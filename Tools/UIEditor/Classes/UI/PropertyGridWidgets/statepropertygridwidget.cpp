@@ -4,18 +4,26 @@
 #include "UIControlStateHelper.h"
 #include "PropertiesGridController.h"
 #include <QList>
+#include <QEvent>
+#include <QKeyEvent>
 
 static const QString STATE_PROPERTY_BLOCK_NAME = "State";
 
 StatePropertyGridWidget::StatePropertyGridWidget(QWidget *parent) :
     BasePropertyGridWidget(parent),
-    ui(new Ui::StatePropertyGridWidget)
+    ui(new Ui::StatePropertyGridWidget),
+	expanded(false)
 {
     ui->setupUi(this);
     SetPropertyBlockName(STATE_PROPERTY_BLOCK_NAME);
     ui->stateSelectComboBox->setItemDelegate(&stateComboboxItemDelegate);
-	
+
+	UpdateState();
+
 	BasePropertyGridWidget::InstallEventFiltersForWidgets(this);
+
+	ui->stateSelectComboBox->installEventFilter(this);
+	ui->stateSelectListWidget->installEventFilter(this);
 }
 
 StatePropertyGridWidget::~StatePropertyGridWidget()
@@ -23,15 +31,183 @@ StatePropertyGridWidget::~StatePropertyGridWidget()
     delete ui;
 }
 
+bool StatePropertyGridWidget::eventFilter(QObject *target, QEvent *event)
+{
+	if (event->type() == QEvent::KeyPress)
+	{
+		QKeyEvent* keyEvent = (QKeyEvent*)event;
+
+		if (target == ui->stateSelectComboBox && keyEvent->key() == Qt::Key_Right)
+		{
+			SetExpandState(true);
+			return true;
+		}
+
+		if (target == ui->stateSelectListWidget && keyEvent->key() == Qt::Key_Left)
+		{
+			SetExpandState(false);
+			return true;
+		}
+	}
+
+	return BasePropertyGridWidget::eventFilter(target, event);
+}
+
+void StatePropertyGridWidget::UpdateState()
+{
+	ui->stateSelectComboBox->setVisible(!expanded);
+	ui->stateSelectListWidget->setVisible(expanded);
+	ui->selectAllCheckbox->setVisible(expanded);
+
+	if (expanded)
+	{
+		ui->expandButton->setText("-");
+		setMinimumHeight(ui->stateSelectListWidget->height() + ui->expandButton->height() + 30);
+		ui->stateSelectListWidget->setFocus();
+	}
+	else
+	{
+		ui->expandButton->setText("+");
+		setMinimumHeight(ui->stateSelectComboBox->height() + ui->expandButton->height() + 30);
+		ui->stateSelectComboBox->setFocus();
+	}
+}
+
+void StatePropertyGridWidget::OnSelectAllStateChanged(int state)
+{
+	ui->stateSelectListWidget->blockSignals(true);
+	SetAllChecked((Qt::CheckState)state);
+	ui->stateSelectListWidget->blockSignals(false);
+
+	MultiplyStateSelectionChanged();
+}
+
+void StatePropertyGridWidget::SetAllChecked(Qt::CheckState state)
+{
+	for (int32 i = 0; i < ui->stateSelectListWidget->count(); ++i)
+	{
+		QListWidgetItem* item = ui->stateSelectListWidget->item(i);
+		item->setCheckState(state);
+	}
+
+	if (GetCheckedState() == STATE_EVERY_ITEM_UNCHECKED)
+	{
+		ui->stateSelectListWidget->item(0)->setCheckState(Qt::Checked);
+	}
+}
+
+StatePropertyGridWidget::eCheckedState StatePropertyGridWidget::GetCheckedState()
+{
+	eCheckedState state = STATE_PARTIALLY_CHECKED;
+
+	bool everyItemUnchecked = true;
+	bool everyItemChecked = true;
+
+	for (int32 i = 0; i < ui->stateSelectListWidget->count(); ++i)
+	{
+		QListWidgetItem* item = ui->stateSelectListWidget->item(i);
+
+		everyItemChecked &= (item->checkState() == Qt::Checked);
+		everyItemUnchecked &= (item->checkState() == Qt::Unchecked);
+	}
+
+	if (everyItemChecked)
+	{
+		state = STATE_EVERY_ITEM_CHECKED;
+	}
+	if (everyItemUnchecked)
+	{
+		state = STATE_EVERY_ITEM_UNCHECKED;
+	}
+
+	return state;
+}
+
+void StatePropertyGridWidget::SetExpandState(bool expanded)
+{
+	this->expanded = expanded;
+	UpdateState();
+	
+	if (expanded)
+	{
+		MultiplyStateSelectionChanged();
+	}
+	else
+	{
+		OnCurrrentIndexChanged(ui->stateSelectComboBox->currentIndex());
+	}
+}
+
+void StatePropertyGridWidget::OnExpandButtonClicked()
+{
+	SetExpandState(!expanded);
+}
+
+void StatePropertyGridWidget::MultiplyStateSelectionChanged()
+{
+	Vector<UIControl::eControlState> selectedStates;
+	for (int32 i = 0; i < ui->stateSelectListWidget->count(); ++i)
+	{
+		QListWidgetItem* item = ui->stateSelectListWidget->item(i);
+
+		if (item->checkState() == Qt::Checked)
+		{
+			UIControl::eControlState selectedState = UIControlStateHelper::GetUIControlStateValue(item->text());
+			selectedStates.push_back(selectedState);
+		}
+	}
+
+	emit SelectMultiplyStates(selectedStates);
+}
+
+void StatePropertyGridWidget::OnListItemChanged(QListWidgetItem* item)
+{
+	ui->stateSelectListWidget->blockSignals(true);
+	ui->selectAllCheckbox->blockSignals(true);
+
+	eCheckedState checkedState = GetCheckedState();
+
+	switch (checkedState)
+	{
+		case STATE_EVERY_ITEM_CHECKED:
+			ui->selectAllCheckbox->setCheckState(Qt::Checked);
+			break;
+
+		case STATE_EVERY_ITEM_UNCHECKED:
+			ui->selectAllCheckbox->setCheckState(Qt::Unchecked);
+			ui->stateSelectListWidget->item(0)->setCheckState(Qt::Checked);
+			break;
+
+		default:
+			break;
+	}
+
+	ui->selectAllCheckbox->blockSignals(false);
+	ui->stateSelectListWidget->blockSignals(false);
+
+	MultiplyStateSelectionChanged();
+}
+
 void StatePropertyGridWidget::FillStatesList()
 {
     ui->stateSelectComboBox->clear();
+	ui->stateSelectListWidget->clear();
     int statesCount = UIControlStateHelper::GetUIControlStatesCount();
     for (int i = 0; i < statesCount; i ++)
     {
         UIControl::eControlState controlState = UIControlStateHelper::GetUIControlState(i);
-        ui->stateSelectComboBox->addItem(UIControlStateHelper::GetUIControlStateName(controlState),
-                                         QVariant(controlState));
+		QString stateName = UIControlStateHelper::GetUIControlStateName(controlState);
+
+        ui->stateSelectComboBox->addItem(stateName, QVariant(controlState));
+
+		QListWidgetItem* item = new QListWidgetItem(stateName);
+		item->setData(Qt::UserRole, QVariant(controlState));
+		item->setCheckState(Qt::Unchecked);
+		if (controlState == UIControlStateHelper::GetDefaultControlState())
+		{
+			item->setCheckState(Qt::Checked);
+		}
+		ui->stateSelectListWidget->addItem(item);
     }
 
     MarkupDirtyStates();
@@ -48,7 +224,16 @@ void StatePropertyGridWidget::Initialize(BaseMetadata* metaData)
     connect(this, SIGNAL(SelectedStateChanged(UIControl::eControlState)),
             PropertiesGridController::Instance(),
             SLOT(OnSelectedStateChanged(UIControl::eControlState)));
-    
+	connect(this, SIGNAL(SelectMultiplyStates(Vector<UIControl::eControlState>)),
+			PropertiesGridController::Instance(), SLOT(OnSelectedStatesChanged(Vector<UIControl::eControlState>)));
+
+	connect(this->ui->expandButton, SIGNAL(pressed()),
+			this, SLOT(OnExpandButtonClicked()));
+	connect(this->ui->selectAllCheckbox, SIGNAL(stateChanged(int)),
+			this, SLOT(OnSelectAllStateChanged(int)));
+	connect(this->ui->stateSelectListWidget, SIGNAL(itemChanged(QListWidgetItem*)),
+			this, SLOT(OnListItemChanged(QListWidgetItem*)));
+
     // Select the first state, emit the signal to update controller.
     int selectedStateIndex = UIControlStateHelper::GetDefaultControlStateIndex();
     ui->stateSelectComboBox->setCurrentIndex(selectedStateIndex);
@@ -62,6 +247,15 @@ void StatePropertyGridWidget::Cleanup()
     disconnect(this, SIGNAL(SelectedStateChanged(UIControl::eControlState)),
             PropertiesGridController::Instance(),
             SLOT(OnSelectedStateChanged(UIControl::eControlState)));
+	disconnect(this, SIGNAL(SelectMultiplyStates(Vector<UIControl::eControlState>)),
+			PropertiesGridController::Instance(), SLOT(OnSelectedStatesChanged(Vector<UIControl::eControlState>)));
+
+	disconnect(this->ui->expandButton, SIGNAL(pressed()),
+			this, SLOT(OnExpandButtonClicked()));
+	disconnect(this->ui->selectAllCheckbox, SIGNAL(stateChanged(int)),
+			this, SLOT(OnSelectAllStateChanged(int)));
+	disconnect(this->ui->stateSelectListWidget, SIGNAL(itemChanged(QListWidgetItem*)),
+			this, SLOT(OnListItemChanged(QListWidgetItem*)));
 
     BasePropertyGridWidget::Cleanup();
 }
@@ -102,4 +296,12 @@ void StatePropertyGridWidget::MarkupDirtyStates()
     }
 
     stateComboboxItemDelegate.SetBoldTextIndexesList(markedTextIndexesList);
+
+	for (int32 i = 0; i < ui->stateSelectListWidget->count(); ++i)
+	{
+		QListWidgetItem* item = ui->stateSelectListWidget->item(i);
+		QFont f = item->font();
+		f.setBold(markedTextIndexesList.contains(i));
+		item->setFont(f);
+	}
 }

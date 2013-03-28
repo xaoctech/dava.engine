@@ -142,7 +142,7 @@ protected:
     virtual void ProcessPushButtonClicked(QPushButton* senderWidget);
 
     // Handle UI Control State is changed.
-    virtual void HandleSelectedUIControlStateChanged(UIControl::eControlState newState);
+    virtual void HandleSelectedUIControlStatesChanged(const Vector<UIControl::eControlState>& newStates);
 
     // These methods are called when property change is succeeded/failed.
     virtual void HandleChangePropertySucceeded(const QString& propertyName);
@@ -179,7 +179,7 @@ protected slots:
     void OnPropertiesChangedExternally();
 
     // Slot for UI Control State Changed notification.
-    void OnSelectedUIControlStateChanged(UIControl::eControlState newState);
+	void OnSelectedUIControlStatesChanged(const Vector<UIControl::eControlState>& newStates);
     
     // Slots for different widget types.
     void OnSpinBoxValueChanged(int value);
