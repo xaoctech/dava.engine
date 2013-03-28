@@ -157,7 +157,7 @@ namespace DAVA
 		windowedMode = DisplayMode(480, 320, 16, 0);
 	}
 
-	void CorePlatformAndroid::RenderRecreated()
+	void CorePlatformAndroid::RenderRecreated(int32 w, int32 h)
 	{
 		Logger::Debug("[CorePlatformAndroid::RenderRecreated] start");
 
@@ -167,6 +167,7 @@ namespace DAVA
 
 		if(wasCreated)
 		{
+            ResizeView(w, h);
 			RenderResource::InvalidateAllResources();
 		}
 		else
@@ -178,6 +179,8 @@ namespace DAVA
 
 			RenderManager::Instance()->InitFBO(androidDelegate->RenderBuffer(), androidDelegate->FrameBuffer());
 			Logger::Debug("[CorePlatformAndroid::] after create renderer");
+
+            ResizeView(w, h);
 
 			FrameworkDidLaunched();
 			screenOrientation = Core::SCREEN_ORIENTATION_PORTRAIT; //no need rotate GL for Android
