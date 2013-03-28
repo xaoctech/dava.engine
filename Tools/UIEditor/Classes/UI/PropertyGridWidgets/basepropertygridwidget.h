@@ -104,10 +104,10 @@ protected:
     void UpdateWidgetWithPropertyValue(const QString& propertyName);
     void UpdateWidgetWithPropertyValue(const PROPERTYGRIDWIDGETSITER& iter);
 
-    void UpdateLineEditWidgetWithPropertyValue(QLineEdit* lineEditWidget, const QMetaProperty& curProperty);
+    virtual void UpdateLineEditWidgetWithPropertyValue(QLineEdit* lineEditWidget, const QMetaProperty& curProperty);
     //void UpdateCheckBoxWidgetWithPropertyValue(QCheckBox* checkBoxWidget, const QMetaProperty& curProperty);
-    void UpdateSpinBoxWidgetWithPropertyValue(QSpinBox* spinBoxWidget, const QMetaProperty& curProperty);
-    void UpdateColorButtonWidgetWithPropertyValue(QColorButton* colorButtonWidget, const QMetaProperty& curProperty);
+    virtual void UpdateSpinBoxWidgetWithPropertyValue(QSpinBox* spinBoxWidget, const QMetaProperty& curProperty);
+    virtual void UpdateColorButtonWidgetWithPropertyValue(QColorButton* colorButtonWidget, const QMetaProperty& curProperty);
 
     // Override this method to get a notification about properties changed from external source.
     virtual void OnPropertiesChangedFromExternalSource() {};

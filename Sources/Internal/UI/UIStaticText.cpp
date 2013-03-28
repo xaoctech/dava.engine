@@ -300,7 +300,7 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
     VariantType *nodeValue = new VariantType();
     
     //Control Type
-    node->Set("type", "UIStaticText");
+	SetPreferredNodeType(node, "UIStaticText");
 
     //Font
     //Get font name and put it here

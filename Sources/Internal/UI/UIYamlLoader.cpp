@@ -37,7 +37,13 @@
 
 namespace DAVA 
 {
-    
+UIYamlLoader::UIYamlLoader() :
+	BaseObject()
+{
+	// Default mode is to ASSERT if custom control isn't found.
+	assertIfCustomControlNotFound = true;
+}
+
 int32 UIYamlLoader::GetDrawTypeFromNode(YamlNode * drawTypeNode)
 {
     int32 ret = UIControlBackground::DRAW_ALIGNED;
@@ -253,10 +259,11 @@ Font * UIYamlLoader::GetFontByName(const String & fontName)
 	return 0;
 }
 
-void UIYamlLoader::Load(UIControl * rootControl, const String & yamlPathname)
+void UIYamlLoader::Load(UIControl * rootControl, const String & yamlPathname, bool assertIfCustomControlNotFound)
 {
 	UIYamlLoader * loader = new UIYamlLoader();
-	
+	loader->SetAssertIfCustomControlNotFound(assertIfCustomControlNotFound);
+
 	loader->ProcessLoad(rootControl, yamlPathname);
 
 	loader->Release();
@@ -461,11 +468,17 @@ void UIYamlLoader::LoadFromNode(UIControl * parentControl, YamlNode * rootNode, 
 		const String & type = typeNode->AsString();
 		if (type == "FTFont")continue;
 		if (type == "GraphicsFont")continue;
-		
-		UIControl * control = dynamic_cast<UIControl*> (ObjectFactory::Instance()->New(type));
+
+		// Base Type might be absent.
+		YamlNode* baseTypeNode = node->Get("baseType");
+		const String baseType = baseTypeNode ? baseTypeNode->AsString() : String();
+
+		// The control can be loaded either from its Type or from Base Type (depending on
+		// whether the control is custom or not.
+		UIControl* control = CreateControl(type, baseType);
 		if (!control)
 		{
-			Logger::Debug("ObjectFactory haven't found object with name:%s", type.c_str());
+			Logger::Debug("ObjectFactory haven't found object with type:%s, base type %s", type.c_str(), baseType.c_str());
 			continue;
 		}else
 		{
@@ -482,6 +495,45 @@ void UIYamlLoader::LoadFromNode(UIControl * parentControl, YamlNode * rootNode, 
 	{
         parentControl->LoadFromYamlNodeCompleted();   
     }
+}
+
+UIControl* UIYamlLoader::CreateControl(const String& type, const String& baseType)
+{
+	// Firstly try Type (Custom Control).
+	UIControl * control = dynamic_cast<UIControl*> (ObjectFactory::Instance()->New(type));
+	if (control)
+	{
+		// Everything is OK. Just update the custom control type for the control, if any.
+		bool hasCustomType = (!type.empty() && !baseType.empty() && (type != baseType));
+		if (hasCustomType)
+		{
+			control->SetCustomControlType(type);
+		}
+
+		return control;
+	}
+
+	// The control can't be loaded by its type - probably it is Custom Control and we are
+	// running under UIEditor or other app which doesn't support custom controls. Verify this.
+	if (this->assertIfCustomControlNotFound)
+	{
+		Logger::Error("Unable to load UI Control %s and 'ASSERT if Custom Control Not Found' flag is set to TRUE", type.c_str());
+		DVASSERT(false);
+	}
+
+	// Retry with base type, if any.
+	if (!baseType.empty())
+	{
+		control = dynamic_cast<UIControl*> (ObjectFactory::Instance()->New(baseType));
+		if (control)
+		{
+			// Even if the control of the base type was created, we have to store its custom type.
+			control->SetCustomControlType(type);
+		}
+	}
+
+	// A NULL might be here too.
+	return control;
 }
 
 YamlNode* UIYamlLoader::SaveToNode(UIControl * parentControl, YamlNode * parentNode,
@@ -510,6 +562,11 @@ YamlNode* UIYamlLoader::SaveToNode(UIControl * parentControl, YamlNode * parentN
     }
 
     return childNode;
+}
+
+void UIYamlLoader::SetAssertIfCustomControlNotFound(bool value)
+{
+	this->assertIfCustomControlNotFound = value;
 }
 	
 }
