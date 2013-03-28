@@ -92,9 +92,8 @@ private:
     
 
 private:
-	DisplayMode windowedMode;
-	int32 oldWidth;
-	int32 oldHeight;
+	int32 width;
+	int32 height;
 
 	bool wasCreated;
 	bool renderIsActive;
