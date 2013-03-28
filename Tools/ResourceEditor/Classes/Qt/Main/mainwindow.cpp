@@ -40,12 +40,12 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	new QtMainWindowHandler(this);
 
 	ui->setupUi(this);
-	ui->davaGLWidget->setFocus();
+	//ui->davaGLWidget->setFocus();
  
     qApp->installEventFilter(this);
 	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + "EditorConfig.yaml");
 
-	QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->davaGLWidget);
+	//QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->davaGLWidget);
 	QtMainWindowHandler::Instance()->SetResentMenu(ui->menuFile);
 	QtMainWindowHandler::Instance()->RegisterStatusBar(ui->statusBar);
 	QtMainWindowHandler::Instance()->RestoreDefaultFocus();

@@ -40,17 +40,13 @@
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
     <property name="spacing">
-     <number>1</number>
+     <number>0</number>
     </property>
     <property name="margin">
      <number>0</number>
     </property>
     <item>
-     <widget class="DavaGLWidget" name="davaGLWidget" native="true">
-      <property name="focusPolicy">
-       <enum>Qt::StrongFocus</enum>
-      </property>
-     </widget>
+     <widget class="SceneTabWidget" name="sceneTabWidget" native="true"/>
     </item>
    </layout>
   </widget>
@@ -277,56 +273,35 @@
    </attribute>
    <widget class="QWidget" name="propertiesBody">
     <layout class="QVBoxLayout" name="verticalLayout_5">
+     <property name="spacing">
+      <number>3</number>
+     </property>
      <property name="margin">
       <number>0</number>
      </property>
      <item>
-      <widget class="QFrame" name="frameProperties">
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
+      <widget class="QToolBar" name="propertiesToolBar">
+       <property name="iconSize">
+        <size>
+         <width>16</width>
+         <height>16</height>
+        </size>
        </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonIconOnly</enum>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_6">
-        <property name="spacing">
-         <number>6</number>
-        </property>
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
-         <number>3</number>
-        </property>
-        <item>
-         <widget class="QToolBar" name="propertiesToolBar">
-          <property name="iconSize">
-           <size>
-            <width>16</width>
-            <height>16</height>
-           </size>
-          </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonIconOnly</enum>
-          </property>
-          <addaction name="actionShowAdvancedProp"/>
-          <addaction name="actionAddNewComponent"/>
-          <addaction name="actionRemoveComponent"/>
-         </widget>
-        </item>
-        <item>
-         <widget class="PropertyEditor" name="propertyEditor">
-          <property name="mouseTracking">
-           <bool>false</bool>
-          </property>
-          <property name="styleSheet">
-           <string notr="true"> QTreeView::branch:has-children:!has-siblings:closed,
+       <addaction name="actionShowAdvancedProp"/>
+       <addaction name="actionAddNewComponent"/>
+       <addaction name="actionRemoveComponent"/>
+      </widget>
+     </item>
+     <item>
+      <widget class="PropertyEditor" name="propertyEditor">
+       <property name="mouseTracking">
+        <bool>false</bool>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"> QTreeView::branch:has-children:!has-siblings:closed,
  QTreeView::branch:closed:has-children:has-siblings {
          border-image: none;
          image: url(:/QtImages/tree-closed.png);
@@ -338,22 +313,19 @@
          image: url(:/QtImages/tree-open.png);
  }
 </string>
-          </property>
-          <property name="editTriggers">
-           <set>QAbstractItemView::AllEditTriggers</set>
-          </property>
-          <property name="alternatingRowColors">
-           <bool>true</bool>
-          </property>
-          <property name="selectionMode">
-           <enum>QAbstractItemView::SingleSelection</enum>
-          </property>
-          <property name="indentation">
-           <number>16</number>
-          </property>
-         </widget>
-        </item>
-       </layout>
+       </property>
+       <property name="editTriggers">
+        <set>QAbstractItemView::AllEditTriggers</set>
+       </property>
+       <property name="alternatingRowColors">
+        <bool>true</bool>
+       </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::SingleSelection</enum>
+       </property>
+       <property name="indentation">
+        <number>16</number>
+       </property>
       </widget>
      </item>
     </layout>
@@ -1264,12 +1236,6 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>DavaGLWidget</class>
-   <extends>QWidget</extends>
-   <header>Main/davaglwidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>QSceneGraphTreeView</class>
    <extends>QTreeView</extends>
    <header>DockSceneGraph/QSceneGraphTreeView.h</header>
@@ -1316,6 +1282,12 @@
    <class>HangingObjectsView</class>
    <extends>QWidget</extends>
    <header>DockHangingObjects/HangingObjectsView.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SceneTabWidget</class>
+   <extends>QWidget</extends>
+   <header>Scene/scenetabwidget.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>
