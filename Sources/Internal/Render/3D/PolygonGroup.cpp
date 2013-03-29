@@ -146,6 +146,7 @@ void PolygonGroup::UpdateDataPointersAndStreams()
 		weightArray = reinterpret_cast<float32*>(meshData + baseShift + 4 * 4);
 		baseShift += GetVertexSize(EVF_JOINTWEIGHT);
 		
+		SafeDeleteArray(jointCountArray);
 		jointCountArray = new int32[vertexCount];
 	}
 }
@@ -337,7 +338,9 @@ void PolygonGroup::BuildTangentsBinormals(uint32 flagsToAdd)
     
 void PolygonGroup::CreateBaseVertexArray()
 {
+	SafeDeleteArray(baseVertexArray);
 	baseVertexArray = new Vector3[vertexCount];
+
 	for (int v = 0; v < vertexCount; ++v)
 	{
 		GetCoord(v, baseVertexArray[v]);
