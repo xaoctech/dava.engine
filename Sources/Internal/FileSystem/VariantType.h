@@ -460,7 +460,12 @@ public:
 	static VariantType FromType(int type);
     
 private:
-    void ReleasePointer();
+	// This constructor is private to prevent creation of VariantType from pointer
+	// Without this, creating VariantType from any pointer will be automatically casted to BOOL 
+	// by C++ compiler, that is completely wrong
+	VariantType(void *);
+
+	void ReleasePointer();
 };
 	
 VariantType::eVariantType VariantType::GetType() const
