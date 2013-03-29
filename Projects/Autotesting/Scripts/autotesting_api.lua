@@ -54,6 +54,8 @@ function OnTestStep(state, err)
 		
 		autotestingSystem:OnTestStep(description[step_num], false, tostring(err))
 	end
+	Yield()
+		
 	next_step()
 end
 
@@ -62,7 +64,6 @@ function Yield()
     --print("Yield")
     coroutine.yield()
 end
-
 
 function ResumeTest()
     --print("ResumeTest")
@@ -87,6 +88,8 @@ function CreateTest(test)
     --print(autotestingSystem:GetTimeElapsed())
     
     --print("CreateTest done")
+    
+    Yield()
 end
 
 function StartTest(test)
@@ -96,6 +99,10 @@ function StartTest(test)
     print("START TEST: " .. description[step_num])
     print("================================================================================")
     next_step()
+    
+    -- wait for application loading
+    Wait(2)
+    
     CreateTest(test)
     ResumeTest()
 end
@@ -246,11 +253,12 @@ end
 function SetText(path, text)
     print("SetText path="..path.." text="..text)
     return autotestingSystem:SetText(path, text)
+    Yield()
 end
 
 function CheckText(name, txt)
 	print("Check that text '" .. txt .. "' is present on control " .. name)
-		local control = autotestingSystem:FindControl(name)
+	local control = autotestingSystem:FindControl(name)
 	
 	if control then
 		return autotestingSystem:CheckText(control, txt)
@@ -261,7 +269,7 @@ end
 
 function CheckMsgText(name, key)
 	print("Check that text with key [" .. key .. "] is present on control " .. name)
-		local control = autotestingSystem:FindControl(name)
+	local control = autotestingSystem:FindControl(name)
 	
 	if control then
 		return autotestingSystem:CheckMsgText(control, key)
