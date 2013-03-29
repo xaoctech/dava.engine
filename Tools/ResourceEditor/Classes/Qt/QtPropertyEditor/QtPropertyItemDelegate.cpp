@@ -30,7 +30,6 @@ QWidget* QtPropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptio
 	if(NULL != data)
 	{
 		editWidget = data->CreateEditor(parent, option);
-		TryEditorWorkarounds(editWidget);
 	}
 
 	if(NULL == editWidget)
@@ -96,7 +95,7 @@ void QtPropertyItemDelegate::recalcOptionalWidgets(const QModelIndex &index, QSt
 	{
 		QWidget *owViewport = data->GetOWViewport();
 
-		for (int i = 0; i < data->GetOWCount(); i++)
+		for (int i = data->GetOWCount() - 1; i >= 0; i--)
 		{
 			int prevOWSpace = 0;
 			int owSpacing = 1;
@@ -132,19 +131,45 @@ void QtPropertyItemDelegate::recalcOptionalWidgets(const QModelIndex &index, QSt
 	}
 }
 
-void QtPropertyItemDelegate::TryEditorWorkarounds(QWidget *editor) const
+void QtPropertyItemDelegate::collapse(const QModelIndex & collapse_index)
 {
-	if(NULL != editor)
+	// hide all optional widgets from child
+	// they will be shown after expanding them and on first paint call
+	if(collapse_index.isValid())
 	{
-		// workaround: qtColorLineEdit should know about Object that filters it events, that object is this delegate. 
-		// This fix is done for MacOS, to prevent editing cancellation, when color dialog appears
-		QtColorLineEdit *lineEdit = dynamic_cast<QtColorLineEdit *>(editor);
-		if(NULL != lineEdit)
+		const QAbstractItemModel *model = collapse_index.model();
+
+		if(NULL != model)
 		{
-			lineEdit->SetItemDelegatePtr(this);
+			// go thought columns and hide OW in each cell PropertyData
+			for (int c = 0; c < model->columnCount(); c++)
+			{
+				QModelIndex cellIndex = model->index(collapse_index.row(), c, collapse_index.parent());
+				QtPropertyData* cellData = cellIndex.data(QtPropertyItem::PropertyDataRole).value<QtPropertyData*>();
+				if(NULL != cellData)
+				{
+					hideAllChildOptionalWidgets(cellData);
+				}
+			}
+		}
+	}
+}
+
+void QtPropertyItemDelegate::expand(const QModelIndex & index)
+{ }
+
+void QtPropertyItemDelegate::hideAllChildOptionalWidgets(QtPropertyData* data)
+{
+	for(int i = 0; i < data->ChildCount(); i++)
+	{
+		QPair<QString, QtPropertyData *> childPair = data->ChildGet(i);
+		QtPropertyData *childData = childPair.second;
+
+		for (int j = 0; j < childData->GetOWCount(); j++)
+		{
+			childData->GetOW(j)->widget->hide();
 		}
 
-		// TODO: other workarounds
-		// ...
+		hideAllChildOptionalWidgets(childData);
 	}
 }
