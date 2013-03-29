@@ -161,6 +161,16 @@ void ParticleEmitter::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
             String filename = archive->GetString("pe.configpath");
             String sceneFilePath = FileSystem::Instance()->SystemPathForFrameworkPath(sceneFile->GetScenePath());
             configPath = FileSystem::Instance()->GetCanonicalPath(sceneFilePath + filename);
+
+#if defined (__DAVAENGINE_ANDROID__)
+            String systemPath = FileSystem::Instance()->SystemPathForFrameworkPath("~res:/");
+            String::size_type pos = configPath.find(systemPath);
+            if(pos == 0)
+            {
+                configPath = configPath.replace(pos, systemPath.length(), "~res:/");
+            }
+#endif //#if defined (__DAVAENGINE_ANDROID__)
+            
 			LoadFromYaml(configPath);
 		}
 	}
