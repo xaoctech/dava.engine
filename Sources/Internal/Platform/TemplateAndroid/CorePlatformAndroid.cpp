@@ -53,8 +53,8 @@ namespace DAVA
 
 		wasCreated = false;
 		renderIsActive = false;
-		oldWidth = 0;
-		oldHeight = 0;
+		width = 0;
+		height = 0;
 
 		foreground = false;
 	}
@@ -114,13 +114,10 @@ namespace DAVA
 
 	void CorePlatformAndroid::ResizeView(int32 w, int32 h)
 	{
-		if(oldWidth != w || oldHeight != h)
+		if(width != w || height != h)
 		{
-			oldWidth = w;
-			oldHeight = h;
-
-			windowedMode.width = w;
-			windowedMode.height = h;
+			width = w;
+			height = h;
 
 			UpdateScreenMode();
 		}
@@ -129,13 +126,14 @@ namespace DAVA
 	void CorePlatformAndroid::UpdateScreenMode()
 	{
 		Logger::Debug("[CorePlatformAndroid::UpdateScreenMode] start");
-		UIControlSystem::Instance()->SetInputScreenAreaSize(windowedMode.width, windowedMode.height);
-		Core::Instance()->SetPhysicalScreenSize(windowedMode.width, windowedMode.height);
+//		UIControlSystem::Instance()->SetInputScreenAreaSize(width, height);
+		UIControlSystem::Instance()->SetInputScreenAreaSize(height, width);
+		Core::Instance()->SetPhysicalScreenSize(width, height);
 
-		RenderManager::Instance()->InitFBSize(windowedMode.width, windowedMode.height);
-        RenderManager::Instance()->Init(windowedMode.width, windowedMode.height);
+		RenderManager::Instance()->InitFBSize(width, height);
+        RenderManager::Instance()->Init(width, height);
 
-		Logger::Debug("[CorePlatformAndroid::] w = %d, h = %d", windowedMode.width, windowedMode.height);
+		Logger::Debug("[CorePlatformAndroid::] w = %d, h = %d", width, height);
 		Logger::Debug("[CorePlatformAndroid::UpdateScreenMode] done");
 	}
 
@@ -152,12 +150,9 @@ namespace DAVA
 //		Logger::Debug("[CorePlatformAndroid::CreateAndroidWindow] assets = %s", assets);
 
 		//FileSystem::Instance()->SetPath(docPath, assets);
-
-		//////////////////////////////////////////////////////////////////////////
-		windowedMode = DisplayMode(480, 320, 16, 0);
 	}
 
-	void CorePlatformAndroid::RenderRecreated()
+	void CorePlatformAndroid::RenderRecreated(int32 w, int32 h)
 	{
 		Logger::Debug("[CorePlatformAndroid::RenderRecreated] start");
 
@@ -167,6 +162,7 @@ namespace DAVA
 
 		if(wasCreated)
 		{
+            ResizeView(w, h);
 			RenderResource::InvalidateAllResources();
 		}
 		else
@@ -178,6 +174,8 @@ namespace DAVA
 
 			RenderManager::Instance()->InitFBO(androidDelegate->RenderBuffer(), androidDelegate->FrameBuffer());
 			Logger::Debug("[CorePlatformAndroid::] after create renderer");
+
+            ResizeView(w, h);
 
 			FrameworkDidLaunched();
 			screenOrientation = Core::SCREEN_ORIENTATION_PORTRAIT; //no need rotate GL for Android
@@ -249,8 +247,8 @@ namespace DAVA
 
 		foreground = false;
 
-		oldWidth = 0;
-		oldHeight = 0;
+		width = 0;
+		height = 0;
 	}
 
 	static Vector<DAVA::UIEvent> activeTouches;

@@ -354,7 +354,7 @@ File *FileSystem::CreateFileForFrameworkPath(const String & frameworkPath, uint3
 #endif
 #ifdef USE_LOCAL_RESOURCES
 		String path;
-		path = "/mnt/sdcard/DavaProject";
+		path = "/mnt/sdcard/DavaProject/Data";
 		path += frameworkPath.c_str() + 5;
 		return File::CreateFromSystemPath(SystemPathForFrameworkPath(path), attributes);
 #else
