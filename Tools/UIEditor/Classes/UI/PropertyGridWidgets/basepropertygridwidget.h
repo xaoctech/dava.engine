@@ -104,10 +104,10 @@ protected:
     void UpdateWidgetWithPropertyValue(const QString& propertyName);
     void UpdateWidgetWithPropertyValue(const PROPERTYGRIDWIDGETSITER& iter);
 
-    void UpdateLineEditWidgetWithPropertyValue(QLineEdit* lineEditWidget, const QMetaProperty& curProperty);
+    virtual void UpdateLineEditWidgetWithPropertyValue(QLineEdit* lineEditWidget, const QMetaProperty& curProperty);
     //void UpdateCheckBoxWidgetWithPropertyValue(QCheckBox* checkBoxWidget, const QMetaProperty& curProperty);
-    void UpdateSpinBoxWidgetWithPropertyValue(QSpinBox* spinBoxWidget, const QMetaProperty& curProperty);
-    void UpdateColorButtonWidgetWithPropertyValue(QColorButton* colorButtonWidget, const QMetaProperty& curProperty);
+    virtual void UpdateSpinBoxWidgetWithPropertyValue(QSpinBox* spinBoxWidget, const QMetaProperty& curProperty);
+    virtual void UpdateColorButtonWidgetWithPropertyValue(QColorButton* colorButtonWidget, const QMetaProperty& curProperty);
 
     // Override this method to get a notification about properties changed from external source.
     virtual void OnPropertiesChangedFromExternalSource() {};
@@ -142,7 +142,7 @@ protected:
     virtual void ProcessPushButtonClicked(QPushButton* senderWidget);
 
     // Handle UI Control State is changed.
-    virtual void HandleSelectedUIControlStateChanged(UIControl::eControlState newState);
+    virtual void HandleSelectedUIControlStatesChanged(const Vector<UIControl::eControlState>& newStates);
 
     // These methods are called when property change is succeeded/failed.
     virtual void HandleChangePropertySucceeded(const QString& propertyName);
@@ -179,7 +179,7 @@ protected slots:
     void OnPropertiesChangedExternally();
 
     // Slot for UI Control State Changed notification.
-    void OnSelectedUIControlStateChanged(UIControl::eControlState newState);
+	void OnSelectedUIControlStatesChanged(const Vector<UIControl::eControlState>& newStates);
     
     // Slots for different widget types.
     void OnSpinBoxValueChanged(int value);

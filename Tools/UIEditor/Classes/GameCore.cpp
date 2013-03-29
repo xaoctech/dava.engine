@@ -51,7 +51,10 @@ GameCore::GameCore()
     new PropertiesGridController();
     new CommandsController();
 	new CopyPasteController();
-    
+
+	// All the controllers are created - initialize them where needed.
+	HierarchyTreeController::Instance()->ConnectToSignals();
+
 	new ScreenWrapper();
     new MetadataFactory();
 	new EditorFontManager();

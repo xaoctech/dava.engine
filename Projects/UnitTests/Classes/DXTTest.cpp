@@ -101,6 +101,14 @@ bool DXTTest::IsCurrentTestAccepted()
 {
     RenderManager::Caps deviceCaps = RenderManager::Instance()->GetCaps();
 
+#if defined (__DAVAENGINE_IPHONE__)
+    if(!deviceCaps.isDXTSupported )
+    {
+        return false;
+    }
+#endif //#if defined (__DAVAENGINE_IPHONE__)
+
+        
     if((formats[currentTest] == FORMAT_RGBA16161616) && !deviceCaps.isFloat16Supported)
     {
         return false;

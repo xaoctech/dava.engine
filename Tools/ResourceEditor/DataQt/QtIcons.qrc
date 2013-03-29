@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/">
+    <file>QtIcons/color.png</file>
     <file>QtIcons/keyminus.png</file>
     <file>QtIcons/keyplus.png</file>
     <file>QtIcons/ccancel.png</file>

@@ -59,9 +59,23 @@ public:
 	int ChildCount();
 	QtPropertyData* ChildGet(const QString &key);
 	QPair<QString, QtPropertyData*> ChildGet(int i);
+	void ChildRemove(const QString &key);
+	void ChildRemove(QtPropertyData *data);
+	void ChildRemove(int i);
 
+signals:
+	void ChildAdded(const QString &key, QtPropertyData *data);
+	void ChildRemoving(const QString &key, QtPropertyData *data);
     
 protected:
+	QVariant curValue;
+	QIcon curIcon;
+	int curFlags;
+
+	QtPropertyData *parent;
+	QHash<QString, QtPropertyData *> children;
+	QHash<QString, int> childrenOrder;
+
 	void ParentUpdate();
 
 	// Functions should be re-implemented by sub-class
@@ -72,15 +86,6 @@ protected:
 	virtual void SetEditorDataInternal(QWidget *editor);
 	virtual void ChildChanged(const QString &key, QtPropertyData *data);
 	virtual void ChildNeedUpdate();
-
-private:
-	QVariant curValue;
-	QIcon curIcon;
-	int curFlags;
-
-	QtPropertyData *parent;
-	QHash<QString, QtPropertyData *> children;
-	QHash<QString, int> childrenOrder;
 	
 public:
 	// Option widgets

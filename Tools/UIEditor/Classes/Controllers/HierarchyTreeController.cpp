@@ -13,6 +13,7 @@
 #include "BaseMetadata.h"
 #include "MetadataFactory.h"
 #include "LibraryController.h"
+#include "CommandsController.h"
 
 HierarchyTreeController::HierarchyTreeController(QObject* parent) :
 	QObject(parent)
@@ -22,7 +23,19 @@ HierarchyTreeController::HierarchyTreeController(QObject* parent) :
 
 HierarchyTreeController::~HierarchyTreeController()
 {
-    
+	DisconnectFromSignals();
+}
+
+void HierarchyTreeController::ConnectToSignals()
+{
+	connect(CommandsController::Instance(), SIGNAL(UnsavedChangesNumberChanged()),
+			this, SLOT(OnUnsavedChangesNumberChanged()));
+}
+
+void HierarchyTreeController::DisconnectFromSignals()
+{
+	disconnect(CommandsController::Instance(), SIGNAL(UnsavedChangesNumberChanged()),
+			   this, SLOT(OnUnsavedChangesNumberChanged()));
 }
 
 bool HierarchyTreeController::Load(const QString& projectPath)
@@ -38,12 +51,25 @@ bool HierarchyTreeController::Load(const QString& projectPath)
 	return res;
 }
 
-bool HierarchyTreeController::Save(const QString& projectPath)
+bool HierarchyTreeController::SaveOnlyChangedScreens(const QString& projectPath)
 {
-	bool res = hierarchyTree.Save(projectPath);
+	bool res = hierarchyTree.SaveOnlyChangedScreens(projectPath);
 	if (res)
 		emit ProjectSaved();
 	return res;
+}
+
+bool HierarchyTreeController::SaveAll(const QString& projectPath)
+{
+	bool res = hierarchyTree.SaveAll(projectPath);
+	if (res)
+		emit ProjectSaved();
+	return res;
+}
+
+List<HierarchyTreeScreenNode*> HierarchyTreeController::GetUnsavedScreens()
+{
+	return hierarchyTree.GetUnsavedScreens();
 }
 
 void HierarchyTreeController::UpdateSelection(const HierarchyTreePlatformNode* activePlatform,
@@ -299,7 +325,7 @@ bool HierarchyTreeController::NewProject(const QString& projectPath)
 {
 	hierarchyTree.CreateProject();
 	
-	bool res = Save(projectPath);
+	bool res = SaveAll(projectPath);
 	if (res)
 	{
 		emit ProjectCreated();
@@ -494,4 +520,9 @@ void HierarchyTreeController::CleanupNodesDeletedFromScene()
 	}
 
 	deletedFromSceneNodes.clear();
+}
+
+void HierarchyTreeController::OnUnsavedChangesNumberChanged()
+{
+	emit HierarchyTreeUpdated();
 }

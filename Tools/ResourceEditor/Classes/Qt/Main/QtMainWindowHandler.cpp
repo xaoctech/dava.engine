@@ -70,6 +70,7 @@ QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
 
 	connect(sceneDataManager, SIGNAL(SceneActivated(SceneData*)), this, SLOT(OnSceneActivated(SceneData*)));
 	connect(sceneDataManager, SIGNAL(SceneReleased(SceneData*)), this, SLOT(OnSceneReleased(SceneData*)));
+	connect(sceneDataManager, SIGNAL(SceneCreated(SceneData*)), this, SLOT(OnSceneCreated(SceneData*)));
 	connect(QtMainWindow::Instance(), SIGNAL(RepackAndReloadFinished()), this, SLOT(ReloadSceneTextures()));
 }
 
@@ -850,6 +851,10 @@ void QtMainWindowHandler::OnSceneActivated(SceneData *scene)
 
 	UpdateUndoActionsState();
 	UpdateModificationActions();
+}
+
+void QtMainWindowHandler::OnSceneCreated(SceneData *scene)
+{
 	UpdateRecentScenesList();
 }
 

@@ -6,6 +6,8 @@
 
 class QtPropertyDataDavaVariant : public QtPropertyData
 {
+	Q_OBJECT
+
 public:
 	QtPropertyDataDavaVariant(const DAVA::VariantType &value);
 	virtual ~QtPropertyDataDavaVariant();
@@ -29,7 +31,13 @@ protected:
 	virtual void EditorDoneInternal(QWidget *editor);
     virtual void SetEditorDataInternal(QWidget *editor);
 
+protected slots:
+	void ColorOWPressed();
+
 private:
+	bool iconCacheIsValid;
+	QIcon iconCache;
+
 	void ChildsCreate();
 	void ChildsSetFromMe();
 	void MeSetFromChilds(const QString &lastChangedChildKey, QtPropertyData *lastChangedChildData);

@@ -45,7 +45,7 @@ QString UISpinnerMetadata::GetPrevButtonText()
         return QString();
     }
 
-	UIStaticText* textControl = GetPrevButton()->GetStateTextControl(this->uiControlState);
+	UIStaticText* textControl = GetPrevButton()->GetStateTextControl(this->uiControlStates[GetActiveStateIndex()]);
 	if (textControl)
 	{
 		return WideString2QStrint(textControl->GetText());
@@ -61,7 +61,10 @@ void UISpinnerMetadata::SetPrevButtonText(const QString& value)
         return;
     }
 
-	GetPrevButton()->SetStateText(this->uiControlState, QStrint2WideString(value));
+	for (uint32 i = 0; i < this->GetStatesCount(); ++i)
+	{
+		GetPrevButton()->SetStateText(this->uiControlStates[i], QStrint2WideString(value));
+	}
 }
 	
 QString UISpinnerMetadata::GetNextButtonText()
@@ -71,7 +74,7 @@ QString UISpinnerMetadata::GetNextButtonText()
         return QString();
     }
 	
-	UIStaticText* textControl = GetNextButton()->GetStateTextControl(this->uiControlState);
+	UIStaticText* textControl = GetNextButton()->GetStateTextControl(this->uiControlStates[GetActiveStateIndex()]);
 	if (textControl)
 	{
 		return WideString2QStrint(textControl->GetText());
@@ -86,8 +89,11 @@ void UISpinnerMetadata::SetNextButtonText(const QString& value)
     {
         return;
     }
-	
-	GetNextButton()->SetStateText(this->uiControlState, QStrint2WideString(value));
+
+	for (uint32 i = 0; i < this->GetStatesCount(); ++i)
+	{
+		GetNextButton()->SetStateText(this->uiControlStates[i], QStrint2WideString(value));
+	}
 }
 
 UISpinner* UISpinnerMetadata::GetActiveUISpinner()
@@ -140,9 +146,6 @@ void UISpinnerMetadata::RecalculateSpinnerButtons()
 	newPrevButtonRect.dx = controlRect.dx * RELATIVE_SPINNER_BUTTONS_WIDTH;
 	newPrevButtonRect.dy = controlRect.y / 2;
 	GetPrevButton()->SetRect(newPrevButtonRect);
-
-	GetPrevButton()->SetRect(Rect(0,0,100,100));
-	GetPrevButton()->SetStateText(0, L"mimimi");
 
 	// The rect for "Next" button is the same, but shifted down.
 	Rect newNextButtonRect = newPrevButtonRect;

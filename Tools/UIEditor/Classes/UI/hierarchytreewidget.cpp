@@ -19,6 +19,7 @@
 #define MENU_ITEM_COPY tr("Copy")
 #define MENU_ITEM_PASTE tr("Paste")
 #define MENU_ITEM_CREATE_SCREEN tr("Create screen")
+#define MENU_ITEM_CREATE_AGGREGATOR tr("Create aggregator")
 
 
 HierarchyTreeWidget::HierarchyTreeWidget(QWidget *parent) :
@@ -70,7 +71,7 @@ void HierarchyTreeWidget::OnTreeUpdated()
 		QTreeWidgetItem* platformItem = new QTreeWidgetItem();
 		platformItem->setData(ITEM_ID, platformNode->GetId());
 		platformItem->setText(0, platformNode->GetName());
-		platformItem->setIcon(0, QIcon(":/icons/079.png"));
+		platformItem->setIcon(0, QIcon(":/Icons/079i.png"));
 		ui->treeWidget->insertTopLevelItem(ui->treeWidget->topLevelItemCount(), platformItem);
 		
 		for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter = platformNode->GetChildNodes().begin();
@@ -82,11 +83,19 @@ void HierarchyTreeWidget::OnTreeUpdated()
 
 			QTreeWidgetItem* screenItem = new QTreeWidgetItem();
 			screenItem->setData(ITEM_ID, screenNode->GetId());
-			screenItem->setText(0, screenNode->GetName());
+
+			// Check whether this screen was changed.
+			QString screenItemText = screenNode->GetName();
+			if (screenNode->GetUnsavedChanges() != 0)
+			{
+				screenItemText += " *";
+			}
+			screenItem->setText(0, screenItemText);
+
 			if (dynamic_cast<const HierarchyTreeAggregatorNode*>(screenNode))
-				screenItem->setIcon(0, QIcon(":/icons/170.png"));
+				screenItem->setIcon(0, QIcon(":/Icons/170.png"));
 			else
-				screenItem->setIcon(0, QIcon(":/icons/068.png"));
+				screenItem->setIcon(0, QIcon(":/Icons/068i.png"));
 			platformItem->insertChild(platformItem->childCount(), screenItem);
 			
 			AddControlItem(screenItem, expandedItems, screenNode->GetChildNodes());
@@ -296,6 +305,10 @@ void HierarchyTreeWidget::OnShowCustomMenu(const QPoint& pos)
 		connect(createScreenAction, SIGNAL(triggered()), this, SLOT(OnCreateScreenAction()));
 		menu.addAction(createScreenAction);
 		
+		QAction* createAggregatorAction = new QAction(MENU_ITEM_CREATE_AGGREGATOR, &menu);
+		connect(createAggregatorAction, SIGNAL(triggered()), this, SLOT(OnCreateAggregatorAction()));
+		menu.addAction(createAggregatorAction);
+		
 		if (CopyPasteController::Instance()->GetCopyType() == CopyPasteController::CopyTypeScreen)
 		{
 			QAction* pasteScreenAction = new QAction(MENU_ITEM_PASTE, &menu);
@@ -360,13 +373,12 @@ void HierarchyTreeWidget::OnDeleteControlAction()
 
 void HierarchyTreeWidget::OnCreateScreenAction()
 {
-	QList<QTreeWidgetItem*> items = ui->treeWidget->selectedItems();
-	if (!items.size())
-		return;
-	QTreeWidgetItem* item = items.at(0);
-	QVariant data = item->data(ITEM_ID);
-	HierarchyTreeNode::HIERARCHYTREENODEID id = data.toInt();
-	emit CreateNewScreen(id);
+	emit CreateNewScreen();
+}
+
+void HierarchyTreeWidget::OnCreateAggregatorAction()
+{
+	emit CreateNewAggregator();
 }
 
 void HierarchyTreeWidget::OnCopyAction()
