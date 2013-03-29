@@ -134,6 +134,28 @@ void UISwitch::CopyDataFrom(UIControl *srcControl)
     InitControls();
 }
 
+List<UIControl* >& UISwitch::GetRealChildren()
+{
+	List<UIControl* >& realChildren = UIControl::GetRealChildren();
+	realChildren.remove(buttonLeft);
+	realChildren.remove(buttonRight);
+	realChildren.remove(toggle);
+
+	return realChildren;
+
+}
+
+List<UIControl* > UISwitch::GetSubcontrols()
+{
+	List<UIControl* > subControls;
+	subControls.push_back(buttonLeft);
+	subControls.push_back(buttonRight);
+	subControls.push_back(toggle);
+
+	return subControls;
+
+}
+
 UIControl* UISwitch::Clone()
 {
 	UISwitch *t = new UISwitch(GetRect());
