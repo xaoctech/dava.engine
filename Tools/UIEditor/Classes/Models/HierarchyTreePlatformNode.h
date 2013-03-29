@@ -33,7 +33,7 @@ public:
 	void ActivatePlatform();
 	
 	bool Load(YamlNode* node);
-	bool Save(YamlNode* node);
+	bool Save(YamlNode* node, bool saveAll);
 
     // Separate method to load/save localization.
     bool LoadLocalization(YamlNode* platform);

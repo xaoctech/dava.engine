@@ -76,24 +76,22 @@ RenderSystem::RenderSystem()
 RenderSystem::~RenderSystem()
 {
 	SafeDelete(particleEmitterSystem);
-    //for (FastNameMap<RenderPass*>::Iterator )
-    Logger::Error("Write functions to release data from HashMaps. Need Iterations for HashMap.");
     
-    renderLayersMap.Clear();
+    FastNameMap<RenderPass*>::Iterator endPasses = renderPassesMap.End();
+    for(FastNameMap<RenderPass*>::Iterator it = renderPassesMap.Begin(); it != endPasses; ++it)
+    {
+        RenderPass *pass = it.GetValue();
+        SafeDelete(pass);
+    }
     renderPassesMap.Clear();
-//    uint32 layersSize = (uint32)renderLayers.size();
-//    for (uint32 k = 0; k < layersSize; ++k)
-//    {
-//        SafeDelete(renderLayers[k]);
-//    }
-//    renderPasses.clear();
-//
-//    uint32 size = (uint32)renderPasses.size();
-//    for (uint32 k = 0; k < size; ++k)
-//    {
-//        SafeDelete(renderPasses[k]);
-//    }
-//    renderPasses.clear();
+    
+    FastNameMap<RenderLayer*>::Iterator endLayers = renderLayersMap.End();
+    for(FastNameMap<RenderLayer*>::Iterator it = renderLayersMap.Begin(); it != endLayers; ++it)
+    {
+        RenderLayer *layer = it.GetValue();
+        SafeDelete(layer);
+    }
+    renderLayersMap.Clear();
 }
     
 

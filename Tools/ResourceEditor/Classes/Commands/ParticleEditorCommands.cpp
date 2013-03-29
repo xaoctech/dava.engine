@@ -72,6 +72,7 @@ CommandUpdateParticleLayer::CommandUpdateParticleLayer(ParticleEmitter* emitter,
 }
 
 void CommandUpdateParticleLayer::Init(const QString& layerName,
+									  ParticleLayer::eType layerType,
 									  bool isDisabled,
 									  bool additive,
 									  Sprite* sprite,
@@ -106,6 +107,7 @@ void CommandUpdateParticleLayer::Init(const QString& layerName,
 									  float32 frameOverLifeFPS)
 {
 	this->layerName = layerName;
+	this->layerType = layerType;
 	this->isDisabled = isDisabled;
 	this->additive = additive;
 	this->sprite = sprite;
@@ -185,6 +187,14 @@ void CommandUpdateParticleLayer::Execute()
 	{
 		emitter->Stop();
 		layer->SetSprite(sprite);
+		emitter->Play();
+	}
+	
+	// The same is for emitter type.
+	if (layer->type != layerType)
+	{
+		emitter->Stop();
+		layer->type = layerType;
 		emitter->Play();
 	}
 
@@ -546,4 +556,3 @@ void CommandSaveParticleEmitterToYaml::Execute()
 
     emitter->SaveToYaml(yamlPath);
 }
-

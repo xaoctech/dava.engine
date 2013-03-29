@@ -1,6 +1,7 @@
 package com.dava.framework;
 
 import android.app.Application;
+import android.content.pm.ApplicationInfo;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.util.Log;
@@ -20,17 +21,15 @@ public class JNIApplication extends Application
 	{
 		app = this;
 		super.onCreate();
-	}
 	
-	
-	protected void CreateApplication(String apkFilePath)
-	{
+		ApplicationInfo info = getApplicationInfo();
+		
 		Log.i(JNIConst.LOG_TAG, "[Application::onCreate] start"); 
 		
 		String docDir = this.getExternalFilesDir(STORAGE_SERVICE).getAbsolutePath();
 		
-		Log.w(JNIConst.LOG_TAG, String.format("[Application::onCreate] apkFilePath is %s", apkFilePath)); 
-		OnCreateApplication(docDir, apkFilePath, JNIConst.LOG_TAG, JNIConst.PACKAGE_NAME);
+		Log.w(JNIConst.LOG_TAG, String.format("[Application::onCreate] apkFilePath is %s", info.publicSourceDir)); 
+		OnCreateApplication(docDir, info.publicSourceDir, JNIConst.LOG_TAG, info.packageName);
 		
 		SetAssetManager(getAssets());
 
@@ -74,6 +73,10 @@ public class JNIApplication extends Application
 	public static JNIApplication GetApplication()
 	{
 		return app;
+	}
+	
+	static {
+		System.loadLibrary("iconv_android");
 	}
 }
 

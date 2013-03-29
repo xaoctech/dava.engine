@@ -11,8 +11,9 @@ JniWebView::JniWebView() :
 
 }
 
-void JniWebView::Initialize(int id, const Rect& controlRect)
+void JniWebView::Initialize(WebViewControl* control, int id, const Rect& controlRect)
 {
+	controls[id] = control;
 	Rect rect = V2P(controlRect);
 	jmethodID mid = GetMethodID("Initialize", "(IFFFF)V");
 	if (mid)
@@ -23,6 +24,7 @@ void JniWebView::Initialize(int id, const Rect& controlRect)
 
 void JniWebView::Deinitialize(int id)
 {
+	controls.erase(id);
 	jmethodID mid = GetMethodID("Deinitialize", "(I)V");
 	if (mid)
 	{
@@ -60,8 +62,28 @@ void JniWebView::SetVisible(int id, bool isVisible)
 	}
 }
 
+IUIWebViewDelegate::eAction JniWebView::URLChanged(int id, const String& newURL)
+{
+	CONTROLS_MAP::iterator iter = controls.find(id);
+	if (iter == controls.end())
+	{
+		Logger::Debug("Error web view id=%d", id);
+		return IUIWebViewDelegate::PROCESS_IN_WEBVIEW;
+	}
+
+	WebViewControl* control = iter->second;
+	IUIWebViewDelegate *delegate = control->delegate;
+	if (!delegate)
+		return IUIWebViewDelegate::PROCESS_IN_WEBVIEW;
+
+	return delegate->URLChanged(control->webView, newURL);
+}
+
 WebViewControl::WebViewControl()
 {
+	delegate = NULL;
+	webView = NULL;
+
 	if (!JniWebView::jniWebView)
 		JniWebView::jniWebView = new JniWebView();
 	webViewId = webViewIdCount++;
@@ -74,7 +96,7 @@ WebViewControl::~WebViewControl()
 
 void WebViewControl::Initialize(const Rect& rect)
 {
-	JniWebView::jniWebView->Initialize(webViewId, rect);
+	JniWebView::jniWebView->Initialize(this, webViewId, rect);
 }
 
 void WebViewControl::OpenURL(const String& urlToOpen)
@@ -90,4 +112,10 @@ void WebViewControl::SetRect(const Rect& rect)
 void WebViewControl::SetVisible(bool isVisible, bool hierarchic)
 {
 	JniWebView::jniWebView->SetVisible(webViewId, isVisible);
+}
+
+void WebViewControl::SetDelegate(DAVA::IUIWebViewDelegate *delegate, DAVA::UIWebView* webView)
+{
+	this->delegate = delegate;
+	this->webView = webView;
 }

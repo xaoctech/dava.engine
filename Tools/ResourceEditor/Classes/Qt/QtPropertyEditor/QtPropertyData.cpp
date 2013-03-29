@@ -113,7 +113,14 @@ void QtPropertyData::ChildAdd(const QString &key, QtPropertyData *data)
         childrenOrder.insert(key, sz);
 
 		data->parent = this;
+
+		emit ChildAdded(key, data);
 	}
+}
+
+void QtPropertyData::ChildAdd(const QString &key, const QVariant &value)
+{
+	ChildAdd(key, new QtPropertyData(value));
 }
 
 int QtPropertyData::ChildCount()
@@ -134,11 +141,6 @@ QPair<QString, QtPropertyData*> QtPropertyData::ChildGet(int i)
 	return p;
 }
 
-void QtPropertyData::ChildAdd(const QString &key, const QVariant &value)
-{
-	ChildAdd(key, new QtPropertyData(value));
-}
-
 QtPropertyData * QtPropertyData::ChildGet(const QString &key)
 {
 	QtPropertyData *data = NULL;
@@ -149,6 +151,45 @@ QtPropertyData * QtPropertyData::ChildGet(const QString &key)
 	}
 
 	return data;
+}
+
+void QtPropertyData::ChildRemove(const QString &key)
+{
+	QtPropertyData *data = ChildGet(key);
+
+	if(NULL != data)
+	{
+		emit ChildRemoving(key, data);
+
+		children.remove(key);
+		childrenOrder.remove(key);
+
+		delete data;
+	}
+}
+
+void QtPropertyData::ChildRemove(int i)
+{
+	QPair<QString, QtPropertyData*> pair = ChildGet(i);
+
+	if(!pair.first.isEmpty() && NULL != pair.second)
+	{
+		emit ChildRemoving(pair.first, pair.second);
+
+		children.remove(pair.first);
+		childrenOrder.remove(pair.first);
+
+		delete pair.second;
+	}
+}
+
+void QtPropertyData::ChildRemove(QtPropertyData *data)
+{
+	QString key = children.key(data, "");
+	if(!key.isEmpty())
+	{
+		ChildRemove(key);
+	}
 }
 
 int QtPropertyData::GetOWCount()

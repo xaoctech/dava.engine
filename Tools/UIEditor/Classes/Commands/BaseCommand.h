@@ -32,7 +32,12 @@ public:
 	virtual bool IsUndoRedoSupported() = 0;
 	
 	virtual void ActivateCommandScreen();
-	
+
+	// Access to the screen unsaved changes counter.
+	void IncrementUnsavedChanges();
+	void DecrementUnsavedChanges();
+	void ResetUnsavedChanges();
+
 protected:
     // Get the Metadata for the tree node passed.
     BaseMetadata* GetMetadataForTreeNode(HierarchyTreeNode::HIERARCHYTREENODEID treeNodeID);
