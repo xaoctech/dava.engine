@@ -56,19 +56,9 @@ class RenderDataObject;
 struct StaticLightingParams
 {
 	Color transparencyColor;
-	Color specularColor;
-	Color emissiveColor;
-	float32 shininess;
-	float32 reflection;
-	float32 emissiveScale;
 
 	INTROSPECTION(StaticLightingParams,
-	MEMBER(transparencyColor, "Transparency Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-	MEMBER(specularColor, "Specular Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-	MEMBER(emissiveColor, "Emissive Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-	MEMBER(shininess, "Shininess", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-	MEMBER(reflection, "Reflection", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-	MEMBER(emissiveScale, "Emissive Scale", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR))
+	MEMBER(transparencyColor, "Transparency Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR))
 };
 
 class InstanceMaterialState : public BaseObject

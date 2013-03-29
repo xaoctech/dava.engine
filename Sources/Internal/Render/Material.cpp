@@ -348,11 +348,6 @@ Material::eValidationResult Material::Validate(PolygonGroup * polygonGroup)
 	{
 		lightingParams = new StaticLightingParams();
 		lightingParams->transparencyColor = Color(0.f, 0.f, 0.f, 0.f);
-		lightingParams->specularColor = Color(0.f, 0.f, 0.f, 0.f);
-		lightingParams->emissiveColor = Color(0.f, 0.f, 0.f, 0.f);
-		lightingParams->shininess = 1.0f;
-		lightingParams->reflection = 1.0f;
-		lightingParams->emissiveScale = 1.0f;
 	}
     
     return VALIDATE_COMPATIBLE;
@@ -597,11 +592,6 @@ void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 	if(lightingParams)
 	{
 		keyedArchive->SetByteArrayAsType("mat.staticTransparencyColor", lightingParams->transparencyColor);
-		keyedArchive->SetByteArrayAsType("mat.staticSpecularColor", lightingParams->specularColor);
-		keyedArchive->SetByteArrayAsType("mat.staticEmissiveColor", lightingParams->emissiveColor);
-		keyedArchive->SetFloat("mat.staticShininess", lightingParams->shininess);
-		keyedArchive->SetFloat("mat.staticreflection", lightingParams->reflection);
-		keyedArchive->SetFloat("mat.staticEmissiveScale", lightingParams->emissiveScale);
 	}
 }
 
@@ -663,11 +653,6 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 			lightingParams = new StaticLightingParams();
 
 		lightingParams->transparencyColor = keyedArchive->GetByteArrayAsType("mat.staticTransparencyColor", Color(0, 0, 0, 0));
-		lightingParams->specularColor = keyedArchive->GetByteArrayAsType("mat.staticSpecularColor", Color(0, 0, 0, 0));
-		lightingParams->emissiveColor = keyedArchive->GetByteArrayAsType("mat.staticEmissiveColor", Color(0, 0, 0, 0));
-		lightingParams->shininess = keyedArchive->GetFloat("mat.staticShininess", 1.0f);
-		lightingParams->reflection = keyedArchive->GetFloat("mat.staticReflection", 1.0f);
-		lightingParams->emissiveScale = keyedArchive->GetFloat("mat.staticEmissiveScale", 1.0f);
 	}
 }
 
