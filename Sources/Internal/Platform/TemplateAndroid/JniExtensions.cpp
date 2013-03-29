@@ -28,11 +28,11 @@ JniExtension::JniExtension(const char* className)
 	{
 		javaClass = env->FindClass(className);
 		if (!javaClass)
-			Logger::Debug("Error find class %s", className);
+			Logger::Error("Error find class %s", className);
 	}
 	else
 	{
-		Logger::Debug("Failed to get the environment using GetEnv()");
+		Logger::Error("Failed to get the environment using GetEnv()");
 	}
 }
 
@@ -40,27 +40,27 @@ JniExtension::~JniExtension()
 {
 	Logger::Debug("JniExtension::~JniExtension(%s)", className);
 
-	if (javaClass)
-		env->DeleteLocalRef(javaClass);
-
+    ReleaseJavaClass();
+    
 	if (isThreadAttached)
 	{
 		jint res = vm->DetachCurrentThread();
-		Logger::Debug("vm->DetachCurrentThread() = %d", res);
-		Logger::Debug("Failed to DetachCurrentThread()");
+		Logger::Error("vm->DetachCurrentThread() = %d", res);
+		Logger::Error("Failed to DetachCurrentThread()");
 	}
 }
 
 jmethodID JniExtension::GetMethodID(const char *methodName, const char *paramCode)
 {
-	Logger::Debug("JniExtension::GetMethodID javaClass=%s methodName=%s", className, methodName);
 	jmethodID mid = NULL;
+    
+    javaClass = env->FindClass(className);
 	if (javaClass)
 		mid = env->GetStaticMethodID(javaClass, methodName, paramCode);
 
 	if (!mid)
 	{
-		Logger::Debug("get method id of %s.%s error ", className, methodName);
+		Logger::Error("get method id of %s.%s error ", className, methodName);
 	}
 
 	return mid;
@@ -79,3 +79,14 @@ Rect JniExtension::V2P(const Rect& srcRect) const
 	rect += offset;
 	return rect;
 }
+
+
+void JniExtension::ReleaseJavaClass()
+{
+	if (javaClass)
+	{
+		env->DeleteLocalRef(javaClass);
+		javaClass = 0;
+	}
+}
+

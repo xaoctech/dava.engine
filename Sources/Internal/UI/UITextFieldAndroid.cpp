@@ -36,7 +36,7 @@ void JniTextField::HideField()
 		GetEnvironment()->CallStaticVoidMethod(javaClass, mid);
 	}
 
-	//SafeRelease(activeTextField);
+	// SafeRelease(activeTextField);
 }
 
 void JniTextField::FieldHiddenWithText(const char* text)
