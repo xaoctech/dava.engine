@@ -657,7 +657,7 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     eType mtype = (eType)keyedArchive->GetInt32("mat.type", type);
     SetType(mtype);
 
-	if(keyedArchive->IsKeyExists("mat.transparencyColor"))
+	if(keyedArchive->IsKeyExists("mat.staticTransparencyColor"))
 	{
 		if(lightingParams == 0)
 			lightingParams = new StaticLightingParams();
