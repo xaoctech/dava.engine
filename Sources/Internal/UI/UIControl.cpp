@@ -1834,8 +1834,9 @@ namespace DAVA
 		// Model UIControl to be used in comparing
 		UIControl *baseControl = new UIControl();		
         
-		// Control Type      
-		node->Set("type", "UIControl");
+		// Control Type
+		SetPreferredNodeType(node, "UIControl");
+
 		// Control name
 		//node->Set("name", this->GetName());
 		// Visible
@@ -2545,5 +2546,37 @@ namespace DAVA
 	void UIControl::ApplyAlignSettingsForChildren()
 	{
 		RecalculateChildsSize();
+	}
+	
+	String UIControl::GetCustomControlType() const
+	{
+		return customControlType;
+	}
+
+	void UIControl::SetCustomControlType(const String& value)
+	{
+		customControlType = value;
+	}
+
+	void UIControl::ResetCustomControlType()
+	{
+		customControlType = String();
+	}
+	
+	void UIControl::SetPreferredNodeType(YamlNode* node, const String& nodeTypeName)
+	{
+		// Do we have Custom Control name? If yes, use it as type and passed one
+		// as the "Base Type"
+		bool hasCustomControl = !GetCustomControlType().empty();
+		if (hasCustomControl)
+		{
+			node->Set("type", GetCustomControlType());
+			node->Set("baseType", nodeTypeName);
+		}
+		else
+		{
+			// The type coincides with the node type name passed, no base type exists.
+			node->Set("type", nodeTypeName);
+		}
 	}
 }

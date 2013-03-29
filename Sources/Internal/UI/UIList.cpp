@@ -656,7 +656,8 @@ YamlNode * UIList::SaveToYamlNode(UIYamlLoader * loader)
 	String stringValue;
     
 	//Control Type
-	node->Set("type", "UIList");
+	SetPreferredNodeType(node, "UIList");
+
 	//Orientation
 	eListOrientation orient = this->GetOrientation();
 	switch(orient)

@@ -42,7 +42,7 @@ namespace DAVA {
 		void Clear();
 				
 	private:
-		HierarchyTreeNode::HIERARCHYTREENODESLIST items;
+		HierarchyTreeNode::HIERARCHYTREECOPYNODESLIST items;
 		CopyType copyType;
 	};
 }
