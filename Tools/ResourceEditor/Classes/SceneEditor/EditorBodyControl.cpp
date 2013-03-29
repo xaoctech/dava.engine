@@ -525,9 +525,16 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 	}
 
 	ArrowsNode* arrowsNode = GetArrowsNode(false);
-	if (arrowsNode && arrowsNode->GetVisible() && !inTouch)
+	if (arrowsNode && arrowsNode->GetVisible() && !inTouch && event->phase != UIEvent::PHASE_KEYCHAR)
 	{
 		Vector3 from, dir;
+		printf("%f - %f\n", event->point.x, event->point.y);
+
+		if(event->point.x == 0 && event->point.y == 0)
+		{
+			printf("111\n");
+		}
+
 		GetCursorVectors(&from, &dir, event->point);
 		Vector3 to = from + dir * 1000.0f;
 		arrowsNode->ProcessMouse(event, from, dir);
