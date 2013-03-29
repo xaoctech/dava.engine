@@ -3,6 +3,7 @@
 
 #include "UI/UITextField.h"
 #include "JniExtensions.h"
+#include "Base/BaseTypes.h"
 
 namespace DAVA
 {
