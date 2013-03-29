@@ -96,9 +96,9 @@ public:
     UIButton * GetButtonPrevious() {return buttonPrevious;}
 
     virtual List<UIControl* >& GetRealChildren();
-	virtual List<UIControl* > GetSubcontrols();
+    virtual List<UIControl* > GetSubcontrols();
 
-	virtual UIControl *Clone();
+    virtual UIControl *Clone();
 
 protected:
     SpinnerAdapter * adapter;
