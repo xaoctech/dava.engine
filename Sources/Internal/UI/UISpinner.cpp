@@ -131,7 +131,7 @@ YamlNode * UISpinner::SaveToYamlNode(UIYamlLoader * loader)
 	YamlNode *node = UIControl::SaveToYamlNode(loader);
 
 	//Control Type
-	node->Set("type", "UISpinner");
+	SetPreferredNodeType(node, "UISpinner");
 	
 	// "Prev/Next" buttons have to be saved too.
 	YamlNode* prevButtonNode = buttonPrevious->SaveToYamlNode(loader);
