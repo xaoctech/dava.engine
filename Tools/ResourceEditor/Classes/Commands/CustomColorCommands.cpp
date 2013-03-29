@@ -2,7 +2,6 @@
 
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../Qt/Main/QtUtils.h"
-#include "../Qt/Main/GUIState.h"
 #include <QFileDialog>
 #include "../SceneEditor/EditorBodyControl.h"
 
@@ -18,8 +17,6 @@ void CommandToggleCustomColors::Execute()
     if(screen)
     {
         screen->CustomColorsTriggered();
-        GUIState::Instance()->SetNeedUpdatedToolsMenu(true);//TODO
-        GUIState::Instance()->SetNeedUpdatedToolbar(true);
     }
 
 }

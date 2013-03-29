@@ -47,7 +47,7 @@ protected:
 	DAVA::String commandName;
 };
 
-#include "../Qt/Main/PointerHolder.h"
+#include "../Qt/DockSceneGraph/PointerHolder.h"
 DECLARE_POINTER_TYPE(Command *);
 
 

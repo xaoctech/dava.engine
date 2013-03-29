@@ -4,44 +4,37 @@
 QtPropertyItem::QtPropertyItem()
 	: QStandardItem()
 	, itemData(NULL)
+	, parentName(NULL)
 	, itemDataDeleteByParent(false)
-{ }
+{
+}
 
 QtPropertyItem::QtPropertyItem(QtPropertyData* data, QtPropertyItem *name)
 	: QStandardItem()
 	, itemData(data)
+	, parentName(name)
 	, itemDataDeleteByParent(false)
 {
-	if(NULL != data && NULL != name)
+	if(NULL != data && NULL != parentName)
 	{
-		bool hasChildren = false;
-
 		for (int i = 0; i < data->ChildCount(); ++i)
 		{
 			QPair<QString, QtPropertyData*> childData = data->ChildGet(i);
-			QList<QStandardItem *> subItems;
-			QtPropertyItem *subName = new QtPropertyItem(childData.first);
-			QtPropertyItem *subValue = new QtPropertyItem(childData.second, subName);
-
-			subValue->itemDataDeleteByParent = true;
-			subName->setEditable(false);
-
-			subItems.append(subName);
-			subItems.append(subValue);
-
-			name->appendRow(subItems);
-
-			hasChildren = true;
+			ChildAdd(childData.first, childData.second);
 		}
 
 		ApplyDataFlags();
-		ApplyNameStyle(name);
+		ApplyNameStyle();
+
+		QObject::connect(data, SIGNAL(ChildRemoving(const QString &, QtPropertyData *)), this, SLOT(DataChildRemoving(const QString &, QtPropertyData *)));
+		QObject::connect(data, SIGNAL(ChildAdded(const QString &, QtPropertyData *)), this, SLOT(DataChildAdded(const QString &, QtPropertyData *)));
 	}
 }
 
 QtPropertyItem::QtPropertyItem(const QVariant &value)
 	: QStandardItem()
 	, itemData(NULL)
+	, parentName(NULL)
 	, itemDataDeleteByParent(false)
 {
 	itemData = new QtPropertyData(value);
@@ -66,7 +59,7 @@ int QtPropertyItem::type() const
 	return QStandardItem::UserType + 1;
 }
 
-QVariant QtPropertyItem::data(int role /* = Qt::UserRole + 1 */) const
+QVariant QtPropertyItem::data(int role) const
 {
 	QVariant v;
 
@@ -81,6 +74,9 @@ QVariant QtPropertyItem::data(int role /* = Qt::UserRole + 1 */) const
 		case Qt::EditRole:
 			v = itemData->GetValue();
 			break;
+		case PropertyDataRole:
+			v = qVariantFromValue(GetPropertyData());
+			break;
 		default:
 			break;
 		}
@@ -94,7 +90,7 @@ QVariant QtPropertyItem::data(int role /* = Qt::UserRole + 1 */) const
 	return v;
 }
 
-void QtPropertyItem::setData(const QVariant & value, int role /* = Qt::UserRole + 1 */)
+void QtPropertyItem::setData(const QVariant & value, int role)
 {
 	switch(role)
 	{
@@ -110,15 +106,55 @@ void QtPropertyItem::setData(const QVariant & value, int role /* = Qt::UserRole 
 	}
 }
 
-void QtPropertyItem::ApplyNameStyle(QtPropertyItem *name)
+void QtPropertyItem::ChildAdd(const QString &key, QtPropertyData* data)
 {
-	// if there are childs, set bold font
-	if(name->rowCount() > 0)
+	if(NULL != parentName)
 	{
-		QFont curFont = name->font();
-		curFont.setBold(true);
-		name->setFont(curFont);
+		QList<QStandardItem *> subItems;
+		QtPropertyItem *subName = new QtPropertyItem(key);
+		QtPropertyItem *subValue = new QtPropertyItem(data, subName);
+
+		subValue->itemDataDeleteByParent = true;
+		subName->setEditable(false);
+
+		subItems.append(subName);
+		subItems.append(subValue);
+
+		parentName->appendRow(subItems);
 	}
+}
+
+void QtPropertyItem::ChildRemove(QtPropertyData* data)
+{
+	if(NULL != parentName)
+	{
+		for(int i = 0; i < parentName->rowCount(); ++i)
+		{
+			QtPropertyItem* childItem = (QtPropertyItem*) parentName->child(i, 1);
+			if(NULL != childItem && childItem->itemData == data)
+			{
+				childItem->itemData = NULL;
+				parentName->removeRow(i);
+			}
+		}
+	}
+}
+
+void QtPropertyItem::ApplyNameStyle()
+{
+	QFont curFont = parentName->font();
+
+	// if there are childs, set bold font
+	if(NULL != parentName && parentName->rowCount() > 0)
+	{
+		curFont.setBold(true);
+	}
+	else
+	{
+		curFont.setBold(false);
+	}
+
+	parentName->setFont(curFont);
 }
 
 void QtPropertyItem::ApplyDataFlags()
@@ -146,4 +182,16 @@ void QtPropertyItem::ApplyDataFlags()
 			setEditable(false);
 		}
 	}
+}
+
+void QtPropertyItem::DataChildAdded(const QString &key, QtPropertyData *data)
+{
+	ChildAdd(key, data);
+	ApplyNameStyle();
+}
+
+void QtPropertyItem::DataChildRemoving(const QString &key, QtPropertyData *data)
+{
+	ChildRemove(data);
+	ApplyNameStyle();
 }

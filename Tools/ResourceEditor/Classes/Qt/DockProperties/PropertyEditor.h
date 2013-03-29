@@ -17,9 +17,10 @@ public:
 	~PropertyEditor();
 
 	void SetNode(DAVA::Entity *node);
+	void SetAdvancedMode(bool set);
 
 protected:
-    void AppendIntrospectionInfo(void *object, const DAVA::IntrospectionInfo * info);
+    QtPropertyData* AppendIntrospectionInfo(void *object, const DAVA::IntrospectionInfo * info);
     
 public slots:
 	void sceneActivated(SceneData *scene);
@@ -27,10 +28,10 @@ public slots:
 	void sceneReleased(SceneData *scene);
 	void sceneNodeSelected(SceneData *scene, DAVA::Entity *node);
 
-	void actionHideReadOnly();
+	void actionShowAdvanced();
 
 protected:
-	bool hideReadOnly;
+	bool advancedMode;
 	QtPosSaver posSaver;
 
 	DAVA::Entity *curNode;

@@ -40,6 +40,8 @@ public:
 	virtual void SetRect(const Rect& rect);
 	virtual void SetVisible(bool isVisible, bool hierarchic);
 
+    virtual void SetDelegate(DAVA::IUIWebViewDelegate *delegate, DAVA::UIWebView* webView) {/*TODO: need to write code */} ;
+
 private:
 	static int webViewIdCount;
 	int webViewId;

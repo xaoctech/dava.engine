@@ -25,6 +25,8 @@ class QSlider;
 class QComboBox;
 class ModificationWidget;
 class QSpinBox;
+class QCheckBox;
+class QDoubleSpinBox;
 
 class QtMainWindowHandler: public QObject, public DAVA::Singleton<QtMainWindowHandler>
 {
@@ -42,10 +44,9 @@ public:
 	void RegisterEditActions(DAVA::int32 count, ...);
 
     void SetResentMenu(QMenu *menu);
-    void SetResentAncorAction(QAction *ancorAction);
 
     //MENU FILE
-    void MenuFileWillShow();
+    void UpdateRecentScenesList();
 
 	void SetDefaultFocusWidget(QWidget *widget);
 	void RestoreDefaultFocus();
@@ -63,6 +64,10 @@ public:
 	void RegisterSetSwitchIndexWidgets(QSpinBox*, QRadioButton*, QRadioButton*, QPushButton*);
     void SetSwitchIndexWidgetsState(bool state);
 
+	//hanging objects
+	void RegisterHangingObjectsWidgets(QCheckBox*, QDoubleSpinBox*, QPushButton*);
+    void SetHangingObjectsWidgetsState(bool state);
+
 	//visibility check tool
 	void RegisterWidgetsVisibilityTool(QPushButton*, QPushButton*, QPushButton*, QPushButton*, QSlider*);
 	void SetWidgetsStateVisibilityTool(bool state);
@@ -72,9 +77,6 @@ public:
 	void UpdateUndoActionsState();
 
 public slots:
-    //menu
-    void MenuToolsWillShow();
-
     void CreateNodeTriggered(QAction *nodeAction);
     void ViewportTriggered(QAction *viewportAction);
     void FileMenuTriggered(QAction *resentScene);
@@ -121,6 +123,9 @@ public slots:
 	//set switch index
 	void ToggleSetSwitchIndex(DAVA::uint32  value, DAVA::SetSwitchIndexHelper::eSET_SWITCH_INDEX state);
 
+	//hanging objects
+	void ToggleHangingObjects(float value, bool isEnabled);
+
     //custom colors
     void ToggleCustomColors();
     void SaveTextureCustomColors();
@@ -154,6 +159,7 @@ public slots:
 
 	void OnSceneActivated(SceneData *scene);
 	void OnSceneReleased(SceneData *scene);
+	void OnSceneCreated(SceneData *scene);
 
 	void ReloadSceneTextures();
 
@@ -179,6 +185,11 @@ private:
 	QRadioButton*	rBtnSelection;
 	QRadioButton*	rBtnScene;
 
+	//hanging objects
+	QPushButton*	hangingObjectsToggleButton;
+	QDoubleSpinBox*	editHangingObjectsValue;
+	QCheckBox *		checkBoxHangingObjects;
+
 	//custom colors
 	QPushButton* customColorsToggleButton;
 	QPushButton* customColorsSaveTextureButton;
@@ -201,10 +212,7 @@ private:
 	QAction *modificationActions[ResourceEditor::MODIFY_COUNT];
 	QAction *editActions[ResourceEditor::EDIT_COUNT];
 
-    
     QMenu *menuResentScenes;
-    QAction *resentAncorAction;
-
 	QWidget *defaultFocusWidget;
     
     QStatusBar *statusBar;

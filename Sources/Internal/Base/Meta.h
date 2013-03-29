@@ -88,7 +88,14 @@ namespace DAVA
 		// то результат выполнения данной функции НЕПРЕДСКАЗУЕМ
 		inline const IntrospectionInfo* GetIntrospection(void *object) const
 		{
-			return introspectionFnPtr(object);
+			const IntrospectionInfo* intro = NULL;
+
+			if(NULL != object)
+			{
+				intro = introspectionFnPtr(object);
+			}
+
+			return intro;
 		}
 
 	protected:

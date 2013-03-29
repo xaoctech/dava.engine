@@ -2452,7 +2452,6 @@
 				E8989C6916BD24E400732C04 /* ImageConvert.h */,
 				E8989C6A16BD24E400732C04 /* ImageLoader.cpp */,
 				E8989C6B16BD24E400732C04 /* ImageLoader.h */,
-				E8989C6C16BD24E400732C04 /* IndexBuffer.h */,
 				E8989C6D16BD24E400732C04 /* LibDxtHelper.cpp */,
 				E8989C6E16BD24E400732C04 /* LibDxtHelper.h */,
 				E8989C6F16BD24E400732C04 /* LibPngHelpers.cpp */,
@@ -2497,6 +2496,7 @@
 				E8989CA716BD24E500732C04 /* TextureDescriptor.h */,
 				E8989CA916BD24E500732C04 /* UberShader.cpp */,
 				E8989CAA16BD24E500732C04 /* UberShader.h */,
+				E8989C6C16BD24E400732C04 /* IndexBuffer.h */,
 				E8989CAB16BD24E500732C04 /* VertexBuffer.h */,
 			);
 			path = Render;

@@ -46,9 +46,9 @@ public:
         float32 GetFarDistance() const {return farDistance; };
         
         INTROSPECTION(LodDistance,
-            PROPERTY(distance, "Distance", GetDistance, SetDistance, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-            PROPERTY(nearDistance, "Near Distance", GetNearDistance, SetNearDistance, INTROSPECTION_EDITOR_READONLY)
-            PROPERTY(farDistance, "Far Distance", GetFarDistance, SetFarDistance, INTROSPECTION_EDITOR_READONLY)
+            PROPERTY("distance", "Distance", GetDistance, SetDistance, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+            PROPERTY("nearDistance", "Near Distance", GetNearDistance, SetNearDistance, INTROSPECTION_EDITOR_READONLY)
+            PROPERTY("farDistance", "Far Distance", GetFarDistance, SetFarDistance, INTROSPECTION_EDITOR_READONLY)
         );
 	};
 
@@ -116,7 +116,7 @@ public:
     INTROSPECTION_EXTEND(LodComponent, Component,
         COLLECTION(lodLayersArray, "Lod Layers Array", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(forceLodLayer, "Force Lod Layer", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        PROPERTY(forceDistance, "Force Distance", GetForceDistance, SetForceDistance, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY("forceDistance", "Force Distance", GetForceDistance, SetForceDistance, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(flags, "Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );
     
