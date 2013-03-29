@@ -1040,7 +1040,7 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
     removedNodeCount = 0;
     rootNode->BakeTransforms();
     
-	ConvertShadows(rootNode);
+	//ConvertShadows(rootNode);
     RemoveEmptySceneNodes(rootNode);
     RemoveEmptyHierarchy(rootNode);
 	ReplaceOldNodes(rootNode);
