@@ -36,8 +36,8 @@ ControlPropertyGridWidget::ControlPropertyGridWidget(QWidget *parent) :
 
 ControlPropertyGridWidget::~ControlPropertyGridWidget()
 {
-    delete ui;
 	DisconnectFromSignals();
+    delete ui;
 }
 
 void ControlPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
