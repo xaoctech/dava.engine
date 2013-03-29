@@ -32,6 +32,7 @@ public:
     virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
     virtual void LoadFromYamlNodeCompleted();
     virtual void CopyDataFrom(DAVA::UIControl *srcControl);
+	virtual UIControl *Clone();
 
     virtual void Input(UIEvent *currentInput);
 

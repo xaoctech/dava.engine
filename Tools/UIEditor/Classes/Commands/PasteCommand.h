@@ -36,7 +36,6 @@ namespace DAVA
 		
 		// Undo/Redo-related functionality.
 		void ReturnPastedControlsToScene();
-		void CleanupPastedItems();
 
 	private:
 		HierarchyTreeNode* parentNode;

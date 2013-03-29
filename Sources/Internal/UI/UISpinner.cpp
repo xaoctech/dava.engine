@@ -93,11 +93,22 @@ void UISpinner::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 
 void UISpinner::CopyDataFrom(UIControl *srcControl)
 {
-    //release default buttons - they have to be copied from srcControl
+	UIControl* buttonPrevClone = buttonPrevious->Clone();
+	UIControl* buttonNextClone = buttonNext->Clone();
+
     RemoveControl(buttonNext);
     RemoveControl(buttonPrevious);
     ReleaseButtons();
+
     UIControl::CopyDataFrom(srcControl);
+	
+	// Yuri Coder, 2013/03/28. CopyDataFrom works with real children,
+	// so need to copy inner buttons explicitely.
+	AddControl(buttonPrevClone);
+	SafeRelease(buttonPrevClone);
+	AddControl(buttonNextClone);
+	SafeRelease(buttonNextClone);
+
     FindRequiredControls();
     if (IsPointerToExactClass<UISpinner>(srcControl)) //we can also copy other controls, that's why we check
     {
@@ -106,6 +117,13 @@ void UISpinner::CopyDataFrom(UIControl *srcControl)
         buttonPrevious->RemoveEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(srcSpinner, &UISpinner::OnPreviousPressed));
     }
     InitButtons();
+}
+
+UIControl* UISpinner::Clone()
+{
+	UISpinner *t = new UISpinner(GetRect());
+	t->CopyDataFrom(this);
+	return t;
 }
 
 void UISpinner::FindRequiredControls()
@@ -150,6 +168,15 @@ List<UIControl* >& UISpinner::GetRealChildren()
 	realChildren.remove(buttonNext);
 
 	return realChildren;
+}
+	
+List<UIControl* > UISpinner::GetSubcontrols()
+{
+	List<UIControl* > subControls;
+	subControls.push_back(buttonPrevious);
+	subControls.push_back(buttonNext);
+	
+	return subControls;
 }
 
 void UISpinner::SetAdapter(SpinnerAdapter * anAdapter)
