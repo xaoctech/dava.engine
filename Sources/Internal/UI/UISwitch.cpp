@@ -122,6 +122,13 @@ void UISwitch::CopyDataFrom(UIControl *srcControl)
     InitControls();
 }
 
+UIControl* UISwitch::Clone()
+{
+	UISwitch *t = new UISwitch();
+	t->CopyDataFrom(this);
+	return t;
+}
+
 void UISwitch::LoadFromYamlNodeCompleted()
 {
     FindRequiredControls();

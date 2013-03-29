@@ -22,8 +22,7 @@ PasteCommand::PasteCommand(HierarchyTreeNode* parentNode, CopyPasteController::C
 
 PasteCommand::~PasteCommand()
 {
-	CleanupPastedItems();
-	//delete this->items;
+	// Nothing is to be cleaned up - Pasted Items are under control of Hierarchy Tree.
 }
 
 
@@ -343,20 +342,4 @@ void PasteCommand::ReturnPastedControlsToScene()
 	}
 
 	HierarchyTreeController::Instance()->EmitHierarchyTreeUpdated();
-}
-
-void PasteCommand::CleanupPastedItems()
-{
-	if (this->newItems == NULL)
-	{
-		return;
-	}
-
-	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::iterator iter = this->newItems->begin();
-		 iter != this->newItems->end(); ++iter)
-	{
-		SafeDelete(*iter);
-	}
-	
-	SafeDelete(this->newItems);
 }

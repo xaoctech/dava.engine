@@ -36,6 +36,9 @@ protected:
 	// Change the state of the widget.
 	void SetWidgetState(eWidgetState newState, bool forceUpdate = false);
 
+	// Update the properties for Subcontrols.
+	void UpdatePropertiesForSubcontrol();
+
 	// Override this method to setup the correct state of the control.
 	virtual void UpdateLineEditWidgetWithPropertyValue(QLineEdit* lineEditWidget,
 													   const QMetaProperty& curProperty);
