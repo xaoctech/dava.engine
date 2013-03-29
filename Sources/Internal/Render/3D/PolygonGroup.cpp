@@ -434,6 +434,7 @@ void PolygonGroup::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
             Logger::Error("PolygonGroup::Load - Something is going wrong, size of vertex array is incorrect");
             return;
         }
+		SafeDeleteArray(meshData);
         meshData = new uint8[vertexCount * vertexStride];
         const uint8 * archiveData = keyedArchive->GetByteArray("vertices");
         memcpy(meshData, archiveData, size);
@@ -448,12 +449,16 @@ void PolygonGroup::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
             Logger::Error("PolygonGroup::Load - Something is going wrong, size of index array is incorrect");   
             return;
         }
+		SafeDeleteArray(indexArray);
         indexArray = new int16[indexCount];
         const uint8 * archiveData = keyedArchive->GetByteArray("indices");
         memcpy(indexArray, archiveData, indexCount * INDEX_FORMAT_SIZE[indexFormat]);         
     }
-    textureCoordArray = new Vector2*[textureCoordCount];
 
+	SafeDeleteArray(textureCoordArray);
+	textureCoordArray = new Vector2*[textureCoordCount];
+
+	SafeRelease(renderDataObject);
     renderDataObject = new RenderDataObject();
     UpdateDataPointersAndStreams();
     RecalcAABBox();
