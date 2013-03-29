@@ -74,5 +74,9 @@ public class JNIApplication extends Application
 	{
 		return app;
 	}
+	
+	static {
+		System.loadLibrary("iconv_android");
+	}
 }
 
