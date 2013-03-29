@@ -45,6 +45,7 @@ HierarchyTreeWidget::~HierarchyTreeWidget()
 void HierarchyTreeWidget::OnTreeUpdated()
 {
 	EXPANDEDITEMS expandedItems;
+	EXPANDEDITEMS selectedItems;
 	//save opened node
 	TREEITEMS oldItems = GetAllItems();
 	for (TREEITEMS::iterator iter = oldItems.begin(); iter != oldItems.end(); ++iter) {
@@ -53,6 +54,17 @@ void HierarchyTreeWidget::OnTreeUpdated()
 		{
 			QVariant data = item->data(ITEM_ID);
 			expandedItems.insert(data.toInt());
+		}
+	}
+
+	//save selected node
+	
+	for (TREEITEMS::iterator iter = oldItems.begin(); iter != oldItems.end(); ++iter) {
+		QTreeWidgetItem* item = iter->second;
+		if (item->isSelected())
+		{
+			QVariant data = item->data(ITEM_ID);
+			selectedItems.insert(data.toInt());
 		}
 	}
 	
@@ -97,19 +109,30 @@ void HierarchyTreeWidget::OnTreeUpdated()
 				screenItem->setIcon(0, QIcon(":/icons/068.png"));
 			platformItem->insertChild(platformItem->childCount(), screenItem);
 			
-			AddControlItem(screenItem, expandedItems, screenNode->GetChildNodes());
+			AddControlItem(screenItem, selectedItems, expandedItems, screenNode->GetChildNodes());
 			
 			if (expandedItems.find(screenNode->GetId()) != expandedItems.end())
 				screenItem->setExpanded(true);
+
+			if (selectedItems.find(screenNode->GetId()) != selectedItems.end())
+			{
+				DAVA::Logger().Debug("***Screen selected!***");
+				screenItem->setSelected(true);
+			}
 		}
 		
 		if (expandedItems.find(platformNode->GetId()) != expandedItems.end())
 			platformItem->setExpanded(true);
 
+		if (selectedItems.find(platformNode->GetId()) != selectedItems.end())
+		{
+			DAVA::Logger().Debug("***Platform selected!***");
+			platformItem->setSelected(true);
+		}
 	}
 }
 
-void HierarchyTreeWidget::AddControlItem(QTreeWidgetItem* parent, const EXPANDEDITEMS& expandedItems, const HierarchyTreeNode::HIERARCHYTREENODESLIST& items)
+void HierarchyTreeWidget::AddControlItem(QTreeWidgetItem* parent, const EXPANDEDITEMS& selectedItems, const EXPANDEDITEMS& expandedItems, const HierarchyTreeNode::HIERARCHYTREENODESLIST& items)
 {
 	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter = items.begin();
 		 iter != items.end();
@@ -125,10 +148,17 @@ void HierarchyTreeWidget::AddControlItem(QTreeWidgetItem* parent, const EXPANDED
 
 		parent->insertChild(parent->childCount(), controlItem);
 		
-		AddControlItem(controlItem, expandedItems, controlNode->GetChildNodes());
+		AddControlItem(controlItem, selectedItems, expandedItems, controlNode->GetChildNodes());
 		
 		if (expandedItems.find(controlNode->GetId()) != expandedItems.end())
 			controlItem->setExpanded(true);
+		if (selectedItems.find(controlNode->GetId()) != selectedItems.end())
+		{
+			QVariant data = controlItem->data(ITEM_ID);
+			HierarchyTreeNode::HIERARCHYTREENODEID id = data.toInt();
+			DAVA::Logger().Debug("***Control %d selected!***", id);
+			controlItem->setSelected(true);
+		}
 	}
 }
 
@@ -145,16 +175,24 @@ void HierarchyTreeWidget::DecorateWithIcon(QTreeWidgetItem *item, DAVA::UIContro
 
 void HierarchyTreeWidget::on_treeWidget_itemSelectionChanged()
 {
-	if (internalSelectionChanged)
-		return;
-
 	QTreeWidgetItem* selectedItem = ui->treeWidget->currentItem();
 	if (!selectedItem)
+	{
+		//DAVA::Logger().Debug("***HierarchyTreeWidget::on_treeWidget_itemSelectionChanged()  !selectedItem return ***");
 		return;
+	}
 
 	QVariant data = selectedItem->data(ITEM_ID);
 	HierarchyTreeNode::HIERARCHYTREENODEID id = data.toInt();
+	//DAVA::Logger().Debug("***HierarchyTreeWidget::on_treeWidget_itemSelectionChanged()  %d ***", id);
 
+	if (internalSelectionChanged)
+	{
+		//DAVA::Logger().Debug("***HierarchyTreeWidget::on_treeWidget_itemSelectionChanged()  internalSelectionChanged ! return ***");
+		return;
+	}
+
+	
 	HierarchyTreeNode* baseNode = HierarchyTreeController::Instance()->GetTree().GetNode(id);
 	HierarchyTreePlatformNode* selectedPlatform = dynamic_cast<HierarchyTreePlatformNode* >(baseNode);
 	HierarchyTreeScreenNode* selectedScreen =  dynamic_cast<HierarchyTreeScreenNode* >(baseNode);
@@ -170,6 +208,7 @@ void HierarchyTreeWidget::on_treeWidget_itemSelectionChanged()
 	{
 		ResetSelection();
 		HierarchyTreeController::Instance()->ResetSelectedControl();
+		DAVA::Logger().Debug("***Element %d selected!!!!***", id);
 		selectedItem->setSelected(true);
 	}
 	
@@ -223,9 +262,14 @@ void HierarchyTreeWidget::OnSelectedControlNodesChanged(const HierarchyTreeContr
 		if (itemIter != items.end())
 		{
             QTreeWidgetItem* item = itemIter->second;
-			item->setSelected(true);
 
-            // Force show selected item
+			QVariant data = item->data(ITEM_ID);
+			HierarchyTreeNode::HIERARCHYTREENODEID id = data.toInt();
+			DAVA::Logger().Debug("***Item %d selected! (HierarchyTreeWidget::OnSelectedControlNodesChanged)***", id);
+
+			item->setSelected(true);
+			
+			// Force show selected item
             QTreeWidgetItem* parentItem = item->parent();
             while (parentItem)
             {
