@@ -71,7 +71,7 @@ void HierarchyTreeWidget::OnTreeUpdated()
 		QTreeWidgetItem* platformItem = new QTreeWidgetItem();
 		platformItem->setData(ITEM_ID, platformNode->GetId());
 		platformItem->setText(0, platformNode->GetName());
-		platformItem->setIcon(0, QIcon(":/icons/079.png"));
+		platformItem->setIcon(0, QIcon(":/Icons/079i.png"));
 		ui->treeWidget->insertTopLevelItem(ui->treeWidget->topLevelItemCount(), platformItem);
 		
 		for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter = platformNode->GetChildNodes().begin();
@@ -93,9 +93,9 @@ void HierarchyTreeWidget::OnTreeUpdated()
 			screenItem->setText(0, screenItemText);
 
 			if (dynamic_cast<const HierarchyTreeAggregatorNode*>(screenNode))
-				screenItem->setIcon(0, QIcon(":/icons/170.png"));
+				screenItem->setIcon(0, QIcon(":/Icons/170.png"));
 			else
-				screenItem->setIcon(0, QIcon(":/icons/068.png"));
+				screenItem->setIcon(0, QIcon(":/Icons/068i.png"));
 			platformItem->insertChild(platformItem->childCount(), screenItem);
 			
 			AddControlItem(screenItem, expandedItems, screenNode->GetChildNodes());
