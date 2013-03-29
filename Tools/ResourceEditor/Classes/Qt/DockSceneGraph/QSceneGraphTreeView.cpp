@@ -19,6 +19,11 @@ QSceneGraphTreeView::QSceneGraphTreeView(QWidget *parent)
 	sceneGraphModel = new SceneGraphModel();
     sceneGraphModel->SetScene(NULL);
 	
+	setDragDropMode(QAbstractItemView::InternalMove);
+	setDragEnabled(true);
+	setAcceptDrops(true);
+	setDropIndicatorShown(true);
+
 	ConnectToSignals();
 }
 

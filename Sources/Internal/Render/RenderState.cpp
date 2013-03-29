@@ -286,24 +286,29 @@ void RenderState::Flush(RenderState * hardwareState) const
 		}
 
 		//if (changeSet & STATE_CHANGED_STENCIL_REF)
-		if (hardwareState->stencilState.ref != stencilState.ref)
-		{
-			SetStencilRefInHW();
-			hardwareState->stencilState.ref = stencilState.ref;
-		}
-		//if (changeSet & STATE_CHANGED_STENCIL_MASK)
-		if(hardwareState->stencilState.mask != stencilState.mask)
-		{
-			SetStencilMaskInHW();
-			hardwareState->stencilState.mask = stencilState.mask;
-		}
+		//if (hardwareState->stencilState.ref != stencilState.ref)
+		//{
+		//	SetStencilRefInHW();
+		//	hardwareState->stencilState.ref = stencilState.ref;
+		//}
+		////if (changeSet & STATE_CHANGED_STENCIL_MASK)
+		//if(hardwareState->stencilState.mask != stencilState.mask)
+		//{
+		//	SetStencilMaskInHW();
+		//	hardwareState->stencilState.mask = stencilState.mask;
+		//}
 		//if (changeSet & STATE_CHANGED_STENCIL_FUNC)
 		if (hardwareState->stencilState.func[0] != stencilState.func[0] || 
-			hardwareState->stencilState.func[1] != stencilState.func[1])
+			hardwareState->stencilState.func[1] != stencilState.func[1] ||
+			hardwareState->stencilState.mask != stencilState.mask ||
+			hardwareState->stencilState.ref != stencilState.ref)
 		{
 			SetStencilFuncInHW();
 			hardwareState->stencilState.func[0] = stencilState.func[0];
 			hardwareState->stencilState.func[1] = stencilState.func[1];
+
+			hardwareState->stencilState.ref = stencilState.ref;
+			hardwareState->stencilState.mask = stencilState.mask;
 		}
 
 		if (hardwareState->stencilState.pass[0] != stencilState.pass[0] ||
@@ -779,6 +784,8 @@ inline void RenderState::SetStencilFuncInHW()
 {
 	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_STENCILFUNC, stencilState.func[0]));
 	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_CCW_STENCILFUNC, stencilState.func[1]));
+	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_STENCILREF, stencilState.ref));
+	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_STENCILMASK, stencilState.mask));
 }
 
 inline void RenderState::SetStencilPassInHW()
@@ -802,7 +809,6 @@ inline void RenderState::SetStencilZFailInHW()
 inline void RenderState::SetStencilOpInHW()
 {
 }
-
 
 
 #endif 

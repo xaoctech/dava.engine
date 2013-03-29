@@ -80,6 +80,10 @@ Core::Core()
     
     desirableIndex = 0;
     
+#if defined (__DAVAENGINE_ANDROID__)
+    screenHeight = screenWidth = 0;
+#endif // #if defined (__DAVAENGINE_ANDROID__)
+
     EnableReloadResourceOnResize(true);
 }
 

@@ -1,5 +1,4 @@
 #include "QResourceEditorProgressDialog.h"
-#include <qtimer.h>
 #include <qprogressbar.h>
 
 #define TIME_INTERVAL_FOR_1_PERCENT 10
@@ -8,6 +7,7 @@ QResourceEditorProgressDialog::QResourceEditorProgressDialog( QWidget * parent, 
 {
 	isCycled = _isCycled;
 	timeIntervalForPercent = TIME_INTERVAL_FOR_1_PERCENT;
+	connect(&timer, SIGNAL(timeout()), this, SLOT(UpdateProgress()));
 
 	if(isCycled)
 	{
@@ -16,18 +16,20 @@ QResourceEditorProgressDialog::QResourceEditorProgressDialog( QWidget * parent, 
 		bar->setTextVisible(false);
 		this->setBar(bar);
 	}
+
+
 }
 
-void	QResourceEditorProgressDialog::showEvent ( QShowEvent * e )
+void QResourceEditorProgressDialog::showEvent ( QShowEvent * e )
 {
 	QProgressDialog::showEvent(e);
 	if(isCycled)
 	{
-		QTimer::singleShot(TIME_INTERVAL_FOR_1_PERCENT, this, SLOT(UpdateProgress()));
+		timer.start(timeIntervalForPercent);
 	}
 }
 
-void	QResourceEditorProgressDialog::UpdateProgress()
+void QResourceEditorProgressDialog::UpdateProgress()
 {
 	if( (!this->isVisible()) || (isCycled == false) )
 	{
@@ -41,5 +43,5 @@ void	QResourceEditorProgressDialog::UpdateProgress()
 	}
 	
 	this->setValue(newValue);
-	QTimer::singleShot(timeIntervalForPercent, this, SLOT(UpdateProgress()));
+	timer.start(timeIntervalForPercent);
 }
