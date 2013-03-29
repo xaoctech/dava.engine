@@ -102,7 +102,7 @@ template<typename T>
     {
 		activeMetadata->SetActiveParamID(i);
 
-		for (int32 stateIndex = 0; stateIndex < activeMetadata->GetStatesCount(); ++stateIndex)
+		for (uint32 stateIndex = 0; stateIndex < activeMetadata->GetStatesCount(); ++stateIndex)
 		{
 			activeMetadata->SetActiveStateIndex(stateIndex);
 
