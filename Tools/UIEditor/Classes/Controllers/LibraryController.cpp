@@ -41,6 +41,7 @@ void LibraryController::Init(LibraryWidget* widget)
 	AddControl("UISlider", new UISlider());
 	AddControl("UIList", new UIList());
 	AddControl("UISpinner", new UISpinner());
+	AddControl("UISwitch", new UISwitch());
 }
 
 void LibraryController::AddControl(HierarchyTreeAggregatorNode* node)

@@ -19,6 +19,7 @@
 #include "UISliderMetadata.h"
 #include "UIListMetadata.h"
 #include "UISpinnerMetadata.h"
+#include "UISwitchMetadata.h"
 
 using namespace DAVA;
 
@@ -176,8 +177,9 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
         return resultList;
     }
 
-	// UI Spinner.
+	// UI Spinner 
 	const UISpinnerMetadata* uiSpinnerMetadata = dynamic_cast<const UISpinnerMetadata*>(metaData);
+	
     if (uiSpinnerMetadata)
     {
         resultList.push_back(controlWidget);
@@ -189,6 +191,20 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
         
         return resultList;
     }
+	
+	// UI Switch
+	const UISwitchMetadata* uiSwitchMetadata = dynamic_cast<const UISwitchMetadata*>(metaData);
+	if (uiSwitchMetadata)
+	{
+		resultList.push_back(controlWidget);
+        resultList.push_back(rectWidget);
+		resultList.push_back(alignWidget);
+        resultList.push_back(stateWidget);
+        resultList.push_back(backgroundWidget);
+        resultList.push_back(flagsWidget);
+        
+        return resultList;
+	}
 
     // TODO: add other Metadatas here as soon as they will be implemented.
     // UI Control Node. Should be at the very bottom of this factory since it is a parent for

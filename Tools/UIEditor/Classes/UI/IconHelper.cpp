@@ -34,6 +34,10 @@ QString IconHelper::GetIconPathForUIControl(DAVA::UIControl *uiControl)
 	{
 		className = "UIStaticText";
 	}
+	else if (dynamic_cast<UISwitch*>(uiControl))
+	{
+		className = "UISwitch";
+	}
 	else if (dynamic_cast<UITextField*>(uiControl))
 	{
 		className = "UITextField";
