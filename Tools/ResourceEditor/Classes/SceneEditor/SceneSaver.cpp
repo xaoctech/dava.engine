@@ -57,6 +57,46 @@ void SceneSaver::SaveFile(const String &fileName, Set<String> &errorLog)
     SafeRelease(scene);
 }
 
+void SceneSaver::ResaveFile(const String &fileName, Set<String> &errorLog)
+{
+	Logger::Info("[SceneSaver::ResaveFile] %s", fileName.c_str());
+
+	String sc2Filename = sceneUtils.dataSourceFolder + fileName;
+
+
+	//Load scene with *.sc2
+	Scene *scene = new Scene();
+	Entity *rootNode = scene->GetRootNode(sc2Filename);
+	if(rootNode)
+	{
+		int32 count = rootNode->GetChildrenCount();
+
+		Vector<Entity*> tempV;
+		tempV.reserve((count));
+		for(int32 i = 0; i < count; ++i)
+		{
+			tempV.push_back(rootNode->GetChild(i));
+		}
+		for(int32 i = 0; i < count; ++i)
+		{
+			scene->AddNode(tempV[i]);
+		}
+
+		scene->Update(0.f);
+
+		SceneFileV2 * outFile = new SceneFileV2();
+		outFile->EnableDebugLog(false);
+		outFile->SaveScene(sc2Filename, scene);
+		SafeRelease(outFile);
+	}
+	else
+	{
+		errorLog.insert(Format("[SceneSaver::ResaveFile] Can't open file %s", fileName.c_str()));
+	}
+
+	SafeRelease(scene);
+}
+
 void SceneSaver::SaveScene(Scene *scene, const String &fileName, Set<String> &errorLog)
 {
     DVASSERT(0 == texturesForSave.size())

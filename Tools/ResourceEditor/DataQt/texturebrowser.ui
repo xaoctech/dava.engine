@@ -78,6 +78,8 @@
          <addaction name="actionViewImagesList"/>
          <addaction name="actionViewTextList"/>
          <addaction name="separator"/>
+         <addaction name="actionFilterSelectedNode"/>
+         <addaction name="separator"/>
         </widget>
        </item>
        <item>
