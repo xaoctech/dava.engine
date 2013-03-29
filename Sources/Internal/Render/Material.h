@@ -52,7 +52,25 @@ class RenderDataObject;
     
     
 // TODO: move Material to Scene3D
-    
+
+struct StaticLightingParams
+{
+	Color transparencyColor;
+	Color specularColor;
+	Color emissiveColor;
+	float32 shininess;
+	float32 reflection;
+	float32 emissiveScale;
+
+	INTROSPECTION(StaticLightingParams,
+	MEMBER(transparencyColor, "Transparency Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+	MEMBER(specularColor, "Specular Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+	MEMBER(emissiveColor, "Emissive Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+	MEMBER(shininess, "Shininess", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+	MEMBER(reflection, "Reflection", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+	MEMBER(emissiveScale, "Emissive Scale", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR))
+};
+
 class InstanceMaterialState : public BaseObject
 {
     static const int32 LIGHT_NODE_MAX_COUNT = 4;
@@ -280,9 +298,11 @@ public:
 	RenderState * GetRenderState();
     
     inline void SetBlendSrc(eBlendMode _blendSrc);
-    inline void SetBlendDest(eBlendMode _blendDest);
+	inline void SetBlendDest(eBlendMode _blendDest);
+	inline void SetStaticLightingParams(StaticLightingParams * params);
     inline eBlendMode GetBlendSrc() const;
     inline eBlendMode GetBlendDest() const;
+	inline StaticLightingParams * GetStaticLightingParams() const;
     
 private:
     void RetrieveTextureSlotNames();
@@ -320,6 +340,7 @@ private:
     float32 fogDensity;
     Color   fogColor;
     
+	StaticLightingParams * lightingParams;
 
 	bool isAlphablend;
     bool isFlatColorEnabled;
@@ -360,6 +381,8 @@ private:
 public:
     
     INTROSPECTION_EXTEND(Material, DataNode,
+		MEMBER(lightingParams, "Static Lighting Params", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+
         MEMBER(isTranslucent, "Is Translucent", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(isTwoSided, "Is Two Sided", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(isSetupLightmap, "Is Setup Lightmap", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
@@ -414,6 +437,13 @@ inline void Material::SetBlendDest(eBlendMode _blendDest)
 {
     blendDst = _blendDest;
 }
+
+inline void Material::SetStaticLightingParams(StaticLightingParams * params)
+{
+	SafeDelete(lightingParams);
+	lightingParams = params;
+}
+
 inline eBlendMode Material::GetBlendSrc() const
 {
     return (eBlendMode)blendSrc;
@@ -423,7 +453,11 @@ inline eBlendMode Material::GetBlendDest() const
     return (eBlendMode)blendDst;
 }
 
-    
+inline StaticLightingParams * Material::GetStaticLightingParams() const
+{
+	return lightingParams;
+}
+
 inline Texture * InstanceMaterialState::GetLightmap() const
 {
     return lightmapTexture;
