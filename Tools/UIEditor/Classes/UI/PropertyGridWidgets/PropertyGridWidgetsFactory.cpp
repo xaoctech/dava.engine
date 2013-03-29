@@ -183,7 +183,6 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
         resultList.push_back(controlWidget);
         resultList.push_back(rectWidget);
 		resultList.push_back(alignWidget);
-		resultList.push_back(spinnerWidget);
         resultList.push_back(stateWidget);
         resultList.push_back(backgroundWidget);
         resultList.push_back(flagsWidget);
