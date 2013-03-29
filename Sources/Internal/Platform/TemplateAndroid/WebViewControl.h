@@ -3,6 +3,7 @@
 
 #include "../../UI/IWebViewControl.h"
 #include "JniExtensions.h"
+#include "Base/BaseTypes.h"
 
 namespace DAVA {
 

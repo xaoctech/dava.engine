@@ -341,6 +341,7 @@
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayerLong.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticlePropertyLine.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\DeviceInfo.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\DPIHelper.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\Mutex.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\Qt\QtLayer.h">
@@ -691,6 +692,7 @@
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayerLong.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticlePropertyLine.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Platform\DeviceInfo.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\Mutex.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\Qt\QtLayer.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
