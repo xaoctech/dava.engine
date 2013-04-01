@@ -1,5 +1,7 @@
 #include "WebViewControl.h"
 
+#include "FileSystem/Logger.h"
+
 using namespace DAVA;
 
 JniWebView* JniWebView::jniWebView = NULL;
