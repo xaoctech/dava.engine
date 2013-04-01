@@ -7,9 +7,9 @@ namespace DAVA
 REGISTER_CLASS(UISwitch);
 
 //use these names for children controls to define UISwitch in .yaml
-static const String BUTTON_LEFT_NAME = "buttonLeft";
-static const String BUTTON_RIGHT_NAME = "buttonRight";
-static const String TOGGLE_NAME = "buttonToggle";
+static const String UISWITCH_BUTTON_LEFT_NAME = "buttonLeft";
+static const String UISWITCH_BUTTON_RIGHT_NAME = "buttonRight";
+static const String UISWITCH_BUTTON_TOGGLE_NAME = "buttonToggle";
 static const float32 SWITCH_ANIMATION_TIME = 0.1f;
 
 class TogglePositionAnimation : public LinearAnimation<float32>
@@ -61,9 +61,9 @@ UISwitch::UISwitch(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*/)
     , toggle(new UIButton())
     , switchOnTapBesideToggle(true)
 {
-    buttonLeft->SetName(BUTTON_LEFT_NAME);
-    buttonRight->SetName(BUTTON_RIGHT_NAME);
-    toggle->SetName(TOGGLE_NAME);
+    buttonLeft->SetName(UISWITCH_BUTTON_LEFT_NAME);
+    buttonRight->SetName(UISWITCH_BUTTON_RIGHT_NAME);
+    toggle->SetName(UISWITCH_BUTTON_TOGGLE_NAME);
     AddControl(buttonLeft);
     AddControl(buttonRight);
     AddControl(toggle);
@@ -110,6 +110,25 @@ void UISwitch::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
     UIControl::LoadFromYamlNode(node, loader);
 }
 
+YamlNode * UISwitch::SaveToYamlNode(UIYamlLoader * loader)
+{
+	YamlNode *node = UIControl::SaveToYamlNode(loader);
+
+	//Control Type
+	SetPreferredNodeType(node, "UISwitch");
+		
+	// All the buttons have to be saved too.
+	YamlNode* leftButtonNode = buttonLeft->SaveToYamlNode(loader);
+	YamlNode* toggleButtonNode = toggle->SaveToYamlNode(loader);
+	YamlNode* rightButtonNode = buttonRight->SaveToYamlNode(loader);
+
+	node->AddNodeToMap(UISWITCH_BUTTON_LEFT_NAME, leftButtonNode);
+	node->AddNodeToMap(UISWITCH_BUTTON_TOGGLE_NAME, toggleButtonNode);
+	node->AddNodeToMap(UISWITCH_BUTTON_RIGHT_NAME, rightButtonNode);
+
+	return node;
+}
+
 void UISwitch::CopyDataFrom(UIControl *srcControl)
 {
 	UIControl* buttonLeftClone = buttonLeft->Clone();
@@ -124,16 +143,13 @@ void UISwitch::CopyDataFrom(UIControl *srcControl)
     UIControl::CopyDataFrom(srcControl);
 	
 	AddControl(buttonLeftClone);
-	this->buttonLeft = static_cast<UIButton*>(buttonLeftClone);
 	SafeRelease(buttonLeftClone);
 
 	AddControl(buttonRightClone);
-	this->buttonRight = static_cast<UIButton*>(buttonRightClone);
 	SafeRelease(buttonRightClone);
 
 	AddControl(toggleClone);
-	this->toggle = static_cast<UIButton*>(toggleClone);
-	SafeRelease(toggleClone);	
+	SafeRelease(toggleClone);
 
     FindRequiredControls();
     InitControls();
@@ -142,23 +158,24 @@ void UISwitch::CopyDataFrom(UIControl *srcControl)
 List<UIControl* >& UISwitch::GetRealChildren()
 {
 	List<UIControl* >& realChildren = UIControl::GetRealChildren();
-	realChildren.remove(buttonLeft);
-	realChildren.remove(buttonRight);
-	realChildren.remove(toggle);
+	
+	realChildren.remove(FindByName(UISWITCH_BUTTON_LEFT_NAME));
+	realChildren.remove(FindByName(UISWITCH_BUTTON_TOGGLE_NAME));
+	realChildren.remove(FindByName(UISWITCH_BUTTON_RIGHT_NAME));
 
 	return realChildren;
-
 }
 
 List<UIControl* > UISwitch::GetSubcontrols()
 {
 	List<UIControl* > subControls;
-	subControls.push_back(buttonLeft);
-	subControls.push_back(buttonRight);
-	subControls.push_back(toggle);
+
+	// Lookup for the contols by their names.
+	AddControlToList(subControls, UISWITCH_BUTTON_LEFT_NAME);
+	AddControlToList(subControls, UISWITCH_BUTTON_TOGGLE_NAME);
+	AddControlToList(subControls, UISWITCH_BUTTON_RIGHT_NAME);
 
 	return subControls;
-
 }
 
 UIControl* UISwitch::Clone()
@@ -176,9 +193,9 @@ void UISwitch::LoadFromYamlNodeCompleted()
 
 void UISwitch::FindRequiredControls()
 {
-    UIControl * leftControl = FindByName(BUTTON_LEFT_NAME);
-    UIControl * rightControl = FindByName(BUTTON_RIGHT_NAME);
-    UIControl * toggleControl = FindByName(TOGGLE_NAME);
+    UIControl * leftControl = FindByName(UISWITCH_BUTTON_LEFT_NAME);
+    UIControl * rightControl = FindByName(UISWITCH_BUTTON_RIGHT_NAME);
+    UIControl * toggleControl = FindByName(UISWITCH_BUTTON_TOGGLE_NAME);
     DVASSERT(leftControl);
     DVASSERT(rightControl);
     DVASSERT(toggleControl);
