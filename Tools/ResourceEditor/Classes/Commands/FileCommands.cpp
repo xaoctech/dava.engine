@@ -92,6 +92,8 @@ void CommandOpenScene::Execute()
             EditorSettings::Instance()->AddLastOpenedFile(selectedScenePathname);
             screen->OpenFileAtScene(selectedScenePathname);
             
+			QtMainWindowHandler::Instance()->SelectMaterialViewOption(Material::MATERIAL_VIEW_COMBO);
+
             //GUIState::Instance()->SetNeedUpdatedFileMenu(true);
         }
         

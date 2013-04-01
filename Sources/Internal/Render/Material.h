@@ -139,6 +139,15 @@ public:
         MATERIAL_TYPES_COUNT
     };
     
+	enum eViewOptions
+	{
+		MATERIAL_VIEW_COMBO = 0,
+		MATERIAL_VIEW_LIGHTMAP_ONLY,
+		MATERIAL_VIEW_TEXTURE_ONLY,
+
+		MATERIAL_VIEW_COUNT
+	};
+
     
     /*
         Plan of supported materials:
@@ -198,6 +207,7 @@ public:
     void SetFogColor(const Color & _fogColor);
     const Color & GetFogColor() const;
     
+	void SetViewOption(eViewOptions option);
     
     void SetTwoSided(bool _isTwoSided);
     bool GetTwoSided();
@@ -242,6 +252,7 @@ public:
     
 //    eType   type; //TODO: waiting for enums at introspection
     uint32 type;
+	uint32 viewOptions;
 
 	Vector4 reflective;
 	float32	reflectivity;
