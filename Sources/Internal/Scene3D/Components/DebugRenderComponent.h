@@ -46,7 +46,7 @@ private:
     
 public:
     INTROSPECTION_EXTEND(DebugRenderComponent, Component,
-        PROPERTY(curDebugFlags, "Debug Flags ", GetDebugFlags, SetDebugFlags, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY("curDebugFlags", "Debug Flags ", GetDebugFlags, SetDebugFlags, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );
 };
 

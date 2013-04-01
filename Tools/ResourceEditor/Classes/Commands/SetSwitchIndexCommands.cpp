@@ -2,7 +2,6 @@
 
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../Qt/Main/QtUtils.h"
-#include "../Qt/Main/GUIState.h"
 #include <QFileDialog>
 #include "../SceneEditor/EditorBodyControl.h"
 #include "../Qt/DockSetSwitchIndex/SetSwitchIndexHelper.h"

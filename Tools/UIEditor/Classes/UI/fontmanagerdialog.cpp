@@ -202,7 +202,7 @@ Font* FontManagerDialog::GetSelectedFont(QItemSelectionModel *selectionModel)
 	if (fontType == FONT_TYPE_GRAPHIC)
     {
     	QString fontSpritePath = QFileDialog::getOpenFileName(this, tr( "Select font sprite" ),
-																	ResourcesManageHelper::GetFontSpritesDirectory(),
+																	ResourcesManageHelper::GetDefaultFontSpritesPath(),
 																	tr( "Sprites (*.txt)" ));
              
         if (!fontSpritePath.isNull() && !fontSpritePath.isEmpty())
@@ -212,6 +212,11 @@ Font* FontManagerDialog::GetSelectedFont(QItemSelectionModel *selectionModel)
 
 			if (ResourcesManageHelper::ValidateResourcePath(fontSpritePath))
 			{
+				// Save new default fonts sprites path
+				QFileInfo fileInfo(fontSpritePath);
+				QString spritePath = fileInfo.absoluteDir().absolutePath();
+				ResourcesManageHelper::SetDefaultFontSpritesPath(spritePath);
+				
 				// Get font definition relative path by it's name
 				QString fontDefinition = ResourcesManageHelper::GetFontRelativePath(fontName, true);
 				// Get sprite file relative path

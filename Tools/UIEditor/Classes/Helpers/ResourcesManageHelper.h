@@ -25,8 +25,6 @@ public:
     static QString GetFontAbsolutePath(const QString& resourceFileName, bool graphicsFont = false);
     static QString GetResourceRelativePath(const QString& resourceAbsolutePath, bool keepFileExtension = false);
     static QStringList GetFontsList();
-	// Validate if selected resource is located inside project 
-	static bool ValidateResourcePath(const QString& resourcePath);
 	// Functions to work with help contents and button background image
 	static QString GetButtonBackgroundImagePath();
 	// Get path to help contents hmtl file
@@ -44,8 +42,19 @@ public:
 	static QString GetSpritesDatasourceDirectory();
 	// Get font sprites datasource directory
 	static QString GetFontSpritesDatasourceDirectory();
-	// Validate resource folder path
+	// Get resource folder path
 	static QString GetResourceFolder(const QString& resourcePath);
+	// Validate if selected resource is located inside project 
+	static bool ValidateResourcePath(const QString& resourcePath);
+	
+	// Get working directory path of last opened sprite
+	static QString GetDefaultSpritesPath(bool spritesPathForSave = false);
+	// Set working directory path of last opened sprite
+	static void SetDefaultSpritesPath(const QString& spritesPath);
+	// Get working directory path of last opened font sprite
+	static QString GetDefaultFontSpritesPath(bool spritesPathForSave = false);
+	// Set working directory path of last opened font sprite
+	static void SetDefaultFontSpritesPath(const QString& spritesPath);
 	
 	// Get project title string
 	static QString GetProjectTitle();
@@ -71,6 +80,8 @@ private:
 	static QString buttonBackgroundImagePath;
 	static QString helpContentsPath;
 	static QString projectTitle;
+	static QString defaultSpritesPath;
+	static QString defaultFontSpritesPath;
 };
 };
 

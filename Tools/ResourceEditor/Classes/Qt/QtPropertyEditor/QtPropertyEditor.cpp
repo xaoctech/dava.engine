@@ -1,3 +1,4 @@
+#include <QMouseEvent>
 #include "QtPropertyEditor/QtPropertyEditor.h"
 #include "QtPropertyEditor/QtPropertyModel.h"
 #include "QtPropertyEditor/QtPropertyItemDelegate.h"
@@ -12,6 +13,8 @@ QtPropertyEditor::QtPropertyEditor(QWidget *parent /* = 0 */)
 	setItemDelegate(curItemDelegate);
 
 	QObject::connect(this, SIGNAL(clicked(const QModelIndex &)), this, SLOT(ItemClicked(const QModelIndex &)));
+	QObject::connect(this, SIGNAL(expanded(const QModelIndex &)), curItemDelegate, SLOT(expand(const QModelIndex &)));
+	QObject::connect(this, SIGNAL(collapsed(const QModelIndex &)), curItemDelegate, SLOT(collapse(const QModelIndex &)));
 }
 
 QtPropertyEditor::~QtPropertyEditor()
@@ -19,7 +22,11 @@ QtPropertyEditor::~QtPropertyEditor()
 
 QPair<QtPropertyItem*, QtPropertyItem*> QtPropertyEditor::AppendProperty(const QString &name, QtPropertyData* data, QtPropertyItem* parent /*= NULL*/)
 {
-	setSortingEnabled(false);
+	if(NULL != data)
+	{
+		data->SetOWViewport(viewport());
+	}
+
 	return curModel->AppendProperty(name, data, parent);
 }
 

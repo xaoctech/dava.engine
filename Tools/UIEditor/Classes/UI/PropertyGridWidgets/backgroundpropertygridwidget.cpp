@@ -134,7 +134,7 @@ void BackGroundPropertyGridWidget::OpenSpriteDialog()
 	 					 				ResourcesManageHelper::GetSpritesDirectory().toStdString());
 
     QString spriteName = QFileDialog::getOpenFileName( this, tr( "Choose a sprite file file" ),
-															ResourcesManageHelper::GetSpritesDirectory(),
+															ResourcesManageHelper::GetDefaultSpritesPath(),
 															tr( "Sprites (*.txt)" ) );
 	if( !spriteName.isNull() && !spriteName.isEmpty())
     {
@@ -145,6 +145,11 @@ void BackGroundPropertyGridWidget::OpenSpriteDialog()
         {
             WidgetSignalsBlocker blocker(ui->spriteLineEdit);
             
+			// Save new default sprites path
+			QFileInfo fileInfo(spriteName);
+			QString spritePath = fileInfo.absoluteDir().absolutePath();
+			ResourcesManageHelper::SetDefaultSpritesPath(spritePath);
+			
             // Sprite name should be pre-processed to use relative path.
             ui->spriteLineEdit->setText(PreprocessSpriteName(spriteName));
             HandleLineEditEditingFinished(ui->spriteLineEdit);
@@ -205,8 +210,6 @@ void BackGroundPropertyGridWidget::ProcessComboboxValueChanged(QComboBox* sender
 
 void BackGroundPropertyGridWidget::CustomProcessComboboxValueChanged(const PROPERTYGRIDWIDGETSITER& iter, int value)
 {
-    BaseCommand* command = new ChangePropertyCommand<int>(activeMetadata, iter->second, value);
-
 	// Don't update the property if the text wasn't actually changed.
     int curValue = PropertiesHelper::GetAllPropertyValues<int>(this->activeMetadata, iter->second.getProperty().name());
 	if (curValue == value)
@@ -214,6 +217,7 @@ void BackGroundPropertyGridWidget::CustomProcessComboboxValueChanged(const PROPE
 		return;
 	}
 
+	BaseCommand* command = new ChangePropertyCommand<int>(activeMetadata, iter->second, value);
     CommandsController::Instance()->ExecuteCommand(command);
     SafeRelease(command);
 }

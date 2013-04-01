@@ -64,3 +64,37 @@ void BaseCommand::ActivateCommandScreen()
 
 	HierarchyTreeController::Instance()->UpdateSelection(platform, screen);
 }
+
+void BaseCommand::IncrementUnsavedChanges()
+{
+	HierarchyTreeScreenNode* screen = dynamic_cast<HierarchyTreeScreenNode*>(HierarchyTreeController::Instance()->GetTree().GetNode(activeScreen));
+	if (!screen)
+	{
+		return;
+	}
+	
+	screen->IncrementUnsavedChanges();
+}
+
+void BaseCommand::DecrementUnsavedChanges()
+{
+	HierarchyTreeScreenNode* screen = dynamic_cast<HierarchyTreeScreenNode*>(HierarchyTreeController::Instance()->GetTree().GetNode(activeScreen));
+	if (!screen)
+	{
+		return;
+	}
+	
+	screen->DecrementUnsavedChanges();
+	
+}
+
+void BaseCommand::ResetUnsavedChanges()
+{
+	HierarchyTreeScreenNode* screen = dynamic_cast<HierarchyTreeScreenNode*>(HierarchyTreeController::Instance()->GetTree().GetNode(activeScreen));
+	if (!screen)
+	{
+		return;
+	}
+	
+	screen->ResetUnsavedChanges();
+}

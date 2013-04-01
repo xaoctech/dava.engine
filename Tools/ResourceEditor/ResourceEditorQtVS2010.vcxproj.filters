@@ -205,6 +205,15 @@
     <Filter Include="QtGenerated\DockSetSwitchIndex">
       <UniqueIdentifier>{778f9502-08bc-42b8-85a3-0f2c489748eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="QtGenerated\QtPropertyEditor\QtPropertyData">
+      <UniqueIdentifier>{f78cb3f2-cefe-4fa7-89e1-46628d2a20c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\DockHangingObjects">
+      <UniqueIdentifier>{62b455cb-7b9d-4c52-b742-c03721be1449}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\DockHangingObjects">
+      <UniqueIdentifier>{06e43fbc-e3e3-484d-93ff-02f41732442e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -996,13 +1005,7 @@
     <ClCompile Include="Classes\Qt\Main\davaglwidget.cpp">
       <Filter>Sources\Qt\Main</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Main\GUIState.cpp">
-      <Filter>Sources\Qt\Main</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\Main\mainwindow.cpp">
-      <Filter>Sources\Qt\Main</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\Main\PointerHolder.cpp">
       <Filter>Sources\Qt\Main</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\Main\QtMainWindowHandler.cpp">
@@ -1017,13 +1020,7 @@
     <ClCompile Include="_GeneratedQt\Main\davaglwidget_moc.cpp">
       <Filter>QtGenerated\Main</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\Main\GUIState_moc.cpp">
-      <Filter>QtGenerated\Main</Filter>
-    </ClCompile>
     <ClCompile Include="_GeneratedQt\Main\mainwindow_moc.cpp">
-      <Filter>QtGenerated\Main</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Main\PointerHolder_moc.cpp">
       <Filter>QtGenerated\Main</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\Main\QtMainWindowHandler_moc.cpp">
@@ -1245,9 +1242,6 @@
     <ClCompile Include="Classes\Qt\DockSceneGraph\SceneGraphModel.cpp">
       <Filter>Sources\Qt\DockSceneGraph</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Main\ExtraUserData.cpp">
-      <Filter>Sources\Qt\Main</Filter>
-    </ClCompile>
     <ClCompile Include="_GeneratedQt\DockSceneGraph\GraphItem_moc.cpp">
       <Filter>QtGenerated\DockSceneGraph</Filter>
     </ClCompile>
@@ -1328,9 +1322,6 @@
     </ClCompile>
     <ClCompile Include="_GeneratedQt\DockParticleEditor\TimeLineWidget_moc.cpp">
       <Filter>QtGenerated\DockParticleEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\Main\ExtraUserData.cpp">
-      <Filter>Sources\Qt\Main</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\DockParticleEditor\ParticleTimeLineWidget.cpp">
       <Filter>Sources\Qt\DockParticleEditor</Filter>
@@ -1482,12 +1473,6 @@
     <ClCompile Include="Classes\SceneEditor\ArrowsNode.cpp">
       <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\DockProperties\PropertyEditorStateHelper.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\DockSceneGraph\SceneGraphModelStateHelper.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\SpritesPacker\SpritePackerHelper.cpp">
       <Filter>Sources\Qt\SpritesPacker</Filter>
     </ClCompile>
@@ -1518,6 +1503,18 @@
     <ClCompile Include="Classes\LandscapeEditor\EditorLandscape.cpp">
       <Filter>Sources\LandscapeEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\DockHangingObjects\HangingObjectsView.cpp">
+      <Filter>Sources\Qt\DockHangingObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockHangingObjects\HangingObjectsView_moc.cpp">
+      <Filter>QtGenerated\DockHangingObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\HangingObjectsCommands.cpp">
+      <Filter>Sources\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockHangingObjects\HangingObjectsHelper.cpp">
+      <Filter>Sources\Qt\DockHangingObjects</Filter>
+    </ClCompile>
     <ClCompile Include="Classes\SceneEditor\SceneSaver.cpp">
       <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
@@ -1526,6 +1523,54 @@
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\SceneUtilsScreen.cpp">
       <Filter>Sources\SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyData_moc.cpp">
+      <Filter>QtGenerated\QtPropertyEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaVariant_moc.cpp">
+      <Filter>QtGenerated\QtPropertyEditor\QtPropertyData</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection_moc.cpp">
+      <Filter>QtGenerated\QtPropertyEditor\QtPropertyData</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection_moc.cpp">
+      <Filter>QtGenerated\QtPropertyEditor\QtPropertyData</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockSceneGraph\ExtraUserData.cpp">
+      <Filter>Sources\Qt\DockSceneGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockSceneGraph\PointerHolder.cpp">
+      <Filter>Sources\Qt\DockSceneGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaKeyedArchive.cpp">
+      <Filter>Sources\Qt\QtPropertyEditor\QtPropertyData</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaKeyedArchive_moc.cpp">
+      <Filter>QtGenerated\QtPropertyEditor\QtPropertyData</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockProperties\PropertyEditorStateHelper.cpp">
+      <Filter>Sources\Qt\DockProperties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockSceneGraph\SceneGraphModelStateHelper.cpp">
+      <Filter>Sources\Qt\DockSceneGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\SceneEditorProxy.cpp">
+      <Filter>Sources\Qt\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\SceneManager.cpp">
+      <Filter>Sources\Qt\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\SceneTabWidget.cpp">
+      <Filter>Sources\Qt\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Scene\SceneEditorProxy_moc.cpp">
+      <Filter>QtGenerated\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Scene\SceneManager_moc.cpp">
+      <Filter>QtGenerated\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Scene\SceneTabWidget_moc.cpp">
+      <Filter>QtGenerated\Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2348,13 +2393,7 @@
     <ClInclude Include="Classes\Qt\Main\davaglwidget.h">
       <Filter>Sources\Qt\Main</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Main\GUIState.h">
-      <Filter>Sources\Qt\Main</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\Main\mainwindow.h">
-      <Filter>Sources\Qt\Main</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Main\PointerHolder.h">
       <Filter>Sources\Qt\Main</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\Main\QtMainWindowHandler.h">
@@ -2513,9 +2552,6 @@
     <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphModel.h">
       <Filter>Sources\Qt\DockSceneGraph</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Main\ExtraUserData.h">
-      <Filter>Sources\Qt\Main</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\ImageSplitter\ImageSplitter.h">
       <Filter>Sources\ImageSplitter</Filter>
     </ClInclude>
@@ -2563,9 +2599,6 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockParticleEditor\TimeLineWidget.h">
       <Filter>Sources\Qt\DockParticleEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Main\ExtraUserData.h">
-      <Filter>Sources\Qt\Main</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockParticleEditor\ParticleTimeLineWidget.h">
       <Filter>Sources\Qt\DockParticleEditor</Filter>
@@ -2666,12 +2699,6 @@
     <ClInclude Include="Classes\SceneEditor\ArrowsNode.h">
       <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\DockProperties\PropertyEditorStateHelper.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphModelStateHelper.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\Main\QTreeViewStateHelper.h">
       <Filter>QtGenerated</Filter>
     </ClInclude>
@@ -2699,6 +2726,15 @@
     <ClInclude Include="Classes\LandscapeEditor\EditorLandscape.h">
       <Filter>Sources\LandscapeEditor</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Qt\DockHangingObjects\HangingObjectsView.h">
+      <Filter>Sources\Qt\DockHangingObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\HangingObjectsCommands.h">
+      <Filter>Sources\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockHangingObjects\HangingObjectsHelper.h">
+      <Filter>Sources\Qt\DockHangingObjects</Filter>
+    </ClInclude>
     <ClInclude Include="Classes\SceneEditor\SceneSaver.h">
       <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
@@ -2707,6 +2743,30 @@
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\SceneUtilsScreen.h">
       <Filter>Sources\SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockSceneGraph\ExtraUserData.h">
+      <Filter>Sources\Qt\DockSceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockSceneGraph\PointerHolder.h">
+      <Filter>Sources\Qt\DockSceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaKeyedArchive.h">
+      <Filter>Sources\Qt\QtPropertyEditor\QtPropertyData</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockProperties\PropertyEditorStateHelper.h">
+      <Filter>Sources\Qt\DockProperties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphModelStateHelper.h">
+      <Filter>Sources\Qt\DockSceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\SceneEditorProxy.h">
+      <Filter>Sources\Qt\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\SceneManager.h">
+      <Filter>Sources\Qt\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\SceneTabWidget.h">
+      <Filter>Sources\Qt\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2902,6 +2962,12 @@
       <Filter>QtData</Filter>
     </None>
     <None Include="DataQt\texturebrowser.ui">
+      <Filter>QtData</Filter>
+    </None>
+    <None Include="DataQt\HangingObjectsView.ui">
+      <Filter>QtData</Filter>
+    </None>
+    <None Include="DataQt\ModificationWidget.ui">
       <Filter>QtData</Filter>
     </None>
   </ItemGroup>

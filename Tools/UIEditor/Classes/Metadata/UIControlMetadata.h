@@ -79,6 +79,9 @@ class UIControlMetadata : public BaseMetadata
 	Q_PROPERTY(bool VCenterAlignEnabled READ GetVCenterAlignEnabled WRITE SetVCenterAlignEnabled);
 	Q_PROPERTY(bool BottomAlignEnabled READ GetBottomAlignEnabled WRITE SetBottomAlignEnabled);
     
+	// Custom Control Name property.
+	Q_PROPERTY(QString CustomControlName READ GetCustomControlName WRITE SetCustomControlName);
+
 public:
     UIControlMetadata(QObject* parent = 0);
     
@@ -204,7 +207,10 @@ protected:
 	
 	bool GetBottomAlignEnabled() const;
 	void SetBottomAlignEnabled(const bool value);
-	
+
+	QString GetCustomControlName() const;
+	void SetCustomControlName(const QString& value);
+
 	virtual void SetActiveControlRect(const Rect& rect);
 };
     
