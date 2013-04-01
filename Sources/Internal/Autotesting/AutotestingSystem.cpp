@@ -817,11 +817,6 @@ void AutotestingSystem::OnMessage(const String & logMessage)
 void AutotestingSystem::OnError(const String & errorMessage)
 {
     Logger::Error("AutotestingSystem::OnError %s",errorMessage.c_str());
-    
-    isWaiting = false;
-    
-    //AddTestResult(errorMessage, false);
-	//SaveTestToDB();
 	
     SaveTestStepLogEntryToDB("ERROR", GetCurrentTimeString(), errorMessage);
     
@@ -838,11 +833,6 @@ void AutotestingSystem::OnError(const String & errorMessage)
 void AutotestingSystem::OnTestsFinished()
 {
     Logger::Debug("AutotestingSystem::OnTestsFinished");
-    
-    isRunning = false;
-    
-    //AddTestResult("finished", true);
-	//SaveTestToDB();
     
     SaveTestStepToDB("finished", true);
     
@@ -941,6 +931,8 @@ void AutotestingSystem::ExitApp()
 {
     if(!needExitApp)
     {
+		isRunning = false;
+		isWaiting = false;
         needExitApp = true;
         timeBeforeExit = 1.0f;
     }
