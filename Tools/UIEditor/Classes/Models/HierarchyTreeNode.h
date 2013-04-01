@@ -27,7 +27,6 @@ public:
     
 	typedef int HIERARCHYTREENODEID;
 	typedef std::list<HIERARCHYTREENODEID> HIERARCHYTREENODESIDLIST;
-
   	static const HIERARCHYTREENODEID HIERARCHYTREENODEID_EMPTY = -1;
 
     HierarchyTreeNode(const QString& name);

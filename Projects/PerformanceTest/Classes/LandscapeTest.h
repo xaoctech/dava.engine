@@ -44,7 +44,7 @@ class LandscapeTest: public TestTemplate<LandscapeTest>
     };
     
 public:
-	LandscapeTest(const String &testName, LandscapeNode::eTiledShaderMode mode);
+	LandscapeTest(const String &testName, Landscape::eTiledShaderMode mode);
 
 	virtual void LoadResources();
 	virtual void UnloadResources();
@@ -59,9 +59,9 @@ protected:
 
     int32 testCounter;
     
-    LandscapeNode::eTiledShaderMode shaderMode;
+    Landscape::eTiledShaderMode shaderMode;
     
-    Sprite *textures[LandscapeNode::TEXTURE_COUNT];
+    Sprite *textures[Landscape::TEXTURE_COUNT];
 };
 
 

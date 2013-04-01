@@ -11,7 +11,8 @@
 
 #define COPY_DELTA Vector2(5, 5)
 
-PasteCommand::PasteCommand(HierarchyTreeNode* parentNode, CopyPasteController::CopyType copyType, const HierarchyTreeNode::HIERARCHYTREENODESLIST* items)
+PasteCommand::PasteCommand(HierarchyTreeNode* parentNode, CopyPasteController::CopyType copyType,
+							const HierarchyTreeNode::HIERARCHYTREENODESLIST* items)
 {
 	this->parentNode = parentNode;
 	this->copyType = copyType;
@@ -21,8 +22,7 @@ PasteCommand::PasteCommand(HierarchyTreeNode* parentNode, CopyPasteController::C
 
 PasteCommand::~PasteCommand()
 {
-	CleanupPastedItems();
-	//delete this->items;
+	// Nothing is to be cleaned up - Pasted Items are under control of Hierarchy Tree.
 }
 
 
@@ -149,10 +149,13 @@ int PasteCommand::PasteControls(HierarchyTreeNode::HIERARCHYTREENODESLIST* newCo
 		 iter != items->end();
 		 ++iter)
 	{
-		HierarchyTreeNode* node = (*iter);
+		HierarchyTreeNode *node = (*iter);
 		HierarchyTreeControlNode* control = dynamic_cast<HierarchyTreeControlNode*>(node);
 		if (!control)
 			continue;
+			
+		//  We should change control name and apply copy delta only if new parent already has children with such name
+		bool bUpdateNameAndShiftPosition = IsParentContainsCopyItemName(parent, control);
 		
 		HierarchyTreeAggregatorControlNode* aggregatorControl = dynamic_cast<HierarchyTreeAggregatorControlNode*>(control);
 		HierarchyTreeControlNode* copy = NULL;
@@ -160,10 +163,11 @@ int PasteCommand::PasteControls(HierarchyTreeNode::HIERARCHYTREENODESLIST* newCo
 			copy = new HierarchyTreeAggregatorControlNode(parent, aggregatorControl);
 		else
 			copy = new HierarchyTreeControlNode(parent, control);
-		UpdateControlName(parent, copy, true);
-		//copy->SetName(FormatCopyName(control->GetName(), parent));
+			
+		UpdateControlName(parent, copy, bUpdateNameAndShiftPosition);
+
 		UIControl* clone = copy->GetUIObject();
-		if (clone)
+		if (clone && bUpdateNameAndShiftPosition)
 			clone->SetPosition(clone->GetPosition() + COPY_DELTA);
 				
 		count++;
@@ -171,6 +175,27 @@ int PasteCommand::PasteControls(HierarchyTreeNode::HIERARCHYTREENODESLIST* newCo
 	}
 	
 	return count;
+}
+
+bool PasteCommand::IsParentContainsCopyItemName(HierarchyTreeNode* parentNode, HierarchyTreeNode* copyNode)
+{
+	const QString copyName = copyNode->GetName();
+	
+	for (HierarchyTreeNode::HIERARCHYTREENODESCONSTITER iter = parentNode->GetChildNodes().begin();
+			 iter != parentNode->GetChildNodes().end();
+			 ++iter)
+	{
+		HierarchyTreeControlNode* control = dynamic_cast<HierarchyTreeControlNode*>((*iter));
+		if (!control)
+			continue;
+				
+		if (control->GetName().compare(copyName) == 0)
+		{
+			return true;
+		}
+	}
+	
+	return false;
 }
 
 void PasteCommand::UpdateControlName(const HierarchyTreeNode* parent, HierarchyTreeNode* node, bool needCreateNewName) const
@@ -204,7 +229,7 @@ int PasteCommand::PasteScreens(HierarchyTreeNode::HIERARCHYTREENODESLIST* newScr
 		 iter != items->end();
 		 ++iter)
 	{
-		HierarchyTreeNode* node = (*iter);
+		HierarchyTreeNode *node = (*iter);
 		HierarchyTreeScreenNode* screen = dynamic_cast<HierarchyTreeScreenNode*>(node);
 		if (!screen)
 			continue;
@@ -227,7 +252,7 @@ int PasteCommand::PastePlatforms(HierarchyTreeNode::HIERARCHYTREENODESLIST* newS
 		 iter != items->end();
 		 ++iter)
 	{
-		HierarchyTreeNode* node = (*iter);
+		HierarchyTreeNode *node = (*iter);
 		HierarchyTreePlatformNode* platform = dynamic_cast<HierarchyTreePlatformNode*>(node);
 		if (!platform)
 			continue;
@@ -281,7 +306,7 @@ QString PasteCommand::FormatCopyName(QString baseName, const HierarchyTreeNode* 
 		
 		if (parentPlatform || parentRoot)
 		{
-			//chekc name only for one child level for screen and platform copy
+			// check name only for one child level for screen and platform copy
 			const HierarchyTreeNode::HIERARCHYTREENODESLIST& child = parent->GetChildNodes();
 			for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter = child.begin();
 				 iter != child.end();
@@ -323,20 +348,4 @@ void PasteCommand::ReturnPastedControlsToScene()
 	}
 
 	HierarchyTreeController::Instance()->EmitHierarchyTreeUpdated();
-}
-
-void PasteCommand::CleanupPastedItems()
-{
-	if (this->newItems == NULL)
-	{
-		return;
-	}
-
-	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::iterator iter = this->newItems->begin();
-		 iter != this->newItems->end(); ++iter)
-	{
-		SafeDelete(*iter);
-	}
-	
-	SafeDelete(this->newItems);
 }

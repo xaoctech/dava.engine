@@ -373,6 +373,7 @@ void HierarchyTreeController::CloseProject()
 	
 	hierarchyTree.CloseProject();
 	CleanupNodesDeletedFromScene();
+	CommandsController::Instance()->CleanupUndoRedoStack();
 
 	EmitHierarchyTreeUpdated();
 	emit ProjectClosed();

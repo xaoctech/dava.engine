@@ -452,6 +452,9 @@
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneData.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneDataManager.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\SceneEditorProxy.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\SceneManager.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\SceneTabWidget.cpp" />
     <ClCompile Include="Classes\Qt\SpritesPacker\SpritePackerHelper.cpp" />
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureBrowser.cpp" />
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureCache.cpp" />
@@ -595,6 +598,9 @@
     <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\SceneDataManager_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\SceneData_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Scene\SceneEditorProxy_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Scene\SceneManager_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Scene\SceneTabWidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\SpritesPacker\SpritePackerHelper_moc.cpp" />
     <ClCompile Include="_GeneratedQt\TextureBrowser\TextureBrowser_moc.cpp" />
     <ClCompile Include="_GeneratedQt\TextureBrowser\TextureCache_moc.cpp" />
@@ -970,6 +976,9 @@
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneData.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneDataManager.h" />
+    <ClInclude Include="Classes\Qt\Scene\SceneEditorProxy.h" />
+    <ClInclude Include="Classes\Qt\Scene\SceneManager.h" />
+    <ClInclude Include="Classes\Qt\Scene\SceneTabWidget.h" />
     <ClInclude Include="Classes\Qt\SpritesPacker\SpritePackerHelper.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureBrowser.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureCache.h" />

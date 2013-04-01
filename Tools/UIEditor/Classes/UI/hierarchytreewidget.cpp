@@ -19,7 +19,10 @@
 #define MENU_ITEM_COPY tr("Copy")
 #define MENU_ITEM_PASTE tr("Paste")
 #define MENU_ITEM_CREATE_SCREEN tr("Create screen")
+#define MENU_ITEM_CREATE_AGGREGATOR tr("Create aggregator")
 
+#define DEFAULT_CONTROL_FONT_COLOR QColor(0x00, 0x00, 0x00, 0xFF)
+#define SUBCONTROL_FONT_COLOR QColor(0x80, 0x80, 0x80, 0xFF)
 
 HierarchyTreeWidget::HierarchyTreeWidget(QWidget *parent) :
     QWidget(parent),
@@ -88,7 +91,7 @@ void HierarchyTreeWidget::OnTreeUpdated()
 		QTreeWidgetItem* platformItem = new QTreeWidgetItem();
 		platformItem->setData(ITEM_ID, platformNode->GetId());
 		platformItem->setText(0, platformNode->GetName());
-		platformItem->setIcon(0, QIcon(":/icons/079.png"));
+		platformItem->setIcon(0, QIcon(":/Icons/079i.png"));
 		ui->treeWidget->insertTopLevelItem(ui->treeWidget->topLevelItemCount(), platformItem);
 		
 		for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter = platformNode->GetChildNodes().begin();
@@ -110,9 +113,9 @@ void HierarchyTreeWidget::OnTreeUpdated()
 			screenItem->setText(0, screenItemText);
 
 			if (dynamic_cast<const HierarchyTreeAggregatorNode*>(screenNode))
-				screenItem->setIcon(0, QIcon(":/icons/170.png"));
+				screenItem->setIcon(0, QIcon(":/Icons/170.png"));
 			else
-				screenItem->setIcon(0, QIcon(":/icons/068.png"));
+				screenItem->setIcon(0, QIcon(":/Icons/068i.png"));
 			platformItem->insertChild(platformItem->childCount(), screenItem);
 			
 			AddControlItem(screenItem, selectedItems, expandedItems, screenNode->GetChildNodes());
@@ -150,7 +153,7 @@ void HierarchyTreeWidget::AddControlItem(QTreeWidgetItem* parent, const EXPANDED
 		controlItem->setData(ITEM_ID, controlNode->GetId());
 		controlItem->setText(0, controlNode->GetName());
 
-		DecorateWithIcon(controlItem, controlNode->GetUIObject());
+		Decorate(controlItem, controlNode->GetUIObject());
 
 		parent->insertChild(parent->childCount(), controlItem);
 		
@@ -165,7 +168,7 @@ void HierarchyTreeWidget::AddControlItem(QTreeWidgetItem* parent, const EXPANDED
 	}
 }
 
-void HierarchyTreeWidget::DecorateWithIcon(QTreeWidgetItem *item, DAVA::UIControl *uiControl)
+void HierarchyTreeWidget::Decorate(QTreeWidgetItem *item, DAVA::UIControl *uiControl)
 {
 	if (!item || !uiControl)
 	{
@@ -174,6 +177,7 @@ void HierarchyTreeWidget::DecorateWithIcon(QTreeWidgetItem *item, DAVA::UIContro
 
 	QString iconPath = IconHelper::GetIconPathForUIControl(uiControl);
 	item->setIcon(0, QIcon(iconPath));
+	item->setTextColor(0, uiControl->IsSubcontrol() ? SUBCONTROL_FONT_COLOR : Qt::black);
 }
 
 void HierarchyTreeWidget::on_treeWidget_itemSelectionChanged()
@@ -326,10 +330,14 @@ void HierarchyTreeWidget::OnShowCustomMenu(const QPoint& pos)
 	QMenu menu;
 	if (selectedControl || selectedPlatform || selectedScreen)
 	{
-		QAction* deleteControlAction = new QAction(MENU_ITEM_DELETE, &menu);
-		connect(deleteControlAction, SIGNAL(triggered()), this, SLOT(OnDeleteControlAction()));
-		menu.addAction(deleteControlAction);
-		
+		// Yuri Coder, 2013/03/29. Deletion is disabled for Subcontrols.
+		if (IsDeleteNodeAllowed(selectedControl))
+		{
+			QAction* deleteControlAction = new QAction(MENU_ITEM_DELETE, &menu);
+			connect(deleteControlAction, SIGNAL(triggered()), this, SLOT(OnDeleteControlAction()));
+			menu.addAction(deleteControlAction);
+		}
+
 		QAction* copyControlAction = new QAction(MENU_ITEM_COPY, &menu);
 		connect(copyControlAction, SIGNAL(triggered()), this, SLOT(OnCopyAction()));
 		menu.addAction(copyControlAction);
@@ -339,6 +347,10 @@ void HierarchyTreeWidget::OnShowCustomMenu(const QPoint& pos)
 		QAction* createScreenAction = new QAction(MENU_ITEM_CREATE_SCREEN, &menu);
 		connect(createScreenAction, SIGNAL(triggered()), this, SLOT(OnCreateScreenAction()));
 		menu.addAction(createScreenAction);
+		
+		QAction* createAggregatorAction = new QAction(MENU_ITEM_CREATE_AGGREGATOR, &menu);
+		connect(createAggregatorAction, SIGNAL(triggered()), this, SLOT(OnCreateAggregatorAction()));
+		menu.addAction(createAggregatorAction);
 		
 		if (CopyPasteController::Instance()->GetCopyType() == CopyPasteController::CopyTypeScreen)
 		{
@@ -404,13 +416,12 @@ void HierarchyTreeWidget::OnDeleteControlAction()
 
 void HierarchyTreeWidget::OnCreateScreenAction()
 {
-	QList<QTreeWidgetItem*> items = ui->treeWidget->selectedItems();
-	if (!items.size())
-		return;
-	QTreeWidgetItem* item = items.at(0);
-	QVariant data = item->data(ITEM_ID);
-	HierarchyTreeNode::HIERARCHYTREENODEID id = data.toInt();
-	emit CreateNewScreen(id);
+	emit CreateNewScreen();
+}
+
+void HierarchyTreeWidget::OnCreateAggregatorAction()
+{
+	emit CreateNewAggregator();
 }
 
 void HierarchyTreeWidget::OnCopyAction()
@@ -460,4 +471,22 @@ void HierarchyTreeWidget::OnPasteAction()
 	HierarchyTreeNode* baseNode = HierarchyTreeController::Instance()->GetTree().GetNode(id);
 
 	CopyPasteController::Instance()->Paste(baseNode);
+}
+
+bool HierarchyTreeWidget::IsDeleteNodeAllowed(HierarchyTreeControlNode* selectedControlNode)
+{
+	if (!selectedControlNode)
+	{
+		return true;
+	}
+		
+	// Check whether selected control is Subcontrol of its parent.
+	UIControl* uiControl = selectedControlNode->GetUIObject();
+	if (!uiControl)
+	{
+		return true;
+	}
+
+	// Subcontrols cannot be deleted.
+	return !uiControl->IsSubcontrol();
 }

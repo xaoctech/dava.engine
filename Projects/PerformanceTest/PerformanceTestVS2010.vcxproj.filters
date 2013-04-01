@@ -22,6 +22,9 @@
     <Filter Include="Tests\Tree">
       <UniqueIdentifier>{08b27b70-1c38-495e-83af-6753c40d94dd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Tests\MemoryAllocation">
+      <UniqueIdentifier>{76b29ae5-c6b8-4234-9c63-275ca14d4a5b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\FrameworkMain.h">
@@ -47,6 +50,9 @@
     </ClInclude>
     <ClInclude Include="Classes\TreeTest.h">
       <Filter>Tests\Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\MemoryAllocationTraverseTest.h">
+      <Filter>Tests\MemoryAllocation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -76,6 +82,9 @@
     </ClCompile>
     <ClCompile Include="Classes\TreeTest.cpp">
       <Filter>Tests\Tree</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\MemoryAllocationTraverseTest.cpp">
+      <Filter>Tests\MemoryAllocation</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -1342,5 +1342,91 @@ void VariantType::SaveData(void *dst, const MetaInfo *meta, const VariantType &v
 		DVASSERT(0 && "Don't know how to save data from such VariantType");
 	}
 }
-	
+
+VariantType VariantType::FromType(int type)
+{
+	VariantType v;
+
+	bool found = false;
+	for(int i = 0; i < TYPES_COUNT; ++i)
+	{
+		if(variantNamesMap[i].variantType == type)
+		{
+			found = true;
+			break;
+		}
+	}
+
+	DVASSERT(true == found);
+
+	switch(type)
+	{
+	case TYPE_BOOLEAN:
+		v.SetBool(false);
+		break;
+	case TYPE_INT32:
+		v.SetInt32(0);
+		break;
+	case TYPE_FLOAT:
+		v.SetFloat(0.0);
+		break;
+	case TYPE_STRING:
+		v.SetString("");
+		break;
+	case TYPE_WIDE_STRING:
+		v.SetWideString(WideString());
+		break;
+	case TYPE_UINT32:
+		v.SetUInt32(0);
+		break;
+	case TYPE_BYTE_ARRAY:
+		v.SetByteArray(NULL, 0);
+		break;
+	case TYPE_KEYED_ARCHIVE:
+		{
+			KeyedArchive *ka = new KeyedArchive();
+			v.SetKeyedArchive(ka);
+			ka->Release();
+		}
+		break;
+	case TYPE_INT64:
+		v.SetInt64(0);
+		break;
+	case TYPE_UINT64:
+		v.SetUInt64(0);
+		break;
+	case TYPE_VECTOR2:
+		v.SetVector2(Vector2());
+		break;
+	case TYPE_VECTOR3:
+		v.SetVector3(Vector3());
+		break;
+	case TYPE_VECTOR4:
+		v.SetVector4(Vector4());
+		break;
+	case TYPE_MATRIX2:
+		v.SetMatrix2(Matrix2());
+		break;
+	case TYPE_MATRIX3:
+		v.SetMatrix3(Matrix3());
+		break;
+	case TYPE_MATRIX4:
+		v.SetMatrix4(Matrix4());
+		break;
+	case TYPE_COLOR:
+		v.SetColor(Color());
+		break;
+	case TYPE_FASTNAME:
+		v.SetFastName("");
+		break;
+	case TYPE_AABBOX3:
+		v.SetAABBox3(AABBox3());
+		break;
+	default:
+		DVASSERT(0 && "Don't know how to create such VariantType");
+	}
+
+	return v;
+}
+
 };
