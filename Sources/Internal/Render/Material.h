@@ -101,8 +101,8 @@ public:
                          MEMBER(uvOffset, "UV Offset", INTROSPECTION_EDITOR)
                          MEMBER(uvScale, "UV Scale", INTROSPECTION_EDITOR)
                          
-                         PROPERTY(flatColor, "Flat Color (works only if flat color enabled)", GetFlatColor, SetFlatColor, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-                         PROPERTY(texture0Shift, "Texture Shift", GetTextureShift, SetTextureShift, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         PROPERTY("flatColor", "Flat Color (works only if flat color enabled)", GetFlatColor, SetFlatColor, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         PROPERTY("texture0Shift", "Texture Shift", GetTextureShift, SetTextureShift, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          
                          //MEMBER(aabbox, "AABBox", INTROSPECTION_EDITOR)
                          );
@@ -377,22 +377,19 @@ public:
                          
         MEMBER(isAlphablend, "Is Alphablended", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         
-        PROPERTY(isFlatColorEnabled, "Is flat color enabled", IsFlatColorEnabled, EnableFlatColor, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-                         
-        PROPERTY(isTexture0ShiftEnabled, "Is texture shift enabled", IsTextureShiftEnabled, EnableTextureShift, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-                         
-        PROPERTY(isExportOwnerLayerEnabled, "Is export owner layer enabled. (Export layer settings to render batch on set)", IsExportOwnerLayerEnabled, SetExportOwnerLayer, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        PROPERTY(ownerLayerName, "Owner layer name", GetOwnerLayerName, SetOwnerLayerName, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        
+        PROPERTY("isFlatColorEnabled", "Is flat color enabled", IsFlatColorEnabled, EnableFlatColor, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY("isTexture0ShiftEnabled", "Is texture shift enabled", IsTextureShiftEnabled, EnableTextureShift, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY("isExportOwnerLayerEnabled", "Is export owner layer enabled. (Export layer settings to render batch on set)", IsExportOwnerLayerEnabled, SetExportOwnerLayer, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY("ownerLayerName", "Owner layer name", GetOwnerLayerName, SetOwnerLayerName, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          
         MEMBER(blendSrc, "Blend Source", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(blendDst, "Blend Destination", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-
         MEMBER(isWireframe, "Is Wire Frame", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-                         
 		MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          
         COLLECTION(names, "Names", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+
+		MEMBER(renderStateBlock, "Render State", INTROSPECTION_EDITOR)
     );
 };
 

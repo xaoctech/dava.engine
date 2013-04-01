@@ -6,7 +6,7 @@
 #include <QApplication>
 
 #include "Main/QtUtils.h"
-#include "Main/PointerHolder.h"
+#include "DockSceneGraph/PointerHolder.h"
 
 #include "DAVAEngine.h"
 using namespace DAVA;

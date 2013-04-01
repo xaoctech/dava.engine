@@ -54,7 +54,7 @@ void DebugRenderSystem::Process()
 				{
 					Color camColor(0.0f, 1.0f, 0.0f, 1.0f);
 					Vector3 camPos = entityCamera->GetPosition();
-					Vector3 camDirect = entityCamera->GetDirection();
+					//Vector3 camDirect = entityCamera->GetDirection();
 					AABBox3 camBox(camPos, 2.5f);
 
 					// If this is clip camera - show it as red camera
@@ -63,10 +63,6 @@ void DebugRenderSystem::Process()
 					RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
 					RenderManager::Instance()->SetState(RenderState::STATE_COLORMASK_ALL | RenderState::STATE_DEPTH_WRITE);
 					RenderManager::Instance()->SetColor(camColor);
-
-					//entityCamera->Set();
-					//camera->Set();
-					//entityCamera->GetFrustum()->DebugDraw();
 
 					RenderHelper::Instance()->DrawBox(camBox, 2.5f);
 
@@ -159,7 +155,7 @@ void DebugRenderSystem::Process()
         if ((debugFlags & DebugRenderComponent::DEBUG_DRAW_AABOX_CORNERS))
         {            
             RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
-            RenderManager::Instance()->SetState(RenderState::STATE_COLORMASK_ALL | RenderState::STATE_DEPTH_WRITE);
+            RenderManager::Instance()->SetState(RenderState::STATE_COLORMASK_ALL | RenderState::STATE_DEPTH_WRITE | RenderState::STATE_DEPTH_TEST);
             RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
             RenderHelper::Instance()->DrawCornerBox(debugBoundigBox, 1.5f);
             RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);

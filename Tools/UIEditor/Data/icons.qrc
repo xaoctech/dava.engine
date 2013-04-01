@@ -1,20 +1,26 @@
 <RCC>
-  <qresource>
+  <qresource prefix="/">
+    <file>Icons/068i.png</file>
+    <file>Icons/079i.png</file>
     <file>Icons/uiaggregatorcontrol.png</file>
     <file>Icons/uibutton.png</file>
     <file>Icons/uilist.png</file>
     <file>Icons/uicontrol.png</file>
-    <file>Icons/uiscrollbar.png</file>
+    <file>Icons/uislider.png</file>
     <file>Icons/uispinner.png</file>
     <file>Icons/uistatictext.png</file>
-    <file>icons/170.png</file>
-    <file>icons/068.png</file>
-    <file>icons/079.png</file>
-    <file>icons/101.png</file>
-    <file>icons/117.png</file>
-    <file>icons/118.png</file>
-    <file>icons/newscene.png</file>
-    <file>icons/openproject.png</file>
-    <file>icons/savescene.png</file>
+    <file>Icons/170.png</file>
+    <file>Icons/068.png</file>
+    <file>Icons/079.png</file>
+    <file>Icons/101.png</file>
+    <file>Icons/117.png</file>
+    <file>Icons/118.png</file>
+    <file>Icons/newscene.png</file>
+    <file>Icons/openproject.png</file>
+    <file>Icons/savescene.png</file>
+    <file>Icons/savesceneall.png</file>
+    <file>Icons/uicustomcontrol.png</file>
+    <file>Icons/uitextfield.png</file>
+    <file>Icons/uiswitch.png</file>
   </qresource>
 </RCC>

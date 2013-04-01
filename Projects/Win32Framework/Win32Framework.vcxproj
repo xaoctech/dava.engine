@@ -341,6 +341,7 @@
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayerLong.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticlePropertyLine.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\DeviceInfo.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\DPIHelper.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\Mutex.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\Qt\QtLayer.h">
@@ -551,6 +552,7 @@
     <ClInclude Include="..\..\Sources\Internal\UI\UIWebView.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIYamlLoader.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\VectorSpinnerAdapter.h" />
+    <ClInclude Include="..\..\Sources\Internal\Utils\CRC32.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\HTTPDownloader.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\MD5.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\Random.h" />
@@ -690,6 +692,7 @@
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayerLong.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticlePropertyLine.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Platform\DeviceInfo.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\Mutex.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\Qt\QtLayer.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -708,6 +711,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\DeviceInfoWin32.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\WebViewControlWin32.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\DPIHelperWin32.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\Thread.cpp" />
@@ -882,6 +886,7 @@
     <ClCompile Include="..\..\Sources\Internal\UI\UITextField.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIWebView.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIYamlLoader.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Utils\CRC32.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Utils\MD5.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Utils\StringFormat.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Utils\UTF8UtilsWin32.cpp" />

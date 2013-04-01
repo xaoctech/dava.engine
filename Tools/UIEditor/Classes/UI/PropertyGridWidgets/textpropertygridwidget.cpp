@@ -93,10 +93,10 @@ void TextPropertyGridWidget::UpdateLocalizationValue()
     }
 }
 
-void TextPropertyGridWidget::HandleSelectedUIControlStateChanged(UIControl::eControlState newState)
+void TextPropertyGridWidget::HandleSelectedUIControlStatesChanged(const Vector<UIControl::eControlState>& newStates)
 {
     // When the UI Control State is changed. we need to update Localization Key/Value.
-    BasePropertyGridWidget::HandleSelectedUIControlStateChanged(newState);
+    BasePropertyGridWidget::HandleSelectedUIControlStatesChanged(newStates);
     UpdateLocalizationValue();
 }
 

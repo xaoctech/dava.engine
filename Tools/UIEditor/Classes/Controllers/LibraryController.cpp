@@ -37,9 +37,11 @@ void LibraryController::Init(LibraryWidget* widget)
 	AddControl("UIControl", new UIControl());
 	AddControl("UIButton", new UIButton());
 	AddControl("UIStaticText", new UIStaticText());
-	AddControl("UIList", new UIList());
+	AddControl("UITextField", new UITextField());
 	AddControl("UISlider", new UISlider());
+	AddControl("UIList", new UIList());
 	AddControl("UISpinner", new UISpinner());
+	AddControl("UISwitch", new UISwitch());
 }
 
 void LibraryController::AddControl(HierarchyTreeAggregatorNode* node)
@@ -115,6 +117,25 @@ HierarchyTreeControlNode* LibraryController::CreateNewControl(HierarchyTreeNode*
 	}
 	
 	parentNode->AddTreeNode(controlNode);
+	
+	// In case the control has subcontrols - they should be added to the control node too.
+	if (control && !control->GetSubcontrols().empty())
+	{
+		List<UIControl*> subControls = control->GetSubcontrols();
+		for (List<UIControl*>::iterator iter = subControls.begin(); iter != subControls.end(); iter ++)
+		{
+			UIControl* subControl = (*iter);
+			if (!subControl)
+			{
+				continue;
+			}
+
+			HierarchyTreeControlNode* subControlNode =
+				new HierarchyTreeControlNode(controlNode, subControl,
+											 QString::fromStdString(subControl->GetName()));
+			controlNode->AddTreeNode(subControlNode);
+		}
+	}
 
 	// Initialize a control through its metadata.
 	BaseMetadata* newControlMetadata = MetadataFactory::Instance()->GetMetadataForUIControl(control);

@@ -3,29 +3,16 @@
 
 #include "../../UI/IWebViewControl.h"
 #include "JniExtensions.h"
+#include "Base/BaseTypes.h"
 
 namespace DAVA {
 
-class JniWebView: public JniExtension
-{
-public:
-	JniWebView();
-
-	void Initialize(int id, const Rect& rect);
-	void Deinitialize(int id);
-
-	void OpenURL(int id, const String& urlToOpen);
-
-	void SetRect(int id, const Rect& rect);
-	void SetVisible(int id, bool isVisible);
-
-public:
-	static JniWebView* jniWebView;
-};
+class JniWebView;
 
 // Web View Control - Android version.
 class WebViewControl : public IWebViewControl
 {
+	friend class JniWebView;
 public:
 	WebViewControl();
 	virtual ~WebViewControl();
@@ -40,9 +27,36 @@ public:
 	virtual void SetRect(const Rect& rect);
 	virtual void SetVisible(bool isVisible, bool hierarchic);
 
+	virtual void SetDelegate(IUIWebViewDelegate *delegate, UIWebView* webView);
+
 private:
 	static int webViewIdCount;
 	int webViewId;
+	IUIWebViewDelegate *delegate;
+	UIWebView* webView;
+};
+
+class JniWebView: public JniExtension
+{
+public:
+	JniWebView();
+
+	void Initialize(WebViewControl* control, int id, const Rect& rect);
+	void Deinitialize(int id);
+
+	void OpenURL(int id, const String& urlToOpen);
+
+	void SetRect(int id, const Rect& rect);
+	void SetVisible(int id, bool isVisible);
+
+	IUIWebViewDelegate::eAction URLChanged(int id, const String& newURL);
+
+public:
+	static JniWebView* jniWebView;
+
+private:
+	typedef std::map<int, WebViewControl*> CONTROLS_MAP;
+	CONTROLS_MAP controls;
 };
 
 };

@@ -17,7 +17,7 @@ namespace DAVA
 	class PasteCommand: public BaseCommand
 	{
 	public:
-		PasteCommand(HierarchyTreeNode* parentNode, CopyPasteController::CopyType copyType, const HierarchyTreeNode::HIERARCHYTREENODESLIST* items);
+		PasteCommand(HierarchyTreeNode* parentNode, CopyPasteController::CopyType copyType, const HierarchyTreeNode::HIERARCHYTREENODESLIST * items);
 		virtual ~PasteCommand();
 		
 		// Execute command.
@@ -30,13 +30,13 @@ namespace DAVA
 		int PasteScreens(HierarchyTreeNode::HIERARCHYTREENODESLIST*, HierarchyTreePlatformNode* parent);
 		int PastePlatforms(HierarchyTreeNode::HIERARCHYTREENODESLIST*, HierarchyTreeRootNode* parent);
 		
+		bool IsParentContainsCopyItemName(HierarchyTreeNode* parentNode, HierarchyTreeNode* copyNode);
 		QString FormatCopyName(QString baseName, const HierarchyTreeNode* parent) const;
 		
 		void UpdateControlName(const HierarchyTreeNode* parent, HierarchyTreeNode* node, bool needCreateNewName) const;
 		
 		// Undo/Redo-related functionality.
 		void ReturnPastedControlsToScene();
-		void CleanupPastedItems();
 
 	private:
 		HierarchyTreeNode* parentNode;
