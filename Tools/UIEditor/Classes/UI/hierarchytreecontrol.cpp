@@ -133,7 +133,7 @@ bool HierarchyTreeControl::SortByInternalIndex(const SortedItems &first, const S
 		if (firstId < secondId)
 			return false;
 	}
-	return true;
+	return false;
 }
 
 QMimeData* HierarchyTreeControl::mimeData(const QList<QTreeWidgetItem*> items) const
