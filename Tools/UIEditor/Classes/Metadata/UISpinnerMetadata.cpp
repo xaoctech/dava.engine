@@ -26,9 +26,11 @@ void UISpinnerMetadata::InitializeControl(const String& controlName, const Vecto
         UISpinner* spinner = dynamic_cast<UISpinner*>(this->treeNodeParams[i].GetUIControl());
 		if (spinner && spinner->GetButtonNext() && spinner->GetButtonPrevious())
 		{
-			
 			spinner->GetButtonNext()->SetStateText(0, L"Next");
 			spinner->GetButtonPrevious()->SetStateText(0, L"Prev");
+			
+			// Define some initial positions for UISpinner buttons.
+			PositionSpinnerButtons(spinner);
 		}
     }
 }
@@ -123,15 +125,9 @@ UIButton* UISpinnerMetadata::GetNextButton()
 	return activeSpinner->GetButtonNext();
 }
 
-void UISpinnerMetadata::SetActiveControlRect(const Rect& rect)
+void UISpinnerMetadata::PositionSpinnerButtons(UISpinner* spinner)
 {
-	UIControlMetadata::SetActiveControlRect(rect);
-	RecalculateSpinnerButtons();
-}
-
-void UISpinnerMetadata::RecalculateSpinnerButtons()
-{
-	if (!GetPrevButton() || !GetNextButton())
+	if (!spinner || !spinner->GetButtonPrevious() || !spinner->GetButtonNext())
 	{
 		return;
 	}
@@ -139,18 +135,18 @@ void UISpinnerMetadata::RecalculateSpinnerButtons()
 	static const float32 RELATIVE_SPINNER_BUTTONS_WIDTH = 0.25f;
 	
 	// Position Prev and Next buttons on the right side of the control.
-	Rect controlRect = GetActiveUISpinner()->GetRect();
+	Rect controlRect = spinner->GetRect();
 	Rect newPrevButtonRect;
 	newPrevButtonRect.x = (controlRect.dx * (1.0f - RELATIVE_SPINNER_BUTTONS_WIDTH));
 	newPrevButtonRect.y = 0;
 	newPrevButtonRect.dx = controlRect.dx * RELATIVE_SPINNER_BUTTONS_WIDTH;
-	newPrevButtonRect.dy = controlRect.y / 2;
-	GetPrevButton()->SetRect(newPrevButtonRect);
+	newPrevButtonRect.dy = controlRect.dy / 2;
+	spinner->GetButtonPrevious()->SetRect(newPrevButtonRect);
 
 	// The rect for "Next" button is the same, but shifted down.
 	Rect newNextButtonRect = newPrevButtonRect;
 	newNextButtonRect.y = controlRect.dy / 2;
-	GetNextButton()->SetRect(newNextButtonRect);
+	spinner->GetButtonNext()->SetRect(newNextButtonRect);
 }
-	
+
 };

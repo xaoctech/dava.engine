@@ -929,3 +929,22 @@ bool BasePropertyGridWidget::eventFilter(QObject *obj, QEvent *event)
     
     return QWidget::eventFilter( obj, event );
 }
+
+bool BasePropertyGridWidget::SubcontrolsExists()
+{
+	if (!activeMetadata || !activeMetadata->GetParamsCount())
+	{
+		return false;
+	}
+	
+    int paramsCount = activeMetadata->GetParamsCount();
+	const METADATAPARAMSVECT& params = activeMetadata->GetParams();
+	
+    for (int i = 0; i < paramsCount; i ++)
+    {
+		if (params[i].GetUIControl() && params[i].GetUIControl()->IsSubcontrol())
+		{
+			return true;
+		}
+	}
+}

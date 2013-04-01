@@ -174,6 +174,9 @@ protected:
 	// Event filter to block wheel events for comboboxes and spinbox
 	virtual bool eventFilter(QObject *obj, QEvent *event);
 
+	// Whether at least one subcontrol exists in metadata?
+	bool SubcontrolsExists();
+
 protected slots:
     // Properties are updated from the external source and needs to be re-drawn.
     void OnPropertiesChangedExternally();
