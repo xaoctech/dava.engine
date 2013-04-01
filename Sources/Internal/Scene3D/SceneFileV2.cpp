@@ -638,7 +638,7 @@ void SceneFileV2::ConvertShadows(Entity * currentNode)
 		if(String::npos != childNode->GetName().find("_shadow"))
 		{
 			DVASSERT(childNode->GetChildrenCount() == 1);
-			ShadowVolumeNode * svn = dynamic_cast<ShadowVolumeNode*>(childNode->GetChild(0));
+			Entity * svn = childNode->FindByName("dynamicshadow.shadowvolume");
 			if(!svn)
 			{
 				MeshInstanceNode * mi = dynamic_cast<MeshInstanceNode*>(childNode->GetChild(0));

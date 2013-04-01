@@ -29,6 +29,8 @@
 		7489A9D01702F5A500D9AE2D /* CRC32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 74A909A91701FA51003FDB31 /* CRC32.cpp */; };
 		74A909AB1701FA51003FDB31 /* CRC32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 74A909A91701FA51003FDB31 /* CRC32.cpp */; };
 		74A909AC1701FA51003FDB31 /* CRC32.h in Headers */ = {isa = PBXBuildFile; fileRef = 74A909AA1701FA51003FDB31 /* CRC32.h */; };
+		840D24221703311400267C58 /* DeviceInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 840D24201703311400267C58 /* DeviceInfo.cpp */; };
+		840D24231703311400267C58 /* DeviceInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 840D24211703311400267C58 /* DeviceInfo.h */; };
 		840ED3E116D5089E00D2BA6C /* DPIHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 840ED3E016D5089E00D2BA6C /* DPIHelper.h */; };
 		840ED3E316D5095000D2BA6C /* DPIHelperMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 840ED3E216D5095000D2BA6C /* DPIHelperMacOS.mm */; };
 		C151B17716D3747E00E09BAF /* DVAssertMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C151B17416D3747E00E09BAF /* DVAssertMessage.cpp */; };
@@ -1229,6 +1231,10 @@
 		E89CE91216C549D2006BEFF4 /* libcurl_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E89CE91116C549D2006BEFF4 /* libcurl_macos.a */; };
 		E8B4F8CF16EF377D0072442A /* UTF8UtilsMac.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8B4F8CE16EF377D0072442A /* UTF8UtilsMac.mm */; };
 		E8B4F8D016EF377D0072442A /* UTF8UtilsMac.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8B4F8CE16EF377D0072442A /* UTF8UtilsMac.mm */; };
+		E8B6B3B01705DB26004F665E /* DeviceInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 840D24201703311400267C58 /* DeviceInfo.cpp */; };
+		E8B6B3B11705DB26004F665E /* DeviceInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 840D24211703311400267C58 /* DeviceInfo.h */; };
+		E8B6B3BB1705DD59004F665E /* DeviceInfoMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8B6B3BA1705DD59004F665E /* DeviceInfoMacOS.mm */; };
+		E8B6B3BC1705DD59004F665E /* DeviceInfoMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8B6B3BA1705DD59004F665E /* DeviceInfoMacOS.mm */; };
 		E8F21DCA16C196DC007F957A /* GlobalEventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */; };
 		E8F21DCB16C196DD007F957A /* GlobalEventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */; };
 		E9E798A916F0BE7600745AF5 /* UISwitch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9E798A716F0BE7600745AF5 /* UISwitch.cpp */; };
@@ -1293,6 +1299,8 @@
 		5C97965914E3F09F00FFFA14 /* libyaml_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyaml_macos.a; path = ../../Libs/libs/libyaml_macos.a; sourceTree = "<group>"; };
 		74A909A91701FA51003FDB31 /* CRC32.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CRC32.cpp; sourceTree = "<group>"; };
 		74A909AA1701FA51003FDB31 /* CRC32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRC32.h; sourceTree = "<group>"; };
+		840D24201703311400267C58 /* DeviceInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DeviceInfo.cpp; sourceTree = "<group>"; };
+		840D24211703311400267C58 /* DeviceInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceInfo.h; sourceTree = "<group>"; };
 		840ED3E016D5089E00D2BA6C /* DPIHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DPIHelper.h; sourceTree = "<group>"; };
 		840ED3E216D5095000D2BA6C /* DPIHelperMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DPIHelperMacOS.mm; sourceTree = "<group>"; };
 		C151B17416D3747E00E09BAF /* DVAssertMessage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DVAssertMessage.cpp; sourceTree = "<group>"; };
@@ -1904,6 +1912,7 @@
 		E898A2C416BD265400732C04 /* libFrameworkQt.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFrameworkQt.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		E89CE91116C549D2006BEFF4 /* libcurl_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl_macos.a; path = ../../Libs/libs/libcurl_macos.a; sourceTree = "<group>"; };
 		E8B4F8CE16EF377D0072442A /* UTF8UtilsMac.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UTF8UtilsMac.mm; sourceTree = "<group>"; };
+		E8B6B3BA1705DD59004F665E /* DeviceInfoMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DeviceInfoMacOS.mm; sourceTree = "<group>"; };
 		E8CC1BF616C109F1009B49BF /* IntrospectionBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IntrospectionBase.cpp; sourceTree = "<group>"; };
 		E9E798A716F0BE7600745AF5 /* UISwitch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UISwitch.cpp; sourceTree = "<group>"; };
 		E9E798A816F0BE7600745AF5 /* UISwitch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UISwitch.h; sourceTree = "<group>"; };
@@ -2378,6 +2387,8 @@
 		E8989BD716BD24E400732C04 /* Platform */ = {
 			isa = PBXGroup;
 			children = (
+				840D24201703311400267C58 /* DeviceInfo.cpp */,
+				840D24211703311400267C58 /* DeviceInfo.h */,
 				840ED3E016D5089E00D2BA6C /* DPIHelper.h */,
 				E8989BE016BD24E400732C04 /* Mutex.cpp */,
 				E8989BE116BD24E400732C04 /* Mutex.h */,
@@ -2419,6 +2430,7 @@
 		E8989C0116BD24E400732C04 /* TemplateMacOS */ = {
 			isa = PBXGroup;
 			children = (
+				E8B6B3BA1705DD59004F665E /* DeviceInfoMacOS.mm */,
 				840ED3E216D5095000D2BA6C /* DPIHelperMacOS.mm */,
 				C151B17A16D3755000E09BAF /* WebViewControlMacOS.h */,
 				C151B17B16D3755000E09BAF /* WebViewControlMacOS.mm */,
@@ -3274,6 +3286,7 @@
 				CCC7A48516F1D6700061EA5D /* UpdateSystem.h in Headers */,
 				CCC7A48B16F1D6B80061EA5D /* Entity.h in Headers */,
 				74A909AC1701FA51003FDB31 /* CRC32.h in Headers */,
+				840D24231703311400267C58 /* DeviceInfo.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3604,6 +3617,7 @@
 				CCC7A48C16F1D6B80061EA5D /* Entity.h in Headers */,
 				C18593DD16F30BF6005D30E2 /* UIAggregatorControl.h in Headers */,
 				7489A9CF1702F5A200D9AE2D /* CRC32.h in Headers */,
+				E8B6B3B11705DB26004F665E /* DeviceInfo.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3976,6 +3990,8 @@
 				CCC7A48316F1D6700061EA5D /* UpdateSystem.cpp in Sources */,
 				CCC7A48916F1D6B80061EA5D /* Entity.cpp in Sources */,
 				74A909AB1701FA51003FDB31 /* CRC32.cpp in Sources */,
+				840D24221703311400267C58 /* DeviceInfo.cpp in Sources */,
+				E8B6B3BB1705DD59004F665E /* DeviceInfoMacOS.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4260,6 +4276,8 @@
 				CCC7A48A16F1D6B80061EA5D /* Entity.cpp in Sources */,
 				C18593DC16F30BF2005D30E2 /* UIAggregatorControl.cpp in Sources */,
 				7489A9D01702F5A500D9AE2D /* CRC32.cpp in Sources */,
+				E8B6B3B01705DB26004F665E /* DeviceInfo.cpp in Sources */,
+				E8B6B3BC1705DD59004F665E /* DeviceInfoMacOS.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

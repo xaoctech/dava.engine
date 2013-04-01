@@ -3,8 +3,6 @@
 
 #include <jni.h>
 
-#include "DAVAEngine.h"
-
 namespace DAVA
 {
 

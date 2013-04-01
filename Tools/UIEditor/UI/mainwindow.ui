@@ -269,7 +269,7 @@
    </property>
    <property name="icon">
     <iconset resource="../Data/icons.qrc">
-     <normaloff>:/icons/openproject.png</normaloff>:/icons/openproject.png</iconset>
+     <normaloff>:/Icons/openproject.png</normaloff>:/Icons/openproject.png</iconset>
    </property>
    <property name="text">
     <string>Open project</string>
@@ -301,7 +301,7 @@
   <action name="actionNew_project">
    <property name="icon">
     <iconset resource="../Data/icons.qrc">
-     <normaloff>:/icons/newscene.png</normaloff>:/icons/newscene.png</iconset>
+     <normaloff>:/Icons/newscene.png</normaloff>:/Icons/newscene.png</iconset>
    </property>
    <property name="text">
     <string>New project</string>
@@ -348,7 +348,7 @@
   <action name="actionClose_project">
    <property name="icon">
     <iconset resource="../Data/icons.qrc">
-     <normaloff>:/icons/101.png</normaloff>:/icons/101.png</iconset>
+     <normaloff>:/Icons/101.png</normaloff>:/Icons/101.png</iconset>
    </property>
    <property name="text">
     <string>Close project</string>
@@ -371,7 +371,7 @@
   <action name="actionSave_project">
    <property name="icon">
     <iconset resource="../Data/icons.qrc">
-     <normaloff>:/icons/savescene.png</normaloff>:/icons/savescene.png</iconset>
+     <normaloff>:/Icons/savescene.png</normaloff>:/Icons/savescene.png</iconset>
    </property>
    <property name="text">
     <string>Save changes</string>
@@ -400,7 +400,7 @@
   <action name="actionUndo">
    <property name="icon">
     <iconset resource="../Data/icons.qrc">
-     <normaloff>:/icons/118.png</normaloff>:/icons/118.png</iconset>
+     <normaloff>:/Icons/118.png</normaloff>:/Icons/118.png</iconset>
    </property>
    <property name="text">
     <string>Undo</string>
@@ -415,7 +415,7 @@
   <action name="actionRedo">
    <property name="icon">
     <iconset resource="../Data/icons.qrc">
-     <normaloff>:/icons/117.png</normaloff>:/icons/117.png</iconset>
+     <normaloff>:/Icons/117.png</normaloff>:/Icons/117.png</iconset>
    </property>
    <property name="text">
     <string>Redo</string>
@@ -430,7 +430,7 @@
   <action name="actionNew_platform">
    <property name="icon">
     <iconset resource="../Data/icons.qrc">
-     <normaloff>:/icons/079.png</normaloff>:/icons/079.png</iconset>
+     <normaloff>:/Icons/079.png</normaloff>:/Icons/079.png</iconset>
    </property>
    <property name="text">
     <string>New platform</string>
@@ -439,7 +439,7 @@
   <action name="actionNew_screen">
    <property name="icon">
     <iconset resource="../Data/icons.qrc">
-     <normaloff>:/icons/068.png</normaloff>:/icons/068.png</iconset>
+     <normaloff>:/Icons/068.png</normaloff>:/Icons/068.png</iconset>
    </property>
    <property name="text">
     <string>New screen</string>
@@ -476,7 +476,7 @@
   <action name="actionNew_aggregator">
    <property name="icon">
     <iconset resource="../Data/icons.qrc">
-     <normaloff>:/icons/170.png</normaloff>:/icons/170.png</iconset>
+     <normaloff>:/Icons/170.png</normaloff>:/Icons/170.png</iconset>
    </property>
    <property name="text">
     <string>New aggregator</string>
