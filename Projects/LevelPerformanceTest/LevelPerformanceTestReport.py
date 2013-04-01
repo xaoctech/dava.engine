@@ -19,7 +19,7 @@ def LogError(logfile, message):
 	logfile.write('</font>\n')
 
 
-stream = open('Data\Config\config.yaml', 'r')
+stream = open('Data/Config/config.yaml', 'r')
 config = yaml.load(stream)
 
 report = open('report.html', 'w')
