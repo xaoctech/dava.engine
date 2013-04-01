@@ -36,8 +36,8 @@ ControlPropertyGridWidget::ControlPropertyGridWidget(QWidget *parent) :
 
 ControlPropertyGridWidget::~ControlPropertyGridWidget()
 {
-    delete ui;
 	DisconnectFromSignals();
+    delete ui;
 }
 
 void ControlPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
@@ -52,6 +52,8 @@ void ControlPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     RegisterLineEditWidgetForProperty(propertiesMap, "Name", ui->objectNameLineEdit, true);
     RegisterLineEditWidgetForProperty(propertiesMap, "Tag", ui->tagLineEdit);
 	RegisterLineEditWidgetForProperty(propertiesMap, CUSTOM_CONTROL_NAME, ui->customControlLineEdit);
+	
+	UpdatePropertiesForSubcontrol();
 }
 
 void ControlPropertyGridWidget::Cleanup()
@@ -176,4 +178,19 @@ void ControlPropertyGridWidget::UpdateLineEditWidgetWithPropertyValue(QLineEdit*
 	eWidgetState widgetState = this->ui->customControlLineEdit->text().isEmpty() ?
 		STATE_DEFAULT_CONTROL : STATE_CUSTOM_CONTROL;
 	SetWidgetState(widgetState);
+}
+
+void ControlPropertyGridWidget::UpdatePropertiesForSubcontrol()
+{
+	if (!activeMetadata || !activeMetadata->GetParamsCount())
+	{
+		return;
+	}
+
+	bool isSubcontrol = SubcontrolsExists();
+
+	// Several properties can't be changed for subcontrols.
+	this->ui->customControlLineEdit->setReadOnly(isSubcontrol);
+	this->ui->objectNameLineEdit->setReadOnly(isSubcontrol);
+	this->ui->btnMorphToCustomControl->setEnabled(!isSubcontrol);
 }

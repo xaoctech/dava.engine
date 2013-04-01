@@ -80,6 +80,11 @@
        <string>UISpinner</string>
       </property>
      </item>
+     <item>
+      <property name="text">
+       <string>UISwitch</string>
+      </property>
+     </item>
     </widget>
    </item>
   </layout>
