@@ -124,12 +124,17 @@ void UISwitch::CopyDataFrom(UIControl *srcControl)
     UIControl::CopyDataFrom(srcControl);
 	
 	AddControl(buttonLeftClone);
+	this->buttonLeft = static_cast<UIButton*>(buttonLeftClone);
 	SafeRelease(buttonLeftClone);
+
 	AddControl(buttonRightClone);
+	this->buttonRight = static_cast<UIButton*>(buttonRightClone);
 	SafeRelease(buttonRightClone);
+
 	AddControl(toggleClone);
+	this->toggle = static_cast<UIButton*>(toggleClone);
 	SafeRelease(toggleClone);	
-	
+
     FindRequiredControls();
     InitControls();
 }

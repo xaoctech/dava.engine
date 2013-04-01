@@ -12,6 +12,7 @@
 #include <QMenu>
 #include <QMessageBox>
 #include "IconHelper.h"
+#include "SubcontrolsHelper.h"
 
 #define ITEM_ID 0, Qt::UserRole
 
@@ -144,7 +145,7 @@ void HierarchyTreeWidget::Decorate(QTreeWidgetItem *item, DAVA::UIControl *uiCon
 
 	QString iconPath = IconHelper::GetIconPathForUIControl(uiControl);
 	item->setIcon(0, QIcon(iconPath));
-	item->setTextColor(0, uiControl->IsSubcontrol() ? SUBCONTROL_FONT_COLOR : Qt::black);
+	item->setTextColor(0, SubcontrolsHelper::ControlIsSubcontrol(uiControl) ? SUBCONTROL_FONT_COLOR : DEFAULT_CONTROL_FONT_COLOR);
 }
 
 void HierarchyTreeWidget::on_treeWidget_itemSelectionChanged()

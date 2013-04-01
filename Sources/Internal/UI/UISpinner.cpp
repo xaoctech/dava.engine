@@ -103,9 +103,12 @@ void UISpinner::CopyDataFrom(UIControl *srcControl)
     UIControl::CopyDataFrom(srcControl);
 	
 	// Yuri Coder, 2013/03/28. CopyDataFrom works with real children,
-	// so need to copy inner buttons explicitely.
+	// so need to copy inner buttons explicitely and replace their pointers.
+	this->buttonPrevious = static_cast<UIButton*>(buttonPrevClone);
 	AddControl(buttonPrevClone);
 	SafeRelease(buttonPrevClone);
+
+	this->buttonNext = static_cast<UIButton*>(buttonNextClone);
 	AddControl(buttonNextClone);
 	SafeRelease(buttonNextClone);
 

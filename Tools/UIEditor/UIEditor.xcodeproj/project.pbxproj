@@ -122,6 +122,7 @@
 		176D395B162C3CAA0099AACF /* BaseMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 176D3959162C3CAA0099AACF /* BaseMetadata.cpp */; };
 		176D395E162C3DF90099AACF /* UIButtonMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 176D395C162C3DF90099AACF /* UIButtonMetadata.cpp */; };
 		176D3961162C3E890099AACF /* UIControlMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 176D395F162C3E890099AACF /* UIControlMetadata.cpp */; };
+		177A3CA5170987970001C4C4 /* SubcontrolsHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 177A3CA3170987970001C4C4 /* SubcontrolsHelper.cpp */; };
 		178F303E165677BF008678AD /* StringUtils.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 178F303C165677BF008678AD /* StringUtils.cpp */; };
 		17C5CCD516F31E5300FB90B4 /* spinnerpropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 17C5CCD416F31E5300FB90B4 /* spinnerpropertygridwidget.ui */; };
 		17C5CCD916F323B700FB90B4 /* spinnerpropertygridwidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17C5CCD816F323B700FB90B4 /* spinnerpropertygridwidget_moc.cpp */; };
@@ -408,6 +409,8 @@
 		176D395D162C3DF90099AACF /* UIButtonMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIButtonMetadata.h; path = Metadata/UIButtonMetadata.h; sourceTree = "<group>"; };
 		176D395F162C3E890099AACF /* UIControlMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIControlMetadata.cpp; path = Metadata/UIControlMetadata.cpp; sourceTree = "<group>"; };
 		176D3960162C3E890099AACF /* UIControlMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIControlMetadata.h; path = Metadata/UIControlMetadata.h; sourceTree = "<group>"; };
+		177A3CA3170987970001C4C4 /* SubcontrolsHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SubcontrolsHelper.cpp; sourceTree = "<group>"; };
+		177A3CA4170987970001C4C4 /* SubcontrolsHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SubcontrolsHelper.h; sourceTree = "<group>"; };
 		178F303C165677BF008678AD /* StringUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StringUtils.cpp; sourceTree = "<group>"; };
 		178F303D165677BF008678AD /* StringUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringUtils.h; sourceTree = "<group>"; };
 		17AB665116EDF86B00634657 /* UIListMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIListMetadata.cpp; path = Metadata/UIListMetadata.cpp; sourceTree = "<group>"; };
@@ -832,6 +835,8 @@
 				17607FC1164121FB004E36DE /* LocalizationSystemHelper.h */,
 				178F303C165677BF008678AD /* StringUtils.cpp */,
 				178F303D165677BF008678AD /* StringUtils.h */,
+				177A3CA3170987970001C4C4 /* SubcontrolsHelper.cpp */,
+				177A3CA4170987970001C4C4 /* SubcontrolsHelper.h */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -1517,6 +1522,7 @@
 				17C5CCDC16F323E900FB90B4 /* spinnerpropertygridwidget.cpp in Build Sources */,
 				7497D74D1705AD5500E1DE60 /* UISwitchMetadata.cpp in Build Sources */,
 				7497D74F1705AD7200E1DE60 /* UISwitchMetadata_moc.cpp in Build Sources */,
+				177A3CA5170987970001C4C4 /* SubcontrolsHelper.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
