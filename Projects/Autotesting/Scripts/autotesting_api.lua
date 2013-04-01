@@ -99,10 +99,7 @@ function StartTest(test)
     print("START TEST: " .. description[step_num])
     print("================================================================================")
     next_step()
-    
-    -- wait for application loading
-    Wait(2)
-    
+        
     CreateTest(test)
     ResumeTest()
 end
@@ -252,8 +249,9 @@ end
 
 function SetText(path, text)
     print("SetText path="..path.." text="..text)
-    return autotestingSystem:SetText(path, text)
+    local res = autotestingSystem:SetText(path, text)
     Yield()
+    return res
 end
 
 function CheckText(name, txt)
