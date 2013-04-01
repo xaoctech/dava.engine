@@ -104,12 +104,16 @@ namespace DAVA
 
 		UIControl::CopyDataFrom(srcControl);
 		UIButton *srcButton = (UIButton *)srcControl;
-		for(int i = 0; i < DRAW_STATE_COUNT; i++)
+		for(int32 i = 1; i < DRAW_STATE_COUNT; i++)
 		{
 			if(srcButton->stateBacks[i])
 			{
 				stateBacks[i] = srcButton->stateBacks[i]->Clone();
 			}
+		}
+		
+		for(int32 i = 0; i < DRAW_STATE_COUNT; i++)
+		{
 			if(srcButton->stateTexts[i])
 			{
 				stateTexts[i] = srcButton->stateTexts[i]->CloneStaticText();
