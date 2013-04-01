@@ -660,6 +660,23 @@ public:
 	virtual List<UIControl* >& GetRealChildren();
 
 	/**
+	 \brief Returns the list of internal controls, which are editable
+	 \ and belongs to the same control.
+	 */
+	virtual List<UIControl* > GetSubcontrols();
+
+	/**
+	 \brief Returns list of control children including internal controls,
+	 \which are editable and belongs to the same control.
+	 */
+	virtual List<UIControl* > GetRealChildrenAndSubcontrols();
+
+	/**
+	 \brief Returns whether this control is subcontrol of its parent.
+	 */
+	virtual bool IsSubcontrol();
+
+	/**
 	 \brief Add control as a child.
 		Children draws in the sequence of adding. If child has another parent 
 		this child removes from the parrent firstly.
@@ -1100,6 +1117,11 @@ public:
 	// Recalculate the size and positions for the child controls according to their Align Options.
 	void ApplyAlignSettingsForChildren();
 
+	// Access to Custom Control Type.
+	String GetCustomControlType() const;
+	void SetCustomControlType(const String& value);
+	void ResetCustomControlType();
+
 public:
 
 	Vector2 relativePosition;//!<position in the parent control.
@@ -1158,10 +1180,17 @@ protected:
 	
 	bool debugDrawEnabled;
 	Color debugDrawColor;
-	
+
+	// If this UI control represents Custom Control - its type is stored here.
+	String customControlType;
+
 	void SetParent(UIControl *newParent);
 	virtual ~UIControl();
-	
+
+	// Set the preferred node type. Needed for saving controls to Yaml while taking
+	// custom controls into account.
+	void SetPreferredNodeType(YamlNode* node, const String& nodeTypeName);
+
 #ifdef ENABLE_CONTROL_EDIT
 	Vector2	__touchStart;
 	Vector2		__oldPosition;

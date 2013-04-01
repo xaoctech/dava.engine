@@ -112,14 +112,55 @@ void UISwitch::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 
 void UISwitch::CopyDataFrom(UIControl *srcControl)
 {
+	UIControl* buttonLeftClone = buttonLeft->Clone();
+	UIControl* buttonRightClone = buttonRight->Clone();
+	UIControl* toggleClone = toggle->Clone();
+
     //release default buttons - they have to be copied from srcControl
     RemoveControl(buttonLeft);
     RemoveControl(buttonRight);
     RemoveControl(toggle);
     ReleaseControls();
     UIControl::CopyDataFrom(srcControl);
+	
+	AddControl(buttonLeftClone);
+	SafeRelease(buttonLeftClone);
+	AddControl(buttonRightClone);
+	SafeRelease(buttonRightClone);
+	AddControl(toggleClone);
+	SafeRelease(toggleClone);	
+	
     FindRequiredControls();
     InitControls();
+}
+
+List<UIControl* >& UISwitch::GetRealChildren()
+{
+	List<UIControl* >& realChildren = UIControl::GetRealChildren();
+	realChildren.remove(buttonLeft);
+	realChildren.remove(buttonRight);
+	realChildren.remove(toggle);
+
+	return realChildren;
+
+}
+
+List<UIControl* > UISwitch::GetSubcontrols()
+{
+	List<UIControl* > subControls;
+	subControls.push_back(buttonLeft);
+	subControls.push_back(buttonRight);
+	subControls.push_back(toggle);
+
+	return subControls;
+
+}
+
+UIControl* UISwitch::Clone()
+{
+	UISwitch *t = new UISwitch(GetRect());
+	t->CopyDataFrom(this);
+	return t;
 }
 
 void UISwitch::LoadFromYamlNodeCompleted()

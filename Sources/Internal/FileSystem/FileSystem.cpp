@@ -52,6 +52,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/errno.h>
+
+#ifdef USE_LOCAL_RESOURCES
+#define USE_LOCAL_RESOURCES_PATH "/mnt/sdcard/DavaProject/Data/"
+#endif
+
 #endif //PLATFORMS
 
 namespace DAVA
@@ -86,7 +91,11 @@ String FileSystem::virtualBundlePath = "";
 #if defined(__DAVAENGINE_ANDROID__)
     const char * FileSystem::FilepathRelativeToBundle(const char * relativePathname)
 	{
+#ifdef USE_LOCAL_RESOURCES
+		return Format("%s%s", USE_LOCAL_RESOURCES_PATH, relativePathname);
+#else
 		return Format("Data%s", relativePathname);
+#endif
 	}
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 	
@@ -349,12 +358,9 @@ File *FileSystem::CreateFileForFrameworkPath(const String & frameworkPath, uint3
 
 	if(String::npos != find)
 	{
-#ifdef __DAVAENGINE_DEBUG__
-//#define USE_LOCAL_RESOURCES
-#endif
 #ifdef USE_LOCAL_RESOURCES
 		String path;
-		path = "/mnt/sdcard/DavaProject";
+		path = USE_LOCAL_RESOURCES_PATH;
 		path += frameworkPath.c_str() + 5;
 		return File::CreateFromSystemPath(SystemPathForFrameworkPath(path), attributes);
 #else

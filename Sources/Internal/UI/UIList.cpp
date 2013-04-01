@@ -648,7 +648,14 @@ void UIList::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 		// TODO
 	InitAfterYaml();
 }
-    
+
+UIControl *UIList::Clone()
+{
+	UIList *c = new UIList(GetRect(), this->orientation);
+	c->CopyDataFrom(this);
+	return c;
+}
+
 YamlNode * UIList::SaveToYamlNode(UIYamlLoader * loader)
 {
 	YamlNode *node = UIControl::SaveToYamlNode(loader);
@@ -656,7 +663,8 @@ YamlNode * UIList::SaveToYamlNode(UIYamlLoader * loader)
 	String stringValue;
     
 	//Control Type
-	node->Set("type", "UIList");
+	SetPreferredNodeType(node, "UIList");
+
 	//Orientation
 	eListOrientation orient = this->GetOrientation();
 	switch(orient)

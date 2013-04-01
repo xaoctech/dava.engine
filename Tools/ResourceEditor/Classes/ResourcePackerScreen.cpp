@@ -319,7 +319,13 @@ DefinitionFile * ResourcePackerScreen::ProcessPSD(const String & processDirector
 			{
 				defFile->frameRects[k - 1].dx+=4;
 				defFile->frameRects[k - 1].dy+=4;
-			}else 
+			}
+			else if(CommandLineParser::Instance()->IsFlagSet("--add2sidepixel"))
+			{
+				defFile->frameRects[k - 1].dx+=2;
+				defFile->frameRects[k - 1].dy+=2;
+			}
+			else
 			{
 				defFile->frameRects[k - 1].dx++;
 				defFile->frameRects[k - 1].dy++;	

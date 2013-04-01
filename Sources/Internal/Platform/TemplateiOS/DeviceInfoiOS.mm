@@ -1,6 +1,8 @@
-#include "../../Platform/DeviceInfo.h"
+#include "Platform/DeviceInfo.h"
 
 #ifdef __DAVAENGINE_IPHONE__
+
+#include "Utils/StringFormat.h"
 
 #import <UIKit/UIDevice.h>
 #import <Foundation/NSLocale.h>

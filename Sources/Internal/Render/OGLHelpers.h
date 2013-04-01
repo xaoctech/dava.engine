@@ -38,9 +38,13 @@
 #if defined(__ENABLE_OGL_DEBUG_BREAK__)
 	#if defined(__DAVAENGINE_WIN32__)
 		#define OGLDebugBreak() { __debugbreak(); }
-	#elif defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_ANDROID__) // Mac & iPhone & Android
+	#elif defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__) // Mac & iPhone & Android
 		#include <signal.h>
 		#define OGLDebugBreak() { kill( getpid(), SIGINT ) ; }
+    #elif defined(__DAVAENGINE_ANDROID__) // Mac & iPhone & Android
+        #include <signal.h>
+        #include <unistd.h>
+        #define OGLDebugBreak() { kill( getpid(), SIGINT ) ; }
 	#else //PLATFORMS
 		//other platforms
 	#endif //PLATFORMS

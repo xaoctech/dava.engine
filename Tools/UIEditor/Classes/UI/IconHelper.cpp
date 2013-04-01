@@ -10,7 +10,11 @@ QString IconHelper::GetIconPathForClassName(const QString &className)
 QString IconHelper::GetIconPathForUIControl(DAVA::UIControl *uiControl)
 {
 	QString className = "UIControl";
-	if (dynamic_cast<UIButton*>(uiControl))
+	if (!uiControl->GetCustomControlType().empty())
+	{
+		className = "UICustomControl";
+	}
+	else if (dynamic_cast<UIButton*>(uiControl))
 	{
 		className = "UIButton";
 	}
@@ -29,6 +33,14 @@ QString IconHelper::GetIconPathForUIControl(DAVA::UIControl *uiControl)
 	else if (dynamic_cast<UIStaticText*>(uiControl))
 	{
 		className = "UIStaticText";
+	}
+	else if (dynamic_cast<UISwitch*>(uiControl))
+	{
+		className = "UISwitch";
+	}
+	else if (dynamic_cast<UITextField*>(uiControl))
+	{
+		className = "UITextField";
 	}
 	else if (dynamic_cast<UIAggregatorControl*>(uiControl))
 	{

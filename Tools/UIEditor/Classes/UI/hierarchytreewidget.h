@@ -24,7 +24,8 @@ private:
 	void AddControlItem(QTreeWidgetItem* parent, const EXPANDEDITEMS& selectedItems,const EXPANDEDITEMS& expandedItems,  const HierarchyTreeNode::HIERARCHYTREENODESLIST& items);
     
 signals:
-	void CreateNewScreen(HierarchyTreeNode::HIERARCHYTREENODEID platformId);
+	void CreateNewScreen();
+	void CreateNewAggregator();
 	
 protected slots:
 	void OnTreeUpdated();
@@ -35,6 +36,7 @@ private slots:
 	void OnShowCustomMenu(const QPoint& pos);
 	void OnDeleteControlAction();
 	void OnCreateScreenAction();
+	void OnCreateAggregatorAction();
 	void OnCopyAction();
 	void OnPasteAction();
 	
@@ -44,7 +46,9 @@ private:
 	void GetChildItems(const QTreeWidgetItem* parent, Map<int, QTreeWidgetItem*> &items);
 	void ResetSelection();
 
-	void DecorateWithIcon(QTreeWidgetItem* item, UIControl* uiControl);
+	// Apply the icon, font color etc to the tree item.
+	void Decorate(QTreeWidgetItem* item, UIControl* uiControl);
+	bool IsDeleteNodeAllowed(HierarchyTreeControlNode* selectedControlNode);
 
 private:
 	bool internalSelectionChanged;
