@@ -241,7 +241,7 @@ bool FileSystem::MoveFile(const String & existingFile, const String & newFile)
 #elif defined(__DAVAENGINE_ANDROID__)
 	DVASSERT_MSG(0, "Not implemented");
 #else //iphone & macos
-	int ret = copyfile(existingFile.c_str(), newFile.c_str(), NULL, COPYFILE_ALL | COPYFILE_EXCL | COPYFILE_MOVE);
+	int ret = copyfile(existingFile.c_str(), newFile.c_str(), NULL, COPYFILE_ALL | COPYFILE_MOVE); //COPYFILE_EXCL
 	return ret==0;
 #endif //PLATFORMS
 }
