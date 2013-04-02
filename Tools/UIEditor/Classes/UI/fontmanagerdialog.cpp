@@ -20,7 +20,7 @@ static const QString FONT_TYPE_GRAPHIC = "Graphics";
 static const QString LOAD_FONT_ERROR_MESSAGE = "Can't load font %1! Try again or select another one.";
 static const QString LOAD_FONT_ERROR_INFO_TEXT = "An error occured while loading font...";
 
-FontManagerDialog::FontManagerDialog(bool okButtonEnable, QDialog *parent) :
+FontManagerDialog::FontManagerDialog(bool okButtonEnable,  const QString& graphicsFontPath, QDialog *parent) :
     QDialog(parent),
     ui(new Ui::FontManagerDialog)
 {    
@@ -42,6 +42,12 @@ FontManagerDialog::FontManagerDialog(bool okButtonEnable, QDialog *parent) :
  	UpdateDialogInformation();
 
 	SafeDelete(resPacker);
+	
+	// Setup default path for graphics font sprites
+	if (!graphicsFontPath.isEmpty())
+	{
+		currentFontPath = ResourcesManageHelper::GetFontAbsolutePath(graphicsFontPath);
+	}
 }
 
 FontManagerDialog::~FontManagerDialog()
@@ -201,8 +207,10 @@ Font* FontManagerDialog::GetSelectedFont(QItemSelectionModel *selectionModel)
 	// Created font according to its type
 	if (fontType == FONT_TYPE_GRAPHIC)
     {
+		// Get sprites directory to open
+		QString currentFontSpriteDir = ResourcesManageHelper::GetDefaultFontSpritesPath(currentFontPath);
     	QString fontSpritePath = QFileDialog::getOpenFileName(this, tr( "Select font sprite" ),
-																	ResourcesManageHelper::GetDefaultFontSpritesPath(),
+																	currentFontSpriteDir,
 																	tr( "Sprites (*.txt)" ));
              
         if (!fontSpritePath.isNull() && !fontSpritePath.isEmpty())
@@ -212,11 +220,6 @@ Font* FontManagerDialog::GetSelectedFont(QItemSelectionModel *selectionModel)
 
 			if (ResourcesManageHelper::ValidateResourcePath(fontSpritePath))
 			{
-				// Save new default fonts sprites path
-				QFileInfo fileInfo(fontSpritePath);
-				QString spritePath = fileInfo.absoluteDir().absolutePath();
-				ResourcesManageHelper::SetDefaultFontSpritesPath(spritePath);
-				
 				// Get font definition relative path by it's name
 				QString fontDefinition = ResourcesManageHelper::GetFontRelativePath(fontName, true);
 				// Get sprite file relative path

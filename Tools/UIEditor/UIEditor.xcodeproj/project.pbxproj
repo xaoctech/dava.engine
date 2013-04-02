@@ -486,6 +486,7 @@
 		7482C8CB1688AAA800435155 /* sliderpropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = sliderpropertygridwidget.ui; sourceTree = "<group>"; };
 		748434291648024700920BBD /* StateComboBoxItemDelegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StateComboBoxItemDelegate.cpp; sourceTree = "<group>"; };
 		7484342A1648024700920BBD /* StateComboBoxItemDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StateComboBoxItemDelegate.h; sourceTree = "<group>"; };
+		7487A43D170ADBED005EA703 /* StringConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StringConstants.h; path = Helpers/StringConstants.h; sourceTree = "<group>"; };
 		74893AD2165A8E8F006B2762 /* ResourcesManageHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ResourcesManageHelper.cpp; path = Helpers/ResourcesManageHelper.cpp; sourceTree = "<group>"; };
 		74893AD3165A8E8F006B2762 /* ResourcesManageHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ResourcesManageHelper.h; path = Helpers/ResourcesManageHelper.h; sourceTree = "<group>"; };
 		748955FB1641620200070AE1 /* QColorButton.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QColorButton.cpp; sourceTree = "<group>"; };
@@ -835,6 +836,7 @@
 				17FBCE45163A7ED100FD96C0 /* UIControlStateHelper.h */,
 				17607FC0164121FB004E36DE /* LocalizationSystemHelper.cpp */,
 				17607FC1164121FB004E36DE /* LocalizationSystemHelper.h */,
+				7487A43D170ADBED005EA703 /* StringConstants.h */,
 				178F303C165677BF008678AD /* StringUtils.cpp */,
 				178F303D165677BF008678AD /* StringUtils.h */,
 			);
