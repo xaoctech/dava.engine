@@ -127,6 +127,8 @@ public:
 
 	void SetRenderSystem(RenderSystem * renderSystem);
 	RenderSystem * GetRenderSystem();
+
+	virtual void BakeTransform(const Matrix4 & transform) {}
     
 protected:
 //    eType type; //TODO: waiting for enums at introspection

@@ -10,6 +10,7 @@ class QtPropertyDataDavaVariant;
 
 class QtPropertyDataIntrospection : public QtPropertyData
 {
+	Q_OBJECT
 public:
 	QtPropertyDataIntrospection(void *object, const DAVA::IntrospectionInfo *info, int hasAnyFlags = DAVA::INTROSPECTION_ALL, int hasNotAnyFlags = 0);
 	virtual ~QtPropertyDataIntrospection();
@@ -24,6 +25,11 @@ protected:
 	virtual QVariant GetValueInternal();
 	virtual void ChildChanged(const QString &key, QtPropertyData *data);
 	virtual void ChildNeedUpdate();
+
+	DAVA_DEPRECATED(void CreateCustomButtonsForRenderObject());
+
+protected slots:
+	void AddBakeTransformsField();
 };
 
 #endif // __QT_PROPERTY_DATA_INTROSPECTION_H__

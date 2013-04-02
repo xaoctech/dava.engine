@@ -12,6 +12,7 @@
 #include "EditorSettings.h"
 #include "StringUtils.h"
 #include "FileSystem/FileSystem.h"
+#include "StringConstants.h"
 
 #include <QApplication>
 #include <QString>
@@ -82,8 +83,6 @@ static const QStringList FONTS_EXTENSIONS_FILTER = (QStringList() << "*.ttf" << 
 QString ResourcesManageHelper::buttonBackgroundImagePath;
 QString ResourcesManageHelper::helpContentsPath;
 QString ResourcesManageHelper::projectTitle;
-QString ResourcesManageHelper::defaultSpritesPath;
-QString ResourcesManageHelper::defaultFontSpritesPath;
 
 QString ResourcesManageHelper::GetFontAbsolutePath(const QString& resourceFileName, bool graphicsFont)
 {	
@@ -110,38 +109,47 @@ bool ResourcesManageHelper::ValidateResourcePath(const QString& resourcePath)
 	return resourcePath.contains(resourceFolder);
 }
 
-QString ResourcesManageHelper::GetDefaultSpritesPath(bool spritesPathForSave)
+QString ResourcesManageHelper::GetGraphicsFontPath(Font* font)
 {
-	if (defaultSpritesPath.isEmpty() && !spritesPathForSave)
-	{
-		return GetSpritesDirectory();
+    if (font && (font->GetFontType() == Font::TYPE_GRAPHICAL))
+    {
+		GraphicsFont *gFont = dynamic_cast<GraphicsFont*>(font);
+		// Get graphics font sprite if it's available
+        Sprite *fontSprite = gFont->GetFontSprite();
+        if (fontSprite)
+        {
+			// Save graphics font sprite path
+        	return QString::fromStdString(fontSprite->GetName());
+    	}
 	}
-	else
-	{
-		return defaultSpritesPath;
-	}
+
+	return QString();
 }
 
-void ResourcesManageHelper::SetDefaultSpritesPath(const QString& spritesPath)
+QString ResourcesManageHelper::GetDefaultSpritesPath(const QString& currentSpritePath)
 {
-	defaultSpritesPath = spritesPath;
+	// If sprite is already set - we should use its directory as default for file dialog
+	if (!currentSpritePath.isEmpty() && currentSpritePath.compare(StringConstants::NO_SPRITE_IS_SET) != 0)
+	{
+		String spriteAbsolutePath = FileSystem::Instance()->SystemPathForFrameworkPath(currentSpritePath.toStdString());
+		QFileInfo fileInfo(QString::fromStdString(spriteAbsolutePath));
+		return fileInfo.absoluteDir().absolutePath();
+	}
+
+	return GetSpritesDirectory();
 }
 
-QString ResourcesManageHelper::GetDefaultFontSpritesPath(bool spritesPathForSave)
+QString ResourcesManageHelper::GetDefaultFontSpritesPath(const QString& currentSpritePath)
 {
-	if (defaultFontSpritesPath.isEmpty() && !spritesPathForSave)
+	// If sprite is already set - we should use its directory as default for file dialog
+	if (!currentSpritePath.isEmpty() && currentSpritePath.compare(StringConstants::NO_SPRITE_IS_SET) != 0)
 	{
-		return GetFontSpritesDirectory();
+		String spriteAbsolutePath = FileSystem::Instance()->SystemPathForFrameworkPath(currentSpritePath.toStdString());
+		QFileInfo fileInfo(QString::fromStdString(spriteAbsolutePath));
+		return fileInfo.absoluteDir().absolutePath();
 	}
-	else
-	{
-		return defaultFontSpritesPath;
-	}
-}
-
-void ResourcesManageHelper::SetDefaultFontSpritesPath(const QString& spritesPath)
-{
-	defaultFontSpritesPath = spritesPath;
+	
+	return GetFontSpritesDirectory();
 }
 
 QString ResourcesManageHelper::GetResourceRelativePath(const QString& resourceAbsolutePath, bool keepFileExtension)

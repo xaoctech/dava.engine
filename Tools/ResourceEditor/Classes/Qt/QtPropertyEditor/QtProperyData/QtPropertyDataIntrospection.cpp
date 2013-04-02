@@ -8,6 +8,8 @@ QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DA
 	: object(_object)
 	, info(_info)
 {
+	CreateCustomButtonsForRenderObject();
+
 	while(NULL != _info && NULL != object)
 	{
 		for(DAVA::int32 i = 0; i < info->MembersCount(); ++i)
@@ -119,4 +121,20 @@ void QtPropertyDataIntrospection::ChildNeedUpdate()
 		}
 
 	}
+}
+
+void QtPropertyDataIntrospection::CreateCustomButtonsForRenderObject()
+{
+	if(NULL != info && (info->Type() == DAVA::MetaInfo::Instance<DAVA::RenderObject>()))
+	{
+		QPushButton *addButton = new QPushButton(QIcon(":/QtIcons/keyplus.png"), "");
+		addButton->setIconSize(QSize(12, 12));
+		AddOW(QtPropertyOW(addButton));
+		QObject::connect(addButton, SIGNAL(pressed()), this, SLOT(AddBakeTransformsField()));
+	}
+}
+
+void QtPropertyDataIntrospection::AddBakeTransformsField()
+{
+
 }
