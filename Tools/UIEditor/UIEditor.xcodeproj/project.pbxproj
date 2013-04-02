@@ -162,6 +162,8 @@
 		748955FD1641620200070AE1 /* QColorButton.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 748955FB1641620200070AE1 /* QColorButton.cpp */; };
 		748E2E5C1649684300C77EB8 /* UITextFieldMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 748E2E5A1649684300C77EB8 /* UITextFieldMetadata.cpp */; };
 		7492E0EA1639445D00DF883A /* fontmanagerdialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7492E0E81639445D00DF883A /* fontmanagerdialog.cpp */; };
+		7497D74D1705AD5500E1DE60 /* UISwitchMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7497D74B1705AD5500E1DE60 /* UISwitchMetadata.cpp */; };
+		7497D74F1705AD7200E1DE60 /* UISwitchMetadata_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7497D74E1705AD7200E1DE60 /* UISwitchMetadata_moc.cpp */; };
 		749D71271636920600C99861 /* textpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 749D71251636920600C99861 /* textpropertygridwidget.cpp */; };
 		74EED62F16B187CF00262D63 /* alignspropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 74EED62E16B187CF00262D63 /* alignspropertygridwidget.ui */; };
 		74EED63216B18C7600262D63 /* alignspropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74EED63016B18C7600262D63 /* alignspropertygridwidget.cpp */; };
@@ -489,6 +491,9 @@
 		748E2E5B1649684300C77EB8 /* UITextFieldMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UITextFieldMetadata.h; path = Metadata/UITextFieldMetadata.h; sourceTree = "<group>"; };
 		7492E0E81639445D00DF883A /* fontmanagerdialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fontmanagerdialog.cpp; sourceTree = "<group>"; };
 		7492E0E91639445D00DF883A /* fontmanagerdialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fontmanagerdialog.h; sourceTree = "<group>"; };
+		7497D74B1705AD5500E1DE60 /* UISwitchMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UISwitchMetadata.cpp; path = Metadata/UISwitchMetadata.cpp; sourceTree = "<group>"; };
+		7497D74C1705AD5500E1DE60 /* UISwitchMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UISwitchMetadata.h; path = Metadata/UISwitchMetadata.h; sourceTree = "<group>"; };
+		7497D74E1705AD7200E1DE60 /* UISwitchMetadata_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UISwitchMetadata_moc.cpp; sourceTree = "<group>"; };
 		749D71251636920600C99861 /* textpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = textpropertygridwidget.cpp; path = PropertyGridWidgets/textpropertygridwidget.cpp; sourceTree = "<group>"; };
 		749D71261636920600C99861 /* textpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = textpropertygridwidget.h; path = PropertyGridWidgets/textpropertygridwidget.h; sourceTree = "<group>"; };
 		74EED62E16B187CF00262D63 /* alignspropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = alignspropertygridwidget.ui; sourceTree = "<group>"; };
@@ -643,6 +648,7 @@
 		02D69C4616F08CED00F3803F /* Metadata */ = {
 			isa = PBXGroup;
 			children = (
+				7497D74E1705AD7200E1DE60 /* UISwitchMetadata_moc.cpp */,
 				C185940516F3243E005D30E2 /* AggregatorMetadata_moc.cpp */,
 				02D69C4716F08CED00F3803F /* BaseMetadata_moc.cpp */,
 				02D69C4816F08CED00F3803F /* BaseMetadataParams_moc.cpp */,
@@ -908,6 +914,8 @@
 				747FA19B1636DBED000CEEDA /* UITextControlMetadata.h */,
 				748E2E5A1649684300C77EB8 /* UITextFieldMetadata.cpp */,
 				748E2E5B1649684300C77EB8 /* UITextFieldMetadata.h */,
+				7497D74B1705AD5500E1DE60 /* UISwitchMetadata.cpp */,
+				7497D74C1705AD5500E1DE60 /* UISwitchMetadata.h */,
 			);
 			name = Metadata;
 			sourceTree = "<group>";
@@ -1507,6 +1515,8 @@
 				498B61FD16F76E2C009D4417 /* IconHelper.cpp in Build Sources */,
 				17C5CCD916F323B700FB90B4 /* spinnerpropertygridwidget_moc.cpp in Build Sources */,
 				17C5CCDC16F323E900FB90B4 /* spinnerpropertygridwidget.cpp in Build Sources */,
+				7497D74D1705AD5500E1DE60 /* UISwitchMetadata.cpp in Build Sources */,
+				7497D74F1705AD7200E1DE60 /* UISwitchMetadata_moc.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

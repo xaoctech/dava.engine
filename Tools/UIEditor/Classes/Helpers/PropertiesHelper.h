@@ -98,16 +98,28 @@ template<typename T>
         
     // Look for the other values - start from 1, since the value #0 is already processed.
     int paramsCount = activeMetadata->GetParamsCount();
-    for (BaseMetadataParams::METADATAPARAMID i = 1; i < paramsCount; i ++)
+    for (BaseMetadataParams::METADATAPARAMID i = 0; i < paramsCount; i ++)
     {
-        activeMetadata->SetActiveParamID(i);
-        const T& curValue = activeMetadata->property(propertyName.toStdString().c_str()).value<T>();
-        if (curValue != firstValue)
-        {
-            isPropertyValueDiffers = true;
-            break;
-        }
+		activeMetadata->SetActiveParamID(i);
+
+		for (uint32 stateIndex = 0; stateIndex < activeMetadata->GetStatesCount(); ++stateIndex)
+		{
+			activeMetadata->SetActiveStateIndex(stateIndex);
+
+			const T& curValue = activeMetadata->property(propertyName.toStdString().c_str()).value<T>();
+			if (curValue != firstValue)
+			{
+				isPropertyValueDiffers = true;
+				break;
+			}
+		}
+
+		if (isPropertyValueDiffers)
+		{
+			break;
+		}
     }
+	activeMetadata->ResetActiveStateIndex();
 
     return firstValue;
 }

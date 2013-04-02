@@ -32,6 +32,9 @@ ParticleLayer3D::~ParticleLayer3D()
 
 void ParticleLayer3D::Draw(Camera * camera)
 {
+	if(!sprite)
+		return;
+
     Matrix4 rotationMatrix = Matrix4::IDENTITY;
     switch(RenderManager::Instance()->GetRenderOrientation())
     {

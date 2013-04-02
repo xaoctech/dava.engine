@@ -47,7 +47,7 @@ void PropertyEditor::SetNode(DAVA::Entity *node)
 	// Do not clear the current states map - we are using one storage to share opened
 	// Property Editor nodes between the different Scene Nodes.
 	treeStateHelper.SaveTreeViewState(false);
-
+	
 	SafeRelease(curNode);
 	curNode = SafeRetain(node);
 

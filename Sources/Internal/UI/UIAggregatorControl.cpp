@@ -31,7 +31,7 @@ UIControl* UIAggregatorControl::Clone()
 YamlNode* UIAggregatorControl::SaveToYamlNode(UIYamlLoader * loader)
 {
 	YamlNode* node = UIControl::SaveToYamlNode(loader);
-	node->Set("type", "UIAggregatorControl");
+	SetPreferredNodeType(node, "UIAggregatorControl");
 	node->Set(AGGREGATOR_PATH, aggregatorPath);
 	return node;
 }

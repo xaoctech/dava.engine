@@ -62,10 +62,12 @@ void CopyPasteController::Copy(const HierarchyTreeNode::HIERARCHYTREENODESLIST& 
 		}
 		
 		if (copy)
+		{
 			this->items.push_back(copy);
+		}
 	}
 	
-	if (items.size())
+	if (this->items.size())
 		copyType = curCopy;
 }
 
@@ -124,7 +126,7 @@ void CopyPasteController::Clear()
 		 iter != items.end();
 		 ++iter)
 	{
-		HierarchyTreeNode* node = (*iter);
+		HierarchyTreeNode *node = (*iter);
 		SAFE_DELETE(node);
 	}
 

@@ -19,6 +19,7 @@
 #include "UIListMetadata.h"
 #include "UISpinnerMetadata.h"
 #include "UIAggregatorMetadata.h"
+#include "UISwitchMetadata.h"
 
 #include "HierarchyTreePlatformNode.h"
 #include "HierarchyTreeScreenNode.h"
@@ -80,6 +81,11 @@ BaseMetadata* MetadataFactory::GetMetadataForUIControl(const UIControl* uiContro
 	if (dynamic_cast<const UISpinner*>(uiControl))
 	{
 		return new UISpinnerMetadata();
+	}
+	
+	if (dynamic_cast<const UISwitch*>(uiControl))
+	{
+		return new UISwitchMetadata();
 	}
 
 	if (dynamic_cast<const UIAggregatorControl*>(uiControl))
