@@ -29,7 +29,7 @@ void MaterialViewOptions::Init()
 	{
 		switch (i)
 		{
-			case Material::MATERIAL_VIEW_COMBO:
+			case Material::MATERIAL_VIEW_TEXTURE_LIGHTMAP:
 				comboBox->addItem("Texture with lightmap");
 				break;
 			case Material::MATERIAL_VIEW_TEXTURE_ONLY:
