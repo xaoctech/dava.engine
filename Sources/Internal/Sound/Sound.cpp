@@ -53,7 +53,7 @@
 namespace DAVA
 {
 
-Sound * Sound::Create(const String & fileName, eType type, int32 priority)
+Sound * Sound::Create(const FilePath & fileName, eType type, int32 priority)
 {
     if(TYPE_STATIC != type && TYPE_STREAMED != type && TYPE_MANAGED != type)
         return 0;
@@ -66,7 +66,7 @@ Sound * Sound::Create(const String & fileName, eType type, int32 priority)
     return sound;
 }
 
-Sound	* Sound::CreateFX(const String & fileName, eType type, int32 priority /*= 0*/)
+Sound	* Sound::CreateFX(const FilePath & fileName, eType type, int32 priority /*= 0*/)
 {
     if(TYPE_STATIC != type && TYPE_STREAMED != type && TYPE_MANAGED != type)
         return 0;
@@ -83,7 +83,7 @@ Sound	* Sound::CreateFX(const String & fileName, eType type, int32 priority /*= 
 	return sound;
 }
 
-Sound	* Sound::CreateMusic(const String & fileName, eType type, int32 priority /*= 0*/)
+Sound	* Sound::CreateMusic(const FilePath & fileName, eType type, int32 priority /*= 0*/)
 {
     if(TYPE_STATIC != type && TYPE_STREAMED != type && TYPE_MANAGED != type)
         return 0;
@@ -113,7 +113,7 @@ Sound	* Sound::CreateMusic(const String & fileName, eType type, int32 priority /
 #endif //#if defined(__DAVAENGINE_IPHONE__)
 }
 
-Sound::Sound(const String & _fileName, eType _type, int32 _priority)
+Sound::Sound(const FilePath & _fileName, eType _type, int32 _priority)
 :	fileName(_fileName),
 	type(_type),
 	buffer(0),
@@ -149,12 +149,11 @@ Sound::~Sound()
 
 bool Sound::Init()
 {
-	int32 strLength = (int32)fileName.length();
+	int32 strLength = (int32)fileName.ResolvePathname().length();
     if(strLength < 5)
         return false;
     
-	String ext = fileName.substr(strLength-4, strLength);
-	if(".wav" == ext)
+	if(".wav" == fileName.GetExtension())
 	{
 		provider = new SoundWVProvider(fileName);
 	}

@@ -58,6 +58,8 @@ LocalizationSystem::~LocalizationSystem()
 	
 void LocalizationSystem::InitWithDirectory(const FilePath &directoryPath)
 {
+    DVASSERT(directoryPath.IsDirectoryPathname());
+    
     this->directoryPath = directoryPath;
 #ifdef __DAVAENGINE_IPHONE__
 	LocalizationIPhone::SelecePreferedLocalizationForPath(directoryPath);

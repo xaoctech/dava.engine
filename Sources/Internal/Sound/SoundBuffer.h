@@ -33,6 +33,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
+#include "FileSystem/FilePath.h"
 #include "Sound/ALUtils.h"
 
 #ifdef __DAVAENGINE_ANDROID__
@@ -48,7 +49,7 @@ class SoundDataProvider;
 class SoundBuffer : public BaseObject
 {
 public:
-	static SoundBuffer * CreateStatic(const String & fileName);
+	static SoundBuffer * CreateStatic(const FilePath & fileName);
 	static SoundBuffer * CreateStreamed();
 	static SoundBuffer * CreateEmpty();
 	virtual int32 Release();
@@ -79,7 +80,7 @@ private:
 	ALuint buffer;
 #endif //#ifdef __DAVASOUND_AL__
 
-	String fileName;
+	FilePath fileName;
 	int8 * data;
 	eType type;
 

@@ -36,12 +36,12 @@ namespace DAVA
 {
 
 Map<String, SoundBuffer*> soundBuffersMap;
-SoundBuffer * SoundBuffer::CreateStatic(const String & fileName)
+SoundBuffer * SoundBuffer::CreateStatic(const FilePath & fileName)
 {
 	SoundBuffer * ret = 0;
 
 	Map<String, SoundBuffer*>::iterator it;
-	it = soundBuffersMap.find(fileName);
+	it = soundBuffersMap.find(fileName.GetAbsolutePathname());
 	if (it != soundBuffersMap.end())
 	{
 		ret = it->second;
@@ -52,7 +52,7 @@ SoundBuffer * SoundBuffer::CreateStatic(const String & fileName)
 	ret = new SoundBuffer();
 	ret->type = TYPE_STATIC;
 	ret->fileName = fileName;
-	soundBuffersMap[fileName] = ret;
+	soundBuffersMap[fileName.GetAbsolutePathname()] = ret;
 
 	return ret;
 }
@@ -97,7 +97,7 @@ int32 SoundBuffer::Release()
 	{
 		if(TYPE_STATIC == type)
 		{
-			soundBuffersMap.erase(fileName);
+			soundBuffersMap.erase(fileName.GetAbsolutePathname());
 		}
 	}
 
