@@ -80,15 +80,14 @@ private:
 	TimeLineWidget* sizeOverLifeTimeLine;
 	TimeLineWidget* velocityTimeLine;
 	TimeLineWidget* spinTimeLine;
-	TimeLineWidget* motionTimeLine;
-	TimeLineWidget* bounceTimeLine;
+
 	TimeLineWidget* alphaOverLifeTimeLine;
 	QCheckBox* frameOverlifeCheckBox;
 	QSpinBox* frameOverlifeFPSSpin;
 	TimeLineWidget* angleTimeLine;
 	GradientPickerWidget* colorRandomGradient;
 	GradientPickerWidget* colorOverLifeGradient;
-	QDoubleSpinBox* alignToMotionSpin;
+
 	QDoubleSpinBox* startTimeSpin;
 	QDoubleSpinBox* endTimeSpin;
 	

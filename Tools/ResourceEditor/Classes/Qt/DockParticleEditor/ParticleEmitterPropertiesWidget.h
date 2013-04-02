@@ -45,7 +45,7 @@ private:
 
 	QLineEdit* emitterYamlPath;
 	QComboBox* emitterType;
-	TimeLineWidget* emitterEmissionAngle;
+
 	TimeLineWidget* emitterEmissionRange;
 	TimeLineWidget* emitterEmissionVector;
 	TimeLineWidget* emitterRadius;
