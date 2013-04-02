@@ -60,24 +60,70 @@ void AutotestingSystemLua::InitFromFile(const String &luaFilePath)
         autotestingLocalizationSystem->SetCurrentLocale(LocalizationSystem::Instance()->GetCurrentLocale());
         autotestingLocalizationSystem->InitWithDirectory("~res:/Autotesting/Strings");
         
+        bool isOk = true;
         luaState = lua_open();
         luaL_openlibs(luaState);
-        LoadWrappedLuaObjects();
-        RunScriptFromFile("~res:/Autotesting/Scripts/autotesting_api.lua");
+        String errors;
+        
+        if(isOk)
+        {
+            isOk = LoadWrappedLuaObjects();
+        }
+        else
+        {
+            errors += " luaL_openlibs failed";
+        }
+        
+        if(isOk)
+        {
+            isOk = RunScriptFromFile("~res:/Autotesting/Scripts/autotesting_api.lua");
+        }
+        else
+        {
+            errors += ", LoadWrappedLuaObjects failed";
+        }
+        
         String pathToAutotesting = FileSystem::Instance()->SystemPathForFrameworkPath("~res:/Autotesting/");
         String setPackagePathScript = Format("SetPackagePath(\"%s\")", pathToAutotesting.c_str());
+        if(isOk)
+        {
+            isOk = RunScript(setPackagePathScript);
+        }
+        else
+        {
+            errors += ", autotesting_api.lua failed";
+        }
         
-        RunScript(setPackagePathScript);
+        if(isOk)
+        {
+            isOk = LoadScriptFromFile(luaFilePath);
+        }
+        else
+        {
+            errors += ", " + setPackagePathScript + " failed";
+        }
         
-        LoadScriptFromFile(luaFilePath);
+        if(isOk)
+        {
+            //TODO: get test name (the name of function)
+            String path;
+            String filename;
+            FileSystem::Instance()->SplitPath(luaFilePath, path, filename);
+            AutotestingSystem::Instance()->Init(filename);
+        }
+        else
+        {
+            errors += ", " + luaFilePath + " failed";
+        }
         
-        //TODO: get test name (the name of function)
-        String path;
-        String filename;
-        FileSystem::Instance()->SplitPath(luaFilePath, path, filename);
-        AutotestingSystem::Instance()->Init(filename);
-        
-        AutotestingSystem::Instance()->RunTests();
+        if(isOk)
+        {
+            AutotestingSystem::Instance()->RunTests();
+        }
+        else
+        {
+            AutotestingSystem::Instance()->OnError(errors);
+        }
     }
 }
 
@@ -250,9 +296,9 @@ void AutotestingSystemLua::ParsePath(const String &path, Vector<String> &parsedP
     Split(path, "/", parsedPath);
 }
     
-void AutotestingSystemLua::LoadWrappedLuaObjects()
+bool AutotestingSystemLua::LoadWrappedLuaObjects()
 {
-    if(!luaState) return; //TODO: report error?
+    if(!luaState) return false; //TODO: report error?
     
     luaopen_AutotestingSystem(luaState);	// load the wrappered module
     luaopen_UIControl(luaState);	// load the wrappered module
@@ -263,6 +309,8 @@ void AutotestingSystemLua::LoadWrappedLuaObjects()
     {
         delegate->LoadWrappedLuaObjects();
     }
+    //TODO: check if modules really loaded
+    return true;
 }
 
 bool AutotestingSystemLua::LoadScript(const String &luaScript)
@@ -290,28 +338,32 @@ bool AutotestingSystemLua::LoadScriptFromFile(const String &luaFilePath)
     return true;
 }
     
-void AutotestingSystemLua::RunScriptFromFile(const String &luaFilePath)
+bool AutotestingSystemLua::RunScriptFromFile(const String &luaFilePath)
 {
     Logger::Debug("AutotestingSystemLua::RunScriptFromFile %s", luaFilePath.c_str());
     if(LoadScriptFromFile(luaFilePath))
     {
-        RunScript();
+        return RunScript();
     }
+    return false;
 }
     
-void AutotestingSystemLua::RunScript(const DAVA::String &luaScript)
+bool AutotestingSystemLua::RunScript(const DAVA::String &luaScript)
 {
     Logger::Debug("AutotestingSystemLua::RunScript %s", luaScript.c_str());
     if(LoadScript(luaScript))
     {
-        RunScript();
+        return RunScript();
     }
+    return false;
 }
     
-void AutotestingSystemLua::RunScript()
+bool AutotestingSystemLua::RunScript()
 {
     //Logger::Debug("AutotestingSystemLua::RunScript");
     lua_pcall(luaState, 0, 0, 0); //TODO: LUA_MULTRET?
+    //TODO: check if lua_pcall was successfull
+    return true;
 }
 
 };
