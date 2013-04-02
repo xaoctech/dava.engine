@@ -37,6 +37,8 @@ void QtPropertyDataIntrospection::AddMember(const DAVA::IntrospectionMember *mem
 	const DAVA::IntrospectionInfo *memberIntrospection = memberMetaInfo->GetIntrospection(memberObject);
 	bool isKeyedArchive = false;
 
+	CreateCustomButtonsForRenderObject(member);
+
 	// keyed archive
 	if(NULL != memberIntrospection && (memberIntrospection->Type() == DAVA::MetaInfo::Instance<DAVA::KeyedArchive>()))
 	{
@@ -119,4 +121,24 @@ void QtPropertyDataIntrospection::ChildNeedUpdate()
 		}
 
 	}
+}
+
+void QtPropertyDataIntrospection::CreateCustomButtonsForRenderObject(const DAVA::IntrospectionMember *member)
+{
+	void *memberObject = member->Data(object);
+	const DAVA::MetaInfo *memberMetaInfo = member->Type();
+	const DAVA::IntrospectionInfo *memberIntrospection = memberMetaInfo->GetIntrospection(memberObject);
+
+	if(NULL != memberIntrospection && (memberIntrospection->Type() == DAVA::MetaInfo::Instance<DAVA::RenderObject>()))
+	{
+		QPushButton *addButton = new QPushButton(QIcon(":/QtIcons/keyplus.png"), "");
+		addButton->setIconSize(QSize(12, 12));
+		AddOW(QtPropertyOW(addButton));
+		QObject::connect(addButton, SIGNAL(pressed()), this, SLOT(AddBakeTransformsField()));
+	}
+}
+
+void QtPropertyDataIntrospection::AddBakeTransformsField()
+{
+
 }
