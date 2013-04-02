@@ -172,6 +172,8 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 	}
 	emitterRadius->Init(minTime, maxTime, updateMinimize);
 	emitterRadius->AddLine(0, PropLineWrapper<float32>(emitter->radius).GetProps(), Qt::blue, "radius");
+	// Radius cannot be negative.
+	emitterRadius->SetMinLimits(0.0f);
 
 	emitterColorWidget->Init(0.f, emitterLifeTime, "color over life");
 	emitterColorWidget->SetValues(PropLineWrapper<Color>(emitter->colorOverLife).GetProps());
