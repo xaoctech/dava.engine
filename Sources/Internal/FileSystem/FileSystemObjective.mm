@@ -52,10 +52,10 @@ namespace DAVA
 
 	
 #if defined(__DAVAENGINE_IPHONE__)
-	NSString * FilepathRelativeToBundleObjC(const String &virtualBundlePath, NSString * relativePathname)
+	NSString * FilepathRelativeToBundleObjC(const FilePath &virtualBundlePath, NSString * relativePathname)
 	{
 		NSString * filePath;
-		if(virtualBundlePath.empty())
+		if(virtualBundlePath.IsInitalized())
 		{
 				//		NSString * bundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString: @""];
 			NSString * bundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString: @"/Data"];
@@ -63,7 +63,7 @@ namespace DAVA
 		}
 		else 
 		{
-			NSString * bundlePath = [NSString stringWithUTF8String: virtualBundlePath.c_str()];
+			NSString * bundlePath = [NSString stringWithUTF8String: virtualBundlePath.GetAbsolutePathname().c_str()];
 			filePath = [bundlePath stringByAppendingString: relativePathname];
 		}
 		
