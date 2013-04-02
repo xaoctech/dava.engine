@@ -20,6 +20,12 @@
 
 #define SPRITE_SIZE 60
 
+const EmitterLayerWidget::LayerTypeMap EmitterLayerWidget::layerTypeMap[] =
+{
+	{ParticleLayer::TYPE_SINGLE_PARTICLE, "Single Particle"},
+	{ParticleLayer::TYPE_PARTICLES, "Particles"}
+};
+
 EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 	QWidget(parent)
 {
@@ -30,6 +36,18 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 	mainBox->addWidget(layerNameLineEdit);
 	connect(layerNameLineEdit,
 			SIGNAL(editingFinished()),
+			this,
+			SLOT(OnValueChanged()));
+
+	layerTypeLabel = new QLabel(this);
+	layerTypeLabel->setText("Layer type");
+	mainBox->addWidget(layerTypeLabel);
+
+	layerTypeComboBox = new QComboBox(this);
+	FillLayerTypes();
+	mainBox->addWidget(layerTypeComboBox);
+	connect(layerTypeComboBox,
+			SIGNAL(currentIndexChanged(int)),
 			this,
 			SLOT(OnValueChanged()));
 
@@ -160,6 +178,10 @@ EmitterLayerWidget::~EmitterLayerWidget()
 			SIGNAL(editingFinished()),
 			this,
 			SLOT(OnValueChanged()));
+	disconnect(layerTypeComboBox,
+			SIGNAL(currentIndexChanged(int)),
+			this,
+			SLOT(OnValueChanged()));
 	disconnect(enableCheckBox,
 			SIGNAL(stateChanged(int)),
 			this,
@@ -221,6 +243,8 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	float32 lifeTime = Min(emitterLifeTime, layer->endTime);
 
 	layerNameLineEdit->setText(QString::fromStdString(layer->layerName));
+	layerTypeComboBox->setCurrentIndex(LayerTypeToIndex(layer->type));
+
 	enableCheckBox->setChecked(!layer->isDisabled);
 	additiveCheckBox->setChecked(layer->GetAdditive());
 
@@ -432,10 +456,12 @@ void EmitterLayerWidget::OnSpriteBtn()
 #ifdef __DAVAENGINE_WIN32__
     //TODO: fix this code on win32 on working FilePath
 	// Remove the drive name, if any.
-	String::size_type driveNamePos = filePathToBeOpened.find(":/");
-	if (driveNamePos != String::npos && filePathToBeOpened.length() > 2)
+	String path = filePathToBeOpened.ResolvePathname();
+	String::size_type driveNamePos = path.find(":/");
+	if (driveNamePos != String::npos && path.length() > 2)
 	{
-		filePathToBeOpened = filePathToBeOpened.substr(2, filePathToBeOpened.length() - 2);
+		path = path.substr(2, path.length() - 2);
+		filePathToBeOpened = FilePath(path);
 	}
 #endif
 
@@ -525,9 +551,12 @@ void EmitterLayerWidget::OnValueChanged()
 	PropLineWrapper<float32> propAngleVariation;
 	angleTimeLine->GetValue(0, propAngle.GetPropsPtr());
 	angleTimeLine->GetValue(1, propAngleVariation.GetPropsPtr());
-	
+
+	ParticleLayer::eType propLayerType = layerTypeMap[layerTypeComboBox->currentIndex()].layerType;
+
 	CommandUpdateParticleLayer* updateLayerCmd = new CommandUpdateParticleLayer(emitter, layer);
 	updateLayerCmd->Init(layerNameLineEdit->text(),
+						 propLayerType,
 						 !enableCheckBox->isChecked(),
 						 additiveCheckBox->isChecked(),
 						 sprite,
@@ -606,4 +635,27 @@ bool EmitterLayerWidget::eventFilter( QObject * o, QEvent * e )
 void EmitterLayerWidget::OnSpritePathChanged(const QString& text)
 {
 	UpdateTooltip();
+}
+
+void EmitterLayerWidget::FillLayerTypes()
+{
+	int32 layerTypes = sizeof(layerTypeMap) / sizeof(*layerTypeMap);
+	for (int32 i = 0; i < layerTypes; i ++)
+	{
+		layerTypeComboBox->addItem(layerTypeMap[i].layerName);
+	}
+}
+
+int32 EmitterLayerWidget::LayerTypeToIndex(ParticleLayer::eType layerType)
+{
+	int32 layerTypes = sizeof(layerTypeMap) / sizeof(*layerTypeMap);
+	for (int32 i = 0; i < layerTypes; i ++)
+	{
+		if (layerTypeMap[i].layerType == layerType)
+		{
+			return i;
+		}
+	}
+	
+	return 0;
 }

@@ -126,6 +126,7 @@ public:
     void OptimizeScene(Entity * rootNode);
     bool RemoveEmptySceneNodes(Entity * rootNode);
     bool RemoveEmptyHierarchy(Entity * currentNode);
+	void ConvertShadows(Entity * rootNode);
     int32 removedNodeCount;
 private:
     void AddToNodeMap(DataNode * node);

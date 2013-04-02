@@ -40,6 +40,7 @@ void SpritePackerHelper::Pack()
 
 	if(!FileSystem::Instance()->IsDirectory(inputDir))
 	{
+		Logger::Error("[SpritePackerHelper::Pack] inputDir is not directory (%s)", inputDir.GetAbsolutePathname().c_str());
 		return;
 	}
 

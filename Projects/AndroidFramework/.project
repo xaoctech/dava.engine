@@ -32,9 +32,9 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>src/Internal</name>
+			<name>Internal</name>
 			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
+			<location>/Users/victorkleschenko/Work/WoT/dava.framework/Sources/Internal</location>
 		</link>
 		<link>
 			<name>src/com</name>
@@ -175,31 +175,6 @@
 			<name>src/Internal/Utils</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Android.mk</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Android.mk</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/DAVAConfig.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/DAVAConfig.h</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/DAVAEngine.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/DAVAEngine.cpp</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/DAVAEngine.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/DAVAEngine.h</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/DoxygenDocumenation.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/DoxygenDocumenation.h</locationURI>
 		</link>
 		<link>
 			<name>src/Internal/Animation/AnimatedObject.cpp</name>
@@ -1882,16 +1857,6 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/RenderResource.h</locationURI>
 		</link>
 		<link>
-			<name>src/Internal/Render/RenderStateBlock.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/RenderStateBlock.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Render/RenderStateBlock.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/RenderStateBlock.h</locationURI>
-		</link>
-		<link>
 			<name>src/Internal/Render/Shader.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Shader.cpp</locationURI>
@@ -2077,26 +2042,6 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene2D/TextGameObject.h</locationURI>
 		</link>
 		<link>
-			<name>src/Internal/Scene3D/BVHierarchy.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/BVHierarchy.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Scene3D/BVHierarchy.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/BVHierarchy.h</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Scene3D/BVNode.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/BVNode.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Scene3D/BVNode.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/BVNode.h</locationURI>
-		</link>
-		<link>
 			<name>src/Internal/Scene3D/BillboardNode.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/BillboardNode.cpp</locationURI>
@@ -2135,16 +2080,6 @@
 			<name>src/Internal/Scene3D/Drawable.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/Drawable.h</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Scene3D/Frustum.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/Frustum.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Scene3D/Frustum.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/Frustum.h</locationURI>
 		</link>
 		<link>
 			<name>src/Internal/Scene3D/ImposterManager.cpp</name>
@@ -2247,36 +2182,6 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/ProxyNode.h</locationURI>
 		</link>
 		<link>
-			<name>src/Internal/Scene3D/QuadTree.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/QuadTree.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Scene3D/QuadTree.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/QuadTree.h</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Scene3D/ReferenceNode.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/ReferenceNode.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Scene3D/ReferenceNode.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/ReferenceNode.h</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Scene3D/RotatingCubeNode.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/RotatingCubeNode.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Scene3D/RotatingCubeNode.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/RotatingCubeNode.h</locationURI>
-		</link>
-		<link>
 			<name>src/Internal/Scene3D/Scene.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/Scene.cpp</locationURI>
@@ -2325,16 +2230,6 @@
 			<name>src/Internal/Scene3D/SceneManager.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/SceneManager.h</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Scene3D/SceneNode.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/SceneNode.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Scene3D/SceneNode.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/SceneNode.h</locationURI>
 		</link>
 		<link>
 			<name>src/Internal/Scene3D/SceneNodeAnimation.cpp</name>
@@ -2405,11 +2300,6 @@
 			<name>src/Internal/Scene3D/SpriteNode.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/SpriteNode.h</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Scene3D/StateNode.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/StateNode.h</locationURI>
 		</link>
 		<link>
 			<name>src/Internal/Scene3D/SwitchNode.cpp</name>
@@ -2937,14 +2827,24 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Utils/StringFormat.h</locationURI>
 		</link>
 		<link>
-			<name>src/Internal/Utils/UTF8Utils.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Utils/UTF8Utils.cpp</locationURI>
-		</link>
-		<link>
 			<name>src/Internal/Utils/UTF8Utils.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Utils/UTF8Utils.h</locationURI>
+		</link>
+		<link>
+			<name>src/Internal/Utils/UTF8UtilsAndroid.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Utils/UTF8UtilsAndroid.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/Internal/Utils/UTF8UtilsMac.mm</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Utils/UTF8UtilsMac.mm</locationURI>
+		</link>
+		<link>
+			<name>src/Internal/Utils/UTF8UtilsWin32.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Utils/UTF8UtilsWin32.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/Internal/Utils/Utils.cpp</name>
@@ -4582,16 +4482,6 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/RenderResource.h</locationURI>
 		</link>
 		<link>
-			<name>bin/classes/Internal/Render/RenderStateBlock.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/RenderStateBlock.cpp</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Render/RenderStateBlock.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/RenderStateBlock.h</locationURI>
-		</link>
-		<link>
 			<name>bin/classes/Internal/Render/Shader.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Shader.cpp</locationURI>
@@ -4777,26 +4667,6 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene2D/TextGameObject.h</locationURI>
 		</link>
 		<link>
-			<name>bin/classes/Internal/Scene3D/BVHierarchy.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/BVHierarchy.cpp</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Scene3D/BVHierarchy.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/BVHierarchy.h</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Scene3D/BVNode.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/BVNode.cpp</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Scene3D/BVNode.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/BVNode.h</locationURI>
-		</link>
-		<link>
 			<name>bin/classes/Internal/Scene3D/BillboardNode.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/BillboardNode.cpp</locationURI>
@@ -4830,16 +4700,6 @@
 			<name>bin/classes/Internal/Scene3D/Drawable.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/Drawable.h</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Scene3D/Frustum.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/Frustum.cpp</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Scene3D/Frustum.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/Frustum.h</locationURI>
 		</link>
 		<link>
 			<name>bin/classes/Internal/Scene3D/ImposterManager.cpp</name>
@@ -4942,36 +4802,6 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/ProxyNode.h</locationURI>
 		</link>
 		<link>
-			<name>bin/classes/Internal/Scene3D/QuadTree.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/QuadTree.cpp</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Scene3D/QuadTree.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/QuadTree.h</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Scene3D/ReferenceNode.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/ReferenceNode.cpp</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Scene3D/ReferenceNode.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/ReferenceNode.h</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Scene3D/RotatingCubeNode.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/RotatingCubeNode.cpp</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Scene3D/RotatingCubeNode.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/RotatingCubeNode.h</locationURI>
-		</link>
-		<link>
 			<name>bin/classes/Internal/Scene3D/Scene.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/Scene.cpp</locationURI>
@@ -5020,16 +4850,6 @@
 			<name>bin/classes/Internal/Scene3D/SceneManager.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/SceneManager.h</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Scene3D/SceneNode.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/SceneNode.cpp</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Scene3D/SceneNode.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/SceneNode.h</locationURI>
 		</link>
 		<link>
 			<name>bin/classes/Internal/Scene3D/SceneNodeAnimation.cpp</name>
@@ -5100,11 +4920,6 @@
 			<name>bin/classes/Internal/Scene3D/SpriteNode.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/SpriteNode.h</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Scene3D/StateNode.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/StateNode.h</locationURI>
 		</link>
 		<link>
 			<name>bin/classes/Internal/Scene3D/SwitchNode.cpp</name>
@@ -5627,14 +5442,24 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Utils/StringFormat.h</locationURI>
 		</link>
 		<link>
-			<name>bin/classes/Internal/Utils/UTF8Utils.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Utils/UTF8Utils.cpp</locationURI>
-		</link>
-		<link>
 			<name>bin/classes/Internal/Utils/UTF8Utils.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Utils/UTF8Utils.h</locationURI>
+		</link>
+		<link>
+			<name>bin/classes/Internal/Utils/UTF8UtilsAndroid.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Utils/UTF8UtilsAndroid.cpp</locationURI>
+		</link>
+		<link>
+			<name>bin/classes/Internal/Utils/UTF8UtilsMac.mm</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Utils/UTF8UtilsMac.mm</locationURI>
+		</link>
+		<link>
+			<name>bin/classes/Internal/Utils/UTF8UtilsWin32.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Utils/UTF8UtilsWin32.cpp</locationURI>
 		</link>
 		<link>
 			<name>bin/classes/Internal/Utils/Utils.cpp</name>
@@ -6077,26 +5902,6 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Highlevel/LandscapeCursor.h</locationURI>
 		</link>
 		<link>
-			<name>src/Internal/Render/Highlevel/LandscapeDebugNode.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Highlevel/LandscapeDebugNode.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Render/Highlevel/LandscapeDebugNode.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Highlevel/LandscapeDebugNode.h</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Render/Highlevel/LandscapeNode.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Highlevel/LandscapeNode.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Render/Highlevel/LandscapeNode.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Highlevel/LandscapeNode.h</locationURI>
-		</link>
-		<link>
 			<name>src/Internal/Render/Highlevel/Light.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Highlevel/Light.cpp</locationURI>
@@ -6495,16 +6300,6 @@
 			<name>src/Internal/Scene3D/Systems/TransformSystem.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/Systems/TransformSystem.h</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Scene3D/Systems/UpdatableSystem.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/Systems/UpdatableSystem.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Scene3D/Systems/UpdatableSystem.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/Systems/UpdatableSystem.h</locationURI>
 		</link>
 		<link>
 			<name>bin/classes/Internal/Base/Radix/Radix.cpp</name>
@@ -6917,26 +6712,6 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Highlevel/LandscapeCursor.h</locationURI>
 		</link>
 		<link>
-			<name>bin/classes/Internal/Render/Highlevel/LandscapeDebugNode.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Highlevel/LandscapeDebugNode.cpp</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Render/Highlevel/LandscapeDebugNode.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Highlevel/LandscapeDebugNode.h</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Render/Highlevel/LandscapeNode.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Highlevel/LandscapeNode.cpp</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Render/Highlevel/LandscapeNode.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Highlevel/LandscapeNode.h</locationURI>
-		</link>
-		<link>
 			<name>bin/classes/Internal/Render/Highlevel/Light.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Highlevel/Light.cpp</locationURI>
@@ -7337,16 +7112,6 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/Systems/TransformSystem.h</locationURI>
 		</link>
 		<link>
-			<name>bin/classes/Internal/Scene3D/Systems/UpdatableSystem.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/Systems/UpdatableSystem.cpp</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Scene3D/Systems/UpdatableSystem.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/Systems/UpdatableSystem.h</locationURI>
-		</link>
-		<link>
 			<name>src/Internal/Platform/Qt/MacOS/CorePlatformMacOS.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/Qt/MacOS/CorePlatformMacOS.cpp</locationURI>
@@ -7432,6 +7197,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/ExternC/JNITextField.cpp</locationURI>
 		</link>
 		<link>
+			<name>src/Internal/Platform/TemplateAndroid/ExternC/JNIWebViewControl.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/ExternC/JNIWebViewControl.cpp</locationURI>
+		</link>
+		<link>
 			<name>bin/classes/Internal/Platform/Qt/MacOS/CorePlatformMacOS.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/Qt/MacOS/CorePlatformMacOS.cpp</locationURI>
@@ -7515,6 +7285,11 @@
 			<name>bin/classes/Internal/Platform/TemplateAndroid/ExternC/JNITextField.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/ExternC/JNITextField.cpp</locationURI>
+		</link>
+		<link>
+			<name>bin/classes/Internal/Platform/TemplateAndroid/ExternC/JNIWebViewControl.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/ExternC/JNIWebViewControl.cpp</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

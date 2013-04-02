@@ -49,8 +49,10 @@ void PrintUsage()
 
     printf("\n");
     printf("-scenesaver [-clean [directory]] [-save [-indir [directory]] [-outdir [directory]] [-processfile [directory]] [-forceclose]\n");
+	printf("-scenesaver [-resave [-indir [directory]] [-processfile [directory]] [-forceclose]\n");
     printf("\t-clean - will delete all files from Data/3d/\n");
     printf("\t-save - will save level to selected Data/3d/\n");
+	printf("\t-resave - will open and save level\n");
     printf("\t-indir - path for Poject/DataSource/3d/ folder \n");
     printf("\t-outdir - path for Poject/Data/3d/ folder\n");
     printf("\t-processfile - filename from DataSource/3d/ for saving\n");

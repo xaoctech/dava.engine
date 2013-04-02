@@ -28,7 +28,8 @@ SceneDataManager::~SceneDataManager()
 SceneData* SceneDataManager::CreateNewScene()
 {
 	SceneData *levelScene = SceneGetLevel();
-    levelScene->CreateScene(true);
+    
+	levelScene->CreateScene(true);
 	
 	UpdateParticleSprites();
 	return levelScene;	
@@ -115,8 +116,9 @@ void SceneDataManager::EditLevelScene(const FilePath &scenePathname)
 		DVASSERT(false && "No way to edit the scene when SceneGetLevel() returns NULL!");
 		return;
 	}
-	
-	return EditScene(sceneData, scenePathname);
+
+	EditScene(sceneData, scenePathname);
+	emit SceneCreated(sceneData);
 }
 
 void SceneDataManager::EditActiveScene(const FilePath &scenePathname)

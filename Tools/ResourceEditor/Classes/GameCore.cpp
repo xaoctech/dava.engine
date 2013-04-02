@@ -46,7 +46,7 @@ GameCore::~GameCore()
 
 void GameCore::OnAppStarted()
 {
-	Logger::Instance()->SetLogFilename("ResEditor.txt");
+	Logger::Instance()->SetLogFilename(FilePath("ResEditor.txt"));
 	RenderManager::Instance()->SetFPS(30);
 
     LocalizationSystem::Instance()->SetCurrentLocale(EditorSettings::Instance()->GetLanguage());

@@ -94,6 +94,26 @@ void PngImageExt::DrawImage(int32 sx, int32 sy, PngImageExt * image)
     uint32 * destData32 = (uint32*)GetData();
 	uint32 * srcData32 = (uint32*)image->GetData();
 
+	if(CommandLineParser::Instance()->IsFlagSet("--add2sidepixel"))
+	{
+		destData32[sx + sy * GetWidth()] = srcData32[0];
+		destData32[sx + (sy + 1 + image->GetHeight())* GetWidth()] = srcData32[(image->GetHeight() - 1) * image->GetWidth()];
+		destData32[(sx + image->GetWidth() + 1) + sy * GetWidth()] = srcData32[0];
+		destData32[(sx + image->GetWidth() + 1) + (sy + 1 + image->GetHeight())* GetWidth()] = srcData32[(image->GetHeight() - 1) * image->GetWidth()];
+		for (int32 y = 0; y < image->GetHeight(); ++y)
+		{
+			destData32[sx + (sy + y + 1) * GetWidth()] = srcData32[y * image->GetWidth()];
+			destData32[(sx + image->GetWidth() + 1) + (sy + y + 1) * GetWidth()] = srcData32[y * image->GetWidth()];
+		}
+		for (int32 x = 0; x < image->GetWidth(); ++x)
+		{
+			destData32[(sx + x + 1) + (sy) * GetWidth()] = srcData32[x];
+			destData32[(sx + x + 1) + (sy + image->GetHeight() + 1) * GetWidth()] = srcData32[x + (image->GetHeight() - 1) * image->GetWidth()];
+		}
+
+		sx++;
+		sy++;
+	}
     
     for (int32 y = 0; y < image->GetHeight(); ++y)
 		for (int32 x = 0; x < image->GetWidth(); ++x)
