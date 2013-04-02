@@ -115,7 +115,7 @@ void GameCore::RegisterScreen(BaseScreen *screen)
 
 void GameCore::CreateDocumentsFolder()
 {
-    String documentsPath = String(FileSystem::Instance()->GetUserDocumentsPath()) + "UnitTests/";
+    FilePath documentsPath = FileSystem::Instance()->GetUserDocumentsPath() + FilePath("UnitTests/");
     
     FileSystem::Instance()->CreateDirectory(documentsPath, true);
     FileSystem::Instance()->SetCurrentDocumentsDirectory(documentsPath);
@@ -124,12 +124,10 @@ void GameCore::CreateDocumentsFolder()
 
 File * GameCore::CreateDocumentsFile(const String &filePathname)
 {
-    String workingFilepathname = FileSystem::Instance()->FilepathInDocuments(filePathname);
+    FilePath workingFilepathname = FileSystem::Instance()->FilepathInDocuments(filePathname);
     
-    String folder, filename;
-    FileSystem::Instance()->SplitPath(workingFilepathname, folder, filename);
     
-    FileSystem::Instance()->CreateDirectory(folder, true);
+    FileSystem::Instance()->CreateDirectory(workingFilepathname.GetDirectory(), true);
     
 	File *retFile = File::Create(workingFilepathname, File::CREATE | File::WRITE);
     return retFile;
