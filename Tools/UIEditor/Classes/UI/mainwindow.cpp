@@ -76,9 +76,14 @@ MainWindow::MainWindow(QWidget *parent) :
 			SLOT(OnSelectedScreenChanged()));
 	
 	connect(ui->hierarchyDockWidget->widget(),
-			SIGNAL(CreateNewScreen(HierarchyTreeNode::HIERARCHYTREENODEID)),
+			SIGNAL(CreateNewScreen()),
 			this,
-			SLOT(OnNewScreen(HierarchyTreeNode::HIERARCHYTREENODEID)));
+			SLOT(OnNewScreen()));
+	
+	connect(ui->hierarchyDockWidget->widget(),
+			SIGNAL(CreateNewAggregator()),
+			this,
+			SLOT(OnNewAggregator()));
 	
 	connect(ScreenWrapper::Instance(),
 			SIGNAL(UpdateScaleRequest(float)),
@@ -404,8 +409,13 @@ void MainWindow::OnNewPlatform()
 	}
 }
 
-void MainWindow::OnNewScreen(HierarchyTreeNode::HIERARCHYTREENODEID id/* = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY*/)
+void MainWindow::OnNewScreen()
 {
+	HierarchyTreeNode::HIERARCHYTREENODEID id = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
+	HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetActivePlatform();
+	if (node)
+		id = node->GetId();
+
 	CreateScreenDlg dlg(this);
 	dlg.SetDefaultPlatform(id);
 	if (dlg.exec() == QDialog::Accepted)
@@ -416,8 +426,13 @@ void MainWindow::OnNewScreen(HierarchyTreeNode::HIERARCHYTREENODEID id/* = Hiera
 	}
 }
 
-void MainWindow::OnNewAggregator(HierarchyTreeNode::HIERARCHYTREENODEID id)
+void MainWindow::OnNewAggregator()
 {
+	HierarchyTreeNode::HIERARCHYTREENODEID id = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
+	HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetActivePlatform();
+	if (node)
+		id = node->GetId();
+	
 	CreateAggregatorDlg dlg(this);
 	dlg.SetDefaultPlatform(id);
 	if (dlg.exec() == QDialog::Accepted)

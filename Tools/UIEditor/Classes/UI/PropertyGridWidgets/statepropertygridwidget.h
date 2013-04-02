@@ -10,6 +10,7 @@ namespace Ui {
 class StatePropertyGridWidget;
 }
 
+class QListWidgetItem;
 class StatePropertyGridWidget : public BasePropertyGridWidget
 {
     Q_OBJECT
@@ -24,8 +25,13 @@ public:
 
 signals:
     void SelectedStateChanged(UIControl::eControlState newState);
+	void SelectMultiplyStates(Vector<UIControl::eControlState> selectedStates);
+	void SizeChanged(bool expanded);
 
 protected slots:
+	void OnExpandButtonClicked();
+	void OnSelectAllStateChanged(int state);
+	void OnListItemChanged(QListWidgetItem* item);
     void OnCurrrentIndexChanged(int index);
 
 protected:
@@ -39,7 +45,26 @@ protected:
     // Markup the "dirty" states in the States combo.
     void MarkupDirtyStates();
 
+	void SetExpandState(bool expanded);
+
+	bool eventFilter(QObject *target, QEvent *event);
+
 private:
+	enum eCheckedState
+	{
+		STATE_EVERY_ITEM_UNCHECKED = 0,
+		STATE_EVERY_ITEM_CHECKED,
+		STATE_PARTIALLY_CHECKED,
+		STATE_COUNT
+	};
+
+	bool expanded;
+
+	void UpdateState();
+	void SetAllChecked(Qt::CheckState state);
+	void MultiplyStateSelectionChanged();
+	eCheckedState GetCheckedState();
+
     Ui::StatePropertyGridWidget *ui;
     StateComboBoxItemDelegate stateComboboxItemDelegate;
 };

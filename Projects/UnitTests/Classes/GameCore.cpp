@@ -50,6 +50,7 @@
 #include "EMailTest.h"
 #include "InputTest.h"
 #include "DeviceInfoTest.h"
+#include "LocalizationTest.h"
 
 using namespace DAVA;
 
@@ -76,6 +77,8 @@ void GameCore::OnAppStarted()
     CreateDocumentsFolder();
 
 	new DeviceInfoTest();
+    new LocalizationTest();
+    new InputTest();
 //    new SampleTest();
 //    new EntityTest(); 
 //    new MemoryAllocatorsTest();
@@ -84,8 +87,7 @@ void GameCore::OnAppStarted()
 //    new SplitTest();
 	new EMailTest();
     new DPITest();
-	new InputTest();
-    new MaterialCompilerTest();
+	new MaterialCompilerTest();
     new CloneTest();
     new PVRTest();
 	new DXTTest();

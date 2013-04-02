@@ -206,7 +206,7 @@ KeyedArchiveItemWidget::KeyedArchiveItemWidget(DAVA::KeyedArchive *_arch, int de
 	: QWidget(parent)
 	, arch(_arch)
 {
-	QGridLayout *gl = new QGridLayout();
+	QGridLayout *grLayout = new QGridLayout();
 	int delautTypeIndex = 0;
 
 	if(NULL != arch)
@@ -217,6 +217,7 @@ KeyedArchiveItemWidget::KeyedArchiveItemWidget(DAVA::KeyedArchive *_arch, int de
 	defaultBtn = new QPushButton("Ok", this);
 	keyWidget = new QLineEdit(this);
 	valueWidget = new QComboBox(this);
+	presetWidget = new QComboBox(this);
 
 	int j = 0;
 	for (int type = (DAVA::VariantType::TYPE_NONE + 1); type < DAVA::VariantType::TYPES_COUNT; type++)
@@ -236,18 +237,21 @@ KeyedArchiveItemWidget::KeyedArchiveItemWidget(DAVA::KeyedArchive *_arch, int de
 	}
 	valueWidget->setCurrentIndex(delautTypeIndex);
 
-	gl->addWidget(new QLabel("Key:", this), 0, 0, 1, 1);
-	gl->addWidget(keyWidget, 0, 1, 1, 2);
-	gl->addWidget(new QLabel("Value type:", this), 1, 0, 1, 1);
-	gl->addWidget(valueWidget, 1, 1, 1, 2);
-	gl->addWidget(defaultBtn, 2, 2, 1, 1);
+	grLayout->addWidget(new QLabel("Key:", this), 0, 0, 1, 1);
+	grLayout->addWidget(keyWidget, 0, 1, 1, 2);
+	grLayout->addWidget(new QLabel("Value type:", this), 1, 0, 1, 1);
+	grLayout->addWidget(valueWidget, 1, 1, 1, 2);
+	grLayout->addWidget(new QLabel("Preset:", this), 2, 0, 1, 1);
+	grLayout->addWidget(presetWidget, 2, 1, 1, 2);
+	grLayout->addWidget(defaultBtn, 3, 2, 1, 1);
 
-	gl->setMargin(5);
-	gl->setSpacing(3);
-	setLayout(gl);
+	grLayout->setMargin(5);
+	grLayout->setSpacing(3);
+	setLayout(grLayout);
 
 	setAttribute(Qt::WA_DeleteOnClose);
 	setWindowFlags(Qt::FramelessWindowHint | Qt::Popup);
+	setWindowOpacity(0.95);
 
 	QObject::connect(defaultBtn, SIGNAL(pressed()), this, SLOT(OkKeyPressed()));
 }

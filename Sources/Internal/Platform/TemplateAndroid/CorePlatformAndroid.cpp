@@ -49,8 +49,6 @@ namespace DAVA
 	CorePlatformAndroid::CorePlatformAndroid()
 	: Core()
 	{
-//		Logger::Debug("[CorePlatformAndroid::CorePlatformAndroid]");
-
 		wasCreated = false;
 		renderIsActive = false;
 		width = 0;
@@ -140,16 +138,11 @@ namespace DAVA
 	void CorePlatformAndroid::CreateAndroidWindow(const char8 *docPath, const char8 *assets, const char8 *logTag, AndroidSystemDelegate * sysDelegate)
 	{
 		androidDelegate = sysDelegate;
+		externalStorage = docPath;
 
 		Core::CreateSingletons();
 
-		externalStorage = docPath;
-
 		Logger::SetTag(logTag);
-//		Logger::Debug("[CorePlatformAndroid::CreateAndroidWindow] docpath = %s", docPath);
-//		Logger::Debug("[CorePlatformAndroid::CreateAndroidWindow] assets = %s", assets);
-
-		//FileSystem::Instance()->SetPath(docPath, assets);
 	}
 
 	void CorePlatformAndroid::RenderRecreated(int32 w, int32 h)

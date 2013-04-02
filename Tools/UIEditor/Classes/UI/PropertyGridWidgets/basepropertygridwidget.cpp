@@ -84,18 +84,18 @@ BasePropertyGridWidget::PROPERTIESMAP BasePropertyGridWidget::BuildMetadataPrope
 // Register grid control as state-aware.
 void BasePropertyGridWidget::RegisterGridWidgetAsStateAware()
 {
-    connect(PropertiesGridController::Instance(),
-            SIGNAL(SelectedUIControlStateChanged(UIControl::eControlState)),
-            this,
-            SLOT(OnSelectedUIControlStateChanged(UIControl::eControlState)));
+	connect(PropertiesGridController::Instance(),
+			SIGNAL(SelectedUIControlStatesChanged(Vector<UIControl::eControlState>)),
+			this,
+			SLOT(OnSelectedUIControlStatesChanged(Vector<UIControl::eControlState>)));
 }
 
 void BasePropertyGridWidget::UnregisterGridWidgetAsStateAware()
 {
-    disconnect(PropertiesGridController::Instance(),
-            SIGNAL(SelectedUIControlStateChanged(UIControl::eControlState)),
-            this,
-            SLOT(OnSelectedUIControlStateChanged(UIControl::eControlState)));
+	disconnect(PropertiesGridController::Instance(),
+			SIGNAL(SelectedUIControlStatesChanged(Vector<UIControl::eControlState>)),
+			this,
+			SLOT(OnSelectedUIControlStatesChanged(Vector<UIControl::eControlState>)));
     
 }
 
@@ -508,14 +508,14 @@ void BasePropertyGridWidget::ProcessAttachedData(const PropertyGridWidgetData& a
     }
 }
 
-void BasePropertyGridWidget::OnSelectedUIControlStateChanged(UIControl::eControlState newState)
+void BasePropertyGridWidget::OnSelectedUIControlStatesChanged(const Vector<UIControl::eControlState>& newStates)
 {
-    HandleSelectedUIControlStateChanged(newState);
+	HandleSelectedUIControlStatesChanged(newStates);
 }
 
-void BasePropertyGridWidget::HandleSelectedUIControlStateChanged(UIControl::eControlState newState)
+void BasePropertyGridWidget::HandleSelectedUIControlStatesChanged(const Vector<UIControl::eControlState>& newStates)
 {
-    this->activeMetadata->SetUIControlState(newState);
+    this->activeMetadata->SetUIControlStates(newStates);
     
     // Look through the map of widgets and update (re-read) properties attached to state-aware
     // widgets.
@@ -802,7 +802,16 @@ bool BasePropertyGridWidget::IsActiveStatePropertyDirty(const QString& propertyN
         return false;
     }
 
-    return IsPropertyDirty(propertyName, this->activeMetadata->GetUIControlState());
+	bool res = false;
+
+	Vector<UIControl::eControlState> states = activeMetadata->GetUIControlStates();
+	for (uint32 i = 0; i < activeMetadata->GetStatesCount(); ++i)
+	{
+		UIControl::eControlState state = states[i];
+		res |= IsPropertyDirty(propertyName, state);
+	}
+
+	return res;
 }
 
 bool BasePropertyGridWidget::IsPropertyDirty(const QString& propertyName, UIControl::eControlState state) const
@@ -919,4 +928,23 @@ bool BasePropertyGridWidget::eventFilter(QObject *obj, QEvent *event)
     }
     
     return QWidget::eventFilter( obj, event );
+}
+
+bool BasePropertyGridWidget::SubcontrolsExists()
+{
+	if (!activeMetadata || !activeMetadata->GetParamsCount())
+	{
+		return false;
+	}
+	
+    int paramsCount = activeMetadata->GetParamsCount();
+	const METADATAPARAMSVECT& params = activeMetadata->GetParams();
+	
+    for (int i = 0; i < paramsCount; i ++)
+    {
+		if (params[i].GetUIControl() && params[i].GetUIControl()->IsSubcontrol())
+		{
+			return true;
+		}
+	}
 }
