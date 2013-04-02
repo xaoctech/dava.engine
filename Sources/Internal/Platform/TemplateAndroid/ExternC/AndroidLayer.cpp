@@ -279,9 +279,10 @@ void Java_com_dava_framework_JNIRenderer_nativeResize(JNIEnv * env, jobject clas
 {
 	if(core)
 	{
-//		LOGI("__ NATIVE RESIZE ___ %d, %d", w, h);
+		LOGI("__ NATIVE RESIZE ___ %d, %d", w, h);
 
-		core->ResizeView(w, h);
+//		core->ResizeView(w, h);
+        core->RenderRecreated(w, h);
 
 // 		DAVA::Sound *s = DAVA::Sound::Create("~res:/Sound/lake.wav", DAVA::Sound::TYPE_STATIC);
 // 		if(s)
@@ -309,7 +310,7 @@ void Java_com_dava_framework_JNIRenderer_nativeRenderRecreated(JNIEnv * env, job
 			androidDelegate->SetBuffers(0, 0);
 		}
 
-		core->RenderRecreated();
+//		core->RenderRecreated();
 	}
 }
 void Java_com_dava_framework_JNIApplication_SetAssetManager(JNIEnv * env, jobject classthis, jobject assetManager)

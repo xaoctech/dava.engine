@@ -442,8 +442,15 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 	if (sizeVariation)
 		particle->size +=(sizeVariation->GetValue(layerTime) * randCoeff);
 	
-	particle->size.x /= (float32)sprite->GetWidth();
-	particle->size.y /= (float32)sprite->GetHeight();
+	if(sprite)
+	{
+		particle->size.x /= (float32)sprite->GetWidth();
+		particle->size.y /= (float32)sprite->GetHeight();
+	}
+	else
+	{
+		particle->size = Vector2(0, 0);
+	}
 
 	float32 vel = 0.0f;
 	if (velocity)

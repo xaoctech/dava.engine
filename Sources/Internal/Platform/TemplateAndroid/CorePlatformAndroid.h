@@ -53,8 +53,7 @@ public:
 
 	virtual void Quit();
 
-	void RenderRecreated();
-	void ResizeView(int32 w, int32 h);
+	void RenderRecreated(int32 w, int32 h);
 	void RepaintView();
 
 	// called from Activity and manage a visible lifetime
@@ -88,11 +87,13 @@ private:
 
 	void UpdateScreenMode();
 
+    void ResizeView(int32 w, int32 h);
+
+    
 
 private:
-	DisplayMode windowedMode;
-	int32 oldWidth;
-	int32 oldHeight;
+	int32 width;
+	int32 height;
 
 	bool wasCreated;
 	bool renderIsActive;

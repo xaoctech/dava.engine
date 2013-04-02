@@ -28,6 +28,7 @@
 		CEC6DA17162D95A6009E5F1D /* KeyedArchiveYamlTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEC6DA16162D95A6009E5F1D /* KeyedArchiveYamlTest.cpp */; };
 		E80842BA1639147A002A6A77 /* TextureUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E80842B81639147A002A6A77 /* TextureUtils.cpp */; };
 		E81F2AF516BFA4E600C4545E /* MaterialCompilerTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E81F2AF316BFA4E600C4545E /* MaterialCompilerTest.cpp */; };
+		E8B6B3CA1705DED5004F665E /* LocalizationTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B6B3C81705DED5004F665E /* LocalizationTest.cpp */; };
 		E8BD1F0816DE4A7800499E18 /* eMailTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8BD1F0616DE4A7800499E18 /* eMailTest.cpp */; };
 		E8C6B12216692E87001EBE09 /* CloneTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8C6B12016692E87001EBE09 /* CloneTest.cpp */; };
 		E8F98C48161AE9B900B50BDA /* PVRTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8F98C46161AE9B900B50BDA /* PVRTest.cpp */; };
@@ -106,6 +107,8 @@
 		E80D2FB0164D518100C13D70 /* libbz2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.dylib; path = usr/lib/libbz2.dylib; sourceTree = SDKROOT; };
 		E81F2AF316BFA4E600C4545E /* MaterialCompilerTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialCompilerTest.cpp; sourceTree = "<group>"; };
 		E81F2AF416BFA4E600C4545E /* MaterialCompilerTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialCompilerTest.h; sourceTree = "<group>"; };
+		E8B6B3C81705DED5004F665E /* LocalizationTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LocalizationTest.cpp; sourceTree = "<group>"; };
+		E8B6B3C91705DED5004F665E /* LocalizationTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalizationTest.h; sourceTree = "<group>"; };
 		E8BD1F0616DE4A7800499E18 /* eMailTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = eMailTest.cpp; sourceTree = "<group>"; };
 		E8BD1F0716DE4A7800499E18 /* eMailTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eMailTest.h; sourceTree = "<group>"; };
 		E8C6B12016692E87001EBE09 /* CloneTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CloneTest.cpp; sourceTree = "<group>"; };
@@ -239,6 +242,8 @@
 		5C7BE30F156E0EF400F9F538 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				E8B6B3C81705DED5004F665E /* LocalizationTest.cpp */,
+				E8B6B3C91705DED5004F665E /* LocalizationTest.h */,
 				497BF6EC16F7565B00AC57C6 /* DeviceInfoTest.cpp */,
 				497BF6ED16F7565B00AC57C6 /* DeviceInfoTest.h */,
 				CC24802416DF6CE000183D40 /* InputTest.cpp */,
@@ -424,6 +429,7 @@
 				E8BD1F0816DE4A7800499E18 /* eMailTest.cpp in Sources */,
 				CC24802616DF6CE000183D40 /* InputTest.cpp in Sources */,
 				497BF6EE16F7565B00AC57C6 /* DeviceInfoTest.cpp in Sources */,
+				E8B6B3CA1705DED5004F665E /* LocalizationTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

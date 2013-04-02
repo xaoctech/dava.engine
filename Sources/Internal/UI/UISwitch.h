@@ -33,6 +33,10 @@ public:
     virtual void LoadFromYamlNodeCompleted();
     virtual void CopyDataFrom(DAVA::UIControl *srcControl);
 
+    virtual List<UIControl* >& GetRealChildren();
+    virtual List<UIControl* > GetSubcontrols();
+    virtual UIControl *Clone();
+
     virtual void Input(UIEvent *currentInput);
 
     bool GetIsLeftSelected() {return isLeftSelected;}
