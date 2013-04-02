@@ -255,7 +255,7 @@ Material::Material()
     ,   isTexture0ShiftEnabled(false)
     ,   isExportOwnerLayerEnabled(true)
     ,   ownerLayerName(LAYER_OPAQUE)
-	,	viewOptions(MATERIAL_VIEW_COMBO)
+	,	viewOptions(MATERIAL_VIEW_TEXTURE_LIGHTMAP)
 {
     //Reserve memory for Collection
     names.resize(TEXTURE_COUNT);
@@ -410,7 +410,7 @@ void Material::RebuildShader()
 
 	switch (viewOptions)
 	{
-		case MATERIAL_VIEW_COMBO:
+		case MATERIAL_VIEW_TEXTURE_LIGHTMAP:
 			break;
 		case MATERIAL_VIEW_LIGHTMAP_ONLY:
 			if (shaderCombileCombo.size() > 0)shaderCombileCombo += ";";

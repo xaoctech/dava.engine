@@ -92,7 +92,7 @@ void CommandOpenScene::Execute()
             EditorSettings::Instance()->AddLastOpenedFile(selectedScenePathname);
             screen->OpenFileAtScene(selectedScenePathname);
             
-			QtMainWindowHandler::Instance()->SelectMaterialViewOption(Material::MATERIAL_VIEW_COMBO);
+			QtMainWindowHandler::Instance()->SelectMaterialViewOption(Material::MATERIAL_VIEW_TEXTURE_LIGHTMAP);
 
             //GUIState::Instance()->SetNeedUpdatedFileMenu(true);
         }
