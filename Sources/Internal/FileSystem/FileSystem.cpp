@@ -236,12 +236,12 @@ bool FileSystem::CopyFile(const String & existingFile, const String & newFile)
 bool FileSystem::MoveFile(const String & existingFile, const String & newFile)
 {
 #ifdef __DAVAENGINE_WIN32__
-	BOOL ret = ::MoveFileA(existingFile.c_str(), newFile.c_str());
+	BOOL ret = ::MoveFileExA(existingFile.c_str(), newFile.c_str(), MOVEFILE_REPLACE_EXISTING);
 	return ret != 0;
 #elif defined(__DAVAENGINE_ANDROID__)
 	DVASSERT_MSG(0, "Not implemented");
 #else //iphone & macos
-	int ret = copyfile(existingFile.c_str(), newFile.c_str(), NULL, COPYFILE_ALL | COPYFILE_EXCL | COPYFILE_MOVE);
+	int ret = copyfile(existingFile.c_str(), newFile.c_str(), NULL, COPYFILE_ALL | COPYFILE_MOVE); //COPYFILE_EXCL
 	return ret==0;
 #endif //PLATFORMS
 }
