@@ -429,6 +429,9 @@
     <ClCompile Include="Classes\Qt\Scene\SceneEditorProxy.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneManager.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneTabWidget.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\EntityModifSystem.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\SceneCameraSystem.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\SceneGridSystem.cpp" />
     <ClCompile Include="Classes\Qt\SpritesPacker\SpritePackerHelper.cpp" />
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureBrowser.cpp" />
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureCache.cpp" />
@@ -923,6 +926,9 @@
     <ClInclude Include="Classes\Qt\Scene\SceneEditorProxy.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneManager.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneTabWidget.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\EntityModifSystem.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\SceneCameraSystem.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\SceneGridSystem.h" />
     <ClInclude Include="Classes\Qt\SpritesPacker\SpritePackerHelper.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureBrowser.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureCache.h" />
