@@ -90,4 +90,18 @@ void Mesh::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
 	RenderObject::Load(archive, sceneFile);
 }
 
+void Mesh::BakeTransform(const Matrix4 & transform)
+{
+	uint32 size = renderBatchArray.size();
+	for(uint32 i = 0; i < size; ++i)
+	{
+		PolygonGroup * pg = renderBatchArray[i]->GetPolygonGroup();
+		DVASSERT(pg);
+		pg->ApplyMatrix(transform);
+		pg->BuildBuffers();
+	}
+
+	RecalcBoundingBox();
+}
+
 };

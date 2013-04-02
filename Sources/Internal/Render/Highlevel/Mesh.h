@@ -57,6 +57,8 @@ public:
 	virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
 	virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
 
+	virtual void BakeTransform(const Matrix4 & transform);
+
 protected:
     //Vector<PolygonGroup*> polygonGroups;
 };
