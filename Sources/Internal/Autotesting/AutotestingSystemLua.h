@@ -98,11 +98,11 @@ protected:
     
     bool LoadScript(const String &luaScript);
     bool LoadScriptFromFile(const String &luaFilePath);
-    void RunScript();
+    bool RunScript();
     
-    void RunScript(const String &luaScript);
-    void RunScriptFromFile(const String &luaFilePath);
-    void LoadWrappedLuaObjects();
+    bool RunScript(const String &luaScript);
+    bool RunScriptFromFile(const String &luaFilePath);
+    bool LoadWrappedLuaObjects();
     
     AutotestingSystemLuaDelegate *delegate;
     lua_State *luaState; //TODO: multiple lua states
