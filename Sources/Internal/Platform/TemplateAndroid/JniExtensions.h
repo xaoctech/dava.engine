@@ -6,6 +6,7 @@
 namespace DAVA
 {
 
+class Rect;
 class JniExtension
 {
 public:
