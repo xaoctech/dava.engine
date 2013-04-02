@@ -22,7 +22,8 @@ public:
 	virtual void LoadResources();
 	virtual void UnloadResources();
 
-	void TestFunction(PerfFuncData * data);
+	void MacTestFunction(PerfFuncData * data);
+	void WinTestFunction(PerfFuncData * data);
 
 	
 };

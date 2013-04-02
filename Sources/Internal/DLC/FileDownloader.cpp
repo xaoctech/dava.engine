@@ -38,7 +38,7 @@ FileDownloader::FileDownloader()
         FileDownloader::isCURLInit = true;
     }
 }
-FileDownloader::FileDownloader(const FilePath & _sourceUrl, const FilePath & _savePath, bool reload)
+FileDownloader::FileDownloader(const String & _sourceUrl, const FilePath & _savePath, bool reload)
     : BaseObject()
     , sourceUrl(_sourceUrl)
     , savePath(_savePath)
@@ -182,7 +182,7 @@ uint32 FileDownloader::CurlDownload()
     curl_handle = curl_easy_init();
     
     /* set URL to get */ 
-    curl_easy_setopt(curl_handle, CURLOPT_URL, GetSourceUrl().ResolvePathname().c_str());
+    curl_easy_setopt(curl_handle, CURLOPT_URL, GetSourceUrl().c_str());
     
     /* no progress meter please */ 
     curl_easy_setopt(curl_handle, CURLOPT_NOPROGRESS, 1L);
@@ -244,12 +244,12 @@ CURL * FileDownloader::GetCurlHandler() const
     return curl_handle;
 }
 
-const FilePath & FileDownloader::GetSourceUrl() const
+const String & FileDownloader::GetSourceUrl() const
 {
     return sourceUrl;
 }
 
-void FileDownloader::SetSourceUrl(const FilePath & _sourceUrl)
+void FileDownloader::SetSourceUrl(const String & _sourceUrl)
 {
     sourceUrl = _sourceUrl;
 }

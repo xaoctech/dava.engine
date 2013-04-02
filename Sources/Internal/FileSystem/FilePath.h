@@ -204,6 +204,7 @@ protected:
 
     static String GetSystemPathname(const String &pathname);
     
+    static bool IsAbsolutePathname(const String &pathname);
     
 protected:
     
