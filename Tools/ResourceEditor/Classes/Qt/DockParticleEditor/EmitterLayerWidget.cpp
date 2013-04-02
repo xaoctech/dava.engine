@@ -260,6 +260,7 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	lifeTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
 	lifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->life).GetProps(), Qt::blue, "life");
 	lifeTimeLine->AddLine(1, PropLineWrapper<float32>(layer->lifeVariation).GetProps(), Qt::darkGreen, "life variation");
+	lifeTimeLine->SetMinLimits(0.0f);
 
 	//LAYER_NUMBER, LAYER_NUMBER_VARIATION,
 	numberTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, true);
