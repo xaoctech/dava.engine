@@ -21,6 +21,8 @@ void FilePathTest::UnloadResources()
 
 void FilePathTest::TestFunction(PerfFuncData * data)
 {
+    String oldProjectPathname = FilePath::GetProjectPathname();
+    
     Logger::Debug("[FilePathTest]");
 
     FilePath filepath1("~res:/Gfx/UI/Screen/texture.tex");
@@ -141,5 +143,7 @@ void FilePathTest::TestFunction(PerfFuncData * data)
     Logger::Info("[10] = %s (%s)", filepath10.GetAbsolutePathname().c_str(), filepath10.ResolvePathname().c_str());
 
     Logger::Debug("[FilePathTest] Done");
+    
+    FilePath::SetProjectPathname(oldProjectPathname);
 }
 

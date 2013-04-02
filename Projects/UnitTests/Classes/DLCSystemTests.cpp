@@ -35,7 +35,7 @@ void DLCSystemTests::StartTests()
 void DLCSystemTests::Test1()
 {
     // Clear before tests
-    FileSystem::Instance()->DeleteDirectory( FileSystem::Instance()->SystemPathForFrameworkPath( std::string( "~doc:/downloads/" ) ) );
+    FileSystem::Instance()->DeleteDirectory(FilePath( "~doc:/downloads/" ));
 
     state = TEST_1;
     isSucsess = true;
@@ -45,7 +45,7 @@ void DLCSystemTests::Test1()
     new DLCSystem();
     
     DLCSystem::Instance()->AddDelegate(this);
-    DLCSystem::Instance()->InitSystem("http://transportcontrol.davamobile.com/temp/test_1/", "~doc:/downloads/res/");
+    DLCSystem::Instance()->InitSystem("http://transportcontrol.davamobile.com/temp/test_1/", FilePath("~doc:/downloads/res/"));
 
     sleep(7);
     DLCSystem::Instance()->Pause();
@@ -63,11 +63,11 @@ void DLCSystemTests::Test2()
     new DLCSystem();
     
     // Delete one file
-    std::string fullPath = FileSystem::Instance()->SystemPathForFrameworkPath( std::string( "~doc:/downloads/res/" ) + "Maps/tree_level1/bush01.DAE" );
+    FilePath fullPath( "~doc:/downloads/res/Maps/tree_level1/bush01.DAE" );
     FileSystem::Instance()->DeleteFile(fullPath);
     
     DLCSystem::Instance()->AddDelegate(this);
-    DLCSystem::Instance()->InitSystem("http://transportcontrol.davamobile.com/temp/test_1/", "~doc:/downloads/res/");
+    DLCSystem::Instance()->InitSystem("http://transportcontrol.davamobile.com/temp/test_1/", FilePath("~doc:/downloads/res/"));
 }
 
 void DLCSystemTests::Test3()
@@ -80,12 +80,12 @@ void DLCSystemTests::Test3()
     new DLCSystem();
     
     // Delete one file
-    std::string fullPath = FileSystem::Instance()->SystemPathForFrameworkPath( std::string( "~doc:/downloads/dlc_2.ka" ) );
+    FilePath fullPath( "~doc:/downloads/dlc_2.ka");
     FileSystem::Instance()->DeleteFile(fullPath);
     
     //
     DLCSystem::Instance()->AddDelegate(this);
-    DLCSystem::Instance()->InitSystem("http://transportcontrol.davamobile.com/temp/test_1/", "~doc:/downloads/res/");
+    DLCSystem::Instance()->InitSystem("http://transportcontrol.davamobile.com/temp/test_1/", FilePath("~doc:/downloads/res/"));
 
     sleep(2);
     DLCSystem::Instance()->Stop();
@@ -102,7 +102,7 @@ void DLCSystemTests::Test4()
     
     //
     DLCSystem::Instance()->AddDelegate(this);
-    DLCSystem::Instance()->InitSystem("http://transportcontrol.davamobile.com/temp/test_1/", "~doc:/downloads/res/");
+    DLCSystem::Instance()->InitSystem("http://transportcontrol.davamobile.com/temp/test_1/", FilePath("~doc:/downloads/res/"));
 }
 
 void DLCSystemTests::Test5()
@@ -116,7 +116,7 @@ void DLCSystemTests::Test5()
     
     //
     DLCSystem::Instance()->AddDelegate(this);
-    DLCSystem::Instance()->InitSystem("http://transportcontrol.davamobile.com/temp/test_5/", "~doc:/downloads/res/");
+    DLCSystem::Instance()->InitSystem("http://transportcontrol.davamobile.com/temp/test_5/", FilePath("~doc:/downloads/res/"));
 }
 
 void DLCSystemTests::Test6()
@@ -129,12 +129,12 @@ void DLCSystemTests::Test6()
     new DLCSystem();
     
     // Delete one file
-    std::string fullPath = FileSystem::Instance()->SystemPathForFrameworkPath( std::string( "~doc:/downloads/dlc_2.ka" ) );
+    FilePath fullPath( "~doc:/downloads/dlc_2.ka" );
     FileSystem::Instance()->DeleteFile(fullPath);
     
     //
     DLCSystem::Instance()->AddDelegate(this);
-    DLCSystem::Instance()->InitSystem("http://transportcontrol.davamobile.com/temp/test_5/", "~doc:/downloads/res/");
+    DLCSystem::Instance()->InitSystem("http://transportcontrol.davamobile.com/temp/test_5/", FilePath("~doc:/downloads/res/"));
     
     sleep(2);
     DLCSystem::Instance()->Stop();
@@ -151,7 +151,7 @@ void DLCSystemTests::Test7()
     
     //
     DLCSystem::Instance()->AddDelegate(this);
-    DLCSystem::Instance()->InitSystem("http://transportcontrol.davamobile.com/temp/test_7/", "~doc:/downloads/res/");
+    DLCSystem::Instance()->InitSystem("http://transportcontrol.davamobile.com/temp/test_7/", FilePath("~doc:/downloads/res/"));
 }
 
 void DLCSystemTests::Test8()
@@ -165,7 +165,7 @@ void DLCSystemTests::Test8()
     
     //
     DLCSystem::Instance()->AddDelegate(this);
-    DLCSystem::Instance()->InitSystem("http://transportcontrol.davamobile.com/temp/test_8/", "~doc:/downloads/res/");
+    DLCSystem::Instance()->InitSystem("http://transportcontrol.davamobile.com/temp/test_8/", FilePath("~doc:/downloads/res/"));
 }
 
 //--------------------

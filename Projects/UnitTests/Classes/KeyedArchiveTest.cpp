@@ -2,8 +2,8 @@
 #include "Math/Math2D.h"
 
 
-#define FILEPATHOLDFORMAT "~res:/KeyedArchives/oldTest.dat"
-#define FILEPATHNEWFORMAT "~res:/KeyedArchives/newTest.dat"
+#define FILEPATHOLDFORMAT FilePath("~res:/KeyedArchives/oldTest.dat")
+#define FILEPATHNEWFORMAT FilePath("~res:/KeyedArchives/newTest.dat")
 
 #define BOOLMAPID       "bool[true]:"
 #define BOOLVALUE       true
