@@ -1,5 +1,6 @@
-TIMEOUT = 10.0
-TIMECLICK = 0.2
+TIMEOUT = 20.0 -- Big time out for waiting
+TIMECLICK = 0.2 -- time for simple action
+DELAY = 0.5 -- time for simulation of human reaction
 
 -- this code for step counting
 local step_num = 0
@@ -40,7 +41,11 @@ function Assert(func, ...)
     
 	local status, err = copcall(func, ...)
 	--print("ASSERT: Status " .. tostring(status) .. " -- Error " .. tostring(err))
-	OnTestStep(status and err, err)
+	if status then
+		OnTestStep(err, "Assertion failed, expected result not equal to actual")
+	else
+		OnTestStep(status, err)
+	end
 end
 
 function OnTestStep(state, err)
@@ -120,7 +125,7 @@ function WaitForHelpers(helpersCount)
 end
 
 function Wait(waitTime)
-    waitTime =  waitTime or TIMECLICK
+    waitTime =  waitTime or DELAY
     
     local elapsedTime = 0.0
     while elapsedTime < waitTime do
@@ -162,16 +167,20 @@ function TouchDown(x, y, touchId)
     autotestingSystem:TouchDown(position, touchId)
 end
 
-function TouchMovePosition(position, touchId)
+function TouchMovePosition(position, touchId, waitTime)
+	waitTime =  waitTime or TIMECLICK
     local touchId = touchId or 1
     print("TouchMovePosition position="..position.x..","..position.y.." touchId="..touchId)
     autotestingSystem:TouchMove(position, touchId)
+    Wait(waitTime)
 end
 
-function TouchMove(x, y, touchId)
+function TouchMove(x, y, touchId, waitTime)
+	waitTime =  waitTime or TIMECLICK
     local touchId = touchId or 1
     print("TouchMove x="..x.." y="..y.." touchId="..touchId)
     autotestingSystem:TouchMove(position, touchId)
+    Wait(waitTime)
 end
 
 function TouchUp(touchId)
@@ -184,9 +193,11 @@ function ClickPosition(position, touchId, time)
     local touchId = touchId or 1
     print("ClickPosition position="..position.x..","..position.y.." touchId="..touchId.." waitTime="..waitTime)
     
-    TouchDownPosition(position, touchId)
     Wait(waitTime)
+    TouchDownPosition(position, touchId)
+    Wait(TIMECLICK)
     TouchUp(touchId)
+    Wait(waitTime)
 end
 
 function Click(x, y, touchId)
@@ -202,11 +213,10 @@ function ClickControl(name, touchId, time)
     local waitTime = time or TIMECLICK
     local touchId = touchId or 1
 	
-	Wait()
     print("ClickControl name="..name.." touchId="..touchId.." waitTime="..waitTime)
     
     local elapsedTime = 0.0
-    while elapsedTime < waitTime do
+    while elapsedTime < TIMEOUT do
         elapsedTime = elapsedTime + autotestingSystem:GetTimeElapsed()
 --        print("Searching "..elapsedTime)
         
@@ -236,7 +246,6 @@ function ClickControl(name, touchId, time)
             
             ClickPosition(position, touchId, waitTime)
             
-			Wait()
             return true
         else
             Yield()
@@ -247,10 +256,12 @@ function ClickControl(name, touchId, time)
     return false
 end
 
-function SetText(path, text)
+function SetText(path, text, time)
+	local waitTime = time or DELAY
     print("SetText path="..path.." text="..text)
     local res = autotestingSystem:SetText(path, text)
     Yield()
+    Wait(waitTime)
     return res
 end
 
@@ -259,6 +270,7 @@ function CheckText(name, txt)
 	local control = autotestingSystem:FindControl(name)
 	
 	if control then
+		Wait(waitTime)
 		return autotestingSystem:CheckText(control, txt)
 	else
 		error("Control " .. name .. " not found")
@@ -270,6 +282,7 @@ function CheckMsgText(name, key)
 	local control = autotestingSystem:FindControl(name)
 	
 	if control then
+		Wait(waitTime)
 		return autotestingSystem:CheckMsgText(control, key)
 	else
 		error("Control " .. name .. " not found")
