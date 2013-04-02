@@ -208,6 +208,7 @@ public:
     const Color & GetFogColor() const;
     
 	void SetViewOption(eViewOptions option);
+	eViewOptions GetViewOption();
     
     void SetTwoSided(bool _isTwoSided);
     bool GetTwoSided();
