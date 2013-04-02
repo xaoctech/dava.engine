@@ -158,7 +158,7 @@ String FilePath::GetFilename(const String &pathname)
 {
     String::size_type dotpos = pathname.rfind(String("/"));
     if (dotpos == String::npos)
-        return String();
+        return pathname;
     
     return pathname.substr(dotpos+1);
 }
@@ -314,7 +314,7 @@ String FilePath::GetSystemPathname(const String &pathname)
         }
         else
         {
-            retPath = retPath.erase(0, 5);
+            retPath = retPath.erase(0, 6);
             retPath = projectPathname + retPath;
         }
 	}
@@ -406,11 +406,7 @@ String FilePath::AbsoluteToRelative(const String &directoryPathname, const Strin
     String workingDirectoryPath = directoryPathname;
     String workingFilePath = absolutePathname;
     
-    std::replace(workingDirectoryPath.begin(),workingDirectoryPath.end(),'\\','/');
-    std::replace(workingFilePath.begin(),workingFilePath.end(),'\\','/');
-    
-    if((absolutePathname.empty()) || ('/' != absolutePathname[0]))
-        return absolutePathname;
+    DVASSERT(IsAbsolutePathname(absolutePathname));
     
     String filePath = GetDirectory(workingFilePath);
     String fileName = GetFilename(workingFilePath);
@@ -443,6 +439,24 @@ String FilePath::AbsoluteToRelative(const String &directoryPathname, const Strin
     return (retPath + fileName);
 }
     
+bool FilePath::IsAbsolutePathname(const String &pathname)
+{
+    if(pathname.empty())
+        return false;
+    
+    //Unix style
+    if(pathname[0] == '/')
+        return true;
+    
+    //Win or DAVA style (c:/, ~res:/, ~doc:/)
+    String::size_type winFound = pathname.find(":/");
+    if(winFound != String::npos)
+    {
+        return true;
+    }
+    
+    return false;
+}
 
     
 }

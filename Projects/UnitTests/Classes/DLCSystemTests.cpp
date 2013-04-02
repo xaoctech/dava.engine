@@ -192,7 +192,6 @@ void DLCSystemTests::InitCompleted(DLCStatusCode withStatus)
             {
                 isSucsess = false;
 				needNextTest = true;
-//                NextTest();
             }
             break;
         case TEST_2:
@@ -212,7 +211,6 @@ void DLCSystemTests::InitCompleted(DLCStatusCode withStatus)
             {
                 isSucsess = false;
 				needNextTest = true;
-//                NextTest();
             }
             break;
         case TEST_3:
@@ -233,7 +231,6 @@ void DLCSystemTests::InitCompleted(DLCStatusCode withStatus)
             {
                 isSucsess = false;
 				needNextTest = true;
-//                NextTest();
             }
             break;
         case TEST_4:
@@ -253,7 +250,6 @@ void DLCSystemTests::InitCompleted(DLCStatusCode withStatus)
             {
                 isSucsess = false;
 				needNextTest = true;
-//                NextTest();
             }
             break;
         case TEST_5:
@@ -276,7 +272,6 @@ void DLCSystemTests::InitCompleted(DLCStatusCode withStatus)
                 Logger::Debug("  INIT FALSE 3");
                 isSucsess = false;
 				needNextTest = true;
-//                NextTest();
             }
             break;
         case TEST_7:
@@ -439,7 +434,6 @@ void DLCSystemTests::NextTest()
             Logger::Debug( " TEST 8 = %s", (isSucsess) ? "Success" : "Fail" );
 			isFinished = true;
 
-//            FileSystem::Instance()->DeleteDirectory( FileSystem::Instance()->SystemPathForFrameworkPath( std::string( "~doc:/downloads/" ) ) );
             break;
         default:
             break;

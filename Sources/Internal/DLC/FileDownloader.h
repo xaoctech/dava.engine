@@ -35,7 +35,7 @@ class FileDownloader: public BaseObject
 public:
     //
     FileDownloader();
-    FileDownloader(const FilePath & _sourceUrl, const FilePath & _savePath, bool reload = false);
+    FileDownloader(const String & _sourceUrl, const FilePath & _savePath, bool reload = false);
     virtual ~FileDownloader();
     
     // Start download file & save with same name
@@ -48,8 +48,8 @@ public:
     virtual void Stop();
     
     // Getters & Setters
-    virtual const FilePath & GetSourceUrl() const;
-    virtual void SetSourceUrl(const FilePath & _sourceUrl);
+    virtual const String & GetSourceUrl() const;
+    virtual void SetSourceUrl(const String & _sourceUrl);
 
     virtual const FilePath & GetSavePath() const;
     virtual void SetSavePath(const FilePath & _savePath);
@@ -90,7 +90,7 @@ protected:
     };
     
 private:
-    FilePath sourceUrl;
+    String sourceUrl;
     FilePath savePath;
     uint16 reconnectCnt;
     int16 reconnectMax;
