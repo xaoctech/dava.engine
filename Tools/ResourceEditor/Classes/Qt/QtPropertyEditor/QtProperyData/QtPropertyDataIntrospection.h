@@ -26,7 +26,7 @@ protected:
 	virtual void ChildChanged(const QString &key, QtPropertyData *data);
 	virtual void ChildNeedUpdate();
 
-	DAVA_DEPRECATED(void CreateCustomButtonsForRenderObject(const DAVA::IntrospectionMember *member));
+	DAVA_DEPRECATED(void CreateCustomButtonsForRenderObject());
 
 protected slots:
 	void AddBakeTransformsField();
