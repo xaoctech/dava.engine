@@ -9,6 +9,7 @@
 #include "UIControlMetadata.h"
 #include "HierarchyTreeController.h"
 #include "StringUtils.h"
+#include "StringConstants.h"
 
 #include <QtGlobal>
 
@@ -540,7 +541,7 @@ QString UIControlMetadata::GetSprite()
     Sprite* sprite = GetActiveUIControl()->GetBackground()->GetSprite();
     if (sprite == NULL)
     {
-        return "<No sprite is set>";
+        return StringConstants::NO_SPRITE_IS_SET;
     }
     
     return sprite->GetRelativePathname().c_str();

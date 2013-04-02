@@ -169,9 +169,14 @@ void TextPropertyGridWidget::ProcessPushButtonClicked(QPushButton *senderWidget)
     }
 
     bool setFontForAllStates = ui->fontForAllStatesCheckBox->isChecked();
+	
+	// Get current value of Font property
+	Font *fontPropertyValue = PropertiesHelper::GetPropertyValue<Font *>(this->activeMetadata, FONT_PROPERTY_NAME, false);
+	// Get sprite path from graphics font
+	QString currentGFontPath = ResourcesManageHelper::GetGraphicsFontPath(fontPropertyValue);
    
     //Call font selection dialog
-    FontManagerDialog *fontDialog = new FontManagerDialog(true);
+    FontManagerDialog *fontDialog = new FontManagerDialog(true, currentGFontPath);
     Font *resultFont = NULL;
     
     if (fontDialog->exec() == QDialog::Accepted)
@@ -211,7 +216,6 @@ void TextPropertyGridWidget::ProcessPushButtonClicked(QPushButton *senderWidget)
 
 void TextPropertyGridWidget::UpdatePushButtonWidgetWithPropertyValue(QPushButton *pushButtonWidget, const QMetaProperty &curProperty)
 {
-    
     if (pushButtonWidget != this->ui->fontSelectButton)
     {
         return;
