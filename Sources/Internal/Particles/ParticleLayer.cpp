@@ -396,7 +396,9 @@ void ParticleLayer::GenerateSingleParticle()
 {
 	GenerateNewParticle(-1);
 	
-	head->angle = 0.0f;
+	// Yuri Coder, 2013/03/26. head->angle = 0.0f commented out because of DF-877.
+	//head->angle = 0.0f;
+
 	//particle->velocity.x = 0.0f;
 	//particle->velocity.y = 0.0f;
 }
@@ -438,8 +440,15 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 	if (sizeVariation)
 		particle->size +=(sizeVariation->GetValue(layerTime) * randCoeff);
 	
-	particle->size.x /= (float32)sprite->GetWidth();
-	particle->size.y /= (float32)sprite->GetHeight();
+	if(sprite)
+	{
+		particle->size.x /= (float32)sprite->GetWidth();
+		particle->size.y /= (float32)sprite->GetHeight();
+	}
+	else
+	{
+		particle->size = Vector2(0, 0);
+	}
 
 	float32 vel = 0.0f;
 	if (velocity)

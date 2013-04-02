@@ -44,10 +44,9 @@ public:
 	void RegisterEditActions(DAVA::int32 count, ...);
 
     void SetResentMenu(QMenu *menu);
-    void SetResentAncorAction(QAction *ancorAction);
 
     //MENU FILE
-    void MenuFileWillShow();
+    void UpdateRecentScenesList();
 
 	void SetDefaultFocusWidget(QWidget *widget);
 	void RestoreDefaultFocus();
@@ -160,6 +159,7 @@ public slots:
 
 	void OnSceneActivated(SceneData *scene);
 	void OnSceneReleased(SceneData *scene);
+	void OnSceneCreated(SceneData *scene);
 
 	void ReloadSceneTextures();
 
@@ -212,10 +212,7 @@ private:
 	QAction *modificationActions[ResourceEditor::MODIFY_COUNT];
 	QAction *editActions[ResourceEditor::EDIT_COUNT];
 
-    
     QMenu *menuResentScenes;
-    QAction *resentAncorAction;
-
 	QWidget *defaultFocusWidget;
     
     QStatusBar *statusBar;

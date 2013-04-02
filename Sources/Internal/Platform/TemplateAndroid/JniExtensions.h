@@ -3,11 +3,10 @@
 
 #include <jni.h>
 
-#include "DAVAEngine.h"
-
 namespace DAVA
 {
 
+class Rect;
 class JniExtension
 {
 public:
@@ -20,6 +19,8 @@ protected:
 	JNIEnv* GetEnvironment() {return env;};
 	Rect V2P(const Rect& rect) const;
 
+    void ReleaseJavaClass();
+    
 protected:
 	const char* className;
 	jclass javaClass;

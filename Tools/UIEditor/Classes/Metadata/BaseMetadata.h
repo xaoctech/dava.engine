@@ -57,10 +57,16 @@ public:
     // on this control.
     BaseMetadataParams::METADATAPARAMID GetActiveParamID() const;
     void SetActiveParamID(BaseMetadataParams::METADATAPARAMID paramID);
-    
+
+	// Get/Set the active State in context.
+	void SetActiveStateIndex(int32 index);
+	int32 GetActiveStateIndex() const;
+	void ResetActiveStateIndex();
+	uint32 GetStatesCount() const;
+
     // UI Control State.
-    UIControl::eControlState GetUIControlState() const;
-    void SetUIControlState(UIControl::eControlState controlState);
+	Vector<UIControl::eControlState> GetUIControlStates() const;
+	void SetUIControlStates(const Vector<UIControl::eControlState>& controlStates);
 
     // Apply move for all controls.
     virtual void ApplyMove(const Vector2&) {};
@@ -102,6 +108,11 @@ protected:
     // Initialization constants.
     static const Vector2 INITIAL_CONTROL_SIZE;
 
+	// if activeStateIndex equal to STATE_INDEX_DEFAULT, then DEFAULT_STATE_INDEX_VALUE is taken
+	// as the result of GetActiveStateIndex()
+	static const int32 STATE_INDEX_DEFAULT = -1;
+	static const int32 DEFAULT_STATE_INDEX_VALUE = 0;
+
     // Verify whether Param ID is OK.
     bool VerifyParamID(BaseMetadataParams::METADATAPARAMID paramID) const;
 
@@ -122,9 +133,12 @@ protected:
 
     // Active Parameter.
     BaseMetadataParams::METADATAPARAMID activeParamID;
-    
+
+	// Active State Index
+	int32 activeStateIndex;
+
     // UI Control State.
-    UIControl::eControlState uiControlState;
+    Vector<UIControl::eControlState> uiControlStates;
 };
 
 }

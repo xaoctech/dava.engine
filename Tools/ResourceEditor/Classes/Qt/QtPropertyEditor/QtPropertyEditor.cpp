@@ -13,6 +13,8 @@ QtPropertyEditor::QtPropertyEditor(QWidget *parent /* = 0 */)
 	setItemDelegate(curItemDelegate);
 
 	QObject::connect(this, SIGNAL(clicked(const QModelIndex &)), this, SLOT(ItemClicked(const QModelIndex &)));
+	QObject::connect(this, SIGNAL(expanded(const QModelIndex &)), curItemDelegate, SLOT(expand(const QModelIndex &)));
+	QObject::connect(this, SIGNAL(collapsed(const QModelIndex &)), curItemDelegate, SLOT(collapse(const QModelIndex &)));
 }
 
 QtPropertyEditor::~QtPropertyEditor()
@@ -22,7 +24,7 @@ QPair<QtPropertyItem*, QtPropertyItem*> QtPropertyEditor::AppendProperty(const Q
 {
 	if(NULL != data)
 	{
-		data->SetOptionalWidgetViewport(viewport());
+		data->SetOWViewport(viewport());
 	}
 
 	return curModel->AppendProperty(name, data, parent);

@@ -9,7 +9,6 @@ using namespace DAVA;
 class SceneSaver: public DAVA::Singleton<SceneSaver>
 {
 public:
-
 	SceneSaver();
 	virtual ~SceneSaver();
     
@@ -17,6 +16,7 @@ public:
     void SetOutFolder(const FilePath &folderPathname);
     
     void SaveFile(const FilePath &fileName, Set<String> &errorLog);
+	void ResaveFile(const FilePath &fileName, Set<String> &errorLog);
     void SaveScene(Scene *scene, const FilePath &fileName, Set<String> &errorLog);
     
 protected:

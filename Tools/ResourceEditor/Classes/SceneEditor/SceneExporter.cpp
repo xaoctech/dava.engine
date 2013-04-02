@@ -100,8 +100,6 @@ void SceneExporter::ExportFile(const FilePath &fileName, Set<String> &errorLog)
 
 void SceneExporter::ExportScene(Scene *scene, const FilePath &fileName, Set<String> &errorLog)
 {
-    Logger::Info("export_Format = %d", exportFormat);
-    
     DVASSERT(0 == texturesForExport.size())
     
     //Create destination folder

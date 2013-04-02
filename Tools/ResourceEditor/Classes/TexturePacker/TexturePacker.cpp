@@ -459,7 +459,15 @@ Rect2i TexturePacker::ReduceRectToOriginalSize(const Rect2i & _input)
 	{
 		r.dx-=4;
 		r.dy-=4;
-	}else		// add 1 pixel by default
+	}
+	else if (CommandLineParser::Instance()->IsFlagSet("--add2sidepixel"))
+	{
+		r.x+=1;
+		r.y+=1;
+		r.dx-=2;
+		r.dy-=2;
+	}
+	else		// add 1 pixel by default
 	{
 		r.dx--;
 		r.dy--;

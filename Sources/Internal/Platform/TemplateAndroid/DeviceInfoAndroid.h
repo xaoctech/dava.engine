@@ -2,6 +2,7 @@
 #define __FRAMEWORK__DEVICEINFOANDROID__
 
 #include "JniExtensions.h"
+#include "Base/BaseTypes.h"
 
 namespace DAVA
 {

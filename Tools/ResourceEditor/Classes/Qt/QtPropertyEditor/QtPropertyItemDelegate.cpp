@@ -11,7 +11,7 @@ QtPropertyItemDelegate::QtPropertyItemDelegate(QWidget *parent /* = 0 */)
 
 void QtPropertyItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-	recalcOptionalWidget(index, (QStyleOptionViewItem *) &option);
+	recalcOptionalWidgets(index, (QStyleOptionViewItem *) &option);
 	QStyledItemDelegate::paint(painter, option, index);
 }
 
@@ -25,12 +25,11 @@ QWidget* QtPropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptio
 	QWidget* editWidget = NULL;
 	QtPropertyData* data = index.data(QtPropertyItem::PropertyDataRole).value<QtPropertyData*>();
 	
-	recalcOptionalWidget(index, (QStyleOptionViewItem *) &option);
+	recalcOptionalWidgets(index, (QStyleOptionViewItem *) &option);
 
 	if(NULL != data)
 	{
 		editWidget = data->CreateEditor(parent, option);
-		TryEditorWorkarounds(editWidget);
 	}
 
 	if(NULL == editWidget)
@@ -88,60 +87,89 @@ void QtPropertyItemDelegate::updateEditorGeometry(QWidget * editor, const QStyle
 	}
 }
 
-void QtPropertyItemDelegate::recalcOptionalWidget(const QModelIndex &index, QStyleOptionViewItem *option) const
+void QtPropertyItemDelegate::recalcOptionalWidgets(const QModelIndex &index, QStyleOptionViewItem *option) const
 {
 	QtPropertyData* data = index.data(QtPropertyItem::PropertyDataRole).value<QtPropertyData*>();
 
 	if(NULL != data)
 	{
-		QWidget *optionalWidget = data->GetOptionalWidget();
-		QWidget *optionalWidgetViewport = data->GetOptionalWidgetViewport();
+		QWidget *owViewport = data->GetOWViewport();
 
-		if(NULL != optionalWidget && NULL != optionalWidgetViewport)
+		for (int i = data->GetOWCount() - 1; i >= 0; i--)
 		{
-			int widgetSize = 0;
-			QRect newWidgetRect = option->rect;
+			int prevOWSpace = 0;
+			int owSpacing = 1;
 
-			// TODO: take widget size from QtPropertyData
-			// ...
-			
-			widgetSize = 20;
-
-			// ...
-
-			if(0 != widgetSize)
+			const QtPropertyOW *ow = data->GetOW(i);
+			if(NULL != ow && NULL != owViewport && NULL != ow->widget)
 			{
-				newWidgetRect.setLeft(newWidgetRect.right() - widgetSize);
-				optionalWidget->setGeometry(newWidgetRect);
-				optionalWidget->show();
+				QWidget *owWidget = ow->widget;
+				int owWidth = ow->size.width();
 
-				// if this widget isn't overlayed we should modify rect for tree view cell to be drawn in.
-				if(!data->GetOptionalWidgetOverlay())
+				if(0 != owWidth)
 				{
-					option->rect.setRight(newWidgetRect.left());
+					QRect owRect = option->rect;
+					owRect.setLeft(owRect.right() - owWidth - prevOWSpace);
+
+					owWidget->setGeometry(owRect);
+					owWidget->show();
+
+					// if this widget isn't overlayed we should modify rect for tree view cell to be drawn in.
+					if(!ow->overlay)
+					{
+						option->rect.setRight(owRect.left());
+					}
+
+					prevOWSpace += (owWidth + owSpacing);
 				}
-			}
-			else
-			{
-				optionalWidget->hide();
+				else
+				{
+					owWidget->hide();
+				}
 			}
 		}
 	}
 }
 
-void QtPropertyItemDelegate::TryEditorWorkarounds(QWidget *editor) const
+void QtPropertyItemDelegate::collapse(const QModelIndex & collapse_index)
 {
-	if(NULL != editor)
+	// hide all optional widgets from child
+	// they will be shown after expanding them and on first paint call
+	if(collapse_index.isValid())
 	{
-		// workaround: qtColorLineEdit should know about Object that filters it events, that object is this delegate. 
-		// This fix is done for MacOS, to prevent editing cancellation, when color dialog appears
-		QtColorLineEdit *lineEdit = dynamic_cast<QtColorLineEdit *>(editor);
-		if(NULL != lineEdit)
+		const QAbstractItemModel *model = collapse_index.model();
+
+		if(NULL != model)
 		{
-			lineEdit->SetItemDelegatePtr(this);
+			// go thought columns and hide OW in each cell PropertyData
+			for (int c = 0; c < model->columnCount(); c++)
+			{
+				QModelIndex cellIndex = model->index(collapse_index.row(), c, collapse_index.parent());
+				QtPropertyData* cellData = cellIndex.data(QtPropertyItem::PropertyDataRole).value<QtPropertyData*>();
+				if(NULL != cellData)
+				{
+					hideAllChildOptionalWidgets(cellData);
+				}
+			}
+		}
+	}
+}
+
+void QtPropertyItemDelegate::expand(const QModelIndex & index)
+{ }
+
+void QtPropertyItemDelegate::hideAllChildOptionalWidgets(QtPropertyData* data)
+{
+	for(int i = 0; i < data->ChildCount(); i++)
+	{
+		QPair<QString, QtPropertyData *> childPair = data->ChildGet(i);
+		QtPropertyData *childData = childPair.second;
+
+		for (int j = 0; j < childData->GetOWCount(); j++)
+		{
+			childData->GetOW(j)->widget->hide();
 		}
 
-		// TODO: other workarounds
-		// ...
+		hideAllChildOptionalWidgets(childData);
 	}
 }

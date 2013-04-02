@@ -5,6 +5,22 @@
 #include <QHash>
 #include <QIcon>
 
+// Optional widget
+struct QtPropertyOW
+{
+	QtPropertyOW() : widget(NULL), overlay(false), size(0, 0)
+	{ }
+
+	QtPropertyOW(QWidget *_widget, bool _overlay = false, QSize _size = QSize(16, 16))
+		: widget(_widget), overlay(_overlay), size(_size)
+	{ }
+
+	QWidget *widget;
+	QSize size;
+	bool overlay;
+};
+
+// PropertyData class
 class QtPropertyData : public QObject
 {
 	Q_OBJECT
@@ -43,61 +59,48 @@ public:
 	int ChildCount();
 	QtPropertyData* ChildGet(const QString &key);
 	QPair<QString, QtPropertyData*> ChildGet(int i);
+	void ChildRemove(const QString &key);
+	void ChildRemove(QtPropertyData *data);
+	void ChildRemove(int i);
 
-	QWidget* GetOptionalWidget();
-	void SetOptionalWidget(QWidget* widget);
-	QWidget* GetOptionalWidgetViewport();
-	void SetOptionalWidgetViewport(QWidget *viewport);
-	void SetOptionalWidgetOverlay(bool overlay);
-	bool GetOptionalWidgetOverlay();
-	// TODO: implement
-	//void SetOptionalWidgetSize(QSize size);
-	//QSize GetOptionalWidgetSize();
-	//void SetOptionalWidgetAlign();
-	//void GetOptionalWidgetAlign();
-
+signals:
+	void ChildAdded(const QString &key, QtPropertyData *data);
+	void ChildRemoving(const QString &key, QtPropertyData *data);
     
 protected:
-	void ParentUpdate();
-
-	//QHashIterator<QString, QtPropertyData*> ChildIterator();
-
-protected:
-	bool childrenItemsCreated;
-
-	// Function should be re-implemented by sub-class
-	virtual QVariant GetValueInternal();
-
-	// Function should be re-implemented by sub-class
-	virtual void SetValueInternal(const QVariant &value);
-
-	// Function should be re-implemented by sub-class
-	virtual QWidget* CreateEditorInternal(QWidget *parent, const QStyleOptionViewItem& option);
-
-    // Function should be re-implemented by sub-class
-	virtual void EditorDoneInternal(QWidget *editor);
-
-    // Function should be re-implemented by sub-class
-	virtual void SetEditorDataInternal(QWidget *editor);
-
-	// Function should be re-implemented by sub-class
-	virtual void ChildChanged(const QString &key, QtPropertyData *data);
-
-	// Function should be re-implemented by sub-class
-	virtual void ChildNeedUpdate();
-
-private:
 	QVariant curValue;
 	QIcon curIcon;
 	int curFlags;
 
-	QWidget *optionalWidget;
-	QWidget *optionalWidgetViewport;
-	bool optionalWidgetOverlay;
-
 	QtPropertyData *parent;
 	QHash<QString, QtPropertyData *> children;
 	QHash<QString, int> childrenOrder;
+
+	void ParentUpdate();
+
+	// Functions should be re-implemented by sub-class
+	virtual QVariant GetValueInternal();
+	virtual void SetValueInternal(const QVariant &value);
+	virtual QWidget* CreateEditorInternal(QWidget *parent, const QStyleOptionViewItem& option);
+	virtual void EditorDoneInternal(QWidget *editor);
+	virtual void SetEditorDataInternal(QWidget *editor);
+	virtual void ChildChanged(const QString &key, QtPropertyData *data);
+	virtual void ChildNeedUpdate();
+	
+public:
+	// Option widgets
+	int GetOWCount();
+	const QtPropertyOW* GetOW(int index = 0);
+	void AddOW(const QtPropertyOW &ow);
+	void RemOW(int index);
+
+	QWidget* GetOWViewport();
+	void SetOWViewport(QWidget *viewport);
+
+private:
+	// Optional widgets data struct and memebers
+	QVector<QtPropertyOW> optionalWidgets;
+	QWidget *optionalWidgetViewport;
 };
 
 #endif // __QT_PROPERTY_DATA_H__

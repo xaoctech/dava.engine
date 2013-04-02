@@ -26,7 +26,7 @@ LOCAL_SRC_FILES := \
                    $(wildcard $(LOCAL_PATH)/../../Classes/*.cpp) \
                    $(wildcard $(LOCAL_PATH)/../../../../Sources/Internal/Platform/TemplateAndroid/ExternC/*.cpp) )
 
-LOCAL_LDLIBS := -lz -lOpenSLES -landroid -fuse-ld=gold -fno-exceptions
+LOCAL_LDLIBS := -lz -lOpenSLES -landroid
 
 # set included libraries
 LOCAL_STATIC_LIBRARIES := libInternal

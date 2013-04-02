@@ -111,7 +111,7 @@ void SelfUpdater::DownloadFinished()
     QFile().rename(appDir + "/quazip1.dll", oldDir + "/quazip1.dll");
 #endif
 
-    QString baseDir = DirectoryManager::GetInstance()->GetBaseDirectory();
+    QString baseDir = DirectoryManager::GetInstance()->GetBaseDirectory() + "/../";
     DirectoryManager::CopyAllFromDir(strTempDir, baseDir);
     DirectoryManager::DeleteDir(strTempDir);
     QFile().remove(strFilePath);

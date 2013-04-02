@@ -1020,13 +1020,7 @@
     <ClCompile Include="_GeneratedQt\Main\davaglwidget_moc.cpp">
       <Filter>QtGenerated\Main</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\Main\GUIState_moc.cpp">
-      <Filter>QtGenerated\Main</Filter>
-    </ClCompile>
     <ClCompile Include="_GeneratedQt\Main\mainwindow_moc.cpp">
-      <Filter>QtGenerated\Main</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Main\PointerHolder_moc.cpp">
       <Filter>QtGenerated\Main</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\Main\QtMainWindowHandler_moc.cpp">
@@ -1479,12 +1473,6 @@
     <ClCompile Include="Classes\SceneEditor\ArrowsNode.cpp">
       <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\DockProperties\PropertyEditorStateHelper.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\DockSceneGraph\SceneGraphModelStateHelper.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\SpritesPacker\SpritePackerHelper.cpp">
       <Filter>Sources\Qt\SpritesPacker</Filter>
     </ClCompile>
@@ -1553,6 +1541,36 @@
     </ClCompile>
     <ClCompile Include="Classes\Qt\DockSceneGraph\PointerHolder.cpp">
       <Filter>Sources\Qt\DockSceneGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaKeyedArchive.cpp">
+      <Filter>Sources\Qt\QtPropertyEditor\QtPropertyData</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaKeyedArchive_moc.cpp">
+      <Filter>QtGenerated\QtPropertyEditor\QtPropertyData</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockProperties\PropertyEditorStateHelper.cpp">
+      <Filter>Sources\Qt\DockProperties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockSceneGraph\SceneGraphModelStateHelper.cpp">
+      <Filter>Sources\Qt\DockSceneGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\SceneEditorProxy.cpp">
+      <Filter>Sources\Qt\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\SceneManager.cpp">
+      <Filter>Sources\Qt\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\SceneTabWidget.cpp">
+      <Filter>Sources\Qt\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Scene\SceneEditorProxy_moc.cpp">
+      <Filter>QtGenerated\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Scene\SceneManager_moc.cpp">
+      <Filter>QtGenerated\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Scene\SceneTabWidget_moc.cpp">
+      <Filter>QtGenerated\Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2681,12 +2699,6 @@
     <ClInclude Include="Classes\SceneEditor\ArrowsNode.h">
       <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\DockProperties\PropertyEditorStateHelper.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphModelStateHelper.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\Main\QTreeViewStateHelper.h">
       <Filter>QtGenerated</Filter>
     </ClInclude>
@@ -2737,6 +2749,24 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockSceneGraph\PointerHolder.h">
       <Filter>Sources\Qt\DockSceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaKeyedArchive.h">
+      <Filter>Sources\Qt\QtPropertyEditor\QtPropertyData</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockProperties\PropertyEditorStateHelper.h">
+      <Filter>Sources\Qt\DockProperties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphModelStateHelper.h">
+      <Filter>Sources\Qt\DockSceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\SceneEditorProxy.h">
+      <Filter>Sources\Qt\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\SceneManager.h">
+      <Filter>Sources\Qt\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\SceneTabWidget.h">
+      <Filter>Sources\Qt\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -31,7 +31,7 @@
 #define __DAVAENGINE_FILE_PATH_H__
 
 #include "Base/BaseTypes.h"
-#include "Base/Introspection.h"
+//#include "Base/Introspection.h"
 
 namespace DAVA
 {
@@ -212,9 +212,10 @@ protected:
     
 public:
     
-    INTROSPECTION(FilePath,
-        MEMBER(absolutePathname, "absolutePathname", INTROSPECTION_EDITOR)
-    );
+//    INTROSPECTION(FilePath,
+//        MEMBER(absolutePathname, "absolutePathname", INTROSPECTION_EDITOR)
+// 		NULL
+//     );
     
 };
 };

@@ -4,18 +4,14 @@
 QtPropertyData::QtPropertyData()
 	: curFlags(0)
 	, parent(NULL)
-	, optionalWidget()
 	, optionalWidgetViewport(NULL)
-	, optionalWidgetOverlay(false)
 { }
 
 QtPropertyData::QtPropertyData(const QVariant &value)
 	: curValue(value)
 	, curFlags(0)
 	, parent(NULL)
-	, optionalWidget()
 	, optionalWidgetViewport(NULL)
-	, optionalWidgetOverlay(false)
 { }
 
 QtPropertyData::~QtPropertyData() 
@@ -32,9 +28,12 @@ QtPropertyData::~QtPropertyData()
 		}
 	}
 
-	if(NULL != optionalWidget)
+	for (int i = 0; i < optionalWidgets.size(); i++)
 	{
-		delete optionalWidget;
+		if(NULL != optionalWidgets.at(i).widget)
+		{
+			delete optionalWidgets.at(i).widget;
+		}
 	}
 }
 
@@ -114,7 +113,14 @@ void QtPropertyData::ChildAdd(const QString &key, QtPropertyData *data)
         childrenOrder.insert(key, sz);
 
 		data->parent = this;
+
+		emit ChildAdded(key, data);
 	}
+}
+
+void QtPropertyData::ChildAdd(const QString &key, const QVariant &value)
+{
+	ChildAdd(key, new QtPropertyData(value));
 }
 
 int QtPropertyData::ChildCount()
@@ -135,11 +141,6 @@ QPair<QString, QtPropertyData*> QtPropertyData::ChildGet(int i)
 	return p;
 }
 
-void QtPropertyData::ChildAdd(const QString &key, const QVariant &value)
-{
-	ChildAdd(key, new QtPropertyData(value));
-}
-
 QtPropertyData * QtPropertyData::ChildGet(const QString &key)
 {
 	QtPropertyData *data = NULL;
@@ -152,58 +153,109 @@ QtPropertyData * QtPropertyData::ChildGet(const QString &key)
 	return data;
 }
 
-QWidget* QtPropertyData::GetOptionalWidget()
+void QtPropertyData::ChildRemove(const QString &key)
 {
-	return optionalWidget;
-}
+	QtPropertyData *data = ChildGet(key);
 
-void QtPropertyData::SetOptionalWidget(QWidget* widget)
-{
-	if(NULL != optionalWidget)
+	if(NULL != data)
 	{
-		delete optionalWidget;
-	}
+		emit ChildRemoving(key, data);
 
-	optionalWidget = widget;
+		children.remove(key);
+		childrenOrder.remove(key);
 
-	if(NULL != optionalWidget)
-	{
-		optionalWidget->setParent(optionalWidgetViewport);
+		delete data;
 	}
 }
 
-void QtPropertyData::SetOptionalWidgetViewport(QWidget *viewport)
+void QtPropertyData::ChildRemove(int i)
+{
+	QPair<QString, QtPropertyData*> pair = ChildGet(i);
+
+	if(!pair.first.isEmpty() && NULL != pair.second)
+	{
+		emit ChildRemoving(pair.first, pair.second);
+
+		children.remove(pair.first);
+		childrenOrder.remove(pair.first);
+
+		delete pair.second;
+	}
+}
+
+void QtPropertyData::ChildRemove(QtPropertyData *data)
+{
+	QString key = children.key(data, "");
+	if(!key.isEmpty())
+	{
+		ChildRemove(key);
+	}
+}
+
+int QtPropertyData::GetOWCount()
+{
+	return optionalWidgets.size();
+}
+
+const QtPropertyOW* QtPropertyData::GetOW(int index)
+{
+	const QtPropertyOW *ret = NULL;
+
+	if(index >= 0 && index < optionalWidgets.size())
+	{
+		ret = &optionalWidgets.at(index);
+	}
+
+	return ret;
+}
+
+void QtPropertyData::AddOW(const QtPropertyOW &ow)
+{
+	optionalWidgets.append(ow);
+
+	if(NULL != ow.widget)
+	{
+		ow.widget->setParent(optionalWidgetViewport);
+	}
+}
+
+void QtPropertyData::RemOW(int index)
+{
+	if(index >= 0 && index < optionalWidgets.size())
+	{
+		if(NULL != optionalWidgets.at(index).widget)
+		{
+			delete optionalWidgets.at(index).widget;
+		}
+
+		optionalWidgets.remove(index);
+	}
+}
+
+QWidget* QtPropertyData::GetOWViewport()
+{
+	return optionalWidgetViewport;
+}
+
+void QtPropertyData::SetOWViewport(QWidget *viewport)
 {
 	optionalWidgetViewport = viewport;
 
-	if(NULL != optionalWidget)
+	for(int i = 0; i < optionalWidgets.size(); ++i)
 	{
-		optionalWidget->setParent(viewport);
+		if(NULL != optionalWidgets.at(i).widget)
+		{
+			optionalWidgets.at(i).widget->setParent(viewport);
+		}
 	}
 
 	QHashIterator<QString, QtPropertyData*> i(children);
 	while (i.hasNext()) 
 	{
 		i.next();
-		i.value()->SetOptionalWidgetViewport(viewport);
+		i.value()->SetOWViewport(viewport);
 	}
 }
-
-QWidget* QtPropertyData::GetOptionalWidgetViewport()
-{
-	return optionalWidgetViewport;
-}
-
-bool QtPropertyData::GetOptionalWidgetOverlay()
-{
-	return optionalWidgetOverlay;
-}
-
-void QtPropertyData::SetOptionalWidgetOverlay(bool overlay)
-{
-	optionalWidgetOverlay = overlay;
-}
-
 
 QVariant QtPropertyData::GetValueInternal()
 {
