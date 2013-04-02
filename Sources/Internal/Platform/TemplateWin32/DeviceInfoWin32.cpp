@@ -1,4 +1,4 @@
-#include "../../Platform/DeviceInfo.h"
+#include "Platform/DeviceInfo.h"
 
 #if defined(__DAVAENGINE_WIN32__)
 
