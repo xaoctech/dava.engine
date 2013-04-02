@@ -142,7 +142,7 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 		minTime = emitterEmissionAngle->GetMinBoundary();
 		maxTime = emitterEmissionAngle->GetMaxBoundary();
 	}
-	emitterEmissionAngle->Init(minTime, maxTime, updateMinimize);
+	emitterEmissionAngle->Init(minTime, maxTime, 0.0, emitterLifeTime, updateMinimize);
 	emitterEmissionAngle->AddLine(0, PropLineWrapper<float32>(emitter->emissionAngle).GetProps(), Qt::blue, "emission angle");
 
 	if(NULL != emitterEmissionRange)
@@ -150,7 +150,7 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 		minTime = emitterEmissionRange->GetMinBoundary();
 		maxTime = emitterEmissionRange->GetMaxBoundary();
 	}
-	emitterEmissionRange->Init(minTime, maxTime, updateMinimize);
+	emitterEmissionRange->Init(minTime, maxTime, 0.0, emitterLifeTime, updateMinimize);
 	emitterEmissionRange->AddLine(0, PropLineWrapper<float32>(emitter->emissionRange).GetProps(), Qt::blue, "emission range");
 
 	if(NULL != emitterEmissionVector)
@@ -158,7 +158,7 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 		minTime = emitterEmissionVector->GetMinBoundary();
 		maxTime = emitterEmissionVector->GetMaxBoundary();
 	}
-	emitterEmissionVector->Init(minTime, maxTime, updateMinimize, true);
+	emitterEmissionVector->Init(minTime, maxTime, 0.0, emitterLifeTime, updateMinimize, true);
 	Vector<QColor> vectorColors;
 	vectorColors.push_back(Qt::blue); vectorColors.push_back(Qt::darkGreen); vectorColors.push_back(Qt::red);
 	Vector<QString> vectorLegends;
@@ -170,7 +170,7 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 		minTime = emitterRadius->GetMinBoundary();
 		maxTime = emitterRadius->GetMaxBoundary();
 	}
-	emitterRadius->Init(minTime, maxTime, updateMinimize);
+	emitterRadius->Init(minTime, maxTime, 0.0, emitterLifeTime, updateMinimize);
 	emitterRadius->AddLine(0, PropLineWrapper<float32>(emitter->radius).GetProps(), Qt::blue, "radius");
 
 	emitterColorWidget->Init(0.f, emitterLifeTime, "color over life");
@@ -181,7 +181,7 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 		minTime = emitterSize->GetMinBoundary();
 		maxTime = emitterSize->GetMaxBoundary();
 	}
-	emitterSize->Init(minTime, maxTime, updateMinimize, true);
+	emitterSize->Init(minTime, maxTime, 0.0, emitterLifeTime, updateMinimize, true);
 	emitterSize->SetMinLimits(0);
 	Vector<QColor> sizeColors;
 	sizeColors.push_back(Qt::blue); sizeColors.push_back(Qt::darkGreen); sizeColors.push_back(Qt::red);
