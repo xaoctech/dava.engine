@@ -252,7 +252,7 @@ public:
     
 //    eType   type; //TODO: waiting for enums at introspection
     uint32 type;
-	uint32 viewOptions;
+	eViewOptions viewOptions;
 
 	Vector4 reflective;
 	float32	reflectivity;
