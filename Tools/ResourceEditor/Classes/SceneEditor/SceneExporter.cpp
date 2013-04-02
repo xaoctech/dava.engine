@@ -165,7 +165,7 @@ void SceneExporter::RemoveEditorNodes(DAVA::Entity *rootNode)
 			if(renderComponent)
 			{
 				DAVA::RenderObject *ro = renderComponent->GetRenderObject();
-				if(ro && dynamic_cast<DAVA::Landscape *>(ro) == 0)
+				if(ro && ro->GetType() != RenderObject::TYPE_LANDSCAPE)
 				{
 					DAVA::uint32 count = ro->GetRenderBatchCount();
 					for(DAVA::uint32 ri = 0; ri < count; ++ri)
