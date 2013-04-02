@@ -139,8 +139,10 @@ void EditorScene::CheckNodes(Entity * curr)
 
 			if(NULL == bulletComponent)
 			{
+				BulletObject *bObj = new BulletObject(this, collisionWorld, curr, AABBox3(Vector3(), 2.5f), curr->GetWorldTransform());
 				bulletComponent = (BulletComponent*) curr->GetOrCreateComponent(Component::BULLET_COMPONENT);
-				bulletComponent->SetBulletObject(new BulletObject(this, collisionWorld, curr, AABBox3(Vector3(), 2.5f), curr->GetWorldTransform()));
+				bulletComponent->SetBulletObject(bObj);
+				SafeRelease(bObj);
 			}
 		}
 
@@ -154,8 +156,10 @@ void EditorScene::CheckNodes(Entity * curr)
 
 			if(NULL == bulletComponent)
 			{
+				BulletObject *bObj = new BulletObject(this, collisionWorld, curr, AABBox3(Vector3(), 2.5f), curr->GetWorldTransform());
 				bulletComponent = (BulletComponent*) curr->GetOrCreateComponent(Component::BULLET_COMPONENT);
-				bulletComponent->SetBulletObject(new BulletObject(this, collisionWorld, curr, AABBox3(Vector3(), 2.5f), curr->GetWorldTransform()));
+				bulletComponent->SetBulletObject(bObj);
+				SafeRelease(bObj);
 			}
 		}
 
@@ -169,8 +173,10 @@ void EditorScene::CheckNodes(Entity * curr)
 			{
 				if(NULL == bulletComponent)
 				{
+					BulletObject *bObj = new BulletObject(this, collisionWorld, curr, curr->GetWorldTransform());
 					bulletComponent = (BulletComponent*) curr->GetOrCreateComponent(Component::BULLET_COMPONENT);
-					bulletComponent->SetBulletObject(new BulletObject(this, collisionWorld, curr, curr->GetWorldTransform()));
+					bulletComponent->SetBulletObject(bObj);
+					SafeRelease(bObj);
 				}
 			}
 		}
