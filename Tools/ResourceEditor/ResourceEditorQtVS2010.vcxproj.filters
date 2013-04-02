@@ -214,6 +214,9 @@
     <Filter Include="Sources\Qt\DockHangingObjects">
       <UniqueIdentifier>{06e43fbc-e3e3-484d-93ff-02f41732442e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Qt\Scene\System">
+      <UniqueIdentifier>{859c9b28-5205-4a42-aede-af5566d0dbb2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1572,6 +1575,15 @@
     <ClCompile Include="_GeneratedQt\Scene\SceneTabWidget_moc.cpp">
       <Filter>QtGenerated\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\EntityModifSystem.cpp">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\SceneCameraSystem.cpp">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\SceneGridSystem.cpp">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -2767,6 +2779,15 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Scene\SceneTabWidget.h">
       <Filter>Sources\Qt\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\EntityModifSystem.h">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\SceneCameraSystem.h">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\SceneGridSystem.h">
+      <Filter>Sources\Qt\Scene\System</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

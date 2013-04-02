@@ -30,34 +30,55 @@
 
 SceneEditorScreenMain::SceneEditorScreenMain()
 	:	UIScreen()
+	, initialized(false)
 {
+}
+
+SceneEditorScreenMain::~SceneEditorScreenMain()
+{
+	SafeRelease(scenePreviewDialog);
+
+	SafeRelease(helpDialog);
+	SafeRelease(textureTrianglesDialog);
+	SafeRelease(settingsDialog);
+
+	ReleaseNodeDialogs();
+	ReleaseBodyList();
+
+	HintManager::Instance()->Release();
+	PropertyControlCreator::Instance()->Release();
 }
 
 void SceneEditorScreenMain::LoadResources()
 {
-    new HintManager();
-    new PropertyControlCreator();
-    
-    ControlsFactory::CustomizeScreenBack(this);
+	if(!initialized)
+	{
+		initialized = true;
 
-    font12 = ControlsFactory::GetFont12();
-	font12Color = ControlsFactory::GetColorLight();
-
-    helpDialog = new HelpDialog();
+		new HintManager();
+		new PropertyControlCreator();
     
-    focusedControl = NULL;
+		ControlsFactory::CustomizeScreenBack(this);
 
-    InitializeNodeDialogs();
+		font12 = ControlsFactory::GetFont12();
+		font12Color = ControlsFactory::GetColorLight();
 
-    Rect fullRect = GetRect();
-    settingsDialog = new SettingsDialog(fullRect, this);
-    textureTrianglesDialog = new TextureTrianglesDialog();
-    materialEditor = new MaterialEditor();
+		helpDialog = new HelpDialog();
     
-    InitControls();
+		focusedControl = NULL;
+
+		InitializeNodeDialogs();
+
+		Rect fullRect = GetRect();
+		settingsDialog = new SettingsDialog(fullRect, this);
+		textureTrianglesDialog = new TextureTrianglesDialog();
+		materialEditor = new MaterialEditor();
     
-    InitializeBodyList();
-    SetupAnimation();
+		InitControls();
+    
+		InitializeBodyList();
+		SetupAnimation();
+	}
 }
 
 
@@ -73,19 +94,7 @@ void SceneEditorScreenMain::InitControls()
 
 void SceneEditorScreenMain::UnloadResources()
 {
-    SafeRelease(scenePreviewDialog);
-
-    SafeRelease(helpDialog);
-    SafeRelease(textureTrianglesDialog);
-    SafeRelease(settingsDialog);
-
-    ReleaseNodeDialogs();
-    ReleaseBodyList();
-
-    HintManager::Instance()->Release();
-    PropertyControlCreator::Instance()->Release();
 }
-
 
 void SceneEditorScreenMain::WillAppear()
 {
