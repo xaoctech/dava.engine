@@ -860,4 +860,31 @@ void UIControlMetadata::SetActiveControlRect(const Rect& rect)
 	GetActiveUIControl()->SetRect(rect);
 }
 
+QString UIControlMetadata::GetCustomControlName() const
+{
+	if (!VerifyActiveParamID())
+	{
+		return QString();
+	}
+	
+	return QString::fromStdString(GetActiveUIControl()->GetCustomControlType());
+}
+	
+void UIControlMetadata::SetCustomControlName(const QString& value)
+{
+	if (!VerifyActiveParamID())
+	{
+		return;
+	}
+
+	if (value.isEmpty())
+	{
+		GetActiveUIControl()->ResetCustomControlType();
+	}
+	else
+	{
+		GetActiveUIControl()->SetCustomControlType(value.toStdString());
+	}
+}
+
 };

@@ -1,4 +1,4 @@
-#include "../../Platform/DeviceInfo.h"
+#include "Platform/DeviceInfo.h"
 
 #ifdef __DAVAENGINE_MACOS__
 

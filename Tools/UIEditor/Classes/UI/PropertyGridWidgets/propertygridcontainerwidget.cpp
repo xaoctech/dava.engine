@@ -9,6 +9,8 @@ PropertyGridContainerWidget::PropertyGridContainerWidget(QWidget *parent) :
     activeMetadata(NULL)
 {
     ui->setupUi(this);
+	ui->topArea->hide();
+
     widgetsFactory.InitializeWidgetParents(this);
     
     ConnectToSignals();
@@ -63,10 +65,20 @@ void PropertyGridContainerWidget::CleanupPropertiesGrid()
         BasePropertyGridWidget* widget = (*iter);
         widget->Cleanup();
 
-        ui->scrollAreaLayout->removeWidget(widget);
+		if (!dynamic_cast<StatePropertyGridWidget*>(*iter))
+		{
+	        ui->scrollAreaLayout->removeWidget(widget);
+		}
+		else
+		{
+			ui->topAreaLayout->removeWidget(widget);
+		}
+
         widget->hide();
     }
-    
+
+	ui->topArea->hide();
+
     // Also release the Active Metadata, if any.
     CleanupActiveMetadata();
 }
@@ -105,20 +117,30 @@ void PropertyGridContainerWidget::BuildPropertiesGrid(BaseMetadata* metaData,
     CleanupPropertiesGrid();
 
     // Metadata is state-aware.
-    metaData->SetUIControlState(PropertiesGridController::Instance()->GetActiveUIControlState());
+	Vector<UIControl::eControlState> activeStates = PropertiesGridController::Instance()->GetActiveUIControlStates();
+    metaData->SetUIControlStates(activeStates);
 
     this->activeWidgetsList = widgetsFactory.GetWidgets(metaData);
     for (PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSITER iter = activeWidgetsList.begin();
          iter != activeWidgetsList.end(); iter ++)
     {
-        BasePropertyGridWidget* widget = (*iter);
-        ui->scrollAreaLayout->addWidget(widget);
-        widget->show();
+		BasePropertyGridWidget* widget = (*iter);
 
-        // Eaach widget should initialize itself by using Metadata (for property names) and
-        // UI Control (for actual values).
-        metaData->SetupParams(params);
-        widget->Initialize(metaData);
+		if (!dynamic_cast<StatePropertyGridWidget*>(*iter))
+		{
+			ui->scrollAreaLayout->addWidget(widget);
+		}
+		else
+		{
+			ui->topArea->show();
+			ui->topAreaLayout->addWidget(widget);
+		}
+		widget->show();
+
+		// Eaach widget should initialize itself by using Metadata (for property names) and
+		// UI Control (for actual values).
+		metaData->SetupParams(params);
+		widget->Initialize(metaData);
     }
     
     // The Active Metatata is known.
