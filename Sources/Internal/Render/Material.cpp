@@ -733,6 +733,11 @@ void Material::SetViewOption(eViewOptions option)
 		RebuildShader();
 	}
 }
+
+Material::eViewOptions Material::GetViewOption()
+{
+	return viewOptions;
+}
     
 bool Material::IsFogEnabled() const
 {
