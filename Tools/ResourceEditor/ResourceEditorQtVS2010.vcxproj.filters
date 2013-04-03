@@ -214,6 +214,12 @@
     <Filter Include="Sources\Qt\DockHangingObjects">
       <UniqueIdentifier>{06e43fbc-e3e3-484d-93ff-02f41732442e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Qt\DockMaterialViewOptions">
+      <UniqueIdentifier>{ac0aff53-678a-41e9-976e-47ea3e28317e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\DockMaterialViewOptions">
+      <UniqueIdentifier>{e560503d-45b2-4dc6-8887-47e59d7d7eb1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1548,6 +1554,14 @@
     <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaKeyedArchive_moc.cpp">
       <Filter>QtGenerated\QtPropertyEditor\QtPropertyData</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\DockMaterialViewOptions\MaterialViewOptions.cpp">
+      <Filter>Sources\Qt\DockMaterialViewOptions</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\MaterialViewOptionsCommands.cpp">
+      <Filter>Sources\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockMaterialViewOptions\MaterialViewOptions_moc.cpp">
+      <Filter>QtGenerated\DockMaterialViewOptions</Filter>
     <ClCompile Include="Classes\Qt\DockProperties\PropertyEditorStateHelper.cpp">
       <Filter>Sources\Qt\DockProperties</Filter>
     </ClCompile>
@@ -2753,6 +2767,11 @@
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaKeyedArchive.h">
       <Filter>Sources\Qt\QtPropertyEditor\QtPropertyData</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Qt\DockMaterialViewOptions\MaterialViewOptions.h">
+      <Filter>Sources\Qt\DockMaterialViewOptions</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\MaterialViewOptionsCommands.h">
+      <Filter>Sources\Commands</Filter>
     <ClInclude Include="Classes\Qt\DockProperties\PropertyEditorStateHelper.h">
       <Filter>Sources\Qt\DockProperties</Filter>
     </ClInclude>
@@ -2968,6 +2987,9 @@
       <Filter>QtData</Filter>
     </None>
     <None Include="DataQt\ModificationWidget.ui">
+      <Filter>QtData</Filter>
+    </None>
+    <None Include="DataQt\MaterialViewOptions.ui">
       <Filter>QtData</Filter>
     </None>
   </ItemGroup>
