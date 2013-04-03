@@ -44,6 +44,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     qApp->installEventFilter(this);
 	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + "EditorConfig.yaml");
 
+	QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->sceneTabWidget);
 	QtMainWindowHandler::Instance()->SetResentMenu(ui->menuFile);
 	QtMainWindowHandler::Instance()->RegisterStatusBar(ui->statusBar);
 	QtMainWindowHandler::Instance()->RestoreDefaultFocus();
