@@ -240,7 +240,8 @@ bool FileSystem::MoveFile(const String & existingFile, const String & newFile, b
 	BOOL ret = ::MoveFileExA(existingFile.c_str(), newFile.c_str(), flags);
 	return ret != 0;
 #elif defined(__DAVAENGINE_ANDROID__)
-	DVASSERT_MSG(0, "Not implemented");
+	int ret = rename(existingFile.c_str(), newFile.c_str());
+	return ret == 0;
 #else //iphone & macos
 
 	int flags = COPYFILE_ALL | COPYFILE_MOVE;
