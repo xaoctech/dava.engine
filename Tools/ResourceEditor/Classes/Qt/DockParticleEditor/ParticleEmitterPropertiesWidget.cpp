@@ -5,6 +5,9 @@
 #include <QLineEdit>
 #include <QEvent>
 
+#define EMISSION_RANGE_MIN_LIMIT_DEGREES 0.0f
+#define EMISSION_RANGE_MAX_LIMIT_DEGREES 180.0f
+
 ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent) :
 	QWidget(parent)
 {
@@ -136,6 +139,9 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 	}
 	emitterEmissionRange->Init(minTime, maxTime, updateMinimize);
 	emitterEmissionRange->AddLine(0, PropLineWrapper<float32>(emitter->emissionRange).GetProps(), Qt::blue, "emission range");
+	emitterEmissionRange->SetMinLimits(EMISSION_RANGE_MIN_LIMIT_DEGREES);
+	emitterEmissionRange->SetMaxLimits(EMISSION_RANGE_MAX_LIMIT_DEGREES);
+	emitterEmissionRange->SetYLegendMark(DEGREE_MARK_CHARACTER);
 
 	if(NULL != emitterEmissionVector)
 	{

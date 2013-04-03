@@ -37,6 +37,10 @@ public:
 	
 	static bool SortPoints(const Vector2& i, const Vector2& j);
 	
+	// Add the mark to X/Y legend values (like 'deg' or 'pts').
+	void SetXLegendMark(const QString& value);
+	void SetYLegendMark(const QString& value);
+
 signals:
 	void TimeLineUpdated();
 	void ValueChanged();
@@ -162,6 +166,9 @@ private:
 
 	float32	scale;
 	float32	initialTimeInterval;
+	
+	QString xLegendMark;
+	QString yLegendMark;
 };
 
 class SetPointValueDlg: public QDialog
