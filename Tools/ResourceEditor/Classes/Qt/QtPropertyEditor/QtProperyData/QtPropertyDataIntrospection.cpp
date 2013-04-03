@@ -153,12 +153,19 @@ void QtPropertyDataIntrospection::BakeTransform()
 void QtPropertyDataIntrospection::ConvertToShadow()
 {
 	DAVA::RenderObject * ro = static_cast<DAVA::RenderObject*>(object);
+
 	DVASSERT(ro->GetRenderBatchCount() == 1);
-	DAVA::ShadowVolume * shadowVolume = ro->CreateShadow();
+	if(typeid(*(ro->GetRenderBatch(0))) == typeid(DAVA::RenderBatch))
+	{
+		DAVA::ShadowVolume * shadowVolume = ro->CreateShadow();
 
-	QtPropertyDataIntrospection * renderComponentProperty = static_cast<QtPropertyDataIntrospection*>(parent);
-	DAVA::RenderComponent * renderComponent = static_cast<DAVA::RenderComponent*>(renderComponentProperty->object);
+		QtPropertyDataIntrospection * renderComponentProperty = static_cast<QtPropertyDataIntrospection*>(parent);
+		DAVA::RenderComponent * renderComponent = static_cast<DAVA::RenderComponent*>(renderComponentProperty->object);
+		DAVA::Entity * entity = renderComponent->GetEntity();
+		entity->SetLocalTransform(entity->GetLocalTransform());//just forced update of worldTransform
 
-	ro->RemoveRenderBatch(ro->GetRenderBatch(0));
-	ro->AddRenderBatch(shadowVolume);
+		ro->RemoveRenderBatch(ro->GetRenderBatch(0));
+		ro->AddRenderBatch(shadowVolume);
+	}
+
 }
