@@ -46,7 +46,7 @@ public:
     
     void CheckForUpdate();
     bool Install(const QString& appName, const QString& appVersion, eAppType type);
-    bool Delete(const QString& appName, eAppType type);
+    bool Delete(const QString& appName, eAppType type, bool force = false);
     QString GetRunPath(const QString& appName, eAppType type);
     bool Update(AvailableSoftWare::SoftWareMap softMap, eAppType type, bool force = false);
     bool AbortCurInstallation();

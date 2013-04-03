@@ -63,7 +63,7 @@ void Installer::UpdateConfigFinished(const AppsConfig & update) {
     }
 
     Update(m_AvailableSoftWare.m_Stable, eAppTypeStable, true);
-    Update(m_AvailableSoftWare.m_Development, eAppTypeDevelopment);
+//  Update(m_AvailableSoftWare.m_Development, eAppTypeDevelopment);
     Update(m_AvailableSoftWare.m_Dependencies, eAppTypeDependencies, true);
 }
 
@@ -369,7 +369,7 @@ void Installer::OnAppDownloaded() {
     }
 }
 
-bool Installer::Delete(const QString& appName, eAppType type) {
+bool Installer::Delete(const QString& appName, eAppType type, bool force) {
     Logger::GetInstance()->AddLog(tr("Deleting %1").arg(appName));
     AppsConfig appsConfig = Settings::GetInstance()->GetCurrentConfig();
     AppsConfig::AppMap* appMap = appsConfig.GetAppMap(type);
@@ -388,13 +388,26 @@ bool Installer::Delete(const QString& appName, eAppType type) {
     if (!config.m_RunPath.isEmpty()){
         while (ProcessHelper::IsProcessRuning(installPath + config.m_RunPath)) {
             Logger::GetInstance()->AddLog(tr("%1 app is running.").arg(appName));
-            if (1 == QMessageBox::information(NULL,//this,
-                                             tr("Error"),
-                                             tr("%1 app is running please close it.").arg(appName),
-                                             tr("Retry"),
-                                             tr("Cancel"))) {
-                Logger::GetInstance()->AddLog(tr("Deleting %1 canceled").arg(appName));
-                return false;
+            if(force)
+            {
+                if (1 == QMessageBox::information(NULL,//this,
+                                                 tr("Error"),
+                                                 tr("%1 app is running please close it.").arg(appName),
+                                                 tr("Retry"))) {
+                    Logger::GetInstance()->AddLog(tr("Deleting %1 canceled").arg(appName));
+                    return false;
+                }
+            }
+            else
+            {
+                if (1 == QMessageBox::information(NULL,//this,
+                                                 tr("Error"),
+                                                 tr("%1 app is running please close it.").arg(appName),
+                                                 tr("Retry"),
+                                                 tr("Cancel"))) {
+                    Logger::GetInstance()->AddLog(tr("Deleting %1 canceled").arg(appName));
+                    return false;
+                }
             }
         }
     }
@@ -478,7 +491,7 @@ bool Installer::Update(AvailableSoftWare::SoftWareMap softMap, eAppType type, bo
                                              tr("%1 update available.").arg(name),
                                              tr("Install"),
                                              tr("Cancel"))) {
-                if (!Delete(name, type)) {
+                if (!Delete(name, type, force)) {
                     Logger::GetInstance()->AddLog(tr("Error update %1"));
                     return false;
                 }
