@@ -20,6 +20,9 @@
 
 #define SPRITE_SIZE 60
 
+#define ANGLE_MIN_LIMIT_DEGREES -360.0f
+#define ANGLE_MAX_LIMIT_DEGREES 360.0f
+
 const EmitterLayerWidget::LayerTypeMap EmitterLayerWidget::layerTypeMap[] =
 {
 	{ParticleLayer::TYPE_SINGLE_PARTICLE, "Single Particle"},
@@ -324,7 +327,10 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	angleTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
 	angleTimeLine->AddLine(0, PropLineWrapper<float32>(layer->angle).GetProps(), Qt::blue, "angle");
 	angleTimeLine->AddLine(1, PropLineWrapper<float32>(layer->angleVariation).GetProps(), Qt::darkGreen, "angle variation");
-	
+	angleTimeLine->SetMinLimits(ANGLE_MIN_LIMIT_DEGREES);
+	angleTimeLine->SetMaxLimits(ANGLE_MAX_LIMIT_DEGREES);
+	angleTimeLine->SetYLegendMark(DEGREE_MARK_CHARACTER);
+
 	//LAYER_START_TIME, LAYER_END_TIME
 	startTimeSpin->setMinimum(0);
 	startTimeSpin->setValue(layer->startTime);
