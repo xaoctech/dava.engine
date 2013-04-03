@@ -37,7 +37,7 @@ void SelfUpdater::UpdatedConfigDownloaded(const AppsConfig& config) {
 
     QString nNewVersion = Settings::GetVersion(config.m_Launcher.m_Version);
     QString nCurVersion = Settings::GetVersion(Settings::GetInstance()->GetLauncherVersion());
-    if (nCurVersion < nNewVersion) {
+    if (nCurVersion != nNewVersion) {
         //download new version
         m_pReply = m_pNetworkManager->get(QNetworkRequest(config.m_Launcher.m_Url));
         connect(m_pReply, SIGNAL(finished()), this, SLOT(DownloadFinished()));
