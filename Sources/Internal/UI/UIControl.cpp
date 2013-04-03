@@ -257,6 +257,18 @@ namespace DAVA
 		return isSubcontrol;
 	}
 
+	bool UIControl::AddControlToList(List<UIControl*>& controlsList, const String& controlName, bool isRecursive)
+	{
+		UIControl* control = FindByName(controlName, isRecursive);
+		if (control)
+		{
+			controlsList.push_back(control);
+			return true;
+		}
+		
+		return false;
+	}
+
 	List<UIControl* > UIControl::GetRealChildrenAndSubcontrols()
 	{
 		List<UIControl*>& realChildrenList = GetRealChildren();

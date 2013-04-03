@@ -16,6 +16,8 @@
 
 using namespace DAVA;
 
+static const FastName LAYER_ARROWS("ArrowsRenderLayer");
+
 class HeightmapNode;
 class EditorScene : public Scene
 {

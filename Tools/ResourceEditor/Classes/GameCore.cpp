@@ -50,7 +50,7 @@ void GameCore::OnAppStarted()
 	RenderManager::Instance()->SetFPS(30);
 
     LocalizationSystem::Instance()->SetCurrentLocale(EditorSettings::Instance()->GetLanguage());
-	LocalizationSystem::Instance()->InitWithDirectory("~res:/Strings");
+	LocalizationSystem::Instance()->InitWithDirectory(FilePath("~res:/Strings/"));
 
     
 #ifdef __DAVAENGINE_BEAST__

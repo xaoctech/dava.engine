@@ -117,10 +117,8 @@ bool ResourcePackerScreen::IsMD5ChangedDir(const FilePath & processDirectoryPath
 {
     DVASSERT(processDirectoryPath.IsDirectoryPathname());
 
-	FilePath pathnameWithoutExtension(name);
-    pathnameWithoutExtension.TruncateExtension();
-    
-	FilePath md5FileName = processDirectoryPath + pathnameWithoutExtension + FilePath(".md5");
+	FilePath filename = FilePath::CreateWithNewExtension(name, ".md5");
+	FilePath md5FileName = processDirectoryPath + filename;
 
 	uint8 oldMD5Digest[16];
 	uint8 newMD5Digest[16];

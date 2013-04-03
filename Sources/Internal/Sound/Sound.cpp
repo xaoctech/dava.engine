@@ -413,7 +413,7 @@ SoundInstance * Sound::Play()
 #endif //#ifdef __DAVAENGINE_ANDROID__
 }
 
-Sound::eType Sound::GetType()
+Sound::eType Sound::GetType() const
 {
 	return type;
 }
@@ -452,7 +452,7 @@ SLuint32 Sound::GetPlayState()
 }
 #endif //#ifdef __DAVAENGINE_ANDROID__
     
-float32 Sound::GetVolume()
+float32 Sound::GetVolume() const
 {
 	return volume;
 }

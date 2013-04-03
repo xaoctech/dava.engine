@@ -42,7 +42,11 @@ signals:
 	
 private:
 	void DeleteOldWidget();
+	void UpdateVisibleTimelines();
 	
+	// Update the visible timelines for the particular Particle Emitter elements.
+	void UpdateVisibleTimelinesForParticleEmitter();
+
 private:
 	EmitterLayerWidget* emitterLayerWidget;
 	LayerForceWidget* layerForceWidget;
