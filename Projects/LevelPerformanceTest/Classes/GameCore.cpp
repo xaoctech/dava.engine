@@ -55,14 +55,14 @@ void GameCore::OnAppStarted()
 {
     DeviceInfo();
     
-	SettingsManager::Instance()->InitWithFile("~res:/Config/config.yaml");
+	SettingsManager::Instance()->InitWithFile(FilePath("~res:/Config/config.yaml"));
 	
 	cursor = 0;
 	RenderManager::Instance()->SetFPS(60);
 
-	String dirPath = "~res:/3d/Maps/";
+	FilePath dirPath("~res:/3d/Maps/");
 	Vector<String> levelsPaths;
-	YamlParser* parser = YamlParser::Create("~res:/maps.yaml");
+	YamlParser* parser = YamlParser::Create(FilePath("~res:/maps.yaml"));
 	if(parser)
 	{
 		YamlNode* rootNode = parser->GetRootNode();
@@ -82,7 +82,7 @@ void GameCore::OnAppStarted()
 
 	for(Vector<String>::const_iterator it = levelsPaths.begin(); it != levelsPaths.end(); ++it)
     {
-		Test *test = new Test(dirPath + (*it));
+		Test *test = new Test(dirPath + FilePath((*it)));
 		if(test != NULL)
         {
 			UIScreenManager::Instance()->RegisterScreen(test->GetScreenId(), test);
@@ -147,7 +147,7 @@ void GameCore::Update(float32 timeElapsed)
 			if(resultScreen == NULL)
             {
 				resultScreen = new ResultScreen(curTest->GetLandscapeTestData(),
-												curTest->GetFileName(),
+												curTest->GetFilePath(),
 												curTest->GetLandscapeTexture());
                 
 				UIScreenManager::Instance()->RegisterScreen(RESULT_SCREEN, resultScreen);
@@ -221,7 +221,7 @@ bool GameCore::ConnectToDB()
     return (dbClient != NULL);
 }
 
-bool GameCore::FlushToDB(const String & levelName, const Map<String, String> &results, const String &imagePath)
+bool GameCore::FlushToDB(const FilePath & levelName, const Map<String, String> &results, const FilePath &imagePath)
 {
 	if(!dbClient)
 		return false;
@@ -231,7 +231,7 @@ bool GameCore::FlushToDB(const String & levelName, const Map<String, String> &re
     MongodbObject *testResultObject = new MongodbObject();
     if(testResultObject)
     {
-        testResultObject->SetObjectName(levelName);
+        testResultObject->SetObjectName(levelName.GetAbsolutePathname());
         
         Map<String, String>::const_iterator it = results.begin();
         for(; it != results.end(); it++)
@@ -271,7 +271,7 @@ bool GameCore::FlushToDB(const String & levelName, const Map<String, String> &re
 				newRunObject->AddString("DeviceDescription", DeviceInfo::Instance()->GetDeviceDescription());
 			}
 
-			newRunObject->AddObject(levelName, testResultObject);
+			newRunObject->AddObject(levelName.GetAbsolutePathname(), testResultObject);
 			newRunObject->Finish();
 			dbClient->SaveObject(newRunObject, currentRunObject);
 			SafeRelease(newRunObject);

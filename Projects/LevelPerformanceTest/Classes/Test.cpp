@@ -19,7 +19,7 @@ Test::Test()
 {
 }
 
-Test::Test(const String& fullName)
+Test::Test(const FilePath& fullName)
 {
 	this->fullName = fullName;
 	
@@ -58,7 +58,7 @@ void Test::LoadResources()
 	DVASSERT_MSG(scene, "There is no landscape in a scene");
 	landscape->SetTiledShaderMode(Landscape::TILED_MODE_TEXTURE);
 
-	uint32 textureMemory = TextureHelper::GetSceneTextureMemory(scene, GetFilePath());
+	uint32 textureMemory = TextureHelper::GetSceneTextureMemory(scene, GetFilePath().GetFilename());
 	testData.SetTextureMemorySize(textureMemory);
 
 	File* file = File::Create(fullName, File::OPEN | File::READ);
@@ -258,20 +258,10 @@ void Test::AnimationFinished(DAVA::BaseObject *, void *, void *)
     camMoveAnimation = NULL;
 }
 
-const String Test::GetFileName() const
-{
-	String path;
-	String filename;
-	FileSystem::Instance()->SplitPath(fullName, path, filename);
-	return filename;
-}
 
-const String Test::GetFilePath() const
+const FilePath & Test::GetFilePath() const
 {
-	String path;
-	String filename;
-	FileSystem::Instance()->SplitPath(fullName, path, filename);
-	return path;
+	return fullName;
 }
 
 void Test::ZeroCurFpsStat()

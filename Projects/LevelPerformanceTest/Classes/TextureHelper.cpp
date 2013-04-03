@@ -5,49 +5,47 @@
 
 using namespace DAVA;
 
-uint32 TextureHelper::GetSceneTextureMemory(DAVA::Scene *scene, const String& scenePath)
+uint32 TextureHelper::GetSceneTextureMemory(DAVA::Scene *scene, const FilePath& scenePath)
 {
 	return EnumerateSceneTextures(scene, scenePath);
 }
 
-uint32 TextureHelper::EnumerateSceneTextures(DAVA::Scene* scene, const String& scenePath)
+uint32 TextureHelper::EnumerateSceneTextures(DAVA::Scene* scene, const FilePath& scenePath)
 {
 	Map<String, Texture *> textureMap;
 	EnumerateTextures(scene, textureMap);
 
-	String projectPath = scenePath;
+	FilePath projectPath(scenePath);
 
 	uint32 sceneTextureMemory = 0;
 	for(Map<String, Texture *>::const_iterator it = textureMap.begin(); it != textureMap.end(); ++it)
 	{
 		Texture *t = it->second;
-		if(String::npos == t->GetPathname().find(projectPath))
+		if(String::npos == t->GetPathname().ResolvePathname().find(projectPath.ResolvePathname()))
 		{   // skip all textures that are not related the scene
 			continue;
 		}
 
-		if(String::npos != t->GetPathname().find(projectPath))
-		{   //We need real info about textures size. In Editor on desktop pvr textures are decompressed to RGBA8888, so they have not real size.
-			String imageFileName = TextureDescriptor::GetPathnameForFormat(t->GetPathname(), t->GetSourceFileFormat());
-			switch (t->GetSourceFileFormat())
-			{
-				case DAVA::PVR_FILE:
-				{
-					sceneTextureMemory += LibPVRHelper::GetDataLength(imageFileName);
-					break;
-				}
-
-				case DAVA::DXT_FILE:
-				{
-					sceneTextureMemory += (int32)LibDxtHelper::GetDataSize(imageFileName);
-					break;
-				}
-
-				default:
-					sceneTextureMemory += t->GetDataSize();
-					break;
-			}
-		}
+        //We need real info about textures size. In Editor on desktop pvr textures are decompressed to RGBA8888, so they have not real size.
+        FilePath imageFileName = TextureDescriptor::GetPathnameForFormat(t->GetPathname(), t->GetSourceFileFormat());
+        switch (t->GetSourceFileFormat())
+        {
+            case DAVA::PVR_FILE:
+            {
+                sceneTextureMemory += LibPVRHelper::GetDataLength(imageFileName);
+                break;
+            }
+                
+            case DAVA::DXT_FILE:
+            {
+                sceneTextureMemory += (int32)LibDxtHelper::GetDataSize(imageFileName);
+                break;
+            }
+                
+            default:
+                sceneTextureMemory += t->GetDataSize();
+                break;
+        }
 	}
 
 	return sceneTextureMemory;
@@ -109,10 +107,10 @@ void TextureHelper::CollectLandscapeTextures(DAVA::Map<DAVA::String, DAVA::Textu
 
 
 
-void TextureHelper::CollectTexture(Map<String, Texture *> &textures, const String &name, Texture *tex)
+void TextureHelper::CollectTexture(Map<String, Texture *> &textures, const FilePath &name, Texture *tex)
 {
-	if (!name.empty())
+	if (name.IsInitalized())
 	{
-		textures[name] = tex;
+		textures[name.GetAbsolutePathname()] = tex;
 	}
 }

@@ -8,7 +8,7 @@ using namespace DAVA;
 class SettingsManager: public Singleton<SettingsManager>
 {
 public:
-    void InitWithFile(const String& filename);
+    void InitWithFile(const FilePath& filename);
 	
 	Point2i GetLandscapePartitioning() const;
 	const String GetLandscapeNodeName() const;
