@@ -95,6 +95,7 @@ public slots:
 	//Edit
 	void UndoAction();
 	void RedoAction();
+	void ConvertToShadow();
 
     //View
     void RestoreViews();

@@ -30,7 +30,6 @@ protected:
 
 protected slots:
 	void BakeTransform();
-	void ConvertToShadow();
 };
 
 #endif // __QT_PROPERTY_DATA_INTROSPECTION_H__

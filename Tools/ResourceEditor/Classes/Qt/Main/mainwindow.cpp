@@ -111,6 +111,9 @@ void QtMainWindow::SetupActions()
 	connect(ui->actionRulerTool, SIGNAL(triggered()), actionHandler, SLOT(RulerTool()));
 	connect(ui->actionShowSettings, SIGNAL(triggered()), actionHandler, SLOT(ShowSettings()));
 	connect(ui->actionBeast, SIGNAL(triggered()), actionHandler, SLOT(Beast()));
+
+	//Edit
+	connect(ui->actionConvertToShadow, SIGNAL(triggered()), actionHandler, SLOT(ConvertToShadow()));
 }
 
 void QtMainWindow::SetupMainMenu()
