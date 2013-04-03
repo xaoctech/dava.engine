@@ -22,8 +22,18 @@ protected:
 	DAVA::float32 curSpeed;
 	DAVA::Camera* curSceneCamera;
 
-	void ProcessMove(float timeElapsed);
-	void ProcessRotate(DAVA::UIEvent *event);
+	DAVA::Vector2 rotateStartPoint;
+	DAVA::Vector2 rotateStopPoint;
+
+	DAVA::float32 curViewAngleZ, curViewAngleY;
+	const DAVA::float32 maxViewAngle;
+
+	void ProcessKeyboardMove(float timeElapsed);
+
+	void RecalcCameraViewAngles();
+	void MouseMoveCameraPosition();
+	void MouseMoveCameraDirection();
+	void MouseMoveCameraPosAndDirByLockedPoint(const DAVA::Vector3 &point);
 };
 
 #endif
