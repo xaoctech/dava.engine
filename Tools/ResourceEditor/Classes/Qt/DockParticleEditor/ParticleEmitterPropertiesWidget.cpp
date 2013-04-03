@@ -5,6 +5,9 @@
 #include <QLineEdit>
 #include <QEvent>
 
+#define EMISSION_RANGE_MIN_LIMIT_DEGREES 0.0f
+#define EMISSION_RANGE_MAX_LIMIT_DEGREES 180.0f
+
 ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent) :
 	QWidget(parent)
 {
@@ -26,9 +29,6 @@ ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent
 	emitterTypeHBox->addWidget(emitterType);
 	mainLayout->addLayout(emitterTypeHBox);
 	connect(emitterType, SIGNAL(currentIndexChanged(int)), this, SLOT(OnValueChanged()));
-
-	emitterEmissionAngle = new TimeLineWidget(this);
-	InitWidget(emitterEmissionAngle);
 
 	emitterEmissionRange = new TimeLineWidget(this);
 	InitWidget(emitterEmissionRange);
@@ -83,10 +83,6 @@ void ParticleEmitterPropertiesWidget::OnValueChanged()
 	DVASSERT(emitterType->currentIndex() != -1);
 	ParticleEmitter::eType type = (ParticleEmitter::eType)emitterType->currentIndex();
 
-	PropLineWrapper<float32> emissionAngle;
-	if(!emitterEmissionAngle->GetValue(0, emissionAngle.GetPropsPtr()))
-		return;
-
 	PropLineWrapper<float32> emissionRange;
 	if(!emitterEmissionRange->GetValue(0, emissionRange.GetPropsPtr()))
 		return;
@@ -111,7 +107,6 @@ void ParticleEmitterPropertiesWidget::OnValueChanged()
 	
 	CommandUpdateEmitter* commandUpdateEmitter = new CommandUpdateEmitter(emitter);
 	commandUpdateEmitter->Init(type,
-							   emissionAngle.GetPropLine(),
 							   emissionRange.GetPropLine(),
 							   emissionVector.GetPropLine(),
 							   radius.GetPropLine(),
@@ -137,14 +132,6 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 	emitterYamlPath->setText(QString::fromStdString(emitter->GetConfigPath()));
 	emitterType->setCurrentIndex(emitter->emitterType);
 
-	if(NULL != emitterEmissionAngle)
-	{
-		minTime = emitterEmissionAngle->GetMinBoundary();
-		maxTime = emitterEmissionAngle->GetMaxBoundary();
-	}
-	emitterEmissionAngle->Init(minTime, maxTime, updateMinimize);
-	emitterEmissionAngle->AddLine(0, PropLineWrapper<float32>(emitter->emissionAngle).GetProps(), Qt::blue, "emission angle");
-
 	if(NULL != emitterEmissionRange)
 	{
 		minTime = emitterEmissionRange->GetMinBoundary();
@@ -152,6 +139,9 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 	}
 	emitterEmissionRange->Init(minTime, maxTime, updateMinimize);
 	emitterEmissionRange->AddLine(0, PropLineWrapper<float32>(emitter->emissionRange).GetProps(), Qt::blue, "emission range");
+	emitterEmissionRange->SetMinLimits(EMISSION_RANGE_MIN_LIMIT_DEGREES);
+	emitterEmissionRange->SetMaxLimits(EMISSION_RANGE_MAX_LIMIT_DEGREES);
+	emitterEmissionRange->SetYLegendMark(DEGREE_MARK_CHARACTER);
 
 	if(NULL != emitterEmissionVector)
 	{
@@ -172,6 +162,8 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 	}
 	emitterRadius->Init(minTime, maxTime, updateMinimize);
 	emitterRadius->AddLine(0, PropLineWrapper<float32>(emitter->radius).GetProps(), Qt::blue, "radius");
+	// Radius cannot be negative.
+	emitterRadius->SetMinLimits(0.0f);
 
 	emitterColorWidget->Init(0.f, emitterLifeTime, "color over life");
 	emitterColorWidget->SetValues(PropLineWrapper<Color>(emitter->colorOverLife).GetProps());
@@ -205,7 +197,6 @@ void ParticleEmitterPropertiesWidget::RestoreVisualState(KeyedArchive* visualSta
 	if (!visualStateProps)
 		return;
 
-	emitterEmissionAngle->SetVisualState(visualStateProps->GetArchive("EMITTER_EMISSION_ANGLE_PROPS"));
 	emitterEmissionRange->SetVisualState(visualStateProps->GetArchive("EMITTER_EMISSION_RANGE_PROPS"));
 	emitterEmissionVector->SetVisualState(visualStateProps->GetArchive("EMITTER_EMISSION_VECTOR_PROPS"));
 	emitterRadius->SetVisualState(visualStateProps->GetArchive("EMITTER_RADIUS_PROPS"));
@@ -218,9 +209,6 @@ void ParticleEmitterPropertiesWidget::StoreVisualState(KeyedArchive* visualState
 		return;
 
 	KeyedArchive* props = new KeyedArchive();
-
-	emitterEmissionAngle->GetVisualState(props);
-	visualStateProps->SetArchive("EMITTER_EMISSION_ANGLE_PROPS", props);
 
 	props->DeleteAllKeys();
 	emitterEmissionRange->GetVisualState(props);

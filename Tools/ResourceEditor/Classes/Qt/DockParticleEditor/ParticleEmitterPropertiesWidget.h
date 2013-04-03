@@ -26,6 +26,10 @@ public:
 	virtual void StoreVisualState(KeyedArchive* visualStateProps);
 	virtual void RestoreVisualState(KeyedArchive* visualStateProps);
 
+	// Accessors to timelines.
+	TimeLineWidget* GetEmitterRadiusTimeline() {return emitterRadius;};
+	TimeLineWidget* GetEmitterSizeTimeline() {return emitterSize;};
+
 signals:
 	void ValueChanged();
 	
@@ -41,7 +45,7 @@ private:
 
 	QLineEdit* emitterYamlPath;
 	QComboBox* emitterType;
-	TimeLineWidget* emitterEmissionAngle;
+
 	TimeLineWidget* emitterEmissionRange;
 	TimeLineWidget* emitterEmissionVector;
 	TimeLineWidget* emitterRadius;
