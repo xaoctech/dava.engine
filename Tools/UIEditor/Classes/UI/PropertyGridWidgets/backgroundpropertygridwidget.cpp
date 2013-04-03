@@ -132,11 +132,13 @@ void BackGroundPropertyGridWidget::OpenSpriteDialog()
 	ResourcePacker *resPacker = new ResourcePacker();
 	resPacker->PackResources(ResourcesManageHelper::GetSpritesDatasourceDirectory().toStdString(),
 	 					 				ResourcesManageHelper::GetSpritesDirectory().toStdString());
-
-    QString spriteName = QFileDialog::getOpenFileName( this, tr( "Choose a sprite file file" ),
-															ResourcesManageHelper::GetDefaultSpritesPath(),
+	// Get sprites directory to open
+	QString currentSpriteDir = ResourcesManageHelper::GetDefaultSpritesPath(this->ui->spriteLineEdit->text());
+	// Get sprite path from file dialog
+    QString spriteName = QFileDialog::getOpenFileName( this, tr( "Choose a sprite file" ),
+															currentSpriteDir,
 															tr( "Sprites (*.txt)" ) );
-	if( !spriteName.isNull() && !spriteName.isEmpty())
+	if(!spriteName.isNull() && !spriteName.isEmpty())
     {
 		// Convert file path into Unix-style path
 		spriteName = ResourcesManageHelper::ConvertPathToUnixStyle(spriteName);
@@ -144,11 +146,6 @@ void BackGroundPropertyGridWidget::OpenSpriteDialog()
 		if (ResourcesManageHelper::ValidateResourcePath(spriteName))
         {
             WidgetSignalsBlocker blocker(ui->spriteLineEdit);
-            
-			// Save new default sprites path
-			QFileInfo fileInfo(spriteName);
-			QString spritePath = fileInfo.absoluteDir().absolutePath();
-			ResourcesManageHelper::SetDefaultSpritesPath(spritePath);
 			
             // Sprite name should be pre-processed to use relative path.
             ui->spriteLineEdit->setText(PreprocessSpriteName(spriteName));

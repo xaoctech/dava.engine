@@ -20,7 +20,7 @@ class FontManagerDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit FontManagerDialog(bool okButtonEnable = false, QDialog *parent = 0);
+    explicit FontManagerDialog(bool okButtonEnable = false, const QString& graphicsFontPath = QString(), QDialog *parent = 0);
     ~FontManagerDialog();
     //Return created font
     Font * ResultFont();
@@ -28,6 +28,7 @@ private:
     Ui::FontManagerDialog *ui;
     QStandardItemModel *tableModel;
     Font *dialogResultFont;
+	QString currentFontPath;
     
     void ConnectToSignals();
     void InitializeTableView();

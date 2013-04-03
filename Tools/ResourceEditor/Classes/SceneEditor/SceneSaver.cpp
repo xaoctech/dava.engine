@@ -137,7 +137,11 @@ void SceneSaver::SaveScene(Scene *scene, const FilePath &fileName, Set<String> &
     outFile->SaveScene(sceneUtils.dataSourceFolder + tempSceneName, scene);
     SafeRelease(outFile);
 
-    FileSystem::Instance()->MoveFile(sceneUtils.dataSourceFolder + tempSceneName, sceneUtils.dataFolder + fileName);
+    bool moved = FileSystem::Instance()->MoveFile(sceneUtils.dataSourceFolder + tempSceneName, sceneUtils.dataFolder + fileName, true);
+	if(!moved)
+	{
+		errorLog.insert(Format("Can't move file %s", fileName.GetAbsolutePathname().c_str()));
+	}
     
     SceneValidator::Instance()->SetPathForChecking(oldPath);
 }

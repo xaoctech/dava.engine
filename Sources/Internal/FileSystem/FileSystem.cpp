@@ -232,15 +232,21 @@ bool FileSystem::CopyFile(const FilePath & existingFile, const FilePath & newFil
 #endif //PLATFORMS
 }
 
-bool FileSystem::MoveFile(const FilePath & existingFile, const FilePath & newFile)
+bool FileSystem::MoveFile(const FilePath & existingFile, const FilePath & newFile, bool overwriteExisting/* = false*/)
 {
 #ifdef __DAVAENGINE_WIN32__
-	BOOL ret = ::MoveFileExA(existingFile.ResolvePathname().c_str(), newFile.ResolvePathname().c_str(), MOVEFILE_REPLACE_EXISTING);
+	DWORD flags = (overwriteExisting) ? MOVEFILE_REPLACE_EXISTING : 0;
+	BOOL ret = ::MoveFileExA(existingFile.ResolvePathname().c_str(), newFile.ResolvePathname().c_str(), flags);
 	return ret != 0;
 #elif defined(__DAVAENGINE_ANDROID__)
-	DVASSERT_MSG(0, "Not implemented");
+	int ret = rename(existingFile.ResolvePathname().c_str(), newFile.ResolvePathname().c_str());
+	return ret == 0;
 #else //iphone & macos
-	int ret = copyfile(existingFile.ResolvePathname().c_str(), newFile.ResolvePathname().c_str(), NULL, COPYFILE_ALL | COPYFILE_MOVE); //COPYFILE_EXCL
+	int flags = COPYFILE_ALL | COPYFILE_MOVE;
+	if(overwriteExisting)
+		flags |= COPYFILE_EXCL;
+	
+	int ret = copyfile(existingFile.ResolvePathname().c_str(), newFile.ResolvePathname().c_str(), NULL, flags);
 	return ret==0;
 #endif //PLATFORMS
 }

@@ -948,6 +948,8 @@ int32 NodesPropertyControl::GetTrianglesForLodLayer(LodComponent::LodData *lodDa
         Vector<Entity *> meshes;
         lodData->nodes[n]->GetChildNodes(meshes);
         
+        meshes.push_back(lodData->nodes[n]);
+        
         for(int32 m = 0; m < (int32)meshes.size(); ++m)
         {
             RenderObject *ro = GetRenerObject(meshes[m]);

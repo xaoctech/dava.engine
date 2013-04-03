@@ -379,7 +379,7 @@ bool LibDxtHelper::WriteDxtFile(const FilePath & fileNameOriginal, int32 width, 
     if(ret)
     {
         FileSystem::Instance()->DeleteFile(fileNameOriginal);
-        if(!FileSystem::Instance()->MoveFile(fileName, fileNameOriginal))
+        if(!FileSystem::Instance()->MoveFile(fileName, fileNameOriginal, true))
         {
             Logger::Error("[LibDxtHelper::WriteDxtFile] Temporary dds file renamig failed.");
             ret = false;

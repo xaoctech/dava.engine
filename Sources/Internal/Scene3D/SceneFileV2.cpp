@@ -661,7 +661,9 @@ bool SceneFileV2::RemoveEmptySceneNodes(DAVA::Entity * currentNode)
         bool doNotRemove = customProperties && customProperties->IsKeyExists("editor.donotremove");
         
         uint32 componentCount = currentNode->GetComponentCount();
-        if (componentCount != 0)
+
+        if ((componentCount > 0 && (0 == currentNode->GetComponent(Component::TRANSFORM_COMPONENT))) //has only component, not transform
+			|| componentCount > 1)
         {
             doNotRemove = true;
         }
@@ -1033,8 +1035,8 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
     removedNodeCount = 0;
     rootNode->BakeTransforms();
     
-	ConvertShadows(rootNode);
-    RemoveEmptySceneNodes(rootNode);
+	//ConvertShadows(rootNode);
+    //RemoveEmptySceneNodes(rootNode);
     RemoveEmptyHierarchy(rootNode);
 	ReplaceOldNodes(rootNode);
     
