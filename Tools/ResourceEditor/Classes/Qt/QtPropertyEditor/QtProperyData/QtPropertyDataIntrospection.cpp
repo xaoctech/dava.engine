@@ -132,12 +132,6 @@ void QtPropertyDataIntrospection::CreateCustomButtonsForRenderObject()
 		bakeButton->setIconSize(QSize(12, 12));
 		AddOW(QtPropertyOW(bakeButton));
 		QObject::connect(bakeButton, SIGNAL(pressed()), this, SLOT(BakeTransform()));
-
-		QPushButton *shadowButton = new QPushButton(QIcon(":/QtIcons/shadow.png"), "");
-		shadowButton->setToolTip("Convert to Shadow");
-		shadowButton->setIconSize(QSize(12, 12));
-		AddOW(QtPropertyOW(shadowButton));
-		QObject::connect(shadowButton, SIGNAL(pressed()), this, SLOT(ConvertToShadow()));
 	}
 }
 
@@ -150,22 +144,3 @@ void QtPropertyDataIntrospection::BakeTransform()
 	entity->SetLocalTransform(DAVA::Matrix4::IDENTITY);
 }
 
-void QtPropertyDataIntrospection::ConvertToShadow()
-{
-	DAVA::RenderObject * ro = static_cast<DAVA::RenderObject*>(object);
-
-	DVASSERT(ro->GetRenderBatchCount() == 1);
-	if(typeid(*(ro->GetRenderBatch(0))) == typeid(DAVA::RenderBatch))
-	{
-		DAVA::ShadowVolume * shadowVolume = ro->CreateShadow();
-
-		QtPropertyDataIntrospection * renderComponentProperty = static_cast<QtPropertyDataIntrospection*>(parent);
-		DAVA::RenderComponent * renderComponent = static_cast<DAVA::RenderComponent*>(renderComponentProperty->object);
-		DAVA::Entity * entity = renderComponent->GetEntity();
-		entity->SetLocalTransform(entity->GetLocalTransform());//just forced update of worldTransform
-
-		ro->RemoveRenderBatch(ro->GetRenderBatch(0));
-		ro->AddRenderBatch(shadowVolume);
-	}
-
-}
