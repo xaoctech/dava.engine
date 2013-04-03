@@ -71,7 +71,7 @@ void Installer::UpdateAvailableSoftware() {
     //merge available software list
     const AppsConfig& currentConfig = Settings::GetInstance()->GetCurrentConfig();
 
-    if (Settings::GetVersion(currentConfig.m_Launcher.m_Version) < Settings::GetVersion(m_AppsConfig.m_Launcher.m_Version)) {
+    if (Settings::GetVersion(currentConfig.m_Launcher.m_Version) != Settings::GetVersion(m_AppsConfig.m_Launcher.m_Version)) {
         //run selfupdate
         Logger::GetInstance()->AddLog(tr("Start self update"));
         m_pSelfUpdater->UpdatedConfigDownloaded(m_AppsConfig);
@@ -121,7 +121,7 @@ void Installer::FormatFromUpdate(AvailableSoftWare::SoftWareMap& softMap, const 
                 soft.m_AvailableVersion.insert(appConfig.m_Version);
                 softMap[appConfig.m_Name] = soft;
             }
-            if (Settings::GetVersion(softMap[appConfig.m_Name].m_NewVersion) < Settings::GetVersion(appConfig.m_Version))
+            if (Settings::GetVersion(softMap[appConfig.m_Name].m_NewVersion) != Settings::GetVersion(appConfig.m_Version))
                 softMap[appConfig.m_Name].m_NewVersion = appConfig.m_Version;
         }
     }
@@ -484,7 +484,7 @@ bool Installer::Update(AvailableSoftWare::SoftWareMap softMap, eAppType type, bo
         const QString& name = iter.key();
         const SoftWare& soft = iter.value();
         if (!soft.m_CurVersion.isEmpty() &&
-            Settings::GetVersion(soft.m_CurVersion) < Settings::GetVersion(soft.m_NewVersion)) {
+            Settings::GetVersion(soft.m_CurVersion) != Settings::GetVersion(soft.m_NewVersion)) {
             if (force ||
                 0 == QMessageBox::information(NULL,//this,
                                              tr("Update available"),
