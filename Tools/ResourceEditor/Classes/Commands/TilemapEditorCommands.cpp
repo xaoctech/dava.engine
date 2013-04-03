@@ -65,7 +65,7 @@ void CommandDrawTilemap::UpdateLandscapeTilemap(DAVA::Image *image)
 {
 	Texture* texture = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight(), false);
 	texture->relativePathname = savedPathname;
-	texture->GenerateMipmaps();
+//	texture->GenerateMipmaps();
 	texture->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
 
 	LandscapeEditorBase* editor = GetActiveEditor();
