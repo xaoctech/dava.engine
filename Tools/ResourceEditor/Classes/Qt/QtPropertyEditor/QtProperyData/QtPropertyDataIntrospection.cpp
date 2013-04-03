@@ -127,14 +127,45 @@ void QtPropertyDataIntrospection::CreateCustomButtonsForRenderObject()
 {
 	if(NULL != info && (info->Type() == DAVA::MetaInfo::Instance<DAVA::RenderObject>()))
 	{
-		QPushButton *addButton = new QPushButton(QIcon(":/QtIcons/keyplus.png"), "");
-		addButton->setIconSize(QSize(12, 12));
-		AddOW(QtPropertyOW(addButton));
-		QObject::connect(addButton, SIGNAL(pressed()), this, SLOT(AddBakeTransformsField()));
+		QPushButton *bakeButton = new QPushButton(QIcon(":/QtIcons/transform_bake.png"), "");
+		bakeButton->setToolTip("Bake Transform");
+		bakeButton->setIconSize(QSize(12, 12));
+		AddOW(QtPropertyOW(bakeButton));
+		QObject::connect(bakeButton, SIGNAL(pressed()), this, SLOT(BakeTransform()));
+
+		QPushButton *shadowButton = new QPushButton(QIcon(":/QtIcons/shadow.png"), "");
+		shadowButton->setToolTip("Convert to Shadow");
+		shadowButton->setIconSize(QSize(12, 12));
+		AddOW(QtPropertyOW(shadowButton));
+		QObject::connect(shadowButton, SIGNAL(pressed()), this, SLOT(ConvertToShadow()));
 	}
 }
 
-void QtPropertyDataIntrospection::AddBakeTransformsField()
+void QtPropertyDataIntrospection::BakeTransform()
 {
+	QtPropertyDataIntrospection * renderComponentProperty = static_cast<QtPropertyDataIntrospection*>(parent);
+	DAVA::Entity * entity = (static_cast<DAVA::RenderComponent*>(renderComponentProperty->object))->GetEntity();
+	DAVA::RenderObject * ro = static_cast<DAVA::RenderObject*>(object);
+	ro->BakeTransform(entity->GetLocalTransform());
+	entity->SetLocalTransform(DAVA::Matrix4::IDENTITY);
+}
+
+void QtPropertyDataIntrospection::ConvertToShadow()
+{
+	DAVA::RenderObject * ro = static_cast<DAVA::RenderObject*>(object);
+
+	DVASSERT(ro->GetRenderBatchCount() == 1);
+	if(typeid(*(ro->GetRenderBatch(0))) == typeid(DAVA::RenderBatch))
+	{
+		DAVA::ShadowVolume * shadowVolume = ro->CreateShadow();
+
+		QtPropertyDataIntrospection * renderComponentProperty = static_cast<QtPropertyDataIntrospection*>(parent);
+		DAVA::RenderComponent * renderComponent = static_cast<DAVA::RenderComponent*>(renderComponentProperty->object);
+		DAVA::Entity * entity = renderComponent->GetEntity();
+		entity->SetLocalTransform(entity->GetLocalTransform());//just forced update of worldTransform
+
+		ro->RemoveRenderBatch(ro->GetRenderBatch(0));
+		ro->AddRenderBatch(shadowVolume);
+	}
 
 }

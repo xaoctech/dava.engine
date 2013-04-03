@@ -63,6 +63,7 @@ public:
  */
 
 class RenderBatch;
+class ShadowVolume;
 class RenderObject : public AnimatedObject
 {
 public:
@@ -129,6 +130,7 @@ public:
 	RenderSystem * GetRenderSystem();
 
 	virtual void BakeTransform(const Matrix4 & transform) {}
+	virtual ShadowVolume * CreateShadow() {return 0;}
     
 protected:
 //    eType type; //TODO: waiting for enums at introspection
