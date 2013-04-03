@@ -8,6 +8,7 @@
 class EntityModifSystem;
 class SceneCameraSystem;
 class SceneGridSystem;
+class SceneCollisionSystem;
 class EntityCollisionSystem;
 
 class SceneEditorProxy : public DAVA::Scene
@@ -33,6 +34,7 @@ protected:
 	EntityModifSystem *modifSystem;
 	EntityCollisionSystem *collisionSystem;
 	SceneCameraSystem* sceneCameraSystem;
+	SceneCollisionSystem *sceneCollisionSystem;
 	SceneGridSystem* sceneGridSystem;
 
 	virtual void Draw();

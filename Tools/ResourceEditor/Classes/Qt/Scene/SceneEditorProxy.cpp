@@ -1,6 +1,7 @@
 #include "Scene/SceneEditorProxy.h"
 #include "Scene/System/SceneCameraSystem.h"
 #include "Scene/System/SceneGridSystem.h"
+#include "Scene/System/SceneCollisionSystem.h"
 
 // framework
 #include "Scene3D/SceneFileV2.h"
@@ -13,10 +14,14 @@ SceneEditorProxy::SceneEditorProxy()
 
 	sceneGridSystem = new SceneGridSystem(this);
 	AddSystem(sceneGridSystem, 0);
+
+	sceneCollisionSystem = new SceneCollisionSystem(this);
+	AddSystem(sceneCollisionSystem, 0);
 }
 
 SceneEditorProxy::~SceneEditorProxy()
 {
+	SafeDelete(sceneCollisionSystem);
 	SafeDelete(sceneGridSystem);
 	SafeDelete(sceneCameraSystem);
 }
