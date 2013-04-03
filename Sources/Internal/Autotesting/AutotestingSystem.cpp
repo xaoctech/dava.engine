@@ -529,9 +529,6 @@ void AutotestingSystem::SaveTestStepLogEntryToDB(const String &type, const Strin
 
 void AutotestingSystem::Update(float32 timeElapsed)
 {
-    if(!isInit) return;
-    
-    
     if(needExitApp)
     {
         timeBeforeExit -= timeElapsed;
@@ -542,6 +539,8 @@ void AutotestingSystem::Update(float32 timeElapsed)
         }
         return;
     }
+    
+    if(!isInit) return;
 
     if(isRunning)
     {
