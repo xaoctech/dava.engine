@@ -104,7 +104,10 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 			QString legend = iter->second.legend;
 				
 			painter.setPen(iter->second.color);
-			painter.drawText(rect(), Qt::AlignCenter, legend);
+			
+			QRect textRect = rect();
+			textRect.adjust(3, 0, 0, 0);
+			painter.drawText(textRect, Qt::AlignLeft, legend);
 		}
 		else
 		{
