@@ -31,7 +31,7 @@ public:
 public slots:
 	void SetCurrentTab(int index);
 
-	// this slot redirect any UIEvent to the active sceneProxy for processing
+	// this slot redirects any UIEvent to the active sceneProxy for processing
 	void ProcessDAVAUIEvent(DAVA::UIEvent *event);
 
 // old ui. should be removed later -->

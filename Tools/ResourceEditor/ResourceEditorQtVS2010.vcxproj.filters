@@ -1584,6 +1584,9 @@
     <ClCompile Include="Classes\Qt\Scene\System\SceneGridSystem.cpp">
       <Filter>Sources\Qt\Scene\System</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\SceneCollisionSystem.cpp">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -2780,13 +2783,16 @@
     <ClInclude Include="Classes\Qt\Scene\SceneTabWidget.h">
       <Filter>Sources\Qt\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Scene\System\EntityModifSystem.h">
-      <Filter>Sources\Qt\Scene\System</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\Scene\System\SceneCameraSystem.h">
       <Filter>Sources\Qt\Scene\System</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\Scene\System\SceneGridSystem.h">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\SceneCollisionSystem.h">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\EntityModifSystem.h">
       <Filter>Sources\Qt\Scene\System</Filter>
     </ClInclude>
   </ItemGroup>
