@@ -6,8 +6,8 @@ using namespace DAVA;
 FilePathTest::FilePathTest()
     :   TestTemplate<FilePathTest>("FilePathTest")
 {
-	RegisterFunction(this, &FilePathTest::MacTestFunction, Format("FilePathTest Mac OS"), NULL);
-	RegisterFunction(this, &FilePathTest::WinTestFunction, Format("FilePathTest Win32"), NULL);
+	RegisterFunction(this, &FilePathTest::MacTestFunction, String("FilePathTest Mac OS"), NULL);
+	RegisterFunction(this, &FilePathTest::WinTestFunction, String("FilePathTest Win32"), NULL);
 }
 
 void FilePathTest::LoadResources()
@@ -151,7 +151,24 @@ void FilePathTest::MacTestFunction(PerfFuncData * data)
     filepath11.ReplaceDirectory("/Users/Test");
     TEST_VERIFY(filepath11.GetDirectory() == "/Users/Test/");
 
+    
+    FilePath filepath12("/Users/Test");
+    filepath12.MakeDirectoryPathname();
+    DVASSERT(filepath12.IsDirectoryPathname());
+    
+    TEST_VERIFY(filepath12.GetFilename() == "");
+    TEST_VERIFY(filepath12.GetBasename() == "");
+    TEST_VERIFY(filepath12.GetExtension() == "");
+    TEST_VERIFY(filepath12.GetDirectory() == "/Users/Test/");
 
+    
+    FilePath filepath13("/Users/Test/file");
+    TEST_VERIFY(filepath13.GetFilename() == "file");
+    TEST_VERIFY(filepath13.GetBasename() == "file");
+    TEST_VERIFY(filepath13.GetExtension() == "");
+    TEST_VERIFY(filepath13.GetDirectory() == "/Users/Test/");
+
+    
     TEST_VERIFY(filepath0.GetAbsolutePathname() == "/Mac/Users/image.doc");
     TEST_VERIFY(filepath0.ResolvePathname() == "/Mac/Users/image.doc");
 
@@ -187,6 +204,12 @@ void FilePathTest::MacTestFunction(PerfFuncData * data)
 
     TEST_VERIFY(filepath11.GetAbsolutePathname() == "/Users/Test/music.mp3");
     TEST_VERIFY(filepath11.ResolvePathname() == "/Users/Test/music.mp3");
+
+    TEST_VERIFY(filepath12.GetAbsolutePathname() == "/Users/Test/");
+    TEST_VERIFY(filepath12.ResolvePathname() == "/Users/Test/");
+
+    TEST_VERIFY(filepath13.GetAbsolutePathname() == "/Users/Test/file");
+    TEST_VERIFY(filepath13.ResolvePathname() == "/Users/Test/file");
 
     
     Logger::Debug("[FilePathTest] Mac OS Done");
@@ -324,7 +347,26 @@ void FilePathTest::WinTestFunction(PerfFuncData * data)
     
     filepath11.ReplaceDirectory("c:/Users/Test");
     TEST_VERIFY(filepath11.GetDirectory() == "c:/Users/Test/");
-        
+    
+    FilePath filepath12("c:/Users/Test");
+    filepath12.MakeDirectoryPathname();
+    DVASSERT(filepath12.IsDirectoryPathname());
+    
+    TEST_VERIFY(filepath12.GetFilename() == "");
+    TEST_VERIFY(filepath12.GetBasename() == "");
+    TEST_VERIFY(filepath12.GetExtension() == "");
+    TEST_VERIFY(filepath12.GetDirectory() == "c:/Users/Test/");
+
+    
+    FilePath filepath13("c:/Users/Test/file");
+    TEST_VERIFY(filepath13.GetFilename() == "file");
+    TEST_VERIFY(filepath13.GetBasename() == "file");
+    TEST_VERIFY(filepath13.GetExtension() == "");
+    TEST_VERIFY(filepath13.GetDirectory() == "c:/Users/Test/");
+
+    
+    
+    
     TEST_VERIFY(filepath0.GetAbsolutePathname() == "c:/Mac/Users/image.doc");
     TEST_VERIFY(filepath0.ResolvePathname() == "c:/Mac/Users/image.doc");
     
@@ -361,6 +403,12 @@ void FilePathTest::WinTestFunction(PerfFuncData * data)
     TEST_VERIFY(filepath11.GetAbsolutePathname() == "c:/Users/Test/music.mp3");
     TEST_VERIFY(filepath11.ResolvePathname() == "c:/Users/Test/music.mp3");
     
+    TEST_VERIFY(filepath12.GetAbsolutePathname() == "c:/Users/Test/");
+    TEST_VERIFY(filepath12.ResolvePathname() == "c:/Users/Test/");
+
+    TEST_VERIFY(filepath13.GetAbsolutePathname() == "c:/Users/Test/file");
+    TEST_VERIFY(filepath13.ResolvePathname() == "c:/Users/Test/file");
+
     
     Logger::Debug("[FilePathTest] Win32 Done");
     
