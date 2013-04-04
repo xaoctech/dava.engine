@@ -243,7 +243,7 @@ bool FileSystem::MoveFile(const FilePath & existingFile, const FilePath & newFil
 	return ret == 0;
 #else //iphone & macos
 	int flags = COPYFILE_ALL | COPYFILE_MOVE;
-	if(overwriteExisting)
+	if(!overwriteExisting)
 		flags |= COPYFILE_EXCL;
 	
 	int ret = copyfile(existingFile.ResolvePathname().c_str(), newFile.ResolvePathname().c_str(), NULL, flags);
@@ -428,22 +428,28 @@ const FilePath & FileSystem::GetCurrentWorkingDirectory()
 #if defined(__DAVAENGINE_WIN32__)
 	::GetCurrentDirectoryA(2048, tempDir);
 	currentWorkingDirectory = FilePath(tempDir);
+	currentWorkingDirectory.MakeDirectoryPathname();
 	return currentWorkingDirectory;
 #elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 	getcwd(tempDir, 2048);
 	currentWorkingDirectory = FilePath(tempDir);
+	currentWorkingDirectory.MakeDirectoryPathname();
 	return currentWorkingDirectory;
 #endif //PLATFORMS
-	return currentWorkingDirectory; 
+	currentWorkingDirectory.MakeDirectoryPathname();
+	return currentWorkingDirectory;
 }
 
 bool FileSystem::SetCurrentWorkingDirectory(const FilePath & newWorkingDirectory)
 {
+    DVASSERT(newWorkingDirectory.IsDirectoryPathname());
+    
 #if defined(__DAVAENGINE_WIN32__)
 	BOOL res = ::SetCurrentDirectoryA(newWorkingDirectory.ResolvePathname().c_str());
 	return (res != 0);
 #elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-	return !(chdir(newWorkingDirectory.ResolvePathname().c_str()) == 0);
+    
+	return (chdir(newWorkingDirectory.ResolvePathname().c_str()) == 0);
 #endif //PLATFORMS
 	return false; 
 }

@@ -30,6 +30,7 @@
 		E81B47DA16F896070025AF23 /* FilePathTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E81B47D816F896070025AF23 /* FilePathTest.cpp */; };
 		E81F2AF516BFA4E600C4545E /* MaterialCompilerTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E81F2AF316BFA4E600C4545E /* MaterialCompilerTest.cpp */; };
 		E832BD95170D5610004D88A0 /* FileListTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E832BD93170D5610004D88A0 /* FileListTest.cpp */; };
+		E832BDA0170D823C004D88A0 /* FileSystemTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E832BD9E170D823C004D88A0 /* FileSystemTest.cpp */; };
 		E8B6B3CA1705DED5004F665E /* LocalizationTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B6B3C81705DED5004F665E /* LocalizationTest.cpp */; };
 		E8BD1F0816DE4A7800499E18 /* eMailTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8BD1F0616DE4A7800499E18 /* eMailTest.cpp */; };
 		E8C6B12216692E87001EBE09 /* CloneTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8C6B12016692E87001EBE09 /* CloneTest.cpp */; };
@@ -113,6 +114,8 @@
 		E81F2AF416BFA4E600C4545E /* MaterialCompilerTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialCompilerTest.h; sourceTree = "<group>"; };
 		E832BD93170D5610004D88A0 /* FileListTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileListTest.cpp; sourceTree = "<group>"; };
 		E832BD94170D5610004D88A0 /* FileListTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileListTest.h; sourceTree = "<group>"; };
+		E832BD9E170D823C004D88A0 /* FileSystemTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileSystemTest.cpp; sourceTree = "<group>"; };
+		E832BD9F170D823C004D88A0 /* FileSystemTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileSystemTest.h; sourceTree = "<group>"; };
 		E8B6B3C81705DED5004F665E /* LocalizationTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LocalizationTest.cpp; sourceTree = "<group>"; };
 		E8B6B3C91705DED5004F665E /* LocalizationTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalizationTest.h; sourceTree = "<group>"; };
 		E8BD1F0616DE4A7800499E18 /* eMailTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = eMailTest.cpp; sourceTree = "<group>"; };
@@ -248,6 +251,8 @@
 		5C7BE30F156E0EF400F9F538 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				E832BD9E170D823C004D88A0 /* FileSystemTest.cpp */,
+				E832BD9F170D823C004D88A0 /* FileSystemTest.h */,
 				E8B6B3C81705DED5004F665E /* LocalizationTest.cpp */,
 				E8B6B3C91705DED5004F665E /* LocalizationTest.h */,
 				497BF6EC16F7565B00AC57C6 /* DeviceInfoTest.cpp */,
@@ -442,6 +447,7 @@
 				497BF6EE16F7565B00AC57C6 /* DeviceInfoTest.cpp in Sources */,
 				E8B6B3CA1705DED5004F665E /* LocalizationTest.cpp in Sources */,
 				E832BD95170D5610004D88A0 /* FileListTest.cpp in Sources */,
+				E832BDA0170D823C004D88A0 /* FileSystemTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

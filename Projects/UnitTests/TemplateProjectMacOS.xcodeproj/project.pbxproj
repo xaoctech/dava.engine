@@ -25,6 +25,7 @@
 		E81F2AF016BFA4A600C4545E /* MaterialCompilerTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E81F2AEE16BFA4A600C4545E /* MaterialCompilerTest.cpp */; };
 		E82E5FFB170B1AB300036D4B /* FilePathTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E82E5FF9170B1AB300036D4B /* FilePathTest.cpp */; };
 		E832BD8F170D424B004D88A0 /* FileListTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E832BD8D170D424B004D88A0 /* FileListTest.cpp */; };
+		E832BD9A170D5941004D88A0 /* FileSystemTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E832BD98170D5941004D88A0 /* FileSystemTest.cpp */; };
 		E83604F1163FEB4C0061A636 /* KeyedArchiveTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E83604ED163FEB4C0061A636 /* KeyedArchiveTest.cpp */; };
 		E83604F2163FEB4C0061A636 /* KeyedArchiveYamlTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E83604EF163FEB4C0061A636 /* KeyedArchiveYamlTest.cpp */; };
 		E87BB1E4162D5CCB001A5448 /* TextureUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E87BB1E2162D5CCB001A5448 /* TextureUtils.cpp */; };
@@ -113,6 +114,8 @@
 		E82E5FFA170B1AB300036D4B /* FilePathTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FilePathTest.h; path = Classes/FilePathTest.h; sourceTree = "<group>"; };
 		E832BD8D170D424B004D88A0 /* FileListTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileListTest.cpp; path = Classes/FileListTest.cpp; sourceTree = "<group>"; };
 		E832BD8E170D424B004D88A0 /* FileListTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileListTest.h; path = Classes/FileListTest.h; sourceTree = "<group>"; };
+		E832BD98170D5941004D88A0 /* FileSystemTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileSystemTest.cpp; path = Classes/FileSystemTest.cpp; sourceTree = "<group>"; };
+		E832BD99170D5941004D88A0 /* FileSystemTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileSystemTest.h; path = Classes/FileSystemTest.h; sourceTree = "<group>"; };
 		E83604ED163FEB4C0061A636 /* KeyedArchiveTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = KeyedArchiveTest.cpp; path = Classes/KeyedArchiveTest.cpp; sourceTree = "<group>"; };
 		E83604EE163FEB4C0061A636 /* KeyedArchiveTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyedArchiveTest.h; path = Classes/KeyedArchiveTest.h; sourceTree = "<group>"; };
 		E83604EF163FEB4C0061A636 /* KeyedArchiveYamlTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = KeyedArchiveYamlTest.cpp; path = Classes/KeyedArchiveYamlTest.cpp; sourceTree = "<group>"; };
@@ -366,6 +369,8 @@
 		E82E5FF7170B1A9E00036D4B /* FilePath */ = {
 			isa = PBXGroup;
 			children = (
+				E832BD98170D5941004D88A0 /* FileSystemTest.cpp */,
+				E832BD99170D5941004D88A0 /* FileSystemTest.h */,
 				E832BD8D170D424B004D88A0 /* FileListTest.cpp */,
 				E832BD8E170D424B004D88A0 /* FileListTest.h */,
 				E82E5FF9170B1AB300036D4B /* FilePathTest.cpp */,
@@ -600,6 +605,7 @@
 				E8B6B3C11705DD97004F665E /* LocalizationTest.cpp in Sources */,
 				E82E5FFB170B1AB300036D4B /* FilePathTest.cpp in Sources */,
 				E832BD8F170D424B004D88A0 /* FileListTest.cpp in Sources */,
+				E832BD9A170D5941004D88A0 /* FileSystemTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

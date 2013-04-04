@@ -178,49 +178,6 @@ public:
 	 */
 	virtual bool IsDirectory(const FilePath & pathToCheck);
 		
-//	/**
-//		\brief Return canonical path name of \a path.
-//
-//		RealPath expands all symbolic links and resolves references to '/./', '/../' and extra '/' characters in
-//		the string named by path and returns the canonicalized absolute pathname.
-//		The resulting path will have no symbolic link, '/./' or '/../' components, also no trailing ones.
-//		Nor will it  end on a slash: if the result is the root then the returned path is empty,
-//		and unless the result is empty, it will always start with a slash.
-//	 */
-//	static FilePath RealPath(const FilePath & path);
-
-//	/**
-//     \brief Return canonical path name of \a path.
-//     
-//     GetCanonicalPath expands all symbolic links and resolves references to '/./', '/../' and extra '/' characters in
-//     the string named by path and returns the canonicalized absolute pathname.
-//     The resulting path will have no symbolic link, '/./' or '/../' components, also no trailing ones.
-//     Nor will it  end on a slash: if the result is the root then the returned path is empty,
-//     and unless the result is empty, it will always start with a slash. It also removes disk letter from path.
-//	 */
-//    static FilePath GetCanonicalPath(const FilePath & path);
-    
-    
-//	/**
-//		\brief Split path to file into path and filename
-//		\param[in] filepath inputpath to some file 
-//		\param[out] path path to the input file (always with trailing backslash character ('/').)
-//		\param[out] filename filename of the input file
-//	 */
-//	static void	SplitPath(const String & filepath, String & path, String & filename);
-
-//	/**
-//		\brief Extract extension from the file path
-//		Function returns extension with ".", so if you'll call GetExtension("filename.png") function will return ".png". 
-//		\returns extension of the file
-//	 */
-//	static String GetExtension(const String & filename);
-
-//	/**
-//		\brief Replace extension for the given filename
-//		
-//	 */
-//	static String ReplaceExtension(const String & filename, const String & newExt);
 
 	
 	/**
@@ -291,29 +248,10 @@ public:
 	int32 Spawn(const String& command);
     
     
-//	/**
-//	 \brief Creates the relative path for filePathname
-//	 \param[in] path of the source folder
-//	 \param[in] path name of the file 
-//	 \returns relative path
-//	 */
-//    static String AbsoluteToRelativePath(const String &folderPathname, const String &absolutePathname);
-    
-
     static void ReplaceBundleName(const FilePath &newBundlePath);
 
 private:
     
-//    /**
-//     \brief Return canonical path name of \a path.
-//     
-//     NormalizePath expands all symbolic links and resolves references to '/./', '/../' and extra '/' characters in
-//     the string named by path and returns the canonicalized absolute pathname.
-//     The resulting path will have no symbolic link, '/./' or '/../' components, also no trailing ones.
-//     Nor will it  end on a slash: if the result is the root then the returned path is empty,
-//     and unless the result is empty, it will always start with a slash.
-//	 */
-//	static FilePath NormalizePath(const FilePath & path);
 	virtual eCreateDirectoryResult CreateExactDirectory(const FilePath & filePath);
 
     
