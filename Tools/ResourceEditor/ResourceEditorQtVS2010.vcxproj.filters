@@ -1562,6 +1562,7 @@
     </ClCompile>
     <ClCompile Include="_GeneratedQt\DockMaterialViewOptions\MaterialViewOptions_moc.cpp">
       <Filter>QtGenerated\DockMaterialViewOptions</Filter>
+    </ClCompile>
     <ClCompile Include="Classes\Qt\DockProperties\PropertyEditorStateHelper.cpp">
       <Filter>Sources\Qt\DockProperties</Filter>
     </ClCompile>
@@ -2772,6 +2773,7 @@
     </ClInclude>
     <ClInclude Include="Classes\Commands\MaterialViewOptionsCommands.h">
       <Filter>Sources\Commands</Filter>
+    </ClInclude>
     <ClInclude Include="Classes\Qt\DockProperties\PropertyEditorStateHelper.h">
       <Filter>Sources\Qt\DockProperties</Filter>
     </ClInclude>
