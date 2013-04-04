@@ -79,7 +79,7 @@ void CommandUpdateParticleLayer::Init(const QString& layerName,
 									  RefPtr< PropertyLine<float32> > numberVariation,
 									  RefPtr< PropertyLine<Vector2> > size,
 									  RefPtr< PropertyLine<Vector2> > sizeVariation,
-									  RefPtr< PropertyLine<float32> > sizeOverLife,
+									  RefPtr< PropertyLine<Vector2> > sizeOverLife,
 									  RefPtr< PropertyLine<float32> > velocity,
 									  RefPtr< PropertyLine<float32> > velocityVariation,
 									  RefPtr< PropertyLine<float32> > velocityOverLife,
@@ -141,7 +141,7 @@ void CommandUpdateParticleLayer::Execute()
 	layer->numberVariation = numberVariation;
 	layer->size = size;
 	layer->sizeVariation = sizeVariation;
-	layer->sizeOverLife = sizeOverLife;
+	layer->sizeOverLifeXY = sizeOverLife;
 	layer->velocity = velocity;
 	layer->velocityVariation = velocityVariation;
 	layer->velocityOverLife = velocityOverLife;

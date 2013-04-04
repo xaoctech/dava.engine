@@ -138,7 +138,7 @@ public:
 			  RefPtr< PropertyLine<float32> > numberVariation,
 			  RefPtr< PropertyLine<Vector2> > size,
 			  RefPtr< PropertyLine<Vector2> > sizeVariation,
-			  RefPtr< PropertyLine<float32> > sizeOverLife,
+			  RefPtr< PropertyLine<Vector2> > sizeOverLife,
 			  RefPtr< PropertyLine<float32> > velocity,
 			  RefPtr< PropertyLine<float32> > velocityVariation,
 			  RefPtr< PropertyLine<float32> > velocityOverLife,
@@ -176,7 +176,7 @@ private:
 	RefPtr< PropertyLine<float32> > numberVariation;
 	RefPtr< PropertyLine<Vector2> > size;
 	RefPtr< PropertyLine<Vector2> > sizeVariation;
-	RefPtr< PropertyLine<float32> > sizeOverLife;
+	RefPtr< PropertyLine<Vector2> > sizeOverLife;
 	RefPtr< PropertyLine<float32> > velocity;
 	RefPtr< PropertyLine<float32> > velocityVariation;
 	RefPtr< PropertyLine<float32> > velocityOverLife;

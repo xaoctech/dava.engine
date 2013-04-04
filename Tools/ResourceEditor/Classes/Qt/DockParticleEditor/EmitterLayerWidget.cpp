@@ -288,11 +288,13 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	sizeVariationTimeLine->SetMinLimits(0);
 	sizeVariationTimeLine->AddLines(PropLineWrapper<Vector2>(layer->sizeVariation).GetProps(), colors, legends);
 	sizeVariationTimeLine->EnableLock(true);
-	
-	sizeOverLifeTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
-	sizeOverLifeTimeLine->SetMinLimits(0);
-	sizeOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->sizeOverLife).GetProps(), Qt::blue, "size over life");
 
+	legends.clear();
+	legends.push_back("size overlife X"); legends.push_back("size overlife Y");
+	sizeOverLifeTimeLine->Init(layer->startTime, lifeTime, updateMinimized, true);
+	sizeOverLifeTimeLine->SetMinLimits(0);
+	sizeOverLifeTimeLine->AddLines(PropLineWrapper<Vector2>(layer->sizeOverLifeXY).GetProps(), colors, legends);
+	sizeOverLifeTimeLine->EnableLock(true);
 
 	//LAYER_VELOCITY, LAYER_VELOCITY_VARIATION, LAYER_VELOCITY_OVER_LIFE,
 	velocityTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
@@ -472,8 +474,8 @@ void EmitterLayerWidget::OnValueChanged()
 	PropLineWrapper<Vector2> propSizeVariation;
 	sizeVariationTimeLine->GetValues(propSizeVariation.GetPropsPtr());
 
-	PropLineWrapper<float32> propsizeOverLife;
-	sizeOverLifeTimeLine->GetValue(0, propsizeOverLife.GetPropsPtr());
+	PropLineWrapper<Vector2> propsizeOverLife;
+	sizeOverLifeTimeLine->GetValues(propsizeOverLife.GetPropsPtr());
 	
 	PropLineWrapper<float32> propVelocity;
 	PropLineWrapper<float32> propVelocityVariation;

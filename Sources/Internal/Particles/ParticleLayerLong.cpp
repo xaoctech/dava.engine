@@ -33,8 +33,8 @@ void ParticleLayerLong::Draw(Camera * camera)
 
 		Vector3 vecLong = -current->direction;
 
-		float32 widthDiv2 = sprite->GetWidth()*current->size.x*current->sizeOverLife;
-		float32 heightDiv2 = sprite->GetHeight()*current->size.y*current->sizeOverLife;
+		float32 widthDiv2 = sprite->GetWidth()*current->size.x*current->sizeOverLife.x;
+		float32 heightDiv2 = sprite->GetHeight()*current->size.y*current->sizeOverLife.y;
 
 		Vector3 topRight = current->position + widthDiv2*vecShort;
 		Vector3 topLeft = current->position - widthDiv2*vecShort;
