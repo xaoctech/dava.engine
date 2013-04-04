@@ -26,11 +26,8 @@
 #define LOCALIZATION_NODE "localization"
 #define LOCALIZATION_PATH_NODE "LocalizationPath"
 #define LOCALIZATION_LOCALE_NODE "Locale"
-#define PATHS_NODE "paths"
 #define FONT_NODE "font"
 #define DEFAULT_FONT_PATH_NODE "DefaultFontPath"
-#define DEFAULT_SPRITES_PATH_NODE "DefaultSpritesPath"
-#define DEFAULT_FONT_SPRITES_PATH_NODE "DefaultFontSpritesPath"
 
 HierarchyTree::HierarchyTree()
 {
@@ -105,27 +102,6 @@ bool HierarchyTree::Load(const QString& projectPath)
 				defaultFontPath.fontSpritePath = fontPathArray[1]->AsString();
 			}
 			EditorFontManager::Instance()->InitDefaultFontFromPath(defaultFontPath);
-		}
-	}
-	
-	// Get path node
-	YamlNode *pathNode = projectRoot->Get(PATHS_NODE);
-	if (pathNode)
-	{
-		YamlNode *spritesPath = pathNode->Get(DEFAULT_SPRITES_PATH_NODE);
-		YamlNode *fontSpritesPath = pathNode->Get(DEFAULT_FONT_SPRITES_PATH_NODE);
-		
-		// Set default sprites path if it is available
-		if (spritesPath)
-		{
-			String defaultSpritesPath = FileSystem::Instance()->SystemPathForFrameworkPath(spritesPath->AsString());
-			ResourcesManageHelper::SetDefaultSpritesPath(QString::fromStdString(defaultSpritesPath));
-		}
-		// Set default font sprites path if it is available
-		if (fontSpritesPath)
-		{
-			String defaultFontSpritesPath = FileSystem::Instance()->SystemPathForFrameworkPath(fontSpritesPath->AsString());
-			ResourcesManageHelper::SetDefaultFontSpritesPath(QString::fromStdString(defaultFontSpritesPath));
 		}
 	}
 
@@ -340,27 +316,6 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
 	YamlNode root(YamlNode::TYPE_MAP);
 	MultiMap<String, YamlNode*> &rootMap = root.AsMap();
 	
-	// Create paths node
-	YamlNode* pathNode = new YamlNode(YamlNode::TYPE_MAP);
-	rootMap.erase(PATHS_NODE);
-	rootMap.insert(std::pair<String, YamlNode*>(PATHS_NODE, pathNode));
-	
-	// Save default sprites directory
-	QString defaultSpritesPath = ResourcesManageHelper::GetDefaultSpritesPath(true);
-	if (!defaultSpritesPath.isEmpty())
-	{
-		QString relativeSpritesPath = ResourcesManageHelper::GetResourceRelativePath(defaultSpritesPath);
-		pathNode->Set(DEFAULT_SPRITES_PATH_NODE, relativeSpritesPath.toStdString());
-	}
-	
-	// Save default font sprites directory
-	QString defaultFontSpritesPath = ResourcesManageHelper::GetDefaultFontSpritesPath(true);
-	if (!defaultFontSpritesPath.isEmpty())
-	{
-		QString relativeSpritesPath = ResourcesManageHelper::GetResourceRelativePath(defaultFontSpritesPath);
-		pathNode->Set(DEFAULT_FONT_SPRITES_PATH_NODE, relativeSpritesPath.toStdString());
-	}
-
 	// Get paths for default font
 	const EditorFontManager::DefaultFontPath& defaultFontPath = EditorFontManager::Instance()->GetDefaultFontPath();
 	String fontPath = defaultFontPath.fontPath;

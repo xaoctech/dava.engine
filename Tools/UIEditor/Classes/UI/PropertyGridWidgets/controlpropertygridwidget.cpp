@@ -187,7 +187,7 @@ void ControlPropertyGridWidget::UpdatePropertiesForSubcontrol()
 		return;
 	}
 
-	bool isSubcontrol = SubcontrolsExists();
+	bool isSubcontrol = ActiveControlIsSubcontrol();
 
 	// Several properties can't be changed for subcontrols.
 	this->ui->customControlLineEdit->setReadOnly(isSubcontrol);

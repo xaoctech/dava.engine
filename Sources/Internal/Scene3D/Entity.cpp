@@ -372,7 +372,7 @@ void Entity::RestoreOriginalTransforms()
 void Entity::BakeTransforms()
 {
     uint32 size = (uint32)children.size();
-    if(size == 1) // propagate matrices
+    if(size == 1 && (0 == GetComponent(Component::LOD_COMPONENT))) // propagate matrices
     {
         for (uint32 c = 0; c < size; ++c)
         {
@@ -769,6 +769,7 @@ void Entity::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 
 	flags = archive->GetUInt32("flags", NODE_VISIBLE);
 	flags |= NODE_UPDATABLE;
+	flags &= ~TRANSFORM_DIRTY;
 
     const Matrix4 & localTransform = archive->GetByteArrayAsType("localTransform", GetLocalTransform());
 	SetLocalTransform(localTransform);

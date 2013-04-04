@@ -864,3 +864,9 @@ void QtMainWindowHandler::OnSceneReleased(SceneData *scene)
 
 	UpdateRecentScenesList();
 }
+
+
+void QtMainWindowHandler::ConvertToShadow()
+{
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandConvertToShadow());
+}

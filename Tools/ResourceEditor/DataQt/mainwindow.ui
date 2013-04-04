@@ -553,6 +553,8 @@
     <addaction name="separator"/>
     <addaction name="actionModifyPlaceOnLandscape"/>
     <addaction name="actionModifySnapToLandscape"/>
+    <addaction name="separator"/>
+    <addaction name="actionConvertToShadow"/>
    </widget>
    <widget class="QMenu" name="menuComponent">
     <property name="title">
@@ -1239,6 +1241,18 @@
    </property>
    <property name="toolTip">
     <string>Remove component</string>
+   </property>
+  </action>
+  <action name="actionConvertToShadow">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/shadow.png</normaloff>:/QtIcons/shadow.png</iconset>
+   </property>
+   <property name="text">
+    <string>Convert to shadow</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+C</string>
    </property>
   </action>
  </widget>
