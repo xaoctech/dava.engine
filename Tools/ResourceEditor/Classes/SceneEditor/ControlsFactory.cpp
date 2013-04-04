@@ -64,7 +64,7 @@ void ControlsFactory::CustomizeButtonExpandable(UIButton *btn)
     
     UIControl *expandable = new UIControl(Rect(btn->GetSize().dx - btn->GetSize().dy, 0, btn->GetSize().dy, btn->GetSize().dy));
     expandable->SetInputEnabled(false);
-    expandable->SetSprite("~res:/Gfx/UI/arrowdown", 0);
+    expandable->SetSprite(FilePath("~res:/Gfx/UI/arrowdown"), 0);
     btn->AddControl(expandable);
     
     SafeRelease(expandable);
