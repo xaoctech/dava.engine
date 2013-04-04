@@ -175,6 +175,8 @@ protected:
 	void UpdateFrameTimeline();
 	
 	void CleanupForces();
+	
+	void FillSizeOverlifeXY(RefPtr< PropertyLine<float32> > sizeOverLife);
 
 	// list of particles
 	Particle *	head;
@@ -210,7 +212,8 @@ public:
 	
 	RefPtr< PropertyLine<Vector2> > size;				// size of particles in pixels 
 	RefPtr< PropertyLine<Vector2> > sizeVariation;		// size variation in pixels
-	RefPtr< PropertyLine<float32> > sizeOverLife;
+	RefPtr< PropertyLine<Vector2> > sizeOverLifeXY;
+	//RefPtr< PropertyLine<float32> > sizeOverLife;
 	
 	RefPtr< PropertyLine<float32> > velocity;			// velocity in pixels
 	RefPtr< PropertyLine<float32> > velocityVariation;	

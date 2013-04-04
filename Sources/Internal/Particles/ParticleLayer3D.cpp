@@ -76,10 +76,10 @@ void ParticleLayer3D::Draw(Camera * camera)
 		float32 cosine;
 		SinCosFast(current->angle, sine, cosine);
 
-		float32 pivotRight = ((sprite->GetWidth()-pivotPoint.x)*current->size.x*current->sizeOverLife)/2.f;
-		float32 pivotLeft = (pivotPoint.x*current->size.x*current->sizeOverLife)/2.f;
-		float32 pivotUp = (pivotPoint.y*current->size.y*current->sizeOverLife)/2.f;
-		float32 pivotDown = ((sprite->GetHeight()-pivotPoint.y)*current->size.y*current->sizeOverLife)/2.f;
+		float32 pivotRight = ((sprite->GetWidth()-pivotPoint.x)*current->size.x*current->sizeOverLife.x)/2.f;
+		float32 pivotLeft = (pivotPoint.x*current->size.x*current->sizeOverLife.x)/2.f;
+		float32 pivotUp = (pivotPoint.y*current->size.y*current->sizeOverLife.y)/2.f;
+		float32 pivotDown = ((sprite->GetHeight()-pivotPoint.y)*current->size.y*current->sizeOverLife.y)/2.f;
 
 		Vector3 dxc = dx*cosine;
 		Vector3 dxs = dx*sine;
@@ -135,7 +135,9 @@ void ParticleLayer3D::Draw(Camera * camera)
 		textures.push_back(pT[6]);
 		textures.push_back(pT[7]);
 
-		uint32 color = (((uint32)(current->color.a*255.f))<<24) |  (((uint32)(current->color.b*255.f))<<16) | (((uint32)(current->color.g*255.f))<<8) | ((uint32)(current->color.r*255.f));
+		// Yuri Coder, 2013/04/03. Need to use drawColor here instead of just colot
+		// to take colorOverlife property into account.
+		uint32 color = (((uint32)(current->drawColor.a*255.f))<<24) |  (((uint32)(current->drawColor.b*255.f))<<16) | (((uint32)(current->drawColor.g*255.f))<<8) | ((uint32)(current->drawColor.r*255.f));
 		for(int32 i = 0; i < 6; ++i)
 		{
 			colors.push_back(color);

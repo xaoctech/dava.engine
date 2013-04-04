@@ -32,7 +32,6 @@ CommandUpdateEmitter::CommandUpdateEmitter(ParticleEmitter* emitter):
 }
 
 void CommandUpdateEmitter::Init(ParticleEmitter::eType emitterType,
-								RefPtr<PropertyLine<float32> > emissionAngle,
 								RefPtr<PropertyLine<float32> > emissionRange,
 								RefPtr<PropertyLine<Vector3> > emissionVector,
 								RefPtr<PropertyLine<float32> > radius,
@@ -41,7 +40,6 @@ void CommandUpdateEmitter::Init(ParticleEmitter::eType emitterType,
 								float32 life)
 {
 	this->emitterType = emitterType;
-	this->emissionAngle = emissionAngle;
 	this->emissionRange = emissionRange;
 	this->emissionVector = emissionVector;
 	this->radius = radius;
@@ -55,7 +53,6 @@ void CommandUpdateEmitter::Execute()
 	DVASSERT(emitter);
 
 	emitter->emitterType = emitterType;
-	emitter->emissionAngle = emissionAngle;
 	emitter->emissionRange = emissionRange;
 	emitter->emissionVector = emissionVector;
 	emitter->radius = radius;
@@ -82,25 +79,19 @@ void CommandUpdateParticleLayer::Init(const QString& layerName,
 									  RefPtr< PropertyLine<float32> > numberVariation,
 									  RefPtr< PropertyLine<Vector2> > size,
 									  RefPtr< PropertyLine<Vector2> > sizeVariation,
-									  RefPtr< PropertyLine<float32> > sizeOverLife,
+									  RefPtr< PropertyLine<Vector2> > sizeOverLife,
 									  RefPtr< PropertyLine<float32> > velocity,
 									  RefPtr< PropertyLine<float32> > velocityVariation,
 									  RefPtr< PropertyLine<float32> > velocityOverLife,
 									  RefPtr< PropertyLine<float32> > spin,
 									  RefPtr< PropertyLine<float32> > spinVariation,
 									  RefPtr< PropertyLine<float32> > spinOverLife,
-									  RefPtr< PropertyLine<float32> > motionRandom,
-									  RefPtr< PropertyLine<float32> > motionRandomVariation,
-									  RefPtr< PropertyLine<float32> > motionRandomOverLife,
-									  RefPtr< PropertyLine<float32> > bounce,
-									  RefPtr< PropertyLine<float32> > bounceVariation,
-									  RefPtr< PropertyLine<float32> > bounceOverLife,
 									  RefPtr< PropertyLine<Color> > colorRandom,
 									  RefPtr< PropertyLine<float32> > alphaOverLife,
 									  RefPtr< PropertyLine<Color> > colorOverLife,
 									  RefPtr< PropertyLine<float32> > angle,
 									  RefPtr< PropertyLine<float32> > angleVariation,
-									  float32 alignToMotion,
+
 									  float32 startTime,
 									  float32 endTime,
 									  bool frameOverLifeEnabled,
@@ -124,19 +115,14 @@ void CommandUpdateParticleLayer::Init(const QString& layerName,
 	this->spin = spin;
 	this->spinVariation = spinVariation;
 	this->spinOverLife = spinOverLife;
-	this->motionRandom = motionRandom;
-	this->motionRandomVariation = motionRandomVariation;
-	this->motionRandomOverLife = motionRandomOverLife;
-	this->bounce = bounce;
-	this->bounceVariation = bounceVariation;
-	this->bounceOverLife = bounceOverLife;
+
 	this->colorRandom = colorRandom;
 	this->alphaOverLife = alphaOverLife;
 	this->colorOverLife = colorOverLife;
 	this->frameOverLife = frameOverLife;
 	this->angle = angle;
 	this->angleVariation = angleVariation;
-	this->alignToMotion = alignToMotion;
+
 	this->startTime = startTime;
 	this->endTime = endTime;
 	this->frameOverLifeEnabled = frameOverLifeEnabled;
@@ -155,19 +141,14 @@ void CommandUpdateParticleLayer::Execute()
 	layer->numberVariation = numberVariation;
 	layer->size = size;
 	layer->sizeVariation = sizeVariation;
-	layer->sizeOverLife = sizeOverLife;
+	layer->sizeOverLifeXY = sizeOverLife;
 	layer->velocity = velocity;
 	layer->velocityVariation = velocityVariation;
 	layer->velocityOverLife = velocityOverLife;
 	layer->spin = spin;
 	layer->spinVariation = spinVariation;
 	layer->spinOverLife = spinOverLife;
-	layer->motionRandom = motionRandom;
-	layer->motionRandomVariation = motionRandomVariation;
-	layer->motionRandomOverLife = motionRandomOverLife;
-	layer->bounce = bounce;
-	layer->bounceVariation = bounceVariation;
-	layer->bounceOverLife = bounceOverLife;
+
 	layer->colorRandom = colorRandom;
 	layer->alphaOverLife = alphaOverLife;
 	layer->colorOverLife = colorOverLife;
@@ -177,7 +158,7 @@ void CommandUpdateParticleLayer::Execute()
 
 	layer->angle = angle;
 	layer->angleVariation = angleVariation;
-	layer->alignToMotion = alignToMotion;
+
 	layer->startTime = startTime;
 	layer->endTime = endTime;
 

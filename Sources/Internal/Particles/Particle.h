@@ -76,7 +76,7 @@ public:
 	float32 life;			// in seconds
 	float32 lifeTime;		// in seconds
 
-	float32 sizeOverLife;
+	Vector2 sizeOverLife;
 	float32 velocityOverLife;
 	float32 spinOverLife;
 
