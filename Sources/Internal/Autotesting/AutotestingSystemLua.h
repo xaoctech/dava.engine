@@ -81,6 +81,13 @@ public:
     
     float32 GetTimeElapsed();
     
+	// Test organization API
+	void OnTestStart(const String &testName);
+
+	void OnStepStart(const String &stepName);
+
+	void Log(const String &level, const String &message);
+	
     // autotesting api
     UIControl *FindControl(const String &path);
     void TouchDown(const Vector2 &point, int32 touchId);
@@ -103,7 +110,7 @@ protected:
     bool RunScript(const String &luaScript);
     bool RunScriptFromFile(const String &luaFilePath);
     bool LoadWrappedLuaObjects();
-    
+	
     AutotestingSystemLuaDelegate *delegate;
     lua_State *luaState; //TODO: multiple lua states
     

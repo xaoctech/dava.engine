@@ -168,13 +168,31 @@ void AutotestingSystemLua::OnTestStep(const String &stepName, bool isPassed, con
     Logger::Debug("AutotestingSystemLua::OnTestStep %s %d %s", stepName.c_str(), isPassed, error.c_str());
     AutotestingSystem::Instance()->OnTestStep(stepName, isPassed, error);
 }
-    
+
+void AutotestingSystemLua::OnTestStart(const String &testName)
+{
+	Logger::Debug("AutotestingSystemLua::OnTestStart %s", testName.c_str());
+	AutotestingSystem::Instance()->OnTestStart(testName);
+}
+
 void AutotestingSystemLua::OnTestFinished()
 {
     Logger::Debug("AutotestingSystemLua::OnTestFinished");
     AutotestingSystem::Instance()->OnTestsFinished();
 }
     
+void AutotestingSystemLua::OnStepStart(const String &stepName)
+{
+	Logger::Debug("AutotestingSystemLua::OnStepStart %s", stepName.c_str());
+	AutotestingSystem::Instance()->OnStepStart(stepName);
+}
+
+void AutotestingSystemLua::Log(const String &level, const String &message)
+{
+	Logger::Debug("AutotestingSystemLua::Log [%s]%s", level.c_str(), message.c_str());
+	AutotestingSystem::Instance()->Log(level, message);
+}
+
 UIControl *AutotestingSystemLua::FindControl(const String &path)
 {
     Logger::Debug("AutotestingSystemLua::FindControl %s", path.c_str());
@@ -350,7 +368,7 @@ bool AutotestingSystemLua::RunScriptFromFile(const String &luaFilePath)
     
 bool AutotestingSystemLua::RunScript(const DAVA::String &luaScript)
 {
-    Logger::Debug("AutotestingSystemLua::RunScript %s", luaScript.c_str());
+    //Logger::Debug("AutotestingSystemLua::RunScript %s", luaScript.c_str());
     if(LoadScript(luaScript))
     {
         return RunScript();

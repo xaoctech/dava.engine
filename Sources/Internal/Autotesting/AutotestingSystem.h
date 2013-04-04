@@ -81,6 +81,13 @@ public:
     
     void RunTests();
     
+	// Test organization
+	void OnTestStart(const String &testName);
+	void OnStepStart( const String & stepName );
+	void OnStepFinished();
+
+	void AutotestingSystem::Log(const String &level, const String &message);
+
     void OnTestsSatrted();
     void OnTestStep(const String & stepName, bool isPassed, const String & error = "");
     void OnError(const String & errorMessage = "");
@@ -105,13 +112,19 @@ protected:
     KeyedArchive *FindOrInsertTestArchive(MongodbUpdateObject *dbUpdateObject, const String &testId);
     KeyedArchive *FindOrInsertTestStepArchive(KeyedArchive *testArchive, const String &stepId);
     KeyedArchive *FindOrInsertTestStepLogEntryArchive(KeyedArchive *testStepArchive, const String &logId);
-    
+
+	KeyedArchive *InsertTestArchive(MongodbUpdateObject* dbUpdateObject, const String &testId, const String &testName);
+	KeyedArchive *InsertStepArchive(KeyedArchive *testArchive, const String &stepId, const String &description);
+
+	KeyedArchive *FindTestArchive(MongodbUpdateObject* dbUpdateObject, const String &testId);
+    KeyedArchive *FindStepArchive(KeyedArchive *testArchive, const String &stepId);
+
     bool ConnectToDB();
 //    void AddTestResult(const String &text, bool isPassed, const String & error = "");
 //    void SaveTestToDB();
     void SaveTestStepToDB(const String &stepDescription, bool isPassed, const String &error = "");
     void SaveTestStepLogEntryToDB(const String &type, const String &time, const String &message);
-    
+
     String ReadMasterIDFromDB(); //TODO: get first available master
     
     bool CheckMasterHelpersReadyDB();
@@ -120,7 +133,8 @@ protected:
     int32 GetIndexInFileList(FileList &fileList, int32 index);
     
     void ExitApp();
-    
+
+
     bool isInit;
     bool isRunning;
     bool needExitApp;

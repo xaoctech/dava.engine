@@ -2,18 +2,12 @@ TIMEOUT = 20.0 -- Big time out for waiting
 TIMECLICK = 0.2 -- time for simple action
 DELAY = 0.5 -- time for simulation of human reaction
 
--- this code for step counting
-local step_num = 0
-local function next_step()
-	step_num = step_num + 1
-	print()
-end
 
 -- API setup
 function SetPackagePath(path)
 	package.path = package.path .. ";" .. path .. "Actions/?.lua;" .. path .. "Scripts/?.lua;"
 	
-	require "logger"
+	--require "logger"
 	require "coxpcall"
 end
 
@@ -22,51 +16,44 @@ end
 ----------------------------------------------------------------------------------------------------
 -- This function for simple test step without any assertion. Fail while error throwing
 -- Parameters:
+--		description - step description
 --		func - link to step function
 --		... - input parameters for step function
-function Step (func, ...)
-    print("Start step: " .. description[step_num])
-    
+function Step(description, func, ...)
+    autotestingSystem:OnStepStart(description)
+	
 	local status, err = copcall(func, ...)
-	--print("STEP: Status " .. tostring(status) .. " -- Error " .. tostring(err))
-	OnTestStep(status, err)
+
+	if not status then autotestingSystem:OnError(err) end
+	Yield()
 end
 
 -- This function for test step with assertion. Fail when step is returned NIL or FALSE
 -- Parameters:
+--		description - step description
 --		func - link to step function
 --		... - input parameters for step function
-function Assert(func, ...)
-	print("Start assertion: " .. description[step_num])
-    
+function Assert(description, func, ...)
+    autotestingSystem:OnStepStart(description)
+	
 	local status, err = copcall(func, ...)
-	--print("ASSERT: Status " .. tostring(status) .. " -- Error " .. tostring(err))
-	if status then
-		OnTestStep(err, "Assertion failed, expected result not equal to actual")
-	else
-		OnTestStep(status, err)
-	end
-end
 
-function OnTestStep(state, err)
-	--print("ONSTEP: Status " .. tostring(state) .. " -- Error " .. tostring(err))
-	if state then
-		autotestingSystem:OnTestStep(description[step_num], true)
-	else
-	    print("Error on step " .. description[step_num])
-		print(err)
-		print()
-		
-		autotestingSystem:OnTestStep(description[step_num], false, tostring(err))
+	if not status then
+		-- Some error during test step
+		autotestingSystem:OnError(err)
+	elseif not err then
+		autotestingSystem:OnError("Assertion failed, expected result not equal to actual")
 	end
 	Yield()
-		
-	next_step()
 end
+
+function Log(message, level)
+	level = level or "DEBUG"
+	autotestingSystem:Log(level, message)
+end 
 
 --
 function Yield()
-    --print("Yield")
     coroutine.yield()
 end
 
@@ -84,29 +71,16 @@ end
 function CreateTest(test)
     --print("CreateTest")
     co = coroutine.create(test) -- create a coroutine with foo as the entry
-    --print(type(co))                 -- display the type of object "co"
-    
-    --print(AutotestingSystem)
     autotestingSystem = AutotestingSystem.Singleton_Autotesting_Instance()
-    --print("AutotestingSystem.Singleton_Autotesting_Instance")
     
-    --print(autotestingSystem:GetTimeElapsed())
-    
-    --print("CreateTest done")
-    
-    Yield()
+    --print(autotestingSystem:GetTimeElapsed())	
 end
 
-function StartTest(test)
-	print()
-	print()
-	print("================================================================================")
-    print("START TEST: " .. description[step_num])
-    print("================================================================================")
-    next_step()
-        
+function StartTest(name, test)      
     CreateTest(test)
-    ResumeTest()
+	--print('StartTest')
+	autotestingSystem:OnTestStart(name)
+    Yield()
 end
 
 function StopTest()
@@ -114,6 +88,7 @@ function StopTest()
     autotestingSystem:OnTestFinished()
 end
 
+-- re-write methods for multiplayer
 function WaitForMaster()
 --    print("WaitForMaster")
     autotestingSystem:WaitForMaster()
@@ -123,6 +98,7 @@ function WaitForHelpers(helpersCount)
 --    print("WaitForHelpers")
     autotestingSystem:WaitForHelpers(helpersCount)
 end
+
 
 function Wait(waitTime)
     waitTime =  waitTime or DELAY
@@ -136,7 +112,7 @@ end
 
 function WaitControl(name, time)
     local waitTime = time or TIMEOUT
-    print("WaitControl name="..name.." waitTime="..waitTime)
+    Log("WaitControl name="..name.." waitTime="..waitTime,"DEBUG")
     
     local elapsedTime = 0.0
     while elapsedTime < waitTime do
@@ -144,33 +120,34 @@ function WaitControl(name, time)
 --        print("Searching "..elapsedTime)
         
         if autotestingSystem:FindControl(name) then
-            print("WaitControl found "..name)
+            Log("WaitControl found "..name, "DEBUG")
+            Yield()
             return true
         else
             Yield()
         end
     end
     
-    print("WaitControl not found "..name)
+    Log("WaitControl not found "..name, "DEBUG")
     return false
 end
 
 function TouchDownPosition(position, touchId)
     local touchId = touchId or 1
-    print("TouchDownPosition position="..position.x..","..position.y.." touchId="..touchId)
+    --print("TouchDownPosition position="..position.x..","..position.y.." touchId="..touchId)
     autotestingSystem:TouchDown(position, touchId)
 end
 
 function TouchDown(x, y, touchId)
     local touchId = touchId or 1
-    print("TouchDown x="..x.." y="..y.." touchId="..touchId)
+    --print("TouchDown x="..x.." y="..y.." touchId="..touchId)
     autotestingSystem:TouchDown(position, touchId)
 end
 
 function TouchMovePosition(position, touchId, waitTime)
 	waitTime =  waitTime or TIMECLICK
     local touchId = touchId or 1
-    print("TouchMovePosition position="..position.x..","..position.y.." touchId="..touchId)
+    Log("TouchMovePosition position="..position.x..","..position.y.." touchId="..touchId)
     autotestingSystem:TouchMove(position, touchId)
     Wait(waitTime)
 end
@@ -178,20 +155,20 @@ end
 function TouchMove(x, y, touchId, waitTime)
 	waitTime =  waitTime or TIMECLICK
     local touchId = touchId or 1
-    print("TouchMove x="..x.." y="..y.." touchId="..touchId)
+    Log("TouchMove x="..x.." y="..y.." touchId="..touchId)
     autotestingSystem:TouchMove(position, touchId)
     Wait(waitTime)
 end
 
 function TouchUp(touchId)
-    print("TouchUp "..touchId)
+    Log("TouchUp "..touchId)
     autotestingSystem:TouchUp(touchId)
 end
 
 function ClickPosition(position, touchId, time)
     local waitTime = time or TIMECLICK
     local touchId = touchId or 1
-    print("ClickPosition position="..position.x..","..position.y.." touchId="..touchId.." waitTime="..waitTime)
+    Log("ClickPosition position="..position.x..","..position.y.." touchId="..touchId.." waitTime="..waitTime)
     
     Wait(waitTime)
     TouchDownPosition(position, touchId)
@@ -203,7 +180,7 @@ end
 function Click(x, y, touchId)
     local waitTime = time or TIMECLICK
     local touchId = touchId or 1
-    print("Click x="..x.." y="..y.." touchId="..touchId)
+    --print("Click x="..x.." y="..y.." touchId="..touchId)
     
     local position = Vector.Vector2(x, y)
     ClickPosition(position, touchId, waitTime)
@@ -213,7 +190,7 @@ function ClickControl(name, touchId, time)
     local waitTime = time or TIMECLICK
     local touchId = touchId or 1
 	
-    print("ClickControl name="..name.." touchId="..touchId.." waitTime="..waitTime)
+    Log("ClickControl name="..name.." touchId="..touchId.." waitTime="..waitTime)
     
     local elapsedTime = 0.0
     while elapsedTime < TIMEOUT do
@@ -252,13 +229,13 @@ function ClickControl(name, touchId, time)
         end
     end
     
-    print("ClickControl not found "..name)
+    Log("ClickControl not found "..name)
     return false
 end
 
 function SetText(path, text, time)
 	local waitTime = time or DELAY
-    print("SetText path="..path.." text="..text)
+    Log("SetText path="..path.." text="..text)
     local res = autotestingSystem:SetText(path, text)
     Yield()
     Wait(waitTime)
@@ -266,7 +243,7 @@ function SetText(path, text, time)
 end
 
 function CheckText(name, txt)
-	print("Check that text '" .. txt .. "' is present on control " .. name)
+	Log("Check that text '" .. txt .. "' is present on control " .. name)
 	local control = autotestingSystem:FindControl(name)
 	
 	if control then
@@ -278,7 +255,7 @@ function CheckText(name, txt)
 end
 
 function CheckMsgText(name, key)
-	print("Check that text with key [" .. key .. "] is present on control " .. name)
+	Log("Check that text with key [" .. key .. "] is present on control " .. name)
 	local control = autotestingSystem:FindControl(name)
 	
 	if control then
