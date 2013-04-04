@@ -434,8 +434,8 @@ void EmitterLayerWidget::OnSpriteBtn()
 	if (FilePath(filePathToBeOpened.GetDirectory()) != projectPath)
 	{
 		QString message = QString("You've opened Particle Sprite from incorrect path (%1).\n Correct one is %2.").
-			arg(QString::fromStdString(filePathToBeOpened.GetDirectory())).
-			arg(QString::fromStdString(projectPath.GetDirectory()));
+			arg(QString::fromStdString(filePathToBeOpened.GetDirectory().ResolvePathname())).
+			arg(QString::fromStdString(projectPath.GetDirectory().ResolvePathname()));
 
 		QMessageBox msgBox(QMessageBox::Warning, "Warning", message);
 		msgBox.exec();
