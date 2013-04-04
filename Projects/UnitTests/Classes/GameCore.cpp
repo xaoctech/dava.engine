@@ -51,6 +51,7 @@
 #include "InputTest.h"
 #include "FilePathTest.h"
 #include "FileListTest.h"
+#include "FileSystemTest.h"
 #include "DeviceInfoTest.h"
 #include "LocalizationTest.h"
 
@@ -81,6 +82,7 @@ void GameCore::OnAppStarted()
 	new DeviceInfoTest();
     new FilePathTest();
     new FileListTest();
+    new FileSystemTest();
     new LocalizationTest();
     new InputTest();
 //    new SampleTest();
