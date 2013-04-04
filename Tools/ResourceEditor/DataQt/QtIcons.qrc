@@ -49,5 +49,7 @@
     <file>QtIcons/heightmapeditor.png</file>
     <file>QtIcons/tilemapeditor.png</file>
     <file>QtIcons/rulertool.png</file>
+    <file>QtIcons/transform_bake.png</file>
+    <file>QtIcons/shadow.png</file>
   </qresource>
 </RCC>

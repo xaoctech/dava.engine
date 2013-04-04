@@ -121,6 +121,8 @@ public:
 
 	void SetVisibilityCriteria(uint32 criteria);
 
+	void UpdateAABBoxFromSource();
+
 protected:
     PolygonGroup * dataSource;
     RenderDataObject * renderDataObject;   // Probably should be replaced to VBO / IBO, but not sure

@@ -12,6 +12,7 @@
 
 #include "PropertyNames.h"
 #include "StringUtils.h"
+#include "StringConstants.h"
 
 using namespace DAVA;
 
@@ -364,7 +365,7 @@ QString UIButtonMetadata::GetSpriteNameForState(UIControl::eControlState state) 
     Sprite* sprite = GetActiveUIButton()->GetStateSprite(state);
     if (sprite == NULL)
     {
-        return "<No sprite is set>";
+        return StringConstants::NO_SPRITE_IS_SET;
     }
 
     return sprite->GetRelativePathname().c_str();

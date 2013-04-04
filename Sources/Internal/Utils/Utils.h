@@ -35,6 +35,7 @@
  */
 
 #include "Base/BaseTypes.h"
+#include "Render/RenderBase.h"
 
 namespace DAVA 
 {
@@ -60,7 +61,12 @@ void EnableSleepTimer();
 void Split(const String & inputString, const String & delims, Vector<String> & tokens);
 
 void ReplaceBundleName(const String &newBundlePath);
-	
+
+eBlendMode GetBlendModeByName(const String & blendStr);
+eCmpFunc GetCmpFuncByName(const String & cmpFuncStr);
+eFace GetFaceByName(const String & faceStr);
+eStencilOp GetStencilOpByName(const String & stencilOpStr);
+eFillMode GetFillModeByName(const String & fillModeStr);
     
 /**
  \brief Function to compare strings case-insensitive

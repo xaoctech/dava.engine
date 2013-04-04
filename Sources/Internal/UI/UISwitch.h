@@ -33,6 +33,8 @@ public:
     virtual void LoadFromYamlNodeCompleted();
     virtual void CopyDataFrom(DAVA::UIControl *srcControl);
 
+	YamlNode * SaveToYamlNode(UIYamlLoader * loader);
+
     virtual List<UIControl* >& GetRealChildren();
     virtual List<UIControl* > GetSubcontrols();
     virtual UIControl *Clone();
