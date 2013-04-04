@@ -79,7 +79,9 @@ private:
 	TimeLineWidget* sizeVariationTimeLine;
 	TimeLineWidget* sizeOverLifeTimeLine;
 	TimeLineWidget* velocityTimeLine;
+	TimeLineWidget* velocityOverLifeTimeLine;
 	TimeLineWidget* spinTimeLine;
+	TimeLineWidget* spinOverLifeTimeLine;
 
 	TimeLineWidget* alphaOverLifeTimeLine;
 	QCheckBox* frameOverlifeCheckBox;
