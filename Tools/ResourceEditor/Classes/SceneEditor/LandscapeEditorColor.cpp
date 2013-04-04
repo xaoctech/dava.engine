@@ -312,6 +312,9 @@ void LandscapeEditorColor::HideAction()
     SafeRelease(maskSprite);
 	SafeRelease(oldMaskSprite);
 	SafeRelease(toolSprite);
+    
+    SafeRelease(originalImage);
+    SafeRelease(savedTexture);
 
 	workingLandscape->CursorDisable();
 }

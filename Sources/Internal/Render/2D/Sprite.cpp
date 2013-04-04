@@ -1567,23 +1567,6 @@ void Sprite::Reload()
 {
     if(type == SPRITE_FROM_FILE)
     {
-        for(int32 i = 0; i < textureCount; ++i)
-        {
-			if(textures[i] == Texture::GetPinkPlaceholder())
-			{
-				SafeRelease(textures[i]);
-				textures[i] = Texture::CreateFromFile(textureNames[i]);
-			}
-			else if(textures[i] && textures[i]->GetPathname().IsInitalized())
-			{
-				textures[i]->Reload();
-			}
-			else
-			{
-				Logger::Error("[Sprite::Reloa] Something strange with texture_%d", i);
-			}
-        }
-        
         Clear();
 
         File *fp = File::Create(relativePathname, File::READ | File::OPEN);

@@ -451,11 +451,11 @@ void LandscapeEditorCustomColors::LoadTextureAction(const FilePath &pathToFile)
 												   image->GetHeight(),
 												   false);
 
-		StoreOriginalState();
-
 		SafeRelease(colorSprite);
 		colorSprite = Sprite::CreateAsRenderTarget(texSurf->GetWidth(), texSurf->GetHeight(), FORMAT_RGBA8888);
 		Sprite* sprite = Sprite::CreateFromTexture(texture, 0, 0, texture->GetWidth(), texture->GetHeight());
+
+		StoreOriginalState();
 
 		RenderManager::Instance()->SetRenderTarget(colorSprite);
 		sprite->Draw();
@@ -522,17 +522,25 @@ bool LandscapeEditorCustomColors::SetScene(EditorScene *newScene)
 
 void LandscapeEditorCustomColors::StoreSaveFileName(const FilePath& fileName)
 {
-	saveFileNamesMap[workingLandscape] = fileName;
 	parent->GetSceneGraph()->UpdatePropertyPanel();
+	if(NULL != workingLandscapeEntity)
+	{
+		KeyedArchive* customProps = workingLandscapeEntity->GetCustomProperties();
+		customProps->SetString(CUSTOM_COLOR_TEXTURE_PROP, GetRelativePathToScenePath(fileName).GetAbsolutePathname());
+	}
 }
 
 FilePath LandscapeEditorCustomColors::GetCurrentSaveFileName()
 {
 	FilePath currentSaveName;
-	Map<Landscape*, FilePath>::iterator saveFileNameIter = this->saveFileNamesMap.find(workingLandscape);
-	if (saveFileNameIter != saveFileNamesMap.end())
+
+	if(NULL != workingLandscapeEntity)
 	{
-		currentSaveName = saveFileNameIter->second;
+		KeyedArchive* customProps = workingLandscapeEntity->GetCustomProperties();
+		if(customProps->IsKeyExists(CUSTOM_COLOR_TEXTURE_PROP))
+		{
+			currentSaveName = customProps->GetString(CUSTOM_COLOR_TEXTURE_PROP);
+		}
 	}
 
 	return GetAbsolutePathFromScenePath(currentSaveName);
