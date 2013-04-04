@@ -19,15 +19,15 @@ public:
 	virtual void RemoveEntity(DAVA::Entity * entity);
 
 protected:
-	/*
 	btDefaultCollisionConfiguration* objectsCollConf;
 	btCollisionDispatcher* objectsCollDisp;
 	btAxisSweep3* objectsBroadphase;
+	btCollisionWorld *objectsCollWorld;
 
 	btDefaultCollisionConfiguration* landCollConf;
 	btCollisionDispatcher* landCollDisp;
 	btAxisSweep3* landBroadphase;
-	*/
+	btCollisionWorld *landCollWorld;
 };
 
 #endif // __SCENE_COLLISION_SYSTEM_H__
