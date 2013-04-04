@@ -94,7 +94,7 @@ FilePath& FilePath::operator=(const FilePath &path)
     
 FilePath FilePath::operator+(const FilePath &path) const
 {
-    DVASSERT(IsDirectoryPathname());
+    DVASSERT(IsDirectoryPathname() || !IsInitalized());
     
     FilePath pathname(*this);
     pathname.absolutePathname = NormalizePathname(pathname.absolutePathname + path.absolutePathname);
@@ -104,10 +104,7 @@ FilePath FilePath::operator+(const FilePath &path) const
     
 FilePath& FilePath::operator+=(const FilePath & path)
 {
-    if(IsInitalized())
-    {
-        DVASSERT(IsDirectoryPathname());
-    }
+    DVASSERT(IsDirectoryPathname() || !IsInitalized());
 
     absolutePathname = NormalizePathname(absolutePathname + path.GetAbsolutePathname());
     
