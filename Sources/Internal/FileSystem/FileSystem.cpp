@@ -254,6 +254,8 @@ bool FileSystem::MoveFile(const FilePath & existingFile, const FilePath & newFil
 
 bool FileSystem::CopyDirectory(const FilePath & sourceDirectory, const FilePath & destinationDirectory)
 {
+    DVASSERT(sourceDirectory.IsDirectoryPathname() && destinationDirectory.IsDirectoryPathname());
+    
 	bool ret = true;
 
 	FileList fileList(sourceDirectory);
@@ -284,6 +286,8 @@ bool FileSystem::DeleteFile(const FilePath & filePath)
 	
 bool FileSystem::DeleteDirectory(const FilePath & path, bool isRecursive)
 {
+    DVASSERT(path.IsDirectoryPathname());
+    
 	FileList * fileList = new FileList(path);
 	for(int i = 0; i < fileList->GetCount(); ++i)
 	{
@@ -327,7 +331,9 @@ bool FileSystem::DeleteDirectory(const FilePath & path, bool isRecursive)
 	
 uint32 FileSystem::DeleteDirectoryFiles(const FilePath & path, bool isRecursive)
 {
-	uint32 fileCount = 0; 
+    DVASSERT(path.IsDirectoryPathname());
+
+	uint32 fileCount = 0;
 	
 	FileList * fileList = new FileList(path);
 	for(int i = 0; i < fileList->GetCount(); ++i)
