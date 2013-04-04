@@ -350,7 +350,7 @@ namespace DAVA
 	{
 		return background->GetAlign();
 	}
-	void UIControl::SetSprite(const String &spriteName, int32 spriteFrame)
+	void UIControl::SetSprite(const FilePath &spriteName, int32 spriteFrame)
 	{
 		background->SetSprite(spriteName, spriteFrame);
 	}

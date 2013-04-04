@@ -203,7 +203,7 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
     if(isDebugLogEnabled)
     {
         Logger::Debug("+ save data objects");
-        Logger::Debug("- save file path: %s", rootNodePathName.GetDirectory().c_str());
+        Logger::Debug("- save file path: %s", rootNodePathName.GetDirectory().GetAbsolutePathname().c_str());
     }
     
 //    // Process file paths

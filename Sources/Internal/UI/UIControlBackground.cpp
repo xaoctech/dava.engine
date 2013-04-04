@@ -115,7 +115,7 @@ UIControlBackground::eDrawType	UIControlBackground::GetDrawType() const
 }
 	
 	
-void UIControlBackground::SetSprite(const String &spriteName, int32 drawFrame)
+void UIControlBackground::SetSprite(const FilePath &spriteName, int32 drawFrame)
 {
 	Sprite *tempSpr = Sprite::Create(spriteName);
 	SetSprite(tempSpr, drawFrame);

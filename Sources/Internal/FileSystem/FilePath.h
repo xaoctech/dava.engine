@@ -105,7 +105,7 @@ public:
         \brief Function to retrieve directory from pathname. Directory for path "/Users/Folder/image.png" is "/Users/Folder/".
         \returns directory value
 	 */
-    String GetDirectory() const;
+    FilePath GetDirectory() const;
     
     
 	/**
@@ -194,13 +194,15 @@ public:
     
 protected:
     
+    static String NormalizePathname(const FilePath &pathname);
     static String NormalizePathname(const String &pathname);
+    
     static String MakeDirectory(const String &pathname);
 
     static String AbsoluteToRelative(const String &directoryPathname, const String &absolutePathname);
 
     static String GetFilename(const String &pathname);
-    static String GetDirectory(const String &pathname);
+    static FilePath GetDirectory(const String &pathname);
 
     static String GetSystemPathname(const String &pathname);
     
