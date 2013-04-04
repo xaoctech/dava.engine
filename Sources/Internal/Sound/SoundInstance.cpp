@@ -61,7 +61,7 @@ SoundInstance::SoundInstance(Sound * parent)
 }
 #endif //#ifdef __DAVAENGINE_ANDROID__
     
-SoundInstance::eState SoundInstance::GetState()
+SoundInstance::eState SoundInstance::GetState() const
 {
 	return state;
 }
@@ -152,7 +152,7 @@ void SoundInstance::SetVolume(float32 volume)
 #endif //#if defined(__DAVAENGINE_IPHONE__)
 }
 
-float32 SoundInstance::GetVolume()
+float32 SoundInstance::GetVolume() const
 {
 #if defined(__DAVAENGINE_IPHONE__)
     if(buddyMusic)
@@ -170,7 +170,8 @@ float32 SoundInstance::GetVolume()
 void SoundInstance::SetPosition(const Vector3 & position)
 {
 #if defined(__DAVAENGINE_IPHONE__)
-	//
+	if(buddyChannel)
+		buddyChannel->SetPosition(position);
 #elif defined(__DAVAENGINE_ANDROID__)
 	//
 #else
@@ -183,7 +184,8 @@ void SoundInstance::SetPosition(const Vector3 & position)
 void SoundInstance::SetIgnorePosition(bool ignorePosition)
 {
 #if defined(__DAVAENGINE_IPHONE__)
-	//
+	if(buddyChannel)
+		buddyChannel->SetIgnorePosition(ignorePosition);
 #elif defined(__DAVAENGINE_ANDROID__)
 	//
 #else

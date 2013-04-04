@@ -74,7 +74,7 @@ public:
 	virtual SoundInstance * Play();
 	virtual void Stop();
 	virtual void SetVolume(float32 volume); // [0..1]
-	virtual float32 GetVolume();
+	virtual float32 GetVolume() const;
 	virtual void SetLooping(bool looping);
 	virtual void SetPosition(const Vector3 & position);
 	void SetIgnorePosition(bool ignorePosition);
@@ -87,7 +87,7 @@ public:
     
     virtual int32           Release();
 
-	eType			GetType();
+	eType			GetType() const;
 
 #ifdef __DAVAENGINE_ANDROID__
     SLuint32 GetPlayState();

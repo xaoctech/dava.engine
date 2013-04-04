@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 
-DEFINES += LAUNCER_VER=\\\"0.7\\\"
+DEFINES += LAUNCER_VER=\\\"0.8\\\"
 
 QT       += core gui network
 

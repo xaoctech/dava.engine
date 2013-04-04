@@ -316,6 +316,12 @@ void WASDCameraController::LookAtSelection()
     
 
     AABBox3 box = selection->GetWTMaximumBoundingBoxSlow();
+    if(box == AABBox3())
+    {
+        return;
+    }
+    
+    
     float32 boxSize = ((box.max - box.min).Length());
     
     const Vector3 & pos = camera->GetPosition();

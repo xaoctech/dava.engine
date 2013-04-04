@@ -68,9 +68,9 @@ TimeLineWidget::~TimeLineWidget()
 QString TimeLineWidget::float2QString(float32 value) const
 {
 	QString strValue;
-	if (value < 10)
+	if (fabs(value) < 10)
 		strValue = "%.2f";
-	else if (value < 100)
+	else if (fabs(value) < 100)
 		strValue = "%.1f";
 	else
 		strValue = "%.0f";
@@ -104,7 +104,10 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 			QString legend = iter->second.legend;
 				
 			painter.setPen(iter->second.color);
-			painter.drawText(rect(), Qt::AlignCenter, legend);
+			
+			QRect textRect = rect();
+			textRect.adjust(3, 0, 0, 0);
+			painter.drawText(textRect, Qt::AlignLeft, legend);
 		}
 		else
 		{
@@ -276,14 +279,19 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 			
 			if (gridStyle == GRID_STYLE_LIMITS)
 			{
-				QRect textRect;
-				textRect = QRect(1, graphRect.top(), graphRect.left(), graphRect.height());
-				painter.drawText(textRect, Qt::AlignTop | Qt::AlignHCenter, float2QString(maxValue));
-				painter.drawText(textRect, Qt::AlignBottom | Qt::AlignHCenter, float2QString(minValue));
+				// Draw Y axe legend.
+				QRect textRect = QRect(1, graphRect.top(), graphRect.left(), graphRect.height());
+				QString value = QString("%1%2").arg(float2QString(minValue)).arg(yLegendMark);
+				painter.drawText(textRect, Qt::AlignBottom | Qt::AlignHCenter, value);
+				value = QString("%1%2").arg(float2QString(maxValue)).arg(yLegendMark);
+				painter.drawText(textRect, Qt::AlignTop | Qt::AlignHCenter, value);
 
+				// Draw X axe legend.
 				textRect = QRect(graphRect.left(), graphRect.bottom() + 1, graphRect.width(), LEGEND_WIDTH);
-				painter.drawText(textRect, Qt::AlignLeft | Qt::AlignTop, float2QString(minTime));
-				painter.drawText(textRect, Qt::AlignRight | Qt::AlignTop, float2QString(maxTime));
+				value = QString("%1%2").arg(float2QString(minTime)).arg(xLegendMark);
+				painter.drawText(textRect, Qt::AlignLeft | Qt::AlignTop, value);
+				value = QString("%1%2").arg(float2QString(maxTime)).arg(xLegendMark);
+				painter.drawText(textRect, Qt::AlignRight | Qt::AlignTop, value);
 			}
 		}
 		
@@ -1499,6 +1507,17 @@ TimeLineWidget::ePositionRelativelyToDrawRect TimeLineWidget::GetPointPositionFr
 	return TimeLineWidget::POSITION_INSIDE;
 }
 
+// Add the mark to X/Y legend values (like 'deg' or 'pts').
+void TimeLineWidget::SetXLegendMark(const QString& value)
+{
+	this->xLegendMark = value;
+}
+
+void TimeLineWidget::SetYLegendMark(const QString& value)
+{
+	this->yLegendMark = value;
+}
+
 SetPointValueDlg::SetPointValueDlg(float32 time, float32 minTime, float32 maxTime, float32 value, float32 minValue, float32 maxValue, QWidget *parent, bool integer):
 	QDialog(parent),
 	isInteger(integer)
@@ -1585,3 +1604,4 @@ float32 SetPointValueDlg::GetValue() const
 
 	return valueSpin->value();
 }
+

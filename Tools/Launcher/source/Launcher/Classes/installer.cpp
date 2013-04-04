@@ -63,7 +63,7 @@ void Installer::UpdateConfigFinished(const AppsConfig & update) {
     }
 
     Update(m_AvailableSoftWare.m_Stable, eAppTypeStable, true);
-    Update(m_AvailableSoftWare.m_Development, eAppTypeDevelopment);
+//  Update(m_AvailableSoftWare.m_Development, eAppTypeDevelopment);
     Update(m_AvailableSoftWare.m_Dependencies, eAppTypeDependencies, true);
 }
 
@@ -71,7 +71,7 @@ void Installer::UpdateAvailableSoftware() {
     //merge available software list
     const AppsConfig& currentConfig = Settings::GetInstance()->GetCurrentConfig();
 
-    if (Settings::GetVersion(currentConfig.m_Launcher.m_Version) < Settings::GetVersion(m_AppsConfig.m_Launcher.m_Version)) {
+    if (Settings::GetVersion(currentConfig.m_Launcher.m_Version) != Settings::GetVersion(m_AppsConfig.m_Launcher.m_Version)) {
         //run selfupdate
         Logger::GetInstance()->AddLog(tr("Start self update"));
         m_pSelfUpdater->UpdatedConfigDownloaded(m_AppsConfig);
@@ -121,7 +121,7 @@ void Installer::FormatFromUpdate(AvailableSoftWare::SoftWareMap& softMap, const 
                 soft.m_AvailableVersion.insert(appConfig.m_Version);
                 softMap[appConfig.m_Name] = soft;
             }
-            if (Settings::GetVersion(softMap[appConfig.m_Name].m_NewVersion) < Settings::GetVersion(appConfig.m_Version))
+            if (Settings::GetVersion(softMap[appConfig.m_Name].m_NewVersion) != Settings::GetVersion(appConfig.m_Version))
                 softMap[appConfig.m_Name].m_NewVersion = appConfig.m_Version;
         }
     }
@@ -369,7 +369,7 @@ void Installer::OnAppDownloaded() {
     }
 }
 
-bool Installer::Delete(const QString& appName, eAppType type) {
+bool Installer::Delete(const QString& appName, eAppType type, bool force) {
     Logger::GetInstance()->AddLog(tr("Deleting %1").arg(appName));
     AppsConfig appsConfig = Settings::GetInstance()->GetCurrentConfig();
     AppsConfig::AppMap* appMap = appsConfig.GetAppMap(type);
@@ -388,13 +388,26 @@ bool Installer::Delete(const QString& appName, eAppType type) {
     if (!config.m_RunPath.isEmpty()){
         while (ProcessHelper::IsProcessRuning(installPath + config.m_RunPath)) {
             Logger::GetInstance()->AddLog(tr("%1 app is running.").arg(appName));
-            if (1 == QMessageBox::information(NULL,//this,
-                                             tr("Error"),
-                                             tr("%1 app is running please close it.").arg(appName),
-                                             tr("Retry"),
-                                             tr("Cancel"))) {
-                Logger::GetInstance()->AddLog(tr("Deleting %1 canceled").arg(appName));
-                return false;
+            if(force)
+            {
+                if (1 == QMessageBox::information(NULL,//this,
+                                                 tr("Error"),
+                                                 tr("%1 app is running please close it.").arg(appName),
+                                                 tr("Retry"))) {
+                    Logger::GetInstance()->AddLog(tr("Deleting %1 canceled").arg(appName));
+                    return false;
+                }
+            }
+            else
+            {
+                if (1 == QMessageBox::information(NULL,//this,
+                                                 tr("Error"),
+                                                 tr("%1 app is running please close it.").arg(appName),
+                                                 tr("Retry"),
+                                                 tr("Cancel"))) {
+                    Logger::GetInstance()->AddLog(tr("Deleting %1 canceled").arg(appName));
+                    return false;
+                }
             }
         }
     }
@@ -471,14 +484,14 @@ bool Installer::Update(AvailableSoftWare::SoftWareMap softMap, eAppType type, bo
         const QString& name = iter.key();
         const SoftWare& soft = iter.value();
         if (!soft.m_CurVersion.isEmpty() &&
-            Settings::GetVersion(soft.m_CurVersion) < Settings::GetVersion(soft.m_NewVersion)) {
+            Settings::GetVersion(soft.m_CurVersion) != Settings::GetVersion(soft.m_NewVersion)) {
             if (force ||
                 0 == QMessageBox::information(NULL,//this,
                                              tr("Update available"),
                                              tr("%1 update available.").arg(name),
                                              tr("Install"),
                                              tr("Cancel"))) {
-                if (!Delete(name, type)) {
+                if (!Delete(name, type, force)) {
                     Logger::GetInstance()->AddLog(tr("Error update %1"));
                     return false;
                 }

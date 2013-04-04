@@ -769,6 +769,7 @@ void Entity::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 
 	flags = archive->GetUInt32("flags", NODE_VISIBLE);
 	flags |= NODE_UPDATABLE;
+	flags &= ~TRANSFORM_DIRTY;
 
     const Matrix4 & localTransform = archive->GetByteArrayAsType("localTransform", GetLocalTransform());
 	SetLocalTransform(localTransform);
