@@ -57,7 +57,7 @@ public:
 	const Vector2 & GetAnalogPosition();
     
     virtual void SetStickSprite(Sprite *stickSprite, int32 frame);
-    virtual void SetStickSprite(const String &stickSpriteName, int32 frame);
+    virtual void SetStickSprite(const FilePath &stickSpriteName, int32 frame);
 	
 	virtual void Input(UIEvent *currentInput); // Can be overrided for control additioanl functionality implementation
 	virtual void InputCancelled(UIEvent *currentInput); // Can be overrided for control additioanl functionality implementation

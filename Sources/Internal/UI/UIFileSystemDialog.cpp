@@ -355,7 +355,7 @@ void UIFileSystemDialog::RefreshList()
     int32 outCnt = 0;
     int32 p = -1;
     
-    String curDirPath = currentDir.GetDirectory();
+    String curDirPath = currentDir.GetDirectory().GetAbsolutePathname();
     while (true) 
     {
         p = curDirPath.rfind("/", p);

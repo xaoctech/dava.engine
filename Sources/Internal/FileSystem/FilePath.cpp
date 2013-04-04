@@ -188,18 +188,18 @@ String FilePath::GetExtension() const
 }
 
     
-String FilePath::GetDirectory() const
+FilePath FilePath::GetDirectory() const
 {
     return GetDirectory(absolutePathname);
 }
 
-String FilePath::GetDirectory(const String &pathname)
+FilePath FilePath::GetDirectory(const String &pathname)
 {
-    const String::size_type dotpos = pathname.rfind(String("/"));
-    if (dotpos == String::npos)
-        return String();
+    const String::size_type slashpos = pathname.rfind(String("/"));
+    if (slashpos == String::npos)
+        return FilePath();
     
-    return pathname.substr(0, dotpos + 1);
+    return FilePath(pathname.substr(0, slashpos + 1));
 }
 
     
@@ -225,22 +225,22 @@ String FilePath::GetRelativePathname(const FilePath &forDirectory) const
     
 void FilePath::ReplaceFilename(const String &filename)
 {
-    const String directory = GetDirectory();
-    absolutePathname = NormalizePathname(directory + filename);
+    const FilePath directory = GetDirectory();
+    absolutePathname = NormalizePathname(directory + FilePath(filename));
 }
     
 void FilePath::ReplaceBasename(const String &basename)
 {
-    const String directory = GetDirectory();
+    const FilePath directory = GetDirectory();
     const String extension = GetExtension();
-    absolutePathname = NormalizePathname(directory + basename + extension);
+    absolutePathname = NormalizePathname(directory + FilePath(basename + extension));
 }
     
 void FilePath::ReplaceExtension(const String &extension)
 {
-    const String directory = GetDirectory();
+    const FilePath directory = GetDirectory();
     const String basename = GetBasename();
-    absolutePathname = NormalizePathname(directory + basename + extension);
+    absolutePathname = NormalizePathname(directory + FilePath(basename + extension));
 }
     
 void FilePath::ReplaceDirectory(const String &directory)
@@ -331,7 +331,12 @@ String FilePath::GetSystemPathname(const String &pathname)
     return NormalizePathname(retPath);
 }
     
-    
+
+String FilePath::NormalizePathname(const FilePath &pathname)
+{
+    return NormalizePathname(pathname.GetAbsolutePathname());
+}
+
 String FilePath::NormalizePathname(const String &pathname)
 {
 	if(pathname.empty())
@@ -408,13 +413,13 @@ String FilePath::AbsoluteToRelative(const String &directoryPathname, const Strin
     
     DVASSERT(IsAbsolutePathname(absolutePathname));
     
-    String filePath = GetDirectory(workingFilePath);
+    FilePath filePath = GetDirectory(workingFilePath);
     String fileName = GetFilename(workingFilePath);
     
     Vector<String> folders;
     Split(workingDirectoryPath, "/", folders);
     Vector<String> fileFolders;
-    Split(filePath, "/", fileFolders);
+    Split(filePath.GetAbsolutePathname(), "/", fileFolders);
     
     Vector<String>::size_type equalCount = 0;
     for(; equalCount < folders.size() && equalCount < fileFolders.size(); ++equalCount)
