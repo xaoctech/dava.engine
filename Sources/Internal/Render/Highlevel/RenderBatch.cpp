@@ -73,13 +73,7 @@ void RenderBatch::SetPolygonGroup(PolygonGroup * _polygonGroup)
 {
 	SafeRelease(dataSource);
     dataSource = SafeRetain(_polygonGroup);
-	if(NULL != dataSource)
-	{
-		aabbox = dataSource->GetBoundingBox();
-        DVASSERT(aabbox.min.x != AABBOX_INFINITY &&
-                 aabbox.min.y != AABBOX_INFINITY &&
-                 aabbox.min.z != AABBOX_INFINITY);
-	}
+	UpdateAABBoxFromSource();
 }
 
 void RenderBatch::SetRenderDataObject(RenderDataObject * _renderDataObject)
@@ -261,6 +255,17 @@ void RenderBatch::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 void RenderBatch::SetVisibilityCriteria(uint32 criteria)
 {
 	visiblityCriteria = criteria;
+}
+
+void RenderBatch::UpdateAABBoxFromSource()
+{
+	if(NULL != dataSource)
+	{
+		aabbox = dataSource->GetBoundingBox();
+		DVASSERT(aabbox.min.x != AABBOX_INFINITY &&
+			aabbox.min.y != AABBOX_INFINITY &&
+			aabbox.min.z != AABBOX_INFINITY);
+	}
 }
 
 

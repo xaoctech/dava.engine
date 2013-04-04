@@ -127,14 +127,20 @@ void QtPropertyDataIntrospection::CreateCustomButtonsForRenderObject()
 {
 	if(NULL != info && (info->Type() == DAVA::MetaInfo::Instance<DAVA::RenderObject>()))
 	{
-		QPushButton *addButton = new QPushButton(QIcon(":/QtIcons/keyplus.png"), "");
-		addButton->setIconSize(QSize(12, 12));
-		AddOW(QtPropertyOW(addButton));
-		QObject::connect(addButton, SIGNAL(pressed()), this, SLOT(AddBakeTransformsField()));
+		QPushButton *bakeButton = new QPushButton(QIcon(":/QtIcons/transform_bake.png"), "");
+		bakeButton->setToolTip("Bake Transform");
+		bakeButton->setIconSize(QSize(12, 12));
+		AddOW(QtPropertyOW(bakeButton));
+		QObject::connect(bakeButton, SIGNAL(pressed()), this, SLOT(BakeTransform()));
 	}
 }
 
-void QtPropertyDataIntrospection::AddBakeTransformsField()
+void QtPropertyDataIntrospection::BakeTransform()
 {
-
+	QtPropertyDataIntrospection * renderComponentProperty = static_cast<QtPropertyDataIntrospection*>(parent);
+	DAVA::Entity * entity = (static_cast<DAVA::RenderComponent*>(renderComponentProperty->object))->GetEntity();
+	DAVA::RenderObject * ro = static_cast<DAVA::RenderObject*>(object);
+	ro->BakeTransform(entity->GetLocalTransform());
+	entity->SetLocalTransform(DAVA::Matrix4::IDENTITY);
 }
+

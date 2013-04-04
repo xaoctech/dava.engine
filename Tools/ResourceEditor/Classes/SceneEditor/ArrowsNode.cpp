@@ -1,5 +1,4 @@
 #include "ArrowsNode.h"
-
 #include "EditorScene.h"
 
 #define RED Color(1.f, 0.f, 0.f, 1.f)
@@ -31,6 +30,7 @@ ArrowsNode::ArrowsNode():
 	RenderComponent* renderComponent = new RenderComponent();
 	RenderObject* renderObject = new RenderObject();
 	ArrowsRenderBatch* renderBatch = new ArrowsRenderBatch(this);
+	renderBatch->SetSortingKey(15);
 	renderObject->AddRenderBatch(renderBatch);
 	renderComponent->SetRenderObject(renderObject);
 	AddComponent(renderComponent);
@@ -195,7 +195,7 @@ void ArrowsNode::SetActive(bool active)
 ArrowsRenderBatch::ArrowsRenderBatch(ArrowsNode* node)
 :	node(node)
 {
-	SetOwnerLayerName(LAYER_OPAQUE);
+	SetOwnerLayerName(LAYER_ARROWS);
 }
 
 void ArrowsRenderBatch::DrawPrism(const Vector3& p1, const Vector3& p2, const Vector3& p3, const Vector3& p4, const Vector3& p5)
@@ -260,7 +260,7 @@ void ArrowsRenderBatch::Draw(Camera* camera)
 	manager->SetMatrix(RenderManager::MATRIX_MODELVIEW, camera->GetMatrix());
 
 	uint32 oldState = manager->GetState();
-	manager->SetState(RenderState::STATE_COLORMASK_ALL);
+	manager->SetState(RenderState::STATE_COLORMASK_ALL | RenderState::STATE_DEPTH_WRITE);
 
 	Color colors[COLORS_COUNT];
 	PrepareColors(colors);

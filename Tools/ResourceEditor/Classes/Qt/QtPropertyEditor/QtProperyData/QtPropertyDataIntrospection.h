@@ -29,7 +29,7 @@ protected:
 	DAVA_DEPRECATED(void CreateCustomButtonsForRenderObject());
 
 protected slots:
-	void AddBakeTransformsField();
+	void BakeTransform();
 };
 
 #endif // __QT_PROPERTY_DATA_INTROSPECTION_H__
