@@ -3,6 +3,7 @@
 
 #include "Entity/SceneSystem.h"
 #include "UI/UIEvent.h"
+#include "bullet/btBulletCollisionCommon.h"
 
 class SceneCollisionSystem : public DAVA::SceneSystem
 {
@@ -18,7 +19,15 @@ public:
 	virtual void RemoveEntity(DAVA::Entity * entity);
 
 protected:
+	/*
+	btDefaultCollisionConfiguration* objectsCollConf;
+	btCollisionDispatcher* objectsCollDisp;
+	btAxisSweep3* objectsBroadphase;
 
+	btDefaultCollisionConfiguration* landCollConf;
+	btCollisionDispatcher* landCollDisp;
+	btAxisSweep3* landBroadphase;
+	*/
 };
 
 #endif // __SCENE_COLLISION_SYSTEM_H__

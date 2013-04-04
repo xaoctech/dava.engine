@@ -37,6 +37,7 @@ SceneCameraSystem::SceneCameraSystem(DAVA::Scene * scene)
 		topCamera->SetUp(DAVA::Vector3(0.0f, 0.0f, 1.0f));
 		topCamera->SetPosition(DAVA::Vector3(0.0f, 0.0f, 200.0f));
 		topCamera->SetTarget(DAVA::Vector3(0.0f, 250.0f, 0.0f));
+		topCamera->Setup(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f);
 
 		DAVA::Entity *topCameraEntity = new DAVA::Entity();
 		topCameraEntity->SetName("editor.debug-camera");

@@ -29,7 +29,11 @@ void SceneCollisionSystem::Draw()
 
 void SceneCollisionSystem::AddEntity(DAVA::Entity * entity)
 {
+	if(NULL != entity)
+	{
 
+	}
+	// check if this entity has render component
 }
 
 void SceneCollisionSystem::RemoveEntity(DAVA::Entity * entity)
