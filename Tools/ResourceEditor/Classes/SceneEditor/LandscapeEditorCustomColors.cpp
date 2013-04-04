@@ -454,11 +454,11 @@ void LandscapeEditorCustomColors::LoadTextureAction(const String &pathToFile)
 												   image->GetHeight(),
 												   false);
 
-		StoreOriginalState();
-
 		SafeRelease(colorSprite);
 		colorSprite = Sprite::CreateAsRenderTarget(texSurf->GetWidth(), texSurf->GetHeight(), FORMAT_RGBA8888);
 		Sprite* sprite = Sprite::CreateFromTexture(texture, 0, 0, texture->GetWidth(), texture->GetHeight());
+
+		StoreOriginalState();
 
 		RenderManager::Instance()->SetRenderTarget(colorSprite);
 		sprite->Draw();
