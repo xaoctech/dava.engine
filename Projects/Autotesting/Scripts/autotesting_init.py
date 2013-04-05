@@ -77,16 +77,17 @@ if (platform.system() == "Darwin"):
         scripts.append("/transporter_chief.rb")
         scripts.append("/testRun.js")
 
-autotestingReportsFolder = os.path.realpath(autotestingSrcFolder + "/Reports")      
+#autotestingReportsFolder = os.path.realpath(autotestingSrcFolder + "/test_report")      
+# Remove as depricated
+#if os.path.exists(autotestingReportsFolder):   
+#    print "remove previous report for " + platformName       
+#    autotestingReportPath = os.path.realpath(autotestingReportsFolder + "/report_" + platformName + ".html") 
+#    if os.path.exists(autotestingReportPath): 
+#        os.remove(autotestingReportPath)
+#else:
+#    os.mkdir(autotestingReportsFolder)
 
-if os.path.exists(autotestingReportsFolder):   
-    print "remove previous report for " + platformName       
-    autotestingReportPath = os.path.realpath(autotestingReportsFolder + "/report_" + platformName + ".html") 
-    if os.path.exists(autotestingReportPath): 
-        os.remove(autotestingReportPath)
-else:
-    os.mkdir(autotestingReportsFolder)    
-    
+	
 print "copy scripts from " + currentDir + " to " + autotestingSrcFolder
 for scriptName in scripts:
     scriptSrcPath = os.path.realpath(currentDir + scriptName)

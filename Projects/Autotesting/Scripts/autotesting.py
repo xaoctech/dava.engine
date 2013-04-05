@@ -47,10 +47,10 @@ autotestingSrcFolder = os.path.realpath(projectDir + "/Autotesting")
 autotestingDestFolder = os.path.realpath(projectDir + "/Data/Autotesting")
 
 # Remove log file
-autotestingLogFilePath = os.path.realpath(projectDir + "/test_log.txt")
-if os.path.exists(autotestingLogFilePath): 
-    print "delete log file: " + autotestingLogFilePath
-    os.remove(autotestingLogFilePath)		
+#autotestingLogFilePath = os.path.realpath(projectDir + "/test_log.txt")
+#if os.path.exists(autotestingLogFilePath): 
+#    print "delete log file: " + autotestingLogFilePath
+#    os.remove(autotestingLogFilePath)		
 
 executableName = ""
 executableBuildPath = ""
