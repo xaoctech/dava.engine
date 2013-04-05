@@ -49,6 +49,8 @@ ParticleEmitter::ParticleEmitter()
 {
 	type = TYPE_PARTICLE_EMTITTER;
 	Cleanup(false);
+
+	bbox = AABBox3(Vector3(), Vector3());
 }
 
 ParticleEmitter::~ParticleEmitter()
