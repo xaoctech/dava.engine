@@ -8,8 +8,8 @@
 
 #include "DAVAEngine.h"
 #include "GameCore.h"
-#include "ResourcePackerScreen.h"
 #include "TexturePacker/CommandLineParser.h"
+#include "TexturePacker/ResourcePacker2D.h"
 
 #include "SceneEditor/EditorSettings.h"
 #include "SceneEditor/EditorConfig.h"
@@ -19,7 +19,7 @@
 #include "SceneEditor/SceneExporter.h"
 #include "SceneEditor/SceneSaver.h"
 
-#include "SceneEditor/PVRConverter.h"
+#include "PVRConverter.h"
 #include "version.h"
 
 using namespace DAVA;
@@ -88,7 +88,7 @@ void ProcessRecourcePacker()
 {
     Vector<String> & commandLine = Core::Instance()->GetCommandLine();
     
-    ResourcePackerScreen * resourcePackerScreen = new ResourcePackerScreen();
+    ResourcePacker2D * resourcePacker = new ResourcePacker2D();
     
     FilePath commandLinePath(commandLine[1]);
     commandLinePath.MakeDirectoryPathname();
@@ -96,20 +96,20 @@ void ProcessRecourcePacker()
     FilePath lastDir(commandLinePath.GetDirectory());
     
     
-    resourcePackerScreen->inputGfxDirectory = commandLinePath;
-    resourcePackerScreen->outputGfxDirectory = resourcePackerScreen->inputGfxDirectory + FilePath("../../Data/") + lastDir;
-    resourcePackerScreen->outputGfxDirectory.MakeDirectoryPathname();
+    resourcePacker->inputGfxDirectory = commandLinePath;
+    resourcePacker->outputGfxDirectory = resourcePacker->inputGfxDirectory + FilePath("../../Data/") + lastDir;
+    resourcePacker->outputGfxDirectory.MakeDirectoryPathname();
     
-    resourcePackerScreen->excludeDirectory = resourcePackerScreen->inputGfxDirectory + FilePath("../");
-    resourcePackerScreen->excludeDirectory.MakeDirectoryPathname();
+    resourcePacker->excludeDirectory = resourcePacker->inputGfxDirectory + FilePath("../");
+    resourcePacker->excludeDirectory.MakeDirectoryPathname();
     
-    if(!resourcePackerScreen->excludeDirectory.IsInitalized())
+    if(!resourcePacker->excludeDirectory.IsInitalized())
     {
         printf("[FATAL ERROR: Packer has wrong input pathname]");
         return;
     }
     
-    if (resourcePackerScreen->excludeDirectory.GetLastDirectoryName() != "DataSource")
+    if (resourcePacker->excludeDirectory.GetLastDirectoryName() != "DataSource")
     {
         printf("[FATAL ERROR: Packer working only inside DataSource directory]");
         return;
@@ -129,22 +129,22 @@ void ProcessRecourcePacker()
 #elif defined (__DAVAENGINE_WIN32__)
 	String toolName = String("/PVRTexToolCL.exe");
 #endif
-    PVRConverter::Instance()->SetPVRTexTool(resourcePackerScreen->excludeDirectory + String("/") + commandLine[2] + toolName);
+    PVRConverter::Instance()->SetPVRTexTool(resourcePacker->excludeDirectory + commandLine[2] + toolName);
 
     uint64 elapsedTime = SystemTimer::Instance()->AbsoluteMS();
     printf("[Resource Packer Started]\n");
-    printf("[INPUT DIR] - [%s]\n", resourcePackerScreen->inputGfxDirectory.GetAbsolutePathname().c_str());
-    printf("[OUTPUT DIR] - [%s]\n", resourcePackerScreen->outputGfxDirectory.GetAbsolutePathname().c_str());
-    printf("[EXCLUDE DIR] - [%s]\n", resourcePackerScreen->excludeDirectory.GetAbsolutePathname().c_str());
+    printf("[INPUT DIR] - [%s]\n", resourcePacker->inputGfxDirectory.GetAbsolutePathname().c_str());
+    printf("[OUTPUT DIR] - [%s]\n", resourcePacker->outputGfxDirectory.GetAbsolutePathname().c_str());
+    printf("[EXCLUDE DIR] - [%s]\n", resourcePacker->excludeDirectory.GetAbsolutePathname().c_str());
     
     Texture::InitializePixelFormatDescriptors();
-    resourcePackerScreen->PackResources();
+    resourcePacker->PackResources();
     elapsedTime = SystemTimer::Instance()->AbsoluteMS() - elapsedTime;
     printf("[Resource Packer Compile Time: %0.3lf seconds]\n", (float64)elapsedTime / 1000.0);
     
     PVRConverter::Instance()->Release();
     
-    SafeRelease(resourcePackerScreen);
+    SafeDelete(resourcePacker);
 }
 
 

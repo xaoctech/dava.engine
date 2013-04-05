@@ -25,7 +25,7 @@ PVRConverter::~PVRConverter()
 
 }
 
-String PVRConverter::ConvertPngToPvr(const String & fileToConvert, const DAVA::TextureDescriptor &descriptor)
+String PVRConverter::ConvertPngToPvr(const FilePath & fileToConvert, const DAVA::TextureDescriptor &descriptor)
 {
 	String outputName;
 	String command = GetCommandLinePVR(fileToConvert, descriptor);
@@ -40,9 +40,9 @@ String PVRConverter::ConvertPngToPvr(const String & fileToConvert, const DAVA::T
 	return outputName;
 }
 
-String PVRConverter::GetCommandLinePVR(const DAVA::String & fileToConvert, const DAVA::TextureDescriptor &descriptor)
+String PVRConverter::GetCommandLinePVR(const DAVA::FilePath & fileToConvert, const DAVA::TextureDescriptor &descriptor)
 {
-	String command = pvrTexToolPathname;
+	String command = pvrTexToolPathname.ResolvePathname();
 	String format = pixelFormatToPVRFormat[descriptor.pvrCompression.format];
 
 	if(command != "" && format != "")
@@ -52,7 +52,7 @@ String PVRConverter::GetCommandLinePVR(const DAVA::String & fileToConvert, const
 		// assemble command
 
 		// input file
-		command += Format(" -i \"%s\"", fileToConvert.c_str());
+		command += Format(" -i \"%s\"", fileToConvert.ResolvePathname().c_str());
 
 		// output format
 		command += Format(" -f%s", format.c_str());
@@ -77,38 +77,35 @@ String PVRConverter::GetCommandLinePVR(const DAVA::String & fileToConvert, const
 	}
     else
     {
-        Logger::Error("[PVRConverter::GetCommandLinePVR] Can't create command line for file (%s)", fileToConvert.c_str());
+        Logger::Error("[PVRConverter::GetCommandLinePVR] Can't create command line for file (%s)", fileToConvert.GetAbsolutePathname().c_str());
         command = "";
     }
 
 	return command;
 }
 
-String PVRConverter::GetPVRToolOutput(const DAVA::String &inputPVR)
+String PVRConverter::GetPVRToolOutput(const DAVA::FilePath &inputPVR)
 {
-	return FileSystem::ReplaceExtension(inputPVR, ".pvr");
+    FilePath path = FilePath::CreateWithNewExtension(inputPVR, ".pvr");
+	return path.ResolvePathname();
 }
 
-void PVRConverter::SetPVRTexTool(const DAVA::String &textToolPathname)
+void PVRConverter::SetPVRTexTool(const DAVA::FilePath &textToolPathname)
 {
-	pvrTexToolPathname = FileSystem::Instance()->SystemPathForFrameworkPath(textToolPathname);
-	pvrTexToolPathname = FileSystem::Instance()->GetCanonicalPath(pvrTexToolPathname);
-
+	pvrTexToolPathname = textToolPathname;
 	if(!FileSystem::Instance()->IsFile(pvrTexToolPathname))
 	{
-		Logger::Error("PVRTexTool doesn't found in %s\n", pvrTexToolPathname.c_str());
-		pvrTexToolPathname = "";
+		Logger::Error("PVRTexTool doesn't found in %s\n", pvrTexToolPathname.GetAbsolutePathname().c_str());
+		pvrTexToolPathname = FilePath();
 	}
 }
 
-void PVRConverter::SetDXTTexTool(const DAVA::String &textToolPathname)
+void PVRConverter::SetDXTTexTool(const DAVA::FilePath &textToolPathname)
 {
-	dxtTexToolPathname = FileSystem::Instance()->SystemPathForFrameworkPath(textToolPathname);
-	dxtTexToolPathname = FileSystem::Instance()->GetCanonicalPath(dxtTexToolPathname);
-
+	dxtTexToolPathname = textToolPathname;
 	if(!FileSystem::Instance()->IsFile(dxtTexToolPathname))
 	{
-		Logger::Error("DXTTexTool doesn't found in %s\n", dxtTexToolPathname.c_str());
-		dxtTexToolPathname = "";
+		Logger::Error("DXTTexTool doesn't found in %s\n", dxtTexToolPathname.GetAbsolutePathname().c_str());
+		dxtTexToolPathname = FilePath();
 	}
 }

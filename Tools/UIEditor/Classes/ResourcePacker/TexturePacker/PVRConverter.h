@@ -11,23 +11,23 @@ public:
 	virtual ~PVRConverter();
 
 	//DAVA::String ConvertPngToPvr(const DAVA::String & fileToConvert, DAVA::PixelFormat format, bool generateMimpaps);
-	DAVA::String ConvertPngToPvr(const DAVA::String & fileToConvert, const DAVA::TextureDescriptor &descriptor);
+	DAVA::String ConvertPngToPvr(const DAVA::FilePath & fileToConvert, const DAVA::TextureDescriptor &descriptor);
 
-	DAVA::String GetCommandLinePVR(const DAVA::String & fileToConvert, const DAVA::TextureDescriptor &descriptor);
+	DAVA::String GetCommandLinePVR(const DAVA::FilePath & fileToConvert, const DAVA::TextureDescriptor &descriptor);
 	//DAVA::String GetCommandLineDXT(const DAVA::String & fileToConvert);
 
-	void SetPVRTexTool(const DAVA::String &textToolPathname);
-	void SetDXTTexTool(const DAVA::String &textToolPathname);
+	void SetPVRTexTool(const DAVA::FilePath &textToolPathname);
+	void SetDXTTexTool(const DAVA::FilePath &textToolPathname);
 
-	DAVA::String GetPVRToolOutput(const DAVA::String &inputPVR);
+	DAVA::String GetPVRToolOutput(const DAVA::FilePath &inputPVR);
 	//DAVA::String GetDXTToolOutput(const DAVA::String &inputDXT);
 
 protected:
 	DAVA::Map<DAVA::PixelFormat, DAVA::String> pixelFormatToPVRFormat;
 	//DAVA::Map<DAVA::PixelFormat, DAVA::String> pixelFormatToDVXFormat;
 
-	DAVA::String pvrTexToolPathname;
-	DAVA::String dxtTexToolPathname;
+	DAVA::FilePath pvrTexToolPathname;
+	DAVA::FilePath dxtTexToolPathname;
 };
 
 #endif // __PVR_CONVERTER_H__

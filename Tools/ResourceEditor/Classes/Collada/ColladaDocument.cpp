@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ColladaDocument.h"
 #include "Scene3D/SceneFile.h"
-#include "../TexturePacker/CommandLineParser.h"
+#include "TexturePacker/CommandLineParser.h"
 
 ///*
 // INCLUDE DevIL

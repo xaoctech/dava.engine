@@ -26,10 +26,7 @@ public:
 	DAVA::uint32	GetParamCount() { return (DAVA::uint32)params.size(); };
 	
 
-	static void		SplitFilePath(const DAVA::String & filepath, DAVA::String & path, DAVA::String & filename);
 	static void		RemoveFromPath(DAVA::String & path, const DAVA::String & removePart);	
-	static DAVA::String	ReplaceExtension(const DAVA::String & filename, const DAVA::String & nexExt);
-	static DAVA::String	GetExtension(const DAVA::String & filename);
 	
 	static DAVA::String RealPath(DAVA::String path);
 

@@ -1,15 +1,12 @@
-/*
- *  PngImage.cpp
- *  texturepack
- *
- *  Created by Vitaliy Borodovsky on 10/28/08.
- *  Copyright 2008 DAVA Consulting, LLC. All rights reserved.
- *
- */
-
-#include "PngImage.h"
-#include "CommandLineParser.h"
+#include "TexturePacker/PngImage.h"
+#include "TexturePacker/CommandLineParser.h"
 #include "Render/LibPngHelpers.h"
+#include "Render/ImageLoader.h"
+#include "Render/Texture.h"
+
+namespace DAVA
+{
+    
 
 PngImageExt::PngImageExt()
 :	internalData(0)
@@ -269,4 +266,5 @@ Color PngImageExt::GetDitheredColorForPoint(int32 x, int32 y)
     return newColor;
 }
 
+};
 

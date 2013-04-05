@@ -1,76 +1,38 @@
-/*
- *  TestScreen.cpp
- *  TemplateProjectMacOS
- *
- *  Created by Vitaliy  Borodovsky on 3/21/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
-#include "ResourcePackerScreen.h"
-#include <Magick++.h>
-#include <magick/MagickCore.h>
-#include <magick/property.h>
+#include "TexturePacker/ResourcePacker2D.h"
 #include "TexturePacker/DefinitionFile.h"
 #include "TexturePacker/TexturePacker.h"
 #include "TexturePacker/CommandLineParser.h"
-#include "UIFileTree.h"
+#include "FileSystem/FileSystem.h"
+#include "FileSystem/FileList.h"
+#include "Core/Core.h"
+#include "Platform/SystemTimer.h"
+#include "Utils/MD5.h"
+#include "Utils/StringFormat.h"
 
-ResourcePackerScreen::ResourcePackerScreen()
+#include <Magick++.h>
+#include <magick/MagickCore.h>
+#include <magick/property.h>
+
+namespace DAVA
+{
+
+ResourcePacker2D::ResourcePacker2D()
 {
 	isLightmapsPacking = false;
 	clearProcessDirectory = false;
 }
 
-void ResourcePackerScreen::LoadResources()
+FilePath ResourcePacker2D::GetProcessFolderName()
 {
-	inputGfxDirectory = FilePath("/Sources/dava.framework/Tools/ResourceEditor/DataSource/Gfx/");
-    Logger::Debug("%s", inputGfxDirectory.GetAbsolutePathname().c_str());
-	outputGfxDirectory = inputGfxDirectory + FilePath("/../../Data/Gfx");
-	excludeDirectory = inputGfxDirectory + FilePath("/../");
-	
-	// PackResources();
-	
-	UIYamlLoader::Load(this, FilePath("~res:/Screens/ResourcePackerScreen.yaml"));
-	
-	resourceTree = SafeRetain(dynamic_cast<UIFileTree*>(FindByName("resourceTree")));
-	resourceTree->SetDelegate(this);
-	resourceTree->SetFolderNavigation(true);
-	resourceTree->SetPath(outputGfxDirectory, ".txt");
-	
-	// Resource Tree Setup
-//	resourceTree = new UIFileTree(Rect(0, 0, 200, 600));
-//	resourceTree->SetPath(outputGfxDirectory, ".txt");
-//	AddControl(resourceTree);
-//	resourceTree->SetDelegate(this);
-
-	//resourceTree->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
-	//resourceTree->GetBackground()->SetColor(Color(0.3, 0.3, 0.3, 1.0f));
-	
-	// SpriteEditor setup
-	spriteEditor = SafeRetain(dynamic_cast<UISpriteEditor*> (FindByName("spriteEditor")));
-//	spriteEditor = new UISpriteEditor(Rect(220, 0, GetScreenWidth() - 230, 500));
-//	spriteEditor->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
-//	spriteEditor->GetBackground()->SetColor(Color(0.5, 0.5, 0.5, 1.0f));
-//	spriteEditor->
+	return FilePath("$process/");
 }
 
-void ResourcePackerScreen::UnloadResources()
+void ResourcePacker2D::PackResources()
 {
-	SafeRelease(resourceTree);
-	SafeRelease(spriteEditor);
-	
-	RemoveAllControls();
-}
-
-FilePath ResourcePackerScreen::GetProcessFolderName()
-{
-	return FilePath("$process");
-}
-
-void ResourcePackerScreen::PackResources()
-{
-	Logger::Debug("Input: %s Output: %s Exclude: %s", inputGfxDirectory.GetAbsolutePathname().c_str(), outputGfxDirectory.GetAbsolutePathname().c_str(), excludeDirectory.GetAbsolutePathname().c_str());
+	Logger::Debug("Input: %s \nOutput: %s \nExclude: %s",
+                  inputGfxDirectory.GetAbsolutePathname().c_str(),
+                  outputGfxDirectory.GetAbsolutePathname().c_str(),
+                  excludeDirectory.GetAbsolutePathname().c_str());
 	
 	isGfxModified = false;
 
@@ -113,7 +75,7 @@ void ResourcePackerScreen::PackResources()
 }
 
 
-bool ResourcePackerScreen::IsMD5ChangedDir(const FilePath & processDirectoryPath, const FilePath & pathname, const FilePath & name, bool isRecursive)
+bool ResourcePacker2D::IsMD5ChangedDir(const FilePath & processDirectoryPath, const FilePath & pathname, const FilePath & name, bool isRecursive)
 {
     DVASSERT(processDirectoryPath.IsDirectoryPathname());
 
@@ -166,7 +128,7 @@ bool ResourcePackerScreen::IsMD5ChangedDir(const FilePath & processDirectoryPath
 }
 
 
-bool ResourcePackerScreen::IsMD5ChangedFile(const FilePath & processDirectoryPath, const FilePath & pathname, const FilePath & psdName)
+bool ResourcePacker2D::IsMD5ChangedFile(const FilePath & processDirectoryPath, const FilePath & pathname, const FilePath & psdName)
 {
     DVASSERT(processDirectoryPath.IsDirectoryPathname());
 
@@ -206,7 +168,7 @@ bool ResourcePackerScreen::IsMD5ChangedFile(const FilePath & processDirectoryPat
 	return isChanged;
 }
 
-DefinitionFile * ResourcePackerScreen::ProcessPSD(const FilePath & processDirectoryPath, const FilePath & psdPathname, const FilePath & psdName)
+DefinitionFile * ResourcePacker2D::ProcessPSD(const FilePath & processDirectoryPath, const FilePath & psdPathname, const FilePath & psdName)
 {
     DVASSERT(processDirectoryPath.IsDirectoryPathname());
     
@@ -273,7 +235,7 @@ DefinitionFile * ResourcePackerScreen::ProcessPSD(const FilePath & processDirect
 			currentLayer.crop(Magick::Geometry(width,height, 0, 0));
 			currentLayer.magick("PNG");
 			FilePath outputFile = processDirectoryPath + psdNameWithoutExtension;
-			outputFile += String(Format("%d.png", k - 1));
+			outputFile += FilePath(String(Format("%d.png", k - 1)));
 			currentLayer.write(outputFile.ResolvePathname());
 		}
 		
@@ -346,13 +308,13 @@ DefinitionFile * ResourcePackerScreen::ProcessPSD(const FilePath & processDirect
 	}
 	catch( Magick::Exception &error_ )
     {
-		std::cout << "Caught exception: " << error_.what() << " file: "<< psdPathname.GetAbsolutePathname() << std::endl;
+        printf("Caught exception: %s file: %s", error_.what(), psdPathname.GetAbsolutePathname().c_str());
 		return 0;
     }
 	return 0;
 }
 
-void ResourcePackerScreen::ProcessFlags(const FilePath & flagsPathname)
+void ResourcePacker2D::ProcessFlags(const FilePath & flagsPathname)
 {
 	File * file = File::Create(flagsPathname, File::READ | File::OPEN);
 	if (!file)
@@ -416,7 +378,7 @@ void ResourcePackerScreen::ProcessFlags(const FilePath & flagsPathname)
 }
 
 
-void ResourcePackerScreen::RecursiveTreeWalk(const FilePath & inputPath, const FilePath & outputPath)
+void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FilePath & outputPath)
 {
 	uint64 packTime = SystemTimer::Instance()->AbsoluteMS();
 
@@ -575,76 +537,5 @@ void ResourcePackerScreen::RecursiveTreeWalk(const FilePath & inputPath, const F
 	SafeRelease(fileList);
 }
 
-// Sprite Editor Logic
-void ResourcePackerScreen::OnCellSelected(UIFileTree * tree, UIFileTreeCell *selectedCell)
-{
-	UITreeItemInfo * itemInfo = selectedCell->GetItemInfo();
-	String extension = FilePath(itemInfo->GetPathname()).GetExtension();
-	if (extension == ".txt")
-	{
-		FilePath spriteNameWithoutExtension(itemInfo->GetPathname());
-        spriteNameWithoutExtension.TruncateExtension();
-        
-		OpenSpriteEditor(spriteNameWithoutExtension);
-	}
-}
 
-UIFileTreeCell *ResourcePackerScreen::CellAtIndex(UIFileTree * tree, UITreeItemInfo *entry, int32 index)
-{
-    int32 width = (int32)tree->GetRect().dx;
-    
-	UIFileTreeCell *c = (UIFileTreeCell *)tree->GetReusableCell("FileTreeCell"); //try to get cell from the reusable cells store
-	if(!c)
-	{ //if cell of requested type isn't find in the store create new cell
-		c = new UIFileTreeCell(Rect(0, 0, (float32)width, 20.f), "FileTreeCell");
-	}
-	//fill cell whith data
-	//c->serverName = GameServer::Instance()->totalServers[index].name + LocalizedString("'s game");
-
-	c->SetStateText(UIControl::STATE_NORMAL, StringToWString(entry->GetName()));
-    c->GetStateTextControl(UIControl::STATE_NORMAL)->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
-    c->SetStateText(UIControl::STATE_SELECTED, StringToWString(entry->GetName()));
-	c->GetStateTextControl(UIControl::STATE_SELECTED)->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
-
-    c->SetSelected(false, false);
-	
-	return c;//returns cell
-}
-
-
-
-void ResourcePackerScreen::OpenSpriteEditor(const FilePath & spriteName)
-{
-	if (spriteEditor->GetParent() == 0)
-	{
-		AddControl(spriteEditor);
-	}
-	spriteEditor->SetPreviewSprite(spriteName);
-}
-
-void ResourcePackerScreen::WillAppear()
-{
-}
-
-void ResourcePackerScreen::WillDisappear()
-{
-	
-}
-
-void ResourcePackerScreen::Input(UIEvent * touch)
-{
-	
-}
-
-void ResourcePackerScreen::Draw(const UIGeometricData &geometricData)
-{
-
-}
-
-int32 ResourcePackerScreen::CellHeight(UIList *forList, int32 index)
-{
-    return 16;
-}
-
-
-
+};
