@@ -72,6 +72,7 @@ void CommandUpdateParticleLayer::Init(const QString& layerName,
 									  ParticleLayer::eType layerType,
 									  bool isDisabled,
 									  bool additive,
+									  bool isLong,
 									  Sprite* sprite,
 									  RefPtr< PropertyLine<float32> > life,
 									  RefPtr< PropertyLine<float32> > lifeVariation,
@@ -101,6 +102,7 @@ void CommandUpdateParticleLayer::Init(const QString& layerName,
 	this->layerType = layerType;
 	this->isDisabled = isDisabled;
 	this->additive = additive;
+	this->isLong = isLong;
 	this->sprite = sprite;
 	this->life = life;
 	this->lifeVariation = lifeVariation;
@@ -135,6 +137,7 @@ void CommandUpdateParticleLayer::Execute()
 	layer->layerName = layerName.toStdString();
 	layer->isDisabled = isDisabled;
 	layer->SetAdditive(additive);
+	layer->SetLong(isLong);
 	layer->life = life;
 	layer->lifeVariation = lifeVariation;
 	layer->number = number;
@@ -178,6 +181,15 @@ void CommandUpdateParticleLayer::Execute()
 		layer->type = layerType;
 		emitter->Play();
 	}
+	
+	// "IsLong" flag.
+	if (layer->IsLong() != isLong)
+	{
+		emitter->Stop();
+		layer->SetLong(isLong);
+		emitter->Play();
+	}
+
 
 	SceneDataManager::Instance()->RefreshParticlesLayer(layer);
 }

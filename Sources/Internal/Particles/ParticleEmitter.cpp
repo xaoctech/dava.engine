@@ -31,7 +31,6 @@
 #include "Particles/Particle.h"
 #include "Particles/ParticleLayer.h"
 #include "Particles/ParticleLayer3D.h"
-#include "Particles/ParticleLayerLong.h"
 #include "Render/RenderManager.h"
 #include "Utils/Random.h"
 #include "Utils/StringFormat.h"

@@ -67,6 +67,14 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 			SIGNAL(stateChanged(int)),
 			this,
 			SLOT(OnValueChanged()));
+
+	isLongCheckBox = new QCheckBox("Long");
+	mainBox->addWidget(isLongCheckBox);
+	connect(isLongCheckBox,
+			SIGNAL(stateChanged(int)),
+			this,
+			SLOT(OnValueChanged()));
+
 	
 	QHBoxLayout* spriteHBox = new QHBoxLayout;
 	spriteLabel = new QLabel(this);
@@ -179,6 +187,10 @@ EmitterLayerWidget::~EmitterLayerWidget()
 			SIGNAL(stateChanged(int)),
 			this,
 			SLOT(OnValueChanged()));
+	disconnect(isLongCheckBox,
+			SIGNAL(stateChanged(int)),
+			this,
+			SLOT(OnValueChanged()));
 	disconnect(spriteBtn,
 			SIGNAL(clicked(bool)),
 			this,
@@ -233,6 +245,7 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 
 	enableCheckBox->setChecked(!layer->isDisabled);
 	additiveCheckBox->setChecked(layer->GetAdditive());
+	isLongCheckBox->setChecked(layer->IsLong());
 
 	//LAYER_SPRITE = 0,
 	sprite = layer->GetSprite();
@@ -512,6 +525,7 @@ void EmitterLayerWidget::OnValueChanged()
 						 propLayerType,
 						 !enableCheckBox->isChecked(),
 						 additiveCheckBox->isChecked(),
+						 isLongCheckBox->isChecked(),
 						 sprite,
 						 propLife.GetPropLine(),
 						 propLifeVariation.GetPropLine(),

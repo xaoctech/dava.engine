@@ -131,6 +131,7 @@ public:
 			  ParticleLayer::eType layerType,
 			  bool isDisabled,
 			  bool additive,
+  			  bool isLong,
 			  Sprite* sprite,
 			  RefPtr< PropertyLine<float32> > life,
 			  RefPtr< PropertyLine<float32> > lifeVariation,
@@ -168,6 +169,7 @@ private:
 	QString layerName;
 	ParticleLayer::eType layerType;
 	bool isDisabled;
+	bool isLong;
 	bool additive;
 	Sprite* sprite;
 	RefPtr< PropertyLine<float32> > life;
