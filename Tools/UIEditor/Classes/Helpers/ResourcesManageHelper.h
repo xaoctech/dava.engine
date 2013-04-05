@@ -10,6 +10,7 @@
 #define UIEditor_ResourcesManageHelper_h
 
 #include "Base/BaseTypes.h"
+#include "Render/2D/FTFont.h"
 
 class QString;
 class QStringList;
@@ -29,6 +30,8 @@ public:
 	static QString GetButtonBackgroundImagePath();
 	// Get path to help contents hmtl file
 	static QString GetHelpContentsPath();
+	// Get graphics font sprite file path
+	static QString GetGraphicsFontPath(Font* font);
 	
 	// Working directory
 	static QString GetDefaultDirectory();
@@ -48,13 +51,9 @@ public:
 	static bool ValidateResourcePath(const QString& resourcePath);
 	
 	// Get working directory path of last opened sprite
-	static QString GetDefaultSpritesPath(bool spritesPathForSave = false);
-	// Set working directory path of last opened sprite
-	static void SetDefaultSpritesPath(const QString& spritesPath);
+	static QString GetDefaultSpritesPath(const QString& currentSpritePath);
 	// Get working directory path of last opened font sprite
-	static QString GetDefaultFontSpritesPath(bool spritesPathForSave = false);
-	// Set working directory path of last opened font sprite
-	static void SetDefaultFontSpritesPath(const QString& spritesPath);
+	static QString GetDefaultFontSpritesPath(const QString& currentSpritePath);
 	
 	// Get project title string
 	static QString GetProjectTitle();
@@ -80,8 +79,6 @@ private:
 	static QString buttonBackgroundImagePath;
 	static QString helpContentsPath;
 	static QString projectTitle;
-	static QString defaultSpritesPath;
-	static QString defaultFontSpritesPath;
 };
 };
 

@@ -21,5 +21,6 @@
     <file>Icons/savesceneall.png</file>
     <file>Icons/uicustomcontrol.png</file>
     <file>Icons/uitextfield.png</file>
+    <file>Icons/uiswitch.png</file>
   </qresource>
 </RCC>

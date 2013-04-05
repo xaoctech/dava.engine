@@ -174,6 +174,12 @@ protected:
 	// Event filter to block wheel events for comboboxes and spinbox
 	virtual bool eventFilter(QObject *obj, QEvent *event);
 
+	// Is the control a subcontrol? (extended UIEditor's version).
+	bool IsSubcontrolInUIEditor(UIControl* uiControl);
+
+	// Whether the active control IS subcontrol?
+	bool ActiveControlIsSubcontrol();
+
 protected slots:
     // Properties are updated from the external source and needs to be re-drawn.
     void OnPropertiesChangedExternally();

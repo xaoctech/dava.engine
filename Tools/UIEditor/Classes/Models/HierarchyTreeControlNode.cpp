@@ -30,8 +30,9 @@ HierarchyTreeControlNode::HierarchyTreeControlNode(HierarchyTreeNode* parent,
 	this->uiObject = node->GetUIObject()->Clone();
 	this->needReleaseUIObjects = false;
 	
-	// Remove real child
-	const List<UIControl* > &realChildren = GetUIObject()->GetRealChildren();
+	// Remove real children & subcontrols - each control is responsible for its
+	// subcontrols by itself.
+	const List<UIControl* > &realChildren = GetUIObject()->GetRealChildrenAndSubcontrols();
 	for (List<UIControl* >::const_iterator iter = realChildren.begin();
 		 iter != realChildren.end();
 		 ++iter)

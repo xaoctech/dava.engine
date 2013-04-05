@@ -63,7 +63,11 @@ JniMailSender::JniMailSender() :
 
 bool JniMailSender::SendEmail(const String& email, const String& subject, const String& messageText)
 {
-	jmethodID mid = GetMethodID("SendEMail", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z");
+	jclass javaClass = GetJavaClass();
+	if (!javaClass)
+		return false;
+
+	jmethodID mid = GetMethodID(javaClass, "SendEMail", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z");
 	bool res = false;
 	if (mid)
 	{
@@ -75,6 +79,8 @@ bool JniMailSender::SendEmail(const String& email, const String& subject, const 
 		GetEnvironment()->DeleteLocalRef(jSubject);
 		GetEnvironment()->DeleteLocalRef(jMessageText);
 	}
+	ReleaseJavaClass(javaClass);
+
 	return res;
 }
 

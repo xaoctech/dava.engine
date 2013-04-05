@@ -1,4 +1,5 @@
 #include "WebViewControl.h"
+#include "FileSystem/Logger.h"
 
 using namespace DAVA;
 
@@ -15,51 +16,73 @@ void JniWebView::Initialize(WebViewControl* control, int id, const Rect& control
 {
 	controls[id] = control;
 	Rect rect = V2P(controlRect);
-	jmethodID mid = GetMethodID("Initialize", "(IFFFF)V");
+
+	jclass javaClass = GetJavaClass();
+	if (!javaClass)
+		return;
+
+	jmethodID mid = GetMethodID(javaClass, "Initialize", "(IFFFF)V");
 	if (mid)
-	{
 		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, id, rect.x, rect.y, rect.dx, rect.dy);
-	}
+	ReleaseJavaClass(javaClass);
 }
 
 void JniWebView::Deinitialize(int id)
 {
+	jclass javaClass = GetJavaClass();
+	if (!javaClass)
+		return;
+
 	controls.erase(id);
-	jmethodID mid = GetMethodID("Deinitialize", "(I)V");
+	jmethodID mid = GetMethodID(javaClass, "Deinitialize", "(I)V");
 	if (mid)
-	{
 		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, id);
-	}
+	ReleaseJavaClass(javaClass);
 }
 
 void JniWebView::OpenURL(int id, const String& urlToOpen)
 {
-	jmethodID mid = GetMethodID("OpenURL", "(ILjava/lang/String;)V");
+	jclass javaClass = GetJavaClass();
+	if (!javaClass)
+		return;
+
+	jmethodID mid = GetMethodID(javaClass, "OpenURL", "(ILjava/lang/String;)V");
 	if (mid)
 	{
 		jstring jUrlToOpen = GetEnvironment()->NewStringUTF(urlToOpen.c_str());
 		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, id, jUrlToOpen);
 		GetEnvironment()->DeleteLocalRef(jUrlToOpen);
 	}
+	ReleaseJavaClass(javaClass);
 }
 
 void JniWebView::SetRect(int id, const Rect& controlRect)
 {
+	jclass javaClass = GetJavaClass();
+	if (!javaClass)
+		return;
+
 	Rect rect = V2P(controlRect);
-	jmethodID mid = GetMethodID("SetRect", "(IFFFF)V");
+	jmethodID mid = GetMethodID(javaClass, "SetRect", "(IFFFF)V");
 	if (mid)
 	{
 		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, id, rect.x, rect.y, rect.dx, rect.dy);
 	}
+	ReleaseJavaClass(javaClass);
 }
 
 void JniWebView::SetVisible(int id, bool isVisible)
 {
-	jmethodID mid = GetMethodID("SetVisible", "(IZ)V");
+	jclass javaClass = GetJavaClass();
+	if (!javaClass)
+		return;
+
+	jmethodID mid = GetMethodID(javaClass, "SetVisible", "(IZ)V");
 	if (mid)
 	{
 		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, id, isVisible);
 	}
+	ReleaseJavaClass(javaClass);
 }
 
 IUIWebViewDelegate::eAction JniWebView::URLChanged(int id, const String& newURL)

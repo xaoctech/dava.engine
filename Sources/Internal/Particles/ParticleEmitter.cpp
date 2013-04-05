@@ -49,6 +49,8 @@ ParticleEmitter::ParticleEmitter()
 {
 	type = TYPE_PARTICLE_EMTITTER;
 	Cleanup(false);
+
+	bbox = AABBox3(Vector3(), Vector3());
 }
 
 ParticleEmitter::~ParticleEmitter()
@@ -145,7 +147,7 @@ void ParticleEmitter::Save(KeyedArchive *archive, SceneFileV2 *sceneFile)
 
 	if(NULL != archive)
 	{
-        String filename = FileSystem::Instance()->AbsoluteToRelativePath(sceneFile->GetScenePath(), configPath);
+		String filename = FileSystem::Instance()->AbsoluteToRelativePath(FileSystem::Instance()->GetCanonicalPath(sceneFile->GetScenePath()), FileSystem::Instance()->GetCanonicalPath(configPath));
 		archive->SetString("pe.configpath", filename);
 	}
 }
