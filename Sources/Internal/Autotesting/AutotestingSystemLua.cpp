@@ -217,40 +217,52 @@ bool AutotestingSystemLua::SetText(const String &path, const String &text)
     
 bool AutotestingSystemLua::CheckText(UIControl *control, const String &expectedText)
 {
-    UIStaticText *uiStaticText = dynamic_cast<UIStaticText*>(control);
-    if(uiStaticText)
-    {
-        String actualText = WStringToString(uiStaticText->GetText());
-        return (actualText == expectedText);
-    }
-    UITextField *uiTextField = dynamic_cast<UITextField*>(control);
-    if(uiTextField)
-    {
-        String actualText = WStringToString(uiTextField->GetText());
-        return (actualText == expectedText);
-    }
-    return false;
+	UIStaticText *uiStaticText = dynamic_cast<UIStaticText*>(control);
+	if(uiStaticText)
+	{
+		String actualText = WStringToString(uiStaticText->GetText());
+		Log("DEBUG", Format("Compare text in control %s with expected text", uiStaticText->GetName().c_str()));
+		Log("DEBUG", actualText);
+		Log("DEBUG", expectedText);
+		return (actualText == expectedText);
+	}
+	UITextField *uiTextField = dynamic_cast<UITextField*>(control);
+	if(uiTextField)
+	{
+		String actualText = WStringToString(uiTextField->GetText());
+		Log("DEBUG", Format("Compare text in control %s with expected text", uiTextField->GetName().c_str()));
+		Log("DEBUG", actualText);
+		Log("DEBUG", expectedText);
+		return (actualText == expectedText);
+	}
+	return false;
 }
-    
+
 bool AutotestingSystemLua::CheckMsgText(UIControl *control, const String &key)
 {
-    WideString expectedText = StringToWString(key);
-    //TODO: check key in localized strings for Lua
-    expectedText = autotestingLocalizationSystem->GetLocalizedString(expectedText);
-    
-    UIStaticText *uiStaticText = dynamic_cast<UIStaticText*>(control);
-    if(uiStaticText)
-    {
-        WideString actualText = uiStaticText->GetText();
-        return (actualText == expectedText);
-    }
-    UITextField *uiTextField = dynamic_cast<UITextField*>(control);
-    if(uiTextField)
-    {
-        WideString actualText = uiTextField->GetText();
-        return (actualText == expectedText);
-    }
-    return false;
+	WideString expectedText = StringToWString(key);
+	//TODO: check key in localized strings for Lua
+	expectedText = autotestingLocalizationSystem->GetLocalizedString(expectedText);
+
+	UIStaticText *uiStaticText = dynamic_cast<UIStaticText*>(control);
+	if(uiStaticText)
+	{
+		WideString actualText = uiStaticText->GetText();
+		Log("DEBUG", Format("Compare text in control %s with text by key %s", uiStaticText->GetName().c_str(), key.c_str()));
+		Log("DEBUG", WStringToString(actualText));
+		Log("DEBUG", WStringToString(expectedText));
+		return (actualText == expectedText);
+	}
+	UITextField *uiTextField = dynamic_cast<UITextField*>(control);
+	if(uiTextField)
+	{
+		WideString actualText = uiTextField->GetText();
+		Log("DEBUG", Format("Compare text in control %s with text by key %s", uiTextField->GetName().c_str(), key.c_str()));
+		Log("DEBUG", WStringToString(actualText));
+		Log("DEBUG", WStringToString(expectedText));
+		return (actualText == expectedText);
+	}
+	return false;
 }
     
 void AutotestingSystemLua::TouchDown(const Vector2 &point, int32 touchId)
