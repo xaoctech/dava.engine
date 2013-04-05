@@ -43,7 +43,7 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	tabBar->setTabData(oldTabIndex, -1);
 	// <--
 
-	// AddTab("/Projects/dava.wot.art/DataSource/3d/Maps/dike_village/dike_village.sc2");
+	AddTab("/Projects/dava.wot.art/DataSource/3d/Maps/dike_village/dike_village.sc2");
 
 	QObject::connect(tabBar, SIGNAL(currentChanged(int)), this, SLOT(SetCurrentTab(int)));
 	SetCurrentTab(oldTabIndex);
@@ -122,23 +122,27 @@ void SceneTabWidget::SetCurrentTab(int index)
 	{
 		tabBar->setCurrentIndex(index);
 		
-		int tabID = GetTabID(index);
-		if(tabID >= 0)
+		currentTabIndex = index;
+		currentTabID = GetTabID(index);
+
+		if(currentTabID >= 0)
 		{
-			UIScreenManager::Instance()->SetScreen(davaUIScreenID);
-			dava3DView->SetScene(tabIDtoSceneMap[tabID]);
+			// old. remove -->
 			oldInput = false;
+			UIScreenManager::Instance()->SetScreen(davaUIScreenID);
+			// <--
+
+			SceneEditorProxy* curSceneProxy = tabIDtoSceneMap[currentTabID];
+			dava3DView->SetScene(curSceneProxy);
+			curSceneProxy->SetViewportRect(dava3DView->GetRect());
 		}
 		// old. remove -->
 		else
 		{
-			UIScreenManager::Instance()->SetScreen(oldScreenID);
 			oldInput = true;
+			UIScreenManager::Instance()->SetScreen(oldScreenID);
 		}
 		// <--
-
-		currentTabIndex = index;
-		currentTabID = tabID;
 	}
 }
 
@@ -191,7 +195,12 @@ void SceneTabWidget::resizeEvent(QResizeEvent * event)
 
 		davaUIScreen->SetSize(DAVA::Vector2(s.width(), s.height()));
 		dava3DView->SetSize(DAVA::Vector2(s.width() - 2 * dava3DViewMargin, s.height() - 2 * dava3DViewMargin));
-
 		sceneEditorScreenMain->SetSize(DAVA::Vector2(s.width(), s.height()));
+
+		SceneEditorProxy* curSceneProxy = tabIDtoSceneMap[currentTabID];
+		if(NULL != curSceneProxy)
+		{
+			curSceneProxy->SetViewportRect(dava3DView->GetRect());
+		}
 	}
 }

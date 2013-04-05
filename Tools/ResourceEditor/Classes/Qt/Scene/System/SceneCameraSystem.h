@@ -11,14 +11,22 @@ public:
 	SceneCameraSystem(DAVA::Scene * scene);
 	~SceneCameraSystem();
 
+	DAVA::Vector3 GetPointDirection(const DAVA::Vector2 &point);
+	DAVA::Vector3 GetCameraPosition();
+
 	void SetMoveSeep(DAVA::float32 speed);
 	DAVA::float32 GetMoveSpeed();
+
+	void SetViewportRect(const DAVA::Rect &rect);
+	const DAVA::Rect GetViewportRect();
 
 	void Update(DAVA::float32 timeElapsed);
 	void ProcessUIEvent(DAVA::UIEvent *event);
 	void Draw();
 
 protected:
+	DAVA::Rect viewportRect;
+
 	DAVA::float32 curSpeed;
 	DAVA::Camera* curSceneCamera;
 
