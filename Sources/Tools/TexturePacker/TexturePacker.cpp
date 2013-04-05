@@ -275,8 +275,7 @@ void TexturePacker::PackToTextures(const FilePath & excludeFolder, const FilePat
 			}
 		}
 
-		char textureExtension[5] = ".png";
-		textureName += FilePath(textureExtension);
+        textureName.ReplaceExtension(".png");
         ExportImage(&finalImage, textureName);
 	}else
 	{
