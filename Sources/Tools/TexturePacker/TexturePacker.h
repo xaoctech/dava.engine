@@ -2,11 +2,8 @@
 #define __DAVAENGINE_TEXTURE_PACKER_H__
 
 #include "Base/BaseTypes.h"
-#include "Base/BaseMath.h"
-#include "Base/BaseObject.h"
-#include "Render/Image.h"
-
 #include "Render/RenderBase.h"
+#include "Math/Math2D.h"
 
 namespace DAVA
 {

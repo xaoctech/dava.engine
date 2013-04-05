@@ -41,7 +41,6 @@ void ResourcePacker2D::PackResources()
 
 
 	FilePath processDirectoryPath = excludeDirectory + GetProcessFolderName();
-    processDirectoryPath.MakeDirectoryPathname();
 	if (FileSystem::Instance()->CreateDirectory(processDirectoryPath, true) == FileSystem::DIRECTORY_CANT_CREATE)
 	{
 		//Logger::Error("Can't create directory: %s", processDirectoryPath.c_str());
@@ -49,7 +48,6 @@ void ResourcePacker2D::PackResources()
 
 
     FilePath md5path(excludeDirectory + GetProcessFolderName());
-    md5path.MakeDirectoryPathname();
 	if (IsMD5ChangedDir(md5path, outputGfxDirectory, gfxDirName + ".md5", true))
 	{
 		if (Core::Instance()->IsConsoleMode())
@@ -179,7 +177,7 @@ DefinitionFile * ResourcePacker2D::ProcessPSD(const FilePath & processDirectoryP
 	}
 	
 	// TODO: Check CRC32
-	std::vector<Magick::Image> layers;
+	Vector<Magick::Image> layers;
 	
     FilePath psdNameWithoutExtension(psdName);
     psdNameWithoutExtension.TruncateExtension();
@@ -235,14 +233,15 @@ DefinitionFile * ResourcePacker2D::ProcessPSD(const FilePath & processDirectoryP
 			currentLayer.crop(Magick::Geometry(width,height, 0, 0));
 			currentLayer.magick("PNG");
 			FilePath outputFile = processDirectoryPath + psdNameWithoutExtension;
-			outputFile += FilePath(String(Format("%d.png", k - 1)));
+			outputFile.ReplaceExtension(String(Format("%d.png", k - 1)));
 			currentLayer.write(outputFile.ResolvePathname());
 		}
 		
 		
 		DefinitionFile * defFile = new DefinitionFile;
-		defFile->filename = processDirectoryPath + String("/") + psdNameWithoutExtension + String(".txt");
-		// Logger::Debug("filename: %s", defFile->filename.c_str());
+		defFile->filename = processDirectoryPath + psdNameWithoutExtension;
+        defFile->filename.ReplaceExtension(".txt");
+
 		defFile->spriteWidth = width;
 		defFile->spriteHeight = height;
 		defFile->frameCount = (int)layers.size() -1;
@@ -382,14 +381,12 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 {
 	uint64 packTime = SystemTimer::Instance()->AbsoluteMS();
 
-	FileList * fileList = new FileList(inputPath);
-
 	/* New $process folder structure */
 	
 	FilePath dataSourceRelativePath(inputPath);
     dataSourceRelativePath.ReplacePath(excludeDirectory);
 
-	FilePath processDirectoryPath = excludeDirectory  + GetProcessFolderName() + FilePath(String("/")) + dataSourceRelativePath;
+	FilePath processDirectoryPath = excludeDirectory  + GetProcessFolderName() + dataSourceRelativePath;
 	if (FileSystem::Instance()->CreateDirectory(processDirectoryPath, true) == FileSystem::DIRECTORY_CANT_CREATE)
 	{
 		//Logger::Error("Can't create directory: %s", processDirectoryPath.c_str());
@@ -410,14 +407,14 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 	List<DefinitionFile *> definitionFileList;
 
 	// Find flags and setup them
+	FileList * fileList = new FileList(inputPath);
 	for (int fi = 0; fi < fileList->GetCount(); ++fi)
 	{
 		if (!fileList->IsDirectory(fi))
 		{
 			if (fileList->GetFilename(fi) == "flags.txt")
 			{
-				FilePath fullname = inputPath + FilePath("flags.txt");
-				ProcessFlags(fullname);
+				ProcessFlags(fileList->GetPathname(fi));
 				break;
 			}
 		}
@@ -441,15 +438,13 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 		{
 			if (!fileList->IsDirectory(fi))
 			{
-                String extension = fileList->GetPathname(fi).GetExtension();
-                String filename = fileList->GetFilename(fi);
-
-				FilePath fullname = inputPath + FilePath(filename);
+				FilePath fullname = fileList->GetPathname(fi);
+                String extension = fullname.GetExtension();
                 
 				if (extension == ".psd")
 				{
                     //TODO: check if we need filename or pathname
-					DefinitionFile * defFile = ProcessPSD(processDirectoryPath, fullname, filename);
+					DefinitionFile * defFile = ProcessPSD(processDirectoryPath, fullname, fullname.GetFilename());
 					definitionFileList.push_back(defFile);
 				}
 				else if(isLightmapsPacking && extension == ".png")
