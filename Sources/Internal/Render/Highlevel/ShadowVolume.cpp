@@ -47,6 +47,8 @@ ShadowVolume::ShadowVolume()
 
     
     SetOwnerLayerName(LAYER_SHADOW_VOLUME);
+
+	aabbox = AABBox3(Vector3(), Vector3());
 }
 
 ShadowVolume::~ShadowVolume()
@@ -518,6 +520,7 @@ void ShadowVolume::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
 			}
 		}
 	}
+	aabbox = AABBox3(Vector3(), Vector3());
 }
     
 void ShadowVolume::SetPolygonGroup(PolygonGroup * _polygonGroup)
