@@ -86,7 +86,7 @@ public:
 	void OnStepStart( const String & stepName );
 	void OnStepFinished();
 
-	void AutotestingSystem::Log(const String &level, const String &message);
+	void Log(const String &level, const String &message);
 
     void OnTestsSatrted();
     void OnTestStep(const String & stepName, bool isPassed, const String & error = "");
