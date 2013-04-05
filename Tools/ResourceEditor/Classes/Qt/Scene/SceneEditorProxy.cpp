@@ -2,6 +2,8 @@
 #include "Scene/System/SceneCameraSystem.h"
 #include "Scene/System/SceneGridSystem.h"
 #include "Scene/System/SceneCollisionSystem.h"
+#include "Scene/System/SceneSelectionSystem.h"
+#include "Scene/System/EntityModifSystem.h"
 
 // framework
 #include "Scene3D/SceneFileV2.h"
@@ -17,10 +19,17 @@ SceneEditorProxy::SceneEditorProxy()
 
 	sceneCollisionSystem = new SceneCollisionSystem(this);
 	AddSystem(sceneCollisionSystem, 0);
+
+	sceneSelectionSystem = new SceneSelectionSystem(this, sceneCollisionSystem);
+	AddSystem(sceneSelectionSystem, 0);
+
+	modifSystem = new EntityModificationSystem(this, sceneCollisionSystem);
+	AddSystem(modifSystem, 0);
 }
 
 SceneEditorProxy::~SceneEditorProxy()
 {
+	SafeDelete(sceneSelectionSystem);
 	SafeDelete(sceneCollisionSystem);
 	SafeDelete(sceneGridSystem);
 	SafeDelete(sceneCameraSystem);
@@ -72,12 +81,23 @@ void SceneEditorProxy::Update(float timeElapsed)
 
 	sceneGridSystem->Update(timeElapsed);
 	sceneCameraSystem->Update(timeElapsed);
+	sceneCollisionSystem->Update(timeElapsed);
+	sceneSelectionSystem->Update(timeElapsed);
+	modifSystem->Update(timeElapsed);
 }
 
 void SceneEditorProxy::ProcessUIEvent(DAVA::UIEvent *event)
 {
 	sceneGridSystem->ProcessUIEvent(event);
 	sceneCameraSystem->ProcessUIEvent(event);
+	sceneCollisionSystem->ProcessUIEvent(event);
+	sceneSelectionSystem->ProcessUIEvent(event);
+	modifSystem->ProcessUIEvent(event);
+}
+
+void SceneEditorProxy::SetViewportRect(const DAVA::Rect &newViewportRect)
+{
+	sceneCameraSystem->SetViewportRect(newViewportRect);
 }
 
 void SceneEditorProxy::Draw()
@@ -86,6 +106,9 @@ void SceneEditorProxy::Draw()
 
 	sceneGridSystem->Draw();
 	sceneCameraSystem->Draw();
+	sceneCollisionSystem->Draw();
+	sceneSelectionSystem->Draw();
+	modifSystem->Draw();
 }
 
 bool SceneEditorProxy::SceneLoad()

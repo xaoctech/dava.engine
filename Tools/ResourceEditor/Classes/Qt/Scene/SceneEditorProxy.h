@@ -5,11 +5,11 @@
 #include "UI/UIEvent.h"
 #include "Scene3D/Scene.h"
 
-class EntityModifSystem;
+class EntityModificationSystem;
 class SceneCameraSystem;
 class SceneGridSystem;
 class SceneCollisionSystem;
-class EntityCollisionSystem;
+class SceneSelectionSystem;
 
 class SceneEditorProxy : public DAVA::Scene
 {
@@ -27,15 +27,18 @@ public:
 	virtual void Update(float timeElapsed);
 	void ProcessUIEvent(DAVA::UIEvent *event);
 
-protected:
-	DAVA::String curScenePath;
+	// this function should be called each time UI3Dview changes its position
+	// viewport rect is used to cals ray from camera to any 2d point on this viewport
+	void SetViewportRect(const DAVA::Rect &newViewportRect);
+
+	EntityModificationSystem *modifSystem;
+	SceneCameraSystem *sceneCameraSystem;
+	SceneCollisionSystem *sceneCollisionSystem;
+	SceneGridSystem *sceneGridSystem;
+	SceneSelectionSystem *sceneSelectionSystem;
 
 protected:
-	EntityModifSystem *modifSystem;
-	EntityCollisionSystem *collisionSystem;
-	SceneCameraSystem* sceneCameraSystem;
-	SceneCollisionSystem *sceneCollisionSystem;
-	SceneGridSystem* sceneGridSystem;
+	DAVA::String curScenePath;
 
 	virtual void Draw();
 	bool SceneLoad();

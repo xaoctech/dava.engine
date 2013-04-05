@@ -63,6 +63,32 @@ SceneCameraSystem::~SceneCameraSystem()
 	SafeRelease(curSceneCamera);
 }
 
+DAVA::Vector3 SceneCameraSystem::GetPointDirection(const DAVA::Vector2 &point)
+{
+	DAVA::Vector3 dir;
+
+	if(NULL != curSceneCamera)
+	{
+		DAVA::Vector3 pos = curSceneCamera->GetPosition();
+		dir = curSceneCamera->UnProject(point.x, point.y, 0, viewportRect);
+		dir -= pos;
+	}
+
+	return dir;
+}
+
+DAVA::Vector3 SceneCameraSystem::GetCameraPosition()
+{
+	DAVA::Vector3 pos;
+
+	if(NULL != curSceneCamera)
+	{
+		pos = curSceneCamera->GetPosition();
+	}
+
+	return pos;
+}
+
 void SceneCameraSystem::SetMoveSeep(DAVA::float32 speed)
 {
 	curSpeed = speed;
@@ -71,6 +97,16 @@ void SceneCameraSystem::SetMoveSeep(DAVA::float32 speed)
 DAVA::float32 SceneCameraSystem::GetMoveSpeed()
 {
 	return curSpeed;
+}
+
+void SceneCameraSystem::SetViewportRect(const DAVA::Rect &rect)
+{
+	viewportRect = rect;
+}
+
+const DAVA::Rect SceneCameraSystem::GetViewportRect()
+{
+	return viewportRect;
 }
 
 void SceneCameraSystem::Update(float timeElapsed)
@@ -289,4 +325,5 @@ void SceneCameraSystem::MouseMoveCameraPosAndDirByLockedPoint(const DAVA::Vector
 		curSceneCamera->SetPosition(newPos);
 	}
 }
+
 
