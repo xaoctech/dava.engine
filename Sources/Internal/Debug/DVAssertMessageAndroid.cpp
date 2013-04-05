@@ -19,13 +19,18 @@ JniDVAssertMessage::JniDVAssertMessage() :
 
 void JniDVAssertMessage::ShowMessage(const char* message)
 {
-	jmethodID mid = GetMethodID("Assert", "(Ljava/lang/String;)V");
+	jclass javaClass = GetJavaClass();
+	if (!javaClass)
+		return;
+
+	jmethodID mid = GetMethodID(javaClass, "Assert", "(Ljava/lang/String;)V");
 	if (mid)
 	{
 		jstring jStrMessage = GetEnvironment()->NewStringUTF(message);
 		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, jStrMessage);
 		GetEnvironment()->DeleteLocalRef(jStrMessage);
 	}
+	ReleaseJavaClass(javaClass);
 }
 
 

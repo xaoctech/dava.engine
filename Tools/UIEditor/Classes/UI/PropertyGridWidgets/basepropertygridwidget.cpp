@@ -7,6 +7,7 @@
 #include "PropertiesGridController.h"
 #include "HierarchyTreeController.h"
 #include "WidgetSignalsBlocker.h"
+#include "SubcontrolsHelper.h"
 
 #include "CommandsController.h"
 #include "ChangePropertyCommand.h"
@@ -928,4 +929,25 @@ bool BasePropertyGridWidget::eventFilter(QObject *obj, QEvent *event)
     }
     
     return QWidget::eventFilter( obj, event );
+}
+
+bool BasePropertyGridWidget::ActiveControlIsSubcontrol()
+{
+	if (!activeMetadata || !activeMetadata->GetParamsCount())
+	{
+		return false;
+	}
+	
+    int paramsCount = activeMetadata->GetParamsCount();
+	const METADATAPARAMSVECT& params = activeMetadata->GetParams();
+	
+    for (int i = 0; i < paramsCount; i ++)
+    {
+		if (SubcontrolsHelper::ControlIsSubcontrol(params[i].GetUIControl()))
+		{
+			return true;
+		}
+	}
+
+	return false;
 }

@@ -242,9 +242,10 @@ public:
 		\brief Moves an existing file to a new file.
 		\param[in] existingFile The name of an existing file.
 		\param[out] newFile The name of the new file.
+		\param[in] overwriteExisting signal to overwrite existing file with name newFile.
 		\returns true if file was successfully moved, false otherwise
 	*/
-	virtual bool MoveFile(const String & existingFile, const String & newFile);
+	virtual bool MoveFile(const String & existingFile, const String & newFile, bool overwriteExisting = false);
 
 	/**
 		\brief Copies directory to another existing directory.

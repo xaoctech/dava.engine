@@ -233,6 +233,55 @@ namespace DAVA
 		return realChilds;
 	}
 
+	List<UIControl* > UIControl::GetSubcontrols()
+	{
+		// Default list of Subcontrols is empty. To be overriden in the derived
+		// controls.
+		return List<UIControl*>();
+	}
+	
+	bool UIControl::IsSubcontrol()
+	{
+		if (!this->GetParent())
+		{
+			return false;
+		}
+		
+		const List<UIControl*>& parentSubcontrols = parent->GetSubcontrols();
+		if (parentSubcontrols.empty())
+		{
+			return false;
+		}
+		
+		bool isSubcontrol = (std::find(parentSubcontrols.begin(), parentSubcontrols.end(), this) != parentSubcontrols.end());
+		return isSubcontrol;
+	}
+
+	bool UIControl::AddControlToList(List<UIControl*>& controlsList, const String& controlName, bool isRecursive)
+	{
+		UIControl* control = FindByName(controlName, isRecursive);
+		if (control)
+		{
+			controlsList.push_back(control);
+			return true;
+		}
+		
+		return false;
+	}
+
+	List<UIControl* > UIControl::GetRealChildrenAndSubcontrols()
+	{
+		List<UIControl*>& realChildrenList = GetRealChildren();
+		List<UIControl*> subControlsList = GetSubcontrols();
+
+		// Merge two lists without duplicates.
+		List<UIControl*> resultList = realChildrenList;
+		resultList.insert(resultList.end(), subControlsList.begin(), subControlsList.end());
+		resultList.erase(std::unique(resultList.begin(), resultList.end()), resultList.end());
+		
+		return resultList;
+	}
+
 	void UIControl::SetName(const String & _name)
 	{
 		name = _name;

@@ -52,21 +52,18 @@ void CopyPasteController::Copy(const HierarchyTreeNode::HIERARCHYTREENODESLIST& 
 		}
 		
 		HierarchyTreeNode* copy = NULL;
-		HierarchyTreeNode::HIERARCHYTREENODEID sourceControlId = 0;
 		if (curCopy == CopyTypePlatform && platform)
 		{
 			copy = new HierarchyTreePlatformNode(NULL, platform);
-			sourceControlId = platform->GetId();
 		}
 		else if (curCopy == CopyTypeScreen && screen)
 		{
 			copy = new HierarchyTreeScreenNode(NULL, screen);
-			sourceControlId = screen->GetId();
 		}
 		
 		if (copy)
 		{
-			this->items.push_back(HierarchyTreeNode::CopyItems(copy, sourceControlId));
+			this->items.push_back(copy);
 		}
 	}
 	
@@ -99,8 +96,7 @@ void CopyPasteController::CopyControls(const HierarchyTreeController::SELECTEDCO
 		else
 			copy = new HierarchyTreeControlNode(NULL, control);
 		
-		HierarchyTreeNode::HIERARCHYTREENODEID sourceControlId = control->GetId();
-		this->items.push_back(HierarchyTreeNode::CopyItems(copy, sourceControlId));
+		this->items.push_back(copy);
 	}
 	if (this->items.size())
 		copyType = CopyTypeControl;
@@ -126,12 +122,12 @@ bool CopyPasteController::ControlIsChild(const HierarchyTreeController::SELECTED
 
 void CopyPasteController::Clear()
 {
-	for (HierarchyTreeNode::HIERARCHYTREECOPYNODESLIST::iterator iter = items.begin();
+	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::iterator iter = items.begin();
 		 iter != items.end();
 		 ++iter)
 	{
-		HierarchyTreeNode::CopyItems item = (*iter);
-		SAFE_DELETE(item.copyControlNode);
+		HierarchyTreeNode *node = (*iter);
+		SAFE_DELETE(node);
 	}
 
 	items.clear();

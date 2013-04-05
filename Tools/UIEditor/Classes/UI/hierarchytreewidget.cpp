@@ -12,6 +12,7 @@
 #include <QMenu>
 #include <QMessageBox>
 #include "IconHelper.h"
+#include "SubcontrolsHelper.h"
 
 #define ITEM_ID 0, Qt::UserRole
 
@@ -21,6 +22,8 @@
 #define MENU_ITEM_CREATE_SCREEN tr("Create screen")
 #define MENU_ITEM_CREATE_AGGREGATOR tr("Create aggregator")
 
+#define DEFAULT_CONTROL_FONT_COLOR QColor(0x00, 0x00, 0x00, 0xFF)
+#define SUBCONTROL_FONT_COLOR QColor(0x80, 0x80, 0x80, 0xFF)
 
 HierarchyTreeWidget::HierarchyTreeWidget(QWidget *parent) :
     QWidget(parent),
@@ -122,7 +125,7 @@ void HierarchyTreeWidget::AddControlItem(QTreeWidgetItem* parent, const EXPANDED
 		controlItem->setData(ITEM_ID, controlNode->GetId());
 		controlItem->setText(0, controlNode->GetName());
 
-		DecorateWithIcon(controlItem, controlNode->GetUIObject());
+		Decorate(controlItem, controlNode->GetUIObject());
 
 		parent->insertChild(parent->childCount(), controlItem);
 		
@@ -133,7 +136,7 @@ void HierarchyTreeWidget::AddControlItem(QTreeWidgetItem* parent, const EXPANDED
 	}
 }
 
-void HierarchyTreeWidget::DecorateWithIcon(QTreeWidgetItem *item, DAVA::UIControl *uiControl)
+void HierarchyTreeWidget::Decorate(QTreeWidgetItem *item, DAVA::UIControl *uiControl)
 {
 	if (!item || !uiControl)
 	{
@@ -142,6 +145,7 @@ void HierarchyTreeWidget::DecorateWithIcon(QTreeWidgetItem *item, DAVA::UIContro
 
 	QString iconPath = IconHelper::GetIconPathForUIControl(uiControl);
 	item->setIcon(0, QIcon(iconPath));
+	item->setTextColor(0, SubcontrolsHelper::ControlIsSubcontrol(uiControl) ? SUBCONTROL_FONT_COLOR : DEFAULT_CONTROL_FONT_COLOR);
 }
 
 void HierarchyTreeWidget::on_treeWidget_itemSelectionChanged()
@@ -291,10 +295,14 @@ void HierarchyTreeWidget::OnShowCustomMenu(const QPoint& pos)
 	QMenu menu;
 	if (selectedControl || selectedPlatform || selectedScreen)
 	{
-		QAction* deleteControlAction = new QAction(MENU_ITEM_DELETE, &menu);
-		connect(deleteControlAction, SIGNAL(triggered()), this, SLOT(OnDeleteControlAction()));
-		menu.addAction(deleteControlAction);
-		
+		// Yuri Coder, 2013/03/29. Deletion is disabled for Subcontrols.
+		if (IsDeleteNodeAllowed(selectedControl))
+		{
+			QAction* deleteControlAction = new QAction(MENU_ITEM_DELETE, &menu);
+			connect(deleteControlAction, SIGNAL(triggered()), this, SLOT(OnDeleteControlAction()));
+			menu.addAction(deleteControlAction);
+		}
+
 		QAction* copyControlAction = new QAction(MENU_ITEM_COPY, &menu);
 		connect(copyControlAction, SIGNAL(triggered()), this, SLOT(OnCopyAction()));
 		menu.addAction(copyControlAction);
@@ -428,4 +436,22 @@ void HierarchyTreeWidget::OnPasteAction()
 	HierarchyTreeNode* baseNode = HierarchyTreeController::Instance()->GetTree().GetNode(id);
 
 	CopyPasteController::Instance()->Paste(baseNode);
+}
+
+bool HierarchyTreeWidget::IsDeleteNodeAllowed(HierarchyTreeControlNode* selectedControlNode)
+{
+	if (!selectedControlNode)
+	{
+		return true;
+	}
+		
+	// Check whether selected control is Subcontrol of its parent.
+	UIControl* uiControl = selectedControlNode->GetUIObject();
+	if (!uiControl)
+	{
+		return true;
+	}
+
+	// Subcontrols cannot be deleted.
+	return !uiControl->IsSubcontrol();
 }
