@@ -138,6 +138,7 @@ public:
 
     // Whether this layer is Long Layer?
     virtual bool IsLong() {return false;};
+	virtual void SetLong(bool /*value*/) {};
     
 	RenderBatch * GetRenderBatch();
 
