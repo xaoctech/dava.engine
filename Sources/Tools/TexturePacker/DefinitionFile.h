@@ -1,22 +1,13 @@
-/*
- *  DefinitionFile.h
- *  texturepack
- *
- *  Created by Vitaliy Borodovsky on 10/28/08.
- *  Copyright 2008 DAVA Consulting, LLC. All rights reserved.
- *
- */
+#ifndef __DAVAENGINE_DEFINITION_FILE_H__
+#define __DAVAENGINE_DEFINITION_FILE_H__
 
-#ifndef __DEFINITION_FILE_H__
-#define __DEFINITION_FILE_H__
+#include "Base/BaseTypes.h"
+#include "FileSystem/FilePath.h"
+#include "Math/Math2D.h"
 
-#include <string>
-#include <vector>
-#include "DAVAEngine.h"
-
-using namespace DAVA;
-
-
+namespace DAVA
+{
+ 
 class DefinitionFile 
 {
 public:
@@ -38,4 +29,7 @@ public:
 	Vector<String> pathsInfo;
 };
 
-#endif
+};
+
+
+#endif // __DAVAENGINE_DEFINITION_FILE_H__

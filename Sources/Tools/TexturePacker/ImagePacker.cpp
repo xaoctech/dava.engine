@@ -1,7 +1,9 @@
-#include "ImagePacker.h"
+#include "TexturePacker/ImagePacker.h"
 #include "Base/BaseTypes.h"
-#include "CommandLineParser.h"
+#include "TexturePacker/CommandLineParser.h"
 
+namespace DAVA
+{
 
 ImagePacker::PackNode * ImagePacker::PackNode::Insert(const Size2i & imageSize)
 {
@@ -87,9 +89,10 @@ bool ImagePacker::AddImage(const Size2i & imageSize, void * searchPtr)
 	{
 		node->searchPtr = searchPtr;
 		if (CommandLineParser::Instance()->GetVerbose())
-			printf("set search ptr to rect:(%d, %d) ims: (%d, %d)\n", node->rect.dx, node->rect.dy, imageSize.dx, imageSize.dy);
-	//		printf("set search ptr to rect:(%d, %d) ims: (%d, %d): 0x%08x\n", node->rect.dx, node->rect.dy, imageSize.dx, imageSize.dy, searchPtr);
-	}	
+        {
+            Logger::Info("set search ptr to rect:(%d, %d) ims: (%d, %d)\n", node->rect.dx, node->rect.dy, imageSize.dx, imageSize.dy);
+        }
+	}
 	return (node != 0);
 }
 	
@@ -113,3 +116,4 @@ Rect2i * ImagePacker::PackNode::SearchRectForPtr(void * searchPtr)
 	}
 }
 	
+};

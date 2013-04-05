@@ -7,7 +7,7 @@
 
 #include <QtConcurrentRun>
 
-#include "ResourcePackerScreen.h"
+#include "TexturePacker/ResourcePacker2D.h"
 #include "Platform/Qt/QtLayer.h"
 
 using namespace DAVA;
@@ -44,11 +44,11 @@ void SpritePackerHelper::Pack()
 		return;
 	}
 
-	ResourcePackerScreen * resourcePackerScreen = new ResourcePackerScreen();
+	ResourcePacker2D * resourcePacker = new ResourcePacker2D();
 	
-	bool isChanged = resourcePackerScreen->IsMD5ChangedDir(projectPath+FilePath("DataSource/Gfx/"),inputDir,FilePath("particles.md5"),true);
+	bool isChanged = resourcePacker->IsMD5ChangedDir(projectPath+FilePath("DataSource/Gfx/"),inputDir,FilePath("particles.md5"),true);
 	
-	SafeRelease(resourcePackerScreen);
+	SafeDelete(resourcePacker);
 	if(!isChanged)
 	{
 		return;

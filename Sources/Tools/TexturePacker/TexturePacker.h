@@ -1,20 +1,21 @@
-/*
- *  TexturePacker.h
- *  texturepack
- *
- *  Created by Vitaliy Borodovsky on 10/28/08.
- *  Copyright 2008 DAVA Consulting, LLC. All rights reserved.
- *
- */
 #ifndef __DAVAENGINE_TEXTURE_PACKER_H__
 #define __DAVAENGINE_TEXTURE_PACKER_H__
 
-#include <string>
-#include <list>
-#include <vector>
-#include "DefinitionFile.h"
-#include "ImagePacker.h"
+#include "Base/BaseTypes.h"
+#include "Base/BaseMath.h"
+#include "Base/BaseObject.h"
+#include "Render/Image.h"
 
+#include "Render/RenderBase.h"
+
+namespace DAVA
+{
+
+class DefinitionFile;
+class TextureDescriptor;
+class PngImageExt;
+class FilePath;
+class ImagePacker;
 
 struct SizeSortItem
 {
@@ -22,27 +23,25 @@ struct SizeSortItem
 	DefinitionFile *	defFile;
 	int					frameIndex;
 };
-
-class DAVA::TextureDescriptor;
-class PngImageExt;
+    
 class TexturePacker 
 {
 public:
 	TexturePacker();
 	
 	// pack textures to single texture
-	void PackToTextures(const FilePath & excludeFolder, const FilePath & outputPath, std::list<DefinitionFile*> & defsList);
+	void PackToTextures(const FilePath & excludeFolder, const FilePath & outputPath, List<DefinitionFile*> & defsList);
 	// page each PSD file to separate texture
-	void PackToTexturesSeparate(const FilePath & excludeFolder, const FilePath & outputPath, std::list<DefinitionFile*> & defsList);
+	void PackToTexturesSeparate(const FilePath & excludeFolder, const FilePath & outputPath, List<DefinitionFile*> & defsList);
 	// pack one sprite and use several textures if more than one needed
-	void PackToMultipleTextures(const FilePath & excludeFolder, const FilePath & outputPath, std::list<DefinitionFile*> & remainingList);
+	void PackToMultipleTextures(const FilePath & excludeFolder, const FilePath & outputPath, List<DefinitionFile*> & remainingList);
 
-	bool TryToPack(const Rect2i & textureRect, std::list<DefinitionFile*> & defsList);
+	bool TryToPack(const Rect2i & textureRect, List<DefinitionFile*> & defsList);
 	bool WriteDefinition(const FilePath & excludeFolder, const FilePath & outputPath, const FilePath & textureName, DefinitionFile * defFile);
 	bool WriteMultipleDefinition(const FilePath & excludeFolder, const FilePath & outputPath, const FilePath & _textureName, DefinitionFile * defFile);
 
-	int TryToPackFromSortVector(ImagePacker * packer, std::vector<SizeSortItem> & tempSortVector);
-	float TryToPackFromSortVectorWeight(ImagePacker * packer,std::vector<SizeSortItem> & tempSortVector);
+	int TryToPackFromSortVector(ImagePacker * packer, Vector<SizeSortItem> & tempSortVector);
+	float TryToPackFromSortVectorWeight(ImagePacker * packer, Vector<SizeSortItem> & tempSortVector);
 
 	Rect2i ReduceRectToOriginalSize(const Rect2i & _input);
 
@@ -53,7 +52,7 @@ public:
 private:
     
     void ExportImage(PngImageExt *image, const FilePath &exportedPathname);
-    DAVA::TextureDescriptor * CreateDescriptor();
+    TextureDescriptor * CreateDescriptor();
     PixelFormat DetectPixelFormatFromFlags();
     
     
@@ -65,6 +64,9 @@ private:
 
 	bool onlySquareTextures;
 };
+
+};
+
 
 #endif // __DAVAENGINE_TEXTURE_PACKER_H__
 

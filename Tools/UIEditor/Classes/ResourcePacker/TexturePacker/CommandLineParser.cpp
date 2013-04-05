@@ -71,25 +71,6 @@ String CommandLineParser::GetParam(int index)
 	return params[index];
 }
 
-void CommandLineParser::SplitFilePath( const String & filePath, String & path, String & filename )
-{
-	String fullPath(filePath);
-	std::replace(fullPath.begin(),fullPath.end(),'\\','/');
-	// now only Unix style slashes
-	String::size_type lastSlashPos = fullPath.find_last_of('/');
-	
-	if (lastSlashPos==std::string::npos)
-	{
-		path = "";
-		filename = fullPath;
-	}
-	else
-	{
-		path = fullPath.substr(0,lastSlashPos);
-		filename = fullPath.substr(lastSlashPos + 1, fullPath.size() - lastSlashPos - 1);
-	}
-}
-
 
 
 //! \brief Return canonical path name of \a path.
@@ -187,16 +168,4 @@ void replace(std::string & repString,const std::string & needle, const std::stri
 void	CommandLineParser::RemoveFromPath(String & path, const String & removePart)
 {
 	replace(path, removePart, std::string(""));
-}
-	
-String CommandLineParser::ReplaceExtension(const String & filename, const String & newExt)
-{
-	String result = filename.substr(0, filename.length() - 4) + newExt;
-	return result;
-}	
-
-String	CommandLineParser::GetExtension(const String & filename)
-{
-	std::string::size_type dotpos = filename.rfind(".");
-	return filename.substr(dotpos);
 }

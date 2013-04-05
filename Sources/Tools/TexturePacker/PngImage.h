@@ -1,16 +1,11 @@
-/*
- *  PngImage.h
- *  texturepack
- *
- *  Created by Vitaliy Borodovsky on 10/28/08.
- *  Copyright 2008 DAVA Consulting, LLC. All rights reserved.
- *
- */
 #ifndef __DAVAENGINE_PNGIMAGEEXT_H__
 #define __DAVAENGINE_PNGIMAGEEXT_H__
 
-#include "DAVAEngine.h"
-using namespace DAVA;
+#include "Base/BaseTypes.h"
+#include "Render/Image.h"
+
+namespace DAVA
+{
 
 class PngImageExt
 {
@@ -66,6 +61,7 @@ inline uint32 PngImageExt::GetHeight() const
 	return internalData->GetHeight();
 }
 
+};
 
 
 #endif // __DAVAENGINE_PNGIMAGEEXT_H__

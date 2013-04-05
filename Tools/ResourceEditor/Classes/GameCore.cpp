@@ -9,7 +9,6 @@
 
 #include "GameCore.h"
 #include "AppScreens.h"
-#include "ResourcePackerScreen.h"
 #include "SceneEditor/SceneEditorScreenMain.h"
 
 #ifdef __DAVAENGINE_BEAST__
@@ -20,7 +19,7 @@
 
 #include "SceneEditor/EditorSettings.h"
 #include "SceneEditor/SceneValidator.h"
-#include "SceneEditor/PVRConverter.h"
+#include "PVRConverter.h"
 
 #include "SceneEditor/CommandLineTool.h"
 #include "SceneEditor/SceneUtilsScreen.h"
@@ -67,14 +66,12 @@ void GameCore::OnAppStarted()
     PVRConverter::Instance()->SetPVRTexTool(String("~res:/PVRTexToolCL.exe"));
 #endif
 
-	resourcePackerScreen = new ResourcePackerScreen();
     sceneEditorScreenMain = new SceneEditorScreenMain();
     sceneUtilsScreen = new SceneUtilsScreen();
 
 	new ParticlesEditorController();
     imageSplitterScreen = new ImageSplitterScreen();
 
-	UIScreenManager::Instance()->RegisterScreen(SCREEN_RESOURCE_PACKER, resourcePackerScreen);
     UIScreenManager::Instance()->RegisterScreen(SCREEN_SCENE_EDITOR_MAIN, sceneEditorScreenMain);
     UIScreenManager::Instance()->RegisterScreen(SCREEN_SCENE_UTILS, sceneUtilsScreen);
     UIScreenManager::Instance()->RegisterScreen(SCREEN_IMAGE_SPLITTER, imageSplitterScreen);
@@ -109,7 +106,6 @@ void GameCore::OnAppFinished()
 
 	BeastProxy::Instance()->Release();
 
-	SafeRelease(resourcePackerScreen);
     SafeRelease(sceneEditorScreenMain);
     SafeRelease(sceneUtilsScreen);
     SafeRelease(imageSplitterScreen);

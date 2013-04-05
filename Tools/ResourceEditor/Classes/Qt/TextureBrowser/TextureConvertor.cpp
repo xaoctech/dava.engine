@@ -5,8 +5,8 @@
 #include "TextureBrowser/TextureConvertor.h"
 #include "Main/mainwindow.h"
 #include "Scene/SceneDataManager.h"
-#include "SceneEditor/PVRConverter.h"
-#include "SceneEditor/DXTConverter.h"
+#include "PVRConverter.h"
+#include "DXTConverter.h"
 #include "SceneEditor/SceneValidator.h"
 #include "Render/LibDxtHelper.h"
 

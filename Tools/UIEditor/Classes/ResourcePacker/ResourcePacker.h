@@ -21,27 +21,27 @@ public:
 	typedef std::map<String, String> FILESMAP;
 	ResourcePacker();
 	// Set packing properties and lanch process of packing
-	void PackResources(const String & inputDir, const String & outputDir);
+	void PackResources(const FilePath & inputDir, const FilePath & outputDir);
 	
 private:
 	// Packing of resources section
 	void StartPacking();
 	
-	String inputGfxDirectory;
-	String outputGfxDirectory;
-	String excludeDirectory;
+	FilePath inputGfxDirectory;
+	FilePath outputGfxDirectory;
+	FilePath excludeDirectory;
 	String gfxDirName;
 
-	void RecursiveTreeWalk(const String & inputPath, const String & outputPath);
-	bool IsModifyDateChagedDir(const String & processDirectoryPath, const String & pathname);
-	bool IsMD5ChangedDir(const String & processDirectoryPath, const String & pathname, const String & psdName, bool isRecursive);
-	bool IsMD5ChangedFile(const String & processDirectoryPath, const String & pathname, const String & psdName);
-	DefinitionFile * ProcessPSD(const String & processDirectoryPath, const String & psdPathname, const String & psdName);
-	void ProcessFlags(const String & flagsPathname);
+	void RecursiveTreeWalk(const FilePath & inputPath, const FilePath & outputPath);
+	bool IsModifyDateChagedDir(const FilePath & processDirectoryPath, const FilePath & pathname);
+	bool IsMD5ChangedDir(const FilePath & processDirectoryPath, const FilePath & pathname, const String & psdName, bool isRecursive);
+	bool IsMD5ChangedFile(const FilePath & processDirectoryPath, const FilePath & pathname, const FilePath & psdName);
+	DefinitionFile * ProcessPSD(const FilePath & processDirectoryPath, const FilePath & psdPathname, const FilePath & psdName);
+	void ProcessFlags(const FilePath & flagsPathname);
 	String GetProcessFolderName();
-	bool SaveFileListToYaml(const String & yamlFilePath);
+	bool SaveFileListToYaml(const FilePath & yamlFilePath);
 	bool CheckSpriteFilesDates(YamlNode *rootNode);
-	void FillSpriteFilesMap(const String & inputPathName);
+	void FillSpriteFilesMap(const FilePath & inputPathName);
 	
 	String currentFlags;
 	bool isGfxModified;

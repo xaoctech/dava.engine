@@ -18,7 +18,7 @@
 #include "FileSystem/File.h"
 #include "Utils/StringFormat.h"
 
-static const String SAVED_FILE_LIST_YAML_FILE = "filelist.yaml";
+static const FilePath SAVED_FILE_LIST_YAML_FILE("filelist.yaml");
 
 ResourcePacker::ResourcePacker()
 {
@@ -28,13 +28,15 @@ ResourcePacker::ResourcePacker()
 
 String ResourcePacker::GetProcessFolderName()
 {
-	return "$process";
+	return "$process/";
 }
 
-void ResourcePacker::PackResources(const String & inputDir, const String & outputDir)
+void ResourcePacker::PackResources(const FilePath & inputDir, const FilePath & outputDir)
 {
+    DVASSERT(inputDir.IsDirectoryPathname() && outputDir.IsDirectoryPathname());
+    
 	// Do not try to pack empty if pack directories are not set
-	if (inputDir.empty() || outputDir.empty())
+	if (!inputDir.IsInitalized() || !outputDir.IsInitalized())
 		return;
 		
 	// Create output dir for case it is not created
@@ -42,31 +44,29 @@ void ResourcePacker::PackResources(const String & inputDir, const String & outpu
 
 	CommandLineParser::Instance()->ClearFlags();
 
-	inputGfxDirectory = DAVA::FileSystem::GetCanonicalPath(inputDir);
-	outputGfxDirectory = DAVA::FileSystem::GetCanonicalPath(outputDir);
-	excludeDirectory = FileSystem::Instance()->RealPath(inputDir + "/../");
+	inputGfxDirectory = inputDir;
+	outputGfxDirectory = outputDir;
+	excludeDirectory = inputDir + FilePath("../");
 	
 	StartPacking();
 }
 
 void ResourcePacker::StartPacking()
 {
-	Logger::Debug("Input: %s Output: %s Exclude: %s", inputGfxDirectory.c_str(), outputGfxDirectory.c_str(), excludeDirectory.c_str());
+	Logger::Debug("Input: %s Output: %s Exclude: %s", inputGfxDirectory.GetAbsolutePathname().c_str(), outputGfxDirectory.GetAbsolutePathname().c_str(), excludeDirectory.GetAbsolutePathname().c_str());
 	
 	isGfxModified = false;
 
-	String path, lastDir;
-	FileSystem::SplitPath(inputGfxDirectory, path, lastDir);
-	std::transform(lastDir.begin(), lastDir.end(), lastDir.begin(), ::tolower);
-	gfxDirName = lastDir;
+	gfxDirName = inputGfxDirectory.GetLastDirectoryName();
+	std::transform(gfxDirName.begin(), gfxDirName.end(), gfxDirName.begin(), ::tolower);
 
-	String processDirectoryPath = excludeDirectory + String("/") + GetProcessFolderName() + String("/");
+	FilePath processDirectoryPath = excludeDirectory + FilePath(GetProcessFolderName());
 	if (FileSystem::Instance()->CreateDirectory(processDirectoryPath, true) == FileSystem::DIRECTORY_CANT_CREATE)
 	{
 		//Logger::Error("Can't create directory: %s", processDirectoryPath.c_str());
 	}
 
-	if (IsMD5ChangedDir(excludeDirectory + String("/") + GetProcessFolderName(), outputGfxDirectory, gfxDirName + ".md5", true))
+	if (IsMD5ChangedDir(excludeDirectory + FilePath(GetProcessFolderName()), outputGfxDirectory, gfxDirName + ".md5", true))
 	{
 		if (Core::Instance()->IsConsoleMode())
 			printf("[Gfx not available or changed - performing full repack]\n");
@@ -76,21 +76,21 @@ void ResourcePacker::StartPacking()
 		bool result = FileSystem::Instance()->DeleteDirectory(outputGfxDirectory);
 		if (result)
 		{
-			Logger::Debug("Removed output directory: %s", outputGfxDirectory.c_str());
+			Logger::Debug("Removed output directory: %s", outputGfxDirectory.GetAbsolutePathname().c_str());
 		}
 		if (!result && Core::Instance()->IsConsoleMode())
 		{
-			printf("[ERROR: Can't delete directory %s]\n", outputGfxDirectory.c_str());
+			printf("[ERROR: Can't delete directory %s]\n", outputGfxDirectory.GetAbsolutePathname().c_str());
 		}
 	}
 
 	RecursiveTreeWalk(inputGfxDirectory, outputGfxDirectory);
 
 	// Put latest md5 after convertation
-	IsMD5ChangedDir(excludeDirectory + String("/") + GetProcessFolderName(), outputGfxDirectory, gfxDirName + ".md5", true);
+	IsMD5ChangedDir(excludeDirectory + FilePath(GetProcessFolderName()), outputGfxDirectory, gfxDirName + ".md5", true);
 }
 
-bool ResourcePacker::SaveFileListToYaml(const String & yamlFilePath)
+bool ResourcePacker::SaveFileListToYaml(const FilePath & yamlFilePath)
 {
 	YamlNode fontsNode(YamlNode::TYPE_MAP);
 	MultiMap<String, YamlNode*> &fontsMap = fontsNode.AsMap();
@@ -111,7 +111,7 @@ bool ResourcePacker::SaveFileListToYaml(const String & yamlFilePath)
 	return parser->SaveToYamlFile(yamlFilePath, &fontsNode, true, File::CREATE | File::WRITE);
 }
 
-void ResourcePacker::FillSpriteFilesMap(const String & inputPathName)
+void ResourcePacker::FillSpriteFilesMap(const FilePath & inputPathName)
 {
 	// Reset sprites files map
 	spriteFiles.clear();
@@ -179,10 +179,12 @@ bool ResourcePacker::CheckSpriteFilesDates(YamlNode *rootNode)
 	return false;
 }
 
-bool ResourcePacker::IsModifyDateChagedDir(const String & processDirectoryPath, const String & pathName)
+bool ResourcePacker::IsModifyDateChagedDir(const FilePath & processDirectoryPath, const FilePath & pathName)
 {
+    DVASSERT(processDirectoryPath.IsDirectoryPathname());
+    
 	bool md5ChecksumNeeded = false;
-	String yamlFilePath = processDirectoryPath + String("/") + SAVED_FILE_LIST_YAML_FILE;
+	FilePath yamlFilePath = processDirectoryPath + SAVED_FILE_LIST_YAML_FILE;
 	
 	// Get sprite file names inside input folder and put them into files map
 	FillSpriteFilesMap(pathName);
@@ -198,7 +200,7 @@ bool ResourcePacker::IsModifyDateChagedDir(const String & processDirectoryPath, 
 		}
 		else
 		{
-			Logger::Error("Failed to open yaml file or the file is empty: %s", yamlFilePath.c_str());
+			Logger::Error("Failed to open yaml file or the file is empty: %s", yamlFilePath.GetAbsolutePathname().c_str());
 			md5ChecksumNeeded = true;
 		}
 		
@@ -215,10 +217,12 @@ bool ResourcePacker::IsModifyDateChagedDir(const String & processDirectoryPath, 
 	return IsMD5ChangedDir(processDirectoryPath, pathName, "dir.md5", false);
 }
 
-bool ResourcePacker::IsMD5ChangedDir(const String & processDirectoryPath, const String & pathname, const String & name, bool isRecursive)
+bool ResourcePacker::IsMD5ChangedDir(const FilePath & processDirectoryPath, const FilePath & pathname, const String & name, bool isRecursive)
 {
-	String pathnameWithoutExtension = FileSystem::ReplaceExtension(name, "");
-	String md5FileName = processDirectoryPath + String("/") + pathnameWithoutExtension + ".md5";
+    DVASSERT(processDirectoryPath.IsDirectoryPathname());
+    
+	FilePath md5FileName = processDirectoryPath + FilePath(name);
+    md5FileName.ReplaceExtension(".md5");
 
 	uint8 oldMD5Digest[16];
 	uint8 newMD5Digest[16];
@@ -261,10 +265,12 @@ bool ResourcePacker::IsMD5ChangedDir(const String & processDirectoryPath, const 
 }
 
 
-bool ResourcePacker::IsMD5ChangedFile(const String & processDirectoryPath, const String & pathname, const String & psdName)
+bool ResourcePacker::IsMD5ChangedFile(const FilePath & processDirectoryPath, const FilePath & pathname, const FilePath & psdName)
 {
-	String pathnameWithoutExtension = FileSystem::ReplaceExtension(psdName, "");
-	String md5FileName = processDirectoryPath + String("/") + pathnameWithoutExtension + ".md5";
+    DVASSERT(processDirectoryPath.IsDirectoryPathname());
+    
+	FilePath md5FileName = processDirectoryPath + FilePath(psdName);
+    md5FileName.ReplaceExtension(".md5");
 
 	uint8 oldMD5Digest[16];
 	uint8 newMD5Digest[16];
@@ -302,8 +308,10 @@ bool ResourcePacker::IsMD5ChangedFile(const String & processDirectoryPath, const
 	return isChanged;
 }
 
-DefinitionFile * ResourcePacker::ProcessPSD(const String & processDirectoryPath, const String & psdPathname, const String & psdName)
+DefinitionFile * ResourcePacker::ProcessPSD(const FilePath & processDirectoryPath, const FilePath & psdPathname, const FilePath & psdName)
 {
+    DVASSERT(processDirectoryPath.IsDirectoryPathname());
+    
 	int32 maxTextureSize = 1024;
 	if (CommandLineParser::Instance()->IsFlagSet("--tsize2048"))
 	{
@@ -311,17 +319,17 @@ DefinitionFile * ResourcePacker::ProcessPSD(const String & processDirectoryPath,
 	}
 	
 	// TODO: Check CRC32
-	std::vector<Magick::Image> layers;
+	Vector<Magick::Image> layers;
 	
-	String psdNameWithoutExtension = FileSystem::ReplaceExtension(psdName, "");
+	FilePath psdNameWithoutExtension = FilePath::CreateWithNewExtension(psdName, "");
 	
 	try 
 	{
-		Magick::readImages(&layers, psdPathname);
+		Magick::readImages(&layers, psdPathname.ResolvePathname());
 		
 		if (layers.size() == 0)
 		{
-			Logger::Error("Number of layers is too low: %s", psdPathname.c_str());
+			Logger::Error("Number of layers is too low: %s", psdPathname.GetAbsolutePathname().c_str());
 			return 0;
 		}
 		
@@ -339,9 +347,9 @@ DefinitionFile * ResourcePacker::ProcessPSD(const String & processDirectoryPath,
 			
 			currentLayer.crop(Magick::Geometry(width,height, 0, 0));
 			currentLayer.magick("PNG");
-			String outputFile = processDirectoryPath + String("/") + psdNameWithoutExtension;
+			FilePath outputFile = processDirectoryPath + psdNameWithoutExtension;
 			outputFile += String(Format("%d.png", k - 1));
-			currentLayer.write(outputFile);
+			currentLayer.write(outputFile.ResolvePathname());
 		}
 		
 		
@@ -368,7 +376,7 @@ DefinitionFile * ResourcePacker::ProcessPSD(const String & processDirectoryPath,
 			if ((defFile->frameRects[k - 1].dx >= maxTextureSize) || (defFile->frameRects[k - 1].dy >= maxTextureSize))
 			{
 				
-				printf("* WARNING * - frame of %s layer %d is bigger than maxTextureSize(%d) layer exportSize (%d x %d) FORCE REDUCE TO (%d x %d). Bewarned!!! Results not guaranteed!!!\n", psdName.c_str(), k - 1, maxTextureSize
+				printf("* WARNING * - frame of %s layer %d is bigger than maxTextureSize(%d) layer exportSize (%d x %d) FORCE REDUCE TO (%d x %d). Bewarned!!! Results not guaranteed!!!\n", psdName.GetAbsolutePathname().c_str(), k - 1, maxTextureSize
 					   , defFile->frameRects[k - 1].dx, defFile->frameRects[k - 1].dy, width, height);
 				defFile->frameRects[k - 1].dx = width;
 				defFile->frameRects[k - 1].dy = height;
@@ -404,18 +412,18 @@ DefinitionFile * ResourcePacker::ProcessPSD(const String & processDirectoryPath,
 	}
 	catch( Magick::Exception &error_ )
     {
-		std::cout << "Caught exception: " << error_.what() << " file: "<< psdPathname << std::endl;
+		std::cout << "Caught exception: " << error_.what() << " file: "<< psdPathname.GetAbsolutePathname() << std::endl;
 		return 0;
     }
 	return 0;
 }
 
-void ResourcePacker::ProcessFlags(const String & flagsPathname)
+void ResourcePacker::ProcessFlags(const FilePath & flagsPathname)
 {
-	File * file = File::Create(flagsPathname.c_str(), File::READ | File::OPEN);
+	File * file = File::Create(flagsPathname, File::READ | File::OPEN);
 	if (!file)
 	{
-		Logger::Error("Failed to open file: %s", flagsPathname.c_str());
+		Logger::Error("Failed to open file: %s", flagsPathname.GetAbsolutePathname().c_str());
 	}
 	char flagsTmpBuffer[4096];
 	int flagsSize = 0;
@@ -473,17 +481,17 @@ void ResourcePacker::ProcessFlags(const String & flagsPathname)
 	SafeRelease(file);
 }
 
-void ResourcePacker::RecursiveTreeWalk(const String & inputPath, const String & outputPath)
+void ResourcePacker::RecursiveTreeWalk(const FilePath & inputPath, const FilePath & outputPath)
 {
+    DVASSERT(inputPath.IsDirectoryPathname() && outputPath.IsDirectoryPathname());
+    
 	uint64 packTime = SystemTimer::Instance()->AbsoluteMS();
 
-	FileList * fileList = new FileList(inputPath);
-
 	// New $process folder structure
-	String dataSourceRelativePath = inputPath;
-	StringReplace(dataSourceRelativePath, excludeDirectory, std::string(""));
+	String dataSourceRelativePath = inputPath.ResolvePathname();
+	StringReplace(dataSourceRelativePath, excludeDirectory.ResolvePathname(), String(""));
 
-	String processDirectoryPath = excludeDirectory + String("/") + GetProcessFolderName() + String("/") + dataSourceRelativePath;
+	FilePath processDirectoryPath = excludeDirectory + FilePath(GetProcessFolderName() + dataSourceRelativePath);
 	if (FileSystem::Instance()->CreateDirectory(processDirectoryPath, true) == FileSystem::DIRECTORY_CANT_CREATE)
 	{
 		//Logger::Error("Can't create directory: %s", processDirectoryPath.c_str());
@@ -501,17 +509,17 @@ void ResourcePacker::RecursiveTreeWalk(const String & inputPath, const String & 
 	}
 	
 	CommandLineParser::Instance()->ClearFlags();
-	std::list<DefinitionFile *> definitionFileList;
+	List<DefinitionFile *> definitionFileList;
 
 	// Find flags and setup them
+	FileList * fileList = new FileList(inputPath);
 	for (int fi = 0; fi < fileList->GetCount(); ++fi)
 	{
 		if (!fileList->IsDirectory(fi))
 		{
 			if (fileList->GetFilename(fi) == "flags.txt")
 			{
-				String fullname = inputPath + String("/") + fileList->GetFilename(fi);
-				ProcessFlags(fullname);
+				ProcessFlags(fileList->GetPathname(fi));
 				break;
 			}
 		}
@@ -533,19 +541,20 @@ void ResourcePacker::RecursiveTreeWalk(const String & inputPath, const String & 
 		{
 			if (!fileList->IsDirectory(fi))
 			{
-				String fullname = inputPath + String("/") + fileList->GetFilename(fi);
-				if (FileSystem::GetExtension(fullname) == ".psd")
+				FilePath fullname = fileList->GetPathname(fi);
+                String extension = fullname.GetExtension();
+				if (extension == ".psd")
 				{
 					DefinitionFile * defFile = ProcessPSD(processDirectoryPath, fullname, fileList->GetFilename(fi));
 					definitionFileList.push_back(defFile);
 				}
-				else if(isLightmapsPacking && FileSystem::GetExtension(fullname) == ".png")
+				else if(isLightmapsPacking && extension == ".png")
 				{
 					DefinitionFile * defFile = new DefinitionFile();
 					defFile->LoadPNG(fullname, processDirectoryPath);
 					definitionFileList.push_back(defFile);
 				}
-				else if (FileSystem::GetExtension(fullname) == ".pngdef")
+				else if (extension == ".pngdef")
 				{
 					DefinitionFile * defFile = new DefinitionFile();
 					if (defFile->LoadPNGDef(fullname, processDirectoryPath))
@@ -564,7 +573,6 @@ void ResourcePacker::RecursiveTreeWalk(const String & inputPath, const String & 
 		if (definitionFileList.size() > 0 && modified)
 		{
 			TexturePacker packer;
-			String outputPathWithSlash = outputPath + String("/");
 				
 			if(isLightmapsPacking)
 			{

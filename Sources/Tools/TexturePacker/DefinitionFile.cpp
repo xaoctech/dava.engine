@@ -1,17 +1,14 @@
-/*
- *  DefinitionFile.cpp
- *  texturepack
- *
- *  Created by Vitaliy Borodovsky on 10/28/08.
- *  Copyright 2008 DAVA Consulting, LLC. All rights reserved.
- *
- */
-
-#include "DefinitionFile.h"
-#include "CommandLineParser.h"
-#include "PngImage.h"
+#include "TexturePacker/DefinitionFile.h"
+#include "TexturePacker/CommandLineParser.h"
+#include "TexturePacker/PngImage.h"
 #include <sys/types.h>
 #include <sys/stat.h>
+
+#include "FileSystem/FileSystem.h"
+
+namespace DAVA
+{
+
 
 DefinitionFile::DefinitionFile()
 :	frameCount(0)
@@ -192,4 +189,5 @@ bool DefinitionFile::Load(const FilePath & _filename)
 }
 
 
+};
 

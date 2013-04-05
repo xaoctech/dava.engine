@@ -1,19 +1,12 @@
-/*======== (C) Copyright 1999 LogGames, L.L.C. All rights reserved. ==========
-
- The copyright to the contents herein is the property of LogGames, L.L.C.
- The contents may be used and/or copied only with the written permission of
- LogGames, L.L.C., or in accordance with the terms and conditions stipulated in
- the agreement/contract under which the contents have been supplied.
-
- Revision History
-	* Created by Borodovsky Vitaliy
-=============================================================================*/
 #ifndef __DAVAENGINE_IMAGEPACKER_H__
 #define __DAVAENGINE_IMAGEPACKER_H__
 
-#include "DAVAEngine.h"
+#include "Base/BaseTypes.h"
+#include "Math/Math2D.h"
 
-using namespace DAVA;
+namespace DAVA
+{
+    
 
 //! helper class to simplify packing of many small 2D images to one big 2D image
 class ImagePacker
@@ -64,6 +57,8 @@ private:
 	
 	
 	PackNode * root;
+};
+
 };
 
 #endif // __DAVAENGINE_IMAGEPACKER_H__

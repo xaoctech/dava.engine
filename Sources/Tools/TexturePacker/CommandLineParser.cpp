@@ -1,10 +1,10 @@
 #include <stdlib.h>
 #include "CommandLineParser.h"
-#include <string>
 #include <cerrno>
 
-using namespace DAVA;
-
+namespace DAVA
+{
+    
 CommandLineParser::CommandLineParser()
 {
 	isVerbose = false;
@@ -169,3 +169,5 @@ void	CommandLineParser::RemoveFromPath(String & path, const String & removePart)
 {
 	replace(path, removePart, std::string(""));
 }
+
+};
