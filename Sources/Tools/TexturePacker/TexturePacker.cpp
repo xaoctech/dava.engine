@@ -182,8 +182,7 @@ void TexturePacker::PackToTexturesSeparate(const FilePath & excludeFolder, const
 				Logger::Error("* ERROR: failed to write definition\n");
 			}
 
-			char textureExtension[5] = "png";
-			textureName += String(".") + textureExtension;
+            textureName.ReplaceExtension(".png");
             ExportImage(&finalImage, FilePath(textureName));
 		}
 	}

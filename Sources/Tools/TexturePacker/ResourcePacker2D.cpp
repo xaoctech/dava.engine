@@ -27,6 +27,15 @@ FilePath ResourcePacker2D::GetProcessFolderName()
 	return FilePath("$process/");
 }
 
+void ResourcePacker2D::InitFolders(const FilePath & inputPath,const FilePath & outputPath)
+{
+    DVASSERT(inputPath.IsDirectoryPathname() && outputPath.IsDirectoryPathname());
+    
+	inputGfxDirectory = inputPath;
+	outputGfxDirectory = outputPath;
+	excludeDirectory = inputPath + FilePath("../");
+}
+    
 void ResourcePacker2D::PackResources()
 {
 	Logger::Debug("Input: %s \nOutput: %s \nExclude: %s",
@@ -524,7 +533,14 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 			if (!fileList->IsNavigationDirectory(fi) && (filename != "$process") && (filename != ".svn"))
 			{
 				if ((filename.size() > 0) && (filename[0] != '.'))
-					RecursiveTreeWalk(inputPath + FilePath(filename), outputPath + FilePath(filename));
+                {
+                    FilePath input = inputPath + FilePath(filename);
+                    input.MakeDirectoryPathname();
+                    
+                    FilePath output = outputPath + FilePath(filename);
+                    output.MakeDirectoryPathname();
+					RecursiveTreeWalk(input, output);
+                }
 			}
 		}
 	}

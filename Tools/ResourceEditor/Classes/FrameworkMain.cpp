@@ -93,15 +93,12 @@ void ProcessRecourcePacker()
     FilePath commandLinePath(commandLine[1]);
     commandLinePath.MakeDirectoryPathname();
     
-    FilePath lastDir(commandLinePath.GetDirectory());
+    FilePath lastDir(commandLinePath.GetDirectory().GetLastDirectoryName());
+    lastDir.MakeDirectoryPathname();
     
+    FilePath outputh = commandLinePath + FilePath("../../Data/") + lastDir;
     
-    resourcePacker->inputGfxDirectory = commandLinePath;
-    resourcePacker->outputGfxDirectory = resourcePacker->inputGfxDirectory + FilePath("../../Data/") + lastDir;
-    resourcePacker->outputGfxDirectory.MakeDirectoryPathname();
-    
-    resourcePacker->excludeDirectory = resourcePacker->inputGfxDirectory + FilePath("../");
-    resourcePacker->excludeDirectory.MakeDirectoryPathname();
+    resourcePacker->InitFolders(commandLinePath, outputh);
     
     if(!resourcePacker->excludeDirectory.IsInitalized())
     {
@@ -116,21 +113,21 @@ void ProcessRecourcePacker()
     }
     
     new PVRConverter();
-
+    
     
     if(commandLine.size() < 3)
     {
         printf("[FATAL ERROR: PVRTexTool path need to be second parameter]");
         return;
     }
-
+    
 #if defined (__DAVAENGINE_MACOS__)
 	String toolName = String("/PVRTexToolCL");
 #elif defined (__DAVAENGINE_WIN32__)
 	String toolName = String("/PVRTexToolCL.exe");
 #endif
     PVRConverter::Instance()->SetPVRTexTool(resourcePacker->excludeDirectory + commandLine[2] + toolName);
-
+    
     uint64 elapsedTime = SystemTimer::Instance()->AbsoluteMS();
     printf("[Resource Packer Started]\n");
     printf("[INPUT DIR] - [%s]\n", resourcePacker->inputGfxDirectory.GetAbsolutePathname().c_str());

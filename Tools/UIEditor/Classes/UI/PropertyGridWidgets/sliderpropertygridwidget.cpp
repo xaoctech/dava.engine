@@ -7,7 +7,7 @@
 #include "CommandsController.h"
 #include "WidgetSignalsBlocker.h"
 #include "ResourcesManageHelper.h"
-#include "ResourcePacker.h"
+#include "TexturePacker/ResourcePacker2D.h"
 
 #include <QFileDialog>
 
@@ -240,10 +240,11 @@ void SliderPropertyGridWidget::OnOpenSpriteDialog()
         return;
 		
 	// Pack all available sprites each time user open sprite dialog
-	ResourcePacker *resPacker = new ResourcePacker();
-	resPacker->PackResources(ResourcesManageHelper::GetSpritesDatasourceDirectory().toStdString(),
+	ResourcePacker2D *resPacker = new ResourcePacker2D();
+	resPacker->InitFolders(ResourcesManageHelper::GetSpritesDatasourceDirectory().toStdString(),
 	 					 				ResourcesManageHelper::GetSpritesDirectory().toStdString());
-	
+	resPacker->PackResources();
+    
 	// Setup default sprites path
 	QString currentSpriteDir = GetSpritePathForButton(senderWidget);
 		
@@ -266,6 +267,8 @@ void SliderPropertyGridWidget::OnOpenSpriteDialog()
 	{
 		ResourcesManageHelper::ShowErrorMessage(spriteName);
 	}
+    
+    SafeDelete(resPacker);
 }
 
 void SliderPropertyGridWidget::OnRemoveSprite()
