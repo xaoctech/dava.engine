@@ -138,7 +138,7 @@ void UISlider::SetThumbSprite(Sprite * sprite, int32 frame)
 	}
 }
 
-void UISlider::SetThumbSprite(const String & spriteName, int32 frame)
+void UISlider::SetThumbSprite(const FilePath & spriteName, int32 frame)
 {
 	thumbButton->GetBackground()->SetSprite(spriteName, frame);
 	leftInactivePart = rightInactivePart = (int32)((thumbButton->GetBackground()->GetSprite()->GetWidth() / 2.0f) + 1.0f); /* 1 px added to align it and make touches easier, with default setup */
@@ -152,7 +152,7 @@ void UISlider::SetMinSprite(Sprite * sprite, int32 frame)
     }
 	bgMin->SetSprite(sprite, frame);
 }
-void UISlider::SetMinSprite(const String & spriteName, int32 frame)
+void UISlider::SetMinSprite(const FilePath & spriteName, int32 frame)
 {
     if (!bgMin) 
     {
@@ -188,7 +188,7 @@ void UISlider::SetMaxSprite(Sprite * sprite, int32 frame)
 	bgMax->SetSprite(sprite, frame);
 }
 	
-void UISlider::SetMaxSprite(const String & spriteName, int32 frame)
+void UISlider::SetMaxSprite(const FilePath & spriteName, int32 frame)
 {
     if (!bgMax)
     {

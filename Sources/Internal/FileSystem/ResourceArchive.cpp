@@ -48,7 +48,7 @@ ResourceArchive::~ResourceArchive()
 //! \brief function to create new resource archive
 //! \param archiveName path to archive we want to save
 //! \param packedCacheDir path to directory where we want to store temporary files or from where get whese files
-void ResourceArchive::StartResource(const String & _archiveName, bool _withPaths, const String & _extrudePart, const String & _packedCacheDir)
+void ResourceArchive::StartResource(const FilePath & _archiveName, bool _withPaths, const String & _extrudePart, const FilePath & _packedCacheDir)
 {
 	archiveFileName = _archiveName;
 	extrudePart = _extrudePart;
@@ -59,9 +59,9 @@ void ResourceArchive::StartResource(const String & _archiveName, bool _withPaths
 
 //! \brief Add new file to archive. Can be called only between \ref StartResource and \ref SaveResource
 //! \param resourceFile name of resourceFile to save
-void ResourceArchive::AddFile(const String & resourceFile)
+void ResourceArchive::AddFile(const FilePath & resourceFile)
 {
-	fileArray.push_back(resourceFile);
+	fileArray.push_back(resourceFile.GetAbsolutePathname());
 }
 
 //! \brief function to finish resource archive and prepare it to saving to disk
@@ -185,7 +185,7 @@ String ResourceArchive::GetResourcePathname(const uint32 resourceIndex) const
 bool ResourceArchive::Open(const FilePath & archiveName)
 {
 	lastResourceIndex = -1;
-	lastResourceName = "";
+	lastResourceName = FilePath();
 
 	archiveFile = File::Create(archiveName, File::OPEN | File::READ);
 	if (!archiveFile)return false;
@@ -283,7 +283,7 @@ bool ResourceArchive::ReadDictionary()
 
 
 // internal function to pack resource
-bool ResourceArchive::PackResource(const String & resourceToPack, int32 * resourcePackedSize, int32 * resourceRealSize)
+bool ResourceArchive::PackResource(const FilePath & resourceToPack, int32 * resourcePackedSize, int32 * resourceRealSize)
 {
 	DictionaryNode & dictNode = nodeArray[saveResourceCounter];
 	dictNode.filePosition = archiveFile->GetPos();
@@ -349,7 +349,7 @@ int32 ResourceArchive::LoadResource(const uint32 resourceIndex, void * data)
 //! \param pathName relative pathname of resource we want to load
 //! \param data pointer to memory we want to store this resource (if null function return size of resource)
 //! \return -1 if error occurred otherwise return size of data
-int32	ResourceArchive::LoadResource(const String & pathName, void * data)
+int32	ResourceArchive::LoadResource(const FilePath & pathName, void * data)
 {	
 	if (!withPaths)return -1;
 	
@@ -364,10 +364,10 @@ int32	ResourceArchive::LoadResource(const String & pathName, void * data)
 	
 	if (pathName != lastResourceName)
 	{
-		std::map<std::string,uint32>::iterator it = nodeMap.find(pathName);
+		Map<String,uint32>::iterator it = nodeMap.find(pathName.GetAbsolutePathname());
 		if ( it != nodeMap.end())
 		{
-			resourceIndex = nodeMap.find(pathName)->second;//FindPathnameIndex(pathName);
+			resourceIndex = nodeMap.find(pathName.GetAbsolutePathname())->second;//FindPathnameIndex(pathName);
 			lastResourceIndex = resourceIndex;
 			lastResourceName = pathName;
 		}
@@ -379,7 +379,7 @@ int32	ResourceArchive::LoadResource(const String & pathName, void * data)
 	return LoadResource(resourceIndex, data);
 }
 
-int32	ResourceArchive::FindPathnameIndex(const String & pathName)
+int32	ResourceArchive::FindPathnameIndex(const FilePath & pathName)
 {
 	//! \todo make Hash of names to increase speed of search
 	
@@ -393,7 +393,7 @@ int32	ResourceArchive::FindPathnameIndex(const String & pathName)
 
 	for (uint32 res = 0; res < header.fileCount; ++res)
 	{
-		if (nodeArray[res].pathName == pathName)
+		if (nodeArray[res].pathName == pathName.GetAbsolutePathname())
 		{
 			lastResourceIndex = res;
 			lastResourceName = pathName;

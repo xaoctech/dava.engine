@@ -272,7 +272,7 @@ Material::Material()
     if (!uberShader)
     {
         uberShader = new UberShader();
-        uberShader->LoadShader("~res:/Shaders/Default/materials.shader");
+        uberShader->LoadShader(FilePath("~res:/Shaders/Default/materials.shader"));
         
         
         //uberShader->CompileShaderCombination("MATERIAL_TEXTURE");
