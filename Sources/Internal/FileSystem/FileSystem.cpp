@@ -239,6 +239,11 @@ bool FileSystem::MoveFile(const FilePath & existingFile, const FilePath & newFil
 	BOOL ret = ::MoveFileExA(existingFile.ResolvePathname().c_str(), newFile.ResolvePathname().c_str(), flags);
 	return ret != 0;
 #elif defined(__DAVAENGINE_ANDROID__)
+	if (!overwriteExisting && access(newFile.ResolvePathname().c_str(), 0) != -1)
+	{
+		return false;
+	}
+	remove(newFile.c_str());
 	int ret = rename(existingFile.ResolvePathname().c_str(), newFile.ResolvePathname().c_str());
 	return ret == 0;
 #else //iphone & macos

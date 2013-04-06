@@ -33,6 +33,8 @@ TimeLineWidget::TimeLineWidget(QWidget *parent) :
 	maxValueLimit = std::numeric_limits<float32>::infinity();
 	minTime = 0.0;
 	maxTime = 1;
+	generalMinTime = minTime;
+	generalMaxTime = maxTime;
 	initialTimeInterval = 1;
 	
 	backgroundBrush.setColor(Qt::white);
@@ -349,7 +351,14 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 void TimeLineWidget::DrawLine(QPainter* painter, uint32 lineId)
 {
 	if (lines[lineId].line.size() == 0)
+	{
 		return;
+	}
+
+	if (FLOAT_EQUAL(generalMaxTime, generalMinTime))//in case of zero life time
+	{
+		return;
+	}
 
 	QBrush pointBrush;
 	pointBrush.setColor(lines[lineId].color);
@@ -422,8 +431,6 @@ QPoint TimeLineWidget::GetDrawPoint(const Vector2& point) const
 	QRect graphRect = GetGraphRect();
 	float x = graphRect.x() + graphRect.width() * (point.x - minTime) / time;
 
-	float rectSize =graphRect.x() + graphRect.width();
-
 	float y = graphRect.bottom() - graphRect.height() * (point.y - minValue) / value;
 	
 	return QPoint(x, y);
@@ -462,12 +469,26 @@ void TimeLineWidget::Init(float32 minT, float32 maxT, bool updateSizeState, bool
 
 	this->minTime = minT;
 	this->maxTime = maxT;
-	this->initialTimeInterval = maxTime - minTime;
+	this->generalMinTime = minT;
+	this->generalMaxTime = maxT;
+	this->initialTimeInterval = generalMaxTime - generalMinTime;
 	this->updateSizeState = updateSizeState;
 	this->aliasLinePoint = aliasLinePoint;
 	this->allowDeleteLine = allowDeleteLine;
 
 	this->isInteger = integer;
+	this->scale = 1.0f;
+}
+
+void TimeLineWidget::Init(float32 minT, float32 maxT, float32 generalMinT, float32 generalMaxT, bool updateSizeState, bool aliasLinePoint, bool allowDeleteLine, bool integer)
+{
+	Init(minT, maxT, updateSizeState, aliasLinePoint, allowDeleteLine, integer);
+	this->minTime = minT;
+	this->maxTime = maxT;
+	this->generalMinTime = generalMinT;
+	this->generalMaxTime = generalMaxT;
+	this->initialTimeInterval = generalMaxTime - generalMinTime;
+	scale = (generalMaxT-generalMinT) / (maxT- minT);
 }
 
 void TimeLineWidget::SetMinLimits(float32 minV)
@@ -585,6 +606,9 @@ void TimeLineWidget::UpdateLimits()
 		{
 			newMaxValue = Max(iter->second.line[i].y, newMaxValue);
 			newMinValue = Min(iter->second.line[i].y, newMinValue);
+/*
+			maxTime = Max(iter->second.line[i].x, maxTime);
+			minTime = Min(iter->second.line[i].x, minTime);*/
 		}
 	}
 	
@@ -1091,7 +1115,7 @@ void TimeLineWidget::SetPointValue(uint32 lineId, uint32 pointId, Vector2 value,
 			float x1 = lines[lineId].line[i - 1].x;
 			float x2 = lines[lineId].line[i].x;
 			
-			if ((x2 - x1) < (maxTime - minTime) * 0.01)
+			if ((x2 - x1) < (maxTime - minTime) * 0.001)
 			{
 				if (i < lines[lineId].line.size() - 1)
 				{
@@ -1398,21 +1422,31 @@ int32 TimeLineWidget::GetIntValue(float32 value) const
 
 void TimeLineWidget::PerformZoom(float newScale)
 {
-	if(newScale < 0 || FLOAT_EQUAL(newScale, 0.0f))
+	float currentInterval = maxTime - minTime;
+	
+	if(newScale < 1.0f || currentInterval < MINIMUM_DISPLAYED_TIME )
 	{
 		return;
 	}
 
-	float interval = maxTime - minTime;
+	float currentCenter =  minTime + currentInterval / 2;
+	float newInterval = initialTimeInterval / newScale;
 	
-	if( interval > MINIMUM_DISPLAYED_TIME && interval < std::numeric_limits<int>::max() ) 
+	minTime = currentCenter - (newInterval / 2);
+	maxTime = currentCenter + (newInterval / 2);
+	
+	if(minTime < generalMinTime)
 	{
-		float oldCenter =  minTime + interval / 2;
-		interval = initialTimeInterval / newScale;
-		minTime = oldCenter - (interval / 2);
-		maxTime = oldCenter + (interval / 2);
-		scale = newScale;
+		minTime = generalMinTime;
+		maxTime = minTime + newInterval;
 	}
+	if(maxTime > generalMaxTime)
+	{
+		minTime = generalMaxTime - newInterval;
+		maxTime = generalMaxTime;
+	}
+	
+	scale = newScale;
 }
 
 void TimeLineWidget::PerformOffset(int value)
@@ -1421,6 +1455,19 @@ void TimeLineWidget::PerformOffset(int value)
 	float pixelsPerTime = GetGraphRect().width() / (maxTime - minTime);
 	float offsetFactor =  value / pixelsPerTime ;
 	
+	float newMinTime = minTime + offsetFactor;
+	
+	if(newMinTime < generalMinTime)
+	{
+		offsetFactor = (minTime - generalMinTime)*(-1.0f);
+	}
+	
+	float newMaxTime = maxTime + offsetFactor;
+	if(newMaxTime > generalMaxTime)
+	{
+		offsetFactor = generalMaxTime - maxTime;
+	}
+
 	maxTime += offsetFactor;
 	minTime += offsetFactor;
 }

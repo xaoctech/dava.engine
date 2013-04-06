@@ -18,7 +18,7 @@ public:
 	explicit ParticleEmitterPropertiesWidget(QWidget* parent = 0);
 	~ParticleEmitterPropertiesWidget();
 
-	void Init(DAVA::ParticleEmitter* emitter, bool updateMinimize);
+	void Init(DAVA::ParticleEmitter* emitter, bool updateMinimize, bool needUpdateTimeLimits = true);
 	void Update();
 	
 	virtual bool eventFilter( QObject * o, QEvent * e );
