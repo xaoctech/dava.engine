@@ -186,9 +186,9 @@ void HierarchyTreeAggregatorNode::UpdateHierarchyTree()
 void HierarchyTreeAggregatorNode::ReplaceAggregator(HierarchyTreeControlNode *node)
 {
 	UIAggregatorControl* uiAggregator = dynamic_cast<UIAggregatorControl*>(node->GetUIObject());
-	if (uiAggregator && uiAggregator->GetAggregatorPath().compare(path) == 0)
+	if (uiAggregator && uiAggregator->GetAggregatorPath().GetAbsolutePathname().compare(path) == 0)
 	{
-		Logger::Debug(uiAggregator->GetAggregatorPath().c_str());
+		Logger::Debug(uiAggregator->GetAggregatorPath().GetAbsolutePathname().c_str());
 		HIERARCHYTREENODESLIST childs = node->GetChildNodes();
 		uint32 i = 0;
 		for (HIERARCHYTREENODESLIST::iterator iter = childs.begin(); iter != childs.end(); ++iter)
