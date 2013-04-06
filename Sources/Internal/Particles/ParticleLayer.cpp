@@ -697,7 +697,7 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 		const String relativePathName = spriteNode->AsString();
 		relativeSpriteName = relativePathName;
 		
-        FilePath path = FilePath(configPath.GetDirectory() + relativePathName);
+        FilePath path = configPath.GetDirectory() + FilePath(relativePathName);
 		Sprite * _sprite = Sprite::Create(path);
 		Vector2 pivotPointTemp;
 		if(pivotPointNode)

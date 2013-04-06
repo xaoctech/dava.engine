@@ -263,7 +263,7 @@ PropertyBoolCell::PropertyBoolCell(PropertyCellDelegate *propDelegate, PropertyC
     Texture::SetDefaultFileFormat(NOT_FILE);
 
     float32 checkBoxWidth = GetHeightForWidth(width - keyName->size.x);
-    checkBox = new UICheckBox("~res:/Gfx/UI/chekBox", Rect(keyName->size.x, 0, checkBoxWidth, checkBoxWidth));
+    checkBox = new UICheckBox(FilePath("~res:/Gfx/UI/chekBox"), Rect(keyName->size.x, 0, checkBoxWidth, checkBoxWidth));
     checkBox->SetDelegate(this);
     AddControl(checkBox);
     
@@ -719,13 +719,13 @@ PropertySliderCell::PropertySliderCell(PropertyCellDelegate *propDelegate, Prope
 
     slider = new UISliderWithText(Rect(textWidth, keyName->size.y, width - 2*textWidth, keyName->size.y));
     slider->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &PropertySliderCell::OnValueChanged));
-    slider->SetMinSprite("~res:/Gfx/LandscapeEditor/Tools/polzunok", 1);
+    slider->SetMinSprite(FilePath("~res:/Gfx/LandscapeEditor/Tools/polzunok"), 1);
     slider->SetMinDrawType(UIControlBackground::DRAW_STRETCH_HORIZONTAL);
     slider->SetMinLeftRightStretchCap(5);
-    slider->SetMaxSprite("~res:/Gfx/LandscapeEditor/Tools/polzunok", 0);
+    slider->SetMaxSprite(FilePath("~res:/Gfx/LandscapeEditor/Tools/polzunok"), 0);
     slider->SetMaxDrawType(UIControlBackground::DRAW_STRETCH_HORIZONTAL);
     slider->SetMaxLeftRightStretchCap(5);
-    slider->SetThumbSprite("~res:/Gfx/LandscapeEditor/Tools/polzunokCenter", 0);
+    slider->SetThumbSprite(FilePath("~res:/Gfx/LandscapeEditor/Tools/polzunokCenter"), 0);
     AddControl(slider);
     
     Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
@@ -788,7 +788,7 @@ PropertyTexturePreviewCell::PropertyTexturePreviewCell(PropertyCellDelegate *pro
     Texture::SetDefaultFileFormat(NOT_FILE);
 
     float32 checkBoxWidth = GetHeightForWidth(width)/2;
-    checkBox = new UICheckBox("~res:/Gfx/UI/chekBox", Rect(0, keyName->size.y, checkBoxWidth, checkBoxWidth));
+    checkBox = new UICheckBox(FilePath("~res:/Gfx/UI/chekBox"), Rect(0, keyName->size.y, checkBoxWidth, checkBoxWidth));
     checkBox->SetDelegate(this);
     AddControl(checkBox);
     

@@ -90,46 +90,12 @@ const FilePath SceneFileV2::GetScenePath()
     return FilePath(rootNodePathName.GetDirectory());
 }
         
-//static void replace(std::string & repString,const std::string & needle, const std::string & s)
-//{
-//    std::string::size_type lastpos = 0, thispos;
-//    while ((thispos = repString.find(needle, lastpos)) != std::string::npos)
-//    {
-//        repString.replace(thispos, needle.length(), s);
-//        lastpos = thispos + 1;
-//    }
-//}
     
 void SceneFileV2::EnableSaveForGame(bool _isSaveForGame)
 {
     isSaveForGame = _isSaveForGame;
 }
 
-//String SceneFileV2::AbsoluteToRelative(const String & absolutePathname)
-//{
-//    String result = FileSystem::GetCanonicalPath(absolutePathname);
-//    
-//    if (isSaveForGame)
-//    {
-//        size_t pos = result.find("DataSource");
-//        if (pos != result.npos)
-//        {
-//            result.replace(pos, strlen("DataSource"), "Data");
-//        }
-//    }
-//
-//    result = FileSystem::AbsoluteToRelativePath(GetScenePath(), result);
-//    return result;
-//}
-//    
-//String SceneFileV2::RelativeToAbsolute(const String & relativePathname)
-//{
-//    String result;
-//    result = GetScenePath() + relativePathname;
-//    result = FileSystem::GetCanonicalPath(result);
-//    return result;
-//}
-    
 void SceneFileV2::EnableDebugLog(bool _isDebugLogEnabled)
 {
     isDebugLogEnabled = _isDebugLogEnabled;

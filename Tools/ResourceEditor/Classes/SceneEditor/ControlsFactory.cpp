@@ -73,14 +73,14 @@ void ControlsFactory::CustomizeButtonExpandable(UIButton *btn)
 }
 
 
-UIButton *ControlsFactory::CreateImageButton(const Rect & rect, const String &imagePath)
+UIButton *ControlsFactory::CreateImageButton(const Rect & rect, const FilePath &imagePath)
 {
     UIButton *btn = new UIButton(rect);
     CustomizeImageButton(btn, imagePath);
     return btn;
 }
 
-void ControlsFactory::CustomizeImageButton(UIButton *btn, const String &imagePath)
+void ControlsFactory::CustomizeImageButton(UIButton *btn, const FilePath &imagePath)
 {
     btn->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_SCALE_TO_RECT);
     btn->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_SCALE_TO_RECT);

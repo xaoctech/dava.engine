@@ -228,13 +228,15 @@ String ColladaDocument::GetTextureName(const FilePath & scenePath, ColladaTextur
     return textureRelativePathName;
 }
 
-void ColladaDocument::SaveScene( const String & scenePath, const String & sceneName )
+void ColladaDocument::SaveScene( const FilePath & scenePath, const String & sceneName )
 {
-	DAVA::Logger::Debug("* Write begin: %s/%s\n", scenePath.c_str(), sceneName.c_str());
+    DVASSERT(scenePath.IsDirectoryPathname());
+    
+	DAVA::Logger::Debug("* Write begin: %s/%s\n", scenePath.GetAbsolutePathname().c_str(), sceneName.c_str());
 	
-	String scenePathName = scenePath + String("/") + sceneName;
+	FilePath scenePathName = scenePath + FilePath(sceneName);
 	
-	sceneFP = fopen(scenePathName.c_str(), "wb");
+	sceneFP = fopen(scenePathName.ResolvePathname().c_str(), "wb");
 	if (sceneFP == 0)return;
 	
     

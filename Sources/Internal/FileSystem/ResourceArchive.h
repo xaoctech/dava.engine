@@ -91,7 +91,7 @@ public:
 	//! \param pathName relative pathname of resource we want to load
 	//! \param data pointer to memory we want to store this resource (if null function return size of resource)
 	//! \return -1 if error occurred otherwise return size of data
-	int32	LoadResource(const String & pathName, void * data);
+	int32	LoadResource(const FilePath & pathName, void * data);
 
 
 	//! \brief function to open resource archive
@@ -111,11 +111,11 @@ public:
 	//! \param archiveName path to archive we want to save
 	//! \param packedCacheDir path to directory where we want to store temporary files or from where get whese files
 	//! \param withPaths save relative paths to open resources
-	void	StartResource(const String & archiveName, bool withPaths = true, const String & extrudePart = String(""), const String & packedCacheDir = String(""));
+	void	StartResource(const FilePath & archiveName, bool withPaths = true, const String & extrudePart = String(""), const FilePath & packedCacheDir = FilePath(""));
 
 	//! \brief Add new file to archive. Can be called only between \ref StartResource and \ref SaveResource
 	//! \param resourceFile name of resourceFile to save
-	void	AddFile(const String & resourceFile);
+	void	AddFile(const FilePath & resourceFile);
 	
 	//! \brief function to finish resource archive and prepare it to saving to disk
 	void	FinishResource();
@@ -130,13 +130,13 @@ public:
 private:
 
 	// internal function to pack resource
-	bool	PackResource(const String & resourceToPack, int32 * resourcePackedSize, int32 * resourceRealSize);
+	bool	PackResource(const FilePath & resourceToPack, int32 * resourcePackedSize, int32 * resourceRealSize);
 	bool	UnpackResource(int32 fileIndex, uint8 * data);
 
 
-	int32	FindPathnameIndex(const String & pathname);
+	int32	FindPathnameIndex(const FilePath & pathname);
 	int32	lastResourceIndex;
-	String	lastResourceName;
+	FilePath	lastResourceName;
 
 	bool	WriteDictionary();
 	bool	ReadDictionary();
@@ -178,14 +178,14 @@ private:
 	// common information (for loading archive files & for saving arhchive files)
 	Header					header;
 	Vector<DictionaryNode>			nodeArray;
-	std::map<std::string,uint32>	nodeMap;
+	Map<String,uint32>	nodeMap;
 
 
 	// save information
 	int32					saveResourceCounter;
 	Vector<String>			fileArray;
-	String					archiveFileName;
-	String					packedCacheDir;
+	FilePath					archiveFileName;
+	FilePath					packedCacheDir;
 	String					extrudePart;
 	bool					withPaths;
 

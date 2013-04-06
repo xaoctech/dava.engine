@@ -50,7 +50,7 @@ TextureFormatDialog::TextureFormatDialog(TextureFormatDialogDelegate *newDelegat
     
 
     //MIPMAPS
-    mipmapEnabled = new UICheckBox("~res:/Gfx/UI/chekBox", Rect(mipmapX, rect.dy - ControlsFactory::BUTTON_HEIGHT * 2.f, 
+    mipmapEnabled = new UICheckBox(FilePath("~res:/Gfx/UI/chekBox"), Rect(mipmapX, rect.dy - ControlsFactory::BUTTON_HEIGHT * 2.f, 
                                                                (float32)ControlsFactory::BUTTON_HEIGHT, (float32)ControlsFactory::BUTTON_HEIGHT));
     draggableDialog->AddControl(mipmapEnabled);
     
