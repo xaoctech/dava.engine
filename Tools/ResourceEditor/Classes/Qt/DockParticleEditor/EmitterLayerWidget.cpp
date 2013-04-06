@@ -67,6 +67,14 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 			SIGNAL(stateChanged(int)),
 			this,
 			SLOT(OnValueChanged()));
+
+	isLongCheckBox = new QCheckBox("Long");
+	mainBox->addWidget(isLongCheckBox);
+	connect(isLongCheckBox,
+			SIGNAL(stateChanged(int)),
+			this,
+			SLOT(OnValueChanged()));
+
 	
 	QHBoxLayout* spriteHBox = new QHBoxLayout;
 	spriteLabel = new QLabel(this);
@@ -99,8 +107,12 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 	InitWidget(sizeOverLifeTimeLine);
 	velocityTimeLine = new TimeLineWidget(this);
 	InitWidget(velocityTimeLine);
+	velocityOverLifeTimeLine = new TimeLineWidget(this);
+	InitWidget(velocityOverLifeTimeLine);
 	spinTimeLine = new TimeLineWidget(this);
 	InitWidget(spinTimeLine);
+	spinOverLifeTimeLine = new TimeLineWidget(this);
+	InitWidget(spinOverLifeTimeLine);
 
 	colorRandomGradient = new GradientPickerWidget(this);
 	InitWidget(colorRandomGradient);
@@ -179,6 +191,10 @@ EmitterLayerWidget::~EmitterLayerWidget()
 			SIGNAL(stateChanged(int)),
 			this,
 			SLOT(OnValueChanged()));
+	disconnect(isLongCheckBox,
+			SIGNAL(stateChanged(int)),
+			this,
+			SLOT(OnValueChanged()));
 	disconnect(spriteBtn,
 			SIGNAL(clicked(bool)),
 			this,
@@ -233,6 +249,7 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 
 	enableCheckBox->setChecked(!layer->isDisabled);
 	additiveCheckBox->setChecked(layer->GetAdditive());
+	isLongCheckBox->setChecked(layer->IsLong());
 
 	//LAYER_SPRITE = 0,
 	sprite = layer->GetSprite();
@@ -287,25 +304,33 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	sizeVariationTimeLine->SetMinLimits(0);
 	sizeVariationTimeLine->AddLines(PropLineWrapper<Vector2>(layer->sizeVariation).GetProps(), colors, legends);
 	sizeVariationTimeLine->EnableLock(true);
-	
-	sizeOverLifeTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
+
+	legends.clear();
+	legends.push_back("size overlife X"); legends.push_back("size overlife Y");
+	sizeOverLifeTimeLine->Init(0, 1, updateMinimized, true);
 	sizeOverLifeTimeLine->SetMinLimits(0);
-	sizeOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->sizeOverLife).GetProps(), Qt::blue, "size over life");
+	sizeOverLifeTimeLine->AddLines(PropLineWrapper<Vector2>(layer->sizeOverLifeXY).GetProps(), colors, legends);
+	sizeOverLifeTimeLine->EnableLock(true);
 
-
-	//LAYER_VELOCITY, LAYER_VELOCITY_VARIATION, LAYER_VELOCITY_OVER_LIFE,
+	//LAYER_VELOCITY, LAYER_VELOCITY_VARIATION,
 	velocityTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
 	velocityTimeLine->AddLine(0, PropLineWrapper<float32>(layer->velocity).GetProps(), Qt::blue, "velocity");
 	velocityTimeLine->AddLine(1, PropLineWrapper<float32>(layer->velocityVariation).GetProps(), Qt::darkGreen, "velocity variation");
-	velocityTimeLine->AddLine(2, PropLineWrapper<float32>(layer->velocityOverLife).GetProps(), Qt::red, "velocity over life");
+	
+	//LAYER_VELOCITY_OVER_LIFE,
+	velocityOverLifeTimeLine->Init(0, 1, updateMinimized);
+	velocityOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->velocityOverLife).GetProps(), Qt::red, "velocity over life");
 
 	//LAYER_FORCES, LAYER_FORCES_VARIATION, LAYER_FORCES_OVER_LIFE,
 
-	//LAYER_SPIN, LAYER_SPIN_VARIATION, LAYER_SPIN_OVER_LIFE,
+	//LAYER_SPIN, LAYER_SPIN_VARIATION, 
 	spinTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
 	spinTimeLine->AddLine(0, PropLineWrapper<float32>(layer->spin).GetProps(), Qt::blue, "spin");
 	spinTimeLine->AddLine(1, PropLineWrapper<float32>(layer->spinVariation).GetProps(), Qt::darkGreen, "spin variation");
-	spinTimeLine->AddLine(2, PropLineWrapper<float32>(layer->spinOverLife).GetProps(), Qt::red, "spin over life");
+	
+	//LAYER_SPIN_OVER_LIFE,
+	spinOverLifeTimeLine->Init(0, 1, updateMinimized);
+	spinOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->spinOverLife).GetProps(), Qt::red, "spin over life");
 
 	//LAYER_COLOR_RANDOM, LAYER_ALPHA_OVER_LIFE, LAYER_COLOR_OVER_LIFE,
 	colorRandomGradient->Init(0, 1, "random color");
@@ -354,8 +379,9 @@ void EmitterLayerWidget::RestoreVisualState(KeyedArchive* visualStateProps)
 	sizeVariationTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_SIZE_VARIATION_PROPS"));
 	sizeOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_SIZE_OVER_LIFE_PROPS"));
 	velocityTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_VELOCITY_PROPS"));
+	velocityOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_VELOCITY_OVER_LIFE"));//todo
 	spinTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_SPIN_PROPS"));
-
+	spinOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_SPIN_OVER_LIFE_PROPS"));
 	alphaOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ALPHA_OVER_LIFE_PROPS"));
 	angleTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ANGLE"));	
 }
@@ -391,8 +417,16 @@ void EmitterLayerWidget::StoreVisualState(KeyedArchive* visualStateProps)
 	visualStateProps->SetArchive("LAYER_VELOCITY_PROPS", props);
 
 	props->DeleteAllKeys();
+	velocityOverLifeTimeLine->GetVisualState(props);
+	visualStateProps->SetArchive("LAYER_VELOCITY_OVER_LIFE", props);
+
+	props->DeleteAllKeys();
 	spinTimeLine->GetVisualState(props);
 	visualStateProps->SetArchive("LAYER_SPIN_PROPS", props);
+
+	props->DeleteAllKeys();
+	spinOverLifeTimeLine->GetVisualState(props);
+	visualStateProps->SetArchive("LAYER_SPIN_OVER_LIFE_PROPS", props);
 
 	props->DeleteAllKeys();
 	alphaOverLifeTimeLine->GetVisualState(props);
@@ -473,22 +507,24 @@ void EmitterLayerWidget::OnValueChanged()
 	PropLineWrapper<Vector2> propSizeVariation;
 	sizeVariationTimeLine->GetValues(propSizeVariation.GetPropsPtr());
 
-	PropLineWrapper<float32> propsizeOverLife;
-	sizeOverLifeTimeLine->GetValue(0, propsizeOverLife.GetPropsPtr());
+	PropLineWrapper<Vector2> propsizeOverLife;
+	sizeOverLifeTimeLine->GetValues(propsizeOverLife.GetPropsPtr());
 	
 	PropLineWrapper<float32> propVelocity;
 	PropLineWrapper<float32> propVelocityVariation;
-	PropLineWrapper<float32> propVelocityOverLife;
 	velocityTimeLine->GetValue(0, propVelocity.GetPropsPtr());
 	velocityTimeLine->GetValue(1, propVelocityVariation.GetPropsPtr());
-	velocityTimeLine->GetValue(2, propVelocityOverLife.GetPropsPtr());
+
+	PropLineWrapper<float32> propVelocityOverLife;
+	velocityOverLifeTimeLine->GetValue(0, propVelocityOverLife.GetPropsPtr());
 	
 	PropLineWrapper<float32> propSpin;
 	PropLineWrapper<float32> propSpinVariation;
-	PropLineWrapper<float32> propSpinOverLife;
 	spinTimeLine->GetValue(0, propSpin.GetPropsPtr());
 	spinTimeLine->GetValue(1, propSpinVariation.GetPropsPtr());
-	spinTimeLine->GetValue(2, propSpinOverLife.GetPropsPtr());
+
+	PropLineWrapper<float32> propSpinOverLife;
+	spinOverLifeTimeLine->GetValue(0, propSpinOverLife.GetPropsPtr());
 
 	PropLineWrapper<Color> propColorRandom;
 	colorRandomGradient->GetValues(propColorRandom.GetPropsPtr());
@@ -511,6 +547,7 @@ void EmitterLayerWidget::OnValueChanged()
 						 propLayerType,
 						 !enableCheckBox->isChecked(),
 						 additiveCheckBox->isChecked(),
+						 isLongCheckBox->isChecked(),
 						 sprite,
 						 propLife.GetPropLine(),
 						 propLifeVariation.GetPropLine(),

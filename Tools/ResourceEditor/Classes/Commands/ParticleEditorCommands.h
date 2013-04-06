@@ -131,6 +131,7 @@ public:
 			  ParticleLayer::eType layerType,
 			  bool isDisabled,
 			  bool additive,
+  			  bool isLong,
 			  Sprite* sprite,
 			  RefPtr< PropertyLine<float32> > life,
 			  RefPtr< PropertyLine<float32> > lifeVariation,
@@ -138,7 +139,7 @@ public:
 			  RefPtr< PropertyLine<float32> > numberVariation,
 			  RefPtr< PropertyLine<Vector2> > size,
 			  RefPtr< PropertyLine<Vector2> > sizeVariation,
-			  RefPtr< PropertyLine<float32> > sizeOverLife,
+			  RefPtr< PropertyLine<Vector2> > sizeOverLife,
 			  RefPtr< PropertyLine<float32> > velocity,
 			  RefPtr< PropertyLine<float32> > velocityVariation,
 			  RefPtr< PropertyLine<float32> > velocityOverLife,
@@ -168,6 +169,7 @@ private:
 	QString layerName;
 	ParticleLayer::eType layerType;
 	bool isDisabled;
+	bool isLong;
 	bool additive;
 	Sprite* sprite;
 	RefPtr< PropertyLine<float32> > life;
@@ -176,7 +178,7 @@ private:
 	RefPtr< PropertyLine<float32> > numberVariation;
 	RefPtr< PropertyLine<Vector2> > size;
 	RefPtr< PropertyLine<Vector2> > sizeVariation;
-	RefPtr< PropertyLine<float32> > sizeOverLife;
+	RefPtr< PropertyLine<Vector2> > sizeOverLife;
 	RefPtr< PropertyLine<float32> > velocity;
 	RefPtr< PropertyLine<float32> > velocityVariation;
 	RefPtr< PropertyLine<float32> > velocityOverLife;
