@@ -14,6 +14,7 @@ public:
 	ResourcePacker2D();
 
 	// Packing of resources section
+	void InitFolders(const FilePath & inputPath,const FilePath & outputPath);
 	void PackResources();
 	
 	void RecursiveTreeWalk(const FilePath & inputPath,const FilePath & outputPath);

@@ -544,7 +544,7 @@ QString UIControlMetadata::GetSprite()
         return StringConstants::NO_SPRITE_IS_SET;
     }
     
-    return QString(sprite->GetRelativePathname().GetAbsolutePathname());
+    return QString::fromStdString(sprite->GetRelativePathname().GetAbsolutePathname());
 }
     
 void UIControlMetadata::SetSpriteFrame(int value)
