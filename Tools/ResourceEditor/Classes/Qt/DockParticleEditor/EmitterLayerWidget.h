@@ -64,6 +64,7 @@ private:
 	QLineEdit* layerNameLineEdit;
 	QCheckBox* enableCheckBox;
 	QCheckBox* additiveCheckBox;
+	QCheckBox* isLongCheckBox;
 
 	QLabel* layerTypeLabel;
 	QComboBox* layerTypeComboBox;
