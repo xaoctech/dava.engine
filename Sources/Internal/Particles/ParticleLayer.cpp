@@ -746,7 +746,7 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 		{
 			// Both properties can't be present in the same config.
 			Logger::Error("Both sizeOverlife and sizeOverlifeXY are defined for Particle Layer %s, taking sizeOverlifeXY as default",
-						  configPath.c_str());
+						  configPath.GetAbsolutePathname().c_str());
 			DVASSERT(false);
 		}
 		else

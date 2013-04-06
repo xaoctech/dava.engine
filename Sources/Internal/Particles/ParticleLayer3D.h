@@ -18,7 +18,7 @@ public:
 	ParticleLayer3D();
 	virtual ~ParticleLayer3D();
 
-	virtual void LoadFromYaml(const String & configPath, YamlNode * node);
+	virtual void LoadFromYaml(const FilePath & configPath, YamlNode * node);
 	virtual ParticleLayer * Clone(ParticleLayer * dstLayer = 0);
 
 	virtual void Draw(Camera * camera);
