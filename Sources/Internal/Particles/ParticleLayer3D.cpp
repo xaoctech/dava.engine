@@ -269,7 +269,7 @@ void ParticleLayer3D::DrawLayerLong(Camera * camera)
 }
 
 
-void ParticleLayer3D::LoadFromYaml(const String & configPath, YamlNode * node)
+void ParticleLayer3D::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 {
 	ParticleLayer::LoadFromYaml(configPath, node);
 	SetAdditive(additive);
