@@ -261,7 +261,7 @@ bool AutotestingSystem::ConnectToDB()
 {
     DVASSERT(NULL == dbClient);
     
-    dbClient = MongodbClient::Create(AUTOTESTING_DB_IP, AUTOTESTING_DB_PORT);
+    dbClient = MongodbClient::Create(AUTOTESTING_DB_HOST, AUTOTESTING_DB_PORT);
     if(dbClient)
     {
         dbClient->SetDatabaseName(AUTOTESTING_DB_NAME);
