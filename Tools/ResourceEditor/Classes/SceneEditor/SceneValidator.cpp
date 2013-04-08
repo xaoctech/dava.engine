@@ -298,7 +298,16 @@ void SceneValidator::ValidateInstanceMaterialState(InstanceMaterialState *materi
     if(!IsTextureDescriptorPath(lightmapName))
     {
         Texture *lightmap = SafeRetain(materialState->GetLightmap());
-        materialState->SetLightmap(lightmap, TextureDescriptor::GetDescriptorPathname(lightmapName));
+        
+        if(lightmapName.IsInitalized())
+        {
+            materialState->SetLightmap(lightmap, TextureDescriptor::GetDescriptorPathname(lightmapName));
+        }
+        else
+        {
+            materialState->SetLightmap(lightmap, FilePath());
+        }
+        
         SafeRelease(lightmap);
     }
 }
