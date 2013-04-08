@@ -8,6 +8,7 @@
 #include <QDialog>
 #include <QDoubleSpinBox>
 #include <QScrollBar.h>
+#include <qslider.h>
 
 using namespace DAVA;
 
@@ -79,8 +80,13 @@ private:
 	QRect GetOffsetRightRect() const;
 	QRect GetOffsetLeftRect() const;
 	QRect GetScrollBarRect() const;
+	QRect GetSliderRect() const;
+
 	void UpdateScrollBarPosition();
 	void UpdateScrollBarSlider();
+
+	void UpdateSliderPosition();
+	void UpdateZoomSlider();
 
 	void SetPointValue(uint32 lineId, uint32 pointId, Vector2 value, bool deleteSamePoints);
 	
@@ -104,7 +110,7 @@ private:
 	
 	int32 GetIntValue(float32 value) const;
 
-	void PerformZoom(float newScale);
+	void PerformZoom(float newScale, bool moveScroll = true);
 
 	void PerformOffset(int value, bool moveScroll = true);
 	void DrawUITriangle(QPainter& painter, const QRect& rect, int rotateDegree);
@@ -122,6 +128,7 @@ private:
 private slots:
 
 	void HandleHorizontalScrollChanged(int value);
+	void HandleZoomScrollChanged(int value);
 
 private:
 	QPoint mouseStartPos;
@@ -181,7 +188,8 @@ private:
 	QString xLegendMark;
 	QString yLegendMark;
 
-	QScrollBar * horizontalScrollBar;
+	QScrollBar	* horizontalScrollBar;
+	QSlider		* zoomSlider;
 };
 
 class SetPointValueDlg: public QDialog
