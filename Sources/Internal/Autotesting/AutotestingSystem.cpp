@@ -261,7 +261,7 @@ bool AutotestingSystem::ConnectToDB()
 {
     DVASSERT(NULL == dbClient);
     
-    dbClient = MongodbClient::Create(AUTOTESTING_DB_IP, AUTOTESTING_DB_PORT);
+    dbClient = MongodbClient::Create(AUTOTESTING_DB_HOST, AUTOTESTING_DB_PORT);
     if(dbClient)
     {
         dbClient->SetDatabaseName(AUTOTESTING_DB_NAME);
@@ -670,8 +670,7 @@ void AutotestingSystem::WriteState(const String & device, const String & state)
 
 	Logger::Debug("AutotestingSystem::WriteState write %s", state);
 	dbUpdateData->SetString(device, state);
-	SafeRelease(dbUpdateData);
-
+	
 	dbUpdateObject->SaveToDB(dbClient);
 	SafeRelease(dbUpdateObject);
 }
@@ -689,7 +688,6 @@ void AutotestingSystem::OnTestStart(const String &testName)
 {
 	Logger::Debug("AutotestingSystem::OnTestStart %s", testName.c_str());
 	
-	WriteState("Master", testName);
 	// Create document for test
 	String testId = Format("Test%d", testIndex);
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
