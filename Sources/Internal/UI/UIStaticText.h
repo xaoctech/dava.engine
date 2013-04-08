@@ -79,7 +79,6 @@ public:
 		else 
 		{
 			SetSprite(NULL, 0);
-			shadowBg->SetSprite(NULL, 0);
 		}
 	}
 
