@@ -222,12 +222,16 @@ String FilePath::GetRelativePathname(const FilePath &forDirectory) const
     
 void FilePath::ReplaceFilename(const String &filename)
 {
+    DVASSERT(IsInitalized());
+    
     const FilePath directory = GetDirectory();
     absolutePathname = NormalizePathname(directory + FilePath(filename));
 }
     
 void FilePath::ReplaceBasename(const String &basename)
 {
+    DVASSERT(IsInitalized());
+    
     const FilePath directory = GetDirectory();
     const String extension = GetExtension();
     absolutePathname = NormalizePathname(directory + FilePath(basename + extension));
@@ -235,6 +239,8 @@ void FilePath::ReplaceBasename(const String &basename)
     
 void FilePath::ReplaceExtension(const String &extension)
 {
+    DVASSERT(IsInitalized());
+    
     const FilePath directory = GetDirectory();
     const String basename = GetBasename();
     absolutePathname = NormalizePathname(directory + FilePath(basename + extension));
@@ -242,12 +248,16 @@ void FilePath::ReplaceExtension(const String &extension)
     
 void FilePath::ReplaceDirectory(const String &directory)
 {
+    DVASSERT(IsInitalized());
+    
     const String filename = GetFilename();
     absolutePathname = NormalizePathname(MakeDirectory(directory)) + filename;
 }
     
 void FilePath::ReplaceDirectory(const FilePath &directory)
 {
+    DVASSERT(IsInitalized());
+    
     DVASSERT(directory.IsDirectoryPathname())
     const String filename = GetFilename();
     absolutePathname = directory.GetAbsolutePathname() + filename;
@@ -261,11 +271,15 @@ String FilePath::ResolvePathname() const
     
 void FilePath::MakeDirectoryPathname()
 {
+    DVASSERT(IsInitalized());
+    
     absolutePathname = MakeDirectory(absolutePathname);
 }
     
 void FilePath::TruncateExtension()
 {
+    DVASSERT(IsInitalized());
+    
     ReplaceExtension(String(""));
 }
     
@@ -281,6 +295,8 @@ String FilePath::GetLastDirectoryName() const
     
 void FilePath::ReplacePath(const FilePath &pathname)
 {
+    DVASSERT(IsInitalized());
+    
     StringReplace(absolutePathname, pathname.GetAbsolutePathname(), String(""));
 }
 
