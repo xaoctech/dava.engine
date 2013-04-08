@@ -652,6 +652,30 @@ KeyedArchive *AutotestingSystem::FindOrInsertTestStepLogEntryArchive(KeyedArchiv
     return currentTestStepLogEntryArchive;
 }
 
+void AutotestingSystem::WriteState(const String & device, const String & state)
+{
+	Logger::Debug("AutotestingSystem::WriteState device=%s state=%s", device.c_str(), state.c_str());
+
+	String documentId = Format("%u", testsDate);
+	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
+	bool isFound = dbClient->FindObjectByKey(documentId, dbUpdateObject);
+	if(!isFound)
+	{
+		dbUpdateObject->SetObjectName(documentId);
+		Logger::Debug("AutotestingSystem::WriteState new MongodbUpdateObject");
+	}
+	dbUpdateObject->LoadData();
+
+	KeyedArchive* dbUpdateData = dbUpdateObject->GetData();
+
+	Logger::Debug("AutotestingSystem::WriteState write %s", state);
+	dbUpdateData->SetString(device, state);
+	SafeRelease(dbUpdateData);
+
+	dbUpdateObject->SaveToDB(dbClient);
+	SafeRelease(dbUpdateObject);
+}
+
 String AutotestingSystem::GetCurrentTimeString()
 {
     uint64 timeAbsMs = SystemTimer::Instance()->FrameStampTimeMS();
@@ -665,6 +689,7 @@ void AutotestingSystem::OnTestStart(const String &testName)
 {
 	Logger::Debug("AutotestingSystem::OnTestStart %s", testName.c_str());
 	
+	WriteState("Master", testName);
 	// Create document for test
 	String testId = Format("Test%d", testIndex);
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
@@ -1235,6 +1260,9 @@ void AutotestingSystem::ExitApp()
         timeBeforeExit = 1.0f;
     }
 }
+
+// Multiplayer API
+
 
 // Working with DB api
 
