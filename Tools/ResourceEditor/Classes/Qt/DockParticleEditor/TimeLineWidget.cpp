@@ -17,14 +17,19 @@
 #define LOCK_WIDTH 45
 #define SCALE_WIDTH 35
 
-#define GRAPH_HEIGHT 150
-#define GRAPH_OFFSET_STEP 10
+#define GRAPH_HEIGHT			150
+#define GRAPH_OFFSET_STEP		10
 
-#define MINIMUM_DISPLAYED_TIME 0.02f
-#define ZOOM_STEP 0.1f
-#define UI_RECTANGLE_OFFSET 1.5
+#define MINIMUM_DISPLAYED_TIME	0.02f
+#define ZOOM_STEP				0.1f
+#define UI_RECTANGLE_OFFSET		1.5
 
-#define SCROLL_BAR_HEIGHT 12
+#define SCROLL_BAR_HEIGHT		12
+
+#define MIN_ZOOM				1.0f
+#define MAX_ZOOM				3.0f
+#define ZOOM_SLIDER_LENGTH		100
+
 
 TimeLineWidget::TimeLineWidget(QWidget *parent) :
 	QWidget(parent)
@@ -61,6 +66,8 @@ TimeLineWidget::TimeLineWidget(QWidget *parent) :
 
 	horizontalScrollBar = new QScrollBar(Qt::Horizontal, this);
 	connect(horizontalScrollBar, SIGNAL(sliderMoved(int)), this, SLOT(HandleHorizontalScrollChanged(int)));
+	zoomSlider = new QSlider(Qt::Horizontal, this);
+	connect(zoomSlider, SIGNAL(sliderMoved(int)), this, SLOT(HandleZoomScrollChanged(int)));
 	UpdateSizePolicy();
 
 	isCtrlPressed = false;
@@ -69,7 +76,11 @@ TimeLineWidget::TimeLineWidget(QWidget *parent) :
 
 TimeLineWidget::~TimeLineWidget()
 {
+	disconnect(horizontalScrollBar, SIGNAL(sliderMoved(int)), this, SLOT(HandleHorizontalScrollChanged(int)));
 	delete horizontalScrollBar;
+
+	disconnect(zoomSlider, SIGNAL(sliderMoved(int)), this, SLOT(HandleZoomScrollChanged(int)));
+	delete zoomSlider;
 }
 
 QString TimeLineWidget::float2QString(float32 value) const
@@ -146,7 +157,12 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 		DrawUITriangle( painter, GetMinimizeRect(), 0);
 	}
 	
+
+	//draw scroll bar
 	UpdateScrollBarPosition();
+
+	//draw slider
+	UpdateSliderPosition();
 	
 	//draw maximize box
 	{
@@ -486,6 +502,7 @@ void TimeLineWidget::Init(float32 minT, float32 maxT, bool updateSizeState, bool
 	this->scale = 1.0f;
 
 	UpdateScrollBarSlider();
+	UpdateZoomSlider();
 }
 
 void TimeLineWidget::Init(float32 minT, float32 maxT, float32 generalMinT, float32 generalMaxT, bool updateSizeState, bool aliasLinePoint, bool allowDeleteLine, bool integer)
@@ -499,6 +516,7 @@ void TimeLineWidget::Init(float32 minT, float32 maxT, float32 generalMinT, float
 	scale = (generalMaxT-generalMinT) / (maxT- minT);
 
 	UpdateScrollBarSlider();
+	UpdateZoomSlider();
 }
 
 void TimeLineWidget::SetMinLimits(float32 minV)
@@ -1273,28 +1291,29 @@ QRect TimeLineWidget::GetMinimizeRect() const
 
 QRect TimeLineWidget::GetIncreaseRect() const
 {
-	QRect rect = GetLockRect();
+	QRect rect = GetScaleRect();
 	rect.translate(-rect.width() * UI_RECTANGLE_OFFSET, 0);
 	return rect;
 }
 
 QRect TimeLineWidget::GetScaleRect() const
 {
-	QRect rect(GetIncreaseRect());
+	QRect rect(GetOffsetLeftRect());
 	rect.translate(-SCALE_WIDTH, 0);
 	return rect;
 }
 
 QRect TimeLineWidget::GetDecreaseRect() const
 {
-	QRect rect = GetScaleRect();
-	rect.translate(-rect.width() * UI_RECTANGLE_OFFSET, 0);
+	QRect rect = GetSliderRect();
+	rect.translate(-(LEGEND_WIDTH - 2) * UI_RECTANGLE_OFFSET, 0);
+	rect.setWidth(LEGEND_WIDTH - 2);
 	return rect;
 }
 
 QRect TimeLineWidget::GetOffsetRightRect() const
 {
-	QRect rect = GetDecreaseRect();
+	QRect rect = GetLockRect();
 	rect.translate(-rect.width() * UI_RECTANGLE_OFFSET, 0);
 	return rect;
 }
@@ -1313,11 +1332,35 @@ QRect TimeLineWidget::GetScrollBarRect() const
 	return rect;
 }
 
+QRect TimeLineWidget::GetSliderRect() const
+{
+	QRect rect = GetIncreaseRect();
+	rect.translate(-(ZOOM_SLIDER_LENGTH + 5), 0);
+	rect.setWidth(ZOOM_SLIDER_LENGTH);
+	return rect;
+}
+
 void TimeLineWidget::UpdateScrollBarPosition()
 {
 	QRect scrollBarRect = GetScrollBarRect();
 	horizontalScrollBar->move(scrollBarRect.x(), scrollBarRect.y());
 	horizontalScrollBar->resize(scrollBarRect.width(), scrollBarRect.height());
+}
+
+void TimeLineWidget::UpdateSliderPosition()
+{
+	QRect sliderRect = GetSliderRect();
+	zoomSlider->move(sliderRect.x(), sliderRect.y());
+	zoomSlider->resize(sliderRect.width(), sliderRect.height());
+}
+
+void TimeLineWidget::UpdateZoomSlider()
+{
+	this->zoomSlider->setPageStep(100 * (MAX_ZOOM - MIN_ZOOM));
+	this->zoomSlider->setMinimum(100 * MIN_ZOOM);
+	this->zoomSlider->setMaximum(100 * MAX_ZOOM);
+	
+	this->zoomSlider->setSliderPosition(ceil (scale * 100));
 }
 
 void TimeLineWidget::UpdateScrollBarSlider()
@@ -1357,6 +1400,7 @@ void TimeLineWidget::UpdateSizePolicy()
 			setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 			horizontalScrollBar->setEnabled(false);
 			horizontalScrollBar->setVisible(false);
+			zoomSlider->setEnabled(false);
 		} break;
 		case SIZE_STATE_NORMAL:
 		{
@@ -1365,6 +1409,8 @@ void TimeLineWidget::UpdateSizePolicy()
 			
 			horizontalScrollBar->setEnabled(true);
 			horizontalScrollBar->setVisible(true);
+
+			zoomSlider->setEnabled(true);
 		} break;
 		case SIZE_STATE_DOUBLE:
 		{
@@ -1375,6 +1421,8 @@ void TimeLineWidget::UpdateSizePolicy()
 
 			horizontalScrollBar->setEnabled(true);
 			horizontalScrollBar->setVisible(true);
+
+			zoomSlider->setEnabled(true);
 		} break;
 	}
 	
@@ -1466,11 +1514,16 @@ int32 TimeLineWidget::GetIntValue(float32 value) const
 	return (int32)(value + 0.5f * sign);
 }
 
-void TimeLineWidget::PerformZoom(float newScale)
+void TimeLineWidget::PerformZoom(float newScale, bool moveSlider)
 {
 	float currentInterval = maxTime - minTime;
 	
-	if(newScale < 1.0f || currentInterval < MINIMUM_DISPLAYED_TIME )
+	if(newScale < MIN_ZOOM || newScale > MAX_ZOOM || currentInterval < MINIMUM_DISPLAYED_TIME  )
+	{
+		return;
+	}
+
+	if( sizeState != SIZE_STATE_NORMAL )
 	{
 		return;
 	}
@@ -1495,10 +1548,20 @@ void TimeLineWidget::PerformZoom(float newScale)
 	scale = newScale;
 
 	UpdateScrollBarSlider();
+
+	if(moveSlider)
+	{
+		UpdateZoomSlider();
+	}
 }
 
 void TimeLineWidget::PerformOffset(int value,  bool moveScroll)
 {
+	if( sizeState != SIZE_STATE_NORMAL )
+	{
+		return;
+	}
+
 	//calculate new values of boundaries (in seconds) from given parametr(in pixels)
 	float pixelsPerTime = GetGraphRect().width() / (maxTime - minTime);
 	float offsetFactor =  value / pixelsPerTime ;
@@ -1624,9 +1687,13 @@ void TimeLineWidget::HandleHorizontalScrollChanged(int value)// value in milisec
 	float newMinTime = (float)value / 100;
 	int offsetFactor = (newMinTime - minTime) * pixelsPerTime ;
 	PerformOffset(offsetFactor, false);
-	/*float step = maxTime - minTime;
-	minTime = (float)value / 100;
-	maxTime = minTime + step;*/
+	this->update();
+}
+
+void TimeLineWidget::HandleZoomScrollChanged(int value)
+{
+	float newScale = (float) value / 100;
+	PerformZoom(newScale, false);
 	this->update();
 }
 
