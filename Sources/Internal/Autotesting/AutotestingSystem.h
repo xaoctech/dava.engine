@@ -81,6 +81,8 @@ public:
     
     void RunTests();
     
+	// multiplayer organization
+
 	// Test organization
 	void OnTestStart(const String &testName);
 	void OnStepStart( const String & stepName );
@@ -108,7 +110,8 @@ public:
     
 protected:
     String GetCurrentTimeString();
-    //DB
+    
+	//DB
     KeyedArchive *FindOrInsertTestArchive(MongodbUpdateObject *dbUpdateObject, const String &testId);
     KeyedArchive *FindOrInsertTestStepArchive(KeyedArchive *testArchive, const String &stepId);
     KeyedArchive *FindOrInsertTestStepLogEntryArchive(KeyedArchive *testStepArchive, const String &logId);
@@ -118,6 +121,8 @@ protected:
 
 	KeyedArchive *FindTestArchive(MongodbUpdateObject* dbUpdateObject, const String &testId);
     KeyedArchive *FindStepArchive(KeyedArchive *testArchive, const String &stepId);
+
+	void WriteState(const String & device, const String & state);
 
     bool ConnectToDB();
 //    void AddTestResult(const String &text, bool isPassed, const String & error = "");
@@ -133,7 +138,6 @@ protected:
     int32 GetIndexInFileList(FileList &fileList, int32 index);
     
     void ExitApp();
-
 
     bool isInit;
     bool isRunning;
