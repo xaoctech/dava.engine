@@ -140,7 +140,7 @@ public:
 		\return 0 if sprite is unavailable and ptr to sprite if sprite is available
 	 */	
 	static Sprite* PureCreate(const FilePath & spriteName, Sprite* forPointer = NULL); 
-    void InitFromFile(File *file, const FilePath &pathName, const FilePath &texturePathname);
+    void InitFromFile(File *file, const FilePath &pathName);
 
 	/**
 	 \brief Function to create sprite from the already created texture.
@@ -287,12 +287,12 @@ protected:
 	 \brief Removes all sprite data.
 	 */
 	void Clear();
-
 	
     static Sprite* GetSpriteFromMap(const FilePath & pathname);
     static FilePath GetScaledName(const FilePath & spriteName);
     static File* LoadLocalizedFile(const FilePath & spritePathname, FilePath & texturePath);
     
+    void ReloadSpriteTextures();
 //private:
     
     
@@ -307,7 +307,6 @@ protected:
 
 	
 	FilePath  relativePathname;
-	FilePath  relativeTexturePathname;
 	
 	Texture ** textures;
 	FilePath *textureNames;
