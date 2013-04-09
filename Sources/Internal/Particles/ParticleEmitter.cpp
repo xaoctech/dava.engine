@@ -723,14 +723,6 @@ void ParticleEmitter::UpdateLayerNameIfEmpty(ParticleLayer* layer, int32 index)
 	}
 }
 
-void ParticleEmitter::ReloadLayerSprites()
-{
-	int32 layersCount = this->GetLayers().size();
-	for (int i = 0; i < layersCount; i ++)
-	{
-		this->GetLayers()[i]->ReloadSprite();
-	}
-}
 
 void ParticleEmitter::LoadParticleLayerFromYaml(YamlNode* yamlNode, bool isLong)
 {
