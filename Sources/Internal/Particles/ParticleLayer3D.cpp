@@ -4,14 +4,16 @@
 #include "Render/Material.h"
 #include "Math/MathHelpers.h"
 #include "Render/Highlevel/Camera.h"
+#include "ParticleEmitter3D.h"
 
 namespace DAVA
 {
 
-ParticleLayer3D::ParticleLayer3D()
+ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 {
 	isLong = false;
 	renderData = new RenderDataObject();
+	this->parent = parent;
 
 	//TODO: set material from outside
 	
@@ -279,7 +281,13 @@ ParticleLayer * ParticleLayer3D::Clone(ParticleLayer * dstLayer /*= 0*/)
 {
 	if(!dstLayer)
 	{
-		dstLayer = new ParticleLayer3D();
+		ParticleEmitter* parentFor3DLayer = NULL;
+		if (dynamic_cast<ParticleLayer3D*>(dstLayer))
+		{
+			parentFor3DLayer = (dynamic_cast<ParticleLayer3D*>(dstLayer))->GetParent();
+		}
+
+		dstLayer = new ParticleLayer3D(parentFor3DLayer);
 	}
 
 	ParticleLayer::Clone(dstLayer);
