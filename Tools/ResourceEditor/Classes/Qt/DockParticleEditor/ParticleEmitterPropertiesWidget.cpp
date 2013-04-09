@@ -23,7 +23,6 @@ ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent
 	emitterTypeHBox->addWidget(new QLabel("type"));
 	emitterType = new QComboBox(this);
 	emitterType->addItem("Point");
-	emitterType->addItem("Line");
 	emitterType->addItem("Box");
 	emitterType->addItem("Sphere");
 	emitterTypeHBox->addWidget(emitterType);
