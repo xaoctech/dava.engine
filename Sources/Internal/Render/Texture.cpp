@@ -768,12 +768,6 @@ void Texture::ReloadAs(ImageFileFormat fileFormat)
 
 void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat, const TextureDescriptor *descriptor)
 {
-    if(descriptor->IsCompressedFile())
-    {
-        return;
-    }
-    
-    
     ReleaseTextureData();
 	
 	DVASSERT(NULL != descriptor);

@@ -28,6 +28,7 @@ LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, E
     }
 
     workingLandscape = NULL;
+	workingLandscapeEntity = NULL;
     workingScene = NULL;
 
     savedPath = "";
@@ -53,6 +54,7 @@ LandscapeEditorBase::~LandscapeEditorBase()
     
     SafeRelease(heightmapNode);
     SafeRetain(workingLandscape);
+	SafeRelease(workingLandscapeEntity);
     SafeRelease(workingScene);
     
     SafeRelease(fileSystemDialog);
@@ -74,6 +76,8 @@ bool LandscapeEditorBase::SetScene(EditorScene *newScene)
     SafeRelease(workingScene);
     
     workingLandscape = SafeRetain(newScene->GetLandscape(newScene));
+	workingLandscapeEntity = SafeRetain(newScene->GetLandscapeNode(newScene));
+
     if(!workingLandscape)
     {
         ShowErrorDialog(String("No landscape at level."));

@@ -250,7 +250,7 @@ bool FileSystem::MoveFile(const String & existingFile, const String & newFile, b
 #else //iphone & macos
 
 	int flags = COPYFILE_ALL | COPYFILE_MOVE;
-	if(overwriteExisting)
+	if(!overwriteExisting)
 		flags |= COPYFILE_EXCL;
 	
 	int ret = copyfile(existingFile.c_str(), newFile.c_str(), NULL, flags); //

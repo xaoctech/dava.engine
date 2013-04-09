@@ -6,7 +6,7 @@
 class Command;
 class CommandsManager: public DAVA::Singleton<CommandsManager>
 {
-    static const DAVA::int32 UNDO_QUEUE_SIZE = 50;
+    static const DAVA::int32 UNDO_QUEUE_SIZE = 10;
     
 public:	
 	CommandsManager();

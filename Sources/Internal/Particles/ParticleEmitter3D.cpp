@@ -1,6 +1,5 @@
 #include "Particles/ParticleEmitter3D.h"
 #include "Particles/ParticleLayer3D.h"
-#include "Particles/ParticleLayerLong.h"
 #include "Render/Highlevel/Camera.h"
 #include "Utils/Random.h"
 
@@ -176,15 +175,8 @@ void ParticleEmitter3D::PrepareEmitterParameters(Particle * particle, float32 ve
 
 void ParticleEmitter3D::LoadParticleLayerFromYaml(YamlNode* yamlNode, bool isLong)
 {
-	ParticleLayer* layer = NULL;
-	 if (isLong)
-	 {
-		 layer = new ParticleLayerLong();
-	 }
-	 else
-	 {
-		 layer = new ParticleLayer3D();
-	 }
+	ParticleLayer3D* layer = new ParticleLayer3D();
+	layer->SetLong(isLong);
 
 	AddLayer(layer);
 	layer->LoadFromYaml(configPath, yamlNode);

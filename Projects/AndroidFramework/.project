@@ -1487,16 +1487,6 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Particles/ParticleLayer3D.h</locationURI>
 		</link>
 		<link>
-			<name>src/Internal/Particles/ParticleLayerLong.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Particles/ParticleLayerLong.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Particles/ParticleLayerLong.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Particles/ParticleLayerLong.h</locationURI>
-		</link>
-		<link>
 			<name>src/Internal/Particles/ParticlePropertyLine.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Particles/ParticlePropertyLine.cpp</locationURI>
@@ -4160,16 +4150,6 @@
 			<name>bin/classes/Internal/Particles/ParticleLayer3D.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Particles/ParticleLayer3D.h</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Particles/ParticleLayerLong.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Particles/ParticleLayerLong.cpp</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Particles/ParticleLayerLong.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Particles/ParticleLayerLong.h</locationURI>
 		</link>
 		<link>
 			<name>bin/classes/Internal/Particles/ParticlePropertyLine.cpp</name>

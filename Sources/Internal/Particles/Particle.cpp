@@ -113,7 +113,7 @@ void Particle::Draw()
 	RenderManager::Instance()->SetColor(drawColor.r, drawColor.g, drawColor.b, drawColor.a);
 	sprite->SetAngle(angle);
 	sprite->SetPosition(position.x, position.y);
-	sprite->SetScale(size.x * sizeOverLife, size.y * sizeOverLife);
+	sprite->SetScale(size.x * sizeOverLife.x, size.y * sizeOverLife.y);
 	sprite->SetFrame(frame);
 	sprite->Draw();
 }
