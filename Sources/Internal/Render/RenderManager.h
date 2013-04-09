@@ -51,6 +51,19 @@ namespace DAVA
 class Texture;
 class Shader;
 class RenderState;
+
+class Image;
+struct ScreenShotCallbackDelegate
+{
+    void operator()(Image *image)
+    {
+        return OnScreenShot(image);
+    }
+
+protected:
+    virtual void OnScreenShot(Image *image) = 0;
+
+};
 /** 
 	\ingroup render
 	\brief Main class that implements rendering abstraction layer.
@@ -510,7 +523,7 @@ public:
     int32 lastBindedFBO;
 #endif //#if defined(__DAVAENGINE_OPENGL__)
     
-    void RequestGLScreenShot() { needGLScreenShot = true; };
+    void RequestGLScreenShot(ScreenShotCallbackDelegate *screenShotCallback);
 
 	
 protected:
@@ -697,7 +710,7 @@ protected:
 	Cursor * cursor;
     
     bool needGLScreenShot;
-    int32 screenShotIndex;
+    ScreenShotCallbackDelegate *screenShotCallback;
     void MakeGLScreenShot();
 };
 

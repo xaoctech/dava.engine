@@ -52,8 +52,8 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
 :   renderer(_renderer),
     currentState(),
     hardwareState(),
-    needGLScreenShot(false),
-    screenShotIndex(0)
+	screenShotCallback(NULL),
+    needGLScreenShot(false)
 {
 //	Logger::Debug("[RenderManager] created");
 
@@ -168,6 +168,12 @@ void RenderManager::SetDebug(bool isDebugEnabled)
 bool RenderManager::IsInsideDraw()
 {
 	return isInsideDraw;
+}
+
+void RenderManager::RequestGLScreenShot(ScreenShotCallbackDelegate *callback)
+{ 
+	screenShotCallback = callback;
+	needGLScreenShot = true; 
 }
     
 #ifdef __DAVAENGINE_ANDROID__    
