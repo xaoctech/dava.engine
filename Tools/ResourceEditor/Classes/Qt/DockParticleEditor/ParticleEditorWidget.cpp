@@ -97,6 +97,8 @@ void ParticleEditorWidget::OnEmitterSelected(Entity* emitterNode, BaseParticleEd
 		int32 scrollValue = stateProps->GetInt32("EDITOR_SCROLL_VALUE", 0);
 		verticalScrollBar()->setValue(scrollValue);
 	}
+
+	UpdateVisibleTimelines();
 }
 
 void ParticleEditorWidget::OnLayerSelected(Entity* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode, bool forceRefresh)
@@ -145,6 +147,8 @@ void ParticleEditorWidget::OnLayerSelected(Entity* emitterNode, ParticleLayer* l
 		int32 scrollValue = stateProps->GetInt32("EDITOR_SCROLL_VALUE", 0);
 		verticalScrollBar()->setValue(scrollValue);
 	}
+
+	UpdateVisibleTimelines();
 }
 
 void ParticleEditorWidget::OnForceSelected(Entity* emitterNode, ParticleLayer* layer, int32 forceIndex, BaseParticleEditorNode* editorNode)
@@ -193,6 +197,8 @@ void ParticleEditorWidget::OnForceSelected(Entity* emitterNode, ParticleLayer* l
 		int32 scrollValue = stateProps->GetInt32("EDITOR_SCROLL_VALUE", 0);
 		verticalScrollBar()->setValue(scrollValue);
 	}
+
+	UpdateVisibleTimelines();
 }
 
 void ParticleEditorWidget::OnNodeDeselected(BaseParticleEditorNode* particleEditorNode)
@@ -225,4 +231,50 @@ void ParticleEditorWidget::OnUpdate()
 void ParticleEditorWidget::OnValueChanged()
 {
 	emit ValueChanged();
+	
+	// Update the visible timelines when the value on the emitter layer is changed.
+	UpdateVisibleTimelines();
+}
+
+void ParticleEditorWidget::UpdateVisibleTimelines()
+{
+	if (emitterPropertiesWidget && emitterPropertiesWidget->GetEmitter())
+	{
+		UpdateVisibleTimelinesForParticleEmitter();
+	}
+}
+
+void ParticleEditorWidget::UpdateVisibleTimelinesForParticleEmitter()
+{
+	// Safety check.
+	if (!emitterPropertiesWidget || !emitterPropertiesWidget->GetEmitter())
+	{
+		return;
+	}
+
+	// Update the visibility of particular timelines based on the emitter type.
+	bool radiusTimeLineVisible = false;
+	bool sizeTimeLineVisible = false;
+	switch (emitterPropertiesWidget->GetEmitter()->emitterType)
+	{
+		case DAVA::ParticleEmitter::EMITTER_ONCIRCLE:
+		{
+			radiusTimeLineVisible = true;
+			break;
+		}
+			
+		case DAVA::ParticleEmitter::EMITTER_RECT:
+		case DAVA::ParticleEmitter::EMITTER_LINE:
+		{
+			sizeTimeLineVisible = true;
+		}
+		
+		default:
+		{
+			break;
+		}
+	}
+	
+	emitterPropertiesWidget->GetEmitterRadiusTimeline()->setVisible(radiusTimeLineVisible);
+	emitterPropertiesWidget->GetEmitterSizeTimeline()->setVisible(sizeTimeLineVisible);
 }

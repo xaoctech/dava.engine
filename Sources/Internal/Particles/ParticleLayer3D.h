@@ -27,7 +27,17 @@ public:
 	
 	virtual void SetAdditive(bool additive);
 
+	// Whether this layer should be drawn as "long" one?
+	virtual bool IsLong();
+	virtual void SetLong(bool value);
+
 protected:
+	// Draw methods for generic and long emitters.
+	void DrawLayerNonLong(Camera * camera);
+	void DrawLayerLong(Camera * camera);
+
+	bool isLong;
+
 	RenderDataObject * renderData;
 	Vector<float32> verts;
 	Vector<float32> textures;

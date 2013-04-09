@@ -1,5 +1,5 @@
 #include "DeviceInfoTest.h"
-#include "Utils/DeviceInfo.h"
+#include "Platform/DeviceInfo.h"
 
 DeviceInfoTest::DeviceInfoTest()
 :	TestTemplate<DeviceInfoTest>("DeviceInfoTest")

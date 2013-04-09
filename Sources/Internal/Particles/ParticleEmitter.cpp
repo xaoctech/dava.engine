@@ -31,7 +31,6 @@
 #include "Particles/Particle.h"
 #include "Particles/ParticleLayer.h"
 #include "Particles/ParticleLayer3D.h"
-#include "Particles/ParticleLayerLong.h"
 #include "Render/RenderManager.h"
 #include "Utils/Random.h"
 #include "Utils/StringFormat.h"
@@ -49,6 +48,8 @@ ParticleEmitter::ParticleEmitter()
 {
 	type = TYPE_PARTICLE_EMTITTER;
 	Cleanup(false);
+
+	bbox = AABBox3(Vector3(), Vector3());
 }
 
 ParticleEmitter::~ParticleEmitter()
@@ -145,7 +146,7 @@ void ParticleEmitter::Save(KeyedArchive *archive, SceneFileV2 *sceneFile)
 
 	if(NULL != archive)
 	{
-        String filename = FileSystem::Instance()->AbsoluteToRelativePath(sceneFile->GetScenePath(), configPath);
+		String filename = FileSystem::Instance()->AbsoluteToRelativePath(FileSystem::Instance()->GetCanonicalPath(sceneFile->GetScenePath()), FileSystem::Instance()->GetCanonicalPath(configPath));
 		archive->SetString("pe.configpath", filename);
 	}
 }
@@ -161,6 +162,16 @@ void ParticleEmitter::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
             String filename = archive->GetString("pe.configpath");
             String sceneFilePath = FileSystem::Instance()->SystemPathForFrameworkPath(sceneFile->GetScenePath());
             configPath = FileSystem::Instance()->GetCanonicalPath(sceneFilePath + filename);
+
+#if defined (__DAVAENGINE_ANDROID__)
+            String systemPath = FileSystem::Instance()->SystemPathForFrameworkPath("~res:/");
+            String::size_type pos = configPath.find(systemPath);
+            if(pos == 0)
+            {
+                configPath = configPath.replace(pos, systemPath.length(), "~res:/");
+            }
+#endif //#if defined (__DAVAENGINE_ANDROID__)
+            
 			LoadFromYaml(configPath);
 		}
 	}
@@ -709,14 +720,6 @@ void ParticleEmitter::UpdateLayerNameIfEmpty(ParticleLayer* layer, int32 index)
 	}
 }
 
-void ParticleEmitter::ReloadLayerSprites()
-{
-	int32 layersCount = this->GetLayers().size();
-	for (int i = 0; i < layersCount; i ++)
-	{
-		this->GetLayers()[i]->ReloadSprite();
-	}
-}
 
 void ParticleEmitter::LoadParticleLayerFromYaml(YamlNode* yamlNode, bool isLong)
 {

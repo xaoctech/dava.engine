@@ -101,6 +101,7 @@ protected:
 
     HeightmapNode *heightmapNode;
     Landscape *workingLandscape;
+	Entity *workingLandscapeEntity;
 
     LandscapeTool *currentTool;
 

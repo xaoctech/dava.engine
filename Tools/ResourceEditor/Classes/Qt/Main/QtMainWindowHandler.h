@@ -64,6 +64,11 @@ public:
 	void RegisterSetSwitchIndexWidgets(QSpinBox*, QRadioButton*, QRadioButton*, QPushButton*);
     void SetSwitchIndexWidgetsState(bool state);
 
+	//material view options
+	void RegisterMaterialViewOptionsWidgets(QComboBox*);
+	void SetMaterialViewOptionsWidgetsState(bool state);
+	void SelectMaterialViewOption(Material::eViewOptions value);
+
 	//hanging objects
 	void RegisterHangingObjectsWidgets(QCheckBox*, QDoubleSpinBox*, QPushButton*);
     void SetHangingObjectsWidgetsState(bool state);
@@ -95,6 +100,7 @@ public slots:
 	//Edit
 	void UndoAction();
 	void RedoAction();
+	void ConvertToShadow();
 
     //View
     void RestoreViews();
@@ -122,6 +128,9 @@ public slots:
     
 	//set switch index
 	void ToggleSetSwitchIndex(DAVA::uint32  value, DAVA::SetSwitchIndexHelper::eSET_SWITCH_INDEX state);
+
+	//material view options
+	void MaterialViewOptionChanged(int index);
 
 	//hanging objects
 	void ToggleHangingObjects(float value, bool isEnabled);
@@ -184,6 +193,9 @@ private:
 	QSpinBox*		editSwitchIndexValue;
 	QRadioButton*	rBtnSelection;
 	QRadioButton*	rBtnScene;
+
+	//material view options
+	QComboBox* comboMaterialViewOption;
 
 	//hanging objects
 	QPushButton*	hangingObjectsToggleButton;

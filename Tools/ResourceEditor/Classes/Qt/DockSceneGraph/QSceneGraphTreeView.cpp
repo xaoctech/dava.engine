@@ -8,6 +8,9 @@
 #include "../Commands/SceneGraphCommands.h"
 #include "../Commands/LibraryCommands.h"
 
+#include "../Scene/SceneDataManager.h"
+#include "../Scene/SceneData.h"
+
 #include "SceneGraphModel.h"
 
 #include <QKeyEvent>
@@ -174,13 +177,17 @@ void QSceneGraphTreeView::ShowSceneGraphMenu(const QModelIndex &index, const QPo
 		Entity *node = static_cast<Entity *>(sceneGraphModel->ItemData(index));
 		if (node)
 		{
-			KeyedArchive *properties = node->GetCustomProperties();
-			if (properties && properties->IsKeyExists(String("editor.referenceToOwner")))
-			{
-				String filePathname = properties->GetString(String("editor.referenceToOwner"));
-				AddActionToMenu(&menu, QString("Edit Model"), new CommandEditScene(filePathname));
-				AddActionToMenu(&menu, QString("Reload Model"), new CommandReloadScene(filePathname));
-			}
+            SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+            if(node->GetParent() == activeScene->GetScene())
+            {
+                KeyedArchive *properties = node->GetCustomProperties();
+                if (properties && properties->IsKeyExists(String("editor.referenceToOwner")))
+                {
+                    String filePathname = properties->GetString(String("editor.referenceToOwner"));
+                    AddActionToMenu(&menu, QString("Edit Model"), new CommandEditScene(filePathname));
+                    AddActionToMenu(&menu, QString("Reload Model"), new CommandReloadScene(filePathname));
+                }
+            }
 		}
 	}
 	

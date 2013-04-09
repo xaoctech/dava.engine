@@ -40,12 +40,11 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	new QtMainWindowHandler(this);
 
 	ui->setupUi(this);
-	ui->davaGLWidget->setFocus();
  
     qApp->installEventFilter(this);
 	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + "EditorConfig.yaml");
 
-	QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->davaGLWidget);
+	QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->sceneTabWidget);
 	QtMainWindowHandler::Instance()->SetResentMenu(ui->menuFile);
 	QtMainWindowHandler::Instance()->RegisterStatusBar(ui->statusBar);
 	QtMainWindowHandler::Instance()->RestoreDefaultFocus();
@@ -113,6 +112,9 @@ void QtMainWindow::SetupActions()
 	connect(ui->actionRulerTool, SIGNAL(triggered()), actionHandler, SLOT(RulerTool()));
 	connect(ui->actionShowSettings, SIGNAL(triggered()), actionHandler, SLOT(ShowSettings()));
 	connect(ui->actionBeast, SIGNAL(triggered()), actionHandler, SLOT(Beast()));
+
+	//Edit
+	connect(ui->actionConvertToShadow, SIGNAL(triggered()), actionHandler, SLOT(ConvertToShadow()));
 }
 
 void QtMainWindow::SetupMainMenu()

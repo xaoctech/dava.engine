@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1065</width>
-    <height>660</height>
+    <height>703</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -40,17 +40,13 @@
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
     <property name="spacing">
-     <number>1</number>
+     <number>0</number>
     </property>
     <property name="margin">
      <number>0</number>
     </property>
     <item>
-     <widget class="DavaGLWidget" name="davaGLWidget" native="true">
-      <property name="focusPolicy">
-       <enum>Qt::StrongFocus</enum>
-      </property>
-     </widget>
+     <widget class="SceneTabWidget" name="sceneTabWidget" native="true"/>
     </item>
    </layout>
   </widget>
@@ -277,56 +273,35 @@
    </attribute>
    <widget class="QWidget" name="propertiesBody">
     <layout class="QVBoxLayout" name="verticalLayout_5">
+     <property name="spacing">
+      <number>3</number>
+     </property>
      <property name="margin">
       <number>0</number>
      </property>
      <item>
-      <widget class="QFrame" name="frameProperties">
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
+      <widget class="QToolBar" name="propertiesToolBar">
+       <property name="iconSize">
+        <size>
+         <width>16</width>
+         <height>16</height>
+        </size>
        </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonIconOnly</enum>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_6">
-        <property name="spacing">
-         <number>6</number>
-        </property>
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
-         <number>3</number>
-        </property>
-        <item>
-         <widget class="QToolBar" name="propertiesToolBar">
-          <property name="iconSize">
-           <size>
-            <width>16</width>
-            <height>16</height>
-           </size>
-          </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonIconOnly</enum>
-          </property>
-          <addaction name="actionShowAdvancedProp"/>
-          <addaction name="actionAddNewComponent"/>
-          <addaction name="actionRemoveComponent"/>
-         </widget>
-        </item>
-        <item>
-         <widget class="PropertyEditor" name="propertyEditor">
-          <property name="mouseTracking">
-           <bool>false</bool>
-          </property>
-          <property name="styleSheet">
-           <string notr="true"> QTreeView::branch:has-children:!has-siblings:closed,
+       <addaction name="actionShowAdvancedProp"/>
+       <addaction name="actionAddNewComponent"/>
+       <addaction name="actionRemoveComponent"/>
+      </widget>
+     </item>
+     <item>
+      <widget class="PropertyEditor" name="propertyEditor">
+       <property name="mouseTracking">
+        <bool>false</bool>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"> QTreeView::branch:has-children:!has-siblings:closed,
  QTreeView::branch:closed:has-children:has-siblings {
          border-image: none;
          image: url(:/QtImages/tree-closed.png);
@@ -338,22 +313,19 @@
          image: url(:/QtImages/tree-open.png);
  }
 </string>
-          </property>
-          <property name="editTriggers">
-           <set>QAbstractItemView::AllEditTriggers</set>
-          </property>
-          <property name="alternatingRowColors">
-           <bool>true</bool>
-          </property>
-          <property name="selectionMode">
-           <enum>QAbstractItemView::SingleSelection</enum>
-          </property>
-          <property name="indentation">
-           <number>16</number>
-          </property>
-         </widget>
-        </item>
-       </layout>
+       </property>
+       <property name="editTriggers">
+        <set>QAbstractItemView::AllEditTriggers</set>
+       </property>
+       <property name="alternatingRowColors">
+        <bool>true</bool>
+       </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::SingleSelection</enum>
+       </property>
+       <property name="indentation">
+        <number>16</number>
+       </property>
       </widget>
      </item>
     </layout>
@@ -581,6 +553,8 @@
     <addaction name="separator"/>
     <addaction name="actionModifyPlaceOnLandscape"/>
     <addaction name="actionModifySnapToLandscape"/>
+    <addaction name="separator"/>
+    <addaction name="actionConvertToShadow"/>
    </widget>
    <widget class="QMenu" name="menuComponent">
     <property name="title">
@@ -795,6 +769,32 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QDockWidget" name="dockWidget">
+   <property name="windowTitle">
+    <string>Material View Options</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_5">
+    <property name="maximumSize">
+     <size>
+      <width>16777215</width>
+      <height>70</height>
+     </size>
+    </property>
+    <widget class="MaterialViewOptions" name="widget" native="true">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>251</width>
+       <height>41</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+  </widget>
   <action name="actionNewScene">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
@@ -1067,6 +1067,9 @@
    <property name="text">
     <string>Move</string>
    </property>
+   <property name="shortcut">
+    <string>Q</string>
+   </property>
   </action>
   <action name="actionModifyRotate">
    <property name="checkable">
@@ -1079,6 +1082,9 @@
    <property name="text">
     <string>Rotate</string>
    </property>
+   <property name="shortcut">
+    <string>E</string>
+   </property>
   </action>
   <action name="actionModifyScale">
    <property name="checkable">
@@ -1090,6 +1096,9 @@
    </property>
    <property name="text">
     <string>Scale</string>
+   </property>
+   <property name="shortcut">
+    <string>R</string>
    </property>
   </action>
   <action name="actionModifyPlaceOnLandscape">
@@ -1260,15 +1269,21 @@
     <string>Remove component</string>
    </property>
   </action>
+  <action name="actionConvertToShadow">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/shadow.png</normaloff>:/QtIcons/shadow.png</iconset>
+   </property>
+   <property name="text">
+    <string>Convert to shadow</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+C</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
-  <customwidget>
-   <class>DavaGLWidget</class>
-   <extends>QWidget</extends>
-   <header>Main/davaglwidget.h</header>
-   <container>1</container>
-  </customwidget>
   <customwidget>
    <class>QSceneGraphTreeView</class>
    <extends>QTreeView</extends>
@@ -1316,6 +1331,17 @@
    <class>HangingObjectsView</class>
    <extends>QWidget</extends>
    <header>DockHangingObjects/HangingObjectsView.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MaterialViewOptions</class>
+   <extends>QWidget</extends>
+   <header>DockMaterialViewOptions/materialviewoptions.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SceneTabWidget</class>
+   <extends>QWidget</extends>
+   <header>Scene/scenetabwidget.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>
