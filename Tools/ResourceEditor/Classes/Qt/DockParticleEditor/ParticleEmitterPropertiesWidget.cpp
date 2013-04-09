@@ -24,8 +24,8 @@ ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent
 	emitterType = new QComboBox(this);
 	emitterType->addItem("Point");
 	emitterType->addItem("Line");
-	emitterType->addItem("Rect");
-	emitterType->addItem("Oncircle");
+	emitterType->addItem("Box");
+	emitterType->addItem("Sphere");
 	emitterTypeHBox->addWidget(emitterType);
 	mainLayout->addLayout(emitterTypeHBox);
 	connect(emitterType, SIGNAL(currentIndexChanged(int)), this, SLOT(OnValueChanged()));
