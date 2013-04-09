@@ -736,6 +736,23 @@ void AutotestingSystem::Log(const String &level, const String &message)
 	SafeRelease(dbUpdateObject);
 }
 
+void AutotestingSystem::SaveScreenShotNameToDB()
+{
+	Logger::Debug("AutotestingSystem::SaveScreenShotNameToDB %s", screenShotName.c_str());
+	
+	String testId = Format("Test%d", testIndex);
+	String stepId = Format("Step%d", stepIndex);
+
+	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
+	KeyedArchive* currentTestArchive = FindOrInsertTestArchive(dbUpdateObject, testId);//FindTestArchive(dbUpdateObject, testId);
+	KeyedArchive* currentStepArchive = FindOrInsertTestStepArchive(currentTestArchive, stepId); //FindStepArchive(currentTestArchive, stepId);
+
+	currentStepArchive->SetString("screenshot", screenShotName);
+
+	dbUpdateObject->SaveToDB(dbClient);
+	SafeRelease(dbUpdateObject);
+}
+
 void AutotestingSystem::OnStepFinished()
 {
 	Logger::Debug("AutotestingSystem::OnStepFinished");
@@ -1126,6 +1143,7 @@ void AutotestingSystem::OnError(const String & errorMessage)
     //SaveTestStepLogEntryToDB("ERROR", GetCurrentTimeString(), errorMessage);
 
 	MakeScreenShot();
+	SaveScreenShotNameToDB();
     
 	String exitOnErrorMsg = Format("EXIT %s OnError %s", testName.c_str(), errorMessage.c_str());
 	if(reportFile)
@@ -1144,6 +1162,8 @@ void AutotestingSystem::MakeScreenShot()
     uint16 minutes = (timeAbsMs/60000)%60;
     uint16 seconds = (timeAbsMs/1000)%60;
 	screenShotName = Format("%s_%s_%02d_%02d_%02d", AUTOTESTING_PLATFORM_NAME, groupName.c_str(), hours, minutes, seconds);
+	SaveScreenShotNameToDB();
+
 	RenderManager::Instance()->RequestGLScreenShot(this);
 }
 

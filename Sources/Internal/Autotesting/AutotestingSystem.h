@@ -132,6 +132,7 @@ protected:
 //    void SaveTestToDB();
     void SaveTestStepToDB(const String &stepDescription, bool isPassed, const String &error = "");
     void SaveTestStepLogEntryToDB(const String &type, const String &time, const String &message);
+	void SaveScreenShotNameToDB();
 
     String ReadMasterIDFromDB(); //TODO: get first available master
     
