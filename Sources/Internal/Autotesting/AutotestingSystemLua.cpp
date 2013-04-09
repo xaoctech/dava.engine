@@ -105,11 +105,7 @@ void AutotestingSystemLua::InitFromFile(const String &luaFilePath)
         
         if(isOk)
         {
-            //TODO: get test name (the name of function)
-            String path;
-            String filename;
-            FileSystem::Instance()->SplitPath(luaFilePath, path, filename);
-            AutotestingSystem::Instance()->Init(filename);
+            AutotestingSystem::Instance()->OnInit();
         }
         else
         {
