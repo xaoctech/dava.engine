@@ -50,6 +50,7 @@ protected:
 
 	QLineEdit *keyWidget;
 	QComboBox *valueWidget;
+	QComboBox *presetWidget;
 	QPushButton *defaultBtn;
 
 	virtual void showEvent(QShowEvent * event);

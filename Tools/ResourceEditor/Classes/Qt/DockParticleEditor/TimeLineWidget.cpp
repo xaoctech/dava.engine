@@ -33,6 +33,8 @@ TimeLineWidget::TimeLineWidget(QWidget *parent) :
 	maxValueLimit = std::numeric_limits<float32>::infinity();
 	minTime = 0.0;
 	maxTime = 1;
+	generalMinTime = minTime;
+	generalMaxTime = maxTime;
 	initialTimeInterval = 1;
 	
 	backgroundBrush.setColor(Qt::white);
@@ -68,9 +70,9 @@ TimeLineWidget::~TimeLineWidget()
 QString TimeLineWidget::float2QString(float32 value) const
 {
 	QString strValue;
-	if (value < 10)
+	if (fabs(value) < 10)
 		strValue = "%.2f";
-	else if (value < 100)
+	else if (fabs(value) < 100)
 		strValue = "%.1f";
 	else
 		strValue = "%.0f";
@@ -104,7 +106,10 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 			QString legend = iter->second.legend;
 				
 			painter.setPen(iter->second.color);
-			painter.drawText(rect(), Qt::AlignCenter, legend);
+			
+			QRect textRect = rect();
+			textRect.adjust(3, 0, 0, 0);
+			painter.drawText(textRect, Qt::AlignLeft, legend);
 		}
 		else
 		{
@@ -276,14 +281,19 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 			
 			if (gridStyle == GRID_STYLE_LIMITS)
 			{
-				QRect textRect;
-				textRect = QRect(1, graphRect.top(), graphRect.left(), graphRect.height());
-				painter.drawText(textRect, Qt::AlignTop | Qt::AlignHCenter, float2QString(maxValue));
-				painter.drawText(textRect, Qt::AlignBottom | Qt::AlignHCenter, float2QString(minValue));
+				// Draw Y axe legend.
+				QRect textRect = QRect(1, graphRect.top(), graphRect.left(), graphRect.height());
+				QString value = QString("%1%2").arg(float2QString(minValue)).arg(yLegendMark);
+				painter.drawText(textRect, Qt::AlignBottom | Qt::AlignHCenter, value);
+				value = QString("%1%2").arg(float2QString(maxValue)).arg(yLegendMark);
+				painter.drawText(textRect, Qt::AlignTop | Qt::AlignHCenter, value);
 
+				// Draw X axe legend.
 				textRect = QRect(graphRect.left(), graphRect.bottom() + 1, graphRect.width(), LEGEND_WIDTH);
-				painter.drawText(textRect, Qt::AlignLeft | Qt::AlignTop, float2QString(minTime));
-				painter.drawText(textRect, Qt::AlignRight | Qt::AlignTop, float2QString(maxTime));
+				value = QString("%1%2").arg(float2QString(minTime)).arg(xLegendMark);
+				painter.drawText(textRect, Qt::AlignLeft | Qt::AlignTop, value);
+				value = QString("%1%2").arg(float2QString(maxTime)).arg(xLegendMark);
+				painter.drawText(textRect, Qt::AlignRight | Qt::AlignTop, value);
 			}
 		}
 		
@@ -341,7 +351,14 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 void TimeLineWidget::DrawLine(QPainter* painter, uint32 lineId)
 {
 	if (lines[lineId].line.size() == 0)
+	{
 		return;
+	}
+
+	if (FLOAT_EQUAL(generalMaxTime, generalMinTime))//in case of zero life time
+	{
+		return;
+	}
 
 	QBrush pointBrush;
 	pointBrush.setColor(lines[lineId].color);
@@ -414,8 +431,6 @@ QPoint TimeLineWidget::GetDrawPoint(const Vector2& point) const
 	QRect graphRect = GetGraphRect();
 	float x = graphRect.x() + graphRect.width() * (point.x - minTime) / time;
 
-	float rectSize =graphRect.x() + graphRect.width();
-
 	float y = graphRect.bottom() - graphRect.height() * (point.y - minValue) / value;
 	
 	return QPoint(x, y);
@@ -454,12 +469,26 @@ void TimeLineWidget::Init(float32 minT, float32 maxT, bool updateSizeState, bool
 
 	this->minTime = minT;
 	this->maxTime = maxT;
-	this->initialTimeInterval = maxTime - minTime;
+	this->generalMinTime = minT;
+	this->generalMaxTime = maxT;
+	this->initialTimeInterval = generalMaxTime - generalMinTime;
 	this->updateSizeState = updateSizeState;
 	this->aliasLinePoint = aliasLinePoint;
 	this->allowDeleteLine = allowDeleteLine;
 
 	this->isInteger = integer;
+	this->scale = 1.0f;
+}
+
+void TimeLineWidget::Init(float32 minT, float32 maxT, float32 generalMinT, float32 generalMaxT, bool updateSizeState, bool aliasLinePoint, bool allowDeleteLine, bool integer)
+{
+	Init(minT, maxT, updateSizeState, aliasLinePoint, allowDeleteLine, integer);
+	this->minTime = minT;
+	this->maxTime = maxT;
+	this->generalMinTime = generalMinT;
+	this->generalMaxTime = generalMaxT;
+	this->initialTimeInterval = generalMaxTime - generalMinTime;
+	scale = (generalMaxT-generalMinT) / (maxT- minT);
 }
 
 void TimeLineWidget::SetMinLimits(float32 minV)
@@ -577,6 +606,9 @@ void TimeLineWidget::UpdateLimits()
 		{
 			newMaxValue = Max(iter->second.line[i].y, newMaxValue);
 			newMinValue = Min(iter->second.line[i].y, newMinValue);
+/*
+			maxTime = Max(iter->second.line[i].x, maxTime);
+			minTime = Min(iter->second.line[i].x, minTime);*/
 		}
 	}
 	
@@ -1083,7 +1115,7 @@ void TimeLineWidget::SetPointValue(uint32 lineId, uint32 pointId, Vector2 value,
 			float x1 = lines[lineId].line[i - 1].x;
 			float x2 = lines[lineId].line[i].x;
 			
-			if ((x2 - x1) < (maxTime - minTime) * 0.01)
+			if ((x2 - x1) < (maxTime - minTime) * 0.001)
 			{
 				if (i < lines[lineId].line.size() - 1)
 				{
@@ -1390,21 +1422,31 @@ int32 TimeLineWidget::GetIntValue(float32 value) const
 
 void TimeLineWidget::PerformZoom(float newScale)
 {
-	if(newScale < 0 || FLOAT_EQUAL(newScale, 0.0f))
+	float currentInterval = maxTime - minTime;
+	
+	if(newScale < 1.0f || currentInterval < MINIMUM_DISPLAYED_TIME )
 	{
 		return;
 	}
 
-	float interval = maxTime - minTime;
+	float currentCenter =  minTime + currentInterval / 2;
+	float newInterval = initialTimeInterval / newScale;
 	
-	if( interval > MINIMUM_DISPLAYED_TIME && interval < std::numeric_limits<int>::max() ) 
+	minTime = currentCenter - (newInterval / 2);
+	maxTime = currentCenter + (newInterval / 2);
+	
+	if(minTime < generalMinTime)
 	{
-		float oldCenter =  minTime + interval / 2;
-		interval = initialTimeInterval / newScale;
-		minTime = oldCenter - (interval / 2);
-		maxTime = oldCenter + (interval / 2);
-		scale = newScale;
+		minTime = generalMinTime;
+		maxTime = minTime + newInterval;
 	}
+	if(maxTime > generalMaxTime)
+	{
+		minTime = generalMaxTime - newInterval;
+		maxTime = generalMaxTime;
+	}
+	
+	scale = newScale;
 }
 
 void TimeLineWidget::PerformOffset(int value)
@@ -1413,6 +1455,19 @@ void TimeLineWidget::PerformOffset(int value)
 	float pixelsPerTime = GetGraphRect().width() / (maxTime - minTime);
 	float offsetFactor =  value / pixelsPerTime ;
 	
+	float newMinTime = minTime + offsetFactor;
+	
+	if(newMinTime < generalMinTime)
+	{
+		offsetFactor = (minTime - generalMinTime)*(-1.0f);
+	}
+	
+	float newMaxTime = maxTime + offsetFactor;
+	if(newMaxTime > generalMaxTime)
+	{
+		offsetFactor = generalMaxTime - maxTime;
+	}
+
 	maxTime += offsetFactor;
 	minTime += offsetFactor;
 }
@@ -1497,6 +1552,17 @@ TimeLineWidget::ePositionRelativelyToDrawRect TimeLineWidget::GetPointPositionFr
 		return POSITION_RIGHT;
 	}
 	return TimeLineWidget::POSITION_INSIDE;
+}
+
+// Add the mark to X/Y legend values (like 'deg' or 'pts').
+void TimeLineWidget::SetXLegendMark(const QString& value)
+{
+	this->xLegendMark = value;
+}
+
+void TimeLineWidget::SetYLegendMark(const QString& value)
+{
+	this->yLegendMark = value;
 }
 
 SetPointValueDlg::SetPointValueDlg(float32 time, float32 minTime, float32 maxTime, float32 value, float32 minValue, float32 maxValue, QWidget *parent, bool integer):
@@ -1585,3 +1651,4 @@ float32 SetPointValueDlg::GetValue() const
 
 	return valueSpin->value();
 }
+

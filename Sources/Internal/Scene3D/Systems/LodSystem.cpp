@@ -65,10 +65,14 @@ void LodSystem::UpdateEntityAfterLoad(Entity * entity)
 		size_t size = ld.indexes.size();
 		for (size_t idx = 0; idx < size; ++idx)
 		{
-			Entity * childEntity = entity->GetChild(ld.indexes[idx]);
-			ld.nodes.push_back(childEntity);
+			int32 desiredIndex = ld.indexes[idx];
+			if(desiredIndex < entity->GetChildrenCount())
 			{
-				childEntity->SetLodVisible(false);
+				Entity * childEntity = entity->GetChild(desiredIndex);
+				ld.nodes.push_back(childEntity);
+				{
+					childEntity->SetLodVisible(false);
+				}
 			}
 		}
 	}

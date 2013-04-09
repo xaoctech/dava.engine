@@ -20,8 +20,6 @@
 		17F53E3516D3705E004D5099 /* WebViewControliOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17F53E3316D3705E004D5099 /* WebViewControliOS.mm */; };
 		496526D0167F173400107C70 /* libdxt_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 496526CF167F173400107C70 /* libdxt_ios.a */; };
 		497BF6E216F751ED00AC57C6 /* DeviceInfoiOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 497BF6E116F751ED00AC57C6 /* DeviceInfoiOS.mm */; };
-		49FDCEA016F3256D00889E47 /* DeviceInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 49FDCE9D16F3256D00889E47 /* DeviceInfo.h */; };
-		49FDCEA316F3286B00889E47 /* DeviceInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49FDCEA216F3286B00889E47 /* DeviceInfo.cpp */; };
 		5C0105D21577993400E0B939 /* libmongodb_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0105D11577993400E0B939 /* libmongodb_ios.a */; };
 		5C77ABBF14C7703800E92D28 /* libpng_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C77ABBE14C7703800E92D28 /* libpng_ios.a */; };
 		5C97964714E3E75000FFFA14 /* libxml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964514E3E75000FFFA14 /* libxml_ios.a */; };
@@ -272,8 +270,6 @@
 		E8B3CB7E16B9326E002BD35F /* ParticleLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C8B216B9326D002BD35F /* ParticleLayer.h */; };
 		E8B3CB7F16B9326E002BD35F /* ParticleLayer3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C8B316B9326D002BD35F /* ParticleLayer3D.cpp */; };
 		E8B3CB8016B9326E002BD35F /* ParticleLayer3D.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C8B416B9326D002BD35F /* ParticleLayer3D.h */; };
-		E8B3CB8116B9326E002BD35F /* ParticleLayerLong.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C8B516B9326D002BD35F /* ParticleLayerLong.cpp */; };
-		E8B3CB8216B9326E002BD35F /* ParticleLayerLong.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C8B616B9326D002BD35F /* ParticleLayerLong.h */; };
 		E8B3CB8316B9326E002BD35F /* ParticlePropertyLine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C8B716B9326D002BD35F /* ParticlePropertyLine.cpp */; };
 		E8B3CB8416B9326E002BD35F /* ParticlePropertyLine.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C8B816B9326D002BD35F /* ParticlePropertyLine.h */; };
 		E8B3CB8516B9326E002BD35F /* ParticleSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C8B916B9326D002BD35F /* ParticleSystem.cpp */; };
@@ -629,6 +625,8 @@
 		E8B3CD3216B9326E002BD35F /* Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3CA7B16B9326E002BD35F /* Utils.cpp */; };
 		E8B3CD3316B9326E002BD35F /* Utils.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3CA7C16B9326E002BD35F /* Utils.h */; };
 		E8B3CD3416B9326E002BD35F /* UtilsMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8B3CA7D16B9326E002BD35F /* UtilsMacOS.mm */; };
+		E8B6B3C61705DEB4004F665E /* DeviceInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B6B3C41705DEB4004F665E /* DeviceInfo.cpp */; };
+		E8B6B3C71705DEB4004F665E /* DeviceInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B6B3C51705DEB4004F665E /* DeviceInfo.h */; };
 		E8BD1F0C16DE4A9C00499E18 /* MailSender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8BD1F0916DE4A9C00499E18 /* MailSender.cpp */; };
 		E8BD1F0D16DE4A9C00499E18 /* MailSender.h in Headers */ = {isa = PBXBuildFile; fileRef = E8BD1F0A16DE4A9C00499E18 /* MailSender.h */; };
 		E8BD1F0E16DE4A9C00499E18 /* MailSenderMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8BD1F0B16DE4A9C00499E18 /* MailSenderMacOS.mm */; };
@@ -675,8 +673,6 @@
 		17F53E3316D3705E004D5099 /* WebViewControliOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WebViewControliOS.mm; sourceTree = "<group>"; };
 		496526CF167F173400107C70 /* libdxt_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_ios.a; path = ../../Libs/libs/libdxt_ios.a; sourceTree = "<group>"; };
 		497BF6E116F751ED00AC57C6 /* DeviceInfoiOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DeviceInfoiOS.mm; sourceTree = "<group>"; };
-		49FDCE9D16F3256D00889E47 /* DeviceInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceInfo.h; sourceTree = "<group>"; };
-		49FDCEA216F3286B00889E47 /* DeviceInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DeviceInfo.cpp; sourceTree = "<group>"; };
 		5C0105D11577993400E0B939 /* libmongodb_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmongodb_ios.a; path = ../../Libs/libs/libmongodb_ios.a; sourceTree = "<group>"; };
 		5C77ABBE14C7703800E92D28 /* libpng_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng_ios.a; path = ../../Libs/libs/libpng_ios.a; sourceTree = "<group>"; };
 		5C97964514E3E75000FFFA14 /* libxml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml_ios.a; path = ../../Libs/libs/libxml_ios.a; sourceTree = "<group>"; };
@@ -929,8 +925,6 @@
 		E8B3C8B216B9326D002BD35F /* ParticleLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayer.h; sourceTree = "<group>"; };
 		E8B3C8B316B9326D002BD35F /* ParticleLayer3D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleLayer3D.cpp; sourceTree = "<group>"; };
 		E8B3C8B416B9326D002BD35F /* ParticleLayer3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayer3D.h; sourceTree = "<group>"; };
-		E8B3C8B516B9326D002BD35F /* ParticleLayerLong.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleLayerLong.cpp; sourceTree = "<group>"; };
-		E8B3C8B616B9326D002BD35F /* ParticleLayerLong.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayerLong.h; sourceTree = "<group>"; };
 		E8B3C8B716B9326D002BD35F /* ParticlePropertyLine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticlePropertyLine.cpp; sourceTree = "<group>"; };
 		E8B3C8B816B9326D002BD35F /* ParticlePropertyLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticlePropertyLine.h; sourceTree = "<group>"; };
 		E8B3C8B916B9326D002BD35F /* ParticleSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleSystem.cpp; sourceTree = "<group>"; };
@@ -1286,6 +1280,8 @@
 		E8B3CA7B16B9326E002BD35F /* Utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Utils.cpp; sourceTree = "<group>"; };
 		E8B3CA7C16B9326E002BD35F /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
 		E8B3CA7D16B9326E002BD35F /* UtilsMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UtilsMacOS.mm; sourceTree = "<group>"; };
+		E8B6B3C41705DEB4004F665E /* DeviceInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DeviceInfo.cpp; sourceTree = "<group>"; };
+		E8B6B3C51705DEB4004F665E /* DeviceInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceInfo.h; sourceTree = "<group>"; };
 		E8BD1F0916DE4A9C00499E18 /* MailSender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MailSender.cpp; sourceTree = "<group>"; };
 		E8BD1F0A16DE4A9C00499E18 /* MailSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MailSender.h; sourceTree = "<group>"; };
 		E8BD1F0B16DE4A9C00499E18 /* MailSenderMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MailSenderMacOS.mm; sourceTree = "<group>"; };
@@ -1708,8 +1704,6 @@
 				E8B3C8B216B9326D002BD35F /* ParticleLayer.h */,
 				E8B3C8B316B9326D002BD35F /* ParticleLayer3D.cpp */,
 				E8B3C8B416B9326D002BD35F /* ParticleLayer3D.h */,
-				E8B3C8B516B9326D002BD35F /* ParticleLayerLong.cpp */,
-				E8B3C8B616B9326D002BD35F /* ParticleLayerLong.h */,
 				E8B3C8B716B9326D002BD35F /* ParticlePropertyLine.cpp */,
 				E8B3C8B816B9326D002BD35F /* ParticlePropertyLine.h */,
 				E8B3C8B916B9326D002BD35F /* ParticleSystem.cpp */,
@@ -1721,6 +1715,8 @@
 		E8B3C8BB16B9326D002BD35F /* Platform */ = {
 			isa = PBXGroup;
 			children = (
+				E8B6B3C41705DEB4004F665E /* DeviceInfo.cpp */,
+				E8B6B3C51705DEB4004F665E /* DeviceInfo.h */,
 				840ED3CA16D5070400D2BA6C /* DPIHelper.h */,
 				E8B3C8C416B9326D002BD35F /* Mutex.cpp */,
 				E8B3C8C516B9326D002BD35F /* Mutex.h */,
@@ -2201,8 +2197,6 @@
 		E8B3CA7016B9326E002BD35F /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				49FDCEA216F3286B00889E47 /* DeviceInfo.cpp */,
-				49FDCE9D16F3256D00889E47 /* DeviceInfo.h */,
 				E8B3CA7116B9326E002BD35F /* HTTPDownloader.h */,
 				E8B3CA7216B9326E002BD35F /* HTTPDownloader.mm */,
 				E8B3CA7416B9326E002BD35F /* MD5.cpp */,
@@ -2404,7 +2398,6 @@
 				E8B3CB7C16B9326E002BD35F /* ParticleEmitterObject.h in Headers */,
 				E8B3CB7E16B9326E002BD35F /* ParticleLayer.h in Headers */,
 				E8B3CB8016B9326E002BD35F /* ParticleLayer3D.h in Headers */,
-				E8B3CB8216B9326E002BD35F /* ParticleLayerLong.h in Headers */,
 				E8B3CB8416B9326E002BD35F /* ParticlePropertyLine.h in Headers */,
 				E8B3CB8616B9326E002BD35F /* ParticleSystem.h in Headers */,
 				E8B3CB8F16B9326E002BD35F /* Mutex.h in Headers */,
@@ -2610,7 +2603,7 @@
 				CCC7A4A716F1D8200061EA5D /* RenderState.h in Headers */,
 				CCC7A4AB16F1D8480061EA5D /* Entity.h in Headers */,
 				CCC7A4AF16F1D88C0061EA5D /* UpdateSystem.h in Headers */,
-				49FDCEA016F3256D00889E47 /* DeviceInfo.h in Headers */,
+				E8B6B3C71705DEB4004F665E /* DeviceInfo.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2773,7 +2766,6 @@
 				E8B3CB7B16B9326E002BD35F /* ParticleEmitterObject.cpp in Sources */,
 				E8B3CB7D16B9326E002BD35F /* ParticleLayer.cpp in Sources */,
 				E8B3CB7F16B9326E002BD35F /* ParticleLayer3D.cpp in Sources */,
-				E8B3CB8116B9326E002BD35F /* ParticleLayerLong.cpp in Sources */,
 				E8B3CB8316B9326E002BD35F /* ParticlePropertyLine.cpp in Sources */,
 				E8B3CB8516B9326E002BD35F /* ParticleSystem.cpp in Sources */,
 				E8B3CB8E16B9326E002BD35F /* Mutex.cpp in Sources */,
@@ -2969,8 +2961,8 @@
 				CCC7A4A616F1D8200061EA5D /* RenderState.cpp in Sources */,
 				CCC7A4AA16F1D8480061EA5D /* Entity.cpp in Sources */,
 				CCC7A4AE16F1D88C0061EA5D /* UpdateSystem.cpp in Sources */,
-				49FDCEA316F3286B00889E47 /* DeviceInfo.cpp in Sources */,
 				497BF6E216F751ED00AC57C6 /* DeviceInfoiOS.mm in Sources */,
+				E8B6B3C61705DEB4004F665E /* DeviceInfo.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

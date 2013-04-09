@@ -628,6 +628,31 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
     
     SafeRelease(archive);
 }
+
+
+void SceneFileV2::ConvertShadows(Entity * currentNode)
+{
+	for(int32 c = 0; c < currentNode->GetChildrenCount(); ++c)
+	{
+		Entity * childNode = currentNode->GetChild(c);
+		if(String::npos != childNode->GetName().find("_shadow"))
+		{
+			DVASSERT(childNode->GetChildrenCount() == 1);
+			Entity * svn = childNode->FindByName("dynamicshadow.shadowvolume");
+			if(!svn)
+			{
+				MeshInstanceNode * mi = dynamic_cast<MeshInstanceNode*>(childNode->GetChild(0));
+				DVASSERT(mi);
+				mi->ConvertToShadowVolume();
+				childNode->RemoveNode(mi);
+			}
+		}
+		else
+		{
+			ConvertShadows(childNode);
+		}
+	}
+}
     
 bool SceneFileV2::RemoveEmptySceneNodes(DAVA::Entity * currentNode)
 {
@@ -643,7 +668,9 @@ bool SceneFileV2::RemoveEmptySceneNodes(DAVA::Entity * currentNode)
         bool doNotRemove = customProperties && customProperties->IsKeyExists("editor.donotremove");
         
         uint32 componentCount = currentNode->GetComponentCount();
-        if (componentCount != 0)
+
+        if ((componentCount > 0 && (0 == currentNode->GetComponent(Component::TRANSFORM_COMPONENT))) //has only component, not transform
+			|| componentCount > 1)
         {
             doNotRemove = true;
         }
@@ -996,10 +1023,10 @@ void SceneFileV2::ReplaceOldNodes(Entity * currentNode)
 	{
 		Entity * childNode = currentNode->GetChild(c);
 		ReplaceOldNodes(childNode);
-        /**
-            Here it's very important to call ReplaceNodeAfterLoad after recursion, to replace nodes that 
-            was deep in hierarchy first.
-         */
+		/**
+			Here it's very important to call ReplaceNodeAfterLoad after recursion, to replace nodes that 
+			was deep in hierarchy first.
+			*/
 		bool wasReplace = ReplaceNodeAfterLoad(childNode);
 		if(wasReplace)
 		{
@@ -1015,8 +1042,8 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
     removedNodeCount = 0;
     rootNode->BakeTransforms();
     
-    //MERGE: commented
-    RemoveEmptySceneNodes(rootNode);
+	//ConvertShadows(rootNode);
+    //RemoveEmptySceneNodes(rootNode);
     RemoveEmptyHierarchy(rootNode);
 	ReplaceOldNodes(rootNode);
     
@@ -1029,5 +1056,7 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
     int32 nowCount = rootNode->GetChildrenCountRecursive();
     Logger::Debug("nodes removed: %d before: %d, now: %d, diff: %d", removedNodeCount, beforeCount, nowCount, beforeCount - nowCount);
 }
- 
+
+
+
 };

@@ -2,6 +2,7 @@
 #define __RESOURCEEDITORQT__BASEPARTICLEEDITORCONTENTWIDGET__
 
 #include "DAVAEngine.h"
+#include <QChar>
 
 using namespace DAVA;
 
@@ -16,6 +17,9 @@ public:
 	ParticleEmitter* GetEmitter() const {return emitter;};
 	
 protected:
+	// "Degree mark" character needed for some widgets.
+	static const QChar DEGREE_MARK_CHARACTER;
+
 	ParticleEmitter* emitter;
 };
 

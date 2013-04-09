@@ -19,7 +19,7 @@ uniform sampler2D texture0;
 varying mediump vec2 varTexCoord0;
 #endif
 
-#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP)
+#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(MATERIAL_VIEW_LIGHTMAP_ONLY)
 uniform sampler2D texture1;
 varying mediump vec2 varTexCoord1;
 #endif
@@ -86,7 +86,7 @@ void main()
 #endif
 #endif
     
-#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP)
+#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(MATERIAL_VIEW_LIGHTMAP_ONLY)
     lowp vec3 textureColor1 = texture2D(texture1, varTexCoord1).rgb;
 #if defined(SETUP_LIGHTMAP)
 	vec3 lightGray = vec3(0.75, 0.75, 0.75);
@@ -151,7 +151,11 @@ void main()
     	#endif
 	}
 #endif
-	
+
+#elif defined(MATERIAL_VIEW_LIGHTMAP_ONLY)	
+    vec3 color = textureColor1.rgb;
+#elif defined(MATERIAL_VIEW_TEXTURE_ONLY)
+    vec3 color = textureColor0.rgb;
 #elif defined(MATERIAL_DECAL) || defined(MATERIAL_LIGHTMAP) || defined(MATERIAL_DETAIL)
     vec3 color = textureColor0.rgb * textureColor1.rgb * 2.0;
 #elif defined(MATERIAL_TEXTURE)

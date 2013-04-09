@@ -19,6 +19,7 @@ public:
 	~TimeLineWidget();
 	
 	void Init(float32 minT, float32 maxT, bool updateSizeState, bool aliasLinePoint = false, bool allowDeleteLine = true, bool integer = false);
+	void Init(float32 minT, float32 maxT, float32 generalMinT, float32 generalMaxT, bool updateSizeState, bool aliasLinePoint = false, bool allowDeleteLine = true, bool integer = false);
 	void SetMinLimits(float32 minV);
 	void SetMaxLimits(float32 maxV);
 	float32 GetMinBoundary();
@@ -37,6 +38,10 @@ public:
 	
 	static bool SortPoints(const Vector2& i, const Vector2& j);
 	
+	// Add the mark to X/Y legend values (like 'deg' or 'pts').
+	void SetXLegendMark(const QString& value);
+	void SetYLegendMark(const QString& value);
+
 signals:
 	void TimeLineUpdated();
 	void ValueChanged();
@@ -117,6 +122,8 @@ private:
 	float32 maxValue;
 	float32 minTime;
 	float32 maxTime;
+	float32 generalMinTime;
+	float32 generalMaxTime;
 	float32 minValueLimit;
 	float32 maxValueLimit;
 	
@@ -162,6 +169,9 @@ private:
 
 	float32	scale;
 	float32	initialTimeInterval;
+	
+	QString xLegendMark;
+	QString yLegendMark;
 };
 
 class SetPointValueDlg: public QDialog

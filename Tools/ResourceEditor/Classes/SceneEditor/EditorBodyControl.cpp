@@ -525,7 +525,7 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 	}
 
 	ArrowsNode* arrowsNode = GetArrowsNode(false);
-	if (arrowsNode && arrowsNode->GetVisible() && !inTouch)
+	if (arrowsNode && arrowsNode->GetVisible() && !inTouch && event->phase != UIEvent::PHASE_KEYCHAR)
 	{
 		Vector3 from, dir;
 		GetCursorVectors(&from, &dir, event->point);
@@ -900,7 +900,7 @@ void EditorBodyControl::PackLightmaps()
 	SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
 	String inputDir = EditorSettings::Instance()->GetProjectPath()+"DataSource/lightmaps_temp/";
 	String outputDir = sceneData->GetScenePathname() + "_lightmaps/";
-	FileSystem::Instance()->MoveFile(inputDir+"landscape.png", "test_landscape.png"); 
+	FileSystem::Instance()->MoveFile(inputDir+"landscape.png", "test_landscape.png", true); 
 
 	LightmapsPacker packer;
 	packer.SetInputDir(inputDir);
@@ -912,7 +912,7 @@ void EditorBodyControl::PackLightmaps()
 
 	BeastProxy::Instance()->UpdateAtlas(beastManager, packer.GetAtlasingData());
 
-	FileSystem::Instance()->MoveFile("test_landscape.png", outputDir+"landscape.png");
+	FileSystem::Instance()->MoveFile("test_landscape.png", outputDir+"landscape.png", true);
 }
 
 void EditorBodyControl::Draw(const UIGeometricData &geometricData)

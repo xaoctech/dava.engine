@@ -267,6 +267,7 @@ Material::Material()
     ,   isExportOwnerLayerEnabled(true)
     ,   ownerLayerName(LAYER_OPAQUE)
 	,	lightingParams(0)
+	,	viewOptions(MATERIAL_VIEW_TEXTURE_LIGHTMAP)
 {
     //Reserve memory for Collection
     names.resize(TEXTURE_COUNT);
@@ -422,6 +423,23 @@ void Material::RebuildShader()
         default:
             break;
     };
+
+	switch (viewOptions)
+	{
+		case MATERIAL_VIEW_TEXTURE_LIGHTMAP:
+			break;
+		case MATERIAL_VIEW_LIGHTMAP_ONLY:
+			if (shaderCombileCombo.size() > 0)shaderCombileCombo += ";";
+			shaderCombileCombo = shaderCombileCombo + "MATERIAL_VIEW_LIGHTMAP_ONLY";
+			break;
+		case MATERIAL_VIEW_TEXTURE_ONLY:
+			if (shaderCombileCombo.size() > 0)shaderCombileCombo += ";";
+			shaderCombileCombo = shaderCombileCombo + "MATERIAL_VIEW_TEXTURE_ONLY";
+			break;
+		default:
+			break;
+	}
+
     if (isTranslucent)
     {
         if (shaderCombileCombo.size() > 0)shaderCombileCombo += ";";
@@ -734,6 +752,20 @@ void Material::SetFog(bool _isFogEnabled)
 {
     isFogEnabled = _isFogEnabled;
     RebuildShader();
+}
+
+void Material::SetViewOption(eViewOptions option)
+{
+	if(viewOptions != option)
+	{
+		viewOptions = option;
+		RebuildShader();
+	}
+}
+
+Material::eViewOptions Material::GetViewOption()
+{
+	return viewOptions;
 }
     
 bool Material::IsFogEnabled() const

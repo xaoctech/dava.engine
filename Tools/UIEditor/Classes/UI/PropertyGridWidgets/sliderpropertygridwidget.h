@@ -22,6 +22,8 @@ public:
 private:
     Ui::SliderPropertyGridWidget *ui;
 	
+	QString GetSpritePathForButton(QWidget *senderWidget);
+	
 protected:
     // Connect/disconnect to the signals.
     void ConnectToSignals();
