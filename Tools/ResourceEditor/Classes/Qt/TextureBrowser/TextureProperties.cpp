@@ -21,6 +21,7 @@ TextureProperties::TextureProperties(QWidget *parent /* = 0 */)
 		helperPVRFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_A8), DAVA::FORMAT_A8);
 		helperPVRFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_PVR4), DAVA::FORMAT_PVR4);
 		helperPVRFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_PVR2), DAVA::FORMAT_PVR2);
+		helperPVRFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_ETC1), DAVA::FORMAT_ETC1);
 
 
 		helperDXTFormats.push_back("None", DAVA::FORMAT_INVALID);

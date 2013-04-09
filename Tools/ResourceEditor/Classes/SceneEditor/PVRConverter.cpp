@@ -14,6 +14,7 @@ PVRConverter::PVRConverter()
 	pixelFormatToPVRFormat[DAVA::FORMAT_PVR2] = "OGLPVRTC2";
 	pixelFormatToPVRFormat[DAVA::FORMAT_PVR4] = "OGLPVRTC4";
 	pixelFormatToPVRFormat[DAVA::FORMAT_A8] = "OGL8";
+	pixelFormatToPVRFormat[DAVA::FORMAT_ETC1] = "ETC";
 }
 
 PVRConverter::~PVRConverter()
