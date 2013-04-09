@@ -39,7 +39,7 @@ void AutotestingSystemYaml::InitFromYaml(const String &yamlFilePath)
             {
                 testName = testNameNode->AsString();
             }
-            AutotestingSystem::Instance()->Init(testName);
+            AutotestingSystem::Instance()->OnInit();//Init(testName);
             
             YamlNode* actionsNode = rootNode->Get("actions");
             AddActionsFromYamlNode(actionsNode);

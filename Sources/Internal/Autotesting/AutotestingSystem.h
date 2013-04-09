@@ -78,7 +78,7 @@ public:
     void Update(float32 timeElapsed);
     void Draw();
     
-    void Init(const String &_testName);
+    void OnInit();
     inline bool IsInit() { return isInit; };
     
     void SetProjectName(const String &_projectName);
@@ -117,15 +117,19 @@ protected:
 
 	void MakeScreenShot();
     //DB
+    void ClearTestInDB();
+    
     KeyedArchive *FindOrInsertTestArchive(MongodbUpdateObject *dbUpdateObject, const String &testId);
     KeyedArchive *FindOrInsertTestStepArchive(KeyedArchive *testArchive, const String &stepId);
     KeyedArchive *FindOrInsertTestStepLogEntryArchive(KeyedArchive *testStepArchive, const String &logId);
 
-	KeyedArchive *InsertTestArchive(MongodbUpdateObject* dbUpdateObject, const String &testId, const String &testName);
+	KeyedArchive *InsertTestArchive(MongodbUpdateObject* dbUpdateObject, const String &testId, const String &testName, bool needClearGroup);
 	KeyedArchive *InsertStepArchive(KeyedArchive *testArchive, const String &stepId, const String &description);
 
-	KeyedArchive *FindTestArchive(MongodbUpdateObject* dbUpdateObject, const String &testId);
+	//KeyedArchive *FindTestArchive(MongodbUpdateObject* dbUpdateObject, const String &testId);
     KeyedArchive *FindStepArchive(KeyedArchive *testArchive, const String &stepId);
+    
+    bool SaveToDB(MongodbUpdateObject *dbUpdateObject);
 
     bool ConnectToDB();
 //    void AddTestResult(const String &text, bool isPassed, const String & error = "");
@@ -172,7 +176,7 @@ protected:
 
     MongodbClient *dbClient;
     bool isDB;
-    bool needClearDB;
+    bool needClearGroupInDB;
     
     bool isMaster;
     int32 requestedHelpers;
