@@ -1306,8 +1306,10 @@ QRect TimeLineWidget::GetScaleRect() const
 QRect TimeLineWidget::GetDecreaseRect() const
 {
 	QRect rect = GetSliderRect();
-	rect.translate(-(LEGEND_WIDTH - 2) * UI_RECTANGLE_OFFSET, 0);
-	rect.setWidth(LEGEND_WIDTH - 2);
+	int sideLength = LEGEND_WIDTH - 2;
+	rect.translate(-sideLength * UI_RECTANGLE_OFFSET, 0);
+	rect.setWidth(sideLength);
+	rect.setHeight(sideLength);
 	return rect;
 }
 
@@ -1337,6 +1339,7 @@ QRect TimeLineWidget::GetSliderRect() const
 	QRect rect = GetIncreaseRect();
 	rect.translate(-(ZOOM_SLIDER_LENGTH + 5), 0);
 	rect.setWidth(ZOOM_SLIDER_LENGTH);
+	rect.setHeight(rect.height() + 4);
 	return rect;
 }
 
