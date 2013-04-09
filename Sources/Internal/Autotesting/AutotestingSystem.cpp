@@ -28,6 +28,7 @@ AutotestingSystem::AutotestingSystem()
     , needClearDB(false)
     , reportFile(NULL)
     , groupName("default")
+	, deviceName("not-initialized")
     , isMaster(true)
     , requestedHelpers(0)
     , isWaiting(false)
@@ -656,23 +657,104 @@ void AutotestingSystem::WriteState(const String & device, const String & state)
 {
 	Logger::Debug("AutotestingSystem::WriteState device=%s state=%s", device.c_str(), state.c_str());
 
-	String documentId = Format("%u", testsDate);
+	String testId = Format("Test%d", testIndex);
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
-	bool isFound = dbClient->FindObjectByKey(documentId, dbUpdateObject);
-	if(!isFound)
+	KeyedArchive* multiplayerArchive;
+	KeyedArchive* currentTestArchive = FindTestArchive(dbUpdateObject, testId);
+
+	multiplayerArchive = SafeRetain(currentTestArchive->GetArchive("Multiplayer", NULL));
+	if (multiplayerArchive)
 	{
-		dbUpdateObject->SetObjectName(documentId);
-		Logger::Debug("AutotestingSystem::WriteState new MongodbUpdateObject");
+		multiplayerArchive->SetString(device, state);
 	}
-	dbUpdateObject->LoadData();
-
-	KeyedArchive* dbUpdateData = dbUpdateObject->GetData();
-
-	Logger::Debug("AutotestingSystem::WriteState write %s", state);
-	dbUpdateData->SetString(device, state);
+	else
+	{
+		multiplayerArchive = new KeyedArchive();
+		multiplayerArchive->SetString(device, state);
+	}
 	
+	currentTestArchive->SetArchive("Multiplayer", multiplayerArchive);
+	SafeRelease(multiplayerArchive);
 	dbUpdateObject->SaveToDB(dbClient);
 	SafeRelease(dbUpdateObject);
+}
+
+String AutotestingSystem::ReadState(const String & device)
+{
+	Logger::Debug("AutotestingSystem::ReadState device=%s", device.c_str());
+	
+	String testId = Format("Test%d", testIndex);
+	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
+	KeyedArchive* currentTestArchive = FindTestArchive(dbUpdateObject, testId);
+	String result;
+	KeyedArchive* multiplayerArchive = SafeRetain(currentTestArchive->GetArchive("Multiplayer", NULL));
+	if (multiplayerArchive)
+	{
+		result = multiplayerArchive->GetString(device.c_str(), "not_found");
+		SafeRelease(multiplayerArchive);
+	}
+	else
+	{
+		result = "not_found";
+	}
+
+	SafeRelease(dbUpdateObject);
+	return result;
+}
+
+void AutotestingSystem::WriteCommand(const String & device, const String & state)
+{
+	Logger::Debug("AutotestingSystem::WriteCommand device=%s state=%s", device.c_str(), state.c_str());
+
+	String testId = Format("Test%d", testIndex);
+	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
+	KeyedArchive* multiplayerArchive;
+	KeyedArchive* currentTestArchive = FindTestArchive(dbUpdateObject, testId);
+
+	multiplayerArchive = SafeRetain(currentTestArchive->GetArchive("Multiplayer", NULL));
+	if (multiplayerArchive)
+	{
+		multiplayerArchive->SetString(device + "_command", state);
+	}
+	else
+	{
+		multiplayerArchive = new KeyedArchive();
+		multiplayerArchive->SetString(device + "_command", state);
+	}
+
+	currentTestArchive->SetArchive("Multiplayer", multiplayerArchive);
+	SafeRelease(multiplayerArchive);
+	dbUpdateObject->SaveToDB(dbClient);
+	SafeRelease(dbUpdateObject);
+}
+
+String AutotestingSystem::ReadCommand(const String & device)
+{
+	Logger::Debug("AutotestingSystem::ReadCommand device=%s", device.c_str());
+
+	String testId = Format("Test%d", testIndex);
+	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
+	KeyedArchive* currentTestArchive = FindTestArchive(dbUpdateObject, testId);
+	String result;
+	KeyedArchive* multiplayerArchive = SafeRetain(currentTestArchive->GetArchive("Multiplayer", NULL));
+	if (multiplayerArchive)
+	{
+		result = multiplayerArchive->GetString(device + "_command", "not_found");
+		SafeRelease(multiplayerArchive);
+	}
+	else
+	{
+		result = "not_found";
+	}
+
+	SafeRelease(dbUpdateObject);
+	return result;
+}
+
+void AutotestingSystem::InitializeDevice(const String & device)
+{
+	Logger::Debug("AutotestingSystem::InitializeDevice device=%s", device.c_str());
+	deviceName = device.c_str();
 }
 
 String AutotestingSystem::GetCurrentTimeString()
@@ -1127,6 +1209,11 @@ void AutotestingSystem::OnError(const String & errorMessage)
 	Log("ERROR", errorMessage);
     //SaveTestStepLogEntryToDB("ERROR", GetCurrentTimeString(), errorMessage);
     
+	if (deviceName != "not-initialized")
+	{
+		WriteState(deviceName, "error");
+	}
+
 	String exitOnErrorMsg = Format("EXIT %s OnError %s", testName.c_str(), errorMessage.c_str());
 	if(reportFile)
 	{
@@ -1143,6 +1230,11 @@ void AutotestingSystem::OnTestsFinished()
     
 	// Mark last step as SUCCESS
 	OnStepFinished();
+
+	if (deviceName != "not-initialized")
+	{
+		WriteState(deviceName, "finished");
+	}
 
 	// Mark test as SUCCESS
 	String testId = Format("Test%d", testIndex);

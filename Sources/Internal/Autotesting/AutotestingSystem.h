@@ -82,7 +82,14 @@ public:
     
     void RunTests();
     
-	// multiplayer organization
+	// multiplayer api
+	void WriteState(const String & device, const String & state);
+	void WriteCommand(const String & device, const String & state);
+
+	String ReadState(const String & device);
+	String ReadCommand(const String & device);
+
+	void InitializeDevice(const String & device);
 
 	// Test organization
 	void OnTestStart(const String &testName);
@@ -123,7 +130,6 @@ protected:
 	KeyedArchive *FindTestArchive(MongodbUpdateObject* dbUpdateObject, const String &testId);
     KeyedArchive *FindStepArchive(KeyedArchive *testArchive, const String &stepId);
 
-	void WriteState(const String & device, const String & state);
 
     bool ConnectToDB();
 //    void AddTestResult(const String &text, bool isPassed, const String & error = "");
@@ -139,6 +145,7 @@ protected:
     int32 GetIndexInFileList(FileList &fileList, int32 index);
     
     void ExitApp();
+	
 
     bool isInit;
     bool isRunning;
@@ -156,6 +163,8 @@ protected:
     String testName;
     String testFileName;
     String testFilePath;
+
+	String deviceName;
 //    struct TestResult
 //    {
 //        TestResult(const String &_name, bool _isPassed, const String &_error) : name(_name), isPassed(_isPassed), error(_error) {}

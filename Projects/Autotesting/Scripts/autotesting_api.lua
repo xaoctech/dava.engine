@@ -2,16 +2,17 @@ TIMEOUT = 20.0 -- Big time out for waiting
 TIMECLICK = 0.2 -- time for simple action
 DELAY = 0.5 -- time for simulation of human reaction
 
+MULTIPLAYER_TIMEOUT = 120 -- Multiplayer timeout
 
 -- API setup
 function SetPackagePath(path)
 	package.path = package.path .. ";" .. path .. "Actions/?.lua;" .. path .. "Scripts/?.lua;"
 	
-	--require "logger"
+	require "logger"
 	require "coxpcall"
 end
 
-----------------------------------------------------------------------------------------------------
+
 -- High-level test function
 ----------------------------------------------------------------------------------------------------
 -- This function for simple test step without any assertion. Fail while error throwing
@@ -24,7 +25,7 @@ function Step(description, func, ...)
 	
 	local status, err = copcall(func, ...)
 
-	if not status then autotestingSystem:OnError(err) end
+	if not status then OnError(err) end
 	Yield()
 end
 
@@ -40,16 +41,20 @@ function Assert(description, func, ...)
 
 	if not status then
 		-- Some error during test step
-		autotestingSystem:OnError(err)
+		OnError(err)
 	elseif not err then
-		autotestingSystem:OnError("Assertion failed, expected result not equal to actual")
+		OnError("Assertion failed, expected result not equal to actual")
 	end
 	Yield()
 end
 
 function Log(message, level)
 	level = level or "DEBUG"
-	autotestingSystem:Log(level, message)
+	if (DEVICE == 'Master') or not DEVICE then
+		autotestingSystem:Log(level, tostring(message))
+	else
+		print('['..level..']'..tostring(message))
+	end
 end 
 
 --
@@ -83,20 +88,73 @@ function StartTest(name, test)
     Yield()
 end
 
+function OnError(text)
+	autotestingSystem:OnError(text)
+	Yield()
+end
+
 function StopTest()
 --    print("StopTest")
     autotestingSystem:OnTestFinished()
 end
 
--- re-write methods for multiplayer
-function WaitForMaster()
---    print("WaitForMaster")
-    autotestingSystem:WaitForMaster()
+----------------------------------------------------------------------------------------------------
+-- Multiplayer API
+----------------------------------------------------------------------------------------------------
+-- mark current device as ready to work in DB
+function InitializeDevice(name)
+	DEVICE = name
+	Log("Mark "..name.." device as Ready")
+	autotestingSystem:InitializeDevice(DEVICE)
+	autotestingSystem:WriteState(DEVICE, "ready")
 end
 
-function WaitForHelpers(helpersCount)
---    print("WaitForHelpers")
-    autotestingSystem:WaitForHelpers(helpersCount)
+function WaitForDevice(name)
+	for i=1,MULTIPLAYER_TIMEOUT do
+		if autotestingSystem:ReadState(name) == "ready" then
+			return
+		else
+			Wait(1)
+		end
+	end
+	OnError("Device "..name.." is not ready during timeout")
+end
+
+function SendJob(name, command)
+	Log("Send to slave "..name.." command: "..command)
+		
+	for i=1,MULTIPLAYER_TIMEOUT do
+		local state = autotestingSystem:ReadState(name)
+		if state == "ready" then
+			autotestingSystem:WriteCommand(name, command)
+			autotestingSystem:WriteState(name, "wait_execution")
+			Log("Device "..name.." ready, comand was sent")
+			return
+		elseif state == "error" then 
+			OnError("Failed to send job to "..name.." cause error on device: "..command)
+		end
+	end
+	OnError("Failed to send job to "..name.." cause timeout: "..command)
+end
+
+function WaitJob(name)
+	Log("Wait for slave "..name)
+	local state
+	
+	for i=1,MULTIPLAYER_TIMEOUT do
+		state = autotestingSystem:ReadState(name)
+		if state == "execution_completed" then
+			autotestingSystem:WriteState(name, "ready")
+			Log("Device "..name.." finish his job")
+			return
+		elseif state == "error" then
+			OnError("Error on "..name.." device")
+		else
+			Wait(1)
+		end
+	end
+	
+	OnError("Wait for job on "..name.." device failed by timeout. Last state "..state)
 end
 
 

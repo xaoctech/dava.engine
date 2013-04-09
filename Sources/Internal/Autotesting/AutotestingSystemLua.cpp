@@ -147,6 +147,38 @@ void AutotestingSystemLua::WaitForHelpers(DAVA::int32 helpersCount)
     AutotestingSystem::Instance()->RegisterMasterInDB(helpersCount);
 }
 
+// Multiplayer API
+void AutotestingSystemLua::WriteState(const String & device, const String & state)
+{
+	Logger::Debug("AutotestingSystemLua::WriteState device=%s state=%s", device.c_str(), state.c_str());
+	AutotestingSystem::Instance()->WriteState(device,state);
+}
+
+void AutotestingSystemLua::WriteCommand(const String & device, const String & state)
+{
+	Logger::Debug("AutotestingSystemLua::WriteCommand device=%s command=%s", device.c_str(), state.c_str());
+	AutotestingSystem::Instance()->WriteCommand(device,state);
+}
+
+String AutotestingSystemLua::ReadState(const String & device)
+{
+	Logger::Debug("AutotestingSystemLua::ReadState device=%s", device.c_str());
+	return AutotestingSystem::Instance()->ReadState(device);
+}
+
+String AutotestingSystemLua::ReadCommand(const String & device)
+{
+	Logger::Debug("AutotestingSystemLua::ReadCommand device=%s", device.c_str());
+	return AutotestingSystem::Instance()->ReadCommand(device);
+}
+
+void AutotestingSystemLua::InitializeDevice(const String & device)
+{
+	Logger::Debug("AutotestingSystemLua::InitializeDevice device=%s", device.c_str());
+	AutotestingSystem::Instance()->InitializeDevice(device);
+}
+
+
 void AutotestingSystemLua::Update(float32 timeElapsed)
 {
     RunScript("ResumeTest()"); //TODO: time 
