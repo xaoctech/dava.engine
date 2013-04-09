@@ -52,6 +52,7 @@ REGISTER_CLASS(InstanceMaterialState)
 InstanceMaterialState::InstanceMaterialState()
     :   flatColor(1.0f, 1.0f, 1.0f, 1.0f)
     ,   texture0Shift(0.0f, 0.0f)
+	,	lightmapSize(128)
 
 {
     for (int32 k = 0; k < LIGHT_NODE_MAX_COUNT; ++k)
@@ -88,6 +89,16 @@ void InstanceMaterialState::SetUVOffsetScale(const Vector2 & _uvOffset, const Ve
 {
     uvOffset = _uvOffset;
     uvScale = _uvScale;
+}
+
+int32 InstanceMaterialState::GetLightmapSize()
+{
+	return lightmapSize;
+}
+
+void InstanceMaterialState::SetLightmapSize(int32 size)
+{
+	lightmapSize = size;
 }
 
 void InstanceMaterialState::ClearLightmap()
@@ -347,7 +358,6 @@ Material::eValidationResult Material::Validate(PolygonGroup * polygonGroup)
 	if(lightingParams == 0)
 	{
 		lightingParams = new StaticLightingParams();
-		lightingParams->transparencyColor = Color(0.f, 0.f, 0.f, 0.f);
 	}
     
     return VALIDATE_COMPATIBLE;
