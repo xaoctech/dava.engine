@@ -126,7 +126,7 @@ void HierarchyTreeAggregatorNode::RemoveSelection()
 
 bool HierarchyTreeAggregatorNode::Load(YamlNode* node, const QString& path)
 {
-	this->path = ResourcesManageHelper::GetResourceRelativePath(path, true).toStdString();
+	this->path = path.toStdString();
 	YamlNode* width = node->Get(WIDTH_NODE);
 	YamlNode* height = node->Get(HEIGHT_NODE);
 	if (!width || !height)
@@ -189,6 +189,7 @@ void HierarchyTreeAggregatorNode::UpdateHierarchyTree()
 void HierarchyTreeAggregatorNode::ReplaceAggregator(HierarchyTreeControlNode *node)
 {
 	UIAggregatorControl* uiAggregator = dynamic_cast<UIAggregatorControl*>(node->GetUIObject());
+	String path1;
 	if (uiAggregator && uiAggregator->GetAggregatorPath().compare(path) == 0)
 	{
 		Logger::Debug(uiAggregator->GetAggregatorPath().c_str());
