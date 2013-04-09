@@ -5,7 +5,6 @@
 #include "Particles/ParticleLayer.h"
 #include "Math/Matrix4.h"
 
-
 namespace DAVA
 {
 
@@ -15,7 +14,7 @@ class Camera;
 class ParticleLayer3D : public ParticleLayer
 {
 public:
-	ParticleLayer3D();
+	ParticleLayer3D(ParticleEmitter* parent);
 	virtual ~ParticleLayer3D();
 
 	virtual void LoadFromYaml(const String & configPath, YamlNode * node);
@@ -31,12 +30,16 @@ public:
 	virtual bool IsLong();
 	virtual void SetLong(bool value);
 
+	// Access to parent.
+	ParticleEmitter* GetParent() const {return parent;};
+
 protected:
 	// Draw methods for generic and long emitters.
 	void DrawLayerNonLong(Camera * camera);
 	void DrawLayerLong(Camera * camera);
 
 	bool isLong;
+	ParticleEmitter* parent;
 
 	RenderDataObject * renderData;
 	Vector<float32> verts;
