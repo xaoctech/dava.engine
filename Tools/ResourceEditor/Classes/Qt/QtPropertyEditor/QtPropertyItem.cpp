@@ -115,6 +115,7 @@ void QtPropertyItem::ChildAdd(const QString &key, QtPropertyData* data)
 		QtPropertyItem *subValue = new QtPropertyItem(data, subName);
 
 		subValue->itemDataDeleteByParent = true;
+		// subValue->setFont(QFont("Courier"));
 		subName->setEditable(false);
 
 		subItems.append(subName);

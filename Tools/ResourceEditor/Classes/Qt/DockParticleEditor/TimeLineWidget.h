@@ -19,6 +19,7 @@ public:
 	~TimeLineWidget();
 	
 	void Init(float32 minT, float32 maxT, bool updateSizeState, bool aliasLinePoint = false, bool allowDeleteLine = true, bool integer = false);
+	void Init(float32 minT, float32 maxT, float32 generalMinT, float32 generalMaxT, bool updateSizeState, bool aliasLinePoint = false, bool allowDeleteLine = true, bool integer = false);
 	void SetMinLimits(float32 minV);
 	void SetMaxLimits(float32 maxV);
 	float32 GetMinBoundary();
@@ -121,6 +122,8 @@ private:
 	float32 maxValue;
 	float32 minTime;
 	float32 maxTime;
+	float32 generalMinTime;
+	float32 generalMaxTime;
 	float32 minValueLimit;
 	float32 maxValueLimit;
 	

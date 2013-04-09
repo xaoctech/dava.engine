@@ -42,6 +42,7 @@ namespace DAVA
 
 class PolygonGroup;
 class RenderBatch;
+class ShadowVolume;
 class Mesh : public RenderObject
 {
 public:
@@ -56,6 +57,9 @@ public:
 	virtual RenderObject * Clone(RenderObject *newObject);
 	virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
 	virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
+
+	virtual void BakeTransform(const Matrix4 & transform);
+	virtual ShadowVolume * CreateShadow();
 
 protected:
     //Vector<PolygonGroup*> polygonGroups;
