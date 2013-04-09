@@ -1644,7 +1644,7 @@ namespace DAVA
 									{
 										controlState |= STATE_PRESSED_INSIDE;
 										controlState &= ~STATE_PRESSED_OUTSIDE;
-#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)                                        
+#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)
 										controlState |= STATE_HOVER;
 #endif
 									}
@@ -1687,7 +1687,7 @@ namespace DAVA
 							if(currentInput->controlState == UIEvent::CONTROL_STATE_INSIDE)
 							{
 								--touchesInside;
-#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)                                        
+#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)
 								if(totalTouches == 0)
 								{
 									controlState |= STATE_HOVER;
@@ -1729,7 +1729,7 @@ namespace DAVA
 							{
 								controlState |= STATE_PRESSED_OUTSIDE;
 								controlState &= ~STATE_PRESSED_INSIDE;
-#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)                                        
+#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)
 								controlState &= ~STATE_HOVER;
 #endif
 							}
@@ -1741,6 +1741,11 @@ namespace DAVA
 				}
 			}
 				break;
+			case UIEvent::PHASE_JOYSTICK:
+			{
+				Input(currentInput);
+				Logger::Debug("PHASE_JOYSTICK");
+			}
 		}
 		
 		return false;
@@ -1748,13 +1753,17 @@ namespace DAVA
 
 	bool UIControl::SystemInput(UIEvent *currentInput)
 	{
+		if(currentInput->phase == UIEvent::PHASE_JOYSTICK)
+			Logger::Debug("UIControl::SystemInput: PHASE_JOYSTICK");
+
 		isUpdated = true;
 		//if(currentInput->touchLocker != this)
 		{
 			if(clipContents 
                && (currentInput->phase != UIEvent::PHASE_DRAG 
                    && currentInput->phase != UIEvent::PHASE_ENDED
-                   && currentInput->phase != UIEvent::PHASE_KEYCHAR))
+                   && currentInput->phase != UIEvent::PHASE_KEYCHAR
+                   && currentInput->phase != UIEvent::PHASE_JOYSTICK))
 			{
 				if(!IsPointInside(currentInput->point))
 				{

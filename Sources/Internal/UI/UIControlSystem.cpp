@@ -315,6 +315,13 @@ void UIControlSystem::SwitchInputToControl(int32 eventID, UIControl *targetContr
 	
 void UIControlSystem::OnInput(int32 touchType, const Vector<UIEvent> &activeInputs, const Vector<UIEvent> &allInputs, bool fromReplay/* = false*/)
 {
+	for(Vector<UIEvent>::const_iterator it = activeInputs.begin(); it != activeInputs.end(); ++it) 
+	{
+		UIEvent ev = *it;
+		if(ev.phase == UIEvent::PHASE_JOYSTICK)
+			Logger::Debug("UIControlSystem::OnInput PHASE_JOYSTICK");
+	}
+
 	if(Replay::IsPlayback() && !fromReplay) return;
 	if (lockInputCounter > 0)return;
 

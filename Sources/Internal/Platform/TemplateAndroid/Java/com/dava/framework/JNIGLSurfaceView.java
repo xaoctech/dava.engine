@@ -1,16 +1,19 @@
 package com.dava.framework;
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
+import android.view.InputDevice;
 import android.view.MotionEvent;
 
 public class JNIGLSurfaceView extends GLSurfaceView 
 {
 	private JNIRenderer mRenderer = null;
 
-    private native void nativeOnTouch(int action, int id, float x, float y, long time);
+    private native void nativeOnInput(int action, int id, float x, float y, long time, int source);
     private native void nativeOnKeyUp(int keyCode);
     private native void nativeOnResumeView();
     private native void nativeOnPauseView();
@@ -66,55 +69,80 @@ public class JNIGLSurfaceView extends GLSurfaceView
     		int id;
     		float x;
     		float y;
+    		int source;
     		
-    		InputEvent(int id, float x, float y)
+    		InputEvent(int id, float x, float y, int source)
     		{
     			this.id = id;
     			this.x = x;
     			this.y = y;
+    			this.source = source;
     		}
     	}
     	
-    	InputEvent[] events;
+    	ArrayList<InputEvent> events;
 		long time;
 		int action;
-    	
+		
     	public InputRunnable(final MotionEvent event)
     	{
     		time = event.getEventTime();
+    		events = new ArrayList<InputEvent>();
     		action = event.getActionMasked();
-    		if (action == MotionEvent.ACTION_MOVE)
+    		if(action == MotionEvent.ACTION_MOVE)
     		{
-    			int pointerCount = event.getPointerCount();
-    			events = new InputEvent[pointerCount];
-    			for (int i = 0; i < pointerCount; ++i)
-    			{
-    				events[i] = new InputEvent(event.getPointerId(i), event.getX(i), event.getY(i));
-    			}
+        		int pointerCount = event.getPointerCount();
+	    		for (int i = 0; i < pointerCount; ++i)
+	    		{
+	    			if((event.getSource() & InputDevice.SOURCE_CLASS_POINTER) > 0)
+	    			{
+	    				events.add(new InputEvent(event.getPointerId(i), event.getX(i), event.getY(i), event.getSource()));
+	    			}
+	    			if((event.getSource() & InputDevice.SOURCE_CLASS_JOYSTICK) > 0)
+	    			{
+	    				//InputEvent::id contains axis id from UIEvent::eJoystickAxisID
+	        			events.add(new InputEvent(0, event.getAxisValue(MotionEvent.AXIS_X, i), 0, event.getSource()));
+	        			events.add(new InputEvent(1, event.getAxisValue(MotionEvent.AXIS_Y, i), 0, event.getSource()));
+	        			events.add(new InputEvent(2, event.getAxisValue(MotionEvent.AXIS_Z, i), 0, event.getSource()));
+	        			events.add(new InputEvent(3, event.getAxisValue(MotionEvent.AXIS_RX, i), 0, event.getSource()));
+	        			events.add(new InputEvent(4, event.getAxisValue(MotionEvent.AXIS_RY, i), 0, event.getSource()));
+	        			events.add(new InputEvent(5, event.getAxisValue(MotionEvent.AXIS_RZ, i), 0, event.getSource()));
+	        			events.add(new InputEvent(6, event.getAxisValue(MotionEvent.AXIS_LTRIGGER, i), 0, event.getSource()));
+	        			events.add(new InputEvent(7, event.getAxisValue(MotionEvent.AXIS_RTRIGGER, i), 0, event.getSource()));
+	        			
+	        			System.out.println("InputRunnable SOURCE_CLASS_JOYSTICK");
+	    			}
+	    		}
     		}
     		else
     		{
     			int actionIdx = event.getActionIndex();
     			assert(actionIdx <= event.getPointerCount());
-    			events = new InputEvent[1];
-    			events[0] = new InputEvent(event.getPointerId(actionIdx), event.getX(actionIdx), event.getY(actionIdx));
+    			events.add(new InputEvent(event.getPointerId(actionIdx), event.getX(actionIdx), event.getY(actionIdx), event.getSource()));
     		}
     	}
 
 		@Override
-		public void run() {
-			int size = events.length;
-			for (int i = 0; i < size; ++i)
+		public void run()
+		{
+			for (int i = 0; i < events.size(); ++i)
 			{
-				nativeOnTouch(action, events[i].id, events[i].x, events[i].y, time);
+				nativeOnInput(action, events.get(i).id, events.get(i).x, events.get(i).y, time, events.get(i).source);
 			}
 		}
-    	
     }
 
+    @Override
     public boolean onTouchEvent(final MotionEvent event) 
     {
     	queueEvent(new InputRunnable(event));
         return true;
+    }
+    
+    @Override
+    public boolean onGenericMotionEvent(MotionEvent event)
+    {
+    	queueEvent(new InputRunnable(event));
+    	return super.onGenericMotionEvent(event);
     }
 }
