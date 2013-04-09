@@ -30,8 +30,8 @@
     <ClInclude Include="..\..\src\env.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\gridfs.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="..\..\include\mongodb\gridfs.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

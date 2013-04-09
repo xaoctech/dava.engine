@@ -15,7 +15,7 @@
  *    limitations under the License.
  */
 
-#include "gridfs.h"
+#include "mongodb/gridfs.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

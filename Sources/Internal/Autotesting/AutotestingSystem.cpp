@@ -249,6 +249,8 @@ void AutotestingSystem::Init(const String &_testName)
         
         isInit = true;
         testName = _testName;
+
+		Log("DEBUG", testName);
     }
 }
     
@@ -597,9 +599,16 @@ KeyedArchive *AutotestingSystem::InsertStepArchive(KeyedArchive *testArchive, co
 	Logger::Debug("AutotestingSystem::InsertStepArchive stepId=%s description=%s", stepId.c_str(), description.c_str());
 
 	KeyedArchive* currentStepArchive = NULL;
-	KeyedArchive* stepsArchive = NULL;
+	KeyedArchive* testStepsArchive = NULL;
 
-	stepsArchive = SafeRetain(testArchive->GetArchive(AUTOTESTING_STEPS, NULL));
+	testStepsArchive = SafeRetain(testArchive->GetArchive(AUTOTESTING_STEPS, NULL));
+	if(!testStepsArchive)
+    {
+        testStepsArchive = new KeyedArchive();
+        testArchive->SetArchive(AUTOTESTING_STEPS, testStepsArchive);
+        SafeRelease(testStepsArchive);
+        testStepsArchive = SafeRetain(testArchive->GetArchive(AUTOTESTING_STEPS));
+    }
 
 	currentStepArchive = new KeyedArchive();
 	currentStepArchive->SetString("Description", description.c_str());
@@ -609,13 +618,12 @@ KeyedArchive *AutotestingSystem::InsertStepArchive(KeyedArchive *testArchive, co
 	currentStepArchive->SetArchive(AUTOTESTING_LOG, logArchive);
 	SafeRelease(logArchive);
 
-	stepsArchive->SetArchive(stepId, currentStepArchive);
+	testStepsArchive->SetArchive(stepId, currentStepArchive);
 	Logger::Debug("AutotestingSystem::InsertStepArchive new %s", stepId.c_str());
 	
-
 	SafeRelease(currentStepArchive);
-	currentStepArchive = stepsArchive->GetArchive(stepId);
-	SafeRelease(stepsArchive);
+	currentStepArchive = testStepsArchive->GetArchive(stepId);
+	SafeRelease(testStepsArchive);
 
 	return currentStepArchive;
 }
@@ -664,7 +672,12 @@ String AutotestingSystem::GetCurrentTimeString()
 void AutotestingSystem::OnTestStart(const String &testName)
 {
 	Logger::Debug("AutotestingSystem::OnTestStart %s", testName.c_str());
-	
+
+	screenShotName = Format("%s_%s_test", AUTOTESTING_PLATFORM_NAME, groupName.c_str());
+	Vector<Image *> images = ImageLoader::CreateFromFile("~res:/Gfx/BattleUI/texture.png");
+	OnScreenShot(images[0]);
+	for_each(images.begin(), images.end(), SafeRelease<Image>);
+
 	// Create document for test
 	String testId = Format("Test%d", testIndex);
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
@@ -688,7 +701,7 @@ void AutotestingSystem::OnStepStart(const String &stepName)
 	String stepId = Format("Step%d", ++stepIndex);
 
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
-	KeyedArchive* currentTestArchive = FindTestArchive(dbUpdateObject, testId);	
+	KeyedArchive* currentTestArchive = FindOrInsertTestArchive(dbUpdateObject, testId); //FindTestArchive(dbUpdateObject, testId);	
 
 	InsertStepArchive(currentTestArchive, stepId, stepName);
 
@@ -705,18 +718,19 @@ void AutotestingSystem::Log(const String &level, const String &message)
 	String logId = Format("Message%d", ++logIndex);
 
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
-	KeyedArchive* currentTestArchive = FindTestArchive(dbUpdateObject, testId);
-	KeyedArchive* currentStepArchive = FindStepArchive(currentTestArchive, stepId);
+	KeyedArchive* currentTestArchive = FindOrInsertTestArchive(dbUpdateObject, testId);//FindTestArchive(dbUpdateObject, testId);
+	KeyedArchive* currentStepArchive = FindOrInsertTestStepArchive(currentTestArchive, stepId); //FindStepArchive(currentTestArchive, stepId);
 
-	KeyedArchive* logsArchive = currentStepArchive->GetArchive(AUTOTESTING_LOG, NULL);
-
-	KeyedArchive* logEntry = new KeyedArchive();
+	//KeyedArchive* logsArchive = currentStepArchive->GetArchive(AUTOTESTING_LOG, NULL);
+	//KeyedArchive* logEntry = new KeyedArchive();
+	KeyedArchive* logEntry = FindOrInsertTestStepLogEntryArchive(currentStepArchive, logId);
+	
 	logEntry->SetString("Type", level);
 	String currentTime = GetCurrentTimeString();
 	logEntry->SetString("Time", currentTime);
 	logEntry->SetString("Message", message);
 
-	logsArchive->SetArchive(logId, logEntry);
+	//logsArchive->SetArchive(logId, logEntry);
 
 	dbUpdateObject->SaveToDB(dbClient);
 	SafeRelease(dbUpdateObject);
@@ -733,11 +747,18 @@ void AutotestingSystem::OnStepFinished()
 
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
 	KeyedArchive* currentTestArchive = FindTestArchive(dbUpdateObject, testId);
-	KeyedArchive* currentStepArchive = FindStepArchive(currentTestArchive, stepId);
-
-	if (currentStepArchive)
+	if(currentTestArchive)
 	{
-		currentStepArchive->SetBool("Success", true);
+		KeyedArchive* currentStepArchive = FindStepArchive(currentTestArchive, stepId);
+
+		if (currentStepArchive)
+		{
+			currentStepArchive->SetBool("Success", true);
+		}
+	}
+	else
+	{
+		OnError(Format("AutotestingSystem::OnStepFinished test %s not found", testId.c_str()));
 	}
 
 	dbUpdateObject->SaveToDB(dbClient);
@@ -871,7 +892,7 @@ void AutotestingSystem::Draw()
     }
     RenderHelper::Instance()->DrawCircle(GetMousePosition(), 15.0f);
 }
-    
+
 void AutotestingSystem::OnTestsSatrted()
 {
     Logger::Debug("AutotestingSystem::OnTestsStarted");
@@ -1103,6 +1124,8 @@ void AutotestingSystem::OnError(const String & errorMessage)
 	
 	Log("ERROR", errorMessage);
     //SaveTestStepLogEntryToDB("ERROR", GetCurrentTimeString(), errorMessage);
+
+	MakeScreenShot();
     
 	String exitOnErrorMsg = Format("EXIT %s OnError %s", testName.c_str(), errorMessage.c_str());
 	if(reportFile)
@@ -1112,7 +1135,31 @@ void AutotestingSystem::OnError(const String & errorMessage)
 	SafeRelease(reportFile);
 
     ExitApp();
-}    
+}
+
+void AutotestingSystem::MakeScreenShot()
+{
+	uint64 timeAbsMs = SystemTimer::Instance()->FrameStampTimeMS();
+    uint16 hours = (timeAbsMs/3600000)%60;
+    uint16 minutes = (timeAbsMs/60000)%60;
+    uint16 seconds = (timeAbsMs/1000)%60;
+	screenShotName = Format("%s_%s_%02d_%02d_%02d", AUTOTESTING_PLATFORM_NAME, groupName.c_str(), hours, minutes, seconds);
+	RenderManager::Instance()->RequestGLScreenShot(this);
+}
+
+void AutotestingSystem::OnScreenShot(Image *image)
+{
+	Logger::Debug("AutotestingSystem::OnScreenShot %s", screenShotName.c_str());
+	
+	String filePath = "~doc:/screenshot.png";//Format("~doc:/%s.png", screenShotName.c_str());
+	String systemFilePath = FileSystem::Instance()->SystemPathForFrameworkPath(filePath);
+	ImageLoader::Save(image, systemFilePath);
+	
+	if(dbClient)
+	{
+		dbClient->SaveFileToGridFS(screenShotName, systemFilePath);
+	}
+}
     
 void AutotestingSystem::OnTestsFinished()
 {

@@ -59,11 +59,14 @@
 #define AUTOTESTING_PLATFORM_NAME  "Unknown"
 #endif //PLATFORMS    
 
+#include "Render/RenderManager.h"
 
 namespace DAVA
 {
 
-class AutotestingSystem : public Singleton<AutotestingSystem>
+class Image;
+
+class AutotestingSystem : public Singleton<AutotestingSystem>, public ScreenShotCallbackDelegate
 {
 public:
     AutotestingSystem();
@@ -79,6 +82,8 @@ public:
     inline bool IsInit() { return isInit; };
     
     void SetProjectName(const String &_projectName);
+
+	void OnScreenShot(Image *image);
     
     void RunTests();
     
@@ -109,6 +114,8 @@ public:
     
 protected:
     String GetCurrentTimeString();
+
+	void MakeScreenShot();
     //DB
     KeyedArchive *FindOrInsertTestArchive(MongodbUpdateObject *dbUpdateObject, const String &testId);
     KeyedArchive *FindOrInsertTestStepArchive(KeyedArchive *testArchive, const String &stepId);
@@ -183,6 +190,8 @@ protected:
 
     Map<int32, UIEvent> touches;
     UIEvent mouseMove;
+
+	String screenShotName;
 };
 
 };

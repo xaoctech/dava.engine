@@ -326,11 +326,11 @@ void RenderManager::MakeGLScreenShot()
 #endif
     SafeDeleteArray(tempData);
     
-    if(image)
+    if(screenShotCallback)
     {
-        ImageLoader::Save(image, FileSystem::Instance()->SystemPathForFrameworkPath(Format("~doc:/screenshot%d.png", ++screenShotIndex)));
-        SafeRelease(image);
+		(*screenShotCallback)(image);
     }
+	SafeRelease(image);
     
 #endif //#if defined(__DAVAENGINE_OPENGL__)
 }
