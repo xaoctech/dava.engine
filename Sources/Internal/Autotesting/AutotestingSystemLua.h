@@ -98,6 +98,15 @@ public:
     bool SetText(const String &path, const String &text); // lua uses ansi strings
     bool CheckText(UIControl *control, const String &expectedText);
     bool CheckMsgText(UIControl *control, const String &key);
+
+	// multiplayer api
+	void WriteState(const String & device, const String & state);
+	void WriteCommand(const String & device, const String & state);
+
+	String ReadState(const String & device);
+	String ReadCommand(const String & device);
+
+	void InitializeDevice(const String & device);
     
 protected:
 #if !defined(SWIG)
@@ -110,7 +119,7 @@ protected:
     bool RunScript(const String &luaScript);
     bool RunScriptFromFile(const String &luaFilePath);
     bool LoadWrappedLuaObjects();
-	
+
     AutotestingSystemLuaDelegate *delegate;
     lua_State *luaState; //TODO: multiple lua states
     
