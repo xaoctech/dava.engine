@@ -292,7 +292,6 @@ namespace DAVA
 				if((source & 0x10) > 0)//SOURCE_CLASS_JOYSTICK
 				{
 					phase = DAVA::UIEvent::PHASE_JOYSTICK;
-					Logger::Debug("CorePlatformAndroid::CreateInputEvent PHASE_JOYSTICK");
 				}
 				else //Touches
 					phase = DAVA::UIEvent::PHASE_DRAG;

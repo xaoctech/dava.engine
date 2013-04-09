@@ -100,7 +100,7 @@ public class JNIGLSurfaceView extends GLSurfaceView
 	    			}
 	    			if((event.getSource() & InputDevice.SOURCE_CLASS_JOYSTICK) > 0)
 	    			{
-	    				//InputEvent::id contains axis id from UIEvent::eJoystickAxisID
+	    				//InputEvent::id corresponds to axis id from UIEvent::eJoystickAxisID
 	        			events.add(new InputEvent(0, event.getAxisValue(MotionEvent.AXIS_X, i), 0, event.getSource()));
 	        			events.add(new InputEvent(1, event.getAxisValue(MotionEvent.AXIS_Y, i), 0, event.getSource()));
 	        			events.add(new InputEvent(2, event.getAxisValue(MotionEvent.AXIS_Z, i), 0, event.getSource()));
@@ -109,8 +109,6 @@ public class JNIGLSurfaceView extends GLSurfaceView
 	        			events.add(new InputEvent(5, event.getAxisValue(MotionEvent.AXIS_RZ, i), 0, event.getSource()));
 	        			events.add(new InputEvent(6, event.getAxisValue(MotionEvent.AXIS_LTRIGGER, i), 0, event.getSource()));
 	        			events.add(new InputEvent(7, event.getAxisValue(MotionEvent.AXIS_RTRIGGER, i), 0, event.getSource()));
-	        			
-	        			System.out.println("InputRunnable SOURCE_CLASS_JOYSTICK");
 	    			}
 	    		}
     		}

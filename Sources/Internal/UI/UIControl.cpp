@@ -1744,7 +1744,6 @@ namespace DAVA
 			case UIEvent::PHASE_JOYSTICK:
 			{
 				Input(currentInput);
-				Logger::Debug("PHASE_JOYSTICK");
 			}
 		}
 		
@@ -1753,9 +1752,6 @@ namespace DAVA
 
 	bool UIControl::SystemInput(UIEvent *currentInput)
 	{
-		if(currentInput->phase == UIEvent::PHASE_JOYSTICK)
-			Logger::Debug("UIControl::SystemInput: PHASE_JOYSTICK");
-
 		isUpdated = true;
 		//if(currentInput->touchLocker != this)
 		{

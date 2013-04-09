@@ -10,6 +10,7 @@ import android.text.InputFilter;
 import android.text.Spanned;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -281,6 +282,14 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 					return true;
 				}
 				return false;
+			}
+		});
+        
+        editText.setOnGenericMotionListener(new View.OnGenericMotionListener() {
+			
+			@Override
+			public boolean onGenericMotion(View v, MotionEvent event) {
+				return glView.onGenericMotionEvent(event);
 			}
 		});
     }
