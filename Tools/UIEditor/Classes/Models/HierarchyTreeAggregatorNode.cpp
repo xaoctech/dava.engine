@@ -87,7 +87,9 @@ void HierarchyTreeAggregatorNode::UpdateChilds()
 		if (!aggregatorControl)
 			continue;
 		
-		List<UIControl*> aggregatorChilds = aggregatorControl->GetChildren();
+		// Remove any child controls of UIControl to prevent appearance of deleted
+		// child in case when screen child is aggregator.
+		/*List<UIControl*> aggregatorChilds = aggregatorControl->GetChildren();
 		int size = GetScreen()->GetChildren().size();
 		for (List<UIControl*>::iterator iter = aggregatorChilds.begin(); iter != aggregatorChilds.end();)
 		{
@@ -96,9 +98,10 @@ void HierarchyTreeAggregatorNode::UpdateChilds()
 			UIControl* child = (*iter);
 			++iter;
 			aggregatorControl->RemoveControl(child);
-		}
+		}*/
+
+		aggregatorControl->RemoveAllControls();
 		
-		aggregatorControl->CleanAggregatorChilds();
 		const List<UIControl*> & childsList = screen->GetChildren();
 		UIControl* belowControl = NULL;
 		List<UIControl*>::const_iterator belowIter = aggregatorControl->GetChildren().begin();
