@@ -622,8 +622,10 @@ bool Texture::IsCompressedFormat(PixelFormat format)
 	bool retValue =  false;
 	if(FORMAT_INVALID != format)
     {
-        if(	FORMAT_PVR2 == format || FORMAT_PVR4 == format  ||
-		   (format >= FORMAT_DXT1 && format <= FORMAT_DXT5NM) )
+        if (FORMAT_PVR2 == format ||
+			FORMAT_PVR4 == format ||
+			(format >= FORMAT_DXT1 && format <= FORMAT_DXT5NM) ||
+			FORMAT_ETC1 == format)
         {
             retValue = true;
         }
@@ -1414,6 +1416,12 @@ void Texture::InitializePixelFormatDescriptors()
 
     SetPixelDescription(FORMAT_RGBA16161616, String("RGBA16161616"), 64, GL_HALF_FLOAT, GL_RGBA, GL_RGBA);
     SetPixelDescription(FORMAT_RGBA32323232, String("RGBA32323232"), 128, GL_FLOAT, GL_RGBA, GL_RGBA);
+
+#if defined (GL_ETC1_RGB8_OES)
+	SetPixelDescription(FORMAT_ETC1,     "ETC1", 8, GL_UNSIGNED_BYTE, GL_ETC1_RGB8_OES, GL_ETC1_RGB8_OES);
+#else
+	SetPixelDescription(FORMAT_ETC1,     "ETC1", 8, 0, 0, 0);
+#endif
 }
 
 void Texture::SetPixelDescription(PixelFormat index, const String &name, int32 size, GLenum type, GLenum format, GLenum internalFormat)
