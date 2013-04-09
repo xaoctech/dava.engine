@@ -57,6 +57,8 @@ struct StaticLightingParams
 {
 	Color transparencyColor;
 
+	StaticLightingParams() : transparencyColor(0, 0, 0, 0) {}
+
 	INTROSPECTION(StaticLightingParams,
 	MEMBER(transparencyColor, "Transparency Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR))
 };
@@ -76,7 +78,10 @@ public:
     
     void SetLightmap(Texture * texture, const String & lightmapName);
     void SetUVOffsetScale(const Vector2 & uvOffset, const Vector2 uvScale);
-    
+
+	int32 GetLightmapSize();
+	void SetLightmapSize(int32 size);
+
     inline Texture * GetLightmap() const;
 	inline const String & GetLightmapName() const;
     
@@ -93,6 +98,7 @@ public:
 private:
     Texture * lightmapTexture;
     String lightmapName;
+	int32 lightmapSize;
     Vector2 uvOffset;
     Vector2 uvScale;
     Color flatColor;
@@ -108,6 +114,7 @@ public:
                          MEMBER(lightmapName, "Lightmap Name:", INTROSPECTION_EDITOR)
                          MEMBER(uvOffset, "UV Offset", INTROSPECTION_EDITOR)
                          MEMBER(uvScale, "UV Scale", INTROSPECTION_EDITOR)
+                         MEMBER(lightmapSize, "Lightmap Size", INTROSPECTION_EDITOR)
                          
                          PROPERTY("flatColor", "Flat Color (works only if flat color enabled)", GetFlatColor, SetFlatColor, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          PROPERTY("texture0Shift", "Texture Shift", GetTextureShift, SetTextureShift, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
