@@ -87,7 +87,9 @@ void HierarchyTreeAggregatorNode::UpdateChilds()
 		if (!aggregatorControl)
 			continue;
 		
-		List<UIControl*> aggregatorChilds = aggregatorControl->GetChildren();
+		// Remove any child controls of UIControl to prevent appearance of deleted
+		// child in case when screen child is aggregator.
+		/*List<UIControl*> aggregatorChilds = aggregatorControl->GetChildren();
 		int size = GetScreen()->GetChildren().size();
 		for (List<UIControl*>::iterator iter = aggregatorChilds.begin(); iter != aggregatorChilds.end();)
 		{
@@ -96,9 +98,10 @@ void HierarchyTreeAggregatorNode::UpdateChilds()
 			UIControl* child = (*iter);
 			++iter;
 			aggregatorControl->RemoveControl(child);
-		}
+		}*/
+
+		aggregatorControl->RemoveAllControls();
 		
-		aggregatorControl->CleanAggregatorChilds();
 		const List<UIControl*> & childsList = screen->GetChildren();
 		UIControl* belowControl = NULL;
 		List<UIControl*>::const_iterator belowIter = aggregatorControl->GetChildren().begin();
@@ -123,7 +126,7 @@ void HierarchyTreeAggregatorNode::RemoveSelection()
 
 bool HierarchyTreeAggregatorNode::Load(YamlNode* node, const QString& path)
 {
-	this->path = ResourcesManageHelper::GetResourceRelativePath(path, true).toStdString();
+	this->path = path.toStdString();
 	YamlNode* width = node->Get(WIDTH_NODE);
 	YamlNode* height = node->Get(HEIGHT_NODE);
 	if (!width || !height)
@@ -186,6 +189,7 @@ void HierarchyTreeAggregatorNode::UpdateHierarchyTree()
 void HierarchyTreeAggregatorNode::ReplaceAggregator(HierarchyTreeControlNode *node)
 {
 	UIAggregatorControl* uiAggregator = dynamic_cast<UIAggregatorControl*>(node->GetUIObject());
+	String path1;
 	if (uiAggregator && uiAggregator->GetAggregatorPath().compare(path) == 0)
 	{
 		Logger::Debug(uiAggregator->GetAggregatorPath().c_str());
