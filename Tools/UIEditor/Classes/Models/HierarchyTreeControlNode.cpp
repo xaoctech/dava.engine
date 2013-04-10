@@ -7,6 +7,8 @@
 //
 
 #include "HierarchyTreeControlNode.h"
+#include "UI/UIList.h"
+#include "EditorListDelegate.h"
 
 HierarchyTreeControlNode::HierarchyTreeControlNode(HierarchyTreeNode* parent,
 												   UIControl* uiObject,
@@ -18,6 +20,15 @@ HierarchyTreeControlNode::HierarchyTreeControlNode(HierarchyTreeNode* parent,
 	this->uiObject = uiObject;
 	this->parentUIObject = NULL;
 	this->needReleaseUIObjects = false;
+	
+	// All UIList controls should always have a delegate
+	// We set a delegate here to avoid inappropriate loading of saved list
+	UIList *list = dynamic_cast<UIList*>(uiObject);
+	if (list)
+	{
+		EditorListDelegate *listDelegate = new EditorListDelegate(list->GetRect());
+		list->SetDelegate(listDelegate);
+	}
 
 	AddControlToParent();
 }
