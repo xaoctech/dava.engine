@@ -69,7 +69,7 @@ void ParticleEmitter::Cleanup(bool needCleanupLayers)
 	size = RefPtr<PropertyLineValue<Vector3> >(0);
 	colorOverLife = 0;
 	radius = 0;
-	rotationMatrix.Identity();
+
 	// number = new PropertyLineValue<float>(1.0f);
 
 	time = 0.0f;
