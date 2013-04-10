@@ -36,7 +36,7 @@ public:
 	void EditActiveScene(const String &scenePathname);
 
 	// Reload the scene.
-	void ReloadScene(const String &scenePathname);
+	void ReloadScene(const String &scenePathname, const String &newScenePathname);
 
 	DAVA::Entity*	SceneGetSelectedNode(SceneData *scene);
 	DAVA::Entity*	SceneGetRootNode(SceneData *scene);
@@ -103,7 +103,7 @@ protected:
 	void EditScene(SceneData* sceneData, const String &scenePathname);
 
 	// Reload the scene node in a recursive way.
-	void ReloadNode(EditorScene* scene, Entity *node, const String &nodePathname);
+	void ReloadNode(EditorScene* scene, Entity *node, const String &nodePathname, const String &fromPathname);
 
 	// Update the Particle Editor sprites.
 	void UpdateParticleSprites();
