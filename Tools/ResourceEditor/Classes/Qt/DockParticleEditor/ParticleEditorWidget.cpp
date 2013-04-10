@@ -264,7 +264,6 @@ void ParticleEditorWidget::UpdateVisibleTimelinesForParticleEmitter()
 		}
 			
 		case DAVA::ParticleEmitter::EMITTER_RECT:
-		case DAVA::ParticleEmitter::EMITTER_LINE:
 		{
 			sizeTimeLineVisible = true;
 		}

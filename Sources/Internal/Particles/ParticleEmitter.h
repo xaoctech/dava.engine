@@ -84,7 +84,6 @@ public:
 	enum eType
 	{
 		EMITTER_POINT,
-		EMITTER_LINE,
 		EMITTER_RECT,
 		EMITTER_ONCIRCLE,		// 
 	};
