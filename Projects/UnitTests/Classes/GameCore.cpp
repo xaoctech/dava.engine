@@ -51,6 +51,7 @@
 #include "InputTest.h"
 #include "DeviceInfoTest.h"
 #include "LocalizationTest.h"
+#include "UIListTest.h"
 
 using namespace DAVA;
 
@@ -98,6 +99,7 @@ void GameCore::OnAppStarted()
 	new SplitTest();
     new KeyedArchiveYamlTest();
 	new DLCTest();
+	new UIListTest();	
     
     errors.reserve(TestCount());
 
