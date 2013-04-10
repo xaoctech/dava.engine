@@ -792,8 +792,8 @@ void RenderManager::SetHWClip(const Rect &rect)
 	}
 	int32 x = (int32)(rect.x * currentDrawScale.x + currentDrawOffset.x);
 	int32 y = (int32)(rect.y * currentDrawScale.y + currentDrawOffset.y);
-	int32 x2= (int32)floorf((rect.dx + rect.x) * currentDrawScale.x + currentDrawOffset.x);
-	int32 y2= (int32)floorf((rect.dy + rect.y) * currentDrawScale.y + currentDrawOffset.y);
+	int32 x2= (int32)ceilf((rect.dx + rect.x) * currentDrawScale.x + currentDrawOffset.x);
+	int32 y2= (int32)ceilf((rect.dy + rect.y) * currentDrawScale.y + currentDrawOffset.y);
 	int32 width = x2 - x;
 	int32 height = y2 - y;
 	switch (renderOrientation) 
