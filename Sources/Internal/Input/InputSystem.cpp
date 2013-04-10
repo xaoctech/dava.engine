@@ -29,6 +29,7 @@
 =====================================================================================*/
 #include "InputSystem.h"
 #include "Input/KeyboardDevice.h"
+#include "UI/UIControlSystem.h"
 
 namespace DAVA 
 {
@@ -41,6 +42,12 @@ InputSystem::InputSystem()
 InputSystem::~InputSystem()
 {
     SafeRelease(keyboard);
+}
+
+void InputSystem::ProcessInputEvent(UIEvent * event)
+{
+	Logger::Debug("InputSystem::ProcessInputEvent: keyCode: %d", event->tid);
+	UIControlSystem::Instance()->OnInput(event);
 }
 
 void InputSystem::OnBeforeUpdate()

@@ -7,6 +7,7 @@ import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.view.InputDevice;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 
 public class JNIGLSurfaceView extends GLSurfaceView 
@@ -14,7 +15,7 @@ public class JNIGLSurfaceView extends GLSurfaceView
 	private JNIRenderer mRenderer = null;
 
     private native void nativeOnInput(int action, int id, float x, float y, long time, int source);
-    private native void nativeOnKeyUp(int keyCode);
+    private native void nativeOnKeyDown(int keyCode);
     private native void nativeOnResumeView();
     private native void nativeOnPauseView();
 
@@ -130,6 +131,26 @@ public class JNIGLSurfaceView extends GLSurfaceView
 		}
     }
 
+    class KeyInputRunnable implements Runnable
+    {
+    	int keyCode;
+    	public KeyInputRunnable(int keyCode)
+    	{
+    		this.keyCode = keyCode;
+    	}
+    	
+    	@Override
+    	public void run() {
+    		nativeOnKeyDown(keyCode);
+    	}
+    }
+    
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    	queueEvent(new KeyInputRunnable(keyCode));
+    	return true;
+    }
+    
     @Override
     public boolean onTouchEvent(final MotionEvent event) 
     {
@@ -141,6 +162,6 @@ public class JNIGLSurfaceView extends GLSurfaceView
     public boolean onGenericMotionEvent(MotionEvent event)
     {
     	queueEvent(new InputRunnable(event));
-    	return super.onGenericMotionEvent(event);
+    	return true;
     }
 }

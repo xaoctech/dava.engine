@@ -17,6 +17,7 @@ extern void FrameworkDidLaunched();
 extern void FrameworkWillTerminate();
 
 #include "Platform/Thread.h"
+#include "Input/InputSystem.h"
 
 namespace DAVA
 {
@@ -245,31 +246,40 @@ namespace DAVA
 	}
 
 	static Vector<DAVA::UIEvent> activeTouches;
-	void CorePlatformAndroid::KeyUp(int32 keyCode)
-	{
-		Vector<DAVA::UIEvent> touches;
-		Vector<DAVA::UIEvent> emptyTouches;
-
-		for(Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
-		{
-			touches.push_back(*it);
-		}
-
-		DAVA::UIEvent ev;
-		ev.keyChar = (char16)keyCode;
-		ev.phase = DAVA::UIEvent::PHASE_KEYCHAR;
-		ev.tapCount = 1;
-		ev.tid = (int32)keyCode;
-
-		touches.push_back(ev);
-
-		UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
-		touches.pop_back();
-		UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
-	}
+//	void CorePlatformAndroid::KeyUp(int32 keyCode)
+//	{
+//		Vector<DAVA::UIEvent> touches;
+//		Vector<DAVA::UIEvent> emptyTouches;
+//
+//		for(Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
+//		{
+//			touches.push_back(*it);
+//		}
+//
+//		DAVA::UIEvent ev;
+//		ev.keyChar = (char16)keyCode;
+//		ev.phase = DAVA::UIEvent::PHASE_KEYCHAR;
+//		ev.tapCount = 1;
+//		ev.tid = (int32)keyCode;
+//
+//		touches.push_back(ev);
+//
+//		UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
+//		touches.pop_back();
+//		UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
+//	}
 
 	void CorePlatformAndroid::KeyDown(int32 keyCode)
 	{
+		UIEvent * keyEvent = new UIEvent;
+		keyEvent->keyChar = 0;
+		keyEvent->phase = DAVA::UIEvent::PHASE_KEYCHAR;
+		keyEvent->tapCount = 1;
+		keyEvent->tid = InputSystem::Instance()->GetKeyboard()->GetDavaKeyForSystemKey(keyCode);
+
+		InputSystem::Instance()->ProcessInputEvent(keyEvent);
+
+		SafeDelete(keyEvent);
 	}
 
 	UIEvent CorePlatformAndroid::CreateInputEvent(int32 action, int32 id, float32 x, float32 y, long time, int32 source)

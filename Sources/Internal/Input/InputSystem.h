@@ -34,8 +34,8 @@
 #include "Base/BaseMath.h"
 #include "Base/Singleton.h"
 #include "Core/Core.h"
+#include "UI/UIEvent.h"
 //#include "UI/UIControl.h"
-//#include "UI/UIEvent.h"
 //#include "UI/UIScreenTransition.h"
 //#include "UI/UILoadingTransition.h"
 //#include "UI/UIPopup.h"
@@ -60,6 +60,7 @@ protected:
 			
 public:
     
+	void ProcessInputEvent(UIEvent * event);
     
     void OnBeforeUpdate();
     void OnAfterUpdate();

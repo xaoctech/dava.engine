@@ -30,7 +30,7 @@ extern "C"
 
 	//JNIGLSurfaceView
 	JNIEXPORT void JNICALL Java_com_dava_framework_JNIGLSurfaceView_nativeOnInput(JNIEnv * env, jobject classthis, jint action, jint id, jfloat x, jfloat y, jlong time, jint source);
-	JNIEXPORT void JNICALL Java_com_dava_framework_JNIGLSurfaceView_nativeOnKeyUp(JNIEnv * env, jobject classthis, jint keyCode);
+	JNIEXPORT void JNICALL Java_com_dava_framework_JNIGLSurfaceView_nativeOnKeyDown(JNIEnv * env, jobject classthis, jint keyCode);
 	JNIEXPORT void JNICALL Java_com_dava_framework_JNIGLSurfaceView_nativeOnResumeView(JNIEnv * env, jobject classthis);
 	JNIEXPORT void JNICALL Java_com_dava_framework_JNIGLSurfaceView_nativeOnPauseView(JNIEnv * env, jobject classthis);
 
@@ -244,11 +244,11 @@ void Java_com_dava_framework_JNIGLSurfaceView_nativeOnInput(JNIEnv * env, jobjec
 	}
 }
 
-void Java_com_dava_framework_JNIGLSurfaceView_nativeOnKeyUp(JNIEnv * env, jobject classthis, jint keyCode)
+void Java_com_dava_framework_JNIGLSurfaceView_nativeOnKeyDown(JNIEnv * env, jobject classthis, jint keyCode)
 {
 	if(core)
 	{
-		core->KeyUp(keyCode);
+		core->KeyDown(keyCode);
 	}
 }
 
