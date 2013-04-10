@@ -34,6 +34,7 @@ void UIListMetadata::InitializeControl(const String& controlName, const Vector2&
 		{
 			EditorListDelegate *editorList = new EditorListDelegate(list->GetRect());
 			list->SetDelegate(editorList);
+			list->GetBackground()->SetDrawType(UIControlBackground::DRAW_SCALE_TO_RECT);
 		}
     }	
 }
