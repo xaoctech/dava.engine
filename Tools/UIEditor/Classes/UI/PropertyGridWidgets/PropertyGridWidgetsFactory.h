@@ -17,17 +17,18 @@
 #include "screenpropertygridwidget.h"
 #include "aggregatorpropertygridwidget.h"
 
+#include "alignspropertygridwidget.h"
+#include "backgroundpropertygridwidget.h"
 #include "basepropertygridwidget.h"
 #include "controlpropertygridwidget.h"
-#include "rectpropertygridwidget.h"
 #include "flagspropertygridwidget.h"
+#include "listpropertygridwidget.h"
+#include "rectpropertygridwidget.h"
+#include "sliderpropertygridwidget.h"
+#include "spinnerpropertygridwidget.h"
 #include "statepropertygridwidget.h"
 #include "textpropertygridwidget.h"
 #include "uitextfieldpropertygridwidget.h"
-#include "backgroundpropertygridwidget.h"
-#include "sliderpropertygridwidget.h"
-#include "alignspropertygridwidget.h"
-#include "spinnerpropertygridwidget.h"
 
 namespace DAVA {
     
@@ -64,7 +65,8 @@ private:
 	SliderPropertyGridWidget* sliderWidget;
 	AlignsPropertyGridWidget* alignWidget;
 	SpinnerPropertyGridWidget* spinnerWidget;
-    
+	ListPropertyGridWidget* listWidget;    
+	
     // The same widgets in the list manner - for easier handling of group operations.
     PROPERTYGRIDWIDGETSLIST registeredWidgets;
 };

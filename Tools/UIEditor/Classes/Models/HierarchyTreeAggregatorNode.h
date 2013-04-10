@@ -40,6 +40,8 @@ public:
 	
 	virtual void SetName(const QString& name);
 	
+	const String& GetPath();
+	
 private:
 	void CopyAggregatorControls();
 	void UpdateHierarchyTree();

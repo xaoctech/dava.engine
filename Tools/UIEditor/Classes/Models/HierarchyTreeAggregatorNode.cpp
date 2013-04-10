@@ -12,6 +12,9 @@
 #include "HierarchyTreePlatformNode.h"
 #include "HierarchyTreeAggregatorControlNode.h"
 
+#include "UI/UIList.h"
+#include "EditorListDelegate.h"
+
 #define WIDTH_NODE "width"
 #define HEIGHT_NODE "height"
 
@@ -185,6 +188,18 @@ void HierarchyTreeAggregatorNode::UpdateHierarchyTree()
 
 void HierarchyTreeAggregatorNode::ReplaceAggregator(HierarchyTreeControlNode *node)
 {
+	UIList *list = dynamic_cast<UIList*>(node->GetUIObject());
+	// For UIList control we should should always create a delegate
+	// Set aggregator ID for list if it has saved aggregator path and it is available in tree
+	if (list && list->GetAggregatorPath().compare(path) == 0)
+	{
+		EditorListDelegate *listDelegate = new EditorListDelegate(list->GetRect());
+		// If loaded delegate has aggregator path - pass its id to delegate
+		listDelegate->SetAggregatorID(GetId());
+		// Always set a delegate for loaded UIList
+		list->SetDelegate(listDelegate);
+	}
+
 	UIAggregatorControl* uiAggregator = dynamic_cast<UIAggregatorControl*>(node->GetUIObject());
 	if (uiAggregator && uiAggregator->GetAggregatorPath().compare(path) == 0)
 	{
@@ -230,4 +245,9 @@ void HierarchyTreeAggregatorNode::SetName(const QString& name)
 const HierarchyTreeAggregatorNode::CHILDS& HierarchyTreeAggregatorNode::GetChilds() const
 {
 	return childs;
+}
+
+const String& HierarchyTreeAggregatorNode::GetPath()
+{
+	return path;
 }
