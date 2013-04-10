@@ -289,3 +289,24 @@ void HierarchyTreePlatformNode::SetParent(HierarchyTreeNode* node, HierarchyTree
 	node->RemoveTreeNode(this, false, false);
 	node->AddTreeNode(this, insertAfter);
 }
+
+bool HierarchyTreePlatformNode::IsAggregatorNamePresent(const QString& candidatName)
+{
+	for (HIERARCHYTREENODESLIST::iterator iter = childNodes.begin(); iter != childNodes.end(); ++iter)
+	{
+		HierarchyTreeNode* node = (*iter);
+		
+		HierarchyTreeAggregatorNode* aggregator = dynamic_cast<HierarchyTreeAggregatorNode*>(node);
+		if (NULL == aggregator)
+		{
+			continue;
+		}
+		if(aggregator->GetName().compare(candidatName) == 0)
+		{
+			return true;
+		}
+
+	}
+	return false;
+}
+
