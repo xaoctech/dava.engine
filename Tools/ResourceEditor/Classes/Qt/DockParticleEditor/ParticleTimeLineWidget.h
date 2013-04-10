@@ -33,6 +33,7 @@ signals:
 protected slots:
 	void OnNodeSelected(Entity* node);
 	void OnEffectNodeSelected(Entity* node);
+	void OnLayerSelected(Entity* node, ParticleLayer* layer);
 	void OnUpdate();
 	
 protected:
@@ -46,11 +47,19 @@ private:
 	bool GetLineRect(uint32 id, QRect& startPoint, QRect& endPoint) const;
 	QRect GetGraphRect() const;
 	QPoint GetPoint(const QPoint&) const;
+	
+	void AddLayerLine(uint32 layerLineID, float32 minTime, float32 maxTime,
+					  const QColor& layerColor, ParticleLayer* layer);
 	void AddLine(uint32 lineId, float32 startTime, float32 endTime, const QColor& color, const QString& legend, ParticleLayer* layer);
+
 	void OnValueChanged(int lineId);
 	void UpdateSizePolicy();
 	QString float2QString(float32 value) const;
 	
+	// Handle situation when the Particle Emitter Node is selected (including
+	// case when separate Layer node is selected.
+	void HandleNodeSelected(Entity* node, ParticleLayer* layer);
+
 private:
 	QBrush backgroundBrush;
 	float32 minTime;

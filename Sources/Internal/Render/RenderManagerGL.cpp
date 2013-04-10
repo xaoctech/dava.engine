@@ -150,7 +150,7 @@ void RenderManager::DetectRenderingCapabilities()
 #elif defined(__DAVAENGINE_ANDROID__)
     //TODO: added correct
     caps.isPVRTCSupported = IsGLExtensionSupported("GL_IMG_texture_compression_pvrtc");
-    caps.isETCSupported = false;
+    caps.isETCSupported = IsGLExtensionSupported("GL_OES_compressed_ETC1_RGB8_texture");
 	caps.isDXTSupported = IsGLExtensionSupported("GL_EXT_texture_compression_s3tc");
     caps.isBGRA8888Supported = false;
     caps.isFloat16Supported = IsGLExtensionSupported("GL_OES_texture_half_float");
