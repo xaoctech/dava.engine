@@ -18,6 +18,8 @@ namespace DAVA {
 class UIListMetadata : public UIControlMetadata
 {
     Q_OBJECT
+	
+	Q_PROPERTY(int AggregatorID READ GetAggregatorID WRITE SetAggregatorID);
 
 public:
     UIListMetadata(QObject* parent = 0);
@@ -28,6 +30,14 @@ protected:
     virtual void UpdateExtraData(HierarchyTreeNodeExtraData& extraData, eExtraDataUpdateStyle updateStyle);
 
     virtual QString GetUIControlClassName() { return "UIList"; };
+	
+    // Helper to access active UI List.
+    UIList* GetActiveUIList() const;
+	
+	// Properties getters/setters
+	int GetAggregatorID();
+    void SetAggregatorID(int value);
+
 };
 
 };
