@@ -69,15 +69,6 @@ void ParticleEmitter3D::PrepareEmitterParameters(Particle * particle, float32 ve
     {
         particle->position = tempPosition;
     }
-    else if (emitterType == EMITTER_LINE)
-    {
-        // TODO: add emitter angle support
-        float32 rand05 = (float32)Random::Instance()->RandFloat() - 0.5f; // [-0.5f, 0.5f]
-        Vector3 lineDirection(0, 0, 0);
-        if(size)
-            lineDirection = size->GetValue(time)*rand05;
-        particle->position = tempPosition + lineDirection;
-    }
     else if (emitterType == EMITTER_RECT)
     {
         // TODO: add emitter angle support
@@ -91,8 +82,25 @@ void ParticleEmitter3D::PrepareEmitterParameters(Particle * particle, float32 ve
     }
     else if (emitterType == EMITTER_ONCIRCLE)
     {
-        // here just set particle position
-        particle->position = tempPosition;
+		// Emit ponts from the sphere.
+		if (radius)
+		{
+			const float32 SPHERE_OFFSET = 10;
+			Vector3 directionVector(SPHERE_OFFSET * (1 - 2*(float32)Random::Instance()->RandFloat()),
+									SPHERE_OFFSET * (1 - 2*(float32)Random::Instance()->RandFloat()),
+									SPHERE_OFFSET * (1 - 2*(float32)Random::Instance()->RandFloat()));
+			
+			float32 curRadius = radius->GetValue(time);
+			directionVector.Normalize();
+			directionVector *= curRadius;
+
+			particle->position = tempPosition + directionVector;
+		}
+		else
+		{
+			// Just apply the temp position.
+			particle->position = tempPosition;
+		}
     }
 	
     Vector3 vel = Vector3(1.0f, 0.0f, 0.0f);
@@ -102,6 +110,7 @@ void ParticleEmitter3D::PrepareEmitterParameters(Particle * particle, float32 ve
 		vel = vel*rotationMatrix;
 	}
 	
+	// TODO, Yuri Coder, 2013/04/08. Only one branch is executed - is it correct?
     Vector3 rotVect(0, 0, 1);
     float32 phi = PI*2*(float32)Random::Instance()->RandFloat();
     if(vel.x != 0)
@@ -175,7 +184,7 @@ void ParticleEmitter3D::PrepareEmitterParameters(Particle * particle, float32 ve
 
 void ParticleEmitter3D::LoadParticleLayerFromYaml(YamlNode* yamlNode, bool isLong)
 {
-	ParticleLayer3D* layer = new ParticleLayer3D();
+	ParticleLayer3D* layer = new ParticleLayer3D(this);
 	layer->SetLong(isLong);
 
 	AddLayer(layer);
