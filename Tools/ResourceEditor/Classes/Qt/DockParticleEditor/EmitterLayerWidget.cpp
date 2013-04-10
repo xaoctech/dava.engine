@@ -310,7 +310,9 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	legends.push_back("size overlife X"); legends.push_back("size overlife Y");
 	sizeOverLifeTimeLine->Init(0, 1, updateMinimized, true);
 	sizeOverLifeTimeLine->SetMinLimits(0);
-	sizeOverLifeTimeLine->AddLines(PropLineWrapper<Vector2>(layer->sizeOverLifeXY).GetProps(), colors, legends);
+	Vector<QColor> colorsSizeOverLife;
+	colorsSizeOverLife.push_back(Qt::red); colorsSizeOverLife.push_back(Qt::darkGreen);
+	sizeOverLifeTimeLine->AddLines(PropLineWrapper<Vector2>(layer->sizeOverLifeXY).GetProps(), colorsSizeOverLife, legends);
 	sizeOverLifeTimeLine->EnableLock(true);
 
 	//LAYER_VELOCITY, LAYER_VELOCITY_VARIATION,
@@ -343,7 +345,7 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	alphaOverLifeTimeLine->Init(0, 1, updateMinimized);
 	alphaOverLifeTimeLine->SetMinLimits(0);
 	alphaOverLifeTimeLine->SetMaxLimits(1.f);
-	alphaOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->alphaOverLife).GetProps(), Qt::blue, "alpha over life");
+	alphaOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->alphaOverLife).GetProps(), Qt::red, "alpha over life");
 	
 	frameOverlifeCheckBox->setChecked(layer->frameOverLifeEnabled);
 	frameOverlifeFPSSpin->setValue(layer->frameOverLifeFPS);
