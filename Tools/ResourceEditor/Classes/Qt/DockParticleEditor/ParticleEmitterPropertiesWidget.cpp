@@ -5,6 +5,9 @@
 #include <QLineEdit>
 #include <QEvent>
 
+#define EMISSION_RANGE_MIN_LIMIT_DEGREES 0.0f
+#define EMISSION_RANGE_MAX_LIMIT_DEGREES 180.0f
+
 ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent) :
 	QWidget(parent)
 {
@@ -26,9 +29,6 @@ ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent
 	emitterTypeHBox->addWidget(emitterType);
 	mainLayout->addLayout(emitterTypeHBox);
 	connect(emitterType, SIGNAL(currentIndexChanged(int)), this, SLOT(OnValueChanged()));
-
-	emitterEmissionAngle = new TimeLineWidget(this);
-	InitWidget(emitterEmissionAngle);
 
 	emitterEmissionRange = new TimeLineWidget(this);
 	InitWidget(emitterEmissionRange);
@@ -83,10 +83,6 @@ void ParticleEmitterPropertiesWidget::OnValueChanged()
 	DVASSERT(emitterType->currentIndex() != -1);
 	ParticleEmitter::eType type = (ParticleEmitter::eType)emitterType->currentIndex();
 
-	PropLineWrapper<float32> emissionAngle;
-	if(!emitterEmissionAngle->GetValue(0, emissionAngle.GetPropsPtr()))
-		return;
-
 	PropLineWrapper<float32> emissionRange;
 	if(!emitterEmissionRange->GetValue(0, emissionRange.GetPropsPtr()))
 		return;
@@ -108,10 +104,11 @@ void ParticleEmitterPropertiesWidget::OnValueChanged()
 		return;
 
 	float32 life = emitterLife->value();
+	float32 currentLifeTime = emitter->GetLifeTime();
+	bool initEmittersByDef = FLOAT_EQUAL(life,currentLifeTime) ? false : true;
 	
 	CommandUpdateEmitter* commandUpdateEmitter = new CommandUpdateEmitter(emitter);
 	commandUpdateEmitter->Init(type,
-							   emissionAngle.GetPropLine(),
 							   emissionRange.GetPropLine(),
 							   emissionVector.GetPropLine(),
 							   radius.GetPropLine(),
@@ -120,11 +117,11 @@ void ParticleEmitterPropertiesWidget::OnValueChanged()
 							   life);
 	CommandsManager::Instance()->ExecuteAndRelease(commandUpdateEmitter);
 
-	Init(emitter, false);
+	Init(emitter, false, initEmittersByDef);
 	emit ValueChanged();
 }
 
-void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool updateMinimize)
+void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool updateMinimize, bool needUpdateTimeLimits)
 {
 	DVASSERT(emitter != 0);
 	this->emitter = emitter;
@@ -132,56 +129,56 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 	blockSignals = true;
 
 	float32 emitterLifeTime = emitter->GetLifeTime();
-	float minTime = 0.f;
-	float maxTime = emitterLifeTime;
+	float minTime		= 0.f;
+	float minTimeLimit	= 0.f;
+
+	float maxTime		= emitterLifeTime;
+	float maxTimeLimit	= emitterLifeTime;
 	emitterYamlPath->setText(QString::fromStdString(emitter->GetConfigPath()));
 	emitterType->setCurrentIndex(emitter->emitterType);
 
-	if(NULL != emitterEmissionAngle)
-	{
-		minTime = emitterEmissionAngle->GetMinBoundary();
-		maxTime = emitterEmissionAngle->GetMaxBoundary();
-	}
-	emitterEmissionAngle->Init(minTime, maxTime, updateMinimize);
-	emitterEmissionAngle->AddLine(0, PropLineWrapper<float32>(emitter->emissionAngle).GetProps(), Qt::blue, "emission angle");
-
-	if(NULL != emitterEmissionRange)
+	if(!needUpdateTimeLimits)
 	{
 		minTime = emitterEmissionRange->GetMinBoundary();
 		maxTime = emitterEmissionRange->GetMaxBoundary();
 	}
-	emitterEmissionRange->Init(minTime, maxTime, updateMinimize);
+	emitterEmissionRange->Init(minTime, maxTime, minTimeLimit, maxTimeLimit, updateMinimize);
 	emitterEmissionRange->AddLine(0, PropLineWrapper<float32>(emitter->emissionRange).GetProps(), Qt::blue, "emission range");
+	emitterEmissionRange->SetMinLimits(EMISSION_RANGE_MIN_LIMIT_DEGREES);
+	emitterEmissionRange->SetMaxLimits(EMISSION_RANGE_MAX_LIMIT_DEGREES);
+	emitterEmissionRange->SetYLegendMark(DEGREE_MARK_CHARACTER);
 
-	if(NULL != emitterEmissionVector)
+	if(!needUpdateTimeLimits)
 	{
 		minTime = emitterEmissionVector->GetMinBoundary();
 		maxTime = emitterEmissionVector->GetMaxBoundary();
 	}
-	emitterEmissionVector->Init(minTime, maxTime, updateMinimize, true);
+	emitterEmissionVector->Init(minTime, maxTime, minTimeLimit, maxTimeLimit, updateMinimize, true);
 	Vector<QColor> vectorColors;
 	vectorColors.push_back(Qt::blue); vectorColors.push_back(Qt::darkGreen); vectorColors.push_back(Qt::red);
 	Vector<QString> vectorLegends;
 	vectorLegends.push_back("emission vector: x"); vectorLegends.push_back("emission vector: y"); vectorLegends.push_back("emission vector: z");
 	emitterEmissionVector->AddLines(PropLineWrapper<Vector3>(emitter->emissionVector).GetProps(), vectorColors, vectorLegends);
 
-	if(NULL != emitterRadius)
+	if(!needUpdateTimeLimits)
 	{
 		minTime = emitterRadius->GetMinBoundary();
 		maxTime = emitterRadius->GetMaxBoundary();
 	}
-	emitterRadius->Init(minTime, maxTime, updateMinimize);
+	emitterRadius->Init(minTime, maxTime, minTimeLimit, maxTimeLimit, updateMinimize);
 	emitterRadius->AddLine(0, PropLineWrapper<float32>(emitter->radius).GetProps(), Qt::blue, "radius");
+	// Radius cannot be negative.
+	emitterRadius->SetMinLimits(0.0f);
 
 	emitterColorWidget->Init(0.f, emitterLifeTime, "color over life");
 	emitterColorWidget->SetValues(PropLineWrapper<Color>(emitter->colorOverLife).GetProps());
 
-	if(NULL != emitterSize)
+	if(!needUpdateTimeLimits)
 	{
 		minTime = emitterSize->GetMinBoundary();
 		maxTime = emitterSize->GetMaxBoundary();
 	}
-	emitterSize->Init(minTime, maxTime, updateMinimize, true);
+	emitterSize->Init(minTime, maxTime, minTimeLimit, maxTimeLimit, updateMinimize, true);
 	emitterSize->SetMinLimits(0);
 	Vector<QColor> sizeColors;
 	sizeColors.push_back(Qt::blue); sizeColors.push_back(Qt::darkGreen); sizeColors.push_back(Qt::red);
@@ -205,7 +202,6 @@ void ParticleEmitterPropertiesWidget::RestoreVisualState(KeyedArchive* visualSta
 	if (!visualStateProps)
 		return;
 
-	emitterEmissionAngle->SetVisualState(visualStateProps->GetArchive("EMITTER_EMISSION_ANGLE_PROPS"));
 	emitterEmissionRange->SetVisualState(visualStateProps->GetArchive("EMITTER_EMISSION_RANGE_PROPS"));
 	emitterEmissionVector->SetVisualState(visualStateProps->GetArchive("EMITTER_EMISSION_VECTOR_PROPS"));
 	emitterRadius->SetVisualState(visualStateProps->GetArchive("EMITTER_RADIUS_PROPS"));
@@ -218,9 +214,6 @@ void ParticleEmitterPropertiesWidget::StoreVisualState(KeyedArchive* visualState
 		return;
 
 	KeyedArchive* props = new KeyedArchive();
-
-	emitterEmissionAngle->GetVisualState(props);
-	visualStateProps->SetArchive("EMITTER_EMISSION_ANGLE_PROPS", props);
 
 	props->DeleteAllKeys();
 	emitterEmissionRange->GetVisualState(props);

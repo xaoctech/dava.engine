@@ -63,6 +63,8 @@ void SpritePackerHelper::Pack()
 
 void SpritePackerHelper::Reload()
 {
+    Map<String, Sprite *>spritesForReloading;
+    
 	for(int i = 0; i < SceneDataManager::Instance()->SceneCount(); ++i)
 	{
 		SceneData *sceneData = SceneDataManager::Instance()->SceneGet(i);
@@ -70,18 +72,24 @@ void SpritePackerHelper::Reload()
 		{
 			// All the Particle Effects must be re-started after sprites are reloaded to avoid
 			// issue like DF-545.
-			ReloadParticleSprites(sceneData);
+			EnumerateSpritesForReloading(sceneData, spritesForReloading);
 		}
-	}
+    }
 
+    Map<String, Sprite *>::const_iterator endIt = spritesForReloading.end();
+    for(Map<String, Sprite *>::const_iterator it = spritesForReloading.begin(); it != endIt; ++it)
+    {
+        it->second->Reload();
+    }
+    
 	ParticlesEditorController::Instance()->RefreshSelectedNode();
 }
 
-void SpritePackerHelper::ReloadParticleSprites(SceneData* sceneData)
+void SpritePackerHelper::EnumerateSpritesForReloading(SceneData* sceneData, Map<String, Sprite *> &sprites)
 {
-	List<Entity*> particleEffects;
+    List<Entity*> particleEffects;
 	sceneData->GetAllParticleEffects(particleEffects);
-
+    
 	for (auto it = particleEffects.begin(); it != particleEffects.end(); ++it)
 	{
 		Entity* curNode = (*it);
@@ -91,24 +99,30 @@ void SpritePackerHelper::ReloadParticleSprites(SceneData* sceneData)
 		{
 			continue;
 		}
-
+        
 		effectComponent->Stop();
-
+        
 		// All the children of this Scene Node must have Emitter components.
 		int32 emittersCount = curNode->GetChildrenCount();
 		for (int32 i = 0; i < emittersCount; i ++)
 		{
 			Entity* childNode = curNode->GetChild(i);
 			ParticleEmitter * emitter = GetEmitter(childNode);
-
+            
 			if (!emitter)
 			{
 				continue;
 			}
 			
-			emitter->ReloadLayerSprites();
+            Vector<ParticleLayer*> & layers = emitter->GetLayers();
+            int32 layersCount = layers.size();
+            for (int il = 0; il < layersCount; ++il)
+            {
+                Sprite *sprite = layers[il]->GetSprite();
+                sprites[sprite->GetRelativePathname()] = sprite;
+            }
 		}
-
+        
 		effectComponent->Start();
 	}
 }

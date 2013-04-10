@@ -18,13 +18,17 @@ public:
 	explicit ParticleEmitterPropertiesWidget(QWidget* parent = 0);
 	~ParticleEmitterPropertiesWidget();
 
-	void Init(DAVA::ParticleEmitter* emitter, bool updateMinimize);
+	void Init(DAVA::ParticleEmitter* emitter, bool updateMinimize, bool needUpdateTimeLimits = true);
 	void Update();
 	
 	virtual bool eventFilter( QObject * o, QEvent * e );
 
 	virtual void StoreVisualState(KeyedArchive* visualStateProps);
 	virtual void RestoreVisualState(KeyedArchive* visualStateProps);
+
+	// Accessors to timelines.
+	TimeLineWidget* GetEmitterRadiusTimeline() {return emitterRadius;};
+	TimeLineWidget* GetEmitterSizeTimeline() {return emitterSize;};
 
 signals:
 	void ValueChanged();
@@ -41,7 +45,7 @@ private:
 
 	QLineEdit* emitterYamlPath;
 	QComboBox* emitterType;
-	TimeLineWidget* emitterEmissionAngle;
+
 	TimeLineWidget* emitterEmissionRange;
 	TimeLineWidget* emitterEmissionVector;
 	TimeLineWidget* emitterRadius;
