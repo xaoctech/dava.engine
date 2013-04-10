@@ -19,6 +19,7 @@
 #include "../Commands/SetSwitchIndexCommands.h"
 #include "../Commands/HangingObjectsCommands.h"
 #include "../Commands/EditCommands.h"
+#include "../Commands/MaterialViewOptionsCommands.h"
 #include "../Constants.h"
 #include "../SceneEditor/EditorSettings.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
@@ -491,6 +492,11 @@ void QtMainWindowHandler::ToggleSetSwitchIndex(DAVA::uint32  value, SetSwitchInd
     CommandsManager::Instance()->ExecuteAndRelease(new CommandToggleSetSwitchIndex(value,state));
 }
 
+void QtMainWindowHandler::MaterialViewOptionChanged(int index)
+{
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandChangeMaterialViewOption((Material::eViewOptions)index));
+}
+
 void QtMainWindowHandler::ToggleHangingObjects(float value, bool isEnabled)
 {
 	CommandsManager::Instance()->ExecuteAndRelease(new CommandToggleHangingObjects(value, isEnabled));
@@ -560,6 +566,24 @@ void QtMainWindowHandler::SetCustomColorsWidgetsState(bool state)
 		ChangeBrushSizeCustomColors(customColorsBrushSizeSlider->value());
 		ChangeColorCustomColors(customColorsColorComboBox->currentIndex());
 	}
+}
+
+void QtMainWindowHandler::RegisterMaterialViewOptionsWidgets(QComboBox* combo)
+{
+	this->comboMaterialViewOption = combo;
+}
+
+void QtMainWindowHandler::SetMaterialViewOptionsWidgetsState(bool state)
+{
+	comboMaterialViewOption->blockSignals(true);
+	comboMaterialViewOption->setEnabled(state);
+	comboMaterialViewOption->blockSignals(false);
+}
+
+
+void QtMainWindowHandler::SelectMaterialViewOption(Material::eViewOptions value)
+{
+	comboMaterialViewOption->setCurrentIndex((int)value);
 }
 
 void QtMainWindowHandler::RegisterSetSwitchIndexWidgets(QSpinBox* spinBox, QRadioButton* rBtnSelection, QRadioButton* rBtnScene, QPushButton* btnOK)
@@ -863,4 +887,10 @@ void QtMainWindowHandler::OnSceneReleased(SceneData *scene)
 	CommandsManager::Instance()->SceneReleased(scene);
 
 	UpdateRecentScenesList();
+}
+
+
+void QtMainWindowHandler::ConvertToShadow()
+{
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandConvertToShadow());
 }

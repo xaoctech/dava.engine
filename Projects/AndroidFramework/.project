@@ -177,31 +177,6 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>bin/classes/Internal/Android.mk</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Android.mk</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/DAVAConfig.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/DAVAConfig.h</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/DAVAEngine.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/DAVAEngine.cpp</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/DAVAEngine.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/DAVAEngine.h</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/DoxygenDocumenation.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/DoxygenDocumenation.h</locationURI>
-		</link>
-		<link>
 			<name>src/Internal/Animation/AnimatedObject.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Animation/AnimatedObject.cpp</locationURI>
@@ -1510,16 +1485,6 @@
 			<name>src/Internal/Particles/ParticleLayer3D.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Particles/ParticleLayer3D.h</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Particles/ParticleLayerLong.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Particles/ParticleLayerLong.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Particles/ParticleLayerLong.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Particles/ParticleLayerLong.h</locationURI>
 		</link>
 		<link>
 			<name>src/Internal/Particles/ParticlePropertyLine.cpp</name>
@@ -4185,16 +4150,6 @@
 			<name>bin/classes/Internal/Particles/ParticleLayer3D.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Particles/ParticleLayer3D.h</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Particles/ParticleLayerLong.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Particles/ParticleLayerLong.cpp</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Particles/ParticleLayerLong.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Particles/ParticleLayerLong.h</locationURI>
 		</link>
 		<link>
 			<name>bin/classes/Internal/Particles/ParticlePropertyLine.cpp</name>

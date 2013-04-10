@@ -14,7 +14,7 @@ public:
     explicit Settings(QObject *parent = 0);
     
     static Settings* GetInstance();
-    static int GetVersion(const QString& strVersion);
+    static QString GetVersion(const QString& strVersion);
 
     void Init();
 

@@ -17,12 +17,19 @@
 #define LOCK_WIDTH 45
 #define SCALE_WIDTH 35
 
-#define GRAPH_HEIGHT 150
-#define GRAPH_OFFSET_STEP 10
+#define GRAPH_HEIGHT			150
+#define GRAPH_OFFSET_STEP		10
 
-#define MINIMUM_DISPLAYED_TIME 0.02f
-#define ZOOM_STEP 0.1f
-#define UI_RECTANGLE_OFFSET 1.5
+#define MINIMUM_DISPLAYED_TIME	0.02f
+#define ZOOM_STEP				0.1f
+#define UI_RECTANGLE_OFFSET		1.5
+
+#define SCROLL_BAR_HEIGHT		12
+
+#define MIN_ZOOM				1.0f
+#define MAX_ZOOM				3.0f
+#define ZOOM_SLIDER_LENGTH		100
+
 
 TimeLineWidget::TimeLineWidget(QWidget *parent) :
 	QWidget(parent)
@@ -33,6 +40,8 @@ TimeLineWidget::TimeLineWidget(QWidget *parent) :
 	maxValueLimit = std::numeric_limits<float32>::infinity();
 	minTime = 0.0;
 	maxTime = 1;
+	generalMinTime = minTime;
+	generalMaxTime = maxTime;
 	initialTimeInterval = 1;
 	
 	backgroundBrush.setColor(Qt::white);
@@ -54,6 +63,11 @@ TimeLineWidget::TimeLineWidget(QWidget *parent) :
 	gridStyle = GRID_STYLE_LIMITS;
 	
 	setMouseTracking(true);
+
+	horizontalScrollBar = new QScrollBar(Qt::Horizontal, this);
+	connect(horizontalScrollBar, SIGNAL(sliderMoved(int)), this, SLOT(HandleHorizontalScrollChanged(int)));
+	zoomSlider = new QSlider(Qt::Horizontal, this);
+	connect(zoomSlider, SIGNAL(sliderMoved(int)), this, SLOT(HandleZoomScrollChanged(int)));
 	UpdateSizePolicy();
 
 	isCtrlPressed = false;
@@ -62,15 +76,19 @@ TimeLineWidget::TimeLineWidget(QWidget *parent) :
 
 TimeLineWidget::~TimeLineWidget()
 {
+	disconnect(horizontalScrollBar, SIGNAL(sliderMoved(int)), this, SLOT(HandleHorizontalScrollChanged(int)));
+	delete horizontalScrollBar;
 
+	disconnect(zoomSlider, SIGNAL(sliderMoved(int)), this, SLOT(HandleZoomScrollChanged(int)));
+	delete zoomSlider;
 }
 
 QString TimeLineWidget::float2QString(float32 value) const
 {
 	QString strValue;
-	if (value < 10)
+	if (fabs(value) < 10)
 		strValue = "%.2f";
-	else if (value < 100)
+	else if (fabs(value) < 100)
 		strValue = "%.1f";
 	else
 		strValue = "%.0f";
@@ -104,7 +122,10 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 			QString legend = iter->second.legend;
 				
 			painter.setPen(iter->second.color);
-			painter.drawText(rect(), Qt::AlignCenter, legend);
+			
+			QRect textRect = rect();
+			textRect.adjust(3, 0, 0, 0);
+			painter.drawText(textRect, Qt::AlignLeft, legend);
 		}
 		else
 		{
@@ -136,6 +157,12 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 		DrawUITriangle( painter, GetMinimizeRect(), 0);
 	}
 	
+
+	//draw scroll bar
+	UpdateScrollBarPosition();
+
+	//draw slider
+	UpdateSliderPosition();
 	
 	//draw maximize box
 	{
@@ -276,14 +303,19 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 			
 			if (gridStyle == GRID_STYLE_LIMITS)
 			{
-				QRect textRect;
-				textRect = QRect(1, graphRect.top(), graphRect.left(), graphRect.height());
-				painter.drawText(textRect, Qt::AlignTop | Qt::AlignHCenter, float2QString(maxValue));
-				painter.drawText(textRect, Qt::AlignBottom | Qt::AlignHCenter, float2QString(minValue));
+				// Draw Y axe legend.
+				QRect textRect = QRect(1, graphRect.top(), graphRect.left(), graphRect.height());
+				QString value = QString("%1%2").arg(float2QString(minValue)).arg(yLegendMark);
+				painter.drawText(textRect, Qt::AlignBottom | Qt::AlignHCenter, value);
+				value = QString("%1%2").arg(float2QString(maxValue)).arg(yLegendMark);
+				painter.drawText(textRect, Qt::AlignTop | Qt::AlignHCenter, value);
 
+				// Draw X axe legend.
 				textRect = QRect(graphRect.left(), graphRect.bottom() + 1, graphRect.width(), LEGEND_WIDTH);
-				painter.drawText(textRect, Qt::AlignLeft | Qt::AlignTop, float2QString(minTime));
-				painter.drawText(textRect, Qt::AlignRight | Qt::AlignTop, float2QString(maxTime));
+				value = QString("%1%2").arg(float2QString(minTime)).arg(xLegendMark);
+				painter.drawText(textRect, Qt::AlignLeft | Qt::AlignTop, value);
+				value = QString("%1%2").arg(float2QString(maxTime)).arg(xLegendMark);
+				painter.drawText(textRect, Qt::AlignRight | Qt::AlignTop, value);
 			}
 		}
 		
@@ -341,7 +373,14 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 void TimeLineWidget::DrawLine(QPainter* painter, uint32 lineId)
 {
 	if (lines[lineId].line.size() == 0)
+	{
 		return;
+	}
+
+	if (FLOAT_EQUAL(generalMaxTime, generalMinTime))//in case of zero life time
+	{
+		return;
+	}
 
 	QBrush pointBrush;
 	pointBrush.setColor(lines[lineId].color);
@@ -414,8 +453,6 @@ QPoint TimeLineWidget::GetDrawPoint(const Vector2& point) const
 	QRect graphRect = GetGraphRect();
 	float x = graphRect.x() + graphRect.width() * (point.x - minTime) / time;
 
-	float rectSize =graphRect.x() + graphRect.width();
-
 	float y = graphRect.bottom() - graphRect.height() * (point.y - minValue) / value;
 	
 	return QPoint(x, y);
@@ -454,12 +491,32 @@ void TimeLineWidget::Init(float32 minT, float32 maxT, bool updateSizeState, bool
 
 	this->minTime = minT;
 	this->maxTime = maxT;
-	this->initialTimeInterval = maxTime - minTime;
+	this->generalMinTime = minT;
+	this->generalMaxTime = maxT;
+	this->initialTimeInterval = generalMaxTime - generalMinTime;
 	this->updateSizeState = updateSizeState;
 	this->aliasLinePoint = aliasLinePoint;
 	this->allowDeleteLine = allowDeleteLine;
 
 	this->isInteger = integer;
+	this->scale = 1.0f;
+
+	UpdateScrollBarSlider();
+	UpdateZoomSlider();
+}
+
+void TimeLineWidget::Init(float32 minT, float32 maxT, float32 generalMinT, float32 generalMaxT, bool updateSizeState, bool aliasLinePoint, bool allowDeleteLine, bool integer)
+{
+	Init(minT, maxT, updateSizeState, aliasLinePoint, allowDeleteLine, integer);
+	this->minTime = minT;
+	this->maxTime = maxT;
+	this->generalMinTime = generalMinT;
+	this->generalMaxTime = generalMaxT;
+	this->initialTimeInterval = generalMaxTime - generalMinTime;
+	scale = (generalMaxT-generalMinT) / (maxT- minT);
+
+	UpdateScrollBarSlider();
+	UpdateZoomSlider();
 }
 
 void TimeLineWidget::SetMinLimits(float32 minV)
@@ -577,6 +634,9 @@ void TimeLineWidget::UpdateLimits()
 		{
 			newMaxValue = Max(iter->second.line[i].y, newMaxValue);
 			newMinValue = Min(iter->second.line[i].y, newMinValue);
+/*
+			maxTime = Max(iter->second.line[i].x, maxTime);
+			minTime = Min(iter->second.line[i].x, minTime);*/
 		}
 	}
 	
@@ -783,7 +843,7 @@ QRect TimeLineWidget::GetGraphRect() const
 	}
 	else
 	{
-		graphRect.setHeight(this->height() - graphRect.y() - LEGEND_WIDTH - 1);
+		graphRect.setHeight(this->height() - graphRect.y() - LEGEND_WIDTH - 1 - SCROLL_BAR_HEIGHT);
 	}
 //	else
 //	{
@@ -1083,7 +1143,7 @@ void TimeLineWidget::SetPointValue(uint32 lineId, uint32 pointId, Vector2 value,
 			float x1 = lines[lineId].line[i - 1].x;
 			float x2 = lines[lineId].line[i].x;
 			
-			if ((x2 - x1) < (maxTime - minTime) * 0.01)
+			if ((x2 - x1) < (maxTime - minTime) * 0.001)
 			{
 				if (i < lines[lineId].line.size() - 1)
 				{
@@ -1231,28 +1291,31 @@ QRect TimeLineWidget::GetMinimizeRect() const
 
 QRect TimeLineWidget::GetIncreaseRect() const
 {
-	QRect rect = GetLockRect();
+	QRect rect = GetScaleRect();
 	rect.translate(-rect.width() * UI_RECTANGLE_OFFSET, 0);
 	return rect;
 }
 
 QRect TimeLineWidget::GetScaleRect() const
 {
-	QRect rect(GetIncreaseRect());
+	QRect rect(GetOffsetLeftRect());
 	rect.translate(-SCALE_WIDTH, 0);
 	return rect;
 }
 
 QRect TimeLineWidget::GetDecreaseRect() const
 {
-	QRect rect = GetScaleRect();
-	rect.translate(-rect.width() * UI_RECTANGLE_OFFSET, 0);
+	QRect rect = GetSliderRect();
+	int sideLength = LEGEND_WIDTH - 2;
+	rect.translate(-sideLength * UI_RECTANGLE_OFFSET, 0);
+	rect.setWidth(sideLength);
+	rect.setHeight(sideLength);
 	return rect;
 }
 
 QRect TimeLineWidget::GetOffsetRightRect() const
 {
-	QRect rect = GetDecreaseRect();
+	QRect rect = GetLockRect();
 	rect.translate(-rect.width() * UI_RECTANGLE_OFFSET, 0);
 	return rect;
 }
@@ -1262,6 +1325,57 @@ QRect TimeLineWidget::GetOffsetLeftRect() const
 	QRect rect = GetOffsetRightRect();
 	rect.translate(-rect.width() * UI_RECTANGLE_OFFSET, 0);
 	return rect;
+}
+
+QRect TimeLineWidget::GetScrollBarRect() const
+{
+	QRect graphRect = GetGraphRect();
+	QRect rect = QRect(graphRect.left(), graphRect.bottom() + SCROLL_BAR_HEIGHT, graphRect.width(), SCROLL_BAR_HEIGHT);
+	return rect;
+}
+
+QRect TimeLineWidget::GetSliderRect() const
+{
+	QRect rect = GetIncreaseRect();
+	rect.translate(-(ZOOM_SLIDER_LENGTH + 5), 0);
+	rect.setWidth(ZOOM_SLIDER_LENGTH);
+	rect.setHeight(rect.height() + 4);
+	return rect;
+}
+
+void TimeLineWidget::UpdateScrollBarPosition()
+{
+	QRect scrollBarRect = GetScrollBarRect();
+	horizontalScrollBar->move(scrollBarRect.x(), scrollBarRect.y());
+	horizontalScrollBar->resize(scrollBarRect.width(), scrollBarRect.height());
+}
+
+void TimeLineWidget::UpdateSliderPosition()
+{
+	QRect sliderRect = GetSliderRect();
+	zoomSlider->move(sliderRect.x(), sliderRect.y());
+	zoomSlider->resize(sliderRect.width(), sliderRect.height());
+}
+
+void TimeLineWidget::UpdateZoomSlider()
+{
+	this->zoomSlider->setPageStep(100 * (MAX_ZOOM - MIN_ZOOM));
+	this->zoomSlider->setMinimum(100 * MIN_ZOOM);
+	this->zoomSlider->setMaximum(100 * MAX_ZOOM);
+	
+	this->zoomSlider->setSliderPosition(ceil (scale * 100));
+}
+
+void TimeLineWidget::UpdateScrollBarSlider()
+{
+	int rengeStep = 100 * (maxTime - minTime);
+	int documentLength = 100 * (generalMaxTime - generalMinTime) ;
+	
+	this->horizontalScrollBar->setPageStep(rengeStep);
+	this->horizontalScrollBar->setMinimum(0);
+	this->horizontalScrollBar->setMaximum(documentLength - rengeStep);
+	
+	this->horizontalScrollBar->setSliderPosition(ceil (minTime * 100));
 }
 
 QRect TimeLineWidget::GetMaximizeRect() const
@@ -1279,24 +1393,39 @@ QRect TimeLineWidget::GetLockRect() const
 
 void TimeLineWidget::UpdateSizePolicy()
 {
+	QRect gRect = GetGraphRect();
+
 	switch (sizeState)
 	{
 		case SIZE_STATE_MINIMIZED:
 		{
 			setMinimumHeight(16);
 			setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+			horizontalScrollBar->setEnabled(false);
+			horizontalScrollBar->setVisible(false);
+			zoomSlider->setEnabled(false);
 		} break;
 		case SIZE_STATE_NORMAL:
 		{
-			setMinimumHeight(GetLegendHeight() + GRAPH_HEIGHT);
+			setMinimumHeight(GetLegendHeight() + GRAPH_HEIGHT + SCROLL_BAR_HEIGHT);
 			setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+			
+			horizontalScrollBar->setEnabled(true);
+			horizontalScrollBar->setVisible(true);
+
+			zoomSlider->setEnabled(true);
 		} break;
 		case SIZE_STATE_DOUBLE:
 		{
 			int height = GetLegendHeight() + GRAPH_HEIGHT;
 			height *= 2;
-			setMinimumHeight(height);
+			setMinimumHeight(height + SCROLL_BAR_HEIGHT);
 			setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+			horizontalScrollBar->setEnabled(true);
+			horizontalScrollBar->setVisible(true);
+
+			zoomSlider->setEnabled(true);
 		} break;
 	}
 	
@@ -1388,33 +1517,78 @@ int32 TimeLineWidget::GetIntValue(float32 value) const
 	return (int32)(value + 0.5f * sign);
 }
 
-void TimeLineWidget::PerformZoom(float newScale)
+void TimeLineWidget::PerformZoom(float newScale, bool moveSlider)
 {
-	if(newScale < 0 || FLOAT_EQUAL(newScale, 0.0f))
+	float currentInterval = maxTime - minTime;
+	
+	if(newScale < MIN_ZOOM || newScale > MAX_ZOOM || currentInterval < MINIMUM_DISPLAYED_TIME  )
 	{
 		return;
 	}
 
-	float interval = maxTime - minTime;
-	
-	if( interval > MINIMUM_DISPLAYED_TIME && interval < std::numeric_limits<int>::max() ) 
+	if( sizeState != SIZE_STATE_NORMAL )
 	{
-		float oldCenter =  minTime + interval / 2;
-		interval = initialTimeInterval / newScale;
-		minTime = oldCenter - (interval / 2);
-		maxTime = oldCenter + (interval / 2);
-		scale = newScale;
+		return;
+	}
+
+	float currentCenter =  minTime + currentInterval / 2;
+	float newInterval = initialTimeInterval / newScale;
+	
+	minTime = currentCenter - (newInterval / 2);
+	maxTime = currentCenter + (newInterval / 2);
+	
+	if(minTime < generalMinTime)
+	{
+		minTime = generalMinTime;
+		maxTime = minTime + newInterval;
+	}
+	if(maxTime > generalMaxTime)
+	{
+		minTime = generalMaxTime - newInterval;
+		maxTime = generalMaxTime;
+	}
+	
+	scale = newScale;
+
+	UpdateScrollBarSlider();
+
+	if(moveSlider)
+	{
+		UpdateZoomSlider();
 	}
 }
 
-void TimeLineWidget::PerformOffset(int value)
+void TimeLineWidget::PerformOffset(int value,  bool moveScroll)
 {
+	if( sizeState != SIZE_STATE_NORMAL )
+	{
+		return;
+	}
+
 	//calculate new values of boundaries (in seconds) from given parametr(in pixels)
 	float pixelsPerTime = GetGraphRect().width() / (maxTime - minTime);
 	float offsetFactor =  value / pixelsPerTime ;
 	
+	float newMinTime = minTime + offsetFactor;
+	
+	if(newMinTime < generalMinTime)
+	{
+		offsetFactor = (minTime - generalMinTime)*(-1.0f);
+	}
+	
+	float newMaxTime = maxTime + offsetFactor;
+	if(newMaxTime > generalMaxTime)
+	{
+		offsetFactor = generalMaxTime - maxTime;
+	}
+
 	maxTime += offsetFactor;
 	minTime += offsetFactor;
+
+	if(moveScroll)
+	{
+		UpdateScrollBarSlider();
+	}
 }
 
 void TimeLineWidget::DrawUITriangle(QPainter& painter, const QRect& rect, int rotateDegree)
@@ -1497,6 +1671,33 @@ TimeLineWidget::ePositionRelativelyToDrawRect TimeLineWidget::GetPointPositionFr
 		return POSITION_RIGHT;
 	}
 	return TimeLineWidget::POSITION_INSIDE;
+}
+
+// Add the mark to X/Y legend values (like 'deg' or 'pts').
+void TimeLineWidget::SetXLegendMark(const QString& value)
+{
+	this->xLegendMark = value;
+}
+
+void TimeLineWidget::SetYLegendMark(const QString& value)
+{
+	this->yLegendMark = value;
+}
+
+void TimeLineWidget::HandleHorizontalScrollChanged(int value)// value in miliseconds
+{
+	float pixelsPerTime = GetGraphRect().width() / (maxTime - minTime);
+	float newMinTime = (float)value / 100;
+	int offsetFactor = (newMinTime - minTime) * pixelsPerTime ;
+	PerformOffset(offsetFactor, false);
+	this->update();
+}
+
+void TimeLineWidget::HandleZoomScrollChanged(int value)
+{
+	float newScale = (float) value / 100;
+	PerformZoom(newScale, false);
+	this->update();
 }
 
 SetPointValueDlg::SetPointValueDlg(float32 time, float32 minTime, float32 maxTime, float32 value, float32 minValue, float32 maxValue, QWidget *parent, bool integer):
@@ -1585,3 +1786,4 @@ float32 SetPointValueDlg::GetValue() const
 
 	return valueSpin->value();
 }
+

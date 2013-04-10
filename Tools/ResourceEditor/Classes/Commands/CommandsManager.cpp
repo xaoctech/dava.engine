@@ -73,6 +73,15 @@ void CommandsManager::ClearQueueTail()
 	if ((activeQueue->commandIndex >= -1) &&
 		(activeQueue->commandIndex < (int32)activeQueue->commands.size()))
 	{
+        if(activeQueue->commandIndex == UNDO_QUEUE_SIZE - 1)
+        {
+            SafeRelease(activeQueue->commands[0]);
+            activeQueue->commands.erase(activeQueue->commands.begin());
+            
+            --activeQueue->commandIndex;
+        }
+        
+        
 		int32 newCount = activeQueue->commandIndex + 1;
 		for_each(activeQueue->commands.begin() + newCount,
 				 activeQueue->commands.end(),
