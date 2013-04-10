@@ -950,18 +950,13 @@ RenderBatch * ParticleLayer::GetRenderBatch()
 
 void ParticleLayer::ReloadSprite()
 {
-	if (this->sprite)
+	if (sprite)
 	{
         DeleteAllParticles();
-		this->sprite->Reload();
+        sprite->Reload();
         UpdateFrameTimeline();
         
-        if(sprite)
-        {
-            pivotPoint = Vector2(sprite->GetWidth()/2.0f, sprite->GetHeight()/2.0f);
-        }
-        
-		this->sprite->Reload();
+        pivotPoint = Vector2(sprite->GetWidth()/2.0f, sprite->GetHeight()/2.0f);
 	}
 	
 	UpdateFrameTimeline();
