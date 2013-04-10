@@ -271,14 +271,21 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 			
 			@Override
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER)
+				if (event.getAction() == KeyEvent.ACTION_DOWN)
 				{
-					glView.queueEvent(new Runnable() {
-						@Override
-						public void run() {
-							JNITextField.TextFieldShouldReturn();
-						}
-					});
+					if(keyCode == KeyEvent.KEYCODE_ENTER)
+					{
+						glView.queueEvent(new Runnable() {
+							@Override
+							public void run() {
+								JNITextField.TextFieldShouldReturn();
+							}
+						});
+					}
+					else
+					{
+						glView.onKeyDown(keyCode, event);
+					}
 					return true;
 				}
 				return false;
