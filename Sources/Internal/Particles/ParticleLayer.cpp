@@ -956,10 +956,7 @@ void ParticleLayer::ReloadSprite()
         sprite->Reload();
         UpdateFrameTimeline();
         
-        if(sprite)
-        {
-            pivotPoint = Vector2(sprite->GetWidth()/2.0f, sprite->GetHeight()/2.0f);
-        }
+        pivotPoint = Vector2(sprite->GetWidth()/2.0f, sprite->GetHeight()/2.0f);
 	}
 	
 	UpdateFrameTimeline();
