@@ -263,7 +263,7 @@ LayerParticleEditorNode* ParticlesEditorController::AddParticleLayerToNode(Emitt
     ParticleLayer *layer;
     if(emitter->GetIs3D())
     {
-        layer = new ParticleLayer3D();
+        layer = new ParticleLayer3D(emitter);
     }
     else
     {
