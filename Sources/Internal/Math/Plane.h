@@ -64,7 +64,7 @@ public:
 	inline float32 DistanceToPoint(const Vector3 & point) const;
     
     //! Find intersection with ray.
-    inline bool IntersectByRay ( const Vector3 &origin, const Vector3& dir, float& outT ) const;
+	inline bool IntersectByRay(const Vector3 & from, const Vector3 & to, float32 & intrsectDistance) const;
 
 	//! Normalize plane equation
 	inline void Normalize();
@@ -131,17 +131,17 @@ inline float32 Plane::DistanceToPoint(const Vector3 & point) const
 	//return (n.DotProduct(point) + d);
 }
 
-inline bool Plane::IntersectByRay(const Vector3 &origin, const Vector3& dir, float& outT) const
+inline bool Plane::IntersectByRay(const Vector3 & from, const Vector3 & to, float32 & intrsectDistance) const
 {
-    float   numer = - (d + (n.DotProduct(origin)));
-    float   denom = n.DotProduct(dir);
+    float   numer = - (d + (n.DotProduct(from)));
+    float   denom = n.DotProduct(to);
         
     if (Abs(denom) < EPSILON)
     {
         return false;
     }
         
-    outT = numer / denom;
+    intrsectDistance = numer / denom;
         
     return true;
 }
