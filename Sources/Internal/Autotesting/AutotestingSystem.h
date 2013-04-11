@@ -120,6 +120,8 @@ protected:
     String GetCurrentTimeString();
     
 	//DB
+	KeyedArchive *FindOrInsertRunArchive(MongodbUpdateObject* dbUpdateObject, const String &runId);
+
     KeyedArchive *FindOrInsertTestArchive(MongodbUpdateObject *dbUpdateObject, const String &testId);
     KeyedArchive *FindOrInsertTestStepArchive(KeyedArchive *testArchive, const String &stepId);
     KeyedArchive *FindOrInsertTestStepLogEntryArchive(KeyedArchive *testStepArchive, const String &logId);
