@@ -2,7 +2,7 @@ TIMEOUT = 20.0 -- Big time out for waiting
 TIMECLICK = 0.2 -- time for simple action
 DELAY = 0.5 -- time for simulation of human reaction
 
-MULTIPLAYER_TIMEOUT = 120 -- Multiplayer timeout
+MULTIPLAYER_TIMEOUT = 300 -- Multiplayer timeout
 
 -- API setup
 function SetPackagePath(path)
