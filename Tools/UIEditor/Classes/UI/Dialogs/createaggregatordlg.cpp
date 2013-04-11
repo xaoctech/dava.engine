@@ -66,13 +66,13 @@ void CreateAggregatorDlg::accept()
 	QString errorMsg("");
 	if (!name.isNull() && !name.isEmpty())
 	{
-		if(!HierarchyTreeController::Instance()->GetActivePlatform()->IsAggregatorNamePresent(name))
+		if(!HierarchyTreeController::Instance()->GetActivePlatform()->IsAggregatorOrScreenNamePresent(name))
 		{
 			QDialog::accept();
 		}
 		else
 		{
-			errorMsg = "Please fill aggregator name field with unique value.";
+			errorMsg = "Please fill aggregator name field with unique value.\r\n The same name with any of screen is forbidden.";
 		}
 	}
 	else
