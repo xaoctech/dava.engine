@@ -291,11 +291,11 @@ void AutotestingSystem::ClearTestInDB()
     MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
     
     // clear test
-    String testId = Format("Test%d", testIndex);
+    String testId = GetTestId(testIndex);
     KeyedArchive* currentTestArchive = InsertTestArchive(dbUpdateObject, testId, testName, needClearGroupInDB);
     
     // Create document for step 0 -  'Precondition'
-    String stepId = Format("Step%d", stepIndex);
+    String stepId = GetStepId(stepIndex);
     InsertStepArchive(currentTestArchive, stepId, "Precondition");
 
     SaveToDB(dbUpdateObject);
@@ -712,7 +712,7 @@ void AutotestingSystem::OnTestStart(const String &_testName)
 	Logger::Debug("AutotestingSystem::OnTestStart %s", _testName.c_str());
     testName = _testName;
     
-    String testId = Format("Test%d", testIndex);
+    String testId = GetTestId(testIndex);
     MongodbUpdateObject *dbUpdateObject = new MongodbUpdateObject();
     KeyedArchive *currentTestArchive = FindOrInsertTestArchive(dbUpdateObject, testId);
     currentTestArchive->SetString("Name", testName);
@@ -727,8 +727,8 @@ void AutotestingSystem::OnStepStart(const String &stepName)
 
 	OnStepFinished();
 
-	String testId = Format("Test%d", testIndex);
-	String stepId = Format("Step%d", ++stepIndex);
+	String testId = GetTestId(testIndex);
+	String stepId = GetStepId(++stepIndex);
 
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
 	KeyedArchive* currentTestArchive = FindOrInsertTestArchive(dbUpdateObject, testId); //FindTestArchive(dbUpdateObject, testId);	
@@ -753,9 +753,9 @@ void AutotestingSystem::Log(const String &level, const String &message)
 {
 	Logger::Debug("AutotestingSystem::Log [%s]%s", level.c_str(), message.c_str());
 	
-	String testId = Format("Test%d", testIndex);
-	String stepId = Format("Step%d", stepIndex);
-	String logId = Format("Message%d", ++logIndex);
+	String testId = GetTestId(testIndex);
+	String stepId = GetStepId(stepIndex);
+	String logId = GetLogId(++logIndex);
 
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
 	KeyedArchive* currentTestArchive = FindOrInsertTestArchive(dbUpdateObject, testId);//FindTestArchive(dbUpdateObject, testId);
@@ -780,8 +780,8 @@ void AutotestingSystem::SaveScreenShotNameToDB()
 {
 	Logger::Debug("AutotestingSystem::SaveScreenShotNameToDB %s", screenShotName.c_str());
 	
-	String testId = Format("Test%d", testIndex);
-	String stepId = Format("Step%d", stepIndex);
+	String testId = GetTestId(testIndex);
+	String stepId = GetStepId(stepIndex);
 
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
 	KeyedArchive* currentTestArchive = FindOrInsertTestArchive(dbUpdateObject, testId);//FindTestArchive(dbUpdateObject, testId);
@@ -798,8 +798,8 @@ void AutotestingSystem::OnStepFinished()
 	Logger::Debug("AutotestingSystem::OnStepFinished");
 
 	// Mark step as SUCCESS
-	String testId = Format("Test%d", testIndex);
-	String stepId = Format("Step%d", stepIndex);
+	String testId = GetTestId(testIndex);
+	String stepId = GetStepId(stepIndex);
 	logIndex = 0;
 
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
@@ -830,8 +830,8 @@ void AutotestingSystem::SaveTestStepToDB(const String &stepDescription, bool isP
     
     Logger::Debug("AutotestingSystem::SaveTestStepToDB %s %d %s", stepDescription.c_str(), isPassed, error.c_str());
     
-    String testId = Format("Test%d", testIndex);
-    String stepId = Format("Step%d", ++stepIndex);
+    String testId = GetTestId(testIndex);
+    String stepId = GetStepId(++stepIndex);
     
     MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
     KeyedArchive* currentTestArchive = FindOrInsertTestArchive(dbUpdateObject, testId);
@@ -844,7 +844,7 @@ void AutotestingSystem::SaveTestStepToDB(const String &stepDescription, bool isP
     
     if(!error.empty())
     {
-        String logId = Format("Message%d", ++logIndex);
+        String logId = GetLogId(++logIndex);
         KeyedArchive* currentLogEntryArchive = FindOrInsertTestStepLogEntryArchive(currentTestStepArchive, logId);
         
         currentLogEntryArchive->SetString("Type", "ERROR");
@@ -867,9 +867,9 @@ void AutotestingSystem::SaveTestStepLogEntryToDB(const String &type, const Strin
     
     Logger::Debug("AutotestingSystem::SaveTestStepLogEntryToDB %s %s %s", type.c_str(), time.c_str(), message.c_str());
     
-    String testId = Format("Test%d", testIndex);
-    String stepId = Format("Step%d", stepIndex);
-    String logId = Format("Message%d", ++logIndex);
+    String testId = GetTestId(testIndex);
+    String stepId = GetStepId(stepIndex);
+    String logId = GetLogId(++logIndex);
 
     String testsName = Format("%u",testsDate);
     
@@ -1230,7 +1230,7 @@ void AutotestingSystem::OnTestsFinished()
 	OnStepFinished();
 
 	// Mark test as SUCCESS
-	String testId = Format("Test%d", testIndex);
+	String testId = GetTestId(testIndex);
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
 	KeyedArchive* currentTestArchive = FindOrInsertTestArchive(dbUpdateObject, testId);//FindTestArchive(dbUpdateObject, testId);
 
