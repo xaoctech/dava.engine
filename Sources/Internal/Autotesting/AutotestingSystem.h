@@ -122,12 +122,14 @@ public:
     void RegisterHelperInDB();
     
 protected:
-    String GetTestId(int32 index) { Format("Test%03d", index); };
-    String GetStepId(int32 index) { Format("Step%03d", index); };
-    String GetLogId(int32 index) { Format("Message%03d", index); };
-    
-    uint64 GetCurrentTimeMS();    String GetCurrentTimeString();
-    
+	void MakeScreenShot();
+
+	String GetTestId(int32 index) { Format("Test%03d", index); };
+	String GetStepId(int32 index) { Format("Step%03d", index); };
+	String GetLogId(int32 index) { Format("Message%03d", index); };
+
+	uint64 GetCurrentTimeMS();
+	String GetCurrentTimeString();
 //DB
 	KeyedArchive *FindOrInsertRunArchive(MongodbUpdateObject* dbUpdateObject, const String &runId);
     void ClearTestInDB();
