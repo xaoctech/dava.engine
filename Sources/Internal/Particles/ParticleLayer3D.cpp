@@ -257,6 +257,7 @@ void ParticleLayer3D::DrawLayerLong(Camera * camera)
 		current = TYPE_PARTICLES == type ? current->next : 0;
 	}
 
+	renderBatch->SetTotalCount(totalCount);
 	if(totalCount > 0)
 	{
 		renderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &verts.front());
@@ -265,8 +266,7 @@ void ParticleLayer3D::DrawLayerLong(Camera * camera)
 
 		RenderManager::Instance()->SetRenderData(renderData);
 		renderBatch->GetMaterial()->PrepareRenderState();
-
-		RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLELIST, 0, 6*totalCount);
+		renderBatch->SetRenderDataObject(renderData);
 	}
 }
 
