@@ -81,6 +81,7 @@ void ParticleEmitter::Cleanup(bool needCleanupLayers)
 	isAutorestart = true;
 	particlesFollow = false;
     is3D = false;
+	playbackSpeed = 1.0f;
 
 	// Also cleanup layers, if needed.
 	if (needCleanupLayers)
@@ -284,6 +285,7 @@ void ParticleEmitter::DoRestart(bool isDeleteAllParticles)
 
 void ParticleEmitter::Update(float32 timeElapsed)
 {
+	timeElapsed *= playbackSpeed;
 	time += timeElapsed;
 	float32 t = time / lifeTime;
 
@@ -724,6 +726,22 @@ bool ParticleEmitter::Is3DFlagCorrect()
 {
 	// ParticleEmitter class can be created only for non-3D Emitters.
 	return (is3D == false);
+}
+
+void ParticleEmitter::SetPlaybackSpeed(float32 value)
+{
+	this->playbackSpeed = Clamp(value, PARTICLE_EMITTER_MIN_PLAYBACK_SPEED,
+								PARTICLE_EMITTER_MAX_PLAYBACK_SPEED);
+	int32 layersCount = this->GetLayers().size();
+	for (int i = 0; i < layersCount; i ++)
+	{
+		this->layers[i]->SetPlaybackSpeed(this->playbackSpeed);
+	}
+}
+
+float32 ParticleEmitter::GetPlaybackSpeed()
+{
+	return this->playbackSpeed;
 }
 
 };
