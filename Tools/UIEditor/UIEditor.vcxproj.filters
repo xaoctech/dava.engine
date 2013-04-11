@@ -612,6 +612,21 @@
     <ClCompile Include="GeneratedFiles\EditorListDelegate_moc.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\UI\Dialogs\PlatformImportDialog.cpp">
+      <Filter>Sources\UI\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\platformimportfilewidget.cpp">
+      <Filter>Sources\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\platformimportfilewidget_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\Dialogs\PlatformImportDialog_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\ImportCommands.cpp">
+      <Filter>Sources\Commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\DefaultScreen.h">
@@ -953,6 +968,21 @@
     <ClInclude Include="GeneratedFiles\ui_listpropertygridwidget.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\UI\Dialogs\PlatformImportDialog.h">
+      <Filter>Sources\UI\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\platformimportfilewidget.h">
+      <Filter>Sources\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_platformimportdialog.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_platformimportfilewidget.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\ImportCommands.h">
+      <Filter>Sources\Commands</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="UI\createplatformdlg.ui">
@@ -1026,6 +1056,11 @@
     </None>
     <None Include="UI\listpropertygridwidget.ui">
       <Filter>Form Files\PropertyGridWidgets</Filter>
+    <None Include="UI\platformimportfilewidget.ui">
+      <Filter>Form Files</Filter>
+    </None>
+    <None Include="UI\platformimportdialog.ui">
+      <Filter>Form Files\Dialogs</Filter>
     </None>
   </ItemGroup>
 </Project>

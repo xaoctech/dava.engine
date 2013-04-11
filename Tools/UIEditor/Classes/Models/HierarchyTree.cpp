@@ -151,6 +151,7 @@ void HierarchyTree::CreateProject()
 void HierarchyTree::CloseProject()
 {
 	projectCreated = false;
+	rootNode.ResetUnsavedChanges();
 	Clear();
 }
 
@@ -366,7 +367,13 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
 		if (!platformNode)
 			continue;
 		
-		result &= platformNode->Save(platforms, saveAll);
+		bool res = platformNode->Save(platforms, saveAll);
+		if (res)
+		{
+			platformNode->ResetUnsavedChanges();
+		}
+
+		result &= res;
 	}
 
 	YamlParser* parser = YamlParser::Create();
@@ -383,6 +390,10 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
 	{
 		//restore project path
 		rootNode.SetProjectFilePath(oldPath);
+	}
+	else
+	{
+		rootNode.ResetUnsavedChanges();
 	}
 
 	return result;

@@ -29,6 +29,16 @@ HierarchyTreeAggregatorNode::HierarchyTreeAggregatorNode(HierarchyTreePlatformNo
 	LibraryController::Instance()->AddControl(this);
 }
 
+HierarchyTreeAggregatorNode::HierarchyTreeAggregatorNode(HierarchyTreePlatformNode* parent,
+														 const HierarchyTreeAggregatorNode* base)
+:	HierarchyTreeScreenNode(parent, base)
+{
+	this->rect = base->GetRect();
+	screen->SetRect(rect);
+
+	LibraryController::Instance()->AddControl(this);
+}
+
 HierarchyTreeAggregatorNode::~HierarchyTreeAggregatorNode()
 {
 	LibraryController::Instance()->RemoveControl(this);
@@ -124,15 +134,11 @@ void HierarchyTreeAggregatorNode::RemoveSelection()
 	UpdateChilds();
 }
 
-bool HierarchyTreeAggregatorNode::Load(YamlNode* node, const QString& path)
+bool HierarchyTreeAggregatorNode::Load(const Rect& rect, const QString& path)
 {
 	this->path = ResourcesManageHelper::GetResourceRelativePath(path, true).toStdString();
-	YamlNode* width = node->Get(WIDTH_NODE);
-	YamlNode* height = node->Get(HEIGHT_NODE);
-	if (!width || !height)
-		return false;
 
-	rect = Rect(0, 0, width->AsInt(), height->AsInt());
+	this->rect = rect;
 	screen->SetRect(rect);
 
 	bool result = HierarchyTreeScreenNode::Load(path);
@@ -142,7 +148,6 @@ bool HierarchyTreeAggregatorNode::Load(YamlNode* node, const QString& path)
 
 bool HierarchyTreeAggregatorNode::Save(YamlNode* node, const QString& path, bool saveAll)
 {
-	String relPath = ResourcesManageHelper::GetResourceRelativePath(path, true).toStdString();
 	for (CHILDS::iterator iter = childs.begin(); iter != childs.end(); ++iter)
 	{
 		HierarchyTreeControlNode* controlNode = (*iter);
@@ -151,7 +156,10 @@ bool HierarchyTreeAggregatorNode::Save(YamlNode* node, const QString& path, bool
 		DVASSERT(aggregatorControl);
 		if (!aggregatorControl)
 			continue;
-		aggregatorControl->SetAggregatorPath(relPath);
+
+		String aggregatorName, aggregatorPath;
+		FileSystem::SplitPath(path.toStdString(), aggregatorPath, aggregatorName);
+		aggregatorControl->SetAggregatorPath(aggregatorName);
 	}
 	
 	node->Set(WIDTH_NODE, (int32)rect.dx);
@@ -201,7 +209,11 @@ void HierarchyTreeAggregatorNode::ReplaceAggregator(HierarchyTreeControlNode *no
 	}
 
 	UIAggregatorControl* uiAggregator = dynamic_cast<UIAggregatorControl*>(node->GetUIObject());
-	if (uiAggregator && uiAggregator->GetAggregatorPath().compare(path) == 0)
+
+	String aggregatorName, aggregatorPath;
+	FileSystem::SplitPath(path, aggregatorPath, aggregatorName);
+
+	if (uiAggregator && uiAggregator->GetAggregatorPath().compare(aggregatorName) == 0)
 	{
 		Logger::Debug(uiAggregator->GetAggregatorPath().c_str());
 		HIERARCHYTREENODESLIST childs = node->GetChildNodes();

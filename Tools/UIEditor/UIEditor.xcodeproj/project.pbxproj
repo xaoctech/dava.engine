@@ -141,7 +141,14 @@
 		17FF15E216400160001B130F /* fontmanagerdialog.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 17FF15DF16400160001B130F /* fontmanagerdialog.ui */; };
 		17FF15F91640069E001B130F /* localizationeditordialog.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 17FF15F81640069E001B130F /* localizationeditordialog.ui */; };
 		17FF160016400A75001B130F /* localizationeditordialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17FF15FE16400A75001B130F /* localizationeditordialog.cpp */; };
+		497774C0170DB808004CE2FB /* importdialogfilewidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 497774BF170DB808004CE2FB /* importdialogfilewidget_moc.cpp */; };
+		497774C2170DB80F004CE2FB /* importdialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 497774C1170DB80F004CE2FB /* importdialog_moc.cpp */; };
 		498B61FD16F76E2C009D4417 /* IconHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498B61FB16F76E2C009D4417 /* IconHelper.cpp */; };
+		49B0263F1709D6B5001E28CC /* importdialog.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 49B0263E1709D6B5001E28CC /* importdialog.ui */; };
+		49B026421709D6BD001E28CC /* importdialogfilewidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 49B026411709D6BD001E28CC /* importdialogfilewidget.ui */; };
+		49B0264C1709DA7D001E28CC /* importdialogfilewidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49B0264A1709DA7D001E28CC /* importdialogfilewidget.cpp */; };
+		49B02651170AC25D001E28CC /* importdialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49B0264F170AC25C001E28CC /* importdialog.cpp */; };
+		49FD832F170B24E800F3B650 /* ImportCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49FD832D170B24E800F3B650 /* ImportCommands.cpp */; };
 		5C190C9F15AEC6F9005731F8 /* Data in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 5C190C9E15AEC6F9005731F8 /* Data */; };
 		5CCC10E715B460BF00DA83EB /* libz.dylib in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CCC10E615B460BF00DA83EB /* libz.dylib */; };
 		5CCC10E915B460C900DA83EB /* libbz2.dylib in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CCC10E815B460C900DA83EB /* libbz2.dylib */; };
@@ -451,8 +458,20 @@
 		2A689518AF9C22C7AA97C9EF /* ogg_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = ogg_macos; path = ../dava.framework/Libs/libs/libogg_macos.a; sourceTree = "<group>"; };
 		336CB11D929F5E35FA69020F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		419FFB6CDDEB353FF0A4F469 /* QtCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtCore.framework; path = ../../../../QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework; sourceTree = "<group>"; };
+		497774BD170DB7F2004CE2FB /* ui_importdialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_importdialog.h; sourceTree = "<group>"; };
+		497774BE170DB7F2004CE2FB /* ui_importdialogfilewidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_importdialogfilewidget.h; sourceTree = "<group>"; };
+		497774BF170DB808004CE2FB /* importdialogfilewidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = importdialogfilewidget_moc.cpp; sourceTree = "<group>"; };
+		497774C1170DB80F004CE2FB /* importdialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = importdialog_moc.cpp; sourceTree = "<group>"; };
 		498B61FB16F76E2C009D4417 /* IconHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IconHelper.cpp; sourceTree = "<group>"; };
 		498B61FC16F76E2C009D4417 /* IconHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IconHelper.h; sourceTree = "<group>"; };
+		49B0263E1709D6B5001E28CC /* importdialog.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = importdialog.ui; sourceTree = "<group>"; };
+		49B026411709D6BD001E28CC /* importdialogfilewidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = importdialogfilewidget.ui; sourceTree = "<group>"; };
+		49B0264A1709DA7D001E28CC /* importdialogfilewidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = importdialogfilewidget.cpp; sourceTree = "<group>"; };
+		49B0264B1709DA7D001E28CC /* importdialogfilewidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = importdialogfilewidget.h; sourceTree = "<group>"; };
+		49B0264F170AC25C001E28CC /* importdialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = importdialog.cpp; path = Dialogs/importdialog.cpp; sourceTree = "<group>"; };
+		49B02650170AC25C001E28CC /* importdialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = importdialog.h; path = Dialogs/importdialog.h; sourceTree = "<group>"; };
+		49FD832D170B24E800F3B650 /* ImportCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ImportCommands.cpp; path = Commands/ImportCommands.cpp; sourceTree = "<group>"; };
+		49FD832E170B24E800F3B650 /* ImportCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ImportCommands.h; path = Commands/ImportCommands.h; sourceTree = "<group>"; };
 		52F4216CE5F81A8073DE30C0 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = /System/Library/Frameworks/OpenAL.framework; sourceTree = "<absolute>"; };
 		548C5E52292D4DA256C12EBD /* png_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = png_macos; path = ../dava.framework/Libs/libs/libpng_macos.a; sourceTree = "<group>"; };
 		5B2DE73738F678B7C6177179 /* curl_ios_mac */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = curl_ios_mac; path = ../dava.framework/Libs/libs/libcurl_ios_mac.a; sourceTree = "<group>"; };
@@ -722,6 +741,7 @@
 		02D69C6A16F08CED00F3803F /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				497774BF170DB808004CE2FB /* importdialogfilewidget_moc.cpp */,
 				02D69C6B16F08CED00F3803F /* controllist_moc.cpp */,
 				02D69C6C16F08CED00F3803F /* createplatformdlg_moc.cpp */,
 				02D69C6D16F08CED00F3803F /* createscreendlg_moc.cpp */,
@@ -742,6 +762,7 @@
 		02D69C6F16F08CED00F3803F /* Dialogs */ = {
 			isa = PBXGroup;
 			children = (
+				497774C1170DB80F004CE2FB /* importdialog_moc.cpp */,
 				C18593F816F314F1005D30E2 /* createaggregatordlg_moc.cpp */,
 				02D69C7016F08CED00F3803F /* localizationeditordialog_moc.cpp */,
 			);
@@ -953,6 +974,8 @@
 				C107415F163E7B740069A640 /* ItemsCommand.h */,
 				C1BBE3541647DAC300EF3CA9 /* PasteCommand.cpp */,
 				C1BBE3551647DAC300EF3CA9 /* PasteCommand.h */,
+				49FD832D170B24E800F3B650 /* ImportCommands.cpp */,
+				49FD832E170B24E800F3B650 /* ImportCommands.h */,
 			);
 			name = Commands;
 			sourceTree = "<group>";
@@ -960,6 +983,7 @@
 		17FF15DC16400155001B130F /* Dialogs */ = {
 			isa = PBXGroup;
 			children = (
+				49B0263E1709D6B5001E28CC /* importdialog.ui */,
 				C18593E916F30D60005D30E2 /* createaggregatordlg.ui */,
 				17FF15F81640069E001B130F /* localizationeditordialog.ui */,
 				17FF15DD16400160001B130F /* createplatformdlg.ui */,
@@ -995,6 +1019,8 @@
 		17FF15FD16400A41001B130F /* Dialogs */ = {
 			isa = PBXGroup;
 			children = (
+				49B0264F170AC25C001E28CC /* importdialog.cpp */,
+				49B02650170AC25C001E28CC /* importdialog.h */,
 				C18593F316F30D74005D30E2 /* createaggregatordlg.cpp */,
 				C18593F416F30D74005D30E2 /* createaggregatordlg.h */,
 				7492E0E91639445D00DF883A /* fontmanagerdialog.h */,
@@ -1073,6 +1099,11 @@
 		C15C2FC9162AD5DD00818631 /* GeneratedFiles */ = {
 			isa = PBXGroup;
 			children = (
+				497774BD170DB7F2004CE2FB /* ui_importdialog.h */,
+				497774BE170DB7F2004CE2FB /* ui_importdialogfilewidget.h */,
+				E8FFFF9D16FB17A500E315AE /* ui_spinnerpropertygridwidget.h */,
+				C18593FF16F31C1C005D30E2 /* ui_aggregatorpropertygridwidget.h */,
+				C18593F716F314DF005D30E2 /* ui_createaggregatordlg.h */,
 				02D69C2D16F08CED00F3803F /* Commands */,
 				02D69C3316F08CED00F3803F /* Controllers */,
 				02D69C3916F08CED00F3803F /* DefaultScreen_moc.cpp */,
@@ -1176,6 +1207,8 @@
 				C15C2FEC162AD6E400818631 /* mainwindow.h */,
 				498B61FB16F76E2C009D4417 /* IconHelper.cpp */,
 				498B61FC16F76E2C009D4417 /* IconHelper.h */,
+				49B0264A1709DA7D001E28CC /* importdialogfilewidget.cpp */,
+				49B0264B1709DA7D001E28CC /* importdialogfilewidget.h */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -1188,6 +1221,7 @@
 				C1C62A6F162EC800000C1B32 /* librarywidget.ui */,
 				C1C62A53162D7455000C1B32 /* hierarchytreewidget.ui */,
 				C15C2FF4162AD71C00818631 /* davaglwidget.ui */,
+				49B026411709D6BD001E28CC /* importdialogfilewidget.ui */,
 				C15C2FF5162AD71C00818631 /* mainwindow.ui */,
 			);
 			path = UI;
@@ -1327,6 +1361,8 @@
 				C18593FB16F31B2F005D30E2 /* aggregatorpropertygridwidget.ui in Bundle Resources */,
 				17C5CCD516F31E5300FB90B4 /* spinnerpropertygridwidget.ui in Bundle Resources */,
 				748A9423170C599C0087E18A /* listpropertygridwidget.ui in Bundle Resources */,
+				49B0263F1709D6B5001E28CC /* importdialog.ui in Bundle Resources */,
+				49B026421709D6BD001E28CC /* importdialogfilewidget.ui in Bundle Resources */,
 			);
 			name = "Bundle Resources";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1547,6 +1583,11 @@
 				748A9427170C59DF0087E18A /* listpropertygridwidget.cpp in Build Sources */,
 				748A942A170C5C650087E18A /* listpropertygridwidget_moc.cpp in Build Sources */,
 				7410E82A171462C70028AAAA /* EditorListDelegate.cpp in Build Sources */,
+				49B0264C1709DA7D001E28CC /* importdialogfilewidget.cpp in Build Sources */,
+				49B02651170AC25D001E28CC /* importdialog.cpp in Build Sources */,
+				49FD832F170B24E800F3B650 /* ImportCommands.cpp in Build Sources */,
+				497774C0170DB808004CE2FB /* importdialogfilewidget_moc.cpp in Build Sources */,
+				497774C2170DB80F004CE2FB /* importdialog_moc.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

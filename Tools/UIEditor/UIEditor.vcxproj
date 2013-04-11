@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClCompile Include="Classes\Commands\BaseCommand.cpp" />
     <ClCompile Include="Classes\Commands\ControlCommands.cpp" />
+    <ClCompile Include="Classes\Commands\ImportCommands.cpp" />
     <ClCompile Include="Classes\Commands\ItemsCommand.cpp" />
     <ClCompile Include="Classes\Commands\PasteCommand.cpp" />
     <ClCompile Include="Classes\Controllers\CommandsController.cpp" />
@@ -77,12 +78,14 @@
     <ClCompile Include="Classes\UI\davaglwidget.cpp" />
     <ClCompile Include="Classes\UI\Dialogs\createaggregatordlg.cpp" />
     <ClCompile Include="Classes\UI\Dialogs\localizationeditordialog.cpp" />
+    <ClCompile Include="Classes\UI\Dialogs\PlatformImportDialog.cpp" />
     <ClCompile Include="Classes\UI\fontmanagerdialog.cpp" />
     <ClCompile Include="Classes\UI\hierarchytreecontrol.cpp" />
     <ClCompile Include="Classes\UI\hierarchytreewidget.cpp" />
     <ClCompile Include="Classes\UI\IconHelper.cpp" />
     <ClCompile Include="Classes\UI\librarywidget.cpp" />
     <ClCompile Include="Classes\UI\mainwindow.cpp" />
+    <ClCompile Include="Classes\UI\platformimportfilewidget.cpp" />
     <ClCompile Include="Classes\UI\PropertyGridWidgets\aggregatorpropertygridwidget.cpp" />
     <ClCompile Include="Classes\UI\PropertyGridWidgets\alignspropertygridwidget.cpp" />
     <ClCompile Include="Classes\UI\PropertyGridWidgets\backgroundpropertygridwidget.cpp" />
@@ -168,11 +171,13 @@
     <ClCompile Include="GeneratedFiles\UI\davaglwidget_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\Dialogs\createaggregatordlg_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\Dialogs\localizationeditordialog_moc.cpp" />
+    <ClCompile Include="GeneratedFiles\UI\Dialogs\PlatformImportDialog_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\fontmanagerdialog_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\hierarchytreecontrol_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\hierarchytreewidget_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\librarywidget_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\mainwindow_moc.cpp" />
+    <ClCompile Include="GeneratedFiles\UI\platformimportfilewidget_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\aggregatorpropertygridwidget_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\AlignsPropertyGridWidget_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\backgroundpropertygridwidget_moc.cpp" />
@@ -198,6 +203,7 @@
     <ClInclude Include="Classes\Commands\BaseCommand.h" />
     <ClInclude Include="Classes\Commands\ChangePropertyCommand.h" />
     <ClInclude Include="Classes\Commands\ControlCommands.h" />
+    <ClInclude Include="Classes\Commands\ImportCommands.h" />
     <ClInclude Include="Classes\Commands\ItemsCommand.h" />
     <ClInclude Include="Classes\Commands\PasteCommand.h" />
     <ClInclude Include="Classes\Controllers\CommandsController.h">
@@ -434,7 +440,9 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe"   -D_WINDOWS -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -D_CRT_SECURE_NO_DEPRECATE -DDAVA_QT -DDAVA_SAVE_TO_YAML  "-I." "-I.\..\..\Sources\Internal" "-I.\..\..\Sources\External" "-I.\..\..\Libs\glew\Include" "-I.\..\..\Libs\include" "-I.\Classes" "-I.\Classes\Commands" "-I.\Classes\Controllers" "-I.\Classes\Helpers" "-I.\Classes\Metadata" "-I.\Classes\Models" "-I.\Classes\UI" "-I.\Classes\UI\Dialogs" "-I.\Classes\UI\PropertyGridWidgets" "-I$(DXSDK_DIR)\include" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtNetwork" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtOpenGL" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default" "-Ic:\Program Files\OpenAL 1.1 SDK\include" "-Ic:\Program Files (x86)\OpenAL 1.1 SDK\include" "-I$(Configuration)\." "-I.\GeneratedFiles" "-I." "-I." "-I." "-I." "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"</Command>
     </ClInclude>
     <ClInclude Include="Classes\UI\Dialogs\createaggregatordlg.h" />
+    <ClInclude Include="Classes\UI\Dialogs\PlatformImportDialog.h" />
     <ClInclude Include="Classes\UI\IconHelper.h" />
+    <ClInclude Include="Classes\UI\platformimportfilewidget.h" />
     <ClInclude Include="Classes\UI\PropertyGridWidgets\aggregatorpropertygridwidget.h" />
     <ClInclude Include="Classes\UI\PropertyGridWidgets\backgroundpropertygridwidget.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(FullPath)</AdditionalInputs>
@@ -645,6 +653,8 @@
     <ClInclude Include="GeneratedFiles\ui_listpropertygridwidget.h" />
     <ClInclude Include="GeneratedFiles\ui_localizationeditordialog.h" />
     <ClInclude Include="GeneratedFiles\ui_mainwindow.h" />
+    <ClInclude Include="GeneratedFiles\ui_platformimportdialog.h" />
+    <ClInclude Include="GeneratedFiles\ui_platformimportfilewidget.h" />
     <ClInclude Include="GeneratedFiles\ui_platformpropertygridwidget.h" />
     <ClInclude Include="GeneratedFiles\ui_propertygridcontainerwidget.h" />
     <ClInclude Include="GeneratedFiles\ui_rectpropertygridwidget.h" />
@@ -724,6 +734,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <None Include="UI\platformimportdialog.ui" />
+    <None Include="UI\platformimportfilewidget.ui" />
     <None Include="UI\PropertyGridWidgets\alignspropertygridwidget.ui">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">
       </AdditionalInputs>
