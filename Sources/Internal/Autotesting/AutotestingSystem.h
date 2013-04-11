@@ -124,8 +124,12 @@ public:
 protected:
 	void MakeScreenShot();
 
-    String GetCurrentTimeString();
-    
+	String GetTestId(int32 index) { return Format("Test%03d", index); };
+	String GetStepId(int32 index) { return Format("Step%03d", index); };
+	String GetLogId(int32 index) { return  Format("Message%03d", index); };
+
+	uint64 GetCurrentTimeMS();
+	String GetCurrentTimeString();
 //DB
 	KeyedArchive *FindOrInsertRunArchive(MongodbUpdateObject* dbUpdateObject, const String &runId);
     void ClearTestInDB();
@@ -159,6 +163,8 @@ protected:
     
     void ExitApp();
 	
+
+    uint64 startTimeMS;
 
     bool isInit;
     bool isRunning;

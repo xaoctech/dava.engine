@@ -146,8 +146,7 @@ function WaitJob(name)
 			Log("Device "..name.." finish his job")
 			return
 		elseif state == "error" then
-			Log("Error on "..name.." device")
-			StopTest()
+			OnError("Error on "..name.." device")
 		else
 			Wait(1)
 		end
