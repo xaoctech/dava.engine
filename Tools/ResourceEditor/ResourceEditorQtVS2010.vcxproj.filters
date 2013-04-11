@@ -220,6 +220,9 @@
     <Filter Include="Sources\Qt\Scene\System\Collision">
       <UniqueIdentifier>{1fd9e330-0ea5-4450-a70a-59efa036c833}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Qt\Scene\System\EntityModif">
+      <UniqueIdentifier>{ef6b3a15-e1e5-4d01-89f4-cd395d2aa38a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1563,9 +1566,6 @@
     <ClCompile Include="Classes\Qt\Scene\SceneEditorProxy.cpp">
       <Filter>Sources\Qt\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Scene\SceneManager.cpp">
-      <Filter>Sources\Qt\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\Scene\SceneTabWidget.cpp">
       <Filter>Sources\Qt\Scene</Filter>
     </ClCompile>
@@ -1598,6 +1598,12 @@
     </ClCompile>
     <ClCompile Include="Classes\Qt\Scene\System\SceneSelectionSystem.cpp">
       <Filter>Sources\Qt\Scene\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\EntityGroup.cpp">
+      <Filter>Sources\Qt\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\EntityModif\Hood.cpp">
+      <Filter>Sources\Qt\Scene\System\EntityModif</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2789,9 +2795,6 @@
     <ClInclude Include="Classes\Qt\Scene\SceneEditorProxy.h">
       <Filter>Sources\Qt\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Scene\SceneManager.h">
-      <Filter>Sources\Qt\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\Scene\SceneTabWidget.h">
       <Filter>Sources\Qt\Scene</Filter>
     </ClInclude>
@@ -2818,6 +2821,12 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Scene\System\SceneSelectionSystem.h">
       <Filter>Sources\Qt\Scene\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\EntityGroup.h">
+      <Filter>Sources\Qt\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\EntityModif\Hood.h">
+      <Filter>Sources\Qt\Scene\System\EntityModif</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

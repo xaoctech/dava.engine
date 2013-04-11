@@ -174,7 +174,13 @@ public:
         \param box given bounding box
      */
 	void DrawBox(const AABBox3 & box, float32 lineWidth = 1.f);
-	
+
+    /**
+        \brief Fills 3D bounding box
+        \param box given bounding box
+     */
+	void FillBox(const AABBox3 & box);
+
     /**
 	 \brief Draws 3D bounding box with corners
 	 \param box given bounding box

@@ -1,5 +1,5 @@
 #ifndef __SCENE_EDITOR_PROXY_H__
-#define __SCENE_TAB_WIDGET_H__
+#define __SCENE_EDITOR_PROXY_H__
 
 #include <QObject>
 #include "UI/UIEvent.h"
@@ -10,6 +10,8 @@ class SceneCameraSystem;
 class SceneGridSystem;
 class SceneCollisionSystem;
 class SceneSelectionSystem;
+
+class SceneEditorSignals;
 
 class SceneEditorProxy : public DAVA::Scene
 {
@@ -31,11 +33,14 @@ public:
 	// viewport rect is used to cals ray from camera to any 2d point on this viewport
 	void SetViewportRect(const DAVA::Rect &newViewportRect);
 
+public:
+	SceneEditorSignals *sceneSignals;
+
 	EntityModificationSystem *modifSystem;
-	SceneCameraSystem *sceneCameraSystem;
-	SceneCollisionSystem *sceneCollisionSystem;
-	SceneGridSystem *sceneGridSystem;
-	SceneSelectionSystem *sceneSelectionSystem;
+	SceneCameraSystem *cameraSystem;
+	SceneCollisionSystem *collisionSystem;
+	SceneGridSystem *gridSystem;
+	SceneSelectionSystem *selectionSystem;
 
 protected:
 	DAVA::String curScenePath;
@@ -45,4 +50,19 @@ protected:
 	bool SceneSave();
 };
 
-#endif
+class SceneEditorSignals : public QObject
+{
+	Q_OBJECT
+
+public:
+	// TODO:
+
+signals:
+	void MouseOver(DAVA::Entity *entity);
+	void MouseOverSelection(DAVA::Entity *entity);
+
+	void Selected(DAVA::Entity *entity);
+	void Deselected(DAVA::Entity *entity);
+};
+
+#endif // __SCENE_EDITOR_PROXY_H__
