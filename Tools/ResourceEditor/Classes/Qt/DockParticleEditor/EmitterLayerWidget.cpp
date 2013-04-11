@@ -323,7 +323,7 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	
 	//LAYER_VELOCITY_OVER_LIFE,
 	velocityOverLifeTimeLine->Init(0, 1, updateMinimized);
-	velocityOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->velocityOverLife).GetProps(), Qt::red, "velocity over life");
+	velocityOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->velocityOverLife).GetProps(), Qt::blue, "velocity over life");
 
 	//LAYER_FORCES, LAYER_FORCES_VARIATION, LAYER_FORCES_OVER_LIFE,
 
@@ -334,7 +334,7 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	
 	//LAYER_SPIN_OVER_LIFE,
 	spinOverLifeTimeLine->Init(0, 1, updateMinimized);
-	spinOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->spinOverLife).GetProps(), Qt::red, "spin over life");
+	spinOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->spinOverLife).GetProps(), Qt::blue, "spin over life");
 
 	//LAYER_COLOR_RANDOM, LAYER_ALPHA_OVER_LIFE, LAYER_COLOR_OVER_LIFE,
 	colorRandomGradient->Init(0, 1, "random color");
