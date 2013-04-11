@@ -43,7 +43,7 @@ LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, E
 	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.png");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
     
-    savedShaderMode = Landscape::TILED_MODE_MIXED;
+    savedShaderMode = Landscape::TILED_MODE_TILE_DETAIL_MASK;
 }
 
 LandscapeEditorBase::~LandscapeEditorBase()
@@ -85,7 +85,7 @@ bool LandscapeEditorBase::SetScene(EditorScene *newScene)
     }
     
     savedShaderMode = workingLandscape->GetTiledShaderMode();
-    workingLandscape->SetTiledShaderMode(Landscape::TILED_MODE_TILEMASK);
+    workingLandscape->SetTiledShaderMode(Landscape::TILED_MODE_TILE_DETAIL_MASK);
     
     workingScene = SafeRetain(newScene);
     return true;
@@ -143,7 +143,7 @@ void LandscapeEditorBase::Close()
     
     workingLandscape->UpdateFullTiledTexture();
     workingLandscape->SetTiledShaderMode(savedShaderMode);
-    savedShaderMode = Landscape::TILED_MODE_MIXED;
+    savedShaderMode = Landscape::TILED_MODE_TILE_DETAIL_MASK;
     
     SafeRelease(workingLandscape);
 

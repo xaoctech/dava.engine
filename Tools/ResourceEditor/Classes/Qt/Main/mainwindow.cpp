@@ -111,8 +111,13 @@ void QtMainWindow::SetupActions()
 	connect(ui->actionTileMapEditor, SIGNAL(triggered()), actionHandler, SLOT(TilemapEditor()));
 	connect(ui->actionRulerTool, SIGNAL(triggered()), actionHandler, SLOT(RulerTool()));
 	connect(ui->actionShowSettings, SIGNAL(triggered()), actionHandler, SLOT(ShowSettings()));
+    
+#if defined (__DAVAENGINE_MACOS__)
+    ui->menuTools->removeAction(ui->actionBeast);
+#else //#if defined (__DAVAENGINE_MACOS__)
 	connect(ui->actionBeast, SIGNAL(triggered()), actionHandler, SLOT(Beast()));
-
+#endif //#if defined (__DAVAENGINE_MACOS__)
+    
 	//Edit
 	connect(ui->actionConvertToShadow, SIGNAL(triggered()), actionHandler, SLOT(ConvertToShadow()));
 }
@@ -122,8 +127,6 @@ void QtMainWindow::SetupMainMenu()
     QtMainWindowHandler *actionHandler = QtMainWindowHandler::Instance();
 
     QAction *actionSceneGraph = ui->dockSceneGraph->toggleViewAction();
-    QAction *actionDataGraph = ui->dockDataGraph->toggleViewAction();
-    QAction *actionEntities = ui->dockEntities->toggleViewAction();
     QAction *actionProperties = ui->dockProperties->toggleViewAction();
     QAction *actionLibrary = ui->dockLibrary->toggleViewAction();
 	QAction *actionReferences = ui->dockReferences->toggleViewAction();
@@ -138,9 +141,7 @@ void QtMainWindow::SetupMainMenu()
     ui->menuView->insertAction(actionToolBar, actionLibrary);
     ui->menuView->insertAction(actionLibrary, actionProperties);
 	ui->menuView->insertAction(actionProperties, actionReferences);
-    ui->menuView->insertAction(actionReferences, actionEntities);
-    ui->menuView->insertAction(actionEntities, actionDataGraph);
-    ui->menuView->insertAction(actionDataGraph, actionSceneGraph);
+    ui->menuView->insertAction(actionReferences, actionSceneGraph);
     ui->menuView->insertAction(actionSceneGraph, actionCustomColors);
 	ui->menuView->insertAction(actionCustomColors, actionVisibilityCheckTool);
 	ui->menuView->insertAction(actionVisibilityCheckTool, actionParticleEditor);
@@ -153,14 +154,12 @@ void QtMainWindow::SetupMainMenu()
     ui->menuView->insertSeparator(actionProperties);
 
     actionHandler->RegisterDockActions(ResourceEditor::HIDABLEWIDGET_COUNT,
-                                       actionSceneGraph, actionDataGraph, actionEntities,
-                                       actionProperties, actionLibrary, actionToolBar, 
+                                       actionSceneGraph,
+                                       actionProperties, actionLibrary, actionToolBar,
 									   actionReferences, actionCustomColors, actionVisibilityCheckTool, 
 									   actionParticleEditor, actionHangingObjects, actionSetSwitchIndex);
 
 
-    ui->dockDataGraph->hide();
-    ui->dockEntities->hide();
     ui->dockProperties->hide();
 	//ui->dockReferences->hide();
     
@@ -226,7 +225,8 @@ void QtMainWindow::SetupMainMenu()
 
 	//Reference
 	connect(ui->applyReferenceSuffixButton, SIGNAL(clicked()), this, SLOT(ApplyReferenceNodeSuffix()));
- 
+
+	actionHandler->MenuViewOptionsWillShow();
 }
 
 void QtMainWindow::SetupToolBars()
