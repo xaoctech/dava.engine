@@ -253,7 +253,6 @@ Material::Material()
     ,   isTranslucent(false)
     ,   isTwoSided(false)
 	,	isSetupLightmap(false)
-	,	setupLightmapSize(32)
     ,   isFogEnabled(false)
     ,   fogDensity(0.006f)
     ,   fogColor((float32)0x87 / 255.0f, (float32)0xbe / 255.0f, (float32)0xd7 / 255.0f, 1.0f)
@@ -892,7 +891,7 @@ void Material::PrepareRenderState(InstanceMaterialState * instanceMaterialState)
 		int32 lightmapSizePosition = shader->FindUniformLocationByName("lightmapSize");
 		if (lightmapSizePosition != -1)
 		{
-			shader->SetUniformValue(lightmapSizePosition, (float32)setupLightmapSize); 
+			shader->SetUniformValue(lightmapSizePosition, (float32)instanceMaterialState->GetLightmapSize()); 
 		}
 	}
     
@@ -1039,16 +1038,6 @@ void Material::SetSetupLightmap(bool _isSetupLightmap)
 		isSetupLightmap = _isSetupLightmap;
 		RebuildShader();
 	}
-}
-
-bool Material::GetSetupLightmap()
-{
-	return isSetupLightmap;
-}
-
-void Material::SetSetupLightmapSize(int32 _setupLightmapSize)
-{
-	setupLightmapSize = _setupLightmapSize;
 }
     
 void Material::SetTexture(eTextureLevel level, Texture * texture)

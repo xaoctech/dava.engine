@@ -118,7 +118,7 @@ void ParticleEmitter3D::PrepareEmitterParametersOnCircle(Particle * particle, fl
 	particle->speed = velocity;
 
 	// Calculate Z value.
-	const float TANGENT_EPSILON = 1E-4;
+	const float32 TANGENT_EPSILON = (float32)(1E-4);
 	if (this->emissionRange)
 	{
 		float32 emissionRangeValue = DegToRad(emissionRange->GetValue(time));
