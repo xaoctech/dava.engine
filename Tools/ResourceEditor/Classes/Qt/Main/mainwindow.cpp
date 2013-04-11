@@ -122,8 +122,6 @@ void QtMainWindow::SetupMainMenu()
     QtMainWindowHandler *actionHandler = QtMainWindowHandler::Instance();
 
     QAction *actionSceneGraph = ui->dockSceneGraph->toggleViewAction();
-    QAction *actionDataGraph = ui->dockDataGraph->toggleViewAction();
-    QAction *actionEntities = ui->dockEntities->toggleViewAction();
     QAction *actionProperties = ui->dockProperties->toggleViewAction();
     QAction *actionLibrary = ui->dockLibrary->toggleViewAction();
 	QAction *actionReferences = ui->dockReferences->toggleViewAction();
@@ -138,9 +136,7 @@ void QtMainWindow::SetupMainMenu()
     ui->menuView->insertAction(actionToolBar, actionLibrary);
     ui->menuView->insertAction(actionLibrary, actionProperties);
 	ui->menuView->insertAction(actionProperties, actionReferences);
-    ui->menuView->insertAction(actionReferences, actionEntities);
-    ui->menuView->insertAction(actionEntities, actionDataGraph);
-    ui->menuView->insertAction(actionDataGraph, actionSceneGraph);
+    ui->menuView->insertAction(actionReferences, actionSceneGraph);
     ui->menuView->insertAction(actionSceneGraph, actionCustomColors);
 	ui->menuView->insertAction(actionCustomColors, actionVisibilityCheckTool);
 	ui->menuView->insertAction(actionVisibilityCheckTool, actionParticleEditor);
@@ -153,14 +149,12 @@ void QtMainWindow::SetupMainMenu()
     ui->menuView->insertSeparator(actionProperties);
 
     actionHandler->RegisterDockActions(ResourceEditor::HIDABLEWIDGET_COUNT,
-                                       actionSceneGraph, actionDataGraph, actionEntities,
-                                       actionProperties, actionLibrary, actionToolBar, 
+                                       actionSceneGraph,
+                                       actionProperties, actionLibrary, actionToolBar,
 									   actionReferences, actionCustomColors, actionVisibilityCheckTool, 
 									   actionParticleEditor, actionHangingObjects, actionSetSwitchIndex);
 
 
-    ui->dockDataGraph->hide();
-    ui->dockEntities->hide();
     ui->dockProperties->hide();
 	//ui->dockReferences->hide();
     
