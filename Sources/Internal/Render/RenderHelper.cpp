@@ -667,4 +667,52 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 		RenderHelper::Instance()->DrawLine(p4, to, lineWidth);
 	}
 
+	void RenderHelper::FillBox(const AABBox3 & box)
+	{
+		DAVA::Vector3 min = box.min;
+		DAVA::Vector3 max = box.max;
+
+		DAVA::Polygon3 poly;
+		poly.AddPoint(min);
+		poly.AddPoint(DAVA::Vector3(min.x, min.y, max.z));
+		poly.AddPoint(DAVA::Vector3(min.x, max.y, max.z));
+		poly.AddPoint(DAVA::Vector3(min.x, max.y, min.z));
+		RenderHelper::Instance()->FillPolygon(poly);
+
+		poly.Clear();
+		poly.AddPoint(min);
+		poly.AddPoint(DAVA::Vector3(min.x, max.y, min.z));
+		poly.AddPoint(DAVA::Vector3(max.x, max.y, min.z));
+		poly.AddPoint(DAVA::Vector3(max.x, min.y, min.z));
+		RenderHelper::Instance()->FillPolygon(poly);
+
+		poly.Clear();
+		poly.AddPoint(min);
+		poly.AddPoint(DAVA::Vector3(min.x, min.y, max.z));
+		poly.AddPoint(DAVA::Vector3(max.x, min.y, max.z));
+		poly.AddPoint(DAVA::Vector3(max.x, min.y, min.z));
+		RenderHelper::Instance()->FillPolygon(poly);
+
+		poly.Clear();
+		poly.AddPoint(max);
+		poly.AddPoint(DAVA::Vector3(max.x, max.y, min.z));
+		poly.AddPoint(DAVA::Vector3(max.x, min.y, min.z));
+		poly.AddPoint(DAVA::Vector3(max.x, min.y, max.z));
+		RenderHelper::Instance()->FillPolygon(poly);
+
+		poly.Clear();
+		poly.AddPoint(max);
+		poly.AddPoint(DAVA::Vector3(max.x, max.y, min.z));
+		poly.AddPoint(DAVA::Vector3(min.x, max.y, min.z));
+		poly.AddPoint(DAVA::Vector3(min.x, max.y, max.z));
+		RenderHelper::Instance()->FillPolygon(poly);
+
+		poly.Clear();
+		poly.AddPoint(max);
+		poly.AddPoint(DAVA::Vector3(max.x, min.y, max.z));
+		poly.AddPoint(DAVA::Vector3(min.x, min.y, max.z));
+		poly.AddPoint(DAVA::Vector3(min.x, max.y, max.z));
+		RenderHelper::Instance()->FillPolygon(poly);
+	}
+
 };

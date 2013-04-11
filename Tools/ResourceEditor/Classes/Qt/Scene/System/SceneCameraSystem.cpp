@@ -109,6 +109,18 @@ const DAVA::Rect SceneCameraSystem::GetViewportRect()
 	return viewportRect;
 }
 
+DAVA::Vector2 SceneCameraSystem::GetSñreenPos(const DAVA::Vector3 &pos3)
+{
+	DAVA::Vector2 ret;
+
+	if(NULL != curSceneCamera)
+	{
+		ret = curSceneCamera->GetOnScreenPosition(pos3, viewportRect);
+	}
+
+	return ret;
+}
+
 void SceneCameraSystem::Update(float timeElapsed)
 {
 	DAVA::Scene *scene = GetScene();

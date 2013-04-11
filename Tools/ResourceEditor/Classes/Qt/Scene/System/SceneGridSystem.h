@@ -6,10 +6,13 @@
 
 class SceneGridSystem : public DAVA::SceneSystem
 {
+	friend class SceneEditorProxy;
+
 public:
 	SceneGridSystem(DAVA::Scene * scene);
 	~SceneGridSystem();
 
+protected:
 	virtual void Update(float timeElapsed);
 	void ProcessUIEvent(DAVA::UIEvent *event);
 	void Draw();

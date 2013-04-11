@@ -59,7 +59,7 @@ int SceneCollisionSystem::GetDebugDrawFlags()
 	return debugDrawFlags;
 }
 
-const DAVA::Vector<DAVA::Entity*>* SceneCollisionSystem::RayTest(DAVA::Vector3 from, DAVA::Vector3 to)
+const EntityGroup* SceneCollisionSystem::RayTest(DAVA::Vector3 from, DAVA::Vector3 to)
 {
 	DAVA::Entity *retEntity = NULL;
 
@@ -72,7 +72,7 @@ const DAVA::Vector<DAVA::Entity*>* SceneCollisionSystem::RayTest(DAVA::Vector3 f
 	// no cache. start ray new ray test
 	lastRayFrom = from;
 	lastRayTo = to;
-	rayIntersectedEntities.clear();
+	rayIntersectedEntities.Clear();
 
 	btVector3 btFrom(from.x, from.y, from.z);
 	btVector3 btTo(to.x, to.y, to.z);
@@ -92,7 +92,7 @@ const DAVA::Vector<DAVA::Entity*>* SceneCollisionSystem::RayTest(DAVA::Vector3 f
 
 				if(NULL != entity)
 				{
-					rayIntersectedEntities.push_back(entity);
+					rayIntersectedEntities.Add(entity, GetBoundingBox(entity));
 				}
 			}
 		}

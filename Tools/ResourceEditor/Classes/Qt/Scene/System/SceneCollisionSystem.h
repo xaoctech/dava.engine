@@ -2,6 +2,7 @@
 #define __SCENE_COLLISION_SYSTEM_H__
 
 #include <QMap>
+#include "Scene/EntityGroup.h"
 
 // bullet
 #include "bullet/btBulletCollisionCommon.h"
@@ -18,6 +19,8 @@ class SceneCollisionDebugDrawer;
 
 class SceneCollisionSystem : public DAVA::SceneSystem
 {
+	friend class SceneEditorProxy;
+
 public:
 	enum DebugDrawFlags
 	{
@@ -36,9 +39,10 @@ public:
 	void SetDebugDrawFlags(int flags);
 	int GetDebugDrawFlags();
 
-	const DAVA::Vector<DAVA::Entity*>* RayTest(DAVA::Vector3 from, DAVA::Vector3 to);
+	const EntityGroup* RayTest(DAVA::Vector3 from, DAVA::Vector3 to);
 	DAVA::AABBox3 GetBoundingBox(DAVA::Entity *entity);
 
+protected:
 	void Update(DAVA::float32 timeElapsed);
 	void ProcessUIEvent(DAVA::UIEvent *event);
 	void Draw();
@@ -52,7 +56,7 @@ protected:
 	DAVA::Vector3 lastRayFrom;
 	DAVA::Vector3 lastRayTo;
 
-	DAVA::Vector<DAVA::Entity *> rayIntersectedEntities;
+	EntityGroup rayIntersectedEntities;
 	bool rayIntersectCached;
 
 	btDefaultCollisionConfiguration* objectsCollConf;

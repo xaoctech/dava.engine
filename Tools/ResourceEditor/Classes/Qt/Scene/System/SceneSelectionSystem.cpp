@@ -8,8 +8,9 @@
 
 SceneSelectionSystem::SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSystem *collisionSystem)
 	: DAVA::SceneSystem(scene)
-	, sceneCollisionSystem(collisionSystem)
+	, collisionSystem(collisionSystem)
 	, selectionDrawFlags(SELECTION_DRAW_SHAPE | SELECTION_FILL_SHAPE)
+	, applyOnPhaseEnd(false)
 {
 
 }
@@ -30,7 +31,8 @@ void SceneSelectionSystem::ProcessUIEvent(DAVA::UIEvent *event)
 	{
 		if(event->tid == DAVA::UIEvent::BUTTON_1)
 		{
-			SceneCameraSystem *cameraSystem	= ((SceneEditorProxy *) GetScene())->sceneCameraSystem;
+			DAVA::Entity *selectionEntity = NULL;
+			SceneCameraSystem *cameraSystem	= ((SceneEditorProxy *) GetScene())->cameraSystem;
 
 			DAVA::Vector3 camPos = cameraSystem->GetCameraPosition();
 			DAVA::Vector3 camDir = cameraSystem->GetPointDirection(event->point);
@@ -39,16 +41,13 @@ void SceneSelectionSystem::ProcessUIEvent(DAVA::UIEvent *event)
 			DAVA::Vector3 traceTo = traceFrom + camDir * 1000.0f;
 
 			DAVA::Entity *selectAfterThat = NULL;
-			if(curSelections.size() > 0)
+			if(curSelections.Size() > 0)
 			{
-				selectAfterThat = curSelections[0];
+				selectAfterThat = curSelections.Get(0);
 			}
 
-			const DAVA::Vector<DAVA::Entity*> *intersectedEntities = sceneCollisionSystem->RayTest(traceFrom, traceTo);
-
-			DAVA::Entity *newSelection = NULL;
-
-			if(intersectedEntities->size() > 0)
+			const EntityGroup* collisionEntities = collisionSystem->RayTest(traceFrom, traceTo);
+			if(collisionEntities->Size() > 0)
 			{
 				// TODO:
 				// search propriate selection
@@ -78,25 +77,41 @@ void SceneSelectionSystem::ProcessUIEvent(DAVA::UIEvent *event)
 				}
 				*/
 
-				newSelection = intersectedEntities->operator[](0);
+				selectionEntity = collisionEntities->Get(0);
 			}
 
-
-			// TODO:
-			// check modifiers key and make add/remove to selection
-			// ...
 			int curKeyModifiers = QApplication::keyboardModifiers();
-			if(curKeyModifiers & Qt::ShiftModifier)
+			if(curKeyModifiers & Qt::ControlModifier)
 			{
-				AddSelection(newSelection);
+				AddSelection(selectionEntity);
 			}
 			else if(curKeyModifiers & Qt::AltModifier)
 			{
-				RemSelection(newSelection);
+				RemSelection(selectionEntity);
 			}
 			else
 			{
-				SetSelection(newSelection);
+				if(selectionEntity == NULL || curSelections.HasEntity(selectionEntity))
+				{
+					applyOnPhaseEnd = true;
+				}
+				else
+				{
+					SetSelection(selectionEntity);
+				}
+			}
+
+			lastSelection = selectionEntity;
+		}
+	}
+	else if(DAVA::UIEvent::PHASE_ENDED == event->phase)
+	{
+		if(event->tid == DAVA::UIEvent::BUTTON_1)
+		{
+			if(applyOnPhaseEnd)
+			{
+				applyOnPhaseEnd = false;
+				SetSelection(lastSelection);
 			}
 		}
 	}
@@ -104,7 +119,7 @@ void SceneSelectionSystem::ProcessUIEvent(DAVA::UIEvent *event)
 
 void SceneSelectionSystem::Draw()
 {
-	if(curSelections.size() > 0)
+	if(curSelections.Size() > 0)
 	{
 		int oldState = DAVA::RenderManager::Instance()->GetState();
 		DAVA::eBlendMode oldBlendSrc = DAVA::RenderManager::Instance()->GetSrcBlend();
@@ -119,9 +134,9 @@ void SceneSelectionSystem::Draw()
 		DAVA::RenderManager::Instance()->SetState(newState);
 		DAVA::RenderManager::Instance()->SetBlendMode(DAVA::BLEND_SRC_ALPHA, DAVA::BLEND_ONE_MINUS_SRC_ALPHA);
 
-		for (DAVA::uint32 i = 0; i < curSelections.size(); i++)
+		for (DAVA::uint32 i = 0; i < curSelections.Size(); i++)
 		{
-			DAVA::AABBox3 selectionBox = sceneCollisionSystem->GetBoundingBox(curSelections[i]);
+			DAVA::AABBox3 selectionBox = collisionSystem->GetBoundingBox(curSelections.Get(i));
 
 			// draw selection share
 			if(selectionDrawFlags & SELECTION_DRAW_SHAPE)
@@ -134,50 +149,7 @@ void SceneSelectionSystem::Draw()
 			if(selectionDrawFlags & SELECTION_FILL_SHAPE)
 			{
 				DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 1.0f, 0.15f));
-				DAVA::Vector3 min = selectionBox.min;
-				DAVA::Vector3 max = selectionBox.max;
-
-				DAVA::Polygon3 poly;
-				poly.AddPoint(min);
-				poly.AddPoint(DAVA::Vector3(min.x, min.y, max.z));
-				poly.AddPoint(DAVA::Vector3(min.x, max.y, max.z));
-				poly.AddPoint(DAVA::Vector3(min.x, max.y, min.z));
-				DAVA::RenderHelper::Instance()->FillPolygon(poly);
-
-				poly.Clear();
-				poly.AddPoint(min);
-				poly.AddPoint(DAVA::Vector3(min.x, max.y, min.z));
-				poly.AddPoint(DAVA::Vector3(max.x, max.y, min.z));
-				poly.AddPoint(DAVA::Vector3(max.x, min.y, min.z));
-				DAVA::RenderHelper::Instance()->FillPolygon(poly);
-
-				poly.Clear();
-				poly.AddPoint(min);
-				poly.AddPoint(DAVA::Vector3(min.x, min.y, max.z));
-				poly.AddPoint(DAVA::Vector3(max.x, min.y, max.z));
-				poly.AddPoint(DAVA::Vector3(max.x, min.y, min.z));
-				DAVA::RenderHelper::Instance()->FillPolygon(poly);
-
-				poly.Clear();
-				poly.AddPoint(max);
-				poly.AddPoint(DAVA::Vector3(max.x, max.y, min.z));
-				poly.AddPoint(DAVA::Vector3(max.x, min.y, min.z));
-				poly.AddPoint(DAVA::Vector3(max.x, min.y, max.z));
-				DAVA::RenderHelper::Instance()->FillPolygon(poly);
-
-				poly.Clear();
-				poly.AddPoint(max);
-				poly.AddPoint(DAVA::Vector3(max.x, max.y, min.z));
-				poly.AddPoint(DAVA::Vector3(min.x, max.y, min.z));
-				poly.AddPoint(DAVA::Vector3(min.x, max.y, max.z));
-				DAVA::RenderHelper::Instance()->FillPolygon(poly);
-
-				poly.Clear();
-				poly.AddPoint(max);
-				poly.AddPoint(DAVA::Vector3(max.x, min.y, max.z));
-				poly.AddPoint(DAVA::Vector3(min.x, min.y, max.z));
-				poly.AddPoint(DAVA::Vector3(min.x, max.y, max.z));
-				DAVA::RenderHelper::Instance()->FillPolygon(poly);
+				DAVA::RenderHelper::Instance()->FillBox(selectionBox);
 			}
 		}
 
@@ -188,35 +160,21 @@ void SceneSelectionSystem::Draw()
 
 void SceneSelectionSystem::SetSelection(DAVA::Entity *entity)
 {
-	curSelections.clear();
-	curSelections.push_back(entity);
+	curSelections.Clear();
+	curSelections.Add(entity, collisionSystem->GetBoundingBox(entity));
 }
-
 
 void SceneSelectionSystem::AddSelection(DAVA::Entity *entity)
 {
-	curSelections.push_back(entity);
+	curSelections.Add(entity, collisionSystem->GetBoundingBox(entity));
 }
 
 void SceneSelectionSystem::RemSelection(DAVA::Entity *entity)
 {
-	// TODO:
-	// ...
+	curSelections.Rem(entity);
 }
 
-DAVA::Entity* SceneSelectionSystem::GetSelectionSingle()
-{
-	DAVA::Entity* singleSel = NULL;
-
-	if(curSelections.size())
-	{
-		singleSel = curSelections[0];
-	}
-
-	return singleSel;
-}
-
-const DAVA::Vector<DAVA::Entity *>* SceneSelectionSystem::GetSelectionsAll()
+const EntityGroup*  SceneSelectionSystem::GetSelection() const
 {
 	return &curSelections;
 }

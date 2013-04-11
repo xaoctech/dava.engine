@@ -11,28 +11,32 @@
 SceneEditorProxy::SceneEditorProxy()
 	: Scene()
 {
-	sceneCameraSystem = new SceneCameraSystem(this);
-	AddSystem(sceneCameraSystem, 0);
+	sceneSignals = new SceneEditorSignals();
 
-	sceneGridSystem = new SceneGridSystem(this);
-	AddSystem(sceneGridSystem, 0);
+	cameraSystem = new SceneCameraSystem(this);
+	AddSystem(cameraSystem, 0);
 
-	sceneCollisionSystem = new SceneCollisionSystem(this);
-	AddSystem(sceneCollisionSystem, 0);
+	gridSystem = new SceneGridSystem(this);
+	AddSystem(gridSystem, 0);
 
-	sceneSelectionSystem = new SceneSelectionSystem(this, sceneCollisionSystem);
-	AddSystem(sceneSelectionSystem, 0);
+	collisionSystem = new SceneCollisionSystem(this);
+	AddSystem(collisionSystem, 0);
 
-	modifSystem = new EntityModificationSystem(this, sceneCollisionSystem);
+	selectionSystem = new SceneSelectionSystem(this, collisionSystem);
+	AddSystem(selectionSystem, 0);
+
+	modifSystem = new EntityModificationSystem(this, collisionSystem);
 	AddSystem(modifSystem, 0);
 }
 
 SceneEditorProxy::~SceneEditorProxy()
 {
-	SafeDelete(sceneSelectionSystem);
-	SafeDelete(sceneCollisionSystem);
-	SafeDelete(sceneGridSystem);
-	SafeDelete(sceneCameraSystem);
+	SafeDelete(selectionSystem);
+	SafeDelete(collisionSystem);
+	SafeDelete(gridSystem);
+	SafeDelete(cameraSystem);
+
+	delete sceneSignals;
 }
 
 bool SceneEditorProxy::Open(const DAVA::String &path)
@@ -79,35 +83,35 @@ void SceneEditorProxy::Update(float timeElapsed)
 {
 	Scene::Update(timeElapsed);
 
-	sceneGridSystem->Update(timeElapsed);
-	sceneCameraSystem->Update(timeElapsed);
-	sceneCollisionSystem->Update(timeElapsed);
-	sceneSelectionSystem->Update(timeElapsed);
+	gridSystem->Update(timeElapsed);
+	cameraSystem->Update(timeElapsed);
+	collisionSystem->Update(timeElapsed);
+	selectionSystem->Update(timeElapsed);
 	modifSystem->Update(timeElapsed);
 }
 
 void SceneEditorProxy::ProcessUIEvent(DAVA::UIEvent *event)
 {
-	sceneGridSystem->ProcessUIEvent(event);
-	sceneCameraSystem->ProcessUIEvent(event);
-	sceneCollisionSystem->ProcessUIEvent(event);
-	sceneSelectionSystem->ProcessUIEvent(event);
+	gridSystem->ProcessUIEvent(event);
+	cameraSystem->ProcessUIEvent(event);
+	collisionSystem->ProcessUIEvent(event);
+	selectionSystem->ProcessUIEvent(event);
 	modifSystem->ProcessUIEvent(event);
 }
 
 void SceneEditorProxy::SetViewportRect(const DAVA::Rect &newViewportRect)
 {
-	sceneCameraSystem->SetViewportRect(newViewportRect);
+	cameraSystem->SetViewportRect(newViewportRect);
 }
 
 void SceneEditorProxy::Draw()
 {
 	Scene::Draw();
 
-	sceneGridSystem->Draw();
-	sceneCameraSystem->Draw();
-	sceneCollisionSystem->Draw();
-	sceneSelectionSystem->Draw();
+	gridSystem->Draw();
+	cameraSystem->Draw();
+	collisionSystem->Draw();
+	selectionSystem->Draw();
 	modifSystem->Draw();
 }
 
