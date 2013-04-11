@@ -97,6 +97,8 @@ ParticleLayer::ParticleLayer()
 	frameOverLifeFPS = 0;
 
     isDisabled = false;
+
+	playbackSpeed = 1.0f;
 }
 
 ParticleLayer::~ParticleLayer()
@@ -298,7 +300,8 @@ void ParticleLayer::Restart(bool isDeleteAllParticles)
 
 void ParticleLayer::Update(float32 timeElapsed)
 {
-	// increment timer	
+	// increment timer, take the playbackSpeed into account.
+	timeElapsed *= playbackSpeed;
 	layerTime += timeElapsed;
 
 	switch(type)
@@ -1058,6 +1061,17 @@ void ParticleLayer::FillSizeOverlifeXY(RefPtr< PropertyLine<float32> > sizeOverL
 	}
 	
 	this->sizeOverLifeXY = sizeOverLifeXYKeyframes;
+}
+
+void ParticleLayer::SetPlaybackSpeed(float32 value)
+{
+	this->playbackSpeed = Clamp(value, PARTICLE_EMITTER_MIN_PLAYBACK_SPEED,
+								PARTICLE_EMITTER_MAX_PLAYBACK_SPEED);
+}
+
+float32 ParticleLayer::GetPlaybackSpeed()
+{
+	return this->playbackSpeed;
 }
 
 }

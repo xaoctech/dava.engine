@@ -49,7 +49,10 @@ namespace DAVA
 	
 class Particle;
 //class ParticleLayer;
-	
+
+#define PARTICLE_EMITTER_MIN_PLAYBACK_SPEED 0.25f
+#define PARTICLE_EMITTER_MAX_PLAYBACK_SPEED 4.0f
+
 /**
 	\ingroup particlesystem
 	\brief Main class to work with particle systems in DAVA SDK. 
@@ -290,6 +293,15 @@ public:
 	 */
 	inline void SetParticlesFollow(bool follow);
 
+	/**
+	 \brief Set the playback speed for the particular emitter.
+	 The playback speed can vary from 0.25 (4x times slower) to 4.0 (4x times faster)
+	 for the particular emitter. Default value is 1.0.
+	 \param[in] playback speed.
+	 */
+	void SetPlaybackSpeed(float32 value);
+	float32 GetPlaybackSpeed();
+
 	/// Particles' color is multiplied by ambientColor before drawing.
 	Color ambientColor;
 
@@ -342,6 +354,7 @@ protected:
 	bool	isAutorestart;
 	bool	particlesFollow;
     bool    is3D;
+	float32 playbackSpeed;
 
 public:
 	RefPtr< PropertyLine<Vector3> > emissionVector;
