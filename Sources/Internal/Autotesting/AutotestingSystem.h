@@ -122,9 +122,11 @@ public:
     void RegisterHelperInDB();
     
 protected:
-	void MakeScreenShot();
-
-    String GetCurrentTimeString();
+    String GetTestId(int32 index) { Format("Test%03d", index); };
+    String GetStepId(int32 index) { Format("Step%03d", index); };
+    String GetLogId(int32 index) { Format("Message%03d", index); };
+    
+    uint64 GetCurrentTimeMS();    String GetCurrentTimeString();
     
 //DB
 	KeyedArchive *FindOrInsertRunArchive(MongodbUpdateObject* dbUpdateObject, const String &runId);
@@ -159,6 +161,8 @@ protected:
     
     void ExitApp();
 	
+
+    uint64 startTimeMS;
 
     bool isInit;
     bool isRunning;

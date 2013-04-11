@@ -39,6 +39,7 @@ AutotestingSystem::AutotestingSystem()
     , isInitMultiplayer(false)
     , stepIndex(0)
     , logIndex(0)
+    , startTimeMS(0)
 {
 #ifdef AUTOTESTING_LUA
     new AutotestingSystemLua();
@@ -293,11 +294,11 @@ void AutotestingSystem::ClearTestInDB()
     MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
     
     // clear test
-    String testId = Format("Test%d", testIndex);
+    String testId = GetTestId(testIndex);
     KeyedArchive* currentTestArchive = InsertTestArchive(dbUpdateObject, testId, testName, needClearGroupInDB);
     
     // Create document for step 0 -  'Precondition'
-    String stepId = Format("Step%d", stepIndex);
+    String stepId = GetStepId(stepIndex);
     InsertStepArchive(currentTestArchive, stepId, "Precondition");
 
     SaveToDB(dbUpdateObject);
@@ -546,7 +547,7 @@ KeyedArchive *AutotestingSystem::InsertTestArchive(MongodbUpdateObject* dbUpdate
 
 	currentTestArchive = new KeyedArchive();
 
-	currentTestArchive->SetString("Name", testName.c_str());
+	currentTestArchive->SetString("Name", testName);
 	currentTestArchive->SetString("FileName", testFileName);
 	currentTestArchive->SetBool("Success", false);
 
@@ -706,6 +707,13 @@ KeyedArchive *AutotestingSystem::FindOrInsertTestStepLogEntryArchive(KeyedArchiv
     
     return currentTestStepLogEntryArchive;
 }
+    
+uint64 AutotestingSystem::GetCurrentTimeMS()
+{
+    uint64 timeAbsMs = SystemTimer::Instance()->FrameStampTimeMS();
+    timeAbsMs -= startTimeMS;
+    return timeAbsMs;
+}
 
 // Multiplayer API
 void AutotestingSystem::WriteState(const String & device, const String & state)
@@ -813,7 +821,7 @@ void AutotestingSystem::InitializeDevice(const String & device)
 
 String AutotestingSystem::GetCurrentTimeString()
 {
-    uint64 timeAbsMs = SystemTimer::Instance()->FrameStampTimeMS();
+    uint64 timeAbsMs = GetCurrentTimeMS();
     uint16 hours = (timeAbsMs/3600000)%60;
     uint16 minutes = (timeAbsMs/60000)%60;
     uint16 seconds = (timeAbsMs/1000)%60;
@@ -824,6 +832,13 @@ void AutotestingSystem::OnTestStart(const String &_testName)
 {
 	Logger::Debug("AutotestingSystem::OnTestStart %s", _testName.c_str());
     testName = _testName;
+    
+    String testId = GetTestId(testIndex);
+    MongodbUpdateObject *dbUpdateObject = new MongodbUpdateObject();
+    KeyedArchive *currentTestArchive = FindOrInsertTestArchive(dbUpdateObject, testId);
+    currentTestArchive->SetString("Name", testName);
+    dbUpdateObject->SaveToDB(dbClient);
+    
     Log("DEBUG", Format("OnTestStart %s", testName.c_str()));
 }
 
@@ -833,8 +848,8 @@ void AutotestingSystem::OnStepStart(const String &stepName)
 
 	OnStepFinished();
 
-	String testId = Format("Test%d", testIndex);
-	String stepId = Format("Step%d", ++stepIndex);
+	String testId = GetTestId(testIndex);
+	String stepId = GetStepId(++stepIndex);
 
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
 	KeyedArchive* currentTestArchive = FindOrInsertTestArchive(dbUpdateObject, testId); //FindTestArchive(dbUpdateObject, testId);	
@@ -859,9 +874,9 @@ void AutotestingSystem::Log(const String &level, const String &message)
 {
 	Logger::Debug("AutotestingSystem::Log [%s]%s", level.c_str(), message.c_str());
 	
-	String testId = Format("Test%d", testIndex);
-	String stepId = Format("Step%d", stepIndex);
-	String logId = Format("Message%d", ++logIndex);
+	String testId = GetTestId(testIndex);
+	String stepId = GetStepId(stepIndex);
+	String logId = GetLogId(++logIndex);
 
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
 	KeyedArchive* currentTestArchive = FindOrInsertTestArchive(dbUpdateObject, testId);//FindTestArchive(dbUpdateObject, testId);
@@ -886,8 +901,8 @@ void AutotestingSystem::SaveScreenShotNameToDB()
 {
 	Logger::Debug("AutotestingSystem::SaveScreenShotNameToDB %s", screenShotName.c_str());
 	
-	String testId = Format("Test%d", testIndex);
-	String stepId = Format("Step%d", stepIndex);
+	String testId = GetTestId(testIndex);
+	String stepId = GetStepId(stepIndex);
 
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
 	KeyedArchive* currentTestArchive = FindOrInsertTestArchive(dbUpdateObject, testId);//FindTestArchive(dbUpdateObject, testId);
@@ -904,8 +919,8 @@ void AutotestingSystem::OnStepFinished()
 	Logger::Debug("AutotestingSystem::OnStepFinished");
 
 	// Mark step as SUCCESS
-	String testId = Format("Test%d", testIndex);
-	String stepId = Format("Step%d", stepIndex);
+	String testId = GetTestId(testIndex);
+	String stepId = GetStepId(stepIndex);
 	logIndex = 0;
 
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
@@ -936,8 +951,8 @@ void AutotestingSystem::SaveTestStepToDB(const String &stepDescription, bool isP
     
     Logger::Debug("AutotestingSystem::SaveTestStepToDB %s %d %s", stepDescription.c_str(), isPassed, error.c_str());
     
-    String testId = Format("Test%d", testIndex);
-    String stepId = Format("Step%d", ++stepIndex);
+    String testId = GetTestId(testIndex);
+    String stepId = GetStepId(++stepIndex);
     
     MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
     KeyedArchive* currentTestArchive = FindOrInsertTestArchive(dbUpdateObject, testId);
@@ -950,7 +965,7 @@ void AutotestingSystem::SaveTestStepToDB(const String &stepDescription, bool isP
     
     if(!error.empty())
     {
-        String logId = Format("Message%d", ++logIndex);
+        String logId = GetLogId(++logIndex);
         KeyedArchive* currentLogEntryArchive = FindOrInsertTestStepLogEntryArchive(currentTestStepArchive, logId);
         
         currentLogEntryArchive->SetString("Type", "ERROR");
@@ -973,9 +988,9 @@ void AutotestingSystem::SaveTestStepLogEntryToDB(const String &type, const Strin
     
     Logger::Debug("AutotestingSystem::SaveTestStepLogEntryToDB %s %s %s", type.c_str(), time.c_str(), message.c_str());
     
-    String testId = Format("Test%d", testIndex);
-    String stepId = Format("Step%d", stepIndex);
-    String logId = Format("Message%d", ++logIndex);
+    String testId = GetTestId(testIndex);
+    String stepId = GetStepId(stepIndex);
+    String logId = GetLogId(++logIndex);
 
     String testsName = Format("%u",testsDate);
     
@@ -1057,6 +1072,9 @@ void AutotestingSystem::Draw()
 void AutotestingSystem::OnTestsSatrted()
 {
     Logger::Debug("AutotestingSystem::OnTestsStarted");
+    
+    startTimeMS = SystemTimer::Instance()->FrameStampTimeMS();
+    
 #ifdef AUTOTESTING_LUA
     AutotestingSystemLua::Instance()->StartTest();
 #endif
@@ -1306,7 +1324,7 @@ void AutotestingSystem::OnError(const String & errorMessage)
 
 void AutotestingSystem::MakeScreenShot()
 {
-	uint64 timeAbsMs = SystemTimer::Instance()->FrameStampTimeMS();
+	uint64 timeAbsMs = GetCurrentTimeMS();
     uint16 hours = (timeAbsMs/3600000)%60;
     uint16 minutes = (timeAbsMs/60000)%60;
     uint16 seconds = (timeAbsMs/1000)%60;
@@ -1343,7 +1361,7 @@ void AutotestingSystem::OnTestsFinished()
 	}
 
 	// Mark test as SUCCESS
-	String testId = Format("Test%d", testIndex);
+	String testId = GetTestId(testIndex);
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
 	KeyedArchive* currentTestArchive = FindOrInsertTestArchive(dbUpdateObject, testId);//FindTestArchive(dbUpdateObject, testId);
 
