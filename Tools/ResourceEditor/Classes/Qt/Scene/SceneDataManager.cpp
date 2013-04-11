@@ -198,7 +198,17 @@ void SceneDataManager::ReloadScene(const String &scenePathname, const String &fr
     scene->ReleaseRootNode(scenePathname);
     
 	nodesToAdd.clear();
-    ReloadNode(scene, scene, scenePathname, fromScenePathname);
+    
+    Set<String> errors;
+    ReloadNode(scene, scene, scenePathname, fromScenePathname, errors);
+    if(!errors.empty())
+    {
+        ShowErrorDialog(errors);
+        
+        nodesToAdd.clear();
+        return;
+    }
+    
     
     for (int32 i = 0; i < (int32)nodesToAdd.size(); i++)
     {
@@ -221,7 +231,7 @@ void SceneDataManager::ReloadScene(const String &scenePathname, const String &fr
 }
 
 
-void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const String &nodePathname, const String &fromPathname)
+void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const String &nodePathname, const String &fromPathname, Set<String> &errors)
 {
 	//если в рут ноды сложить такие же рут ноды то на релоаде все накроет пиздой
     KeyedArchive *customProperties = node->GetCustomProperties();
@@ -245,7 +255,7 @@ void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const String
         }
         else
         {
-            ShowErrorDialog(Format("Cannot load object: %s", fromPathname.c_str()));
+            errors.insert(Format("Cannot load object: %s", fromPathname.c_str()));
         }
 
         return;
@@ -255,7 +265,7 @@ void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const String
     for (int ci = 0; ci < csz; ++ci)
     {
         Entity * child = node->GetChild(ci);
-        ReloadNode(scene, child, nodePathname, fromPathname);
+        ReloadNode(scene, child, nodePathname, fromPathname, errors);
     }
 }
 
