@@ -37,7 +37,8 @@ protected:
 	// Properties getters/setters
 	int GetAggregatorID();
     void SetAggregatorID(int value);
-
+	
+	virtual void SetActiveControlRect(const Rect& rect);
 };
 
 };
