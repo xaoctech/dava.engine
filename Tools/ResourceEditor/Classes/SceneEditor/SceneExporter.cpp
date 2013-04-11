@@ -249,7 +249,12 @@ void SceneExporter::ExportLandscape(Scene *scene, Set<String> &errorLog)
     if (landscape)
     {
         sceneUtils.CopyFile(landscape->GetHeightmapPathname(), errorLog);
-        ExportLandscapeFullTiledTexture(landscape, errorLog);
+        
+        Landscape::eTiledShaderMode mode = landscape->GetTiledShaderMode();
+        if(mode == Landscape::TILED_MODE_MIXED || mode == Landscape::TILED_MODE_TEXTURE)
+        {
+            ExportLandscapeFullTiledTexture(landscape, errorLog);
+        }
     }
 }
 
