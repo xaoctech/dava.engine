@@ -111,8 +111,13 @@ void QtMainWindow::SetupActions()
 	connect(ui->actionTileMapEditor, SIGNAL(triggered()), actionHandler, SLOT(TilemapEditor()));
 	connect(ui->actionRulerTool, SIGNAL(triggered()), actionHandler, SLOT(RulerTool()));
 	connect(ui->actionShowSettings, SIGNAL(triggered()), actionHandler, SLOT(ShowSettings()));
+    
+#if defined (__DAVAENGINE_MACOS__)
+    ui->menuTools->removeAction(ui->actionBeast);
+#else //#if defined (__DAVAENGINE_MACOS__)
 	connect(ui->actionBeast, SIGNAL(triggered()), actionHandler, SLOT(Beast()));
-
+#endif //#if defined (__DAVAENGINE_MACOS__)
+    
 	//Edit
 	connect(ui->actionConvertToShadow, SIGNAL(triggered()), actionHandler, SLOT(ConvertToShadow()));
 }
