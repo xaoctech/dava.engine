@@ -103,7 +103,7 @@ protected:
 	void EditScene(SceneData* sceneData, const String &scenePathname);
 
 	// Reload the scene node in a recursive way.
-	void ReloadNode(EditorScene* scene, Entity *node, const String &nodePathname, const String &fromPathname);
+	void ReloadNode(EditorScene* scene, Entity *node, const String &nodePathname, const String &fromPathname, Set<String> &errors);
 
 	// Update the Particle Editor sprites.
 	void UpdateParticleSprites();
