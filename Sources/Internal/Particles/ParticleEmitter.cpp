@@ -69,7 +69,7 @@ void ParticleEmitter::Cleanup(bool needCleanupLayers)
 	size = RefPtr<PropertyLineValue<Vector3> >(0);
 	colorOverLife = 0;
 	radius = 0;
-	rotationMatrix.Identity();
+
 	// number = new PropertyLineValue<float>(1.0f);
 
 	time = 0.0f;
@@ -347,15 +347,6 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
     {
         particle->position = tempPosition;
     }
-    else if (emitterType == EMITTER_LINE)
-    {
-        // TODO: add emitter angle support
-        float32 rand05 = (float32)Random::Instance()->RandFloat() - 0.5f; // [-0.5f, 0.5f]
-        Vector3 lineDirection(0, 0, 0);
-        if(size)
-            lineDirection = size->GetValue(time)*rand05;
-        particle->position = tempPosition + lineDirection;
-    }
     else if (emitterType == EMITTER_RECT)
     {
         // TODO: add emitter angle support
@@ -479,7 +470,11 @@ void ParticleEmitter::LoadFromYaml(const String & filename)
 			if (typeNode->AsString() == "point")
 				emitterType = EMITTER_POINT;
 			else if (typeNode->AsString() == "line")
-				emitterType = EMITTER_LINE;
+			{
+				// Yuri Coder, 2013/04/09. Get rid of the "line" node type -
+				// it can be completely replaced by "rect" one.
+				emitterType = EMITTER_RECT;
+			}
 			else if (typeNode->AsString() == "rect")
 				emitterType = EMITTER_RECT;
 			else if (typeNode->AsString() == "oncircle")
@@ -679,11 +674,6 @@ String ParticleEmitter::GetEmitterTypeName()
         case EMITTER_POINT:
         {
             return "point";
-        }
-
-        case EMITTER_LINE:
-        {
-            return "line";
         }
 
         case EMITTER_RECT:

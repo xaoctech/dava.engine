@@ -4,14 +4,16 @@
 #include "Render/Material.h"
 #include "Math/MathHelpers.h"
 #include "Render/Highlevel/Camera.h"
+#include "ParticleEmitter3D.h"
 
 namespace DAVA
 {
 
-ParticleLayer3D::ParticleLayer3D()
+ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 {
 	isLong = false;
 	renderData = new RenderDataObject();
+	this->parent = parent;
 
 	//TODO: set material from outside
 	
@@ -98,11 +100,11 @@ void ParticleLayer3D::DrawLayerNonLong(Camera * camera)
 		Vector3 dxs = dx*sine;
 		Vector3 dyc = dy*cosine;
 		Vector3 dys = dy*sine;
-			
-		Vector3 topLeft = current->position+(-dxc+dys)*pivotUp + (dxs+dyc)*pivotLeft;
-		Vector3 topRight = current->position+(-dxs-dyc)*pivotRight + (-dxc+dys)*pivotUp;
-		Vector3 botLeft = current->position+(dxs+dyc)*pivotLeft + (dxc-dys)*pivotDown;
-		Vector3 botRight = current->position+(dxc-dys)*pivotDown + (-dxs-dyc)*pivotRight;
+
+		Vector3 topLeft = current->position+(dxs+dyc)*pivotLeft + (dxc-dys)*pivotDown;
+		Vector3 topRight = current->position+(-dxc+dys)*pivotUp + (dxs+dyc)*pivotLeft;
+		Vector3 botLeft = current->position+(dxc-dys)*pivotDown + (-dxs-dyc)*pivotRight;
+		Vector3 botRight = current->position+(-dxs-dyc)*pivotRight + (-dxc+dys)*pivotUp;
 
 		verts.push_back(topLeft.x);//0
 		verts.push_back(topLeft.y);
@@ -255,6 +257,7 @@ void ParticleLayer3D::DrawLayerLong(Camera * camera)
 		current = TYPE_PARTICLES == type ? current->next : 0;
 	}
 
+	renderBatch->SetTotalCount(totalCount);
 	if(totalCount > 0)
 	{
 		renderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &verts.front());
@@ -263,8 +266,7 @@ void ParticleLayer3D::DrawLayerLong(Camera * camera)
 
 		RenderManager::Instance()->SetRenderData(renderData);
 		renderBatch->GetMaterial()->PrepareRenderState();
-
-		RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLELIST, 0, 6*totalCount);
+		renderBatch->SetRenderDataObject(renderData);
 	}
 }
 
@@ -279,7 +281,13 @@ ParticleLayer * ParticleLayer3D::Clone(ParticleLayer * dstLayer /*= 0*/)
 {
 	if(!dstLayer)
 	{
-		dstLayer = new ParticleLayer3D();
+		ParticleEmitter* parentFor3DLayer = NULL;
+		if (dynamic_cast<ParticleLayer3D*>(dstLayer))
+		{
+			parentFor3DLayer = (dynamic_cast<ParticleLayer3D*>(dstLayer))->GetParent();
+		}
+
+		dstLayer = new ParticleLayer3D(parentFor3DLayer);
 	}
 
 	ParticleLayer::Clone(dstLayer);
