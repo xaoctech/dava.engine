@@ -226,7 +226,8 @@ void QtMainWindow::SetupMainMenu()
 
 	//Reference
 	connect(ui->applyReferenceSuffixButton, SIGNAL(clicked()), this, SLOT(ApplyReferenceNodeSuffix()));
- 
+
+	actionHandler->MenuViewOptionsWillShow();
 }
 
 void QtMainWindow::SetupToolBars()
