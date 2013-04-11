@@ -946,6 +946,8 @@ bool RenderState::SaveToYamlFile(const String & filePath)
 	YamlNode* resultNode = SaveToYamlNode();
 	parser->SaveToYamlFile(filePath, resultNode, true);
 
+	SafeRelease(parser);
+
 	return true;
 }
 	
