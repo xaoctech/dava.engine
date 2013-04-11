@@ -113,6 +113,7 @@ public:
     void RegisterHelperInDB();
     
 protected:
+    uint64 GetCurrentTimeMS();
     String GetCurrentTimeString();
 
 	void MakeScreenShot();
@@ -147,6 +148,7 @@ protected:
     
     void ExitApp();
 
+    uint64 startTimeMS;
 
     bool isInit;
     bool isRunning;
