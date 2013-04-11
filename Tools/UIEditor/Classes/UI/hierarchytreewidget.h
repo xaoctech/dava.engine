@@ -26,7 +26,9 @@ private:
 signals:
 	void CreateNewScreen();
 	void CreateNewAggregator();
-	
+
+	void ImportScreenOrAggregator();
+
 protected slots:
 	void OnTreeUpdated();
 	
@@ -39,7 +41,8 @@ private slots:
 	void OnCreateAggregatorAction();
 	void OnCopyAction();
 	void OnPasteAction();
-	
+	void OnImportScreenOrAggregatorAction();
+
 private:
 	typedef Map<int, QTreeWidgetItem*> TREEITEMS;
 	TREEITEMS GetAllItems();

@@ -66,6 +66,9 @@ public:
 
 	virtual bool IsUndoRedoSupported() {return true;};
 
+	virtual void IncrementUnsavedChanges();
+	virtual void DecrementUnsavedChanges();
+
 protected:
 	// Command data.
     typedef Vector<ChangePropertyCommandData<Type> > COMMANDDATAVECT;
@@ -266,6 +269,26 @@ template<typename Type>
 																  isPropertyValueDiffers);
 	
 	bool propertySetOK = (realValue == curValue);
+
+//	if (propertyName == "Name" && propertySetOK)
+//	{
+//		HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetTree().GetNode((*iter).GetTreeNodeID());
+//		HierarchyTreeAggregatorNode* aggregator = dynamic_cast<HierarchyTreeAggregatorNode*>(node);
+//		if (aggregator)
+//		{
+//			HierarchyTreeAggregatorNode::CHILDS controls = aggregator->GetChilds();
+//			HierarchyTreeAggregatorNode::CHILDS::iterator it;
+//			for (it = controls.begin(); it != controls.end(); ++it)
+//			{
+//				HierarchyTreeScreenNode* screen = HierarchyTreeController::Instance()->GetScreenNodeForNode(*it);
+//				if (screen)
+//				{
+//					screen->IncrementUnsavedChanges();
+//				}
+//			}
+//		}
+//	}
+
 	SAFE_DELETE(baseMetadata);
 
 	return propertySetOK;
@@ -275,6 +298,88 @@ template<typename Type>
     QString ChangePropertyCommand<Type>::GetPropertyName()
 {
     return this->propertyGridWidgetData.getProperty().name();
+}
+
+template<typename Type>
+    void ChangePropertyCommand<Type>::IncrementUnsavedChanges()
+{
+	QString propertyName = GetPropertyName();
+
+	COMMANDDATAVECTITER it;
+	for (it = commandData.begin(); it != commandData.end(); ++it)
+	{
+		HierarchyTreeNode::HIERARCHYTREENODEID treeNodeID = (*it).GetTreeNodeID();
+
+		HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetTree().GetNode(treeNodeID);
+		if (dynamic_cast<HierarchyTreePlatformNode*>(node))
+		{
+			node->IncrementUnsavedChanges();
+		}
+		else
+		{
+			BaseCommand::IncrementUnsavedChanges();
+		}
+
+		if (propertyName == "Name")
+		{
+			HierarchyTreeNode* nodeId = HierarchyTreeController::Instance()->GetTree().GetNode((*it).GetTreeNodeID());
+			HierarchyTreeAggregatorNode* aggregator = dynamic_cast<HierarchyTreeAggregatorNode*>(nodeId);
+			if (aggregator)
+			{
+				HierarchyTreeAggregatorNode::CHILDS controls = aggregator->GetChilds();
+				HierarchyTreeAggregatorNode::CHILDS::iterator iter;
+				for (iter = controls.begin(); iter != controls.end(); ++iter)
+				{
+					HierarchyTreeScreenNode* screen = HierarchyTreeController::Instance()->GetScreenNodeForNode(*iter);
+					if (screen)
+					{
+						screen->IncrementUnsavedChanges();
+					}
+				}
+			}
+		}
+	}
+}
+
+template<typename Type>
+    void ChangePropertyCommand<Type>::DecrementUnsavedChanges()
+{
+	QString propertyName = GetPropertyName();
+
+	COMMANDDATAVECTITER it;
+	for (it = commandData.begin(); it != commandData.end(); ++it)
+	{
+		HierarchyTreeNode::HIERARCHYTREENODEID treeNodeID = (*it).GetTreeNodeID();
+
+		HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetTree().GetNode(treeNodeID);
+		if (dynamic_cast<HierarchyTreePlatformNode*>(node))
+		{
+			node->DecrementUnsavedChanges();
+		}
+		else
+		{
+			BaseCommand::DecrementUnsavedChanges();
+		}
+
+		if (propertyName == "Name")
+		{
+			HierarchyTreeNode* nodeId = HierarchyTreeController::Instance()->GetTree().GetNode((*it).GetTreeNodeID());
+			HierarchyTreeAggregatorNode* aggregator = dynamic_cast<HierarchyTreeAggregatorNode*>(nodeId);
+			if (aggregator)
+			{
+				HierarchyTreeAggregatorNode::CHILDS controls = aggregator->GetChilds();
+				HierarchyTreeAggregatorNode::CHILDS::iterator iter;
+				for (iter = controls.begin(); iter != controls.end(); ++iter)
+				{
+					HierarchyTreeScreenNode* screen = HierarchyTreeController::Instance()->GetScreenNodeForNode(*iter);
+					if (screen)
+					{
+						screen->DecrementUnsavedChanges();
+					}
+				}
+			}
+		}
+	}
 }
 
 #endif /* defined(__UIEditor__ChangePropertyCommand__) */
