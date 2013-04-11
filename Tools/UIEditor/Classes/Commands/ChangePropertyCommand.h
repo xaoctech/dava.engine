@@ -58,7 +58,7 @@ class ChangePropertyCommand : public BaseCommand
 public:
     ChangePropertyCommand(BaseMetadata* baseMetadata,
                           const PropertyGridWidgetData& propertyGridWidgetData,
-                          Type value, bool allStates = false);
+                          Type value);
 	virtual ~ChangePropertyCommand();
 
     virtual void Execute();
@@ -91,9 +91,7 @@ protected:
     
     // Current value.
     Type curValue;
-    
-    bool setPropertyForAllStates;
-    
+
     // Current state.
 	Vector<UIControl::eControlState> curStates;
 
@@ -122,11 +120,10 @@ public:
 template<typename Type>
     ChangePropertyCommand<Type>::ChangePropertyCommand(BaseMetadata* baseMetadata,
                                                        const PropertyGridWidgetData& propertyGridWidgetData,
-                                                       Type value, bool allStates) :
+                                                       Type value) :
     propertyGridWidgetData(propertyGridWidgetData)
 {
     this->curValue = value;
-    this->setPropertyForAllStates = allStates;
     this->curStates = baseMetadata->GetUIControlStates();
     this->commandData = BuildCommandData(baseMetadata);
 }
@@ -243,26 +240,9 @@ template<typename Type>
 	QString propertyName = GetPropertyName();
 	BaseMetadata* baseMetadata = GetMetadataForTreeNode((*iter).GetTreeNodeID());
 
-	if (setPropertyForAllStates)
-	{
-		Vector<UIControl::eControlState> states;
+	baseMetadata->SetUIControlStates(this->curStates);
+	PropertiesHelper::SetAllPropertyValues<Type>(baseMetadata, propertyName, newValue);
 
-		int statesCount = UIControlStateHelper::GetUIControlStatesCount();
-		for (int stateID = 0; stateID < statesCount; stateID ++)
-		{
-			states.push_back(UIControlStateHelper::GetUIControlState(stateID));
-		}
-
-		baseMetadata->SetUIControlStates(states);
-		PropertiesHelper::SetAllPropertyValues<Type>(baseMetadata, propertyName, newValue);
-		baseMetadata->SetUIControlStates(this->curStates);
-	}
-	else
-	{
-		baseMetadata->SetUIControlStates(this->curStates);
-		PropertiesHelper::SetAllPropertyValues<Type>(baseMetadata, propertyName, newValue);
-	}
-	
 	// Verify whether the properties were indeed changed.
 	bool isPropertyValueDiffers = false;
 	Type realValue = PropertiesHelper::GetAllPropertyValues<Type>(baseMetadata, propertyName,
