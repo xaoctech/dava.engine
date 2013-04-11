@@ -30,6 +30,7 @@
 #include "Database/MongodbClient.h"
 #include "Database/MongodbObject.h"
 #include "mongodb/mongo.h"
+#include "mongodb/gridfs.h"
 
 #include "Utils/Utils.h"
 #include "Utils/StringFormat.h"
@@ -181,6 +182,34 @@ void MongodbClient::DropCollection()
 bool MongodbClient::IsConnected()
 {
     return (0 != mongo_is_connected(clientData->connection));
+}
+
+// bool MongodbClient::SaveBufferToGridFS(const String &name, char * buffer, uint32 length)
+// {
+// 	gridfs gfs[1];
+// 	gridfs_init(clientData->connection, database.c_str(), "fs", gfs);
+// 	bool isOk = false;
+// 	isOk = (MONGO_OK == gridfs_store_buffer(gfs, buffer, length, name.c_str(), NULL));
+// 	if(!isOk)
+// 	{
+// 		Logger::Error("MongodbClient::SaveBufferToGridFS failed to save %s to gridfs", name.c_str());
+// 	}
+// 	gridfs_destroy(gfs);
+// 	return isOk;
+// }
+
+bool MongodbClient::SaveFileToGridFS(const String &name, const String &pathToFile)
+{
+	gridfs gfs[1];
+	gridfs_init(clientData->connection, database.c_str(), "fs", gfs);
+	bool isOk = false;
+	isOk = (MONGO_OK == gridfs_store_file(gfs, pathToFile.c_str(), name.c_str(), NULL));
+	if(!isOk)
+	{
+		Logger::Error("MongodbClient::SaveFileToGridFS failed to save %s to gridfs", name.c_str());
+	}
+	gridfs_destroy(gfs);
+	return isOk;
 }
 
 bool MongodbClient::SaveBinary(const String &key, uint8 *data, int32 dataSize)
