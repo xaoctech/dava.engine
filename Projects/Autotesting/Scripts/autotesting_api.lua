@@ -50,7 +50,7 @@ end
 
 function Log(message, level)
 	level = level or "DEBUG"
-		autotestingSystem:Log(level, tostring(message))
+	autotestingSystem:Log(level, tostring(message))
 end 
 
 --
