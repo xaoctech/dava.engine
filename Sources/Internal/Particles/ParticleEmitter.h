@@ -84,7 +84,6 @@ public:
 	enum eType
 	{
 		EMITTER_POINT,
-		EMITTER_LINE,
 		EMITTER_RECT,
 		EMITTER_ONCIRCLE,		// 
 	};
@@ -317,8 +316,6 @@ public:
 	void UpdateEmptyLayerNames();
 	void UpdateLayerNameIfEmpty(ParticleLayer* layer, int32 index);
 
-	void ReloadLayerSprites();
-
 protected:
 	// Virtual methods which are different for 2D and 3D emitters.
 	virtual void PrepareEmitterParameters(Particle * particle, float32 velocity, int32 emitIndex);
@@ -348,7 +345,6 @@ protected:
 
 public:
 	RefPtr< PropertyLine<Vector3> > emissionVector;
-	Matrix3 rotationMatrix;
     RefPtr< PropertyLine<float32> > emissionAngle;
 	RefPtr< PropertyLine<float32> > emissionRange;
 	RefPtr< PropertyLine<float32> > radius;

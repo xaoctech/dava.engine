@@ -46,7 +46,7 @@ ParticleTimeLineWidget::ParticleTimeLineWidget(QWidget *parent/* = 0*/) :
 	connect(ParticlesEditorController::Instance(),
 			SIGNAL(LayerSelected(Entity*, ParticleLayer*, BaseParticleEditorNode*, bool)),
 			this,
-			SLOT(OnNodeSelected(Entity*)));
+			SLOT(OnLayerSelected(Entity*, ParticleLayer*)));
 	connect(ParticlesEditorController::Instance(),
 			SIGNAL(ForceSelected(Entity*, ParticleLayer*, int32, BaseParticleEditorNode*)),
 			this,
@@ -67,7 +67,23 @@ ParticleTimeLineWidget::~ParticleTimeLineWidget()
 	
 }
 
+void ParticleTimeLineWidget::OnLayerSelected(Entity* node, ParticleLayer* layer)
+{
+	if (!node || !layer)
+	{
+		emit ChangeVisible(false);
+		return;
+	}
+	
+	HandleNodeSelected(node, layer);
+}
+
 void ParticleTimeLineWidget::OnNodeSelected(Entity* node)
+{
+	HandleNodeSelected(node, NULL);
+}
+
+void ParticleTimeLineWidget::HandleNodeSelected(Entity* node, ParticleLayer* layer)
 {
 	emitterNode = node;
 	effectNode = NULL;
@@ -77,28 +93,48 @@ void ParticleTimeLineWidget::OnNodeSelected(Entity* node)
 	ParticleEmitter* emitter = NULL;
 	if (node)
 	{
-		ParticleEmitter * emitter = GetEmitter(node);
+		emitter = GetEmitter(node);
 		if (!emitter)
 		{
 		    return;
 		}
-		if (emitter)
-			maxTime = emitter->GetLifeTime();
+
+		maxTime = emitter->GetLifeTime();
 	}
+
 	Init(minTime, maxTime);
 	if (emitter)
 	{
 		QColor colors[3] = {Qt::blue, Qt::darkGreen, Qt::red};
-		const Vector<ParticleLayer*> & layers = emitter->GetLayers();
-		for (uint32 i = 0; i < layers.size(); ++i)
+		uint32 colorsCount = sizeof(colors) / sizeof(*colors);
+
+		if (!layer)
 		{
-			float32 startTime = Max(minTime, layers[i]->startTime);
-			float32 endTime = Min(maxTime, layers[i]->endTime);
-			
-			AddLine(i, startTime, endTime, colors[i % 3], QString::fromStdString(layers[i]->layerName), layers[i]);
+			// No particular layer specified - add all ones.
+			const Vector<ParticleLayer*> & layers = emitter->GetLayers();
+			for (uint32 i = 0; i < layers.size(); ++i)
+			{
+				AddLayerLine(i, minTime, maxTime, colors[i % colorsCount], layers[i]);
+			}
+		}
+		else
+		{
+			// Add the particular layer only.
+			int layerIndex = 0;
+			const Vector<ParticleLayer*> & layers = emitter->GetLayers();
+			for (uint32 i = 0; i < layers.size(); i ++)
+			{
+				if (layers[i] == layer)
+				{
+					layerIndex = i;
+					break;
+				}
+			}
+
+			AddLayerLine(layerIndex, minTime, maxTime, colors[layerIndex % colorsCount], layer);
 		}
 	}
-	
+
 	UpdateSizePolicy();
 	if (lines.size())
 	{
@@ -188,6 +224,20 @@ void ParticleTimeLineWidget::Init(float32 minTime, float32 maxTime)
 	this->maxTime = maxTime;
 	
 	lines.clear();
+}
+
+void ParticleTimeLineWidget::AddLayerLine(uint32 layerLineID, float32 minTime, float32 maxTime,
+										  const QColor& layerColor, ParticleLayer* layer)
+{
+	if (!layer)
+	{
+		return;
+	}
+	
+	float32 startTime = Max(minTime, layer->startTime);
+	float32 endTime = Min(maxTime, layer->endTime);
+	
+	AddLine(layerLineID, startTime, endTime, layerColor, QString::fromStdString(layer->layerName), layer);
 }
 
 void ParticleTimeLineWidget::AddLine(uint32 lineId, float32 startTime, float32 endTime, const QColor& color, const QString& legend, ParticleLayer* layer)

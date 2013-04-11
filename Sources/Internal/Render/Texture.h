@@ -324,6 +324,8 @@ private:
     static bool IsLoadAvailable(const ImageFileFormat fileFormat, const TextureDescriptor *descriptor);
     
     static String GetActualFilename(const String &pathname, const ImageFileFormat fileFormat, const TextureDescriptor *descriptor);
+    
+    static ImageFileFormat GetFormatForLoading(const ImageFileFormat requestedFormat, const TextureDescriptor *descriptor);
 };
     
 // Implementation of inline functions

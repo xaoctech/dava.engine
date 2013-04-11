@@ -52,6 +52,7 @@ REGISTER_CLASS(InstanceMaterialState)
 InstanceMaterialState::InstanceMaterialState()
     :   flatColor(1.0f, 1.0f, 1.0f, 1.0f)
     ,   texture0Shift(0.0f, 0.0f)
+	,	lightmapSize(128)
 
 {
     for (int32 k = 0; k < LIGHT_NODE_MAX_COUNT; ++k)
@@ -88,6 +89,16 @@ void InstanceMaterialState::SetUVOffsetScale(const Vector2 & _uvOffset, const Ve
 {
     uvOffset = _uvOffset;
     uvScale = _uvScale;
+}
+
+int32 InstanceMaterialState::GetLightmapSize()
+{
+	return lightmapSize;
+}
+
+void InstanceMaterialState::SetLightmapSize(int32 size)
+{
+	lightmapSize = size;
 }
 
 void InstanceMaterialState::ClearLightmap()
@@ -255,10 +266,11 @@ Material::Material()
     ,   isTexture0ShiftEnabled(false)
     ,   isExportOwnerLayerEnabled(true)
     ,   ownerLayerName(LAYER_OPAQUE)
+	,	lightingParams(0)
+	,	viewOptions(MATERIAL_VIEW_TEXTURE_LIGHTMAP)
 {
     //Reserve memory for Collection
     names.resize(TEXTURE_COUNT);
-    
     
 	renderStateBlock.state = RenderState::DEFAULT_3D_STATE;
 
@@ -314,6 +326,7 @@ Material::~Material()
     {
         SafeRelease(textures[tc]);
     }
+	SafeDelete(lightingParams);
 }
     
     
@@ -343,6 +356,10 @@ Material::eValidationResult Material::Validate(PolygonGroup * polygonGroup)
         return VALIDATE_INCOMPATIBLE;
     }
     
+	if(lightingParams == 0)
+	{
+		lightingParams = new StaticLightingParams();
+	}
     
     return VALIDATE_COMPATIBLE;
 }
@@ -406,6 +423,23 @@ void Material::RebuildShader()
         default:
             break;
     };
+
+	switch (viewOptions)
+	{
+		case MATERIAL_VIEW_TEXTURE_LIGHTMAP:
+			break;
+		case MATERIAL_VIEW_LIGHTMAP_ONLY:
+			if (shaderCombileCombo.size() > 0)shaderCombileCombo += ";";
+			shaderCombileCombo = shaderCombileCombo + "MATERIAL_VIEW_LIGHTMAP_ONLY";
+			break;
+		case MATERIAL_VIEW_TEXTURE_ONLY:
+			if (shaderCombileCombo.size() > 0)shaderCombileCombo += ";";
+			shaderCombileCombo = shaderCombileCombo + "MATERIAL_VIEW_TEXTURE_ONLY";
+			break;
+		default:
+			break;
+	}
+
     if (isTranslucent)
     {
         if (shaderCombileCombo.size() > 0)shaderCombileCombo += ";";
@@ -582,6 +616,11 @@ void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 
 	keyedArchive->SetBool("mat.isFlatColorEnabled", isFlatColorEnabled);
 	keyedArchive->SetBool("mat.isTexture0ShiftEnabled", isTexture0ShiftEnabled);
+
+	if(lightingParams)
+	{
+		keyedArchive->SetByteArrayAsType("mat.staticTransparencyColor", lightingParams->transparencyColor);
+	}
 }
 
 void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
@@ -635,6 +674,14 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 
     eType mtype = (eType)keyedArchive->GetInt32("mat.type", type);
     SetType(mtype);
+
+	if(keyedArchive->IsKeyExists("mat.staticTransparencyColor"))
+	{
+		if(lightingParams == 0)
+			lightingParams = new StaticLightingParams();
+
+		lightingParams->transparencyColor = keyedArchive->GetByteArrayAsType("mat.staticTransparencyColor", Color(0, 0, 0, 0));
+	}
 }
 
 void Material::SetOpaque(bool _isOpaque)
@@ -705,6 +752,20 @@ void Material::SetFog(bool _isFogEnabled)
 {
     isFogEnabled = _isFogEnabled;
     RebuildShader();
+}
+
+void Material::SetViewOption(eViewOptions option)
+{
+	if(viewOptions != option)
+	{
+		viewOptions = option;
+		RebuildShader();
+	}
+}
+
+Material::eViewOptions Material::GetViewOption()
+{
+	return viewOptions;
 }
     
 bool Material::IsFogEnabled() const

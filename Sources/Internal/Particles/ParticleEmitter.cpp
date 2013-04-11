@@ -31,7 +31,6 @@
 #include "Particles/Particle.h"
 #include "Particles/ParticleLayer.h"
 #include "Particles/ParticleLayer3D.h"
-#include "Particles/ParticleLayerLong.h"
 #include "Render/RenderManager.h"
 #include "Utils/Random.h"
 #include "Utils/StringFormat.h"
@@ -49,6 +48,8 @@ ParticleEmitter::ParticleEmitter()
 {
 	type = TYPE_PARTICLE_EMTITTER;
 	Cleanup(false);
+
+	bbox = AABBox3(Vector3(), Vector3());
 }
 
 ParticleEmitter::~ParticleEmitter()
@@ -68,7 +69,7 @@ void ParticleEmitter::Cleanup(bool needCleanupLayers)
 	size = RefPtr<PropertyLineValue<Vector3> >(0);
 	colorOverLife = 0;
 	radius = 0;
-	rotationMatrix.Identity();
+
 	// number = new PropertyLineValue<float>(1.0f);
 
 	time = 0.0f;
@@ -145,7 +146,7 @@ void ParticleEmitter::Save(KeyedArchive *archive, SceneFileV2 *sceneFile)
 
 	if(NULL != archive)
 	{
-        String filename = FileSystem::Instance()->AbsoluteToRelativePath(sceneFile->GetScenePath(), configPath);
+		String filename = FileSystem::Instance()->AbsoluteToRelativePath(FileSystem::Instance()->GetCanonicalPath(sceneFile->GetScenePath()), FileSystem::Instance()->GetCanonicalPath(configPath));
 		archive->SetString("pe.configpath", filename);
 	}
 }
@@ -346,15 +347,6 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
     {
         particle->position = tempPosition;
     }
-    else if (emitterType == EMITTER_LINE)
-    {
-        // TODO: add emitter angle support
-        float32 rand05 = (float32)Random::Instance()->RandFloat() - 0.5f; // [-0.5f, 0.5f]
-        Vector3 lineDirection(0, 0, 0);
-        if(size)
-            lineDirection = size->GetValue(time)*rand05;
-        particle->position = tempPosition + lineDirection;
-    }
     else if (emitterType == EMITTER_RECT)
     {
         // TODO: add emitter angle support
@@ -478,7 +470,11 @@ void ParticleEmitter::LoadFromYaml(const String & filename)
 			if (typeNode->AsString() == "point")
 				emitterType = EMITTER_POINT;
 			else if (typeNode->AsString() == "line")
-				emitterType = EMITTER_LINE;
+			{
+				// Yuri Coder, 2013/04/09. Get rid of the "line" node type -
+				// it can be completely replaced by "rect" one.
+				emitterType = EMITTER_RECT;
+			}
 			else if (typeNode->AsString() == "rect")
 				emitterType = EMITTER_RECT;
 			else if (typeNode->AsString() == "oncircle")
@@ -680,11 +676,6 @@ String ParticleEmitter::GetEmitterTypeName()
             return "point";
         }
 
-        case EMITTER_LINE:
-        {
-            return "line";
-        }
-
         case EMITTER_RECT:
         {
             return "rect";
@@ -719,14 +710,6 @@ void ParticleEmitter::UpdateLayerNameIfEmpty(ParticleLayer* layer, int32 index)
 	}
 }
 
-void ParticleEmitter::ReloadLayerSprites()
-{
-	int32 layersCount = this->GetLayers().size();
-	for (int i = 0; i < layersCount; i ++)
-	{
-		this->GetLayers()[i]->ReloadSprite();
-	}
-}
 
 void ParticleEmitter::LoadParticleLayerFromYaml(YamlNode* yamlNode, bool isLong)
 {

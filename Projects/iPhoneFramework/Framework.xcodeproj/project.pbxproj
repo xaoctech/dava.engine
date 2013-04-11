@@ -270,8 +270,6 @@
 		E8B3CB7E16B9326E002BD35F /* ParticleLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C8B216B9326D002BD35F /* ParticleLayer.h */; };
 		E8B3CB7F16B9326E002BD35F /* ParticleLayer3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C8B316B9326D002BD35F /* ParticleLayer3D.cpp */; };
 		E8B3CB8016B9326E002BD35F /* ParticleLayer3D.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C8B416B9326D002BD35F /* ParticleLayer3D.h */; };
-		E8B3CB8116B9326E002BD35F /* ParticleLayerLong.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C8B516B9326D002BD35F /* ParticleLayerLong.cpp */; };
-		E8B3CB8216B9326E002BD35F /* ParticleLayerLong.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C8B616B9326D002BD35F /* ParticleLayerLong.h */; };
 		E8B3CB8316B9326E002BD35F /* ParticlePropertyLine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C8B716B9326D002BD35F /* ParticlePropertyLine.cpp */; };
 		E8B3CB8416B9326E002BD35F /* ParticlePropertyLine.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C8B816B9326D002BD35F /* ParticlePropertyLine.h */; };
 		E8B3CB8516B9326E002BD35F /* ParticleSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C8B916B9326D002BD35F /* ParticleSystem.cpp */; };
@@ -927,8 +925,6 @@
 		E8B3C8B216B9326D002BD35F /* ParticleLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayer.h; sourceTree = "<group>"; };
 		E8B3C8B316B9326D002BD35F /* ParticleLayer3D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleLayer3D.cpp; sourceTree = "<group>"; };
 		E8B3C8B416B9326D002BD35F /* ParticleLayer3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayer3D.h; sourceTree = "<group>"; };
-		E8B3C8B516B9326D002BD35F /* ParticleLayerLong.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleLayerLong.cpp; sourceTree = "<group>"; };
-		E8B3C8B616B9326D002BD35F /* ParticleLayerLong.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayerLong.h; sourceTree = "<group>"; };
 		E8B3C8B716B9326D002BD35F /* ParticlePropertyLine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticlePropertyLine.cpp; sourceTree = "<group>"; };
 		E8B3C8B816B9326D002BD35F /* ParticlePropertyLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticlePropertyLine.h; sourceTree = "<group>"; };
 		E8B3C8B916B9326D002BD35F /* ParticleSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleSystem.cpp; sourceTree = "<group>"; };
@@ -1708,8 +1704,6 @@
 				E8B3C8B216B9326D002BD35F /* ParticleLayer.h */,
 				E8B3C8B316B9326D002BD35F /* ParticleLayer3D.cpp */,
 				E8B3C8B416B9326D002BD35F /* ParticleLayer3D.h */,
-				E8B3C8B516B9326D002BD35F /* ParticleLayerLong.cpp */,
-				E8B3C8B616B9326D002BD35F /* ParticleLayerLong.h */,
 				E8B3C8B716B9326D002BD35F /* ParticlePropertyLine.cpp */,
 				E8B3C8B816B9326D002BD35F /* ParticlePropertyLine.h */,
 				E8B3C8B916B9326D002BD35F /* ParticleSystem.cpp */,
@@ -2404,7 +2398,6 @@
 				E8B3CB7C16B9326E002BD35F /* ParticleEmitterObject.h in Headers */,
 				E8B3CB7E16B9326E002BD35F /* ParticleLayer.h in Headers */,
 				E8B3CB8016B9326E002BD35F /* ParticleLayer3D.h in Headers */,
-				E8B3CB8216B9326E002BD35F /* ParticleLayerLong.h in Headers */,
 				E8B3CB8416B9326E002BD35F /* ParticlePropertyLine.h in Headers */,
 				E8B3CB8616B9326E002BD35F /* ParticleSystem.h in Headers */,
 				E8B3CB8F16B9326E002BD35F /* Mutex.h in Headers */,
@@ -2773,7 +2766,6 @@
 				E8B3CB7B16B9326E002BD35F /* ParticleEmitterObject.cpp in Sources */,
 				E8B3CB7D16B9326E002BD35F /* ParticleLayer.cpp in Sources */,
 				E8B3CB7F16B9326E002BD35F /* ParticleLayer3D.cpp in Sources */,
-				E8B3CB8116B9326E002BD35F /* ParticleLayerLong.cpp in Sources */,
 				E8B3CB8316B9326E002BD35F /* ParticlePropertyLine.cpp in Sources */,
 				E8B3CB8516B9326E002BD35F /* ParticleSystem.cpp in Sources */,
 				E8B3CB8E16B9326E002BD35F /* Mutex.cpp in Sources */,

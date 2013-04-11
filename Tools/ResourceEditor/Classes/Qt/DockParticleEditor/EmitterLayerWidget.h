@@ -64,6 +64,7 @@ private:
 	QLineEdit* layerNameLineEdit;
 	QCheckBox* enableCheckBox;
 	QCheckBox* additiveCheckBox;
+	QCheckBox* isLongCheckBox;
 
 	QLabel* layerTypeLabel;
 	QComboBox* layerTypeComboBox;
@@ -79,7 +80,9 @@ private:
 	TimeLineWidget* sizeVariationTimeLine;
 	TimeLineWidget* sizeOverLifeTimeLine;
 	TimeLineWidget* velocityTimeLine;
+	TimeLineWidget* velocityOverLifeTimeLine;
 	TimeLineWidget* spinTimeLine;
+	TimeLineWidget* spinOverLifeTimeLine;
 
 	TimeLineWidget* alphaOverLifeTimeLine;
 	QCheckBox* frameOverlifeCheckBox;

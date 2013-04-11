@@ -18,7 +18,7 @@ public:
 	explicit ParticleEmitterPropertiesWidget(QWidget* parent = 0);
 	~ParticleEmitterPropertiesWidget();
 
-	void Init(DAVA::ParticleEmitter* emitter, bool updateMinimize);
+	void Init(DAVA::ParticleEmitter* emitter, bool updateMinimize, bool needUpdateTimeLimits = true);
 	void Update();
 	
 	virtual bool eventFilter( QObject * o, QEvent * e );
@@ -29,6 +29,7 @@ public:
 	// Accessors to timelines.
 	TimeLineWidget* GetEmitterRadiusTimeline() {return emitterRadius;};
 	TimeLineWidget* GetEmitterSizeTimeline() {return emitterSize;};
+	TimeLineWidget* GetEmissionVectorTimeline() {return emitterEmissionVector;};
 
 signals:
 	void ValueChanged();
