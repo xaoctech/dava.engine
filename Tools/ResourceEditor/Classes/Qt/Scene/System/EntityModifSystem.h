@@ -5,41 +5,40 @@
 #include "Scene3D/Entity.h"
 #include "UI/UIEvent.h"
 
-#include "Scene/System/EntityModif/Hood.h"
-
 class SceneCollisionSystem;
 class SceneCameraSystem;
 class EntityGroup;
+class Hood;
+
+enum EntityModifMode
+{
+	EM_MODE_OFF,
+	EM_MODE_MOVE,
+	EM_MODE_ROTATE,
+	EM_MODE_SCALE
+};
+
+enum EntityModifAxis
+{
+	EM_AXIS_X = 0x1,
+	EM_AXIS_Y = 0x2,
+	EM_AXIS_Z = 0x4,
+	EM_AXIS_XY = EM_AXIS_X | EM_AXIS_Y,
+	EM_AXIS_XZ = EM_AXIS_X | EM_AXIS_Z,
+	EM_AXIS_YZ = EM_AXIS_Y | EM_AXIS_Z
+};
+
+enum EntityModifPivotPoint
+{
+	EM_PIVOT_ENTITY_CENTER,
+	EM_PIVOT_SELECTION_CENTER
+};
 
 class EntityModificationSystem : public DAVA::SceneSystem
 {
 	friend class SceneEditorProxy;
 
 public:
-	enum Mode
-	{
-		MODIF_OFF,
-		MODIF_MOVE,
-		MODIF_ROTATE,
-		MODIF_SCALE
-	};
-
-	enum Axis
-	{
-		AXIS_X,
-		AXIS_Y,
-		AXIS_Z,
-		AXIS_XY,
-		AXIS_XZ,
-		AXIS_YZ
-	};
-
-	enum PivotPoint
-	{
-		ENTITY_CENTER,
-		SELECTION_CENTER
-	};
-
 	EntityModificationSystem(DAVA::Scene * scene, SceneCollisionSystem *colSys, SceneCameraSystem *camSys);
 	~EntityModificationSystem();
 
@@ -65,7 +64,8 @@ protected:
 	int  curMode;
 	int  curAxis;
 	int  curPivotPoint;
-	Hood curHood;
+
+	Hood* modifHood;
 
 	// starting modification pos
 	DAVA::Vector3 modifStartPos3d;

@@ -1,10 +1,10 @@
 #include "Scene/System/EntityModif/Hood.h"
+#include "Scene/System/EntityModifSystem.h"
 #include "Scene/System/SceneCollisionSystem.h"
 #include "Scene/System/SceneCameraSystem.h"
 
-Hood::Hood(SceneCameraSystem *camSys)
-	: curType(HOOD_NORMAL)
-	, cameraSystem(camSys)
+Hood::Hood()
+	: curType(EM_MODE_MOVE)
 {
 	btVector3 worldMin(-1000,-1000,-1000);
 	btVector3 worldMax(1000,1000,1000);
@@ -17,7 +17,7 @@ Hood::Hood(SceneCameraSystem *camSys)
 	collWorld = new btCollisionWorld(collDispatcher, collBroadphase, collConfiguration);
 	collWorld->setDebugDrawer(collDebugDraw);
 
-	UpdateCollObjects();
+	CreateCollObjects();
 }
 
 Hood::~Hood()
@@ -31,7 +31,7 @@ Hood::~Hood()
 	delete collConfiguration;
 }
 
-void Hood::SetPosition(DAVA::Vector3 pos)
+void Hood::SetPosition(const DAVA::Vector3 &pos)
 {
 	if(curPos != pos)
 	{
@@ -40,12 +40,17 @@ void Hood::SetPosition(DAVA::Vector3 pos)
 	}
 }
 
+void Hood::MovePosition(const DAVA::Vector3 &offset)
+{
+	curPos += offset;
+	UpdateCollObjects();
+}
+
 void Hood::SetType(int type)
 {
 	if(curType != type)
 	{
 		curType = type;
-		UpdateCollObjects();
 	}
 }
 
@@ -55,6 +60,8 @@ void Hood::SetScale(DAVA::float32 scale)
 	{
 		curScale = scale;
 		UpdateCollObjects();
+
+		printf("%g\n", scale);
 	}
 }
 
@@ -65,31 +72,61 @@ int Hood::GetType() const
 
 void Hood::Draw() const
 {
-	DAVA::Vector3 c(0, 0, 0);
-	DAVA::Vector3 x(3.0f, 0, 0);
-	DAVA::Vector3 y(0, 3.0f, 0);
-	DAVA::Vector3 z(0, 0, 3.0f);
-
-	c += curPos;
-	x += curPos;
-	y += curPos;
-	z += curPos;
-
 	int oldState = DAVA::RenderManager::Instance()->GetState();
 	DAVA::RenderManager::Instance()->SetState(DAVA::RenderState::STATE_COLORMASK_ALL | DAVA::RenderState::STATE_DEPTH_WRITE);
 
-	DAVA::RenderManager::Instance()->SetColor(1, 0, 0, 1);
-	DAVA::RenderHelper::Instance()->DrawLine(c, x);
+	//collWorld->debugDrawWorld();
 
-	DAVA::RenderManager::Instance()->SetColor(0, 1, 0, 1);
-	DAVA::RenderHelper::Instance()->DrawLine(c, y);
+	const DAVA::Vector<HoodObject*>* curHoodObjects = NULL;
 
-	DAVA::RenderManager::Instance()->SetColor(0, 0, 1, 1);
-	DAVA::RenderHelper::Instance()->DrawLine(c, z);
+	switch (curType)
+	{
+	case EM_MODE_MOVE:
+		curHoodObjects = &moveHood;
+		break;
+	case EM_MODE_ROTATE:
+		curHoodObjects = &rotateHood;
+		break;
+	case EM_MODE_SCALE:
+		curHoodObjects = &scaleHood;
+		break;
+	default:
+		curHoodObjects = &normalHood;
+		break;
+	}
+
+	for (size_t i = 0; i < curHoodObjects->size(); i++)
+	{
+		HoodObject *obj = curHoodObjects->operator[](i);
+
+		if(curType & obj->representAxis)
+		{
+			// selected axis - yellow
+			DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1, 1, 0, 1));
+		}
+		else
+		{
+			if(obj->representAxis & EM_AXIS_X)
+			{
+				// x axis red
+				DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1, 0, 0, 1));
+			}
+			else if(obj->representAxis & EM_AXIS_Y)
+			{
+				// y axis green
+				DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0, 1, 0, 1));
+			}
+			else if(obj->representAxis & EM_AXIS_Z)
+			{
+				// z axis blue
+				DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0, 0, 1, 1));
+			}
+		}
+
+		obj->Draw();
+	}
 
 	DAVA::RenderManager::Instance()->SetState(oldState);
-	
-	collWorld->debugDrawWorld();
 }
 
 void Hood::RayTest(const DAVA::Vector3 &from, const DAVA::Vector3 &to)
@@ -99,111 +136,193 @@ void Hood::RayTest(const DAVA::Vector3 &from, const DAVA::Vector3 &to)
 
 	btCollisionWorld::AllHitsRayResultCallback btCallback(btFrom, btTo);
 	collWorld->rayTest(btFrom, btTo, btCallback);
-
-	if(btCallback.hasHit()) 
-	{
-		intersected = true;
-	}
-	else
-	{
-		intersected = false;
-	}
 }
 
 void Hood::CreateCollObjects()
 {
+	HoodObject *hObj;
+
 	RemoveCollObjects();
 
-
-	AddLineShape(DAVA::Vector3(0, 0, 0), DAVA::Vector3(3, 0, 0));
-	AddLineShape(DAVA::Vector3(0, 0, 0), DAVA::Vector3(0, 3, 0));
-	AddLineShape(DAVA::Vector3(0, 0, 0), DAVA::Vector3(0, 0, 3));
-	//AddLineShape(DAVA::Vector3(3, 0, 0), DAVA::Vector3(0, 0, 3));
-	//AddLineShape(DAVA::Vector3(0, 3, 0), DAVA::Vector3(0, 0, 3));
-	//AddLineShape(DAVA::Vector3(3, 0, 0), DAVA::Vector3(0, 3, 0));
-
-	/*
-	switch(curType)
+	// create move hood
 	{
-	case HOOD_MOVE:
-		{
-		}
-		break;
+		hObj = CreateLine(DAVA::Vector3(1, 0, 0), DAVA::Vector3(4, 0, 0));
+		hObj->representAxis = EM_AXIS_X;
+		moveHood.push_back(hObj);
 
-	default:
-		break;
+		hObj = CreateLine(DAVA::Vector3(0, 1, 0), DAVA::Vector3(0, 4, 0));
+		hObj->representAxis = EM_AXIS_Y;
+		moveHood.push_back(hObj);
+
+		hObj = CreateLine(DAVA::Vector3(0, 0, 1), DAVA::Vector3(0, 0, 4));
+		hObj->representAxis = EM_AXIS_Z;
+		moveHood.push_back(hObj);
+
+		hObj = CreateLine(DAVA::Vector3(2, 0, 0), DAVA::Vector3(2, 2, 0));
+		hObj->representAxis = EM_AXIS_XY;
+		moveHood.push_back(hObj);
+
+		hObj = CreateLine(DAVA::Vector3(0, 2, 0), DAVA::Vector3(2, 2, 0));
+		hObj->representAxis = EM_AXIS_XY;
+		moveHood.push_back(hObj);
+
+		hObj = CreateLine(DAVA::Vector3(2, 0, 0), DAVA::Vector3(2, 0, 2));
+		hObj->representAxis = EM_AXIS_XZ;
+		moveHood.push_back(hObj);
+
+		hObj = CreateLine(DAVA::Vector3(0, 0, 2), DAVA::Vector3(2, 0, 2));
+		hObj->representAxis = EM_AXIS_XZ;
+		moveHood.push_back(hObj);
+
+		hObj = CreateLine(DAVA::Vector3(0, 2, 0), DAVA::Vector3(0, 2, 2));
+		hObj->representAxis = EM_AXIS_YZ;
+		moveHood.push_back(hObj);
+
+		hObj = CreateLine(DAVA::Vector3(0, 0, 2), DAVA::Vector3(0, 2, 2));
+		hObj->representAxis = EM_AXIS_YZ;
+		moveHood.push_back(hObj);
 	}
-	*/
+
+	// create rotate hood
+	{
+		// TODO:
+		// ...
+		// 
+	}
+
+	// create scale hood
+	{
+		// TODO:
+		// ...
+		// 
+	}
+}
+
+void Hood::UpdateCollObjects()
+{
+	for (size_t i = 0; i < moveHood.size(); i++)
+	{
+		moveHood[i]->UpdatePos(curPos);
+	}
+
+	for (size_t i = 0; i < rotateHood.size(); i++)
+	{
+		rotateHood[i]->UpdatePos(curPos);
+	}
+
+	for (size_t i = 0; i < scaleHood.size(); i++)
+	{
+		scaleHood[i]->UpdatePos(curPos);
+	}
 }
 
 void Hood::RemoveCollObjects()
 {
-	QMapIterator<btCollisionObject*, int> i(collObjects);
-	while(i.hasNext())
+	for (size_t i = 0; i < moveHood.size(); i++)
 	{
-		i.next();
-
-		collWorld->removeCollisionObject(i.key());
-		delete i.key();
+		Destroy(moveHood[i]);
 	}
+	moveHood.clear();
 
-	for(size_t j = 0; j < collShapes.size(); ++j)
+	for (size_t i = 0; i < rotateHood.size(); i++)
 	{
-		delete collShapes[j];
+		Destroy(rotateHood[i]);
 	}
+	rotateHood.clear();
 
-	collShapes.clear();
-	collObjects.clear();
+	for (size_t i = 0; i < scaleHood.size(); i++)
+	{
+		Destroy(scaleHood[i]);
+	}
+	scaleHood.clear();
 }
 
-void Hood::AddLineShape(const DAVA::Vector3 &from, const DAVA::Vector3 &to)
+HoodObject* Hood::CreateLine(const DAVA::Vector3 &from, const DAVA::Vector3 &to, DAVA::float32 weight)
 {
-	// we will create shape on x axis
-	DAVA::Vector3 initial(1, 0, 0);
+	HoodLine* ret = new HoodLine();
 
-	DAVA::Vector3 dir = (to - from);
-	DAVA::float32 length = dir.Length();
-	DAVA::Vector3 normal;
-	DAVA::float32 angle = 0;
-	DAVA::Vector3 drawAround(length / 2, 0.05f, 0.05f);
+	DAVA::Vector3 direction = (to - from);
+	DAVA::float32 length = direction.Length();
+	DAVA::Vector3 axisX(1, 0, 0);
+	DAVA::Vector3 rotateNormal;
+	DAVA::float32 rotateAngle = 0;
 
-	// create shape on x axis
-	btCollisionShape *shape = new btBoxShape(btVector3(drawAround.x, drawAround.y, drawAround.z));
-	btCollisionObject *obj = new btCollisionObject();
-	obj->setCollisionShape(shape);
+	// initially create object on x axis
+	ret->from = from;
+	ret->to = to;
+	ret->btShape = new btBoxShape(btVector3(length / 2, weight / 2, weight / 2)); 
+	ret->btObject = new btCollisionObject();
+	ret->btObject->setCollisionShape(ret->btShape);
+	ret->initialOffset = DAVA::Vector3(length / 2, 0, 0);
 
-	dir.Normalize();
-	normal = initial.CrossProduct(dir);
-	if(!normal.IsZero())
+	direction.Normalize();
+	rotateNormal = axisX.CrossProduct(direction);
+
+	// do we need rotation
+	if(!rotateNormal.IsZero())
 	{
-		DAVA::Vector3 fromN = from;
-
-		if(!fromN.IsZero())
-		{
-			fromN.Normalize();
-		}
-
-		DAVA::float32 angleCos = initial.DotProduct(dir);
-		angle = acosf(angleCos);
-		normal.Normalize();
+		rotateNormal.Normalize();
+		rotateAngle = acosf(axisX.DotProduct(direction));
 
 		DAVA::Matrix4 rotate;
 		rotate.Identity();
-		rotate.CreateRotation(normal, -angle);
+		rotate.CreateRotation(rotateNormal, -rotateAngle);
 
-		drawAround = DAVA::MultiplyVectorMat3x3(drawAround, rotate);
+		ret->initialOffset = DAVA::MultiplyVectorMat3x3(ret->initialOffset, rotate);
 	}
+
+	ret->initialOffset += from;
 
 	btTransform trasf;
 	trasf.setIdentity();
-	if(NULL != angle)
-	{
-		trasf.setIdentity();
-		trasf.setRotation(btQuaternion(btVector3(normal.x, normal.y, normal.z), angle));
-		obj->setWorldTransform(trasf);
-	}
-	trasf.setOrigin(btVector3(from.x + drawAround.x + curPos.x, from.y + drawAround.y + curPos.y, from.z + drawAround.z + curPos.z));
-	obj->setWorldTransform(trasf);
 
-	collWorld->addCollisionObject(obj);
+	if(0 != rotateAngle)
+	{
+		trasf.setRotation(btQuaternion(btVector3(rotateNormal.x, rotateNormal.y, rotateNormal.z), rotateAngle));
+	}
+
+	trasf.setOrigin(btVector3(ret->initialOffset.x + curPos.x, ret->initialOffset.y + curPos.y, ret->initialOffset.z + curPos.z));
+
+	ret->btObject->setWorldTransform(trasf);
+	collWorld->addCollisionObject(ret->btObject);
+
+	return ret;
+}
+
+void Hood::Destroy(HoodObject *hoodObject)
+{
+	if(NULL != hoodObject)
+	{
+		if(NULL != hoodObject->btObject)
+		{
+			collWorld->removeCollisionObject(hoodObject->btObject);
+			delete hoodObject->btObject;
+		}
+
+		if(NULL != hoodObject->btShape)
+		{
+			delete hoodObject->btShape;
+		}
+
+		delete hoodObject;
+	}
+}
+
+// -------------------------------------------------------------------------------------------------
+// HoodObjects
+// -------------------------------------------------------------------------------------------------
+
+void HoodObject::UpdatePos(const DAVA::Vector3 &pos)
+{
+	curOffset = pos;
+
+	DAVA::Vector3 curPos = initialOffset + curOffset;
+	btTransform transf = btObject->getWorldTransform();
+	transf.setOrigin(btVector3(curPos.x, curPos.y, curPos.z));
+	btObject->setWorldTransform(transf);
+}
+
+void HoodLine::Draw()
+{
+	DAVA::RenderHelper::Instance()->DrawLine(from + curOffset, to + curOffset);
 }

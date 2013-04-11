@@ -1,4 +1,5 @@
 #include "Scene/System/EntityModifSystem.h"
+#include "Scene/System/EntityModif/Hood.h"
 #include "Scene/EntityGroup.h"
 
 #include "Scene/SceneEditorProxy.h"
@@ -11,16 +12,19 @@ EntityModificationSystem::EntityModificationSystem(DAVA::Scene * scene, SceneCol
 	, collisionSystem(colSys)
 	, cameraSystem(camSys)
 	, inModifState(false)
-	, curMode(MODIF_MOVE)
-	, curAxis(AXIS_XZ)
-	, curPivotPoint(SELECTION_CENTER)
-	, curHood(camSys)
+	, curMode(EM_MODE_MOVE)
+	, curAxis(EM_AXIS_Z)
+	, curPivotPoint(EM_PIVOT_SELECTION_CENTER)
+	, modifHood(NULL)
 {
-	curHood.SetType(curMode);
+	modifHood = new Hood();
+	modifHood->SetType(curMode);
 }
 
 EntityModificationSystem::~EntityModificationSystem()
-{ }
+{
+	delete modifHood;
+}
 
 void EntityModificationSystem::Update(DAVA::float32 timeElapsed)
 {
@@ -38,27 +42,19 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 		// current cursor point, when looking from current camera
 		DAVA::Vector3 camPosition = cameraSystem->GetCameraPosition();
 		DAVA::Vector3 camToPointDirection = cameraSystem->GetPointDirection(event->point);
+		DAVA::Vector3 hoodPosition;
 
 		if(NULL != selectedEntities && selectedEntities->Size() > 0)
 		{
-			// set initial hood position
-			DAVA::Vector3 p;
-
 			switch(curPivotPoint)
 			{
-			case SELECTION_CENTER:
-				p = selectedEntities->GetCommonBbox().GetCenter();
+			case EM_PIVOT_SELECTION_CENTER:
+				hoodPosition = selectedEntities->GetCommonBbox().GetCenter();
 				break;
 			default:
-				p = selectedEntities->GetBbox(0).GetCenter();
+				hoodPosition = selectedEntities->GetBbox(0).GetCenter();
 				break;
 			}
-
-			curHood.SetPosition(selectedEntities->GetCommonBbox().GetCenter());
-		}
-		else
-		{
-			curHood.SetPosition(DAVA::Vector3(0, 0, 0));
 		}
 
 		// if we are not in modification state, try to find some selected item
@@ -68,8 +64,11 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 			// get intersected items in the line from camera to current mouse position
 			DAVA::Vector3 traceTo = camPosition + camToPointDirection * 1000.0f;
 
+			modifHood->SetPosition(hoodPosition);
+			modifHood->SetScale((hoodPosition - camPosition).Length() / 40.f);
+
 			// send this ray to hood
-			curHood.RayTest(camPosition, traceTo);
+			//curHood.RayTest(camPosition, traceTo);
 
 			// send this ray to collision system and get collision objects
 			const EntityGroup *collisionEntities = collisionSystem->RayTest(camPosition, traceTo);
@@ -100,7 +99,7 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 						modifStartPos2d = event->point;
 
 						// set initial hood position
-						curHood.SetPosition(modifEntitiesCenter);
+						modifHood->SetPosition(modifEntitiesCenter);
 					}
 				}
 			}
@@ -114,18 +113,18 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 
 				switch (curMode)
 				{
-				case MODIF_MOVE:
+				case EM_MODE_MOVE:
 					{
 						DAVA::Vector3 curPos = CamCursorPosToModifPos(camPosition, camToPointDirection, modifEntitiesCenter);
 						Move(curPos);
 					}
 					break;
-				case MODIF_ROTATE:
+				case EM_MODE_ROTATE:
 					{
 						Rotate(event->point);
 					}
 					break;
-				case MODIF_SCALE:
+				case EM_MODE_SCALE:
 					{
 						Scale(event->point);
 					}
@@ -160,8 +159,10 @@ void EntityModificationSystem::Draw()
 
 	if(NULL != selectedEntities && selectedEntities->Size() > 0)
 	{
-		curHood.Draw();
+		//modifHood->Draw();
 	}
+
+	modifHood->Draw();
 }
 
 void EntityModificationSystem::BeginModification(const EntityGroup *entities)
@@ -200,16 +201,16 @@ void EntityModificationSystem::BeginModification(const EntityGroup *entities)
 		// remember axis vector we are rotating around
 		switch(curAxis)
 		{
-		case AXIS_X:
-		case AXIS_XY:
+		case EM_AXIS_X:
+		case EM_AXIS_XY:
 			rotateAround = DAVA::Vector3(1, 0, 0);
 			break;
-		case AXIS_YZ:
-		case AXIS_Y:
+		case EM_AXIS_YZ:
+		case EM_AXIS_Y:
 			rotateAround = DAVA::Vector3(0, 1, 0);
 			break;
-		case AXIS_XZ:
-		case AXIS_Z:
+		case EM_AXIS_XZ:
+		case EM_AXIS_Z:
 			rotateAround = DAVA::Vector3(0, 0, 1);
 			break;
 		}
@@ -254,16 +255,16 @@ DAVA::Vector3 EntityModificationSystem::CamCursorPosToModifPos(const DAVA::Vecto
 
 	switch(curAxis)
 	{
-	case AXIS_X:
-	case AXIS_Y:
-	case AXIS_XY:
+	case EM_AXIS_X:
+	case EM_AXIS_Y:
+	case EM_AXIS_XY:
 		planeNormal = DAVA::Vector3(0, 0, 1);
 		break;
-	case AXIS_Z:
-	case AXIS_YZ:
+	case EM_AXIS_Z:
+	case EM_AXIS_YZ:
 		planeNormal = DAVA::Vector3(1, 0, 0);
 		break;
-	case AXIS_XZ:
+	case EM_AXIS_XZ:
 		planeNormal = DAVA::Vector3(0, 1, 0);
 		break;
 	default:
@@ -292,34 +293,38 @@ void EntityModificationSystem::Move(const DAVA::Vector3 &newPos3d)
 
 		switch(curAxis)
 		{
-		case AXIS_X:
+		case EM_AXIS_X:
 			modifPosWithLocedAxis.y = modifStartPos3d.y;
 			modifPosWithLocedAxis.z = modifStartPos3d.z;
 			break;
-		case AXIS_Y:
+		case EM_AXIS_Y:
 			modifPosWithLocedAxis.x = modifStartPos3d.x;
 			modifPosWithLocedAxis.z = modifStartPos3d.z;
 			break;
-		case AXIS_Z:
+		case EM_AXIS_Z:
 			modifPosWithLocedAxis.x = modifStartPos3d.x;
 			modifPosWithLocedAxis.y = modifStartPos3d.y;
 			break;
-		case AXIS_XY:
+		case EM_AXIS_XY:
 			modifPosWithLocedAxis.z = modifStartPos3d.z;
 			break;
-		case AXIS_XZ:
+		case EM_AXIS_XZ:
 			modifPosWithLocedAxis.y = modifStartPos3d.y;
 			break;
-		case AXIS_YZ:
+		case EM_AXIS_YZ:
 			modifPosWithLocedAxis.x = modifStartPos3d.x;
 			break;
 		}
 
+		DAVA::Vector3 moveOffset = modifPosWithLocedAxis - modifStartPos3d;
 		DAVA::Matrix4 moveModification;
 		moveModification.Identity();
-		moveModification.CreateTranslation(modifPosWithLocedAxis - modifStartPos3d);
+		moveModification.CreateTranslation(moveOffset);
 
 		modifEntities[i].entity->SetLocalTransform(modifEntities[i].originalTransform * moveModification);
+
+		// also move hood
+		modifHood->MovePosition(moveOffset);
 	}
 }
 
@@ -336,11 +341,11 @@ void EntityModificationSystem::Rotate(const DAVA::Vector2 &newPos2d)
 
 		switch(curPivotPoint)
 		{
-		case ENTITY_CENTER:
+		case EM_PIVOT_ENTITY_CENTER:
 			// move to zero, rotate, move back to original center point
 			rotateModification = (modifEntities[i].moveToZeroPos * rotateModification) * modifEntities[i].moveFromZeroPos;
 			break;
-		case SELECTION_CENTER:
+		case EM_PIVOT_SELECTION_CENTER:
 			// move to zero relative selection center, rotate, move back to original center point
 			rotateModification = (moveToZeroPosRelativeCenter * rotateModification) * moveFromZeroPosRelativeCenter;
 			break;
