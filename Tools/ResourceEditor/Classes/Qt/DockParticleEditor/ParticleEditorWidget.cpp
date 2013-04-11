@@ -255,11 +255,15 @@ void ParticleEditorWidget::UpdateVisibleTimelinesForParticleEmitter()
 	// Update the visibility of particular timelines based on the emitter type.
 	bool radiusTimeLineVisible = false;
 	bool sizeTimeLineVisible = false;
+
+	bool emissionVectorTimeLineVisible = true;
+
 	switch (emitterPropertiesWidget->GetEmitter()->emitterType)
 	{
 		case DAVA::ParticleEmitter::EMITTER_ONCIRCLE:
 		{
 			radiusTimeLineVisible = true;
+			emissionVectorTimeLineVisible = false;
 			break;
 		}
 			
@@ -276,4 +280,5 @@ void ParticleEditorWidget::UpdateVisibleTimelinesForParticleEmitter()
 	
 	emitterPropertiesWidget->GetEmitterRadiusTimeline()->setVisible(radiusTimeLineVisible);
 	emitterPropertiesWidget->GetEmitterSizeTimeline()->setVisible(sizeTimeLineVisible);
+	emitterPropertiesWidget->GetEmissionVectorTimeline()->setVisible(emissionVectorTimeLineVisible);
 }

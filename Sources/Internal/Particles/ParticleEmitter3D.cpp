@@ -44,24 +44,19 @@ void ParticleEmitter3D::RenderUpdate(Camera *camera, float32 timeElapsed)
 void ParticleEmitter3D::Draw(Camera * camera)
 {
 	//Dizz: now layer->Draw is called from ParticleLayerBatch
-	//Vector<ParticleLayer*>::iterator it;
-	//for(it = layers.begin(); it != layers.end(); ++it)
-	//{
-	//	ParticleLayer3D * layer = (ParticleLayer3D*)(*it);
-	//	if(!layer->isDisabled)
-	//	{
-	//		layer->Draw(camera);
-	//	}
-	//}
 }
 
 void ParticleEmitter3D::PrepareEmitterParameters(Particle * particle, float32 velocity, int32 emitIndex)
 {
 	Vector3 tempPosition = Vector3();
 	Matrix4 * worldTransformPtr = GetWorldTransformPtr();
+	Matrix3 rotationMatrix;
+	rotationMatrix.Identity();
+
 	if(worldTransformPtr)
 	{
 		tempPosition = worldTransformPtr->GetTranslationVector();
+		rotationMatrix = Matrix3(*worldTransformPtr);;
 	}
 
 	//Vector3 tempPosition = particlesFollow ? Vector3() : position;
@@ -80,37 +75,82 @@ void ParticleEmitter3D::PrepareEmitterParameters(Particle * particle, float32 ve
             lineDirection = Vector3(size->GetValue(time).x * rand05_x, size->GetValue(time).y * rand05_y, size->GetValue(time).z * rand05_z);
         particle->position = tempPosition + lineDirection;
     }
-    else if (emitterType == EMITTER_ONCIRCLE)
-    {
-		// Emit ponts from the sphere.
-		if (radius)
-		{
-			const float32 SPHERE_OFFSET = 10;
-			Vector3 directionVector(SPHERE_OFFSET * (1 - 2*(float32)Random::Instance()->RandFloat()),
-									SPHERE_OFFSET * (1 - 2*(float32)Random::Instance()->RandFloat()),
-									SPHERE_OFFSET * (1 - 2*(float32)Random::Instance()->RandFloat()));
-			
-			float32 curRadius = radius->GetValue(time);
-			directionVector.Normalize();
-			directionVector *= curRadius;
 
-			particle->position = tempPosition + directionVector;
+    if (emitterType == EMITTER_ONCIRCLE)
+    {
+		// For "Circle" emitters the calculation is different.
+		PrepareEmitterParametersOnCircle(particle, velocity, emitIndex, tempPosition, rotationMatrix);
+	}
+	else
+	{
+		PrepareEmitterParametersGeneric(particle, velocity, emitIndex, tempPosition, rotationMatrix);
+	}
+
+	if(worldTransformPtr)
+	{
+		Matrix4 newTransform = *worldTransformPtr;
+		newTransform._30 = newTransform._31 = newTransform._32 = 0;
+		particle->direction = particle->direction*newTransform;
+	}
+}
+	
+void ParticleEmitter3D::PrepareEmitterParametersOnCircle(Particle * particle, float32 velocity,
+														 int32 emitIndex, const Vector3& tempPosition,
+														 const Matrix3& rotationMatrix)
+{
+	// Emit ponts from the circle in the XY plane.
+	float32 curRadius = 1.0f;
+	if (radius)
+	{
+		curRadius = radius->GetValue(time);
+	}
+
+	float32 curAngle = PI_2 * (float32)Random::Instance()->RandFloat();
+	float sinAngle = 0.0f;
+	float cosAngle = 0.0f;
+	SinCosFast(curAngle, sinAngle, cosAngle);
+
+	Vector3 directionVector(curRadius * cosAngle,
+							curRadius * sinAngle,
+							0.0f);
+
+	particle->position = (tempPosition + directionVector) * rotationMatrix;
+	particle->speed = velocity;
+
+	// Calculate Z value.
+	const float TANGENT_EPSILON = 1E-4;
+	if (this->emissionRange)
+	{
+		float32 emissionRangeValue = DegToRad(emissionRange->GetValue(time));
+		SinCosFast(emissionRangeValue, sinAngle, cosAngle);
+		if (fabs(cosAngle) < TANGENT_EPSILON)
+		{
+			// Reset the direction vector.
+			directionVector.x = 0;
+			directionVector.y = 0;
+			directionVector.z = -curRadius / 2 + (float32)Random::Instance()->RandFloat() * curRadius;
 		}
 		else
 		{
-			// Just apply the temp position.
-			particle->position = tempPosition;
+			float32 zValue = (curRadius * sinAngle / cosAngle);
+			directionVector.z = -zValue / 2 + (float32)Random::Instance()->RandFloat() * zValue;
 		}
-    }
-	
+	}
+
+	particle->direction = directionVector;
+}
+
+void ParticleEmitter3D::PrepareEmitterParametersGeneric(Particle * particle, float32 velocity,
+														int32 emitIndex, const Vector3& tempPosition,
+														const Matrix3& rotationMatrix)
+{
     Vector3 vel = Vector3(1.0f, 0.0f, 0.0f);
     if(emissionVector)
 	{
         vel = emissionVector->GetValue(0);
 		vel = vel*rotationMatrix;
 	}
-	
-	// TODO, Yuri Coder, 2013/04/08. Only one branch is executed - is it correct?
+
     Vector3 rotVect(0, 0, 1);
     float32 phi = PI*2*(float32)Random::Instance()->RandFloat();
     if(vel.x != 0)
@@ -162,24 +202,11 @@ void ParticleEmitter3D::PrepareEmitterParameters(Particle * particle, float32 ve
 		particle->direction.y = 0.f;
 	if (particle->direction.z <= EPSILON && particle->direction.z >= -EPSILON)
 		particle->direction.z = 0.f;
-	
-    if (emitterType == EMITTER_ONCIRCLE)
-    {
-        qvq1_v.Normalize();
-        if(radius)
-            particle->position += qvq1_v * radius->GetValue(time);
-    }
 
 	// Yuri Coder, 2013/03/26. After discussion with Ivan it appears this angle
 	// calculation is incorrect. TODO: return to this code later on.
+    
     //particle->angle = atanf(particle->direction.z/particle->direction.x);
-
-	if(worldTransformPtr)
-	{
-		Matrix4 newTransform = *worldTransformPtr;
-		newTransform._30 = newTransform._31 = newTransform._32 = 0;
-		particle->direction = particle->direction*newTransform;
-	}
 }
 
 void ParticleEmitter3D::LoadParticleLayerFromYaml(YamlNode* yamlNode, bool isLong)
