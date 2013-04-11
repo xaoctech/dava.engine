@@ -41,6 +41,11 @@ namespace DAVA
 		return aggregatorID;
 	}
 	
+	void EditorListDelegate::SetCellSize(const Vector2 &size)
+	{
+		cellSize = size;
+	}
+	
 	// UIListDelegate implementation	
 	int32 EditorListDelegate::ElementsCount(UIList *)
 	{
@@ -54,7 +59,10 @@ namespace DAVA
 		if (!cell)
 		{
 			cell = new UIListCell(Rect(0.0f, 0.0f, cellSize.x, cellSize.y), "Cell");
-		//	cell->SetDebugDraw(true);
+		}
+		else
+		{
+			cell->SetSize(Vector2(cellSize.x, cellSize.y));
 		}
 		
 		// Get aggregator node
@@ -62,16 +70,17 @@ namespace DAVA
 		HierarchyTreeAggregatorNode *aggregatorNode = dynamic_cast<HierarchyTreeAggregatorNode*>(node);
 	
 		cell->RemoveAllControls();
-		//cell->SetHCenterAlignEnabled(true);
-		//cell->SetLeftAlignEnabled(true);
-		//cell->SetHCenterAlign(0);
+		
 		if (aggregatorNode)
 		{
 			UIAggregatorControl* control = new UIAggregatorControl();
-			control->CopyDataFrom(aggregatorNode->GetScreen());			
-			//control->SetRightAlignEnabled(true);
-		//	control->SetLeftAlignEnabled(true);
+			control->CopyDataFrom(aggregatorNode->GetScreen());
 			cell->AddControl(control);
+			
+			control->SetRightAlignEnabled(true);
+			control->SetLeftAlignEnabled(true);
+			control->SetTopAlignEnabled(true);
+			control->SetBottomAlignEnabled(true);
 		}
 		else
 		{			
@@ -87,17 +96,6 @@ namespace DAVA
 	{
     	return cellSize.y;
 	}
-	
-	/*void EditorListDelegate::OnCellSelected(UIList *forList, UIListCell *selectedCell)
-	{
-		//selectedIndices[selectedTabIndex] = selectedCell->GetIndex();
-    
-    	const List<UIControl *> &ls = forList->GetVisibleCells();
-    	for (List<UIControl *>::const_iterator it = ls.begin(); it != ls.end(); it++)
-    	{
-        	UIListCell *c = (UIListCell *)(*it);
-    	}
-	}*/
 	
 	void EditorListDelegate::SaveToYaml(UIList *forList, YamlNode *)
 	{

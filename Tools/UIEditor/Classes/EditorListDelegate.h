@@ -25,11 +25,12 @@ public:
     virtual int32 ElementsCount(UIList *forList);
 	virtual UIListCell *CellAtIndex(UIList *forList, int32 index);
 	virtual int32 CellHeight(UIList *forList, int32 index);
-	//virtual void OnCellSelected(UIList *forList, UIListCell *selectedCell);
 	virtual void SaveToYaml(UIList *forList, YamlNode *node);
 	
 	void SetAggregatorID(int32 id);
 	int32 GetAggregatorID();
+	
+	void SetCellSize(const Vector2 &size);
 
 private:
 	int32 aggregatorID;
