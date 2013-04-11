@@ -338,7 +338,6 @@
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleForce.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayer.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayer3D.h" />
-    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayerLong.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticlePropertyLine.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\DeviceInfo.h" />
@@ -689,7 +688,6 @@
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleForce.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayer3D.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayerLong.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticlePropertyLine.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\DeviceInfo.cpp" />
