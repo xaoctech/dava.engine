@@ -8,24 +8,19 @@
 #include "Base/BaseTypes.h"
 #include "UI/UIEvent.h"
 
+struct HoodObject;
+
 class Hood
 {
 public:
-	enum HoodType
-	{
-		HOOD_NORMAL,
-		HOOD_MOVE,
-		HOOD_ROTATE,
-		HOOD_SCALE
-	};
-
-	Hood(SceneCameraSystem *camSys);
+	Hood();
 	~Hood();
 
 	void SetType(int type);
 	int GetType() const;
 
-	void SetPosition(DAVA::Vector3 pos);
+	void SetPosition(const DAVA::Vector3 &pos);
+	void MovePosition(const DAVA::Vector3 &offset);
 	void SetScale(DAVA::float32 scale);
 
 	void SetSelectedAxis(int axis);
@@ -34,7 +29,6 @@ public:
 	int MouseOverAxis() const;
 
 	void Draw() const;
-	void Update() const;
 	void RayTest(const DAVA::Vector3 &from, const DAVA::Vector3 &to);
 
 protected:
@@ -43,13 +37,9 @@ protected:
 	DAVA::float32 curScale;
 	int curAxis;
 
-	SceneCameraSystem *cameraSystem;
-
 	void CreateCollObjects();
+	void UpdateCollObjects();
 	void RemoveCollObjects();
-
-
-	void AddLineShape(const DAVA::Vector3 &from, const DAVA::Vector3 &to);
 
 private:
 	btCollisionWorld* collWorld;
@@ -58,19 +48,36 @@ private:
 	btCollisionDispatcher* collDispatcher;
 	btIDebugDraw* collDebugDraw;
 
-	struct HoodObject
-	{
-		btCollisionObject* btObject;
-		btCollisionShape* btShape;
-		btTransform btObjTransform;
-		DAVA::Color originalColor;
-		DAVA::Color selectedColor;
-		int representAxis;
-	};
+	DAVA::Vector<HoodObject*> normalHood;
+	DAVA::Vector<HoodObject*> moveHood;
+	DAVA::Vector<HoodObject*> rotateHood;
+	DAVA::Vector<HoodObject*> scaleHood;
 
-	DAVA::Vector<HoodObject> moveHood;
-	DAVA::Vector<HoodObject> rotateHood;
-	DAVA::Vector<HoodObject> scaleHood;
+	HoodObject* CreateLine(const DAVA::Vector3 &from, const DAVA::Vector3 &to, DAVA::float32 weight = 0.05f);
+	void Destroy(HoodObject *hoodObject);
 };
+
+struct HoodObject
+{
+	HoodObject() : btObject(NULL), btShape(NULL) {};
+
+	btCollisionObject* btObject;
+	btCollisionShape* btShape;
+	DAVA::Vector3 initialOffset;
+	DAVA::Vector3 curOffset;
+	int representAxis;
+
+	virtual void UpdatePos(const DAVA::Vector3 &pos);
+	virtual void Draw() = 0;
+};
+
+struct HoodLine : public HoodObject
+{
+	DAVA::Vector3 from;
+	DAVA::Vector3 to;
+
+	virtual void Draw();
+};
+
 
 #endif // __ENTITY_MODIFICATION_SYSTEM_HOOD_H__

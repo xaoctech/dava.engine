@@ -25,7 +25,7 @@ SceneEditorProxy::SceneEditorProxy()
 	selectionSystem = new SceneSelectionSystem(this, collisionSystem);
 	AddSystem(selectionSystem, 0);
 
-	modifSystem = new EntityModificationSystem(this, collisionSystem);
+	modifSystem = new EntityModificationSystem(this, collisionSystem, cameraSystem);
 	AddSystem(modifSystem, 0);
 }
 
