@@ -125,7 +125,7 @@ function SendJob(name, command)
 		if state == "ready" then
 			autotestingSystem:WriteCommand(name, command)
 			autotestingSystem:WriteState(name, "wait_execution")
-			Log("Device "..name.." ready, comand was sent")
+			Log("Device "..name.." ready, command was sent")
 			return
 		elseif state == "error" then 
 			OnError("Failed to send job to "..name.." cause error on device: "..command)
@@ -136,7 +136,7 @@ function SendJob(name, command)
 end
 
 function WaitJob(name)
-	Log("Wait for slave "..name)
+	Log("Wait for job on slave "..name)
 	local state
 	
 	for i=1,MULTIPLAYER_TIMEOUT do

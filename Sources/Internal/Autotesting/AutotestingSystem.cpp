@@ -303,6 +303,7 @@ void AutotestingSystem::ClearTestInDB()
     SaveToDB(dbUpdateObject);
     SafeRelease(dbUpdateObject);
 }
+
 KeyedArchive *AutotestingSystem::FindOrInsertRunArchive(MongodbUpdateObject* dbUpdateObject, const String &runId)
 {
 	Logger::Debug("AutotestingSystem::FindOrInsertRunArchive %s", runId.c_str());
@@ -706,6 +707,7 @@ KeyedArchive *AutotestingSystem::FindOrInsertTestStepLogEntryArchive(KeyedArchiv
     return currentTestStepLogEntryArchive;
 }
 
+// Multiplayer API
 void AutotestingSystem::WriteState(const String & device, const String & state)
 {
 	Logger::Debug("AutotestingSystem::WriteState device=%s state=%s", device.c_str(), state.c_str());
