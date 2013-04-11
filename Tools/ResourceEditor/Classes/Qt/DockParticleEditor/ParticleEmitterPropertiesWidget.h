@@ -29,6 +29,7 @@ public:
 	// Accessors to timelines.
 	TimeLineWidget* GetEmitterRadiusTimeline() {return emitterRadius;};
 	TimeLineWidget* GetEmitterSizeTimeline() {return emitterSize;};
+	TimeLineWidget* GetEmissionVectorTimeline() {return emitterEmissionVector;};
 
 signals:
 	void ValueChanged();

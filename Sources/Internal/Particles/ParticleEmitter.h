@@ -345,7 +345,6 @@ protected:
 
 public:
 	RefPtr< PropertyLine<Vector3> > emissionVector;
-	Matrix3 rotationMatrix;
     RefPtr< PropertyLine<float32> > emissionAngle;
 	RefPtr< PropertyLine<float32> > emissionRange;
 	RefPtr< PropertyLine<float32> > radius;
