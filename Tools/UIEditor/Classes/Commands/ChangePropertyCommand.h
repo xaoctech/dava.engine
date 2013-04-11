@@ -270,25 +270,6 @@ template<typename Type>
 	
 	bool propertySetOK = (realValue == curValue);
 
-//	if (propertyName == "Name" && propertySetOK)
-//	{
-//		HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetTree().GetNode((*iter).GetTreeNodeID());
-//		HierarchyTreeAggregatorNode* aggregator = dynamic_cast<HierarchyTreeAggregatorNode*>(node);
-//		if (aggregator)
-//		{
-//			HierarchyTreeAggregatorNode::CHILDS controls = aggregator->GetChilds();
-//			HierarchyTreeAggregatorNode::CHILDS::iterator it;
-//			for (it = controls.begin(); it != controls.end(); ++it)
-//			{
-//				HierarchyTreeScreenNode* screen = HierarchyTreeController::Instance()->GetScreenNodeForNode(*it);
-//				if (screen)
-//				{
-//					screen->IncrementUnsavedChanges();
-//				}
-//			}
-//		}
-//	}
-
 	SAFE_DELETE(baseMetadata);
 
 	return propertySetOK;
