@@ -280,11 +280,13 @@ void RenderManager::MakeGLScreenShot()
     tempData = new uint8[imageDataSize];
 
     LockNonMain();
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-    glBindFramebuffer(GL_FRAMEBUFFER_BINDING_OES, fboViewRenderbuffer);
-#else
-    glBindFramebuffer(GL_FRAMEBUFFER_BINDING_EXT, fboViewRenderbuffer);
-#endif
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, fboViewRenderbuffer);
+//#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+//    glBindFramebuffer(GL_FRAMEBUFFER_BINDING_OES, fboViewRenderbuffer);
+//#else
+//    glBindFramebuffer(GL_FRAMEBUFFER_BINDING_EXT, fboViewRenderbuffer);
+//#endif
     
     RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
     RENDER_VERIFY(glReadPixels(0, 0, width, height, formatDescriptor.format, formatDescriptor.type, (GLvoid *)tempData));
@@ -326,11 +328,11 @@ void RenderManager::MakeGLScreenShot()
 #endif
     SafeDeleteArray(tempData);
     
-    if(image)
+    if(screenShotCallback)
     {
-        ImageLoader::Save(image, FileSystem::Instance()->SystemPathForFrameworkPath(Format("~doc:/screenshot%d.png", ++screenShotIndex)));
-        SafeRelease(image);
+		(*screenShotCallback)(image);
     }
+	SafeRelease(image);
     
 #endif //#if defined(__DAVAENGINE_OPENGL__)
 }

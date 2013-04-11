@@ -25,8 +25,8 @@ public:
     MongodbUpdateObject();
     virtual ~MongodbUpdateObject();
     
-    void LoadData();
-    void SaveData();
+    bool LoadData();
+    bool SaveData();
     
     KeyedArchive* GetData();
     
