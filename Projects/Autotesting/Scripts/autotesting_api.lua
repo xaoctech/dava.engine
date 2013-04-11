@@ -8,7 +8,7 @@ MULTIPLAYER_TIMEOUT = 120 -- Multiplayer timeout
 function SetPackagePath(path)
 	package.path = package.path .. ";" .. path .. "Actions/?.lua;" .. path .. "Scripts/?.lua;"
 	
-	require "logger"
+	--require "logger"
 	require "coxpcall"
 end
 
@@ -50,11 +50,7 @@ end
 
 function Log(message, level)
 	level = level or "DEBUG"
-	if (DEVICE == 'Master') or not DEVICE then
 		autotestingSystem:Log(level, tostring(message))
-	else
-		print('['..level..']'..tostring(message))
-	end
 end 
 
 --
@@ -110,6 +106,7 @@ function InitializeDevice(name)
 end
 
 function WaitForDevice(name)
+	Log("Wait while "..name.." device become Ready")
 	for i=1,MULTIPLAYER_TIMEOUT do
 		if autotestingSystem:ReadState(name) == "ready" then
 			return
@@ -133,6 +130,7 @@ function SendJob(name, command)
 		elseif state == "error" then 
 			OnError("Failed to send job to "..name.." cause error on device: "..command)
 		end
+		Wait(1)
 	end
 	OnError("Failed to send job to "..name.." cause timeout: "..command)
 end
