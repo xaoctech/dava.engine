@@ -314,6 +314,6 @@ inline Landscape* Test::GetLandscape()
 Texture* Test::GetLandscapeTexture()
 {
 	Landscape* landscape = GetLandscape();
-	return landscape->GetTexture(Landscape::TEXTURE_TILE_FULL);
+	return landscape->CreateFullTiledTexture();
 };
 
