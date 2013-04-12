@@ -28,7 +28,7 @@ public:
 		ACTIONS_COUNT
 	};
 
-	virtual eAction URLChanged(DAVA::UIWebView* webview, const String& newURL) = 0;
+	virtual eAction URLChanged(DAVA::UIWebView* webview, const String& newURL, bool isRedirectedByMouseClick) = 0;
 	
 	virtual void PageLoaded(DAVA::UIWebView* webview) = 0;
 };

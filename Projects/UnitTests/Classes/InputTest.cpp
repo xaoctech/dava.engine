@@ -15,13 +15,22 @@ static const float INPUT_TEST_AUTO_CLOSE_TIME = 30.0f;
 
 class UIWebViewDelegate: public IUIWebViewDelegate
 {
-	virtual eAction URLChanged(UIWebView* webview, const String& newURL);
+	virtual eAction URLChanged(UIWebView* webview, const String& newURL, bool isRedirectedByMouseClick);
 
 	virtual void PageLoaded(UIWebView* webview);
 };
 
-IUIWebViewDelegate::eAction UIWebViewDelegate::URLChanged(UIWebView* webview, const String& newURL)
+IUIWebViewDelegate::eAction UIWebViewDelegate::URLChanged(UIWebView* webview, const String& newURL, bool isRedirectedByMouseClick)
 {
+	if(isRedirectedByMouseClick)
+	{
+		DAVA::Logger::Debug("Link %s from browser", newURL.c_str());
+	}
+	else
+	{
+		DAVA::Logger::Debug("Link %s from source code", newURL.c_str());
+	}
+
 	if (newURL.find("google.com.ua") != String::npos)
 	{
 		return IUIWebViewDelegate::PROCESS_IN_SYSTEM_BROWSER;
@@ -128,8 +137,9 @@ void InputTest::LoadResources()
 
 	//delegate = new UIWebViewDelegate();
 	webView3 = new UIWebView(Rect(520, 130, 215, 135));
-	webView3->OpenURL(url);
 	webView3->SetDelegate((UIWebViewDelegate*)delegate);
+	webView3->OpenURL(url);
+
 	AddControl(webView3);
 
 	AddControl(testButton);
