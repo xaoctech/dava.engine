@@ -217,17 +217,14 @@
     <Filter Include="Sources\Qt\Scene\System">
       <UniqueIdentifier>{859c9b28-5205-4a42-aede-af5566d0dbb2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Qt\Scene\System\Collision">
-      <UniqueIdentifier>{1fd9e330-0ea5-4450-a70a-59efa036c833}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Qt\Scene\System\EntityModif">
-      <UniqueIdentifier>{ef6b3a15-e1e5-4d01-89f4-cd395d2aa38a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Qt\DockMaterialViewOptions">
       <UniqueIdentifier>{ac0aff53-678a-41e9-976e-47ea3e28317e}</UniqueIdentifier>
     </Filter>
     <Filter Include="QtGenerated\DockMaterialViewOptions">
       <UniqueIdentifier>{e560503d-45b2-4dc6-8887-47e59d7d7eb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\Scene\System\CollisionSystem">
+      <UniqueIdentifier>{1fd9e330-0ea5-4450-a70a-59efa036c833}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1593,32 +1590,32 @@
     <ClCompile Include="_GeneratedQt\Scene\SceneTabWidget_moc.cpp">
       <Filter>QtGenerated\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Scene\System\EntityModifSystem.cpp">
-      <Filter>Sources\Qt\Scene\System</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\Scene\System\SceneCameraSystem.cpp">
-      <Filter>Sources\Qt\Scene\System</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\Scene\System\SceneGridSystem.cpp">
-      <Filter>Sources\Qt\Scene\System</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\Scene\System\SceneCollisionSystem.cpp">
-      <Filter>Sources\Qt\Scene\System</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\Scene\System\Collision\CollisionLandscape.cpp">
-      <Filter>Sources\Qt\Scene\System\Collision</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\Scene\System\Collision\CollisionRenderObject.cpp">
-      <Filter>Sources\Qt\Scene\System\Collision</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\Scene\System\SceneSelectionSystem.cpp">
-      <Filter>Sources\Qt\Scene\System</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\Scene\EntityGroup.cpp">
       <Filter>Sources\Qt\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Scene\System\EntityModif\Hood.cpp">
-      <Filter>Sources\Qt\Scene\System\EntityModif</Filter>
+    <ClCompile Include="Classes\Qt\Scene\System\CameraSystem.cpp">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem.cpp">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\GridSystem.cpp">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\HoodSystem.cpp">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\ModifSystem.cpp">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\SelectionSystem.cpp">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionLandscape.cpp">
+      <Filter>Sources\Qt\Scene\System\CollisionSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionRenderObject.cpp">
+      <Filter>Sources\Qt\Scene\System\CollisionSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2819,35 +2816,35 @@
     <ClInclude Include="Classes\Qt\Scene\SceneTabWidget.h">
       <Filter>Sources\Qt\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Scene\System\SceneCameraSystem.h">
-      <Filter>Sources\Qt\Scene\System</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Scene\System\SceneGridSystem.h">
-      <Filter>Sources\Qt\Scene\System</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Scene\System\SceneCollisionSystem.h">
-      <Filter>Sources\Qt\Scene\System</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Scene\System\EntityModifSystem.h">
-      <Filter>Sources\Qt\Scene\System</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Scene\System\Collision\CollisionBaseObject.h">
-      <Filter>Sources\Qt\Scene\System\Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Scene\System\Collision\CollisionLandscape.h">
-      <Filter>Sources\Qt\Scene\System\Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Scene\System\Collision\CollisionRenderObject.h">
-      <Filter>Sources\Qt\Scene\System\Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Scene\System\SceneSelectionSystem.h">
-      <Filter>Sources\Qt\Scene\System</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\Scene\EntityGroup.h">
       <Filter>Sources\Qt\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Scene\System\EntityModif\Hood.h">
-      <Filter>Sources\Qt\Scene\System\EntityModif</Filter>
+    <ClInclude Include="Classes\Qt\Scene\System\CameraSystem.h">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem.h">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\GridSystem.h">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\HoodSystem.h">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\ModifSystem.h">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\SelectionSystem.h">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionBaseObject.h">
+      <Filter>Sources\Qt\Scene\System\CollisionSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionLandscape.h">
+      <Filter>Sources\Qt\Scene\System\CollisionSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionRenderObject.h">
+      <Filter>Sources\Qt\Scene\System\CollisionSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

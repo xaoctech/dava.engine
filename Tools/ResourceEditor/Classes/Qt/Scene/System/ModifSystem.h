@@ -8,7 +8,7 @@
 class SceneCollisionSystem;
 class SceneCameraSystem;
 class EntityGroup;
-class Hood;
+class HoodSystem;
 
 enum EntityModifMode
 {
@@ -20,6 +20,8 @@ enum EntityModifMode
 
 enum EntityModifAxis
 {
+	EM_AXIS_NONE = 0,
+
 	EM_AXIS_X = 0x1,
 	EM_AXIS_Y = 0x2,
 	EM_AXIS_Z = 0x4,
@@ -28,27 +30,25 @@ enum EntityModifAxis
 	EM_AXIS_YZ = EM_AXIS_Y | EM_AXIS_Z
 };
 
-enum EntityModifPivotPoint
-{
-	EM_PIVOT_ENTITY_CENTER,
-	EM_PIVOT_SELECTION_CENTER
-};
-
 class EntityModificationSystem : public DAVA::SceneSystem
 {
 	friend class SceneEditorProxy;
 
 public:
-	EntityModificationSystem(DAVA::Scene * scene, SceneCollisionSystem *colSys, SceneCameraSystem *camSys);
+	EntityModificationSystem(DAVA::Scene * scene, SceneCollisionSystem *colSys, SceneCameraSystem *camSys, HoodSystem *hoodSys);
 	~EntityModificationSystem();
 
 protected:
 	SceneCollisionSystem *collisionSystem;
 	SceneCameraSystem *cameraSystem;
+	HoodSystem* hoodSystem;
 
 	void Update(DAVA::float32 timeElapsed);
 	void ProcessUIEvent(DAVA::UIEvent *event);
 	void Draw();
+
+	int GetModifAxis() const;
+	void SetModifAxis(int axis);
 
 protected:
 	struct EntityToModify
@@ -61,11 +61,10 @@ protected:
 	};
 
 	bool inModifState;
+	bool modified;
+
 	int  curMode;
 	int  curAxis;
-	int  curPivotPoint;
-
-	Hood* modifHood;
 
 	// starting modification pos
 	DAVA::Vector3 modifStartPos3d;
@@ -81,6 +80,7 @@ protected:
 	DAVA::Matrix4 moveFromZeroPosRelativeCenter;
 	DAVA::Vector2 rotateNormal;
 	DAVA::Vector3 rotateAround;
+	int modifPivotPoint;
 
 	void BeginModification(const EntityGroup *entities);
 	void EndModification();

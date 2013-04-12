@@ -10,6 +10,7 @@ class SceneCameraSystem;
 class SceneGridSystem;
 class SceneCollisionSystem;
 class SceneSelectionSystem;
+class HoodSystem;
 
 class SceneEditorSignals;
 
@@ -36,11 +37,12 @@ public:
 public:
 	SceneEditorSignals *sceneSignals;
 
-	EntityModificationSystem *modifSystem;
 	SceneCameraSystem *cameraSystem;
 	SceneCollisionSystem *collisionSystem;
 	SceneGridSystem *gridSystem;
+	HoodSystem *hoodSystem;
 	SceneSelectionSystem *selectionSystem;
+	EntityModificationSystem *modifSystem;
 
 protected:
 	DAVA::String curScenePath;

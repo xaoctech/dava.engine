@@ -1,9 +1,10 @@
 #include "Scene/SceneEditorProxy.h"
-#include "Scene/System/SceneCameraSystem.h"
-#include "Scene/System/SceneGridSystem.h"
-#include "Scene/System/SceneCollisionSystem.h"
-#include "Scene/System/SceneSelectionSystem.h"
-#include "Scene/System/EntityModifSystem.h"
+#include "Scene/System/CameraSystem.h"
+#include "Scene/System/GridSystem.h"
+#include "Scene/System/CollisionSystem.h"
+#include "Scene/System/SelectionSystem.h"
+#include "Scene/System/ModifSystem.h"
+#include "Scene/System/HoodSystem.h"
 
 // framework
 #include "Scene3D/SceneFileV2.h"
@@ -22,16 +23,21 @@ SceneEditorProxy::SceneEditorProxy()
 	collisionSystem = new SceneCollisionSystem(this);
 	AddSystem(collisionSystem, 0);
 
-	selectionSystem = new SceneSelectionSystem(this, collisionSystem);
+	hoodSystem = new HoodSystem(this, cameraSystem);
+	AddSystem(hoodSystem, 0);
+
+	selectionSystem = new SceneSelectionSystem(this, collisionSystem, hoodSystem);
 	AddSystem(selectionSystem, 0);
 
-	modifSystem = new EntityModificationSystem(this, collisionSystem, cameraSystem);
+	modifSystem = new EntityModificationSystem(this, collisionSystem, cameraSystem, hoodSystem);
 	AddSystem(modifSystem, 0);
 }
 
 SceneEditorProxy::~SceneEditorProxy()
 {
+	SafeDelete(modifSystem);
 	SafeDelete(selectionSystem);
+	SafeDelete(hoodSystem);
 	SafeDelete(collisionSystem);
 	SafeDelete(gridSystem);
 	SafeDelete(cameraSystem);
@@ -86,6 +92,7 @@ void SceneEditorProxy::Update(float timeElapsed)
 	gridSystem->Update(timeElapsed);
 	cameraSystem->Update(timeElapsed);
 	collisionSystem->Update(timeElapsed);
+	hoodSystem->Update(timeElapsed);
 	selectionSystem->Update(timeElapsed);
 	modifSystem->Update(timeElapsed);
 }
@@ -95,6 +102,7 @@ void SceneEditorProxy::ProcessUIEvent(DAVA::UIEvent *event)
 	gridSystem->ProcessUIEvent(event);
 	cameraSystem->ProcessUIEvent(event);
 	collisionSystem->ProcessUIEvent(event);
+	hoodSystem->ProcessUIEvent(event);
 	selectionSystem->ProcessUIEvent(event);
 	modifSystem->ProcessUIEvent(event);
 }
@@ -112,6 +120,7 @@ void SceneEditorProxy::Draw()
 	cameraSystem->Draw();
 	collisionSystem->Draw();
 	selectionSystem->Draw();
+	hoodSystem->Draw();
 	modifSystem->Draw();
 }
 
