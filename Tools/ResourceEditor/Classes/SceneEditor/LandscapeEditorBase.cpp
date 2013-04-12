@@ -85,7 +85,10 @@ bool LandscapeEditorBase::SetScene(EditorScene *newScene)
     }
     
     savedShaderMode = workingLandscape->GetTiledShaderMode();
-    workingLandscape->SetTiledShaderMode(Landscape::TILED_MODE_TILE_DETAIL_MASK);
+    if(savedShaderMode == Landscape::TILED_MODE_TEXTURE || savedShaderMode == Landscape::TILED_MODE_MIXED)
+    {
+        workingLandscape->SetTiledShaderMode(Landscape::TILED_MODE_TILEMASK);
+    }
     
     workingScene = SafeRetain(newScene);
     return true;
