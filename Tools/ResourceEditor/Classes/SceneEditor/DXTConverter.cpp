@@ -16,7 +16,7 @@ String DXTConverter::ConvertPngToDxt(const String & fileToConvert, const DAVA::T
 			image->ResizeImage(descriptor.dxtCompression.compressToWidth, descriptor.dxtCompression.compressToHeight);
 		}
 		
-		if(LibDxtHelper::WriteDxtFile(outputName,
+		if(LibDxtHelper::WriteDdsFile(outputName,
                                       image->width, image->height, image->data,
                                       descriptor.dxtCompression.format,
                                       (descriptor.generateMipMaps == TextureDescriptor::OPTION_ENABLED)))
