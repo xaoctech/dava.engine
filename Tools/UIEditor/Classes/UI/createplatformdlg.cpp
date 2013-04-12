@@ -1,6 +1,8 @@
 #include "Classes/UI/createplatformdlg.h"
 #include "ui_createplatformdlg.h"
 #include <QMessageBox>
+#include "HierarchyTreeController.h"
+#include "HierarchyTree.h"
 
 CreatePlatformDlg::CreatePlatformDlg(QWidget *parent) :
     QDialog(parent),
@@ -36,7 +38,16 @@ void CreatePlatformDlg::accept()
 	{
 		if (GetHeight() > 0 && GetWidth() > 0)
 		{
-			QDialog::accept();
+			if(!HierarchyTreeController::Instance()->GetTree().IsPlatformNamePresent(platformName) )
+			{
+				QDialog::accept();
+			}
+			else
+			{
+				QMessageBox msgBox;
+				msgBox.setText(tr("Please fill platform name field with unique value."));
+				msgBox.exec();
+			}
 		}
 		else
 		{
