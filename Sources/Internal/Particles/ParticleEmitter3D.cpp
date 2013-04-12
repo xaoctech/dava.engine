@@ -207,7 +207,8 @@ void ParticleEmitter3D::PrepareEmitterParametersGeneric(Particle * particle, flo
 
 	// Yuri Coder, 2013/03/26. After discussion with Ivan it appears this angle
 	// calculation is incorrect. TODO: return to this code later on.
-    particle->angle = atanf(particle->direction.z/particle->direction.x);
+    
+    //particle->angle = atanf(particle->direction.z/particle->direction.x);
 }
 
 void ParticleEmitter3D::LoadParticleLayerFromYaml(YamlNode* yamlNode, bool isLong)
