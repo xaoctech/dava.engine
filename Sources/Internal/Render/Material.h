@@ -242,8 +242,6 @@ public:
     float32 GetShininess() const;
 
 	void SetSetupLightmap(bool isSetupLightmap);
-	bool GetSetupLightmap();
-	void SetSetupLightmapSize(int32 setupLightmapSize);
     
     
     void EnableTextureShift(const bool & isEnabled);
@@ -336,7 +334,6 @@ private:
     bool    isTwoSided;
 
 	bool	isSetupLightmap;
-	int32	setupLightmapSize;
     
     float32	shininess;
     
@@ -395,7 +392,6 @@ public:
         MEMBER(isTranslucent, "Is Translucent", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(isTwoSided, "Is Two Sided", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(isSetupLightmap, "Is Setup Lightmap", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(setupLightmapSize, "Setup Lightmap Size", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(shininess, "Shininess", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
 
         MEMBER(ambientColor, "Ambient Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
