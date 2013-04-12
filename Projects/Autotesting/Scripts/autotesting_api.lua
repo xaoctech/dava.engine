@@ -155,6 +155,14 @@ function WaitJob(name)
 	OnError("Wait for job on "..name.." device failed by timeout. Last state "..state)
 end
 
+function SendJobAndWait(name, command)
+	SendJob(name, command)
+	WaitJob(name)
+end
+
+function noneStep()
+	return true
+end
 
 function Wait(waitTime)
     waitTime =  waitTime or DELAY
