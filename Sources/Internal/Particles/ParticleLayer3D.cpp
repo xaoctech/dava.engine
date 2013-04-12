@@ -100,11 +100,11 @@ void ParticleLayer3D::DrawLayerNonLong(Camera * camera)
 		Vector3 dxs = dx*sine;
 		Vector3 dyc = dy*cosine;
 		Vector3 dys = dy*sine;
-			
-		Vector3 topLeft = current->position+(-dxc+dys)*pivotUp + (dxs+dyc)*pivotLeft;
-		Vector3 topRight = current->position+(-dxs-dyc)*pivotRight + (-dxc+dys)*pivotUp;
-		Vector3 botLeft = current->position+(dxs+dyc)*pivotLeft + (dxc-dys)*pivotDown;
-		Vector3 botRight = current->position+(dxc-dys)*pivotDown + (-dxs-dyc)*pivotRight;
+
+		Vector3 topLeft = current->position+(dxs+dyc)*pivotLeft + (dxc-dys)*pivotDown;
+		Vector3 topRight = current->position+(-dxc+dys)*pivotUp + (dxs+dyc)*pivotLeft;
+		Vector3 botLeft = current->position+(dxc-dys)*pivotDown + (-dxs-dyc)*pivotRight;
+		Vector3 botRight = current->position+(-dxs-dyc)*pivotRight + (-dxc+dys)*pivotUp;
 
 		verts.push_back(topLeft.x);//0
 		verts.push_back(topLeft.y);

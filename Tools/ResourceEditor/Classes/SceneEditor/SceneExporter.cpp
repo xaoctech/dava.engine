@@ -165,16 +165,22 @@ void SceneExporter::RemoveEditorNodes(DAVA::Entity *rootNode)
         }
 		else
 		{
-            // LIGHT
-//			LightNode * light = dynamic_cast<LightNode*>(node);
-//			if(light)
-//			{
-//				bool isDynamic = light->GetCustomProperties()->GetBool("editor.dynamiclight.enable", true);
-//				if(!isDynamic)
-//				{
-//					node->GetParent()->RemoveNode(node);
-//				}
-//			}
+			DAVA::RenderComponent *renderComponent = static_cast<DAVA::RenderComponent *>(node->GetComponent(DAVA::Component::RENDER_COMPONENT));
+			if(renderComponent)
+			{
+				DAVA::RenderObject *ro = renderComponent->GetRenderObject();
+				if(ro && ro->GetType() != RenderObject::TYPE_LANDSCAPE)
+				{
+					DAVA::uint32 count = ro->GetRenderBatchCount();
+					for(DAVA::uint32 ri = 0; ri < count; ++ri)
+					{
+						DAVA::Material *material = ro->GetRenderBatch(ri)->GetMaterial();
+						if(material)
+							material->SetStaticLightingParams(0);
+					}
+				}
+
+			}
 		}
     }
 }
@@ -243,7 +249,12 @@ void SceneExporter::ExportLandscape(Scene *scene, Set<String> &errorLog)
     if (landscape)
     {
         sceneUtils.CopyFile(landscape->GetHeightmapPathname(), errorLog);
-        ExportLandscapeFullTiledTexture(landscape, errorLog);
+        
+        Landscape::eTiledShaderMode mode = landscape->GetTiledShaderMode();
+        if(mode == Landscape::TILED_MODE_MIXED || mode == Landscape::TILED_MODE_TEXTURE)
+        {
+            ExportLandscapeFullTiledTexture(landscape, errorLog);
+        }
     }
 }
 
