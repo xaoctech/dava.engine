@@ -24,6 +24,8 @@
 
 - (BOOL)webView: (UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType;
 
+- (void)webViewDidFinishLoad:(UIWebView *)webView;
+
 @end
 
 @implementation WebViewURLDelegate
@@ -85,6 +87,14 @@
 	return process;
 }
 
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView
+{
+    if (delegate && self->webView)
+	{
+        delegate->PageLoaded(self->webView);
+    }
+}
 @end
 
 
