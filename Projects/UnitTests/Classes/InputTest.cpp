@@ -16,6 +16,8 @@ static const float INPUT_TEST_AUTO_CLOSE_TIME = 30.0f;
 class UIWebViewDelegate: public IUIWebViewDelegate
 {
 	virtual eAction URLChanged(UIWebView* webview, const String& newURL);
+
+	virtual void PageLoaded(UIWebView* webview);
 };
 
 IUIWebViewDelegate::eAction UIWebViewDelegate::URLChanged(UIWebView* webview, const String& newURL)
@@ -34,6 +36,11 @@ IUIWebViewDelegate::eAction UIWebViewDelegate::URLChanged(UIWebView* webview, co
 	}
 
 	return IUIWebViewDelegate::PROCESS_IN_WEBVIEW;
+}
+
+void UIWebViewDelegate::PageLoaded(UIWebView* webview)
+{
+	webview->SetVisible(true);
 }
 
 
@@ -98,11 +105,15 @@ void InputTest::LoadResources()
 	testButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &InputTest::ButtonPressed));
 
 	webView1 = new UIWebView(Rect(5, 105, 500, 190));
-	webView1->OpenURL("http://www.google.com");
+
+	webView1->SetVisible(false);
+	delegate = new UIWebViewDelegate();
+	webView1->SetDelegate((UIWebViewDelegate*)delegate);
+	webView1->OpenURL("http://www.linux.org.ru");
 	AddControl(webView1);
 
-	webView2 = new UIWebView(Rect(305, 300, 440, 190));
-	webView2->OpenURL("http://www.apple.com");
+	/*webView2 = new UIWebView(Rect(305, 300, 440, 190));
+	webView2->OpenURL("http://www.google.com");
 	AddControl(webView2);
 
 	String srcDir = FileSystem::Instance()->FileSystem::SystemPathForFrameworkPath("~res:/TestData/InputTest/");
@@ -118,7 +129,7 @@ void InputTest::LoadResources()
 	webView3 = new UIWebView(Rect(520, 130, 215, 135));
 	webView3->OpenURL(url);
 	webView3->SetDelegate((UIWebViewDelegate*)delegate);
-	AddControl(webView3);
+	AddControl(webView3);*/
 
 	AddControl(testButton);
 }
@@ -132,8 +143,8 @@ void InputTest::UnloadResources()
 	SafeRelease(staticText);
 	
 	SafeRelease(webView1);
-	SafeRelease(webView2);
-	SafeRelease(webView3);
+	//SafeRelease(webView2);
+	//SafeRelease(webView3);
 	
 	UIWebViewDelegate* d = (UIWebViewDelegate*)delegate;
 	delete d;
@@ -172,3 +183,13 @@ void InputTest::ButtonPressed(BaseObject *obj, void *data, void *callerData)
 	testFinished = true;
 }
 
+void InputTest::OnPageLoaded(DAVA::BaseObject * caller, void * param, void *callerData)
+{
+	UIWebView* webView = dynamic_cast<UIWebView*>(caller);
+	if(NULL == webView)
+	{
+		return;
+	}
+	
+	webView->SetVisible(true);
+}
