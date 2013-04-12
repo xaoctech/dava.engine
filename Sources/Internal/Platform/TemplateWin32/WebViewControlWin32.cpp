@@ -10,6 +10,9 @@ using namespace DAVA;
 extern _ATL_FUNC_INFO BeforeNavigate2Info;
 _ATL_FUNC_INFO BeforeNavigate2Info = {CC_STDCALL, VT_EMPTY, 7, {VT_DISPATCH,VT_BYREF|VT_VARIANT,VT_BYREF|VT_VARIANT,VT_BYREF|VT_VARIANT,VT_BYREF|VT_VARIANT,VT_BYREF|VT_VARIANT,VT_BYREF|VT_BOOL}};
 
+extern _ATL_FUNC_INFO DocumentCompleteInfo;
+_ATL_FUNC_INFO DocumentCompleteInfo =  {CC_STDCALL,VT_EMPTY,2,{VT_DISPATCH,VT_BYREF | VT_VARIANT}};
+
 struct EventSink : public IDispEventImpl<1, EventSink, &DIID_DWebBrowserEvents2>
 {
 private:
@@ -29,6 +32,14 @@ public:
 		{
 			this->delegate = delegate;
 			this->webView = webView;
+		}
+	}
+
+	void  __stdcall DocumentComplete(IDispatch* pDisp, VARIANT* URL)
+	{
+		if (delegate && webView)
+		{
+			delegate->PageLoaded(webView);
 		}
 	}
 
@@ -75,6 +86,7 @@ public:
 
 	BEGIN_SINK_MAP(EventSink)
 		SINK_ENTRY_INFO(1, DIID_DWebBrowserEvents2, DISPID_BEFORENAVIGATE2, BeforeNavigate2, &BeforeNavigate2Info)
+		SINK_ENTRY_INFO(1, DIID_DWebBrowserEvents2, DISPID_DOCUMENTCOMPLETE, DocumentComplete, &DocumentCompleteInfo)
 	END_SINK_MAP()
 };
 
