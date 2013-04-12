@@ -437,6 +437,14 @@ void ParticleEmitter::LoadFromYaml(const String & filename)
 		if (emitterNode->Get("emissionVector"))
 			emissionVector = PropertyLineYamlReader::CreateVector3PropertyLineFromYamlNode(emitterNode, "emissionVector");
         
+		YamlNode* emissionVectorInvertedNode = emitterNode->Get("emissionVectorInverted");
+		if (!emissionVectorInvertedNode)
+		{
+			// Yuri Coder, 2013/04/12. This means that the emission vector in the YAML file is not inverted yet.
+			// Because of [DF-1003] fix for such files we have to invert coordinates for this vector.
+			InvertEmissionVectorCoordinates();
+		}
+
 		if (emitterNode->Get("emissionRange"))
 			emissionRange = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(emitterNode, "emissionRange");
         
@@ -562,13 +570,17 @@ void ParticleEmitter::SaveToYaml(const String & filename)
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(emitterYamlNode, "emissionRange", this->emissionRange);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector3>(emitterYamlNode, "emissionVector", this->emissionVector);
 
+	// Yuri Coder, 2013/04/12. After the coordinates inversion for the emission vector we need to introduce the
+	// new "emissionVectorInverted" flag to mark we don't need to invert coordinates after re-loading the YAML.
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(emitterYamlNode, "emissionVectorInverted", true);
+
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(emitterYamlNode, "radius", this->radius);
 
     PropertyLineYamlWriter::WriteColorPropertyLineToYamlNode(emitterYamlNode, "colorOverLife", this->colorOverLife);
 
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector3>(emitterYamlNode, "size", this->size);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(emitterYamlNode, "life", this->lifeTime);
-    
+
     // Now write all the Layers. Note - layers are child of root node, not the emitter one.
     int32 layersCount = this->layers.size();
     for (int32 i = 0; i < layersCount; i ++)
@@ -742,6 +754,34 @@ void ParticleEmitter::SetPlaybackSpeed(float32 value)
 float32 ParticleEmitter::GetPlaybackSpeed()
 {
 	return this->playbackSpeed;
+}
+
+void ParticleEmitter::InvertEmissionVectorCoordinates()
+{
+	if (!this->emissionVector)
+	{
+		return;
+	}
+
+	PropertyLineValue<Vector3> *pv;
+    PropertyLineKeyframes<Vector3> *pk;
+
+    pk = dynamic_cast< PropertyLineKeyframes<Vector3> *>(this->emissionVector.Get());
+    if (pk)
+    {
+        for (uint32 i = 0; i < pk->keys.size(); ++i)
+        {
+			pk->keys[i].value *= -1;
+        }
+		
+		return;
+    }
+
+	pv = dynamic_cast< PropertyLineValue<Vector3> *>(this->emissionVector.Get());
+	if (pv)
+    {
+		pv->value *= -1;
+    }
 }
 
 };
