@@ -336,6 +336,9 @@ protected:
 	// Internal restart function.
 	void DoRestart(bool isDeleteAllParticles);
 
+	// Invert the emission vector coordinates for backward compatibility.
+	void InvertEmissionVectorCoordinates();
+
     String GetEmitterTypeName();
 
 	void CleanupLayers();
