@@ -69,7 +69,7 @@ public:
 	void KeyUp(int32 keyCode);
 	void KeyDown(int32 keyCode);
 
-	void OnTouch(int32 action, int32 id, float32 x, float32 y, long time);
+	void OnTouch(int32 action, int32 id, float32 x, float32 y, float64 time);
 
 	bool DownloadHttpFile(const String & url, const String & documentsPathname);
 
@@ -100,7 +100,7 @@ private:
 
 	bool foreground;
 
-	UIEvent CreateTouchEvent(int32 action, int32 id, float32 x, float32 y, long time);
+	UIEvent CreateTouchEvent(int32 action, int32 id, float32 x, float32 y, float64 time);
 
 	Vector<DAVA::UIEvent> totalTouches;
 	int32 touchPhase;

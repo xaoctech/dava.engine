@@ -272,7 +272,7 @@ namespace DAVA
 	{
 	}
 
-	UIEvent CorePlatformAndroid::CreateTouchEvent(int32 action, int32 id, float32 x, float32 y, long time)
+	UIEvent CorePlatformAndroid::CreateTouchEvent(int32 action, int32 id, float32 x, float32 y, float64 time)
 	{
 		int32 phase = DAVA::UIEvent::PHASE_DRAG;
 		switch(action)
@@ -321,10 +321,10 @@ namespace DAVA
 		assetMngr = mngr;
 	}
 
-	void CorePlatformAndroid::OnTouch(int32 action, int32 id, float32 x, float32 y, long time)
+	void CorePlatformAndroid::OnTouch(int32 action, int32 id, float32 x, float32 y, float64 time)
 	{
 //		Logger::Debug("[CorePlatformAndroid::OnTouch] IN totalTouches.size = %d", totalTouches.size());
-//		Logger::Debug("[CorePlatformAndroid::OnTouch] action is %d, id is %d, x is %f, y is %f, time is %d", action, id, x, y, time);
+//		Logger::Debug("[CorePlatformAndroid::OnTouch] action is %d, id is %d, x is %f, y is %f, time is %lf", action, id, x, y, time);
 
 		UIEvent touchEvent = CreateTouchEvent(action, id, x, y, time);
 		Vector<DAVA::UIEvent> activeTouches;
