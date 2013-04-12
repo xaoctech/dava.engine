@@ -1,5 +1,7 @@
-#include "Scene/System/SceneCollisionSystem.h"
-#include "Scene/System/Collision/CollisionRenderObject.h"
+#include "Scene/System/CollisionSystem.h"
+#include "Scene/System/CollisionSystem/CollisionRenderObject.h"
+#include "Scene/System/CameraSystem.h"
+#include "Scene/SceneEditorProxy.h"
 
 // framework
 #include "Scene3D/Components/ComponentHelpers.h"
@@ -101,6 +103,19 @@ const EntityGroup* SceneCollisionSystem::RayTest(DAVA::Vector3 from, DAVA::Vecto
 	return &rayIntersectedEntities;
 }
 
+const EntityGroup* SceneCollisionSystem::RayTestFromCamera()
+{
+	SceneCameraSystem *cameraSystem	= ((SceneEditorProxy *) GetScene())->cameraSystem;
+
+	DAVA::Vector3 camPos = cameraSystem->GetCameraPosition();
+	DAVA::Vector3 camDir = cameraSystem->GetPointDirection(lastMousePos);
+
+	DAVA::Vector3 traceFrom = camPos;
+	DAVA::Vector3 traceTo = traceFrom + camDir * 1000.0f;
+
+	return RayTest(traceFrom, traceTo);
+}
+
 DAVA::AABBox3 SceneCollisionSystem::GetBoundingBox(DAVA::Entity *entity)
 {
 	DAVA::AABBox3 aabox;
@@ -124,7 +139,9 @@ void SceneCollisionSystem::Update(DAVA::float32 timeElapsed)
 }
 
 void SceneCollisionSystem::ProcessUIEvent(DAVA::UIEvent *event)
-{ }
+{
+	lastMousePos = event->point;
+}
 
 void SceneCollisionSystem::Draw()
 {

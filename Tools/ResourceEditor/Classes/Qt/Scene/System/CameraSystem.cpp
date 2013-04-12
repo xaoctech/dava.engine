@@ -1,4 +1,4 @@
-#include "Scene/System/SceneCameraSystem.h"
+#include "Scene/System/CameraSystem.h"
 
 // framework
 #include "Scene3D/Components/CameraComponent.h"

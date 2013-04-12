@@ -1,4 +1,4 @@
-#include "Scene/System/SceneGridSystem.h"
+#include "Scene/System/GridSystem.h"
 
 // framework
 #include "Render/RenderManager.h"

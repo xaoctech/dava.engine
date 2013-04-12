@@ -1,35 +1,42 @@
-#include "Scene/System/EntityModifSystem.h"
-#include "Scene/System/EntityModif/Hood.h"
+#include "Scene/System/ModifSystem.h"
+#include "Scene/System/HoodSystem.h"
+#include "Scene/System/CameraSystem.h"
+#include "Scene/System/CollisionSystem.h"
+#include "Scene/System/SelectionSystem.h"
+
 #include "Scene/EntityGroup.h"
-
 #include "Scene/SceneEditorProxy.h"
-#include "Scene/System/SceneCameraSystem.h"
-#include "Scene/System/SceneCollisionSystem.h"
-#include "Scene/System/SceneSelectionSystem.h"
 
-EntityModificationSystem::EntityModificationSystem(DAVA::Scene * scene, SceneCollisionSystem *colSys, SceneCameraSystem *camSys)
+EntityModificationSystem::EntityModificationSystem(DAVA::Scene * scene, SceneCollisionSystem *colSys, SceneCameraSystem *camSys, HoodSystem *hoodSys)
 	: DAVA::SceneSystem(scene)
 	, collisionSystem(colSys)
 	, cameraSystem(camSys)
+	, hoodSystem(hoodSys)
 	, inModifState(false)
+	, modified(false)
 	, curMode(EM_MODE_MOVE)
 	, curAxis(EM_AXIS_Z)
-	, curPivotPoint(EM_PIVOT_SELECTION_CENTER)
-	, modifHood(NULL)
-{
-	modifHood = new Hood();
-	modifHood->SetType(curMode);
-}
+{ }
 
 EntityModificationSystem::~EntityModificationSystem()
+{ }
+
+void EntityModificationSystem::SetModifAxis(int axis)
 {
-	delete modifHood;
+	if(axis != EM_AXIS_NONE)
+	{
+		curAxis = axis;
+		hoodSystem->SetSelectedAxis(axis);
+	}
+}
+
+int EntityModificationSystem::GetModifAxis() const
+{
+	return curAxis;
 }
 
 void EntityModificationSystem::Update(DAVA::float32 timeElapsed)
-{
-
-}
+{ }
 
 void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 {
@@ -39,44 +46,42 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 		SceneSelectionSystem *selectionSystem = ((SceneEditorProxy *) GetScene())->selectionSystem;
 		const EntityGroup *selectedEntities = selectionSystem->GetSelection();
 
-		// current cursor point, when looking from current camera
+		// remember current cursor point, when looking from current camera
 		DAVA::Vector3 camPosition = cameraSystem->GetCameraPosition();
 		DAVA::Vector3 camToPointDirection = cameraSystem->GetPointDirection(event->point);
-		DAVA::Vector3 hoodPosition;
-
-		if(NULL != selectedEntities && selectedEntities->Size() > 0)
-		{
-			switch(curPivotPoint)
-			{
-			case EM_PIVOT_SELECTION_CENTER:
-				hoodPosition = selectedEntities->GetCommonBbox().GetCenter();
-				break;
-			default:
-				hoodPosition = selectedEntities->GetBbox(0).GetCenter();
-				break;
-			}
-		}
 
 		// if we are not in modification state, try to find some selected item
 		// that have mouse cursor at the top of it
 		if(!inModifState)
 		{
-			// get intersected items in the line from camera to current mouse position
-			DAVA::Vector3 traceTo = camPosition + camToPointDirection * 1000.0f;
+			bool modifCanStart = false;
 
-			modifHood->SetPosition(hoodPosition);
-			modifHood->SetScale((hoodPosition - camPosition).Length() / 40.f);
+			// we can start modification only if mouse is over hood
+			// on mouse is over one of currently selected items
+			int mouseOverAxis = hoodSystem->GetPassingAxis();
+			if(mouseOverAxis != EM_AXIS_NONE)
+			{
+				// allow starting modification
+				modifCanStart = true;
 
-			// send this ray to hood
-			//curHood.RayTest(camPosition, traceTo);
+				// select current hood axis as active
+				SetModifAxis(mouseOverAxis);
+			}
+			else
+			{
+				// send this ray to collision system and get collision objects
+				const EntityGroup *collisionEntities = collisionSystem->RayTestFromCamera();
 
-			// send this ray to collision system and get collision objects
-			const EntityGroup *collisionEntities = collisionSystem->RayTest(camPosition, traceTo);
+				// check if one of got collision objects is intersected with selected items
+				// if so - we can start modification
+				if(NULL != GetFirstIntersectedEntity(selectedEntities, collisionEntities))
+				{
+					modifCanStart = true;
+				}
+			}
 
-			// check if one of got collision objects is intersected with selected items
-			// if so - we can start modification
-			DAVA::Entity* selectedCollisionEntity = GetFirstIntersectedEntity(selectedEntities, collisionEntities);
-			if(NULL != selectedCollisionEntity)
+			// can we start modification???
+			if(modifCanStart)
 			{
 				// TODO:
 				// emit signal about mouse is over selected object
@@ -97,9 +102,6 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 						// init some values, needed for modifications
 						modifStartPos3d = CamCursorPosToModifPos(camPosition, camToPointDirection, modifEntitiesCenter);
 						modifStartPos2d = event->point;
-
-						// set initial hood position
-						modifHood->SetPosition(modifEntitiesCenter);
 					}
 				}
 			}
@@ -110,27 +112,37 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 			// phase still continue
 			if(event->phase == DAVA::UIEvent::PHASE_DRAG)
 			{
-
 				switch (curMode)
 				{
 				case EM_MODE_MOVE:
 					{
-						DAVA::Vector3 curPos = CamCursorPosToModifPos(camPosition, camToPointDirection, modifEntitiesCenter);
-						Move(curPos);
+						Move(CamCursorPosToModifPos(camPosition, camToPointDirection, modifEntitiesCenter));
+						modified = true;
 					}
 					break;
 				case EM_MODE_ROTATE:
 					{
 						Rotate(event->point);
+						modified = true;
 					}
 					break;
 				case EM_MODE_SCALE:
 					{
 						Scale(event->point);
+						modified = true;
 					}
 					break;
 				default:
 					break;
+				}
+
+				if(modified)
+				{
+					// say to selection system, that selected items were modified
+					selectionSystem->SelectedItemsWereModified();
+
+					// lock hood, so it wont process ui events, wont calc. scale depending on it current position
+					hoodSystem->Lock();
 				}
 			}
 			// phase ended
@@ -143,8 +155,12 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 					// ...
 					// 
 
-					inModifState = false;
 					EndModification();
+					inModifState = false;
+					modified = false;
+
+					hoodSystem->Unlock();
+					selectionSystem->UpdateHoodPos();
 				}
 			}
 		}
@@ -152,18 +168,7 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 }
 
 void EntityModificationSystem::Draw()
-{
-	// current selected entities
-	SceneSelectionSystem *selectionSystem = ((SceneEditorProxy *) GetScene())->selectionSystem;
-	const EntityGroup *selectedEntities = selectionSystem->GetSelection();
-
-	if(NULL != selectedEntities && selectedEntities->Size() > 0)
-	{
-		//modifHood->Draw();
-	}
-
-	modifHood->Draw();
-}
+{ }
 
 void EntityModificationSystem::BeginModification(const EntityGroup *entities)
 {
@@ -222,6 +227,10 @@ void EntityModificationSystem::BeginModification(const EntityGroup *entities)
 		// so calculate this normal
 		rotateNormal = DAVA::Vector2(-rotateAxis.y, rotateAxis.x);
 		rotateNormal.Normalize();
+
+		// remember current selection pivot point
+		SceneSelectionSystem *selectionSystem = ((SceneEditorProxy *) GetScene())->selectionSystem;
+		modifPivotPoint = selectionSystem->GetPivotPoint();
 	}
 }
 
@@ -324,7 +333,7 @@ void EntityModificationSystem::Move(const DAVA::Vector3 &newPos3d)
 		modifEntities[i].entity->SetLocalTransform(modifEntities[i].originalTransform * moveModification);
 
 		// also move hood
-		modifHood->MovePosition(moveOffset);
+		hoodSystem->MovePosition(moveOffset);
 	}
 }
 
@@ -339,13 +348,13 @@ void EntityModificationSystem::Rotate(const DAVA::Vector2 &newPos2d)
 		rotateModification.Identity();
 		rotateModification.CreateRotation(rotateAround, rotateForce / 70.0f);
 
-		switch(curPivotPoint)
+		switch(modifPivotPoint)
 		{
-		case EM_PIVOT_ENTITY_CENTER:
+		case SceneSelectionSystem::SELECTION_ENTITY_CENTER:
 			// move to zero, rotate, move back to original center point
 			rotateModification = (modifEntities[i].moveToZeroPos * rotateModification) * modifEntities[i].moveFromZeroPos;
 			break;
-		case EM_PIVOT_SELECTION_CENTER:
+		case SceneSelectionSystem::SELECTION_COMMON_CENTER:
 			// move to zero relative selection center, rotate, move back to original center point
 			rotateModification = (moveToZeroPosRelativeCenter * rotateModification) * moveFromZeroPosRelativeCenter;
 			break;

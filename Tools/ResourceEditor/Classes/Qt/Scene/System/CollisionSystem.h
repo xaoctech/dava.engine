@@ -39,8 +39,10 @@ public:
 	void SetDebugDrawFlags(int flags);
 	int GetDebugDrawFlags();
 
-	const EntityGroup* RayTest(DAVA::Vector3 from, DAVA::Vector3 to);
 	DAVA::AABBox3 GetBoundingBox(DAVA::Entity *entity);
+
+	const EntityGroup* RayTest(DAVA::Vector3 from, DAVA::Vector3 to);
+	const EntityGroup* RayTestFromCamera();
 
 protected:
 	void Update(DAVA::float32 timeElapsed);
@@ -55,6 +57,7 @@ protected:
 
 	DAVA::Vector3 lastRayFrom;
 	DAVA::Vector3 lastRayTo;
+	DAVA::Vector2 lastMousePos;
 
 	EntityGroup rayIntersectedEntities;
 	bool rayIntersectCached;

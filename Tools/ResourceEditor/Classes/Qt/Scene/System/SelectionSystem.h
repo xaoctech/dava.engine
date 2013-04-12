@@ -9,10 +9,12 @@
 #include "UI/UIEvent.h"
 
 class SceneCollisionSystem;
+class HoodSystem;
 
 class SceneSelectionSystem : public DAVA::SceneSystem
 {
 	friend class SceneEditorProxy;
+	friend class EntityModificationSystem;
 
 public:
 	enum SelectionDrawFlags
@@ -26,7 +28,13 @@ public:
 		DEBUG_DRAW_ALL = 0xFFFFFFFF
 	};
 
-	SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSystem *collisionSystem);
+	enum SelectionPivotPoint
+	{
+		SELECTION_ENTITY_CENTER,
+		SELECTION_COMMON_CENTER
+	};
+
+	SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSystem *collSys, HoodSystem *hoodSys);
 	~SceneSelectionSystem();
 
 	void SetSelection(DAVA::Entity *entity);
@@ -35,22 +43,32 @@ public:
 
 	const EntityGroup* GetSelection() const;
 
-	void SetSelectionDrawFlags(int flags);
-	int GetSelectionDrawFlags() const;
+	void SetDrawFlags(int flags);
+	int GetDrawFlags() const;
+
+	void SetPivotPoint(int pp);
+	int GetPivotPoint() const;
+
+	void UpdateHoodPos() const;
 
 protected:
 	void Update(DAVA::float32 timeElapsed);
 	void ProcessUIEvent(DAVA::UIEvent *event);
 	void Draw();
 
-protected:
+	void SelectedItemsWereModified();
+
+private:
 	int selectionDrawFlags;
 	bool applyOnPhaseEnd;
 
 	SceneCollisionSystem *collisionSystem;
+	HoodSystem* hoodSystem;
 
 	EntityGroup curSelections;
 	DAVA::Entity *lastSelection;
+
+	int  curPivotPoint;
 };
 
 #endif //__SCENE_SELECTION_SYSTEM_H__
