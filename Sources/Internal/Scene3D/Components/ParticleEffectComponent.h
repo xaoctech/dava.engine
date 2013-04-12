@@ -48,6 +48,13 @@ public:
      */
     void SetPlaybackCompleteMessage(const Message & msg);
 
+	/**
+     \brief Access to playback speed for the particle emitters. Returns
+	 the playback speed for first emitter, sets for all ones.
+     */
+	float32 GetPlaybackSpeed();
+	void SetPlaybackSpeed(float32 value);
+
 protected:
 	// Update the duration for all the child nodes.
 	void UpdateDurationForChildNodes(float32 newEmitterLifeTime);

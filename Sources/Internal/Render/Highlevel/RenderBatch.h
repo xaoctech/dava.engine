@@ -121,7 +121,7 @@ public:
 
 	void SetVisibilityCriteria(uint32 criteria);
 
-	void UpdateAABBoxFromSource();
+	virtual void UpdateAABBoxFromSource();
 
 protected:
     PolygonGroup * dataSource;

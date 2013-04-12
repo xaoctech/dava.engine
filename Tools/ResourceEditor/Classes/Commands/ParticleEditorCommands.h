@@ -96,6 +96,21 @@ protected:
 	virtual void Execute();
 };
 
+class CommandUpdateEffect: public Command
+{
+public:
+	CommandUpdateEffect(ParticleEffectComponent* particleEffect);
+	void Init(float32 playbackSpeed);
+	
+protected:
+	virtual void Execute();
+	
+private:
+	ParticleEffectComponent* particleEffect;
+
+	float32 playbackSpeed;
+};
+
 class CommandUpdateEmitter: public Command
 {
 public:
@@ -106,7 +121,8 @@ public:
 			  RefPtr<PropertyLine<float32> > radius,
 			  RefPtr<PropertyLine<Color> > colorOverLife,
 			  RefPtr<PropertyLine<Vector3> > size,
-			  float32 life);
+			  float32 life,
+			  float32 playbackSpeed);
 
 protected:
 	virtual void Execute();
@@ -121,6 +137,7 @@ private:
 	RefPtr<PropertyLine<Color> > colorOverLife;
 	RefPtr<PropertyLine<Vector3> > size;
 	float32 life;
+	float32 playbackSpeed;
 };
 
 class CommandUpdateParticleLayer: public Command
