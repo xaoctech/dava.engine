@@ -75,7 +75,7 @@ using namespace DAVA;
 		
 		if (url)
 		{
-			IUIWebViewDelegate::eAction action = delegate->URLChanged(self->webView, [url UTF8String]);
+			IUIWebViewDelegate::eAction action = delegate->URLChanged(self->webView, [url UTF8String],  self->webView->IsRedirectedByMouseClick());
 			
 			switch (action)
 			{

@@ -58,7 +58,7 @@ public:
 			String s = str;
 			delete[] str;
 
-			IUIWebViewDelegate::eAction action = delegate->URLChanged(webView, s);
+			IUIWebViewDelegate::eAction action = delegate->URLChanged(webView, s, webView->IsRedirectedByMouseClick());
 
 			switch (action)
 			{

@@ -32,7 +32,12 @@ public:
 
 	void SetDelegate(IUIWebViewDelegate* delegate);
 
+	bool IsRedirectedByMouseClick(){return isRedirectedByMouseClick;}
+
 protected:
+	
+	bool isRedirectedByMouseClick;
+
 	// Platform-specific implementation of the Web View Control.
 	IWebViewControl* webViewControl;
 };
