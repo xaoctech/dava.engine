@@ -25,6 +25,23 @@ using namespace DAVA;
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Yuri Coder, 03/12/2012. New commands for Particle Editor QT.
 
+CommandUpdateEffect::CommandUpdateEffect(ParticleEffectComponent* particleEffect):
+Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+{
+	this->particleEffect = particleEffect;
+}
+
+void CommandUpdateEffect::Init(float32 playbackSpeed)
+{
+	this->playbackSpeed = playbackSpeed;
+}
+
+void CommandUpdateEffect::Execute()
+{
+	DVASSERT(particleEffect);
+	particleEffect->SetPlaybackSpeed(playbackSpeed);
+}
+
 CommandUpdateEmitter::CommandUpdateEmitter(ParticleEmitter* emitter):
 	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
 {
@@ -37,7 +54,8 @@ void CommandUpdateEmitter::Init(ParticleEmitter::eType emitterType,
 								RefPtr<PropertyLine<float32> > radius,
 								RefPtr<PropertyLine<Color> > colorOverLife,
 								RefPtr<PropertyLine<Vector3> > size,
-								float32 life)
+								float32 life,
+								float32 playbackSpeed)
 {
 	this->emitterType = emitterType;
 	this->emissionRange = emissionRange;
@@ -46,6 +64,7 @@ void CommandUpdateEmitter::Init(ParticleEmitter::eType emitterType,
 	this->colorOverLife = colorOverLife;
 	this->size = size;
 	this->life = life;
+	this->playbackSpeed = playbackSpeed;
 }
 
 void CommandUpdateEmitter::Execute()
@@ -59,6 +78,7 @@ void CommandUpdateEmitter::Execute()
 	emitter->colorOverLife = colorOverLife;
 	emitter->size = size;
 	emitter->SetLifeTime(life);
+	emitter->SetPlaybackSpeed(playbackSpeed);
 }
 
 CommandUpdateParticleLayer::CommandUpdateParticleLayer(ParticleEmitter* emitter, ParticleLayer* layer) :
