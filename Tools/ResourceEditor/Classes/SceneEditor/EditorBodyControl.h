@@ -246,6 +246,7 @@ protected:
     
     RulerTool *landscapeRulerTool;
 
+	Entity* originalNode;
 	Entity* modifiedNode;
 	Matrix4 transformBeforeModification;
 };
