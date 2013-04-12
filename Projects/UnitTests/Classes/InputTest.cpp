@@ -105,15 +105,16 @@ void InputTest::LoadResources()
 	testButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &InputTest::ButtonPressed));
 
 	webView1 = new UIWebView(Rect(5, 105, 500, 190));
-
 	webView1->SetVisible(false);
 	delegate = new UIWebViewDelegate();
 	webView1->SetDelegate((UIWebViewDelegate*)delegate);
 	webView1->OpenURL("http://www.linux.org.ru");
 	AddControl(webView1);
 
-	/*webView2 = new UIWebView(Rect(305, 300, 440, 190));
-	webView2->OpenURL("http://www.google.com");
+	webView2 = new UIWebView(Rect(305, 300, 440, 190));
+    webView2->SetVisible(false);
+    webView2->SetDelegate((UIWebViewDelegate*)delegate);
+	webView2->OpenURL("http://www.apple.com");
 	AddControl(webView2);
 
 	String srcDir = FileSystem::Instance()->FileSystem::SystemPathForFrameworkPath("~res:/TestData/InputTest/");
@@ -125,11 +126,11 @@ void InputTest::LoadResources()
 	FileSystem::Instance()->CopyFile(srcFile, cpyFile);
 	String url = "file:///" + cpyFile;
 
-	delegate = new UIWebViewDelegate();
+	//delegate = new UIWebViewDelegate();
 	webView3 = new UIWebView(Rect(520, 130, 215, 135));
 	webView3->OpenURL(url);
 	webView3->SetDelegate((UIWebViewDelegate*)delegate);
-	AddControl(webView3);*/
+	AddControl(webView3);
 
 	AddControl(testButton);
 }
