@@ -431,7 +431,6 @@ void ParticleTimeLineWidget::UpdateParticlesCountPosition()
 					   graphRect.height() + 1);
 
 	countWidget->setGeometry(countersRect);
-	countWidget->repaint();
 }
 
 void ParticleTimeLineWidget::UpdateParticlesCountValues()
