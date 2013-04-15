@@ -796,8 +796,10 @@ void RenderManager::SetHWClip(const Rect &rect)
 	}
 	int32 x = (int32)(rect.x * currentDrawScale.x + currentDrawOffset.x);
 	int32 y = (int32)(rect.y * currentDrawScale.y + currentDrawOffset.y);
-	int32 width = (int32)(rect.dx * currentDrawScale.x);
-	int32 height = (int32)(rect.dy * currentDrawScale.y);
+	int32 x2= (int32)ceilf((rect.dx + rect.x) * currentDrawScale.x + currentDrawOffset.x);
+	int32 y2= (int32)ceilf((rect.dy + rect.y) * currentDrawScale.y + currentDrawOffset.y);
+	int32 width = x2 - x;
+	int32 height = y2 - y;
 	switch (renderOrientation) 
 	{
 	case Core::SCREEN_ORIENTATION_PORTRAIT:

@@ -158,7 +158,11 @@ public:
 							 RefPtr< PropertyLine<Vector3> > forceVariation,
 							 RefPtr< PropertyLine<float32> > forceOverLife);
 
-protected:	
+	// Playback speed.
+	void SetPlaybackSpeed(float32 value);
+	float32 GetPlaybackSpeed();
+
+protected:
 	void GenerateNewParticle(int32 emitIndex);
 	void GenerateSingleParticle();
 	
@@ -198,7 +202,8 @@ protected:
 	ParticleLayerBatch * renderBatch;
 
 	bool		additive;
-	
+	float32		playbackSpeed;
+
 public:
 	String			layerName;
 	Vector2			pivotPoint;

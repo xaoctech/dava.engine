@@ -20,6 +20,10 @@ protected:
 	// "Degree mark" character needed for some widgets.
 	static const QChar DEGREE_MARK_CHARACTER;
 
+	// Conversion from/to playback speed to/from slider value.
+	int ConvertFromPlaybackSpeedToSliderValue(float32 playbackSpeed);
+	float ConvertFromSliderValueToPlaybackSpeed(int sliderValue);
+
 	ParticleEmitter* emitter;
 };
 

@@ -103,3 +103,13 @@ uint32 LandscapeTestData::GetSceneFileSize() const
 {
 	return sceneFileSize;
 }
+
+void LandscapeTestData::SetTexturesFilesSize(uint32 size)
+{
+	textureFilesSize = size;
+}
+
+uint32 LandscapeTestData::GetTexturesFilesSize() const
+{
+	return textureFilesSize;
+}

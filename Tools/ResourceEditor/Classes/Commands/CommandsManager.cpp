@@ -73,6 +73,7 @@ void CommandsManager::ClearQueueTail()
 	if ((activeQueue->commandIndex >= -1) &&
 		(activeQueue->commandIndex < (int32)activeQueue->commands.size()))
 	{
+        DVASSERT(activeQueue->commandIndex <= (UNDO_QUEUE_SIZE - 1)); //Queue cannot be more than UNDO_QUEUE_SIZE
         if(activeQueue->commandIndex == UNDO_QUEUE_SIZE - 1)
         {
             SafeRelease(activeQueue->commands[0]);
@@ -130,6 +131,16 @@ void CommandsManager::ExecuteAndRelease(Command* command)
 {
 	Execute(command);
 	SafeRelease(command);
+}
+
+void CommandsManager::ExecuteOnly(Command *command)
+{
+	command->Execute();
+}
+
+void CommandsManager::CancelOnly(Command *command)
+{
+	command->Cancel();
 }
 
 void CommandsManager::Undo()
