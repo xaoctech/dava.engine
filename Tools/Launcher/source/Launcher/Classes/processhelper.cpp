@@ -6,6 +6,8 @@
 #endif
 #include <QUrl>
 #include <QDesktopServices>
+#include <QProcess>
+#include <QStringList>
 
 #ifdef Q_OS_DARWIN
 void ProcessHelper::RunProcess(const QString& path)
