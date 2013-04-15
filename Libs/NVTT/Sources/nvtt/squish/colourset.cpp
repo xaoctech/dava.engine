@@ -138,7 +138,7 @@ ColourSet::ColourSet( u8 const* rgba, int flags, bool createMinimalSet/*=false*/
 #endif
 }
 
-void ColourSet::RemapIndices( u8 const* source, u8* target ) const
+/*void ColourSet::RemapIndices( u8 const* source, u8* target ) const
 {
 	for( int i = 0; i < 16; ++i )
 	{
@@ -148,6 +148,6 @@ void ColourSet::RemapIndices( u8 const* source, u8* target ) const
 		else
 			target[i] = source[j];
 	}
-}
+}*/
 
 } // namespace squish
