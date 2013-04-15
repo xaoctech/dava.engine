@@ -7,15 +7,16 @@
 #include "processhelper.h"
 #include "settings.h"
 
-#define LAUNCER_VER "0.8"
+#define LAUNCER_VER "0.82"
 
 #define COLUMN_NAME 0
 #define COLUMN_CUR_VER 1
 #define COLUMN_NEW_VER 2
 
 #define ST_TAB 0
-#define DEV_TAB 1
-#define DEP_TAB 2
+#define QA_TAB 1
+#define DEV_TAB 2
+#define DEP_TAB 3
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -36,15 +37,18 @@ MainWindow::MainWindow(QWidget *parent) :
     m_pUpdateTimer->start(Settings::GetInstance()->GetUpdateTimerInterval());
 
     ui->stableTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    ui->testTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
     ui->developmentTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
     ui->dependenciesTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
 
     connect(ui->stableTable, SIGNAL(itemSelectionChanged()), this, SLOT(UpdateBtn()));
+    connect(ui->testTable, SIGNAL(itemSelectionChanged()), this, SLOT(UpdateBtn()));
     connect(ui->dependenciesTable, SIGNAL(itemSelectionChanged()), this, SLOT(UpdateBtn()));
     connect(ui->developmentTable, SIGNAL(itemSelectionChanged()), this, SLOT(UpdateBtn()));
     connect(ui->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(UpdateBtn()));
 
     connect(ui->stableTable, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_btnRun_clicked()));
+    connect(ui->testTable, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_btnRun_clicked()));
     connect(ui->developmentTable, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_btnRun_clicked()));
 
     connect(Logger::GetInstance(), SIGNAL(LogAdded(QString)), this, SLOT(OnLogAdded(QString)));
@@ -64,6 +68,7 @@ MainWindow::~MainWindow() {
 void MainWindow::AvailableSoftWareUpdated(const AvailableSoftWare& software) {
     m_SoftWare = software;
     FillTableSoft(ui->stableTable, software.m_Stable);
+    FillTableSoft(ui->testTable, software.m_Test);
     FillTableSoft(ui->developmentTable, software.m_Development);
     FillTableDependencies(ui->dependenciesTable, software.m_Dependencies);
 }
@@ -171,6 +176,11 @@ void MainWindow::UpdateBtn() {
         m_SelectedAppType = eAppTypeStable;
         UpdateSelectedApp(ui->stableTable);
     }break;
+    case QA_TAB: {
+        pSelectedMap = &m_SoftWare.m_Test;
+        m_SelectedAppType = eAppTypeTest;
+        UpdateSelectedApp(ui->testTable);
+    }break;
     case DEV_TAB: {
         pSelectedMap = &m_SoftWare.m_Development;
         m_SelectedAppType = eAppTypeDevelopment;
@@ -206,6 +216,9 @@ void MainWindow::UpdateBtn() {
             }
         };
         case ST_TAB: {
+            ui->btnRun->setVisible(true);
+        } break;
+        case QA_TAB: {
             ui->btnRun->setVisible(true);
         } break;
         case DEP_TAB: {
