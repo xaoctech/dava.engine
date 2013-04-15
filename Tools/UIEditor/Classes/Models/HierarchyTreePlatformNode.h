@@ -51,6 +51,8 @@ public:
 	
 	virtual void SetParent(HierarchyTreeNode* node, HierarchyTreeNode* insertAfter);
 
+	bool IsAggregatorOrScreenNamePresent(const QString& candidatName);
+
 private:
 	int width;
 	int height;
