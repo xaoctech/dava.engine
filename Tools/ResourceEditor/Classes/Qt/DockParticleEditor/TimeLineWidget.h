@@ -77,8 +77,6 @@ private:
 	QRect GetIncreaseRect() const;
 	QRect GetScaleRect() const;
 	QRect GetDecreaseRect() const;
-	QRect GetOffsetRightRect() const;
-	QRect GetOffsetLeftRect() const;
 	QRect GetScrollBarRect() const;
 	QRect GetSliderRect() const;
 
