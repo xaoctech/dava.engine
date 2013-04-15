@@ -20,9 +20,9 @@ class UIWebViewDelegate: public IUIWebViewDelegate
 	virtual void PageLoaded(UIWebView* webview);
 };
 
-IUIWebViewDelegate::eAction UIWebViewDelegate::URLChanged(UIWebView* webview, const String& newURL, bool isRedirectedByMouseClick)
+IUIWebViewDelegate::eAction UIWebViewDelegate::URLChanged(UIWebView* webview, const String& newURL, bool isInitiatedByUser)
 {
-	if(isRedirectedByMouseClick)
+	if(isInitiatedByUser)
 	{
 		DAVA::Logger::Debug("Link %s from browser", newURL.c_str());
 	}
