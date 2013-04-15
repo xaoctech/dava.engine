@@ -63,9 +63,6 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 			{
 				// allow starting modification
 				modifCanStart = true;
-
-				// select current hood axis as active
-				SetModifAxis(mouseOverAxis);
 			}
 			else
 			{
@@ -95,6 +92,9 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 					{
 						// go to modification state
 						inModifState = true;
+
+						// select current hood axis as active
+						SetModifAxis(mouseOverAxis);
 
 						// set entities to be modified
 						BeginModification(selectedEntities);
