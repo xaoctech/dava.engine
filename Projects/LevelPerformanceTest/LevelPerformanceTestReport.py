@@ -77,7 +77,12 @@ if None != connection:
 				reportValues.sort()
 				for reportValue in reportValues:
 					if '_id' != reportValue and 'ResultImagePNG' != reportValue:
-						report.write('<b><i>' + reportValue + '</i></b>: ' + level[reportValue] + '<br/>\n')
+						if 'SceneFileSize' == reportValue and 11. < float(level[reportValue].split()[0]):
+							report.write('<b style="color:Red"><i>' + reportValue + '</i>: ' + level[reportValue] + ' (Limit: 11 Mb)</b><br/>\n')
+						elif 'TextureMemorySize' == reportValue and 46. < float(level[reportValue].split()[0]):
+							report.write('<b style="color:Red"><i>' + reportValue + '</i>: ' + level[reportValue] + ' (Limit: 46 Mb)</b><br/>\n')
+						else:
+							report.write('<b><i>' + reportValue + '</i></b>: ' + level[reportValue] + '<br/>\n')
 						
 				imageFile = open(levelName + '.png', 'wb')
 				imageFile.write(level['ResultImagePNG'])
