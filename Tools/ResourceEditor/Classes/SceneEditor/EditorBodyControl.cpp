@@ -40,6 +40,8 @@
 EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect)
 	, beastManager(0)
+	, originalNode(0)
+	, modifiedNode(0)
 {
     currentViewportType = ResourceEditor::VIEWPORT_DEFAULT;
     
@@ -425,10 +427,11 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 						isDrag = true;
 						if (InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SHIFT))
 						{//copy object
-							CommandsManager::Instance()->ExecuteAndRelease(new CommandCloneObject(selection, this, scene->collisionWorld));
-
-							selection = scene->GetProxy();
-							modifiedNode = scene->GetProxy();
+							originalNode = scene->GetProxy();
+							modifiedNode = originalNode->Clone();
+							originalNode->GetParent()->AddNode(modifiedNode);
+							SelectNode(modifiedNode);
+							selection = modifiedNode;
 							transformBeforeModification = modifiedNode->GetLocalTransform();
 						}
 
@@ -486,9 +489,23 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 			inTouch = false;
 			if (isDrag)
 			{
-				CommandsManager::Instance()->ExecuteAndRelease(new CommandTransformObject(modifiedNode,
-																						  transformBeforeModification,
-																						  modifiedNode->GetLocalTransform()));
+				if (originalNode)
+				{
+					CommandCloneAndTransform* cmd = new CommandCloneAndTransform(originalNode,
+																				 modifiedNode->GetLocalTransform(),
+																				 this,
+																				 scene->collisionWorld);
+					CommandsManager::Instance()->ExecuteAndRelease(cmd);
+					originalNode = NULL;
+					RemoveNode(modifiedNode);
+					SafeRelease(modifiedNode);
+				}
+				else
+				{
+					CommandsManager::Instance()->ExecuteAndRelease(new CommandTransformObject(modifiedNode,
+																							  transformBeforeModification,
+																							  modifiedNode->GetLocalTransform()));
+				}
 
 				if (selection)
 				{

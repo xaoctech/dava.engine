@@ -68,7 +68,7 @@ String HeightmapModificationCommand::SaveHeightmap(Heightmap* heightmap)
 		filename += Heightmap::FileExtension();
 		
 		int32 i = 0;
-		for (; i < fileList->GetFileCount(); ++i)
+		for (; i < fileList->GetCount(); ++i)
 		{
 			if (fileList->GetFilename(i) == filename)
 			{
@@ -76,7 +76,7 @@ String HeightmapModificationCommand::SaveHeightmap(Heightmap* heightmap)
 				break;
 			}
 		}
-		if (i >= fileList->GetFileCount())
+		if (i >= fileList->GetCount())
 			validFileName = true;
 	} while (!validFileName);
 	

@@ -10,6 +10,11 @@ uint32 TextureHelper::GetSceneTextureMemory(DAVA::Scene *scene, const String& sc
 	return EnumerateSceneTextures(scene, scenePath);
 }
 
+DAVA::uint32 TextureHelper::GetSceneTextureFilesSize(DAVA::Scene* scene, const String& scenePath)
+{
+	return EnumerateSceneTexturesFileSize(scene, scenePath);
+}
+
 uint32 TextureHelper::EnumerateSceneTextures(DAVA::Scene* scene, const String& scenePath)
 {
 	Map<String, Texture *> textureMap;
@@ -51,6 +56,34 @@ uint32 TextureHelper::EnumerateSceneTextures(DAVA::Scene* scene, const String& s
 	}
 
 	return sceneTextureMemory;
+}
+
+DAVA::uint32 TextureHelper::EnumerateSceneTexturesFileSize(DAVA::Scene* scene, const String& scenePath)
+{
+	Map<String, Texture *> textureMap;
+	EnumerateTextures(scene, textureMap);
+
+	String projectPath = scenePath;
+
+	uint32 sceneTextureFilesSize = 0;
+	for(Map<String, Texture *>::const_iterator it = textureMap.begin(); it != textureMap.end(); ++it)
+	{
+		Texture *t = it->second;
+		if(String::npos == t->GetPathname().find(projectPath))
+		{   // skip all textures that are not related the scene
+			continue;
+		}
+
+		if(String::npos != t->GetPathname().find(projectPath))
+		{   //We need real info about textures size. In Editor on desktop pvr textures are decompressed to RGBA8888, so they have not real size.
+			String imageFileName = TextureDescriptor::GetPathnameForFormat(t->GetPathname(), t->GetSourceFileFormat());
+			File * textureFile = File::Create(imageFileName, File::OPEN | File::READ);
+			sceneTextureFilesSize += textureFile->GetSize();
+			SafeRelease(textureFile);
+		}
+	}
+
+	return sceneTextureFilesSize;
 }
 
 void TextureHelper::EnumerateTextures(DAVA::Entity *forNode, Map<String, Texture *> &textures)
