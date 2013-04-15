@@ -321,7 +321,8 @@ void SceneValidator::ValidateLandscape(Landscape *landscape, Set<String> &errors
     {
         if(		(Landscape::TEXTURE_DETAIL == (Landscape::eTextureLevel)i)
            ||	(Landscape::TEXTURE_TILE_FULL == (Landscape::eTextureLevel)i
-                 &&	landscape->GetTiledShaderMode() == Landscape::TILED_MODE_TILEMASK))
+                 &&	(landscape->GetTiledShaderMode() == Landscape::TILED_MODE_TILEMASK
+                 || landscape->GetTiledShaderMode() == Landscape::TILED_MODE_TILE_DETAIL_MASK)))
         {
             continue;
         }

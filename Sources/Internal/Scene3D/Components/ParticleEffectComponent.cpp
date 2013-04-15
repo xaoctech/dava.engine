@@ -163,6 +163,36 @@ void ParticleEffectComponent::CheckPlaybackComplete()
 	}
 }
 
+float32 ParticleEffectComponent::GetPlaybackSpeed()
+{
+	// Ask the first emitter available.
+	int32 childrenCount = entity->GetChildrenCount();
+	for (int32 i = 0; i < childrenCount; i ++)
+	{
+		RenderComponent * component = static_cast<RenderComponent*>(entity->GetChild(i)->GetComponent(Component::RENDER_COMPONENT));
+		if(component && component->GetRenderObject() && component->GetRenderObject()->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
+		{
+			ParticleEmitter * emitter = static_cast<ParticleEmitter*>(component->GetRenderObject());
+			return emitter->GetPlaybackSpeed();
+		}
+	}
 
+	return 1.0f;
+}
+
+void ParticleEffectComponent::SetPlaybackSpeed(float32 value)
+{
+	// Update all emitters.
+	int32 childrenCount = entity->GetChildrenCount();
+	for (int32 i = 0; i < childrenCount; i ++)
+	{
+		RenderComponent * component = static_cast<RenderComponent*>(entity->GetChild(i)->GetComponent(Component::RENDER_COMPONENT));
+		if(component && component->GetRenderObject() && component->GetRenderObject()->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
+		{
+			ParticleEmitter * emitter = static_cast<ParticleEmitter*>(component->GetRenderObject());
+			emitter->SetPlaybackSpeed(value);
+		}
+	}
+}
 
 }

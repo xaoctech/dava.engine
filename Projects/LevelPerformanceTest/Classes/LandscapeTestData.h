@@ -25,6 +25,7 @@ private:
 	Vector<FpsStatItem> stat;
 
 	uint32 textureMemorySize;
+	uint32 textureFilesSize;
 	uint32 sceneFileSize;
 
 public:
@@ -32,8 +33,10 @@ public:
 	void AddStatItem(const FpsStatItem& item);
 
 	void SetTextureMemorySize(uint32 size);
+	void SetTexturesFilesSize(uint32 size);
 	void SetSceneFileSize(uint32 size);
 	uint32 GetTextureMemorySize() const;
+	uint32 GetTexturesFilesSize() const;
 	uint32 GetSceneFileSize() const;
 
 	const DAVA::Rect& GetLandscapeRect() const;

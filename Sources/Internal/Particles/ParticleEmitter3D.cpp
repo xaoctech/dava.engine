@@ -118,7 +118,7 @@ void ParticleEmitter3D::PrepareEmitterParametersOnCircle(Particle * particle, fl
 	particle->speed = velocity;
 
 	// Calculate Z value.
-	const float TANGENT_EPSILON = 1E-4;
+	const float32 TANGENT_EPSILON = (float32)(1E-4);
 	if (this->emissionRange)
 	{
 		float32 emissionRangeValue = DegToRad(emissionRange->GetValue(time));
@@ -147,7 +147,9 @@ void ParticleEmitter3D::PrepareEmitterParametersGeneric(Particle * particle, flo
     Vector3 vel = Vector3(1.0f, 0.0f, 0.0f);
     if(emissionVector)
 	{
-        vel = emissionVector->GetValue(0);
+		// Yuri Coder, 2013/04/12. Need to invert the directions in the emission vector, since
+		// their coordinates are in the opposite directions for the Particles Editor.
+        vel = emissionVector->GetValue(0) * -1.0f;
 		vel = vel*rotationMatrix;
 	}
 

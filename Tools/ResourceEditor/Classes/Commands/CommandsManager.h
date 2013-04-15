@@ -17,6 +17,9 @@ public:
     void Undo();
     void Redo();
 
+	void ExecuteOnly(Command *command);
+	void CancelOnly(Command *command);
+
 	DAVA::int32 GetUndoQueueLength();
 	DAVA::int32 GetRedoQueueLength();
 
