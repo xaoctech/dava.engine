@@ -14,7 +14,6 @@
 #include "PropertyControlCreator.h"
 
 #include "HintManager.h"
-#include "HelpDialog.h"
 
 #include "SceneExporter.h"
 #include "SceneSaver.h"
@@ -43,8 +42,6 @@ void SceneEditorScreenMain::LoadResources()
     font12 = ControlsFactory::GetFont12();
 	font12Color = ControlsFactory::GetColorLight();
 
-    helpDialog = new HelpDialog();
-    
     focusedControl = NULL;
 
     InitializeNodeDialogs();
@@ -75,7 +72,6 @@ void SceneEditorScreenMain::UnloadResources()
 {
     SafeRelease(scenePreviewDialog);
 
-    SafeRelease(helpDialog);
     SafeRelease(textureTrianglesDialog);
     SafeRelease(settingsDialog);
 
@@ -405,18 +401,6 @@ void SceneEditorScreenMain::Input(DAVA::UIEvent *event)
         UITextField *tf1 = dynamic_cast<UITextField *>(focusedControl);
         if(!tf && !tf1)
         {
-            if((DVKEY_F1 == event->tid) || (DVKEY_H == event->tid))
-            {
-                if(helpDialog->GetParent())
-                {
-                    helpDialog->Close();
-                }
-                else
-                {
-                    helpDialog->Show();
-                }
-            }
-            
             if(DVKEY_ESCAPE == event->tid)
             {
                 if(materialEditor && materialEditor->GetParent())
