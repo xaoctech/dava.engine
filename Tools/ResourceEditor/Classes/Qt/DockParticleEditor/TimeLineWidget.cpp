@@ -30,6 +30,11 @@
 #define MAX_ZOOM				10.0f
 #define ZOOM_SLIDER_LENGTH		100
 
+#ifdef __DAVAENGINE_WIN32__
+#define SLIDER_HEIGHT_EXPAND    0
+#else
+#define SLIDER_HEIGHT_EXPAND    5
+#endif
 
 TimeLineWidget::TimeLineWidget(QWidget *parent) :
 	QWidget(parent)
@@ -895,13 +900,13 @@ void TimeLineWidget::mousePressEvent(QMouseEvent *event)
 		}
 		else if (GetOffsetLeftRect().contains(event->pos()))
 		{
-			PerformOffset(GRAPH_OFFSET_STEP);
+			PerformOffset(-GRAPH_OFFSET_STEP);
 			return;
 		}
 
 		else if (GetOffsetRightRect().contains(event->pos()))
 		{
-			PerformOffset(-GRAPH_OFFSET_STEP);
+			PerformOffset(GRAPH_OFFSET_STEP);
 			return;
 		}
 
@@ -1339,7 +1344,7 @@ QRect TimeLineWidget::GetSliderRect() const
 	QRect rect = GetIncreaseRect();
 	rect.translate(-(ZOOM_SLIDER_LENGTH + 5), 0);
 	rect.setWidth(ZOOM_SLIDER_LENGTH);
-	rect.setHeight(rect.height() + 4);
+	rect.setHeight(rect.height() + SLIDER_HEIGHT_EXPAND);
 	return rect;
 }
 
