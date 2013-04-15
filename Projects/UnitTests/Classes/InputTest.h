@@ -29,6 +29,7 @@ public:
 	virtual void Update(float32 timeElapsed);
 
 	void TestFunction(PerfFuncData * data);
+	void OnPageLoaded(DAVA::BaseObject * caller, void * param, void *callerData);
 	
 private:
 	void ButtonPressed(BaseObject *obj, void *data, void *callerData);
