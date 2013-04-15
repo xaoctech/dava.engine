@@ -27,7 +27,7 @@
 #define SCROLL_BAR_HEIGHT		12
 
 #define MIN_ZOOM				1.0f
-#define MAX_ZOOM				3.0f
+#define MAX_ZOOM				10.0f
 #define ZOOM_SLIDER_LENGTH		100
 
 
@@ -65,9 +65,9 @@ TimeLineWidget::TimeLineWidget(QWidget *parent) :
 	setMouseTracking(true);
 
 	horizontalScrollBar = new QScrollBar(Qt::Horizontal, this);
-	connect(horizontalScrollBar, SIGNAL(sliderMoved(int)), this, SLOT(HandleHorizontalScrollChanged(int)));
+	connect(horizontalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(HandleHorizontalScrollChanged(int)));
 	zoomSlider = new QSlider(Qt::Horizontal, this);
-	connect(zoomSlider, SIGNAL(sliderMoved(int)), this, SLOT(HandleZoomScrollChanged(int)));
+	connect(zoomSlider, SIGNAL(valueChanged(int)), this, SLOT(HandleZoomScrollChanged(int)));
 	UpdateSizePolicy();
 
 	isCtrlPressed = false;
