@@ -472,14 +472,19 @@ void QtMainWindowHandler::RulerTool()
 void QtMainWindowHandler::ReloadAsPNG()
 {
     CommandsManager::Instance()->ExecuteAndRelease(new ReloadTexturesAsCommand(PNG_FILE));
+	MenuViewOptionsWillShow();
 }
+
 void QtMainWindowHandler::ReloadAsPVR()
 {
     CommandsManager::Instance()->ExecuteAndRelease(new ReloadTexturesAsCommand(PVR_FILE));
+	MenuViewOptionsWillShow();
 }
+
 void QtMainWindowHandler::ReloadAsDXT()
 {
     CommandsManager::Instance()->ExecuteAndRelease(new ReloadTexturesAsCommand(DXT_FILE));
+	MenuViewOptionsWillShow();
 }
 
 void QtMainWindowHandler::ReloadSceneTextures()

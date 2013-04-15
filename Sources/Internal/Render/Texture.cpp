@@ -684,7 +684,7 @@ Texture * Texture::PureCreate(const String & pathName)
     }
     else
     {
-        ImageFileFormat fileFormat = TextureDescriptor::GetFormatForExtension(extension);
+        ImageFileFormat fileFormat = GetFormatForLoading(TextureDescriptor::GetFormatForExtension(extension), descriptor);
         if((NOT_FILE == defaultFileFormat) || IsLoadAvailable(fileFormat, descriptor))
         {
             texture = CreateFromImage(pathName, descriptor);
@@ -721,6 +721,7 @@ Texture * Texture::CreateFromDescriptor(const String &pathName, TextureDescripto
     Texture * texture = NULL;
     
     ImageFileFormat formatForLoading = (NOT_FILE == defaultFileFormat) ? (ImageFileFormat)descriptor->textureFileFormat : defaultFileFormat;
+    formatForLoading = GetFormatForLoading(formatForLoading, descriptor);
     if((NOT_FILE == defaultFileFormat) || IsLoadAvailable(formatForLoading, descriptor))
     {
         String imagePathname = GetActualFilename(pathName, formatForLoading, descriptor);
@@ -775,11 +776,15 @@ void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat, const TextureDescriptor
 	
 	DVASSERT(NULL != descriptor);
     
-    String imagePathname = TextureDescriptor::GetPathnameForFormat(descriptor->pathname, fileFormat);
+    
+    ImageFileFormat formatForLoading = GetFormatForLoading(fileFormat, descriptor);
+    
+    
+    String imagePathname = TextureDescriptor::GetPathnameForFormat(descriptor->pathname, formatForLoading);
     File *file = File::Create(imagePathname, File::OPEN | File::READ);
 
     bool loaded = false;
-    if(descriptor && file && IsLoadAvailable(fileFormat, descriptor))
+    if(descriptor && file && IsLoadAvailable(formatForLoading, descriptor))
     {
         loaded = LoadFromImage(file, descriptor);
     }
@@ -823,7 +828,7 @@ void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat, const TextureDescriptor
     }
     else
     {
-        loadedAsFile = fileFormat;
+        loadedAsFile = formatForLoading;
     }
     
     SafeRelease(file);
@@ -1566,6 +1571,15 @@ ImageFileFormat Texture::GetDefaultFileFormat()
     return defaultFileFormat;
 }
 
+    
+ImageFileFormat Texture::GetFormatForLoading(const ImageFileFormat requestedFormat, const TextureDescriptor *descriptor)
+{
+    if(descriptor->IsCompressedFile())
+        return (ImageFileFormat)descriptor->textureFileFormat;
+    
+    return requestedFormat;
+}
+    
 
 
 };
