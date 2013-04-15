@@ -1069,4 +1069,9 @@ float32 ParticleLayer::GetPlaybackSpeed()
 	return this->playbackSpeed;
 }
 
+int32 ParticleLayer::GetActiveParticlesCount()
+{
+	return count;
+}
+
 }

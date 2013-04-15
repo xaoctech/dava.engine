@@ -19,9 +19,14 @@
 #define LEFT_INDENT 10
 #define TOP_INDENT 5
 #define BOTTOM_INDENT 18
+#define RIGHT_INDENT 50
 #define LINE_STEP 16
 #define RECT_SIZE 3
 #define LINE_WIDTH 3
+
+#define PARTICLES_COUNTER_INDENT 3
+
+#define UPDATE_PARTICLES_COUNTER_PERIOD 250 // in milliseconds
 
 ParticleTimeLineWidget::ParticleTimeLineWidget(QWidget *parent/* = 0*/) :
 	QWidget(parent),
@@ -31,7 +36,7 @@ ParticleTimeLineWidget::ParticleTimeLineWidget(QWidget *parent/* = 0*/) :
 #ifdef Q_WS_WIN
 	nameFont("Courier", 8, QFont::Normal)
 #else
-	nameFont("Courier", 11, QFont::Normal)
+	nameFont("Courier", 12, QFont::Normal)
 #endif
 {
 	backgroundBrush.setColor(Qt::white);
@@ -60,11 +65,18 @@ ParticleTimeLineWidget::ParticleTimeLineWidget(QWidget *parent/* = 0*/) :
 	Init(0, 0);
 	
 	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+
+	// Init and start updating the particles grid.
+	this->countWidget = new ParticlesCountWidget(this, this);
+    connect(&updateTimer, SIGNAL(timeout()),
+			this, SLOT(OnUpdateParticlesCountNeeded()));
+    updateTimer.start(UPDATE_PARTICLES_COUNTER_PERIOD);
 }
 
 ParticleTimeLineWidget::~ParticleTimeLineWidget()
 {
-	
+	SafeDelete(this->countWidget);
+	updateTimer.stop();
 }
 
 void ParticleTimeLineWidget::OnLayerSelected(Entity* node, ParticleLayer* layer)
@@ -136,6 +148,8 @@ void ParticleTimeLineWidget::HandleNodeSelected(Entity* node, ParticleLayer* lay
 	}
 
 	UpdateSizePolicy();
+	UpdateParticlesCountPosition();
+
 	if (lines.size())
 	{
 		emit ChangeVisible(true);
@@ -357,6 +371,8 @@ void ParticleTimeLineWidget::paintEvent(QPaintEvent *)
 		QPoint endPoint(endRect.center());
 		endPoint.setX(endPoint.x() - 3);
 		painter.drawLine(startPoint, endPoint);
+
+		UpdateParticlesCountPosition();
 	}
 }
 
@@ -394,8 +410,34 @@ QRect ParticleTimeLineWidget::GetGraphRect() const
 	}
 	legendWidth = Min(legendWidth, (width() - LEFT_INDENT * 2) / 6);
 	
-	QRect rect = QRect(QPoint(LEFT_INDENT + legendWidth, TOP_INDENT), QSize(width() - LEFT_INDENT * 2 - legendWidth, height() - BOTTOM_INDENT));
+	QRect rect = QRect(QPoint(LEFT_INDENT + legendWidth, TOP_INDENT),
+					   QSize(width() - LEFT_INDENT * 2 - legendWidth - RIGHT_INDENT,
+							 height() - BOTTOM_INDENT));
 	return rect;
+}
+
+void ParticleTimeLineWidget::UpdateParticlesCountPosition()
+{
+	if (lines.size() == 0)
+	{
+		return;
+	}
+	
+	QRect graphRect = GetGraphRect();
+	const int32 PARTICLES_COUNTER_RECT_OFFSET = 3;
+	QRect countersRect(graphRect.right() + PARTICLES_COUNTER_RECT_OFFSET,
+					   graphRect.top(),
+					   RIGHT_INDENT + 1,
+					   graphRect.height() + 1);
+
+	countWidget->setGeometry(countersRect);
+	countWidget->repaint();
+}
+
+void ParticleTimeLineWidget::UpdateParticlesCountValues()
+{
+	// Just invalidate and repaint the counter widget.
+	this->countWidget->repaint();
 }
 
 void ParticleTimeLineWidget::UpdateSizePolicy()
@@ -529,6 +571,11 @@ void ParticleTimeLineWidget::OnUpdate()
 		OnEffectNodeSelected(effectNode);
 }
 
+void ParticleTimeLineWidget::OnUpdateParticlesCountNeeded()
+{
+	UpdateParticlesCountValues();
+}
+
 ParticleTimeLineWidget::SetPointValueDlg::SetPointValueDlg(float32 value, float32 minValue, float32 maxValue, QWidget *parent) :
 	QDialog(parent)
 {
@@ -565,3 +612,68 @@ ParticleTimeLineWidget::SetPointValueDlg::SetPointValueDlg(float32 value, float3
 	valueSpin->setFocus();
 	valueSpin->selectAll();	
 }
+
+////////////////////////////////////////////////////////////////////////////////////
+ParticlesCountWidget::ParticlesCountWidget(const ParticleTimeLineWidget* timeLineWidget,
+										   QWidget *parent) :
+	QWidget(parent)
+{
+	this->timeLineWidget = timeLineWidget;
+}
+
+void ParticlesCountWidget::paintEvent(QPaintEvent *)
+{
+	if (!this->timeLineWidget)
+	{
+		return;
+	}
+
+	QPainter painter(this);
+	painter.setPen(Qt::black);
+	
+	QRect ourRect = rect();
+	ourRect.adjust(0, 0, -1, -1);
+	painter.drawRect(ourRect);
+
+	// Draw the per-layer particles count.
+	int32 totalParticlesCount = 0;
+	for (ParticleTimeLineWidget::LINE_MAP::const_iterator iter = timeLineWidget->lines.begin();
+		 iter != timeLineWidget->lines.end(); ++iter)
+	{
+		const ParticleTimeLineWidget::LINE& line = iter->second;
+
+		QRect startRect;
+		QRect endRect;
+		timeLineWidget->GetLineRect(iter->first, startRect, endRect);
+
+		painter.setPen(QPen(line.color, LINE_WIDTH));
+		painter.setFont(timeLineWidget->nameFont);
+		painter.drawText(QPoint(PARTICLES_COUNTER_INDENT, endRect.top()),
+						 GetActiveParticlesCount(line));
+
+		if (line.layer)
+		{
+			totalParticlesCount += line.layer->GetParticleCount();
+		}
+	}
+
+	// Draw the "Total" box.
+	QPoint totalPoint(PARTICLES_COUNTER_INDENT, rect().bottom() - 3);
+	QFont totalFont = timeLineWidget->nameFont;
+	totalFont.setBold(true);
+	
+	painter.setPen(QPen(Qt::black, LINE_WIDTH));
+	painter.drawText(totalPoint, QString::number(totalParticlesCount));
+}
+
+QString ParticlesCountWidget::GetActiveParticlesCount(const ParticleTimeLineWidget::LINE& line)
+{
+	if (!line.layer)
+	{
+		return QString();
+	}
+	
+	int32 particlesNumber = line.layer->GetActiveParticlesCount();
+	return QString::number(particlesNumber);
+}
+
