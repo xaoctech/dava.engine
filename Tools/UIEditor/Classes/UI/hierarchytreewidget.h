@@ -21,7 +21,7 @@ public:
 	
 private:
 	typedef Set<HierarchyTreeNode::HIERARCHYTREENODEID> EXPANDEDITEMS;
-	void AddControlItem(QTreeWidgetItem* parent, const EXPANDEDITEMS& selectedItems, const HierarchyTreeNode::HIERARCHYTREENODESLIST& items);
+	void AddControlItem(QTreeWidgetItem* parent, const EXPANDEDITEMS& selectedItems,const EXPANDEDITEMS& expandedItems,  const HierarchyTreeNode::HIERARCHYTREENODESLIST& items);
     
 signals:
 	void CreateNewScreen();
