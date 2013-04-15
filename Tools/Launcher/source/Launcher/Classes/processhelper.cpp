@@ -2,11 +2,17 @@
 
 #ifdef Q_OS_WIN
 #include <windows.h>
-//#include <Psapi.h>
 #include <TlHelp32.h>
 #endif
+#include <QUrl>
+#include <QDesktopServices>
 
 #ifdef Q_OS_DARWIN
+void ProcessHelper::RunProcess(const QString& path)
+{
+    QDesktopServices::openUrl(QUrl("file:///" + path, QUrl::TolerantMode));
+}
+
 bool ProcessHelper::GetProcessPSN(const QString& path, ProcessSerialNumber& psn) {
     psn.highLongOfPSN = kNoProcess;
     psn.lowLongOfPSN = kNoProcess;
@@ -39,6 +45,14 @@ bool ProcessHelper::GetProcessPSN(const QString& path, ProcessSerialNumber& psn)
 #endif
 
 #ifdef Q_OS_WIN
+
+void ProcessHelper::RunProcess(const QString& path)
+{
+    int lastPos = path.lastIndexOf('/');
+    QString workingDir = path.left(lastPos);
+    QProcess::startDetached(path, QStringList(), workingDir);
+}
+
 bool ProcessHelper::GetProcessID(QString path, quint32& dwPID) {
 
     path.replace("/", "\\");
