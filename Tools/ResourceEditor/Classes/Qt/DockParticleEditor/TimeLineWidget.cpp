@@ -227,12 +227,6 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 		int horLineY2 = horLineY1;
 		painter.drawLine(horLineX1, horLineY1, horLineX2, horLineY2);
 	}
-
-	//draw offsetRight box
-	DrawUITriangle( painter, GetOffsetRightRect(), 90);
-
-	//draw offsetLeft box
-	DrawUITriangle( painter, GetOffsetLeftRect(), 270);
 	
 	if (sizeState != SIZE_STATE_MINIMIZED)
 	{
@@ -898,18 +892,7 @@ void TimeLineWidget::mousePressEvent(QMouseEvent *event)
 			PerformZoom(scale - ZOOM_STEP);
 			return;
 		}
-		else if (GetOffsetLeftRect().contains(event->pos()))
-		{
-			PerformOffset(-GRAPH_OFFSET_STEP);
-			return;
-		}
-
-		else if (GetOffsetRightRect().contains(event->pos()))
-		{
-			PerformOffset(GRAPH_OFFSET_STEP);
-			return;
-		}
-
+		
 		else if (GetLineDrawRect().contains(event->pos()))
 		{
 			drawLine++;
@@ -1303,7 +1286,7 @@ QRect TimeLineWidget::GetIncreaseRect() const
 
 QRect TimeLineWidget::GetScaleRect() const
 {
-	QRect rect(GetOffsetLeftRect());
+	QRect rect(GetLockRect());
 	rect.translate(-SCALE_WIDTH, 0);
 	return rect;
 }
@@ -1315,20 +1298,6 @@ QRect TimeLineWidget::GetDecreaseRect() const
 	rect.translate(-sideLength * UI_RECTANGLE_OFFSET, 0);
 	rect.setWidth(sideLength);
 	rect.setHeight(sideLength);
-	return rect;
-}
-
-QRect TimeLineWidget::GetOffsetRightRect() const
-{
-	QRect rect = GetLockRect();
-	rect.translate(-rect.width() * UI_RECTANGLE_OFFSET, 0);
-	return rect;
-}
-
-QRect TimeLineWidget::GetOffsetLeftRect() const
-{
-	QRect rect = GetOffsetRightRect();
-	rect.translate(-rect.width() * UI_RECTANGLE_OFFSET, 0);
 	return rect;
 }
 
