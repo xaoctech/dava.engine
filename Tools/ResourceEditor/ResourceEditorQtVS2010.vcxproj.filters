@@ -426,9 +426,6 @@
     <ClInclude Include="Classes\SceneEditor\ExtendedDialog.h">
       <Filter>Sources\SceneEditor\Dialogs</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\HelpDialog.h">
-      <Filter>Sources\SceneEditor\Dialogs</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\SceneEditor\SettingsDialog.h">
       <Filter>Sources\SceneEditor\Dialogs</Filter>
     </ClInclude>
@@ -2858,9 +2855,6 @@
       <Filter>Sources\SceneEditor\Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\ExtendedDialog.cpp">
-      <Filter>Sources\SceneEditor\Dialogs</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\HelpDialog.cpp">
       <Filter>Sources\SceneEditor\Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\SettingsDialog.cpp">
