@@ -466,7 +466,6 @@
     <ClCompile Include="Classes\SceneEditor\FogControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\GraphBase.cpp" />
     <ClCompile Include="Classes\SceneEditor\HeightmapNode.cpp" />
-    <ClCompile Include="Classes\SceneEditor\HelpDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\HintManager.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeEditorBase.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeEditorColor.cpp" />
@@ -966,7 +965,6 @@
     <ClInclude Include="Classes\SceneEditor\FogControl.h" />
     <ClInclude Include="Classes\SceneEditor\GraphBase.h" />
     <ClInclude Include="Classes\SceneEditor\HeightmapNode.h" />
-    <ClInclude Include="Classes\SceneEditor\HelpDialog.h" />
     <ClInclude Include="Classes\SceneEditor\HintManager.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeEditorBase.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeEditorColor.h" />
