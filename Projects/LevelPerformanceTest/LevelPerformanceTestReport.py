@@ -141,7 +141,7 @@ if None != connection:
 	else:
 		LogError(report, "There are no test with ID: " + testID)
 		
-#	collection.remove({"_id": testID})
+	collection.remove({"_id": testID})
 	
 else:
 	LogError(report, "Can't connect to Database")
