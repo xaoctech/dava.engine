@@ -48,34 +48,14 @@ void SceneInfo::sceneChanged(SceneData *sceneData)
 {
     if(NULL == sceneData) return;
     
-    CollectSceneData(sceneData, true);
-    
-    SaveTreeState();
-    
-    RefreshSceneGeneralInfo();
-    Refresh3DDrawInfo();
-    RefreshMaterialsInfo();
-    RefreshLODInfo();
-    RefreshParticlesInfo();
-    
-    RestoreTreeState();
+	RefreshAllData(sceneData);
 }
 
 void SceneInfo::sceneActivated(SceneData *sceneData)
 {
     if(NULL == sceneData) return;
     
-    CollectSceneData(sceneData, true);
-    
-    SaveTreeState();
-    
-    RefreshSceneGeneralInfo();
-    Refresh3DDrawInfo();
-    RefreshMaterialsInfo();
-    RefreshLODInfo();
-    RefreshParticlesInfo();
-    
-    RestoreTreeState();
+	RefreshAllData(sceneData);
 }
 
 void SceneInfo::sceneReleased(SceneData *sceneData)
@@ -362,7 +342,7 @@ void SceneInfo::CollectParticlesData()
             {
                 sprites.insert(spr);
                 
-                for(uint32 fr = 0; fr < spr->GetFrameCount(); ++fr)
+                for(int32 fr = 0; fr < spr->GetFrameCount(); ++fr)
                 {
                     Texture *tex = spr->GetTexture(fr);
                     CollectTexture(particleTextures, tex->GetPathname(), tex);
@@ -464,20 +444,25 @@ void SceneInfo::showEvent ( QShowEvent * event )
 void SceneInfo::timerDone()
 {
     SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
-    CollectSceneData(sceneData, true);
-    
-    SaveTreeState();
-    
-    RefreshSceneGeneralInfo();
-    Refresh3DDrawInfo();
-    RefreshMaterialsInfo();
-    RefreshLODInfo();
-    RefreshParticlesInfo();
-    
-    RestoreTreeState();
+	RefreshAllData(sceneData);
     
     if(isVisible())
     {
         QTimer::singleShot(1000, this, SLOT(timerDone()));
     }
+}
+
+void SceneInfo::RefreshAllData(SceneData *sceneData)
+{
+	CollectSceneData(sceneData, true);
+
+	SaveTreeState();
+
+	RefreshSceneGeneralInfo();
+	Refresh3DDrawInfo();
+	RefreshMaterialsInfo();
+	RefreshLODInfo();
+	RefreshParticlesInfo();
+
+	RestoreTreeState();
 }

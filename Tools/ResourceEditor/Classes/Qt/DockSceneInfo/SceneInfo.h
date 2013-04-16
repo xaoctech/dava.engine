@@ -69,6 +69,8 @@ protected:
     void RefreshParticlesInfo();
 
     
+	void RefreshAllData(SceneData *sceneData);
+
     void CollectSceneData(SceneData *sceneData, bool force);
     void ClearData();
     
