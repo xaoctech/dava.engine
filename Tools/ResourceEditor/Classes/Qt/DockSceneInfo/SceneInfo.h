@@ -3,7 +3,7 @@
 
 #include "QtPosSaver/QtPosSaver.h"
 #include "QtPropertyEditor/QtPropertyEditor.h"
-#include "PropertyEditorStateHelper.h"
+#include "../DockProperties/PropertyEditorStateHelper.h"
 
 #include <QShowEvent>
 
