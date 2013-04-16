@@ -42,7 +42,7 @@ protected:
 	void UpdateCollision(DAVA::Entity* node);
 };
 
-class CommandCloneAndTransform: public Command
+class CommandCloneAndTransform: public MultiCommand
 {
 public:
 	CommandCloneAndTransform(DAVA::Entity* originalNode,
