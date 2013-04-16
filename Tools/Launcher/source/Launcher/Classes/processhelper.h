@@ -11,6 +11,7 @@ class ProcessHelper
 public:
     static bool IsProcessRuning(const QString& path);
     static void SetActiveProcess(const QString& path);
+    static void RunProcess(const QString& path);
 
 private:
 #ifdef Q_OS_DARWIN

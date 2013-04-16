@@ -61,6 +61,9 @@ void Test::LoadResources()
 	uint32 textureMemory = TextureHelper::GetSceneTextureMemory(scene, GetFilePath());
 	testData.SetTextureMemorySize(textureMemory);
 
+	uint32 textureFilesSize = TextureHelper::GetSceneTextureFilesSize(scene, GetFilePath());
+	testData.SetTexturesFilesSize(textureFilesSize);
+
 	File* file = File::Create(fullName, File::OPEN | File::READ);
 	DVASSERT_MSG(file, "Could not open file scene file");
 	testData.SetSceneFileSize(file->GetSize());
