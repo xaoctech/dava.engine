@@ -1074,4 +1074,19 @@ int32 ParticleLayer::GetActiveParticlesCount()
 	return count;
 }
 
+float32 ParticleLayer::GetActiveParticlesArea()
+{
+	// Yuri Coder, 2013/04/16. Since the particles size are updated in runtime,
+	// we have to recalculate their area each time this method is called.
+	float32 activeArea = 0;
+	Particle * current = head;
+	while(current)
+	{
+		activeArea += current->GetArea();
+		current = current->next;
+	}
+
+	return activeArea;
+}
+
 }
