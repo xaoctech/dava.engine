@@ -49,6 +49,7 @@ HierarchyTreeWidget::~HierarchyTreeWidget()
 void HierarchyTreeWidget::OnTreeUpdated()
 {
 	EXPANDEDITEMS expandedItems;
+	EXPANDEDITEMS selectedItems;
 	//save opened node
 	TREEITEMS oldItems = GetAllItems();
 	for (TREEITEMS::iterator iter = oldItems.begin(); iter != oldItems.end(); ++iter) {
@@ -57,6 +58,23 @@ void HierarchyTreeWidget::OnTreeUpdated()
 		{
 			QVariant data = item->data(ITEM_ID);
 			expandedItems.insert(data.toInt());
+		}
+	}
+
+	//save selected node
+	
+	for (TREEITEMS::iterator iter = oldItems.begin(); iter != oldItems.end(); ++iter) {
+		QTreeWidgetItem* item = iter->second;
+		if (item->isSelected())
+		{
+			QVariant data = item->data(ITEM_ID);
+			selectedItems.insert(data.toInt());
+			HierarchyTreeNode* baseNode = HierarchyTreeController::Instance()->GetTree().GetNode(data.toInt());
+			HierarchyTreeControlNode* selectedControl = dynamic_cast<HierarchyTreeControlNode* >(baseNode);
+			if(NULL != selectedControl)
+			{
+				internalSelectionChanged = true;
+			}
 		}
 	}
 	
@@ -101,19 +119,30 @@ void HierarchyTreeWidget::OnTreeUpdated()
 				screenItem->setIcon(0, QIcon(":/Icons/068i.png"));
 			platformItem->insertChild(platformItem->childCount(), screenItem);
 			
-			AddControlItem(screenItem, expandedItems, screenNode->GetChildNodes());
+			AddControlItem(screenItem, selectedItems, expandedItems, screenNode->GetChildNodes());
 			
 			if (expandedItems.find(screenNode->GetId()) != expandedItems.end())
 				screenItem->setExpanded(true);
+
+			if (selectedItems.find(screenNode->GetId()) != selectedItems.end())
+			{
+				screenItem->setSelected(true);
+			}
 		}
 		
 		if (expandedItems.find(platformNode->GetId()) != expandedItems.end())
 			platformItem->setExpanded(true);
 
+		if (selectedItems.find(platformNode->GetId()) != selectedItems.end())
+		{
+			platformItem->setSelected(true);
+		}
 	}
+
+	internalSelectionChanged = false;
 }
 
-void HierarchyTreeWidget::AddControlItem(QTreeWidgetItem* parent, const EXPANDEDITEMS& expandedItems, const HierarchyTreeNode::HIERARCHYTREENODESLIST& items)
+void HierarchyTreeWidget::AddControlItem(QTreeWidgetItem* parent, const EXPANDEDITEMS& selectedItems, const EXPANDEDITEMS& expandedItems, const HierarchyTreeNode::HIERARCHYTREENODESLIST& items)
 {
 	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter = items.begin();
 		 iter != items.end();
@@ -129,10 +158,14 @@ void HierarchyTreeWidget::AddControlItem(QTreeWidgetItem* parent, const EXPANDED
 
 		parent->insertChild(parent->childCount(), controlItem);
 		
-		AddControlItem(controlItem, expandedItems, controlNode->GetChildNodes());
+		AddControlItem(controlItem, selectedItems, expandedItems, controlNode->GetChildNodes());
 		
 		if (expandedItems.find(controlNode->GetId()) != expandedItems.end())
 			controlItem->setExpanded(true);
+		if (selectedItems.find(controlNode->GetId()) != selectedItems.end())
+		{
+			controlItem->setSelected(true);
+		}
 	}
 }
 
@@ -150,16 +183,19 @@ void HierarchyTreeWidget::Decorate(QTreeWidgetItem *item, DAVA::UIControl *uiCon
 
 void HierarchyTreeWidget::on_treeWidget_itemSelectionChanged()
 {
-	if (internalSelectionChanged)
-		return;
-
 	QTreeWidgetItem* selectedItem = ui->treeWidget->currentItem();
 	if (!selectedItem)
+	{
 		return;
+	}
+
+	if (internalSelectionChanged)
+	{
+		return;
+	}
 
 	QVariant data = selectedItem->data(ITEM_ID);
 	HierarchyTreeNode::HIERARCHYTREENODEID id = data.toInt();
-
 	HierarchyTreeNode* baseNode = HierarchyTreeController::Instance()->GetTree().GetNode(id);
 	HierarchyTreePlatformNode* selectedPlatform = dynamic_cast<HierarchyTreePlatformNode* >(baseNode);
 	HierarchyTreeScreenNode* selectedScreen =  dynamic_cast<HierarchyTreeScreenNode* >(baseNode);
@@ -229,8 +265,8 @@ void HierarchyTreeWidget::OnSelectedControlNodesChanged(const HierarchyTreeContr
 		{
             QTreeWidgetItem* item = itemIter->second;
 			item->setSelected(true);
-
-            // Force show selected item
+			
+			// Force show selected item
             QTreeWidgetItem* parentItem = item->parent();
             while (parentItem)
             {

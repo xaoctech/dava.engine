@@ -24,6 +24,8 @@
 
 - (BOOL)webView: (UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType;
 
+- (void)webViewDidFinishLoad:(UIWebView *)webView;
+
 @end
 
 @implementation WebViewURLDelegate
@@ -58,7 +60,7 @@
 		
 		if (url)
 		{
-			DAVA::IUIWebViewDelegate::eAction action = delegate->URLChanged(self->webView, [url UTF8String]);
+			DAVA::IUIWebViewDelegate::eAction action = delegate->URLChanged(self->webView, [url UTF8String], self->webView->IsInitiatedByUser());
 			
 			switch (action) {
 				case DAVA::IUIWebViewDelegate::PROCESS_IN_WEBVIEW:
@@ -85,6 +87,14 @@
 	return process;
 }
 
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView
+{
+    if (delegate && self->webView)
+	{
+        delegate->PageLoaded(self->webView);
+    }
+}
 @end
 
 

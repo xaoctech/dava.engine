@@ -52,7 +52,7 @@ REGISTER_CLASS(InstanceMaterialState)
 InstanceMaterialState::InstanceMaterialState()
     :   flatColor(1.0f, 1.0f, 1.0f, 1.0f)
     ,   texture0Shift(0.0f, 0.0f)
-	,	lightmapSize(128)
+	,	lightmapSize(LIGHTMAP_SIZE_DEFAULT)
 
 {
     for (int32 k = 0; k < LIGHT_NODE_MAX_COUNT; ++k)
@@ -149,6 +149,11 @@ void InstanceMaterialState::Save(KeyedArchive * archive, SceneFileV2 *sceneFile)
             archive->SetString("ims.lightmapname", filename);
 		}
 		
+		if(lightmapSize != LIGHTMAP_SIZE_DEFAULT)
+		{
+			archive->SetInt32("ims.lightmapsize", lightmapSize);
+		}
+
 		if(flatColor != Color::White())
 		{
 			archive->SetByteArrayAsType("ims.flatColor", flatColor);
@@ -184,6 +189,7 @@ void InstanceMaterialState::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 
 		flatColor = archive->GetByteArrayAsType("ims.flatColor", Color::White());
 		texture0Shift = archive->GetVector2("ims.texture0Shift");
+		lightmapSize = archive->GetInt32("ims.lightmapsize", LIGHTMAP_SIZE_DEFAULT);
 	}
 }
 
@@ -253,7 +259,6 @@ Material::Material()
     ,   isTranslucent(false)
     ,   isTwoSided(false)
 	,	isSetupLightmap(false)
-	,	setupLightmapSize(32)
     ,   isFogEnabled(false)
     ,   fogDensity(0.006f)
     ,   fogColor((float32)0x87 / 255.0f, (float32)0xbe / 255.0f, (float32)0xd7 / 255.0f, 1.0f)
@@ -892,7 +897,7 @@ void Material::PrepareRenderState(InstanceMaterialState * instanceMaterialState)
 		int32 lightmapSizePosition = shader->FindUniformLocationByName("lightmapSize");
 		if (lightmapSizePosition != -1)
 		{
-			shader->SetUniformValue(lightmapSizePosition, (float32)setupLightmapSize); 
+			shader->SetUniformValue(lightmapSizePosition, (float32)instanceMaterialState->GetLightmapSize()); 
 		}
 	}
     
@@ -1039,16 +1044,6 @@ void Material::SetSetupLightmap(bool _isSetupLightmap)
 		isSetupLightmap = _isSetupLightmap;
 		RebuildShader();
 	}
-}
-
-bool Material::GetSetupLightmap()
-{
-	return isSetupLightmap;
-}
-
-void Material::SetSetupLightmapSize(int32 _setupLightmapSize)
-{
-	setupLightmapSize = _setupLightmapSize;
 }
     
 void Material::SetTexture(eTextureLevel level, Texture * texture)
