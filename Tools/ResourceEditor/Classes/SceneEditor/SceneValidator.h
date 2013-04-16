@@ -5,7 +5,6 @@
 
 using namespace DAVA;
 
-class SceneInfoControl;
 class SceneValidator: public Singleton<SceneValidator>
 {
     
@@ -83,10 +82,7 @@ public:
     String SetPathForChecking(const String &pathname);
     
     void EnumerateSceneTextures();
-    void CollectSceneStats(const RenderManager::Stats &newStats);
     void EnumerateNodes(Scene *scene);
-    
-    void SetInfoControl(SceneInfoControl *newInfoControl);
     
     static bool IsTextureChanged(const String &texturePathname, ImageFileFormat fileFormat);
     
@@ -129,12 +125,8 @@ protected:
     Set<Entity *> emptyNodesForDeletion;
     Set<String> errorMessages;
     
-    SceneInfoControl *infoControl;
-
     int32 sceneTextureCount;
     int32 sceneTextureMemory;
-    
-    RenderManager::Stats sceneStats;
     
     String pathForChecking;
 };
