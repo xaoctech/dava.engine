@@ -12,14 +12,18 @@
 #include <QWidget>
 #include <QDialog>
 #include <QDoubleSpinBox>
+#include <QLabel>
+#include <QTimer>
+
 #include <DAVAEngine.h>
 
 using namespace DAVA;
-
+class ParticlesCountWidget;
 class ParticleTimeLineWidget : public QWidget
 {
 	Q_OBJECT
-	
+	friend class ParticlesCountWidget;
+
 public:
 	explicit ParticleTimeLineWidget(QWidget *parent = 0);
 	~ParticleTimeLineWidget();
@@ -35,7 +39,9 @@ protected slots:
 	void OnEffectNodeSelected(Entity* node);
 	void OnLayerSelected(Entity* node, ParticleLayer* layer);
 	void OnUpdate();
-	
+
+	void OnUpdateParticlesCountNeeded();
+
 protected:
 	virtual void paintEvent(QPaintEvent *);
 	virtual void mouseMoveEvent(QMouseEvent *);
@@ -61,11 +67,6 @@ private:
 	void HandleNodeSelected(Entity* node, ParticleLayer* layer);
 
 private:
-	QBrush backgroundBrush;
-	float32 minTime;
-	float32 maxTime;
-	QFont nameFont;
-	
 	struct LINE
 	{
 		float32 startTime;
@@ -74,14 +75,28 @@ private:
 		QString legend;
 		ParticleLayer* layer;
 	};
-	
+
+	void UpdateParticlesCountPosition();
+	void UpdateParticlesCountValues();
+
+	// Get the width/height for particle counter label.
+	void GetParticlesCountWidthHeight(const LINE& line, int32& width, int32& height);
+
 	typedef DAVA::Map<uint32, LINE> LINE_MAP;
 	LINE_MAP lines;
+
+	QBrush backgroundBrush;
+	float32 minTime;
+	float32 maxTime;
+	QFont nameFont;
 	
 	QPoint selectedPoint;
 	Entity* emitterNode;
 	Entity* effectNode;
 	
+	ParticlesCountWidget* countWidget;
+	QTimer updateTimer;
+
 	enum eGridStyle
 	{
 		GRID_STYLE_ALL_POSITION,
@@ -101,6 +116,26 @@ private:
 	private:
 		QDoubleSpinBox* valueSpin;
 	};
+};
+
+////////////////////////////////////////////////////////////////////////////////////
+// A specific class to display the per-layer counters.
+class ParticlesCountWidget : public QWidget
+{
+	Q_OBJECT
+
+public:
+	explicit ParticlesCountWidget(const ParticleTimeLineWidget* timeLineWidget,
+								  QWidget *parent = 0);
+
+protected:
+	virtual void paintEvent(QPaintEvent *);
+	
+	// Get the string representation of active particles count for the current layer.
+	QString GetActiveParticlesCount(const ParticleTimeLineWidget::LINE& line);
+
+private:
+	const ParticleTimeLineWidget* timeLineWidget;
 };
 
 #endif /* defined(__ResourceEditorQt__ParticleTimeLineWidget__) */
