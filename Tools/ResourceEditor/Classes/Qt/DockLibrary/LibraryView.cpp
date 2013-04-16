@@ -3,6 +3,16 @@
 #include <QFileSystemModel>
 #include <QMenu>
 
+#include "../Scene/SceneDataManager.h"
+#include "../Scene/SceneData.h"
+#include "../../LandscapeEditor/LandscapesController.h"
+
+#include "../../SceneEditor/SceneEditorScreenMain.h"
+#include "../../SceneEditor/EditorBodyControl.h"
+
+#include "../../AppScreens.h"
+
+
 LibraryView::LibraryView(QWidget *parent /* = 0 */)
 	: QTreeView(parent)
 {
@@ -54,9 +64,25 @@ void LibraryView::ShowContextMenu(const QPoint &point)
 
 			if(0 == fileExtension.compare("sc2", Qt::CaseInsensitive))
 			{
-				contextMenu.addAction(new ContextMenuAction(QString("Add"), new CommandAddScene(fileInfo.filePath().toStdString())));
+				SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+				LandscapesController *landsacpesController = activeScene->GetLandscapesController();
+
+				SceneEditorScreenMain *screen = static_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen(SCREEN_SCENE_EDITOR_MAIN));
+				EditorBodyControl *c = screen->FindCurrentBody()->bodyControl;
+
+				bool canChangeScene = !landsacpesController->EditorLandscapeIsActive() && !c->LandscapeEditorActive();
+				if(canChangeScene)
+				{
+					contextMenu.addAction(new ContextMenuAction(QString("Add"), new CommandAddScene(fileInfo.filePath().toStdString())));
+				}
+
 				contextMenu.addAction(new ContextMenuAction(QString("Edit"), new CommandEditScene(fileInfo.filePath().toStdString())));
-				contextMenu.addAction(new ContextMenuAction(QString("Reload"), new CommandReloadScene(fileInfo.filePath().toStdString())));
+
+				if(canChangeScene)
+				{
+					contextMenu.addAction(new ContextMenuAction(QString("Reload"), new CommandReloadScene(fileInfo.filePath().toStdString())));
+				}
+
 			}
 			else if(0 == fileExtension.compare("dae", Qt::CaseInsensitive))
 			{
