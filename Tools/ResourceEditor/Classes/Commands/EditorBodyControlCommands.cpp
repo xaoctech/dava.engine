@@ -107,7 +107,7 @@ CommandCloneAndTransform::CommandCloneAndTransform(DAVA::Entity* originalNode,
 												   const DAVA::Matrix4& finalTransform,
 												   EditorBodyControl* bodyControl,
 												   btCollisionWorld* collisionWorld)
-:	Command(COMMAND_UNDO_REDO)
+:	MultiCommand(COMMAND_UNDO_REDO)
 ,	clonedNode(0)
 ,	cloneCmd(0)
 ,	transformCmd(0)
@@ -131,16 +131,16 @@ void CommandCloneAndTransform::Execute()
 	if (!cloneCmd && !transformCmd)
 	{
 		cloneCmd = new CommandCloneObject(originalNode, bodyControl, collisionWorld);
-		CommandsManager::Instance()->ExecuteOnly(cloneCmd);
+		ExecuteInternal(cloneCmd);
 		clonedNode = cloneCmd->GetClonedNode();
 
 		transformCmd = new CommandTransformObject(clonedNode, originalNode->GetLocalTransform(), transform);
-		CommandsManager::Instance()->ExecuteOnly(transformCmd);
+		ExecuteInternal(transformCmd);
 	}
 	else
 	{
-		CommandsManager::Instance()->ExecuteOnly(cloneCmd);
-		CommandsManager::Instance()->ExecuteOnly(transformCmd);
+		ExecuteInternal(cloneCmd);
+		ExecuteInternal(transformCmd);
 	}
 }
 
@@ -148,8 +148,8 @@ void CommandCloneAndTransform::Cancel()
 {
 	if (cloneCmd && transformCmd)
 	{
-		CommandsManager::Instance()->CancelOnly(transformCmd);
-		CommandsManager::Instance()->CancelOnly(cloneCmd);
+		CancelInternal(transformCmd);
+		CancelInternal(cloneCmd);
 	}
 }
 
