@@ -18,7 +18,6 @@ class EditorBodyControl;
 class MaterialEditor;
 class SettingsDialog;
 class TextureTrianglesDialog;
-class HelpDialog;
 
 class SceneEditorScreenMain: 
     public UIScreen,
@@ -162,8 +161,6 @@ private:
 	Color font12Color;
     
 	bool useConvertedTextures;
-    
-    HelpDialog *helpDialog;
     
     void ReleaseResizedControl(UIControl *control);
 
