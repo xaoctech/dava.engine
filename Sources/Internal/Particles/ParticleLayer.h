@@ -162,6 +162,8 @@ public:
 	void SetPlaybackSpeed(float32 value);
 	float32 GetPlaybackSpeed();
 
+	int32 GetActiveParticlesCount();
+
 protected:
 	void GenerateNewParticle(int32 emitIndex);
 	void GenerateSingleParticle();
