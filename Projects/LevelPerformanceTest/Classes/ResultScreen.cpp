@@ -66,7 +66,9 @@ void ResultScreen::SaveResults()
 	Map<String, Texture *> textures;
 	results["TextureMemorySize"] = Format("%.2f Mb", testData.GetTextureMemorySize()/(1024.f * 1024.f));
 	results["TextureFilesSize"] = Format("%.2f Mb", testData.GetTexturesFilesSize()/(1024.f * 1024.f));
-    results["SceneFileSize"] = Format("%.2f Mb", testData.GetSceneFileSize()/(1024.f * 1024.f));
+
+	String filePath = testData.GetSceneFilePath();
+    results["SceneFilePath"] = filePath.substr(filePath.find("Maps"));
     
     String documentsPath = FileSystem::Instance()->SystemPathForFrameworkPath("~doc:");
     String folderPathname = documentsPath + "PerformanceTestResult";
