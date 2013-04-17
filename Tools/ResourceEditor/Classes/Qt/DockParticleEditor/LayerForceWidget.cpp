@@ -64,7 +64,7 @@ void LayerForceWidget::Init(ParticleEmitter* emitter, ParticleLayer* layer, uint
 	ParticleForce* curForce = layer->forces[forceIndex];
 
 	Vector<QColor> colors;
-	colors.push_back(Qt::blue); colors.push_back(Qt::darkGreen); colors.push_back(Qt::red);
+	colors.push_back(Qt::red); colors.push_back(Qt::darkGreen); colors.push_back(Qt::blue);
 	Vector<QString> legends;
 	legends.push_back("force x"); legends.push_back("force y"); legends.push_back("force z");
 	forceTimeLine->Init(layer->startTime, lifeTime, updateMinimized, true, false);
