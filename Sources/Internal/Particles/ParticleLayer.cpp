@@ -233,7 +233,7 @@ void ParticleLayer::SetSprite(Sprite * _sprite)
 		pivotPoint = Vector2(_sprite->GetWidth()/2.0f, _sprite->GetHeight()/2.0f);
 
 		String spritePath = FileSystem::GetCanonicalPath(sprite->GetRelativePathname());
-		const String configPath = emitter->GetConfigPath();
+		const String configPath = FileSystem::Instance()->GetCanonicalPath(emitter->GetConfigPath());
 		String configFolder, configFile;
 		FileSystem::SplitPath(configPath, configFolder, configFile);
 		relativeSpriteName = FileSystem::AbsoluteToRelativePath(configFolder, spritePath);
@@ -398,7 +398,9 @@ void ParticleLayer::GenerateSingleParticle()
 {
 	GenerateNewParticle(-1);
 	
-	head->angle = 0.0f;
+	// Yuri Coder, 2013/03/26. head->angle = 0.0f commented out because of DF-877.
+	//head->angle = 0.0f;
+
 	//particle->velocity.x = 0.0f;
 	//particle->velocity.y = 0.0f;
 }
@@ -440,8 +442,15 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 	if (sizeVariation)
 		particle->size +=(sizeVariation->GetValue(layerTime) * randCoeff);
 	
-	particle->size.x /= (float32)sprite->GetWidth();
-	particle->size.y /= (float32)sprite->GetHeight();
+	if(sprite)
+	{
+		particle->size.x /= (float32)sprite->GetWidth();
+		particle->size.y /= (float32)sprite->GetHeight();
+	}
+	else
+	{
+		particle->size = Vector2(0, 0);
+	}
 
 	float32 vel = 0.0f;
 	if (velocity)
@@ -683,7 +692,9 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 		relativeSpriteName = relativePathName;
 		String configFolder, configFile;
 		FileSystem::SplitPath(configPath, configFolder, configFile);
-		Sprite * _sprite = Sprite::Create(configFolder+relativePathName);
+		
+		String path = FileSystem::Instance()->GetCanonicalPath(configFolder+relativePathName);
+		Sprite * _sprite = Sprite::Create(path);
 		Vector2 pivotPointTemp;
 		if(pivotPointNode)
 		{

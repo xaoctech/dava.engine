@@ -150,7 +150,7 @@ NMaterialInstance * PolygonGroupWithMaterial::GetNMaterialInstance()
     return nMaterialInstance;
 }
     
-//SceneNode* PolygonGroupWithMaterial::Clone(SceneNode *dstNode)
+//Entity* PolygonGroupWithMaterial::Clone(Entity *dstNode)
 //{
 //    if (!dstNode)
 //    {
@@ -158,7 +158,7 @@ NMaterialInstance * PolygonGroupWithMaterial::GetNMaterialInstance()
 //        dstNode = new PolygonGroupWithMaterial();
 //    }
 //    
-//    SceneNode::Clone(dstNode);
+//    Entity::Clone(dstNode);
 //    PolygonGroupWithMaterial *nd = (PolygonGroupWithMaterial *)dstNode;
 //    
 //    nd->nMaterial = SafeRetain(nMaterial);
@@ -180,7 +180,7 @@ void PolygonGroupWithMaterial::Draw()
 
 
 MeshInstanceNode::MeshInstanceNode()
-:	SceneNode()
+:	Entity()
 {
     //Logger::Debug("MeshInstance: %p", this);
 	materialState = new InstanceMaterialState();
@@ -219,7 +219,7 @@ void MeshInstanceNode::AddPolygonGroup(StaticMesh * mesh, int32 polygonGroupInde
     
     
 //    scene->ImmediateUpdate(this, renderComponent);
-//    SceneNode * node = new SceneNode();
+//    Entity * node = new Entity();
 //    RenderComponent * renderComponent = new RenderComponent();
 //    renderComponent->SetRenderObject(polygroup);
 //    node->AddComponent(renderComponent);
@@ -447,13 +447,13 @@ void MeshInstanceNode::Draw()
 	//glPopMatrix();
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
 
-	SceneNode::Draw();
+	Entity::Draw();
 #endif
     //Stats::Instance()->EndTimeMeasure("Scene.Draw.MeshInstanceNode.Draw", this);
 }
 
 
-SceneNode* MeshInstanceNode::Clone(SceneNode *dstNode)
+Entity* MeshInstanceNode::Clone(Entity *dstNode)
 {
     if (!dstNode) 
     {
@@ -461,7 +461,7 @@ SceneNode* MeshInstanceNode::Clone(SceneNode *dstNode)
         dstNode = new MeshInstanceNode();
     }
 
-    SceneNode::Clone(dstNode);
+    Entity::Clone(dstNode);
     MeshInstanceNode *nd = (MeshInstanceNode *)dstNode;
     
     nd->polygroups = polygroups;
@@ -479,8 +479,8 @@ AABBox3 MeshInstanceNode::GetWTMaximumBoundingBoxSlow()
 {
 	AABBox3 retBBox = transformedBox;
     
-    const Vector<SceneNode*>::iterator & itEnd = children.end();
-	for (Vector<SceneNode*>::iterator it = children.begin(); it != itEnd; ++it)
+    const Vector<Entity*>::iterator & itEnd = children.end();
+	for (Vector<Entity*>::iterator it = children.begin(); it != itEnd; ++it)
     {
         AABBox3 box = (*it)->GetWTMaximumBoundingBoxSlow();
         if(  (AABBOX_INFINITY != box.min.x && AABBOX_INFINITY != box.min.y && AABBOX_INFINITY != box.min.z)
@@ -495,7 +495,7 @@ AABBox3 MeshInstanceNode::GetWTMaximumBoundingBoxSlow()
     
 void MeshInstanceNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
-    SceneNode::Save(archive, sceneFile);
+    Entity::Save(archive, sceneFile);
 //    archive->SetInt32("lodCount", (int32)lodLayers.size());
 //    
 //    int32 lodIdx = 0;
@@ -555,7 +555,7 @@ void MeshInstanceNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 
 void MeshInstanceNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
-    SceneNode::Load(archive, sceneFile);
+    Entity::Load(archive, sceneFile);
 
     static const int32 errorIdx = -1;
 
@@ -762,7 +762,7 @@ void MeshInstanceNode::GetDataNodes(Set<DataNode*> & dataNodes)
             dataNodes.insert(polygroups[k]->GetMaterial());
         }
 //    }
-    SceneNode::GetDataNodes(dataNodes);
+    Entity::GetDataNodes(dataNodes);
 }
     
 void MeshInstanceNode::BakeTransforms()

@@ -612,8 +612,8 @@ Texture* Sprite::GetTexture()
 Texture* Sprite::GetTexture(int32 frameNumber)
 {
 //	DVASSERT(frameNumber > -1 && frameNumber < frameCount);
-    frame = Clamp(frame, 0, frameCount - 1);
-	return textures[frameTextureIndex[frameNumber]];
+    frame = Clamp(frameNumber, 0, frameCount - 1);
+	return textures[frameTextureIndex[frame]];
 }
 	
 float32 *Sprite::GetTextureVerts(int32 frame)
@@ -1400,7 +1400,8 @@ void Sprite::DrawPoints(Vector2 *verticies)
 	
 float32 Sprite::GetRectOffsetValueForFrame(int32 frame, eRectsAndOffsets valueType) const
 {
-	return rectsAndOffsets[frame][valueType];
+	int32 clampedFrame = Clamp(frame, 0, frameCount - 1);
+	return rectsAndOffsets[clampedFrame][valueType];
 }
 
 void Sprite::PrepareForNewSize()
@@ -1561,23 +1562,6 @@ void Sprite::Reload()
 {
     if(type == SPRITE_FROM_FILE)
     {
-        for(int32 i = 0; i < textureCount; ++i)
-        {
-			if(textures[i] == Texture::GetPinkPlaceholder())
-			{
-				SafeRelease(textures[i]);
-				textures[i] = Texture::CreateFromFile(textureNames[i]);
-			}
-			else if(textures[i] && !textures[i]->GetPathname().empty())
-			{
-				textures[i]->Reload();
-			}
-			else
-			{
-				Logger::Error("[Sprite::Reloa] Something strange with texture_%d", i);
-			}
-        }
-        
         Clear();
 
         File *fp = File::Create(relativePathname, File::READ | File::OPEN);

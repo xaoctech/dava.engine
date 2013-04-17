@@ -50,7 +50,6 @@ Font* EditorFontManager::LoadFont(const String& fontPath, const String& fontName
 	if (font)
 	{
 		font->SetSize(12.f);
-		font->SetColor(Color(1,1,1,1));
 		
 		fonts[fontName] = font;
         //If font was successfully loaded - emit the signal 
@@ -143,10 +142,6 @@ void EditorFontManager::InitDefaultFontFromPath(const EditorFontManager::Default
 	// Set default font only if font was really created
 	if (loadedFont)
 	{
-		// TODO: We don't have font color property for now.
-        // Initialize created font with white color
-		loadedFont->SetColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
-
 		// Reset default font
 		if (defaultFont)
 		{

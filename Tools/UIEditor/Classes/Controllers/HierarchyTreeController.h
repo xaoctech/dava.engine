@@ -19,6 +19,7 @@
 #include "HierarchyTreeScreenNode.h"
 #include "HierarchyTreeControlNode.h"
 #include "HierarchyTreePlatformNode.h"
+#include "HierarchyTreeAggregatorNode.h"
 #include <set>
 
 using namespace DAVA;
@@ -33,15 +34,25 @@ public:
 	
 	explicit HierarchyTreeController(QObject* parent = NULL);
     virtual ~HierarchyTreeController();
-    
+
+	void ConnectToSignals();
+	void DisconnectFromSignals();
+
 	bool NewProject(const QString& projectPath);
 	bool Load(const QString& projectPath);
-	bool Save(const QString& projectPath);
+
+	// Perform the save for the changed only screens or for all screens.
+	bool SaveOnlyChangedScreens(const QString& projectPath);
+	bool SaveAll(const QString& projectPath);
+
+	// Get the list of unsaved screens.
+	List<HierarchyTreeScreenNode*> GetUnsavedScreens();
 
 	void CloseProject();
 
 	HierarchyTreePlatformNode* AddPlatform(const QString& name, const Vector2& size);
 	HierarchyTreeScreenNode* AddScreen(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platform);
+	HierarchyTreeAggregatorNode* AddAggregator(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platform, const Rect& rect);
 	HierarchyTreeNode::HIERARCHYTREENODEID CreateNewControl(const QString& type, const QPoint& position);
 
 	// Return any kind of node (one or multiple) back to the scene.
@@ -100,6 +111,9 @@ signals:
 	
 	void SelectedTreeItemChanged(const HierarchyTreeNode*);
 	
+protected slots:
+	void OnUnsavedChangesNumberChanged();
+
 protected:
 	void Clear();
 	

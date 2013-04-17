@@ -183,9 +183,9 @@ String EditorBodyControl::CustomColorsGetCurrentSaveFileName()
 	return landscapeEditorCustomColors->GetCurrentSaveFileName();
 }
 
-void RemoveDeepCamera(SceneNode * curr)
+void RemoveDeepCamera(Entity * curr)
 {
-	SceneNode * cam;
+	Entity * cam;
 	
 	cam = curr->FindByName("editor.main-camera");
 	while (cam)
@@ -255,14 +255,14 @@ void EditorBodyControl::ReleaseModificationPanel()
 
 void EditorBodyControl::PlaceOnLandscape()
 {
-	SceneNode * selection = scene->GetProxy();
+	Entity * selection = scene->GetProxy();
 	if (selection && InModificationMode())
 	{
         PlaceOnLandscape(selection);
 	}
 }
 
-void EditorBodyControl::PlaceOnLandscape(SceneNode *node)
+void EditorBodyControl::PlaceOnLandscape(Entity *node)
 {
 	if (node)
 	{
@@ -394,7 +394,7 @@ bool EditorBodyControl::ProcessKeyboard(UIEvent *event)
 
 bool EditorBodyControl::ProcessMouse(UIEvent *event)
 {
-	SceneNode * selection = scene->GetProxy();
+	Entity * selection = scene->GetProxy();
 	//selection with second mouse button
     
 	if (event->tid == UIEvent::BUTTON_1)
@@ -461,7 +461,7 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 			{
 				if (selection && InModificationMode())
 				{
-                    LandscapeNode *landscape = dynamic_cast<LandscapeNode *>(selection);
+                    Landscape *landscape = dynamic_cast<Landscape *>(selection);
                     if(!landscape)
                     {
                         PrepareModMatrix(event->point);
@@ -525,7 +525,7 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 	}
 
 	ArrowsNode* arrowsNode = GetArrowsNode(false);
-	if (arrowsNode && arrowsNode->GetVisible() && !inTouch)
+	if (arrowsNode && arrowsNode->GetVisible() && !inTouch && event->phase != UIEvent::PHASE_KEYCHAR)
 	{
 		Vector3 from, dir;
 		GetCursorVectors(&from, &dir, event->point);
@@ -680,7 +680,7 @@ void EditorBodyControl::DrawAfterChilds(const UIGeometricData &geometricData)
 
 void EditorBodyControl::Update(float32 timeElapsed)
 {
-	SceneNode * selection = scene->GetProxy();
+	Entity * selection = scene->GetProxy();
 	if (selection)
 	{
 		rotationCenter = selection->GetWorldTransform().GetTranslationVector();
@@ -743,17 +743,17 @@ void EditorBodyControl::ReloadRootScene(const String &pathToFile)
     Refresh();
 }
 
-void EditorBodyControl::ReloadNode(SceneNode *node, const String &pathToFile)
+void EditorBodyControl::ReloadNode(Entity *node, const String &pathToFile)
 {//если в рут ноды сложить такие же рут ноды то на релоаде все накроет пиздой
     KeyedArchive *customProperties = node->GetCustomProperties();
     if (customProperties->GetString("editor.referenceToOwner", "") == pathToFile) 
     {
-        SceneNode *newNode = scene->GetRootNode(pathToFile)->Clone();
+        Entity *newNode = scene->GetRootNode(pathToFile)->Clone();
         newNode->SetLocalTransform(node->GetLocalTransform());
         newNode->GetCustomProperties()->SetString("editor.referenceToOwner", pathToFile);
         newNode->SetSolid(true);
         
-        SceneNode *parent = node->GetParent();
+        Entity *parent = node->GetParent();
         AddedNode addN;
         addN.nodeToAdd = newNode;
         addN.nodeToRemove = node;
@@ -766,7 +766,7 @@ void EditorBodyControl::ReloadNode(SceneNode *node, const String &pathToFile)
     int32 csz = node->GetChildrenCount();
     for (int ci = 0; ci < csz; ++ci)
     {
-        SceneNode * child = node->GetChild(ci);
+        Entity * child = node->GetChild(ci);
         ReloadNode(child, pathToFile);
     }
 }
@@ -805,13 +805,13 @@ EditorScene * EditorBodyControl::GetScene()
     return scene;
 }
 
-void EditorBodyControl::AddNode(SceneNode *node)
+void EditorBodyControl::AddNode(Entity *node)
 {
     SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     activeScene->AddSceneNode(node);
 }
 
-SceneNode * EditorBodyControl::GetSelectedSGNode()
+Entity * EditorBodyControl::GetSelectedSGNode()
 {
     return scene->GetSelection();
 }
@@ -829,7 +829,7 @@ void EditorBodyControl::Refresh()
 }
 
 
-void EditorBodyControl::SelectNodeAtTree(DAVA::SceneNode *node)
+void EditorBodyControl::SelectNodeAtTree(DAVA::Entity *node)
 {
     SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
     sceneData->SelectNode(node);
@@ -900,7 +900,7 @@ void EditorBodyControl::PackLightmaps()
 	SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
 	String inputDir = EditorSettings::Instance()->GetProjectPath()+"DataSource/lightmaps_temp/";
 	String outputDir = sceneData->GetScenePathname() + "_lightmaps/";
-	FileSystem::Instance()->MoveFile(inputDir+"landscape.png", "test_landscape.png"); 
+	FileSystem::Instance()->MoveFile(inputDir+"landscape.png", "test_landscape.png", true); 
 
 	LightmapsPacker packer;
 	packer.SetInputDir(inputDir);
@@ -912,7 +912,7 @@ void EditorBodyControl::PackLightmaps()
 
 	BeastProxy::Instance()->UpdateAtlas(beastManager, packer.GetAtlasingData());
 
-	FileSystem::Instance()->MoveFile("test_landscape.png", outputDir+"landscape.png");
+	FileSystem::Instance()->MoveFile("test_landscape.png", outputDir+"landscape.png", true);
 }
 
 void EditorBodyControl::Draw(const UIGeometricData &geometricData)
@@ -927,7 +927,7 @@ void EditorBodyControl::Draw(const UIGeometricData &geometricData)
 
 void EditorBodyControl::RecreteFullTilingTexture()
 {
-    LandscapeNode *landscape = scene->GetLandscape(scene);
+    Landscape *landscape = scene->GetLandscape(scene);
     if (landscape)
     {
         landscape->UpdateFullTiledTexture();
@@ -1047,7 +1047,7 @@ void EditorBodyControl::LandscapeEditorStarted()
         AddControl(toolsPanel);
     }
     
-	SceneNode* sceneNode = EditorScene::GetLandscapeNode(scene);
+	Entity* sceneNode = EditorScene::GetLandscapeNode(scene);
 	if (sceneNode)
 	{
 		scene->SetSelection(sceneNode);
@@ -1160,7 +1160,7 @@ void EditorBodyControl::SetCameraController(CameraController *newCameraControlle
     cameraController = SafeRetain(newCameraController);
 }
 
-void EditorBodyControl::SelectNodeQt(DAVA::SceneNode *node)
+void EditorBodyControl::SelectNodeQt(DAVA::Entity *node)
 {
     sceneGraph->SelectNode(node);
 }
@@ -1191,11 +1191,11 @@ void EditorBodyControl::SetSize(const Vector2 &newSize)
 
 void EditorBodyControl::ProcessIsSolidChanging()
 {
-    SceneNode *selectedNode = scene->GetSelection();
+    Entity *selectedNode = scene->GetSelection();
     if(selectedNode)
     {
         KeyedArchive *customProperties = selectedNode->GetCustomProperties();
-        if(customProperties && customProperties->IsKeyExists(String(SceneNode::SCENE_NODE_IS_SOLID_PROPERTY_NAME)))
+        if(customProperties && customProperties->IsKeyExists(String(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME)))
         {
             bool isSolid = selectedNode->GetSolid();
             selectedNode->SetSolid(!isSolid);
@@ -1302,12 +1302,12 @@ void EditorBodyControl::VisibilityToolSetAreaSize(uint32 size)
 	landscapeEditorVisibilityTool->SetVisibilityAreaSize(size);
 }
 
-void EditorBodyControl::RemoveNode(SceneNode *node)
+void EditorBodyControl::RemoveNode(Entity *node)
 {
 	scene->RemoveNode(node);
 }
 
-void EditorBodyControl::SelectNode(SceneNode *node)
+void EditorBodyControl::SelectNode(Entity *node)
 {
 	scene->SetSelection(node);
 	SelectNodeAtTree(node);
@@ -1329,7 +1329,7 @@ ArrowsNode* EditorBodyControl::GetArrowsNode(bool createIfNotExist)
 	return arrowsNode;
 }
 
-void EditorBodyControl::UpdateArrowsNode(SceneNode* node)
+void EditorBodyControl::UpdateArrowsNode(Entity* node)
 {
 	ArrowsNode* arrowsNode = GetArrowsNode(false);
 	if (node && arrowsNode)
@@ -1385,7 +1385,7 @@ void EditorBodyControl::RestoreOriginalTransform()
 	if (!InModificationMode())
 		return;
 
-	SceneNode* selection = scene->GetProxy();
+	Entity* selection = scene->GetProxy();
 	CommandsManager::Instance()->ExecuteAndRelease(new CommandRestoreOriginalTransform(selection));
 }
 
@@ -1394,7 +1394,7 @@ void EditorBodyControl::ApplyTransform(float32 x, float32 y, float32 z)
 	if (!InModificationMode())
 		return;
 
-    SceneNode *selectedNode = scene->GetProxy();
+    Entity *selectedNode = scene->GetProxy();
     if(selectedNode)
 	{
 		Matrix4 modification;
@@ -1449,7 +1449,7 @@ Matrix4 EditorBodyControl::GetLandscapeOffset(const Matrix4& transform)
 	Vector3 p = Vector3(0, 0, 0) * transform;
 
 	Vector3 result;
-	LandscapeNode* landscape = scene->GetLandscape(scene);
+	Landscape* landscape = scene->GetLandscape(scene);
 	bool res = landscape->PlacePoint(p, result);
 	if (res)
 	{

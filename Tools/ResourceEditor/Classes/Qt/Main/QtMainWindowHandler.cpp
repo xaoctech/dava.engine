@@ -17,12 +17,13 @@
 #include "../Commands/HeightmapEditorCommands.h"
 #include "../Commands/ModificationOptionsCommands.h"
 #include "../Commands/SetSwitchIndexCommands.h"
+#include "../Commands/HangingObjectsCommands.h"
 #include "../Commands/EditCommands.h"
+#include "../Commands/MaterialViewOptionsCommands.h"
 #include "../Constants.h"
 #include "../SceneEditor/EditorSettings.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/EditorBodyControl.h"
-#include "GUIState.h"
 #include "Scene/SceneDataManager.h"
 #include "Scene/SceneData.h"
 #include "Main/QtUtils.h"
@@ -49,7 +50,6 @@ using namespace DAVA;
 QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
     :   QObject(parent)
 	,	menuResentScenes(NULL)
-    ,   resentAncorAction(NULL)
 	,	defaultFocusWidget(NULL)
     ,   statusBar(NULL)
 {
@@ -71,6 +71,7 @@ QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
 
 	connect(sceneDataManager, SIGNAL(SceneActivated(SceneData*)), this, SLOT(OnSceneActivated(SceneData*)));
 	connect(sceneDataManager, SIGNAL(SceneReleased(SceneData*)), this, SLOT(OnSceneReleased(SceneData*)));
+	connect(sceneDataManager, SIGNAL(SceneCreated(SceneData*)), this, SLOT(OnSceneCreated(SceneData*)));
 	connect(QtMainWindow::Instance(), SIGNAL(RepackAndReloadFinished()), this, SLOT(ReloadSceneTextures()));
 }
 
@@ -235,16 +236,8 @@ void QtMainWindowHandler::SetResentMenu(QMenu *menu)
     menuResentScenes = menu;
 }
 
-void QtMainWindowHandler::SetResentAncorAction(QAction *ancorAction)
+void QtMainWindowHandler::UpdateRecentScenesList()
 {
-    resentAncorAction = ancorAction;
-}
-
-
-void QtMainWindowHandler::MenuFileWillShow()
-{
-    if(!GUIState::Instance()->GetNeedUpdatedFileMenu()) return;
-    
     //TODO: what a bug?
     DVASSERT(menuResentScenes && "Call SetResentMenu() to setup resent menu");
 
@@ -267,28 +260,10 @@ void QtMainWindowHandler::MenuFileWillShow()
             resentActions.push_back(resentSceneActions[i]);
         }
         
-        menuResentScenes->insertActions(resentAncorAction, resentActions);
-        menuResentScenes->insertSeparator(resentAncorAction);
+		menuResentScenes->addSeparator();
+        menuResentScenes->addActions(resentActions);
     }
- 
-    GUIState::Instance()->SetNeedUpdatedFileMenu(false);
 }
-
-void QtMainWindowHandler::MenuToolsWillShow()
-{
-    if(!GUIState::Instance()->GetNeedUpdatedToolsMenu()) return;
-
-    //TODO: need code here
-
-//    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-//    if(screen)
-//    {
-////        screen->;
-//    }
-    
-    GUIState::Instance()->SetNeedUpdatedToolsMenu(false);
-}
-
 
 void QtMainWindowHandler::FileMenuTriggered(QAction *resentScene)
 {
@@ -517,6 +492,16 @@ void QtMainWindowHandler::ToggleSetSwitchIndex(DAVA::uint32  value, SetSwitchInd
     CommandsManager::Instance()->ExecuteAndRelease(new CommandToggleSetSwitchIndex(value,state));
 }
 
+void QtMainWindowHandler::MaterialViewOptionChanged(int index)
+{
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandChangeMaterialViewOption((Material::eViewOptions)index));
+}
+
+void QtMainWindowHandler::ToggleHangingObjects(float value, bool isEnabled)
+{
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandToggleHangingObjects(value, isEnabled));
+}
+
 void QtMainWindowHandler::ToggleCustomColors()
 {
     CommandsManager::Instance()->ExecuteAndRelease(new CommandToggleCustomColors());
@@ -583,6 +568,24 @@ void QtMainWindowHandler::SetCustomColorsWidgetsState(bool state)
 	}
 }
 
+void QtMainWindowHandler::RegisterMaterialViewOptionsWidgets(QComboBox* combo)
+{
+	this->comboMaterialViewOption = combo;
+}
+
+void QtMainWindowHandler::SetMaterialViewOptionsWidgetsState(bool state)
+{
+	comboMaterialViewOption->blockSignals(true);
+	comboMaterialViewOption->setEnabled(state);
+	comboMaterialViewOption->blockSignals(false);
+}
+
+
+void QtMainWindowHandler::SelectMaterialViewOption(Material::eViewOptions value)
+{
+	comboMaterialViewOption->setCurrentIndex((int)value);
+}
+
 void QtMainWindowHandler::RegisterSetSwitchIndexWidgets(QSpinBox* spinBox, QRadioButton* rBtnSelection, QRadioButton* rBtnScene, QPushButton* btnOK)
 {
 	this->setSwitchIndexToggleButton = btnOK;
@@ -605,6 +608,27 @@ void QtMainWindowHandler::SetSwitchIndexWidgetsState(bool state)
 	editSwitchIndexValue->setEnabled(state);
 	rBtnSelection->setEnabled(state);
 	rBtnScene->setEnabled(state);
+}
+
+void QtMainWindowHandler::RegisterHangingObjectsWidgets(QCheckBox* chBox, QDoubleSpinBox* dSpinBox, QPushButton* btnUpdate)
+{
+	this->hangingObjectsToggleButton= btnUpdate;
+	this->editHangingObjectsValue	= dSpinBox;
+	this->checkBoxHangingObjects	= chBox;
+}
+
+void QtMainWindowHandler::SetHangingObjectsWidgetsState(bool state)
+{
+		DVASSERT(hangingObjectsToggleButton &&
+		 editHangingObjectsValue &&
+		 checkBoxHangingObjects );
+
+	hangingObjectsToggleButton->blockSignals(true);
+	hangingObjectsToggleButton->setEnabled(state);
+	hangingObjectsToggleButton->blockSignals(false);
+
+	editHangingObjectsValue->setEnabled(state);
+	checkBoxHangingObjects->setEnabled(state);
 }
 
 void QtMainWindowHandler::ToggleVisibilityTool()
@@ -853,7 +877,20 @@ void QtMainWindowHandler::OnSceneActivated(SceneData *scene)
 	UpdateModificationActions();
 }
 
+void QtMainWindowHandler::OnSceneCreated(SceneData *scene)
+{
+	UpdateRecentScenesList();
+}
+
 void QtMainWindowHandler::OnSceneReleased(SceneData *scene)
 {
 	CommandsManager::Instance()->SceneReleased(scene);
+
+	UpdateRecentScenesList();
+}
+
+
+void QtMainWindowHandler::ConvertToShadow()
+{
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandConvertToShadow());
 }

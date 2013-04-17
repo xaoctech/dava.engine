@@ -18,7 +18,7 @@ PropertiesGridController::PropertiesGridController(QObject* parent) :
     QObject(parent)
 {
     this->activeNode = NULL;
-    this->activeUIControlState = UIControl::STATE_NORMAL;
+    this->activeUIControlStates.push_back(UIControl::STATE_NORMAL);
     ConnectToSignals();
 }
 
@@ -49,19 +49,38 @@ const HierarchyTreeController::SELECTEDCONTROLNODES PropertiesGridController::Ge
     return this->activeNodes;
 }
 
-UIControl::eControlState PropertiesGridController::GetActiveUIControlState() const
+Vector<UIControl::eControlState> PropertiesGridController::GetActiveUIControlStates() const
 {
-    return this->activeUIControlState;
+	return this->activeUIControlStates;
 }
 
-void PropertiesGridController::SetActiveUIControlState(UIControl::eControlState newState)
+void PropertiesGridController::SetActiveUIControlStates(const Vector<UIControl::eControlState>& newStates)
 {
-    bool stateChanged = newState != this->activeUIControlState;
-    this->activeUIControlState = newState;
-    if (stateChanged)
-    {
-        emit SelectedUIControlStateChanged(this->activeUIControlState);
-    }
+	bool stateChanged = false;
+
+	if (newStates.size() != activeUIControlStates.size())
+	{
+		stateChanged = true;
+	}
+	else
+	{
+		for (uint32 i = 0; i < activeUIControlStates.size(); ++i)
+		{
+			stateChanged |= (std::find(newStates.begin(), newStates.end(), activeUIControlStates[i]) ==
+							 newStates.end());
+
+			if (stateChanged)
+			{
+				break;
+			}
+		}
+	}
+
+	if (stateChanged)
+	{
+		this->activeUIControlStates = newStates;
+		emit SelectedUIControlStatesChanged(newStates);
+	}
 }
 
 void PropertiesGridController::OnSelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES
@@ -91,7 +110,9 @@ void PropertiesGridController::UpdatePropertiesForSingleNode(const HierarchyTree
     }
 
     this->activeNode = selectedNode;
-    this->activeUIControlState = UIControlStateHelper::GetDefaultControlState();
+
+	this->activeUIControlStates.clear();
+    this->activeUIControlStates.push_back(UIControlStateHelper::GetDefaultControlState());
   
     // Properties Grid View is ready to create the appropriate widgets.
     emit PropertiesGridUpdated();
@@ -108,7 +129,6 @@ void PropertiesGridController::UpdatePropertiesForUIControlNodeList(const Hierar
     }
 
     this->activeNodes = selectedNodes;
-    Logger::Debug("Current Active Nodes count: %i", selectedNodes.size());
     emit PropertiesGridUpdated();
 }
 
@@ -126,5 +146,13 @@ void PropertiesGridController::CleanupSelection()
 
 void PropertiesGridController::OnSelectedStateChanged(UIControl::eControlState newState)
 {
-    SetActiveUIControlState(newState);
+	Vector<UIControl::eControlState> newStates;
+	newStates.push_back(newState);
+
+	SetActiveUIControlStates(newStates);
+}
+
+void PropertiesGridController::OnSelectedStatesChanged(const Vector<UIControl::eControlState>& newStates)
+{
+	SetActiveUIControlStates(newStates);
 }

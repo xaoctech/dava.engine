@@ -120,7 +120,7 @@ void CommandConvertScene::Execute()
         String path = FileSystem::Instance()->ReplaceExtension(filePathname, ".sce");
         Scene * scene = new Scene();
         
-        SceneNode *rootNode = scene->GetRootNode(path);
+        Entity *rootNode = scene->GetRootNode(path);
         scene->AddNode(rootNode);
         
         scene->BakeTransforms();
@@ -144,13 +144,3 @@ void CommandConvertScene::Execute()
     }
 }
 
-CommandAddReferenceScene::CommandAddReferenceScene(const DAVA::String &pathname)
-:   LibraryCommand(pathname, Command::COMMAND_UNDO_REDO)
-{
-	commandName = "Add Reference";
-}
-
-void CommandAddReferenceScene::Execute()
-{
-	SceneDataManager::Instance()->AddReferenceScene(filePathname);
-}

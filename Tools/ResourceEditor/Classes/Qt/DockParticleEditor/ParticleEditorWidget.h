@@ -29,9 +29,9 @@ public:
     ~ParticleEditorWidget();
 	
 protected slots:
-	void OnEmitterSelected(SceneNode* emitterNode, BaseParticleEditorNode* editorNode);
-    void OnLayerSelected(SceneNode* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode, bool forceRefresh);
-    void OnForceSelected(SceneNode* emitterNode, ParticleLayer* layer, int32 forceIndex, BaseParticleEditorNode* editorNode);
+	void OnEmitterSelected(Entity* emitterNode, BaseParticleEditorNode* editorNode);
+    void OnLayerSelected(Entity* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode, bool forceRefresh);
+    void OnForceSelected(Entity* emitterNode, ParticleLayer* layer, int32 forceIndex, BaseParticleEditorNode* editorNode);
 	void OnUpdate();
 	void OnValueChanged();
 	void OnNodeDeselected(BaseParticleEditorNode* particleEditorNode);
@@ -42,7 +42,11 @@ signals:
 	
 private:
 	void DeleteOldWidget();
+	void UpdateVisibleTimelines();
 	
+	// Update the visible timelines for the particular Particle Emitter elements.
+	void UpdateVisibleTimelinesForParticleEmitter();
+
 private:
 	EmitterLayerWidget* emitterLayerWidget;
 	LayerForceWidget* layerForceWidget;

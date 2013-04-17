@@ -40,6 +40,12 @@ public:
 	// Cleanup the stacks.
 	void Cleanup();
 
+	// We need to control saved changes for each screen to determine which of them
+	// were changed.
+	void IncrementUnsavedChanges(bool forUndoStack);
+	void DecrementUnsavedChanges(bool forUndoStack);
+	void ResetUnsavedChanges();
+
 protected:
 
 	// Add command to the particular stack, with checking the stack size.

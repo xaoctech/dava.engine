@@ -57,5 +57,14 @@ protected:
     virtual void Execute();
 };
 
+class CommandConvertToShadow : public Command
+{
+public:
+	CommandConvertToShadow();
+
+protected:
+	virtual void Execute();
+};
+
 
 #endif // #ifndef __TOOLS_COMMANDS_H__

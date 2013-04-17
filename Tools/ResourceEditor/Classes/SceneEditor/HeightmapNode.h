@@ -17,11 +17,11 @@ using namespace DAVA;
 class btHeightfieldTerrainShape;
 class EditorScene;
 //class Heightmap;
-class HeightmapNode : public SceneNode
+class HeightmapNode : public Entity
 {
 public:
     
-    HeightmapNode(EditorScene * _scene, LandscapeNode *land);
+    HeightmapNode(EditorScene * _scene, Landscape *land);
     virtual ~HeightmapNode();
 
     const Vector3 &GetSize();
@@ -35,7 +35,7 @@ public:
     
 protected:
     
-    LandscapeNode *land;
+    Landscape *land;
     
     float32 areaScale;
     float32 maxHeight;

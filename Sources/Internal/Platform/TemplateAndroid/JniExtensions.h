@@ -3,10 +3,10 @@
 
 #include <jni.h>
 
-#include "DAVAEngine.h"
-
 namespace DAVA
 {
+
+class Rect;
 
 class JniExtension
 {
@@ -14,7 +14,9 @@ public:
 	JniExtension(const char* className);
 	virtual ~JniExtension();
 
-	jmethodID GetMethodID(const char *methodName, const char *paramCode);
+	jclass GetJavaClass() const;
+	void ReleaseJavaClass(jclass javaClass) const;
+	jmethodID GetMethodID(jclass javaClass, const char *methodName, const char *paramCode) const;
 
 protected:
 	JNIEnv* GetEnvironment() {return env;};
@@ -22,11 +24,10 @@ protected:
 
 protected:
 	const char* className;
-	jclass javaClass;
 	JNIEnv* env;
 	JavaVM* vm;
 
-	bool isThreadAttached;
+	//bool isThreadAttached;
 };
 
 }

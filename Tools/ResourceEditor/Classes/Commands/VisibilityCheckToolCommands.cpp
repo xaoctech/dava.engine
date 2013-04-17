@@ -1,8 +1,7 @@
+#include <QFileDialog>
 #include "VisibilityCheckToolCommands.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
-#include "../Qt/Main/GUIState.h"
 #include "../Qt/Main/QtUtils.h"
-#include <QFileDialog>
 #include "../SceneEditor/EditorBodyControl.h"
 
 CommandToggleVisibilityTool::CommandToggleVisibilityTool()
@@ -16,8 +15,6 @@ void CommandToggleVisibilityTool::Execute()
 	if(screen)
 	{
 		screen->VisibilityToolTriggered();
-		GUIState::Instance()->SetNeedUpdatedToolsMenu(true);
-		GUIState::Instance()->SetNeedUpdatedToolbar(true);
 	}
 }
 

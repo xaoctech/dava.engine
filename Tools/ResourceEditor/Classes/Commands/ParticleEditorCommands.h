@@ -101,7 +101,6 @@ class CommandUpdateEmitter: public Command
 public:
 	CommandUpdateEmitter(ParticleEmitter* emitter);
 	void Init(ParticleEmitter::eType emitterType,
-			  RefPtr<PropertyLine<float32> > emissionAngle,
 			  RefPtr<PropertyLine<float32> > emissionRange,
 			  RefPtr<PropertyLine<Vector3> > emissionVector,
 			  RefPtr<PropertyLine<float32> > radius,
@@ -116,7 +115,6 @@ private:
 	ParticleEmitter* emitter;
 
 	ParticleEmitter::eType emitterType;
-	RefPtr<PropertyLine<float32> > emissionAngle;
 	RefPtr<PropertyLine<float32> > emissionRange;
 	RefPtr<PropertyLine<Vector3> > emissionVector;
 	RefPtr<PropertyLine<float32> > radius;
@@ -130,6 +128,7 @@ class CommandUpdateParticleLayer: public Command
 public:
 	CommandUpdateParticleLayer(ParticleEmitter* emitter, ParticleLayer* layer);
 	void Init(const QString& layerName,
+			  ParticleLayer::eType layerType,
 			  bool isDisabled,
 			  bool additive,
 			  Sprite* sprite,
@@ -146,18 +145,13 @@ public:
 			  RefPtr< PropertyLine<float32> > spin,
 			  RefPtr< PropertyLine<float32> > spinVariation,
 			  RefPtr< PropertyLine<float32> > spinOverLife,
-			  RefPtr< PropertyLine<float32> > motionRandom,
-			  RefPtr< PropertyLine<float32> > motionRandomVariation,
-			  RefPtr< PropertyLine<float32> > motionRandomOverLife,
-			  RefPtr< PropertyLine<float32> > bounce,
-			  RefPtr< PropertyLine<float32> > bounceVariation,
-			  RefPtr< PropertyLine<float32> > bounceOverLife,
+
 			  RefPtr< PropertyLine<Color> > colorRandom,
 			  RefPtr< PropertyLine<float32> > alphaOverLife,
 			  RefPtr< PropertyLine<Color> > colorOverLife,
 			  RefPtr< PropertyLine<float32> > angle,
 			  RefPtr< PropertyLine<float32> > angleVariation,
-			  float32 alignToMotion,
+
 			  float32 startTime,
 			  float32 endTime,
 			  bool frameOverLifeEnabled,
@@ -172,6 +166,7 @@ private:
 	ParticleLayer* layer;
 
 	QString layerName;
+	ParticleLayer::eType layerType;
 	bool isDisabled;
 	bool additive;
 	Sprite* sprite;
@@ -188,19 +183,14 @@ private:
 	RefPtr< PropertyLine<float32> > spin;
 	RefPtr< PropertyLine<float32> > spinVariation;
 	RefPtr< PropertyLine<float32> > spinOverLife;
-	RefPtr< PropertyLine<float32> > motionRandom;
-	RefPtr< PropertyLine<float32> > motionRandomVariation;
-	RefPtr< PropertyLine<float32> > motionRandomOverLife;
-	RefPtr< PropertyLine<float32> > bounce;
-	RefPtr< PropertyLine<float32> > bounceVariation;
-	RefPtr< PropertyLine<float32> > bounceOverLife;
+
 	RefPtr< PropertyLine<Color> > colorRandom;
 	RefPtr< PropertyLine<float32> > alphaOverLife;
 	RefPtr< PropertyLine<Color> > colorOverLife;
 	RefPtr< PropertyLine<float32> > frameOverLife;
 	RefPtr< PropertyLine<float32> > angle;
 	RefPtr< PropertyLine<float32> > angleVariation;
-	float32 alignToMotion;
+
 	float32 startTime;
 	float32 endTime;
 	bool frameOverLifeEnabled;

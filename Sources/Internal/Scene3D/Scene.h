@@ -33,7 +33,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
 #include "Render/RenderBase.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Light.h"
 
@@ -60,7 +60,6 @@ class MeshInstanceNode;
 class ImposterManager;
 class ImposterNode;
 class EntityManager;
-class BVHierarchy;
 class Component;
 class SceneSystem;
 class RenderSystem;
@@ -71,7 +70,7 @@ class DebugRenderSystem;
 class EventSystem;
 class ParticleEmitterSystem;
 class ParticleEffectSystem;
-class UpdatableSystem;
+class UpdateSystem;
 class LightUpdateSystem;
 class SwitchSystem;
     
@@ -84,7 +83,7 @@ class SwitchSystem;
  
  
  */
-class Scene : public SceneNode
+class Scene : public Entity
 {
 public:	
 	Scene();
@@ -93,16 +92,16 @@ public:
     /**
         \brief Function to register node in scene. This function is called when you add node to the node that already in the scene. 
      */
-    virtual void    RegisterNode(SceneNode * entity);
-    virtual void    UnregisterNode(SceneNode * entity);
+    virtual void    RegisterNode(Entity * entity);
+    virtual void    UnregisterNode(Entity * entity);
     
-    virtual void    AddComponent(SceneNode * entity, Component * component);
-    virtual void    RemoveComponent(SceneNode * entity, Component * component);
+    virtual void    AddComponent(Entity * entity, Component * component);
+    virtual void    RemoveComponent(Entity * entity, Component * component);
     
     virtual void    AddSystem(SceneSystem * sceneSystem, uint32 componentFlags);
     virtual void    RemoveSystem(SceneSystem * sceneSystem, uint32 componentFlags);
     
-	virtual void ImmediateEvent(SceneNode * entity, uint32 componentType, uint32 event);
+	virtual void ImmediateEvent(Entity * entity, uint32 componentType, uint32 event);
 
     Vector<SceneSystem*> systems;
     TransformSystem * transformSystem;
@@ -111,7 +110,7 @@ public:
     DebugRenderSystem * debugRenderSystem;
 	EventSystem * eventSystem;
 	ParticleEffectSystem * particleEffectSystem;
-	UpdatableSystem * updatableSystem;
+	UpdateSystem * updatableSystem;
     LightUpdateSystem * lightUpdateSystem;
 	SwitchSystem * switchSystem;
 	RenderSystem * renderSystem;
@@ -149,18 +148,18 @@ public:
         \param[in] rootNodePath path of this root node
      */
 
-    void AddRootNode(SceneNode *node, const String &rootNodePath);
+    void AddRootNode(Entity *node, const String &rootNodePath);
 
 	/**
         \brief Get root node by path.
         This function can be used when you want to get a node and add it to real scene.  
         \code
-        SceneNode * node = scene->GetRootNode("~res:/Scenes/level0.sce");
+        Entity * node = scene->GetRootNode("~res:/Scenes/level0.sce");
         scene->AddNode(node);
         \endcode
      */
     
-    SceneNode *GetRootNode(const String &rootNodePath);
+    Entity *GetRootNode(const String &rootNodePath);
     
     /**
         \brief Release root node by name.
@@ -172,7 +171,7 @@ public:
         \brief Release root node by pointer to this node.
         \param[in] nodeToRelease root node pointer you want to release.
      */
-    void ReleaseRootNode(SceneNode *nodeToRelease);
+    void ReleaseRootNode(Entity *nodeToRelease);
 
 	
 	virtual void StopAllAnimations(bool recursive = true);
@@ -277,13 +276,12 @@ protected:
 	Vector<ShadowVolumeNode*> shadowVolumes;
     Set<Light*> lights;
 
-	BVHierarchy * bvHierarchy;
 	ImposterManager * imposterManager;
 
 	String referenceNodeSuffix;
 	bool referenceNodeSuffixChanged;
     
-    friend class SceneNode;
+    friend class Entity;
 };
 
 // Inline implementation

@@ -107,7 +107,7 @@ public:
     
     void RecreteFullTilingTexture();
 
-    void SelectNodeQt(SceneNode *node);
+    void SelectNodeQt(Entity *node);
     void OnReloadRootNodesQt();
     
     void ShowScenePreview(const String scenePathname);
@@ -121,6 +121,8 @@ public:
     void UpdateModificationPanel(void);
 
     void ProcessIsSolidChanging();
+
+	void ActivateLevelBodyItem();
 
 private:
     
@@ -165,15 +167,6 @@ private:
     
     void ReleaseResizedControl(UIControl *control);
 
-	//for save to folder with Childs
-	//////////////////////////////
-	void CopyFile(const String & file);
-	void CheckNodes(SceneNode * node);
-	String inputFolder;
-	String outputFolder;
-	//////////////////////////////
-	
-    
 public: //For Qt integration
     void OpenFileAtScene(const String &pathToFile);
     void NewScene();

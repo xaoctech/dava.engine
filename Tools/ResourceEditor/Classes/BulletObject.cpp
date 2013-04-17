@@ -43,7 +43,7 @@ BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, User
 	CreateBoxObject();
 }
 
-BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, SceneNode * _entity, const Matrix4 &pWorldTransform)
+BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, Entity * _entity, const Matrix4 &pWorldTransform)
 :	collWorld(collisionWorld),
 	collisionPartTransform(&((Matrix4&)pWorldTransform)),
 	userNode(0),
@@ -58,7 +58,7 @@ BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, Scen
 	CreateFromEntity();
 }
 
-BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, SceneNode * _entity, const AABBox3 &_box, const Matrix4 &pWorldTransform)
+BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, Entity * _entity, const AABBox3 &_box, const Matrix4 &pWorldTransform)
 :	collWorld(collisionWorld),
 	collisionPartTransform(&((Matrix4&)pWorldTransform)),
 	userNode(0),
@@ -233,6 +233,7 @@ void BulletObject::UpdateCollisionObject()
 {
 	if (!updateFlag)
 		return;
+
 	if (!(*collisionPartTransform == createdWith))
 	{
 		DeleteCollisionObject();
@@ -247,24 +248,26 @@ void BulletObject::UpdateCollisionObject()
 			CreateBoxObject();
 	}
 	
-//    btTransform btt;
-//    btt.setIdentity();
-//	
-//	//scale
-//	Vector3 scale = collisionPartTransform->GetScaleVector();
-//	shape->setLocalScaling(btVector3(scale.x, scale.y, scale.z));
-//	
-//	//origin
-//	Vector3 origin = collisionPartTransform->GetTranslationVector();
-//	btt.setOrigin(btVector3(origin.x, origin.y, origin.z));
-//	
-//	//rotation
-////	Quaternion qt;
-////	qt.Construct(*collisionPartTransform);
-////	btt.setRotation(btQuaternion(qt.x, qt.y, qt.z, qt.w));
-//					
-////    btt.setFromOpenGLMatrix(collisionPartTransform->data);
-//    collisionObject->setWorldTransform(btt);
+	/*
+    btTransform btt;
+    btt.setIdentity();
+	
+	//scale
+	Vector3 scale = collisionPartTransform->GetScaleVector();
+	shape->setLocalScaling(btVector3(scale.x, scale.y, scale.z));
+	
+	//origin
+	Vector3 origin = collisionPartTransform->GetTranslationVector();
+	btt.setOrigin(btVector3(origin.x, origin.y, origin.z));
+	
+	//rotation
+	Quaternion qt;
+	qt.Construct(*collisionPartTransform);
+	btt.setRotation(btQuaternion(qt.x, qt.y, qt.z, qt.w));
+					
+    btt.setFromOpenGLMatrix(collisionPartTransform->data);
+	collisionObject->setWorldTransform(btt);
+	*/
 }
 
 void BulletObject::Draw(const Matrix4 & worldTransform, MeshInstanceNode * node)

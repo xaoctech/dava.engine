@@ -5,36 +5,36 @@
 #-------------------------------------------------
 
 
-DEFINES += LAUNCER_VER=\\\"0.7\\\"
+DEFINES += LAUNCER_VER=\\\"0.8\\\"
 
 QT       += core gui network
 
 TARGET = Launcher
 TEMPLATE = app
 
-SOURCES += main.cpp\
-    mainwindow.cpp \
-    selfupdater.cpp \
-    settings.cpp \
-    configDownload.cpp \
-    logger.cpp \
-    directorymanager.cpp \
-    ziphelper.cpp \
-    installer.cpp \
-    processhelper.cpp
+SOURCES += Classes/main.cpp\
+    Classes/mainwindow.cpp \
+    Classes/selfupdater.cpp \
+    Classes/settings.cpp \
+    Classes/configDownload.cpp \
+    Classes/logger.cpp \
+    Classes/directorymanager.cpp \
+    Classes/ziphelper.cpp \
+    Classes/installer.cpp \
+    Classes/processhelper.cpp
 
-HEADERS  += mainwindow.h \
-    selfupdater.h \
-    settings.h \
-    configDownload.h \
-    logger.h \
-    directorymanager.h \
-    ziphelper.h \
-    installer.h \
-    AppType.h \
-    processhelper.h
+HEADERS  += Classes/mainwindow.h \
+    Classes/selfupdater.h \
+    Classes/settings.h \
+    Classes/configDownload.h \
+    Classes/logger.h \
+    Classes/directorymanager.h \
+    Classes/ziphelper.h \
+    Classes/installer.h \
+    Classes/AppType.h \
+    Classes/processhelper.h
 
-FORMS    += mainwindow.ui
+FORMS    += UI/mainwindow.ui
 
 macx: LIBS += -L$$PWD/yaml-cpp/libs/ -lyaml-cpp_osx
 macx: PRE_TARGETDEPS += $$PWD/yaml-cpp/libs/libyaml-cpp_osx.a

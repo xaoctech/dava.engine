@@ -540,11 +540,65 @@
     <ClCompile Include="Classes\Metadata\UISpinnerMetadata.cpp">
       <Filter>Sources\Metadata</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Metadata\UISwitchMetadata.cpp">
+      <Filter>Sources\Metadata</Filter>
+    </ClCompile>
     <ClCompile Include="GeneratedFiles\Metadata\UIListMetadata_moc.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Metadata\UISpinnerMetadata_moc.cpp">
       <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Metadata\UISwitchMetadata_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Models\HierarchyTreeAggregatorControlNode.cpp">
+      <Filter>Sources\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Models\HierarchyTreeAggregatorNode.cpp">
+      <Filter>Sources\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Metadata\AggregatorMetadata.cpp">
+      <Filter>Sources\Metadata</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Metadata\UIAggregatorMetadata.cpp">
+      <Filter>Sources\Metadata</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Controllers\LibraryController.cpp">
+      <Filter>Sources\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\Dialogs\createaggregatordlg.cpp">
+      <Filter>Sources\UI\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\PropertyGridWidgets\aggregatorpropertygridwidget.cpp">
+      <Filter>Sources\UI\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\Dialogs\createaggregatordlg_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\aggregatorpropertygridwidget_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Models\HierarchyTreeAggregatorControlNode_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Models\HierarchyTreeAggregatorNode_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Metadata\AggregatorMetadata_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\IconHelper.cpp">
+      <Filter>Sources\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\PropertyGridWidgets\spinnerpropertygridwidget.cpp">
+      <Filter>Sources\UI\PropertyGridWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\spinnerpropertygridwidget_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Helpers\SubcontrolsHelper.cpp">
+      <Filter>Sources\Helpers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -845,26 +899,39 @@
     <ClInclude Include="Classes\Metadata\UISpinnerMetadata.h">
       <Filter>Sources\Metadata</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="UI\davaglwidget.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="UI\hierarchytreewidget.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="UI\librarywidget.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="UI\mainwindow.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="UI\PropertyGridWidgets\alignspropertygridwidget.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Data\icons.qrc">
-      <Filter>Resources</Filter>
-    </CustomBuild>
+    <ClInclude Include="Classes\Metadata\UISwitchMetadata.h">
+      <Filter>Sources\Metadata</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Models\HierarchyTreeAggregatorControlNode.h">
+      <Filter>Sources\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Models\HierarchyTreeAggregatorNode.h">
+      <Filter>Sources\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Metadata\AggregatorMetadata.h">
+      <Filter>Sources\Metadata</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Metadata\UIAggregatorMetadata.h">
+      <Filter>Sources\Metadata</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Controllers\LibraryController.h">
+      <Filter>Sources\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\Dialogs\createaggregatordlg.h">
+      <Filter>Sources\UI\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertyGridWidgets\aggregatorpropertygridwidget.h">
+      <Filter>Sources\UI\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\IconHelper.h">
+      <Filter>Sources\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertyGridWidgets\spinnerpropertygridwidget.h">
+      <Filter>Sources\UI\PropertyGridWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Helpers\SubcontrolsHelper.h">
+      <Filter>Sources\Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="UI\createplatformdlg.ui">
@@ -917,6 +984,24 @@
     </None>
     <None Include="UI\uitextfieldpropertygridwidget.ui">
       <Filter>Form Files\PropertyGridWidgets</Filter>
+    </None>
+    <None Include="UI\PropertyGridWidgets\alignspropertygridwidget.ui">
+      <Filter>Form Files</Filter>
+    </None>
+    <None Include="UI\davaglwidget.ui">
+      <Filter>Form Files</Filter>
+    </None>
+    <None Include="UI\hierarchytreewidget.ui">
+      <Filter>Form Files</Filter>
+    </None>
+    <None Include="UI\librarywidget.ui">
+      <Filter>Form Files</Filter>
+    </None>
+    <None Include="UI\mainwindow.ui">
+      <Filter>Form Files</Filter>
+    </None>
+    <None Include="Data\icons.qrc">
+      <Filter>Resources</Filter>
     </None>
   </ItemGroup>
 </Project>

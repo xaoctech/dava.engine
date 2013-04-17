@@ -56,6 +56,8 @@ public:
 	virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
 	virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
 
+	virtual void UpdateAABBoxFromSource();
+
 private:
 	Shader * shader;
 

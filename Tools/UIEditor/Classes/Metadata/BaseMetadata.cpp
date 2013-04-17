@@ -15,7 +15,8 @@ const Vector2 BaseMetadata::INITIAL_CONTROL_SIZE = Vector2(100, 30);
 
 BaseMetadata::BaseMetadata(QObject *parent) :
     QObject(parent),
-    activeParamID(BaseMetadataParams::BaseMetadataID_UNKNOWN)
+    activeParamID(BaseMetadataParams::BaseMetadataID_UNKNOWN),
+	activeStateIndex(STATE_INDEX_DEFAULT)
 {
 }
 
@@ -124,14 +125,15 @@ UIControl* BaseMetadata::GetActiveUIControl() const
     return treeNodeParams[activeParamID].GetUIControl();
 }
 
-UIControl::eControlState BaseMetadata::GetUIControlState() const
+Vector<UIControl::eControlState> BaseMetadata::GetUIControlStates() const
 {
-    return this->uiControlState;
+	return this->uiControlStates;
 }
 
-void BaseMetadata::SetUIControlState(UIControl::eControlState controlState)
+void BaseMetadata::SetUIControlStates(const Vector<UIControl::eControlState> &controlStates)
 {
-    this->uiControlState = controlState;
+	this->uiControlStates = controlStates;
+	ResetActiveStateIndex();
 }
 
 HierarchyTreeNode* BaseMetadata::GetTreeNode(BaseMetadataParams::METADATAPARAMID paramID) const
@@ -226,12 +228,12 @@ void BaseMetadata::SetStateDirtyForProperty(UIControl::eControlState controlStat
 
 bool BaseMetadata::IsActiveStateDirtyForProperty(const QString& propertyName)
 {
-    return IsStateDirtyForProperty(this->uiControlState, propertyName);
+    return IsStateDirtyForProperty(this->uiControlStates[GetActiveStateIndex()], propertyName);
 }
 
 void BaseMetadata::SetActiveStateDirtyForProperty(const QString& propertyName, bool value)
 {
-    SetStateDirtyForProperty(this->uiControlState, propertyName, value);
+    SetStateDirtyForProperty(this->uiControlStates[GetActiveStateIndex()], propertyName, value);
 }
 
 // Get the "reference" state to compare all other with.
@@ -248,4 +250,41 @@ Color BaseMetadata::QTColorToDAVAColor(const QColor& qtColor) const
 QColor BaseMetadata::DAVAColorToQTColor(const Color& davaColor) const
 {
     return QColor(davaColor.r * 0xFF, davaColor.g * 0xFF, davaColor.b * 0xFF, davaColor.a * 0xFF);
+}
+
+void BaseMetadata::SetActiveStateIndex(int32 index)
+{
+	if (index >= STATE_INDEX_DEFAULT && index < (int32)GetStatesCount())
+	{
+		activeStateIndex = index;
+		if (GetActiveUIControl())
+		{
+			GetActiveUIControl()->SetState(uiControlStates[GetActiveStateIndex()]);
+		}
+	}
+	else
+	{
+		SetActiveStateIndex(STATE_INDEX_DEFAULT);
+		Logger::Error("Invalid state index: %d", index);
+	}
+}
+
+int32 BaseMetadata::GetActiveStateIndex() const
+{
+	if (activeStateIndex == STATE_INDEX_DEFAULT)
+	{
+		return DEFAULT_STATE_INDEX_VALUE;
+	}
+
+	return activeStateIndex;
+}
+
+void BaseMetadata::ResetActiveStateIndex()
+{
+	SetActiveStateIndex(STATE_INDEX_DEFAULT);
+}
+
+uint32 BaseMetadata::GetStatesCount() const
+{
+	return uiControlStates.size();
 }

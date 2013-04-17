@@ -1,6 +1,6 @@
 #include "Scene3D/Components/UpdatableComponent.h"
-#include "Scene3D/Systems/UpdatableSystem.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Systems/UpdateSystem.h"
+#include "Scene3D/Entity.h"
 #include "Scene3D/Scene.h"
 
 namespace DAVA
@@ -11,7 +11,7 @@ UpdatableComponent::UpdatableComponent()
 {
 }
 
-Component * UpdatableComponent::Clone(SceneNode * toEntity)
+Component * UpdatableComponent::Clone(Entity * toEntity)
 {
 	UpdatableComponent * newComponent = new UpdatableComponent();
 	newComponent->SetEntity(toEntity);

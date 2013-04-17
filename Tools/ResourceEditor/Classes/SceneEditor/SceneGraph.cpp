@@ -28,7 +28,7 @@ SceneGraph::~SceneGraph()
 
 void SceneGraph::SelectNode(BaseObject *node)
 {
-    workingNode = dynamic_cast<SceneNode *>(node);
+    workingNode = dynamic_cast<Entity *>(node);
     UpdatePropertyPanel();
 }
 
@@ -98,17 +98,17 @@ void SceneGraph::FillCell(UIHierarchyCell *cell, void *node)
     // 2. Restore default format after loading of UI from stored settings.
     Texture::SetDefaultFileFormat(NOT_FILE);
 
-    SceneNode *n = (SceneNode *)node;
+    Entity *n = (Entity *)node;
     UIStaticText *text =  (UIStaticText *)cell->FindByName("_Text_");
     text->SetText(StringToWString(n->GetName()));
     
     UIControl *icon = cell->FindByName("_Icon_");
-    icon->SetSprite("~res:/Gfx/UI/SceneNode/scenenode", 0);
+    icon->SetSprite("~res:/Gfx/UI/Entity/scenenode", 0);
     
     UIControl *marker = cell->FindByName("_Marker_");
-    if(n->GetFlags() & SceneNode::NODE_INVALID)
+    if(n->GetFlags() & Entity::NODE_INVALID)
     {
-        marker->SetSprite("~res:/Gfx/UI/SceneNode/scenenode_invalid", 0);
+        marker->SetSprite("~res:/Gfx/UI/Entity/scenenode_invalid", 0);
         marker->SetVisible(true);
     }
     else 
@@ -131,7 +131,7 @@ void SceneGraph::FillCell(UIHierarchyCell *cell, void *node)
 
 void SceneGraph::SelectHierarchyNode(UIHierarchyNode * node)
 {
-    SceneNode * sceneNode = dynamic_cast<SceneNode*>((BaseObject*)node->GetUserNode());
+    Entity * sceneNode = dynamic_cast<Entity*>((BaseObject*)node->GetUserNode());
     if (sceneNode)
     {
         workingNode = sceneNode;
@@ -183,7 +183,7 @@ void SceneGraph::UpdatePropertyPanel()
     }
 }
 
-void SceneGraph::RecreatePropertiesPanelForNode(SceneNode * node)
+void SceneGraph::RecreatePropertiesPanelForNode(Entity * node)
 {
 	if(propertyControl && propertyControl->GetParent())
 	{
@@ -294,12 +294,12 @@ void SceneGraph::RemoveRootNodes()
             }
 
             
-            Vector<SceneNode *>nodesForDeletion;
+            Vector<Entity *>nodesForDeletion;
             nodesForDeletion.reserve(workingScene->GetChildrenCount());
             
             for(int32 i = 0; i < workingScene->GetChildrenCount(); ++i)
             {
-                SceneNode *node = workingScene->GetChild(i);
+                Entity *node = workingScene->GetChild(i);
 
                 customProperties = node->GetCustomProperties();
                 if(customProperties && customProperties->IsKeyExists("editor.referenceToOwner"))
@@ -315,7 +315,7 @@ void SceneGraph::RemoveRootNodes()
             workingNode = NULL;
             for(int32 i = 0; i < (int32)nodesForDeletion.size(); ++i)
             {
-                SceneNode *node = nodesForDeletion[i];
+                Entity *node = nodesForDeletion[i];
                 
                 workingScene->ReleaseUserData(node);
                 workingScene->RemoveNode(node);
@@ -337,7 +337,7 @@ bool SceneGraph::IsNodeExpandable(UIHierarchy *, void *forNode)
 {
     if (forNode) 
     {
-        SceneNode *node = (SceneNode*)forNode;
+        Entity *node = (Entity*)forNode;
         if(node->GetSolid())
         {
             return false;
@@ -355,7 +355,7 @@ int32 SceneGraph::ChildrenCount(UIHierarchy *, void *forParent)
 {
     if (forParent) 
     {
-        SceneNode *node = (SceneNode*)forParent;
+        Entity *node = (Entity*)forParent;
         if(node->GetSolid())
         {
             return 0;
@@ -376,7 +376,7 @@ void * SceneGraph::ChildAtIndex(UIHierarchy *, void *forParent, int32 index)
 {
     if (forParent) 
     {
-        return ((SceneNode*)forParent)->GetChild(index);
+        return ((Entity*)forParent)->GetChild(index);
     }
     
     return workingScene->GetChild(index);
@@ -384,21 +384,21 @@ void * SceneGraph::ChildAtIndex(UIHierarchy *, void *forParent, int32 index)
 
 void SceneGraph::DragAndDrop(void *who, void *target, int32 mode)
 {
-    SceneNode *whoNode = SafeRetain((SceneNode *)who);
-    SceneNode *targetNode = SafeRetain((SceneNode *)target);
+    Entity *whoNode = SafeRetain((Entity *)who);
+    Entity *targetNode = SafeRetain((Entity *)target);
     
     if(whoNode)
     {
         if(UIHierarchy::DRAG_CHANGE_PARENT == mode)
         {
             // select new parent for dragged node
-            SceneNode *newParent = (targetNode) ? targetNode : workingScene;
+            Entity *newParent = (targetNode) ? targetNode : workingScene;
             
             //skip unused drag
             if(whoNode->GetParent() != newParent)
             {
                 // check correct hierarhy (can't drag to child)
-                SceneNode *nd = newParent->GetParent();
+                Entity *nd = newParent->GetParent();
                 while(nd && nd != whoNode)
                 {
                     nd = nd->GetParent();

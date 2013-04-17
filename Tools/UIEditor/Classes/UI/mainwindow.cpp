@@ -8,6 +8,7 @@
 #include "createplatformdlg.h"
 #include "createplatformdlg.h"
 #include "createscreendlg.h"
+#include "Dialogs/createaggregatordlg.h"
 #include "fontmanagerdialog.h"
 #include "Dialogs/localizationeditordialog.h"
 #include "ItemsCommand.h"
@@ -75,9 +76,14 @@ MainWindow::MainWindow(QWidget *parent) :
 			SLOT(OnSelectedScreenChanged()));
 	
 	connect(ui->hierarchyDockWidget->widget(),
-			SIGNAL(CreateNewScreen(HierarchyTreeNode::HIERARCHYTREENODEID)),
+			SIGNAL(CreateNewScreen()),
 			this,
-			SLOT(OnNewScreen(HierarchyTreeNode::HIERARCHYTREENODEID)));
+			SLOT(OnNewScreen()));
+	
+	connect(ui->hierarchyDockWidget->widget(),
+			SIGNAL(CreateNewAggregator()),
+			this,
+			SLOT(OnNewAggregator()));
 	
 	connect(ScreenWrapper::Instance(),
 			SIGNAL(UpdateScaleRequest(float)),
@@ -153,6 +159,7 @@ void MainWindow::CreateHierarchyDockWidgetToolbar()
 	// Set actions for toolbar
  	toolBar->addAction(ui->actionNew_platform);
 	toolBar->addAction(ui->actionNew_screen);
+	toolBar->addAction(ui->actionNew_aggregator);
 	// Disable moving of toolbar
 	toolBar->setMovable(false);
 	// Set toolbar position
@@ -309,11 +316,13 @@ void MainWindow::InitMenu()
 
 	connect(ui->actionNew_project, SIGNAL(triggered()), this, SLOT(OnNewProject()));
 	connect(ui->actionSave_project, SIGNAL(triggered()), this, SLOT(OnSaveProject()));
+	connect(ui->actionSave_All, SIGNAL(triggered()), this, SLOT(OnSaveProjectAll()));
     connect(ui->actionOpen_project, SIGNAL(triggered()), this, SLOT(OnOpenProject()));
 	connect(ui->actionClose_project, SIGNAL(triggered()), this, SLOT(OnCloseProject()));
 
 	connect(ui->actionNew_platform, SIGNAL(triggered()), this, SLOT(OnNewPlatform()));
 	connect(ui->actionNew_screen, SIGNAL(triggered()), this, SLOT(OnNewScreen()));
+	connect(ui->actionNew_aggregator, SIGNAL(triggered()), this, SLOT(OnNewAggregator()));
 
 	connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(OnExitApplication()));
 	
@@ -322,7 +331,13 @@ void MainWindow::InitMenu()
 
     connect(ui->actionZoomIn, SIGNAL(triggered()), this, SLOT(OnZoomInRequested()));
     connect(ui->actionZoomOut, SIGNAL(triggered()), this, SLOT(OnZoomOutRequested()));
-	
+	// Remap zoom in/out shorcuts for windows platform
+#if defined(__DAVAENGINE_WIN32__)
+	QList<QKeySequence> shortcuts;
+	shortcuts.append(QKeySequence(Qt::CTRL + Qt::Key_Equal));
+	shortcuts.append(QKeySequence(Qt::CTRL + Qt::Key_Plus));
+	ui->actionZoomIn->setShortcuts(shortcuts);
+#endif
 	//Create empty actions for recent projects files
 	for(int32 i = 0; i < EditorSettings::RECENT_FILES_COUNT; ++i)
     {
@@ -344,10 +359,12 @@ void MainWindow::UpdateMenu()
 {
 	//ui->actionNew
 	ui->actionSave_project->setEnabled(HierarchyTreeController::Instance()->GetTree().IsProjectCreated());
+	ui->actionSave_All->setEnabled(HierarchyTreeController::Instance()->GetTree().IsProjectCreated());
 	ui->actionClose_project->setEnabled(HierarchyTreeController::Instance()->GetTree().IsProjectCreated());
 	ui->menuProject->setEnabled(HierarchyTreeController::Instance()->GetTree().IsProjectCreated());
 	ui->actionNew_platform->setEnabled(HierarchyTreeController::Instance()->GetTree().IsProjectCreated());
 	ui->actionNew_screen->setEnabled(HierarchyTreeController::Instance()->GetTree().GetPlatforms().size());
+	ui->actionNew_aggregator->setEnabled(HierarchyTreeController::Instance()->GetTree().GetPlatforms().size());
 }
 
 void MainWindow::OnNewProject()
@@ -392,13 +409,35 @@ void MainWindow::OnNewPlatform()
 	}
 }
 
-void MainWindow::OnNewScreen(HierarchyTreeNode::HIERARCHYTREENODEID id/* = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY*/)
+void MainWindow::OnNewScreen()
 {
+	HierarchyTreeNode::HIERARCHYTREENODEID id = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
+	HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetActivePlatform();
+	if (node)
+		id = node->GetId();
+
 	CreateScreenDlg dlg(this);
 	dlg.SetDefaultPlatform(id);
 	if (dlg.exec() == QDialog::Accepted)
 	{
 		CreateScreenCommand* cmd = new CreateScreenCommand(dlg.GetScreenName(), dlg.GetPlatformId());
+		CommandsController::Instance()->ExecuteCommand(cmd);
+		SafeRelease(cmd);
+	}
+}
+
+void MainWindow::OnNewAggregator()
+{
+	HierarchyTreeNode::HIERARCHYTREENODEID id = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
+	HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetActivePlatform();
+	if (node)
+		id = node->GetId();
+	
+	CreateAggregatorDlg dlg(this);
+	dlg.SetDefaultPlatform(id);
+	if (dlg.exec() == QDialog::Accepted)
+	{
+		CreateAggregatorCommand* cmd = new CreateAggregatorCommand(dlg.GetName(), dlg.GetPlatformId(), dlg.GetRect());
 		CommandsController::Instance()->ExecuteCommand(cmd);
 		SafeRelease(cmd);
 	}
@@ -462,14 +501,18 @@ void MainWindow::FileMenuTriggered(QAction *resentScene)
     }
 }
 
-void MainWindow::OnSaveProject()
+void MainWindow::DoSaveProject(bool changesOnly)
 {
 	QString projectPath = HierarchyTreeController::Instance()->GetTree().GetActiveProjectPath();
 
 	if (projectPath.isNull() || projectPath.isEmpty())
 		return;
-		
-	if (HierarchyTreeController::Instance()->Save(projectPath))
+
+	HierarchyTreeController* controller = HierarchyTreeController::Instance();
+	bool saveSucceeded = changesOnly ? controller->SaveOnlyChangedScreens(projectPath) :
+		controller->SaveAll(projectPath);
+
+	if (saveSucceeded)
 	{
 		// If project was successfully saved - we should save new project file path
 		// and add this project to recent files list
@@ -509,6 +552,16 @@ void MainWindow::OnOpenProject()
 	}
 }
 
+void MainWindow::OnSaveProject()
+{
+	DoSaveProject(true);
+}
+
+void MainWindow::OnSaveProjectAll()
+{
+	DoSaveProject(false);
+}
+
 void MainWindow::OnCloseProject()
 {
 	CloseProject();
@@ -524,7 +577,8 @@ void MainWindow::OnExitApplication()
 
 bool MainWindow::CloseProject()
 {
-	if (!CommandsController::Instance()->IsLastChangeSaved())
+	bool lastChangeSaved = HierarchyTreeController::Instance()->GetUnsavedScreens().empty();
+	if (!lastChangeSaved)
 	{
 		int ret = QMessageBox::warning(this, qApp->applicationName(),
 									   tr("The project has been modified.\n"
@@ -592,7 +646,8 @@ void MainWindow::OnChangePropertySucceeded()
 void MainWindow::OnUnsavedChangesNumberChanged()
 {
 	QString projectTitle = ResourcesManageHelper::GetProjectTitle();
-	if (CommandsController::Instance()->IsLastChangeSaved())
+	List<HierarchyTreeScreenNode*> unsavedScreens = HierarchyTreeController::Instance()->GetUnsavedScreens();
+	if (unsavedScreens.empty())
 	{
 		setWindowTitle(projectTitle);
 	}

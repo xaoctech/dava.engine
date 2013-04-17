@@ -38,19 +38,19 @@ namespace DAVA
 {
 
 // GLOBAL PASSES
-static FastName PASS_FORWARD("ForwardPass");
-static FastName PASS_SHADOW_VOLUME("ShadowVolumePass");
-static FastName PASS_DEFERRED("DeferredPass");
+static const FastName PASS_FORWARD("ForwardPass");
+static const FastName PASS_SHADOW_VOLUME("ShadowVolumePass");
+static const FastName PASS_DEFERRED("DeferredPass");
 
 // GLOBAL LAYERS
-static FastName LAYER_OPAQUE("OpaqueRenderLayer");
-static FastName LAYER_ALPHA_TEST_LAYER("AlphaTestLayer");
-static FastName LAYER_TRANSLUCENT("TransclucentRenderLayer");
-static FastName LAYER_AFTER_TRANSLUCENT("AfterTransclucentRenderLayer");
-static FastName LAYER_SHADOW_VOLUME("ShadowVolumeRenderLayer");
+static const FastName LAYER_OPAQUE("OpaqueRenderLayer");
+static const FastName LAYER_ALPHA_TEST_LAYER("AlphaTestLayer");
+static const FastName LAYER_TRANSLUCENT("TransclucentRenderLayer");
+static const FastName LAYER_AFTER_TRANSLUCENT("AfterTransclucentRenderLayer");
+static const FastName LAYER_SHADOW_VOLUME("ShadowVolumeRenderLayer");
     
-static FastName INHERIT_FROM_MATERIAL("Inherit from material");
-static FastName LAST_LAYER("Last layer");
+static const FastName INHERIT_FROM_MATERIAL("Inherit from material");
+static const FastName LAST_LAYER("Last layer");
 
 } // ns
 
