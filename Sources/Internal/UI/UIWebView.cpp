@@ -25,6 +25,7 @@ using namespace DAVA;
 UIWebView::UIWebView()
 {
 	webViewControl = new WebViewControl();
+	isInitiatedByUser = true;
 }
 
 UIWebView::~UIWebView()
@@ -46,7 +47,9 @@ void UIWebView::SetDelegate(IUIWebViewDelegate* delegate)
 
 void UIWebView::OpenURL(const String& urlToOpen)
 {
+	isInitiatedByUser = false;
 	this->webViewControl->OpenURL(urlToOpen);
+	isInitiatedByUser = true;
 }
 
 void UIWebView::SetPosition(const Vector2 &position, bool positionInAbsoluteCoordinates)

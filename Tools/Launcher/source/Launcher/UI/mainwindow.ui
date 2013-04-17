@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>819</width>
-    <height>427</height>
+    <width>818</width>
+    <height>431</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -33,10 +33,61 @@
      <widget class="QTableWidget" name="stableTable">
       <property name="geometry">
        <rect>
-        <x>1</x>
+        <x>0</x>
         <y>0</y>
-        <width>792</width>
-        <height>351</height>
+        <width>795</width>
+        <height>355</height>
+       </rect>
+      </property>
+      <property name="editTriggers">
+       <set>QAbstractItemView::NoEditTriggers</set>
+      </property>
+      <property name="selectionMode">
+       <enum>QAbstractItemView::SingleSelection</enum>
+      </property>
+      <property name="selectionBehavior">
+       <enum>QAbstractItemView::SelectRows</enum>
+      </property>
+      <property name="rowCount">
+       <number>0</number>
+      </property>
+      <attribute name="horizontalHeaderCascadingSectionResizes">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="verticalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="verticalHeaderCascadingSectionResizes">
+       <bool>false</bool>
+      </attribute>
+      <column>
+       <property name="text">
+        <string notr="true">Name</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Installed Version</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Available Version</string>
+       </property>
+      </column>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_5">
+     <attribute name="title">
+      <string>QA</string>
+     </attribute>
+     <widget class="QTableWidget" name="testTable">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>795</width>
+        <height>355</height>
        </rect>
       </property>
       <property name="editTriggers">
@@ -84,10 +135,10 @@
      <widget class="QTableWidget" name="developmentTable">
       <property name="geometry">
        <rect>
-        <x>1</x>
+        <x>0</x>
         <y>0</y>
-        <width>792</width>
-        <height>351</height>
+        <width>795</width>
+        <height>355</height>
        </rect>
       </property>
       <property name="editTriggers">
@@ -135,10 +186,10 @@
      <widget class="QTableWidget" name="dependenciesTable">
       <property name="geometry">
        <rect>
-        <x>1</x>
+        <x>0</x>
         <y>0</y>
-        <width>792</width>
-        <height>351</height>
+        <width>795</width>
+        <height>355</height>
        </rect>
       </property>
       <property name="editTriggers">
@@ -181,10 +232,10 @@
      <widget class="QListWidget" name="listWidget">
       <property name="geometry">
        <rect>
-        <x>1</x>
+        <x>0</x>
         <y>0</y>
-        <width>792</width>
-        <height>351</height>
+        <width>795</width>
+        <height>355</height>
        </rect>
       </property>
      </widget>
@@ -222,9 +273,9 @@
    <widget class="QWidget" name="horizontalLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>450</x>
+      <x>441</x>
       <y>391</y>
-      <width>361</width>
+      <width>371</width>
       <height>31</height>
      </rect>
     </property>

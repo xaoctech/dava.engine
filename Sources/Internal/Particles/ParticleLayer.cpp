@@ -734,7 +734,7 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 	size = PropertyLineYamlReader::CreateVector2PropertyLineFromYamlNode(node, "size");
 	sizeVariation = PropertyLineYamlReader::CreateVector2PropertyLineFromYamlNode(node, "sizeVariation");
 
-	sizeOverLifeXY = PropertyLineYamlReader::CreateVector2PropertyLineFromYamlNode(node, "sizeOverlifeXY");
+	sizeOverLifeXY = PropertyLineYamlReader::CreateVector2PropertyLineFromYamlNode(node, "sizeOverLifeXY");
 
 	// Yuri Coder, 2013/04/03. sizeOverLife is outdated and kept here for the backward compatibility only.
 	// New property is sizeOverlifeXY and contains both X and Y components.
@@ -744,7 +744,7 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 		if (sizeOverLifeXY)
 		{
 			// Both properties can't be present in the same config.
-			Logger::Error("Both sizeOverlife and sizeOverlifeXY are defined for Particle Layer %s, taking sizeOverlifeXY as default",
+			Logger::Error("Both sizeOverlife and sizeOverLifeXY are defined for Particle Layer %s, taking sizeOverLifeXY as default",
 						  configPath.c_str());
 			DVASSERT(false);
 		}
@@ -1067,6 +1067,26 @@ void ParticleLayer::SetPlaybackSpeed(float32 value)
 float32 ParticleLayer::GetPlaybackSpeed()
 {
 	return this->playbackSpeed;
+}
+
+int32 ParticleLayer::GetActiveParticlesCount()
+{
+	return count;
+}
+
+float32 ParticleLayer::GetActiveParticlesArea()
+{
+	// Yuri Coder, 2013/04/16. Since the particles size are updated in runtime,
+	// we have to recalculate their area each time this method is called.
+	float32 activeArea = 0;
+	Particle * current = head;
+	while(current)
+	{
+		activeArea += current->GetArea();
+		current = current->next;
+	}
+
+	return activeArea;
 }
 
 }

@@ -118,4 +118,9 @@ void Particle::Draw()
 	sprite->Draw();
 }
 
+float32 Particle::GetArea()
+{
+	return (size.x * sizeOverLife.x) * (size.y * sizeOverLife.y);
+}
+
 };

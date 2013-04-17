@@ -66,6 +66,7 @@ struct StaticLightingParams
 class InstanceMaterialState : public BaseObject
 {
     static const int32 LIGHT_NODE_MAX_COUNT = 4;
+	static const int32 LIGHTMAP_SIZE_DEFAULT = 128; 
 public:
     InstanceMaterialState();
     virtual ~InstanceMaterialState();

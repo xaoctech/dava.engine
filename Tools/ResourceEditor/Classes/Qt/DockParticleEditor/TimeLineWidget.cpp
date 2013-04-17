@@ -19,8 +19,19 @@
 #define MINIMUM_DISPLAYED_TIME	0.02f
 #define ZOOM_STEP				0.1f
 #define UI_RECTANGLE_OFFSET		1.5
+/*
+#define SCROLL_BAR_HEIGHT		12
 
-//#define ZOOM_SLIDER_LENGTH		100
+#define MIN_ZOOM				1.0f
+#define MAX_ZOOM				10.0f
+#define ZOOM_SLIDER_LENGTH		100
+*/
+#ifdef __DAVAENGINE_WIN32__
+#define SLIDER_HEIGHT_EXPAND    0
+#else
+#define SLIDER_HEIGHT_EXPAND    5
+#endif
+
 
 TimeLineWidget::TimeLineWidget(QWidget *parent) :
 	ScrollZoomWidget(parent)
@@ -1112,12 +1123,21 @@ QRect TimeLineWidget::GetDecreaseRect() const
 	return rect;
 }
 
+/*
+QRect TimeLineWidget::GetScrollBarRect() const
+{
+	QRect graphRect = GetGraphRect();
+	QRect rect = QRect(graphRect.left(), graphRect.bottom() + SCROLL_BAR_HEIGHT, graphRect.width(), SCROLL_BAR_HEIGHT);
+	return rect;
+}
+*/
+
 QRect TimeLineWidget::GetSliderRect() const
 {
 	QRect rect = GetIncreaseRect();
 	rect.translate(-(ZOOM_SLIDER_LENGTH + 5), 0);
 	rect.setWidth(ZOOM_SLIDER_LENGTH);
-	rect.setHeight(rect.height() + 4);
+	rect.setHeight(rect.height() + SLIDER_HEIGHT_EXPAND);
 	return rect;
 }
 

@@ -17,11 +17,20 @@
 #include "ParticlesEditorController.h"
 
 #define LEFT_INDENT 20
-#define TOP_INDENT 5
-#define BOTTOM_INDENT 16
+//#define TOP_INDENT 5
+//#define BOTTOM_INDENT 16
+//#define LEFT_INDENT 10
+#define TOP_INDENT 14
+#define BOTTOM_INDENT 24
+#define RIGHT_INDENT 104
 #define LINE_STEP 16
 #define RECT_SIZE 3
 #define LINE_WIDTH 3
+
+#define PARTICLES_INFO_CONTROL_OFFSET 8
+#define PARTICLES_INFO_CONTROL_WIDTH 50
+
+#define UPDATE_LAYERS_EXTRA_INFO_PERIOD 250 // in milliseconds
 
 ParticleTimeLineWidget::ParticleTimeLineWidget(QWidget *parent/* = 0*/) :
 	ScrollZoomWidget(parent),
@@ -31,7 +40,7 @@ ParticleTimeLineWidget::ParticleTimeLineWidget(QWidget *parent/* = 0*/) :
 #ifdef Q_WS_WIN
 	nameFont("Courier", 8, QFont::Normal)
 #else
-	nameFont("Courier", 11, QFont::Normal)
+	nameFont("Courier", 12, QFont::Normal)
 #endif
 {
 	backgroundBrush.setColor(Qt::white);
@@ -60,11 +69,22 @@ ParticleTimeLineWidget::ParticleTimeLineWidget(QWidget *parent/* = 0*/) :
 	Init(0, 0);
 	
 	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+
+	// Init and start updating the particles grid.
+	this->countWidget = new ParticlesCountWidget(this, this);
+	this->areaWidget = new ParticlesAreaWidget(this, this);
+
+    connect(&updateTimer, SIGNAL(timeout()),
+			this, SLOT(OnUpdateLayersExtraInfoNeeded()));
+    updateTimer.start(UPDATE_LAYERS_EXTRA_INFO_PERIOD);
 }
 
 ParticleTimeLineWidget::~ParticleTimeLineWidget()
 {
-	
+	SafeDelete(this->countWidget);
+	SafeDelete(this->areaWidget);
+
+	updateTimer.stop();
 }
 
 void ParticleTimeLineWidget::OnLayerSelected(Entity* node, ParticleLayer* layer)
@@ -136,6 +156,8 @@ void ParticleTimeLineWidget::HandleNodeSelected(Entity* node, ParticleLayer* lay
 	}
 
 	UpdateSizePolicy();
+	UpdateLayersExtraInfoPosition();
+
 	if (lines.size())
 	{
 		emit ChangeVisible(true);
@@ -411,6 +433,8 @@ void ParticleTimeLineWidget::paintEvent(QPaintEvent *e)
 		{
 			painter.drawLine(startPoint, endPoint);
 		}
+
+		UpdateLayersExtraInfoPosition();
 	}
 
 	ScrollZoomWidget::paintEvent(e);
@@ -450,8 +474,37 @@ QRect ParticleTimeLineWidget::GetGraphRect() const
 	}
 	legendWidth = Min(legendWidth, (width() - LEFT_INDENT * 2) / 6);
 	
-	QRect rect = QRect(QPoint(LEFT_INDENT + legendWidth, TOP_INDENT), QSize(width() - LEFT_INDENT * 2 - legendWidth, height() - BOTTOM_INDENT - SCROLL_BAR_HEIGHT));
+
+	QRect rect = QRect(QPoint(LEFT_INDENT + legendWidth, TOP_INDENT),
+					   QSize(width() - LEFT_INDENT * 2 - legendWidth - RIGHT_INDENT,
+							 height() - (BOTTOM_INDENT + TOP_INDENT) + LINE_STEP / 2 - SCROLL_BAR_HEIGHT));
+
 	return rect;
+}
+
+void ParticleTimeLineWidget::UpdateLayersExtraInfoPosition()
+{
+	if (lines.size() == 0)
+	{
+		return;
+	}
+	
+	QRect graphRect = GetGraphRect();
+	QRect extraInfoRect(graphRect.right() + PARTICLES_INFO_CONTROL_OFFSET,
+					   0,
+					   PARTICLES_INFO_CONTROL_WIDTH + 1,
+					   graphRect.height() + TOP_INDENT + 1);
+	countWidget->setGeometry(extraInfoRect);
+	
+	extraInfoRect.moveRight(extraInfoRect.right() + PARTICLES_INFO_CONTROL_WIDTH);
+	areaWidget->setGeometry(extraInfoRect);
+}
+
+void ParticleTimeLineWidget::UpdateLayersExtraInfoValues()
+{
+	// Just invalidate and repaint the counter widgets.
+	this->countWidget->repaint();
+	this->areaWidget->repaint();
 }
 
 void ParticleTimeLineWidget::UpdateSizePolicy()
@@ -591,6 +644,11 @@ void ParticleTimeLineWidget::OnUpdate()
 		OnEffectNodeSelected(effectNode);
 }
 
+void ParticleTimeLineWidget::OnUpdateLayersExtraInfoNeeded()
+{
+	UpdateLayersExtraInfoValues();
+}
+
 ParticleTimeLineWidget::SetPointValueDlg::SetPointValueDlg(float32 value, float32 minValue, float32 maxValue, QWidget *parent) :
 	QDialog(parent)
 {
@@ -626,4 +684,156 @@ ParticleTimeLineWidget::SetPointValueDlg::SetPointValueDlg(float32 value, float3
 	btnOk->setDefault(true);
 	valueSpin->setFocus();
 	valueSpin->selectAll();	
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+ParticlesExtraInfoWidget::ParticlesExtraInfoWidget(const ParticleTimeLineWidget* timeLineWidget,
+											   QWidget *parent) :
+	QWidget(parent)
+{
+	this->timeLineWidget = timeLineWidget;
+}
+
+void ParticlesExtraInfoWidget::paintEvent(QPaintEvent *)
+{
+	if (!this->timeLineWidget)
+	{
+		return;
+	}
+
+	QPainter painter(this);
+	painter.setPen(Qt::black);
+	
+	QRect ourRect = rect();
+	ourRect.adjust(0, 0, -1, -1);
+	painter.drawRect(ourRect);
+
+	// Draw the header.
+	painter.setFont(timeLineWidget->nameFont);
+	painter.setPen(Qt::black);
+	QRect textRect(0, 0, rect().width(), TOP_INDENT);
+	painter.drawRect(textRect);
+	painter.drawText(textRect, Qt::AlignHCenter | Qt::AlignVCenter, GetExtraInfoHeader());
+
+	// Draw the per-layer particles count.
+	OnBeforeGetExtraInfoLoop();
+
+	QFontMetrics fontMetrics(timeLineWidget->nameFont);
+	painter.setFont(timeLineWidget->nameFont);
+
+	int32 i = 0;
+	for (ParticleTimeLineWidget::LINE_MAP::const_iterator iter = timeLineWidget->lines.begin();
+		 iter != timeLineWidget->lines.end(); ++iter, ++i)
+	{
+		const ParticleTimeLineWidget::LINE& line = iter->second;
+
+		painter.setPen(QPen(line.color, LINE_WIDTH));
+		int startY = i * LINE_STEP + LINE_STEP / 2;
+		QRect textRect (EXTRA_INFO_LEFT_PADDING, TOP_INDENT + startY,
+						rect().width() - EXTRA_INFO_LEFT_PADDING, LINE_STEP);
+		painter.drawText(textRect, Qt::AlignLeft | Qt::AlignVCenter,
+						 GetExtraInfoForLayerLine(line));
+	}
+
+	OnAfterGetExtraInfoLoop();
+
+	// Draw the "Total" box.
+	QPoint totalPoint(EXTRA_INFO_LEFT_PADDING, rect().bottom() - 3);
+	QFont totalFont = timeLineWidget->nameFont;
+	totalFont.setBold(true);
+
+	painter.setPen(QPen(Qt::black, LINE_WIDTH));
+	painter.drawText(totalPoint, GetExtraInfoFooter());
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+ParticlesCountWidget::ParticlesCountWidget(const ParticleTimeLineWidget* timeLineWidget,
+										   QWidget *parent) :
+	ParticlesExtraInfoWidget(timeLineWidget, parent)
+{
+	this->totalParticlesCount = 0;
+}
+
+void ParticlesCountWidget::OnBeforeGetExtraInfoLoop()
+{
+	this->totalParticlesCount = 0;
+}
+
+QString ParticlesCountWidget::GetExtraInfoForLayerLine(const ParticleTimeLineWidget::LINE& line)
+{
+	if (!line.layer)
+	{
+		return QString();
+	}
+	
+	int32 particlesNumber = line.layer->GetActiveParticlesCount();
+	this->totalParticlesCount += particlesNumber;
+
+	return QString::number(particlesNumber);
+}
+
+QString ParticlesCountWidget::GetExtraInfoHeader()
+{
+	return "Count";
+}
+
+QString ParticlesCountWidget::GetExtraInfoFooter()
+{
+	return QString::number(this->totalParticlesCount);
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+ParticlesAreaWidget::ParticlesAreaWidget(const ParticleTimeLineWidget* timeLineWidget,
+									   QWidget *parent) :
+ParticlesExtraInfoWidget(timeLineWidget, parent)
+{
+	this->totalParticlesArea = 0.0f;
+}
+
+void ParticlesAreaWidget::OnBeforeGetExtraInfoLoop()
+{
+	this->totalParticlesArea = 0;
+}
+
+QString ParticlesAreaWidget::GetExtraInfoForLayerLine(const ParticleTimeLineWidget::LINE& line)
+{
+	if (!line.layer)
+	{
+		return QString();
+	}
+	
+	float32 area = line.layer->GetActiveParticlesArea();
+	this->totalParticlesArea += area;
+
+	return FormatFloat(area);
+}
+
+QString ParticlesAreaWidget::GetExtraInfoHeader()
+{
+	return "Area";
+}
+
+QString ParticlesAreaWidget::GetExtraInfoFooter()
+{
+	return FormatFloat(this->totalParticlesArea);
+}
+
+QString ParticlesAreaWidget::FormatFloat(float32 value)
+{
+	QString strValue;
+	if (fabs(value) < 10)
+	{
+		strValue = "%.4f";
+	}
+	else if (fabs(value) < 100)
+	{
+		strValue = "%.2f";
+	}
+	else
+	{
+		strValue = "%.0f";
+	}
+
+	strValue.sprintf(strValue.toAscii(), value);
+	return strValue;
 }

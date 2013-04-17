@@ -3,6 +3,7 @@
 
 enum eAppType {
     eAppTypeStable,
+    eAppTypeTest,
     eAppTypeDevelopment,
     eAppTypeDependencies
 };
