@@ -25,8 +25,6 @@ HierarchyTreeScreenNode::HierarchyTreeScreenNode(HierarchyTreePlatformNode* pare
 	scale = 1.f;
 	posX = 0;
 	posY = 0;
-
-	unsavedChangesCounter = 0;
 }
 
 HierarchyTreeScreenNode::HierarchyTreeScreenNode(HierarchyTreePlatformNode* parent, const HierarchyTreeScreenNode* base):
@@ -194,7 +192,7 @@ void HierarchyTreeScreenNode::BuildHierarchyTree(HierarchyTreeNode* parent, List
 bool HierarchyTreeScreenNode::Save(const QString& path, bool saveAll)
 {
 	// Do not save the screen if it wasn't changed.
-	if (!saveAll && this->unsavedChangesCounter == 0)
+	if (!saveAll && !IsNeedSave())
 	{
 		return true;
 	}
@@ -244,18 +242,7 @@ Rect HierarchyTreeScreenNode::GetRect() const
 	return rect;
 }
 
-// Access to the screen unsaved changes counter.
-void HierarchyTreeScreenNode::IncrementUnsavedChanges()
+bool HierarchyTreeScreenNode::IsNeedSave() const
 {
-	unsavedChangesCounter ++;
-}
-
-void HierarchyTreeScreenNode::DecrementUnsavedChanges()
-{
-	unsavedChangesCounter --;
-}
-
-void HierarchyTreeScreenNode::ResetUnsavedChanges()
-{
-	unsavedChangesCounter = 0;
+	return IsMarked() | (this->unsavedChangesCounter != 0);
 }

@@ -34,8 +34,8 @@ const BackgroundGridWidgetHelper::ColorInheritTypesData BackgroundGridWidgetHelp
 const BackgroundGridWidgetHelper::SpriteModificationTypesData BackgroundGridWidgetHelper::spriteModificationTypesData[] =
 {
 	{0,						"Original"},
-	{ESM_HFLIP,				"Horizontal"},
-	{ESM_VFLIP,				"Vertical"},
+	{ESM_VFLIP,				"Horizontal"},
+	{ESM_HFLIP,				"Vertical"},
 	{ESM_HFLIP|ESM_VFLIP,	"Both"}
 
 };
