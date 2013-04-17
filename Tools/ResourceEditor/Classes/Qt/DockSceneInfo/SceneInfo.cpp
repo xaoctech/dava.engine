@@ -14,6 +14,7 @@
 
 #include <QHeaderView>
 #include <QTimer>
+#include <QPalette>
 
 using namespace DAVA;
 
@@ -36,6 +37,8 @@ SceneInfo::SceneInfo(QWidget *parent /* = 0 */)
     ClearData();
     
     InitializeInfo();
+    
+    viewport()->setBackgroundRole(QPalette::Window);
 }
 
 SceneInfo::~SceneInfo()
