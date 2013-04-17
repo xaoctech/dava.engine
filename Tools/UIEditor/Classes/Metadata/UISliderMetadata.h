@@ -48,7 +48,7 @@ protected:
 	// Override Resize function
 	virtual void ApplyResize(const Rect& originalRect, const Rect& newRect);
 		
-    // Helper to access active UI Button.
+    // Helper to access active UI Slider.
     UISlider* GetActiveUISlider() const;
 	
     // Getters/setters.

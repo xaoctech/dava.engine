@@ -51,6 +51,7 @@
 #include "InputTest.h"
 #include "DeviceInfoTest.h"
 #include "LocalizationTest.h"
+#include "UIListTest.h"
 
 using namespace DAVA;
 
