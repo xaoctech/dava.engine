@@ -3,9 +3,11 @@
 
 #include "DAVAEngine.h"
 
+class MultiCommand;
 class CommandsManager;
 class Command: public DAVA::BaseObject
 {
+	friend class MultiCommand;
     friend class CommandsManager;
     
 protected:
@@ -45,6 +47,18 @@ protected:
     eCommandState commandState;
 
 	DAVA::String commandName;
+};
+
+class MultiCommand: public Command
+{
+public:
+	MultiCommand(eCommandType _type);
+
+protected:
+	void ExecuteInternal(Command* command);
+	void CancelInternal(Command* command);
+
+	eCommandState GetInternalCommandState(Command* command);
 };
 
 #include "../Qt/DockSceneGraph/PointerHolder.h"
