@@ -8,10 +8,13 @@
 #include "../Commands/SceneGraphCommands.h"
 #include "../Commands/LibraryCommands.h"
 
-#include "../Scene/SceneDataManager.h"
-#include "../Scene/SceneData.h"
-
 #include "SceneGraphModel.h"
+
+#include "../../LandscapeEditor/LandscapesController.h"
+#include "../../SceneEditor/SceneEditorScreenMain.h"
+#include "../../SceneEditor/EditorBodyControl.h"
+#include "../../AppScreens.h"
+
 
 #include <QKeyEvent>
 
@@ -168,6 +171,18 @@ void QSceneGraphTreeView::ShowSceneGraphMenu(const QModelIndex &index, const QPo
 	// For "custom" Particles Editor nodes the "generic" ones aren't needed".
     if (sceneGraphModel->GetParticlesEditorSceneModelHelper().NeedDisplaySceneEditorPopupMenuItems(index))
     {
+		SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+		LandscapesController *landsacpesController = activeScene->GetLandscapesController();
+
+		SceneEditorScreenMain *screen = static_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen(SCREEN_SCENE_EDITOR_MAIN));
+		EditorBodyControl *c = screen->FindCurrentBody()->bodyControl;
+
+		bool canChangeScene = !landsacpesController->EditorLandscapeIsActive() && !c->LandscapeEditorActive();
+		if(!canChangeScene)
+			return;
+
+
+
 		AddActionToMenu(&menu, QString("Remove Root Nodes"), new CommandRemoveRootNodes());
 		AddActionToMenu(&menu, QString("Look at Object"), new CommandLockAtObject());
 		AddActionToMenu(&menu, QString("Remove Object"), new CommandRemoveSceneNode());

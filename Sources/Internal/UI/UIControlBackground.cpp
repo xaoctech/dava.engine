@@ -76,6 +76,8 @@ void UIControlBackground::CopyDataFrom(UIControlBackground *srcBackground)
 	spriteModification = srcBackground->spriteModification;
 	colorInheritType = srcBackground->colorInheritType;
 	perPixelAccuracyType = srcBackground->perPixelAccuracyType;
+	leftStretchCap = srcBackground->leftStretchCap;
+	topStretchCap = srcBackground->topStretchCap;
 }
 
 

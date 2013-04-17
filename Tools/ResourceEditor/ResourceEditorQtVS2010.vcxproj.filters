@@ -220,6 +220,12 @@
     <Filter Include="QtGenerated\DockMaterialViewOptions">
       <UniqueIdentifier>{e560503d-45b2-4dc6-8887-47e59d7d7eb1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Qt\DockSceneInfo">
+      <UniqueIdentifier>{18c9c067-52e7-4949-a460-aa84289f4863}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\DockSceneInfo">
+      <UniqueIdentifier>{eb98cf11-941e-4f68-9493-8c0e36af005e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -426,9 +432,6 @@
     <ClInclude Include="Classes\SceneEditor\ExtendedDialog.h">
       <Filter>Sources\SceneEditor\Dialogs</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\HelpDialog.h">
-      <Filter>Sources\SceneEditor\Dialogs</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\SceneEditor\SettingsDialog.h">
       <Filter>Sources\SceneEditor\Dialogs</Filter>
     </ClInclude>
@@ -526,9 +529,6 @@
       <Filter>Sources\SceneEditor\Controls</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\ModificationPopUp.h">
-      <Filter>Sources\SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\SceneInfoControl.h">
       <Filter>Sources\SceneEditor\Controls</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\ScenePreviewControl.h">
@@ -1464,9 +1464,6 @@
     <ClCompile Include="Classes\Commands\ToolsCommands.cpp">
       <Filter>Sources\Commands</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Commands\ViewCommands.cpp">
-      <Filter>Sources\Commands</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Commands\VisibilityCheckToolCommands.cpp">
       <Filter>Sources\Commands</Filter>
     </ClCompile>
@@ -1592,6 +1589,12 @@
     </ClCompile>
     <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticleEffectPropertiesWidget_moc.cpp">
       <Filter>QtGenerated\DockParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockSceneInfo\SceneInfo.cpp">
+      <Filter>Sources\Qt\DockSceneInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockSceneInfo\SceneInfo_moc.cpp">
+      <Filter>QtGenerated\DockSceneInfo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2708,9 +2711,6 @@
     <ClInclude Include="Classes\Commands\ToolsCommands.h">
       <Filter>Sources\Commands</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Commands\ViewCommands.h">
-      <Filter>Sources\Commands</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands\VisibilityCheckToolCommands.h">
       <Filter>Sources\Commands</Filter>
     </ClInclude>
@@ -2798,6 +2798,9 @@
     <ClInclude Include="Classes\Qt\DockParticleEditor\ParticleEffectPropertiesWidget.h">
       <Filter>Sources\Qt\DockParticleEditor</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Qt\DockSceneInfo\SceneInfo.h">
+      <Filter>Sources\Qt\DockSceneInfo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.cpp">
@@ -2858,9 +2861,6 @@
       <Filter>Sources\SceneEditor\Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\ExtendedDialog.cpp">
-      <Filter>Sources\SceneEditor\Dialogs</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\HelpDialog.cpp">
       <Filter>Sources\SceneEditor\Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\SettingsDialog.cpp">
@@ -2957,9 +2957,6 @@
       <Filter>Sources\SceneEditor\Controls</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\ModificationsPanel.cpp">
-      <Filter>Sources\SceneEditor\Controls</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\SceneInfoControl.cpp">
       <Filter>Sources\SceneEditor\Controls</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\ScenePreviewControl.cpp">

@@ -6,7 +6,6 @@
 #include "EditorSettings.h"
 #include "../config.h"
 
-#include "SceneInfoControl.h"
 #include "SceneValidator.h"
 #include "../LightmapsPacker.h"
 
@@ -60,10 +59,6 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     scene3dView->SetInputEnabled(false);
     AddControl(scene3dView);
 
-    int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth();
-    sceneInfoControl = new SceneInfoControl(Rect(rect.dx - rightSideWidth * 2 , 0, rightSideWidth, rightSideWidth));
-    AddControl(sceneInfoControl);
-
 	CreateModificationPanel();
     CreateLandscapeEditor();
 
@@ -97,8 +92,6 @@ EditorBodyControl::~EditorBodyControl()
     
     SafeRelease(sceneGraph);
     currentGraph = NULL;
-    
-    SafeRelease(sceneInfoControl);
     
     ReleaseModificationPanel();
     
@@ -426,12 +419,16 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 					{
 						isDrag = true;
 						if (InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SHIFT))
-						{//copy object
+						{
 							originalNode = scene->GetProxy();
+
+							//create temporary node to calculate transform
 							modifiedNode = originalNode->Clone();
 							originalNode->GetParent()->AddNode(modifiedNode);
 							SelectNode(modifiedNode);
 							selection = modifiedNode;
+
+							//store original transform
 							transformBeforeModification = modifiedNode->GetLocalTransform();
 						}
 
@@ -489,16 +486,25 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 			inTouch = false;
 			if (isDrag)
 			{
+				// originalNode should be non-zero only when clone node
 				if (originalNode)
 				{
+					// Get final transform from temporary node
+					Matrix4 transform = modifiedNode->GetLocalTransform();
+
+					// Remove temporary node
+					RemoveSelectedSGNode();
+					SafeRelease(modifiedNode);
+					
 					CommandCloneAndTransform* cmd = new CommandCloneAndTransform(originalNode,
-																				 modifiedNode->GetLocalTransform(),
+																				 transform,
 																				 this,
 																				 scene->collisionWorld);
 					CommandsManager::Instance()->ExecuteAndRelease(cmd);
 					originalNode = NULL;
-					RemoveNode(modifiedNode);
-					SafeRelease(modifiedNode);
+
+					// update selection to newly created node
+					selection = scene->GetProxy();
 				}
 				else
 				{
@@ -900,18 +906,6 @@ bool EditorBodyControl::ControlsAreLocked()
     return (ResourceEditor::VIEWPORT_DEFAULT != currentViewportType);
 }
 
-void EditorBodyControl::ToggleSceneInfo()
-{
-    if(sceneInfoControl->GetParent())
-    {
-        RemoveControl(sceneInfoControl);
-    }
-    else
-    {
-        AddControl(sceneInfoControl);
-    }
-}
-
 void EditorBodyControl::PackLightmaps()
 {
 	SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
@@ -1053,8 +1047,6 @@ LandscapeEditorBase* EditorBodyControl::GetCurrentLandscapeEditor()
 
 void EditorBodyControl::LandscapeEditorStarted()
 {
-    RemoveControl(sceneInfoControl);
-
     RemoveControl(modificationPanel);
     savedModificatioMode = modificationPanel->IsModificationMode();
     
@@ -1128,11 +1120,6 @@ void EditorBodyControl::SetScene(EditorScene *newScene)
     scene3dView->SetScene(scene);
 	sceneGraph->SetScene(scene);
     
-    if(sceneInfoControl)
-    {
-        sceneInfoControl->SetWorkingScene(newScene);
-    }
-    
     modificationPanel->SetScene(scene);
 
 	if(landscapeEditorColor)
@@ -1200,8 +1187,6 @@ void EditorBodyControl::SetSize(const Vector2 &newSize)
     scene3dView->SetSize(viewSize);
     
     sceneGraph->SetSize(newSize);
-    
-    sceneInfoControl->SetPosition(Vector2(newSize.x - rightSideWidth * 2, 0));
 }
 
 
