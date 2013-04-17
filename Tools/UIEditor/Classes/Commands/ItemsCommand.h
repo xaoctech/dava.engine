@@ -31,7 +31,21 @@ public:
 	// Return the Redo Node to scene.
 	void ReturnRedoNodeToScene();
 
+	void DetectType(HierarchyTreeNode* node);
 protected:
+	// the type of objects on which command is being performed
+	enum eObjectType
+	{
+		TYPE_UNDEFINED = -1,
+		TYPE_PLATFORM = 0,
+		TYPE_AGGREGATOR,
+		TYPE_SCREEN,
+		TYPE_CONTROLS,
+		TYPES_COUNT
+	};
+
+	eObjectType type;
+
 	// The Redo Node remembered.
 	HierarchyTreeNode* redoNode;
 };
@@ -45,6 +59,9 @@ public:
 	virtual void Rollback();
 
 	virtual bool IsUndoRedoSupported() {return true;};
+
+	virtual void IncrementUnsavedChanges();
+	virtual void DecrementUnsavedChanges();
 
 private:
 	QString name;
@@ -61,6 +78,8 @@ public:
 
 	virtual bool IsUndoRedoSupported() {return true;};
 
+	virtual void IncrementUnsavedChanges();
+	virtual void DecrementUnsavedChanges();
 private:
 	QString name;
 	HierarchyTreeNode::HIERARCHYTREENODEID platformId;
@@ -75,7 +94,9 @@ public:
 	virtual void Rollback();
 	
 	virtual bool IsUndoRedoSupported() {return true;};
-	
+
+	virtual void IncrementUnsavedChanges();
+	virtual void DecrementUnsavedChanges();
 private:
 	QString name;
 	HierarchyTreeNode::HIERARCHYTREENODEID platformId;
@@ -104,26 +125,38 @@ private:
 	HierarchyTreeNode* redoNode;
 };
 
-class DeleteSelectedNodeCommand: public BaseCommand
+class DeleteSelectedNodeCommand: public UndoableHierarchyTreeNodeCommand
 {
 public:
-	DeleteSelectedNodeCommand(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes);
+	DeleteSelectedNodeCommand(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes, bool needDeleteFiles = false);
 	
 	virtual void Execute();
 	void Rollback();
 	virtual bool IsUndoRedoSupported() {return true;};
-	
+
+	virtual void IncrementUnsavedChanges();
+	virtual void DecrementUnsavedChanges();
+
 private:
+	HierarchyTreeNode::HIERARCHYTREENODEID parentId;
+
 	HierarchyTreeNode::HIERARCHYTREENODESLIST nodes;
 	
 	// Prepare the information needed for Redo.
 	void PrepareRedoInformation();
-	
+
+	// Need to store parents of UIAggregatorControl
+	// removing from scene with corresponding HierarchyTreeAggregatorNode
+	void StoreParentsOfRemovingAggregatorControls(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes);
+
 	// Information needed during Undo/Redo.
 	HierarchyTreeNode::HIERARCHYTREENODESLIST redoNodes;
+	Set<HierarchyTreeNode::HIERARCHYTREENODEID> parentsOfRemovingAggregatorControls;
+
+	bool deleteFiles;
 };
 
-class ChangeNodeHeirarchy: public BaseCommand
+class ChangeNodeHeirarchy: public UndoableHierarchyTreeNodeCommand
 {
 public:
 	ChangeNodeHeirarchy(HierarchyTreeNode::HIERARCHYTREENODEID targetNodeID, HierarchyTreeNode::HIERARCHYTREENODEID afterNodeID, HierarchyTreeNode::HIERARCHYTREENODESIDLIST items);
@@ -131,7 +164,10 @@ public:
 	virtual void Execute();
 	virtual void Rollback();
 	virtual bool IsUndoRedoSupported() {return true;};
-	
+
+	virtual void IncrementUnsavedChanges();
+	virtual void DecrementUnsavedChanges();
+
 protected:
 	// Store the previous parents to apply Rollback.
 	void StorePreviousParents();
@@ -139,6 +175,9 @@ protected:
 private:
 	HierarchyTreeNode::HIERARCHYTREENODEID targetNodeID;
 	HierarchyTreeNode::HIERARCHYTREENODESIDLIST items;
+
+	// Previous marked flags for Screens
+	Map<HierarchyTreeNode::HIERARCHYTREENODEID, bool> storedMarks;
 
 	// Previous parents for the "items" list.
 	struct PreviousState

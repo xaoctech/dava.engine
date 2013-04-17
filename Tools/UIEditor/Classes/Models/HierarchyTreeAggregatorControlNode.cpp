@@ -59,3 +59,14 @@ void HierarchyTreeAggregatorControlNode::ReturnTreeNodeToScene()
 	SetAggregatorNode(parentAggregatorSave);
 	HierarchyTreeControlNode::ReturnTreeNodeToScene();
 }
+
+String HierarchyTreeAggregatorControlNode::GetAggregatorPath() const
+{
+	UIAggregatorControl* aggregatorControl = dynamic_cast<UIAggregatorControl*>(GetUIObject());
+	if (aggregatorControl)
+	{
+		return aggregatorControl->GetAggregatorPath();
+	}
+
+	return "";
+}
