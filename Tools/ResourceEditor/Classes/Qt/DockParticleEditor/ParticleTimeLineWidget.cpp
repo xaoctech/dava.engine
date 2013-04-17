@@ -17,9 +17,6 @@
 #include "ParticlesEditorController.h"
 
 #define LEFT_INDENT 20
-//#define TOP_INDENT 5
-//#define BOTTOM_INDENT 16
-//#define LEFT_INDENT 10
 #define TOP_INDENT 14
 #define BOTTOM_INDENT 24
 #define RIGHT_INDENT 104
@@ -509,7 +506,7 @@ void ParticleTimeLineWidget::UpdateLayersExtraInfoValues()
 
 void ParticleTimeLineWidget::UpdateSizePolicy()
 {
-	int height = (lines.size() + 1) * LINE_STEP + BOTTOM_INDENT + TOP_INDENT + SCROLL_BAR_HEIGHT;
+	int height = (lines.size() + 1) * LINE_STEP + BOTTOM_INDENT + TOP_INDENT + PARTICLES_INFO_CONTROL_OFFSET;
 	setMinimumHeight(height);
 }
 

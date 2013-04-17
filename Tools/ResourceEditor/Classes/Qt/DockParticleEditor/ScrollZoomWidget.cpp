@@ -236,7 +236,7 @@ void ScrollZoomWidget::keyReleaseEvent (QKeyEvent *event)
 QRect ScrollZoomWidget::GetScrollBarRect() const
 {
 	QRect graphRect = GetGraphRect();
-	QRect rect = QRect(graphRect.left(), graphRect.bottom() + SCROLL_BAR_HEIGHT, graphRect.width(), SCROLL_BAR_HEIGHT);
+	QRect rect = QRect(graphRect.left(), this->height() - SCROLL_BAR_HEIGHT, graphRect.width(), SCROLL_BAR_HEIGHT);
 	return rect;
 }
 

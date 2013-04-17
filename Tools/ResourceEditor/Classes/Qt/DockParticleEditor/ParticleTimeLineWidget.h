@@ -60,7 +60,7 @@ protected:
 	virtual void mousePressEvent(QMouseEvent *);
 	virtual void mouseReleaseEvent(QMouseEvent *);
 	virtual void mouseDoubleClickEvent(QMouseEvent *);
-	
+
 private:
 	bool GetLineRect(uint32 id, QRect& startPoint, QRect& endPoint) const;
 	QRect GetGraphRect() const;
@@ -72,7 +72,10 @@ private:
 
 	void OnValueChanged(int lineId);
 	void UpdateSizePolicy();
-	
+
+	void UpdateLayersExtraInfoPosition();
+	void UpdateLayersExtraInfoValues();
+
 	// Handle situation when the Particle Emitter Node is selected (including
 	// case when separate Layer node is selected.
 	void HandleNodeSelected(Entity* node, ParticleLayer* layer);
@@ -81,10 +84,8 @@ private:
 	virtual QRect GetIncreaseRect() const;
 	virtual QRect GetScaleRect() const;
 	virtual QRect GetDecreaseRect() const;
-	
 
 private:
-
 	// Get the width/height for particle counter label.
 	void GetParticlesCountWidthHeight(const LINE& line, int32& width, int32& height);
 
@@ -99,7 +100,6 @@ private:
 	ParticlesCountWidget* countWidget;
 	ParticlesAreaWidget* areaWidget;
 
-	
 	class SetPointValueDlg: public QDialog
 	{
 		//Q_OBJECT
