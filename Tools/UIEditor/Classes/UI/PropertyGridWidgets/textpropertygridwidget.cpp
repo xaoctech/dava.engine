@@ -102,40 +102,7 @@ void TextPropertyGridWidget::HandleSelectedUIControlStatesChanged(const Vector<U
 
 void TextPropertyGridWidget::HandleLineEditEditingFinished(QLineEdit *senderWidget)
 {
-    bool setTextForAllStates = ui->textForAllStatesCheckBox->isChecked();
-    if (setTextForAllStates)
-    {
-        if (activeMetadata == NULL)
-        {
-            // No control already assinged.
-            return;
-        }
-        
-        PROPERTYGRIDWIDGETSITER iter = propertyGridWidgetsMap.find(senderWidget);
-        if (iter == propertyGridWidgetsMap.end())
-        {
-            Logger::Error("OnLineEditValueChanged - unable to find attached property in the propertyGridWidgetsMap!");
-            return;
-        }
-
-		// Don't update the property if the text wasn't actually changed.
-		QString curValue = PropertiesHelper::GetAllPropertyValues<QString>(this->activeMetadata, iter->second.getProperty().name());
-		if (curValue == senderWidget->text())
-		{
-			return;
-		}
-
-        BaseCommand* command = new ChangePropertyCommand<QString>(activeMetadata,
-                                                                  iter->second,
-                                                                  senderWidget->text(),
-                                                                  setTextForAllStates);
-        CommandsController::Instance()->ExecuteCommand(command);
-        SafeRelease(command);        
-    }
-    else
-    {
-        BasePropertyGridWidget::HandleLineEditEditingFinished(senderWidget);
-    }
+	BasePropertyGridWidget::HandleLineEditEditingFinished(senderWidget);
 }
 
 void TextPropertyGridWidget::HandleChangePropertySucceeded(const QString& propertyName)
@@ -168,8 +135,6 @@ void TextPropertyGridWidget::ProcessPushButtonClicked(QPushButton *senderWidget)
         return;
     }
 
-    bool setFontForAllStates = ui->fontForAllStatesCheckBox->isChecked();
-	
 	// Get current value of Font property
 	Font *fontPropertyValue = PropertiesHelper::GetPropertyValue<Font *>(this->activeMetadata, FONT_PROPERTY_NAME, false);
 	// Get sprite path from graphics font
@@ -207,7 +172,7 @@ void TextPropertyGridWidget::ProcessPushButtonClicked(QPushButton *senderWidget)
 		return;
 	}
 	// Set font for all states if checkbox is checked
-    BaseCommand* command = new ChangePropertyCommand<Font *>(activeMetadata, iter->second, resultFont, setFontForAllStates);
+    BaseCommand* command = new ChangePropertyCommand<Font *>(activeMetadata, iter->second, resultFont);
     CommandsController::Instance()->ExecuteCommand(command);
     SafeRelease(command);
 	// TODO - probable memory leak. Need to investigate how to fix it
