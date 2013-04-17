@@ -25,6 +25,12 @@
 #define MAX_ZOOM				10.0f
 #define ZOOM_SLIDER_LENGTH		40
 
+#ifdef __DAVAENGINE_WIN32__
+#define SLIDER_HEIGHT_EXPAND    0
+#else
+#define SLIDER_HEIGHT_EXPAND    5
+#endif
+
 using namespace DAVA;
 
 class ScrollZoomWidget : public QWidget
