@@ -27,13 +27,13 @@
 
 using namespace DAVA;
 
-class TimeLineWidgetBase : public QWidget
+class ScrollZoomWidget : public QWidget
 {
 	Q_OBJECT
 
 public:
-	explicit TimeLineWidgetBase(QWidget *parent = 0);
-	~TimeLineWidgetBase();
+	explicit ScrollZoomWidget(QWidget *parent = 0);
+	~ScrollZoomWidget();
 	
 	virtual void Init(float32 minT, float32 maxT);
 	float32 GetMinBoundary();
