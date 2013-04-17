@@ -297,7 +297,7 @@ void LandscapeEditorHeightmap::UpdateCursor()
 void LandscapeEditorHeightmap::InputAction(int32 phase, bool intersects)
 {
     bool dropper = IsKeyModificatorPressed(DVKEY_CTRL);
-    if(dropper)
+    if(dropper && !editingIsEnabled)
     {
         switch(phase)
         {
