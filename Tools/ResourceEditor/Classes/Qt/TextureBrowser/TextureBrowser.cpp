@@ -43,7 +43,7 @@ TextureBrowser::TextureBrowser(QWidget *parent)
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneActivated(SceneData *)), this, SLOT(sceneActivated(SceneData *)));
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneChanged(SceneData *)), this, SLOT(sceneChanged(SceneData *)));
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneReleased(SceneData *)), this, SLOT(sceneReleased(SceneData *)));
-	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneNodeSelected(SceneData *, DAVA::SceneNode *)), this, SLOT(sceneNodeSelected(SceneData *, DAVA::SceneNode *)));
+	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneNodeSelected(SceneData *, DAVA::Entity *)), this, SLOT(sceneNodeSelected(SceneData *, DAVA::Entity *)));
 
 	// convertor signals
 	QObject::connect(TextureConvertor::Instance(), SIGNAL(readyOriginal(const DAVA::TextureDescriptor *, const QImage &)), this, SLOT(textureReadyOriginal(const DAVA::TextureDescriptor *, const QImage &)));
@@ -445,9 +445,6 @@ void TextureBrowser::setupTextureListToolbar()
 
 	ui->textureListToolbar->addWidget(texturesSortComboLabel);
 	ui->textureListToolbar->addWidget(texturesSortCombo);
-
-	ui->textureListToolbar->addSeparator();
-	ui->textureListToolbar->addAction(ui->actionFilterSelectedNode);
 
 	QObject::connect(texturesSortCombo, SIGNAL(activated(const QString &)), this, SLOT(textureListSortChanged(const QString &)));
 	QObject::connect(ui->actionViewTextList, SIGNAL(triggered(bool)), this, SLOT(textureListViewText(bool)));
@@ -865,7 +862,7 @@ void TextureBrowser::sceneReleased(SceneData *sceneData)
 	}
 }
 
-void TextureBrowser::sceneNodeSelected(SceneData *sceneData, DAVA::SceneNode *node)
+void TextureBrowser::sceneNodeSelected(SceneData *sceneData, DAVA::Entity *node)
 {
 	textureListModel->setHighlight(node);
 }

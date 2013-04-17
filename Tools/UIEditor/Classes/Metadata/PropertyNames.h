@@ -22,6 +22,10 @@ namespace PropertyNames
     static const char* BACKGROUND_COLOR_PROPERTY_NAME = "BackgroundColor";
     static const char* SPRITE_PROPERTY_NAME = "Sprite";
     static const char* SPRITE_FRAME_PROPERTY_NAME = "SpriteFrame";
+	static const char* SPRITE_MODIFICATION_PROPERTY_NAME = "SpriteModification";
+
+	static const char* STRETCH_HORIZONTAL_PROPERTY_NAME = "LeftRightStretchCap";
+	static const char* STRETCH_VERTICAL_PROPERTY_NAME = "TopBottomStretchCap";
     
     static const char* DRAW_TYPE_PROPERTY_NAME = "DrawType";
     static const char* COLOR_INHERIT_TYPE_PROPERTY_NAME = "ColorInheritType";
@@ -30,6 +34,10 @@ namespace PropertyNames
     static const char* TEXT_PROPERTY_NAME = "Text";
     static const char* TEXT_COLOR_PROPERTY_NAME = "TextColor";
 	
+	static const char* SHADOW_OFFSET_X = "ShadowOffsetX";
+	static const char* SHADOW_OFFSET_Y = "ShadowOffsetY";
+	static const char* SHADOW_COLOR = "ShadowColor";
+
 	// Slider properties
 	static const char* SLIDER_VALUE_PROPERTY_NAME = "SliderValue";
 	static const char* SLIDER_MIN_VALUE_PROPERTY_NAME = "SliderMinValue";
@@ -56,6 +64,13 @@ namespace PropertyNames
 	static const char* VCENTER_ALIGN_ENABLED = "VCenterAlignEnabled";
 	static const char* BOTTOM_ALIGN = "BottomAlign";
 	static const char* BOTTOM_ALIGN_ENABLED = "BottomAlignEnabled";
+	
+	// UI Spinner properties.
+	static const char* UISPINNER_PREV_BUTTON_TEXT = "PrevButtonText";
+	static const char* UISPINNER_NEXT_BUTTON_TEXT = "NextButtonText";
+	
+	// Custom Control properties.
+	static const char* CUSTOM_CONTROL_NAME = "CustomControlName";
 }
 };
 

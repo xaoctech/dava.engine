@@ -62,16 +62,14 @@ FastName::FastName(const char *name)
 		db->namesHash.Insert(nameCopy, index);
 	}
 
+	DVASSERT(index != -1);
 	#ifdef DAVA_DEBUG
 		debug_str_ptr = c_str();
 	#endif
 }
 
 FastName::FastName(const FastName &_name)
-    : index(-1)
 {
-	RemRef(index);
-
 	index = _name.index;
 
 #ifdef DAVA_DEBUG
@@ -88,7 +86,8 @@ FastName::~FastName()
 
 const char* FastName::c_str() const
 {
-	if(index > 0)
+	DVASSERT(index >= -1 && index < (int)FastNameDB::Instance()->namesTable.size());
+	if(index >= 0)
 	{
         return FastNameDB::Instance()->namesTable[index];
 	}
@@ -132,18 +131,17 @@ int FastName::Index() const
 
 void FastName::AddRef(int i) const
 {
-	if(i > 0)
-	{
-		FastNameDB *db = FastNameDB::Instance();
-		db->namesRefCounts[i]++;
-	}
+	FastNameDB *db = FastNameDB::Instance();
+	DVASSERT(i >= 0 && i < (int)db->namesTable.size());
+	db->namesRefCounts[i]++;
 }
 
 void FastName::RemRef(int i) const
 {
-	if(i > 0)
+	FastNameDB *db = FastNameDB::Instance();
+	DVASSERT(i >= -1 && i < (int)db->namesTable.size());
+	if (i >= 0)
 	{
-		FastNameDB *db = FastNameDB::Instance();
 		db->namesRefCounts[i]--;
 		if(0 == db->namesRefCounts[i])
 		{

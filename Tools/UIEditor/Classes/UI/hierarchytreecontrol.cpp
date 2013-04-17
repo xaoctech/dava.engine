@@ -8,7 +8,7 @@
 #include "CopyPasteController.h"
 
 #define TREE_MIME_DATA 0
-#define ITEM_ID 0, 1
+#define ITEM_ID 0, Qt::UserRole
 
 HierarchyTreeControlMimeData::HierarchyTreeControlMimeData(const QList<QTreeWidgetItem*> items)
 {
@@ -133,7 +133,7 @@ bool HierarchyTreeControl::SortByInternalIndex(const SortedItems &first, const S
 		if (firstId < secondId)
 			return false;
 	}
-	return true;
+	return false;
 }
 
 QMimeData* HierarchyTreeControl::mimeData(const QList<QTreeWidgetItem*> items) const

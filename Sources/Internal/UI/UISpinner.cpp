@@ -6,8 +6,8 @@ namespace DAVA
 REGISTER_CLASS(UISpinner);
 
 //use these names for children buttons to define UISpinner in .yaml
-static const String BUTTON_NEXT_NAME = "buttonNext";
-static const String BUTTON_PREVIOUS_NAME = "buttonPrevious";
+static const String UISPINNER_BUTTON_NEXT_NAME = "buttonNext";
+static const String UISPINNER_BUTTON_PREVIOUS_NAME = "buttonPrevious";
 
 void SpinnerAdapter::AddObserver(SelectionObserver* anObserver)
 {
@@ -51,8 +51,8 @@ UISpinner::UISpinner(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*
     , buttonPrevious(new UIButton())
     , adapter(NULL)
 {
-    buttonNext->SetName(BUTTON_NEXT_NAME);
-    buttonPrevious->SetName(BUTTON_PREVIOUS_NAME);
+    buttonNext->SetName(UISPINNER_BUTTON_NEXT_NAME);
+    buttonPrevious->SetName(UISPINNER_BUTTON_PREVIOUS_NAME);
     AddControl(buttonNext);
     AddControl(buttonPrevious);
     InitButtons();
@@ -93,11 +93,23 @@ void UISpinner::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 
 void UISpinner::CopyDataFrom(UIControl *srcControl)
 {
-    //release default buttons - they have to be copied from srcControl
+	UIControl* buttonPrevClone = buttonPrevious->Clone();
+	UIControl* buttonNextClone = buttonNext->Clone();
+
     RemoveControl(buttonNext);
     RemoveControl(buttonPrevious);
     ReleaseButtons();
+
     UIControl::CopyDataFrom(srcControl);
+	
+	// Yuri Coder, 2013/03/28. CopyDataFrom works with real children,
+	// so need to copy inner buttons explicitely.
+	AddControl(buttonPrevClone);
+	SafeRelease(buttonPrevClone);
+
+	AddControl(buttonNextClone);
+	SafeRelease(buttonNextClone);
+
     FindRequiredControls();
     if (IsPointerToExactClass<UISpinner>(srcControl)) //we can also copy other controls, that's why we check
     {
@@ -108,10 +120,17 @@ void UISpinner::CopyDataFrom(UIControl *srcControl)
     InitButtons();
 }
 
+UIControl* UISpinner::Clone()
+{
+	UISpinner *t = new UISpinner(GetRect());
+	t->CopyDataFrom(this);
+	return t;
+}
+
 void UISpinner::FindRequiredControls()
 {
-    UIControl * nextButtonControl = FindByName(BUTTON_NEXT_NAME);
-    UIControl * previousButtonControl = FindByName(BUTTON_PREVIOUS_NAME);
+    UIControl * nextButtonControl = FindByName(UISPINNER_BUTTON_NEXT_NAME);
+    UIControl * previousButtonControl = FindByName(UISPINNER_BUTTON_PREVIOUS_NAME);
     DVASSERT(nextButtonControl);
     DVASSERT(previousButtonControl);
     buttonNext = SafeRetain(DynamicTypeCheck<UIButton*>(nextButtonControl));
@@ -131,14 +150,14 @@ YamlNode * UISpinner::SaveToYamlNode(UIYamlLoader * loader)
 	YamlNode *node = UIControl::SaveToYamlNode(loader);
 
 	//Control Type
-	node->Set("type", "UISpinner");
+	SetPreferredNodeType(node, "UISpinner");
 	
 	// "Prev/Next" buttons have to be saved too.
 	YamlNode* prevButtonNode = buttonPrevious->SaveToYamlNode(loader);
 	YamlNode* nextButtonNode = buttonNext->SaveToYamlNode(loader);
 	
-	node->AddNodeToMap(BUTTON_PREVIOUS_NAME, prevButtonNode);
-	node->AddNodeToMap(BUTTON_NEXT_NAME, nextButtonNode);
+	node->AddNodeToMap(UISPINNER_BUTTON_PREVIOUS_NAME, prevButtonNode);
+	node->AddNodeToMap(UISPINNER_BUTTON_NEXT_NAME, nextButtonNode);
 
 	return node;
 }
@@ -146,10 +165,21 @@ YamlNode * UISpinner::SaveToYamlNode(UIYamlLoader * loader)
 List<UIControl* >& UISpinner::GetRealChildren()
 {
 	List<UIControl* >& realChildren = UIControl::GetRealChildren();
-	realChildren.remove(buttonPrevious);
-	realChildren.remove(buttonNext);
+	realChildren.remove(FindByName(UISPINNER_BUTTON_PREVIOUS_NAME));
+	realChildren.remove(FindByName(UISPINNER_BUTTON_NEXT_NAME));
 
 	return realChildren;
+}
+	
+List<UIControl* > UISpinner::GetSubcontrols()
+{
+	List<UIControl* > subControls;
+
+	// Lookup for the contols by their names.
+	AddControlToList(subControls, UISPINNER_BUTTON_PREVIOUS_NAME);
+	AddControlToList(subControls, UISPINNER_BUTTON_NEXT_NAME);
+
+	return subControls;
 }
 
 void UISpinner::SetAdapter(SpinnerAdapter * anAdapter)

@@ -80,6 +80,10 @@ Core::Core()
     
     desirableIndex = 0;
     
+#if defined (__DAVAENGINE_ANDROID__)
+    screenHeight = screenWidth = 0;
+#endif // #if defined (__DAVAENGINE_ANDROID__)
+
     EnableReloadResourceOnResize(true);
 }
 
@@ -101,13 +105,12 @@ void Core::CreateSingletons()
     
     
     // check types size
-    
+	new Logger();
+
 	new FileSystem();
 	FileSystem::Instance()->SetDefaultDocumentsDirectory();
     FileSystem::Instance()->CreateDirectory(FileSystem::Instance()->GetCurrentDocumentsDirectory(), true);
-
 	
-	new Logger();
 	if (isConsoleMode)
 	{
 		/*

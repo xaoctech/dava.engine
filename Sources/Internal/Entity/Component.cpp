@@ -1,5 +1,5 @@
 #include "Entity/Component.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 #include "Debug/DVAssert.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/RenderComponent.h"
@@ -66,12 +66,12 @@ Component::Component()
 Component::~Component()
 { }
 
-void Component::SetEntity(SceneNode * _entity)
+void Component::SetEntity(Entity * _entity)
 {
 	entity = _entity;
 }
 
-SceneNode* Component::GetEntity() 
+Entity* Component::GetEntity() 
 { 
 	return entity;
 };

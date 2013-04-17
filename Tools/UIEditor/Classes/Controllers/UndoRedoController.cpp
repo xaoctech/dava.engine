@@ -62,6 +62,7 @@ bool UndoRedoController::Undo()
 	AddCommandToStack(redoStack, command);
 	undoStack.pop_front();
 
+	command->ActivateCommandScreen();
 	command->Rollback();
 	return true;
 }
@@ -78,6 +79,7 @@ bool UndoRedoController::Redo()
 	AddCommandToStack(undoStack, command);
 	redoStack.pop_front();
 	
+	command->ActivateCommandScreen();
 	command->Execute();
 	return true;
 }
@@ -104,3 +106,29 @@ void UndoRedoController::AddCommandToStack(Deque<BaseCommand*>& stackToAdd, Base
 	}
 }
 
+void UndoRedoController::IncrementUnsavedChanges(bool forUndoStack)
+{
+	Deque<BaseCommand*>& activeStack = forUndoStack ? undoStack : redoStack;
+	if (activeStack.empty())
+	{
+		return;
+	}
+	
+	activeStack.front()->IncrementUnsavedChanges();
+}
+
+void UndoRedoController::DecrementUnsavedChanges(bool forUndoStack)
+{
+	Deque<BaseCommand*>& activeStack = forUndoStack ? undoStack : redoStack;
+	if (activeStack.empty())
+	{
+		return;
+	}
+	
+	activeStack.front()->DecrementUnsavedChanges();
+}
+
+void UndoRedoController::ResetUnsavedChanges()
+{
+	// TODO! IMPLEMENT!
+}

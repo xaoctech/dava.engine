@@ -25,7 +25,7 @@ RenderObject * RenderComponent::GetRenderObject()
     return renderObject;
 }
     
-Component * RenderComponent::Clone(SceneNode * toEntity)
+Component * RenderComponent::Clone(Entity * toEntity)
 {
     RenderComponent * component = new RenderComponent();
 	component->SetEntity(toEntity);
@@ -73,10 +73,8 @@ void RenderComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 			{
 				ro->Load(roArch, sceneFile);
 				SetRenderObject(ro);
-			}
-			else
-			{
-				printf("1111\n");
+
+				ro->Release();
 			}
 		}
 	}

@@ -9,6 +9,8 @@
 #include "HierarchyTreeScreenNode.h"
 #include "ScreenManager.h"
 #include "HierarchyTreeControlNode.h"
+#include "HierarchyTreePlatformNode.h"
+#include "HierarchyTreeAggregatorControlNode.h"
 #include <QFile>
 #include "Render/2D/FontManager.h"
 
@@ -22,6 +24,8 @@ HierarchyTreeScreenNode::HierarchyTreeScreenNode(HierarchyTreePlatformNode* pare
 	scale = 1.f;
 	posX = 0;
 	posY = 0;
+
+	unsavedChangesCounter = 0;
 }
 
 HierarchyTreeScreenNode::HierarchyTreeScreenNode(HierarchyTreePlatformNode* parent, const HierarchyTreeScreenNode* base):
@@ -35,7 +39,9 @@ HierarchyTreeScreenNode::HierarchyTreeScreenNode(HierarchyTreePlatformNode* pare
 	scale = 1.f;
 	posX = 0;
 	posY = 0;
-	
+
+	unsavedChangesCounter = 0;
+
 	const HierarchyTreeNode::HIERARCHYTREENODESLIST& chilren = base->GetChildNodes();
 	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter = chilren.begin();
 		 iter != chilren.end();
@@ -159,18 +165,36 @@ void HierarchyTreeScreenNode::BuildHierarchyTree(HierarchyTreeNode* parent, List
 	{
 		UIControl* uiControl = (*iter);
 		
-		HierarchyTreeControlNode* node = new HierarchyTreeControlNode(parent, uiControl, QString::fromStdString(uiControl->GetName()));
+		HierarchyTreeControlNode* node = NULL;
+		if (dynamic_cast<UIAggregatorControl*>(uiControl))
+			node = new HierarchyTreeAggregatorControlNode(NULL, parent, uiControl, QString::fromStdString(uiControl->GetName()));
+		else
+			node = new HierarchyTreeControlNode(parent, uiControl, QString::fromStdString(uiControl->GetName()));
 
-		// Use the "real" children list here to avoid loading of (for example) separate Static Text for UITextControls.
-		BuildHierarchyTree(node, uiControl->GetRealChildren());
+		// Yuri Coder, 2013/03/28. For some controls (like UISpinner) we have to load info not only about the control
+		// itself, but also for its "subcontrols". Actually subcontrols are the same as "real chidren", but may also
+		// include some extra items. GetSubcontrols() method is virtual and redefined on each UIControl's level.
+		BuildHierarchyTree(node, uiControl->GetRealChildrenAndSubcontrols());
 		parent->AddTreeNode(node);
 	}
 }
 
-bool HierarchyTreeScreenNode::Save(const QString& path)
+bool HierarchyTreeScreenNode::Save(const QString& path, bool saveAll)
 {
+	// Do not save the screen if it wasn't changed.
+	if (!saveAll && this->unsavedChangesCounter == 0)
+	{
+		return true;
+	}
+
 	FontManager::Instance()->PrepareToSaveFonts();
-	return UIYamlLoader::Save(screen, path.toStdString(), true);
+	bool saveResult = UIYamlLoader::Save(screen, path.toStdString(), true);
+	if (saveResult)
+	{
+		ResetUnsavedChanges();
+	}
+
+	return saveResult;
 }
 
 void HierarchyTreeScreenNode::ReturnTreeNodeToScene()
@@ -184,10 +208,8 @@ void HierarchyTreeScreenNode::ReturnTreeNodeToScene()
 	this->redoParentNode->AddTreeNode(this, redoPreviousNode);
 }
 
-Rect HierarchyTreeScreenNode::GetRect() const
+void HierarchyTreeScreenNode::CombineRectWithChild(Rect& rect) const
 {
-	Rect rect(0, 0, GetPlatform()->GetWidth(), GetPlatform()->GetHeight());
-	
 	const HIERARCHYTREENODESLIST& childs = GetChildNodes();
 	for (HIERARCHYTREENODESLIST::const_iterator iter = childs.begin(); iter != childs.end(); ++iter)
 	{
@@ -199,6 +221,29 @@ Rect HierarchyTreeScreenNode::GetRect() const
 		
 		rect = rect.Combine(controlRect);
 	}
+}
+
+Rect HierarchyTreeScreenNode::GetRect() const
+{
+	Rect rect(0, 0, GetPlatform()->GetWidth(), GetPlatform()->GetHeight());
+	
+	CombineRectWithChild(rect);
 	
 	return rect;
+}
+
+// Access to the screen unsaved changes counter.
+void HierarchyTreeScreenNode::IncrementUnsavedChanges()
+{
+	unsavedChangesCounter ++;
+}
+
+void HierarchyTreeScreenNode::DecrementUnsavedChanges()
+{
+	unsavedChangesCounter --;
+}
+
+void HierarchyTreeScreenNode::ResetUnsavedChanges()
+{
+	unsavedChangesCounter = 0;
 }

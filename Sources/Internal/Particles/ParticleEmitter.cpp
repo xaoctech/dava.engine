@@ -49,6 +49,8 @@ ParticleEmitter::ParticleEmitter()
 {
 	type = TYPE_PARTICLE_EMTITTER;
 	Cleanup(false);
+
+	bbox = AABBox3(Vector3(), Vector3());
 }
 
 ParticleEmitter::~ParticleEmitter()
@@ -90,13 +92,10 @@ void ParticleEmitter::Cleanup(bool needCleanupLayers)
 
 void ParticleEmitter::CleanupLayers()
 {
-	Vector<ParticleLayer*>::iterator it;
-	for(it = layers.begin(); it != layers.end(); ++it)
-	{
-		SafeRelease(*it);
-	}
-
-	layers.clear();
+    while(!layers.empty())
+    {
+        RemoveLayer(layers[0]);
+    }
 }
 
 //ParticleEmitter * ParticleEmitter::Clone()
@@ -148,7 +147,7 @@ void ParticleEmitter::Save(KeyedArchive *archive, SceneFileV2 *sceneFile)
 
 	if(NULL != archive)
 	{
-        String filename = FileSystem::Instance()->AbsoluteToRelativePath(sceneFile->GetScenePath(), configPath);
+		String filename = FileSystem::Instance()->AbsoluteToRelativePath(FileSystem::Instance()->GetCanonicalPath(sceneFile->GetScenePath()), FileSystem::Instance()->GetCanonicalPath(configPath));
 		archive->SetString("pe.configpath", filename);
 	}
 }
@@ -164,6 +163,16 @@ void ParticleEmitter::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
             String filename = archive->GetString("pe.configpath");
             String sceneFilePath = FileSystem::Instance()->SystemPathForFrameworkPath(sceneFile->GetScenePath());
             configPath = FileSystem::Instance()->GetCanonicalPath(sceneFilePath + filename);
+
+#if defined (__DAVAENGINE_ANDROID__)
+            String systemPath = FileSystem::Instance()->SystemPathForFrameworkPath("~res:/");
+            String::size_type pos = configPath.find(systemPath);
+            if(pos == 0)
+            {
+                configPath = configPath.replace(pos, systemPath.length(), "~res:/");
+            }
+#endif //#if defined (__DAVAENGINE_ANDROID__)
+            
 			LoadFromYaml(configPath);
 		}
 	}
@@ -200,10 +209,20 @@ void ParticleEmitter::RemoveLayer(ParticleLayer * layer)
 	if (layerIter != this->layers.end())
 	{
 		layers.erase(layerIter);
+
+        RemoveRenderBatch(layer->GetRenderBatch());
 		layer->SetEmitter(NULL);
 		SafeRelease(layer);
 	}
 }
+    
+void ParticleEmitter::RemoveLayer(int32 index)
+{
+    DVASSERT(0 <= index && index < (int32)layers.size());
+
+    RemoveLayer(layers[index]);
+}
+
 	
 void ParticleEmitter::MoveLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove)
 {
@@ -289,7 +308,8 @@ void ParticleEmitter::Update(float32 timeElapsed)
 	Vector<ParticleLayer*>::iterator it;
 	for(it = layers.begin(); it != layers.end(); ++it)
 	{
-		(*it)->Update(timeElapsed);
+        if(!(*it)->isDisabled)
+            (*it)->Update(timeElapsed);
 	}
 }
 
@@ -400,6 +420,8 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
 
 void ParticleEmitter::LoadFromYaml(const String & filename)
 {
+    Cleanup(true);
+    
 	YamlParser * parser = YamlParser::Create(filename);
 	if(!parser)
 	{

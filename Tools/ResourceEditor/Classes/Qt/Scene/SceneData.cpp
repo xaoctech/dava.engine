@@ -1,5 +1,6 @@
 #include "Scene/SceneData.h"
 #include "DockSceneGraph/SceneGraphModel.h"
+#include "DockSceneGraph/PointerHolder.h"
 
 #include "../EditorScene.h"
 #include "../SceneEditor/EditorSettings.h"
@@ -19,7 +20,7 @@
 
 
 #include "Main/QtUtils.h"
-#include "Main/PointerHolder.h"
+#include "DockSceneGraph/PointerHolder.h"
 
 #include "DockLibrary//LibraryModel.h"
 
@@ -49,7 +50,7 @@ SceneData::~SceneData()
     SafeRelease(cameraController);
 }
 
-void SceneData::RebuildSceneGraphNode(DAVA::SceneNode* node)
+void SceneData::RebuildSceneGraphNode(DAVA::Entity* node)
 {
 	emit SceneGraphModelNeedsRebuildNode(node);
 }
@@ -64,7 +65,7 @@ EditorScene * SceneData::GetScene()
     return scene;
 }
 
-void SceneData::AddSceneNode(DAVA::SceneNode *node)
+void SceneData::AddSceneNode(DAVA::Entity *node)
 {
     // Firstly ask Particle Editor to add this node.
     if (particlesEditorSceneDataHelper.AddSceneNode(node) == false)
@@ -72,7 +73,7 @@ void SceneData::AddSceneNode(DAVA::SceneNode *node)
         scene->AddNode(node);
     }
     
-    LandscapeNode *landscape = dynamic_cast<LandscapeNode *>(node);
+    Landscape *landscape = dynamic_cast<Landscape *>(node);
     if(landscape)
     {
         landscapesController->SaveLandscape(landscape);
@@ -81,12 +82,12 @@ void SceneData::AddSceneNode(DAVA::SceneNode *node)
     RebuildSceneGraph();
 }
 
-void SceneData::RemoveSceneNode(DAVA::SceneNode *node)
+void SceneData::RemoveSceneNode(DAVA::Entity *node)
 {
-    SceneNode * parent = node->GetParent();
+    Entity * parent = node->GetParent();
     if (parent)
     {
-        LandscapeNode *landscape = dynamic_cast<LandscapeNode *>(node);
+        Landscape *landscape = dynamic_cast<Landscape *>(node);
         if(landscape)
         {
             landscapesController->SaveLandscape(NULL);
@@ -105,13 +106,13 @@ void SceneData::RemoveSceneNode(DAVA::SceneNode *node)
     RebuildSceneGraph();
 }
 
-void SceneData::SelectNode(DAVA::SceneNode *node)
+void SceneData::SelectNode(DAVA::Entity *node)
 {
 	this->selectedNode = node;
 	emit SceneGraphModelNeedsSelectNode(node);
 }
 
-void SceneData::SceneNodeSelectedInGraph(SceneNode *node)
+void SceneData::SceneNodeSelectedInGraph(Entity *node)
 {
     if(scene)   scene->SetSelection(node);
     
@@ -143,7 +144,7 @@ void SceneData::SceneNodeSelectedInGraph(SceneNode *node)
 	emit SceneNodeSelected(node);
 }
 
-DAVA::SceneNode * SceneData::GetSelectedNode()
+DAVA::Entity * SceneData::GetSelectedNode()
 {
     return this->selectedNode;
 }
@@ -198,7 +199,7 @@ void SceneData::CreateScene(bool createEditorCameras)
         
         cam->Setup(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f);
         
-        ScopedPtr<SceneNode> node(new SceneNode());
+        ScopedPtr<Entity> node(new Entity());
         node->SetName("editor.main-camera");
         node->AddComponent(new CameraComponent(cam));
         createdScene->AddNode(node);
@@ -214,7 +215,7 @@ void SceneData::CreateScene(bool createEditorCameras)
         
         cam2->Setup(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f);
         
-        ScopedPtr<SceneNode> node2(new SceneNode());
+        ScopedPtr<Entity> node2(new Entity());
         node2->SetName("editor.debug-camera");
         node2->AddComponent(new CameraComponent(cam2));
         createdScene->AddNode(node2);
@@ -243,7 +244,7 @@ String SceneData::GetScenePathname() const
     return sceneFilePathname;
 }
 
-void SceneData::BakeNode(DAVA::SceneNode *node)
+void SceneData::BakeNode(DAVA::Entity *node)
 {
     if(node->GetSolid())
     {
@@ -257,18 +258,18 @@ void SceneData::BakeNode(DAVA::SceneNode *node)
     }
 }
 
-void SceneData::RemoveIdentityNodes(DAVA::SceneNode *node)
+void SceneData::RemoveIdentityNodes(DAVA::Entity *node)
 {
     for(int32 i = 0; i < node->GetChildrenCount(); ++i)
     {
-        SceneNode *removedChild = node->GetChild(i);
+        Entity *removedChild = node->GetChild(i);
         
         if(
-           (removedChild->GetFlags() & SceneNode::NODE_LOCAL_MATRIX_IDENTITY)
-           &&   (typeid(SceneNode) == typeid(*removedChild))
+           (removedChild->GetFlags() & Entity::NODE_LOCAL_MATRIX_IDENTITY)
+           &&   (typeid(Entity) == typeid(*removedChild))
            &&   (removedChild->GetChildrenCount() == 1))
         {
-            //SceneNode *child = SafeRetain(removedChild->GetChild(0));
+            //Entity *child = SafeRetain(removedChild->GetChild(0));
             //removedChild->RemoveNode(child);
             node->AddNode(removedChild->GetChild(0));
             //SafeRelease(child);
@@ -284,11 +285,11 @@ void SceneData::RemoveIdentityNodes(DAVA::SceneNode *node)
     }
 }
 
-void SceneData::FindIdentityNodes(DAVA::SceneNode *node)
+void SceneData::FindIdentityNodes(DAVA::Entity *node)
 {
     for(int32 i = 0; i < node->GetChildrenCount(); ++i)
     {
-        SceneNode *child = node->GetChild(i);
+        Entity *child = node->GetChild(i);
         
         if(child->GetSolid())
         {
@@ -352,7 +353,7 @@ void SceneData::SetLandscapesControllerScene(EditorScene* scene)
 
 void SceneData::ResetLandsacpeSelection()
 {
-	LandscapeNode *selectedNode = dynamic_cast<LandscapeNode *>	(GetSelectedNode());
+	Landscape *selectedNode = dynamic_cast<Landscape *>	(GetSelectedNode());
 	if(selectedNode)
 	{
 		SelectNode(NULL);
@@ -362,7 +363,7 @@ void SceneData::ResetLandsacpeSelection()
 
 void SceneData::RestoreTexture(const DAVA::String &descriptorPathname, DAVA::Texture *texture)
 {
-    Vector<SceneNode *> nodes;
+    Vector<Entity *> nodes;
     scene->GetChildNodes(nodes);
     
     for(int32 n = 0; n < (int32)nodes.size(); ++n)
@@ -400,14 +401,14 @@ void SceneData::RestoreTexture(const DAVA::String &descriptorPathname, DAVA::Tex
             }
         }
         
-        LandscapeNode *landscape = dynamic_cast<LandscapeNode *>(ro);
+        Landscape *landscape = dynamic_cast<Landscape *>(ro);
         if(landscape)
         {
-            for(int32 t = 0; t < LandscapeNode::TEXTURE_COUNT; ++t)
+            for(int32 t = 0; t < Landscape::TEXTURE_COUNT; ++t)
             {
-                if(landscape->GetTextureName((LandscapeNode::eTextureLevel)t) == descriptorPathname)
+                if(landscape->GetTextureName((Landscape::eTextureLevel)t) == descriptorPathname)
                 {
-                    landscape->SetTexture((LandscapeNode::eTextureLevel)t, texture);
+                    landscape->SetTexture((Landscape::eTextureLevel)t, texture);
                 }
             }
         }
@@ -419,7 +420,7 @@ void SceneData::EmitSceneChanged()
 	emit SceneChanged(this->scene);
 }
 
-void SceneData::GetAllParticleEffects(List<DAVA::SceneNode*> & particleEffects)
+void SceneData::GetAllParticleEffects(List<DAVA::Entity*> & particleEffects)
 {
 	Scene* scene = this->GetScene();
 	uint32 childCount = scene->GetChildrenCount();
@@ -429,7 +430,7 @@ void SceneData::GetAllParticleEffects(List<DAVA::SceneNode*> & particleEffects)
 	}
 }
 
-void SceneData::FindAllParticleEffectsRecursive(SceneNode *node , List<DAVA::SceneNode*> & particleEffects)
+void SceneData::FindAllParticleEffectsRecursive(Entity *node , List<DAVA::Entity*> & particleEffects)
 {
     ParticleEffectComponent * effectComponent = cast_if_equal<ParticleEffectComponent*>(node->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
 	if (effectComponent)

@@ -79,6 +79,12 @@ void RenderObject::AddRenderBatch(RenderBatch * batch)
 
 void RenderObject::RemoveRenderBatch(RenderBatch * batch)
 {
+    if (removeIndex != -1)
+    {
+        DVASSERT(renderSystem);
+		renderSystem->RemoveRenderBatch(batch);
+    }
+    
     batch->SetRenderObject(0);
 	batch->Release();
 

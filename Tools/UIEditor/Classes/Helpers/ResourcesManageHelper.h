@@ -10,6 +10,7 @@
 #define UIEditor_ResourcesManageHelper_h
 
 #include "Base/BaseTypes.h"
+#include "Render/2D/FTFont.h"
 
 class QString;
 class QStringList;
@@ -25,12 +26,12 @@ public:
     static QString GetFontAbsolutePath(const QString& resourceFileName, bool graphicsFont = false);
     static QString GetResourceRelativePath(const QString& resourceAbsolutePath, bool keepFileExtension = false);
     static QStringList GetFontsList();
-	// Validate if selected resource is located inside project 
-	static bool ValidateResourcePath(const QString& resourcePath);
 	// Functions to work with help contents and button background image
 	static QString GetButtonBackgroundImagePath();
 	// Get path to help contents hmtl file
 	static QString GetHelpContentsPath();
+	// Get graphics font sprite file path
+	static QString GetGraphicsFontPath(Font* font);
 	
 	// Working directory
 	static QString GetDefaultDirectory();
@@ -44,8 +45,15 @@ public:
 	static QString GetSpritesDatasourceDirectory();
 	// Get font sprites datasource directory
 	static QString GetFontSpritesDatasourceDirectory();
-	// Validate resource folder path
+	// Get resource folder path
 	static QString GetResourceFolder(const QString& resourcePath);
+	// Validate if selected resource is located inside project 
+	static bool ValidateResourcePath(const QString& resourcePath);
+	
+	// Get working directory path of last opened sprite
+	static QString GetDefaultSpritesPath(const QString& currentSpritePath);
+	// Get working directory path of last opened font sprite
+	static QString GetDefaultFontSpritesPath(const QString& currentSpritePath);
 	
 	// Get project title string
 	static QString GetProjectTitle();

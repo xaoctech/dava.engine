@@ -27,7 +27,7 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/SceneNodeAnimation.h"
 #include "Scene3D/SceneNodeAnimationList.h"

@@ -8,12 +8,14 @@
 
 #include "HierarchyTreePlatformNode.h"
 #include "HierarchyTreeScreenNode.h"
+#include "HierarchyTreeAggregatorNode.h"
 #include "ResourcesManageHelper.h"
 #include <QDir>
 
 #define WIDTH_NODE "width"
 #define HEIGHT_NODE "height"
 #define SCREENS_NODE "screens"
+#define AGGREGATORS_NODE "aggregators"
 
 #define LOCALIZATION_PATH_NODE "LocalizationPath"
 #define LOCALIZATION_LOCALE_NODE "Locale"
@@ -56,6 +58,11 @@ void HierarchyTreePlatformNode::SetSize(int width, int height)
 	for (HIERARCHYTREENODESLIST::iterator iter = childNodes.begin(); iter != childNodes.end(); ++iter)
 	{
 		HierarchyTreeNode* node = (*iter);
+		
+		HierarchyTreeAggregatorNode* aggregator = dynamic_cast<HierarchyTreeAggregatorNode*>(node);
+		if (aggregator)
+			continue;
+		
 		HierarchyTreeScreenNode* screenNode = dynamic_cast<HierarchyTreeScreenNode*>(node);
 		if (screenNode)
 		{
@@ -128,6 +135,24 @@ bool HierarchyTreePlatformNode::Load(YamlNode* platform)
 			AddTreeNode(screenNode);
 		}
 	}
+	
+	YamlNode* aggregators = platform->Get(AGGREGATORS_NODE);
+	if (aggregators)
+	{
+		for (int i = 0; i < aggregators->GetCount(); i++)
+		{
+			YamlNode* aggregator = aggregators->Get(i);
+			if (!aggregator)
+				continue;
+			String aggregatorName = aggregator->AsString();
+			
+			QString aggregatorPath = QString(SCREEN_PATH).arg(GetPlatformFolder()).arg(QString::fromStdString(aggregatorName));
+			HierarchyTreeAggregatorNode* aggregatorNode = new HierarchyTreeAggregatorNode(this, QString::fromStdString(aggregatorName), Rect());
+			result &= aggregatorNode->Load(aggregator, aggregatorPath);
+			AddTreeNode(aggregatorNode);			
+		}
+	}
+	
 	return result;
 }
 
@@ -152,7 +177,7 @@ bool HierarchyTreePlatformNode::LoadLocalization(YamlNode* platform)
     return true;
 }
 
-bool HierarchyTreePlatformNode::Save(YamlNode* node)
+bool HierarchyTreePlatformNode::Save(YamlNode* node, bool saveAll)
 {
 	YamlNode* platform = new YamlNode(YamlNode::TYPE_MAP);
 	platform->Set(WIDTH_NODE, GetWidth());
@@ -165,9 +190,12 @@ bool HierarchyTreePlatformNode::Save(YamlNode* node)
 	
 	MultiMap<String, YamlNode*> &platformMap = platform->AsMap();
 	YamlNode* screens = new YamlNode(YamlNode::TYPE_ARRAY);
-
 	platformMap.erase(SCREENS_NODE);
 	platformMap.insert(std::pair<String, YamlNode*>(SCREENS_NODE, screens));
+	
+	YamlNode* aggregators = new YamlNode(YamlNode::TYPE_MAP);
+	platformMap.erase(AGGREGATORS_NODE);
+	platformMap.insert(std::pair<String, YamlNode*>(AGGREGATORS_NODE, aggregators));
 
     // Add the Localization info - specific for each Platform.
     SaveLocalization(platform);
@@ -178,16 +206,41 @@ bool HierarchyTreePlatformNode::Save(YamlNode* node)
 	dir.mkpath(platformFolder);
 	
 	bool result = true;
+	
+	//save aggregators node before save screens
 	for (HIERARCHYTREENODESCONSTITER iter = GetChildNodes().begin();
 		 iter != GetChildNodes().end();
 		 ++iter)
 	{
+		HierarchyTreeAggregatorNode* node = dynamic_cast<HierarchyTreeAggregatorNode*>(*iter);
+		if (!node)
+			continue;
+
+		QString path = QString(SCREEN_PATH).arg(platformFolder).arg(node->GetName());
+		MultiMap<String, YamlNode*> &aggregatorsMap = aggregators->AsMap();
+		
+		YamlNode* aggregator = new YamlNode(YamlNode::TYPE_MAP);
+		result &= node->Save(aggregator, path, saveAll);
+		
+		aggregatorsMap.erase(node->GetName().toStdString());
+		aggregatorsMap.insert(std::pair<String, YamlNode*>(node->GetName().toStdString(), aggregator));
+	}
+		
+	
+	for (HIERARCHYTREENODESCONSTITER iter = GetChildNodes().begin();
+		 iter != GetChildNodes().end();
+		 ++iter)
+	{
+		HierarchyTreeAggregatorNode* node = dynamic_cast<HierarchyTreeAggregatorNode*>(*iter);
+		if (node)
+			continue;	//skip aggregators
+		
 		HierarchyTreeScreenNode* screenNode = dynamic_cast<HierarchyTreeScreenNode*>(*iter);
 		if (!screenNode)
 			continue;
 		
 		QString screenPath = QString(SCREEN_PATH).arg(platformFolder).arg(screenNode->GetName());
-		result &= screenNode->Save(screenPath);
+		result &= screenNode->Save(screenPath, saveAll);
 		
 		screens->AddValueToArray(screenNode->GetName().toStdString());
 	}

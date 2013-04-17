@@ -52,6 +52,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/errno.h>
+
+#ifdef USE_LOCAL_RESOURCES
+#define USE_LOCAL_RESOURCES_PATH "/mnt/sdcard/DavaProject/Data/"
+#endif
+
 #endif //PLATFORMS
 
 namespace DAVA
@@ -86,7 +91,11 @@ String FileSystem::virtualBundlePath = "";
 #if defined(__DAVAENGINE_ANDROID__)
     const char * FileSystem::FilepathRelativeToBundle(const char * relativePathname)
 	{
+#ifdef USE_LOCAL_RESOURCES
+		return Format("%s%s", USE_LOCAL_RESOURCES_PATH, relativePathname);
+#else
 		return Format("Data%s", relativePathname);
+#endif
 	}
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 	
@@ -224,15 +233,22 @@ bool FileSystem::CopyFile(const String & existingFile, const String & newFile)
 #endif //PLATFORMS
 }
 
-bool FileSystem::MoveFile(const String & existingFile, const String & newFile)
+bool FileSystem::MoveFile(const String & existingFile, const String & newFile, bool overwriteExisting/* = false*/)
 {
 #ifdef __DAVAENGINE_WIN32__
-	BOOL ret = ::MoveFileA(existingFile.c_str(), newFile.c_str());
+	DWORD flags = (overwriteExisting) ? MOVEFILE_REPLACE_EXISTING : 0;
+	BOOL ret = ::MoveFileExA(existingFile.c_str(), newFile.c_str(), flags);
 	return ret != 0;
 #elif defined(__DAVAENGINE_ANDROID__)
-	DVASSERT_MSG(0, "Not implemented");
+	int ret = rename(existingFile.c_str(), newFile.c_str());
+	return ret == 0;
 #else //iphone & macos
-	int ret = copyfile(existingFile.c_str(), newFile.c_str(), NULL, COPYFILE_ALL | COPYFILE_EXCL | COPYFILE_MOVE);
+
+	int flags = COPYFILE_ALL | COPYFILE_MOVE;
+	if(!overwriteExisting)
+		flags |= COPYFILE_EXCL;
+	
+	int ret = copyfile(existingFile.c_str(), newFile.c_str(), NULL, flags); //
 	return ret==0;
 #endif //PLATFORMS
 }
@@ -349,12 +365,9 @@ File *FileSystem::CreateFileForFrameworkPath(const String & frameworkPath, uint3
 
 	if(String::npos != find)
 	{
-#ifdef __DAVAENGINE_DEBUG__
-//#define USE_LOCAL_RESOURCES
-#endif
 #ifdef USE_LOCAL_RESOURCES
 		String path;
-		path = "/mnt/sdcard/DavaProject";
+		path = USE_LOCAL_RESOURCES_PATH;
 		path += frameworkPath.c_str() + 5;
 		return File::CreateFromSystemPath(SystemPathForFrameworkPath(path), attributes);
 #else
@@ -430,24 +443,32 @@ bool FileSystem::IsFile(const String & pathToCheck)
 {
     String pathname = SystemPathForFrameworkPath(pathToCheck);
     
-    struct stat s;
-    if(stat(pathname.c_str(),&s) == 0)
-    {
-        return (0 != (s.st_mode & S_IFREG));
-    }
+	struct stat s;
+ 	if(stat(pathname.c_str(),&s) == 0)
+	{
+		return (0 != (s.st_mode & S_IFREG));
+	}
+
     return false;
 }
-	  
+
 bool FileSystem::IsDirectory(const String & pathToCheck)
 {
     String pathname = SystemPathForFrameworkPath(pathToCheck);
+
+#if defined (__DAVAENGINE_WIN32__)
+	DWORD stats = GetFileAttributesA(pathname.c_str());
+	return (stats != -1) && (0 != (stats & FILE_ATTRIBUTE_DIRECTORY));
+#else //#if defined (__DAVAENGINE_WIN32__)
+
+	struct stat s;
+	if(stat(pathname.c_str(), &s) == 0)
+	{
+		return (0 != (s.st_mode & S_IFDIR));
+	}
+#endif //#if defined (__DAVAENGINE_WIN32__)
     
-    struct stat s;
-    if(stat(pathname.c_str(), &s) == 0)
-    {
-        return (0 != (s.st_mode & S_IFDIR));
-    }
-    return false;
+	return false;
 }
 
 const String & FileSystem::GetCurrentDocumentsDirectory()

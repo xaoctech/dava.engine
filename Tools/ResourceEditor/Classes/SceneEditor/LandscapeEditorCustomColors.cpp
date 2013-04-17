@@ -9,7 +9,7 @@
 #include "HeightmapNode.h"
 
 #include "../LandscapeEditor/EditorHeightmap.h"
-#include "../LandscapeEditor/EditorLandscapeNode.h"
+#include "../LandscapeEditor/EditorLandscape.h"
 #include "EditorBodyControl.h"
 #include "SceneGraph.h"
 #include "../Qt/Main/QtMainWindowHandler.h"
@@ -100,7 +100,7 @@ void LandscapeEditorCustomColors::PerformLandscapeDraw()
     texSurf->GenerateMipmaps();
     RenderManager::Instance()->RestoreRenderTarget();
 
-	workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_FULL, sprTargetSurf->GetTexture());
+	workingLandscape->SetTexture(Landscape::TEXTURE_TILE_FULL, sprTargetSurf->GetTexture());
 	
 	SafeRelease(sprTargetSurf);
 	SafeRelease(sprLandscape);
@@ -233,7 +233,7 @@ void LandscapeEditorCustomColors::UpdateCursor()
 		Vector2 pos = landscapePoint - Vector2(radius, radius)/2;
 		UpdateCircleTexture(false);
 		workingLandscape->SetCursorTexture(circleTexture);
-		workingLandscape->SetBigTextureSize((float32)workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL)->GetWidth());
+		workingLandscape->SetBigTextureSize((float32)workingLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL)->GetWidth());
 		workingLandscape->SetCursorPosition(pos);
 		
 		workingLandscape->SetCursorScale(radius*2);
@@ -384,13 +384,13 @@ void LandscapeEditorCustomColors::HideAction()
 
 void LandscapeEditorCustomColors::ShowAction()
 {
-    landscapeSize = GetLandscape()->GetTexture(LandscapeNode::TEXTURE_TILE_FULL)->GetWidth();
+    landscapeSize = GetLandscape()->GetTexture(Landscape::TEXTURE_TILE_FULL)->GetWidth();
 
 	workingLandscape->CursorEnable();
 	//save fog status and disable it for more convenience
 	isFogEnabled = workingLandscape->IsFogEnabled();
 	workingLandscape->SetFog(false);
-	texSurf = SafeRetain( workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL));
+	texSurf = SafeRetain( workingLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL));
 
 	String loadFileName = GetCurrentSaveFileName();
 	if(!loadFileName.empty())
@@ -398,7 +398,7 @@ void LandscapeEditorCustomColors::ShowAction()
 
 	if(NULL == colorSprite)
 	{
-		Texture* tex =  workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL);
+		Texture* tex =  workingLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL);
 		colorSprite = Sprite::CreateAsRenderTarget(tex->width, tex->height, FORMAT_RGBA8888);
 		RenderManager::Instance()->SetRenderTarget(colorSprite);
 		const Vector<Color> & colors = EditorConfig::Instance()->GetColorPropertyValues("LandscapeCustomColors");
@@ -454,11 +454,11 @@ void LandscapeEditorCustomColors::LoadTextureAction(const String &pathToFile)
 												   image->GetHeight(),
 												   false);
 
-		StoreOriginalState();
-
 		SafeRelease(colorSprite);
 		colorSprite = Sprite::CreateAsRenderTarget(texSurf->GetWidth(), texSurf->GetHeight(), FORMAT_RGBA8888);
 		Sprite* sprite = Sprite::CreateFromTexture(texture, 0, 0, texture->GetWidth(), texture->GetHeight());
+
+		StoreOriginalState();
 
 		RenderManager::Instance()->SetRenderTarget(colorSprite);
 		sprite->Draw();
@@ -481,7 +481,7 @@ NodesPropertyControl *LandscapeEditorCustomColors::GetPropertyControl(const Rect
 		(LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingScene, rect, LandscapeEditorPropertyControl::COLORIZE_EDITOR_MODE);
 		//(LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingLandscape, rect, LandscapeEditorPropertyControl::COLORIZE_EDITOR_MODE);
 
-	workingLandscape->SetTiledShaderMode(LandscapeNode::TILED_MODE_TEXTURE);
+	workingLandscape->SetTiledShaderMode(Landscape::TILED_MODE_TEXTURE);
 	propsControl->SetDelegate(this);
 	LandscapeEditorSettingsChanged(propsControl->Settings());
 
@@ -513,10 +513,10 @@ void LandscapeEditorCustomColors::RecreateHeightmapNode()
 
 bool LandscapeEditorCustomColors::SetScene(EditorScene *newScene)
 {
-    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(newScene->GetLandscape(newScene));
+    EditorLandscape *editorLandscape = dynamic_cast<EditorLandscape *>(newScene->GetLandscape(newScene));
     if(editorLandscape)
     {
-        ShowErrorDialog(String("Cannot start color editor. Remove EditorLandscapeNode from scene"));
+        ShowErrorDialog(String("Cannot start color editor. Remove EditorLandscape from scene"));
         return false;
     }
 
@@ -525,20 +525,28 @@ bool LandscapeEditorCustomColors::SetScene(EditorScene *newScene)
 
 void LandscapeEditorCustomColors::StoreSaveFileName(const String& fileName)
 {
-	saveFileNamesMap[workingLandscape] = fileName;
 	parent->GetSceneGraph()->UpdatePropertyPanel();
+	if(NULL != workingLandscapeEntity)
+	{
+		KeyedArchive* customProps = workingLandscapeEntity->GetCustomProperties();
+		customProps->SetString(CUSTOM_COLOR_TEXTURE_PROP, GetRelativePathToProjectPath(fileName));
+	}
 }
 
 String LandscapeEditorCustomColors::GetCurrentSaveFileName()
 {
 	String currentSaveName = "";
-	Map<LandscapeNode*, String>::iterator saveFileNameIter = this->saveFileNamesMap.find(workingLandscape);
-	if (saveFileNameIter != saveFileNamesMap.end())
+
+	if(NULL != workingLandscapeEntity)
 	{
-		currentSaveName = saveFileNameIter->second;
+		KeyedArchive* customProps = workingLandscapeEntity->GetCustomProperties();
+		if(customProps->IsKeyExists(CUSTOM_COLOR_TEXTURE_PROP))
+		{
+			currentSaveName = customProps->GetString(CUSTOM_COLOR_TEXTURE_PROP);
+		}
 	}
 
-	return GetAbsolutePathFromScenePath(currentSaveName);
+	return GetAbsolutePathFromProjectPath(currentSaveName);
 }
 
 String LandscapeEditorCustomColors::GetScenePath()
@@ -610,17 +618,17 @@ void LandscapeEditorCustomColors::ClearSceneResources()
 
 void LandscapeEditorCustomColors::UpdateLandscapeTilemap(Texture* texture)
 {
-	workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_FULL, texSurf);
-	workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, texture);
+	workingLandscape->SetTexture(Landscape::TEXTURE_TILE_FULL, texSurf);
+	workingLandscape->SetTexture(Landscape::TEXTURE_TILE_MASK, texture);
 	workingLandscape->UpdateFullTiledTexture();
 	
-	Image* image = workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK)->CreateImageFromMemory();
+	Image* image = workingLandscape->GetTexture(Landscape::TEXTURE_TILE_MASK)->CreateImageFromMemory();
 	ImageLoader::Save(image, texture->GetPathname());
 	SafeRelease(image);
 	
 	SafeRelease(texSurf);
 	
-	texSurf = SafeRetain(workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL));
+	texSurf = SafeRetain(workingLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL));
 	wasTileMaskToolUpdate = true;
 }
 

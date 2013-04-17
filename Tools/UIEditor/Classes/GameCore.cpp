@@ -41,9 +41,7 @@
 #include "ScreenManager.h"
 #include "EditorSettings.h"
 #include "ResourcesManageHelper.h"
-
-#include <UI/UIButton.h>
-#include <UI/UIStaticText.h>
+#include "LibraryController.h"
 
 using namespace DAVA;
 
@@ -53,32 +51,24 @@ GameCore::GameCore()
     new PropertiesGridController();
     new CommandsController();
 	new CopyPasteController();
-    
+
+	// All the controllers are created - initialize them where needed.
+	HierarchyTreeController::Instance()->ConnectToSignals();
+
 	new ScreenWrapper();
     new MetadataFactory();
 	new EditorFontManager();
 	new ScreenManager();
 	new EditorSettings();
 	new UndoRedoController();
+	new LibraryController();
 	
 	//Initialize internal resources of application
 	ResourcesManageHelper::InitInternalResources();
-
-	tempControls.insert(new UIControl());
-	tempControls.insert(new UIButton());
-	tempControls.insert(new UIStaticText());
-	tempControls.insert(new UIList());
-	tempControls.insert(new UIScrollBar());
-	tempControls.insert(new UISpinner());
 }
 
 GameCore::~GameCore()
 {
-	for (Set<UIControl*>::iterator iter = tempControls.begin(); iter != tempControls.end(); ++iter)
-	{
-		UIControl* control = (*iter);
-		SafeRelease(control);
-	}
 }
 
 void GameCore::OnAppStarted()

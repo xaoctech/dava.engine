@@ -12,10 +12,12 @@
 #include "HierarchyTreeControlNode.h"
 #include "HierarchyTreeNode.h"
 #include "HierarchyTreeController.h"
+#include "LibraryController.h"
 
 #include "MetadataFactory.h"
 #include "ResourcesManageHelper.h"
 #include "EditorFontManager.h"
+#include "FileSystem/FileSystem.h"
 
 #include <QFile>
 #include <QDir>
@@ -24,8 +26,8 @@
 #define LOCALIZATION_NODE "localization"
 #define LOCALIZATION_PATH_NODE "LocalizationPath"
 #define LOCALIZATION_LOCALE_NODE "Locale"
-#define DEFAULT_FONT "font"
-#define DEFAULT_FONT_PATH "DefaultFontPath"
+#define FONT_NODE "font"
+#define DEFAULT_FONT_PATH_NODE "DefaultFontPath"
 
 HierarchyTree::HierarchyTree()
 {
@@ -79,11 +81,11 @@ bool HierarchyTree::Load(const QString& projectPath)
 	}
 	
 	// Get font node
-	YamlNode *font = projectRoot->Get(DEFAULT_FONT);
+	YamlNode *font = projectRoot->Get(FONT_NODE);
 	if (font)
 	{
 		// Get default font node
-		YamlNode *fontPath = font->Get(DEFAULT_FONT_PATH);
+		YamlNode *fontPath = font->Get(DEFAULT_FONT_PATH_NODE);
 		if (fontPath)
 		{
 			// Get font values into array
@@ -176,6 +178,21 @@ HierarchyTreeScreenNode* HierarchyTree::AddScreen(const QString& name, Hierarchy
 	return screenNode;
 }
 
+HierarchyTreeAggregatorNode* HierarchyTree::AddAggregator(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platformId, const Rect& rect)
+{
+	HierarchyTreeNode* baseNode = FindNode(&rootNode, platformId);
+	HierarchyTreePlatformNode* platformNode = dynamic_cast<HierarchyTreePlatformNode*>(baseNode);
+	if (!platformNode)
+	{
+		return NULL;
+	}
+	
+	HierarchyTreeAggregatorNode* aggregatorNode = new HierarchyTreeAggregatorNode(platformNode, name, rect);
+	platformNode->AddTreeNode(aggregatorNode);
+	
+	return aggregatorNode;
+}
+
 HierarchyTreeNode* HierarchyTree::GetNode(HierarchyTreeNode::HIERARCHYTREENODEID id) const
 {
 	if (rootNode.GetId() == id)
@@ -261,6 +278,12 @@ void HierarchyTree::DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST&
 			continue;
 		}
 		
+		HierarchyTreeAggregatorNode* aggregatorNode = dynamic_cast<HierarchyTreeAggregatorNode*>(node);
+		if (aggregatorNode)
+		{
+			LibraryController::Instance()->RemoveControl(aggregatorNode);
+		}
+		
 		HierarchyTreeScreenNode* screenNode = dynamic_cast<HierarchyTreeScreenNode*>(node);
 		if (screenNode)
 		{
@@ -277,12 +300,22 @@ void HierarchyTree::DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST&
 	}
 }
 
-bool HierarchyTree::Save(const QString& projectPath)
+bool HierarchyTree::SaveOnlyChangedScreens(const QString& projectPath)
+{
+	return DoSave(projectPath, false);
+}
+
+bool HierarchyTree::SaveAll(const QString& projectPath)
+{
+	return DoSave(projectPath, true);
+}
+
+bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
 {
 	bool result = true;
 	YamlNode root(YamlNode::TYPE_MAP);
 	MultiMap<String, YamlNode*> &rootMap = root.AsMap();
-
+	
 	// Get paths for default font
 	const EditorFontManager::DefaultFontPath& defaultFontPath = EditorFontManager::Instance()->GetDefaultFontPath();
 	String fontPath = defaultFontPath.fontPath;
@@ -292,8 +325,8 @@ bool HierarchyTree::Save(const QString& projectPath)
 	{
 		// Create font node
 		YamlNode* fontNode = new YamlNode(YamlNode::TYPE_MAP);
-		rootMap.erase(DEFAULT_FONT);
-		rootMap.insert(std::pair<String, YamlNode*>(DEFAULT_FONT, fontNode));
+		rootMap.erase(FONT_NODE);
+		rootMap.insert(std::pair<String, YamlNode*>(FONT_NODE, fontNode));
 	
 		// Create fonts array
 		MultiMap<String, YamlNode*> &fontMap = fontNode->AsMap();	
@@ -307,7 +340,7 @@ bool HierarchyTree::Save(const QString& projectPath)
 			fontPathNode->AddValueToArray(fontSpritePath);
 		}
 		// Insert array into node
-		fontMap.insert(std::pair<String, YamlNode*>(DEFAULT_FONT_PATH, fontPathNode));
+		fontMap.insert(std::pair<String, YamlNode*>(DEFAULT_FONT_PATH_NODE, fontPathNode));
 	}
 	
 	YamlNode* platforms = new YamlNode(YamlNode::TYPE_MAP);
@@ -333,7 +366,7 @@ bool HierarchyTree::Save(const QString& projectPath)
 		if (!platformNode)
 			continue;
 		
-		result &= platformNode->Save(platforms);
+		result &= platformNode->Save(platforms, saveAll);
 	}
 
 	YamlParser* parser = YamlParser::Create();
@@ -426,4 +459,42 @@ void HierarchyTree::UpdateExtraDataRecursive(HierarchyTreeControlNode* node, Bas
 void HierarchyTree::UpdateLocalization()
 {
     UpdateExtraData(BaseMetadata::UPDATE_CONTROL_FROM_EXTRADATA_LOCALIZED);
+}
+
+List<HierarchyTreeScreenNode*> HierarchyTree::GetUnsavedScreens()
+{
+	List<HierarchyTreeScreenNode*> resultList;
+	
+	if (GetPlatforms().empty())
+	{
+		return resultList;
+	}
+
+	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator platformIter = GetPlatforms().begin();
+		 platformIter != GetPlatforms().end(); ++platformIter)
+	{
+		HierarchyTreePlatformNode* platformNode = dynamic_cast<HierarchyTreePlatformNode*>(*platformIter);
+		if (!platformNode)
+		{
+			continue;
+		}
+
+		for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator screenIter = platformNode->GetChildNodes().begin();
+			 screenIter != platformNode->GetChildNodes().end(); ++screenIter)
+		{
+			HierarchyTreeScreenNode* screenNode = dynamic_cast<HierarchyTreeScreenNode*>(*screenIter);
+			if (!screenNode)
+			{
+				continue;
+			}
+
+			// Does this screen contain unsaved changes?
+			if (screenNode->GetUnsavedChanges() != 0)
+			{
+				resultList.push_back(screenNode);
+			}
+		}
+	}
+
+	return resultList;
 }

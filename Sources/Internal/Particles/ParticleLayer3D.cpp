@@ -32,6 +32,9 @@ ParticleLayer3D::~ParticleLayer3D()
 
 void ParticleLayer3D::Draw(Camera * camera)
 {
+	if(!sprite)
+		return;
+
     Matrix4 rotationMatrix = Matrix4::IDENTITY;
     switch(RenderManager::Instance()->GetRenderOrientation())
     {
@@ -58,7 +61,7 @@ void ParticleLayer3D::Draw(Camera * camera)
 	Particle * current = head;
 	if(current)
 	{
-		renderBatch->GetMaterial()->GetRenderStateBlock()->SetTexture(sprite->GetTexture(current->frame));
+		renderBatch->GetMaterial()->GetRenderState()->SetTexture(sprite->GetTexture(current->frame));
 	}
 
 	while(current != 0)
@@ -132,7 +135,9 @@ void ParticleLayer3D::Draw(Camera * camera)
 		textures.push_back(pT[6]);
 		textures.push_back(pT[7]);
 
-		uint32 color = (((uint32)(current->color.a*255.f))<<24) |  (((uint32)(current->color.b*255.f))<<16) | (((uint32)(current->color.g*255.f))<<8) | ((uint32)(current->color.r*255.f));
+		// Yuri Coder, 2013/04/03. Need to use drawColor here instead of just colot
+		// to take colorOverlife property into account.
+		uint32 color = (((uint32)(current->drawColor.a*255.f))<<24) |  (((uint32)(current->drawColor.b*255.f))<<16) | (((uint32)(current->drawColor.g*255.f))<<8) | ((uint32)(current->drawColor.r*255.f));
 		for(int32 i = 0; i < 6; ++i)
 		{
 			colors.push_back(color);

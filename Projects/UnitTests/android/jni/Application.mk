@@ -14,5 +14,6 @@ APP_CFLAGS += -DUSE_LOCAL_RESOURCES #use local resources
 #APP_OPTIM := release
 
 APP_CFLAGS += -Wno-invalid-offsetof
+APP_LDLIBS := -fuse-ld=gold -fno-exceptions
 
 APP_ABI := armeabi-v7a

@@ -36,6 +36,10 @@ void UITextFieldPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     
     RegisterLineEditWidgetForProperty(propertiesMap, TEXT_PROPERTY_NAME, ui->textLineEdit);
     RegisterColorButtonWidgetForProperty(propertiesMap, TEXT_COLOR_PROPERTY_NAME, ui->textColorPushButton);
+
+    RegisterSpinBoxWidgetForProperty(propertiesMap, SHADOW_OFFSET_X, ui->shadowOffsetXSpinBox);
+    RegisterSpinBoxWidgetForProperty(propertiesMap, SHADOW_OFFSET_Y, ui->shadowOffsetYSpinBox);
+    RegisterColorButtonWidgetForProperty(propertiesMap, SHADOW_COLOR, ui->shadowColorButton);
 }
 
 void UITextFieldPropertyGridWidget::Cleanup()
@@ -43,6 +47,10 @@ void UITextFieldPropertyGridWidget::Cleanup()
     UnregisterPushButtonWidget(ui->fontSelectButton);
     UnregisterSpinBoxWidget(ui->fontSizeSpinBox);
     UnregisterColorButtonWidget(ui->textColorPushButton);
+
+    UnregisterSpinBoxWidget(ui->shadowOffsetXSpinBox);
+    UnregisterSpinBoxWidget(ui->shadowOffsetYSpinBox);
+    UnregisterColorButtonWidget(ui->shadowColorButton);
     
     BasePropertyGridWidget::Cleanup();
 }
@@ -55,8 +63,13 @@ void UITextFieldPropertyGridWidget::ProcessPushButtonClicked(QPushButton *sender
         return;
     }
     
-    //Call font selection dialog
-    FontManagerDialog *fontDialog = new FontManagerDialog(true);
+	// Get current value of Font property
+	Font *fontPropertyValue = PropertiesHelper::GetPropertyValue<Font *>(this->activeMetadata, FONT_PROPERTY_NAME, false);
+	// Get sprite path from graphics font
+	QString currentGFontPath = ResourcesManageHelper::GetGraphicsFontPath(fontPropertyValue);
+
+    //Call font selection dialog - with ok button and preset of graphics font path
+    FontManagerDialog *fontDialog = new FontManagerDialog(true, currentGFontPath);
     Font *resultFont = NULL;
     
     if ( fontDialog->exec() == QDialog::Accepted )

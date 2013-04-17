@@ -10,6 +10,7 @@
 
 #include "PlatformMetadata.h"
 #include "ScreenMetadata.h"
+#include "AggregatorMetadata.h"
 
 #include "UIControlMetadata.h"
 #include "UIButtonMetadata.h"
@@ -18,6 +19,7 @@
 #include "UISliderMetadata.h"
 #include "UIListMetadata.h"
 #include "UISpinnerMetadata.h"
+#include "UISwitchMetadata.h"
 
 using namespace DAVA;
 
@@ -28,6 +30,9 @@ PropertyGridWidgetsFactory::PropertyGridWidgetsFactory()
     
     screenWidget = new ScreenPropertyGridWidget();
     registeredWidgets.push_back(screenWidget);
+	
+	aggregatorWidget = new AggregatorPropertyGridWidget();
+	registeredWidgets.push_back(aggregatorWidget);
     
     controlWidget = new ControlPropertyGridWidget();
     registeredWidgets.push_back(controlWidget);
@@ -55,6 +60,9 @@ PropertyGridWidgetsFactory::PropertyGridWidgetsFactory()
 	    
     flagsWidget = new FlagsPropertyGridWidget();
     registeredWidgets.push_back(flagsWidget);
+	
+	spinnerWidget = new SpinnerPropertyGridWidget();
+	registeredWidgets.push_back(spinnerWidget);
 }
 
 PropertyGridWidgetsFactory::~PropertyGridWidgetsFactory()
@@ -97,6 +105,14 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
         resultList.push_back(screenWidget);
         return resultList;
     }
+	
+	// aggregator node
+	const AggregatorMetadata* aggregatorMetadata = dynamic_cast<const AggregatorMetadata*>(metaData);
+	if (aggregatorMetadata)
+	{
+		resultList.push_back(aggregatorWidget);
+		return resultList;
+	}
 
     // UI Button/Static Text Nodes - they require the same widgets.
     const UIButtonMetadata* uiButtonMetadata = dynamic_cast<const UIButtonMetadata*>(metaData);
@@ -161,8 +177,9 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
         return resultList;
     }
 
-	// UI Spinner.
+	// UI Spinner 
 	const UISpinnerMetadata* uiSpinnerMetadata = dynamic_cast<const UISpinnerMetadata*>(metaData);
+	
     if (uiSpinnerMetadata)
     {
         resultList.push_back(controlWidget);
@@ -174,6 +191,20 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
         
         return resultList;
     }
+	
+	// UI Switch
+	const UISwitchMetadata* uiSwitchMetadata = dynamic_cast<const UISwitchMetadata*>(metaData);
+	if (uiSwitchMetadata)
+	{
+		resultList.push_back(controlWidget);
+        resultList.push_back(rectWidget);
+		resultList.push_back(alignWidget);
+        resultList.push_back(stateWidget);
+        resultList.push_back(backgroundWidget);
+        resultList.push_back(flagsWidget);
+        
+        return resultList;
+	}
 
     // TODO: add other Metadatas here as soon as they will be implemented.
     // UI Control Node. Should be at the very bottom of this factory since it is a parent for

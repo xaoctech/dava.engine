@@ -14,6 +14,7 @@
 
 #include "PlatformMetadata.h"
 #include "ScreenMetadata.h"
+#include "AggregatorMetadata.h"
 #include "HierarchyTreeController.h"
 
 #include "Base/Singleton.h"
@@ -42,6 +43,7 @@ protected:
     // Get the specific metadata for non-UI Controls.
     PlatformMetadata* GetPlatformMetadata() const;
     ScreenMetadata* GetScreenMetadata() const;
+	AggregatorMetadata* GetAggregatorMetadata() const;
 };
     
 }

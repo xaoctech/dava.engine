@@ -13,7 +13,7 @@ public:
 
 //    virtual void WillDisappear();
     
-	virtual void ReadFrom(SceneNode * sceneNode);
+	virtual void ReadFrom(Entity * sceneNode);
     
 //    virtual void OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);
 //    virtual void OnDistancePropertyChanged(PropertyList *forList, const String &forKey, float32 newValue, int32 index);

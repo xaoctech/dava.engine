@@ -33,7 +33,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
 #include "Scene3D/DataNode.h"
-#include "Render/RenderStateBlock.h"
+#include "Render/RenderState.h"
 
 #include "FileSystem/FilePath.h"
 #include "Base/FastName.h"
@@ -101,8 +101,8 @@ public:
                          MEMBER(uvOffset, "UV Offset", INTROSPECTION_EDITOR)
                          MEMBER(uvScale, "UV Scale", INTROSPECTION_EDITOR)
                          
-                         PROPERTY(flatColor, "Flat Color (works only if flat color enabled)", GetFlatColor, SetFlatColor, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-                         PROPERTY(texture0Shift, "Texture Shift", GetTextureShift, SetTextureShift, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         PROPERTY("flatColor", "Flat Color (works only if flat color enabled)", GetFlatColor, SetFlatColor, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         PROPERTY("texture0Shift", "Texture Shift", GetTextureShift, SetTextureShift, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          
                          //MEMBER(aabbox, "AABBox", INTROSPECTION_EDITOR)
                          );
@@ -139,6 +139,15 @@ public:
         MATERIAL_TYPES_COUNT
     };
     
+	enum eViewOptions
+	{
+		MATERIAL_VIEW_TEXTURE_LIGHTMAP = 0,
+		MATERIAL_VIEW_LIGHTMAP_ONLY,
+		MATERIAL_VIEW_TEXTURE_ONLY,
+
+		MATERIAL_VIEW_COUNT
+	};
+
     
     /*
         Plan of supported materials:
@@ -198,6 +207,8 @@ public:
     void SetFogColor(const Color & _fogColor);
     const Color & GetFogColor() const;
     
+	void SetViewOption(eViewOptions option);
+	eViewOptions GetViewOption();
     
     void SetTwoSided(bool _isTwoSided);
     bool GetTwoSided();
@@ -242,6 +253,7 @@ public:
     
 //    eType   type; //TODO: waiting for enums at introspection
     uint32 type;
+	eViewOptions viewOptions;
 
 	Vector4 reflective;
 	float32	reflectivity;
@@ -277,7 +289,7 @@ public:
 	inline Texture * GetTexture(eTextureLevel level) const;
 	inline const String & GetTextureName(eTextureLevel level) const;
 
-	RenderStateBlock * GetRenderStateBlock();
+	RenderState * GetRenderState();
     
     inline void SetBlendSrc(eBlendMode _blendSrc);
     inline void SetBlendDest(eBlendMode _blendDest);
@@ -346,7 +358,7 @@ private:
     int32 uniformFlatColor;
     int32 uniformTexture0Shift;
 
-	RenderStateBlock renderStateBlock;
+	RenderState renderStateBlock;
     
     
     /*
@@ -377,22 +389,19 @@ public:
                          
         MEMBER(isAlphablend, "Is Alphablended", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         
-        PROPERTY(isFlatColorEnabled, "Is flat color enabled", IsFlatColorEnabled, EnableFlatColor, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-                         
-        PROPERTY(isTexture0ShiftEnabled, "Is texture shift enabled", IsTextureShiftEnabled, EnableTextureShift, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-                         
-        PROPERTY(isExportOwnerLayerEnabled, "Is export owner layer enabled. (Export layer settings to render batch on set)", IsExportOwnerLayerEnabled, SetExportOwnerLayer, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        PROPERTY(ownerLayerName, "Owner layer name", GetOwnerLayerName, SetOwnerLayerName, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        
+        PROPERTY("isFlatColorEnabled", "Is flat color enabled", IsFlatColorEnabled, EnableFlatColor, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY("isTexture0ShiftEnabled", "Is texture shift enabled", IsTextureShiftEnabled, EnableTextureShift, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY("isExportOwnerLayerEnabled", "Is export owner layer enabled. (Export layer settings to render batch on set)", IsExportOwnerLayerEnabled, SetExportOwnerLayer, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY("ownerLayerName", "Owner layer name", GetOwnerLayerName, SetOwnerLayerName, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          
         MEMBER(blendSrc, "Blend Source", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(blendDst, "Blend Destination", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-
         MEMBER(isWireframe, "Is Wire Frame", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-                         
 		MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          
         COLLECTION(names, "Names", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+
+		MEMBER(renderStateBlock, "Render State", INTROSPECTION_EDITOR)
     );
 };
 

@@ -14,7 +14,7 @@ namespace DAVA
 		IMPLEMENT_COMPONENT_TYPE(USER_COMPONENT);
 
 		UserComponent();
-		virtual Component * Clone(SceneNode * toEntity);
+		virtual Component * Clone(Entity * toEntity);
 		virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 		virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 

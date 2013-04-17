@@ -1,5 +1,5 @@
 #include "Scene3D/Components/UserComponent.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 
 namespace DAVA
 {
@@ -7,7 +7,7 @@ namespace DAVA
 UserComponent::UserComponent()
 { }
 
-Component * UserComponent::Clone(SceneNode * toEntity)
+Component * UserComponent::Clone(Entity * toEntity)
 {
 	UserComponent *uc = new UserComponent();
 	uc->SetEntity(toEntity);

@@ -44,6 +44,16 @@ protected:
     
     virtual QColor GetFontColor() const;
     virtual void SetFontColor(const QColor& value);
+	
+	// Shadow offset and color getters/setters
+	virtual float GetShadowOffsetX() const;
+	virtual void SetShadowOffsetX(float offset);
+	
+	virtual float GetShadowOffsetY() const;
+	virtual void SetShadowOffsetY(float offset);
+	
+	virtual QColor GetShadowColor() const;
+	virtual void SetShadowColor(const QColor& value);
 
     // Color getter/setter. Also virtual.
     virtual QColor GetColor();
@@ -65,7 +75,10 @@ protected:
 
     virtual int GetAlign();
     virtual void SetAlign(int value);
-    
+
+	virtual void SetSpriteModification(int value);
+	virtual int GetSpriteModification();
+
     // For UI Button localized text depends on state, so overriding this function.
     virtual UIControl::eControlState GetCurrentStateForLocalizedText() const;
     
@@ -107,7 +120,11 @@ protected:
     // Align Type.
     int GetAlignForState(UIControl::eControlState state) const;
     void UpdatePropertyDirtyFlagForAlign();
-    
+
+	// Sprite Modification Type
+	int GetSpriteModificationForState(UIControl::eControlState state) const;
+	void UpdatePropertyDirtyFlagForSpriteModification();
+
     // Recover dirty flags.
     void RecoverPropertyDirtyFlags();
 };

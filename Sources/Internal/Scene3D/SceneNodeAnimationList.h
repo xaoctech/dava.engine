@@ -30,14 +30,14 @@
 #ifndef __DAVAENGINE_SCENE_NODE_ANIMATION_LIST_H__
 #define __DAVAENGINE_SCENE_NODE_ANIMATION_LIST_H__
 
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 #include "Scene3D/SceneNodeAnimation.h"
 #include "Base/EventDispatcher.h"
 
 namespace DAVA 
 {
 	
-class SceneNodeAnimationList : public SceneNode
+class SceneNodeAnimationList : public Entity
 {
 public:
 	enum

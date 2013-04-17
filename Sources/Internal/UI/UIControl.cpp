@@ -233,6 +233,55 @@ namespace DAVA
 		return realChilds;
 	}
 
+	List<UIControl* > UIControl::GetSubcontrols()
+	{
+		// Default list of Subcontrols is empty. To be overriden in the derived
+		// controls.
+		return List<UIControl*>();
+	}
+	
+	bool UIControl::IsSubcontrol()
+	{
+		if (!this->GetParent())
+		{
+			return false;
+		}
+		
+		const List<UIControl*>& parentSubcontrols = parent->GetSubcontrols();
+		if (parentSubcontrols.empty())
+		{
+			return false;
+		}
+		
+		bool isSubcontrol = (std::find(parentSubcontrols.begin(), parentSubcontrols.end(), this) != parentSubcontrols.end());
+		return isSubcontrol;
+	}
+
+	bool UIControl::AddControlToList(List<UIControl*>& controlsList, const String& controlName, bool isRecursive)
+	{
+		UIControl* control = FindByName(controlName, isRecursive);
+		if (control)
+		{
+			controlsList.push_back(control);
+			return true;
+		}
+		
+		return false;
+	}
+
+	List<UIControl* > UIControl::GetRealChildrenAndSubcontrols()
+	{
+		List<UIControl*>& realChildrenList = GetRealChildren();
+		List<UIControl*> subControlsList = GetSubcontrols();
+
+		// Merge two lists without duplicates.
+		List<UIControl*> resultList = realChildrenList;
+		resultList.insert(resultList.end(), subControlsList.begin(), subControlsList.end());
+		resultList.erase(std::unique(resultList.begin(), resultList.end()), resultList.end());
+		
+		return resultList;
+	}
+
 	void UIControl::SetName(const String & _name)
 	{
 		name = _name;
@@ -1451,14 +1500,6 @@ namespace DAVA
 			Draw(drawData);
 		}
 		
-		if (debugDrawEnabled)
-		{//TODO: Add debug draw for rotated controls
-			Color oldColor = RenderManager::Instance()->GetColor();
-			RenderManager::Instance()->SetColor(debugDrawColor);
-			RenderHelper::Instance()->DrawRect(drawData.GetUnrotatedRect());
-			RenderManager::Instance()->SetColor(oldColor);
-		}
-		
 		isIteratorCorrupted = false;
 		List<UIControl*>::iterator it = childs.begin();
         List<UIControl*>::iterator itEnd = childs.end();
@@ -1475,7 +1516,15 @@ namespace DAVA
 		if(clipContents)
 		{
 			RenderManager::Instance()->ClipPop();
-		}	
+		}
+		
+		if (debugDrawEnabled)
+		{//TODO: Add debug draw for rotated controls
+			Color oldColor = RenderManager::Instance()->GetColor();
+			RenderManager::Instance()->SetColor(debugDrawColor);
+			RenderHelper::Instance()->DrawRect(drawData.GetUnrotatedRect());
+			RenderManager::Instance()->SetColor(oldColor);
+		}
 	}
 	
 	bool UIControl::IsPointInside(const Vector2 &point, bool expandWithFocus/* = false*/)
@@ -1834,10 +1883,11 @@ namespace DAVA
 		// Model UIControl to be used in comparing
 		UIControl *baseControl = new UIControl();		
         
-		// Control Type      
-		node->Set("type", "UIControl");
+		// Control Type
+		SetPreferredNodeType(node, "UIControl");
+
 		// Control name
-		node->Set("name", this->GetName());
+		//node->Set("name", this->GetName());
 		// Visible
 		if (baseControl->GetVisible() != this->GetVisible())
 		{
@@ -1881,7 +1931,7 @@ namespace DAVA
 		Rect rect = this->GetRect();
 		if (baseControl->GetRect() != rect)
 		{
-			Vector4 rectVector4(rect.x, rect.y, rect.dx, rect.dy);
+			Vector4 rectVector4(rect.x + pivotPoint.x, rect.y + pivotPoint.y, rect.dx, rect.dy);
 			nodeValue->SetVector4(rectVector4);
 			node->Set("rect", nodeValue);
 		}
@@ -2420,7 +2470,8 @@ namespace DAVA
 	
 	void UIControl::RecalculateChildsSize()
 	{
-		const List<UIControl*>& realChildren = this->GetRealChildren();
+//		const List<UIControl*>& realChildren = this->GetRealChildren();
+		const List<UIControl*>& realChildren = this->GetChildren();	//YZ recalculate size for all controls
 		for(List<UIControl*>::const_iterator iter = realChildren.begin(); iter != realChildren.end(); ++iter)
 		{
 			UIControl* child = (*iter);
@@ -2544,5 +2595,37 @@ namespace DAVA
 	void UIControl::ApplyAlignSettingsForChildren()
 	{
 		RecalculateChildsSize();
+	}
+	
+	String UIControl::GetCustomControlType() const
+	{
+		return customControlType;
+	}
+
+	void UIControl::SetCustomControlType(const String& value)
+	{
+		customControlType = value;
+	}
+
+	void UIControl::ResetCustomControlType()
+	{
+		customControlType = String();
+	}
+	
+	void UIControl::SetPreferredNodeType(YamlNode* node, const String& nodeTypeName)
+	{
+		// Do we have Custom Control name? If yes, use it as type and passed one
+		// as the "Base Type"
+		bool hasCustomControl = !GetCustomControlType().empty();
+		if (hasCustomControl)
+		{
+			node->Set("type", GetCustomControlType());
+			node->Set("baseType", nodeTypeName);
+		}
+		else
+		{
+			// The type coincides with the node type name passed, no base type exists.
+			node->Set("type", nodeTypeName);
+		}
 	}
 }

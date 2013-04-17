@@ -1,13 +1,16 @@
 #include "DAVAEngine.h"
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataIntrospection.h"
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
+#include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaKeyedArchive.h"
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataIntoCollection.h"
 
 QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DAVA::IntrospectionInfo *_info, int hasAnyFlags, int hasNotAnyFlags)
 	: object(_object)
 	, info(_info)
 {
-	while(NULL != _info && object)
+	CreateCustomButtonsForRenderObject();
+
+	while(NULL != _info && NULL != object)
 	{
 		for(DAVA::int32 i = 0; i < info->MembersCount(); ++i)
 		{
@@ -36,34 +39,39 @@ void QtPropertyDataIntrospection::AddMember(const DAVA::IntrospectionMember *mem
 	const DAVA::IntrospectionInfo *memberIntrospection = memberMetaInfo->GetIntrospection(memberObject);
 	bool isKeyedArchive = false;
 
-	// check if this member is keyed archive
-	// for keyed archives always will be variant type created
+	// keyed archive
 	if(NULL != memberIntrospection && (memberIntrospection->Type() == DAVA::MetaInfo::Instance<DAVA::KeyedArchive>()))
 	{
-		isKeyedArchive = true;
+		QtPropertyDataDavaKeyedArcive *childData = new QtPropertyDataDavaKeyedArcive((DAVA::KeyedArchive *) memberObject);
+		ChildAdd(member->Name(), childData);
 	}
-
-    if(NULL != memberObject && NULL != memberIntrospection && !isKeyedArchive)
+	// introspection
+	else if(NULL != memberObject && NULL != memberIntrospection)
     {
 		QtPropertyDataIntrospection *childData = new QtPropertyDataIntrospection(memberObject, memberIntrospection, hasAnyFlags, hasNotAnyFlags);
 		ChildAdd(member->Name(), childData);
     }
+	// any other value
     else
     {
-        if(memberMetaInfo->IsPointer() && !isKeyedArchive)
+		// pointer
+        if(memberMetaInfo->IsPointer())
         {
 			QString s;
             QtPropertyData* childData = new QtPropertyData(s.sprintf("[%p] Pointer", memberObject));
             childData->SetFlags(childData->GetFlags() | FLAG_IS_DISABLED);
             ChildAdd(member->Name(), childData);
         }
+		// other value
         else
         {
+			// collection
             if(member->Collection() && !isKeyedArchive)
             {
                 QtPropertyDataIntroCollection *childCollection = new QtPropertyDataIntroCollection(memberObject, member->Collection(), hasAnyFlags, hasNotAnyFlags);
                 ChildAdd(member->Name(), childCollection);
             }
+			// variant
             else
             {
                 QtPropertyDataDavaVariant *childData = new QtPropertyDataDavaVariant(member->Value(object));
@@ -114,3 +122,25 @@ void QtPropertyDataIntrospection::ChildNeedUpdate()
 
 	}
 }
+
+void QtPropertyDataIntrospection::CreateCustomButtonsForRenderObject()
+{
+	if(NULL != info && (info->Type() == DAVA::MetaInfo::Instance<DAVA::RenderObject>()))
+	{
+		QPushButton *bakeButton = new QPushButton(QIcon(":/QtIcons/transform_bake.png"), "");
+		bakeButton->setToolTip("Bake Transform");
+		bakeButton->setIconSize(QSize(12, 12));
+		AddOW(QtPropertyOW(bakeButton));
+		QObject::connect(bakeButton, SIGNAL(pressed()), this, SLOT(BakeTransform()));
+	}
+}
+
+void QtPropertyDataIntrospection::BakeTransform()
+{
+	QtPropertyDataIntrospection * renderComponentProperty = static_cast<QtPropertyDataIntrospection*>(parent);
+	DAVA::Entity * entity = (static_cast<DAVA::RenderComponent*>(renderComponentProperty->object))->GetEntity();
+	DAVA::RenderObject * ro = static_cast<DAVA::RenderObject*>(object);
+	ro->BakeTransform(entity->GetLocalTransform());
+	entity->SetLocalTransform(DAVA::Matrix4::IDENTITY);
+}
+

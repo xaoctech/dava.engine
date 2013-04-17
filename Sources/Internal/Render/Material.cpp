@@ -255,12 +255,13 @@ Material::Material()
     ,   isTexture0ShiftEnabled(false)
     ,   isExportOwnerLayerEnabled(true)
     ,   ownerLayerName(LAYER_OPAQUE)
+	,	viewOptions(MATERIAL_VIEW_TEXTURE_LIGHTMAP)
 {
     //Reserve memory for Collection
     names.resize(TEXTURE_COUNT);
     
     
-	renderStateBlock.state = RenderStateBlock::DEFAULT_3D_STATE;
+	renderStateBlock.state = RenderState::DEFAULT_3D_STATE;
 
 //    if (scene)
 //    {
@@ -406,6 +407,23 @@ void Material::RebuildShader()
         default:
             break;
     };
+
+	switch (viewOptions)
+	{
+		case MATERIAL_VIEW_TEXTURE_LIGHTMAP:
+			break;
+		case MATERIAL_VIEW_LIGHTMAP_ONLY:
+			if (shaderCombileCombo.size() > 0)shaderCombileCombo += ";";
+			shaderCombileCombo = shaderCombileCombo + "MATERIAL_VIEW_LIGHTMAP_ONLY";
+			break;
+		case MATERIAL_VIEW_TEXTURE_ONLY:
+			if (shaderCombileCombo.size() > 0)shaderCombileCombo += ";";
+			shaderCombileCombo = shaderCombileCombo + "MATERIAL_VIEW_TEXTURE_ONLY";
+			break;
+		default:
+			break;
+	}
+
     if (isTranslucent)
     {
         if (shaderCombileCombo.size() > 0)shaderCombileCombo += ";";
@@ -706,6 +724,20 @@ void Material::SetFog(bool _isFogEnabled)
     isFogEnabled = _isFogEnabled;
     RebuildShader();
 }
+
+void Material::SetViewOption(eViewOptions option)
+{
+	if(viewOptions != option)
+	{
+		viewOptions = option;
+		RebuildShader();
+	}
+}
+
+Material::eViewOptions Material::GetViewOption()
+{
+	return viewOptions;
+}
     
 bool Material::IsFogEnabled() const
 {
@@ -780,27 +812,27 @@ void Material::PrepareRenderState(InstanceMaterialState * instanceMaterialState)
 
 	if (isTranslucent || isTwoSided)
 	{
-		renderStateBlock.state &= ~RenderStateBlock::STATE_CULL;
+		renderStateBlock.state &= ~RenderState::STATE_CULL;
 	}
 	else
 	{
-		renderStateBlock.state |= RenderStateBlock::STATE_CULL;
+		renderStateBlock.state |= RenderState::STATE_CULL;
 	}
 
 
 	if(isAlphablend)
 	{
-		renderStateBlock.state |= RenderStateBlock::STATE_BLEND;
+		renderStateBlock.state |= RenderState::STATE_BLEND;
 		//Dizz: temporary solution
-		renderStateBlock.state &= ~RenderStateBlock::STATE_DEPTH_WRITE;
+		renderStateBlock.state &= ~RenderState::STATE_DEPTH_WRITE;
 
 		renderStateBlock.SetBlendMode((eBlendMode)blendSrc, (eBlendMode)blendDst);
 	}
 	else
 	{
 		//Dizz: temporary solution
-		renderStateBlock.state |= RenderStateBlock::STATE_DEPTH_WRITE;
-		renderStateBlock.state &= ~RenderStateBlock::STATE_BLEND;
+		renderStateBlock.state |= RenderState::STATE_DEPTH_WRITE;
+		renderStateBlock.state &= ~RenderState::STATE_BLEND;
 	}
 
 	if(isWireframe)
@@ -1035,7 +1067,7 @@ bool Material::GetAlphablend()
 	return isAlphablend;
 }
 
-RenderStateBlock * Material::GetRenderStateBlock()
+RenderState * Material::GetRenderState()
 {
 	return &renderStateBlock;
 }

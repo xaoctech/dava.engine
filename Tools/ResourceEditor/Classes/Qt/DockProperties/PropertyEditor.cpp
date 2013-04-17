@@ -12,7 +12,7 @@
 
 PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */)
 	: QtPropertyEditor(parent)
-	, hideReadOnly(false)
+	, advancedMode(false)
 	, curNode(NULL)
 	, treeStateHelper(this, this->curModel)
 {
@@ -20,12 +20,11 @@ PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */)
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneActivated(SceneData *)), this, SLOT(sceneActivated(SceneData *)));
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneChanged(SceneData *)), this, SLOT(sceneChanged(SceneData *)));
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneReleased(SceneData *)), this, SLOT(sceneReleased(SceneData *)));
-	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneNodeSelected(SceneData *, DAVA::SceneNode *)), this, SLOT(sceneNodeSelected(SceneData *, DAVA::SceneNode *)));
+	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneNodeSelected(SceneData *, DAVA::Entity *)), this, SLOT(sceneNodeSelected(SceneData *, DAVA::Entity *)));
 
 	// MainWindow actions
-	QObject::connect(QtMainWindow::Instance()->GetUI()->actionPropHideReadonly, SIGNAL(triggered()), this, SLOT(actionHideReadOnly()));
-
-	hideReadOnly = QtMainWindow::Instance()->GetUI()->actionPropHideReadonly->isChecked();
+	QObject::connect(QtMainWindow::Instance()->GetUI()->actionShowAdvancedProp, SIGNAL(triggered()), this, SLOT(actionShowAdvanced()));
+	advancedMode = QtMainWindow::Instance()->GetUI()->actionShowAdvancedProp->isChecked();
 
 
 	posSaver.Attach(this, "DocPropetyEditor");
@@ -42,13 +41,13 @@ PropertyEditor::~PropertyEditor()
 	SafeRelease(curNode);
 }
 
-void PropertyEditor::SetNode(DAVA::SceneNode *node)
+void PropertyEditor::SetNode(DAVA::Entity *node)
 {
 	// Store the current Property Editor Tree state before switching to the new node.
 	// Do not clear the current states map - we are using one storage to share opened
 	// Property Editor nodes between the different Scene Nodes.
 	treeStateHelper.SaveTreeViewState(false);
-
+	
 	SafeRelease(curNode);
 	curNode = SafeRetain(node);
 
@@ -62,7 +61,16 @@ void PropertyEditor::SetNode(DAVA::SceneNode *node)
             Component *component = curNode->GetComponent(i);
             if(component)
             {
-                AppendIntrospectionInfo(component, component->GetTypeInfo());
+                QtPropertyData *componentData = AppendIntrospectionInfo(component, component->GetTypeInfo());
+
+				if(NULL != componentData)
+				{
+					// Add optional button to track "remove this component" command
+					QPushButton *removeButton = new QPushButton(QIcon(":/QtIcons/removecomponent.png"), "");
+					removeButton->setFlat(true);
+
+					componentData->AddOW(QtPropertyOW(removeButton, true));
+				}
             }
         }
 	}
@@ -79,8 +87,19 @@ void PropertyEditor::SetNode(DAVA::SceneNode *node)
 	}
 }
 
-void PropertyEditor::AppendIntrospectionInfo(void *object, const DAVA::IntrospectionInfo *info)
+void PropertyEditor::SetAdvancedMode(bool set)
 {
+	if(advancedMode != set)
+	{
+		advancedMode = set;
+		SetNode(curNode);
+	}
+}
+
+QtPropertyData* PropertyEditor::AppendIntrospectionInfo(void *object, const DAVA::IntrospectionInfo *info)
+{
+	QtPropertyData* propData = NULL;
+
 	if(NULL != info)
 	{
 		bool hasMembers = false;
@@ -102,9 +121,9 @@ void PropertyEditor::AppendIntrospectionInfo(void *object, const DAVA::Introspec
 			int hasFlags = DAVA::INTROSPECTION_EDITOR;
 			int hasNotFlags = 0;
 
-			if(hideReadOnly) hasNotFlags |= DAVA::INTROSPECTION_EDITOR_READONLY;
+			if(!advancedMode) hasNotFlags |= DAVA::INTROSPECTION_EDITOR_READONLY;
 
-			QtPropertyData* propData = new QtPropertyDataIntrospection(object, currentInfo, hasFlags, hasNotFlags);
+			propData = new QtPropertyDataIntrospection(object, currentInfo, hasFlags, hasNotFlags);
 
 			if(propData->ChildCount() > 0)
 			{
@@ -116,9 +135,12 @@ void PropertyEditor::AppendIntrospectionInfo(void *object, const DAVA::Introspec
 			else
 			{
 				delete propData;
+				propData = NULL;
 			}
         }
     }
+
+	return propData;
 }
 
 void PropertyEditor::sceneChanged(SceneData *sceneData)
@@ -140,17 +162,16 @@ void PropertyEditor::sceneActivated(SceneData *sceneData)
 void PropertyEditor::sceneReleased(SceneData *sceneData)
 { }
 
-void PropertyEditor::sceneNodeSelected(SceneData *sceneData, DAVA::SceneNode *node)
+void PropertyEditor::sceneNodeSelected(SceneData *sceneData, DAVA::Entity *node)
 {
 	SetNode(node);
 }
 
-void PropertyEditor::actionHideReadOnly()
+void PropertyEditor::actionShowAdvanced()
 {
-	QAction *hideAction = dynamic_cast<QAction *>(QObject::sender());
-	if(NULL != hideAction)
+	QAction *showAdvancedAction = dynamic_cast<QAction *>(QObject::sender());
+	if(NULL != showAdvancedAction)
 	{
-		hideReadOnly = hideAction->isChecked();
-		SetNode(curNode);
+		SetAdvancedMode(showAdvancedAction->isChecked());
 	}
 }
