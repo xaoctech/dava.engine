@@ -1,10 +1,46 @@
 #!/usr/bin/python
-
+from __future__ import with_statement
+from contextlib import closing
+from zipfile import ZipFile, ZIP_DEFLATED
+import sys
+import os
 import pymongo
 import bson
 import yaml
-import sys
 import datetime
+import shutil
+
+mapsDir = './DataSource/3d/';
+
+def zipdir(basedir, archivename):
+    assert os.path.isdir(basedir)
+    with closing(ZipFile(archivename, "w", ZIP_DEFLATED)) as z:
+        for root, dirs, files in os.walk(basedir):
+            #NOTE: ignore empty directories
+            for fn in files:
+                absfn = os.path.join(root, fn)
+                zfn = absfn[len(basedir)+len(os.sep):] #XXX: relative path
+                z.write(absfn, zfn)
+
+def getZippedSize(sceneFile):
+	pervDir = os.getcwd();
+	os.chdir("../../../wot.blitz/");
+
+
+	outDir = os.getcwd() + '/export_process/';
+	executable = 'Tools/ResEditor/dava.framework/Tools/ResourceEditor/ResourceEditorQt.app/Contents/MacOS/ResourceEditorQt';
+
+	os.spawnv(os.P_WAIT, executable, [executable, '-sceneexporter', '-export', '-indir', mapsDir, '-outdir', outDir, '-processfile', sceneFile, '-forceclose']);
+	zipdir(outDir[:-1], 'export_process.zip');
+	zipSize = os.path.getsize('export_process.zip');
+
+	shutil.rmtree(outDir[:-1]);
+	os.remove('export_process.zip');
+	os.chdir(pervDir);
+	
+	return zipSize;
+
+
 
 arguments = sys.argv[1:]
 
@@ -76,14 +112,29 @@ if None != connection:
 				reportValues = level.keys()
 				reportValues.sort()
 				for reportValue in reportValues:
-					if '_id' != reportValue and 'ResultImagePNG' != reportValue:
-						if 'SceneFileSize' == reportValue and 11. < float(level[reportValue].split()[0]):
-							report.write('<b style="color:Red"><i>' + reportValue + '</i>: ' + level[reportValue] + ' (Limit: 11 Mb)</b><br/>\n')
-						elif 'TextureMemorySize' == reportValue and 46. < float(level[reportValue].split()[0]):
+					if 'SceneFilePath' == reportValue:
+						sceneFilePath = level[reportValue];
+						pervDir = os.getcwd();
+						os.chdir("../../../wot.blitz/");
+						sceneFileSize = os.path.getsize(mapsDir + sceneFilePath)/(1024. * 1024.);
+						os.chdir(pervDir);
+
+						if sceneFileSize > 11. :
+							report.write('<b style="color:Red"><i>SceneFileSize</i>: ' + '{:.2f}'.format(sceneFileSize) + ' Mb (Limit: 11 Mb)</b><br/>\n')
+						else:
+							report.write('<b><i>SceneFileSize </i>: ' + '{:.2f}'.format(sceneFileSize) + ' Mb (Limit: 11 Mb)</b><br/>\n')
+
+						zippedSceneSize = getZippedSize(sceneFilePath)/(1024. * 1024.);
+						report.write('<b><i>ZippedSceneSize</i>: ' + '{:.2f}'.format(zippedSceneSize) + ' Mb</b><br/>\n')
+
+					elif 'TextureFilesSize' == reportValue:
+						report.write('<b><i>' + reportValue + '</i>: ' + level[reportValue] + '</b><br/>\n')
+					elif 'TextureMemorySize' == reportValue:
+						if 46. < float(level[reportValue].split()[0]):
 							report.write('<b style="color:Red"><i>' + reportValue + '</i>: ' + level[reportValue] + ' (Limit: 46 Mb)</b><br/>\n')
 						else:
-							report.write('<b><i>' + reportValue + '</i></b>: ' + level[reportValue] + '<br/>\n')
-						
+							report.write('<b><i>' + reportValue + '</i>: ' + level[reportValue] + ' (Limit: 46 Mb)</b><br/>\n')
+
 				imageFile = open(levelName + '.png', 'wb')
 				imageFile.write(level['ResultImagePNG'])
 				report.write('<img src="./' + levelName + '.png"' + ' alt="'+ levelName +'"></br>\n')
