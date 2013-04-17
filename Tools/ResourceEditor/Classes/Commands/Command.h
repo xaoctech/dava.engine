@@ -57,6 +57,8 @@ public:
 protected:
 	void ExecuteInternal(Command* command);
 	void CancelInternal(Command* command);
+
+	eCommandState GetInternalCommandState(Command* command);
 };
 
 #include "../Qt/DockSceneGraph/PointerHolder.h"
