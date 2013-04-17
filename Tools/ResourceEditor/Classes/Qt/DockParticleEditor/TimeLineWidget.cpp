@@ -27,9 +27,14 @@
 #define SCROLL_BAR_HEIGHT		12
 
 #define MIN_ZOOM				1.0f
-#define MAX_ZOOM				3.0f
+#define MAX_ZOOM				10.0f
 #define ZOOM_SLIDER_LENGTH		100
 
+#ifdef __DAVAENGINE_WIN32__
+#define SLIDER_HEIGHT_EXPAND    0
+#else
+#define SLIDER_HEIGHT_EXPAND    5
+#endif
 
 TimeLineWidget::TimeLineWidget(QWidget *parent) :
 	QWidget(parent)
@@ -65,9 +70,9 @@ TimeLineWidget::TimeLineWidget(QWidget *parent) :
 	setMouseTracking(true);
 
 	horizontalScrollBar = new QScrollBar(Qt::Horizontal, this);
-	connect(horizontalScrollBar, SIGNAL(sliderMoved(int)), this, SLOT(HandleHorizontalScrollChanged(int)));
+	connect(horizontalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(HandleHorizontalScrollChanged(int)));
 	zoomSlider = new QSlider(Qt::Horizontal, this);
-	connect(zoomSlider, SIGNAL(sliderMoved(int)), this, SLOT(HandleZoomScrollChanged(int)));
+	connect(zoomSlider, SIGNAL(valueChanged(int)), this, SLOT(HandleZoomScrollChanged(int)));
 	UpdateSizePolicy();
 
 	isCtrlPressed = false;
@@ -222,12 +227,6 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 		int horLineY2 = horLineY1;
 		painter.drawLine(horLineX1, horLineY1, horLineX2, horLineY2);
 	}
-
-	//draw offsetRight box
-	DrawUITriangle( painter, GetOffsetRightRect(), 90);
-
-	//draw offsetLeft box
-	DrawUITriangle( painter, GetOffsetLeftRect(), 270);
 	
 	if (sizeState != SIZE_STATE_MINIMIZED)
 	{
@@ -893,18 +892,7 @@ void TimeLineWidget::mousePressEvent(QMouseEvent *event)
 			PerformZoom(scale - ZOOM_STEP);
 			return;
 		}
-		else if (GetOffsetLeftRect().contains(event->pos()))
-		{
-			PerformOffset(GRAPH_OFFSET_STEP);
-			return;
-		}
-
-		else if (GetOffsetRightRect().contains(event->pos()))
-		{
-			PerformOffset(-GRAPH_OFFSET_STEP);
-			return;
-		}
-
+		
 		else if (GetLineDrawRect().contains(event->pos()))
 		{
 			drawLine++;
@@ -1298,7 +1286,7 @@ QRect TimeLineWidget::GetIncreaseRect() const
 
 QRect TimeLineWidget::GetScaleRect() const
 {
-	QRect rect(GetOffsetLeftRect());
+	QRect rect(GetLockRect());
 	rect.translate(-SCALE_WIDTH, 0);
 	return rect;
 }
@@ -1310,20 +1298,6 @@ QRect TimeLineWidget::GetDecreaseRect() const
 	rect.translate(-sideLength * UI_RECTANGLE_OFFSET, 0);
 	rect.setWidth(sideLength);
 	rect.setHeight(sideLength);
-	return rect;
-}
-
-QRect TimeLineWidget::GetOffsetRightRect() const
-{
-	QRect rect = GetLockRect();
-	rect.translate(-rect.width() * UI_RECTANGLE_OFFSET, 0);
-	return rect;
-}
-
-QRect TimeLineWidget::GetOffsetLeftRect() const
-{
-	QRect rect = GetOffsetRightRect();
-	rect.translate(-rect.width() * UI_RECTANGLE_OFFSET, 0);
 	return rect;
 }
 
@@ -1339,7 +1313,7 @@ QRect TimeLineWidget::GetSliderRect() const
 	QRect rect = GetIncreaseRect();
 	rect.translate(-(ZOOM_SLIDER_LENGTH + 5), 0);
 	rect.setWidth(ZOOM_SLIDER_LENGTH);
-	rect.setHeight(rect.height() + 4);
+	rect.setHeight(rect.height() + SLIDER_HEIGHT_EXPAND);
 	return rect;
 }
 

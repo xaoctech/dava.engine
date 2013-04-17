@@ -13,9 +13,11 @@ class TextureHelper
 {
 public:
 	static DAVA::uint32 GetSceneTextureMemory(DAVA::Scene* scene, const FilePath & scenePath);
+	static DAVA::uint32 GetSceneTextureFilesSize(DAVA::Scene* scene, const FilePath& scenePath);
 
 private:
 	static DAVA::uint32 EnumerateSceneTextures(DAVA::Scene* scene, const FilePath & scenePath);
+	static DAVA::uint32 EnumerateSceneTexturesFileSize(DAVA::Scene* scene, const FilePath& scenePath);
 
 	static void EnumerateTextures(DAVA::Entity *forNode, Map<String, Texture *> &textures);
 	static void CollectLandscapeTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, Landscape *forNode);

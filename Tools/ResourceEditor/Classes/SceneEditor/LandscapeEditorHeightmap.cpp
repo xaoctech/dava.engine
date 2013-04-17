@@ -390,9 +390,14 @@ Heightmap* LandscapeEditorHeightmap::GetHeightmap()
 	return landscapesController->GetCurrentHeightmap();
 }
 
-void LandscapeEditorHeightmap::UpdateHeightmap(Heightmap* heightmap)
+void LandscapeEditorHeightmap::UpdateHeightmap(Heightmap* heightmap, Rect rect)
 {
-	UpdateHeightmap(Rect(0, 0, (float32)heightmap->Size()-1.f, (float32)heightmap->Size()-1.f));
+	if (rect.x == -1 || rect.y == -1)
+	{
+		rect = Rect(0, 0, (float32)heightmap->Size()-1.f, (float32)heightmap->Size()-1.f);
+	}
+
+	UpdateHeightmap(rect);
 }
 
 bool LandscapeEditorHeightmap::CopyPasteBegin()

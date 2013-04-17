@@ -61,11 +61,6 @@ List<UIControl* >& UIAggregatorControl::GetRealChildren()
 	return realChilds;
 }
 
-void UIAggregatorControl::CleanAggregatorChilds()
-{
-	
-}
-
 void UIAggregatorControl::AddAggregatorChild(UIControl* uiControl)
 {
 	//AddControl(uiControl);

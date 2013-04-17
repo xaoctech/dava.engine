@@ -16,7 +16,6 @@ namespace DAVA
 		virtual List<UIControl* >& GetRealChildren();
 	
 		void AddAggregatorChild(UIControl* uiControl);
-		void CleanAggregatorChilds();
 		
 		void SetAggregatorPath(const FilePath& path);
 		const FilePath & GetAggregatorPath() const;

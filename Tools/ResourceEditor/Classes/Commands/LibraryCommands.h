@@ -52,6 +52,20 @@ protected:
     virtual void Cancel();
 };
 
+class CommandReloadEntityFrom: public LibraryCommand
+{
+public:
+	CommandReloadEntityFrom(const DAVA::FilePath &pathname);
+    
+protected:
+    
+    virtual void Execute();
+    virtual void Cancel();
+    
+protected:
+    
+    DAVA::FilePath fromPathname;
+};
 
 class CommandConvertScene: public LibraryCommand
 {

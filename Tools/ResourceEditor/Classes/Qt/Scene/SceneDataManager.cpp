@@ -7,6 +7,7 @@
 #include "PVRConverter.h"
 
 #include "./Qt/SpritesPacker/SpritePackerHelper.h"
+#include "../Main/QtUtils.h"
 
 using namespace DAVA;
 
@@ -176,7 +177,7 @@ void SceneDataManager::EditScene(SceneData* sceneData, const FilePath &scenePath
     emit SceneGraphNeedRebuild();
 }
 
-void SceneDataManager::ReloadScene(const FilePath &scenePathname)
+void SceneDataManager::ReloadScene(const FilePath &scenePathname, const FilePath &fromScenePathname)
 {
 	SceneData* sceneData = SceneGetActive();
 	if (!sceneData)
@@ -191,13 +192,23 @@ void SceneDataManager::ReloadScene(const FilePath &scenePathname)
 		DVASSERT(false && "sceneData->GetScene() returned NULL!");
 		return;
 	}
-
+    
 	sceneData->SelectNode(NULL);
     scene->ReleaseRootNode(scenePathname);
-
+    
 	nodesToAdd.clear();
-    ReloadNode(scene, scene, scenePathname);
-
+    
+    Set<String> errors;
+    ReloadNode(scene, scene, scenePathname, fromScenePathname, errors);
+    if(!errors.empty())
+    {
+        ShowErrorDialog(errors);
+        
+        nodesToAdd.clear();
+        return;
+    }
+    
+    
     for (int32 i = 0; i < (int32)nodesToAdd.size(); i++)
     {
         scene->ReleaseUserData(nodesToAdd[i].nodeToRemove);
@@ -218,24 +229,33 @@ void SceneDataManager::ReloadScene(const FilePath &scenePathname)
 	sceneData->SetLandscapesControllerScene(scene);
 }
 
-void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const FilePath &nodePathname)
+void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const FilePath &nodePathname, const FilePath &fromPathname, Set<String> &errors)
 {
 	//если в рут ноды сложить такие же рут ноды то на релоаде все накроет пиздой
     KeyedArchive *customProperties = node->GetCustomProperties();
     if (customProperties->GetString("editor.referenceToOwner", "") == nodePathname.GetAbsolutePathname())
     {
-        Entity *newNode = scene->GetRootNode(nodePathname)->Clone();
-        newNode->SetLocalTransform(node->GetLocalTransform());
-        newNode->GetCustomProperties()->SetString("editor.referenceToOwner", nodePathname.GetAbsolutePathname());
-        newNode->SetSolid(true);
-        
-        Entity *parent = node->GetParent();
-        AddedNode addN;
-        addN.nodeToAdd = newNode;
-        addN.nodeToRemove = node;
-        addN.parent = parent;
-        
-        nodesToAdd.push_back(addN);
+        Entity *loadedNode = scene->GetRootNode(fromPathname)->Clone();
+        if(loadedNode)
+        {
+            Entity *newNode = loadedNode->Clone();
+            newNode->SetLocalTransform(node->GetLocalTransform());
+            newNode->GetCustomProperties()->SetString("editor.referenceToOwner", nodePathname.GetAbsolutePathname());
+            newNode->SetSolid(true);
+            
+            Entity *parent = node->GetParent();
+            AddedNode addN;
+            addN.nodeToAdd = newNode;
+            addN.nodeToRemove = node;
+            addN.parent = parent;
+            
+            nodesToAdd.push_back(addN);
+        }
+        else
+        {
+            errors.insert(Format("Cannot load object: %s", fromPathname.GetAbsolutePathname().c_str()));
+        }
+
         return;
     }
     
@@ -243,7 +263,7 @@ void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const FilePa
     for (int ci = 0; ci < csz; ++ci)
     {
         Entity * child = node->GetChild(ci);
-        ReloadNode(scene, child, nodePathname);
+        ReloadNode(scene, child, nodePathname, fromPathname, errors);
     }
 }
 

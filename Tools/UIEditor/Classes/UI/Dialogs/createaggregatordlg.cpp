@@ -63,14 +63,28 @@ void CreateAggregatorDlg::SetDefaultPlatform(HierarchyTreeNode::HIERARCHYTREENOD
 void CreateAggregatorDlg::accept()
 {
 	const QString name = GetName();
+	QString errorMsg("");
 	if (!name.isNull() && !name.isEmpty())
 	{
-		QDialog::accept();
+		if(!HierarchyTreeController::Instance()->GetActivePlatform()->IsAggregatorOrScreenNamePresent(name))
+		{
+			QDialog::accept();
+		}
+		else
+		{
+			errorMsg = "Please fill aggregator name field with unique value.\r\n The same name with any of screen is forbidden.";
+		}
 	}
 	else
 	{
+		errorMsg = "Please fill aggregator name field with value. It can't be empty.";
+	}
+	
+	if(!errorMsg.isEmpty())
+	{
 		QMessageBox msgBox;
-		msgBox.setText(tr("Please fill aggregator name field with value. It can't be empty."));
+		msgBox.setText(errorMsg);
 		msgBox.exec();
-	}	
+	}
+	
 }

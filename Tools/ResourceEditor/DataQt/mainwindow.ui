@@ -141,21 +141,6 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockDataGraph">
-   <property name="minimumSize">
-    <size>
-     <width>150</width>
-     <height>42</height>
-    </size>
-   </property>
-   <property name="windowTitle">
-    <string>Data Graph</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="QWidget" name="dataGraphBody"/>
-  </widget>
   <widget class="QDockWidget" name="dockLibrary">
    <property name="minimumSize">
     <size>
@@ -331,21 +316,6 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockEntities">
-   <property name="minimumSize">
-    <size>
-     <width>150</width>
-     <height>42</height>
-    </size>
-   </property>
-   <property name="windowTitle">
-    <string>Entity Graph</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="QWidget" name="entityBody"/>
-  </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="windowTitle">
     <string>Tool Bar</string>
@@ -448,7 +418,7 @@
      <x>0</x>
      <y>0</y>
      <width>1065</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -537,7 +507,6 @@
     <addaction name="separator"/>
     <addaction name="actionRestoreViews"/>
     <addaction name="separator"/>
-    <addaction name="actionSceneInfo"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -795,6 +764,54 @@
     </widget>
    </widget>
   </widget>
+  <widget class="QDockWidget" name="dockSceneInfo">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="windowTitle">
+    <string>Scene Info</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockSceneInfoContent">
+    <layout class="QVBoxLayout" name="verticalLayout_6">
+     <property name="spacing">
+      <number>3</number>
+     </property>
+     <property name="margin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="SceneInfo" name="sceneInfo">
+       <property name="styleSheet">
+        <string notr="true"> QTreeView::branch:has-children:!has-siblings:closed,
+ QTreeView::branch:closed:has-children:has-siblings {
+         border-image: none;
+         image: url(:/QtImages/tree-closed.png);
+ }
+
+ QTreeView::branch:open:has-children:!has-siblings,
+ QTreeView::branch:open:has-children:has-siblings  {
+         border-image: none;
+         image: url(:/QtImages/tree-open.png);
+ }
+</string>
+       </property>
+       <property name="editTriggers">
+        <set>QAbstractItemView::AllEditTriggers</set>
+       </property>
+       <property name="alternatingRowColors">
+        <bool>true</bool>
+       </property>
+       <property name="indentation">
+        <number>16</number>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
   <action name="actionNewScene">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
@@ -837,7 +854,7 @@
      <normaloff>:/QtIcons/savescenetofolder.png</normaloff>:/QtIcons/savescenetofolder.png</iconset>
    </property>
    <property name="text">
-    <string>Save To Folder with Childs</string>
+    <string>Save To Folder with Children</string>
    </property>
   </action>
   <action name="actionOpenProject">
@@ -976,11 +993,6 @@
   <action name="actionRestoreViews">
    <property name="text">
     <string>Restore Views</string>
-   </property>
-  </action>
-  <action name="actionSceneInfo">
-   <property name="text">
-    <string>Scene Info</string>
    </property>
   </action>
   <action name="actionShowSettings">
@@ -1342,6 +1354,11 @@
    <extends>QWidget</extends>
    <header>Scene/scenetabwidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SceneInfo</class>
+   <extends>QTreeView</extends>
+   <header>DockSceneInfo/SceneInfo.h</header>
   </customwidget>
  </customwidgets>
  <resources>

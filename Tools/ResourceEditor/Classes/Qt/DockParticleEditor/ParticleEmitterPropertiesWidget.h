@@ -9,6 +9,8 @@
 
 #include <QComboBox>
 #include <QDoubleSpinBox>
+#include <QLabel>
+#include <QSlider>
 
 class ParticleEmitterPropertiesWidget: public QWidget, public BaseParticleEditorContentWidget
 {
@@ -29,6 +31,7 @@ public:
 	// Accessors to timelines.
 	TimeLineWidget* GetEmitterRadiusTimeline() {return emitterRadius;};
 	TimeLineWidget* GetEmitterSizeTimeline() {return emitterSize;};
+	TimeLineWidget* GetEmissionVectorTimeline() {return emitterEmissionVector;};
 
 signals:
 	void ValueChanged();
@@ -39,6 +42,7 @@ public slots:
 
 protected:
 	void UpdateTooltip();
+	void UpdatePlaybackSpeedLabel();
 
 private:
 	QVBoxLayout* mainLayout;
@@ -53,6 +57,9 @@ private:
 	QDoubleSpinBox* emitterLife;
 	GradientPickerWidget* emitterColorWidget;
 	
+	QLabel* emitterPlaybackSpeedLabel;
+	QSlider* emitterPlaybackSpeed;
+
 	bool blockSignals;
 	
 	void InitWidget(QWidget* widget, bool connectWidget = true);

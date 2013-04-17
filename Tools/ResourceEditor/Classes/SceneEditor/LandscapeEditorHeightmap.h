@@ -37,7 +37,7 @@ public:
     virtual void TextureDidChanged(const String &forKey);
 
 	Heightmap* GetHeightmap();
-	void UpdateHeightmap(Heightmap* heightmap);
+	void UpdateHeightmap(Heightmap* heightmap, Rect rect = Rect(-1, -1, -1, -1));
 
 	virtual void UpdateLandscapeTilemap(Texture* texture);
 protected:

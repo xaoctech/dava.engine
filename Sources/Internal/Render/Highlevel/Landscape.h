@@ -277,6 +277,7 @@ public:
     
     virtual void UpdateFullTiledTexture();
     FilePath SaveFullTiledTexture();
+    Texture *CreateFullTiledTexture();
     
     void SetFog(bool _fogEnabled);
     bool IsFogEnabled() const;
@@ -394,7 +395,6 @@ protected:
     Vector<LandQuadTreeNode<LandscapeQuad> *>lodNot0quads;
 
     int32 prevLodLayer;
-    Texture *CreateFullTiledTexture();
     
     int32 flashQueueCounter;
     

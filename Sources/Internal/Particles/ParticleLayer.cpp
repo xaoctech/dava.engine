@@ -97,6 +97,8 @@ ParticleLayer::ParticleLayer()
 	frameOverLifeFPS = 0;
 
     isDisabled = false;
+
+	playbackSpeed = 1.0f;
 }
 
 ParticleLayer::~ParticleLayer()
@@ -304,7 +306,8 @@ void ParticleLayer::Restart(bool isDeleteAllParticles)
 
 void ParticleLayer::Update(float32 timeElapsed)
 {
-	// increment timer	
+	// increment timer, take the playbackSpeed into account.
+	timeElapsed *= playbackSpeed;
 	layerTime += timeElapsed;
 
 	switch(type)
@@ -735,7 +738,7 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 	size = PropertyLineYamlReader::CreateVector2PropertyLineFromYamlNode(node, "size");
 	sizeVariation = PropertyLineYamlReader::CreateVector2PropertyLineFromYamlNode(node, "sizeVariation");
 
-	sizeOverLifeXY = PropertyLineYamlReader::CreateVector2PropertyLineFromYamlNode(node, "sizeOverlifeXY");
+	sizeOverLifeXY = PropertyLineYamlReader::CreateVector2PropertyLineFromYamlNode(node, "sizeOverLifeXY");
 
 	// Yuri Coder, 2013/04/03. sizeOverLife is outdated and kept here for the backward compatibility only.
 	// New property is sizeOverlifeXY and contains both X and Y components.
@@ -954,18 +957,13 @@ RenderBatch * ParticleLayer::GetRenderBatch()
 
 void ParticleLayer::ReloadSprite()
 {
-	if (this->sprite)
+	if (sprite)
 	{
         DeleteAllParticles();
-		this->sprite->Reload();
+        sprite->Reload();
         UpdateFrameTimeline();
         
-        if(sprite)
-        {
-            pivotPoint = Vector2(sprite->GetWidth()/2.0f, sprite->GetHeight()/2.0f);
-        }
-        
-		this->sprite->Reload();
+        pivotPoint = Vector2(sprite->GetWidth()/2.0f, sprite->GetHeight()/2.0f);
 	}
 	
 	UpdateFrameTimeline();
@@ -1062,6 +1060,37 @@ void ParticleLayer::FillSizeOverlifeXY(RefPtr< PropertyLine<float32> > sizeOverL
 	}
 	
 	this->sizeOverLifeXY = sizeOverLifeXYKeyframes;
+}
+
+void ParticleLayer::SetPlaybackSpeed(float32 value)
+{
+	this->playbackSpeed = Clamp(value, PARTICLE_EMITTER_MIN_PLAYBACK_SPEED,
+								PARTICLE_EMITTER_MAX_PLAYBACK_SPEED);
+}
+
+float32 ParticleLayer::GetPlaybackSpeed()
+{
+	return this->playbackSpeed;
+}
+
+int32 ParticleLayer::GetActiveParticlesCount()
+{
+	return count;
+}
+
+float32 ParticleLayer::GetActiveParticlesArea()
+{
+	// Yuri Coder, 2013/04/16. Since the particles size are updated in runtime,
+	// we have to recalculate their area each time this method is called.
+	float32 activeArea = 0;
+	Particle * current = head;
+	while(current)
+	{
+		activeArea += current->GetArea();
+		current = current->next;
+	}
+
+	return activeArea;
 }
 
 }

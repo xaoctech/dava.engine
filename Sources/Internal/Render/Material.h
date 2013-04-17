@@ -52,10 +52,21 @@ class RenderDataObject;
     
     
 // TODO: move Material to Scene3D
-    
+
+struct StaticLightingParams
+{
+	Color transparencyColor;
+
+	StaticLightingParams() : transparencyColor(0, 0, 0, 0) {}
+
+	INTROSPECTION(StaticLightingParams,
+	MEMBER(transparencyColor, "Transparency Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR))
+};
+
 class InstanceMaterialState : public BaseObject
 {
     static const int32 LIGHT_NODE_MAX_COUNT = 4;
+	static const int32 LIGHTMAP_SIZE_DEFAULT = 128; 
 public:
     InstanceMaterialState();
     virtual ~InstanceMaterialState();
@@ -68,7 +79,10 @@ public:
     
     void SetLightmap(Texture * texture, const FilePath & lightmapName);
     void SetUVOffsetScale(const Vector2 & uvOffset, const Vector2 uvScale);
-    
+
+	int32 GetLightmapSize();
+	void SetLightmapSize(int32 size);
+
     inline Texture * GetLightmap() const;
 	inline const FilePath & GetLightmapName() const;
     
@@ -85,6 +99,7 @@ public:
 private:
     Texture * lightmapTexture;
     FilePath lightmapName;
+	int32 lightmapSize;
     Vector2 uvOffset;
     Vector2 uvScale;
     Color flatColor;
@@ -100,6 +115,7 @@ public:
 //                         MEMBER(lightmapName, "Lightmap Name:", INTROSPECTION_EDITOR)
                          MEMBER(uvOffset, "UV Offset", INTROSPECTION_EDITOR)
                          MEMBER(uvScale, "UV Scale", INTROSPECTION_EDITOR)
+                         MEMBER(lightmapSize, "Lightmap Size", INTROSPECTION_EDITOR)
                          
                          PROPERTY("flatColor", "Flat Color (works only if flat color enabled)", GetFlatColor, SetFlatColor, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          PROPERTY("texture0Shift", "Texture Shift", GetTextureShift, SetTextureShift, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
@@ -227,8 +243,6 @@ public:
     float32 GetShininess() const;
 
 	void SetSetupLightmap(bool isSetupLightmap);
-	bool GetSetupLightmap();
-	void SetSetupLightmapSize(int32 setupLightmapSize);
     
     
     void EnableTextureShift(const bool & isEnabled);
@@ -292,9 +306,11 @@ public:
 	RenderState * GetRenderState();
     
     inline void SetBlendSrc(eBlendMode _blendSrc);
-    inline void SetBlendDest(eBlendMode _blendDest);
+	inline void SetBlendDest(eBlendMode _blendDest);
+	inline void SetStaticLightingParams(StaticLightingParams * params);
     inline eBlendMode GetBlendSrc() const;
     inline eBlendMode GetBlendDest() const;
+	inline StaticLightingParams * GetStaticLightingParams() const;
     
 private:
     void RetrieveTextureSlotNames();
@@ -318,7 +334,6 @@ private:
     bool    isTwoSided;
 
 	bool	isSetupLightmap;
-	int32	setupLightmapSize;
     
     float32	shininess;
     
@@ -331,6 +346,7 @@ private:
     float32 fogDensity;
     Color   fogColor;
     
+	StaticLightingParams * lightingParams;
 
 	bool isAlphablend;
     bool isFlatColorEnabled;
@@ -371,10 +387,11 @@ private:
 public:
     
     INTROSPECTION_EXTEND(Material, DataNode,
+		MEMBER(lightingParams, "Static Lighting Params", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+
         MEMBER(isTranslucent, "Is Translucent", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(isTwoSided, "Is Two Sided", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(isSetupLightmap, "Is Setup Lightmap", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(setupLightmapSize, "Setup Lightmap Size", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(shininess, "Shininess", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
 
         MEMBER(ambientColor, "Ambient Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
@@ -390,8 +407,8 @@ public:
         
         PROPERTY("isFlatColorEnabled", "Is flat color enabled", IsFlatColorEnabled, EnableFlatColor, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         PROPERTY("isTexture0ShiftEnabled", "Is texture shift enabled", IsTextureShiftEnabled, EnableTextureShift, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        PROPERTY("isExportOwnerLayerEnabled", "Is export owner layer enabled. (Export layer settings to render batch on set)", IsExportOwnerLayerEnabled, SetExportOwnerLayer, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        PROPERTY("ownerLayerName", "Owner layer name", GetOwnerLayerName, SetOwnerLayerName, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY("isExportOwnerLayerEnabled", "Is export owner layer enabled. (Export layer settings to render batch on set)", IsExportOwnerLayerEnabled, SetExportOwnerLayer, INTROSPECTION_SERIALIZABLE)
+        PROPERTY("ownerLayerName", "Owner layer name", GetOwnerLayerName, SetOwnerLayerName, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
                          
         MEMBER(blendSrc, "Blend Source", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(blendDst, "Blend Destination", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
@@ -424,6 +441,13 @@ inline void Material::SetBlendDest(eBlendMode _blendDest)
 {
     blendDst = _blendDest;
 }
+
+inline void Material::SetStaticLightingParams(StaticLightingParams * params)
+{
+	SafeDelete(lightingParams);
+	lightingParams = params;
+}
+
 inline eBlendMode Material::GetBlendSrc() const
 {
     return (eBlendMode)blendSrc;
@@ -433,7 +457,11 @@ inline eBlendMode Material::GetBlendDest() const
     return (eBlendMode)blendDst;
 }
 
-    
+inline StaticLightingParams * Material::GetStaticLightingParams() const
+{
+	return lightingParams;
+}
+
 inline Texture * InstanceMaterialState::GetLightmap() const
 {
     return lightmapTexture;

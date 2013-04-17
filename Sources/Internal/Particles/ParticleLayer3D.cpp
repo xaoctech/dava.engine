@@ -4,14 +4,16 @@
 #include "Render/Material.h"
 #include "Math/MathHelpers.h"
 #include "Render/Highlevel/Camera.h"
+#include "ParticleEmitter3D.h"
 
 namespace DAVA
 {
 
-ParticleLayer3D::ParticleLayer3D()
+ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 {
 	isLong = false;
 	renderData = new RenderDataObject();
+	this->parent = parent;
 
 	//TODO: set material from outside
 	
@@ -33,20 +35,15 @@ ParticleLayer3D::~ParticleLayer3D()
 
 void ParticleLayer3D::Draw(Camera * camera)
 {
-	if (IsLong())
-	{
-		DrawLayerLong(camera);
-	}
-	else
-	{
-		DrawLayerNonLong(camera);
-	}
+	DrawLayer(camera);
 }
 
-void ParticleLayer3D::DrawLayerNonLong(Camera * camera)
+void ParticleLayer3D::DrawLayer(Camera* camera)
 {
-	if(!sprite)
+	if (!sprite)
+	{
 		return;
+	}
 
     Matrix4 rotationMatrix = Matrix4::IDENTITY;
     switch(RenderManager::Instance()->GetRenderOrientation())
@@ -63,8 +60,9 @@ void ParticleLayer3D::DrawLayerNonLong(Camera * camera)
 
     Matrix4 mv = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW)*rotationMatrix;
     
-	Vector3 _up(mv._01, mv._11, mv._21);
-	Vector3 _left(mv._00, mv._10, mv._20);
+	_up = Vector3(mv._01, mv._11, mv._21);
+	_left = Vector3(mv._00, mv._10, mv._20);
+	direction = camera->GetDirection();
 
 	verts.clear();
 	textures.clear();
@@ -79,30 +77,19 @@ void ParticleLayer3D::DrawLayerNonLong(Camera * camera)
 
 	while(current != 0)
 	{
-		Vector3 dx(_left);
-		Vector3 dy(_up);
+		Vector3 topRight;
+		Vector3 topLeft;
+		Vector3 botRight;
+		Vector3 botLeft;
 
-		//dx *= sqrt(2.f);
-		//dy *= sqrt(2.f);
-
-		float32 sine;
-		float32 cosine;
-		SinCosFast(current->angle, sine, cosine);
-
-		float32 pivotRight = ((sprite->GetWidth()-pivotPoint.x)*current->size.x*current->sizeOverLife.x)/2.f;
-		float32 pivotLeft = (pivotPoint.x*current->size.x*current->sizeOverLife.x)/2.f;
-		float32 pivotUp = (pivotPoint.y*current->size.y*current->sizeOverLife.y)/2.f;
-		float32 pivotDown = ((sprite->GetHeight()-pivotPoint.y)*current->size.y*current->sizeOverLife.y)/2.f;
-
-		Vector3 dxc = dx*cosine;
-		Vector3 dxs = dx*sine;
-		Vector3 dyc = dy*cosine;
-		Vector3 dys = dy*sine;
-			
-		Vector3 topLeft = current->position+(-dxc+dys)*pivotUp + (dxs+dyc)*pivotLeft;
-		Vector3 topRight = current->position+(-dxs-dyc)*pivotRight + (-dxc+dys)*pivotUp;
-		Vector3 botLeft = current->position+(dxs+dyc)*pivotLeft + (dxc-dys)*pivotDown;
-		Vector3 botRight = current->position+(dxc-dys)*pivotDown + (-dxs-dyc)*pivotRight;
+		if (IsLong())
+		{
+			CalcLong(current, topLeft, topRight, botLeft, botRight);
+		}
+		else
+		{
+			CalcNonLong(current, topLeft, topRight, botLeft, botRight);
+		}
 
 		verts.push_back(topLeft.x);//0
 		verts.push_back(topLeft.y);
@@ -150,7 +137,8 @@ void ParticleLayer3D::DrawLayerNonLong(Camera * camera)
 
 		// Yuri Coder, 2013/04/03. Need to use drawColor here instead of just colot
 		// to take colorOverlife property into account.
-		uint32 color = (((uint32)(current->drawColor.a*255.f))<<24) |  (((uint32)(current->drawColor.b*255.f))<<16) | (((uint32)(current->drawColor.g*255.f))<<8) | ((uint32)(current->drawColor.r*255.f));
+		uint32 color = (((uint32)(current->drawColor.a*255.f))<<24) |  (((uint32)(current->drawColor.b*255.f))<<16) |
+			(((uint32)(current->drawColor.g*255.f))<<8) | ((uint32)(current->drawColor.r*255.f));
 		for(int32 i = 0; i < 6; ++i)
 		{
 			colors.push_back(color);
@@ -167,105 +155,62 @@ void ParticleLayer3D::DrawLayerNonLong(Camera * camera)
 		renderData->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &textures.front());
 		renderData->SetStream(EVF_COLOR, TYPE_UNSIGNED_BYTE, 4, 0, &colors.front());
 
+		if (IsLong())
+		{
+			RenderManager::Instance()->SetRenderData(renderData);
+			renderBatch->GetMaterial()->PrepareRenderState();
+		}
 		renderBatch->SetRenderDataObject(renderData);
 	}
 }
 
-void ParticleLayer3D::DrawLayerLong(Camera * camera)
+void ParticleLayer3D::CalcNonLong(Particle* current,
+								  Vector3& topLeft,
+								  Vector3& topRight,
+								  Vector3& botLeft,
+								  Vector3& botRight)
 {
-	verts.clear();
-	textures.clear();
-	colors.clear();
-	int32 totalCount = 0;
+	Vector3 dx(_left);
+	Vector3 dy(_up);
 
-	Particle * current = head;
-	if(current)
-	{
-		renderBatch->GetMaterial()->GetRenderState()->SetTexture(sprite->GetTexture(current->frame));
-	}
+	float32 sine;
+	float32 cosine;
+	SinCosFast(current->angle, sine, cosine);
 
-	Vector3 direction = camera->GetDirection();
-	while(current != 0)
-	{
-		Vector3 vecShort = current->direction.CrossProduct(direction);
-		vecShort /= 2.f;
+	float32 pivotRight = ((sprite->GetWidth()-pivotPoint.x)*current->size.x*current->sizeOverLife.x)/2.f;
+	float32 pivotLeft = (pivotPoint.x*current->size.x*current->sizeOverLife.x)/2.f;
+	float32 pivotUp = (pivotPoint.y*current->size.y*current->sizeOverLife.y)/2.f;
+	float32 pivotDown = ((sprite->GetHeight()-pivotPoint.y)*current->size.y*current->sizeOverLife.y)/2.f;
+
+	Vector3 dxc = dx*cosine;
+	Vector3 dxs = dx*sine;
+	Vector3 dyc = dy*cosine;
+	Vector3 dys = dy*sine;
+
+	topLeft = current->position+(dxs+dyc)*pivotLeft + (dxc-dys)*pivotDown;
+	topRight = current->position+(-dxc+dys)*pivotUp + (dxs+dyc)*pivotLeft;
+	botLeft = current->position+(dxc-dys)*pivotDown + (-dxs-dyc)*pivotRight;
+	botRight = current->position+(-dxs-dyc)*pivotRight + (-dxc+dys)*pivotUp;
+}
+
+void ParticleLayer3D::CalcLong(Particle* current,
+							   Vector3& topLeft,
+							   Vector3& topRight,
+							   Vector3& botLeft,
+							   Vector3& botRight)
+{
+	Vector3 vecShort = current->direction.CrossProduct(direction);
+	vecShort /= 2.f;
 		
-		Vector3 vecLong = -current->direction;
+	Vector3 vecLong = -current->direction;
 
-		float32 widthDiv2 = sprite->GetWidth()*current->size.x*current->sizeOverLife.x;
-		float32 heightDiv2 = sprite->GetHeight()*current->size.y*current->sizeOverLife.y;
+	float32 widthDiv2 = sprite->GetWidth()*current->size.x*current->sizeOverLife.x;
+	float32 heightDiv2 = sprite->GetHeight()*current->size.y*current->sizeOverLife.y;
 
-		Vector3 topRight = current->position + widthDiv2*vecShort;
-		Vector3 topLeft = current->position - widthDiv2*vecShort;
-		Vector3 botRight = topRight + heightDiv2*vecLong;
-		Vector3 botLeft = topLeft + heightDiv2*vecLong;
-
-		verts.push_back(topLeft.x);//0
-		verts.push_back(topLeft.y);
-		verts.push_back(topLeft.z);
-
-		verts.push_back(topRight.x);//1
-		verts.push_back(topRight.y);
-		verts.push_back(topRight.z);
-
-		verts.push_back(botLeft.x);//2
-		verts.push_back(botLeft.y);
-		verts.push_back(botLeft.z);
-
-		verts.push_back(botLeft.x);//2
-		verts.push_back(botLeft.y);
-		verts.push_back(botLeft.z);
-
-		verts.push_back(topRight.x);//1
-		verts.push_back(topRight.y);
-		verts.push_back(topRight.z);
-
-		verts.push_back(botRight.x);//3
-		verts.push_back(botRight.y);
-		verts.push_back(botRight.z);
-
-		float32 *pT = sprite->GetTextureVerts(current->frame);
-
-		textures.push_back(pT[0]);
-		textures.push_back(pT[1]);
-
-		textures.push_back(pT[2]);
-		textures.push_back(pT[3]);
-
-		textures.push_back(pT[4]);
-		textures.push_back(pT[5]);
-
-		textures.push_back(pT[4]);
-		textures.push_back(pT[5]);
-
-		textures.push_back(pT[2]);
-		textures.push_back(pT[3]);
-
-		textures.push_back(pT[6]);
-		textures.push_back(pT[7]);
-
-		uint32 color = (((uint32)(current->drawColor.a*255.f))<<24) |  (((uint32)(current->drawColor.b*255.f))<<16) |
-						(((uint32)(current->drawColor.g*255.f))<<8) | ((uint32)(current->drawColor.r*255.f));
-		for(int32 i = 0; i < 6; ++i)
-		{
-			colors.push_back(color);
-		}
-
-		totalCount++;
-		current = TYPE_PARTICLES == type ? current->next : 0;
-	}
-
-	if(totalCount > 0)
-	{
-		renderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &verts.front());
-		renderData->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &textures.front());
-		renderData->SetStream(EVF_COLOR, TYPE_UNSIGNED_BYTE, 4, 0, &colors.front());
-
-		RenderManager::Instance()->SetRenderData(renderData);
-		renderBatch->GetMaterial()->PrepareRenderState();
-
-		RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLELIST, 0, 6*totalCount);
-	}
+	topRight = current->position + widthDiv2*vecShort;
+	topLeft = current->position - widthDiv2*vecShort;
+	botRight = topRight + heightDiv2*vecLong;
+	botLeft = topLeft + heightDiv2*vecLong;
 }
 
 
@@ -279,7 +224,13 @@ ParticleLayer * ParticleLayer3D::Clone(ParticleLayer * dstLayer /*= 0*/)
 {
 	if(!dstLayer)
 	{
-		dstLayer = new ParticleLayer3D();
+		ParticleEmitter* parentFor3DLayer = NULL;
+		if (dynamic_cast<ParticleLayer3D*>(dstLayer))
+		{
+			parentFor3DLayer = (dynamic_cast<ParticleLayer3D*>(dstLayer))->GetParent();
+		}
+
+		dstLayer = new ParticleLayer3D(parentFor3DLayer);
 	}
 
 	ParticleLayer::Clone(dstLayer);

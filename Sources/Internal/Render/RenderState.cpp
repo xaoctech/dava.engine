@@ -941,14 +941,12 @@ void RenderState::LoadFromYamlNode(YamlNode * rootNode)
 bool RenderState::SaveToYamlFile(const FilePath & filePath)
 {
 	YamlParser * parser = YamlParser::Create();
-	if (!parser)
-	{
-		Logger::Error("ProcessSave: error while creating YAML parser! (%s)", filePath.GetAbsolutePathname().c_str());
-		return false;
-	}
+	DVASSERT(parser);
 
 	YamlNode* resultNode = SaveToYamlNode();
 	parser->SaveToYamlFile(filePath, resultNode, true);
+
+	SafeRelease(parser);
 
 	return true;
 }
