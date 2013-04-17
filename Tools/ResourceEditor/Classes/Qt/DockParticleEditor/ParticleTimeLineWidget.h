@@ -13,10 +13,11 @@
 #include <QDialog>
 #include <QDoubleSpinBox>
 #include <DAVAEngine.h>
+#include "TimeLineWidgetBase.h"
 
 using namespace DAVA;
 
-class ParticleTimeLineWidget : public QWidget
+class ParticleTimeLineWidget : public TimeLineWidgetBase
 {
 	Q_OBJECT
 	
@@ -27,7 +28,6 @@ public:
 	void Init(float32 minTime, float32 maxTime);
 	
 signals:
-	void ValueChanged();
 	void ChangeVisible(bool visible);
 	
 protected slots:
@@ -54,16 +54,18 @@ private:
 
 	void OnValueChanged(int lineId);
 	void UpdateSizePolicy();
-	QString float2QString(float32 value) const;
 	
 	// Handle situation when the Particle Emitter Node is selected (including
 	// case when separate Layer node is selected.
 	void HandleNodeSelected(Entity* node, ParticleLayer* layer);
+	
+	virtual QRect GetSliderRect() const;
+	virtual QRect GetIncreaseRect() const;
+	virtual QRect GetScaleRect() const;
+	virtual QRect GetDecreaseRect() const;
+	
 
 private:
-	QBrush backgroundBrush;
-	float32 minTime;
-	float32 maxTime;
 	QFont nameFont;
 	
 	struct LINE
@@ -82,12 +84,7 @@ private:
 	Entity* emitterNode;
 	Entity* effectNode;
 	
-	enum eGridStyle
-	{
-		GRID_STYLE_ALL_POSITION,
-		GRID_STYLE_LIMITS
-	};
-	eGridStyle gridStyle;
+	
 	
 	class SetPointValueDlg: public QDialog
 	{

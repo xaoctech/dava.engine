@@ -16,15 +16,15 @@
 
 #include "ParticlesEditorController.h"
 
-#define LEFT_INDENT 10
+#define LEFT_INDENT 20
 #define TOP_INDENT 5
-#define BOTTOM_INDENT 18
+#define BOTTOM_INDENT 16
 #define LINE_STEP 16
 #define RECT_SIZE 3
 #define LINE_WIDTH 3
 
 ParticleTimeLineWidget::ParticleTimeLineWidget(QWidget *parent/* = 0*/) :
-	QWidget(parent),
+	TimeLineWidgetBase(parent),
 	selectedPoint(-1, -1),
 	emitterNode(NULL),
 	effectNode(NULL),
@@ -147,6 +147,40 @@ void ParticleTimeLineWidget::HandleNodeSelected(Entity* node, ParticleLayer* lay
 	}
 }
 
+QRect ParticleTimeLineWidget::GetSliderRect() const
+{
+	QRect rect = GetIncreaseRect();
+	rect.translate(-(ZOOM_SLIDER_LENGTH + 5), 0);
+	rect.setWidth(ZOOM_SLIDER_LENGTH);
+	rect.setHeight(rect.height() + 4);
+	return rect;
+}
+
+QRect ParticleTimeLineWidget::GetIncreaseRect() const
+{
+	QRect rect = GetScaleRect();
+	rect.translate(-12, 0);
+	rect.setWidth (8);
+	rect.setHeight(8);
+	return rect;
+}
+
+QRect ParticleTimeLineWidget::GetScaleRect() const
+{
+	QRect rect = GetScrollBarRect();
+	rect.translate(-SCALE_WIDTH, 0);
+	return rect;
+}
+
+QRect ParticleTimeLineWidget::GetDecreaseRect() const
+{
+	QRect rect = GetSliderRect();
+	rect.translate(-12, 0);
+	rect.setWidth (8);
+	rect.setHeight(8);
+	return rect;
+}
+
 void ParticleTimeLineWidget::OnEffectNodeSelected(Entity* node)
 {
 	emitterNode = NULL;
@@ -220,9 +254,7 @@ void ParticleTimeLineWidget::OnEffectNodeSelected(Entity* node)
 
 void ParticleTimeLineWidget::Init(float32 minTime, float32 maxTime)
 {
-	this->minTime = minTime;
-	this->maxTime = maxTime;
-	
+	TimeLineWidgetBase::Init(minTime, maxTime);
 	lines.clear();
 }
 
@@ -251,20 +283,7 @@ void ParticleTimeLineWidget::AddLine(uint32 lineId, float32 startTime, float32 e
 	lines[lineId] = line;
 }
 
-QString ParticleTimeLineWidget::float2QString(float32 value) const
-{
-	QString strValue;
-	if (value < 10)
-		strValue = "%.2f";
-	else if (value < 100)
-		strValue = "%.1f";
-	else
-		strValue = "%.0f";
-	strValue.sprintf(strValue.toAscii(), value);
-	return strValue;
-}
-
-void ParticleTimeLineWidget::paintEvent(QPaintEvent *)
+void ParticleTimeLineWidget::paintEvent(QPaintEvent *e)
 {
 	QPainter painter(this);
 	
@@ -321,7 +340,32 @@ void ParticleTimeLineWidget::paintEvent(QPaintEvent *)
 		
 		QRect startRect;
 		QRect endRect;
+		bool drawStartRect = true;
+		bool drawEndRect = true;
 		GetLineRect(iter->first, startRect, endRect);
+		ePositionRelativelyToDrawRect startPosition =  GetPointPositionFromDrawingRect(startRect.center());
+		ePositionRelativelyToDrawRect endPosition =  GetPointPositionFromDrawingRect(endRect.center());
+		if(startPosition == POSITION_LEFT)
+		{
+			drawStartRect = false;
+			startRect.moveTo(graphRect.x() - RECT_SIZE,startRect.y());
+
+		}else if (startPosition == POSITION_RIGHT)
+		{
+			drawStartRect = false;
+			startRect.moveTo(graphRect.x() + graphRect.width() - RECT_SIZE, startRect.y());
+		}
+
+		if(endPosition == POSITION_LEFT)
+		{
+			drawEndRect = false;
+			endRect.moveTo(graphRect.x() - RECT_SIZE, endRect.y());
+		}else if (endPosition == POSITION_RIGHT)
+		{
+			drawEndRect = false;
+			endRect.moveTo(graphRect.x() + graphRect.width() - RECT_SIZE, endRect.y());
+		}
+
 		painter.setPen(QPen(line.color, 1));
 		painter.drawLine(QPoint(graphRect.left(), startRect.center().y()), QPoint(graphRect.right(), startRect.center().y()));
 		
@@ -349,15 +393,27 @@ void ParticleTimeLineWidget::paintEvent(QPaintEvent *)
 			else
 				painter.fillRect(endRect, brush);
 		}
-		painter.drawRect(startRect);
-		painter.drawRect(endRect);
 		
 		QPoint startPoint(startRect.center());
 		startPoint.setX(startPoint.x() + 3);
 		QPoint endPoint(endRect.center());
 		endPoint.setX(endPoint.x() - 3);
-		painter.drawLine(startPoint, endPoint);
+
+		if(drawStartRect)
+		{
+			painter.drawRect(startRect);
+		}
+		if(drawEndRect)
+		{
+			painter.drawRect(endRect);
+		}
+		if(!(startPosition == endPosition && startPosition != POSITION_INSIDE))
+		{
+			painter.drawLine(startPoint, endPoint);
+		}
 	}
+
+	TimeLineWidgetBase::paintEvent(e);
 }
 
 bool ParticleTimeLineWidget::GetLineRect(uint32 id, QRect& startRect, QRect& endRect) const
@@ -371,8 +427,8 @@ bool ParticleTimeLineWidget::GetLineRect(uint32 id, QRect& startRect, QRect& end
 		
 		const LINE& line = iter->second;
 		
-		QPoint startPoint(grapRect.left() + line.startTime / (maxTime - minTime) * grapRect.width(), grapRect.top() + (i + 1) * LINE_STEP);
-		QPoint endPoint(grapRect.left() + line.endTime / (maxTime - minTime) * grapRect.width(), grapRect.top() + (i + 1) * LINE_STEP);
+		QPoint startPoint(grapRect.left() + (line.startTime - minTime) / (maxTime - minTime) * grapRect.width(), grapRect.top() + (i + 1) * LINE_STEP);
+		QPoint endPoint(grapRect.left() + (line.endTime - minTime) / (maxTime - minTime) * grapRect.width(), grapRect.top() + (i + 1) * LINE_STEP);
 		startRect = QRect(startPoint - QPoint(RECT_SIZE, RECT_SIZE), startPoint + QPoint(RECT_SIZE, RECT_SIZE));
 		endRect = QRect(endPoint - QPoint(RECT_SIZE, RECT_SIZE), endPoint + QPoint(RECT_SIZE, RECT_SIZE));
 		return true;
@@ -394,20 +450,23 @@ QRect ParticleTimeLineWidget::GetGraphRect() const
 	}
 	legendWidth = Min(legendWidth, (width() - LEFT_INDENT * 2) / 6);
 	
-	QRect rect = QRect(QPoint(LEFT_INDENT + legendWidth, TOP_INDENT), QSize(width() - LEFT_INDENT * 2 - legendWidth, height() - BOTTOM_INDENT));
+	QRect rect = QRect(QPoint(LEFT_INDENT + legendWidth, TOP_INDENT), QSize(width() - LEFT_INDENT * 2 - legendWidth, height() - BOTTOM_INDENT - SCROLL_BAR_HEIGHT));
 	return rect;
 }
 
 void ParticleTimeLineWidget::UpdateSizePolicy()
 {
-	int height = (lines.size() + 1) * LINE_STEP + BOTTOM_INDENT + TOP_INDENT;
+	int height = (lines.size() + 1) * LINE_STEP + BOTTOM_INDENT + TOP_INDENT + SCROLL_BAR_HEIGHT;
 	setMinimumHeight(height);
 }
 
 void ParticleTimeLineWidget::mouseMoveEvent(QMouseEvent * event)
 {
 	if (selectedPoint.x() == -1)
+	{
+		TimeLineWidgetBase::mouseMoveEvent(event);
 		return;
+	}
 	
 	LINE_MAP::iterator iter = lines.find(selectedPoint.x());
 	if (iter == lines.end())
@@ -432,10 +491,12 @@ void ParticleTimeLineWidget::mouseMoveEvent(QMouseEvent * event)
 void ParticleTimeLineWidget::mousePressEvent(QMouseEvent * event)
 {
 	selectedPoint = GetPoint(event->pos());
+
+	TimeLineWidgetBase::mousePressEvent(event);
 	update();
 }
 
-void ParticleTimeLineWidget::mouseReleaseEvent(QMouseEvent *)
+void ParticleTimeLineWidget::mouseReleaseEvent(QMouseEvent * e)
 {
 	if (selectedPoint.x() != -1 &&
 		selectedPoint.y() != -1)
@@ -444,6 +505,7 @@ void ParticleTimeLineWidget::mouseReleaseEvent(QMouseEvent *)
 	}
 		
 	selectedPoint = QPoint(-1, -1);
+	TimeLineWidgetBase::mouseReleaseEvent(e);
 	update();
 }
 
