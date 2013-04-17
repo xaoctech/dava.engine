@@ -24,30 +24,12 @@ ParticleEmitterNode::~ParticleEmitterNode()
 
 void ParticleEmitterNode::Update(float32 timeElapsed)
 {
-	if(emitter)
-	{
-		const Matrix4 & worldTransform = GetWorldTransform();
-		Vector3 position = Vector3(worldTransform._30, worldTransform._31, worldTransform._32);
-		emitter->rotationMatrix = Matrix3(worldTransform);;
-		emitter->SetPosition(position);
-		emitter->Update(timeElapsed);
-	}
+	// Yuri Coder, 2013/04/10. This method isn't called anymore.
 }
 
 void ParticleEmitterNode::Draw()
 {
-	if(emitter)
-	{
-		eBlendMode sblend = RenderManager::Instance()->GetSrcBlend();
-		eBlendMode dblend = RenderManager::Instance()->GetDestBlend();
-		RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
-
-//		ParticleEmitter3D * emitter3D = static_cast<ParticleEmitter3D*>(emitter);
-//		emitter3D->Draw(scene->GetCurrentCamera());
-		emitter->Draw(scene->GetCurrentCamera());
-
-		RenderManager::Instance()->SetBlendMode(sblend, dblend);
-	}
+	// Yuri Coder, 2013/04/10. This method isn't called anymore.
 }
 
 void ParticleEmitterNode::LoadFromYaml(const FilePath& _yamlPath)

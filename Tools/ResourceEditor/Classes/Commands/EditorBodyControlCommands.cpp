@@ -1,6 +1,7 @@
 #include "EditorBodyControlCommands.h"
 #include "../SceneEditor/EditorBodyControl.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
+#include "CommandsManager.h"
 
 CommandTransformObject::CommandTransformObject(DAVA::Entity* node, const DAVA::Matrix4& originalTransform, const DAVA::Matrix4& finalTransform)
 :	Command(COMMAND_UNDO_REDO)
@@ -93,6 +94,62 @@ void CommandCloneObject::UpdateCollision(DAVA::Entity *node)
 	for(int32 i = 0; i < node->GetChildrenCount(); ++i)
 	{
 		UpdateCollision(node->GetChild(i));
+	}
+}
+
+Entity* CommandCloneObject::GetClonedNode()
+{
+	return clonedNode;
+}
+
+
+CommandCloneAndTransform::CommandCloneAndTransform(DAVA::Entity* originalNode,
+												   const DAVA::Matrix4& finalTransform,
+												   EditorBodyControl* bodyControl,
+												   btCollisionWorld* collisionWorld)
+:	MultiCommand(COMMAND_UNDO_REDO)
+,	clonedNode(0)
+,	cloneCmd(0)
+,	transformCmd(0)
+{
+	commandName = "Clone Object";
+
+	this->originalNode = originalNode;
+	this->bodyControl = bodyControl;
+	this->collisionWorld = collisionWorld;
+	this->transform = finalTransform;
+}
+
+CommandCloneAndTransform::~CommandCloneAndTransform()
+{
+	SafeRelease(transformCmd);
+	SafeRelease(cloneCmd);
+}
+
+void CommandCloneAndTransform::Execute()
+{
+	if (!cloneCmd && !transformCmd)
+	{
+		cloneCmd = new CommandCloneObject(originalNode, bodyControl, collisionWorld);
+		ExecuteInternal(cloneCmd);
+		clonedNode = cloneCmd->GetClonedNode();
+
+		transformCmd = new CommandTransformObject(clonedNode, originalNode->GetLocalTransform(), transform);
+		ExecuteInternal(transformCmd);
+	}
+	else
+	{
+		ExecuteInternal(cloneCmd);
+		ExecuteInternal(transformCmd);
+	}
+}
+
+void CommandCloneAndTransform::Cancel()
+{
+	if (cloneCmd && transformCmd)
+	{
+		CancelInternal(transformCmd);
+		CancelInternal(cloneCmd);
 	}
 }
 

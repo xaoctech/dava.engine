@@ -498,3 +498,22 @@ List<HierarchyTreeScreenNode*> HierarchyTree::GetUnsavedScreens()
 
 	return resultList;
 }
+
+bool HierarchyTree::IsPlatformNamePresent(const QString& name) const
+{
+	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator platformIter = GetPlatforms().begin();
+	 platformIter != GetPlatforms().end(); ++platformIter)
+	{
+		HierarchyTreePlatformNode* platformNode = dynamic_cast<HierarchyTreePlatformNode*>(*platformIter);
+		if (!platformNode)
+		{
+			continue;
+		}
+		if(name.compare(platformNode->GetName()) == 0)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}

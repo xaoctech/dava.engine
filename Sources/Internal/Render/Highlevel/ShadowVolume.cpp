@@ -47,8 +47,6 @@ ShadowVolume::ShadowVolume()
 
     
     SetOwnerLayerName(LAYER_SHADOW_VOLUME);
-
-	aabbox = AABBox3(Vector3(), Vector3());
 }
 
 ShadowVolume::~ShadowVolume()
@@ -520,17 +518,30 @@ void ShadowVolume::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
 			}
 		}
 	}
-	aabbox = AABBox3(Vector3(), Vector3());
 }
     
 void ShadowVolume::SetPolygonGroup(PolygonGroup * _polygonGroup)
 {
+	SafeRelease(shadowPolygonGroup);
     shadowPolygonGroup = SafeRetain(_polygonGroup);
+
+	UpdateAABBoxFromSource();
 }
 
 PolygonGroup * ShadowVolume::GetPolygonGroup()
 {
     return shadowPolygonGroup;
+}
+
+void ShadowVolume::UpdateAABBoxFromSource()
+{
+	if(NULL != shadowPolygonGroup)
+	{
+		aabbox = shadowPolygonGroup->GetBoundingBox();
+		DVASSERT(aabbox.min.x != AABBOX_INFINITY &&
+			aabbox.min.y != AABBOX_INFINITY &&
+			aabbox.min.z != AABBOX_INFINITY);
+	}
 }
 
 

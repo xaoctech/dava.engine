@@ -56,15 +56,15 @@ void Test::LoadResources()
 
 	Landscape* landscape = GetLandscape();
 	DVASSERT_MSG(scene, "There is no landscape in a scene");
-	landscape->SetTiledShaderMode(Landscape::TILED_MODE_TEXTURE);
+//	landscape->SetTiledShaderMode(Landscape::TILED_MODE_TEXTURE);
 
 	uint32 textureMemory = TextureHelper::GetSceneTextureMemory(scene, GetFilePath().GetFilename());
 	testData.SetTextureMemorySize(textureMemory);
 
-	File* file = File::Create(fullName, File::OPEN | File::READ);
-	DVASSERT_MSG(file, "Could not open file scene file");
-	testData.SetSceneFileSize(file->GetSize());
-	SafeRelease(file);
+	uint32 textureFilesSize = TextureHelper::GetSceneTextureFilesSize(scene, GetFilePath());
+	testData.SetTexturesFilesSize(textureFilesSize);
+
+	testData.SetSceneFilePath(fullName);
 
 	PreparePath();
     PrepareFpsStat();
@@ -304,6 +304,6 @@ inline Landscape* Test::GetLandscape()
 Texture* Test::GetLandscapeTexture()
 {
 	Landscape* landscape = GetLandscape();
-	return landscape->GetTexture(Landscape::TEXTURE_TILE_FULL);
+	return landscape->CreateFullTiledTexture();
 };
 

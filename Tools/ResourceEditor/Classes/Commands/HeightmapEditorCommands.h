@@ -21,10 +21,13 @@ public:
 	HeightmapModificationCommand(Command::eCommandType type);
 
 protected:
+	Rect updatedRect;
+
 	static String TimeString();
 	static FilePath SaveHeightmap(Heightmap* heightmap);
 	static LandscapeEditorHeightmap* GetEditor();
 	static void UpdateLandscapeHeightmap(const FilePath & filename);
+	static Rect GetDifferenceRect(Heightmap* originalHeighmap, Heightmap* modifiedHeighmap);
 };
 
 class CommandDrawHeightmap: public HeightmapModificationCommand
