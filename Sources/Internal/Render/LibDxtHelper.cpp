@@ -423,8 +423,6 @@ bool NvttHelper::DecompressAtc(const nvtt::Decompressor & dec, DDSInfo info, Pix
 	unsigned char* buffer = compressedImges;
 	for(uint32 i = 0; i < info.mipmapsCount; ++i)
 	{
-		Image* innerImage = Image::Create(info.width, info.height, FORMAT_RGBA8888);
-		
 		TQonvertImage srcImg = {0};
 		TQonvertImage dstImg = {0};
 		
@@ -445,21 +443,21 @@ bool NvttHelper::DecompressAtc(const nvtt::Decompressor & dec, DDSInfo info, Pix
 			dstImg.nDataSize == 0)
 		{
 			Logger::Error("[NvttHelper::DecompressAtc] Reading decompress atc data.");
-			SafeRelease(innerImage);
 			res = false;
 			break;
 		}
-		
+
 		dstImg.pData = new unsigned char[dstImg.nDataSize];
 		if (Qonvert(&srcImg, &dstImg) != Q_SUCCESS)
 		{
 			Logger::Error("[NvttHelper::DecompressAtc] Reading decompress atc data.");
 			SafeDeleteArray(dstImg.pData);
-			SafeRelease(innerImage);
+
 			res = false;
 			break;
 		}
-		
+
+		Image* innerImage = Image::Create(info.width, info.height, FORMAT_RGBA8888);
 		innerImage->data = dstImg.pData;
 		innerImage->dataSize = dstImg.nDataSize;
 		//SafeDeleteArray(dstImg.pData);
@@ -555,6 +553,8 @@ bool LibDxtHelper::WriteDxtFile(const String & fileNameOriginal, int32 width, in
 
 bool LibDxtHelper::WriteAtcFile(const String & fileNameOriginal, int32 width, int32 height, uint8 * data, PixelFormat compressionFormat, bool generateMipmaps)
 {
+	const int32 minSize = 0;
+	
 	if (compressionFormat != FORMAT_ATC_RGB &&
 		compressionFormat != FORMAT_ATC_RGBA_EXPLICIT_ALPHA &&
 		compressionFormat != FORMAT_ATC_RGBA_INTERPOLATED_ALPHA)
@@ -594,7 +594,7 @@ bool LibDxtHelper::WriteAtcFile(const String & fileNameOriginal, int32 width, in
 		
 		baseWidth = baseWidth >> 1;
 		baseHeight = baseHeight >> 1;
-	}while(generateMipmaps && baseWidth > 1 && baseHeight > 1);
+	}while(generateMipmaps && baseWidth > minSize && baseHeight > minSize);
 	
 	unsigned char* buffer = new unsigned char[bufSize];
 	unsigned char* tmpBuffer = buffer;
@@ -620,7 +620,7 @@ bool LibDxtHelper::WriteAtcFile(const String & fileNameOriginal, int32 width, in
 		
 		baseWidth = baseWidth >> 1;
 		baseHeight = baseHeight >> 1;
-	}while(generateMipmaps && baseWidth > 1 && baseHeight > 1);
+	}while(generateMipmaps && baseWidth > minSize && baseHeight > minSize);
 
 	
 	nvtt::Format innerComprFormat = NvttHelper::GetNVTTFormatByPixelFormat(compressionFormat);
