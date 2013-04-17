@@ -104,7 +104,6 @@ public slots:
 
     //View
     void RestoreViews();
-    void ToggleSceneInfo();
 
     //tools
     void Materials();

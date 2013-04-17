@@ -21,7 +21,6 @@ using namespace DAVA;
 
 class RulerTool;
 class SceneGraph;
-class SceneInfoControl;
 class BeastManager;
 class LandscapeEditorColor;
 class LandscapeEditorHeightmap;
@@ -75,8 +74,6 @@ public:
 
 	void PushDebugCamera();
 	void PopDebugCamera();
-
-    void ToggleSceneInfo();
 
     void GetCursorVectors(Vector3 * from, Vector3 * dir, const Vector2 &point);
     
@@ -216,8 +213,6 @@ protected:
 	
     ResourceEditor::eViewportType currentViewportType;
     
-    SceneInfoControl *sceneInfoControl;
-
 	void PackLightmaps();
 
 	//modification options
