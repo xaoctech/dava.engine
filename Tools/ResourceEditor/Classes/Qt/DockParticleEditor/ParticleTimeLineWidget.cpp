@@ -24,7 +24,7 @@
 #define LINE_WIDTH 3
 
 ParticleTimeLineWidget::ParticleTimeLineWidget(QWidget *parent/* = 0*/) :
-	TimeLineWidgetBase(parent),
+	ScrollZoomWidget(parent),
 	selectedPoint(-1, -1),
 	emitterNode(NULL),
 	effectNode(NULL),
@@ -254,7 +254,7 @@ void ParticleTimeLineWidget::OnEffectNodeSelected(Entity* node)
 
 void ParticleTimeLineWidget::Init(float32 minTime, float32 maxTime)
 {
-	TimeLineWidgetBase::Init(minTime, maxTime);
+	ScrollZoomWidget::Init(minTime, maxTime);
 	lines.clear();
 }
 
@@ -413,7 +413,7 @@ void ParticleTimeLineWidget::paintEvent(QPaintEvent *e)
 		}
 	}
 
-	TimeLineWidgetBase::paintEvent(e);
+	ScrollZoomWidget::paintEvent(e);
 }
 
 bool ParticleTimeLineWidget::GetLineRect(uint32 id, QRect& startRect, QRect& endRect) const
@@ -464,7 +464,7 @@ void ParticleTimeLineWidget::mouseMoveEvent(QMouseEvent * event)
 {
 	if (selectedPoint.x() == -1)
 	{
-		TimeLineWidgetBase::mouseMoveEvent(event);
+		ScrollZoomWidget::mouseMoveEvent(event);
 		return;
 	}
 	
@@ -492,7 +492,7 @@ void ParticleTimeLineWidget::mousePressEvent(QMouseEvent * event)
 {
 	selectedPoint = GetPoint(event->pos());
 
-	TimeLineWidgetBase::mousePressEvent(event);
+	ScrollZoomWidget::mousePressEvent(event);
 	update();
 }
 
@@ -505,7 +505,7 @@ void ParticleTimeLineWidget::mouseReleaseEvent(QMouseEvent * e)
 	}
 		
 	selectedPoint = QPoint(-1, -1);
-	TimeLineWidgetBase::mouseReleaseEvent(e);
+	ScrollZoomWidget::mouseReleaseEvent(e);
 	update();
 }
 

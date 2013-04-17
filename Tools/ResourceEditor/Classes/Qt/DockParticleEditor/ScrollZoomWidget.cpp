@@ -1,4 +1,4 @@
-#include "TimeLineWidgetBase.h"
+#include "ScrollZoomWidget.h"
 
 #include <QPaintEvent>
 #include <QPainter>
@@ -10,7 +10,7 @@
 #include <Base/Introspection.h>
 
 
-TimeLineWidgetBase::TimeLineWidgetBase(QWidget *parent) :
+ScrollZoomWidget::ScrollZoomWidget(QWidget *parent) :
 	QWidget(parent)
 {
 	minValue = std::numeric_limits<float32>::infinity();
@@ -39,7 +39,7 @@ TimeLineWidgetBase::TimeLineWidgetBase(QWidget *parent) :
 	scale = 1.0f;
 }
 
-TimeLineWidgetBase::~TimeLineWidgetBase()
+ScrollZoomWidget::~ScrollZoomWidget()
 {
 	disconnect(horizontalScrollBar, SIGNAL(sliderMoved(int)), this, SLOT(HandleHorizontalScrollChanged(int)));
 	delete horizontalScrollBar;
@@ -48,7 +48,7 @@ TimeLineWidgetBase::~TimeLineWidgetBase()
 	delete zoomSlider;
 }
 
-void TimeLineWidgetBase::Init(float32 minT, float32 maxT)
+void ScrollZoomWidget::Init(float32 minT, float32 maxT)
 {
 	this->minTime = minT;
 	this->maxTime = maxT;
@@ -63,7 +63,7 @@ void TimeLineWidgetBase::Init(float32 minT, float32 maxT)
 	UpdateZoomSlider();
 }
 
-QString TimeLineWidgetBase::float2QString(float32 value) const
+QString ScrollZoomWidget::float2QString(float32 value) const
 {
 	QString strValue;
 	if (fabs(value) < 10)
@@ -76,7 +76,7 @@ QString TimeLineWidgetBase::float2QString(float32 value) const
 	return strValue;
 }
 
-void TimeLineWidgetBase::paintEvent(QPaintEvent * /*paintEvent*/)
+void ScrollZoomWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 {
 	//draw scroll bar
 	UpdateScrollBarPosition();
@@ -140,7 +140,7 @@ void TimeLineWidgetBase::paintEvent(QPaintEvent * /*paintEvent*/)
 	
 }
 
-void TimeLineWidgetBase::mouseMoveEvent(QMouseEvent * event)
+void ScrollZoomWidget::mouseMoveEvent(QMouseEvent * event)
 {
 	if(mouseStartPos.x() != 0)
 	{
@@ -149,7 +149,7 @@ void TimeLineWidgetBase::mouseMoveEvent(QMouseEvent * event)
 	}
 }
 
-void TimeLineWidgetBase::mousePressEvent(QMouseEvent * event)
+void ScrollZoomWidget::mousePressEvent(QMouseEvent * event)
 {
 	mouseStartPos = event->pos();
 	if (event->button() == Qt::LeftButton)
@@ -171,22 +171,22 @@ void TimeLineWidgetBase::mousePressEvent(QMouseEvent * event)
 	}
 }
 
-void TimeLineWidgetBase::mouseReleaseEvent(QMouseEvent *)
+void ScrollZoomWidget::mouseReleaseEvent(QMouseEvent *)
 {
 	mouseStartPos.setX(0);
 }
 
-float32 TimeLineWidgetBase::GetMinBoundary()
+float32 ScrollZoomWidget::GetMinBoundary()
 {
 	return minTime;
 }
 
-float32 TimeLineWidgetBase::GetMaxBoundary()
+float32 ScrollZoomWidget::GetMaxBoundary()
 {
 	return maxTime;
 }
 
-void TimeLineWidgetBase::wheelEvent(QWheelEvent* event)
+void ScrollZoomWidget::wheelEvent(QWheelEvent* event)
 {
 	if(isCtrlPressed)
 	{
@@ -214,7 +214,7 @@ void TimeLineWidgetBase::wheelEvent(QWheelEvent* event)
 	}
 }
 
-void TimeLineWidgetBase::keyPressEvent (QKeyEvent * event)
+void ScrollZoomWidget::keyPressEvent (QKeyEvent * event)
 {
 	QWidget::keyPressEvent(event);
 	if (event->modifiers()==Qt::ControlModifier)
@@ -223,7 +223,7 @@ void TimeLineWidgetBase::keyPressEvent (QKeyEvent * event)
 	}
 }
 
-void TimeLineWidgetBase::keyReleaseEvent (QKeyEvent *event)
+void ScrollZoomWidget::keyReleaseEvent (QKeyEvent *event)
 {
 	QWidget::keyPressEvent(event);
 	if (event->key() == Qt::Key_Control)
@@ -233,28 +233,28 @@ void TimeLineWidgetBase::keyReleaseEvent (QKeyEvent *event)
 	}
 }
 
-QRect TimeLineWidgetBase::GetScrollBarRect() const
+QRect ScrollZoomWidget::GetScrollBarRect() const
 {
 	QRect graphRect = GetGraphRect();
 	QRect rect = QRect(graphRect.left(), graphRect.bottom() + SCROLL_BAR_HEIGHT, graphRect.width(), SCROLL_BAR_HEIGHT);
 	return rect;
 }
 
-void TimeLineWidgetBase::UpdateScrollBarPosition()
+void ScrollZoomWidget::UpdateScrollBarPosition()
 {
 	QRect scrollBarRect = GetScrollBarRect();
 	horizontalScrollBar->move(scrollBarRect.x(), scrollBarRect.y());
 	horizontalScrollBar->resize(scrollBarRect.width(), scrollBarRect.height());
 }
 
-void TimeLineWidgetBase::UpdateSliderPosition()
+void ScrollZoomWidget::UpdateSliderPosition()
 {
 	QRect sliderRect = GetSliderRect();
 	zoomSlider->move(sliderRect.x(), sliderRect.y());
 	zoomSlider->resize(sliderRect.width(), sliderRect.height());
 }
 
-void TimeLineWidgetBase::UpdateZoomSlider()
+void ScrollZoomWidget::UpdateZoomSlider()
 {
 	this->zoomSlider->setPageStep(100 * (MAX_ZOOM - MIN_ZOOM));
 	this->zoomSlider->setMinimum(100 * MIN_ZOOM);
@@ -263,7 +263,7 @@ void TimeLineWidgetBase::UpdateZoomSlider()
 	this->zoomSlider->setSliderPosition(ceil (scale * 100));
 }
 
-void TimeLineWidgetBase::UpdateScrollBarSlider()
+void ScrollZoomWidget::UpdateScrollBarSlider()
 {
 	int rengeStep = 100 * (maxTime - minTime);
 	int documentLength = 100 * (generalMaxTime - generalMinTime) ;
@@ -275,13 +275,13 @@ void TimeLineWidgetBase::UpdateScrollBarSlider()
 	this->horizontalScrollBar->setSliderPosition(ceil (minTime * 100));
 }
 
-int32 TimeLineWidgetBase::GetIntValue(float32 value) const
+int32 ScrollZoomWidget::GetIntValue(float32 value) const
 {
 	float32 sign =	(value < 0) ? -1.f : 1.f;
 	return (int32)(value + 0.5f * sign);
 }
 
-void TimeLineWidgetBase::PerformZoom(float newScale, bool moveSlider)
+void ScrollZoomWidget::PerformZoom(float newScale, bool moveSlider)
 {
 	float currentInterval = maxTime - minTime;
 	
@@ -317,7 +317,7 @@ void TimeLineWidgetBase::PerformZoom(float newScale, bool moveSlider)
 	}
 }
 
-void TimeLineWidgetBase::PerformOffset(float value,  bool moveScroll)
+void ScrollZoomWidget::PerformOffset(float value,  bool moveScroll)
 {
 	//!
 	/*
@@ -352,22 +352,22 @@ void TimeLineWidgetBase::PerformOffset(float value,  bool moveScroll)
 	}
 }
 
-TimeLineWidgetBase::ePositionRelativelyToDrawRect TimeLineWidgetBase::GetPointPositionFromDrawingRect(QPoint point) const
+ScrollZoomWidget::ePositionRelativelyToDrawRect ScrollZoomWidget::GetPointPositionFromDrawingRect(QPoint point) const
 {
 	//check if point is situated inside or outside of drawing rectangle
 	QRect graphRect = GetGraphRect();
 	if(point.x() < graphRect.x() )
 	{
-		return TimeLineWidgetBase::POSITION_LEFT;
+		return ScrollZoomWidget::POSITION_LEFT;
 	}
 	else if( point.x() > ( graphRect.x() + graphRect.width() ) )
 	{
-		return TimeLineWidgetBase::POSITION_RIGHT;
+		return ScrollZoomWidget::POSITION_RIGHT;
 	}
-	return TimeLineWidgetBase::POSITION_INSIDE;
+	return ScrollZoomWidget::POSITION_INSIDE;
 }
 
-void TimeLineWidgetBase::HandleHorizontalScrollChanged(int value)// value in miliseconds
+void ScrollZoomWidget::HandleHorizontalScrollChanged(int value)// value in miliseconds
 {
 	float newMinTime = (float)value / 100;
 	float pixelsPerTime = GetGraphRect().width() / (maxTime - minTime);
@@ -376,7 +376,7 @@ void TimeLineWidgetBase::HandleHorizontalScrollChanged(int value)// value in mil
 	this->update();
 }
 
-void TimeLineWidgetBase::HandleZoomScrollChanged(int value)
+void ScrollZoomWidget::HandleZoomScrollChanged(int value)
 {
 	float newScale = (float) value / 100;
 	PerformZoom(newScale, false);

@@ -13,11 +13,11 @@
 #include <QDialog>
 #include <QDoubleSpinBox>
 #include <DAVAEngine.h>
-#include "TimeLineWidgetBase.h"
+#include "ScrollZoomWidget.h"
 
 using namespace DAVA;
 
-class ParticleTimeLineWidget : public TimeLineWidgetBase
+class ParticleTimeLineWidget : public ScrollZoomWidget
 {
 	Q_OBJECT
 	

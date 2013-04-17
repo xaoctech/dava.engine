@@ -9,11 +9,11 @@
 #include <QDoubleSpinBox>
 #include <QScrollBar.h>
 #include <qslider.h>
-#include "TimeLineWidgetBase.h"
+#include "ScrollZoomWidget.h"
 
 using namespace DAVA;
 
-class TimeLineWidget : public TimeLineWidgetBase
+class TimeLineWidget : public ScrollZoomWidget
 {
 	Q_OBJECT
 

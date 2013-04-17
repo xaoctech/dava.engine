@@ -23,7 +23,7 @@
 //#define ZOOM_SLIDER_LENGTH		100
 
 TimeLineWidget::TimeLineWidget(QWidget *parent) :
-	TimeLineWidgetBase(parent)
+	ScrollZoomWidget(parent)
 {
 	selectedPoint = -1;
 	selectedLine = -1;
@@ -260,7 +260,7 @@ void TimeLineWidget::paintEvent(QPaintEvent * e)
 		painter.fillRect(GetPointRect(GetDrawPoint(newPoint)), pointBrush);
 	}
 
-	TimeLineWidgetBase::paintEvent(e);
+	ScrollZoomWidget::paintEvent(e);
 }
 
 void TimeLineWidget::DrawLine(QPainter* painter, uint32 lineId)
@@ -387,7 +387,7 @@ void TimeLineWidget::Init(float32 minT, float32 maxT, bool updateSizeState, bool
 	this->allowDeleteLine = allowDeleteLine;
 
 	this->isInteger = integer;
-	TimeLineWidgetBase::Init(minT, maxT);
+	ScrollZoomWidget::Init(minT, maxT);
 }
 
 void TimeLineWidget::Init(float32 minT, float32 maxT, float32 generalMinT, float32 generalMaxT, bool updateSizeState, bool aliasLinePoint, bool allowDeleteLine, bool integer)
@@ -791,7 +791,7 @@ void TimeLineWidget::mousePressEvent(QMouseEvent *event)
 		}
 	}
 	
-	TimeLineWidgetBase::mousePressEvent(event);
+	ScrollZoomWidget::mousePressEvent(event);
 	if (sizeState != SIZE_STATE_MINIMIZED)
 		GraphRectClick(event);
 
@@ -896,7 +896,7 @@ void TimeLineWidget::mouseMoveEvent(QMouseEvent *event)
 					}
 					else 
 					{
-						TimeLineWidgetBase::mouseMoveEvent( event);
+						ScrollZoomWidget::mouseMoveEvent( event);
 					}
 				}
 				prevPoint = nextPoint;
@@ -933,7 +933,7 @@ void TimeLineWidget::mouseReleaseEvent(QMouseEvent * event)
 	selectedPoint = -1;
 	selectedLine = -1;
 	
-	TimeLineWidgetBase::mouseReleaseEvent(event);
+	ScrollZoomWidget::mouseReleaseEvent(event);
 }
 
 void TimeLineWidget::mouseDoubleClickEvent(QMouseEvent * event)
@@ -1260,7 +1260,7 @@ void TimeLineWidget::PerformZoom(float newScale, bool moveSlider)
 	{
 		return;
 	}
-	TimeLineWidgetBase::PerformZoom(newScale, moveSlider);
+	ScrollZoomWidget::PerformZoom(newScale, moveSlider);
 }
 
 void TimeLineWidget::PerformOffset(int value,  bool moveScroll)
@@ -1269,7 +1269,7 @@ void TimeLineWidget::PerformOffset(int value,  bool moveScroll)
 	{
 		return;
 	}
-	TimeLineWidgetBase::PerformOffset(value, moveScroll);
+	ScrollZoomWidget::PerformOffset(value, moveScroll);
 }
 
 void TimeLineWidget::DrawUITriangle(QPainter& painter, const QRect& rect, int rotateDegree)
