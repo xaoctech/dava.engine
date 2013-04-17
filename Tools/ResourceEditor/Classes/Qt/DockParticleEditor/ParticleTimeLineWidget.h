@@ -18,18 +18,30 @@
 #include <DAVAEngine.h>
 
 using namespace DAVA;
+
 class ParticlesCountWidget;
+class ParticlesAreaWidget;
 class ParticleTimeLineWidget : public QWidget
 {
 	Q_OBJECT
-	friend class ParticlesCountWidget;
+	friend class ParticlesExtraInfoWidget;
 
 public:
 	explicit ParticleTimeLineWidget(QWidget *parent = 0);
 	~ParticleTimeLineWidget();
 	
 	void Init(float32 minTime, float32 maxTime);
-	
+
+	struct LINE
+	{
+		float32 startTime;
+		float32 endTime;
+		QColor color;
+		QString legend;
+		ParticleLayer* layer;
+	};
+	typedef DAVA::Map<uint32, LINE> LINE_MAP;
+
 signals:
 	void ValueChanged();
 	void ChangeVisible(bool visible);
@@ -40,7 +52,7 @@ protected slots:
 	void OnLayerSelected(Entity* node, ParticleLayer* layer);
 	void OnUpdate();
 
-	void OnUpdateParticlesCountNeeded();
+	void OnUpdateLayersExtraInfoNeeded();
 
 protected:
 	virtual void paintEvent(QPaintEvent *);
@@ -67,22 +79,12 @@ private:
 	void HandleNodeSelected(Entity* node, ParticleLayer* layer);
 
 private:
-	struct LINE
-	{
-		float32 startTime;
-		float32 endTime;
-		QColor color;
-		QString legend;
-		ParticleLayer* layer;
-	};
-
-	void UpdateParticlesCountPosition();
-	void UpdateParticlesCountValues();
+	void UpdateLayersExtraInfoPosition();
+	void UpdateLayersExtraInfoValues();
 
 	// Get the width/height for particle counter label.
 	void GetParticlesCountWidthHeight(const LINE& line, int32& width, int32& height);
 
-	typedef DAVA::Map<uint32, LINE> LINE_MAP;
 	LINE_MAP lines;
 
 	QBrush backgroundBrush;
@@ -94,8 +96,9 @@ private:
 	Entity* emitterNode;
 	Entity* effectNode;
 	
-	ParticlesCountWidget* countWidget;
 	QTimer updateTimer;
+	ParticlesCountWidget* countWidget;
+	ParticlesAreaWidget* areaWidget;
 
 	enum eGridStyle
 	{
@@ -119,23 +122,73 @@ private:
 };
 
 ////////////////////////////////////////////////////////////////////////////////////
-// A specific class to display the per-layer counters.
-class ParticlesCountWidget : public QWidget
+// A specific class to display the per-layer particles info.
+const int32 EXTRA_INFO_LEFT_PADDING = 3;
+
+class ParticlesExtraInfoWidget : public QWidget
 {
 	Q_OBJECT
-
+	
 public:
-	explicit ParticlesCountWidget(const ParticleTimeLineWidget* timeLineWidget,
-								  QWidget *parent = 0);
+	explicit ParticlesExtraInfoWidget(const ParticleTimeLineWidget* timeLineWidget,
+									  QWidget *parent = 0);
 
 protected:
 	virtual void paintEvent(QPaintEvent *);
 	
-	// Get the string representation of active particles count for the current layer.
-	QString GetActiveParticlesCount(const ParticleTimeLineWidget::LINE& line);
+	// These methods are to be overriden for derived classes.
+	// Get an extra information to be displayed near the line.
+	virtual QString GetExtraInfoForLayerLine(const ParticleTimeLineWidget::LINE& line) {return QString();};
+
+	// Get the extra info for the header/footer.
+	virtual QString GetExtraInfoHeader() {return QString(); };
+	virtual QString GetExtraInfoFooter() {return QString(); };
+
+	// In case some information should be accumulated during the loop,
+	// these methods are called just before the loop and just after it.
+	virtual void OnBeforeGetExtraInfoLoop() {};
+	virtual void OnAfterGetExtraInfoLoop() {};
+
+	// The timeline widget being used.
+	const ParticleTimeLineWidget* timeLineWidget;
+};
+
+// Particles Count information.
+class ParticlesCountWidget : public ParticlesExtraInfoWidget
+{
+	Q_OBJECT
+public:
+	explicit ParticlesCountWidget(const ParticleTimeLineWidget* timeLineWidget,
+									  QWidget *parent = 0);
+protected:
+	virtual void OnBeforeGetExtraInfoLoop();
+	virtual QString GetExtraInfoForLayerLine(const ParticleTimeLineWidget::LINE& line);
+
+	virtual QString GetExtraInfoHeader();
+	virtual QString GetExtraInfoFooter();
 
 private:
-	const ParticleTimeLineWidget* timeLineWidget;
+	int32 totalParticlesCount;
+};
+
+// Particles Area information.
+class ParticlesAreaWidget : public ParticlesExtraInfoWidget
+{
+	Q_OBJECT
+public:
+	explicit ParticlesAreaWidget(const ParticleTimeLineWidget* timeLineWidget,
+								 QWidget *parent = 0);
+protected:
+	virtual void OnBeforeGetExtraInfoLoop();
+	virtual QString GetExtraInfoForLayerLine(const ParticleTimeLineWidget::LINE& line);
+	
+	virtual QString GetExtraInfoHeader();
+	virtual QString GetExtraInfoFooter();
+	
+private:
+	QString FormatFloat(float32 value);
+
+	float32 totalParticlesArea;
 };
 
 #endif /* defined(__ResourceEditorQt__ParticleTimeLineWidget__) */
