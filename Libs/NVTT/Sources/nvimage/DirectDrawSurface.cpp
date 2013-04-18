@@ -53,6 +53,10 @@ namespace
 	static const uint FOURCC_RXGB = MAKEFOURCC('R', 'X', 'G', 'B');
 	static const uint FOURCC_ATI1 = MAKEFOURCC('A', 'T', 'I', '1');
 	static const uint FOURCC_ATI2 = MAKEFOURCC('A', 'T', 'I', '2');
+	
+	static const uint FOURCC_ATC_RGB = MAKEFOURCC('A', 'T', 'C', ' ');
+	static const uint FOURCC_ATC_RGBA_EXPLICIT_ALPHA = MAKEFOURCC('A', 'T', 'C', 'I');
+	static const uint FOURCC_ATC_RGBA_INTERPOLATED_ALPHA = MAKEFOURCC('A', 'T', 'C', 'A');
 
 	static const uint FOURCC_A2XY = MAKEFOURCC('A', '2', 'X', 'Y');
 	
@@ -826,7 +830,10 @@ bool DirectDrawSurface::isSupported() const
 				header.pf.fourcc != FOURCC_DXT5 &&
 				header.pf.fourcc != FOURCC_RXGB &&
 				header.pf.fourcc != FOURCC_ATI1 &&
-				header.pf.fourcc != FOURCC_ATI2)
+				header.pf.fourcc != FOURCC_ATI2 &&
+				header.pf.fourcc != FOURCC_ATC_RGB &&
+				header.pf.fourcc != FOURCC_ATC_RGBA_EXPLICIT_ALPHA &&
+				header.pf.fourcc != FOURCC_ATC_RGBA_INTERPOLATED_ALPHA)
 			{
 				// Unknown fourcc code.
 				return false;
@@ -1180,6 +1187,7 @@ uint DirectDrawSurface::blockSize() const
 	{
 		case FOURCC_DXT1:
 		case FOURCC_ATI1:
+		case FOURCC_ATC_RGB:
 			return 8;
 		case FOURCC_DXT2:
 		case FOURCC_DXT3:
@@ -1187,6 +1195,8 @@ uint DirectDrawSurface::blockSize() const
 		case FOURCC_DXT5:
 		case FOURCC_RXGB:
 		case FOURCC_ATI2:
+		case FOURCC_ATC_RGBA_EXPLICIT_ALPHA:
+		case FOURCC_ATC_RGBA_INTERPOLATED_ALPHA:
 			return 16;
 	};
 
@@ -1381,13 +1391,18 @@ bool DirectDrawSurface::getFormat(nvtt::Format * retFormat) const
 	
 	uint flags = header.pf.flags ;
 	bool normalFlag = flags &= DDPF_NORMAL != 0 ? true : false;
-	
-	flags = header.pf.flags ;
-	bool isRgb = flags &= DDPF_RGB != 0 ? true : false;
-	if(isRgb)
+
+	if (header.pf.fourcc != FOURCC_ATC_RGB &&
+		header.pf.fourcc != FOURCC_ATC_RGBA_EXPLICIT_ALPHA &&
+		header.pf.fourcc != FOURCC_ATC_RGBA_INTERPOLATED_ALPHA)
 	{
-		*retFormat = nvtt::Format_RGB;
-		return true;
+		flags = header.pf.flags ;
+		bool isRgb = flags &= DDPF_RGB != 0 ? true : false;
+		if(isRgb)
+		{
+			*retFormat = nvtt::Format_RGB;
+			return true;
+		}
 	}
 
 	switch (header.pf.fourcc) 
@@ -1407,6 +1422,16 @@ bool DirectDrawSurface::getFormat(nvtt::Format * retFormat) const
 	case FOURCC_ATI2:
 		*retFormat = nvtt::Format_BC5;
 		break;
+	case FOURCC_ATC_RGB:
+		*retFormat = nvtt::Format_ATC_RGB;
+		break;
+	case FOURCC_ATC_RGBA_EXPLICIT_ALPHA:
+		*retFormat = nvtt::Format_ATC_RGBA_EXPLICIT_ALPHA;
+		break;
+	case FOURCC_ATC_RGBA_INTERPOLATED_ALPHA:
+		*retFormat = nvtt::Format_ATC_RGBA_INTERPOLATED_ALPHA;
+		break;
+
 	default:
 		return false;
 	}
