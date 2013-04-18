@@ -4,6 +4,7 @@
 #include <QObject>
 #include "UI/UIEvent.h"
 #include "Scene3D/Scene.h"
+#include "Base/StaticSingleton.h"
 
 class EntityModificationSystem;
 class SceneCameraSystem;
@@ -52,19 +53,23 @@ protected:
 	bool SceneSave();
 };
 
-class SceneEditorSignals : public QObject
+class SceneEditorSignals : public QObject, public DAVA::StaticSingleton<SceneEditorSignals>
 {
 	Q_OBJECT
 
 public:
-	// TODO:
+	void EmitMouseOver(SceneEditorProxy *scene, DAVA::Entity *entity);
+	void EmitMouseOverSelection(SceneEditorProxy *scene, DAVA::Entity *entity);
+
+	void EmitSelected(SceneEditorProxy *scene, DAVA::Entity *entity);
+	void EmitDeselected(SceneEditorProxy *scene, DAVA::Entity *entity);
 
 signals:
-	void MouseOver(DAVA::Entity *entity);
-	void MouseOverSelection(DAVA::Entity *entity);
+	void MouseOver(SceneEditorProxy *scene, DAVA::Entity *entity);
+	void MouseOverSelection(SceneEditorProxy *scene, DAVA::Entity *entity);
 
-	void Selected(DAVA::Entity *entity);
-	void Deselected(DAVA::Entity *entity);
+	void Selected(SceneEditorProxy *scene, DAVA::Entity *entity);
+	void Deselected(SceneEditorProxy *scene, DAVA::Entity *entity);
 };
 
 #endif // __SCENE_EDITOR_PROXY_H__

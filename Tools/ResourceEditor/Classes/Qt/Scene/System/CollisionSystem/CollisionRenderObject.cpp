@@ -45,8 +45,8 @@ CollisionRenderObject::CollisionRenderObject(DAVA::Entity *entity, btCollisionWo
 					btTriangles->addTriangle(vertex0, vertex1, vertex2, false);
 				}
 
-				// boundingBox will be calculeted from polygon group bbox and cur. entity transformation
-				pg->GetBoundingBox().GetTransformedBox(curEntityTransform, boundingBox);
+				// save original bbox
+				boundingBox = pg->GetBoundingBox();
 				
 				// increase bbox a a little bit
 				boundingBox.AddPoint(boundingBox.min - DAVA::Vector3(0.5f, 0.5f, 0.5f));
@@ -56,8 +56,11 @@ CollisionRenderObject::CollisionRenderObject(DAVA::Entity *entity, btCollisionWo
 
 		if(anyPolygonAdded)
 		{
+			DAVA::Vector3 pos = curEntityTransform.GetTranslationVector();
+
 			btObject = new btCollisionObject();
 			btShape = new btBvhTriangleMeshShape(btTriangles, true, true);
+
 			btObject->setCollisionShape(btShape);
 			btWord->addCollisionObject(btObject);
 		}

@@ -187,10 +187,14 @@ public:
      */
 	void DrawCornerBox(const AABBox3 & bbox, float32 lineWidth = 1.f);
 	
-	void DrawSphere(float32 r);
+	void DrawSphere(const Vector3 &center, float32 radius, float32 lineWidth = 1.f);
+	void FillSphere(const Vector3 &center, float32 radius);
 
-	void DrawArrow(const Vector3 &from, const Vector3 &to, float32 lineWidth = 1.f);
+	void DrawArrow(const Vector3 &from, const Vector3 &to, float32 arrowLength, float32 lineWidth = 1.f);
+	void FillArrow(const Vector3 &from, const Vector3 &to, float32 arrowLength, float32 lineWidth = 1.f);
 
+	void DrawDodecahedron(const Vector3 &center, float32 radius, float32 lineWidth = 1.f);
+	void FillDodecahedron(const Vector3 &center, float32 radius);
 	
     // Other debug functions  
 	void DrawBSpline(BezierSpline3 * bSpline, int segments = 20, float ts = 0.0f, float te = 1.0f);
