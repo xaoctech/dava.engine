@@ -6,6 +6,7 @@ import bson
 import sys
 
 report = open('testId', 'w')
+report2 = open('Data/testId', 'w')
 	
 connection = None;
 try:
@@ -23,6 +24,7 @@ if None != connection:
 		testId = currTest['LastTestId'] + 1;
 		currTest['LastTestId'] = testId;
 		collection.update({'_id': 'GlobalTestId'}, {'$set' : {'LastTestId' : testId}});
-		report.write(str(testId))
+		report.write(str(testId));
+		report2.write(str(testId));
 
 report.close()
