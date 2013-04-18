@@ -100,12 +100,16 @@ public:
 	// Set the "ASSERT if custom control is not found during loading" flag.
 	void SetAssertIfCustomControlNotFound(bool value);
 
+	String GetCurrentPath() const;
+
 protected:
 	// Create the control by its type or base type.
 	UIControl* CreateControl(const String& type, const String& baseType);
 
 	// ASSERTion flag for "Custom Control not found" state.
 	bool assertIfCustomControlNotFound;
+
+	String currentPath;
 };
 };
 

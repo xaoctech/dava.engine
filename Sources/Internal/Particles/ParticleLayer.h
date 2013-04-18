@@ -162,7 +162,9 @@ public:
 	void SetPlaybackSpeed(float32 value);
 	float32 GetPlaybackSpeed();
 
+	// Statistics for particles - count and area they use.
 	int32 GetActiveParticlesCount();
+	float32 GetActiveParticlesArea();
 
 protected:
 	void GenerateNewParticle(int32 emitIndex);

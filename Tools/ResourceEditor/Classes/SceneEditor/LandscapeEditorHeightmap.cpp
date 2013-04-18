@@ -201,7 +201,9 @@ void LandscapeEditorHeightmap::UpdateBrushTool(float32 timeElapsed)
             heightmap->DrawAbsoluteRGBA(toolImage, (int32)pos.x, (int32)pos.y, scaleSize, scaleSize, koef, height);
         }
         
-        UpdateHeightmap(Rect(pos.x, pos.y, (float32)scaleSize, (float32)scaleSize));
+		Rect rect(pos.x, pos.y, (float32)scaleSize, (float32)scaleSize);
+		AddRectToAccumulator(rect);
+		UpdateHeightmap(rect);
     }
 }
 
@@ -255,7 +257,9 @@ void LandscapeEditorHeightmap::UpdateCopypasteTool(float32 timeElapsed)
             DVASSERT(heightmap);
             heightmap->DrawCopypasteRGBA(toolImage, posFrom, posTo, scaleSize, scaleSize, koef);
             
-            UpdateHeightmap(Rect(posTo.x, posTo.y, (float32)scaleSize, (float32)scaleSize));
+			Rect rect(posTo.x, posTo.y, (float32)scaleSize, (float32)scaleSize);
+			AddRectToAccumulator(rect);
+            UpdateHeightmap(rect);
         }
     }
 }
@@ -293,7 +297,7 @@ void LandscapeEditorHeightmap::UpdateCursor()
 void LandscapeEditorHeightmap::InputAction(int32 phase, bool intersects)
 {
     bool dropper = IsKeyModificatorPressed(DVKEY_CTRL);
-    if(dropper)
+    if(dropper && !editingIsEnabled)
     {
         switch(phase)
         {
@@ -391,9 +395,14 @@ Heightmap* LandscapeEditorHeightmap::GetHeightmap()
 	return landscapesController->GetCurrentHeightmap();
 }
 
-void LandscapeEditorHeightmap::UpdateHeightmap(Heightmap* heightmap)
+void LandscapeEditorHeightmap::UpdateHeightmap(Heightmap* heightmap, Rect rect)
 {
-	UpdateHeightmap(Rect(0, 0, (float32)heightmap->Size()-1.f, (float32)heightmap->Size()-1.f));
+	if (rect.x == -1 || rect.y == -1)
+	{
+		rect = Rect(0, 0, (float32)heightmap->Size()-1.f, (float32)heightmap->Size()-1.f);
+	}
+
+	UpdateHeightmap(rect);
 }
 
 bool LandscapeEditorHeightmap::CopyPasteBegin()
@@ -548,6 +557,7 @@ void LandscapeEditorHeightmap::TextureDidChanged(const String &forKey)
         Heightmap *heightmap = landscapesController->GetCurrentHeightmap();
         landscapeSize = heightmap->Size();
 
+		updatedRectAccumulator = Rect(Vector2(0, 0), Vector2(GetHeightmap()->Size() - 1, GetHeightmap()->Size() - 1));
 		CreateHeightmapUndo();
     }
     else if("property.landscape.texture.tilemask" == forKey)
@@ -622,7 +632,7 @@ void LandscapeEditorHeightmap::CreateHeightmapUndo()
 {
 	if (oldHeightmap)
 	{
-		CommandsManager::Instance()->ExecuteAndRelease(new CommandDrawHeightmap(oldHeightmap, GetHeightmap()));
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandDrawHeightmap(oldHeightmap, GetHeightmap(), GetUpdatedRect()));
 		SafeRelease(oldHeightmap);
 	}
 }
@@ -641,7 +651,8 @@ void LandscapeEditorHeightmap::CreateCopyPasteUndo()
 																					 GetHeightmap(),
 																					 oldTilemap,
 																					 image,
-																					 tilemaskPathname));
+																					 tilemaskPathname,
+																					 GetUpdatedRect()));
 		SafeRelease(oldHeightmap);
 		SafeRelease(oldTilemap);
 		SafeRelease(image);
@@ -667,4 +678,29 @@ void LandscapeEditorHeightmap::StoreOriginalHeightmap()
 {
 	DVASSERT(oldHeightmap == NULL);
 	oldHeightmap = GetHeightmap()->Clone(oldHeightmap);
+	ResetAccumulatorRect();
+}
+
+void LandscapeEditorHeightmap::ResetAccumulatorRect()
+{
+	float32 inf = std::numeric_limits<float32>::infinity();
+	updatedRectAccumulator = Rect(inf, inf, -inf, -inf);
+}
+
+void LandscapeEditorHeightmap::AddRectToAccumulator(const Rect &rect)
+{
+	updatedRectAccumulator = updatedRectAccumulator.Combine(rect);
+}
+
+Rect LandscapeEditorHeightmap::GetUpdatedRect()
+{
+	float32 heightmapSize = GetHeightmap()->Size() - 1.f;
+	Rect r = updatedRectAccumulator;
+
+	r.x = Max(r.x, 0.f);
+	r.y = Max(r.y, 0.f);
+	r.dx = Min(r.dx, heightmapSize);
+	r.dy = Min(r.dy, heightmapSize);
+
+	return r;
 }

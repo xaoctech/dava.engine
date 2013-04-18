@@ -89,6 +89,9 @@ public:
 	// Cleanup the existing forces.
 	void CleanupForces();
 
+	// Get the area currently occupied by particle.
+	float32 GetArea();
+
 	int32	frame;
 	float32 frameLastUpdateTime;
 	
