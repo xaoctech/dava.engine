@@ -6,7 +6,6 @@
 #include "../Commands/ToolsCommands.h"
 #include "../Commands/CommandViewport.h"
 #include "../Commands/SceneGraphCommands.h"
-#include "../Commands/ViewCommands.h"
 #include "../Commands/CommandReloadTextures.h"
 #include "../Commands/ParticleEditorCommands.h"
 #include "../Commands/LandscapeOptionsCommands.h"
@@ -373,11 +372,6 @@ void QtMainWindowHandler::RestoreViews()
 void QtMainWindowHandler::RefreshSceneGraph()
 {
     CommandsManager::Instance()->ExecuteAndRelease(new CommandRefreshSceneGraph());
-}
-
-void QtMainWindowHandler::ToggleSceneInfo()
-{
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandSceneInfo());
 }
 
 void QtMainWindowHandler::ShowSettings()

@@ -784,4 +784,16 @@ void ParticleEmitter::InvertEmissionVectorCoordinates()
     }
 }
 
+int32 ParticleEmitter::GetActiveParticlesCount()
+{
+	uint32 particlesCount = 0;
+	int32 layersCount = this->GetLayers().size();
+	for (int i = 0; i < layersCount; i ++)
+	{
+		particlesCount += this->layers[i]->GetActiveParticlesCount();
+	}
+
+	return particlesCount;
+}
+
 };

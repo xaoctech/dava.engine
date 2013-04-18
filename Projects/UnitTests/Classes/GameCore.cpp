@@ -51,6 +51,7 @@
 #include "InputTest.h"
 #include "DeviceInfoTest.h"
 #include "LocalizationTest.h"
+#include "UIListTest.h"
 
 using namespace DAVA;
 
@@ -77,26 +78,26 @@ void GameCore::OnAppStarted()
     CreateDocumentsFolder();
 
 	new DeviceInfoTest();
-    new LocalizationTest();
+	new LocalizationTest();
     new InputTest();
-//    new SampleTest();
-//    new EntityTest(); 
-//    new MemoryAllocatorsTest();
-//    new HashMapTest();
-//    new SoundTest();
-//    new SplitTest();
+	new SampleTest();
+	new EntityTest(); 
+	new MemoryAllocatorsTest();
+	new HashMapTest();
+	new SoundTest();
+	new SplitTest();
 	new EMailTest();
-    new DPITest();
+	new DPITest();
 	new MaterialCompilerTest();
-    new CloneTest();
-    new PVRTest();
+	new CloneTest();
+	new PVRTest();
 	new DXTTest();
 	new EntityTest();	
 	new MemoryAllocatorsTest();
 	new HashMapTest();
 	new SoundTest();
 	new SplitTest();
-    new KeyedArchiveYamlTest();
+	new KeyedArchiveYamlTest();
 	new DLCTest();
     
     errors.reserve(TestCount());

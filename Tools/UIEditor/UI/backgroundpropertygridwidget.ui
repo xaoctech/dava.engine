@@ -115,7 +115,7 @@ inherit:</string>
      <rect>
       <x>81</x>
       <y>25</y>
-      <width>201</width>
+      <width>206</width>
       <height>21</height>
      </rect>
     </property>
@@ -127,7 +127,7 @@ inherit:</string>
     </property>
     <property name="maximumSize">
      <size>
-      <width>201</width>
+      <width>206</width>
       <height>21</height>
      </size>
     </property>
@@ -140,7 +140,7 @@ inherit:</string>
      <rect>
       <x>81</x>
       <y>56</y>
-      <width>149</width>
+      <width>154</width>
       <height>22</height>
      </rect>
     </property>
@@ -151,7 +151,7 @@ inherit:</string>
    <widget class="QPushButton" name="openSpriteButton">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>235</x>
       <y>56</y>
       <width>30</width>
       <height>22</height>
@@ -166,7 +166,7 @@ inherit:</string>
      <rect>
       <x>80</x>
       <y>110</y>
-      <width>204</width>
+      <width>209</width>
       <height>26</height>
      </rect>
     </property>
@@ -176,7 +176,7 @@ inherit:</string>
      <rect>
       <x>80</x>
       <y>139</y>
-      <width>204</width>
+      <width>209</width>
       <height>26</height>
      </rect>
     </property>
@@ -186,7 +186,7 @@ inherit:</string>
      <rect>
       <x>80</x>
       <y>168</y>
-      <width>204</width>
+      <width>209</width>
       <height>26</height>
      </rect>
     </property>
@@ -204,7 +204,7 @@ inherit:</string>
    <widget class="QPushButton" name="removeSpriteButton">
     <property name="geometry">
      <rect>
-      <x>260</x>
+      <x>265</x>
       <y>56</y>
       <width>22</width>
       <height>22</height>
@@ -244,9 +244,9 @@ inherit:</string>
     <property name="geometry">
      <rect>
       <x>90</x>
-      <y>200</y>
-      <width>51</width>
-      <height>22</height>
+      <y>199</y>
+      <width>46</width>
+      <height>25</height>
      </rect>
     </property>
     <property name="minimum">
@@ -259,10 +259,10 @@ inherit:</string>
    <widget class="QSpinBox" name="tbSpinBox">
     <property name="geometry">
      <rect>
-      <x>238</x>
-      <y>200</y>
+      <x>241</x>
+      <y>199</y>
       <width>46</width>
-      <height>22</height>
+      <height>25</height>
      </rect>
     </property>
     <property name="minimum">
@@ -275,8 +275,8 @@ inherit:</string>
    <widget class="QLabel" name="modificationLabel">
     <property name="geometry">
      <rect>
-      <x>129</x>
-      <y>90</y>
+      <x>125</x>
+      <y>88</y>
       <width>71</width>
       <height>16</height>
      </rect>
@@ -288,10 +288,10 @@ inherit:</string>
    <widget class="QComboBox" name="modificationComboBox">
     <property name="geometry">
      <rect>
-      <x>197</x>
-      <y>86</y>
-      <width>86</width>
-      <height>21</height>
+      <x>195</x>
+      <y>83</y>
+      <width>95</width>
+      <height>26</height>
      </rect>
     </property>
    </widget>
