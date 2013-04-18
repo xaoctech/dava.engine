@@ -360,11 +360,12 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
             lineDirection = Vector3(size->GetValue(time).x * rand05_x, size->GetValue(time).y * rand05_y, size->GetValue(time).z * rand05_z);
 		particle->position = tempPosition + lineDirection;
 	}
-    else if (emitterType == EMITTER_ONCIRCLE)
+    else if ((emitterType == EMITTER_ONCIRCLE) || (emitterType == EMITTER_SHOCKWAVE))
     {
         // here just set particle position
+		// Yuri Coder, 2013/04/18. Shockwave particle isn't implemented for 2D mode -
+		// currently draw them in the same way as "onCircle" ones.
         particle->position = tempPosition;
-        //if (
     }
         
     Vector3 vel;
@@ -398,7 +399,9 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
     vel.z = 0;
         
     // reuse particle velocity we've calculated
-    if (emitterType == EMITTER_ONCIRCLE)
+	// Yuri Coder, 2013/04/18. Shockwave particle isn't implemented for 2D mode -
+	// currently draw them in the same way as "onCircle" ones.
+    if ((emitterType == EMITTER_ONCIRCLE) || (emitterType == EMITTER_SHOCKWAVE))
     {
         if(radius)
             particle->position += vel * radius->GetValue(time);
@@ -489,7 +492,9 @@ void ParticleEmitter::LoadFromYaml(const String & filename)
 				emitterType = EMITTER_RECT;
 			else if (typeNode->AsString() == "oncircle")
 				emitterType = EMITTER_ONCIRCLE;
-			else 
+			else if (typeNode->AsString() == "shockwave")
+				emitterType = EMITTER_SHOCKWAVE;
+			else
 				emitterType = EMITTER_POINT;
 		}else
 			emitterType = EMITTER_POINT;
@@ -700,6 +705,11 @@ String ParticleEmitter::GetEmitterTypeName()
             return "oncircle";
         }
 
+		case EMITTER_SHOCKWAVE:
+        {
+            return "shockwave";
+        }
+
         default:
         {
             return "unknown";
@@ -782,6 +792,18 @@ void ParticleEmitter::InvertEmissionVectorCoordinates()
     {
 		pv->value *= -1;
     }
+}
+
+int32 ParticleEmitter::GetActiveParticlesCount()
+{
+	uint32 particlesCount = 0;
+	int32 layersCount = this->GetLayers().size();
+	for (int i = 0; i < layersCount; i ++)
+	{
+		particlesCount += this->layers[i]->GetActiveParticlesCount();
+	}
+
+	return particlesCount;
 }
 
 };

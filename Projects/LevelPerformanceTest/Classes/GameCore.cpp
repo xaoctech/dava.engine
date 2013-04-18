@@ -42,8 +42,10 @@ using namespace DAVA;
 GameCore::GameCore()
 {
 	resultScreen = NULL;
-	currentRunId = 0;
+	currentRunId = -1;
 	dbClient = NULL;
+
+	cursor = 0;
 }
 
 GameCore::~GameCore()
@@ -54,10 +56,25 @@ GameCore::~GameCore()
 void GameCore::OnAppStarted()
 {
     DeviceInfo();
-    
+
+	File * testIdFile = File::Create("testId", File::OPEN | File::READ);
+	if(testIdFile)
+	{
+		char buf[30];
+		ZeroMemory(buf, sizeof(char)*30);
+		testIdFile->ReadLine(buf, 30);
+		sscanf_s(buf, "%d",&currentRunId);
+		SafeRelease(testIdFile);
+	}
+	else
+	{
+		SafeRelease(testIdFile);
+		Core::Instance()->Quit();
+		return;
+	}
+
 	SettingsManager::Instance()->InitWithFile("~res:/Config/config.yaml");
 	
-	cursor = 0;
 	RenderManager::Instance()->SetFPS(60);
 
 	String dirPath = "~res:/3d/Maps/";
@@ -102,14 +119,17 @@ void GameCore::OnAppStarted()
     {
 		appFinished = true;
 	}
-    
+
 	ConnectToDB();
 }
 
 void GameCore::OnAppFinished()
 {
-	dbClient->Disconnect();
-	SafeRelease(dbClient);
+	if(dbClient)
+	{
+		dbClient->Disconnect();
+		SafeRelease(dbClient);
+	}
 
 	SafeRelease(cursor);
 }
@@ -199,19 +219,19 @@ bool GameCore::ConnectToDB()
         dbClient->SetDatabaseName(DATABASE_NAME);
         dbClient->SetCollectionName(DATABASE_COLLECTION);
 
-		MongodbObject *globalIdObject = dbClient->FindObjectByKey("GlobalTestId");
+		//MongodbObject *globalIdObject = dbClient->FindObjectByKey("GlobalTestId");
 
-		if(globalIdObject)
-			currentRunId = globalIdObject->GetInt32("LastTestId") + 1;
+		//if(globalIdObject)
+		//	currentRunId = globalIdObject->GetInt32("LastTestId") + 1;
 
-		MongodbObject * newGlobalIdObject = new MongodbObject();
-		newGlobalIdObject->SetObjectName("GlobalTestId");
-		newGlobalIdObject->AddInt32("LastTestId", currentRunId);
-		newGlobalIdObject->Finish();
-		dbClient->SaveObject(newGlobalIdObject, globalIdObject);
+		//MongodbObject * newGlobalIdObject = new MongodbObject();
+		//newGlobalIdObject->SetObjectName("GlobalTestId");
+		//newGlobalIdObject->AddInt32("LastTestId", currentRunId);
+		//newGlobalIdObject->Finish();
+		//dbClient->SaveObject(newGlobalIdObject, globalIdObject);
 
-		SafeRelease(newGlobalIdObject);
-		SafeRelease(globalIdObject);
+		//SafeRelease(newGlobalIdObject);
+		//SafeRelease(globalIdObject);
     }
     else
     {

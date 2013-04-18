@@ -20,6 +20,9 @@ if None != connection:
 	
 	currTest = collection.find_one({'_id': 'GlobalTestId'})
 	if None != currTest:
-		report.write(str(currTest['LastTestId']+1))
+		testId = currTest['LastTestId'] + 1;
+		currTest['LastTestId'] = testId;
+		collection.update({'_id': 'GlobalTestId'}, {'$set' : {'LastTestId' : testId}});
+		report.write(str(testId))
 
 report.close()

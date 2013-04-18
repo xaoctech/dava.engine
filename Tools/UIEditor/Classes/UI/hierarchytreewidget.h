@@ -21,12 +21,14 @@ public:
 	
 private:
 	typedef Set<HierarchyTreeNode::HIERARCHYTREENODEID> EXPANDEDITEMS;
-	void AddControlItem(QTreeWidgetItem* parent, const EXPANDEDITEMS& selectedItems, const HierarchyTreeNode::HIERARCHYTREENODESLIST& items);
+	void AddControlItem(QTreeWidgetItem* parent, const EXPANDEDITEMS& selectedItems,const EXPANDEDITEMS& expandedItems,  const HierarchyTreeNode::HIERARCHYTREENODESLIST& items);
     
 signals:
 	void CreateNewScreen();
 	void CreateNewAggregator();
-	
+
+	void ImportScreenOrAggregator();
+
 protected slots:
 	void OnTreeUpdated();
 	
@@ -39,7 +41,8 @@ private slots:
 	void OnCreateAggregatorAction();
 	void OnCopyAction();
 	void OnPasteAction();
-	
+	void OnImportScreenOrAggregatorAction();
+
 private:
 	typedef Map<int, QTreeWidgetItem*> TREEITEMS;
 	TREEITEMS GetAllItems();

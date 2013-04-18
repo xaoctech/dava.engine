@@ -10,6 +10,7 @@ namespace Ui {
 class MainWindow;
 }
 
+class QFileDialog;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -41,7 +42,10 @@ private slots:
 	void OnNewPlatform();
 	void OnNewScreen();
 	void OnNewAggregator();
-	
+
+	void OnImportPlatform();
+	void OnImportScreenOrAggregator();
+
 	void OnProjectCreated();
 	void OnSelectedScreenChanged();
 	

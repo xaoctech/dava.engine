@@ -18,7 +18,6 @@ class EditorBodyControl;
 class MaterialEditor;
 class SettingsDialog;
 class TextureTrianglesDialog;
-class HelpDialog;
 
 class SceneEditorScreenMain: 
     public UIScreen,
@@ -165,8 +164,6 @@ private:
 	bool initialized;
 	bool useConvertedTextures;
     
-    HelpDialog *helpDialog;
-    
     void ReleaseResizedControl(UIControl *control);
 
 public: //For Qt integration
@@ -205,7 +202,6 @@ public: //For Qt integration
 	void VisibilityToolSetArea();
 	void VisibilityToolSetAreaSize(uint32 size);
     
-    void ToggleSceneInfo();
     void ShowSettings();
     
     void ProcessBeast();

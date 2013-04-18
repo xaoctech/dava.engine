@@ -27,9 +27,10 @@ void CommandHeightmapEditor::Execute()
 }
 
 
-HeightmapModificationCommand::HeightmapModificationCommand(Command::eCommandType type)
+HeightmapModificationCommand::HeightmapModificationCommand(Command::eCommandType type, const Rect& updatedRect)
 :	Command(type)
 {
+	this->updatedRect = updatedRect;
 }
 
 String HeightmapModificationCommand::TimeString()
@@ -118,8 +119,8 @@ void HeightmapModificationCommand::UpdateLandscapeHeightmap(String filename)
 }
 
 
-CommandDrawHeightmap::CommandDrawHeightmap(Heightmap* originalHeightmap, Heightmap* newHeightmap)
-:	HeightmapModificationCommand(COMMAND_UNDO_REDO)
+CommandDrawHeightmap::CommandDrawHeightmap(Heightmap* originalHeightmap, Heightmap* newHeightmap, const Rect& updatedRect)
+:	HeightmapModificationCommand(COMMAND_UNDO_REDO, updatedRect)
 {
 	commandName = "Heightmap Change";
 	redoFilename = "";
@@ -150,7 +151,7 @@ void CommandDrawHeightmap::Execute()
 	{
 		Heightmap* heightmap = editor->GetHeightmap();
 		heightmap->Load(redoFilename);
-		editor->UpdateHeightmap(heightmap);
+		editor->UpdateHeightmap(heightmap, updatedRect);
 	}
 	else
 	{
@@ -168,7 +169,7 @@ void CommandDrawHeightmap::Cancel()
 	{
 		Heightmap* heightmap = editor->GetHeightmap();
 		heightmap->Load(undoFilename);
-		editor->UpdateHeightmap(heightmap);
+		editor->UpdateHeightmap(heightmap, updatedRect);
 	}
 	else
 	{
@@ -177,8 +178,8 @@ void CommandDrawHeightmap::Cancel()
 }
 
 
-CommandCopyPasteHeightmap::CommandCopyPasteHeightmap(bool copyHeightmap, bool copyTilemap, Heightmap* originalHeightmap, Heightmap* newHeightmap, Image* originalTilemap, Image* newTilemap, const String& tilemapSavedPath)
-:	HeightmapModificationCommand(COMMAND_UNDO_REDO)
+CommandCopyPasteHeightmap::CommandCopyPasteHeightmap(bool copyHeightmap, bool copyTilemap, Heightmap* originalHeightmap, Heightmap* newHeightmap, Image* originalTilemap, Image* newTilemap, const String& tilemapSavedPath, const Rect& updatedRect)
+:	HeightmapModificationCommand(COMMAND_UNDO_REDO, updatedRect)
 ,	heightmap(copyHeightmap)
 ,	tilemap(copyTilemap)
 {
@@ -227,7 +228,7 @@ void CommandCopyPasteHeightmap::Execute()
 		{
 			Heightmap* heightmap = editor->GetHeightmap();
 			heightmap->Load(heightmapRedoFilename);
-			editor->UpdateHeightmap(heightmap);
+			editor->UpdateHeightmap(heightmap, updatedRect);
 		}
 		else
 		{
@@ -255,7 +256,7 @@ void CommandCopyPasteHeightmap::Cancel()
 		{
 			Heightmap* heightmap = editor->GetHeightmap();
 			heightmap->Load(heightmapUndoFilename);
-			editor->UpdateHeightmap(heightmap);
+			editor->UpdateHeightmap(heightmap, updatedRect);
 		}
 		else
 		{

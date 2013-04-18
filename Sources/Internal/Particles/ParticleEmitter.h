@@ -88,7 +88,8 @@ public:
 	{
 		EMITTER_POINT,
 		EMITTER_RECT,
-		EMITTER_ONCIRCLE,		// 
+		EMITTER_ONCIRCLE,
+		EMITTER_SHOCKWAVE
 	};
 
 	ParticleEmitter();
@@ -327,6 +328,11 @@ public:
 
 	void UpdateEmptyLayerNames();
 	void UpdateLayerNameIfEmpty(ParticleLayer* layer, int32 index);
+
+	/**
+     \brief Returns the total active particles count for the whole effect.
+     */
+	int32 GetActiveParticlesCount();
 
 protected:
 	// Virtual methods which are different for 2D and 3D emitters.

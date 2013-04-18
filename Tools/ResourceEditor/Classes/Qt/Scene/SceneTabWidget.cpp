@@ -10,7 +10,7 @@
 SceneTabWidget::SceneTabWidget(QWidget *parent)
 	: QWidget(parent)
 	, davaUIScreenID(SCREEN_MAIN)
-	, oldScreenID(SCREEN_MAIN + 1)
+	, oldScreenID(SCREEN_MAIN_OLD)
 	, dava3DViewMargin(10)
 	, currentTabIndex(-1)
 	, currentTabID(-1)

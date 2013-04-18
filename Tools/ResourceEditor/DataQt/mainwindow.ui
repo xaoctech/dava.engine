@@ -507,7 +507,6 @@
     <addaction name="separator"/>
     <addaction name="actionRestoreViews"/>
     <addaction name="separator"/>
-    <addaction name="actionSceneInfo"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -765,6 +764,69 @@
     </widget>
    </widget>
   </widget>
+  <widget class="QDockWidget" name="dockSceneInfo">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="windowTitle">
+    <string>Scene Info</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockSceneInfoContent">
+    <layout class="QVBoxLayout" name="verticalLayout_6">
+     <property name="spacing">
+      <number>3</number>
+     </property>
+     <property name="margin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="SceneInfo" name="sceneInfo">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"> QTreeView::branch:has-children:!has-siblings:closed,
+ QTreeView::branch:closed:has-children:has-siblings {
+         border-image: none;
+         image: url(:/QtImages/tree-closed.png);
+ }
+
+ QTreeView::branch:open:has-children:!has-siblings,
+ QTreeView::branch:open:has-children:has-siblings  {
+         border-image: none;
+         image: url(:/QtImages/tree-open.png);
+ }
+</string>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
+       </property>
+       <property name="editTriggers">
+        <set>QAbstractItemView::NoEditTriggers</set>
+       </property>
+       <property name="alternatingRowColors">
+        <bool>false</bool>
+       </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::NoSelection</enum>
+       </property>
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectRows</enum>
+       </property>
+       <property name="indentation">
+        <number>16</number>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
   <action name="actionNewScene">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
@@ -912,7 +974,7 @@
      <normaloff>:/QtIcons/textureeditor.png</normaloff>:/QtIcons/textureeditor.png</iconset>
    </property>
    <property name="text">
-    <string>Texture Convertor</string>
+    <string>Texture Converter</string>
    </property>
   </action>
   <action name="actionIPhone">
@@ -946,11 +1008,6 @@
   <action name="actionRestoreViews">
    <property name="text">
     <string>Restore Views</string>
-   </property>
-  </action>
-  <action name="actionSceneInfo">
-   <property name="text">
-    <string>Scene Info</string>
    </property>
   </action>
   <action name="actionShowSettings">
@@ -1312,6 +1369,11 @@
    <extends>QWidget</extends>
    <header>Scene/scenetabwidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SceneInfo</class>
+   <extends>QTreeView</extends>
+   <header>DockSceneInfo/SceneInfo.h</header>
   </customwidget>
  </customwidgets>
  <resources>
