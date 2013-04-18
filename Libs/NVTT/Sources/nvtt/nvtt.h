@@ -83,6 +83,13 @@ namespace nvtt
 		Format_BC3n = Format_DXT5n,
 		Format_BC4,     // ATI1
 		Format_BC5,     // 3DC, ATI2
+		
+		//ATC formats
+		Format_ATC_RGB,
+		Format_ATC_RGBA_EXPLICIT_ALPHA,
+		Format_ATC_RGBA_INTERPOLATED_ALPHA,
+		
+		Format_COUNT,
 	};
 	
 	/// Quality modes.
