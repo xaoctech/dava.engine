@@ -34,3 +34,9 @@ void MultiCommand::CancelInternal(Command* command)
 	DVASSERT(command);
 	command->Cancel();
 }
+
+Command::eCommandState MultiCommand::GetInternalCommandState(Command* command)
+{
+	DVASSERT(command);
+	return command->State();
+}

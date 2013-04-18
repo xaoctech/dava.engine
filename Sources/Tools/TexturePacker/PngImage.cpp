@@ -97,12 +97,12 @@ void PngImageExt::DrawImage(int32 sx, int32 sy, PngImageExt * image)
 		destData32[sx + (sy + 1 + image->GetHeight())* GetWidth()] = srcData32[(image->GetHeight() - 1) * image->GetWidth()];
 		destData32[(sx + image->GetWidth() + 1) + sy * GetWidth()] = srcData32[(image->GetWidth() - 1)];
 		destData32[(sx + image->GetWidth() + 1) + (sy + 1 + image->GetHeight())* GetWidth()] = srcData32[(image->GetWidth() - 1) + (image->GetHeight() - 1) * image->GetWidth()];
-		for (int32 y = 0; y < image->GetHeight(); ++y)
+		for (uint32 y = 0; y < image->GetHeight(); ++y)
 		{
 			destData32[sx + (sy + y + 1) * GetWidth()] = srcData32[y * image->GetWidth()];
 			destData32[(sx + image->GetWidth() + 1) + (sy + y + 1) * GetWidth()] = srcData32[(image->GetWidth() - 1) + (y * image->GetWidth())];
 		}
-		for (int32 x = 0; x < image->GetWidth(); ++x)
+		for (uint32 x = 0; x < image->GetWidth(); ++x)
 		{
 			destData32[(sx + x + 1) + (sy) * GetWidth()] = srcData32[x];
 			destData32[(sx + x + 1) + (sy + image->GetHeight() + 1) * GetWidth()] = srcData32[x + (image->GetHeight() - 1) * image->GetWidth()];
@@ -112,8 +112,8 @@ void PngImageExt::DrawImage(int32 sx, int32 sy, PngImageExt * image)
 		sy++;
 	}
     
-    for (int32 y = 0; y < image->GetHeight(); ++y)
-		for (int32 x = 0; x < image->GetWidth(); ++x)
+    for (uint32 y = 0; y < image->GetHeight(); ++y)
+		for (uint32 x = 0; x < image->GetWidth(); ++x)
 		{
 			if ((sx + x) < 0)continue;
 			if ((sx + x) >= (int32)GetWidth())continue;
@@ -130,7 +130,7 @@ void PngImageExt::DrawImage(int32 sx, int32 sy, PngImageExt * image)
 bool PngImageExt::IsHorzLineOpaque(int32 y)
 {
 	uint8 * line = GetData() + y * GetWidth() * 4;
-	for (int32 x = 0; x < GetWidth(); ++x)
+	for (uint32 x = 0; x < GetWidth(); ++x)
 		if (line[x * 4 + 3] != 0)
 			return false;
 	return true;
@@ -139,7 +139,7 @@ bool PngImageExt::IsHorzLineOpaque(int32 y)
 bool PngImageExt::IsVertLineOpaque(int32 x)
 {
 	uint8 * vertLine = GetData() + x * 4;
-	for (int32 x = 0; x < GetHeight(); ++x)
+	for (uint32 x = 0; x < GetHeight(); ++x)
 	{
 		if (vertLine[3] != 0)
 			return false;
@@ -152,14 +152,14 @@ bool PngImageExt::IsVertLineOpaque(int32 x)
 void PngImageExt::FindNonOpaqueRect(Rect2i & rect)
 {
 	rect = Rect2i(0, 0, GetWidth(), GetHeight());
-	for (int32 y = 0; y < GetHeight(); ++y)
+	for (uint32 y = 0; y < GetHeight(); ++y)
 		if (IsHorzLineOpaque(y))
 		{
 			rect.y++;
 			rect.dy--;
 		}else break;
 	
-	for (int32 x = 0; x < GetWidth(); ++x)
+	for (uint32 x = 0; x < GetWidth(); ++x)
 		if (IsVertLineOpaque(x))
 		{
 			rect.x++;
@@ -206,9 +206,9 @@ void PngImageExt::DitherAlpha()
     uint8 *ditheredPtr = image->GetData();
     uint8 *dataPtr = GetData();
 
-    for(int32 y = 0; y < GetHeight(); ++y)
+    for(uint32 y = 0; y < GetHeight(); ++y)
     {
-        for(int32 x = 0; x < GetWidth(); ++x)
+        for(uint32 x = 0; x < GetWidth(); ++x)
         {
             if(dataPtr[3])
             {

@@ -280,6 +280,8 @@
 		84221F1016F8B02D000E7D74 /* HangingObjectsCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84221F0E16F8B02D000E7D74 /* HangingObjectsCommands.cpp */; };
 		8471AC8D16A414D900129793 /* ImageSplitter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8471AC8916A414D900129793 /* ImageSplitter.cpp */; };
 		8471AC8E16A414D900129793 /* ImageSplitterScreen.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8471AC8B16A414D900129793 /* ImageSplitterScreen.cpp */; };
+		84EF22CE171EECA900B45031 /* ScrollZoomWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84EF22CD171EECA900B45031 /* ScrollZoomWidget_moc.cpp */; };
+		84EF22D4171EECBD00B45031 /* ScrollZoomWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84EF22D2171EECBD00B45031 /* ScrollZoomWidget.cpp */; };
 		A51FBC516D952C0C5AB72EA1 /* QtGui.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 9B8EE51E126C761F3F797428 /* QtGui.framework */; };
 		A93E34BD17283146D6E95207 /* QtCore.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 419FFB6CDDEB353FF0A4F469 /* QtCore.framework */; };
 		A9F72A8809110F713D328E52 /* OpenAL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 52F4216CE5F81A8073DE30C0 /* OpenAL.framework */; };
@@ -1078,6 +1080,9 @@
 		8471AC8A16A414D900129793 /* ImageSplitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ImageSplitter.h; path = Classes/ImageSplitter/ImageSplitter.h; sourceTree = "<group>"; };
 		8471AC8B16A414D900129793 /* ImageSplitterScreen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ImageSplitterScreen.cpp; path = Classes/ImageSplitter/ImageSplitterScreen.cpp; sourceTree = "<group>"; };
 		8471AC8C16A414D900129793 /* ImageSplitterScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ImageSplitterScreen.h; path = Classes/ImageSplitter/ImageSplitterScreen.h; sourceTree = "<group>"; };
+		84EF22CD171EECA900B45031 /* ScrollZoomWidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScrollZoomWidget_moc.cpp; sourceTree = "<group>"; };
+		84EF22D2171EECBD00B45031 /* ScrollZoomWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScrollZoomWidget.cpp; sourceTree = "<group>"; };
+		84EF22D3171EECBD00B45031 /* ScrollZoomWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScrollZoomWidget.h; sourceTree = "<group>"; };
 		9B8EE51E126C761F3F797428 /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework"; sourceTree = "<absolute>"; };
 		C18521A716831F84003D4A6F /* BaseParticleEditorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseParticleEditorNode.cpp; sourceTree = "<group>"; };
 		C18521A816831F84003D4A6F /* BaseParticleEditorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseParticleEditorNode.h; sourceTree = "<group>"; };
@@ -2315,6 +2320,8 @@
 		E838D4DE16AFFED4006F1721 /* DockParticleEditor */ = {
 			isa = PBXGroup;
 			children = (
+				84EF22D2171EECBD00B45031 /* ScrollZoomWidget.cpp */,
+				84EF22D3171EECBD00B45031 /* ScrollZoomWidget.h */,
 				E8DD07BD16B054210013F115 /* BaseParticleEditorContentWidget.cpp */,
 				E8DD07BE16B054210013F115 /* BaseParticleEditorContentWidget.h */,
 				E838D4DF16AFFED4006F1721 /* EmitterLayerWidget.cpp */,
@@ -2600,6 +2607,7 @@
 		E838D79516B00511006F1721 /* DockParticleEditor */ = {
 			isa = PBXGroup;
 			children = (
+				84EF22CD171EECA900B45031 /* ScrollZoomWidget_moc.cpp */,
 				178A9B761716EB8F006BB1F7 /* ParticleEffectPropertiesWidget_moc.cpp */,
 				E838D79616B00511006F1721 /* EmitterLayerWidget_moc.cpp */,
 				E838D79716B00511006F1721 /* GradientPickerWidget_moc.cpp */,
@@ -3454,6 +3462,8 @@
 				178A9B771716EB8F006BB1F7 /* ParticleEffectPropertiesWidget_moc.cpp in Build Sources */,
 				E88F2FFC171C801600510B78 /* SceneInfo.cpp in Build Sources */,
 				E88F3002171C85A000510B78 /* SceneInfo_moc.cpp in Build Sources */,
+				84EF22CE171EECA900B45031 /* ScrollZoomWidget_moc.cpp in Build Sources */,
+				84EF22D4171EECBD00B45031 /* ScrollZoomWidget.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

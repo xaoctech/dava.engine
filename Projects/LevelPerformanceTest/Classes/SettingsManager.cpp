@@ -4,8 +4,8 @@
 #define ANGLE_SPEED 80.f
 #define VELOCITY 40.f
 #define LANDSCAPE_NODE_NAME "Landscape"
-#define X 3
-#define Y 4
+#define XSIZE 100.f
+#define YSIZE 100.f
 #define MIN_FPS 15
 #define MIN_FPS_SECTOR_COUNT 10
 #define COLOR_TRANSPARENCY 127
@@ -15,8 +15,8 @@ SettingsManager sm;
 void SettingsManager::InitWithFile(const FilePath &filename)
 {
 	landscapeNodeName = LANDSCAPE_NODE_NAME;
-	landscapePartitioning.x = X;
-	landscapePartitioning.y = Y;
+	landscapePartitioningSize.x = XSIZE;
+	landscapePartitioningSize.y = YSIZE;
 	cameraElevation = H;
 	cameraRotationSpeed = ANGLE_SPEED;
 	cameraMovementSpeed = VELOCITY;
@@ -41,17 +41,10 @@ void SettingsManager::InitWithFile(const FilePath &filename)
                 landscapeNodeName = node->AsString();
             }
             
-            node = rootNode->Get("landscapePartitioning");
+            node = rootNode->Get("landscapePartitioningSize");
             if(node && node->GetCount() == 2)
             {
-                YamlNode* x = node->Get(0);
-                YamlNode* y = node->Get(1);
-                
-                if(x && y)
-                {
-                    landscapePartitioning.x = x->AsInt();
-                    landscapePartitioning.y = y->AsInt();
-                }
+				landscapePartitioningSize = node->AsVector2();
             }
             
             node = rootNode->Get("cameraElevation");
@@ -125,9 +118,9 @@ void SettingsManager::InitWithFile(const FilePath &filename)
     SafeRelease(parser);
 }
 
-Point2i SettingsManager::GetLandscapePartitioning() const
+Vector2 SettingsManager::GetLandscapePartitioningSize() const
 {
-	return landscapePartitioning;
+	return landscapePartitioningSize;
 }
 
 const String SettingsManager::GetLandscapeNodeName() const

@@ -278,9 +278,12 @@ void BackGroundPropertyGridWidget::HandleDrawTypeComboBox()
 
 	int selectedIndex = ui->drawTypeComboBox->currentIndex();
 	UIControlBackground::eDrawType drawType = BackgroundGridWidgetHelper::GetDrawType(selectedIndex);
+	
 	bool lrState = false;
 	bool tbState = false;
 	bool modificationComboBoxState = true;
+	bool alignComboBoxState = false;
+	
 	switch (drawType)
 	{
 		case UIControlBackground::DRAW_STRETCH_HORIZONTAL:
@@ -298,9 +301,15 @@ void BackGroundPropertyGridWidget::HandleDrawTypeComboBox()
 			tbState = true;
 			modificationComboBoxState = false;
 			break;
+		case UIControlBackground::DRAW_ALIGNED:
+			alignComboBoxState = true;
+			break;
+		default:
+			break;
 	}
 
 	ui->lrSpinBox->setEnabled(lrState);
 	ui->tbSpinBox->setEnabled(tbState);
 	ui->modificationComboBox->setEnabled(modificationComboBoxState);
+	ui->alignComboBox->setEnabled(alignComboBoxState);
 }

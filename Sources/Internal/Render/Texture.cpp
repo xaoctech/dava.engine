@@ -236,13 +236,11 @@ void Texture::TexImage(int32 level, uint32 width, uint32 height, const void * _d
 
     RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
 
-
 	DVASSERT((0 <= format) && (format < FORMAT_COUNT));
 	
-
     if(FORMAT_INVALID != format)
     {
-        if(IsCompressedFormat(format))
+		if (IsCompressedFormat(format))
         {
             RENDER_VERIFY(glCompressedTexImage2D(GL_TEXTURE_2D, level, pixelDescriptors[format].internalformat, width, height, 0, dataSize, _data));
         }
@@ -625,7 +623,10 @@ bool Texture::IsCompressedFormat(PixelFormat format)
         if (FORMAT_PVR2 == format ||
 			FORMAT_PVR4 == format ||
 			(format >= FORMAT_DXT1 && format <= FORMAT_DXT5NM) ||
-			FORMAT_ETC1 == format)
+			FORMAT_ETC1 == format ||
+			FORMAT_ATC_RGB == format ||
+			FORMAT_ATC_RGBA_EXPLICIT_ALPHA == format ||
+			FORMAT_ATC_RGBA_INTERPOLATED_ALPHA == format)
         {
             retValue = true;
         }
@@ -1417,6 +1418,25 @@ void Texture::InitializePixelFormatDescriptors()
 	SetPixelDescription(FORMAT_ETC1,     "ETC1", 8, GL_UNSIGNED_BYTE, GL_ETC1_RGB8_OES, GL_ETC1_RGB8_OES);
 #else
 	SetPixelDescription(FORMAT_ETC1,     "ETC1", 8, 0, 0, 0);
+#endif
+	
+	
+#if defined (GL_ATC_RGB_AMD)
+	SetPixelDescription(FORMAT_ATC_RGB, "ATC_RGB", 4, GL_UNSIGNED_BYTE, GL_ATC_RGB_AMD, GL_ATC_RGB_AMD);
+#else
+	SetPixelDescription(FORMAT_ATC_RGB, "ATC_RGB", 4, 0, 0, 0);
+#endif
+	
+#if defined (GL_ATC_RGBA_EXPLICIT_ALPHA_AMD)
+	SetPixelDescription(FORMAT_ATC_RGBA_EXPLICIT_ALPHA, "ATC_RGBA_E", 8, GL_UNSIGNED_BYTE, GL_ATC_RGBA_EXPLICIT_ALPHA_AMD, GL_ATC_RGBA_EXPLICIT_ALPHA_AMD);
+#else
+	SetPixelDescription(FORMAT_ATC_RGBA_EXPLICIT_ALPHA, "ATC_RGBA_E", 8, 0, 0, 0);
+#endif
+
+#if defined (GL_ATC_RGBA_INTERPOLATED_ALPHA_AMD)
+	SetPixelDescription(FORMAT_ATC_RGBA_INTERPOLATED_ALPHA, "ATC_RGBA_I", 8, GL_UNSIGNED_BYTE, GL_ATC_RGBA_INTERPOLATED_ALPHA_AMD, GL_ATC_RGBA_INTERPOLATED_ALPHA_AMD);
+#else
+	SetPixelDescription(FORMAT_ATC_RGBA_INTERPOLATED_ALPHA, "ATC_RGBA_I", 8, 0, 0, 0);
 #endif
 }
 

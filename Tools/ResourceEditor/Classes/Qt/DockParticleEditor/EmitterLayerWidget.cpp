@@ -293,7 +293,7 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 
 	//LAYER_SIZE, LAYER_SIZE_VARIATION, LAYER_SIZE_OVER_LIFE,
 	Vector<QColor> colors;
-	colors.push_back(Qt::blue); colors.push_back(Qt::darkGreen);
+	colors.push_back(Qt::red); colors.push_back(Qt::darkGreen);
 	Vector<QString> legends;
 	legends.push_back("size X"); legends.push_back("size Y");
 	sizeTimeLine->Init(layer->startTime, lifeTime, updateMinimized, true);
