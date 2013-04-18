@@ -16,12 +16,13 @@
 #include <QTimer>
 
 #include <DAVAEngine.h>
+#include "ScrollZoomWidget.h"
 
 using namespace DAVA;
 
 class ParticlesCountWidget;
 class ParticlesAreaWidget;
-class ParticleTimeLineWidget : public QWidget
+class ParticleTimeLineWidget : public ScrollZoomWidget
 {
 	Q_OBJECT
 	friend class ParticlesExtraInfoWidget;
@@ -43,7 +44,6 @@ public:
 	typedef DAVA::Map<uint32, LINE> LINE_MAP;
 
 signals:
-	void ValueChanged();
 	void ChangeVisible(bool visible);
 	
 protected slots:
@@ -60,7 +60,7 @@ protected:
 	virtual void mousePressEvent(QMouseEvent *);
 	virtual void mouseReleaseEvent(QMouseEvent *);
 	virtual void mouseDoubleClickEvent(QMouseEvent *);
-	
+
 private:
 	bool GetLineRect(uint32 id, QRect& startPoint, QRect& endPoint) const;
 	QRect GetGraphRect() const;
@@ -72,24 +72,24 @@ private:
 
 	void OnValueChanged(int lineId);
 	void UpdateSizePolicy();
-	QString float2QString(float32 value) const;
-	
-	// Handle situation when the Particle Emitter Node is selected (including
-	// case when separate Layer node is selected.
-	void HandleNodeSelected(Entity* node, ParticleLayer* layer);
 
-private:
 	void UpdateLayersExtraInfoPosition();
 	void UpdateLayersExtraInfoValues();
 
+	// Handle situation when the Particle Emitter Node is selected (including
+	// case when separate Layer node is selected.
+	void HandleNodeSelected(Entity* node, ParticleLayer* layer);
+	
+	virtual QRect GetSliderRect() const;
+	virtual QRect GetIncreaseRect() const;
+	virtual QRect GetScaleRect() const;
+	virtual QRect GetDecreaseRect() const;
+
+private:
 	// Get the width/height for particle counter label.
 	void GetParticlesCountWidthHeight(const LINE& line, int32& width, int32& height);
 
 	LINE_MAP lines;
-
-	QBrush backgroundBrush;
-	float32 minTime;
-	float32 maxTime;
 	QFont nameFont;
 	
 	QPoint selectedPoint;
@@ -100,13 +100,6 @@ private:
 	ParticlesCountWidget* countWidget;
 	ParticlesAreaWidget* areaWidget;
 
-	enum eGridStyle
-	{
-		GRID_STYLE_ALL_POSITION,
-		GRID_STYLE_LIMITS
-	};
-	eGridStyle gridStyle;
-	
 	class SetPointValueDlg: public QDialog
 	{
 		//Q_OBJECT
