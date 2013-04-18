@@ -419,12 +419,16 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 					{
 						isDrag = true;
 						if (InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SHIFT))
-						{//copy object
+						{
 							originalNode = scene->GetProxy();
+
+							//create temporary node to calculate transform
 							modifiedNode = originalNode->Clone();
 							originalNode->GetParent()->AddNode(modifiedNode);
 							SelectNode(modifiedNode);
 							selection = modifiedNode;
+
+							//store original transform
 							transformBeforeModification = modifiedNode->GetLocalTransform();
 						}
 
@@ -482,16 +486,25 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 			inTouch = false;
 			if (isDrag)
 			{
+				// originalNode should be non-zero only when clone node
 				if (originalNode)
 				{
+					// Get final transform from temporary node
+					Matrix4 transform = modifiedNode->GetLocalTransform();
+
+					// Remove temporary node
+					RemoveSelectedSGNode();
+					SafeRelease(modifiedNode);
+					
 					CommandCloneAndTransform* cmd = new CommandCloneAndTransform(originalNode,
-																				 modifiedNode->GetLocalTransform(),
+																				 transform,
 																				 this,
 																				 scene->collisionWorld);
 					CommandsManager::Instance()->ExecuteAndRelease(cmd);
 					originalNode = NULL;
-					RemoveNode(modifiedNode);
-					SafeRelease(modifiedNode);
+
+					// update selection to newly created node
+					selection = scene->GetProxy();
 				}
 				else
 				{

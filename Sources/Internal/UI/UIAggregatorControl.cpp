@@ -7,6 +7,7 @@
 //
 
 #include "UIAggregatorControl.h"
+#include "FileSystem/FileSystem.h"
 
 using namespace DAVA;
 
@@ -44,8 +45,14 @@ void UIAggregatorControl::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loade
 	if (pathNode)
 	{
 		aggregatorPath = FilePath(pathNode->AsString());
+		String aggregatorFileName = aggregatorPath.GetFilename();
+
+		aggregatorPath = loader->GetCurrentPath() + FilePath(aggregatorFileName);
+
 		UIYamlLoader loader;
 		loader.Load(this, aggregatorPath);
+
+		aggregatorPath = FilePath(aggregatorFileName);
 	}
 }
 

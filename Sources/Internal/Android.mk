@@ -78,6 +78,7 @@ LOCAL_LDLIBS += $(LIBS_PATH)/libyaml_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libmongodb_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libdxt_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libcurl_android.a
+LOCAL_LDLIBS += $(LIBS_PATH)/libTextureConverter_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libiconv_android.so
 
 # set exported used libs

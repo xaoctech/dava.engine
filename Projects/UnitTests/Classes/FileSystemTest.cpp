@@ -55,7 +55,7 @@ void FileSystemTest::ResTestFunction(PerfFuncData * data)
                 FilePath pathname = files.GetPathname(ifi);
 
                 File *file = File::Create(pathname, File::OPEN | File::READ);
-                TEST_VERIFY(file);
+                TEST_VERIFY(file != NULL);
 
                 if(!file) continue;
                 
@@ -118,7 +118,7 @@ void FileSystemTest::DocTestFunctionCheckCopy(PerfFuncData * data)
                 FilePath pathname = files.GetPathname(ifi);
                 
                 File *file = File::Create(pathname, File::OPEN | File::READ);
-                TEST_VERIFY(file);
+                TEST_VERIFY(file != NULL);
                 
                 if(!file) continue;
                 

@@ -491,6 +491,18 @@
     <string>Save All</string>
    </property>
   </action>
+  <action name="actionImport_Platform">
+   <property name="icon">
+    <iconset resource="../Data/icons.qrc">
+     <normaloff>:/Icons/079import.png</normaloff>:/Icons/079import.png</iconset>
+   </property>
+   <property name="text">
+    <string>Import Platform</string>
+   </property>
+   <property name="toolTip">
+    <string>Import existing platform</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>

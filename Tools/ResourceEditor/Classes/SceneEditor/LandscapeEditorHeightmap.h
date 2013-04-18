@@ -87,8 +87,13 @@ protected:
     void CreateTilemaskImage();
     Image *CreateToolImage(int32 sideSize);
 
+	Rect updatedRectAccumulator;
 	Heightmap* oldHeightmap;
 	Image* oldTilemap;
+
+	void AddRectToAccumulator(const Rect& rect);
+	void ResetAccumulatorRect();
+	Rect GetUpdatedRect();
 };
 
 

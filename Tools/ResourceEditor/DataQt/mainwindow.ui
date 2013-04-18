@@ -784,6 +784,12 @@
      </property>
      <item>
       <widget class="SceneInfo" name="sceneInfo">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
        <property name="styleSheet">
         <string notr="true"> QTreeView::branch:has-children:!has-siblings:closed,
  QTreeView::branch:closed:has-children:has-siblings {
@@ -798,11 +804,20 @@
  }
 </string>
        </property>
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
+       </property>
        <property name="editTriggers">
-        <set>QAbstractItemView::AllEditTriggers</set>
+        <set>QAbstractItemView::NoEditTriggers</set>
        </property>
        <property name="alternatingRowColors">
-        <bool>true</bool>
+        <bool>false</bool>
+       </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::NoSelection</enum>
+       </property>
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectRows</enum>
        </property>
        <property name="indentation">
         <number>16</number>
@@ -959,7 +974,7 @@
      <normaloff>:/QtIcons/textureeditor.png</normaloff>:/QtIcons/textureeditor.png</iconset>
    </property>
    <property name="text">
-    <string>Texture Convertor</string>
+    <string>Texture Converter</string>
    </property>
   </action>
   <action name="actionIPhone">

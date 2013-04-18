@@ -173,7 +173,7 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 	}
 	emitterEmissionVector->Init(minTime, maxTime, minTimeLimit, maxTimeLimit, updateMinimize, true);
 	Vector<QColor> vectorColors;
-	vectorColors.push_back(Qt::blue); vectorColors.push_back(Qt::darkGreen); vectorColors.push_back(Qt::red);
+	vectorColors.push_back(Qt::red); vectorColors.push_back(Qt::darkGreen); vectorColors.push_back(Qt::blue);
 	Vector<QString> vectorLegends;
 	vectorLegends.push_back("emission vector: x"); vectorLegends.push_back("emission vector: y"); vectorLegends.push_back("emission vector: z");
 	emitterEmissionVector->AddLines(PropLineWrapper<Vector3>(emitter->emissionVector).GetProps(), vectorColors, vectorLegends);
@@ -199,7 +199,7 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 	emitterSize->Init(minTime, maxTime, minTimeLimit, maxTimeLimit, updateMinimize, true);
 	emitterSize->SetMinLimits(0);
 	Vector<QColor> sizeColors;
-	sizeColors.push_back(Qt::blue); sizeColors.push_back(Qt::darkGreen); sizeColors.push_back(Qt::red);
+	sizeColors.push_back(Qt::red); sizeColors.push_back(Qt::darkGreen); sizeColors.push_back(Qt::blue);
 	Vector<QString> sizeLegends;
 	sizeLegends.push_back("size: x"); sizeLegends.push_back("size: y"); sizeLegends.push_back("size: z");
 	emitterSize->AddLines(PropLineWrapper<Vector3>(emitter->size).GetProps(), sizeColors, sizeLegends);

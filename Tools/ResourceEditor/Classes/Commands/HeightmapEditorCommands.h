@@ -18,7 +18,7 @@ protected:
 class HeightmapModificationCommand: public Command
 {
 public:
-	HeightmapModificationCommand(Command::eCommandType type);
+	HeightmapModificationCommand(Command::eCommandType type, const Rect& updatedRect);
 
 protected:
 	Rect updatedRect;
@@ -27,13 +27,14 @@ protected:
 	static FilePath SaveHeightmap(Heightmap* heightmap);
 	static LandscapeEditorHeightmap* GetEditor();
 	static void UpdateLandscapeHeightmap(const FilePath & filename);
-	static Rect GetDifferenceRect(Heightmap* originalHeighmap, Heightmap* modifiedHeighmap);
 };
 
 class CommandDrawHeightmap: public HeightmapModificationCommand
 {
 public:
-	CommandDrawHeightmap(Heightmap* originalHeightmap, Heightmap* newHeightmap);
+	CommandDrawHeightmap(Heightmap* originalHeightmap,
+						 Heightmap* newHeightmap,
+						 const Rect& updatedRect);
 	virtual ~CommandDrawHeightmap();
 	
 protected:
@@ -47,7 +48,10 @@ protected:
 class CommandCopyPasteHeightmap: public HeightmapModificationCommand
 {
 public:
-	CommandCopyPasteHeightmap(bool copyHeightmap, bool copyTilemap, Heightmap* originalHeightmap, Heightmap* newHeightmap, Image* originalTilemap, Image* newTilemap, const FilePath& tilemapSavedPath);
+	CommandCopyPasteHeightmap(bool copyHeightmap, bool copyTilemap,
+							  Heightmap* originalHeightmap, Heightmap* newHeightmap,
+							  Image* originalTilemap, Image* newTilemap,
+							  const FilePath& tilemapSavedPath, const Rect& updatedRect);
 	virtual ~CommandCopyPasteHeightmap();
 
 protected:

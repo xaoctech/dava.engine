@@ -49,3 +49,23 @@ QString IconHelper::GetIconPathForUIControl(DAVA::UIControl *uiControl)
 
 	return GetIconPathForClassName(className);
 }
+
+QString IconHelper::GetPlatformIconPath()
+{
+	return ":/Icons/079i.png";
+}
+
+QString IconHelper::GetScreenIconPath()
+{
+	return ":/Icons/068i.png";
+}
+
+QString IconHelper::GetAggregatorIconPath()
+{
+	return ":/Icons/170.png";
+}
+
+QString IconHelper::GetIgnoreIconPath()
+{
+	return ":/Icons/101.png";
+}
