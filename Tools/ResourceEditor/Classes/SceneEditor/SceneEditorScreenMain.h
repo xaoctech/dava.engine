@@ -200,7 +200,6 @@ public: //For Qt integration
 	void VisibilityToolSetArea();
 	void VisibilityToolSetAreaSize(uint32 size);
     
-    void ToggleSceneInfo();
     void ShowSettings();
     
     void ProcessBeast();

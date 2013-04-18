@@ -37,7 +37,7 @@ public:
     virtual void TextureDidChanged(const String &forKey);
 
 	Heightmap* GetHeightmap();
-	void UpdateHeightmap(Heightmap* heightmap);
+	void UpdateHeightmap(Heightmap* heightmap, Rect rect = Rect(-1, -1, -1, -1));
 
 	virtual void UpdateLandscapeTilemap(Texture* texture);
 protected:
@@ -87,8 +87,13 @@ protected:
     void CreateTilemaskImage();
     Image *CreateToolImage(int32 sideSize);
 
+	Rect updatedRectAccumulator;
 	Heightmap* oldHeightmap;
 	Image* oldTilemap;
+
+	void AddRectToAccumulator(const Rect& rect);
+	void ResetAccumulatorRect();
+	Rect GetUpdatedRect();
 };
 
 

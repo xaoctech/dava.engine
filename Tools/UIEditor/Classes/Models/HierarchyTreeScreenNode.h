@@ -54,10 +54,7 @@ public:
 	// Access to the screen unsaved changes counter.
 	int32 GetUnsavedChanges() const {return unsavedChangesCounter;};
 
-	// Modifiers for the unsaved changes counter.
-	void IncrementUnsavedChanges();
-	void DecrementUnsavedChanges();
-	void ResetUnsavedChanges();
+	virtual bool IsNeedSave() const;
 
 protected:
 	void CombineRectWithChild(Rect& rect) const;
@@ -72,8 +69,6 @@ protected:
 	float scale;
 	int posX;
 	int posY;
-	
-	int32 unsavedChangesCounter;
 };
 
 #endif /* defined(__UIEditor__HierarchyTreeScreenNode__) */

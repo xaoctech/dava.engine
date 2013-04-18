@@ -743,12 +743,6 @@ bool SceneEditorScreenMain::TileMaskEditorEnabled()
 }
 
 
-void SceneEditorScreenMain::ToggleSceneInfo()
-{
-    BodyItem *iBody = FindCurrentBody();
-    iBody->bodyControl->ToggleSceneInfo();
-}
-
 void SceneEditorScreenMain::ShowSettings()
 {
     if(!settingsDialog->GetParent())
