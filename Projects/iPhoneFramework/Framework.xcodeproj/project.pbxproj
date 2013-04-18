@@ -27,6 +27,7 @@
 		840ED3C916D506F900D2BA6C /* DPIHelperiOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 840ED3C816D506F900D2BA6C /* DPIHelperiOS.mm */; };
 		840ED3CB16D5070400D2BA6C /* DPIHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 840ED3CA16D5070400D2BA6C /* DPIHelper.h */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
+		C1DC1F081717FD3C001C5EC3 /* libTextureConverter_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C1DC1F071717FD3C001C5EC3 /* libTextureConverter_macos.a */; };
 		CC247FF116D69F1700183D40 /* DVAssertMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC247FEC16D69F1700183D40 /* DVAssertMessage.cpp */; };
 		CC247FF216D69F1700183D40 /* DVAssertMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = CC247FED16D69F1700183D40 /* DVAssertMessage.h */; };
 		CC247FF316D69F1700183D40 /* DVAssertMessageApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = CC247FEE16D69F1700183D40 /* DVAssertMessageApple.mm */; };
@@ -680,6 +681,7 @@
 		840ED3C816D506F900D2BA6C /* DPIHelperiOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DPIHelperiOS.mm; sourceTree = "<group>"; };
 		840ED3CA16D5070400D2BA6C /* DPIHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DPIHelper.h; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
+		C1DC1F071717FD3C001C5EC3 /* libTextureConverter_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libTextureConverter_macos.a; path = ../../Libs/libs/libTextureConverter_macos.a; sourceTree = "<group>"; };
 		CC247FEC16D69F1700183D40 /* DVAssertMessage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DVAssertMessage.cpp; sourceTree = "<group>"; };
 		CC247FED16D69F1700183D40 /* DVAssertMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DVAssertMessage.h; sourceTree = "<group>"; };
 		CC247FEE16D69F1700183D40 /* DVAssertMessageApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DVAssertMessageApple.mm; sourceTree = "<group>"; };
@@ -1303,6 +1305,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C1DC1F081717FD3C001C5EC3 /* libTextureConverter_macos.a in Frameworks */,
 				E81F2B0516BFF65700C4545E /* libcurl_ios.a in Frameworks */,
 				496526D0167F173400107C70 /* libdxt_ios.a in Frameworks */,
 				0224B74A1598B40100CDEF9E /* libogg_ios.a in Frameworks */,
@@ -1332,6 +1335,7 @@
 		0867D691FE84028FC02AAC07 /* Framework */ = {
 			isa = PBXGroup;
 			children = (
+				C1DC1F071717FD3C001C5EC3 /* libTextureConverter_macos.a */,
 				E81F2B0416BFF65700C4545E /* libcurl_ios.a */,
 				496526CF167F173400107C70 /* libdxt_ios.a */,
 				E80D2FB2164D51A100C13D70 /* libbz2.dylib */,
