@@ -75,11 +75,16 @@ void ParticleEmitter3D::PrepareEmitterParameters(Particle * particle, float32 ve
             lineDirection = Vector3(size->GetValue(time).x * rand05_x, size->GetValue(time).y * rand05_y, size->GetValue(time).z * rand05_z);
         particle->position = tempPosition + lineDirection;
     }
+	else if (emitterType == EMITTER_ONCIRCLE)
+	{
+		// here just set particle position
+		particle->position = tempPosition;
+	}
 
-    if (emitterType == EMITTER_ONCIRCLE)
+    if (emitterType == EMITTER_SHOCKWAVE)
     {
-		// For "Circle" emitters the calculation is different.
-		PrepareEmitterParametersOnCircle(particle, velocity, emitIndex, tempPosition, rotationMatrix);
+		// For "Shockwave" emitters the calculation is different.
+		PrepareEmitterParametersShockwave(particle, velocity, emitIndex, tempPosition, rotationMatrix);
 	}
 	else
 	{
@@ -94,7 +99,7 @@ void ParticleEmitter3D::PrepareEmitterParameters(Particle * particle, float32 ve
 	}
 }
 	
-void ParticleEmitter3D::PrepareEmitterParametersOnCircle(Particle * particle, float32 velocity,
+void ParticleEmitter3D::PrepareEmitterParametersShockwave(Particle * particle, float32 velocity,
 														 int32 emitIndex, const Vector3& tempPosition,
 														 const Matrix3& rotationMatrix)
 {
@@ -204,7 +209,14 @@ void ParticleEmitter3D::PrepareEmitterParametersGeneric(Particle * particle, flo
 		particle->direction.y = 0.f;
 	if (particle->direction.z <= EPSILON && particle->direction.z >= -EPSILON)
 		particle->direction.z = 0.f;
-
+	
+	if (emitterType == EMITTER_ONCIRCLE)
+	{
+		qvq1_v.Normalize();
+		if(radius)
+			particle->position += qvq1_v * radius->GetValue(time);
+	}
+	
 	// Yuri Coder, 2013/03/26. After discussion with Ivan it appears this angle
 	// calculation is incorrect. TODO: return to this code later on.
     
