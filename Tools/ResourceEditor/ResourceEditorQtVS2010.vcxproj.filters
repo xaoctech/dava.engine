@@ -1590,6 +1590,12 @@
     <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticleEffectPropertiesWidget_moc.cpp">
       <Filter>QtGenerated\DockParticleEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\DockParticleEditor\ScrollZoomWidget.cpp">
+      <Filter>Sources\Qt\DockParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\ScrollZoomWidget_moc.cpp">
+      <Filter>QtGenerated\DockParticleEditor</Filter>
+    </ClCompile>
     <ClCompile Include="Classes\Qt\DockSceneInfo\SceneInfo.cpp">
       <Filter>Sources\Qt\DockSceneInfo</Filter>
     </ClCompile>
@@ -2796,6 +2802,9 @@
       <Filter>Sources\Qt\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockParticleEditor\ParticleEffectPropertiesWidget.h">
+      <Filter>Sources\Qt\DockParticleEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockParticleEditor\ScrollZoomWidget.h">
       <Filter>Sources\Qt\DockParticleEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockSceneInfo\SceneInfo.h">

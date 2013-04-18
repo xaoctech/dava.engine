@@ -25,6 +25,7 @@ ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent
 	emitterType->addItem("Point");
 	emitterType->addItem("Box");
 	emitterType->addItem("Circle");
+	emitterType->addItem("Shockwave");
 	emitterTypeHBox->addWidget(emitterType);
 	mainLayout->addLayout(emitterTypeHBox);
 	connect(emitterType, SIGNAL(currentIndexChanged(int)), this, SLOT(OnValueChanged()));
