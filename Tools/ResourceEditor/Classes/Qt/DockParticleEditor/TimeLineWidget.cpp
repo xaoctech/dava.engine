@@ -728,7 +728,6 @@ QRect TimeLineWidget::GetGraphRect() const
 void TimeLineWidget::mousePressEvent(QMouseEvent *event)
 {
 	QWidget::mousePressEvent(event);
-	setFocus();
 		
 	//check click on draw color rect
 	if (event->button()==Qt::LeftButton)
