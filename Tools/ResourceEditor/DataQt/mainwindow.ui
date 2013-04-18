@@ -974,7 +974,7 @@
      <normaloff>:/QtIcons/textureeditor.png</normaloff>:/QtIcons/textureeditor.png</iconset>
    </property>
    <property name="text">
-    <string>Texture Convertor</string>
+    <string>Texture Converter</string>
    </property>
   </action>
   <action name="actionIPhone">

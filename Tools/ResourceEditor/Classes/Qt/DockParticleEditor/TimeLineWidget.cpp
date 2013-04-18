@@ -74,8 +74,8 @@ void TimeLineWidget::paintEvent(QPaintEvent * e)
 		{
 			LINES_MAP::iterator iter = lines.begin();
 			QString legend = iter->second.legend;
-				
-			painter.setPen(iter->second.color);
+
+			painter.setPen(Qt::blue);
 			
 			QRect textRect = rect();
 			textRect.adjust(3, 0, 0, 0);

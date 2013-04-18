@@ -32,6 +32,7 @@
 #include "Platform/SystemTimer.h"
 #include "UI/UIControl.h"
 #include "FileSystem/YamlParser.h"
+#include "FileSystem/FileSystem.h"
 #include "Render/2D/GraphicsFont.h"
 #include "Render/2D/FontManager.h"
 
@@ -42,6 +43,8 @@ UIYamlLoader::UIYamlLoader() :
 {
 	// Default mode is to ASSERT if custom control isn't found.
 	assertIfCustomControlNotFound = true;
+
+	currentPath = "";
 }
 
 int32 UIYamlLoader::GetDrawTypeFromNode(YamlNode * drawTypeNode)
@@ -288,7 +291,10 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const String & yamlPathn
 		Logger::Error("Failed to open yaml file: %s", yamlPathname.c_str());
 		return;
 	}
-	
+
+	String filename;
+	FileSystem::SplitPath(yamlPathname, currentPath, filename);
+
 	YamlNode * rootNode = parser->GetRootNode();
     if (!rootNode)
     {
@@ -567,6 +573,11 @@ YamlNode* UIYamlLoader::SaveToNode(UIControl * parentControl, YamlNode * parentN
 void UIYamlLoader::SetAssertIfCustomControlNotFound(bool value)
 {
 	this->assertIfCustomControlNotFound = value;
+}
+
+String UIYamlLoader::GetCurrentPath() const
+{
+	return currentPath;
 }
 	
 }
