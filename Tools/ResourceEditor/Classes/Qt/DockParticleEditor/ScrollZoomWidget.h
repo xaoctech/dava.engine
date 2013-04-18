@@ -32,6 +32,7 @@
 #endif
 
 using namespace DAVA;
+#include <qpainter.h>
 
 class ScrollZoomWidget : public QWidget
 {
@@ -49,7 +50,7 @@ signals:
 	void ValueChanged();
 
 protected:
-	virtual void paintEvent(QPaintEvent *);
+	virtual void paintEvent(QPaintEvent *,QPainter& painter );
 	virtual void mouseMoveEvent(QMouseEvent *);
 	virtual void mousePressEvent(QMouseEvent *);
 	virtual void mouseReleaseEvent(QMouseEvent *);

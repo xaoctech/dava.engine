@@ -260,7 +260,7 @@ void TimeLineWidget::paintEvent(QPaintEvent * e)
 		painter.fillRect(GetPointRect(GetDrawPoint(newPoint)), pointBrush);
 	}
 
-	ScrollZoomWidget::paintEvent(e);
+	ScrollZoomWidget::paintEvent(e, painter);
 }
 
 void TimeLineWidget::DrawLine(QPainter* painter, uint32 lineId)
@@ -1150,7 +1150,7 @@ void TimeLineWidget::UpdateSizePolicy()
 		} break;
 		case SIZE_STATE_NORMAL:
 		{
-			setMinimumHeight(GetLegendHeight() + GRAPH_HEIGHT + SCROLL_BAR_HEIGHT);
+			setMinimumHeight(GetLegendHeight() + GRAPH_HEIGHT + SCROLL_BAR_HEIGHT );
 			setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 			
 			horizontalScrollBar->setEnabled(true);

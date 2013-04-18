@@ -434,7 +434,7 @@ void ParticleTimeLineWidget::paintEvent(QPaintEvent *e)
 		UpdateLayersExtraInfoPosition();
 	}
 
-	ScrollZoomWidget::paintEvent(e);
+	ScrollZoomWidget::paintEvent(e, painter);
 }
 
 bool ParticleTimeLineWidget::GetLineRect(uint32 id, QRect& startRect, QRect& endRect) const
