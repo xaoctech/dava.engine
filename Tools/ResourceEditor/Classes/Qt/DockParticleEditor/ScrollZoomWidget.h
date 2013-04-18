@@ -56,8 +56,6 @@ protected:
 	virtual void mouseReleaseEvent(QMouseEvent *);
 
 	virtual void wheelEvent(QWheelEvent*);
-	virtual void keyPressEvent(QKeyEvent *event);
-	virtual void keyReleaseEvent (QKeyEvent *);
 
 	virtual void UpdateSizePolicy()			= 0;
 	virtual QRect GetGraphRect() const		= 0;
@@ -115,7 +113,6 @@ protected:
 	eGridStyle		gridStyle;
 	
 	QBrush			backgroundBrush;
-	bool			isCtrlPressed;
 	float32			scale;
 	float32			initialTimeInterval;
 
