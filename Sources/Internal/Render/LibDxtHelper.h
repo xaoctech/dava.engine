@@ -18,7 +18,7 @@ public:
 	static bool IsDxtFile(File * file);
 
 	//input data only in RGBA8888
-	static bool WriteDxtFile(const String & fileName, int32 width, int32 height, uint8 * data, PixelFormat compressionFormat, bool generateMipmaps);
+	static bool WriteDdsFile(const String & fileName, int32 width, int32 height, uint8 * data, PixelFormat compressionFormat, bool generateMipmaps);
 
 	static bool ReadDxtFile(const String & fileName, Vector<Image*> &imageSet);
 	static bool ReadDxtFile(File * file, Vector<Image*> &imageSet);
@@ -36,6 +36,11 @@ public:
 
 	static uint32 GetDataSize(const String & fileName);
 	static uint32 GetDataSize(File * file);
+	
+private:
+	//input data only in RGBA8888
+	static bool WriteDxtFile(const String & fileName, int32 width, int32 height, uint8 * data, PixelFormat compressionFormat, bool generateMipmaps);
+	static bool WriteAtcFile(const String & fileName, int32 width, int32 height, uint8 * data, PixelFormat compressionFormat, bool generateMipmaps);
 };
 
 };
