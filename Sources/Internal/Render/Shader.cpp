@@ -272,7 +272,7 @@ void Shader::SetDefineList(const String & enableDefinesList)
 {
     Vector<String> defineNameList;
     String result;
-    Split(enableDefinesList, ";", defineNameList);
+    Split(enableDefinesList, ";", defineNameList, true);
     size_t size = defineNameList.size();
     for (size_t i = 0; i < size; ++i)
     {
@@ -580,17 +580,17 @@ GLint Shader::CompileShader(GLuint *shader, GLenum type, GLint count, const GLch
     
     RENDER_VERIFY(glCompileShader(*shader));					// compile shader
     
-//#if defined(DEBUG)
-    GLint logLength = 0;
-    RENDER_VERIFY(glGetShaderiv(*shader, GL_INFO_LOG_LENGTH, &logLength));
-    if (logLength > 1)
-    {
-        GLchar *log = (GLchar *)malloc(logLength);
-        RENDER_VERIFY(glGetShaderInfoLog(*shader, logLength, &logLength, log));
-        Logger::Debug("Shader compile log:\n%s", log);
-        free(log);
-    }
-//#endif
+#ifdef __DAVAENGINE_DEBUG__
+	{
+		GLchar log[4096];
+		GLsizei logLength = 0;
+		RENDER_VERIFY(glGetShaderInfoLog(*shader, 4096, &logLength, log));
+		if (logLength)
+		{
+			Logger::Debug("Shader compile log:\n%s", log);
+		}
+	}
+#endif
     
     RENDER_VERIFY(glGetShaderiv(*shader, GL_COMPILE_STATUS, &status));
     if (status == GL_FALSE)
