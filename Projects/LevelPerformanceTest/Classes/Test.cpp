@@ -151,18 +151,19 @@ void Test::PreparePath()
 {
 	SettingsManager *settings = SettingsManager::Instance();
 
-	int32 partX = settings->GetLandscapePartitioning().x;
-	int32 partY = settings->GetLandscapePartitioning().y;
 	
     Landscape *land = GetLandscape();
 	AABBox3 boundingBox = land->GetBoundingBox();
 	Vector3 min = boundingBox.min;
 	Vector3 max = boundingBox.max;
-	
+
+	Vector2 rectSize = settings->GetLandscapePartitioningSize();
+
 	float32 landWidth = max.x - min.x;
 	float32 landLength = max.y - min.y;
-	
-	Vector2 rectSize(landWidth / partX, landLength / partY);
+
+	int32 partX = (int32)ceilf(landWidth / rectSize.x);
+	int32 partY = (int32)ceilf(landLength / rectSize.y);
 	
 	int32 x = 0;
 	int32 xDir = 1;
