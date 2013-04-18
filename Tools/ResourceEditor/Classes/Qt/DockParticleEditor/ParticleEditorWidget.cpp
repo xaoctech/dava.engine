@@ -299,6 +299,7 @@ void ParticleEditorWidget::UpdateVisibleTimelinesForParticleEmitter()
 	switch (emitterPropertiesWidget->GetEmitter()->emitterType)
 	{
 		case DAVA::ParticleEmitter::EMITTER_ONCIRCLE:
+		case DAVA::ParticleEmitter::EMITTER_SHOCKWAVE:
 		{
 			radiusTimeLineVisible = true;
 			emissionVectorTimeLineVisible = false;
