@@ -49,8 +49,7 @@ ScrollZoomWidget::ScrollZoomWidget(QWidget *parent) :
                             "margin: -3px 0;"
                             "border-radius: 2px;"
                             "}");
-    
-	isCtrlPressed = false;
+
 	scale = 1.0f;
 }
 
@@ -205,7 +204,7 @@ float32 ScrollZoomWidget::GetMaxBoundary()
 
 void ScrollZoomWidget::wheelEvent(QWheelEvent* event)
 {
-	if(isCtrlPressed)
+	if(event->modifiers() == Qt::ControlModifier)
 	{
 		// get wheel steps according qt documentation
 		int numDegrees = event->delta() / 8;
@@ -228,27 +227,6 @@ void ScrollZoomWidget::wheelEvent(QWheelEvent* event)
 	else
 	{
 		QWidget::wheelEvent(event);
-	}
-}
-
-void ScrollZoomWidget::keyPressEvent (QKeyEvent * event)
-{
-	QWidget::keyPressEvent(event);
-	if (event->modifiers()==Qt::ControlModifier)
-	{
-		isCtrlPressed = true;
-        DAVA::Logger::Debug("CTRL pressed");
-	}
-}
-
-void ScrollZoomWidget::keyReleaseEvent (QKeyEvent *event)
-{
-	QWidget::keyReleaseEvent(event);
-	if (event->key() == Qt::Key_Control)
-	{
-		DAVA::Logger::Debug("CTRL released");
-        isCtrlPressed = false;
-		setFocus();
 	}
 }
 
