@@ -39,7 +39,7 @@ String PVRConverter::ConvertPngToPvr(const String & fileToConvert, const DAVA::T
 
 String PVRConverter::GetCommandLinePVR(const DAVA::String & fileToConvert, const DAVA::TextureDescriptor &descriptor)
 {
-	String command = pvrTexToolPathname;
+	String command = Format("\"%s\"", pvrTexToolPathname.c_str());
 	String format = pixelFormatToPVRFormat[descriptor.pvrCompression.format];
 
 	if(command != "" && format != "")

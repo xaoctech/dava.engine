@@ -18,6 +18,9 @@ HierarchyTreeNode::HierarchyTreeNode(const QString& name)
 	
 	this->redoParentNode = NULL;
 	this->redoPreviousNode = NULL;
+
+	marked = false;
+	unsavedChangesCounter = 0;
 }
 
 HierarchyTreeNode::HierarchyTreeNode(const HierarchyTreeNode* node)
@@ -25,6 +28,9 @@ HierarchyTreeNode::HierarchyTreeNode(const HierarchyTreeNode* node)
 	this->id = nextId++;
 	this->name = node->name;
 	this->extraData = node->extraData;
+
+	this->marked = false;
+	unsavedChangesCounter = 0;
 }
 
 HierarchyTreeNode::~HierarchyTreeNode()
@@ -175,4 +181,63 @@ void HierarchyTreeNode::PrepareRemoveFromSceneInformation()
 			break;
 		}
 	}
+}
+
+bool HierarchyTreeNode::IsMarked() const
+{
+	return marked;
+}
+
+bool HierarchyTreeNode::IsNeedSave() const
+{
+	return IsMarked() | (this->unsavedChangesCounter != 0) | HasUnsavedChilder();
+}
+
+bool HierarchyTreeNode::HasUnsavedChilder() const
+{
+	for (HIERARCHYTREENODESCONSTITER it = childNodes.begin(); it != childNodes.end(); ++it)
+	{
+		if ((*it)->IsNeedSave())
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void HierarchyTreeNode::SetMarked(bool marked)
+{
+	this->marked = marked;
+}
+
+void HierarchyTreeNode::SetChildrenMarked(bool marked, bool recursive)
+{
+	HIERARCHYTREENODESITER it;
+	for (it = childNodes.begin(); it != childNodes.end(); ++it)
+	{
+		(*it)->SetMarked(marked);
+
+		if (recursive)
+		{
+			(*it)->SetChildrenMarked(marked, recursive);
+		}
+	}
+}
+
+// Access to the screen unsaved changes counter.
+void HierarchyTreeNode::IncrementUnsavedChanges()
+{
+	unsavedChangesCounter ++;
+}
+
+void HierarchyTreeNode::DecrementUnsavedChanges()
+{
+	unsavedChangesCounter --;
+}
+
+void HierarchyTreeNode::ResetUnsavedChanges()
+{
+	unsavedChangesCounter = 0;
+	SetMarked(false);
 }

@@ -133,16 +133,6 @@ void CommandsManager::ExecuteAndRelease(Command* command)
 	SafeRelease(command);
 }
 
-void CommandsManager::ExecuteOnly(Command *command)
-{
-	command->Execute();
-}
-
-void CommandsManager::CancelOnly(Command *command)
-{
-	command->Cancel();
-}
-
 void CommandsManager::Undo()
 {
 	if ((activeQueue->commandIndex >= 0) &&

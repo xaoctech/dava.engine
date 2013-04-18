@@ -14,7 +14,6 @@
 #include "PropertyControlCreator.h"
 
 #include "HintManager.h"
-#include "HelpDialog.h"
 
 #include "SceneExporter.h"
 #include "SceneSaver.h"
@@ -36,17 +35,16 @@ SceneEditorScreenMain::SceneEditorScreenMain()
 
 SceneEditorScreenMain::~SceneEditorScreenMain()
 {
-	SafeRelease(scenePreviewDialog);
+   	SafeRelease(scenePreviewDialog);
 
-	SafeRelease(helpDialog);
-	SafeRelease(textureTrianglesDialog);
-	SafeRelease(settingsDialog);
+    SafeRelease(textureTrianglesDialog);
+    SafeRelease(settingsDialog);
 
-	ReleaseNodeDialogs();
-	ReleaseBodyList();
+    ReleaseNodeDialogs();
+    ReleaseBodyList();
 
-	HintManager::Instance()->Release();
-	PropertyControlCreator::Instance()->Release();
+    HintManager::Instance()->Release();
+    PropertyControlCreator::Instance()->Release();
 }
 
 void SceneEditorScreenMain::LoadResources()
@@ -54,30 +52,28 @@ void SceneEditorScreenMain::LoadResources()
 	if(!initialized)
 	{
 		initialized = true;
-
-		new HintManager();
-		new PropertyControlCreator();
+		
+	    new HintManager();
+	    new PropertyControlCreator();
     
-		ControlsFactory::CustomizeScreenBack(this);
+	    ControlsFactory::CustomizeScreenBack(this);
 
-		font12 = ControlsFactory::GetFont12();
+	    font12 = ControlsFactory::GetFont12();
 		font12Color = ControlsFactory::GetColorLight();
 
-		helpDialog = new HelpDialog();
-    
-		focusedControl = NULL;
+	    focusedControl = NULL;
 
-		InitializeNodeDialogs();
+	    InitializeNodeDialogs();
 
-		Rect fullRect = GetRect();
-		settingsDialog = new SettingsDialog(fullRect, this);
-		textureTrianglesDialog = new TextureTrianglesDialog();
-		materialEditor = new MaterialEditor();
+	    Rect fullRect = GetRect();
+	    settingsDialog = new SettingsDialog(fullRect, this);
+	    textureTrianglesDialog = new TextureTrianglesDialog();
+	    materialEditor = new MaterialEditor();
     
-		InitControls();
+	    InitControls();
     
-		InitializeBodyList();
-		SetupAnimation();
+	    InitializeBodyList();
+	    SetupAnimation();
 	}
 }
 
@@ -414,18 +410,6 @@ void SceneEditorScreenMain::Input(DAVA::UIEvent *event)
         UITextField *tf1 = dynamic_cast<UITextField *>(focusedControl);
         if(!tf && !tf1)
         {
-            if((DVKEY_F1 == event->tid) || (DVKEY_H == event->tid))
-            {
-                if(helpDialog->GetParent())
-                {
-                    helpDialog->Close();
-                }
-                else
-                {
-                    helpDialog->Show();
-                }
-            }
-            
             if(DVKEY_ESCAPE == event->tid)
             {
                 if(materialEditor && materialEditor->GetParent())
@@ -767,12 +751,6 @@ bool SceneEditorScreenMain::TileMaskEditorEnabled()
     return iBody->bodyControl->TileMaskEditorEnabled();
 }
 
-
-void SceneEditorScreenMain::ToggleSceneInfo()
-{
-    BodyItem *iBody = FindCurrentBody();
-    iBody->bodyControl->ToggleSceneInfo();
-}
 
 void SceneEditorScreenMain::ShowSettings()
 {

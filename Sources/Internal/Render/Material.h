@@ -66,6 +66,7 @@ struct StaticLightingParams
 class InstanceMaterialState : public BaseObject
 {
     static const int32 LIGHT_NODE_MAX_COUNT = 4;
+	static const int32 LIGHTMAP_SIZE_DEFAULT = 128; 
 public:
     InstanceMaterialState();
     virtual ~InstanceMaterialState();
@@ -407,8 +408,8 @@ public:
         
         PROPERTY("isFlatColorEnabled", "Is flat color enabled", IsFlatColorEnabled, EnableFlatColor, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         PROPERTY("isTexture0ShiftEnabled", "Is texture shift enabled", IsTextureShiftEnabled, EnableTextureShift, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        PROPERTY("isExportOwnerLayerEnabled", "Is export owner layer enabled. (Export layer settings to render batch on set)", IsExportOwnerLayerEnabled, SetExportOwnerLayer, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        PROPERTY("ownerLayerName", "Owner layer name", GetOwnerLayerName, SetOwnerLayerName, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY("isExportOwnerLayerEnabled", "Is export owner layer enabled. (Export layer settings to render batch on set)", IsExportOwnerLayerEnabled, SetExportOwnerLayer, INTROSPECTION_SERIALIZABLE)
+        PROPERTY("ownerLayerName", "Owner layer name", GetOwnerLayerName, SetOwnerLayerName, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
                          
         MEMBER(blendSrc, "Blend Source", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(blendDst, "Blend Destination", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
