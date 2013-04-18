@@ -89,7 +89,8 @@ public:
 	{
 		EMITTER_POINT,
 		EMITTER_RECT,
-		EMITTER_ONCIRCLE,		// 
+		EMITTER_ONCIRCLE,
+		EMITTER_SHOCKWAVE
 	};
 
 	ParticleEmitter();
