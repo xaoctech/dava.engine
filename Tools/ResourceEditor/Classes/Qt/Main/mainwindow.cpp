@@ -101,7 +101,6 @@ void QtMainWindow::SetupActions()
 	connect(ui->actionReloadAll, SIGNAL(triggered()), actionHandler, SLOT(RepackAndReloadTextures()));
 
 	//View
-	connect(ui->actionSceneInfo, SIGNAL(triggered()), actionHandler, SLOT(ToggleSceneInfo()));
 	connect(ui->actionRestoreViews, SIGNAL(triggered()), actionHandler, SLOT(RestoreViews()));
 
 	//Tools
@@ -137,7 +136,10 @@ void QtMainWindow::SetupMainMenu()
 	QAction *actionSetSwitchIndex = ui->dockSetSwitchIndex->toggleViewAction();
 	QAction *actionParticleEditor = ui->dockParticleEditor->toggleViewAction();
 	QAction *actionParticleEditorTimeLine = ui->dockParticleEditorTimeLine->toggleViewAction();
-    ui->menuView->insertAction(ui->actionRestoreViews, actionToolBar);
+    QAction *actionSceneInfo = ui->dockSceneInfo->toggleViewAction();
+
+    ui->menuView->insertAction(ui->actionRestoreViews, actionSceneInfo);
+    ui->menuView->insertAction(actionSceneInfo, actionToolBar);
     ui->menuView->insertAction(actionToolBar, actionLibrary);
     ui->menuView->insertAction(actionLibrary, actionProperties);
 	ui->menuView->insertAction(actionProperties, actionReferences);
@@ -157,11 +159,10 @@ void QtMainWindow::SetupMainMenu()
                                        actionSceneGraph,
                                        actionProperties, actionLibrary, actionToolBar,
 									   actionReferences, actionCustomColors, actionVisibilityCheckTool, 
-									   actionParticleEditor, actionHangingObjects, actionSetSwitchIndex);
+									   actionParticleEditor, actionHangingObjects, actionSetSwitchIndex, actionSceneInfo);
 
 
     ui->dockProperties->hide();
-	//ui->dockReferences->hide();
     
     
     //CreateNode

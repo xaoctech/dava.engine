@@ -381,7 +381,14 @@ void TextureProperties::resetCommonProp()
 		propertiesEnum->setValue(enumWrapModeT, helperWrapModes.indexV(curTextureDescriptor->wrapModeT));
 
 		// min gl filter
-		propertiesEnum->setValue(enumMinGL, helperMinGLModes.indexV(curTextureDescriptor->minFilter));
+        if(curTextureDescriptor->generateMipMaps)
+        {
+            propertiesEnum->setValue(enumMinGL, helperMinGLModesWithMipmap.indexV(curTextureDescriptor->minFilter));
+        }
+        else
+        {
+            propertiesEnum->setValue(enumMinGL, helperMinGLModes.indexV(curTextureDescriptor->minFilter));
+        }
 		propertiesEnum->setValue(enumMagGL, helperMagGLModes.indexV(curTextureDescriptor->magFilter));
 	}
 }

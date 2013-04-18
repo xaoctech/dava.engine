@@ -21,6 +21,8 @@ public:
 	HierarchyTreePlatformNode(HierarchyTreeRootNode* rootNode, const QString& name);
 	HierarchyTreePlatformNode(HierarchyTreeRootNode* rootNode, const HierarchyTreePlatformNode* base);
 
+	virtual ~HierarchyTreePlatformNode();
+
 	void SetSize(int width, int height);
 	int GetWidth() const;
 	int GetHeight() const;
@@ -31,6 +33,9 @@ public:
 	
 	QString GetPlatformFolder() const;
 	void ActivatePlatform();
+
+	QString GetScreenPath(QString screenName) const;
+	QString GetScreenPath(String screenName) const;
 	
 	bool Load(YamlNode* node);
 	bool Save(YamlNode* node, bool saveAll);

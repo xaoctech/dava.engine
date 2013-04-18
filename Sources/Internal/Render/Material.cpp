@@ -52,7 +52,7 @@ REGISTER_CLASS(InstanceMaterialState)
 InstanceMaterialState::InstanceMaterialState()
     :   flatColor(1.0f, 1.0f, 1.0f, 1.0f)
     ,   texture0Shift(0.0f, 0.0f)
-	,	lightmapSize(128)
+	,	lightmapSize(LIGHTMAP_SIZE_DEFAULT)
 
 {
     for (int32 k = 0; k < LIGHT_NODE_MAX_COUNT; ++k)
@@ -149,6 +149,11 @@ void InstanceMaterialState::Save(KeyedArchive * archive, SceneFileV2 *sceneFile)
             archive->SetString("ims.lightmapname", filename);
 		}
 		
+		if(lightmapSize != LIGHTMAP_SIZE_DEFAULT)
+		{
+			archive->SetInt32("ims.lightmapsize", lightmapSize);
+		}
+
 		if(flatColor != Color::White())
 		{
 			archive->SetByteArrayAsType("ims.flatColor", flatColor);
@@ -184,6 +189,7 @@ void InstanceMaterialState::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 
 		flatColor = archive->GetByteArrayAsType("ims.flatColor", Color::White());
 		texture0Shift = archive->GetVector2("ims.texture0Shift");
+		lightmapSize = archive->GetInt32("ims.lightmapsize", LIGHTMAP_SIZE_DEFAULT);
 	}
 }
 
@@ -193,6 +199,7 @@ InstanceMaterialState * InstanceMaterialState::Clone()
 
 	newState->lightmapTexture = SafeRetain(lightmapTexture);
 	newState->lightmapName = lightmapName;
+	newState->lightmapSize = lightmapSize;
 	newState->uvOffset = uvOffset;
 	newState->uvScale = uvScale;
 	newState->flatColor = flatColor;

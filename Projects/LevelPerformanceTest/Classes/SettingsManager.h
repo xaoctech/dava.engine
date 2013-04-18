@@ -10,7 +10,7 @@ class SettingsManager: public Singleton<SettingsManager>
 public:
     void InitWithFile(const String& filename);
 	
-	Point2i GetLandscapePartitioning() const;
+	Vector2 GetLandscapePartitioningSize() const;
 	const String GetLandscapeNodeName() const;
 	float32 GetCameraElevation() const;
 	float32 GetCameraRotationSpeed() const;
@@ -20,7 +20,7 @@ public:
 	uint8 GetColorTransparency() const;
 	Color GetColorByFps(float32 fps) const;
 private:
-	Point2i landscapePartitioning;
+	Vector2 landscapePartitioningSize;
 	String landscapeNodeName;
 	float32 cameraElevation;
 	float32 cameraRotationSpeed;

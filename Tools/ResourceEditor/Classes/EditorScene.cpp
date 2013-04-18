@@ -545,7 +545,7 @@ void EditorScene::Draw()
     
     RenderManager::Instance()->ClearStats();
 	Scene::Draw();
-    SceneValidator::Instance()->CollectSceneStats(RenderManager::Instance()->GetStats());
+    renderStats = RenderManager::Instance()->GetStats();
     
     if(drawGrid)
     {
@@ -639,4 +639,9 @@ int32 EditorScene::GetForceLodLayer(Entity *node)
     }
     
     return -1;
+}
+
+const RenderManager::Stats & EditorScene::GetRenderStats() const
+{
+    return renderStats;
 }
