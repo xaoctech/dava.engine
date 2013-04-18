@@ -441,6 +441,12 @@
     <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionRenderObject.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\GridSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\HoodSystem.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\HoodSystem\HoodCollObject.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\HoodSystem\HoodObject.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\HoodSystem\MoveHood.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\HoodSystem\NormalHood.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\HoodSystem\RotateHood.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\HoodSystem\ScaleHood.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\ModifSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\SelectionSystem.cpp" />
     <ClCompile Include="Classes\Qt\SpritesPacker\SpritePackerHelper.cpp" />
@@ -949,6 +955,12 @@
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionRenderObject.h" />
     <ClInclude Include="Classes\Qt\Scene\System\GridSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\HoodSystem.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\HoodSystem\HoodCollObject.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\HoodSystem\HoodObject.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\HoodSystem\MoveHood.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\HoodSystem\NormalHood.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\HoodSystem\RotateHood.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\HoodSystem\ScaleHood.h" />
     <ClInclude Include="Classes\Qt\Scene\System\ModifSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\SelectionSystem.h" />
     <ClInclude Include="Classes\Qt\SpritesPacker\SpritePackerHelper.h" />

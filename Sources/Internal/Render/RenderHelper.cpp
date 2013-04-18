@@ -34,6 +34,46 @@
 
 namespace DAVA
 {
+
+	static Vector3 DodecVertexes[20] = {
+		Vector3( 0.607f,  0.000f,  0.795f),
+		Vector3( 0.188f,  0.577f,  0.795f),
+		Vector3(-0.491f,  0.357f,  0.795f),
+		Vector3(-0.491f, -0.357f,  0.795f),
+		Vector3( 0.188f, -0.577f,  0.795f),
+		Vector3( 0.982f,  0.000f,  0.188f),
+		Vector3( 0.304f,  0.934f,  0.188f),
+		Vector3(-0.795f,  0.577f,  0.188f),
+		Vector3(-0.795f, -0.577f,  0.188f),
+		Vector3( 0.304f, -0.934f,  0.188f),
+		Vector3( 0.795f,  0.577f, -0.188f),
+		Vector3(-0.304f,  0.934f, -0.188f),
+		Vector3(-0.982f,  0.000f, -0.188f),
+		Vector3(-0.304f, -0.934f, -0.188f),
+		Vector3( 0.795f, -0.577f, -0.188f),
+		Vector3( 0.491f,  0.357f, -0.795f),
+		Vector3(-0.188f,  0.577f, -0.795f),
+		Vector3(-0.607f,  0.000f, -0.795f),
+		Vector3(-0.188f, -0.577f, -0.795f),
+		Vector3( 0.491f, -0.357f, -0.795f)
+	};
+
+	static int DodecIndexes[12][5] = { 
+		0, 1, 2, 3, 4,
+		0, 1, 6, 10, 5,
+		1, 2, 7, 11, 6,
+		2, 3, 8, 12, 7,
+		3, 4, 9, 13, 8,
+		4, 0, 5, 14, 9,
+		15, 16, 11, 6, 10,
+		16, 17, 12, 7, 11,
+		17, 18, 13, 8, 12,
+		18, 19, 14, 9, 13,
+		19, 15, 10, 5, 14,
+		15, 16, 17, 18, 19
+	};
+	
+	
 RenderHelper::RenderHelper()
 {
     renderDataObject = new RenderDataObject();
@@ -514,7 +554,7 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
     RenderHelper::Instance()->DrawLine(point, point - Vector3(offs, 0, 0), lineWidth);	
 }
 	
-	void RenderHelper::DrawSphere(float32 r)
+	void RenderHelper::DrawSphere(const Vector3 &center, float32 radius, float32 lineWidth)
 	{
 		int32 n = 2;
         Vector<Vector3> points;
@@ -526,8 +566,8 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 				
 		for (e = -n; e <= n; e++)
 		{
-			float32 r_e = r * cosf(segmentRad * e);
-			float32 y_e = r * sinf(segmentRad * e);
+			float32 r_e = radius * cosf(segmentRad * e);
+			float32 y_e = radius * sinf(segmentRad * e);
 			
 			for (int s = 0; s < numberOfSeparators; s++)
 			{
@@ -536,8 +576,8 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 				points.push_back(Vector3(x_s, y_e, z_s));
 			}
 		}
-		points.push_back(Vector3(0, r, 0));
-		points.push_back(Vector3(0, -r, 0));
+		points.push_back(Vector3(0, radius, 0));
+		points.push_back(Vector3(0, -radius, 0));
 		
 		for (e = 0; e < 4 * n ; e++)
 		{
@@ -582,44 +622,152 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 		int32 size = triangleIndices.size()/3;
 		for (int i = 0; i < size; i++)
 		{
-			Vector3 p1 = points[triangleIndices[i]];
-			Vector3 p2 = points[triangleIndices[i + 1]];
-			Vector3 p3 = points[triangleIndices[i + 2]];
+			Vector3 p1 = points[triangleIndices[i]] + center;
+			Vector3 p2 = points[triangleIndices[i + 1]] + center;
+			Vector3 p3 = points[triangleIndices[i + 2]] + center;
 						
-			RenderHelper::Instance()->DrawLine(p1, p2);
-			RenderHelper::Instance()->DrawLine(p1, p3);
-			RenderHelper::Instance()->DrawLine(p2, p3);
+			RenderHelper::Instance()->DrawLine(p1, p2, lineWidth);
+			RenderHelper::Instance()->DrawLine(p1, p3, lineWidth);
+			RenderHelper::Instance()->DrawLine(p2, p3, lineWidth);
 		
 			p1.y = -p1.y;
 			p2.y = -p2.y;
 			p3.y = -p3.y;
 		
-			RenderHelper::Instance()->DrawLine(p1, p2);
-			RenderHelper::Instance()->DrawLine(p1, p3);
-			RenderHelper::Instance()->DrawLine(p2, p3);			
+			RenderHelper::Instance()->DrawLine(p1, p2, lineWidth);
+			RenderHelper::Instance()->DrawLine(p1, p3, lineWidth);
+			RenderHelper::Instance()->DrawLine(p2, p3, lineWidth);			
 		}			
 	}
 
-	void RenderHelper::DrawArrow(const Vector3 &from, const Vector3 &to, float32 lineWidth)
+	void RenderHelper::FillSphere(const Vector3 &center, float32 radius)
 	{
-		Vector3 c((to.x + from.x) / 2, (to.y + from.y) / 2, (to.z + from.z) / 2);
+		int32 n = 2;
+		Vector<Vector3> points;
+		Vector<int32> triangleIndices;
+
+		int32 e;
+		float32 segmentRad = PI / (2.0f * ((float32)(n + 1)));
+		int32 numberOfSeparators = 4 * n + 4;
+
+		for (e = -n; e <= n; e++)
+		{
+			float32 r_e = radius * cosf(segmentRad * e);
+			float32 y_e = radius * sinf(segmentRad * e);
+
+			for (int s = 0; s < numberOfSeparators; s++)
+			{
+				float32 z_s = r_e * sinf(segmentRad * s) * (-1.0f);
+				float32 x_s = r_e * cosf(segmentRad * s);
+				points.push_back(Vector3(x_s, y_e, z_s));
+			}
+		}
+		points.push_back(Vector3(0, radius, 0));
+		points.push_back(Vector3(0, -radius, 0));
+
+		for (e = 0; e < 4 * n ; e++)
+		{
+			for (int i = 0; i < numberOfSeparators; i++)
+			{
+				triangleIndices.push_back(e * numberOfSeparators + i);
+				triangleIndices.push_back(e * numberOfSeparators + i + 
+					numberOfSeparators);
+				triangleIndices.push_back(e * numberOfSeparators + (i + 1) % 
+					numberOfSeparators + numberOfSeparators);
+
+				triangleIndices.push_back(e * numberOfSeparators + (i + 1) % 
+					numberOfSeparators + numberOfSeparators);
+				triangleIndices.push_back(e * numberOfSeparators + 
+					(i + 1) % numberOfSeparators);
+				triangleIndices.push_back(e * numberOfSeparators + i);
+			}
+		}
+
+		//fill
+
+		int32 size = triangleIndices.size()/3;
+		for (int i = 0; i < size; i++)
+		{
+			Vector3 p1 = points[triangleIndices[i]] + center;
+			Vector3 p2 = points[triangleIndices[i + 1]] + center;
+			Vector3 p3 = points[triangleIndices[i + 2]] + center;
+
+			Polygon3 poly;
+			poly.AddPoint(p1);
+			poly.AddPoint(p3);
+			poly.AddPoint(p2);
+			RenderHelper::Instance()->FillPolygon(poly);
+
+			p1.y = -p1.y;
+			p2.y = -p2.y;
+			p3.y = -p3.y;
+
+			poly.Clear();
+			poly.AddPoint(p1);
+			poly.AddPoint(p3);
+			poly.AddPoint(p2);
+			RenderHelper::Instance()->FillPolygon(poly);
+		}			
+	}
+
+	void RenderHelper::DrawArrow(const Vector3 &from, const Vector3 &to, float32 arrowLength, float32 lineWidth)
+	{
+		if(0 != lineWidth)
+		{
+			Vector3 v = (to + from);
+			Vector3 c = v * arrowLength / v.Length();
+			Vector3 d = to - from;
+
+			DAVA::float32 k = c.Length() / 4;
+
+			Vector3 n = c.CrossProduct(to);
+			n.Normalize();
+			n *= k;
+
+			Vector3 p1 = c + n;
+			Vector3 p2 = c - n;
+
+			Vector3 nd = d.CrossProduct(n);
+			nd.Normalize();
+			nd *= k;
+
+			Vector3 p3 = c + nd;
+			Vector3 p4 = c - nd;
+
+			RenderHelper::Instance()->DrawLine(from, c, lineWidth);
+
+			RenderHelper::Instance()->DrawLine(p1, p3, lineWidth);
+			RenderHelper::Instance()->DrawLine(p2, p3, lineWidth);
+			RenderHelper::Instance()->DrawLine(p1, p4, lineWidth);
+			RenderHelper::Instance()->DrawLine(p2, p4, lineWidth);
+			RenderHelper::Instance()->DrawLine(p1, to, lineWidth);
+			RenderHelper::Instance()->DrawLine(p2, to, lineWidth);		
+			RenderHelper::Instance()->DrawLine(p3, to, lineWidth);
+			RenderHelper::Instance()->DrawLine(p4, to, lineWidth);
+		}
+	}
+
+	void RenderHelper::FillArrow(const Vector3 &from, const Vector3 &to, float32 arrowLength, float32 lineWidth)
+	{
 		Vector3 d = to - from;
+		Vector3 c = to - (d * arrowLength / d.Length());
+
+		DAVA::float32 k = arrowLength / 4;
 
 		Vector3 n = c.CrossProduct(to);
 		n.Normalize();
+		n *= k;
 
 		Vector3 p1 = c + n;
 		Vector3 p2 = c - n;
 
 		Vector3 nd = d.CrossProduct(n);
 		nd.Normalize();
+		nd *= k;
 
 		Vector3 p3 = c + nd;
 		Vector3 p4 = c - nd;
 
-		RenderHelper::Instance()->DrawLine(from, c, lineWidth);
-
-		/*
 		Polygon3 poly;
 		poly.AddPoint(p1);
 		poly.AddPoint(p3);
@@ -655,16 +803,11 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 		poly.AddPoint(p4);
 		poly.AddPoint(to);
 		RenderHelper::Instance()->FillPolygon(poly);
-		*/
 
-		RenderHelper::Instance()->DrawLine(p1, p3, lineWidth);
-		RenderHelper::Instance()->DrawLine(p2, p3, lineWidth);
-		RenderHelper::Instance()->DrawLine(p1, p4, lineWidth);
-		RenderHelper::Instance()->DrawLine(p2, p4, lineWidth);
-		RenderHelper::Instance()->DrawLine(p1, to, lineWidth);
-		RenderHelper::Instance()->DrawLine(p2, to, lineWidth);		
-		RenderHelper::Instance()->DrawLine(p3, to, lineWidth);
-		RenderHelper::Instance()->DrawLine(p4, to, lineWidth);
+		if(0 != lineWidth)
+		{
+			RenderHelper::Instance()->DrawLine(from, c, lineWidth);
+		}
 	}
 
 	void RenderHelper::FillBox(const AABBox3 & box)
@@ -715,4 +858,35 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 		RenderHelper::Instance()->FillPolygon(poly);
 	}
 
+	void RenderHelper::DrawDodecahedron(const Vector3 &center, float32 radius, float32 lineWidth /* = 1.f */)
+	{
+		for(int i = 0; i < 12; ++i)
+		{
+			Polygon3 poly;
+
+			poly.AddPoint((DodecVertexes[DodecIndexes[i][0]] * radius) + center);
+			poly.AddPoint((DodecVertexes[DodecIndexes[i][1]] * radius) + center);
+			poly.AddPoint((DodecVertexes[DodecIndexes[i][2]] * radius) + center);
+			poly.AddPoint((DodecVertexes[DodecIndexes[i][3]] * radius) + center);
+			poly.AddPoint((DodecVertexes[DodecIndexes[i][4]] * radius) + center);
+
+			DrawPolygon(poly, true);
+		}
+	}
+
+	void RenderHelper::FillDodecahedron(const Vector3 &center, float32 radius)
+	{
+		for(int i = 0; i < 12; ++i)
+		{
+			Polygon3 poly;
+
+			poly.AddPoint((DodecVertexes[DodecIndexes[i][0]] * radius) + center);
+			poly.AddPoint((DodecVertexes[DodecIndexes[i][1]] * radius) + center);
+			poly.AddPoint((DodecVertexes[DodecIndexes[i][2]] * radius) + center);
+			poly.AddPoint((DodecVertexes[DodecIndexes[i][3]] * radius) + center);
+			poly.AddPoint((DodecVertexes[DodecIndexes[i][4]] * radius) + center);
+
+			FillPolygon(poly);
+		}
+	}
 };

@@ -44,6 +44,7 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	// <--
 
 	AddTab("/Projects/dava.wot.art/DataSource/3d/Maps/dike_village/dike_village.sc2");
+	//AddTab("/Projects/dava.wot.art/DataSource/3d/Maps/desert_train/desert_train.sc2");
 
 	QObject::connect(tabBar, SIGNAL(currentChanged(int)), this, SLOT(SetCurrentTab(int)));
 	SetCurrentTab(oldTabIndex);

@@ -12,13 +12,14 @@ EntityGroup::EntityGroup(const EntityGroup &ss)
 EntityGroup::~EntityGroup()
 { }
 
-void EntityGroup::Add(DAVA::Entity *entity, DAVA::AABBox3 entityBbox /* = DAVA::AABBox3() */)
+void EntityGroup::Add(DAVA::Entity *entity, DAVA::Entity *solidEntity, DAVA::AABBox3 entityBbox /* = DAVA::AABBox3() */)
 {
 	size_t i;
 	if(!Index(entity, i))
 	{
-		EntityItem item;
+		EntityGroupItem item;
 		item.entity = entity;
+		item.solidEntity = solidEntity;
 		item.bbox = entityBbox;
 
 		entities.push_back(item);
@@ -26,12 +27,17 @@ void EntityGroup::Add(DAVA::Entity *entity, DAVA::AABBox3 entityBbox /* = DAVA::
 	}
 }
 
+void EntityGroup::Add(const EntityGroupItem &groupItem)
+{
+	Add(groupItem.entity, groupItem.solidEntity, groupItem.bbox);
+}
+
 void EntityGroup::Rem(DAVA::Entity *entity)
 {
 	size_t i;
 	if(Index(entity, i))
 	{
-		DAVA::Vector<EntityItem>::iterator it = entities.begin();
+		DAVA::Vector<EntityGroupItem>::iterator it = entities.begin();
 		entities.erase(it + i);
 
 		// recalc common ab
@@ -55,7 +61,7 @@ size_t EntityGroup::Size() const
 	return entities.size();
 }
 
-DAVA::Entity* EntityGroup::Get(size_t i) const
+DAVA::Entity* EntityGroup::GetEntity(size_t i) const
 {
 	DAVA::Entity *ret = NULL;
 
@@ -67,13 +73,37 @@ DAVA::Entity* EntityGroup::Get(size_t i) const
 	return ret;
 }
 
+DAVA::Entity* EntityGroup::GetSolidEntity(size_t i) const
+{
+	DAVA::Entity *ret = NULL;
+
+	if(i < entities.size())
+	{
+		ret = entities[i].solidEntity;
+	}
+
+	return ret;
+}
+
+EntityGroupItem EntityGroup::GetItem(size_t i) const
+{
+	EntityGroupItem ret;
+
+	if(i < entities.size())
+	{
+		ret = entities[i];
+	}
+
+	return ret;
+}
+
 DAVA::AABBox3 EntityGroup::GetBbox(size_t i) const
 {
 	DAVA::AABBox3 ret;
 
 	if(i < entities.size())
 	{
-		ret = entities[i].bbox;
+		entities[i].bbox.GetTransformedBox(entities[i].entity->GetWorldTransform(), ret);
 	}
 
 	return ret;
@@ -81,7 +111,14 @@ DAVA::AABBox3 EntityGroup::GetBbox(size_t i) const
 
 DAVA::AABBox3 EntityGroup::GetCommonBbox() const
 {
-	return entitiesBbox;
+	DAVA::AABBox3 ret;
+
+	for(size_t i = 0; i <entities.size(); ++i)
+	{
+		ret.AddAABBox(GetBbox(i));
+	}
+
+	return ret;
 }
 
 bool EntityGroup::HasEntity(DAVA::Entity *entity) const
@@ -129,3 +166,20 @@ bool EntityGroup::Index(DAVA::Entity *entity, size_t &index) const
 
 	return false;
 }
+
+DAVA::Entity* EntityGroup::IntersectedEntity(const EntityGroup *group) const
+{
+	DAVA::Entity* ret = NULL;
+
+	for(size_t i = 0; i < entities.size(); ++i)
+	{
+		if(group->HasEntity(entities[i].entity))
+		{
+			ret = entities[i].entity;
+			break;
+		}
+	}
+
+	return ret;
+}
+

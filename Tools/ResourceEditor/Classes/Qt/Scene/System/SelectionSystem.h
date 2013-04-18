@@ -23,7 +23,8 @@ public:
 
 		SELECTION_DRAW_SHAPE = 0x1,
 		SELECTION_FILL_SHAPE = 0x2,
-		SELECTION_NO_DEEP_TEST = 0x4,
+		SELECTION_DRAW_CORNERS = 0x4,
+		SELECTION_NO_DEEP_TEST = 0x10,
 
 		DEBUG_DRAW_ALL = 0xFFFFFFFF
 	};
@@ -50,13 +51,15 @@ public:
 	int GetPivotPoint() const;
 
 	void UpdateHoodPos() const;
+	void SelectedItemsWereModified();
 
 protected:
 	void Update(DAVA::float32 timeElapsed);
 	void ProcessUIEvent(DAVA::UIEvent *event);
 	void Draw();
 
-	void SelectedItemsWereModified();
+	EntityGroup GetSelecetableFromCollision(const EntityGroup *collisionEntities);
+	EntityGroupItem GetSelectableEntity(DAVA::Entity* entity);
 
 private:
 	int selectionDrawFlags;

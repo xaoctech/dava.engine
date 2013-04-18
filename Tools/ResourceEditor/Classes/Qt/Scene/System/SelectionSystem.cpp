@@ -11,7 +11,7 @@ SceneSelectionSystem::SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSy
 	: DAVA::SceneSystem(scene)
 	, collisionSystem(collSys)
 	, hoodSystem(hoodSys)
-	, selectionDrawFlags(SELECTION_DRAW_SHAPE | SELECTION_FILL_SHAPE)
+	, selectionDrawFlags(SELECTION_FILL_SHAPE | SELECTION_DRAW_SHAPE)
 	, applyOnPhaseEnd(false)
 	, curPivotPoint(SELECTION_COMMON_CENTER)
 {
@@ -25,7 +25,7 @@ SceneSelectionSystem::~SceneSelectionSystem()
 
 void SceneSelectionSystem::Update(DAVA::float32 timeElapsed)
 {
-
+	UpdateHoodPos();
 }
 
 void SceneSelectionSystem::ProcessUIEvent(DAVA::UIEvent *event)
@@ -37,69 +37,60 @@ void SceneSelectionSystem::ProcessUIEvent(DAVA::UIEvent *event)
 		{
 			if(event->tid == DAVA::UIEvent::BUTTON_1)
 			{
-				DAVA::Entity *selectionEntity = NULL;
-				DAVA::Entity *selectAfterThat = NULL;
-
-				if(curSelections.Size() > 0)
-				{
-					selectAfterThat = curSelections.Get(0);
-				}
-
 				const EntityGroup* collisionEntities = collisionSystem->RayTestFromCamera();
-				if(collisionEntities->Size() > 0)
+				EntityGroup selectableItems = GetSelecetableFromCollision(collisionEntities);
+
+				DAVA::Entity *firstEntity = selectableItems.GetEntity(0);
+				DAVA::Entity *nextEntity = NULL;
+
+				// search possible next item only if now there is no selection or is only single selection
+				if(curSelections.Size() <= 1)
 				{
-					// TODO:
-					// search propriate selection
-			
-					/*
-					btCollisionObject *btObj;
+					bool found = false;
 
-					// try to find object next after afterThatEntity
-					DAVA::Entity *stepEntity = NULL;
-					for(int i = 0; i < foundCount; ++i)
+					// find first after currently selected items
+					for(size_t i = 0; i < selectableItems.Size(); i++)
 					{
-						btCollisionObject *btObj = btCallback.m_collisionObjects[i];
-						stepEntity = collisionToEntity.value(btObj, NULL);
-
-						if(stepEntity == afterThatEntity && (i + 1) < foundCount)
+						DAVA::Entity *entity = selectableItems.GetEntity(i);
+						if(curSelections.HasEntity(entity))
 						{
-							retEntity = collisionToEntity.value(btCallback.m_collisionObjects[i + 1], NULL);
-							break;
+							if((i + 1) < selectableItems.Size())
+							{
+								found = true;
+
+								nextEntity = selectableItems.GetEntity(i + 1);
+								break;
+							}
 						}
 					}
 
-					// if not found - return first one
-					if(NULL == retEntity)
+					if(!found)
 					{
-						btObj = btCallback.m_collisionObjects[0];
-						retEntity = collisionToEntity.value(btObj, NULL);
+						nextEntity = selectableItems.GetEntity(0);
 					}
-					*/
-
-					selectionEntity = collisionEntities->Get(0);
 				}
 
 				int curKeyModifiers = QApplication::keyboardModifiers();
 				if(curKeyModifiers & Qt::ControlModifier)
 				{
-					AddSelection(selectionEntity);
+					AddSelection(firstEntity);
 				}
 				else if(curKeyModifiers & Qt::AltModifier)
 				{
-					RemSelection(selectionEntity);
+					RemSelection(firstEntity);
 				}
 				else
 				{
 					// if new selection is NULL or is one of already selected items
 					// we should change current selection only on phase end
-					if(selectionEntity == NULL || curSelections.HasEntity(selectionEntity))
+					if(nextEntity == NULL || NULL != curSelections.IntersectedEntity(collisionEntities))
 					{
 						applyOnPhaseEnd = true;
-						lastSelection = selectionEntity;
+						lastSelection = nextEntity;
 					}
 					else
 					{
-						SetSelection(selectionEntity);
+						SetSelection(nextEntity);
 					}
 				}
 			}
@@ -137,13 +128,19 @@ void SceneSelectionSystem::Draw()
 
 		for (DAVA::uint32 i = 0; i < curSelections.Size(); i++)
 		{
-			DAVA::AABBox3 selectionBox = collisionSystem->GetBoundingBox(curSelections.Get(i));
+			DAVA::AABBox3 selectionBox = curSelections.GetBbox(i);
 
 			// draw selection share
 			if(selectionDrawFlags & SELECTION_DRAW_SHAPE)
 			{
 				DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 1.0f, 1.0f));
 				DAVA::RenderHelper::Instance()->DrawBox(selectionBox);
+			}
+			// draw selection share
+			else if(selectionDrawFlags & SELECTION_DRAW_CORNERS)
+			{
+				DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 1.0f, 1.0f));
+				DAVA::RenderHelper::Instance()->DrawCornerBox(selectionBox);
 			}
 
 			// fill selection shape
@@ -162,14 +159,23 @@ void SceneSelectionSystem::Draw()
 void SceneSelectionSystem::SetSelection(DAVA::Entity *entity)
 {
 	curSelections.Clear();
-	curSelections.Add(entity, collisionSystem->GetBoundingBox(entity));
+
+	if(NULL != entity)
+	{
+		EntityGroupItem selectableItem = GetSelectableEntity(entity);
+		curSelections.Add(selectableItem);
+	}
 
 	UpdateHoodPos();
 }
 
 void SceneSelectionSystem::AddSelection(DAVA::Entity *entity)
 {
-	curSelections.Add(entity, collisionSystem->GetBoundingBox(entity));
+	if(NULL != entity)
+	{
+		EntityGroupItem selectableItem = GetSelectableEntity(entity);
+		curSelections.Add(selectableItem);
+	}
 
 	UpdateHoodPos();
 }
@@ -181,7 +187,7 @@ void SceneSelectionSystem::RemSelection(DAVA::Entity *entity)
 	UpdateHoodPos();
 }
 
-const EntityGroup*  SceneSelectionSystem::GetSelection() const
+const EntityGroup* SceneSelectionSystem::GetSelection() const
 {
 	return &curSelections;
 }
@@ -222,7 +228,67 @@ void SceneSelectionSystem::UpdateHoodPos() const
 	}
 	else
 	{
-		hoodSystem->SetPosition(DAVA::Vector3(0, 0,0 ));
+		hoodSystem->SetPosition(DAVA::Vector3(0, 0, 0));
 		hoodSystem->Hide();
 	}
+}
+
+EntityGroup SceneSelectionSystem::GetSelecetableFromCollision(const EntityGroup *collisionEntities)
+{
+	EntityGroup ret;
+
+	if(NULL != collisionEntities)
+	{
+		for(size_t i = 0; i < collisionEntities->Size(); ++i)
+		{
+			DAVA::Entity *entity = collisionEntities->GetEntity(i);
+			EntityGroupItem item = GetSelectableEntity(entity);
+
+			ret.Add(item);
+		}
+	}
+
+	return ret;
+}
+
+EntityGroupItem SceneSelectionSystem::GetSelectableEntity(DAVA::Entity* entity)
+{
+	EntityGroupItem ret;
+	DAVA::Entity *solidEntity = entity;
+	
+	if(NULL != entity)
+	{
+		ret.bbox.AddAABBox(collisionSystem->GetBoundingBox(entity));
+
+		// find real solid entity
+		solidEntity = entity;
+		while(NULL != solidEntity && !solidEntity->GetSolid())
+		{
+			solidEntity = solidEntity->GetParent();
+			ret.bbox.AddAABBox(collisionSystem->GetBoundingBox(solidEntity));
+		}
+
+		// if there is no solid entity, try to find lod parent entity
+		if(NULL == solidEntity)
+		{
+			// find entity that has lod component
+			solidEntity = entity;
+			while(NULL != solidEntity && NULL == solidEntity->GetComponent(DAVA::Component::LOD_COMPONENT))
+			{
+				solidEntity = solidEntity->GetParent();
+			}
+		}
+
+		// still not found?
+		if(NULL == solidEntity)
+		{
+			// let it current entity bo be tread as solid
+			solidEntity = entity;
+		}
+
+		ret.entity = entity;
+		ret.solidEntity = solidEntity;
+	}
+
+	return ret;
 }

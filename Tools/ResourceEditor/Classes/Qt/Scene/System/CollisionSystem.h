@@ -20,15 +20,17 @@ class SceneCollisionDebugDrawer;
 class SceneCollisionSystem : public DAVA::SceneSystem
 {
 	friend class SceneEditorProxy;
+	friend class EntityModificationSystem;
 
 public:
 	enum DebugDrawFlags
 	{
 		DEBUG_DRAW_NOTHING = 0x0,
 
-		DEGUG_DRAW_OBJECTS = 0x1,
-		DEBUG_DRAW_LAND = 0x2,
-		DEBUG_DRAW_RAYTEST = 0x4,
+		DEBUG_DRAW_OBJECTS = 0x1,
+		DEBUG_DRAW_SELECTED_OBJECTS = 0x2,
+		DEBUG_DRAW_LAND = 0x4,
+		DEBUG_DRAW_RAYTEST = 0x10,
 
 		DEBUG_DRAW_ALL = 0xFFFFFFFF
 	};
@@ -43,6 +45,8 @@ public:
 
 	const EntityGroup* RayTest(DAVA::Vector3 from, DAVA::Vector3 to);
 	const EntityGroup* RayTestFromCamera();
+
+	void UpdateCollisionObject(DAVA::Entity *entity);
 
 protected:
 	void Update(DAVA::float32 timeElapsed);
@@ -78,6 +82,7 @@ protected:
 	QMap<btCollisionObject*, DAVA::Entity*> collisionToEntity;
 
 	void BuildFromEntity(DAVA::Entity * entity);
+	void DestroyFromEntity(DAVA::Entity * entity);
 };
 
 class SceneCollisionDebugDrawer : public btIDebugDraw

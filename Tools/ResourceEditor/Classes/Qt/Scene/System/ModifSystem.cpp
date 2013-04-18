@@ -7,6 +7,9 @@
 #include "Scene/EntityGroup.h"
 #include "Scene/SceneEditorProxy.h"
 
+#include "Commands/CommandsManager.h"
+#include "Commands/EditorBodyControlCommands.h"
+
 EntityModificationSystem::EntityModificationSystem(DAVA::Scene * scene, SceneCollisionSystem *colSys, SceneCameraSystem *camSys, HoodSystem *hoodSys)
 	: DAVA::SceneSystem(scene)
 	, collisionSystem(colSys)
@@ -14,9 +17,10 @@ EntityModificationSystem::EntityModificationSystem(DAVA::Scene * scene, SceneCol
 	, hoodSystem(hoodSys)
 	, inModifState(false)
 	, modified(false)
-	, curMode(EM_MODE_MOVE)
-	, curAxis(EM_AXIS_Z)
-{ }
+{
+	SetModifMode(EM_MODE_SCALE);
+	SetModifAxis(EM_AXIS_Z);
+}
 
 EntityModificationSystem::~EntityModificationSystem()
 { }
@@ -33,6 +37,17 @@ void EntityModificationSystem::SetModifAxis(int axis)
 int EntityModificationSystem::GetModifAxis() const
 {
 	return curAxis;
+}
+
+void EntityModificationSystem::SetModifMode(int mode)
+{
+	curMode = mode;
+	hoodSystem->SetType(mode);
+}
+
+int EntityModificationSystem::GetModifMode() const
+{
+	return curMode;
 }
 
 void EntityModificationSystem::Update(DAVA::float32 timeElapsed)
@@ -64,14 +79,14 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 				// allow starting modification
 				modifCanStart = true;
 			}
-			else
+			else if(selectedEntities->Size() > 0)
 			{
 				// send this ray to collision system and get collision objects
 				const EntityGroup *collisionEntities = collisionSystem->RayTestFromCamera();
 
 				// check if one of got collision objects is intersected with selected items
 				// if so - we can start modification
-				if(NULL != GetFirstIntersectedEntity(selectedEntities, collisionEntities))
+				if(NULL != selectedEntities->IntersectedEntity(collisionEntities))
 				{
 					modifCanStart = true;
 				}
@@ -94,7 +109,10 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 						inModifState = true;
 
 						// select current hood axis as active
-						SetModifAxis(mouseOverAxis);
+						if(curMode == EM_MODE_MOVE || curMode == EM_MODE_ROTATE)
+						{
+							SetModifAxis(mouseOverAxis);
+						}
 
 						// set entities to be modified
 						BeginModification(selectedEntities);
@@ -150,17 +168,20 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 			{
 				if(event->tid == DAVA::UIEvent::BUTTON_1)
 				{
-					// TODO:
-					// apply modification commands
-					// ...
-					// 
+					if(modified)
+					{
+						for (size_t i = 0; i < modifEntities.size(); ++i)
+						{
+							// apply modification command
+							CommandsManager::Instance()->ExecuteAndRelease(new CommandTransformObject(modifEntities[i].entity,	modifEntities[i].originalTransform, modifEntities[i].entity->GetLocalTransform()));
+						}
+					}
 
 					EndModification();
 					inModifState = false;
 					modified = false;
 
 					hoodSystem->Unlock();
-					selectionSystem->UpdateHoodPos();
 				}
 			}
 		}
@@ -179,7 +200,13 @@ void EntityModificationSystem::BeginModification(const EntityGroup *entities)
 	{
 		for(size_t i = 0; i < entities->Size(); ++i)
 		{
-			DAVA::Entity *en = entities->Get(i);
+			DAVA::Entity *en = entities->GetSolidEntity(i);
+
+			if(NULL == en)
+			{
+				en = entities->GetEntity(i);
+			}
+
 			if(NULL != en)
 			{
 				EntityToModify etm;
@@ -189,15 +216,11 @@ void EntityModificationSystem::BeginModification(const EntityGroup *entities)
 				etm.moveToZeroPos.CreateTranslation(-etm.originalCenter);
 				etm.moveFromZeroPos.CreateTranslation(etm.originalCenter);
 				modifEntities.push_back(etm);
-
-				// calc common for all selected entities bbox
-				modifEntitiesBbox.AddAABBox(collisionSystem->GetBoundingBox(en));
 			}
 		}
 
-		// now we has common bbox
 		// center of this bbox will modification center, common for all entities
-		modifEntitiesCenter = modifEntitiesBbox.GetCenter();
+		modifEntitiesCenter = entities->GetCommonBbox().GetCenter();
 
 		// prepare translation matrix's, used before and after rotation
 		moveToZeroPosRelativeCenter.CreateTranslation(-modifEntitiesCenter);
@@ -207,14 +230,14 @@ void EntityModificationSystem::BeginModification(const EntityGroup *entities)
 		switch(curAxis)
 		{
 		case EM_AXIS_X:
-		case EM_AXIS_XY:
+		case EM_AXIS_YZ:
 			rotateAround = DAVA::Vector3(1, 0, 0);
 			break;
-		case EM_AXIS_YZ:
 		case EM_AXIS_Y:
+		case EM_AXIS_XZ:
 			rotateAround = DAVA::Vector3(0, 1, 0);
 			break;
-		case EM_AXIS_XZ:
+		case EM_AXIS_XY:
 		case EM_AXIS_Z:
 			rotateAround = DAVA::Vector3(0, 0, 1);
 			break;
@@ -238,23 +261,6 @@ void EntityModificationSystem::EndModification()
 {
 	modifEntitiesCenter.Set(0, 0, 0);
 	modifEntities.clear();
-	modifEntitiesBbox.Empty();
-}
-
-DAVA::Entity* EntityModificationSystem::GetFirstIntersectedEntity(const EntityGroup *gr1, const EntityGroup *gr2)
-{
-	DAVA::Entity* ret = NULL;
-
-	for(size_t i = 0; i < gr1->Size(); ++i)
-	{
-		if(gr2->HasEntity(gr1->Get(i)))
-		{
-			ret = gr1->Get(i);
-			break;
-		}
-	}
-
-	return ret;
 }
 
 DAVA::Vector3 EntityModificationSystem::CamCursorPosToModifPos(const DAVA::Vector3 &camPosition, const DAVA::Vector3 &camPointDirection, const DAVA::Vector3 &planePoint)
@@ -330,23 +336,21 @@ void EntityModificationSystem::Move(const DAVA::Vector3 &newPos3d)
 		moveModification.Identity();
 		moveModification.CreateTranslation(moveOffset);
 
-		modifEntities[i].entity->SetLocalTransform(modifEntities[i].originalTransform * moveModification);
-
-		// also move hood
-		hoodSystem->MovePosition(moveOffset);
+		DAVA::Matrix4 newLocalTransform = modifEntities[i].originalTransform * moveModification;
+		modifEntities[i].entity->SetLocalTransform(newLocalTransform);
 	}
 }
 
 void EntityModificationSystem::Rotate(const DAVA::Vector2 &newPos2d)
 {
 	DAVA::Vector2 rotateLength = newPos2d - modifStartPos2d;
-	DAVA::float32 rotateForce = -(rotateNormal.DotProduct(rotateLength));
+	DAVA::float32 rotateForce = -(rotateNormal.DotProduct(rotateLength)) / 70.0f;
 
 	for (size_t i = 0; i < modifEntities.size(); ++i)
 	{
 		DAVA::Matrix4 rotateModification;
 		rotateModification.Identity();
-		rotateModification.CreateRotation(rotateAround, rotateForce / 70.0f);
+		rotateModification.CreateRotation(rotateAround, rotateForce);
 
 		switch(modifPivotPoint)
 		{
@@ -369,5 +373,21 @@ void EntityModificationSystem::Rotate(const DAVA::Vector2 &newPos2d)
 
 void EntityModificationSystem::Scale(const DAVA::Vector2 &newPos2d)
 {
+	DAVA::Vector2 scaleDir = (newPos2d - modifStartPos2d);
+	DAVA::float32 scaleForce;
 
+	scaleForce = 1.0f - (scaleDir.y / 70.0f);
+
+	if(scaleForce >= 0)
+	{
+		for (size_t i = 0; i < modifEntities.size(); ++i)
+		{
+			DAVA::Matrix4 scaleModification;
+			scaleModification.Identity();
+			scaleModification.CreateScale(DAVA::Vector3(scaleForce, scaleForce, scaleForce));
+
+			scaleModification = (modifEntities[i].moveToZeroPos * scaleModification) * modifEntities[i].moveFromZeroPos;
+			modifEntities[i].entity->SetLocalTransform(modifEntities[i].originalTransform * scaleModification);
+		}
+	}
 }
