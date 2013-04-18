@@ -35,6 +35,21 @@ ScrollZoomWidget::ScrollZoomWidget(QWidget *parent) :
 	connect(zoomSlider, SIGNAL(valueChanged(int)), this, SLOT(HandleZoomScrollChanged(int)));
 	//UpdateSizePolicy();
 
+    zoomSlider->setStyleSheet(
+                            "QSlider::groove:horizontal {"
+                            "border: 1px none;"
+                            "height: 4px;"
+                            "background: palette(midlight);"
+                            "margin: 4px 0;"
+                            "}"
+                            "QSlider::handle:horizontal {"
+                            "background: palette(window);"
+                            "border: 1px solid #999999;"
+                            "width: 4px;"
+                            "margin: -4px 0;"
+                            "border-radius: 2px;"
+                            "}");
+    
 	isCtrlPressed = false;
 	scale = 1.0f;
 }
@@ -76,15 +91,13 @@ QString ScrollZoomWidget::float2QString(float32 value) const
 	return strValue;
 }
 
-void ScrollZoomWidget::paintEvent(QPaintEvent * /*paintEvent*/)
+void ScrollZoomWidget::paintEvent(QPaintEvent * /*paintEvent*/, QPainter & painter)
 {
 	//draw scroll bar
 	UpdateScrollBarPosition();
 
 	//draw slider
 	UpdateSliderPosition();
-
-	QPainter painter(this);
 
 	painter.setPen(Qt::black);
 	
@@ -236,7 +249,7 @@ void ScrollZoomWidget::keyReleaseEvent (QKeyEvent *event)
 QRect ScrollZoomWidget::GetScrollBarRect() const
 {
 	QRect graphRect = GetGraphRect();
-	QRect rect = QRect(graphRect.left(), this->height() - SCROLL_BAR_HEIGHT, graphRect.width(), SCROLL_BAR_HEIGHT);
+	QRect rect = QRect(graphRect.left(), this->height() - SCROLL_BAR_HEIGHT - 2, graphRect.width(), SCROLL_BAR_HEIGHT);
 	return rect;
 }
 
