@@ -40,13 +40,13 @@ ScrollZoomWidget::ScrollZoomWidget(QWidget *parent) :
                             "border: 1px none;"
                             "height: 4px;"
                             "background: palette(midlight);"
-                            "margin: 4px 0;"
+                            "margin: 3px 0;"
                             "}"
                             "QSlider::handle:horizontal {"
                             "background: palette(window);"
                             "border: 1px solid #999999;"
                             "width: 4px;"
-                            "margin: -4px 0;"
+                            "margin: -3px 0;"
                             "border-radius: 2px;"
                             "}");
     
@@ -164,6 +164,8 @@ void ScrollZoomWidget::mouseMoveEvent(QMouseEvent * event)
 
 void ScrollZoomWidget::mousePressEvent(QMouseEvent * event)
 {
+	QWidget::mousePressEvent(event);
+	setFocus();
 	mouseStartPos = event->pos();
 	if (event->button() == Qt::LeftButton)
 	{
@@ -184,8 +186,10 @@ void ScrollZoomWidget::mousePressEvent(QMouseEvent * event)
 	}
 }
 
-void ScrollZoomWidget::mouseReleaseEvent(QMouseEvent *)
+void ScrollZoomWidget::mouseReleaseEvent(QMouseEvent *e)
 {
+    QWidget::mouseReleaseEvent(e);
+    setFocus();
 	mouseStartPos.setX(0);
 }
 
@@ -233,15 +237,17 @@ void ScrollZoomWidget::keyPressEvent (QKeyEvent * event)
 	if (event->modifiers()==Qt::ControlModifier)
 	{
 		isCtrlPressed = true;
+        DAVA::Logger::Debug("CTRL pressed");
 	}
 }
 
 void ScrollZoomWidget::keyReleaseEvent (QKeyEvent *event)
 {
-	QWidget::keyPressEvent(event);
+	QWidget::keyReleaseEvent(event);
 	if (event->key() == Qt::Key_Control)
 	{
-		isCtrlPressed = false;
+		DAVA::Logger::Debug("CTRL released");
+        isCtrlPressed = false;
 		setFocus();
 	}
 }
@@ -249,7 +255,7 @@ void ScrollZoomWidget::keyReleaseEvent (QKeyEvent *event)
 QRect ScrollZoomWidget::GetScrollBarRect() const
 {
 	QRect graphRect = GetGraphRect();
-	QRect rect = QRect(graphRect.left(), this->height() - SCROLL_BAR_HEIGHT - 2, graphRect.width(), SCROLL_BAR_HEIGHT);
+	QRect rect = QRect(graphRect.left(), this->height() - SCROLL_BAR_HEIGHT - 1, graphRect.width(), SCROLL_BAR_HEIGHT);
 	return rect;
 }
 
