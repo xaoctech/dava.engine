@@ -26,5 +26,11 @@ if None != connection:
 		collection.update({'_id': 'GlobalTestId'}, {'$set' : {'LastTestId' : testId}});
 		report.write(str(testId));
 		report2.write(str(testId));
-
+	else:
+		doc = {};
+		doc['_id'] = 'GlobalTestId';
+		doc['LastTestId'] = 1;
+		collection.insert(doc);
+		report.write(str(1));
+		report2.write(str(1));
 report.close()

@@ -37,8 +37,9 @@ private:
     
     void PrepareSprite();
 	
+	Vector2 GetVecInRect(const Rect & rect, float32 angleInRad);
+
 	void DrawStatImage(DAVA::Rect rect);
-	void DrawMinFpsTargets(DAVA::Rect rect);
     
     void SaveResults();
     
