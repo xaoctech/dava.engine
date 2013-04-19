@@ -54,12 +54,15 @@ UIStaticText::UIStaticText(const Rect &rect, bool rectInAbsoluteCoordinates/* = 
 	background->SetPerPixelAccuracyType(UIControlBackground::PER_PIXEL_ACCURACY_ENABLED);
 
 	shadowBg = new UIControlBackground();
+	textBg = new UIControlBackground();
+	textBg->SetDrawType(UIControlBackground::DRAW_ALIGNED);
 }
 
 UIStaticText::~UIStaticText()
 {
 	SafeRelease(textBlock);
 	SafeRelease(shadowBg);
+	SafeRelease(textBg);
 }
 
 	
@@ -79,7 +82,9 @@ void UIStaticText::CopyDataFrom(UIControl *srcControl)
     shadowColor = t->shadowColor;
     shadowOffset = t->shadowOffset;
     SafeRelease(shadowBg);
+	SafeRelease(textBg);
     shadowBg = t->shadowBg->Clone();
+	textBg = t->textBg->Clone();
 }
 	
 UIStaticText *UIStaticText::CloneStaticText()
@@ -129,11 +134,11 @@ void UIStaticText::SetMultiline(bool _isMultilineEnabled, bool bySymbol)
 	textBlock->SetMultiline(_isMultilineEnabled, bySymbol);
 	PrepareSprite();
 }
-	
+	/*
 void UIStaticText::SetSpriteAlign(int32 align)
 {
-	SetAlign(align);
-}
+	UIControl::SetSpriteAlign(align);
+}*/
 
 void UIStaticText::SetAlign(int32 _align)
 {
@@ -180,6 +185,9 @@ void UIStaticText::Draw(const UIGeometricData &geometricData)
 	PrepareSprite();
 	textBlock->PreDraw();
 
+	background->SetDrawColor(textColor);
+	UIControl::Draw(geometricData);
+
 	if(0 != shadowColor.a && (0 != shadowOffset.dx || 0 != shadowOffset.dy))
 	{
 		UIGeometricData shadowGeomData = geometricData;
@@ -187,14 +195,16 @@ void UIStaticText::Draw(const UIGeometricData &geometricData)
 		shadowGeomData.position += shadowOffset;
 		shadowGeomData.unrotatedRect += shadowOffset;
 
-		shadowBg->SetAlign(background->GetAlign());
+		shadowBg->SetAlign(textBg->GetAlign());
         shadowBg->SetPerPixelAccuracyType(background->GetPerPixelAccuracyType());
 		shadowBg->SetDrawColor(shadowColor);
 		shadowBg->Draw(shadowGeomData);
 	}
 
-	background->SetDrawColor(textColor);
-	UIControl::Draw(geometricData);
+	textBg->SetAlign(textBlock->GetAlign());
+	textBg->SetPerPixelAccuracyType(background->GetPerPixelAccuracyType());
+	textBg->SetDrawColor(textColor);
+	textBg->Draw(geometricData);
 }
 
 void UIStaticText::SetFontColor(const Color& fontColor)

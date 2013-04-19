@@ -35,6 +35,17 @@ protected:
     // Handle UI Control State is changed - needed for updating Localization Text.
     virtual void HandleSelectedUIControlStatesChanged(const Vector<UIControl::eControlState>& newStates);
 
+	// Background Control contains Comboboxes which should be processed in the specific way.
+    virtual void ProcessComboboxValueChanged(QComboBox* senderWidget, const PROPERTYGRIDWIDGETSITER& iter,
+                                             const QString& value);
+    virtual void UpdateComboBoxWidgetWithPropertyValue(QComboBox* comboBoxWidget, const QMetaProperty& curProperty);
+
+    // Fill the combos with appropriate values.
+    void FillComboboxes();
+
+    // Handler for the custom combobox values.
+    void CustomProcessComboboxValueChanged(const PROPERTYGRIDWIDGETSITER& iter, int value);
+
 private:
     Ui::TextPropertyGridWidget *ui;
 };
