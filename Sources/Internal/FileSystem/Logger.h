@@ -41,6 +41,8 @@
 #include "Base/BaseTypes.h"
 #include "Base/Singleton.h"
 
+#include "FileSystem/FilePath.h"
+
 namespace DAVA 
 {
 	
@@ -71,7 +73,7 @@ public:
 	//! Enables/disables logging to file. Disabled by default.
 	//! \param[in] filename: name of log file. Empty string disables logging to file, 
 	//! non-empty creates log file in working directory.
-	virtual void SetLogFilename(const String & filename);
+	virtual void SetLogFilename(const FilePath & filename);
 	
 	//! Returns the current set log level.
 	virtual eLogLevel GetLogLevel();
@@ -121,7 +123,7 @@ public:
     
 protected:	
 	const char8 * GetLogLevelString(eLogLevel ll);
-	String logFilename;
+	FilePath logFilename;
 	
 private:
 	eLogLevel logLevel;

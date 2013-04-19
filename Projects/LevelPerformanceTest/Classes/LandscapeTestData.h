@@ -23,7 +23,7 @@ private:
 
 	uint32 textureMemorySize;
 	uint32 textureFilesSize;
-	String sceneFilePath;
+	FilePath sceneFilePath;
 
 public:
 	void SetLandscapeRect(const DAVA::Rect& rect);
@@ -31,10 +31,10 @@ public:
 
 	void SetTextureMemorySize(uint32 size);
 	void SetTexturesFilesSize(uint32 size);
-	void SetSceneFilePath(const String & path);
+	void SetSceneFilePath(const FilePath & path);
 	uint32 GetTextureMemorySize() const;
 	uint32 GetTexturesFilesSize() const;
-	String GetSceneFilePath() const;
+	const FilePath & GetSceneFilePath() const;
 
 	const DAVA::Rect& GetLandscapeRect() const;
 	uint32 GetItemCount() const;

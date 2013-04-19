@@ -16,7 +16,7 @@ public:
     ScenePreviewDialog();
     virtual ~ScenePreviewDialog();
     
-    void Show(const String &scenePathname);
+    void Show(const FilePath &scenePathname);
     virtual void Close();
     
 protected:

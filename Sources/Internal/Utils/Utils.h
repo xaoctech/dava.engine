@@ -35,6 +35,7 @@
  */
 
 #include "Base/BaseTypes.h"
+#include "FileSystem/FilePath.h"
 #include "Render/RenderBase.h"
 
 namespace DAVA 
@@ -105,30 +106,6 @@ inline String WStringToString(const WideString& s)
 	return temp; 
 }
 
-// Truncate the file extension.
-inline String TruncateFileExtension(const String& fileName, const String& extension)
-{
-    String truncatedName = fileName;
-    
-    int truncatedStringLen = truncatedName.length() - extension.length();
-    bool endsWithExtension = false;
-    if (fileName.length() >= extension.length())
-    {
-        endsWithExtension = (truncatedName.compare(truncatedStringLen, extension.length(), extension) == 0);
-    }
-    
-    if (endsWithExtension)
-    {
-        truncatedName.resize(truncatedStringLen);
-    }
-    
-    return truncatedName;
-}
-
-inline String TruncateTxtFileExtension(const String& fileName)
-{
-    return TruncateFileExtension(fileName, ".txt");
-}
     
 template<class T>
 void FindAndRemoveExchangingWithLast(Vector<T> & array, const T & object)

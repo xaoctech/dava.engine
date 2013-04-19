@@ -3,7 +3,7 @@
 #include "ResourcesManageHelper.h"
 #include "EditorFontManager.h"
 #include "EditorSettings.h"
-#include "ResourcePacker.h"
+#include "TexturePacker/ResourcePacker2D.h"
 
 #include <QMessageBox>
 #include <QFileDialog>
@@ -29,12 +29,13 @@ FontManagerDialog::FontManagerDialog(bool okButtonEnable,  const QString& graphi
     ui->okButton->setVisible(okButtonEnable);
     dialogResultFont = NULL;
 	// Pack graphics fonts sprites each time sprite dialog is opened
-	ResourcePacker *resPacker = new ResourcePacker();
+	ResourcePacker2D *resPacker = new ResourcePacker2D();
 
 	DAVA::String inDir = ResourcesManageHelper::GetFontSpritesDatasourceDirectory().toStdString();
 	DAVA::String outDir = ResourcesManageHelper::GetFontSpritesDirectory().toStdString();
 
-	resPacker->PackResources(inDir, outDir);
+	resPacker->InitFolders(inDir, outDir);
+	resPacker->PackResources();
     // Initialize dialog
     ConnectToSignals();
     InitializeTableView();

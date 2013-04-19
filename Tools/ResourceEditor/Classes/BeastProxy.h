@@ -14,7 +14,7 @@ public:
 	virtual bool IsJobDone(BeastManager * manager) {return false;}
 
 	virtual void Run(BeastManager * manager, DAVA::Scene * scene) {};
-	virtual void SetLightmapsDirectory(BeastManager * manager, const DAVA::String & path) {};
+	virtual void SetLightmapsDirectory(BeastManager * manager, const DAVA::FilePath & path) {};
 	virtual void SetMode(BeastManager * manager, DAVA::int32 mode) {};
 
 	virtual void UpdateAtlas(BeastManager * manager, DAVA::Vector<LightmapAtlasingData> * atlasData) {};

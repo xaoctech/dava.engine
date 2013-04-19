@@ -283,18 +283,19 @@ Vector<String> ImportDialog::GetDirectoryContent(const String& path, bool getFil
 		
 		if (isDirectory && !getFiles)
 		{
-			if (s != "." && s != "..")
+			if (!fileList.IsNavigationDirectory(i))
 			{
 				list.push_back(s);
 			}
 		}
 		else if (!isDirectory && getFiles)
 		{
-			if (FileSystem::GetExtension(s) == fileMask)
+			String ext = fileList.GetPathname(i).GetExtension();
+			if (ext == fileMask)
 			{
 				if (removeExtension)
 				{
-					s = FileSystem::ReplaceExtension(s, "");
+					s = fileList.GetPathname(i).GetBasename();
 				}
 				list.push_back(s);
 			}

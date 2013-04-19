@@ -71,10 +71,7 @@ Set<QString> ImportNodesCommand::GetNodeAggregatorControls(const HierarchyTreeNo
 		const HierarchyTreeAggregatorControlNode* childNode = dynamic_cast<const HierarchyTreeAggregatorControlNode*>(*it);
 		if (childNode)
 		{
-			String path, name;
-			FileSystem::SplitPath(childNode->GetAggregatorPath(), path, name);
-			name = FileSystem::ReplaceExtension(name, "");
-
+			String name = childNode->GetAggregatorPath().GetBasename();
 			nodeAggregatorControls.insert(QString::fromStdString(name));
 		}
 

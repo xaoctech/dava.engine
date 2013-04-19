@@ -1,11 +1,3 @@
-//
-//  DLCManager.cpp
-//  WoTSniperMacOS
-//
-//  Created by Andrey Panasyuk on 3/1/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "DLC/DLCSystem.h"
 #include "DLC/DLCUnpacker.h"
 #include "FileSystem/FileSystem.h"
@@ -49,15 +41,15 @@ DLCSystem::~DLCSystem()
     queueDLC.clear();
 };
 
-void DLCSystem::InitSystem(const std::string& serverURL, const std::string& _contentPath)
+void DLCSystem::InitSystem(const String& serverURL, const FilePath & _contentPath)
 {
     indexURL = serverURL;
-    std::string indexURLPath = serverURL + "IndexDLC.yaml";
+    String indexURLPath = serverURL + "IndexDLC.yaml";
     
-    indexFilePath = "~doc:/downloads/";
+    indexFilePath = FilePath("~doc:/downloads/");
     contentPath = _contentPath;
-    FileSystem::Instance()->CreateDirectory( FileSystem::Instance()->SystemPathForFrameworkPath( indexFilePath ), true );
-    FileSystem::Instance()->CreateDirectory( FileSystem::Instance()->SystemPathForFrameworkPath( contentPath ), true );
+    FileSystem::Instance()->CreateDirectory(indexFilePath, true);
+    FileSystem::Instance()->CreateDirectory(contentPath, true);
     
     currDownloader = new FileDownloader( indexURLPath, indexFilePath, true );
     currDownloader->SetDelegate(this);
@@ -72,8 +64,8 @@ void DLCSystem::AddDelegate(DLCSystemDelegate* delegate)
 
 void DLCSystem::RemoveDelegate(DLCSystemDelegate* delegate)
 {
-    std::vector<DLCSystemDelegate*>::iterator iter = delegates.begin();
-    std::vector<DLCSystemDelegate*>::iterator endIter = delegates.end();
+    Vector<DLCSystemDelegate*>::iterator iter = delegates.begin();
+    Vector<DLCSystemDelegate*>::iterator endIter = delegates.end();
     for (; iter != endIter; ++iter )
     {
         if ( delegate == *iter )
@@ -118,7 +110,7 @@ void DLCSystem::DownloadComplete(FileDownloaderDelegate::DownloadStatusCode stat
             SendStatusToDelegates( DOWNLOAD_COMPLETE, DLCSystemDelegate::DOWNLOAD_SUCCESS, dlc->index );
 
             // Unpack DLC & save files paths
-            std::string fileForPaths = indexFilePath + dlc->name + ".ka";
+            FilePath fileForPaths = indexFilePath + FilePath(dlc->name + ".ka");
             DLCUnpacker::Unpack( dlc->fullPath, contentPath, fileForPaths );
             FileSystem::Instance()->DeleteFile(dlc->fullPath);
         }
@@ -148,7 +140,7 @@ void DLCSystem::DownloadComplete(FileDownloaderDelegate::DownloadStatusCode stat
         if ( status == DL_SUCCESS )
         {
             // Create DLC files descriptions
-            YamlParser * parser = YamlParser::Create(indexFilePath + "IndexDLC.yaml");
+            YamlParser * parser = YamlParser::Create(indexFilePath + FilePath("IndexDLC.yaml"));
             YamlNode * rootNode = parser->GetRootNode()->Get( "downloads" );
             for ( uint16 roonInd = 0; roonInd < rootNode->GetCount(); ++roonInd )
             {
@@ -165,10 +157,9 @@ void DLCSystem::DownloadComplete(FileDownloaderDelegate::DownloadStatusCode stat
             {
                 DLCSource * dlc = dlcs[curInd];
                 // 
-                std::string path;
-                std::string fileName;
-                FileSystem::SplitPath( dlc->pathOnServer, path, fileName );
-                std::string fullSavePath = FileSystem::RealPath( FileSystem::Instance()->SystemPathForFrameworkPath( contentPath ) + "/" + fileName );
+                FilePath fullSavePath(dlc->pathOnServer);
+                fullSavePath.ReplaceDirectory(contentPath);
+                
                 dlc->fullPath = fullSavePath;
                 bool isDlcFound = false;
                 
@@ -191,7 +182,7 @@ void DLCSystem::DownloadComplete(FileDownloaderDelegate::DownloadStatusCode stat
                         }
                         
                         // Check file system
-                        std::string fileForPaths = indexFilePath + dlc->name + ".ka";
+                        FilePath fileForPaths = indexFilePath + FilePath(dlc->name + ".ka");
                         CheckFileStructureDLC(fileForPaths, dlc);
 
                         // Check version
@@ -257,7 +248,7 @@ bool DLCSystem::Stop()
 
 void DLCSystem::LoadOldDlcs()
 {
-    File * file = FileSystem::Instance()->CreateFileForFrameworkPath( indexFilePath + "DLCSystemStates", File::OPEN | File::READ );
+    File * file = File::Create(indexFilePath + FilePath("DLCSystemStates"), File::OPEN | File::READ );
     if ( file == NULL )
     {
         return;
@@ -278,7 +269,7 @@ void DLCSystem::LoadOldDlcs()
 
 void DLCSystem::SaveOldDlcs() const
 {
-    File * file = FileSystem::Instance()->CreateFileForFrameworkPath( indexFilePath + "DLCSystemStates", File::CREATE | File::WRITE );
+    File * file = File::Create(indexFilePath + FilePath("DLCSystemStates"), File::CREATE | File::WRITE );
     if ( file == NULL )
     {
         return;
@@ -295,7 +286,7 @@ void DLCSystem::SaveOldDlcs() const
     SafeRelease(file);
 }
 
-void DLCSystem::CheckFileStructureDLC(const std::string& path, DLCSource * _dlc)
+void DLCSystem::CheckFileStructureDLC(const FilePath & path, DLCSource * _dlc)
 {
     KeyedArchive * archive = new KeyedArchive();
     archive->Load( path );
@@ -304,14 +295,14 @@ void DLCSystem::CheckFileStructureDLC(const std::string& path, DLCSource * _dlc)
     
     for ( uint32 i = 0; i < size; ++i )
     {
-        std::string key = "";
+        String key = "";
         std::stringstream stream;
         stream << i;
         stream >> key;
-        std::string filePathForCheck = archive->GetString(key);
-        std::string fullPathForCheck = contentPath + filePathForCheck;
+        FilePath filePathForCheck = FilePath(archive->GetString(key));
+        FilePath fullPathForCheck = contentPath + filePathForCheck;
         
-        File * file = FileSystem::Instance()->CreateFileForFrameworkPath( fullPathForCheck, File::OPEN | File::READ );
+        File * file = File::Create(fullPathForCheck, File::OPEN | File::READ );
         if ( file == NULL )
         {
             isFileStructureOk = false;
@@ -400,7 +391,7 @@ void DLCSystem::DownloadNextDLC()
     
     DLCSource * downloadingDLC = *queueDLC.begin();
     
-    std::string filePath = indexURL + downloadingDLC->pathOnServer;
+    String filePath = indexURL + downloadingDLC->pathOnServer;
     
     bool reload = false;
     if ( downloadingDLC->state == DLC_OLD_VERSION )
