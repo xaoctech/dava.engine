@@ -10,7 +10,7 @@
 
 SceneCollisionSystem::SceneCollisionSystem(DAVA::Scene * scene)
 	: DAVA::SceneSystem(scene)
-	, debugDrawFlags(DEBUG_DRAW_SELECTED_OBJECTS)
+	, debugDrawFlags(DEBUG_DRAW_NOTHING)
 {
 	btVector3 worldMin(-1000,-1000,-1000);
 	btVector3 worldMax(1000,1000,1000);

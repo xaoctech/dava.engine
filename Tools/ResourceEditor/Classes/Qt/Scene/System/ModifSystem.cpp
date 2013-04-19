@@ -386,7 +386,21 @@ void EntityModificationSystem::Scale(const DAVA::Vector2 &newPos2d)
 			scaleModification.Identity();
 			scaleModification.CreateScale(DAVA::Vector3(scaleForce, scaleForce, scaleForce));
 
-			scaleModification = (modifEntities[i].moveToZeroPos * scaleModification) * modifEntities[i].moveFromZeroPos;
+			switch(modifPivotPoint)
+			{
+			case SceneSelectionSystem::SELECTION_ENTITY_CENTER:
+				// move to zero, rotate, move back to original center point
+				scaleModification = (modifEntities[i].moveToZeroPos * scaleModification) * modifEntities[i].moveFromZeroPos;
+				break;
+			case SceneSelectionSystem::SELECTION_COMMON_CENTER:
+				// move to zero relative selection center, rotate, move back to original center point
+				scaleModification = (moveToZeroPosRelativeCenter * scaleModification) * moveFromZeroPosRelativeCenter;
+				break;
+			default:
+				scaleModification.Identity();
+				break;
+			}
+			
 			modifEntities[i].entity->SetLocalTransform(modifEntities[i].originalTransform * scaleModification);
 		}
 	}

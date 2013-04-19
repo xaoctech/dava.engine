@@ -11,7 +11,7 @@ SceneSelectionSystem::SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSy
 	: DAVA::SceneSystem(scene)
 	, collisionSystem(collSys)
 	, hoodSystem(hoodSys)
-	, selectionDrawFlags(SELECTION_FILL_SHAPE | SELECTION_DRAW_SHAPE)
+	, selectionDrawFlags(SELECTION_FILL_SHAPE | SELECTION_DRAW_CORNERS)
 	, applyOnPhaseEnd(false)
 	, curPivotPoint(SELECTION_COMMON_CENTER)
 {
