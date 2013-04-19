@@ -1653,6 +1653,9 @@
     <ClCompile Include="_GeneratedQt\DockSceneInfo\SceneInfo_moc.cpp">
       <Filter>QtGenerated\DockSceneInfo</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\SceneManager.cpp">
+      <Filter>Sources\Qt\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -2905,6 +2908,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockSceneInfo\SceneInfo.h">
       <Filter>Sources\Qt\DockSceneInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\SceneManager.h">
+      <Filter>Sources\Qt\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -12,8 +12,6 @@
 SceneEditorProxy::SceneEditorProxy()
 	: Scene()
 {
-	sceneSignals = new SceneEditorSignals();
-
 	cameraSystem = new SceneCameraSystem(this);
 	AddSystem(cameraSystem, 0);
 
@@ -41,8 +39,6 @@ SceneEditorProxy::~SceneEditorProxy()
 	SafeDelete(collisionSystem);
 	SafeDelete(gridSystem);
 	SafeDelete(cameraSystem);
-
-	delete sceneSignals;
 }
 
 bool SceneEditorProxy::Open(const DAVA::String &path)
