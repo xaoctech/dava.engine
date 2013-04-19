@@ -4,6 +4,8 @@
 #include "../../SceneEditor/EditorSettings.h"
 #include "../../EditorScene.h"
 
+#include "../../SceneEditor/CommandLineTool.h"
+
 
 #include "Main/QtUtils.h"
 
@@ -442,7 +444,7 @@ void SceneInfo::showEvent ( QShowEvent * event )
 {
     QtPropertyEditor::showEvent(event);
     
-    if(isVisible())
+    if(isVisible() && !IsInConsoleMode())
     {
         QTimer::singleShot(1000, this, SLOT(timerDone()));
     }
@@ -473,3 +475,12 @@ void SceneInfo::RefreshAllData(SceneData *sceneData)
 
 	RestoreTreeState();
 }
+
+bool SceneInfo::IsInConsoleMode()
+{
+    return (     CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter"))
+            ||   CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter"))
+            ||   CommandLineTool::Instance()->CommandIsFound(String("-scenesaver"))
+        );
+}
+

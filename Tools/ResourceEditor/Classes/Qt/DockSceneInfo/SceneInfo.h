@@ -91,6 +91,9 @@ protected:
     void CollectTexture(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, const DAVA::FilePath &pathname, DAVA::Texture *tex);
     
     static DAVA::uint32 CalculateTextureSize(const DAVA::Map<DAVA::String, DAVA::Texture *> &textures);
+
+    bool IsInConsoleMode();
+    
     
 protected:
     
