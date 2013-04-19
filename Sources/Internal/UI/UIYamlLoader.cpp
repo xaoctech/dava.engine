@@ -63,6 +63,7 @@ int32 UIYamlLoader::GetDrawTypeFromNode(YamlNode * drawTypeNode)
     if("DRAW_STRETCH_HORIZONTAL" == type) ret = UIControlBackground::DRAW_STRETCH_HORIZONTAL;
     if("DRAW_STRETCH_VERTICAL" == type) ret = UIControlBackground::DRAW_STRETCH_VERTICAL;
     if("DRAW_STRETCH_BOTH" == type) ret = UIControlBackground::DRAW_STRETCH_BOTH;
+	if("DRAW_TILED" == type) ret = UIControlBackground::DRAW_TILED;
     
     return ret;
 }
@@ -94,6 +95,9 @@ String UIYamlLoader::GetDrawTypeNodeValue(int32 drawType)
             break;
         case UIControlBackground::DRAW_STRETCH_BOTH:
             ret = "DRAW_STRETCH_BOTH";
+			break;
+		case UIControlBackground::DRAW_TILED:
+            ret = "DRAW_TILED";
 			break;
         default:
             ret = "DRAW_ALIGNED";
