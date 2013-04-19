@@ -44,13 +44,13 @@ namespace DAVA
     {
     }
     
-    UIListCell::UIListCell(const Rect &rect, const String &cellIdentifier, const String &aggregatorPath)
+    UIListCell::UIListCell(const Rect &rect, const String &cellIdentifier, const FilePath &aggregatorPath)
         :	UIButton(rect)
         ,	currentIndex(-1)
         ,	identifier(cellIdentifier)
         ,	cellStore(NULL)
     {
-		if (!aggregatorPath.empty())
+		if (aggregatorPath.IsInitalized())
 		{
 			UIAggregatorControl *aggregator = new UIAggregatorControl();
 			UIYamlLoader loader;

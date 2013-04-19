@@ -665,12 +665,12 @@ UIControl *UIList::Clone()
 	return c;
 }
 
-const String & UIList::GetAggregatorPath()
+const FilePath & UIList::GetAggregatorPath()
 {
 	return aggregatorPath;
 }
 	
-void UIList::SetAggregatorPath(const String &aggregatorPath)
+void UIList::SetAggregatorPath(const FilePath &aggregatorPath)
 {
 	this->aggregatorPath = aggregatorPath;
 }
@@ -707,9 +707,9 @@ YamlNode * UIList::SaveToYamlNode(UIYamlLoader * loader)
 	}
 
 	// Save aggregator path only if it is not empty
-	if (!aggregatorPath.empty())
+	if (aggregatorPath.IsInitalized())
 	{
-		node->Set("aggregatorPath", aggregatorPath);
+		node->Set("aggregatorPath", aggregatorPath.GetAbsolutePathname());
 	}
     
 	return node;

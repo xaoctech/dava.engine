@@ -6,7 +6,7 @@
 struct LightmapAtlasingData
 {
 	DAVA::String meshInstanceName;
-	DAVA::String textureName;
+	DAVA::FilePath textureName;
 	DAVA::Vector2 uvOffset;
 	DAVA::Vector2 uvScale;
 };

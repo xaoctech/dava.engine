@@ -11,7 +11,7 @@ public:
     TextureConverterCell(const Rect &rect, const String &cellIdentifier);
     virtual ~TextureConverterCell();
 
-    void SetTexture(const String &texturePath);
+    void SetTexture(const FilePath &texturePath);
     
     static int32 GetCellHeight();
 protected:

@@ -9,7 +9,7 @@ using namespace DAVA;
 class Test: public DAVA::UIScreen
 {
 public:
-	Test(const String& fullName);
+	Test(const FilePath & fullName);
 	
 	virtual void LoadResources();
 	virtual void UnloadResources();
@@ -27,8 +27,7 @@ public:
 
 	Texture* GetLandscapeTexture();
 
-	const String GetFileName() const;
-	const String GetFilePath() const;
+	const FilePath & GetFilePath() const;
 
 	const LandscapeTestData& GetLandscapeTestData() const {return testData;};
 private:
@@ -39,7 +38,7 @@ private:
 	
 	int32 skipFrames;
 
-	String fullName;
+	FilePath fullName;
 	
 	LandscapeTestData testData;
     Vector3 curCameraPosition;

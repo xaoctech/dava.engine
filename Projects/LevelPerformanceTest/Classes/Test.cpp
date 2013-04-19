@@ -11,7 +11,7 @@ Test::Test()
 {
 }
 
-Test::Test(const String& fullName)
+Test::Test(const FilePath& fullName)
 {
 	this->fullName = fullName;
 	
@@ -50,7 +50,7 @@ void Test::LoadResources()
 	Landscape* landscape = GetLandscape();
 	DVASSERT_MSG(scene, "There is no landscape in a scene");
 
-	uint32 textureMemory = TextureHelper::GetSceneTextureMemory(scene, GetFilePath());
+	uint32 textureMemory = TextureHelper::GetSceneTextureMemory(scene, GetFilePath().GetFilename());
 	testData.SetTextureMemorySize(textureMemory);
 
 	uint32 textureFilesSize = TextureHelper::GetSceneTextureFilesSize(scene, GetFilePath());
@@ -96,8 +96,6 @@ void Test::OnSectorCameraAnimationEnded(BaseObject* caller, void* userData, void
 
 	if(curSectorIndex < 8)
 	{
-//		SafeRelease(camRotateAnimation);
-
 		float32 timeToRotate = 45.f / SettingsManager::Instance()->GetCameraRotationSpeed();
 		camRotateAnimation = new LinearAnimation<float32>(this, &curCameraAngle, curCameraAngle + 45.f, timeToRotate, Interpolation::LINEAR);
 		camRotateAnimation->AddEvent(Animation::EVENT_ANIMATION_END, Message(this, &Test::OnSectorCameraAnimationEnded));
@@ -238,20 +236,9 @@ Vector3 Test::GetRealPoint(const Vector2& point)
     return realPoint;
 }
 
-const String Test::GetFileName() const
+const FilePath & Test::GetFilePath() const
 {
-	String path;
-	String filename;
-	FileSystem::Instance()->SplitPath(fullName, path, filename);
-	return filename;
-}
-
-const String Test::GetFilePath() const
-{
-	String path;
-	String filename;
-	FileSystem::Instance()->SplitPath(fullName, path, filename);
-	return path;
+	return fullName;
 }
 
 void Test::ZeroCurFpsStat()

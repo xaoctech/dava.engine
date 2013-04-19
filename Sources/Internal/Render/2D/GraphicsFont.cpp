@@ -208,11 +208,13 @@ YamlNode * GraphicsFont::SaveToYamlNode()
     Sprite *sprite = this->fontSprite;
     if (sprite)
     {
-        //Truncate sprite ".txt" extension before save       
-        node->Set("sprite", TruncateTxtFileExtension(sprite->GetName()));
+        //Truncate sprite ".txt" extension before save
+        FilePath path(sprite->GetRelativePathname());
+        path.TruncateExtension();
+        node->Set("sprite", path.GetAbsolutePathname());
     }    
     //Font Definition
-    node->Set("definition", this->GetFontDefinitionName());
+    node->Set("definition", this->GetFontDefinitionName().GetAbsolutePathname());
 
     return node;
 }
@@ -223,17 +225,20 @@ Sprite *GraphicsFont::GetFontSprite()
     return fontSprite;
 }
     
-String GraphicsFont::GetFontDefinitionName()
+FilePath & GraphicsFont::GetFontDefinitionName()
 {
     return fontDefinitionName;
 }
 
-bool GraphicsFontDefinition::LoadFontDefinition(const String & fontDefName)
+bool GraphicsFontDefinition::LoadFontDefinition(const FilePath & fontDefName)
 {
     File * file = 0;
-    size_t pos = fontDefName.rfind("/");
-    String fileName = fontDefName.substr(pos + 1);
-    String pathName = fontDefName.substr(0, pos + 1) + LocalizationSystem::Instance()->GetCurrentLocale() + "/" + fileName;
+    
+//    size_t pos = fontDefName.rfind("/");
+//    String fileName = fontDefName.substr(pos + 1);
+//    String pathName = fontDefName.substr(0, pos + 1) + LocalizationSystem::Instance()->GetCurrentLocale() + "/" + fileName;
+    
+    FilePath pathName = fontDefName.GetDirectory() + FilePath(LocalizationSystem::Instance()->GetCurrentLocale() + "/" + fontDefName.GetFilename());
     
     file = File::Create(pathName, File::READ|File::OPEN);
     
@@ -356,7 +361,7 @@ uint16 GraphicsFontDefinition::CharacterToIndex(char16 c)
 	return INVALID_CHARACTER_INDEX;
 }
 	
-GraphicsFont * GraphicsFont::Create(const String & fontDefName, const String & spriteName)
+GraphicsFont * GraphicsFont::Create(const FilePath & fontDefName, const FilePath & spriteName)
 {
 	GraphicsFont * font = new GraphicsFont();
 	font->fdef = new GraphicsFontDefinition();
@@ -364,7 +369,7 @@ GraphicsFont * GraphicsFont::Create(const String & fontDefName, const String & s
     font->fontDefinitionName = fontDefName;
 	if (!font->fdef->LoadFontDefinition(fontDefName))
 	{
-		Logger::Error("Failed to create font from definition: %s", fontDefName.c_str());
+		Logger::Error("Failed to create font from definition: %s", fontDefName.GetAbsolutePathname().c_str());
 		SafeRelease(font->fdef);
 		SafeRelease(font);
 		return 0;
@@ -373,7 +378,7 @@ GraphicsFont * GraphicsFont::Create(const String & fontDefName, const String & s
 	font->fontSprite = Sprite::Create(spriteName);
 	if (!font->fontSprite)
 	{
-		Logger::Error("Failed to create font because sprite is not available: %s", spriteName.c_str());
+		Logger::Error("Failed to create font because sprite is not available: %s", spriteName.GetAbsolutePathname().c_str());
 		SafeRelease(font);
 		return 0;
 	}

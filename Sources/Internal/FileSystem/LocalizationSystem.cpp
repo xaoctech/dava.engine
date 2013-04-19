@@ -56,13 +56,15 @@ LocalizationSystem::~LocalizationSystem()
 	SafeDelete(dataHolder);
 }
 	
-void LocalizationSystem::InitWithDirectory(const String &directoryPath)
+void LocalizationSystem::InitWithDirectory(const FilePath &directoryPath)
 {
+    DVASSERT(directoryPath.IsDirectoryPathname());
+    
     this->directoryPath = directoryPath;
 #ifdef __DAVAENGINE_IPHONE__
 	LocalizationIPhone::SelecePreferedLocalizationForPath(directoryPath);
 #endif
-	LoadStringFile(langId, directoryPath + "/" + langId.c_str() + ".yaml");
+	LoadStringFile(langId, directoryPath + FilePath(langId + ".yaml"));
 }
 	
 const String &LocalizationSystem::GetCurrentLocale()
@@ -70,7 +72,7 @@ const String &LocalizationSystem::GetCurrentLocale()
 	return langId;
 }
 	
-const String &LocalizationSystem::GetDirectoryPath() const
+const FilePath &LocalizationSystem::GetDirectoryPath() const
 {
     return directoryPath;
 }
@@ -80,7 +82,7 @@ void LocalizationSystem::SetCurrentLocale(const String &newLangId)
 	langId = newLangId;
 }
 	
-LocalizationSystem::StringFile * LocalizationSystem::LoadFromYamlFile(const String & langID, const String & pathName)
+LocalizationSystem::StringFile * LocalizationSystem::LoadFromYamlFile(const String & langID, const FilePath & pathName)
 {
 	yaml_parser_t parser;
 	yaml_event_t event;
@@ -219,7 +221,7 @@ bool LocalizationSystem::SaveToYamlFile(const StringFile* stringFile)
 	return result;
 }
 
-void LocalizationSystem::LoadStringFile(const String & langID, const String & fileName)
+void LocalizationSystem::LoadStringFile(const String & langID, const FilePath & fileName)
 {
 	StringFile * file = LoadFromYamlFile(langID, fileName);
 	if (file)
@@ -228,7 +230,7 @@ void LocalizationSystem::LoadStringFile(const String & langID, const String & fi
 	}	
 }
 	
-void LocalizationSystem::UnloadStringFile(const String & fileName)
+void LocalizationSystem::UnloadStringFile(const FilePath & fileName)
 {
 	DVASSERT(0 && "Method do not implemented");
 }
@@ -291,7 +293,7 @@ void LocalizationSystem::Cleanup()
 	}
 	stringsList.clear();
     
-    directoryPath.clear();
+    directoryPath = FilePath();
     langId.clear();
 	SafeDeleteArray(dataHolder->data);
 }

@@ -31,11 +31,11 @@
 
 void ClipTestScreen::LoadResources()
 {
-	redSprite = Sprite::Create("~res:/Gfx/SpriteBasics/redsprite");
-	greenSprite = Sprite::Create("~res:/Gfx/SpriteBasics/greensprite");
-	blueSprite = Sprite::Create("~res:/Gfx/SpriteBasics/bluesprite");
-	tranclucentSprite = Sprite::Create("~res:/Gfx/SpriteBasics/transclucentsprite");
-	zebraSprite = Sprite::Create("~res:/Gfx/SpriteBasics/zebrasprite");
+	redSprite = Sprite::Create(FilePath("~res:/Gfx/SpriteBasics/redsprite"));
+	greenSprite = Sprite::Create(FilePath("~res:/Gfx/SpriteBasics/greensprite"));
+	blueSprite = Sprite::Create(FilePath("~res:/Gfx/SpriteBasics/bluesprite"));
+	tranclucentSprite = Sprite::Create(FilePath("~res:/Gfx/SpriteBasics/transclucentsprite"));
+	zebraSprite = Sprite::Create(FilePath("~res:/Gfx/SpriteBasics/zebrasprite"));
 }
 
 void ClipTestScreen::UnloadResources()

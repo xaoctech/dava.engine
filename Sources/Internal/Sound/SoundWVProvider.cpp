@@ -35,7 +35,7 @@
 namespace DAVA
 {
 
-SoundWVProvider::SoundWVProvider(const String & _fileName)
+SoundWVProvider::SoundWVProvider(const FilePath & _fileName)
 :	SoundDataProvider(_fileName),
 	file(0)
 {

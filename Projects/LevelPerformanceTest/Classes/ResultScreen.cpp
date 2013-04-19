@@ -4,7 +4,7 @@
 #include "Config.h"
 #include "DeviceInfo.h"
 
-ResultScreen::ResultScreen(const LandscapeTestData& testData, const String& filename, Texture* landscapeTexture)
+ResultScreen::ResultScreen(const LandscapeTestData& testData, const FilePath& filename, Texture* landscapeTexture)
 :	isFinished(false),
 	state(RESULT_STATE_NORMAL),
 	testData(testData)
@@ -58,8 +58,8 @@ void ResultScreen::SaveResults()
     Vector2 screenSize(core->GetVirtualScreenWidth(), core->GetVirtualScreenHeight());
     
     Image* image = resultSprite->GetTexture()->CreateImageFromMemory();
-    String saveFileName = FileSystem::Instance()->GetUserDocumentsPath();
-    saveFileName += filename + ".png";
+    FilePath saveFileName = FileSystem::Instance()->GetUserDocumentsPath();
+    saveFileName += FilePath(filename.GetAbsolutePathname() + ".png");
     ImageLoader::Save(image, saveFileName);
     
     Map<String, String> results;
@@ -67,13 +67,13 @@ void ResultScreen::SaveResults()
 	results["TextureMemorySize"] = Format("%.2f Mb", testData.GetTextureMemorySize()/(1024.f * 1024.f));
 	results["TextureFilesSize"] = Format("%.2f Mb", testData.GetTexturesFilesSize()/(1024.f * 1024.f));
 
-	String filePath = testData.GetSceneFilePath();
+	String filePath = testData.GetSceneFilePath().ResolvePathname();
     results["SceneFilePath"] = filePath.substr(filePath.find("Maps"));
     
-    String documentsPath = FileSystem::Instance()->SystemPathForFrameworkPath("~doc:");
-    String folderPathname = documentsPath + "PerformanceTestResult";
+    FilePath documentsPath("~doc:");
+    FilePath folderPathname = documentsPath + FilePath("PerformanceTestResult/");
     FileSystem::Instance()->CreateDirectory(folderPathname);
-    String statFileName = folderPathname + "/" + filename + ".txt";
+    FilePath statFileName = folderPathname + filename + FilePath(".txt");
     File* file = File::Create(statFileName, File::CREATE | File::WRITE);
     if (file)
     {
@@ -87,7 +87,7 @@ void ResultScreen::SaveResults()
         SafeRelease(file);
     }
     
-    String levelName = filename.substr(0, filename.find('.')); // "levelName" must be w/o dots
+    FilePath levelName = FilePath::CreateWithNewExtension(filename, "");
     GameCore::Instance()->FlushToDB(levelName, results, saveFileName);
     
     state = RESULT_STATE_FINISHED;

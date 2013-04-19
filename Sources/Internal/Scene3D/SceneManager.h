@@ -47,8 +47,8 @@ public:
     SceneManager();
     virtual ~SceneManager();
     
-    Scene * LoadScene(const String & scenePathname);
-    void ReleaseScene(const String & scenePathname);
+    Scene * LoadScene(const FilePath & scenePathname);
+    void ReleaseScene(const FilePath & scenePathname);
     void ReleaseAllScenes();
     
 private:

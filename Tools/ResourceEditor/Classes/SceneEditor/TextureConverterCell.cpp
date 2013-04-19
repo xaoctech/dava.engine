@@ -58,27 +58,21 @@ TextureConverterCell::~TextureConverterCell()
     SafeRelease(textureSize);
 }
 
-void TextureConverterCell::SetTexture(const String &texturePath)
+void TextureConverterCell::SetTexture(const FilePath &texturePath)
 {
-    String textureWorkingPath = texturePath;
-    
-    String path, filename;
-    FileSystem::SplitPath(textureWorkingPath, path, filename);
-
     textureFormat->SetText(L"");
     textureSize->SetText(L"");
-    textureName->SetText(StringToWString(filename));
+    textureName->SetText(StringToWString(texturePath.GetFilename()));
     
-    Texture *texture = Texture::CreateFromFile(textureWorkingPath);
+    Texture *texture = Texture::CreateFromFile(texturePath);
     Sprite *s = Sprite::CreateFromTexture(texture, 0, 0, (float32)texture->width, (float32)texture->height);
     preview->SetSprite(s, 0);
     
-    String ext = FileSystem::GetExtension(filename);
-    if(".png" == ext)
+    if(texturePath.IsEqualToExtension(".png"))
     {
         String pngFormat = Texture::GetPixelFormatString(texture->format);
         
-        String pvrPath = FileSystem::ReplaceExtension(textureWorkingPath, ".pvr");
+        FilePath pvrPath = FilePath::CreateWithNewExtension(texturePath, ".pvr");
         Texture *pvrTex = Texture::CreateFromFile(pvrPath);
         if(pvrTex)
         {
@@ -97,15 +91,15 @@ void TextureConverterCell::SetTexture(const String &texturePath)
             textureFormat->SetText(StringToWString(pngFormat));
         }
     }
-    else if(".pvr" == ext)
+    else if(texturePath.IsEqualToExtension(".pvr"))
     {
-        PixelFormat format = LibPVRHelper::GetPixelFormat(textureWorkingPath);
-        uint32 pvrDataSize = LibPVRHelper::GetDataLength(textureWorkingPath);
+        PixelFormat format = LibPVRHelper::GetPixelFormat(texturePath);
+        uint32 pvrDataSize = LibPVRHelper::GetDataLength(texturePath);
 
         String pvrFormat = Texture::GetPixelFormatString(format);
         textureSize->SetText(SizeInBytesToWideString(pvrDataSize));
 
-        String pngPath = FileSystem::ReplaceExtension(textureWorkingPath, ".pvr");
+        FilePath pngPath = FilePath::CreateWithNewExtension(texturePath, ".png");
         Texture *pngTex = Texture::CreateFromFile(pngPath);
         if(pngTex)
         {

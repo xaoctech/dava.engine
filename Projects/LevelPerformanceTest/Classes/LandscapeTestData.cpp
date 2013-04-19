@@ -79,7 +79,7 @@ void LandscapeTestData::SetTextureMemorySize(uint32 size)
 	textureMemorySize = size;
 }
 
-void LandscapeTestData::SetSceneFilePath(const String & path)
+void LandscapeTestData::SetSceneFilePath(const FilePath & path)
 {
 	sceneFilePath = path;
 }
@@ -89,7 +89,7 @@ uint32 LandscapeTestData::GetTextureMemorySize() const
 	return textureMemorySize;
 }
 
-String LandscapeTestData::GetSceneFilePath() const
+const FilePath & LandscapeTestData::GetSceneFilePath() const
 {
 	return sceneFilePath;
 }

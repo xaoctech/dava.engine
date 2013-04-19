@@ -123,7 +123,7 @@ QString UISliderMetadata::GetSliderThumbSprite() const
         return StringConstants::NO_SPRITE_IS_SET;
     }
     
-    return thumbSprite->GetRelativePathname().c_str();
+    return QString::fromStdString(thumbSprite->GetRelativePathname().GetAbsolutePathname());
 }
 
 void UISliderMetadata::SetSliderThumbSprite(QString value)
@@ -203,7 +203,7 @@ QString UISliderMetadata::GetSliderMinSprite() const
         return StringConstants::NO_SPRITE_IS_SET;
     }
     
-    return minSprite->GetRelativePathname().c_str();
+    return QString::fromStdString(minSprite->GetRelativePathname().GetAbsolutePathname());
 }
 
 void UISliderMetadata::SetSliderMinSprite(QString value)
@@ -303,7 +303,7 @@ QString UISliderMetadata::GetSliderMaxSprite() const
         return StringConstants::NO_SPRITE_IS_SET;
     }
     
-    return maxSprite->GetRelativePathname().c_str();
+    return QString::fromStdString(maxSprite->GetRelativePathname().GetAbsolutePathname());
 }
 
 void UISliderMetadata::SetSliderMaxSprite(QString value)

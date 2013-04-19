@@ -501,10 +501,10 @@ void HierarchyTreeController::UpdateLocalization(bool takePathFromLocalizationSy
     else
     {
         // FROM Active Platform TO Localization System.
-        const String& localizationPath = activePlatformNode->GetLocalizationPath();
+        const FilePath & localizationPath = activePlatformNode->GetLocalizationPath();
         const String& locale = activePlatformNode->GetLocale();
 
-        if (localizationPath.empty() || locale.empty())
+        if (!localizationPath.IsInitalized() || locale.empty())
         {
             // No Localization Path is already set - cleanup the Localization System.
             LocalizationSystem::Instance()->Cleanup();
