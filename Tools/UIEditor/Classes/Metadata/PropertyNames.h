@@ -23,6 +23,7 @@ namespace PropertyNames
     static const char* SPRITE_PROPERTY_NAME = "Sprite";
     static const char* SPRITE_FRAME_PROPERTY_NAME = "SpriteFrame";
 	static const char* SPRITE_MODIFICATION_PROPERTY_NAME = "SpriteModification";
+	static const char* SPRITE_ALIGN_PROPERTY_NAME = "SpriteAlign";
 
 	static const char* STRETCH_HORIZONTAL_PROPERTY_NAME = "LeftRightStretchCap";
 	static const char* STRETCH_VERTICAL_PROPERTY_NAME = "TopBottomStretchCap";

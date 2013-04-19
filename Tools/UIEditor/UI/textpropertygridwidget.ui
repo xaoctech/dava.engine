@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>300</width>
-    <height>232</height>
+    <height>262</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>300</width>
-    <height>232</height>
+    <height>262</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -25,7 +25,7 @@
      <x>1</x>
      <y>1</y>
      <width>299</width>
-     <height>231</height>
+     <height>261</height>
     </rect>
    </property>
    <property name="minimumSize">
@@ -218,6 +218,29 @@ QPushButton:pressed {background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 
     </property>
     <property name="text">
      <string>X:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="AlignLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>236</y>
+      <width>62</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Align:</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="alignComboBox">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>230</y>
+      <width>209</width>
+      <height>26</height>
+     </rect>
     </property>
    </widget>
   </widget>

@@ -60,15 +60,23 @@ void BackGroundPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     
     RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::DRAW_TYPE_PROPERTY_NAME, ui->drawTypeComboBox, false, true);
     RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::COLOR_INHERIT_TYPE_PROPERTY_NAME, ui->colorInheritComboBox, false, true);
-    RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::ALIGN_PROPERTY_NAME, ui->alignComboBox, false, true);
+    
+	if(dynamic_cast<UIStaticTextMetadata*>(activeMetadata))
+	{
+		RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::SPRITE_ALIGN_PROPERTY_NAME, ui->alignComboBox, false, true);
+	}
+	else
+	{
+		RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::ALIGN_PROPERTY_NAME, ui->alignComboBox, false, true);
+	}
 
     RegisterColorButtonWidgetForProperty(propertiesMap, PropertyNames::BACKGROUND_COLOR_PROPERTY_NAME, ui->selectColorButton, false, true);
 
     // Editing of sprites is not allowed for UIStaticText.
-    bool disableSpriteEditingControls = (dynamic_cast<UIStaticTextMetadata*>(activeMetadata) != NULL);
+    /*bool disableSpriteEditingControls = (dynamic_cast<UIStaticTextMetadata*>(activeMetadata) != NULL);
     ui->spriteLineEdit->setDisabled(disableSpriteEditingControls);
     ui->frameSpinBox->setDisabled(disableSpriteEditingControls);
-    ui->openSpriteButton->setDisabled(disableSpriteEditingControls);
+    ui->openSpriteButton->setDisabled(disableSpriteEditingControls);*/
 	HandleDrawTypeComboBox();
 }
 
