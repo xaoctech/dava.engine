@@ -215,7 +215,11 @@ uint32 SceneInfo::CalculateTextureSize(const Map<String, Texture *> &textures)
         }
         
         TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(pathname);
-        DVASSERT(descriptor);
+        if(!descriptor)
+        {
+            Logger::Error("[SceneInfo::CalculateTextureSize] Can't create descriptor for texture %s", pathname.c_str());
+            continue;
+        }
         
         ImageFileFormat requestedFormat = (descriptor->isCompressedFile) ?
                                 (ImageFileFormat)descriptor->textureFileFormat :
