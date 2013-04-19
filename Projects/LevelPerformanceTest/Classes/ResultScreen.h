@@ -37,7 +37,7 @@ private:
     
     void PrepareSprite();
 	
-	Vector2 GetVecInRect(const Rect & rect, float32 angleInRad);
+	DAVA::Vector2 GetVecInRect(const DAVA::Rect & rect, float32 angleInRad);
 
 	void DrawStatImage(DAVA::Rect rect);
     
