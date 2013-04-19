@@ -7,13 +7,10 @@ using namespace DAVA;
 
 struct FpsStatItem
 {
-	float32 minFps;
+	float32 avFps[8];
 	DAVA::Rect rect;
-	Vector3 position;
-	Vector3 viewTarget;
 	
 	FpsStatItem()
-	:	minFps(std::numeric_limits<float32>::infinity())
 	{
 	}
 };

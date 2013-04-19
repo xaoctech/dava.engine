@@ -1,18 +1,8 @@
 #include "LandscapeTestData.h"
 
-class FpsStatItemCompare
-{
-public:
-	bool operator()(const FpsStatItem& a, const FpsStatItem& b)
-	{
-		return a.minFps < b.minFps;
-	}
-};
-
 void LandscapeTestData::AddStatItem(const FpsStatItem &item)
 {
 	stat.push_back(item);
-	std::sort(stat.begin(), stat.end(), FpsStatItemCompare());
 }
 
 void LandscapeTestData::SetLandscapeRect(const Rect &rect)

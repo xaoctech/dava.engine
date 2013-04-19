@@ -24,7 +24,7 @@ public:
 	int32 GetScreenId() const {return screenId;};
 	
 	bool IsFinished() const {return isFinished;};
-	
+
 	Texture* GetLandscapeTexture();
 
 	const String GetFileName() const;
@@ -41,13 +41,14 @@ private:
 
 	String fullName;
 	
-	float32 time;
-    
 	LandscapeTestData testData;
     Vector3 curCameraPosition;
     uint32 nextRectNum;
+
     float32 curCameraAngle;
-    LinearAnimation<Vector3>* camMoveAnimation;
+	float32 curSectorTime;
+	int32 curSectorFrames;
+	int32 curSectorIndex;
     LinearAnimation<float32>* camRotateAnimation;
 
     Vector<DAVA::Rect> rectSequence;
@@ -58,12 +59,12 @@ private:
     Vector3 GetRealPoint(const Vector2& point);
     
 	void PreparePath();
-    void PrepareCameraAnimation();
+    void PrepareCameraPosition();
     void PrepareFpsStat();
-    void MoveToNextPoint();
+    bool MoveToNextPoint();
     void SaveFpsStat();
 	void ZeroCurFpsStat();
-    void AnimationFinished(BaseObject*, void*, void*);
+	void OnSectorCameraAnimationEnded(BaseObject* caller, void* userData, void* callerData);
 
 	inline UI3DView* GetSceneView();
 	inline Scene* GetScene();
