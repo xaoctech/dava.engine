@@ -215,8 +215,7 @@ void SceneExporter::ExportFolder(const FilePath &folderName, Set<String> &errorL
         }
         else 
         {
-            String extension = pathname.GetExtension();
-            if(String(".sc2") == extension)
+            if(pathname.IsEqualToExtension(".sc2"))
             {
                 String::size_type exportedPos = pathname.GetAbsolutePathname().find(".exported.sc2");
                 if(exportedPos != String::npos)

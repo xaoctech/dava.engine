@@ -68,8 +68,7 @@ void TextureConverterCell::SetTexture(const FilePath &texturePath)
     Sprite *s = Sprite::CreateFromTexture(texture, 0, 0, (float32)texture->width, (float32)texture->height);
     preview->SetSprite(s, 0);
     
-    String ext = texturePath.GetExtension();
-    if(".png" == ext)
+    if(texturePath.IsEqualToExtension(".png"))
     {
         String pngFormat = Texture::GetPixelFormatString(texture->format);
         
@@ -92,7 +91,7 @@ void TextureConverterCell::SetTexture(const FilePath &texturePath)
             textureFormat->SetText(StringToWString(pngFormat));
         }
     }
-    else if(".pvr" == ext)
+    else if(texturePath.IsEqualToExtension(".pvr"))
     {
         PixelFormat format = LibPVRHelper::GetPixelFormat(texturePath);
         uint32 pvrDataSize = LibPVRHelper::GetDataLength(texturePath);

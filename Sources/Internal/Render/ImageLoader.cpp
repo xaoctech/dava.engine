@@ -170,8 +170,7 @@ Vector<Image *> ImageLoader::CreateFromPVR(DAVA::File *file)
 
 void ImageLoader::Save(DAVA::Image *image, const FilePath &pathname)
 {
-    String extension = pathname.GetExtension();
-    DVASSERT_MSG( 0 != CompareCaseInsensitive(extension, ".tex") , "Need to save image to PNG file");
+    DVASSERT(pathname.IsEqualToExtension(".png"));
     
     DVASSERT((FORMAT_RGBA8888 == image->format) || (FORMAT_A8 == image->format) || (FORMAT_A16 == image->format));
     LibPngWrapper::WritePngFile(pathname, image->width, image->height, image->data, image->format);

@@ -17,7 +17,7 @@ void LightmapsPacker::ParseSpriteDescriptors()
 	for(int32 i = 0; i < itemsCount; ++i)
 	{
 		const FilePath & filePath = fileList->GetPathname(i);
-		if(fileList->IsDirectory(i) || filePath.GetExtension() != ".txt")
+		if(fileList->IsDirectory(i) || !filePath.IsEqualToExtension(".txt"))
 		{
 			continue;
 		}
@@ -91,7 +91,7 @@ void LightmapsPacker::Compress()
 	for(int32 i = 0; i < itemsCount; ++i)
 	{
 		const FilePath & filePath = fileList->GetPathname(i);
-		if(fileList->IsDirectory(i) || filePath.GetExtension() != ".png")
+		if(fileList->IsDirectory(i) || !filePath.IsEqualToExtension(".png"))
 		{
 			continue;
 		}

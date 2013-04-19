@@ -144,7 +144,7 @@ void Heightmap::SetTileSize(int32 newSize)
 
 void Heightmap::Save(const FilePath &filePathname)
 {
-    if(FileExtension() != filePathname.GetExtension())
+    if(!filePathname.IsEqualToExtension(FileExtension()))
     {
         Logger::Error("Heightmap::Save wrong extension: %s", filePathname.GetAbsolutePathname().c_str());
         return;
@@ -183,7 +183,7 @@ void Heightmap::Save(const FilePath &filePathname)
     
 bool Heightmap::Load(const FilePath &filePathname)
 {
-    if(FileExtension() != filePathname.GetExtension())
+    if(!filePathname.IsEqualToExtension(FileExtension()))
     {
         Logger::Error("Heightmap::Load failed with wrong extension: %s", filePathname.GetAbsolutePathname().c_str());
         return false;

@@ -220,7 +220,7 @@ uint32 SceneInfo::CalculateTextureSize(const Map<String, Texture *> &textures)
         TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(pathname);
         if(!descriptor)
         {
-            Logger::Error("[SceneInfo::CalculateTextureSize] Can't create descriptor for texture %s", pathname.c_str());
+            Logger::Error("[SceneInfo::CalculateTextureSize] Can't create descriptor for texture %s", pathname.GetAbsolutePathname().c_str());
             continue;
         }
         

@@ -275,15 +275,14 @@ void Landscape::BuildLandscapeFromHeightmapImage(const FilePath & heightmapPathn
 bool Landscape::BuildHeightmap()
 {
     bool retValue = false;
-    String extension = heightmapPath.GetExtension();
-    if(".png" == extension)
+    if(heightmapPath.IsEqualToExtension(".png"))
     {
         Vector<Image *> imageSet = ImageLoader::CreateFromFile(heightmapPath);
         if(0 != imageSet.size())
         {
             if ((imageSet[0]->GetPixelFormat() != FORMAT_A8) && (imageSet[0]->GetPixelFormat() != FORMAT_A16))
             {
-                Logger::Error("Image for landscape should be grayscale");
+                Logger::Error("Image for landscape should be gray scale");
             }
             else
             {
@@ -295,7 +294,7 @@ bool Landscape::BuildHeightmap()
             for_each(imageSet.begin(), imageSet.end(), SafeRelease<Image>);
         }
     }
-    else if(Heightmap::FileExtension() == extension)
+    else if(heightmapPath.IsEqualToExtension(Heightmap::FileExtension()))
     {
         retValue = heightmap->Load(heightmapPath);
     }
@@ -1384,8 +1383,7 @@ void Landscape::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
     RenderObject::Save(archive, sceneFile);
         
     //TODO: remove code in future. Need for transition from *.png to *.heightmap
-    String extension = heightmapPath.GetExtension();
-    if(Heightmap::FileExtension() != extension)
+    if(!heightmapPath.IsEqualToExtension(Heightmap::FileExtension()))
     {
         heightmapPath.ReplaceExtension(Heightmap::FileExtension());
         heightmap->Save(heightmapPath);

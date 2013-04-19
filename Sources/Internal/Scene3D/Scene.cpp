@@ -398,15 +398,14 @@ Entity *Scene::GetRootNode(const FilePath &rootNodePath)
 		return node->GetNode();
 	}
     
-    String ext = rootNodePath.GetExtension();
-    if(ext == ".sce")
+    if(rootNodePath.IsEqualToExtension(".sce"))
     {
         SceneFile *file = new SceneFile();
         file->SetDebugLog(true);
         file->LoadScene(rootNodePath, this);
         SafeRelease(file);
     }
-    else if(ext == ".sc2")
+    else if(rootNodePath.IsEqualToExtension(".sc2"))
     {
         uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
         SceneFileV2 *file = new SceneFileV2();

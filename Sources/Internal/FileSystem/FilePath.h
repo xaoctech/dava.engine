@@ -192,6 +192,12 @@ public:
     void ReplacePath(const FilePath &pathname);
     
     
+	/**
+        \brief Function for comparison with extension of filepath object
+        \param[in] extension is extension for comparison
+	 */
+	bool IsEqualToExtension(const String & extension) const;
+
 protected:
     
     static String NormalizePathname(const FilePath &pathname);

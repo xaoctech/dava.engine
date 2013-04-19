@@ -26,8 +26,7 @@ LibraryCommand::LibraryCommand(const DAVA::FilePath &pathname, eCommandType _typ
 
 bool LibraryCommand::CheckExtension(const DAVA::String &extenstionToChecking)
 {
-    String extension = filePathname.GetExtension();
-    return (0 == CompareCaseInsensitive(extension, extenstionToChecking));
+	return filePathname.IsEqualToExtension(extenstionToChecking);
 }
 
 

@@ -675,14 +675,13 @@ Texture * Texture::PureCreate(const FilePath & pathName)
     if(!descriptor) return NULL;
     
 	// TODO: add check that pathName
-	String extension = pathName.GetExtension();
-    if(TextureDescriptor::GetDescriptorExtension() == extension)
+    if(pathName.IsEqualToExtension(TextureDescriptor::GetDescriptorExtension()))
     {
 		texture = CreateFromDescriptor(pathName, descriptor);
     }
     else
     {
-        ImageFileFormat fileFormat = GetFormatForLoading(TextureDescriptor::GetFormatForExtension(extension), descriptor);
+        ImageFileFormat fileFormat = GetFormatForLoading(TextureDescriptor::GetFormatForExtension(pathName.GetExtension()), descriptor);
         if((NOT_FILE == defaultFileFormat) || IsLoadAvailable(fileFormat, descriptor))
         {
             texture = CreateFromImage(pathName, descriptor);
