@@ -57,13 +57,13 @@ void GameCore::OnAppStarted()
 {
     DeviceInfo();
 
-	File * testIdFile = File::Create(FilePath("testId"), File::OPEN | File::READ);
+	File * testIdFile = File::Create(FilePath("~res:/testId"), File::OPEN | File::READ);
 	if(testIdFile)
 	{
 		char buf[30];
-		ZeroMemory(buf, sizeof(char)*30);
+		memset(buf, 0, sizeof(char)*30);
 		testIdFile->ReadLine(buf, 30);
-		sscanf_s(buf, "%d",&currentRunId);
+		sscanf(buf, "%d",&currentRunId);
 		SafeRelease(testIdFile);
 	}
 	else
