@@ -300,7 +300,12 @@ void FilePath::ReplacePath(const FilePath &pathname)
     StringReplace(absolutePathname, pathname.GetAbsolutePathname(), String(""));
 }
 
-    
+bool FilePath::IsEqualToExtension( const String & extension ) const
+{
+	String selfExtension = GetExtension();
+	return (CompareCaseInsensitive(extension, selfExtension) == 0);
+}
+
     
 FilePath FilePath::CreateWithNewExtension(const FilePath &pathname, const String &extension)
 {
@@ -475,6 +480,7 @@ bool FilePath::IsAbsolutePathname(const String &pathname)
     
     return false;
 }
+
 
     
 }

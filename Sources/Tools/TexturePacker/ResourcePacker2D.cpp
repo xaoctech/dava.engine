@@ -448,21 +448,19 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 			if (!fileList->IsDirectory(fi))
 			{
 				FilePath fullname = fileList->GetPathname(fi);
-                String extension = fullname.GetExtension();
-                
-				if (extension == ".psd")
+				if (fullname.IsEqualToExtension(".psd"))
 				{
                     //TODO: check if we need filename or pathname
 					DefinitionFile * defFile = ProcessPSD(processDirectoryPath, fullname, fullname.GetFilename());
 					definitionFileList.push_back(defFile);
 				}
-				else if(isLightmapsPacking && extension == ".png")
+				else if(isLightmapsPacking && fullname.IsEqualToExtension(".png"))
 				{
 					DefinitionFile * defFile = new DefinitionFile();
 					defFile->LoadPNG(fullname, processDirectoryPath);
 					definitionFileList.push_back(defFile);
 				}
-				else if (extension == ".pngdef")
+				else if (fullname.IsEqualToExtension(".pngdef"))
 				{
 					DefinitionFile * defFile = new DefinitionFile();
 					if (defFile->LoadPNGDef(fullname, processDirectoryPath))

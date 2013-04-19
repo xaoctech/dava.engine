@@ -201,8 +201,7 @@ int32 ScenePreviewControl::OpenScene(const FilePath &pathToFile)
     RecreateScene();
     
     int32 retError = SceneFileV2::ERROR_NO_ERROR;
-    String ext = pathToFile.GetExtension();
-    if(ext == ".sce")
+    if(pathToFile.IsEqualToExtension(".sce"))
     {
         SceneFile *file = new SceneFile();
         file->SetDebugLog(true);
@@ -213,7 +212,7 @@ int32 ScenePreviewControl::OpenScene(const FilePath &pathToFile)
         
         SafeRelease(file);
     }
-    else if(ext == ".sc2")
+    else if(pathToFile.IsEqualToExtension(".sc2"))
     {
         SceneFileV2 *file = new SceneFileV2();
         file->EnableDebugLog(true);

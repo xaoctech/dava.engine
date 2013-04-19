@@ -657,8 +657,7 @@ bool SceneValidator::IsTextureChanged(const FilePath &texturePathname, ImageFile
 
 bool SceneValidator::IsTextureDescriptorPath(const FilePath &path)
 {
-	String ext = path.GetExtension();
-	return (ext == TextureDescriptor::GetDescriptorExtension());
+	return path.IsEqualToExtension(TextureDescriptor::GetDescriptorExtension());
 }
 
 
@@ -681,8 +680,7 @@ void SceneValidator::CreateDefaultDescriptors(const FilePath &folderPathname)
 		}
         else
         {
-            const String extension = fileList->GetPathname(fi).GetExtension();
-            if(0 == CompareCaseInsensitive(String(".png"), extension))
+			if(fileList->GetPathname(fi).IsEqualToExtension(".png"))
             {
                 CreateDescriptorIfNeed(fileList->GetPathname(fi));
             }

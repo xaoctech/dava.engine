@@ -476,8 +476,7 @@ bool NvttHelper::DecompressAtc(const nvtt::Decompressor & dec, DDSInfo info, Pix
 bool LibDxtHelper::WriteDdsFile(const FilePath & fileNameOriginal, int32 width, int32 height, uint8 * data, PixelFormat compressionFormat, bool generateMipmaps)
 {
 	//creating tmp dds file, nvtt accept only filename.dds as input, because of this the last letter befor "." should be changed to "_".
-	String extension = fileNameOriginal.GetExtension();
-    if(0 != CompareCaseInsensitive(extension, ".dds"))
+	if(!fileNameOriginal.IsEqualToExtension(".dds"))
     {
 		Logger::Error("[LibDxtHelper::WriteDxtFile] Wrong input file name (%s).", fileNameOriginal.GetAbsolutePathname().c_str());
         return false;

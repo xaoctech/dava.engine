@@ -501,7 +501,7 @@ void LandscapeEditorHeightmap::SaveTextureAction(const FilePath &pathToFile)
     if(heightmap)
     {
         FilePath heightmapPath = pathToFile;
-        if(Heightmap::FileExtension() != heightmapPath.GetExtension())
+        if(!heightmapPath.IsEqualToExtension(Heightmap::FileExtension()))
         {
             heightmapPath.ReplaceExtension(Heightmap::FileExtension());
         }

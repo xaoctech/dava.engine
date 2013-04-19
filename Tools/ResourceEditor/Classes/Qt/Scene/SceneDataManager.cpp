@@ -38,8 +38,7 @@ SceneData* SceneDataManager::CreateNewScene()
 
 void SceneDataManager::AddScene(const FilePath &scenePathname)
 {
-    String extension = scenePathname.GetExtension();
-    DVASSERT((".sc2" == extension) && "Wrong file extension.");
+    DVASSERT(scenePathname.IsEqualToExtension(".sc2"));
 
 	SceneData* sceneData = SceneGetActive();
 	if (!sceneData)
@@ -143,8 +142,7 @@ void SceneDataManager::EditScene(SceneData* sceneData, const FilePath &scenePath
 		return;
 	}
 
-    String extension = scenePathname.GetExtension();
-    DVASSERT((".sc2" == extension) && "Wrong file extension.");
+    DVASSERT(scenePathname.IsEqualToExtension(".sc2"));
 	
     Entity * rootNode = scene->GetRootNode(scenePathname);
     if(rootNode)
@@ -344,7 +342,7 @@ void SceneDataManager::SceneShowPreview(const DAVA::FilePath &path)
 
 	if(screen)
 	{
-		if(0 == CompareCaseInsensitive(path.GetExtension(), ".sc2") && FileSystem::Instance()->IsFile(path))
+		if(path.IsEqualToExtension(".sc2") && FileSystem::Instance()->IsFile(path))
 		{
 			screen->ShowScenePreview(path);
 		}

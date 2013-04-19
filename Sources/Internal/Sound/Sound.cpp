@@ -153,12 +153,12 @@ bool Sound::Init()
     if(strLength < 5)
         return false;
     
-	if(".wav" == fileName.GetExtension())
+	if(fileName.IsEqualToExtension(".wav"))
 	{
 		provider = new SoundWVProvider(fileName);
 	}
 #if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
-	else if(".ogg" == fileName.GetExtension())
+	else if(fileName.IsEqualToExtension(".ogg"))
 	{
 		provider = new SoundOVProvider(fileName);
 	}
