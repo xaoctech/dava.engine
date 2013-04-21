@@ -46,6 +46,7 @@ public:
 	FilePath();
     FilePath(const FilePath & path);
     FilePath(const String & sourcePath);
+    FilePath(const char * sourcePath);
     FilePath(const String & directory, const String & filename);
 
 	virtual ~FilePath();

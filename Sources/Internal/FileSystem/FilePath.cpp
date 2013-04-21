@@ -56,6 +56,11 @@ FilePath::FilePath(const FilePath &path)
     absolutePathname = path.absolutePathname;
 }
     
+FilePath::FilePath(const char * sourcePath)
+{
+    absolutePathname = NormalizePathname(String(sourcePath));
+}
+
 FilePath::FilePath(const String &pathname)
 {
     absolutePathname = NormalizePathname(pathname);
