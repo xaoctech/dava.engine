@@ -114,8 +114,8 @@ protected:
 
 	struct HashMapItem : public HashMapItemBase
 	{
-		const K & key;
-		const V & value;
+		K key;
+		V value;
 		HashMapItem *next;
 
 		HashMapItem(const K & k, const V & v)

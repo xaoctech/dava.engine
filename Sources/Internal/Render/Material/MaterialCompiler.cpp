@@ -50,7 +50,7 @@ MaterialCompiler::eCompileResult MaterialCompiler::Compile(MaterialGraph * _mate
         return COMPILATION_FAILED;
     }
 
-    currentMaterial = new NMaterial(maxLights);
+    currentMaterial = new NMaterial();
 
     RecursiveSetDepthMarker(rootResultNode, 0);
     materialGraph->SortByDepthMarkerAndRemoveUnused();
@@ -69,16 +69,19 @@ MaterialCompiler::eCompileResult MaterialCompiler::Compile(MaterialGraph * _mate
     
     GenerateCode(materialGraph);
     
-    Shader * shader = new Shader();
-    shader->Load(materialCompiledVshName, materialCompiledFshName);
-    shader->Recompile();
-    
-    currentMaterial->SetShader(0, shader);
-    
-    *resultMaterial = currentMaterial;
-    
     return COMPILATION_SUCCESS;
 };
+    
+const String & MaterialCompiler::GetCompiledVertexShaderPathname() const
+{
+    return materialCompiledVshName;
+}
+
+const String & MaterialCompiler::GetCompiledFragmentShaderPathname() const
+{
+    return materialCompiledFshName;
+}
+
     
 void MaterialCompiler::RecursiveSetDepthMarker(MaterialGraphNode * node, uint32 depthMarker)
 {
@@ -211,8 +214,8 @@ MaterialCompiler::eCompileError MaterialCompiler::GenerateCodeForNode(MaterialGr
         Logger::Debug("%s", node->nodeCode.c_str());
         *destinationCode += node->nodeCode;
         
-        NMaterialDescriptor * descriptor = currentMaterial->GetDescriptor();
-        descriptor->SetNameForTextureSlot(node->textureChannelIndex, node->name);
+        //NMaterialDescriptor * descriptor = currentMaterial->GetDescriptor();
+        //descriptor->SetNameForTextureSlot(node->textureChannelIndex, node->name);
     }
     
     if (type == MaterialGraphNode::TYPE_CONST)

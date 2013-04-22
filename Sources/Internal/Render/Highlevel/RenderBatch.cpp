@@ -56,7 +56,7 @@ RenderBatch::RenderBatch()
     indexCount = 0;
     type = PRIMITIVETYPE_TRIANGLELIST;
 	renderObject = 0;
-    materialInstance = new InstanceMaterialState();
+    materialInstance = new NMaterialInstance();
     ownerLayerName = INHERIT_FROM_MATERIAL;
 	visiblityCriteria = RenderObject::VISIBILITY_CRITERIA;
 }
@@ -82,12 +82,17 @@ void RenderBatch::SetRenderDataObject(RenderDataObject * _renderDataObject)
     renderDataObject = SafeRetain(_renderDataObject);
 }
 
-void RenderBatch::SetMaterial(Material * _material)
+void RenderBatch::SetMaterial(NMaterial * _material)
 {
 	SafeRelease(material);
     material = SafeRetain(_material);
 }
 
+void RenderBatch::SetMaterialInstance(NMaterialInstance *_materialInstance)
+{
+    SafeRelease(materialInstance);
+    materialInstance = SafeRetain(_materialInstance);
+}
     
 void RenderBatch::Draw(Camera * camera)
 {
@@ -104,7 +109,7 @@ void RenderBatch::Draw(Camera * camera)
 	
     Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
-    material->Draw(dataSource,  materialInstance);
+    materialInstance->Draw(dataSource);
 }
     
     
@@ -113,7 +118,7 @@ const FastName & RenderBatch::GetOwnerLayerName()
     if (ownerLayerName == INHERIT_FROM_MATERIAL)
     {
         DVASSERT(material != 0);
-        return material->GetOwnerLayerName();
+        return materialInstance->GetOwnerLayerName();
     }
     else
     {
@@ -239,8 +244,14 @@ void RenderBatch::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 		PolygonGroup *pg = dynamic_cast<PolygonGroup*>(sceneFile->GetNodeByPointer(archive->GetVariant("rb.datasource")->AsUInt64()));
 		Material *mat = dynamic_cast<Material*>(sceneFile->GetNodeByPointer(archive->GetVariant("rb.material")->AsUInt64()));
 
+        NMaterial * newMaterial = 0;
+        NMaterialInstance * newMaterialInstance = 0;
+        
+        sceneFile->ConvertOldMaterialToNewMaterial(mat, 0, &newMaterial, &newMaterialInstance);
+        
 		SetPolygonGroup(pg);
-		SetMaterial(mat);
+        
+		// SetMaterial(mat);
 
 		KeyedArchive *mia = archive->GetArchive("rb.matinst");
 		if(NULL != mia)

@@ -40,6 +40,11 @@ namespace DAVA
 {
     // Should be convertex to FNAMEs
 
+    
+    
+    
+    
+    
     static const char * TEXTURE_MAP_BASE_TEXTURE = "baseTextureMap";
     static const char * TEXTURE_MAP_NORMAL = "normalMap";
     static const char * TEXTURE_MAP_LIGHTMAP = "lightMap";

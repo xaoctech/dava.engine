@@ -32,6 +32,8 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
+#include "Base/HashMap.h"
+#include "Base/FastNameMap.h"
 #include "Scene3D/DataNode.h"
 #include "Render/RenderState.h"
 #include "Render/ShaderUniformArray.h"
@@ -49,6 +51,8 @@ class PolygonGroup;
 class RenderDataObject;
 class RenderState;
 class Light;
+class MaterialCompiler;
+class MaterialGraph;
 
 class NMaterialDescriptor : public BaseObject
 {
@@ -76,17 +80,42 @@ public:
     NMaterialInstance();
     virtual ~NMaterialInstance();
     
-    bool LoadFromYaml(const String & pathname);
-    uint32 GetLightCount() { return lightCount; };
-    void SetLightNode(uint32 index, Light * lightNode) { lightNodes[index] = lightNode; };
-    RenderState * GetRenderState() { return &renderState; };
+    void Save(KeyedArchive * archive, SceneFileV2 *sceneFile);
+	void Load(KeyedArchive * archive, SceneFileV2 *sceneFile);
 
     void PrepareInstanceForShader(Shader * shader);
+    RenderState * GetRenderState() { return &renderState; };
 
+    // Functions
     void SetUniformData(uint32 uniformIndex, void * data, uint32 size);
-    
     void UpdateUniforms();
     void BindUniforms();
+
+    // Helper functions
+    uint32 GetLightCount() { return lightCount; };
+    void SetLight(uint32 index, Light * light) { lights[index] = light; };
+    Light * GetLight(uint32 index) { return lights[index]; };
+    
+    void SetTwoSided(bool isTwoSided);
+    bool IsTwoSided();
+    
+    void SetLightmap(Texture * texture, const String & lightmapName);
+    void SetUVOffsetScale(const Vector2 & uvOffset, const Vector2 uvScale);
+    
+    Texture * GetLightmap() const;
+    const String & GetLightmapName() const;
+
+    
+    // Prepare and draw functions
+    void PrepareRenderState();
+    void Draw(PolygonGroup * polygonGroup);
+    
+    bool IsExportOwnerLayerEnabled() const;
+    void SetExportOwnerLayer(const bool & isEnabled);
+    const FastName & GetOwnerLayerName() const;
+    void SetOwnerLayerName(const FastName & fastname);
+    
+    NMaterialInstance * Clone();
     
 private:
     
@@ -101,33 +130,33 @@ private:
     };
     
     
-    uint32                  uniformCount;
-    UniformInfo *           uniforms;
-    uint8 *                 uniformData;
-    uint32                  lightCount;
-    Light              *lightNodes[8];
-    RenderState        renderState;
-    Shader *                shader;
+    uint32 uniformCount;
+    UniformInfo * uniforms;
+    uint8 * uniformData;
+    uint32 lightCount;
+    Light * lights[8];
+    RenderState renderState;
+    Shader * shader;
     friend class NMaterial;
 };
  
-class NMaterial : public BaseObject
+class NMaterial : public DataNode
 {
 public:
-    NMaterial(uint32 shaderCount);
+    NMaterial();
     virtual ~NMaterial();
     
-    NMaterialDescriptor * GetDescriptor();
-    void SetShader(uint32 index, Shader * shader);
-    void PrepareRenderState(PolygonGroup * polygonGroup, NMaterialInstance * instance);
-    void Draw(PolygonGroup * polygonGroup, NMaterialInstance * instance);
+    bool LoadFromFile(const String & pathname);
+    
+    void AddShader(const FastName & fname, Shader * shader);
+    uint32 GetShaderCount();
 
+    
+    // Load default render state from yaml.
+    // Keep it here, by default MaterialInstance Render State should be referenced from this point. 
+    
 private:
-    
-    
-    uint32 shaderCount;
-    Shader ** shaderArray;
-    NMaterialDescriptor * descriptor;
+    HashMap<FastName, NMaterialInstance*> shaders; // TODO: HashMap<FastName, NMaterialInstance*> baseInstances;
 };
 
 

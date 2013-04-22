@@ -101,7 +101,7 @@ void SpriteRenderBatch::Draw(Camera * camera)
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
 
 	RenderManager::Instance()->SetRenderData(renderDataObject);
-	material->PrepareRenderState();
+	materialInstance->PrepareRenderState();
 
 	RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, spriteObject->GetFrame() * 4, 4);
 }

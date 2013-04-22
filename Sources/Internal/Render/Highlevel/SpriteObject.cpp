@@ -29,6 +29,7 @@
 =====================================================================================*/
 #include "Render/Highlevel/SpriteObject.h"
 #include "Render/Highlevel/SpriteRenderBatch.h"
+#include "Render/Material/MaterialSystem.h"
 
 
 namespace DAVA 
@@ -84,18 +85,26 @@ void SpriteObject::SetupRenderBatch()
 	renderDataObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &verts.front());
 	renderDataObject->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &textures.front());
 
-	Material * material = new Material();
-	material->SetType(Material::MATERIAL_UNLIT_TEXTURE);
-	material->SetAlphablend(true);
-	material->SetBlendSrc(BLEND_SRC_ALPHA);
-	material->SetBlendDest(BLEND_ONE_MINUS_SRC_ALPHA);
-	material->SetName("SpriteObject_material");
+//	Material * material = new Material();
+//	material->SetType(Material::MATERIAL_UNLIT_TEXTURE);
+//	material->SetAlphablend(true);
+//	material->SetBlendSrc(BLEND_SRC_ALPHA);
+//	material->SetBlendDest(BLEND_ONE_MINUS_SRC_ALPHA);
+//	material->SetName("SpriteObject_material");
+//	material->GetRenderState()->SetTexture(sprite->GetTexture(frame));
 
-	material->GetRenderState()->SetTexture(sprite->GetTexture(frame));
-
+    NMaterial * material = 0;
+    
+    material = MaterialSystem::Instance()->GetMaterial(MATERIAL_VERTEX_COLOR_NO_LIT_TRANSLUCENT);
+    
+    DVASSERT(material != 0);
+    
+    
+    
+    
 	SpriteRenderBatch *batch = new SpriteRenderBatch();
 	batch->SetMaterial(material);
-	batch->SetRenderDataObject(renderDataObject);
+    batch->SetRenderDataObject(renderDataObject);
 	AddRenderBatch(batch);
 
 	SafeRelease(material);
@@ -125,7 +134,7 @@ void SpriteObject::SetFrame(int32 newFrame)
 	int32 count = GetRenderBatchCount();
 	if(count)
 	{
-		GetRenderBatch(0)->GetMaterial()->GetRenderState()->SetTexture(sprite->GetTexture(frame));
+		GetRenderBatch(0)->GetMaterialInstance()->GetRenderState()->SetTexture(sprite->GetTexture(frame));
 	}
 }
 

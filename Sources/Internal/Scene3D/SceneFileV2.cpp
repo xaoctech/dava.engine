@@ -67,6 +67,8 @@
 #include "Scene3D/SpriteNode.h"
 #include "Render/Highlevel/SpriteObject.h"
 
+#include "Render/Material/NMaterial.h"
+#include "Render/Material/MaterialSystem.h"
 
 namespace DAVA
 {
@@ -708,6 +710,21 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
     return false;
 }
 
+void SceneFileV2::ConvertOldMaterialToNewMaterial(Material * oldMaterial, InstanceMaterialState * oldMaterialState,
+                                                  NMaterial ** newMaterial, NMaterialInstance ** newMaterialInstance)
+{
+    NMaterial * resultMaterial = 0;
+    NMaterialInstance * resultMaterialInstance = 0;
+    
+    resultMaterial = MaterialSystem::Instance()->GetMaterial(MATERIAL_VERTEX_COLOR_NO_LIT_OPAQUE);
+    resultMaterialInstance = new NMaterialInstance();
+    
+    
+    
+    *newMaterial = resultMaterial;
+    *newMaterialInstance = resultMaterialInstance;
+}
+
     
 bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
 {
@@ -741,7 +758,11 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
         for (uint32 k = 0; k < (uint32)polygroups.size(); ++k)
         {
             PolygonGroupWithMaterial * group = polygroups[k];
-            mesh->AddPolygonGroup(group->GetPolygonGroup(), group->GetMaterial());
+            
+            NMaterial * nMaterial = 0;
+            NMaterialInstance * nMaterialInstance = 0;
+            ConvertOldMaterialToNewMaterial(group->GetMaterial(), 0, &nMaterial, &nMaterialInstance);
+            mesh->AddPolygonGroup(group->GetPolygonGroup(), nMaterial, nMaterialInstance);
             
             
             if (group->GetMaterial()->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
