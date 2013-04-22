@@ -35,11 +35,12 @@
 #include "Base/FastName.h"
 #include "Render/RenderBase.h"
 #include "Base/BaseMath.h"
-#include "Render/Material.h"
 
 #include "Render/3D/PolygonGroup.h"
 #include "Render/RenderDataObject.h"
 #include "Render/Highlevel/RenderObject.h"
+#include "Render/Material.h"
+#include "Render/Material/NMaterial.h"
 
 namespace DAVA
 {
@@ -61,6 +62,8 @@ class RenderLayer;
 class Camera;
 class RenderObject;
 class RenderBatch;
+class NMaterial;
+class NMaterialInstance;
 
     
 /*
@@ -89,10 +92,11 @@ public:
     void SetRenderDataObject(RenderDataObject * _renderDataObject);
     inline RenderDataObject * GetRenderDataObject();
     
-    void SetMaterial(Material * _material);
+    void SetMaterial(NMaterial * _material);
+    void SetMaterialInstance(NMaterialInstance * _materialInstance);
     
-    inline Material * GetMaterial();
-    inline InstanceMaterialState * GetMaterialInstance();
+    inline NMaterial * GetMaterial();
+    inline NMaterialInstance * GetMaterialInstance();
     
 	void SetRenderObject(RenderObject * renderObject);
 	inline RenderObject * GetRenderObject();
@@ -126,8 +130,10 @@ public:
 protected:
     PolygonGroup * dataSource;
     RenderDataObject * renderDataObject;   // Probably should be replaced to VBO / IBO, but not sure
-    Material * material;                    // Should be replaced to NMaterial
-    InstanceMaterialState * materialInstance; // Should be replaced by NMaterialInstance
+    NMaterial * material;                    // Should be replaced to NMaterial
+    NMaterialInstance * materialInstance; // Should be replaced by NMaterialInstance
+    
+    
 	RenderObject * renderObject;
     FastName ownerLayerName;
     
@@ -176,12 +182,12 @@ inline RenderDataObject * RenderBatch::GetRenderDataObject()
     return renderDataObject;
 }
 
-inline Material * RenderBatch::GetMaterial()
+inline NMaterial * RenderBatch::GetMaterial()
 {
     return material;
 }
     
-inline InstanceMaterialState * RenderBatch::GetMaterialInstance()
+inline NMaterialInstance * RenderBatch::GetMaterialInstance()
 {
     return materialInstance;
 }

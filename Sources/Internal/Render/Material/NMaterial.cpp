@@ -5,6 +5,8 @@
 #include "Render/RenderBase.h"
 #include "FileSystem/YamlParser.h"
 #include "Render/Shader.h"
+#include "Render/Material/MaterialGraph.h"
+#include "Render/Material/MaterialCompiler.h"
 
 
 namespace DAVA
@@ -62,7 +64,7 @@ NMaterialInstance::NMaterialInstance()
     lightCount = 0;
     for (uint32 k = 0; k < 8; ++k)
     {
-        lightNodes[k] = 0;
+        lights[k] = 0;
     }
     
     renderState.state = RenderState::DEFAULT_3D_STATE;
@@ -73,19 +75,6 @@ NMaterialInstance::~NMaterialInstance()
 {
     SafeDeleteArray(uniforms);
     SafeDeleteArray(uniformData);
-}
-    
-bool NMaterialInstance::LoadFromYaml(const String & pathname)
-{
-    YamlParser * parser = parser->Create(pathname);
-    parser->GetRootNode();
-    
-    
-    
-    
-    SafeRelease(parser);
-
-	return true;
 }
     
 void NMaterialInstance::SetUniformData(uint32 uniformIndex, void * data, uint32 size)
@@ -245,61 +234,204 @@ void NMaterialInstance::UpdateUniforms()
          const Matrix4 & matrix = camera->GetMatrix();
          Vector3 lightPosition0InCameraSpace = lightNode0->GetPosition() * matrix;
      */
-
 }
     
-NMaterial::NMaterial(uint32 _shaderCount)
-    :   shaderCount(_shaderCount)
+void NMaterialInstance::SetTwoSided(bool isTwoSided)
 {
-    shaderArray = new Shader*[shaderCount];
-    descriptor = new NMaterialDescriptor();
+    if (isTwoSided)
+        renderState.RemoveState(RenderState::STATE_CULL);
+    else
+        renderState.AppendState(RenderState::STATE_CULL);
+}
+    
+bool NMaterialInstance::IsTwoSided()
+{
+    return (renderState.GetState() & RenderState::STATE_CULL) == 0;
+}
+
+    
+void NMaterialInstance::SetLightmap(Texture * texture, const String & lightmapName)
+{
+    
+}
+    
+void NMaterialInstance::SetUVOffsetScale(const Vector2 & uvOffset, const Vector2 uvScale)
+{
+    
+}
+
+Texture * NMaterialInstance::GetLightmap() const
+{
+    return 0;
+}
+    
+const String & NMaterialInstance::GetLightmapName() const
+{
+    return String();
+}
+    
+void NMaterialInstance::Save(KeyedArchive * archive, SceneFileV2 *sceneFile)
+{
+    
+}
+void NMaterialInstance::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
+{
+    
+}
+    
+bool NMaterialInstance::IsExportOwnerLayerEnabled() const
+{
+    return true;
+}
+void NMaterialInstance::SetExportOwnerLayer(const bool & isEnabled)
+{
+    
+}
+const FastName & NMaterialInstance::GetOwnerLayerName() const
+{
+    return FastName("");
+}
+    
+void NMaterialInstance::SetOwnerLayerName(const FastName & _fastname)
+{
+    
+}
+    
+NMaterialInstance * NMaterialInstance::Clone()
+{
+    NMaterialInstance * materialInstance = new NMaterialInstance();
+    return materialInstance;
+}
+
+    
+    
+    
+NMaterial::NMaterial()
+{
 }
     
 NMaterial::~NMaterial()
 {
-    SafeRelease(descriptor);
-    SafeDeleteArray(shaderArray);
+}
+
+bool NMaterial::LoadFromFile(const String & pathname)
+{
+    YamlParser * parser = YamlParser::Create(pathname);
+    if (!parser)
+    {
+        Logger::Error("Can't load requested material: %s", pathname.c_str());
+        return false;
+    }
+    YamlNode * rootNode = parser->GetRootNode();
+    
+    if (!rootNode)
+    {
+        SafeRelease(rootNode);
+        return false;
+    }
+    //YamlNode * pass =
+    
+    for (int32 k = 0; k < rootNode->GetCount(); ++k)
+    {
+        YamlNode * renderStepNode = rootNode->Get(k);
+        
+        if (renderStepNode->AsString() == "RenderStep")
+        {
+            Logger::Debug("- RenderStep found: %s", renderStepNode->AsString().c_str());
+            YamlNode * shaderNode = renderStepNode->Get("Shader");
+            YamlNode * shaderGraphNode = renderStepNode->Get("ShaderGraph");
+
+            if (!shaderNode && !shaderGraphNode)
+            {
+                Logger::Error("Material:%s RenderStep:%s does not have shader or shader graph", pathname.c_str(), renderStepNode->AsString().c_str());
+                SafeRelease(parser);
+                return false;
+            }
+            
+            String vertexShader, fragmentShader;
+            if (shaderNode)
+            {
+                YamlNode * vertexShaderNode = shaderNode->Get(0);
+                YamlNode * fragmentShaderNode = shaderNode->Get(1);
+                
+                DVASSERT(vertexShaderNode && fragmentShaderNode);
+                
+                vertexShader = vertexShaderNode->AsString();
+                fragmentShader = fragmentShaderNode->AsString();
+            }
+            
+            if (shaderGraphNode)
+            {
+                String shaderGraphPathname = shaderGraphNode->AsString();
+                MaterialGraph * graph = new MaterialGraph();
+                graph->LoadFromFile(shaderGraphPathname);
+
+                MaterialCompiler * compiler = new MaterialCompiler();
+                compiler->Compile(graph, 0, 4, 0);
+                
+                vertexShader = compiler->GetCompiledVertexShaderPathname();
+                fragmentShader = compiler->GetCompiledFragmentShaderPathname();
+                
+                SafeRelease(compiler);
+                SafeRelease(graph);
+            }
+            
+            YamlNode * definesNode = renderStepNode->Get("Defines");
+            if (definesNode)
+            {
+                
+                
+            }
+            
+            // YamlNode * n;
+            
+        } 
+    }
+
+    SafeRelease(parser);
+    return true;
 }
     
-NMaterialDescriptor * NMaterial::GetDescriptor()
+void NMaterial::AddShader(const FastName & fname, Shader * shader)
 {
-    return descriptor;
+    DVASSERT(shader != 0);
+    //shaders.Insert(fname, SafeRetain(shader));
 }
     
-void NMaterial::SetShader(uint32 index, Shader * shader)
+uint32 NMaterial::GetShaderCount()
 {
-    DVASSERT(shaderArray != 0);
-    shaderArray[index] = shader;
+    return (uint32)shaders.Size();
 }
 
 
-void NMaterial::PrepareRenderState(PolygonGroup * polygonGroup, NMaterialInstance * instance)
+void NMaterialInstance::PrepareRenderState()
 {
     
 //    if (1)
-    {
+//    {
 //        shaderArray[0]->Dump();
-    }
+//    }
     
     
-    Shader * activeShader = shaderArray[instance->GetLightCount()];
-    DVASSERT(activeShader != 0)
-    instance->renderState.SetShader(activeShader);
-    instance->PrepareInstanceForShader(activeShader);
+    renderState.SetShader(shader);
+    PrepareInstanceForShader(shader);
     
     // Bind shader & global uniforms
-    RenderManager::Instance()->FlushState(&instance->renderState);
+    // TODO: Rethink RenderManager uniforms...
+    RenderManager::Instance()->FlushState(&renderState);
 
     // Here bind local uniforms of material
-    instance->UpdateUniforms();
-    instance->BindUniforms();
+    UpdateUniforms();
+    BindUniforms();
     
-    RenderManager::Instance()->SetRenderData(polygonGroup->renderDataObject);
-	RenderManager::Instance()->AttachRenderData();
 };
 
-void NMaterial::Draw(PolygonGroup * polygonGroup, NMaterialInstance * instance)
+void NMaterialInstance::Draw(PolygonGroup * polygonGroup)
 {
+    // TODO: Remove support of OpenGL ES 1.0 from attach render data
+    RenderManager::Instance()->SetRenderData(polygonGroup->renderDataObject);
+	RenderManager::Instance()->AttachRenderData();
+
     // TODO: rethink this code
     if (polygonGroup->renderDataObject->GetIndexBufferID() != 0)
     {

@@ -342,6 +342,11 @@ public:
     Texture * currentTexture[MAX_TEXTURE_LEVELS];
     Shader * shader;
     
+    void AppendState(uint32 state);
+    void RemoveState(uint32 state);
+    void SetState(uint32 state);
+    uint32 GetState();
+    
     // STATE_COLOR
     inline void SetColor(float32 _r, float32 _g, float32 _b, float32 _a);
     inline void SetColor(const Color & _color);
@@ -350,6 +355,8 @@ public:
     
     // STATE_BLEND_FUNC
     inline void SetBlendMode(eBlendMode _sourceFactor, eBlendMode _destFactor);
+    inline void SetBlendSrc(eBlendMode _sourceFactor);
+    inline void SetBlendDest(eBlendMode _destFactor);
 	inline eBlendMode GetSrcBlend();
 	inline eBlendMode GetDestBlend();
     
@@ -469,6 +476,27 @@ public:
 		)
 };
 
+    
+inline void RenderState::AppendState(uint32 _state)
+{
+    state |= _state;
+}
+
+inline void RenderState::RemoveState(uint32 _state)
+{
+    state &= ~_state;
+}
+
+inline void RenderState::SetState(uint32 _state)
+{
+    state = _state;
+}
+
+inline uint32 RenderState::GetState()
+{
+    return state;
+}
+    
 // Implementation of inline functions
 inline void RenderState::SetColor(float32 _r, float32 _g, float32 _b, float32 _a)
 {
@@ -514,6 +542,16 @@ inline void RenderState::SetBlendMode(eBlendMode _sourceFactor, eBlendMode _dest
         destFactor = _destFactor;
         //changeSet |= STATE_CHANGED_SRC_BLEND | STATE_CHANGED_DEST_BLEND;
     }
+}
+    
+inline void RenderState::SetBlendSrc(eBlendMode _sourceFactor)
+{
+    sourceFactor = _sourceFactor;
+}
+
+inline void RenderState::SetBlendDest(eBlendMode _destFactor)
+{
+    destFactor = _destFactor;
 }
     
 // SHADER

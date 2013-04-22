@@ -91,6 +91,9 @@ namespace DAVA
      scene->Load("filename
 */
 
+class NMaterialInstance;
+class NMaterial;
+    
 class SceneFileV2 : public BaseObject
 {
 public: 
@@ -128,6 +131,10 @@ public:
     bool RemoveEmptyHierarchy(Entity * currentNode);
 	void ConvertShadows(Entity * rootNode);
     int32 removedNodeCount;
+    
+    void ConvertOldMaterialToNewMaterial(Material * oldMaterial, InstanceMaterialState * oldMaterialState,
+                                         NMaterial ** newMaterial, NMaterialInstance ** newMaterialInstance);
+
 private:
     void AddToNodeMap(DataNode * node);
 

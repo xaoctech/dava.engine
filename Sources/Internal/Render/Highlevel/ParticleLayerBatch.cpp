@@ -39,7 +39,7 @@ void ParticleLayerBatch::Draw(Camera * camera)
 	if(!totalCount)return;
 
 	RenderManager::Instance()->SetRenderData(renderDataObject);
-	material->PrepareRenderState();
+	materialInstance->PrepareRenderState();
 
 	RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLELIST, 0, 6*totalCount);
 }

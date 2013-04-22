@@ -9,8 +9,9 @@ namespace DAVA
 {
 
 class RenderDataObject;
-class Material;
+class NMaterial;
 class Camera;
+    
 class ParticleLayer3D : public ParticleLayer
 {
 public:
@@ -22,7 +23,7 @@ public:
 
 	virtual void Draw(Camera * camera);
 
-	Material * GetMaterial();
+	NMaterial * GetMaterial();
 	
 	virtual void SetAdditive(bool additive);
 

@@ -17,15 +17,21 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 
 	//TODO: set material from outside
 	
-	Material * material = new Material();
-	material->SetType(Material::MATERIAL_VERTEX_COLOR_ALPHABLENDED);
-	material->SetAlphablend(true);
-	material->SetBlendSrc(BLEND_SRC_ALPHA);
-	material->SetBlendDest(BLEND_ONE);
-	material->SetName("ParticleLayer3D_material");
+//	Material * material = new Material();
+//	material->SetType(Material::MATERIAL_VERTEX_COLOR_ALPHABLENDED);
+//	material->SetAlphablend(true);
+//	material->SetBlendSrc(BLEND_SRC_ALPHA);
+//	material->SetBlendDest(BLEND_ONE);
+//	material->SetName("ParticleLayer3D_material");
 
-	renderBatch->SetMaterial(material);
+    NMaterial * material = new NMaterial();
+    NMaterialInstance * materialInstance = new NMaterialInstance();
+    
+    renderBatch->SetMaterial(material);
+    renderBatch->SetMaterialInstance(materialInstance);
+
 	SafeRelease(material);
+    SafeRelease(materialInstance);
 }
 
 ParticleLayer3D::~ParticleLayer3D()
@@ -72,7 +78,7 @@ void ParticleLayer3D::DrawLayer(Camera* camera)
 	Particle * current = head;
 	if(current)
 	{
-		renderBatch->GetMaterial()->GetRenderState()->SetTexture(sprite->GetTexture(current->frame));
+		renderBatch->GetMaterialInstance()->GetRenderState()->SetTexture(sprite->GetTexture(current->frame));
 	}
 
 	while(current != 0)
@@ -238,7 +244,7 @@ ParticleLayer * ParticleLayer3D::Clone(ParticleLayer * dstLayer /*= 0*/)
 	return dstLayer;
 }
 
-Material * ParticleLayer3D::GetMaterial()
+NMaterial * ParticleLayer3D::GetMaterial()
 {
 	return renderBatch->GetMaterial();
 }
@@ -248,13 +254,13 @@ void ParticleLayer3D::SetAdditive(bool additive)
 	ParticleLayer::SetAdditive(additive);
 	if(additive)
 	{
-		renderBatch->GetMaterial()->SetBlendSrc(BLEND_SRC_ALPHA);
-		renderBatch->GetMaterial()->SetBlendDest(BLEND_ONE);
+		renderBatch->GetMaterialInstance()->GetRenderState()->SetBlendSrc(BLEND_SRC_ALPHA);
+		renderBatch->GetMaterialInstance()->GetRenderState()->SetBlendDest(BLEND_ONE);
 	}
 	else
 	{
-		renderBatch->GetMaterial()->SetBlendSrc(BLEND_SRC_ALPHA);
-		renderBatch->GetMaterial()->SetBlendDest(BLEND_ONE_MINUS_SRC_ALPHA);
+		renderBatch->GetMaterialInstance()->GetRenderState()->SetBlendSrc(BLEND_SRC_ALPHA);
+		renderBatch->GetMaterialInstance()->GetRenderState()->SetBlendDest(BLEND_ONE_MINUS_SRC_ALPHA);
 	}
 }
 

@@ -236,32 +236,32 @@ void SceneValidator::ValidateRenderBatch(Entity *ownerNode, RenderBatch *renderB
     ownerNode->RemoveFlag(Entity::NODE_INVALID);
     
     
-    Material *material = renderBatch->GetMaterial();
-    if(material)
-    {
-        ValidateMaterial(material, errorsLog);
-    }
+//    Material *material = renderBatch->GetMaterial();
+//    if(material)
+//    {
+//        ValidateMaterial(material, errorsLog);
+//    }
+//    
+//    InstanceMaterialState *materialState = renderBatch->GetMaterialInstance();
+//    if(materialState)
+//    {
+//        ValidateInstanceMaterialState(materialState, errorsLog);
+//    }
     
-    InstanceMaterialState *materialState = renderBatch->GetMaterialInstance();
-    if(materialState)
-    {
-        ValidateInstanceMaterialState(materialState, errorsLog);
-    }
     
-    
-    PolygonGroup *polygonGroup = renderBatch->GetPolygonGroup();
-    if(polygonGroup)
-    {
-        if(material)
-        {
-            if (material->Validate(polygonGroup) == Material::VALIDATE_INCOMPATIBLE)
-            {
-                ownerNode->AddFlag(Entity::NODE_INVALID);
-                errorsLog.insert(Format("Material: %s incompatible with node:%s.", material->GetName().c_str(), ownerNode->GetFullName().c_str()));
-                errorsLog.insert("For lightmapped objects check second coordinate set. For normalmapped check tangents, binormals.");
-            }
-        }
-    }
+//    PolygonGroup *polygonGroup = renderBatch->GetPolygonGroup();
+//    if(polygonGroup)
+//    {
+//        if(material)
+//        {
+//            if (material->Validate(polygonGroup) == Material::VALIDATE_INCOMPATIBLE)
+//            {
+//                ownerNode->AddFlag(Entity::NODE_INVALID);
+//                errorsLog.insert(Format("Material: %s incompatible with node:%s.", material->GetName().c_str(), ownerNode->GetFullName().c_str()));
+//                errorsLog.insert("For lightmapped objects check second coordinate set. For normalmapped check tangents, binormals.");
+//            }
+//        }
+//    }
 }
 
 void SceneValidator::ValidateMaterial(Material *material, Set<String> &errorsLog)

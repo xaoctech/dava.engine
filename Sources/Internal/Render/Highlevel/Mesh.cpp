@@ -31,6 +31,8 @@
 #include "Render/Highlevel/RenderBatch.h"
 #include "Render/3D/PolygonGroup.h"
 #include "Render/Highlevel/ShadowVolume.h"
+#include "Render/Material/NMaterial.h"
+
 namespace DAVA
 {
 
@@ -46,11 +48,12 @@ Mesh::~Mesh()
     
 }
 
-void Mesh::AddPolygonGroup(PolygonGroup * polygonGroup, Material * material)
+void Mesh::AddPolygonGroup(PolygonGroup * polygonGroup, NMaterial * material, NMaterialInstance * materialInstance)
 {
     RenderBatch * batch = new RenderBatch();
     batch->SetPolygonGroup(polygonGroup);
     batch->SetMaterial(material);
+    batch->SetMaterialInstance(materialInstance);
     batch->SetRenderDataObject(polygonGroup->renderDataObject);
     batch->SetStartIndex(0);
     batch->SetIndexCount(polygonGroup->GetIndexCount());

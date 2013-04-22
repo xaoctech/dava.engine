@@ -376,26 +376,26 @@ void SceneData::RestoreTexture(const DAVA::FilePath &descriptorPathname, DAVA::T
         {
             RenderBatch *renderBatch = ro->GetRenderBatch(b);
             
-            Material *material = renderBatch->GetMaterial();
-            if(material)
-            {
-                for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
-                {
-                    if(material->GetTextureName((Material::eTextureLevel)t) == descriptorPathname)
-                    {
-                        material->SetTexture((Material::eTextureLevel)t, texture);
-                    }
-                }
-            }
-            
-            InstanceMaterialState *instanceMaterial = renderBatch->GetMaterialInstance();
-            if(instanceMaterial)
-            {
-                if(instanceMaterial->GetLightmapName() == descriptorPathname)
-                {
-                    instanceMaterial->SetLightmap(texture, instanceMaterial->GetLightmapName());
-                }
-            }
+//            Material *material = renderBatch->GetMaterial();
+//            if(material)
+//            {
+//                for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
+//                {
+//                    if(material->GetTextureName((Material::eTextureLevel)t) == descriptorPathname)
+//                    {
+//                        material->SetTexture((Material::eTextureLevel)t, texture);
+//                    }
+//                }
+//            }
+//            
+//            InstanceMaterialState *instanceMaterial = renderBatch->GetMaterialInstance();
+//            if(instanceMaterial)
+//            {
+//                if(instanceMaterial->GetLightmapName() == descriptorPathname)
+//                {
+//                    instanceMaterial->SetLightmap(texture, instanceMaterial->GetLightmapName());
+//                }
+//            }
         }
         
         Landscape *landscape = dynamic_cast<Landscape *>(ro);

@@ -60,7 +60,7 @@ void RenderPass::AddRenderLayer(RenderLayer * layer, const FastName & afterLayer
 			const FastName & name = renderLayers[i]->GetName();
 			if(afterLayer == name)
 			{
-				renderLayers.insert(renderLayers.begin() +i+1, layer);
+				renderLayers.insert(renderLayers.begin() + i + 1, layer);
 				return;
 			}
 		}

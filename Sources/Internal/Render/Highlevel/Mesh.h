@@ -35,7 +35,6 @@
 #include "Base/BaseMath.h"
 #include "Render/Highlevel/RenderSystem.h"
 #include "Render/Highlevel/RenderObject.h"
-#include "Render/Material.h"
 
 namespace DAVA
 {
@@ -43,18 +42,22 @@ namespace DAVA
 class PolygonGroup;
 class RenderBatch;
 class ShadowVolume;
+class NMaterial;
+class NMaterialInstance;
+
 class Mesh : public RenderObject
 {
 public:
     Mesh();
     virtual ~Mesh();
     
-    void AddPolygonGroup(PolygonGroup * polygonGroup, Material * material);
+    void AddPolygonGroup(PolygonGroup * polygonGroup, NMaterial * material, NMaterialInstance * materialInstance);
 
     uint32 GetPolygonGroupCount();
     PolygonGroup * GetPolygonGroup(uint32 index);
     
 	virtual RenderObject * Clone(RenderObject *newObject);
+
 	virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
 	virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
 
@@ -62,7 +65,6 @@ public:
 	virtual ShadowVolume * CreateShadow();
 
 protected:
-    //Vector<PolygonGroup*> polygonGroups;
 };
 
 
