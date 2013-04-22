@@ -59,7 +59,7 @@ void ResultScreen::SaveResults()
     
     Image* image = resultSprite->GetTexture()->CreateImageFromMemory();
     FilePath saveFileName = FileSystem::Instance()->GetUserDocumentsPath();
-    saveFileName += FilePath(filename.GetAbsolutePathname() + ".png");
+    saveFileName += FilePath(filename.GetFilename() + ".png");
     ImageLoader::Save(image, saveFileName);
     
     Map<String, String> results;
@@ -70,10 +70,9 @@ void ResultScreen::SaveResults()
 	String filePath = testData.GetSceneFilePath().ResolvePathname();
     results["SceneFilePath"] = filePath.substr(filePath.find("Maps"));
     
-    FilePath documentsPath("~doc:");
-    FilePath folderPathname = documentsPath + FilePath("PerformanceTestResult/");
+	FilePath folderPathname("~doc:/PerformanceTestResult/");
     FileSystem::Instance()->CreateDirectory(folderPathname);
-    FilePath statFileName = folderPathname + filename + FilePath(".txt");
+    FilePath statFileName = folderPathname + FilePath::CreateWithNewExtension(filename, ".txt").GetFilename();
     File* file = File::Create(statFileName, File::CREATE | File::WRITE);
     if (file)
     {
@@ -87,7 +86,7 @@ void ResultScreen::SaveResults()
         SafeRelease(file);
     }
     
-    FilePath levelName = FilePath::CreateWithNewExtension(filename, "");
+    FilePath levelName = FilePath::CreateWithNewExtension(filename, "").GetFilename();
     GameCore::Instance()->FlushToDB(levelName, results, saveFileName);
     
     state = RESULT_STATE_FINISHED;
