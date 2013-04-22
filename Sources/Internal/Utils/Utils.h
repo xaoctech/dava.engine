@@ -52,10 +52,10 @@ inline String WStringToString(const WideString& s);
 
 WideString GetDeviceName();
 	
-#if defined(__DAVAENGINE_IPHONE__)
+#if defined(__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
 void DisableSleepTimer();
 void EnableSleepTimer();
-#endif //#if defined(__DAVAENGINE_IPHONE__)
+#endif //#if defined(__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
 	
 //int SplitString(const String& input, const String& delimiter, std::vector<String>& results, bool includeEmpties = true);
 void Split(const String & inputString, const String & delims, Vector<String> & tokens);
