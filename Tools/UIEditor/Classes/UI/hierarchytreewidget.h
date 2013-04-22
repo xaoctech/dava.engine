@@ -33,7 +33,7 @@ signals:
 	void ImportScreenOrAggregator();
 
 protected slots:
-	void OnTreeUpdated();
+	void OnTreeUpdated(bool needRestoreSelection);
 	
 private slots:
     void on_treeWidget_itemSelectionChanged();
