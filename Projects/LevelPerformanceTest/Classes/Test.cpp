@@ -50,10 +50,10 @@ void Test::LoadResources()
 	Landscape* landscape = GetLandscape();
 	DVASSERT_MSG(scene, "There is no landscape in a scene");
 
-	uint32 textureMemory = TextureHelper::GetSceneTextureMemory(scene, GetFilePath().GetFilename());
+	uint32 textureMemory = TextureHelper::GetSceneTextureMemory(scene);
 	testData.SetTextureMemorySize(textureMemory);
 
-	uint32 textureFilesSize = TextureHelper::GetSceneTextureFilesSize(scene, GetFilePath());
+	uint32 textureFilesSize = TextureHelper::GetSceneTextureFilesSize(scene);
 	testData.SetTexturesFilesSize(textureFilesSize);
 
 	testData.SetSceneFilePath(fullName);
