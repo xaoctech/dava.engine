@@ -128,7 +128,7 @@ void NotPassableTerrain::SetDisplayedTexture()
 
 void NotPassableTerrain::LoadColorsArray()
 {
-    YamlParser* parser = YamlParser::Create("~res:/Configs/LandscapeAngle.yaml");
+    YamlParser* parser = YamlParser::Create(FilePath("~res:/Configs/LandscapeAngle.yaml"));
     
     if (parser != 0)
     {

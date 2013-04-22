@@ -180,12 +180,12 @@ bool XMLParser::ParseBytes(const unsigned char *bytes, int length, XMLParserDele
 	return true;
 }
 
-bool XMLParser::ParseFile(const String &fileName, XMLParserDelegate *delegate)
+bool XMLParser::ParseFile(const FilePath &fileName, XMLParserDelegate *delegate)
 {
 	File *fp = File::Create(fileName, File::READ|File::OPEN);
 	if(!fp)
 	{
-		Logger::Error("Can't open file %s", fileName.c_str());
+		Logger::Error("Can't open file %s", fileName.GetAbsolutePathname().c_str());
 		return false;
 	}
 	
@@ -198,7 +198,7 @@ bool XMLParser::ParseFile(const String &fileName, XMLParserDelegate *delegate)
 
 	if (!res)
 	{
-		Logger::Warning("%s PARSING PROBLEMS!!!", fileName.c_str());
+		Logger::Warning("%s PARSING PROBLEMS!!!", fileName.GetAbsolutePathname().c_str());
 		return false;
 	}
 	return true;

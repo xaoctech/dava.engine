@@ -9,7 +9,7 @@ using namespace DAVA;
 class Test: public DAVA::UIScreen
 {
 public:
-	Test(const String& fullName);
+	Test(const FilePath & fullName);
 	
 	virtual void LoadResources();
 	virtual void UnloadResources();
@@ -24,11 +24,10 @@ public:
 	int32 GetScreenId() const {return screenId;};
 	
 	bool IsFinished() const {return isFinished;};
-	
+
 	Texture* GetLandscapeTexture();
 
-	const String GetFileName() const;
-	const String GetFilePath() const;
+	const FilePath & GetFilePath() const;
 
 	const LandscapeTestData& GetLandscapeTestData() const {return testData;};
 private:
@@ -39,15 +38,16 @@ private:
 	
 	int32 skipFrames;
 
-	String fullName;
+	FilePath fullName;
 	
-	float32 time;
-    
 	LandscapeTestData testData;
     Vector3 curCameraPosition;
     uint32 nextRectNum;
+
     float32 curCameraAngle;
-    LinearAnimation<Vector3>* camMoveAnimation;
+	float32 curSectorTime;
+	int32 curSectorFrames;
+	int32 curSectorIndex;
     LinearAnimation<float32>* camRotateAnimation;
 
     Vector<DAVA::Rect> rectSequence;
@@ -58,12 +58,12 @@ private:
     Vector3 GetRealPoint(const Vector2& point);
     
 	void PreparePath();
-    void PrepareCameraAnimation();
+    void PrepareCameraPosition();
     void PrepareFpsStat();
-    void MoveToNextPoint();
+    bool MoveToNextPoint();
     void SaveFpsStat();
 	void ZeroCurFpsStat();
-    void AnimationFinished(BaseObject*, void*, void*);
+	void OnSectorCameraAnimationEnded(BaseObject* caller, void* userData, void* callerData);
 
 	inline UI3DView* GetSceneView();
 	inline Scene* GetScene();

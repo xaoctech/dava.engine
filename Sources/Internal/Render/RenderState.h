@@ -416,7 +416,7 @@ public:
      \brief Function to load render state from yaml file.
 	 \param[in] filePath path to file
      */
-	void LoadFromYamlFile(const String & filePath);
+	void LoadFromYamlFile(const FilePath & filePath);
 
 	/**
 	 \brief Function to load render state from yaml node.
@@ -428,7 +428,7 @@ public:
      \brief Function to save render state to yaml file.
 	 \param[in] filePath path to file
      */
-	bool SaveToYamlFile(const String & filePath);
+	bool SaveToYamlFile(const FilePath & filePath);
 	
 	/**
 	 \brief Function to save render state to yaml node.

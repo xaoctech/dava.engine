@@ -1,18 +1,8 @@
 #include "LandscapeTestData.h"
 
-class FpsStatItemCompare
-{
-public:
-	bool operator()(const FpsStatItem& a, const FpsStatItem& b)
-	{
-		return a.minFps < b.minFps;
-	}
-};
-
 void LandscapeTestData::AddStatItem(const FpsStatItem &item)
 {
 	stat.push_back(item);
-	std::sort(stat.begin(), stat.end(), FpsStatItemCompare());
 }
 
 void LandscapeTestData::SetLandscapeRect(const Rect &rect)
@@ -89,7 +79,7 @@ void LandscapeTestData::SetTextureMemorySize(uint32 size)
 	textureMemorySize = size;
 }
 
-void LandscapeTestData::SetSceneFilePath(const String & path)
+void LandscapeTestData::SetSceneFilePath(const FilePath & path)
 {
 	sceneFilePath = path;
 }
@@ -99,7 +89,7 @@ uint32 LandscapeTestData::GetTextureMemorySize() const
 	return textureMemorySize;
 }
 
-String LandscapeTestData::GetSceneFilePath() const
+const FilePath & LandscapeTestData::GetSceneFilePath() const
 {
 	return sceneFilePath;
 }

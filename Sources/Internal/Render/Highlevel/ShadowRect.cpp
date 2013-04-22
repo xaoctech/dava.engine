@@ -31,6 +31,7 @@
 #include "Render/RenderBase.h"
 #include "Render/RenderManager.h"
 #include "Scene3D/Scene.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA
 {
@@ -71,7 +72,7 @@ ShadowRect::ShadowRect()
     shadowColor = Color(0, 0, 0, 0.5f);
     
 	shader = new Shader();
-	shader->LoadFromYaml("~res:/Shaders/ShadowVolume/shadowrect.shader");
+	shader->LoadFromYaml(FilePath("~res:/Shaders/ShadowVolume/shadowrect.shader"));
 	shader->Recompile();
     
     uniformShadowColor = shader->FindUniformLocationByName("shadowColor");

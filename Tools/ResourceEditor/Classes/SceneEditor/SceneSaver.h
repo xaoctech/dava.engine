@@ -12,19 +12,19 @@ public:
 	SceneSaver();
 	virtual ~SceneSaver();
     
-    void SetInFolder(const String &folderPathname);
-    void SetOutFolder(const String &folderPathname);
+    void SetInFolder(const FilePath &folderPathname);
+    void SetOutFolder(const FilePath &folderPathname);
     
-    void SaveFile(const String &fileName, Set<String> &errorLog);
-	void ResaveFile(const String &fileName, Set<String> &errorLog);
-    void SaveScene(Scene *scene, const String &fileName, Set<String> &errorLog);
+    void SaveFile(const FilePath &fileName, Set<String> &errorLog);
+	void ResaveFile(const FilePath &fileName, Set<String> &errorLog);
+    void SaveScene(Scene *scene, const FilePath &fileName, Set<String> &errorLog);
     
 protected:
     
     void ReleaseTextures();
 
     void CopyTextures(Scene *scene, Set<String> &errorLog);
-    void CopyTexture(const String &texturePathname, Set<String> &errorLog);
+    void CopyTexture(const FilePath &texturePathname, Set<String> &errorLog);
 
 	void CopyReferencedObject(Entity *node, Set<String> &errorLog);
 

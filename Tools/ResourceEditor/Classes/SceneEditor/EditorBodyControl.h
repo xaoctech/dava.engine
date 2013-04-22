@@ -54,8 +54,8 @@ public:
 
     virtual void SetSize(const Vector2 &newSize);
 
-    void ReloadRootScene(const String &pathToFile);
-    void ReloadNode(Entity *node, const String &pathToFile);
+    void ReloadRootScene(const FilePath &pathToFile);
+    void ReloadNode(Entity *node, const FilePath &pathToFile);
     
 	void BeastProcessScene();
     virtual void DrawAfterChilds(const UIGeometricData &geometricData);
@@ -122,9 +122,9 @@ public:
 	
 	void SetBrushRadius(uint32 size);
 	void SetColorIndex(uint32 indexInSet);
-	void SaveTexture(const String &path);
-	void CustomColorsLoadTexture(const String& path);
-	String CustomColorsGetCurrentSaveFileName();
+	void SaveTexture(const FilePath &path);
+	void CustomColorsLoadTexture(const FilePath& path);
+	FilePath CustomColorsGetCurrentSaveFileName();
 	
 	//visibility check tool
 	void VisibilityToolSetPoint();
@@ -188,7 +188,7 @@ protected:
 	
 	float32 moveKf;
     
-    String mainFilePath;
+    FilePath mainFilePath;
     
     
     void SelectNodeAtTree(Entity *node);

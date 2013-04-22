@@ -40,6 +40,7 @@
 #include "Render/Highlevel/RenderObject.h"
 #include "Render/Highlevel/IRenderUpdatable.h"
 #include "Particles/ParticleLayer.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA 
 {
@@ -100,13 +101,13 @@ public:
 		 Function do not cache emitters so you'll need to cache them yourself in your code.
 		 \param[in] pathName path to resource you want to load
 	 */
-	void LoadFromYaml(const String & pathName);
+	void LoadFromYaml(const FilePath & pathName);
 	
 	/**
      \brief Function saves emitter to yaml file.
      \param[in] pathName path to resource you want to load
 	 */
-    void SaveToYaml(const String & pathName);
+    void SaveToYaml(const FilePath & pathName);
     
 	/**
 		\brief Function sets the position of emitter.
@@ -323,7 +324,7 @@ public:
     inline bool GetIs3D();
 	virtual bool Is3DFlagCorrect();
 
-	const String & GetConfigPath() { return configPath; }
+	const FilePath & GetConfigPath() { return configPath; }
 	void Cleanup(bool needCleanupLayers = true);
 
 	void UpdateEmptyLayerNames();
@@ -349,7 +350,7 @@ protected:
 
 	void CleanupLayers();
 
-	String configPath;
+	FilePath configPath;
 	
 	Vector<ParticleLayer*> layers;
 	Vector3 position;

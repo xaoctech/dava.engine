@@ -51,7 +51,7 @@ namespace DAVA
 		 \param[in] rect Used only size part of the rect. Incoming rect size can be modified by the UIList if this is neccesary.
 		 \param[in] cellIdentifier literal identifier to represents cell type. For example: "Name cell", "Phone number cell", etc.
 		 */
-		UIListCell(const Rect &rect, const String &cellIdentifier, const String &aggregatorPath = "");
+		UIListCell(const Rect &rect, const String &cellIdentifier, const FilePath &aggregatorPath = FilePath());
 
         /**
 		 \brief Returns cell's identifier.

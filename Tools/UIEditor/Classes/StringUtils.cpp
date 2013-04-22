@@ -7,7 +7,6 @@
 //
 
 #include "StringUtils.h"
-#include "Utils/Utils.h"
 
 namespace DAVA {
 
@@ -15,12 +14,30 @@ namespace DAVA {
 QString TruncateFileExtension(const QString& fileName, const QString& extension)
 {
     // Just wrap around the particular DAVA engine functions.
-    return QString::fromStdString(TruncateFileExtension(fileName.toStdString(), extension.toStdString()));
+    
+    String truncatedName = fileName.toStdString();
+    
+    int truncatedStringLen = truncatedName.length() - extension.length();
+    bool endsWithExtension = false;
+    if (fileName.length() >= extension.length())
+    {
+        endsWithExtension = (truncatedName.compare(truncatedStringLen, extension.length(), extension.toStdString()) == 0);
+    }
+    
+    if (endsWithExtension)
+    {
+        truncatedName.resize(truncatedStringLen);
+    }
+    
+    return QString::fromStdString(truncatedName);
 }
 
 QString TruncateTxtFileExtension(const QString& fileName)
 {
-    return QString::fromStdString(TruncateTxtFileExtension(fileName.toStdString()));
+    FilePath path(fileName.toStdString());
+    path.TruncateExtension();
+    
+    return QString::fromStdString(path.GetAbsolutePathname());
 }
 
 WideString QStrint2WideString(const QString& str)

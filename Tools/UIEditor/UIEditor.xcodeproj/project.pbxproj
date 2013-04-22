@@ -56,13 +56,6 @@
 		02D69CC516F08CEE00F3803F /* HierarchyTreePlatformNode_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C5A16F08CED00F3803F /* HierarchyTreePlatformNode_moc.cpp */; };
 		02D69CC616F08CEE00F3803F /* HierarchyTreeRootNode_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C5B16F08CED00F3803F /* HierarchyTreeRootNode_moc.cpp */; };
 		02D69CC716F08CEE00F3803F /* HierarchyTreeScreenNode_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C5C16F08CED00F3803F /* HierarchyTreeScreenNode_moc.cpp */; };
-		02D69CC816F08CEE00F3803F /* ResourcePacker_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C5E16F08CED00F3803F /* ResourcePacker_moc.cpp */; };
-		02D69CC916F08CEE00F3803F /* CommandLineParser_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C6016F08CED00F3803F /* CommandLineParser_moc.cpp */; };
-		02D69CCA16F08CEE00F3803F /* DefinitionFile_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C6116F08CED00F3803F /* DefinitionFile_moc.cpp */; };
-		02D69CCB16F08CEE00F3803F /* ImagePacker_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C6216F08CED00F3803F /* ImagePacker_moc.cpp */; };
-		02D69CCC16F08CEE00F3803F /* PngImage_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C6316F08CED00F3803F /* PngImage_moc.cpp */; };
-		02D69CCD16F08CEE00F3803F /* PVRConverter_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C6416F08CED00F3803F /* PVRConverter_moc.cpp */; };
-		02D69CCE16F08CEE00F3803F /* TexturePacker_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C6516F08CED00F3803F /* TexturePacker_moc.cpp */; };
 		02D69CCF16F08CEE00F3803F /* ScreenControl_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C6616F08CED00F3803F /* ScreenControl_moc.cpp */; };
 		02D69CD016F08CEE00F3803F /* ScreenManager_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C6716F08CED00F3803F /* ScreenManager_moc.cpp */; };
 		02D69CD116F08CEE00F3803F /* ScreenWrapper_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C6816F08CED00F3803F /* ScreenWrapper_moc.cpp */; };
@@ -156,13 +149,6 @@
 		7410E82A171462C70028AAAA /* EditorListDelegate.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7410E828171462C70028AAAA /* EditorListDelegate.cpp */; };
 		747FA17C1636A7CF000CEEDA /* backgroundpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 747FA17A1636A7CF000CEEDA /* backgroundpropertygridwidget.cpp */; };
 		747FA19C1636DBED000CEEDA /* UITextControlMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 747FA19A1636DBED000CEEDA /* UITextControlMetadata.cpp */; };
-		74819F2D169F1435000FE4B1 /* CommandLineParser.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74819F20169F1435000FE4B1 /* CommandLineParser.cpp */; };
-		74819F2E169F1435000FE4B1 /* DefinitionFile.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74819F22169F1435000FE4B1 /* DefinitionFile.cpp */; };
-		74819F2F169F1435000FE4B1 /* ImagePacker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74819F24169F1435000FE4B1 /* ImagePacker.cpp */; };
-		74819F30169F1435000FE4B1 /* PngImage.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74819F26169F1435000FE4B1 /* PngImage.cpp */; };
-		74819F31169F1435000FE4B1 /* TexturePacker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74819F28169F1435000FE4B1 /* TexturePacker.cpp */; };
-		74819F34169F1493000FE4B1 /* ResourcePacker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74819F33169F1493000FE4B1 /* ResourcePacker.cpp */; };
-		74819F37169F1946000FE4B1 /* PVRConverter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74819F35169F1946000FE4B1 /* PVRConverter.cpp */; };
 		7482C8C71688AA9100435155 /* UISliderMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7482C8C51688AA9100435155 /* UISliderMetadata.cpp */; };
 		7482C8CA1688AA9F00435155 /* sliderpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7482C8C81688AA9F00435155 /* sliderpropertygridwidget.cpp */; };
 		7482C8CC1688AAA800435155 /* sliderpropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 7482C8CB1688AAA800435155 /* sliderpropertygridwidget.ui */; };
@@ -229,6 +215,14 @@
 		C1C62A54162D7455000C1B32 /* hierarchytreewidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = C1C62A53162D7455000C1B32 /* hierarchytreewidget.ui */; };
 		C1C62A70162EC800000C1B32 /* librarywidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = C1C62A6F162EC800000C1B32 /* librarywidget.ui */; };
 		C1C62A73162EC809000C1B32 /* librarywidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C1C62A71162EC809000C1B32 /* librarywidget.cpp */; };
+		E8EB3D7B17208318006727FA /* DXTConverter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EB3D6A17208318006727FA /* DXTConverter.cpp */; };
+		E8EB3D7C17208318006727FA /* PVRConverter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EB3D6C17208318006727FA /* PVRConverter.cpp */; };
+		E8EB3D7D17208318006727FA /* CommandLineParser.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EB3D6F17208318006727FA /* CommandLineParser.cpp */; };
+		E8EB3D7E17208318006727FA /* DefinitionFile.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EB3D7117208318006727FA /* DefinitionFile.cpp */; };
+		E8EB3D7F17208318006727FA /* ImagePacker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EB3D7317208318006727FA /* ImagePacker.cpp */; };
+		E8EB3D8017208318006727FA /* PngImage.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EB3D7517208318006727FA /* PngImage.cpp */; };
+		E8EB3D8117208318006727FA /* ResourcePacker2D.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EB3D7717208318006727FA /* ResourcePacker2D.cpp */; };
+		E8EB3D8217208318006727FA /* TexturePacker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EB3D7917208318006727FA /* TexturePacker.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -306,13 +300,6 @@
 		02D69C5A16F08CED00F3803F /* HierarchyTreePlatformNode_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HierarchyTreePlatformNode_moc.cpp; sourceTree = "<group>"; };
 		02D69C5B16F08CED00F3803F /* HierarchyTreeRootNode_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HierarchyTreeRootNode_moc.cpp; sourceTree = "<group>"; };
 		02D69C5C16F08CED00F3803F /* HierarchyTreeScreenNode_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HierarchyTreeScreenNode_moc.cpp; sourceTree = "<group>"; };
-		02D69C5E16F08CED00F3803F /* ResourcePacker_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ResourcePacker_moc.cpp; sourceTree = "<group>"; };
-		02D69C6016F08CED00F3803F /* CommandLineParser_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CommandLineParser_moc.cpp; sourceTree = "<group>"; };
-		02D69C6116F08CED00F3803F /* DefinitionFile_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DefinitionFile_moc.cpp; sourceTree = "<group>"; };
-		02D69C6216F08CED00F3803F /* ImagePacker_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImagePacker_moc.cpp; sourceTree = "<group>"; };
-		02D69C6316F08CED00F3803F /* PngImage_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PngImage_moc.cpp; sourceTree = "<group>"; };
-		02D69C6416F08CED00F3803F /* PVRConverter_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PVRConverter_moc.cpp; sourceTree = "<group>"; };
-		02D69C6516F08CED00F3803F /* TexturePacker_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TexturePacker_moc.cpp; sourceTree = "<group>"; };
 		02D69C6616F08CED00F3803F /* ScreenControl_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScreenControl_moc.cpp; sourceTree = "<group>"; };
 		02D69C6716F08CED00F3803F /* ScreenManager_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScreenManager_moc.cpp; sourceTree = "<group>"; };
 		02D69C6816F08CED00F3803F /* ScreenWrapper_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScreenWrapper_moc.cpp; sourceTree = "<group>"; };
@@ -490,20 +477,6 @@
 		747FA17B1636A7CF000CEEDA /* backgroundpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = backgroundpropertygridwidget.h; path = PropertyGridWidgets/backgroundpropertygridwidget.h; sourceTree = "<group>"; };
 		747FA19A1636DBED000CEEDA /* UITextControlMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UITextControlMetadata.cpp; path = Metadata/UITextControlMetadata.cpp; sourceTree = "<group>"; };
 		747FA19B1636DBED000CEEDA /* UITextControlMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UITextControlMetadata.h; path = Metadata/UITextControlMetadata.h; sourceTree = "<group>"; };
-		74819F20169F1435000FE4B1 /* CommandLineParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CommandLineParser.cpp; sourceTree = "<group>"; };
-		74819F21169F1435000FE4B1 /* CommandLineParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommandLineParser.h; sourceTree = "<group>"; };
-		74819F22169F1435000FE4B1 /* DefinitionFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DefinitionFile.cpp; sourceTree = "<group>"; };
-		74819F23169F1435000FE4B1 /* DefinitionFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefinitionFile.h; sourceTree = "<group>"; };
-		74819F24169F1435000FE4B1 /* ImagePacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImagePacker.cpp; sourceTree = "<group>"; };
-		74819F25169F1435000FE4B1 /* ImagePacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImagePacker.h; sourceTree = "<group>"; };
-		74819F26169F1435000FE4B1 /* PngImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PngImage.cpp; sourceTree = "<group>"; };
-		74819F27169F1435000FE4B1 /* PngImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PngImage.h; sourceTree = "<group>"; };
-		74819F28169F1435000FE4B1 /* TexturePacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TexturePacker.cpp; sourceTree = "<group>"; };
-		74819F29169F1435000FE4B1 /* TexturePacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TexturePacker.h; sourceTree = "<group>"; };
-		74819F32169F147B000FE4B1 /* ResourcePacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResourcePacker.h; sourceTree = "<group>"; };
-		74819F33169F1493000FE4B1 /* ResourcePacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ResourcePacker.cpp; sourceTree = "<group>"; };
-		74819F35169F1946000FE4B1 /* PVRConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PVRConverter.cpp; sourceTree = "<group>"; };
-		74819F36169F1946000FE4B1 /* PVRConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRConverter.h; sourceTree = "<group>"; };
 		7482C8C51688AA9100435155 /* UISliderMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UISliderMetadata.cpp; path = Metadata/UISliderMetadata.cpp; sourceTree = "<group>"; };
 		7482C8C61688AA9100435155 /* UISliderMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UISliderMetadata.h; path = Metadata/UISliderMetadata.h; sourceTree = "<group>"; };
 		7482C8C81688AA9F00435155 /* sliderpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sliderpropertygridwidget.cpp; path = PropertyGridWidgets/sliderpropertygridwidget.cpp; sourceTree = "<group>"; };
@@ -614,6 +587,22 @@
 		C6766F86E49E9C8701C8E637 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = /System/Library/Frameworks/AGL.framework; sourceTree = "<absolute>"; };
 		CBE0854C74E7E8A8F67923BE /* yaml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = yaml_macos; path = ../dava.framework/Libs/libs/libyaml_macos.a; sourceTree = "<group>"; };
 		DA18A6831232F53228631AD1 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
+		E8EB3D6A17208318006727FA /* DXTConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DXTConverter.cpp; path = ../../../Sources/Tools/DXTConverter.cpp; sourceTree = "<group>"; };
+		E8EB3D6B17208318006727FA /* DXTConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DXTConverter.h; path = ../../../Sources/Tools/DXTConverter.h; sourceTree = "<group>"; };
+		E8EB3D6C17208318006727FA /* PVRConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PVRConverter.cpp; path = ../../../Sources/Tools/PVRConverter.cpp; sourceTree = "<group>"; };
+		E8EB3D6D17208318006727FA /* PVRConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PVRConverter.h; path = ../../../Sources/Tools/PVRConverter.h; sourceTree = "<group>"; };
+		E8EB3D6F17208318006727FA /* CommandLineParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CommandLineParser.cpp; sourceTree = "<group>"; };
+		E8EB3D7017208318006727FA /* CommandLineParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommandLineParser.h; sourceTree = "<group>"; };
+		E8EB3D7117208318006727FA /* DefinitionFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DefinitionFile.cpp; sourceTree = "<group>"; };
+		E8EB3D7217208318006727FA /* DefinitionFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefinitionFile.h; sourceTree = "<group>"; };
+		E8EB3D7317208318006727FA /* ImagePacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImagePacker.cpp; sourceTree = "<group>"; };
+		E8EB3D7417208318006727FA /* ImagePacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImagePacker.h; sourceTree = "<group>"; };
+		E8EB3D7517208318006727FA /* PngImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PngImage.cpp; sourceTree = "<group>"; };
+		E8EB3D7617208318006727FA /* PngImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PngImage.h; sourceTree = "<group>"; };
+		E8EB3D7717208318006727FA /* ResourcePacker2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ResourcePacker2D.cpp; sourceTree = "<group>"; };
+		E8EB3D7817208318006727FA /* ResourcePacker2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResourcePacker2D.h; sourceTree = "<group>"; };
+		E8EB3D7917208318006727FA /* TexturePacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TexturePacker.cpp; sourceTree = "<group>"; };
+		E8EB3D7A17208318006727FA /* TexturePacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TexturePacker.h; sourceTree = "<group>"; };
 		E8FFFF9D16FB17A500E315AE /* ui_spinnerpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_spinnerpropertygridwidget.h; sourceTree = "<group>"; };
 		F7C12D3D2FE75302773F34BB /* vorbisfile_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbisfile_macos; path = ../dava.framework/Libs/oggvorbis/lib/libvorbisfile_macos.a; sourceTree = "<group>"; };
 		FAC1F4E071D49CE850E70770 /* Data/ */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Data/; sourceTree = "<group>"; };
@@ -714,28 +703,6 @@
 				02D69C5C16F08CED00F3803F /* HierarchyTreeScreenNode_moc.cpp */,
 			);
 			path = Models;
-			sourceTree = "<group>";
-		};
-		02D69C5D16F08CED00F3803F /* ResourcePacker */ = {
-			isa = PBXGroup;
-			children = (
-				02D69C5E16F08CED00F3803F /* ResourcePacker_moc.cpp */,
-				02D69C5F16F08CED00F3803F /* TexturePacker */,
-			);
-			path = ResourcePacker;
-			sourceTree = "<group>";
-		};
-		02D69C5F16F08CED00F3803F /* TexturePacker */ = {
-			isa = PBXGroup;
-			children = (
-				02D69C6016F08CED00F3803F /* CommandLineParser_moc.cpp */,
-				02D69C6116F08CED00F3803F /* DefinitionFile_moc.cpp */,
-				02D69C6216F08CED00F3803F /* ImagePacker_moc.cpp */,
-				02D69C6316F08CED00F3803F /* PngImage_moc.cpp */,
-				02D69C6416F08CED00F3803F /* PVRConverter_moc.cpp */,
-				02D69C6516F08CED00F3803F /* TexturePacker_moc.cpp */,
-			);
-			path = TexturePacker;
 			sourceTree = "<group>";
 		};
 		02D69C6A16F08CED00F3803F /* UI */ = {
@@ -1050,35 +1017,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		74819F17169F1435000FE4B1 /* ResourcePacker */ = {
-			isa = PBXGroup;
-			children = (
-				74819F1F169F1435000FE4B1 /* TexturePacker */,
-				74819F32169F147B000FE4B1 /* ResourcePacker.h */,
-				74819F33169F1493000FE4B1 /* ResourcePacker.cpp */,
-			);
-			path = ResourcePacker;
-			sourceTree = "<group>";
-		};
-		74819F1F169F1435000FE4B1 /* TexturePacker */ = {
-			isa = PBXGroup;
-			children = (
-				74819F35169F1946000FE4B1 /* PVRConverter.cpp */,
-				74819F36169F1946000FE4B1 /* PVRConverter.h */,
-				74819F20169F1435000FE4B1 /* CommandLineParser.cpp */,
-				74819F21169F1435000FE4B1 /* CommandLineParser.h */,
-				74819F22169F1435000FE4B1 /* DefinitionFile.cpp */,
-				74819F23169F1435000FE4B1 /* DefinitionFile.h */,
-				74819F24169F1435000FE4B1 /* ImagePacker.cpp */,
-				74819F25169F1435000FE4B1 /* ImagePacker.h */,
-				74819F26169F1435000FE4B1 /* PngImage.cpp */,
-				74819F27169F1435000FE4B1 /* PngImage.h */,
-				74819F28169F1435000FE4B1 /* TexturePacker.cpp */,
-				74819F29169F1435000FE4B1 /* TexturePacker.h */,
-			);
-			path = TexturePacker;
-			sourceTree = "<group>";
-		};
 		7CABE3C80E79AD2B307756D2 /* Sources [qmake] */ = {
 			isa = PBXGroup;
 			children = (
@@ -1115,7 +1053,6 @@
 				02D69C4516F08CED00F3803F /* icons_qrc.cpp */,
 				02D69C4616F08CED00F3803F /* Metadata */,
 				02D69C5516F08CED00F3803F /* Models */,
-				02D69C5D16F08CED00F3803F /* ResourcePacker */,
 				02D69C6616F08CED00F3803F /* ScreenControl_moc.cpp */,
 				02D69C6716F08CED00F3803F /* ScreenManager_moc.cpp */,
 				02D69C6816F08CED00F3803F /* ScreenWrapper_moc.cpp */,
@@ -1153,6 +1090,7 @@
 		C15C2FDF162AD6E400818631 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				E8EB3D691720830D006727FA /* ResourcePacker */,
 				C1C62A3A162D371E000C1B32 /* DefaultScreen.cpp */,
 				C1C62A3B162D371E000C1B32 /* DefaultScreen.h */,
 				C17246101637E18900709AAF /* EditorFontManager.cpp */,
@@ -1177,7 +1115,6 @@
 				17112B5616392E880017E713 /* Helpers */,
 				176D3958162C3C8C0099AACF /* Metadata */,
 				176D3941162C2F5D0099AACF /* Models */,
-				74819F17169F1435000FE4B1 /* ResourcePacker */,
 				C15C2FE8162AD6E400818631 /* UI */,
 			);
 			path = Classes;
@@ -1233,6 +1170,38 @@
 				FAC1F4E071D49CE850E70770 /* Data/ */,
 			);
 			name = "Source [bundle data]";
+			sourceTree = "<group>";
+		};
+		E8EB3D691720830D006727FA /* ResourcePacker */ = {
+			isa = PBXGroup;
+			children = (
+				E8EB3D6A17208318006727FA /* DXTConverter.cpp */,
+				E8EB3D6B17208318006727FA /* DXTConverter.h */,
+				E8EB3D6C17208318006727FA /* PVRConverter.cpp */,
+				E8EB3D6D17208318006727FA /* PVRConverter.h */,
+				E8EB3D6E17208318006727FA /* TexturePacker */,
+			);
+			name = ResourcePacker;
+			sourceTree = "<group>";
+		};
+		E8EB3D6E17208318006727FA /* TexturePacker */ = {
+			isa = PBXGroup;
+			children = (
+				E8EB3D6F17208318006727FA /* CommandLineParser.cpp */,
+				E8EB3D7017208318006727FA /* CommandLineParser.h */,
+				E8EB3D7117208318006727FA /* DefinitionFile.cpp */,
+				E8EB3D7217208318006727FA /* DefinitionFile.h */,
+				E8EB3D7317208318006727FA /* ImagePacker.cpp */,
+				E8EB3D7417208318006727FA /* ImagePacker.h */,
+				E8EB3D7517208318006727FA /* PngImage.cpp */,
+				E8EB3D7617208318006727FA /* PngImage.h */,
+				E8EB3D7717208318006727FA /* ResourcePacker2D.cpp */,
+				E8EB3D7817208318006727FA /* ResourcePacker2D.h */,
+				E8EB3D7917208318006727FA /* TexturePacker.cpp */,
+				E8EB3D7A17208318006727FA /* TexturePacker.h */,
+			);
+			name = TexturePacker;
+			path = ../../../Sources/Tools/TexturePacker;
 			sourceTree = "<group>";
 		};
 		ED1E82605DD74B483AF3C982 /* External Frameworks and Libraries */ = {
@@ -1473,13 +1442,6 @@
 				7482C8C71688AA9100435155 /* UISliderMetadata.cpp in Build Sources */,
 				7482C8CA1688AA9F00435155 /* sliderpropertygridwidget.cpp in Build Sources */,
 				173339E71694472600E98820 /* UndoRedoController.cpp in Build Sources */,
-				74819F2D169F1435000FE4B1 /* CommandLineParser.cpp in Build Sources */,
-				74819F2E169F1435000FE4B1 /* DefinitionFile.cpp in Build Sources */,
-				74819F2F169F1435000FE4B1 /* ImagePacker.cpp in Build Sources */,
-				74819F30169F1435000FE4B1 /* PngImage.cpp in Build Sources */,
-				74819F31169F1435000FE4B1 /* TexturePacker.cpp in Build Sources */,
-				74819F34169F1493000FE4B1 /* ResourcePacker.cpp in Build Sources */,
-				74819F37169F1946000FE4B1 /* PVRConverter.cpp in Build Sources */,
 				74EED63216B18C7600262D63 /* alignspropertygridwidget.cpp in Build Sources */,
 				1710178B16EE197900BC7AE0 /* UIListMetadata.cpp in Build Sources */,
 				1710179016EE2F3200BC7AE0 /* UISpinnerMetadata.cpp in Build Sources */,
@@ -1526,13 +1488,6 @@
 				02D69CC516F08CEE00F3803F /* HierarchyTreePlatformNode_moc.cpp in Build Sources */,
 				02D69CC616F08CEE00F3803F /* HierarchyTreeRootNode_moc.cpp in Build Sources */,
 				02D69CC716F08CEE00F3803F /* HierarchyTreeScreenNode_moc.cpp in Build Sources */,
-				02D69CC816F08CEE00F3803F /* ResourcePacker_moc.cpp in Build Sources */,
-				02D69CC916F08CEE00F3803F /* CommandLineParser_moc.cpp in Build Sources */,
-				02D69CCA16F08CEE00F3803F /* DefinitionFile_moc.cpp in Build Sources */,
-				02D69CCB16F08CEE00F3803F /* ImagePacker_moc.cpp in Build Sources */,
-				02D69CCC16F08CEE00F3803F /* PngImage_moc.cpp in Build Sources */,
-				02D69CCD16F08CEE00F3803F /* PVRConverter_moc.cpp in Build Sources */,
-				02D69CCE16F08CEE00F3803F /* TexturePacker_moc.cpp in Build Sources */,
 				02D69CCF16F08CEE00F3803F /* ScreenControl_moc.cpp in Build Sources */,
 				02D69CD016F08CEE00F3803F /* ScreenManager_moc.cpp in Build Sources */,
 				02D69CD116F08CEE00F3803F /* ScreenWrapper_moc.cpp in Build Sources */,
@@ -1588,6 +1543,14 @@
 				49FD832F170B24E800F3B650 /* ImportCommands.cpp in Build Sources */,
 				497774C0170DB808004CE2FB /* importdialogfilewidget_moc.cpp in Build Sources */,
 				497774C2170DB80F004CE2FB /* importdialog_moc.cpp in Build Sources */,
+				E8EB3D7B17208318006727FA /* DXTConverter.cpp in Build Sources */,
+				E8EB3D7C17208318006727FA /* PVRConverter.cpp in Build Sources */,
+				E8EB3D7D17208318006727FA /* CommandLineParser.cpp in Build Sources */,
+				E8EB3D7E17208318006727FA /* DefinitionFile.cpp in Build Sources */,
+				E8EB3D7F17208318006727FA /* ImagePacker.cpp in Build Sources */,
+				E8EB3D8017208318006727FA /* PngImage.cpp in Build Sources */,
+				E8EB3D8117208318006727FA /* ResourcePacker2D.cpp in Build Sources */,
+				E8EB3D8217208318006727FA /* TexturePacker.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1625,14 +1588,15 @@
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtOpenGL",
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include",
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/mkspecs/macx-xcode",
-					../dava.framework/Sources/Internal,
-					../dava.framework/Sources/External,
-					../dava.framework/Sources/External/Freetype,
-					../dava.framework/Libs/oggvorbis/include,
-					../dava.framework/Sources/Libs/include,
+					../../Sources/Internal,
+					../../Sources/Tools,
+					../../Sources/External,
+					../../Sources/External/Freetype,
+					../../Libs/oggvorbis/include,
+					../../Sources/Libs/include,
 					Classes,
-					../dava.framework/Libs/libs,
-					../dava.framework/Libs/freetype/include,
+					../../Libs/libs,
+					../../Libs/freetype/include,
 					/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers,
 					/System/Library/Frameworks/AGL.framework/Headers,
 					.,
@@ -1697,35 +1661,6 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = DAVA_SAVE_TO_YAML;
-				HEADER_SEARCH_PATHS = (
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework/Versions/4/Headers",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtCore",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework/Versions/4/Headers",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtNetwork",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework/Versions/4/Headers",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtGui",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework/Versions/4/Headers",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtOpenGL",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/mkspecs/macx-xcode",
-					../../Sources/Internal,
-					../../Sources/External,
-					../../Sources/External/Freetype,
-					../../Libs/oggvorbis/include,
-					../../Sources/Libs/include,
-					./Classes,
-					../../Libs/libs,
-					../../Libs/freetype/include,
-					/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers,
-					/System/Library/Frameworks/AGL.framework/Headers,
-					.,
-					/usr/local/include,
-					/System/Library/Frameworks/CarbonCore.framework/Headers,
-					"../../Libs/ImageMagick-6.7.4/",
-					"../../Libs/ImageMagick-6.7.4/delegates/include",
-					"../../Libs/ImageMagick-6.7.4/include/ImageMagick",
-					../../Libs/libpng/include/,
-				);
 				LIBRARY_SEARCH_PATHS = (
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
 					/System/Library/Frameworks/,
@@ -1750,35 +1685,6 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					DAVA_DEBUG,
 					DAVA_SAVE_TO_YAML,
-				);
-				HEADER_SEARCH_PATHS = (
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework/Versions/4/Headers",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtCore",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework/Versions/4/Headers",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtNetwork",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework/Versions/4/Headers",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtGui",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework/Versions/4/Headers",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtOpenGL",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/mkspecs/macx-xcode",
-					../../Sources/Internal,
-					../../Sources/External,
-					../../Sources/External/Freetype,
-					../../Libs/oggvorbis/include,
-					../../Sources/Libs/include,
-					./Classes,
-					../../Libs/libs,
-					../../Libs/freetype/include,
-					/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers,
-					/System/Library/Frameworks/AGL.framework/Headers,
-					.,
-					/usr/local/include,
-					/System/Library/Frameworks/CarbonCore.framework/Headers,
-					"../../Libs/ImageMagick-6.7.4/",
-					"../../Libs/ImageMagick-6.7.4/delegates/include",
-					"../../Libs/ImageMagick-6.7.4/include/ImageMagick",
-					../../Libs/libpng/include/,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
@@ -1815,14 +1721,15 @@
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtOpenGL",
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include",
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/mkspecs/macx-xcode",
-					../dava.framework/Sources/Internal,
-					../dava.framework/Sources/External,
-					../dava.framework/Sources/External/Freetype,
-					../dava.framework/Libs/oggvorbis/include,
-					../dava.framework/Sources/Libs/include,
+					../../Sources/Internal,
+					../../Sources/Tools,
+					../../Sources/External,
+					../../Sources/External/Freetype,
+					../../Libs/oggvorbis/include,
+					../../Sources/Libs/include,
 					Classes,
-					../dava.framework/Libs/libs,
-					../dava.framework/Libs/freetype/include,
+					../../Libs/libs,
+					../../Libs/freetype/include,
 					/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers,
 					/System/Library/Frameworks/AGL.framework/Headers,
 					.,

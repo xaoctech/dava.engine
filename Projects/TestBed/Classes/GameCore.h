@@ -60,6 +60,14 @@ public:
 	virtual void OnSuspend();
 	virtual void OnResume();
 	virtual void OnBackground();
+    
+#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
+    /**
+     \brief Called when application goes to background due to device lock on iOS platforms
+	 */
+	virtual void OnDeviceLocked() {};
+#endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
+
 	
 	virtual void BeginFrame();
 	virtual void Update(DAVA::float32 update);
