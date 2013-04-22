@@ -41,7 +41,7 @@ SceneEditorProxy::~SceneEditorProxy()
 	SafeDelete(cameraSystem);
 }
 
-bool SceneEditorProxy::Open(const DAVA::String &path)
+bool SceneEditorProxy::Load(const DAVA::String &path)
 {
 	bool ret = false;
 
@@ -54,11 +54,6 @@ bool SceneEditorProxy::Open(const DAVA::String &path)
 	return ret;
 }
 
-bool SceneEditorProxy::Save()
-{
-	return Save(curScenePath);
-}
-
 bool SceneEditorProxy::Save(const DAVA::String &path)
 {
 	bool ret = false;
@@ -69,6 +64,11 @@ bool SceneEditorProxy::Save(const DAVA::String &path)
 	}
 
 	return ret;
+}
+
+bool SceneEditorProxy::Save()
+{
+	return Save(curScenePath);
 }
 
 DAVA::String SceneEditorProxy::GetScenePath()
@@ -93,7 +93,7 @@ void SceneEditorProxy::Update(float timeElapsed)
 	modifSystem->Update(timeElapsed);
 }
 
-void SceneEditorProxy::ProcessUIEvent(DAVA::UIEvent *event)
+void SceneEditorProxy::PostUIEvent(DAVA::UIEvent *event)
 {
 	gridSystem->ProcessUIEvent(event);
 	cameraSystem->ProcessUIEvent(event);

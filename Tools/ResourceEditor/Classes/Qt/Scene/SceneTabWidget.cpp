@@ -22,6 +22,10 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	// 
 	// tab bar
 	tabBar = new QTabBar(this);
+	tabBar->setTabsClosable(true);
+	tabBar->setMovable(true);
+	tabBar->setUsesScrollButtons(true);
+	tabBar->setExpanding(false);
 
 	// davawidget to displae davaengine content
 	davaWidget = new DavaGLWidget(this);
@@ -46,7 +50,7 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	AddTab("/Projects/dava.wot.art/DataSource/3d/Maps/dike_village/dike_village.sc2");
 	//AddTab("/Projects/dava.wot.art/DataSource/3d/Maps/desert_train/desert_train.sc2");
 
-	QObject::connect(tabBar, SIGNAL(currentChanged(int)), this, SLOT(SetCurrentTab(int)));
+	QObject::connect(tabBar, SIGNAL(currentChanged(int)), this, SLOT(TabBarCurrentChanged(int)));
 	SetCurrentTab(oldTabIndex);
 }
 
@@ -105,7 +109,7 @@ int SceneTabWidget::AddTab(const DAVA::String &scenePapth)
 	int tabIndex = AddTab();
 	int tabID = GetTabID(tabIndex);
 
-	tabIDtoSceneMap[tabID]->Open(scenePapth);
+	tabIDtoSceneMap[tabID]->Load(scenePapth);
 	tabBar->setTabText(tabIndex, scenePapth.c_str());
 	tabBar->setTabToolTip(tabIndex, scenePapth.c_str());
 
@@ -181,9 +185,14 @@ void SceneTabWidget::ProcessDAVAUIEvent(DAVA::UIEvent *event)
 		SceneEditorProxy* curSceneProxy = tabIDtoSceneMap[currentTabID];
 		if(NULL != curSceneProxy)
 		{
-			curSceneProxy->ProcessUIEvent(event);
+			curSceneProxy->PostUIEvent(event);
 		}
 	}
+}
+
+void SceneTabWidget::TabBarCurrentChanged(int index)
+{
+	SetCurrentTab(index);
 }
 
 void SceneTabWidget::resizeEvent(QResizeEvent * event)
