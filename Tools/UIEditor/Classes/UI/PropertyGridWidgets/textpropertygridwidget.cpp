@@ -202,7 +202,7 @@ void TextPropertyGridWidget::UpdatePushButtonWidgetWithPropertyValue(QPushButton
             {
                 FTFont *ftFont = dynamic_cast<FTFont*>(fontPropertyValue);
                 //Set pushbutton widget text as font relative path
-                buttonText = QString::fromStdString(ftFont->GetFontPath());;
+                buttonText = QString::fromStdString(ftFont->GetFontPath().GetAbsolutePathname());;
                 break;
             }
             case Font::TYPE_GRAPHICAL:
@@ -216,8 +216,8 @@ void TextPropertyGridWidget::UpdatePushButtonWidgetWithPropertyValue(QPushButton
                     return;
                 }
                 //Get font definition and sprite relative path
-                QString fontDefinitionName = QString::fromStdString(gFont->GetFontDefinitionName());
-                QString fontSpriteName = QString::fromStdString(fontSprite->GetName());
+                QString fontDefinitionName = QString::fromStdString(gFont->GetFontDefinitionName().GetAbsolutePathname());
+                QString fontSpriteName = QString::fromStdString(fontSprite->GetRelativePathname().GetAbsolutePathname());
                 //Set push button widget text - for grapics font it contains font definition and sprite names
                 buttonText = QString("%1\n%2").arg(fontDefinitionName, fontSpriteName);
                 break;

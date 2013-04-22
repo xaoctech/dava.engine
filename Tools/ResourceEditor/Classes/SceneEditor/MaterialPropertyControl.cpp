@@ -146,7 +146,7 @@ void MaterialPropertyControl::SetFilepathValue(Material *material, int32 type)
     }
     else 
     {
-        propertyList->SetFilepathPropertyValue(textureNames[type], "");
+        propertyList->SetFilepathPropertyValue(textureNames[type], FilePath());
     }
 
 }
@@ -246,17 +246,21 @@ void MaterialPropertyControl::OnFloatPropertyChanged(PropertyList *forList, cons
     NodesPropertyControl::OnFloatPropertyChanged(forList, forKey, newValue);
 }
 
-void MaterialPropertyControl::OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
+void MaterialPropertyControl::OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const FilePath &newValue)
 {
 	Set<String> errorLog;
-	bool isCorrect = SceneValidator::Instance()->ValidateTexturePathname(newValue, errorLog);
-	if(!isCorrect)
-	{
-		ShowErrorDialog(errorLog);
-		return;
-	}
     
-    String descriptorPathname = TextureDescriptor::GetDescriptorPathname(newValue);
+    if(newValue.IsInitalized())
+    {
+        bool isCorrect = SceneValidator::Instance()->ValidateTexturePathname(newValue, errorLog);
+        if(!isCorrect)
+        {
+            ShowErrorDialog(errorLog);
+            return;
+        }
+    }
+    
+    FilePath descriptorPathname = newValue.IsInitalized() ? TextureDescriptor::GetDescriptorPathname(newValue) : FilePath();
     for (int32 i = 0; i < ME_TEX_COUNT; i++)
     {
         if (forKey == textureNames[i]) 
@@ -267,12 +271,15 @@ void MaterialPropertyControl::OnFilepathPropertyChanged(PropertyList *forList, c
             Texture *tx = material->GetTexture((Material::eTextureLevel)textureTypes[i]);
             if(tx)
             {
-                SceneValidator::Instance()->ValidateTextureAndShowErrors(tx, material->GetTextureName((Material::eTextureLevel)textureTypes[i]),
-					Format("Material: %s. TextureLevel %d.", material->GetName().c_str(), textureTypes[i]));
+                if(tx != Texture::GetPinkPlaceholder())
+                {
+                    SceneValidator::Instance()->ValidateTextureAndShowErrors(tx, material->GetTextureName((Material::eTextureLevel)textureTypes[i]),
+                                                                             Format("Material: %s. TextureLevel %d.", material->GetName().c_str(), textureTypes[i]));
+                }
             }
             else 
             {
-                propertyList->SetFilepathPropertyValue(textureNames[i], "");
+                propertyList->SetFilepathPropertyValue(textureNames[i], FilePath());
             }
             break;
         }

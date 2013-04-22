@@ -332,7 +332,7 @@ void RenderManager::MakeGLScreenShot()
     
     if(image)
     {
-        ImageLoader::Save(image, FileSystem::Instance()->SystemPathForFrameworkPath(Format("~doc:/screenshot%d.png", ++screenShotIndex)));
+        ImageLoader::Save(image, FilePath(Format("~doc:/screenshot%d.png", ++screenShotIndex)));
         SafeRelease(image);
     }
     

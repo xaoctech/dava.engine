@@ -2101,24 +2101,24 @@ bool LibPVRHelper::PreparePVRData(const char* pvrData, const int32 pvrDataSize)
     return true;
 }
 
-PixelFormat LibPVRHelper::GetPixelFormat(const String &filePathname)
+PixelFormat LibPVRHelper::GetPixelFormat(const FilePath &filePathname)
 {
     PVRHeaderV3 header = GetHeader(filePathname);
     return GetTextureFormat(header);
 }
     
-uint32 LibPVRHelper::GetDataLength(const String &filePathname)
+uint32 LibPVRHelper::GetDataLength(const FilePath &filePathname)
 {
     PVRHeaderV3 header = GetHeader(filePathname);
     return GetTextureDataSize(header);
 }
 
-PVRHeaderV3 LibPVRHelper::GetHeader(const String &filePathname)
+PVRHeaderV3 LibPVRHelper::GetHeader(const FilePath &filePathname)
 {
     File *file = File::Create(filePathname, File::READ | File::OPEN);
     if(!file)
     {
-        Logger::Error("[LibPVRHelper::GetHeaderForFile] cannot open file %s", filePathname.c_str());
+        Logger::Error("[LibPVRHelper::GetHeaderForFile] cannot open file %s", filePathname.GetAbsolutePathname().c_str());
         return PVRHeaderV3();
     }
     

@@ -33,6 +33,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
+#include "FileSystem/FilePath.h"
 
 
 namespace DAVA 
@@ -70,7 +71,7 @@ protected:
 };
 	
 	
-bool DownloadFileFromURLToDocuments(const String & url, const String & documentsPathname);
+bool DownloadFileFromURLToDocuments(const String & url, const FilePath & documentsPathname);
 	
 };
 

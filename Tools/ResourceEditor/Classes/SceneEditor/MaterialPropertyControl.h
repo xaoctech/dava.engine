@@ -28,7 +28,7 @@ public:
     virtual void OnColorPropertyChanged(PropertyList *forList, const String &forKey, const Color& newColor);
     virtual void OnComboIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey);
     virtual void OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue);
-    virtual void OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue);
+    virtual void OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const FilePath &newValue);
     virtual void OnStringPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue);
     
 protected:

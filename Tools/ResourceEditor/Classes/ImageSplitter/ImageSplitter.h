@@ -9,13 +9,13 @@ class ImageSplitter
 {
 public:
 
-    static bool SplitImage(const String &pathname, Set<String> &errorLog);
-    static bool MergeImages(const String &folder, Set<String> &errorLog);
+    static bool SplitImage(const FilePath &pathname, Set<String> &errorLog);
+    static bool MergeImages(const FilePath &folder, Set<String> &errorLog);
     
 private:
     
-    static void SaveImage(Image *image, const String &pathname);
-    static Image * LoadImage(const String &pathname);
+    static void SaveImage(Image *image, const FilePath &pathname);
+    static Image * LoadImage(const FilePath &pathname);
     
     static void ReleaseImages(Image *r, Image *g, Image *b, Image *a);
 };

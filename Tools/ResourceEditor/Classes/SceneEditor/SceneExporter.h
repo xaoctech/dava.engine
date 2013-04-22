@@ -15,15 +15,15 @@ public:
     
     void SetExportingFormat(const String &newFormat);
     
-    void CleanFolder(const String &folderPathname, Set<String> &errorLog);
+    void CleanFolder(const FilePath &folderPathname, Set<String> &errorLog);
     
-    void SetInFolder(const String &folderPathname);
-    void SetOutFolder(const String &folderPathname);
+    void SetInFolder(const FilePath &folderPathname);
+    void SetOutFolder(const FilePath &folderPathname);
     
-    void ExportFile(const String &fileName, Set<String> &errorLog);
-    void ExportFolder(const String &folderName, Set<String> &errorLog);
+    void ExportFile(const FilePath &fileName, Set<String> &errorLog);
+    void ExportFolder(const FilePath &folderName, Set<String> &errorLog);
     
-    void ExportScene(Scene *scene, const String &fileName, Set<String> &errorLog);
+    void ExportScene(Scene *scene, const FilePath &fileName, Set<String> &errorLog);
     
 protected:
     
@@ -31,14 +31,14 @@ protected:
     
     void ExportLandscape(Scene *scene, Set<String> &errorLog);
     void ExportLandscapeFullTiledTexture(Landscape *landscape, Set<String> &errorLog);
-    bool ExportTexture(const String &texturePathname, Set<String> &errorLog);
-    bool ExportTextureDescriptor(const String &texturePathname, Set<String> &errorLog);
+    bool ExportTexture(const FilePath &texturePathname, Set<String> &errorLog);
+    bool ExportTextureDescriptor(const FilePath &texturePathname, Set<String> &errorLog);
     
     void ExportTextures(Scene *scene, Set<String> &errorLog);
     
     void ReleaseTextures();
     
-    void CompressTextureIfNeed(const String &texturePathname, Set<String> &errorLog);
+    void CompressTextureIfNeed(const FilePath &texturePathname, Set<String> &errorLog);
     
     
 protected:

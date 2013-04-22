@@ -55,7 +55,7 @@ public:
 		VALUE_SEED
 	};
 
-	void	StartRecord(const String & dirName);
+	void	StartRecord(const FilePath & dirName);
 	void	StopRecord();
 	void	RecordFrame(float32 frameTime);
 	void	RecordEventsCount(int32 eventsCount);
@@ -63,7 +63,7 @@ public:
 	void	RecordSeed(const uint32 seed);
 	void	PauseReplay(bool isPause);
 
-	void	StartPlayback(const String & dirName);
+	void	StartPlayback(const FilePath & dirName);
 	float32	PlayFrameTime();
 	int32	PlayEventsCount();
 	UIEvent	PlayEvent();
