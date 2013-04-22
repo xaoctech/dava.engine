@@ -93,12 +93,13 @@ void SoundChannel::Stop()
 			AL_VERIFY(alSourcei(source, AL_BUFFER, 0));
 		}
 #endif //#ifdef __DAVASOUND_AL__
+		SafeRelease( buddySound );
 	}
 }
 
 void SoundChannel::Play(Sound * sound, bool _looping)
 {
-	buddySound = sound;
+	buddySound = SafeRetain(sound);
 	looping = _looping;
     
 	if(Sound::TYPE_STATIC == buddySound->GetType())
@@ -189,6 +190,7 @@ void SoundChannel::UpdateStreamed()
 	}
 	if(STATE_FREE == state)
 	{
+		SafeRelease( buddySound );
 		return;
 	}
 
