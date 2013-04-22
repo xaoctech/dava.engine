@@ -80,7 +80,7 @@ public:
 	HierarchyTreePlatformNode* GetActivePlatform() const;
     HierarchyTreeScreenNode* GetActiveScreen() const;
 	
-    void EmitHierarchyTreeUpdated();
+    void EmitHierarchyTreeUpdated(bool needRestoreSelection = true);
 
     const SELECTEDCONTROLNODES& GetActiveControlNodes() const;
 	bool IsNodeActive(const HierarchyTreeControlNode* activeControl) const;
@@ -105,7 +105,7 @@ signals:
 //	void ScreenCreated();
 //	void Scree
 	
-	void HierarchyTreeUpdated();
+	void HierarchyTreeUpdated(bool needRestoreSelection = true);
 	void SelectedPlatformChanged(const HierarchyTreePlatformNode*);
 	void SelectedScreenChanged(const HierarchyTreeScreenNode*);
 	

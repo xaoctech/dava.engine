@@ -34,7 +34,7 @@ HierarchyTreeWidget::HierarchyTreeWidget(QWidget *parent) :
 {
     ui->setupUi(this);
 	
-	connect(HierarchyTreeController::Instance(), SIGNAL(HierarchyTreeUpdated()), this, SLOT(OnTreeUpdated()));
+	connect(HierarchyTreeController::Instance(), SIGNAL(HierarchyTreeUpdated(bool)), this, SLOT(OnTreeUpdated(bool)));
 	connect(HierarchyTreeController::Instance(),
 			SIGNAL(SelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES &)),
 			this,
@@ -49,7 +49,7 @@ HierarchyTreeWidget::~HierarchyTreeWidget()
     delete ui;
 }
 
-void HierarchyTreeWidget::OnTreeUpdated()
+void HierarchyTreeWidget::OnTreeUpdated(bool needRestoreSelection)
 {
 	EXPANDEDITEMS expandedItems;
 	EXPANDEDITEMS selectedItems;
@@ -139,7 +139,11 @@ void HierarchyTreeWidget::OnTreeUpdated()
 	{
 		QTreeWidgetItem* rootItem = ui->treeWidget->topLevelItem(i);
 		RestoreTreeItemExpandedStateRecursive(rootItem, expandedItems);
-//		RestoreTreeItemSelectedStateRecursive(rootItem, selectedItems);
+		
+		if (needRestoreSelection)
+		{
+			RestoreTreeItemSelectedStateRecursive(rootItem, selectedItems);
+		}
 	}
 
 	internalSelectionChanged = false;
