@@ -65,7 +65,6 @@ void HierarchyTreeWidget::OnTreeUpdated()
 	}
 
 	//save selected node
-	
 	for (TREEITEMS::iterator iter = oldItems.begin(); iter != oldItems.end(); ++iter) {
 		QTreeWidgetItem* item = iter->second;
 		if (item->isSelected())
@@ -83,7 +82,7 @@ void HierarchyTreeWidget::OnTreeUpdated()
 	
 	//reset tree
 	ui->treeWidget->clear();
-	
+
 	const HierarchyTree& tree = HierarchyTreeController::Instance()->GetTree();
 	const HierarchyTreeRootNode* rootNode = tree.GetRootNode();
 	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter = rootNode->GetChildNodes().begin();
@@ -130,30 +129,23 @@ void HierarchyTreeWidget::OnTreeUpdated()
 				screenItem->setIcon(0, QIcon(IconHelper::GetScreenIconPath()));
 			platformItem->insertChild(platformItem->childCount(), screenItem);
 			
-			AddControlItem(screenItem, selectedItems, expandedItems, screenNode->GetChildNodes());
-			
-			if (expandedItems.find(screenNode->GetId()) != expandedItems.end())
-				screenItem->setExpanded(true);
-
-			if (selectedItems.find(screenNode->GetId()) != selectedItems.end())
-			{
-				screenItem->setSelected(true);
-			}
+			AddControlItem(screenItem, screenNode->GetChildNodes());
 		}
-		
-		if (expandedItems.find(platformNode->GetId()) != expandedItems.end())
-			platformItem->setExpanded(true);
+	}
 
-		if (selectedItems.find(platformNode->GetId()) != selectedItems.end())
-		{
-			platformItem->setSelected(true);
-		}
+	// Restore the selected items only after the tree is fully built.
+	int itemsCount = ui->treeWidget->topLevelItemCount();
+	for (int i = 0; i < itemsCount; i ++)
+	{
+		QTreeWidgetItem* rootItem = ui->treeWidget->topLevelItem(i);
+		RestoreTreeItemExpandedStateRecursive(rootItem, expandedItems);
+//		RestoreTreeItemSelectedStateRecursive(rootItem, selectedItems);
 	}
 
 	internalSelectionChanged = false;
 }
 
-void HierarchyTreeWidget::AddControlItem(QTreeWidgetItem* parent, const EXPANDEDITEMS& selectedItems, const EXPANDEDITEMS& expandedItems, const HierarchyTreeNode::HIERARCHYTREENODESLIST& items)
+void HierarchyTreeWidget::AddControlItem(QTreeWidgetItem* parent, const HierarchyTreeNode::HIERARCHYTREENODESLIST& items)
 {
 	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter = items.begin();
 		 iter != items.end();
@@ -168,15 +160,65 @@ void HierarchyTreeWidget::AddControlItem(QTreeWidgetItem* parent, const EXPANDED
 		Decorate(controlItem, controlNode->GetUIObject());
 
 		parent->insertChild(parent->childCount(), controlItem);
-		
-		AddControlItem(controlItem, selectedItems, expandedItems, controlNode->GetChildNodes());
-		
-		if (expandedItems.find(controlNode->GetId()) != expandedItems.end())
-			controlItem->setExpanded(true);
-		if (selectedItems.find(controlNode->GetId()) != selectedItems.end())
-		{
-			controlItem->setSelected(true);
-		}
+
+		// Perform the recursive call.
+		AddControlItem(controlItem, controlNode->GetChildNodes());
+	}
+}
+
+void HierarchyTreeWidget::RestoreTreeItemSelectedStateRecursive(QTreeWidgetItem* parentItem,
+	const EXPANDEDITEMS& selectedItems)
+{
+	if (!parentItem )
+	{
+		return;
+	}
+
+	QVariant itemIDData = parentItem->data(ITEM_ID);
+	if (itemIDData.type() != QVariant::Int)
+	{
+		return;
+	}
+
+	int itemID = itemIDData.toInt();
+	if (selectedItems.find(itemID) != selectedItems.end() && 
+		!parentItem->isSelected())
+	{
+		parentItem->setSelected(true);
+	}
+
+	// Repeat for all children.
+	for (int i = 0; i < parentItem->childCount(); i ++)
+	{
+		RestoreTreeItemSelectedStateRecursive(parentItem->child(i), selectedItems);
+	}
+}
+
+void HierarchyTreeWidget::RestoreTreeItemExpandedStateRecursive(QTreeWidgetItem* parentItem,
+	const EXPANDEDITEMS& expandedItems)
+{
+	if (!parentItem )
+	{
+		return;
+	}
+
+	QVariant itemIDData = parentItem->data(ITEM_ID);
+	if (itemIDData.type() != QVariant::Int)
+	{
+		return;
+	}
+
+	int itemID = itemIDData.toInt();
+	if (expandedItems.find(itemID) != expandedItems.end() &&
+		parentItem->childCount() > 0 && !parentItem->isExpanded())
+	{
+		parentItem->setExpanded(true);
+	}
+
+	// Repeat for all children.
+	for (int i = 0; i < parentItem->childCount(); i ++)
+	{
+		RestoreTreeItemExpandedStateRecursive(parentItem->child(i), expandedItems);
 	}
 }
 
