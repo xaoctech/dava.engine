@@ -127,7 +127,7 @@ namespace DAVA
 	 vector (start + dir) 
 	 with plane (plane normal + plane point)
 	 */
-	inline bool GetIntersectionVectorWithPlane(const Vector3 & start, const Vector3 & dir, const Vector3 & planeN, const Vector3 & planePoint, Vector3 & result)
+	DAVA_DEPRECATED(inline bool GetIntersectionVectorWithPlane(const Vector3 & start, const Vector3 & dir, const Vector3 & planeN, const Vector3 & planePoint, Vector3 & result))
 	{	
 		Vector3 intersection;
 		float32 cosang, dist, lamda;
