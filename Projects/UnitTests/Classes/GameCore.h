@@ -95,6 +95,9 @@ protected:
     MongodbObject * CreateSubObject(const String &objectName, MongodbObject *dbObject, bool needFinished);
     MongodbObject * CreateLogObject(const String &logName, const String &runTime);
 
+    const String GetErrorText(const ErrorData *error);
+    
+    
 protected:
     
     File * logFile;

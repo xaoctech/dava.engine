@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Textures Browser</string>
+   <string>Texture Converter</string>
   </property>
   <property name="windowIcon">
    <iconset resource="QtIcons.qrc">
@@ -360,9 +360,6 @@
              <layout class="QGridLayout" name="gridLayout_2">
               <property name="horizontalSpacing">
                <number>10</number>
-              </property>
-              <property name="margin">
-               <number>9</number>
               </property>
               <item row="0" column="1">
                <widget class="QLabel" name="labelOriginalFormat">

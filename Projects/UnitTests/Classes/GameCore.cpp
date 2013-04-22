@@ -49,8 +49,12 @@
 #include "DPITest.h"
 #include "EMailTest.h"
 #include "InputTest.h"
+#include "FilePathTest.h"
+#include "FileListTest.h"
+#include "FileSystemTest.h"
 #include "DeviceInfoTest.h"
 #include "LocalizationTest.h"
+#include "UIListTest.h"
 
 using namespace DAVA;
 
@@ -77,26 +81,29 @@ void GameCore::OnAppStarted()
     CreateDocumentsFolder();
 
 	new DeviceInfoTest();
+    new FilePathTest();
+    new FileListTest();
+    new FileSystemTest();
     new LocalizationTest();
     new InputTest();
-//    new SampleTest();
-//    new EntityTest(); 
-//    new MemoryAllocatorsTest();
-//    new HashMapTest();
-//    new SoundTest();
-//    new SplitTest();
+	new SampleTest();
+	new EntityTest(); 
+	new MemoryAllocatorsTest();
+	new HashMapTest();
+	new SoundTest();
+	new SplitTest();
 	new EMailTest();
-    new DPITest();
+	new DPITest();
 	new MaterialCompilerTest();
-    new CloneTest();
-    new PVRTest();
+	new CloneTest();
+	new PVRTest();
 	new DXTTest();
 	new EntityTest();	
 	new MemoryAllocatorsTest();
 	new HashMapTest();
 	new SoundTest();
 	new SplitTest();
-    new KeyedArchiveYamlTest();
+	new KeyedArchiveYamlTest();
 	new DLCTest();
     
     errors.reserve(TestCount());
@@ -113,7 +120,7 @@ void GameCore::RegisterScreen(BaseScreen *screen)
 
 void GameCore::CreateDocumentsFolder()
 {
-    String documentsPath = String(FileSystem::Instance()->GetUserDocumentsPath()) + "UnitTests/";
+    FilePath documentsPath = FileSystem::Instance()->GetUserDocumentsPath() + FilePath("UnitTests/");
     
     FileSystem::Instance()->CreateDirectory(documentsPath, true);
     FileSystem::Instance()->SetCurrentDocumentsDirectory(documentsPath);
@@ -122,12 +129,10 @@ void GameCore::CreateDocumentsFolder()
 
 File * GameCore::CreateDocumentsFile(const String &filePathname)
 {
-    String workingFilepathname = FileSystem::Instance()->FilepathInDocuments(filePathname);
+    FilePath workingFilepathname = FileSystem::Instance()->FilepathInDocuments(filePathname);
     
-    String folder, filename;
-    FileSystem::Instance()->SplitPath(workingFilepathname, folder, filename);
     
-    FileSystem::Instance()->CreateDirectory(folder, true);
+    FileSystem::Instance()->CreateDirectory(workingFilepathname.GetDirectory(), true);
     
 	File *retFile = File::Create(workingFilepathname, File::CREATE | File::WRITE);
     return retFile;
@@ -345,30 +350,24 @@ void GameCore::FlushTestResults()
 void GameCore::RegisterError(const String &command, const String &fileName, int32 line, TestData *testData)
 {
     ErrorData *newError = new ErrorData();
-        
-    if(newError)
+    
+    newError->command = command;
+    newError->filename = fileName;
+    newError->line = line;
+    
+    if(testData)
     {
-        newError->command = command;
-        newError->filename = fileName;
-        newError->line = line;
-        
-        if(testData)
-        {
-            newError->testName = testData->name;
-            newError->testMessage = testData->message;
-        }
-        else
-        {
-            newError->testName = String("");
-            newError->testMessage = String("");
-        }
-        
-        errors.push_back(newError);
+        newError->testName = testData->name;
+        newError->testMessage = testData->message;
     }
-    else 
+    else
     {
-        LogMessage(String("Can't allocate ErrorData"));
+        newError->testName = String("");
+        newError->testMessage = String("");
     }
+    
+    errors.push_back(newError);
+    Logger::Error(GetErrorText(newError).c_str());
 }
 
 bool GameCore::ConnectToDB()
@@ -410,21 +409,7 @@ MongodbObject * GameCore::CreateLogObject(const String &logName, const String &r
             reportFile->WriteLine(String("Failed tests:"));
             for(int32 i = 0; i < errorCount; ++i)
             {
-                ErrorData *error = errors[i];
-                
-                String errorString = String(Format("command: %s at file: %s at line: %d",
-                                                   error->command.c_str(), error->filename.c_str(), error->line));
-                
-                if(!error->testName.empty())
-                {
-                    errorString += String(Format(", test: %s", error->testName.c_str()));
-                }
-                
-                if(!error->testMessage.empty())
-                {
-                    errorString += String(Format(", message: %s", error->testMessage.c_str()));
-                }
-                
+                String errorString = GetErrorText(errors[i]);
                 
                 reportFile->WriteLine(String(Format("Error[%06d]: ", i+1)) + errorString);
                 if(logObject)
@@ -453,6 +438,25 @@ MongodbObject * GameCore::CreateLogObject(const String &logName, const String &r
     
     return logObject;
 }
+
+const String GameCore::GetErrorText(const ErrorData *error)
+{
+    String errorString = String(Format("command: %s at file: %s at line: %d",
+                                       error->command.c_str(), error->filename.c_str(), error->line));
+    
+    if(!error->testName.empty())
+    {
+        errorString += String(Format(", test: %s", error->testName.c_str()));
+    }
+    
+    if(!error->testMessage.empty())
+    {
+        errorString += String(Format(", message: %s", error->testMessage.c_str()));
+    }
+
+    return errorString;
+}
+
 
 MongodbObject * GameCore::CreateSubObject(const String &objectName, MongodbObject *dbObject, bool needFinished)
 {

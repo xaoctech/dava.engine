@@ -42,7 +42,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	ui->setupUi(this);
  
     qApp->installEventFilter(this);
-	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + "EditorConfig.yaml");
+	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + FilePath("EditorConfig.yaml"));
 
 	QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->sceneTabWidget);
 	QtMainWindowHandler::Instance()->SetResentMenu(ui->menuFile);
@@ -101,7 +101,6 @@ void QtMainWindow::SetupActions()
 	connect(ui->actionReloadAll, SIGNAL(triggered()), actionHandler, SLOT(RepackAndReloadTextures()));
 
 	//View
-	connect(ui->actionSceneInfo, SIGNAL(triggered()), actionHandler, SLOT(ToggleSceneInfo()));
 	connect(ui->actionRestoreViews, SIGNAL(triggered()), actionHandler, SLOT(RestoreViews()));
 
 	//Tools
@@ -137,7 +136,10 @@ void QtMainWindow::SetupMainMenu()
 	QAction *actionSetSwitchIndex = ui->dockSetSwitchIndex->toggleViewAction();
 	QAction *actionParticleEditor = ui->dockParticleEditor->toggleViewAction();
 	QAction *actionParticleEditorTimeLine = ui->dockParticleEditorTimeLine->toggleViewAction();
-    ui->menuView->insertAction(ui->actionRestoreViews, actionToolBar);
+    QAction *actionSceneInfo = ui->dockSceneInfo->toggleViewAction();
+
+    ui->menuView->insertAction(ui->actionRestoreViews, actionSceneInfo);
+    ui->menuView->insertAction(actionSceneInfo, actionToolBar);
     ui->menuView->insertAction(actionToolBar, actionLibrary);
     ui->menuView->insertAction(actionLibrary, actionProperties);
 	ui->menuView->insertAction(actionProperties, actionReferences);
@@ -157,11 +159,10 @@ void QtMainWindow::SetupMainMenu()
                                        actionSceneGraph,
                                        actionProperties, actionLibrary, actionToolBar,
 									   actionReferences, actionCustomColors, actionVisibilityCheckTool, 
-									   actionParticleEditor, actionHangingObjects, actionSetSwitchIndex);
+									   actionParticleEditor, actionHangingObjects, actionSetSwitchIndex, actionSceneInfo);
 
 
     ui->dockProperties->hide();
-	//ui->dockReferences->hide();
     
     
     //CreateNode
@@ -286,20 +287,20 @@ void QtMainWindow::OpenLastProject()
        &&   !CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter"))
        &&   !CommandLineTool::Instance()->CommandIsFound(String("-scenesaver")))
     {
-        DAVA::String projectPath = EditorSettings::Instance()->GetProjectPath();
+        DAVA::FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
 
-        if(projectPath.empty())
+        if(!projectPath.IsInitalized())
         {
-			projectPath = ProjectManager::Instance()->ProjectOpenDialog().toStdString().c_str();
+			projectPath = FilePath(ProjectManager::Instance()->ProjectOpenDialog().toStdString());
         }
 
-		if(projectPath.empty())
+        if(!projectPath.IsInitalized())
 		{
 			QtLayer::Instance()->Quit();
 		}
 		else
 		{
-			ProjectManager::Instance()->ProjectOpen(QString(projectPath.c_str()));
+			ProjectManager::Instance()->ProjectOpen(QString(projectPath.ResolvePathname().c_str()));
 		}
     }
 }

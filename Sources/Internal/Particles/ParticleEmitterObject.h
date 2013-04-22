@@ -63,7 +63,7 @@ public:
 		This function retain emitter and release old emitter that was stored in this object.
 		\param[in] pathName path to resource you want to load
 	 */
-	virtual void LoadFromYaml(const String & pathName);
+	virtual void LoadFromYaml(const FilePath & pathName);
 	/** 
 		\brief Function marks that this object must be deleted after N repeats of emitter animation.
 		\param[in] numberOfRepeats number of times we need to repeat emitter animation before deletion

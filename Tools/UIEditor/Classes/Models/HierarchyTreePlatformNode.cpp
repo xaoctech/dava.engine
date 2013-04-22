@@ -41,12 +41,40 @@ HierarchyTreePlatformNode::HierarchyTreePlatformNode(HierarchyTreeRootNode* root
 		 iter != chilren.end();
 		 ++iter)
 	{
-		const HierarchyTreeScreenNode* baseControl = dynamic_cast<const HierarchyTreeScreenNode* >((*iter));
-		if (!baseControl)
+		const HierarchyTreeScreenNode* screen = dynamic_cast<const HierarchyTreeScreenNode* >((*iter));
+		const HierarchyTreeAggregatorNode* aggregator = dynamic_cast<const HierarchyTreeAggregatorNode* >((*iter));
+
+		if (!screen && !aggregator)
 			continue;
-		
-		HierarchyTreeScreenNode* control = new HierarchyTreeScreenNode(this, baseControl);
+
+		HierarchyTreeNode* control;
+		if (aggregator)
+		{
+			control = new HierarchyTreeAggregatorNode(this, aggregator);
+		}
+		else
+		{
+			control = new HierarchyTreeScreenNode(this, screen);
+		}
 		AddTreeNode(control);
+	}
+}
+
+HierarchyTreePlatformNode::~HierarchyTreePlatformNode()
+{
+	// Remove screens before removing aggregators
+	HierarchyTreeNode::HIERARCHYTREENODESITER it;
+	for (it = childNodes.begin(); it != childNodes.end();)
+	{
+		if (!dynamic_cast<HierarchyTreeAggregatorNode*>(*it))
+		{
+			delete (*it);
+			it = childNodes.erase(it);
+		}
+		else
+		{
+			++it;
+		}
 	}
 }
 
@@ -99,6 +127,16 @@ QString HierarchyTreePlatformNode::GetPlatformFolder() const
 	return path;
 }
 
+QString HierarchyTreePlatformNode::GetScreenPath(QString screenName) const
+{
+	return QString(SCREEN_PATH).arg(GetPlatformFolder()).arg(screenName);
+}
+
+QString HierarchyTreePlatformNode::GetScreenPath(String screenName) const
+{
+	return GetScreenPath(QString::fromStdString(screenName));
+}
+
 void HierarchyTreePlatformNode::ActivatePlatform()
 {
 	if (rootNode)
@@ -129,7 +167,7 @@ bool HierarchyTreePlatformNode::Load(YamlNode* platform)
 				continue;
 			String screenName = screen->AsString();
 			
-			QString screenPath = QString(SCREEN_PATH).arg(GetPlatformFolder()).arg(QString::fromStdString(screenName));
+			QString screenPath = GetScreenPath(screenName);
 			HierarchyTreeScreenNode* screenNode = new HierarchyTreeScreenNode(this, QString::fromStdString(screenName));
 			result &= screenNode->Load(screenPath);
 			AddTreeNode(screenNode);
@@ -145,10 +183,22 @@ bool HierarchyTreePlatformNode::Load(YamlNode* platform)
 			if (!aggregator)
 				continue;
 			String aggregatorName = aggregator->AsString();
-			
-			QString aggregatorPath = QString(SCREEN_PATH).arg(GetPlatformFolder()).arg(QString::fromStdString(aggregatorName));
+
+			QString aggregatorPath = GetScreenPath(aggregatorName);
 			HierarchyTreeAggregatorNode* aggregatorNode = new HierarchyTreeAggregatorNode(this, QString::fromStdString(aggregatorName), Rect());
-			result &= aggregatorNode->Load(aggregator, aggregatorPath);
+
+			YamlNode* aggregatorWidth = aggregator->Get(WIDTH_NODE);
+			YamlNode* aggregatorHeight = aggregator->Get(HEIGHT_NODE);
+			if (!aggregatorWidth || !aggregatorHeight)
+			{
+				result = false;
+			}
+			else
+			{
+				Rect r = Rect(0, 0, aggregatorWidth->AsInt(), aggregatorHeight->AsInt());
+				result &= aggregatorNode->Load(r, aggregatorPath);
+			}
+
 			AddTreeNode(aggregatorNode);			
 		}
 	}
@@ -216,7 +266,7 @@ bool HierarchyTreePlatformNode::Save(YamlNode* node, bool saveAll)
 		if (!node)
 			continue;
 
-		QString path = QString(SCREEN_PATH).arg(platformFolder).arg(node->GetName());
+		QString path = GetScreenPath(node->GetName());
 		MultiMap<String, YamlNode*> &aggregatorsMap = aggregators->AsMap();
 		
 		YamlNode* aggregator = new YamlNode(YamlNode::TYPE_MAP);
@@ -239,7 +289,7 @@ bool HierarchyTreePlatformNode::Save(YamlNode* node, bool saveAll)
 		if (!screenNode)
 			continue;
 		
-		QString screenPath = QString(SCREEN_PATH).arg(platformFolder).arg(screenNode->GetName());
+		QString screenPath = GetScreenPath(screenNode->GetName());
 		result &= screenNode->Save(screenPath, saveAll);
 		
 		screens->AddValueToArray(screenNode->GetName().toStdString());
@@ -254,13 +304,13 @@ bool HierarchyTreePlatformNode::SaveLocalization(YamlNode* platform)
         return false;
     }
 
-    platform->Set(LOCALIZATION_PATH_NODE, this->localizationPath);
+    platform->Set(LOCALIZATION_PATH_NODE, this->localizationPath.GetAbsolutePathname());
     platform->Set(LOCALIZATION_LOCALE_NODE, locale);
 
     return true;
 }
 
-void HierarchyTreePlatformNode::SetLocalizationPath(const String& localizationPath)
+void HierarchyTreePlatformNode::SetLocalizationPath(const FilePath & localizationPath)
 {
     this->localizationPath = localizationPath;
 }

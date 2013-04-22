@@ -1,16 +1,9 @@
-//
-//  FileDownloader.h
-//  WoTSniperMacOS
-//
-//  Created by Andrey Panasyuk on 3/21/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
-//
-
-#ifndef __DAVAENGINE_FileDownloader_h__
-#define __DAVAENGINE_FileDownloader_h__
+#ifndef __DAVAENGINE_FILE_DOWNLOADER_H__
+#define __DAVAENGINE_FILE_DOWNLOADER_H__
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA
 {
@@ -42,7 +35,7 @@ class FileDownloader: public BaseObject
 public:
     //
     FileDownloader();
-    FileDownloader(const std::string& _sourceUrl, const std::string& _savePath, bool reload = false);
+    FileDownloader(const String & _sourceUrl, const FilePath & _savePath, bool reload = false);
     virtual ~FileDownloader();
     
     // Start download file & save with same name
@@ -55,11 +48,11 @@ public:
     virtual void Stop();
     
     // Getters & Setters
-    virtual const std::string& GetSourceUrl() const;
-    virtual void SetSourceUrl(const std::string& _sourceUrl);
+    virtual const String & GetSourceUrl() const;
+    virtual void SetSourceUrl(const String & _sourceUrl);
 
-    virtual const std::string& GetSavePath() const;
-    virtual void SetSavePath(const std::string& _savePath);
+    virtual const FilePath & GetSavePath() const;
+    virtual void SetSavePath(const FilePath & _savePath);
 
     virtual uint16 GetMaxReconnect() const;
     virtual void  SetMaxReconnect(const uint16 _cnt);
@@ -97,8 +90,8 @@ protected:
     };
     
 private:
-    std::string sourceUrl;
-    std::string savePath;
+    String sourceUrl;
+    FilePath savePath;
     uint16 reconnectCnt;
     int16 reconnectMax;
     bool reloadFile;
@@ -114,4 +107,4 @@ private:
 }
 
 
-#endif
+#endif //__DAVAENGINE_FILE_DOWNLOADER_H__

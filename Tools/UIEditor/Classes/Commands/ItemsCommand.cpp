@@ -13,6 +13,7 @@
 UndoableHierarchyTreeNodeCommand::UndoableHierarchyTreeNodeCommand()
 {
 	this->redoNode = NULL;
+	this->type = TYPE_UNDEFINED;
 }
 
 void UndoableHierarchyTreeNodeCommand::SetRedoNode(HierarchyTreeNode* redoNode)
@@ -37,6 +38,26 @@ void UndoableHierarchyTreeNodeCommand::PrepareRemoveFromSceneInformation()
 	}
 }
 
+void UndoableHierarchyTreeNodeCommand::DetectType(HierarchyTreeNode* node)
+{
+	if (dynamic_cast<HierarchyTreePlatformNode*>(node))
+	{
+		this->type = TYPE_PLATFORM;
+	}
+	else if (dynamic_cast<HierarchyTreeAggregatorNode*>(node))
+	{
+		this->type = TYPE_AGGREGATOR;
+	}
+	else if (dynamic_cast<HierarchyTreeScreenNode*>(node))
+	{
+		this->type = TYPE_SCREEN;
+	}
+	else
+	{
+		this->type = TYPE_CONTROLS;
+	}
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CreatePlatformCommand::CreatePlatformCommand(const QString& name, const Vector2& size) :
@@ -51,6 +72,7 @@ void CreatePlatformCommand::Execute()
 	if (this->redoNode == NULL)
 	{
 		SetRedoNode(HierarchyTreeController::Instance()->AddPlatform(name, size));
+		redoNode->SetMarked(true);
 	}
 	else
 	{
@@ -65,8 +87,18 @@ void CreatePlatformCommand::Rollback()
 	if (this->redoNode)
 	{
 		// Remove the created node from the scene, but keep it in memory.
-		HierarchyTreeController::Instance()->DeleteNode(this->redoNode->GetId(), false, true);
+		HierarchyTreeController::Instance()->DeleteNode(this->redoNode->GetId(), false, true, true);
 	}
+}
+
+void CreatePlatformCommand::IncrementUnsavedChanges()
+{
+	this->redoNode->GetParent()->IncrementUnsavedChanges();
+}
+
+void CreatePlatformCommand::DecrementUnsavedChanges()
+{
+	this->redoNode->GetParent()->DecrementUnsavedChanges();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,6 +115,7 @@ void CreateScreenCommand::Execute()
 	if (this->redoNode == NULL)
 	{
 		SetRedoNode(HierarchyTreeController::Instance()->AddScreen(name, platformId));
+		redoNode->SetMarked(true);
 	}
 	else
 	{
@@ -97,8 +130,18 @@ void CreateScreenCommand::Rollback()
 	if (this->redoNode)
 	{
 		// Remove the created node from the scene, but keep it in memory.
-		HierarchyTreeController::Instance()->DeleteNode(this->redoNode->GetId(), false, true);
+		HierarchyTreeController::Instance()->DeleteNode(this->redoNode->GetId(), false, true, true);
 	}
+}
+
+void CreateScreenCommand::IncrementUnsavedChanges()
+{
+	redoNode->GetParent()->IncrementUnsavedChanges();
+}
+
+void CreateScreenCommand::DecrementUnsavedChanges()
+{
+	redoNode->GetParent()->DecrementUnsavedChanges();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -116,6 +159,7 @@ void CreateAggregatorCommand::Execute()
 	if (this->redoNode == NULL)
 	{
 		SetRedoNode(HierarchyTreeController::Instance()->AddAggregator(name, platformId, rect));
+		redoNode->SetMarked(true);
 	}
 	else
 	{
@@ -130,8 +174,18 @@ void CreateAggregatorCommand::Rollback()
 	if (this->redoNode)
 	{
 		// Remove the created node from the scene, but keep it in memory.
-		HierarchyTreeController::Instance()->DeleteNode(this->redoNode->GetId(), false, true);
+		HierarchyTreeController::Instance()->DeleteNode(this->redoNode->GetId(), false, true, true);
 	}
+}
+
+void CreateAggregatorCommand::IncrementUnsavedChanges()
+{
+	redoNode->GetParent()->IncrementUnsavedChanges();
+}
+
+void CreateAggregatorCommand::DecrementUnsavedChanges()
+{
+	redoNode->GetParent()->DecrementUnsavedChanges();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -177,7 +231,7 @@ void CreateControlCommand::Rollback()
 	
 	// OK, we have all the information we need to perform Redo. Remove the created node
 	// from the scene, but keep it in memory.
-	HierarchyTreeController::Instance()->DeleteNode(createdControlID, false, true);
+	HierarchyTreeController::Instance()->DeleteNode(createdControlID, false, true, false);
 }
 
 void CreateControlCommand::PrepareRedoInformation()
@@ -197,9 +251,22 @@ void CreateControlCommand::PrepareRedoInformation()
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-DeleteSelectedNodeCommand::DeleteSelectedNodeCommand(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes)
+DeleteSelectedNodeCommand::DeleteSelectedNodeCommand(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes, bool needDeleteFiles)
 {
 	this->nodes = nodes;
+	this->deleteFiles = needDeleteFiles;
+
+	DVASSERT(nodes.empty() == false);
+	HierarchyTreeNode* itemNode = nodes.front();
+
+	DetectType(itemNode);
+
+	if (type == TYPE_AGGREGATOR)
+	{
+		StoreParentsOfRemovingAggregatorControls(nodes);
+	}
+
+	parentId = itemNode->GetParent()->GetId();
 }
 
 void DeleteSelectedNodeCommand::Execute()
@@ -211,7 +278,24 @@ void DeleteSelectedNodeCommand::Execute()
 	}
 
 	// Delete the node from scene, but keep in memory.
-	HierarchyTreeController::Instance()->DeleteNodes(this->nodes, false, true);
+	HierarchyTreeController::Instance()->DeleteNodes(this->nodes, false, true, this->deleteFiles);
+}
+
+void DeleteSelectedNodeCommand::StoreParentsOfRemovingAggregatorControls(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes)
+{
+	HierarchyTreeNode::HIERARCHYTREENODESCONSTITER it;
+	for (it = nodes.begin(); it != nodes.end(); ++it)
+	{
+		if (!dynamic_cast<HierarchyTreeAggregatorNode*>(*it))
+		{
+			HierarchyTreeScreenNode* screen = HierarchyTreeController::Instance()->GetScreenNodeForNode(*it);
+
+			if (screen)
+			{
+				parentsOfRemovingAggregatorControls.insert(screen->GetId());
+			}
+		}
+	}
 }
 
 void DeleteSelectedNodeCommand::PrepareRedoInformation()
@@ -241,6 +325,66 @@ void DeleteSelectedNodeCommand::Rollback()
 	HierarchyTreeController::Instance()->ReturnNodeToScene(redoNodes);
 }
 
+void DeleteSelectedNodeCommand::IncrementUnsavedChanges()
+{
+	switch (type)
+	{
+		case TYPE_PLATFORM:
+		case TYPE_SCREEN:
+			HierarchyTreeController::Instance()->GetTree().GetNode((parentId))->IncrementUnsavedChanges();
+			break;
+
+		case TYPE_AGGREGATOR:
+			HierarchyTreeController::Instance()->GetTree().GetNode((parentId))->IncrementUnsavedChanges();
+			for (Set<HierarchyTreeNode::HIERARCHYTREENODEID>::iterator it = parentsOfRemovingAggregatorControls.begin();
+				 it != parentsOfRemovingAggregatorControls.end();
+				 ++it)
+			{
+				HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetTree().GetNode(*it);
+				if (node)
+				{
+					node->IncrementUnsavedChanges();
+				}
+			}
+			break;
+
+		case TYPE_CONTROLS:
+		default:
+			BaseCommand::IncrementUnsavedChanges();
+			break;
+	}
+}
+
+void DeleteSelectedNodeCommand::DecrementUnsavedChanges()
+{
+	switch (type)
+	{
+		case TYPE_PLATFORM:
+		case TYPE_SCREEN:
+			HierarchyTreeController::Instance()->GetTree().GetNode((parentId))->DecrementUnsavedChanges();
+			break;
+
+		case TYPE_AGGREGATOR:
+			HierarchyTreeController::Instance()->GetTree().GetNode((parentId))->DecrementUnsavedChanges();
+			for (Set<HierarchyTreeNode::HIERARCHYTREENODEID>::iterator it = parentsOfRemovingAggregatorControls.begin();
+				 it != parentsOfRemovingAggregatorControls.end();
+				 ++it)
+			{
+				HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetTree().GetNode(*it);
+				if (node)
+				{
+					node->DecrementUnsavedChanges();
+				}
+			}
+			break;
+
+		case TYPE_CONTROLS:
+		default:
+			BaseCommand::DecrementUnsavedChanges();
+			break;
+	}
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ChangeNodeHeirarchy::ChangeNodeHeirarchy(HierarchyTreeNode::HIERARCHYTREENODEID targetNodeID, HierarchyTreeNode::HIERARCHYTREENODEID afterNodeID, HierarchyTreeNode::HIERARCHYTREENODESIDLIST items)
@@ -248,7 +392,11 @@ ChangeNodeHeirarchy::ChangeNodeHeirarchy(HierarchyTreeNode::HIERARCHYTREENODEID 
 	this->targetNodeID = targetNodeID;
 	this->afterNodeID = afterNodeID;
 	this->items = items;
-	
+
+	DVASSERT(items.empty() == false);
+	HierarchyTreeNode* itemNode = HierarchyTreeController::Instance()->GetTree().GetNode((items.front()));
+	DetectType(itemNode);
+
 	// Remember the previous parent IDs for the commands. Note - we cannot store just pointers
 	// to the parents since they may gone.
 	StorePreviousParents();
@@ -307,6 +455,18 @@ void ChangeNodeHeirarchy::Execute()
 		HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetTree().GetNode((*iter));
 		if (node)
 		{
+			if (dynamic_cast<HierarchyTreeScreenNode*>(node))
+			{
+				HierarchyTreeNode* sourceNode = node->GetParent();
+
+				if (sourceNode != targetNode)
+				{
+					HierarchyTreeNode::HIERARCHYTREENODESLIST screens;
+					screens.push_back(node);
+					HierarchyTreeController::Instance()->DeleteNodesFiles(screens);
+				}
+			}
+
 			//YZ backlight parent rect
 			bool isNodeSelected = false;
 			HierarchyTreeControlNode* controlNode = dynamic_cast<HierarchyTreeControlNode*>(node);
@@ -348,4 +508,105 @@ void ChangeNodeHeirarchy::Rollback()
 	
 	HierarchyTreeController::Instance()->EmitHierarchyTreeUpdated();
 	ScreenWrapper::Instance()->RequestUpdateView();
+}
+
+void ChangeNodeHeirarchy::IncrementUnsavedChanges()
+{
+	HierarchyTreeNode* sourceNode = 0;
+	HierarchyTreeNode* targetNode = HierarchyTreeController::Instance()->GetTree().GetNode(targetNodeID);
+
+	switch (this->type)
+	{
+		case TYPE_PLATFORM:
+			// The Platform nodes could only be moved within root node
+			targetNode->IncrementUnsavedChanges();
+			break;
+
+		case TYPE_SCREEN:
+		case TYPE_AGGREGATOR:
+			// If Screen nodes are moved within one platform, it's enough to increment unsaved changes only in this platform...
+			targetNode->IncrementUnsavedChanges();
+
+			// ...Otherwise we need more complicated handling
+			sourceNode = HierarchyTreeController::Instance()->GetTree().GetNode(items.front());
+			if (sourceNode != targetNode)
+			{
+				sourceNode->IncrementUnsavedChanges();
+
+				// Need to mark all screens which being moved to other platform.
+				// Otherwise they won't be saved to files at the new location
+				// Before mark, need to store current mark state for correct rollback.
+				storedMarks.clear();
+				for (HierarchyTreeNode::HIERARCHYTREENODESIDLIST::iterator it = items.begin(); it != items.end(); ++it)
+				{
+					HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetTree().GetNode(*it);
+					storedMarks[*it] = node->IsMarked();
+
+					node->SetMarked(true);
+				}
+			}
+
+			break;
+
+		case TYPE_CONTROLS:
+			targetNode->IncrementUnsavedChanges();
+
+			sourceNode = HierarchyTreeController::Instance()->GetScreenNodeForNode(HierarchyTreeController::Instance()->GetTree().GetNode(items.front()));
+			if (sourceNode != targetNode)
+			{
+				sourceNode->IncrementUnsavedChanges();
+			}
+			break;
+
+		default:
+			break;
+	}
+}
+
+void ChangeNodeHeirarchy::DecrementUnsavedChanges()
+{
+	HierarchyTreeNode* sourceNode = 0;
+	HierarchyTreeNode* targetNode = HierarchyTreeController::Instance()->GetTree().GetNode(targetNodeID);
+
+	switch (this->type)
+	{
+		case TYPE_PLATFORM:
+			targetNode->DecrementUnsavedChanges();
+			break;
+
+		case TYPE_SCREEN:
+		case TYPE_AGGREGATOR:
+			targetNode->DecrementUnsavedChanges();
+
+			sourceNode = HierarchyTreeController::Instance()->GetTree().GetNode(items.front());
+			if (sourceNode != targetNode)
+			{
+				sourceNode->DecrementUnsavedChanges();
+			}
+
+			// Restore mark state. See comments in IncrementUnsavedChanges()
+			for (HierarchyTreeNode::HIERARCHYTREENODESIDLIST::iterator it = items.begin(); it != items.end(); ++it)
+			{
+				HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetTree().GetNode(*it);
+
+				if (storedMarks.find(*it) != storedMarks.end())
+				{
+					node->SetMarked(storedMarks[*it]);
+				}
+			}
+			break;
+
+		case TYPE_CONTROLS:
+			targetNode->DecrementUnsavedChanges();
+
+			sourceNode = HierarchyTreeController::Instance()->GetScreenNodeForNode(HierarchyTreeController::Instance()->GetTree().GetNode(items.front()));
+			if (sourceNode != targetNode)
+			{
+				sourceNode->DecrementUnsavedChanges();
+			}
+			break;
+
+		default:
+			break;
+	}
 }

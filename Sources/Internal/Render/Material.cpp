@@ -52,7 +52,7 @@ REGISTER_CLASS(InstanceMaterialState)
 InstanceMaterialState::InstanceMaterialState()
     :   flatColor(1.0f, 1.0f, 1.0f, 1.0f)
     ,   texture0Shift(0.0f, 0.0f)
-	,	lightmapSize(128)
+	,	lightmapSize(LIGHTMAP_SIZE_DEFAULT)
 
 {
     for (int32 k = 0; k < LIGHT_NODE_MAX_COUNT; ++k)
@@ -78,7 +78,7 @@ Light * InstanceMaterialState::GetLight(int32 lightIndex)
     return lightNodes[lightIndex]; 
 }
 
-void InstanceMaterialState::SetLightmap(Texture * _lightMapTexture, const String & _lightmapName)
+void InstanceMaterialState::SetLightmap(Texture * _lightMapTexture, const FilePath & _lightmapName)
 {
     SafeRelease(lightmapTexture);
     lightmapTexture = SafeRetain(_lightMapTexture);
@@ -143,12 +143,17 @@ void InstanceMaterialState::Save(KeyedArchive * archive, SceneFileV2 *sceneFile)
 			archive->SetVector2("ims.uvscale", uvScale);
 		}
 		
-		if(!lightmapName.empty())
+		if(lightmapName.IsInitalized())
 		{
-            String filename = FileSystem::Instance()->AbsoluteToRelativePath(sceneFile->GetScenePath(), lightmapName);
+            String filename = lightmapName.GetRelativePathname(sceneFile->GetScenePath());
             archive->SetString("ims.lightmapname", filename);
 		}
 		
+		if(lightmapSize != LIGHTMAP_SIZE_DEFAULT)
+		{
+			archive->SetInt32("ims.lightmapsize", lightmapSize);
+		}
+
 		if(flatColor != Color::White())
 		{
 			archive->SetByteArrayAsType("ims.flatColor", flatColor);
@@ -171,7 +176,7 @@ void InstanceMaterialState::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 		String filename = archive->GetString("ims.lightmapname");
 		if(!filename.empty())
 		{
-            String lName = FileSystem::Instance()->GetCanonicalPath(sceneFile->GetScenePath() + filename);
+            FilePath lName = sceneFile->GetScenePath() + FilePath(filename);
 
 			Texture* lTexture = Texture::CreateFromFile(lName);
 			SetLightmap(lTexture, lName);
@@ -184,6 +189,7 @@ void InstanceMaterialState::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 
 		flatColor = archive->GetByteArrayAsType("ims.flatColor", Color::White());
 		texture0Shift = archive->GetVector2("ims.texture0Shift");
+		lightmapSize = archive->GetInt32("ims.lightmapsize", LIGHTMAP_SIZE_DEFAULT);
 	}
 }
 
@@ -193,6 +199,7 @@ InstanceMaterialState * InstanceMaterialState::Clone()
 
 	newState->lightmapTexture = SafeRetain(lightmapTexture);
 	newState->lightmapName = lightmapName;
+	newState->lightmapSize = lightmapSize;
 	newState->uvOffset = uvOffset;
 	newState->uvScale = uvScale;
 	newState->flatColor = flatColor;
@@ -282,7 +289,7 @@ Material::Material()
     if (!uberShader)
     {
         uberShader = new UberShader();
-        uberShader->LoadShader("~res:/Shaders/Default/materials.shader");
+        uberShader->LoadShader(FilePath("~res:/Shaders/Default/materials.shader"));
         
         
         //uberShader->CompileShaderCombination("MATERIAL_TEXTURE");
@@ -584,9 +591,9 @@ void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     keyedArchive->SetInt32("mat.texCount", TEXTURE_COUNT);
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
-        if (names[k].Initalized())
+        if (names[k].IsInitalized())
         {
-            String filename = names[k].GetRelativePath(sceneFile->GetScenePath());
+            String filename = names[k].GetRelativePathname(sceneFile->GetScenePath());
             keyedArchive->SetString(Format("mat.tex%d", k), filename);
             
             if(sceneFile->DebugLogEnabled())
@@ -634,19 +641,18 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
         {
             if(relativePathname[0] == '~') //path like ~res:/Gfx...
             {
-                names[k].InitFromAbsolutePath(relativePathname);
+                names[k] = FilePath(relativePathname);
             }
             else
             {
-                names[k].InitFromRelativePath(relativePathname, sceneFile->GetScenePath());
+                names[k] = sceneFile->GetScenePath() + FilePath(relativePathname);
             }
             
             if(sceneFile->DebugLogEnabled())
-                //Logger::Debug("--- load material texture: %s abs:%s", relativePathname.c_str(), names[k].GetAbsolutePath().c_str());
-            	Logger::Debug("--- load material texture: %s src:%s", relativePathname.c_str(), names[k].GetSourcePath().c_str());
+            	Logger::Debug("--- load material texture: %s src:%s", relativePathname.c_str(), names[k].GetAbsolutePathname().c_str());
             
             //textures[k] = Texture::CreateFromFile(names[k].GetAbsolutePath());
-            textures[k] = Texture::CreateFromFile(names[k].GetSourcePath());
+            textures[k] = Texture::CreateFromFile(names[k]);
         }
     }
     
@@ -1045,32 +1051,28 @@ void Material::SetTexture(eTextureLevel level, Texture * texture)
     if (texture == textures[level])return;
     
     SafeRelease(textures[level]);
-//	names[level] = String("");
-	names[level].InitFromAbsolutePath(String(""));
+	names[level] = String("");
 
     textures[level] = SafeRetain(texture);
 	if(textures[level])
 	{
 		if(!textures[level]->isRenderTarget)
 		{
-//			names[level] = textures[level]->GetPathname();
-			names[level].InitFromAbsolutePath(textures[level]->GetPathname());
+			names[level] = textures[level]->GetPathname();
 		}
 	}
 }
 
-void Material::SetTexture(eTextureLevel level, const String & textureName)
+void Material::SetTexture(eTextureLevel level, const FilePath & textureName)
 {
     SafeRelease(textures[level]);
-//    names[level] = "";
-	names[level].InitFromAbsolutePath(String(""));
+    names[level] = FilePath();
  
     Texture *t = Texture::CreateFromFile(textureName);
     if(t)
     {
         textures[level] = t;
-//        names[level] = textureName;
-        names[level].InitFromAbsolutePath(textureName);
+        names[level] = textureName;
     }
 }
 

@@ -14,6 +14,8 @@
 #include "BaseCommand.h"
 #include "ChangePropertyCommand.h"
 
+#include "UIAggregatorMetadata.h"
+
 using namespace DAVA;
 using namespace PropertyNames;
 
@@ -193,4 +195,8 @@ void ControlPropertyGridWidget::UpdatePropertiesForSubcontrol()
 	this->ui->customControlLineEdit->setReadOnly(isSubcontrol);
 	this->ui->objectNameLineEdit->setReadOnly(isSubcontrol);
 	this->ui->btnMorphToCustomControl->setEnabled(!isSubcontrol);
+	
+	// Hide morph button for UI Aggregator
+	UIAggregatorMetadata *UIAggregatorMeta = dynamic_cast<UIAggregatorMetadata*>(activeMetadata);
+	this->ui->btnMorphToCustomControl->setHidden(UIAggregatorMeta ? true : false);
 }

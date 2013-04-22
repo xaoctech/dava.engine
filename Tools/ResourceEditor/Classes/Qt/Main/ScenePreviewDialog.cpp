@@ -35,7 +35,7 @@ ScenePreviewDialog::~ScenePreviewDialog()
 }
 
 
-void ScenePreviewDialog::Show(const String &scenePathname)
+void ScenePreviewDialog::Show(const FilePath &scenePathname)
 {
     if(!GetParent())
     {

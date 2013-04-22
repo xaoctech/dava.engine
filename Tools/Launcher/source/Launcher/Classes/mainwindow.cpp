@@ -267,9 +267,7 @@ void MainWindow::on_btnRun_clicked() {
     if (ProcessHelper::IsProcessRuning(path)) {
         ProcessHelper::SetActiveProcess(path);
     } else {
-        int lastPos = path.lastIndexOf('/');
-        QString workingDir = path.left(lastPos);
-        QProcess::startDetached(path, QStringList(), workingDir);
+        ProcessHelper::RunProcess(path);
     }
 }
 
