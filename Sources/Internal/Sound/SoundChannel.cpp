@@ -93,12 +93,13 @@ void SoundChannel::Stop()
 			AL_VERIFY(alSourcei(source, AL_BUFFER, 0));
 		}
 #endif //#ifdef __DAVASOUND_AL__
+		SafeRelease( buddySound );
 	}
 }
 
 void SoundChannel::Play(Sound * sound, bool _looping)
 {
-	buddySound = sound;
+	buddySound = SafeRetain(sound);
 	looping = _looping;
     
 	if(Sound::TYPE_STATIC == buddySound->GetType())
@@ -189,6 +190,7 @@ void SoundChannel::UpdateStreamed()
 	}
 	if(STATE_FREE == state)
 	{
+		SafeRelease( buddySound );
 		return;
 	}
 
@@ -257,7 +259,7 @@ void SoundChannel::SetIgnorePosition(bool ignorePosition)
 #ifdef __DAVASOUND_AL__
 	if(ignorePosition)
 	{
-		AL_VERIFY(alSourcef(source, AL_GAIN, .2f));
+		AL_VERIFY(alSourcef(source, AL_GAIN, volume));
 		AL_VERIFY(alSource3f(source, AL_POSITION, 0, 0, 0));
 		AL_VERIFY(alSourcei(source, AL_SOURCE_RELATIVE, AL_TRUE));
 	}
@@ -265,6 +267,8 @@ void SoundChannel::SetIgnorePosition(bool ignorePosition)
 	{
 		AL_VERIFY(alSourcef(source, AL_GAIN, volume));
 		AL_VERIFY(alSourcei(source, AL_SOURCE_RELATIVE, AL_FALSE));
+        AL_VERIFY(alSourcef(source, AL_MAX_DISTANCE, 100.0f));
+        AL_VERIFY(alSourcef(source, AL_REFERENCE_DISTANCE, 5.0f));
 	}
 #endif //#ifdef __DAVASOUND_AL__
 }

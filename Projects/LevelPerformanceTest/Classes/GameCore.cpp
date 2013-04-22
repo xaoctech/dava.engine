@@ -251,7 +251,7 @@ bool GameCore::FlushToDB(const FilePath & levelName, const Map<String, String> &
     MongodbObject *testResultObject = new MongodbObject();
     if(testResultObject)
     {
-        testResultObject->SetObjectName(levelName.GetAbsolutePathname());
+        testResultObject->SetObjectName(levelName.GetFilename());
         
         Map<String, String>::const_iterator it = results.begin();
         for(; it != results.end(); it++)
@@ -291,7 +291,7 @@ bool GameCore::FlushToDB(const FilePath & levelName, const Map<String, String> &
 				newRunObject->AddString("DeviceDescription", DeviceInfo::GetModel() + " " + DeviceInfo::GetVersion());
 			}
 
-			newRunObject->AddObject(levelName.GetAbsolutePathname(), testResultObject);
+			newRunObject->AddObject(levelName.GetFilename(), testResultObject);
 			newRunObject->Finish();
 			dbClient->SaveObject(newRunObject, currentRunObject);
 			SafeRelease(newRunObject);
