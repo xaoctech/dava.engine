@@ -114,7 +114,7 @@ void TheoraPlayer::OpenFile(const FilePath &path)
 {
     ReleaseData();
     
-    if(!path.IsInitalized())
+    if(path.IsEmpty())
         return;
     
     filePath = path;

@@ -50,7 +50,7 @@ namespace DAVA
         ,	identifier(cellIdentifier)
         ,	cellStore(NULL)
     {
-		if (aggregatorPath.IsInitalized())
+		if (!aggregatorPath.IsEmpty())
 		{
 			UIAggregatorControl *aggregator = new UIAggregatorControl();
 			UIYamlLoader loader;

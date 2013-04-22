@@ -32,7 +32,7 @@ void FilePathTest::MacTestFunction(PerfFuncData * data)
     
     FilePath filepath0("~res:/Gfx/UI/Screen/texture.tex");
     
-    TEST_VERIFY(filepath0.IsInitalized());
+    TEST_VERIFY(!filepath0.IsEmpty());
     TEST_VERIFY(!filepath0.IsDirectoryPathname());
     
     TEST_VERIFY(filepath0.GetFilename() == "texture.tex");
@@ -74,7 +74,7 @@ void FilePathTest::MacTestFunction(PerfFuncData * data)
     TEST_VERIFY(filepath0 == filepath2);
     
     FilePath filepath3;
-    TEST_VERIFY(!filepath3.IsInitalized());
+    TEST_VERIFY(filepath3.IsEmpty());
     TEST_VERIFY(!filepath3.IsDirectoryPathname());
 
     filepath3 = filepath0;
@@ -83,7 +83,7 @@ void FilePathTest::MacTestFunction(PerfFuncData * data)
 
     
     FilePath filepath4("~res:/Gfx/UI/", "Screen/texture.tex");
-    TEST_VERIFY(filepath4.IsInitalized());
+    TEST_VERIFY(!filepath4.IsEmpty());
     TEST_VERIFY(!filepath4.IsDirectoryPathname());
     
     TEST_VERIFY(filepath4.GetFilename() == "texture.tex");
@@ -99,7 +99,7 @@ void FilePathTest::MacTestFunction(PerfFuncData * data)
 
     
     FilePath filepath5("~res:/Gfx/UI/", "../Screen/texture.tex");
-    TEST_VERIFY(filepath5.IsInitalized());
+    TEST_VERIFY(!filepath5.IsEmpty());
     TEST_VERIFY(!filepath5.IsDirectoryPathname());
     
     TEST_VERIFY(filepath5.GetFilename() == "texture.tex");
@@ -117,7 +117,7 @@ void FilePathTest::MacTestFunction(PerfFuncData * data)
     TEST_VERIFY(filepath5 == filepath6);
 
     FilePath filepath7("~res:/Gfx/Screen/");
-    TEST_VERIFY(filepath7.IsInitalized());
+    TEST_VERIFY(!filepath7.IsEmpty());
     TEST_VERIFY(filepath7.IsDirectoryPathname());
 
     FilePath filepath8 = filepath7 + FilePath("texture.tex");
@@ -131,7 +131,7 @@ void FilePathTest::MacTestFunction(PerfFuncData * data)
     TEST_VERIFY(filepath8 != filepath10);
 
     FilePath filepath11("texture.tex");
-    TEST_VERIFY(filepath11.IsInitalized());
+    TEST_VERIFY(!filepath11.IsEmpty());
     TEST_VERIFY(!filepath11.IsDirectoryPathname());
     
     TEST_VERIFY(filepath11.GetFilename() == "texture.tex");
@@ -229,7 +229,7 @@ void FilePathTest::WinTestFunction(PerfFuncData * data)
     
     FilePath filepath0("~res:/Gfx/UI/Screen/texture.tex");
     
-    TEST_VERIFY(filepath0.IsInitalized());
+    TEST_VERIFY(!filepath0.IsEmpty());
     TEST_VERIFY(!filepath0.IsDirectoryPathname());
     
     TEST_VERIFY(filepath0.GetFilename() == "texture.tex");
@@ -271,7 +271,7 @@ void FilePathTest::WinTestFunction(PerfFuncData * data)
     TEST_VERIFY(filepath0 == filepath2);
     
     FilePath filepath3;
-    TEST_VERIFY(!filepath3.IsInitalized());
+    TEST_VERIFY(filepath3.IsEmpty());
     TEST_VERIFY(!filepath3.IsDirectoryPathname());
     
     filepath3 = filepath0;
@@ -280,7 +280,7 @@ void FilePathTest::WinTestFunction(PerfFuncData * data)
     
     
     FilePath filepath4("~res:/Gfx/UI/", "Screen/texture.tex");
-    TEST_VERIFY(filepath4.IsInitalized());
+    TEST_VERIFY(!filepath4.IsEmpty());
     TEST_VERIFY(!filepath4.IsDirectoryPathname());
     
     TEST_VERIFY(filepath4.GetFilename() == "texture.tex");
@@ -296,7 +296,7 @@ void FilePathTest::WinTestFunction(PerfFuncData * data)
     
     
     FilePath filepath5("~res:/Gfx/UI/", "../Screen/texture.tex");
-    TEST_VERIFY(filepath5.IsInitalized());
+    TEST_VERIFY(!filepath5.IsEmpty());
     TEST_VERIFY(!filepath5.IsDirectoryPathname());
     
     TEST_VERIFY(filepath5.GetFilename() == "texture.tex");
@@ -314,7 +314,7 @@ void FilePathTest::WinTestFunction(PerfFuncData * data)
     TEST_VERIFY(filepath5 == filepath6);
     
     FilePath filepath7("~res:/Gfx/Screen/");
-    TEST_VERIFY(filepath7.IsInitalized());
+    TEST_VERIFY(!filepath7.IsEmpty());
     TEST_VERIFY(filepath7.IsDirectoryPathname());
     
     FilePath filepath8 = filepath7 + FilePath("texture.tex");
@@ -328,7 +328,7 @@ void FilePathTest::WinTestFunction(PerfFuncData * data)
     TEST_VERIFY(filepath8 != filepath10);
     
     FilePath filepath11("texture.tex");
-    TEST_VERIFY(filepath11.IsInitalized());
+    TEST_VERIFY(!filepath11.IsEmpty());
     TEST_VERIFY(!filepath11.IsDirectoryPathname());
     
     TEST_VERIFY(filepath11.GetFilename() == "texture.tex");
