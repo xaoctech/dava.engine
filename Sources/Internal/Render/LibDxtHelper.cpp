@@ -844,7 +844,7 @@ void NvttHelper::SwapBRChannels(uint8* data, uint32 size)
 
 bool NvttHelper::InitDecompressor(nvtt::Decompressor & dec, const FilePath & fileName)
 {
-	if(!fileName.IsInitalized())
+	if(fileName.IsEmpty())
 	{
 		Logger::Error("[NvttHelper::InitDecompressor] try init with empty name");
 		return false;

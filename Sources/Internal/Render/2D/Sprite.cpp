@@ -135,10 +135,10 @@ Sprite* Sprite::PureCreate(const FilePath & spriteName, Sprite* forPointer)
     }
     spr->resourceSizeIndex = sizeIndex;
     
-    if(texturePath.IsInitalized())
-		spr->InitFromFile(fp, texturePath);
-    else
+    if(texturePath.IsEmpty())
 		spr->InitFromFile(fp, pathName);
+    else
+		spr->InitFromFile(fp, texturePath);
     
     
     SafeRelease(fp);
@@ -1606,7 +1606,7 @@ void Sprite::ReloadSpriteTextures()
             SafeRelease(textures[i]);
             textures[i] = Texture::CreateFromFile(textureNames[i]);
         }
-        else if(textures[i] && textures[i]->GetPathname().IsInitalized())
+        else if(textures[i] && !textures[i]->GetPathname().IsEmpty())
         {
             textures[i]->Reload();
         }

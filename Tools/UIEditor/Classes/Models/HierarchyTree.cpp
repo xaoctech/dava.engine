@@ -322,7 +322,7 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
 	FilePath fontPath = defaultFontPath.fontPath;
 	FilePath fontSpritePath = defaultFontPath.fontSpritePath;
 	// Check if default font path exist
-	if (fontPath.IsInitalized())
+	if (!fontPath.IsEmpty())
 	{
 		// Create font node
 		YamlNode* fontNode = new YamlNode(YamlNode::TYPE_MAP);
@@ -336,7 +336,7 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
 		// Put font path
 		fontPathNode->AddValueToArray(fontPath.GetAbsolutePathname());
 		// Put font sprite path if it available
-		if (fontSpritePath.IsInitalized())
+		if (!fontSpritePath.IsEmpty())
 		{
 			fontPathNode->AddValueToArray(fontSpritePath.GetAbsolutePathname());
 		}

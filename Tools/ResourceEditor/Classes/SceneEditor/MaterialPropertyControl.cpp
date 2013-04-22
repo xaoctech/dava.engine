@@ -250,7 +250,7 @@ void MaterialPropertyControl::OnFilepathPropertyChanged(PropertyList *forList, c
 {
 	Set<String> errorLog;
     
-    if(newValue.IsInitalized())
+    if(!newValue.IsEmpty())
     {
         bool isCorrect = SceneValidator::Instance()->ValidateTexturePathname(newValue, errorLog);
         if(!isCorrect)
@@ -260,7 +260,7 @@ void MaterialPropertyControl::OnFilepathPropertyChanged(PropertyList *forList, c
         }
     }
     
-    FilePath descriptorPathname = newValue.IsInitalized() ? TextureDescriptor::GetDescriptorPathname(newValue) : FilePath();
+    FilePath descriptorPathname = newValue.IsEmpty() ? FilePath() : TextureDescriptor::GetDescriptorPathname(newValue);
     for (int32 i = 0; i < ME_TEX_COUNT; i++)
     {
         if (forKey == textureNames[i]) 
