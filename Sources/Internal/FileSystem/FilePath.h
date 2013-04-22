@@ -215,6 +215,8 @@ protected:
     
     static bool IsAbsolutePathname(const String &pathname);
     
+    static String AddPath(const FilePath &folder, const FilePath & addition);
+    
 protected:
     
     String absolutePathname;

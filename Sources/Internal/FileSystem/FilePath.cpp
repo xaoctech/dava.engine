@@ -99,20 +99,13 @@ FilePath& FilePath::operator=(const FilePath &path)
     
 FilePath FilePath::operator+(const FilePath &path) const
 {
-    DVASSERT(IsDirectoryPathname() || !IsInitalized());
-    
-    FilePath pathname(*this);
-    pathname.absolutePathname = NormalizePathname(pathname.absolutePathname + path.absolutePathname);
-    
+    FilePath pathname(AddPath(*this, path));
     return pathname;
 }
     
 FilePath& FilePath::operator+=(const FilePath & path)
 {
-    DVASSERT(IsDirectoryPathname() || !IsInitalized());
-
-    absolutePathname = NormalizePathname(absolutePathname + path.GetAbsolutePathname());
-    
+    absolutePathname = AddPath(*this, path);
     return (*this);
 }
 
@@ -486,6 +479,35 @@ bool FilePath::IsAbsolutePathname(const String &pathname)
     return false;
 }
 
+String FilePath::AddPath(const FilePath &folder, const FilePath & addition)
+{
+    DVASSERT(folder.IsDirectoryPathname() || !folder.IsInitalized());
+    
+    String pathname;
+    String::size_type tildaPos = folder.absolutePathname.find("~");
+    if(tildaPos == 0)
+    {
+        pathname = folder.ResolvePathname();
+        pathname = NormalizePathname(pathname + addition.absolutePathname);
+        
+        String systemPath = addition.absolutePathname.substr(0, 6);
+        systemPath = FilePath(systemPath).ResolvePathname();
+        
+        String::size_type pos = pathname.find(systemPath);
+        if(pos == 0)
+        {
+            pathname = pathname.replace(pos, systemPath.length(), systemPath);
+        }
+    }
+    else
+    {
+        pathname = NormalizePathname(folder.absolutePathname + addition.absolutePathname);
+    }
+    
+    return pathname;
+}
+    
+    
 
     
 }
