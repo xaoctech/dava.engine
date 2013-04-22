@@ -4,12 +4,12 @@
 using namespace DAVA;
 
 
-bool ImageSplitter::SplitImage(const String &pathname, Set<String> &errorLog)
+bool ImageSplitter::SplitImage(const FilePath &pathname, Set<String> &errorLog)
 {
     Image *loadedImage = CreateTopLevelImage(pathname);
     if(!loadedImage)
     {
-        errorLog.insert(String(Format("Can't load image %s", pathname.c_str())));
+        errorLog.insert(String(Format("Can't load image %s", pathname.GetAbsolutePathname().c_str())));
         return false;
     }
     
@@ -36,13 +36,12 @@ bool ImageSplitter::SplitImage(const String &pathname, Set<String> &errorLog)
         alpha->data[i] = loadedImage->data[offset + 3];
     }
     
-    String folder, filename;
-    FileSystem::Instance()->SplitPath(pathname, folder, filename);
+    FilePath folder(pathname.GetDirectory());
     
-    SaveImage(red, folder + "/r.png");
-    SaveImage(green, folder + "/g.png");
-    SaveImage(blue, folder + "/b.png");
-    SaveImage(alpha, folder + "/a.png");
+    SaveImage(red, folder + FilePath("r.png"));
+    SaveImage(green, folder + FilePath("g.png"));
+    SaveImage(blue, folder + FilePath("b.png"));
+    SaveImage(alpha, folder + FilePath("a.png"));
 
 
     ReleaseImages(red, green, blue, alpha);
@@ -50,16 +49,18 @@ bool ImageSplitter::SplitImage(const String &pathname, Set<String> &errorLog)
     return true;
 }
 
-bool ImageSplitter::MergeImages(const String &folder, Set<String> &errorLog)
+bool ImageSplitter::MergeImages(const FilePath &folder, Set<String> &errorLog)
 {
-    Image *red = LoadImage(folder + "/r.png");
-    Image *green = LoadImage(folder + "/g.png");
-    Image *blue = LoadImage(folder + "/b.png");
-    Image *alpha = LoadImage(folder + "/a.png");
+    DVASSERT(folder.IsDirectoryPathname());
+    
+    Image *red = LoadImage(folder + FilePath("r.png"));
+    Image *green = LoadImage(folder + FilePath("g.png"));
+    Image *blue = LoadImage(folder + FilePath("b.png"));
+    Image *alpha = LoadImage(folder + FilePath("a.png"));
 
     if(!red || !green || !blue || !alpha)
     {
-        errorLog.insert(String(Format("Can't load one or more channel images from folder %s", folder.c_str())));
+        errorLog.insert(String(Format("Can't load one or more channel images from folder %s", folder.GetAbsolutePathname().c_str())));
         ReleaseImages(red, green, blue, alpha);
         return false;
     }
@@ -91,21 +92,21 @@ bool ImageSplitter::MergeImages(const String &folder, Set<String> &errorLog)
         mergedImage->data[offset + 3] = alpha->data[i];
     }
 
-    ImageLoader::Save(mergedImage, FileSystem::Instance()->GetCanonicalPath(folder + "/merged.png"));
+    ImageLoader::Save(mergedImage, folder + FilePath("merged.png"));
     
     ReleaseImages(red, green, blue, alpha);
     SafeRelease(mergedImage);
     return true;
 }
 
-void ImageSplitter::SaveImage(Image *image, const String &pathname)
+void ImageSplitter::SaveImage(Image *image, const FilePath &pathname)
 {
-    ImageLoader::Save(image, FileSystem::Instance()->GetCanonicalPath(pathname));
+    ImageLoader::Save(image, pathname);
 }
 
-Image * ImageSplitter::LoadImage(const String &pathname)
+Image * ImageSplitter::LoadImage(const FilePath &pathname)
 {
-    return CreateTopLevelImage(FileSystem::Instance()->GetCanonicalPath(pathname));
+    return CreateTopLevelImage(pathname);
 }
 
 void ImageSplitter::ReleaseImages(Image *r, Image *g, Image *b, Image *a)

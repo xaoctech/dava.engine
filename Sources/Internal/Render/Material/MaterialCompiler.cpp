@@ -58,12 +58,13 @@ MaterialCompiler::eCompileResult MaterialCompiler::Compile(MaterialGraph * _mate
     MaterialGraphNode::RecursiveSetRealUsageBack(rootResultNode);
     MaterialGraphNode::RecursiveSetRealUsageForward(rootResultNode);
 
-    materialCompiledVshName = materialGraph->GetMaterialPath() + FileSystem::ReplaceExtension(materialGraph->GetMaterialFilename(), ".vsh");
-    materialCompiledFshName = materialGraph->GetMaterialPath() + FileSystem::ReplaceExtension(materialGraph->GetMaterialFilename(), ".fsh");
+    
+    materialCompiledVshName = FilePath::CreateWithNewExtension(materialGraph->GetMaterialPathname(), ".vsh");
+    materialCompiledFshName = FilePath::CreateWithNewExtension(materialGraph->GetMaterialPathname(), ".fsh");
 
 #if 1
-    materialCompiledVshName = "~doc:/temp.vsh";
-    materialCompiledFshName = "~doc:/temp.fsh";
+    materialCompiledVshName = FilePath("~doc:/temp.vsh");
+    materialCompiledFshName = FilePath("~doc:/temp.fsh");
 #endif
     
     GenerateCode(materialGraph);
@@ -109,8 +110,9 @@ void MaterialCompiler::GenerateCode(MaterialGraph * materialGraph)
     
     //MaterialGraphNode * rootResultNode = materialGraph->GetNodeByName("material");
 
-    String vertexShaderPath = materialGraph->GetMaterialPath() + materialGraph->GetVertexShaderFilename();
-    String fragmentShaderPath = materialGraph->GetMaterialPath() + materialGraph->GetPixelShaderFilename();
+    FilePath materialPath(materialGraph->GetMaterialPathname().GetDirectory());
+    FilePath vertexShaderPath(materialPath + materialGraph->GetVertexShaderFilename());
+    FilePath fragmentShaderPath(materialPath + materialGraph->GetPixelShaderFilename());
 
     String originalVertexShader = FileSystem::Instance()->ReadFileContents(vertexShaderPath);
     String originalFragmentShader = FileSystem::Instance()->ReadFileContents(fragmentShaderPath);

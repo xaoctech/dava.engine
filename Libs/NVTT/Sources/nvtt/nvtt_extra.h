@@ -29,6 +29,7 @@
 // Public interface.
 namespace nvtt
 {
+#define DECOMPRESSOR_MIN_HEADER_SIZE 148
 		
 	/// Texture decompressor.
 	struct Decompressor

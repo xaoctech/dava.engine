@@ -47,7 +47,7 @@ public:
 	KeyedUnarchiver();
 	virtual ~KeyedUnarchiver();
 	
-	bool UnarchiveFile(const String & pathName);
+	bool UnarchiveFile(const FilePath & pathName);
 	bool UnarchiveFile(File *file);
 	
 	bool IsKeyExists(const String & key);

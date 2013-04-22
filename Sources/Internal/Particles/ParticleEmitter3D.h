@@ -29,9 +29,9 @@ protected:
 	virtual void LoadParticleLayerFromYaml(YamlNode* yamlNode, bool isLiong);
 	
 	// 3D-specific methods.
-	void PrepareEmitterParametersOnCircle(Particle * particle, float32 velocity,
-										  int32 emitIndex, const Vector3& tempPosition,
-										  const Matrix3& rotationMatrix);
+	void PrepareEmitterParametersShockwave(Particle * particle, float32 velocity,
+										   int32 emitIndex, const Vector3& tempPosition,
+										   const Matrix3& rotationMatrix);
 	void PrepareEmitterParametersGeneric(Particle * particle, float32 velocity,
 										 int32 emitIndex, const Vector3& tempPosition,
 										 const Matrix3& rotationMatrix);

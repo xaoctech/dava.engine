@@ -79,7 +79,7 @@ bool IsEqual(const WideString& s1, const WideString& s2)
 	return (*p1 == *p2);
 }
 
-void Split(const String & inputString, const String & delims, Vector<String> & tokens)
+void Split(const String & inputString, const String & delims, Vector<String> & tokens, bool skipDuplicated/* = false*/)
 {
 	// Skip delims at beginning, find start of first token
 	String::size_type lastPos = inputString.find_first_not_of(delims, 0);
@@ -91,7 +91,21 @@ void Split(const String & inputString, const String & delims, Vector<String> & t
 	while (String::npos != pos || String::npos != lastPos)
 	{
 		// Found a token, add it to the vector.
-		tokens.push_back(inputString.substr(lastPos, pos - lastPos));
+		String token = inputString.substr(lastPos, pos - lastPos);
+		bool needAddToken = true;
+		if (skipDuplicated)
+		{
+			for (uint32 i = 0; i < tokens.size(); ++i)
+			{
+				if (token.compare(tokens[i]) == 0)
+				{
+					needAddToken = false;
+					break;
+				}
+			}
+		}
+		if (needAddToken)
+			tokens.push_back(token);
 		// Skip delims.  Note the "not_of". this is beginning of token
 		lastPos = inputString.find_first_not_of(delims, pos);
 		// Find next delimiter at end of token.

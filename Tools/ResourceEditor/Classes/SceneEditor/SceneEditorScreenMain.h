@@ -109,7 +109,7 @@ public:
     void SelectNodeQt(Entity *node);
     void OnReloadRootNodesQt();
     
-    void ShowScenePreview(const String scenePathname);
+    void ShowScenePreview(const FilePath & scenePathname);
     void HideScenePreview();
 
     bool LandscapeEditorModeEnabled();
@@ -165,17 +165,17 @@ private:
     void ReleaseResizedControl(UIControl *control);
 
 public: //For Qt integration
-    void OpenFileAtScene(const String &pathToFile);
+    void OpenFileAtScene(const FilePath &pathToFile);
     void NewScene();
 
     bool SaveIsAvailable();
-    String CurrentScenePathname();
-    void SaveSceneToFile(const String &pathToFile);
+    FilePath CurrentScenePathname();
+    void SaveSceneToFile(const FilePath &pathToFile);
    
 
     void ExportAs(ImageFileFormat format);
 
-	void SaveToFolder(const String & folder);
+	void SaveToFolder(const FilePath & folder);
 	
     void CreateNode(ResourceEditor::eNodeType nodeType);
     void SetViewport(ResourceEditor::eViewportType viewportType);
@@ -189,13 +189,13 @@ public: //For Qt integration
     void CustomColorsTriggered();
 	void CustomColorsSetRadius(uint32 newRadius);
 	void CustomColorsSetColor(uint32 indexInSet);
-	void CustomColorsSaveTexture(const String &path);
-	void CustomColorsLoadTexture(const String& path);
-	String CustomColorsGetCurrentSaveFileName();
+	void CustomColorsSaveTexture(const FilePath & path);
+	void CustomColorsLoadTexture(const FilePath & path);
+	FilePath CustomColorsGetCurrentSaveFileName();
 	
 	//visibility check tool
 	void VisibilityToolTriggered();
-	void VisibilityToolSaveTexture(const String& path);
+	void VisibilityToolSaveTexture(const FilePath& path);
 	void VisibilityToolSetPoint();
 	void VisibilityToolSetArea();
 	void VisibilityToolSetAreaSize(uint32 size);

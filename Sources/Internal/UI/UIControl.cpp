@@ -350,7 +350,7 @@ namespace DAVA
 	{
 		return background->GetAlign();
 	}
-	void UIControl::SetSprite(const String &spriteName, int32 spriteFrame)
+	void UIControl::SetSprite(const FilePath &spriteName, int32 spriteFrame)
 	{
 		background->SetSprite(spriteName, spriteFrame);
 	}
@@ -1912,7 +1912,10 @@ namespace DAVA
 		Sprite *sprite =  this->GetSprite();
 		if (sprite)
 		{
-			node->Set("sprite", TruncateTxtFileExtension(sprite->GetName()));
+            FilePath path(sprite->GetRelativePathname());
+            path.TruncateExtension();
+
+			node->Set("sprite", path.GetAbsolutePathname());
 		}
 		// Color
 		Color color =  this->GetBackground()->GetColor();

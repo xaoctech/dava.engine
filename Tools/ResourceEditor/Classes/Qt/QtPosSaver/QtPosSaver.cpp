@@ -10,7 +10,7 @@ QtPosSaver::QtPosSaver()
 	if(!settingsArchiveIsLoaded)
 	{
 		settingsArchiveIsLoaded = true;
-		settingsArchive.Load("~doc:/ResourceEditorPos.archive");
+		settingsArchive.Load(DAVA::FilePath("~doc:/ResourceEditorPos.archive"));
 	}
 	else
 	{
@@ -29,7 +29,7 @@ QtPosSaver::~QtPosSaver()
 
 		if(1 == settingsArchive.GetRetainCount())
 		{
-			settingsArchive.Save("~doc:/ResourceEditorPos.archive");
+			settingsArchive.Save(DAVA::FilePath("~doc:/ResourceEditorPos.archive"));
 		}
 		else
 		{

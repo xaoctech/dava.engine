@@ -120,8 +120,15 @@ void SceneUtilsScreen::Export()
         if(     CommandLineTool::Instance()->CheckPosition(outPosition)
            &&   CommandLineTool::Instance()->CheckPosition(inPosition))
         {
-            SceneExporter::Instance()->SetOutFolder(commandLine[outPosition + 1]);
-            SceneExporter::Instance()->SetInFolder(commandLine[inPosition + 1]);
+            FilePath outFolder(commandLine[outPosition + 1]);
+            outFolder.MakeDirectoryPathname();
+            
+            FilePath inFolder(commandLine[inPosition + 1]);
+            inFolder.MakeDirectoryPathname();
+            
+            
+            SceneExporter::Instance()->SetOutFolder(outFolder);
+            SceneExporter::Instance()->SetInFolder(inFolder);
             
             int32 formatPosition = CommandLineTool::Instance()->CommandPosition(String("-format"));
             if(CommandLineTool::Instance()->CheckPosition(formatPosition))
@@ -148,7 +155,11 @@ void SceneUtilsScreen::Export()
             {
                 if(CommandLineTool::Instance()->CheckPosition(folderPosition))
                 {
-                    SceneExporter::Instance()->ExportFolder(commandLine[folderPosition + 1], errorLog);
+                    FilePath folder(commandLine[folderPosition + 1]);
+                    folder.MakeDirectoryPathname();
+                    
+                    
+                    SceneExporter::Instance()->ExportFolder(folder, errorLog);
                     
                     //TODO: process errors
                 }
@@ -179,9 +190,16 @@ void SceneUtilsScreen::Save()
         if(     CommandLineTool::Instance()->CheckPosition(outPosition)
            &&   CommandLineTool::Instance()->CheckPosition(inPosition))
         {
-            SceneSaver::Instance()->SetOutFolder(commandLine[outPosition + 1]);
-            SceneSaver::Instance()->SetInFolder(commandLine[inPosition + 1]);
             
+            FilePath outFolder(commandLine[outPosition + 1]);
+            outFolder.MakeDirectoryPathname();
+            
+            FilePath inFolder(commandLine[inPosition + 1]);
+            inFolder.MakeDirectoryPathname();
+            
+            SceneSaver::Instance()->SetOutFolder(outFolder);
+            SceneSaver::Instance()->SetInFolder(inFolder);
+
             int32 filePosition = CommandLineTool::Instance()->CommandPosition(String("-processfile"));
             if(CommandLineTool::INVALID_POSITION != filePosition)
             {

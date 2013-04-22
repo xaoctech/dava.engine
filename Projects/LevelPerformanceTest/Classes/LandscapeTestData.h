@@ -3,17 +3,12 @@
 
 #include "DAVAEngine.h"
 
-using namespace DAVA;
-
 struct FpsStatItem
 {
-	float32 minFps;
+    DAVA::float32 avFps[8];
 	DAVA::Rect rect;
-	Vector3 position;
-	Vector3 viewTarget;
 	
 	FpsStatItem()
-	:	minFps(std::numeric_limits<float32>::infinity())
 	{
 	}
 };
@@ -22,30 +17,30 @@ class LandscapeTestData
 {
 private:
 	DAVA::Rect landscapeRect;
-	Vector<FpsStatItem> stat;
+    DAVA::Vector<FpsStatItem> stat;
 
-	uint32 textureMemorySize;
-	uint32 textureFilesSize;
-	String sceneFilePath;
+	DAVA::uint32 textureMemorySize;
+	DAVA::uint32 textureFilesSize;
+	DAVA::FilePath sceneFilePath;
 
 public:
 	void SetLandscapeRect(const DAVA::Rect& rect);
 	void AddStatItem(const FpsStatItem& item);
 
-	void SetTextureMemorySize(uint32 size);
-	void SetTexturesFilesSize(uint32 size);
-	void SetSceneFilePath(const String & path);
-	uint32 GetTextureMemorySize() const;
-	uint32 GetTexturesFilesSize() const;
-	String GetSceneFilePath() const;
+	void SetTextureMemorySize(DAVA::uint32 size);
+	void SetTexturesFilesSize(DAVA::uint32 size);
+	void SetSceneFilePath(const DAVA::FilePath & path);
+	DAVA::uint32 GetTextureMemorySize() const;
+	DAVA::uint32 GetTexturesFilesSize() const;
+	const DAVA::FilePath & GetSceneFilePath() const;
 
 	const DAVA::Rect& GetLandscapeRect() const;
-	uint32 GetItemCount() const;
-	const FpsStatItem& GetItem(uint32 index) const;
+	DAVA::uint32 GetItemCount() const;
+	const FpsStatItem& GetItem(DAVA::uint32 index) const;
 
 	void Clear();
 	DAVA::Rect TranslateRect(const DAVA::Rect& rect, const DAVA::Rect& destPlane) const;
-	Vector2 TranslatePoint(const Vector2& point, const DAVA::Rect& destPlane) const;
+	DAVA::Vector2 TranslatePoint(const DAVA::Vector2& point, const DAVA::Rect& destPlane) const;
 };
 
 #endif

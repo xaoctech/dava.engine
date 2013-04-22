@@ -81,8 +81,8 @@ Font* EditorFontManager::GetFont(const String& name) const
 
 EditorFontManager::DefaultFontPath EditorFontManager::GetDefaultFontPath()
 {
-	String defFontPath;
-	String defFontSpritePath;
+	FilePath defFontPath;
+	FilePath defFontSpritePath;
 
 	if (defaultFont)
 	{
@@ -92,9 +92,9 @@ EditorFontManager::DefaultFontPath EditorFontManager::GetDefaultFontPath()
             case Font::TYPE_FT:
             {
                 FTFont *ftFont = dynamic_cast<FTFont*>(defaultFont);
-				String ftFontPath = ftFont->GetFontPath();
+				FilePath ftFontPath = ftFont->GetFontPath();
 				// Don't save standart default font
-				if (ftFontPath.find(DEFAULT_FONT_NAME) == String::npos)
+				if (ftFontPath.GetAbsolutePathname().find(DEFAULT_FONT_NAME) == String::npos)
 				{
 					// Set font path
 					defFontPath = ftFontPath;
@@ -111,7 +111,7 @@ EditorFontManager::DefaultFontPath EditorFontManager::GetDefaultFontPath()
                 {
 					// Set font definition and sprite relative path
 					defFontPath = gFont->GetFontDefinitionName();
-					defFontSpritePath = fontSprite->GetName();
+					defFontSpritePath = fontSprite->GetRelativePathname();
                 }
 				break;
             }
@@ -123,16 +123,17 @@ EditorFontManager::DefaultFontPath EditorFontManager::GetDefaultFontPath()
 
 void EditorFontManager::InitDefaultFontFromPath(const EditorFontManager::DefaultFontPath& defaultFontPath)
 {
-	String fontPath = defaultFontPath.fontPath;
-	String fontSpritePath = defaultFontPath.fontSpritePath;
+	FilePath fontPath = defaultFontPath.fontPath;
+	FilePath fontSpritePath = defaultFontPath.fontSpritePath;
 	Font* loadedFont = NULL;
 	// Create font from loaded paths
-	if (!fontPath.empty())
+	if (fontPath.IsInitalized())
 	{
 		// Grpahics font
-		if (!fontSpritePath.empty())
+		if (fontSpritePath.IsInitalized())
 		{
-			loadedFont = GraphicsFont::Create(fontPath, TruncateTxtFileExtension(fontSpritePath));
+            fontSpritePath.TruncateExtension();
+			loadedFont = GraphicsFont::Create(fontPath, fontSpritePath);
 		}
 		else // True type font
 		{
@@ -159,12 +160,12 @@ QString EditorFontManager::GetDefaultFontName() const
     	case Font::TYPE_FT:
         {
         	FTFont *ftFont = dynamic_cast<FTFont*>(defaultFont);
-			return QString::fromStdString(ftFont->GetFontPath());
+			return QString::fromStdString(ftFont->GetFontPath().GetAbsolutePathname());
         }
 		case Font::TYPE_GRAPHICAL:
         {
         	GraphicsFont *gFont = dynamic_cast<GraphicsFont*>(defaultFont);
-			return QString::fromStdString(gFont->GetFontDefinitionName());
+			return QString::fromStdString(gFont->GetFontDefinitionName().GetAbsolutePathname());
 		}
 	}
 	return QString::fromStdString(DEFAULT_FONT_PATH);

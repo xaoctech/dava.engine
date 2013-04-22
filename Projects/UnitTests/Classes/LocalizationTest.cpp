@@ -19,8 +19,8 @@ LocalizationTest::LocalizationTest()
 		RegisterFunction(this, &LocalizationTest::TestFunction, Format("Localization test of %s", files[i].c_str()), NULL);
 	}
 
-	srcDir = FileSystem::Instance()->FileSystem::SystemPathForFrameworkPath("~res:/TestData/LocalizationTest/");
-	cpyDir = FileSystem::Instance()->GetCurrentDocumentsDirectory() + "LocalizationTest/";
+	srcDir = FilePath("~res:/TestData/LocalizationTest/");
+	cpyDir = FileSystem::Instance()->GetCurrentDocumentsDirectory() + FilePath("LocalizationTest/");
 
 	FileSystem::Instance()->DeleteDirectory(cpyDir);
 	FileSystem::Instance()->CreateDirectory(cpyDir);
@@ -40,8 +40,8 @@ void LocalizationTest::Draw(const DAVA::UIGeometricData &geometricData)
 
 void LocalizationTest::TestFunction(TestTemplate<LocalizationTest>::PerfFuncData *data)
 {
-	String srcFile = srcDir + files[currentTest] + ".yaml";
-	String cpyFile = cpyDir + files[currentTest] + ".yaml";
+	FilePath srcFile = srcDir + FilePath(files[currentTest] + ".yaml");
+	FilePath cpyFile = cpyDir + FilePath(files[currentTest] + ".yaml");
 
 	FileSystem::Instance()->CopyFile(srcFile, cpyFile);
 
@@ -65,7 +65,7 @@ void LocalizationTest::TestFunction(TestTemplate<LocalizationTest>::PerfFuncData
 	++currentTest;
 }
 
-bool LocalizationTest::CompareFiles(const String& file1, const String& file2)
+bool LocalizationTest::CompareFiles(const FilePath& file1, const FilePath& file2)
 {
 	File* f1 = File::Create(file1, File::OPEN | File::READ);
 	File* f2 = File::Create(file2, File::OPEN | File::READ);

@@ -27,7 +27,7 @@
 #define PLATFORM_NAME           String("Unknown")
 #endif //PLATFORMS
 
-#define RESULT_TEXTURE_SCALE     0.25f
+#define RESULT_TEXTURE_SCALE     0.5f
 #define MINFPS_TARGET_SIZE          3.f
 
 #endif

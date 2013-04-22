@@ -33,7 +33,7 @@
 
 void TestScreen::LoadResources()
 {
-	UIYamlLoader::Load(this, "~res:/Screens/test_screen.yaml");
+	UIYamlLoader::Load(this, FilePath("~res:/Screens/test_screen.yaml"));
 
 	Logger::Debug("TestScreen = (%f, %f, %f, %f)", GetRect().x, GetRect().y, GetRect().dx, GetRect().dy);
 	
@@ -52,7 +52,7 @@ void TestScreen::LoadResources()
 	x = 0;
 	dx = 0.5f;
 	
-	testSprite = Sprite::Create("~res:/Gfx/Effects/flower");
+	testSprite = Sprite::Create(FilePath("~res:/Gfx/Effects/flower"));
 }
 
 void TestScreen::UnloadResources()

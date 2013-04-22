@@ -122,11 +122,11 @@ Texture * Texture::pinkPlaceholder = 0;
 static int32 textureFboCounter = 0;
 
 // Main constructurs
-Texture * Texture::Get(const String & pathName)
+Texture * Texture::Get(const FilePath & pathName)
 {
 	Texture * texture = NULL;
 	Map<String, Texture *>::iterator it;
-	it = textureMap.find(pathName);
+	it = textureMap.find(pathName.GetAbsolutePathname());
 	if (it != textureMap.end())
 	{
 		texture = it->second;
@@ -218,12 +218,12 @@ Texture * Texture::CreateTextFromData(PixelFormat format, uint8 * data, uint32 w
 	RenderManager::Instance()->UnlockNonMain();
     
 	if (!addInfo)
-		tx->relativePathname = Format("Text texture %d", textureFboCounter);
+		tx->relativePathname = FilePath(Format("Text texture %d", textureFboCounter));
 	else 
-		tx->relativePathname = Format("Text texture %d info:%s", textureFboCounter, addInfo);
+		tx->relativePathname = FilePath(Format("Text texture %d info:%s", textureFboCounter, addInfo));
 
 	textureFboCounter++;
-    textureMap[tx->relativePathname] = tx;
+    textureMap[tx->relativePathname.GetAbsolutePathname()] = tx;
 	return tx;
 }
 	
@@ -236,13 +236,11 @@ void Texture::TexImage(int32 level, uint32 width, uint32 height, const void * _d
 
     RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
 
-
 	DVASSERT((0 <= format) && (format < FORMAT_COUNT));
 	
-
     if(FORMAT_INVALID != format)
     {
-        if(IsCompressedFormat(format))
+		if (IsCompressedFormat(format))
         {
             RENDER_VERIFY(glCompressedTexImage2D(GL_TEXTURE_2D, level, pixelDescriptors[format].internalformat, width, height, 0, dataSize, _data));
         }
@@ -480,12 +478,12 @@ void Texture::GeneratePixelesation()
 }
     
 
-Texture * Texture::CreateFromImage(const String &pathname, DAVA::TextureDescriptor *descriptor)
+Texture * Texture::CreateFromImage(const FilePath &pathname, DAVA::TextureDescriptor *descriptor)
 {
     File *file = File::Create(pathname, File::OPEN | File::READ);
     if(!file)
     {
-        Logger::Error("[Texture::CreateFromImage] Cannot open file %s", pathname.c_str());
+        Logger::Error("[Texture::CreateFromImage] Cannot open file %s", pathname.GetAbsolutePathname().c_str());
         return NULL;
     }
 
@@ -625,7 +623,10 @@ bool Texture::IsCompressedFormat(PixelFormat format)
         if (FORMAT_PVR2 == format ||
 			FORMAT_PVR4 == format ||
 			(format >= FORMAT_DXT1 && format <= FORMAT_DXT5NM) ||
-			FORMAT_ETC1 == format)
+			FORMAT_ETC1 == format ||
+			FORMAT_ATC_RGB == format ||
+			FORMAT_ATC_RGBA_EXPLICIT_ALPHA == format ||
+			FORMAT_ATC_RGBA_INTERPOLATED_ALPHA == format)
         {
             retValue = true;
         }
@@ -633,7 +634,7 @@ bool Texture::IsCompressedFormat(PixelFormat format)
 	return retValue;
 }
 
-void Texture::LoadMipMapFromFile(int32 level, const String & pathname)
+void Texture::LoadMipMapFromFile(int32 level, const FilePath & pathname)
 {
     DVASSERT(false);
     return;
@@ -650,7 +651,7 @@ void Texture::LoadMipMapFromFile(int32 level, const String & pathname)
 //	SafeRelease(image);
 }
 	
-Texture * Texture::CreateFromFile(const String & pathName)
+Texture * Texture::CreateFromFile(const FilePath & pathName)
 {
 	Texture * texture = PureCreate(pathName);
 	if(!texture)
@@ -661,10 +662,10 @@ Texture * Texture::CreateFromFile(const String & pathName)
 	return texture;
 }
 
-Texture * Texture::PureCreate(const String & pathName)
+Texture * Texture::PureCreate(const FilePath & pathName)
 {
     //TODO::temporary workaround to optimize old scenes loading
-    String descriptorPathname = FileSystem::Instance()->ReplaceExtension(pathName, TextureDescriptor::GetDescriptorExtension());
+    FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(pathName);
     Texture * texture = Texture::Get(descriptorPathname);
 //    Texture * texture = Texture::Get(pathName);
 	if (texture) return texture;
@@ -674,14 +675,13 @@ Texture * Texture::PureCreate(const String & pathName)
     if(!descriptor) return NULL;
     
 	// TODO: add check that pathName
-	String extension = FileSystem::GetExtension(pathName);
-    if(TextureDescriptor::GetDescriptorExtension() == extension)
+    if(pathName.IsEqualToExtension(TextureDescriptor::GetDescriptorExtension()))
     {
 		texture = CreateFromDescriptor(pathName, descriptor);
     }
     else
     {
-        ImageFileFormat fileFormat = GetFormatForLoading(TextureDescriptor::GetFormatForExtension(extension), descriptor);
+        ImageFileFormat fileFormat = GetFormatForLoading(TextureDescriptor::GetFormatForExtension(pathName.GetExtension()), descriptor);
         if((NOT_FILE == defaultFileFormat) || IsLoadAvailable(fileFormat, descriptor))
         {
             texture = CreateFromImage(pathName, descriptor);
@@ -695,7 +695,7 @@ Texture * Texture::PureCreate(const String & pathName)
     if(texture)
     {
 		texture->relativePathname = descriptor->pathname;
-        textureMap[texture->relativePathname] = texture;
+        textureMap[texture->relativePathname.GetAbsolutePathname()] = texture;
         texture->SetWrapMode((TextureWrap)descriptor->wrapModeS, (TextureWrap)descriptor->wrapModeT);
     }
     
@@ -703,7 +703,7 @@ Texture * Texture::PureCreate(const String & pathName)
 	return texture;
 }
     
-Texture * Texture::CreateFromDescriptor(const String &pathName, TextureDescriptor *descriptor)
+Texture * Texture::CreateFromDescriptor(const FilePath &pathName, TextureDescriptor *descriptor)
 {
 #if defined TEXTURE_SPLICING_ENABLED
     Texture * texture = Texture::Get(pathName);
@@ -721,7 +721,7 @@ Texture * Texture::CreateFromDescriptor(const String &pathName, TextureDescripto
     formatForLoading = GetFormatForLoading(formatForLoading, descriptor);
     if((NOT_FILE == defaultFileFormat) || IsLoadAvailable(formatForLoading, descriptor))
     {
-        String imagePathname = GetActualFilename(pathName, formatForLoading, descriptor);
+        FilePath imagePathname = GetActualFilename(pathName, formatForLoading, descriptor);
         texture = CreateFromImage(imagePathname, descriptor);
         if(texture)
         {
@@ -734,7 +734,7 @@ Texture * Texture::CreateFromDescriptor(const String &pathName, TextureDescripto
     return texture;
 }
 
-String Texture::GetActualFilename(const String &pathname, const ImageFileFormat fileFormat, const TextureDescriptor *descriptor)
+FilePath Texture::GetActualFilename(const FilePath &pathname, const ImageFileFormat fileFormat, const TextureDescriptor *descriptor)
 {
     if(descriptor->IsCompressedFile())
     {
@@ -773,11 +773,8 @@ void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat, const TextureDescriptor
 	
 	DVASSERT(NULL != descriptor);
     
-    
-    ImageFileFormat formatForLoading = GetFormatForLoading(fileFormat, descriptor);
-    
-    
-    String imagePathname = TextureDescriptor::GetPathnameForFormat(descriptor->pathname, formatForLoading);
+	ImageFileFormat formatForLoading = GetFormatForLoading(fileFormat, descriptor);
+    FilePath imagePathname = TextureDescriptor::GetPathnameForFormat(descriptor->pathname, formatForLoading);
     File *file = File::Create(imagePathname, File::OPEN | File::READ);
 
     bool loaded = false;
@@ -800,7 +797,7 @@ void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat, const TextureDescriptor
 #endif //#if defined(__DAVAENGINE_OPENGL__)
         RenderManager::Instance()->UnlockNonMain();
         
-        Logger::Error("[Texture::ReloadAs] Cannot reload from file %s", imagePathname.c_str());
+        Logger::Error("[Texture::ReloadAs] Cannot reload from file %s", imagePathname.GetAbsolutePathname().c_str());
         
         
         uint32 dataSize = width * height * GetPixelFormatSizeInBytes(format);
@@ -852,7 +849,7 @@ int32 Texture::Release()
 {
 	if(GetRetainCount() == 1)
 	{
-		textureMap.erase(relativePathname);
+		textureMap.erase(relativePathname.GetAbsolutePathname());
 	}
 	return BaseObject::Release();
 }
@@ -947,8 +944,8 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat
 
 
 	tx->isRenderTarget = true;
-	tx->relativePathname = Format("FBO texture %d", textureFboCounter);
-    textureMap[tx->relativePathname] = tx;
+	tx->relativePathname = FilePath(Format("FBO texture %d", textureFboCounter));
+    textureMap[tx->relativePathname.GetAbsolutePathname()] = tx;
 	
 	textureFboCounter++;
 	
@@ -965,7 +962,7 @@ void Texture::DumpTextures()
 	for(Map<String, Texture *>::iterator it = textureMap.begin(); it != textureMap.end(); ++it)
 	{
 		Texture *t = it->second;
-		Logger::Info("%s with id %d (%dx%d) retainCount: %d debug: %s format: %s", t->relativePathname.c_str(), t->id, t->width, t->height, t->GetRetainCount(), t->debugInfo.c_str(), GetPixelFormatString(t->format));
+		Logger::Info("%s with id %d (%dx%d) retainCount: %d debug: %s format: %s", t->relativePathname.GetAbsolutePathname().c_str(), t->id, t->width, t->height, t->GetRetainCount(), t->debugInfo.c_str(), GetPixelFormatString(t->format));
 		cnt++;
         
         DVASSERT((0 <= t->format) && (t->format < FORMAT_COUNT));
@@ -1420,6 +1417,25 @@ void Texture::InitializePixelFormatDescriptors()
 	SetPixelDescription(FORMAT_ETC1,     "ETC1", 8, GL_UNSIGNED_BYTE, GL_ETC1_RGB8_OES, GL_ETC1_RGB8_OES);
 #else
 	SetPixelDescription(FORMAT_ETC1,     "ETC1", 8, 0, 0, 0);
+#endif
+	
+	
+#if defined (GL_ATC_RGB_AMD)
+	SetPixelDescription(FORMAT_ATC_RGB, "ATC_RGB", 4, GL_UNSIGNED_BYTE, GL_ATC_RGB_AMD, GL_ATC_RGB_AMD);
+#else
+	SetPixelDescription(FORMAT_ATC_RGB, "ATC_RGB", 4, 0, 0, 0);
+#endif
+	
+#if defined (GL_ATC_RGBA_EXPLICIT_ALPHA_AMD)
+	SetPixelDescription(FORMAT_ATC_RGBA_EXPLICIT_ALPHA, "ATC_RGBA_E", 8, GL_UNSIGNED_BYTE, GL_ATC_RGBA_EXPLICIT_ALPHA_AMD, GL_ATC_RGBA_EXPLICIT_ALPHA_AMD);
+#else
+	SetPixelDescription(FORMAT_ATC_RGBA_EXPLICIT_ALPHA, "ATC_RGBA_E", 8, 0, 0, 0);
+#endif
+
+#if defined (GL_ATC_RGBA_INTERPOLATED_ALPHA_AMD)
+	SetPixelDescription(FORMAT_ATC_RGBA_INTERPOLATED_ALPHA, "ATC_RGBA_I", 8, GL_UNSIGNED_BYTE, GL_ATC_RGBA_INTERPOLATED_ALPHA_AMD, GL_ATC_RGBA_INTERPOLATED_ALPHA_AMD);
+#else
+	SetPixelDescription(FORMAT_ATC_RGBA_INTERPOLATED_ALPHA, "ATC_RGBA_I", 8, 0, 0, 0);
 #endif
 }
 

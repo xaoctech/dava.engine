@@ -29,6 +29,7 @@
 #define __DAVAENGINE_HEIGHT_MAP_H__
 
 #include "Base/BaseObject.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA
 {
@@ -45,10 +46,10 @@ public:
 	virtual ~Heightmap();
     
     bool BuildFromImage( const Image *image);
-    void SaveToImage(const String & filename);
+    void SaveToImage(const FilePath & filename);
     
-    virtual void Save(const String &filePathname);
-    virtual bool Load(const String &filePathname);
+    virtual void Save(const FilePath &filePathname);
+    virtual bool Load(const FilePath &filePathname);
     
     uint16 * Data();
     int32 Size() const;

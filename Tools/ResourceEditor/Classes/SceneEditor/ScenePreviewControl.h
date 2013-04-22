@@ -55,7 +55,7 @@ public:
     virtual void Input(UIEvent * touch);
     virtual void Update(float32 timeElapsed);
 
-    int32 OpenScene(const String &pathToFile);
+    int32 OpenScene(const FilePath &pathToFile);
     void ReleaseScene();
     void RecreateScene();
     
@@ -70,7 +70,7 @@ protected:
     UI3DView * scene3dView;
     PreviewCameraController * cameraController;
     
-    String currentScenePath;
+    FilePath currentScenePath;
     Entity *rootNode;
     
     bool needSetCamera;

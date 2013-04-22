@@ -78,7 +78,7 @@ long OVTellFunc(void *datasource)
 }
 #endif //#if defined(__OGG_ENABLED__)
 
-SoundOVProvider::SoundOVProvider(const String & _fileName)
+SoundOVProvider::SoundOVProvider(const FilePath & _fileName)
 :	SoundDataProvider(_fileName),
 	file(0)
 {
@@ -167,7 +167,7 @@ int32 SoundOVProvider::LoadData(int8 ** buffer, int32 desiredSize)
 		}
 		else if(result < 0)
 		{
-			Logger::Error("int32 SoundOVProvider::LoadData failed for file %s with code %d", fileName.c_str(), result);
+			Logger::Error("int32 SoundOVProvider::LoadData failed for file %s with code %d", fileName.GetAbsolutePathname().c_str(), result);
 			return 0;
 		}	
 		else
