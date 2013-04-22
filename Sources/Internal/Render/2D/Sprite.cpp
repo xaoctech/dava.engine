@@ -181,7 +181,13 @@ File * Sprite::LoadLocalizedFile(const String &spritePathname, String &texturePa
     String fileName, folderName;
     FileSystem::Instance()->SplitPath(spritePathname, folderName, fileName);
     
-    String localizedScaledPath = folderName + LocalizationSystem::Instance()->GetCurrentLocale() + "/" + fileName;
+	// If current locale is empty - we don't have to consider it
+	String localeDir;
+	if (!LocalizationSystem::Instance()->GetCurrentLocale().empty())
+	{
+		localeDir = LocalizationSystem::Instance()->GetCurrentLocale() + "/";
+	}	
+    String localizedScaledPath = folderName + localeDir + fileName;
 //    Logger::Info("[Sprite::LoadLocalizedFile] (%s).", localizedScaledPath.c_str());
     
     texturePath = "";
