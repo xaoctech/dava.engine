@@ -39,7 +39,7 @@ public:
 		PROPERTY_TYPES_COUNT
 	};
 
-    void ParseConfig(const String &filePath);
+    void ParseConfig(const FilePath &filePath);
 
 	const Vector<String> & GetProjectPropertyNames();
 	const Vector<String> & GetComboPropertyValues(const String & nameStr);

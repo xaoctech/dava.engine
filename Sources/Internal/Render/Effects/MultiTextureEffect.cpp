@@ -32,6 +32,7 @@
 #include "Render/RenderManager.h"
 #include "Render/Effects/MultiTextureEffect.h"
 #include "Render/Shader.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA 
 {
@@ -65,7 +66,7 @@ void MultiTextureEffectGL::DrawArrays(ePrimitiveType mode, int32 first, int32 co
 MultiTextureEffectGL20::MultiTextureEffectGL20()
 {
     shader = new Shader();
-    shader->LoadFromYaml("~res:/Shaders/Default/fixed_func_multi_texture.shader");
+    shader->LoadFromYaml(FilePath("~res:/Shaders/Default/fixed_func_multi_texture.shader"));
     shader->Recompile();
 }
 

@@ -66,6 +66,7 @@ struct StaticLightingParams
 class InstanceMaterialState : public BaseObject
 {
     static const int32 LIGHT_NODE_MAX_COUNT = 4;
+	static const int32 LIGHTMAP_SIZE_DEFAULT = 128; 
 public:
     InstanceMaterialState();
     virtual ~InstanceMaterialState();
@@ -76,14 +77,14 @@ public:
     void SetLight(int32 lightIndex, Light * lightNode);
     Light * GetLight(int32 lightIndex);
     
-    void SetLightmap(Texture * texture, const String & lightmapName);
+    void SetLightmap(Texture * texture, const FilePath & lightmapName);
     void SetUVOffsetScale(const Vector2 & uvOffset, const Vector2 uvScale);
 
 	int32 GetLightmapSize();
 	void SetLightmapSize(int32 size);
 
     inline Texture * GetLightmap() const;
-	inline const String & GetLightmapName() const;
+	inline const FilePath & GetLightmapName() const;
     
     void SetFlatColor(const Color & color);
     const Color & GetFlatColor();
@@ -97,7 +98,7 @@ public:
 
 private:
     Texture * lightmapTexture;
-    String lightmapName;
+    FilePath lightmapName;
 	int32 lightmapSize;
     Vector2 uvOffset;
     Vector2 uvScale;
@@ -111,7 +112,7 @@ private:
 public:
     INTROSPECTION_EXTEND(InstanceMaterialState, BaseObject,
                          //MEMBER(lightmapTexture, "Texture:", INTROSPECTION_EDITOR)
-                         MEMBER(lightmapName, "Lightmap Name:", INTROSPECTION_EDITOR)
+//                         MEMBER(lightmapName, "Lightmap Name:", INTROSPECTION_EDITOR)
                          MEMBER(uvOffset, "UV Offset", INTROSPECTION_EDITOR)
                          MEMBER(uvScale, "UV Scale", INTROSPECTION_EDITOR)
                          MEMBER(lightmapSize, "Lightmap Size", INTROSPECTION_EDITOR)
@@ -298,9 +299,9 @@ public:
     
     
     void SetTexture(eTextureLevel level, Texture * texture);
-    void SetTexture(eTextureLevel level, const String & textureName);
+    void SetTexture(eTextureLevel level, const FilePath & textureName);
 	inline Texture * GetTexture(eTextureLevel level) const;
-	inline const String & GetTextureName(eTextureLevel level) const;
+	inline const FilePath & GetTextureName(eTextureLevel level) const;
 
 	RenderState * GetRenderState();
     
@@ -317,7 +318,6 @@ private:
     
     Texture * textures[TEXTURE_COUNT];
     Vector<FilePath> names;
-//    String names[TEXTURE_COUNT];
     
     String textureSlotNames[TEXTURE_COUNT];
     uint32 textureSlotCount;
@@ -407,8 +407,8 @@ public:
         
         PROPERTY("isFlatColorEnabled", "Is flat color enabled", IsFlatColorEnabled, EnableFlatColor, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         PROPERTY("isTexture0ShiftEnabled", "Is texture shift enabled", IsTextureShiftEnabled, EnableTextureShift, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        PROPERTY("isExportOwnerLayerEnabled", "Is export owner layer enabled. (Export layer settings to render batch on set)", IsExportOwnerLayerEnabled, SetExportOwnerLayer, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        PROPERTY("ownerLayerName", "Owner layer name", GetOwnerLayerName, SetOwnerLayerName, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY("isExportOwnerLayerEnabled", "Is export owner layer enabled. (Export layer settings to render batch on set)", IsExportOwnerLayerEnabled, SetExportOwnerLayer, INTROSPECTION_SERIALIZABLE)
+        PROPERTY("ownerLayerName", "Owner layer name", GetOwnerLayerName, SetOwnerLayerName, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
                          
         MEMBER(blendSrc, "Blend Source", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(blendDst, "Blend Destination", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
@@ -427,11 +427,10 @@ Texture * Material::GetTexture(eTextureLevel level) const
 	return textures[level];
 }
 
-inline const String & Material::GetTextureName(eTextureLevel level) const
+inline const FilePath & Material::GetTextureName(eTextureLevel level) const
 {
 	DVASSERT(level < TEXTURE_COUNT);
-//	return names[level];
-	return names[level].GetAbsolutePath();
+	return names[level];
 }
 
 inline void Material::SetBlendSrc(eBlendMode _blendSrc)
@@ -468,7 +467,7 @@ inline Texture * InstanceMaterialState::GetLightmap() const
     return lightmapTexture;
 }
 
-inline const String & InstanceMaterialState::GetLightmapName() const
+inline const FilePath & InstanceMaterialState::GetLightmapName() const
 {
     return lightmapName;
 }

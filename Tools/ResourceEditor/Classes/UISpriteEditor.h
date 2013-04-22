@@ -49,7 +49,7 @@ public:
 //	UISlider * GetFrameSlider();
 	
 	void SetRect(const Rect &rect, bool rectInAbsoluteCoordinates = false);
-	void SetPreviewSprite(const String & spriteName);
+	void SetPreviewSprite(const FilePath & spriteName);
 	
 	void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
 	void LoadFromYamlNodeCompleted();

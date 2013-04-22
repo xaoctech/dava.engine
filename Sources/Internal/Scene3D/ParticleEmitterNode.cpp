@@ -32,7 +32,7 @@ void ParticleEmitterNode::Draw()
 	// Yuri Coder, 2013/04/10. This method isn't called anymore.
 }
 
-void ParticleEmitterNode::LoadFromYaml(const String& _yamlPath)
+void ParticleEmitterNode::LoadFromYaml(const FilePath& _yamlPath)
 {
 	yamlPath = _yamlPath;
 	SafeRelease(emitter);
@@ -66,15 +66,15 @@ void ParticleEmitterNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
 	Entity::Save(archive, sceneFile);
 
-	archive->SetString("yamlPath", sceneFile->AbsoluteToRelative(yamlPath));
+	archive->SetString("yamlPath", yamlPath.GetRelativePathname(sceneFile->GetScenePath()));
 }
 
 void ParticleEmitterNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
 	Entity::Load(archive, sceneFile);
 	
-	yamlPath = archive->GetString("yamlPath");
-	yamlPath = sceneFile->RelativeToAbsolute(yamlPath);
+	String path = archive->GetString("yamlPath");
+	yamlPath = sceneFile->GetScenePath() + FilePath(path);
 	LoadFromYaml(yamlPath);
 }
 

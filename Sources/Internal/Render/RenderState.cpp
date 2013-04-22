@@ -823,19 +823,19 @@ RenderState::StencilState::StencilState()
 	zFail[0] = zFail[1] = STENCILOP_KEEP;
 } 
 
-void RenderState::LoadFromYamlFile(const String & filePath)
+void RenderState::LoadFromYamlFile(const FilePath & filePath)
 {
 	YamlParser * parser = YamlParser::Create(filePath);
 	if (!parser)
 	{
-		Logger::Error("Failed to open yaml file: %s", filePath.c_str());
+		Logger::Error("Failed to open yaml file: %s", filePath.GetAbsolutePathname().c_str());
 		return;
 	}
 
 	YamlNode * rootNode = parser->GetRootNode();
 	if (!rootNode)
 	{
-		Logger::Warning("yaml file: %s is empty", filePath.c_str());
+		Logger::Warning("yaml file: %s is empty", filePath.GetAbsolutePathname().c_str());
 		return;
 	}
 
@@ -938,7 +938,7 @@ void RenderState::LoadFromYamlNode(YamlNode * rootNode)
 	}
 }
 
-bool RenderState::SaveToYamlFile(const String & filePath)
+bool RenderState::SaveToYamlFile(const FilePath & filePath)
 {
 	YamlParser * parser = YamlParser::Create();
 	DVASSERT(parser);

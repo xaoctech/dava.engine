@@ -27,9 +27,10 @@ void CommandHeightmapEditor::Execute()
 }
 
 
-HeightmapModificationCommand::HeightmapModificationCommand(Command::eCommandType type)
+HeightmapModificationCommand::HeightmapModificationCommand(Command::eCommandType type, const Rect& updatedRect)
 :	Command(type)
 {
+	this->updatedRect = updatedRect;
 }
 
 String HeightmapModificationCommand::TimeString()
@@ -44,13 +45,15 @@ String HeightmapModificationCommand::TimeString()
     return timeString;
 }
 
-String HeightmapModificationCommand::SaveHeightmap(Heightmap* heightmap)
+FilePath HeightmapModificationCommand::SaveHeightmap(Heightmap* heightmap)
 {
-	String documentsPath = FileSystem::Instance()->SystemPathForFrameworkPath("~doc:");
-	String folderPathname = documentsPath + "History";
-	FileSystem::Instance()->CreateDirectory(folderPathname);
-	folderPathname = folderPathname + "/Heightmap";
-	FileSystem::Instance()->CreateDirectory(folderPathname);
+	FilePath documentsPath("~doc:");
+
+	FilePath folderPathname("~doc:/History/");
+	FileSystem::Instance()->CreateDirectory(folderPathname.ResolvePathname());
+
+	folderPathname = folderPathname + FilePath("/Heightmap/");
+	FileSystem::Instance()->CreateDirectory(folderPathname.ResolvePathname());
 	
 	FileList* fileList = new FileList(folderPathname);
 	
@@ -80,8 +83,7 @@ String HeightmapModificationCommand::SaveHeightmap(Heightmap* heightmap)
 			validFileName = true;
 	} while (!validFileName);
 	
-	filename = folderPathname + "/" + filename;
-	heightmap->Save(filename);
+	heightmap->Save(folderPathname + FilePath(filename));
 	
 	SafeRelease(fileList);
 	
@@ -101,7 +103,7 @@ LandscapeEditorHeightmap* HeightmapModificationCommand::GetEditor()
 	return editor;
 }
 
-void HeightmapModificationCommand::UpdateLandscapeHeightmap(String filename)
+void HeightmapModificationCommand::UpdateLandscapeHeightmap(const FilePath & filename)
 {
 	SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
 	LandscapesController* landscapesController = activeScene->GetLandscapesController();
@@ -118,11 +120,10 @@ void HeightmapModificationCommand::UpdateLandscapeHeightmap(String filename)
 }
 
 
-CommandDrawHeightmap::CommandDrawHeightmap(Heightmap* originalHeightmap, Heightmap* newHeightmap)
-:	HeightmapModificationCommand(COMMAND_UNDO_REDO)
+CommandDrawHeightmap::CommandDrawHeightmap(Heightmap* originalHeightmap, Heightmap* newHeightmap, const Rect& updatedRect)
+:	HeightmapModificationCommand(COMMAND_UNDO_REDO, updatedRect)
 {
 	commandName = "Heightmap Change";
-	redoFilename = "";
 
 	if (originalHeightmap && newHeightmap)
 	{
@@ -150,7 +151,7 @@ void CommandDrawHeightmap::Execute()
 	{
 		Heightmap* heightmap = editor->GetHeightmap();
 		heightmap->Load(redoFilename);
-		editor->UpdateHeightmap(heightmap);
+		editor->UpdateHeightmap(heightmap, updatedRect);
 	}
 	else
 	{
@@ -168,7 +169,7 @@ void CommandDrawHeightmap::Cancel()
 	{
 		Heightmap* heightmap = editor->GetHeightmap();
 		heightmap->Load(undoFilename);
-		editor->UpdateHeightmap(heightmap);
+		editor->UpdateHeightmap(heightmap, updatedRect);
 	}
 	else
 	{
@@ -177,15 +178,13 @@ void CommandDrawHeightmap::Cancel()
 }
 
 
-CommandCopyPasteHeightmap::CommandCopyPasteHeightmap(bool copyHeightmap, bool copyTilemap, Heightmap* originalHeightmap, Heightmap* newHeightmap, Image* originalTilemap, Image* newTilemap, const String& tilemapSavedPath)
-:	HeightmapModificationCommand(COMMAND_UNDO_REDO)
+CommandCopyPasteHeightmap::CommandCopyPasteHeightmap(bool copyHeightmap, bool copyTilemap, Heightmap* originalHeightmap, Heightmap* newHeightmap, Image* originalTilemap, Image* newTilemap, const FilePath& tilemapSavedPath, const Rect& updatedRect)
+:	HeightmapModificationCommand(COMMAND_UNDO_REDO, updatedRect)
 ,	heightmap(copyHeightmap)
 ,	tilemap(copyTilemap)
 {
 	commandName = "Heightmap Copy/Paste";
 
-	heightmapUndoFilename = "";
-	heightmapRedoFilename = "";
 	tilemapUndoImage = NULL;
 	tilemapRedoImage = NULL;
 
@@ -197,7 +196,8 @@ CommandCopyPasteHeightmap::CommandCopyPasteHeightmap(bool copyHeightmap, bool co
 
 	if (copyTilemap && originalTilemap && newTilemap)
 	{
-		tilemapSavedPathname = FileSystem::Instance()->ReplaceExtension(tilemapSavedPath, ".png");;
+        tilemapSavedPathname = FilePath::CreateWithNewExtension(tilemapSavedPath, ".png");
+        
 		tilemapUndoImage = SafeRetain(originalTilemap);
 		tilemapRedoImage = SafeRetain(newTilemap);
 	}
@@ -227,7 +227,7 @@ void CommandCopyPasteHeightmap::Execute()
 		{
 			Heightmap* heightmap = editor->GetHeightmap();
 			heightmap->Load(heightmapRedoFilename);
-			editor->UpdateHeightmap(heightmap);
+			editor->UpdateHeightmap(heightmap, updatedRect);
 		}
 		else
 		{
@@ -255,7 +255,7 @@ void CommandCopyPasteHeightmap::Cancel()
 		{
 			Heightmap* heightmap = editor->GetHeightmap();
 			heightmap->Load(heightmapUndoFilename);
-			editor->UpdateHeightmap(heightmap);
+			editor->UpdateHeightmap(heightmap, updatedRect);
 		}
 		else
 		{

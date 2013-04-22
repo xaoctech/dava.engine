@@ -51,8 +51,8 @@ public:
 
     static void CustomizeButtonExpandable(UIButton *btn);
 
-    static UIButton *CreateImageButton(const Rect & rect, const String &imagePath);
-    static void CustomizeImageButton(UIButton *btn, const String &imagePath);
+    static UIButton *CreateImageButton(const Rect & rect, const FilePath &imagePath);
+    static void CustomizeImageButton(UIButton *btn, const FilePath &imagePath);
     
     static UIButton *CreateCloseWindowButton(const Rect & rect);
     static void CustomizeCloseWindowButton(UIButton *btn);

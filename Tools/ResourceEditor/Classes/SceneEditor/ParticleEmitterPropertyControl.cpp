@@ -23,5 +23,5 @@ void ParticleEmitterPropertyControl::ReadFrom(Entity * sceneNode)
 	propertyList->AddSection("Particles emitter");
 
 	propertyList->AddStringProperty("Yaml path", PropertyList::PROPERTY_IS_READ_ONLY);
-	propertyList->SetStringPropertyValue("Yaml path", emitter->GetConfigPath());
+	propertyList->SetStringPropertyValue("Yaml path", emitter->GetConfigPath().GetAbsolutePathname());
 }

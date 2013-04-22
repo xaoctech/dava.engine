@@ -1,18 +1,10 @@
 #include "LandscapeTestData.h"
 
-class FpsStatItemCompare
-{
-public:
-	bool operator()(const FpsStatItem& a, const FpsStatItem& b)
-	{
-		return a.minFps < b.minFps;
-	}
-};
+using namespace DAVA;
 
 void LandscapeTestData::AddStatItem(const FpsStatItem &item)
 {
 	stat.push_back(item);
-	std::sort(stat.begin(), stat.end(), FpsStatItemCompare());
 }
 
 void LandscapeTestData::SetLandscapeRect(const Rect &rect)
@@ -89,9 +81,9 @@ void LandscapeTestData::SetTextureMemorySize(uint32 size)
 	textureMemorySize = size;
 }
 
-void LandscapeTestData::SetSceneFileSize(uint32 size)
+void LandscapeTestData::SetSceneFilePath(const FilePath & path)
 {
-	sceneFileSize = size;
+	sceneFilePath = path;
 }
 
 uint32 LandscapeTestData::GetTextureMemorySize() const
@@ -99,9 +91,9 @@ uint32 LandscapeTestData::GetTextureMemorySize() const
 	return textureMemorySize;
 }
 
-uint32 LandscapeTestData::GetSceneFileSize() const
+const FilePath & LandscapeTestData::GetSceneFilePath() const
 {
-	return sceneFileSize;
+	return sceneFilePath;
 }
 
 void LandscapeTestData::SetTexturesFilesSize(uint32 size)

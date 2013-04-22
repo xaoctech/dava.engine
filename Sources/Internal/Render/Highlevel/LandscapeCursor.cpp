@@ -27,6 +27,7 @@
 
 #include "LandscapeCursor.h"
 #include "Render/RenderManager.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA
 {
@@ -36,7 +37,7 @@ LandscapeCursor::LandscapeCursor()
 	cursorTexture = 0;
 
 	shader = new Shader();
-	shader->LoadFromYaml("~res:/Shaders/Landscape/cursor.shader");
+	shader->LoadFromYaml(FilePath("~res:/Shaders/Landscape/cursor.shader"));
 	shader->Recompile();
 
 	uniformTexture = shader->FindUniformLocationByName("texture0");

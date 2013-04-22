@@ -90,16 +90,16 @@ bool HierarchyTree::Load(const QString& projectPath)
 		{
 			// Get font values into array
 			Vector<YamlNode*> fontPathArray = fontPath->AsVector();
-			EditorFontManager::DefaultFontPath defaultFontPath("","");
+			EditorFontManager::DefaultFontPath defaultFontPath(FilePath(""), FilePath(""));
 			// True type font
 			if (fontPathArray.size() == 1)
 			{
-				defaultFontPath.fontPath = fontPathArray[0]->AsString();
+				defaultFontPath.fontPath = FilePath(fontPathArray[0]->AsString());
 			}
 			else if (fontPathArray.size() == 2) // Graphics font
 			{
-				defaultFontPath.fontPath = fontPathArray[0]->AsString();
-				defaultFontPath.fontSpritePath = fontPathArray[1]->AsString();
+				defaultFontPath.fontPath = FilePath(fontPathArray[0]->AsString());
+				defaultFontPath.fontSpritePath = FilePath(fontPathArray[1]->AsString());
 			}
 			EditorFontManager::Instance()->InitDefaultFontFromPath(defaultFontPath);
 		}
@@ -151,6 +151,7 @@ void HierarchyTree::CreateProject()
 void HierarchyTree::CloseProject()
 {
 	projectCreated = false;
+	rootNode.ResetUnsavedChanges();
 	Clear();
 }
 
@@ -318,10 +319,10 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
 	
 	// Get paths for default font
 	const EditorFontManager::DefaultFontPath& defaultFontPath = EditorFontManager::Instance()->GetDefaultFontPath();
-	String fontPath = defaultFontPath.fontPath;
-	String fontSpritePath = defaultFontPath.fontSpritePath;
+	FilePath fontPath = defaultFontPath.fontPath;
+	FilePath fontSpritePath = defaultFontPath.fontSpritePath;
 	// Check if default font path exist
-	if (!fontPath.empty())
+	if (fontPath.IsInitalized())
 	{
 		// Create font node
 		YamlNode* fontNode = new YamlNode(YamlNode::TYPE_MAP);
@@ -333,11 +334,11 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
 		YamlNode* fontPathNode = new YamlNode(YamlNode::TYPE_ARRAY);
 		
 		// Put font path
-		fontPathNode->AddValueToArray(fontPath);
+		fontPathNode->AddValueToArray(fontPath.GetAbsolutePathname());
 		// Put font sprite path if it available
-		if (!fontSpritePath.empty())
+		if (fontSpritePath.IsInitalized())
 		{
-			fontPathNode->AddValueToArray(fontSpritePath);
+			fontPathNode->AddValueToArray(fontSpritePath.GetAbsolutePathname());
 		}
 		// Insert array into node
 		fontMap.insert(std::pair<String, YamlNode*>(DEFAULT_FONT_PATH_NODE, fontPathNode));
@@ -366,7 +367,13 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
 		if (!platformNode)
 			continue;
 		
-		result &= platformNode->Save(platforms, saveAll);
+		bool res = platformNode->Save(platforms, saveAll);
+		if (res)
+		{
+			platformNode->ResetUnsavedChanges();
+		}
+
+		result &= res;
 	}
 
 	YamlParser* parser = YamlParser::Create();
@@ -383,6 +390,10 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
 	{
 		//restore project path
 		rootNode.SetProjectFilePath(oldPath);
+	}
+	else
+	{
+		rootNode.ResetUnsavedChanges();
 	}
 
 	return result;
