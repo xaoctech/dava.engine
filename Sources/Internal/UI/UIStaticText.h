@@ -60,10 +60,14 @@ public:
 
 	void SetMultiline(bool isMultilineEnabled, bool bySymbol = false);
 	void SetFittingOption(int32 fittingType);//may be FITTING_DISABLED, FITTING_ENLARGE, FITTING_REDUCE, FITTING_ENLARGE | FITTING_REDUCE
-	void SetAlign(int32 _align);
-	//virtual void SetSpriteAlign(int32 align);
+	
+	//for background sprite
+	virtual void SetAlign(int32 _align);
+	virtual int32 GetAlign() const;
 
-	int32 GetAlign() const;
+	virtual void SetTextAlign(int32 _align);
+	virtual int32 GetTextAlign() const;
+
 	const Vector2 &GetTextSize();
 	
 	inline void PrepareSprite()
@@ -75,7 +79,6 @@ public:
 		}
 		else 
 		{
-			SetSprite(NULL, 0);
 			shadowBg->SetSprite(NULL, 0);
 			textBg->SetSprite(NULL, 0);
 		}
