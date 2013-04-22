@@ -20,6 +20,7 @@ Settings* Settings::m_spInstance = NULL;
 #define LAUNCHER_VER "LAUNCHER_VER"
 
 #define STABLE "STABLE"
+#define QA "QA"
 #define DEVELOPMENT "DEVELOPMENT"
 #define DEPENDENCIES "DEPENDENCIES"
 
@@ -57,34 +58,33 @@ void Settings::Init() {
     ParseInitConfig();
 }
 
-void Settings::ParseInitConfig() {
-    QFile file(DirectoryManager::GetInstance()->GetConfigDir() + InitFile);
-    if (!file.open(QFile::ReadOnly)) {
-        Logger::GetInstance()->AddLog(tr("Error read config"));
-        return;
-    }
-
-    YAML::Parser parser;
-    std::istringstream stream(file.readAll().data());
-    parser.Load(stream);
-
-    file.close();
-
-    YAML::Node doc;
-    if (!parser.GetNextDocument(doc)) {
-        Logger::GetInstance()->AddLog(tr("Error parse settings."));
-        return;
-    }
-
 #define setString(a, b) {std::string c; b->GetScalar(c); a = c.c_str();}
-    const YAML::Node* pTimer = doc.FindValue(CONFIG_UPDATE_INTERVAL);
+
+void Settings::ParseInitConfig() {
+    QFile launcherFile(DirectoryManager::GetInstance()->GetConfigDir() + InitFile);
+    if (!launcherFile.open(QFile::ReadOnly)) {
+        Logger::GetInstance()->AddLog(tr("Error read launcher config"));
+        return;
+    }
+    YAML::Parser launcherParser;
+    std::istringstream launcherStream(launcherFile.readAll().data());
+    launcherParser.Load(launcherStream);
+    launcherFile.close();
+
+    YAML::Node launcherSettings;
+    if (!launcherParser.GetNextDocument(launcherSettings)) {
+        Logger::GetInstance()->AddLog(tr("Error parse launcher settings."));
+        return;
+    }
+
+    AppsConfig newConfig;
+    const YAML::Node* pTimer = launcherSettings.FindValue(CONFIG_UPDATE_INTERVAL);
     if (pTimer) {
         QString interval;
         setString(interval, pTimer);
         m_nUpdateTimer = interval.toInt() * 60 * 1000;
     }
-    AppsConfig newConfig;
-    const YAML::Node* Launcher = doc.FindValue(LAUNCHER);
+    const YAML::Node* Launcher = launcherSettings.FindValue(LAUNCHER);
     if (Launcher) {
         const YAML::Node* LauncherVer = Launcher->FindValue(LAUNCHER_VER);
         if (LauncherVer)
@@ -94,9 +94,23 @@ void Settings::ParseInitConfig() {
             setString(newConfig.m_Launcher.m_Url, LauncherUrl);
     }
 
-    ParseAppConfig(&doc, STABLE, newConfig.m_Stable);
-    ParseAppConfig(&doc, DEVELOPMENT, newConfig.m_Development);
-    ParseAppConfig(&doc, DEPENDENCIES, newConfig.m_Dependencies);
+    QFile docFile(DirectoryManager::GetInstance()->GetDocumentsDirectory() + InitFile);
+    if(docFile.open(QFile::ReadOnly)) {
+        YAML::Parser docParser;
+        std::istringstream docStream(docFile.readAll().data());
+        docParser.Load(docStream);
+        docFile.close();
+
+        YAML::Node docSettings;
+        docParser.GetNextDocument(docSettings);
+
+        ParseAppConfig(&docSettings, STABLE, newConfig.m_Stable);
+        ParseAppConfig(&docSettings, QA, newConfig.m_Test);
+        ParseAppConfig(&docSettings, DEVELOPMENT, newConfig.m_Development);
+        ParseAppConfig(&docSettings, DEPENDENCIES, newConfig.m_Dependencies);
+    }
+
+
     m_Config = newConfig;
 
 }
@@ -145,19 +159,20 @@ void Settings::UpdateInitConfig() {
     //emitter << YAML::Key << CONFIG_UPDATE_INTERVAL;
     //emitter << YAML::Value << m_nUpdateTimer;
 
-    emitter << YAML::Key << LAUNCHER;
-    std::map<std::string, std::string> launcher;
-    launcher[QString(LAUNCHER_VER).toStdString()] = m_Config.m_Launcher.m_Version.toStdString();
-    launcher[QString(LAUNCHER_UPDATE_URL).toStdString()] = m_Config.m_Launcher.m_Url.toString().toStdString();
-    emitter << YAML::Value << launcher;
+//    emitter << YAML::Key << LAUNCHER;
+//    std::map<std::string, std::string> launcher;
+//    launcher[QString(LAUNCHER_VER).toStdString()] = m_Config.m_Launcher.m_Version.toStdString();
+//    launcher[QString(LAUNCHER_UPDATE_URL).toStdString()] = m_Config.m_Launcher.m_Url.toString().toStdString();
+//    emitter << YAML::Value << launcher;
 
     EmitAppConfig(emitter, STABLE, m_Config.m_Stable);
+    EmitAppConfig(emitter, QA, m_Config.m_Test);
     EmitAppConfig(emitter, DEVELOPMENT, m_Config.m_Development);
     EmitAppConfig(emitter, DEPENDENCIES, m_Config.m_Dependencies);
 
     emitter << YAML::EndMap;
 
-    QString path = DirectoryManager::GetInstance()->GetConfigDir() + InitFile;
+    QString path = DirectoryManager::GetInstance()->GetDocumentsDirectory() + InitFile;
     QFile file(path);
     if (!file.open(QFile::WriteOnly | QFile::Truncate)) {
         Logger::GetInstance()->AddLog(tr("Error save config"));
@@ -230,16 +245,18 @@ QString Settings::GetLauncherUrl() const {
     return m_Config.m_Launcher.m_Url.toString();
 }
 
-int Settings::GetVersion(const QString& strVersion) {
-    //"10.123"
+QString Settings::GetVersion(const QString& strVersion) {
+
     QStringList list = strVersion.split(".");
     if (list.size() != 2) {
-        return -1;
+        return strVersion;;
     }
     int nVersion = -1;
     nVersion = list.at(0).toInt() << 16;
     nVersion += list.at(1).toInt();
-    return nVersion;
+    QString str;
+    str.sprintf("%d", nVersion);
+    return str;
 }
 
 const AppsConfig& Settings::GetCurrentConfig() const {

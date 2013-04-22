@@ -76,7 +76,8 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-		self.font = [NSFont fontWithName:ARCVIEW_DEFAULT_FONT_NAME size:ARCVIEW_DEFAULT_FONT_SIZE];
+        NSFont * tmpfont = [NSFont systemFontOfSize: ARCVIEW_DEFAULT_FONT_SIZE];//[NSFont fontWithName:ARCVIEW_DEFAULT_FONT_NAME size:ARCVIEW_DEFAULT_FONT_SIZE];
+		self.font = tmpfont;
 		self.string = @"Test String!@#$%^&*()~";
 		self.radius = ARCVIEW_DEFAULT_RADIUS;
 		self.showsGlyphBounds = NO;
@@ -1000,8 +1001,6 @@ NSInteger floatSort(id num1, id num2, void *context)
 - (void)drawRect:(NSRect)rect 
 {
 	// Don't draw if we don't have a font or string
-	if (self.font == NULL || self.string == NULL) 
-		return;
 
 	
 	// Initialize the text matrix to a known value
@@ -1016,7 +1015,9 @@ NSInteger floatSort(id num1, id num2, void *context)
 	CGContextSetRGBFillColor(context, 0.0f, 0.0f, 0.0f, 1.0f);
 	CGContextFillRect(context, CGRectMake(rect.origin.x, rect.origin.y, rect.size.width, rect.size.height));
 	
-	
+    if (self.font == NULL || self.string == NULL)
+		return;
+
 	CGContextSaveGState(context);
 	
 //	CGContextSetInterpolationQuality(context, kCGInterpolationHigh);

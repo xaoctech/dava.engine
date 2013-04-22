@@ -45,7 +45,7 @@ KeyedArchiver::~KeyedArchiver()
 	
 }
 
-bool KeyedArchiver::StartEncodingToFile(const String & pathName)
+bool KeyedArchiver::StartEncodingToFile(const FilePath & pathName)
 {
 	archive = File::Create(pathName, File::CREATE|File::WRITE);
 	if (!archive)return false;

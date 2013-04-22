@@ -26,12 +26,14 @@ class AvailableSoftWare
 public:
     void Clear() {
         m_Stable.clear();
+        m_Test.clear();
         m_Development.clear();
         m_Dependencies.clear();
     }
 
     typedef QMap<QString, SoftWare> SoftWareMap;
     SoftWareMap m_Stable;
+    SoftWareMap m_Test;
     SoftWareMap m_Development;
     SoftWareMap m_Dependencies;
 };
@@ -46,7 +48,7 @@ public:
     
     void CheckForUpdate();
     bool Install(const QString& appName, const QString& appVersion, eAppType type);
-    bool Delete(const QString& appName, eAppType type);
+    bool Delete(const QString& appName, eAppType type, bool force = false);
     QString GetRunPath(const QString& appName, eAppType type);
     bool Update(AvailableSoftWare::SoftWareMap softMap, eAppType type, bool force = false);
     bool AbortCurInstallation();

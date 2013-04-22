@@ -8,7 +8,7 @@
 
 #include "UISliderMetadata.h"
 #include "StringUtils.h"
-#include <QDebug>
+#include "StringConstants.h"
 
 using namespace DAVA;
 
@@ -114,16 +114,16 @@ QString UISliderMetadata::GetSliderThumbSprite() const
 	UIControl* thumbButton = GetActiveUISlider()->GetThumb();		
 	if (thumbButton == NULL)
 	{
-		return "<No sprite is set>";
+		return StringConstants::NO_SPRITE_IS_SET;
 	}
 
     Sprite* thumbSprite = thumbButton->GetBackground()->GetSprite();
     if (thumbSprite == NULL)
     {
-        return "<No sprite is set>";
+        return StringConstants::NO_SPRITE_IS_SET;
     }
     
-    return thumbSprite->GetRelativePathname().c_str();
+    return QString::fromStdString(thumbSprite->GetRelativePathname().GetAbsolutePathname());
 }
 
 void UISliderMetadata::SetSliderThumbSprite(QString value)
@@ -194,16 +194,16 @@ QString UISliderMetadata::GetSliderMinSprite() const
 	UIControlBackground* bgMin = GetActiveUISlider()->GetBgMin();
 	if (bgMin == NULL)
 	{
-		return "<No sprite is set>";
+		return StringConstants::NO_SPRITE_IS_SET;
 	}
 
     Sprite* minSprite = bgMin->GetSprite();
     if (minSprite == NULL)
     {
-        return "<No sprite is set>";
+        return StringConstants::NO_SPRITE_IS_SET;
     }
     
-    return minSprite->GetRelativePathname().c_str();
+    return QString::fromStdString(minSprite->GetRelativePathname().GetAbsolutePathname());
 }
 
 void UISliderMetadata::SetSliderMinSprite(QString value)
@@ -294,16 +294,16 @@ QString UISliderMetadata::GetSliderMaxSprite() const
 	UIControlBackground* bgMax = GetActiveUISlider()->GetBgMax();
 	if (bgMax == NULL)
 	{
-		return "<No sprite is set>";
+		return StringConstants::NO_SPRITE_IS_SET;
 	}
 
     Sprite* maxSprite = bgMax->GetSprite();
     if (maxSprite == NULL)
     {
-        return "<No sprite is set>";
+        return StringConstants::NO_SPRITE_IS_SET;
     }
     
-    return maxSprite->GetRelativePathname().c_str();
+    return QString::fromStdString(maxSprite->GetRelativePathname().GetAbsolutePathname());
 }
 
 void UISliderMetadata::SetSliderMaxSprite(QString value)

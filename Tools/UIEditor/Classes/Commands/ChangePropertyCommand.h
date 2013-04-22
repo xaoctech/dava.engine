@@ -58,13 +58,16 @@ class ChangePropertyCommand : public BaseCommand
 public:
     ChangePropertyCommand(BaseMetadata* baseMetadata,
                           const PropertyGridWidgetData& propertyGridWidgetData,
-                          Type value, bool allStates = false);
+                          Type value);
 	virtual ~ChangePropertyCommand();
 
     virtual void Execute();
 	virtual void Rollback();
 
 	virtual bool IsUndoRedoSupported() {return true;};
+
+	virtual void IncrementUnsavedChanges();
+	virtual void DecrementUnsavedChanges();
 
 protected:
 	// Command data.
@@ -88,11 +91,9 @@ protected:
     
     // Current value.
     Type curValue;
-    
-    bool setPropertyForAllStates;
-    
+
     // Current state.
-    UIControl::eControlState curState;
+	Vector<UIControl::eControlState> curStates;
 
 	// The vector of Command Data with the initial values.
     COMMANDDATAVECT commandData;
@@ -119,12 +120,11 @@ public:
 template<typename Type>
     ChangePropertyCommand<Type>::ChangePropertyCommand(BaseMetadata* baseMetadata,
                                                        const PropertyGridWidgetData& propertyGridWidgetData,
-                                                       Type value, bool allStates) :
+                                                       Type value) :
     propertyGridWidgetData(propertyGridWidgetData)
 {
     this->curValue = value;
-    this->setPropertyForAllStates = allStates;
-    this->curState = baseMetadata->GetUIControlState();
+    this->curStates = baseMetadata->GetUIControlStates();
     this->commandData = BuildCommandData(baseMetadata);
 }
 
@@ -190,7 +190,7 @@ template<typename Type>
     baseMetadata->SetupParams(params);
     
     // Restore the Metadata UI Control state.
-    baseMetadata->SetUIControlState(curState);
+    baseMetadata->SetUIControlStates(curStates);
     
     return baseMetadata;
 }
@@ -240,29 +240,16 @@ template<typename Type>
 	QString propertyName = GetPropertyName();
 	BaseMetadata* baseMetadata = GetMetadataForTreeNode((*iter).GetTreeNodeID());
 
-	if (setPropertyForAllStates)
-	{
-		//Set property text for all states
-		int statesCount = UIControlStateHelper::GetUIControlStatesCount();
-		for (int stateID = 0; stateID < statesCount; stateID ++)
-		{
-			UIControl::eControlState state = UIControlStateHelper::GetUIControlState(stateID);
-			//Change control state and set text property value
-			baseMetadata->SetUIControlState(state);
-			PropertiesHelper::SetAllPropertyValues<Type>(baseMetadata, propertyName, newValue);
-		}
-	}
-	else
-	{
-		PropertiesHelper::SetAllPropertyValues<Type>(baseMetadata, propertyName, newValue);
-	}
-	
+	baseMetadata->SetUIControlStates(this->curStates);
+	PropertiesHelper::SetAllPropertyValues<Type>(baseMetadata, propertyName, newValue);
+
 	// Verify whether the properties were indeed changed.
 	bool isPropertyValueDiffers = false;
 	Type realValue = PropertiesHelper::GetAllPropertyValues<Type>(baseMetadata, propertyName,
 																  isPropertyValueDiffers);
 	
 	bool propertySetOK = (realValue == curValue);
+
 	SAFE_DELETE(baseMetadata);
 
 	return propertySetOK;
@@ -272,6 +259,88 @@ template<typename Type>
     QString ChangePropertyCommand<Type>::GetPropertyName()
 {
     return this->propertyGridWidgetData.getProperty().name();
+}
+
+template<typename Type>
+    void ChangePropertyCommand<Type>::IncrementUnsavedChanges()
+{
+	QString propertyName = GetPropertyName();
+
+	COMMANDDATAVECTITER it;
+	for (it = commandData.begin(); it != commandData.end(); ++it)
+	{
+		HierarchyTreeNode::HIERARCHYTREENODEID treeNodeID = (*it).GetTreeNodeID();
+
+		HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetTree().GetNode(treeNodeID);
+		if (dynamic_cast<HierarchyTreePlatformNode*>(node))
+		{
+			node->IncrementUnsavedChanges();
+		}
+		else
+		{
+			BaseCommand::IncrementUnsavedChanges();
+		}
+
+		if (propertyName == "Name")
+		{
+			HierarchyTreeNode* nodeId = HierarchyTreeController::Instance()->GetTree().GetNode((*it).GetTreeNodeID());
+			HierarchyTreeAggregatorNode* aggregator = dynamic_cast<HierarchyTreeAggregatorNode*>(nodeId);
+			if (aggregator)
+			{
+				HierarchyTreeAggregatorNode::CHILDS controls = aggregator->GetChilds();
+				HierarchyTreeAggregatorNode::CHILDS::iterator iter;
+				for (iter = controls.begin(); iter != controls.end(); ++iter)
+				{
+					HierarchyTreeScreenNode* screen = HierarchyTreeController::Instance()->GetScreenNodeForNode(*iter);
+					if (screen)
+					{
+						screen->IncrementUnsavedChanges();
+					}
+				}
+			}
+		}
+	}
+}
+
+template<typename Type>
+    void ChangePropertyCommand<Type>::DecrementUnsavedChanges()
+{
+	QString propertyName = GetPropertyName();
+
+	COMMANDDATAVECTITER it;
+	for (it = commandData.begin(); it != commandData.end(); ++it)
+	{
+		HierarchyTreeNode::HIERARCHYTREENODEID treeNodeID = (*it).GetTreeNodeID();
+
+		HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetTree().GetNode(treeNodeID);
+		if (dynamic_cast<HierarchyTreePlatformNode*>(node))
+		{
+			node->DecrementUnsavedChanges();
+		}
+		else
+		{
+			BaseCommand::DecrementUnsavedChanges();
+		}
+
+		if (propertyName == "Name")
+		{
+			HierarchyTreeNode* nodeId = HierarchyTreeController::Instance()->GetTree().GetNode((*it).GetTreeNodeID());
+			HierarchyTreeAggregatorNode* aggregator = dynamic_cast<HierarchyTreeAggregatorNode*>(nodeId);
+			if (aggregator)
+			{
+				HierarchyTreeAggregatorNode::CHILDS controls = aggregator->GetChilds();
+				HierarchyTreeAggregatorNode::CHILDS::iterator iter;
+				for (iter = controls.begin(); iter != controls.end(); ++iter)
+				{
+					HierarchyTreeScreenNode* screen = HierarchyTreeController::Instance()->GetScreenNodeForNode(*iter);
+					if (screen)
+					{
+						screen->DecrementUnsavedChanges();
+					}
+				}
+			}
+		}
+	}
 }
 
 #endif /* defined(__UIEditor__ChangePropertyCommand__) */

@@ -63,8 +63,13 @@ void UITextFieldPropertyGridWidget::ProcessPushButtonClicked(QPushButton *sender
         return;
     }
     
-    //Call font selection dialog
-    FontManagerDialog *fontDialog = new FontManagerDialog(true);
+	// Get current value of Font property
+	Font *fontPropertyValue = PropertiesHelper::GetPropertyValue<Font *>(this->activeMetadata, FONT_PROPERTY_NAME, false);
+	// Get sprite path from graphics font
+	QString currentGFontPath = ResourcesManageHelper::GetGraphicsFontPath(fontPropertyValue);
+
+    //Call font selection dialog - with ok button and preset of graphics font path
+    FontManagerDialog *fontDialog = new FontManagerDialog(true, currentGFontPath);
     Font *resultFont = NULL;
     
     if ( fontDialog->exec() == QDialog::Accepted )
@@ -126,7 +131,7 @@ void UITextFieldPropertyGridWidget::UpdatePushButtonWidgetWithPropertyValue(QPus
             {
                 FTFont *ftFont = dynamic_cast<FTFont*>(fontPropertyValue);
                 //Set pushbutton widget text
-                buttonText = QString::fromStdString(ftFont->GetFontPath());
+                buttonText = QString::fromStdString(ftFont->GetFontPath().GetAbsolutePathname());
                 break;
             }
             case Font::TYPE_GRAPHICAL:
@@ -140,8 +145,8 @@ void UITextFieldPropertyGridWidget::UpdatePushButtonWidgetWithPropertyValue(QPus
                     return;
                 }
                 //Get font definition and sprite relative path
-                QString fontDefinitionName = QString::fromStdString(gFont->GetFontDefinitionName());
-                QString fontSpriteName =QString::fromStdString(fontSprite->GetName());
+                QString fontDefinitionName = QString::fromStdString(gFont->GetFontDefinitionName().GetAbsolutePathname());
+                QString fontSpriteName =QString::fromStdString(fontSprite->GetRelativePathname().GetAbsolutePathname());
                 //Set push button widget text - for grapics font it contains font definition and sprite names
                 buttonText = QString("%1\n%2").arg(fontDefinitionName, fontSpriteName);
                 break;

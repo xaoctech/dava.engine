@@ -72,7 +72,7 @@ protected:
 	};
 
 public:
-	static GameObject* Create(const String & _pathToSprite, int32 frame = 0);
+	static GameObject* Create(const FilePath & _pathToSprite, int32 frame = 0);
 	static GameObject* Create(Sprite * sprite, int32 frame = 0);
 	
 	inline void		SetPosition(const Vector2 & position);
@@ -91,7 +91,7 @@ public:
 	inline Vector2	GetSize() const;
 	
 	inline void		SetSprite(Sprite * sprite);
-	inline void		SetSprite(const String &spriteName);
+	inline void		SetSprite(const FilePath &spriteName);
 	inline Sprite*  GetSprite() const;
 
 	/**
@@ -285,7 +285,7 @@ inline void	GameObject::SetSprite(Sprite * _sprite)
 	SetFrame(0);
 }
 	
-inline void GameObject::SetSprite(const String &spriteName)
+inline void GameObject::SetSprite(const FilePath &spriteName)
 {
 	Sprite *spr = Sprite::Create(spriteName);
 	SetSprite(spr);

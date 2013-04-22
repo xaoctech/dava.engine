@@ -76,6 +76,8 @@ void UIControlBackground::CopyDataFrom(UIControlBackground *srcBackground)
 	spriteModification = srcBackground->spriteModification;
 	colorInheritType = srcBackground->colorInheritType;
 	perPixelAccuracyType = srcBackground->perPixelAccuracyType;
+	leftStretchCap = srcBackground->leftStretchCap;
+	topStretchCap = srcBackground->topStretchCap;
 }
 
 
@@ -115,7 +117,7 @@ UIControlBackground::eDrawType	UIControlBackground::GetDrawType() const
 }
 	
 	
-void UIControlBackground::SetSprite(const String &spriteName, int32 drawFrame)
+void UIControlBackground::SetSprite(const FilePath &spriteName, int32 drawFrame)
 {
 	Sprite *tempSpr = Sprite::Create(spriteName);
 	SetSprite(tempSpr, drawFrame);

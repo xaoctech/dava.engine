@@ -147,14 +147,16 @@ void RenderManager::DetectRenderingCapabilities()
     caps.isBGRA8888Supported = IsGLExtensionSupported("GL_APPLE_texture_format_BGRA8888");
     caps.isFloat16Supported = IsGLExtensionSupported("GL_OES_texture_half_float");
     caps.isFloat32Supported = IsGLExtensionSupported("GL_OES_texture_float");
+	caps.isATCSupported = IsGLExtensionSupported("GL_AMD_compressed_ATC_texture");
 #elif defined(__DAVAENGINE_ANDROID__)
     //TODO: added correct
     caps.isPVRTCSupported = IsGLExtensionSupported("GL_IMG_texture_compression_pvrtc");
-    caps.isETCSupported = false;
+    caps.isETCSupported = IsGLExtensionSupported("GL_OES_compressed_ETC1_RGB8_texture");
 	caps.isDXTSupported = IsGLExtensionSupported("GL_EXT_texture_compression_s3tc");
     caps.isBGRA8888Supported = false;
     caps.isFloat16Supported = IsGLExtensionSupported("GL_OES_texture_half_float");
     caps.isFloat32Supported = IsGLExtensionSupported("GL_OES_texture_float");
+	caps.isATCSupported = IsGLExtensionSupported("GL_AMD_compressed_ATC_texture");
 #elif defined(__DAVAENGINE_MACOS__)
     caps.isPVRTCSupported = false;
 	caps.isDXTSupported = IsGLExtensionSupported("GL_EXT_texture_compression_s3tc");
@@ -162,6 +164,7 @@ void RenderManager::DetectRenderingCapabilities()
     caps.isBGRA8888Supported = IsGLExtensionSupported("GL_IMG_texture_format_BGRA8888");
     caps.isFloat16Supported = IsGLExtensionSupported("GL_ARB_half_float_pixel");
     caps.isFloat32Supported = IsGLExtensionSupported("GL_ARB_texture_float");
+	caps.isATCSupported = IsGLExtensionSupported("GL_AMD_compressed_ATC_texture");
 #elif defined(__DAVAENGINE_WIN32__)
     caps.isPVRTCSupported = false;
     caps.isETCSupported = IsGLExtensionSupported("GL_OES_compressed_ETC1_RGB8_texture");
@@ -169,6 +172,7 @@ void RenderManager::DetectRenderingCapabilities()
     caps.isFloat16Supported = IsGLExtensionSupported("GL_ARB_half_float_pixel");
     caps.isFloat32Supported = IsGLExtensionSupported("GL_ARB_texture_float");
 	caps.isDXTSupported = IsGLExtensionSupported("GL_EXT_texture_compression_s3tc");
+	caps.isATCSupported = IsGLExtensionSupported("GL_AMD_compressed_ATC_texture");
 #endif
 
 //	caps.isDXTSupported = IsGLExtensionSupported("GL_EXT_texture_compression_s3tc");
@@ -328,7 +332,7 @@ void RenderManager::MakeGLScreenShot()
     
     if(image)
     {
-        ImageLoader::Save(image, FileSystem::Instance()->SystemPathForFrameworkPath(Format("~doc:/screenshot%d.png", ++screenShotIndex)));
+        ImageLoader::Save(image, FilePath(Format("~doc:/screenshot%d.png", ++screenShotIndex)));
         SafeRelease(image);
     }
     
@@ -792,8 +796,10 @@ void RenderManager::SetHWClip(const Rect &rect)
 	}
 	int32 x = (int32)(rect.x * currentDrawScale.x + currentDrawOffset.x);
 	int32 y = (int32)(rect.y * currentDrawScale.y + currentDrawOffset.y);
-	int32 width = (int32)(rect.dx * currentDrawScale.x);
-	int32 height = (int32)(rect.dy * currentDrawScale.y);
+	int32 x2= (int32)ceilf((rect.dx + rect.x) * currentDrawScale.x + currentDrawOffset.x);
+	int32 y2= (int32)ceilf((rect.dy + rect.y) * currentDrawScale.y + currentDrawOffset.y);
+	int32 width = x2 - x;
+	int32 height = y2 - y;
 	switch (renderOrientation) 
 	{
 	case Core::SCREEN_ORIENTATION_PORTRAIT:

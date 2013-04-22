@@ -42,11 +42,14 @@ void CopyPasteController::Copy(const HierarchyTreeNode::HIERARCHYTREENODESLIST& 
 		const HierarchyTreeNode* node = (*iter);
 		const HierarchyTreeScreenNode* screen = dynamic_cast<const HierarchyTreeScreenNode* >(node);
 		const HierarchyTreePlatformNode* platform = dynamic_cast<const HierarchyTreePlatformNode*>(node);
-		
+		const HierarchyTreeAggregatorNode* aggregator = dynamic_cast<const HierarchyTreeAggregatorNode*>(node);
+
 		if (curCopy == CopyTypeNone)
 		{
 			if (platform)
 				curCopy = CopyTypePlatform;
+			else if (aggregator)
+				curCopy = CopyTypeAggregator;
 			else if (screen)
 				curCopy = CopyTypeScreen;
 		}
@@ -56,16 +59,22 @@ void CopyPasteController::Copy(const HierarchyTreeNode::HIERARCHYTREENODESLIST& 
 		{
 			copy = new HierarchyTreePlatformNode(NULL, platform);
 		}
+		else if (curCopy == CopyTypeAggregator && aggregator)
+		{
+			copy = new HierarchyTreeAggregatorNode(NULL, aggregator);
+		}
 		else if (curCopy == CopyTypeScreen && screen)
 		{
 			copy = new HierarchyTreeScreenNode(NULL, screen);
 		}
 		
 		if (copy)
+		{
 			this->items.push_back(copy);
+		}
 	}
 	
-	if (items.size())
+	if (this->items.size())
 		copyType = curCopy;
 }
 
@@ -124,7 +133,7 @@ void CopyPasteController::Clear()
 		 iter != items.end();
 		 ++iter)
 	{
-		HierarchyTreeNode* node = (*iter);
+		HierarchyTreeNode *node = (*iter);
 		SAFE_DELETE(node);
 	}
 

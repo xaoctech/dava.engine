@@ -7,13 +7,10 @@ using namespace DAVA;
 
 struct FpsStatItem
 {
-	float32 minFps;
+	float32 avFps[8];
 	DAVA::Rect rect;
-	Vector3 position;
-	Vector3 viewTarget;
 	
 	FpsStatItem()
-	:	minFps(std::numeric_limits<float32>::infinity())
 	{
 	}
 };
@@ -25,16 +22,19 @@ private:
 	Vector<FpsStatItem> stat;
 
 	uint32 textureMemorySize;
-	uint32 sceneFileSize;
+	uint32 textureFilesSize;
+	FilePath sceneFilePath;
 
 public:
 	void SetLandscapeRect(const DAVA::Rect& rect);
 	void AddStatItem(const FpsStatItem& item);
 
 	void SetTextureMemorySize(uint32 size);
-	void SetSceneFileSize(uint32 size);
+	void SetTexturesFilesSize(uint32 size);
+	void SetSceneFilePath(const FilePath & path);
 	uint32 GetTextureMemorySize() const;
-	uint32 GetSceneFileSize() const;
+	uint32 GetTexturesFilesSize() const;
+	const FilePath & GetSceneFilePath() const;
 
 	const DAVA::Rect& GetLandscapeRect() const;
 	uint32 GetItemCount() const;

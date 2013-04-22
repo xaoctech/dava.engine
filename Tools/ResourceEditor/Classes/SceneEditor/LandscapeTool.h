@@ -17,7 +17,7 @@ public:
         TOOL_COPYPASTE
     };
     
-    LandscapeTool(int32 _ID, eToolType _type, const String & _imageName);
+    LandscapeTool(int32 _ID, eToolType _type, const FilePath & _imageName);
     virtual ~LandscapeTool();
 
     static float32 SizeColorMin();
@@ -34,7 +34,7 @@ public:
 
     int32 toolID;
     
-    String imageName;
+    FilePath imageName;
     Image *image;
     Sprite *sprite;
     

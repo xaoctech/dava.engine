@@ -200,7 +200,7 @@ void main()
 		varTexCoord1 = inTexCoord1;
 	#elif defined(MATERIAL_LIGHTMAP)
 		varTexCoord1 = uvScale*inTexCoord1+uvOffset;
-	#else defined(MATERIAL_DECAL)
+	#else
 		varTexCoord1 = inTexCoord1;
 	#endif
 #endif

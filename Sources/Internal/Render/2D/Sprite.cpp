@@ -86,21 +86,24 @@ Sprite::Sprite()
 	defaultPivotPoint = Vector2(0.0f, 0.0f);
 }
 
-Sprite* Sprite::PureCreate(const String & spriteName, Sprite* forPointer)
+Sprite* Sprite::PureCreate(const FilePath & spriteName, Sprite* forPointer)
 {
 //	Logger::Debug("pure create: %s", spriteName.c_str());
 //	Logger::Info("Sprite pure creation");
-	String pathName = spriteName + ".txt";
+	FilePath pathName(spriteName);
+    pathName.ReplaceExtension(".txt");
 	
-	String scaledName = GetScaledName(spriteName);
-	String scaledPath = scaledName + ".txt";
+	FilePath scaledName = GetScaledName(spriteName);
+	FilePath scaledPath(scaledName);
+    scaledPath.ReplaceExtension(".txt");
+    
     Sprite *sprForScaledPath = GetSpriteFromMap(scaledPath);
     if(sprForScaledPath)
     {
         return sprForScaledPath;
     }
 	
-    String texturePath;
+    FilePath texturePath;
     File * fp = LoadLocalizedFile(scaledPath, texturePath);
     int32 sizeIndex = 0;
 	if (!fp)
@@ -114,7 +117,7 @@ Sprite* Sprite::PureCreate(const String & spriteName, Sprite* forPointer)
         fp = LoadLocalizedFile(pathName, texturePath);
         if(!fp)
         {
-            Logger::Instance()->Warning("Failed to open sprite file: %s", pathName.c_str());
+            Logger::Instance()->Warning("Failed to open sprite file: %s", pathName.GetAbsolutePathname().c_str());
             return NULL;
         }
         
@@ -131,12 +134,17 @@ Sprite* Sprite::PureCreate(const String & spriteName, Sprite* forPointer)
         spr = new Sprite();
     }
     spr->resourceSizeIndex = sizeIndex;
-    spr->InitFromFile(fp, pathName, texturePath);
+    
+    if(texturePath.IsInitalized())
+		spr->InitFromFile(fp, texturePath);
+    else
+		spr->InitFromFile(fp, pathName);
+    
     
     SafeRelease(fp);
     
 //	Logger::Debug("Adding to map for key: %s", spr->relativePathname.c_str());
-	spriteMap[spr->relativePathname] = spr;
+	spriteMap[spr->relativePathname.GetAbsolutePathname()] = spr;
 //	Logger::Debug("Resetting sprite");
 	spr->Reset();
 //	Logger::Debug("Returning pointer");
@@ -144,10 +152,10 @@ Sprite* Sprite::PureCreate(const String & spriteName, Sprite* forPointer)
 }
     
     
-Sprite* Sprite::GetSpriteFromMap(const String &pathname)
+Sprite* Sprite::GetSpriteFromMap(const FilePath &pathname)
 {
     Map<String, Sprite*>::iterator it;
-	it = spriteMap.find(pathname);
+	it = spriteMap.find(pathname.GetAbsolutePathname());
 	if (it != spriteMap.end())
 	{
 		Sprite *spr = it->second;
@@ -158,28 +166,26 @@ Sprite* Sprite::GetSpriteFromMap(const String &pathname)
     return NULL;
 }
     
-String Sprite::GetScaledName(const String &spriteName)
+FilePath Sprite::GetScaledName(const FilePath &spriteName)
 {
-    String::size_type pos = spriteName.find(Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()));
+    String::size_type pos = spriteName.GetAbsolutePathname().find(Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()));
     if(String::npos != pos)
 	{
-        return spriteName.substr(0, pos)
+        String pathname = spriteName.GetAbsolutePathname();
+        return pathname.substr(0, pos)
                         + Core::Instance()->GetResourceFolder(Core::Instance()->GetDesirableResourceIndex())
-                        + spriteName.substr(pos + Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()).length());
+                        + pathname.substr(pos + Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()).length());
 	}
     
     return spriteName;
 }
 
-File * Sprite::LoadLocalizedFile(const String &spritePathname, String &texturePath)
+File * Sprite::LoadLocalizedFile(const FilePath & spritePathname, FilePath & texturePath)
 {
-    String fileName, folderName;
-    FileSystem::Instance()->SplitPath(spritePathname, folderName, fileName);
+    FilePath localizedScaledPath(spritePathname);
+    localizedScaledPath.ReplaceDirectory(spritePathname.GetDirectory() + FilePath(LocalizationSystem::Instance()->GetCurrentLocale() + "/"));
     
-    String localizedScaledPath = folderName + LocalizationSystem::Instance()->GetCurrentLocale() + "/" + fileName;
-//    Logger::Info("[Sprite::LoadLocalizedFile] (%s).", localizedScaledPath.c_str());
-    
-    texturePath = "";
+    texturePath = FilePath();
     File * fp = File::Create(localizedScaledPath, File::READ|File::OPEN);
     if(fp)
     {
@@ -197,30 +203,20 @@ File * Sprite::LoadLocalizedFile(const String &spritePathname, String &texturePa
     return fp;
 }
     
-void Sprite::InitFromFile(File *file, const String &pathName, const String &texturePathname)
+void Sprite::InitFromFile(File *file, const FilePath &pathName)
 {
 	bool usedForScale = false;//Думаю, после исправлений в конвертере, эта магия больше не нужна. Но переменную пока оставлю.
 
 //	uint64 timeSpriteRead = SystemTimer::Instance()->AbsoluteMS();
 
-    String texturePath = texturePathname;
-	size_t tpos = texturePath.rfind("/");
-	if(tpos != String::npos)
-	{
-		texturePath.erase(tpos + 1);
-	}
-
-	char tempBuf[1024];
-
-
     type = SPRITE_FROM_FILE;
 	relativePathname = pathName;
-    relativeTexturePathname = texturePathname;
-    
+
+	char tempBuf[1024];
 	file->ReadLine(tempBuf, 1024);
 	sscanf(tempBuf, "%d", &textureCount);
 	textures = new Texture*[textureCount];
-	textureNames = new String[textureCount];
+	textureNames = new FilePath[textureCount];
 //	timeSpriteRead = SystemTimer::Instance()->AbsoluteMS() - timeSpriteRead;
 
 	char textureCharName[128];
@@ -228,7 +224,8 @@ void Sprite::InitFromFile(File *file, const String &pathName, const String &text
 	{
 		file->ReadLine(tempBuf, 1024);
 		sscanf(tempBuf, "%s", textureCharName);
-		String tp = texturePath + textureCharName;
+        
+		FilePath tp = pathName.GetDirectory() + FilePath(textureCharName);
 //		Logger::Debug("Opening texture: %s", tp.c_str());
 		textures[k] = Texture::CreateFromFile(tp);
 		textureNames[k] = tp;
@@ -347,12 +344,15 @@ void Sprite::InitFromFile(File *file, const String &pathName, const String &text
 }
 
 	
-Sprite* Sprite::Create(const String &spriteName)
+Sprite* Sprite::Create(const FilePath &spriteName)
 {
 	Sprite * spr = PureCreate(spriteName,NULL);
 	if (!spr)
 	{
 		spr = CreateFromTexture(Vector2(16.f, 16.f), Texture::GetPinkPlaceholder(), Vector2(0.f, 0.f), Vector2(16.f, 16.f));
+        
+        spr->type = SPRITE_FROM_FILE;
+        spr->relativePathname = spriteName;
 	}
 	return spr;
 }
@@ -426,7 +426,7 @@ void Sprite::InitFromTexture(Texture *fromTexture, int32 xOffset, int32 yOffset,
 	this->type = SPRITE_FROM_TEXTURE;
 	this->textureCount = 1;
 	this->textures = new Texture*[this->textureCount];
-	this->textureNames = new String[this->textureCount];
+	this->textureNames = new FilePath[this->textureCount];
 
 
 	this->textures[0] = SafeRetain(fromTexture);
@@ -507,8 +507,8 @@ void Sprite::InitFromTexture(Texture *fromTexture, int32 xOffset, int32 yOffset,
 	}
 	
 	
-	this->relativePathname = Format("FBO sprite %d", fboCounter);
-	spriteMap[this->relativePathname] = this;
+	this->relativePathname = FilePath(Format("FBO sprite %d", fboCounter));
+	spriteMap[this->relativePathname.GetAbsolutePathname()] = this;
 	fboCounter++;
 	this->Reset();
 }
@@ -557,7 +557,7 @@ int32 Sprite::Release()
 	if(GetRetainCount() == 1)
 	{
         SafeRelease(spriteRenderObject);
-		spriteMap.erase(relativePathname);
+		spriteMap.erase(relativePathname.GetAbsolutePathname());
 	}
 		
 	return BaseObject::Release();
@@ -612,8 +612,8 @@ Texture* Sprite::GetTexture()
 Texture* Sprite::GetTexture(int32 frameNumber)
 {
 //	DVASSERT(frameNumber > -1 && frameNumber < frameCount);
-    frame = Clamp(frame, 0, frameCount - 1);
-	return textures[frameTextureIndex[frameNumber]];
+    frame = Clamp(frameNumber, 0, frameCount - 1);
+	return textures[frameTextureIndex[frame]];
 }
 	
 float32 *Sprite::GetTextureVerts(int32 frame)
@@ -1400,18 +1400,21 @@ void Sprite::DrawPoints(Vector2 *verticies)
 	
 float32 Sprite::GetRectOffsetValueForFrame(int32 frame, eRectsAndOffsets valueType) const
 {
-	return rectsAndOffsets[frame][valueType];
+	int32 clampedFrame = Clamp(frame, 0, frameCount - 1);
+	return rectsAndOffsets[clampedFrame][valueType];
 }
 
 void Sprite::PrepareForNewSize()
 {
-	int pos = (int)relativePathname.find(Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()));
-	String scaledName = relativePathname.substr(0, pos) + Core::Instance()->GetResourceFolder(Core::Instance()->GetDesirableResourceIndex()) + relativePathname.substr(pos + Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()).length());
+    String pathname = relativePathname.GetAbsolutePathname();
+    
+	int pos = (int)pathname.find(Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()));
+	String scaledName = pathname.substr(0, pos) + Core::Instance()->GetResourceFolder(Core::Instance()->GetDesirableResourceIndex()) + pathname.substr(pos + Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()).length());
 	
 	Logger::Instance()->Debug("Seraching for file: %s", scaledName.c_str());
 	
 	
-	File *fp = File::Create(scaledName, File::READ|File::OPEN);
+	File *fp = File::Create(FilePath(scaledName), File::READ|File::OPEN);
 	
 	if (!fp)
 	{
@@ -1424,7 +1427,7 @@ void Sprite::PrepareForNewSize()
 		
 	Clear();
 	Logger::Debug("erasing from sprite from map");
-	spriteMap.erase(relativePathname);
+	spriteMap.erase(relativePathname.GetAbsolutePathname());
 	textures = 0;
 	textureNames = 0;
 
@@ -1449,7 +1452,9 @@ void Sprite::PrepareForNewSize()
 	resourceToVirtualFactor = 1.0f;
     resourceToPhysicalFactor = 1.0f;
     
-	PureCreate(relativePathname.substr(0, relativePathname.length() - 4), this);
+    
+    String path = relativePathname.GetAbsolutePathname();
+	PureCreate(FilePath(path.substr(0, path.length() - 4)), this);
 //TODO: следующая строка кода написада здесь только до тех времен 
 //		пока defaultPivotPoint не начнет задаваться прямо в спрайте,
 //		но возможно это навсегда.
@@ -1484,7 +1489,7 @@ void Sprite::DumpSprites()
 	for(Map<String, Sprite*>::iterator it = spriteMap.begin(); it != spriteMap.end(); ++it)
 	{
 		Sprite *sp = it->second; //[spriteDict objectForKey:[txKeys objectAtIndex:i]];
-		Logger::Debug("name:%s count:%d size(%.0f x %.0f)", sp->relativePathname.c_str(), sp->GetRetainCount(), sp->size.dx, sp->size.dy);
+		Logger::Debug("name:%s count:%d size(%.0f x %.0f)", sp->relativePathname.GetAbsolutePathname().c_str(), sp->GetRetainCount(), sp->size.dx, sp->size.dy);
 	}
 	Logger::Info("============================================================");
 }
@@ -1518,7 +1523,7 @@ void Sprite::ConvertToVirtualSize()
     texCoords[0][7] *= resourceToVirtualFactor;
 }
 
-const String & Sprite::GetRelativePathname() const
+const FilePath & Sprite::GetRelativePathname() const
 {
 	return relativePathname;
 }
@@ -1561,37 +1566,56 @@ void Sprite::Reload()
 {
     if(type == SPRITE_FROM_FILE)
     {
-        for(int32 i = 0; i < textureCount; ++i)
-        {
-			if(textures[i] == Texture::GetPinkPlaceholder())
-			{
-				SafeRelease(textures[i]);
-				textures[i] = Texture::CreateFromFile(textureNames[i]);
-			}
-			else if(textures[i] && !textures[i]->GetPathname().empty())
-			{
-				textures[i]->Reload();
-			}
-			else
-			{
-				Logger::Error("[Sprite::Reloa] Something strange with texture_%d", i);
-			}
-        }
-        
+        ReloadSpriteTextures();
+
+        int32 sizeIndex = resourceSizeIndex;
+
         Clear();
+        
+        resourceSizeIndex = sizeIndex;
 
         File *fp = File::Create(relativePathname, File::READ | File::OPEN);
         if(fp)
         {
-            InitFromFile(fp, relativePathname, relativeTexturePathname);
+            InitFromFile(fp, relativePathname);
+
+            SetFrame(frame);
+            
             SafeRelease(fp);
         }
 		else
 		{
-			Logger::Warning("Unable to reload sprite %s", relativePathname.c_str());
+			Logger::Warning("Unable to reload sprite %s", relativePathname.GetAbsolutePathname().c_str());
+            
+            FilePath spriteName = relativePathname;
+            
 			InitFromTexture(Texture::GetPinkPlaceholder(), 0, 0, 16.0f, 16.0f, 16, 16, false);
+            
+            type = SPRITE_FROM_FILE;
+            relativePathname = spriteName;
 		}
     }
 }
+    
+void Sprite::ReloadSpriteTextures()
+{
+    for(int32 i = 0; i < textureCount; ++i)
+    {
+        if(textures[i] == Texture::GetPinkPlaceholder())
+        {
+            SafeRelease(textures[i]);
+            textures[i] = Texture::CreateFromFile(textureNames[i]);
+        }
+        else if(textures[i] && textures[i]->GetPathname().IsInitalized())
+        {
+            textures[i]->Reload();
+        }
+        else
+        {
+            Logger::Error("[Sprite::ReloadSpriteTextures] Something strange with texture_%d", i);
+        }
+    }
+}
+    
     
 };

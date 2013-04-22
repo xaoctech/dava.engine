@@ -40,6 +40,7 @@
 #include "Particles/Particle.h"
 #include "Particles/ParticleForce.h"
 #include "Particles/ParticlePropertyLine.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA
 {
@@ -118,7 +119,7 @@ public:
 		\brief Function to load layer from yaml node.
 		Normally this function is called from ParticleEmitter. 	 
 	 */
-	virtual void LoadFromYaml(const String & configPath, YamlNode * node);
+	virtual void LoadFromYaml(const FilePath & configPath, YamlNode * node);
 
 	/**
      \brief Function to save layer to yaml node.
@@ -138,6 +139,7 @@ public:
 
     // Whether this layer is Long Layer?
     virtual bool IsLong() {return false;};
+	virtual void SetLong(bool /*value*/) {};
     
 	RenderBatch * GetRenderBatch();
 
@@ -157,7 +159,15 @@ public:
 							 RefPtr< PropertyLine<Vector3> > forceVariation,
 							 RefPtr< PropertyLine<float32> > forceOverLife);
 
-protected:	
+	// Playback speed.
+	void SetPlaybackSpeed(float32 value);
+	float32 GetPlaybackSpeed();
+
+	// Statistics for particles - count and area they use.
+	int32 GetActiveParticlesCount();
+	float32 GetActiveParticlesArea();
+
+protected:
 	void GenerateNewParticle(int32 emitIndex);
 	void GenerateSingleParticle();
 	
@@ -175,6 +185,8 @@ protected:
 	void UpdateFrameTimeline();
 	
 	void CleanupForces();
+	
+	void FillSizeOverlifeXY(RefPtr< PropertyLine<float32> > sizeOverLife);
 
 	// list of particles
 	Particle *	head;
@@ -195,7 +207,8 @@ protected:
 	ParticleLayerBatch * renderBatch;
 
 	bool		additive;
-	
+	float32		playbackSpeed;
+
 public:
 	String			layerName;
 	Vector2			pivotPoint;
@@ -210,7 +223,8 @@ public:
 	
 	RefPtr< PropertyLine<Vector2> > size;				// size of particles in pixels 
 	RefPtr< PropertyLine<Vector2> > sizeVariation;		// size variation in pixels
-	RefPtr< PropertyLine<float32> > sizeOverLife;
+	RefPtr< PropertyLine<Vector2> > sizeOverLifeXY;
+	//RefPtr< PropertyLine<float32> > sizeOverLife;
 	
 	RefPtr< PropertyLine<float32> > velocity;			// velocity in pixels
 	RefPtr< PropertyLine<float32> > velocityVariation;	

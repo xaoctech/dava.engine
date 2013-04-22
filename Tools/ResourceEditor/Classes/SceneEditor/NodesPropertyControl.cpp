@@ -420,7 +420,7 @@ void NodesPropertyControl::OnDistancePropertyChanged(PropertyList *, const Strin
     if(nodesDelegate)
     {
         nodesDelegate->NodesPropertyChanged(forKey);
-    }
+	}
 }
 
 
@@ -448,7 +448,7 @@ void NodesPropertyControl::OnSliderPropertyChanged(PropertyList *, const String 
     if(nodesDelegate)
     {
         nodesDelegate->NodesPropertyChanged(forKey);
-    }
+	}
 }
 
 
@@ -459,6 +459,8 @@ void NodesPropertyControl::SetDelegate(NodesPropertyDelegate *delegate)
 
 void NodesPropertyControl::OnStringPropertyChanged(PropertyList *, const String &forKey, const String &newValue)
 {
+	bool needUpdatePropertyPanel = false;
+
     if(forKey == SCENE_NODE_NAME_PROPERTY_NAME) //Entity
     {
         if(currentSceneNode)
@@ -478,6 +480,7 @@ void NodesPropertyControl::OnStringPropertyChanged(PropertyList *, const String 
             if(customProperties->IsKeyExists(forKey))
             {
                 customProperties->SetString(forKey, newValue);
+				needUpdatePropertyPanel = true;
             }
         }
     }
@@ -485,7 +488,10 @@ void NodesPropertyControl::OnStringPropertyChanged(PropertyList *, const String 
     if(nodesDelegate)
     {
         nodesDelegate->NodesPropertyChanged(forKey);
-    }
+	}
+
+	if(needUpdatePropertyPanel)
+		UpdateFieldsForCurrentNode();
 }
 void NodesPropertyControl::OnFloatPropertyChanged(PropertyList *, const String &forKey, float newValue)
 {
@@ -505,10 +511,14 @@ void NodesPropertyControl::OnFloatPropertyChanged(PropertyList *, const String &
     if(nodesDelegate)
     {
         nodesDelegate->NodesPropertyChanged(forKey);
-    }
+	}
+
+	UpdateFieldsForCurrentNode();
 }
 void NodesPropertyControl::OnIntPropertyChanged(PropertyList *, const String &forKey, int newValue)
 {
+	bool needUpdatePropertyPanel = false;
+
     if(!createNodeProperties)
     {
         if(currentSceneNode)
@@ -517,6 +527,7 @@ void NodesPropertyControl::OnIntPropertyChanged(PropertyList *, const String &fo
             if(customProperties->IsKeyExists(forKey))
             {
                 customProperties->SetInt32(forKey, newValue);
+				needUpdatePropertyPanel = true;
             }
         }
     }
@@ -525,11 +536,15 @@ void NodesPropertyControl::OnIntPropertyChanged(PropertyList *, const String &fo
     if(nodesDelegate)
     {
         nodesDelegate->NodesPropertyChanged(forKey);
-    }
+	}
+
+	if(needUpdatePropertyPanel)
+		UpdateFieldsForCurrentNode();
 }
 
 void NodesPropertyControl::OnBoolPropertyChanged(PropertyList *, const String &forKey, bool newValue)
 {
+	bool needUpdatePropertyPanel = true;
     if(currentSceneNode)
     {
         KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
@@ -566,6 +581,8 @@ void NodesPropertyControl::OnBoolPropertyChanged(PropertyList *, const String &f
                     childLodComponents[i]->SetForceDistance(forceDistance);
                 }
             }
+
+			needUpdatePropertyPanel = false;
         }
 // 		else if("CollisionFlag" == forKey)
 // 		{
@@ -599,14 +616,17 @@ void NodesPropertyControl::OnBoolPropertyChanged(PropertyList *, const String &f
     if(nodesDelegate)
     {
         nodesDelegate->NodesPropertyChanged(forKey);
-    }
+	}
+
+	if(needUpdatePropertyPanel)
+		UpdateFieldsForCurrentNode();
 }
-void NodesPropertyControl::OnFilepathPropertyChanged(PropertyList *, const String &forKey, const String &)
+void NodesPropertyControl::OnFilepathPropertyChanged(PropertyList *, const String &forKey, const FilePath &)
 {
     if(nodesDelegate)
     {
         nodesDelegate->NodesPropertyChanged(forKey);
-    }
+	}
 }
 void NodesPropertyControl::OnComboIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey)
 {
@@ -625,7 +645,9 @@ void NodesPropertyControl::OnComboIndexChanged(PropertyList *forList, const Stri
     if(nodesDelegate)
     {
         nodesDelegate->NodesPropertyChanged(forKey);
-    }
+	}
+
+	UpdateFieldsForCurrentNode();
 }
 
 void NodesPropertyControl::OnMatrix4Changed(PropertyList *, const String &forKey, const Matrix4 & matrix4)
@@ -642,7 +664,7 @@ void NodesPropertyControl::OnMatrix4Changed(PropertyList *, const String &forKey
     if(nodesDelegate)
     {
         nodesDelegate->NodesPropertyChanged(forKey);
-    }
+	}
 }
 
 void NodesPropertyControl::OnSectionExpanded(PropertyList *, const String &forKey, bool isExpanded)
@@ -853,7 +875,6 @@ void NodesPropertyControl::UpdateMatricesForCurrentNode()
 	}
 }
 
-
 bool NodesPropertyControl::GetHeaderState(const String & headerName, bool defaultValue)
 {
     KeyedArchive *settings = EditorSettings::Instance()->GetSettings();
@@ -947,6 +968,8 @@ int32 NodesPropertyControl::GetTrianglesForLodLayer(LodComponent::LodData *lodDa
     {
         Vector<Entity *> meshes;
         lodData->nodes[n]->GetChildNodes(meshes);
+        
+        meshes.push_back(lodData->nodes[n]);
         
         for(int32 m = 0; m < (int32)meshes.size(); ++m)
         {

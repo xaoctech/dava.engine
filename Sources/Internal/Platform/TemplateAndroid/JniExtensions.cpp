@@ -7,8 +7,7 @@ JniExtension::JniExtension(const char* className)
 {
 	Logger::Debug("JniExtension::JniExtension(%s)", className);
 	this->className = className;
-	javaClass = 0;
-	isThreadAttached = false;
+	//isThreadAttached = false;
 
 	CorePlatformAndroid *core = (CorePlatformAndroid *)Core::Instance();
 	AndroidSystemDelegate* delegate = core->GetAndroidSystemDelegate();
@@ -24,15 +23,10 @@ JniExtension::JniExtension(const char* className)
 			isThreadAttached = true;
 	}*/
 
-	if (res == JNI_OK)
+	if (res != JNI_OK)
 	{
-		javaClass = env->FindClass(className);
-		if (!javaClass)
-			Logger::Debug("Error find class %s", className);
-	}
-	else
-	{
-		Logger::Debug("Failed to get the environment using GetEnv()");
+		Logger::Error("Failed to get the environment using GetEnv()");
+		env = NULL;
 	}
 }
 
@@ -40,27 +34,45 @@ JniExtension::~JniExtension()
 {
 	Logger::Debug("JniExtension::~JniExtension(%s)", className);
 
-	if (javaClass)
-		env->DeleteLocalRef(javaClass);
-
-	if (isThreadAttached)
+	/*if (isThreadAttached)
 	{
 		jint res = vm->DetachCurrentThread();
-		Logger::Debug("vm->DetachCurrentThread() = %d", res);
-		Logger::Debug("Failed to DetachCurrentThread()");
-	}
+		Logger::Error("vm->DetachCurrentThread() = %d", res);
+		Logger::Error("Failed to DetachCurrentThread()");
+	}*/
 }
 
-jmethodID JniExtension::GetMethodID(const char *methodName, const char *paramCode)
+jclass JniExtension::GetJavaClass() const
 {
-	Logger::Debug("JniExtension::GetMethodID javaClass=%s methodName=%s", className, methodName);
-	jmethodID mid = NULL;
-	if (javaClass)
-		mid = env->GetStaticMethodID(javaClass, methodName, paramCode);
+	DVASSERT(env);
+	if (!env)
+		return NULL;
+
+	jclass javaClass = env->FindClass(className);
+	if (!javaClass)
+		Logger::Error("Error find class %s", className);
+
+	return javaClass;
+}
+
+void JniExtension::ReleaseJavaClass(jclass javaClass) const
+{
+	DVASSERT(env);
+	if (!env)
+		return;
+
+	env->DeleteLocalRef(javaClass);
+	javaClass = NULL;
+}
+
+jmethodID JniExtension::GetMethodID(jclass javaClass, const char *methodName, const char *paramCode) const
+{
+	DVASSERT(javaClass);
+	jmethodID mid = env->GetStaticMethodID(javaClass, methodName, paramCode);
 
 	if (!mid)
 	{
-		Logger::Debug("get method id of %s.%s error ", className, methodName);
+		Logger::Error("get method id of %s.%s error ", className, methodName);
 	}
 
 	return mid;

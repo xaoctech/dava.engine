@@ -131,6 +131,11 @@ void UIList::SetDelegate(UIListDelegate *newDelegate)
 	delegate = newDelegate;
 }
 
+UIListDelegate * UIList::GetDelegate()
+{
+	return delegate;
+}
+
 void UIList::ScrollToElement(int32 index)
 {
     DVASSERT(delegate)
@@ -642,13 +647,34 @@ void UIList::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 			DVASSERT(0 && "Orientation constant is wrong");
 		}
 	}
-		
-		
+	// Load aggregator path
+	YamlNode * aggregatorPathNode = node->Get("aggregatorPath");
+	if (aggregatorPathNode)
+	{
+		aggregatorPath = aggregatorPathNode->AsString();
+	}
 		
 		// TODO
 	InitAfterYaml();
 }
-    
+
+UIControl *UIList::Clone()
+{
+	UIList *c = new UIList(GetRect(), this->orientation);
+	c->CopyDataFrom(this);
+	return c;
+}
+
+const FilePath & UIList::GetAggregatorPath()
+{
+	return aggregatorPath;
+}
+	
+void UIList::SetAggregatorPath(const FilePath &aggregatorPath)
+{
+	this->aggregatorPath = aggregatorPath;
+}
+
 YamlNode * UIList::SaveToYamlNode(UIYamlLoader * loader)
 {
 	YamlNode *node = UIControl::SaveToYamlNode(loader);
@@ -656,7 +682,8 @@ YamlNode * UIList::SaveToYamlNode(UIYamlLoader * loader)
 	String stringValue;
     
 	//Control Type
-	node->Set("type", "UIList");
+	SetPreferredNodeType(node, "UIList");
+
 	//Orientation
 	eListOrientation orient = this->GetOrientation();
 	switch(orient)
@@ -672,6 +699,18 @@ YamlNode * UIList::SaveToYamlNode(UIYamlLoader * loader)
 			break;
 	}
 	node->Set("orientation", stringValue);
+	
+	if (delegate)
+	{
+		// Set aggregator path from current List delegate
+		delegate->SaveToYaml(this, node);
+	}
+
+	// Save aggregator path only if it is not empty
+	if (aggregatorPath.IsInitalized())
+	{
+		node->Set("aggregatorPath", aggregatorPath.GetAbsolutePathname());
+	}
     
 	return node;
 }

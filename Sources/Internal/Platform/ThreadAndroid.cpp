@@ -10,6 +10,7 @@
 namespace DAVA
 {
 
+#include <unistd.h>
 
 #include <pthread.h>
 

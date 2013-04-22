@@ -13,6 +13,7 @@
 #include "HierarchyTreeAggregatorControlNode.h"
 #include <QFile>
 #include "Render/2D/FontManager.h"
+#include <qmessagebox.h>
 
 HierarchyTreeScreenNode::HierarchyTreeScreenNode(HierarchyTreePlatformNode* parent, const QString& name) :
 	HierarchyTreeNode(name)
@@ -24,8 +25,6 @@ HierarchyTreeScreenNode::HierarchyTreeScreenNode(HierarchyTreePlatformNode* pare
 	scale = 1.f;
 	posX = 0;
 	posY = 0;
-
-	unsavedChangesCounter = 0;
 }
 
 HierarchyTreeScreenNode::HierarchyTreeScreenNode(HierarchyTreePlatformNode* parent, const HierarchyTreeScreenNode* base):
@@ -99,6 +98,17 @@ void HierarchyTreeScreenNode::SetParent(HierarchyTreeNode* node, HierarchyTreeNo
 	if (!newPlatform)
 		return;
 	
+	// check if parent platform has aggregator with same name already
+	// if so message box will be shown
+	bool shouldInsert = ! newPlatform->IsAggregatorOrScreenNamePresent(this->GetName());
+	if(!shouldInsert)
+	{
+		QMessageBox msgBox;
+		msgBox.setText("The platform has aggregator or screen with the same name already!");
+		msgBox.exec();
+		return;
+	}
+
 	HierarchyTreePlatformNode* oldPlatform = GetPlatform();
 	if (oldPlatform)
 	{
@@ -171,8 +181,10 @@ void HierarchyTreeScreenNode::BuildHierarchyTree(HierarchyTreeNode* parent, List
 		else
 			node = new HierarchyTreeControlNode(parent, uiControl, QString::fromStdString(uiControl->GetName()));
 
-		// Use the "real" children list here to avoid loading of (for example) separate Static Text for UITextControls.
-		BuildHierarchyTree(node, uiControl->GetRealChildren());
+		// Yuri Coder, 2013/03/28. For some controls (like UISpinner) we have to load info not only about the control
+		// itself, but also for its "subcontrols". Actually subcontrols are the same as "real chidren", but may also
+		// include some extra items. GetSubcontrols() method is virtual and redefined on each UIControl's level.
+		BuildHierarchyTree(node, uiControl->GetRealChildrenAndSubcontrols());
 		parent->AddTreeNode(node);
 	}
 }
@@ -180,7 +192,7 @@ void HierarchyTreeScreenNode::BuildHierarchyTree(HierarchyTreeNode* parent, List
 bool HierarchyTreeScreenNode::Save(const QString& path, bool saveAll)
 {
 	// Do not save the screen if it wasn't changed.
-	if (!saveAll && this->unsavedChangesCounter == 0)
+	if (!saveAll && !IsNeedSave())
 	{
 		return true;
 	}
@@ -230,18 +242,7 @@ Rect HierarchyTreeScreenNode::GetRect() const
 	return rect;
 }
 
-// Access to the screen unsaved changes counter.
-void HierarchyTreeScreenNode::IncrementUnsavedChanges()
+bool HierarchyTreeScreenNode::IsNeedSave() const
 {
-	unsavedChangesCounter ++;
-}
-
-void HierarchyTreeScreenNode::DecrementUnsavedChanges()
-{
-	unsavedChangesCounter --;
-}
-
-void HierarchyTreeScreenNode::ResetUnsavedChanges()
-{
-	unsavedChangesCounter = 0;
+	return IsMarked() | (this->unsavedChangesCounter != 0);
 }

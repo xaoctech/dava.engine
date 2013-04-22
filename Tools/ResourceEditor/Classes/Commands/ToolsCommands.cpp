@@ -98,7 +98,37 @@ void CommandRulerTool::Execute()
     SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     activeScene->RebuildSceneGraph();
     
-    QtMainWindowHandler::Instance()->ShowStatusBarMessage(activeScene->GetScenePathname());
+    QtMainWindowHandler::Instance()->ShowStatusBarMessage(activeScene->GetScenePathname().GetAbsolutePathname());
 }
 
 
+
+CommandConvertToShadow::CommandConvertToShadow()
+:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+{
+
+}
+
+void CommandConvertToShadow::Execute()
+{
+	Entity * entity = SceneDataManager::Instance()->SceneGetSelectedNode(SceneDataManager::Instance()->SceneGetActive());
+	if(entity)
+	{
+		RenderComponent * rc = static_cast<RenderComponent*>(entity->GetComponent(Component::RENDER_COMPONENT));
+		RenderObject * ro = GetRenerObject(entity);
+		if(ro->GetRenderBatchCount() == 1 && typeid(*(ro->GetRenderBatch(0))) == typeid(DAVA::RenderBatch))
+		{
+			SceneDataManager::Instance()->SceneGetActive()->SelectNode(0);
+
+			ShadowVolume * shadowVolume = ro->CreateShadow();
+
+			ro->RemoveRenderBatch(ro->GetRenderBatch(0));
+			ro->AddRenderBatch(shadowVolume);
+
+			entity->SetLocalTransform(entity->GetLocalTransform());//just forced update of worldTransform
+
+			
+			SceneDataManager::Instance()->SceneGetActive()->SelectNode(entity);
+		}
+	}
+}

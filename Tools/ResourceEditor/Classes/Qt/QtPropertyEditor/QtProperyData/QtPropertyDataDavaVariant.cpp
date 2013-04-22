@@ -11,6 +11,7 @@
 
 QtPropertyDataDavaVariant::QtPropertyDataDavaVariant(const DAVA::VariantType &value)
 	: curVariantValue(value)
+	, iconCacheIsValid(false)
 {
 	// set special flags
 	switch(curVariantValue.type)
@@ -241,11 +242,11 @@ void QtPropertyDataDavaVariant::ChildsCreate()
 		break;
     case DAVA::VariantType::TYPE_COLOR:
         {
-//            DAVA::Color color = curVariantValue.AsColor();
-//            ChildAdd("R", color.r);
-//            ChildAdd("G", color.g);
-//            ChildAdd("B", color.b);
-//            ChildAdd("A", color.a);
+			QPushButton *colorBtn = new QPushButton(QIcon(":/QtIcons/color.png"), "");
+			colorBtn->setIconSize(QSize(12, 12));
+			colorBtn->setFlat(true);
+			AddOW(QtPropertyOW(colorBtn));
+			QObject::connect(colorBtn, SIGNAL(pressed()), this, SLOT(ColorOWPressed()));
         }
         break;
 	case DAVA::VariantType::TYPE_AABBOX3:
@@ -426,7 +427,7 @@ QVariant QtPropertyDataDavaVariant::FromVector4(const DAVA::Vector4 &vector)
 {
 	QVariant v;
 
-	v = QString().sprintf("[%g, %g, %g, %g]", vector.x, vector.y, vector.z, vector.w);
+	v = QString().sprintf("[%8.2f, %8.2f, %8.2f, %8.2f]", vector.x, vector.y, vector.z, vector.w);
 
 	return v;
 }
@@ -435,7 +436,7 @@ QVariant QtPropertyDataDavaVariant::FromVector3(const DAVA::Vector3 &vector)
 {
 	QVariant v;
 
-	v = QString().sprintf("[%g, %g, %g]", vector.x, vector.y, vector.z);
+	v = QString().sprintf("[%8.2f, %8.2f, %8.2f]", vector.x, vector.y, vector.z);
 
 	return v;
 }
@@ -444,7 +445,7 @@ QVariant QtPropertyDataDavaVariant::FromVector2(const DAVA::Vector2 &vector)
 {
 	QVariant v;
 
-	v = QString().sprintf("[%g, %g]", vector.x, vector.y);
+	v = QString().sprintf("[%8.2f, %8.2f]", vector.x, vector.y);
 
 	return v;
 }
@@ -453,11 +454,11 @@ QVariant QtPropertyDataDavaVariant::FromMatrix4(const DAVA::Matrix4 &matrix)
 {
 	QVariant v;
 
-	v = QString().sprintf("[%g, %g, %g, %g]\n[%g, %g, %g, %g]\n[%g, %g, %g, %g]\n[%g, %g, %g, %g]",
-                          matrix._00, matrix._01, matrix._02, matrix._03,
-                          matrix._10, matrix._11, matrix._12, matrix._13,
-                          matrix._20, matrix._21, matrix._22, matrix._23,
-                          matrix._30, matrix._31, matrix._32, matrix._33
+	v = QString().sprintf("[%8.2f, %8.2f, %8.2f, %8.2f]\n[%8.2f, %8.2f, %8.2f, %8.2f]\n[%8.2f, %8.2f, %8.2f, %8.2f]\n[%8.2f, %8.2f, %8.2f, %8.2f]",
+                          matrix._00, matrix._10, matrix._20, matrix._30,
+                          matrix._01, matrix._11, matrix._21, matrix._31,
+                          matrix._02, matrix._12, matrix._22, matrix._32,
+                          matrix._03, matrix._13, matrix._23, matrix._33
                           );
 
 	return v;
@@ -467,10 +468,10 @@ QVariant QtPropertyDataDavaVariant::FromMatrix3(const DAVA::Matrix3 &matrix)
 {
 	QVariant v;
 
-	v = QString().sprintf("[%g, %g, %g]\n[%g, %g, %g]\n[%g, %g, %g]",
-                          matrix._00, matrix._01, matrix._02,
-                          matrix._10, matrix._11, matrix._12,
-                          matrix._20, matrix._21, matrix._22
+	v = QString().sprintf("[%8.2f, %8.2f, %8.2f]\n[%8.2f, %8.2f, %8.2f]\n[%8.2f, %8.2f, %8.2f]",
+                          matrix._00, matrix._10, matrix._20,
+                          matrix._01, matrix._11, matrix._21,
+                          matrix._02, matrix._12, matrix._22
                           );
 
 	return v;
@@ -480,9 +481,9 @@ QVariant QtPropertyDataDavaVariant::FromMatrix2(const DAVA::Matrix2 &matrix)
 {
 	QVariant v;
 
-	v = QString().sprintf("([%g, %g]\n[%g, %g])",
-		matrix._00, matrix._01,
-		matrix._10, matrix._11);
+	v = QString().sprintf("([%8.2f, %8.2f]\n[%8.2f, %8.2f])",
+		matrix._00, matrix._10,
+		matrix._01, matrix._11);
 
 	return v;
 }
@@ -502,7 +503,7 @@ QVariant QtPropertyDataDavaVariant::FromAABBox3(const DAVA::AABBox3 &aabbox)
 {
 	QVariant v;
 
-	v = QString().sprintf("[%g, %g, %g]\n[%g, %g, %g]",
+	v = QString().sprintf("[%8.2f, %8.2f, %8.2f]\n[%8.2f, %8.2f, %8.2f]",
 		aabbox.min.x, aabbox.min.y, aabbox.min.z,
 		aabbox.max.x, aabbox.max.y, aabbox.max.z
 		);
@@ -555,6 +556,7 @@ void QtPropertyDataDavaVariant::ToMatrix2(const QVariant &value)
 
 void QtPropertyDataDavaVariant::ToColor(const QVariant &value)
 {
+	//curVariantValue.SetColor(QColorToColor(c));
 	// TODO:
 	// ...
 }
@@ -564,7 +566,6 @@ void QtPropertyDataDavaVariant::ToAABBox3(const QVariant &value)
 	// TODO:
 	// ...
 }
-
 
 QWidget* QtPropertyDataDavaVariant::CreateEditorInternal(QWidget *parent, const QStyleOptionViewItem& option)
 {
@@ -584,6 +585,8 @@ void QtPropertyDataDavaVariant::EditorDoneInternal(QWidget *editor)
 		QtColorLineEdit *colorLineEdit = (QtColorLineEdit *) editor;
         curVariantValue.SetColor(QColorToColor(colorLineEdit->GetColor()));
     }
+
+	iconCacheIsValid = false;
 }
 
 void QtPropertyDataDavaVariant::SetEditorDataInternal(QWidget *editor)
@@ -595,23 +598,53 @@ void QtPropertyDataDavaVariant::SetEditorDataInternal(QWidget *editor)
     }
 }
 
+void QtPropertyDataDavaVariant::ColorOWPressed()
+{
+	QColor c = QColorDialog::getColor(ColorToQColor(curVariantValue.AsColor()), NULL, "Select color", QColorDialog::ShowAlphaChannel);
+	if(c.isValid())
+	{
+		curVariantValue.SetColor(QColorToColor(c));
+		ParentUpdate();
+
+		iconCacheIsValid = false;
+	}
+}
+
 QIcon QtPropertyDataDavaVariant::GetIcon()
 {
-	if(curVariantValue.type == DAVA::VariantType::TYPE_COLOR)
+	if(!iconCacheIsValid)
 	{
-		QPixmap pix(16,16);
-		QPainter p(&pix);
+		iconCacheIsValid = true;
 
-		p.setPen(QColor(0, 0, 0));
-		p.setBrush(QBrush(ColorToQColor(curVariantValue.AsColor())));
-		p.drawRect(QRect(0,0,15,15));
+		if(curVariantValue.type == DAVA::VariantType::TYPE_COLOR)
+		{
+			QPixmap pix(16,16);
+			QPainter p(&pix);
+			QColor c = ColorToQColor(curVariantValue.AsColor());
 
-		return QIcon(pix);
+			if(c.alpha() < 255)
+			{
+				p.setBrush(QColor(250, 250, 250));
+				p.drawRect(QRect(0, 0, 15, 15));
+				p.setPen(QColor(200, 200, 200));
+				p.setBrush(QColor(150, 150, 150));
+				p.drawRect(QRect(0, 0, 7, 7));
+				p.drawRect(QRect(8, 8, 15, 15));
+			}
+
+			p.setPen(QColor(0, 0, 0));
+			p.setBrush(QBrush(c));
+			p.drawRect(QRect(0,0,15,15));
+
+			iconCache = QIcon(pix);
+		}
+		else
+		{
+			iconCache = QtPropertyData::GetIcon();
+		}
 	}
-	else
-	{
-		return QtPropertyData::GetIcon();
-	}
+
+	return iconCache;
 }
 
 void QtPropertyDataDavaVariant::SetIcon(const QIcon &icon)

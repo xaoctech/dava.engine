@@ -16,9 +16,34 @@ public class JNIWebView {
 	static Map<Integer, WebView> views = new HashMap<Integer, WebView>();
 	
 	private static class InternalViewClient extends WebViewClient {
+		int id;
+		
+		public InternalViewClient(int _id) {
+			id = _id;
+		}
+		
 		@Override
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {
-			view.loadUrl(url);
+			int res = OnUrlChange(id, url);
+			
+			/*enum eAction
+			{
+				PROCESS_IN_WEBVIEW = 0,
+				PROCESS_IN_SYSTEM_BROWSER,
+				NO_PROCESS,
+				ACTIONS_COUNT
+			};*/
+
+			if (res == 0) {
+				return false;
+			}
+			else if (res == 1) {
+
+				final JNIActivity activity = JNIActivity.GetActivity();
+				WebView webView = new WebView(activity);
+				webView.loadUrl(url);
+				return true;
+			}
 			return true;
 		}
 	}
@@ -41,7 +66,8 @@ public class JNIWebView {
 				params.topMargin = (int)y;
 				params.width = (int)(dx + 0.5f);
 				params.height = (int)(dy + 0.5f);
-				webView.setWebViewClient(new InternalViewClient());
+				webView.setWebViewClient(new InternalViewClient(id));
+				webView.getSettings().setJavaScriptEnabled(true);
 				
 				activity.addContentView(webView, params);
 				views.put(id, webView);
@@ -124,4 +150,6 @@ public class JNIWebView {
 			}
 		});
 	}
+	
+	private static native int OnUrlChange(int id, String url);
 }

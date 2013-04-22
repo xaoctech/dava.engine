@@ -34,6 +34,8 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
 #include "Base/BaseMath.h"
+#include "FileSystem/FilePath.h"
+
 
 #ifdef __DAVAENGINE_ANDROID__
 #include <SLES/OpenSLES.h>
@@ -67,14 +69,14 @@ public:
 		TYPE_MANAGED	 //!< Data is loaded into memory only before playback.
 	};
 
-	static Sound	* Create(const String & fileName, eType type, int32 priority = 0);
-	static Sound	* CreateFX(const String & fileName, eType type, int32 priority = 0);
-	static Sound	* CreateMusic(const String & fileName, eType type, int32 priority = 0);
+	static Sound	* Create(const FilePath & fileName, eType type, int32 priority = 0);
+	static Sound	* CreateFX(const FilePath & fileName, eType type, int32 priority = 0);
+	static Sound	* CreateMusic(const FilePath & fileName, eType type, int32 priority = 0);
 
 	virtual SoundInstance * Play();
 	virtual void Stop();
 	virtual void SetVolume(float32 volume); // [0..1]
-	virtual float32 GetVolume();
+	virtual float32 GetVolume() const;
 	virtual void SetLooping(bool looping);
 	virtual void SetPosition(const Vector3 & position);
 	void SetIgnorePosition(bool ignorePosition);
@@ -87,13 +89,13 @@ public:
     
     virtual int32           Release();
 
-	eType			GetType();
+	eType			GetType() const;
 
 #ifdef __DAVAENGINE_ANDROID__
     SLuint32 GetPlayState();
 #endif //#ifdef __DAVAENGINE_ANDROID__
 protected:
-	Sound(const String & fileName, eType type, int32 priority = 0);
+	Sound(const FilePath & fileName, eType type, int32 priority = 0);
 	virtual ~Sound();
 
 	virtual bool Init();
@@ -106,7 +108,7 @@ protected:
 	void RemoveSoundInstance(SoundInstance * soundInstance);
 
 	List<SoundInstance*> soundInstances;
-	String fileName;
+	FilePath fileName;
 	eType type;
 	SoundDataProvider * provider;
 	SoundBuffer * buffer;

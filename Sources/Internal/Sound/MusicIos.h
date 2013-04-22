@@ -47,7 +47,7 @@ public:
     bool                    IsPlaying();
     
 protected:
-    MusicIos(const String & fileName);
+    MusicIos(const FilePath & fileName);
     virtual bool Init();
     virtual ~MusicIos();
     

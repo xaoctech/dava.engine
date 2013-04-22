@@ -292,7 +292,7 @@ void TextureBrowser::updateInfoOriginal(const QImage &origImage)
 		const char *formatStr = DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_RGBA8888);
 
 		int datasize = origImage.width() * origImage.height() * DAVA::Texture::GetPixelFormatSizeInBytes(DAVA::FORMAT_RGBA8888);
-		int filesize = QFileInfo(curDescriptor->GetSourceTexturePathname().c_str()).size();
+		int filesize = QFileInfo(curDescriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str()).size();
 
 		sprintf(tmp, "Format\t: %s\nSize\t: %dx%d\nData size\t: %s\nFile size\t: %s", formatStr, origImage.width(), origImage.height(),
 			 SizeInBytesToString(datasize).c_str(),
@@ -322,24 +322,24 @@ void TextureBrowser::updateInfoConverted()
 		case ViewPVR:
 			if(curDescriptor->pvrCompression.format != DAVA::FORMAT_INVALID)
 			{
-				DAVA::String compressedTexturePath = DAVA::TextureDescriptor::GetPathnameForFormat(curTexture->GetPathname(), DAVA::PVR_FILE);
+				DAVA::FilePath compressedTexturePath = DAVA::TextureDescriptor::GetPathnameForFormat(curTexture->GetPathname(), DAVA::PVR_FILE);
 
 				formatStr = DAVA::Texture::GetPixelFormatString(curDescriptor->pvrCompression.format);
-				filesize = QFileInfo(compressedTexturePath.c_str()).size();
+				filesize = QFileInfo(compressedTexturePath.GetAbsolutePathname().c_str()).size();
 				datasize = DAVA::LibPVRHelper::GetDataLength(compressedTexturePath);
 			}
 			break;
 		case ViewDXT:
 			if(curDescriptor->dxtCompression.format != DAVA::FORMAT_INVALID)
 			{
-				DAVA::String compressedTexturePath = DAVA::TextureDescriptor::GetPathnameForFormat(curTexture->GetPathname(), DAVA::DXT_FILE);
+				DAVA::FilePath compressedTexturePath = DAVA::TextureDescriptor::GetPathnameForFormat(curTexture->GetPathname(), DAVA::DXT_FILE);
 
 				formatStr = DAVA::Texture::GetPixelFormatString(curDescriptor->dxtCompression.format);
-				filesize = QFileInfo(compressedTexturePath.c_str()).size();
+				filesize = QFileInfo(compressedTexturePath.GetAbsolutePathname().c_str()).size();
 
 				// TODO: more accurate dxt data size calculation
 				//datasize = (curTexture->width * curTexture->height * DAVA::Texture::GetPixelFormatSizeInBits(curDescriptor->dxtCompression.format)) >> 3;
-				datasize = LibDxtHelper::GetDataSize(compressedTexturePath.c_str());
+				datasize = LibDxtHelper::GetDataSize(compressedTexturePath);
 			}
 			break;
 		}
@@ -445,9 +445,6 @@ void TextureBrowser::setupTextureListToolbar()
 
 	ui->textureListToolbar->addWidget(texturesSortComboLabel);
 	ui->textureListToolbar->addWidget(texturesSortCombo);
-
-	ui->textureListToolbar->addSeparator();
-	ui->textureListToolbar->addAction(ui->actionFilterSelectedNode);
 
 	QObject::connect(texturesSortCombo, SIGNAL(activated(const QString &)), this, SLOT(textureListSortChanged(const QString &)));
 	QObject::connect(ui->actionViewTextList, SIGNAL(triggered(bool)), this, SLOT(textureListViewText(bool)));
@@ -803,7 +800,7 @@ void TextureBrowser::convertStatus(const JobItem *jobCur, int jobLeft)
 
 	if(NULL != jobCur && NULL != jobCur->descriptor)
 	{
-		statusText += QString("Converting %1").arg(QString(jobCur->descriptor->pathname.c_str()));
+		statusText += QString("Converting %1").arg(QString(jobCur->descriptor->pathname.GetAbsolutePathname().c_str()));
 	}
 
 	if(jobLeft > 0)

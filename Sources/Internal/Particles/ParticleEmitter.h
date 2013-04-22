@@ -40,6 +40,7 @@
 #include "Render/Highlevel/RenderObject.h"
 #include "Render/Highlevel/IRenderUpdatable.h"
 #include "Particles/ParticleLayer.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA 
 {
@@ -49,7 +50,10 @@ namespace DAVA
 	
 class Particle;
 //class ParticleLayer;
-	
+
+#define PARTICLE_EMITTER_MIN_PLAYBACK_SPEED 0.25f
+#define PARTICLE_EMITTER_MAX_PLAYBACK_SPEED 4.0f
+
 /**
 	\ingroup particlesystem
 	\brief Main class to work with particle systems in DAVA SDK. 
@@ -84,9 +88,9 @@ public:
 	enum eType
 	{
 		EMITTER_POINT,
-		EMITTER_LINE,
 		EMITTER_RECT,
-		EMITTER_ONCIRCLE,		// 
+		EMITTER_ONCIRCLE,
+		EMITTER_SHOCKWAVE
 	};
 
 	ParticleEmitter();
@@ -97,13 +101,13 @@ public:
 		 Function do not cache emitters so you'll need to cache them yourself in your code.
 		 \param[in] pathName path to resource you want to load
 	 */
-	void LoadFromYaml(const String & pathName);
+	void LoadFromYaml(const FilePath & pathName);
 	
 	/**
      \brief Function saves emitter to yaml file.
      \param[in] pathName path to resource you want to load
 	 */
-    void SaveToYaml(const String & pathName);
+    void SaveToYaml(const FilePath & pathName);
     
 	/**
 		\brief Function sets the position of emitter.
@@ -291,6 +295,15 @@ public:
 	 */
 	inline void SetParticlesFollow(bool follow);
 
+	/**
+	 \brief Set the playback speed for the particular emitter.
+	 The playback speed can vary from 0.25 (4x times slower) to 4.0 (4x times faster)
+	 for the particular emitter. Default value is 1.0.
+	 \param[in] playback speed.
+	 */
+	void SetPlaybackSpeed(float32 value);
+	float32 GetPlaybackSpeed();
+
 	/// Particles' color is multiplied by ambientColor before drawing.
 	Color ambientColor;
 
@@ -311,13 +324,16 @@ public:
     inline bool GetIs3D();
 	virtual bool Is3DFlagCorrect();
 
-	const String & GetConfigPath() { return configPath; }
+	const FilePath & GetConfigPath() { return configPath; }
 	void Cleanup(bool needCleanupLayers = true);
 
 	void UpdateEmptyLayerNames();
 	void UpdateLayerNameIfEmpty(ParticleLayer* layer, int32 index);
 
-	void ReloadLayerSprites();
+	/**
+     \brief Returns the total active particles count for the whole effect.
+     */
+	int32 GetActiveParticlesCount();
 
 protected:
 	// Virtual methods which are different for 2D and 3D emitters.
@@ -327,11 +343,14 @@ protected:
 	// Internal restart function.
 	void DoRestart(bool isDeleteAllParticles);
 
+	// Invert the emission vector coordinates for backward compatibility.
+	void InvertEmissionVectorCoordinates();
+
     String GetEmitterTypeName();
 
 	void CleanupLayers();
 
-	String configPath;
+	FilePath configPath;
 	
 	Vector<ParticleLayer*> layers;
 	Vector3 position;
@@ -345,10 +364,10 @@ protected:
 	bool	isAutorestart;
 	bool	particlesFollow;
     bool    is3D;
+	float32 playbackSpeed;
 
 public:
 	RefPtr< PropertyLine<Vector3> > emissionVector;
-	Matrix3 rotationMatrix;
     RefPtr< PropertyLine<float32> > emissionAngle;
 	RefPtr< PropertyLine<float32> > emissionRange;
 	RefPtr< PropertyLine<float32> > radius;

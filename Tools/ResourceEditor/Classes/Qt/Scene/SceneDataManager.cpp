@@ -4,9 +4,10 @@
 
 #include "../SceneEditor/SceneValidator.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
-#include "../SceneEditor/PVRConverter.h"
+#include "PVRConverter.h"
 
 #include "./Qt/SpritesPacker/SpritePackerHelper.h"
+#include "../Main/QtUtils.h"
 
 using namespace DAVA;
 
@@ -28,16 +29,16 @@ SceneDataManager::~SceneDataManager()
 SceneData* SceneDataManager::CreateNewScene()
 {
 	SceneData *levelScene = SceneGetLevel();
-    levelScene->CreateScene(true);
+    
+	levelScene->CreateScene(true);
 	
 	UpdateParticleSprites();
 	return levelScene;	
 }
 
-void SceneDataManager::AddScene(const String &scenePathname)
+void SceneDataManager::AddScene(const FilePath &scenePathname)
 {
-    String extension = FileSystem::Instance()->GetExtension(scenePathname);
-    DVASSERT((".sc2" == extension) && "Wrong file extension.");
+    DVASSERT(scenePathname.IsEqualToExtension(".sc2"));
 
 	SceneData* sceneData = SceneGetActive();
 	if (!sceneData)
@@ -56,7 +57,7 @@ void SceneDataManager::AddScene(const String &scenePathname)
     Entity * rootNode = scene->GetRootNode(scenePathname)->Clone();
 
     KeyedArchive * customProperties = rootNode->GetCustomProperties();
-    customProperties->SetString("editor.referenceToOwner", scenePathname);
+    customProperties->SetString("editor.referenceToOwner", scenePathname.GetAbsolutePathname());
     
     rootNode->SetSolid(true);
     scene->AddNode(rootNode);
@@ -107,7 +108,7 @@ void SceneDataManager::AddScene(const String &scenePathname)
 	emit SceneGraphNeedRebuild();
 }
 
-void SceneDataManager::EditLevelScene(const String &scenePathname)
+void SceneDataManager::EditLevelScene(const FilePath &scenePathname)
 {
 	SceneData* sceneData = SceneGetLevel();
 	if (!sceneData)
@@ -115,11 +116,12 @@ void SceneDataManager::EditLevelScene(const String &scenePathname)
 		DVASSERT(false && "No way to edit the scene when SceneGetLevel() returns NULL!");
 		return;
 	}
-	
-	return EditScene(sceneData, scenePathname);
+
+	EditScene(sceneData, scenePathname);
+	emit SceneCreated(sceneData);
 }
 
-void SceneDataManager::EditActiveScene(const String &scenePathname)
+void SceneDataManager::EditActiveScene(const FilePath &scenePathname)
 {
 	SceneData* sceneData = SceneGetActive();
 	if (!sceneData)
@@ -131,7 +133,7 @@ void SceneDataManager::EditActiveScene(const String &scenePathname)
 	return EditScene(sceneData, scenePathname);
 }
 
-void SceneDataManager::EditScene(SceneData* sceneData, const String &scenePathname)
+void SceneDataManager::EditScene(SceneData* sceneData, const FilePath &scenePathname)
 {
 	EditorScene* scene = sceneData->GetScene();
 	if (!scene)
@@ -140,8 +142,7 @@ void SceneDataManager::EditScene(SceneData* sceneData, const String &scenePathna
 		return;
 	}
 
-    String extension = FileSystem::Instance()->GetExtension(scenePathname);
-    DVASSERT((".sc2" == extension) && "Wrong file extension.");
+    DVASSERT(scenePathname.IsEqualToExtension(".sc2"));
 	
     Entity * rootNode = scene->GetRootNode(scenePathname);
     if(rootNode)
@@ -174,7 +175,7 @@ void SceneDataManager::EditScene(SceneData* sceneData, const String &scenePathna
     emit SceneGraphNeedRebuild();
 }
 
-void SceneDataManager::ReloadScene(const String &scenePathname)
+void SceneDataManager::ReloadScene(const FilePath &scenePathname, const FilePath &fromScenePathname)
 {
 	SceneData* sceneData = SceneGetActive();
 	if (!sceneData)
@@ -189,13 +190,23 @@ void SceneDataManager::ReloadScene(const String &scenePathname)
 		DVASSERT(false && "sceneData->GetScene() returned NULL!");
 		return;
 	}
-
+    
 	sceneData->SelectNode(NULL);
     scene->ReleaseRootNode(scenePathname);
-
+    
 	nodesToAdd.clear();
-    ReloadNode(scene, scene, scenePathname);
-
+    
+    Set<String> errors;
+    ReloadNode(scene, scene, scenePathname, fromScenePathname, errors);
+    if(!errors.empty())
+    {
+        ShowErrorDialog(errors);
+        
+        nodesToAdd.clear();
+        return;
+    }
+    
+    
     for (int32 i = 0; i < (int32)nodesToAdd.size(); i++)
     {
         scene->ReleaseUserData(nodesToAdd[i].nodeToRemove);
@@ -216,24 +227,33 @@ void SceneDataManager::ReloadScene(const String &scenePathname)
 	sceneData->SetLandscapesControllerScene(scene);
 }
 
-void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const String &nodePathname)
+void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const FilePath &nodePathname, const FilePath &fromPathname, Set<String> &errors)
 {
 	//если в рут ноды сложить такие же рут ноды то на релоаде все накроет пиздой
     KeyedArchive *customProperties = node->GetCustomProperties();
-    if (customProperties->GetString("editor.referenceToOwner", "") == nodePathname)
+    if (customProperties->GetString("editor.referenceToOwner", "") == nodePathname.GetAbsolutePathname())
     {
-        Entity *newNode = scene->GetRootNode(nodePathname)->Clone();
-        newNode->SetLocalTransform(node->GetLocalTransform());
-        newNode->GetCustomProperties()->SetString("editor.referenceToOwner", nodePathname);
-        newNode->SetSolid(true);
-        
-        Entity *parent = node->GetParent();
-        AddedNode addN;
-        addN.nodeToAdd = newNode;
-        addN.nodeToRemove = node;
-        addN.parent = parent;
-        
-        nodesToAdd.push_back(addN);
+        Entity *loadedNode = scene->GetRootNode(fromPathname)->Clone();
+        if(loadedNode)
+        {
+            Entity *newNode = loadedNode->Clone();
+            newNode->SetLocalTransform(node->GetLocalTransform());
+            newNode->GetCustomProperties()->SetString("editor.referenceToOwner", nodePathname.GetAbsolutePathname());
+            newNode->SetSolid(true);
+            
+            Entity *parent = node->GetParent();
+            AddedNode addN;
+            addN.nodeToAdd = newNode;
+            addN.nodeToRemove = node;
+            addN.parent = parent;
+            
+            nodesToAdd.push_back(addN);
+        }
+        else
+        {
+            errors.insert(Format("Cannot load object: %s", fromPathname.GetAbsolutePathname().c_str()));
+        }
+
         return;
     }
     
@@ -241,7 +261,7 @@ void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const String
     for (int ci = 0; ci < csz; ++ci)
     {
         Entity * child = node->GetChild(ci);
-        ReloadNode(scene, child, nodePathname);
+        ReloadNode(scene, child, nodePathname, fromPathname, errors);
     }
 }
 
@@ -316,15 +336,15 @@ DAVA::Entity* SceneDataManager::SceneGetRootNode(SceneData *scene)
 	return node;
 }
 
-void SceneDataManager::SceneShowPreview(const DAVA::String &path)
+void SceneDataManager::SceneShowPreview(const DAVA::FilePath &path)
 {
 	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
 
 	if(screen)
 	{
-		if(0 == CompareCaseInsensitive(FileSystem::Instance()->GetExtension(path), ".sc2") && FileSystem::Instance()->IsFile(path))
+		if(path.IsEqualToExtension(".sc2") && FileSystem::Instance()->IsFile(path))
 		{
-			screen->ShowScenePreview(FileSystem::Instance()->GetCanonicalPath(path));
+			screen->ShowScenePreview(path);
 		}
 		else
 		{
@@ -465,14 +485,14 @@ void SceneDataManager::EnumerateTextures(DAVA::Entity *forNode, Map<String, Text
             {
                 for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
                 {
-                    CollectTexture(textures, material->GetTextureName((DAVA::Material::eTextureLevel)t), material->GetTexture((DAVA::Material::eTextureLevel)t));
+                    CollectTexture(textures, material->GetTextureName((DAVA::Material::eTextureLevel)t).GetAbsolutePathname(), material->GetTexture((DAVA::Material::eTextureLevel)t));
                 }
             }
 
             InstanceMaterialState *instanceMaterial = renderBatch->GetMaterialInstance();
             if(instanceMaterial)
             {
-                CollectTexture(textures, instanceMaterial->GetLightmapName(), instanceMaterial->GetLightmap());
+                CollectTexture(textures, instanceMaterial->GetLightmapName().GetAbsolutePathname(), instanceMaterial->GetLightmap());
             }
         }
 
@@ -488,7 +508,7 @@ void SceneDataManager::CollectLandscapeTextures(DAVA::Map<DAVA::String, DAVA::Te
 {
 	for(int32 t = 0; t < Landscape::TEXTURE_COUNT; t++)
 	{
-		CollectTexture(textures, forNode->GetTextureName((Landscape::eTextureLevel)t), forNode->GetTexture((Landscape::eTextureLevel)t));
+		CollectTexture(textures, forNode->GetTextureName((Landscape::eTextureLevel)t).GetAbsolutePathname(), forNode->GetTexture((Landscape::eTextureLevel)t));
 	}
 }
 
@@ -593,7 +613,7 @@ DAVA::Texture * SceneDataManager::TextureReload(const TextureDescriptor *descrip
 	if(workingTexture == Texture::GetPinkPlaceholder())
 	{
 		//Create texture from descriptor pathname and real image file
-        String pathname = descriptor->pathname;
+        FilePath pathname = descriptor->pathname;
 		workingTexture = Texture::CreateFromFile(pathname);
 		RestoreTexture(pathname, workingTexture);
 
@@ -611,7 +631,7 @@ DAVA::Texture * SceneDataManager::TextureReload(const TextureDescriptor *descrip
 	return workingTexture;
 }
 
-void SceneDataManager::RestoreTexture( const DAVA::String &descriptorPathname, DAVA::Texture *texture )
+void SceneDataManager::RestoreTexture( const DAVA::FilePath &descriptorPathname, DAVA::Texture *texture )
 {
 	List<SceneData *>::const_iterator endIt = scenes.end();
 	for(List<SceneData *>::const_iterator it = scenes.begin(); it != endIt; ++it)

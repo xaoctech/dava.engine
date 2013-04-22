@@ -85,56 +85,17 @@ SceneFileV2::~SceneFileV2()
 {
 }
     
-const String & SceneFileV2::GetScenePath()
+const FilePath SceneFileV2::GetScenePath()
 {
-    return rootNodePath;
+    return FilePath(rootNodePathName.GetDirectory());
 }
-    
-const String & SceneFileV2::GetSceneFilename()
-{
-    return rootNodeName;
-}
-    
-static void replace(std::string & repString,const std::string & needle, const std::string & s)
-{
-    std::string::size_type lastpos = 0, thispos;
-    while ((thispos = repString.find(needle, lastpos)) != std::string::npos)
-    {
-        repString.replace(thispos, needle.length(), s);
-        lastpos = thispos + 1;
-    }
-}
+        
     
 void SceneFileV2::EnableSaveForGame(bool _isSaveForGame)
 {
     isSaveForGame = _isSaveForGame;
 }
 
-String SceneFileV2::AbsoluteToRelative(const String & absolutePathname)
-{
-    String result = FileSystem::GetCanonicalPath(absolutePathname);
-    
-    if (isSaveForGame)
-    {
-        size_t pos = result.find("DataSource");
-        if (pos != result.npos)
-        {
-            result.replace(pos, strlen("DataSource"), "Data");
-        }
-    }
-
-    result = FileSystem::AbsoluteToRelativePath(GetScenePath(), result);
-    return result;
-}
-    
-String SceneFileV2::RelativeToAbsolute(const String & relativePathname)
-{
-    String result;
-    result = GetScenePath() + relativePathname;
-    result = FileSystem::GetCanonicalPath(result);
-    return result;
-}
-    
 void SceneFileV2::EnableDebugLog(bool _isDebugLogEnabled)
 {
     isDebugLogEnabled = _isDebugLogEnabled;
@@ -181,18 +142,17 @@ SceneFileV2::eError SceneFileV2::GetError()
 }
 
 
-SceneFileV2::eError SceneFileV2::SaveScene(const String & filename, DAVA::Scene *_scene)
+SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scene *_scene)
 {
     File * file = File::Create(filename, File::CREATE | File::WRITE);
     if (!file)
     {
-        Logger::Error("SceneFileV2::SaveScene failed to create file: %s", filename.c_str());
+        Logger::Error("SceneFileV2::SaveScene failed to create file: %s", filename.GetAbsolutePathname().c_str());
         SetError(ERROR_FAILED_TO_CREATE_FILE);
         return GetError();
     }
     
-    rootNodePathName = FileSystem::GetCanonicalPath(filename);
-    FileSystem::Instance()->SplitPath(rootNodePathName, rootNodePath, rootNodeName);
+    rootNodePathName = filename;
 
     // save header
     header.signature[0] = 'S';
@@ -209,7 +169,7 @@ SceneFileV2::eError SceneFileV2::SaveScene(const String & filename, DAVA::Scene 
     if(isDebugLogEnabled)
     {
         Logger::Debug("+ save data objects");
-        Logger::Debug("- save file path: %s", rootNodePath.c_str());
+        Logger::Debug("- save file path: %s", rootNodePathName.GetDirectory().GetAbsolutePathname().c_str());
     }
     
 //    // Process file paths
@@ -244,7 +204,7 @@ SceneFileV2::eError SceneFileV2::SaveScene(const String & filename, DAVA::Scene 
     {
         if (!SaveHierarchy(_scene->GetChild(ci), file, 1))
         {
-            Logger::Error("SceneFileV2::SaveScene failed to save hierarchy file: %s", filename.c_str());
+            Logger::Error("SceneFileV2::SaveScene failed to save hierarchy file: %s", filename.GetAbsolutePathname().c_str());
             SafeRelease(file);
             return GetError();
         }
@@ -254,19 +214,18 @@ SceneFileV2::eError SceneFileV2::SaveScene(const String & filename, DAVA::Scene 
     return GetError();
 };	
     
-SceneFileV2::eError SceneFileV2::LoadScene(const String & filename, Scene * _scene)
+SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _scene)
 {
     File * file = File::Create(filename, File::OPEN | File::READ);
     if (!file)
     {
-        Logger::Error("SceneFileV2::LoadScene failed to create file: %s", filename.c_str());
+        Logger::Error("SceneFileV2::LoadScene failed to create file: %s", filename.GetAbsolutePathname().c_str());
         SetError(ERROR_FAILED_TO_CREATE_FILE);
         return GetError();
     }   
 
     scene = _scene;
-    rootNodePathName = FileSystem::GetCanonicalPath(filename);
-    FileSystem::Instance()->SplitPath(rootNodePathName, rootNodePath, rootNodeName);
+    rootNodePathName = filename;
 
     file->Read(&header, sizeof(Header));
     int requiredVersion = 3;
@@ -298,7 +257,7 @@ SceneFileV2::eError SceneFileV2::LoadScene(const String & filename, Scene * _sce
         Logger::Debug("+ load hierarchy");
         
     Entity * rootNode = new Entity();
-    rootNode->SetName(rootNodeName);
+    rootNode->SetName(rootNodePathName.GetFilename());
 	rootNode->SetScene(0);
     for (int ci = 0; ci < header.nodeCount; ++ci)
     {
@@ -312,7 +271,7 @@ SceneFileV2::eError SceneFileV2::LoadScene(const String & filename, Scene * _sce
     if (GetError() == ERROR_NO_ERROR)
     {
         // TODO: Check do we need to releae root node here
-        _scene->AddRootNode(rootNode, rootNodePathName);
+        _scene->AddRootNode(rootNode, rootNodePathName.GetAbsolutePathname());
     }
     else
     {
@@ -628,6 +587,31 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
     
     SafeRelease(archive);
 }
+
+
+void SceneFileV2::ConvertShadows(Entity * currentNode)
+{
+	for(int32 c = 0; c < currentNode->GetChildrenCount(); ++c)
+	{
+		Entity * childNode = currentNode->GetChild(c);
+		if(String::npos != childNode->GetName().find("_shadow"))
+		{
+			DVASSERT(childNode->GetChildrenCount() == 1);
+			Entity * svn = childNode->FindByName("dynamicshadow.shadowvolume");
+			if(!svn)
+			{
+				MeshInstanceNode * mi = dynamic_cast<MeshInstanceNode*>(childNode->GetChild(0));
+				DVASSERT(mi);
+				mi->ConvertToShadowVolume();
+				childNode->RemoveNode(mi);
+			}
+		}
+		else
+		{
+			ConvertShadows(childNode);
+		}
+	}
+}
     
 bool SceneFileV2::RemoveEmptySceneNodes(DAVA::Entity * currentNode)
 {
@@ -643,7 +627,9 @@ bool SceneFileV2::RemoveEmptySceneNodes(DAVA::Entity * currentNode)
         bool doNotRemove = customProperties && customProperties->IsKeyExists("editor.donotremove");
         
         uint32 componentCount = currentNode->GetComponentCount();
-        if (componentCount != 0)
+
+        if ((componentCount > 0 && (0 == currentNode->GetComponent(Component::TRANSFORM_COMPONENT))) //has only component, not transform
+			|| componentCount > 1)
         {
             doNotRemove = true;
         }
@@ -996,10 +982,10 @@ void SceneFileV2::ReplaceOldNodes(Entity * currentNode)
 	{
 		Entity * childNode = currentNode->GetChild(c);
 		ReplaceOldNodes(childNode);
-        /**
-            Here it's very important to call ReplaceNodeAfterLoad after recursion, to replace nodes that 
-            was deep in hierarchy first.
-         */
+		/**
+			Here it's very important to call ReplaceNodeAfterLoad after recursion, to replace nodes that 
+			was deep in hierarchy first.
+			*/
 		bool wasReplace = ReplaceNodeAfterLoad(childNode);
 		if(wasReplace)
 		{
@@ -1015,8 +1001,8 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
     removedNodeCount = 0;
     rootNode->BakeTransforms();
     
-    //MERGE: commented
-    RemoveEmptySceneNodes(rootNode);
+	//ConvertShadows(rootNode);
+    //RemoveEmptySceneNodes(rootNode);
     RemoveEmptyHierarchy(rootNode);
 	ReplaceOldNodes(rootNode);
     
@@ -1029,5 +1015,7 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
     int32 nowCount = rootNode->GetChildrenCountRecursive();
     Logger::Debug("nodes removed: %d before: %d, now: %d, diff: %d", removedNodeCount, beforeCount, nowCount, beforeCount - nowCount);
 }
- 
+
+
+
 };

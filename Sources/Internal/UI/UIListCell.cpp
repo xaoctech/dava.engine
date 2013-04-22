@@ -30,6 +30,7 @@
 
 #include "UI/UIListCell.h"
 #include "Base/ObjectFactory.h"
+#include "UI/UIAggregatorControl.h"
 
 namespace DAVA 
 {
@@ -43,13 +44,20 @@ namespace DAVA
     {
     }
     
-    UIListCell::UIListCell(const Rect &rect, const String &cellIdentifier)
+    UIListCell::UIListCell(const Rect &rect, const String &cellIdentifier, const FilePath &aggregatorPath)
         :	UIButton(rect)
         ,	currentIndex(-1)
         ,	identifier(cellIdentifier)
         ,	cellStore(NULL)
     {
-            
+		if (aggregatorPath.IsInitalized())
+		{
+			UIAggregatorControl *aggregator = new UIAggregatorControl();
+			UIYamlLoader loader;
+			loader.Load(aggregator, aggregatorPath);
+			
+			this->AddControl(aggregator);
+		}
     }
         
     UIListCell::~UIListCell()
@@ -106,7 +114,8 @@ namespace DAVA
         YamlNode *node = UIControl::SaveToYamlNode(loader);
         
         //Control Type
-        node->Set("type", "UIListCell");
+		SetPreferredNodeType(node, "UIListCell");
+
         //Identifier
         node->Set("identifier", this->GetIdentifier());
         

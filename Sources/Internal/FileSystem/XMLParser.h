@@ -69,7 +69,7 @@ public:
 	
 	XMLParser();
 	
-	static bool ParseFile(const String &fileName, XMLParserDelegate *delegate);
+	static bool ParseFile(const FilePath &fileName, XMLParserDelegate *delegate);
 	static bool ParseBytes(const unsigned char *bytes, int length, XMLParserDelegate *delegate);
 	
 private:

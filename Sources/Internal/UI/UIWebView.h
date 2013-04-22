@@ -9,7 +9,6 @@
 #ifndef __DAVAENGINE_UIWEBVIEW_H__
 #define __DAVAENGINE_UIWEBVIEW_H__
 
-#include "DAVAEngine.h"
 #include "UIControl.h"
 #include "IWebViewControl.h"
 
@@ -33,7 +32,12 @@ public:
 
 	void SetDelegate(IUIWebViewDelegate* delegate);
 
+	bool IsInitiatedByUser(){return isInitiatedByUser;}
+
 protected:
+	
+	bool isInitiatedByUser;
+
 	// Platform-specific implementation of the Web View Control.
 	IWebViewControl* webViewControl;
 };

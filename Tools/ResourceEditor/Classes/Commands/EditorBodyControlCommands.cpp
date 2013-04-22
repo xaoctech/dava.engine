@@ -1,6 +1,9 @@
 #include "EditorBodyControlCommands.h"
 #include "../SceneEditor/EditorBodyControl.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
+#include "CommandsManager.h"
+#include "../Qt/Scene/SceneDataManager.h"
+#include "../Qt/Scene/SceneData.h"
 
 CommandTransformObject::CommandTransformObject(DAVA::Entity* node, const DAVA::Matrix4& originalTransform, const DAVA::Matrix4& finalTransform)
 :	Command(COMMAND_UNDO_REDO)
@@ -53,7 +56,7 @@ void CommandCloneObject::Execute()
 	{
 		if (!clonedNode)
 		{
-			clonedNode = SafeRetain(originalNode->Clone());
+			clonedNode = originalNode->Clone();
 
 			if (collisionWorld)
 				UpdateCollision(clonedNode);
@@ -70,7 +73,11 @@ void CommandCloneObject::Cancel()
 {
 	if (originalNode && clonedNode)
 	{
-		bodyControl->RemoveNode(clonedNode);
+		clonedNode->GetParent()->RemoveNode(clonedNode);
+
+		// rebuild scene graph after removing node
+		SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+		activeScene->RebuildSceneGraph();
 
 		if (bodyControl)
 			bodyControl->SelectNode(originalNode);
@@ -93,6 +100,72 @@ void CommandCloneObject::UpdateCollision(DAVA::Entity *node)
 	for(int32 i = 0; i < node->GetChildrenCount(); ++i)
 	{
 		UpdateCollision(node->GetChild(i));
+	}
+}
+
+Entity* CommandCloneObject::GetClonedNode()
+{
+	return clonedNode;
+}
+
+
+CommandCloneAndTransform::CommandCloneAndTransform(DAVA::Entity* originalNode,
+												   const DAVA::Matrix4& finalTransform,
+												   EditorBodyControl* bodyControl,
+												   btCollisionWorld* collisionWorld)
+:	MultiCommand(COMMAND_UNDO_REDO)
+,	clonedNode(0)
+,	cloneCmd(0)
+,	transformCmd(0)
+{
+	commandName = "Clone Object";
+
+	this->originalNode = originalNode;
+	this->bodyControl = bodyControl;
+	this->collisionWorld = collisionWorld;
+	this->transform = finalTransform;
+}
+
+CommandCloneAndTransform::~CommandCloneAndTransform()
+{
+	SafeRelease(transformCmd);
+	SafeRelease(cloneCmd);
+}
+
+void CommandCloneAndTransform::Execute()
+{
+	if (!cloneCmd)
+	{
+		cloneCmd = new CommandCloneObject(originalNode, bodyControl, collisionWorld);
+	}
+	ExecuteInternal(cloneCmd);
+
+	if (GetInternalCommandState(cloneCmd) != STATE_VALID)
+	{
+		SetState(STATE_INVALID);
+		return;
+	}
+
+	if (!transformCmd)
+	{
+		transformCmd = new CommandTransformObject(cloneCmd->GetClonedNode(), originalNode->GetLocalTransform(), transform);
+		// Need to apply transform only once when creating command
+		ExecuteInternal(transformCmd);
+
+		if (GetInternalCommandState(transformCmd) != STATE_VALID)
+		{
+			SetState(STATE_INVALID);
+			return;
+		}
+	}
+}
+
+void CommandCloneAndTransform::Cancel()
+{
+	// No need to undo transform command, removed node will appear at the same place where it was removed
+	if (cloneCmd)
+	{
+		CancelInternal(cloneCmd);
 	}
 }
 

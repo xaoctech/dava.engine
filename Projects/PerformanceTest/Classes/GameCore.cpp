@@ -71,10 +71,10 @@ void GameCore::OnAppStarted()
     
         new SpriteTest(String("Sprite"));
         new CacheTest(String("Cache Test"));
-        new LandscapeTest(String("Landscape Textures Test"), LandscapeNode::TILED_MODE_COUNT);
-        new LandscapeTest(String("Landscape Mixed Mode"), LandscapeNode::TILED_MODE_MIXED);
-        new LandscapeTest(String("Landscape Tiled Mode"), LandscapeNode::TILED_MODE_TILEMASK);
-        new LandscapeTest(String("Landscape Texture Mode"), LandscapeNode::TILED_MODE_TEXTURE);
+        new LandscapeTest(String("Landscape Textures Test"), Landscape::TILED_MODE_COUNT);
+        new LandscapeTest(String("Landscape Mixed Mode"), Landscape::TILED_MODE_MIXED);
+        new LandscapeTest(String("Landscape Tiled Mode"), Landscape::TILED_MODE_TILEMASK);
+        new LandscapeTest(String("Landscape Texture Mode"), Landscape::TILED_MODE_TEXTURE);
         
         new MemoryAllocationTraverseTest("Memory Test");
         
@@ -104,8 +104,7 @@ void GameCore::RegisterScreen(BaseScreen *screen)
 
 bool GameCore::CreateLogFile()
 {
-    String documentsPath =      String(FileSystem::Instance()->GetUserDocumentsPath()) 
-                            +   String("PerfomanceTest/");
+    FilePath documentsPath = FileSystem::Instance()->GetUserDocumentsPath() + FilePath("PerfomanceTest/");
     
     bool documentsExists = FileSystem::Instance()->IsDirectory(documentsPath);
     if(!documentsExists)
@@ -115,7 +114,7 @@ bool GameCore::CreateLogFile()
     FileSystem::Instance()->SetCurrentDocumentsDirectory(documentsPath);
     
     
-    String folderPath = FileSystem::Instance()->GetCurrentDocumentsDirectory() + "Reports/";
+    FilePath folderPath = FileSystem::Instance()->GetCurrentDocumentsDirectory() + FilePath("Reports/");
     bool folderExcists = FileSystem::Instance()->IsDirectory(folderPath);
     if(!folderExcists)
     {
@@ -123,7 +122,7 @@ bool GameCore::CreateLogFile()
     }
 
 	time_t logStartTime = time(0);
-	logFile = File::Create(Format("~doc:/Reports/%lld.report.txt", logStartTime), File::CREATE | File::WRITE);
+	logFile = File::Create(FilePath(Format("~doc:/Reports/%lld.report.txt", logStartTime)), File::CREATE | File::WRITE);
 
     return (NULL != logFile);
 }
@@ -136,7 +135,7 @@ void GameCore::OnAppFinished()
         SafeRelease(dbClient);
     }
     
-    for(int32 i = 0; i < screens.size(); ++i)
+    for(int32 i = 0; i < (int32)screens.size(); ++i)
     {
         SafeRelease(screens[i]);
     }
@@ -192,7 +191,7 @@ bool GameCore::ConnectToDB()
 void GameCore::RunAllTests()
 {
     currentTestIndex = 0;
-    for(int32 iScr = 0; iScr < screens.size(); ++iScr)
+    for(int32 iScr = 0; iScr < (int32)screens.size(); ++iScr)
     {
         int32 count = screens[iScr]->GetTestCount();
         if(0 < count)
@@ -217,7 +216,7 @@ void GameCore::RunAllTests()
 void GameCore::RunTestByName(const String &testName)
 {
     currentTestIndex = 0;
-    for(int32 iScr = 0; iScr < screens.size(); ++iScr)
+    for(int32 iScr = 0; iScr < (int32)screens.size(); ++iScr)
     {
         if(screens[iScr]->GetName() == testName)
         {
@@ -260,7 +259,7 @@ int32 GameCore::TestCount()
 {
     int32 count = 0;
     
-    for(int32 i = 0; i < screens.size(); ++i)
+    for(int32 i = 0; i < (int32)screens.size(); ++i)
     {
         count += screens[i]->GetTestCount();
     }
@@ -303,7 +302,7 @@ void GameCore::ProcessTests()
 
 void GameCore::FlushTestResults()
 {
-    for(int32 iScr = 0; iScr < screens.size(); ++iScr)
+    for(int32 iScr = 0; iScr < (int32)screens.size(); ++iScr)
     {
         int32 count = screens[iScr]->GetTestCount();
 
@@ -357,7 +356,7 @@ void GameCore::FlushTestResults()
                                                 utcTime->tm_year + 1900, utcTime->tm_mon + 1, utcTime->tm_mday, 
                                                 utcTime->tm_hour, utcTime->tm_min, utcTime->tm_sec);
 
-        for(int32 iScr = 0; iScr < screens.size(); ++iScr)
+        for(int32 iScr = 0; iScr < (int32)screens.size(); ++iScr)
         {
             int32 count = screens[iScr]->GetTestCount();
             

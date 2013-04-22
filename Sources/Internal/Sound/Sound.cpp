@@ -53,7 +53,7 @@
 namespace DAVA
 {
 
-Sound * Sound::Create(const String & fileName, eType type, int32 priority)
+Sound * Sound::Create(const FilePath & fileName, eType type, int32 priority)
 {
     if(TYPE_STATIC != type && TYPE_STREAMED != type && TYPE_MANAGED != type)
         return 0;
@@ -66,7 +66,7 @@ Sound * Sound::Create(const String & fileName, eType type, int32 priority)
     return sound;
 }
 
-Sound	* Sound::CreateFX(const String & fileName, eType type, int32 priority /*= 0*/)
+Sound	* Sound::CreateFX(const FilePath & fileName, eType type, int32 priority /*= 0*/)
 {
     if(TYPE_STATIC != type && TYPE_STREAMED != type && TYPE_MANAGED != type)
         return 0;
@@ -83,7 +83,7 @@ Sound	* Sound::CreateFX(const String & fileName, eType type, int32 priority /*= 
 	return sound;
 }
 
-Sound	* Sound::CreateMusic(const String & fileName, eType type, int32 priority /*= 0*/)
+Sound	* Sound::CreateMusic(const FilePath & fileName, eType type, int32 priority /*= 0*/)
 {
     if(TYPE_STATIC != type && TYPE_STREAMED != type && TYPE_MANAGED != type)
         return 0;
@@ -113,7 +113,7 @@ Sound	* Sound::CreateMusic(const String & fileName, eType type, int32 priority /
 #endif //#if defined(__DAVAENGINE_IPHONE__)
 }
 
-Sound::Sound(const String & _fileName, eType _type, int32 _priority)
+Sound::Sound(const FilePath & _fileName, eType _type, int32 _priority)
 :	fileName(_fileName),
 	type(_type),
 	buffer(0),
@@ -149,17 +149,16 @@ Sound::~Sound()
 
 bool Sound::Init()
 {
-	int32 strLength = (int32)fileName.length();
+	int32 strLength = (int32)fileName.ResolvePathname().length();
     if(strLength < 5)
         return false;
     
-	String ext = fileName.substr(strLength-4, strLength);
-	if(".wav" == ext)
+	if(fileName.IsEqualToExtension(".wav"))
 	{
 		provider = new SoundWVProvider(fileName);
 	}
 #if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
-	else if(".ogg" == ext)
+	else if(fileName.IsEqualToExtension(".ogg"))
 	{
 		provider = new SoundOVProvider(fileName);
 	}
@@ -414,7 +413,7 @@ SoundInstance * Sound::Play()
 #endif //#ifdef __DAVAENGINE_ANDROID__
 }
 
-Sound::eType Sound::GetType()
+Sound::eType Sound::GetType() const
 {
 	return type;
 }
@@ -453,7 +452,7 @@ SLuint32 Sound::GetPlayState()
 }
 #endif //#ifdef __DAVAENGINE_ANDROID__
     
-float32 Sound::GetVolume()
+float32 Sound::GetVolume() const
 {
 	return volume;
 }

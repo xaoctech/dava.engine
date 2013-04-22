@@ -413,6 +413,30 @@ public:
 	inline void SetFillModeInHW() const;
     
     /**
+     \brief Function to load render state from yaml file.
+	 \param[in] filePath path to file
+     */
+	void LoadFromYamlFile(const FilePath & filePath);
+
+	/**
+	 \brief Function to load render state from yaml node.
+	 \param[in] rootNode root yaml node
+	 */
+	void LoadFromYamlNode(YamlNode * rootNode);
+
+    /**
+     \brief Function to save render state to yaml file.
+	 \param[in] filePath path to file
+     */
+	bool SaveToYamlFile(const FilePath & filePath);
+	
+	/**
+	 \brief Function to save render state to yaml node.
+	 \param[in] rootNode root yaml node
+	 */
+	YamlNode * SaveToYamlNode(YamlNode * rootNode = 0);
+
+    /**
         Function to reset state to original zero state.
      */
     void Reset(bool doHardwareReset);
@@ -431,6 +455,9 @@ public:
 
 	//introspection related
 
+	void GetCurrentStateStrings(Vector<String> & statesStrs);
+
+	static uint32 GetRenderStateByName(const String & str);
 
 #if defined(__DAVAENGINE_DIRECTX9__)
 	static IDirect3DDevice9 * direct3DDevice; 

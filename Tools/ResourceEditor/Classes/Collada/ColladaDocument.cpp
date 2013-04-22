@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ColladaDocument.h"
 #include "Scene3D/SceneFile.h"
-#include "../TexturePacker/CommandLineParser.h"
+#include "TexturePacker/CommandLineParser.h"
 
 ///*
 // INCLUDE DevIL
@@ -128,11 +128,8 @@ bool ColladaDocument::ExportNodeAnimations(FCDocument * exportDoc, FCDSceneNode 
 	GetAnimationTimeInfo(exportDoc, timeStart, timeEnd);
 	DAVA::Logger::Debug("== Additional animation: %s start: %0.3f end: %0.3f\n ", exportDoc->GetFileUrl().c_str(), timeStart, timeEnd);
 	
-	std::string fullPathName = exportDoc->GetFileUrl().c_str();
-	std::string path;
-	std::string name;
-	CommandLineParser::Instance()->SplitFilePath(fullPathName, path, name);
-	name = CommandLineParser::Instance()->ReplaceExtension(name, "");
+	FilePath fullPathName(exportDoc->GetFileUrl().c_str());
+	String name = fullPathName.GetBasename();
 	
 	ColladaAnimation * anim = new ColladaAnimation();
 	anim->name = name;//Format("animation:%d", colladaScene->colladaAnimations.size());
@@ -207,11 +204,11 @@ void ColladaDocument::Render()
 	colladaScene->Render();
 }
     
-String ColladaDocument::GetTextureName(const String & scenePath, ColladaTexture * texture)
+String ColladaDocument::GetTextureName(const FilePath & scenePath, ColladaTexture * texture)
 {
     String textureRelativePathName = String(texture->texturePathName.c_str());
     printf("+ get texture name: %s", textureRelativePathName.c_str());
-    CommandLineParser::RemoveFromPath(textureRelativePathName, scenePath);
+    CommandLineParser::RemoveFromPath(textureRelativePathName, scenePath.GetAbsolutePathname());
     
     if (textureRelativePathName.c_str()[0] == '/')
         textureRelativePathName.erase(0, 1);
@@ -222,7 +219,7 @@ String ColladaDocument::GetTextureName(const String & scenePath, ColladaTexture 
     int32 pos = textureRelativePathName.find(".");
     if(-1 != pos)
     {
-        String extension = FileSystem::Instance()->GetExtension(textureRelativePathName);
+        String extension = FilePath(textureRelativePathName).GetExtension();
         if((0 != CompareCaseInsensitive(extension, ".png")) && (0 != CompareCaseInsensitive(extension, ".pvr")))
         {
             textureRelativePathName.replace(pos, 4, ".png");
@@ -231,13 +228,15 @@ String ColladaDocument::GetTextureName(const String & scenePath, ColladaTexture 
     return textureRelativePathName;
 }
 
-void ColladaDocument::SaveScene( const String & scenePath, const String & sceneName )
+void ColladaDocument::SaveScene( const FilePath & scenePath, const String & sceneName )
 {
-	DAVA::Logger::Debug("* Write begin: %s/%s\n", scenePath.c_str(), sceneName.c_str());
+    DVASSERT(scenePath.IsDirectoryPathname());
+    
+	DAVA::Logger::Debug("* Write begin: %s/%s\n", scenePath.GetAbsolutePathname().c_str(), sceneName.c_str());
 	
-	String scenePathName = scenePath + String("/") + sceneName;
+	FilePath scenePathName = scenePath + FilePath(sceneName);
 	
-	sceneFP = fopen(scenePathName.c_str(), "wb");
+	sceneFP = fopen(scenePathName.ResolvePathname().c_str(), "wb");
 	if (sceneFP == 0)return;
 	
     

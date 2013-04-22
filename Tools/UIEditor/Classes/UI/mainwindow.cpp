@@ -15,6 +15,8 @@
 #include "CommandsController.h"
 #include "FileSystem/FileSystem.h"
 #include "ResourcesManageHelper.h"
+#include "Dialogs/importdialog.h"
+#include "ImportCommands.h"
 
 #include <QDir>
 #include <QFileDialog>
@@ -76,10 +78,20 @@ MainWindow::MainWindow(QWidget *parent) :
 			SLOT(OnSelectedScreenChanged()));
 	
 	connect(ui->hierarchyDockWidget->widget(),
-			SIGNAL(CreateNewScreen(HierarchyTreeNode::HIERARCHYTREENODEID)),
+			SIGNAL(CreateNewScreen()),
 			this,
-			SLOT(OnNewScreen(HierarchyTreeNode::HIERARCHYTREENODEID)));
+			SLOT(OnNewScreen()));
 	
+	connect(ui->hierarchyDockWidget->widget(),
+			SIGNAL(CreateNewAggregator()),
+			this,
+			SLOT(OnNewAggregator()));
+
+	connect(ui->hierarchyDockWidget->widget(),
+			SIGNAL(ImportScreenOrAggregator()),
+			this,
+			SLOT(OnImportScreenOrAggregator()));
+
 	connect(ScreenWrapper::Instance(),
 			SIGNAL(UpdateScaleRequest(float)),
 			this,
@@ -155,6 +167,7 @@ void MainWindow::CreateHierarchyDockWidgetToolbar()
  	toolBar->addAction(ui->actionNew_platform);
 	toolBar->addAction(ui->actionNew_screen);
 	toolBar->addAction(ui->actionNew_aggregator);
+	toolBar->addAction(ui->actionImport_Platform);
 	// Disable moving of toolbar
 	toolBar->setMovable(false);
 	// Set toolbar position
@@ -318,6 +331,7 @@ void MainWindow::InitMenu()
 	connect(ui->actionNew_platform, SIGNAL(triggered()), this, SLOT(OnNewPlatform()));
 	connect(ui->actionNew_screen, SIGNAL(triggered()), this, SLOT(OnNewScreen()));
 	connect(ui->actionNew_aggregator, SIGNAL(triggered()), this, SLOT(OnNewAggregator()));
+	connect(ui->actionImport_Platform, SIGNAL(triggered()), this, SLOT(OnImportPlatform()));
 
 	connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(OnExitApplication()));
 	
@@ -360,6 +374,7 @@ void MainWindow::UpdateMenu()
 	ui->actionNew_platform->setEnabled(HierarchyTreeController::Instance()->GetTree().IsProjectCreated());
 	ui->actionNew_screen->setEnabled(HierarchyTreeController::Instance()->GetTree().GetPlatforms().size());
 	ui->actionNew_aggregator->setEnabled(HierarchyTreeController::Instance()->GetTree().GetPlatforms().size());
+	ui->actionImport_Platform->setEnabled(HierarchyTreeController::Instance()->GetTree().GetPlatforms().size());
 }
 
 void MainWindow::OnNewProject()
@@ -404,8 +419,13 @@ void MainWindow::OnNewPlatform()
 	}
 }
 
-void MainWindow::OnNewScreen(HierarchyTreeNode::HIERARCHYTREENODEID id/* = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY*/)
+void MainWindow::OnNewScreen()
 {
+	HierarchyTreeNode::HIERARCHYTREENODEID id = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
+	HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetActivePlatform();
+	if (node)
+		id = node->GetId();
+
 	CreateScreenDlg dlg(this);
 	dlg.SetDefaultPlatform(id);
 	if (dlg.exec() == QDialog::Accepted)
@@ -416,13 +436,71 @@ void MainWindow::OnNewScreen(HierarchyTreeNode::HIERARCHYTREENODEID id/* = Hiera
 	}
 }
 
-void MainWindow::OnNewAggregator(HierarchyTreeNode::HIERARCHYTREENODEID id)
+void MainWindow::OnNewAggregator()
 {
+	HierarchyTreeNode::HIERARCHYTREENODEID id = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
+	HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetActivePlatform();
+	if (node)
+		id = node->GetId();
+	
 	CreateAggregatorDlg dlg(this);
 	dlg.SetDefaultPlatform(id);
 	if (dlg.exec() == QDialog::Accepted)
 	{
 		CreateAggregatorCommand* cmd = new CreateAggregatorCommand(dlg.GetName(), dlg.GetPlatformId(), dlg.GetRect());
+		CommandsController::Instance()->ExecuteCommand(cmd);
+		SafeRelease(cmd);
+	}
+}
+
+void MainWindow::OnImportPlatform()
+{
+	QString platformsPath = ResourcesManageHelper::GetPlatformRootPath(HierarchyTreeController::Instance()->GetTree().GetRootNode()->GetProjectDir());
+
+	QString selectedDir = QFileDialog::getExistingDirectory(this, tr("Select platform to import"),
+															platformsPath,
+															QFileDialog::DontResolveSymlinks |
+															QFileDialog::ReadOnly |
+															QFileDialog::ShowDirsOnly);
+
+	if (selectedDir.isEmpty())
+	{
+		return;
+	}
+
+	if (!selectedDir.startsWith(platformsPath))
+	{
+		QMessageBox::critical(this, tr("Import error"),
+							  tr("Only the platforms inside current project directory could be imported"));
+		return;
+	}
+
+	FilePath selectedDirPath(selectedDir.toStdString());
+	String platformName = selectedDirPath.GetFilename();
+
+	ImportDialog importDlg(ImportDialog::IMPORT_PLATFORM, this, selectedDir);
+	if (importDlg.exec() == QDialog::Accepted)
+	{
+		QSize size = importDlg.GetPlatformSize();
+		Vector<ImportDialog::FileItem> files = importDlg.GetFiles();
+
+		ImportPlatformCommand* cmd = new ImportPlatformCommand(selectedDir,
+															   QString::fromStdString(platformName),
+															   size, files);
+		CommandsController::Instance()->ExecuteCommand(cmd);
+		SafeRelease(cmd);
+	}
+}
+
+void MainWindow::OnImportScreenOrAggregator()
+{
+	ImportDialog importDlg(ImportDialog::IMPORT_SCREEN, this);
+	if (importDlg.exec() == QDialog::Accepted)
+	{
+		HierarchyTreeNode::HIERARCHYTREENODEID platformId = importDlg.GetPlatformId();
+		Vector<ImportDialog::FileItem> files = importDlg.GetFiles();
+
+		ImportScreensCommand* cmd = new ImportScreensCommand(platformId, files);
 		CommandsController::Instance()->ExecuteCommand(cmd);
 		SafeRelease(cmd);
 	}
@@ -562,7 +640,7 @@ void MainWindow::OnExitApplication()
 
 bool MainWindow::CloseProject()
 {
-	bool lastChangeSaved = HierarchyTreeController::Instance()->GetUnsavedScreens().empty();
+	bool lastChangeSaved = !HierarchyTreeController::Instance()->HasUnsavedChanges();
 	if (!lastChangeSaved)
 	{
 		int ret = QMessageBox::warning(this, qApp->applicationName(),
@@ -631,13 +709,9 @@ void MainWindow::OnChangePropertySucceeded()
 void MainWindow::OnUnsavedChangesNumberChanged()
 {
 	QString projectTitle = ResourcesManageHelper::GetProjectTitle();
-	List<HierarchyTreeScreenNode*> unsavedScreens = HierarchyTreeController::Instance()->GetUnsavedScreens();
-	if (unsavedScreens.empty())
+	if (HierarchyTreeController::Instance()->HasUnsavedChanges())
 	{
-		setWindowTitle(projectTitle);
+		projectTitle += " *";
 	}
-	else
-	{
-		setWindowTitle(projectTitle + " *");
-	}
+	setWindowTitle(projectTitle);
 }

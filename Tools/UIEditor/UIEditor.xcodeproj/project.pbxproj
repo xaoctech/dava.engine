@@ -56,13 +56,6 @@
 		02D69CC516F08CEE00F3803F /* HierarchyTreePlatformNode_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C5A16F08CED00F3803F /* HierarchyTreePlatformNode_moc.cpp */; };
 		02D69CC616F08CEE00F3803F /* HierarchyTreeRootNode_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C5B16F08CED00F3803F /* HierarchyTreeRootNode_moc.cpp */; };
 		02D69CC716F08CEE00F3803F /* HierarchyTreeScreenNode_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C5C16F08CED00F3803F /* HierarchyTreeScreenNode_moc.cpp */; };
-		02D69CC816F08CEE00F3803F /* ResourcePacker_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C5E16F08CED00F3803F /* ResourcePacker_moc.cpp */; };
-		02D69CC916F08CEE00F3803F /* CommandLineParser_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C6016F08CED00F3803F /* CommandLineParser_moc.cpp */; };
-		02D69CCA16F08CEE00F3803F /* DefinitionFile_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C6116F08CED00F3803F /* DefinitionFile_moc.cpp */; };
-		02D69CCB16F08CEE00F3803F /* ImagePacker_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C6216F08CED00F3803F /* ImagePacker_moc.cpp */; };
-		02D69CCC16F08CEE00F3803F /* PngImage_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C6316F08CED00F3803F /* PngImage_moc.cpp */; };
-		02D69CCD16F08CEE00F3803F /* PVRConverter_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C6416F08CED00F3803F /* PVRConverter_moc.cpp */; };
-		02D69CCE16F08CEE00F3803F /* TexturePacker_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C6516F08CED00F3803F /* TexturePacker_moc.cpp */; };
 		02D69CCF16F08CEE00F3803F /* ScreenControl_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C6616F08CED00F3803F /* ScreenControl_moc.cpp */; };
 		02D69CD016F08CEE00F3803F /* ScreenManager_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C6716F08CED00F3803F /* ScreenManager_moc.cpp */; };
 		02D69CD116F08CEE00F3803F /* ScreenWrapper_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C6816F08CED00F3803F /* ScreenWrapper_moc.cpp */; };
@@ -97,6 +90,7 @@
 		0C6D4628EE0B0D1479A20551 /* AGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = C6766F86E49E9C8701C8E637 /* AGL.framework */; };
 		1700E418162EB2C20069650D /* basepropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1700E416162EB2C20069650D /* basepropertygridwidget.cpp */; };
 		1700E41D162EB8C60069650D /* rectpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1700E41B162EB8C60069650D /* rectpropertygridwidget.cpp */; };
+		1707BA111709C90D00D69DC0 /* SubcontrolsHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1707BA0F1709C90D00D69DC0 /* SubcontrolsHelper.cpp */; };
 		1710178B16EE197900BC7AE0 /* UIListMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17AB665116EDF86B00634657 /* UIListMetadata.cpp */; };
 		1710179016EE2F3200BC7AE0 /* UISpinnerMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1710178E16EE2F3100BC7AE0 /* UISpinnerMetadata.cpp */; };
 		17112B45163920BC0017E713 /* CommandsController.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17112B43163920BC0017E713 /* CommandsController.cpp */; };
@@ -140,28 +134,34 @@
 		17FF15E216400160001B130F /* fontmanagerdialog.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 17FF15DF16400160001B130F /* fontmanagerdialog.ui */; };
 		17FF15F91640069E001B130F /* localizationeditordialog.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 17FF15F81640069E001B130F /* localizationeditordialog.ui */; };
 		17FF160016400A75001B130F /* localizationeditordialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17FF15FE16400A75001B130F /* localizationeditordialog.cpp */; };
+		497774C0170DB808004CE2FB /* importdialogfilewidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 497774BF170DB808004CE2FB /* importdialogfilewidget_moc.cpp */; };
+		497774C2170DB80F004CE2FB /* importdialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 497774C1170DB80F004CE2FB /* importdialog_moc.cpp */; };
 		498B61FD16F76E2C009D4417 /* IconHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498B61FB16F76E2C009D4417 /* IconHelper.cpp */; };
+		49B0263F1709D6B5001E28CC /* importdialog.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 49B0263E1709D6B5001E28CC /* importdialog.ui */; };
+		49B026421709D6BD001E28CC /* importdialogfilewidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 49B026411709D6BD001E28CC /* importdialogfilewidget.ui */; };
+		49B0264C1709DA7D001E28CC /* importdialogfilewidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49B0264A1709DA7D001E28CC /* importdialogfilewidget.cpp */; };
+		49B02651170AC25D001E28CC /* importdialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49B0264F170AC25C001E28CC /* importdialog.cpp */; };
+		49FD832F170B24E800F3B650 /* ImportCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49FD832D170B24E800F3B650 /* ImportCommands.cpp */; };
 		5C190C9F15AEC6F9005731F8 /* Data in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 5C190C9E15AEC6F9005731F8 /* Data */; };
 		5CCC10E715B460BF00DA83EB /* libz.dylib in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CCC10E615B460BF00DA83EB /* libz.dylib */; };
 		5CCC10E915B460C900DA83EB /* libbz2.dylib in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CCC10E815B460C900DA83EB /* libbz2.dylib */; };
 		740F353416832022003B35E7 /* EditorSettings.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 740F353316832022003B35E7 /* EditorSettings.cpp */; };
+		7410E82A171462C70028AAAA /* EditorListDelegate.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7410E828171462C70028AAAA /* EditorListDelegate.cpp */; };
 		747FA17C1636A7CF000CEEDA /* backgroundpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 747FA17A1636A7CF000CEEDA /* backgroundpropertygridwidget.cpp */; };
 		747FA19C1636DBED000CEEDA /* UITextControlMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 747FA19A1636DBED000CEEDA /* UITextControlMetadata.cpp */; };
-		74819F2D169F1435000FE4B1 /* CommandLineParser.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74819F20169F1435000FE4B1 /* CommandLineParser.cpp */; };
-		74819F2E169F1435000FE4B1 /* DefinitionFile.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74819F22169F1435000FE4B1 /* DefinitionFile.cpp */; };
-		74819F2F169F1435000FE4B1 /* ImagePacker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74819F24169F1435000FE4B1 /* ImagePacker.cpp */; };
-		74819F30169F1435000FE4B1 /* PngImage.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74819F26169F1435000FE4B1 /* PngImage.cpp */; };
-		74819F31169F1435000FE4B1 /* TexturePacker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74819F28169F1435000FE4B1 /* TexturePacker.cpp */; };
-		74819F34169F1493000FE4B1 /* ResourcePacker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74819F33169F1493000FE4B1 /* ResourcePacker.cpp */; };
-		74819F37169F1946000FE4B1 /* PVRConverter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74819F35169F1946000FE4B1 /* PVRConverter.cpp */; };
 		7482C8C71688AA9100435155 /* UISliderMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7482C8C51688AA9100435155 /* UISliderMetadata.cpp */; };
 		7482C8CA1688AA9F00435155 /* sliderpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7482C8C81688AA9F00435155 /* sliderpropertygridwidget.cpp */; };
 		7482C8CC1688AAA800435155 /* sliderpropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 7482C8CB1688AAA800435155 /* sliderpropertygridwidget.ui */; };
 		7484342B1648024700920BBD /* StateComboBoxItemDelegate.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 748434291648024700920BBD /* StateComboBoxItemDelegate.cpp */; };
 		74893AD4165A8E90006B2762 /* ResourcesManageHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74893AD2165A8E8F006B2762 /* ResourcesManageHelper.cpp */; };
 		748955FD1641620200070AE1 /* QColorButton.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 748955FB1641620200070AE1 /* QColorButton.cpp */; };
+		748A9423170C599C0087E18A /* listpropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 748A9422170C599C0087E18A /* listpropertygridwidget.ui */; };
+		748A9427170C59DF0087E18A /* listpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 748A9425170C59DE0087E18A /* listpropertygridwidget.cpp */; };
+		748A942A170C5C650087E18A /* listpropertygridwidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 748A9429170C5C650087E18A /* listpropertygridwidget_moc.cpp */; };
 		748E2E5C1649684300C77EB8 /* UITextFieldMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 748E2E5A1649684300C77EB8 /* UITextFieldMetadata.cpp */; };
 		7492E0EA1639445D00DF883A /* fontmanagerdialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7492E0E81639445D00DF883A /* fontmanagerdialog.cpp */; };
+		7497D74D1705AD5500E1DE60 /* UISwitchMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7497D74B1705AD5500E1DE60 /* UISwitchMetadata.cpp */; };
+		7497D74F1705AD7200E1DE60 /* UISwitchMetadata_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7497D74E1705AD7200E1DE60 /* UISwitchMetadata_moc.cpp */; };
 		749D71271636920600C99861 /* textpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 749D71251636920600C99861 /* textpropertygridwidget.cpp */; };
 		74EED62F16B187CF00262D63 /* alignspropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 74EED62E16B187CF00262D63 /* alignspropertygridwidget.ui */; };
 		74EED63216B18C7600262D63 /* alignspropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74EED63016B18C7600262D63 /* alignspropertygridwidget.cpp */; };
@@ -215,6 +215,14 @@
 		C1C62A54162D7455000C1B32 /* hierarchytreewidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = C1C62A53162D7455000C1B32 /* hierarchytreewidget.ui */; };
 		C1C62A70162EC800000C1B32 /* librarywidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = C1C62A6F162EC800000C1B32 /* librarywidget.ui */; };
 		C1C62A73162EC809000C1B32 /* librarywidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C1C62A71162EC809000C1B32 /* librarywidget.cpp */; };
+		E8EB3D7B17208318006727FA /* DXTConverter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EB3D6A17208318006727FA /* DXTConverter.cpp */; };
+		E8EB3D7C17208318006727FA /* PVRConverter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EB3D6C17208318006727FA /* PVRConverter.cpp */; };
+		E8EB3D7D17208318006727FA /* CommandLineParser.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EB3D6F17208318006727FA /* CommandLineParser.cpp */; };
+		E8EB3D7E17208318006727FA /* DefinitionFile.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EB3D7117208318006727FA /* DefinitionFile.cpp */; };
+		E8EB3D7F17208318006727FA /* ImagePacker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EB3D7317208318006727FA /* ImagePacker.cpp */; };
+		E8EB3D8017208318006727FA /* PngImage.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EB3D7517208318006727FA /* PngImage.cpp */; };
+		E8EB3D8117208318006727FA /* ResourcePacker2D.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EB3D7717208318006727FA /* ResourcePacker2D.cpp */; };
+		E8EB3D8217208318006727FA /* TexturePacker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EB3D7917208318006727FA /* TexturePacker.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -292,13 +300,6 @@
 		02D69C5A16F08CED00F3803F /* HierarchyTreePlatformNode_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HierarchyTreePlatformNode_moc.cpp; sourceTree = "<group>"; };
 		02D69C5B16F08CED00F3803F /* HierarchyTreeRootNode_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HierarchyTreeRootNode_moc.cpp; sourceTree = "<group>"; };
 		02D69C5C16F08CED00F3803F /* HierarchyTreeScreenNode_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HierarchyTreeScreenNode_moc.cpp; sourceTree = "<group>"; };
-		02D69C5E16F08CED00F3803F /* ResourcePacker_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ResourcePacker_moc.cpp; sourceTree = "<group>"; };
-		02D69C6016F08CED00F3803F /* CommandLineParser_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CommandLineParser_moc.cpp; sourceTree = "<group>"; };
-		02D69C6116F08CED00F3803F /* DefinitionFile_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DefinitionFile_moc.cpp; sourceTree = "<group>"; };
-		02D69C6216F08CED00F3803F /* ImagePacker_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImagePacker_moc.cpp; sourceTree = "<group>"; };
-		02D69C6316F08CED00F3803F /* PngImage_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PngImage_moc.cpp; sourceTree = "<group>"; };
-		02D69C6416F08CED00F3803F /* PVRConverter_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PVRConverter_moc.cpp; sourceTree = "<group>"; };
-		02D69C6516F08CED00F3803F /* TexturePacker_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TexturePacker_moc.cpp; sourceTree = "<group>"; };
 		02D69C6616F08CED00F3803F /* ScreenControl_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScreenControl_moc.cpp; sourceTree = "<group>"; };
 		02D69C6716F08CED00F3803F /* ScreenManager_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScreenManager_moc.cpp; sourceTree = "<group>"; };
 		02D69C6816F08CED00F3803F /* ScreenWrapper_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScreenWrapper_moc.cpp; sourceTree = "<group>"; };
@@ -355,6 +356,8 @@
 		1700E417162EB2C20069650D /* basepropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = basepropertygridwidget.h; path = PropertyGridWidgets/basepropertygridwidget.h; sourceTree = "<group>"; };
 		1700E41B162EB8C60069650D /* rectpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rectpropertygridwidget.cpp; path = PropertyGridWidgets/rectpropertygridwidget.cpp; sourceTree = "<group>"; };
 		1700E41C162EB8C60069650D /* rectpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rectpropertygridwidget.h; path = PropertyGridWidgets/rectpropertygridwidget.h; sourceTree = "<group>"; };
+		1707BA0F1709C90D00D69DC0 /* SubcontrolsHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SubcontrolsHelper.cpp; path = Helpers/SubcontrolsHelper.cpp; sourceTree = "<group>"; };
+		1707BA101709C90D00D69DC0 /* SubcontrolsHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SubcontrolsHelper.h; path = Helpers/SubcontrolsHelper.h; sourceTree = "<group>"; };
 		1710178E16EE2F3100BC7AE0 /* UISpinnerMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UISpinnerMetadata.cpp; path = Metadata/UISpinnerMetadata.cpp; sourceTree = "<group>"; };
 		1710178F16EE2F3200BC7AE0 /* UISpinnerMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UISpinnerMetadata.h; path = Metadata/UISpinnerMetadata.h; sourceTree = "<group>"; };
 		17112B43163920BC0017E713 /* CommandsController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CommandsController.cpp; path = Controllers/CommandsController.cpp; sourceTree = "<group>"; };
@@ -442,8 +445,20 @@
 		2A689518AF9C22C7AA97C9EF /* ogg_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = ogg_macos; path = ../dava.framework/Libs/libs/libogg_macos.a; sourceTree = "<group>"; };
 		336CB11D929F5E35FA69020F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		419FFB6CDDEB353FF0A4F469 /* QtCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtCore.framework; path = ../../../../QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework; sourceTree = "<group>"; };
+		497774BD170DB7F2004CE2FB /* ui_importdialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_importdialog.h; sourceTree = "<group>"; };
+		497774BE170DB7F2004CE2FB /* ui_importdialogfilewidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_importdialogfilewidget.h; sourceTree = "<group>"; };
+		497774BF170DB808004CE2FB /* importdialogfilewidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = importdialogfilewidget_moc.cpp; sourceTree = "<group>"; };
+		497774C1170DB80F004CE2FB /* importdialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = importdialog_moc.cpp; sourceTree = "<group>"; };
 		498B61FB16F76E2C009D4417 /* IconHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IconHelper.cpp; sourceTree = "<group>"; };
 		498B61FC16F76E2C009D4417 /* IconHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IconHelper.h; sourceTree = "<group>"; };
+		49B0263E1709D6B5001E28CC /* importdialog.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = importdialog.ui; sourceTree = "<group>"; };
+		49B026411709D6BD001E28CC /* importdialogfilewidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = importdialogfilewidget.ui; sourceTree = "<group>"; };
+		49B0264A1709DA7D001E28CC /* importdialogfilewidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = importdialogfilewidget.cpp; sourceTree = "<group>"; };
+		49B0264B1709DA7D001E28CC /* importdialogfilewidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = importdialogfilewidget.h; sourceTree = "<group>"; };
+		49B0264F170AC25C001E28CC /* importdialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = importdialog.cpp; path = Dialogs/importdialog.cpp; sourceTree = "<group>"; };
+		49B02650170AC25C001E28CC /* importdialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = importdialog.h; path = Dialogs/importdialog.h; sourceTree = "<group>"; };
+		49FD832D170B24E800F3B650 /* ImportCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ImportCommands.cpp; path = Commands/ImportCommands.cpp; sourceTree = "<group>"; };
+		49FD832E170B24E800F3B650 /* ImportCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ImportCommands.h; path = Commands/ImportCommands.h; sourceTree = "<group>"; };
 		52F4216CE5F81A8073DE30C0 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = /System/Library/Frameworks/OpenAL.framework; sourceTree = "<absolute>"; };
 		548C5E52292D4DA256C12EBD /* png_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = png_macos; path = ../dava.framework/Libs/libs/libpng_macos.a; sourceTree = "<group>"; };
 		5B2DE73738F678B7C6177179 /* curl_ios_mac */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = curl_ios_mac; path = ../dava.framework/Libs/libs/libcurl_ios_mac.a; sourceTree = "<group>"; };
@@ -456,24 +471,12 @@
 		6C21256244E578A9DE07EE60 /* xml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = xml_macos; path = ../dava.framework/Libs/libs/libxml_macos.a; sourceTree = "<group>"; };
 		740F35311683200F003B35E7 /* EditorSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorSettings.h; sourceTree = "<group>"; };
 		740F353316832022003B35E7 /* EditorSettings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditorSettings.cpp; sourceTree = "<group>"; };
+		7410E828171462C70028AAAA /* EditorListDelegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditorListDelegate.cpp; sourceTree = "<group>"; };
+		7410E829171462C70028AAAA /* EditorListDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorListDelegate.h; sourceTree = "<group>"; };
 		747FA17A1636A7CF000CEEDA /* backgroundpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = backgroundpropertygridwidget.cpp; path = PropertyGridWidgets/backgroundpropertygridwidget.cpp; sourceTree = "<group>"; };
 		747FA17B1636A7CF000CEEDA /* backgroundpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = backgroundpropertygridwidget.h; path = PropertyGridWidgets/backgroundpropertygridwidget.h; sourceTree = "<group>"; };
 		747FA19A1636DBED000CEEDA /* UITextControlMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UITextControlMetadata.cpp; path = Metadata/UITextControlMetadata.cpp; sourceTree = "<group>"; };
 		747FA19B1636DBED000CEEDA /* UITextControlMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UITextControlMetadata.h; path = Metadata/UITextControlMetadata.h; sourceTree = "<group>"; };
-		74819F20169F1435000FE4B1 /* CommandLineParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CommandLineParser.cpp; sourceTree = "<group>"; };
-		74819F21169F1435000FE4B1 /* CommandLineParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommandLineParser.h; sourceTree = "<group>"; };
-		74819F22169F1435000FE4B1 /* DefinitionFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DefinitionFile.cpp; sourceTree = "<group>"; };
-		74819F23169F1435000FE4B1 /* DefinitionFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefinitionFile.h; sourceTree = "<group>"; };
-		74819F24169F1435000FE4B1 /* ImagePacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImagePacker.cpp; sourceTree = "<group>"; };
-		74819F25169F1435000FE4B1 /* ImagePacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImagePacker.h; sourceTree = "<group>"; };
-		74819F26169F1435000FE4B1 /* PngImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PngImage.cpp; sourceTree = "<group>"; };
-		74819F27169F1435000FE4B1 /* PngImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PngImage.h; sourceTree = "<group>"; };
-		74819F28169F1435000FE4B1 /* TexturePacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TexturePacker.cpp; sourceTree = "<group>"; };
-		74819F29169F1435000FE4B1 /* TexturePacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TexturePacker.h; sourceTree = "<group>"; };
-		74819F32169F147B000FE4B1 /* ResourcePacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResourcePacker.h; sourceTree = "<group>"; };
-		74819F33169F1493000FE4B1 /* ResourcePacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ResourcePacker.cpp; sourceTree = "<group>"; };
-		74819F35169F1946000FE4B1 /* PVRConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PVRConverter.cpp; sourceTree = "<group>"; };
-		74819F36169F1946000FE4B1 /* PVRConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRConverter.h; sourceTree = "<group>"; };
 		7482C8C51688AA9100435155 /* UISliderMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UISliderMetadata.cpp; path = Metadata/UISliderMetadata.cpp; sourceTree = "<group>"; };
 		7482C8C61688AA9100435155 /* UISliderMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UISliderMetadata.h; path = Metadata/UISliderMetadata.h; sourceTree = "<group>"; };
 		7482C8C81688AA9F00435155 /* sliderpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sliderpropertygridwidget.cpp; path = PropertyGridWidgets/sliderpropertygridwidget.cpp; sourceTree = "<group>"; };
@@ -481,14 +484,23 @@
 		7482C8CB1688AAA800435155 /* sliderpropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = sliderpropertygridwidget.ui; sourceTree = "<group>"; };
 		748434291648024700920BBD /* StateComboBoxItemDelegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StateComboBoxItemDelegate.cpp; sourceTree = "<group>"; };
 		7484342A1648024700920BBD /* StateComboBoxItemDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StateComboBoxItemDelegate.h; sourceTree = "<group>"; };
+		7487A43D170ADBED005EA703 /* StringConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StringConstants.h; path = Helpers/StringConstants.h; sourceTree = "<group>"; };
 		74893AD2165A8E8F006B2762 /* ResourcesManageHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ResourcesManageHelper.cpp; path = Helpers/ResourcesManageHelper.cpp; sourceTree = "<group>"; };
 		74893AD3165A8E8F006B2762 /* ResourcesManageHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ResourcesManageHelper.h; path = Helpers/ResourcesManageHelper.h; sourceTree = "<group>"; };
 		748955FB1641620200070AE1 /* QColorButton.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QColorButton.cpp; sourceTree = "<group>"; };
 		748955FC1641620200070AE1 /* QColorButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QColorButton.h; sourceTree = "<group>"; };
+		748A9422170C599C0087E18A /* listpropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = listpropertygridwidget.ui; sourceTree = "<group>"; };
+		748A9425170C59DE0087E18A /* listpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = listpropertygridwidget.cpp; path = PropertyGridWidgets/listpropertygridwidget.cpp; sourceTree = "<group>"; };
+		748A9426170C59DE0087E18A /* listpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = listpropertygridwidget.h; path = PropertyGridWidgets/listpropertygridwidget.h; sourceTree = "<group>"; };
+		748A9428170C5C3E0087E18A /* ui_listpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_listpropertygridwidget.h; sourceTree = "<group>"; };
+		748A9429170C5C650087E18A /* listpropertygridwidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = listpropertygridwidget_moc.cpp; sourceTree = "<group>"; };
 		748E2E5A1649684300C77EB8 /* UITextFieldMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UITextFieldMetadata.cpp; path = Metadata/UITextFieldMetadata.cpp; sourceTree = "<group>"; };
 		748E2E5B1649684300C77EB8 /* UITextFieldMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UITextFieldMetadata.h; path = Metadata/UITextFieldMetadata.h; sourceTree = "<group>"; };
 		7492E0E81639445D00DF883A /* fontmanagerdialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fontmanagerdialog.cpp; sourceTree = "<group>"; };
 		7492E0E91639445D00DF883A /* fontmanagerdialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fontmanagerdialog.h; sourceTree = "<group>"; };
+		7497D74B1705AD5500E1DE60 /* UISwitchMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UISwitchMetadata.cpp; path = Metadata/UISwitchMetadata.cpp; sourceTree = "<group>"; };
+		7497D74C1705AD5500E1DE60 /* UISwitchMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UISwitchMetadata.h; path = Metadata/UISwitchMetadata.h; sourceTree = "<group>"; };
+		7497D74E1705AD7200E1DE60 /* UISwitchMetadata_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UISwitchMetadata_moc.cpp; sourceTree = "<group>"; };
 		749D71251636920600C99861 /* textpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = textpropertygridwidget.cpp; path = PropertyGridWidgets/textpropertygridwidget.cpp; sourceTree = "<group>"; };
 		749D71261636920600C99861 /* textpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = textpropertygridwidget.h; path = PropertyGridWidgets/textpropertygridwidget.h; sourceTree = "<group>"; };
 		74EED62E16B187CF00262D63 /* alignspropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = alignspropertygridwidget.ui; sourceTree = "<group>"; };
@@ -575,6 +587,22 @@
 		C6766F86E49E9C8701C8E637 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = /System/Library/Frameworks/AGL.framework; sourceTree = "<absolute>"; };
 		CBE0854C74E7E8A8F67923BE /* yaml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = yaml_macos; path = ../dava.framework/Libs/libs/libyaml_macos.a; sourceTree = "<group>"; };
 		DA18A6831232F53228631AD1 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
+		E8EB3D6A17208318006727FA /* DXTConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DXTConverter.cpp; path = ../../../Sources/Tools/DXTConverter.cpp; sourceTree = "<group>"; };
+		E8EB3D6B17208318006727FA /* DXTConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DXTConverter.h; path = ../../../Sources/Tools/DXTConverter.h; sourceTree = "<group>"; };
+		E8EB3D6C17208318006727FA /* PVRConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PVRConverter.cpp; path = ../../../Sources/Tools/PVRConverter.cpp; sourceTree = "<group>"; };
+		E8EB3D6D17208318006727FA /* PVRConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PVRConverter.h; path = ../../../Sources/Tools/PVRConverter.h; sourceTree = "<group>"; };
+		E8EB3D6F17208318006727FA /* CommandLineParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CommandLineParser.cpp; sourceTree = "<group>"; };
+		E8EB3D7017208318006727FA /* CommandLineParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommandLineParser.h; sourceTree = "<group>"; };
+		E8EB3D7117208318006727FA /* DefinitionFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DefinitionFile.cpp; sourceTree = "<group>"; };
+		E8EB3D7217208318006727FA /* DefinitionFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefinitionFile.h; sourceTree = "<group>"; };
+		E8EB3D7317208318006727FA /* ImagePacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImagePacker.cpp; sourceTree = "<group>"; };
+		E8EB3D7417208318006727FA /* ImagePacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImagePacker.h; sourceTree = "<group>"; };
+		E8EB3D7517208318006727FA /* PngImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PngImage.cpp; sourceTree = "<group>"; };
+		E8EB3D7617208318006727FA /* PngImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PngImage.h; sourceTree = "<group>"; };
+		E8EB3D7717208318006727FA /* ResourcePacker2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ResourcePacker2D.cpp; sourceTree = "<group>"; };
+		E8EB3D7817208318006727FA /* ResourcePacker2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResourcePacker2D.h; sourceTree = "<group>"; };
+		E8EB3D7917208318006727FA /* TexturePacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TexturePacker.cpp; sourceTree = "<group>"; };
+		E8EB3D7A17208318006727FA /* TexturePacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TexturePacker.h; sourceTree = "<group>"; };
 		E8FFFF9D16FB17A500E315AE /* ui_spinnerpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_spinnerpropertygridwidget.h; sourceTree = "<group>"; };
 		F7C12D3D2FE75302773F34BB /* vorbisfile_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbisfile_macos; path = ../dava.framework/Libs/oggvorbis/lib/libvorbisfile_macos.a; sourceTree = "<group>"; };
 		FAC1F4E071D49CE850E70770 /* Data/ */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Data/; sourceTree = "<group>"; };
@@ -643,6 +671,7 @@
 		02D69C4616F08CED00F3803F /* Metadata */ = {
 			isa = PBXGroup;
 			children = (
+				7497D74E1705AD7200E1DE60 /* UISwitchMetadata_moc.cpp */,
 				C185940516F3243E005D30E2 /* AggregatorMetadata_moc.cpp */,
 				02D69C4716F08CED00F3803F /* BaseMetadata_moc.cpp */,
 				02D69C4816F08CED00F3803F /* BaseMetadataParams_moc.cpp */,
@@ -676,31 +705,10 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
-		02D69C5D16F08CED00F3803F /* ResourcePacker */ = {
-			isa = PBXGroup;
-			children = (
-				02D69C5E16F08CED00F3803F /* ResourcePacker_moc.cpp */,
-				02D69C5F16F08CED00F3803F /* TexturePacker */,
-			);
-			path = ResourcePacker;
-			sourceTree = "<group>";
-		};
-		02D69C5F16F08CED00F3803F /* TexturePacker */ = {
-			isa = PBXGroup;
-			children = (
-				02D69C6016F08CED00F3803F /* CommandLineParser_moc.cpp */,
-				02D69C6116F08CED00F3803F /* DefinitionFile_moc.cpp */,
-				02D69C6216F08CED00F3803F /* ImagePacker_moc.cpp */,
-				02D69C6316F08CED00F3803F /* PngImage_moc.cpp */,
-				02D69C6416F08CED00F3803F /* PVRConverter_moc.cpp */,
-				02D69C6516F08CED00F3803F /* TexturePacker_moc.cpp */,
-			);
-			path = TexturePacker;
-			sourceTree = "<group>";
-		};
 		02D69C6A16F08CED00F3803F /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				497774BF170DB808004CE2FB /* importdialogfilewidget_moc.cpp */,
 				02D69C6B16F08CED00F3803F /* controllist_moc.cpp */,
 				02D69C6C16F08CED00F3803F /* createplatformdlg_moc.cpp */,
 				02D69C6D16F08CED00F3803F /* createscreendlg_moc.cpp */,
@@ -721,6 +729,7 @@
 		02D69C6F16F08CED00F3803F /* Dialogs */ = {
 			isa = PBXGroup;
 			children = (
+				497774C1170DB80F004CE2FB /* importdialog_moc.cpp */,
 				C18593F816F314F1005D30E2 /* createaggregatordlg_moc.cpp */,
 				02D69C7016F08CED00F3803F /* localizationeditordialog_moc.cpp */,
 			);
@@ -737,6 +746,7 @@
 				02D69C7916F08CED00F3803F /* basepropertygridwidget_moc.cpp */,
 				02D69C7A16F08CED00F3803F /* controlpropertygridwidget_moc.cpp */,
 				02D69C7B16F08CED00F3803F /* flagspropertygridwidget_moc.cpp */,
+				748A9429170C5C650087E18A /* listpropertygridwidget_moc.cpp */,
 				02D69C7C16F08CED00F3803F /* platformpropertygridwidget_moc.cpp */,
 				02D69C7D16F08CED00F3803F /* propertygridcontainerwidget_moc.cpp */,
 				02D69C7E16F08CED00F3803F /* PropertyGridWidgetData_moc.cpp */,
@@ -786,6 +796,8 @@
 				173AC33C1630137C00A773F5 /* controlpropertygridwidget.h */,
 				173AC3391630137400A773F5 /* flagspropertygridwidget.cpp */,
 				173AC33D1630137C00A773F5 /* flagspropertygridwidget.h */,
+				748A9425170C59DE0087E18A /* listpropertygridwidget.cpp */,
+				748A9426170C59DE0087E18A /* listpropertygridwidget.h */,
 				17DF04E71636850C001F7ED2 /* platformpropertygridwidget.cpp */,
 				17DF04E81636850C001F7ED2 /* platformpropertygridwidget.h */,
 				17CED76B163ABD3B00F9B02D /* propertygridcontainerwidget.cpp */,
@@ -813,6 +825,8 @@
 		17112B5616392E880017E713 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				1707BA0F1709C90D00D69DC0 /* SubcontrolsHelper.cpp */,
+				1707BA101709C90D00D69DC0 /* SubcontrolsHelper.h */,
 				74893AD2165A8E8F006B2762 /* ResourcesManageHelper.cpp */,
 				74893AD3165A8E8F006B2762 /* ResourcesManageHelper.h */,
 				17607FED16415B7C004E36DE /* BackgroundGridWidgetHelper.cpp */,
@@ -824,6 +838,7 @@
 				17FBCE45163A7ED100FD96C0 /* UIControlStateHelper.h */,
 				17607FC0164121FB004E36DE /* LocalizationSystemHelper.cpp */,
 				17607FC1164121FB004E36DE /* LocalizationSystemHelper.h */,
+				7487A43D170ADBED005EA703 /* StringConstants.h */,
 				178F303C165677BF008678AD /* StringUtils.cpp */,
 				178F303D165677BF008678AD /* StringUtils.h */,
 			);
@@ -908,6 +923,8 @@
 				747FA19B1636DBED000CEEDA /* UITextControlMetadata.h */,
 				748E2E5A1649684300C77EB8 /* UITextFieldMetadata.cpp */,
 				748E2E5B1649684300C77EB8 /* UITextFieldMetadata.h */,
+				7497D74B1705AD5500E1DE60 /* UISwitchMetadata.cpp */,
+				7497D74C1705AD5500E1DE60 /* UISwitchMetadata.h */,
 			);
 			name = Metadata;
 			sourceTree = "<group>";
@@ -924,6 +941,8 @@
 				C107415F163E7B740069A640 /* ItemsCommand.h */,
 				C1BBE3541647DAC300EF3CA9 /* PasteCommand.cpp */,
 				C1BBE3551647DAC300EF3CA9 /* PasteCommand.h */,
+				49FD832D170B24E800F3B650 /* ImportCommands.cpp */,
+				49FD832E170B24E800F3B650 /* ImportCommands.h */,
 			);
 			name = Commands;
 			sourceTree = "<group>";
@@ -931,6 +950,7 @@
 		17FF15DC16400155001B130F /* Dialogs */ = {
 			isa = PBXGroup;
 			children = (
+				49B0263E1709D6B5001E28CC /* importdialog.ui */,
 				C18593E916F30D60005D30E2 /* createaggregatordlg.ui */,
 				17FF15F81640069E001B130F /* localizationeditordialog.ui */,
 				17FF15DD16400160001B130F /* createplatformdlg.ui */,
@@ -943,20 +963,21 @@
 		17FF15E316400207001B130F /* PropertyGridWidgets */ = {
 			isa = PBXGroup;
 			children = (
+				74EED62E16B187CF00262D63 /* alignspropertygridwidget.ui */,
 				C18593FA16F31B2F005D30E2 /* aggregatorpropertygridwidget.ui */,
-				17C5CCD416F31E5300FB90B4 /* spinnerpropertygridwidget.ui */,
 				C18593EB16F30D67005D30E2 /* backgroundpropertygridwidget.ui */,
 				C18593EC16F30D67005D30E2 /* basepropertygridwidget.ui */,
 				C18593ED16F30D67005D30E2 /* controlpropertygridwidget.ui */,
 				C18593EE16F30D67005D30E2 /* flagspropertygridwidget.ui */,
+				748A9422170C599C0087E18A /* listpropertygridwidget.ui */,
 				02D69A4F16F0783000F3803F /* platformpropertygridwidget.ui */,
 				02D69A5016F0783000F3803F /* propertygridcontainerwidget.ui */,
 				02D69A5116F0783000F3803F /* rectpropertygridwidget.ui */,
 				02D69A5216F0783000F3803F /* screenpropertygridwidget.ui */,
+				7482C8CB1688AAA800435155 /* sliderpropertygridwidget.ui */,
+				17C5CCD416F31E5300FB90B4 /* spinnerpropertygridwidget.ui */,
 				02D69A5316F0783000F3803F /* statepropertygridwidget.ui */,
 				02D69A5416F0783000F3803F /* textpropertygridwidget.ui */,
-				74EED62E16B187CF00262D63 /* alignspropertygridwidget.ui */,
-				7482C8CB1688AAA800435155 /* sliderpropertygridwidget.ui */,
 				176834A716510788004800D7 /* uitextfieldpropertygridwidget.ui */,
 			);
 			name = PropertyGridWidgets;
@@ -965,6 +986,8 @@
 		17FF15FD16400A41001B130F /* Dialogs */ = {
 			isa = PBXGroup;
 			children = (
+				49B0264F170AC25C001E28CC /* importdialog.cpp */,
+				49B02650170AC25C001E28CC /* importdialog.h */,
 				C18593F316F30D74005D30E2 /* createaggregatordlg.cpp */,
 				C18593F416F30D74005D30E2 /* createaggregatordlg.h */,
 				7492E0E91639445D00DF883A /* fontmanagerdialog.h */,
@@ -994,35 +1017,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		74819F17169F1435000FE4B1 /* ResourcePacker */ = {
-			isa = PBXGroup;
-			children = (
-				74819F1F169F1435000FE4B1 /* TexturePacker */,
-				74819F32169F147B000FE4B1 /* ResourcePacker.h */,
-				74819F33169F1493000FE4B1 /* ResourcePacker.cpp */,
-			);
-			path = ResourcePacker;
-			sourceTree = "<group>";
-		};
-		74819F1F169F1435000FE4B1 /* TexturePacker */ = {
-			isa = PBXGroup;
-			children = (
-				74819F35169F1946000FE4B1 /* PVRConverter.cpp */,
-				74819F36169F1946000FE4B1 /* PVRConverter.h */,
-				74819F20169F1435000FE4B1 /* CommandLineParser.cpp */,
-				74819F21169F1435000FE4B1 /* CommandLineParser.h */,
-				74819F22169F1435000FE4B1 /* DefinitionFile.cpp */,
-				74819F23169F1435000FE4B1 /* DefinitionFile.h */,
-				74819F24169F1435000FE4B1 /* ImagePacker.cpp */,
-				74819F25169F1435000FE4B1 /* ImagePacker.h */,
-				74819F26169F1435000FE4B1 /* PngImage.cpp */,
-				74819F27169F1435000FE4B1 /* PngImage.h */,
-				74819F28169F1435000FE4B1 /* TexturePacker.cpp */,
-				74819F29169F1435000FE4B1 /* TexturePacker.h */,
-			);
-			path = TexturePacker;
-			sourceTree = "<group>";
-		};
 		7CABE3C80E79AD2B307756D2 /* Sources [qmake] */ = {
 			isa = PBXGroup;
 			children = (
@@ -1043,6 +1037,8 @@
 		C15C2FC9162AD5DD00818631 /* GeneratedFiles */ = {
 			isa = PBXGroup;
 			children = (
+				497774BD170DB7F2004CE2FB /* ui_importdialog.h */,
+				497774BE170DB7F2004CE2FB /* ui_importdialogfilewidget.h */,
 				E8FFFF9D16FB17A500E315AE /* ui_spinnerpropertygridwidget.h */,
 				C18593FF16F31C1C005D30E2 /* ui_aggregatorpropertygridwidget.h */,
 				C18593F716F314DF005D30E2 /* ui_createaggregatordlg.h */,
@@ -1057,13 +1053,16 @@
 				02D69C4516F08CED00F3803F /* icons_qrc.cpp */,
 				02D69C4616F08CED00F3803F /* Metadata */,
 				02D69C5516F08CED00F3803F /* Models */,
-				02D69C5D16F08CED00F3803F /* ResourcePacker */,
 				02D69C6616F08CED00F3803F /* ScreenControl_moc.cpp */,
 				02D69C6716F08CED00F3803F /* ScreenManager_moc.cpp */,
 				02D69C6816F08CED00F3803F /* ScreenWrapper_moc.cpp */,
 				02D69C6916F08CED00F3803F /* StringUtils_moc.cpp */,
 				02D69C6A16F08CED00F3803F /* UI */,
 				02D69C8816F08CED00F3803F /* ui_alignspropertygridwidget.h */,
+				748A9428170C5C3E0087E18A /* ui_listpropertygridwidget.h */,
+				E8FFFF9D16FB17A500E315AE /* ui_spinnerpropertygridwidget.h */,
+				C18593FF16F31C1C005D30E2 /* ui_aggregatorpropertygridwidget.h */,
+				C18593F716F314DF005D30E2 /* ui_createaggregatordlg.h */,
 				02D69C8916F08CED00F3803F /* ui_backgroundpropertygridwidget.h */,
 				02D69C8A16F08CED00F3803F /* ui_basepropertygridwidget.h */,
 				02D69C8B16F08CED00F3803F /* ui_controlpropertygridwidget.h */,
@@ -1091,29 +1090,31 @@
 		C15C2FDF162AD6E400818631 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				E8EB3D691720830D006727FA /* ResourcePacker */,
 				C1C62A3A162D371E000C1B32 /* DefaultScreen.cpp */,
+				C1C62A3B162D371E000C1B32 /* DefaultScreen.h */,
 				C17246101637E18900709AAF /* EditorFontManager.cpp */,
+				C17246111637E18900709AAF /* EditorFontManager.h */,
+				7410E828171462C70028AAAA /* EditorListDelegate.cpp */,
+				7410E829171462C70028AAAA /* EditorListDelegate.h */,
 				740F353316832022003B35E7 /* EditorSettings.cpp */,
+				740F35311683200F003B35E7 /* EditorSettings.h */,
 				C15C2FE1162AD6E400818631 /* FrameworkMain.cpp */,
+				C15C2FE2162AD6E400818631 /* FrameworkMain.h */,
 				C15C2FE3162AD6E400818631 /* GameCore.cpp */,
+				C15C2FE4162AD6E400818631 /* GameCore.h */,
 				C15C2FE5162AD6E400818631 /* main.cpp */,
 				C10740E0163A94440069A640 /* ScreenControl.cpp */,
-				C10740E2163A94450069A640 /* ScreenManager.cpp */,
-				C1C62A22162C33FC000C1B32 /* ScreenWrapper.cpp */,
-				C1C62A3B162D371E000C1B32 /* DefaultScreen.h */,
-				C17246111637E18900709AAF /* EditorFontManager.h */,
-				740F35311683200F003B35E7 /* EditorSettings.h */,
-				C15C2FE2162AD6E400818631 /* FrameworkMain.h */,
-				C15C2FE4162AD6E400818631 /* GameCore.h */,
 				C10740E1163A94450069A640 /* ScreenControl.h */,
+				C10740E2163A94450069A640 /* ScreenManager.cpp */,
 				C10740E3163A94450069A640 /* ScreenManager.h */,
+				C1C62A22162C33FC000C1B32 /* ScreenWrapper.cpp */,
 				C1C62A23162C33FC000C1B32 /* ScreenWrapper.h */,
 				17F2EF2916355E1000DEE054 /* Commands */,
 				176D3951162C38FF0099AACF /* Controllers */,
 				17112B5616392E880017E713 /* Helpers */,
 				176D3958162C3C8C0099AACF /* Metadata */,
 				176D3941162C2F5D0099AACF /* Models */,
-				74819F17169F1435000FE4B1 /* ResourcePacker */,
 				C15C2FE8162AD6E400818631 /* UI */,
 			);
 			path = Classes;
@@ -1143,6 +1144,8 @@
 				C15C2FEC162AD6E400818631 /* mainwindow.h */,
 				498B61FB16F76E2C009D4417 /* IconHelper.cpp */,
 				498B61FC16F76E2C009D4417 /* IconHelper.h */,
+				49B0264A1709DA7D001E28CC /* importdialogfilewidget.cpp */,
+				49B0264B1709DA7D001E28CC /* importdialogfilewidget.h */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -1155,6 +1158,7 @@
 				C1C62A6F162EC800000C1B32 /* librarywidget.ui */,
 				C1C62A53162D7455000C1B32 /* hierarchytreewidget.ui */,
 				C15C2FF4162AD71C00818631 /* davaglwidget.ui */,
+				49B026411709D6BD001E28CC /* importdialogfilewidget.ui */,
 				C15C2FF5162AD71C00818631 /* mainwindow.ui */,
 			);
 			path = UI;
@@ -1166,6 +1170,38 @@
 				FAC1F4E071D49CE850E70770 /* Data/ */,
 			);
 			name = "Source [bundle data]";
+			sourceTree = "<group>";
+		};
+		E8EB3D691720830D006727FA /* ResourcePacker */ = {
+			isa = PBXGroup;
+			children = (
+				E8EB3D6A17208318006727FA /* DXTConverter.cpp */,
+				E8EB3D6B17208318006727FA /* DXTConverter.h */,
+				E8EB3D6C17208318006727FA /* PVRConverter.cpp */,
+				E8EB3D6D17208318006727FA /* PVRConverter.h */,
+				E8EB3D6E17208318006727FA /* TexturePacker */,
+			);
+			name = ResourcePacker;
+			sourceTree = "<group>";
+		};
+		E8EB3D6E17208318006727FA /* TexturePacker */ = {
+			isa = PBXGroup;
+			children = (
+				E8EB3D6F17208318006727FA /* CommandLineParser.cpp */,
+				E8EB3D7017208318006727FA /* CommandLineParser.h */,
+				E8EB3D7117208318006727FA /* DefinitionFile.cpp */,
+				E8EB3D7217208318006727FA /* DefinitionFile.h */,
+				E8EB3D7317208318006727FA /* ImagePacker.cpp */,
+				E8EB3D7417208318006727FA /* ImagePacker.h */,
+				E8EB3D7517208318006727FA /* PngImage.cpp */,
+				E8EB3D7617208318006727FA /* PngImage.h */,
+				E8EB3D7717208318006727FA /* ResourcePacker2D.cpp */,
+				E8EB3D7817208318006727FA /* ResourcePacker2D.h */,
+				E8EB3D7917208318006727FA /* TexturePacker.cpp */,
+				E8EB3D7A17208318006727FA /* TexturePacker.h */,
+			);
+			name = TexturePacker;
+			path = ../../../Sources/Tools/TexturePacker;
 			sourceTree = "<group>";
 		};
 		ED1E82605DD74B483AF3C982 /* External Frameworks and Libraries */ = {
@@ -1293,6 +1329,9 @@
 				C18593F216F30D67005D30E2 /* flagspropertygridwidget.ui in Bundle Resources */,
 				C18593FB16F31B2F005D30E2 /* aggregatorpropertygridwidget.ui in Bundle Resources */,
 				17C5CCD516F31E5300FB90B4 /* spinnerpropertygridwidget.ui in Bundle Resources */,
+				748A9423170C599C0087E18A /* listpropertygridwidget.ui in Bundle Resources */,
+				49B0263F1709D6B5001E28CC /* importdialog.ui in Bundle Resources */,
+				49B026421709D6BD001E28CC /* importdialogfilewidget.ui in Bundle Resources */,
 			);
 			name = "Bundle Resources";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1403,13 +1442,6 @@
 				7482C8C71688AA9100435155 /* UISliderMetadata.cpp in Build Sources */,
 				7482C8CA1688AA9F00435155 /* sliderpropertygridwidget.cpp in Build Sources */,
 				173339E71694472600E98820 /* UndoRedoController.cpp in Build Sources */,
-				74819F2D169F1435000FE4B1 /* CommandLineParser.cpp in Build Sources */,
-				74819F2E169F1435000FE4B1 /* DefinitionFile.cpp in Build Sources */,
-				74819F2F169F1435000FE4B1 /* ImagePacker.cpp in Build Sources */,
-				74819F30169F1435000FE4B1 /* PngImage.cpp in Build Sources */,
-				74819F31169F1435000FE4B1 /* TexturePacker.cpp in Build Sources */,
-				74819F34169F1493000FE4B1 /* ResourcePacker.cpp in Build Sources */,
-				74819F37169F1946000FE4B1 /* PVRConverter.cpp in Build Sources */,
 				74EED63216B18C7600262D63 /* alignspropertygridwidget.cpp in Build Sources */,
 				1710178B16EE197900BC7AE0 /* UIListMetadata.cpp in Build Sources */,
 				1710179016EE2F3200BC7AE0 /* UISpinnerMetadata.cpp in Build Sources */,
@@ -1456,13 +1488,6 @@
 				02D69CC516F08CEE00F3803F /* HierarchyTreePlatformNode_moc.cpp in Build Sources */,
 				02D69CC616F08CEE00F3803F /* HierarchyTreeRootNode_moc.cpp in Build Sources */,
 				02D69CC716F08CEE00F3803F /* HierarchyTreeScreenNode_moc.cpp in Build Sources */,
-				02D69CC816F08CEE00F3803F /* ResourcePacker_moc.cpp in Build Sources */,
-				02D69CC916F08CEE00F3803F /* CommandLineParser_moc.cpp in Build Sources */,
-				02D69CCA16F08CEE00F3803F /* DefinitionFile_moc.cpp in Build Sources */,
-				02D69CCB16F08CEE00F3803F /* ImagePacker_moc.cpp in Build Sources */,
-				02D69CCC16F08CEE00F3803F /* PngImage_moc.cpp in Build Sources */,
-				02D69CCD16F08CEE00F3803F /* PVRConverter_moc.cpp in Build Sources */,
-				02D69CCE16F08CEE00F3803F /* TexturePacker_moc.cpp in Build Sources */,
 				02D69CCF16F08CEE00F3803F /* ScreenControl_moc.cpp in Build Sources */,
 				02D69CD016F08CEE00F3803F /* ScreenManager_moc.cpp in Build Sources */,
 				02D69CD116F08CEE00F3803F /* ScreenWrapper_moc.cpp in Build Sources */,
@@ -1507,6 +1532,25 @@
 				498B61FD16F76E2C009D4417 /* IconHelper.cpp in Build Sources */,
 				17C5CCD916F323B700FB90B4 /* spinnerpropertygridwidget_moc.cpp in Build Sources */,
 				17C5CCDC16F323E900FB90B4 /* spinnerpropertygridwidget.cpp in Build Sources */,
+				7497D74D1705AD5500E1DE60 /* UISwitchMetadata.cpp in Build Sources */,
+				7497D74F1705AD7200E1DE60 /* UISwitchMetadata_moc.cpp in Build Sources */,
+				1707BA111709C90D00D69DC0 /* SubcontrolsHelper.cpp in Build Sources */,
+				748A9427170C59DF0087E18A /* listpropertygridwidget.cpp in Build Sources */,
+				748A942A170C5C650087E18A /* listpropertygridwidget_moc.cpp in Build Sources */,
+				7410E82A171462C70028AAAA /* EditorListDelegate.cpp in Build Sources */,
+				49B0264C1709DA7D001E28CC /* importdialogfilewidget.cpp in Build Sources */,
+				49B02651170AC25D001E28CC /* importdialog.cpp in Build Sources */,
+				49FD832F170B24E800F3B650 /* ImportCommands.cpp in Build Sources */,
+				497774C0170DB808004CE2FB /* importdialogfilewidget_moc.cpp in Build Sources */,
+				497774C2170DB80F004CE2FB /* importdialog_moc.cpp in Build Sources */,
+				E8EB3D7B17208318006727FA /* DXTConverter.cpp in Build Sources */,
+				E8EB3D7C17208318006727FA /* PVRConverter.cpp in Build Sources */,
+				E8EB3D7D17208318006727FA /* CommandLineParser.cpp in Build Sources */,
+				E8EB3D7E17208318006727FA /* DefinitionFile.cpp in Build Sources */,
+				E8EB3D7F17208318006727FA /* ImagePacker.cpp in Build Sources */,
+				E8EB3D8017208318006727FA /* PngImage.cpp in Build Sources */,
+				E8EB3D8117208318006727FA /* ResourcePacker2D.cpp in Build Sources */,
+				E8EB3D8217208318006727FA /* TexturePacker.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1544,14 +1588,15 @@
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtOpenGL",
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include",
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/mkspecs/macx-xcode",
-					../dava.framework/Sources/Internal,
-					../dava.framework/Sources/External,
-					../dava.framework/Sources/External/Freetype,
-					../dava.framework/Libs/oggvorbis/include,
-					../dava.framework/Sources/Libs/include,
+					../../Sources/Internal,
+					../../Sources/Tools,
+					../../Sources/External,
+					../../Sources/External/Freetype,
+					../../Libs/oggvorbis/include,
+					../../Sources/Libs/include,
 					Classes,
-					../dava.framework/Libs/libs,
-					../dava.framework/Libs/freetype/include,
+					../../Libs/libs,
+					../../Libs/freetype/include,
 					/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers,
 					/System/Library/Frameworks/AGL.framework/Headers,
 					.,
@@ -1616,35 +1661,6 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = DAVA_SAVE_TO_YAML;
-				HEADER_SEARCH_PATHS = (
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework/Versions/4/Headers",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtCore",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework/Versions/4/Headers",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtNetwork",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework/Versions/4/Headers",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtGui",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework/Versions/4/Headers",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtOpenGL",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/mkspecs/macx-xcode",
-					../../Sources/Internal,
-					../../Sources/External,
-					../../Sources/External/Freetype,
-					../../Libs/oggvorbis/include,
-					../../Sources/Libs/include,
-					./Classes,
-					../../Libs/libs,
-					../../Libs/freetype/include,
-					/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers,
-					/System/Library/Frameworks/AGL.framework/Headers,
-					.,
-					/usr/local/include,
-					/System/Library/Frameworks/CarbonCore.framework/Headers,
-					"../../Libs/ImageMagick-6.7.4/",
-					"../../Libs/ImageMagick-6.7.4/delegates/include",
-					"../../Libs/ImageMagick-6.7.4/include/ImageMagick",
-					../../Libs/libpng/include/,
-				);
 				LIBRARY_SEARCH_PATHS = (
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
 					/System/Library/Frameworks/,
@@ -1669,35 +1685,6 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					DAVA_DEBUG,
 					DAVA_SAVE_TO_YAML,
-				);
-				HEADER_SEARCH_PATHS = (
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework/Versions/4/Headers",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtCore",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework/Versions/4/Headers",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtNetwork",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework/Versions/4/Headers",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtGui",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework/Versions/4/Headers",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtOpenGL",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include",
-					"~/QtSDK/Desktop/Qt/4.8.1/gcc/mkspecs/macx-xcode",
-					../../Sources/Internal,
-					../../Sources/External,
-					../../Sources/External/Freetype,
-					../../Libs/oggvorbis/include,
-					../../Sources/Libs/include,
-					./Classes,
-					../../Libs/libs,
-					../../Libs/freetype/include,
-					/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers,
-					/System/Library/Frameworks/AGL.framework/Headers,
-					.,
-					/usr/local/include,
-					/System/Library/Frameworks/CarbonCore.framework/Headers,
-					"../../Libs/ImageMagick-6.7.4/",
-					"../../Libs/ImageMagick-6.7.4/delegates/include",
-					"../../Libs/ImageMagick-6.7.4/include/ImageMagick",
-					../../Libs/libpng/include/,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
@@ -1734,14 +1721,15 @@
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtOpenGL",
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include",
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/mkspecs/macx-xcode",
-					../dava.framework/Sources/Internal,
-					../dava.framework/Sources/External,
-					../dava.framework/Sources/External/Freetype,
-					../dava.framework/Libs/oggvorbis/include,
-					../dava.framework/Sources/Libs/include,
+					../../Sources/Internal,
+					../../Sources/Tools,
+					../../Sources/External,
+					../../Sources/External/Freetype,
+					../../Libs/oggvorbis/include,
+					../../Sources/Libs/include,
 					Classes,
-					../dava.framework/Libs/libs,
-					../dava.framework/Libs/freetype/include,
+					../../Libs/libs,
+					../../Libs/freetype/include,
 					/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers,
 					/System/Library/Frameworks/AGL.framework/Headers,
 					.,

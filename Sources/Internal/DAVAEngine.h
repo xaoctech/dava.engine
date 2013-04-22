@@ -96,6 +96,7 @@
 #include "FileSystem/XMLParser.h"
 #include "FileSystem/YamlParser.h"
 #include "FileSystem/Parser.h"
+#include "FileSystem/FilePath.h"
 
 
 // Collisions
@@ -198,8 +199,6 @@
 #include "Particles/ParticleEmitterObject.h"
 #include "Particles/ParticleEmitter3D.h"
 #include "Particles/ParticleLayer3D.h"
-#include "Particles/ParticleLayerLong.h"
-
 
 // 3D core classes
 #include "Scene3D/SceneFile.h"
@@ -223,6 +222,7 @@
 #include "Render/Highlevel/Heightmap.h"
 #include "Render/Highlevel/Light.h"
 #include "Render/Highlevel/Mesh.h"
+#include "Render/Highlevel/ShadowVolume.h"
 #include "Render/Highlevel/SpriteObject.h"
 #include "Render/Highlevel/RenderObject.h"
 #include "Render/Highlevel/RenderFastNames.h"
