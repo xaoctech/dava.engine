@@ -40,7 +40,7 @@ class File;
 class SoundWVProvider : public SoundDataProvider
 {
 public:
-	SoundWVProvider(const String & fileName);
+	SoundWVProvider(const FilePath & fileName);
 	virtual ~SoundWVProvider();
 
 	virtual bool Init();

@@ -41,9 +41,9 @@
 
 namespace DAVA
 {
-Cursor * Cursor::Create(const String & cursorPathname, const Vector2 & hotSpot)
+Cursor * Cursor::Create(const FilePath & cursorPathname, const Vector2 & hotSpot)
 {
-	const String & realPath = FileSystem::Instance()->SystemPathForFrameworkPath(cursorPathname);
+	const String realPath = cursorPathname.ResolvePathname();
 	NSImage * image = [[NSImage alloc] initByReferencingFile:[NSString stringWithFormat:@"%s", realPath.c_str()]];
 	if (!image)
 	{

@@ -29,7 +29,7 @@ QString ProjectManager::CurProjectPath()
 
 QString ProjectManager::CurProjectDataSourcePath()
 {
-	return QString(EditorSettings::Instance()->GetDataSourcePath().c_str());
+	return QString(EditorSettings::Instance()->GetDataSourcePath().GetAbsolutePathname().c_str());
 }
 
 QString ProjectManager::ProjectOpenDialog()
@@ -47,13 +47,10 @@ void ProjectManager::ProjectOpen(const QString &path)
 
 		if(!curProjectPath.isEmpty())
 		{
-			DAVA::String projectPath = PathnameToDAVAStyle(path);
-			if('/' != projectPath[projectPath.length() - 1])
-			{
-				projectPath += '/';
-			}
+			DAVA::FilePath projectPath = PathnameToDAVAStyle(path);
+            projectPath.MakeDirectoryPathname();
 
-			DAVA::String dataSource3Dpathname = projectPath + DAVA::String("DataSource/3d/");
+			DAVA::FilePath dataSource3Dpathname = projectPath + DAVA::FilePath("DataSource/3d/");
 
 			EditorSettings::Instance()->SetProjectPath(projectPath);
 			EditorSettings::Instance()->SetDataSourcePath(dataSource3Dpathname);
@@ -62,7 +59,7 @@ void ProjectManager::ProjectOpen(const QString &path)
 			SceneValidator::Instance()->CreateDefaultDescriptors(dataSource3Dpathname);
 			SceneValidator::Instance()->SetPathForChecking(projectPath);
 
-			EditorConfig::Instance()->ParseConfig(projectPath + "EditorConfig.yaml");
+			EditorConfig::Instance()->ParseConfig(projectPath + FilePath("EditorConfig.yaml"));
 		}
 
 		SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());

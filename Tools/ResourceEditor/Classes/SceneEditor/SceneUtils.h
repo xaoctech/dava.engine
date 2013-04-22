@@ -10,23 +10,22 @@ public:
 	SceneUtils();
     ~SceneUtils();
     
-    void CleanFolder(const DAVA::String &folderPathname, DAVA::Set<DAVA::String> &errorLog);
+    void CleanFolder(const DAVA::FilePath &folderPathname, DAVA::Set<DAVA::String> &errorLog);
     
-    void SetInFolder(const DAVA::String &folderPathname);
-    void SetOutFolder(const DAVA::String &folderPathname);
+    void SetInFolder(const DAVA::FilePath &folderPathname);
+    void SetOutFolder(const DAVA::FilePath &folderPathname);
     
-    bool CopyFile(const DAVA::String &filePathname, DAVA::Set<DAVA::String> &errorLog);
+    bool CopyFile(const DAVA::FilePath &filePathname, DAVA::Set<DAVA::String> &errorLog);
     
-    DAVA::String NormalizeFolderPath(const DAVA::String &pathname);
-    DAVA::String RemoveFolderFromPath(const DAVA::String &pathname, const DAVA::String &folderPathname);
+    DAVA::String RemoveFolderFromPath(const DAVA::FilePath &pathname, const DAVA::FilePath &folderPathname);
 
-    void PrepareFolderForCopy(const DAVA::String &filePathname, DAVA::Set<DAVA::String> &errorLog);
+    void PrepareFolderForCopy(const DAVA::FilePath &filePathname, DAVA::Set<DAVA::String> &errorLog);
 
 public:
 
-    DAVA::String dataFolder;
-    DAVA::String dataSourceFolder;
-    DAVA::String workingFolder;
+    DAVA::FilePath dataFolder;
+    DAVA::FilePath dataSourceFolder;
+    DAVA::FilePath workingFolder;
 };
 
 

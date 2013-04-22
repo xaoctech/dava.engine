@@ -44,7 +44,7 @@ public:
 	LocalizationSystem();
 	virtual ~LocalizationSystem();
 	
-	void InitWithDirectory(const String &directoryPath);
+	void InitWithDirectory(const FilePath &directoryPath);
 	
 	const String &GetCurrentLocale();
 	void SetCurrentLocale(const String &newLangId);
@@ -53,7 +53,7 @@ public:
 	void SetLocalizedString(const WideString & key, const WideString & value);
 	void RemoveLocalizedString(const WideString & key);
 
-    const String& GetDirectoryPath() const;
+    const FilePath& GetDirectoryPath() const;
 
     void Cleanup();
 
@@ -66,22 +66,22 @@ public:
 
 private:
 
-	void LoadStringFile(const String & langId, const String & fileName);
-	void UnloadStringFile(const String & fileName); 
+	void LoadStringFile(const String & langId, const FilePath & fileName);
+	void UnloadStringFile(const FilePath & fileName); 
 
 	String langId;
-    String directoryPath;
+    FilePath directoryPath;
 	
 	struct StringFile
 	{
-		String pathName;
+		FilePath pathName;
 		String langId;
 		Map<WideString, WideString> strings;
 	};
 	List<StringFile*> stringsList;
 
 	// Load/Save functionality.
-	StringFile* LoadFromYamlFile(const String & langID, const String & fileName);
+	StringFile* LoadFromYamlFile(const String & langID, const FilePath & fileName);
 	bool SaveToYamlFile(const StringFile* stringFile);
 
 	YamlParser::YamlDataHolder *dataHolder;
