@@ -86,7 +86,7 @@ if None != connection:
 	currTest = collection.find_one({'_id': testID})
 	if None != currTest:
 		report.write('<H2> Device: ' + currTest['DeviceDescription'] + '</H2>\n')
-		report.write('<H3> Date: ' + str(datetime.datetime.now()) + '</H3></br>\n')
+		report.write('<H3> Date: ' + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + '</H3></br>\n')
 		
 		
 		report.write('<table border="3" cellspacing="2"><tr>\n')
@@ -146,7 +146,7 @@ if None != connection:
 	else:
 		LogError(report, "There are no test with ID: " + testID)
 		
-	collection.remove({"_id": testID})
+#	collection.remove({"_id": testID})
 	
 else:
 	LogError(report, "Can't connect to Database")
