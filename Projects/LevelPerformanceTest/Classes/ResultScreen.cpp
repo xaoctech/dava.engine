@@ -4,6 +4,8 @@
 #include "Config.h"
 #include "DeviceInfo.h"
 
+using namespace DAVA;
+
 ResultScreen::ResultScreen(const LandscapeTestData& testData, const FilePath& filename, Texture* landscapeTexture)
 :	isFinished(false),
 	state(RESULT_STATE_NORMAL),
