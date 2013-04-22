@@ -50,9 +50,6 @@
 namespace DAVA 
 {
     
-#define FORMAT_ETC_WILL_BE_ENABLED_LATER 0x0D0A
-
-    
 uint32 LibPVRHelper::GetBitsPerPixel(uint64 pixelFormat)
 {
 #if defined (__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
@@ -1636,8 +1633,7 @@ const PixelFormat LibPVRHelper::GetCompressedFormat(const uint64 pixelFormat)
         }
         case ePVRTPF_ETC1:
         {
-//            return FORMAT_ETC_WILL_BE_ENABLED_LATER;
-            return FORMAT_INVALID;
+            return FORMAT_ETC1;
         }
             
         default:
@@ -1844,6 +1840,10 @@ bool LibPVRHelper::ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize,
         }
         else
         {
+#if defined (__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+			DVASSERT(false && "Must be hardware supported");
+			return false;
+#else //#if defined (__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
             //Create a near-identical texture header for the decompressed header.
             PVRHeaderV3 decompressedHeader = CreateDecompressedHeader(compressedHeader);
             if(!AllocateImageData(image, mipMapLevel, decompressedHeader))
@@ -1860,21 +1860,17 @@ bool LibPVRHelper::ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize,
             uint32 compressedFaceOffset = GetTextureDataSize(compressedHeader, mipMapLevel, false, false);
             for (uint32 uiFace=0;uiFace<compressedHeader.u32NumFaces;++uiFace)
             {
-#if defined (__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-                DVASSERT(false && "Must be hardware supported");
-#else //#if defined (__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
                 PVRTDecompressPVRTC(pTempCompData, (FORMAT_PVR2 == formatDescriptor.formatID) ? 1 : 0, image->width, image->height, pTempDecompData);
-#endif //#if defined (__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-                
                 //Move forward through the pointers.
                 pTempDecompData+=decompressedFaceOffset;
                 pTempCompData+=compressedFaceOffset;
             }
             image->format = FORMAT_RGBA8888;
+#endif //#if defined (__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)			
         }
     }
-#if !defined(__DAVAENGINE_IPHONE__) && !defined (__DAVAENGINE_ANDROID__)
-    else if (FORMAT_ETC_WILL_BE_ENABLED_LATER == formatDescriptor.formatID)
+#if !defined(__DAVAENGINE_IPHONE__)
+    else if (FORMAT_ETC1 == formatDescriptor.formatID)
     {
         if(deviceCaps.isETCSupported)
         {
@@ -1887,6 +1883,10 @@ bool LibPVRHelper::ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize,
         else
         {
             //Create a near-identical texture header for the decompressed header.
+#if defined (__DAVAENGINE_ANDROID__)
+			DVASSERT(!"Must be hardware supported");
+			return false;
+#else
             PVRHeaderV3 decompressedHeader = CreateDecompressedHeader(compressedHeader);
             if(!AllocateImageData(image, mipMapLevel, decompressedHeader))
             {
@@ -1909,6 +1909,7 @@ bool LibPVRHelper::ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize,
                 pTempCompData += compressedFaceOffset;
             }
             image->format = FORMAT_RGBA8888;
+#endif //defined (__DAVAENGINE_ANDROID__)
         }
     }
 #endif //#if !defined(__DAVAENGINE_IPHONE__)
@@ -2100,24 +2101,24 @@ bool LibPVRHelper::PreparePVRData(const char* pvrData, const int32 pvrDataSize)
     return true;
 }
 
-PixelFormat LibPVRHelper::GetPixelFormat(const String &filePathname)
+PixelFormat LibPVRHelper::GetPixelFormat(const FilePath &filePathname)
 {
     PVRHeaderV3 header = GetHeader(filePathname);
     return GetTextureFormat(header);
 }
     
-uint32 LibPVRHelper::GetDataLength(const String &filePathname)
+uint32 LibPVRHelper::GetDataLength(const FilePath &filePathname)
 {
     PVRHeaderV3 header = GetHeader(filePathname);
     return GetTextureDataSize(header);
 }
 
-PVRHeaderV3 LibPVRHelper::GetHeader(const String &filePathname)
+PVRHeaderV3 LibPVRHelper::GetHeader(const FilePath &filePathname)
 {
     File *file = File::Create(filePathname, File::READ | File::OPEN);
     if(!file)
     {
-        Logger::Error("[LibPVRHelper::GetHeaderForFile] cannot open file %s", filePathname.c_str());
+        Logger::Error("[LibPVRHelper::GetHeaderForFile] cannot open file %s", filePathname.GetAbsolutePathname().c_str());
         return PVRHeaderV3();
     }
     

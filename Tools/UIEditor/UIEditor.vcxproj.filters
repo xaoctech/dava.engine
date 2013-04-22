@@ -540,10 +540,16 @@
     <ClCompile Include="Classes\Metadata\UISpinnerMetadata.cpp">
       <Filter>Sources\Metadata</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Metadata\UISwitchMetadata.cpp">
+      <Filter>Sources\Metadata</Filter>
+    </ClCompile>
     <ClCompile Include="GeneratedFiles\Metadata\UIListMetadata_moc.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Metadata\UISpinnerMetadata_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Metadata\UISwitchMetadata_moc.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Models\HierarchyTreeAggregatorControlNode.cpp">
@@ -590,6 +596,36 @@
     </ClCompile>
     <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\spinnerpropertygridwidget_moc.cpp">
       <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Helpers\SubcontrolsHelper.cpp">
+      <Filter>Sources\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\EditorListDelegate.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\PropertyGridWidgets\listpropertygridwidget.cpp">
+      <Filter>Sources\UI\PropertyGridWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\listpropertygridwidget_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\EditorListDelegate_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\ImportCommands.cpp">
+      <Filter>Sources\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\importdialogfilewidget_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\Dialogs\importdialog_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\importdialogfilewidget.cpp">
+      <Filter>Sources\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\Dialogs\importdialog.cpp">
+      <Filter>Sources\UI\Dialogs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -890,6 +926,9 @@
     <ClInclude Include="Classes\Metadata\UISpinnerMetadata.h">
       <Filter>Sources\Metadata</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Metadata\UISwitchMetadata.h">
+      <Filter>Sources\Metadata</Filter>
+    </ClInclude>
     <ClInclude Include="Classes\Models\HierarchyTreeAggregatorControlNode.h">
       <Filter>Sources\Models</Filter>
     </ClInclude>
@@ -916,6 +955,33 @@
     </ClInclude>
     <ClInclude Include="Classes\UI\PropertyGridWidgets\spinnerpropertygridwidget.h">
       <Filter>Sources\UI\PropertyGridWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Helpers\SubcontrolsHelper.h">
+      <Filter>Sources\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\EditorListDelegate.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertyGridWidgets\listpropertygridwidget.h">
+      <Filter>Sources\UI\PropertyGridWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_listpropertygridwidget.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\ImportCommands.h">
+      <Filter>Sources\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_importdialog.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_importdialogfilewidget.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\importdialogfilewidget.h">
+      <Filter>Sources\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\Dialogs\importdialog.h">
+      <Filter>Sources\UI\Dialogs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -987,6 +1053,15 @@
     </None>
     <None Include="Data\icons.qrc">
       <Filter>Resources</Filter>
+    </None>
+    <None Include="UI\listpropertygridwidget.ui">
+      <Filter>Form Files\PropertyGridWidgets</Filter>
+    </None>
+    <None Include="UI\platformimportfilewidget.ui">
+      <Filter>Form Files</Filter>
+    </None>
+    <None Include="UI\platformimportdialog.ui">
+      <Filter>Form Files\Dialogs</Filter>
     </None>
   </ItemGroup>
 </Project>

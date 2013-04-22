@@ -67,7 +67,7 @@ void CommandOpenProject::Execute()
 
 
 //Open scene
-CommandOpenScene::CommandOpenScene(const DAVA::String &scenePathname/* = DAVA::String("") */)
+CommandOpenScene::CommandOpenScene(const DAVA::FilePath &scenePathname/* = DAVA::FilePath() */)
     :   Command(Command::COMMAND_CLEAR_UNDO_QUEUE)
     ,   selectedScenePathname(scenePathname)
 {
@@ -76,13 +76,13 @@ CommandOpenScene::CommandOpenScene(const DAVA::String &scenePathname/* = DAVA::S
 
 void CommandOpenScene::Execute()
 {
-    if(0 == selectedScenePathname.length())
+    if(!selectedScenePathname.IsInitalized())
     {
-        String dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
-        selectedScenePathname = GetOpenFileName(String("Open Scene File"), (dataSourcePath.c_str()), String("Scene File (*.sc2)"));
+        FilePath dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
+        selectedScenePathname = GetOpenFileName(String("Open Scene File"), dataSourcePath, String("Scene File (*.sc2)"));
     }
     
-    if(0 < selectedScenePathname.size())
+    if(selectedScenePathname.IsInitalized())
     {
         SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
         if(screen)
@@ -92,10 +92,12 @@ void CommandOpenScene::Execute()
             EditorSettings::Instance()->AddLastOpenedFile(selectedScenePathname);
             screen->OpenFileAtScene(selectedScenePathname);
             
+			QtMainWindowHandler::Instance()->SelectMaterialViewOption(Material::MATERIAL_VIEW_TEXTURE_LIGHTMAP);
+
             //GUIState::Instance()->SetNeedUpdatedFileMenu(true);
         }
         
-        QtMainWindowHandler::Instance()->ShowStatusBarMessage(selectedScenePathname);
+        QtMainWindowHandler::Instance()->ShowStatusBarMessage(selectedScenePathname.GetAbsolutePathname());
     }
 }
 
@@ -131,8 +133,8 @@ void CommandSaveScene::Execute()
     {
         SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
         
-		String currentPath;
-		if(0 < screen->CurrentScenePathname().length())
+		FilePath currentPath;
+		if(screen->CurrentScenePathname().IsInitalized())
 		{
 			currentPath = screen->CurrentScenePathname();    
 		}
@@ -141,12 +143,12 @@ void CommandSaveScene::Execute()
 			currentPath = EditorSettings::Instance()->GetDataSourcePath();
 		}
 
-        QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save Scene File"), QString(currentPath.c_str()),
+        QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save Scene File"), QString(currentPath.GetAbsolutePathname().c_str()),
                                                         QString("Scene File (*.sc2)")
                                                         );
         if(0 < filePath.size())
         {
-			String normalizedPathname = PathnameToDAVAStyle(filePath);
+			FilePath normalizedPathname = PathnameToDAVAStyle(filePath);
 
             EditorSettings::Instance()->AddLastOpenedFile(normalizedPathname);
 
@@ -184,8 +186,8 @@ void CommandSaveScene::SaveParticleEmitterNodeRecursive(Entity* parentNode)
 	if (needSaveThisLevelNode)
 	{
 		// Do we have file name? Ask for it, if not.
-		String yamlPath = emitter->GetConfigPath();
-		if (yamlPath.empty())
+		FilePath yamlPath = emitter->GetConfigPath();
+		if (!yamlPath.IsInitalized())
 		{
 			QString saveDialogCaption = QString("Save Particle Emitter \"%1\"").arg(QString::fromStdString(parentNode->GetName()));
 			QString saveDialogYamlPath = QFileDialog::getSaveFileName(NULL, saveDialogCaption, "", QString("Yaml File (*.yaml)"));
@@ -196,7 +198,7 @@ void CommandSaveScene::SaveParticleEmitterNodeRecursive(Entity* parentNode)
 			}
 		}
 
-		if (!yamlPath.empty())
+		if (yamlPath.IsInitalized())
 		{
 			emitter->SaveToYaml(yamlPath);
 		}
@@ -241,11 +243,8 @@ void CommandSaveToFolderWithChilds::Execute()
 	
     if(0 < path.size())
     {
-		String folderPath = PathnameToDAVAStyle(path);
-		if('/' != folderPath[folderPath.length() - 1])
-        {
-            folderPath += '/';
-        }
+		FilePath folderPath = PathnameToDAVAStyle(path);
+        folderPath.MakeDirectoryPathname();
 
 		SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
 		if(screen)

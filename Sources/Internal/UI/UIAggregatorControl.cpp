@@ -7,6 +7,7 @@
 //
 
 #include "UIAggregatorControl.h"
+#include "FileSystem/FileSystem.h"
 
 using namespace DAVA;
 
@@ -31,8 +32,8 @@ UIControl* UIAggregatorControl::Clone()
 YamlNode* UIAggregatorControl::SaveToYamlNode(UIYamlLoader * loader)
 {
 	YamlNode* node = UIControl::SaveToYamlNode(loader);
-	node->Set("type", "UIAggregatorControl");
-	node->Set(AGGREGATOR_PATH, aggregatorPath);
+	SetPreferredNodeType(node, "UIAggregatorControl");
+	node->Set(AGGREGATOR_PATH, aggregatorPath.GetAbsolutePathname());
 	return node;
 }
 
@@ -43,9 +44,15 @@ void UIAggregatorControl::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loade
 	YamlNode * pathNode = node->Get(AGGREGATOR_PATH);
 	if (pathNode)
 	{
-		aggregatorPath = pathNode->AsString();
+		aggregatorPath = FilePath(pathNode->AsString());
+		String aggregatorFileName = aggregatorPath.GetFilename();
+
+		aggregatorPath = loader->GetCurrentPath() + FilePath(aggregatorFileName);
+
 		UIYamlLoader loader;
 		loader.Load(this, aggregatorPath);
+
+		aggregatorPath = FilePath(aggregatorFileName);
 	}
 }
 
@@ -61,11 +68,6 @@ List<UIControl* >& UIAggregatorControl::GetRealChildren()
 	return realChilds;
 }
 
-void UIAggregatorControl::CleanAggregatorChilds()
-{
-	
-}
-
 void UIAggregatorControl::AddAggregatorChild(UIControl* uiControl)
 {
 	//AddControl(uiControl);
@@ -73,12 +75,12 @@ void UIAggregatorControl::AddAggregatorChild(UIControl* uiControl)
 	aggregatorControls.push_back(uiControl);
 }
 
-void UIAggregatorControl::SetAggregatorPath(const String& path)
+void UIAggregatorControl::SetAggregatorPath(const FilePath& path)
 {
 	aggregatorPath = path;
 }
 
-String UIAggregatorControl::GetAggregatorPath() const
+const FilePath & UIAggregatorControl::GetAggregatorPath() const
 {
 	return aggregatorPath;
 }

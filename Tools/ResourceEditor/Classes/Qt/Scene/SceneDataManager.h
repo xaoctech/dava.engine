@@ -27,16 +27,16 @@ public:
 	SceneData* CreateNewScene();
 
 	// Add the new scene.
-	void AddScene(const DAVA::String &scenePathname);
+	void AddScene(const FilePath &scenePathname);
 
 	// Edit the existing level scene.
-	void EditLevelScene(const String &scenePathname);
+	void EditLevelScene(const FilePath &scenePathname);
 
 	// Edit the active scene.
-	void EditActiveScene(const String &scenePathname);
+	void EditActiveScene(const FilePath &scenePathname);
 
 	// Reload the scene.
-	void ReloadScene(const String &scenePathname);
+	void ReloadScene(const FilePath &scenePathname, const FilePath &newScenePathname);
 
 	DAVA::Entity*	SceneGetSelectedNode(SceneData *scene);
 	DAVA::Entity*	SceneGetRootNode(SceneData *scene);
@@ -44,7 +44,7 @@ public:
 	SceneData*			SceneGetLevel();
 	SceneData*			SceneGet(DAVA::int32 index);
 	DAVA::int32			SceneCount();
-	void				SceneShowPreview(const DAVA::String &path);
+	void				SceneShowPreview(const FilePath &path);
 	void				SceneHidePreview();
     
 	void				TextureCompressAllNotCompressed();
@@ -96,14 +96,14 @@ protected:
 	static void CollectLandscapeTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, DAVA::Landscape *forNode);
 	static void CollectTexture(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, const DAVA::String &name, DAVA::Texture *tex);
 
-	void RestoreTexture(const DAVA::String &descriptorPathname, DAVA::Texture *texture);
+	void RestoreTexture(const DAVA::FilePath &descriptorPathname, DAVA::Texture *texture);
 	void CompressTextures(const List<Texture *> texturesForCompression, ImageFileFormat fileFormat);
 
 	// Edit Scene implementation for any kind of scenes.
-	void EditScene(SceneData* sceneData, const String &scenePathname);
+	void EditScene(SceneData* sceneData, const FilePath &scenePathname);
 
 	// Reload the scene node in a recursive way.
-	void ReloadNode(EditorScene* scene, Entity *node, const String &nodePathname);
+	void ReloadNode(EditorScene* scene, Entity *node, const FilePath &nodePathname, const FilePath &fromPathname, Set<String> &errors);
 
 	// Update the Particle Editor sprites.
 	void UpdateParticleSprites();

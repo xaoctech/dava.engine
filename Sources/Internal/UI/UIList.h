@@ -92,6 +92,12 @@ class UIListDelegate
      */
 	virtual void OnCellSelected(UIList *forList, UIListCell *selectedCell)
 	{};
+	
+	/**
+		\brief This metod is called by UIList when need to save.
+	*/
+	virtual void SaveToYaml(UIList *forList, YamlNode *node)
+	{};
 };
 /**
 	\ingroup controlsystem
@@ -167,8 +173,13 @@ public:
 	UIList(const Rect &rect, eListOrientation requiredOrientation, bool rectInAbsoluteCoordinates = false);
 	
 	void SetDelegate(UIListDelegate *newDelegate);
+	UIListDelegate * GetDelegate();
 	
     void ScrollToElement(int32 index);
+	
+	// Get and set aggregator path
+	const FilePath & GetAggregatorPath();
+	void SetAggregatorPath(const FilePath &aggregatorPath);
     
     float32 GetScrollPosition();
     void SetScrollPosition(float32 newScrollPos);
@@ -200,6 +211,8 @@ public:
     virtual float32 TotalAreaSize(UIScrollBar *forScrollBar);
     virtual float32 ViewPosition(UIScrollBar *forScrollBar);
     virtual void OnViewPositionChanged(UIScrollBar *byScrollBar, float32 newPosition);
+
+	virtual UIControl *Clone();
 
 protected:
 	void InitAfterYaml();
@@ -243,6 +256,7 @@ protected:
 	int32 touchHoldSize;
 	
 	bool needRefresh;
+	FilePath aggregatorPath;
 	
 
 	Map<String,Vector<UIListCell*>*> cellStore;

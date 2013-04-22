@@ -57,7 +57,6 @@ ParticleLayer::ParticleLayer()
 
 	size = 0;
 	sizeVariation = 0;
-	sizeOverLife = 0;
 
 	velocity = 0;
 	velocityVariation = 0;	
@@ -98,6 +97,8 @@ ParticleLayer::ParticleLayer()
 	frameOverLifeFPS = 0;
 
     isDisabled = false;
+
+	playbackSpeed = 1.0f;
 }
 
 ParticleLayer::~ParticleLayer()
@@ -134,8 +135,8 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	if (sizeVariation)
 		dstLayer->sizeVariation.Set(sizeVariation->Clone());
 	
-	if (sizeOverLife)
-		dstLayer->sizeOverLife.Set(sizeOverLife->Clone());
+	if (sizeOverLifeXY)
+		dstLayer->sizeOverLifeXY.Set(sizeOverLifeXY->Clone());
 	
 	if (velocity)
 		dstLayer->velocity.Set(velocity->Clone());
@@ -232,11 +233,17 @@ void ParticleLayer::SetSprite(Sprite * _sprite)
 	{
 		pivotPoint = Vector2(_sprite->GetWidth()/2.0f, _sprite->GetHeight()/2.0f);
 
-		String spritePath = FileSystem::GetCanonicalPath(sprite->GetRelativePathname());
-		const String configPath = FileSystem::Instance()->GetCanonicalPath(emitter->GetConfigPath());
-		String configFolder, configFile;
-		FileSystem::SplitPath(configPath, configFolder, configFile);
-		relativeSpriteName = FileSystem::AbsoluteToRelativePath(configFolder, spritePath);
+		FilePath spritePath = sprite->GetRelativePathname();
+        if(0 == spritePath.GetAbsolutePathname().find("FBO"))
+        {
+            //Sprite was saved incorrectly
+            relativeSpriteName = spritePath.GetAbsolutePathname();
+        }
+        else
+        {
+            const FilePath configPath = emitter->GetConfigPath();
+            relativeSpriteName = spritePath.GetRelativePathname(configPath.GetDirectory());
+        }
 	}
 }
 	
@@ -299,7 +306,8 @@ void ParticleLayer::Restart(bool isDeleteAllParticles)
 
 void ParticleLayer::Update(float32 timeElapsed)
 {
-	// increment timer	
+	// increment timer, take the playbackSpeed into account.
+	timeElapsed *= playbackSpeed;
 	layerTime += timeElapsed;
 
 	switch(type)
@@ -398,7 +406,9 @@ void ParticleLayer::GenerateSingleParticle()
 {
 	GenerateNewParticle(-1);
 	
-	head->angle = 0.0f;
+	// Yuri Coder, 2013/03/26. head->angle = 0.0f commented out because of DF-877.
+	//head->angle = 0.0f;
+
 	//particle->velocity.x = 0.0f;
 	//particle->velocity.y = 0.0f;
 }
@@ -440,8 +450,15 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 	if (sizeVariation)
 		particle->size +=(sizeVariation->GetValue(layerTime) * randCoeff);
 	
-	particle->size.x /= (float32)sprite->GetWidth();
-	particle->size.y /= (float32)sprite->GetHeight();
+	if(sprite)
+	{
+		particle->size.x /= (float32)sprite->GetWidth();
+		particle->size.y /= (float32)sprite->GetHeight();
+	}
+	else
+	{
+		particle->size = Vector2(0, 0);
+	}
 
 	float32 vel = 0.0f;
 	if (velocity)
@@ -465,7 +482,8 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 	if (angleVariation)
 		particle->angle += DegToRad(angleVariation->GetValue(layerTime) * randCoeff);
 
-	particle->sizeOverLife = 1.0f;
+	particle->sizeOverLife.x = 1.0f;
+	particle->sizeOverLife.y = 1.0f;
 	particle->velocityOverLife = 1.0f;
 	particle->spinOverLife = 1.0f;
 //	particle->forceOverLife0 = 1.0f;
@@ -542,8 +560,8 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 void ParticleLayer::ProcessParticle(Particle * particle)
 {
 	float32 t = particle->life / particle->lifeTime;
-	if (sizeOverLife)
-		particle->sizeOverLife = sizeOverLife->GetValue(t);
+	if (sizeOverLifeXY)
+		particle->sizeOverLife = sizeOverLifeXY->GetValue(t);
 	if (spinOverLife)
 		particle->spinOverLife = spinOverLife->GetValue(t);
 	if (velocityOverLife)
@@ -627,7 +645,7 @@ void ParticleLayer::Draw(Camera * camera)
 }
 
 
-void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
+void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 {
 // 	PropertyLine<float32> * life;				// in seconds
 // 	PropertyLine<float32> * lifeVariation;		// variation part of life that added to particle life during generation of the particle
@@ -681,10 +699,8 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 		
 		const String relativePathName = spriteNode->AsString();
 		relativeSpriteName = relativePathName;
-		String configFolder, configFile;
-		FileSystem::SplitPath(configPath, configFolder, configFile);
 		
-		String path = FileSystem::Instance()->GetCanonicalPath(configFolder+relativePathName);
+        FilePath path = configPath.GetDirectory() + FilePath(relativePathName);
 		Sprite * _sprite = Sprite::Create(path);
 		Vector2 pivotPointTemp;
 		if(pivotPointNode)
@@ -719,11 +735,31 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 	number = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "number");	
 	numberVariation = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "numberVariation");	
 
-	size = PropertyLineYamlReader::CreateVector2PropertyLineFromYamlNode(node, "size");	
-	sizeVariation = PropertyLineYamlReader::CreateVector2PropertyLineFromYamlNode(node, "sizeVariation");	
-	sizeOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "sizeOverLife");	
+	size = PropertyLineYamlReader::CreateVector2PropertyLineFromYamlNode(node, "size");
+	sizeVariation = PropertyLineYamlReader::CreateVector2PropertyLineFromYamlNode(node, "sizeVariation");
 
-	velocity = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "velocity");	
+	sizeOverLifeXY = PropertyLineYamlReader::CreateVector2PropertyLineFromYamlNode(node, "sizeOverLifeXY");
+
+	// Yuri Coder, 2013/04/03. sizeOverLife is outdated and kept here for the backward compatibility only.
+	// New property is sizeOverlifeXY and contains both X and Y components.
+	RefPtr< PropertyLine<float32> > sizeOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "sizeOverLife");
+	if (sizeOverLife)
+	{
+		if (sizeOverLifeXY)
+		{
+			// Both properties can't be present in the same config.
+			Logger::Error("Both sizeOverlife and sizeOverlifeXY are defined for Particle Layer %s, taking sizeOverlifeXY as default",
+						  configPath.GetAbsolutePathname().c_str());
+			DVASSERT(false);
+		}
+		else
+		{
+			// Only the outdated sizeOverlife is defined - create sizeOverlifeXY property based on outdated one.
+			FillSizeOverlifeXY(sizeOverLife);
+		}
+	}
+
+	velocity = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "velocity");
 	velocityVariation = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "velocityVariation");	
 	velocityOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "velocityOverLife");
 	
@@ -837,7 +873,7 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
     
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector2>(layerNode, "size", this->size);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector2>(layerNode, "sizeVariation", this->sizeVariation);
-    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "sizeOverLife", this->sizeOverLife);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector2>(layerNode, "sizeOverLifeXY", this->sizeOverLifeXY);
     
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "velocity", this->velocity);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "velocityVariation", this->velocityVariation);
@@ -921,9 +957,13 @@ RenderBatch * ParticleLayer::GetRenderBatch()
 
 void ParticleLayer::ReloadSprite()
 {
-	if (this->sprite)
+	if (sprite)
 	{
-		this->sprite->Reload();
+        DeleteAllParticles();
+        sprite->Reload();
+        UpdateFrameTimeline();
+        
+        pivotPoint = Vector2(sprite->GetWidth()/2.0f, sprite->GetHeight()/2.0f);
 	}
 	
 	UpdateFrameTimeline();
@@ -993,6 +1033,64 @@ void ParticleLayer::CleanupForces()
 	}
 	
 	this->forces.clear();
+}
+
+void ParticleLayer::FillSizeOverlifeXY(RefPtr< PropertyLine<float32> > sizeOverLife)
+{
+	Vector<PropValue<float32> > wrappedPropertyValues = PropLineWrapper<float32>(sizeOverLife).GetProps();
+	if (wrappedPropertyValues.empty())
+	{
+		this->sizeOverLifeXY = NULL;
+		return;
+	}
+	else if (wrappedPropertyValues.size() == 1)
+	{
+		Vector2 singleValue(wrappedPropertyValues[0].v, wrappedPropertyValues[0].v);
+		this->sizeOverLifeXY = RefPtr< PropertyLine<Vector2> >(new PropertyLineValue<Vector2>(singleValue));
+		return;
+	}
+
+	RefPtr<PropertyLineKeyframes<Vector2> > sizeOverLifeXYKeyframes =
+		RefPtr<PropertyLineKeyframes<Vector2> >(new PropertyLineKeyframes<Vector2>);
+	int32 propsCount = wrappedPropertyValues.size();
+	for (int32 i = 0; i < propsCount; i ++)
+	{
+		Vector2 curValue(wrappedPropertyValues[i].v, wrappedPropertyValues[i].v);
+		sizeOverLifeXYKeyframes->AddValue(wrappedPropertyValues[i].t, curValue);
+	}
+	
+	this->sizeOverLifeXY = sizeOverLifeXYKeyframes;
+}
+
+void ParticleLayer::SetPlaybackSpeed(float32 value)
+{
+	this->playbackSpeed = Clamp(value, PARTICLE_EMITTER_MIN_PLAYBACK_SPEED,
+								PARTICLE_EMITTER_MAX_PLAYBACK_SPEED);
+}
+
+float32 ParticleLayer::GetPlaybackSpeed()
+{
+	return this->playbackSpeed;
+}
+
+int32 ParticleLayer::GetActiveParticlesCount()
+{
+	return count;
+}
+
+float32 ParticleLayer::GetActiveParticlesArea()
+{
+	// Yuri Coder, 2013/04/16. Since the particles size are updated in runtime,
+	// we have to recalculate their area each time this method is called.
+	float32 activeArea = 0;
+	Particle * current = head;
+	while(current)
+	{
+		activeArea += current->GetArea();
+		current = current->next;
+	}
+
+	return activeArea;
 }
 
 }

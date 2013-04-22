@@ -368,13 +368,13 @@ ColorPicker::ColorPicker(ColorPickerDelegate *newDelegate)
     alphaValue->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &ColorPicker::OnAlphaChanged));
     alphaValue->SetMinMaxValue(0.f, 1.0f);
     alphaValue->SetValue(1.0f);
-    alphaValue->SetMinSprite("~res:/Gfx/LandscapeEditor/Tools/polzunok", 1);
+    alphaValue->SetMinSprite(FilePath("~res:/Gfx/LandscapeEditor/Tools/polzunok"), 1);
     alphaValue->SetMinDrawType(UIControlBackground::DRAW_STRETCH_HORIZONTAL);
     alphaValue->SetMinLeftRightStretchCap(5);
-    alphaValue->SetMaxSprite("~res:/Gfx/LandscapeEditor/Tools/polzunok", 0);
+    alphaValue->SetMaxSprite(FilePath("~res:/Gfx/LandscapeEditor/Tools/polzunok"), 0);
     alphaValue->SetMaxDrawType(UIControlBackground::DRAW_STRETCH_HORIZONTAL);
     alphaValue->SetMaxLeftRightStretchCap(5);
-    alphaValue->SetThumbSprite("~res:/Gfx/LandscapeEditor/Tools/polzunokCenter", 0);
+    alphaValue->SetThumbSprite(FilePath("~res:/Gfx/LandscapeEditor/Tools/polzunokCenter"), 0);
     draggableDialog->AddControl(alphaValue);
 
     Rect selectorRect(colorMapControl->GetRect());

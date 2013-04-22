@@ -61,7 +61,7 @@ void DataGraph::FillCell(UIHierarchyCell *cell, void *node)
     text->SetText(StringToWString(n->GetName()));
     
     UIControl *icon = cell->FindByName("_Icon_");
-    icon->SetSprite("~res:/Gfx/UI/SceneNode/datanode", 0);
+    icon->SetSprite(FilePath("~res:/Gfx/UI/SceneNode/datanode"), 0);
 
     UIControl *marker = cell->FindByName("_Marker_");
     marker->SetVisible(false);

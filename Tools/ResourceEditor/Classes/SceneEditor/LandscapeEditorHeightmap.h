@@ -37,7 +37,7 @@ public:
     virtual void TextureDidChanged(const String &forKey);
 
 	Heightmap* GetHeightmap();
-	void UpdateHeightmap(Heightmap* heightmap);
+	void UpdateHeightmap(Heightmap* heightmap, Rect rect = Rect(-1, -1, -1, -1));
 
 	virtual void UpdateLandscapeTilemap(Texture* texture);
 protected:
@@ -49,7 +49,7 @@ protected:
     virtual void InputAction(int32 phase, bool intersects);
     virtual void HideAction();
     virtual void ShowAction();
-    virtual void SaveTextureAction(const String &pathToFile);
+    virtual void SaveTextureAction(const FilePath &pathToFile);
 	virtual void UpdateCursor();
 
     bool CopyPasteBegin();
@@ -80,15 +80,20 @@ protected:
     Vector2 copyFromCenter;
     Vector2 copyToCenter;
     Image *tilemaskImage;
-    String tilemaskPathname;
+    FilePath tilemaskPathname;
     bool tilemaskWasChanged;
     Texture *tilemaskTexture;
     
     void CreateTilemaskImage();
     Image *CreateToolImage(int32 sideSize);
 
+	Rect updatedRectAccumulator;
 	Heightmap* oldHeightmap;
 	Image* oldTilemap;
+
+	void AddRectToAccumulator(const Rect& rect);
+	void ResetAccumulatorRect();
+	Rect GetUpdatedRect();
 };
 
 

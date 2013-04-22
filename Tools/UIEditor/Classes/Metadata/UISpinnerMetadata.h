@@ -43,8 +43,7 @@ protected:
 	UIButton* GetPrevButton();
 	UIButton* GetNextButton();
 
-	virtual void SetActiveControlRect(const Rect& rect);
-	void RecalculateSpinnerButtons();
+	void PositionSpinnerButtons(UISpinner* spinner);
 };
 	
 };

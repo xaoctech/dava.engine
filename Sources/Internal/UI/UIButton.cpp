@@ -104,12 +104,16 @@ namespace DAVA
 
 		UIControl::CopyDataFrom(srcControl);
 		UIButton *srcButton = (UIButton *)srcControl;
-		for(int i = 0; i < DRAW_STATE_COUNT; i++)
+		for(int32 i = 1; i < DRAW_STATE_COUNT; i++)
 		{
 			if(srcButton->stateBacks[i])
 			{
 				stateBacks[i] = srcButton->stateBacks[i]->Clone();
 			}
+		}
+		
+		for(int32 i = 0; i < DRAW_STATE_COUNT; i++)
+		{
 			if(srcButton->stateTexts[i])
 			{
 				stateTexts[i] = srcButton->stateTexts[i]->CloneStaticText();
@@ -136,7 +140,7 @@ namespace DAVA
 		}
 	}
 
-	void UIButton::SetStateSprite(int32 state, const String &spriteName, int32 spriteFrame/* = 0*/)
+	void UIButton::SetStateSprite(int32 state, const FilePath &spriteName, int32 spriteFrame/* = 0*/)
 	{
 		for(int i = 0; i < DRAW_STATE_COUNT; i++)
 		{
@@ -760,7 +764,7 @@ namespace DAVA
 		UIButton *baseControl = new UIButton();
 		
 		//Control Type
-		node->Set("type", "UIButton");
+		SetPreferredNodeType(node, "UIButton");
         
 		//Remove values of UIControl
 		//UIButton has state specific properties
@@ -806,7 +810,11 @@ namespace DAVA
 			{
 				//Create array yamlnode and add it to map
 				YamlNode *spriteNode = new YamlNode(YamlNode::TYPE_ARRAY);
-				spriteNode->AddValueToArray(TruncateTxtFileExtension(stateSprite->GetName()));
+                
+                FilePath path(stateSprite->GetRelativePathname());
+                path.TruncateExtension();
+                
+				spriteNode->AddValueToArray(path.GetAbsolutePathname());
 				spriteNode->AddValueToArray(stateFrame);
 				node->AddNodeToMap(Format("stateSprite%s", statePostfix[i].c_str()), spriteNode);
 			}

@@ -1,4 +1,4 @@
-#include "../../Utils/DeviceInfo.h"
+#include "../../Platform/DeviceInfo.h"
 
 #if defined(__DAVAENGINE_ANDROID__)
 
@@ -29,68 +29,95 @@ JniDeviceInfo::JniDeviceInfo()
 
 String JniDeviceInfo::GetVersion()
 {
-	jmethodID mid = GetMethodID("GetVersion", "()V");
+	jclass javaClass = GetJavaClass();
+	if (!javaClass)
+		return "";
+
+	intermediateStr = "";
+	jmethodID mid = GetMethodID(javaClass, "GetVersion", "()V");
 	if (mid)
-	{
 		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, 0);
 
-		return intermediateStr;
-	}
+	ReleaseJavaClass(javaClass);
+
+	return intermediateStr;
 }
 
 String JniDeviceInfo::GetManufacturer()
 {
-	jmethodID mid = GetMethodID("GetManufacturer", "()V");
+	jclass javaClass = GetJavaClass();
+	if (!javaClass)
+		return "";
+
+	intermediateStr = "";
+	jmethodID mid = GetMethodID(javaClass, "GetManufacturer", "()V");
 	if (mid)
-	{
 		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, 0);
 
-		return intermediateStr;
-	}
+	ReleaseJavaClass(javaClass);
+	return intermediateStr;
 }
 
 String JniDeviceInfo::GetModel()
 {
-	jmethodID mid = GetMethodID("GetModel", "()V");
-	if (mid)
-	{
-		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, 0);
+	jclass javaClass = GetJavaClass();
+	if (!javaClass)
+		return "";
 
-		return intermediateStr;
-	}
+	intermediateStr = "";
+
+	jmethodID mid = GetMethodID(javaClass, "GetModel", "()V");
+	if (mid)
+		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, 0);
+	ReleaseJavaClass(javaClass);
+
+	return intermediateStr;
 }
 
 String JniDeviceInfo::GetLocale()
 {
-	jmethodID mid = GetMethodID("GetLocale", "()V");
-	if (mid)
-	{
-		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, 0);
+	jclass javaClass = GetJavaClass();
+	if (!javaClass)
+		return "";
 
-		return intermediateStr;
-	}
+	intermediateStr = "";
+
+	jmethodID mid = GetMethodID(javaClass, "GetLocale", "()V");
+	if (mid)
+		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, 0);
+	ReleaseJavaClass(javaClass);
+
+	return intermediateStr;
 }
 
 String JniDeviceInfo::GetRegion()
 {
-	jmethodID mid = GetMethodID("GetRegion", "()V");
-	if (mid)
-	{
-		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, 0);
+	jclass javaClass = GetJavaClass();
+	if (!javaClass)
+		return "";
 
-		return intermediateStr;
-	}
+	intermediateStr = "";
+	jmethodID mid = GetMethodID(javaClass, "GetRegion", "()V");
+	if (mid)
+		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, 0);
+	ReleaseJavaClass(javaClass);
+
+	return intermediateStr;
 }
 
 String JniDeviceInfo::GetTimeZone()
 {
-	jmethodID mid = GetMethodID("GetTimeZone", "()V");
-	if (mid)
-	{
-		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, 0);
+	jclass javaClass = GetJavaClass();
+	if (!javaClass)
+		return "";
 
-		return intermediateStr;
-	}
+	intermediateStr = "";
+	jmethodID mid = GetMethodID(javaClass, "GetTimeZone", "()V");
+	if (mid)
+		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, 0);
+	ReleaseJavaClass(javaClass);
+
+	return intermediateStr;
 }
 
 String DeviceInfo::GetVersion()

@@ -14,7 +14,7 @@
 #include "UIStaticTextMetadata.h"
 #include "ResourcesManageHelper.h"
 
-#include "ResourcePacker.h"
+#include "TexturePacker/ResourcePacker2D.h"
 
 static const QString TEXT_PROPERTY_BLOCK_NAME = "Background";
 
@@ -129,14 +129,19 @@ void BackGroundPropertyGridWidget::FillComboboxes()
 void BackGroundPropertyGridWidget::OpenSpriteDialog()
 {
 	// Pack all available sprites each time user open sprite dialog
-	ResourcePacker *resPacker = new ResourcePacker();
-	resPacker->PackResources(ResourcesManageHelper::GetSpritesDatasourceDirectory().toStdString(),
-	 					 				ResourcesManageHelper::GetSpritesDirectory().toStdString());
+	ResourcePacker2D *resPacker = new ResourcePacker2D();
+	resPacker->InitFolders(FilePath(ResourcesManageHelper::GetSpritesDatasourceDirectory().toStdString()),
+                           FilePath(ResourcesManageHelper::GetSpritesDirectory().toStdString()));
+    
+    resPacker->PackResources();
 
-    QString spriteName = QFileDialog::getOpenFileName( this, tr( "Choose a sprite file file" ),
-															ResourcesManageHelper::GetDefaultSpritesPath(),
+	// Get sprites directory to open
+	QString currentSpriteDir = ResourcesManageHelper::GetDefaultSpritesPath(this->ui->spriteLineEdit->text());
+	// Get sprite path from file dialog
+    QString spriteName = QFileDialog::getOpenFileName( this, tr( "Choose a sprite file" ),
+															currentSpriteDir,
 															tr( "Sprites (*.txt)" ) );
-	if( !spriteName.isNull() && !spriteName.isEmpty())
+	if(!spriteName.isNull() && !spriteName.isEmpty())
     {
 		// Convert file path into Unix-style path
 		spriteName = ResourcesManageHelper::ConvertPathToUnixStyle(spriteName);
@@ -144,11 +149,6 @@ void BackGroundPropertyGridWidget::OpenSpriteDialog()
 		if (ResourcesManageHelper::ValidateResourcePath(spriteName))
         {
             WidgetSignalsBlocker blocker(ui->spriteLineEdit);
-            
-			// Save new default sprites path
-			QFileInfo fileInfo(spriteName);
-			QString spritePath = fileInfo.absoluteDir().absolutePath();
-			ResourcesManageHelper::SetDefaultSpritesPath(spritePath);
 			
             // Sprite name should be pre-processed to use relative path.
             ui->spriteLineEdit->setText(PreprocessSpriteName(spriteName));
@@ -210,8 +210,6 @@ void BackGroundPropertyGridWidget::ProcessComboboxValueChanged(QComboBox* sender
 
 void BackGroundPropertyGridWidget::CustomProcessComboboxValueChanged(const PROPERTYGRIDWIDGETSITER& iter, int value)
 {
-    BaseCommand* command = new ChangePropertyCommand<int>(activeMetadata, iter->second, value);
-
 	// Don't update the property if the text wasn't actually changed.
     int curValue = PropertiesHelper::GetAllPropertyValues<int>(this->activeMetadata, iter->second.getProperty().name());
 	if (curValue == value)
@@ -219,6 +217,7 @@ void BackGroundPropertyGridWidget::CustomProcessComboboxValueChanged(const PROPE
 		return;
 	}
 
+	BaseCommand* command = new ChangePropertyCommand<int>(activeMetadata, iter->second, value);
     CommandsController::Instance()->ExecuteCommand(command);
     SafeRelease(command);
 }
@@ -279,9 +278,12 @@ void BackGroundPropertyGridWidget::HandleDrawTypeComboBox()
 
 	int selectedIndex = ui->drawTypeComboBox->currentIndex();
 	UIControlBackground::eDrawType drawType = BackgroundGridWidgetHelper::GetDrawType(selectedIndex);
+	
 	bool lrState = false;
 	bool tbState = false;
 	bool modificationComboBoxState = true;
+	bool alignComboBoxState = false;
+	
 	switch (drawType)
 	{
 		case UIControlBackground::DRAW_STRETCH_HORIZONTAL:
@@ -299,9 +301,15 @@ void BackGroundPropertyGridWidget::HandleDrawTypeComboBox()
 			tbState = true;
 			modificationComboBoxState = false;
 			break;
+		case UIControlBackground::DRAW_ALIGNED:
+			alignComboBoxState = true;
+			break;
+		default:
+			break;
 	}
 
 	ui->lrSpinBox->setEnabled(lrState);
 	ui->tbSpinBox->setEnabled(tbState);
 	ui->modificationComboBox->setEnabled(modificationComboBoxState);
+	ui->alignComboBox->setEnabled(alignComboBoxState);
 }

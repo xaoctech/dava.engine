@@ -27,7 +27,6 @@ public:
     
 	typedef int HIERARCHYTREENODEID;
 	typedef std::list<HIERARCHYTREENODEID> HIERARCHYTREENODESIDLIST;
-
   	static const HIERARCHYTREENODEID HIERARCHYTREENODEID_EMPTY = -1;
 
     HierarchyTreeNode(const QString& name);
@@ -67,6 +66,17 @@ public:
 	// Prepare the Undo/Redo information.
 	void PrepareRemoveFromSceneInformation();
 
+	virtual bool IsMarked() const;
+	virtual bool IsNeedSave() const;
+	bool HasUnsavedChilder() const;
+	void SetMarked(bool marked);
+	void SetChildrenMarked(bool marked, bool recursive = false);
+
+	// Modifiers for the unsaved changes counter.
+	void IncrementUnsavedChanges();
+	void DecrementUnsavedChanges();
+	void ResetUnsavedChanges();
+
 protected:
 	HIERARCHYTREENODEID id;
 	
@@ -86,6 +96,9 @@ protected:
 	// Undo/Redo information.
 	HierarchyTreeNode* redoParentNode;
 	HierarchyTreeNode* redoPreviousNode;
+
+	bool marked;
+	int32 unsavedChangesCounter;
 };
 
 

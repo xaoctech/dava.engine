@@ -1,6 +1,5 @@
 #include "SceneValidator.h"
 #include "EditorSettings.h"
-#include "SceneInfoControl.h"
 
 #include "Render/LibPVRHelper.h"
 #include "Render/TextureDescriptor.h"
@@ -20,14 +19,11 @@ SceneValidator::SceneValidator()
     sceneTextureCount = 0;
     sceneTextureMemory = 0;
 
-    infoControl = NULL;
-    
     pathForChecking = String("");
 }
 
 SceneValidator::~SceneValidator()
 {
-    SafeRelease(infoControl);
 }
 
 bool SceneValidator::ValidateSceneAndShowErrors(Scene *scene)
@@ -134,24 +130,22 @@ void SceneValidator::ValidateSceneNode(Entity *sceneNode, Set<String> &errorsLog
         ValidateLodComponent(node, errorsLog);
         ValidateParticleEmitterComponent(node, errorsLog);
         
-        
-
         KeyedArchive *customProperties = node->GetCustomProperties();
         if(customProperties->IsKeyExists("editor.referenceToOwner"))
         {
-            String dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
-            if(1 < dataSourcePath.length())
+            FilePath dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
+            if(1 < dataSourcePath.GetAbsolutePathname().length())
             {
-                if('/' == dataSourcePath[0])
+                if('/' == dataSourcePath.GetAbsolutePathname()[0])
                 {
-                    dataSourcePath = dataSourcePath.substr(1);
+                    dataSourcePath = FilePath(dataSourcePath.GetAbsolutePathname().substr(1));
                 }
                 
                 String referencePath = customProperties->GetString("editor.referenceToOwner");
-                String::size_type pos = referencePath.rfind(dataSourcePath);
+                String::size_type pos = referencePath.rfind(dataSourcePath.GetAbsolutePathname());
                 if((String::npos != pos) && (1 != pos))
                 {
-                    referencePath.replace(pos, dataSourcePath.length(), "");
+                    referencePath.replace(pos, dataSourcePath.GetAbsolutePathname().length(), "");
                     customProperties->SetString("editor.referenceToOwner", referencePath);
                     
                     errorsLog.insert(Format("Node %s: referenceToOwner isn't correct. Re-save level.", node->GetName().c_str()));
@@ -279,7 +273,7 @@ void SceneValidator::ValidateMaterial(Material *material, Set<String> &errorsLog
         {
             ValidateTexture(texture, material->GetTextureName((Material::eTextureLevel)iTex), Format("Material: %s. TextureLevel %d.", material->GetName().c_str(), iTex), errorsLog);
             
-            String matTexName = material->GetTextureName((Material::eTextureLevel)iTex);
+            FilePath matTexName = material->GetTextureName((Material::eTextureLevel)iTex);
             if(!IsTextureDescriptorPath(matTexName))
             {
                 material->SetTexture((Material::eTextureLevel)iTex, TextureDescriptor::GetDescriptorPathname(matTexName));
@@ -296,11 +290,20 @@ void SceneValidator::ValidateInstanceMaterialState(InstanceMaterialState *materi
         ValidateTexture(materialState->GetLightmap(), materialState->GetLightmapName(), "InstanceMaterialState, lightmap", errorsLog);
     }
     
-    String lightmapName = materialState->GetLightmapName();
+    FilePath lightmapName = materialState->GetLightmapName();
     if(!IsTextureDescriptorPath(lightmapName))
     {
         Texture *lightmap = SafeRetain(materialState->GetLightmap());
-        materialState->SetLightmap(lightmap, TextureDescriptor::GetDescriptorPathname(lightmapName));
+        
+        if(lightmapName.IsInitalized())
+        {
+            materialState->SetLightmap(lightmap, TextureDescriptor::GetDescriptorPathname(lightmapName));
+        }
+        else
+        {
+            materialState->SetLightmap(lightmap, FilePath());
+        }
+        
         SafeRelease(lightmap);
     }
 }
@@ -321,14 +324,15 @@ void SceneValidator::ValidateLandscape(Landscape *landscape, Set<String> &errors
     {
         if(		(Landscape::TEXTURE_DETAIL == (Landscape::eTextureLevel)i)
            ||	(Landscape::TEXTURE_TILE_FULL == (Landscape::eTextureLevel)i
-                 &&	landscape->GetTiledShaderMode() == Landscape::TILED_MODE_TILEMASK))
+                 &&	(landscape->GetTiledShaderMode() == Landscape::TILED_MODE_TILEMASK
+                 || landscape->GetTiledShaderMode() == Landscape::TILED_MODE_TILE_DETAIL_MASK)))
         {
             continue;
         }
         
 		// TODO:
 		// new texture path
-		DAVA::String landTexName = landscape->GetTextureName((Landscape::eTextureLevel)i);
+		DAVA::FilePath landTexName = landscape->GetTextureName((Landscape::eTextureLevel)i);
 		if(!IsTextureDescriptorPath(landTexName))
 		{
 			landscape->SetTextureName((Landscape::eTextureLevel)i, TextureDescriptor::GetDescriptorPathname(landTexName));
@@ -340,7 +344,7 @@ void SceneValidator::ValidateLandscape(Landscape *landscape, Set<String> &errors
     bool pathIsCorrect = ValidatePathname(landscape->GetHeightmapPathname(), String("Landscape. Heightmap."));
     if(!pathIsCorrect)
     {
-        String path = FileSystem::AbsoluteToRelativePath(EditorSettings::Instance()->GetDataSourcePath(), landscape->GetHeightmapPathname());
+        String path = landscape->GetHeightmapPathname().GetRelativePathname(EditorSettings::Instance()->GetDataSourcePath());
         errorsLog.insert("Wrong path of Heightmap: " + path);
     }
 }
@@ -355,7 +359,7 @@ bool SceneValidator::NodeRemovingDisabled(Entity *node)
 }
 
 
-void SceneValidator::ValidateTextureAndShowErrors(Texture *texture, const String &textureName, const String &validatedObjectName)
+void SceneValidator::ValidateTextureAndShowErrors(Texture *texture, const FilePath &textureName, const String &validatedObjectName)
 {
     errorMessages.clear();
 
@@ -363,11 +367,11 @@ void SceneValidator::ValidateTextureAndShowErrors(Texture *texture, const String
     ShowErrorDialog(errorMessages);
 }
 
-void SceneValidator::ValidateTexture(Texture *texture, const String &texturePathname, const String &validatedObjectName, Set<String> &errorsLog)
+void SceneValidator::ValidateTexture(Texture *texture, const FilePath &texturePathname, const String &validatedObjectName, Set<String> &errorsLog)
 {
 	if(!texture) return;
 	
-	String path = FileSystem::AbsoluteToRelativePath(EditorSettings::Instance()->GetProjectPath(), texturePathname);
+	String path = texturePathname.GetRelativePathname(EditorSettings::Instance()->GetProjectPath());
 	String textureInfo = path + " for object: " + validatedObjectName;
 
 	if(texture == Texture::GetPinkPlaceholder())
@@ -418,15 +422,15 @@ void SceneValidator::EnumerateSceneTextures()
 	for(Map<String, Texture *>::const_iterator it = textureMap.begin(); it != textureMap.end(); ++it)
 	{
 		Texture *t = it->second;
-        if(String::npos == t->GetPathname().find(projectPath))
+        if(String::npos == t->GetPathname().GetAbsolutePathname().find(projectPath))
         {   // skip all textures that are not related the scene
             continue;
         }
 
         
-        if(String::npos != t->GetPathname().find(projectPath))
+        if(String::npos != t->GetPathname().GetAbsolutePathname().find(projectPath))
         {   //We need real info about textures size. In Editor on desktop pvr textures are decompressed to RGBA8888, so they have not real size.
-            String imageFileName = TextureDescriptor::GetPathnameForFormat(t->GetPathname(), t->GetSourceFileFormat());
+            FilePath imageFileName = TextureDescriptor::GetPathnameForFormat(t->GetPathname(), t->GetSourceFileFormat());
             switch (t->GetSourceFileFormat())
             {
                 case DAVA::PVR_FILE:
@@ -447,27 +451,7 @@ void SceneValidator::EnumerateSceneTextures()
             }
         }
 	}
-    
-    if(infoControl)
-    {
-        infoControl->InvalidateTexturesInfo(sceneTextureCount, sceneTextureMemory);
-    }
 }
-
-void SceneValidator::SetInfoControl(SceneInfoControl *newInfoControl)
-{
-    SafeRelease(infoControl);
-    infoControl = SafeRetain(newInfoControl);
-    
-    sceneStats.Clear();
-}
-
-void SceneValidator::CollectSceneStats(const RenderManager::Stats &newStats)
-{
-    sceneStats = newStats;
-    infoControl->SetRenderStats(sceneStats);
-}
-
 
 bool SceneValidator::WasTextureChanged(Texture *texture, ImageFileFormat fileFormat)
 {
@@ -476,7 +460,7 @@ bool SceneValidator::WasTextureChanged(Texture *texture, ImageFileFormat fileFor
         return false;
     }
     
-    String texturePathname = texture->GetPathname();
+    FilePath texturePathname = texture->GetPathname();
     return (IsPathCorrectForProject(texturePathname) && IsTextureChanged(texturePathname, fileFormat));
 }
 
@@ -487,7 +471,7 @@ bool SceneValidator::IsFBOTexture(Texture *texture)
         return true;
     }
 
-    String::size_type textTexturePos = texture->GetPathname().find("Text texture");
+    String::size_type textTexturePos = texture->GetPathname().GetAbsolutePathname().find("Text texture");
     if(String::npos != textTexturePos)
     {
         return true; //is text texture
@@ -498,26 +482,26 @@ bool SceneValidator::IsFBOTexture(Texture *texture)
 
 
 
-String SceneValidator::SetPathForChecking(const String &pathname)
+FilePath SceneValidator::SetPathForChecking(const FilePath &pathname)
 {
-    String oldPath = pathForChecking;
+    FilePath oldPath = pathForChecking;
     pathForChecking = pathname;
     return oldPath;
 }
 
 
-bool SceneValidator::ValidateTexturePathname(const String &pathForValidation, Set<String> &errorsLog)
+bool SceneValidator::ValidateTexturePathname(const FilePath &pathForValidation, Set<String> &errorsLog)
 {
-	DVASSERT(!pathForChecking.empty() && "Need to set pathname for DataSource folder");
+	DVASSERT(pathForChecking.IsInitalized() && "Need to set pathname for DataSource folder");
 
 	bool pathIsCorrect = IsPathCorrectForProject(pathForValidation);
 	if(pathIsCorrect)
 	{
-		String textureExtension = FileSystem::Instance()->GetExtension(pathForValidation);
+		String textureExtension = pathForValidation.GetExtension();
 		String::size_type extPosition = TextureDescriptor::GetSupportedTextureExtensions().find(textureExtension);
 		if(String::npos == extPosition)
 		{
-			errorsLog.insert(Format("Path %s has incorrect extension", pathForValidation.c_str()));
+			errorsLog.insert(Format("Path %s has incorrect extension", pathForValidation.GetAbsolutePathname().c_str()));
 			return false;
 		}
 
@@ -525,26 +509,26 @@ bool SceneValidator::ValidateTexturePathname(const String &pathForValidation, Se
 	}
 	else
 	{
-		errorsLog.insert(Format("Path %s is incorrect for project %s", pathForValidation.c_str(), pathForChecking.c_str()));
+		errorsLog.insert(Format("Path %s is incorrect for project %s", pathForValidation.GetAbsolutePathname().c_str(), pathForChecking.GetAbsolutePathname().c_str()));
 	}
 
 	return pathIsCorrect;
 }
 
-bool SceneValidator::ValidateHeightmapPathname(const String &pathForValidation, Set<String> &errorsLog)
+bool SceneValidator::ValidateHeightmapPathname(const FilePath &pathForValidation, Set<String> &errorsLog)
 {
-	DVASSERT(!pathForChecking.empty() && "Need to set pathname for DataSource folder");
+	DVASSERT(pathForChecking.IsInitalized() && "Need to set pathname for DataSource folder");
 
 	bool pathIsCorrect = IsPathCorrectForProject(pathForValidation);
 	if(pathIsCorrect)
 	{
-		String::size_type posPng = pathForValidation.find(".png");
-		String::size_type posHeightmap = pathForValidation.find(Heightmap::FileExtension());
+		String::size_type posPng = pathForValidation.GetAbsolutePathname().find(".png");
+		String::size_type posHeightmap = pathForValidation.GetAbsolutePathname().find(Heightmap::FileExtension());
         
         pathIsCorrect = ((String::npos != posPng) || (String::npos != posHeightmap));
         if(!pathIsCorrect)
         {
-            errorsLog.insert(Format("Heightmap path %s is wrong", pathForValidation.c_str()));
+            errorsLog.insert(Format("Heightmap path %s is wrong", pathForValidation.GetAbsolutePathname().c_str()));
             return false;
         }
         
@@ -564,7 +548,7 @@ bool SceneValidator::ValidateHeightmapPathname(const String &pathForValidation, 
         if(!pathIsCorrect)
         {
             SafeRelease(heightmap);
-            errorsLog.insert(Format("Can't load Heightmap from path %s", pathForValidation.c_str()));
+            errorsLog.insert(Format("Can't load Heightmap from path %s", pathForValidation.GetAbsolutePathname().c_str()));
             return false;
         }
         
@@ -572,7 +556,7 @@ bool SceneValidator::ValidateHeightmapPathname(const String &pathForValidation, 
         pathIsCorrect = IsPowerOf2(heightmap->Size() - 1);
         if(!pathIsCorrect)
         {
-            errorsLog.insert(Format("Heightmap %s has wrong size", pathForValidation.c_str()));
+            errorsLog.insert(Format("Heightmap %s has wrong size", pathForValidation.GetAbsolutePathname().c_str()));
         }
         
         SafeRelease(heightmap);
@@ -580,24 +564,24 @@ bool SceneValidator::ValidateHeightmapPathname(const String &pathForValidation, 
 	}
 	else
 	{
-		errorsLog.insert(Format("Path %s is incorrect for project %s", pathForValidation.c_str(), pathForChecking.c_str()));
+		errorsLog.insert(Format("Path %s is incorrect for project %s", pathForValidation.GetAbsolutePathname().c_str(), pathForChecking.GetAbsolutePathname().c_str()));
 	}
 
 	return pathIsCorrect;
 }
 
 
-void SceneValidator::CreateDescriptorIfNeed(const String &forPathname)
+void SceneValidator::CreateDescriptorIfNeed(const FilePath &forPathname)
 {
-    String descriptorPathname = TextureDescriptor::GetDescriptorPathname(forPathname);
+    FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(forPathname);
     if(! FileSystem::Instance()->IsFile(descriptorPathname))
     {
-		Logger::Warning("[SceneValidator::CreateDescriptorIfNeed] Need descriptor for file %s", forPathname.c_str());
+		Logger::Warning("[SceneValidator::CreateDescriptorIfNeed] Need descriptor for file %s", forPathname.GetAbsolutePathname().c_str());
         
 		TextureDescriptor *descriptor = new TextureDescriptor();
 		descriptor->textureFileFormat = PNG_FILE;
         
-        String descriptorPathname = TextureDescriptor::GetDescriptorPathname(forPathname);
+        FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(forPathname);
 		descriptor->Save(descriptorPathname);
 
         SafeRelease(descriptor);
@@ -605,13 +589,13 @@ void SceneValidator::CreateDescriptorIfNeed(const String &forPathname)
 }
 
 
-bool SceneValidator::ValidatePathname(const String &pathForValidation, const String &validatedObjectName)
+bool SceneValidator::ValidatePathname(const FilePath &pathForValidation, const String &validatedObjectName)
 {
-    DVASSERT(0 < pathForChecking.length()); 
+    DVASSERT(pathForChecking.IsInitalized());
     //Need to set path to DataSource/3d for path correction  
     //Use SetPathForChecking();
     
-    String pathname = FileSystem::GetCanonicalPath(pathForValidation);
+    String pathname = pathForValidation.ResolvePathname();
     
     String::size_type fboFound = pathname.find(String("FBO"));
     String::size_type resFound = pathname.find(String("~res:"));
@@ -623,10 +607,10 @@ bool SceneValidator::ValidatePathname(const String &pathForValidation, const Str
     return IsPathCorrectForProject(pathForValidation);
 }
 
-bool SceneValidator::IsPathCorrectForProject(const String &pathname)
+bool SceneValidator::IsPathCorrectForProject(const FilePath &pathname)
 {
-    String normalizedPath = FileSystem::GetCanonicalPath(pathname);
-    String::size_type foundPos = normalizedPath.find(pathForChecking);
+    String normalizedPath = pathname.ResolvePathname();
+    String::size_type foundPos = normalizedPath.find(pathForChecking.GetAbsolutePathname());
     return (String::npos != foundPos);
 }
 
@@ -641,9 +625,6 @@ void SceneValidator::EnumerateNodes(DAVA::Scene *scene)
             nodesCount += EnumerateSceneNodes(scene->GetChild(i));
         }
     }
-    
-    if(infoControl)
-        infoControl->SetNodesCount(nodesCount);
 }
 
 int32 SceneValidator::EnumerateSceneNodes(DAVA::Entity *node)
@@ -660,7 +641,7 @@ int32 SceneValidator::EnumerateSceneNodes(DAVA::Entity *node)
 }
 
 
-bool SceneValidator::IsTextureChanged(const String &texturePathname, ImageFileFormat fileFormat)
+bool SceneValidator::IsTextureChanged(const FilePath &texturePathname, ImageFileFormat fileFormat)
 {
     bool isChanged = false;
 
@@ -674,15 +655,14 @@ bool SceneValidator::IsTextureChanged(const String &texturePathname, ImageFileFo
     return isChanged;
 }
 
-bool SceneValidator::IsTextureDescriptorPath(const String &path)
+bool SceneValidator::IsTextureDescriptorPath(const FilePath &path)
 {
-	String ext = FileSystem::GetExtension(path);
-	return (ext == TextureDescriptor::GetDescriptorExtension());
+	return path.IsEqualToExtension(TextureDescriptor::GetDescriptorExtension());
 }
 
 
 
-void SceneValidator::CreateDefaultDescriptors(const String &folderPathname)
+void SceneValidator::CreateDefaultDescriptors(const FilePath &folderPathname)
 {
 	FileList * fileList = new FileList(folderPathname);
     if(!fileList) return;
@@ -691,20 +671,18 @@ void SceneValidator::CreateDefaultDescriptors(const String &folderPathname)
 	{
 		if (fileList->IsDirectory(fi))
 		{
-            if(0 != CompareCaseInsensitive(String(".svn"), fileList->GetFilename(fi))
-               && 0 != CompareCaseInsensitive(String("."), fileList->GetFilename(fi))
-                && 0 != CompareCaseInsensitive(String(".."), fileList->GetFilename(fi)))
+            String name = fileList->GetFilename(fi);
+            
+            if(0 != CompareCaseInsensitive(String(".svn"), name) && !fileList->IsNavigationDirectory(fi))
             {
                 CreateDefaultDescriptors(fileList->GetPathname(fi));
             }
 		}
         else
         {
-            const String pathname = fileList->GetPathname(fi);
-            const String extension = FileSystem::Instance()->GetExtension(pathname);
-            if(0 == CompareCaseInsensitive(String(".png"), extension))
+			if(fileList->GetPathname(fi).IsEqualToExtension(".png"))
             {
-                CreateDescriptorIfNeed(pathname);
+                CreateDescriptorIfNeed(fileList->GetPathname(fi));
             }
         }
 	}

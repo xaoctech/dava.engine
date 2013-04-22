@@ -16,7 +16,7 @@ enum eResultScreenState
 class ResultScreen: public DAVA::UIScreen
 {
 public:
-	ResultScreen(const LandscapeTestData& testData, const String& filename, Texture* landscapeTexture);
+	ResultScreen(const LandscapeTestData& testData, const FilePath& filename, Texture* landscapeTexture);
 	~ResultScreen();
 	
 	virtual void LoadResources();
@@ -37,8 +37,9 @@ private:
     
     void PrepareSprite();
 	
+	DAVA::Vector2 GetVecInRect(const DAVA::Rect & rect, float32 angleInRad);
+
 	void DrawStatImage(DAVA::Rect rect);
-	void DrawMinFpsTargets(DAVA::Rect rect);
     
     void SaveResults();
     
@@ -46,7 +47,7 @@ private:
 	Sprite* textureSprite;
     Sprite* resultSprite;
 
-	String filename;
+	FilePath filename;
 	const LandscapeTestData& testData;
 	eResultScreenState state;
 	bool isFinished;

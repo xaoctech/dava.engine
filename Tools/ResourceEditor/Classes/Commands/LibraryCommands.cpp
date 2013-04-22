@@ -18,22 +18,21 @@
 
 using namespace DAVA;
 
-LibraryCommand::LibraryCommand(const DAVA::String &pathname, eCommandType _type)
+LibraryCommand::LibraryCommand(const DAVA::FilePath &pathname, eCommandType _type)
     :   Command(_type)
-    ,   filePathname(FileSystem::Instance()->GetCanonicalPath(pathname))
+    ,   filePathname(pathname)
 {
 }
 
 bool LibraryCommand::CheckExtension(const DAVA::String &extenstionToChecking)
 {
-    String extension = FileSystem::Instance()->GetExtension(filePathname);
-    return (0 == CompareCaseInsensitive(extension, extenstionToChecking));
+	return filePathname.IsEqualToExtension(extenstionToChecking);
 }
 
 
 
 //Add scene to current tab
-CommandAddScene::CommandAddScene(const DAVA::String &pathname)
+CommandAddScene::CommandAddScene(const DAVA::FilePath &pathname)
     :   LibraryCommand(pathname, Command::COMMAND_UNDO_REDO)
 {
 	commandName = "Add Scene";
@@ -55,7 +54,7 @@ void CommandAddScene::Cancel()
 
 
 //edit scene at new tab
-CommandEditScene::CommandEditScene(const DAVA::String &pathname)
+CommandEditScene::CommandEditScene(const DAVA::FilePath &pathname)
     :   LibraryCommand(pathname, COMMAND_WITHOUT_UNDO_EFFECT)
 {
 }
@@ -65,23 +64,20 @@ void CommandEditScene::Execute()
 {
     DVASSERT(CheckExtension(String(".sc2")) && "Wrong extension");
     
-    String path, name;
-    FileSystem::Instance()->SplitPath(filePathname, path, name);
-    
     SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
     if(screen)
     {
-        screen->AddBodyItem(StringToWString(name), true);
+        screen->AddBodyItem(StringToWString(filePathname.GetFilename()), true);
     }
 
     SceneDataManager::Instance()->EditActiveScene(filePathname);
 
-    QtMainWindowHandler::Instance()->ShowStatusBarMessage(filePathname);
+    QtMainWindowHandler::Instance()->ShowStatusBarMessage(filePathname.GetAbsolutePathname());
 }
 
 
 //reload root node at current tab
-CommandReloadScene::CommandReloadScene(const DAVA::String &pathname)
+CommandReloadScene::CommandReloadScene(const DAVA::FilePath &pathname)
     :   LibraryCommand(pathname, COMMAND_UNDO_REDO)
 {
 	commandName = "Reload Scene";
@@ -91,7 +87,7 @@ CommandReloadScene::CommandReloadScene(const DAVA::String &pathname)
 void CommandReloadScene::Execute()
 {
     DVASSERT(CheckExtension(String(".sc2")) && "Wrong extension");
-    SceneDataManager::Instance()->ReloadScene(filePathname);
+    SceneDataManager::Instance()->ReloadScene(filePathname, filePathname);
 }
 
 void CommandReloadScene::Cancel()
@@ -101,8 +97,38 @@ void CommandReloadScene::Cancel()
 }
 
 
+//reload root node at current tab
+CommandReloadEntityFrom::CommandReloadEntityFrom(const DAVA::FilePath &pathname)
+:   LibraryCommand(pathname, COMMAND_UNDO_REDO)
+{
+	commandName = "Reload Entity From";
+    fromPathname = FilePath();
+}
+
+
+void CommandReloadEntityFrom::Execute()
+{
+    DVASSERT(CheckExtension(String(".sc2")) && "Wrong extension");
+    
+    fromPathname = GetOpenFileName(String("Select Scene File"), filePathname.GetDirectory(), String("Scene File (*.sc2)"));
+    if(!fromPathname.IsInitalized())
+    {
+        return;
+    }
+    
+    SceneDataManager::Instance()->ReloadScene(filePathname, fromPathname);
+}
+
+void CommandReloadEntityFrom::Cancel()
+{
+    DVASSERT(CheckExtension(String(".sc2")) && "Wrong extension");
+    //TODO: need code here
+}
+
+
+
 //convert from dae to sc2
-CommandConvertScene::CommandConvertScene(const DAVA::String &pathname)
+CommandConvertScene::CommandConvertScene(const DAVA::FilePath &pathname)
     :   LibraryCommand(pathname, COMMAND_WITHOUT_UNDO_EFFECT)
 {
 }
@@ -117,7 +143,9 @@ void CommandConvertScene::Execute()
     if(code == COLLADA_OK)
     {
         // load sce to scene object
-        String path = FileSystem::Instance()->ReplaceExtension(filePathname, ".sce");
+        FilePath path(filePathname);
+        path.ReplaceExtension(".sce");
+
         Scene * scene = new Scene();
         
         Entity *rootNode = scene->GetRootNode(path);
@@ -126,10 +154,10 @@ void CommandConvertScene::Execute()
         scene->BakeTransforms();
         
         // Export to *.sc2
-        path = FileSystem::Instance()->ReplaceExtension(path, ".sc2");
+        path.ReplaceExtension(".sc2");
         SceneFileV2 * file = new SceneFileV2();
         file->EnableDebugLog(true);
-        file->SaveScene(path.c_str(), scene);
+        file->SaveScene(path, scene);
         SafeRelease(file);
         
         SafeRelease(scene);

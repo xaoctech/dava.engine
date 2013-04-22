@@ -14,11 +14,12 @@
 
 #include "UIControlMetadata.h"
 #include "UIButtonMetadata.h"
-#include "UIStaticTextMetadata.h"
-#include "UITextFieldMetadata.h"
-#include "UISliderMetadata.h"
 #include "UIListMetadata.h"
+#include "UISliderMetadata.h"
 #include "UISpinnerMetadata.h"
+#include "UIStaticTextMetadata.h"
+#include "UISwitchMetadata.h"
+#include "UITextFieldMetadata.h"
 
 using namespace DAVA;
 
@@ -62,6 +63,9 @@ PropertyGridWidgetsFactory::PropertyGridWidgetsFactory()
 	
 	spinnerWidget = new SpinnerPropertyGridWidget();
 	registeredWidgets.push_back(spinnerWidget);
+	
+	listWidget = new ListPropertyGridWidget();
+	registeredWidgets.push_back(listWidget);
 }
 
 PropertyGridWidgetsFactory::~PropertyGridWidgetsFactory()
@@ -170,26 +174,41 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
         resultList.push_back(rectWidget);
 		resultList.push_back(alignWidget);
         resultList.push_back(stateWidget);
+		resultList.push_back(listWidget);
         resultList.push_back(backgroundWidget);
         resultList.push_back(flagsWidget);
         
         return resultList;
     }
 
-	// UI Spinner.
+	// UI Spinner 
 	const UISpinnerMetadata* uiSpinnerMetadata = dynamic_cast<const UISpinnerMetadata*>(metaData);
+	
     if (uiSpinnerMetadata)
     {
         resultList.push_back(controlWidget);
         resultList.push_back(rectWidget);
 		resultList.push_back(alignWidget);
-		resultList.push_back(spinnerWidget);
         resultList.push_back(stateWidget);
         resultList.push_back(backgroundWidget);
         resultList.push_back(flagsWidget);
         
         return resultList;
     }
+	
+	// UI Switch
+	const UISwitchMetadata* uiSwitchMetadata = dynamic_cast<const UISwitchMetadata*>(metaData);
+	if (uiSwitchMetadata)
+	{
+		resultList.push_back(controlWidget);
+        resultList.push_back(rectWidget);
+		resultList.push_back(alignWidget);
+        resultList.push_back(stateWidget);
+        resultList.push_back(backgroundWidget);
+        resultList.push_back(flagsWidget);
+        
+        return resultList;
+	}
 
     // TODO: add other Metadatas here as soon as they will be implemented.
     // UI Control Node. Should be at the very bottom of this factory since it is a parent for

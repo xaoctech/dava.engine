@@ -11,7 +11,10 @@
 #include <QVariant>
 #include <QMenu>
 #include <QMessageBox>
+#include <QFileDialog>
 #include "IconHelper.h"
+#include "SubcontrolsHelper.h"
+#include "ResourcesManageHelper.h"
 
 #define ITEM_ID 0, Qt::UserRole
 
@@ -19,7 +22,11 @@
 #define MENU_ITEM_COPY tr("Copy")
 #define MENU_ITEM_PASTE tr("Paste")
 #define MENU_ITEM_CREATE_SCREEN tr("Create screen")
+#define MENU_ITEM_CREATE_AGGREGATOR tr("Create aggregator")
+#define MENU_ITEM_IMPORT_SCREEN_OR_AGGREGATOR tr("Import screen or aggregator")
 
+#define DEFAULT_CONTROL_FONT_COLOR QColor(0x00, 0x00, 0x00, 0xFF)
+#define SUBCONTROL_FONT_COLOR QColor(0x80, 0x80, 0x80, 0xFF)
 
 HierarchyTreeWidget::HierarchyTreeWidget(QWidget *parent) :
     QWidget(parent),
@@ -45,6 +52,7 @@ HierarchyTreeWidget::~HierarchyTreeWidget()
 void HierarchyTreeWidget::OnTreeUpdated()
 {
 	EXPANDEDITEMS expandedItems;
+	EXPANDEDITEMS selectedItems;
 	//save opened node
 	TREEITEMS oldItems = GetAllItems();
 	for (TREEITEMS::iterator iter = oldItems.begin(); iter != oldItems.end(); ++iter) {
@@ -53,6 +61,23 @@ void HierarchyTreeWidget::OnTreeUpdated()
 		{
 			QVariant data = item->data(ITEM_ID);
 			expandedItems.insert(data.toInt());
+		}
+	}
+
+	//save selected node
+	
+	for (TREEITEMS::iterator iter = oldItems.begin(); iter != oldItems.end(); ++iter) {
+		QTreeWidgetItem* item = iter->second;
+		if (item->isSelected())
+		{
+			QVariant data = item->data(ITEM_ID);
+			selectedItems.insert(data.toInt());
+			HierarchyTreeNode* baseNode = HierarchyTreeController::Instance()->GetTree().GetNode(data.toInt());
+			HierarchyTreeControlNode* selectedControl = dynamic_cast<HierarchyTreeControlNode* >(baseNode);
+			if(NULL != selectedControl)
+			{
+				internalSelectionChanged = true;
+			}
 		}
 	}
 	
@@ -69,8 +94,16 @@ void HierarchyTreeWidget::OnTreeUpdated()
 		const HierarchyTreePlatformNode* platformNode = (const HierarchyTreePlatformNode*)(*iter);
 		QTreeWidgetItem* platformItem = new QTreeWidgetItem();
 		platformItem->setData(ITEM_ID, platformNode->GetId());
-		platformItem->setText(0, platformNode->GetName());
-		platformItem->setIcon(0, QIcon(":/icons/079.png"));
+
+		QString platformName = platformNode->GetName();
+		if (platformNode->IsNeedSave())
+		{
+			platformName += " *";
+		}
+		platformItem->setText(0, platformName);
+
+		platformItem->setIcon(0, QIcon(IconHelper::GetPlatformIconPath()));
+
 		ui->treeWidget->insertTopLevelItem(ui->treeWidget->topLevelItemCount(), platformItem);
 		
 		for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter = platformNode->GetChildNodes().begin();
@@ -85,31 +118,42 @@ void HierarchyTreeWidget::OnTreeUpdated()
 
 			// Check whether this screen was changed.
 			QString screenItemText = screenNode->GetName();
-			if (screenNode->GetUnsavedChanges() != 0)
+			if (screenNode->IsNeedSave())
 			{
 				screenItemText += " *";
 			}
 			screenItem->setText(0, screenItemText);
 
 			if (dynamic_cast<const HierarchyTreeAggregatorNode*>(screenNode))
-				screenItem->setIcon(0, QIcon(":/icons/170.png"));
+				screenItem->setIcon(0, QIcon(IconHelper::GetAggregatorIconPath()));
 			else
-				screenItem->setIcon(0, QIcon(":/icons/068.png"));
+				screenItem->setIcon(0, QIcon(IconHelper::GetScreenIconPath()));
 			platformItem->insertChild(platformItem->childCount(), screenItem);
 			
-			AddControlItem(screenItem, expandedItems, screenNode->GetChildNodes());
+			AddControlItem(screenItem, selectedItems, expandedItems, screenNode->GetChildNodes());
 			
 			if (expandedItems.find(screenNode->GetId()) != expandedItems.end())
 				screenItem->setExpanded(true);
+
+			if (selectedItems.find(screenNode->GetId()) != selectedItems.end())
+			{
+				screenItem->setSelected(true);
+			}
 		}
 		
 		if (expandedItems.find(platformNode->GetId()) != expandedItems.end())
 			platformItem->setExpanded(true);
 
+		if (selectedItems.find(platformNode->GetId()) != selectedItems.end())
+		{
+			platformItem->setSelected(true);
+		}
 	}
+
+	internalSelectionChanged = false;
 }
 
-void HierarchyTreeWidget::AddControlItem(QTreeWidgetItem* parent, const EXPANDEDITEMS& expandedItems, const HierarchyTreeNode::HIERARCHYTREENODESLIST& items)
+void HierarchyTreeWidget::AddControlItem(QTreeWidgetItem* parent, const EXPANDEDITEMS& selectedItems, const EXPANDEDITEMS& expandedItems, const HierarchyTreeNode::HIERARCHYTREENODESLIST& items)
 {
 	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter = items.begin();
 		 iter != items.end();
@@ -121,18 +165,22 @@ void HierarchyTreeWidget::AddControlItem(QTreeWidgetItem* parent, const EXPANDED
 		controlItem->setData(ITEM_ID, controlNode->GetId());
 		controlItem->setText(0, controlNode->GetName());
 
-		DecorateWithIcon(controlItem, controlNode->GetUIObject());
+		Decorate(controlItem, controlNode->GetUIObject());
 
 		parent->insertChild(parent->childCount(), controlItem);
 		
-		AddControlItem(controlItem, expandedItems, controlNode->GetChildNodes());
+		AddControlItem(controlItem, selectedItems, expandedItems, controlNode->GetChildNodes());
 		
 		if (expandedItems.find(controlNode->GetId()) != expandedItems.end())
 			controlItem->setExpanded(true);
+		if (selectedItems.find(controlNode->GetId()) != selectedItems.end())
+		{
+			controlItem->setSelected(true);
+		}
 	}
 }
 
-void HierarchyTreeWidget::DecorateWithIcon(QTreeWidgetItem *item, DAVA::UIControl *uiControl)
+void HierarchyTreeWidget::Decorate(QTreeWidgetItem *item, DAVA::UIControl *uiControl)
 {
 	if (!item || !uiControl)
 	{
@@ -141,20 +189,24 @@ void HierarchyTreeWidget::DecorateWithIcon(QTreeWidgetItem *item, DAVA::UIContro
 
 	QString iconPath = IconHelper::GetIconPathForUIControl(uiControl);
 	item->setIcon(0, QIcon(iconPath));
+	item->setTextColor(0, SubcontrolsHelper::ControlIsSubcontrol(uiControl) ? SUBCONTROL_FONT_COLOR : DEFAULT_CONTROL_FONT_COLOR);
 }
 
 void HierarchyTreeWidget::on_treeWidget_itemSelectionChanged()
 {
-	if (internalSelectionChanged)
-		return;
-
 	QTreeWidgetItem* selectedItem = ui->treeWidget->currentItem();
 	if (!selectedItem)
+	{
 		return;
+	}
+
+	if (internalSelectionChanged)
+	{
+		return;
+	}
 
 	QVariant data = selectedItem->data(ITEM_ID);
 	HierarchyTreeNode::HIERARCHYTREENODEID id = data.toInt();
-
 	HierarchyTreeNode* baseNode = HierarchyTreeController::Instance()->GetTree().GetNode(id);
 	HierarchyTreePlatformNode* selectedPlatform = dynamic_cast<HierarchyTreePlatformNode* >(baseNode);
 	HierarchyTreeScreenNode* selectedScreen =  dynamic_cast<HierarchyTreeScreenNode* >(baseNode);
@@ -224,8 +276,8 @@ void HierarchyTreeWidget::OnSelectedControlNodesChanged(const HierarchyTreeContr
 		{
             QTreeWidgetItem* item = itemIter->second;
 			item->setSelected(true);
-
-            // Force show selected item
+			
+			// Force show selected item
             QTreeWidgetItem* parentItem = item->parent();
             while (parentItem)
             {
@@ -290,10 +342,14 @@ void HierarchyTreeWidget::OnShowCustomMenu(const QPoint& pos)
 	QMenu menu;
 	if (selectedControl || selectedPlatform || selectedScreen)
 	{
-		QAction* deleteControlAction = new QAction(MENU_ITEM_DELETE, &menu);
-		connect(deleteControlAction, SIGNAL(triggered()), this, SLOT(OnDeleteControlAction()));
-		menu.addAction(deleteControlAction);
-		
+		// Yuri Coder, 2013/03/29. Deletion is disabled for Subcontrols.
+		if (IsDeleteNodeAllowed(selectedControl))
+		{
+			QAction* deleteControlAction = new QAction(MENU_ITEM_DELETE, &menu);
+			connect(deleteControlAction, SIGNAL(triggered()), this, SLOT(OnDeleteControlAction()));
+			menu.addAction(deleteControlAction);
+		}
+
 		QAction* copyControlAction = new QAction(MENU_ITEM_COPY, &menu);
 		connect(copyControlAction, SIGNAL(triggered()), this, SLOT(OnCopyAction()));
 		menu.addAction(copyControlAction);
@@ -304,7 +360,16 @@ void HierarchyTreeWidget::OnShowCustomMenu(const QPoint& pos)
 		connect(createScreenAction, SIGNAL(triggered()), this, SLOT(OnCreateScreenAction()));
 		menu.addAction(createScreenAction);
 		
-		if (CopyPasteController::Instance()->GetCopyType() == CopyPasteController::CopyTypeScreen)
+		QAction* createAggregatorAction = new QAction(MENU_ITEM_CREATE_AGGREGATOR, &menu);
+		connect(createAggregatorAction, SIGNAL(triggered()), this, SLOT(OnCreateAggregatorAction()));
+		menu.addAction(createAggregatorAction);
+
+		QAction* importScreenOrAggregatorAction = new QAction(MENU_ITEM_IMPORT_SCREEN_OR_AGGREGATOR, &menu);
+		connect(importScreenOrAggregatorAction, SIGNAL(triggered()), this, SLOT(OnImportScreenOrAggregatorAction()));
+		menu.addAction(importScreenOrAggregatorAction);
+
+		if (CopyPasteController::Instance()->GetCopyType() == CopyPasteController::CopyTypeScreen ||
+			CopyPasteController::Instance()->GetCopyType() == CopyPasteController::CopyTypeAggregator)
 		{
 			QAction* pasteScreenAction = new QAction(MENU_ITEM_PASTE, &menu);
 			connect(pasteScreenAction, SIGNAL(triggered()), this, SLOT(OnPasteAction()));
@@ -330,6 +395,8 @@ void HierarchyTreeWidget::OnDeleteControlAction()
 		return;
 
 	bool needConfirm = false;
+	bool needDeleteFiles = false;
+
 	HierarchyTreeNode::HIERARCHYTREENODESLIST nodes;
 	for (QList<QTreeWidgetItem*>::iterator iter = items.begin(); iter != items.end(); ++iter)
 	{
@@ -348,8 +415,41 @@ void HierarchyTreeWidget::OnDeleteControlAction()
 				nodes.push_back((*iter));
 			}
 		}
+
+		if (aggregatorNode ||
+			dynamic_cast<HierarchyTreeScreenNode*>(node) ||
+			dynamic_cast<HierarchyTreePlatformNode*>(node))
+		{
+			QMessageBox messageBox;
+			messageBox.setText(tr("Delete nodes"));
+			messageBox.setInformativeText(tr("Do you want to remove selected nodes only from project, or delete their files from disk?"));
+			QAbstractButton* removeFromProjectButton = (QAbstractButton*)messageBox.addButton(tr("Remove from project"),
+																							  QMessageBox::YesRole);
+			QAbstractButton* deleteFromProjectButton = (QAbstractButton*)messageBox.addButton(tr("Delete from disk"),
+																							  QMessageBox::YesRole);
+			QAbstractButton* cancelButton = (QAbstractButton*)messageBox.addButton(tr("Cancel"),
+																				   QMessageBox::RejectRole);
+			messageBox.setDefaultButton((QPushButton*)removeFromProjectButton);
+			messageBox.setIcon(QMessageBox::Question);
+			messageBox.exec();
+
+			if (messageBox.clickedButton() == removeFromProjectButton)
+			{
+				Logger::Debug("removeFromProjectButton");
+			}
+			if (messageBox.clickedButton() == deleteFromProjectButton)
+			{
+				needDeleteFiles = true;
+				Logger::Debug("deleteFromProjectButton");
+			}
+			if (messageBox.clickedButton() == cancelButton)
+			{
+				Logger::Debug("cancelButton");
+				return;
+			}
+		}
 		
-		nodes.push_back(node);
+		nodes.push_front(node);
 	}
 	
 	if (needConfirm)
@@ -361,20 +461,24 @@ void HierarchyTreeWidget::OnDeleteControlAction()
 			return;
 	}
 	
-	DeleteSelectedNodeCommand* cmd = new DeleteSelectedNodeCommand(nodes);
+	DeleteSelectedNodeCommand* cmd = new DeleteSelectedNodeCommand(nodes, needDeleteFiles);
 	CommandsController::Instance()->ExecuteCommand(cmd);
 	SafeRelease(cmd);
 }
 
+void HierarchyTreeWidget::OnImportScreenOrAggregatorAction()
+{
+	emit ImportScreenOrAggregator();
+}
+
 void HierarchyTreeWidget::OnCreateScreenAction()
 {
-	QList<QTreeWidgetItem*> items = ui->treeWidget->selectedItems();
-	if (!items.size())
-		return;
-	QTreeWidgetItem* item = items.at(0);
-	QVariant data = item->data(ITEM_ID);
-	HierarchyTreeNode::HIERARCHYTREENODEID id = data.toInt();
-	emit CreateNewScreen(id);
+	emit CreateNewScreen();
+}
+
+void HierarchyTreeWidget::OnCreateAggregatorAction()
+{
+	emit CreateNewAggregator();
 }
 
 void HierarchyTreeWidget::OnCopyAction()
@@ -424,4 +528,22 @@ void HierarchyTreeWidget::OnPasteAction()
 	HierarchyTreeNode* baseNode = HierarchyTreeController::Instance()->GetTree().GetNode(id);
 
 	CopyPasteController::Instance()->Paste(baseNode);
+}
+
+bool HierarchyTreeWidget::IsDeleteNodeAllowed(HierarchyTreeControlNode* selectedControlNode)
+{
+	if (!selectedControlNode)
+	{
+		return true;
+	}
+		
+	// Check whether selected control is Subcontrol of its parent.
+	UIControl* uiControl = selectedControlNode->GetUIObject();
+	if (!uiControl)
+	{
+		return true;
+	}
+
+	// Subcontrols cannot be deleted.
+	return !uiControl->IsSubcontrol();
 }

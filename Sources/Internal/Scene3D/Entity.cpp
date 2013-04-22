@@ -372,7 +372,7 @@ void Entity::RestoreOriginalTransforms()
 void Entity::BakeTransforms()
 {
     uint32 size = (uint32)children.size();
-    if(size == 1) // propagate matrices
+    if(size == 1 && (0 == GetComponent(Component::LOD_COMPONENT))) // propagate matrices
     {
         for (uint32 c = 0; c < size; ++c)
         {
@@ -726,7 +726,7 @@ void Entity::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     if(customProperties && customProperties->IsKeyExists("editor.referenceToOwner"))
     {
         savedPath = customProperties->GetString("editor.referenceToOwner");
-        String newPath = sceneFileV2->AbsoluteToRelative(savedPath);
+        String newPath = FilePath(savedPath).GetRelativePathname(sceneFileV2->GetScenePath().GetAbsolutePathname());
         customProperties->SetString("editor.referenceToOwner", newPath);
     }
     
@@ -769,6 +769,7 @@ void Entity::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 
 	flags = archive->GetUInt32("flags", NODE_VISIBLE);
 	flags |= NODE_UPDATABLE;
+	flags &= ~TRANSFORM_DIRTY;
 
     const Matrix4 & localTransform = archive->GetByteArrayAsType("localTransform", GetLocalTransform());
 	SetLocalTransform(localTransform);
@@ -787,8 +788,11 @@ void Entity::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     {
         if(customProperties->IsKeyExists("editor.referenceToOwner"))
         {
-            String newPath = sceneFileV2->RelativeToAbsolute(customProperties->GetString("editor.referenceToOwner"));
-            customProperties->SetString("editor.referenceToOwner", newPath);
+            FilePath newPath(sceneFileV2->GetScenePath());
+            newPath += FilePath(customProperties->GetString("editor.referenceToOwner"));
+
+            //TODO: why we use absolute pathname instead of relative?
+            customProperties->SetString("editor.referenceToOwner", newPath.GetAbsolutePathname());
         }
     }
 

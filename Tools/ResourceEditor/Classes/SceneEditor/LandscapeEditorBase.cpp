@@ -18,20 +18,19 @@ LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, E
     ,   touchID(INVALID_TOUCH_ID)
 {
     fileSystemDialogOpMode = DIALOG_OPERATION_NONE;
-    fileSystemDialog = new UIFileSystemDialog("~res:/Fonts/MyriadPro-Regular.otf");
+    fileSystemDialog = new UIFileSystemDialog(FilePath("~res:/Fonts/MyriadPro-Regular.otf"));
     fileSystemDialog->SetDelegate(this);
 
-    String path = EditorSettings::Instance()->GetDataSourcePath();
-    if(path.length())
+    FilePath path = EditorSettings::Instance()->GetDataSourcePath();
+    if(path.IsInitalized())
     {
         fileSystemDialog->SetCurrentDir(path);   
     }
 
     workingLandscape = NULL;
+	workingLandscapeEntity = NULL;
     workingScene = NULL;
 
-    savedPath = "";
-    
     currentTool = NULL;
     heightmapNode = NULL;
     
@@ -39,20 +38,19 @@ LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, E
     
     landscapeSize = 0;
 
-	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.png");
+	cursorTexture = Texture::CreateFromFile(FilePath("~res:/LandscapeEditor/Tools/cursor/cursor.png"));
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
     
-    savedShaderMode = Landscape::TILED_MODE_MIXED;
+    savedShaderMode = Landscape::TILED_MODE_TILE_DETAIL_MASK;
 }
 
 LandscapeEditorBase::~LandscapeEditorBase()
 {
-    savedPath = "";
-    
     SafeRelease(toolsPanel);
     
     SafeRelease(heightmapNode);
     SafeRetain(workingLandscape);
+	SafeRelease(workingLandscapeEntity);
     SafeRelease(workingScene);
     
     SafeRelease(fileSystemDialog);
@@ -74,6 +72,8 @@ bool LandscapeEditorBase::SetScene(EditorScene *newScene)
     SafeRelease(workingScene);
     
     workingLandscape = SafeRetain(newScene->GetLandscape(newScene));
+	workingLandscapeEntity = SafeRetain(newScene->GetLandscapeNode(newScene));
+
     if(!workingLandscape)
     {
         ShowErrorDialog(String("No landscape at level."));
@@ -81,7 +81,10 @@ bool LandscapeEditorBase::SetScene(EditorScene *newScene)
     }
     
     savedShaderMode = workingLandscape->GetTiledShaderMode();
-    workingLandscape->SetTiledShaderMode(Landscape::TILED_MODE_TILEMASK);
+    if(savedShaderMode == Landscape::TILED_MODE_TEXTURE || savedShaderMode == Landscape::TILED_MODE_MIXED)
+    {
+        workingLandscape->SetTiledShaderMode(Landscape::TILED_MODE_TILEMASK);
+    }
     
     workingScene = SafeRetain(newScene);
     return true;
@@ -139,7 +142,7 @@ void LandscapeEditorBase::Close()
     
     workingLandscape->UpdateFullTiledTexture();
     workingLandscape->SetTiledShaderMode(savedShaderMode);
-    savedShaderMode = Landscape::TILED_MODE_MIXED;
+    savedShaderMode = Landscape::TILED_MODE_TILE_DETAIL_MASK;
     
     SafeRelease(workingLandscape);
 
@@ -237,9 +240,10 @@ void LandscapeEditorBase::SaveTexture()
 {
     state = ELE_SAVING_TEXTURE;
     
-    if(savedPath.length())
+    if(savedPath.IsInitalized())
     {
-        String pathToSave = FileSystem::Instance()->ReplaceExtension(savedPath, ".png");
+        FilePath pathToSave = savedPath;
+        pathToSave.ReplaceExtension(".png");
         SaveTextureAs(pathToSave, true);
     }
     else if(!fileSystemDialog->GetParent())
@@ -254,7 +258,7 @@ void LandscapeEditorBase::SaveTexture()
     }
 }
 
-void LandscapeEditorBase::SaveTextureAs(const String &pathToFile, bool closeLE)
+void LandscapeEditorBase::SaveTextureAs(const FilePath &pathToFile, bool closeLE)
 {
     SaveTextureAction(pathToFile);
     
@@ -304,7 +308,7 @@ void LandscapeEditorBase::ClearSceneResources()
 	}
 }
 
-void LandscapeEditorBase::OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile)
+void LandscapeEditorBase::OnFileSelected(UIFileSystemDialog *forDialog, const FilePath &pathToFile)
 {
     switch (fileSystemDialogOpMode) 
     {

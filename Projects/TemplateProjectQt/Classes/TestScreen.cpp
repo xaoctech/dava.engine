@@ -32,16 +32,16 @@
 void TestScreen::LoadResources()
 {
 	manager = GameObjectManager::Create();
-	bigBox = GameObject::Create("~res:/Gfx/GameObjects/blueboxbig");
+	bigBox = GameObject::Create(FilePath("~res:/Gfx/GameObjects/blueboxbig"));
 	bigBox->SetPivotPoint(ALIGN_HCENTER | ALIGN_VCENTER);
 	bigBox->SetPosition(200, 200);
 	manager->AddObject(bigBox.Get());
 
-	smallBox = GameObject::Create("~res:/Gfx/GameObjects/bluebox");
+	smallBox = GameObject::Create(FilePath("~res:/Gfx/GameObjects/bluebox"));
 	smallBox->SetPivotPoint(ALIGN_HCENTER | ALIGN_VCENTER);
 	bigBox->AddObject(smallBox.Get());
 
-	smallCircle = GameObject::Create("~res:/Gfx/GameObjects/bluecircle");
+	smallCircle = GameObject::Create(FilePath("~res:/Gfx/GameObjects/bluecircle"));
 	smallCircle->SetPosition(bigBox->GetSize());
 	smallCircle->SetPivotPoint(ALIGN_HCENTER | ALIGN_VCENTER);
 	bigBox->AddObject(smallCircle.Get());
@@ -49,13 +49,13 @@ void TestScreen::LoadResources()
 	bigBox->SetAngle(DegToRad(30.0f));
 	time = 0.0f;
 	
-	bigBoxParticles = GameObject::Create("~res:/Gfx/GameObjects/blueboxbig");
+	bigBoxParticles = GameObject::Create(FilePath("~res:/Gfx/GameObjects/blueboxbig"));
 	bigBoxParticles->SetPivotPoint(ALIGN_HCENTER | ALIGN_VCENTER);
 	bigBoxParticles->SetPosition(200, 100);
 	manager->AddObject(bigBoxParticles.Get());
 	
 	bigBoxEmitter = new ParticleEmitterObject(); 
-	bigBoxEmitter->LoadFromYaml("~res:/Particles/sparkles.yaml");
+	bigBoxEmitter->LoadFromYaml(FilePath("~res:/Particles/sparkles.yaml"));
 	bigBoxEmitter->SetPriority(10);
 	
 //	RefPtr<GameObject> centerTest  = GameObject::Create("~res:/Gfx/GameObjects/bluecircle");
@@ -72,12 +72,12 @@ void TestScreen::LoadResources()
 	manager->AddObject(bigBoxEmitterClone);
 
 	Texture::EnableMipmapGeneration();
-	testSprite = Sprite::Create("~res:/Gfx/GameObjects/blueboxbig");
+	testSprite = Sprite::Create(FilePath("~res:/Gfx/GameObjects/blueboxbig"));
 	Texture::DisableMipmapGeneration();
 
-	sndClick = Sound::CreateFX("~res:/Sounds/click.wav", Sound::TYPE_STATIC);
+	sndClick = Sound::CreateFX(FilePath("~res:/Sounds/click.wav"), Sound::TYPE_STATIC);
 
-	music = Sound::CreateMusic("~res:/Sounds/final.ogg", Sound::TYPE_STREAMED);
+	music = Sound::CreateMusic(FilePath("~res:/Sounds/final.ogg"), Sound::TYPE_STREAMED);
 	music->SetLooping(true);
 
 	isPlaying = false;
