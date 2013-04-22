@@ -57,7 +57,7 @@ SoundInstance::SoundInstance(Sound * parent)
     animatedVolume(-1.f)
 {
 	SoundSystem::Instance()->AddSoundInstance(this);
-    parentSound = parent;
+    parentSound = SafeRetain(parent);
 }
 #endif //#ifdef __DAVAENGINE_ANDROID__
     
