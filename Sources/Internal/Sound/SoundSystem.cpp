@@ -70,6 +70,7 @@ namespace DAVA
 		context = alcCreateContext(device, 0);
 		AL_CHECKERROR();
 		AL_VERIFY(alcMakeContextCurrent(context));
+		AL_VERIFY(alDistanceModel( AL_INVERSE_DISTANCE_CLAMPED ) );
 	}
 #endif //#ifdef __DAVASOUND_AL__
 

@@ -57,13 +57,12 @@ namespace DAVA
 		NSString * filePath;
 		if(virtualBundlePath.IsInitalized())
 		{
-				//		NSString * bundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString: @""];
-			NSString * bundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString: @"/Data"];
+			NSString * bundlePath = [NSString stringWithUTF8String: virtualBundlePath.GetAbsolutePathname().c_str()];
 			filePath = [bundlePath stringByAppendingString: relativePathname];
 		}
 		else 
 		{
-			NSString * bundlePath = [NSString stringWithUTF8String: virtualBundlePath.GetAbsolutePathname().c_str()];
+			NSString * bundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString: @"/Data"];
 			filePath = [bundlePath stringByAppendingString: relativePathname];
 		}
 		

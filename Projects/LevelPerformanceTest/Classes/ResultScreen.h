@@ -4,8 +4,6 @@
 #include "DAVAEngine.h"
 #include "LandscapeTestData.h"
 
-using namespace DAVA;
-
 enum eResultScreenState
 {
 	RESULT_STATE_NORMAL = 0,
@@ -16,7 +14,7 @@ enum eResultScreenState
 class ResultScreen: public DAVA::UIScreen
 {
 public:
-	ResultScreen(const LandscapeTestData& testData, const FilePath& filename, Texture* landscapeTexture);
+	ResultScreen(const LandscapeTestData& testData, const DAVA::FilePath& filename, DAVA::Texture* landscapeTexture);
 	~ResultScreen();
 	
 	virtual void LoadResources();
@@ -24,8 +22,8 @@ public:
 	virtual void WillAppear();
 	virtual void WillDisappear();
 	
-	virtual void Update(float32 timeElapsed);
-	virtual void Draw(const UIGeometricData &geometricData);
+	virtual void Update(DAVA::float32 timeElapsed);
+	virtual void Draw(const DAVA::UIGeometricData &geometricData);
 	
 	virtual void Input(DAVA::UIEvent * touch);
 
@@ -37,28 +35,28 @@ private:
     
     void PrepareSprite();
 	
-	DAVA::Vector2 GetVecInRect(const DAVA::Rect & rect, float32 angleInRad);
+	DAVA::Vector2 GetVecInRect(const DAVA::Rect & rect, DAVA::float32 angleInRad);
 
 	void DrawStatImage(DAVA::Rect rect);
     
     void SaveResults();
     
-	Texture* texture;
-	Sprite* textureSprite;
-    Sprite* resultSprite;
+	DAVA::Texture* texture;
+	DAVA::Sprite* textureSprite;
+    DAVA::Sprite* resultSprite;
 
-	FilePath filename;
+	DAVA::FilePath filename;
 	const LandscapeTestData& testData;
 	eResultScreenState state;
 	bool isFinished;
 	
-	UIStaticText *fileNameText;
-	UIStaticText *statText[3];
-	UIStaticText *tapToContinue;
-	UIStaticText *screenshotText;
+	DAVA::UIStaticText *fileNameText;
+	DAVA::UIStaticText *statText[3];
+	DAVA::UIStaticText *tapToContinue;
+	DAVA::UIStaticText *screenshotText;
 	
-	int32 testCount;
-	int32 testNumber;
+	DAVA::int32 testCount;
+	DAVA::int32 testNumber;
 };
 
 #endif
