@@ -60,16 +60,8 @@ void BackGroundPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     
     RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::DRAW_TYPE_PROPERTY_NAME, ui->drawTypeComboBox, false, true);
     RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::COLOR_INHERIT_TYPE_PROPERTY_NAME, ui->colorInheritComboBox, false, true);
-    
-	if(dynamic_cast<UIStaticTextMetadata*>(activeMetadata))
-	{
-		RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::SPRITE_ALIGN_PROPERTY_NAME, ui->alignComboBox, false, true);
-	}
-	else
-	{
-		RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::ALIGN_PROPERTY_NAME, ui->alignComboBox, false, true);
-	}
-
+	RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::ALIGN_PROPERTY_NAME, ui->alignComboBox, false, true);
+	
     RegisterColorButtonWidgetForProperty(propertiesMap, PropertyNames::BACKGROUND_COLOR_PROPERTY_NAME, ui->selectColorButton, false, true);
 
     // Editing of sprites is not allowed for UIStaticText.
@@ -121,6 +113,8 @@ void BackGroundPropertyGridWidget::FillComboboxes()
     
     ui->alignComboBox->clear();
     itemsCount = BackgroundGridWidgetHelper::GetAlignTypesCount();
+	// Horizontal Justify has sense only for text
+	itemsCount--;
     for (int i = 0; i < itemsCount; i ++)
     {
         ui->alignComboBox->addItem(BackgroundGridWidgetHelper::GetAlignTypeDesc(i));

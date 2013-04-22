@@ -12,6 +12,9 @@
 #include "PropertyNames.h"
 #include "ResourcesManageHelper.h"
 #include "BackgroundGridWidgetHelper.h"
+#include "UIStaticTextMetadata.h"
+#include "UITextFieldMetadata.h"
+#include "UIButtonMetadata.h"
 
 #include "StringUtils.h"
 
@@ -53,7 +56,13 @@ void TextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     // Localized Text Key is handled through generic Property mechanism, but we need to update the
     // Localization Value widget each time Localization Key is changes.
     RegisterLineEditWidgetForProperty(propertiesMap, LOCALIZED_TEXT_KEY_PROPERTY_NAME, ui->localizationKeyNameLineEdit, false, true);
-	RegisterComboBoxWidgetForProperty(propertiesMap, ALIGN_PROPERTY_NAME, ui->alignComboBox, false, true);
+	RegisterComboBoxWidgetForProperty(propertiesMap, TEXT_ALIGN_PROPERTY_NAME, ui->alignComboBox, false, true);
+
+	bool enableTextAlignComboBox = (dynamic_cast<UIStaticTextMetadata*>(activeMetadata)	!= NULL||
+									dynamic_cast<UITextFieldMetadata*>(activeMetadata)	!= NULL||
+									dynamic_cast<UIButtonMetadata*>(activeMetadata)		!= NULL);
+	ui->alignComboBox->setEnabled(enableTextAlignComboBox);
+
     UpdateLocalizationValue();
 
     RegisterGridWidgetAsStateAware();

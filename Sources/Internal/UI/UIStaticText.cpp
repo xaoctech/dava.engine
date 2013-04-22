@@ -56,6 +56,7 @@ UIStaticText::UIStaticText(const Rect &rect, bool rectInAbsoluteCoordinates/* = 
 	shadowBg = new UIControlBackground();
 	textBg = new UIControlBackground();
 	textBg->SetDrawType(UIControlBackground::DRAW_ALIGNED);
+	textBlock->SetAlign(ALIGN_TOP|ALIGN_LEFT);
 }
 
 UIStaticText::~UIStaticText()
@@ -134,20 +135,25 @@ void UIStaticText::SetMultiline(bool _isMultilineEnabled, bool bySymbol)
 	textBlock->SetMultiline(_isMultilineEnabled, bySymbol);
 	PrepareSprite();
 }
-	/*
-void UIStaticText::SetSpriteAlign(int32 align)
-{
-	UIControl::SetSpriteAlign(align);
-}*/
 
 void UIStaticText::SetAlign(int32 _align)
 {
-	textBlock->SetAlign(_align);
+	UIControl::SetSpriteAlign(_align);
 }
 
 int32 UIStaticText::GetAlign() const
 {
-	return textBlock->GetAlign();
+	return UIControl::GetSpriteAlign();
+}
+
+void UIStaticText::SetTextAlign(int32 _align)
+{
+	textBg->SetAlign(_align); 
+}
+
+int32 UIStaticText::GetTextAlign() const
+{
+	return textBg->GetAlign();
 }
 
 const Vector2 &UIStaticText::GetTextSize()
@@ -201,7 +207,6 @@ void UIStaticText::Draw(const UIGeometricData &geometricData)
 		shadowBg->Draw(shadowGeomData);
 	}
 
-	textBg->SetAlign(textBlock->GetAlign());
 	textBg->SetPerPixelAccuracyType(background->GetPerPixelAccuracyType());
 	textBg->SetDrawColor(textColor);
 	textBg->Draw(geometricData);
@@ -289,21 +294,14 @@ void UIStaticText::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 		SetShadowOffset(shadowOffsetNode->AsVector2());
 	}
 
-	YamlNode * alignNode = node->Get("align");
-	SetAlign(loader->GetAlignFromYamlNode(alignNode)); // NULL is also OK here.
+	YamlNode * alignNode = node->Get("textalign");
+	SetTextAlign(loader->GetAlignFromYamlNode(alignNode)); // NULL is also OK here.
 }
 
 YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
 {
     YamlNode *node = UIControl::SaveToYamlNode(loader);
 
-    // Sprite node is not needed for UITextField.
-    YamlNode *spriteNode = node->Get("sprite");
-    if (spriteNode)
-    {
-        node->RemoveNodeFromMap("sprite");
-    }
-	
 	UIStaticText *baseControl = new UIStaticText();	
 
     //Temp variable
@@ -349,7 +347,7 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
 	}
     
 	// Align
-	node->SetNodeToMap("align", loader->GetAlignNodeValue(this->GetAlign()));
+	node->SetNodeToMap("textalign", loader->GetAlignNodeValue(this->GetTextAlign()));
 
 	// Draw type. Must be overriden for UITextControls.
 	node->Set("drawType", loader->GetDrawTypeNodeValue(this->GetBackground()->GetDrawType()));
