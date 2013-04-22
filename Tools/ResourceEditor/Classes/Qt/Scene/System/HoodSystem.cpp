@@ -66,14 +66,17 @@ DAVA::Vector3 HoodSystem::GetPosition() const
 
 void HoodSystem::SetPosition(const DAVA::Vector3 &pos)
 {
-	if(curPos != pos)
+	if(!locked)
 	{
-		curPos = pos;
-		curOffset = DAVA::Vector3(0, 0, 0);
-
-		if(NULL != curHood)
+		if(curPos != pos)
 		{
-			curHood->UpdatePos(curPos);
+			curPos = pos;
+			curOffset = DAVA::Vector3(0, 0, 0);
+
+			if(NULL != curHood)
+			{
+				curHood->UpdatePos(curPos);
+			}
 		}
 	}
 }
@@ -104,7 +107,6 @@ void HoodSystem::SetScale(DAVA::float32 scale)
 		}
 	}
 }
-
 
 void HoodSystem::SetType(int type)
 {

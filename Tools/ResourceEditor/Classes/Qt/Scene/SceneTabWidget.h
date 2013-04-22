@@ -27,12 +27,14 @@ public:
 	int AddTab(const DAVA::String &scenePapth);
 
 	int GetCurrentTab();
+	void SetCurrentTab(int index);
 	
 public slots:
-	void SetCurrentTab(int index);
-
 	// this slot redirects any UIEvent to the active sceneProxy for processing
 	void ProcessDAVAUIEvent(DAVA::UIEvent *event);
+
+	// tab switched by user
+	void TabBarCurrentChanged(int index);
 
 // old ui. should be removed later -->
 protected:

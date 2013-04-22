@@ -19,21 +19,6 @@ public:
 	SceneEditorProxy();
 	~SceneEditorProxy();
 
-	bool Open(const DAVA::String &path);
-	bool Save();
-	bool Save(const DAVA::String &path);
-
-	DAVA::String GetScenePath();
-	void SetScenePath(const DAVA::String &newScenePath);
-
-	virtual void Update(float timeElapsed);
-	void ProcessUIEvent(DAVA::UIEvent *event);
-
-	// this function should be called each time UI3Dview changes its position
-	// viewport rect is used to calc. ray from camera to any 2d point on this viewport
-	void SetViewportRect(const DAVA::Rect &newViewportRect);
-
-public:
 	SceneCameraSystem *cameraSystem;
 	SceneCollisionSystem *collisionSystem;
 	SceneGridSystem *gridSystem;
@@ -41,10 +26,25 @@ public:
 	SceneSelectionSystem *selectionSystem;
 	EntityModificationSystem *modifSystem;
 
+	bool Load(const DAVA::String &path);
+	bool Save(const DAVA::String &path);
+	bool Save();
+
+	DAVA::String GetScenePath();
+	void SetScenePath(const DAVA::String &newScenePath);
+
+	void PostUIEvent(DAVA::UIEvent *event);
+
+	// this function should be called each time UI3Dview changes its position
+	// viewport rect is used to calc. ray from camera to any 2d point on this viewport
+	void SetViewportRect(const DAVA::Rect &newViewportRect);
+
 protected:
 	DAVA::String curScenePath;
 
+	virtual void Update(float timeElapsed);
 	virtual void Draw();
+
 	bool SceneLoad();
 	bool SceneSave();
 };
