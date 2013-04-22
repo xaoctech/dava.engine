@@ -2847,6 +2847,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Utils/Utils.h</locationURI>
 		</link>
 		<link>
+			<name>src/Internal/Utils/UtilsAndroid.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Utils/UtilsAndroid.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/Internal/Utils/UtilsMacOS.mm</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Utils/UtilsMacOS.mm</locationURI>
@@ -5450,6 +5455,11 @@
 			<name>bin/classes/Internal/Utils/Utils.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Utils/Utils.h</locationURI>
+		</link>
+		<link>
+			<name>bin/classes/Internal/Utils/UtilsAndroid.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Utils/UtilsAndroid.cpp</locationURI>
 		</link>
 		<link>
 			<name>bin/classes/Internal/Utils/UtilsMacOS.mm</name>
