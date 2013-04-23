@@ -93,8 +93,27 @@ FilePath FilePath::operator+(const FilePath &path) const
     FilePath pathname(AddPath(*this, path));
     return pathname;
 }
+
+FilePath FilePath::operator+(const String &path) const
+{
+    FilePath pathname(AddPath(*this, path));
+    return pathname;
+}
+
+FilePath FilePath::operator+(const char * path) const
+{
+    FilePath pathname(AddPath(*this, path));
+    return pathname;
+}
+
     
-FilePath& FilePath::operator+=(const FilePath & path)
+FilePath& FilePath::operator+=(const char * path)
+{
+    absolutePathname = AddPath(*this, path);
+    return (*this);
+}
+
+FilePath& FilePath::operator+=(const String & path)
 {
     absolutePathname = AddPath(*this, path);
     return (*this);
@@ -216,7 +235,7 @@ void FilePath::ReplaceFilename(const String &filename)
     DVASSERT(!IsEmpty());
     
     const FilePath directory = GetDirectory();
-    absolutePathname = NormalizePathname(directory + FilePath(filename));
+    absolutePathname = NormalizePathname(directory + filename);
 }
     
 void FilePath::ReplaceBasename(const String &basename)
@@ -225,7 +244,7 @@ void FilePath::ReplaceBasename(const String &basename)
     
     const FilePath directory = GetDirectory();
     const String extension = GetExtension();
-    absolutePathname = NormalizePathname(directory + FilePath(basename + extension));
+    absolutePathname = NormalizePathname(directory + (basename + extension));
 }
     
 void FilePath::ReplaceExtension(const String &extension)
@@ -234,7 +253,7 @@ void FilePath::ReplaceExtension(const String &extension)
     
     const FilePath directory = GetDirectory();
     const String basename = GetBasename();
-    absolutePathname = NormalizePathname(directory + FilePath(basename + extension));
+    absolutePathname = NormalizePathname(directory + (basename + extension));
 }
     
 void FilePath::ReplaceDirectory(const String &directory)

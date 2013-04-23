@@ -110,7 +110,7 @@ void DLCSystem::DownloadComplete(FileDownloaderDelegate::DownloadStatusCode stat
             SendStatusToDelegates( DOWNLOAD_COMPLETE, DLCSystemDelegate::DOWNLOAD_SUCCESS, dlc->index );
 
             // Unpack DLC & save files paths
-            FilePath fileForPaths = indexFilePath + FilePath(dlc->name + ".ka");
+            FilePath fileForPaths = indexFilePath + (dlc->name + ".ka");
             DLCUnpacker::Unpack( dlc->fullPath, contentPath, fileForPaths );
             FileSystem::Instance()->DeleteFile(dlc->fullPath);
         }
@@ -140,7 +140,7 @@ void DLCSystem::DownloadComplete(FileDownloaderDelegate::DownloadStatusCode stat
         if ( status == DL_SUCCESS )
         {
             // Create DLC files descriptions
-            YamlParser * parser = YamlParser::Create(indexFilePath + FilePath("IndexDLC.yaml"));
+            YamlParser * parser = YamlParser::Create(indexFilePath + "IndexDLC.yaml");
             YamlNode * rootNode = parser->GetRootNode()->Get( "downloads" );
             for ( uint16 roonInd = 0; roonInd < rootNode->GetCount(); ++roonInd )
             {
@@ -182,7 +182,7 @@ void DLCSystem::DownloadComplete(FileDownloaderDelegate::DownloadStatusCode stat
                         }
                         
                         // Check file system
-                        FilePath fileForPaths = indexFilePath + FilePath(dlc->name + ".ka");
+                        FilePath fileForPaths = indexFilePath + (dlc->name + ".ka");
                         CheckFileStructureDLC(fileForPaths, dlc);
 
                         // Check version
@@ -248,7 +248,7 @@ bool DLCSystem::Stop()
 
 void DLCSystem::LoadOldDlcs()
 {
-    File * file = File::Create(indexFilePath + FilePath("DLCSystemStates"), File::OPEN | File::READ );
+    File * file = File::Create(indexFilePath + "DLCSystemStates", File::OPEN | File::READ );
     if ( file == NULL )
     {
         return;
@@ -269,7 +269,7 @@ void DLCSystem::LoadOldDlcs()
 
 void DLCSystem::SaveOldDlcs() const
 {
-    File * file = File::Create(indexFilePath + FilePath("DLCSystemStates"), File::CREATE | File::WRITE );
+    File * file = File::Create(indexFilePath + "DLCSystemStates", File::CREATE | File::WRITE );
     if ( file == NULL )
     {
         return;
@@ -299,8 +299,7 @@ void DLCSystem::CheckFileStructureDLC(const FilePath & path, DLCSource * _dlc)
         std::stringstream stream;
         stream << i;
         stream >> key;
-        FilePath filePathForCheck = FilePath(archive->GetString(key));
-        FilePath fullPathForCheck = contentPath + filePathForCheck;
+        FilePath fullPathForCheck = contentPath + archive->GetString(key);
         
         File * file = File::Create(fullPathForCheck, File::OPEN | File::READ );
         if ( file == NULL )

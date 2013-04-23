@@ -573,7 +573,7 @@ FilePath LandscapeEditorCustomColors::GetAbsolutePathFromScenePath(const FilePat
 	if(relativePath.IsEmpty())
 		return FilePath();
 
-	return (GetScenePath() + FilePath(relativePath));
+	return (GetScenePath() + relativePath);
 }
 
 
@@ -582,7 +582,7 @@ FilePath LandscapeEditorCustomColors::GetAbsolutePathFromProjectPath(const FileP
 	if(relativePath.IsEmpty())
 		return FilePath();
 
-	return (EditorSettings::Instance()->GetProjectPath() + FilePath(relativePath));
+	return (EditorSettings::Instance()->GetProjectPath() + relativePath);
 }
 
 void LandscapeEditorCustomColors::SaveTexture()

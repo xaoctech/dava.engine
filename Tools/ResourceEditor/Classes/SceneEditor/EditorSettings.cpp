@@ -60,7 +60,7 @@ FilePath EditorSettings::GetProjectPath()
 
 FilePath EditorSettings::GetParticlesConfigsPath()
 {
-	return GetProjectPath() + FilePath("Data/Configs/Particles/");
+	return GetProjectPath() + "Data/Configs/Particles/";
 }
 
 float32 EditorSettings::GetCameraSpeed()

@@ -183,7 +183,7 @@ FilePath Sprite::GetScaledName(const FilePath &spriteName)
 File * Sprite::LoadLocalizedFile(const FilePath & spritePathname, FilePath & texturePath)
 {
     FilePath localizedScaledPath(spritePathname);
-    localizedScaledPath.ReplaceDirectory(spritePathname.GetDirectory() + FilePath(LocalizationSystem::Instance()->GetCurrentLocale() + "/"));
+    localizedScaledPath.ReplaceDirectory(spritePathname.GetDirectory() + (LocalizationSystem::Instance()->GetCurrentLocale() + "/"));
     
     texturePath = FilePath();
     File * fp = File::Create(localizedScaledPath, File::READ|File::OPEN);
@@ -225,7 +225,7 @@ void Sprite::InitFromFile(File *file, const FilePath &pathName)
 		file->ReadLine(tempBuf, 1024);
 		sscanf(tempBuf, "%s", textureCharName);
         
-		FilePath tp = pathName.GetDirectory() + FilePath(textureCharName);
+		FilePath tp = pathName.GetDirectory() + textureCharName;
 //		Logger::Debug("Opening texture: %s", tp.c_str());
 		textures[k] = Texture::CreateFromFile(tp);
 		textureNames[k] = tp;

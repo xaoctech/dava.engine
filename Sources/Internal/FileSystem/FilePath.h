@@ -70,6 +70,11 @@ public:
     FilePath& operator=(const FilePath & path);
     FilePath operator+(const FilePath & path) const;
     FilePath& operator+=(const FilePath & path);
+    FilePath operator+(const String & path) const;
+    FilePath& operator+=(const String & path);
+    FilePath operator+(const char * path) const;
+    FilePath& operator+=(const char * path);
+
     bool operator==(const FilePath & path) const;
 	bool operator!=(const FilePath & path) const;
 
@@ -225,6 +230,7 @@ protected:
     
     static bool IsAbsolutePathname(const String &pathname);
     
+public:
     static String AddPath(const FilePath &folder, const FilePath & addition);
     
 protected:
@@ -240,6 +246,7 @@ public:
 //     );
     
 };
+    
 };
 
 #endif //__DAVAENGINE_FILE_PATH_H__

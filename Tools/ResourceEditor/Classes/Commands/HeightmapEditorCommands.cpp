@@ -50,10 +50,10 @@ FilePath HeightmapModificationCommand::SaveHeightmap(Heightmap* heightmap)
 	FilePath documentsPath("~doc:");
 
 	FilePath folderPathname("~doc:/History/");
-	FileSystem::Instance()->CreateDirectory(folderPathname.GetAbsolutePathname());
+	FileSystem::Instance()->CreateDirectory(folderPathname);
 
-	folderPathname = folderPathname + FilePath("/Heightmap/");
-	FileSystem::Instance()->CreateDirectory(folderPathname.GetAbsolutePathname());
+	folderPathname = folderPathname + "Heightmap/";
+	FileSystem::Instance()->CreateDirectory(folderPathname);
 	
 	FileList* fileList = new FileList(folderPathname);
 	

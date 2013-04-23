@@ -334,7 +334,7 @@ void SceneEditorScreenMain::AutoSaveLevel(BaseObject *, void *, void *)
     time_t now = time(0);
     tm* utcTime = localtime(&now);
     
-    FilePath folderPath = EditorSettings::Instance()->GetDataSourcePath() + FilePath("Autosave/");
+    FilePath folderPath = EditorSettings::Instance()->GetDataSourcePath() + "Autosave/";
     bool folderExcists = FileSystem::Instance()->IsDirectory(folderPath);
     if(!folderExcists)
     {
@@ -343,7 +343,7 @@ void SceneEditorScreenMain::AutoSaveLevel(BaseObject *, void *, void *)
 
     
     
-    FilePath pathToFile = folderPath + FilePath(Format("AutoSave_%04d.%02d.%02d_%02d_%02d.sc2",
+    FilePath pathToFile = folderPath + String(Format("AutoSave_%04d.%02d.%02d_%02d_%02d.sc2",
                                             utcTime->tm_year + 1900, utcTime->tm_mon + 1, utcTime->tm_mday, 
                                             utcTime->tm_hour, utcTime->tm_min));
     
@@ -532,7 +532,7 @@ void SceneEditorScreenMain::SaveToFolder(const FilePath & folder)
     
     if(!SceneSaver::Instance()) new SceneSaver();
     
-    FilePath inFolder = projectPath + FilePath("DataSource/3d/");
+    FilePath inFolder = projectPath + "DataSource/3d/";
     SceneSaver::Instance()->SetInFolder(inFolder);
     SceneSaver::Instance()->SetOutFolder(folder);
     
@@ -592,7 +592,7 @@ void SceneEditorScreenMain::ExportAs(ImageFileFormat format)
     
     if(!SceneExporter::Instance()) new SceneExporter();
     
-    FilePath inFolder = projectPath + FilePath("DataSource/3d/");
+    FilePath inFolder = projectPath + "DataSource/3d/";
     SceneExporter::Instance()->SetInFolder(inFolder);
     SceneExporter::Instance()->SetOutFolder(projectPath + String("Data/3d/"));
     
