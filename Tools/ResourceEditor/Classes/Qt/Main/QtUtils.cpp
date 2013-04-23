@@ -27,7 +27,7 @@ DAVA::FilePath GetOpenFileName(const DAVA::String &title, const DAVA::FilePath &
     QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 
     FilePath openedPathname = PathnameToDAVAStyle(filePath);
-    if(openedPathname.IsInitalized() && !SceneValidator::Instance()->IsPathCorrectForProject(openedPathname))
+    if(!openedPathname.IsEmpty() && !SceneValidator::Instance()->IsPathCorrectForProject(openedPathname))
     {
         //Need to Show Error
 		ShowErrorDialog(String(Format("File(%s) was selected from incorect project.", openedPathname.GetAbsolutePathname().c_str())));

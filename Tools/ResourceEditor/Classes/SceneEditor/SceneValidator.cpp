@@ -295,13 +295,13 @@ void SceneValidator::ValidateInstanceMaterialState(InstanceMaterialState *materi
     {
         Texture *lightmap = SafeRetain(materialState->GetLightmap());
         
-        if(lightmapName.IsInitalized())
+        if(lightmapName.IsEmpty())
         {
-            materialState->SetLightmap(lightmap, TextureDescriptor::GetDescriptorPathname(lightmapName));
+            materialState->SetLightmap(lightmap, FilePath());
         }
         else
         {
-            materialState->SetLightmap(lightmap, FilePath());
+            materialState->SetLightmap(lightmap, TextureDescriptor::GetDescriptorPathname(lightmapName));
         }
         
         SafeRelease(lightmap);
@@ -492,7 +492,7 @@ FilePath SceneValidator::SetPathForChecking(const FilePath &pathname)
 
 bool SceneValidator::ValidateTexturePathname(const FilePath &pathForValidation, Set<String> &errorsLog)
 {
-	DVASSERT(pathForChecking.IsInitalized() && "Need to set pathname for DataSource folder");
+	DVASSERT_MSG(!pathForChecking.IsEmpty(), "Need to set pathname for DataSource folder");
 
 	bool pathIsCorrect = IsPathCorrectForProject(pathForValidation);
 	if(pathIsCorrect)
@@ -517,7 +517,7 @@ bool SceneValidator::ValidateTexturePathname(const FilePath &pathForValidation, 
 
 bool SceneValidator::ValidateHeightmapPathname(const FilePath &pathForValidation, Set<String> &errorsLog)
 {
-	DVASSERT(pathForChecking.IsInitalized() && "Need to set pathname for DataSource folder");
+	DVASSERT_MSG(!pathForChecking.IsEmpty(), "Need to set pathname for DataSource folder");
 
 	bool pathIsCorrect = IsPathCorrectForProject(pathForValidation);
 	if(pathIsCorrect)
@@ -591,7 +591,7 @@ void SceneValidator::CreateDescriptorIfNeed(const FilePath &forPathname)
 
 bool SceneValidator::ValidatePathname(const FilePath &pathForValidation, const String &validatedObjectName)
 {
-    DVASSERT(pathForChecking.IsInitalized());
+    DVASSERT(!pathForChecking.IsEmpty());
     //Need to set path to DataSource/3d for path correction  
     //Use SetPathForChecking();
     
