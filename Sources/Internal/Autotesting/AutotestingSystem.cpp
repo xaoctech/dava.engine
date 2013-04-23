@@ -716,7 +716,7 @@ void AutotestingSystem::OnTestStart(const String &_testName)
     MongodbUpdateObject *dbUpdateObject = new MongodbUpdateObject();
     KeyedArchive *currentTestArchive = FindOrInsertTestArchive(dbUpdateObject, testId);
     currentTestArchive->SetString("Name", testName);
-    dbUpdateObject->SaveToDB(dbClient);
+    SaveToDB(dbUpdateObject);
     
     Log("DEBUG", Format("OnTestStart %s", testName.c_str()));
 }
