@@ -394,7 +394,7 @@ File *FileSystem::CreateFileForFrameworkPath(const FilePath & frameworkPath, uin
 const FilePath & FileSystem::SystemPathForFrameworkPath(const FilePath & frameworkPath)
 {
 	//DVASSERT(frameworkPath.size() > 0);
-    if(!frameworkPath.IsInitalized() || frameworkPath.GetAbsolutePathname()[0] != '~')
+    if(frameworkPath.IsEmpty() || frameworkPath.GetAbsolutePathname()[0] != '~')
 	{
 		return frameworkPath;
 	}

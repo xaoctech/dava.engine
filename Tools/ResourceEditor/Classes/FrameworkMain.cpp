@@ -100,7 +100,7 @@ void ProcessRecourcePacker()
     
     resourcePacker->InitFolders(commandLinePath, outputh);
     
-    if(!resourcePacker->excludeDirectory.IsInitalized())
+    if(resourcePacker->excludeDirectory.IsEmpty())
     {
         printf("[FATAL ERROR: Packer has wrong input pathname]");
         return;
