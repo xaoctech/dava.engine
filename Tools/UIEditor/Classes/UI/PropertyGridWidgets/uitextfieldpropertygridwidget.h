@@ -23,7 +23,14 @@ public:
     virtual void Initialize(BaseMetadata* activeMetadata);
     virtual void Cleanup();
 
-private:
+    virtual void ProcessComboboxValueChanged(QComboBox* senderWidget, const PROPERTYGRIDWIDGETSITER& iter,
+                                             const QString& value);
+    virtual void UpdateComboBoxWidgetWithPropertyValue(QComboBox* comboBoxWidget, const QMetaProperty& curProperty);
+
+    void FillComboboxes();
+
+    void CustomProcessComboboxValueChanged(const PROPERTYGRIDWIDGETSITER& iter, int value);
+
     Ui::UITextFieldPropertyGridWidget *ui;
 };
 
