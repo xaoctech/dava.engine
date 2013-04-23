@@ -13,7 +13,7 @@ HoodSystem::HoodSystem(DAVA::Scene * scene, SceneCameraSystem *camSys)
 	, curHood(NULL)
 	, moveHood()
 	, locked(false)
-	, invisible(true)
+	, visible(false)
 {
 	btVector3 worldMin(-1000,-1000,-1000);
 	btVector3 worldMax(1000,1000,1000);
@@ -176,7 +176,7 @@ void HoodSystem::RemCollObjects(const DAVA::Vector<HoodCollObject*>* objects)
 
 void HoodSystem::Update(float timeElapsed)
 {
-	if(!locked && !invisible)
+	if(visible && !locked)
 	{
 		// scale hood depending on current camera position
 		DAVA::Vector3 camPosition = cameraSystem->GetCameraPosition();
@@ -186,7 +186,14 @@ void HoodSystem::Update(float timeElapsed)
 
 void HoodSystem::ProcessUIEvent(DAVA::UIEvent *event)
 {
-	if(!locked && !invisible && NULL != curHood)
+	// before checking result mark that there is no hood axis under mouse
+	if(!locked)
+	{
+		moseOverAxis = EM_AXIS_NONE;
+	}
+	
+	// if is visible and not locked check mouse over status
+	if(visible && !locked && NULL != curHood)
 	{
 		// get intersected items in the line from camera to current mouse position
 		DAVA::Vector3 camPosition = cameraSystem->GetCameraPosition();
@@ -198,9 +205,6 @@ void HoodSystem::ProcessUIEvent(DAVA::UIEvent *event)
 
 		btCollisionWorld::AllHitsRayResultCallback btCallback(btFrom, btTo);
 		collWorld->rayTest(btFrom, btTo, btCallback);
-
-		// before checking result mark that there is no hood axis under mouse
-		moseOverAxis = EM_AXIS_NONE;
 
 		if(btCallback.hasHit())
 		{
@@ -222,7 +226,7 @@ void HoodSystem::ProcessUIEvent(DAVA::UIEvent *event)
 
 void HoodSystem::Draw()
 {
-	if(!invisible && NULL != curHood)
+	if(visible && NULL != curHood)
 	{
 		int showAsSelected = curAxis;
 
@@ -271,10 +275,10 @@ void HoodSystem::Unlock()
 
 void HoodSystem::Show()
 {
-	invisible = false;
+	visible = true;
 }
 
 void HoodSystem::Hide()
 {
-	invisible = true;
+	visible = false;
 }

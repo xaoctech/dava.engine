@@ -34,6 +34,15 @@ SceneCollisionSystem::SceneCollisionSystem(DAVA::Scene * scene)
 
 SceneCollisionSystem::~SceneCollisionSystem()
 {
+	QMapIterator<DAVA::Entity*, CollisionBaseObject*> i(entityToCollision);
+	while(i.hasNext())
+	{
+		i.next();
+
+		CollisionBaseObject *cObj = i.value();
+		delete cObj;
+	}
+
 	DAVA::SafeDelete(objectsCollWorld);
 	DAVA::SafeDelete(objectsBroadphase);
 	DAVA::SafeDelete(objectsCollDisp);
@@ -43,13 +52,6 @@ SceneCollisionSystem::~SceneCollisionSystem()
 	DAVA::SafeDelete(landBroadphase);
 	DAVA::SafeDelete(landCollDisp);
 	DAVA::SafeDelete(landCollConf);
-
-	QMapIterator<DAVA::Entity*, CollisionBaseObject*> i(entityToCollision);
-	while(i.hasNext())
-	{
-		i.next();
-		delete i.value();
-	}
 }
 
 void SceneCollisionSystem::SetDebugDrawFlags(int flags)
