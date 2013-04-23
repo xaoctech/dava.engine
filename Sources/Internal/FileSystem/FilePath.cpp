@@ -121,15 +121,15 @@ bool FilePath::operator!=(const FilePath &path) const
 }
 
     
-const bool FilePath::IsInitalized() const
+const bool FilePath::IsEmpty() const
 {
-    return (!absolutePathname.empty());
+    return absolutePathname.empty();
 }
     
 
 const bool FilePath::IsDirectoryPathname() const
 {
-    if(!IsInitalized())
+    if(IsEmpty())
     {
         return false;
     }
@@ -193,7 +193,7 @@ FilePath FilePath::GetDirectory(const String &pathname)
     const String::size_type slashpos = pathname.rfind(String("/"));
     if (slashpos == String::npos)
         return FilePath();
-    
+
     return FilePath(pathname.substr(0, slashpos + 1));
 }
 
@@ -205,7 +205,7 @@ String FilePath::GetRelativePathname() const
     
 String FilePath::GetRelativePathname(const String &forDirectory) const
 {
-    if(!IsInitalized())
+    if(IsEmpty())
         return String();
     
     return AbsoluteToRelative(GetSystemPathname(forDirectory), ResolvePathname());
@@ -220,7 +220,7 @@ String FilePath::GetRelativePathname(const FilePath &forDirectory) const
     
 void FilePath::ReplaceFilename(const String &filename)
 {
-    DVASSERT(IsInitalized());
+    DVASSERT(!IsEmpty());
     
     const FilePath directory = GetDirectory();
     absolutePathname = NormalizePathname(directory + FilePath(filename));
@@ -228,7 +228,7 @@ void FilePath::ReplaceFilename(const String &filename)
     
 void FilePath::ReplaceBasename(const String &basename)
 {
-    DVASSERT(IsInitalized());
+    DVASSERT(!IsEmpty());
     
     const FilePath directory = GetDirectory();
     const String extension = GetExtension();
@@ -237,7 +237,7 @@ void FilePath::ReplaceBasename(const String &basename)
     
 void FilePath::ReplaceExtension(const String &extension)
 {
-    DVASSERT(IsInitalized());
+    DVASSERT(!IsEmpty());
     
     const FilePath directory = GetDirectory();
     const String basename = GetBasename();
@@ -246,7 +246,7 @@ void FilePath::ReplaceExtension(const String &extension)
     
 void FilePath::ReplaceDirectory(const String &directory)
 {
-    DVASSERT(IsInitalized());
+    DVASSERT(!IsEmpty());
     
     const String filename = GetFilename();
     absolutePathname = NormalizePathname(MakeDirectory(directory)) + filename;
@@ -254,7 +254,7 @@ void FilePath::ReplaceDirectory(const String &directory)
     
 void FilePath::ReplaceDirectory(const FilePath &directory)
 {
-    DVASSERT(IsInitalized());
+    DVASSERT(!IsEmpty());
     
     DVASSERT(directory.IsDirectoryPathname())
     const String filename = GetFilename();
@@ -269,21 +269,21 @@ String FilePath::ResolvePathname() const
     
 void FilePath::MakeDirectoryPathname()
 {
-    DVASSERT(IsInitalized());
+    DVASSERT(!IsEmpty());
     
     absolutePathname = MakeDirectory(absolutePathname);
 }
     
 void FilePath::TruncateExtension()
 {
-    DVASSERT(IsInitalized());
+    DVASSERT(!IsEmpty());
     
     ReplaceExtension(String(""));
 }
     
 String FilePath::GetLastDirectoryName() const
 {
-    DVASSERT(IsInitalized() && IsDirectoryPathname());
+    DVASSERT(!IsEmpty() && IsDirectoryPathname());
     
     String path = absolutePathname;
     path = path.substr(0, path.length() - 1);
@@ -293,7 +293,7 @@ String FilePath::GetLastDirectoryName() const
     
 void FilePath::ReplacePath(const FilePath &pathname)
 {
-    DVASSERT(IsInitalized());
+    DVASSERT(!IsEmpty());
     
     StringReplace(absolutePathname, pathname.GetAbsolutePathname(), String(""));
 }
@@ -481,7 +481,7 @@ bool FilePath::IsAbsolutePathname(const String &pathname)
 
 String FilePath::AddPath(const FilePath &folder, const FilePath & addition)
 {
-    DVASSERT(folder.IsDirectoryPathname() || !folder.IsInitalized());
+    DVASSERT(folder.IsDirectoryPathname() || folder.IsEmpty());
     
     String pathname;
     String::size_type tildaPos = folder.absolutePathname.find("~");

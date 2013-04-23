@@ -393,7 +393,7 @@ void LandscapeEditorCustomColors::ShowAction()
 	texSurf = SafeRetain( workingLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL));
 
 	FilePath loadFileName = GetCurrentSaveFileName();
-	if(loadFileName.IsInitalized())
+	if(!loadFileName.IsEmpty())
 		LoadTextureAction(loadFileName);
 
 	if(NULL == colorSprite)
@@ -416,7 +416,7 @@ void LandscapeEditorCustomColors::ShowAction()
 
 void LandscapeEditorCustomColors::SaveTextureAction(const FilePath &pathToFile)
 {
-	if(!pathToFile.IsInitalized())
+	if(pathToFile.IsEmpty())
 		return;
 
     if(colorSprite)
@@ -435,7 +435,7 @@ void LandscapeEditorCustomColors::SaveTextureAction(const FilePath &pathToFile)
 
 void LandscapeEditorCustomColors::LoadTextureAction(const FilePath &pathToFile)
 {
-	if(!pathToFile.IsInitalized())
+	if(pathToFile.IsEmpty())
 		return;
 
 	Vector<Image*> images = ImageLoader::CreateFromFile(pathToFile);
@@ -554,7 +554,7 @@ FilePath LandscapeEditorCustomColors::GetScenePath()
 
 FilePath LandscapeEditorCustomColors::GetRelativePathToScenePath(const FilePath &absolutePath)
 {
-	if(!absolutePath.IsInitalized())
+	if(absolutePath.IsEmpty())
 		return FilePath();
 
 	return FilePath(absolutePath.GetRelativePathname(GetScenePath()));
@@ -562,7 +562,7 @@ FilePath LandscapeEditorCustomColors::GetRelativePathToScenePath(const FilePath 
 
 FilePath LandscapeEditorCustomColors::GetRelativePathToProjectPath(const FilePath& absolutePath)
 {
-	if(!absolutePath.IsInitalized())
+	if(absolutePath.IsEmpty())
 		return FilePath();
 
 	return FilePath(absolutePath.GetRelativePathname(EditorSettings::Instance()->GetProjectPath()));
@@ -570,7 +570,7 @@ FilePath LandscapeEditorCustomColors::GetRelativePathToProjectPath(const FilePat
 
 FilePath LandscapeEditorCustomColors::GetAbsolutePathFromScenePath(const FilePath &relativePath)
 {
-	if(!relativePath.IsInitalized())
+	if(relativePath.IsEmpty())
 		return FilePath();
 
 	return (GetScenePath() + FilePath(relativePath));
@@ -579,7 +579,7 @@ FilePath LandscapeEditorCustomColors::GetAbsolutePathFromScenePath(const FilePat
 
 FilePath LandscapeEditorCustomColors::GetAbsolutePathFromProjectPath(const FilePath& relativePath)
 {
-	if(!relativePath.IsInitalized())
+	if(relativePath.IsEmpty())
 		return FilePath();
 
 	return (EditorSettings::Instance()->GetProjectPath() + FilePath(relativePath));

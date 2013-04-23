@@ -371,7 +371,7 @@ void SceneInfo::CollectLODData()
 
 void SceneInfo::CollectTexture(Map<String, Texture *> &textures, const FilePath &name, Texture *tex)
 {
-    if(name.IsInitalized() && tex)
+    if(!name.IsEmpty() && tex)
 	{
 		textures[name.GetAbsolutePathname()] = tex;
 	}

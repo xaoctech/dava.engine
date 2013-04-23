@@ -384,7 +384,7 @@ void PropertyFilepathCell::SetData(PropertyCellData *prop)
 void PropertyFilepathCell::OnButton(BaseObject * , void * , void * )
 {
     FilePath pathToFile = GetOpenFileName(WStringToString(keyName->GetText()), GetPathname(), GetExtensionFilter());
-    if(pathToFile.IsInitalized())
+    if(!pathToFile.IsEmpty())
     {
         property->SetFilePath(pathToFile);
         SetData(property);
@@ -394,7 +394,7 @@ void PropertyFilepathCell::OnButton(BaseObject * , void * , void * )
 
 FilePath PropertyFilepathCell::GetPathname()
 {
-    if(property->GetFilePath().IsInitalized())
+    if(!property->GetFilePath().IsEmpty())
     {
         return property->GetFilePath();
     }
