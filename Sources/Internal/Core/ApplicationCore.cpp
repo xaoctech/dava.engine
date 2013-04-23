@@ -101,9 +101,13 @@ bool ApplicationCore::OnQuit()
 	return false;
 }
 
+#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__) 
+	
 void ApplicationCore::OnForeground()
 {
 	// Default implementation is empty.
 }
+
+#endif
 
 };
