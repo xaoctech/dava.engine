@@ -459,7 +459,7 @@ void EmitterLayerWidget::OnSpriteBtn()
 #ifdef __DAVAENGINE_WIN32__
     //TODO: fix this code on win32 on working FilePath
 	// Remove the drive name, if any.
-	String path = filePathToBeOpened.ResolvePathname();
+	String path = filePathToBeOpened.GetAbsolutePathname();
 	String::size_type driveNamePos = path.find(":/");
 	if (driveNamePos != String::npos && path.length() > 2)
 	{
@@ -471,8 +471,8 @@ void EmitterLayerWidget::OnSpriteBtn()
 	if (FilePath(filePathToBeOpened.GetDirectory()) != projectPath)
 	{
 		QString message = QString("You've opened Particle Sprite from incorrect path (%1).\n Correct one is %2.").
-			arg(QString::fromStdString(filePathToBeOpened.GetDirectory().ResolvePathname())).
-			arg(QString::fromStdString(projectPath.GetDirectory().ResolvePathname()));
+			arg(QString::fromStdString(filePathToBeOpened.GetDirectory().GetAbsolutePathname())).
+			arg(QString::fromStdString(projectPath.GetDirectory().GetAbsolutePathname()));
 
 		QMessageBox msgBox(QMessageBox::Warning, "Warning", message);
 		msgBox.exec();

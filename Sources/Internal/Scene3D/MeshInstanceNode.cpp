@@ -542,7 +542,7 @@ void MeshInstanceNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 	for(Vector<LightmapData>::iterator lightmapsIterator = lightmaps.begin(); lightmapsIterator != lighmapsEnd; ++lightmapsIterator)
 	{
 		LightmapData & data = *lightmapsIterator;
-		String filename = data.lightmapName.GetRelativePathname(sceneFile->GetScenePath().GetAbsolutePathname());
+		String filename = data.lightmapName.GetRelativePathname(sceneFile->GetScenePath());
 
 		archive->SetString(Format("lightmap%d", lightmapIndex), filename.c_str());
 		archive->SetFloat(Format("lightmap%duvoX", lightmapIndex), data.uvOffset.x);

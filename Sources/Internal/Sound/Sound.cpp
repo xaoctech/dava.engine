@@ -149,7 +149,7 @@ Sound::~Sound()
 
 bool Sound::Init()
 {
-	int32 strLength = (int32)fileName.ResolvePathname().length();
+	int32 strLength = (int32)fileName.GetAbsolutePathname().length();
     if(strLength < 5)
         return false;
     

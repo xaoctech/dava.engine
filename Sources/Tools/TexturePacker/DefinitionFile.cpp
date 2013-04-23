@@ -54,7 +54,7 @@ bool DefinitionFile::LoadPNGDef(const FilePath & _filename, const FilePath & pat
 
 	if (CommandLineParser::Instance()->GetVerbose())printf("* Load PNG Definition: %s\n", _filename.GetAbsolutePathname().c_str());
 	
-	FILE * fp = fopen(_filename.ResolvePathname().c_str(), "rt");
+	FILE * fp = fopen(_filename.GetAbsolutePathname().c_str(), "rt");
 	fscanf(fp, "%d", &frameCount);
 
 	String nameWithoutExt = _filename.GetBasename();
@@ -132,7 +132,7 @@ bool DefinitionFile::LoadPNGDef(const FilePath & _filename, const FilePath & pat
 bool DefinitionFile::Load(const FilePath & _filename)
 {
 	filename = _filename;
-	FILE * fp = fopen(filename.ResolvePathname().c_str(), "rt");
+	FILE * fp = fopen(filename.GetAbsolutePathname().c_str(), "rt");
 	if (!fp)
 	{
 		printf("*** ERROR: Can't open definition file: %s\n",filename.GetAbsolutePathname().c_str());

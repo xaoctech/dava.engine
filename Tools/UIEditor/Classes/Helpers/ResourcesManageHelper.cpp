@@ -42,11 +42,11 @@
 // Resource folder header
 static const QString RES_HEADER = "~res:";
 // True type fonts resource folder path
-static const FilePath FONTS_RES_PATH("~res:/Fonts/");
+static const String FONTS_RES_PATH("~res:/Fonts/");
 // Graphics fonts definition resource folder path
-static const FilePath GRAPHICS_FONTS_RES_PATH("~res:/Fontdef/");
+static const String GRAPHICS_FONTS_RES_PATH("~res:/Fontdef/");
 // Button background image path
-static const FilePath BACKGROUND_IMAGE_PATH("~res:/Images/buttonBg.png");
+static const String BACKGROUND_IMAGE_PATH("~res:/Images/buttonBg.png");
 // Help contents path
 // Help contents path
 #if defined(__DAVAENGINE_WIN32__)
@@ -86,8 +86,8 @@ QString ResourcesManageHelper::projectTitle;
 
 QString ResourcesManageHelper::GetFontAbsolutePath(const QString& resourceFileName, bool graphicsFont)
 {	
-    QString fontPath = graphicsFont ? QString::fromStdString(GRAPHICS_FONTS_RES_PATH.ResolvePathname())
-									: QString::fromStdString(FONTS_RES_PATH.ResolvePathname());
+    QString fontPath = graphicsFont ? QString::fromStdString(FilePath(GRAPHICS_FONTS_RES_PATH).GetAbsolutePathname())
+									: QString::fromStdString(FilePath(FONTS_RES_PATH).GetAbsolutePathname());
     fontPath += resourceFileName;
 	
     return fontPath;    
@@ -95,8 +95,8 @@ QString ResourcesManageHelper::GetFontAbsolutePath(const QString& resourceFileNa
 
 QString ResourcesManageHelper::GetFontRelativePath(const QString& resourceFileName, bool graphicsFont)
 {
-    QString fontPath = graphicsFont ? QString::fromStdString(GRAPHICS_FONTS_RES_PATH.ResolvePathname())
-									: QString::fromStdString(FONTS_RES_PATH.ResolvePathname());
+    QString fontPath = graphicsFont ? QString::fromStdString(FilePath(GRAPHICS_FONTS_RES_PATH).GetAbsolutePathname())
+									: QString::fromStdString(FilePath(FONTS_RES_PATH).GetAbsolutePathname());
     fontPath += resourceFileName;
 	
     return fontPath;
@@ -132,7 +132,7 @@ QString ResourcesManageHelper::GetDefaultSpritesPath(const QString& currentSprit
 	if (!currentSpritePath.isEmpty() && currentSpritePath.compare(StringConstants::NO_SPRITE_IS_SET) != 0)
 	{
 		FilePath spriteAbsolutePath(currentSpritePath.toStdString());
-		QFileInfo fileInfo(QString::fromStdString(spriteAbsolutePath.ResolvePathname()));
+		QFileInfo fileInfo(QString::fromStdString(spriteAbsolutePath.GetAbsolutePathname()));
 		return fileInfo.absoluteDir().absolutePath();
 	}
 
@@ -145,7 +145,7 @@ QString ResourcesManageHelper::GetDefaultFontSpritesPath(const QString& currentS
 	if (!currentSpritePath.isEmpty() && currentSpritePath.compare(StringConstants::NO_SPRITE_IS_SET) != 0)
 	{
 		FilePath spriteAbsolutePath(currentSpritePath.toStdString());
-		QFileInfo fileInfo(QString::fromStdString(spriteAbsolutePath.ResolvePathname()));
+		QFileInfo fileInfo(QString::fromStdString(spriteAbsolutePath.GetAbsolutePathname()));
 		return fileInfo.absoluteDir().absolutePath();
 	}
 	
@@ -184,14 +184,14 @@ QStringList ResourcesManageHelper::GetFontsList()
     QStringList filesNamesList;
 	// Get true type fonts
     // Get absoulute path
-    QString fontsPath = QString::fromStdString(FONTS_RES_PATH.ResolvePathname());
+    QString fontsPath = QString::fromStdString(FilePath(FONTS_RES_PATH).GetAbsolutePathname());
     QDir dir(fontsPath);
     // Get the list of files in fonts directory
     filesNamesList = dir.entryList(FONTS_EXTENSIONS_FILTER, QDir::Files);	
 	fontsPath.clear();
 	
 	// Get graphics fonts
-	fontsPath = QString::fromStdString(GRAPHICS_FONTS_RES_PATH.ResolvePathname());
+	fontsPath = QString::fromStdString(FilePath(GRAPHICS_FONTS_RES_PATH).GetAbsolutePathname());
 	// If we can't open graphics font directory - do nothing
 	if (dir.cd(fontsPath))
 	{
@@ -202,11 +202,11 @@ QStringList ResourcesManageHelper::GetFontsList()
 
 void ResourcesManageHelper::InitInternalResources()
 {
-	buttonBackgroundImagePath = QString::fromStdString(BACKGROUND_IMAGE_PATH.ResolvePathname());
+	buttonBackgroundImagePath = QString::fromStdString(FilePath(BACKGROUND_IMAGE_PATH).GetAbsolutePathname());
 
 #if defined(__DAVAENGINE_WIN32__)
 	FilePath currentFolder = FileSystem::Instance()->GetCurrentWorkingDirectory();
-	helpContentsPath = ConvertPathToUnixStyle(QString::fromStdString((currentFolder + HELP_CONTENTS_PATH).ResolvePathname()));
+	helpContentsPath = ConvertPathToUnixStyle(QString::fromStdString((currentFolder + HELP_CONTENTS_PATH).GetAbsolutePathname()));
 #else
     helpContentsPath = QString::fromStdString(HELP_CONTENTS_PATH.ResolvePathname());
 #endif

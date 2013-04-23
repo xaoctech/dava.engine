@@ -455,7 +455,7 @@ bool TexturePacker::WriteDefinition(const FilePath & excludeFolder, const FilePa
 		Logger::Info("* Write definition: %s\n", fileName.c_str());
 	
 	FilePath defFilePath = outputPath + FilePath(fileName);
-	FILE * fp = fopen(defFilePath.ResolvePathname().c_str(), "wt");
+	FILE * fp = fopen(defFilePath.GetAbsolutePathname().c_str(), "wt");
 	if (!fp)return false;
 	
 	fprintf(fp, "%d\n", 1);
@@ -490,7 +490,7 @@ bool TexturePacker::WriteMultipleDefinition(const FilePath & excludeFolder, cons
 		Logger::Info("* Write definition: %s\n", fileName.c_str());
 	
 	FilePath defFilePath = outputPath + FilePath(fileName);
-	FILE * fp = fopen(defFilePath.ResolvePathname().c_str(), "wt");
+	FILE * fp = fopen(defFilePath.GetAbsolutePathname().c_str(), "wt");
 	if (!fp)return false;
 	
 	String textureExtension = TextureDescriptor::GetDescriptorExtension();
