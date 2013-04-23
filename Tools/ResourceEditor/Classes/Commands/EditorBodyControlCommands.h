@@ -28,6 +28,8 @@ public:
 	CommandCloneObject(DAVA::Entity* node, EditorBodyControl* bodyControl, btCollisionWorld* collisionWorld);
 	virtual ~CommandCloneObject();
 
+	Entity* GetClonedNode();
+
 protected:
 	DAVA::Entity* originalNode;
 	DAVA::Entity* clonedNode;
@@ -38,6 +40,29 @@ protected:
 	virtual void Cancel();
 
 	void UpdateCollision(DAVA::Entity* node);
+};
+
+class CommandCloneAndTransform: public MultiCommand
+{
+public:
+	CommandCloneAndTransform(DAVA::Entity* originalNode,
+							 const DAVA::Matrix4& finalTransform,
+							 EditorBodyControl* bodyControl,
+							 btCollisionWorld* collisionWorld);
+	virtual ~CommandCloneAndTransform();
+
+protected:
+	DAVA::Entity* originalNode;
+	DAVA::Entity* clonedNode;
+	EditorBodyControl* bodyControl;
+	btCollisionWorld* collisionWorld;
+	DAVA::Matrix4 transform;
+
+	CommandCloneObject* cloneCmd;
+	CommandTransformObject* transformCmd;
+
+	virtual void Execute();
+	virtual void Cancel();
 };
 
 class CommandPlaceOnLandscape: public Command

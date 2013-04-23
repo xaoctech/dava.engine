@@ -64,6 +64,8 @@ public:
     void SetForceLodLayer(Entity *node, int32 layer);
     int32 GetForceLodLayer(Entity *node);
     
+    const RenderManager::Stats & GetRenderStats() const;
+    
 protected:
 
     
@@ -93,6 +95,8 @@ protected:
     bool drawGrid;
 
 	btBroadphaseProxy* originalHandler;
+    
+    RenderManager::Stats renderStats;
 };
 
 #endif

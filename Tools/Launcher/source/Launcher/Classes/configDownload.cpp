@@ -9,6 +9,7 @@
 #define URL_launcher "URL_launcher"
 #define launcher_ver "launcher_ver"
 #define URL_stable "URL_stable"
+#define URL_test "URL_qa"
 #define URL_development "URL_development"
 #define URL_dependencies "URL_dependencies"
 
@@ -30,6 +31,7 @@ void ConfigDownloader::UpdateConfig()
 {
     m_UpdatedConfig.Clear();
     m_StableUrl.clear();
+    m_TestUrl.clear();
     m_DevelopmentUrl.clear();
     m_DependenciesUrl.clear();
 
@@ -67,6 +69,8 @@ void ConfigDownloader::ConfigDownloaded()
             if (launcher_verNode) setString(m_UpdatedConfig.m_Launcher.m_Version, launcher_verNode);
             const YAML::Node* URL_stableNode = doc.FindValue(URL_stable);
             if (URL_stableNode)  setString(m_StableUrl, URL_stableNode);
+            const YAML::Node* URL_testNode = doc.FindValue(URL_test);
+            if (URL_testNode)  setString(m_TestUrl, URL_testNode);
             const YAML::Node* URL_developmentNode = doc.FindValue(URL_development);
             if (URL_developmentNode)  setString(m_DevelopmentUrl, URL_developmentNode);
             const YAML::Node* URL_dependenciesNode = doc.FindValue(URL_dependencies);
@@ -80,6 +84,15 @@ void ConfigDownloader::ConfigDownloaded()
             Logger::GetInstance()->AddLog(tr("Error parse stable config"));
         } else {
             ParseAppData(m_UpdatedConfig.m_Stable, &doc);
+        }
+
+        SetState(eDownloadStateTest);
+    }break;
+    case eDownloadStateTest:{
+        if (!parser.GetNextDocument(doc)) {
+            Logger::GetInstance()->AddLog(tr("Error parse qa config"));
+        } else {
+            ParseAppData(m_UpdatedConfig.m_Test, &doc);
         }
 
         SetState(eDownloadStateDevelopment);
@@ -118,6 +131,9 @@ void ConfigDownloader::SetState(eDownloadState newState) {
     }break;
     case eDownloadStateStable: {
         m_pReply = m_pManager->get(QNetworkRequest(m_StableUrl));
+    }break;
+    case eDownloadStateTest: {
+        m_pReply = m_pManager->get(QNetworkRequest(m_TestUrl));
     }break;
     case eDownloadStateDevelopment: {
         m_pReply = m_pManager->get(QNetworkRequest(m_DevelopmentUrl));
@@ -167,6 +183,7 @@ void ConfigDownloader::ParseAppData(AppsConfig::AppMap &appMap, const YAML::Node
 void AppsConfig::Clear() {
     m_Launcher.Clear();
     m_Stable.clear();
+    m_Test.clear();
     m_Development.clear();
     m_Dependencies.clear();
 }
