@@ -147,7 +147,7 @@ void ParticleEmitter::Save(KeyedArchive *archive, SceneFileV2 *sceneFile)
 
 	if(NULL != archive)
 	{
-        String filename = configPath.GetRelativePathname(sceneFile->GetScenePath().GetAbsolutePathname());
+        String filename = configPath.GetRelativePathname(sceneFile->GetScenePath());
 		archive->SetString("pe.configpath", filename);
 	}
 }

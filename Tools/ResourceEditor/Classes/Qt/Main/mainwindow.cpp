@@ -300,7 +300,7 @@ void QtMainWindow::OpenLastProject()
 		}
 		else
 		{
-			ProjectManager::Instance()->ProjectOpen(QString(projectPath.ResolvePathname().c_str()));
+			ProjectManager::Instance()->ProjectOpen(QString(projectPath.GetAbsolutePathname().c_str()));
 		}
     }
 }

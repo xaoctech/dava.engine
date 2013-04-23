@@ -595,7 +595,7 @@ bool SceneValidator::ValidatePathname(const FilePath &pathForValidation, const S
     //Need to set path to DataSource/3d for path correction  
     //Use SetPathForChecking();
     
-    String pathname = pathForValidation.ResolvePathname();
+    String pathname = pathForValidation.GetAbsolutePathname();
     
     String::size_type fboFound = pathname.find(String("FBO"));
     String::size_type resFound = pathname.find(String("~res:"));
@@ -609,7 +609,7 @@ bool SceneValidator::ValidatePathname(const FilePath &pathForValidation, const S
 
 bool SceneValidator::IsPathCorrectForProject(const FilePath &pathname)
 {
-    String normalizedPath = pathname.ResolvePathname();
+    String normalizedPath = pathname.GetAbsolutePathname();
     String::size_type foundPos = normalizedPath.find(pathForChecking.GetAbsolutePathname());
     return (String::npos != foundPos);
 }

@@ -161,7 +161,7 @@ void FileSystemTest::DocTestFunction(PerfFuncData * data)
     
     FilePath savedCurrentDocDirectory = FileSystem::Instance()->GetCurrentDocumentsDirectory();
     FileSystem::Instance()->SetCurrentDocumentsDirectory(FilePath("~doc:/TestData/FileSystemTest/"));
-    TEST_VERIFY(FileSystem::Instance()->GetCurrentDocumentsDirectory() == FilePath("~doc:/TestData/FileSystemTest/"));
+    TEST_VERIFY(FileSystem::Instance()->GetCurrentDocumentsDirectory() == FilePath("~doc:/"));
     
     FileSystem::Instance()->SetCurrentDocumentsDirectory(savedCurrentDocDirectory);
     TEST_VERIFY(FileSystem::Instance()->GetCurrentDocumentsDirectory() == savedCurrentDocDirectory);

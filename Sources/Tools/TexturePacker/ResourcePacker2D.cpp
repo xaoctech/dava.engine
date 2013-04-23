@@ -193,7 +193,7 @@ DefinitionFile * ResourcePacker2D::ProcessPSD(const FilePath & processDirectoryP
 	
 	try 
 	{
-		Magick::readImages(&layers, psdPathname.ResolvePathname());
+		Magick::readImages(&layers, psdPathname.GetAbsolutePathname());
 		
 		if (layers.size() == 0)
 		{
@@ -243,7 +243,7 @@ DefinitionFile * ResourcePacker2D::ProcessPSD(const FilePath & processDirectoryP
 			currentLayer.magick("PNG");
 			FilePath outputFile = processDirectoryPath + psdNameWithoutExtension;
 			outputFile.ReplaceExtension(String(Format("%d.png", k - 1)));
-			currentLayer.write(outputFile.ResolvePathname());
+			currentLayer.write(outputFile.GetAbsolutePathname());
 		}
 		
 		

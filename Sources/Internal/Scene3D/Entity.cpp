@@ -726,7 +726,7 @@ void Entity::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     if(customProperties && customProperties->IsKeyExists("editor.referenceToOwner"))
     {
         savedPath = customProperties->GetString("editor.referenceToOwner");
-        String newPath = FilePath(savedPath).GetRelativePathname(sceneFileV2->GetScenePath().GetAbsolutePathname());
+        String newPath = FilePath(savedPath).GetRelativePathname(sceneFileV2->GetScenePath());
         customProperties->SetString("editor.referenceToOwner", newPath);
     }
     

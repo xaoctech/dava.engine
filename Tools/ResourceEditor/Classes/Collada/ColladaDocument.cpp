@@ -236,7 +236,7 @@ void ColladaDocument::SaveScene( const FilePath & scenePath, const String & scen
 	
 	FilePath scenePathName = scenePath + FilePath(sceneName);
 	
-	sceneFP = fopen(scenePathName.ResolvePathname().c_str(), "wb");
+	sceneFP = fopen(scenePathName.GetAbsolutePathname().c_str(), "wb");
 	if (sceneFP == 0)return;
 	
     

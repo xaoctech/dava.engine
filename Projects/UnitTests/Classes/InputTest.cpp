@@ -133,7 +133,7 @@ void InputTest::LoadResources()
 	FilePath srcFile = srcDir + FilePath("test.html");
 	FilePath cpyFile = cpyDir + FilePath("test.html");
 	FileSystem::Instance()->CopyFile(srcFile, cpyFile);
-	String url = "file:///" + cpyFile.ResolvePathname();
+	String url = "file:///" + cpyFile.GetAbsolutePathname();
 
 	//delegate = new UIWebViewDelegate();
 	webView3 = new UIWebView(Rect(520, 130, 215, 135));
