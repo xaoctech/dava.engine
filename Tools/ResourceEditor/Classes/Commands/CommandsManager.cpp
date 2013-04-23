@@ -73,6 +73,7 @@ void CommandsManager::ClearQueueTail()
 	if ((activeQueue->commandIndex >= -1) &&
 		(activeQueue->commandIndex < (int32)activeQueue->commands.size()))
 	{
+        DVASSERT(activeQueue->commandIndex <= (UNDO_QUEUE_SIZE - 1)); //Queue cannot be more than UNDO_QUEUE_SIZE
         if(activeQueue->commandIndex == UNDO_QUEUE_SIZE - 1)
         {
             SafeRelease(activeQueue->commands[0]);

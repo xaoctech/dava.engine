@@ -50,9 +50,6 @@
 namespace DAVA 
 {
     
-#define FORMAT_ETC_WILL_BE_ENABLED_LATER 0x0D0A
-
-    
 uint32 LibPVRHelper::GetBitsPerPixel(uint64 pixelFormat)
 {
 #if defined (__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
@@ -1636,8 +1633,7 @@ const PixelFormat LibPVRHelper::GetCompressedFormat(const uint64 pixelFormat)
         }
         case ePVRTPF_ETC1:
         {
-//            return FORMAT_ETC_WILL_BE_ENABLED_LATER;
-            return FORMAT_INVALID;
+            return FORMAT_ETC1;
         }
             
         default:
@@ -1873,8 +1869,8 @@ bool LibPVRHelper::ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize,
             image->format = FORMAT_RGBA8888;
         }
     }
-#if !defined(__DAVAENGINE_IPHONE__) && !defined (__DAVAENGINE_ANDROID__)
-    else if (FORMAT_ETC_WILL_BE_ENABLED_LATER == formatDescriptor.formatID)
+#if !defined(__DAVAENGINE_IPHONE__)
+    else if (FORMAT_ETC1 == formatDescriptor.formatID)
     {
         if(deviceCaps.isETCSupported)
         {
@@ -1887,6 +1883,10 @@ bool LibPVRHelper::ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize,
         else
         {
             //Create a near-identical texture header for the decompressed header.
+#if defined (__DAVAENGINE_ANDROID__)
+			DVASSERT(!"Must be hardware supported");
+			return false;
+#else
             PVRHeaderV3 decompressedHeader = CreateDecompressedHeader(compressedHeader);
             if(!AllocateImageData(image, mipMapLevel, decompressedHeader))
             {
@@ -1909,6 +1909,7 @@ bool LibPVRHelper::ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize,
                 pTempCompData += compressedFaceOffset;
             }
             image->format = FORMAT_RGBA8888;
+#endif //defined (__DAVAENGINE_ANDROID__)
         }
     }
 #endif //#if !defined(__DAVAENGINE_IPHONE__)

@@ -7,6 +7,8 @@
 #include <QString>
 #include <QDialog>
 #include <QDoubleSpinBox>
+#include <QScrollBar.h>
+#include <qslider.h>
 
 using namespace DAVA;
 
@@ -19,6 +21,7 @@ public:
 	~TimeLineWidget();
 	
 	void Init(float32 minT, float32 maxT, bool updateSizeState, bool aliasLinePoint = false, bool allowDeleteLine = true, bool integer = false);
+	void Init(float32 minT, float32 maxT, float32 generalMinT, float32 generalMaxT, bool updateSizeState, bool aliasLinePoint = false, bool allowDeleteLine = true, bool integer = false);
 	void SetMinLimits(float32 minV);
 	void SetMaxLimits(float32 maxV);
 	float32 GetMinBoundary();
@@ -74,9 +77,15 @@ private:
 	QRect GetIncreaseRect() const;
 	QRect GetScaleRect() const;
 	QRect GetDecreaseRect() const;
-	QRect GetOffsetRightRect() const;
-	QRect GetOffsetLeftRect() const;
-	
+	QRect GetScrollBarRect() const;
+	QRect GetSliderRect() const;
+
+	void UpdateScrollBarPosition();
+	void UpdateScrollBarSlider();
+
+	void UpdateSliderPosition();
+	void UpdateZoomSlider();
+
 	void SetPointValue(uint32 lineId, uint32 pointId, Vector2 value, bool deleteSamePoints);
 	
 	void AddPoint(uint32 lineId, const Vector2& point);
@@ -99,9 +108,9 @@ private:
 	
 	int32 GetIntValue(float32 value) const;
 
-	void PerformZoom(float newScale);
+	void PerformZoom(float newScale, bool moveScroll = true);
 
-	void PerformOffset(int value);
+	void PerformOffset(int value, bool moveScroll = true);
 	void DrawUITriangle(QPainter& painter, const QRect& rect, int rotateDegree);
 
 	void GetCrossingPoint(const QPoint& firstPoint, const QPoint& secondPoint, QPoint & leftBorderCrossPoint, QPoint & rightBorderCrossPoint);
@@ -114,6 +123,11 @@ private:
 	};
 	ePositionRelativelyToDrawRect GetPointPositionFromDrawingRect(QPoint point); 
 
+private slots:
+
+	void HandleHorizontalScrollChanged(int value);
+	void HandleZoomScrollChanged(int value);
+
 private:
 	QPoint mouseStartPos;
 	
@@ -121,6 +135,8 @@ private:
 	float32 maxValue;
 	float32 minTime;
 	float32 maxTime;
+	float32 generalMinTime;
+	float32 generalMaxTime;
 	float32 minValueLimit;
 	float32 maxValueLimit;
 	
@@ -169,6 +185,9 @@ private:
 	
 	QString xLegendMark;
 	QString yLegendMark;
+
+	QScrollBar	* horizontalScrollBar;
+	QSlider		* zoomSlider;
 };
 
 class SetPointValueDlg: public QDialog

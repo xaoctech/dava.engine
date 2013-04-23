@@ -76,7 +76,7 @@ public:
 	float32 life;			// in seconds
 	float32 lifeTime;		// in seconds
 
-	float32 sizeOverLife;
+	Vector2 sizeOverLife;
 	float32 velocityOverLife;
 	float32 spinOverLife;
 
@@ -88,6 +88,9 @@ public:
 
 	// Cleanup the existing forces.
 	void CleanupForces();
+
+	// Get the area currently occupied by particle.
+	float32 GetArea();
 
 	int32	frame;
 	float32 frameLastUpdateTime;

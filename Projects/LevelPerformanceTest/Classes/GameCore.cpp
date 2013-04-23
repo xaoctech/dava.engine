@@ -34,7 +34,7 @@
 #include "LandscapeTestData.h"
 #include "Config.h"
 #include "Database/MongodbObject.h"
-#include "DeviceInfo.h"
+#include "Platform/DeviceInfo.h"
 
 
 using namespace DAVA;
@@ -268,7 +268,7 @@ bool GameCore::FlushToDB(const String & levelName, const Map<String, String> &re
 			else
 			{
 				newRunObject->SetObjectName(Format("%d", currentRunId));
-				newRunObject->AddString("DeviceDescription", DeviceInfo::Instance()->GetDeviceDescription());
+				newRunObject->AddString("DeviceDescription", DeviceInfo::GetModel() + " " + DeviceInfo::GetVersion());
 			}
 
 			newRunObject->AddObject(levelName, testResultObject);
