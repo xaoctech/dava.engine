@@ -127,7 +127,7 @@ void QtMainWindowHandler::OpenResentScene(int32 index)
 {
 	DAVA::String path = EditorSettings::Instance()->GetLastOpenedFile(index);
     CommandsManager::Instance()->ExecuteAndRelease(new CommandOpenScene(path));
-	QtMainWindow::Instance()->GetUI()->sceneTabWidget->AddTab(path);
+	QtMainWindow::Instance()->GetUI()->sceneTabWidget->OpenTab(path);
 }
 
 void QtMainWindowHandler::SaveScene()

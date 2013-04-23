@@ -4,6 +4,8 @@
 #include <QMap>
 #include <QTabBar>
 #include <QWidget>
+#include <QMetaType>
+
 #include "Main/davaglwidget.h"
 
 #include "UI/UIScreen.h"
@@ -15,6 +17,8 @@ class SceneEditorScreenMain;
 class SceneEditorProxy;
 class DAVAUI3DView;
 
+Q_DECLARE_METATYPE(SceneEditorProxy *);
+
 class SceneTabWidget : public QWidget
 {
 	Q_OBJECT
@@ -23,8 +27,10 @@ public:
 	SceneTabWidget(QWidget *parent);
 	~SceneTabWidget();
 
-	int AddTab();
-	int AddTab(const DAVA::String &scenePapth);
+	int OpenTab();
+	int OpenTab(const DAVA::FilePath &scenePapth);
+
+	void CloseTab(int index);
 
 	int GetCurrentTab();
 	void SetCurrentTab(int index);
@@ -35,6 +41,9 @@ public slots:
 
 	// tab switched by user
 	void TabBarCurrentChanged(int index);
+
+	// tab request close
+	void TabBarCloseRequest(int index);
 
 // old ui. should be removed later -->
 protected:
@@ -48,8 +57,8 @@ protected:
 
 protected:
 	QTabBar *tabBar;
-	int currentTabIndex;
-	int currentTabID;
+	//int currentTabIndex;
+	//int currentTabID;
 
 	DavaGLWidget *davaWidget;
 	DAVA::UIScreen *davaUIScreen;
@@ -57,18 +66,20 @@ protected:
 	const int davaUIScreenID;
 	const int dava3DViewMargin;
 
-	QMap<int, SceneEditorProxy* > tabIDtoSceneMap;
+	//QMap<int, SceneEditorProxy* > tabIDtoSceneMap;
 
 	void InitDAVAUI();
 	void ReleaseDAVAUI();
 
-	int GetTabIndex(int tabID);
-	int GetTabID(int index);
+	//int GetTabIndex(int tabID);
+	//int GetTabID(int index);
+	SceneEditorProxy* GetTabScene(int index);
+	void SetTabScene(int index, SceneEditorProxy* scene);
 
 	virtual void resizeEvent(QResizeEvent * event);
 
 private:
-	int tabIDCounter;
+	int newSceneCounter;
 };
 
 // this is helper class

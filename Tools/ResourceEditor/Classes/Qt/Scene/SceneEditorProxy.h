@@ -26,12 +26,12 @@ public:
 	SceneSelectionSystem *selectionSystem;
 	EntityModificationSystem *modifSystem;
 
-	bool Load(const DAVA::String &path);
-	bool Save(const DAVA::String &path);
+	bool Load(const DAVA::FilePath &path);
+	bool Save(const DAVA::FilePath &path);
 	bool Save();
 
-	DAVA::String GetScenePath();
-	void SetScenePath(const DAVA::String &newScenePath);
+	DAVA::FilePath GetScenePath();
+	void SetScenePath(const DAVA::FilePath &newScenePath);
 
 	void PostUIEvent(DAVA::UIEvent *event);
 
@@ -40,13 +40,10 @@ public:
 	void SetViewportRect(const DAVA::Rect &newViewportRect);
 
 protected:
-	DAVA::String curScenePath;
+	DAVA::FilePath curScenePath;
 
 	virtual void Update(float timeElapsed);
 	virtual void Draw();
-
-	bool SceneLoad();
-	bool SceneSave();
 };
 
 #endif // __SCENE_EDITOR_PROXY_H__
