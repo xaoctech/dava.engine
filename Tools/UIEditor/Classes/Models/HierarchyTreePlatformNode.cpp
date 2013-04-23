@@ -221,6 +221,10 @@ bool HierarchyTreePlatformNode::LoadLocalization(YamlNode* platform)
         !localeNode->AsString().empty())
     {
         localizationPath = pathNode->AsString();
+		// YuriCoder, 2013/04/23. Localization path must be absolute - do the conversion
+		// for previous projects.
+		localizationPath.MakeDirectoryPathname();
+
         locale = localeNode->AsString();
     }
 
@@ -304,6 +308,8 @@ bool HierarchyTreePlatformNode::SaveLocalization(YamlNode* platform)
         return false;
     }
 
+	// YuriCoder, 2013/04/23. Localization path must be absolute.
+	this->localizationPath.MakeDirectoryPathname();
     platform->Set(LOCALIZATION_PATH_NODE, this->localizationPath.GetAbsolutePathname());
     platform->Set(LOCALIZATION_LOCALE_NODE, locale);
 
