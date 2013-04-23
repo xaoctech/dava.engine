@@ -97,7 +97,7 @@ void MaterialPropertyControl::ReadFrom(DataNode * dataNode)
 		Vector<String> blendTypes;
 		for (int i = 0; i < BLEND_MODE_COUNT; i++) 
 		{
-			blendTypes.push_back(BlendModeNames[i]);
+			blendTypes.push_back(BLEND_MODE_NAMES[i]);
 		}
 		propertyList->AddComboProperty("property.material.blendSrc", blendTypes);
 		propertyList->SetComboPropertyIndex("property.material.blendSrc", material->GetBlendSrc());
