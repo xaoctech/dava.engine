@@ -151,7 +151,7 @@ void LandscapePropertyControl::OnFloatPropertyChanged(PropertyList *forList, con
 			
 			Set<String> errorsLog;
 			FilePath heightMap = propertyList->GetFilepathPropertyValue("property.landscape.heightmap");
-			if(SceneValidator::Instance()->ValidateHeightmapPathname(heightMap, errorsLog) && heightMap.IsInitalized())
+			if(SceneValidator::Instance()->ValidateHeightmapPathname(heightMap, errorsLog) && !heightMap.IsEmpty())
 			{
 				landscape->BuildLandscapeFromHeightmapImage(heightMap, bbox);
 			}
@@ -239,7 +239,7 @@ void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, 
 			bbox.AddPoint(Vector3(-size.x/2.f, -size.y/2.f, 0.f));
 			bbox.AddPoint(Vector3(size.x/2.f, size.y/2.f, size.z));
 
-			if(newValue.IsInitalized())
+			if(!newValue.IsEmpty())
 			{
 				landscape->BuildLandscapeFromHeightmapImage(newValue, bbox);
 			}
@@ -247,11 +247,11 @@ void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, 
 	}
 	else
 	{
-		bool isValid = (newValue.IsInitalized()) ? SceneValidator::Instance()->ValidateTexturePathname(newValue, errorsLog) : true;
+		bool isValid = (newValue.IsEmpty()) ? true : SceneValidator::Instance()->ValidateTexturePathname(newValue, errorsLog);
 		if(isValid)
 		{
             FilePath descriptorPathname;
-            if(newValue.IsInitalized())
+            if(!newValue.IsEmpty())
             {
                 descriptorPathname = TextureDescriptor::GetDescriptorPathname(newValue);
             }
@@ -304,7 +304,7 @@ void LandscapePropertyControl::SetLandscapeTexture(Landscape::eTextureLevel leve
 		return;
 
     landscape->SetTexture(level, texturePathname);
-    if(texturePathname.IsInitalized())
+    if(!texturePathname.IsEmpty())
     {
         SceneValidator::Instance()->ValidateTextureAndShowErrors(landscape->GetTexture(level), landscape->GetTextureName(level), Format("Landscape. TextureLevel %d", level));
     }

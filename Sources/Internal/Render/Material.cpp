@@ -143,7 +143,7 @@ void InstanceMaterialState::Save(KeyedArchive * archive, SceneFileV2 *sceneFile)
 			archive->SetVector2("ims.uvscale", uvScale);
 		}
 		
-		if(lightmapName.IsInitalized())
+		if(!lightmapName.IsEmpty())
 		{
             String filename = lightmapName.GetRelativePathname(sceneFile->GetScenePath());
             archive->SetString("ims.lightmapname", filename);
@@ -591,7 +591,7 @@ void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     keyedArchive->SetInt32("mat.texCount", TEXTURE_COUNT);
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
-        if (names[k].IsInitalized())
+        if (!names[k].IsEmpty())
         {
             String filename = names[k].GetRelativePathname(sceneFile->GetScenePath());
             keyedArchive->SetString(Format("mat.tex%d", k), filename);

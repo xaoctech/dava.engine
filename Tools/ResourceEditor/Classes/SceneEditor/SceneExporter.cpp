@@ -263,7 +263,7 @@ void SceneExporter::ExportLandscapeFullTiledTexture(Landscape *landscape, Set<St
     }
     
     FilePath textureName = landscape->GetTextureName(Landscape::TEXTURE_TILE_FULL);
-    if(!textureName.IsInitalized())
+    if(textureName.IsEmpty())
     {
         FilePath fullTiledPathname = landscape->GetTextureName(Landscape::TEXTURE_COLOR);
         fullTiledPathname.ReplaceExtension(".thumbnail_exported.png");
