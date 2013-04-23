@@ -51,6 +51,7 @@ end
 function Log(message, level)
 	level = level or "DEBUG"
 	autotestingSystem:Log(level, tostring(message))
+	Yield()
 end 
 
 --
@@ -124,7 +125,9 @@ function SendJob(name, command)
 		local state = autotestingSystem:ReadState(name)
 		if state == "ready" then
 			autotestingSystem:WriteCommand(name, command)
+			Yield()
 			autotestingSystem:WriteState(name, "wait_execution")
+			Yield()
 			Log("Device "..name.." ready, command was sent")
 			return
 		elseif state == "error" then 
@@ -141,6 +144,7 @@ function WaitJob(name)
 	
 	for i=1,MULTIPLAYER_TIMEOUT do
 		state = autotestingSystem:ReadState(name)
+		Yield()
 		if state == "execution_completed" then
 			autotestingSystem:WriteState(name, "ready")
 			Log("Device "..name.." finish his job")
