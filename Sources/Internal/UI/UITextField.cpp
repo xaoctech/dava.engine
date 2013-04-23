@@ -310,7 +310,7 @@ void UITextField::SetSpriteAlign(int32 align)
 #ifdef __DAVAENGINE_IPHONE__
     textFieldiPhone->SetAlign(align);
 #else
-    staticText->SetSpriteAlign(align);
+    UIControl::SetSpriteAlign(align);
 #endif
 }
 
@@ -499,6 +499,7 @@ void UITextField::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 		YamlNode * textColorNode = node->Get("textcolor");
 		YamlNode * shadowColorNode = node->Get("shadowcolor");
 		YamlNode * shadowOffsetNode = node->Get("shadowoffset");
+		YamlNode * textAlignNode = node->Get("textalign");
 		
 		if(textColorNode)
 		{
@@ -515,6 +516,11 @@ void UITextField::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 		if(shadowOffsetNode)
 		{
 			SetShadowOffset(shadowOffsetNode->AsVector2());
+		}
+
+		if(textAlignNode)
+		{
+			SetTextAlign(loader->GetAlignFromYamlNode(textAlignNode));
 		}
     }
     //InitAfterYaml();
@@ -539,13 +545,6 @@ void UITextField::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 YamlNode * UITextField::SaveToYamlNode(UIYamlLoader * loader)
 {
     YamlNode *node = UIControl::SaveToYamlNode(loader);
-
-    // Sprite node is not needed for UITextField.
-    YamlNode *spriteNode = node->Get("sprite");
-    if (spriteNode)
-    {
-        node->RemoveNodeFromMap("sprite");
-    }
 
     //Temp variable
     VariantType *nodeValue = new VariantType();
@@ -575,6 +574,9 @@ YamlNode * UITextField::SaveToYamlNode(UIYamlLoader * loader)
 	// ShadowOffset
 	nodeValue->SetVector2(GetShadowOffset());
 	node->Set("shadowoffset", nodeValue);
+
+	// Text align
+	node->SetNodeToMap("textalign", loader->GetAlignNodeValue(this->GetTextAlign()));
 
 	// Draw Type must be overwritten fot UITextField.
 	UIControlBackground::eDrawType drawType =  this->GetBackground()->GetDrawType();
