@@ -34,7 +34,7 @@
 namespace DAVA 
 {
 
-SpriteObject::SpriteObject(const String &pathToSprite, int32 _frame
+SpriteObject::SpriteObject(const FilePath &pathToSprite, int32 _frame
 							, const Vector2 &reqScale, const Vector2 &pivotPoint)
 	:   RenderObject()
 {

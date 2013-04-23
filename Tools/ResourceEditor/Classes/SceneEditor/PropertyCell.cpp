@@ -263,7 +263,7 @@ PropertyBoolCell::PropertyBoolCell(PropertyCellDelegate *propDelegate, PropertyC
     Texture::SetDefaultFileFormat(NOT_FILE);
 
     float32 checkBoxWidth = GetHeightForWidth(width - keyName->size.x);
-    checkBox = new UICheckBox("~res:/Gfx/UI/chekBox", Rect(keyName->size.x, 0, checkBoxWidth, checkBoxWidth));
+    checkBox = new UICheckBox(FilePath("~res:/Gfx/UI/chekBox"), Rect(keyName->size.x, 0, checkBoxWidth, checkBoxWidth));
     checkBox->SetDelegate(this);
     AddControl(checkBox);
     
@@ -367,36 +367,36 @@ void PropertyFilepathCell::SetData(PropertyCellData *prop)
 {
     PropertyCell::SetData(prop);
     
-    String fullpath = prop->GetString();
-    String datasourcePath = EditorSettings::Instance()->GetDataSourcePath();
-    int32 pos = fullpath.find(datasourcePath);
+    FilePath fullpath = prop->GetFilePath();
+    FilePath datasourcePath = EditorSettings::Instance()->GetDataSourcePath();
+    int32 pos = fullpath.GetAbsolutePathname().find(datasourcePath.GetAbsolutePathname());
     if(String::npos == (String::size_type)pos)
     {
-        pathText->SetText(StringToWString(prop->GetString()));
+        pathText->SetText(StringToWString(fullpath.GetFilename()));
     }
     else
     {
-        fullpath = fullpath.substr(datasourcePath.length());
-        pathText->SetText(StringToWString(fullpath));
+        String path = fullpath.GetAbsolutePathname().substr(datasourcePath.GetAbsolutePathname().length());
+        pathText->SetText(StringToWString(path));
     }
 }
 
 void PropertyFilepathCell::OnButton(BaseObject * , void * , void * )
 {
-    String pathToFile = GetOpenFileName(WStringToString(keyName->GetText()), GetPathname(), GetExtensionFilter());
-    if(!pathToFile.empty())
+    FilePath pathToFile = GetOpenFileName(WStringToString(keyName->GetText()), GetPathname(), GetExtensionFilter());
+    if(!pathToFile.IsEmpty())
     {
-        property->SetString(pathToFile);
+        property->SetFilePath(pathToFile);
         SetData(property);
         propertyDelegate->OnPropertyChanged(property);
     }
 }
 
-String PropertyFilepathCell::GetPathname()
+FilePath PropertyFilepathCell::GetPathname()
 {
-    if(0 < property->GetString().length())
+    if(!property->GetFilePath().IsEmpty())
     {
-        return property->GetString();
+        return property->GetFilePath();
     }
 
     return EditorSettings::Instance()->GetDataSourcePath();
@@ -426,7 +426,7 @@ String PropertyFilepathCell::GetExtensionFilter()
 
 void PropertyFilepathCell::OnClear(BaseObject * , void * , void * )
 {
-    property->SetString("");
+    property->SetFilePath(FilePath());
     SetData(property);
     propertyDelegate->OnPropertyChanged(property);
 }
@@ -719,13 +719,13 @@ PropertySliderCell::PropertySliderCell(PropertyCellDelegate *propDelegate, Prope
 
     slider = new UISliderWithText(Rect(textWidth, keyName->size.y, width - 2*textWidth, keyName->size.y));
     slider->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &PropertySliderCell::OnValueChanged));
-    slider->SetMinSprite("~res:/Gfx/LandscapeEditor/Tools/polzunok", 1);
+    slider->SetMinSprite(FilePath("~res:/Gfx/LandscapeEditor/Tools/polzunok"), 1);
     slider->SetMinDrawType(UIControlBackground::DRAW_STRETCH_HORIZONTAL);
     slider->SetMinLeftRightStretchCap(5);
-    slider->SetMaxSprite("~res:/Gfx/LandscapeEditor/Tools/polzunok", 0);
+    slider->SetMaxSprite(FilePath("~res:/Gfx/LandscapeEditor/Tools/polzunok"), 0);
     slider->SetMaxDrawType(UIControlBackground::DRAW_STRETCH_HORIZONTAL);
     slider->SetMaxLeftRightStretchCap(5);
-    slider->SetThumbSprite("~res:/Gfx/LandscapeEditor/Tools/polzunokCenter", 0);
+    slider->SetThumbSprite(FilePath("~res:/Gfx/LandscapeEditor/Tools/polzunokCenter"), 0);
     AddControl(slider);
     
     Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
@@ -788,7 +788,7 @@ PropertyTexturePreviewCell::PropertyTexturePreviewCell(PropertyCellDelegate *pro
     Texture::SetDefaultFileFormat(NOT_FILE);
 
     float32 checkBoxWidth = GetHeightForWidth(width)/2;
-    checkBox = new UICheckBox("~res:/Gfx/UI/chekBox", Rect(0, keyName->size.y, checkBoxWidth, checkBoxWidth));
+    checkBox = new UICheckBox(FilePath("~res:/Gfx/UI/chekBox"), Rect(0, keyName->size.y, checkBoxWidth, checkBoxWidth));
     checkBox->SetDelegate(this);
     AddControl(checkBox);
     

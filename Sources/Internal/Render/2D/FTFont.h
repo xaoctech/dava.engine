@@ -35,6 +35,7 @@
 #include "Base/BaseMath.h"
 #include "Render/2D/Font.h"
 #include "Platform/Mutex.h"
+#include "FileSystem/FilePath.h"
 
 struct FT_FaceRec_;
 typedef struct FT_FaceRec_*  FT_Face;
@@ -63,7 +64,7 @@ public:
 		\param[in] path - path to freetype-supported file (.ttf, .otf)
 		\returns constructed font
 	*/
-	static		FTFont * Create(const String& path);
+	static		FTFont * Create(const FilePath & path);
 	
 	virtual		~FTFont();
 
@@ -116,7 +117,7 @@ public:
 	virtual bool IsTextSupportsSoftwareRendering() { return true; };
 
 	//We need to return font path
-	String GetFontPath();
+	const FilePath & GetFontPath();
 	// Put font properties into YamlNode
 	virtual YamlNode * SaveToYamlNode();
 
@@ -124,7 +125,7 @@ private:
 	FTFont(FTInternalFont* internalFont);
 	FTInternalFont	* internalFont;
 	
-	String fontPath;
+	FilePath fontPath;
 };
 
 

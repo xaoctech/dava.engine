@@ -178,8 +178,8 @@ public:
     void ScrollToElement(int32 index);
 	
 	// Get and set aggregator path
-	const String & GetAggregatorPath();
-	void SetAggregatorPath(const String &aggregatorPath);
+	const FilePath & GetAggregatorPath();
+	void SetAggregatorPath(const FilePath &aggregatorPath);
     
     float32 GetScrollPosition();
     void SetScrollPosition(float32 newScrollPos);
@@ -256,7 +256,7 @@ protected:
 	int32 touchHoldSize;
 	
 	bool needRefresh;
-	String aggregatorPath;
+	FilePath aggregatorPath;
 	
 
 	Map<String,Vector<UIListCell*>*> cellStore;

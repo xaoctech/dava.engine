@@ -304,13 +304,13 @@ bool HierarchyTreePlatformNode::SaveLocalization(YamlNode* platform)
         return false;
     }
 
-    platform->Set(LOCALIZATION_PATH_NODE, this->localizationPath);
+    platform->Set(LOCALIZATION_PATH_NODE, this->localizationPath.GetAbsolutePathname());
     platform->Set(LOCALIZATION_LOCALE_NODE, locale);
 
     return true;
 }
 
-void HierarchyTreePlatformNode::SetLocalizationPath(const String& localizationPath)
+void HierarchyTreePlatformNode::SetLocalizationPath(const FilePath & localizationPath)
 {
     this->localizationPath = localizationPath;
 }

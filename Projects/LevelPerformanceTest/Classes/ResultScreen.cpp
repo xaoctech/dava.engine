@@ -4,7 +4,9 @@
 #include "Config.h"
 #include "DeviceInfo.h"
 
-ResultScreen::ResultScreen(const LandscapeTestData& testData, const String& filename, Texture* landscapeTexture)
+using namespace DAVA;
+
+ResultScreen::ResultScreen(const LandscapeTestData& testData, const FilePath& filename, Texture* landscapeTexture)
 :	isFinished(false),
 	state(RESULT_STATE_NORMAL),
 	testData(testData)
@@ -58,8 +60,8 @@ void ResultScreen::SaveResults()
     Vector2 screenSize(core->GetVirtualScreenWidth(), core->GetVirtualScreenHeight());
     
     Image* image = resultSprite->GetTexture()->CreateImageFromMemory();
-    String saveFileName = FileSystem::Instance()->GetUserDocumentsPath();
-    saveFileName += filename + ".png";
+    FilePath saveFileName = FileSystem::Instance()->GetUserDocumentsPath();
+    saveFileName += FilePath(filename.GetFilename() + ".png");
     ImageLoader::Save(image, saveFileName);
     
     Map<String, String> results;
@@ -67,13 +69,12 @@ void ResultScreen::SaveResults()
 	results["TextureMemorySize"] = Format("%.2f Mb", testData.GetTextureMemorySize()/(1024.f * 1024.f));
 	results["TextureFilesSize"] = Format("%.2f Mb", testData.GetTexturesFilesSize()/(1024.f * 1024.f));
 
-	String filePath = testData.GetSceneFilePath();
+	String filePath = testData.GetSceneFilePath().ResolvePathname();
     results["SceneFilePath"] = filePath.substr(filePath.find("Maps"));
     
-    String documentsPath = FileSystem::Instance()->SystemPathForFrameworkPath("~doc:");
-    String folderPathname = documentsPath + "PerformanceTestResult";
+	FilePath folderPathname("~doc:/PerformanceTestResult/");
     FileSystem::Instance()->CreateDirectory(folderPathname);
-    String statFileName = folderPathname + "/" + filename + ".txt";
+    FilePath statFileName = folderPathname + FilePath::CreateWithNewExtension(filename, ".txt").GetFilename();
     File* file = File::Create(statFileName, File::CREATE | File::WRITE);
     if (file)
     {
@@ -87,7 +88,7 @@ void ResultScreen::SaveResults()
         SafeRelease(file);
     }
     
-    String levelName = filename.substr(0, filename.find('.')); // "levelName" must be w/o dots
+    FilePath levelName = FilePath::CreateWithNewExtension(filename, "").GetFilename();
     GameCore::Instance()->FlushToDB(levelName, results, saveFileName);
     
     state = RESULT_STATE_FINISHED;
@@ -155,7 +156,6 @@ void ResultScreen::PrepareSprite()
     textureSprite->SetScale(RESULT_TEXTURE_SCALE, RESULT_TEXTURE_SCALE);
 	textureSprite->Draw();
 	DrawStatImage(r);
-	DrawMinFpsTargets(r);
 	RenderManager::Instance()->RestoreRenderTarget();
 }
 
@@ -167,45 +167,33 @@ void ResultScreen::DrawStatImage(Rect rect)
 	for(uint32 i = 0; i < testData.GetItemCount(); ++i)
 	{
 		FpsStatItem item = testData.GetItem(i);
-		manager->SetColor(SettingsManager::Instance()->GetColorByFps(item.minFps));
-		helper->FillRect(testData.TranslateRect(item.rect, rect));
+		Rect curRect = testData.TranslateRect(item.rect, rect);
+		for(uint32 j = 0; j < 8; j++)
+		{
+			manager->SetColor(SettingsManager::Instance()->GetColorByFps(item.avFps[j]));
+			Polygon2 curSector;
+			curSector.AddPoint(curRect.GetCenter());
+			curSector.AddPoint(GetVecInRect(curRect, DegToRad(j * 45.f - 22.5f)));
+			curSector.AddPoint(GetVecInRect(curRect, DegToRad(j * 45.f)));
+			curSector.AddPoint(GetVecInRect(curRect, DegToRad(j * 45.f + 22.5f)));
+			helper->FillPolygon(curSector);
+			manager->SetColor(Color::Black());
+			helper->DrawPolygon(curSector, true);
+		}
 	}
 }
 
-void ResultScreen::DrawMinFpsTargets(DAVA::Rect rect)
+Vector2 ResultScreen::GetVecInRect(const Rect & rect, float32 angleInRad)
 {
-	RenderHelper *helper = RenderHelper::Instance();
-	RenderManager *manager = RenderManager::Instance();
-
-	uint32 cnt = Min(SettingsManager::Instance()->GetMinFpsSectorCount(), testData.GetItemCount());
-	for(uint32 i = 0; i < cnt; ++i)
-	{
-		FpsStatItem item = testData.GetItem(i);
-		if(item.minFps < SettingsManager::Instance()->GetMinFps())
-		{
-			Vector2 pos(item.position.x, item.position.y);
-			Vector2 target(item.viewTarget.x, item.viewTarget.y);
-
-			pos = testData.TranslatePoint(pos, rect);
-			target = testData.TranslatePoint(target, rect) - pos;
-			target *= 20.f;
-			target += pos;
-
-			manager->SetColor(1.f, 1.f, 1.f, 1.f);
-			helper->FillRect(Rect(pos - Vector2(MINFPS_TARGET_SIZE, MINFPS_TARGET_SIZE),
-                                  Vector2(MINFPS_TARGET_SIZE * 2, MINFPS_TARGET_SIZE * 2)));
-
-#if defined(__DAVAENGINE_OPENGL__)
-			glLineWidth(MINFPS_TARGET_SIZE);
-#endif
-			helper->DrawLine(pos, target);
-#if defined(__DAVAENGINE_OPENGL__)
-			glLineWidth(MINFPS_TARGET_SIZE);
-#endif
-		}
-		else
-		{
-			break;
-		}
-	}
+	Vector2 retVec;
+	Matrix2 m;
+	m.BuildRotation(angleInRad);
+	angleInRad += DAVA::PI_05;
+	while(angleInRad > DAVA::PI_05)
+		angleInRad -= DAVA::PI_05;
+	if(angleInRad > DAVA::PI_05 / 2)
+		angleInRad = DAVA::PI_05 - angleInRad;
+	Vector2 v = Vector2((Point2f(rect.GetSize().x / 2, 0) * m).data) / abs(cosf(angleInRad));
+	retVec = v + rect.GetCenter();
+	return retVec;
 }

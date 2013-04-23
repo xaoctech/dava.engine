@@ -40,7 +40,7 @@ KeyedUnarchiver::~KeyedUnarchiver()
 {
 }
 	
-bool KeyedUnarchiver::UnarchiveFile(const String & pathName)
+bool KeyedUnarchiver::UnarchiveFile(const FilePath & pathName)
 {
 	File * archive = File::Create(pathName, File::OPEN|File::READ);
 	if (!archive)return false;

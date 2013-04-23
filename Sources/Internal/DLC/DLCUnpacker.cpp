@@ -1,11 +1,3 @@
-//
-//  ZlibWrapper.cpp
-//  WoTSniperMacOS
-//
-//  Created by Andrey Panasyuk on 3/21/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "DLCUnpacker.h"
 #include "libpng/zlib.h"
 #include "FileSystem/FileSystem.h"
@@ -19,21 +11,19 @@
 namespace DAVA
 {
     
-void DLCUnpacker::Unpack(const std::string& filePathSrc, const std::string& unpackPath, const std::string& fileForPaths)
+void DLCUnpacker::Unpack(const FilePath & filePathSrc, const FilePath & unpackPath, const FilePath & fileForPaths)
 {
     Logger::Debug("DLC Complete");
-    std::string filePathDest = FileSystem::ReplaceExtension(filePathSrc, "");
+    
+    FilePath filePathDest = FilePath::CreateWithNewExtension(filePathSrc, "");
     
     File* sFile = File::Create( filePathSrc, File::OPEN|File::READ );
     File* dFile = File::Create( filePathDest, File::CREATE|File::WRITE);
     
-    int result = DLCUnpacker::Inflate(sFile, dFile);
+    int32 result = DLCUnpacker::Inflate(sFile, dFile);
     
     SafeRelease(sFile);
     SafeRelease(dFile);
-    
-    std::string filePathDir;
-    std::string fileName;
     
     if ( result != Z_OK )
     {
@@ -41,24 +31,24 @@ void DLCUnpacker::Unpack(const std::string& filePathSrc, const std::string& unpa
     }
     
     ResourceArchive * resArchive = new ResourceArchive();
-    result = resArchive->Open(filePathDest);
+    result = resArchive->Open(filePathDest.GetAbsolutePathname());
 
     // Save paths for check all files every start app
     KeyedArchive * archive = NULL;
-    if ( fileForPaths != "" )
+    if (!fileForPaths.IsEmpty())
     {
         archive = new KeyedArchive();
         archive->SetUInt32("size", resArchive->GetFileCount());
     }
     
-    for (int i = 0; i < resArchive->GetFileCount(); ++i)
+    for (int32 i = 0; i < resArchive->GetFileCount(); ++i)
     {
-        std::string filePath = FileSystem::Instance()->SystemPathForFrameworkPath( unpackPath + resArchive->GetResourcePathname(i) );
+        FilePath filePath = unpackPath + FilePath(resArchive->GetResourcePathname(i));
+        FileSystem::Instance()->SystemPathForFrameworkPath( unpackPath + resArchive->GetResourcePathname(i) );
         
-        FileSystem::SplitPath(filePath, filePathDir, fileName);
-        result = FileSystem::Instance()->CreateDirectory(filePathDir, true);
+        result = FileSystem::Instance()->CreateDirectory(filePath.GetDirectory(), true);
         
-        File *wFile = FileSystem::Instance()->CreateFileForFrameworkPath(filePath, File::CREATE | File::WRITE);
+        File *wFile = File::Create(filePath, File::CREATE | File::WRITE);
         int size = resArchive->LoadResource(i, NULL);
         char* buff = new char[size];
         result = resArchive->LoadResource(i, buff);
@@ -69,8 +59,8 @@ void DLCUnpacker::Unpack(const std::string& filePathSrc, const std::string& unpa
         // KeyedArchive with paths , key is index
         if ( archive != NULL )
         {
-            std::string key = "";
-            std::string value = resArchive->GetResourcePathname(i);
+            String key = "";
+            String value = resArchive->GetResourcePathname(i);
             std::stringstream stream;
             stream << i;
             stream >> key;
@@ -80,7 +70,7 @@ void DLCUnpacker::Unpack(const std::string& filePathSrc, const std::string& unpa
     
     if ( archive != NULL )
     {
-        archive->Save( fileForPaths );
+        archive->Save(fileForPaths.GetAbsolutePathname());
         SafeRelease(archive);
     }
     
@@ -95,9 +85,9 @@ void DLCUnpacker::Unpack(const std::string& filePathSrc, const std::string& unpa
  the version of the library linked do not match, or Z_ERRNO if there
  is an error reading or writing the files. */
 
-int DLCUnpacker::Inflate(File *source, File *dest)
+int32 DLCUnpacker::Inflate(File *source, File *dest)
 {
-    int ret;
+    int32 ret;
     unsigned have;
     z_stream strm;
     unsigned char in[CHUNK];

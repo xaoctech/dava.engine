@@ -11,6 +11,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Sources\Tools\DXTConverter.cpp" />
+    <ClCompile Include="..\..\Sources\Tools\PVRConverter.cpp" />
+    <ClCompile Include="..\..\Sources\Tools\TexturePacker\CommandLineParser.cpp" />
+    <ClCompile Include="..\..\Sources\Tools\TexturePacker\DefinitionFile.cpp" />
+    <ClCompile Include="..\..\Sources\Tools\TexturePacker\ImagePacker.cpp" />
+    <ClCompile Include="..\..\Sources\Tools\TexturePacker\PngImage.cpp" />
+    <ClCompile Include="..\..\Sources\Tools\TexturePacker\ResourcePacker2D.cpp" />
+    <ClCompile Include="..\..\Sources\Tools\TexturePacker\TexturePacker.cpp" />
     <ClCompile Include="Classes\Commands\BaseCommand.cpp" />
     <ClCompile Include="Classes\Commands\ControlCommands.cpp" />
     <ClCompile Include="Classes\Commands\ImportCommands.cpp" />
@@ -61,13 +69,6 @@
     <ClCompile Include="Classes\Models\HierarchyTreePlatformNode.cpp" />
     <ClCompile Include="Classes\Models\HierarchyTreeRootNode.cpp" />
     <ClCompile Include="Classes\Models\HierarchyTreeScreenNode.cpp" />
-    <ClCompile Include="Classes\ResourcePacker\ResourcePacker.cpp" />
-    <ClCompile Include="Classes\ResourcePacker\TexturePacker\CommandLineParser.cpp" />
-    <ClCompile Include="Classes\ResourcePacker\TexturePacker\DefinitionFile.cpp" />
-    <ClCompile Include="Classes\ResourcePacker\TexturePacker\ImagePacker.cpp" />
-    <ClCompile Include="Classes\ResourcePacker\TexturePacker\PngImage.cpp" />
-    <ClCompile Include="Classes\ResourcePacker\TexturePacker\PVRConverter.cpp" />
-    <ClCompile Include="Classes\ResourcePacker\TexturePacker\TexturePacker.cpp" />
     <ClCompile Include="Classes\ScreenControl.cpp" />
     <ClCompile Include="Classes\ScreenManager.cpp" />
     <ClCompile Include="Classes\ScreenWrapper.cpp" />
@@ -108,7 +109,6 @@
     <ClCompile Include="Classes\UI\StateComboBoxItemDelegate.cpp" />
     <ClCompile Include="GeneratedFiles\Commands\BaseCommand_moc.cpp" />
     <ClCompile Include="GeneratedFiles\Commands\ChangePropertyCommand_moc.cpp" />
-    <ClCompile Include="GeneratedFiles\Commands\ControlCommands_moc.cpp" />
     <ClCompile Include="GeneratedFiles\Commands\ItemsCommand_moc.cpp" />
     <ClCompile Include="GeneratedFiles\Commands\PasteCommand_moc.cpp" />
     <ClCompile Include="GeneratedFiles\Controllers\CommandsController_moc.cpp" />
@@ -154,13 +154,6 @@
     <ClCompile Include="GeneratedFiles\Models\HierarchyTreeRootNode_moc.cpp" />
     <ClCompile Include="GeneratedFiles\Models\HierarchyTreeScreenNode_moc.cpp" />
     <ClCompile Include="GeneratedFiles\Models\HierarchyTree_moc.cpp" />
-    <ClCompile Include="GeneratedFiles\ResourcePacker\ResourcePacker_moc.cpp" />
-    <ClCompile Include="GeneratedFiles\ResourcePacker\TexturePacker\CommandLineParser_moc.cpp" />
-    <ClCompile Include="GeneratedFiles\ResourcePacker\TexturePacker\DefinitionFile_moc.cpp" />
-    <ClCompile Include="GeneratedFiles\ResourcePacker\TexturePacker\ImagePacker_moc.cpp" />
-    <ClCompile Include="GeneratedFiles\ResourcePacker\TexturePacker\PngImage_moc.cpp" />
-    <ClCompile Include="GeneratedFiles\ResourcePacker\TexturePacker\PVRConverter_moc.cpp" />
-    <ClCompile Include="GeneratedFiles\ResourcePacker\TexturePacker\TexturePacker_moc.cpp" />
     <ClCompile Include="GeneratedFiles\ScreenControl_moc.cpp" />
     <ClCompile Include="GeneratedFiles\ScreenManager_moc.cpp" />
     <ClCompile Include="GeneratedFiles\ScreenWrapper_moc.cpp" />
@@ -200,6 +193,14 @@
     <ClCompile Include="GeneratedFiles\UI\StateComboBoxItemDelegate_moc.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Sources\Tools\DXTConverter.h" />
+    <ClInclude Include="..\..\Sources\Tools\PVRConverter.h" />
+    <ClInclude Include="..\..\Sources\Tools\TexturePacker\CommandLineParser.h" />
+    <ClInclude Include="..\..\Sources\Tools\TexturePacker\DefinitionFile.h" />
+    <ClInclude Include="..\..\Sources\Tools\TexturePacker\ImagePacker.h" />
+    <ClInclude Include="..\..\Sources\Tools\TexturePacker\PngImage.h" />
+    <ClInclude Include="..\..\Sources\Tools\TexturePacker\ResourcePacker2D.h" />
+    <ClInclude Include="..\..\Sources\Tools\TexturePacker\TexturePacker.h" />
     <ClInclude Include="Classes\Commands\BaseCommand.h" />
     <ClInclude Include="Classes\Commands\ChangePropertyCommand.h" />
     <ClInclude Include="Classes\Commands\ControlCommands.h" />
@@ -362,13 +363,6 @@
     <ClInclude Include="Classes\Models\HierarchyTreePlatformNode.h" />
     <ClInclude Include="Classes\Models\HierarchyTreeRootNode.h" />
     <ClInclude Include="Classes\Models\HierarchyTreeScreenNode.h" />
-    <ClInclude Include="Classes\ResourcePacker\ResourcePacker.h" />
-    <ClInclude Include="Classes\ResourcePacker\TexturePacker\CommandLineParser.h" />
-    <ClInclude Include="Classes\ResourcePacker\TexturePacker\DefinitionFile.h" />
-    <ClInclude Include="Classes\ResourcePacker\TexturePacker\ImagePacker.h" />
-    <ClInclude Include="Classes\ResourcePacker\TexturePacker\PngImage.h" />
-    <ClInclude Include="Classes\ResourcePacker\TexturePacker\PVRConverter.h" />
-    <ClInclude Include="Classes\ResourcePacker\TexturePacker\TexturePacker.h" />
     <ClInclude Include="Classes\ScreenControl.h" />
     <ClInclude Include="Classes\ScreenWrapper.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">
@@ -839,7 +833,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>../../libs/imagemagick-6.7.4-windows/magick++/lib/magick++;../../libs/imagemagick-6.7.4-windows/magick++/lib;../../Libs/ImageMagick-6.7.4-Windows;$(QT_HOME)\include\QtCore;$(QT_HOME)\include\QtNetwork;$(QT_HOME)\include\QtGui;$(QT_HOME)\include\QtOpenGL;$(QT_HOME)\include\ActiveQt;$(QT_HOME)\include;$(QT_HOME)\mkspecs\default;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;$(DXSDK_DIR)/include;..\..\Sources\Internal;..\..\Sources\External;../../Libs/include;..\..\Libs\glew\include;.\Classes;.\Classes\ResourcePacker;.\Classes\Helpers;.\Classes\Models;.\Classes\Controllers;.\Classes\Metadata;.\Classes\Commands;.\Classes\UI;.\Classes\UI\Dialogs;.\Classes\UI\PropertyGridWidgets;.;$Configuration;.\GeneratedFiles;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../libs/imagemagick-6.7.4-windows/magick++/lib/magick++;../../libs/imagemagick-6.7.4-windows/magick++/lib;../../Libs/ImageMagick-6.7.4-Windows;$(QT_HOME)\include\QtCore;$(QT_HOME)\include\QtNetwork;$(QT_HOME)\include\QtGui;$(QT_HOME)\include\QtOpenGL;$(QT_HOME)\include\ActiveQt;$(QT_HOME)\include;$(QT_HOME)\mkspecs\default;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;$(DXSDK_DIR)/include;..\..\Sources\Internal;..\..\Sources\External;..\..\Sources\Tools;../../Libs/include;..\..\Libs\glew\include;.\Classes;.\Classes\ResourcePacker;.\Classes\Helpers;.\Classes\Models;.\Classes\Controllers;.\Classes\Metadata;.\Classes\Commands;.\Classes\UI;.\Classes\UI\Dialogs;.\Classes\UI\PropertyGridWidgets;.;$Configuration;.\GeneratedFiles;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
       <BufferSecurityCheck>false</BufferSecurityCheck>
@@ -887,7 +881,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>../../Libs/ImageMagick-6.7.4-Windows;../../libs/imagemagick-6.7.4-windows/magick++/lib;../../libs/imagemagick-6.7.4-windows/magick++/lib/magick++;./../../Sources/Internal;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/include;./Classes;./Classes/ResourcePacker;.\Classes\Commands;.\Classes\Controllers;.\Classes\Helpers;.\Classes\Metadata;.\Classes\Models;.\Classes\UI;.\Classes\UI\Dialogs;.\Classes\UI\PropertyGridWidgets;$(DXSDK_DIR)/include;$(QT_HOME)\include\QtCore;$(QT_HOME)\include\QtNetwork;$(QT_HOME)\include\QtGui;$(QT_HOME)\include\QtOpenGL;$(QT_HOME)\include;$(QT_HOME)\include\ActiveQt;$(QT_HOME)\mkspecs\default;.;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;$(Configuration);.\GeneratedFiles;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../Libs/ImageMagick-6.7.4-Windows;../../libs/imagemagick-6.7.4-windows/magick++/lib;../../libs/imagemagick-6.7.4-windows/magick++/lib/magick++;./../../Sources/Internal;..\..\Sources\Tools;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/include;./Classes;./Classes/ResourcePacker;.\Classes\Commands;.\Classes\Controllers;.\Classes\Helpers;.\Classes\Metadata;.\Classes\Models;.\Classes\UI;.\Classes\UI\Dialogs;.\Classes\UI\PropertyGridWidgets;$(DXSDK_DIR)/include;$(QT_HOME)\include\QtCore;$(QT_HOME)\include\QtNetwork;$(QT_HOME)\include\QtGui;$(QT_HOME)\include\QtOpenGL;$(QT_HOME)\include;$(QT_HOME)\include\ActiveQt;$(QT_HOME)\mkspecs\default;.;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;$(Configuration);.\GeneratedFiles;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
       <BufferSecurityCheck>true</BufferSecurityCheck>

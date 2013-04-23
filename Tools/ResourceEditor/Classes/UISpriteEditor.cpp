@@ -64,7 +64,7 @@ UISpriteEditor::~UISpriteEditor()
 void UISpriteEditor::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 {
 	UIControl::LoadFromYamlNode(node, loader);
-	UIYamlLoader::Load(this, "~res:/Screens/SpriteEditor.yaml");
+	UIYamlLoader::Load(this, FilePath("~res:/Screens/SpriteEditor.yaml"));
 	
 }
     
@@ -85,7 +85,7 @@ void UISpriteEditor::LoadFromYamlNodeCompleted()
 	//spritePreview->SetRect(Rect(5, 25, rect.dx - 10, rect.dy - 85));
 }; 
 
-void UISpriteEditor::SetPreviewSprite(const String & spriteName)
+void UISpriteEditor::SetPreviewSprite(const FilePath & spriteName)
 {
 	Sprite * sprite = Sprite::Create(spriteName);
 

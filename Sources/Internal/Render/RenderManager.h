@@ -76,6 +76,7 @@ public:
         bool isFloat16Supported;
         bool isFloat32Supported;
 		bool isDXTSupported;
+		bool isATCSupported;
 	};
     
     struct Stats

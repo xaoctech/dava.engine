@@ -35,7 +35,7 @@
 namespace DAVA
 {
 
-SoundDataProvider::SoundDataProvider(const String & _fileName)
+SoundDataProvider::SoundDataProvider(const FilePath & _fileName)
 :	fileName(_fileName),
 	isInited(false)
 {

@@ -233,11 +233,17 @@ void ParticleLayer::SetSprite(Sprite * _sprite)
 	{
 		pivotPoint = Vector2(_sprite->GetWidth()/2.0f, _sprite->GetHeight()/2.0f);
 
-		String spritePath = FileSystem::GetCanonicalPath(sprite->GetRelativePathname());
-		const String configPath = FileSystem::Instance()->GetCanonicalPath(emitter->GetConfigPath());
-		String configFolder, configFile;
-		FileSystem::SplitPath(configPath, configFolder, configFile);
-		relativeSpriteName = FileSystem::AbsoluteToRelativePath(configFolder, spritePath);
+		FilePath spritePath = sprite->GetRelativePathname();
+        if(0 == spritePath.GetAbsolutePathname().find("FBO"))
+        {
+            //Sprite was saved incorrectly
+            relativeSpriteName = spritePath.GetAbsolutePathname();
+        }
+        else
+        {
+            const FilePath configPath = emitter->GetConfigPath();
+            relativeSpriteName = spritePath.GetRelativePathname(configPath.GetDirectory());
+        }
 	}
 }
 	
@@ -639,7 +645,7 @@ void ParticleLayer::Draw(Camera * camera)
 }
 
 
-void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
+void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 {
 // 	PropertyLine<float32> * life;				// in seconds
 // 	PropertyLine<float32> * lifeVariation;		// variation part of life that added to particle life during generation of the particle
@@ -693,10 +699,8 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 		
 		const String relativePathName = spriteNode->AsString();
 		relativeSpriteName = relativePathName;
-		String configFolder, configFile;
-		FileSystem::SplitPath(configPath, configFolder, configFile);
 		
-		String path = FileSystem::Instance()->GetCanonicalPath(configFolder+relativePathName);
+        FilePath path = configPath.GetDirectory() + FilePath(relativePathName);
 		Sprite * _sprite = Sprite::Create(path);
 		Vector2 pivotPointTemp;
 		if(pivotPointNode)
@@ -744,8 +748,8 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 		if (sizeOverLifeXY)
 		{
 			// Both properties can't be present in the same config.
-			Logger::Error("Both sizeOverlife and sizeOverLifeXY are defined for Particle Layer %s, taking sizeOverLifeXY as default",
-						  configPath.c_str());
+			Logger::Error("Both sizeOverlife and sizeOverlifeXY are defined for Particle Layer %s, taking sizeOverlifeXY as default",
+						  configPath.GetAbsolutePathname().c_str());
 			DVASSERT(false);
 		}
 		else
