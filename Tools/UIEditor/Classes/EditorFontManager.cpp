@@ -127,10 +127,10 @@ void EditorFontManager::InitDefaultFontFromPath(const EditorFontManager::Default
 	FilePath fontSpritePath = defaultFontPath.fontSpritePath;
 	Font* loadedFont = NULL;
 	// Create font from loaded paths
-	if (fontPath.IsInitalized())
+	if (!fontPath.IsEmpty())
 	{
 		// Grpahics font
-		if (fontSpritePath.IsInitalized())
+		if (!fontSpritePath.IsEmpty())
 		{
             fontSpritePath.TruncateExtension();
 			loadedFont = GraphicsFont::Create(fontPath, fontSpritePath);

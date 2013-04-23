@@ -55,9 +55,8 @@ namespace DAVA
 	NSString * FilepathRelativeToBundleObjC(const FilePath &virtualBundlePath, NSString * relativePathname)
 	{
 		NSString * filePath;
-		if(virtualBundlePath.IsInitalized())
+		if(virtualBundlePath.IsEmpty())
 		{
-				//		NSString * bundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString: @""];
 			NSString * bundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString: @"/Data"];
 			filePath = [bundlePath stringByAppendingString: relativePathname];
 		}
@@ -74,7 +73,7 @@ namespace DAVA
                                             NSString * relativePathname)
 	{
         NSString * filePath;
-        if(virtualBundlePath.IsInitalized())
+        if(!virtualBundlePath.IsEmpty())
         {
             NSString * bundlePath = [NSString stringWithUTF8String: virtualBundlePath.GetAbsolutePathname().c_str()];
             filePath = [bundlePath stringByAppendingString: relativePathname];

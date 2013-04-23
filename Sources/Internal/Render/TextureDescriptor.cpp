@@ -157,7 +157,7 @@ bool TextureDescriptor::Load(const FilePath &filePathname)
 
 void TextureDescriptor::Save() const
 {
-    DVASSERT_MSG(pathname.IsInitalized(), "Can use this method only after calling Load()");
+    DVASSERT_MSG(!pathname.IsEmpty(), "Can use this method only after calling Load()");
     Save(pathname);
 }
     
@@ -385,7 +385,7 @@ bool TextureDescriptor::GetGenerateMipMaps() const
     
 FilePath TextureDescriptor::GetSourceTexturePathname() const
 {
-    if(!pathname.IsInitalized())
+    if(pathname.IsEmpty())
     {
         return FilePath();
     }
