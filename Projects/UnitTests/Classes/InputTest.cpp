@@ -70,7 +70,7 @@ void InputTest::LoadResources()
 {
 	GetBackground()->SetColor(Color(1.f, 0, 0, 1));
 	
-	Texture* texture = Texture::CreateFromFile("~res:/TestData/PVRTest/PNG/number_9.png");
+	Texture* texture = Texture::CreateFromFile("~res:/TestData/InputTest/rect2.png");
 	Sprite* spr = Sprite::CreateFromTexture(texture,0,0,texture->width,texture->height);
 
 	Font *font = FTFont::Create("~res:/Fonts/korinna.ttf");
@@ -86,8 +86,8 @@ void InputTest::LoadResources()
 	textField->SetFont(font);
 #endif
 	textField->SetSprite(spr,0);
-
-	textField->SetTextAlign(ALIGN_LEFT | ALIGN_VCENTER);
+    textField->SetSpriteAlign(ALIGN_RIGHT);
+	textField->SetTextAlign(ALIGN_LEFT | ALIGN_BOTTOM);
 	textField->SetText(L"textField");
 	textField->SetDebugDraw(true);
 	textField->SetDelegate(new UITextFieldDelegate());

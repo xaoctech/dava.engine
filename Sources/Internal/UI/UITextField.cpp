@@ -285,7 +285,12 @@ void UITextField::SetShadowColor(const Color& color)
 
 void UITextField::SetTextAlign(int32 align)
 {
-	staticText->SetTextAlign(align);
+#ifdef __DAVAENGINE_IPHONE__
+    textFieldiPhone->SetTextAlign(align);
+#else
+    staticText->SetTextAlign(align);
+#endif
+	
 }
 
 void UITextField::SetFontSize(float size)
@@ -307,11 +312,11 @@ UITextFieldDelegate * UITextField::GetDelegate()
 	
 void UITextField::SetSpriteAlign(int32 align)
 {
-#ifdef __DAVAENGINE_IPHONE__
-    textFieldiPhone->SetAlign(align);
-#else
+//#ifdef __DAVAENGINE_IPHONE__
+//    textFieldiPhone->SetAlign(align);
+//#else
     UIControl::SetSpriteAlign(align);
-#endif
+//#endif
 }
 
 void UITextField::SetSize(const DAVA::Vector2 &newSize)
@@ -367,7 +372,12 @@ const WideString & UITextField::GetText()
 
 	int32 UITextField::GetTextAlign()
 	{
-		return staticText ? staticText->GetTextAlign() : ALIGN_HCENTER|ALIGN_VCENTER;
+#ifdef __DAVAENGINE_IPHONE__
+        return textFieldiPhone ? textFieldiPhone->GetTextAlign() : ALIGN_HCENTER|ALIGN_VCENTER;
+#else
+        return staticText ? staticText->GetTextAlign() : ALIGN_HCENTER|ALIGN_VCENTER;
+#endif
+		
 	}
 
 void UITextField::Input(UIEvent *currentInput)
