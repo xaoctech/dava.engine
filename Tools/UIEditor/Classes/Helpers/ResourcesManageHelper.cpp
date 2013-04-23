@@ -208,7 +208,7 @@ void ResourcesManageHelper::InitInternalResources()
 	FilePath currentFolder = FileSystem::Instance()->GetCurrentWorkingDirectory();
 	helpContentsPath = ConvertPathToUnixStyle(QString::fromStdString((currentFolder + HELP_CONTENTS_PATH).GetAbsolutePathname()));
 #else
-    helpContentsPath = QString::fromStdString(HELP_CONTENTS_PATH.ResolvePathname());
+    helpContentsPath = QString::fromStdString(FilePath(HELP_CONTENTS_PATH).GetAbsolutePathname());
 #endif
 	// Save project default title
     if(DAVA::Core::Instance())

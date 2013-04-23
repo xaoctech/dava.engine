@@ -789,7 +789,7 @@ void Entity::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
         if(customProperties->IsKeyExists("editor.referenceToOwner"))
         {
             FilePath newPath(sceneFileV2->GetScenePath());
-            newPath += FilePath(customProperties->GetString("editor.referenceToOwner"));
+            newPath += customProperties->GetString("editor.referenceToOwner");
 
             //TODO: why we use absolute pathname instead of relative?
             customProperties->SetString("editor.referenceToOwner", newPath.GetAbsolutePathname());

@@ -117,7 +117,7 @@ void FilePathTest::MacTestFunction(PerfFuncData * data)
     TEST_VERIFY(!filepath7.IsEmpty());
     TEST_VERIFY(filepath7.IsDirectoryPathname());
 
-    FilePath filepath8 = filepath7 + FilePath("texture.tex");
+    FilePath filepath8 = filepath7 + "texture.tex";
     TEST_VERIFY(filepath8 == filepath6);
 
     
@@ -284,7 +284,7 @@ void FilePathTest::WinTestFunction(PerfFuncData * data)
     TEST_VERIFY(!filepath7.IsEmpty());
     TEST_VERIFY(filepath7.IsDirectoryPathname());
     
-    FilePath filepath8 = filepath7 + FilePath("texture.tex");
+    FilePath filepath8 = filepath7 + "texture.tex";
     TEST_VERIFY(filepath8 == filepath6);
     
     

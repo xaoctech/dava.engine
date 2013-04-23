@@ -96,7 +96,7 @@ void ProcessRecourcePacker()
     FilePath lastDir(commandLinePath.GetDirectory().GetLastDirectoryName());
     lastDir.MakeDirectoryPathname();
     
-    FilePath outputh = commandLinePath + FilePath("../../Data/") + lastDir;
+    FilePath outputh = commandLinePath + "../../Data/" + lastDir;
     
     resourcePacker->InitFolders(commandLinePath, outputh);
     

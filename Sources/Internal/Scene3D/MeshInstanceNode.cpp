@@ -646,7 +646,7 @@ void MeshInstanceNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 			LightmapData data;
 
             String pathname = archive->GetString(Format("lightmap%d", i), "");
-            data.lightmapName = sceneFile->GetScenePath() + FilePath(pathname);
+            data.lightmapName = sceneFile->GetScenePath() + pathname;
 			data.uvOffset.x = archive->GetFloat(Format("lightmap%duvoX", i));
 			data.uvOffset.y = archive->GetFloat(Format("lightmap%duvoY", i));
 			data.uvScale.x = archive->GetFloat(Format("lightmap%duvsX", i));

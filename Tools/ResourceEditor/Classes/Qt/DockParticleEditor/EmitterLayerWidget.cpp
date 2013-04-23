@@ -446,7 +446,7 @@ void EmitterLayerWidget::OnSpriteBtn()
 {
 	FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
 	
-	projectPath += FilePath("Data/Gfx/Particles/");
+	projectPath += "Data/Gfx/Particles/";
     
 	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open particle sprite"), QString::fromStdString(projectPath.GetAbsolutePathname()), QString("Effect File (*.txt)"));
 	if (filePath.isEmpty())

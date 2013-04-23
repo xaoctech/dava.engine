@@ -277,7 +277,7 @@ void FileListTest::RecursiveCopy(const DAVA::FilePath &src, const DAVA::FilePath
     {
         if(fileList.IsDirectory(i) && !fileList.IsNavigationDirectory(i))
         {
-            RecursiveCopy(fileList.GetPathname(i), dst + FilePath(fileList.GetFilename(i) + "/"));
+            RecursiveCopy(fileList.GetPathname(i), dst + (fileList.GetFilename(i) + "/"));
         }
     }
 }

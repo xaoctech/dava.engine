@@ -153,7 +153,7 @@ void TexturePacker::PackToTexturesSeparate(const FilePath & excludeFolder, const
 		{
 			char textureNameWithIndex[50];
 			sprintf(textureNameWithIndex, "texture%d", textureIndex++);
-			FilePath textureName = outputPath + FilePath(textureNameWithIndex);
+			FilePath textureName = outputPath + textureNameWithIndex;
 			if (CommandLineParser::Instance()->GetVerbose())
 				Logger::Info("* Writing final texture (%d x %d): %s\n", bestXResolution, bestYResolution , textureName.GetAbsolutePathname().c_str());
 			
@@ -236,7 +236,7 @@ void TexturePacker::PackToTextures(const FilePath & excludeFolder, const FilePat
 		Logger::Info("\n");
 	if (bestResolution != (maxTextureSize + 1) * (maxTextureSize + 1))
 	{
-		FilePath textureName = outputPath + FilePath("texture");
+		FilePath textureName = outputPath + "texture";
 		if (CommandLineParser::Instance()->GetVerbose())
 			Logger::Info("* Writing final texture (%d x %d): %s\n", bestXResolution, bestYResolution , textureName.GetAbsolutePathname().c_str());
 	
@@ -395,7 +395,7 @@ void TexturePacker::PackToMultipleTextures(const FilePath & excludeFolder, const
 	{
 		char temp[256];
 		sprintf(temp, "texture%d.png", image);
-		FilePath textureName = outputPath + FilePath(temp);
+		FilePath textureName = outputPath + temp;
         ExportImage(finalImages[image], textureName);
 	}
 
@@ -403,7 +403,7 @@ void TexturePacker::PackToMultipleTextures(const FilePath & excludeFolder, const
 	{
 		DefinitionFile * defFile = *defi;
 		
-		FilePath textureName = outputPath + FilePath("texture");
+		FilePath textureName = outputPath + "texture";
 		if (!WriteMultipleDefinition(excludeFolder, outputPath, FilePath("texture"), defFile))
 		{
 			Logger::Error("* ERROR: failed to write definition\n");
@@ -454,7 +454,7 @@ bool TexturePacker::WriteDefinition(const FilePath & excludeFolder, const FilePa
 	if (CommandLineParser::Instance()->GetVerbose())
 		Logger::Info("* Write definition: %s\n", fileName.c_str());
 	
-	FilePath defFilePath = outputPath + FilePath(fileName);
+	FilePath defFilePath = outputPath + fileName;
 	FILE * fp = fopen(defFilePath.GetAbsolutePathname().c_str(), "wt");
 	if (!fp)return false;
 	
@@ -489,7 +489,7 @@ bool TexturePacker::WriteMultipleDefinition(const FilePath & excludeFolder, cons
 	if (CommandLineParser::Instance()->GetVerbose())
 		Logger::Info("* Write definition: %s\n", fileName.c_str());
 	
-	FilePath defFilePath = outputPath + FilePath(fileName);
+	FilePath defFilePath = outputPath + fileName;
 	FILE * fp = fopen(defFilePath.GetAbsolutePathname().c_str(), "wt");
 	if (!fp)return false;
 	

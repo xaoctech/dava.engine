@@ -70,13 +70,13 @@ void Replay::StartRecord(const FilePath & dirName)
         String fileName = list->GetFilename(i);
         if(!list->IsNavigationDirectory(i) && !list->IsDirectory(i) && fileName != "LastReplay.rep")
         {
-            FileSystem::Instance()->CopyFile(list->GetPathname(i), dirName + FilePath(fileName));
+            FileSystem::Instance()->CopyFile(list->GetPathname(i), dirName + fileName);
         }
     }
 
     list->Release();
 
-    FilePath filePath = dirName + FilePath("LastReplay.rep");
+    FilePath filePath = dirName + "LastReplay.rep";
     file = File::Create(filePath, File::CREATE | File::WRITE);
 
     Random::Instance()->Seed();
@@ -137,7 +137,7 @@ void Replay::StartPlayback(const FilePath & dirName)
 		String fileName = list->GetFilename(i);
 		if(!list->IsNavigationDirectory(i) && !list->IsDirectory(i))
 		{
-            FilePath existingFile = dirName + FilePath(fileName);
+            FilePath existingFile = dirName + fileName;
             FilePath newFile("~doc:/" + fileName);
             
 			FileSystem::Instance()->CopyFile(existingFile, newFile);

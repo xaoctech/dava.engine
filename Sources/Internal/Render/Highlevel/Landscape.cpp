@@ -1418,7 +1418,7 @@ void Landscape::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 	RenderObject::Load(archive, sceneFile);
 
     FilePath path(sceneFile->GetScenePath());
-    path += FilePath(archive->GetString("hmap"));
+    path += archive->GetString("hmap");
 
     AABBox3 boxDef;
     boxDef = archive->GetByteArrayAsType("bbox", boxDef);
@@ -1442,10 +1442,10 @@ void Landscape::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
         if(!textureName.empty())
         {
             FilePath path(sceneFile->GetScenePath());
-            path += FilePath(archive->GetString("hmap"));
+            path += archive->GetString("hmap");
 
             absPath = sceneFile->GetScenePath();
-            absPath += FilePath(textureName);
+            absPath += textureName;
         }
 
         if(sceneFile->DebugLogEnabled())

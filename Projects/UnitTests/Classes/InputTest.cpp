@@ -127,11 +127,11 @@ void InputTest::LoadResources()
 	AddControl(webView2);
 
 	FilePath srcDir("~res:/TestData/InputTest/");
-	FilePath cpyDir = FileSystem::Instance()->GetCurrentDocumentsDirectory() + FilePath("InputTest/");
+	FilePath cpyDir = FileSystem::Instance()->GetCurrentDocumentsDirectory() + "InputTest/";
 	FileSystem::Instance()->DeleteDirectory(cpyDir);
 	FileSystem::Instance()->CreateDirectory(cpyDir);
-	FilePath srcFile = srcDir + FilePath("test.html");
-	FilePath cpyFile = cpyDir + FilePath("test.html");
+	FilePath srcFile = srcDir + "test.html";
+	FilePath cpyFile = cpyDir + "test.html";
 	FileSystem::Instance()->CopyFile(srcFile, cpyFile);
 	String url = "file:///" + cpyFile.GetAbsolutePathname();
 

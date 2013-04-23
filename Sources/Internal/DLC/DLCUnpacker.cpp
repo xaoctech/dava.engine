@@ -43,7 +43,7 @@ void DLCUnpacker::Unpack(const FilePath & filePathSrc, const FilePath & unpackPa
     
     for (int32 i = 0; i < resArchive->GetFileCount(); ++i)
     {
-        FilePath filePath = unpackPath + FilePath(resArchive->GetResourcePathname(i));
+        FilePath filePath = unpackPath + resArchive->GetResourcePathname(i);
         
         result = FileSystem::Instance()->CreateDirectory(filePath.GetDirectory(), true);
         

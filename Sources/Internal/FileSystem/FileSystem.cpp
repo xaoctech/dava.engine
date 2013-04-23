@@ -271,7 +271,7 @@ bool FileSystem::CopyDirectory(const FilePath & sourceDirectory, const FilePath 
 	{
 		if(!fileList.IsDirectory(i) && !fileList.IsNavigationDirectory(i))
 		{
-            const FilePath destinationPath = destinationDirectory + FilePath("/" + fileList.GetFilename(i));
+            const FilePath destinationPath = destinationDirectory + fileList.GetFilename(i);
 			if(!CopyFile(fileList.GetPathname(i), destinationPath))
 			{
 				ret = false;
@@ -406,7 +406,7 @@ const FilePath FileSystem::SystemPathForFrameworkPath(const String & frameworkPa
         FilePath p(FilepathRelativeToBundle(""));
         p.MakeDirectoryPathname();
         
-		tempRetPath = p + FilePath(pathname.erase(0, 5));
+		tempRetPath = p + pathname.erase(0, 5);
 	}
 	else
 	{
@@ -416,7 +416,7 @@ const FilePath FileSystem::SystemPathForFrameworkPath(const String & frameworkPa
             FilePath p(FilepathInDocuments(""));
             p.MakeDirectoryPathname();
             
-            tempRetPath = p + FilePath(pathname.erase(0, 5));
+            tempRetPath = p + pathname.erase(0, 5);
 		}
         else
         {
@@ -501,7 +501,7 @@ void FileSystem::SetCurrentDocumentsDirectory(const FilePath & newDocDirectory)
 const FilePath FileSystem::FilepathInDocuments(const char * relativePathname)
 {
     //return Format("./Documents/%s", relativePathname);
-    return currentDocDirectory + FilePath(relativePathname);
+    return currentDocDirectory + relativePathname;
 }
 
 const FilePath FileSystem::FilepathInDocuments(const String & relativePathname)
@@ -511,11 +511,7 @@ const FilePath FileSystem::FilepathInDocuments(const String & relativePathname)
 
 void FileSystem::SetDefaultDocumentsDirectory()
 {
-#if defined(__DAVAENGINE_WIN32__)
-    SetCurrentDocumentsDirectory(GetUserDocumentsPath() + FilePath("DAVAProject\\"));
-#elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
-    SetCurrentDocumentsDirectory(GetUserDocumentsPath() + FilePath("DAVAProject/"));
-#endif //PLATFORMS
+    SetCurrentDocumentsDirectory(GetUserDocumentsPath() + "DAVAProject/");
 }
 
 

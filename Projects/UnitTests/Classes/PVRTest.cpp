@@ -49,7 +49,7 @@ static const PixelFormat formats[] =
 PVRTest::PVRTest()
 : TestTemplate<PVRTest>("PVRTest")
 {
-    FilePath testFolder = FileSystem::Instance()->GetCurrentDocumentsDirectory() + FilePath("/PVRTest/");
+    FilePath testFolder = FileSystem::Instance()->GetCurrentDocumentsDirectory() + "PVRTest/";
     FileSystem::Instance()->CreateDirectory(testFolder, true);
 
     
@@ -134,8 +134,8 @@ void PVRTest::TestFunction(PerfFuncData * data)
         Image *secondComparer = TextureUtils::CreateImageAsRGBA8888(pvrSprite);
         
         FilePath documentsPath = FileSystem::Instance()->GetCurrentDocumentsDirectory();
-        ImageLoader::Save(firstComparer, documentsPath + FilePath(Format("PVRTest/src_number_%d.png", currentTest)));
-        ImageLoader::Save(secondComparer, documentsPath + FilePath(Format("PVRTest/dst_number_%d.png", currentTest)));
+        ImageLoader::Save(firstComparer, documentsPath + Format("PVRTest/src_number_%d.png", currentTest));
+        ImageLoader::Save(secondComparer, documentsPath + Format("PVRTest/dst_number_%d.png", currentTest));
     }
     
     ++currentTest;

@@ -112,7 +112,7 @@ FileList::FileList(const FilePath & filepath)
 	{
 		while(n--)
 		{
-			entry.path = path + FilePath(namelist[n]->d_name);
+			entry.path = path + namelist[n]->d_name;
 			entry.name = namelist[n]->d_name;
 			entry.size = 0;
 			entry.isDirectory = namelist[n]->d_type == DT_DIR;
