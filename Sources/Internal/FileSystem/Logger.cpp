@@ -79,7 +79,7 @@ void Logger::Logv(eLogLevel ll, const char16* text, va_list li)
 	_vsnwprintf(tmp, sizeof(tmp)/sizeof(wchar_t)-2, text, li);
 	wcscat(tmp, L"\n");
 	OutputDebugStringW(tmp);
-	if(logFilename.IsInitalized() && FileSystem::Instance())
+	if(!logFilename.IsEmpty() && FileSystem::Instance())
 	{
 		FilePath filename = FileSystem::Instance()->GetCurrentDocumentsDirectory()+logFilename;
 		FILE * file = fopen(filename.ResolvePathname().c_str(), "ab");
