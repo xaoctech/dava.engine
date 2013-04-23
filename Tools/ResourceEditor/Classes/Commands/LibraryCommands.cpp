@@ -111,7 +111,7 @@ void CommandReloadEntityFrom::Execute()
     DVASSERT(CheckExtension(String(".sc2")) && "Wrong extension");
     
     fromPathname = GetOpenFileName(String("Select Scene File"), filePathname.GetDirectory(), String("Scene File (*.sc2)"));
-    if(!fromPathname.IsInitalized())
+    if(fromPathname.IsEmpty())
     {
         return;
     }

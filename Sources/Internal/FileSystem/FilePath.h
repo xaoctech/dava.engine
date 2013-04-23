@@ -70,7 +70,7 @@ public:
         \brief Function to check is filepath empty or no
         \returns true if absolutePathname is not empty
 	 */
-    const bool IsInitalized() const;
+    const bool IsEmpty() const;
 
 	/*
         \brief Function to check is filepath represent folder path

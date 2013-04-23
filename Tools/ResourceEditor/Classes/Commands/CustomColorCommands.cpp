@@ -35,7 +35,7 @@ void CommandSaveTextureCustomColors::Execute()
 
 	FilePath selectedPathname = screen->CustomColorsGetCurrentSaveFileName();
 
-	if(!selectedPathname.IsInitalized())
+	if(selectedPathname.IsEmpty())
 	{
 		selectedPathname = FilePath(screen->CurrentScenePathname().GetDirectory());
 	}
@@ -44,7 +44,7 @@ void CommandSaveTextureCustomColors::Execute()
 
 	selectedPathname = PathnameToDAVAStyle(filePath);
 
-	if(selectedPathname.IsInitalized())
+	if(!selectedPathname.IsEmpty())
 		screen->CustomColorsSaveTexture(selectedPathname);
 }
 
@@ -61,13 +61,13 @@ void CommandLoadTextureCustomColors::Execute()
 
 	FilePath currentPath = screen->CustomColorsGetCurrentSaveFileName();
 
-	if(!currentPath.IsInitalized())
+	if(currentPath.IsEmpty())
 	{
 		currentPath = FilePath(screen->CurrentScenePathname().GetDirectory());
 	}
 
 	FilePath selectedPathname = GetOpenFileName(String("Load texture"), currentPath, String("PNG image (*.png)"));
-	if(selectedPathname.IsInitalized())
+	if(!selectedPathname.IsEmpty())
 	{
 		screen->CustomColorsLoadTexture(selectedPathname);
 	}

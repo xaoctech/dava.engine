@@ -20,7 +20,7 @@ SpritePackerHelper::SpritePackerHelper()
 void SpritePackerHelper::UpdateParticleSprites()
 {
 	FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
-    if(!projectPath.IsInitalized())
+    if(projectPath.IsEmpty())
     {
         Logger::Warning("[ParticlesEditorSpritePackerHelper::UpdateParticleSprites] Project path not set.");
         return;
@@ -130,7 +130,7 @@ void SpritePackerHelper::EnumerateSpritesForReloading(SceneData* sceneData, Map<
 void SpritePackerHelper::UpdateParticleSpritesAsync()
 {
 	FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
-    if(!projectPath.IsInitalized())
+    if(projectPath.IsEmpty())
     {
         Logger::Warning("[ParticlesEditorSpritePackerHelper::UpdateParticleSprites] Project path not set.");
         return;

@@ -35,7 +35,7 @@ void DLCUnpacker::Unpack(const FilePath & filePathSrc, const FilePath & unpackPa
 
     // Save paths for check all files every start app
     KeyedArchive * archive = NULL;
-    if (fileForPaths.IsInitalized())
+    if (!fileForPaths.IsEmpty())
     {
         archive = new KeyedArchive();
         archive->SetUInt32("size", resArchive->GetFileCount());

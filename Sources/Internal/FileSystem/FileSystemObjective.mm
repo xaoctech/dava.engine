@@ -73,7 +73,7 @@ namespace DAVA
                                             NSString * relativePathname)
 	{
         NSString * filePath;
-        if(virtualBundlePath.IsInitalized())
+        if(!virtualBundlePath.IsEmpty())
         {
             NSString * bundlePath = [NSString stringWithUTF8String: virtualBundlePath.GetAbsolutePathname().c_str()];
             filePath = [bundlePath stringByAppendingString: relativePathname];

@@ -185,7 +185,7 @@ void ScenePreviewControl::RecreateScene()
 
 void ScenePreviewControl::ReleaseScene()
 {
-    if(currentScenePath.IsInitalized())
+    if(!currentScenePath.IsEmpty())
     {
         editorScene->RemoveNode(rootNode);
         editorScene->ReleaseRootNode(currentScenePath);

@@ -289,12 +289,12 @@ void QtMainWindow::OpenLastProject()
     {
         DAVA::FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
 
-        if(!projectPath.IsInitalized())
+        if(projectPath.IsEmpty())
         {
 			projectPath = FilePath(ProjectManager::Instance()->ProjectOpenDialog().toStdString());
         }
 
-        if(!projectPath.IsInitalized())
+        if(projectPath.IsEmpty())
 		{
 			QtLayer::Instance()->Quit();
 		}
