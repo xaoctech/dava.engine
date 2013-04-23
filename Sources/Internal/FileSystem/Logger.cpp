@@ -55,7 +55,7 @@ void Logger::Logv(eLogLevel ll, const char8* text, va_list li)
 	_vsnprintf(tmp, sizeof(tmp)-2, text, li);
 	strcat(tmp, "\n");
 	OutputDebugStringA(tmp);
-	if(logFilename.IsInitalized() && FileSystem::Instance())
+	if(!logFilename.IsEmpty() && FileSystem::Instance())
 	{
 		FilePath filename = FileSystem::Instance()->GetCurrentDocumentsDirectory()+logFilename;
 		FILE * file = fopen(filename.ResolvePathname().c_str(), "ab");
