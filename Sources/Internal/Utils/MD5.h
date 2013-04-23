@@ -49,6 +49,8 @@
 
 
 #include "Base/BaseTypes.h"
+#include "FileSystem/FilePath.h"
+
 
 namespace DAVA
 {
@@ -71,8 +73,8 @@ public:
     
     static const int32 DIGEST_SIZE = 16;
     
-	static void ForFile(const String & pathName, uint8 * buffer);
-	static void ForDirectory(const String & pathName, uint8 * buffer, bool isRecursive);
+	static void ForFile(const FilePath & pathName, uint8 * buffer);
+	static void ForDirectory(const FilePath & pathName, uint8 * buffer, bool isRecursive);
 
     static void HashToChar(const uint8 * hash, char8 *buffer, uint32 bufferSize);
 	static void CharToHash(const char8 *buffer, uint8 * hash);
@@ -85,7 +87,7 @@ public:
 
 	uint8 * GetDigest() { return digest; };
 private:
-	static void RecursiveDirectoryMD5(const String & pathName, MD5 & md5, bool isRecursive);
+	static void RecursiveDirectoryMD5(const FilePath & pathName, MD5 & md5, bool isRecursive);
     
     static uint8 GetNumberFromCharacter(char8 character);
     static char8 GetCharacterFromNumber(uint8 number);

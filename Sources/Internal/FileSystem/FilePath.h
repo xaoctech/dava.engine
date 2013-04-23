@@ -31,7 +31,7 @@
 #define __DAVAENGINE_FILE_PATH_H__
 
 #include "Base/BaseTypes.h"
-#include "Base/BaseObject.h"
+//#include "Base/Introspection.h"
 
 namespace DAVA
 {
@@ -39,82 +39,196 @@ namespace DAVA
 	\ingroup filesystem
 	\brief class to work with file pathname
  */
-class FilePath: public BaseObject
+class FilePath
 {
 public:
+
+	FilePath();
+    FilePath(const FilePath & path);
+    FilePath(const String & sourcePath);
+    FilePath(const char * sourcePath);
+    FilePath(const String & directory, const String & filename);
+
+	virtual ~FilePath();
+
+    /**
+        \brief Function to retrive FilePath with new extension without changing of source FilePath object
+        \param[in] pathname is source FilePath object
+        \param[in] extension is new extension
+        \returns resolved FilePath object with new extension
+	 */
+    static FilePath CreateWithNewExtension(const FilePath &pathname, const String &extension);
+
+
+    FilePath& operator=(const FilePath & path);
+    FilePath operator+(const FilePath & path) const;
+    FilePath& operator+=(const FilePath & path);
+    bool operator==(const FilePath & path) const;
+	bool operator!=(const FilePath & path) const;
+
 	/*
-	
-	TODO: new interface
+        \brief Function to check is filepath empty or no
+        \returns true if absolutePathname is not empty
+	 */
+    const bool IsEmpty() const;
 
-	FilePath();
-	FilePath(const FilePath &path);
-	FilePath(const char* path);
-	FilePath(const String &path);
-	virtual ~FilePath();
+	/*
+        \brief Function to check is filepath represent folder path
+        \returns true if absolutePathname has '/' as last charachter
+	 */
+    const bool IsDirectoryPathname() const;
 
-	FilePath& operator=(const FilePath &path);
-	String& operator()(const FilePath &path);
+	/**
+        \brief Function to retrieve pathname
+        \returns pathname value
+	 */
+    const String & GetAbsolutePathname() const;
+    
+	/**
+        \brief Function to retrieve filename from pathname. Filename for path "/Users/Folder/image.png" is "image.png".
+        \returns filename value
+	 */
+    String GetFilename() const;
 
-	String AbsolutePath();
-	String RelativePath(const FilePath &path = String());
-	String AbsoluteDir();
-	String RelativeDir(const FilePath &path = String());
-	String Filename();
-	String Basename();
-	String Extension();
-	*/	
+    /**
+        \brief Function to retrieve basename from pathname. Basename for path "/Users/Folder/image.png" is "image".
+        \returns basename value
+	 */
+    String GetBasename() const;
+    
+	/**
+        \brief Function to retrieve extension from pathname. Extension for path "/Users/Folder/image.png" is ".png".
+        \returns extension value
+	 */
+    String GetExtension() const;
 
+	/**
+        \brief Function to retrieve directory from pathname. Directory for path "/Users/Folder/image.png" is "/Users/Folder/".
+        \returns directory value
+	 */
+    FilePath GetDirectory() const;
+    
+    
+	/**
+        \brief Function to retrieve relative pathname for current working directory
+        \returns relative path value
+	 */
+    String GetRelativePathname() const;
 
-	FilePath();
-    FilePath(const FilePath &path);
-//    FilePath(const String &sourcePath); 
-	virtual ~FilePath();
+	/**
+        \brief Function to retrieve relative pathname for exact directory
+        \param[in] forDirectory is exact directory for relative path calculation
+        \returns relative path value
+	 */
+    String GetRelativePathname(const String &forDirectory) const;
+    String GetRelativePathname(const FilePath &forDirectory) const;
+    
+    
+	/**
+        \brief Function for replacement of original filename
+        \param[in] filename is new filename
+	 */
+    void ReplaceFilename(const String &filename);
+
+	/**
+        \brief Function for replacement of original basename
+        \param[in] basename is new basename
+	 */
+    void ReplaceBasename(const String &basename);
+
+	/**
+        \brief Function for replacement of original extension
+        \param[in] extension is new extension
+	 */
+    void ReplaceExtension(const String &extension);
+    
+	/**
+        \brief Function for replacement of original directory
+        \param[in] directory is new directory
+	 */
+    void ReplaceDirectory(const String &directory);
+    void ReplaceDirectory(const FilePath &directory);
+    
+	/**
+        \brief Function for setup of project path for resolving pathnames such as "~res:/Gfx/image.png"
+        \param[in] pathname is project path
+	 */
+    static void SetProjectPathname(const String &pathname);
+
+	/**
+        \brief Function to retrive project path for resolving pathnames such as "~res:/Gfx/image.png"
+        \returns project path 
+	 */
+    static const String & GetProjectPathname();
 
     
-//    void InitFromPathname(const String &sourcePath);
-    void InitFromAbsolutePath(const String &absolutePath);
-    void InitFromRelativePath(const String &relativePath);
-    void InitFromRelativePath(const String &relativePath, const String &folder);
-    
-    void SetSourcePath(const String &sourcePath);
-    void SetAbsolutePath(const String &absolutePath);
-    void SetRelativePath(const String &relativePath);
-    void SetRelativePath(const String &relativePath, const String &folder);
+	/**
+        \brief Function to retrive system path for resolving pathnames such as "~res:/Gfx/image.png", "~doc:/Project/cache.dat"
+        \returns resolved pathname in system style. For example "~doc:/Project/cache.dat" will be resolved as "/User/Documents/Project/cache.dat"
+	 */
+    String ResolvePathname() const;
 
-    FilePath& operator=(const FilePath &path);
-//    FilePath& operator=(const String &pathname);
-
-//	operator String();
-
-    const String & GetSourcePath() const;
-    const String & GetAbsolutePath() const;
-    const String GetRelativePath() const;
-    const String GetRelativePath(const String &folder) const;
     
-    const String GetExtension() const;
+	/**
+        \brief Function to modify absolute to be path fo folder. For example "Users/Document" after function call will be "Users/Document/"
+	 */
+    void MakeDirectoryPathname();
+
+	/**
+        \brief Function to truncate extension from path
+	 */
+    void TruncateExtension();
     
-    const bool Initalized() const;
+    /**
+        \brief Function to retrive last directory name from FilePath that represents directory pathname
+        \returns last directory name
+	 */
+    String GetLastDirectoryName() const;
+    
+    
+	/**
+        \brief Function for replacement of pathname from absolutepath
+        \param[in] pathname is pathname for replacement
+	 */
+    void ReplacePath(const FilePath &pathname);
+    
+    
+	/**
+        \brief Function for comparison with extension of filepath object
+        \param[in] extension is extension for comparison
+	 */
+	bool IsEqualToExtension(const String & extension) const;
+
+protected:
+    
+    static String NormalizePathname(const FilePath &pathname);
+    static String NormalizePathname(const String &pathname);
+    
+    static String MakeDirectory(const String &pathname);
+
+    static String AbsoluteToRelative(const String &directoryPathname, const String &absolutePathname);
+
+    static String GetFilename(const String &pathname);
+    static FilePath GetDirectory(const String &pathname);
+
+    static String GetSystemPathname(const String &pathname);
+    
+    static bool IsAbsolutePathname(const String &pathname);
+    
+    static String AddPath(const FilePath &folder, const FilePath & addition);
     
 protected:
     
-    static const String CreateAbsoluteFromRelative(const String &relativePath, const String &folder);
-    
-protected:
-
-    String sourcePathname;
     String absolutePathname;
+    static String projectPathname;
     
-    String relativePathname;
-    String relativeFolder;
-
 public:
-    INTROSPECTION_EXTEND(FilePath, BaseObject,
-        MEMBER(sourcePathname, "Source Pathname", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(absolutePathname, "Absolute Pathname", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-                         
-        MEMBER(relativePathname, "Relative Pathname", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(relativeFolder, "Relative Folder", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-    );
+    
+//    INTROSPECTION(FilePath,
+//        MEMBER(absolutePathname, "absolutePathname", INTROSPECTION_EDITOR)
+// 		NULL
+//     );
+    
 };
 };
 

@@ -37,9 +37,8 @@ namespace DAVA
     
 ShadowVolumeRenderPass::ShadowVolumeRenderPass(const FastName & _name)
     :   RenderPass(_name)
-    ,   shadowRect(0)
 {
-    
+    shadowRect = ShadowRect::Create();
 }
 
 ShadowVolumeRenderPass::~ShadowVolumeRenderPass()
@@ -60,11 +59,6 @@ void ShadowVolumeRenderPass::Draw(Camera * camera)
     if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::SHADOWVOLUME_DRAW)
        && renderBatchCount > 0)
 	{
-		if(!shadowRect)
-		{
-			shadowRect = ShadowRect::Create();
-		}
-        
 		//2nd pass
 		RenderManager::Instance()->RemoveState(RenderState::STATE_CULL);
 		RenderManager::Instance()->RemoveState(RenderState::STATE_DEPTH_WRITE);

@@ -31,7 +31,7 @@ namespace DAVA
 		virtual void RemoveTreeNodeFromScene();
 		virtual void ReturnTreeNodeToScene();
 
-		String GetAggregatorPath() const;
+		FilePath GetAggregatorPath() const;
 	private:
 		HierarchyTreeAggregatorNode* parentAggregator;
 		HierarchyTreeAggregatorNode* parentAggregatorSave;

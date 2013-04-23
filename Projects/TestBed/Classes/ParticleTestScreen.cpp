@@ -63,7 +63,7 @@ void ParticleTestScreen::LoadResources()
 	SafeRelease(sprite);
 	*/
 	//uint64 t1 = SystemTimer::Instance()->AbsoluteMS();
-	particleEmitters[0]->LoadFromYaml("~res:/Particles/Sparkles/sparkles_linda_menu.yaml");
+	particleEmitters[0]->LoadFromYaml(FilePath("~res:/Particles/Sparkles/sparkles_linda_menu.yaml"));
 	particleEmittersCount = 1;
 	//uint64 time = SystemTimer::Instance()->AbsoluteMS() - t1;
 	
@@ -91,7 +91,7 @@ void ParticleTestScreen::LoadResources()
 //	particleEmitters[0]->LoadFromYaml("~res:/Particles/Sparkles/streaks.yaml");
 //	particleEmitters[0]->LoadFromYaml("~res:/Particles/Sparkles/laser_smoke.yaml");
 	
-	UIYamlLoader::Load(this, "~res:/Screens/particle_test_screen.yaml");
+	UIYamlLoader::Load(this, FilePath("~res:/Screens/particle_test_screen.yaml"));
 	
 	particleCount = dynamic_cast<UIStaticText*>(this->FindByName("particleCountTextField"));
 	fps = dynamic_cast<UIStaticText*> (this->FindByName("fpsTextField"));
@@ -99,7 +99,7 @@ void ParticleTestScreen::LoadResources()
 	particleEmitters[0]->SetPosition(Vector2(100, 100));
 	textUpdateTime = 0.0f;
 	
-	cursor = Sprite::Create("~res:/Gfx/Effects/flower");
+	cursor = Sprite::Create(FilePath("~res:/Gfx/Effects/flower"));
 	plasmaTime = 0;
 }
 

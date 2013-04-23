@@ -37,9 +37,9 @@ public:
 
 	void SetColor(const Color &newColor);
 	void SetRadius(int radius);
-	void SaveColorLayer(const String &pathName);
-	void LoadColorLayer(const String &pathName);
-	String GetCurrentSaveFileName();
+	void SaveColorLayer(const FilePath &pathName);
+	void LoadColorLayer(const FilePath &pathName);
+	FilePath GetCurrentSaveFileName();
 
 	void ClearSceneResources();
 
@@ -53,20 +53,20 @@ protected:
     virtual void InputAction(int32 phase, bool intersects);
     virtual void HideAction();
     virtual void ShowAction();
-    virtual void SaveTextureAction(const String &pathToFile);
+    virtual void SaveTextureAction(const FilePath &pathToFile);
 	virtual void UpdateCursor();
 
 	void StoreOriginalState();
 	void CreateUndoPoint();
 
-	String GetScenePath();
-	String GetRelativePathToScenePath(const String& absolutePath);
-	String GetAbsolutePathFromScenePath(const String& relativePath);
-	String GetRelativePathToProjectPath(const String& absolutePath);
-	String GetAbsolutePathFromProjectPath(const String& relativePath);
-	void StoreSaveFileName(const String& fileName);
+	FilePath GetScenePath();
+	FilePath GetRelativePathToScenePath(const FilePath& absolutePath);
+	FilePath GetAbsolutePathFromScenePath(const FilePath& relativePath);
+	FilePath GetRelativePathToProjectPath(const FilePath& absolutePath);
+	FilePath GetAbsolutePathFromProjectPath(const FilePath& relativePath);
+	void StoreSaveFileName(const FilePath& fileName);
 
-	void LoadTextureAction(const String& pathToFile);
+	void LoadTextureAction(const FilePath& pathToFile);
 
     virtual void RecreateHeightmapNode();
 	void UpdateCircleTexture(bool setTransparent);

@@ -53,7 +53,7 @@ class File;
 class SoundOVProvider : public SoundDataProvider
 {
 public:
-	SoundOVProvider(const String & fileName);
+	SoundOVProvider(const FilePath & fileName);
 	virtual ~SoundOVProvider();
 
 	virtual bool Init();

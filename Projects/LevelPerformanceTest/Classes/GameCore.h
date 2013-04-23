@@ -63,7 +63,7 @@ public:
 	virtual void OnDeviceLocked() {}
 #endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
     
-    bool FlushToDB(const String & levelName, const Map<String, String> &results, const String &imagePath);
+    bool FlushToDB(const FilePath & levelName, const Map<String, String> &results, const FilePath &imagePath);
     
 private:
     bool ConnectToDB();

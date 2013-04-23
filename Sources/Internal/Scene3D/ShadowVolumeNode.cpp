@@ -30,7 +30,7 @@
 #include "Render/3D/StaticMesh.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/SceneFileV2.h"
-
+#include "FileSystem/FilePath.h"
 
 
 namespace DAVA
@@ -42,7 +42,7 @@ ShadowVolumeNode::ShadowVolumeNode()
 : shadowPolygonGroup(0)
 {
 	shader = new Shader();
-	shader->LoadFromYaml("~res:/Shaders/ShadowVolume/shadowvolume.shader");
+	shader->LoadFromYaml(FilePath("~res:/Shaders/ShadowVolume/shadowvolume.shader"));
 	shader->Recompile();
 }
 
