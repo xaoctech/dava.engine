@@ -101,6 +101,9 @@ bool ApplicationCore::OnQuit()
 	return false;
 }
 
-
+void ApplicationCore::OnForeground()
+{
+	// Default implementation is empty.
+}
 
 };
