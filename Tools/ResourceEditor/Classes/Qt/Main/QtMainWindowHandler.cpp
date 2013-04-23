@@ -870,8 +870,6 @@ void QtMainWindowHandler::UpdateUndoActionsState()
 
 void QtMainWindowHandler::OnSceneActivated(SceneData *scene)
 {
-	CommandsManager::Instance()->ChangeQueue(scene);
-
 	UpdateUndoActionsState();
 	UpdateModificationActions();
 }

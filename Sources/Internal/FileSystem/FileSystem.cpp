@@ -74,7 +74,7 @@ void FileSystem::ReplaceBundleName(const FilePath & newBundlePath)
 #if defined(__DAVAENGINE_WIN32__)
 const char * FileSystem::FilepathRelativeToBundle(const char * relativePathname)
 {
-	if(virtualBundlePath.IsInitalized())
+	if(!virtualBundlePath.IsEmpty())
     {
         return Format("%s/%s", virtualBundlePath.GetAbsolutePathname().c_str(), relativePathname);
     }
