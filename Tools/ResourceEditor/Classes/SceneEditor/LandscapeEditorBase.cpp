@@ -22,7 +22,7 @@ LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, E
     fileSystemDialog->SetDelegate(this);
 
     FilePath path = EditorSettings::Instance()->GetDataSourcePath();
-    if(path.IsInitalized())
+    if(!path.IsEmpty())
     {
         fileSystemDialog->SetCurrentDir(path);   
     }
@@ -240,7 +240,7 @@ void LandscapeEditorBase::SaveTexture()
 {
     state = ELE_SAVING_TEXTURE;
     
-    if(savedPath.IsInitalized())
+    if(!savedPath.IsEmpty())
     {
         FilePath pathToSave = savedPath;
         pathToSave.ReplaceExtension(".png");

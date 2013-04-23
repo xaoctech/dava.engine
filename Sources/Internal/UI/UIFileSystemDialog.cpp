@@ -342,7 +342,7 @@ void UIFileSystemDialog::RefreshList()
     lastSelected = NULL;
     lastSelectedIndex = -1;
     Logger::Debug("Cur Dir: %s", currentDir.GetAbsolutePathname().c_str());
-    if (!currentDir.IsInitalized())
+    if (currentDir.IsEmpty())
     {
         currentDir += FilePath("/");
     }

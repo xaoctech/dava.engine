@@ -366,7 +366,7 @@ void LandscapeEditorColor::TextureWillChanged(const String &forKey)
 {
     if("property.landscape.texture.tilemask" == forKey)
     {
-        if(savedPath.IsInitalized())
+        if(!savedPath.IsEmpty())
         {
             SaveTextureAction(savedPath);
         }

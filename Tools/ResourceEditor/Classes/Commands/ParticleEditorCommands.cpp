@@ -553,7 +553,7 @@ void CommandSaveParticleEmitterToYaml::Execute()
     }
 
 	FilePath yamlPath = emitter->GetConfigPath();
-    if (this->forceAskFilename || !yamlPath.IsInitalized() )
+    if (this->forceAskFilename || yamlPath.IsEmpty() )
     {
         QString projectPath = QString(EditorSettings::Instance()->GetParticlesConfigsPath().GetAbsolutePathname().c_str());
         QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save Particle Emitter YAML file"),
