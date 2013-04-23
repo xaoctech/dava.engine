@@ -32,36 +32,57 @@ SceneEditorProxy::SceneEditorProxy()
 }
 
 SceneEditorProxy::~SceneEditorProxy()
-{
-	SafeDelete(modifSystem);
-	SafeDelete(selectionSystem);
-	SafeDelete(hoodSystem);
-	SafeDelete(collisionSystem);
-	SafeDelete(gridSystem);
-	SafeDelete(cameraSystem);
-}
+{ }
 
-bool SceneEditorProxy::Load(const DAVA::String &path)
+bool SceneEditorProxy::Load(const DAVA::FilePath &path)
 {
 	bool ret = false;
 
-	if(curScenePath != path)
+	Entity * rootNode = GetRootNode(path);
+	if(rootNode)
 	{
+		ret = true;
+
+		DAVA::Vector<DAVA::Entity*> tmpEntities;
+		int entitiesCount = rootNode->GetChildrenCount();
+
+		tmpEntities.reserve(entitiesCount);
+
+		// remember all child pointers, but don't add them to scene in this cycle
+		// because when entity is adding it is automatically removing from its old hierarchy
+		for (DAVA::int32 i = 0; i < entitiesCount; ++i)
+		{
+			tmpEntities.push_back(rootNode->GetChild(i));
+		}
+
+		// now we can safely add entities into our hierarchy
+		for (DAVA::int32 i = 0; i < (DAVA::int32) tmpEntities.size(); ++i)
+		{
+			AddNode(tmpEntities[i]);
+		}
+
 		curScenePath = path;
-		ret = SceneLoad();
 	}
 
 	return ret;
 }
 
-bool SceneEditorProxy::Save(const DAVA::String &path)
+bool SceneEditorProxy::Save(const DAVA::FilePath &path)
 {
 	bool ret = false;
 
-	if(!curScenePath.empty())
+	DAVA::SceneFileV2 *file = new DAVA::SceneFileV2();
+	file->EnableDebugLog(false);
+
+	DAVA::SceneFileV2::eError err = file->SaveScene(path, this);
+	ret = (DAVA::SceneFileV2::ERROR_NO_ERROR == err);
+
+	if(ret)
 	{
-		ret = SceneSave();
+		curScenePath = path;
 	}
+
+	SafeRelease(file);
 
 	return ret;
 }
@@ -71,12 +92,12 @@ bool SceneEditorProxy::Save()
 	return Save(curScenePath);
 }
 
-DAVA::String SceneEditorProxy::GetScenePath()
+DAVA::FilePath SceneEditorProxy::GetScenePath()
 {
 	return curScenePath;
 }
 
-void SceneEditorProxy::SetScenePath(const DAVA::String &newScenePath)
+void SceneEditorProxy::SetScenePath(const DAVA::FilePath &newScenePath)
 {
 	curScenePath = newScenePath;
 }
@@ -118,55 +139,4 @@ void SceneEditorProxy::Draw()
 	selectionSystem->Draw();
 	hoodSystem->Draw();
 	modifSystem->Draw();
-}
-
-bool SceneEditorProxy::SceneLoad()
-{
-	bool ret = false;
-
-	Entity * rootNode = GetRootNode(curScenePath);
-	if(rootNode)
-	{
-		ret = true;
-
-		DAVA::Vector<DAVA::Entity*> tmpEntities;
-		int entitiesCount = rootNode->GetChildrenCount();
-
-		tmpEntities.reserve(entitiesCount);
-
-		// remember all child pointers, but don't add them to scene in this cycle
-		// because when entity is adding it is automatically removing from its old hierarchy
-		for (DAVA::int32 i = 0; i < entitiesCount; ++i)
-		{
-			tmpEntities.push_back(rootNode->GetChild(i));
-		}
-
-		// now we can safely add entities into our hierarchy
-		for (DAVA::int32 i = 0; i < (DAVA::int32) tmpEntities.size(); ++i)
-		{
-			AddNode(tmpEntities[i]);
-		}
-	}
-
-	return ret;
-}
-
-bool SceneEditorProxy::SceneSave()
-{
-	// TODO:
-	// ...
-	// 
-	// 
-
-	/*
-	DAVA::SceneFileV2 *file = new DAVA::SceneFileV2();
-	file->EnableDebugLog(false);
-
-	DAVA::SceneFileV2::eError err = file->SaveScene(curScenePath, this);
-	ret = (DAVA::SceneFileV2::ERROR_NO_ERROR == err);
-
-	SafeRelease(file);
-	*/
-
-	return false;
 }

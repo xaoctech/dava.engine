@@ -6,15 +6,14 @@
 
 #include <QVBoxLayout>
 #include <QResizeEvent>
+#include <QMessageBox>
 
 SceneTabWidget::SceneTabWidget(QWidget *parent)
 	: QWidget(parent)
 	, davaUIScreenID(SCREEN_MAIN)
 	, oldScreenID(SCREEN_MAIN_OLD)
 	, dava3DViewMargin(10)
-	, currentTabIndex(-1)
-	, currentTabID(-1)
-	, tabIDCounter(0)
+	, newSceneCounter(0)
 {
 	this->setMouseTracking(true);
 
@@ -44,13 +43,15 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 
 	// remove -->
 	int oldTabIndex = tabBar->addTab("OldScreenMain");
-	tabBar->setTabData(oldTabIndex, -1);
+	SetTabScene(oldTabIndex, NULL);
 	// <--
 
-	AddTab("/Projects/dava.wot.art/DataSource/3d/Maps/dike_village/dike_village.sc2");
+	OpenTab("/Projects/dava.wot.art/DataSource/3d/Maps/dike_village/dike_village.sc2");
 	//AddTab("/Projects/dava.wot.art/DataSource/3d/Maps/desert_train/desert_train.sc2");
 
 	QObject::connect(tabBar, SIGNAL(currentChanged(int)), this, SLOT(TabBarCurrentChanged(int)));
+	QObject::connect(tabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(TabBarCloseRequest(int)));
+
 	SetCurrentTab(oldTabIndex);
 }
 
@@ -90,56 +91,109 @@ void SceneTabWidget::ReleaseDAVAUI()
 	SafeRelease(davaUIScreen);
 }
 
-int SceneTabWidget::AddTab()
+int SceneTabWidget::OpenTab()
 {
-	int tabID = tabIDCounter;
-	tabIDCounter++;
+	SceneEditorProxy *scene = new SceneEditorProxy();
 
-	SceneEditorProxy *sceneProxy = new SceneEditorProxy();
-	tabIDtoSceneMap.insert(tabID, sceneProxy);
-
-	int tabIndex = tabBar->addTab("NewScene");
-	tabBar->setTabData(tabIndex, tabID);
+	int tabIndex = tabBar->addTab("NewScene" + QString::number(++newSceneCounter));
+	SetTabScene(tabIndex, scene);
 
 	return tabIndex;
 }
 
-int SceneTabWidget::AddTab(const DAVA::String &scenePapth)
+int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 {
-	int tabIndex = AddTab();
-	int tabID = GetTabID(tabIndex);
+	int tabIndex = -1;
+	SceneEditorProxy *scene = new SceneEditorProxy();
 
-	tabIDtoSceneMap[tabID]->Load(scenePapth);
-	tabBar->setTabText(tabIndex, scenePapth.c_str());
-	tabBar->setTabToolTip(tabIndex, scenePapth.c_str());
+	if(scene->Load(scenePapth))
+	{
+		tabIndex = tabBar->addTab(scenePapth.GetFilename().c_str());
+		SetTabScene(tabIndex, scene);
+
+		tabBar->setTabToolTip(tabIndex, scenePapth.GetAbsolutePathname().c_str());
+	}
+	else
+	{
+		// TODO:
+		// message box about can't load scene
+		// ...
+		
+		delete scene;
+	}
 
 	return tabIndex;
+}
+
+void SceneTabWidget::CloseTab(int index)
+{
+	bool doCloseScene = false;
+	SceneEditorProxy *scene = GetTabScene(index);
+
+	if(NULL != scene)
+	{
+		bool sceneChanged = true;
+
+		// TODO: 
+		// check if scene changed
+		// ...
+		
+		if(sceneChanged)
+		{
+			int answer = QMessageBox::question(NULL, "Scene was changed", "Do you want to save changes, made to scene?", 
+				QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel);
+			
+			if(answer == QMessageBox::Yes)
+			{
+				if(scene->Save())
+				{
+					doCloseScene = true;
+				}
+				else
+				{
+					QMessageBox::critical(NULL, "Scene save error", "Error saving scene. Please try again.");
+				}
+			}
+			else if(answer == QMessageBox::No)
+			{
+				doCloseScene = true;
+			}
+		}
+		else
+		{
+			doCloseScene = true;
+		}
+	}
+
+	if(doCloseScene)
+	{
+		delete scene;
+		tabBar->removeTab(index);
+	}
 }
 
 int SceneTabWidget::GetCurrentTab()
 {
-	return currentTabIndex;
+	return tabBar->currentIndex();
 }
 
 void SceneTabWidget::SetCurrentTab(int index)
 {
-	if(index != currentTabIndex && index >= 0 && index < tabBar->count())
+	if(index >= 0 && index < tabBar->count())
 	{
 		tabBar->setCurrentIndex(index);
 		
-		currentTabIndex = index;
-		currentTabID = GetTabID(index);
+		SceneEditorProxy *scene = GetTabScene(index);
 
-		if(currentTabID >= 0)
+		if(NULL != scene)
 		{
 			// old. remove -->
 			oldInput = false;
 			UIScreenManager::Instance()->SetScreen(davaUIScreenID);
 			// <--
 
-			SceneEditorProxy* curSceneProxy = tabIDtoSceneMap[currentTabID];
-			dava3DView->SetScene(curSceneProxy);
-			curSceneProxy->SetViewportRect(dava3DView->GetRect());
+			dava3DView->SetScene(scene);
+			scene->SetViewportRect(dava3DView->GetRect());
 		}
 		// old. remove -->
 		else
@@ -151,41 +205,34 @@ void SceneTabWidget::SetCurrentTab(int index)
 	}
 }
 
-int SceneTabWidget::GetTabIndex(int tabID)
+SceneEditorProxy* SceneTabWidget::GetTabScene(int index)
 {
-	int index = -1;
-	for(int i = 0; i < tabBar->count(); ++i)
+	SceneEditorProxy *ret = NULL;
+
+	if(index > 0 && index < tabBar->count())
 	{
-		if(tabBar->tabData(i).toInt() == tabID)
-		{
-			index = i;
-			break;
-		}
+		ret = tabBar->tabData(index).value<SceneEditorProxy *>();
 	}
 
-	return index;
+	return ret;
 }
 
-int SceneTabWidget::GetTabID(int index)
+void SceneTabWidget::SetTabScene(int index, SceneEditorProxy* scene)
 {
-	int tabID = -1;
-
-	if(index >= 0 && index < tabBar->count())
+	if(index > 0 && index < tabBar->count())
 	{
-		tabID = tabBar->tabData(index).toInt();
+		tabBar->setTabData(index, qVariantFromValue(scene));
 	}
-
-	return tabID;
 }
 
 void SceneTabWidget::ProcessDAVAUIEvent(DAVA::UIEvent *event)
 {
 	if(!oldInput)
 	{
-		SceneEditorProxy* curSceneProxy = tabIDtoSceneMap[currentTabID];
-		if(NULL != curSceneProxy)
+		SceneEditorProxy* scene = GetTabScene(tabBar->currentIndex());
+		if(NULL != scene)
 		{
-			curSceneProxy->PostUIEvent(event);
+			scene->PostUIEvent(event);
 		}
 	}
 }
@@ -193,6 +240,11 @@ void SceneTabWidget::ProcessDAVAUIEvent(DAVA::UIEvent *event)
 void SceneTabWidget::TabBarCurrentChanged(int index)
 {
 	SetCurrentTab(index);
+}
+
+void SceneTabWidget::TabBarCloseRequest(int index)
+{
+	CloseTab(index);
 }
 
 void SceneTabWidget::resizeEvent(QResizeEvent * event)
@@ -207,10 +259,10 @@ void SceneTabWidget::resizeEvent(QResizeEvent * event)
 		dava3DView->SetSize(DAVA::Vector2(s.width() - 2 * dava3DViewMargin, s.height() - 2 * dava3DViewMargin));
 		sceneEditorScreenMain->SetSize(DAVA::Vector2(s.width(), s.height()));
 
-		SceneEditorProxy* curSceneProxy = tabIDtoSceneMap[currentTabID];
-		if(NULL != curSceneProxy)
+		SceneEditorProxy* scene = GetTabScene(tabBar->currentIndex());
+		if(NULL != scene)
 		{
-			curSceneProxy->SetViewportRect(dava3DView->GetRect());
+			scene->SetViewportRect(dava3DView->GetRect());
 		}
 	}
 }
