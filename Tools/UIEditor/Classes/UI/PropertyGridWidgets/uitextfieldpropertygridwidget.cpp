@@ -7,6 +7,7 @@
 #include "PropertyNames.h"
 #include "PropertiesHelper.h"
 #include "WidgetSignalsBlocker.h"
+#include "BackgroundGridWidgetHelper.h"
 
 using namespace PropertyNames;
 
@@ -28,7 +29,7 @@ UITextFieldPropertyGridWidget::~UITextFieldPropertyGridWidget()
 void UITextFieldPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
 {
     BasePropertyGridWidget::Initialize(activeMetadata);
-    
+	FillComboboxes();
     PROPERTIESMAP propertiesMap = BuildMetadataPropertiesMap();
 
     RegisterPushButtonWidgetForProperty(propertiesMap, FONT_PROPERTY_NAME, ui->fontSelectButton);
@@ -40,6 +41,8 @@ void UITextFieldPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     RegisterSpinBoxWidgetForProperty(propertiesMap, SHADOW_OFFSET_X, ui->shadowOffsetXSpinBox);
     RegisterSpinBoxWidgetForProperty(propertiesMap, SHADOW_OFFSET_Y, ui->shadowOffsetYSpinBox);
     RegisterColorButtonWidgetForProperty(propertiesMap, SHADOW_COLOR, ui->shadowColorButton);
+
+	RegisterComboBoxWidgetForProperty(propertiesMap, TEXT_ALIGN_PROPERTY_NAME, ui->alignComboBox, false, true);
 }
 
 void UITextFieldPropertyGridWidget::Cleanup()
@@ -51,13 +54,15 @@ void UITextFieldPropertyGridWidget::Cleanup()
     UnregisterSpinBoxWidget(ui->shadowOffsetXSpinBox);
     UnregisterSpinBoxWidget(ui->shadowOffsetYSpinBox);
     UnregisterColorButtonWidget(ui->shadowColorButton);
+
+	UnregisterComboBoxWidget(ui->alignComboBox);
     
     BasePropertyGridWidget::Cleanup();
 }
 
 void UITextFieldPropertyGridWidget::ProcessPushButtonClicked(QPushButton *senderWidget)
 {
-    if ((activeMetadata == NULL) || (senderWidget != this->ui->fontSelectButton))
+	    if ((activeMetadata == NULL) || (senderWidget != this->ui->fontSelectButton))
     {
         // No control already assinged or not fontSelectButton
         return;
@@ -160,4 +165,74 @@ void UITextFieldPropertyGridWidget::UpdatePushButtonWidgetWithPropertyValue(QPus
         
         pushButtonWidget->setText(buttonText);
     }
+}
+
+
+void UITextFieldPropertyGridWidget::FillComboboxes()
+{
+    ui->alignComboBox->clear();
+    int itemsCount = BackgroundGridWidgetHelper::GetAlignTypesCount();
+    for (int i = 0; i < itemsCount; i ++)
+    {
+        ui->alignComboBox->addItem(BackgroundGridWidgetHelper::GetAlignTypeDesc(i));
+    }
+
+}
+
+void UITextFieldPropertyGridWidget::CustomProcessComboboxValueChanged(const PROPERTYGRIDWIDGETSITER& iter, int value)
+{
+		// Don't update the property if the text wasn't actually changed.
+    int curValue = PropertiesHelper::GetAllPropertyValues<int>(this->activeMetadata, iter->second.getProperty().name());
+	if (curValue == value)
+	{
+		return;
+	}
+
+	BaseCommand* command = new ChangePropertyCommand<int>(activeMetadata, iter->second, value);
+    CommandsController::Instance()->ExecuteCommand(command);
+    SafeRelease(command);
+}
+
+void UITextFieldPropertyGridWidget::ProcessComboboxValueChanged(QComboBox* senderWidget, const PROPERTYGRIDWIDGETSITER& iter,
+                                             const QString& value)
+{
+	if (senderWidget == NULL)
+    {
+        Logger::Error("UITextFieldPropertyGridWidget::ProcessComboboxValueChanged: senderWidget is NULL!");
+        return;
+    }
+    
+    // Try to process this control-specific widgets.
+    int selectedIndex = senderWidget->currentIndex();
+
+	if (senderWidget == ui->alignComboBox)
+    {
+        return CustomProcessComboboxValueChanged(iter, BackgroundGridWidgetHelper::GetAlignType(selectedIndex));
+    }
+
+    // No postprocessing was applied - use the generic process.
+    BasePropertyGridWidget::ProcessComboboxValueChanged(senderWidget, iter, value);
+}
+
+void UITextFieldPropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue(QComboBox* comboBoxWidget, const QMetaProperty& curProperty)
+{
+	if (!this->activeMetadata)
+    {
+        return;
+    }
+
+    bool isPropertyValueDiffers = false;
+    const QString& propertyName = curProperty.name();
+    int propertyValue = PropertiesHelper::GetPropertyValue<int>(this->activeMetadata, propertyName, isPropertyValueDiffers);
+
+    // Firstly check the custom comboboxes.
+    if (comboBoxWidget == ui->alignComboBox)
+    {
+        UpdateWidgetPalette(comboBoxWidget, propertyName);
+        return SetComboboxSelectedItem(comboBoxWidget,
+                                       BackgroundGridWidgetHelper::GetAlignTypeDescByType(propertyValue));
+    }
+
+    // Not related to the custom combobox - call the generic one.
+    BasePropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue(comboBoxWidget, curProperty);
 }
