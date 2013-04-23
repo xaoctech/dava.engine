@@ -150,51 +150,5 @@ int32 CompareCaseInsensitive(const String &str1, const String &str2)
     
     return 1;
 }
-
-eBlendMode GetBlendModeByName(const String & blendStr)
-{
-	for(uint32 i = 0; i < BLEND_MODE_COUNT; i++)
-		if(blendStr == BlendModeNames[i])
-			return (eBlendMode)i;
-
-	return BLEND_MODE_COUNT;
-}
-
-eCmpFunc GetCmpFuncByName(const String & cmpFuncStr)
-{
-	for(uint32 i = 0; i < CMP_TEST_MODE_COUNT; i++)
-		if(cmpFuncStr == CmpFuncNames[i])
-			return (eCmpFunc)i;
-
-	return CMP_TEST_MODE_COUNT;
-}
-
-eFace GetFaceByName(const String & faceStr)
-{
-	for(uint32 i = 0; i < FACE_COUNT; i++)
-		if(faceStr == FaceNames[i])
-			return (eFace)i;
-
-	return FACE_COUNT;
-}
-
-eStencilOp GetStencilOpByName(const String & stencilOpStr)
-{
-	for(uint32 i = 0; i < STENCILOP_COUNT; i++)
-		if(stencilOpStr == StencilOpNames[i])
-			return (eStencilOp)i;
-
-	return STENCILOP_COUNT;
-}
-
-eFillMode GetFillModeByName(const String & fillModeStr)
-{
-	for(uint32 i = 0; i < FILLMODE_COUNT; i++)
-		if(fillModeStr == FillModeNames[i])
-			return (eFillMode)i;
-
-	return FILLMODE_COUNT;
-}
-
 	
 }; // end of namespace DAVA

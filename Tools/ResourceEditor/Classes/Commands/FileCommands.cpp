@@ -76,13 +76,13 @@ CommandOpenScene::CommandOpenScene(const DAVA::FilePath &scenePathname/* = DAVA:
 
 void CommandOpenScene::Execute()
 {
-    if(!selectedScenePathname.IsInitalized())
+    if(selectedScenePathname.IsEmpty())
     {
         FilePath dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
         selectedScenePathname = GetOpenFileName(String("Open Scene File"), dataSourcePath, String("Scene File (*.sc2)"));
     }
     
-    if(selectedScenePathname.IsInitalized())
+    if(!selectedScenePathname.IsEmpty())
     {
         SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
         if(screen)
@@ -134,7 +134,7 @@ void CommandSaveScene::Execute()
         SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
         
 		FilePath currentPath;
-		if(screen->CurrentScenePathname().IsInitalized())
+		if(!screen->CurrentScenePathname().IsEmpty())
 		{
 			currentPath = screen->CurrentScenePathname();    
 		}
@@ -187,7 +187,7 @@ void CommandSaveScene::SaveParticleEmitterNodeRecursive(Entity* parentNode)
 	{
 		// Do we have file name? Ask for it, if not.
 		FilePath yamlPath = emitter->GetConfigPath();
-		if (!yamlPath.IsInitalized())
+		if (yamlPath.IsEmpty())
 		{
 			QString saveDialogCaption = QString("Save Particle Emitter \"%1\"").arg(QString::fromStdString(parentNode->GetName()));
 			QString saveDialogYamlPath = QFileDialog::getSaveFileName(NULL, saveDialogCaption, "", QString("Yaml File (*.yaml)"));
@@ -198,7 +198,7 @@ void CommandSaveScene::SaveParticleEmitterNodeRecursive(Entity* parentNode)
 			}
 		}
 
-		if (yamlPath.IsInitalized())
+		if (!yamlPath.IsEmpty())
 		{
 			emitter->SaveToYaml(yamlPath);
 		}

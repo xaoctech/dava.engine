@@ -629,7 +629,7 @@ Texture * Landscape::CreateTexture(eTextureLevel level, const FilePath & texture
     if(TEXTURE_TILE_FULL == level)
     {
         //must not zero only for finalized maps
-        if(textureName.IsInitalized())
+        if(!textureName.IsEmpty())
         {
             return Texture::PureCreate(textureName);
         }
@@ -1655,7 +1655,7 @@ FilePath Landscape::SaveFullTiledTexture()
     
 void Landscape::UpdateFullTiledTexture()
 {
-    if(!textureNames[TEXTURE_TILE_FULL].IsInitalized())
+    if(textureNames[TEXTURE_TILE_FULL].IsEmpty())
     {
 		RenderManager::Instance()->LockNonMain();
         Texture *t = CreateFullTiledTexture();

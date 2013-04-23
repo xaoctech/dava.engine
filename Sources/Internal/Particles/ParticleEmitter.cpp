@@ -161,20 +161,7 @@ void ParticleEmitter::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
 		if(archive->IsKeyExists("pe.configpath"))
 		{
             String filename = archive->GetString("pe.configpath");
-
 			configPath = sceneFile->GetScenePath() + FilePath(filename);
-
-#if defined (__DAVAENGINE_ANDROID__)
-            String systemPath = FilePath("~res:/").ResolvePathname();
-			String path = configPath.ResolvePathname();
-
-            String::size_type pos = path.find(systemPath);
-            if(pos == 0)
-            {
-                path = path.replace(pos, systemPath.length(), "~res:/");
-				configPath = FilePath(path);
-            }
-#endif //#if defined (__DAVAENGINE_ANDROID__)
             
 			LoadFromYaml(configPath);
 		}
