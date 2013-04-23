@@ -170,8 +170,11 @@ void SceneExporter::RemoveEditorNodes(DAVA::Entity *rootNode)
 					DAVA::uint32 count = ro->GetRenderBatchCount();
 					for(DAVA::uint32 ri = 0; ri < count; ++ri)
 					{
-						DAVA::Material *material = ro->GetRenderBatch(ri)->GetMaterial();
-						if(material)
+						//DAVA::Material *material = ro->GetRenderBatch(ri)->GetMaterial();
+                        Logger::Error("Return DAVA::Material *material = ro->GetRenderBatch(ri)->GetMaterial()");
+						DAVA::Material *material = 0;//ro->GetRenderBatch(ri)->GetMaterial();
+						
+                        if(material)
 							material->SetStaticLightingParams(0);
 					}
 				}

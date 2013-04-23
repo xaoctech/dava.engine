@@ -99,7 +99,7 @@ public:
     void SetTwoSided(bool isTwoSided);
     bool IsTwoSided();
     
-    void SetLightmap(Texture * texture, const String & lightmapName);
+    void SetLightmap(Texture * texture, const FilePath & lightmapName);
     void SetUVOffsetScale(const Vector2 & uvOffset, const Vector2 uvScale);
     
     Texture * GetLightmap() const;

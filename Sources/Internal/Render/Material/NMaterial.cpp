@@ -250,7 +250,7 @@ bool NMaterialInstance::IsTwoSided()
 }
 
     
-void NMaterialInstance::SetLightmap(Texture * texture, const String & lightmapName)
+void NMaterialInstance::SetLightmap(Texture * texture, const FilePath & lightmapName)
 {
     
 }

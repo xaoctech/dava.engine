@@ -164,7 +164,8 @@ void ParticleLayer3D::DrawLayer(Camera* camera)
 		if (IsLong())
 		{
 			RenderManager::Instance()->SetRenderData(renderData);
-			renderBatch->GetMaterial()->PrepareRenderState();
+			// renderBatch->GetMaterial()->PrepareRenderState();
+            Logger::Error("Need to return preparation of the render state to particles.");
 		}
 		renderBatch->SetRenderDataObject(renderData);
 	}
@@ -272,7 +273,8 @@ bool ParticleLayer3D::IsLong()
 void ParticleLayer3D::SetLong(bool value)
 {
 	isLong = value;
-	renderBatch->GetMaterial()->SetTwoSided(isLong);
+	//renderBatch->GetMaterial()->SetTwoSided(isLong);
+    Logger::Error("Return renderBatch->GetMaterial()->SetTwoSided(isLong);");
 }
 
 };
