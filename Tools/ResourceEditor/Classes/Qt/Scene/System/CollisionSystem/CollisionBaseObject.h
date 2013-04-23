@@ -13,7 +13,7 @@ public:
 		, btObject(NULL)
 	{ }
 
-	virtual ~CollisionBaseObject() = 0
+	virtual ~CollisionBaseObject()
 	{ }
 
 	DAVA::Entity *entity;

@@ -45,7 +45,7 @@ public:
 
 protected:
 	bool locked;
-	bool invisible;
+	bool visible;
 
 	int curMode;
 	DAVA::Vector3 curPos;
