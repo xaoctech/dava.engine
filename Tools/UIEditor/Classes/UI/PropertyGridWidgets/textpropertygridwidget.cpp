@@ -73,7 +73,6 @@ void TextPropertyGridWidget::InsertLocalizationFields()
 	ui->textLineEdit->setEnabled(false);
 	ui->textLineEdit->setVisible(false);
 	ui->label->setVisible(false);
-
 	
 	this->resize(300, 262);
     this->setMinimumSize(QSize(300, 262));
@@ -89,7 +88,6 @@ void TextPropertyGridWidget::InsertLocalizationFields()
 	localizationKeyTextLineEdit->setEnabled(false);
 	localizationKeyTextLineEdit->setGeometry(QRect(10, 55, 281, 22));
 	localizationKeyTextLineEdit->setReadOnly(true);
-
 
 	ui->fontNameLabel->setGeometry(QRect(10, 95, 31, 16));
 	ui->fontSizeSpinBox->setGeometry(QRect(234, 91, 57, 25));
