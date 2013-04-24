@@ -922,7 +922,11 @@ bool AutotestingSystem::SaveToDB(MongodbUpdateObject *dbUpdateObject)
                 ret = false;
                 Logger::Error("AutotestingSystem::SaveToDB failed to check saved object");
             }
-            sleep(1000);
+#if !defined( _WIN32 )
+            sleep( 1 );
+#else
+            Sleep( 1000 );
+#endif
         }
     }
     return ret;
