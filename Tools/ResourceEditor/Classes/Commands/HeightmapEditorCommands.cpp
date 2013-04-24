@@ -7,26 +7,6 @@
 
 #include "Utils/Random.h"
 
-//Show/Hide Heightmap Editor
-CommandHeightmapEditor::CommandHeightmapEditor()
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
-{
-}
-
-
-void CommandHeightmapEditor::Execute()
-{
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-        screen->HeightmapTriggered();
-    }
-
-    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
-    activeScene->RebuildSceneGraph();
-}
-
-
 HeightmapModificationCommand::HeightmapModificationCommand(Command::eCommandType type, const Rect& updatedRect)
 :	Command(type)
 {
