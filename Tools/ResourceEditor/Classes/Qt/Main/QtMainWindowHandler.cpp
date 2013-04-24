@@ -158,9 +158,10 @@ void QtMainWindowHandler::CreateNode(ResourceEditor::eNodeType type)
 void QtMainWindowHandler::Materials()
 {
 	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	DVASSERT(screen);
-	
-	screen->MaterialsTriggered();
+	if (screen)
+	{
+		screen->MaterialsTriggered();
+	}
 
 	/*
 	MaterialBrowser *materialBrowser = new MaterialBrowser((QWidget *) parent());
@@ -183,17 +184,19 @@ void QtMainWindowHandler::Materials()
 void QtMainWindowHandler::HeightmapEditor()
 {
 	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	DVASSERT(screen);
-
-	screen->HeightmapTriggered();
+	if (screen)
+	{
+		screen->HeightmapTriggered();
+	}
 }
 
 void QtMainWindowHandler::TilemapEditor()
 {
 	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	DVASSERT(screen);
-
-	screen->TilemapTriggered();
+	if (screen)
+	{
+		screen->TilemapTriggered();
+	}
 }
 
 void QtMainWindowHandler::ConvertTextures()
@@ -209,9 +212,10 @@ void QtMainWindowHandler::ConvertTextures()
 void QtMainWindowHandler::SetViewport(ResourceEditor::eViewportType type)
 {
 	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	DVASSERT(screen);
-
-	screen->SetViewport(type);
+	if (screen)
+	{
+		screen->SetViewport(type);
+	}
 }
 
 
@@ -387,9 +391,10 @@ void QtMainWindowHandler::RefreshSceneGraph()
 void QtMainWindowHandler::ShowSettings()
 {
 	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	DVASSERT(screen);
-
-	screen->ShowSettings();
+	if (screen)
+	{
+		screen->ShowSettings();
+	}
 }
 
 
@@ -427,9 +432,10 @@ void QtMainWindowHandler::CreateParticleEmitterNode()
 void QtMainWindowHandler::ToggleNotPassableTerrain()
 {
 	SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
-	DVASSERT(activeScene);
-
-	activeScene->ToggleNotPassableLandscape();
+	if (activeScene)
+	{
+		activeScene->ToggleNotPassableLandscape();
+	}
 }
 
 void QtMainWindowHandler::RegisterStatusBar(QStatusBar *registeredSatusBar)
@@ -477,12 +483,16 @@ void QtMainWindowHandler::MenuViewOptionsWillShow()
 void QtMainWindowHandler::RulerTool()
 {
 	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	DVASSERT(screen);
+	if (screen)
+	{
+		screen->RulerToolTriggered();
 
-	screen->RulerToolTriggered();
-
-	SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
-	ShowStatusBarMessage(activeScene->GetScenePathname().GetAbsolutePathname());
+		SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+		if (activeScene)
+		{
+			ShowStatusBarMessage(activeScene->GetScenePathname().GetAbsolutePathname());
+		}
+	}
 }
 
 void QtMainWindowHandler::ReloadAsPNG()
@@ -526,9 +536,10 @@ void QtMainWindowHandler::ToggleHangingObjects(float value, bool isEnabled)
 void QtMainWindowHandler::ToggleCustomColors()
 {
 	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	DVASSERT(screen);
-
-	screen->CustomColorsTriggered();
+	if (screen)
+	{
+		screen->CustomColorsTriggered();
+	}
 }
 
 void QtMainWindowHandler::SaveTextureCustomColors()
@@ -544,17 +555,19 @@ void QtMainWindowHandler::LoadTextureCustomColors()
 void QtMainWindowHandler::ChangeBrushSizeCustomColors(int newSize)
 {
 	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	DVASSERT(screen);
-
-	screen->CustomColorsSetRadius(newSize);
+	if (screen)
+	{
+		screen->CustomColorsSetRadius(newSize);
+	}
 }
 
 void QtMainWindowHandler::ChangeColorCustomColors(int newColorIndex)
 {
 	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	DVASSERT(screen);
-
-	screen->CustomColorsSetColor(newColorIndex);
+	if (screen)
+	{
+		screen->CustomColorsSetColor(newColorIndex);
+	}
 }
 
 void QtMainWindowHandler::RegisterCustomColorsWidgets(QPushButton* toggleButton, QPushButton* saveTextureButton, QSlider* brushSizeSlider, QComboBox* colorComboBox, QPushButton* loadTextureButton)
@@ -664,9 +677,10 @@ void QtMainWindowHandler::SetHangingObjectsWidgetsState(bool state)
 void QtMainWindowHandler::ToggleVisibilityTool()
 {
 	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	DVASSERT(screen);
-
-	screen->VisibilityToolTriggered();
+	if (screen)
+	{
+		screen->VisibilityToolTriggered();
+	}
 }
 
 void QtMainWindowHandler::SaveTextureVisibilityTool()
@@ -677,25 +691,28 @@ void QtMainWindowHandler::SaveTextureVisibilityTool()
 void QtMainWindowHandler::ChangleAreaSizeVisibilityTool(int newSize)
 {
 	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	DVASSERT(screen);
-
-	screen->VisibilityToolSetAreaSize(newSize);
+	if (screen)
+	{
+		screen->VisibilityToolSetAreaSize(newSize);
+	}
 }
 
 void QtMainWindowHandler::SetVisibilityPointVisibilityTool()
 {
 	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	DVASSERT(screen);
-
-	screen->VisibilityToolSetPoint();
+	if (screen)
+	{
+		screen->VisibilityToolSetPoint();
+	}
 }
 
 void QtMainWindowHandler::SetVisibilityAreaVisibilityTool()
 {
 	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	DVASSERT(screen);
-
-	screen->VisibilityToolSetArea();
+	if (screen)
+	{
+		screen->VisibilityToolSetArea();
+	}
 }
 
 void QtMainWindowHandler::RegisterWidgetsVisibilityTool(QPushButton* toggleButton, QPushButton* saveTextureButton, QPushButton* setPointButton, QPushButton* setAreaButton, QSlider* areaSizeSlider)
@@ -785,32 +802,41 @@ void QtMainWindowHandler::ModificationScale()
 void QtMainWindowHandler::SetModificationMode(ResourceEditor::eModificationActions mode)
 {
 	SceneEditorScreenMain* screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	DVASSERT(screen);
+	if (screen)
+	{
+		EditorBodyControl* bodyControl = screen->FindCurrentBody()->bodyControl;
+		if (bodyControl)
+		{
+			ResourceEditor::eModificationActions curModificationMode = bodyControl->GetModificationMode();
 
-	EditorBodyControl* bodyControl = screen->FindCurrentBody()->bodyControl;
-	ResourceEditor::eModificationActions curModificationMode = bodyControl->GetModificationMode();
-
-	if (mode != curModificationMode)
-		bodyControl->SetModificationMode(mode);
+			if (mode != curModificationMode)
+				bodyControl->SetModificationMode(mode);
+		}
+	}
 }
 
 void QtMainWindowHandler::ModificationPlaceOnLand()
 {
 	SceneEditorScreenMain* screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	DVASSERT(screen);
-
-	screen->FindCurrentBody()->bodyControl->OnPlaceOnLandscape();
+	if (screen)
+	{
+		screen->FindCurrentBody()->bodyControl->OnPlaceOnLandscape();
+	}
 }
 
 void QtMainWindowHandler::ModificationSnapToLand()
 {
 	SceneEditorScreenMain* screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	DVASSERT(screen);
+	if (screen)
+	{
+		EditorBodyControl* bodyControl = screen->FindCurrentBody()->bodyControl;
 
-	EditorBodyControl* bodyControl = screen->FindCurrentBody()->bodyControl;
-
-	bool curSnapToLand = bodyControl->IsLandscapeRelative();
-	bodyControl->SetLandscapeRelative(!curSnapToLand);
+		if (bodyControl)
+		{
+			bool curSnapToLand = bodyControl->IsLandscapeRelative();
+			bodyControl->SetLandscapeRelative(!curSnapToLand);
+		}
+	}
 }
 
 void QtMainWindowHandler::UpdateModificationActions()
@@ -861,17 +887,19 @@ void QtMainWindowHandler::UpdateModificationActions()
 void QtMainWindowHandler::OnApplyModification(double x, double y, double z)
 {
 	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	DVASSERT(screen);
-
-	screen->FindCurrentBody()->bodyControl->ApplyTransform(x, y, z);
+	if (screen)
+	{
+		screen->FindCurrentBody()->bodyControl->ApplyTransform(x, y, z);
+	}
 }
 
 void QtMainWindowHandler::OnResetModification()
 {
 	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	DVASSERT(screen);
-
-	screen->FindCurrentBody()->bodyControl->RestoreOriginalTransform();
+	if (screen)
+	{
+		screen->FindCurrentBody()->bodyControl->RestoreOriginalTransform();
+	}
 }
 
 void QtMainWindowHandler::UndoAction()
