@@ -205,12 +205,12 @@ bool FileSystem::CopyFile(const FilePath & existingFile, const FilePath & newFil
                 }
                 else
                 {
-                    Logger::Error("[FileSystem::CopyFile] can't write to file %s", newFile.c_str());
+                    Logger::Error("[FileSystem::CopyFile] can't write to file %s", newFile.GetAbsolutePathname().c_str());
                 }
             }
             else
             {
-                Logger::Error("[FileSystem::CopyFile] can't read file %s", existingFile.c_str());
+                Logger::Error("[FileSystem::CopyFile] can't read file %s", existingFile.GetAbsolutePathname().c_str());
             }
             
             SafeDeleteArray(data);
@@ -243,7 +243,7 @@ bool FileSystem::MoveFile(const FilePath & existingFile, const FilePath & newFil
 	{
 		return false;
 	}
-	remove(newFile.c_str());
+	remove(newFile.GetAbsolutePathname().c_str());
 	int ret = rename(existingFile.GetAbsolutePathname().c_str(), newFile.GetAbsolutePathname().c_str());
 	return ret == 0;
 #else //iphone & macos
@@ -369,13 +369,13 @@ uint32 FileSystem::DeleteDirectoryFiles(const FilePath & path, bool isRecursive)
 File *FileSystem::CreateFileForFrameworkPath(const FilePath & frameworkPath, uint32 attributes)
 {
 #if defined(__DAVAENGINE_ANDROID__)
-    String::size_type find = frameworkPath.find("~res:");
+    String::size_type find = frameworkPath.GetAbsolutePathname().find("~res:");
 
 	if(String::npos != find)
 	{
 #ifdef USE_LOCAL_RESOURCES
         FilePath path(USE_LOCAL_RESOURCES_PATH);
-		path += frameworkPath.c_str() + 5;
+		path += frameworkPath.GetAbsolutePathname().c_str() + 5;
 		return File::CreateFromSystemPath(path, attributes);
 #else
 		return APKFile::CreateFromAssets(frameworkPath, attributes);

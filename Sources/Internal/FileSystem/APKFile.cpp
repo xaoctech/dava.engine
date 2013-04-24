@@ -52,7 +52,7 @@ APKFile::~APKFile()
     
 }
 
-File * APKFile::CreateFromAssets(const String &filePath, uint32 attributes)
+File * APKFile::CreateFromAssets(const FilePath &filePath, uint32 attributes)
 {
 //	Logger::Debug("[APKFile::CreateFromAssets] wan't to create file %s", filePath.c_str());
 //
@@ -62,7 +62,7 @@ File * APKFile::CreateFromAssets(const String &filePath, uint32 attributes)
 	{
 		FileSystem::ResourceArchiveItem & item = *ai;
         
-		String filenamecpp = filePath;
+		String filenamecpp = filePath.GetAbsolutePathname();
         
 		String::size_type pos = filenamecpp.find(item.attachPath);
 		if (pos == 0)
@@ -86,7 +86,7 @@ File * APKFile::CreateFromAssets(const String &filePath, uint32 attributes)
     bool isDirectory = FileSystem::Instance()->IsDirectory(filePath);
     if(isDirectory)
     {
-        Logger::Error("[APKFile::CreateFromAssets] Can't create file because of it is directory (%s)", filePath.c_str());
+        Logger::Error("[APKFile::CreateFromAssets] Can't create file because of it is directory (%s)", filePath.GetAbsolutePathname().c_str());
         return NULL;
     }
     
@@ -98,10 +98,10 @@ File * APKFile::CreateFromAssets(const String &filePath, uint32 attributes)
     AAssetManager *assetManager = core->GetAssetManager();
     DVASSERT_MSG(assetManager, "Need setup assetManager on core creation");
     
-    AAsset * asset = AAssetManager_open(assetManager, filePath.c_str(), AASSET_MODE_UNKNOWN);
+    AAsset * asset = AAssetManager_open(assetManager, filePath.GetAbsolutePathname().c_str(), AASSET_MODE_UNKNOWN);
     if(!asset)
     {
-        Logger::Error("[APKFile::CreateFromAssets] Can't load asset for path %s", filePath.c_str());
+        Logger::Error("[APKFile::CreateFromAssets] Can't load asset for path %s", filePath.GetAbsolutePathname().c_str());
         return NULL;
     }
     
@@ -122,7 +122,7 @@ File * APKFile::CreateFromAssets(const String &filePath, uint32 attributes)
     return fileInstance;
 }
     
-APKFile * APKFile::CreateFromData(const String &filePath, const uint8 * data, int32 dataSize, uint32 attributes)
+APKFile * APKFile::CreateFromData(const FilePath &filePath, const uint8 * data, int32 dataSize, uint32 attributes)
 {
     APKFile *fl = new APKFile();
 	fl->filename = filePath;
