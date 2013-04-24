@@ -59,17 +59,17 @@ void FileSystemTest::ResTestFunction(PerfFuncData * data)
 
                 if(!file) continue;
                 
-                if(filename == "file1")
+                if(filename == "file1.zip")
                 {
-                    TEST_VERIFY(pathname == "~res:/TestData/FileSystemTest/Folder1/file1");
-                    TEST_VERIFY(file->GetFilename() == "~res:/TestData/FileSystemTest/Folder1/file1");
-                    TEST_VERIFY(file->GetSize() == 350);
+                    TEST_VERIFY(pathname == "~res:/TestData/FileSystemTest/Folder1/file1.zip");
+                    TEST_VERIFY(file->GetFilename() == "~res:/TestData/FileSystemTest/Folder1/file1.zip");
+                    TEST_VERIFY(file->GetSize() == 31749);
                 }
-                else if(filename == "file2.txt")
+                else if(filename == "file2.zip")
                 {
-                    TEST_VERIFY(pathname == "~res:/TestData/FileSystemTest/Folder1/file2.txt");
-                    TEST_VERIFY(file->GetFilename() == "~res:/TestData/FileSystemTest/Folder1/file2.txt");
-                    TEST_VERIFY(file->GetSize() == 30240);
+                    TEST_VERIFY(pathname == "~res:/TestData/FileSystemTest/Folder1/file2.zip");
+                    TEST_VERIFY(file->GetFilename() == "~res:/TestData/FileSystemTest/Folder1/file2.zip");
+                    TEST_VERIFY(file->GetSize() == 22388);
                 }
                 else if(filename == "file3.doc")
                 {
@@ -122,17 +122,17 @@ void FileSystemTest::DocTestFunctionCheckCopy(PerfFuncData * data)
                 
                 if(!file) continue;
                 
-                if(filename == "file1")
+                if(filename == "file1.zip")
                 {
-                    TEST_VERIFY(pathname == "~doc:/TestData/FileSystemTest/Folder1/file1");
-                    TEST_VERIFY(file->GetFilename() == "~doc:/TestData/FileSystemTest/Folder1/file1");
-                    TEST_VERIFY(file->GetSize() == 350);
+                    TEST_VERIFY(pathname == "~doc:/TestData/FileSystemTest/Folder1/file1.zip");
+                    TEST_VERIFY(file->GetFilename() == "~doc:/TestData/FileSystemTest/Folder1/file1.zip");
+                    TEST_VERIFY(file->GetSize() == 31749);
                 }
-                else if(filename == "file2.txt")
+                else if(filename == "file2.zip")
                 {
-                    TEST_VERIFY(pathname == "~doc:/TestData/FileSystemTest/Folder1/file2.txt");
-                    TEST_VERIFY(file->GetFilename() == "~doc:/TestData/FileSystemTest/Folder1/file2.txt");
-                    TEST_VERIFY(file->GetSize() == 30240);
+                    TEST_VERIFY(pathname == "~doc:/TestData/FileSystemTest/Folder1/file2.zip");
+                    TEST_VERIFY(file->GetFilename() == "~doc:/TestData/FileSystemTest/Folder1/file2.zip");
+                    TEST_VERIFY(file->GetSize() == 22388);
                 }
                 else if(filename == "file3.doc")
                 {
@@ -167,8 +167,8 @@ void FileSystemTest::DocTestFunction(PerfFuncData * data)
     TEST_VERIFY(FileSystem::Instance()->GetCurrentDocumentsDirectory() == savedCurrentDocDirectory);
     
 
-    TEST_VERIFY(!FileSystem::Instance()->IsDirectory("~doc:/TestData/FileSystemTest/Folder1/file1"));
-    TEST_VERIFY(FileSystem::Instance()->IsFile("~doc:/TestData/FileSystemTest/Folder1/file1"));
+    TEST_VERIFY(!FileSystem::Instance()->IsDirectory("~doc:/TestData/FileSystemTest/Folder1/file1.zip"));
+    TEST_VERIFY(FileSystem::Instance()->IsFile("~doc:/TestData/FileSystemTest/Folder1/file1.zip"));
     
     TEST_VERIFY(FileSystem::Instance()->IsDirectory("~doc:/TestData/FileSystemTest/"));
     TEST_VERIFY(!FileSystem::Instance()->IsFile("~doc:/TestData/FileSystemTest/"));
@@ -187,13 +187,13 @@ void FileSystemTest::DocTestFunction(PerfFuncData * data)
 
     
     
-    bool moved = FileSystem::Instance()->MoveFile("~doc:/TestData/FileSystemTest/Folder1/file1", "~doc:/TestData/FileSystemTest/Folder1/file_new");
+    bool moved = FileSystem::Instance()->MoveFile("~doc:/TestData/FileSystemTest/Folder1/file1.zip", "~doc:/TestData/FileSystemTest/Folder1/file_new");
     TEST_VERIFY(moved);
     
-    moved = FileSystem::Instance()->MoveFile("~doc:/TestData/FileSystemTest/Folder1/file2.txt", "~doc:/TestData/FileSystemTest/Folder1/file_new");
+    moved = FileSystem::Instance()->MoveFile("~doc:/TestData/FileSystemTest/Folder1/file2.zip", "~doc:/TestData/FileSystemTest/Folder1/file_new");
     TEST_VERIFY(!moved);
     
-    moved = FileSystem::Instance()->MoveFile("~doc:/TestData/FileSystemTest/Folder1/file2.txt", "~doc:/TestData/FileSystemTest/Folder1/file_new", true);
+    moved = FileSystem::Instance()->MoveFile("~doc:/TestData/FileSystemTest/Folder1/file2.zip", "~doc:/TestData/FileSystemTest/Folder1/file_new", true);
     TEST_VERIFY(moved);
 
     FileSystem::Instance()->DeleteFile("~doc:/TestData/FileSystemTest/Folder1/file1_new");
@@ -208,12 +208,6 @@ void FileSystemTest::DocTestFunction(PerfFuncData * data)
     FileList fileList("~doc:/TestData/FileSystemTest/Folder1/");
     TEST_VERIFY(fileList.GetFileCount() == 0);
 }
-
-
-
-
-
-
 
 
 bool FileSystemTest::RecursiveCopy(const DAVA::FilePath &src, const DAVA::FilePath &dst)
