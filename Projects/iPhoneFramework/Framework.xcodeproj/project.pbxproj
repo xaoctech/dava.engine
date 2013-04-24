@@ -3018,7 +3018,6 @@
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/libs\"",
 				);
-				OTHER_CFLAGS = "-mno-thumb";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Framework;
 			};
@@ -3051,7 +3050,6 @@
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/libs\"",
 				);
-				OTHER_CFLAGS = "-mno-thumb";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Framework;
 			};
@@ -3083,7 +3081,7 @@
 					./../../Libs/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-mno-thumb";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-fvisibility=hidden",
@@ -3124,7 +3122,7 @@
 					./../../Libs/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-mno-thumb";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-fvisibility=hidden",
@@ -3165,7 +3163,7 @@
 					./../../Libs/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-mno-thumb";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-fvisibility=hidden",
@@ -3208,7 +3206,6 @@
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/libs\"",
 				);
-				OTHER_CFLAGS = "-mno-thumb";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Framework;
 			};
@@ -3239,7 +3236,7 @@
 					./../../Libs/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-mno-thumb";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-fvisibility=hidden",
@@ -3282,7 +3279,6 @@
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/libs\"",
 				);
-				OTHER_CFLAGS = "-mno-thumb";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Framework;
 			};
