@@ -5,16 +5,6 @@
 #include "Command.h"
 #include "../SceneEditor/LandscapeEditorHeightmap.h"
 
-class CommandHeightmapEditor: public Command
-{
-public:
-	CommandHeightmapEditor();
-    
-protected:
-    
-    virtual void Execute();
-};
-
 class HeightmapModificationCommand: public Command
 {
 public:

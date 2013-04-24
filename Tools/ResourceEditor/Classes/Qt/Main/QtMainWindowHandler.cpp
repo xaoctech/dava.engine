@@ -4,25 +4,21 @@
 #include "../Commands/CommandsManager.h"
 #include "../Commands/FileCommands.h"
 #include "../Commands/ToolsCommands.h"
-#include "../Commands/CommandViewport.h"
 #include "../Commands/SceneGraphCommands.h"
 #include "../Commands/CommandReloadTextures.h"
 #include "../Commands/ParticleEditorCommands.h"
-#include "../Commands/LandscapeOptionsCommands.h"
 #include "../Commands/TextureOptionsCommands.h"
 #include "../Commands/CustomColorCommands.h"
 #include "../Commands/VisibilityCheckToolCommands.h"
 #include "../Commands/TilemapEditorCommands.h"
 #include "../Commands/HeightmapEditorCommands.h"
-#include "../Commands/ModificationOptionsCommands.h"
 #include "../Commands/SetSwitchIndexCommands.h"
-#include "../Commands/HangingObjectsCommands.h"
-#include "../Commands/EditCommands.h"
 #include "../Commands/MaterialViewOptionsCommands.h"
 #include "../Constants.h"
 #include "../SceneEditor/EditorSettings.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/EditorBodyControl.h"
+#include "../DockHangingObjects/HangingObjectsHelper.h"
 #include "Scene/SceneDataManager.h"
 #include "Scene/SceneData.h"
 #include "Main/QtUtils.h"
@@ -41,6 +37,7 @@
 #include <QComboBox>
 #include <QStatusBar>
 #include <QSpinBox.h>
+#include <QFileDialog>
 
 #include "Render/LibDxtHelper.h"
 
@@ -160,7 +157,10 @@ void QtMainWindowHandler::CreateNode(ResourceEditor::eNodeType type)
 
 void QtMainWindowHandler::Materials()
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandMaterials());
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	DVASSERT(screen);
+	
+	screen->MaterialsTriggered();
 
 	/*
 	MaterialBrowser *materialBrowser = new MaterialBrowser((QWidget *) parent());
@@ -182,12 +182,18 @@ void QtMainWindowHandler::Materials()
 
 void QtMainWindowHandler::HeightmapEditor()
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandHeightmapEditor());
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	DVASSERT(screen);
+
+	screen->HeightmapTriggered();
 }
 
 void QtMainWindowHandler::TilemapEditor()
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandTilemapEditor());
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	DVASSERT(screen);
+
+	screen->TilemapTriggered();
 }
 
 void QtMainWindowHandler::ConvertTextures()
@@ -202,7 +208,10 @@ void QtMainWindowHandler::ConvertTextures()
 
 void QtMainWindowHandler::SetViewport(ResourceEditor::eViewportType type)
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandViewport(type));
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	DVASSERT(screen);
+
+	screen->SetViewport(type);
 }
 
 
@@ -371,12 +380,16 @@ void QtMainWindowHandler::RestoreViews()
 
 void QtMainWindowHandler::RefreshSceneGraph()
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandRefreshSceneGraph());
+	SceneData * activeScene = SceneDataManager::Instance()->SceneGetActive();
+	activeScene->RebuildSceneGraph();
 }
 
 void QtMainWindowHandler::ShowSettings()
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandSettings());
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	DVASSERT(screen);
+
+	screen->ShowSettings();
 }
 
 
@@ -413,7 +426,10 @@ void QtMainWindowHandler::CreateParticleEmitterNode()
 
 void QtMainWindowHandler::ToggleNotPassableTerrain()
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandNotPassableTerrain());
+	SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+	DVASSERT(activeScene);
+
+	activeScene->ToggleNotPassableLandscape();
 }
 
 void QtMainWindowHandler::RegisterStatusBar(QStatusBar *registeredSatusBar)
@@ -460,7 +476,13 @@ void QtMainWindowHandler::MenuViewOptionsWillShow()
 
 void QtMainWindowHandler::RulerTool()
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandRulerTool());
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	DVASSERT(screen);
+
+	screen->RulerToolTriggered();
+
+	SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+	ShowStatusBarMessage(activeScene->GetScenePathname().GetAbsolutePathname());
 }
 
 void QtMainWindowHandler::ReloadAsPNG()
@@ -498,12 +520,15 @@ void QtMainWindowHandler::MaterialViewOptionChanged(int index)
 
 void QtMainWindowHandler::ToggleHangingObjects(float value, bool isEnabled)
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandToggleHangingObjects(value, isEnabled));
+	HangingObjectsHelper::ProcessHangingObjectsUpdate(value, isEnabled);
 }
 
 void QtMainWindowHandler::ToggleCustomColors()
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandToggleCustomColors());
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	DVASSERT(screen);
+
+	screen->CustomColorsTriggered();
 }
 
 void QtMainWindowHandler::SaveTextureCustomColors()
@@ -518,12 +543,18 @@ void QtMainWindowHandler::LoadTextureCustomColors()
 
 void QtMainWindowHandler::ChangeBrushSizeCustomColors(int newSize)
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandChangeBrushSizeCustomColors(newSize));
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	DVASSERT(screen);
+
+	screen->CustomColorsSetRadius(newSize);
 }
 
 void QtMainWindowHandler::ChangeColorCustomColors(int newColorIndex)
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandChangeColorCustomColors(newColorIndex));
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	DVASSERT(screen);
+
+	screen->CustomColorsSetColor(newColorIndex);
 }
 
 void QtMainWindowHandler::RegisterCustomColorsWidgets(QPushButton* toggleButton, QPushButton* saveTextureButton, QSlider* brushSizeSlider, QComboBox* colorComboBox, QPushButton* loadTextureButton)
@@ -632,7 +663,10 @@ void QtMainWindowHandler::SetHangingObjectsWidgetsState(bool state)
 
 void QtMainWindowHandler::ToggleVisibilityTool()
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandToggleVisibilityTool());
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	DVASSERT(screen);
+
+	screen->VisibilityToolTriggered();
 }
 
 void QtMainWindowHandler::SaveTextureVisibilityTool()
@@ -642,17 +676,26 @@ void QtMainWindowHandler::SaveTextureVisibilityTool()
 
 void QtMainWindowHandler::ChangleAreaSizeVisibilityTool(int newSize)
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandChangeAreaSizeVisibilityTool(newSize));
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	DVASSERT(screen);
+
+	screen->VisibilityToolSetAreaSize(newSize);
 }
 
 void QtMainWindowHandler::SetVisibilityPointVisibilityTool()
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandSetPointVisibilityTool());
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	DVASSERT(screen);
+
+	screen->VisibilityToolSetPoint();
 }
 
 void QtMainWindowHandler::SetVisibilityAreaVisibilityTool()
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandSetAreaVisibilityTool());
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	DVASSERT(screen);
+
+	screen->VisibilityToolSetArea();
 }
 
 void QtMainWindowHandler::RegisterWidgetsVisibilityTool(QPushButton* toggleButton, QPushButton* saveTextureButton, QPushButton* setPointButton, QPushButton* setAreaButton, QSlider* areaSizeSlider)
@@ -753,7 +796,10 @@ void QtMainWindowHandler::SetModificationMode(ResourceEditor::eModificationActio
 
 void QtMainWindowHandler::ModificationPlaceOnLand()
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new ModificationPlaceOnLandCommand());
+	SceneEditorScreenMain* screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	DVASSERT(screen);
+
+	screen->FindCurrentBody()->bodyControl->OnPlaceOnLandscape();
 }
 
 void QtMainWindowHandler::ModificationSnapToLand()
@@ -814,23 +860,29 @@ void QtMainWindowHandler::UpdateModificationActions()
 
 void QtMainWindowHandler::OnApplyModification(double x, double y, double z)
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new ModificationApplyCommand(x, y, z));
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	DVASSERT(screen);
+
+	screen->FindCurrentBody()->bodyControl->ApplyTransform(x, y, z);
 }
 
 void QtMainWindowHandler::OnResetModification()
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new ModificationResetCommand());
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	DVASSERT(screen);
+
+	screen->FindCurrentBody()->bodyControl->RestoreOriginalTransform();
 }
 
 void QtMainWindowHandler::UndoAction()
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new UndoCommand());
+	CommandsManager::Instance()->Undo();
 	UpdateUndoActionsState();
 }
 
 void QtMainWindowHandler::RedoAction()
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new RedoCommand());
+	CommandsManager::Instance()->Redo();
 	UpdateUndoActionsState();
 }
 
