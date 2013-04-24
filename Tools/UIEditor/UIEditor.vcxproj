@@ -661,7 +661,6 @@
     <ClInclude Include="GeneratedFiles\ui_screenpropertygridwidget.h" />
     <ClInclude Include="GeneratedFiles\ui_sliderpropertygridwidget.h" />
     <ClInclude Include="GeneratedFiles\ui_statepropertygridwidget.h" />
-    <ClInclude Include="GeneratedFiles\ui_textpropertygridwidget.h" />
     <ClInclude Include="GeneratedFiles\ui_uitextfieldpropertygridwidget.h" />
   </ItemGroup>
   <ItemGroup>
@@ -785,7 +784,6 @@
     <None Include="UI\screenpropertygridwidget.ui" />
     <None Include="UI\sliderpropertygridwidget.ui" />
     <None Include="UI\statepropertygridwidget.ui" />
-    <None Include="UI\textpropertygridwidget.ui" />
     <None Include="UI\uitextfieldpropertygridwidget.ui" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
