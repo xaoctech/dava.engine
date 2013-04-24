@@ -24,7 +24,7 @@ ResourcePacker2D::ResourcePacker2D()
 
 FilePath ResourcePacker2D::GetProcessFolderName()
 {
-	return FilePath("$process/");
+	return "$process/";
 }
 
 void ResourcePacker2D::InitFolders(const FilePath & inputPath,const FilePath & outputPath)
@@ -429,7 +429,7 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 	bool modified = isGfxModified;
 	// Process all psd / png files
 
-	if (IsMD5ChangedDir(processDirectoryPath, inputPath, FilePath("dir.md5"), false))
+	if (IsMD5ChangedDir(processDirectoryPath, inputPath, "dir.md5", false))
 	{
 		modified = true;
 		//if (Core::Instance()->IsConsoleMode())

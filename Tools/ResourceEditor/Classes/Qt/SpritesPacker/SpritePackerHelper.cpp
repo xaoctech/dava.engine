@@ -46,7 +46,7 @@ void SpritePackerHelper::Pack()
 
 	ResourcePacker2D * resourcePacker = new ResourcePacker2D();
 	
-	bool isChanged = resourcePacker->IsMD5ChangedDir(projectPath+"DataSource/Gfx/",inputDir,FilePath("particles.md5"),true);
+	bool isChanged = resourcePacker->IsMD5ChangedDir(projectPath+"DataSource/Gfx/",inputDir,"particles.md5",true);
 	
 	SafeDelete(resourcePacker);
 	if(!isChanged)

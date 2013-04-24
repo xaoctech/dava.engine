@@ -6,8 +6,8 @@ using namespace DAVA;
 FileListTest::FileListTest()
     :   TestTemplate<FileListTest>("FileListTest")
 {
-    FileSystem::Instance()->DeleteDirectory(FilePath("~doc:/TestData/FileListTest/"), true);
-    RecursiveCopy(FilePath("~res:/TestData/FileListTest/"), FilePath("~doc:/TestData/FileListTest/"));
+    FileSystem::Instance()->DeleteDirectory("~doc:/TestData/FileListTest/", true);
+    RecursiveCopy("~res:/TestData/FileListTest/", "~doc:/TestData/FileListTest/");
 
 	RegisterFunction(this, &FileListTest::ResTestFunction, String("ResTestFunction"), NULL);
 	RegisterFunction(this, &FileListTest::DocTestFunction, String("DocTestFunction"), NULL);
@@ -27,7 +27,7 @@ void FileListTest::ResTestFunction(PerfFuncData * data)
 {
     Logger::Debug("[FileListTest::ResTestFunction]");
 
-    FileList fileList(FilePath("~res:/TestData/FileListTest/"));
+    FileList fileList("~res:/TestData/FileListTest/");
 
     TEST_VERIFY(fileList.GetDirectoryCount() == 3);
     TEST_VERIFY(fileList.GetFileCount() == 0);
@@ -43,7 +43,7 @@ void FileListTest::ResTestFunction(PerfFuncData * data)
         
         if(filename == "Folder1")
         {
-            TEST_VERIFY(pathname == FilePath("~res:/TestData/FileListTest/Folder1/"));
+            TEST_VERIFY(pathname == "~res:/TestData/FileListTest/Folder1/");
             TEST_VERIFY(files.GetFileCount() == 3);
 
             for(int32 ifi = 0; ifi < files.GetCount(); ++ifi)
@@ -55,15 +55,15 @@ void FileListTest::ResTestFunction(PerfFuncData * data)
                 
                 if(filename == "file1")
                 {
-                    TEST_VERIFY(pathname == FilePath("~res:/TestData/FileListTest/Folder1/file1"));
+                    TEST_VERIFY(pathname == "~res:/TestData/FileListTest/Folder1/file1");
                 }
                 else if(filename == "file2.txt")
                 {
-                    TEST_VERIFY(pathname == FilePath("~res:/TestData/FileListTest/Folder1/file2.txt"));
+                    TEST_VERIFY(pathname == "~res:/TestData/FileListTest/Folder1/file2.txt");
                 }
                 else if(filename == "file3.doc")
                 {
-                    TEST_VERIFY(pathname == FilePath("~res:/TestData/FileListTest/Folder1/file3.doc"));
+                    TEST_VERIFY(pathname == "~res:/TestData/FileListTest/Folder1/file3.doc");
                 }
                 else
                 {
@@ -73,7 +73,7 @@ void FileListTest::ResTestFunction(PerfFuncData * data)
         }
         else if(filename == "Folder2")
         {
-            TEST_VERIFY(pathname == FilePath("~res:/TestData/FileListTest/Folder2/"));
+            TEST_VERIFY(pathname == "~res:/TestData/FileListTest/Folder2/");
             TEST_VERIFY(files.GetFileCount() == 6);
             for(int32 ifi = 0; ifi < files.GetCount(); ++ifi)
             {
@@ -84,27 +84,27 @@ void FileListTest::ResTestFunction(PerfFuncData * data)
                 
                 if(filename == "file1")
                 {
-                    TEST_VERIFY(pathname == FilePath("~res:/TestData/FileListTest/Folder2/file1"));
+                    TEST_VERIFY(pathname == "~res:/TestData/FileListTest/Folder2/file1");
                 }
                 else if(filename == "file1.txt")
                 {
-                    TEST_VERIFY(pathname == FilePath("~res:/TestData/FileListTest/Folder2/file1.txt"));
+                    TEST_VERIFY(pathname == "~res:/TestData/FileListTest/Folder2/file1.txt");
                 }
                 else if(filename == "file2")
                 {
-                    TEST_VERIFY(pathname == FilePath("~res:/TestData/FileListTest/Folder2/file2"));
+                    TEST_VERIFY(pathname == "~res:/TestData/FileListTest/Folder2/file2");
                 }
                 else if(filename == "file2.txt")
                 {
-                    TEST_VERIFY(pathname == FilePath("~res:/TestData/FileListTest/Folder2/file2.txt"));
+                    TEST_VERIFY(pathname == "~res:/TestData/FileListTest/Folder2/file2.txt");
                 }
                 else if(filename == "file3")
                 {
-                    TEST_VERIFY(pathname == FilePath("~res:/TestData/FileListTest/Folder2/file3"));
+                    TEST_VERIFY(pathname == "~res:/TestData/FileListTest/Folder2/file3");
                 }
                 else if(filename == "file3.doc")
                 {
-                    TEST_VERIFY(pathname == FilePath("~res:/TestData/FileListTest/Folder2/file3.doc"));
+                    TEST_VERIFY(pathname == "~res:/TestData/FileListTest/Folder2/file3.doc");
                 }
                 else
                 {
@@ -114,7 +114,7 @@ void FileListTest::ResTestFunction(PerfFuncData * data)
         }
         else if(filename == "Folder3")
         {
-            TEST_VERIFY(pathname == FilePath("~res:/TestData/FileListTest/Folder3/"));
+            TEST_VERIFY(pathname == "~res:/TestData/FileListTest/Folder3/");
             TEST_VERIFY(files.GetFileCount() == 2);
             for(int32 ifi = 0; ifi < files.GetCount(); ++ifi)
             {
@@ -125,11 +125,11 @@ void FileListTest::ResTestFunction(PerfFuncData * data)
                 
                 if(filename == "file1")
                 {
-                    TEST_VERIFY(pathname == FilePath("~res:/TestData/FileListTest/Folder3/file1"));
+                    TEST_VERIFY(pathname == "~res:/TestData/FileListTest/Folder3/file1");
                 }
                 else if(filename == "file3.doc")
                 {
-                    TEST_VERIFY(pathname == FilePath("~res:/TestData/FileListTest/Folder3/file3.doc"));
+                    TEST_VERIFY(pathname == "~res:/TestData/FileListTest/Folder3/file3.doc");
                 }
                 else
                 {
@@ -148,7 +148,7 @@ void FileListTest::DocTestFunction(PerfFuncData * data)
 {
     Logger::Debug("[FileListTest::DocTestFunction]");
     
-    FileList fileList(FilePath("~doc:/TestData/FileListTest/"));
+    FileList fileList("~doc:/TestData/FileListTest/");
     
     TEST_VERIFY(fileList.GetDirectoryCount() == 3);
     TEST_VERIFY(fileList.GetFileCount() == 0);
@@ -164,7 +164,7 @@ void FileListTest::DocTestFunction(PerfFuncData * data)
         
         if(filename == "Folder1")
         {
-            TEST_VERIFY(pathname == FilePath("~doc:/TestData/FileListTest/Folder1/"));
+            TEST_VERIFY(pathname == "~doc:/TestData/FileListTest/Folder1/");
             TEST_VERIFY(files.GetFileCount() == 3);
             
             for(int32 ifi = 0; ifi < files.GetCount(); ++ifi)
@@ -176,15 +176,15 @@ void FileListTest::DocTestFunction(PerfFuncData * data)
                 
                 if(filename == "file1")
                 {
-                    TEST_VERIFY(pathname == FilePath("~doc:/TestData/FileListTest/Folder1/file1"));
+                    TEST_VERIFY(pathname == "~doc:/TestData/FileListTest/Folder1/file1");
                 }
                 else if(filename == "file2.txt")
                 {
-                    TEST_VERIFY(pathname == FilePath("~doc:/TestData/FileListTest/Folder1/file2.txt"));
+                    TEST_VERIFY(pathname == "~doc:/TestData/FileListTest/Folder1/file2.txt");
                 }
                 else if(filename == "file3.doc")
                 {
-                    TEST_VERIFY(pathname == FilePath("~doc:/TestData/FileListTest/Folder1/file3.doc"));
+                    TEST_VERIFY(pathname == "~doc:/TestData/FileListTest/Folder1/file3.doc");
                 }
                 else
                 {
@@ -194,7 +194,7 @@ void FileListTest::DocTestFunction(PerfFuncData * data)
         }
         else if(filename == "Folder2")
         {
-            TEST_VERIFY(pathname == FilePath("~doc:/TestData/FileListTest/Folder2/"));
+            TEST_VERIFY(pathname == "~doc:/TestData/FileListTest/Folder2/");
             TEST_VERIFY(files.GetFileCount() == 6);
             for(int32 ifi = 0; ifi < files.GetCount(); ++ifi)
             {
@@ -205,27 +205,27 @@ void FileListTest::DocTestFunction(PerfFuncData * data)
                 
                 if(filename == "file1")
                 {
-                    TEST_VERIFY(pathname == FilePath("~doc:/TestData/FileListTest/Folder2/file1"));
+                    TEST_VERIFY(pathname == "~doc:/TestData/FileListTest/Folder2/file1");
                 }
                 else if(filename == "file1.txt")
                 {
-                    TEST_VERIFY(pathname == FilePath("~doc:/TestData/FileListTest/Folder2/file1.txt"));
+                    TEST_VERIFY(pathname == "~doc:/TestData/FileListTest/Folder2/file1.txt");
                 }
                 else if(filename == "file2")
                 {
-                    TEST_VERIFY(pathname == FilePath("~doc:/TestData/FileListTest/Folder2/file2"));
+                    TEST_VERIFY(pathname == "~doc:/TestData/FileListTest/Folder2/file2");
                 }
                 else if(filename == "file2.txt")
                 {
-                    TEST_VERIFY(pathname == FilePath("~doc:/TestData/FileListTest/Folder2/file2.txt"));
+                    TEST_VERIFY(pathname == "~doc:/TestData/FileListTest/Folder2/file2.txt");
                 }
                 else if(filename == "file3")
                 {
-                    TEST_VERIFY(pathname == FilePath("~doc:/TestData/FileListTest/Folder2/file3"));
+                    TEST_VERIFY(pathname == "~doc:/TestData/FileListTest/Folder2/file3");
                 }
                 else if(filename == "file3.doc")
                 {
-                    TEST_VERIFY(pathname == FilePath("~doc:/TestData/FileListTest/Folder2/file3.doc"));
+                    TEST_VERIFY(pathname == "~doc:/TestData/FileListTest/Folder2/file3.doc");
                 }
                 else
                 {
@@ -235,7 +235,7 @@ void FileListTest::DocTestFunction(PerfFuncData * data)
         }
         else if(filename == "Folder3")
         {
-            TEST_VERIFY(pathname == FilePath("~doc:/TestData/FileListTest/Folder3/"));
+            TEST_VERIFY(pathname == "~doc:/TestData/FileListTest/Folder3/");
             TEST_VERIFY(files.GetFileCount() == 2);
             for(int32 ifi = 0; ifi < files.GetCount(); ++ifi)
             {
@@ -246,11 +246,11 @@ void FileListTest::DocTestFunction(PerfFuncData * data)
                 
                 if(filename == "file1")
                 {
-                    TEST_VERIFY(pathname == FilePath("~doc:/TestData/FileListTest/Folder3/file1"));
+                    TEST_VERIFY(pathname == "~doc:/TestData/FileListTest/Folder3/file1");
                 }
                 else if(filename == "file3.doc")
                 {
-                    TEST_VERIFY(pathname == FilePath("~doc:/TestData/FileListTest/Folder3/file3.doc"));
+                    TEST_VERIFY(pathname == "~doc:/TestData/FileListTest/Folder3/file3.doc");
                 }
                 else
                 {

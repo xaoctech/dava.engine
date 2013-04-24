@@ -63,7 +63,7 @@ void Replay::StartRecord(const FilePath & dirName)
 	FileSystem::Instance()->DeleteDirectoryFiles(dirName, false);
 	FileSystem::Instance()->CreateDirectory(dirName);
     
-    FileList * list = new FileList(FilePath("~doc:/"));
+    FileList * list = new FileList("~doc:/");
     int32 listSize = list->GetCount();
     for(int32 i = 0; i < listSize; ++i)
     {
@@ -129,7 +129,7 @@ void Replay::StartPlayback(const FilePath & dirName)
 	pauseReplay = false;
 	isPlayback = true;
 
-	FileSystem::Instance()->DeleteDirectoryFiles(FilePath("~doc:/"), false);
+	FileSystem::Instance()->DeleteDirectoryFiles("~doc:/", false);
 	FileList * list = new FileList(dirName);
 	int32 listSize = list->GetCount();
 	for(int32 i = 0; i < listSize; ++i)
@@ -148,7 +148,7 @@ void Replay::StartPlayback(const FilePath & dirName)
 
 
 	skipType = false;
-	file = File::Create(FilePath("~doc:/LastReplay.rep"), File::OPEN | File::READ);
+	file = File::Create("~doc:/LastReplay.rep", File::OPEN | File::READ);
 }
 
 float32 Replay::PlayFrameTime()

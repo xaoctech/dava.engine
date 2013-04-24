@@ -70,7 +70,7 @@ void InputTest::LoadResources()
 {
 	GetBackground()->SetColor(Color(1.f, 0, 0, 1));
 	
-	Font *font = FTFont::Create(FilePath("~res:/Fonts/korinna.ttf"));
+	Font *font = FTFont::Create("~res:/Fonts/korinna.ttf");
     DVASSERT(font);
 	font->SetSize(20);
     font->SetColor(Color::White());

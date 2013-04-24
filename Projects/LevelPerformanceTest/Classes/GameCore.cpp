@@ -57,7 +57,7 @@ void GameCore::OnAppStarted()
 {
     DeviceInfo();
 
-	File * testIdFile = File::Create(FilePath("~res:/testId"), File::OPEN | File::READ);
+	File * testIdFile = File::Create("~res:/testId", File::OPEN | File::READ);
 	if(testIdFile)
 	{
 		char buf[30];
@@ -73,13 +73,13 @@ void GameCore::OnAppStarted()
 		return;
 	}
     
-	SettingsManager::Instance()->InitWithFile(FilePath("~res:/Config/config.yaml"));
+	SettingsManager::Instance()->InitWithFile("~res:/Config/config.yaml");
 	
 	RenderManager::Instance()->SetFPS(60);
 
 	FilePath dirPath("~res:/3d/Maps/");
 	Vector<String> levelsPaths;
-	YamlParser* parser = YamlParser::Create(FilePath("~res:/maps.yaml"));
+	YamlParser* parser = YamlParser::Create("~res:/maps.yaml");
 	if(parser)
 	{
 		YamlNode* rootNode = parser->GetRootNode();

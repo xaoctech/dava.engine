@@ -50,9 +50,9 @@ static const String BACKGROUND_IMAGE_PATH("~res:/Images/buttonBg.png");
 // Help contents path
 // Help contents path
 #if defined(__DAVAENGINE_WIN32__)
-static const FilePath HELP_CONTENTS_PATH("/Data/Help/UIEditor.html");
+static const String HELP_CONTENTS_PATH("/Data/Help/UIEditor.html");
 #else
-static const FilePath HELP_CONTENTS_PATH("~res:/Help/UIEditor.html");
+static const String HELP_CONTENTS_PATH("~res:/Help/UIEditor.html");
 #endif
 // Additional text constants
 static const QString GFX = "/Gfx/";

@@ -72,7 +72,7 @@ ShadowRect::ShadowRect()
     shadowColor = Color(0, 0, 0, 0.5f);
     
 	shader = new Shader();
-	shader->LoadFromYaml(FilePath("~res:/Shaders/ShadowVolume/shadowrect.shader"));
+	shader->LoadFromYaml("~res:/Shaders/ShadowVolume/shadowrect.shader");
 	shader->Recompile();
     
     uniformShadowColor = shader->FindUniformLocationByName("shadowColor");

@@ -575,7 +575,7 @@ void UIFileSystemDialog::CreateHistoryForPath(const FilePath &pathToFile)
     Split(pathToFile.GetAbsolutePathname(), "/", folders);
 
     foldersHistory.clear();
-    foldersHistory.push_back(FilePath("/"));
+    foldersHistory.push_back("/");
     for(int32 iFolder = 0; iFolder < (int32)folders.size(); ++iFolder)
     {
         FilePath f(foldersHistory[iFolder]);

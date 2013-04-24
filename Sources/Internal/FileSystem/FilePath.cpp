@@ -106,19 +106,23 @@ FilePath FilePath::operator+(const char * path) const
     return pathname;
 }
 
-    
-FilePath& FilePath::operator+=(const char * path)
+FilePath& FilePath::operator+=(const FilePath & path)
 {
     absolutePathname = AddPath(*this, path);
     return (*this);
 }
-
+    
 FilePath& FilePath::operator+=(const String & path)
 {
     absolutePathname = AddPath(*this, path);
     return (*this);
 }
 
+FilePath& FilePath::operator+=(const char * path)
+{
+    absolutePathname = AddPath(*this, path);
+    return (*this);
+}
     
 bool FilePath::operator==(const FilePath &path) const
 {
@@ -213,6 +217,13 @@ String FilePath::GetRelativePathname() const
     return GetRelativePathname(FileSystem::Instance()->GetCurrentWorkingDirectory());
 }
     
+String FilePath::GetRelativePathname(const FilePath &forDirectory) const
+{
+    DVASSERT(forDirectory.IsDirectoryPathname());
+    
+    return AbsoluteToRelative(forDirectory.GetAbsolutePathname(), absolutePathname);
+}
+
 String FilePath::GetRelativePathname(const String &forDirectory) const
 {
     if(IsEmpty())
@@ -221,11 +232,12 @@ String FilePath::GetRelativePathname(const String &forDirectory) const
 	return GetRelativePathname(FilePath(forDirectory));
 }
     
-String FilePath::GetRelativePathname(const FilePath &forDirectory) const
+String FilePath::GetRelativePathname(const char * forDirectory) const
 {
-	DVASSERT(forDirectory.IsDirectoryPathname());
-
-	return AbsoluteToRelative(forDirectory.GetAbsolutePathname(), absolutePathname);
+    if(forDirectory == NULL)
+        return String();
+    
+	return GetRelativePathname(FilePath(forDirectory));
 }
 
     

@@ -81,7 +81,7 @@ void PVRTest::LoadResources()
 {
     GetBackground()->SetColor(Color(0.0f, 1.0f, 0.0f, 1.0f));
 
-    Font *font = FTFont::Create(FilePath("~res:/Fonts/korinna.ttf"));
+    Font *font = FTFont::Create("~res:/Fonts/korinna.ttf");
     DVASSERT(font);
 
     font->SetSize(20);
