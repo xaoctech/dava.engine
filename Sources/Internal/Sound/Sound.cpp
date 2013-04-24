@@ -211,8 +211,8 @@ bool Sound::InitAssetAudioPlayer()
     
     // use asset manager to open asset by filename
     AAssetManager* mgr = ((CorePlatformAndroid *)Core::Instance())->GetAssetManager();
-    int32 strLength = (int32)fileName.length();
-    String filePath = "Data" + fileName.substr(5, strLength - 5);
+    int32 strLength = (int32)fileName.GetAbsolutePathname().length();
+    String filePath = "Data" + fileName.GetAbsolutePathname().substr(5, strLength - 5);
     AAsset* asset = AAssetManager_open(mgr, filePath.c_str(), AASSET_MODE_UNKNOWN);
     
     if(!asset)
