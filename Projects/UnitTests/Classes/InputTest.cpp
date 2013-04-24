@@ -151,6 +151,9 @@ void InputTest::LoadResources()
 	AddControl(webView3);
 
 	AddControl(testButton);
+    
+    SafeRelease(spr);
+    SafeRelease(texture);
 }
 
 void InputTest::UnloadResources()

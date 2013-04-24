@@ -12,7 +12,6 @@
 		02D69A5716F0783000F3803F /* rectpropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 02D69A5116F0783000F3803F /* rectpropertygridwidget.ui */; };
 		02D69A5816F0783000F3803F /* screenpropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 02D69A5216F0783000F3803F /* screenpropertygridwidget.ui */; };
 		02D69A5916F0783000F3803F /* statepropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 02D69A5316F0783000F3803F /* statepropertygridwidget.ui */; };
-		02D69A5A16F0783000F3803F /* textpropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 02D69A5416F0783000F3803F /* textpropertygridwidget.ui */; };
 		02D69C9D16F08CEE00F3803F /* BaseCommand_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C2E16F08CED00F3803F /* BaseCommand_moc.cpp */; };
 		02D69C9E16F08CEE00F3803F /* ChangePropertyCommand_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C2F16F08CED00F3803F /* ChangePropertyCommand_moc.cpp */; };
 		02D69C9F16F08CEE00F3803F /* ControlCommands_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C3016F08CED00F3803F /* ControlCommands_moc.cpp */; };
@@ -90,7 +89,6 @@
 		02D69CE716F08CEE00F3803F /* screenpropertygridwidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C8116F08CED00F3803F /* screenpropertygridwidget_moc.cpp */; };
 		02D69CE816F08CEE00F3803F /* sliderpropertygridwidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C8216F08CED00F3803F /* sliderpropertygridwidget_moc.cpp */; };
 		02D69CE916F08CEE00F3803F /* statepropertygridwidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C8316F08CED00F3803F /* statepropertygridwidget_moc.cpp */; };
-		02D69CEA16F08CEE00F3803F /* textpropertygridwidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C8416F08CED00F3803F /* textpropertygridwidget_moc.cpp */; };
 		02D69CEB16F08CEE00F3803F /* uitextfieldpropertygridwidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C8516F08CED00F3803F /* uitextfieldpropertygridwidget_moc.cpp */; };
 		02D69CEC16F08CEE00F3803F /* QColorButton_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C8616F08CED00F3803F /* QColorButton_moc.cpp */; };
 		02D69CED16F08CEE00F3803F /* StateComboBoxItemDelegate_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C8716F08CED00F3803F /* StateComboBoxItemDelegate_moc.cpp */; };
@@ -181,6 +179,7 @@
 		74EED63216B18C7600262D63 /* alignspropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74EED63016B18C7600262D63 /* alignspropertygridwidget.cpp */; };
 		77BDEC8E56A833D3814BC614 /* QtNetwork.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 82153068A36B6EA46DD82A06 /* QtNetwork.framework */; };
 		77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 336CB11D929F5E35FA69020F /* Cocoa.framework */; };
+		84B61F7B1727CF560011E66D /* textpropertygridwidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84B61F7A1727CF560011E66D /* textpropertygridwidget_moc.cpp */; };
 		A51FBC516D952C0C5AB72EA1 /* QtGui.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 9B8EE51E126C761F3F797428 /* QtGui.framework */; };
 		A93E34BD17283146D6E95207 /* QtCore.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 419FFB6CDDEB353FF0A4F469 /* QtCore.framework */; };
 		A9F72A8809110F713D328E52 /* OpenAL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 52F4216CE5F81A8073DE30C0 /* OpenAL.framework */; };
@@ -262,7 +261,6 @@
 		02D69A5116F0783000F3803F /* rectpropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = rectpropertygridwidget.ui; sourceTree = "<group>"; };
 		02D69A5216F0783000F3803F /* screenpropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = screenpropertygridwidget.ui; sourceTree = "<group>"; };
 		02D69A5316F0783000F3803F /* statepropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = statepropertygridwidget.ui; sourceTree = "<group>"; };
-		02D69A5416F0783000F3803F /* textpropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = textpropertygridwidget.ui; sourceTree = "<group>"; };
 		02D69C2E16F08CED00F3803F /* BaseCommand_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseCommand_moc.cpp; sourceTree = "<group>"; };
 		02D69C2F16F08CED00F3803F /* ChangePropertyCommand_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ChangePropertyCommand_moc.cpp; sourceTree = "<group>"; };
 		02D69C3016F08CED00F3803F /* ControlCommands_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ControlCommands_moc.cpp; sourceTree = "<group>"; };
@@ -340,7 +338,6 @@
 		02D69C8116F08CED00F3803F /* screenpropertygridwidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = screenpropertygridwidget_moc.cpp; sourceTree = "<group>"; };
 		02D69C8216F08CED00F3803F /* sliderpropertygridwidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sliderpropertygridwidget_moc.cpp; sourceTree = "<group>"; };
 		02D69C8316F08CED00F3803F /* statepropertygridwidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = statepropertygridwidget_moc.cpp; sourceTree = "<group>"; };
-		02D69C8416F08CED00F3803F /* textpropertygridwidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = textpropertygridwidget_moc.cpp; sourceTree = "<group>"; };
 		02D69C8516F08CED00F3803F /* uitextfieldpropertygridwidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = uitextfieldpropertygridwidget_moc.cpp; sourceTree = "<group>"; };
 		02D69C8616F08CED00F3803F /* QColorButton_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QColorButton_moc.cpp; sourceTree = "<group>"; };
 		02D69C8716F08CED00F3803F /* StateComboBoxItemDelegate_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StateComboBoxItemDelegate_moc.cpp; sourceTree = "<group>"; };
@@ -363,7 +360,6 @@
 		02D69C9816F08CEE00F3803F /* ui_screenpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_screenpropertygridwidget.h; sourceTree = "<group>"; };
 		02D69C9916F08CEE00F3803F /* ui_sliderpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_sliderpropertygridwidget.h; sourceTree = "<group>"; };
 		02D69C9A16F08CEE00F3803F /* ui_statepropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_statepropertygridwidget.h; sourceTree = "<group>"; };
-		02D69C9B16F08CEE00F3803F /* ui_textpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_textpropertygridwidget.h; sourceTree = "<group>"; };
 		02D69C9C16F08CEE00F3803F /* ui_uitextfieldpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_uitextfieldpropertygridwidget.h; sourceTree = "<group>"; };
 		1700E416162EB2C20069650D /* basepropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = basepropertygridwidget.cpp; path = PropertyGridWidgets/basepropertygridwidget.cpp; sourceTree = "<group>"; };
 		1700E417162EB2C20069650D /* basepropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = basepropertygridwidget.h; path = PropertyGridWidgets/basepropertygridwidget.h; sourceTree = "<group>"; };
@@ -537,6 +533,7 @@
 		8159B90213E2E13CB65C75B4 /* vorbis_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbis_macos; path = ../dava.framework/Libs/oggvorbis/lib/libvorbis_macos.a; sourceTree = "<group>"; };
 		81BBDA0F1849B4A35FAB7D00 /* freetype_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = freetype_macos; path = ../dava.framework/Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
 		82153068A36B6EA46DD82A06 /* QtNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtNetwork.framework; path = ../../../../QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework; sourceTree = "<group>"; };
+		84B61F7A1727CF560011E66D /* textpropertygridwidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = textpropertygridwidget_moc.cpp; sourceTree = "<group>"; };
 		9B8EE51E126C761F3F797428 /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = ../../../../QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework; sourceTree = "<group>"; };
 		C10740DA163A94360069A640 /* createplatformdlg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = createplatformdlg.cpp; sourceTree = "<group>"; };
 		C10740DB163A94360069A640 /* createplatformdlg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = createplatformdlg.h; sourceTree = "<group>"; };
@@ -772,6 +769,7 @@
 		02D69C7616F08CED00F3803F /* PropertyGridWidgets */ = {
 			isa = PBXGroup;
 			children = (
+				84B61F7A1727CF560011E66D /* textpropertygridwidget_moc.cpp */,
 				C185940016F31CDF005D30E2 /* aggregatorpropertygridwidget_moc.cpp */,
 				17C5CCD816F323B700FB90B4 /* spinnerpropertygridwidget_moc.cpp */,
 				02D69C7716F08CED00F3803F /* AlignsPropertyGridWidget_moc.cpp */,
@@ -788,7 +786,6 @@
 				02D69C8116F08CED00F3803F /* screenpropertygridwidget_moc.cpp */,
 				02D69C8216F08CED00F3803F /* sliderpropertygridwidget_moc.cpp */,
 				02D69C8316F08CED00F3803F /* statepropertygridwidget_moc.cpp */,
-				02D69C8416F08CED00F3803F /* textpropertygridwidget_moc.cpp */,
 				02D69C8516F08CED00F3803F /* uitextfieldpropertygridwidget_moc.cpp */,
 			);
 			path = PropertyGridWidgets;
@@ -1010,7 +1007,6 @@
 				7482C8CB1688AAA800435155 /* sliderpropertygridwidget.ui */,
 				17C5CCD416F31E5300FB90B4 /* spinnerpropertygridwidget.ui */,
 				02D69A5316F0783000F3803F /* statepropertygridwidget.ui */,
-				02D69A5416F0783000F3803F /* textpropertygridwidget.ui */,
 				176834A716510788004800D7 /* uitextfieldpropertygridwidget.ui */,
 			);
 			name = PropertyGridWidgets;
@@ -1144,7 +1140,6 @@
 				02D69C9816F08CEE00F3803F /* ui_screenpropertygridwidget.h */,
 				02D69C9916F08CEE00F3803F /* ui_sliderpropertygridwidget.h */,
 				02D69C9A16F08CEE00F3803F /* ui_statepropertygridwidget.h */,
-				02D69C9B16F08CEE00F3803F /* ui_textpropertygridwidget.h */,
 				02D69C9C16F08CEE00F3803F /* ui_uitextfieldpropertygridwidget.h */,
 			);
 			path = GeneratedFiles;
@@ -1353,7 +1348,6 @@
 				02D69A5716F0783000F3803F /* rectpropertygridwidget.ui in Bundle Resources */,
 				02D69A5816F0783000F3803F /* screenpropertygridwidget.ui in Bundle Resources */,
 				02D69A5916F0783000F3803F /* statepropertygridwidget.ui in Bundle Resources */,
-				02D69A5A16F0783000F3803F /* textpropertygridwidget.ui in Bundle Resources */,
 				C18593EF16F30D67005D30E2 /* backgroundpropertygridwidget.ui in Bundle Resources */,
 				C18593F016F30D67005D30E2 /* basepropertygridwidget.ui in Bundle Resources */,
 				C18593F116F30D67005D30E2 /* controlpropertygridwidget.ui in Bundle Resources */,
@@ -1560,7 +1554,6 @@
 				02D69CE716F08CEE00F3803F /* screenpropertygridwidget_moc.cpp in Build Sources */,
 				02D69CE816F08CEE00F3803F /* sliderpropertygridwidget_moc.cpp in Build Sources */,
 				02D69CE916F08CEE00F3803F /* statepropertygridwidget_moc.cpp in Build Sources */,
-				02D69CEA16F08CEE00F3803F /* textpropertygridwidget_moc.cpp in Build Sources */,
 				02D69CEB16F08CEE00F3803F /* uitextfieldpropertygridwidget_moc.cpp in Build Sources */,
 				02D69CEC16F08CEE00F3803F /* QColorButton_moc.cpp in Build Sources */,
 				02D69CED16F08CEE00F3803F /* StateComboBoxItemDelegate_moc.cpp in Build Sources */,
@@ -1588,6 +1581,7 @@
 				49FD832F170B24E800F3B650 /* ImportCommands.cpp in Build Sources */,
 				497774C0170DB808004CE2FB /* importdialogfilewidget_moc.cpp in Build Sources */,
 				497774C2170DB80F004CE2FB /* importdialog_moc.cpp in Build Sources */,
+				84B61F7B1727CF560011E66D /* textpropertygridwidget_moc.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
