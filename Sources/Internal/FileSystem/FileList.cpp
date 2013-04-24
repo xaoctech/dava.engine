@@ -53,6 +53,8 @@ int alphasortAndroid(const dirent **a, const dirent **b)
 
 FileList::FileList(const FilePath & filepath)
 {
+    DVASSERT(filepath.IsDirectoryPathname());
+    
 	path = filepath;
 
 // Windows version
