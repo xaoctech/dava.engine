@@ -115,7 +115,7 @@ HierarchyTreeNode* HierarchyTreePlatformNode::GetParent()
 	return this->rootNode;
 }
 
-QString HierarchyTreePlatformNode::GetPlatformFolder() const
+FilePath HierarchyTreePlatformNode::GetPlatformFolder() const
 {
 	QString path;
 	if (rootNode)
@@ -124,12 +124,15 @@ QString HierarchyTreePlatformNode::GetPlatformFolder() const
 	}
 	path += GetName();
 
-	return path;
+    FilePath folder(path.toStdString());
+    folder.MakeDirectoryPathname();
+    
+	return folder;
 }
 
 QString HierarchyTreePlatformNode::GetScreenPath(QString screenName) const
 {
-	return QString(SCREEN_PATH).arg(GetPlatformFolder()).arg(screenName);
+	return QString(SCREEN_PATH).arg(QString::fromStdString(GetPlatformFolder().GetAbsolutePathname())).arg(screenName);
 }
 
 QString HierarchyTreePlatformNode::GetScreenPath(String screenName) const
@@ -250,10 +253,10 @@ bool HierarchyTreePlatformNode::Save(YamlNode* node, bool saveAll)
     // Add the Localization info - specific for each Platform.
     SaveLocalization(platform);
 
-	QString platformFolder = GetPlatformFolder();
+	FilePath platformFolder = GetPlatformFolder();
 
 	QDir dir;
-	dir.mkpath(platformFolder);
+	dir.mkpath(QString::fromStdString(platformFolder.GetAbsolutePathname()));
 	
 	bool result = true;
 	
