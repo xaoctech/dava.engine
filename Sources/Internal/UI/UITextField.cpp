@@ -312,11 +312,7 @@ UITextFieldDelegate * UITextField::GetDelegate()
 	
 void UITextField::SetSpriteAlign(int32 align)
 {
-//#ifdef __DAVAENGINE_IPHONE__
-//    textFieldiPhone->SetAlign(align);
-//#else
     UIControl::SetSpriteAlign(align);
-//#endif
 }
 
 void UITextField::SetSize(const DAVA::Vector2 &newSize)

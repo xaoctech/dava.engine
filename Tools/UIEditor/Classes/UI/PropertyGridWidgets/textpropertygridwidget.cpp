@@ -25,7 +25,6 @@ static const QString TEXT_PROPERTY_BLOCK_NAME = "Text";
 
 TextPropertyGridWidget::TextPropertyGridWidget(QWidget *parent) :
     UITextFieldPropertyGridWidget(parent)
-    //ui(new Ui::TextPropertyGridWidget)
 {
     SetPropertyBlockName(TEXT_PROPERTY_BLOCK_NAME);
 	InsertLocalizationFields();
