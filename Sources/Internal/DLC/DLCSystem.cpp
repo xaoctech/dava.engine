@@ -46,7 +46,7 @@ void DLCSystem::InitSystem(const String& serverURL, const FilePath & _contentPat
     indexURL = serverURL;
     String indexURLPath = serverURL + "IndexDLC.yaml";
     
-    indexFilePath = FilePath("~doc:/downloads/");
+    indexFilePath = "~doc:/downloads/";
     contentPath = _contentPath;
     FileSystem::Instance()->CreateDirectory(indexFilePath, true);
     FileSystem::Instance()->CreateDirectory(contentPath, true);

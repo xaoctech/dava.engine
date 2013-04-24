@@ -19,7 +19,7 @@ LocalizationTest::LocalizationTest()
 		RegisterFunction(this, &LocalizationTest::TestFunction, Format("Localization test of %s", files[i].c_str()), NULL);
 	}
 
-	srcDir = FilePath("~res:/TestData/LocalizationTest/");
+	srcDir = "~res:/TestData/LocalizationTest/";
 	cpyDir = FileSystem::Instance()->GetCurrentDocumentsDirectory() + "LocalizationTest/";
 
 	FileSystem::Instance()->DeleteDirectory(cpyDir);

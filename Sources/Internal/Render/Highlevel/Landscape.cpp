@@ -121,7 +121,7 @@ void Landscape::InitShaders()
     ReleaseShaders();
     
     tileMaskShader = new Shader();
-    tileMaskShader->LoadFromYaml(FilePath("~res:/Shaders/Landscape/tilemask.shader"));
+    tileMaskShader->LoadFromYaml("~res:/Shaders/Landscape/tilemask.shader");
     
     String defines = "";
     
@@ -165,7 +165,7 @@ void Landscape::InitShaders()
     }
     
     fullTiledShader = new Shader();
-    fullTiledShader->LoadFromYaml(FilePath("~res:/Shaders/Landscape/fulltiled_texture.shader"));
+    fullTiledShader->LoadFromYaml("~res:/Shaders/Landscape/fulltiled_texture.shader");
 	if(isFogEnabled && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
     {
         fullTiledShader->SetDefineList("VERTEX_FOG");   

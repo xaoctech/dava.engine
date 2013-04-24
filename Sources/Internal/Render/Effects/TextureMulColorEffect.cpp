@@ -77,7 +77,7 @@ void TextureMulColorEffectGL::DrawElements(ePrimitiveType type, int32 count, eIn
 TextureMulColorEffectGL20::TextureMulColorEffectGL20()
 {
     shader = new Shader();
-    shader->LoadFromYaml(FilePath("~res:/Shaders/Default/fixed_func_texture.shader"));
+    shader->LoadFromYaml("~res:/Shaders/Default/fixed_func_texture.shader");
     shader->Recompile();
 }
 

@@ -132,8 +132,9 @@ public:
         \param[in] forDirectory is exact directory for relative path calculation
         \returns relative path value
 	 */
-	String GetRelativePathname(const String &forDirectory) const;
     String GetRelativePathname(const FilePath &forDirectory) const;
+	String GetRelativePathname(const String &forDirectory) const;
+    String GetRelativePathname(const char * forDirectory) const;
     
     
 	/**

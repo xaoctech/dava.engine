@@ -173,7 +173,7 @@ void TexturePacker::PackToTexturesSeparate(const FilePath & excludeFolder, const
 				snprintf(name, 256, "%s%d.png", withoutExt.GetAbsolutePathname().c_str(), frame);
 				
 				PngImageExt image;
-				image.Read(FilePath(name));
+				image.Read(name);
 				finalImage.DrawImage(destRect->x, destRect->y, &image);
 			}
 			
@@ -259,7 +259,7 @@ void TexturePacker::PackToTextures(const FilePath & excludeFolder, const FilePat
 				snprintf(name, 256, "%s%d.png", withoutExt.GetAbsolutePathname().c_str(), frame);
 
 				PngImageExt image;
-				image.Read(FilePath(name));
+				image.Read(name);
 				finalImage.DrawImage(destRect->x, destRect->y, &image);
 
 				if (CommandLineParser::Instance()->IsFlagSet("--debug"))
@@ -268,7 +268,7 @@ void TexturePacker::PackToTextures(const FilePath & excludeFolder, const FilePat
 				}
 			}
 			
-			if (!WriteDefinition(excludeFolder, outputPath, FilePath("texture"), defFile))
+			if (!WriteDefinition(excludeFolder, outputPath, "texture", defFile))
 			{
 				Logger::Error("* ERROR: failed to write definition\n");
 			}
@@ -381,7 +381,7 @@ void TexturePacker::PackToMultipleTextures(const FilePath & excludeFolder, const
 			{
 				if (CommandLineParser::Instance()->GetVerbose())Logger::Info("[MultiPack] pack to texture: %d\n", packerIndex);
 				PngImageExt image;
-				image.Read(FilePath(name));
+				image.Read(name);
 				finalImages[packerIndex]->DrawImage(destRect->x, destRect->y, &image);
 				if (CommandLineParser::Instance()->IsFlagSet("--debug"))
 				{
@@ -404,7 +404,7 @@ void TexturePacker::PackToMultipleTextures(const FilePath & excludeFolder, const
 		DefinitionFile * defFile = *defi;
 		
 		FilePath textureName = outputPath + "texture";
-		if (!WriteMultipleDefinition(excludeFolder, outputPath, FilePath("texture"), defFile))
+		if (!WriteMultipleDefinition(excludeFolder, outputPath, "texture", defFile))
 		{
 			Logger::Error("* ERROR: failed to write definition\n");
 		}
