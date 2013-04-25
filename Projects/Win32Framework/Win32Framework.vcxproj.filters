@@ -1214,6 +1214,7 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Autotesting\AutotestingSystemYaml.h">
       <Filter>Internal\Autotesting</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Platform\DPIHelper.h">
       <Filter>Internal\Platform</Filter>
     </ClInclude>
@@ -2199,9 +2200,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\UI\UISwitch.cpp">
       <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystem_wrap.cxx">
-      <Filter>Internal\Autotesting</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystemLua.cpp">
       <Filter>Internal\Autotesting</Filter>
