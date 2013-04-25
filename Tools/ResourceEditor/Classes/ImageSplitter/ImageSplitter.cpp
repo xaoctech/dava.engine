@@ -38,10 +38,10 @@ bool ImageSplitter::SplitImage(const FilePath &pathname, Set<String> &errorLog)
     
     FilePath folder(pathname.GetDirectory());
     
-    SaveImage(red, folder + FilePath("r.png"));
-    SaveImage(green, folder + FilePath("g.png"));
-    SaveImage(blue, folder + FilePath("b.png"));
-    SaveImage(alpha, folder + FilePath("a.png"));
+    SaveImage(red, folder + "r.png");
+    SaveImage(green, folder + "g.png");
+    SaveImage(blue, folder + "b.png");
+    SaveImage(alpha, folder + "a.png");
 
 
     ReleaseImages(red, green, blue, alpha);
@@ -53,10 +53,10 @@ bool ImageSplitter::MergeImages(const FilePath &folder, Set<String> &errorLog)
 {
     DVASSERT(folder.IsDirectoryPathname());
     
-    Image *red = LoadImage(folder + FilePath("r.png"));
-    Image *green = LoadImage(folder + FilePath("g.png"));
-    Image *blue = LoadImage(folder + FilePath("b.png"));
-    Image *alpha = LoadImage(folder + FilePath("a.png"));
+    Image *red = LoadImage(folder + "r.png");
+    Image *green = LoadImage(folder + "g.png");
+    Image *blue = LoadImage(folder + "b.png");
+    Image *alpha = LoadImage(folder + "a.png");
 
     if(!red || !green || !blue || !alpha)
     {
@@ -92,7 +92,7 @@ bool ImageSplitter::MergeImages(const FilePath &folder, Set<String> &errorLog)
         mergedImage->data[offset + 3] = alpha->data[i];
     }
 
-    ImageLoader::Save(mergedImage, folder + FilePath("merged.png"));
+    ImageLoader::Save(mergedImage, folder + "merged.png");
     
     ReleaseImages(red, green, blue, alpha);
     SafeRelease(mergedImage);

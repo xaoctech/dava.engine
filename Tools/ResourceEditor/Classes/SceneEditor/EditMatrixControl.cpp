@@ -45,7 +45,7 @@ EditMatrixControl::EditMatrixControl(const Rect & _rect, bool _readOnly)
     //UIYamlLoader::Load(this, "~res:/Screens/Panels/camera_panel.yaml");
     //UIText
     
-    Font *f = FTFont::Create(FilePath("~res:/Fonts/MyriadPro-Regular.otf"));
+    Font *f = FTFont::Create("~res:/Fonts/MyriadPro-Regular.otf");
     f->SetSize(12);
     
     float32 spacing = 2.0f;

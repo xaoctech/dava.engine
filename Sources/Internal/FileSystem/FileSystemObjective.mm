@@ -106,7 +106,7 @@ namespace DAVA
     
     const FilePath FileSystem::GetPublicDocumentsPath()
     {
-        return FilePath("/Users/Shared/");
+        return "/Users/Shared/";
     }
 
     const FilePath FileSystem::GetHomePath()
