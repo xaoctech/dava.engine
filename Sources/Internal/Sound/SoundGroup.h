@@ -52,18 +52,20 @@ public:
 	void SetVolume(float32 volume);
 	float32	GetVolume();
 
-	void Update();
 	void Stop();
 
 	Animation * VolumeAnimation(float32 newVolume, float32 time, int32 track = 0);
 
 private:
 	float32 animatedVolume;
+
+	void Update();
 	void OnVolumeAnimationEnded(BaseObject * caller, void * userData, void * callerData);
 
 	FMOD::SoundGroup * fmodSoundGroup;
 
 friend class Sound;
+friend class SoundSystem;
 };
 
 };

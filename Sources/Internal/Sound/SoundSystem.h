@@ -53,6 +53,9 @@ public:
 	void Suspend();
 	void Resume();
 
+	void SetListenerPosition(const Vector3 & position);
+	void SetListenerOrientation(const Vector3 & at, const Vector3 & up);
+
 	SoundGroup * GetSoundGroup(const FastName & groupName);
 private:
 

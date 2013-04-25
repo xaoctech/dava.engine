@@ -74,6 +74,8 @@ public:
 	void Stop();
 	void PerformPlaybackComplete();
 
+	void SetPosition(const Vector3 & position);
+
 	void SetLoopCount(int32 looping); // -1 = infinity
 	int32 GetLoopCount() const;
 
@@ -87,6 +89,7 @@ private:
 
 	void SetSoundGroup(const FastName & groupName);
 
+	bool is3d;
 	Vector3 position;
 
 	FilePath fileName;
