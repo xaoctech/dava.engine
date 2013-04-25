@@ -21,6 +21,7 @@ LOCAL_MODULE := libInternal
 LOCAL_C_INCLUDES := $(LOCAL_PATH)
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/Platform/TemplateAndroid/
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../Libs/include
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../Libs/fmod/include
 
 # set exported includes
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
@@ -80,6 +81,7 @@ LOCAL_LDLIBS += $(LIBS_PATH)/libdxt_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libcurl_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libTextureConverter_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libiconv_android.so
+LOCAL_LDLIBS += $(LOCAL_PATH)/../../Libs/fmod/lib/libfmodex_android.so
 
 # set exported used libs
 LOCAL_EXPORT_LDLIBS := $(LOCAL_LDLIBS)
