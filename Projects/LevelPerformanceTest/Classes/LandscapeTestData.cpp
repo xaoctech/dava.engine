@@ -1,5 +1,7 @@
 #include "LandscapeTestData.h"
 
+using namespace DAVA;
+
 void LandscapeTestData::AddStatItem(const FpsStatItem &item)
 {
 	stat.push_back(item);

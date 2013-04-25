@@ -82,12 +82,13 @@ FilePath HeightmapModificationCommand::SaveHeightmap(Heightmap* heightmap)
 		if (i >= fileList->GetCount())
 			validFileName = true;
 	} while (!validFileName);
-	
-	heightmap->Save(folderPathname + FilePath(filename));
+
+	FilePath saveFileName = folderPathname + filename;
+	heightmap->Save(saveFileName);
 	
 	SafeRelease(fileList);
 	
-	return filename;
+	return saveFileName;
 }
 
 LandscapeEditorHeightmap* HeightmapModificationCommand::GetEditor()

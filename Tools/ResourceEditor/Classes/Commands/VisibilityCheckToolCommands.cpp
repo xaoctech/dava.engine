@@ -61,7 +61,7 @@ void CommandSaveTextureVisibilityTool::Execute()
 
 	FilePath selectedPathname = PathnameToDAVAStyle(filePath);
 
-	if(selectedPathname.IsInitalized())
+	if(!selectedPathname.IsEmpty())
 	{
 		SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
 		if(screen)
