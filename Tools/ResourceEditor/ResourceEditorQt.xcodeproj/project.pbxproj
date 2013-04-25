@@ -26,11 +26,9 @@
 		49802D4716C2596700E40105 /* SceneEditorScreenMainCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49802D4516C2596600E40105 /* SceneEditorScreenMainCommands.cpp */; };
 		498AA6FD1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498AA6FB1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp */; };
 		498AA7001653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */; };
-		499922FC16CBC5A500313367 /* EditCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 499922FA16CBC5A500313367 /* EditCommands.cpp */; };
 		49C89A3716C3AB1A008AA6F0 /* ArrowsNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49C89A3516C3AB1A008AA6F0 /* ArrowsNode.cpp */; };
 		49C89A3916C3AB72008AA6F0 /* ModificationWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49C89A3816C3AB72008AA6F0 /* ModificationWidget_moc.cpp */; };
 		49C89A3C16C3ABE6008AA6F0 /* ModificationWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49C89A3A16C3ABE6008AA6F0 /* ModificationWidget.cpp */; };
-		49C89A3F16C3AC14008AA6F0 /* ModificationOptionsCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49C89A3D16C3AC14008AA6F0 /* ModificationOptionsCommands.cpp */; };
 		4FB96A261705C90500EB205E /* SceneEditorProxy.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FB96A1D1705C90500EB205E /* SceneEditorProxy.cpp */; };
 		4FB96A271705C90500EB205E /* SceneManager.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FB96A1F1705C90500EB205E /* SceneManager.cpp */; };
 		4FB96A281705C90500EB205E /* SceneTabWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FB96A211705C90500EB205E /* SceneTabWidget.cpp */; };
@@ -45,7 +43,6 @@
 		5C190C9F15AEC6F9005731F8 /* Data in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 5C190C9E15AEC6F9005731F8 /* Data */; };
 		5C44DB4115F4BD6C00A42B52 /* SwitchNodePropertyControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C44DB3F15F4BD6C00A42B52 /* SwitchNodePropertyControl.cpp */; };
 		5C44DB4415F4DA9800A42B52 /* CommandReloadTextures.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C44DB4215F4DA9800A42B52 /* CommandReloadTextures.cpp */; };
-		5C45EB9416060B70007EE300 /* LandscapeOptionsCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C45EB9216060B70007EE300 /* LandscapeOptionsCommands.cpp */; };
 		5C45EB971606483E007EE300 /* LandscapesController.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C45EB951606483E007EE300 /* LandscapesController.cpp */; };
 		5C4A3F5E15FC910F005CABFE /* EditorHeightmap.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C4A3F5C15FC910F005CABFE /* EditorHeightmap.cpp */; };
 		5C4F6D7115F88CF900C5A222 /* ParticleEditorCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C4F6D6F15F88CF900C5A222 /* ParticleEditorCommands.cpp */; };
@@ -253,7 +250,6 @@
 		5C7F49F315B44BB70038AF3A /* VertexOctTree.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F49E315B44BB70038AF3A /* VertexOctTree.cpp */; };
 		5C7F49F715B44EE50038AF3A /* icon.icns in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 5C7F49F615B44EE50038AF3A /* icon.icns */; };
 		5C8AD20815BDD66900BC3FD8 /* CommandCreateNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8AD20615BDD66900BC3FD8 /* CommandCreateNode.cpp */; };
-		5C8AD20B15BDE73B00BC3FD8 /* CommandViewport.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8AD20915BDE73B00BC3FD8 /* CommandViewport.cpp */; };
 		5C8AD20E15BDEA9200BC3FD8 /* ToolsCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8AD20C15BDEA9200BC3FD8 /* ToolsCommands.cpp */; };
 		5C8DA28C16024F4200BCE6DF /* NotPassableTerrain.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8DA28A16024F4200BCE6DF /* NotPassableTerrain.cpp */; };
 		5C8DA28F160263C200BCE6DF /* SpritesPacker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8DA28D160263C200BCE6DF /* SpritesPacker.cpp */; };
@@ -277,7 +273,6 @@
 		84221F0616F8AF67000E7D74 /* HangingObjectsView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84221F0516F8AF67000E7D74 /* HangingObjectsView_moc.cpp */; };
 		84221F0C16F8AF97000E7D74 /* HangingObjectsHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84221F0816F8AF97000E7D74 /* HangingObjectsHelper.cpp */; };
 		84221F0D16F8AF97000E7D74 /* HangingObjectsView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84221F0A16F8AF97000E7D74 /* HangingObjectsView.cpp */; };
-		84221F1016F8B02D000E7D74 /* HangingObjectsCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84221F0E16F8B02D000E7D74 /* HangingObjectsCommands.cpp */; };
 		8471AC8D16A414D900129793 /* ImageSplitter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8471AC8916A414D900129793 /* ImageSplitter.cpp */; };
 		8471AC8E16A414D900129793 /* ImageSplitterScreen.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8471AC8B16A414D900129793 /* ImageSplitterScreen.cpp */; };
 		84EF22CE171EECA900B45031 /* ScrollZoomWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84EF22CD171EECA900B45031 /* ScrollZoomWidget_moc.cpp */; };
@@ -500,15 +495,12 @@
 		498AA6FC1653DC5F00E0831D /* VisibilityCheckToolCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisibilityCheckToolCommands.h; path = Classes/Commands/VisibilityCheckToolCommands.h; sourceTree = "<group>"; };
 		498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeEditorVisibilityCheckTool.cpp; path = Classes/SceneEditor/LandscapeEditorVisibilityCheckTool.cpp; sourceTree = "<group>"; };
 		498AA6FF1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeEditorVisibilityCheckTool.h; path = Classes/SceneEditor/LandscapeEditorVisibilityCheckTool.h; sourceTree = "<group>"; };
-		499922FA16CBC5A500313367 /* EditCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EditCommands.cpp; path = Classes/Commands/EditCommands.cpp; sourceTree = "<group>"; };
-		499922FB16CBC5A500313367 /* EditCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EditCommands.h; path = Classes/Commands/EditCommands.h; sourceTree = "<group>"; };
 		49C89A3516C3AB1A008AA6F0 /* ArrowsNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ArrowsNode.cpp; path = Classes/SceneEditor/ArrowsNode.cpp; sourceTree = "<group>"; };
 		49C89A3616C3AB1A008AA6F0 /* ArrowsNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ArrowsNode.h; path = Classes/SceneEditor/ArrowsNode.h; sourceTree = "<group>"; };
 		49C89A3816C3AB72008AA6F0 /* ModificationWidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ModificationWidget_moc.cpp; sourceTree = "<group>"; };
 		49C89A3A16C3ABE6008AA6F0 /* ModificationWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ModificationWidget.cpp; sourceTree = "<group>"; };
 		49C89A3B16C3ABE6008AA6F0 /* ModificationWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModificationWidget.h; sourceTree = "<group>"; };
-		49C89A3D16C3AC14008AA6F0 /* ModificationOptionsCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ModificationOptionsCommands.cpp; path = Classes/Commands/ModificationOptionsCommands.cpp; sourceTree = "<group>"; };
-		49C89A3E16C3AC14008AA6F0 /* ModificationOptionsCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ModificationOptionsCommands.h; path = Classes/Commands/ModificationOptionsCommands.h; sourceTree = "<group>"; };
+		49EF1C7A1726A68800B899E6 /* CommandList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommandList.h; path = Classes/Commands/CommandList.h; sourceTree = "<group>"; };
 		4FB96A1D1705C90500EB205E /* SceneEditorProxy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneEditorProxy.cpp; sourceTree = "<group>"; };
 		4FB96A1E1705C90500EB205E /* SceneEditorProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneEditorProxy.h; sourceTree = "<group>"; };
 		4FB96A1F1705C90500EB205E /* SceneManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneManager.cpp; sourceTree = "<group>"; };
@@ -537,8 +529,6 @@
 		5C44DB4015F4BD6C00A42B52 /* SwitchNodePropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SwitchNodePropertyControl.h; path = Classes/SceneEditor/SwitchNodePropertyControl.h; sourceTree = "<group>"; };
 		5C44DB4215F4DA9800A42B52 /* CommandReloadTextures.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CommandReloadTextures.cpp; path = Classes/Commands/CommandReloadTextures.cpp; sourceTree = "<group>"; };
 		5C44DB4315F4DA9800A42B52 /* CommandReloadTextures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommandReloadTextures.h; path = Classes/Commands/CommandReloadTextures.h; sourceTree = "<group>"; };
-		5C45EB9216060B70007EE300 /* LandscapeOptionsCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeOptionsCommands.cpp; path = Classes/Commands/LandscapeOptionsCommands.cpp; sourceTree = "<group>"; };
-		5C45EB9316060B70007EE300 /* LandscapeOptionsCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeOptionsCommands.h; path = Classes/Commands/LandscapeOptionsCommands.h; sourceTree = "<group>"; };
 		5C45EB951606483E007EE300 /* LandscapesController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapesController.cpp; path = Classes/LandscapeEditor/LandscapesController.cpp; sourceTree = "<group>"; };
 		5C45EB961606483E007EE300 /* LandscapesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapesController.h; path = Classes/LandscapeEditor/LandscapesController.h; sourceTree = "<group>"; };
 		5C4A3F5C15FC910F005CABFE /* EditorHeightmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EditorHeightmap.cpp; path = Classes/LandscapeEditor/EditorHeightmap.cpp; sourceTree = "<group>"; };
@@ -1031,8 +1021,6 @@
 		5C7F49F815B44F6D0038AF3A /* FCollada.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FCollada.xcodeproj; path = ../ColladaConverter/Collada15/FCollada/FCollada.xcodeproj; sourceTree = "<group>"; };
 		5C8AD20615BDD66900BC3FD8 /* CommandCreateNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CommandCreateNode.cpp; path = Classes/Commands/CommandCreateNode.cpp; sourceTree = "<group>"; };
 		5C8AD20715BDD66900BC3FD8 /* CommandCreateNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommandCreateNode.h; path = Classes/Commands/CommandCreateNode.h; sourceTree = "<group>"; };
-		5C8AD20915BDE73B00BC3FD8 /* CommandViewport.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CommandViewport.cpp; path = Classes/Commands/CommandViewport.cpp; sourceTree = "<group>"; };
-		5C8AD20A15BDE73B00BC3FD8 /* CommandViewport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommandViewport.h; path = Classes/Commands/CommandViewport.h; sourceTree = "<group>"; };
 		5C8AD20C15BDEA9200BC3FD8 /* ToolsCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ToolsCommands.cpp; path = Classes/Commands/ToolsCommands.cpp; sourceTree = "<group>"; };
 		5C8AD20D15BDEA9200BC3FD8 /* ToolsCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ToolsCommands.h; path = Classes/Commands/ToolsCommands.h; sourceTree = "<group>"; };
 		5C8DA28A16024F4200BCE6DF /* NotPassableTerrain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NotPassableTerrain.cpp; path = Classes/LandscapeEditor/NotPassableTerrain.cpp; sourceTree = "<group>"; };
@@ -1074,8 +1062,6 @@
 		84221F0916F8AF97000E7D74 /* HangingObjectsHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HangingObjectsHelper.h; path = Classes/Qt/DockHangingObjects/HangingObjectsHelper.h; sourceTree = "<group>"; };
 		84221F0A16F8AF97000E7D74 /* HangingObjectsView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HangingObjectsView.cpp; path = Classes/Qt/DockHangingObjects/HangingObjectsView.cpp; sourceTree = "<group>"; };
 		84221F0B16F8AF97000E7D74 /* HangingObjectsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HangingObjectsView.h; path = Classes/Qt/DockHangingObjects/HangingObjectsView.h; sourceTree = "<group>"; };
-		84221F0E16F8B02D000E7D74 /* HangingObjectsCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HangingObjectsCommands.cpp; path = Classes/Commands/HangingObjectsCommands.cpp; sourceTree = "<group>"; };
-		84221F0F16F8B02D000E7D74 /* HangingObjectsCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HangingObjectsCommands.h; path = Classes/Commands/HangingObjectsCommands.h; sourceTree = "<group>"; };
 		8471AC8916A414D900129793 /* ImageSplitter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ImageSplitter.cpp; path = Classes/ImageSplitter/ImageSplitter.cpp; sourceTree = "<group>"; };
 		8471AC8A16A414D900129793 /* ImageSplitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ImageSplitter.h; path = Classes/ImageSplitter/ImageSplitter.h; sourceTree = "<group>"; };
 		8471AC8B16A414D900129793 /* ImageSplitterScreen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ImageSplitterScreen.cpp; path = Classes/ImageSplitter/ImageSplitterScreen.cpp; sourceTree = "<group>"; };
@@ -2090,24 +2076,17 @@
 		5CDD9ABA15B893CF007CA99A /* Commands */ = {
 			isa = PBXGroup;
 			children = (
+				49EF1C7A1726A68800B899E6 /* CommandList.h */,
 				0297F315170B404100627F78 /* MaterialViewOptionsCommands.cpp */,
 				0297F316170B404100627F78 /* MaterialViewOptionsCommands.h */,
-				84221F0E16F8B02D000E7D74 /* HangingObjectsCommands.cpp */,
-				84221F0F16F8B02D000E7D74 /* HangingObjectsCommands.h */,
 				84221ED116E62E0C000E7D74 /* SetSwitchIndexCommands.cpp */,
 				84221ED216E62E0C000E7D74 /* SetSwitchIndexCommands.h */,
-				499922FA16CBC5A500313367 /* EditCommands.cpp */,
-				499922FB16CBC5A500313367 /* EditCommands.h */,
-				49C89A3D16C3AC14008AA6F0 /* ModificationOptionsCommands.cpp */,
-				49C89A3E16C3AC14008AA6F0 /* ModificationOptionsCommands.h */,
 				498AA6FB1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp */,
 				498AA6FC1653DC5F00E0831D /* VisibilityCheckToolCommands.h */,
 				E80842DA1639277D002A6A77 /* TextureOptionsCommands.cpp */,
 				E80842DB1639277D002A6A77 /* TextureOptionsCommands.h */,
 				4940AF6A164C1684003E95A7 /* CustomColorCommands.cpp */,
 				4940AF6B164C1684003E95A7 /* CustomColorCommands.h */,
-				5C45EB9216060B70007EE300 /* LandscapeOptionsCommands.cpp */,
-				5C45EB9316060B70007EE300 /* LandscapeOptionsCommands.h */,
 				5C4F6D6F15F88CF900C5A222 /* ParticleEditorCommands.cpp */,
 				5C4F6D7015F88CF900C5A222 /* ParticleEditorCommands.h */,
 				5C44DB4215F4DA9800A42B52 /* CommandReloadTextures.cpp */,
@@ -2118,8 +2097,6 @@
 				5CFEEBBF15CAB60B00ABF023 /* SceneGraphCommands.h */,
 				5C8AD20C15BDEA9200BC3FD8 /* ToolsCommands.cpp */,
 				5C8AD20D15BDEA9200BC3FD8 /* ToolsCommands.h */,
-				5C8AD20915BDE73B00BC3FD8 /* CommandViewport.cpp */,
-				5C8AD20A15BDE73B00BC3FD8 /* CommandViewport.h */,
 				5C8AD20615BDD66900BC3FD8 /* CommandCreateNode.cpp */,
 				5C8AD20715BDD66900BC3FD8 /* CommandCreateNode.h */,
 				5CF17EC115B91E8600A9FC33 /* FileCommands.cpp */,
@@ -3140,7 +3117,6 @@
 				5CDD9AC015B893E4007CA99A /* CommandsManager.cpp in Build Sources */,
 				5CF17EC315B91E8600A9FC33 /* FileCommands.cpp in Build Sources */,
 				5C8AD20815BDD66900BC3FD8 /* CommandCreateNode.cpp in Build Sources */,
-				5C8AD20B15BDE73B00BC3FD8 /* CommandViewport.cpp in Build Sources */,
 				5C8AD20E15BDEA9200BC3FD8 /* ToolsCommands.cpp in Build Sources */,
 				5C574E3915C9463C0015537A /* btAxisSweep3.cpp in Build Sources */,
 				5C574E3A15C9463C0015537A /* btBroadphaseProxy.cpp in Build Sources */,
@@ -3269,7 +3245,6 @@
 				5C8DA28C16024F4200BCE6DF /* NotPassableTerrain.cpp in Build Sources */,
 				5C8DA28F160263C200BCE6DF /* SpritesPacker.cpp in Build Sources */,
 				5C048FD816037725008631C2 /* LandscapeRenderer.cpp in Build Sources */,
-				5C45EB9416060B70007EE300 /* LandscapeOptionsCommands.cpp in Build Sources */,
 				5C45EB971606483E007EE300 /* LandscapesController.cpp in Build Sources */,
 				E8EE7E59160DBCA000645405 /* RulerTool.cpp in Build Sources */,
 				E8F020CB16103E84000969AF /* RulerToolLandscape.cpp in Build Sources */,
@@ -3413,8 +3388,6 @@
 				49C89A3716C3AB1A008AA6F0 /* ArrowsNode.cpp in Build Sources */,
 				49C89A3916C3AB72008AA6F0 /* ModificationWidget_moc.cpp in Build Sources */,
 				49C89A3C16C3ABE6008AA6F0 /* ModificationWidget.cpp in Build Sources */,
-				49C89A3F16C3AC14008AA6F0 /* ModificationOptionsCommands.cpp in Build Sources */,
-				499922FC16CBC5A500313367 /* EditCommands.cpp in Build Sources */,
 				177D1A9016CB8ADB0021104B /* SceneGraphModelStateHelper.cpp in Build Sources */,
 				177D1A9316CB8C820021104B /* PropertyEditorStateHelper.cpp in Build Sources */,
 				841703F916CBA49C00F1023D /* QResourceEditorProgressDialog.cpp in Build Sources */,
@@ -3432,7 +3405,6 @@
 				84221F0616F8AF67000E7D74 /* HangingObjectsView_moc.cpp in Build Sources */,
 				84221F0C16F8AF97000E7D74 /* HangingObjectsHelper.cpp in Build Sources */,
 				84221F0D16F8AF97000E7D74 /* HangingObjectsView.cpp in Build Sources */,
-				84221F1016F8B02D000E7D74 /* HangingObjectsCommands.cpp in Build Sources */,
 				50474EDC16FD872600A17478 /* ExtraUserData.cpp in Build Sources */,
 				50474EDD16FD872600A17478 /* PointerHolder.cpp in Build Sources */,
 				E8362647170057E000BC26CF /* ExtraUserData_moc.cpp in Build Sources */,

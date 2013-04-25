@@ -8,15 +8,6 @@
 
 using namespace DAVA;
 
-class CommandToggleCustomColors: public Command
-{
-public:
-    CommandToggleCustomColors();
-
-protected:
-    virtual void Execute();
-};
-
 class CommandSaveTextureCustomColors: public Command
 {
 public:
@@ -30,26 +21,6 @@ class CommandLoadTextureCustomColors: public Command
 public:
     CommandLoadTextureCustomColors();
 protected:
-    virtual void Execute();
-};
-
-class CommandChangeBrushSizeCustomColors: public Command
-{
-public:
-    CommandChangeBrushSizeCustomColors(uint32 newSize);
-protected:
-    uint32 size;
-
-    virtual void Execute();
-};
-
-class CommandChangeColorCustomColors: public Command
-{
-public:
-    CommandChangeColorCustomColors(uint32 newColorIndex);
-protected:
-    uint32 colorIndex;
-    
     virtual void Execute();
 };
 

@@ -29,32 +29,52 @@
 
 SceneEditorScreenMain::SceneEditorScreenMain()
 	:	UIScreen()
+	, initialized(false)
 {
+}
+
+SceneEditorScreenMain::~SceneEditorScreenMain()
+{
+   	SafeRelease(scenePreviewDialog);
+
+    SafeRelease(textureTrianglesDialog);
+    SafeRelease(settingsDialog);
+
+    ReleaseNodeDialogs();
+    ReleaseBodyList();
+
+    HintManager::Instance()->Release();
+    PropertyControlCreator::Instance()->Release();
 }
 
 void SceneEditorScreenMain::LoadResources()
 {
-    new HintManager();
-    new PropertyControlCreator();
+	if(!initialized)
+	{
+		initialized = true;
+		
+	    new HintManager();
+	    new PropertyControlCreator();
     
-    ControlsFactory::CustomizeScreenBack(this);
+	    ControlsFactory::CustomizeScreenBack(this);
 
-    font12 = ControlsFactory::GetFont12();
-	font12Color = ControlsFactory::GetColorLight();
+	    font12 = ControlsFactory::GetFont12();
+		font12Color = ControlsFactory::GetColorLight();
 
-    focusedControl = NULL;
+	    focusedControl = NULL;
 
-    InitializeNodeDialogs();
+	    InitializeNodeDialogs();
 
-    Rect fullRect = GetRect();
-    settingsDialog = new SettingsDialog(fullRect, this);
-    textureTrianglesDialog = new TextureTrianglesDialog();
-    materialEditor = new MaterialEditor();
+	    Rect fullRect = GetRect();
+	    settingsDialog = new SettingsDialog(fullRect, this);
+	    textureTrianglesDialog = new TextureTrianglesDialog();
+	    materialEditor = new MaterialEditor();
     
-    InitControls();
+	    InitControls();
     
-    InitializeBodyList();
-    SetupAnimation();
+	    InitializeBodyList();
+	    SetupAnimation();
+	}
 }
 
 
@@ -70,18 +90,7 @@ void SceneEditorScreenMain::InitControls()
 
 void SceneEditorScreenMain::UnloadResources()
 {
-    SafeRelease(scenePreviewDialog);
-
-    SafeRelease(textureTrianglesDialog);
-    SafeRelease(settingsDialog);
-
-    ReleaseNodeDialogs();
-    ReleaseBodyList();
-
-    HintManager::Instance()->Release();
-    PropertyControlCreator::Instance()->Release();
 }
-
 
 void SceneEditorScreenMain::WillAppear()
 {

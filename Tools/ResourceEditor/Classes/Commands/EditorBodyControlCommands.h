@@ -13,13 +13,14 @@ public:
 	CommandTransformObject(DAVA::Entity* node, const DAVA::Matrix4& originalTransform, const DAVA::Matrix4& finalTransform);
 
 protected:
-	DAVA::Matrix4 undoTransform;
 	DAVA::Entity* node;
-
+	DAVA::Matrix4 undoTransform;
 	DAVA::Matrix4 redoTransform;
 
 	virtual void Execute();
 	virtual void Cancel();
+
+	void UpdateCollision();
 };
 
 class CommandCloneObject: public Command
