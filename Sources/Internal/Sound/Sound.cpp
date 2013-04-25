@@ -47,17 +47,20 @@ Sound * Sound::Create3D(const FilePath & fileName, eType type, const FastName & 
 	return CreateWithFlags(fileName, type, groupName, FMOD_3D, priority);
 }
 
-Sound * Sound::CreateWithFlags(const FilePath & fileName, eType type, const FastName & groupName, int32 addFlags, int32 priority)
+Sound * Sound::CreateWithFlags(const FilePath & fileName, eType type, const FastName & groupName, int32 flags, int32 priority)
 {
 	Sound * sound = new Sound(fileName, type, priority);
+
+	if(flags & FMOD_3D)
+		sound->is3d = true;
 
 	switch (type)
 	{
 	case TYPE_STATIC:
-		FMOD_VERIFY(SoundSystem::Instance()->fmodSystem->createSound(fileName.ResolvePathname().c_str(), FMOD_DEFAULT | addFlags, 0, &sound->fmodSound));
+		FMOD_VERIFY(SoundSystem::Instance()->fmodSystem->createSound(fileName.ResolvePathname().c_str(), FMOD_DEFAULT | flags, 0, &sound->fmodSound));
 		break;
 	case TYPE_STREAMED:
-		FMOD_VERIFY(SoundSystem::Instance()->fmodSystem->createStream(fileName.ResolvePathname().c_str(), FMOD_LOOP_NORMAL | addFlags, 0, &sound->fmodSound));
+		FMOD_VERIFY(SoundSystem::Instance()->fmodSystem->createStream(fileName.ResolvePathname().c_str(), FMOD_LOOP_NORMAL | flags, 0, &sound->fmodSound));
 		break;
 	}
 
@@ -71,7 +74,8 @@ Sound * Sound::CreateWithFlags(const FilePath & fileName, eType type, const Fast
 Sound::Sound(const FilePath & _fileName, eType _type, int32 _priority)
 :	fileName(_fileName),
 	type(_type),
-	priority(_priority)
+	priority(_priority),
+	is3d(false)
 {
 }
 
@@ -94,11 +98,31 @@ void Sound::Play()
 {
 	FMOD::Channel * fmodInstance = 0;
 	FMOD_VERIFY(SoundSystem::Instance()->fmodSystem->playSound(FMOD_CHANNEL_FREE, fmodSound, true, &fmodInstance)); //start sound paused
+	FMOD_VECTOR pos = {position.x, position.y, position.z};
 	FMOD_VERIFY(fmodInstance->setPriority(priority));
 	FMOD_VERIFY(fmodInstance->setCallback(SoundInstanceEndPlaying));
 	FMOD_VERIFY(fmodInstance->setUserData(this));
 	FMOD_VERIFY(fmodInstance->setChannelGroup(fmodInstanceGroup));
+
+	if(is3d)
+		FMOD_VERIFY(fmodInstance->set3DAttributes(&pos, 0));
+
 	FMOD_VERIFY(fmodInstance->setPaused(false));
+}
+
+void Sound::SetPosition(const Vector3 & _position)
+{
+	position = _position;
+	FMOD_VECTOR pos = {position.x, position.y, position.z};
+
+	int32 instancesCount = 0;
+	FMOD_VERIFY(fmodInstanceGroup->getNumChannels(&instancesCount));
+	for(int32 i = 0; i < instancesCount; i++)
+	{
+		FMOD::Channel * inst = 0;
+		FMOD_VERIFY(fmodInstanceGroup->getChannel(i, &inst));
+		FMOD_VERIFY(inst->set3DAttributes(&pos, 0));
+	}
 }
 
 Sound::eType Sound::GetType() const
