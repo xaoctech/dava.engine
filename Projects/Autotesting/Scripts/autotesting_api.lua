@@ -168,6 +168,17 @@ function noneStep()
 	return true
 end
 
+-- Work with UI controls
+-- !!!!! Realize visibility center of element
+function IsVisible(element)
+	local control = autotestingSystem:FindControl(element)
+	if control then
+		return true
+	else
+		return false
+	end
+end
+
 function Wait(waitTime)
     waitTime =  waitTime or DELAY
     
@@ -224,11 +235,13 @@ function TouchMove(x, y, touchId, waitTime)
 	waitTime =  waitTime or TIMECLICK
     local touchId = touchId or 1
     Log("TouchMove x="..x.." y="..y.." touchId="..touchId)
+    local position = Vector.Vector2(x, y)
     autotestingSystem:TouchMove(position, touchId)
     Wait(waitTime)
 end
 
 function TouchUp(touchId)
+	local touchId = touchId or 1
     Log("TouchUp "..touchId)
     autotestingSystem:TouchUp(touchId)
 end
@@ -301,6 +314,8 @@ function ClickControl(name, touchId, time)
     return false
 end
 
+-- Work with Text field and labels 
+
 function SetText(path, text, time)
 	local waitTime = time or DELAY
     Log("SetText path="..path.." text="..text)
@@ -332,4 +347,94 @@ function CheckMsgText(name, key)
 	else
 		error("Control " .. name .. " not found")
 	end
+end
+
+-- Work with List
+function SelectHorizontal(list, item)
+	Log("Select "..tostring(item).." item in horizontal list "..list)
+	local cell = list.."/".. tostring(item)
+	repeat
+		if IsVisible(cell) then
+			break
+		else
+			ScrollRight(list)
+		end
+	until IsVisible(list.."/"..tostring(GetChildCount(list))) -- replace this by GetChildCount()
+    
+	if IsVisible(cell) then
+		ClickControl(cell)
+		return true
+	else
+		Log("List "..list.." not found")
+		return false
+	end
+end
+
+function SelectVertical(list, item)
+	Log("Select "..tostring(item).." item in vertical list "..list)
+	local cell = list.."/".. tostring(item)
+	repeat
+		if IsVisible(cell) then
+			break
+		else
+			ScrollDown(list)
+		end
+	until IsVisible(list.."/"..tostring(GetChildCount(list))) -- replace this by GetChildCount()
+    
+	if IsVisible(cell) then
+		ClickControl(cell)
+		return true
+	else
+		Log("List "..list.." not found")
+		return false
+	end
+end
+
+function ScrollDown(list)
+	local control = autotestingSystem:FindControl(list)
+    if control then	
+        local position = Vector.Vector2()
+            
+        local geomData = control:GetGeometricData()
+        local rect = geomData:GetUnrotatedRect()
+       
+        position.x = rect.x + rect.dx/2
+        position.y = rect.y + rect.dy/2
+		
+		TouchDownPosition(position)
+		Wait(0.5)
+        position.y = position.y - rect.dy/2
+		TouchMovePosition(position)
+		Wait(0.5)
+		TouchUp()
+	else
+		OnError("Couldnt find list "..list)
+	end
+end
+
+function ScrollRight(list)
+	local control = autotestingSystem:FindControl(list)
+    if control then	
+        local position = Vector.Vector2()
+            
+        local geomData = control:GetGeometricData()
+        local rect = geomData:GetUnrotatedRect()
+       
+        position.x = rect.x + rect.dx/2
+        position.y = rect.y + rect.dy/2
+		
+		TouchDownPosition(position)
+		Wait(0.5)
+        position.x = position.x + rect.dx/2
+		TouchMovePosition(position)
+		Wait(0.5)
+		TouchUp()
+	else
+		OnError("Couldnt find list "..list)
+	end
+end
+
+-- !!!!!!!Realize from C side
+function GetChildCount(element)
+	return 1
 end
