@@ -4,7 +4,7 @@
 #include <QPushButton>
 #include "HierarchyTreeController.h"
 
-ImportDialog::ImportDialog(eImportType type, QWidget *parent, const QString& platformPath)
+ImportDialog::ImportDialog(eImportType type, QWidget *parent, const FilePath& platformPath)
 :	QDialog(parent)
 ,	ui(new Ui::ImportDialog)
 ,	importType(type)
@@ -68,7 +68,7 @@ void ImportDialog::InitScreensImport()
 		return;
 	}
 
-	Vector<String> platformFileList = GetDirectoryContent(platform->GetPlatformFolder().toStdString(), true, ".yaml");
+	Vector<String> platformFileList = GetDirectoryContent(platform->GetPlatformFolder(), true, ".yaml");
 	Vector<String> platformChildrenNames = GetChildrenNames(platform);
 	Vector<String> nodesNotInProject = GetStringNotInList(platformFileList, platformChildrenNames);
 
@@ -79,7 +79,7 @@ void ImportDialog::InitPlatformImport()
 {
 	this->setWindowTitle(tr("Import platform"));
 
-	Vector<String> platformFileList = GetDirectoryContent(platformPath.toStdString(), true, ".yaml");
+	Vector<String> platformFileList = GetDirectoryContent(platformPath, true, ".yaml");
 	InitWithFileList(platformFileList);
 }
 
@@ -270,7 +270,7 @@ HierarchyTreeNode::HIERARCHYTREENODEID ImportDialog::GetPlatformId()
 	return HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
 }
 
-Vector<String> ImportDialog::GetDirectoryContent(const String& path, bool getFiles, const String& fileMask, bool removeExtension)
+Vector<String> ImportDialog::GetDirectoryContent(const FilePath& path, bool getFiles, const String& fileMask, bool removeExtension)
 {
 	FileList fileList(path);
 	fileList.Sort();

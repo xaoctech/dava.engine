@@ -43,6 +43,13 @@ class FilePath
 {
 public:
 
+	enum eType
+	{
+		PATH_IN_FILESYSTEM = 0,		//	rootdir/...
+		PATH_IN_DOCUMENTS,			//~doc:/....
+		PATH_IN_RESOURCES			//~res:/....
+	};
+
 	FilePath();
     FilePath(const FilePath & path);
     FilePath(const String & sourcePath);
@@ -52,7 +59,7 @@ public:
 	virtual ~FilePath();
 
     /**
-        \brief Function to retrive FilePath with new extension without changing of source FilePath object
+        \brief Function to retrieve FilePath with new extension without changing of source FilePath object
         \param[in] pathname is source FilePath object
         \param[in] extension is new extension
         \returns resolved FilePath object with new extension
@@ -63,6 +70,11 @@ public:
     FilePath& operator=(const FilePath & path);
     FilePath operator+(const FilePath & path) const;
     FilePath& operator+=(const FilePath & path);
+    FilePath operator+(const String & path) const;
+    FilePath& operator+=(const String & path);
+    FilePath operator+(const char * path) const;
+    FilePath& operator+=(const char * path);
+
     bool operator==(const FilePath & path) const;
 	bool operator!=(const FilePath & path) const;
 
@@ -74,7 +86,7 @@ public:
 
 	/*
         \brief Function to check is filepath represent folder path
-        \returns true if absolutePathname has '/' as last charachter
+        \returns true if absolutePathname has '/' as last character
 	 */
     const bool IsDirectoryPathname() const;
 
@@ -120,8 +132,9 @@ public:
         \param[in] forDirectory is exact directory for relative path calculation
         \returns relative path value
 	 */
-    String GetRelativePathname(const String &forDirectory) const;
     String GetRelativePathname(const FilePath &forDirectory) const;
+	String GetRelativePathname(const String &forDirectory) const;
+    String GetRelativePathname(const char * forDirectory) const;
     
     
 	/**
@@ -156,21 +169,14 @@ public:
     static void SetProjectPathname(const String &pathname);
 
 	/**
-        \brief Function to retrive project path for resolving pathnames such as "~res:/Gfx/image.png"
+        \brief Function to retrieve project path for resolving pathnames such as "~res:/Gfx/image.png"
         \returns project path 
 	 */
     static const String & GetProjectPathname();
 
     
 	/**
-        \brief Function to retrive system path for resolving pathnames such as "~res:/Gfx/image.png", "~doc:/Project/cache.dat"
-        \returns resolved pathname in system style. For example "~doc:/Project/cache.dat" will be resolved as "/User/Documents/Project/cache.dat"
-	 */
-    String ResolvePathname() const;
-
-    
-	/**
-        \brief Function to modify absolute to be path fo folder. For example "Users/Document" after function call will be "Users/Document/"
+        \brief Function to modify absolute to be path to folder. For example "Users/Document" after function call will be "Users/Document/"
 	 */
     void MakeDirectoryPathname();
 
@@ -180,14 +186,14 @@ public:
     void TruncateExtension();
     
     /**
-        \brief Function to retrive last directory name from FilePath that represents directory pathname
+        \brief Function to retrieve last directory name from FilePath that represents directory pathname
         \returns last directory name
 	 */
     String GetLastDirectoryName() const;
     
     
 	/**
-        \brief Function for replacement of pathname from absolutepath
+        \brief Function for replacement of pathname from absolute path
         \param[in] pathname is pathname for replacement
 	 */
     void ReplacePath(const FilePath &pathname);
@@ -199,8 +205,18 @@ public:
 	 */
 	bool IsEqualToExtension(const String & extension) const;
 
+
+	/**
+        \brief Function to retrieve path in framework style: with ~res: or ~doc:
+        \param[in] type of FilePath representation
+		\returns pathname value for requested type
+	 */
+	String GetFrameworkPathForType(eType pathType);
+
 protected:
     
+	String GetFrameworkPathForPrefix(const String &typePrefix);
+
     static String NormalizePathname(const FilePath &pathname);
     static String NormalizePathname(const String &pathname);
     
@@ -215,6 +231,7 @@ protected:
     
     static bool IsAbsolutePathname(const String &pathname);
     
+public:
     static String AddPath(const FilePath &folder, const FilePath & addition);
     
 protected:
@@ -230,6 +247,7 @@ public:
 //     );
     
 };
+    
 };
 
 #endif //__DAVAENGINE_FILE_PATH_H__

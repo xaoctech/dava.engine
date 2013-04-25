@@ -66,7 +66,7 @@ LandscapeToolsPanelHeightmap::LandscapeToolsPanelHeightmap(LandscapeToolsPanelDe
     AddSliderHeader(averageStrength, LocalizedString(L"landscapeeditor.averagestrength"));
 
     
-    dropperTool = new LandscapeTool(-1, LandscapeTool::TOOL_DROPPER, FilePath("~res:/LandscapeEditor/SpecialTools/dropper.png"));
+    dropperTool = new LandscapeTool(-1, LandscapeTool::TOOL_DROPPER, "~res:/LandscapeEditor/SpecialTools/dropper.png");
     dropperTool->size = 1.0f;
     dropperTool->height = prevHeightValue = 0.f;
     
@@ -79,7 +79,7 @@ LandscapeToolsPanelHeightmap::LandscapeToolsPanelHeightmap(LandscapeToolsPanelDe
     AddControl(dropperIcon);
     
 
-    copypasteTool = new LandscapeTool(-1, LandscapeTool::TOOL_COPYPASTE, FilePath("~res:/LandscapeEditor/SpecialTools/copypaste.png"));
+    copypasteTool = new LandscapeTool(-1, LandscapeTool::TOOL_COPYPASTE, "~res:/LandscapeEditor/SpecialTools/copypaste.png");
     
     Rect copypasteRect = dropperRect;
     copypasteRect.x = (copypasteRect.x + copypasteRect.dx + ControlsFactory::OFFSET);

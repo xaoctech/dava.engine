@@ -74,7 +74,7 @@ void ParticleEmitterNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 	Entity::Load(archive, sceneFile);
 	
 	String path = archive->GetString("yamlPath");
-	yamlPath = sceneFile->GetScenePath() + FilePath(path);
+	yamlPath = sceneFile->GetScenePath() + path;
 	LoadFromYaml(yamlPath);
 }
 
