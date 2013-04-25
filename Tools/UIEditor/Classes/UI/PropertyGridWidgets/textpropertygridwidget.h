@@ -33,7 +33,7 @@ protected:
     virtual void UpdatePushButtonWidgetWithPropertyValue(QPushButton *pushButtonWidget, const QMetaProperty& curProperty);
 
     // Handle UI Control State is changed - needed for updating Localization Text.
-    virtual void HandleSelectedUIControlStateChanged(UIControl::eControlState newState);
+    virtual void HandleSelectedUIControlStatesChanged(const Vector<UIControl::eControlState>& newStates);
 
 private:
     Ui::TextPropertyGridWidget *ui;

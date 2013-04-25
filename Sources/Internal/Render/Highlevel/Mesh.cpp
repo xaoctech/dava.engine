@@ -30,6 +30,7 @@
 #include "Render/Highlevel/Mesh.h"
 #include "Render/Highlevel/RenderBatch.h"
 #include "Render/3D/PolygonGroup.h"
+#include "Render/Highlevel/ShadowVolume.h"
 namespace DAVA
 {
 
@@ -88,6 +89,32 @@ void Mesh::Save(KeyedArchive *archive, SceneFileV2 *sceneFile)
 void Mesh::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
 {
 	RenderObject::Load(archive, sceneFile);
+}
+
+void Mesh::BakeTransform(const Matrix4 & transform)
+{
+	uint32 size = renderBatchArray.size();
+	for(uint32 i = 0; i < size; ++i)
+	{
+		PolygonGroup * pg = renderBatchArray[i]->GetPolygonGroup();
+		DVASSERT(pg);
+		pg->ApplyMatrix(transform);
+		pg->BuildBuffers();
+
+		renderBatchArray[i]->UpdateAABBoxFromSource();
+	}
+
+	RecalcBoundingBox();
+}
+
+ShadowVolume * Mesh::CreateShadow()
+{
+	DVASSERT(renderBatchArray.size() == 1);
+
+	ShadowVolume * newShadowVolume = new ShadowVolume();
+	newShadowVolume->MakeShadowVolumeFromPolygonGroup(GetRenderBatch(0)->GetPolygonGroup());
+
+	return newShadowVolume;
 }
 
 };

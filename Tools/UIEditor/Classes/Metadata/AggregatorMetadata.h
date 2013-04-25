@@ -21,8 +21,7 @@ class AggregatorMetadata : public BaseMetadata
 protected:
     // Accessors to the Tree Node.
     HierarchyTreeAggregatorNode* GetNode() const;
-    virtual QString GetUIControlClassName() { return "UIControladfsadfasdf"; };
-
+	
     // Getters/setters.
     QString GetName() const;
     void SetName(const QString& name);

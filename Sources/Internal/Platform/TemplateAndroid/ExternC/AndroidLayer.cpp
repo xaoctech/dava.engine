@@ -29,7 +29,7 @@ extern "C"
 	JNIEXPORT void JNICALL Java_com_dava_framework_JNIActivity_nativeOnAccelerometer(JNIEnv * env, jobject classthis, jfloat x, jfloat y, jfloat z);
 
 	//JNIGLSurfaceView
-	JNIEXPORT void JNICALL Java_com_dava_framework_JNIGLSurfaceView_nativeOnTouch(JNIEnv * env, jobject classthis, jint action, jint id, jfloat x, jfloat y, jlong time);
+	JNIEXPORT void JNICALL Java_com_dava_framework_JNIGLSurfaceView_nativeOnTouch(JNIEnv * env, jobject classthis, jint action, jint id, jfloat x, jfloat y, jdouble time);
 	JNIEXPORT void JNICALL Java_com_dava_framework_JNIGLSurfaceView_nativeOnKeyUp(JNIEnv * env, jobject classthis, jint keyCode);
 	JNIEXPORT void JNICALL Java_com_dava_framework_JNIGLSurfaceView_nativeOnResumeView(JNIEnv * env, jobject classthis);
 	JNIEXPORT void JNICALL Java_com_dava_framework_JNIGLSurfaceView_nativeOnPauseView(JNIEnv * env, jobject classthis);
@@ -236,7 +236,7 @@ void Java_com_dava_framework_JNIActivity_nativeOnAccelerometer(JNIEnv * env, job
 
 
 // CALLED FROM JNIGLSurfaceView
-void Java_com_dava_framework_JNIGLSurfaceView_nativeOnTouch(JNIEnv * env, jobject classthis, jint action, jint id, jfloat x, jfloat y, jlong time)
+void Java_com_dava_framework_JNIGLSurfaceView_nativeOnTouch(JNIEnv * env, jobject classthis, jint action, jint id, jfloat x, jfloat y, jdouble time)
 {
 	if(core)
 	{
@@ -279,9 +279,10 @@ void Java_com_dava_framework_JNIRenderer_nativeResize(JNIEnv * env, jobject clas
 {
 	if(core)
 	{
-//		LOGI("__ NATIVE RESIZE ___ %d, %d", w, h);
+		LOGI("__ NATIVE RESIZE ___ %d, %d", w, h);
 
-		core->ResizeView(w, h);
+//		core->ResizeView(w, h);
+        core->RenderRecreated(w, h);
 
 // 		DAVA::Sound *s = DAVA::Sound::Create("~res:/Sound/lake.wav", DAVA::Sound::TYPE_STATIC);
 // 		if(s)
@@ -309,7 +310,7 @@ void Java_com_dava_framework_JNIRenderer_nativeRenderRecreated(JNIEnv * env, job
 			androidDelegate->SetBuffers(0, 0);
 		}
 
-		core->RenderRecreated();
+//		core->RenderRecreated();
 	}
 }
 void Java_com_dava_framework_JNIApplication_SetAssetManager(JNIEnv * env, jobject classthis, jobject assetManager)

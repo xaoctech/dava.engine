@@ -131,7 +131,12 @@ Sprite* Sprite::PureCreate(const String & spriteName, Sprite* forPointer)
         spr = new Sprite();
     }
     spr->resourceSizeIndex = sizeIndex;
-    spr->InitFromFile(fp, pathName, texturePath);
+    
+    if(texturePath.empty())
+        spr->InitFromFile(fp, pathName);
+    else
+        spr->InitFromFile(fp, texturePath);
+    
     
     SafeRelease(fp);
     
@@ -197,26 +202,16 @@ File * Sprite::LoadLocalizedFile(const String &spritePathname, String &texturePa
     return fp;
 }
     
-void Sprite::InitFromFile(File *file, const String &pathName, const String &texturePathname)
+void Sprite::InitFromFile(File *file, const String &pathName)
 {
 	bool usedForScale = false;//Думаю, после исправлений в конвертере, эта магия больше не нужна. Но переменную пока оставлю.
 
 //	uint64 timeSpriteRead = SystemTimer::Instance()->AbsoluteMS();
 
-    String texturePath = texturePathname;
-	size_t tpos = texturePath.rfind("/");
-	if(tpos != String::npos)
-	{
-		texturePath.erase(tpos + 1);
-	}
-
-	char tempBuf[1024];
-
-
     type = SPRITE_FROM_FILE;
 	relativePathname = pathName;
-    relativeTexturePathname = texturePathname;
-    
+
+	char tempBuf[1024];
 	file->ReadLine(tempBuf, 1024);
 	sscanf(tempBuf, "%d", &textureCount);
 	textures = new Texture*[textureCount];
@@ -228,6 +223,11 @@ void Sprite::InitFromFile(File *file, const String &pathName, const String &text
 	{
 		file->ReadLine(tempBuf, 1024);
 		sscanf(tempBuf, "%s", textureCharName);
+        
+        
+        String texturePath, pname;
+        FileSystem::Instance()->SplitPath(pathName, texturePath, pname);
+        
 		String tp = texturePath + textureCharName;
 //		Logger::Debug("Opening texture: %s", tp.c_str());
 		textures[k] = Texture::CreateFromFile(tp);
@@ -353,6 +353,9 @@ Sprite* Sprite::Create(const String &spriteName)
 	if (!spr)
 	{
 		spr = CreateFromTexture(Vector2(16.f, 16.f), Texture::GetPinkPlaceholder(), Vector2(0.f, 0.f), Vector2(16.f, 16.f));
+        
+        spr->type = SPRITE_FROM_FILE;
+        spr->relativePathname = spriteName;
 	}
 	return spr;
 }
@@ -612,8 +615,8 @@ Texture* Sprite::GetTexture()
 Texture* Sprite::GetTexture(int32 frameNumber)
 {
 //	DVASSERT(frameNumber > -1 && frameNumber < frameCount);
-    frame = Clamp(frame, 0, frameCount - 1);
-	return textures[frameTextureIndex[frameNumber]];
+    frame = Clamp(frameNumber, 0, frameCount - 1);
+	return textures[frameTextureIndex[frame]];
 }
 	
 float32 *Sprite::GetTextureVerts(int32 frame)
@@ -1400,7 +1403,8 @@ void Sprite::DrawPoints(Vector2 *verticies)
 	
 float32 Sprite::GetRectOffsetValueForFrame(int32 frame, eRectsAndOffsets valueType) const
 {
-	return rectsAndOffsets[frame][valueType];
+	int32 clampedFrame = Clamp(frame, 0, frameCount - 1);
+	return rectsAndOffsets[clampedFrame][valueType];
 }
 
 void Sprite::PrepareForNewSize()
@@ -1561,37 +1565,56 @@ void Sprite::Reload()
 {
     if(type == SPRITE_FROM_FILE)
     {
-        for(int32 i = 0; i < textureCount; ++i)
-        {
-			if(textures[i] == Texture::GetPinkPlaceholder())
-			{
-				SafeRelease(textures[i]);
-				textures[i] = Texture::CreateFromFile(textureNames[i]);
-			}
-			else if(textures[i] && !textures[i]->GetPathname().empty())
-			{
-				textures[i]->Reload();
-			}
-			else
-			{
-				Logger::Error("[Sprite::Reloa] Something strange with texture_%d", i);
-			}
-        }
-        
+        ReloadSpriteTextures();
+
+        int32 sizeIndex = resourceSizeIndex;
+
         Clear();
+        
+        resourceSizeIndex = sizeIndex;
 
         File *fp = File::Create(relativePathname, File::READ | File::OPEN);
         if(fp)
         {
-            InitFromFile(fp, relativePathname, relativeTexturePathname);
+            InitFromFile(fp, relativePathname);
+
+            SetFrame(frame);
+            
             SafeRelease(fp);
         }
 		else
 		{
 			Logger::Warning("Unable to reload sprite %s", relativePathname.c_str());
+            
+            String spriteName = relativePathname;
+            
 			InitFromTexture(Texture::GetPinkPlaceholder(), 0, 0, 16.0f, 16.0f, 16, 16, false);
+            
+            type = SPRITE_FROM_FILE;
+            relativePathname = spriteName;
 		}
     }
 }
+    
+void Sprite::ReloadSpriteTextures()
+{
+    for(int32 i = 0; i < textureCount; ++i)
+    {
+        if(textures[i] == Texture::GetPinkPlaceholder())
+        {
+            SafeRelease(textures[i]);
+            textures[i] = Texture::CreateFromFile(textureNames[i]);
+        }
+        else if(textures[i] && !textures[i]->GetPathname().empty())
+        {
+            textures[i]->Reload();
+        }
+        else
+        {
+            Logger::Error("[Sprite::ReloadSpriteTextures] Something strange with texture_%d", i);
+        }
+    }
+}
+    
     
 };

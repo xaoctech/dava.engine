@@ -34,10 +34,19 @@ public:
 	
 	explicit HierarchyTreeController(QObject* parent = NULL);
     virtual ~HierarchyTreeController();
-    
+
+	void ConnectToSignals();
+	void DisconnectFromSignals();
+
 	bool NewProject(const QString& projectPath);
 	bool Load(const QString& projectPath);
-	bool Save(const QString& projectPath);
+
+	// Perform the save for the changed only screens or for all screens.
+	bool SaveOnlyChangedScreens(const QString& projectPath);
+	bool SaveAll(const QString& projectPath);
+
+	// Get the list of unsaved screens.
+	List<HierarchyTreeScreenNode*> GetUnsavedScreens();
 
 	void CloseProject();
 
@@ -102,6 +111,9 @@ signals:
 	
 	void SelectedTreeItemChanged(const HierarchyTreeNode*);
 	
+protected slots:
+	void OnUnsavedChangesNumberChanged();
+
 protected:
 	void Clear();
 	

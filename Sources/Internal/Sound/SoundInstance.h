@@ -75,7 +75,7 @@ public:
 		\brief Get current volume.
 		\returns Current volume.
 	*/
-	float32	GetVolume();
+	float32	GetVolume() const;
 
 	void SetPosition(const Vector3 & position);
 	void SetIgnorePosition(bool ignorePosition);
@@ -104,7 +104,7 @@ public:
 		\brief Get playback state.
 		\returns Current playback state.
 	*/
-	eState GetState();
+	eState GetState() const;
 
 	IMPLEMENT_EVENT_DISPATCHER(soundInstanceEventDispatcher);
 
@@ -112,7 +112,12 @@ private:
 	
 
 	SoundInstance();
-	virtual ~SoundInstance() {};
+	virtual ~SoundInstance()
+    {
+#ifdef __DAVAENGINE_ANDROID__
+        SafeRelease(parentSound);
+#endif //#ifdef __DAVAENGINE_ANDROID__
+    };
     
 #ifdef __DAVAENGINE_ANDROID__
     SoundInstance(Sound * parent);

@@ -10,6 +10,12 @@
 
 #include "SceneGraphModel.h"
 
+#include "../../LandscapeEditor/LandscapesController.h"
+#include "../../SceneEditor/SceneEditorScreenMain.h"
+#include "../../SceneEditor/EditorBodyControl.h"
+#include "../../AppScreens.h"
+
+
 #include <QKeyEvent>
 
 QSceneGraphTreeView::QSceneGraphTreeView(QWidget *parent)
@@ -165,6 +171,18 @@ void QSceneGraphTreeView::ShowSceneGraphMenu(const QModelIndex &index, const QPo
 	// For "custom" Particles Editor nodes the "generic" ones aren't needed".
     if (sceneGraphModel->GetParticlesEditorSceneModelHelper().NeedDisplaySceneEditorPopupMenuItems(index))
     {
+		SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+		LandscapesController *landsacpesController = activeScene->GetLandscapesController();
+
+		SceneEditorScreenMain *screen = static_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen(SCREEN_SCENE_EDITOR_MAIN));
+		EditorBodyControl *c = screen->FindCurrentBody()->bodyControl;
+
+		bool canChangeScene = !landsacpesController->EditorLandscapeIsActive() && !c->LandscapeEditorActive();
+		if(!canChangeScene)
+			return;
+
+
+
 		AddActionToMenu(&menu, QString("Remove Root Nodes"), new CommandRemoveRootNodes());
 		AddActionToMenu(&menu, QString("Look at Object"), new CommandLockAtObject());
 		AddActionToMenu(&menu, QString("Remove Object"), new CommandRemoveSceneNode());
@@ -174,13 +192,18 @@ void QSceneGraphTreeView::ShowSceneGraphMenu(const QModelIndex &index, const QPo
 		Entity *node = static_cast<Entity *>(sceneGraphModel->ItemData(index));
 		if (node)
 		{
-			KeyedArchive *properties = node->GetCustomProperties();
-			if (properties && properties->IsKeyExists(String("editor.referenceToOwner")))
-			{
-				String filePathname = properties->GetString(String("editor.referenceToOwner"));
-				AddActionToMenu(&menu, QString("Edit Model"), new CommandEditScene(filePathname));
-				AddActionToMenu(&menu, QString("Reload Model"), new CommandReloadScene(filePathname));
-			}
+            SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+            if(node->GetParent() == activeScene->GetScene())
+            {
+                KeyedArchive *properties = node->GetCustomProperties();
+                if (properties && properties->IsKeyExists(String("editor.referenceToOwner")))
+                {
+                    String filePathname = properties->GetString(String("editor.referenceToOwner"));
+                    AddActionToMenu(&menu, QString("Edit Model"), new CommandEditScene(filePathname));
+                    AddActionToMenu(&menu, QString("Reload Model"), new CommandReloadScene(filePathname));
+                    AddActionToMenu(&menu, QString("Reload Model From"), new CommandReloadEntityFrom(filePathname));
+                }
+            }
 		}
 	}
 	

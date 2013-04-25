@@ -92,7 +92,7 @@ protected:
     bool setPropertyForAllStates;
     
     // Current state.
-    UIControl::eControlState curState;
+	Vector<UIControl::eControlState> curStates;
 
 	// The vector of Command Data with the initial values.
     COMMANDDATAVECT commandData;
@@ -124,7 +124,7 @@ template<typename Type>
 {
     this->curValue = value;
     this->setPropertyForAllStates = allStates;
-    this->curState = baseMetadata->GetUIControlState();
+    this->curStates = baseMetadata->GetUIControlStates();
     this->commandData = BuildCommandData(baseMetadata);
 }
 
@@ -190,7 +190,7 @@ template<typename Type>
     baseMetadata->SetupParams(params);
     
     // Restore the Metadata UI Control state.
-    baseMetadata->SetUIControlState(curState);
+    baseMetadata->SetUIControlStates(curStates);
     
     return baseMetadata;
 }
@@ -242,18 +242,21 @@ template<typename Type>
 
 	if (setPropertyForAllStates)
 	{
-		//Set property text for all states
+		Vector<UIControl::eControlState> states;
+
 		int statesCount = UIControlStateHelper::GetUIControlStatesCount();
 		for (int stateID = 0; stateID < statesCount; stateID ++)
 		{
-			UIControl::eControlState state = UIControlStateHelper::GetUIControlState(stateID);
-			//Change control state and set text property value
-			baseMetadata->SetUIControlState(state);
-			PropertiesHelper::SetAllPropertyValues<Type>(baseMetadata, propertyName, newValue);
+			states.push_back(UIControlStateHelper::GetUIControlState(stateID));
 		}
+
+		baseMetadata->SetUIControlStates(states);
+		PropertiesHelper::SetAllPropertyValues<Type>(baseMetadata, propertyName, newValue);
+		baseMetadata->SetUIControlStates(this->curStates);
 	}
 	else
 	{
+		baseMetadata->SetUIControlStates(this->curStates);
 		PropertiesHelper::SetAllPropertyValues<Type>(baseMetadata, propertyName, newValue);
 	}
 	

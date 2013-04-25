@@ -41,6 +41,32 @@ QPair<QtPropertyItem*, QtPropertyItem*> QtPropertyModel::AppendProperty(const QS
 	return QPair<QtPropertyItem*, QtPropertyItem*>(newPropertyName, newPropertyValue);
 }
 
+QtPropertyData * QtPropertyModel::GetProperty(const QString &name, QtPropertyItem* parent/* = NULL*/)
+{
+    QStandardItem* root = (QStandardItem *) parent;
+	if(NULL == root)
+	{
+		root = invisibleRootItem();
+	}
+
+    for(DAVA::int32 r = 0; r < root->rowCount(); ++r)
+    {
+        QtPropertyItem *keyItem = dynamic_cast<QtPropertyItem *>(root->child(r, 0));
+        DVASSERT(keyItem);
+        
+        if(keyItem->GetPropertyData()->GetValue().toString() == name)
+        {
+            QtPropertyItem *dataItem = dynamic_cast<QtPropertyItem *>(root->child(r, 1));
+            DVASSERT(dataItem);
+            
+            return dataItem->GetPropertyData();
+        }
+    }
+    
+    return NULL;
+}
+
+
 void QtPropertyModel::RemoveProperty(QtPropertyItem* item)
 {
 	removeRow(indexFromItem(item).row());

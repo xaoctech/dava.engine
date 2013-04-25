@@ -77,7 +77,7 @@ void LayerForceWidget::Init(ParticleEmitter* emitter, ParticleLayer* layer, uint
 	forceVariationTimeLine->AddLines(PropLineWrapper<Vector3>(curForce->GetForceVariation()).GetProps(), colors, legends);
 	forceVariationTimeLine->EnableLock(true);
 
-	forceOverLifeTimeLine->Init(layer->startTime, lifeTime, updateMinimized, true, false);
+	forceOverLifeTimeLine->Init(0, 1, updateMinimized, true, false);
 	forceOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(curForce->GetForceOverlife()).GetProps(), Qt::blue, "forces over life");
 
 	blockSignals = false;

@@ -68,6 +68,9 @@ namespace PropertyNames
 	// UI Spinner properties.
 	static const char* UISPINNER_PREV_BUTTON_TEXT = "PrevButtonText";
 	static const char* UISPINNER_NEXT_BUTTON_TEXT = "NextButtonText";
+	
+	// Custom Control properties.
+	static const char* CUSTOM_CONTROL_NAME = "CustomControlName";
 }
 };
 

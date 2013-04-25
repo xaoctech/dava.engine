@@ -201,6 +201,8 @@ public:
     virtual float32 ViewPosition(UIScrollBar *forScrollBar);
     virtual void OnViewPositionChanged(UIScrollBar *byScrollBar, float32 newPosition);
 
+	virtual UIControl *Clone();
+
 protected:
 	void InitAfterYaml();
 	virtual ~UIList();

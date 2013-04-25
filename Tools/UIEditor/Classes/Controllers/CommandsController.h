@@ -43,8 +43,6 @@ public:
     // These methods are called when property change is succeeded or failed.
     void EmitChangePropertySucceeded(const QString& propertyName);
     void EmitChangePropertyFailed(const QString& propertyName);
-
-	bool IsLastChangeSaved() const;
 	
 signals:
     // Called when some command changes the properties, so the values need to be updated.
@@ -64,8 +62,7 @@ protected slots:
 	void OnProjectSaved();
     
 protected:
-	int32 unsavedChanges;
-	
+
 	// Undo/Redo controller.
 	UndoRedoController undoRedoController;
 };
