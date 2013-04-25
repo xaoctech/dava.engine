@@ -9,7 +9,7 @@
 
 class SceneEditorProxy;
 
-class SceneManager : public QObject, public DAVA::StaticSingleton<SceneManager>
+class SceneSignals : public QObject, public DAVA::StaticSingleton<SceneSignals>
 {
 	Q_OBJECT
 
