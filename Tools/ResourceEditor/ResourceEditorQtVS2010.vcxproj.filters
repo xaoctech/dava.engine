@@ -1398,9 +1398,6 @@
     <ClCompile Include="Classes\Commands\CommandsManager.cpp">
       <Filter>Sources\Commands</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Commands\CommandViewport.cpp">
-      <Filter>Sources\Commands</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Commands\CustomColorCommands.cpp">
       <Filter>Sources\Commands</Filter>
     </ClCompile>
@@ -1413,13 +1410,7 @@
     <ClCompile Include="Classes\Commands\HeightmapEditorCommands.cpp">
       <Filter>Sources\Commands</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Commands\LandscapeOptionsCommands.cpp">
-      <Filter>Sources\Commands</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Commands\LibraryCommands.cpp">
-      <Filter>Sources\Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Commands\ModificationOptionsCommands.cpp">
       <Filter>Sources\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\ParticleEditorCommands.cpp">
@@ -1476,9 +1467,6 @@
     <ClCompile Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexHelper.cpp">
       <Filter>Sources\Qt\DockSetSwitchIndex</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Commands\EditCommands.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\LandscapeEditor\EditorLandscape.cpp">
       <Filter>Sources\LandscapeEditor</Filter>
     </ClCompile>
@@ -1487,9 +1475,6 @@
     </ClCompile>
     <ClCompile Include="_GeneratedQt\DockHangingObjects\HangingObjectsView_moc.cpp">
       <Filter>QtGenerated\DockHangingObjects</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Commands\HangingObjectsCommands.cpp">
-      <Filter>Sources\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\DockHangingObjects\HangingObjectsHelper.cpp">
       <Filter>Sources\Qt\DockHangingObjects</Filter>
@@ -2651,9 +2636,6 @@
     <ClInclude Include="Classes\Commands\CommandsManager.h">
       <Filter>Sources\Commands</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Commands\CommandViewport.h">
-      <Filter>Sources\Commands</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands\CustomColorCommands.h">
       <Filter>Sources\Commands</Filter>
     </ClInclude>
@@ -2666,13 +2648,7 @@
     <ClInclude Include="Classes\Commands\HeightmapEditorCommands.h">
       <Filter>Sources\Commands</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Commands\LandscapeOptionsCommands.h">
-      <Filter>Sources\Commands</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands\LibraryCommands.h">
-      <Filter>Sources\Commands</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Commands\ModificationOptionsCommands.h">
       <Filter>Sources\Commands</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands\ParticleEditorCommands.h">
@@ -2720,9 +2696,6 @@
     <ClInclude Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexHelper.h">
       <Filter>Sources\Qt\DockSetSwitchIndex</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Commands\EditCommands.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Collada\ColladaErrorCodes.h">
       <Filter>Sources\Collada</Filter>
     </ClInclude>
@@ -2731,9 +2704,6 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockHangingObjects\HangingObjectsView.h">
       <Filter>Sources\Qt\DockHangingObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Commands\HangingObjectsCommands.h">
-      <Filter>Sources\Commands</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockHangingObjects\HangingObjectsHelper.h">
       <Filter>Sources\Qt\DockHangingObjects</Filter>
