@@ -15,16 +15,6 @@ protected:
 };
 
 
-class CommandRefreshSceneGraph: public Command
-{
-public:	
-	CommandRefreshSceneGraph();
-    
-protected:	
-    
-    virtual void Execute();
-};
-
 class CommandLockAtObject: public Command
 {
 public:
