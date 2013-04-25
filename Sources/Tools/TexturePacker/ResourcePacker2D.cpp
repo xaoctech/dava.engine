@@ -24,7 +24,7 @@ ResourcePacker2D::ResourcePacker2D()
 
 FilePath ResourcePacker2D::GetProcessFolderName()
 {
-	return FilePath("$process/");
+	return "$process/";
 }
 
 void ResourcePacker2D::InitFolders(const FilePath & inputPath,const FilePath & outputPath)
@@ -33,7 +33,7 @@ void ResourcePacker2D::InitFolders(const FilePath & inputPath,const FilePath & o
     
 	inputGfxDirectory = inputPath;
 	outputGfxDirectory = outputPath;
-	excludeDirectory = inputPath + FilePath("../");
+	excludeDirectory = inputPath + "../";
 }
     
 void ResourcePacker2D::PackResources()
@@ -56,8 +56,7 @@ void ResourcePacker2D::PackResources()
 	}
 
 
-    FilePath md5path(excludeDirectory + GetProcessFolderName());
-	if (IsMD5ChangedDir(md5path, outputGfxDirectory, gfxDirName + ".md5", true))
+	if (IsMD5ChangedDir(processDirectoryPath, outputGfxDirectory, gfxDirName + ".md5", true))
 	{
 		if (Core::Instance()->IsConsoleMode())
 			printf("[Gfx not available or changed - performing full repack]\n");
@@ -78,7 +77,7 @@ void ResourcePacker2D::PackResources()
 	RecursiveTreeWalk(inputGfxDirectory, outputGfxDirectory);
 
 	// Put latest md5 after convertation
-	IsMD5ChangedDir(md5path, outputGfxDirectory, gfxDirName + ".md5", true);
+	IsMD5ChangedDir(processDirectoryPath, outputGfxDirectory, gfxDirName + ".md5", true);
 }
 
 
@@ -139,10 +138,8 @@ bool ResourcePacker2D::IsMD5ChangedFile(const FilePath & processDirectoryPath, c
 {
     DVASSERT(processDirectoryPath.IsDirectoryPathname());
 
-    FilePath pathnameWithoutExtension(psdName);
-    pathnameWithoutExtension.TruncateExtension();
-    
-	FilePath md5FileName = processDirectoryPath + pathnameWithoutExtension + FilePath(".md5");
+    FilePath filename = FilePath::CreateWithNewExtension(psdName, ".md5");
+	FilePath md5FileName = processDirectoryPath + filename;
 
 	uint8 oldMD5Digest[16];
 	uint8 newMD5Digest[16];
@@ -193,7 +190,7 @@ DefinitionFile * ResourcePacker2D::ProcessPSD(const FilePath & processDirectoryP
 	
 	try 
 	{
-		Magick::readImages(&layers, psdPathname.ResolvePathname());
+		Magick::readImages(&layers, psdPathname.GetAbsolutePathname());
 		
 		if (layers.size() == 0)
 		{
@@ -243,7 +240,7 @@ DefinitionFile * ResourcePacker2D::ProcessPSD(const FilePath & processDirectoryP
 			currentLayer.magick("PNG");
 			FilePath outputFile = processDirectoryPath + psdNameWithoutExtension;
 			outputFile.ReplaceExtension(String(Format("%d.png", k - 1)));
-			currentLayer.write(outputFile.ResolvePathname());
+			currentLayer.write(outputFile.GetAbsolutePathname());
 		}
 		
 		
@@ -432,7 +429,7 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 	bool modified = isGfxModified;
 	// Process all psd / png files
 
-	if (IsMD5ChangedDir(processDirectoryPath, inputPath, FilePath("dir.md5"), false))
+	if (IsMD5ChangedDir(processDirectoryPath, inputPath, "dir.md5", false))
 	{
 		modified = true;
 		//if (Core::Instance()->IsConsoleMode())
@@ -532,10 +529,10 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 			{
 				if ((filename.size() > 0) && (filename[0] != '.'))
                 {
-                    FilePath input = inputPath + FilePath(filename);
+                    FilePath input = inputPath + filename;
                     input.MakeDirectoryPathname();
                     
-                    FilePath output = outputPath + FilePath(filename);
+                    FilePath output = outputPath + filename;
                     output.MakeDirectoryPathname();
 					RecursiveTreeWalk(input, output);
                 }

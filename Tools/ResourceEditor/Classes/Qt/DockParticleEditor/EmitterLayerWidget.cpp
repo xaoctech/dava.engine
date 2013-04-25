@@ -446,7 +446,7 @@ void EmitterLayerWidget::OnSpriteBtn()
 {
 	FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
 	
-	projectPath += FilePath("Data/Gfx/Particles/");
+	projectPath += "Data/Gfx/Particles/";
     
 	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open particle sprite"), QString::fromStdString(projectPath.GetAbsolutePathname()), QString("Effect File (*.txt)"));
 	if (filePath.isEmpty())
@@ -459,7 +459,7 @@ void EmitterLayerWidget::OnSpriteBtn()
 #ifdef __DAVAENGINE_WIN32__
     //TODO: fix this code on win32 on working FilePath
 	// Remove the drive name, if any.
-	String path = filePathToBeOpened.ResolvePathname();
+	String path = filePathToBeOpened.GetAbsolutePathname();
 	String::size_type driveNamePos = path.find(":/");
 	if (driveNamePos != String::npos && path.length() > 2)
 	{
@@ -468,11 +468,11 @@ void EmitterLayerWidget::OnSpriteBtn()
 	}
 #endif
 
-	if (FilePath(filePathToBeOpened.GetDirectory()) != projectPath)
+	if (filePathToBeOpened.GetDirectory() != projectPath)
 	{
 		QString message = QString("You've opened Particle Sprite from incorrect path (%1).\n Correct one is %2.").
-			arg(QString::fromStdString(filePathToBeOpened.GetDirectory().ResolvePathname())).
-			arg(QString::fromStdString(projectPath.GetDirectory().ResolvePathname()));
+			arg(QString::fromStdString(filePathToBeOpened.GetDirectory().GetAbsolutePathname())).
+			arg(QString::fromStdString(projectPath.GetDirectory().GetAbsolutePathname()));
 
 		QMessageBox msgBox(QMessageBox::Warning, "Warning", message);
 		msgBox.exec();

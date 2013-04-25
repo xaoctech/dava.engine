@@ -238,7 +238,7 @@ bool GraphicsFontDefinition::LoadFontDefinition(const FilePath & fontDefName)
 //    String fileName = fontDefName.substr(pos + 1);
 //    String pathName = fontDefName.substr(0, pos + 1) + LocalizationSystem::Instance()->GetCurrentLocale() + "/" + fileName;
     
-    FilePath pathName = fontDefName.GetDirectory() + FilePath(LocalizationSystem::Instance()->GetCurrentLocale() + "/" + fontDefName.GetFilename());
+    FilePath pathName = fontDefName.GetDirectory() + (LocalizationSystem::Instance()->GetCurrentLocale() + "/" + fontDefName.GetFilename());
     
     file = File::Create(pathName, File::READ|File::OPEN);
     

@@ -234,9 +234,9 @@ void ColladaDocument::SaveScene( const FilePath & scenePath, const String & scen
     
 	DAVA::Logger::Debug("* Write begin: %s/%s\n", scenePath.GetAbsolutePathname().c_str(), sceneName.c_str());
 	
-	FilePath scenePathName = scenePath + FilePath(sceneName);
+	FilePath scenePathName = scenePath + sceneName;
 	
-	sceneFP = fopen(scenePathName.ResolvePathname().c_str(), "wb");
+	sceneFP = fopen(scenePathName.GetAbsolutePathname().c_str(), "wb");
 	if (sceneFP == 0)return;
 	
     

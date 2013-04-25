@@ -50,7 +50,7 @@ void ProjectManager::ProjectOpen(const QString &path)
 			DAVA::FilePath projectPath = PathnameToDAVAStyle(path);
             projectPath.MakeDirectoryPathname();
 
-			DAVA::FilePath dataSource3Dpathname = projectPath + DAVA::FilePath("DataSource/3d/");
+			DAVA::FilePath dataSource3Dpathname = projectPath + "DataSource/3d/";
 
 			EditorSettings::Instance()->SetProjectPath(projectPath);
 			EditorSettings::Instance()->SetDataSourcePath(dataSource3Dpathname);
@@ -59,7 +59,7 @@ void ProjectManager::ProjectOpen(const QString &path)
 			SceneValidator::Instance()->CreateDefaultDescriptors(dataSource3Dpathname);
 			SceneValidator::Instance()->SetPathForChecking(projectPath);
 
-			EditorConfig::Instance()->ParseConfig(projectPath + FilePath("EditorConfig.yaml"));
+			EditorConfig::Instance()->ParseConfig(projectPath + "EditorConfig.yaml");
 		}
 
 		SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());

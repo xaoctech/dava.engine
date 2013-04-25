@@ -45,11 +45,11 @@ GameCore::~GameCore()
 
 void GameCore::OnAppStarted()
 {
-	Logger::Instance()->SetLogFilename(FilePath("ResEditor.txt"));
+	Logger::Instance()->SetLogFilename("ResEditor.txt");
 	RenderManager::Instance()->SetFPS(30);
 
     LocalizationSystem::Instance()->SetCurrentLocale(EditorSettings::Instance()->GetLanguage());
-	LocalizationSystem::Instance()->InitWithDirectory(FilePath("~res:/Strings/"));
+	LocalizationSystem::Instance()->InitWithDirectory("~res:/Strings/");
 
     
 #ifdef __DAVAENGINE_BEAST__

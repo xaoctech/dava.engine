@@ -131,8 +131,8 @@ void BackGroundPropertyGridWidget::OpenSpriteDialog()
 {
 	// Pack all available sprites each time user open sprite dialog
 	ResourcePacker2D *resPacker = new ResourcePacker2D();
-	resPacker->InitFolders(FilePath(ResourcesManageHelper::GetSpritesDatasourceDirectory().toStdString()),
-                           FilePath(ResourcesManageHelper::GetSpritesDirectory().toStdString()));
+	resPacker->InitFolders(ResourcesManageHelper::GetSpritesDatasourceDirectory().toStdString(),
+                           ResourcesManageHelper::GetSpritesDirectory().toStdString());
     
     resPacker->PackResources();
 

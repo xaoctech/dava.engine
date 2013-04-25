@@ -37,7 +37,7 @@ LandscapeCursor::LandscapeCursor()
 	cursorTexture = 0;
 
 	shader = new Shader();
-	shader->LoadFromYaml(FilePath("~res:/Shaders/Landscape/cursor.shader"));
+	shader->LoadFromYaml("~res:/Shaders/Landscape/cursor.shader");
 	shader->Recompile();
 
 	uniformTexture = shader->FindUniformLocationByName("texture0");
