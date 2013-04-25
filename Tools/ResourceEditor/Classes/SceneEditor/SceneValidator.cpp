@@ -248,6 +248,7 @@ void SceneValidator::ValidateRenderBatch(Entity *ownerNode, RenderBatch *renderB
     if(materialState)
     {
         ValidateInstanceMaterialState(materialState, errorsLog);
+		ConvertLightmapSizeFromProperty(ownerNode, materialState);
     }
     
     
@@ -342,8 +343,21 @@ void SceneValidator::ValidateLandscape(Landscape *landscape, Set<String> &errors
     }
 }
 
-
-
+void SceneValidator::ConvertLightmapSizeFromProperty(Entity *ownerNode, InstanceMaterialState *materialState)
+{
+	KeyedArchive * props = ownerNode->GetCustomProperties();
+	Map<String, VariantType*> map = props->GetArchieveData();
+	for(Map<String, VariantType*>::iterator it = map.begin(); it != map.end(); it++)
+	{
+		String key = it->first;
+		if(key.find("lightmap.size") != String::npos)
+		{
+			materialState->SetLightmapSize(props->GetInt32(key, 128));
+			props->DeleteKey(key);
+			break;
+		}
+	}
+}
 
 bool SceneValidator::NodeRemovingDisabled(Entity *node)
 {
