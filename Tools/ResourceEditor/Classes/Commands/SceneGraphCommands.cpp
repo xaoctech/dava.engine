@@ -29,19 +29,6 @@ void CommandRemoveRootNodes::Execute()
 }
 
 
-CommandRefreshSceneGraph::CommandRefreshSceneGraph()
-    :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
-{
-}
-
-
-void CommandRefreshSceneGraph::Execute()
-{
-    SceneData * activeScene = SceneDataManager::Instance()->SceneGetActive();
-    activeScene->RebuildSceneGraph();
-}
-
-
 CommandLockAtObject::CommandLockAtObject()
 :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
 {
