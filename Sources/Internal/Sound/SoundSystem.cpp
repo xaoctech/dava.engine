@@ -33,6 +33,10 @@
 #include "Sound/SoundGroup.h"
 #include "Sound/FMODUtils.h"
 
+#ifdef __DAVAENGINE_IPHONE__
+#include "fmodiphone.h"
+#endif
+
 namespace DAVA
 {
 SoundSystem::SoundSystem(int32 maxChannels)
@@ -68,7 +72,9 @@ void SoundSystem::Suspend()
 
 void SoundSystem::Resume()
 {
-
+#ifdef __DAVAENGINE_IPHONE__
+    FMOD_IPhone_RestoreAudioSession();
+#endif
 }
 
 void SoundSystem::SetListenerPosition(const Vector3 & position)
