@@ -548,7 +548,7 @@ YamlNode * UISlider::SaveToYamlNode(UIYamlLoader * loader)
 	YamlNode* minBackgroundNode = this->bgMin->SaveToYamlNode(loader);
 	node->AddNodeToMap(UISLIDER_MIN_SPRITE_CONTROL_NAME, minBackgroundNode);
 
-	YamlNode* maxBackgroundNode = this->bgMin->SaveToYamlNode(loader);
+	YamlNode* maxBackgroundNode = this->bgMax->SaveToYamlNode(loader);
 	node->AddNodeToMap(UISLIDER_MAX_SPRITE_CONTROL_NAME, maxBackgroundNode);
 
     return node;
