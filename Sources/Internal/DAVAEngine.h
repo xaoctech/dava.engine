@@ -188,7 +188,6 @@
 // Sound & Music
 #include "Sound/Sound.h"
 #include "Sound/SoundSystem.h"
-#include "Sound/SoundInstance.h"
 #include "Sound/SoundGroup.h"
 
 // Particle System

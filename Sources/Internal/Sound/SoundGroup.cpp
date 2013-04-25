@@ -25,85 +25,67 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Ivan Petrochenko
+        * Created by Igor Solovey
 =====================================================================================*/
 
 #include "Sound/SoundGroup.h"
 #include "Sound/Sound.h"
-
-#ifdef __DAVAENGINE_ANDROID__
-#include <SLES/OpenSLES.h>
-#endif //#ifdef __DAVAENGINE_ANDROID__
+#include "Animation/LinearAnimation.h"
+#include "Sound/FMODUtils.h"
 
 namespace DAVA
 {
 
-SoundGroup::SoundGroup()
-:	volume(1.f)
+SoundGroup::SoundGroup() :
+animatedVolume(-1.f)
 {
-
+	FMOD_VERIFY(SoundSystem::Instance()->fmodSystem->createSoundGroup(0, &fmodSoundGroup));
 }
 
 SoundGroup::~SoundGroup()
 {
-	List<Sound*>::iterator it;
-	for(it = sounds.begin(); it != sounds.end(); ++it)
-	{
-		Sound * sound = *it;
-		sound->Release();
-	}
+	FMOD_VERIFY(fmodSoundGroup->release());
 }
 
-void SoundGroup::AddSound(Sound * sound)
+void SoundGroup::SetVolume(float32 volume)
 {
-	sound->SetVolume(volume);
-	sounds.push_back(sound);
-	sound->SetSoundGroup(this);
-}
-
-void SoundGroup::RemoveSound(Sound * sound)
-{
-	sounds.remove(sound);
-	sound->SetSoundGroup(0);
-}
-
-void SoundGroup::SetVolume(float32 _volume)
-{
-	volume = Clamp(_volume, 0.f, 1.f);
-	List<Sound*>::iterator it;
-	for(it = sounds.begin(); it != sounds.end(); ++it)
-	{
-		Sound * sound = *it;
-		sound->SetVolume(volume);
-	}
+	FMOD_VERIFY(fmodSoundGroup->setVolume(volume));
 }
 
 float32 SoundGroup::GetVolume()
 {
+	float32 volume;
+	FMOD_VERIFY(fmodSoundGroup->getVolume(&volume));
 	return volume;
 }
 
-#ifdef __DAVAENGINE_ANDROID__
-void SoundGroup::Suspend()
+void SoundGroup::Stop()
 {
-    List<Sound*>::iterator it;
-	for(it = sounds.begin(); it != sounds.end(); ++it)
-	{
-		Sound * sound = *it;
-        if(sound->GetPlayState() == SL_PLAYSTATE_PLAYING)
-            sound->Pause(true);
-	}
+	FMOD_VERIFY(fmodSoundGroup->stop());
 }
-void SoundGroup::Resume()
+
+void SoundGroup::Update()
 {
-    List<Sound*>::iterator it;
-	for(it = sounds.begin(); it != sounds.end(); ++it)
-	{
-		Sound * sound = *it;
-        if(sound->GetPlayState() == SL_PLAYSTATE_PAUSED)
-            sound->Pause(false);
-	}
+	if(animatedVolume != -1.f)
+		SetVolume(animatedVolume);
 }
-#endif //#ifdef __DAVAENGINE_ANDROID__
-    
+
+Animation * SoundGroup::VolumeAnimation(float32 newVolume, float32 time, int32 track /*= 0*/)
+{
+	animatedVolume = GetVolume();
+	Animation * a = new LinearAnimation<float32>(this, &animatedVolume, newVolume, time, Interpolation::LINEAR);
+	a->AddEvent(Animation::EVENT_ANIMATION_END, Message(this, &SoundGroup::OnVolumeAnimationEnded));
+	Retain();
+	a->Start(track);
+
+	return a;
+}
+
+void SoundGroup::OnVolumeAnimationEnded(BaseObject * caller, void * userData, void * callerData)
+{
+	SetVolume(animatedVolume);
+	animatedVolume = -1.f;
+	Release();
+}
+
 };

@@ -25,7 +25,7 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Ivan Petrochenko
+        * Created by Igor Solovey
 =====================================================================================*/
 
 #ifndef __DAVAENGINE_SOUND_H__
@@ -35,111 +35,68 @@
 #include "Base/BaseObject.h"
 #include "Base/BaseMath.h"
 #include "FileSystem/FilePath.h"
+#include "Sound/SoundSystem.h"
+#include "Base/EventDispatcher.h"
 
-
-#ifdef __DAVAENGINE_ANDROID__
-#include <SLES/OpenSLES.h>
-#include <SLES/OpenSLES_Android.h>
-#endif //#ifdef __DAVAENGINE_ANDROID__
+namespace FMOD
+{
+class Sound;
+class ChannelGroup;
+};
 
 namespace DAVA
 {
 
-class SoundDataProvider;
-class SoundChannel;
-class SoundBuffer;
-class SoundInstance;
-class SoundGroup;
-
-/**
-	\ingroup sound
-	\brief Sound
-*/
 class Sound : public BaseObject
 {
 public:
 
-	/**
-	 \enum Sound memory management types.
-	 */
 	enum eType
 	{
-		TYPE_STATIC = 0, //!< Whole data is loaded into memory when sound is created.
-		TYPE_STREAMED,   //!< Only two buffers with summary size of 0.5sec are holded in memory.
-		TYPE_MANAGED	 //!< Data is loaded into memory only before playback.
+		TYPE_STATIC = 0,
+		TYPE_STREAMED
 	};
 
-	static Sound	* Create(const FilePath & fileName, eType type, int32 priority = 0);
-	static Sound	* CreateFX(const FilePath & fileName, eType type, int32 priority = 0);
-	static Sound	* CreateMusic(const FilePath & fileName, eType type, int32 priority = 0);
+	enum eEvent
+	{
+		EVENT_COMPLETED = 1 //!< Event is performed when sound playback is completed.
+	};
 
-	virtual SoundInstance * Play();
-	virtual void Stop();
-	virtual void SetVolume(float32 volume); // [0..1]
-	virtual float32 GetVolume() const;
-	virtual void SetLooping(bool looping);
-	virtual void SetPosition(const Vector3 & position);
-	void SetIgnorePosition(bool ignorePosition);
+	static Sound * Create(const FilePath & fileName, eType type, const FastName & groupName, int32 priority = 128);
+	static Sound * Create3D(const FilePath & fileName, eType type, const FastName & groupName, int32 priority = 128);
 
-	/**
-		\brief Pause or resume playback.
-		\param[in] pause pause(true) or resume(false) playback.
-	*/
-	virtual void			Pause(bool pause);
-    
-    virtual int32           Release();
+	void SetVolume(float32 volume);
+	float32	GetVolume();
 
-	eType			GetType() const;
+	void Play();
+	void Pause(bool isPaused);
+	bool IsPaused();
+	void Stop();
+	void PerformPlaybackComplete();
 
-#ifdef __DAVAENGINE_ANDROID__
-    SLuint32 GetPlayState();
-#endif //#ifdef __DAVAENGINE_ANDROID__
-protected:
-	Sound(const FilePath & fileName, eType type, int32 priority = 0);
-	virtual ~Sound();
+	void SetLoopCount(int32 looping); // -1 = infinity
+	int32 GetLoopCount() const;
 
-	virtual bool Init();
-    
-	bool PrepareStaticBuffer();
-	void PrepareDynamicBuffers();
-	void UpdateDynamicBuffers();
+	eType GetType() const;
 
-	void AddSoundInstance(SoundInstance * soundInstance);
-	void RemoveSoundInstance(SoundInstance * soundInstance);
+private:
+	Sound(const FilePath & fileName, eType type, int32 priority);
+	~Sound();
 
-	List<SoundInstance*> soundInstances;
+	static Sound * CreateWithFlags(const FilePath & fileName, eType type, const FastName & groupName, int32 addFlags, int32 priority = 128);
+
+	void SetSoundGroup(const FastName & groupName);
+
+	Vector3 position;
+
 	FilePath fileName;
 	eType type;
-	SoundDataProvider * provider;
-	SoundBuffer * buffer;
-	SoundBuffer * streamBuffer;
 	int32 priority;
-	float32 volume;
-	bool looping;
-	Vector3 position;
-	bool ignorePosition;
-    
-#ifdef __DAVAENGINE_ANDROID__
-    SLObjectItf playerObject;
-    SLPlayItf playerPlay;
-    SLSeekItf playerSeek;
-    SLVolumeItf playerVolume;
-    
-    SLAndroidSimpleBufferQueueItf playerBufferQueue;
-    
-    int16 minVolumeLevel;
-    int16 maxVolumeLevel;
-    
-    bool InitBufferQueueAudioPlayer();
-    bool InitAssetAudioPlayer();
-#endif //#ifdef __DAVAENGINE_ANDROID__
-    
-	SoundGroup * group;
-	void SetSoundGroup(SoundGroup * group);
 
-friend class SoundChannel;
-friend class SoundInstance;
-friend class SoundGroup;
+	FMOD::Sound * fmodSound;
+	FMOD::ChannelGroup * fmodInstanceGroup;
+
+	IMPLEMENT_EVENT_DISPATCHER(eventDispatcher);
 };
 
 };

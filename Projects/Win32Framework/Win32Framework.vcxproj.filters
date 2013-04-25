@@ -606,34 +606,13 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SpriteNode.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\ALUtils.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Sound\Sound.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\SoundBuffer.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\SoundChannel.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\SoundDataProvider.h">
       <Filter>Internal\Sound</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Sound\SoundGroup.h">
       <Filter>Internal\Sound</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\SoundInstance.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\SoundOVProvider.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Sound\SoundSystem.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\SoundWVProvider.h">
       <Filter>Internal\Sound</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\UI\ScrollHelper.h">
@@ -1263,6 +1242,9 @@
     <ClInclude Include="..\..\Sources\Internal\Platform\DeviceInfo.h">
       <Filter>Internal\Platform</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Sound\FMODUtils.h">
+      <Filter>Internal\Sound</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1640,28 +1622,10 @@
     <ClCompile Include="..\..\Sources\Internal\Sound\Sound.cpp">
       <Filter>Internal\Sound</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\SoundBuffer.cpp">
-      <Filter>Internal\Sound</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\SoundChannel.cpp">
-      <Filter>Internal\Sound</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\SoundDataProvider.cpp">
-      <Filter>Internal\Sound</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Sound\SoundGroup.cpp">
       <Filter>Internal\Sound</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\SoundInstance.cpp">
-      <Filter>Internal\Sound</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\SoundOVProvider.cpp">
-      <Filter>Internal\Sound</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Sound\SoundSystem.cpp">
-      <Filter>Internal\Sound</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\SoundWVProvider.cpp">
       <Filter>Internal\Sound</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\UI\ScrollHelper.cpp">

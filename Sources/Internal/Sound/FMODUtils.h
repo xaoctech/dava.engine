@@ -28,45 +28,24 @@
         * Created by Igor Solovey
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_SOUND_SYSTEM_H__
-#define __DAVAENGINE_SOUND_SYSTEM_H__
+#ifndef __DAVAENGINE_FMODUTILS_H__
+#define __DAVAENGINE_FMODUTILS_H__
 
-#include "Base/Singleton.h"
-#include "Base/BaseTypes.h"
-#include "Base/BaseMath.h"
-
-namespace FMOD
-{
-class System;
-};
+#include "fmod.hpp"
+#include "fmod_errors.h"
 
 namespace DAVA
 {
-class SoundGroup;
-class SoundSystem : public Singleton<SoundSystem>
-{
-public:
-	SoundSystem(int32 maxChannels);
-	virtual ~SoundSystem();
 
-	void Update();
-	void Suspend();
-	void Resume();
+#define FMOD_VERIFY(command) \
+	{ \
+	FMOD_RESULT result = command; \
+	if(result != FMOD_OK) \
+	{ \
+		Logger::Error("FMOD: %s file:%s line:%d failed with error: %s", #command, __FILE__, __LINE__, FMOD_ErrorString(result)); \
+	} \
+} \
 
-	SoundGroup * GetSoundGroup(const FastName & groupName);
-private:
+}
 
-	SoundGroup * CreateSoundGroup(const FastName & groupName);
-
-	FMOD::System * fmodSystem;
-	Map<int, SoundGroup*> soundGroups;
-
-friend class SoundGroup;
-friend class Sound;
-};
-
-
-
-};
-
-#endif //__DAVAENGINE_SOUND_SYSTEM_H__
+#endif //__DAVAENGINE_FMODUTILS_H__
