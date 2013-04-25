@@ -69,6 +69,9 @@ void ProjectManager::ProjectOpen(const QString &path)
 		}
 
 		emit ProjectOpened(curProjectPath);
+
+		// TODO: 
+		// DAVA::FilePath::SetProjectPathname(curProjectPath.toStdString());
 	}
 }
 
@@ -78,5 +81,8 @@ void ProjectManager::ProjectClose()
 	{
 		emit ProjectClosed(curProjectPath);
 		curProjectPath = "";
+		
+		// TODO:
+		// DAVA::FilePath::SetProjectPathname(curProjectPath.toStdString());
 	}
 }
