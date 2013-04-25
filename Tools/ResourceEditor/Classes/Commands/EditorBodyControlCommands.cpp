@@ -5,6 +5,9 @@
 #include "../Qt/Scene/SceneDataManager.h"
 #include "../Qt/Scene/SceneData.h"
 
+#include "Scene/SceneEditorProxy.h"
+#include "Scene/System/CollisionSystem.h"
+
 CommandTransformObject::CommandTransformObject(DAVA::Entity* node, const DAVA::Matrix4& originalTransform, const DAVA::Matrix4& finalTransform)
 :	Command(COMMAND_UNDO_REDO)
 {
@@ -20,6 +23,7 @@ void CommandTransformObject::Execute()
 	if (node)
 	{
 		node->SetLocalTransform(redoTransform);
+		UpdateCollision();
 	}
 	else
 		SetState(STATE_INVALID);
@@ -30,6 +34,20 @@ void CommandTransformObject::Cancel()
 	if (node)
 	{
 		node->SetLocalTransform(undoTransform);
+		UpdateCollision();
+	}
+}
+
+void CommandTransformObject::UpdateCollision()
+{
+	SceneEditorProxy *sep = dynamic_cast<SceneEditorProxy *>(node->GetScene());
+	if(NULL != sep && NULL != sep->collisionSystem)
+	{
+		// make sure that worldtransform is up to date
+		sep->transformSystem->Process();
+
+		// update bullet object
+		sep->collisionSystem->UpdateCollisionObject(node);
 	}
 }
 
