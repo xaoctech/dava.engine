@@ -120,7 +120,7 @@ void GameCore::RegisterScreen(BaseScreen *screen)
 
 void GameCore::CreateDocumentsFolder()
 {
-    FilePath documentsPath = FileSystem::Instance()->GetUserDocumentsPath() + FilePath("UnitTests/");
+    FilePath documentsPath = FileSystem::Instance()->GetUserDocumentsPath() + "UnitTests/";
     
     FileSystem::Instance()->CreateDirectory(documentsPath, true);
     FileSystem::Instance()->SetCurrentDocumentsDirectory(documentsPath);

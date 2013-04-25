@@ -121,7 +121,7 @@ void Landscape::InitShaders()
     ReleaseShaders();
     
     tileMaskShader = new Shader();
-    tileMaskShader->LoadFromYaml(FilePath("~res:/Shaders/Landscape/tilemask.shader"));
+    tileMaskShader->LoadFromYaml("~res:/Shaders/Landscape/tilemask.shader");
     
     String defines = "";
     
@@ -165,7 +165,7 @@ void Landscape::InitShaders()
     }
     
     fullTiledShader = new Shader();
-    fullTiledShader->LoadFromYaml(FilePath("~res:/Shaders/Landscape/fulltiled_texture.shader"));
+    fullTiledShader->LoadFromYaml("~res:/Shaders/Landscape/fulltiled_texture.shader");
 	if(isFogEnabled && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
     {
         fullTiledShader->SetDefineList("VERTEX_FOG");   
@@ -1418,7 +1418,7 @@ void Landscape::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 	RenderObject::Load(archive, sceneFile);
 
     FilePath path(sceneFile->GetScenePath());
-    path += FilePath(archive->GetString("hmap"));
+    path += archive->GetString("hmap");
 
     AABBox3 boxDef;
     boxDef = archive->GetByteArrayAsType("bbox", boxDef);
@@ -1442,10 +1442,10 @@ void Landscape::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
         if(!textureName.empty())
         {
             FilePath path(sceneFile->GetScenePath());
-            path += FilePath(archive->GetString("hmap"));
+            path += archive->GetString("hmap");
 
             absPath = sceneFile->GetScenePath();
-            absPath += FilePath(textureName);
+            absPath += textureName;
         }
 
         if(sceneFile->DebugLogEnabled())
