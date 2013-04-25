@@ -109,7 +109,7 @@ const DAVA::Rect SceneCameraSystem::GetViewportRect()
 	return viewportRect;
 }
 
-DAVA::Vector2 SceneCameraSystem::GetSñreenPos(const DAVA::Vector3 &pos3)
+DAVA::Vector2 SceneCameraSystem::GetScreenPos(const DAVA::Vector3 &pos3)
 {
 	DAVA::Vector2 ret;
 
