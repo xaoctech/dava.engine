@@ -199,6 +199,7 @@ InstanceMaterialState * InstanceMaterialState::Clone()
 
 	newState->lightmapTexture = SafeRetain(lightmapTexture);
 	newState->lightmapName = lightmapName;
+	newState->lightmapSize = lightmapSize;
 	newState->uvOffset = uvOffset;
 	newState->uvScale = uvScale;
 	newState->flatColor = flatColor;
