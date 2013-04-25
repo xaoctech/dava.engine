@@ -1,6 +1,5 @@
 #include "SceneValidator.h"
 #include "EditorSettings.h"
-#include "SceneInfoControl.h"
 
 #include "Render/LibPVRHelper.h"
 #include "Render/TextureDescriptor.h"
@@ -20,14 +19,11 @@ SceneValidator::SceneValidator()
     sceneTextureCount = 0;
     sceneTextureMemory = 0;
 
-    infoControl = NULL;
-    
     pathForChecking = String("");
 }
 
 SceneValidator::~SceneValidator()
 {
-    SafeRelease(infoControl);
 }
 
 bool SceneValidator::ValidateSceneAndShowErrors(Scene *scene)
@@ -321,7 +317,8 @@ void SceneValidator::ValidateLandscape(Landscape *landscape, Set<String> &errors
     {
         if(		(Landscape::TEXTURE_DETAIL == (Landscape::eTextureLevel)i)
            ||	(Landscape::TEXTURE_TILE_FULL == (Landscape::eTextureLevel)i
-                 &&	landscape->GetTiledShaderMode() == Landscape::TILED_MODE_TILEMASK))
+                 &&	(landscape->GetTiledShaderMode() == Landscape::TILED_MODE_TILEMASK
+                 || landscape->GetTiledShaderMode() == Landscape::TILED_MODE_TILE_DETAIL_MASK)))
         {
             continue;
         }
@@ -447,27 +444,7 @@ void SceneValidator::EnumerateSceneTextures()
             }
         }
 	}
-    
-    if(infoControl)
-    {
-        infoControl->InvalidateTexturesInfo(sceneTextureCount, sceneTextureMemory);
-    }
 }
-
-void SceneValidator::SetInfoControl(SceneInfoControl *newInfoControl)
-{
-    SafeRelease(infoControl);
-    infoControl = SafeRetain(newInfoControl);
-    
-    sceneStats.Clear();
-}
-
-void SceneValidator::CollectSceneStats(const RenderManager::Stats &newStats)
-{
-    sceneStats = newStats;
-    infoControl->SetRenderStats(sceneStats);
-}
-
 
 bool SceneValidator::WasTextureChanged(Texture *texture, ImageFileFormat fileFormat)
 {
@@ -641,9 +618,6 @@ void SceneValidator::EnumerateNodes(DAVA::Scene *scene)
             nodesCount += EnumerateSceneNodes(scene->GetChild(i));
         }
     }
-    
-    if(infoControl)
-        infoControl->SetNodesCount(nodesCount);
 }
 
 int32 SceneValidator::EnumerateSceneNodes(DAVA::Entity *node)

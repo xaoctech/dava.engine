@@ -33,15 +33,15 @@ public:
     const HierarchyTreeController::SELECTEDCONTROLNODES GetActiveTreeNodesList() const;
 
     // Access to the active UI Control State.
-    UIControl::eControlState GetActiveUIControlState() const;
-    void SetActiveUIControlState(UIControl::eControlState newState);
+    Vector<UIControl::eControlState> GetActiveUIControlStates() const;
+    void SetActiveUIControlStates(const Vector<UIControl::eControlState>& newStates);
 
 signals:
     // Generated when Properties Grid is updated and needs to be re-built.
     void PropertiesGridUpdated();
     
     // Generated when UI Control State is changed.
-    void SelectedUIControlStateChanged(UIControl::eControlState newState);
+    void SelectedUIControlStatesChanged(const Vector<UIControl::eControlState>& newState);
 
 public slots:
     // Emitted by Hierarchy Tree Controller when selected control is changed.
@@ -52,7 +52,8 @@ public slots:
     void OnSelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES &selectedNodes);
     
     // Selected State is changed.
-    void OnSelectedStateChanged(UIControl::eControlState newState);
+	void OnSelectedStateChanged(UIControl::eControlState newState);
+	void OnSelectedStatesChanged(const Vector<UIControl::eControlState>& newStates);
 
 protected:
     // Connect to the signals.
@@ -76,7 +77,7 @@ private:
     HierarchyTreeController::SELECTEDCONTROLNODES activeNodes;
     
     // Active UI Control State.
-    UIControl::eControlState activeUIControlState;
+	Vector<UIControl::eControlState> activeUIControlStates;
     
     //Current localization files directory
     QString localizationDirectoryPath;

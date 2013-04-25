@@ -50,6 +50,10 @@
 					<value>true</value>
 				</dictionary>
 				<dictionary>
+					<key>org.eclipse.cdt.make.core.fullBuildTarget</key>
+					<value> -j 8 NDK_DEBUG=1</value>
+				</dictionary>
+				<dictionary>
 					<key>org.eclipse.cdt.make.core.stopOnError</key>
 					<value>true</value>
 				</dictionary>
@@ -229,6 +233,16 @@
 			<name>src/Classes/KeyedArchiveYamlTest.h</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Classes/KeyedArchiveYamlTest.h</locationURI>
+		</link>
+		<link>
+			<name>src/Classes/LocalizationTest.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Classes/LocalizationTest.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/Classes/LocalizationTest.h</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Classes/LocalizationTest.h</locationURI>
 		</link>
 		<link>
 			<name>src/Classes/MaterialCompilerTest.cpp</name>
@@ -444,6 +458,16 @@
 			<name>bin/classes/Classes/KeyedArchiveYamlTest.h</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Classes/KeyedArchiveYamlTest.h</locationURI>
+		</link>
+		<link>
+			<name>bin/classes/Classes/LocalizationTest.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Classes/LocalizationTest.cpp</locationURI>
+		</link>
+		<link>
+			<name>bin/classes/Classes/LocalizationTest.h</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Classes/LocalizationTest.h</locationURI>
 		</link>
 		<link>
 			<name>bin/classes/Classes/MaterialCompilerTest.cpp</name>

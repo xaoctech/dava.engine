@@ -6,7 +6,6 @@
 #include "../Commands/ToolsCommands.h"
 #include "../Commands/CommandViewport.h"
 #include "../Commands/SceneGraphCommands.h"
-#include "../Commands/ViewCommands.h"
 #include "../Commands/CommandReloadTextures.h"
 #include "../Commands/ParticleEditorCommands.h"
 #include "../Commands/LandscapeOptionsCommands.h"
@@ -19,6 +18,7 @@
 #include "../Commands/SetSwitchIndexCommands.h"
 #include "../Commands/HangingObjectsCommands.h"
 #include "../Commands/EditCommands.h"
+#include "../Commands/MaterialViewOptionsCommands.h"
 #include "../Constants.h"
 #include "../SceneEditor/EditorSettings.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
@@ -70,6 +70,7 @@ QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
 
 	connect(sceneDataManager, SIGNAL(SceneActivated(SceneData*)), this, SLOT(OnSceneActivated(SceneData*)));
 	connect(sceneDataManager, SIGNAL(SceneReleased(SceneData*)), this, SLOT(OnSceneReleased(SceneData*)));
+	connect(sceneDataManager, SIGNAL(SceneCreated(SceneData*)), this, SLOT(OnSceneCreated(SceneData*)));
 	connect(QtMainWindow::Instance(), SIGNAL(RepackAndReloadFinished()), this, SLOT(ReloadSceneTextures()));
 }
 
@@ -373,11 +374,6 @@ void QtMainWindowHandler::RefreshSceneGraph()
     CommandsManager::Instance()->ExecuteAndRelease(new CommandRefreshSceneGraph());
 }
 
-void QtMainWindowHandler::ToggleSceneInfo()
-{
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandSceneInfo());
-}
-
 void QtMainWindowHandler::ShowSettings()
 {
     CommandsManager::Instance()->ExecuteAndRelease(new CommandSettings());
@@ -470,14 +466,19 @@ void QtMainWindowHandler::RulerTool()
 void QtMainWindowHandler::ReloadAsPNG()
 {
     CommandsManager::Instance()->ExecuteAndRelease(new ReloadTexturesAsCommand(PNG_FILE));
+	MenuViewOptionsWillShow();
 }
+
 void QtMainWindowHandler::ReloadAsPVR()
 {
     CommandsManager::Instance()->ExecuteAndRelease(new ReloadTexturesAsCommand(PVR_FILE));
+	MenuViewOptionsWillShow();
 }
+
 void QtMainWindowHandler::ReloadAsDXT()
 {
     CommandsManager::Instance()->ExecuteAndRelease(new ReloadTexturesAsCommand(DXT_FILE));
+	MenuViewOptionsWillShow();
 }
 
 void QtMainWindowHandler::ReloadSceneTextures()
@@ -488,6 +489,11 @@ void QtMainWindowHandler::ReloadSceneTextures()
 void QtMainWindowHandler::ToggleSetSwitchIndex(DAVA::uint32  value, SetSwitchIndexHelper::eSET_SWITCH_INDEX state)
 {
     CommandsManager::Instance()->ExecuteAndRelease(new CommandToggleSetSwitchIndex(value,state));
+}
+
+void QtMainWindowHandler::MaterialViewOptionChanged(int index)
+{
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandChangeMaterialViewOption((Material::eViewOptions)index));
 }
 
 void QtMainWindowHandler::ToggleHangingObjects(float value, bool isEnabled)
@@ -559,6 +565,24 @@ void QtMainWindowHandler::SetCustomColorsWidgetsState(bool state)
 		ChangeBrushSizeCustomColors(customColorsBrushSizeSlider->value());
 		ChangeColorCustomColors(customColorsColorComboBox->currentIndex());
 	}
+}
+
+void QtMainWindowHandler::RegisterMaterialViewOptionsWidgets(QComboBox* combo)
+{
+	this->comboMaterialViewOption = combo;
+}
+
+void QtMainWindowHandler::SetMaterialViewOptionsWidgetsState(bool state)
+{
+	comboMaterialViewOption->blockSignals(true);
+	comboMaterialViewOption->setEnabled(state);
+	comboMaterialViewOption->blockSignals(false);
+}
+
+
+void QtMainWindowHandler::SelectMaterialViewOption(Material::eViewOptions value)
+{
+	comboMaterialViewOption->setCurrentIndex((int)value);
 }
 
 void QtMainWindowHandler::RegisterSetSwitchIndexWidgets(QSpinBox* spinBox, QRadioButton* rBtnSelection, QRadioButton* rBtnScene, QPushButton* btnOK)
@@ -850,6 +874,10 @@ void QtMainWindowHandler::OnSceneActivated(SceneData *scene)
 
 	UpdateUndoActionsState();
 	UpdateModificationActions();
+}
+
+void QtMainWindowHandler::OnSceneCreated(SceneData *scene)
+{
 	UpdateRecentScenesList();
 }
 
@@ -858,4 +886,10 @@ void QtMainWindowHandler::OnSceneReleased(SceneData *scene)
 	CommandsManager::Instance()->SceneReleased(scene);
 
 	UpdateRecentScenesList();
+}
+
+
+void QtMainWindowHandler::ConvertToShadow()
+{
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandConvertToShadow());
 }

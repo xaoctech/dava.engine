@@ -46,7 +46,7 @@ float AggregatorMetadata::GetWidth() const
     HierarchyTreeAggregatorNode* node = GetNode();
     if (node)
     {
-        return node->GetRect().dy;
+        return node->GetRect().dx;
     }
     
     return -1.0f;

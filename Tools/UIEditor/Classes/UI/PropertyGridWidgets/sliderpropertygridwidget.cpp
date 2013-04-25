@@ -243,9 +243,12 @@ void SliderPropertyGridWidget::OnOpenSpriteDialog()
 	ResourcePacker *resPacker = new ResourcePacker();
 	resPacker->PackResources(ResourcesManageHelper::GetSpritesDatasourceDirectory().toStdString(),
 	 					 				ResourcesManageHelper::GetSpritesDirectory().toStdString());
-
+	
+	// Setup default sprites path
+	QString currentSpriteDir = GetSpritePathForButton(senderWidget);
+		
     QString spriteName = QFileDialog::getOpenFileName( this, tr( "Choose a sprite file file" ),
-															ResourcesManageHelper::GetSpritesDirectory(),
+															currentSpriteDir,
 															tr( "Sprites (*.txt)" ) );
     // Exit if sprite name is empty
     if( spriteName.isNull() || spriteName.isEmpty())
@@ -299,6 +302,26 @@ void SliderPropertyGridWidget::SetSprite(QWidget *senderWidget, const QString& s
         ui->maxSpriteLineEdit->setText(spritePath);
         HandleLineEditEditingFinished(ui->maxSpriteLineEdit);
     }
+}
+
+QString SliderPropertyGridWidget::GetSpritePathForButton(QWidget *senderWidget)
+{
+	QString spriteDirectory = ResourcesManageHelper::GetSpritesDirectory();
+	// Get current sprite path that corresponds to pushed button and setup directory to open
+	if (senderWidget == ui->openThumbSpriteButton)
+    {
+		spriteDirectory = ResourcesManageHelper::GetDefaultSpritesPath(this->ui->thumbSpriteLineEdit->text());
+    }
+    else if (senderWidget == ui->openMinSpriteButton)
+    {
+		spriteDirectory = ResourcesManageHelper::GetDefaultSpritesPath(this->ui->minSpriteLineEdit->text());
+    }
+    else if (senderWidget == ui->openMaxSpriteButton)
+    {
+		spriteDirectory = ResourcesManageHelper::GetDefaultSpritesPath(this->ui->maxSpriteLineEdit->text());
+	}
+	
+	return spriteDirectory;
 }
 
 void SliderPropertyGridWidget::OnSliderValueChanged(int value)

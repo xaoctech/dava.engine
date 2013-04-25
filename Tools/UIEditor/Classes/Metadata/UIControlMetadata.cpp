@@ -9,6 +9,7 @@
 #include "UIControlMetadata.h"
 #include "HierarchyTreeController.h"
 #include "StringUtils.h"
+#include "StringConstants.h"
 
 #include <QtGlobal>
 
@@ -540,7 +541,7 @@ QString UIControlMetadata::GetSprite()
     Sprite* sprite = GetActiveUIControl()->GetBackground()->GetSprite();
     if (sprite == NULL)
     {
-        return "<No sprite is set>";
+        return StringConstants::NO_SPRITE_IS_SET;
     }
     
     return sprite->GetRelativePathname().c_str();
@@ -858,6 +859,33 @@ void UIControlMetadata::SetBottomAlignEnabled(const bool value)
 void UIControlMetadata::SetActiveControlRect(const Rect& rect)
 {
 	GetActiveUIControl()->SetRect(rect);
+}
+
+QString UIControlMetadata::GetCustomControlName() const
+{
+	if (!VerifyActiveParamID())
+	{
+		return QString();
+	}
+	
+	return QString::fromStdString(GetActiveUIControl()->GetCustomControlType());
+}
+	
+void UIControlMetadata::SetCustomControlName(const QString& value)
+{
+	if (!VerifyActiveParamID())
+	{
+		return;
+	}
+
+	if (value.isEmpty())
+	{
+		GetActiveUIControl()->ResetCustomControlType();
+	}
+	else
+	{
+		GetActiveUIControl()->SetCustomControlType(value.toStdString());
+	}
 }
 
 };

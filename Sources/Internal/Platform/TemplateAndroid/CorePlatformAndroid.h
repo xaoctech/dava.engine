@@ -53,8 +53,7 @@ public:
 
 	virtual void Quit();
 
-	void RenderRecreated();
-	void ResizeView(int32 w, int32 h);
+	void RenderRecreated(int32 w, int32 h);
 	void RepaintView();
 
 	// called from Activity and manage a visible lifetime
@@ -70,7 +69,7 @@ public:
 	void KeyUp(int32 keyCode);
 	void KeyDown(int32 keyCode);
 
-	void OnTouch(int32 action, int32 id, float32 x, float32 y, long time);
+	void OnTouch(int32 action, int32 id, float32 x, float32 y, float64 time);
 
 	bool DownloadHttpFile(const String & url, const String & documentsPathname);
 
@@ -88,18 +87,20 @@ private:
 
 	void UpdateScreenMode();
 
+    void ResizeView(int32 w, int32 h);
+
+    
 
 private:
-	DisplayMode windowedMode;
-	int32 oldWidth;
-	int32 oldHeight;
+	int32 width;
+	int32 height;
 
 	bool wasCreated;
 	bool renderIsActive;
 
 	bool foreground;
 
-	UIEvent CreateTouchEvent(int32 action, int32 id, float32 x, float32 y, long time);
+	UIEvent CreateTouchEvent(int32 action, int32 id, float32 x, float32 y, float64 time);
 
 	Vector<DAVA::UIEvent> totalTouches;
 	int32 touchPhase;
