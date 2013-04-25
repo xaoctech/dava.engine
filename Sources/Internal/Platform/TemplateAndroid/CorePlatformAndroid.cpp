@@ -368,7 +368,7 @@ namespace DAVA
 	{
 		if(androidDelegate)
 		{
-			String path = FileSystem::Instance()->SystemPathForFrameworkPath(documentsPathname);
+			String path = FileSystem::Instance()->SystemPathForFrameworkPath(documentsPathname).ResolvePathname();
 			return androidDelegate->DownloadHttpFile(url, path);
 		}
 
