@@ -129,30 +129,6 @@ void SceneValidator::ValidateSceneNode(Entity *sceneNode, Set<String> &errorsLog
         ValidateRenderComponent(node, errorsLog);
         ValidateLodComponent(node, errorsLog);
         ValidateParticleEmitterComponent(node, errorsLog);
-        
-        KeyedArchive *customProperties = node->GetCustomProperties();
-        if(customProperties->IsKeyExists("editor.referenceToOwner"))
-        {
-            FilePath dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
-            if(1 < dataSourcePath.GetAbsolutePathname().length())
-            {
-                if('/' == dataSourcePath.GetAbsolutePathname()[0])
-                {
-                    dataSourcePath = FilePath(dataSourcePath.GetAbsolutePathname().substr(1));
-                }
-                
-                String referencePath = customProperties->GetString("editor.referenceToOwner");
-                String::size_type pos = referencePath.rfind(dataSourcePath.GetAbsolutePathname());
-                if((String::npos != pos) && (1 != pos))
-                {
-                    referencePath.replace(pos, dataSourcePath.GetAbsolutePathname().length(), "");
-                    customProperties->SetString("editor.referenceToOwner", referencePath);
-                    
-                    errorsLog.insert(Format("Node %s: referenceToOwner isn't correct. Re-save level.", node->GetName().c_str()));
-                }
-            }
-        }
-        
         ValidateSceneNode(node, errorsLog);
     }
 }
