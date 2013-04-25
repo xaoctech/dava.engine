@@ -477,7 +477,7 @@ FilePath SceneEditorScreenMain::CurrentScenePathname()
 {
     SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
     FilePath pathname(sceneData->GetScenePathname());
-    if (pathname.IsInitalized())
+    if (!pathname.IsEmpty())
     {
         pathname.ReplaceExtension(".sc2");
     }

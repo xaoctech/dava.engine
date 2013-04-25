@@ -50,6 +50,8 @@
 		CCC7A4AE16F1D88C0061EA5D /* UpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A4AC16F1D88C0061EA5D /* UpdateSystem.cpp */; };
 		CCC7A4AF16F1D88C0061EA5D /* UpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A4AD16F1D88C0061EA5D /* UpdateSystem.h */; };
 		E81F2B0516BFF65700C4545E /* libcurl_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E81F2B0416BFF65700C4545E /* libcurl_ios.a */; };
+		E8373BD817268CD9001A9770 /* UIAggregatorControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8373BD617268CD9001A9770 /* UIAggregatorControl.cpp */; };
+		E8373BD917268CD9001A9770 /* UIAggregatorControl.h in Headers */ = {isa = PBXBuildFile; fileRef = E8373BD717268CD9001A9770 /* UIAggregatorControl.h */; };
 		E89CE92A16C54A36006BEFF4 /* SpriteObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E89CE92616C54A36006BEFF4 /* SpriteObject.cpp */; };
 		E89CE92B16C54A36006BEFF4 /* SpriteObject.h in Headers */ = {isa = PBXBuildFile; fileRef = E89CE92716C54A36006BEFF4 /* SpriteObject.h */; };
 		E89CE92C16C54A36006BEFF4 /* SpriteRenderBatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E89CE92816C54A36006BEFF4 /* SpriteRenderBatch.cpp */; };
@@ -706,6 +708,8 @@
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		E80D2FB2164D51A100C13D70 /* libbz2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.dylib; path = usr/lib/libbz2.dylib; sourceTree = SDKROOT; };
 		E81F2B0416BFF65700C4545E /* libcurl_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl_ios.a; path = ../../Libs/libs/libcurl_ios.a; sourceTree = "<group>"; };
+		E8373BD617268CD9001A9770 /* UIAggregatorControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIAggregatorControl.cpp; sourceTree = "<group>"; };
+		E8373BD717268CD9001A9770 /* UIAggregatorControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIAggregatorControl.h; sourceTree = "<group>"; };
 		E89CE92616C54A36006BEFF4 /* SpriteObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteObject.cpp; sourceTree = "<group>"; };
 		E89CE92716C54A36006BEFF4 /* SpriteObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpriteObject.h; sourceTree = "<group>"; };
 		E89CE92816C54A36006BEFF4 /* SpriteRenderBatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteRenderBatch.cpp; sourceTree = "<group>"; };
@@ -2125,6 +2129,8 @@
 		E8B3CA2E16B9326E002BD35F /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				E8373BD617268CD9001A9770 /* UIAggregatorControl.cpp */,
+				E8373BD717268CD9001A9770 /* UIAggregatorControl.h */,
 				17F53E2C16D36FF3004D5099 /* IWebViewControl.h */,
 				17F53E2D16D36FF3004D5099 /* UIWebView.cpp */,
 				17F53E2E16D36FF3004D5099 /* UIWebView.h */,
@@ -2608,6 +2614,7 @@
 				CCC7A4AB16F1D8480061EA5D /* Entity.h in Headers */,
 				CCC7A4AF16F1D88C0061EA5D /* UpdateSystem.h in Headers */,
 				E8B6B3C71705DEB4004F665E /* DeviceInfo.h in Headers */,
+				E8373BD917268CD9001A9770 /* UIAggregatorControl.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2967,6 +2974,7 @@
 				CCC7A4AE16F1D88C0061EA5D /* UpdateSystem.cpp in Sources */,
 				497BF6E216F751ED00AC57C6 /* DeviceInfoiOS.mm in Sources */,
 				E8B6B3C61705DEB4004F665E /* DeviceInfo.cpp in Sources */,
+				E8373BD817268CD9001A9770 /* UIAggregatorControl.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -55,5 +55,49 @@ namespace DAVA
 		}
 	}
 
+	eBlendMode GetBlendModeByName(const String & blendStr)
+	{
+		for(uint32 i = 0; i < BLEND_MODE_COUNT; i++)
+			if(blendStr == BLEND_MODE_NAMES[i])
+				return (eBlendMode)i;
+
+		return BLEND_MODE_COUNT;
+	}
+
+	eCmpFunc GetCmpFuncByName(const String & cmpFuncStr)
+	{
+		for(uint32 i = 0; i < CMP_TEST_MODE_COUNT; i++)
+			if(cmpFuncStr == CMP_FUNC_NAMES[i])
+				return (eCmpFunc)i;
+
+		return CMP_TEST_MODE_COUNT;
+	}
+
+	eFace GetFaceByName(const String & faceStr)
+	{
+		for(uint32 i = 0; i < FACE_COUNT; i++)
+			if(faceStr == FACE_NAMES[i])
+				return (eFace)i;
+
+		return FACE_COUNT;
+	}
+
+	eStencilOp GetStencilOpByName(const String & stencilOpStr)
+	{
+		for(uint32 i = 0; i < STENCILOP_COUNT; i++)
+			if(stencilOpStr == STENCIL_OP_NAMES[i])
+				return (eStencilOp)i;
+
+		return STENCILOP_COUNT;
+	}
+
+	eFillMode GetFillModeByName(const String & fillModeStr)
+	{
+		for(uint32 i = 0; i < FILLMODE_COUNT; i++)
+			if(fillModeStr == FILL_MODE_NAMES[i])
+				return (eFillMode)i;
+
+		return FILLMODE_COUNT;
+	}
 
 };

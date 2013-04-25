@@ -4,6 +4,8 @@
 #include "Config.h"
 #include "DeviceInfo.h"
 
+using namespace DAVA;
+
 ResultScreen::ResultScreen(const LandscapeTestData& testData, const FilePath& filename, Texture* landscapeTexture)
 :	isFinished(false),
 	state(RESULT_STATE_NORMAL),
@@ -191,7 +193,8 @@ Vector2 ResultScreen::GetVecInRect(const Rect & rect, float32 angleInRad)
 		angleInRad -= DAVA::PI_05;
 	if(angleInRad > DAVA::PI_05 / 2)
 		angleInRad = DAVA::PI_05 - angleInRad;
-	Vector2 v = Vector2((Point2f(rect.GetSize().x / 2, 0) * m).data) / abs(cosf(angleInRad));
+	Vector2 v = Vector2((Point2f(rect.GetSize().x / 2, 0) * m).data) / Abs(cosf(angleInRad));
+    
 	retVec = v + rect.GetCenter();
 	return retVec;
 }

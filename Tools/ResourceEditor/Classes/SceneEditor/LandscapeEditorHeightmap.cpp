@@ -529,7 +529,7 @@ void LandscapeEditorHeightmap::TextureWillChanged(const String &forKey)
 {
     if("property.landscape.texture.heightmap" == forKey)
     {
-        if(savedPath.IsInitalized())
+        if(!savedPath.IsEmpty())
         {
             SaveTextureAction(savedPath);
 
