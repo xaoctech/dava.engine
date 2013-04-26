@@ -47,10 +47,15 @@
 #include "Scene3D/Systems/GlobalEventSystem.h"
 #include "Scene3D/Components/SwitchComponent.h"
 
+
+#define COMPONENTS_IN_VECTOR_COUNT 3
+#define USE_VECTOR(x) (((1 << x) & vectorComponentsMask) != 0)
+
 namespace DAVA
 {
     
-    
+uint32 vectorComponentsMask = (1 << Component::TRANSFORM_COMPONENT) | (1 << Component::RENDER_COMPONENT) | (Component::LOD_COMPONENT);
+
 REGISTER_CLASS(Entity);
 
 // Property Names.
@@ -65,8 +70,8 @@ Entity::Entity()
 //    Logger::Debug("Entity: %p", this);
     componentFlags = 0;
 
-	components.resize(Component::COMPONENT_COUNT);
-    for (uint32 k = 0; k < Component::COMPONENT_COUNT; ++k)
+	components.resize(COMPONENTS_IN_VECTOR_COUNT);
+    for (uint32 k = 0; k < COMPONENTS_IN_VECTOR_COUNT; ++k)
         components[k] = 0;
     
     defaultLocalTransform.Identity();
@@ -98,56 +103,168 @@ Entity::~Entity()
 
     SafeRelease(customProperties);
 
-	for(int32 i = 0; i < Component::COMPONENT_COUNT; ++i)
-	{
-		if(components[i])
-		{
-			RemoveComponent(components[i]);
-		}
-	}
-
+	RemoveAllComponents();
 //  Logger::Debug("~Entity: %p", this);
 }
     
 void Entity::AddComponent(Component * component)
 {
 	component->SetEntity(this);
+    
+    uint32 componentType = component->GetType();
+    if(USE_VECTOR(componentType))
+    {
+        SafeDelete(components[componentType]);
+        components[componentType] = component;
+    }
+    else
+    {
+        ComponentsMap::iterator it = componentsMap.find(componentType);
+        if(componentsMap.end() == it)
+        {
+            Vector<Component*>* componentsVector = new Vector<Component*>();
+            componentsVector->resize(1);
+            
+            std::pair<ComponentsMap::iterator, bool> insertResult =
+                componentsMap.insert(std::pair<uint32, Vector<Component*>* >(componentType, componentsVector));
+            it = insertResult.first;
+        }
+        
+        it->second->push_back(component);
+    }
 
-    SafeDelete(components[component->GetType()]);
-    components[component->GetType()] = component;
     if (scene)
         scene->AddComponent(this, component);
     // SHOULD BE DONE AFTER scene->AddComponent
-    componentFlags |= 1 << component->GetType();
+    componentFlags |= 1 << componentType;
+}
+    
+void Entity::RemoveAllComponents()
+{
+    for(int32 i = 0; i < COMPONENTS_IN_VECTOR_COUNT; ++i)
+	{
+		if(components[i])
+		{
+			CleanupComponent(components[i], 0);
+            components[i] = NULL;
+		}
+	}
+    
+    for(ComponentsMap::iterator it = componentsMap.begin();
+        it != componentsMap.end(); ++it)
+    {
+        int componentCount = it->second->size();
+        for(Vector<Component*>::iterator compIt = it->second->begin();
+            compIt != it->second->end(); ++compIt)
+        {
+            componentCount--;
+            CleanupComponent(*compIt, componentCount);
+        }
+        
+        delete(it->second);
+        it->second = NULL;
+    }
+    
+    componentsMap.clear();
 }
 
 void Entity::RemoveComponent(Component * component)
 {
-	component->SetEntity(0);
-
-    components[component->GetType()] = 0;
+    int componentCount = 0;
+    uint32 componentType = component->GetType();
+    
+    if(USE_VECTOR(componentType))
+    {
+        components[componentType] = 0;
+    }
+    else
+    {
+        ComponentsMap::iterator it = componentsMap.find(componentType);
+        if(componentsMap.end() != it)
+        {
+            for(Vector<Component*>::iterator i = it->second->begin();
+                i != it->second->end(); ++i)
+            {
+                if((*i) == component)
+                {
+                    it->second->erase(i);
+                    break;
+                }
+            }
+            
+            componentCount = it->second->size();
+        }
+    }
+    
+    CleanupComponent(component, componentCount);    
+}
+    
+void Entity::RemoveComponent(uint32 componentType, uint32 index)
+{
+    Component* component = NULL;
+    int componentCount = 0;
+    if(USE_VECTOR(componentType))
+    {
+        component = components[componentType];
+        components[componentType] = NULL;
+    }
+    else
+    {
+        ComponentsMap::iterator it = componentsMap.find(componentType);
+        if(componentsMap.end() != it &&
+           it->second->size() > index)
+        {
+            component = it->second->at(index);
+            it->second->erase(it->second->begin() + index);
+            
+            componentCount = it->second->size();
+        }
+    }
+    
+    if(NULL != component)
+    {
+        CleanupComponent(component, componentCount);
+    }    
+}
+    
+inline void Entity::CleanupComponent(Component* component, uint32 componentCount)
+{
+    component->SetEntity(0);
+    
     if (scene)
         scene->RemoveComponent(this, component);
-    // SHOULD BE DONE AFTER scene->RemoveComponent
-    componentFlags &= ~(1 << component->GetType());
-	delete(component);
-}
     
-void Entity::RemoveComponent(uint32 componentType)
-{
-    if (components[componentType])
-        RemoveComponent(components[componentType]);
+    if(componentCount <= 0)
+    {
+        componentFlags &= ~(1 << component->GetType());
+    }
+    
+    delete(component);
 }
 
-    
-Component * Entity::GetComponent(uint32 componentType)
+Component * Entity::GetComponent(uint32 componentType, uint32 index) const
 {
-    return components[componentType];
+    Component* component = NULL;
+    if(USE_VECTOR(componentType))
+    {
+        component = components[componentType];
+    }
+    else
+    {
+        ComponentsMap::const_iterator it = componentsMap.find(componentType);
+        if(componentsMap.end() != it &&
+           it->second->size() > index)
+        {
+            component = it->second->at(index);
+        }
+    }
+    
+    return component;
 }
 
-Component * Entity::GetOrCreateComponent(uint32 componentType)
+Component * Entity::GetOrCreateComponent(uint32 componentType, uint32 index)
 {
-	Component * ret = components[componentType];
+	Component * ret = GetComponent(componentType, index);
 	if(!ret)
 	{
 		ret = Component::CreateByType(componentType);
@@ -160,13 +277,44 @@ Component * Entity::GetOrCreateComponent(uint32 componentType)
 uint32 Entity::GetComponentCount()
 {
     uint32 count = 0;
-    for (uint32 k = 0; k < Component::COMPONENT_COUNT; ++k)
+    for (uint32 k = 0; k < COMPONENTS_IN_VECTOR_COUNT; ++k)
         if (componentFlags >> k)
             count++;
+    
+    if(componentsMap.size() > 0)
+    {
+        for(ComponentsMap::iterator it = componentsMap.begin();
+            it != componentsMap.end(); ++it)
+        {
+            count += it->second->size();
+        }
+    }
+    
     return count;
 }
 
-
+uint32 Entity::GetComponentCount(uint32 componentType)
+{
+    int componentCount = 0;
+    
+    if(USE_VECTOR(componentType))
+    {
+        if(components[componentType] != NULL)
+        {
+            componentCount = 1;
+        }
+    }
+    else
+    {
+        ComponentsMap::iterator it = componentsMap.find(componentType);
+        if(componentsMap.end() != it)
+        {
+            componentCount = it->second->size();
+        }
+    }
+    
+    return componentCount;
+}
 
 void Entity::SetScene(Scene * _scene)
 {
@@ -562,15 +710,24 @@ Entity* Entity::Clone(Entity *dstNode)
     }
     dstNode->defaultLocalTransform = defaultLocalTransform;
     
-    //uint32 size = components.size();
-    for (uint32 k = 0; k < Component::COMPONENT_COUNT;++k)
+    dstNode->RemoveAllComponents();
+    for (uint32 k = 0; k < COMPONENTS_IN_VECTOR_COUNT;++k)
 	{
 		if(components[k])
 		{
-			SafeDelete(dstNode->components[k]);
 			dstNode->AddComponent(components[k]->Clone(dstNode));
 		}
 	}
+    
+    for(ComponentsMap::iterator it = componentsMap.begin();
+        it != componentsMap.end(); ++it)
+    {
+        for(Vector<Component*>::iterator compIt = it->second->begin();
+            compIt != it->second->end(); ++compIt)
+        {
+            dstNode->AddComponent((*compIt)->Clone(dstNode));
+        }
+    }
     
     dstNode->name = name;
     dstNode->tag = tag;
@@ -581,6 +738,7 @@ Entity* Entity::Clone(Entity *dstNode)
     
     dstNode->nodeAnimations = nodeAnimations;
     
+    dstNode->RemoveAllChildren();
     std::vector<Entity*>::iterator it = children.begin();
 	const std::vector<Entity*>::iterator & childsEnd = children.end();
 	for(; it != childsEnd; it++)
@@ -595,12 +753,12 @@ Entity* Entity::Clone(Entity *dstNode)
 
 void Entity::SetDebugFlags(uint32 debugFlags, bool isRecursive)
 {
-	DebugRenderComponent * debugComponent = cast_if_equal<DebugRenderComponent*>(components[Component::DEBUG_RENDER_COMPONENT]);
+	DebugRenderComponent * debugComponent = cast_if_equal<DebugRenderComponent*>(GetComponent(Component::DEBUG_RENDER_COMPONENT));
 
 	if(!debugComponent)
 	{
 		AddComponent(new DebugRenderComponent());
-		debugComponent = cast_if_equal<DebugRenderComponent*>(components[Component::DEBUG_RENDER_COMPONENT]);
+		debugComponent = cast_if_equal<DebugRenderComponent*>(GetComponent(Component::DEBUG_RENDER_COMPONENT));
 		debugComponent->SetDebugFlags(DebugRenderComponent::DEBUG_AUTOCREATED);
 	}
 
@@ -627,7 +785,7 @@ void Entity::SetDebugFlags(uint32 debugFlags, bool isRecursive)
 
 uint32 Entity::GetDebugFlags() const
 {
-	DebugRenderComponent * debugComponent = cast_if_equal<DebugRenderComponent*>(components[Component::DEBUG_RENDER_COMPONENT]);
+	DebugRenderComponent * debugComponent = cast_if_equal<DebugRenderComponent*>(GetComponent(Component::DEBUG_RENDER_COMPONENT));
 	if(debugComponent)
 	{
 		return debugComponent->GetDebugFlags();
@@ -843,6 +1001,16 @@ void Entity::GetDataNodes(Set<DataNode*> & dataNodes)
         if(components[k])
         {
             components[k]->GetDataNodes(dataNodes);
+        }
+    }
+    
+    for(ComponentsMap::iterator it = componentsMap.begin();
+        it != componentsMap.end(); ++it)
+    {
+        for(Vector<Component*>::iterator compIt = it->second->begin();
+            compIt != it->second->end(); ++compIt)
+        {
+            (*compIt)->GetDataNodes(dataNodes);
         }
     }
 
