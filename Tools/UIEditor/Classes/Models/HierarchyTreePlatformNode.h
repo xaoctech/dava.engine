@@ -33,7 +33,7 @@ public:
 	void ActivatePlatform();
 	
 	bool Load(YamlNode* node);
-	bool Save(YamlNode* node);
+	bool Save(YamlNode* node, bool saveAll);
 
     // Separate method to load/save localization.
     bool LoadLocalization(YamlNode* platform);
@@ -50,6 +50,8 @@ public:
 	virtual void ReturnTreeNodeToScene();
 	
 	virtual void SetParent(HierarchyTreeNode* node, HierarchyTreeNode* insertAfter);
+
+	bool IsAggregatorOrScreenNamePresent(const QString& candidatName);
 
 private:
 	int width;

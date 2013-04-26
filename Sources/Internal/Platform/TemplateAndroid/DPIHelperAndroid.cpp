@@ -19,12 +19,18 @@ JniDpiHelper::JniDpiHelper() :
 
 uint32 JniDpiHelper::GetScreenDPI()
 {
-	jmethodID mid = GetMethodID("GetScreenDPI", "()I");
+	jclass javaClass = GetJavaClass();
+	if (!javaClass)
+		return 0;
+
+	uint32 dpi = 0;
+	jmethodID mid = GetMethodID(javaClass, "GetScreenDPI", "()I");
 	if (mid)
 	{
-		return GetEnvironment()->CallStaticIntMethod(javaClass, mid);
+		dpi = GetEnvironment()->CallStaticIntMethod(javaClass, mid);
 	}
-	return 0;
+	ReleaseJavaClass(javaClass);
+	return dpi;
 }
 
 uint32 DPIHelper::GetScreenDPI()

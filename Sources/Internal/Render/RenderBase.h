@@ -154,6 +154,8 @@ enum PixelFormat
     FORMAT_DXT3,
     FORMAT_DXT5,
     FORMAT_DXT5NM,
+	
+	FORMAT_ETC1,
 
     FORMAT_COUNT,
     FORMAT_CLOSEST = 256
@@ -231,7 +233,19 @@ enum eCmpFunc
     CMP_ALWAYS,
     CMP_TEST_MODE_COUNT, 
 };
-    
+
+static const String CmpFuncNames[] = 
+{
+	"CMP_NEVER",
+	"CMP_LESS",
+	"CMP_EQUAL",
+	"CMP_LEQUAL",
+	"CMP_GREATER",
+	"CMP_NOTEQUAL",
+	"CMP_GEQUAL",
+	"CMP_ALWAYS"
+};
+
 #if defined(__DAVAENGINE_OPENGL__)
 static const GLint COMPARE_FUNCTION_MAP[CMP_TEST_MODE_COUNT] = 
 {
@@ -295,7 +309,14 @@ enum eFace
 
     FACE_COUNT,
 };
-    
+
+static const String FaceNames[] = 
+{
+	"FACE_FRONT",
+	"FACE_BACK",
+	"FACE_FRONT_AND_BACK"
+};
+
 #if defined(__DAVAENGINE_OPENGL__)
     static const GLint CULL_FACE_MAP[FACE_COUNT] = 
     {
@@ -315,7 +336,7 @@ enum eFace
 
 enum eStencilOp
 {
-	STENCILOP_KEEP,
+	STENCILOP_KEEP = 0,
 	STENCILOP_ZERO,
 	STENCILOP_REPLACE,
 	STENCILOP_INCR,
@@ -325,6 +346,18 @@ enum eStencilOp
 	STENCILOP_INVERT,
 
 	STENCILOP_COUNT
+};
+
+static const String StencilOpNames[] = 
+{
+	"STENCILOP_KEEP",
+	"STENCILOP_ZERO",
+	"STENCILOP_REPLACE",
+	"STENCILOP_INCR",
+	"STENCILOP_INCR_WRAP",
+	"STENCILOP_DECR",
+	"STENCILOP_DECR_WRAP",
+	"STENCILOP_INVERT"
 };
 
 #if defined(__DAVAENGINE_OPENGL__)
@@ -361,6 +394,14 @@ enum eFillMode
 
 	FILLMODE_COUNT
 };
+
+static const String FillModeNames[] = 
+{
+	"FILLMODE_POINT",
+	"FILLMODE_WIREFRAME",
+	"FILLMODE_SOLID"
+};
+
 #if defined(__DAVAENGINE_OPENGL__) && (defined(__DAVAENGINE_MACOS__) || defined (__DAVAENGINE_WIN32__))
 static const GLint FILLMODE_MAP[FILLMODE_COUNT] = 
 {

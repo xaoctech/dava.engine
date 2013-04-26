@@ -100,8 +100,6 @@ void SceneExporter::ExportFile(const String &fileName, Set<String> &errorLog)
 
 void SceneExporter::ExportScene(Scene *scene, const String &fileName, Set<String> &errorLog)
 {
-    Logger::Info("export_Format = %d", exportFormat);
-    
     DVASSERT(0 == texturesForExport.size())
     
     //Create destination folder
@@ -140,7 +138,11 @@ void SceneExporter::ExportScene(Scene *scene, const String &fileName, Set<String
     outFile->SaveScene(sceneUtils.dataSourceFolder + tempSceneName, scene);
     SafeRelease(outFile);
 
-    FileSystem::Instance()->MoveFile(sceneUtils.dataSourceFolder + tempSceneName, sceneUtils.dataFolder + fileName);
+    bool moved = FileSystem::Instance()->MoveFile(sceneUtils.dataSourceFolder + tempSceneName, sceneUtils.dataFolder + fileName, true);
+	if(!moved)
+	{
+		errorLog.insert(Format("Can't move file %s", fileName.c_str()));
+	}
     
     SceneValidator::Instance()->SetPathForChecking(oldPath);
 }
@@ -163,16 +165,22 @@ void SceneExporter::RemoveEditorNodes(DAVA::Entity *rootNode)
         }
 		else
 		{
-            // LIGHT
-//			LightNode * light = dynamic_cast<LightNode*>(node);
-//			if(light)
-//			{
-//				bool isDynamic = light->GetCustomProperties()->GetBool("editor.dynamiclight.enable", true);
-//				if(!isDynamic)
-//				{
-//					node->GetParent()->RemoveNode(node);
-//				}
-//			}
+			DAVA::RenderComponent *renderComponent = static_cast<DAVA::RenderComponent *>(node->GetComponent(DAVA::Component::RENDER_COMPONENT));
+			if(renderComponent)
+			{
+				DAVA::RenderObject *ro = renderComponent->GetRenderObject();
+				if(ro && ro->GetType() != RenderObject::TYPE_LANDSCAPE)
+				{
+					DAVA::uint32 count = ro->GetRenderBatchCount();
+					for(DAVA::uint32 ri = 0; ri < count; ++ri)
+					{
+						DAVA::Material *material = ro->GetRenderBatch(ri)->GetMaterial();
+						if(material)
+							material->SetStaticLightingParams(0);
+					}
+				}
+
+			}
 		}
     }
 }
@@ -241,7 +249,12 @@ void SceneExporter::ExportLandscape(Scene *scene, Set<String> &errorLog)
     if (landscape)
     {
         sceneUtils.CopyFile(landscape->GetHeightmapPathname(), errorLog);
-        ExportLandscapeFullTiledTexture(landscape, errorLog);
+        
+        Landscape::eTiledShaderMode mode = landscape->GetTiledShaderMode();
+        if(mode == Landscape::TILED_MODE_MIXED || mode == Landscape::TILED_MODE_TEXTURE)
+        {
+            ExportLandscapeFullTiledTexture(landscape, errorLog);
+        }
     }
 }
 

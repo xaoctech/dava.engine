@@ -15,6 +15,10 @@
 #include "TexturePacker/TexturePacker.h"
 #include "TexturePacker/CommandLineParser.h"
 #include "FileSystem/FileSystem.h"
+#include "FileSystem/File.h"
+#include "Utils/StringFormat.h"
+
+static const String SAVED_FILE_LIST_YAML_FILE = "filelist.yaml";
 
 ResourcePacker::ResourcePacker()
 {
@@ -56,13 +60,11 @@ void ResourcePacker::StartPacking()
 	std::transform(lastDir.begin(), lastDir.end(), lastDir.begin(), ::tolower);
 	gfxDirName = lastDir;
 
-
 	String processDirectoryPath = excludeDirectory + String("/") + GetProcessFolderName() + String("/");
 	if (FileSystem::Instance()->CreateDirectory(processDirectoryPath, true) == FileSystem::DIRECTORY_CANT_CREATE)
 	{
 		//Logger::Error("Can't create directory: %s", processDirectoryPath.c_str());
 	}
-
 
 	if (IsMD5ChangedDir(excludeDirectory + String("/") + GetProcessFolderName(), outputGfxDirectory, gfxDirName + ".md5", true))
 	{
@@ -88,6 +90,130 @@ void ResourcePacker::StartPacking()
 	IsMD5ChangedDir(excludeDirectory + String("/") + GetProcessFolderName(), outputGfxDirectory, gfxDirName + ".md5", true);
 }
 
+bool ResourcePacker::SaveFileListToYaml(const String & yamlFilePath)
+{
+	YamlNode fontsNode(YamlNode::TYPE_MAP);
+	MultiMap<String, YamlNode*> &fontsMap = fontsNode.AsMap();
+	
+    for (ResourcePacker::FILESMAP::const_iterator iter = spriteFiles.begin(); iter != spriteFiles.end(); ++iter)
+    {
+		YamlNode *fileNode = new YamlNode(YamlNode::TYPE_MAP);
+		String fileName = iter->first;
+		String fileDate = iter->second;
+		// Put file date
+		fileNode->Set("date", fileDate);
+		// Put file node into map
+		fontsMap.insert(std::pair<String, YamlNode*>(fileName, fileNode));
+    }
+	
+	YamlParser* parser = YamlParser::Create();
+	
+	return parser->SaveToYamlFile(yamlFilePath, &fontsNode, true, File::CREATE | File::WRITE);
+}
+
+void ResourcePacker::FillSpriteFilesMap(const String & inputPathName)
+{
+	// Reset sprites files map
+	spriteFiles.clear();
+
+	// Get the list of files inside input directory
+	FileList * fileList = new FileList(inputPathName);	
+	
+	if (fileList)
+	{
+		// Process the list of files inside input directory and fill psdFile map with values
+		for(int i = 0; i < fileList->GetCount(); ++i)
+		{
+			if(!fileList->IsDirectory(i) && !fileList->IsNavigationDirectory(i))
+			{
+				String fileName = fileList->GetFilename(i);
+				String modDate = File::GetModificationDate(fileList->GetPathname(i));
+
+				// spriteFiles into map file date with a key - file name
+				spriteFiles[fileName] = modDate;
+			}
+		}
+	}
+}
+
+bool ResourcePacker::CheckSpriteFilesDates(YamlNode *rootNode)
+{
+	// Check here if we the number of files in yaml file and inside input directory is equal
+	// If not - we should launch md5 checksum calculation
+	if (rootNode->AsMap().size() != spriteFiles.size())
+	{
+		return true;
+	}
+	// Compare modify date of saved files list and modify date of actual files inside input directory
+	// If only one file differs or new file found - we should launch md5 checksum calculation
+	for (MultiMap<String, YamlNode*>::iterator t = rootNode->AsMap().begin(); t != rootNode->AsMap().end(); ++t)
+	{
+		YamlNode * fileNode = t->second;
+		// Skip empty file node
+		if (!fileNode) continue;
+
+		YamlNode * dateNode = fileNode->Get("date");
+		// Skip empty date node
+		if (!dateNode) continue;
+													
+		String fileName = fileNode->AsString();
+		String fileDate = dateNode->AsString();
+		// Look for a new files iside sprite's input folder
+		FILESMAP::const_iterator iter = spriteFiles.find(fileName);
+		
+		// If we have a new sprite - we should launch md5 check process
+		if (iter == spriteFiles.end())
+		{
+			return true;
+		}
+		
+		// Compare saved file modify date and actual file modify date
+		String saveFileDate = iter->second;
+		if (saveFileDate.compare(fileDate) != 0)
+		{
+			// If modify date of files differs - we should launch md5 check process
+			return true;
+		}
+	}
+	
+	return false;
+}
+
+bool ResourcePacker::IsModifyDateChagedDir(const String & processDirectoryPath, const String & pathName)
+{
+	bool md5ChecksumNeeded = false;
+	String yamlFilePath = processDirectoryPath + String("/") + SAVED_FILE_LIST_YAML_FILE;
+	
+	// Get sprite file names inside input folder and put them into files map
+	FillSpriteFilesMap(pathName);
+		
+	if (spriteFiles.size() > 0)
+	{
+		// Read existing yaml file with saved file names and their modify date
+		YamlParser * parser = YamlParser::Create(yamlFilePath);
+			
+		if (parser && parser->GetRootNode())
+		{
+			md5ChecksumNeeded = CheckSpriteFilesDates(parser->GetRootNode());
+		}
+		else
+		{
+			Logger::Error("Failed to open yaml file or the file is empty: %s", yamlFilePath.c_str());
+			md5ChecksumNeeded = true;
+		}
+		
+		// Always update yaml file with actual file list
+		SaveFileListToYaml(yamlFilePath);
+	}
+
+	// Check here if las modified date correspond to
+	if (!md5ChecksumNeeded)
+	{		
+		return false;
+	}
+
+	return IsMD5ChangedDir(processDirectoryPath, pathName, "dir.md5", false);
+}
 
 bool ResourcePacker::IsMD5ChangedDir(const String & processDirectoryPath, const String & pathname, const String & name, bool isRecursive)
 {
@@ -394,7 +520,7 @@ void ResourcePacker::RecursiveTreeWalk(const String & inputPath, const String & 
 	bool modified = isGfxModified;
 	// Process all psd / png files
 
-	if (IsMD5ChangedDir(processDirectoryPath, inputPath, "dir.md5", false))
+	if (IsModifyDateChagedDir(processDirectoryPath, inputPath))
 	{
 		modified = true;
 	}

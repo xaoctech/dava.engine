@@ -26,6 +26,7 @@
     <ClInclude Include="Classes\InputTest.h" />
     <ClInclude Include="Classes\KeyedArchiveTest.h" />
     <ClInclude Include="Classes\KeyedArchiveYamlTest.h" />
+    <ClInclude Include="Classes\LocalizationTest.h" />
     <ClInclude Include="Classes\MaterialCompilerTest.h" />
     <ClInclude Include="Classes\MemoryAllocatorsTest.h" />
     <ClInclude Include="Classes\PVRTest.h" />
@@ -50,6 +51,7 @@
     <ClCompile Include="Classes\InputTest.cpp" />
     <ClCompile Include="Classes\KeyedArchiveTest.cpp" />
     <ClCompile Include="Classes\KeyedArchiveYamlTest.cpp" />
+    <ClCompile Include="Classes\LocalizationTest.cpp" />
     <ClCompile Include="Classes\MaterialCompilerTest.cpp" />
     <ClCompile Include="Classes\MemoryAllocatorsTest.cpp" />
     <ClCompile Include="Classes\PVRTest.cpp" />

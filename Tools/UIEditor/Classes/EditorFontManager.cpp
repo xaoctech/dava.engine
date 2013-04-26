@@ -142,9 +142,6 @@ void EditorFontManager::InitDefaultFontFromPath(const EditorFontManager::Default
 	// Set default font only if font was really created
 	if (loadedFont)
 	{
-		// TODO: We don't have font color property for now.
-        // Initialize created font with white color
-
 		// Reset default font
 		if (defaultFont)
 		{

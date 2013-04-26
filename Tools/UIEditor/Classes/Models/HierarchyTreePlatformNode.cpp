@@ -177,7 +177,7 @@ bool HierarchyTreePlatformNode::LoadLocalization(YamlNode* platform)
     return true;
 }
 
-bool HierarchyTreePlatformNode::Save(YamlNode* node)
+bool HierarchyTreePlatformNode::Save(YamlNode* node, bool saveAll)
 {
 	YamlNode* platform = new YamlNode(YamlNode::TYPE_MAP);
 	platform->Set(WIDTH_NODE, GetWidth());
@@ -220,7 +220,7 @@ bool HierarchyTreePlatformNode::Save(YamlNode* node)
 		MultiMap<String, YamlNode*> &aggregatorsMap = aggregators->AsMap();
 		
 		YamlNode* aggregator = new YamlNode(YamlNode::TYPE_MAP);
-		result &= node->Save(aggregator, path);
+		result &= node->Save(aggregator, path, saveAll);
 		
 		aggregatorsMap.erase(node->GetName().toStdString());
 		aggregatorsMap.insert(std::pair<String, YamlNode*>(node->GetName().toStdString(), aggregator));
@@ -240,7 +240,7 @@ bool HierarchyTreePlatformNode::Save(YamlNode* node)
 			continue;
 		
 		QString screenPath = QString(SCREEN_PATH).arg(platformFolder).arg(screenNode->GetName());
-		result &= screenNode->Save(screenPath);
+		result &= screenNode->Save(screenPath, saveAll);
 		
 		screens->AddValueToArray(screenNode->GetName().toStdString());
 	}
@@ -289,3 +289,24 @@ void HierarchyTreePlatformNode::SetParent(HierarchyTreeNode* node, HierarchyTree
 	node->RemoveTreeNode(this, false, false);
 	node->AddTreeNode(this, insertAfter);
 }
+
+bool HierarchyTreePlatformNode::IsAggregatorOrScreenNamePresent(const QString& candidatName)
+{
+	for (HIERARCHYTREENODESLIST::iterator iter = childNodes.begin(); iter != childNodes.end(); ++iter)
+	{
+		HierarchyTreeNode* node = (*iter);
+		
+		HierarchyTreeAggregatorNode* aggregator = dynamic_cast<HierarchyTreeAggregatorNode*>(node);
+		HierarchyTreeScreenNode* screen = dynamic_cast<HierarchyTreeScreenNode*>(node);
+		if (NULL == aggregator && NULL == screen)
+		{
+			continue;
+		}
+		if(node->GetName().compare(candidatName) == 0)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+

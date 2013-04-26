@@ -16,15 +16,10 @@ public:
 	void SetColor(const QColor &color);
 	QColor GetColor() const;
 
-	void SetItemDelegatePtr(const QAbstractItemDelegate* deleg);
-
 protected:
 	QColor curColor;
-	QToolButton *toolButton;
-	const QAbstractItemDelegate* deleg;
 
 protected slots:
-	void ToolButtonClicked();
 	void EditFinished();
 };
 
