@@ -109,7 +109,7 @@ void LandscapeToolsSelection::EnumerateTools()
         String filename = fileList->GetFilename(iFile);
         if(fileList->GetPathname(iFile).IsEqualToExtension(".png"))
         {
-            LandscapeTool *tool = new LandscapeTool(toolID, LandscapeTool::TOOL_BRUSH, toolsPath + FilePath(filename));
+            LandscapeTool *tool = new LandscapeTool(toolID, LandscapeTool::TOOL_BRUSH, toolsPath + filename);
             ++toolID;
             
             tools.push_back(tool);

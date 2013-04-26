@@ -70,7 +70,7 @@ void InputTest::LoadResources()
 {
 	GetBackground()->SetColor(Color(1.f, 0, 0, 1));
 	
-	Font *font = FTFont::Create(FilePath("~res:/Fonts/korinna.ttf"));
+	Font *font = FTFont::Create("~res:/Fonts/korinna.ttf");
     DVASSERT(font);
 	font->SetSize(20);
     font->SetColor(Color::White());
@@ -127,13 +127,13 @@ void InputTest::LoadResources()
 	AddControl(webView2);
 
 	FilePath srcDir("~res:/TestData/InputTest/");
-	FilePath cpyDir = FileSystem::Instance()->GetCurrentDocumentsDirectory() + FilePath("InputTest/");
+	FilePath cpyDir = FileSystem::Instance()->GetCurrentDocumentsDirectory() + "InputTest/";
 	FileSystem::Instance()->DeleteDirectory(cpyDir);
 	FileSystem::Instance()->CreateDirectory(cpyDir);
-	FilePath srcFile = srcDir + FilePath("test.html");
-	FilePath cpyFile = cpyDir + FilePath("test.html");
+	FilePath srcFile = srcDir + "test.html";
+	FilePath cpyFile = cpyDir + "test.html";
 	FileSystem::Instance()->CopyFile(srcFile, cpyFile);
-	String url = "file:///" + cpyFile.ResolvePathname();
+	String url = "file:///" + cpyFile.GetAbsolutePathname();
 
 	//delegate = new UIWebViewDelegate();
 	webView3 = new UIWebView(Rect(520, 130, 215, 135));

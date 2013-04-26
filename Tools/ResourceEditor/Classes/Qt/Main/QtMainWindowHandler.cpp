@@ -122,7 +122,8 @@ void QtMainWindowHandler::OpenProject()
 
 void QtMainWindowHandler::OpenResentScene(int32 index)
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandOpenScene(EditorSettings::Instance()->GetLastOpenedFile(index)));
+	DAVA::String path = EditorSettings::Instance()->GetLastOpenedFile(index);
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandOpenScene(path));
 }
 
 void QtMainWindowHandler::SaveScene()

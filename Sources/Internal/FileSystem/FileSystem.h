@@ -184,7 +184,7 @@ public:
 	 \brief Returns absolute system path from the framework specific path
 	 parse paths with specific discs ~res:/ and ~doc:/
 	 */
-	const FilePath & SystemPathForFrameworkPath(const FilePath & frameworkPath);
+	const FilePath SystemPathForFrameworkPath(const String & frameworkPath);
 	
 	File *CreateFileForFrameworkPath(const FilePath & frameworkPath, uint32 attributes);
 

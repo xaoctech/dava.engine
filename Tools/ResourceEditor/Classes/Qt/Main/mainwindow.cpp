@@ -42,7 +42,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	ui->setupUi(this);
  
     qApp->installEventFilter(this);
-	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + FilePath("EditorConfig.yaml"));
+	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + "EditorConfig.yaml");
 
 	QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->sceneTabWidget);
 	QtMainWindowHandler::Instance()->SetResentMenu(ui->menuFile);
@@ -300,7 +300,7 @@ void QtMainWindow::OpenLastProject()
 		}
 		else
 		{
-			ProjectManager::Instance()->ProjectOpen(QString(projectPath.ResolvePathname().c_str()));
+			ProjectManager::Instance()->ProjectOpen(QString(projectPath.GetAbsolutePathname().c_str()));
 		}
     }
 }

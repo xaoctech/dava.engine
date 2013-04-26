@@ -73,7 +73,7 @@ void ColorOnlyEffectGL::DrawElements(ePrimitiveType type, int32 count, eIndexFor
 ColorOnlyEffectGL20::ColorOnlyEffectGL20()
 {
     shader = new Shader();
-    shader->LoadFromYaml(FilePath("~res:/Shaders/Default/fixed_func_color_only.shader"));
+    shader->LoadFromYaml("~res:/Shaders/Default/fixed_func_color_only.shader");
     shader->Recompile();
 }
     

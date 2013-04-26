@@ -39,9 +39,9 @@ void SceneUtils::SetOutFolder(const FilePath &folderPathname)
 bool SceneUtils::CopyFile(const FilePath &filePathname, Set<String> &errorLog)
 {
     String workingPathname = RemoveFolderFromPath(filePathname, dataSourceFolder);
-    PrepareFolderForCopy(FilePath(workingPathname), errorLog);
+    PrepareFolderForCopy(workingPathname, errorLog);
     
-    bool retCopy = FileSystem::Instance()->CopyFile(dataSourceFolder + FilePath(workingPathname), dataFolder + FilePath(workingPathname));
+    bool retCopy = FileSystem::Instance()->CopyFile(dataSourceFolder + workingPathname, dataFolder + workingPathname);
     if(!retCopy)
     {
         errorLog.insert(String(Format("Can't copy %s from %s to %s",
@@ -55,7 +55,7 @@ bool SceneUtils::CopyFile(const FilePath &filePathname, Set<String> &errorLog)
 
 void SceneUtils::PrepareFolderForCopy(const FilePath &filePathname, Set<String> &errorLog)
 {
-    FilePath newFolderPath = dataFolder + FilePath(filePathname.GetDirectory());
+    FilePath newFolderPath = dataFolder + filePathname.GetDirectory();
     if(!FileSystem::Instance()->IsDirectory(newFolderPath))
     {
         FileSystem::eCreateDirectoryResult retCreate = FileSystem::Instance()->CreateDirectory(newFolderPath, true);

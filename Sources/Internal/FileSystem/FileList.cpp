@@ -53,6 +53,8 @@ int alphasortAndroid(const dirent **a, const dirent **b)
 
 FileList::FileList(const FilePath & filepath)
 {
+    DVASSERT(filepath.IsDirectoryPathname());
+    
 	path = filepath;
 
 // Windows version
@@ -62,7 +64,7 @@ FileList::FileList(const FilePath & filepath)
 	//_getcwd(tmp, _MAX_PATH);
 	//Path = tmp;
 	FilePath prevDir = FileSystem::Instance()->GetCurrentWorkingDirectory();
-	BOOL res = SetCurrentDirectoryA(path.ResolvePathname().c_str());
+	BOOL res = SetCurrentDirectoryA(path.GetAbsolutePathname().c_str());
 
 	if (res)
 	{
@@ -103,16 +105,16 @@ FileList::FileList(const FilePath & filepath)
 	FileEntry entry;
 
 #if defined (__DAVAENGINE_ANDROID__)
-	int32 n = scandir(path.ResolvePathname().c_str(), &namelist, 0, alphasortAndroid);
+	int32 n = scandir(path.GetAbsolutePathname().c_str(), &namelist, 0, alphasortAndroid);
 #else //#if defined (__DAVAENGINE_ANDROID__)
-	int32 n = scandir(path.ResolvePathname().c_str(), &namelist, 0, alphasort);
+	int32 n = scandir(path.GetAbsolutePathname().c_str(), &namelist, 0, alphasort);
 #endif //#if defined (__DAVAENGINE_ANDROID__)    
     
 	if (n >= 0)
 	{
 		while(n--)
 		{
-			entry.path = path + FilePath(namelist[n]->d_name);
+			entry.path = path + namelist[n]->d_name;
 			entry.name = namelist[n]->d_name;
 			entry.size = 0;
 			entry.isDirectory = namelist[n]->d_type == DT_DIR;
