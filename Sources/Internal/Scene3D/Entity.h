@@ -38,7 +38,6 @@
 #include "Entity/Component.h"
 #include "FileSystem/KeyedArchive.h"
 
-
 namespace DAVA
 {
 
@@ -75,10 +74,11 @@ public:
     
     void AddComponent(Component * component);
     void RemoveComponent(Component * component);
-    void RemoveComponent(uint32 componentType);
-    Component * GetComponent(uint32 componentType);
-	Component * GetOrCreateComponent(uint32 componentType);
+    void RemoveComponent(uint32 componentType, uint32 index = 0);
+    Component * GetComponent(uint32 componentType, uint32 index = 0) const;
+    Component * GetOrCreateComponent(uint32 componentType, uint32 index = 0);
     uint32 GetComponentCount();
+    uint32 GetComponentCount(uint32 componentType);
     
     inline uint32 GetAvailableComponentFlags();
 
@@ -337,6 +337,11 @@ public:
 	static const char* SCENE_NODE_IS_SOLID_PROPERTY_NAME;
 
 	void FindComponentsByTypeRecursive(Component::eType type, List<DAVA::Entity*> & components);
+    
+protected:
+    
+    inline void CleanupComponent(Component* component, uint32 componentCount);
+    void RemoveAllComponents();
    
 protected:
 
@@ -357,10 +362,13 @@ protected:
     KeyedArchive *customProperties;
     
 private:
+        
+    typedef Map<uint32, Vector<Component*>* > ComponentsMap;
+    
 	Vector<Component *> components;
     uint32 componentFlags;
     uint32 componentUpdateMarks;
-    
+    ComponentsMap componentsMap;
 
     Matrix4 defaultLocalTransform;
    	friend class Scene;
