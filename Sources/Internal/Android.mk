@@ -4,8 +4,12 @@
 # set local path for lib
 LOCAL_PATH := $(call my-dir)
 
-DAVA_ROOT := $(LOCAL_PATH)
+include $(CLEAR_VARS)
+LOCAL_MODULE := iconv_android-prebuilt
+LOCAL_SRC_FILES := ../../Libs/libs/libiconv_android.so
+include $(PREBUILT_SHARED_LIBRARY)
 
+DAVA_ROOT := $(LOCAL_PATH)
 
 # clear all variables
 include $(CLEAR_VARS)
@@ -74,18 +78,15 @@ LOCAL_LDLIBS += $(LIBS_PATH)/libyaml_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libmongodb_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libdxt_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libcurl_android.a
-LOCAL_LDLIBS += -fuse-ld=gold -fno-exceptions
+LOCAL_LDLIBS += $(LIBS_PATH)/libiconv_android.so
 
 # set exported used libs
 LOCAL_EXPORT_LDLIBS := $(LOCAL_LDLIBS)
 
-# set arm mode
-# LOCAL_ARM_MODE := arm
-
-
 # set included libraries
 LOCAL_STATIC_LIBRARIES := libbox2d
-#LOCAL_STATIC_LIBRARIES += android_native_app_glue
+
+LOCAL_SHARED_LIBRARIES += iconv_android-prebuilt
 
 include $(BUILD_STATIC_LIBRARY)
 
@@ -96,4 +97,3 @@ $(call import-add-path,$(DAVA_ROOT)/../External/Box2D)
 $(call import-add-path,$(DAVA_ROOT))
 
 $(call import-module,box2d)
-#$(call import-module,android/native_app_glue)

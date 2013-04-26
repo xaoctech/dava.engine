@@ -48,6 +48,7 @@ public:
     typedef QMap<QString, AppConfig> AppVersion;    //version, app config
     typedef QMap<QString, AppVersion> AppMap;
     AppMap m_Stable;
+    AppMap m_Test;
     AppMap m_Development;
     AppMap m_Dependencies;
 
@@ -57,6 +58,9 @@ public:
         switch (type) {
         case eAppTypeStable: {
             return &m_Stable;
+        }break;
+        case eAppTypeTest: {
+            return &m_Test;
         }break;
         case eAppTypeDevelopment: {
             return &m_Development;
@@ -89,6 +93,7 @@ private:
         eDownloadStateInactive,
         eDownloadStateLauncher,
         eDownloadStateStable,
+        eDownloadStateTest,
         eDownloadStateDevelopment,
         eDownloadStateDependencies
     };
@@ -104,6 +109,7 @@ private:
 
     AppsConfig m_UpdatedConfig;
     QString m_StableUrl;
+    QString m_TestUrl;
     QString m_DevelopmentUrl;
     QString m_DependenciesUrl;
 };

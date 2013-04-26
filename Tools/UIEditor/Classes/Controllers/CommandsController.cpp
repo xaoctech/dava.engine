@@ -14,8 +14,6 @@ using namespace DAVA;
 CommandsController::CommandsController(QObject* parent/* = NULL*/) :
 	QObject(parent)
 {
-	unsavedChanges = 0;
-	
 	//We should reset isLastChangeSaved flag each time the project was closed
 	connect(HierarchyTreeController::Instance(),
 			SIGNAL(ProjectClosed()),
@@ -30,12 +28,12 @@ CommandsController::CommandsController(QObject* parent/* = NULL*/) :
 
 void CommandsController::ExecuteCommand(BaseCommand* command)
 {
-	++unsavedChanges;
-
 	SafeRetain(command);
     command->Execute();
 
 	undoRedoController.AddCommandToUndoStack(command);
+	undoRedoController.IncrementUnsavedChanges(true);
+
 	emit UndoRedoAvailabilityChanged();
 	emit UnsavedChangesNumberChanged();
 
@@ -57,14 +55,8 @@ void CommandsController::EmitChangePropertyFailed(const QString& propertyName)
     emit ChangePropertyFailed(propertyName);
 }
 
-bool CommandsController::IsLastChangeSaved() const
-{
-	return (unsavedChanges == 0);
-}
-
 void CommandsController::OnProjectSaved()
 {
-	unsavedChanges = 0;
 	emit UnsavedChangesNumberChanged();
 }
 
@@ -81,9 +73,9 @@ bool CommandsController::IsRedoAvailable()
 
 bool CommandsController::Undo()
 {
-	--unsavedChanges;
-
+	undoRedoController.DecrementUnsavedChanges(true);
 	bool undoResult = undoRedoController.Undo();
+
 	emit UndoRedoAvailabilityChanged();
 	emit UnsavedChangesNumberChanged();
 	return undoResult;
@@ -91,9 +83,9 @@ bool CommandsController::Undo()
 
 bool CommandsController::Redo()
 {
-	++unsavedChanges;
-
+	undoRedoController.IncrementUnsavedChanges(false);
 	bool redoResult = undoRedoController.Redo();
+
 	emit UndoRedoAvailabilityChanged();
 	emit UnsavedChangesNumberChanged();
 	return redoResult;

@@ -44,13 +44,21 @@ public:
 	bool IsNameExist(const QString& name, const HierarchyTreeNode* parent) const;
 	
 	bool Load(const QString& path);
-	bool Save(const QString& path);
+	bool Save(const QString& path, bool saveAll);
 	
 	virtual void ReturnTreeNodeToScene();
 	virtual Rect GetRect() const;
 	
 	virtual void RemoveSelection() {};
-	
+
+	// Access to the screen unsaved changes counter.
+	int32 GetUnsavedChanges() const {return unsavedChangesCounter;};
+
+	// Modifiers for the unsaved changes counter.
+	void IncrementUnsavedChanges();
+	void DecrementUnsavedChanges();
+	void ResetUnsavedChanges();
+
 protected:
 	void CombineRectWithChild(Rect& rect) const;
 
@@ -64,6 +72,8 @@ protected:
 	float scale;
 	int posX;
 	int posY;
+	
+	int32 unsavedChangesCounter;
 };
 
 #endif /* defined(__UIEditor__HierarchyTreeScreenNode__) */

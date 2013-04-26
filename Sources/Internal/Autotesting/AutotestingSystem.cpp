@@ -837,7 +837,7 @@ void AutotestingSystem::OnTestStart(const String &_testName)
     MongodbUpdateObject *dbUpdateObject = new MongodbUpdateObject();
     KeyedArchive *currentTestArchive = FindOrInsertTestArchive(dbUpdateObject, testId);
     currentTestArchive->SetString("Name", testName);
-    dbUpdateObject->SaveToDB(dbClient);
+    SaveToDB(dbUpdateObject);
     
     Log("DEBUG", Format("OnTestStart %s", testName.c_str()));
 }
@@ -860,12 +860,195 @@ void AutotestingSystem::OnStepStart(const String &stepName)
 	SafeRelease(dbUpdateObject);
 }
     
+bool AutotestingSystem::CheckKeyedArchivesEqual(KeyedArchive* firstKeyedArchive, KeyedArchive* secondKeyedArchive)
+{
+    bool isEqual = false;
+    
+    if(firstKeyedArchive && secondKeyedArchive)
+    {    
+        if(firstKeyedArchive == secondKeyedArchive)
+        {
+            isEqual = true;
+        }
+        else
+        {
+            Map<String, VariantType*> firstData = firstKeyedArchive->GetArchieveData();
+            Map<String, VariantType*> secondData = secondKeyedArchive->GetArchieveData();
+            if(firstData.size() == secondData.size())
+            {
+                isEqual = true;
+                Map<String, VariantType*>::iterator firstIt = firstData.begin();
+                Map<String, VariantType*>::iterator firstEndIt = firstData.end();
+                
+                for(; firstIt != firstEndIt; ++firstIt)
+                {
+                    Map<String, VariantType*>::iterator secondEndIt = secondData.end();
+                    Map<String, VariantType*>::iterator secondFindIt = secondData.find(firstIt->first);
+                    if(secondFindIt != secondEndIt)
+                    {
+                        if(secondFindIt->second != firstIt->second)
+                        {
+                            // pointers to VariantType are not equal, check values
+                            if(secondFindIt->second && firstIt->second)
+                            {
+                                switch (firstIt->second->GetType())
+                                {
+                                    case VariantType::TYPE_KEYED_ARCHIVE:
+                                        if(secondFindIt->second->GetType() == VariantType::TYPE_KEYED_ARCHIVE)
+                                        {
+                                            isEqual = CheckKeyedArchivesEqual(firstIt->second->AsKeyedArchive(), secondFindIt->second->AsKeyedArchive());
+                                        }
+                                        else
+                                        {
+                                            isEqual = false;
+                                            Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %x %x ERROR values for %s cannot be compared (second type is %d, expected %d TYPE_KEYED_ARCHIVE)", firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str(), firstIt->second->GetType(), secondFindIt->second->GetType(), firstIt->second->GetType());
+                                        }
+                                        break;
+                                    case VariantType::TYPE_STRING:
+                                        if(secondFindIt->second->GetType() == VariantType::TYPE_STRING)
+                                        {
+                                            if(secondFindIt->second->AsString() != firstIt->second->AsString())
+                                            {
+                                                
+                                                isEqual = false;
+                                                Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %x %x ERROR values for %s are not equal (%s != %s)", firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str(), firstIt->second->AsString().c_str(), secondFindIt->second->AsString().c_str());
+                                            }
+                                        }
+                                        else
+                                        {
+                                            isEqual = false;
+                                            Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %x %x ERROR values for %s cannot be compared (second type is %d, expected %d TYPE_STRING)", firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str(), firstIt->second->GetType(), secondFindIt->second->GetType(), firstIt->second->GetType());
+                                        }
+                                        break;
+                                    case VariantType::TYPE_FLOAT:
+                                        if(secondFindIt->second->GetType() == VariantType::TYPE_FLOAT)
+                                        {
+                                            if(firstIt->second->AsFloat() != secondFindIt->second->AsFloat())
+                                            {
+                                                isEqual = false;
+                                                Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %x %x ERROR values for %s are not equal (%f != %f)", firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str(), firstIt->second->AsFloat(), secondFindIt->second->AsFloat());
+                                            }
+                                        }
+                                        else
+                                        {
+                                            isEqual = false;
+                                            Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %x %x ERROR values for %s cannot be compared (second type is %d, expected %d TYPE_FLOAT)", firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str(), firstIt->second->GetType(), secondFindIt->second->GetType(), firstIt->second->GetType());
+                                        }
+                                        break;
+                                    case VariantType::TYPE_INT32:
+                                        if(secondFindIt->second->GetType() == VariantType::TYPE_INT32)
+                                        {
+                                            if(firstIt->second->AsInt32() != secondFindIt->second->AsInt32())
+                                            {
+                                                isEqual = false;
+                                                Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %x %x ERROR values for %s are not equal (%d != %d)", firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str(), firstIt->second->AsInt32(), secondFindIt->second->AsInt32());
+                                            }
+                                        }
+                                        else
+                                        {
+                                            isEqual = false;
+                                            Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %x %x ERROR values for %s cannot be compared (second type is %d, expected %d TYPE_INT32)", firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str(), firstIt->second->GetType(), secondFindIt->second->GetType(), firstIt->second->GetType());
+                                        }
+                                        break;
+                                    case VariantType::TYPE_BOOLEAN:
+                                        if(secondFindIt->second->GetType() == VariantType::TYPE_BOOLEAN)
+                                        {
+                                            if(firstIt->second->AsBool() != secondFindIt->second->AsBool())
+                                            {
+                                                isEqual = false;
+                                                Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %x %x ERROR values for %s are not equal (%d != %d)", firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str(), firstIt->second->AsBool(), secondFindIt->second->AsBool());
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if(secondFindIt->second->GetType() == VariantType::TYPE_INT32)
+                                            {
+                                                bool secondValue = (secondFindIt->second->AsInt32() == 1);
+                                                if(firstIt->second->AsBool() != secondValue)
+                                                {
+                                                    isEqual = false;
+                                                    Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %x %x ERROR values for %s are not equal (%d != %d)", firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str(), firstIt->second->AsBool(), secondFindIt->second->AsInt32());
+                                                }
+                                            }
+                                            else
+                                            {
+                                                isEqual = false;
+                                                Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %x %x ERROR values for %s cannot be compared (second type is %d, expected %d TYPE_BOOLEAN or %d TYPE_INT32)", firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str(), firstIt->second->GetType(), secondFindIt->second->GetType(), firstIt->second->GetType(), VariantType::TYPE_INT32);
+                                            }
+                                        }
+                                        break;
+                                    default:
+                                        //TODO: other pointer types (not only KeyedArchive) which may be equal even when pointers are not equal
+                                        isEqual = false;
+                                        Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %x %x ERROR values for %s are not equal", firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str());
+                                        break;
+                                }
+                            }
+                            else
+                            {
+                                isEqual = false;
+                                Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %x %x ERROR one of the values for %s is NULL", firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str());
+                            }
+                        }
+                    }
+                    else
+                    {
+                        isEqual = false;
+                        Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %x %x ERROR second archive doesn't have key %s", firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str());
+                    }
+                }
+            }
+            else
+            {
+                Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %x %x ERROR keys count are not equal", firstKeyedArchive, secondKeyedArchive);
+            }
+        }
+    }
+    
+    return isEqual;
+}
+    
+bool AutotestingSystem::CheckSavedObjectInDB(MongodbUpdateObject *dbUpdateObject)
+{
+    bool isSavedObjectValid = false;
+    if(dbClient)
+    {
+        MongodbUpdateObject *foundObject = new MongodbUpdateObject();
+        isSavedObjectValid = dbClient->FindObjectByKey(dbUpdateObject->GetObjectName(), foundObject);
+        if(isSavedObjectValid)
+        {
+            foundObject->LoadData();
+            isSavedObjectValid = CheckKeyedArchivesEqual(dbUpdateObject->GetData(), foundObject->GetData());
+        }
+        SafeRelease(foundObject);
+    }
+    return isSavedObjectValid;
+}
+    
 bool AutotestingSystem::SaveToDB(MongodbUpdateObject *dbUpdateObject)
 {
     bool ret = dbUpdateObject->SaveToDB(dbClient);
+    
     if(!ret)
     {
         Logger::Error("AutotestingSystem::SaveToDB failed");
+    }
+    else
+    {
+        int32 attemptsLeft = 10;
+        while(!CheckSavedObjectInDB(dbUpdateObject))
+        {
+            if(--attemptsLeft <= 0)
+            {
+                ret = false;
+                Logger::Error("AutotestingSystem::SaveToDB failed to check saved object");
+            }
+#if !defined( _WIN32 )
+            sleep( 1 );
+#else
+            Sleep( 1000 );
+#endif
+        }
     }
     return ret;
 }
@@ -1305,7 +1488,6 @@ void AutotestingSystem::OnError(const String & errorMessage)
     //SaveTestStepLogEntryToDB("ERROR", GetCurrentTimeString(), errorMessage);
 
 	MakeScreenShot();
-	SaveScreenShotNameToDB();
     
 	if (deviceName != "not-initialized")
 	{

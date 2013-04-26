@@ -618,6 +618,45 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 		Vector3 p4 = c - nd;
 
 		RenderHelper::Instance()->DrawLine(from, c, lineWidth);
+
+		/*
+		Polygon3 poly;
+		poly.AddPoint(p1);
+		poly.AddPoint(p3);
+		poly.AddPoint(p2);
+		RenderHelper::Instance()->FillPolygon(poly);
+
+		poly.Clear();
+		poly.AddPoint(p1);
+		poly.AddPoint(p4);
+		poly.AddPoint(p2);
+		RenderHelper::Instance()->FillPolygon(poly);
+
+		poly.Clear();
+		poly.AddPoint(p1);
+		poly.AddPoint(p3);
+		poly.AddPoint(to);
+		RenderHelper::Instance()->FillPolygon(poly);
+
+		poly.Clear();
+		poly.AddPoint(p1);
+		poly.AddPoint(p4);
+		poly.AddPoint(to);
+		RenderHelper::Instance()->FillPolygon(poly);
+
+		poly.Clear();
+		poly.AddPoint(p2);
+		poly.AddPoint(p3);
+		poly.AddPoint(to);
+		RenderHelper::Instance()->FillPolygon(poly);
+
+		poly.Clear();
+		poly.AddPoint(p2);
+		poly.AddPoint(p4);
+		poly.AddPoint(to);
+		RenderHelper::Instance()->FillPolygon(poly);
+		*/
+
 		RenderHelper::Instance()->DrawLine(p1, p3, lineWidth);
 		RenderHelper::Instance()->DrawLine(p2, p3, lineWidth);
 		RenderHelper::Instance()->DrawLine(p1, p4, lineWidth);
@@ -627,4 +666,5 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 		RenderHelper::Instance()->DrawLine(p3, to, lineWidth);
 		RenderHelper::Instance()->DrawLine(p4, to, lineWidth);
 	}
+
 };

@@ -106,3 +106,29 @@ void UndoRedoController::AddCommandToStack(Deque<BaseCommand*>& stackToAdd, Base
 	}
 }
 
+void UndoRedoController::IncrementUnsavedChanges(bool forUndoStack)
+{
+	Deque<BaseCommand*>& activeStack = forUndoStack ? undoStack : redoStack;
+	if (activeStack.empty())
+	{
+		return;
+	}
+	
+	activeStack.front()->IncrementUnsavedChanges();
+}
+
+void UndoRedoController::DecrementUnsavedChanges(bool forUndoStack)
+{
+	Deque<BaseCommand*>& activeStack = forUndoStack ? undoStack : redoStack;
+	if (activeStack.empty())
+	{
+		return;
+	}
+	
+	activeStack.front()->DecrementUnsavedChanges();
+}
+
+void UndoRedoController::ResetUnsavedChanges()
+{
+	// TODO! IMPLEMENT!
+}

@@ -242,7 +242,7 @@ bool AutotestingSystemLua::SetText(const String &path, const String &text)
     }
     return false;
 }
-    
+
 bool AutotestingSystemLua::CheckText(UIControl *control, const String &expectedText)
 {
 	UIStaticText *uiStaticText = dynamic_cast<UIStaticText*>(control);

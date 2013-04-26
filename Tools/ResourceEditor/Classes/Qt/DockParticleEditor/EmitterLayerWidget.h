@@ -21,6 +21,7 @@
 #include <QPushButton>
 #include <QLineEdit>
 #include <QCheckBox>
+#include <QComboBox>
 
 using namespace DAVA;
 
@@ -53,6 +54,9 @@ private:
 	void InitWidget(QWidget* );
 	void UpdateTooltip();
 	
+	void FillLayerTypes();
+	int32 LayerTypeToIndex(ParticleLayer::eType layerType);
+
 private:
 	ParticleLayer* layer;
 	QVBoxLayout* mainBox;
@@ -60,6 +64,11 @@ private:
 	QLineEdit* layerNameLineEdit;
 	QCheckBox* enableCheckBox;
 	QCheckBox* additiveCheckBox;
+	QCheckBox* isLongCheckBox;
+
+	QLabel* layerTypeLabel;
+	QComboBox* layerTypeComboBox;
+
 	Sprite* sprite;
 	QLabel* spriteLabel;
 	QPushButton* spriteBtn;
@@ -71,20 +80,29 @@ private:
 	TimeLineWidget* sizeVariationTimeLine;
 	TimeLineWidget* sizeOverLifeTimeLine;
 	TimeLineWidget* velocityTimeLine;
+	TimeLineWidget* velocityOverLifeTimeLine;
 	TimeLineWidget* spinTimeLine;
-	TimeLineWidget* motionTimeLine;
-	TimeLineWidget* bounceTimeLine;
+	TimeLineWidget* spinOverLifeTimeLine;
+
 	TimeLineWidget* alphaOverLifeTimeLine;
 	QCheckBox* frameOverlifeCheckBox;
 	QSpinBox* frameOverlifeFPSSpin;
 	TimeLineWidget* angleTimeLine;
 	GradientPickerWidget* colorRandomGradient;
 	GradientPickerWidget* colorOverLifeGradient;
-	QDoubleSpinBox* alignToMotionSpin;
+
 	QDoubleSpinBox* startTimeSpin;
 	QDoubleSpinBox* endTimeSpin;
 	
 	bool blockSignals;
+
+	struct LayerTypeMap
+	{
+		ParticleLayer::eType layerType;
+		QString layerName;
+	};
+
+	static const LayerTypeMap layerTypeMap[];
 };
 
 #endif /* defined(__ResourceEditorQt__EmitterLayerWidget__) */

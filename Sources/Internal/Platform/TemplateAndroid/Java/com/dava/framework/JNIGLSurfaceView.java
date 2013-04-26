@@ -4,13 +4,14 @@ import android.content.Context;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 
 public class JNIGLSurfaceView extends GLSurfaceView 
 {
 	private JNIRenderer mRenderer = null;
 
-    private native void nativeOnTouch(int action, int id, float x, float y, long time);
+    private native void nativeOnTouch(int action, int id, float x, float y, double time);
     private native void nativeOnKeyUp(int keyCode);
     private native void nativeOnResumeView();
     private native void nativeOnPauseView();
@@ -76,12 +77,12 @@ public class JNIGLSurfaceView extends GLSurfaceView
     	}
     	
     	InputEvent[] events;
-		long time;
+    	double time;
 		int action;
     	
     	public InputRunnable(final MotionEvent event)
     	{
-    		time = event.getEventTime();
+    		time = ((double)event.getEventTime()) / 1000000.f;
     		action = event.getActionMasked();
     		if (action == MotionEvent.ACTION_MOVE)
     		{

@@ -91,7 +91,7 @@ CommandReloadScene::CommandReloadScene(const DAVA::String &pathname)
 void CommandReloadScene::Execute()
 {
     DVASSERT(CheckExtension(String(".sc2")) && "Wrong extension");
-    SceneDataManager::Instance()->ReloadScene(filePathname);
+    SceneDataManager::Instance()->ReloadScene(filePathname, filePathname);
 }
 
 void CommandReloadScene::Cancel()
@@ -99,6 +99,39 @@ void CommandReloadScene::Cancel()
     DVASSERT(CheckExtension(String(".sc2")) && "Wrong extension");
     //TODO: need code here
 }
+
+
+//reload root node at current tab
+CommandReloadEntityFrom::CommandReloadEntityFrom(const DAVA::String &pathname)
+:   LibraryCommand(pathname, COMMAND_UNDO_REDO)
+{
+	commandName = "Reload Entity From";
+    fromPathname = String("");
+}
+
+
+void CommandReloadEntityFrom::Execute()
+{
+    DVASSERT(CheckExtension(String(".sc2")) && "Wrong extension");
+    
+    String path, name;
+    FileSystem::Instance()->SplitPath(filePathname, path, name);
+    
+    fromPathname = GetOpenFileName(String("Select Scene File"), (path.c_str()), String("Scene File (*.sc2)"));
+    if(fromPathname.empty())
+    {
+        return;
+    }
+    
+    SceneDataManager::Instance()->ReloadScene(filePathname, fromPathname);
+}
+
+void CommandReloadEntityFrom::Cancel()
+{
+    DVASSERT(CheckExtension(String(".sc2")) && "Wrong extension");
+    //TODO: need code here
+}
+
 
 
 //convert from dae to sc2

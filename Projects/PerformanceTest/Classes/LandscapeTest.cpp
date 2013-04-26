@@ -30,20 +30,20 @@
 
 #include "LandscapeTest.h"
 
-LandscapeTest::LandscapeTest(const String &testName, LandscapeNode::eTiledShaderMode mode)
+LandscapeTest::LandscapeTest(const String &testName, Landscape::eTiledShaderMode mode)
     :   TestTemplate<LandscapeTest>(testName)
     ,   shaderMode(mode)
 {
     testCounter = 0;
     
-    for(int32 i = 0; i < LandscapeNode::TEXTURE_COUNT; ++i)
+    for(int32 i = 0; i < Landscape::TEXTURE_COUNT; ++i)
     {
         textures[i] = NULL;
     }
     
-    if(LandscapeNode::TILED_MODE_COUNT == shaderMode)
+    if(Landscape::TILED_MODE_COUNT == shaderMode)
     {
-        for(int32 i = 0; i < LandscapeNode::TEXTURE_COUNT; ++i)
+        for(int32 i = 0; i < Landscape::TEXTURE_COUNT; ++i)
         {
             RegisterFunction(this, &LandscapeTest::DrawSprite, Format("TestLandscapeTexture_%02d", i), TEST_FRAMES_COUNT/2, (void *)i);
         }
@@ -62,26 +62,26 @@ LandscapeTest::LandscapeTest(const String &testName, LandscapeNode::eTiledShader
 
 void LandscapeTest::LoadResources()
 {
-	LandscapeNode * land = new LandscapeNode();  
+	Landscape * land = new Landscape();  
     SafeRelease(land);
     
     Scene *scene = new Scene();
     scene->AddNode(scene->GetRootNode(String("~res:/3d/LandscapeTest/landscapetest.sc2"))); 
 
-    SceneNode *cameraHolder = scene->FindByName(String("TestCamera"));
+    Entity *cameraHolder = scene->FindByName(String("TestCamera"));
     Camera *cam = GetCamera(cameraHolder);
     scene->AddCamera(cam); 
     scene->SetCurrentCamera(cam);
   
-    SceneNode *landscapeHolder = scene->FindByName(String("Landscape"));
+    Entity *landscapeHolder = scene->FindByName(String("Landscape"));
     land = GetLandscape(landscapeHolder);
     if(land)
     {
-        if(LandscapeNode::TILED_MODE_COUNT == shaderMode)
+        if(Landscape::TILED_MODE_COUNT == shaderMode)
         {
-            for(int32 i = 0; i < LandscapeNode::TEXTURE_COUNT; ++i)
+            for(int32 i = 0; i < Landscape::TEXTURE_COUNT; ++i)
             {
-                Texture *t = land->GetTexture((LandscapeNode::eTextureLevel)i);
+                Texture *t = land->GetTexture((Landscape::eTextureLevel)i);
                 if(t)
                 {
                     textures[i] = Sprite::CreateFromTexture(t, 0, 0, t->GetWidth(), t->GetHeight());
@@ -105,7 +105,7 @@ void LandscapeTest::LoadResources()
 
 void LandscapeTest::UnloadResources()
 {
-    for(int32 i = 0; i < LandscapeNode::TEXTURE_COUNT; ++i)
+    for(int32 i = 0; i < Landscape::TEXTURE_COUNT; ++i)
     {
         SafeRelease(textures[i]);
     }
@@ -117,7 +117,7 @@ void LandscapeTest::UnloadResources()
 
 bool LandscapeTest::RunTest(int32 testNum)
 {
-    if(LandscapeNode::TILED_MODE_COUNT == shaderMode)
+    if(Landscape::TILED_MODE_COUNT == shaderMode)
     {
         return TestTemplate<LandscapeTest>::RunTest(testNum);
     }

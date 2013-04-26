@@ -145,6 +145,8 @@ protected:
     KeyedArchive *FindStepArchive(KeyedArchive *testArchive, const String &stepId);
     
     bool SaveToDB(MongodbUpdateObject *dbUpdateObject);
+    bool CheckSavedObjectInDB(MongodbUpdateObject *dbUpdateObject);
+    bool CheckKeyedArchivesEqual(KeyedArchive* firstKeyedArchive, KeyedArchive* secondKeyedArchive);
 
 
     bool ConnectToDB();

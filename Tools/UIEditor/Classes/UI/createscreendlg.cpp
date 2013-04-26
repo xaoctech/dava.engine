@@ -45,14 +45,26 @@ void CreateScreenDlg::SetDefaultPlatform(HierarchyTreeNode::HIERARCHYTREENODEID 
 void CreateScreenDlg::accept()
 {
 	const QString screenName = GetScreenName();
+	QString errorMsg("");
 	if (!screenName.isNull() && !screenName.isEmpty())
 	{
-		QDialog::accept();
+		if(!HierarchyTreeController::Instance()->GetActivePlatform()->IsAggregatorOrScreenNamePresent(screenName))
+		{
+			QDialog::accept();
+		}
+		else
+		{
+			errorMsg = "Please fill screen name field with unique value.\r\nThe same name with any of aggregators is forbidden.";
+		}
 	}
 	else
 	{
+		errorMsg = ("Please fill screen name field with value. It can't be empty.");
+	}
+	if(!errorMsg.isEmpty())
+	{
 		QMessageBox msgBox;
-		msgBox.setText(tr("Please fill screen name field with value. It can't be empty."));
+		msgBox.setText(errorMsg);
 		msgBox.exec();
-	}	
+	}
 }

@@ -1,4 +1,4 @@
-TIMEOUT = 10.0 -- Big time out for waiting
+TIMEOUT = 30.0 -- Big time out for waiting
 TIMECLICK = 0.2 -- time for simple action
 DELAY = 0.5 -- time for simulation of human reaction
 
@@ -354,13 +354,49 @@ function SelectHorizontal(list, item)
 	Log("Select "..tostring(item).." item in horizontal list "..list)
 	local cell = list.."/".. tostring(item)
 	assert(WaitControl(list), "Couldn't select "..cell)
+	
+		local last_visible = 0
+	local previous_last = 0
+	local index = 0
+	
+	-- find first visible element
+	for i = 0, 100 do --to avoid hanging up in empty list
+		if IsVisible(list.."/"..tostring(i)) then
+			previous_last = i
+			last_visible = i
+			Log( "previous_last = "..tostring(previous_last)..",last_visible = "..tostring(last_visible) )
+			break
+		end
+	end
+    
+	-- find last wisible
+	index = previous_last + 1
+	while true do
+		if not IsVisible(list.."/"..tostring(index)) then
+			last_visible = index - 1
+			Log( "last_visible = "..tostring(last_visible) )
+			break
+		end
+		index = index + 1
+	end
+	
 	repeat
 		if IsVisible(cell) then
 			break
 		else
-			ScrollRight(list)
+			previous_last = last_visible
+			ScrollLeft(list)
+			index = last_visible + 1
+			while true do
+				if not IsVisible(list.."/"..tostring(index)) then
+					last_visible = index - 1
+					Log( "previous_last = "..tostring(previous_last) )
+					break
+				end
+				index = index + 1
+			end
 		end
-	until IsVisible(list.."/"..tostring(GetChildCount(list))) -- replace this by GetChildCount()
+	until previous_last == last_visible
     
 	if IsVisible(cell) then
 		ClickControl(cell)
@@ -375,14 +411,50 @@ function SelectVertical(list, item)
 	Log("Select "..tostring(item).." item in vertical list "..list)
 	local cell = list.."/".. tostring(item)
 	assert(WaitControl(list), "Couldn't select "..cell)
+	
+	local last_visible = 0
+	local previous_last = 0
+	local index = 0
+	
+	-- find first visible element
+	for i = 0, 100 do --to avoid hanging up in empty list
+		if IsVisible(list.."/"..tostring(i)) then
+			previous_last = i
+			last_visible = i
+			Log( "previous_last = "..tostring(previous_last)..",last_visible = "..tostring(last_visible) )
+			break
+		end
+	end
+    
+	-- find last wisible
+	index = previous_last + 1
+	while true do
+		if not IsVisible(list.."/"..tostring(index)) then
+			last_visible = index - 1
+			Log( "last_visible = "..tostring(last_visible) )
+			break
+		end
+		index = index + 1
+	end
+	
 	repeat
 		if IsVisible(cell) then
 			break
 		else
+			previous_last = last_visible
 			ScrollDown(list)
+			index = last_visible + 1
+			while true do
+				if not IsVisible(list.."/"..tostring(index)) then
+					last_visible = index - 1
+					Log( "previous_last = "..tostring(previous_last) )
+					break
+				end
+				index = index + 1
+			end
 		end
-	until IsVisible(list.."/"..tostring(GetChildCount(list))) -- replace this by GetChildCount()
-    
+	until previous_last == last_visible
+	
 	if IsVisible(cell) then
 		ClickControl(cell)
 		return true
@@ -405,16 +477,16 @@ function ScrollDown(list)
 		
 		TouchDownPosition(position)
 		Wait(0.5)
-        position.y = position.y - rect.dy/2
+        position.y = position.y - rect.dy/3
 		TouchMovePosition(position)
-		Wait(0.5)
 		TouchUp()
+		Wait(1)
 	else
 		OnError("Couldnt find list "..list)
 	end
 end
 
-function ScrollRight(list)
+function ScrollLeft(list)
 	local control = autotestingSystem:FindControl(list)
     if control then	
         local position = Vector.Vector2()
@@ -427,10 +499,10 @@ function ScrollRight(list)
 		
 		TouchDownPosition(position)
 		Wait(0.5)
-        position.x = position.x + rect.dx/2
+        position.x = position.x - rect.dx/3
 		TouchMovePosition(position)
-		Wait(0.5)
 		TouchUp()
+		Wait(1)
 	else
 		OnError("Couldnt find list "..list)
 	end

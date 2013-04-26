@@ -25,6 +25,23 @@ using namespace DAVA;
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Yuri Coder, 03/12/2012. New commands for Particle Editor QT.
 
+CommandUpdateEffect::CommandUpdateEffect(ParticleEffectComponent* particleEffect):
+Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+{
+	this->particleEffect = particleEffect;
+}
+
+void CommandUpdateEffect::Init(float32 playbackSpeed)
+{
+	this->playbackSpeed = playbackSpeed;
+}
+
+void CommandUpdateEffect::Execute()
+{
+	DVASSERT(particleEffect);
+	particleEffect->SetPlaybackSpeed(playbackSpeed);
+}
+
 CommandUpdateEmitter::CommandUpdateEmitter(ParticleEmitter* emitter):
 	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
 {
@@ -32,22 +49,22 @@ CommandUpdateEmitter::CommandUpdateEmitter(ParticleEmitter* emitter):
 }
 
 void CommandUpdateEmitter::Init(ParticleEmitter::eType emitterType,
-								RefPtr<PropertyLine<float32> > emissionAngle,
 								RefPtr<PropertyLine<float32> > emissionRange,
 								RefPtr<PropertyLine<Vector3> > emissionVector,
 								RefPtr<PropertyLine<float32> > radius,
 								RefPtr<PropertyLine<Color> > colorOverLife,
 								RefPtr<PropertyLine<Vector3> > size,
-								float32 life)
+								float32 life,
+								float32 playbackSpeed)
 {
 	this->emitterType = emitterType;
-	this->emissionAngle = emissionAngle;
 	this->emissionRange = emissionRange;
 	this->emissionVector = emissionVector;
 	this->radius = radius;
 	this->colorOverLife = colorOverLife;
 	this->size = size;
 	this->life = life;
+	this->playbackSpeed = playbackSpeed;
 }
 
 void CommandUpdateEmitter::Execute()
@@ -55,13 +72,13 @@ void CommandUpdateEmitter::Execute()
 	DVASSERT(emitter);
 
 	emitter->emitterType = emitterType;
-	emitter->emissionAngle = emissionAngle;
 	emitter->emissionRange = emissionRange;
 	emitter->emissionVector = emissionVector;
 	emitter->radius = radius;
 	emitter->colorOverLife = colorOverLife;
 	emitter->size = size;
 	emitter->SetLifeTime(life);
+	emitter->SetPlaybackSpeed(playbackSpeed);
 }
 
 CommandUpdateParticleLayer::CommandUpdateParticleLayer(ParticleEmitter* emitter, ParticleLayer* layer) :
@@ -72,8 +89,10 @@ CommandUpdateParticleLayer::CommandUpdateParticleLayer(ParticleEmitter* emitter,
 }
 
 void CommandUpdateParticleLayer::Init(const QString& layerName,
+									  ParticleLayer::eType layerType,
 									  bool isDisabled,
 									  bool additive,
+									  bool isLong,
 									  Sprite* sprite,
 									  RefPtr< PropertyLine<float32> > life,
 									  RefPtr< PropertyLine<float32> > lifeVariation,
@@ -81,33 +100,29 @@ void CommandUpdateParticleLayer::Init(const QString& layerName,
 									  RefPtr< PropertyLine<float32> > numberVariation,
 									  RefPtr< PropertyLine<Vector2> > size,
 									  RefPtr< PropertyLine<Vector2> > sizeVariation,
-									  RefPtr< PropertyLine<float32> > sizeOverLife,
+									  RefPtr< PropertyLine<Vector2> > sizeOverLife,
 									  RefPtr< PropertyLine<float32> > velocity,
 									  RefPtr< PropertyLine<float32> > velocityVariation,
 									  RefPtr< PropertyLine<float32> > velocityOverLife,
 									  RefPtr< PropertyLine<float32> > spin,
 									  RefPtr< PropertyLine<float32> > spinVariation,
 									  RefPtr< PropertyLine<float32> > spinOverLife,
-									  RefPtr< PropertyLine<float32> > motionRandom,
-									  RefPtr< PropertyLine<float32> > motionRandomVariation,
-									  RefPtr< PropertyLine<float32> > motionRandomOverLife,
-									  RefPtr< PropertyLine<float32> > bounce,
-									  RefPtr< PropertyLine<float32> > bounceVariation,
-									  RefPtr< PropertyLine<float32> > bounceOverLife,
 									  RefPtr< PropertyLine<Color> > colorRandom,
 									  RefPtr< PropertyLine<float32> > alphaOverLife,
 									  RefPtr< PropertyLine<Color> > colorOverLife,
 									  RefPtr< PropertyLine<float32> > angle,
 									  RefPtr< PropertyLine<float32> > angleVariation,
-									  float32 alignToMotion,
+
 									  float32 startTime,
 									  float32 endTime,
 									  bool frameOverLifeEnabled,
 									  float32 frameOverLifeFPS)
 {
 	this->layerName = layerName;
+	this->layerType = layerType;
 	this->isDisabled = isDisabled;
 	this->additive = additive;
+	this->isLong = isLong;
 	this->sprite = sprite;
 	this->life = life;
 	this->lifeVariation = lifeVariation;
@@ -122,19 +137,14 @@ void CommandUpdateParticleLayer::Init(const QString& layerName,
 	this->spin = spin;
 	this->spinVariation = spinVariation;
 	this->spinOverLife = spinOverLife;
-	this->motionRandom = motionRandom;
-	this->motionRandomVariation = motionRandomVariation;
-	this->motionRandomOverLife = motionRandomOverLife;
-	this->bounce = bounce;
-	this->bounceVariation = bounceVariation;
-	this->bounceOverLife = bounceOverLife;
+
 	this->colorRandom = colorRandom;
 	this->alphaOverLife = alphaOverLife;
 	this->colorOverLife = colorOverLife;
 	this->frameOverLife = frameOverLife;
 	this->angle = angle;
 	this->angleVariation = angleVariation;
-	this->alignToMotion = alignToMotion;
+
 	this->startTime = startTime;
 	this->endTime = endTime;
 	this->frameOverLifeEnabled = frameOverLifeEnabled;
@@ -147,25 +157,21 @@ void CommandUpdateParticleLayer::Execute()
 	layer->layerName = layerName.toStdString();
 	layer->isDisabled = isDisabled;
 	layer->SetAdditive(additive);
+	layer->SetLong(isLong);
 	layer->life = life;
 	layer->lifeVariation = lifeVariation;
 	layer->number = number;
 	layer->numberVariation = numberVariation;
 	layer->size = size;
 	layer->sizeVariation = sizeVariation;
-	layer->sizeOverLife = sizeOverLife;
+	layer->sizeOverLifeXY = sizeOverLife;
 	layer->velocity = velocity;
 	layer->velocityVariation = velocityVariation;
 	layer->velocityOverLife = velocityOverLife;
 	layer->spin = spin;
 	layer->spinVariation = spinVariation;
 	layer->spinOverLife = spinOverLife;
-	layer->motionRandom = motionRandom;
-	layer->motionRandomVariation = motionRandomVariation;
-	layer->motionRandomOverLife = motionRandomOverLife;
-	layer->bounce = bounce;
-	layer->bounceVariation = bounceVariation;
-	layer->bounceOverLife = bounceOverLife;
+
 	layer->colorRandom = colorRandom;
 	layer->alphaOverLife = alphaOverLife;
 	layer->colorOverLife = colorOverLife;
@@ -175,7 +181,7 @@ void CommandUpdateParticleLayer::Execute()
 
 	layer->angle = angle;
 	layer->angleVariation = angleVariation;
-	layer->alignToMotion = alignToMotion;
+
 	layer->startTime = startTime;
 	layer->endTime = endTime;
 
@@ -187,6 +193,23 @@ void CommandUpdateParticleLayer::Execute()
 		layer->SetSprite(sprite);
 		emitter->Play();
 	}
+	
+	// The same is for emitter type.
+	if (layer->type != layerType)
+	{
+		emitter->Stop();
+		layer->type = layerType;
+		emitter->Play();
+	}
+	
+	// "IsLong" flag.
+	if (layer->IsLong() != isLong)
+	{
+		emitter->Stop();
+		layer->SetLong(isLong);
+		emitter->Play();
+	}
+
 
 	SceneDataManager::Instance()->RefreshParticlesLayer(layer);
 }
@@ -546,4 +569,3 @@ void CommandSaveParticleEmitterToYaml::Execute()
 
     emitter->SaveToYaml(yamlPath);
 }
-

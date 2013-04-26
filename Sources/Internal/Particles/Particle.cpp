@@ -107,13 +107,20 @@ bool Particle::Update(float32 timeElapsed)
 
 void Particle::Draw()
 {
+	// Yuri Coder, 2013/04/03. This method is called for 2D sprites only. For 3D sprites
+	// please see ParticleLayer3D::Draw()
 	if (IsDead())return;
 	RenderManager::Instance()->SetColor(drawColor.r, drawColor.g, drawColor.b, drawColor.a);
 	sprite->SetAngle(angle);
 	sprite->SetPosition(position.x, position.y);
-	sprite->SetScale(size.x * sizeOverLife, size.y * sizeOverLife);
+	sprite->SetScale(size.x * sizeOverLife.x, size.y * sizeOverLife.y);
 	sprite->SetFrame(frame);
 	sprite->Draw();
+}
+
+float32 Particle::GetArea()
+{
+	return (size.x * sizeOverLife.x) * (size.y * sizeOverLife.y);
 }
 
 };

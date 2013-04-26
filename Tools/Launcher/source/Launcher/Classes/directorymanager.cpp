@@ -6,6 +6,7 @@ DirectoryManager* DirectoryManager::m_spInstance = NULL;
 
 #define DOWNLOAD_DIR "/Downloads/"
 #define STABLE_DIR "/Stable/"
+#define TEST_DIR "/QA/"
 #define DEVELOPMENT_DIR "/Development/"
 #define DEPENDENCIES_DIR "/Dependencies/"
 
@@ -24,6 +25,7 @@ void DirectoryManager::Init() {
 
     QDir().mkdir(GetDownloadDir());
     QDir().mkdir(GetStableDir());
+    QDir().mkdir(GetTestDir());
     QDir().mkdir(GetDevelopment());
     QDir().mkdir(GetDependencies());
 }
@@ -37,20 +39,24 @@ void DirectoryManager::InitBaseDir() {
 
     m_configDir = m_appDir;
 
-    int nPos = -1;
-    do {
-        int pos = m_appDir.indexOf("/", nPos + 1);
-        if (pos != -1)
-            nPos = pos;
-        else
-            break;
-    }while (true);
+    int nPos = m_appDir.lastIndexOf("/");
     if (nPos != -1)
         m_appDir.chop(m_appDir.size() - nPos);
 
 #ifdef Q_OS_DARWIN
      m_configDir = m_appDir;
+
+     nPos = m_appDir.lastIndexOf("/");
+     if (nPos != -1)
+         m_appDir.chop(m_appDir.size() - nPos);
 #endif
+}
+
+QString DirectoryManager::GetDocumentsDirectory() const {
+    QString path = QDir::homePath() + "/Documents/DAVAProject/Launcher/";
+    if(!QDir(path).exists())
+        QDir().mkdir(path);
+    return path;
 }
 
 QString DirectoryManager::GetBaseDirectory() const {
@@ -74,6 +80,12 @@ QString DirectoryManager::GetDownloadDir() const {
 QString DirectoryManager::GetStableDir() const {
     QString baseDir = GetBaseDirectory();
     baseDir.append(STABLE_DIR);
+    return baseDir;
+}
+
+QString DirectoryManager::GetTestDir() const {
+    QString baseDir = GetBaseDirectory();
+    baseDir.append(TEST_DIR);
     return baseDir;
 }
 
