@@ -210,7 +210,7 @@ void SceneExporter::ExportFolder(const FilePath &folderName, Set<String> &errorL
             if(!fileList->IsNavigationDirectory(i))
             {
                 String workingPathname = sceneUtils.RemoveFolderFromPath(pathname, sceneUtils.dataSourceFolder);
-                ExportFolder(FilePath(workingPathname), errorLog);
+                ExportFolder(workingPathname, errorLog);
             }
         }
         else 
@@ -225,7 +225,7 @@ void SceneExporter::ExportFolder(const FilePath &folderName, Set<String> &errorL
                 }
                 
                 String workingPathname = sceneUtils.RemoveFolderFromPath(pathname, sceneUtils.dataSourceFolder);
-                ExportFile(FilePath(workingPathname), errorLog);
+                ExportFile(workingPathname, errorLog);
             }
         }
     }

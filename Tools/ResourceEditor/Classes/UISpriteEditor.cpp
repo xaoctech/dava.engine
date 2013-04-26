@@ -64,7 +64,7 @@ UISpriteEditor::~UISpriteEditor()
 void UISpriteEditor::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 {
 	UIControl::LoadFromYamlNode(node, loader);
-	UIYamlLoader::Load(this, FilePath("~res:/Screens/SpriteEditor.yaml"));
+	UIYamlLoader::Load(this, "~res:/Screens/SpriteEditor.yaml");
 	
 }
     

@@ -120,7 +120,7 @@ void LocalizationEditorDialog::SetDefaultLanguage()
 void LocalizationEditorDialog::OnOpenLocalizationFileButtonClicked()
 {
 	FilePath relativeLocalizationPath = LocalizationSystem::Instance()->GetDirectoryPath();
-	QString absoluteLocalizationPath = QString::fromStdString(relativeLocalizationPath.ResolvePathname());
+	QString absoluteLocalizationPath = QString::fromStdString(relativeLocalizationPath.GetAbsolutePathname());
 
 	if (absoluteLocalizationPath.isEmpty())
 	{

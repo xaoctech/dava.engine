@@ -9,7 +9,6 @@
 
 #include "GameCore.h"
 #include "AppScreens.h"
-#include "SceneEditor/SceneEditorScreenMain.h"
 
 #ifdef __DAVAENGINE_BEAST__
 #include "BeastProxyImpl.h"
@@ -33,23 +32,18 @@ using namespace DAVA;
 
 
 GameCore::GameCore()
-{
-    virtualSize.x = Core::Instance()->GetVirtualScreenWidth();
-    virtualSize.y = Core::Instance()->GetVirtualScreenHeight();
-}
+{ }
 
 GameCore::~GameCore()
-{
-	
-}
+{ }
 
 void GameCore::OnAppStarted()
 {
-	Logger::Instance()->SetLogFilename(FilePath("ResEditor.txt"));
+	Logger::Instance()->SetLogFilename("ResEditor.txt");
 	RenderManager::Instance()->SetFPS(30);
 
     LocalizationSystem::Instance()->SetCurrentLocale(EditorSettings::Instance()->GetLanguage());
-	LocalizationSystem::Instance()->InitWithDirectory(FilePath("~res:/Strings/"));
+	LocalizationSystem::Instance()->InitWithDirectory("~res:/Strings/");
 
     
 #ifdef __DAVAENGINE_BEAST__
@@ -66,30 +60,27 @@ void GameCore::OnAppStarted()
     PVRConverter::Instance()->SetPVRTexTool(String("~res:/PVRTexToolCL.exe"));
 #endif
 
-    sceneEditorScreenMain = new SceneEditorScreenMain();
     sceneUtilsScreen = new SceneUtilsScreen();
 
 	new ParticlesEditorController();
     imageSplitterScreen = new ImageSplitterScreen();
 
-    UIScreenManager::Instance()->RegisterScreen(SCREEN_SCENE_EDITOR_MAIN, sceneEditorScreenMain);
-    UIScreenManager::Instance()->RegisterScreen(SCREEN_SCENE_UTILS, sceneUtilsScreen);
-    UIScreenManager::Instance()->RegisterScreen(SCREEN_IMAGE_SPLITTER, imageSplitterScreen);
+    UIScreenManager::Instance()->RegisterScreen(SCREEN_UTILS_SCENE, sceneUtilsScreen);
+    UIScreenManager::Instance()->RegisterScreen(SCREEN_UTILS_IMAGE_SPLITTER, imageSplitterScreen);
 
     
-    if(     CommandLineTool::Instance()
-       &&   (CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter"))
-       ||   CommandLineTool::Instance()->CommandIsFound(String("-scenesaver"))))
+    if( CommandLineTool::Instance() &&
+		(CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")) ||
+		 CommandLineTool::Instance()->CommandIsFound(String("-scenesaver"))))
     {
-        UIScreenManager::Instance()->SetFirst(SCREEN_SCENE_UTILS);
+        UIScreenManager::Instance()->SetFirst(SCREEN_UTILS_SCENE);
     }
     else if(CommandLineTool::Instance() && CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter")))
     {
-        UIScreenManager::Instance()->SetFirst(SCREEN_IMAGE_SPLITTER);
+        UIScreenManager::Instance()->SetFirst(SCREEN_UTILS_IMAGE_SPLITTER);
     }
     else
     {
-        UIScreenManager::Instance()->SetFirst(SCREEN_SCENE_EDITOR_MAIN);
         Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
     }
 	
@@ -106,7 +97,6 @@ void GameCore::OnAppFinished()
 
 	BeastProxy::Instance()->Release();
 
-    SafeRelease(sceneEditorScreenMain);
     SafeRelease(sceneUtilsScreen);
     SafeRelease(imageSplitterScreen);
 }
@@ -135,29 +125,12 @@ void GameCore::BeginFrame()
 
 void GameCore::Update(float32 timeElapsed)
 {
-    Vector2 newVirtualSize(Core::Instance()->GetVirtualScreenWidth(), Core::Instance()->GetVirtualScreenHeight());
-    
-    if(virtualSize != newVirtualSize)
-    {
-        virtualSize = newVirtualSize;
-        ResizeScreens();
-    }
-    
 	ApplicationCore::Update(timeElapsed);
 }
 
 void GameCore::Draw()
 {
 	ApplicationCore::Draw();
-
-}
-
-void GameCore::ResizeScreens()
-{
-    if(sceneEditorScreenMain)
-    {
-        sceneEditorScreenMain->SetSize(virtualSize);
-    }
 }
 
 
