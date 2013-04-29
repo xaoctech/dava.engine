@@ -61,9 +61,9 @@ protected:
 
 	FilePath GetScenePath();
 	String GetRelativePathToScenePath(const FilePath& absolutePath);
-	FilePath GetAbsolutePathFromScenePath(const FilePath& relativePath);
+	FilePath GetAbsolutePathFromScenePath(const String& relativePath);
 	String GetRelativePathToProjectPath(const FilePath& absolutePath);
-	FilePath GetAbsolutePathFromProjectPath(const FilePath& relativePath);
+	FilePath GetAbsolutePathFromProjectPath(const String& relativePath);
 	void StoreSaveFileName(const FilePath& fileName);
 
 	void LoadTextureAction(const FilePath& pathToFile);

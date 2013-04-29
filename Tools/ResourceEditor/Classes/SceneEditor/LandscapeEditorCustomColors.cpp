@@ -532,7 +532,7 @@ void LandscapeEditorCustomColors::StoreSaveFileName(const FilePath& fileName)
 
 FilePath LandscapeEditorCustomColors::GetCurrentSaveFileName()
 {
-	FilePath currentSaveName;
+	String currentSaveName;
 
 	if(NULL != workingLandscapeEntity)
 	{
@@ -568,18 +568,18 @@ String LandscapeEditorCustomColors::GetRelativePathToProjectPath(const FilePath&
 	return absolutePath.GetRelativePathname(EditorSettings::Instance()->GetProjectPath());
 }
 
-FilePath LandscapeEditorCustomColors::GetAbsolutePathFromScenePath(const FilePath &relativePath)
+FilePath LandscapeEditorCustomColors::GetAbsolutePathFromScenePath(const String &relativePath)
 {
-	if(relativePath.IsEmpty())
+	if(relativePath.empty())
 		return FilePath();
 
 	return (GetScenePath() + relativePath);
 }
 
 
-FilePath LandscapeEditorCustomColors::GetAbsolutePathFromProjectPath(const FilePath& relativePath)
+FilePath LandscapeEditorCustomColors::GetAbsolutePathFromProjectPath(const String& relativePath)
 {
-	if(relativePath.IsEmpty())
+	if(relativePath.empty())
 		return FilePath();
 
 	return (EditorSettings::Instance()->GetProjectPath() + relativePath);
