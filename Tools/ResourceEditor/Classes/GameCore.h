@@ -35,8 +35,6 @@ public:
 	virtual void Draw();
 	
 private:
-    SceneUtilsScreen *sceneUtilsScreen;
-   	ImageSplitterScreen *imageSplitterScreen;
 };
 
 

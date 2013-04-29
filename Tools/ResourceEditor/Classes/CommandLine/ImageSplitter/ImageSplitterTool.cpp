@@ -20,38 +20,71 @@
     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTR ACT, STRICT LIABILITY, OR TORT
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
         * Created by Ivan "Dizz" Petrochenko
 =====================================================================================*/
-#ifndef __SCENE_UTILS_SCREEN_H__
-#define __SCENE_UTILS_SCREEN_H__
 
-#include "DAVAEngine.h"
+#include "ImageSplitterTool.h"
+#include "ImageSplitter.h"
+
+#include "../EditorCommandLineParser.h"
+
 using namespace DAVA;
 
-class SceneUtilsScreen: public UIScreen
+
+DAVA::String ImageSplitterTool::GetCommandLineKey()
 {
-public:
+    return "-imagesplitter";
+}
 
-	virtual void LoadResources();
-	virtual void UnloadResources();
-	virtual void WillAppear();
-	virtual void DidAppear();
+bool ImageSplitterTool::InitializeFromCommandLine()
+{
+    commandAction = ACTION_NONE;
     
-protected:    
+    if(EditorCommandLineParser::CommandIsFound(String("-split")))
+    {
+        commandAction = ACTION_SPLIT;
+        filename = EditorCommandLineParser::GetCommandParam(String("-file"));
+        if(filename.empty())
+        {
+            errors.insert(String("Incorrect params for splitting of the file"));
+            return false;
+        }
+    }
+    else if(EditorCommandLineParser::CommandIsFound(String("-merge")))
+    {
+        commandAction = ACTION_MERGE;
+  
+        foldername = EditorCommandLineParser::GetCommandParam(String("-folder"));
+        if(filename.empty())
+        {
+            errors.insert(String("Incorrect params for merging of the files"));
+            return false;
+        }
+    }
+    else
+    {
+        errors.insert(String("Incorrect params for merging of the files"));
+        return false;
+    }
     
-    void CleanFolder();
-    void Export();
-    void Save();
-    
-    
-    Set<String> errorLog;
-    
-};
+    return true;
+}
+
+void ImageSplitterTool::Process()
+{
+    if(commandAction == ACTION_SPLIT)
+    {
+        ImageSplitter::SplitImage(filename, errors);
+    }
+    else if(commandAction == ACTION_MERGE)
+    {
+        ImageSplitter::MergeImages(foldername, errors);
+    }
+}
 
 
-#endif // __SCENE_UTILS_SCREEN_H__

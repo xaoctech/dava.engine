@@ -28,64 +28,41 @@
         * Created by Ivan "Dizz" Petrochenko
 =====================================================================================*/
 
-#include "ImageSplitterScreen.h"
+#include "CleanFolderTool.h"
 
-#include "../SceneEditor/CommandLineTool.h"
-#include "../Qt/Main/QtUtils.h"
-#include "ImageSplitter.h"
+#include "../EditorCommandLineParser.h"
+
+using namespace DAVA;
 
 
-void ImageSplitterScreen::LoadResources()
+DAVA::String CleanFolderTool::GetCommandLineKey()
 {
-    GetBackground()->SetColor(Color::White());
+    return "-cleanfolder";
 }
 
-void ImageSplitterScreen::UnloadResources()
+bool CleanFolderTool::InitializeFromCommandLine()
 {
-    
-}
-
-void ImageSplitterScreen::WillAppear()
-{
-    errorLog.clear();
-    
-    Vector<String> & commandLine = Core::Instance()->GetCommandLine();
-    if(CommandLineTool::Instance()->CommandIsFound(String("-split")))
+    foldername = EditorCommandLineParser::GetCommandParam(String("-folder"));
+    if(foldername.IsEmpty())
     {
-        int32 inPosition = CommandLineTool::Instance()->CommandPosition(String("-file"));
-        if(CommandLineTool::Instance()->CheckPosition(inPosition))
-        {
-            String filepathname = commandLine[inPosition + 1];
-            ImageSplitter::SplitImage(filepathname, errorLog);
-        }
-        else
-        {
-            errorLog.insert(String("Incorrect params for splitting of the file"));
-        }
+        errors.insert(String("Incorrect params for cleaning folder"));
+        return false;
     }
-    else if(CommandLineTool::Instance()->CommandIsFound(String("-merge")))
+
+    return true;
+}
+
+void CleanFolderTool::Process()
+{
+    bool ret = FileSystem::Instance()->DeleteDirectory(foldername);
+    if(!ret)
     {
-        int32 inPosition = CommandLineTool::Instance()->CommandPosition(String("-folder"));
-        if(CommandLineTool::Instance()->CheckPosition(inPosition))
+        bool folderExists = FileSystem::Instance()->IsDirectory(foldername);
+        if(folderExists)
         {
-            String folderPathname = commandLine[inPosition + 1];
-            ImageSplitter::MergeImages(folderPathname, errorLog);
-        }
-        else
-        {
-            errorLog.insert(String("Incorrect params for merging of the files"));
+            errors.insert(String(Format("[CleanFolder] ret = %d, folder = %s", ret, foldername.GetAbsolutePathname().c_str())));
         }
     }
 }
 
-void ImageSplitterScreen::DidAppear()
-{
-    ShowErrorDialog(errorLog);
 
-    bool forceMode =    CommandLineTool::Instance()->CommandIsFound(String("-force"))
-                    ||  CommandLineTool::Instance()->CommandIsFound(String("-forceclose"));
-    if(forceMode || 0 == errorLog.size())
-    {
-        Core::Instance()->Quit();
-    }
-}
