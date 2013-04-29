@@ -5,7 +5,7 @@
 #include "../SceneEditor/EditorBodyControl.h"
 
 CommandSaveTextureVisibilityTool::CommandSaveTextureVisibilityTool()
-:	Command(COMMAND_WITHOUT_UNDO_EFFECT)
+:	Command(COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_SAVE_TEXTURE_VISIBILITY_TOOL)
 {
 }
 
@@ -30,7 +30,7 @@ void CommandSaveTextureVisibilityTool::Execute()
 }
 
 CommandPlacePointVisibilityTool::CommandPlacePointVisibilityTool(const Vector2& newVisibilityPoint, const Vector2& oldVisibilityPoint, bool oldPointIsSet, Image* oldImage)
-:	Command(COMMAND_WITHOUT_UNDO_EFFECT)
+:	Command(COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_PLACE_POINT_VISIBILITY_TOOL)
 ,	point(newVisibilityPoint)
 ,	oldPoint(oldVisibilityPoint)
 ,	oldPointIsSet(oldPointIsSet)
@@ -75,7 +75,7 @@ LandscapeEditorVisibilityCheckTool* CommandPlacePointVisibilityTool::GetEditor()
 }
 
 CommandPlaceAreaVisibilityTool::CommandPlaceAreaVisibilityTool(const Vector2& areaPoint, uint32 areaSize, Image* oldImage)
-:	Command(COMMAND_WITHOUT_UNDO_EFFECT),
+:	Command(COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_PLACE_AREA_VISIBILITY_TOOL),
 	point(areaPoint),
 	size(areaSize),
 	redoImage(NULL)
