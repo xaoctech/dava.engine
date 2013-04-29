@@ -163,7 +163,7 @@ bool FilePath::operator!=(const FilePath &path) const
 }
 
     
-const bool FilePath::IsDirectoryPathname() const
+bool FilePath::IsDirectoryPathname() const
 {
     if(IsEmpty())
     {
@@ -279,11 +279,6 @@ void FilePath::ReplaceBasename(const String &basename)
     
 void FilePath::ReplaceExtension(const String &extension)
 {
-    if(IsEmpty())
-    {
-        int a  = 0;
-    }
-    
     DVASSERT(!IsEmpty());
     
     const FilePath directory = GetDirectory();
@@ -332,13 +327,6 @@ String FilePath::GetLastDirectoryName() const
     return FilePath(path).GetFilename();
 }
     
-//void FilePath::ReplacePath(const FilePath &pathname)
-//{
-//    DVASSERT(!IsEmpty());
-//    
-//    StringReplace(absolutePathname, pathname.GetAbsolutePathname(), String(""));
-//}
-
 bool FilePath::IsEqualToExtension( const String & extension ) const
 {
 	String selfExtension = GetExtension();
@@ -389,23 +377,20 @@ String FilePath::GetSystemPathname(const String &pathname)
 }
     
 
-String FilePath::GetFrameworkPathForType( eType pathType )
+String FilePath::GetFrameworkPath()
 {
-	if(pathType == PATH_IN_FILESYSTEM)
-	{
-		return absolutePathname;
-	}
-
-	if(pathType == PATH_IN_DOCUMENTS)
-	{
-		return GetFrameworkPathForPrefix("~doc:/");
-	}
-
-	if(pathType == PATH_IN_RESOURCES)
-	{
-		return GetFrameworkPathForPrefix("~res:/");
-	}
-
+    String pathInRes = GetFrameworkPathForPrefix("~res:/");
+    if(!pathInRes.empty())
+    {
+        return pathInRes;
+    }
+    
+    String pathInDoc = GetFrameworkPathForPrefix("~doc:/");
+    if(!pathInDoc.empty())
+    {
+        return pathInDoc;
+    }
+    
 	DVASSERT(false);
 
 	return String();
@@ -426,7 +411,7 @@ String FilePath::GetFrameworkPathForPrefix( const String &typePrefix )
 		return pathname;
 	}
 
-	return absolutePathname;
+	return String();
 }
 
 

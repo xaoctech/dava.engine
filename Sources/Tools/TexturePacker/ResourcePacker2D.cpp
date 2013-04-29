@@ -352,10 +352,7 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 
 	/* New $process folder structure */
 	
-	FilePath dataSourceRelativePath(inputPath);
-//    dataSourceRelativePath.ReplacePath(excludeDirectory);
-    DVASSERT(false); //TODO: need to check logic of this operation
-
+	String dataSourceRelativePath = inputPath.GetRelativePathname(excludeDirectory);
 	FilePath processDirectoryPath = excludeDirectory  + GetProcessFolderName() + dataSourceRelativePath;
 	if (FileSystem::Instance()->CreateDirectory(processDirectoryPath, true) == FileSystem::DIRECTORY_CANT_CREATE)
 	{
