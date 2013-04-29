@@ -60,9 +60,9 @@ protected:
 	void CreateUndoPoint();
 
 	FilePath GetScenePath();
-	FilePath GetRelativePathToScenePath(const FilePath& absolutePath);
+	String GetRelativePathToScenePath(const FilePath& absolutePath);
 	FilePath GetAbsolutePathFromScenePath(const FilePath& relativePath);
-	FilePath GetRelativePathToProjectPath(const FilePath& absolutePath);
+	String GetRelativePathToProjectPath(const FilePath& absolutePath);
 	FilePath GetAbsolutePathFromProjectPath(const FilePath& relativePath);
 	void StoreSaveFileName(const FilePath& fileName);
 

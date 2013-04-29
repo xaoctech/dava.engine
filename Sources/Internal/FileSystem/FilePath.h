@@ -82,7 +82,7 @@ public:
         \brief Function to check is filepath empty or no
         \returns true if absolutePathname is not empty
 	 */
-    const bool IsEmpty() const;
+    inline const bool IsEmpty() const;
 
 	/*
         \brief Function to check is filepath represent folder path
@@ -94,7 +94,7 @@ public:
         \brief Function to retrieve pathname
         \returns pathname value
 	 */
-    const String & GetAbsolutePathname() const;
+    inline const String & GetAbsolutePathname() const;
     
 	/**
         \brief Function to retrieve filename from pathname. Filename for path "/Users/Folder/image.png" is "image.png".
@@ -192,11 +192,11 @@ public:
     String GetLastDirectoryName() const;
     
     
-	/**
-        \brief Function for replacement of pathname from absolute path
-        \param[in] pathname is pathname for replacement
-	 */
-    void ReplacePath(const FilePath &pathname);
+//	/**
+//        \brief Function for replacement of pathname from absolute path
+//        \param[in] pathname is pathname for replacement
+//	 */
+//    void ReplacePath(const FilePath &pathname);
     
     
 	/**
@@ -215,6 +215,9 @@ public:
 
 protected:
     
+    void Initialize(const String &pathname);
+
+    
 	String GetFrameworkPathForPrefix(const String &typePrefix);
 
     static String NormalizePathname(const FilePath &pathname);
@@ -232,6 +235,7 @@ protected:
     static bool IsAbsolutePathname(const String &pathname);
     
 public:
+    static String AddPath(const FilePath &folder, const String & addition);
     static String AddPath(const FilePath &folder, const FilePath & addition);
     
 protected:
@@ -247,6 +251,18 @@ public:
 //     );
     
 };
+    
+    
+inline const String & FilePath::GetAbsolutePathname() const
+{
+    return absolutePathname;
+}
+
+inline const bool FilePath::IsEmpty() const
+{
+    return absolutePathname.empty();
+}
+
     
 };
 
