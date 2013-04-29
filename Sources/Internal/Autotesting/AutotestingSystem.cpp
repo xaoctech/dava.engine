@@ -1030,16 +1030,16 @@ bool AutotestingSystem::SaveToDB(MongodbUpdateObject *dbUpdateObject)
 	Logger::Debug("AutotestingSystem::SaveToDB");
 
     bool ret = dbUpdateObject->SaveToDB(dbClient);
-    
+    //return ret;
     if(!ret)
     {
         Logger::Error("AutotestingSystem::SaveToDB failed");
     }
     else
     {
-		int32 maxAttemptsToWait = 10;
+		int32 maxAttemptsToWait = 1;
         int32 attemptsToWaitLeft = maxAttemptsToWait;
-		int32 maxAttemptsToRetry = 2;
+		int32 maxAttemptsToRetry = 5;
 		int32 attemptsToRetryLeft = maxAttemptsToRetry;
 
 		Logger::Debug("AutotestingSystem::SaveToDB CheckSavedObjectInDB wait=%d retry=%d", attemptsToWaitLeft, attemptsToRetryLeft);
@@ -1067,9 +1067,9 @@ bool AutotestingSystem::SaveToDB(MongodbUpdateObject *dbUpdateObject)
 
 						Logger::Debug("AutotestingSystem::SaveToDB retry failed wait=%d retry=%d, sleep 1 sec", attemptsToWaitLeft, attemptsToRetryLeft);
 #if !defined( _WIN32 )
-            sleep( 1 );
+            //sleep( 1 );
 #else
-            Sleep( 1000 );
+            //Sleep( 1000 );
 #endif
 					}
 				}
