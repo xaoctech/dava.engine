@@ -27,27 +27,23 @@
     Revision History:
         * Created by Ivan "Dizz" Petrochenko
 =====================================================================================*/
-#ifndef __IMAGE_SPLITTER_SCREEN_H__
-#define __IMAGE_SPLITTER_SCREEN_H__
+#ifndef __CLEAN_FOLDER_TOOL_H__
+#define __CLEAN_FOLDER_TOOL_H__
 
-#include "DAVAEngine.h"
-using namespace DAVA;
+#include "../CommandLineTool.h"
 
-class ImageSplitterScreen: public UIScreen
+class CleanFolderTool: public CommandLineTool
 {
 public:
 
-	virtual void LoadResources();
-	virtual void UnloadResources();
-	virtual void WillAppear();
-	virtual void DidAppear();
+    virtual DAVA::String GetCommandLineKey();
+    virtual bool InitializeFromCommandLine();
+    virtual void Process();
     
-    
-protected:    
+protected:
 
-    Set<String> errorLog;
-    
+    DAVA::FilePath foldername;
 };
 
 
-#endif // __IMAGE_SPLITTER_SCREEN_H__
+#endif // __CLEAN_FOLDER_TOOL_H__

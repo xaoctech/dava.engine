@@ -20,10 +20,7 @@
 #include "SceneEditor/SceneValidator.h"
 #include "PVRConverter.h"
 
-#include "SceneEditor/CommandLineTool.h"
-#include "SceneEditor/SceneUtilsScreen.h"
-
-#include "ImageSplitter/ImageSplitterScreen.h"
+#include "CommandLine/CommandLineManager.h"
 
 #include "TextureBrowser/TextureConvertor.h"
 #include "DockParticleEditor/ParticlesEditorController.h"
@@ -60,26 +57,9 @@ void GameCore::OnAppStarted()
     PVRConverter::Instance()->SetPVRTexTool(String("~res:/PVRTexToolCL.exe"));
 #endif
 
-    sceneUtilsScreen = new SceneUtilsScreen();
-
 	new ParticlesEditorController();
-    imageSplitterScreen = new ImageSplitterScreen();
 
-    UIScreenManager::Instance()->RegisterScreen(SCREEN_UTILS_SCENE, sceneUtilsScreen);
-    UIScreenManager::Instance()->RegisterScreen(SCREEN_UTILS_IMAGE_SPLITTER, imageSplitterScreen);
-
-    
-    if( CommandLineTool::Instance() &&
-		(CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")) ||
-		 CommandLineTool::Instance()->CommandIsFound(String("-scenesaver"))))
-    {
-        UIScreenManager::Instance()->SetFirst(SCREEN_UTILS_SCENE);
-    }
-    else if(CommandLineTool::Instance() && CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter")))
-    {
-        UIScreenManager::Instance()->SetFirst(SCREEN_UTILS_IMAGE_SPLITTER);
-    }
-    else
+    if(!CommandLineManager::Instance()->IsCommandLineModeEnabled())
     {
         Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
     }
@@ -96,9 +76,6 @@ void GameCore::OnAppFinished()
     SceneValidator::Instance()->Release();
 
 	BeastProxy::Instance()->Release();
-
-    SafeRelease(sceneUtilsScreen);
-    SafeRelease(imageSplitterScreen);
 }
 
 void GameCore::OnSuspend()
