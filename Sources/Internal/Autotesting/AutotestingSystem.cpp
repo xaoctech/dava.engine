@@ -860,7 +860,7 @@ void AutotestingSystem::OnStepStart(const String &stepName)
 	SafeRelease(dbUpdateObject);
 }
     
-bool AutotestingSystem::CheckKeyedArchivesEqual(KeyedArchive* firstKeyedArchive, KeyedArchive* secondKeyedArchive)
+bool AutotestingSystem::CheckKeyedArchivesEqual(const String &name, KeyedArchive* firstKeyedArchive, KeyedArchive* secondKeyedArchive)
 {
     bool isEqual = false;
     
@@ -896,12 +896,12 @@ bool AutotestingSystem::CheckKeyedArchivesEqual(KeyedArchive* firstKeyedArchive,
                                     case VariantType::TYPE_KEYED_ARCHIVE:
                                         if(secondFindIt->second->GetType() == VariantType::TYPE_KEYED_ARCHIVE)
                                         {
-                                            isEqual = CheckKeyedArchivesEqual(firstIt->second->AsKeyedArchive(), secondFindIt->second->AsKeyedArchive());
+                                            isEqual = CheckKeyedArchivesEqual(firstIt->first, firstIt->second->AsKeyedArchive(), secondFindIt->second->AsKeyedArchive());
                                         }
                                         else
                                         {
                                             isEqual = false;
-                                            Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %x %x ERROR values for %s cannot be compared (second type is %d, expected %d TYPE_KEYED_ARCHIVE)", firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str(), firstIt->second->GetType(), secondFindIt->second->GetType(), firstIt->second->GetType());
+                                            Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %s %x %x ERROR values for %s cannot be compared (second type is %d, expected %d TYPE_KEYED_ARCHIVE)", name.c_str(), firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str(), firstIt->second->GetType(), secondFindIt->second->GetType(), firstIt->second->GetType());
                                         }
                                         break;
                                     case VariantType::TYPE_STRING:
@@ -911,13 +911,13 @@ bool AutotestingSystem::CheckKeyedArchivesEqual(KeyedArchive* firstKeyedArchive,
                                             {
                                                 
                                                 isEqual = false;
-                                                Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %x %x ERROR values for %s are not equal (%s != %s)", firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str(), firstIt->second->AsString().c_str(), secondFindIt->second->AsString().c_str());
+                                                Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %s %x %x ERROR values for %s are not equal (%s != %s)", name.c_str(), firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str(), firstIt->second->AsString().c_str(), secondFindIt->second->AsString().c_str());
                                             }
                                         }
                                         else
                                         {
                                             isEqual = false;
-                                            Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %x %x ERROR values for %s cannot be compared (second type is %d, expected %d TYPE_STRING)", firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str(), firstIt->second->GetType(), secondFindIt->second->GetType(), firstIt->second->GetType());
+                                            Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %s %x %x ERROR values for %s cannot be compared (second type is %d, expected %d TYPE_STRING)", name.c_str(), firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str(), firstIt->second->GetType(), secondFindIt->second->GetType(), firstIt->second->GetType());
                                         }
                                         break;
                                     case VariantType::TYPE_FLOAT:
@@ -926,13 +926,13 @@ bool AutotestingSystem::CheckKeyedArchivesEqual(KeyedArchive* firstKeyedArchive,
                                             if(firstIt->second->AsFloat() != secondFindIt->second->AsFloat())
                                             {
                                                 isEqual = false;
-                                                Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %x %x ERROR values for %s are not equal (%f != %f)", firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str(), firstIt->second->AsFloat(), secondFindIt->second->AsFloat());
+                                                Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %s %x %x ERROR values for %s are not equal (%f != %f)", name.c_str(), firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str(), firstIt->second->AsFloat(), secondFindIt->second->AsFloat());
                                             }
                                         }
                                         else
                                         {
                                             isEqual = false;
-                                            Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %x %x ERROR values for %s cannot be compared (second type is %d, expected %d TYPE_FLOAT)", firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str(), firstIt->second->GetType(), secondFindIt->second->GetType(), firstIt->second->GetType());
+                                            Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %s %x %x ERROR values for %s cannot be compared (second type is %d, expected %d TYPE_FLOAT)", name.c_str(), firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str(), firstIt->second->GetType(), secondFindIt->second->GetType(), firstIt->second->GetType());
                                         }
                                         break;
                                     case VariantType::TYPE_INT32:
@@ -941,13 +941,13 @@ bool AutotestingSystem::CheckKeyedArchivesEqual(KeyedArchive* firstKeyedArchive,
                                             if(firstIt->second->AsInt32() != secondFindIt->second->AsInt32())
                                             {
                                                 isEqual = false;
-                                                Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %x %x ERROR values for %s are not equal (%d != %d)", firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str(), firstIt->second->AsInt32(), secondFindIt->second->AsInt32());
+                                                Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %s %x %x ERROR values for %s are not equal (%d != %d)", name.c_str(), firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str(), firstIt->second->AsInt32(), secondFindIt->second->AsInt32());
                                             }
                                         }
                                         else
                                         {
                                             isEqual = false;
-                                            Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %x %x ERROR values for %s cannot be compared (second type is %d, expected %d TYPE_INT32)", firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str(), firstIt->second->GetType(), secondFindIt->second->GetType(), firstIt->second->GetType());
+                                            Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %s %x %x ERROR values for %s cannot be compared (second type is %d, expected %d TYPE_INT32)", name.c_str(), firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str(), firstIt->second->GetType(), secondFindIt->second->GetType(), firstIt->second->GetType());
                                         }
                                         break;
                                     case VariantType::TYPE_BOOLEAN:
@@ -956,7 +956,7 @@ bool AutotestingSystem::CheckKeyedArchivesEqual(KeyedArchive* firstKeyedArchive,
                                             if(firstIt->second->AsBool() != secondFindIt->second->AsBool())
                                             {
                                                 isEqual = false;
-                                                Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %x %x ERROR values for %s are not equal (%d != %d)", firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str(), firstIt->second->AsBool(), secondFindIt->second->AsBool());
+                                                Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %s %x %x ERROR values for %s are not equal (%d != %d)", name.c_str(), firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str(), firstIt->second->AsBool(), secondFindIt->second->AsBool());
                                             }
                                         }
                                         else
@@ -967,40 +967,40 @@ bool AutotestingSystem::CheckKeyedArchivesEqual(KeyedArchive* firstKeyedArchive,
                                                 if(firstIt->second->AsBool() != secondValue)
                                                 {
                                                     isEqual = false;
-                                                    Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %x %x ERROR values for %s are not equal (%d != %d)", firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str(), firstIt->second->AsBool(), secondFindIt->second->AsInt32());
+                                                    Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %s %x %x ERROR values for %s are not equal (%d != %d)", name.c_str(), firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str(), firstIt->second->AsBool(), secondFindIt->second->AsInt32());
                                                 }
                                             }
                                             else
                                             {
                                                 isEqual = false;
-                                                Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %x %x ERROR values for %s cannot be compared (second type is %d, expected %d TYPE_BOOLEAN or %d TYPE_INT32)", firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str(), firstIt->second->GetType(), secondFindIt->second->GetType(), firstIt->second->GetType(), VariantType::TYPE_INT32);
+                                                Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %s %x %x ERROR values for %s cannot be compared (second type is %d, expected %d TYPE_BOOLEAN or %d TYPE_INT32)", name.c_str(), firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str(), firstIt->second->GetType(), secondFindIt->second->GetType(), firstIt->second->GetType(), VariantType::TYPE_INT32);
                                             }
                                         }
                                         break;
                                     default:
                                         //TODO: other pointer types (not only KeyedArchive) which may be equal even when pointers are not equal
                                         isEqual = false;
-                                        Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %x %x ERROR values for %s are not equal", firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str());
+                                        Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %s %x %x ERROR values for %s are not equal", name.c_str(), firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str());
                                         break;
                                 }
                             }
                             else
                             {
                                 isEqual = false;
-                                Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %x %x ERROR one of the values for %s is NULL", firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str());
+                                Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %s %x %x ERROR one of the values for %s is NULL", name.c_str(), firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str());
                             }
                         }
                     }
                     else
                     {
                         isEqual = false;
-                        Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %x %x ERROR second archive doesn't have key %s", firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str());
+                        Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %s %x %x ERROR second archive doesn't have key %s", name.c_str(), firstKeyedArchive, secondKeyedArchive, firstIt->first.c_str());
                     }
                 }
             }
             else
             {
-                Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %x %x ERROR keys count are not equal", firstKeyedArchive, secondKeyedArchive);
+                Logger::Error("AutotestingSystem::CheckKeyedArchivesEqual %s %x %x ERROR keys count are not equal", name.c_str(), firstKeyedArchive, secondKeyedArchive);
             }
         }
     }
@@ -1018,7 +1018,7 @@ bool AutotestingSystem::CheckSavedObjectInDB(MongodbUpdateObject *dbUpdateObject
         if(isSavedObjectValid)
         {
             foundObject->LoadData();
-            isSavedObjectValid = CheckKeyedArchivesEqual(dbUpdateObject->GetData(), foundObject->GetData());
+            isSavedObjectValid = CheckKeyedArchivesEqual(dbUpdateObject->GetObjectName(), dbUpdateObject->GetData(), foundObject->GetData());
         }
         SafeRelease(foundObject);
     }
@@ -1027,6 +1027,8 @@ bool AutotestingSystem::CheckSavedObjectInDB(MongodbUpdateObject *dbUpdateObject
     
 bool AutotestingSystem::SaveToDB(MongodbUpdateObject *dbUpdateObject)
 {
+	Logger::Debug("AutotestingSystem::SaveToDB");
+
     bool ret = dbUpdateObject->SaveToDB(dbClient);
     
     if(!ret)
@@ -1035,14 +1037,55 @@ bool AutotestingSystem::SaveToDB(MongodbUpdateObject *dbUpdateObject)
     }
     else
     {
-        int32 attemptsLeft = 10;
+		int32 maxAttemptsToWait = 10;
+        int32 attemptsToWaitLeft = maxAttemptsToWait;
+		int32 maxAttemptsToRetry = 2;
+		int32 attemptsToRetryLeft = maxAttemptsToRetry;
+
+		Logger::Debug("AutotestingSystem::SaveToDB CheckSavedObjectInDB wait=%d retry=%d", attemptsToWaitLeft, attemptsToRetryLeft);
+
         while(!CheckSavedObjectInDB(dbUpdateObject))
         {
-            if(--attemptsLeft <= 0)
+            if(--attemptsToWaitLeft <= 0)
             {
-                ret = false;
-                Logger::Error("AutotestingSystem::SaveToDB failed to check saved object");
+				if(--attemptsToRetryLeft <= 0)
+				{
+					Logger::Error("AutotestingSystem::SaveToDB failed, retried %d times", maxAttemptsToRetry);
+				}
+				else
+				{
+					attemptsToWaitLeft = maxAttemptsToWait;
+					--attemptsToRetryLeft;
+
+					while(!dbUpdateObject->SaveToDB(dbClient))
+					{
+						if(--attemptsToRetryLeft <= 0)
+						{
+							Logger::Error("AutotestingSystem::SaveToDB failed, retried %d times", maxAttemptsToRetry);
+							break;
+						}
+
+						Logger::Debug("AutotestingSystem::SaveToDB retry failed wait=%d retry=%d, sleep 1 sec", attemptsToWaitLeft, attemptsToRetryLeft);
+#if !defined( _WIN32 )
+            sleep( 1 );
+#else
+            Sleep( 1000 );
+#endif
+					}
+				}
+
+				if(attemptsToRetryLeft <= 0)
+				{
+					Logger::Error("AutotestingSystem::SaveToDB failed, retried %d times", maxAttemptsToRetry);
+					break;
+				}
+				else
+				{
+					Logger::Warning("AutotestingSystem::SaveToDB failed. Attempts to retry left: %d", attemptsToRetryLeft);
+				}
             }
+
+			Logger::Debug("AutotestingSystem::SaveToDB CheckSavedObjectInDB failed wait=%d retry=%d, sleep 1 sec", attemptsToWaitLeft, attemptsToRetryLeft);
 #if !defined( _WIN32 )
             sleep( 1 );
 #else
