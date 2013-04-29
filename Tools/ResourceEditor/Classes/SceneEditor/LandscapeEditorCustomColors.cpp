@@ -526,7 +526,7 @@ void LandscapeEditorCustomColors::StoreSaveFileName(const FilePath& fileName)
 	if(NULL != workingLandscapeEntity)
 	{
 		KeyedArchive* customProps = workingLandscapeEntity->GetCustomProperties();
-		customProps->SetString(CUSTOM_COLOR_TEXTURE_PROP, GetRelativePathToProjectPath(fileName).GetAbsolutePathname());
+		customProps->SetString(CUSTOM_COLOR_TEXTURE_PROP, GetRelativePathToProjectPath(fileName));
 	}
 }
 
@@ -552,20 +552,20 @@ FilePath LandscapeEditorCustomColors::GetScenePath()
 	return FilePath(sceneFilePath.GetDirectory());
 }
 
-FilePath LandscapeEditorCustomColors::GetRelativePathToScenePath(const FilePath &absolutePath)
+String LandscapeEditorCustomColors::GetRelativePathToScenePath(const FilePath &absolutePath)
 {
 	if(absolutePath.IsEmpty())
-		return FilePath();
+		return String();
 
-	return FilePath(absolutePath.GetRelativePathname(GetScenePath()));
+	return absolutePath.GetRelativePathname(GetScenePath());
 }
 
-FilePath LandscapeEditorCustomColors::GetRelativePathToProjectPath(const FilePath& absolutePath)
+String LandscapeEditorCustomColors::GetRelativePathToProjectPath(const FilePath& absolutePath)
 {
 	if(absolutePath.IsEmpty())
-		return FilePath();
+		return String();
 
-	return FilePath(absolutePath.GetRelativePathname(EditorSettings::Instance()->GetProjectPath()));
+	return absolutePath.GetRelativePathname(EditorSettings::Instance()->GetProjectPath());
 }
 
 FilePath LandscapeEditorCustomColors::GetAbsolutePathFromScenePath(const FilePath &relativePath)

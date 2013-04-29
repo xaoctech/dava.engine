@@ -104,7 +104,7 @@ static const char8 * logLevelString[4] =
 Logger::Logger()
 {
 	logLevel = LEVEL_DEBUG;
-	SetLogFilename(FilePath());
+	SetLogFilename(String());
 }
 
 Logger::~Logger()
@@ -220,7 +220,7 @@ void Logger::Error(const char16 * text, ...)
 	va_end(vl);
 }
 
-void Logger::SetLogFilename(const FilePath & filename)
+void Logger::SetLogFilename(const String & filename)
 {
 	logFilename = filename;
 }
