@@ -65,6 +65,9 @@ namespace PropertyNames
 	static const char* BOTTOM_ALIGN = "BottomAlign";
 	static const char* BOTTOM_ALIGN_ENABLED = "BottomAlignEnabled";
 	
+	// UI Scroll View properties
+	static const char* HORIZONTAL_SCROLL_POSITION = "HorizontalScrollPosition";
+	static const char* VERTICAL_SCROLL_POSITION = "VerticalScrollPosition";
 	// UI Spinner properties.
 	static const char* UISPINNER_PREV_BUTTON_TEXT = "PrevButtonText";
 	static const char* UISPINNER_NEXT_BUTTON_TEXT = "NextButtonText";

@@ -77,9 +77,9 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
 
-	new DeviceInfoTest();
-    new LocalizationTest();
-    new InputTest();
+//	new DeviceInfoTest();
+//    new LocalizationTest();
+//    new InputTest();
 //    new SampleTest();
 //    new EntityTest(); 
 //    new MemoryAllocatorsTest();

@@ -67,7 +67,7 @@ void UIListTest::LoadResources()
 {
 	Font *font = FTFont::Create("~res:/Fonts/korinna.ttf");
     DVASSERT(font);
-	font->SetSize(20);
+	font->SetSize(14);
     font->SetColor(Color::White());
 
 	YamlParser * parser = YamlParser::Create("~res:/TestData/ListTest/ListData.yaml");
@@ -97,10 +97,36 @@ void UIListTest::LoadResources()
 	
 	SafeRelease(loader);
 	SafeRelease(parser);	
+	
+	
+	/*scrollView = new UIScrollView(Rect(10, 10, 200, 120), Vector2(300, 300));
+	scrollView->SetName("SCROLL CTL");
+	AddControl(scrollView);
+
+	
+	UIControl *testControl = new UIControl(Rect(50, 0, 150, 150));
+	testControl->SetDebugDraw(true);
+	testControl->GetBackground()->SetColor(Color(0.3333, 0.6667, 0.4980, 1.0000));
+	testControl->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
+	testControl->SetName("TEST CONTROL");
+	testControl->AddEvent(UIScrollView::EVENT_TOUCH_UP_INSIDE, Message(this, &UIListTest::ButtonPressed));
+	
+	UIButton *testButton = new UIButton(Rect(10, 50, 250, 100));
+	testButton->SetDebugDraw(true);
+	testButton->SetStateFont(STATE_NORMAL, font);
+	testButton->SetStateText(STATE_NORMAL, L"First button");
+	testButton->GetBackground()->SetColor(Color(0.6667, 0.6667, 0.4980, 1.0000));
+	testButton->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
+	testButton->AddEvent(UIScrollView::EVENT_TOUCH_UP_INSIDE, Message(this, &UIListTest::ButtonPressed));
+	testButton->SetName("TEST BUTTON");
+	testButton->AddControl(testControl);
+	
+	scrollView->AddControl(testButton);	*/
 
 	finishTestBtn = new UIButton(Rect(10, 210, 300, 30));
 	finishTestBtn->SetStateFont(0xFF, font);
 	finishTestBtn->SetStateText(0xFF, L"Finish test");
+
 	finishTestBtn->SetDebugDraw(true);
 	finishTestBtn->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &UIListTest::ButtonPressed));
 	AddControl(finishTestBtn);
@@ -109,7 +135,7 @@ void UIListTest::LoadResources()
 void UIListTest::UnloadResources()
 {
 	RemoveAllControls();
-
+//	SafeRelease(scrollView);
 	SafeRelease(finishTestBtn);
 }
 
@@ -123,7 +149,7 @@ void UIListTest::Update(float32 timeElapsed)
     onScreenTime += timeElapsed;
     if(onScreenTime > LIST_TEST_AUTO_CLOSE_TIME)
     {
-        testFinished = true;
+ //       testFinished = true;
     }
     
     TestTemplate<UIListTest>::Update(timeElapsed);

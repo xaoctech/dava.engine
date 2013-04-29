@@ -17,6 +17,7 @@
 #include "UITextFieldMetadata.h"
 #include "UISliderMetadata.h"
 #include "UIListMetadata.h"
+#include "UIScrollViewMetadata.h"
 #include "UISpinnerMetadata.h"
 #include "UIAggregatorMetadata.h"
 #include "UISwitchMetadata.h"
@@ -76,6 +77,11 @@ BaseMetadata* MetadataFactory::GetMetadataForUIControl(const UIControl* uiContro
 	if (dynamic_cast<const UIList*>(uiControl))
 	{
 		return new UIListMetadata();
+	}
+	
+	if (dynamic_cast<const UIScrollView*>(uiControl))
+	{
+		return new UIScrollViewMetadata();
 	}
 
 	if (dynamic_cast<const UISpinner*>(uiControl))
