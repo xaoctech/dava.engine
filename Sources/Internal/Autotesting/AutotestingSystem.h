@@ -146,7 +146,7 @@ protected:
     
     bool SaveToDB(MongodbUpdateObject *dbUpdateObject);
     bool CheckSavedObjectInDB(MongodbUpdateObject *dbUpdateObject);
-    bool CheckKeyedArchivesEqual(KeyedArchive* firstKeyedArchive, KeyedArchive* secondKeyedArchive);
+    bool CheckKeyedArchivesEqual(const String &name, KeyedArchive* firstKeyedArchive, KeyedArchive* secondKeyedArchive);
 
 
     bool ConnectToDB();
