@@ -8,7 +8,7 @@
 #include "../LandscapeEditor/LandscapesController.h"
 
 CommandDrawTilemap::CommandDrawTilemap(Image* originalImage, Image* newImage, const FilePath & pathname, Landscape* landscape)
-:	Command(COMMAND_UNDO_REDO)
+:	Command(COMMAND_UNDO_REDO, CommandList::ID_COMMAND_DRAW_TILEMAP)
 ,	landscape(landscape)
 {
 	commandName = "Tilemap Draw";
