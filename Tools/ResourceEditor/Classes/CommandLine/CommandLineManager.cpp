@@ -135,9 +135,9 @@ void CommandLineManager::Process()
     }
 }
 
-void CommandLineManager::PrintResults()
+bool CommandLineManager::PrintResults()
 {
-    if(!activeTool) return;
+    if(!activeTool) return false;
     
     const Set<String> &errors = activeTool->GetErrorList();
     if(0 < errors.size())
@@ -159,10 +159,7 @@ void CommandLineManager::PrintResults()
     
     bool forceMode =    EditorCommandLineParser::CommandIsFound(String("-force"))
                     ||  EditorCommandLineParser::CommandIsFound(String("-forceclose"));
-    if(forceMode || 0 == errors.size())
-    {
-        Core::Instance()->Quit();
-    }
+    return (forceMode || 0 == errors.size());
 }
 
 

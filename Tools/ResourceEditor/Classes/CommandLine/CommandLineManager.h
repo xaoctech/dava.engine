@@ -13,7 +13,7 @@ public:
     bool IsCommandLineModeEnabled() { return isCommandLineModeEnabled; };
     
     void Process();
-    void PrintResults();
+    bool PrintResults();
     
 protected:
 

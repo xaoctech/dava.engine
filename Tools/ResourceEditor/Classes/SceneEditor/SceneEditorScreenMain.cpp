@@ -27,8 +27,6 @@
 #include "../Commands/SceneEditorScreenMainCommands.h"
 #include "../Commands/CommandsManager.h"
 
-#include "../CommandLine/CommandLineManager.h"
-
 
 SceneEditorScreenMain::SceneEditorScreenMain()
 	:	UIScreen()
@@ -97,18 +95,6 @@ void SceneEditorScreenMain::UnloadResources()
 
 void SceneEditorScreenMain::WillAppear()
 {
-    if(CommandLineManager::Instance()->IsCommandLineModeEnabled())
-    {
-        CommandLineManager::Instance()->Process();
-    }
-}
-
-void SceneEditorScreenMain::DidAppear()
-{
-    if(CommandLineManager::Instance()->IsCommandLineModeEnabled())
-    {
-        CommandLineManager::Instance()->PrintResults();
-    }
 }
 
 void SceneEditorScreenMain::WillDisappear()
