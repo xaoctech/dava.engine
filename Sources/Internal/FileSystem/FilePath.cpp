@@ -81,8 +81,9 @@ FilePath::FilePath(const String &directory, const String &filename)
 	absolutePathname = AddPath(directoryPath, filename);
 }
     
-void FilePath::Initialize(const String &pathname)
+void FilePath::Initialize(const String &_pathname)
 {
+	String pathname = NormalizePathname(_pathname);
     if(IsAbsolutePathname(pathname))
     {
         absolutePathname = GetSystemPathname(pathname);
