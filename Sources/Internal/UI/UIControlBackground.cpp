@@ -689,8 +689,8 @@ void UIControlBackground::DrawTiled(const Rect &drawRect)
 	const float32 cellsH =  Max( 0.0f, (dx - leftStretchCap * 2) / (texDx - leftStretchCap * 2) );
 	const float32 cellsV =  Max( 0.0f, (dy - topStretchCap * 2) / (texDy - topStretchCap * 2) );
 	// The size of a single "tile"
-	float32 verticalStretchCap = texDx - leftStretchCap * 2;
-	float32 horizontalStretchCap = texDy - topStretchCap * 2;
+	float32 horizontalStretchCap = texDx - leftStretchCap * 2;
+	float32 verticalStretchCap = texDy - topStretchCap * 2;
 	
 	// The overall horizontal and vertical cells number
 	int32 cellsHCount = ceilf(cellsH) + 2;
@@ -736,20 +736,20 @@ void UIControlBackground::DrawTiled(const Rect &drawRect)
 		// For the last cell in row - we should calculate offset
 		if (i == cellsHCount - 2)
 		{		
-			lastCellOffset = ((cellsHCount - 2) * verticalStretchCap + 2 * leftStretchCap) - dx;
+			lastCellOffset = ((cellsHCount - 2) * horizontalStretchCap + 2 * leftStretchCap) - dx;
 			if (lastCellOffset < 0) lastCellOffset = 0;
 		}		
 		// Left border cell
-		GenerateCell(vertices, i * 8, verticalStretchCap - lastCellOffset, topStretchCap,
-					x + leftStretchCap + verticalStretchCap * (i - 1), y);
+		GenerateCell(vertices, i * 8, horizontalStretchCap - lastCellOffset, topStretchCap,
+					x + leftStretchCap + horizontalStretchCap * (i - 1), y);
 		// Right border cell
-		GenerateCell(vertices, (i + cellsHCount * (cellsVCount - 1)) * 8, verticalStretchCap - lastCellOffset, topStretchCap,
-					x + leftStretchCap + verticalStretchCap * (i - 1), y + dy - topStretchCap);
+		GenerateCell(vertices, (i + cellsHCount * (cellsVCount - 1)) * 8, horizontalStretchCap - lastCellOffset, topStretchCap,
+					x + leftStretchCap + horizontalStretchCap * (i - 1), y + dy - topStretchCap);
 		// Left border cell texture
-		GenerateCell(texCoords, i * 8, verticalStretchCap - lastCellOffset, topStretchCap,
+		GenerateCell(texCoords, i * 8, horizontalStretchCap - lastCellOffset, topStretchCap,
 						texX + leftStretchCap, texY, textureWidth, textureHeight);
 		// Right border cell texture
-		GenerateCell(texCoords, (i + cellsHCount * (cellsVCount - 1)) * 8, verticalStretchCap - lastCellOffset, topStretchCap,
+		GenerateCell(texCoords, (i + cellsHCount * (cellsVCount - 1)) * 8, horizontalStretchCap - lastCellOffset, topStretchCap,
 						texX + leftStretchCap, texY + texDy - topStretchCap, textureWidth, textureHeight);
 	}
 	
@@ -760,20 +760,20 @@ void UIControlBackground::DrawTiled(const Rect &drawRect)
 		// For the last cell in row - we should calculate offset
 		if (i == cellsVCount - 2)
 		{		
-			lastCellOffset = ((cellsVCount - 2) * horizontalStretchCap + 2 * topStretchCap) - dy;
+			lastCellOffset = ((cellsVCount - 2) * verticalStretchCap + 2 * topStretchCap) - dy;
 			if (lastCellOffset < 0) lastCellOffset = 0;
 		}		
 		// Top border cell
-		GenerateCell(vertices, (i * cellsHCount) * 8, leftStretchCap, horizontalStretchCap - lastCellOffset,
-					x, y + topStretchCap + horizontalStretchCap * (i - 1));
+		GenerateCell(vertices, (i * cellsHCount) * 8, leftStretchCap, verticalStretchCap - lastCellOffset,
+					x, y + topStretchCap + verticalStretchCap * (i - 1));
 		// Bottom border cell
-		GenerateCell(vertices, (i * cellsHCount + cellsHCount - 1) * 8, leftStretchCap, horizontalStretchCap - lastCellOffset,
-					x + dx - leftStretchCap, y + topStretchCap + horizontalStretchCap * (i - 1));
+		GenerateCell(vertices, (i * cellsHCount + cellsHCount - 1) * 8, leftStretchCap, verticalStretchCap - lastCellOffset,
+					x + dx - leftStretchCap, y + topStretchCap + verticalStretchCap * (i - 1));
 		// Top border cell texture part
-		GenerateCell(texCoords, (i * cellsHCount) * 8, leftStretchCap, horizontalStretchCap - lastCellOffset,
+		GenerateCell(texCoords, (i * cellsHCount) * 8, leftStretchCap, verticalStretchCap - lastCellOffset,
 						texX, texY + topStretchCap, textureWidth, textureHeight);
 		// Bottom border cell texture part
-		GenerateCell(texCoords, (i * cellsHCount + cellsHCount - 1) * 8, leftStretchCap, horizontalStretchCap - lastCellOffset,
+		GenerateCell(texCoords, (i * cellsHCount + cellsHCount - 1) * 8, leftStretchCap, verticalStretchCap - lastCellOffset,
 						texX + texDx - leftStretchCap, texY + topStretchCap, textureWidth, textureHeight);
 	}
 	
@@ -784,7 +784,7 @@ void UIControlBackground::DrawTiled(const Rect &drawRect)
 		// For the last cell in row - we should calculate offset
 		if (iy == cellsVCount - 2)
 		{		
-			lastCellVOffset = ((cellsVCount - 2) * horizontalStretchCap + 2 * topStretchCap) - dy;
+			lastCellVOffset = ((cellsVCount - 2) * verticalStretchCap + 2 * topStretchCap) - dy;
 			if (lastCellVOffset < 0) lastCellVOffset = 0;
 		}		
 	
@@ -794,14 +794,14 @@ void UIControlBackground::DrawTiled(const Rect &drawRect)
 			// For the last cell in row - we should calculate offset
 			if (ix == cellsHCount - 2)
 			{		
-				lastCellHOffset = ((cellsHCount - 2) * verticalStretchCap + 2 * leftStretchCap) - dx;
+				lastCellHOffset = ((cellsHCount - 2) * horizontalStretchCap + 2 * leftStretchCap) - dx;
 				if (lastCellHOffset < 0) lastCellHOffset = 0;
 			}		
 			// Central cell used for "tiling"
-			GenerateCell(vertices, (ix + cellsHCount * iy) * 8, verticalStretchCap - lastCellHOffset, horizontalStretchCap - lastCellVOffset,
-						x + leftStretchCap + verticalStretchCap * (ix - 1), y +  topStretchCap + horizontalStretchCap * (iy - 1));
+			GenerateCell(vertices, (ix + cellsHCount * iy) * 8, horizontalStretchCap - lastCellHOffset, verticalStretchCap - lastCellVOffset,
+						x + leftStretchCap + horizontalStretchCap * (ix - 1), y +  topStretchCap + verticalStretchCap * (iy - 1));
 			// Central cell texture part
-			GenerateCell(texCoords, (ix + cellsHCount * iy) * 8, verticalStretchCap - lastCellHOffset, horizontalStretchCap - lastCellVOffset,
+			GenerateCell(texCoords, (ix + cellsHCount * iy) * 8, horizontalStretchCap - lastCellHOffset, verticalStretchCap - lastCellVOffset,
 						texX + leftStretchCap, texY + topStretchCap,
 						textureWidth, textureHeight);
 		}
