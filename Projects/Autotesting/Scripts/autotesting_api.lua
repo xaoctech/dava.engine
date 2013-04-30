@@ -196,6 +196,22 @@ function IsVisible(element, background)
 	end
 end
 
+function IsOnScreen(control)
+	local screen = autotestingSystem:GetScreen()
+	local geomData = control:GetGeometricData()
+    local rect = geomData:GetUnrotatedRect()
+	local geomData = screen:GetGeometricData()
+	local backRect = geomData:GetUnrotatedRect()
+    Log("Control "..tostring(rect.x)..","..tostring(rect.y).." ["..tostring(rect.dx)..", "..tostring(rect.dy).."]")
+    Log("Background "..tostring(backRect.x)..","..tostring(backRect.y).." ["..tostring(backRect.dx)..", "..tostring(backRect.dy).."]")
+			
+	if (rect.x >= backRect.x) and (rect.x + rect.dx <= backRect.x + backRect.dx) and (rect.y >= backRect.y) and (rect.y + rect.dy <= backRect.y + backRect.dy) then
+		return true
+	else
+		return false
+	end
+end
+
 function Wait(waitTime)
     waitTime =  waitTime or DELAY
     
@@ -297,7 +313,8 @@ function ClickControl(name, touchId, time)
 --        print("Searching "..elapsedTime)
         
         local control = autotestingSystem:FindControl(name)
-        if control then     
+        local screen = autotestingSystem:GetScreen()
+        if control and IsOnScreen(control) then     
             -- local position = control:GetPosition(true)
             local position = Vector.Vector2()
 --            print(position)
