@@ -79,7 +79,6 @@ public:
 	virtual void LoadResources();
 	virtual void UnloadResources();
 	virtual void WillAppear();
-	virtual void DidAppear();
 	virtual void WillDisappear();
 	
 	virtual void Update(float32 timeElapsed);

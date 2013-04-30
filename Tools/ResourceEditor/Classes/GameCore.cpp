@@ -49,8 +49,6 @@ void GameCore::OnAppStarted()
     new BeastProxy();
 #endif //__DAVAENGINE_BEAST__
 	
-	new PVRConverter();
-
 #if defined (__DAVAENGINE_MACOS__)
 	PVRConverter::Instance()->SetPVRTexTool(String("~res:/PVRTexToolCL"));
 #elif defined (__DAVAENGINE_WIN32__)
@@ -72,7 +70,6 @@ void GameCore::OnAppStarted()
 
 void GameCore::OnAppFinished()
 {
-	PVRConverter::Instance()->Release();
     SceneValidator::Instance()->Release();
 
 	BeastProxy::Instance()->Release();
