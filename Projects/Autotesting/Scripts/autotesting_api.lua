@@ -170,10 +170,27 @@ end
 
 -- Work with UI controls
 -- !!!!! Realize visibility center of element
-function IsVisible(element)
+function IsVisible(element, background)
 	local control = autotestingSystem:FindControl(element)
 	if control then
-		return true
+		if background then
+			local back = autotestingSystem:FindControl(background)
+			assert(back, background.." background not found")
+			local geomData = control:GetGeometricData()
+            local rect = geomData:GetUnrotatedRect()
+			local geomData = back:GetGeometricData()
+			local backRect = geomData:GetUnrotatedRect()
+            --Log("Control "..tostring(rect.x)..","..tostring(rect.y).." ["..tostring(rect.dx)..", "..tostring(rect.dy).."]")
+            --Log("Background "..tostring(backRect.x)..","..tostring(backRect.y).." ["..tostring(backRect.dx)..", "..tostring(backRect.dy).."]")
+			
+			if (rect.x >= backRect.x) and (rect.x + rect.dx <= backRect.x + backRect.dx) and (rect.y >= backRect.y) and (rect.y + rect.dy <= backRect.y + backRect.dy) then
+				return true
+			else
+				return false
+			end
+		else
+			return true
+		end
 	else
 		return false
 	end
@@ -203,7 +220,8 @@ function WaitControl(name, time)
             Yield()
             return true
         else
-            Yield()
+            Wait(1)
+			Yield()
         end
     end
     
@@ -279,10 +297,7 @@ function ClickControl(name, touchId, time)
 --        print("Searching "..elapsedTime)
         
         local control = autotestingSystem:FindControl(name)
-        if control then
---            print("ClickControl found "..name)
---            print(control)
-            
+        if control then     
             -- local position = control:GetPosition(true)
             local position = Vector.Vector2()
 --            print(position)
@@ -306,6 +321,7 @@ function ClickControl(name, touchId, time)
             
             return true
         else
+			Wait(DELAY)
             Yield()
         end
     end
@@ -381,7 +397,7 @@ function SelectHorizontal(list, item)
 	end
 	
 	repeat
-		if IsVisible(cell) then
+		if IsVisible(cell, list) then
 			break
 		else
 			previous_last = last_visible
@@ -398,7 +414,7 @@ function SelectHorizontal(list, item)
 		end
 	until previous_last == last_visible
     
-	if IsVisible(cell) then
+	if IsVisible(cell, list) then
 		ClickControl(cell)
 		return true
 	else
@@ -438,7 +454,7 @@ function SelectVertical(list, item)
 	end
 	
 	repeat
-		if IsVisible(cell) then
+		if IsVisible(cell, list) then
 			break
 		else
 			previous_last = last_visible
@@ -455,7 +471,7 @@ function SelectVertical(list, item)
 		end
 	until previous_last == last_visible
 	
-	if IsVisible(cell) then
+	if IsVisible(cell, list) then
 		ClickControl(cell)
 		return true
 	else
