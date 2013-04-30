@@ -89,6 +89,7 @@ public:
 	void Log(const String &level, const String &message);
 	
     // autotesting api
+    UIControl *GetScreen();
     UIControl *FindControl(const String &path);
     void TouchDown(const Vector2 &point, int32 touchId);
     void TouchMove(const Vector2 &point, int32 touchId);
