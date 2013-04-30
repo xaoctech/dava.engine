@@ -229,6 +229,19 @@ HierarchyTreeNode::HIERARCHYTREENODEID DefaultScreen::SmartSelection::GetFirst()
 	return this->id;
 }
 
+HierarchyTreeNode::HIERARCHYTREENODEID DefaultScreen::SmartSelection::GetLast() const
+{
+	SelectionVector selection;
+	FormatSelectionVector(selection);
+	// The last element in selection array is on the top - so we should get it
+	if (selection.size() > 0)
+	{
+		return selection[selection.size() - 1];
+	}
+
+	return this->id;
+}
+
 void DefaultScreen::SmartSelection::FormatSelectionVector(SelectionVector &selection) const
 {
 	for (childsSet::const_iterator iter = childs.begin();
@@ -248,7 +261,8 @@ HierarchyTreeNode::HIERARCHYTREENODEID DefaultScreen::SmartSelection::GetNext(Hi
 	FormatSelectionVector(selection);
 
 	bool peakNext = false;
-	for (uint32 i = 0; i < selection.size(); i++)
+	// From top control to bottom control
+	for (int32 i = selection.size() - 1; i >= 0; i--)
 	{
 		if (peakNext)
 			return selection[i];
@@ -322,11 +336,11 @@ HierarchyTreeControlNode* DefaultScreen::SmartGetSelectedControl(const Vector2& 
 	{
 		oldSmartSelectedId = root->GetNext(oldSmartSelectedId);
 		if (oldSmartSelectedId == HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY)
-			oldSmartSelectedId = root->GetFirst();
+			oldSmartSelectedId = root->GetLast();
 	}
 	else
 	{
-		oldSmartSelectedId = root->GetFirst();
+		oldSmartSelectedId = root->GetLast();
 	}
 	
 	SAFE_DELETE(oldSmartSelected);
