@@ -1170,10 +1170,12 @@ void Entity::LoadComponentsV6(KeyedArchive *compsArch, SceneFileV2 * sceneFileV2
                     if(Component::DEBUG_RENDER_COMPONENT == compType)
                     {
                         compType = Component::LOD_COMPONENT;
+                        compArch->SetUInt32("comp.type", compType);
                     }
                     else if(Component::LOD_COMPONENT == compType)
                     {
                         compType = Component::DEBUG_RENDER_COMPONENT;
+                        compArch->SetUInt32("comp.type", compType);
                     }
                     //}VI
                     
@@ -1231,7 +1233,7 @@ bool Entity::GetSolid()
 
 void Entity::GetDataNodes(Set<DataNode*> & dataNodes)
 {
-    for (uint32 k = 0; k < Component::COMPONENT_COUNT; ++k)
+    for (uint32 k = 0; k < components.size(); ++k)
     {
         if(components[k])
         {

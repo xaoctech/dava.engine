@@ -97,21 +97,7 @@ void Component::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 
 		if(archive->IsKeyExists("comp.type"))
         {
-            type = archive->GetUInt32("comp.type");
-            
-            //VI{
-            //Need to swap these 2 components since their order in the enum
-            //has been changed
-            if(Component::DEBUG_RENDER_COMPONENT == type)
-            {
-                type = Component::LOD_COMPONENT;
-            }
-            else if(Component::LOD_COMPONENT == type)
-            {
-                type = Component::DEBUG_RENDER_COMPONENT;
-            }
-            //}VI
-
+            type = archive->GetUInt32("comp.type");            
         }
         
         if(archive->IsKeyExists("comp.typename"))
