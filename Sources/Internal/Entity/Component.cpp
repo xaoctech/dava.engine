@@ -12,6 +12,7 @@
 #include "Scene3D/Components/LightComponent.h"
 #include "Scene3D/Components/SwitchComponent.h"
 #include "Scene3D/Components/UserComponent.h"
+#include "Base/ObjectFactory.h"
 
 namespace DAVA
 {
@@ -84,6 +85,7 @@ void Component::GetDataNodes(Set<DAVA::DataNode *> &dataNodes)
 void Component::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 {
 	if(NULL != archive) archive->SetUInt32("comp.type", GetType());
+    if(NULL != archive) archive->SetString("comp.typename", ObjectFactory::Instance()->GetName(this));
 }
 
 void Component::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
@@ -91,8 +93,31 @@ void Component::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 	if(NULL != archive)
 	{
 		uint32 type = 0xFFFFFFFF;
+        
 
-		if(archive->IsKeyExists("comp.type")) type = archive->GetUInt32("comp.type");
+		if(archive->IsKeyExists("comp.type"))
+        {
+            type = archive->GetUInt32("comp.type");
+            
+            //VI{
+            //Need to swap these 2 components since their order in the enum
+            //has been changed
+            if(Component::DEBUG_RENDER_COMPONENT == type)
+            {
+                type = Component::LOD_COMPONENT;
+            }
+            else if(Component::LOD_COMPONENT == type)
+            {
+                type = Component::DEBUG_RENDER_COMPONENT;
+            }
+            //}VI
+
+        }
+        
+        if(archive->IsKeyExists("comp.typename"))
+        {
+            DVASSERT(archive->GetString("comp.typename") == ObjectFactory::Instance()->GetName(this));
+        }
 
 		DVASSERT(type == GetType());
 	}

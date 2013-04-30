@@ -7,6 +7,8 @@
 namespace DAVA
 {
     
+REGISTER_CLASS(CameraComponent)
+    
 CameraComponent::CameraComponent(Camera * _camera)
 {
     camera = SafeRetain(_camera);
