@@ -30,9 +30,11 @@ void SceneSaver::SaveFile(const String &fileName, Set<String> &errorLog)
 {
     Logger::Info("[SceneSaver::SaveFile] %s", fileName.c_str());
     
+    FilePath filePath = sceneUtils.dataSourceFolder + fileName;
+
     //Load scene with *.sc2
     Scene *scene = new Scene();
-    Entity *rootNode = scene->GetRootNode(sceneUtils.dataSourceFolder + fileName);
+    Entity *rootNode = scene->GetRootNode(filePath);
     if(rootNode)
     {
         int32 count = rootNode->GetChildrenCount();
@@ -47,7 +49,7 @@ void SceneSaver::SaveFile(const String &fileName, Set<String> &errorLog)
 			scene->AddNode(tempV[i]);
 		}
 		
-		SaveScene(scene, fileName, errorLog);
+		SaveScene(scene, filePath, errorLog);
     }
 	else
 	{
@@ -98,11 +100,13 @@ void SceneSaver::ResaveFile(const String &fileName, Set<String> &errorLog)
 	SafeRelease(scene);
 }
 
-void SceneSaver::SaveScene(Scene *scene, const String &fileName, Set<String> &errorLog)
+void SceneSaver::SaveScene(Scene *scene, const FilePath &fileName, Set<String> &errorLog)
 {
     DVASSERT(0 == texturesForSave.size())
     
-//    sceneUtils.workingFolder = fileName.GetDirectory().GetRelativePathname(sceneUtils.dataSourceFolder);
+    String relativeFilename = fileName.GetRelativePathname(sceneUtils.dataSourceFolder);
+    sceneUtils.workingFolder = fileName.GetDirectory().GetRelativePathname(sceneUtils.dataSourceFolder);
+    
     FileSystem::Instance()->CreateDirectory(sceneUtils.dataFolder + sceneUtils.workingFolder, true);
 
     scene->Update(0.1f);
@@ -125,7 +129,7 @@ void SceneSaver::SaveScene(Scene *scene, const String &fileName, Set<String> &er
 	CopyReferencedObject(scene, errorLog);
 
     //save scene to new place
-    FilePath tempSceneName = sceneUtils.dataSourceFolder + (sceneUtils.workingFolder + fileName);
+    FilePath tempSceneName = sceneUtils.dataSourceFolder + relativeFilename;
     tempSceneName.ReplaceExtension(".saved.sc2");
     
     SceneFileV2 * outFile = new SceneFileV2();
@@ -135,10 +139,10 @@ void SceneSaver::SaveScene(Scene *scene, const String &fileName, Set<String> &er
     outFile->SaveScene(tempSceneName, scene);
     SafeRelease(outFile);
 
-    bool moved = FileSystem::Instance()->MoveFile(tempSceneName, sceneUtils.dataFolder + fileName, true);
+    bool moved = FileSystem::Instance()->MoveFile(tempSceneName, sceneUtils.dataFolder + relativeFilename, true);
 	if(!moved)
 	{
-		errorLog.insert(Format("Can't move file %s", fileName.c_str()));
+		errorLog.insert(Format("Can't move file %s", fileName.GetAbsolutePathname().c_str()));
 	}
     
     SceneValidator::Instance()->SetPathForChecking(oldPath);

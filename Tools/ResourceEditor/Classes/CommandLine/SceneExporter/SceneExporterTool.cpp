@@ -36,6 +36,24 @@
 using namespace DAVA;
 
 
+void SceneExporterTool::PrintUsage()
+{
+    printf("\n");
+    printf("-sceneexporter [-indir [directory]] [-outdir [directory]] [-processdir [directory]] [-processfile [directory]] [-format]\n");
+    printf("\twill export scene file from DataSource/3d to Data/3d\n");
+    printf("\t-indir - path for Poject/DataSource/3d/ folder \n");
+    printf("\t-outdir - path for Poject/Data/3d/ folder\n");
+    printf("\t-processdir - foldername from DataSource/3d/ for exporting\n");
+    printf("\t-processfile - filename from DataSource/3d/ for exporting\n");
+    printf("\t-format - png, pvr, dxt\n");
+    
+    printf("\n");
+    printf("Samples:\n");
+    printf("-sceneexporter -export -indir /Users/User/Project/DataSource/3d -outdir /Users/User/Project/Data/3d/ -processdir Maps/objects/\n");
+    printf("-sceneexporter -export -indir /Users/User/Project/DataSource/3d -outdir /Users/User/Project/Data/3d/ -processfile Maps/level.sc2 -forceclose\n");
+
+}
+
 DAVA::String SceneExporterTool::GetCommandLineKey()
 {
     return "-sceneexporter";
@@ -79,6 +97,7 @@ bool SceneExporterTool::InitializeFromCommandLine()
         errors.insert("File or folder for export is not set");
         return false;
     }
+    
     
     return true;
 }

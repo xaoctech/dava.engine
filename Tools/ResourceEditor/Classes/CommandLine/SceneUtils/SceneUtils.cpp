@@ -39,7 +39,7 @@ void SceneUtils::SetOutFolder(const FilePath &folderPathname)
 bool SceneUtils::CopyFile(const FilePath &filePathname, Set<String> &errorLog)
 {
     String workingPathname = RemoveFolderFromPath(filePathname, dataSourceFolder);
-    PrepareFolderForCopyFile(workingFolder, errorLog);
+    PrepareFolderForCopyFile(workingPathname, errorLog);
     
     bool retCopy = FileSystem::Instance()->CopyFile(dataSourceFolder + workingPathname, dataFolder + workingPathname);
     if(!retCopy)

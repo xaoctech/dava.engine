@@ -67,13 +67,15 @@ void SceneExporter::SetExportingFormat(const String &newFormat)
     }
 }
 
-void SceneExporter::ExportFile(const FilePath &fileName, Set<String> &errorLog)
+void SceneExporter::ExportFile(const String &fileName, Set<String> &errorLog)
 {
-    Logger::Info("[SceneExporter::ExportFile] %s", fileName.GetAbsolutePathname().c_str());
+    Logger::Info("[SceneExporter::ExportFile] %s", fileName.c_str());
+    
+    FilePath filePath = sceneUtils.dataSourceFolder + fileName;
     
     //Load scene with *.sc2
     Scene *scene = new Scene();
-    Entity *rootNode = scene->GetRootNode(sceneUtils.dataSourceFolder + fileName);
+    Entity *rootNode = scene->GetRootNode(filePath);
     if(rootNode)
     {
         int32 count = rootNode->GetChildrenCount();
@@ -88,11 +90,11 @@ void SceneExporter::ExportFile(const FilePath &fileName, Set<String> &errorLog)
 			scene->AddNode(tempV[i]);
 		}
 		
-		ExportScene(scene, fileName, errorLog);
+		ExportScene(scene, filePath, errorLog);
     }
 	else
 	{
-		errorLog.insert(Format("[SceneExporter::ExportFile] Can't open file %s", fileName.GetAbsolutePathname().c_str()));
+		errorLog.insert(Format("[SceneExporter::ExportFile] Can't open file %s", filePath.GetAbsolutePathname().c_str()));
 	}
 
     SafeRelease(scene);
@@ -198,9 +200,11 @@ void SceneExporter::ReleaseTextures()
     texturesForExport.clear();
 }
 
-void SceneExporter::ExportFolder(const FilePath &folderName, Set<String> &errorLog)
+void SceneExporter::ExportFolder(const String &folderName, Set<String> &errorLog)
 {
     FilePath folderPathname = sceneUtils.dataSourceFolder + folderName;
+    folderPathname.MakeDirectoryPathname();
+    
 	FileList * fileList = new FileList(folderPathname);
     for (int32 i = 0; i < fileList->GetCount(); ++i)
 	{

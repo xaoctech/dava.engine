@@ -34,6 +34,17 @@
 
 using namespace DAVA;
 
+void CleanFolderTool::PrintUsage()
+{
+    printf("\n");
+    printf("-cleanfolder [-folder [directory]]\n");
+    printf("\twill delete folder with files \n");
+    printf("\t-folder - path for /Users/User/Project/Data/3d/ folder \n");
+
+    printf("\n");
+    printf("Sample:\n");
+    printf("-cleanfolder -folder /Users/User/Project/Data/3d -forceclose\n");
+}
 
 DAVA::String CleanFolderTool::GetCommandLineKey()
 {
@@ -49,6 +60,8 @@ bool CleanFolderTool::InitializeFromCommandLine()
         return false;
     }
 
+    foldername.MakeDirectoryPathname();
+    
     return true;
 }
 

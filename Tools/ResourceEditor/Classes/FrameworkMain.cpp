@@ -94,11 +94,6 @@ void FrameworkDidLaunched()
     {
         CreateDefaultDescriptorsAtDataSource3D();
     }
-    else
-    {
-        CommandLineManager::Instance()->Process();
-        CommandLineManager::Instance()->PrintResults();
-    }
     
 #if defined(__DAVAENGINE_IPHONE__)
 	KeyedArchive * appOptions = new KeyedArchive();
