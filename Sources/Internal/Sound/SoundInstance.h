@@ -112,13 +112,8 @@ private:
 	
 
 	SoundInstance();
-	virtual ~SoundInstance()
-    {
-#ifdef __DAVAENGINE_ANDROID__
-        SafeRelease(parentSound);
-#endif //#ifdef __DAVAENGINE_ANDROID__
-    };
-    
+    virtual ~SoundInstance();
+
 #ifdef __DAVAENGINE_ANDROID__
     SoundInstance(Sound * parent);
 #endif //#ifdef __DAVAENGINE_ANDROID__
