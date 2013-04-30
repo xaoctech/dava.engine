@@ -160,7 +160,8 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
     header.signature[2] = 'V';
     header.signature[3] = '2';
     
-    header.version = 6;
+    //VI: see Entity::Load - version 7 is new components save format
+    header.version = 7;
     header.nodeCount = _scene->GetChildrenCount();
     
     file->Write(&header, sizeof(Header));
@@ -328,7 +329,7 @@ void SceneFileV2::LoadDataNode(DataNode * parent, File * file)
     archive->Load(file);
     
     String name = archive->GetString("##name");
-    DataNode * node = dynamic_cast<DataNode *>(ObjectFactory::Instance()->New(name));
+    DataNode * node = dynamic_cast<DataNode *>(ObjectFactory::Instance()->New<BaseObject>(name));
     
     if (node)
     {
@@ -391,7 +392,7 @@ void SceneFileV2::LoadDataHierarchy(Scene * scene, DataNode * root, File * file,
     // DataNode * node = dynamic_cast<DataNode*>(BaseObject::LoadFromArchive(archive));
     
     String name = archive->GetString("##name");
-    DataNode * node = dynamic_cast<DataNode *>(ObjectFactory::Instance()->New(name));
+    DataNode * node = dynamic_cast<DataNode *>(ObjectFactory::Instance()->New<BaseObject>(name));
 
     if (node)
     {
@@ -544,7 +545,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
 	}
 	else
     {
-        baseObject = ObjectFactory::Instance()->New(name);
+        baseObject = ObjectFactory::Instance()->New<BaseObject>(name);
         node = dynamic_cast<Entity*>(baseObject);
     }
 

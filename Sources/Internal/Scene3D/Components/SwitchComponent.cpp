@@ -6,6 +6,9 @@
 namespace DAVA
 {
 
+REGISTER_CLASS(SwitchComponent)
+
+
 SwitchComponent::SwitchComponent()
 :	oldSwitchIndex(-1),
 	newSwitchIndex(0)

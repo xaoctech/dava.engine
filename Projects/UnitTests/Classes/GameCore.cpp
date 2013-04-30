@@ -202,6 +202,7 @@ void GameCore::BeginFrame()
 void GameCore::Update(float32 timeElapsed)
 {	
     ProcessTests();
+        
 	ApplicationCore::Update(timeElapsed);
 }
 
