@@ -47,12 +47,13 @@ public:
     virtual DAVA::String GetCommandLineKey();
     virtual bool InitializeFromCommandLine();
     virtual void Process();
-    
+    virtual void PrintUsage();
+   
 protected:
     
     eAction commandAction;
-    DAVA::String filename;
-    DAVA::String foldername;
+    DAVA::FilePath filename;
+    DAVA::FilePath foldername;
 };
 
 

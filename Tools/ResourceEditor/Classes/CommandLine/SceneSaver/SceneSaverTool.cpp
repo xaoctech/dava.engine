@@ -35,6 +35,24 @@
 
 using namespace DAVA;
 
+void SceneSaverTool::PrintUsage()
+{
+    printf("\n");
+    printf("-scenesaver -save [-indir [directory]] [-outdir [directory]] [-processfile [directory]]\n");
+    printf("-scenesaver -resave [-indir [directory]] [-processfile [directory]] [-forceclose]\n");
+    printf("\twill save scene file from DataSource/3d to any Data or DataSource folder\n");
+    printf("\t-save - will save level to selected Data/3d/\n");
+    printf("\t-resave - will open and save level\n");
+    printf("\t-indir - path for Poject/DataSource/3d/ folder \n");
+    printf("\t-outdir - path for Poject/Data/3d/ folder\n");
+    printf("\t-processfile - filename from DataSource/3d/ for saving\n");
+
+    printf("\n");
+    printf("Samples:\n");
+    printf("-scenesaver -save -indir /Users/User/Project/DataSource/3d -outdir /Users/User/Project/Data/3d/ -processfile Maps/level.sc2 -forceclose\n");
+    printf("-scenesaver -resave -indir /Users/User/Project/DataSource/3d -processfile Maps/level.sc2 -forceclose\n");
+}
+
 DAVA::String SceneSaverTool::GetCommandLineKey()
 {
     return "-scenesaver";

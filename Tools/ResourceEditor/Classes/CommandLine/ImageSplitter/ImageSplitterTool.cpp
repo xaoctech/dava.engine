@@ -36,6 +36,21 @@
 using namespace DAVA;
 
 
+void ImageSplitterTool::PrintUsage()
+{
+    printf("\n");
+    printf("-imagesplitter -split [-file [file]]\n");
+    printf("-imagesplitter -merge [-folder [directory]]\n");
+    printf("\twill split one image at four channels or merge four channels to one image\n");
+    printf("\t-file - filename of the splitting file\n");
+    printf("\t-folder - path for folder with four channels\n");
+
+    printf("\n");
+    printf("Samples:\n");
+    printf("-imagesplitter -split -file /Users/User/Project/Data/3d/image.png\n");
+    printf("-imagesplitter -merge -folder /Users/User/Project/Data/3d/\n");
+}
+
 DAVA::String ImageSplitterTool::GetCommandLineKey()
 {
     return "-imagesplitter";
@@ -49,7 +64,7 @@ bool ImageSplitterTool::InitializeFromCommandLine()
     {
         commandAction = ACTION_SPLIT;
         filename = EditorCommandLineParser::GetCommandParam(String("-file"));
-        if(filename.empty())
+        if(filename.IsEmpty())
         {
             errors.insert(String("Incorrect params for splitting of the file"));
             return false;
@@ -60,11 +75,12 @@ bool ImageSplitterTool::InitializeFromCommandLine()
         commandAction = ACTION_MERGE;
   
         foldername = EditorCommandLineParser::GetCommandParam(String("-folder"));
-        if(filename.empty())
+        if(foldername.IsEmpty())
         {
             errors.insert(String("Incorrect params for merging of the files"));
             return false;
         }
+        foldername.MakeDirectoryPathname();
     }
     else
     {

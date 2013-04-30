@@ -23,52 +23,11 @@ void CommandLineManager::PrintUsage()
     printf("\t-v or --verbose - detailed output\n");
     printf("\t-forceclose - close editor after job would be finished\n");
     
-    printf("\n");
-    printf("-sceneexporter [-indir [directory]] [-outdir [directory]] [-processdir [directory]] [-processfile [directory]] [-format]\n");
-    printf("\twill export scene file from DataSource/3d to Data/3d\n");
-    printf("\t-indir - path for Poject/DataSource/3d/ folder \n");
-    printf("\t-outdir - path for Poject/Data/3d/ folder\n");
-    printf("\t-processdir - foldername from DataSource/3d/ for exporting\n");
-    printf("\t-processfile - filename from DataSource/3d/ for exporting\n");
-    printf("\t-format - png, pvr, dxt\n");
-    
-    printf("\n");
-    printf("-scenesaver -save [-indir [directory]] [-outdir [directory]] [-processfile [directory]]\n");
-    printf("-scenesaver -resave [-indir [directory]] [-processfile [directory]] [-forceclose]\n");
-    printf("\twill save scene file from DataSource/3d to any Data or DataSource folder\n");
-    printf("\t-save - will save level to selected Data/3d/\n");
-    printf("\t-resave - will open and save level\n");
-    printf("\t-indir - path for Poject/DataSource/3d/ folder \n");
-    printf("\t-outdir - path for Poject/Data/3d/ folder\n");
-    printf("\t-processfile - filename from DataSource/3d/ for saving\n");
-
-    printf("\n");
-    printf("-cleanfolder [-folder [directory]]\n");
-    printf("\twill delete folder with files \n");
-    printf("\t-folder - path for /Users/User/Project/Data/3d/ folder \n");
-
-    printf("\n");
-    printf("-imagesplitter -split [-file [file]]\n");
-    printf("-imagesplitter -merge [-folder [directory]]\n");
-    printf("\twill split one image at four channels or merge four channels to one image\n");
-    printf("\t-file - filename of the splitting file\n");
-    printf("\t-folder - path for folder with four channels\n");
-
-    printf("\n");
-    printf("Samples:");
-    printf("-sceneexporter -export -indir /Users/User/Project/DataSource/3d -outdir /Users/User/Project/Data/3d/ -processdir Maps/objects/\n");
-    printf("-sceneexporter -export -indir /Users/User/Project/DataSource/3d -outdir /Users/User/Project/Data/3d/ -processfile Maps/level.sc2 -forceclose\n");
-    
-    printf("\n");
-    printf("-scenesaver -save -indir /Users/User/Project/DataSource/3d -outdir /Users/User/Project/Data/3d/ -processfile Maps/level.sc2 -forceclose\n");
-    printf("-scenesaver -resave -indir /Users/User/Project/DataSource/3d -processfile Maps/level.sc2 -forceclose\n");
-
-    printf("\n");
-    printf("-cleanfolder -folder /Users/User/Project/Data/3d -forceclose\n");
-
-    printf("\n");
-    printf("-imagesplitter -split -file /Users/User/Project/Data/3d/image.png\n");
-    printf("-imagesplitter -merge -folder /Users/User/Project/Data/3d/\n");
+    Map<String, CommandLineTool *>::const_iterator endIT = commandLineTools.end();
+    for(auto it = commandLineTools.begin(); it != endIT; ++it)
+    {
+        it->second->PrintUsage();
+    }
 }
 
 

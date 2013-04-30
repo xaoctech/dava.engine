@@ -47,6 +47,7 @@ public:
     virtual DAVA::String GetCommandLineKey();
     virtual bool InitializeFromCommandLine();
     virtual void Process();
+    virtual void PrintUsage();
     
 protected:
 

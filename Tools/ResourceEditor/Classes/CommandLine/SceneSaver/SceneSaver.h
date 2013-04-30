@@ -17,7 +17,7 @@ public:
     
     void SaveFile(const String &fileName, Set<String> &errorLog);
 	void ResaveFile(const String &fileName, Set<String> &errorLog);
-    void SaveScene(Scene *scene, const String &fileName, Set<String> &errorLog);
+    void SaveScene(Scene *scene, const FilePath &fileName, Set<String> &errorLog);
     
 protected:
     

@@ -14,6 +14,8 @@ public:
   
     virtual void Process() = 0;
 
+    virtual void PrintUsage() = 0;
+
     inline const DAVA::Set<DAVA::String> & GetErrorList() const;
     
 protected:
