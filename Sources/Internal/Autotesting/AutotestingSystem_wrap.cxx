@@ -12,6 +12,7 @@
 #define SWIG_LUA_TARGET SWIG_LUA_FLAVOR_LUA
 #define SWIG_LUA_MODULE_GLOBAL
 
+
 #ifdef __cplusplus
 /* SwigValueWrapper is described in swig.swg */
 template<typename T> class SwigValueWrapper {
@@ -2357,6 +2358,30 @@ fail:
 }
 
 
+static int _wrap_AutotestingSystemLua_GetScreen(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
+  DAVA::UIControl *result = 0 ;
+  
+  SWIG_check_num_args("DAVA::AutotestingSystemLua::GetScreen",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::GetScreen",1,"DAVA::AutotestingSystemLua *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0))){
+    SWIG_fail_ptr("AutotestingSystemLua_GetScreen",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
+  }
+  
+  result = (DAVA::UIControl *)(arg1)->GetScreen();
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_DAVA__UIControl,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_AutotestingSystemLua_FindControl(lua_State* L) {
   int SWIG_arg = 0;
   DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
@@ -2738,6 +2763,7 @@ static swig_lua_method swig_DAVA_AutotestingSystemLua_methods[] = {
     {"OnTestStart", _wrap_AutotestingSystemLua_OnTestStart}, 
     {"OnStepStart", _wrap_AutotestingSystemLua_OnStepStart}, 
     {"Log", _wrap_AutotestingSystemLua_Log}, 
+    {"GetScreen", _wrap_AutotestingSystemLua_GetScreen}, 
     {"FindControl", _wrap_AutotestingSystemLua_FindControl}, 
     {"TouchDown", _wrap_AutotestingSystemLua_TouchDown}, 
     {"TouchMove", _wrap_AutotestingSystemLua_TouchMove}, 
