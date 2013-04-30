@@ -1251,6 +1251,12 @@ namespace DAVA
 		_topAlignEnabled = srcControl->_topAlignEnabled;
 		_vcenterAlignEnabled = srcControl->_vcenterAlignEnabled;
 		_bottomAlignEnabled = srcControl->_bottomAlignEnabled;
+		
+		if (GetBackground() && srcControl->GetBackground())
+		{
+			GetBackground()->SetLeftRightStretchCap(srcControl->GetBackground()->GetLeftRightStretchCap());
+			GetBackground()->SetTopBottomStretchCap(srcControl->GetBackground()->GetTopBottomStretchCap());
+		}
 
         tag = srcControl->GetTag();
         name = srcControl->name;
@@ -1500,6 +1506,14 @@ namespace DAVA
 			Draw(drawData);
 		}
 		
+		if (debugDrawEnabled)
+		{//TODO: Add debug draw for rotated controls
+			Color oldColor = RenderManager::Instance()->GetColor();
+			RenderManager::Instance()->SetColor(debugDrawColor);
+			RenderHelper::Instance()->DrawRect(drawData.GetUnrotatedRect());
+			RenderManager::Instance()->SetColor(oldColor);
+		}
+		
 		isIteratorCorrupted = false;
 		List<UIControl*>::iterator it = childs.begin();
         List<UIControl*>::iterator itEnd = childs.end();
@@ -1516,14 +1530,6 @@ namespace DAVA
 		if(clipContents)
 		{
 			RenderManager::Instance()->ClipPop();
-		}
-		
-		if (debugDrawEnabled)
-		{//TODO: Add debug draw for rotated controls
-			Color oldColor = RenderManager::Instance()->GetColor();
-			RenderManager::Instance()->SetColor(debugDrawColor);
-			RenderHelper::Instance()->DrawRect(drawData.GetUnrotatedRect());
-			RenderManager::Instance()->SetColor(oldColor);
 		}
 	}
 	
