@@ -220,6 +220,11 @@ void AutotestingSystemLua::Log(const String &level, const String &message)
 	Logger::Debug("AutotestingSystemLua::Log [%s]%s", level.c_str(), message.c_str());
 	AutotestingSystem::Instance()->Log(level, message);
 }
+    
+UIControl *AutotestingSystemLua::GetScreen()
+{
+    return UIControlSystem::Instance()->GetScreen();
+}
 
 UIControl *AutotestingSystemLua::FindControl(const String &path)
 {
