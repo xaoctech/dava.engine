@@ -493,9 +493,9 @@ void Entity::AddNode(Entity * node)
         {
             node->parent->RemoveNode(node);
         }
+ 		node->SetParent(this);
         node->SetScene(GetScene());
-        node->SetParent(this);
-    }
+   }
 }
     
 void Entity::InsertBeforeNode(Entity *newNode, Entity *beforeNode)

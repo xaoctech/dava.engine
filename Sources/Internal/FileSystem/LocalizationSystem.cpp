@@ -64,7 +64,7 @@ void LocalizationSystem::InitWithDirectory(const FilePath &directoryPath)
 #ifdef __DAVAENGINE_IPHONE__
 	LocalizationIPhone::SelecePreferedLocalizationForPath(directoryPath);
 #endif
-	LoadStringFile(langId, directoryPath + FilePath(langId + ".yaml"));
+	LoadStringFile(langId, directoryPath + (langId + ".yaml"));
 }
 	
 const String &LocalizationSystem::GetCurrentLocale()

@@ -42,7 +42,7 @@ ShadowVolumeNode::ShadowVolumeNode()
 : shadowPolygonGroup(0)
 {
 	shader = new Shader();
-	shader->LoadFromYaml(FilePath("~res:/Shaders/ShadowVolume/shadowvolume.shader"));
+	shader->LoadFromYaml("~res:/Shaders/ShadowVolume/shadowvolume.shader");
 	shader->Recompile();
 }
 
