@@ -134,7 +134,7 @@ void FilePathTest::MacTestFunction(PerfFuncData * data)
     TEST_VERIFY(filepath11.GetFilename() == "texture.tex");
     TEST_VERIFY(filepath11.GetBasename() == "texture");
     TEST_VERIFY(filepath11.GetExtension() == ".tex");
-    TEST_VERIFY(filepath11.GetDirectory() == FilePath());
+    TEST_VERIFY(filepath11.GetDirectory() == FilePath(""));
 
     filepath11.ReplaceBasename("image");
     TEST_VERIFY(filepath11.GetFilename() == "image.tex");
@@ -301,7 +301,7 @@ void FilePathTest::WinTestFunction(PerfFuncData * data)
     TEST_VERIFY(filepath11.GetFilename() == "texture.tex");
     TEST_VERIFY(filepath11.GetBasename() == "texture");
     TEST_VERIFY(filepath11.GetExtension() == ".tex");
-    TEST_VERIFY(filepath11.GetDirectory() == FilePath());
+    TEST_VERIFY(filepath11.GetDirectory() == FilePath(""));
     
     filepath11.ReplaceBasename("image");
     TEST_VERIFY(filepath11.GetFilename() == "image.tex");
