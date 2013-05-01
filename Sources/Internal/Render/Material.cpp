@@ -176,7 +176,7 @@ void InstanceMaterialState::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 		String filename = archive->GetString("ims.lightmapname");
 		if(!filename.empty())
 		{
-            FilePath lName = sceneFile->GetScenePath() + FilePath(filename);
+            FilePath lName = sceneFile->GetScenePath() + filename;
 
 			Texture* lTexture = Texture::CreateFromFile(lName);
 			SetLightmap(lTexture, lName);
@@ -289,7 +289,7 @@ Material::Material()
     if (!uberShader)
     {
         uberShader = new UberShader();
-        uberShader->LoadShader(FilePath("~res:/Shaders/Default/materials.shader"));
+        uberShader->LoadShader("~res:/Shaders/Default/materials.shader");
         
         
         //uberShader->CompileShaderCombination("MATERIAL_TEXTURE");
@@ -645,7 +645,7 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
             }
             else
             {
-                names[k] = sceneFile->GetScenePath() + FilePath(relativePathname);
+                names[k] = sceneFile->GetScenePath() + relativePathname;
             }
             
             if(sceneFile->DebugLogEnabled())

@@ -213,15 +213,10 @@ protected:
 	
 #if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__) 
 	/**
-		\brief Called when application goes to background on mobile platforms
+		\brief Called when application goes to background on iOS platforms
 	 */
 	virtual void OnBackground() = 0;
-
-	/**
-	 \brief Called when application returns to foreground on mobile platforms
-	 */
-	virtual void OnForeground();
-
+    
     /**
      \brief Called when application goes to background due to device lock on iOS platforms
 	 */

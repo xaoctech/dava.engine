@@ -67,6 +67,7 @@ const String VariantType::TYPENAME_MATRIX4 = "Matrix4";
 const String VariantType::TYPENAME_COLOR   = "Color";
 const String VariantType::TYPENAME_FASTNAME= "FastName";
 const String VariantType::TYPENAME_AABBOX3 = "AABBox3";
+const String VariantType::TYPENAME_FILEPATH = "FilePath";
     
 const VariantType::PairTypeName VariantType::variantNamesMap[] =
 {
@@ -89,7 +90,8 @@ const VariantType::PairTypeName VariantType::variantNamesMap[] =
     VariantType::PairTypeName(VariantType::TYPE_MATRIX4,       TYPENAME_MATRIX4,		MetaInfo::Instance<Matrix4>()),
 	VariantType::PairTypeName(VariantType::TYPE_COLOR,         TYPENAME_COLOR,          MetaInfo::Instance<Color>()),
 	VariantType::PairTypeName(VariantType::TYPE_FASTNAME,      TYPENAME_FASTNAME,       MetaInfo::Instance<FastName>()),
-	VariantType::PairTypeName(VariantType::TYPE_AABBOX3,       TYPENAME_AABBOX3,        MetaInfo::Instance<AABBox3>())
+	VariantType::PairTypeName(VariantType::TYPE_AABBOX3,       TYPENAME_AABBOX3,        MetaInfo::Instance<AABBox3>()),
+	VariantType::PairTypeName(VariantType::TYPE_FILEPATH,      TYPENAME_FILEPATH,       MetaInfo::Instance<FilePath>())
 };
 
 VariantType::VariantType()
@@ -196,6 +198,11 @@ VariantType::VariantType(const FastName & value) : pointerValue(NULL)
 VariantType::VariantType(const AABBox3 & value) : pointerValue(NULL)
 {
 	SetAABBox3(value);
+}
+
+VariantType::VariantType(const FilePath & value) : pointerValue(NULL)
+{
+	SetFilePath(value);
 }
 
 VariantType::~VariantType()
@@ -337,6 +344,14 @@ void VariantType::SetAABBox3(const DAVA::AABBox3 &value)
 	aabbox3 = new AABBox3(value);
 }
 
+void VariantType::SetFilePath(const FilePath & value)
+{
+	ReleasePointer();
+	type = TYPE_FILEPATH;
+
+	filepathValue = new FilePath(value);
+}
+
 void VariantType::SetVariant(const VariantType& var)
 {
 	switch(var.type)
@@ -435,6 +450,11 @@ void VariantType::SetVariant(const VariantType& var)
 	case TYPE_AABBOX3:
 		{
 			SetAABBox3(var.AsAABBox3());
+		}
+		break;
+	case TYPE_FILEPATH:
+		{
+			SetFilePath(var.AsFilePath());
 		}
 		break;
 
@@ -569,6 +589,12 @@ const AABBox3 & VariantType::AsAABBox3() const
 {
 	DVASSERT(type == TYPE_AABBOX3);
 	return *aabbox3;
+}
+
+const FilePath & VariantType::AsFilePath() const
+{
+	DVASSERT(type == TYPE_FILEPATH);
+	return *filepathValue;
 }
 
 
@@ -717,6 +743,17 @@ bool VariantType::Write(File * fp) const
 			if (written != sizeof(AABBox3))return false;
 		}
 		break;
+	case TYPE_FILEPATH:
+		{
+			String str = filepathValue->GetAbsolutePathname();
+			int32 len = (int32) str.length();
+			written = fp->Write(&len, 4);
+			if (written != 4)return false;
+
+			written = fp->Write(str.c_str(), len);
+			if (written != len) return false;
+		}
+		break;	
             
 	}
 	return true;
@@ -900,7 +937,20 @@ bool VariantType::Read(File * fp)
 				if (read != sizeof(AABBox3))return false;
 			}
 			break;
+		case TYPE_FILEPATH:
+			{
+				int32 len;
+				read = fp->Read(&len, 4);
+				if (read != 4)return false;
 
+				char *buf = new char[len + 1];
+				read = fp->Read(buf, len);
+				buf[len] = 0;
+				filepathValue = new FilePath(buf);
+				delete [] buf;
+				if (read != len) return false;
+			}
+			break;	
 		default:
 		{
 			//DVASSERT(0 && "Something went wrong with VariantType");
@@ -991,6 +1041,11 @@ void VariantType::ReleasePointer()
 			case TYPE_AABBOX3:
 				{
 					delete aabbox3;
+				}
+				break;
+			case TYPE_FILEPATH:
+				{
+					delete filepathValue;
 				}
 				break;
         }
@@ -1134,6 +1189,11 @@ bool VariantType::operator==(const VariantType& other) const
 					isEqual = (AsAABBox3() == other.AsAABBox3());
 				}
 				break;
+			case TYPE_FILEPATH:
+				{
+					isEqual = (AsFilePath() == other.AsFilePath());
+				}
+				break;
                 
         }
     }
@@ -1237,6 +1297,9 @@ VariantType VariantType::LoadData(const void *src, const MetaInfo *meta)
 	case TYPE_AABBOX3:
 		v.SetAABBox3(*((DAVA::AABBox3 *) src));
 		break;
+	case TYPE_FILEPATH:
+		v.SetFilePath(*((DAVA::FilePath *) src));
+		break;
 	default:
 		printf("MetaType: %s, size %d, is pointer %d, introspection %p\n", meta->GetTypeName(), meta->GetSize(), meta->IsPointer(), meta->GetIntrospection());
 		if(NULL != meta->GetIntrospection())
@@ -1338,6 +1401,9 @@ void VariantType::SaveData(void *dst, const MetaInfo *meta, const VariantType &v
 	case TYPE_AABBOX3:
 		*((DAVA::AABBox3 *) dst) = val.AsAABBox3();
 		break;
+	case TYPE_FILEPATH:
+		*((DAVA::FilePath *) dst) = val.AsFilePath();
+		break;
 	default:
 		DVASSERT(0 && "Don't know how to save data from such VariantType");
 	}
@@ -1421,6 +1487,9 @@ VariantType VariantType::FromType(int type)
 		break;
 	case TYPE_AABBOX3:
 		v.SetAABBox3(AABBox3());
+		break;
+	case TYPE_FILEPATH:
+		v.SetFilePath(FilePath());
 		break;
 	default:
 		DVASSERT(0 && "Don't know how to create such VariantType");

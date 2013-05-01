@@ -51,8 +51,8 @@ class Color;
 class KeyedArchive;
     
 class FastName;
-
 class AABBox3;
+class FilePath;
     
 /**
  \ingroup filesystem
@@ -84,6 +84,7 @@ public:
 	static const String TYPENAME_COLOR;     // "Color"
 	static const String TYPENAME_FASTNAME;     // "FastName"
 	static const String TYPENAME_AABBOX3;     // "AABBox3"
+	static const String TYPENAME_FILEPATH;	// FilePath
 
 	VariantType();
 	VariantType(const VariantType &value);
@@ -106,6 +107,7 @@ public:
 	explicit VariantType(const Color & value);
 	explicit VariantType(const FastName & value);
 	explicit VariantType(const AABBox3 & value);
+	explicit VariantType(const FilePath & value);
 
 	~VariantType();
 	
@@ -131,6 +133,7 @@ public:
         TYPE_COLOR,
         TYPE_FASTNAME,
 		TYPE_AABBOX3,
+		TYPE_FILEPATH,
         
         TYPES_COUNT // every new type should be always added to the end for compatibility with old archives
 	};
@@ -157,6 +160,7 @@ public:
         
         String* stringValue;
         WideString* wideStringValue;
+		FilePath* filepathValue;
         
         Color* colorValue;
         FastName *fastnameValue;
@@ -297,12 +301,17 @@ public:
 	 */
 	void SetFastName(const FastName & value);
     
-
     /**
 		 \brief Function to set AABBox3 value to variant type variable
 		 \param[in] value	value to set
 	 */
 	void SetAABBox3(const AABBox3 & value);
+
+	/**
+		\brief Function to set FilePath value to variant type variable
+		\param[in] value	value to set
+	 */
+	void SetFilePath(const FilePath & value);
 
 	/**
 		\brief Function to return bool value from variable
@@ -423,6 +432,12 @@ public:
          \returns value of variable, or generate assert if variable type is different
      */
     const AABBox3 &AsAABBox3() const;
+
+    /**
+         \brief Function to return FilePath from variable.
+		 \returns value of variable, or generate assert if variable type is different
+     */
+    const FilePath &AsFilePath() const;
 
 	// File read & write helpers
 	

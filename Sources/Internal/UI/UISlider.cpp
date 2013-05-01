@@ -31,7 +31,6 @@
 #include "UI/UISlider.h"
 #include "UI/UIButton.h"
 #include "Render/RenderManager.h"
-#include "Render/RenderHelper.h"
 
 #include "Base/ObjectFactory.h"
 #include "Utils/Utils.h"
@@ -42,22 +41,22 @@ namespace DAVA
 	
 	
 REGISTER_CLASS(UISlider);
-
-// Use these names for children buttons to define UISlider in .yaml
-static const String UISLIDER_THUMB_SPRITE_CONTROL_NAME = "thumbSpriteControl";
-static const String UISLIDER_MIN_SPRITE_CONTROL_NAME = "minSpriteControl";
-static const String UISLIDER_MAX_SPRITE_CONTROL_NAME = "maxSpriteControl";
-
+	
 UISlider::UISlider(const Rect & rect)
 :	UIControl(rect)
 ,	bgMin(0)
 ,	bgMax(0)
-,	thumbButton(0)
-,	minDrawType(UIControlBackground::DRAW_ALIGNED)
-,	maxDrawType(UIControlBackground::DRAW_ALIGNED)
 {
 	inputEnabled = true;
 	isEventsContinuos = true;
+	
+#if 0
+	thumbButton = new UIControl(Rect(0, 0, 40.f, 40.f));
+	thumbButton->SetInputEnabled(false);
+	
+	thumbButton->relativePosition.y -= Abs(rect.dy - thumbButton->size.y) / 2.0f; 
+#endif
+	
 	
 	leftInactivePart = 0;
 	rightInactivePart = 0;
@@ -65,21 +64,25 @@ UISlider::UISlider(const Rect & rect)
 	maxValue = 1.0f;
 	currentValue = 0.5f;
 
-	InitSubcontrols();
+#if 0
+	AddControl(thumbButton);
+
+	SetValue(currentValue);
+#endif
+	
+	InitThumb();
+	
+//	thumbButton->SetDebugDraw(TRUE);
+//	SetDebugDraw(true);
 }
 	
 
-UISlider::UISlider() :
-	bgMin(0),
-	bgMax(0),
-	thumbButton(0),
-	minDrawType(UIControlBackground::DRAW_ALIGNED),
-	maxDrawType(UIControlBackground::DRAW_ALIGNED)
+UISlider::UISlider() : bgMin(0),	bgMax(0)	
 {
 	inputEnabled = true;
 	isEventsContinuos = true;
-	
-	InitSubcontrols();
+	// Init thumb button with null value to avoid crash
+	thumbButton = NULL;	
 	
 	leftInactivePart = 0;
 	rightInactivePart = 0;
@@ -90,78 +93,15 @@ UISlider::UISlider() :
 	
 void UISlider::InitThumb()
 {
-	if (!thumbButton)
-	{
-		thumbButton = new UIControl(Rect(0, 0, 40.f, 40.f));
-		thumbButton->SetName(UISLIDER_THUMB_SPRITE_CONTROL_NAME);
-		UIControl::AddControl(thumbButton);
-	}
-	
+	thumbButton = new UIControl(Rect(0, 0, 40.f, 40.f));
 	thumbButton->SetInputEnabled(false);
+	
 	thumbButton->relativePosition.y = size.y * 0.5f;
     thumbButton->pivotPoint = thumbButton->size*0.5f;
 	
+	AddControl(thumbButton);
+	
 	SetValue(currentValue);
-}
-
-void UISlider::AddControl(DAVA::UIControl *control)
-{
-	// Synchronize the pointers to the buttons each time new control is added.
-	UIControl::AddControl(control);
-
-	if (control->GetName() == UISLIDER_THUMB_SPRITE_CONTROL_NAME)
-	{
-		thumbButton = control;
-	}
-	else if (control->GetName() == UISLIDER_MIN_SPRITE_CONTROL_NAME)
-	{
-		bgMin = control;
-	}
-	else if (control->GetName() == UISLIDER_MAX_SPRITE_CONTROL_NAME)
-	{
-		bgMax = control;
-	}
-}
-		
-void UISlider::InitMinBackground()
-{
-	if (!bgMin)
-	{
-		bgMin = new UIControl(this->GetRect());
-		bgMin->SetName(UISLIDER_MIN_SPRITE_CONTROL_NAME);
-		UIControl::AddControl(bgMin);
-	}
-}
-
-void UISlider::InitMaxBackground()
-{
-	if (!bgMax)
-	{
-		bgMax = new UIControl(this->GetRect());
-		bgMax->SetName(UISLIDER_MAX_SPRITE_CONTROL_NAME);
-		UIControl::AddControl(bgMax);
-	}
-}
-
-void UISlider::ReleaseAllSubcontrols()
-{
-	if (thumbButton)
-	{
-		RemoveControl(thumbButton);
-		SafeRelease(thumbButton);
-	}
-	
-	if (bgMin)
-	{
-		RemoveControl(bgMin);
-		SafeRelease(bgMin);
-	}
-	
-	if (bgMax)
-	{
-		RemoveControl(bgMax);
-		SafeRelease(bgMax);
-	}
 }
 
 void UISlider::SetThumb(UIControl *newThumb)
@@ -170,7 +110,7 @@ void UISlider::SetThumb(UIControl *newThumb)
     SafeRelease(thumbButton);
     
     thumbButton = SafeRetain(newThumb);
-	thumbButton->SetName(UISLIDER_THUMB_SPRITE_CONTROL_NAME);
+
 	thumbButton->SetInputEnabled(false);
 	
 	thumbButton->relativePosition.y = size.y * 0.5f;
@@ -191,7 +131,7 @@ UISlider::~UISlider()
 
 void UISlider::SetThumbSprite(Sprite * sprite, int32 frame)
 {
-	thumbButton->SetSprite(sprite, frame);
+	thumbButton->GetBackground()->SetSprite(sprite, frame);
 	if (sprite)
 	{
 		leftInactivePart = rightInactivePart = (int32)((sprite->GetWidth() / 2.0f) + 1.0f); /* 1 px added to align it and make touches easier, with default setup */
@@ -200,64 +140,90 @@ void UISlider::SetThumbSprite(Sprite * sprite, int32 frame)
 
 void UISlider::SetThumbSprite(const FilePath & spriteName, int32 frame)
 {
-	thumbButton->SetSprite(spriteName, frame);
+	thumbButton->GetBackground()->SetSprite(spriteName, frame);
 	leftInactivePart = rightInactivePart = (int32)((thumbButton->GetBackground()->GetSprite()->GetWidth() / 2.0f) + 1.0f); /* 1 px added to align it and make touches easier, with default setup */
 }
 
 void UISlider::SetMinSprite(Sprite * sprite, int32 frame)
 {
-	InitMinBackground();
+    if (!bgMin) 
+    {
+        bgMin = new UIControlBackground();
+    }
 	bgMin->SetSprite(sprite, frame);
 }
 void UISlider::SetMinSprite(const FilePath & spriteName, int32 frame)
 {
-	InitMinBackground();
+    if (!bgMin) 
+    {
+        bgMin = new UIControlBackground();
+    }
 	bgMin->SetSprite(spriteName, frame);
 }
 	
 void UISlider::SetMinDrawType(UIControlBackground::eDrawType drawType)
 {
-	InitMinBackground();
-    bgMin->GetBackground()->SetDrawType(drawType);
+    if (!bgMin) 
+    {
+        bgMin = new UIControlBackground();
+    }
+    bgMin->SetDrawType(drawType);
 }
     
 void UISlider::SetMinLeftRightStretchCap(float32 stretchCap)
 {
-	InitMinBackground();
-    bgMin->GetBackground()->SetLeftRightStretchCap(stretchCap);
+    if (!bgMin) 
+    {
+        bgMin = new UIControlBackground();
+    }
+    bgMin->SetLeftRightStretchCap(stretchCap);
 }
     
 void UISlider::SetMaxSprite(Sprite * sprite, int32 frame)
 {
-	InitMaxBackground();
+    if (!bgMax)
+    {
+        bgMax = new UIControlBackground();
+    }
 	bgMax->SetSprite(sprite, frame);
 }
 	
 void UISlider::SetMaxSprite(const FilePath & spriteName, int32 frame)
 {
-	InitMaxBackground();
+    if (!bgMax)
+    {
+        bgMax = new UIControlBackground();
+    }
 	bgMax->SetSprite(spriteName, frame);
 }
     
 void UISlider::SetMaxDrawType(UIControlBackground::eDrawType drawType)
 {
-	InitMaxBackground();
-    bgMax->GetBackground()->SetDrawType(drawType);
+    if (!bgMax) 
+    {
+        bgMax = new UIControlBackground();
+    }
+    bgMax->SetDrawType(drawType);
 }
 
 void UISlider::SetMaxLeftRightStretchCap(float32 stretchCap)
 {
-	InitMaxBackground();
-    bgMax->GetBackground()->SetLeftRightStretchCap(stretchCap);
+    if (!bgMax) 
+    {
+        bgMax = new UIControlBackground();
+    }
+    bgMax->SetLeftRightStretchCap(stretchCap);
 }
 
 void UISlider::RecalcButtonPos()
 {
-	if (thumbButton)
-	{
-		thumbButton->relativePosition.x = Interpolation::Linear((float32)leftInactivePart, size.x - rightInactivePart, minValue, currentValue, maxValue);
-		clipPointRelative = thumbButton->relativePosition.x;
-	}
+	thumbButton->relativePosition.x = Interpolation::Linear((float32)leftInactivePart, size.x - rightInactivePart, minValue, currentValue, maxValue);
+//	thumbButton->relativePosition.x = x - thumbButton->size.x * 0.5f;
+	
+	clipPointRelative = thumbButton->relativePosition.x;
+	
+	//Rect rect = GetRect();
+	//thumbButton->relativePosition.y -= Abs(rect.dy - thumbButton->size.y) / 2.0f; 
 }
 
 void UISlider::SetValue(float32 value)
@@ -331,17 +297,18 @@ void UISlider::Draw(const UIGeometricData &geometricData)
 {
 	const Rect & aRect =  thumbButton->GetGeometricData().GetUnrotatedRect();
 	float32 clipPointAbsolute = aRect.x + aRect.dx * 0.5f;
-	if (bgMin && bgMin->GetVisible())
+	if (bgMin)
 	{
-		bgMin->GetBackground()->SetParentColor(GetBackground()->GetDrawColor());
+		bgMin->SetParentColor(GetBackground()->GetDrawColor());
 		RenderManager::Instance()->ClipPush();
 		RenderManager::Instance()->ClipRect(Rect(Core::Instance()->GetVirtualScreenXMin(), 0, clipPointAbsolute - Core::Instance()->GetVirtualScreenXMin(), (float32)GetScreenHeight()));
 		bgMin->Draw(geometricData);
+		
 		RenderManager::Instance()->ClipPop();
 	}
-	if (bgMax && bgMax->GetVisible())
+	if (bgMax)
 	{
-		bgMax->GetBackground()->SetParentColor(GetBackground()->GetDrawColor());
+		bgMax->SetParentColor(GetBackground()->GetDrawColor());
 		RenderManager::Instance()->ClipPush();
 		RenderManager::Instance()->ClipRect(Rect(clipPointAbsolute, 0, Core::Instance()->GetVirtualScreenXMax() - clipPointAbsolute, (float32)GetScreenHeight()));
 		bgMax->Draw(geometricData);
@@ -349,80 +316,13 @@ void UISlider::Draw(const UIGeometricData &geometricData)
 	}
 	
 	if (!bgMax && !bgMin)
-	{
 		UIControl::Draw(geometricData);
-	}
-}
-	
-void UISlider::SystemDraw(const UIGeometricData &geometricData)
-{
-	UIGeometricData drawData;
-	drawData.position = relativePosition;
-	drawData.size = size;
-	drawData.pivotPoint = pivotPoint;
-	drawData.scale = scale;
-	drawData.angle = angle;
-	drawData.AddToGeometricData(geometricData);
-	
-	if(parent)
-	{
-		GetBackground()->SetParentColor(parent->GetBackground()->GetDrawColor());
-	}
-	else
-	{
-		GetBackground()->SetParentColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
-	}
-	
-	if(clipContents)
-	{
-		RenderManager::Instance()->ClipPush();
-		RenderManager::Instance()->ClipRect(drawData.GetUnrotatedRect());
-	}
-
-	// Draw us.
-	if(visible)
-	{
-		Draw(drawData);
-	}
-	
-	// Draw all the child controls BUT the backgrounds.
-	List<UIControl*>::iterator it = childs.begin();
-	List<UIControl*>::iterator itEnd = childs.end();
-	for(; it != itEnd; ++it)
-	{
-		if ((*it) == bgMin || (*it) == bgMax)
-		{
-			continue;
-		}
-		
-		(*it)->SystemDraw(drawData);
-	}
-	
-	if(visible)
-	{
-		DrawAfterChilds(drawData);
-	}
-	if(clipContents)
-	{
-		RenderManager::Instance()->ClipPop();
-	}
-
-	if (debugDrawEnabled)
-	{
-		Color oldColor = RenderManager::Instance()->GetColor();
-		RenderManager::Instance()->SetColor(debugDrawColor);
-		RenderHelper::Instance()->DrawRect(drawData.GetUnrotatedRect());
-		RenderManager::Instance()->SetColor(oldColor);
-	}
 }
 
 List<UIControl* >& UISlider::GetRealChildren()
 {
 	List<UIControl* >& realChildren = UIControl::GetRealChildren();
-	realChildren.remove(FindByName(UISLIDER_THUMB_SPRITE_CONTROL_NAME));
-	realChildren.remove(FindByName(UISLIDER_MIN_SPRITE_CONTROL_NAME));
-	realChildren.remove(FindByName(UISLIDER_MAX_SPRITE_CONTROL_NAME));
-
+	realChildren.remove(thumbButton);
 	return realChildren;
 }
 	
@@ -430,53 +330,45 @@ void UISlider::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 {
 	UIControl::LoadFromYamlNode(node, loader);
 	
-	ReleaseAllSubcontrols();
+	InitThumb();
+	
 	YamlNode * thumbSpriteNode = node->Get("thumbSprite");
 
 	if (thumbSpriteNode)
 	{
-		// Yuri Coder, 2012/04/24. This is old configuration version without the subcontrols.
-		// Need to create sprite subcontrol.
-		InitThumb();
 		YamlNode * spriteNode = thumbSpriteNode->Get(0);
 		YamlNode * frameNode = thumbSpriteNode->Get(1);
 		
 		if (spriteNode)
-		{
 			SetThumbSprite(spriteNode->AsString(), frameNode->AsInt());
-		}
+		//SetMinSprite("/XGfx/Options/slider_bg", 1);
+		//SetMaxSprite("/XGfx/Options/slider_bg", 0);
 	}
 	
 	YamlNode * minSpriteNode = node->Get("minSprite");
 	
 	if (minSpriteNode)
 	{
-		// Yuri Coder, 2012/04/24. This is old configuration version without the subcontrols.
-		// Need to create min background subcontrol.
-		InitMinBackground();
 		YamlNode * spriteNode = minSpriteNode->Get(0);
 		YamlNode * frameNode = minSpriteNode->Get(1);
 		
 		if (spriteNode)
-		{
 			SetMinSprite(spriteNode->AsString(), frameNode->AsInt());
-		}
+		//SetMinSprite("/XGfx/Options/slider_bg", 1);
+		//SetMaxSprite("/XGfx/Options/slider_bg", 0);
 	}
 	
 	YamlNode * maxSpriteNode = node->Get("maxSprite");
 	
 	if (maxSpriteNode)
 	{
-		// Yuri Coder, 2012/04/24. This is old configuration version without the subcontrols.
-		// Need to create max background subcontrol.
-		InitMaxBackground();
 		YamlNode * spriteNode = maxSpriteNode->Get(0);
 		YamlNode * frameNode = maxSpriteNode->Get(1);
 		
 		if (spriteNode)
-		{
 			SetMaxSprite(spriteNode->AsString(), frameNode->AsInt());
-		}
+		//SetMinSprite("/XGfx/Options/slider_bg", 1);
+		//SetMaxSprite("/XGfx/Options/slider_bg", 0);
 	}
 	
 	// Values
@@ -495,30 +387,22 @@ void UISlider::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 	if (maxValueNode)
 		SetMaxValue(maxValueNode->AsFloat());
 	
-	
-	// Load the Min/Max draw types to apply them when the loading will be completed.
+	// Min/Max draw type
 	YamlNode * minDrawTypeNode = node->Get("minDrawType");
 
 	if(minDrawTypeNode)
 	{
-		this->minDrawType =(UIControlBackground::eDrawType)loader->GetDrawTypeFromNode(minDrawTypeNode);
+		UIControlBackground::eDrawType type = (UIControlBackground::eDrawType)loader->GetDrawTypeFromNode(minDrawTypeNode);
+		SetMinDrawType(type);
 	}
 	
 	YamlNode * maxDrawTypeNode = node->Get("maxDrawType");
+
 	if(maxDrawTypeNode)
 	{
-		this->maxDrawType= (UIControlBackground::eDrawType)loader->GetDrawTypeFromNode(maxDrawTypeNode);
-	}
-}
-
-void UISlider::LoadFromYamlNodeCompleted()
-{
-	// All the UIControls should exist at this moment - just attach to them.
-	AttachToSubcontrols();
-	bgMin->GetBackground()->SetDrawType(minDrawType);
-	bgMax->GetBackground()->SetDrawType(maxDrawType);
-
-	RecalcButtonPos();
+		UIControlBackground::eDrawType type = (UIControlBackground::eDrawType)loader->GetDrawTypeFromNode(maxDrawTypeNode);
+		SetMaxDrawType(type);
+	}		
 }
 	
 YamlNode * UISlider::SaveToYamlNode(UIYamlLoader * loader)
@@ -539,18 +423,72 @@ YamlNode * UISlider::SaveToYamlNode(UIYamlLoader * loader)
 	// Sprite max value
 	value = this->GetMaxValue();
 	node->Set("maxValue", value);
+		
+	// Get thumb sprite and frame
+	if (this->thumbButton != NULL)
+	{
+		Sprite *sprite = this->GetThumb()->GetSprite();
+		int32 spriteFrame = this->GetThumb()->GetFrame();
+		if (sprite)
+		{
+			//Create array yamlnode and add it to map
+			YamlNode *spriteNode = new YamlNode(YamlNode::TYPE_ARRAY);
+            
+            FilePath path(sprite->GetRelativePathname());
+            path.TruncateExtension();
 
-	// Yuri Coder, 2013/04/24. Thumb Button and all the backgrounds are child controls now
-	// so save them under appropriate names.
-	YamlNode* thumbButtonNode = this->thumbButton->SaveToYamlNode(loader);
-	node->AddNodeToMap(UISLIDER_THUMB_SPRITE_CONTROL_NAME, thumbButtonNode);
+			spriteNode->AddValueToArray(path.GetAbsolutePathname());
+			spriteNode->AddValueToArray(spriteFrame);
+			node->AddNodeToMap("thumbSprite", spriteNode);
+		}
+	}
+	
+	if (this->bgMin != NULL)
+	{
+		// Get min sprite and frame
+		Sprite *sprite = this->GetBgMin()->GetSprite();
+		int32 spriteFrame = this->GetBgMin()->GetFrame();
+		if (sprite)
+		{
+			// Create array yamlnode and add it to map
+			YamlNode *spriteNode = new YamlNode(YamlNode::TYPE_ARRAY);
+            
+            FilePath path(sprite->GetRelativePathname());
+            path.TruncateExtension();
 
-	YamlNode* minBackgroundNode = this->bgMin->SaveToYamlNode(loader);
-	node->AddNodeToMap(UISLIDER_MIN_SPRITE_CONTROL_NAME, minBackgroundNode);
+			spriteNode->AddValueToArray(path.GetAbsolutePathname());
+			spriteNode->AddValueToArray(spriteFrame);
+			node->AddNodeToMap("minSprite", spriteNode);
+		}
+		
+		// Min draw type
+		UIControlBackground::eDrawType drawType =  this->GetBgMin()->GetDrawType();
+		node->Set("minDrawType", loader->GetDrawTypeNodeValue(drawType));
+	}
 
-	YamlNode* maxBackgroundNode = this->bgMin->SaveToYamlNode(loader);
-	node->AddNodeToMap(UISLIDER_MAX_SPRITE_CONTROL_NAME, maxBackgroundNode);
+	if (this->bgMax != NULL)
+	{
+		// Get max sprite and frame
+		Sprite* sprite = this->GetBgMax()->GetSprite();
+		int32 spriteFrame = this->GetBgMax()->GetFrame();
+		if (sprite)
+		{
+			// Create array yamlnode and add it to map
+			YamlNode *spriteNode = new YamlNode(YamlNode::TYPE_ARRAY);
+            
+            FilePath path(sprite->GetRelativePathname());
+            path.TruncateExtension();
 
+			spriteNode->AddValueToArray(path.GetAbsolutePathname());
+			spriteNode->AddValueToArray(spriteFrame);
+			node->AddNodeToMap("maxSprite", spriteNode);
+		}
+		
+		// Max draw type
+		UIControlBackground::eDrawType drawType =  this->GetBgMax()->GetDrawType();
+		node->Set("maxDrawType", loader->GetDrawTypeNodeValue(drawType));
+	}
+    
     return node;
 }
 	
@@ -582,61 +520,12 @@ void UISlider::CopyDataFrom(UIControl *srcControl)
 		AddControl(thumbButton);
 	}
 	if (t->bgMin)
-	{
 		bgMin = t->bgMin->Clone();
-		AddControl(bgMin);
-	}
 	if (t->bgMax)
-	{
 		bgMax = t->bgMax->Clone();
-		AddControl(bgMax);
-	}
 	
 	clipPointRelative = t->clipPointRelative;
 	relTouchPoint = t->relTouchPoint;
 }
 
-void UISlider::InitSubcontrols()
-{
-	InitThumb();
-	InitMinBackground();
-	InitMaxBackground();
-}
-	
-void UISlider::AttachToSubcontrols()
-{
-	if (!thumbButton)
-	{
-		thumbButton = FindByName(UISLIDER_THUMB_SPRITE_CONTROL_NAME);
-		DVASSERT(thumbButton);
-	}
-	
-	if (!bgMin)
-	{
-		bgMin = FindByName(UISLIDER_MIN_SPRITE_CONTROL_NAME);
-		DVASSERT(bgMin);
-	}
-	
-	if (!bgMax)
-	{
-		bgMax = FindByName(UISLIDER_MAX_SPRITE_CONTROL_NAME);
-		DVASSERT(bgMax);
-	}
-	
-	// All the controls will be released in the destructor, so need to addref.
-	SafeRetain(thumbButton);
-	SafeRetain(bgMin);
-	SafeRetain(bgMax);
-}
-
-List<UIControl*> UISlider::GetSubcontrols()
-{
-	List<UIControl*> subControls;
-	AddControlToList(subControls, UISLIDER_THUMB_SPRITE_CONTROL_NAME);
-	AddControlToList(subControls, UISLIDER_MIN_SPRITE_CONTROL_NAME);
-	AddControlToList(subControls, UISLIDER_MAX_SPRITE_CONTROL_NAME);
-
-	return subControls;
-}
-	
 } // ns

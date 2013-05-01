@@ -47,7 +47,7 @@ void UIAggregatorControl::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loade
 		aggregatorPath = FilePath(pathNode->AsString());
 		String aggregatorFileName = aggregatorPath.GetFilename();
 
-		aggregatorPath = loader->GetCurrentPath() + FilePath(aggregatorFileName);
+		aggregatorPath = loader->GetCurrentPath() + aggregatorFileName;
 
 		UIYamlLoader loader;
 		loader.Load(this, aggregatorPath);

@@ -47,7 +47,7 @@ void AutotestingSystem::OnAppStarted()
     if(!isInit)
     {
         // get files list for ~res:/Autotesting/Tests
-        FileList fileList(FilePath("~res:/Autotesting/Tests"));
+        FileList fileList("~res:/Autotesting/Tests");
         int32 fileListSize = fileList.GetCount();
         if(fileListSize == 0)
         {
@@ -57,7 +57,7 @@ void AutotestingSystem::OnAppStarted()
         // read current test index and autotesting id from ~doc:/autotesting.archive
         KeyedArchive* autotestingArchive = new KeyedArchive();
 
-        if(autotestingArchive->Load(FilePath("~doc:/autotesting/autotesting.archive")))
+        if(autotestingArchive->Load("~doc:/autotesting/autotesting.archive"))
         {
             testIndex = autotestingArchive->GetInt32("index");
             VariantType* vt = autotestingArchive->GetVariant("id");
@@ -70,7 +70,7 @@ void AutotestingSystem::OnAppStarted()
         int32 autotestingId = 1;
 
         //TODO: read autotesting id from ~res:/Autotesting/autotesting.archive
-        File* file = File::Create(FilePath("~res:/Autotesting/id.txt"), File::OPEN | File::READ);
+        File* file = File::Create("~res:/Autotesting/id.txt", File::OPEN | File::READ);
         if(file)
         {
             char tempBuf[1024];
@@ -168,7 +168,7 @@ void AutotestingSystem::OnAppStarted()
             autotestingArchive->SetUInt32("id", testsId);
             autotestingArchive->SetInt32("index", (testIndex + 1));
         }
-        autotestingArchive->Save(FilePath("~doc:/autotesting/autotesting.archive"));
+        autotestingArchive->Save("~doc:/autotesting/autotesting.archive");
     }
 }
     
