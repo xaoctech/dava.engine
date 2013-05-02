@@ -169,13 +169,19 @@ void GameCore::OnSuspend()
 
 void GameCore::OnResume()
 {
-//    Logger::Debug("GameCore::OnResume");
+    Logger::Debug("GameCore::OnResume");
     ApplicationCore::OnResume();
 }
 
 void GameCore::OnBackground()
-{	
-//    Logger::Debug("GameCore::OnBackground");
+{
+    Logger::Debug("GameCore::OnBackground");
+}
+
+void GameCore::OnForeground()
+{
+	Logger::Debug("GameCore::OnForeground");
+	ApplicationCore::OnForeground();
 }
 
 #if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)

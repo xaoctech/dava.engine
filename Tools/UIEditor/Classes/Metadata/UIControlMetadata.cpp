@@ -375,6 +375,11 @@ void UIControlMetadata::ApplyMove(const Vector2& moveDelta)
 	rect.x = controlPosition.x;
 	rect.y = controlPosition.y;
 	
+	// Apply the pivot point.
+	Vector2 pivotPoint = GetActiveUIControl()->pivotPoint;
+	rect.x -= pivotPoint.x;
+	rect.y -= pivotPoint.y;
+	
 	SetActiveControlRect(rect);
 }
 
