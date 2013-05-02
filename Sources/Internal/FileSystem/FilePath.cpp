@@ -60,7 +60,7 @@ FilePath FilePath::FilepathRelativeToBundle(const char * relativePathname)
 	}
 	else
 	{
-		retPath = FileSystem::Instance()->GetCurrentWorkingDirectory() + (String("Data/")+relativePathname);
+		retPath = FileSystem::Instance()->GetCurrentWorkingDirectory() + relativePathname;
 	}
 
 	return retPath;
@@ -74,14 +74,15 @@ FilePath FilePath::FilepathRelativeToBundle(const char * relativePathname)
 #ifdef USE_LOCAL_RESOURCES
 	return Format("%s%s", USE_LOCAL_RESOURCES_PATH, relativePathname);
 #else
-	return Format("Data%s", relativePathname);
+	return relativePathname;
 #endif
 }
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 
 FilePath FilePath::FilepathRelativeToBundle(const String & relativePathname)
 {
-	return FilepathRelativeToBundle(relativePathname.c_str());
+    String dataPath = "Data/" + relativePathname;
+	return FilepathRelativeToBundle(dataPath.c_str());
 }
 
 
