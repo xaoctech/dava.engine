@@ -1,7 +1,10 @@
 #include "CommandsManager.h"
 #include "Command.h"
 
+#include "Scene3D/Scene.h"
+
 #include "../Qt/Main/QtMainWindowHandler.h"
+#include "../Qt/Commands/CommandSignals.h"
 
 using namespace DAVA;
 
@@ -35,7 +38,7 @@ void CommandsManager::ClearQueue(UndoQueue* queue)
 	queue->commands.clear();
 }
 
-void CommandsManager::SceneReleased(SceneData* scene)
+void CommandsManager::SceneReleased(DAVA::Scene* scene)
 {
 	QUEUE_MAP::iterator it = queueMap.find(scene);
 
@@ -72,13 +75,18 @@ void CommandsManager::ClearQueueTail(UndoQueue* queue)
 }
 
 
-void CommandsManager::Execute(Command *command, SceneData* forScene)
+void CommandsManager::Execute(Command *command, DAVA::Scene* forScene)
 {
 	UndoQueue* queue = GetQueueForScene(forScene);
 	DVASSERT(queue);
 
     command->Execute();
-    
+
+	if (command->State() == Command::STATE_VALID)
+	{
+		EmitCommandExecutedSignal(command, forScene);
+	}
+
     switch (command->Type()) 
     {
         case Command::COMMAND_WITHOUT_UNDO_EFFECT:
@@ -110,13 +118,13 @@ void CommandsManager::Execute(Command *command, SceneData* forScene)
 	QtMainWindowHandler::Instance()->UpdateUndoActionsState();
 }
 
-void CommandsManager::ExecuteAndRelease(Command* command, SceneData* forScene)
+void CommandsManager::ExecuteAndRelease(Command* command, DAVA::Scene* forScene)
 {
 	Execute(command, forScene);
 	SafeRelease(command);
 }
 
-void CommandsManager::Undo(SceneData* forScene)
+void CommandsManager::Undo(DAVA::Scene* forScene)
 {
 	UndoQueue* queue = GetQueueForScene(forScene);
 	DVASSERT(queue);
@@ -125,14 +133,17 @@ void CommandsManager::Undo(SceneData* forScene)
 		(queue->commandIndex < (int32)queue->commands.size()))
 	{
 		//TODO: need check state?
-		queue->commands[queue->commandIndex]->Cancel();
+		Command* command = queue->commands[queue->commandIndex];
+		command->Cancel();
+		EmitCommandExecutedSignal(command, forScene);
+
 		--queue->commandIndex;
 
 		QtMainWindowHandler::Instance()->UpdateUndoActionsState();
 	}
 }
 
-void CommandsManager::Redo(SceneData* forScene)
+void CommandsManager::Redo(DAVA::Scene* forScene)
 {
 	UndoQueue* queue = GetQueueForScene(forScene);
 	DVASSERT(queue);
@@ -142,11 +153,14 @@ void CommandsManager::Redo(SceneData* forScene)
 	{
 		//TODO: need check state?
 		++queue->commandIndex;
-		queue->commands[queue->commandIndex]->Execute();
+
+		Command* command = queue->commands[queue->commandIndex];
+		command->Execute();
+		EmitCommandExecutedSignal(command, forScene);
 	}
 }
 
-int32 CommandsManager::GetUndoQueueLength(SceneData* forScene)
+int32 CommandsManager::GetUndoQueueLength(DAVA::Scene* forScene)
 {
 	UndoQueue* queue = GetQueueForScene(forScene);
 	DVASSERT(queue);
@@ -154,7 +168,7 @@ int32 CommandsManager::GetUndoQueueLength(SceneData* forScene)
 	return queue->commandIndex + 1;
 }
 
-int32 CommandsManager::GetRedoQueueLength(SceneData* forScene)
+int32 CommandsManager::GetRedoQueueLength(DAVA::Scene* forScene)
 {
 	UndoQueue* queue = GetQueueForScene(forScene);
 	DVASSERT(queue);
@@ -162,7 +176,7 @@ int32 CommandsManager::GetRedoQueueLength(SceneData* forScene)
 	return queue->commands.size() - queue->commandIndex - 1;
 }
 
-String CommandsManager::GetUndoCommandName(SceneData* forScene)
+String CommandsManager::GetUndoCommandName(DAVA::Scene* forScene)
 {
 	UndoQueue* queue = GetQueueForScene(forScene);
 	DVASSERT(queue);
@@ -176,7 +190,7 @@ String CommandsManager::GetUndoCommandName(SceneData* forScene)
 	return "";
 }
 
-String CommandsManager::GetRedoCommandName(SceneData* forScene)
+String CommandsManager::GetRedoCommandName(DAVA::Scene* forScene)
 {
 	UndoQueue* queue = GetQueueForScene(forScene);
 	DVASSERT(queue);
@@ -190,11 +204,11 @@ String CommandsManager::GetRedoCommandName(SceneData* forScene)
 	return "";
 }
 
-CommandsManager::UndoQueue* CommandsManager::GetQueueForScene(SceneData *scene)
+CommandsManager::UndoQueue* CommandsManager::GetQueueForScene(DAVA::Scene *scene)
 {
 	if (!scene)
 	{
-		scene = SceneDataManager::Instance()->SceneGetActive();
+		scene = SceneDataManager::Instance()->SceneGetActive()->GetScene();
 	}
 	DVASSERT(scene);
 
@@ -212,4 +226,19 @@ CommandsManager::UndoQueue* CommandsManager::GetQueueForScene(SceneData *scene)
 	}
 
 	return res;
+}
+
+void CommandsManager::EmitCommandExecutedSignal(Command* command, Scene* scene)
+{
+	if (!scene)
+	{
+		scene = SceneDataManager::Instance()->SceneGetActive()->GetScene();
+	}
+	DVASSERT(scene);
+
+	Set<Entity*> entities = command->GetAffectedEntities();
+	if (!entities.empty())
+	{
+		CommandSignals::Instance()->EmitCommandDidAffectEntities(scene, command->Id(), entities);
+	}
 }

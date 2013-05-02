@@ -8,7 +8,9 @@
 class HeightmapModificationCommand: public Command
 {
 public:
-	HeightmapModificationCommand(Command::eCommandType type, const Rect& updatedRect);
+	HeightmapModificationCommand(Command::eCommandType type,
+								 const Rect& updatedRect,
+								 CommandList::eCommandId id);
 
 protected:
 	Rect updatedRect;

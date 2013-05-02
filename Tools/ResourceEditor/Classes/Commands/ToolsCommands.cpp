@@ -12,7 +12,7 @@ using namespace DAVA;
 
 //Beast
 CommandBeast::CommandBeast()
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_BEAST)
 {
 }
 
@@ -28,7 +28,7 @@ void CommandBeast::Execute()
 
 
 CommandConvertToShadow::CommandConvertToShadow()
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_CONVERT_TO_SHADOW)
 {
 
 }
@@ -53,6 +53,16 @@ void CommandConvertToShadow::Execute()
 
 			
 			SceneDataManager::Instance()->SceneGetActive()->SelectNode(entity);
+
+			affectedEntity = entity;
 		}
 	}
+}
+
+DAVA::Set<DAVA::Entity*> CommandConvertToShadow::GetAffectedEntities()
+{
+	Set<Entity*> entities;
+	entities.insert(affectedEntity);
+
+	return entities;
 }

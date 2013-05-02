@@ -232,6 +232,12 @@
     <Filter Include="QtGenerated\DockSceneInfo">
       <UniqueIdentifier>{eb98cf11-941e-4f68-9493-8c0e36af005e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Qt\Commands">
+      <UniqueIdentifier>{5023523c-494e-44c1-aea2-fea202030a06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\Commands">
+      <UniqueIdentifier>{4109d87f-cd98-43db-a669-c63245c9e788}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Sources\CommandLine">
       <UniqueIdentifier>{8508f90f-bc06-411f-986b-bccae0d3c86a}</UniqueIdentifier>
     </Filter>
@@ -1632,6 +1638,12 @@
     <ClCompile Include="Classes\Qt\Scene\SceneSignals.cpp">
       <Filter>Sources\Qt\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\Commands\CommandSignals.cpp">
+      <Filter>Sources\Qt\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Commands\CommandSignals_moc.cpp">
+      <Filter>QtGenerated\Commands</Filter>
+    </ClCompile>
     <ClCompile Include="Classes\CommandLine\CommandLineManager.cpp">
       <Filter>Sources\CommandLine</Filter>
     </ClCompile>
@@ -2884,6 +2896,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Scene\SceneSignals.h">
       <Filter>Sources\Qt\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Commands\CommandSignals.h">
+      <Filter>Sources\Qt\Commands</Filter>
     </ClInclude>
     <ClInclude Include="Classes\CommandLine\CommandLineManager.h">
       <Filter>Sources\CommandLine</Filter>

@@ -962,7 +962,7 @@ void QtMainWindowHandler::OnSceneCreated(SceneData *scene)
 
 void QtMainWindowHandler::OnSceneReleased(SceneData *scene)
 {
-	CommandsManager::Instance()->SceneReleased(scene);
+	CommandsManager::Instance()->SceneReleased(scene->GetScene());
 
 	UpdateRecentScenesList();
 }
