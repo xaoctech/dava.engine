@@ -28,64 +28,79 @@
         * Created by Ivan "Dizz" Petrochenko
 =====================================================================================*/
 
-#include "ImageSplitterScreen.h"
-
-#include "../SceneEditor/CommandLineTool.h"
-#include "../Qt/Main/QtUtils.h"
+#include "ImageSplitterTool.h"
 #include "ImageSplitter.h"
 
+#include "../EditorCommandLineParser.h"
 
-void ImageSplitterScreen::LoadResources()
+using namespace DAVA;
+
+
+void ImageSplitterTool::PrintUsage()
 {
-    GetBackground()->SetColor(Color::White());
+    printf("\n");
+    printf("-imagesplitter -split [-file [file]]\n");
+    printf("-imagesplitter -merge [-folder [directory]]\n");
+    printf("\twill split one image at four channels or merge four channels to one image\n");
+    printf("\t-file - filename of the splitting file\n");
+    printf("\t-folder - path for folder with four channels\n");
+
+    printf("\n");
+    printf("Samples:\n");
+    printf("-imagesplitter -split -file /Users/User/Project/Data/3d/image.png\n");
+    printf("-imagesplitter -merge -folder /Users/User/Project/Data/3d/\n");
 }
 
-void ImageSplitterScreen::UnloadResources()
+DAVA::String ImageSplitterTool::GetCommandLineKey()
 {
+    return "-imagesplitter";
+}
+
+bool ImageSplitterTool::InitializeFromCommandLine()
+{
+    commandAction = ACTION_NONE;
     
-}
-
-void ImageSplitterScreen::WillAppear()
-{
-    errorLog.clear();
+    if(EditorCommandLineParser::CommandIsFound(String("-split")))
+    {
+        commandAction = ACTION_SPLIT;
+        filename = EditorCommandLineParser::GetCommandParam(String("-file"));
+        if(filename.IsEmpty())
+        {
+            errors.insert(String("Incorrect params for splitting of the file"));
+            return false;
+        }
+    }
+    else if(EditorCommandLineParser::CommandIsFound(String("-merge")))
+    {
+        commandAction = ACTION_MERGE;
+  
+        foldername = EditorCommandLineParser::GetCommandParam(String("-folder"));
+        if(foldername.IsEmpty())
+        {
+            errors.insert(String("Incorrect params for merging of the files"));
+            return false;
+        }
+        foldername.MakeDirectoryPathname();
+    }
+    else
+    {
+        errors.insert(String("Incorrect params for merging of the files"));
+        return false;
+    }
     
-    Vector<String> & commandLine = Core::Instance()->GetCommandLine();
-    if(CommandLineTool::Instance()->CommandIsFound(String("-split")))
-    {
-        int32 inPosition = CommandLineTool::Instance()->CommandPosition(String("-file"));
-        if(CommandLineTool::Instance()->CheckPosition(inPosition))
-        {
-            String filepathname = commandLine[inPosition + 1];
-            ImageSplitter::SplitImage(filepathname, errorLog);
-        }
-        else
-        {
-            errorLog.insert(String("Incorrect params for splitting of the file"));
-        }
-    }
-    else if(CommandLineTool::Instance()->CommandIsFound(String("-merge")))
-    {
-        int32 inPosition = CommandLineTool::Instance()->CommandPosition(String("-folder"));
-        if(CommandLineTool::Instance()->CheckPosition(inPosition))
-        {
-            String folderPathname = commandLine[inPosition + 1];
-            ImageSplitter::MergeImages(folderPathname, errorLog);
-        }
-        else
-        {
-            errorLog.insert(String("Incorrect params for merging of the files"));
-        }
-    }
+    return true;
 }
 
-void ImageSplitterScreen::DidAppear()
+void ImageSplitterTool::Process()
 {
-    ShowErrorDialog(errorLog);
-
-    bool forceMode =    CommandLineTool::Instance()->CommandIsFound(String("-force"))
-                    ||  CommandLineTool::Instance()->CommandIsFound(String("-forceclose"));
-    if(forceMode || 0 == errorLog.size())
+    if(commandAction == ACTION_SPLIT)
     {
-        Core::Instance()->Quit();
+        ImageSplitter::SplitImage(filename, errors);
+    }
+    else if(commandAction == ACTION_MERGE)
+    {
+        ImageSplitter::MergeImages(foldername, errors);
     }
 }
+
+

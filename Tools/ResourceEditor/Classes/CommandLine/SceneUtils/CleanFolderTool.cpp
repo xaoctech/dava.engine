@@ -20,34 +20,62 @@
     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTR ACT, STRICT LIABILITY, OR TORT
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
         * Created by Ivan "Dizz" Petrochenko
 =====================================================================================*/
-#ifndef __IMAGE_SPLITTER_SCREEN_H__
-#define __IMAGE_SPLITTER_SCREEN_H__
 
-#include "DAVAEngine.h"
+#include "CleanFolderTool.h"
+
+#include "../EditorCommandLineParser.h"
+
 using namespace DAVA;
 
-class ImageSplitterScreen: public UIScreen
+void CleanFolderTool::PrintUsage()
 {
-public:
+    printf("\n");
+    printf("-cleanfolder [-folder [directory]]\n");
+    printf("\twill delete folder with files \n");
+    printf("\t-folder - path for /Users/User/Project/Data/3d/ folder \n");
 
-	virtual void LoadResources();
-	virtual void UnloadResources();
-	virtual void WillAppear();
-	virtual void DidAppear();
+    printf("\n");
+    printf("Sample:\n");
+    printf("-cleanfolder -folder /Users/User/Project/Data/3d -forceclose\n");
+}
+
+DAVA::String CleanFolderTool::GetCommandLineKey()
+{
+    return "-cleanfolder";
+}
+
+bool CleanFolderTool::InitializeFromCommandLine()
+{
+    foldername = EditorCommandLineParser::GetCommandParam(String("-folder"));
+    if(foldername.IsEmpty())
+    {
+        errors.insert(String("Incorrect params for cleaning folder"));
+        return false;
+    }
+
+    foldername.MakeDirectoryPathname();
     
-    
-protected:    
+    return true;
+}
 
-    Set<String> errorLog;
-    
-};
+void CleanFolderTool::Process()
+{
+    bool ret = FileSystem::Instance()->DeleteDirectory(foldername);
+    if(!ret)
+    {
+        bool folderExists = FileSystem::Instance()->IsDirectory(foldername);
+        if(folderExists)
+        {
+            errors.insert(String(Format("[CleanFolder] ret = %d, folder = %s", ret, foldername.GetAbsolutePathname().c_str())));
+        }
+    }
+}
 
 
-#endif // __IMAGE_SPLITTER_SCREEN_H__

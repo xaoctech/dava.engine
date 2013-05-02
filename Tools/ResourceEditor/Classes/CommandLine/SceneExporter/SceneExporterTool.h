@@ -27,31 +27,39 @@
     Revision History:
         * Created by Ivan "Dizz" Petrochenko
 =====================================================================================*/
-#ifndef __SCENE_UTILS_SCREEN_H__
-#define __SCENE_UTILS_SCREEN_H__
+#ifndef __SCENE_EXPORTER_TOOL_H__
+#define __SCENE_EXPORTER_TOOL_H__
 
-#include "DAVAEngine.h"
-using namespace DAVA;
+#include "../CommandLineTool.h"
 
-class SceneUtilsScreen: public UIScreen
+class SceneExporterTool: public CommandLineTool
 {
+    enum eAction
+    {
+        ACTION_NONE = -1,
+        
+        ACTION_EXPORT_FILE,
+        ACTION_EXPORT_FOLDER
+    };
+    
 public:
 
-	virtual void LoadResources();
-	virtual void UnloadResources();
-	virtual void WillAppear();
-	virtual void DidAppear();
+    virtual DAVA::String GetCommandLineKey();
+    virtual bool InitializeFromCommandLine();
+    virtual void Process();
+    virtual void PrintUsage();
     
-protected:    
+protected:
+
+    eAction commandAction;
+    DAVA::String filename;
+    DAVA::String foldername;
     
-    void CleanFolder();
-    void Export();
-    void Save();
+    DAVA::FilePath inFolder;
+    DAVA::FilePath outFolder;
     
-    
-    Set<String> errorLog;
-    
+    DAVA::String format;
 };
 
 
-#endif // __SCENE_UTILS_SCREEN_H__
+#endif // __SCENE_EXPORTER_TOOL_H__

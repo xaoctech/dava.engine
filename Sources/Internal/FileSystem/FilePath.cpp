@@ -542,7 +542,7 @@ bool FilePath::IsAbsolutePathname(const String &pathname)
         return true;
     
     //Win or DAVA style (c:/, ~res:/, ~doc:/)
-    String::size_type winFound = pathname.find(":/");
+    String::size_type winFound = pathname.find(":");
     if(winFound != String::npos)
     {
         return true;
