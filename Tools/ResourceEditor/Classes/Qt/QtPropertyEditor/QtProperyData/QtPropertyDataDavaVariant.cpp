@@ -125,7 +125,7 @@ QVariant QtPropertyDataDavaVariant::GetValueInternal()
 		v = FromAABBox3(curVariantValue.AsAABBox3());
 		break;
 	case DAVA::VariantType::TYPE_FILEPATH:
-		v = curVariantValue.AsFilePath().GetRelativePathname(DAVA::FilePath::GetProjectPathname()).c_str();
+		v = curVariantValue.AsFilePath().GetRelativePathname(DAVA::FilePath::GetBundleName()).c_str();
 		break;
 
 	case DAVA::VariantType::TYPE_BYTE_ARRAY:
@@ -192,7 +192,7 @@ void QtPropertyDataDavaVariant::SetValueInternal(const QVariant &value)
 		ToAABBox3(value);
 		break;
 	case DAVA::VariantType::TYPE_FILEPATH:
-		curVariantValue.SetFilePath(DAVA::FilePath(DAVA::FilePath::GetProjectPathname(), value.toString().toStdString()));
+		curVariantValue.SetFilePath(DAVA::FilePath(DAVA::FilePath::GetBundleName(), value.toString().toStdString()));
 		break;
 
 	case DAVA::VariantType::TYPE_BYTE_ARRAY:

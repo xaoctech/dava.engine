@@ -23,11 +23,11 @@ void FilePathTest::UnloadResources()
 
 void FilePathTest::MacTestFunction(PerfFuncData * data)
 {
-    String oldProjectPathname = FilePath::GetProjectPathname();
+    FilePath oldProjectPathname = FilePath::GetBundleName();
     
     Logger::Debug("[FilePathTest] MacOS");
 
-    FilePath::SetProjectPathname("/TestProject");
+    FilePath::SetBundleName("/TestProject");
     
     FilePath filepath0("~res:/Gfx/UI/Screen/texture.tex");
     
@@ -122,7 +122,7 @@ void FilePathTest::MacTestFunction(PerfFuncData * data)
     TEST_VERIFY(filepath8 == filepath6);
 
     
-    FilePath::SetProjectPathname("/TestProject/Data");
+    FilePath::SetBundleName("/TestProject/Data");
     FilePath filepath9("~res:/Gfx/UI/Screen/texture.tex");
     FilePath filepath10("~res:/Gfx/", "../../Data/Gfx/UI/Screen/texture.tex");
     TEST_VERIFY(filepath9 == filepath10);
@@ -184,16 +184,16 @@ void FilePathTest::MacTestFunction(PerfFuncData * data)
     
     Logger::Debug("[FilePathTest] Mac OS Done");
     
-    FilePath::SetProjectPathname(oldProjectPathname);
+    FilePath::SetBundleName(oldProjectPathname);
 }
 
 void FilePathTest::WinTestFunction(PerfFuncData * data)
 {
-    String oldProjectPathname = FilePath::GetProjectPathname();
+	FilePath oldProjectPathname = FilePath::GetBundleName();
     
     Logger::Debug("[FilePathTest] Win32");
     
-    FilePath::SetProjectPathname("c:/TestProject");
+    FilePath::SetBundleName("c:/TestProject");
     
     FilePath filepath0("~res:/Gfx/UI/Screen/texture.tex");
     
@@ -289,7 +289,7 @@ void FilePathTest::WinTestFunction(PerfFuncData * data)
     TEST_VERIFY(filepath8 == filepath6);
     
     
-    FilePath::SetProjectPathname("c:/TestProject/Data");
+    FilePath::SetBundleName("c:/TestProject/Data");
     FilePath filepath9("~res:/Gfx/UI/Screen/texture.tex");
     FilePath filepath10("~res:/Gfx/", "../../Data/Gfx/UI/Screen/texture.tex");
     TEST_VERIFY(filepath9 == filepath10);
@@ -350,16 +350,16 @@ void FilePathTest::WinTestFunction(PerfFuncData * data)
     
     Logger::Debug("[FilePathTest] Win32 Done");
     
-    FilePath::SetProjectPathname(oldProjectPathname);
+    FilePath::SetBundleName(oldProjectPathname);
 }
 
 void FilePathTest::WinStylePathTestFunction(PerfFuncData * data)
 {
-    String oldProjectPathname = FilePath::GetProjectPathname();
+	FilePath oldProjectPathname = FilePath::GetBundleName();
     
     Logger::Debug("[FilePathTest] Win32");
     
-    FilePath::SetProjectPathname("c:\\TestProject");
+    FilePath::SetBundleName("c:\\TestProject");
     
     FilePath filepath0("~res:\\Gfx\\UI\\Screen\\texture.tex");
     
@@ -455,7 +455,7 @@ void FilePathTest::WinStylePathTestFunction(PerfFuncData * data)
     TEST_VERIFY(filepath8 == filepath6);
     
     
-    FilePath::SetProjectPathname("c:\\TestProject\\Data");
+    FilePath::SetBundleName("c:\\TestProject\\Data");
     FilePath filepath9("~res:\\Gfx\\UI\\Screen\\texture.tex");
     FilePath filepath10("~res:\\Gfx\\", "..\\..\\Data\\Gfx\\UI\\Screen\\texture.tex");
     TEST_VERIFY(filepath9 == filepath10);
@@ -516,5 +516,5 @@ void FilePathTest::WinStylePathTestFunction(PerfFuncData * data)
     
     Logger::Debug("[FilePathTest] Win32 Done");
     
-    FilePath::SetProjectPathname(oldProjectPathname);
+    FilePath::SetBundleName(oldProjectPathname);
 }
