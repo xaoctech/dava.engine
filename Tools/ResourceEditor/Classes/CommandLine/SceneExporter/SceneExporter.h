@@ -2,7 +2,7 @@
 #define __SCENE_EXPORTER_H__
 
 #include "DAVAEngine.h"
-#include "SceneUtils.h"
+#include "CommandLine/SceneUtils/SceneUtils.h"
 
 using namespace DAVA;
 
