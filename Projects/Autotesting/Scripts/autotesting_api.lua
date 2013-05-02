@@ -99,17 +99,43 @@ end
 -- Multiplayer API
 ----------------------------------------------------------------------------------------------------
 -- mark current device as ready to work in DB
+function ReadState(name)
+	return autotestingSystem:ReadState(name)
+end
+
+function ReadCommand(name)
+	return autotestingSystem:ReadCommand(name)
+end
+
+function WriteState(name, state)
+	autotestingSystem:WriteState(name, state)
+	
+	local afterWrite = ReadState(name)
+	if state ~= afterWrite then
+		OnError("After writing: expected state '"..state.."' on device '"..name.."', actual:"..afterWrite)
+	end
+end
+
+function WriteCommand(name, command)
+	autotestingSystem:WriteCommand(name, command)
+	
+	local afterWrite = ReadCommand(name)
+	if command ~= afterWrite then
+		OnError("After writing: expected state '"..command.."' on device '"..name.."', actual:"..afterWrite)
+	end
+end
+
 function InitializeDevice(name)
 	DEVICE = name
 	Log("Mark "..name.." device as Ready")
 	autotestingSystem:InitializeDevice(DEVICE)
-	autotestingSystem:WriteState(DEVICE, "ready")
+	WriteState(DEVICE, "ready")
 end
 
 function WaitForDevice(name)
 	Log("Wait while "..name.." device become Ready")
 	for i=1,MULTIPLAYER_TIMEOUT do
-		if autotestingSystem:ReadState(name) == "ready" then
+		if ReadState(name) == "ready" then
 			return
 		else
 			Wait(1)
@@ -122,11 +148,11 @@ function SendJob(name, command)
 	Log("Send to slave "..name.." command: "..command)
 		
 	for i=1,MULTIPLAYER_TIMEOUT do
-		local state = autotestingSystem:ReadState(name)
+		local state = ReadState(name)
 		if state == "ready" then
-			autotestingSystem:WriteCommand(name, command)
+			WriteCommand(name, command)
 			Yield()
-			autotestingSystem:WriteState(name, "wait_execution")
+			WriteState(name, "wait_execution")
 			Yield()
 			Log("Device "..name.." ready, command was sent")
 			return
@@ -143,10 +169,10 @@ function WaitJob(name)
 	local state
 	
 	for i=1,MULTIPLAYER_TIMEOUT do
-		state = autotestingSystem:ReadState(name)
+		state = ReadState(name)
 		Yield()
 		if state == "execution_completed" then
-			autotestingSystem:WriteState(name, "ready")
+			WriteState(name, "ready")
 			Log("Device "..name.." finish his job")
 			return
 		elseif state == "error" then
@@ -171,6 +197,7 @@ end
 -- Work with UI controls
 -- !!!!! Realize visibility center of element
 function IsVisible(element, background)
+	Yield()
 	local control = autotestingSystem:FindControl(element)
 	if control then
 		if background then
@@ -202,8 +229,8 @@ function IsOnScreen(control)
     local rect = geomData:GetUnrotatedRect()
 	local geomData = screen:GetGeometricData()
 	local backRect = geomData:GetUnrotatedRect()
-    Log("Control "..tostring(rect.x)..","..tostring(rect.y).." ["..tostring(rect.dx)..", "..tostring(rect.dy).."]")
-    Log("Background "..tostring(backRect.x)..","..tostring(backRect.y).." ["..tostring(backRect.dx)..", "..tostring(backRect.dy).."]")
+    --Log("Control "..tostring(rect.x)..","..tostring(rect.y).." ["..tostring(rect.dx)..", "..tostring(rect.dy).."]")
+    --Log("Background "..tostring(backRect.x)..","..tostring(backRect.y).." ["..tostring(backRect.dx)..", "..tostring(backRect.dy).."]")
 			
 	if (rect.x >= backRect.x) and (rect.x + rect.dx <= backRect.x + backRect.dx) and (rect.y >= backRect.y) and (rect.y + rect.dy <= backRect.y + backRect.dy) then
 		return true
@@ -229,15 +256,11 @@ function WaitControl(name, time)
     local elapsedTime = 0.0
     while elapsedTime < waitTime do
         elapsedTime = elapsedTime + autotestingSystem:GetTimeElapsed()
---        print("Searching "..elapsedTime)
+		Yield()
         
         if autotestingSystem:FindControl(name) then
             Log("WaitControl found "..name, "DEBUG")
-            Yield()
             return true
-        else
-            Wait(1)
-			Yield()
         end
     end
     
@@ -513,7 +536,7 @@ function ScrollDown(list)
         position.y = position.y - rect.dy/3
 		TouchMovePosition(position)
 		TouchUp()
-		Wait(1)
+		Wait(0.5)
 	else
 		OnError("Couldnt find list "..list)
 	end
@@ -535,14 +558,8 @@ function ScrollLeft(list)
         position.x = position.x - rect.dx/3
 		TouchMovePosition(position)
 		TouchUp()
-		Wait(1)
+		Wait(0.5)
 	else
 		OnError("Couldnt find list "..list)
 	end
-end
-
--- !!!!!!!Realize from C side
-function GetCellsCount(element)
-	-- cause index begin from '0'
-	return 1 - 1
 end
