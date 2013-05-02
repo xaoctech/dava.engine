@@ -63,10 +63,10 @@ public:
 	
 	virtual void OnSuspend();
 	virtual void OnResume();
-	virtual void OnBackground();
-	virtual void OnForeground();
 
 #if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
+	virtual void OnBackground();
+	virtual void OnForeground();
 	virtual void OnDeviceLocked();
 #endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
 

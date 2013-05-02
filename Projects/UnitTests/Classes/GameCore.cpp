@@ -173,6 +173,14 @@ void GameCore::OnResume()
     ApplicationCore::OnResume();
 }
 
+
+#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
+void GameCore::OnDeviceLocked()
+{
+//    Logger::Debug("GameCore::OnDeviceLocked");
+    Core::Instance()->Quit();
+}
+
 void GameCore::OnBackground()
 {
     Logger::Debug("GameCore::OnBackground");
@@ -184,12 +192,6 @@ void GameCore::OnForeground()
 	ApplicationCore::OnForeground();
 }
 
-#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
-void GameCore::OnDeviceLocked()
-{
-//    Logger::Debug("GameCore::OnDeviceLocked");
-    Core::Instance()->Quit();
-}
 #endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
 
 
