@@ -1,5 +1,6 @@
 #include "Scene/System/CollisionSystem.h"
 #include "Scene/System/CollisionSystem/CollisionRenderObject.h"
+#include "Scene/System/CollisionSystem/CollisionLandscape.h"
 #include "Scene/System/CameraSystem.h"
 #include "Scene/System/SelectionSystem.h"
 #include "Scene/SceneEditorProxy.h"
@@ -169,6 +170,9 @@ void SceneCollisionSystem::ProcessUIEvent(DAVA::UIEvent *event)
 
 void SceneCollisionSystem::Draw()
 {
+	int oldState = DAVA::RenderManager::Instance()->GetState();
+	DAVA::RenderManager::Instance()->SetState(DAVA::RenderState::STATE_COLORMASK_ALL | DAVA::RenderState::STATE_DEPTH_WRITE | DAVA::RenderState::STATE_DEPTH_TEST);
+
 	if(debugDrawFlags & DEBUG_DRAW_OBJECTS)
 	{
 		objectsCollWorld->debugDrawWorld();
@@ -176,16 +180,14 @@ void SceneCollisionSystem::Draw()
 
 	if(debugDrawFlags & DEBUG_DRAW_LAND)
 	{
+		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0, 1.0f, 0, 1.0f));
 		landCollWorld->debugDrawWorld();
 	}
 
 	if(debugDrawFlags & DEBUG_DRAW_RAYTEST)
 	{
-		int oldState = DAVA::RenderManager::Instance()->GetState();
-		DAVA::RenderManager::Instance()->SetState(DAVA::RenderState::STATE_COLORMASK_ALL | DAVA::RenderState::STATE_DEPTH_WRITE | DAVA::RenderState::STATE_DEPTH_TEST);
 		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 0, 0, 1.0f));
 		DAVA::RenderHelper::Instance()->DrawLine(lastRayFrom, lastRayTo);
-		DAVA::RenderManager::Instance()->SetState(oldState);
 	}
 
 	if(debugDrawFlags & DEBUG_DRAW_SELECTED_OBJECTS)
@@ -214,6 +216,8 @@ void SceneCollisionSystem::Draw()
 			}
 		}
 	}
+
+	DAVA::RenderManager::Instance()->SetState(oldState);
 }
 
 void SceneCollisionSystem::AddEntity(DAVA::Entity * entity)
@@ -253,26 +257,30 @@ void SceneCollisionSystem::RemoveEntity(DAVA::Entity * entity)
 
 void SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity)
 {
+	CollisionBaseObject *collObj = NULL;
+
 	// check if this entity is landscape
 	DAVA::Landscape *landscape = DAVA::GetLandscape(entity);
+
 	if(NULL != landscape)
 	{
-		// landscape has its own collision word
-		// TODO:
-		// ...
+		collObj = new CollisionLandscape(entity, landCollWorld, landscape);
 	}
 	else
 	{
 		// check if entity has render object. if so - build bullet object
 		// from this render object
 		DAVA::RenderObject *renderObject = DAVA::GetRenerObject(entity);
-
 		if(NULL != renderObject && renderObject->GetType() != DAVA::RenderObject::TYPE_LANDSCAPE && entity->IsLodMain(0))
 		{
-			CollisionBaseObject *collObj = new CollisionRenderObject(entity, objectsCollWorld, renderObject);
-			entityToCollision[entity] = collObj;
-			collisionToEntity[collObj->btObject] = entity;
+			collObj = new CollisionRenderObject(entity, objectsCollWorld, renderObject);
 		}
+	}
+
+	if(NULL != collObj)
+	{
+		entityToCollision[entity] = collObj;
+		collisionToEntity[collObj->btObject] = entity;
 	}
 }
 
@@ -310,7 +318,12 @@ void SceneCollisionDebugDrawer::drawLine(const btVector3& from, const btVector3&
 }
 
 void SceneCollisionDebugDrawer::drawContactPoint( const btVector3& PointOnB,const btVector3& normalOnB,btScalar distance,int lifeTime,const btVector3& color )
-{ }
+{
+	DAVA::Color davaColor(color.x(), color.y(), color.z(), 1.0f);
+
+	manager->SetColor(davaColor);
+	helper->DrawPoint(DAVA::Vector3(PointOnB.x(), PointOnB.y(), PointOnB.z()));
+}
 
 void SceneCollisionDebugDrawer::reportErrorWarning( const char* warningString )
 { }
