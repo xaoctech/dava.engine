@@ -691,6 +691,16 @@ void Core::GoBackground(bool isLock)
 #endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
 }
 
+void Core::GoForeground()
+{
+#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
+	if (core)
+	{
+		core->OnForeground();
+	}
+#endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
+}
+
 uint32 Core::GetGlobalFrameIndex()
 {
 	return globalFrameIndex;

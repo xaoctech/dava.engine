@@ -321,9 +321,9 @@ bool HierarchyTreeController::IsNodeActive(const HierarchyTreeControlNode* contr
 	return (activeControlNodes.find((HierarchyTreeControlNode* )control) != activeControlNodes.end());
 }
 
-void HierarchyTreeController::EmitHierarchyTreeUpdated()
+void HierarchyTreeController::EmitHierarchyTreeUpdated(bool needRestoreSelection)
 {
-    emit HierarchyTreeUpdated();
+    emit HierarchyTreeUpdated(needRestoreSelection);
 }
 
 bool HierarchyTreeController::NewProject(const QString& projectPath)
