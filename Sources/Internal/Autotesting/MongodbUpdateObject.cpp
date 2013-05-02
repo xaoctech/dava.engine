@@ -77,6 +77,9 @@ bool MongodbUpdateObject::SaveToDB(MongodbClient* dbClient)
         //updateObject->Print();
         return dbClient->SaveObject(updateObject);
     }
+
+
+	Logger::Error("MongodbUpdateObject::SaveToDB SaveData failed 2");
     return false;
 }
     
