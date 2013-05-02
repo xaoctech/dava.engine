@@ -33,6 +33,7 @@
 
 #import <Foundation/NSString.h>
 #import <Foundation/NSBundle.h>
+#import <Foundation/NSPathUtilities.h>
 
 namespace DAVA
 {
