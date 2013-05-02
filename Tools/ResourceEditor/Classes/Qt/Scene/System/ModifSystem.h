@@ -82,6 +82,10 @@ protected:
 	DAVA::Matrix4 moveFromZeroPosRelativeCenter;
 	DAVA::Vector2 rotateNormal;
 	DAVA::Vector3 rotateAround;
+	DAVA::float32 crossXY;
+	DAVA::float32 crossXZ;
+	DAVA::float32 crossYZ;
+
 	int modifPivotPoint;
 
 	void BeginModification(const EntityGroup *entities);
@@ -90,9 +94,9 @@ protected:
 	DAVA::Vector3 CamCursorPosToModifPos(const DAVA::Vector3 &camPosition, const DAVA::Vector3 &camPointDirection, const DAVA::Vector3 &planePoint);
 	DAVA::Vector2 Cam2dProjection(const DAVA::Vector3 &from, const DAVA::Vector3 &to);
 
-	void Move(const DAVA::Vector3 &newPos3d);
-	void Rotate(const DAVA::Vector2 &newPos2d);
-	void Scale(const DAVA::Vector2 &newPos2d);
+	DAVA::Vector3 Move(const DAVA::Vector3 &newPos3d);
+	DAVA::float32 Rotate(const DAVA::Vector2 &newPos2d);
+	DAVA::float32 Scale(const DAVA::Vector2 &newPos2d);
 
 	void MoveDone(const DAVA::Vector2 &newPos3d);
 	void RotateDone(const DAVA::Vector2 &newPos2d);

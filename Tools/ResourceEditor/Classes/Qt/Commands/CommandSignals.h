@@ -5,19 +5,20 @@
 
 #include "Base/StaticSingleton.h"
 #include "Scene3D/Entity.h"
-#include "../../Commands/CommandList.h"
+
+#include "Commands/CommandList.h"
 
 class CommandSignals: public QObject, public DAVA::StaticSingleton<CommandSignals>
 {
 	Q_OBJECT
 
 signals:
-	void CommandDidAffectEntities(DAVA::Scene* scene,
+	void CommandAffectsEntities(DAVA::Scene* scene,
 								  CommandList::eCommandId id,
 								  const DAVA::Set<DAVA::Entity*>& affectedEntities);
 
 public:
-	void EmitCommandDidAffectEntities(DAVA::Scene* scene,
+	void EmitCommandAffectsEntities(DAVA::Scene* scene,
 									  CommandList::eCommandId id,
 									  const DAVA::Set<DAVA::Entity*>& affectedEntities);
 };

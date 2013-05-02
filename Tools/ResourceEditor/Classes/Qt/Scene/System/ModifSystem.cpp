@@ -18,7 +18,7 @@ EntityModificationSystem::EntityModificationSystem(DAVA::Scene * scene, SceneCol
 	, inModifState(false)
 	, modified(false)
 {
-	SetModifMode(EM_MODE_SCALE);
+	SetModifMode(EM_MODE_MOVE);
 	SetModifAxis(EM_AXIS_Z);
 }
 
@@ -82,7 +82,7 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 			else if(selectedEntities->Size() > 0)
 			{
 				// send this ray to collision system and get collision objects
-				const EntityGroup *collisionEntities = collisionSystem->RayTestFromCamera();
+				const EntityGroup *collisionEntities = collisionSystem->ObjectsRayTestFromCamera();
 
 				// check if one of got collision objects is intersected with selected items
 				// if so - we can start modification
@@ -130,23 +130,28 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 			// phase still continue
 			if(event->phase == DAVA::UIEvent::PHASE_DRAG)
 			{
+				DAVA::Vector3 moveOffset;
+				DAVA::float32 rotateAngle;
+				DAVA::float32 scaleForce;
+
 				switch (curMode)
 				{
 				case EM_MODE_MOVE:
 					{
-						Move(CamCursorPosToModifPos(camPosition, camToPointDirection, modifEntitiesCenter));
+						DAVA::Vector3 newPos3d = CamCursorPosToModifPos(camPosition, camToPointDirection, modifEntitiesCenter);
+						moveOffset = Move(newPos3d);
 						modified = true;
 					}
 					break;
 				case EM_MODE_ROTATE:
 					{
-						Rotate(event->point);
+						rotateAngle = Rotate(event->point);
 						modified = true;
 					}
 					break;
 				case EM_MODE_SCALE:
 					{
-						Scale(event->point);
+						scaleForce = Scale(event->point);
 						modified = true;
 					}
 					break;
@@ -161,6 +166,11 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 
 					// lock hood, so it wont process ui events, wont calc. scale depending on it current position
 					hoodSystem->Lock();
+					hoodSystem->MovePosition(moveOffset);
+
+					// TODO:
+					// emit move/rotate/scale offset/angle/force
+					// ...
 				}
 			}
 			// phase ended
@@ -246,6 +256,20 @@ void EntityModificationSystem::BeginModification(const EntityGroup *entities)
 		// 2d axis projection we are rotating around
 		DAVA::Vector2 rotateAxis = Cam2dProjection(modifEntitiesCenter, modifEntitiesCenter + rotateAround);
 
+		// axis dot products
+		DAVA::Vector2 zeroPos = cameraSystem->GetScreenPos(modifEntitiesCenter);
+		DAVA::Vector2 xPos = cameraSystem->GetScreenPos(modifEntitiesCenter + DAVA::Vector3(1, 0, 0));
+		DAVA::Vector2 yPos = cameraSystem->GetScreenPos(modifEntitiesCenter + DAVA::Vector3(0, 1, 0));
+		DAVA::Vector2 zPos = cameraSystem->GetScreenPos(modifEntitiesCenter + DAVA::Vector3(0, 0, 1));
+
+		DAVA::Vector2 vx = xPos - zeroPos;
+		DAVA::Vector2 vy = yPos - zeroPos;
+		DAVA::Vector2 vz = zPos - zeroPos;
+
+		crossXY = Abs(vx.CrossProduct(vy));
+		crossXZ = Abs(vx.CrossProduct(vz));
+		crossYZ = Abs(vy.CrossProduct(vz));
+
 		// real rotate should be done in direction of 2dAxis normal,
 		// so calculate this normal
 		rotateNormal = DAVA::Vector2(-rotateAxis.y, rotateAxis.x);
@@ -268,25 +292,73 @@ DAVA::Vector3 EntityModificationSystem::CamCursorPosToModifPos(const DAVA::Vecto
 	DAVA::Vector3 ret;
 	DAVA::Vector3 planeNormal;
 
+	printf("xy %g; xz %g; yz %g\n", crossXY, crossXZ, crossYZ);
+
 	switch(curAxis)
 	{
 	case EM_AXIS_X:
+		{
+			if(crossXY > crossXZ)
+			{
+				printf("XY\n");
+				planeNormal = DAVA::Vector3(0, 0, 1);
+			}
+			else
+			{
+				printf("XZ\n");
+				planeNormal = DAVA::Vector3(0, 1, 0);
+			}
+		}
+		break;
 	case EM_AXIS_Y:
-	case EM_AXIS_XY:
-		planeNormal = DAVA::Vector3(0, 0, 1);
+		{
+			if(crossXY > crossYZ)
+			{
+				printf("XY\n");
+				planeNormal = DAVA::Vector3(0, 0, 1);
+			}
+			else
+			{
+				printf("YZ\n");
+				planeNormal = DAVA::Vector3(1, 0, 0);
+			}
+		}
 		break;
 	case EM_AXIS_Z:
-	case EM_AXIS_YZ:
-		planeNormal = DAVA::Vector3(1, 0, 0);
+		{
+			if(crossXZ > crossYZ)
+			{
+				printf("XZ\n");
+				planeNormal = DAVA::Vector3(0, 1, 0);
+			}
+			else
+			{
+				printf("YZ\n");
+				planeNormal = DAVA::Vector3(1, 0, 0);
+			}
+		}
 		break;
 	case EM_AXIS_XZ:
 		planeNormal = DAVA::Vector3(0, 1, 0);
 		break;
+	case EM_AXIS_YZ:
+		planeNormal = DAVA::Vector3(1, 0, 0);
+		break;
+	case EM_AXIS_XY:
 	default:
+		planeNormal = DAVA::Vector3(0, 0, 1);
 		break;
 	}
 
-	DAVA::GetIntersectionVectorWithPlane(camPosition, camPointDirection, planeNormal, planePoint, ret);
+	DAVA::Plane plane(planeNormal, planePoint);
+	DAVA::float32 distance = FLT_MAX;
+
+	//DAVA::Vector3 retOld;
+	//DAVA::GetIntersectionVectorWithPlane(camPosition, camPointDirection, planeNormal, planePoint, retOld);
+
+	plane.IntersectByRay(camPosition, camPointDirection, distance);
+	ret = camPosition + (camPointDirection * distance);
+	
 	return ret;
 }
 
@@ -300,38 +372,41 @@ DAVA::Vector2 EntityModificationSystem::Cam2dProjection(const DAVA::Vector3 &fro
 	return ret;
 }
 
-void EntityModificationSystem::Move(const DAVA::Vector3 &newPos3d)
+DAVA::Vector3 EntityModificationSystem::Move(const DAVA::Vector3 &newPos3d)
 {
+	DAVA::Vector3 moveOffset;
+	DAVA::Vector3 modifPosWithLocedAxis = modifStartPos3d;
+	DAVA::Vector3 deltaPos3d = newPos3d - modifStartPos3d;
+
+	switch(curAxis)
+	{
+	case EM_AXIS_X:
+		modifPosWithLocedAxis.x += DAVA::Vector3(1, 0, 0).DotProduct(deltaPos3d);
+		break;
+	case EM_AXIS_Y:
+		modifPosWithLocedAxis.y += DAVA::Vector3(0, 1, 0).DotProduct(deltaPos3d);
+		break;
+	case EM_AXIS_Z:
+		modifPosWithLocedAxis.z += DAVA::Vector3(0, 0, 1).DotProduct(deltaPos3d);
+		break;
+	case EM_AXIS_XY:
+		modifPosWithLocedAxis.x = newPos3d.x;
+		modifPosWithLocedAxis.y = newPos3d.y;
+		break;
+	case EM_AXIS_XZ:
+		modifPosWithLocedAxis.x = newPos3d.x;
+		modifPosWithLocedAxis.z = newPos3d.z;
+		break;
+	case EM_AXIS_YZ:
+		modifPosWithLocedAxis.z = newPos3d.z;
+		modifPosWithLocedAxis.y = newPos3d.y;
+		break;
+	}
+
+	moveOffset = modifPosWithLocedAxis - modifStartPos3d;
+
 	for (size_t i = 0; i < modifEntities.size(); ++i)
 	{
-		DAVA::Vector3 modifPosWithLocedAxis = newPos3d;
-
-		switch(curAxis)
-		{
-		case EM_AXIS_X:
-			modifPosWithLocedAxis.y = modifStartPos3d.y;
-			modifPosWithLocedAxis.z = modifStartPos3d.z;
-			break;
-		case EM_AXIS_Y:
-			modifPosWithLocedAxis.x = modifStartPos3d.x;
-			modifPosWithLocedAxis.z = modifStartPos3d.z;
-			break;
-		case EM_AXIS_Z:
-			modifPosWithLocedAxis.x = modifStartPos3d.x;
-			modifPosWithLocedAxis.y = modifStartPos3d.y;
-			break;
-		case EM_AXIS_XY:
-			modifPosWithLocedAxis.z = modifStartPos3d.z;
-			break;
-		case EM_AXIS_XZ:
-			modifPosWithLocedAxis.y = modifStartPos3d.y;
-			break;
-		case EM_AXIS_YZ:
-			modifPosWithLocedAxis.x = modifStartPos3d.x;
-			break;
-		}
-
-		DAVA::Vector3 moveOffset = modifPosWithLocedAxis - modifStartPos3d;
 		DAVA::Matrix4 moveModification;
 		moveModification.Identity();
 		moveModification.CreateTranslation(moveOffset);
@@ -339,9 +414,11 @@ void EntityModificationSystem::Move(const DAVA::Vector3 &newPos3d)
 		DAVA::Matrix4 newLocalTransform = modifEntities[i].originalTransform * moveModification;
 		modifEntities[i].entity->SetLocalTransform(newLocalTransform);
 	}
+
+	return moveOffset;
 }
 
-void EntityModificationSystem::Rotate(const DAVA::Vector2 &newPos2d)
+DAVA::float32 EntityModificationSystem::Rotate(const DAVA::Vector2 &newPos2d)
 {
 	DAVA::Vector2 rotateLength = newPos2d - modifStartPos2d;
 	DAVA::float32 rotateForce = -(rotateNormal.DotProduct(rotateLength)) / 70.0f;
@@ -369,9 +446,11 @@ void EntityModificationSystem::Rotate(const DAVA::Vector2 &newPos2d)
 
 		modifEntities[i].entity->SetLocalTransform(modifEntities[i].originalTransform * rotateModification);
 	}
+
+	return rotateForce;
 }
 
-void EntityModificationSystem::Scale(const DAVA::Vector2 &newPos2d)
+DAVA::float32 EntityModificationSystem::Scale(const DAVA::Vector2 &newPos2d)
 {
 	DAVA::Vector2 scaleDir = (newPos2d - modifStartPos2d);
 	DAVA::float32 scaleForce;
@@ -404,4 +483,6 @@ void EntityModificationSystem::Scale(const DAVA::Vector2 &newPos2d)
 			modifEntities[i].entity->SetLocalTransform(modifEntities[i].originalTransform * scaleModification);
 		}
 	}
+
+	return scaleForce;
 }

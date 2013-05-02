@@ -28,9 +28,11 @@ public:
 		DEBUG_DRAW_NOTHING = 0x0,
 
 		DEBUG_DRAW_OBJECTS = 0x1,
-		DEBUG_DRAW_SELECTED_OBJECTS = 0x2,
-		DEBUG_DRAW_LAND = 0x4,
-		DEBUG_DRAW_RAYTEST = 0x10,
+		DEBUG_DRAW_OBJECTS_SELECTED = 0x2,
+		DEBUG_DRAW_OBJECTS_RAYTEST = 0x4,
+
+		DEBUG_DRAW_LAND = 0x10,
+		DEBUG_DRAW_LAND_RAYTEST = 0x20,
 
 		DEBUG_DRAW_ALL = 0xFFFFFFFF
 	};
@@ -43,8 +45,11 @@ public:
 
 	DAVA::AABBox3 GetBoundingBox(DAVA::Entity *entity);
 
-	const EntityGroup* RayTest(DAVA::Vector3 from, DAVA::Vector3 to);
-	const EntityGroup* RayTestFromCamera();
+	const EntityGroup* ObjectsRayTest(const DAVA::Vector3 &from, const DAVA::Vector3 &to);
+	const EntityGroup* ObjectsRayTestFromCamera();
+
+	DAVA::Vector3 LandRayTest(const DAVA::Vector3 &from, const DAVA::Vector3 &to);
+	DAVA::Vector3 LandRayTestFromCamera();
 
 	void UpdateCollisionObject(DAVA::Entity *entity);
 

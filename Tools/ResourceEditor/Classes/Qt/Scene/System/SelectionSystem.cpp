@@ -37,7 +37,7 @@ void SceneSelectionSystem::ProcessUIEvent(DAVA::UIEvent *event)
 		{
 			if(event->tid == DAVA::UIEvent::BUTTON_1)
 			{
-				const EntityGroup* collisionEntities = collisionSystem->RayTestFromCamera();
+				const EntityGroup* collisionEntities = collisionSystem->ObjectsRayTestFromCamera();
 				EntityGroup selectableItems = GetSelecetableFromCollision(collisionEntities);
 
 				DAVA::Entity *firstEntity = selectableItems.GetEntity(0);

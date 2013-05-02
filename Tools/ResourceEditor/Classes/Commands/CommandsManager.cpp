@@ -239,6 +239,6 @@ void CommandsManager::EmitCommandExecutedSignal(Command* command, Scene* scene)
 	Set<Entity*> entities = command->GetAffectedEntities();
 	if (!entities.empty())
 	{
-		CommandSignals::Instance()->EmitCommandDidAffectEntities(scene, command->Id(), entities);
+		CommandSignals::Instance()->EmitCommandAffectsEntities(scene, command->Id(), entities);
 	}
 }

@@ -65,7 +65,7 @@ int SceneCollisionSystem::GetDebugDrawFlags()
 	return debugDrawFlags;
 }
 
-const EntityGroup* SceneCollisionSystem::RayTest(DAVA::Vector3 from, DAVA::Vector3 to)
+const EntityGroup* SceneCollisionSystem::ObjectsRayTest(const DAVA::Vector3 &from, const DAVA::Vector3 &to)
 {
 	DAVA::Entity *retEntity = NULL;
 
@@ -123,7 +123,7 @@ const EntityGroup* SceneCollisionSystem::RayTest(DAVA::Vector3 from, DAVA::Vecto
 	return &rayIntersectedEntities;
 }
 
-const EntityGroup* SceneCollisionSystem::RayTestFromCamera()
+const EntityGroup* SceneCollisionSystem::ObjectsRayTestFromCamera()
 {
 	SceneCameraSystem *cameraSystem	= ((SceneEditorProxy *) GetScene())->cameraSystem;
 
@@ -133,7 +133,7 @@ const EntityGroup* SceneCollisionSystem::RayTestFromCamera()
 	DAVA::Vector3 traceFrom = camPos;
 	DAVA::Vector3 traceTo = traceFrom + camDir * 1000.0f;
 
-	return RayTest(traceFrom, traceTo);
+	return ObjectsRayTest(traceFrom, traceTo);
 }
 
 void SceneCollisionSystem::UpdateCollisionObject(DAVA::Entity *entity)
@@ -173,24 +173,24 @@ void SceneCollisionSystem::Draw()
 	int oldState = DAVA::RenderManager::Instance()->GetState();
 	DAVA::RenderManager::Instance()->SetState(DAVA::RenderState::STATE_COLORMASK_ALL | DAVA::RenderState::STATE_DEPTH_WRITE | DAVA::RenderState::STATE_DEPTH_TEST);
 
-	if(debugDrawFlags & DEBUG_DRAW_OBJECTS)
-	{
-		objectsCollWorld->debugDrawWorld();
-	}
-
 	if(debugDrawFlags & DEBUG_DRAW_LAND)
 	{
 		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0, 1.0f, 0, 1.0f));
 		landCollWorld->debugDrawWorld();
 	}
 
-	if(debugDrawFlags & DEBUG_DRAW_RAYTEST)
+	if(debugDrawFlags & DEBUG_DRAW_OBJECTS)
+	{
+		objectsCollWorld->debugDrawWorld();
+	}
+
+	if(debugDrawFlags & DEBUG_DRAW_OBJECTS_RAYTEST)
 	{
 		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 0, 0, 1.0f));
 		DAVA::RenderHelper::Instance()->DrawLine(lastRayFrom, lastRayTo);
 	}
 
-	if(debugDrawFlags & DEBUG_DRAW_SELECTED_OBJECTS)
+	if(debugDrawFlags & DEBUG_DRAW_OBJECTS_SELECTED)
 	{
 		// current selected entities
 		SceneSelectionSystem *selectionSystem = ((SceneEditorProxy *) GetScene())->selectionSystem;
