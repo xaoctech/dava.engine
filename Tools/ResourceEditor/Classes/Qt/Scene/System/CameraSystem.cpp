@@ -121,6 +121,18 @@ DAVA::Vector2 SceneCameraSystem::GetScreenPos(const DAVA::Vector3 &pos3)
 	return ret;
 }
 
+DAVA::Vector3 SceneCameraSystem::GetScenePos(const DAVA::float32 x, const DAVA::float32 y, const DAVA::float32 z)
+{
+	DAVA::Vector3 ret;
+
+	if(NULL != curSceneCamera)
+	{
+		ret = curSceneCamera->UnProject(x, y, z, viewportRect);
+	}
+
+	return ret;
+}
+
 void SceneCameraSystem::Update(float timeElapsed)
 {
 	DAVA::Scene *scene = GetScene();
@@ -221,7 +233,6 @@ void SceneCameraSystem::ProcessKeyboardMove(DAVA::float32 timeElapsed)
 				curSceneCamera->SetPosition(pos);
 				curSceneCamera->SetDirection(dir);    // right now required because camera rebuild direction to target, and if position & target is equal after set position it produce wrong results
 			}
-
 
 			if(kd->IsKeyPressed(DAVA::DVKEY_RIGHT) || kd->IsKeyPressed(DAVA::DVKEY_D))
 			{

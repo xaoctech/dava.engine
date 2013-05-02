@@ -1,8 +1,8 @@
 #include "CommandSignals.h"
 
-void CommandSignals::EmitCommandDidAffectEntities(DAVA::Scene *scene,
+void CommandSignals::EmitCommandAffectsEntities(DAVA::Scene *scene,
 												   CommandList::eCommandId id,
 												   const DAVA::Set<DAVA::Entity *>& affectedEntities)
 {
-	emit CommandDidAffectEntities(scene, id, affectedEntities);
+	emit CommandAffectsEntities(scene, id, affectedEntities);
 }
