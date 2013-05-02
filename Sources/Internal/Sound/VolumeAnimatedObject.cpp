@@ -28,24 +28,48 @@
         * Created by Igor Solovey
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_FMODUTILS_H__
-#define __DAVAENGINE_FMODUTILS_H__
-
-#include "fmod_event.hpp"
-#include "fmod_errors.h"
+#include "Sound/VolumeAnimatedObject.h"
+#include "Animation/Animation.h"
+#include "Animation/LinearAnimation.h"
+#include "Sound/SoundSystem.h"
 
 namespace DAVA
 {
 
-#define FMOD_VERIFY(command) \
-	{ \
-	FMOD_RESULT result = command; \
-	if(result != FMOD_OK) \
-	{ \
-		Logger::Error("FMOD: %s file:%s line:%d failed with error: %s", #command, __FILE__, __LINE__, FMOD_ErrorString(result)); \
-	} \
-} \
+VolumeAnimatedObject::VolumeAnimatedObject() :
+	animatedVolume(-1)
+{
 
 }
 
-#endif //__DAVAENGINE_FMODUTILS_H__
+Animation * VolumeAnimatedObject::VolumeAnimation(float32 newVolume, float32 time, int32 track)
+{
+	animatedVolume = GetVolume();
+
+	Animation * a = new LinearAnimation<float32>(this, &animatedVolume, newVolume, time, Interpolation::LINEAR);
+	a->AddEvent(Animation::EVENT_ANIMATION_END, Message(this, &VolumeAnimatedObject::OnVolumeAnimationEnded));
+	a->AddEvent(Animation::EVENT_ANIMATION_CANCELLED, Message(this, &VolumeAnimatedObject::OnVolumeAnimationEnded));
+	Retain();
+	a->Start(track);
+
+	SoundSystem::Instance()->AddVolumeAnimatedObject(this);
+
+	return a;
+}
+
+void VolumeAnimatedObject::Update()
+{
+	if(animatedVolume != -1.f)
+		SetVolume(animatedVolume);
+}
+
+void VolumeAnimatedObject::OnVolumeAnimationEnded(BaseObject * caller, void * userData, void * callerData)
+{
+	SetVolume(animatedVolume);
+	animatedVolume = -1.f;
+	Release();
+
+	SoundSystem::Instance()->RemoveVolumeAnimatedObject(this);
+}
+
+};

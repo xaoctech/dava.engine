@@ -28,24 +28,55 @@
         * Created by Igor Solovey
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_FMODUTILS_H__
-#define __DAVAENGINE_FMODUTILS_H__
+#ifndef __DAVAENGINE_SOUND_EVENT_H__
+#define __DAVAENGINE_SOUND_EVENT_H__
 
-#include "fmod_event.hpp"
-#include "fmod_errors.h"
+#include "Base/BaseTypes.h"
+#include "Base/BaseMath.h"
+#include "Base/EventDispatcher.h"
+#include "Sound/VolumeAnimatedObject.h"
+
+namespace FMOD
+{
+	class Event;
+};
 
 namespace DAVA
 {
+class SoundEvent : public VolumeAnimatedObject
+{
+public:
+	enum eEvent
+	{
+		EVENT_STARTED = 0,	//Called when an event is started. FMOD_EVENT_CALLBACKTYPE_EVENTSTARTED
+		EVENT_FINISHED,		//Called when an event is stopped for any reason. FMOD_EVENT_CALLBACKTYPE_EVENTFINISHED
+		EVENT_SYNCPOINT,	//Called when a syncpoint is encountered. Can be from wav file markers. FMOD_EVENT_CALLBACKTYPE_SYNCPOINT
 
-#define FMOD_VERIFY(command) \
-	{ \
-	FMOD_RESULT result = command; \
-	if(result != FMOD_OK) \
-	{ \
-		Logger::Error("FMOD: %s file:%s line:%d failed with error: %s", #command, __FILE__, __LINE__, FMOD_ErrorString(result)); \
-	} \
-} \
+		EVENT_COUNT
+	};
 
-}
+	void SetVolume(float32 volume);
+	float32	GetVolume();
 
-#endif //__DAVAENGINE_FMODUTILS_H__
+	void Play();
+	void Pause(bool isPaused);
+	bool IsPaused();
+	void Stop();
+	void PerformCallback(eEvent eventType);
+
+	void SetPosition(const Vector3 & position);
+
+private:
+	SoundEvent(FMOD::Event * fmodEvent);
+	~SoundEvent();
+
+	FMOD::Event * fmodEvent;
+
+	IMPLEMENT_EVENT_DISPATCHER(eventDispatcher);
+
+friend class SoundSystem;
+};
+
+};
+
+#endif

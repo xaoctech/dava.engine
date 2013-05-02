@@ -34,15 +34,21 @@
 #include "Base/Singleton.h"
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
+#include "Base/ScopedPtr.h"
 
 namespace FMOD
 {
 class System;
+class EventSystem;
 };
 
 namespace DAVA
 {
 class SoundGroup;
+class SoundEvent;
+class Animation;
+class SoundEventCategory;
+class VolumeAnimatedObject;
 class SoundSystem : public Singleton<SoundSystem>
 {
 public:
@@ -56,13 +62,25 @@ public:
 	void SetListenerPosition(const Vector3 & position);
 	void SetListenerOrientation(const Vector3 & at, const Vector3 & up);
 
-	SoundGroup * GetSoundGroup(const FastName & groupName);
-private:
+	SoundEvent * CreateSoundEvent(const String & eventPath);
 
+	void LoadFEV(const FilePath & filePath);
+
+	SoundGroup * GetSoundGroup(const FastName & groupName);
+	ScopedPtr<SoundEventCategory> SoundSystem::GetSoundEventCategory(const String & category);
+
+	void AddVolumeAnimatedObject(VolumeAnimatedObject * object);
+	void RemoveVolumeAnimatedObject(VolumeAnimatedObject * object);
+
+private:
 	SoundGroup * CreateSoundGroup(const FastName & groupName);
 
+
 	FMOD::System * fmodSystem;
+	FMOD::EventSystem * fmodEventSystem;
+
 	Map<int, SoundGroup*> soundGroups;
+	Vector<VolumeAnimatedObject *> animatedObjects;
 
 friend class SoundGroup;
 friend class Sound;
