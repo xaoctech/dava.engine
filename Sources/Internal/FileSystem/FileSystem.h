@@ -177,14 +177,6 @@ public:
 		\brief Function check if specified path is a directory
 	 */
 	virtual bool IsDirectory(const FilePath & pathToCheck);
-		
-
-	
-	/**
-	 \brief Returns absolute system path from the framework specific path
-	 parse paths with specific discs ~res:/ and ~doc:/
-	 */
-	const FilePath SystemPathForFrameworkPath(const String & frameworkPath);
 	
 	File *CreateFileForFrameworkPath(const FilePath & frameworkPath, uint32 attributes);
 
@@ -248,14 +240,10 @@ public:
 	int32 Spawn(const String& command);
     
     
-    static void ReplaceBundleName(const FilePath &newBundlePath);
-
 private:
     
 	virtual eCreateDirectoryResult CreateExactDirectory(const FilePath & filePath);
 
-    
-    FilePath tempRetPath;
 	FilePath currentWorkingDirectory;
     FilePath currentDocDirectory;
 
@@ -271,11 +259,6 @@ private:
 #if defined(__DAVAENGINE_ANDROID__)
 	friend class APKFile;
 #endif //#if defined(__DAVAENGINE_ANDROID__)
-
-    static FilePath virtualBundlePath;
-
-    static const char * FilepathRelativeToBundle(const char * relativePathname);
-    static const char * FilepathRelativeToBundle(const String & relativePathname);
 };
 	
 };
