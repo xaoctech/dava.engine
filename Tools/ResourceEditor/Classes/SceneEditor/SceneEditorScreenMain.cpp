@@ -15,8 +15,8 @@
 
 #include "HintManager.h"
 
-#include "SceneExporter.h"
-#include "SceneSaver.h"
+#include "CommandLine/SceneExporter/SceneExporter.h"
+#include "CommandLine/SceneSaver/SceneSaver.h"
 
 #include "../Qt/Scene/SceneData.h"
 #include "../Qt/Scene/SceneDataManager.h"

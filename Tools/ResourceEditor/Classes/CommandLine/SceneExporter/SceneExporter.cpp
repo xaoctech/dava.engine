@@ -1,11 +1,11 @@
 #include "SceneExporter.h"
-#include "SceneValidator.h"
+#include "SceneEditor/SceneValidator.h"
 
 #include "PVRConverter.h"
 #include "DXTConverter.h"
 
 #include "Render/TextureDescriptor.h"
-#include "../Qt/Scene/SceneDataManager.h"
+#include "Qt/Scene/SceneDataManager.h"
 
 
 using namespace DAVA;
