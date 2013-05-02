@@ -74,10 +74,7 @@ void CommandLineManager::AddCommandLineTool(CommandLineTool *tool)
 
 void CommandLineManager::ParseCommandLine()
 {
-    if(     EditorCommandLineParser::GetCommandsCount() < 2
-       ||   (EditorCommandLineParser::CommandIsFound(String("-usage")))
-       ||   (EditorCommandLineParser::CommandIsFound(String("-help")))
-       )
+    if(EditorCommandLineParser::CommandIsFound(String("-usage")) || EditorCommandLineParser::CommandIsFound(String("-help")))
     {
         PrintUsage();
         return;
