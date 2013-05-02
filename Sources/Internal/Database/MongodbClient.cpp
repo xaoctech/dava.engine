@@ -181,7 +181,17 @@ void MongodbClient::DropCollection()
     
 bool MongodbClient::IsConnected()
 {
-    return (0 != mongo_is_connected(clientData->connection));
+	int32 connectStatus = mongo_is_connected(clientData->connection);
+	if(0 != connectStatus)
+	{
+		int32 checkStatus = mongo_check_connection(clientData->connection);
+		if(MONGO_OK == checkStatus)
+			return true;
+	}
+
+	Logger::Warning("[MongodbClient::IsConnected] is not connected.");
+	return false;
+//	return (0 != mongo_is_connected(clientData->connection));
 }
 
 // bool MongodbClient::SaveBufferToGridFS(const String &name, char * buffer, uint32 length)
@@ -358,7 +368,12 @@ bool MongodbClient::SaveObject(MongodbObject *object)
         }
     }
     
-    return (MONGO_OK == status);
+	if(MONGO_OK != status)
+	{
+		Logger::Error("[MongodbClient::SaveObject] object not saved");
+	}
+
+	return (MONGO_OK == status);
 }
 
 bool MongodbClient::SaveObject(MongodbObject *newObject, MongodbObject *oldObject)
