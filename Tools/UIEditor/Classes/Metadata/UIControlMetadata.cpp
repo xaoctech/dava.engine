@@ -513,26 +513,6 @@ void UIControlMetadata::SetTopBottomStretchCap(float value)
     GetActiveUIControl()->GetBackground()->SetTopBottomStretchCap(value);
 }
 
-int UIControlMetadata::GetSpriteAlign()
-{
-	if (!VerifyActiveParamID())
-    {
-        return ALIGN_LEFT;
-    }
-    
-    return (int)GetActiveUIControl()->GetSpriteAlign();
-}
-
-void UIControlMetadata::SetSpriteAlign(int value)
-{
-	if (!VerifyActiveParamID())
-    {
-        return;
-    }
-    
-    GetActiveUIControl()->SetSpriteAlign((eAlign)value);
-}
-
 void UIControlMetadata::SetSprite(const QString& value)
 {
     if (!VerifyActiveParamID())

@@ -1,5 +1,5 @@
 #include "textpropertygridwidget.h"
-#include "ui_textpropertygridwidget.h"
+#include "ui_uitextfieldpropertygridwidget.h"
 
 #include "CommandsController.h"
 #include "ChangePropertyCommand.h"
@@ -24,23 +24,22 @@ using namespace PropertyNames;
 static const QString TEXT_PROPERTY_BLOCK_NAME = "Text";
 
 TextPropertyGridWidget::TextPropertyGridWidget(QWidget *parent) :
-    BasePropertyGridWidget(parent),
-    ui(new Ui::TextPropertyGridWidget)
+    UITextFieldPropertyGridWidget(parent)
 {
-    ui->setupUi(this);
     SetPropertyBlockName(TEXT_PROPERTY_BLOCK_NAME);
-	
+	InsertLocalizationFields();
 	BasePropertyGridWidget::InstallEventFiltersForWidgets(this);
 }
 
 TextPropertyGridWidget::~TextPropertyGridWidget()
 {
-    delete ui;
+	delete localizationKeyNameLineEdit;
+	delete localizationKeyTextLineEdit;
 }
 
 void TextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
 {
-    BasePropertyGridWidget::Initialize(activeMetadata);
+	BasePropertyGridWidget::Initialize(activeMetadata);
 	FillComboboxes();
     
     PROPERTIESMAP propertiesMap = BuildMetadataPropertiesMap();
@@ -48,14 +47,14 @@ void TextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     // All these properties are state-aware.
     RegisterSpinBoxWidgetForProperty(propertiesMap, FONT_SIZE_PROPERTY_NAME, ui->fontSizeSpinBox, false, true);
     RegisterPushButtonWidgetForProperty(propertiesMap, FONT_PROPERTY_NAME, ui->fontSelectButton, false, true);
-    RegisterColorButtonWidgetForProperty(propertiesMap, FONT_COLOR_PROPERTY_NAME, ui->fontColorButton, false, true);
+    RegisterColorButtonWidgetForProperty(propertiesMap, FONT_COLOR_PROPERTY_NAME, ui->textColorPushButton, false, true);
     // Shadow properties are also state-aware
     RegisterSpinBoxWidgetForProperty(propertiesMap, SHADOW_OFFSET_X, ui->shadowOffsetXSpinBox, false, true);
     RegisterSpinBoxWidgetForProperty(propertiesMap, SHADOW_OFFSET_Y, ui->shadowOffsetYSpinBox, false, true);
     RegisterColorButtonWidgetForProperty(propertiesMap, SHADOW_COLOR, ui->shadowColorButton, false, true);
     // Localized Text Key is handled through generic Property mechanism, but we need to update the
     // Localization Value widget each time Localization Key is changes.
-    RegisterLineEditWidgetForProperty(propertiesMap, LOCALIZED_TEXT_KEY_PROPERTY_NAME, ui->localizationKeyNameLineEdit, false, true);
+    RegisterLineEditWidgetForProperty(propertiesMap, LOCALIZED_TEXT_KEY_PROPERTY_NAME, localizationKeyNameLineEdit, false, true);
 	RegisterComboBoxWidgetForProperty(propertiesMap, TEXT_ALIGN_PROPERTY_NAME, ui->alignComboBox, false, true);
 
 	bool enableTextAlignComboBox = (dynamic_cast<UIStaticTextMetadata*>(activeMetadata)	!= NULL||
@@ -68,22 +67,48 @@ void TextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     RegisterGridWidgetAsStateAware();
 }
 
+void TextPropertyGridWidget::InsertLocalizationFields()
+{
+	ui->textLineEdit->setEnabled(false);
+	ui->textLineEdit->setVisible(false);
+	ui->label->setVisible(false);
+	
+	this->resize(300, 262);
+    this->setMinimumSize(QSize(300, 262));
+
+	ui->groupBox->resize(300, 262);
+    ui->groupBox->setMinimumSize(QSize(300, 262));
+
+	localizationKeyNameLineEdit = new QLineEdit(ui->groupBox);
+	localizationKeyNameLineEdit->setObjectName(QString::fromUtf8("localizationKeyNameLineEdit"));
+	localizationKeyNameLineEdit->setGeometry(QRect(10, 25, 281, 22));
+	localizationKeyTextLineEdit = new QLineEdit(ui->groupBox);
+	localizationKeyTextLineEdit->setObjectName(QString::fromUtf8("localizationKeyTextLineEdit"));
+	localizationKeyTextLineEdit->setEnabled(false);
+	localizationKeyTextLineEdit->setGeometry(QRect(10, 55, 281, 22));
+	localizationKeyTextLineEdit->setReadOnly(true);
+
+	ui->fontNameLabel->setGeometry(QRect(10, 95, 31, 16));
+	ui->fontSizeSpinBox->setGeometry(QRect(234, 91, 57, 25));
+	ui->fontSelectButton->setGeometry(QRect(50, 86, 181, 38));
+	ui->fontColorLabel->setGeometry(QRect(10, 140, 71, 16));
+	ui->textColorPushButton->setGeometry(QRect(85, 138, 205, 21));
+	ui->shadowOffsetLabel->setGeometry(QRect(10, 172, 91, 16));
+	ui->offsetYLabel->setGeometry(QRect(210, 172, 16, 16));
+	ui->shadowColorLabel->setGeometry(QRect(10, 202, 91, 16));
+	ui->shadowOffsetXSpinBox->setGeometry(QRect(140, 168, 57, 25));
+	ui->shadowOffsetYSpinBox->setGeometry(QRect(230, 168, 57, 25));
+	ui->shadowColorButton->setGeometry(QRect(105, 200, 185, 21));
+	ui->offsetXLabel->setGeometry(QRect(120, 172, 16, 16));
+	ui->AlignLabel->setGeometry(QRect(10, 236, 62, 16));
+	ui->alignComboBox->setGeometry(QRect(80, 230, 209, 26));
+}
+
 void TextPropertyGridWidget::Cleanup()
 {
     UnregisterGridWidgetAsStateAware();
-
-    UnregisterPushButtonWidget(ui->fontSelectButton);
-    UnregisterSpinBoxWidget(ui->fontSizeSpinBox);
-    UnregisterColorButtonWidget(ui->fontColorButton);
-	
-	UnregisterSpinBoxWidget(ui->shadowOffsetXSpinBox);
-	UnregisterSpinBoxWidget(ui->shadowOffsetYSpinBox);
-	UnregisterColorButtonWidget(ui->shadowColorButton);
-
-    UnregisterLineEditWidget(ui->localizationKeyNameLineEdit);
-	UnregisterComboBoxWidget(ui->alignComboBox);
-    
-    BasePropertyGridWidget::Cleanup();
+    UnregisterLineEditWidget(localizationKeyNameLineEdit);
+    UITextFieldPropertyGridWidget::Cleanup();
 }
 
 void TextPropertyGridWidget::UpdateLocalizationValue()
@@ -94,15 +119,15 @@ void TextPropertyGridWidget::UpdateLocalizationValue()
     }
     
     // Key is known now - determine and set the value.
-    QString localizationKey = this->ui->localizationKeyNameLineEdit->text();
+    QString localizationKey = this->localizationKeyNameLineEdit->text();
     WideString localizationValue = LocalizationSystem::Instance()->GetLocalizedString(QStrint2WideString(localizationKey));
-	this->ui->localizationKeyTextLineEdit->setText(WideString2QStrint(localizationValue));
+	this->localizationKeyTextLineEdit->setText(WideString2QStrint(localizationValue));
     
     // Also update the "dirty" style for the "Value"
-    PROPERTYGRIDWIDGETSITER iter = this->propertyGridWidgetsMap.find(this->ui->localizationKeyNameLineEdit);
+    PROPERTYGRIDWIDGETSITER iter = this->propertyGridWidgetsMap.find(this->localizationKeyNameLineEdit);
     if (iter != this->propertyGridWidgetsMap.end())
     {
-        UpdateWidgetPalette(this->ui->localizationKeyTextLineEdit, iter->second.getProperty().name());
+        UpdateWidgetPalette(this->localizationKeyTextLineEdit, iter->second.getProperty().name());
     }
 }
 
@@ -113,16 +138,11 @@ void TextPropertyGridWidget::HandleSelectedUIControlStatesChanged(const Vector<U
     UpdateLocalizationValue();
 }
 
-void TextPropertyGridWidget::HandleLineEditEditingFinished(QLineEdit *senderWidget)
-{
-	BasePropertyGridWidget::HandleLineEditEditingFinished(senderWidget);
-}
-
 void TextPropertyGridWidget::HandleChangePropertySucceeded(const QString& propertyName)
 {
     BasePropertyGridWidget::HandleChangePropertySucceeded(propertyName);
     
-    if (IsWidgetBoundToProperty(this->ui->localizationKeyNameLineEdit, propertyName))
+    if (IsWidgetBoundToProperty(this->localizationKeyNameLineEdit, propertyName))
     {
         // Localization Key is updated - update the value.
         UpdateLocalizationValue();
@@ -133,184 +153,9 @@ void TextPropertyGridWidget::HandleChangePropertyFailed(const QString& propertyN
 {
     BasePropertyGridWidget::HandleChangePropertyFailed(propertyName);
 
-    if (IsWidgetBoundToProperty(this->ui->localizationKeyNameLineEdit, propertyName))
+    if (IsWidgetBoundToProperty(this->localizationKeyNameLineEdit, propertyName))
     {
         // Localization Key is updated - update the value.
         UpdateLocalizationValue();
     }
-}
-
-void TextPropertyGridWidget::ProcessPushButtonClicked(QPushButton *senderWidget)
-{   
-    if ((activeMetadata == NULL) || (senderWidget != this->ui->fontSelectButton))
-    {
-        // No control already assinged or not fontSelectButton
-        return;
-    }
-
-	// Get current value of Font property
-	Font *fontPropertyValue = PropertiesHelper::GetPropertyValue<Font *>(this->activeMetadata, FONT_PROPERTY_NAME, false);
-	// Get sprite path from graphics font
-	QString currentGFontPath = ResourcesManageHelper::GetGraphicsFontPath(fontPropertyValue);
-   
-    //Call font selection dialog
-    FontManagerDialog *fontDialog = new FontManagerDialog(true, currentGFontPath);
-    Font *resultFont = NULL;
-    
-    if (fontDialog->exec() == QDialog::Accepted)
-    {
-        resultFont = fontDialog->ResultFont();
-    }
-    
-    //Delete font select dialog reference
-    SafeDelete(fontDialog);
-
-    if (!resultFont)
-    {
-        return;
-    }
-    
-    PROPERTYGRIDWIDGETSITER iter = propertyGridWidgetsMap.find(senderWidget);
-    if (iter == propertyGridWidgetsMap.end())
-    {
-        Logger::Error("OnPushButtonClicked - unable to find attached property in the propertyGridWidgetsMap!");
-        return;
-    }
-
-	// Don't update the property if the font wasn't actually changed.
-    Font* curValue = PropertiesHelper::GetAllPropertyValues<Font*>(this->activeMetadata, iter->second.getProperty().name());
-	if (curValue->IsEqual(resultFont))
-	{
-		SafeRelease(resultFont);
-		return;
-	}
-	// Set font for all states if checkbox is checked
-    BaseCommand* command = new ChangePropertyCommand<Font *>(activeMetadata, iter->second, resultFont);
-    CommandsController::Instance()->ExecuteCommand(command);
-    SafeRelease(command);
-	// TODO - probable memory leak. Need to investigate how to fix it
-	// SafeRelease(resultFont);
-}
-
-void TextPropertyGridWidget::UpdatePushButtonWidgetWithPropertyValue(QPushButton *pushButtonWidget, const QMetaProperty &curProperty)
-{
-    if (pushButtonWidget != this->ui->fontSelectButton)
-    {
-        return;
-    }
-    
-    bool isPropertyValueDiffers = false;
-    Font *fontPropertyValue = PropertiesHelper::GetPropertyValue<Font *>(this->activeMetadata,
-                                                                      curProperty.name(), isPropertyValueDiffers);
-    if (fontPropertyValue)
-    {
-        //Set button text
-        WidgetSignalsBlocker blocker(pushButtonWidget);        
-        Font::eFontType fontType = fontPropertyValue->GetFontType();
-        QString buttonText;
-        
-        switch (fontType)
-        {
-            case Font::TYPE_FT:
-            {
-                FTFont *ftFont = dynamic_cast<FTFont*>(fontPropertyValue);
-                //Set pushbutton widget text as font relative path
-                buttonText = QString::fromStdString(ftFont->GetFontPath().GetAbsolutePathname());;
-                break;
-            }
-            case Font::TYPE_GRAPHICAL:
-            {
-                GraphicsFont *gFont = dynamic_cast<GraphicsFont*>(fontPropertyValue);
-                //Put into result string font definition and font sprite path
-                Sprite *fontSprite = gFont->GetFontSprite();
-                if (!fontSprite) //If no sprite available - quit
-                {
-                    pushButtonWidget->setText("Graphical font is not available");
-                    return;
-                }
-                //Get font definition and sprite relative path
-                QString fontDefinitionName = QString::fromStdString(gFont->GetFontDefinitionName().GetAbsolutePathname());
-                QString fontSpriteName = QString::fromStdString(fontSprite->GetRelativePathname().GetAbsolutePathname());
-                //Set push button widget text - for grapics font it contains font definition and sprite names
-                buttonText = QString("%1\n%2").arg(fontDefinitionName, fontSpriteName);
-                break;
-            }
-            default:
-            {
-                //Do nothing if we can't determine font type
-                return;
-            }
-        }
-        
-        pushButtonWidget->setText(buttonText);
-    }
-}
-
-void TextPropertyGridWidget::FillComboboxes()
-{
-    ui->alignComboBox->clear();
-    int itemsCount = BackgroundGridWidgetHelper::GetAlignTypesCount();
-    for (int i = 0; i < itemsCount; i ++)
-    {
-        ui->alignComboBox->addItem(BackgroundGridWidgetHelper::GetAlignTypeDesc(i));
-    }
-
-}
-
-void TextPropertyGridWidget::CustomProcessComboboxValueChanged(const PROPERTYGRIDWIDGETSITER& iter, int value)
-{
-		// Don't update the property if the text wasn't actually changed.
-    int curValue = PropertiesHelper::GetAllPropertyValues<int>(this->activeMetadata, iter->second.getProperty().name());
-	if (curValue == value)
-	{
-		return;
-	}
-
-	BaseCommand* command = new ChangePropertyCommand<int>(activeMetadata, iter->second, value);
-    CommandsController::Instance()->ExecuteCommand(command);
-    SafeRelease(command);
-}
-
-void TextPropertyGridWidget::ProcessComboboxValueChanged(QComboBox* senderWidget, const PROPERTYGRIDWIDGETSITER& iter,
-                                             const QString& value)
-{
-	if (senderWidget == NULL)
-    {
-        Logger::Error("TextPropertyGridWidget::ProcessComboboxValueChanged: senderWidget is NULL!");
-        return;
-    }
-    
-    // Try to process this control-specific widgets.
-    int selectedIndex = senderWidget->currentIndex();
-
-	if (senderWidget == ui->alignComboBox)
-    {
-        return CustomProcessComboboxValueChanged(iter, BackgroundGridWidgetHelper::GetAlignType(selectedIndex));
-    }
-
-    // No postprocessing was applied - use the generic process.
-    BasePropertyGridWidget::ProcessComboboxValueChanged(senderWidget, iter, value);
-}
-
-void TextPropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue(QComboBox* comboBoxWidget, const QMetaProperty& curProperty)
-{
-	if (!this->activeMetadata)
-    {
-        return;
-    }
-
-    bool isPropertyValueDiffers = false;
-    const QString& propertyName = curProperty.name();
-    int propertyValue = PropertiesHelper::GetPropertyValue<int>(this->activeMetadata, propertyName, isPropertyValueDiffers);
-
-    // Firstly check the custom comboboxes.
-    if (comboBoxWidget == ui->alignComboBox)
-    {
-        UpdateWidgetPalette(comboBoxWidget, propertyName);
-        return SetComboboxSelectedItem(comboBoxWidget,
-                                       BackgroundGridWidgetHelper::GetAlignTypeDescByType(propertyValue));
-    }
-
-    // Not related to the custom combobox - call the generic one.
-    BasePropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue(comboBoxWidget, curProperty);
 }
