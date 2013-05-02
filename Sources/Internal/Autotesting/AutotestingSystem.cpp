@@ -828,6 +828,16 @@ String AutotestingSystem::GetCurrentTimeString()
     return Format("%02d:%02d:%02d", hours, minutes, seconds);
 }
 
+String AutotestingSystem::GetCurrentTimeMsString()
+{
+	uint64 timeAbsMs = SystemTimer::Instance()->AbsoluteMS();
+	uint16 hours = (timeAbsMs/3600000)%60;
+	uint16 minutes = (timeAbsMs/60000)%60;
+	uint16 seconds = (timeAbsMs/1000)%60;
+	uint16 miliseconds = (timeAbsMs)%1000;
+	return Format("%02d:%02d:%02d.%03d", hours, minutes, seconds, miliseconds);
+}
+
 void AutotestingSystem::OnTestStart(const String &_testName)
 {
 	Logger::Debug("AutotestingSystem::OnTestStart %s", _testName.c_str());
@@ -1030,13 +1040,18 @@ bool AutotestingSystem::SaveToDB(MongodbUpdateObject *dbUpdateObject)
 	Logger::Debug("AutotestingSystem::SaveToDB");
 
     bool ret = dbUpdateObject->SaveToDB(dbClient);
-    //return ret;
+    return ret;
+
+	/* FOR DEBBUGING
     if(!ret)
     {
         Logger::Error("AutotestingSystem::SaveToDB failed");
     }
     else
     {
+
+		Logger::Debug("AutotestingSystem::SaveToDB Ok");
+		return ret;
 		int32 maxAttemptsToWait = 1;
         int32 attemptsToWaitLeft = maxAttemptsToWait;
 		int32 maxAttemptsToRetry = 5;
@@ -1093,7 +1108,7 @@ bool AutotestingSystem::SaveToDB(MongodbUpdateObject *dbUpdateObject)
 #endif
         }
     }
-    return ret;
+    return ret;*/
 }
 
 void AutotestingSystem::Log(const String &level, const String &message)

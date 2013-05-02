@@ -50,7 +50,9 @@ end
 
 function Log(message, level)
 	level = level or "DEBUG"
-	autotestingSystem:Log(level, tostring(message))
+	--if level ~= "DEBUG" then
+		autotestingSystem:Log(level, tostring(message))
+	--end
 	Yield()
 end 
 

@@ -131,6 +131,7 @@ protected:
 
 	uint64 GetCurrentTimeMS();
 	String GetCurrentTimeString();
+	String GetCurrentTimeMsString();
 //DB
 	KeyedArchive *FindOrInsertRunArchive(MongodbUpdateObject* dbUpdateObject, const String &runId);
     void ClearTestInDB();
@@ -165,7 +166,6 @@ protected:
     int32 GetIndexInFileList(FileList &fileList, int32 index);
     
     void ExitApp();
-	
 
     uint64 startTimeMS;
 
