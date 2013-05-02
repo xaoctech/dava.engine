@@ -44,7 +44,7 @@ namespace DAVA
 		NSString * filePath;
 		if(virtualBundlePath.IsEmpty())
 		{
-			NSString * bundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString: @"/Data"];
+			NSString * bundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString: @"/"];
 			filePath = [bundlePath stringByAppendingString: relativePathname];
 		}
 		else
@@ -62,7 +62,7 @@ namespace DAVA
         NSString * filePath;
         if(virtualBundlePath.IsEmpty())
         {
-            NSString * bundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString: @"/Contents/Resources/Data"];
+            NSString * bundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString: @"/Contents/Resources/"];
             filePath = [bundlePath stringByAppendingString: relativePathname];
         }
         else
