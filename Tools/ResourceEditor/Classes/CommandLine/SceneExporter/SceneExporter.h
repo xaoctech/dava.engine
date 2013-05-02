@@ -20,8 +20,8 @@ public:
     void SetInFolder(const FilePath &folderPathname);
     void SetOutFolder(const FilePath &folderPathname);
     
-    void ExportFile(const FilePath &fileName, Set<String> &errorLog);
-    void ExportFolder(const FilePath &folderName, Set<String> &errorLog);
+    void ExportFile(const String &fileName, Set<String> &errorLog);
+    void ExportFolder(const String &folderName, Set<String> &errorLog);
     
     void ExportScene(Scene *scene, const FilePath &fileName, Set<String> &errorLog);
     

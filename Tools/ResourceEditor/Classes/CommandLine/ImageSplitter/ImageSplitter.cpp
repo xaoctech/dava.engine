@@ -1,8 +1,7 @@
 #include "ImageSplitter.h"
-#include "../Qt/Main/QtUtils.h"
+#include "../../Qt/Main/QtUtils.h"
 
 using namespace DAVA;
-
 
 bool ImageSplitter::SplitImage(const FilePath &pathname, Set<String> &errorLog)
 {

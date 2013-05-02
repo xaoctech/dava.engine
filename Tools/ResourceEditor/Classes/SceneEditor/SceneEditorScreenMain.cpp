@@ -27,6 +27,7 @@
 #include "../Commands/SceneEditorScreenMainCommands.h"
 #include "../Commands/CommandsManager.h"
 
+
 SceneEditorScreenMain::SceneEditorScreenMain()
 	:	UIScreen()
 	, initialized(false)

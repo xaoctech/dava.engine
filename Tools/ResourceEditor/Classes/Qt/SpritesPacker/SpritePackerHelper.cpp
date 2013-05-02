@@ -82,7 +82,8 @@ void SpritePackerHelper::Reload()
         it->second->Reload();
     }
     
-	ParticlesEditorController::Instance()->RefreshSelectedNode();
+    if(ParticlesEditorController::Instance())
+        ParticlesEditorController::Instance()->RefreshSelectedNode();
 }
 
 void SpritePackerHelper::EnumerateSpritesForReloading(SceneData* sceneData, Map<String, Sprite *> &sprites)
