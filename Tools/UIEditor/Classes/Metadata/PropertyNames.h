@@ -23,6 +23,7 @@ namespace PropertyNames
     static const char* SPRITE_PROPERTY_NAME = "Sprite";
     static const char* SPRITE_FRAME_PROPERTY_NAME = "SpriteFrame";
 	static const char* SPRITE_MODIFICATION_PROPERTY_NAME = "SpriteModification";
+	static const char* SPRITE_ALIGN_PROPERTY_NAME = "SpriteAlign";
 
 	static const char* STRETCH_HORIZONTAL_PROPERTY_NAME = "LeftRightStretchCap";
 	static const char* STRETCH_VERTICAL_PROPERTY_NAME = "TopBottomStretchCap";
@@ -33,7 +34,8 @@ namespace PropertyNames
     
     static const char* TEXT_PROPERTY_NAME = "Text";
     static const char* TEXT_COLOR_PROPERTY_NAME = "TextColor";
-	
+	static const char* TEXT_ALIGN_PROPERTY_NAME = "TextAlign";
+
 	static const char* SHADOW_OFFSET_X = "ShadowOffsetX";
 	static const char* SHADOW_OFFSET_Y = "ShadowOffsetY";
 	static const char* SHADOW_COLOR = "ShadowColor";

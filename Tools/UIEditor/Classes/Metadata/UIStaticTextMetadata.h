@@ -39,6 +39,9 @@ protected:
 	virtual int GetAlign();
     virtual void SetAlign(int value);
 
+	virtual int GetTextAlign();
+    virtual void SetTextAlign(int value);
+
     virtual Font * GetFont();
     virtual void SetFont(Font* font);
     

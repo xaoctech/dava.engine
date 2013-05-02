@@ -113,6 +113,14 @@ void InputTest::LoadResources()
 	testButton->SetDebugDraw(true);
 	testButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &InputTest::ButtonPressed));
 
+	staticText = new UIStaticText(Rect(500, 500, 100, 50));
+	font->SetSize(10);
+	staticText->SetFont(font);
+	staticText->SetTextAlign(12);// 12 - Rtop
+	staticText->SetText(L"StaticText");
+	staticText->SetDebugDraw(true);
+	AddControl(staticText);
+
 	webView1 = new UIWebView(Rect(5, 105, 500, 190));
 	webView1->SetVisible(false);
 	delegate = new UIWebViewDelegate();
@@ -154,8 +162,8 @@ void InputTest::UnloadResources()
 	SafeRelease(staticText);
 	
 	SafeRelease(webView1);
-	//SafeRelease(webView2);
-	//SafeRelease(webView3);
+	SafeRelease(webView2);
+	SafeRelease(webView3);
 	
 	UIWebViewDelegate* d = (UIWebViewDelegate*)delegate;
 	delete d;

@@ -11,6 +11,10 @@
 #include "fontmanagerdialog.h"
 #include "PropertyNames.h"
 #include "ResourcesManageHelper.h"
+#include "BackgroundGridWidgetHelper.h"
+#include "UIStaticTextMetadata.h"
+#include "UITextFieldMetadata.h"
+#include "UIButtonMetadata.h"
 
 #include "StringUtils.h"
 
@@ -37,6 +41,7 @@ TextPropertyGridWidget::~TextPropertyGridWidget()
 void TextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
 {
     BasePropertyGridWidget::Initialize(activeMetadata);
+	FillComboboxes();
     
     PROPERTIESMAP propertiesMap = BuildMetadataPropertiesMap();
 
@@ -51,6 +56,13 @@ void TextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     // Localized Text Key is handled through generic Property mechanism, but we need to update the
     // Localization Value widget each time Localization Key is changes.
     RegisterLineEditWidgetForProperty(propertiesMap, LOCALIZED_TEXT_KEY_PROPERTY_NAME, ui->localizationKeyNameLineEdit, false, true);
+	RegisterComboBoxWidgetForProperty(propertiesMap, TEXT_ALIGN_PROPERTY_NAME, ui->alignComboBox, false, true);
+
+	bool enableTextAlignComboBox = (dynamic_cast<UIStaticTextMetadata*>(activeMetadata)	!= NULL||
+									dynamic_cast<UITextFieldMetadata*>(activeMetadata)	!= NULL||
+									dynamic_cast<UIButtonMetadata*>(activeMetadata)		!= NULL);
+	ui->alignComboBox->setEnabled(enableTextAlignComboBox);
+
     UpdateLocalizationValue();
 
     RegisterGridWidgetAsStateAware();
@@ -69,6 +81,7 @@ void TextPropertyGridWidget::Cleanup()
 	UnregisterColorButtonWidget(ui->shadowColorButton);
 
     UnregisterLineEditWidget(ui->localizationKeyNameLineEdit);
+	UnregisterComboBoxWidget(ui->alignComboBox);
     
     BasePropertyGridWidget::Cleanup();
 }
@@ -231,4 +244,73 @@ void TextPropertyGridWidget::UpdatePushButtonWidgetWithPropertyValue(QPushButton
         
         pushButtonWidget->setText(buttonText);
     }
+}
+
+void TextPropertyGridWidget::FillComboboxes()
+{
+    ui->alignComboBox->clear();
+    int itemsCount = BackgroundGridWidgetHelper::GetAlignTypesCount();
+    for (int i = 0; i < itemsCount; i ++)
+    {
+        ui->alignComboBox->addItem(BackgroundGridWidgetHelper::GetAlignTypeDesc(i));
+    }
+
+}
+
+void TextPropertyGridWidget::CustomProcessComboboxValueChanged(const PROPERTYGRIDWIDGETSITER& iter, int value)
+{
+		// Don't update the property if the text wasn't actually changed.
+    int curValue = PropertiesHelper::GetAllPropertyValues<int>(this->activeMetadata, iter->second.getProperty().name());
+	if (curValue == value)
+	{
+		return;
+	}
+
+	BaseCommand* command = new ChangePropertyCommand<int>(activeMetadata, iter->second, value);
+    CommandsController::Instance()->ExecuteCommand(command);
+    SafeRelease(command);
+}
+
+void TextPropertyGridWidget::ProcessComboboxValueChanged(QComboBox* senderWidget, const PROPERTYGRIDWIDGETSITER& iter,
+                                             const QString& value)
+{
+	if (senderWidget == NULL)
+    {
+        Logger::Error("TextPropertyGridWidget::ProcessComboboxValueChanged: senderWidget is NULL!");
+        return;
+    }
+    
+    // Try to process this control-specific widgets.
+    int selectedIndex = senderWidget->currentIndex();
+
+	if (senderWidget == ui->alignComboBox)
+    {
+        return CustomProcessComboboxValueChanged(iter, BackgroundGridWidgetHelper::GetAlignType(selectedIndex));
+    }
+
+    // No postprocessing was applied - use the generic process.
+    BasePropertyGridWidget::ProcessComboboxValueChanged(senderWidget, iter, value);
+}
+
+void TextPropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue(QComboBox* comboBoxWidget, const QMetaProperty& curProperty)
+{
+	if (!this->activeMetadata)
+    {
+        return;
+    }
+
+    bool isPropertyValueDiffers = false;
+    const QString& propertyName = curProperty.name();
+    int propertyValue = PropertiesHelper::GetPropertyValue<int>(this->activeMetadata, propertyName, isPropertyValueDiffers);
+
+    // Firstly check the custom comboboxes.
+    if (comboBoxWidget == ui->alignComboBox)
+    {
+        UpdateWidgetPalette(comboBoxWidget, propertyName);
+        return SetComboboxSelectedItem(comboBoxWidget,
+                                       BackgroundGridWidgetHelper::GetAlignTypeDescByType(propertyValue));
+    }
+
+    // Not related to the custom combobox - call the generic one.
+    BasePropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue(comboBoxWidget, curProperty);
 }
