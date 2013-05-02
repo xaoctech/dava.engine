@@ -32,12 +32,12 @@
 #include "Sound/Sound.h"
 #include "Animation/LinearAnimation.h"
 #include "Sound/FMODUtils.h"
+#include "Sound/SoundSystem.h"
 
 namespace DAVA
 {
 
-SoundGroup::SoundGroup() :
-animatedVolume(-1.f)
+SoundGroup::SoundGroup()
 {
 	FMOD_VERIFY(SoundSystem::Instance()->fmodSystem->createSoundGroup(0, &fmodSoundGroup));
 }
@@ -62,30 +62,6 @@ float32 SoundGroup::GetVolume()
 void SoundGroup::Stop()
 {
 	FMOD_VERIFY(fmodSoundGroup->stop());
-}
-
-void SoundGroup::Update()
-{
-	if(animatedVolume != -1.f)
-		SetVolume(animatedVolume);
-}
-
-Animation * SoundGroup::VolumeAnimation(float32 newVolume, float32 time, int32 track /*= 0*/)
-{
-	animatedVolume = GetVolume();
-	Animation * a = new LinearAnimation<float32>(this, &animatedVolume, newVolume, time, Interpolation::LINEAR);
-	a->AddEvent(Animation::EVENT_ANIMATION_END, Message(this, &SoundGroup::OnVolumeAnimationEnded));
-	Retain();
-	a->Start(track);
-
-	return a;
-}
-
-void SoundGroup::OnVolumeAnimationEnded(BaseObject * caller, void * userData, void * callerData)
-{
-	SetVolume(animatedVolume);
-	animatedVolume = -1.f;
-	Release();
 }
 
 };

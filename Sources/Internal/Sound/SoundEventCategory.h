@@ -28,24 +28,38 @@
         * Created by Igor Solovey
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_FMODUTILS_H__
-#define __DAVAENGINE_FMODUTILS_H__
+#ifndef __DAVAENGINE_SOUND_EVENT_CATEGORY_H__
+#define __DAVAENGINE_SOUND_EVENT_CATEGORY_H__
 
-#include "fmod_event.hpp"
-#include "fmod_errors.h"
+#include "Base/BaseTypes.h"
+#include "Base/BaseObject.h"
+#include "Sound/VolumeAnimatedObject.h"
+
+namespace FMOD
+{
+class EventCategory;
+};
 
 namespace DAVA
 {
 
-#define FMOD_VERIFY(command) \
-	{ \
-	FMOD_RESULT result = command; \
-	if(result != FMOD_OK) \
-	{ \
-		Logger::Error("FMOD: %s file:%s line:%d failed with error: %s", #command, __FILE__, __LINE__, FMOD_ErrorString(result)); \
-	} \
-} \
+class SoundEventCategory : public VolumeAnimatedObject
+{
+public:
+	SoundEventCategory(FMOD::EventCategory * category);
+	~SoundEventCategory();
 
-}
+	void SetVolume(float32 volume);
+	float32	GetVolume();
 
-#endif //__DAVAENGINE_FMODUTILS_H__
+	void Stop();
+	void Pause(bool isPaused);
+	bool GetPaused();
+
+private:
+	FMOD::EventCategory * fmodEventCategory;
+};
+
+};
+
+#endif //__DAVAENGINE_SOUND_EVENT_CATEGORY_H__

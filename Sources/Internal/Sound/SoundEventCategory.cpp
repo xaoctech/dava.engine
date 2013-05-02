@@ -28,24 +28,49 @@
         * Created by Igor Solovey
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_FMODUTILS_H__
-#define __DAVAENGINE_FMODUTILS_H__
-
-#include "fmod_event.hpp"
-#include "fmod_errors.h"
+#include "Sound/SoundEventCategory.h"
+#include "Animation/LinearAnimation.h"
+#include "Sound/FMODUtils.h"
 
 namespace DAVA
 {
 
-#define FMOD_VERIFY(command) \
-	{ \
-	FMOD_RESULT result = command; \
-	if(result != FMOD_OK) \
-	{ \
-		Logger::Error("FMOD: %s file:%s line:%d failed with error: %s", #command, __FILE__, __LINE__, FMOD_ErrorString(result)); \
-	} \
-} \
-
+SoundEventCategory::SoundEventCategory(FMOD::EventCategory * category) :
+	fmodEventCategory(category) 
+{
 }
 
-#endif //__DAVAENGINE_FMODUTILS_H__
+SoundEventCategory::~SoundEventCategory()
+{
+}
+
+void SoundEventCategory::SetVolume(float32 volume)
+{
+	FMOD_VERIFY(fmodEventCategory->setVolume(volume));
+}
+
+float32 SoundEventCategory::GetVolume()
+{
+	float32 volume;
+	FMOD_VERIFY(fmodEventCategory->getVolume(&volume));
+	return volume;
+}
+
+void SoundEventCategory::Stop()
+{
+	FMOD_VERIFY(fmodEventCategory->stopAllEvents());
+}
+
+void SoundEventCategory::Pause(bool isPaused)
+{
+	FMOD_VERIFY(fmodEventCategory->setPaused(isPaused));
+}
+
+bool SoundEventCategory::GetPaused()
+{
+	bool isPaused = false;
+	FMOD_VERIFY(fmodEventCategory->getPaused(&isPaused));
+	return isPaused;
+}
+
+};

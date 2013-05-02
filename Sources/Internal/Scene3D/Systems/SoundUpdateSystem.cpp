@@ -25,27 +25,45 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Igor Solovey
+        * Created by Igor Solovey 
 =====================================================================================*/
-
-#ifndef __DAVAENGINE_FMODUTILS_H__
-#define __DAVAENGINE_FMODUTILS_H__
-
-#include "fmod_event.hpp"
-#include "fmod_errors.h"
+#include "Scene3D/Systems/SoundUpdateSystem.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Entity.h"
+#include "Scene3D/Scene.h"
+#include "Scene3D/Components/TransformComponent.h"
+#include "Sound/SoundEvent.h"
 
 namespace DAVA
 {
-
-#define FMOD_VERIFY(command) \
-	{ \
-	FMOD_RESULT result = command; \
-	if(result != FMOD_OK) \
-	{ \
-		Logger::Error("FMOD: %s file:%s line:%d failed with error: %s", #command, __FILE__, __LINE__, FMOD_ErrorString(result)); \
-	} \
-} \
-
+SoundUpdateSystem::SoundUpdateSystem(Scene * scene)
+:	SceneSystem(scene)
+{
+	scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::WORLD_TRANSFORM_CHANGED);
+	scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::SOUND_CHANGED);
 }
 
-#endif //__DAVAENGINE_FMODUTILS_H__
+SoundUpdateSystem::~SoundUpdateSystem()
+{
+}
+
+void SoundUpdateSystem::ImmediateEvent(Entity * entity, uint32 event)
+{
+    if (event == EventSystem::WORLD_TRANSFORM_CHANGED)
+    {
+        Matrix4 * worldTransformPointer = ((TransformComponent*)entity->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransformPtr();
+		Vector3 translation = worldTransformPointer->GetTranslationVector();
+		
+		//SoundEvent * sEvent = ((SoundComponent *)entity->GetComponent(Component::SOUND_COMPONENT))->GetSoundEvent();
+		//sEvent->SetPosition(translation);
+    }
+
+	if (event == EventSystem::SOUND_CHANGED)
+	{
+		//SoundComponent * soundComponent = (SoundComponent *)entity->GetComponent(Component::SOUND_COMPONENT);
+		//SoundEvent * sEvent = SounsSystem::Instance()->CreateSoundEvent(soundComponent->GetEventPath());
+		//soundComponent->SetSoundEvent(sEvent);
+	}
+}
+    
+};

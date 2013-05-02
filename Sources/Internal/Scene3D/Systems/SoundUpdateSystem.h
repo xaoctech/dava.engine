@@ -25,27 +25,26 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Igor Solovey
+        * Created by Igor Solovey 
 =====================================================================================*/
+#ifndef __DAVAENGINE_SCENE3D_SOUNDUPDATESYSTEM_H__
+#define	__DAVAENGINE_SCENE3D_SOUNDUPDATESYSTEM_H__
 
-#ifndef __DAVAENGINE_FMODUTILS_H__
-#define __DAVAENGINE_FMODUTILS_H__
-
-#include "fmod_event.hpp"
-#include "fmod_errors.h"
+#include "Base/BaseTypes.h"
+#include "Entity/SceneSystem.h"
 
 namespace DAVA
 {
+class SoundUpdateSystem : public SceneSystem
+{
+public:
+    SoundUpdateSystem(Scene * scene);
+    virtual ~SoundUpdateSystem();
 
-#define FMOD_VERIFY(command) \
-	{ \
-	FMOD_RESULT result = command; \
-	if(result != FMOD_OK) \
-	{ \
-		Logger::Error("FMOD: %s file:%s line:%d failed with error: %s", #command, __FILE__, __LINE__, FMOD_ErrorString(result)); \
-	} \
-} \
+    virtual void ImmediateEvent(Entity * entity, uint32 event);
+};
+    
+} // ns
 
-}
+#endif	/* __DAVAENGINE_SCENE3D_SOUNDUPDATESYSTEM_H__ */
 
-#endif //__DAVAENGINE_FMODUTILS_H__

@@ -33,7 +33,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
-#include "Animation/Animation.h"
+#include "Sound/VolumeAnimatedObject.h"
 
 namespace FMOD
 {
@@ -43,7 +43,8 @@ class SoundGroup;
 namespace DAVA
 {
 
-class SoundGroup : public AnimatedObject
+class Animation;
+class SoundGroup : public VolumeAnimatedObject
 {
 public:
 	SoundGroup();
@@ -54,14 +55,7 @@ public:
 
 	void Stop();
 
-	Animation * VolumeAnimation(float32 newVolume, float32 time, int32 track = 0);
-
 private:
-	float32 animatedVolume;
-
-	void Update();
-	void OnVolumeAnimationEnded(BaseObject * caller, void * userData, void * callerData);
-
 	FMOD::SoundGroup * fmodSoundGroup;
 
 friend class Sound;

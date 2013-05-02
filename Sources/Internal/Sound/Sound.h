@@ -33,10 +33,9 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
-#include "Base/BaseMath.h"
 #include "FileSystem/FilePath.h"
-#include "Sound/SoundSystem.h"
 #include "Base/EventDispatcher.h"
+#include "Sound/VolumeAnimatedObject.h"
 
 namespace FMOD
 {
@@ -47,7 +46,7 @@ class ChannelGroup;
 namespace DAVA
 {
 
-class Sound : public BaseObject
+class Sound : public VolumeAnimatedObject
 {
 public:
 
@@ -59,7 +58,7 @@ public:
 
 	enum eEvent
 	{
-		EVENT_COMPLETED = 1 //!< Event is performed when sound playback is completed.
+		EVENT_SOUND_COMPLETED = 1 //!< Event is performed when sound playback is completed.
 	};
 
 	static Sound * Create(const FilePath & fileName, eType type, const FastName & groupName, int32 priority = 128);

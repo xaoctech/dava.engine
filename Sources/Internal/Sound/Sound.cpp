@@ -87,7 +87,7 @@ Sound::~Sound()
 
 void Sound::SetSoundGroup(const FastName & groupName)
 {
-	SoundGroup * soundGroup = SoundSystem::Instance()->GetSoundGroup(groupName);
+	SoundGroup * soundGroup = SoundSystem::Instance()->CreateSoundGroup(groupName);
 	if(soundGroup)
 	{
 		FMOD_VERIFY(fmodSound->setSoundGroup(soundGroup->fmodSoundGroup));
@@ -173,7 +173,7 @@ void Sound::SetLoopCount(int32 loopCount)
 
 void Sound::PerformPlaybackComplete()
 {
-	eventDispatcher.PerformEvent(EVENT_COMPLETED, this);
+	eventDispatcher.PerformEvent(EVENT_SOUND_COMPLETED, this);
 }
 
 FMOD_RESULT F_CALLBACK SoundInstanceEndPlaying(FMOD_CHANNEL *channel, FMOD_CHANNEL_CALLBACKTYPE type, void *commanddata1, void *commanddata2)

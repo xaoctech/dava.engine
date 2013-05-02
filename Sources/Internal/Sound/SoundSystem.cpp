@@ -31,6 +31,9 @@
 #include "Base/FastName.h"
 #include "Sound/SoundSystem.h"
 #include "Sound/SoundGroup.h"
+#include "Sound/SoundEvent.h"
+#include "Sound/SoundEventCategory.h"
+#include "Sound/VolumeAnimatedObject.h"
 #include "Sound/FMODUtils.h"
 
 #ifdef __DAVAENGINE_IPHONE__
@@ -41,8 +44,9 @@ namespace DAVA
 {
 SoundSystem::SoundSystem(int32 maxChannels)
 {
-	FMOD_VERIFY(FMOD::System_Create(&fmodSystem));
-	FMOD_VERIFY(fmodSystem->init(maxChannels, FMOD_INIT_NORMAL, 0));
+	FMOD_VERIFY(FMOD::EventSystem_Create(&fmodEventSystem));
+	FMOD_VERIFY(fmodEventSystem->getSystemObject(&fmodSystem));
+	FMOD_VERIFY(fmodEventSystem->init(maxChannels, FMOD_INIT_NORMAL, 0));
 }
 
 SoundSystem::~SoundSystem()
@@ -55,14 +59,29 @@ SoundSystem::~SoundSystem()
 	FMOD_VERIFY(fmodSystem->release());
 }
 
+void SoundSystem::LoadFEV(const FilePath & filePath)
+{
+	FMOD_VERIFY(fmodEventSystem->load(filePath.ResolvePathname().c_str(), 0, 0));
+}
+
+SoundEvent * SoundSystem::CreateSoundEvent(const String & eventPath)
+{
+	FMOD::Event * fmodEvent = 0;
+	FMOD_VERIFY(fmodEventSystem->getEvent(eventPath.c_str(), FMOD_EVENT_DEFAULT, &fmodEvent));
+	if(fmodEvent)
+		return new SoundEvent(fmodEvent);
+	else
+		return 0;
+}
+
 void SoundSystem::Update()
 {
-	for(Map<int, SoundGroup*>::iterator it = soundGroups.begin(); it != soundGroups.end(); it++)
+	for(Vector<VolumeAnimatedObject *>::iterator it = animatedObjects.begin(); it != animatedObjects.end(); it++)
 	{
-		it->second->Update();
+		(*it)->Update();
 	}
 
-	fmodSystem->update();
+	fmodEventSystem->update();
 }
 
 void SoundSystem::Suspend()
@@ -80,14 +99,14 @@ void SoundSystem::Resume()
 void SoundSystem::SetListenerPosition(const Vector3 & position)
 {
 	FMOD_VECTOR pos = {position.x, position.y, position.z};
-	FMOD_VERIFY(fmodSystem->set3DListenerAttributes(0, &pos, 0, 0, 0));
+	FMOD_VERIFY(fmodEventSystem->set3DListenerAttributes(0, &pos, 0, 0, 0));
 }
 
 void SoundSystem::SetListenerOrientation(const Vector3 & _at, const Vector3 & _up)
 {
 	FMOD_VECTOR at = {_at.x, _at.y, _at.z};
 	FMOD_VECTOR up = {_up.x, _up.y, _up.z};
-	FMOD_VERIFY(fmodSystem->set3DListenerAttributes(0, 0, 0, &at, &up));
+	FMOD_VERIFY(fmodEventSystem->set3DListenerAttributes(0, 0, 0, &at, &up));
 }
 
 SoundGroup * SoundSystem::GetSoundGroup(const FastName & groupName)
@@ -112,6 +131,29 @@ SoundGroup * SoundSystem::CreateSoundGroup(const FastName & groupName)
 	}
 
 	return group;
+}
+
+ScopedPtr<SoundEventCategory> SoundSystem::GetSoundEventCategory(const String & category)
+{
+	FMOD::EventCategory * fmodCategory = 0;
+	FMOD_VERIFY(fmodEventSystem->getCategory(category.c_str(), &fmodCategory));
+
+	if(fmodCategory)
+		return ScopedPtr<SoundEventCategory>(new SoundEventCategory(fmodCategory));
+	else
+		return ScopedPtr<SoundEventCategory>(0);
+}
+
+void SoundSystem::AddVolumeAnimatedObject(VolumeAnimatedObject * object)
+{
+	animatedObjects.push_back(object);
+}
+
+void SoundSystem::RemoveVolumeAnimatedObject(VolumeAnimatedObject * object)
+{
+	Vector<VolumeAnimatedObject *>::iterator it = std::find(animatedObjects.begin(), animatedObjects.end(), object);
+	if(it != animatedObjects.end())
+		animatedObjects.erase(it);
 }
 
 };

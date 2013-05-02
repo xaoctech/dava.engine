@@ -28,24 +28,33 @@
         * Created by Igor Solovey
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_FMODUTILS_H__
-#define __DAVAENGINE_FMODUTILS_H__
+#ifndef __DAVAENGINE_VOLUME_ANIMATED_OBJECT_H__
+#define __DAVAENGINE_VOLUME_ANIMATED_OBJECT_H__
 
-#include "fmod_event.hpp"
-#include "fmod_errors.h"
+#include "Base/BaseTypes.h"
+#include "Animation/AnimatedObject.h"
 
 namespace DAVA
 {
 
-#define FMOD_VERIFY(command) \
-	{ \
-	FMOD_RESULT result = command; \
-	if(result != FMOD_OK) \
-	{ \
-		Logger::Error("FMOD: %s file:%s line:%d failed with error: %s", #command, __FILE__, __LINE__, FMOD_ErrorString(result)); \
-	} \
-} \
+class Animation;
+class VolumeAnimatedObject : public AnimatedObject
+{
+public:
+	VolumeAnimatedObject();
 
-}
+	virtual void SetVolume(float32 volume) = 0;
+	virtual float32 GetVolume() = 0;
 
-#endif //__DAVAENGINE_FMODUTILS_H__
+	Animation * VolumeAnimation(float32 newVolume, float32 time, int32 track = 0);
+	void Update();
+
+private:
+	float32 animatedVolume;
+
+	void OnVolumeAnimationEnded(BaseObject * caller, void * userData, void * callerData);
+};
+
+};
+
+#endif
