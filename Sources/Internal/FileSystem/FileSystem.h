@@ -136,18 +136,6 @@ public:
     virtual void SetDefaultDocumentsDirectory();
     
     /**
-         \brief Function to retrieve full path relative current documents folder
-         \returns path relative corrent documents folder
-     */
-    virtual const FilePath FilepathInDocuments(const char * relativePathname);
-    
-    /**
-         \brief Function to retrieve full path relative current documents folder
-         \returns path relative corrent documents folder
-     */
-    virtual const FilePath FilepathInDocuments(const String & relativePathname);
-    
-    /**
          \brief Function to retrieve user's documents path
          \returns user's documents path
      */

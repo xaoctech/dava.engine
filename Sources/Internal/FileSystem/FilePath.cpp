@@ -85,6 +85,15 @@ FilePath FilePath::FilepathRelativeToBundle(const String & relativePathname)
 	return FilepathRelativeToBundle(dataPath.c_str());
 }
 
+FilePath FilePath::FilepathInDocuments(const char * relativePathname)
+{
+    return FileSystem::Instance()->GetCurrentDocumentsDirectory() + relativePathname;
+}
+
+FilePath FilePath::FilepathInDocuments(const String & relativePathname)
+{
+    return FilepathInDocuments(relativePathname.c_str());
+}
 
 
 FilePath::FilePath()
@@ -420,7 +429,7 @@ String FilePath::GetSystemPathname(const String &pathname)
 		if(find != String::npos)
 		{
 			retPath = retPath.erase(0, 5);
-			retPath = FileSystem::Instance()->FilepathInDocuments(retPath).GetAbsolutePathname();
+			retPath = FilepathInDocuments(retPath).GetAbsolutePathname();
 		}
 	}
     
