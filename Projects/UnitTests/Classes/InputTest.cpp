@@ -70,6 +70,9 @@ void InputTest::LoadResources()
 {
 	GetBackground()->SetColor(Color(1.f, 0, 0, 1));
 	
+	Texture* texture = Texture::CreateFromFile("~res:/TestData/InputTest/rect2.png");
+	Sprite* spr = Sprite::CreateFromTexture(texture,0,0,texture->width,texture->height);
+
 	Font *font = FTFont::Create("~res:/Fonts/korinna.ttf");
     DVASSERT(font);
 	font->SetSize(20);
@@ -82,6 +85,9 @@ void InputTest::LoadResources()
 #else
 	textField->SetFont(font);
 #endif
+	textField->SetSprite(spr,0);
+    textField->SetSpriteAlign(ALIGN_RIGHT);
+	textField->SetTextAlign(ALIGN_LEFT | ALIGN_BOTTOM);
 	textField->SetText(L"textField");
 	textField->SetDebugDraw(true);
 	textField->SetDelegate(new UITextFieldDelegate());
@@ -95,6 +101,7 @@ void InputTest::LoadResources()
 #endif
 	textField->SetText(L"textField");
 	textField->SetDebugDraw(true);
+	textField->SetDelegate(new UITextFieldDelegate());
 	AddControl(textField);
 
 	textField = new UITextField(Rect(750, 10, 100, 500));
@@ -105,6 +112,7 @@ void InputTest::LoadResources()
 #endif
 	textField->SetText(L"textField");
 	textField->SetDebugDraw(true);
+	textField->SetDelegate(new UITextFieldDelegate());
 	AddControl(textField);
 
 	testButton = new UIButton(Rect(0, 300, 300, 30));
@@ -151,6 +159,9 @@ void InputTest::LoadResources()
 	AddControl(webView3);
 
 	AddControl(testButton);
+    
+    SafeRelease(spr);
+    SafeRelease(texture);
 }
 
 void InputTest::UnloadResources()

@@ -65,11 +65,7 @@ void BackGroundPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
 	
     RegisterColorButtonWidgetForProperty(propertiesMap, PropertyNames::BACKGROUND_COLOR_PROPERTY_NAME, ui->selectColorButton, false, true);
 
-    // Editing of sprites is not allowed for UIStaticText.
-    /*bool disableSpriteEditingControls = (dynamic_cast<UIStaticTextMetadata*>(activeMetadata) != NULL);
-    ui->spriteLineEdit->setDisabled(disableSpriteEditingControls);
-    ui->frameSpinBox->setDisabled(disableSpriteEditingControls);
-    ui->openSpriteButton->setDisabled(disableSpriteEditingControls);*/
+	ui->spriteLineEdit->setEnabled(true);
 	HandleDrawTypeComboBox();
 }
 

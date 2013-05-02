@@ -56,8 +56,6 @@ class UIControlMetadata : public BaseMetadata
 	Q_PROPERTY(float LeftRightStretchCap READ GetLeftRightStretchCap WRITE SetLeftRightStretchCap);
 	Q_PROPERTY(float TopBottomStretchCap READ GetTopBottomStretchCap WRITE SetTopBottomStretchCap);
 
-	Q_PROPERTY(int SpriteAlign READ GetSpriteAlign WRITE SetSpriteAlign);
-
     // Flag Properties
     Q_PROPERTY(bool Selected READ GetSelected WRITE SetSelected);
     Q_PROPERTY(bool Visible READ GetVisible WRITE SetVisible);
@@ -140,9 +138,6 @@ protected:
 	
 	virtual float GetTopBottomStretchCap();
 	virtual void SetTopBottomStretchCap(float value);
-
-	virtual int GetSpriteAlign();
-	virtual void SetSpriteAlign(int value);
 
     //Color getter/setter. Also virtual.
     virtual QColor GetColor();
