@@ -283,6 +283,11 @@ void UITextField::SetShadowColor(const Color& color)
 	staticText->SetShadowColor(color);
    }
 
+void UITextField::SetTextAlign(int32 align)
+{
+	staticText->SetTextAlign(align);
+}
+
 void UITextField::SetFontSize(float size)
 {
 #ifdef __DAVAENGINE_IPHONE__
@@ -358,6 +363,11 @@ const WideString & UITextField::GetText()
 	Color UITextField::GetShadowColor()
 	{
 		return staticText ? staticText->GetShadowColor() : Color(1,1,1,1);
+	}
+
+	int32 UITextField::GetTextAlign()
+	{
+		return staticText ? staticText->GetTextAlign() : ALIGN_HCENTER|ALIGN_VCENTER;
 	}
 
 void UITextField::Input(UIEvent *currentInput)
