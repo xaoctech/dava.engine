@@ -578,7 +578,7 @@ void CommandSaveParticleEmitterToYaml::Execute()
 }
 
 CommandLoadInnerEmitterFromYaml::CommandLoadInnerEmitterFromYaml() :
-	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_LOAD_INNER_EMITTER_FROM_YAML)
 {
 }
 
@@ -613,7 +613,7 @@ void CommandLoadInnerEmitterFromYaml::Execute()
 }
 
 CommandSaveInnerEmitterToYaml::CommandSaveInnerEmitterToYaml(bool forceAskFilename) :
-	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_SAVE_INNER_EMITTER_TO_YAML)
 {
     this->forceAskFilename = forceAskFilename;
 }
