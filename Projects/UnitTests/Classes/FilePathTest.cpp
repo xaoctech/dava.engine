@@ -199,6 +199,7 @@ void FilePathTest::WinTestFunction(PerfFuncData * data)
     
     TEST_VERIFY(!filepath0.IsEmpty());
     TEST_VERIFY(!filepath0.IsDirectoryPathname());
+    TEST_VERIFY(filepath0.GetType() == FilePath::PATH_IN_RESOURCES);
     
     TEST_VERIFY(filepath0.GetFilename() == "texture.tex");
     TEST_VERIFY(filepath0.GetBasename() == "texture");
@@ -233,23 +234,30 @@ void FilePathTest::WinTestFunction(PerfFuncData * data)
     TEST_VERIFY(filepath0.GetDirectory() == "c:/Mac/Users/");
     
     TEST_VERIFY(filepath0.GetAbsolutePathname() == "c:/Mac/Users/image.doc")
-    
+    TEST_VERIFY(filepath0.GetType() == FilePath::PATH_IN_FILESYSTEM);
+
     
     FilePath filepath2(filepath0);
     TEST_VERIFY(filepath0 == filepath2);
-    
+    TEST_VERIFY(filepath2.GetType() == FilePath::PATH_IN_FILESYSTEM);
+
     FilePath filepath3;
     TEST_VERIFY(filepath3.IsEmpty());
     TEST_VERIFY(!filepath3.IsDirectoryPathname());
+    TEST_VERIFY(filepath3.GetType() == FilePath::PATH_IN_FILESYSTEM);
+
     
     filepath3 = filepath0;
     TEST_VERIFY(filepath0 == filepath3);
     TEST_VERIFY(filepath2 == filepath3);
-    
+    TEST_VERIFY(filepath3.GetType() == FilePath::PATH_IN_FILESYSTEM);
+
     
     FilePath filepath4("~res:/Gfx/UI/", "Screen/texture.tex");
     TEST_VERIFY(!filepath4.IsEmpty());
     TEST_VERIFY(!filepath4.IsDirectoryPathname());
+    TEST_VERIFY(filepath4.GetType() == FilePath::PATH_IN_RESOURCES);
+
     
     TEST_VERIFY(filepath4.GetFilename() == "texture.tex");
     TEST_VERIFY(filepath4.GetBasename() == "texture");
@@ -266,6 +274,8 @@ void FilePathTest::WinTestFunction(PerfFuncData * data)
     FilePath filepath5("~res:/Gfx/UI/", "../Screen/texture.tex");
     TEST_VERIFY(!filepath5.IsEmpty());
     TEST_VERIFY(!filepath5.IsDirectoryPathname());
+    TEST_VERIFY(filepath5.GetType() == FilePath::PATH_IN_RESOURCES);
+
     
     TEST_VERIFY(filepath5.GetFilename() == "texture.tex");
     TEST_VERIFY(filepath5.GetBasename() == "texture");
@@ -280,14 +290,18 @@ void FilePathTest::WinTestFunction(PerfFuncData * data)
     
     FilePath filepath6("~res:/Gfx/Screen/texture.tex");
     TEST_VERIFY(filepath5 == filepath6);
+    TEST_VERIFY(filepath6.GetType() == FilePath::PATH_IN_RESOURCES);
+
     
     FilePath filepath7("~res:/Gfx/Screen/");
     TEST_VERIFY(!filepath7.IsEmpty());
     TEST_VERIFY(filepath7.IsDirectoryPathname());
-    
+    TEST_VERIFY(filepath7.GetType() == FilePath::PATH_IN_RESOURCES);
+
     FilePath filepath8 = filepath7 + "texture.tex";
     TEST_VERIFY(filepath8 == filepath6);
-    
+    TEST_VERIFY(filepath8.GetType() == FilePath::PATH_IN_RESOURCES);
+
     
     FilePath::SetBundleName("c:/TestProject/Data");
     FilePath filepath9("~res:/Gfx/UI/Screen/texture.tex");
@@ -295,10 +309,16 @@ void FilePathTest::WinTestFunction(PerfFuncData * data)
     TEST_VERIFY(filepath9 == filepath10);
     TEST_VERIFY(filepath8 != filepath10);
     
+    TEST_VERIFY(filepath9.GetType() == FilePath::PATH_IN_RESOURCES);
+    TEST_VERIFY(filepath10.GetType() == FilePath::PATH_IN_RESOURCES);
+
+    
+    
     FilePath filepath11("texture.tex");
     TEST_VERIFY(!filepath11.IsEmpty());
     TEST_VERIFY(!filepath11.IsDirectoryPathname());
-    
+    TEST_VERIFY(filepath11.GetType() == FilePath::PATH_IN_FILESYSTEM);
+
     TEST_VERIFY(filepath11.GetFilename() == "texture.tex");
     TEST_VERIFY(filepath11.GetBasename() == "texture");
     TEST_VERIFY(filepath11.GetExtension() == ".tex");
@@ -319,6 +339,8 @@ void FilePathTest::WinTestFunction(PerfFuncData * data)
     FilePath filepath12("c:/Users/Test");
     filepath12.MakeDirectoryPathname();
     DVASSERT(filepath12.IsDirectoryPathname());
+    TEST_VERIFY(filepath12.GetType() == FilePath::PATH_IN_FILESYSTEM);
+
     
     TEST_VERIFY(filepath12.GetFilename() == "");
     TEST_VERIFY(filepath12.GetBasename() == "");
@@ -331,7 +353,9 @@ void FilePathTest::WinTestFunction(PerfFuncData * data)
     TEST_VERIFY(filepath13.GetBasename() == "file");
     TEST_VERIFY(filepath13.GetExtension() == "");
     TEST_VERIFY(filepath13.GetDirectory() == "c:/Users/Test/");
+    TEST_VERIFY(filepath13.GetType() == FilePath::PATH_IN_FILESYSTEM);
 
+    
     
     TEST_VERIFY(filepath0.GetAbsolutePathname() == "c:/Mac/Users/image.doc");
     TEST_VERIFY(filepath2.GetAbsolutePathname() == "c:/Mac/Users/image.doc");

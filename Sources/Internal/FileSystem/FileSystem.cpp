@@ -328,10 +328,8 @@ uint32 FileSystem::DeleteDirectoryFiles(const FilePath & path, bool isRecursive)
 File *FileSystem::CreateFileForFrameworkPath(const FilePath & frameworkPath, uint32 attributes)
 {
 #if defined(__DAVAENGINE_ANDROID__)
-    String::size_type find = frameworkPath.GetAbsolutePathname().find("~res:");
-
-	if(String::npos != find)
-	{
+    if(frameworkPath.GetType() == FilePath::PATH_IN_RESOURCES)
+    {
 #ifdef USE_LOCAL_RESOURCES
         FilePath path(USE_LOCAL_RESOURCES_PATH);
 		path += frameworkPath.GetAbsolutePathname().c_str() + 5;
@@ -339,12 +337,12 @@ File *FileSystem::CreateFileForFrameworkPath(const FilePath & frameworkPath, uin
 #else
 		return APKFile::CreateFromAssets(frameworkPath, attributes);
 #endif
-	}
+    }
 	else
 	{
 		return File::CreateFromSystemPath(frameworkPath, attributes);
 	}
-
+    
 #else //#if defined(__DAVAENGINE_ANDROID__)
 	return File::CreateFromSystemPath(frameworkPath, attributes);
 #endif //#if defined(__DAVAENGINE_ANDROID__)

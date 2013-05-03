@@ -41,6 +41,8 @@ namespace DAVA
  */
 class FilePath
 {
+public:
+    
     enum ePathType
     {
         PATH_IN_FILESYSTEM = 0,     // not framework path /Users/... or c:/...
@@ -197,6 +199,10 @@ public:
 	String GetFrameworkPath();
 
 
+	/**
+        \brief Function to set project path for resolving pathnames such as "~res:/Gfx/image.png"
+        \param[in] new project path
+	 */
 	static void SetBundleName(const FilePath &newBundlePath);
 		
 	/**
@@ -217,6 +223,11 @@ public:
      */
     static FilePath FilepathInDocuments(const String & relativePathname);
 
+    
+    /**
+        \brief Function to retrieve type of path
+        \returns type of path
+     */
     inline const ePathType GetType() const;
     
     
