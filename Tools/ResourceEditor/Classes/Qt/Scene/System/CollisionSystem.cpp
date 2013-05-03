@@ -11,7 +11,6 @@
 
 SceneCollisionSystem::SceneCollisionSystem(DAVA::Scene * scene)
 	: DAVA::SceneSystem(scene)
-	, debugDrawFlags(DEBUG_DRAW_LAND_RAYTEST | DEBUG_DRAW_LAND_COLLISION)
 	, rayIntersectCached(false)
 {
 	btVector3 worldMin(-1000,-1000,-1000);
@@ -56,14 +55,14 @@ SceneCollisionSystem::~SceneCollisionSystem()
 	DAVA::SafeDelete(landCollConf);
 }
 
-void SceneCollisionSystem::SetDebugDrawFlags(int flags)
+void SceneCollisionSystem::SetDrawMode(int mode)
 {
-	debugDrawFlags = flags;
+	drawMode = mode;
 }
 
 int SceneCollisionSystem::GetDebugDrawFlags()
 {
-	return debugDrawFlags;
+	return drawMode;
 }
 
 const EntityGroup* SceneCollisionSystem::ObjectsRayTest(const DAVA::Vector3 &from, const DAVA::Vector3 &to)
@@ -229,36 +228,36 @@ void SceneCollisionSystem::Draw()
 	int oldState = DAVA::RenderManager::Instance()->GetState();
 	DAVA::RenderManager::Instance()->SetState(DAVA::RenderState::STATE_COLORMASK_ALL | DAVA::RenderState::STATE_DEPTH_WRITE | DAVA::RenderState::STATE_DEPTH_TEST);
 
-	if(debugDrawFlags & DEBUG_DRAW_LAND)
+	if(drawMode & ST_COLL_DRAW_LAND)
 	{
 		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0, 0.5f, 0, 1.0f));
 		landCollWorld->debugDrawWorld();
 	}
 
-	if(debugDrawFlags & DEBUG_DRAW_LAND_RAYTEST)
+	if(drawMode & ST_COLL_DRAW_LAND_RAYTEST)
 	{
 		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0, 1.0f, 0, 1.0f));
 		DAVA::RenderHelper::Instance()->DrawLine(lastLandRayFrom, lastLandRayTo);
 	}
 
-	if(debugDrawFlags & DEBUG_DRAW_LAND_COLLISION)
+	if(drawMode & ST_COLL_DRAW_LAND_COLLISION)
 	{
 		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0, 1.0f, 0, 1.0f));
-		DAVA::RenderHelper::Instance()->DrawPoint(lastLandCollision, 10.0f);
+		DAVA::RenderHelper::Instance()->DrawPoint(lastLandCollision, 7.0f);
 	}
 
-	if(debugDrawFlags & DEBUG_DRAW_OBJECTS)
+	if(drawMode & ST_COLL_DRAW_OBJECTS)
 	{
 		objectsCollWorld->debugDrawWorld();
 	}
 
-	if(debugDrawFlags & DEBUG_DRAW_OBJECTS_RAYTEST)
+	if(drawMode & ST_COLL_DRAW_OBJECTS_RAYTEST)
 	{
 		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 0, 0, 1.0f));
 		DAVA::RenderHelper::Instance()->DrawLine(lastRayFrom, lastRayTo);
 	}
 
-	if(debugDrawFlags & DEBUG_DRAW_OBJECTS_SELECTED)
+	if(drawMode & ST_COLL_DRAW_OBJECTS_SELECTED)
 	{
 		// current selected entities
 		SceneSelectionSystem *selectionSystem = ((SceneEditorProxy *) GetScene())->selectionSystem;
