@@ -8,7 +8,7 @@
 
 
 CommandToggleSetSwitchIndex::CommandToggleSetSwitchIndex(uint32 value, SetSwitchIndexHelper::eSET_SWITCH_INDEX state)
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_TOGGLE_SET_SWITCH_INDEX)
 {
     this->value = value;
 	this->swtichState = state;

@@ -63,20 +63,20 @@ void Replay::StartRecord(const FilePath & dirName)
 	FileSystem::Instance()->DeleteDirectoryFiles(dirName, false);
 	FileSystem::Instance()->CreateDirectory(dirName);
     
-    FileList * list = new FileList(FilePath("~doc:/"));
+    FileList * list = new FileList("~doc:/");
     int32 listSize = list->GetCount();
     for(int32 i = 0; i < listSize; ++i)
     {
         String fileName = list->GetFilename(i);
         if(!list->IsNavigationDirectory(i) && !list->IsDirectory(i) && fileName != "LastReplay.rep")
         {
-            FileSystem::Instance()->CopyFile(list->GetPathname(i), dirName + FilePath(fileName));
+            FileSystem::Instance()->CopyFile(list->GetPathname(i), dirName + fileName);
         }
     }
 
     list->Release();
 
-    FilePath filePath = dirName + FilePath("LastReplay.rep");
+    FilePath filePath = dirName + "LastReplay.rep";
     file = File::Create(filePath, File::CREATE | File::WRITE);
 
     Random::Instance()->Seed();
@@ -129,7 +129,7 @@ void Replay::StartPlayback(const FilePath & dirName)
 	pauseReplay = false;
 	isPlayback = true;
 
-	FileSystem::Instance()->DeleteDirectoryFiles(FilePath("~doc:/"), false);
+	FileSystem::Instance()->DeleteDirectoryFiles("~doc:/", false);
 	FileList * list = new FileList(dirName);
 	int32 listSize = list->GetCount();
 	for(int32 i = 0; i < listSize; ++i)
@@ -137,7 +137,7 @@ void Replay::StartPlayback(const FilePath & dirName)
 		String fileName = list->GetFilename(i);
 		if(!list->IsNavigationDirectory(i) && !list->IsDirectory(i))
 		{
-            FilePath existingFile = dirName + FilePath(fileName);
+            FilePath existingFile = dirName + fileName;
             FilePath newFile("~doc:/" + fileName);
             
 			FileSystem::Instance()->CopyFile(existingFile, newFile);
@@ -148,7 +148,7 @@ void Replay::StartPlayback(const FilePath & dirName)
 
 
 	skipType = false;
-	file = File::Create(FilePath("~doc:/LastReplay.rep"), File::OPEN | File::READ);
+	file = File::Create("~doc:/LastReplay.rep", File::OPEN | File::READ);
 }
 
 float32 Replay::PlayFrameTime()

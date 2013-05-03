@@ -31,7 +31,7 @@ public:
 
 	HierarchyTreeNode* GetRoot() {return rootNode;};
 	
-	QString GetPlatformFolder() const;
+	FilePath GetPlatformFolder() const;
 	void ActivatePlatform();
 
 	QString GetScreenPath(QString screenName) const;

@@ -914,9 +914,6 @@
     <ClInclude Include="GeneratedFiles\ui_statepropertygridwidget.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_textpropertygridwidget.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_uitextfieldpropertygridwidget.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
@@ -1028,9 +1025,6 @@
       <Filter>Form Files\PropertyGridWidgets</Filter>
     </None>
     <None Include="UI\statepropertygridwidget.ui">
-      <Filter>Form Files\PropertyGridWidgets</Filter>
-    </None>
-    <None Include="UI\textpropertygridwidget.ui">
       <Filter>Form Files\PropertyGridWidgets</Filter>
     </None>
     <None Include="UI\uitextfieldpropertygridwidget.ui">

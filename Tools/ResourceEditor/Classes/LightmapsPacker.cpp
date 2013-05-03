@@ -33,7 +33,7 @@ void LightmapsPacker::ParseSpriteDescriptors()
 		file->ReadLine(buf, sizeof(buf)); //textures count
 
 		readSize = file->ReadLine(buf, sizeof(buf)); //texture name
-		FilePath originalTextureName = outputDir + FilePath(String(buf, readSize));
+		FilePath originalTextureName = outputDir + String(buf, readSize);
 		data.textureName = originalTextureName;
 
 		file->ReadLine(buf, sizeof(buf)); //image size

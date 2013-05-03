@@ -138,14 +138,14 @@ void MeshInstancePropertyControl::ReadFrom(Entity * sceneNode)
 void MeshInstancePropertyControl::OnGo2Materials(DAVA::BaseObject *object, void *userData, void *callerData)
 {
     Material *material = (Material *)userData;
-    SceneEditorScreenMain *screen = (SceneEditorScreenMain *)UIScreenManager::Instance()->GetScreen(SCREEN_SCENE_EDITOR_MAIN);
+    SceneEditorScreenMain *screen = (SceneEditorScreenMain *)UIScreenManager::Instance()->GetScreen(SCREEN_MAIN);
     screen->EditMaterial(material);
 }
 
 void MeshInstancePropertyControl::OnShowTexture(DAVA::BaseObject *object, void *userData, void *callerData)
 {
     PolygonGroup *polygonGroup = (PolygonGroup *)userData;
-    SceneEditorScreenMain *screen = (SceneEditorScreenMain *)UIScreenManager::Instance()->GetScreen(SCREEN_SCENE_EDITOR_MAIN);
+    SceneEditorScreenMain *screen = (SceneEditorScreenMain *)UIScreenManager::Instance()->GetScreen(SCREEN_MAIN);
     screen->ShowTextureTriangles(polygonGroup);
 }
 

@@ -30,7 +30,7 @@ void DefinitionFile::LoadPNG(const FilePath & _filename, const FilePath & pathTo
     String nameWithoutExt = _filename.GetBasename();
     FilePath corespondingPngImage = FilePath::CreateWithNewExtension(_filename, ".png");
 
-	filename = pathToProcess + FilePath(nameWithoutExt + String(".txt"));
+	filename = pathToProcess + (nameWithoutExt + String(".txt"));
 	frameCount = 1;
 
 	PngImageExt image;
@@ -44,7 +44,7 @@ void DefinitionFile::LoadPNG(const FilePath & _filename, const FilePath & pathTo
 	frameRects[0].dx = spriteWidth;
 	frameRects[0].dy = spriteHeight;
 
-	FilePath fileWrite = pathToProcess + FilePath(nameWithoutExt + "0" + String(".png"));
+	FilePath fileWrite = pathToProcess + (nameWithoutExt + "0" + String(".png"));
 	FileSystem::Instance()->CopyFile(_filename, fileWrite);
 }
 
@@ -54,13 +54,13 @@ bool DefinitionFile::LoadPNGDef(const FilePath & _filename, const FilePath & pat
 
 	if (CommandLineParser::Instance()->GetVerbose())printf("* Load PNG Definition: %s\n", _filename.GetAbsolutePathname().c_str());
 	
-	FILE * fp = fopen(_filename.ResolvePathname().c_str(), "rt");
+	FILE * fp = fopen(_filename.GetAbsolutePathname().c_str(), "rt");
 	fscanf(fp, "%d", &frameCount);
 
 	String nameWithoutExt = _filename.GetBasename();
-	FilePath corespondingPngImage = FilePath(_filename.GetDirectory()) +  FilePath(nameWithoutExt + String(".png"));
+	FilePath corespondingPngImage = _filename.GetDirectory() +  (nameWithoutExt + String(".png"));
 
-	filename = pathToProcess + FilePath(nameWithoutExt + String(".txt"));
+	filename = pathToProcess + (nameWithoutExt + String(".txt"));
 	
 	PngImageExt image;
 	image.Read(corespondingPngImage);
@@ -91,7 +91,7 @@ bool DefinitionFile::LoadPNGDef(const FilePath & _filename, const FilePath & pat
 		
 		char number[10];
 		sprintf(number, "%d", k);
-		FilePath fileWrite = pathToProcess + FilePath(nameWithoutExt + String(number) + String(".png"));
+		FilePath fileWrite = pathToProcess + (nameWithoutExt + String(number) + String(".png"));
 		frameX2.Write(fileWrite);		
 	
 		frameRects[k].x = reducedRect.x;
@@ -132,7 +132,7 @@ bool DefinitionFile::LoadPNGDef(const FilePath & _filename, const FilePath & pat
 bool DefinitionFile::Load(const FilePath & _filename)
 {
 	filename = _filename;
-	FILE * fp = fopen(filename.ResolvePathname().c_str(), "rt");
+	FILE * fp = fopen(filename.GetAbsolutePathname().c_str(), "rt");
 	if (!fp)
 	{
 		printf("*** ERROR: Can't open definition file: %s\n",filename.GetAbsolutePathname().c_str());
