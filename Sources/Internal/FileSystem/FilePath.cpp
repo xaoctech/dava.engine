@@ -30,6 +30,15 @@
 #include "FileSystem/FilePath.h"
 #include "FileSystem/FileSystem.h"
 #include "Utils/Utils.h"
+#include "Utils/StringFormat.h"
+
+#if defined(__DAVAENGINE_ANDROID__)
+#ifdef USE_LOCAL_RESOURCES
+#define USE_LOCAL_RESOURCES_PATH "/mnt/sdcard/DavaProject/"
+#endif
+#endif
+
+
 
 namespace DAVA
 {
@@ -69,6 +78,7 @@ FilePath FilePath::FilepathRelativeToBundle(const char * relativePathname)
 
 
 #if defined(__DAVAENGINE_ANDROID__)
+
 FilePath FilePath::FilepathRelativeToBundle(const char * relativePathname)
 {
 #ifdef USE_LOCAL_RESOURCES
@@ -175,7 +185,6 @@ void FilePath::Initialize(const String &_pathname)
     if(IsAbsolutePathname(pathname))
     {
         absolutePathname = GetSystemPathname(pathname, pathType);
-        Logger::Debug("[FilePath::Initialize] absolutePathname: %s", absolutePathname.c_str());
     }
     else
     {
