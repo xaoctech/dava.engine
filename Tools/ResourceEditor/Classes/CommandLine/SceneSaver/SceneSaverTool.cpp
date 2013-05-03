@@ -104,26 +104,17 @@ bool SceneSaverTool::InitializeFromCommandLine()
 
 void SceneSaverTool::Process()
 {
-    bool needLocalSceneSaver = (SceneSaver::Instance() == NULL);
-    if(needLocalSceneSaver)
-    {
-        new SceneSaver();
-    }
+    SceneSaver saver;
 
-    SceneSaver::Instance()->SetInFolder(inFolder);
+    saver.SetInFolder(inFolder);
     if(commandAction == ACTION_SAVE)
     {
-        SceneSaver::Instance()->SetOutFolder(outFolder);
-        SceneSaver::Instance()->SaveFile(filename, errors);
+        saver.SetOutFolder(outFolder);
+        saver.SaveFile(filename, errors);
     }
     else if(commandAction == ACTION_RESAVE)
     {
-        SceneSaver::Instance()->ResaveFile(filename, errors);
-    }
-    
-    if(needLocalSceneSaver)
-    {
-        SceneSaver::Instance()->Release();
+        saver.ResaveFile(filename, errors);
     }
 }
 
