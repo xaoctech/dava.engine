@@ -61,7 +61,7 @@ SoundSystem::~SoundSystem()
 
 void SoundSystem::LoadFEV(const FilePath & filePath)
 {
-	FMOD_VERIFY(fmodEventSystem->load(filePath.ResolvePathname().c_str(), 0, 0));
+	FMOD_VERIFY(fmodEventSystem->load(filePath.GetAbsolutePathname().c_str(), 0, 0));
 }
 
 SoundEvent * SoundSystem::CreateSoundEvent(const String & eventPath)
