@@ -187,7 +187,7 @@ void RenderObject::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 				KeyedArchive *batchArch = batchesArch->GetArchive(KeyedArchive::GenKeyFromIndex(i));
 				if(NULL != batchArch)
 				{
-					RenderBatch *batch = (RenderBatch *) ObjectFactory::Instance()->New(batchArch->GetString("rb.classname"));
+					RenderBatch *batch = ObjectFactory::Instance()->New<RenderBatch>(batchArch->GetString("rb.classname"));
 					if(NULL != batch)
 					{
 						batch->Load(batchArch, sceneFile);

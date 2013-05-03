@@ -8,7 +8,7 @@
 
 namespace DAVA
 {
-
+    
 class SwitchComponent : public Component
 {
 public:

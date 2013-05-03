@@ -512,7 +512,7 @@ void UIYamlLoader::LoadFromNode(UIControl * parentControl, YamlNode * rootNode, 
 UIControl* UIYamlLoader::CreateControl(const String& type, const String& baseType)
 {
 	// Firstly try Type (Custom Control).
-	UIControl * control = dynamic_cast<UIControl*> (ObjectFactory::Instance()->New(type));
+	UIControl * control = dynamic_cast<UIControl*> (ObjectFactory::Instance()->New<BaseObject>(type));
 	if (control)
 	{
 		// Everything is OK. Just update the custom control type for the control, if any.
@@ -536,7 +536,7 @@ UIControl* UIYamlLoader::CreateControl(const String& type, const String& baseTyp
 	// Retry with base type, if any.
 	if (!baseType.empty())
 	{
-		control = dynamic_cast<UIControl*> (ObjectFactory::Instance()->New(baseType));
+		control = dynamic_cast<UIControl*> (ObjectFactory::Instance()->New<BaseObject>(baseType));
 		if (control)
 		{
 			// Even if the control of the base type was created, we have to store its custom type.
