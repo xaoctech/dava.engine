@@ -104,28 +104,19 @@ bool SceneExporterTool::InitializeFromCommandLine()
 
 void SceneExporterTool::Process()
 {
-    bool needLocalSceneExporter = (SceneExporter::Instance() == NULL);
-    if(needLocalSceneExporter)
-    {
-        new SceneExporter();
-    }
+    SceneExporter exporter;
 
-    SceneExporter::Instance()->SetOutFolder(outFolder);
-    SceneExporter::Instance()->SetInFolder(inFolder);
-    SceneExporter::Instance()->SetExportingFormat(format);
+    exporter.SetOutFolder(outFolder);
+    exporter.SetInFolder(inFolder);
+    exporter.SetExportingFormat(format);
     
     if(commandAction == ACTION_EXPORT_FILE)
     {
-        SceneExporter::Instance()->ExportFile(filename, errors);
+        exporter.ExportFile(filename, errors);
     }
     else if(commandAction == ACTION_EXPORT_FOLDER)
     {
-        SceneExporter::Instance()->ExportFolder(foldername, errors);
-    }
-    
-    if(needLocalSceneExporter)
-    {
-        SceneExporter::Instance()->Release();
+        exporter.ExportFolder(foldername, errors);
     }
 }
 

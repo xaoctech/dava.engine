@@ -138,7 +138,6 @@ void FrameworkWillTerminate()
 	SceneValidator::Instance()->Release();
 	EditorConfig::Instance()->Release();
 	EditorSettings::Instance()->Release();
-    SceneExporter::Instance()->Release();
 
 	CommandLineManager::Instance()->Release();
 }
