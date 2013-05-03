@@ -197,6 +197,19 @@ public:
 	 */
     static const FilePath & GetBundleName();
 
+    /**
+        \brief Function to retrieve full path relative current documents folder
+        \returns path relative corrent documents folder
+     */
+    static FilePath FilepathInDocuments(const char * relativePathname);
+    
+    /**
+        \brief Function to retrieve full path relative current documents folder
+        \returns path relative corrent documents folder
+     */
+    static FilePath FilepathInDocuments(const String & relativePathname);
+
+    
 protected:
     
     void Initialize(const String &pathname);
@@ -220,20 +233,6 @@ protected:
 	static FilePath FilepathRelativeToBundle(const char * relativePathname);
 	static FilePath FilepathRelativeToBundle(const String & relativePathname);
 
-    /**
-     \brief Function to retrieve full path relative current documents folder
-     \returns path relative corrent documents folder
-     */
-    static FilePath FilepathInDocuments(const char * relativePathname);
-    
-    /**
-     \brief Function to retrieve full path relative current documents folder
-     \returns path relative corrent documents folder
-     */
-    static FilePath FilepathInDocuments(const String & relativePathname);
-
-    
-    
 public:
     static String AddPath(const FilePath &folder, const String & addition);
     static String AddPath(const FilePath &folder, const FilePath & addition);
