@@ -512,7 +512,7 @@ void UIControlMetadata::SetTopBottomStretchCap(float value)
     
     GetActiveUIControl()->GetBackground()->SetTopBottomStretchCap(value);
 }
-    
+
 void UIControlMetadata::SetSprite(const QString& value)
 {
     if (!VerifyActiveParamID())

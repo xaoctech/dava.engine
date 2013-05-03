@@ -61,7 +61,8 @@ SceneGraphItem* ParticlesEditorSceneModelHelper::GetGraphItemToBeSelected(GraphI
 
 void ParticlesEditorSceneModelHelper::ResetSelection()
 {
-	ParticlesEditorController::Instance()->CleanupSelectedNode();
+    if(ParticlesEditorController::Instance())
+        ParticlesEditorController::Instance()->CleanupSelectedNode();
 }
 
 SceneGraphItem* ParticlesEditorSceneModelHelper::GetGraphItemToBeSelectedRecursive(GraphItem* rootItem, Entity* node)
