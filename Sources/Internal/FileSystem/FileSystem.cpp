@@ -80,6 +80,8 @@ FileSystem::~FileSystem()
 
 FileSystem::eCreateDirectoryResult FileSystem::CreateDirectory(const FilePath & filePath, bool isRecursive)
 {
+    DVASSERT(filePath.GetType() != FilePath::PATH_IN_RESOURCES);
+    
 	if (!isRecursive)
 	{
         return CreateExactDirectory(filePath);
@@ -124,6 +126,8 @@ FileSystem::eCreateDirectoryResult FileSystem::CreateDirectory(const FilePath & 
     
 FileSystem::eCreateDirectoryResult FileSystem::CreateExactDirectory(const FilePath & filePath)
 {
+    DVASSERT(filePath.GetType() != FilePath::PATH_IN_RESOURCES);
+
     if(IsDirectory(filePath))
         return DIRECTORY_EXISTS;
     
@@ -139,6 +143,8 @@ FileSystem::eCreateDirectoryResult FileSystem::CreateExactDirectory(const FilePa
 
 bool FileSystem::CopyFile(const FilePath & existingFile, const FilePath & newFile)
 {
+    DVASSERT(newFile.GetType() != FilePath::PATH_IN_RESOURCES);
+
 #ifdef __DAVAENGINE_WIN32__
 	BOOL ret = ::CopyFileA(existingFile.GetAbsolutePathname().c_str(), newFile.GetAbsolutePathname().c_str(), true);
 	return ret != 0;
@@ -193,6 +199,8 @@ bool FileSystem::CopyFile(const FilePath & existingFile, const FilePath & newFil
 
 bool FileSystem::MoveFile(const FilePath & existingFile, const FilePath & newFile, bool overwriteExisting/* = false*/)
 {
+    DVASSERT(newFile.GetType() != FilePath::PATH_IN_RESOURCES);
+
 #ifdef __DAVAENGINE_WIN32__
 	DWORD flags = (overwriteExisting) ? MOVEFILE_REPLACE_EXISTING : 0;
 	BOOL ret = ::MoveFileExA(existingFile.GetAbsolutePathname().c_str(), newFile.GetAbsolutePathname().c_str(), flags);
@@ -218,6 +226,7 @@ bool FileSystem::MoveFile(const FilePath & existingFile, const FilePath & newFil
 
 bool FileSystem::CopyDirectory(const FilePath & sourceDirectory, const FilePath & destinationDirectory)
 {
+    DVASSERT(destinationDirectory.GetType() != FilePath::PATH_IN_RESOURCES);
     DVASSERT(sourceDirectory.IsDirectoryPathname() && destinationDirectory.IsDirectoryPathname());
     
 	bool ret = true;
@@ -243,6 +252,8 @@ bool FileSystem::CopyDirectory(const FilePath & sourceDirectory, const FilePath 
 	
 bool FileSystem::DeleteFile(const FilePath & filePath)
 {
+    DVASSERT(filePath.GetType() != FilePath::PATH_IN_RESOURCES);
+
 	// function unlink return 0 on success, -1 on error
 	int res = remove(filePath.GetAbsolutePathname().c_str());
 	return (res == 0);
@@ -250,6 +261,7 @@ bool FileSystem::DeleteFile(const FilePath & filePath)
 	
 bool FileSystem::DeleteDirectory(const FilePath & path, bool isRecursive)
 {
+    DVASSERT(path.GetType() != FilePath::PATH_IN_RESOURCES);
     DVASSERT(path.IsDirectoryPathname());
     
 	FileList * fileList = new FileList(path);
@@ -295,6 +307,7 @@ bool FileSystem::DeleteDirectory(const FilePath & path, bool isRecursive)
 	
 uint32 FileSystem::DeleteDirectoryFiles(const FilePath & path, bool isRecursive)
 {
+    DVASSERT(path.GetType() != FilePath::PATH_IN_RESOURCES);
     DVASSERT(path.IsDirectoryPathname());
 
 	uint32 fileCount = 0;
