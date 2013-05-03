@@ -33,6 +33,7 @@ public:
 
 		DEBUG_DRAW_LAND = 0x10,
 		DEBUG_DRAW_LAND_RAYTEST = 0x20,
+		DEBUG_DRAW_LAND_COLLISION = 0x40,
 
 		DEBUG_DRAW_ALL = 0xFFFFFFFF
 	};
@@ -70,6 +71,10 @@ protected:
 
 	EntityGroup rayIntersectedEntities;
 	bool rayIntersectCached;
+
+	DAVA::Vector3 lastLandRayFrom;
+	DAVA::Vector3 lastLandRayTo;
+	DAVA::Vector3 lastLandCollision;
 
 	btDefaultCollisionConfiguration* objectsCollConf;
 	btCollisionDispatcher* objectsCollDisp;
