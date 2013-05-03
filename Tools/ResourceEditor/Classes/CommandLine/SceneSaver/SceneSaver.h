@@ -6,7 +6,7 @@
 
 using namespace DAVA;
 
-class SceneSaver: public DAVA::Singleton<SceneSaver>
+class SceneSaver
 {
 public:
 	SceneSaver();
