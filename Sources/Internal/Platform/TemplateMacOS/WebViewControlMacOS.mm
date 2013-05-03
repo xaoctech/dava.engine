@@ -75,7 +75,8 @@ using namespace DAVA;
 		
 		if (url)
 		{
-			IUIWebViewDelegate::eAction action = delegate->URLChanged(self->webView, [url UTF8String],  self->webView->IsInitiatedByUser());
+            bool currentInitiatedByUser = self->webView->UpdateInitiatedByUserFlag();
+            IUIWebViewDelegate::eAction action = delegate->URLChanged(self->webView, [url UTF8String], currentInitiatedByUser);
 			
 			switch (action)
 			{
