@@ -150,8 +150,8 @@ void LandscapePropertyControl::OnFloatPropertyChanged(PropertyList *forList, con
 			bbox.AddPoint(Vector3(size.x/2.f, size.y/2.f, size.z));
 			
 			Set<String> errorsLog;
-			String heightMap = propertyList->GetFilepathPropertyValue("property.landscape.heightmap");
-			if(SceneValidator::Instance()->ValidateHeightmapPathname(heightMap, errorsLog) && heightMap.length())
+			FilePath heightMap = propertyList->GetFilepathPropertyValue("property.landscape.heightmap");
+			if(SceneValidator::Instance()->ValidateHeightmapPathname(heightMap, errorsLog) && !heightMap.IsEmpty())
 			{
 				landscape->BuildLandscapeFromHeightmapImage(heightMap, bbox);
 			}
@@ -219,7 +219,7 @@ void LandscapePropertyControl::OnIntPropertyChanged(PropertyList *forList, const
 	NodesPropertyControl::OnIntPropertyChanged(forList, forKey, newValue);
 }
 
-void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
+void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const FilePath &newValue)
 {
 	Set<String> errorsLog;
 	if("property.landscape.heightmap" == forKey)
@@ -239,7 +239,7 @@ void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, 
 			bbox.AddPoint(Vector3(-size.x/2.f, -size.y/2.f, 0.f));
 			bbox.AddPoint(Vector3(size.x/2.f, size.y/2.f, size.z));
 
-			if(newValue.length())
+			if(!newValue.IsEmpty())
 			{
 				landscape->BuildLandscapeFromHeightmapImage(newValue, bbox);
 			}
@@ -247,11 +247,11 @@ void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, 
 	}
 	else
 	{
-		bool isValid = (newValue.empty()) ? true: SceneValidator::Instance()->ValidateTexturePathname(newValue, errorsLog);
+		bool isValid = (newValue.IsEmpty()) ? true : SceneValidator::Instance()->ValidateTexturePathname(newValue, errorsLog);
 		if(isValid)
 		{
-            String descriptorPathname = String("");
-            if(!newValue.empty())
+            FilePath descriptorPathname;
+            if(!newValue.IsEmpty())
             {
                 descriptorPathname = TextureDescriptor::GetDescriptorPathname(newValue);
             }
@@ -297,14 +297,17 @@ void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, 
 	}
 }
 
-void LandscapePropertyControl::SetLandscapeTexture(Landscape::eTextureLevel level, const String &texturePathname)
+void LandscapePropertyControl::SetLandscapeTexture(Landscape::eTextureLevel level, const FilePath &texturePathname)
 {
 	Landscape *landscape = GetLandscape();
 	if (!landscape)
 		return;
 
     landscape->SetTexture(level, texturePathname);
-    SceneValidator::Instance()->ValidateTextureAndShowErrors(landscape->GetTexture(level), landscape->GetTextureName(level), Format("Landscape. TextureLevel %d", level));
+    if(!texturePathname.IsEmpty())
+    {
+        SceneValidator::Instance()->ValidateTextureAndShowErrors(landscape->GetTexture(level), landscape->GetTextureName(level), Format("Landscape. TextureLevel %d", level));
+    }
 
     if(Landscape::TEXTURE_TILE_FULL != level)
     {
@@ -406,8 +409,8 @@ void LandscapePropertyControl::GenerateFullTiledTexture(DAVA::BaseObject *object
 	if (!landscape)
 		return;
 
-    String texPathname = landscape->SaveFullTiledTexture();
-    String descriptorPathname = TextureDescriptor::GetDescriptorPathname(texPathname);
+    FilePath texPathname = landscape->SaveFullTiledTexture();
+    FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(texPathname);
     
     TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
     if(!descriptor)
@@ -430,8 +433,8 @@ void LandscapePropertyControl::SaveHeightmapToPng(DAVA::BaseObject *object, void
 		return;
 
     Heightmap * heightmap = landscape->GetHeightmap();
-    String heightmapPath = landscape->GetHeightmapPathname();
-    heightmapPath = FileSystem::ReplaceExtension(heightmapPath, ".png");
+    FilePath heightmapPath = landscape->GetHeightmapPathname();
+    heightmapPath.ReplaceExtension(".png");
     heightmap->SaveToImage(heightmapPath);
 }
 

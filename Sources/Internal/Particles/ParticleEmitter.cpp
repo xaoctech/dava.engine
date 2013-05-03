@@ -147,7 +147,7 @@ void ParticleEmitter::Save(KeyedArchive *archive, SceneFileV2 *sceneFile)
 
 	if(NULL != archive)
 	{
-		String filename = FileSystem::Instance()->AbsoluteToRelativePath(FileSystem::Instance()->GetCanonicalPath(sceneFile->GetScenePath()), FileSystem::Instance()->GetCanonicalPath(configPath));
+        String filename = configPath.GetRelativePathname(sceneFile->GetScenePath());
 		archive->SetString("pe.configpath", filename);
 	}
 }
@@ -161,17 +161,7 @@ void ParticleEmitter::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
 		if(archive->IsKeyExists("pe.configpath"))
 		{
             String filename = archive->GetString("pe.configpath");
-            String sceneFilePath = FileSystem::Instance()->SystemPathForFrameworkPath(sceneFile->GetScenePath());
-            configPath = FileSystem::Instance()->GetCanonicalPath(sceneFilePath + filename);
-
-#if defined (__DAVAENGINE_ANDROID__)
-            String systemPath = FileSystem::Instance()->SystemPathForFrameworkPath("~res:/");
-            String::size_type pos = configPath.find(systemPath);
-            if(pos == 0)
-            {
-                configPath = configPath.replace(pos, systemPath.length(), "~res:/");
-            }
-#endif //#if defined (__DAVAENGINE_ANDROID__)
+			configPath = sceneFile->GetScenePath() + filename;
             
 			LoadFromYaml(configPath);
 		}
@@ -360,11 +350,12 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
             lineDirection = Vector3(size->GetValue(time).x * rand05_x, size->GetValue(time).y * rand05_y, size->GetValue(time).z * rand05_z);
 		particle->position = tempPosition + lineDirection;
 	}
-    else if (emitterType == EMITTER_ONCIRCLE)
+    else if ((emitterType == EMITTER_ONCIRCLE) || (emitterType == EMITTER_SHOCKWAVE))
     {
         // here just set particle position
+		// Yuri Coder, 2013/04/18. Shockwave particle isn't implemented for 2D mode -
+		// currently draw them in the same way as "onCircle" ones.
         particle->position = tempPosition;
-        //if (
     }
         
     Vector3 vel;
@@ -398,7 +389,9 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
     vel.z = 0;
         
     // reuse particle velocity we've calculated
-    if (emitterType == EMITTER_ONCIRCLE)
+	// Yuri Coder, 2013/04/18. Shockwave particle isn't implemented for 2D mode -
+	// currently draw them in the same way as "onCircle" ones.
+    if ((emitterType == EMITTER_ONCIRCLE) || (emitterType == EMITTER_SHOCKWAVE))
     {
         if(radius)
             particle->position += vel * radius->GetValue(time);
@@ -410,14 +403,14 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
     particle->angle = particleAngle;
 }
 
-void ParticleEmitter::LoadFromYaml(const String & filename)
+void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 {
     Cleanup(true);
     
 	YamlParser * parser = YamlParser::Create(filename);
 	if(!parser)
 	{
-		Logger::Error("ParticleEmitter::LoadFromYaml failed (%s)", filename.c_str());
+		Logger::Error("ParticleEmitter::LoadFromYaml failed (%s)", filename.GetAbsolutePathname().c_str());
 		return;
 	}
 
@@ -489,7 +482,9 @@ void ParticleEmitter::LoadFromYaml(const String & filename)
 				emitterType = EMITTER_RECT;
 			else if (typeNode->AsString() == "oncircle")
 				emitterType = EMITTER_ONCIRCLE;
-			else 
+			else if (typeNode->AsString() == "shockwave")
+				emitterType = EMITTER_SHOCKWAVE;
+			else
 				emitterType = EMITTER_POINT;
 		}else
 			emitterType = EMITTER_POINT;
@@ -549,7 +544,7 @@ void ParticleEmitter::LoadFromYaml(const String & filename)
 	SafeRelease(parser);
 }
 
-void ParticleEmitter::SaveToYaml(const String & filename)
+void ParticleEmitter::SaveToYaml(const FilePath & filename)
 {
     YamlParser* parser = YamlParser::Create();
     if (!parser)
@@ -698,6 +693,11 @@ String ParticleEmitter::GetEmitterTypeName()
         case EMITTER_ONCIRCLE:
         {
             return "oncircle";
+        }
+
+		case EMITTER_SHOCKWAVE:
+        {
+            return "shockwave";
         }
 
         default:

@@ -25,6 +25,7 @@ ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent
 	emitterType->addItem("Point");
 	emitterType->addItem("Box");
 	emitterType->addItem("Circle");
+	emitterType->addItem("Shockwave");
 	emitterTypeHBox->addWidget(emitterType);
 	mainLayout->addLayout(emitterTypeHBox);
 	connect(emitterType, SIGNAL(currentIndexChanged(int)), this, SLOT(OnValueChanged()));
@@ -145,12 +146,14 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 	blockSignals = true;
 
 	float32 emitterLifeTime = emitter->GetLifeTime();
+
+    
 	float minTime		= 0.f;
 	float minTimeLimit	= 0.f;
-
+    
 	float maxTime		= emitterLifeTime;
 	float maxTimeLimit	= emitterLifeTime;
-	emitterYamlPath->setText(QString::fromStdString(emitter->GetConfigPath()));
+	emitterYamlPath->setText(QString::fromStdString(emitter->GetConfigPath().GetAbsolutePathname()));
 	emitterType->setCurrentIndex(emitter->emitterType);
 
 	if(!needUpdateTimeLimits)

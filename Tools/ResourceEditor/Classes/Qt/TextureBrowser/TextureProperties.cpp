@@ -32,6 +32,9 @@ TextureProperties::TextureProperties(QWidget *parent /* = 0 */)
 		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_DXT3), DAVA::FORMAT_DXT3);
 		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_DXT5), DAVA::FORMAT_DXT5);
 		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_DXT5NM), DAVA::FORMAT_DXT5NM);
+		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_ATC_RGB), DAVA::FORMAT_ATC_RGB);
+		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_ATC_RGBA_EXPLICIT_ALPHA), DAVA::FORMAT_ATC_RGBA_EXPLICIT_ALPHA);
+		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_ATC_RGBA_INTERPOLATED_ALPHA), DAVA::FORMAT_ATC_RGBA_INTERPOLATED_ALPHA);
 
 		helperWrapModes.push_back("Clamp", DAVA::Texture::WRAP_CLAMP_TO_EDGE);
 		helperWrapModes.push_back("Repeat", DAVA::Texture::WRAP_REPEAT);

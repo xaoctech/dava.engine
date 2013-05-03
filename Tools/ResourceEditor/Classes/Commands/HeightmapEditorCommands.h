@@ -5,16 +5,6 @@
 #include "Command.h"
 #include "../SceneEditor/LandscapeEditorHeightmap.h"
 
-class CommandHeightmapEditor: public Command
-{
-public:
-	CommandHeightmapEditor();
-    
-protected:
-    
-    virtual void Execute();
-};
-
 class HeightmapModificationCommand: public Command
 {
 public:
@@ -24,9 +14,9 @@ protected:
 	Rect updatedRect;
 
 	static String TimeString();
-	static String SaveHeightmap(Heightmap* heightmap);
+	static FilePath SaveHeightmap(Heightmap* heightmap);
 	static LandscapeEditorHeightmap* GetEditor();
-	static void UpdateLandscapeHeightmap(String filename);
+	static void UpdateLandscapeHeightmap(const FilePath & filename);
 };
 
 class CommandDrawHeightmap: public HeightmapModificationCommand
@@ -38,8 +28,8 @@ public:
 	virtual ~CommandDrawHeightmap();
 	
 protected:
-	String undoFilename;
-	String redoFilename;
+	FilePath undoFilename;
+	FilePath redoFilename;
 
 	virtual void Execute();
 	virtual void Cancel();
@@ -51,16 +41,16 @@ public:
 	CommandCopyPasteHeightmap(bool copyHeightmap, bool copyTilemap,
 							  Heightmap* originalHeightmap, Heightmap* newHeightmap,
 							  Image* originalTilemap, Image* newTilemap,
-							  const String& tilemapSavedPath, const Rect& updatedRect);
+							  const FilePath& tilemapSavedPath, const Rect& updatedRect);
 	virtual ~CommandCopyPasteHeightmap();
 
 protected:
-	String heightmapUndoFilename;
-	String heightmapRedoFilename;
+	FilePath heightmapUndoFilename;
+	FilePath heightmapRedoFilename;
 
 	Image* tilemapUndoImage;
 	Image* tilemapRedoImage;
-	String tilemapSavedPathname;
+	FilePath tilemapSavedPathname;
 
 	Landscape* landscape;
 

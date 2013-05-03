@@ -7,33 +7,15 @@
 #include "../LandscapeEditor/EditorLandscape.h"
 #include "../LandscapeEditor/LandscapesController.h"
 
-//Show/Hide Tilemap Editor
-CommandTilemapEditor::CommandTilemapEditor()
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
-{
-}
-
-
-void CommandTilemapEditor::Execute()
-{
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-        screen->TilemapTriggered();
-    }
-	
-	//    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
-	//    activeScene->RebuildSceneGraph();
-}
-
-
-CommandDrawTilemap::CommandDrawTilemap(Image* originalImage, Image* newImage, const String& pathname, Landscape* landscape)
+CommandDrawTilemap::CommandDrawTilemap(Image* originalImage, Image* newImage, const FilePath & pathname, Landscape* landscape)
 :	Command(COMMAND_UNDO_REDO)
 ,	landscape(landscape)
 {
 	commandName = "Tilemap Draw";
 
-	savedPathname = FileSystem::Instance()->ReplaceExtension(pathname, ".png");;
+	savedPathname = pathname;
+    savedPathname.ReplaceExtension(".png");
+
 	undoImage = SafeRetain(originalImage);
 	redoImage = SafeRetain(newImage);
 }

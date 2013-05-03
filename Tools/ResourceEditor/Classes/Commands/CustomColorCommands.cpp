@@ -5,22 +5,6 @@
 #include <QFileDialog>
 #include "../SceneEditor/EditorBodyControl.h"
 
-CommandToggleCustomColors::CommandToggleCustomColors()
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
-{
-    
-}
-
-void CommandToggleCustomColors::Execute()
-{
-	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-        screen->CustomColorsTriggered();
-    }
-
-}
-
 CommandSaveTextureCustomColors::CommandSaveTextureCustomColors()
 :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
 {
@@ -33,20 +17,18 @@ void CommandSaveTextureCustomColors::Execute()
 	if(!screen)
 		return;
 
-	String selectedPathname = screen->CustomColorsGetCurrentSaveFileName();
+	FilePath selectedPathname = screen->CustomColorsGetCurrentSaveFileName();
 
-	if(selectedPathname.empty())
+	if(selectedPathname.IsEmpty())
 	{
-		String sceneFilePath = screen->CurrentScenePathname();
-		String sceneFileName = "";
-		FileSystem::SplitPath(sceneFilePath, selectedPathname, sceneFileName);
+		selectedPathname = FilePath(screen->CurrentScenePathname().GetDirectory());
 	}
 
-	QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save texture"), QString(selectedPathname.c_str()), QString("PNG image (*.png)"));
+	QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save texture"), QString(selectedPathname.GetAbsolutePathname().c_str()), QString("PNG image (*.png)"));
 
 	selectedPathname = PathnameToDAVAStyle(filePath);
 
-	if(!selectedPathname.empty())
+	if(!selectedPathname.IsEmpty())
 		screen->CustomColorsSaveTexture(selectedPathname);
 }
 
@@ -61,52 +43,20 @@ void CommandLoadTextureCustomColors::Execute()
 	if(!screen)
 		return;
 
-	String currentPath = screen->CustomColorsGetCurrentSaveFileName();
+	FilePath currentPath = screen->CustomColorsGetCurrentSaveFileName();
 
-	if(currentPath.empty())
+	if(currentPath.IsEmpty())
 	{
-		String sceneFilePath = screen->CurrentScenePathname();
-		String sceneFileName = "";
-		FileSystem::SplitPath(sceneFilePath, currentPath, sceneFileName);
+		currentPath = FilePath(screen->CurrentScenePathname().GetDirectory());
 	}
 
-	String selectedPathname = GetOpenFileName(String("Load texture"), currentPath, String("PNG image (*.png)"));
-	if(!selectedPathname.empty())
+	FilePath selectedPathname = GetOpenFileName(String("Load texture"), currentPath, String("PNG image (*.png)"));
+	if(!selectedPathname.IsEmpty())
 	{
 		screen->CustomColorsLoadTexture(selectedPathname);
 	}
 }
 
-CommandChangeBrushSizeCustomColors::CommandChangeBrushSizeCustomColors(uint32 newSize)
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT),
-    size(newSize)
-{    
-}
-
-void CommandChangeBrushSizeCustomColors::Execute()
-{
-	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-        screen->CustomColorsSetRadius(size);
-    }
-}
-
-CommandChangeColorCustomColors::CommandChangeColorCustomColors(uint32 newColorIndex)
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT),
-    colorIndex(newColorIndex)
-{
-    
-}
-
-void CommandChangeColorCustomColors::Execute()
-{
-	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-		screen->CustomColorsSetColor(colorIndex);
-    }
-}
 
 CommandDrawCustomColors::CommandDrawCustomColors(Image* originalImage, Image* newImage)
 :	Command(COMMAND_UNDO_REDO)
