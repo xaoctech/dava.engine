@@ -72,22 +72,27 @@ FilePath FilePath::FilepathRelativeToBundle(const char * relativePathname)
 FilePath FilePath::FilepathRelativeToBundle(const char * relativePathname)
 {
 #ifdef USE_LOCAL_RESOURCES
-	return Format("%s%s", USE_LOCAL_RESOURCES_PATH, relativePathname);
+	FilePath path(Format("%s%s", USE_LOCAL_RESOURCES_PATH, relativePathname));
 #else
-	return relativePathname;
+	FilePath path(relativePathname);
 #endif
+
+	path.pathType = PATH_IN_RESOURCES;
+	return path;
 }
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 
 FilePath FilePath::FilepathRelativeToBundle(const String & relativePathname)
 {
-    String dataPath = "Data/" + relativePathname;
+    String dataPath = "Data" + relativePathname;
 	return FilepathRelativeToBundle(dataPath.c_str());
 }
 
 FilePath FilePath::FilepathInDocuments(const char * relativePathname)
 {
-    return FileSystem::Instance()->GetCurrentDocumentsDirectory() + relativePathname;
+	FilePath path(FileSystem::Instance()->GetCurrentDocumentsDirectory() + relativePathname);
+	path.pathType = PATH_IN_DOCUMENTS;
+    return path;
 }
 
 FilePath FilePath::FilepathInDocuments(const String & relativePathname)
@@ -170,6 +175,7 @@ void FilePath::Initialize(const String &_pathname)
     if(IsAbsolutePathname(pathname))
     {
         absolutePathname = GetSystemPathname(pathname, pathType);
+        Logger::Debug("[FilePath::Initialize] absolutePathname: %s", absolutePathname.c_str());
     }
     else
     {
@@ -181,8 +187,12 @@ void FilePath::Initialize(const String &_pathname)
         }
         else
         {
+#if defined(__DAVAENGINE_ANDROID__)
+            absolutePathname = pathname;
+#else //#if defined(__DAVAENGINE_ANDROID__)
             FilePath path = FileSystem::Instance()->GetCurrentWorkingDirectory() + pathname;
             absolutePathname = path.GetAbsolutePathname();
+#endif //#if defined(__DAVAENGINE_ANDROID__)
         }
     }
 }
@@ -264,7 +274,6 @@ bool FilePath::IsDirectoryPathname() const
 }
 
 
-
 String FilePath::GetFilename() const
 {
     return GetFilename(absolutePathname);
@@ -306,7 +315,9 @@ String FilePath::GetExtension() const
     
 FilePath FilePath::GetDirectory() const
 {
-    return GetDirectory(absolutePathname);
+	FilePath directory(GetDirectory(absolutePathname));
+	directory.pathType = pathType;
+    return directory;
 }
 
 FilePath FilePath::GetDirectory(const String &pathname)
@@ -388,7 +399,7 @@ void FilePath::ReplaceDirectory(const FilePath &directory)
 {
     DVASSERT(!IsEmpty());
     
-    DVASSERT(directory.IsDirectoryPathname())
+    DVASSERT(directory.IsDirectoryPathname());
     const String filename = GetFilename();
     absolutePathname = directory.GetAbsolutePathname() + filename;
     pathType = directory.pathType;
@@ -477,7 +488,7 @@ String FilePath::GetFrameworkPath()
 
 String FilePath::GetFrameworkPathForPrefix( const String &typePrefix, const ePathType pType)
 {
-    DVASSERT(!typePrefix.empty())
+    DVASSERT(!typePrefix.empty());
     
 	String prefixPathname = GetSystemPathname(typePrefix, pType);
 
