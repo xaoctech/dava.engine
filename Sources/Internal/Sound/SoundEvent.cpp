@@ -44,7 +44,12 @@ SoundEvent::SoundEvent(FMOD::Event * _fmodEvent) :
 
 SoundEvent::~SoundEvent()
 {
-	FMOD_VERIFY(fmodEvent->release(true));
+	FMOD::EventGroup * parent = 0;
+	FMOD_VERIFY(fmodEvent->getParentGroup(&parent));
+	if(parent)
+	{
+		FMOD_VERIFY(parent->freeEventData(fmodEvent));
+	}
 }
 
 void SoundEvent::Play()

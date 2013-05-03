@@ -57,10 +57,10 @@ Sound * Sound::CreateWithFlags(const FilePath & fileName, eType type, const Fast
 	switch (type)
 	{
 	case TYPE_STATIC:
-		FMOD_VERIFY(SoundSystem::Instance()->fmodSystem->createSound(fileName.ResolvePathname().c_str(), FMOD_DEFAULT | flags, 0, &sound->fmodSound));
+		FMOD_VERIFY(SoundSystem::Instance()->fmodSystem->createSound(fileName.GetAbsolutePathname().c_str(), FMOD_DEFAULT | flags, 0, &sound->fmodSound));
 		break;
 	case TYPE_STREAMED:
-		FMOD_VERIFY(SoundSystem::Instance()->fmodSystem->createStream(fileName.ResolvePathname().c_str(), FMOD_LOOP_NORMAL | flags, 0, &sound->fmodSound));
+		FMOD_VERIFY(SoundSystem::Instance()->fmodSystem->createStream(fileName.GetAbsolutePathname().c_str(), FMOD_LOOP_NORMAL | flags, 0, &sound->fmodSound));
 		break;
 	}
 

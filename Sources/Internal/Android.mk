@@ -9,6 +9,16 @@ LOCAL_MODULE := iconv_android-prebuilt
 LOCAL_SRC_FILES := ../../Libs/libs/libiconv_android.so
 include $(PREBUILT_SHARED_LIBRARY)
 
+include $(CLEAR_VARS)
+LOCAL_MODULE := fmodex_android-prebuilt
+LOCAL_SRC_FILES := ../../Libs/fmod/lib/libfmodex.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := fmodevent_android-prebuilt
+LOCAL_SRC_FILES := ../../Libs/fmod/lib/libfmodevent.so
+include $(PREBUILT_SHARED_LIBRARY)
+
 DAVA_ROOT := $(LOCAL_PATH)
 
 # clear all variables
@@ -81,7 +91,8 @@ LOCAL_LDLIBS += $(LIBS_PATH)/libdxt_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libcurl_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libTextureConverter_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libiconv_android.so
-LOCAL_LDLIBS += $(LOCAL_PATH)/../../Libs/fmod/lib/libfmodex_android.so
+LOCAL_LDLIBS += $(LOCAL_PATH)/../../Libs/fmod/lib/libfmodex.so
+LOCAL_LDLIBS += $(LOCAL_PATH)/../../Libs/fmod/lib/libfmodevent.so
 
 # set exported used libs
 LOCAL_EXPORT_LDLIBS := $(LOCAL_LDLIBS)
@@ -90,6 +101,8 @@ LOCAL_EXPORT_LDLIBS := $(LOCAL_LDLIBS)
 LOCAL_STATIC_LIBRARIES := libbox2d
 
 LOCAL_SHARED_LIBRARIES += iconv_android-prebuilt
+LOCAL_SHARED_LIBRARIES += fmodex_android-prebuilt
+LOCAL_SHARED_LIBRARIES += fmodevent_android-prebuilt
 
 include $(BUILD_STATIC_LIBRARY)
 

@@ -67,7 +67,7 @@ public:
 	void LoadFEV(const FilePath & filePath);
 
 	SoundGroup * GetSoundGroup(const FastName & groupName);
-	ScopedPtr<SoundEventCategory> SoundSystem::GetSoundEventCategory(const String & category);
+	ScopedPtr<SoundEventCategory> GetSoundEventCategory(const String & category);
 
 	void AddVolumeAnimatedObject(VolumeAnimatedObject * object);
 	void RemoveVolumeAnimatedObject(VolumeAnimatedObject * object);
