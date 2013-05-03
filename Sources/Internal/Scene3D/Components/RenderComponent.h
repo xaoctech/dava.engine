@@ -7,7 +7,7 @@
 
 namespace DAVA 
 {
-
+    
 class RenderComponent : public Component
 {
 public:
