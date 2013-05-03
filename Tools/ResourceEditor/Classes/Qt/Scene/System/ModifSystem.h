@@ -5,30 +5,12 @@
 #include "Scene3D/Entity.h"
 #include "UI/UIEvent.h"
 
+#include "Scene/SceneTypes.h"
+
 class SceneCollisionSystem;
 class SceneCameraSystem;
 class EntityGroup;
 class HoodSystem;
-
-enum EntityModifMode
-{
-	EM_MODE_OFF,
-	EM_MODE_MOVE,
-	EM_MODE_ROTATE,
-	EM_MODE_SCALE
-};
-
-enum EntityModifAxis
-{
-	EM_AXIS_NONE = 0,
-
-	EM_AXIS_X = 0x1,
-	EM_AXIS_Y = 0x2,
-	EM_AXIS_Z = 0x4,
-	EM_AXIS_XY = EM_AXIS_X | EM_AXIS_Y,
-	EM_AXIS_XZ = EM_AXIS_X | EM_AXIS_Z,
-	EM_AXIS_YZ = EM_AXIS_Y | EM_AXIS_Z
-};
 
 class EntityModificationSystem : public DAVA::SceneSystem
 {
@@ -38,6 +20,12 @@ public:
 	EntityModificationSystem(DAVA::Scene * scene, SceneCollisionSystem *colSys, SceneCameraSystem *camSys, HoodSystem *hoodSys);
 	~EntityModificationSystem();
 
+	ST_Axis GetModifAxis() const;
+	void SetModifAxis(ST_Axis axis);
+
+	ST_ModifMode GetModifMode() const;
+	void SetModifMode(ST_ModifMode mode);
+
 protected:
 	SceneCollisionSystem *collisionSystem;
 	SceneCameraSystem *cameraSystem;
@@ -46,12 +34,6 @@ protected:
 	void Update(DAVA::float32 timeElapsed);
 	void ProcessUIEvent(DAVA::UIEvent *event);
 	void Draw();
-
-	int GetModifAxis() const;
-	void SetModifAxis(int axis);
-
-	int GetModifMode() const;
-	void SetModifMode(int mode);
 
 protected:
 	struct EntityToModify
@@ -66,8 +48,8 @@ protected:
 	bool inModifState;
 	bool modified;
 
-	int  curMode;
-	int  curAxis;
+	ST_ModifMode curMode;
+	ST_Axis curAxis;
 
 	// starting modification pos
 	DAVA::Vector3 modifStartPos3d;
@@ -77,6 +59,7 @@ protected:
 	DAVA::Vector<EntityToModify> modifEntities;
 
 	// values calculated, when starting modification
+	ST_PivotPoint modifPivotPoint;
 	DAVA::Vector3 modifEntitiesCenter;
 	DAVA::Matrix4 moveToZeroPosRelativeCenter;
 	DAVA::Matrix4 moveFromZeroPosRelativeCenter;
@@ -85,8 +68,6 @@ protected:
 	DAVA::float32 crossXY;
 	DAVA::float32 crossXZ;
 	DAVA::float32 crossYZ;
-
-	int modifPivotPoint;
 
 	void BeginModification(const EntityGroup *entities);
 	void EndModification();

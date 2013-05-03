@@ -8,8 +8,8 @@
 HoodSystem::HoodSystem(DAVA::Scene * scene, SceneCameraSystem *camSys)
 	: DAVA::SceneSystem(scene)
 	, cameraSystem(camSys)
-	, curMode(EM_MODE_OFF)
-	, moseOverAxis(EM_AXIS_NONE)
+	, curMode(ST_MODIF_OFF)
+	, moseOverAxis(ST_AXIS_NONE)
 	, curHood(NULL)
 	, moveHood()
 	, locked(false)
@@ -26,8 +26,8 @@ HoodSystem::HoodSystem(DAVA::Scene * scene, SceneCameraSystem *camSys)
 	collWorld = new btCollisionWorld(collDispatcher, collBroadphase, collConfiguration);
 	collWorld->setDebugDrawer(collDebugDraw);
 
-	SetSelectedAxis(EM_AXIS_X);
-	SetType(EM_MODE_MOVE);
+	SetModifAxis(ST_AXIS_X);
+	SetModifMode(ST_MODIF_MOVE);
 
 	moveHood.colorX = DAVA::Color(1, 0, 0, 1);
 	moveHood.colorY = DAVA::Color(0, 1, 0, 1);
@@ -108,25 +108,25 @@ void HoodSystem::SetScale(DAVA::float32 scale)
 	}
 }
 
-void HoodSystem::SetType(int type)
+void HoodSystem::SetModifMode(ST_ModifMode mode)
 {
-	if(curMode != type )
+	if(curMode != mode)
 	{
 		if(NULL != curHood)
 		{
 			RemCollObjects(&curHood->collObjects);
 		}
 
-		curMode = type;
-		switch (type)
+		curMode = mode;
+		switch (mode)
 		{
-		case EM_MODE_MOVE:
+		case ST_MODIF_MOVE:
 			curHood = &moveHood;
 			break;
-		case EM_MODE_SCALE:
+		case ST_MODIF_SCALE:
 			curHood = &scaleHood;
 			break;
-		case EM_MODE_ROTATE:
+		case ST_MODIF_ROTATE:
 			curHood = &rotateHood;
 			break;
 		default:
@@ -146,7 +146,7 @@ void HoodSystem::SetType(int type)
 	}
 }
 
-int HoodSystem::GetType() const
+ST_ModifMode HoodSystem::GetModifMode() const
 {
 	return curMode;
 }
@@ -189,7 +189,7 @@ void HoodSystem::ProcessUIEvent(DAVA::UIEvent *event)
 	// before checking result mark that there is no hood axis under mouse
 	if(!locked)
 	{
-		moseOverAxis = EM_AXIS_NONE;
+		moseOverAxis = ST_AXIS_NONE;
 	}
 	
 	// if is visible and not locked check mouse over status
@@ -228,11 +228,11 @@ void HoodSystem::Draw()
 {
 	if(visible && NULL != curHood)
 	{
-		int showAsSelected = curAxis;
+		ST_Axis showAsSelected = curAxis;
 
-		if(curMode != EM_MODE_OFF)
+		if(curMode != ST_MODIF_OFF)
 		{
-			if(EM_AXIS_NONE != moseOverAxis)
+			if(ST_AXIS_NONE != moseOverAxis)
 			{
 				showAsSelected = moseOverAxis;
 			}
@@ -240,25 +240,25 @@ void HoodSystem::Draw()
 
 		curHood->Draw(showAsSelected, moseOverAxis);
 
-		// debug draw collision word
+		// debug draw axis collision word
 		//collWorld->debugDrawWorld();
 	}
 }
 
-void HoodSystem::SetSelectedAxis(int axis)
+void HoodSystem::SetModifAxis(ST_Axis axis)
 {
-	if(EM_AXIS_NONE != axis)
+	if(ST_AXIS_NONE != axis)
 	{
 		curAxis = axis;
 	}
 }
 
-int HoodSystem::GetSelectedAxis() const
+ST_Axis HoodSystem::GetModifAxis() const
 {
 	return curAxis;
 }
 
-int HoodSystem::GetPassingAxis() const
+ST_Axis HoodSystem::GetPassingAxis() const
 {
 	return moseOverAxis;
 }

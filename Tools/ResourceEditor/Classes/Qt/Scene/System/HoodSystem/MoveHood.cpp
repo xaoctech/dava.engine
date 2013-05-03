@@ -11,31 +11,31 @@ MoveHood::MoveHood() : HoodObject(4.0f)
 	DAVA::float32 c = baseSize / 3;
 
 	axisX = CreateLine(DAVA::Vector3(b, 0, 0), DAVA::Vector3(baseSize, 0, 0));
-	axisX->axis = EM_AXIS_X;
+	axisX->axis = ST_AXIS_X;
 
 	axisY = CreateLine(DAVA::Vector3(0, b, 0), DAVA::Vector3(0, baseSize, 0));
-	axisY->axis = EM_AXIS_Y;
+	axisY->axis = ST_AXIS_Y;
 
 	axisZ = CreateLine(DAVA::Vector3(0, 0, b), DAVA::Vector3(0, 0, baseSize));
-	axisZ->axis = EM_AXIS_Z;
+	axisZ->axis = ST_AXIS_Z;
 
 	axisXY1 = CreateLine(DAVA::Vector3(c, 0, 0), DAVA::Vector3(c, c, 0));
-	axisXY1->axis = EM_AXIS_XY;
+	axisXY1->axis = ST_AXIS_XY;
 
 	axisXY2 = CreateLine(DAVA::Vector3(0, c, 0), DAVA::Vector3(c, c, 0));
-	axisXY2->axis = EM_AXIS_XY;
+	axisXY2->axis = ST_AXIS_XY;
 
 	axisXZ1 = CreateLine(DAVA::Vector3(c, 0, 0), DAVA::Vector3(c, 0, c));
-	axisXZ1->axis = EM_AXIS_XZ;
+	axisXZ1->axis = ST_AXIS_XZ;
 
 	axisXZ2 = CreateLine(DAVA::Vector3(0, 0, c), DAVA::Vector3(c, 0, c));
-	axisXZ2->axis = EM_AXIS_XZ;
+	axisXZ2->axis = ST_AXIS_XZ;
 
 	axisYZ1 = CreateLine(DAVA::Vector3(0, c, 0), DAVA::Vector3(0, c, c));
-	axisYZ1->axis = EM_AXIS_YZ;
+	axisYZ1->axis = ST_AXIS_YZ;
 	
 	axisYZ2 = CreateLine(DAVA::Vector3(0, 0, c), DAVA::Vector3(0, c, c));
-	axisYZ2->axis = EM_AXIS_YZ;
+	axisYZ2->axis = ST_AXIS_YZ;
 }
 
 MoveHood::~MoveHood()
@@ -43,7 +43,7 @@ MoveHood::~MoveHood()
 
 }
 
-void MoveHood::Draw(int selectedAxis, int mouseOverAxis)
+void MoveHood::Draw(ST_Axis selectedAxis, ST_Axis mouseOverAxis)
 {
 	int oldState = DAVA::RenderManager::Instance()->GetState();
 	DAVA::eBlendMode oldBlendSrc = DAVA::RenderManager::Instance()->GetSrcBlend();
@@ -56,7 +56,7 @@ void MoveHood::Draw(int selectedAxis, int mouseOverAxis)
 	DAVA::Vector3 curPos = axisX->curPos;
 
 	// x
-	if(selectedAxis & EM_AXIS_X) 
+	if(selectedAxis & ST_AXIS_X) 
 		DAVA::RenderManager::Instance()->SetColor(colorS);
 	else 
 		DAVA::RenderManager::Instance()->SetColor(colorX);
@@ -64,7 +64,7 @@ void MoveHood::Draw(int selectedAxis, int mouseOverAxis)
 	DAVA::RenderHelper::Instance()->DrawLine(axisX->curFrom, axisX->curTo);
 	
 	// y
-	if(selectedAxis & EM_AXIS_Y) 
+	if(selectedAxis & ST_AXIS_Y) 
 		DAVA::RenderManager::Instance()->SetColor(colorS);
 	else 
 		DAVA::RenderManager::Instance()->SetColor(colorY);
@@ -72,7 +72,7 @@ void MoveHood::Draw(int selectedAxis, int mouseOverAxis)
 	DAVA::RenderHelper::Instance()->DrawLine(axisY->curFrom, axisY->curTo);
 
 	// z
-	if(selectedAxis & EM_AXIS_Z) 
+	if(selectedAxis & ST_AXIS_Z) 
 		DAVA::RenderManager::Instance()->SetColor(colorS);
 	else 
 		DAVA::RenderManager::Instance()->SetColor(colorZ);
@@ -96,7 +96,7 @@ void MoveHood::Draw(int selectedAxis, int mouseOverAxis)
 
 
 	// xy
-	if(selectedAxis == EM_AXIS_XY) 
+	if(selectedAxis == ST_AXIS_XY) 
 	{
 		DAVA::RenderManager::Instance()->SetColor(colorS);
 		DAVA::RenderHelper::Instance()->DrawLine(axisXY1->curFrom, axisXY1->curTo);
@@ -119,7 +119,7 @@ void MoveHood::Draw(int selectedAxis, int mouseOverAxis)
 	}
 
 	// xz
-	if(selectedAxis == EM_AXIS_XZ) 
+	if(selectedAxis == ST_AXIS_XZ) 
 	{
 		DAVA::RenderManager::Instance()->SetColor(colorS);
 		DAVA::RenderHelper::Instance()->DrawLine(axisXZ1->curFrom, axisXZ1->curTo);
@@ -142,7 +142,7 @@ void MoveHood::Draw(int selectedAxis, int mouseOverAxis)
 	}
 
 	// yz
-	if(selectedAxis == EM_AXIS_YZ) 
+	if(selectedAxis == ST_AXIS_YZ) 
 	{
 		DAVA::RenderManager::Instance()->SetColor(colorS);
 		DAVA::RenderHelper::Instance()->DrawLine(axisYZ1->curFrom, axisYZ1->curTo);

@@ -966,6 +966,7 @@
     <ClInclude Include="Classes\Qt\Scene\SceneEditorProxy.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneSignals.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneTabWidget.h" />
+    <ClInclude Include="Classes\Qt\Scene\SceneTypes.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CameraSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionBaseObject.h" />

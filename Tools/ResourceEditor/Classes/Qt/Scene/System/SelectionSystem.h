@@ -2,6 +2,7 @@
 #define __SCENE_SELECTION_SYSTEM_H__
 
 #include "Scene/EntityGroup.h"
+#include "Scene/SceneTypes.h"
 
 // framework
 #include "Entity/SceneSystem.h"
@@ -17,24 +18,6 @@ class SceneSelectionSystem : public DAVA::SceneSystem
 	friend class EntityModificationSystem;
 
 public:
-	enum SelectionDrawFlags
-	{
-		DEBUG_DRAW_NOTHING = 0x0,
-
-		SELECTION_DRAW_SHAPE = 0x1,
-		SELECTION_FILL_SHAPE = 0x2,
-		SELECTION_DRAW_CORNERS = 0x4,
-		SELECTION_NO_DEEP_TEST = 0x10,
-
-		DEBUG_DRAW_ALL = 0xFFFFFFFF
-	};
-
-	enum SelectionPivotPoint
-	{
-		SELECTION_ENTITY_CENTER,
-		SELECTION_COMMON_CENTER
-	};
-
 	SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSystem *collSys, HoodSystem *hoodSys);
 	~SceneSelectionSystem();
 
@@ -44,14 +27,11 @@ public:
 
 	const EntityGroup* GetSelection() const;
 
-	void SetDrawFlags(int flags);
-	int GetDrawFlags() const;
+	void SetDrawMode(int mode);
+	int GetDrawMode() const;
 
-	void SetPivotPoint(int pp);
-	int GetPivotPoint() const;
-
-	void UpdateHoodPos() const;
-	void SelectedItemsWereModified();
+	void SetPivotPoint(ST_PivotPoint pp);
+	ST_PivotPoint GetPivotPoint() const;
 
 protected:
 	void Update(DAVA::float32 timeElapsed);
@@ -61,8 +41,11 @@ protected:
 	EntityGroup GetSelecetableFromCollision(const EntityGroup *collisionEntities);
 	EntityGroupItem GetSelectableEntity(DAVA::Entity* entity);
 
+	void UpdateHoodPos() const;
+	void SelectedItemsWereModified();
+
 private:
-	int selectionDrawFlags;
+	int drawMode;
 	bool applyOnPhaseEnd;
 
 	SceneCollisionSystem *collisionSystem;
@@ -71,7 +54,7 @@ private:
 	EntityGroup curSelections;
 	DAVA::Entity *lastSelection;
 
-	int  curPivotPoint;
+	ST_PivotPoint curPivotPoint;
 };
 
 #endif //__SCENE_SELECTION_SYSTEM_H__
