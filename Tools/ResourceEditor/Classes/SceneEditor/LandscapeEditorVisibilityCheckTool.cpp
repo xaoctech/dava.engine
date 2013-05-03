@@ -187,7 +187,7 @@ void LandscapeEditorVisibilityCheckTool::SetState(eVisibilityCheckToolState newS
 	}
 }
 
-void LandscapeEditorVisibilityCheckTool::SaveColorLayer(const String &pathName)
+void LandscapeEditorVisibilityCheckTool::SaveColorLayer(const FilePath &pathName)
 {
 	SaveTextureAction(pathName);
 }
@@ -580,7 +580,7 @@ void LandscapeEditorVisibilityCheckTool::ShowAction()
 	QtMainWindowHandler::Instance()->SetWidgetsStateVisibilityTool(true);
 }
 
-void LandscapeEditorVisibilityCheckTool::SaveTextureAction(const String &pathToFile)
+void LandscapeEditorVisibilityCheckTool::SaveTextureAction(const FilePath &pathToFile)
 {
     if(visibilityAreaSprite)
     {

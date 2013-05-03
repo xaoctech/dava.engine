@@ -14,7 +14,7 @@
 #include "UIStaticTextMetadata.h"
 #include "ResourcesManageHelper.h"
 
-#include "ResourcePacker.h"
+#include "TexturePacker/ResourcePacker2D.h"
 
 static const QString TEXT_PROPERTY_BLOCK_NAME = "Background";
 
@@ -129,9 +129,12 @@ void BackGroundPropertyGridWidget::FillComboboxes()
 void BackGroundPropertyGridWidget::OpenSpriteDialog()
 {
 	// Pack all available sprites each time user open sprite dialog
-	ResourcePacker *resPacker = new ResourcePacker();
-	resPacker->PackResources(ResourcesManageHelper::GetSpritesDatasourceDirectory().toStdString(),
-	 					 				ResourcesManageHelper::GetSpritesDirectory().toStdString());
+	ResourcePacker2D *resPacker = new ResourcePacker2D();
+	resPacker->InitFolders(ResourcesManageHelper::GetSpritesDatasourceDirectory().toStdString(),
+                           ResourcesManageHelper::GetSpritesDirectory().toStdString());
+    
+    resPacker->PackResources();
+
 	// Get sprites directory to open
 	QString currentSpriteDir = ResourcesManageHelper::GetDefaultSpritesPath(this->ui->spriteLineEdit->text());
 	// Get sprite path from file dialog

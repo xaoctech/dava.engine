@@ -54,10 +54,11 @@ SoundInstance::SoundInstance()
 #ifdef __DAVAENGINE_ANDROID__
 SoundInstance::SoundInstance(Sound * parent)
 :	state(STATE_PLAYING),
-    animatedVolume(-1.f)
+    animatedVolume(-1.f),
+    parentSound(NULL)
 {
 	SoundSystem::Instance()->AddSoundInstance(this);
-    parentSound = parent;
+    parentSound = SafeRetain(parent);
 }
 #endif //#ifdef __DAVAENGINE_ANDROID__
     

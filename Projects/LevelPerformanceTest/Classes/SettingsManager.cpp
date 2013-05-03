@@ -12,7 +12,7 @@
 
 SettingsManager sm;
 
-void SettingsManager::InitWithFile(const String &filename)
+void SettingsManager::InitWithFile(const FilePath &filename)
 {
 	landscapeNodeName = LANDSCAPE_NODE_NAME;
 	landscapePartitioningSize.x = XSIZE;

@@ -33,7 +33,7 @@ YamlNode* UIAggregatorControl::SaveToYamlNode(UIYamlLoader * loader)
 {
 	YamlNode* node = UIControl::SaveToYamlNode(loader);
 	SetPreferredNodeType(node, "UIAggregatorControl");
-	node->Set(AGGREGATOR_PATH, aggregatorPath);
+	node->Set(AGGREGATOR_PATH, aggregatorPath.GetAbsolutePathname());
 	return node;
 }
 
@@ -44,17 +44,15 @@ void UIAggregatorControl::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loade
 	YamlNode * pathNode = node->Get(AGGREGATOR_PATH);
 	if (pathNode)
 	{
-		aggregatorPath = pathNode->AsString();
-
-		String aggregatorFileName;
-		FileSystem::SplitPath(aggregatorPath, aggregatorPath, aggregatorFileName);
+		aggregatorPath = FilePath(pathNode->AsString());
+		String aggregatorFileName = aggregatorPath.GetFilename();
 
 		aggregatorPath = loader->GetCurrentPath() + aggregatorFileName;
 
 		UIYamlLoader loader;
 		loader.Load(this, aggregatorPath);
 
-		aggregatorPath = aggregatorFileName;
+		aggregatorPath = FilePath(aggregatorFileName);
 	}
 }
 
@@ -77,12 +75,12 @@ void UIAggregatorControl::AddAggregatorChild(UIControl* uiControl)
 	aggregatorControls.push_back(uiControl);
 }
 
-void UIAggregatorControl::SetAggregatorPath(const String& path)
+void UIAggregatorControl::SetAggregatorPath(const FilePath& path)
 {
 	aggregatorPath = path;
 }
 
-String UIAggregatorControl::GetAggregatorPath() const
+const FilePath & UIAggregatorControl::GetAggregatorPath() const
 {
 	return aggregatorPath;
 }

@@ -71,10 +71,7 @@ Set<QString> ImportNodesCommand::GetNodeAggregatorControls(const HierarchyTreeNo
 		const HierarchyTreeAggregatorControlNode* childNode = dynamic_cast<const HierarchyTreeAggregatorControlNode*>(*it);
 		if (childNode)
 		{
-			String path, name;
-			FileSystem::SplitPath(childNode->GetAggregatorPath(), path, name);
-			name = FileSystem::ReplaceExtension(name, "");
-
+			String name = childNode->GetAggregatorPath().GetBasename();
 			nodeAggregatorControls.insert(QString::fromStdString(name));
 		}
 
@@ -144,7 +141,7 @@ bool ImportNodesCommand::LoadAggregators()
 		return false;
 	}
 
-	QString platformPath = platform->GetPlatformFolder();
+	FilePath platformPath = platform->GetPlatformFolder();
 
 	bool result = true;
 	Vector<ImportDialog::FileItem>::const_iterator it;
@@ -153,7 +150,8 @@ bool ImportNodesCommand::LoadAggregators()
 		Rect rect(0, 0, it->size.width(), it->size.height());
 		HierarchyTreeAggregatorNode* node = new HierarchyTreeAggregatorNode(platform, it->fileName, rect);
 
-		if (node->Load(rect, platformPath + "/" + it->fileName + ".yaml") == false)
+        FilePath filename = platformPath + (it->fileName.toStdString() + ".yaml");
+		if (node->Load(rect, QString::fromStdString(filename.GetAbsolutePathname())) == false)
 		{
 			importErrorsAggregators.push_back(it->fileName);
 			SafeDelete(node);
@@ -177,7 +175,7 @@ bool ImportNodesCommand::LoadScreens()
 		return false;
 	}
 
-	QString platformPath = platform->GetPlatformFolder();
+	FilePath platformPath = platform->GetPlatformFolder();
 
 	bool result = true;
 	Vector<ImportDialog::FileItem>::const_iterator it;
@@ -185,7 +183,8 @@ bool ImportNodesCommand::LoadScreens()
 	{
 		HierarchyTreeScreenNode* node = new HierarchyTreeScreenNode(platform, it->fileName);
 
-		if (node->Load(platformPath + "/" + it->fileName + ".yaml") == false)
+        FilePath filename = platformPath + (it->fileName.toStdString() + ".yaml");
+		if (node->Load(QString::fromStdString(filename.GetAbsolutePathname())) == false)
 		{
 			importErrorsScreens.insert(std::pair<QString, QString>(it->fileName, ""));
 			SafeDelete(node);

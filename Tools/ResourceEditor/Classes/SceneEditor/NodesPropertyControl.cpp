@@ -621,7 +621,7 @@ void NodesPropertyControl::OnBoolPropertyChanged(PropertyList *, const String &f
 	if(needUpdatePropertyPanel)
 		UpdateFieldsForCurrentNode();
 }
-void NodesPropertyControl::OnFilepathPropertyChanged(PropertyList *, const String &forKey, const String &)
+void NodesPropertyControl::OnFilepathPropertyChanged(PropertyList *, const String &forKey, const FilePath &)
 {
     if(nodesDelegate)
     {

@@ -32,6 +32,7 @@
 #define __DAVAENGINE_SOUND_DATA_PROVIDER_H__
 
 #include "Base/BaseTypes.h"
+#include "FileSystem/FilePath.h"
 #include "Sound/ALUtils.h"
 
 namespace DAVA
@@ -41,7 +42,7 @@ class SoundBuffer;
 class SoundDataProvider
 {
 public:
-	SoundDataProvider(const String & fileName);
+	SoundDataProvider(const FilePath & fileName);
 	virtual ~SoundDataProvider() {};
 
 	virtual bool Init();
@@ -57,7 +58,7 @@ public:
 #endif //#ifdef __DAVASOUND_AL__
 
 protected:
-	String fileName;
+	FilePath fileName;
 	int32 dataSize;
 	int32 leftDataSize;
 	int32 channelsCount;

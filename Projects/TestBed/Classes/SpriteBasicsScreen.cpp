@@ -32,14 +32,14 @@
 
 void SpriteBasicsScreen::LoadResources()
 {
-	redSprite = Sprite::Create("~res:/Gfx/SpriteBasics/redsprite");
-	greenSprite = Sprite::Create("~res:/Gfx/SpriteBasics/greensprite");
-	blueSprite = Sprite::Create("~res:/Gfx/SpriteBasics/bluesprite");
-	tranclucentSprite = Sprite::Create("~res:/Gfx/SpriteBasics/transclucentsprite");
-	zebraSprite = Sprite::Create("~res:/Gfx/SpriteBasics/zebrasprite");
+	redSprite = Sprite::Create(FilePath("~res:/Gfx/SpriteBasics/redsprite"));
+	greenSprite = Sprite::Create(FilePath("~res:/Gfx/SpriteBasics/greensprite"));
+	blueSprite = Sprite::Create(FilePath("~res:/Gfx/SpriteBasics/bluesprite"));
+	tranclucentSprite = Sprite::Create(FilePath("~res:/Gfx/SpriteBasics/transclucentsprite"));
+	zebraSprite = Sprite::Create(FilePath("~res:/Gfx/SpriteBasics/zebrasprite"));
 	
-	graphicsFont = GraphicsFont::Create("~res:/Fonts/bd_cartoon.def", "~res:/Gfx/Fonts2/bd_cartoon");
-	graphicsFont2 = GraphicsFont::Create("~res:/Fonts/jointby.def", "~res:/Gfx/Fonts2/jointby");
+	graphicsFont = GraphicsFont::Create(FilePath("~res:/Fonts/bd_cartoon.def"), FilePath("~res:/Gfx/Fonts2/bd_cartoon"));
+	graphicsFont2 = GraphicsFont::Create(FilePath("~res:/Fonts/jointby.def"), FilePath("~res:/Gfx/Fonts2/jointby"));
 // 	button = new UIButton(Rect(200, 200, 100, 50));
 // 	//button->SetDebugDraw(true);
 // 	button->SetStateDrawType(UIControl::STATE_NORMAL|UIControl::STATE_HOVER|UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);

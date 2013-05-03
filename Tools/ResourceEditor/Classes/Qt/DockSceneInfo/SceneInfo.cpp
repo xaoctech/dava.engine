@@ -4,6 +4,8 @@
 #include "../../SceneEditor/EditorSettings.h"
 #include "../../EditorScene.h"
 
+#include "../../SceneEditor/CommandLineTool.h"
+
 
 #include "Main/QtUtils.h"
 
@@ -207,24 +209,28 @@ uint32 SceneInfo::CalculateTextureSize(const Map<String, Texture *> &textures)
     Map<String, Texture *>::const_iterator endIt = textures.end();
     for(Map<String, Texture *>::const_iterator it = textures.begin(); it != endIt; ++it)
     {
-        String pathname = it->first;
+        FilePath pathname = it->first;
         Texture *tex = it->second;
         DVASSERT(tex);
         
-        if(String::npos == pathname.find(projectPath))
+        if(String::npos == pathname.GetAbsolutePathname().find(projectPath))
         {
-            Logger::Warning("[SceneInfo::CalculateTextureSize] Path (%s) doesn't belong to project.", pathname.c_str());
+            Logger::Warning("[SceneInfo::CalculateTextureSize] Path (%s) doesn't belong to project.", pathname.GetAbsolutePathname().c_str());
             continue;
         }
         
         TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(pathname);
-        DVASSERT(descriptor);
+        if(!descriptor)
+        {
+            Logger::Error("[SceneInfo::CalculateTextureSize] Can't create descriptor for texture %s", pathname.GetAbsolutePathname().c_str());
+            continue;
+        }
         
         ImageFileFormat requestedFormat = (descriptor->isCompressedFile) ?
                                 (ImageFileFormat)descriptor->textureFileFormat :
                                 (ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat();
                 
-        String imagePathname = TextureDescriptor::GetPathnameForFormat(pathname, requestedFormat);
+        FilePath imagePathname = TextureDescriptor::GetPathnameForFormat(pathname, requestedFormat);
         switch (requestedFormat)
         {
             case PVR_FILE:
@@ -363,11 +369,11 @@ void SceneInfo::CollectLODData()
 }
 
 
-void SceneInfo::CollectTexture(Map<String, Texture *> &textures, const String &name, Texture *tex)
+void SceneInfo::CollectTexture(Map<String, Texture *> &textures, const FilePath &name, Texture *tex)
 {
-    if(!name.empty() && tex)
+    if(!name.IsEmpty() && tex)
 	{
-		textures[name] = tex;
+		textures[name.GetAbsolutePathname()] = tex;
 	}
 }
 
@@ -438,7 +444,7 @@ void SceneInfo::showEvent ( QShowEvent * event )
 {
     QtPropertyEditor::showEvent(event);
     
-    if(isVisible())
+    if(isVisible() && !IsInConsoleMode())
     {
         QTimer::singleShot(1000, this, SLOT(timerDone()));
     }
@@ -469,3 +475,12 @@ void SceneInfo::RefreshAllData(SceneData *sceneData)
 
 	RestoreTreeState();
 }
+
+bool SceneInfo::IsInConsoleMode()
+{
+    return (     CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter"))
+            ||   CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter"))
+            ||   CommandLineTool::Instance()->CommandIsFound(String("-scenesaver"))
+        );
+}
+

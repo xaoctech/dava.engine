@@ -60,7 +60,7 @@ void HierarchyTreeAggregatorControlNode::ReturnTreeNodeToScene()
 	HierarchyTreeControlNode::ReturnTreeNodeToScene();
 }
 
-String HierarchyTreeAggregatorControlNode::GetAggregatorPath() const
+FilePath HierarchyTreeAggregatorControlNode::GetAggregatorPath() const
 {
 	UIAggregatorControl* aggregatorControl = dynamic_cast<UIAggregatorControl*>(GetUIObject());
 	if (aggregatorControl)
@@ -68,5 +68,5 @@ String HierarchyTreeAggregatorControlNode::GetAggregatorPath() const
 		return aggregatorControl->GetAggregatorPath();
 	}
 
-	return "";
+	return FilePath();
 }

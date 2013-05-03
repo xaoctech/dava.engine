@@ -8,14 +8,11 @@
     <Filter Include="Sources">
       <UniqueIdentifier>{1c139c9d-a02a-4049-9549-1444b14eeb9b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\PVRConverter">
-      <UniqueIdentifier>{4ca254e2-1d64-4cc2-b4d6-09c89ae7168d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\CommandLineTool">
       <UniqueIdentifier>{e1cbfa9e-e4bb-4941-8152-b962de178cc4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\DXTConverter">
-      <UniqueIdentifier>{4f948d37-4806-4fc2-8e35-54296c5941c5}</UniqueIdentifier>
+    <Filter Include="Sources\ResourcePacker">
+      <UniqueIdentifier>{19178aef-554c-4cd6-8a62-a99cec20413e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -24,24 +21,6 @@
     </ClCompile>
     <ClCompile Include="Win32Specific\stdafx.cpp">
       <Filter>Win32 Specific</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\TexturePacker\CommandLineParser.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\TexturePacker\DefinitionFile.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\TexturePacker\ImagePacker.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\TexturePacker\PngImage.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\ResourcePackerScreen.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\TexturePacker\TexturePacker.cpp">
-      <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="Classes\UIFileTree.cpp">
       <Filter>Sources</Filter>
@@ -61,37 +40,37 @@
     <ClCompile Include="Classes\ResourcePackerSpecific\GameCore.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\PVRConverter.cpp">
-      <Filter>Sources\PVRConverter</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\SceneEditor\CommandLineTool.cpp">
       <Filter>Sources\CommandLineTool</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\DXTConverter.cpp">
-      <Filter>Sources\DXTConverter</Filter>
+    <ClCompile Include="..\..\Sources\Tools\TexturePacker\CommandLineParser.cpp">
+      <Filter>Sources\ResourcePacker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Tools\TexturePacker\DefinitionFile.cpp">
+      <Filter>Sources\ResourcePacker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Tools\TexturePacker\ImagePacker.cpp">
+      <Filter>Sources\ResourcePacker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Tools\TexturePacker\PngImage.cpp">
+      <Filter>Sources\ResourcePacker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Tools\TexturePacker\ResourcePacker2D.cpp">
+      <Filter>Sources\ResourcePacker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Tools\TexturePacker\TexturePacker.cpp">
+      <Filter>Sources\ResourcePacker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Tools\DXTConverter.cpp">
+      <Filter>Sources\ResourcePacker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Tools\PVRConverter.cpp">
+      <Filter>Sources\ResourcePacker</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Win32Specific\stdafx.h">
       <Filter>Win32 Specific</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\TexturePacker\CommandLineParser.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\TexturePacker\DefinitionFile.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\TexturePacker\ImagePacker.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\TexturePacker\PngImage.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\ResourcePackerScreen.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\TexturePacker\TexturePacker.h">
-      <Filter>Sources</Filter>
     </ClInclude>
     <ClInclude Include="Classes\UIFileTree.h">
       <Filter>Sources</Filter>
@@ -111,14 +90,32 @@
     <ClInclude Include="Classes\ResourcePackerSpecific\GameCore.h">
       <Filter>Sources</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\PVRConverter.h">
-      <Filter>Sources\PVRConverter</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\SceneEditor\CommandLineTool.h">
       <Filter>Sources\CommandLineTool</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\DXTConverter.h">
-      <Filter>Sources\DXTConverter</Filter>
+    <ClInclude Include="..\..\Sources\Tools\TexturePacker\CommandLineParser.h">
+      <Filter>Sources\ResourcePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Tools\TexturePacker\DefinitionFile.h">
+      <Filter>Sources\ResourcePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Tools\TexturePacker\ImagePacker.h">
+      <Filter>Sources\ResourcePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Tools\TexturePacker\PngImage.h">
+      <Filter>Sources\ResourcePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Tools\TexturePacker\ResourcePacker2D.h">
+      <Filter>Sources\ResourcePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Tools\TexturePacker\TexturePacker.h">
+      <Filter>Sources\ResourcePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Tools\DXTConverter.h">
+      <Filter>Sources\ResourcePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Tools\PVRConverter.h">
+      <Filter>Sources\ResourcePacker</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

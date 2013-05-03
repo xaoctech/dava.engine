@@ -126,14 +126,14 @@ void InputTest::LoadResources()
 	webView2->OpenURL("http://www.apple.com");
 	AddControl(webView2);
 
-	String srcDir = FileSystem::Instance()->FileSystem::SystemPathForFrameworkPath("~res:/TestData/InputTest/");
-	String cpyDir = FileSystem::Instance()->GetCurrentDocumentsDirectory() + "InputTest/";
+	FilePath srcDir("~res:/TestData/InputTest/");
+	FilePath cpyDir = FileSystem::Instance()->GetCurrentDocumentsDirectory() + "InputTest/";
 	FileSystem::Instance()->DeleteDirectory(cpyDir);
 	FileSystem::Instance()->CreateDirectory(cpyDir);
-	String srcFile = srcDir + "test.html";
-	String cpyFile = cpyDir + "test.html";
+	FilePath srcFile = srcDir + "test.html";
+	FilePath cpyFile = cpyDir + "test.html";
 	FileSystem::Instance()->CopyFile(srcFile, cpyFile);
-	String url = "file:///" + cpyFile;
+	String url = "file:///" + cpyFile.GetAbsolutePathname();
 
 	//delegate = new UIWebViewDelegate();
 	webView3 = new UIWebView(Rect(520, 130, 215, 135));

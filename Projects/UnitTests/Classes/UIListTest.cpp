@@ -50,7 +50,7 @@ UIListCell *UIListTestDelegate::CellAtIndex(UIList *list, int32 index)
 
 int32 UIListTestDelegate::CellHeight(UIList *list, int32 index)
 {
-   	return cellSize.y;
+   	return (int32)cellSize.y;
 }
 
 UIListTest::UIListTest() :

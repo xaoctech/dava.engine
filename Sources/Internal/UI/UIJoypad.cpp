@@ -196,7 +196,7 @@ void UIJoypad::SetStickSprite(Sprite *stickSprite, int32 frame)
     stick->SetSprite(stickSprite, frame);
 }
     
-void UIJoypad::SetStickSprite(const String &stickSpriteName, int32 frame)
+void UIJoypad::SetStickSprite(const FilePath &stickSpriteName, int32 frame)
 {
     CreateStickControl();
     stick->SetSprite(stickSpriteName, frame);
