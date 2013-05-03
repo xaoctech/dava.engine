@@ -11,7 +11,7 @@
 
 SceneCollisionSystem::SceneCollisionSystem(DAVA::Scene * scene)
 	: DAVA::SceneSystem(scene)
-	, debugDrawFlags(DEBUG_DRAW_NOTHING)
+	, debugDrawFlags(DEBUG_DRAW_LAND_RAYTEST | DEBUG_DRAW_LAND_COLLISION)
 {
 	btVector3 worldMin(-1000,-1000,-1000);
 	btVector3 worldMax(1000,1000,1000);
@@ -136,6 +136,42 @@ const EntityGroup* SceneCollisionSystem::ObjectsRayTestFromCamera()
 	return ObjectsRayTest(traceFrom, traceTo);
 }
 
+DAVA::Vector3 SceneCollisionSystem::LandRayTest(const DAVA::Vector3 &from, const DAVA::Vector3 &to)
+{
+	DAVA::Vector3 ret;
+
+	// no cache. start ray new ray test
+	lastLandRayFrom = from;
+	lastLandRayTo = to;
+
+	btVector3 btFrom(from.x, from.y, from.z);
+	btVector3 btTo(to.x, to.y, to.z);
+
+	btCollisionWorld::ClosestRayResultCallback btCallback(btFrom, btTo);
+	landCollWorld->rayTest(btFrom, btTo, btCallback);
+	if(btCallback.hasHit()) 
+	{
+		btVector3 hitPoint = btCallback.m_hitPointWorld;
+		ret = DAVA::Vector3(hitPoint.x(), hitPoint.y(), hitPoint.z());
+	}
+
+	lastLandCollision = ret;
+	return ret;
+}
+
+DAVA::Vector3 SceneCollisionSystem::LandRayTestFromCamera()
+{
+	SceneCameraSystem *cameraSystem	= ((SceneEditorProxy *) GetScene())->cameraSystem;
+
+	DAVA::Vector3 camPos = cameraSystem->GetCameraPosition();
+	DAVA::Vector3 camDir = cameraSystem->GetPointDirection(lastMousePos);
+
+	DAVA::Vector3 traceFrom = camPos;
+	DAVA::Vector3 traceTo = traceFrom + camDir * 1000.0f;
+
+	return LandRayTest(traceFrom, traceTo);
+}
+
 void SceneCollisionSystem::UpdateCollisionObject(DAVA::Entity *entity)
 {
 	RemoveEntity(entity);
@@ -175,8 +211,20 @@ void SceneCollisionSystem::Draw()
 
 	if(debugDrawFlags & DEBUG_DRAW_LAND)
 	{
-		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0, 1.0f, 0, 1.0f));
+		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0, 0.5f, 0, 1.0f));
 		landCollWorld->debugDrawWorld();
+	}
+
+	if(debugDrawFlags & DEBUG_DRAW_LAND_RAYTEST)
+	{
+		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0, 1.0f, 0, 1.0f));
+		DAVA::RenderHelper::Instance()->DrawLine(lastLandRayFrom, lastLandRayTo);
+	}
+
+	if(debugDrawFlags & DEBUG_DRAW_LAND_COLLISION)
+	{
+		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0, 1.0f, 0, 1.0f));
+		DAVA::RenderHelper::Instance()->DrawPoint(lastLandCollision, 10.0f);
 	}
 
 	if(debugDrawFlags & DEBUG_DRAW_OBJECTS)

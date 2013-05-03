@@ -170,7 +170,7 @@ void RenderHelper::DrawLine(const Vector3 & start, const Vector3 & end, float32 
 void RenderHelper::DrawPoint(const Vector2 & pt, float32 ptSize)
 {
 #if defined (__DAVAENGINE_OPENGL__)
-    glPointSize(3.0f);
+    glPointSize(ptSize);
 #endif 
     vertexStream->Set(TYPE_FLOAT, 2, 0, (void*)&pt);
     RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
@@ -184,7 +184,7 @@ void RenderHelper::DrawPoint(const Vector2 & pt, float32 ptSize)
 void RenderHelper::DrawPoint(const Vector3 & pt, float32 ptSize)
 {
 #if defined (__DAVAENGINE_OPENGL__)
-    glPointSize(3.0f);
+    glPointSize(ptSize);
 #endif 
     vertexStream->Set(TYPE_FLOAT, 3, 0, (void*)&pt);
     RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
