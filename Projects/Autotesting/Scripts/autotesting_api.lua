@@ -123,7 +123,7 @@ function WriteCommand(name, command)
 	
 	local afterWrite = ReadCommand(name)
 	if command ~= afterWrite then
-		OnError("After writing: expected state '"..command.."' on device '"..name.."', actual:"..afterWrite)
+		OnError("After writing: expected command '"..command.."' on device '"..name.."', actual:"..afterWrite)
 	end
 end
 
@@ -517,7 +517,7 @@ function SelectVertical(list, item)
 		ClickControl(cell)
 		return true
 	else
-		Log("List "..list.." not found")
+		Log("Item "..item.." in "..list.." not found")
 		return false
 	end
 end
