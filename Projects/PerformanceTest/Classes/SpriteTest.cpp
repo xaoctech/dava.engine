@@ -66,12 +66,12 @@ SpriteTest::SpriteTest(const String &screenName)
 
 void SpriteTest::LoadResources()
 {
-	redSprite = Sprite::Create(FilePath("~res:/Gfx/SpriteTest/redsprite"));
-	greenSprite = Sprite::Create(FilePath("~res:/Gfx/SpriteTest/greensprite"));
-	blueSprite = Sprite::Create(FilePath("~res:/Gfx/SpriteTest/bluesprite"));
-	tranclucentSprite = Sprite::Create(FilePath("~res:/Gfx/SpriteTest/transclucentsprite"));
-	zebraSprite = Sprite::Create(FilePath("~res:/Gfx/SpriteTest/zebrasprite"));
-	redGameObject = GameObject::Create(FilePath("~res:/Gfx/SpriteTest/redsprite"));
+	redSprite = Sprite::Create("~res:/Gfx/SpriteTest/redsprite");
+	greenSprite = Sprite::Create("~res:/Gfx/SpriteTest/greensprite");
+	blueSprite = Sprite::Create("~res:/Gfx/SpriteTest/bluesprite");
+	tranclucentSprite = Sprite::Create("~res:/Gfx/SpriteTest/transclucentsprite");
+	zebraSprite = Sprite::Create("~res:/Gfx/SpriteTest/zebrasprite");
+	redGameObject = GameObject::Create("~res:/Gfx/SpriteTest/redsprite");
 }
 
 void SpriteTest::UnloadResources()

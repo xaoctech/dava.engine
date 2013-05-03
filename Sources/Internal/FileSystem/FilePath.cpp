@@ -34,18 +34,68 @@
 namespace DAVA
 {
 
-String FilePath::projectPathname = String();
+FilePath FilePath::virtualBundlePath = FilePath();
 
-void FilePath::SetProjectPathname(const String &pathname)
+void FilePath::SetBundleName(const FilePath & newBundlePath)
 {
-    projectPathname = NormalizePathname(MakeDirectory(pathname));
+	virtualBundlePath = newBundlePath;
+
+	if(!virtualBundlePath.IsEmpty())
+		virtualBundlePath.MakeDirectoryPathname();
 }
 
-const String & FilePath::GetProjectPathname()
+const FilePath & FilePath::GetBundleName()
 {
-    return projectPathname;
+	return virtualBundlePath;
 }
-    
+
+
+#if defined(__DAVAENGINE_WIN32__)
+FilePath FilePath::FilepathRelativeToBundle(const char * relativePathname)
+{
+	FilePath retPath;
+	if(!virtualBundlePath.IsEmpty())
+	{
+		retPath = virtualBundlePath + relativePathname;
+	}
+	else
+	{
+		retPath = FileSystem::Instance()->GetCurrentWorkingDirectory() + relativePathname;
+	}
+
+	return retPath;
+}
+#endif //#if defined(__DAVAENGINE_WIN32__)
+
+
+#if defined(__DAVAENGINE_ANDROID__)
+FilePath FilePath::FilepathRelativeToBundle(const char * relativePathname)
+{
+#ifdef USE_LOCAL_RESOURCES
+	return Format("%s%s", USE_LOCAL_RESOURCES_PATH, relativePathname);
+#else
+	return relativePathname;
+#endif
+}
+#endif //#if defined(__DAVAENGINE_ANDROID__)
+
+FilePath FilePath::FilepathRelativeToBundle(const String & relativePathname)
+{
+    String dataPath = "Data/" + relativePathname;
+	return FilepathRelativeToBundle(dataPath.c_str());
+}
+
+FilePath FilePath::FilepathInDocuments(const char * relativePathname)
+{
+    return FileSystem::Instance()->GetCurrentDocumentsDirectory() + relativePathname;
+}
+
+FilePath FilePath::FilepathInDocuments(const String & relativePathname)
+{
+    return FilepathInDocuments(relativePathname.c_str());
+}
+
+
 FilePath::FilePath()
 {
     absolutePathname = String();
@@ -73,6 +123,14 @@ FilePath::FilePath(const String &pathname)
 }
 
     
+FilePath::FilePath(const char * directory, const String &filename)
+{
+	FilePath directoryPath(directory);
+	directoryPath.MakeDirectoryPathname();
+
+	absolutePathname = AddPath(directoryPath, filename);
+}
+
 FilePath::FilePath(const String &directory, const String &filename)
 {
 	FilePath directoryPath(directory);
@@ -80,7 +138,15 @@ FilePath::FilePath(const String &directory, const String &filename)
 
 	absolutePathname = AddPath(directoryPath, filename);
 }
-    
+
+FilePath::FilePath(const FilePath &directory, const String &filename)
+{
+	DVASSERT(directory.IsDirectoryPathname());
+
+	absolutePathname = AddPath(directory, filename);
+}
+
+
 void FilePath::Initialize(const String &_pathname)
 {
 	String pathname = NormalizePathname(_pathname);
@@ -354,15 +420,8 @@ String FilePath::GetSystemPathname(const String &pathname)
     String::size_type find = pathname.find("~res:");
 	if(find != String::npos)
 	{
-        if(projectPathname.empty())
-        {
-            retPath = FileSystem::Instance()->SystemPathForFrameworkPath(retPath).GetAbsolutePathname();
-        }
-        else
-        {
-            retPath = retPath.erase(0, 6);
-            retPath = projectPathname + "Data/" + retPath;
-        }
+		retPath = retPath.erase(0, 5);
+		retPath = FilepathRelativeToBundle(retPath).GetAbsolutePathname();
 	}
 	else
 	{
@@ -370,7 +429,7 @@ String FilePath::GetSystemPathname(const String &pathname)
 		if(find != String::npos)
 		{
 			retPath = retPath.erase(0, 5);
-			retPath = FileSystem::Instance()->FilepathInDocuments(retPath).GetAbsolutePathname();
+			retPath = FilepathInDocuments(retPath).GetAbsolutePathname();
 		}
 	}
     
@@ -542,7 +601,7 @@ bool FilePath::IsAbsolutePathname(const String &pathname)
         return true;
     
     //Win or DAVA style (c:/, ~res:/, ~doc:/)
-    String::size_type winFound = pathname.find(":/");
+    String::size_type winFound = pathname.find(":");
     if(winFound != String::npos)
     {
         return true;

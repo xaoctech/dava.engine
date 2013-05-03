@@ -96,7 +96,7 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 {
     SafeRelease(sceneNode);
 
-	SceneEditorScreenMain * screen = (SceneEditorScreenMain*)UIScreenManager::Instance()->GetScreen(SCREEN_SCENE_EDITOR_MAIN);
+	SceneEditorScreenMain * screen = (SceneEditorScreenMain*)UIScreenManager::Instance()->GetScreen(SCREEN_MAIN);
 	EditorScene * editorScene = screen->FindCurrentBody()->bodyControl->GetScene();
 	scene = editorScene;
 

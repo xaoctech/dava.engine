@@ -1,7 +1,7 @@
 #ifndef __DAVAENGINE_PVR_CONVERTER_H__
 #define __DAVAENGINE_PVR_CONVERTER_H__
 
-#include "Base/Singleton.h"
+#include "Base/StaticSingleton.h"
 #include "Base/BaseTypes.h"
 #include "Render/RenderBase.h"
 #include "FileSystem/FilePath.h"
@@ -10,7 +10,7 @@ namespace DAVA
 {
 
 class TextureDescriptor;
-class PVRConverter: public Singleton<PVRConverter>
+class PVRConverter: public StaticSingleton<PVRConverter>
 {    
 public:
  

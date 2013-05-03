@@ -48,11 +48,11 @@ void SoundTest::LoadResources()
 {
     GetBackground()->SetColor(Color::White());
     
-    sndClick = Sound::CreateFX(FilePath("~res:/Sounds/click.wav"), Sound::TYPE_STATIC);
+    sndClick = Sound::CreateFX("~res:/Sounds/click.wav", Sound::TYPE_STATIC);
 #ifdef __DAVAENGINE_IPHONE__
-	music = Sound::CreateMusic(FilePath("~res:/Sounds/map.caf"), Sound::TYPE_STREAMED);
+	music = Sound::CreateMusic("~res:/Sounds/map.caf", Sound::TYPE_STREAMED);
 #else
-	music = Sound::CreateMusic(FilePath("~res:/Sounds/map.ogg"), Sound::TYPE_STREAMED);
+	music = Sound::CreateMusic("~res:/Sounds/map.ogg", Sound::TYPE_STREAMED);
 #endif
 }
 
@@ -67,25 +67,25 @@ void SoundTest::CreateInvalidSounds(PerfFuncData * data)
     Sound * sound = 0;
     sound = Sound::Create(FilePath(), (Sound::eType)1111);
     TEST_VERIFY(sound == 0);
-    sound = Sound::Create(FilePath("?InvalidPath"), Sound::TYPE_STATIC);
+    sound = Sound::Create("?InvalidPath", Sound::TYPE_STATIC);
     TEST_VERIFY(sound == 0);
     
     sound = Sound::CreateFX(FilePath(), Sound::TYPE_STATIC);
     TEST_VERIFY(sound == 0);
-    sound = Sound::CreateFX(FilePath("//InvalidPath"), (Sound::eType)333);
+    sound = Sound::CreateFX("//InvalidPath", (Sound::eType)333);
     TEST_VERIFY(sound == 0);
     
     sound = Sound::CreateMusic(FilePath(), (Sound::eType)222);
     TEST_VERIFY(sound == 0);
-    sound = Sound::CreateMusic(FilePath(":\\InvalidPath"), Sound::TYPE_STREAMED);
+    sound = Sound::CreateMusic(":\\InvalidPath", Sound::TYPE_STREAMED);
     TEST_VERIFY(sound == 0);
     
 #ifdef __DAVAENGINE_IPHONE__
-	sound = Sound::CreateMusic(FilePath("~res:/Sounds/null.caf"), Sound::TYPE_STREAMED);
+	sound = Sound::CreateMusic("~res:/Sounds/null.caf", Sound::TYPE_STREAMED);
     TEST_VERIFY(sound == 0);
     SafeRelease(sound);
 #else
-	sound = Sound::CreateMusic(FilePath("~res:/Sounds/null.ogg"), Sound::TYPE_STREAMED);
+	sound = Sound::CreateMusic("~res:/Sounds/null.ogg", Sound::TYPE_STREAMED);
     TEST_VERIFY(sound == 0);
     SafeRelease(sound);
 #endif
@@ -95,16 +95,16 @@ void SoundTest::CreateValidSounds(PerfFuncData * data)
 {
     Sound * sound = 0;
     
-    sound = Sound::CreateFX(FilePath("~res:/Sounds/click.wav"), Sound::TYPE_STATIC);
+    sound = Sound::CreateFX("~res:/Sounds/click.wav", Sound::TYPE_STATIC);
     TEST_VERIFY(sound != 0);
     SafeRelease(sound);
     
 #ifdef __DAVAENGINE_IPHONE__
-	sound = Sound::CreateMusic(FilePath("~res:/Sounds/map.caf"), Sound::TYPE_STREAMED);
+	sound = Sound::CreateMusic("~res:/Sounds/map.caf", Sound::TYPE_STREAMED);
     TEST_VERIFY(sound != 0);
     SafeRelease(sound);
 #else
-	sound = Sound::CreateMusic(FilePath("~res:/Sounds/map.ogg"), Sound::TYPE_STREAMED);
+	sound = Sound::CreateMusic("~res:/Sounds/map.ogg", Sound::TYPE_STREAMED);
     TEST_VERIFY(sound != 0);
     SafeRelease(sound);
 #endif

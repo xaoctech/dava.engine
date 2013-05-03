@@ -1,8 +1,5 @@
 #include "EntityTest.h"
 
-#include <sys/time.h>
-
-#include "Base/ObjectFactory.h"
 //IMPLEMENT_COMPONENT(TestVisibilityAABBoxComponent);
 //IMPLEMENT_COMPONENT(TestVisibilityBSphereComponent);
 //IMPLEMENT_COMPONENT(TestDrawMeshComponent);

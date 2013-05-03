@@ -189,7 +189,7 @@ namespace DAVA
         textFieldHolder->textField.font = [UIFont systemFontOfSize:scaledSize];
     }
     
-    void UITextFieldiPhone::SetAlign(DAVA::int32 align)
+    void UITextFieldiPhone::SetTextAlign(DAVA::int32 align)
     {
         UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
         if (align & ALIGN_LEFT)
@@ -207,6 +207,45 @@ namespace DAVA
             textFieldHolder->textField.contentVerticalAlignment = UIControlContentVerticalAlignmentBottom;
     }
 	
+    DAVA::int32 UITextFieldiPhone::GetTextAlign()
+    {
+        UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
+        
+        DAVA::int32 retValue = 0;
+        
+        
+        UIControlContentHorizontalAlignment horAligment = textFieldHolder->textField.contentHorizontalAlignment;
+        UIControlContentVerticalAlignment   verAligment = textFieldHolder->textField.contentVerticalAlignment;
+        
+        switch (horAligment)
+        {
+            case UIControlContentHorizontalAlignmentLeft:
+                retValue |= ALIGN_LEFT;
+                break;
+            case UIControlContentHorizontalAlignmentCenter:
+                retValue |= ALIGN_HCENTER;
+                break;
+            case UIControlContentHorizontalAlignmentRight:
+                retValue |= ALIGN_RIGHT;
+                break;
+        }
+        
+        switch (verAligment)
+        {
+            case UIControlContentVerticalAlignmentTop:
+                retValue |= ALIGN_TOP;
+                break;
+            case UIControlContentVerticalAlignmentCenter:
+                retValue |= ALIGN_VCENTER;
+                break;
+            case UIControlContentVerticalAlignmentBottom:
+                retValue |= ALIGN_BOTTOM;
+                break;
+        }
+        
+    return retValue;
+    }
+    
     void UITextFieldiPhone::SetReturnKey(int32 returnType)
     {
         UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;

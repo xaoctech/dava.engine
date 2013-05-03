@@ -37,6 +37,7 @@ public:
 	virtual void UnloadResources();
 
 	void DummyComponents(PerfFuncData * data);
+
 };
 
 

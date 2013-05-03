@@ -5,7 +5,7 @@
 #include "../Qt/Scene/SceneData.h"
 
 CommandCreateNodeSceneEditor::CommandCreateNodeSceneEditor(DAVA::Entity* node)
-:	Command(COMMAND_UNDO_REDO)
+:	Command(COMMAND_UNDO_REDO, CommandList::ID_COMMAND_CREATE_NODE_SCENE_EDITOR)
 {
 	commandName = "Create Node";
 	this->node = SafeRetain(node);
@@ -44,4 +44,12 @@ void CommandCreateNodeSceneEditor::Cancel()
 				activeScene->RemoveSceneNode(node);
 		}
 	}
+}
+
+DAVA::Set<DAVA::Entity*> CommandCreateNodeSceneEditor::GetAffectedEntities()
+{
+	Set<Entity*> entities;
+	entities.insert(node);
+
+	return entities;
 }
