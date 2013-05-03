@@ -154,8 +154,8 @@ void InputTest::UnloadResources()
 	SafeRelease(staticText);
 	
 	SafeRelease(webView1);
-	//SafeRelease(webView2);
-	//SafeRelease(webView3);
+	SafeRelease(webView2);
+	SafeRelease(webView3);
 	
 	UIWebViewDelegate* d = (UIWebViewDelegate*)delegate;
 	delete d;
