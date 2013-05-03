@@ -77,7 +77,7 @@ FileList::FileList(const FilePath & filepath)
 			do
 			{
                 //TODO: need to check for Win32
-				entry.path = filepath + FilePath(c_file.name);
+				entry.path = filepath + c_file.name;
 				entry.name = c_file.name;
 				entry.size = c_file.size;
 				entry.isDirectory = (_A_SUBDIR & c_file.attrib) != 0;

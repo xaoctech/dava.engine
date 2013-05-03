@@ -144,8 +144,8 @@ void HierarchyTreePlatformNode::ActivatePlatform()
 {
 	if (rootNode)
 	{
-		String bundleName = ResourcesManageHelper::GetDataPath(rootNode->GetProjectDir()).toStdString();
-		FileSystem::Instance()->ReplaceBundleName(bundleName);
+		String bundleName = rootNode->GetProjectDir().toStdString();
+		FilePath::SetBundleName(bundleName);
 	}
 }
 

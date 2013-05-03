@@ -157,7 +157,7 @@ void DebugRenderSystem::Process()
             RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
             RenderManager::Instance()->SetState(RenderState::STATE_COLORMASK_ALL | RenderState::STATE_DEPTH_WRITE | RenderState::STATE_DEPTH_TEST);
             RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
-            RenderHelper::Instance()->DrawCornerBox(debugBoundigBox, 1.5f);
+            RenderHelper::Instance()->DrawCornerBox(debugBoundigBox);
             RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
             RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
             //		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
@@ -168,7 +168,7 @@ void DebugRenderSystem::Process()
             RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
             RenderManager::Instance()->SetState(RenderState::STATE_COLORMASK_ALL | RenderState::STATE_DEPTH_WRITE);
             RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
-            RenderHelper::Instance()->DrawBox(debugBoundigBox, 1.5f);
+            RenderHelper::Instance()->DrawBox(debugBoundigBox);
             RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
             RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
         }

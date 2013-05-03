@@ -129,7 +129,7 @@ void GameCore::CreateDocumentsFolder()
 
 File * GameCore::CreateDocumentsFile(const String &filePathname)
 {
-    FilePath workingFilepathname = FileSystem::Instance()->FilepathInDocuments(filePathname);
+    FilePath workingFilepathname = FilePath::FilepathInDocuments(filePathname);
     
     
     FileSystem::Instance()->CreateDirectory(workingFilepathname.GetDirectory(), true);
@@ -173,6 +173,14 @@ void GameCore::OnResume()
     ApplicationCore::OnResume();
 }
 
+
+#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
+void GameCore::OnDeviceLocked()
+{
+//    Logger::Debug("GameCore::OnDeviceLocked");
+    Core::Instance()->Quit();
+}
+
 void GameCore::OnBackground()
 {
     Logger::Debug("GameCore::OnBackground");
@@ -184,12 +192,6 @@ void GameCore::OnForeground()
 	ApplicationCore::OnForeground();
 }
 
-#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
-void GameCore::OnDeviceLocked()
-{
-//    Logger::Debug("GameCore::OnDeviceLocked");
-    Core::Instance()->Quit();
-}
 #endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
 
 

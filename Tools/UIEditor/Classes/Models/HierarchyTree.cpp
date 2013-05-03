@@ -151,6 +151,8 @@ void HierarchyTree::CreateProject()
 void HierarchyTree::CloseProject()
 {
 	projectCreated = false;
+	// Reset project path
+	rootNode.SetProjectFilePath(QString());
 	rootNode.ResetUnsavedChanges();
 	Clear();
 }

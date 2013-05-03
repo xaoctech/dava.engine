@@ -62,6 +62,14 @@ SoundInstance::SoundInstance(Sound * parent)
 }
 #endif //#ifdef __DAVAENGINE_ANDROID__
     
+SoundInstance::~SoundInstance()
+{
+#ifdef __DAVAENGINE_ANDROID__
+    SafeRelease(parentSound);
+#endif //#ifdef __DAVAENGINE_ANDROID__
+};
+
+    
 SoundInstance::eState SoundInstance::GetState() const
 {
 	return state;

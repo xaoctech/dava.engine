@@ -27,7 +27,7 @@ using namespace DAVA;
 // Yuri Coder, 03/12/2012. New commands for Particle Editor QT.
 
 CommandUpdateEffect::CommandUpdateEffect(ParticleEffectComponent* particleEffect):
-Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_UPDATE_EFFECT)
 {
 	this->particleEffect = particleEffect;
 }
@@ -44,7 +44,7 @@ void CommandUpdateEffect::Execute()
 }
 
 CommandUpdateEmitter::CommandUpdateEmitter(ParticleEmitter* emitter):
-	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_UPDATE_EMITTER)
 {
 	this->emitter = emitter;
 }
@@ -83,7 +83,7 @@ void CommandUpdateEmitter::Execute()
 }
 
 CommandUpdateParticleLayer::CommandUpdateParticleLayer(ParticleEmitter* emitter, ParticleLayer* layer) :
-	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_UPDATE_PARTICLE_LAYER)
 {
 	this->emitter = emitter;
 	this->layer = layer;
@@ -222,7 +222,7 @@ void CommandUpdateParticleLayer::Execute()
 }
 
 CommandUpdateParticleLayerTime::CommandUpdateParticleLayerTime(ParticleLayer* layer) :
-	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_UPDATE_PARTICLE_LAYER_TIME)
 {
 	this->layer = layer;
 }
@@ -240,7 +240,7 @@ void CommandUpdateParticleLayerTime::Execute()
 }
 
 CommandUpdateParticleLayerEnabled::CommandUpdateParticleLayerEnabled(ParticleLayer* layer, bool isEnabled) :
-	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_UPDATE_PARTICLE_LAYER_ENABLED)
 {
 	this->layer = layer;
 	this->isEnabled = isEnabled;
@@ -256,7 +256,7 @@ void CommandUpdateParticleLayerEnabled::Execute()
 }
 
 CommandUpdateParticleForce::CommandUpdateParticleForce(ParticleLayer* layer, uint32 forceId) :
-	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_UPDATE_PARTICLE_FORCE)
 {
 	this->layer = layer;
 	this->forceId = forceId;
@@ -281,7 +281,7 @@ void CommandUpdateParticleForce::Execute()
 // Yuri Coder, 03/12/2012. New commands for Particle Editor QT.
 
 CommandAddParticleEmitter::CommandAddParticleEmitter() :
-    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_ADD_PARTICLE_EMITTER)
 {
 }
 
@@ -293,7 +293,7 @@ void CommandAddParticleEmitter::Execute()
 
 
 CommandStartStopParticleEffect::CommandStartStopParticleEffect(bool isStart) :
-    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_START_STOP_PARTICLE_EFFECT)
 {
     this->isStart = isStart;
 }
@@ -318,7 +318,7 @@ void CommandStartStopParticleEffect::Execute()
 }
 
 CommandRestartParticleEffect::CommandRestartParticleEffect() :
-    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_RESTART_PARTICLE_EFFECT)
 {
 }
 
@@ -337,7 +337,7 @@ void CommandRestartParticleEffect::Execute()
 }
 
 CommandAddParticleEmitterLayer::CommandAddParticleEmitterLayer() :
-    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_ADD_PARTICLE_EMITTER_LAYER)
 {
 }
 
@@ -369,7 +369,7 @@ void CommandAddParticleEmitterLayer::Execute()
 }
 
 CommandRemoveParticleEmitterLayer::CommandRemoveParticleEmitterLayer() :
-    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_REMOVE_PARTICLE_EMITTER_LAYER)
 {
 }
 
@@ -405,7 +405,7 @@ void CommandRemoveParticleEmitterLayer::Execute()
 }
 
 CommandCloneParticleEmitterLayer::CommandCloneParticleEmitterLayer() :
-    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_CLONE_PARTICLE_EMITTER_LAYER)
 {
 }
 
@@ -430,7 +430,7 @@ void CommandCloneParticleEmitterLayer::Execute()
 }
 
 CommandAddParticleEmitterForce::CommandAddParticleEmitterForce() :
-    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_ADD_PARTICLE_EMITTER_FORCE)
 {
 }
 
@@ -459,7 +459,7 @@ void CommandAddParticleEmitterForce::Execute()
 }
 
 CommandRemoveParticleEmitterForce::CommandRemoveParticleEmitterForce() :
-    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_REMOVE_PARTICLE_EMITTER_FORCE)
 {
 }
 
@@ -495,7 +495,7 @@ void CommandRemoveParticleEmitterForce::Execute()
 }
 
 CommandLoadParticleEmitterFromYaml::CommandLoadParticleEmitterFromYaml() :
-    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_LOAD_PARTICLE_EMITTER_FROM_YAML)
 {
 }
 
@@ -539,7 +539,7 @@ void CommandLoadParticleEmitterFromYaml::Execute()
 }
 
 CommandSaveParticleEmitterToYaml::CommandSaveParticleEmitterToYaml(bool forceAskFilename) :
-    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_SAVE_PARTICLE_EMITTER_TO_YAML)
 {
     this->forceAskFilename = forceAskFilename;
 }

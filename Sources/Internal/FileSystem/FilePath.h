@@ -43,18 +43,13 @@ class FilePath
 {
 public:
 
-	enum eType
-	{
-		PATH_IN_FILESYSTEM = 0,		//	rootdir/...
-		PATH_IN_DOCUMENTS,			//~doc:/....
-		PATH_IN_RESOURCES			//~res:/....
-	};
-
 	FilePath();
     FilePath(const FilePath & path);
     FilePath(const String & sourcePath);
     FilePath(const char * sourcePath);
+    FilePath(const FilePath & directory, const String & filename);
     FilePath(const String & directory, const String & filename);
+    FilePath(const char *directory, const String & filename);
 
 	virtual ~FilePath();
 
@@ -82,19 +77,19 @@ public:
         \brief Function to check is filepath empty or no
         \returns true if absolutePathname is not empty
 	 */
-    const bool IsEmpty() const;
+    inline bool IsEmpty() const;
 
 	/*
         \brief Function to check is filepath represent folder path
         \returns true if absolutePathname has '/' as last character
 	 */
-    const bool IsDirectoryPathname() const;
+    bool IsDirectoryPathname() const;
 
 	/**
         \brief Function to retrieve pathname
         \returns pathname value
 	 */
-    const String & GetAbsolutePathname() const;
+    inline const String & GetAbsolutePathname() const;
     
 	/**
         \brief Function to retrieve filename from pathname. Filename for path "/Users/Folder/image.png" is "image.png".
@@ -163,19 +158,6 @@ public:
     void ReplaceDirectory(const FilePath &directory);
     
 	/**
-        \brief Function for setup of project path for resolving pathnames such as "~res:/Gfx/image.png"
-        \param[in] pathname is project path
-	 */
-    static void SetProjectPathname(const String &pathname);
-
-	/**
-        \brief Function to retrieve project path for resolving pathnames such as "~res:/Gfx/image.png"
-        \returns project path 
-	 */
-    static const String & GetProjectPathname();
-
-    
-	/**
         \brief Function to modify absolute to be path to folder. For example "Users/Document" after function call will be "Users/Document/"
 	 */
     void MakeDirectoryPathname();
@@ -193,13 +175,6 @@ public:
     
     
 	/**
-        \brief Function for replacement of pathname from absolute path
-        \param[in] pathname is pathname for replacement
-	 */
-    void ReplacePath(const FilePath &pathname);
-    
-    
-	/**
         \brief Function for comparison with extension of filepath object
         \param[in] extension is extension for comparison
 	 */
@@ -211,10 +186,34 @@ public:
         \param[in] type of FilePath representation
 		\returns pathname value for requested type
 	 */
-	String GetFrameworkPathForType(eType pathType);
+	String GetFrameworkPath();
 
+
+	static void SetBundleName(const FilePath &newBundlePath);
+		
+	/**
+        \brief Function to retrieve project path for resolving pathnames such as "~res:/Gfx/image.png"
+        \returns project path 
+	 */
+    static const FilePath & GetBundleName();
+
+    /**
+        \brief Function to retrieve full path relative current documents folder
+        \returns path relative corrent documents folder
+     */
+    static FilePath FilepathInDocuments(const char * relativePathname);
+    
+    /**
+        \brief Function to retrieve full path relative current documents folder
+        \returns path relative corrent documents folder
+     */
+    static FilePath FilepathInDocuments(const String & relativePathname);
+
+    
 protected:
     
+    void Initialize(const String &pathname);
+
 	String GetFrameworkPathForPrefix(const String &typePrefix);
 
     static String NormalizePathname(const FilePath &pathname);
@@ -230,23 +229,32 @@ protected:
     static String GetSystemPathname(const String &pathname);
     
     static bool IsAbsolutePathname(const String &pathname);
-    
+
+	static FilePath FilepathRelativeToBundle(const char * relativePathname);
+	static FilePath FilepathRelativeToBundle(const String & relativePathname);
+
 public:
+    static String AddPath(const FilePath &folder, const String & addition);
     static String AddPath(const FilePath &folder, const FilePath & addition);
-    
+
 protected:
     
     String absolutePathname;
-    static String projectPathname;
-    
-public:
-    
-//    INTROSPECTION(FilePath,
-//        MEMBER(absolutePathname, "absolutePathname", INTROSPECTION_EDITOR)
-// 		NULL
-//     );
-    
+
+	static FilePath virtualBundlePath;
 };
+    
+    
+inline const String & FilePath::GetAbsolutePathname() const
+{
+    return absolutePathname;
+}
+
+inline bool FilePath::IsEmpty() const
+{
+    return absolutePathname.empty();
+}
+
     
 };
 
