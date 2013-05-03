@@ -205,18 +205,21 @@ FilePath& FilePath::operator=(const FilePath &path)
 FilePath FilePath::operator+(const FilePath &path) const
 {
     FilePath pathname(AddPath(*this, path));
+    pathname.pathType = this->pathType;
     return pathname;
 }
 
 FilePath FilePath::operator+(const String &path) const
 {
     FilePath pathname(AddPath(*this, path));
+    pathname.pathType = this->pathType;
     return pathname;
 }
 
 FilePath FilePath::operator+(const char * path) const
 {
     FilePath pathname(AddPath(*this, String(path)));
+    pathname.pathType = this->pathType;
     return pathname;
 }
 
