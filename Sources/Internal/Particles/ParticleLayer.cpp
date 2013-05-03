@@ -1215,4 +1215,21 @@ void ParticleLayer::RemoveInnerEmitter()
 	SafeRelease(innerEmitter);
 }
 
+void ParticleLayer::SetDisabled(bool value)
+{
+	this->isDisabled = value;
+	
+	// Update all the inner layers.
+	Particle* current = this->head;
+	while (current)
+	{
+		if (current->GetInnerEmitter())
+		{
+			current->GetInnerEmitter()->SetDisabledForAllLayers(value);
+		}
+
+		current = current->next;
+	}
+}
+
 };

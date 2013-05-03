@@ -26,6 +26,8 @@
 
 #include "Commands/Command.h"
 
+class SceneGraphModel;
+
 namespace DAVA {
 
 // Scene Model Helper for Particles Editor.
@@ -77,7 +79,8 @@ public:
 	
 	// Update the representation of the layer when it is refreshed.
 	void UpdateLayerRepresentation(GraphItem* rootItem,
-								   DAVA::ParticleLayer* layer);
+								   DAVA::ParticleLayer* layer,
+								   SceneGraphModel* sceneGraphModel);
 
 protected:
 	// Add the action to QT menu.
@@ -100,7 +103,7 @@ protected:
     void SynchronizeEffectParticleEditorNode(EffectParticleEditorNode* node, Entity* effectRootNode);
     void SynchronizeEmitterParticleEditorNode(EmitterParticleEditorNode* node);
     void SynchronizeLayerParticleEditorNode(LayerParticleEditorNode* node);
-	void SynchronizeInnerEmitterNode(LayerParticleEditorNode* node, SceneGraphItem* layerNodeItem = NULL);
+	void SynchronizeInnerEmitterNode(LayerParticleEditorNode* node, SceneGraphItem* layerNodeItem = NULL, SceneGraphModel* sceneGraphModel = NULL);
 
 	void BuildEntitiesSets(EffectParticleEditorNode* node, Entity* effectRootNode,
 						   Set<Entity*>& entitiesInParticleEditor,

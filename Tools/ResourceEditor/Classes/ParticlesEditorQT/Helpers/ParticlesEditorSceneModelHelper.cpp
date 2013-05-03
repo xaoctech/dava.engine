@@ -8,6 +8,7 @@
 
 #include "ParticlesEditorSceneModelHelper.h"
 #include "DockParticleEditor/ParticlesEditorController.h"
+#include "SceneGraphModel.h"
 
 #include "Commands/CommandsManager.h"
 #include "Commands/SceneGraphCommands.h"
@@ -316,7 +317,8 @@ void ParticlesEditorSceneModelHelper::SynchronizeLayerParticleEditorNode(LayerPa
 }
 
 void ParticlesEditorSceneModelHelper::SynchronizeInnerEmitterNode(LayerParticleEditorNode* node,
-																  SceneGraphItem* layerNodeItem)
+																  SceneGraphItem* layerNodeItem,
+																  SceneGraphModel* sceneGraphModel)
 {
 	if (!node)
     {
@@ -344,15 +346,14 @@ void ParticlesEditorSceneModelHelper::SynchronizeInnerEmitterNode(LayerParticleE
 		
 		node->AddChildNode(innerEmitterEditorNode);
 
-		/*
 		// Also update the Scene Graph, if requested.
-		if (layerNodeItem)
+		if (layerNodeItem && sceneGraphModel)
 		{
 			SceneGraphItem* childItem = new SceneGraphItem();
 			childItem->SetExtraUserData(innerEmitterEditorNode);
-			layerNodeItem->AppendChild(childItem);
+			sceneGraphModel->AddNodeToTree(layerNodeItem, childItem);
 		}
-		*/
+
 		return;
 	}
 
@@ -361,8 +362,7 @@ void ParticlesEditorSceneModelHelper::SynchronizeInnerEmitterNode(LayerParticleE
 	if (needRemoveInnerEmitter)
 	{
 		// Update the Scene Graph, if needed.
-		/*
-		if (layerNodeItem)
+		if (layerNodeItem && sceneGraphModel)
 		{
 			int childrenCount = layerNodeItem->ChildrenCount();
 			List<GraphItem*> childItemsToRemove;
@@ -385,10 +385,10 @@ void ParticlesEditorSceneModelHelper::SynchronizeInnerEmitterNode(LayerParticleE
 			for (List<GraphItem*>::iterator iter = childItemsToRemove.begin();
 				 iter != childItemsToRemove.end(); iter ++)
 			{
-				layerNodeItem->RemoveChild(*iter);
+				GraphItem* childItem = (*iter);
+				sceneGraphModel->RemoveNodeFromTree(layerNodeItem, childItem);
 			}
 		}
-		 */
 
 		// AFTER the Scene Graph was updated - do the actual remove.
 		BaseParticleEditorNode::PARTICLEEDITORNODESLIST nodesToRemove;
@@ -729,7 +729,7 @@ bool ParticlesEditorSceneModelHelper::GetCheckableStateForGraphItem(GraphItem* g
 		return false;
 	}
 	
-	return !layerEditorNode->GetLayer()->isDisabled;
+	return !layerEditorNode->GetLayer()->GetDisabled();
 }
 
 void ParticlesEditorSceneModelHelper::SetCheckableStateForGraphItem(GraphItem* graphItem, bool value)
@@ -835,9 +835,9 @@ void ParticlesEditorSceneModelHelper::RemoveExcessiveNodesFromSceneGraph(EffectP
 }
 
 void ParticlesEditorSceneModelHelper::UpdateLayerRepresentation(GraphItem* rootItem,
-																DAVA::ParticleLayer* layer)
+																DAVA::ParticleLayer* layer,
+																SceneGraphModel* sceneGraphModel)
 {
-	/*
 	// Get the appropriate Scene Graph Item.
 	SceneGraphItem* layerItem = GetGraphItemForParticlesLayer(rootItem, layer);
 	if (!layerItem)
@@ -855,6 +855,5 @@ void ParticlesEditorSceneModelHelper::UpdateLayerRepresentation(GraphItem* rootI
 	bool innerEmitterExistedBeforeSync = (layerNode->GetInnerEmittersCount() > 0);
 	
 	// ... and do the synchronization for inner emitters.
-	SynchronizeInnerEmitterNode(layerNode, layerItem);
-	 */
+	SynchronizeInnerEmitterNode(layerNode, layerItem, sceneGraphModel);
 }

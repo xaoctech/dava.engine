@@ -304,6 +304,12 @@ public:
 	void SetPlaybackSpeed(float32 value);
 	float32 GetPlaybackSpeed();
 
+	/**
+	 \brief Set the "IsDisabled" flag for all the inner layers.
+	 \param[in] "Is Disabled" flag.
+	 */
+	void SetDisabledForAllLayers(bool value);
+
 	/// Particles' color is multiplied by ambientColor before drawing.
 	Color ambientColor;
 
