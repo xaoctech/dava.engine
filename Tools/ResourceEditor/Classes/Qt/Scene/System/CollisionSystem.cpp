@@ -12,6 +12,7 @@
 SceneCollisionSystem::SceneCollisionSystem(DAVA::Scene * scene)
 	: DAVA::SceneSystem(scene)
 	, debugDrawFlags(DEBUG_DRAW_LAND_RAYTEST | DEBUG_DRAW_LAND_COLLISION)
+	, rayIntersectCached(false)
 {
 	btVector3 worldMin(-1000,-1000,-1000);
 	btVector3 worldMax(1000,1000,1000);
@@ -140,19 +141,38 @@ DAVA::Vector3 SceneCollisionSystem::LandRayTest(const DAVA::Vector3 &from, const
 {
 	DAVA::Vector3 ret;
 
-	// no cache. start ray new ray test
+	// check if cache is available 
+	if(lastLandRayFrom == from && lastLandRayTo == to)
+	{
+		return lastLandCollision;
+	}
+
+	// no cache. start new ray test
 	lastLandRayFrom = from;
 	lastLandRayTo = to;
 
-	btVector3 btFrom(from.x, from.y, from.z);
-	btVector3 btTo(to.x, to.y, to.z);
+	DAVA::Vector3 rayDirection = to - from;
+	DAVA::float32 rayLength = rayDirection.Length();
+	DAVA::Vector3 rayStep = rayDirection / rayLength;
 
-	btCollisionWorld::ClosestRayResultCallback btCallback(btFrom, btTo);
-	landCollWorld->rayTest(btFrom, btTo, btCallback);
-	if(btCallback.hasHit()) 
+	btVector3 btFrom(from.x, from.y, from.z);
+
+	while (rayLength > 0)
 	{
-		btVector3 hitPoint = btCallback.m_hitPointWorld;
-		ret = DAVA::Vector3(hitPoint.x(), hitPoint.y(), hitPoint.z());
+		btVector3 btTo(btFrom.x() + rayStep.x, btFrom.y() + rayStep.y, btFrom.z() + rayStep.z);
+
+		btCollisionWorld::ClosestRayResultCallback btCallback(btFrom, btTo);
+		landCollWorld->rayTest(btFrom, btTo, btCallback);
+		if(btCallback.hasHit()) 
+		{
+			btVector3 hitPoint = btCallback.m_hitPointWorld;
+			ret = DAVA::Vector3(hitPoint.x(), hitPoint.y(), hitPoint.z());
+
+			break;
+		}
+
+		btFrom = btTo;
+		rayLength -= 1.0f;
 	}
 
 	lastLandCollision = ret;
