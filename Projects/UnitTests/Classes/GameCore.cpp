@@ -129,7 +129,7 @@ void GameCore::CreateDocumentsFolder()
 
 File * GameCore::CreateDocumentsFile(const String &filePathname)
 {
-    FilePath workingFilepathname = FileSystem::Instance()->FilepathInDocuments(filePathname);
+    FilePath workingFilepathname = FilePath::FilepathInDocuments(filePathname);
     
     
     FileSystem::Instance()->CreateDirectory(workingFilepathname.GetDirectory(), true);

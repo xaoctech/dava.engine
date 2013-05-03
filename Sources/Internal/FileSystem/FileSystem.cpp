@@ -422,17 +422,6 @@ void FileSystem::SetCurrentDocumentsDirectory(const FilePath & newDocDirectory)
     currentDocDirectory = newDocDirectory;
 }
 
-const FilePath FileSystem::FilepathInDocuments(const char * relativePathname)
-{
-    //return Format("./Documents/%s", relativePathname);
-    return currentDocDirectory + relativePathname;
-}
-
-const FilePath FileSystem::FilepathInDocuments(const String & relativePathname)
-{
-    return FilepathInDocuments(relativePathname.c_str());
-}
-
 void FileSystem::SetDefaultDocumentsDirectory()
 {
     SetCurrentDocumentsDirectory(GetUserDocumentsPath() + "DAVAProject/");

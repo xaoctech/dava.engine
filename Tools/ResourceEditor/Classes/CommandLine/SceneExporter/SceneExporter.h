@@ -6,7 +6,7 @@
 
 using namespace DAVA;
 
-class SceneExporter: public DAVA::Singleton<SceneExporter>
+class SceneExporter
 {
 public:
 

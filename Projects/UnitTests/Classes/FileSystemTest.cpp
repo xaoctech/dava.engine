@@ -174,8 +174,8 @@ void FileSystemTest::DocTestFunction(PerfFuncData * data)
     TEST_VERIFY(!FileSystem::Instance()->IsFile("~doc:/TestData/FileSystemTest/"));
     
 
-    TEST_VERIFY(    FileSystem::Instance()->FilepathInDocuments((const char *)"Test/test.file")
-                ==  FileSystem::Instance()->FilepathInDocuments(String("Test/test.file")));
+    TEST_VERIFY(    FilePath::FilepathInDocuments((const char *)"Test/test.file")
+                ==  FilePath::FilepathInDocuments(String("Test/test.file")));
     
     
     FileSystem::eCreateDirectoryResult created = FileSystem::Instance()->CreateDirectory("~doc:/TestData/FileSystemTest/1/2/3", false);
