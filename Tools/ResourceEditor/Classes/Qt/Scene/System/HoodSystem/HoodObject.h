@@ -2,6 +2,7 @@
 #define __HOOD_OBJECT_H__
 
 #include "Scene/System/HoodSystem/HoodCollObject.h"
+#include "Scene/SceneTypes.h"
 
 struct HoodObject 
 {
@@ -16,7 +17,7 @@ struct HoodObject
 
 	virtual void UpdatePos(const DAVA::Vector3 &pos);
 	virtual void UpdateScale(const DAVA::float32 &scale);
-	virtual void Draw(int selectedAxis, int mouseOverAxis) = 0;
+	virtual void Draw(ST_Axis selectedAxis, ST_Axis mouseOverAxis) = 0;
 
 	HoodCollObject* CreateLine(const DAVA::Vector3 &from, const DAVA::Vector3 &to);
 

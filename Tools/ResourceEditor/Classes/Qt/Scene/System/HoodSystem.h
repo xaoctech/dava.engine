@@ -1,6 +1,7 @@
 #ifndef __ENTITY_MODIFICATION_SYSTEM_HOOD_H__
 #define __ENTITY_MODIFICATION_SYSTEM_HOOD_H__
 
+#include "Scene/SceneTypes.h"
 #include "Scene/System/HoodSystem/NormalHood.h"
 #include "Scene/System/HoodSystem/MoveHood.h"
 #include "Scene/System/HoodSystem/ScaleHood.h"
@@ -23,16 +24,16 @@ public:
 	HoodSystem(DAVA::Scene * scene, SceneCameraSystem *camSys);
 	~HoodSystem();
 
-	void SetType(int type);
-	int GetType() const;
+	void SetModifMode(ST_ModifMode mode);
+	ST_ModifMode GetModifMode() const;
 
 	DAVA::Vector3 GetPosition() const;
 	void SetPosition(const DAVA::Vector3 &pos);
 	void MovePosition(const DAVA::Vector3 &offset);
 
-	void SetSelectedAxis(int axis);
-	int GetSelectedAxis() const;
-	int GetPassingAxis() const;
+	void SetModifAxis(ST_Axis axis);
+	ST_Axis GetModifAxis() const;
+	ST_Axis GetPassingAxis() const;
 
 	void SetScale(DAVA::float32 scale);
 	DAVA::float32 GetScale() const;
@@ -47,12 +48,12 @@ protected:
 	bool locked;
 	bool visible;
 
-	int curMode;
+	ST_ModifMode curMode;
+	ST_Axis curAxis;
+	ST_Axis moseOverAxis;
 	DAVA::Vector3 curPos;
 	DAVA::Vector3 curOffset;
 	DAVA::float32 curScale;
-	int curAxis;
-	int moseOverAxis;
 
 	SceneCameraSystem *cameraSystem;
 

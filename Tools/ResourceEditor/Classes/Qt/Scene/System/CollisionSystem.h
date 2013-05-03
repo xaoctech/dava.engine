@@ -3,6 +3,7 @@
 
 #include <QMap>
 #include "Scene/EntityGroup.h"
+#include "Scene/SceneTypes.h"
 
 // bullet
 #include "bullet/btBulletCollisionCommon.h"
@@ -23,25 +24,10 @@ class SceneCollisionSystem : public DAVA::SceneSystem
 	friend class EntityModificationSystem;
 
 public:
-	enum DebugDrawFlags
-	{
-		DEBUG_DRAW_NOTHING = 0x0,
-
-		DEBUG_DRAW_OBJECTS = 0x1,
-		DEBUG_DRAW_OBJECTS_SELECTED = 0x2,
-		DEBUG_DRAW_OBJECTS_RAYTEST = 0x4,
-
-		DEBUG_DRAW_LAND = 0x10,
-		DEBUG_DRAW_LAND_RAYTEST = 0x20,
-		DEBUG_DRAW_LAND_COLLISION = 0x40,
-
-		DEBUG_DRAW_ALL = 0xFFFFFFFF
-	};
-
 	SceneCollisionSystem(DAVA::Scene * scene);
 	~SceneCollisionSystem();
 
-	void SetDebugDrawFlags(int flags);
+	void SetDrawMode(int mode);
 	int GetDebugDrawFlags();
 
 	DAVA::AABBox3 GetBoundingBox(DAVA::Entity *entity);
@@ -63,7 +49,7 @@ protected:
 	virtual void RemoveEntity(DAVA::Entity * entity);
 
 protected:
-	int debugDrawFlags;
+	int drawMode;
 
 	DAVA::Vector3 lastRayFrom;
 	DAVA::Vector3 lastRayTo;

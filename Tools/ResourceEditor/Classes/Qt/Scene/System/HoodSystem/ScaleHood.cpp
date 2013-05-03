@@ -11,22 +11,22 @@ ScaleHood::ScaleHood() : HoodObject(4.0f)
 	DAVA::float32 c = 2 * baseSize / 3;
 
 	axisX = CreateLine(DAVA::Vector3(0, 0, 0), DAVA::Vector3(baseSize, 0, 0));
-	axisX->axis = EM_AXIS_X;
+	axisX->axis = ST_AXIS_X;
 
 	axisY = CreateLine(DAVA::Vector3(0, 0, 0), DAVA::Vector3(0, baseSize, 0));
-	axisY->axis = EM_AXIS_Y;
+	axisY->axis = ST_AXIS_Y;
 
 	axisZ = CreateLine(DAVA::Vector3(0, 0, 0), DAVA::Vector3(0, 0, baseSize));
-	axisZ->axis = EM_AXIS_Z;
+	axisZ->axis = ST_AXIS_Z;
 
 	axisXY = CreateLine(DAVA::Vector3(c, 0, 0), DAVA::Vector3(0, c, 0));
-	axisXY->axis = EM_AXIS_XY;
+	axisXY->axis = ST_AXIS_XY;
 
 	axisXZ = CreateLine(DAVA::Vector3(c, 0, 0), DAVA::Vector3(0, 0, c));
-	axisXZ->axis = EM_AXIS_XZ;
+	axisXZ->axis = ST_AXIS_XZ;
 
 	axisYZ = CreateLine(DAVA::Vector3(0, c, 0), DAVA::Vector3(0, 0, c));
-	axisYZ->axis = EM_AXIS_YZ;
+	axisYZ->axis = ST_AXIS_YZ;
 }
 
 ScaleHood::~ScaleHood()
@@ -34,7 +34,7 @@ ScaleHood::~ScaleHood()
 
 }
 
-void ScaleHood::Draw(int selectedAxis, int mouseOverAxis)
+void ScaleHood::Draw(ST_Axis selectedAxis, ST_Axis mouseOverAxis)
 {
 	int oldState = DAVA::RenderManager::Instance()->GetState();
 	DAVA::eBlendMode oldBlendSrc = DAVA::RenderManager::Instance()->GetSrcBlend();
