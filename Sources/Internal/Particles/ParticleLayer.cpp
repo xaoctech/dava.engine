@@ -39,12 +39,20 @@
 namespace DAVA
 {
 
+ParticleLayer::LayerTypeNamesInfo ParticleLayer::layerTypeNamesInfoMap[] =
+{
+	{ TYPE_SINGLE_PARTICLE, "single" },
+	{ TYPE_PARTICLES, "particles" },
+	{ TYPE_SUPEREMITTER_PARTICLES, "superEmitter" }
+};
+
 ParticleLayer::ParticleLayer()
 	: head(0)
 	, count(0)
 	, limit(1000)
 	, emitter(0)
 	, sprite(0)
+	, innerEmitter(NULL)
 {
 	renderBatch = new ParticleLayerBatch();
 	renderBatch->SetParticleLayer(this);
@@ -105,6 +113,8 @@ ParticleLayer::~ParticleLayer()
 {
 	SafeRelease(renderBatch);
 	SafeRelease(sprite);
+	SafeRelease(innerEmitter);
+
 	head = 0;
 	CleanupForces();
 	// dynamic cache automatically delete all particles
@@ -195,10 +205,13 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	
 	if (angleVariation)
 		dstLayer->angleVariation.Set(angleVariation->Clone());
-	
+
+	if (innerEmitter)
+		dstLayer->innerEmitter = static_cast<ParticleEmitter*>(innerEmitter->Clone(NULL));
+
 	dstLayer->layerName = layerName;
 	dstLayer->alignToMotion = alignToMotion;
-	dstLayer->additive = additive;
+	dstLayer->SetAdditive(additive);
 	dstLayer->startTime = startTime;
 	dstLayer->endTime = endTime;
 	dstLayer->type = type;
@@ -312,7 +325,8 @@ void ParticleLayer::Update(float32 timeElapsed)
 
 	switch(type)
 	{
-	case TYPE_PARTICLES:
+		case TYPE_PARTICLES:
+		case TYPE_SUPEREMITTER_PARTICLES:
 		{
 			Particle * prev = 0;
 			Particle * current = head;
@@ -367,7 +381,8 @@ void ParticleLayer::Update(float32 timeElapsed)
 			}
 			break;
 		}
-	case TYPE_SINGLE_PARTICLE:
+
+		case TYPE_SINGLE_PARTICLE:
 		{
 			bool needUpdate = true;
 			if ((layerTime >= startTime) && (layerTime < endTime) && !emitter->IsPaused())
@@ -421,6 +436,13 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 	}
 	
 	Particle * particle = ParticleSystem::Instance()->NewParticle();
+
+	// SuperEmitter particles contains the emitter inside.
+	if (type == TYPE_SUPEREMITTER_PARTICLES)
+	{
+		particle->InitializeInnerEmitter(this->emitter, innerEmitter);
+	}
+
 	particle->CleanupForces();
 
 	particle->next = 0;
@@ -622,6 +644,7 @@ void ParticleLayer::Draw(Camera * camera)
 	switch(type)
 	{
 		case TYPE_PARTICLES:
+		case TYPE_SUPEREMITTER_PARTICLES:
 		{
 			Particle * current = head;
 			while(current)
@@ -682,8 +705,7 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 	YamlNode * typeNode = node->Get("layerType");
 	if (typeNode)
 	{
-		if (typeNode->AsString() == "single")
-			type = TYPE_SINGLE_PARTICLE;
+		type = StringToLayerType(typeNode->AsString(), TYPE_PARTICLES);
 	}
 
 	YamlNode * nameNode = node->Get("name");
@@ -834,7 +856,16 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 	{
 		isDisabled = isDisabledNode->AsBool();
 	}
-	
+
+	// Load the Inner Emitter parameters.
+	YamlNode * innerEmitterPathNode = node->Get("innerEmitterPath");
+	if (innerEmitterPathNode)
+	{
+		innerEmitterPath = innerEmitterPathNode->AsString();
+		CreateInnerEmitter();
+		innerEmitter->LoadFromYaml(this->innerEmitterPath);
+	}
+
 	// Yuri Coder, 2013/01/31. After all the data is loaded, check the Frame Overlife timelines and
 	// synchronize them with the maximum available frames in the sprite. See also DF-573.
 	UpdateFrameTimeline();
@@ -849,7 +880,7 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "name", layerName);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "type", "layer");
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "layerType",
-                                                                 this->type == TYPE_SINGLE_PARTICLE ? "single" : "particles");
+																 LayerTypeToString(type, "particles"));
     if (this->IsLong())
     {
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "isLong", true);
@@ -908,6 +939,11 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "endTime", this->endTime);
 
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "isDisabled", this->isDisabled);
+
+	if (innerEmitter)
+	{
+		PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "innerEmitterPath", this->innerEmitterPath.GetAbsolutePathname());
+	}
 
     // Now write the forces.
     SaveForcesToYamlNode(layerNode);
@@ -1066,6 +1102,10 @@ void ParticleLayer::SetPlaybackSpeed(float32 value)
 {
 	this->playbackSpeed = Clamp(value, PARTICLE_EMITTER_MIN_PLAYBACK_SPEED,
 								PARTICLE_EMITTER_MAX_PLAYBACK_SPEED);
+	
+	// Lookup through the active particles to update playback speed for the
+	// inner emitters.
+	UpdatePlaybackSpeedForInnerEmitters(value);
 }
 
 float32 ParticleLayer::GetPlaybackSpeed()
@@ -1075,7 +1115,30 @@ float32 ParticleLayer::GetPlaybackSpeed()
 
 int32 ParticleLayer::GetActiveParticlesCount()
 {
-	return count;
+	if (!innerEmitter)
+	{
+		return count;
+	}
+
+	// Ask each end every active particle's inner emitter regarding the total.
+	int32 totalCount = count;
+	Particle* current = head;
+	while (current)
+	{
+		if (current->GetInnerEmitter())
+		{
+			ParticleEmitter* currentInnerEmitter = current->GetInnerEmitter();
+			for (Vector<ParticleLayer*>::iterator iter = currentInnerEmitter->GetLayers().begin();
+				 iter != currentInnerEmitter->GetLayers().end(); iter ++)
+			{
+				totalCount += (*iter)->GetActiveParticlesCount();
+			}
+		}
+		
+		current = current->next;
+	}
+
+	return totalCount;
 }
 
 float32 ParticleLayer::GetActiveParticlesArea()
@@ -1093,4 +1156,63 @@ float32 ParticleLayer::GetActiveParticlesArea()
 	return activeArea;
 }
 
+ParticleLayer::eType ParticleLayer::StringToLayerType(const String& layerTypeName, eType defaultLayerType)
+{
+	int32 layerTypesCount = sizeof(layerTypeNamesInfoMap) / sizeof(*layerTypeNamesInfoMap);
+	for (int32 i = 0; i < layerTypesCount; i ++)
+	{
+		if (layerTypeNamesInfoMap[i].layerTypeName == layerTypeName)
+		{
+			return layerTypeNamesInfoMap[i].layerType;
+		}
+	}
+	
+	return defaultLayerType;
 }
+
+String ParticleLayer::LayerTypeToString(eType layerType, const String& defaultLayerTypeName)
+{
+	int32 layerTypesCount = sizeof(layerTypeNamesInfoMap) / sizeof(*layerTypeNamesInfoMap);
+	for (int32 i = 0; i < layerTypesCount; i ++)
+	{
+		if (layerTypeNamesInfoMap[i].layerType == layerType)
+		{
+			return layerTypeNamesInfoMap[i].layerTypeName;
+		}
+	}
+	
+	return defaultLayerTypeName;
+}
+
+void ParticleLayer::UpdatePlaybackSpeedForInnerEmitters(float value)
+{
+	Particle* current = this->head;
+	while (current)
+	{
+		if (current->GetInnerEmitter())
+		{
+			current->GetInnerEmitter()->SetPlaybackSpeed(value);
+		}
+		
+		current = current->next;
+	}
+}
+
+void ParticleLayer::CreateInnerEmitter()
+{
+	SafeRelease(innerEmitter);
+	innerEmitter = new ParticleEmitter();
+}
+
+ParticleEmitter* ParticleLayer::GetInnerEmitter()
+{
+	return innerEmitter;
+}
+
+void ParticleLayer::RemoveInnerEmitter()
+{
+	DeleteAllParticles();
+	SafeRelease(innerEmitter);
+}
+
+};

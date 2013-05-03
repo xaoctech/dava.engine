@@ -530,6 +530,9 @@ QVariant SceneGraphModel::data(const QModelIndex &index, int role) const
 
 void SceneGraphModel::RefreshParticlesLayer(DAVA::ParticleLayer* layer)
 {
+	// Changing the layer type might add/remove extra items (like Inner Emitter).
+	particlesEditorSceneModelHelper.UpdateLayerRepresentation(rootItem, layer);
+	
 	// Ask Helper to return us the SceneGraph node for this Particle layer.
 	SceneGraphItem* itemToRefresh = particlesEditorSceneModelHelper.GetGraphItemForParticlesLayer(rootItem, layer);
 	if (itemToRefresh)

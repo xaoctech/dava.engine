@@ -286,5 +286,26 @@ protected:
     bool forceAskFilename;
 };
 
+// The same for Inner Emitters.
+class CommandLoadInnerEmitterFromYaml : public Command
+{
+public:
+    CommandLoadInnerEmitterFromYaml();
+	
+protected:
+    virtual void Execute();
+};
+
+class CommandSaveInnerEmitterToYaml : public Command
+{
+public:
+    CommandSaveInnerEmitterToYaml(bool forceAskFilename);
+	
+protected:
+    virtual void Execute();
+    
+    bool forceAskFilename;
+};
+
 
 #endif //__PARTICLE_EDITOR_COMMANDS_H__

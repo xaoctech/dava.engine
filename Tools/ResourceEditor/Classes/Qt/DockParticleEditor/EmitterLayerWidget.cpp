@@ -26,7 +26,8 @@
 const EmitterLayerWidget::LayerTypeMap EmitterLayerWidget::layerTypeMap[] =
 {
 	{ParticleLayer::TYPE_SINGLE_PARTICLE, "Single Particle"},
-	{ParticleLayer::TYPE_PARTICLES, "Particles"}
+	{ParticleLayer::TYPE_PARTICLES, "Particles"},
+	{ParticleLayer::TYPE_SUPEREMITTER_PARTICLES, "SuperEmitter"}
 };
 
 EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
@@ -95,6 +96,14 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 			SLOT(OnSpriteBtn()));
 	connect(spritePathLabel, SIGNAL(textChanged(const QString&)), this, SLOT(OnSpritePathChanged(const QString&)));
 
+	QVBoxLayout* innerEmitterLayout = new QVBoxLayout();
+	innerEmitterLabel = new QLabel("Inner Emitter", this);
+	innerEmitterPathLabel = new QLineEdit(this);
+	innerEmitterPathLabel->setReadOnly(true);
+	innerEmitterLayout->addWidget(innerEmitterLabel);
+	innerEmitterLayout->addWidget(innerEmitterPathLabel);
+	mainBox->addLayout(innerEmitterLayout);
+	
 	lifeTimeLine = new TimeLineWidget(this);
 	InitWidget(lifeTimeLine);
 	numberTimeLine = new TimeLineWidget(this);
@@ -132,9 +141,11 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 	connect(frameOverlifeFPSSpin, SIGNAL(valueChanged(int)),
 			this, SLOT(OnValueChanged()));
 
+	frameOverlifeFPSLabel = new QLabel("FPS", this);
+
 	frameOverlifeLayout->addWidget(frameOverlifeCheckBox);
 	frameOverlifeLayout->addWidget(frameOverlifeFPSSpin);
-	frameOverlifeLayout->addWidget(new QLabel("FPS", this));
+	frameOverlifeLayout->addWidget(frameOverlifeFPSLabel);
 	mainBox->addLayout(frameOverlifeLayout);
 	
 	angleTimeLine = new TimeLineWidget(this);
@@ -645,4 +656,31 @@ int32 EmitterLayerWidget::LayerTypeToIndex(ParticleLayer::eType layerType)
 	}
 	
 	return 0;
+}
+
+void EmitterLayerWidget::SetSuperemitterMode(bool isSuperemitter)
+{
+	// Sprite has no sense for Superemitter.
+	spriteBtn->setVisible(!isSuperemitter);
+	spriteLabel->setVisible(!isSuperemitter);
+	spritePathLabel->setVisible(!isSuperemitter);
+	
+	// The same is for "Additive" flag, Color, Alpha and Frame.
+	additiveCheckBox->setVisible(!isSuperemitter);
+	colorRandomGradient->setVisible(!isSuperemitter);
+	colorOverLifeGradient->setVisible(!isSuperemitter);
+	alphaOverLifeTimeLine->setVisible(!isSuperemitter);
+
+	frameOverlifeCheckBox->setVisible(!isSuperemitter);
+	frameOverlifeFPSSpin->setVisible(!isSuperemitter);
+	frameOverlifeFPSLabel->setVisible(!isSuperemitter);
+	
+	// Some controls are however specific for this mode only - display and update them.
+	innerEmitterLabel->setVisible(isSuperemitter);
+	innerEmitterPathLabel->setVisible(isSuperemitter);
+	
+	if (isSuperemitter && this->layer->GetInnerEmitter())
+	{
+		innerEmitterPathLabel->setText(QString::fromStdString(layer->GetInnerEmitter()->GetConfigPath().GetAbsolutePathname()));
+	}
 }
