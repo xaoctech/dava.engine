@@ -39,7 +39,7 @@
 namespace DAVA
 {
 
-ParticleLayer::LayerTypeNamesInfo ParticleLayer::layerTypeNamesInfoMap[] =
+const ParticleLayer::LayerTypeNamesInfo ParticleLayer::layerTypeNamesInfoMap[] =
 {
 	{ TYPE_SINGLE_PARTICLE, "single" },
 	{ TYPE_PARTICLES, "particles" },

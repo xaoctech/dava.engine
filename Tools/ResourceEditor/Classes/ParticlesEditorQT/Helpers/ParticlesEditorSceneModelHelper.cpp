@@ -8,7 +8,7 @@
 
 #include "ParticlesEditorSceneModelHelper.h"
 #include "DockParticleEditor/ParticlesEditorController.h"
-#include "SceneGraphModel.h"
+#include "DockSceneGraph/SceneGraphModel.h"
 
 #include "Commands/CommandsManager.h"
 #include "Commands/SceneGraphCommands.h"
