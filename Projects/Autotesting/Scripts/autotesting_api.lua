@@ -261,7 +261,7 @@ function WaitControl(name, time)
 		Yield()
         
         if autotestingSystem:FindControl(name) then
-            Log("WaitControl found "..name, "DEBUG")
+            --Log("WaitControl found "..name, "DEBUG")
             return true
         end
     end
@@ -301,7 +301,7 @@ end
 
 function TouchUp(touchId)
 	local touchId = touchId or 1
-    Log("TouchUp "..touchId)
+    --Log("TouchUp "..touchId)
     autotestingSystem:TouchUp(touchId)
 end
 
@@ -422,7 +422,7 @@ function SelectHorizontal(list, item)
 		if IsVisible(list.."/"..tostring(i)) then
 			previous_last = i
 			last_visible = i
-			Log( "previous_last = "..tostring(previous_last)..",last_visible = "..tostring(last_visible) )
+			--Log( "previous_last = "..tostring(previous_last)..",last_visible = "..tostring(last_visible) )
 			break
 		end
 	end
@@ -432,7 +432,7 @@ function SelectHorizontal(list, item)
 	while true do
 		if not IsVisible(list.."/"..tostring(index)) then
 			last_visible = index - 1
-			Log( "last_visible = "..tostring(last_visible) )
+			--Log( "last_visible = "..tostring(last_visible) )
 			break
 		end
 		index = index + 1
@@ -448,7 +448,7 @@ function SelectHorizontal(list, item)
 			while true do
 				if not IsVisible(list.."/"..tostring(index)) then
 					last_visible = index - 1
-					Log( "previous_last = "..tostring(previous_last) )
+					--Log( "previous_last = "..tostring(previous_last) )
 					break
 				end
 				index = index + 1
@@ -479,7 +479,7 @@ function SelectVertical(list, item)
 		if IsVisible(list.."/"..tostring(i)) then
 			previous_last = i
 			last_visible = i
-			Log( "previous_last = "..tostring(previous_last)..",last_visible = "..tostring(last_visible) )
+			--Log( "previous_last = "..tostring(previous_last)..",last_visible = "..tostring(last_visible) )
 			break
 		end
 	end
@@ -489,7 +489,7 @@ function SelectVertical(list, item)
 	while true do
 		if not IsVisible(list.."/"..tostring(index)) then
 			last_visible = index - 1
-			Log( "last_visible = "..tostring(last_visible) )
+			--Log( "last_visible = "..tostring(last_visible) )
 			break
 		end
 		index = index + 1
@@ -505,7 +505,7 @@ function SelectVertical(list, item)
 			while true do
 				if not IsVisible(list.."/"..tostring(index)) then
 					last_visible = index - 1
-					Log( "previous_last = "..tostring(previous_last) )
+					--Log( "previous_last = "..tostring(previous_last) )
 					break
 				end
 				index = index + 1
