@@ -556,7 +556,7 @@ void LandscapeEditorVisibilityCheckTool::ShowAction()
 {
 	if(pointCursorTexture == NULL)
 	{
-		pointCursorTexture = Texture::CreateFromFile(FilePath("~res:/LandscapeEditor/Tools/cursor/setPointCursor.png"));
+		pointCursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/setPointCursor.png");
 		pointCursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
 	}
 	SetState(VCT_STATE_NORMAL);

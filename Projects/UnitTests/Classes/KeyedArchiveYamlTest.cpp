@@ -1,8 +1,8 @@
 #include "KeyedArchiveYamlTest.h"
 #include "Math/Math2D.h"
 
-#define FILE_PATH FilePath("~res:/KeyedArchives/keyed_archive_original.yaml")
-#define GENERATED_FILE_PATH FilePath("KeyedArchives/keyed_archive_created.yaml")
+#define FILE_PATH String("~res:/KeyedArchives/keyed_archive_original.yaml")
+#define GENERATED_FILE_PATH String("KeyedArchives/keyed_archive_created.yaml")
 //#define GENERATED_FILE_PATH "~res:/KeyedArchives/keyed_archive_created.yaml"
 //#define GENERATED_FILE_PATH "/Users/user/Documents/work/gitHub/dava.framework/Projects/UnitTests/Data/KeyedArchives/keyed_archive_created.yaml"
 

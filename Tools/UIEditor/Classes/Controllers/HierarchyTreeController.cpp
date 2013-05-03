@@ -448,8 +448,7 @@ void HierarchyTreeController::DeleteNodesFiles(const HierarchyTreeNode::HIERARCH
 		{
 			platformNode->SetMarked(true);
 			platformNode->SetChildrenMarked(true);
-			QString path = platformNode->GetPlatformFolder();
-			FileSystem::Instance()->DeleteDirectory(path.toStdString(), true);
+			FileSystem::Instance()->DeleteDirectory(platformNode->GetPlatformFolder(), true);
 		}
 	}
 }

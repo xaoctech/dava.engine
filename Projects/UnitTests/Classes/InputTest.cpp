@@ -70,7 +70,10 @@ void InputTest::LoadResources()
 {
 	GetBackground()->SetColor(Color(1.f, 0, 0, 1));
 	
-	Font *font = FTFont::Create(FilePath("~res:/Fonts/korinna.ttf"));
+	Texture* texture = Texture::CreateFromFile("~res:/TestData/InputTest/rect2.png");
+	Sprite* spr = Sprite::CreateFromTexture(texture,0,0,texture->width,texture->height);
+
+	Font *font = FTFont::Create("~res:/Fonts/korinna.ttf");
     DVASSERT(font);
 	font->SetSize(20);
     font->SetColor(Color::White());
@@ -82,6 +85,9 @@ void InputTest::LoadResources()
 #else
 	textField->SetFont(font);
 #endif
+	textField->SetSprite(spr,0);
+    textField->SetSpriteAlign(ALIGN_RIGHT);
+	textField->SetTextAlign(ALIGN_LEFT | ALIGN_BOTTOM);
 	textField->SetText(L"textField");
 	textField->SetDebugDraw(true);
 	textField->SetDelegate(new UITextFieldDelegate());
@@ -95,6 +101,7 @@ void InputTest::LoadResources()
 #endif
 	textField->SetText(L"textField");
 	textField->SetDebugDraw(true);
+	textField->SetDelegate(new UITextFieldDelegate());
 	AddControl(textField);
 
 	textField = new UITextField(Rect(750, 10, 100, 500));
@@ -105,6 +112,7 @@ void InputTest::LoadResources()
 #endif
 	textField->SetText(L"textField");
 	textField->SetDebugDraw(true);
+	textField->SetDelegate(new UITextFieldDelegate());
 	AddControl(textField);
 
 	testButton = new UIButton(Rect(0, 300, 300, 30));
@@ -112,6 +120,14 @@ void InputTest::LoadResources()
 	testButton->SetStateText(0xFF, L"Finish Test");
 	testButton->SetDebugDraw(true);
 	testButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &InputTest::ButtonPressed));
+
+	staticText = new UIStaticText(Rect(500, 500, 100, 50));
+	font->SetSize(10);
+	staticText->SetFont(font);
+	staticText->SetTextAlign(12);// 12 - Rtop
+	staticText->SetText(L"StaticText");
+	staticText->SetDebugDraw(true);
+	AddControl(staticText);
 
 	webView1 = new UIWebView(Rect(5, 105, 500, 190));
 	webView1->SetVisible(false);
@@ -127,13 +143,13 @@ void InputTest::LoadResources()
 	AddControl(webView2);
 
 	FilePath srcDir("~res:/TestData/InputTest/");
-	FilePath cpyDir = FileSystem::Instance()->GetCurrentDocumentsDirectory() + FilePath("InputTest/");
+	FilePath cpyDir = FileSystem::Instance()->GetCurrentDocumentsDirectory() + "InputTest/";
 	FileSystem::Instance()->DeleteDirectory(cpyDir);
 	FileSystem::Instance()->CreateDirectory(cpyDir);
-	FilePath srcFile = srcDir + FilePath("test.html");
-	FilePath cpyFile = cpyDir + FilePath("test.html");
+	FilePath srcFile = srcDir + "test.html";
+	FilePath cpyFile = cpyDir + "test.html";
 	FileSystem::Instance()->CopyFile(srcFile, cpyFile);
-	String url = "file:///" + cpyFile.ResolvePathname();
+	String url = "file:///" + cpyFile.GetAbsolutePathname();
 
 	//delegate = new UIWebViewDelegate();
 	webView3 = new UIWebView(Rect(520, 130, 215, 135));
@@ -143,6 +159,9 @@ void InputTest::LoadResources()
 	AddControl(webView3);
 
 	AddControl(testButton);
+    
+    SafeRelease(spr);
+    SafeRelease(texture);
 }
 
 void InputTest::UnloadResources()
@@ -154,8 +173,8 @@ void InputTest::UnloadResources()
 	SafeRelease(staticText);
 	
 	SafeRelease(webView1);
-	//SafeRelease(webView2);
-	//SafeRelease(webView3);
+	SafeRelease(webView2);
+	SafeRelease(webView3);
 	
 	UIWebViewDelegate* d = (UIWebViewDelegate*)delegate;
 	delete d;

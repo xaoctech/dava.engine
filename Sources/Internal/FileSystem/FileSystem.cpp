@@ -63,47 +63,6 @@ namespace DAVA
 {
 
 	
-FilePath FileSystem::virtualBundlePath = FilePath();
-	
-void FileSystem::ReplaceBundleName(const FilePath & newBundlePath)
-{
-    virtualBundlePath = newBundlePath;
-}
-	
-	
-#if defined(__DAVAENGINE_WIN32__)
-const char * FileSystem::FilepathRelativeToBundle(const char * relativePathname)
-{
-	if(!virtualBundlePath.IsEmpty())
-    {
-        return Format("%s/%s", virtualBundlePath.GetAbsolutePathname().c_str(), relativePathname);
-    }
-    else
-    {
-        FilePath currentFolder = FileSystem::Instance()->GetCurrentWorkingDirectory();
-        return Format("%s/Data/%s", currentFolder.GetAbsolutePathname().c_str(), relativePathname);
-    }
-}
-#endif //#if defined(__DAVAENGINE_WIN32__)
-	
-	
-#if defined(__DAVAENGINE_ANDROID__)
-const char * FileSystem::FilepathRelativeToBundle(const char * relativePathname)
-{
-#ifdef USE_LOCAL_RESOURCES
-	return Format("%s%s", USE_LOCAL_RESOURCES_PATH, relativePathname);
-#else
-	return Format("Data%s", relativePathname);
-#endif
-}
-#endif //#if defined(__DAVAENGINE_ANDROID__)
-	
-const char * FileSystem::FilepathRelativeToBundle(const String & relativePathname)
-{
-    return FilepathRelativeToBundle(relativePathname.c_str());
-}
-
-    
 FileSystem::FileSystem()
 {
 }
@@ -391,42 +350,7 @@ File *FileSystem::CreateFileForFrameworkPath(const FilePath & frameworkPath, uin
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 }
 
-const FilePath FileSystem::SystemPathForFrameworkPath(const String & frameworkPath)
-{
-	//DVASSERT(frameworkPath.size() > 0);
-    if(frameworkPath.empty() || frameworkPath[0] != '~')
-	{
-		return FilePath(frameworkPath);
-	}
-    
-    String pathname = frameworkPath;
-    String::size_type find = pathname.find("~res:");
-	if(find != String::npos)
-	{
-        FilePath p(FilepathRelativeToBundle(""));
-        p.MakeDirectoryPathname();
-        
-		tempRetPath = p + pathname.erase(0, 5);
-	}
-	else
-	{
-		find = pathname.find("~doc:");
-		if(find != String::npos)
-		{
-            FilePath p(FilepathInDocuments(""));
-            p.MakeDirectoryPathname();
-            
-            tempRetPath = p + pathname.erase(0, 5);
-		}
-        else
-        {
-            tempRetPath = frameworkPath;
-        }
-	}
-    
-	return tempRetPath;
-}
-	
+
 const FilePath & FileSystem::GetCurrentWorkingDirectory()
 {
 	char tempDir[2048];
@@ -496,17 +420,6 @@ const FilePath & FileSystem::GetCurrentDocumentsDirectory()
 void FileSystem::SetCurrentDocumentsDirectory(const FilePath & newDocDirectory)
 {
     currentDocDirectory = newDocDirectory;
-}
-
-const FilePath FileSystem::FilepathInDocuments(const char * relativePathname)
-{
-    //return Format("./Documents/%s", relativePathname);
-    return currentDocDirectory + relativePathname;
-}
-
-const FilePath FileSystem::FilepathInDocuments(const String & relativePathname)
-{
-    return FilepathInDocuments(relativePathname.c_str());
 }
 
 void FileSystem::SetDefaultDocumentsDirectory()

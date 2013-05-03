@@ -7,7 +7,7 @@
 class LibraryCommand: public Command
 {
 public:
-    LibraryCommand(const DAVA::FilePath &pathname, eCommandType _type);
+    LibraryCommand(const DAVA::FilePath &pathname, eCommandType _type, CommandList::eCommandId id);
     
 protected:
     

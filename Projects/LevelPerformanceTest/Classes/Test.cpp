@@ -29,11 +29,6 @@ void Test::LoadResources()
 	scene->AddNode(scene->GetRootNode(fullName));
 	DVASSERT_MSG(scene, "Could not load the scene");
     
-    /*SceneFileV2 *file = new SceneFileV2();
-    file->EnableDebugLog(false);
-    file->SaveScene(FilePath("~res:/3d/Maps/desert_train/a_level.sc2"), scene);
-    SafeRelease(file);*/
-
 	Camera* cam = new Camera();
 	scene->AddCamera(cam);
 

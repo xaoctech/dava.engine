@@ -47,7 +47,9 @@ public:
     FilePath(const FilePath & path);
     FilePath(const String & sourcePath);
     FilePath(const char * sourcePath);
+    FilePath(const FilePath & directory, const String & filename);
     FilePath(const String & directory, const String & filename);
+    FilePath(const char *directory, const String & filename);
 
 	virtual ~FilePath();
 
@@ -156,19 +158,6 @@ public:
     void ReplaceDirectory(const FilePath &directory);
     
 	/**
-        \brief Function for setup of project path for resolving pathnames such as "~res:/Gfx/image.png"
-        \param[in] pathname is project path
-	 */
-    static void SetProjectPathname(const String &pathname);
-
-	/**
-        \brief Function to retrieve project path for resolving pathnames such as "~res:/Gfx/image.png"
-        \returns project path 
-	 */
-    static const String & GetProjectPathname();
-
-    
-	/**
         \brief Function to modify absolute to be path to folder. For example "Users/Document" after function call will be "Users/Document/"
 	 */
     void MakeDirectoryPathname();
@@ -199,6 +188,28 @@ public:
 	 */
 	String GetFrameworkPath();
 
+
+	static void SetBundleName(const FilePath &newBundlePath);
+		
+	/**
+        \brief Function to retrieve project path for resolving pathnames such as "~res:/Gfx/image.png"
+        \returns project path 
+	 */
+    static const FilePath & GetBundleName();
+
+    /**
+        \brief Function to retrieve full path relative current documents folder
+        \returns path relative corrent documents folder
+     */
+    static FilePath FilepathInDocuments(const char * relativePathname);
+    
+    /**
+        \brief Function to retrieve full path relative current documents folder
+        \returns path relative corrent documents folder
+     */
+    static FilePath FilepathInDocuments(const String & relativePathname);
+
+    
 protected:
     
     void Initialize(const String &pathname);
@@ -218,23 +229,19 @@ protected:
     static String GetSystemPathname(const String &pathname);
     
     static bool IsAbsolutePathname(const String &pathname);
-    
+
+	static FilePath FilepathRelativeToBundle(const char * relativePathname);
+	static FilePath FilepathRelativeToBundle(const String & relativePathname);
+
 public:
     static String AddPath(const FilePath &folder, const String & addition);
     static String AddPath(const FilePath &folder, const FilePath & addition);
-    
+
 protected:
     
     String absolutePathname;
-    static String projectPathname;
-    
-public:
-    
-//    INTROSPECTION(FilePath,
-//        MEMBER(absolutePathname, "absolutePathname", INTROSPECTION_EDITOR)
-// 		NULL
-//     );
-    
+
+	static FilePath virtualBundlePath;
 };
     
     

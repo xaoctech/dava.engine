@@ -7,28 +7,8 @@
 #include "../LandscapeEditor/EditorLandscape.h"
 #include "../LandscapeEditor/LandscapesController.h"
 
-//Show/Hide Tilemap Editor
-CommandTilemapEditor::CommandTilemapEditor()
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
-{
-}
-
-
-void CommandTilemapEditor::Execute()
-{
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-        screen->TilemapTriggered();
-    }
-	
-	//    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
-	//    activeScene->RebuildSceneGraph();
-}
-
-
 CommandDrawTilemap::CommandDrawTilemap(Image* originalImage, Image* newImage, const FilePath & pathname, Landscape* landscape)
-:	Command(COMMAND_UNDO_REDO)
+:	Command(COMMAND_UNDO_REDO, CommandList::ID_COMMAND_DRAW_TILEMAP)
 ,	landscape(landscape)
 {
 	commandName = "Tilemap Draw";

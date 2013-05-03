@@ -39,7 +39,7 @@ public:
 		QSize size;
 	};
 
-	explicit ImportDialog(eImportType type, QWidget *parent = 0, const QString& platformPath = "");
+	explicit ImportDialog(eImportType type, QWidget *parent = 0, const FilePath& platformPath = FilePath(""));
 
 	~ImportDialog();
 
@@ -61,7 +61,7 @@ private:
 	ImportDialogFileWidget* controlWidget;
 	Vector<ImportDialogFileWidget*> fileWidgets;
 	HierarchyTreeNode::HIERARCHYTREENODEID platformId;
-	QString platformPath;
+	FilePath platformPath;
 
 	void ClearCurrentList();
 	bool CheckAggregatorsSize();
@@ -69,7 +69,7 @@ private:
 	void InitScreensImport();
 	void InitPlatformImport();
 
-	Vector<String> GetDirectoryContent(const String& path, bool getFiles = false,
+	Vector<String> GetDirectoryContent(const FilePath& path, bool getFiles = false,
 									   const String& fileMask = "",
 									   bool removeExtension = true);
 	Vector<String> GetChildrenNames(HierarchyTreeNode* node);

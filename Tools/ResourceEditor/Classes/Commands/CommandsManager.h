@@ -4,7 +4,7 @@
 #include "DAVAEngine.h"
 
 class Command;
-class SceneData;
+class DAVA::Scene;
 
 class CommandsManager: public DAVA::Singleton<CommandsManager>
 {
@@ -14,38 +14,40 @@ public:
 	CommandsManager();
 	virtual ~CommandsManager();
 	
-    void Execute(Command *command, SceneData* forScene = NULL);
-	void ExecuteAndRelease(Command* command, SceneData* forScene = NULL);
-    void Undo(SceneData* forScene = NULL);
-    void Redo(SceneData* forScene = NULL);
+    void Execute(Command *command, DAVA::Scene* forScene = NULL);
+	void ExecuteAndRelease(Command* command, DAVA::Scene* forScene = NULL);
+    void Undo(DAVA::Scene* forScene = NULL);
+    void Redo(DAVA::Scene* forScene = NULL);
 
-	DAVA::int32 GetUndoQueueLength(SceneData* forScene = NULL);
-	DAVA::int32 GetRedoQueueLength(SceneData* forScene = NULL);
+	DAVA::int32 GetUndoQueueLength(DAVA::Scene* forScene = NULL);
+	DAVA::int32 GetRedoQueueLength(DAVA::Scene* forScene = NULL);
 
-	DAVA::String GetUndoCommandName(SceneData* forScene = NULL);
-	DAVA::String GetRedoCommandName(SceneData* forScene = NULL);
+	DAVA::String GetUndoCommandName(DAVA::Scene* forScene = NULL);
+	DAVA::String GetRedoCommandName(DAVA::Scene* forScene = NULL);
 
-	void SceneReleased(SceneData* scene);
+	void SceneReleased(DAVA::Scene* scene);
 
 private:
 	struct UndoQueue
 	{
 		DAVA::Vector<Command*> commands;
 		DAVA::int32 commandIndex;
-		SceneData* activeScene;
+		DAVA::Scene* activeScene;
 
-		UndoQueue(SceneData* scene)
+		UndoQueue(DAVA::Scene* scene)
 		:	commandIndex(-1)
 		,	activeScene(scene)
 		{ commands.reserve(UNDO_QUEUE_SIZE); };
 	};
 
-	typedef DAVA::Map<SceneData*, UndoQueue*> QUEUE_MAP;
+	typedef DAVA::Map<DAVA::Scene*, UndoQueue*> QUEUE_MAP;
 
     void ClearQueue(UndoQueue* queue);
     void ClearQueueTail(UndoQueue* queue);
 	void ClearAllQueues();
-	UndoQueue* GetQueueForScene(SceneData* scene);
+	UndoQueue* GetQueueForScene(DAVA::Scene* scene);
+
+	void EmitCommandExecutedSignal(Command* command, DAVA::Scene* scene);
 
 	QUEUE_MAP queueMap;
 };

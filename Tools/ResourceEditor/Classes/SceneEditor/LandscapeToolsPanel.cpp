@@ -64,15 +64,15 @@ UISlider * LandscapeToolsPanel::CreateSlider(const Rect & rect)
     slider->SetMinMaxValue(0.f, 1.0f);
     slider->SetValue(0.5f);
     
-    slider->SetMinSprite(FilePath("~res:/Gfx/LandscapeEditor/Tools/polzunok"), 1);
+    slider->SetMinSprite("~res:/Gfx/LandscapeEditor/Tools/polzunok", 1);
     slider->SetMinDrawType(UIControlBackground::DRAW_STRETCH_HORIZONTAL);
     slider->SetMinLeftRightStretchCap(5);
 
-    slider->SetMaxSprite(FilePath("~res:/Gfx/LandscapeEditor/Tools/polzunok"), 0);
+    slider->SetMaxSprite("~res:/Gfx/LandscapeEditor/Tools/polzunok", 0);
     slider->SetMaxDrawType(UIControlBackground::DRAW_STRETCH_HORIZONTAL);
     slider->SetMaxLeftRightStretchCap(5);
 
-    slider->SetThumbSprite(FilePath("~res:/Gfx/LandscapeEditor/Tools/polzunokCenter"), 0);
+    slider->SetThumbSprite("~res:/Gfx/LandscapeEditor/Tools/polzunokCenter", 0);
     
     Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
     
@@ -96,7 +96,7 @@ void LandscapeToolsPanel::AddSliderHeader(UISlider *slider, const WideString &te
 
 UICheckBox *LandscapeToolsPanel::CreateCkeckbox(const Rect &rect, const WideString &text)
 {
-    UICheckBox *checkbox = new UICheckBox(FilePath("~res:/Gfx/UI/chekBox"), rect);
+    UICheckBox *checkbox = new UICheckBox("~res:/Gfx/UI/chekBox", rect);
     checkbox->SetDelegate(this);
     AddControl(checkbox);
     

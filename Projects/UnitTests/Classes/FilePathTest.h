@@ -16,6 +16,7 @@ public:
 
 	void MacTestFunction(PerfFuncData * data);
 	void WinTestFunction(PerfFuncData * data);
+	void WinStylePathTestFunction(PerfFuncData * data);
 
 	
 };

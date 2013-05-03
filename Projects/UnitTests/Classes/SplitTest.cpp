@@ -46,7 +46,7 @@ void SplitTest::LoadResources()
     staticText = new UIStaticText();
     staticText->SetRect(Rect(10.f, 10.f, 400.f, 200.f));
     
-    font = FTFont::Create(FilePath("~res:/Fonts/korinna.ttf"));
+    font = FTFont::Create("~res:/Fonts/korinna.ttf");
     
     staticText->SetFont(font);
 }

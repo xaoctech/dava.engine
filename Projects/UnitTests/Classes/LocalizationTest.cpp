@@ -19,8 +19,8 @@ LocalizationTest::LocalizationTest()
 		RegisterFunction(this, &LocalizationTest::TestFunction, Format("Localization test of %s", files[i].c_str()), NULL);
 	}
 
-	srcDir = FilePath("~res:/TestData/LocalizationTest/");
-	cpyDir = FileSystem::Instance()->GetCurrentDocumentsDirectory() + FilePath("LocalizationTest/");
+	srcDir = "~res:/TestData/LocalizationTest/";
+	cpyDir = FileSystem::Instance()->GetCurrentDocumentsDirectory() + "LocalizationTest/";
 
 	FileSystem::Instance()->DeleteDirectory(cpyDir);
 	FileSystem::Instance()->CreateDirectory(cpyDir);
@@ -40,8 +40,8 @@ void LocalizationTest::Draw(const DAVA::UIGeometricData &geometricData)
 
 void LocalizationTest::TestFunction(TestTemplate<LocalizationTest>::PerfFuncData *data)
 {
-	FilePath srcFile = srcDir + FilePath(files[currentTest] + ".yaml");
-	FilePath cpyFile = cpyDir + FilePath(files[currentTest] + ".yaml");
+	FilePath srcFile = srcDir + (files[currentTest] + ".yaml");
+	FilePath cpyFile = cpyDir + (files[currentTest] + ".yaml");
 
 	FileSystem::Instance()->CopyFile(srcFile, cpyFile);
 
