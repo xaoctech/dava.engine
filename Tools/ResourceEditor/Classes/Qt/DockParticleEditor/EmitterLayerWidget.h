@@ -42,6 +42,9 @@ public:
 	virtual void StoreVisualState(KeyedArchive* visualStateProps);
 	virtual void RestoreVisualState(KeyedArchive* visualStateProps);
 
+	// Switch from/to SuperEmitter mode.
+	void SetSuperemitterMode(bool isSuperemitter);
+
 signals:
 	void ValueChanged();
 	
@@ -72,8 +75,11 @@ private:
 	Sprite* sprite;
 	QLabel* spriteLabel;
 	QPushButton* spriteBtn;
-	//QLabel* spritePathLabel;
 	QLineEdit* spritePathLabel;
+	
+	QLabel* innerEmitterLabel;
+	QLineEdit* innerEmitterPathLabel;
+	
 	TimeLineWidget* lifeTimeLine;
 	TimeLineWidget* numberTimeLine;
 	TimeLineWidget* sizeTimeLine;
@@ -87,6 +93,8 @@ private:
 	TimeLineWidget* alphaOverLifeTimeLine;
 	QCheckBox* frameOverlifeCheckBox;
 	QSpinBox* frameOverlifeFPSSpin;
+	QLabel* frameOverlifeFPSLabel;
+
 	TimeLineWidget* angleTimeLine;
 	GradientPickerWidget* colorRandomGradient;
 	GradientPickerWidget* colorOverLifeGradient;

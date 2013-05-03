@@ -198,6 +198,7 @@ void ParticleEmitter::RemoveLayer(ParticleLayer * layer)
 	Vector<DAVA::ParticleLayer*>::iterator layerIter = std::find(layers.begin(), layers.end(), layer);
 	if (layerIter != this->layers.end())
 	{
+		layer->RemoveInnerEmitter();
 		layers.erase(layerIter);
 
         RemoveRenderBatch(layer->GetRenderBatch());
@@ -794,6 +795,19 @@ int32 ParticleEmitter::GetActiveParticlesCount()
 	}
 
 	return particlesCount;
+}
+
+void ParticleEmitter::RememberInitialTranslationVector()
+{
+	if (GetWorldTransformPtr())
+	{
+		this->initialTranslationVector = GetWorldTransformPtr()->GetTranslationVector();
+	}
+}
+
+const Vector3& ParticleEmitter::GetInitialTranslationVector()
+{
+	return this->initialTranslationVector;
 }
 
 };

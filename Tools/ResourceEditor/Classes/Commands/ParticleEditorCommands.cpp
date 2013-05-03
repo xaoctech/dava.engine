@@ -9,6 +9,7 @@
 #include "ParticlesEditorQT/Nodes/BaseParticleEditorNode.h"
 #include "ParticlesEditorQT/Nodes/EmitterParticleEditorNode.h"
 #include "ParticlesEditorQT/Nodes/LayerParticleEditorNode.h"
+#include "ParticlesEditorQT/Nodes/InnerEmitterParticleEditorNode.h"
 
 #include "../Qt/Main/QtUtils.h"
 #include "../Qt/Main/QtMainWindowHandler.h"
@@ -210,6 +211,12 @@ void CommandUpdateParticleLayer::Execute()
 		emitter->Play();
 	}
 
+	// In case we are switching to "SuperEmitter" type - need to create Inner Emitter
+	// for the layer.
+	if (layer->type == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES && !layer->GetInnerEmitter())
+	{
+		layer->CreateInnerEmitter();
+	}
 
 	SceneDataManager::Instance()->RefreshParticlesLayer(layer);
 }
@@ -559,6 +566,75 @@ void CommandSaveParticleEmitterToYaml::Execute()
         QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save Particle Emitter YAML file"),
                                                         projectPath, QString("YAML File (*.yaml)"));
  
+        if (filePath.isEmpty())
+        {
+            return;
+        }
+        
+        yamlPath = FilePath(filePath.toStdString());
+    }
+
+    emitter->SaveToYaml(yamlPath);
+}
+
+CommandLoadInnerEmitterFromYaml::CommandLoadInnerEmitterFromYaml() :
+	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+{
+}
+
+void CommandLoadInnerEmitterFromYaml::Execute()
+{
+    BaseParticleEditorNode* selectedNode = ParticlesEditorController::Instance()->GetSelectedNode();
+    InnerEmitterParticleEditorNode* innerEmitterNode = dynamic_cast<InnerEmitterParticleEditorNode*>(selectedNode);
+    if (!innerEmitterNode || !innerEmitterNode->GetInnerEmitter())
+    {
+        return;
+    }
+    
+    QString projectPath = QString(EditorSettings::Instance()->GetParticlesConfigsPath().GetAbsolutePathname().c_str());
+	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open Particle Emitter Yaml file"),
+                                                    projectPath, QString("YAML File (*.yaml)"));
+	if (filePath.isEmpty())
+    {
+		return;
+    }
+
+    ParticleEmitter* innerEmitter = innerEmitterNode->GetInnerEmitter();
+    innerEmitter->LoadFromYaml(filePath.toStdString());
+	
+	// Perform the validation of the Yaml file loaded.
+	String validationMessage;
+	if (ParticlesEditorSceneDataHelper::ValidateParticleEmitter(innerEmitter, validationMessage) == false)
+	{
+		ShowErrorDialog(validationMessage);
+	}
+
+    QtMainWindowHandler::Instance()->RefreshSceneGraph();
+}
+
+CommandSaveInnerEmitterToYaml::CommandSaveInnerEmitterToYaml(bool forceAskFilename) :
+	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+{
+    this->forceAskFilename = forceAskFilename;
+}
+
+void CommandSaveInnerEmitterToYaml::Execute()
+{
+    BaseParticleEditorNode* selectedNode = ParticlesEditorController::Instance()->GetSelectedNode();
+    InnerEmitterParticleEditorNode* emitterNode = dynamic_cast<InnerEmitterParticleEditorNode*>(selectedNode);
+    if (!emitterNode || !emitterNode->GetInnerEmitter())
+    {
+        return;
+    }
+	
+    ParticleEmitter * emitter = emitterNode->GetInnerEmitter();
+	FilePath yamlPath = emitter->GetConfigPath();
+    if (this->forceAskFilename || yamlPath.IsEmpty() )
+    {
+        QString projectPath = QString(EditorSettings::Instance()->GetParticlesConfigsPath().GetAbsolutePathname().c_str());
+        QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save Particle Emitter YAML file"),
+                                                        projectPath, QString("YAML File (*.yaml)"));
+		
         if (filePath.isEmpty())
         {
             return;

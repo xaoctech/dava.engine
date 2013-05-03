@@ -64,6 +64,7 @@ public:
 	{
 		TYPE_SINGLE_PARTICLE,
 		TYPE_PARTICLES,				// default for any particle layer loaded from yaml file
+		TYPE_SUPEREMITTER_PARTICLES
 	};
 	
 	ParticleLayer();
@@ -167,6 +168,15 @@ public:
 	int32 GetActiveParticlesCount();
 	float32 GetActiveParticlesArea();
 
+	// Create the inner emitter where needed.
+	virtual void CreateInnerEmitter();
+
+	// Get thhe inner emitter, if exists.
+	ParticleEmitter* GetInnerEmitter();
+
+	// Stop and remove Inner Emitter.
+	virtual void RemoveInnerEmitter();
+
 protected:
 	void GenerateNewParticle(int32 emitIndex);
 	void GenerateSingleParticle();
@@ -187,6 +197,13 @@ protected:
 	void CleanupForces();
 	
 	void FillSizeOverlifeXY(RefPtr< PropertyLine<float32> > sizeOverLife);
+	
+	// Convert from Layer Type to its name and vice versa.
+	eType StringToLayerType(const String& layerTypeName, eType defaultLayerType);
+	String LayerTypeToString(eType layerType, const String& defaultLayerTypeName);
+
+	// Update the playback speed for all Inner Emitters.
+	void UpdatePlaybackSpeedForInnerEmitters(float value);
 
 	// list of particles
 	Particle *	head;
@@ -261,8 +278,19 @@ public:
 	bool		frameOverLifeEnabled;
 	float32		frameOverLifeFPS;
 
-    bool isDisabled;
-    
+    bool		isDisabled;
+
+	ParticleEmitter* innerEmitter;
+	FilePath	innerEmitterPath;
+
+private:
+	struct LayerTypeNamesInfo
+	{
+		eType layerType;
+		String layerTypeName;
+	};
+	static const LayerTypeNamesInfo layerTypeNamesInfoMap[];
+
 public:
     
     INTROSPECTION_EXTEND(ParticleLayer, BaseObject,
