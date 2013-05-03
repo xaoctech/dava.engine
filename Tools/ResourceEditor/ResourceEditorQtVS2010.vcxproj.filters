@@ -2933,6 +2933,9 @@
     <ClInclude Include="Classes\CommandLine\SceneUtils\SceneUtils.h">
       <Filter>Sources\CommandLine\SceneUtils</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\SceneTypes.h">
+      <Filter>Sources\Qt\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.cpp">

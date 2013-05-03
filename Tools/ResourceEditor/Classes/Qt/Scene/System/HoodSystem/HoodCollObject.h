@@ -1,6 +1,8 @@
 #ifndef __HOOD_COLLISION_OBJECT_H__
 #define __HOOD_COLLISION_OBJECT_H__
 
+#include "Scene/SceneTypes.h"
+
 // bullet
 #include "bullet/btBulletCollisionCommon.h"
 
@@ -28,7 +30,7 @@ struct HoodCollObject
 	DAVA::Vector3 curPos;
 	DAVA::float32 curScale;
 
-	int axis;
+	ST_Axis axis;
 
 	void UpdatePos(const DAVA::Vector3 &pos);
 	void UpdateScale(const DAVA::float32 &scale);
