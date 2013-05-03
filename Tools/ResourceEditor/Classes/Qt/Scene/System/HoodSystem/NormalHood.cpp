@@ -8,13 +8,13 @@
 NormalHood::NormalHood() : HoodObject(2.0f)
 {
 	axisX = CreateLine(DAVA::Vector3(0, 0, 0), DAVA::Vector3(baseSize, 0, 0));
-	axisX->axis = EM_AXIS_X;
+	axisX->axis = ST_AXIS_X;
 
 	axisY = CreateLine(DAVA::Vector3(0, 0, 0), DAVA::Vector3(0, baseSize, 0));
-	axisY->axis = EM_AXIS_Y;
+	axisY->axis = ST_AXIS_Y;
 
 	axisZ = CreateLine(DAVA::Vector3(0, 0, 0), DAVA::Vector3(0, 0, baseSize));
-	axisZ->axis = EM_AXIS_Z;
+	axisZ->axis = ST_AXIS_Z;
 }
 
 NormalHood::~NormalHood()
@@ -22,7 +22,7 @@ NormalHood::~NormalHood()
 
 }
 
-void NormalHood::Draw(int selectedAxis, int mouseOverAxis)
+void NormalHood::Draw(ST_Axis selectedAxis, ST_Axis mouseOverAxis)
 {
 	int oldState = DAVA::RenderManager::Instance()->GetState();
 	DAVA::eBlendMode oldBlendSrc = DAVA::RenderManager::Instance()->GetSrcBlend();
@@ -32,7 +32,7 @@ void NormalHood::Draw(int selectedAxis, int mouseOverAxis)
 	DAVA::RenderManager::Instance()->SetBlendMode(DAVA::BLEND_SRC_ALPHA, DAVA::BLEND_ONE_MINUS_SRC_ALPHA);
 
 	// x
-	if(selectedAxis & EM_AXIS_X) 
+	if(selectedAxis & ST_AXIS_X) 
 		DAVA::RenderManager::Instance()->SetColor(colorS);
 	else 
 		DAVA::RenderManager::Instance()->SetColor(colorX);
@@ -40,7 +40,7 @@ void NormalHood::Draw(int selectedAxis, int mouseOverAxis)
 	DAVA::RenderHelper::Instance()->DrawLine(axisX->curFrom, axisX->curTo);
 
 	// y
-	if(selectedAxis & EM_AXIS_Y) 
+	if(selectedAxis & ST_AXIS_Y) 
 		DAVA::RenderManager::Instance()->SetColor(colorS);
 	else 
 		DAVA::RenderManager::Instance()->SetColor(colorY);
@@ -48,7 +48,7 @@ void NormalHood::Draw(int selectedAxis, int mouseOverAxis)
 	DAVA::RenderHelper::Instance()->DrawLine(axisY->curFrom, axisY->curTo);
 
 	// z
-	if(selectedAxis & EM_AXIS_Z) 
+	if(selectedAxis & ST_AXIS_Z) 
 		DAVA::RenderManager::Instance()->SetColor(colorS);
 	else 
 		DAVA::RenderManager::Instance()->SetColor(colorZ);

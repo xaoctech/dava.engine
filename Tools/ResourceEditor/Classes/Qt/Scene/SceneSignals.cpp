@@ -1,21 +1,21 @@
 #include "SceneSignals.h"
 
-void SceneSignals::EmitMouseOver(SceneEditorProxy *scene, DAVA::Entity *entity)
+void SceneSignals::EmitMouseOver(SceneEditorProxy *scene, const EntityGroup *entities)
 {
-	emit MouseOver(scene, entity);
+	emit MouseOver(scene, entities);
 }
 
-void SceneSignals::EmitMouseOverSelection(SceneEditorProxy *scene, DAVA::Entity *entity)
+void SceneSignals::EmitMouseOverSelection(SceneEditorProxy *scene, const EntityGroup *entities)
 {
-	emit MouseOverSelection(scene, entity);
+	emit MouseOverSelection(scene, entities);
 }
 
-void SceneSignals::EmitSelected(SceneEditorProxy *scene, DAVA::Entity *entity)
+void SceneSignals::EmitSelected(SceneEditorProxy *scene, const EntityGroup *entities)
 {
-	emit Selected(scene, entity);
+	emit Selected(scene, entities);
 }
 
-void SceneSignals::EmitDeselected(SceneEditorProxy *scene, DAVA::Entity *entity)
+void SceneSignals::EmitDeselected(SceneEditorProxy *scene, const EntityGroup *entities)
 {
-	emit Deselected(scene, entity);
+	emit Deselected(scene, entities);
 }
