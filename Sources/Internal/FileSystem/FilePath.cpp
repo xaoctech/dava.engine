@@ -30,61 +30,183 @@
 #include "FileSystem/FilePath.h"
 #include "FileSystem/FileSystem.h"
 #include "Utils/Utils.h"
+#include "Utils/StringFormat.h"
+
+#if defined(__DAVAENGINE_ANDROID__)
+#ifdef USE_LOCAL_RESOURCES
+#define USE_LOCAL_RESOURCES_PATH "/mnt/sdcard/DavaProject/"
+#endif
+#endif
+
+
 
 namespace DAVA
 {
 
-String FilePath::projectPathname = String();
+FilePath FilePath::virtualBundlePath = FilePath();
 
-void FilePath::SetProjectPathname(const String &pathname)
+void FilePath::SetBundleName(const FilePath & newBundlePath)
 {
-    projectPathname = NormalizePathname(MakeDirectory(pathname));
+	virtualBundlePath = newBundlePath;
+
+	if(!virtualBundlePath.IsEmpty())
+		virtualBundlePath.MakeDirectoryPathname();
 }
 
-const String & FilePath::GetProjectPathname()
+const FilePath & FilePath::GetBundleName()
 {
-    return projectPathname;
+	return virtualBundlePath;
 }
-    
+
+
+#if defined(__DAVAENGINE_WIN32__)
+FilePath FilePath::FilepathRelativeToBundle(const char * relativePathname)
+{
+	FilePath retPath;
+	if(!virtualBundlePath.IsEmpty())
+	{
+		retPath = virtualBundlePath + relativePathname;
+	}
+	else
+	{
+		retPath = FileSystem::Instance()->GetCurrentWorkingDirectory() + relativePathname;
+	}
+
+	return retPath;
+}
+#endif //#if defined(__DAVAENGINE_WIN32__)
+
+
+#if defined(__DAVAENGINE_ANDROID__)
+
+FilePath FilePath::FilepathRelativeToBundle(const char * relativePathname)
+{
+#ifdef USE_LOCAL_RESOURCES
+	FilePath path(Format("%s%s", USE_LOCAL_RESOURCES_PATH, relativePathname));
+#else
+	FilePath path(relativePathname);
+#endif
+
+	path.pathType = PATH_IN_RESOURCES;
+	return path;
+}
+#endif //#if defined(__DAVAENGINE_ANDROID__)
+
+FilePath FilePath::FilepathRelativeToBundle(const String & relativePathname)
+{
+    String dataPath = "Data" + relativePathname;
+	return FilepathRelativeToBundle(dataPath.c_str());
+}
+
+FilePath FilePath::FilepathInDocuments(const char * relativePathname)
+{
+	FilePath path(FileSystem::Instance()->GetCurrentDocumentsDirectory() + relativePathname);
+	path.pathType = PATH_IN_DOCUMENTS;
+    return path;
+}
+
+FilePath FilePath::FilepathInDocuments(const String & relativePathname)
+{
+    return FilepathInDocuments(relativePathname.c_str());
+}
+
+
 FilePath::FilePath()
 {
+    pathType = PATH_IN_FILESYSTEM;
     absolutePathname = String();
 }
 
 FilePath::FilePath(const FilePath &path)
 {
+    pathType = path.pathType;
     absolutePathname = path.absolutePathname;
 }
     
 FilePath::FilePath(const char * sourcePath)
 {
-    absolutePathname = NormalizePathname(String(sourcePath));
+	if(sourcePath)
+    {
+        Initialize(String(sourcePath));
+    }
+	else
+    {
+		absolutePathname = String();
+        pathType = PATH_IN_FILESYSTEM;
+    }
 }
 
 FilePath::FilePath(const String &pathname)
 {
-    absolutePathname = NormalizePathname(pathname);
+	if(pathname.empty())
+    {
+		absolutePathname = String();
+        pathType = PATH_IN_FILESYSTEM;
+    }
+	else
+    {
+        Initialize(String(pathname));
+    }
 }
+
     
+FilePath::FilePath(const char * directory, const String &filename)
+{
+	FilePath directoryPath(directory);
+	directoryPath.MakeDirectoryPathname();
+
+    pathType = directoryPath.pathType;
+	absolutePathname = AddPath(directoryPath, filename);
+}
+
 FilePath::FilePath(const String &directory, const String &filename)
 {
-    if((!directory.empty()) && (directory[0] == '~'))
-    {
-        String resType = directory.substr(0, 6);
-        String bundlePathname = GetSystemPathname(resType);
-        
-        absolutePathname = NormalizePathname(GetSystemPathname(directory) + filename);
-        
-        String::size_type find = absolutePathname.find(bundlePathname);
-        DVASSERT(find != String::npos)
+	FilePath directoryPath(directory);
+	directoryPath.MakeDirectoryPathname();
 
-        absolutePathname = resType + absolutePathname.erase(find, bundlePathname.length());
+    pathType = directoryPath.pathType;
+	absolutePathname = AddPath(directoryPath, filename);
+}
+
+FilePath::FilePath(const FilePath &directory, const String &filename)
+{
+	DVASSERT(directory.IsDirectoryPathname());
+
+    pathType = directory.pathType;
+	absolutePathname = AddPath(directory, filename);
+}
+
+
+void FilePath::Initialize(const String &_pathname)
+{
+	String pathname = NormalizePathname(_pathname);
+
+    pathType = GetPathType(pathname);
+    if(IsAbsolutePathname(pathname))
+    {
+        absolutePathname = GetSystemPathname(pathname, pathType);
     }
     else
     {
-        absolutePathname = NormalizePathname(directory + filename);
+        if(     (pathname.find("FBO ") == 0)
+            ||  (pathname.find("memoryfile_0x") == 0)
+            ||  (pathname.find("Text ") == 0))
+        {
+            absolutePathname = pathname;
+        }
+        else
+        {
+#if defined(__DAVAENGINE_ANDROID__)
+            absolutePathname = pathname;
+#else //#if defined(__DAVAENGINE_ANDROID__)
+            FilePath path = FileSystem::Instance()->GetCurrentWorkingDirectory() + pathname;
+            absolutePathname = path.GetAbsolutePathname();
+#endif //#if defined(__DAVAENGINE_ANDROID__)
+        }
     }
 }
+
+    
     
 FilePath::~FilePath()
 {
@@ -94,21 +216,49 @@ FilePath::~FilePath()
 FilePath& FilePath::operator=(const FilePath &path)
 {
     this->absolutePathname = path.absolutePathname;
+    this->pathType = path.pathType;
+    
     return *this;
 }
     
 FilePath FilePath::operator+(const FilePath &path) const
 {
     FilePath pathname(AddPath(*this, path));
+    pathname.pathType = this->pathType;
     return pathname;
 }
-    
+
+FilePath FilePath::operator+(const String &path) const
+{
+    FilePath pathname(AddPath(*this, path));
+    pathname.pathType = this->pathType;
+    return pathname;
+}
+
+FilePath FilePath::operator+(const char * path) const
+{
+    FilePath pathname(AddPath(*this, String(path)));
+    pathname.pathType = this->pathType;
+    return pathname;
+}
+
 FilePath& FilePath::operator+=(const FilePath & path)
 {
     absolutePathname = AddPath(*this, path);
     return (*this);
 }
+    
+FilePath& FilePath::operator+=(const String & path)
+{
+    absolutePathname = AddPath(*this, path);
+    return (*this);
+}
 
+FilePath& FilePath::operator+=(const char * path)
+{
+    absolutePathname = AddPath(*this, String(path));
+    return (*this);
+}
     
 bool FilePath::operator==(const FilePath &path) const
 {
@@ -121,13 +271,7 @@ bool FilePath::operator!=(const FilePath &path) const
 }
 
     
-const bool FilePath::IsEmpty() const
-{
-    return absolutePathname.empty();
-}
-    
-
-const bool FilePath::IsDirectoryPathname() const
+bool FilePath::IsDirectoryPathname() const
 {
     if(IsEmpty())
     {
@@ -136,11 +280,6 @@ const bool FilePath::IsDirectoryPathname() const
 
     const int32 lastPosition = absolutePathname.length() - 1;
     return (absolutePathname.at(lastPosition) == '/');
-}
-
-const String & FilePath::GetAbsolutePathname() const
-{
-    return absolutePathname;
 }
 
 
@@ -185,7 +324,9 @@ String FilePath::GetExtension() const
     
 FilePath FilePath::GetDirectory() const
 {
-    return GetDirectory(absolutePathname);
+	FilePath directory(GetDirectory(absolutePathname));
+	directory.pathType = pathType;
+    return directory;
 }
 
 FilePath FilePath::GetDirectory(const String &pathname)
@@ -200,20 +341,30 @@ FilePath FilePath::GetDirectory(const String &pathname)
     
 String FilePath::GetRelativePathname() const
 {
-    return GetRelativePathname(FileSystem::Instance()->GetCurrentWorkingDirectory().GetAbsolutePathname());
+    return GetRelativePathname(FileSystem::Instance()->GetCurrentWorkingDirectory());
 }
     
+String FilePath::GetRelativePathname(const FilePath &forDirectory) const
+{
+    DVASSERT(forDirectory.IsDirectoryPathname() || forDirectory.IsEmpty());
+    
+    return AbsoluteToRelative(forDirectory.GetAbsolutePathname(), absolutePathname);
+}
+
 String FilePath::GetRelativePathname(const String &forDirectory) const
 {
     if(IsEmpty())
         return String();
     
-    return AbsoluteToRelative(GetSystemPathname(forDirectory), ResolvePathname());
+	return GetRelativePathname(FilePath(forDirectory));
 }
     
-String FilePath::GetRelativePathname(const FilePath &forDirectory) const
+String FilePath::GetRelativePathname(const char * forDirectory) const
 {
-    return GetRelativePathname(forDirectory.GetAbsolutePathname());
+    if(forDirectory == NULL)
+        return String();
+    
+	return GetRelativePathname(FilePath(forDirectory));
 }
 
     
@@ -223,7 +374,7 @@ void FilePath::ReplaceFilename(const String &filename)
     DVASSERT(!IsEmpty());
     
     const FilePath directory = GetDirectory();
-    absolutePathname = NormalizePathname(directory + FilePath(filename));
+    absolutePathname = NormalizePathname(directory + filename);
 }
     
 void FilePath::ReplaceBasename(const String &basename)
@@ -232,7 +383,7 @@ void FilePath::ReplaceBasename(const String &basename)
     
     const FilePath directory = GetDirectory();
     const String extension = GetExtension();
-    absolutePathname = NormalizePathname(directory + FilePath(basename + extension));
+    absolutePathname = NormalizePathname(directory + (basename + extension));
 }
     
 void FilePath::ReplaceExtension(const String &extension)
@@ -241,7 +392,7 @@ void FilePath::ReplaceExtension(const String &extension)
     
     const FilePath directory = GetDirectory();
     const String basename = GetBasename();
-    absolutePathname = NormalizePathname(directory + FilePath(basename + extension));
+    absolutePathname = NormalizePathname(directory + (basename + extension));
 }
     
 void FilePath::ReplaceDirectory(const String &directory)
@@ -250,21 +401,17 @@ void FilePath::ReplaceDirectory(const String &directory)
     
     const String filename = GetFilename();
     absolutePathname = NormalizePathname(MakeDirectory(directory)) + filename;
+    pathType = GetPathType(absolutePathname);
 }
     
 void FilePath::ReplaceDirectory(const FilePath &directory)
 {
     DVASSERT(!IsEmpty());
     
-    DVASSERT(directory.IsDirectoryPathname())
+    DVASSERT(directory.IsDirectoryPathname());
     const String filename = GetFilename();
     absolutePathname = directory.GetAbsolutePathname() + filename;
-}
-    
-
-String FilePath::ResolvePathname() const
-{
-    return GetSystemPathname(absolutePathname);
+    pathType = directory.pathType;
 }
     
 void FilePath::MakeDirectoryPathname()
@@ -291,13 +438,6 @@ String FilePath::GetLastDirectoryName() const
     return FilePath(path).GetFilename();
 }
     
-void FilePath::ReplacePath(const FilePath &pathname)
-{
-    DVASSERT(!IsEmpty());
-    
-    StringReplace(absolutePathname, pathname.GetAbsolutePathname(), String(""));
-}
-
 bool FilePath::IsEqualToExtension( const String & extension ) const
 {
 	String selfExtension = GetExtension();
@@ -313,40 +453,65 @@ FilePath FilePath::CreateWithNewExtension(const FilePath &pathname, const String
 }
 
     
-String FilePath::GetSystemPathname(const String &pathname)
+String FilePath::GetSystemPathname(const String &pathname, const ePathType pType)
 {
-    if(pathname.empty() || pathname[0] != '~')
-    {
-		return pathname;
-    }
+    if(pType == PATH_IN_FILESYSTEM)
+        return pathname;
+    
     
     String retPath = pathname;
-    String::size_type find = pathname.find("~res:");
-	if(find != String::npos)
+    retPath = retPath.erase(0, 5);
+    
+	if(pType == PATH_IN_RESOURCES)
 	{
-        if(projectPathname.empty())
-        {
-            retPath = FileSystem::Instance()->SystemPathForFrameworkPath(retPath).GetAbsolutePathname();
-        }
-        else
-        {
-            retPath = retPath.erase(0, 6);
-            retPath = projectPathname + retPath;
-        }
+		retPath = FilepathRelativeToBundle(retPath).GetAbsolutePathname();
 	}
-	else
+	else if(pType == PATH_IN_DOCUMENTS)
 	{
-		find = retPath.find("~doc:");
-		if(find != String::npos)
-		{
-			retPath = retPath.erase(0, 5);
-			retPath = FileSystem::Instance()->FilepathInDocuments("").GetAbsolutePathname() + retPath;
-		}
+        retPath = FilepathInDocuments(retPath).GetAbsolutePathname();
 	}
     
     return NormalizePathname(retPath);
 }
     
+
+String FilePath::GetFrameworkPath()
+{
+    String pathInRes = GetFrameworkPathForPrefix("~res:/", PATH_IN_RESOURCES);
+    if(!pathInRes.empty())
+    {
+        return pathInRes;
+    }
+    
+    String pathInDoc = GetFrameworkPathForPrefix("~doc:/", PATH_IN_DOCUMENTS);
+    if(!pathInDoc.empty())
+    {
+        return pathInDoc;
+    }
+    
+	DVASSERT(false);
+
+	return String();
+}
+
+
+String FilePath::GetFrameworkPathForPrefix( const String &typePrefix, const ePathType pType)
+{
+    DVASSERT(!typePrefix.empty());
+    
+	String prefixPathname = GetSystemPathname(typePrefix, pType);
+
+	String::size_type pos = absolutePathname.find(prefixPathname);
+	if(pos == 0)
+	{
+		String pathname = absolutePathname;
+		pathname = pathname.replace(pos, prefixPathname.length(), typePrefix);
+		return pathname;
+	}
+
+	return String();
+}
+
 
 String FilePath::NormalizePathname(const FilePath &pathname)
 {
@@ -424,6 +589,10 @@ String FilePath::MakeDirectory(const String &pathname)
     
 String FilePath::AbsoluteToRelative(const String &directoryPathname, const String &absolutePathname)
 {
+    if(absolutePathname.empty())
+        return String();
+    
+    
     String workingDirectoryPath = directoryPathname;
     String workingFilePath = absolutePathname;
     
@@ -470,7 +639,7 @@ bool FilePath::IsAbsolutePathname(const String &pathname)
         return true;
     
     //Win or DAVA style (c:/, ~res:/, ~doc:/)
-    String::size_type winFound = pathname.find(":/");
+    String::size_type winFound = pathname.find(":");
     if(winFound != String::npos)
     {
         return true;
@@ -478,36 +647,40 @@ bool FilePath::IsAbsolutePathname(const String &pathname)
     
     return false;
 }
+    
+String FilePath::AddPath(const FilePath &folder, const String & addition)
+{
+    DVASSERT(folder.IsDirectoryPathname() || folder.IsEmpty());
+
+    String pathname = folder.GetAbsolutePathname() + addition;
+	return NormalizePathname(pathname);
+}
+
 
 String FilePath::AddPath(const FilePath &folder, const FilePath & addition)
 {
     DVASSERT(folder.IsDirectoryPathname() || folder.IsEmpty());
     
-    String pathname;
-    String::size_type tildaPos = folder.absolutePathname.find("~");
-    if(tildaPos == 0)
-    {
-        pathname = folder.ResolvePathname();
-        pathname = NormalizePathname(pathname + addition.absolutePathname);
-        
-        String systemPath = addition.absolutePathname.substr(0, 6);
-        systemPath = FilePath(systemPath).ResolvePathname();
-        
-        String::size_type pos = pathname.find(systemPath);
-        if(pos == 0)
-        {
-            pathname = pathname.replace(pos, systemPath.length(), systemPath);
-        }
-    }
-    else
-    {
-        pathname = NormalizePathname(folder.absolutePathname + addition.absolutePathname);
-    }
-    
-    return pathname;
+    String pathname = folder.GetAbsolutePathname() + addition.GetAbsolutePathname();
+	return NormalizePathname(pathname);
 }
-    
-    
+
+FilePath::ePathType FilePath::GetPathType(const String &pathname)
+{
+    String::size_type find = pathname.find("~res:");
+    if(find != String::npos)
+    {
+        return PATH_IN_RESOURCES;
+    }
+
+    find = pathname.find("~doc:");
+    if(find != String::npos)
+    {
+        return PATH_IN_DOCUMENTS;
+    }
+
+    return PATH_IN_FILESYSTEM;
+}
 
     
 }

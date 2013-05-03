@@ -7,28 +7,10 @@
 
 #include "Utils/Random.h"
 
-//Show/Hide Heightmap Editor
-CommandHeightmapEditor::CommandHeightmapEditor()
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
-{
-}
-
-
-void CommandHeightmapEditor::Execute()
-{
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-        screen->HeightmapTriggered();
-    }
-
-    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
-    activeScene->RebuildSceneGraph();
-}
-
-
-HeightmapModificationCommand::HeightmapModificationCommand(Command::eCommandType type, const Rect& updatedRect)
-:	Command(type)
+HeightmapModificationCommand::HeightmapModificationCommand(Command::eCommandType type,
+														   const Rect& updatedRect,
+														   CommandList::eCommandId id)
+:	Command(type, id)
 {
 	this->updatedRect = updatedRect;
 }
@@ -47,13 +29,13 @@ String HeightmapModificationCommand::TimeString()
 
 FilePath HeightmapModificationCommand::SaveHeightmap(Heightmap* heightmap)
 {
-	FilePath documentsPath("~doc:");
+	FilePath documentsPath("~doc:/");
 
 	FilePath folderPathname("~doc:/History/");
-	FileSystem::Instance()->CreateDirectory(folderPathname.ResolvePathname());
+	FileSystem::Instance()->CreateDirectory(folderPathname);
 
-	folderPathname = folderPathname + FilePath("/Heightmap/");
-	FileSystem::Instance()->CreateDirectory(folderPathname.ResolvePathname());
+	folderPathname = folderPathname + "Heightmap/";
+	FileSystem::Instance()->CreateDirectory(folderPathname);
 	
 	FileList* fileList = new FileList(folderPathname);
 	
@@ -122,7 +104,7 @@ void HeightmapModificationCommand::UpdateLandscapeHeightmap(const FilePath & fil
 
 
 CommandDrawHeightmap::CommandDrawHeightmap(Heightmap* originalHeightmap, Heightmap* newHeightmap, const Rect& updatedRect)
-:	HeightmapModificationCommand(COMMAND_UNDO_REDO, updatedRect)
+:	HeightmapModificationCommand(COMMAND_UNDO_REDO, updatedRect, CommandList::ID_COMMAND_DRAW_HEIGHTMAP)
 {
 	commandName = "Heightmap Change";
 
@@ -180,7 +162,7 @@ void CommandDrawHeightmap::Cancel()
 
 
 CommandCopyPasteHeightmap::CommandCopyPasteHeightmap(bool copyHeightmap, bool copyTilemap, Heightmap* originalHeightmap, Heightmap* newHeightmap, Image* originalTilemap, Image* newTilemap, const FilePath& tilemapSavedPath, const Rect& updatedRect)
-:	HeightmapModificationCommand(COMMAND_UNDO_REDO, updatedRect)
+:	HeightmapModificationCommand(COMMAND_UNDO_REDO, updatedRect, CommandList::ID_COMMAND_COPY_PASTE_HEIGHTMAP)
 ,	heightmap(copyHeightmap)
 ,	tilemap(copyTilemap)
 {

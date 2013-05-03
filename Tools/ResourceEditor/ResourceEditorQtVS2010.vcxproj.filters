@@ -154,9 +154,6 @@
     <Filter Include="Sources\Commands">
       <UniqueIdentifier>{7bc64643-a6f9-419d-a371-9fb4fc7cd1ae}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\ImageSplitter">
-      <UniqueIdentifier>{1154d5d2-81ee-4619-8434-8be16d12c565}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\ParticlesEditorQT">
       <UniqueIdentifier>{b82196cb-74f3-409b-b4b5-ab952345f92b}</UniqueIdentifier>
     </Filter>
@@ -211,11 +208,20 @@
     <Filter Include="Sources\Qt\DockHangingObjects">
       <UniqueIdentifier>{06e43fbc-e3e3-484d-93ff-02f41732442e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Qt\Scene\System">
+      <UniqueIdentifier>{859c9b28-5205-4a42-aede-af5566d0dbb2}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Sources\Qt\DockMaterialViewOptions">
       <UniqueIdentifier>{ac0aff53-678a-41e9-976e-47ea3e28317e}</UniqueIdentifier>
     </Filter>
     <Filter Include="QtGenerated\DockMaterialViewOptions">
       <UniqueIdentifier>{e560503d-45b2-4dc6-8887-47e59d7d7eb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\Scene\System\CollisionSystem">
+      <UniqueIdentifier>{1fd9e330-0ea5-4450-a70a-59efa036c833}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\Scene\System\HoodSystem">
+      <UniqueIdentifier>{63d4cd6d-e505-48b0-9cdd-2fc699f3d987}</UniqueIdentifier>
     </Filter>
     <Filter Include="Sources\ResourcePacker">
       <UniqueIdentifier>{2455ec2d-6861-4bb8-b6b6-00e76010bf71}</UniqueIdentifier>
@@ -225,6 +231,27 @@
     </Filter>
     <Filter Include="QtGenerated\DockSceneInfo">
       <UniqueIdentifier>{eb98cf11-941e-4f68-9493-8c0e36af005e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\Commands">
+      <UniqueIdentifier>{5023523c-494e-44c1-aea2-fea202030a06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\Commands">
+      <UniqueIdentifier>{4109d87f-cd98-43db-a669-c63245c9e788}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\CommandLine">
+      <UniqueIdentifier>{8508f90f-bc06-411f-986b-bccae0d3c86a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\CommandLine\ImageSplitter">
+      <UniqueIdentifier>{d6786fbe-dd65-4cc9-bbb2-405a19cbb7a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\CommandLine\SceneExporter">
+      <UniqueIdentifier>{ff57bccb-5bce-4287-9b91-d3c31317a823}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\CommandLine\SceneSaver">
+      <UniqueIdentifier>{e30e9138-8dcb-48bf-af64-52594b5aa4f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\CommandLine\SceneUtils">
+      <UniqueIdentifier>{ea1c3731-01c7-4f90-ba93-09071caa53a8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -279,9 +306,6 @@
     <ClCompile Include="Classes\SceneEditor\CameraController.cpp">
       <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\CommandLineTool.cpp">
-      <Filter>Sources\SceneEditor</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\SceneEditor\ControlsFactory.cpp">
       <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
@@ -298,9 +322,6 @@
       <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\SceneEditorScreenMain.cpp">
-      <Filter>Sources\SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\SceneExporter.cpp">
       <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\SceneValidator.cpp">
@@ -1239,12 +1260,6 @@
     <ClCompile Include="_GeneratedQt\DockSceneGraph\SceneGraphModel_moc.cpp">
       <Filter>QtGenerated\DockSceneGraph</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\ImageSplitter\ImageSplitter.cpp">
-      <Filter>Sources\ImageSplitter</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\ImageSplitter\ImageSplitterScreen.cpp">
-      <Filter>Sources\ImageSplitter</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\ParticlesEditorQT\Nodes\BaseParticleEditorNode.cpp">
       <Filter>Sources\ParticlesEditorQT\Nodes</Filter>
     </ClCompile>
@@ -1398,9 +1413,6 @@
     <ClCompile Include="Classes\Commands\CommandsManager.cpp">
       <Filter>Sources\Commands</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Commands\CommandViewport.cpp">
-      <Filter>Sources\Commands</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Commands\CustomColorCommands.cpp">
       <Filter>Sources\Commands</Filter>
     </ClCompile>
@@ -1413,13 +1425,7 @@
     <ClCompile Include="Classes\Commands\HeightmapEditorCommands.cpp">
       <Filter>Sources\Commands</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Commands\LandscapeOptionsCommands.cpp">
-      <Filter>Sources\Commands</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Commands\LibraryCommands.cpp">
-      <Filter>Sources\Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Commands\ModificationOptionsCommands.cpp">
       <Filter>Sources\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\ParticleEditorCommands.cpp">
@@ -1476,9 +1482,6 @@
     <ClCompile Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexHelper.cpp">
       <Filter>Sources\Qt\DockSetSwitchIndex</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Commands\EditCommands.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\LandscapeEditor\EditorLandscape.cpp">
       <Filter>Sources\LandscapeEditor</Filter>
     </ClCompile>
@@ -1488,20 +1491,8 @@
     <ClCompile Include="_GeneratedQt\DockHangingObjects\HangingObjectsView_moc.cpp">
       <Filter>QtGenerated\DockHangingObjects</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Commands\HangingObjectsCommands.cpp">
-      <Filter>Sources\Commands</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\DockHangingObjects\HangingObjectsHelper.cpp">
       <Filter>Sources\Qt\DockHangingObjects</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\SceneSaver.cpp">
-      <Filter>Sources\SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\SceneUtils.cpp">
-      <Filter>Sources\SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\SceneUtilsScreen.cpp">
-      <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyData_moc.cpp">
       <Filter>QtGenerated\QtPropertyEditor</Filter>
@@ -1545,20 +1536,44 @@
     <ClCompile Include="Classes\Qt\Scene\SceneEditorProxy.cpp">
       <Filter>Sources\Qt\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Scene\SceneManager.cpp">
-      <Filter>Sources\Qt\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\Scene\SceneTabWidget.cpp">
       <Filter>Sources\Qt\Scene</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\Scene\SceneEditorProxy_moc.cpp">
       <Filter>QtGenerated\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\Scene\SceneManager_moc.cpp">
+    <ClCompile Include="_GeneratedQt\Scene\SceneSignals_moc.cpp">
       <Filter>QtGenerated\Scene</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\Scene\SceneTabWidget_moc.cpp">
       <Filter>QtGenerated\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\EntityGroup.cpp">
+      <Filter>Sources\Qt\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\CameraSystem.cpp">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem.cpp">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\GridSystem.cpp">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\HoodSystem.cpp">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\ModifSystem.cpp">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\SelectionSystem.cpp">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionLandscape.cpp">
+      <Filter>Sources\Qt\Scene\System\CollisionSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionRenderObject.cpp">
+      <Filter>Sources\Qt\Scene\System\CollisionSystem</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Tools\TexturePacker\CommandLineParser.cpp">
       <Filter>Sources\ResourcePacker</Filter>
@@ -1590,6 +1605,24 @@
     <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticleEffectPropertiesWidget_moc.cpp">
       <Filter>QtGenerated\DockParticleEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\HoodSystem\HoodCollObject.cpp">
+      <Filter>Sources\Qt\Scene\System\HoodSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\HoodSystem\HoodObject.cpp">
+      <Filter>Sources\Qt\Scene\System\HoodSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\HoodSystem\MoveHood.cpp">
+      <Filter>Sources\Qt\Scene\System\HoodSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\HoodSystem\NormalHood.cpp">
+      <Filter>Sources\Qt\Scene\System\HoodSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\HoodSystem\RotateHood.cpp">
+      <Filter>Sources\Qt\Scene\System\HoodSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\HoodSystem\ScaleHood.cpp">
+      <Filter>Sources\Qt\Scene\System\HoodSystem</Filter>
+    </ClCompile>
     <ClCompile Include="Classes\Qt\DockParticleEditor\ScrollZoomWidget.cpp">
       <Filter>Sources\Qt\DockParticleEditor</Filter>
     </ClCompile>
@@ -1601,6 +1634,48 @@
     </ClCompile>
     <ClCompile Include="_GeneratedQt\DockSceneInfo\SceneInfo_moc.cpp">
       <Filter>QtGenerated\DockSceneInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\SceneSignals.cpp">
+      <Filter>Sources\Qt\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Commands\CommandSignals.cpp">
+      <Filter>Sources\Qt\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Commands\CommandSignals_moc.cpp">
+      <Filter>QtGenerated\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\CommandLine\CommandLineManager.cpp">
+      <Filter>Sources\CommandLine</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\CommandLine\CommandLineTool.cpp">
+      <Filter>Sources\CommandLine</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\CommandLine\EditorCommandLineParser.cpp">
+      <Filter>Sources\CommandLine</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\CommandLine\ImageSplitter\ImageSplitter.cpp">
+      <Filter>Sources\CommandLine\ImageSplitter</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\CommandLine\ImageSplitter\ImageSplitterTool.cpp">
+      <Filter>Sources\CommandLine\ImageSplitter</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\CommandLine\SceneExporter\SceneExporter.cpp">
+      <Filter>Sources\CommandLine\SceneExporter</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\CommandLine\SceneExporter\SceneExporterTool.cpp">
+      <Filter>Sources\CommandLine\SceneExporter</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\CommandLine\SceneSaver\SceneSaver.cpp">
+      <Filter>Sources\CommandLine\SceneSaver</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\CommandLine\SceneSaver\SceneSaverTool.cpp">
+      <Filter>Sources\CommandLine\SceneSaver</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\CommandLine\SceneUtils\CleanFolderTool.cpp">
+      <Filter>Sources\CommandLine\SceneUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\CommandLine\SceneUtils\SceneUtils.cpp">
+      <Filter>Sources\CommandLine\SceneUtils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1658,9 +1733,6 @@
     <ClInclude Include="Classes\SceneEditor\CameraController.h">
       <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\CommandLineTool.h">
-      <Filter>Sources\SceneEditor</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\SceneEditor\ControlsFactory.h">
       <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
@@ -1677,9 +1749,6 @@
       <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\SceneEditorScreenMain.h">
-      <Filter>Sources\SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\SceneExporter.h">
       <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\SceneNodeIDs.h">
@@ -2558,12 +2627,6 @@
     <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphModel.h">
       <Filter>Sources\Qt\DockSceneGraph</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\ImageSplitter\ImageSplitter.h">
-      <Filter>Sources\ImageSplitter</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\ImageSplitter\ImageSplitterScreen.h">
-      <Filter>Sources\ImageSplitter</Filter>
-    </ClInclude>
     <ClInclude Include="_GeneratedQt\ui_ParticleProperty.h">
       <Filter>QtGenerated</Filter>
     </ClInclude>
@@ -2651,9 +2714,6 @@
     <ClInclude Include="Classes\Commands\CommandsManager.h">
       <Filter>Sources\Commands</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Commands\CommandViewport.h">
-      <Filter>Sources\Commands</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands\CustomColorCommands.h">
       <Filter>Sources\Commands</Filter>
     </ClInclude>
@@ -2666,13 +2726,7 @@
     <ClInclude Include="Classes\Commands\HeightmapEditorCommands.h">
       <Filter>Sources\Commands</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Commands\LandscapeOptionsCommands.h">
-      <Filter>Sources\Commands</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands\LibraryCommands.h">
-      <Filter>Sources\Commands</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Commands\ModificationOptionsCommands.h">
       <Filter>Sources\Commands</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands\ParticleEditorCommands.h">
@@ -2720,9 +2774,6 @@
     <ClInclude Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexHelper.h">
       <Filter>Sources\Qt\DockSetSwitchIndex</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Commands\EditCommands.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Collada\ColladaErrorCodes.h">
       <Filter>Sources\Collada</Filter>
     </ClInclude>
@@ -2732,20 +2783,8 @@
     <ClInclude Include="Classes\Qt\DockHangingObjects\HangingObjectsView.h">
       <Filter>Sources\Qt\DockHangingObjects</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Commands\HangingObjectsCommands.h">
-      <Filter>Sources\Commands</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\DockHangingObjects\HangingObjectsHelper.h">
       <Filter>Sources\Qt\DockHangingObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\SceneSaver.h">
-      <Filter>Sources\SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\SceneUtils.h">
-      <Filter>Sources\SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\SceneUtilsScreen.h">
-      <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockSceneGraph\ExtraUserData.h">
       <Filter>Sources\Qt\DockSceneGraph</Filter>
@@ -2771,11 +2810,38 @@
     <ClInclude Include="Classes\Qt\Scene\SceneEditorProxy.h">
       <Filter>Sources\Qt\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Scene\SceneManager.h">
-      <Filter>Sources\Qt\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\Scene\SceneTabWidget.h">
       <Filter>Sources\Qt\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\EntityGroup.h">
+      <Filter>Sources\Qt\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\CameraSystem.h">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem.h">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\GridSystem.h">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\HoodSystem.h">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\ModifSystem.h">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\SelectionSystem.h">
+      <Filter>Sources\Qt\Scene\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionBaseObject.h">
+      <Filter>Sources\Qt\Scene\System\CollisionSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionLandscape.h">
+      <Filter>Sources\Qt\Scene\System\CollisionSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionRenderObject.h">
+      <Filter>Sources\Qt\Scene\System\CollisionSystem</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Tools\TexturePacker\CommandLineParser.h">
       <Filter>Sources\ResourcePacker</Filter>
@@ -2804,11 +2870,71 @@
     <ClInclude Include="Classes\Qt\DockParticleEditor\ParticleEffectPropertiesWidget.h">
       <Filter>Sources\Qt\DockParticleEditor</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\HoodSystem\HoodCollObject.h">
+      <Filter>Sources\Qt\Scene\System\HoodSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\HoodSystem\HoodObject.h">
+      <Filter>Sources\Qt\Scene\System\HoodSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\HoodSystem\MoveHood.h">
+      <Filter>Sources\Qt\Scene\System\HoodSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\HoodSystem\NormalHood.h">
+      <Filter>Sources\Qt\Scene\System\HoodSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\HoodSystem\RotateHood.h">
+      <Filter>Sources\Qt\Scene\System\HoodSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\HoodSystem\ScaleHood.h">
+      <Filter>Sources\Qt\Scene\System\HoodSystem</Filter>
+    </ClInclude>
     <ClInclude Include="Classes\Qt\DockParticleEditor\ScrollZoomWidget.h">
       <Filter>Sources\Qt\DockParticleEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockSceneInfo\SceneInfo.h">
       <Filter>Sources\Qt\DockSceneInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\SceneSignals.h">
+      <Filter>Sources\Qt\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Commands\CommandSignals.h">
+      <Filter>Sources\Qt\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\CommandLine\CommandLineManager.h">
+      <Filter>Sources\CommandLine</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\CommandLine\CommandLineTool.h">
+      <Filter>Sources\CommandLine</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\CommandLine\EditorCommandLineParser.h">
+      <Filter>Sources\CommandLine</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\CommandLine\ImageSplitter\ImageSplitter.h">
+      <Filter>Sources\CommandLine\ImageSplitter</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\CommandLine\ImageSplitter\ImageSplitterTool.h">
+      <Filter>Sources\CommandLine\ImageSplitter</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\CommandLine\SceneExporter\SceneExporter.h">
+      <Filter>Sources\CommandLine\SceneExporter</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\CommandLine\SceneExporter\SceneExporterTool.h">
+      <Filter>Sources\CommandLine\SceneExporter</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\CommandLine\SceneSaver\SceneSaver.h">
+      <Filter>Sources\CommandLine\SceneSaver</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\CommandLine\SceneSaver\SceneSaverTool.h">
+      <Filter>Sources\CommandLine\SceneSaver</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\CommandLine\SceneUtils\CleanFolderTool.h">
+      <Filter>Sources\CommandLine\SceneUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\CommandLine\SceneUtils\SceneUtils.h">
+      <Filter>Sources\CommandLine\SceneUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\SceneTypes.h">
+      <Filter>Sources\Qt\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

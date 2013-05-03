@@ -18,7 +18,7 @@ LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, E
     ,   touchID(INVALID_TOUCH_ID)
 {
     fileSystemDialogOpMode = DIALOG_OPERATION_NONE;
-    fileSystemDialog = new UIFileSystemDialog(FilePath("~res:/Fonts/MyriadPro-Regular.otf"));
+    fileSystemDialog = new UIFileSystemDialog("~res:/Fonts/MyriadPro-Regular.otf");
     fileSystemDialog->SetDelegate(this);
 
     FilePath path = EditorSettings::Instance()->GetDataSourcePath();
@@ -38,7 +38,7 @@ LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, E
     
     landscapeSize = 0;
 
-	cursorTexture = Texture::CreateFromFile(FilePath("~res:/LandscapeEditor/Tools/cursor/cursor.png"));
+	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.png");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
     
     savedShaderMode = Landscape::TILED_MODE_TILE_DETAIL_MASK;

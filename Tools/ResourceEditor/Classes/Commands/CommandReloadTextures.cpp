@@ -8,7 +8,7 @@ using namespace DAVA;
 
 
 CommandReloadTextures::CommandReloadTextures()
-    :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+    :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_RELOAD_TEXTURES)
 {
 }
 

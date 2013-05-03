@@ -52,7 +52,7 @@ bool DownloadFileFromURLToDocuments(const String & url, const FilePath & documen
     NSData * fileContents = [NSData dataWithContentsOfURL:[NSURL URLWithString:localizedPath]];
     if (fileContents) 
     {
-        [fileContents writeToFile:[NSString stringWithCString: documentsPathname.ResolvePathname().c_str() encoding:NSUTF8StringEncoding] atomically:true];
+        [fileContents writeToFile:[NSString stringWithCString: documentsPathname.GetAbsolutePathname().c_str() encoding:NSUTF8StringEncoding] atomically:true];
         return true;
     }
     return false;

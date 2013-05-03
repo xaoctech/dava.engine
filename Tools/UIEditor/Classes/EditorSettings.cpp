@@ -13,7 +13,7 @@
 EditorSettings::EditorSettings()
 {
     settings = new KeyedArchive();    
-    settings->Load(FilePath("~doc:/UIEditorOptions.archive"));
+    settings->Load("~doc:/UIEditorOptions.archive");
 }
 
 EditorSettings::~EditorSettings()
@@ -28,7 +28,7 @@ KeyedArchive *EditorSettings::GetSettings()
 
 void EditorSettings::Save()
 {
-    settings->Save(FilePath("~doc:/UIEditorOptions.archive"));
+    settings->Save("~doc:/UIEditorOptions.archive");
 }
 
 void EditorSettings::SetProjectPath(const String &projectPath)

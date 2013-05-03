@@ -7,7 +7,7 @@ QResourceEditorProgressDialog::QResourceEditorProgressDialog( QWidget * parent, 
 {
 	isCycled = _isCycled;
 	timeIntervalForPercent = TIME_INTERVAL_FOR_1_PERCENT;
-	connect(&timer, SIGNAL(timeout()), this, SLOT(UpdateProgress()));
+	connect(&timer, SIGNAL(timeout()), this, SLOT(UpdateProgress()), Qt::QueuedConnection);
 
 	if(isCycled)
 	{
@@ -16,8 +16,6 @@ QResourceEditorProgressDialog::QResourceEditorProgressDialog( QWidget * parent, 
 		bar->setTextVisible(false);
 		this->setBar(bar);
 	}
-
-
 }
 
 void QResourceEditorProgressDialog::showEvent ( QShowEvent * e )
