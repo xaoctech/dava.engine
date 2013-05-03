@@ -156,7 +156,7 @@ void CommandUpdateParticleLayer::Init(const QString& layerName,
 void CommandUpdateParticleLayer::Execute()
 {
 	layer->layerName = layerName.toStdString();
-	layer->isDisabled = isDisabled;
+	layer->SetDisabled(isDisabled);
 	layer->SetAdditive(additive);
 	layer->SetLong(isLong);
 	layer->life = life;
@@ -250,7 +250,7 @@ void CommandUpdateParticleLayerEnabled::Execute()
 {
 	if (this->layer)
 	{
-		this->layer->isDisabled = !isEnabled;
+		this->layer->SetDisabled(!isEnabled);
 		ParticlesEditorController::Instance()->RefreshSelectedNode(true);
 	}
 }

@@ -258,7 +258,7 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	layerNameLineEdit->setText(QString::fromStdString(layer->layerName));
 	layerTypeComboBox->setCurrentIndex(LayerTypeToIndex(layer->type));
 
-	enableCheckBox->setChecked(!layer->isDisabled);
+	enableCheckBox->setChecked(!layer->GetDisabled());
 	additiveCheckBox->setChecked(layer->GetAdditive());
 	isLongCheckBox->setChecked(layer->IsLong());
 

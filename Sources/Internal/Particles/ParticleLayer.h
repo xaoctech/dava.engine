@@ -177,6 +177,10 @@ public:
 	// Stop and remove Inner Emitter.
 	virtual void RemoveInnerEmitter();
 
+	// Enable/disable the layer.
+	inline bool GetDisabled();
+	void SetDisabled(bool value);
+
 protected:
 	void GenerateNewParticle(int32 emitIndex);
 	void GenerateSingleParticle();
@@ -223,6 +227,7 @@ protected:
 
 	ParticleLayerBatch * renderBatch;
 
+	bool		isDisabled;
 	bool		additive;
 	float32		playbackSpeed;
 
@@ -277,8 +282,6 @@ public:
 
 	bool		frameOverLifeEnabled;
 	float32		frameOverLifeFPS;
-
-    bool		isDisabled;
 
 	ParticleEmitter* innerEmitter;
 	FilePath	innerEmitterPath;
@@ -355,6 +358,12 @@ inline int32 ParticleLayer::GetParticleCount()
 {
 	return count;
 }
+	
+inline bool ParticleLayer::GetDisabled()
+{
+	return this->isDisabled;
+}
+
 };
 
 #endif // __DAVAENGINE_PARTICLE_LAYER_H__

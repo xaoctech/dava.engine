@@ -300,7 +300,7 @@ void ParticleEmitter::Update(float32 timeElapsed)
 	Vector<ParticleLayer*>::iterator it;
 	for(it = layers.begin(); it != layers.end(); ++it)
 	{
-        if(!(*it)->isDisabled)
+        if(!(*it)->GetDisabled())
             (*it)->Update(timeElapsed);
 	}
 }
@@ -320,7 +320,7 @@ void ParticleEmitter::RenderUpdate(Camera *camera, float32 timeElapsed)
 	Vector<ParticleLayer*>::iterator it;
 	for(it = layers.begin(); it != layers.end(); ++it)
 	{
-		if(!(*it)->isDisabled)
+		if(!(*it)->GetDisabled())
 			(*it)->Draw(camera);
 	}
 
@@ -808,6 +808,14 @@ void ParticleEmitter::RememberInitialTranslationVector()
 const Vector3& ParticleEmitter::GetInitialTranslationVector()
 {
 	return this->initialTranslationVector;
+}
+
+void ParticleEmitter::SetDisabledForAllLayers(bool value)
+{
+	for (Vector<ParticleLayer*>::iterator iter = layers.begin(); iter != layers.end(); iter ++)
+	{
+		(*iter)->SetDisabled(value);
+	}
 }
 
 };
