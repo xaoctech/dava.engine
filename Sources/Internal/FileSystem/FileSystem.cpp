@@ -53,10 +53,6 @@
 #include <sys/stat.h>
 #include <sys/errno.h>
 
-#ifdef USE_LOCAL_RESOURCES
-#define USE_LOCAL_RESOURCES_PATH "/mnt/sdcard/DavaProject/Data/"
-#endif
-
 #endif //PLATFORMS
 
 namespace DAVA
@@ -344,9 +340,7 @@ File *FileSystem::CreateFileForFrameworkPath(const FilePath & frameworkPath, uin
     if(frameworkPath.GetType() == FilePath::PATH_IN_RESOURCES)
     {
 #ifdef USE_LOCAL_RESOURCES
-        FilePath path(USE_LOCAL_RESOURCES_PATH);
-		path += frameworkPath.GetAbsolutePathname().c_str() + 5;
-		return File::CreateFromSystemPath(path, attributes);
+		return File::CreateFromSystemPath(frameworkPath, attributes);
 #else
 		return APKFile::CreateFromAssets(frameworkPath, attributes);
 #endif
