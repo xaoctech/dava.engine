@@ -43,6 +43,7 @@ namespace FMOD
 
 namespace DAVA
 {
+class SoundComponent;
 class SoundEvent : public VolumeAnimatedObject
 {
 public:
@@ -75,6 +76,7 @@ private:
 	IMPLEMENT_EVENT_DISPATCHER(eventDispatcher);
 
 friend class SoundSystem;
+friend class SoundComponent;
 };
 
 };

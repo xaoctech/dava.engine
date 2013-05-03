@@ -1257,6 +1257,9 @@
     <ClInclude Include="..\..\Sources\Internal\Sound\VolumeAnimatedObject.h">
       <Filter>Internal\Sound</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SoundComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2209,6 +2212,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Sound\VolumeAnimatedObject.cpp">
       <Filter>Internal\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SoundComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
