@@ -107,6 +107,7 @@ void Core::CreateSingletons()
     // check types size
 	new Logger();
 
+    FilePath::InitializeBundleName();
 	new FileSystem();
 	FileSystem::Instance()->SetDefaultDocumentsDirectory();
     FileSystem::Instance()->CreateDirectory(FileSystem::Instance()->GetCurrentDocumentsDirectory(), true);
