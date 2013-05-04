@@ -6,9 +6,11 @@ using namespace DAVA;
 FilePathTest::FilePathTest()
     :   TestTemplate<FilePathTest>("FilePathTest")
 {
+    RegisterFunction(this, &FilePathTest::FilePathOperationsTest, String("FilePathTest Operations"), NULL);
 	RegisterFunction(this, &FilePathTest::MacTestFunction, String("FilePathTest Mac OS"), NULL);
 	RegisterFunction(this, &FilePathTest::WinTestFunction, String("FilePathTest Win32"), NULL);
 	RegisterFunction(this, &FilePathTest::WinStylePathTestFunction, String("FilePathTest Win32 Style"), NULL);
+	RegisterFunction(this, &FilePathTest::BundleNameTest, String("FilePathTest BundleNameTest"), NULL);
 }
 
 void FilePathTest::LoadResources()
@@ -19,6 +21,34 @@ void FilePathTest::LoadResources()
 void FilePathTest::UnloadResources()
 {
 	RemoveAllControls();
+}
+
+void FilePathTest::FilePathOperationsTest(PerfFuncData * data)
+{
+    Logger::Debug("[FilePathTest] FilePathOperationsTest");
+
+    FilePath path0("~res:/Gfx/UI/texture.tex");
+    FilePath path1("~res:/Gfx/UI/");
+    
+    FilePath path2 = path1 + "texture.tex";
+    TEST_VERIFY(path2 == path0);
+    TEST_VERIFY(path2.IsEqualToExtension(".tex"));
+    TEST_VERIFY(path2.IsEqualToExtension(".tEx"));
+    TEST_VERIFY(path2.IsEqualToExtension(".tEX"));
+    TEST_VERIFY(path2.IsEqualToExtension(".teX"));
+
+    FilePath path3 = FilePath::CreateWithNewExtension(path2, ".psd");
+    TEST_VERIFY(path3 == "~res:/Gfx/UI/texture.psd");
+
+    path3.TruncateExtension();
+    TEST_VERIFY(path3 == "~res:/Gfx/UI/texture");
+    TEST_VERIFY(path3.IsEqualToExtension(""));
+    TEST_VERIFY(!path3.IsEqualToExtension(".psd"));
+
+    path3.ReplaceFilename("");
+    TEST_VERIFY(path3.GetLastDirectoryName() == "UI");
+
+    Logger::Debug("[FilePathTest] FilePathOperationsTest Done");
 }
 
 void FilePathTest::MacTestFunction(PerfFuncData * data)
@@ -94,7 +124,6 @@ void FilePathTest::MacTestFunction(PerfFuncData * data)
     TEST_VERIFY(filepath4.GetRelativePathname("~res:/Gfx/UI/") == "Screen/texture.tex");
     TEST_VERIFY(filepath4.GetRelativePathname("~res:/Gfx/") == "UI/Screen/texture.tex");
     TEST_VERIFY(filepath4.GetRelativePathname("~res:/") == "Gfx/UI/Screen/texture.tex");
-//    TEST_VERIFY(filepath4.GetRelativePathname("~res:") == "Gfx/UI/Screen/texture.tex");
 
     
     FilePath filepath5("~res:/Gfx/UI/", "../Screen/texture.tex");
@@ -109,7 +138,6 @@ void FilePathTest::MacTestFunction(PerfFuncData * data)
     TEST_VERIFY(filepath5.GetRelativePathname("~res:/Gfx/Screen/") == "texture.tex");
     TEST_VERIFY(filepath5.GetRelativePathname("~res:/Gfx/") == "Screen/texture.tex");
     TEST_VERIFY(filepath5.GetRelativePathname("~res:/") == "Gfx/Screen/texture.tex");
-//    TEST_VERIFY(filepath5.GetRelativePathname("~res:") == "Gfx/Screen/texture.tex");
     
     FilePath filepath6("~res:/Gfx/Screen/texture.tex");
     TEST_VERIFY(filepath5 == filepath6);
@@ -170,11 +198,11 @@ void FilePathTest::MacTestFunction(PerfFuncData * data)
     TEST_VERIFY(filepath0.GetAbsolutePathname() == "/Mac/Users/image.doc");
     TEST_VERIFY(filepath2.GetAbsolutePathname() == "/Mac/Users/image.doc");
     TEST_VERIFY(filepath3.GetAbsolutePathname() == "/Mac/Users/image.doc");
-    TEST_VERIFY(filepath4.GetAbsolutePathname() == "/TestProject/Data/Gfx/UI/Screen/texture.tex");
-    TEST_VERIFY(filepath5.GetAbsolutePathname() == "/TestProject/Data/Gfx/Screen/texture.tex");
-    TEST_VERIFY(filepath6.GetAbsolutePathname() == "/TestProject/Data/Gfx/Screen/texture.tex");
-    TEST_VERIFY(filepath7.GetAbsolutePathname() == "/TestProject/Data/Gfx/Screen/");
-    TEST_VERIFY(filepath8.GetAbsolutePathname() == "/TestProject/Data/Gfx/Screen/texture.tex");
+    TEST_VERIFY(filepath4.GetAbsolutePathname() == "/TestProject/Data/Data/Gfx/UI/Screen/texture.tex");
+    TEST_VERIFY(filepath5.GetAbsolutePathname() == "/TestProject/Data/Data/Gfx/Screen/texture.tex");
+    TEST_VERIFY(filepath6.GetAbsolutePathname() == "/TestProject/Data/Data/Gfx/Screen/texture.tex");
+    TEST_VERIFY(filepath7.GetAbsolutePathname() == "/TestProject/Data/Data/Gfx/Screen/");
+    TEST_VERIFY(filepath8.GetAbsolutePathname() == "/TestProject/Data/Data/Gfx/Screen/texture.tex");
     TEST_VERIFY(filepath9.GetAbsolutePathname() == "/TestProject/Data/Data/Gfx/UI/Screen/texture.tex");
     TEST_VERIFY(filepath10.GetAbsolutePathname() == "/TestProject/Data/Data/Gfx/UI/Screen/texture.tex");
     TEST_VERIFY(filepath11.GetAbsolutePathname() == "/Users/Test/music.mp3");
@@ -268,7 +296,6 @@ void FilePathTest::WinTestFunction(PerfFuncData * data)
     TEST_VERIFY(filepath4.GetRelativePathname("~res:/Gfx/UI/") == "Screen/texture.tex");
     TEST_VERIFY(filepath4.GetRelativePathname("~res:/Gfx/") == "UI/Screen/texture.tex");
     TEST_VERIFY(filepath4.GetRelativePathname("~res:/") == "Gfx/UI/Screen/texture.tex");
-//    TEST_VERIFY(filepath4.GetRelativePathname("~res:") == "Gfx/UI/Screen/texture.tex");
     
     
     FilePath filepath5("~res:/Gfx/UI/", "../Screen/texture.tex");
@@ -286,7 +313,6 @@ void FilePathTest::WinTestFunction(PerfFuncData * data)
     TEST_VERIFY(filepath5.GetRelativePathname("~res:/Gfx/") == "Screen/texture.tex");
     TEST_VERIFY(filepath5.GetRelativePathname("~res:/Gfx/") == "Screen/texture.tex");
     TEST_VERIFY(filepath5.GetRelativePathname("~res:/") == "Gfx/Screen/texture.tex");
-//    TEST_VERIFY(filepath5.GetRelativePathname("~res:") == "Gfx/Screen/texture.tex");
     
     FilePath filepath6("~res:/Gfx/Screen/texture.tex");
     TEST_VERIFY(filepath5 == filepath6);
@@ -360,11 +386,11 @@ void FilePathTest::WinTestFunction(PerfFuncData * data)
     TEST_VERIFY(filepath0.GetAbsolutePathname() == "c:/Mac/Users/image.doc");
     TEST_VERIFY(filepath2.GetAbsolutePathname() == "c:/Mac/Users/image.doc");
     TEST_VERIFY(filepath3.GetAbsolutePathname() == "c:/Mac/Users/image.doc");
-    TEST_VERIFY(filepath4.GetAbsolutePathname() == "c:/TestProject/Data/Gfx/UI/Screen/texture.tex");
-    TEST_VERIFY(filepath5.GetAbsolutePathname() == "c:/TestProject/Data/Gfx/Screen/texture.tex");
-    TEST_VERIFY(filepath6.GetAbsolutePathname() == "c:/TestProject/Data/Gfx/Screen/texture.tex");
-    TEST_VERIFY(filepath7.GetAbsolutePathname() == "c:/TestProject/Data/Gfx/Screen/");
-    TEST_VERIFY(filepath8.GetAbsolutePathname() == "c:/TestProject/Data/Gfx/Screen/texture.tex");
+    TEST_VERIFY(filepath4.GetAbsolutePathname() == "c:/TestProject/Data/Data/Gfx/UI/Screen/texture.tex");
+    TEST_VERIFY(filepath5.GetAbsolutePathname() == "c:/TestProject/Data/Data/Gfx/Screen/texture.tex");
+    TEST_VERIFY(filepath6.GetAbsolutePathname() == "c:/TestProject/Data/Data/Gfx/Screen/texture.tex");
+    TEST_VERIFY(filepath7.GetAbsolutePathname() == "c:/TestProject/Data/Data/Gfx/Screen/");
+    TEST_VERIFY(filepath8.GetAbsolutePathname() == "c:/TestProject/Data/Data/Gfx/Screen/texture.tex");
     TEST_VERIFY(filepath9.GetAbsolutePathname() == "c:/TestProject/Data/Data/Gfx/UI/Screen/texture.tex");
     TEST_VERIFY(filepath10.GetAbsolutePathname() == "c:/TestProject/Data/Data/Gfx/UI/Screen/texture.tex");
     TEST_VERIFY(filepath11.GetAbsolutePathname() == "c:/Users/Test/music.mp3");
@@ -450,7 +476,6 @@ void FilePathTest::WinStylePathTestFunction(PerfFuncData * data)
     TEST_VERIFY(filepath4.GetRelativePathname("~res:\\Gfx\\UI\\") == "Screen/texture.tex");
     TEST_VERIFY(filepath4.GetRelativePathname("~res:\\Gfx\\") == "UI/Screen/texture.tex");
     TEST_VERIFY(filepath4.GetRelativePathname("~res:\\") == "Gfx/UI/Screen/texture.tex");
-//    TEST_VERIFY(filepath4.GetRelativePathname("~res:") == "Gfx/UI/Screen/texture.tex");
     
     
     FilePath filepath5("~res:\\Gfx\\UI\\", "..\\Screen\\texture.tex");
@@ -466,7 +491,6 @@ void FilePathTest::WinStylePathTestFunction(PerfFuncData * data)
     TEST_VERIFY(filepath5.GetRelativePathname("~res:\\Gfx\\") == "Screen/texture.tex");
     TEST_VERIFY(filepath5.GetRelativePathname("~res:\\Gfx\\") == "Screen/texture.tex");
     TEST_VERIFY(filepath5.GetRelativePathname("~res:\\") == "Gfx/Screen/texture.tex");
-//    TEST_VERIFY(filepath5.GetRelativePathname("~res:") == "Gfx/Screen/texture.tex");
     
     FilePath filepath6("~res:\\Gfx\\Screen\\texture.tex");
     TEST_VERIFY(filepath5 == filepath6);
@@ -526,11 +550,11 @@ void FilePathTest::WinStylePathTestFunction(PerfFuncData * data)
     TEST_VERIFY(filepath0.GetAbsolutePathname() == "c:/Mac/Users/image.doc");
     TEST_VERIFY(filepath2.GetAbsolutePathname() == "c:/Mac/Users/image.doc");
     TEST_VERIFY(filepath3.GetAbsolutePathname() == "c:/Mac/Users/image.doc");
-    TEST_VERIFY(filepath4.GetAbsolutePathname() == "c:/TestProject/Data/Gfx/UI/Screen/texture.tex");
-    TEST_VERIFY(filepath5.GetAbsolutePathname() == "c:/TestProject/Data/Gfx/Screen/texture.tex");
-    TEST_VERIFY(filepath6.GetAbsolutePathname() == "c:/TestProject/Data/Gfx/Screen/texture.tex");
-    TEST_VERIFY(filepath7.GetAbsolutePathname() == "c:/TestProject/Data/Gfx/Screen/");
-    TEST_VERIFY(filepath8.GetAbsolutePathname() == "c:/TestProject/Data/Gfx/Screen/texture.tex");
+    TEST_VERIFY(filepath4.GetAbsolutePathname() == "c:/TestProject/Data/Data/Gfx/UI/Screen/texture.tex");
+    TEST_VERIFY(filepath5.GetAbsolutePathname() == "c:/TestProject/Data/Data/Gfx/Screen/texture.tex");
+    TEST_VERIFY(filepath6.GetAbsolutePathname() == "c:/TestProject/Data/Data/Gfx/Screen/texture.tex");
+    TEST_VERIFY(filepath7.GetAbsolutePathname() == "c:/TestProject/Data/Data/Gfx/Screen/");
+    TEST_VERIFY(filepath8.GetAbsolutePathname() == "c:/TestProject/Data/Data/Gfx/Screen/texture.tex");
     TEST_VERIFY(filepath9.GetAbsolutePathname() == "c:/TestProject/Data/Data/Gfx/UI/Screen/texture.tex");
     TEST_VERIFY(filepath10.GetAbsolutePathname() == "c:/TestProject/Data/Data/Gfx/UI/Screen/texture.tex");
     TEST_VERIFY(filepath11.GetAbsolutePathname() == "c:/Users/Test/music.mp3");
@@ -542,3 +566,51 @@ void FilePathTest::WinStylePathTestFunction(PerfFuncData * data)
     
     FilePath::SetBundleName(oldProjectPathname);
 }
+
+void FilePathTest::BundleNameTest(PerfFuncData * data)
+{
+    Logger::Debug("[FilePathTest] BundleNameTest");
+
+    FileSystem::Instance()->DeleteDirectory("~doc:/BundleTest/Data/TestData/FileSystemTest/Folder1/");
+
+    FileSystem::eCreateDirectoryResult created = FileSystem::Instance()->CreateDirectory("~doc:/BundleTest/Data/TestData/FileSystemTest/Folder1/", true);
+    TEST_VERIFY(created == FileSystem::DIRECTORY_CREATED);
+
+    File *fileForWritting = File::Create("~doc:/BundleTest/Data/TestData/FileSystemTest/Folder1/file1.zip", File::CREATE | File::WRITE);
+    if(!fileForWritting)
+    {
+        TEST_VERIFY(fileForWritting != NULL);
+        return;
+    }
+
+    
+    uint8 buffer[1024];
+    TEST_VERIFY(fileForWritting->Write(buffer, 1024) == 1024);
+    SafeRelease(fileForWritting);
+    
+
+    TEST_VERIFY(HasFileCorrectSize("~res:/TestData/FileSystemTest/Folder1/file1.zip", 31749));
+    FilePath::AddResourcesFolder("~doc:/BundleTest/");
+    TEST_VERIFY(HasFileCorrectSize("~res:/TestData/FileSystemTest/Folder1/file1.zip", 1024));
+    TEST_VERIFY(!HasFileCorrectSize("~res:/TestData/FileSystemTest/Folder1/file1.zip", 31749));
+    FilePath::RemoveResourcesFolder("~doc:/BundleTest/");
+    TEST_VERIFY(HasFileCorrectSize("~res:/TestData/FileSystemTest/Folder1/file1.zip", 31749));
+
+    Logger::Debug("[FilePathTest] BundleNameTest Done");
+}
+
+bool FilePathTest::HasFileCorrectSize(const FilePath &path, uint32 size)
+{
+    File *file = File::Create(path, File::OPEN | File::READ);
+    if(!file)
+    {
+        Logger::Error("[FilePathTest::HasFileCorrectSize] Can't open file %s", path.GetAbsolutePathname().c_str());
+        return false;
+    }
+    
+    bool sizeIsCorrect = (file->GetSize() == size);
+    SafeRelease(file);
+
+    return sizeIsCorrect;
+}
+
