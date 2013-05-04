@@ -1114,7 +1114,7 @@ bool AutotestingSystem::SaveToDB(MongodbUpdateObject *dbUpdateObject)
 void AutotestingSystem::Log(const String &level, const String &message)
 {
 	Logger::Debug("AutotestingSystem::Log [%s]%s", level.c_str(), message.c_str());
-	
+	uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
 	String testId = GetTestId(testIndex);
 	String stepId = GetStepId(stepIndex);
 	String logId = GetLogId(++logIndex);
@@ -1136,6 +1136,8 @@ void AutotestingSystem::Log(const String &level, const String &message)
 
     SaveToDB(dbUpdateObject);
 	SafeRelease(dbUpdateObject);
+	uint64 finishTime = SystemTimer::Instance()->AbsoluteMS();
+	Logger::Debug("AutotestingSystem::Log FINISH %d", finishTime - startTime);
 }
 
 void AutotestingSystem::SaveScreenShotNameToDB()
