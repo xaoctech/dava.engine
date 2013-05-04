@@ -300,25 +300,11 @@ FilePath FilePath::operator+(const String &path) const
     return pathname;
 }
 
-//FilePath FilePath::operator+(const char * path) const
-//{
-//    FilePath pathname(AddPath(*this, String(path)));
-//    pathname.pathType = this->pathType;
-//    return pathname;
-//}
-
-    
 FilePath& FilePath::operator+=(const String & path)
 {
     absolutePathname = AddPath(*this, path);
     return (*this);
 }
-
-//FilePath& FilePath::operator+=(const char * path)
-//{
-//    absolutePathname = AddPath(*this, String(path));
-//    return (*this);
-//}
     
 bool FilePath::operator==(const FilePath &path) const
 {
