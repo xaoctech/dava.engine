@@ -286,19 +286,20 @@ void SceneExporter::ExportLandscapeFullTiledTexture(Landscape *landscape, Set<St
                 descriptor->pvrCompression.format = FORMAT_PVR4;
             }
             
-            FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(workingPathname);
-            descriptor->Save(sceneUtils.dataFolder + descriptorPathname);
+            FilePath descriptorPathnameInData = TextureDescriptor::GetDescriptorPathname(sceneUtils.dataFolder + workingPathname);
+            descriptor->Save(descriptorPathnameInData);
             
-            bool needToDeleteDescriptorFile = !FileSystem::Instance()->IsFile(sceneUtils.dataSourceFolder + descriptorPathname);
-            descriptor->Save(sceneUtils.dataSourceFolder + descriptorPathname);
-            
+            FilePath descriptorPathnameInDataSource = TextureDescriptor::GetDescriptorPathname(sceneUtils.dataSourceFolder + workingPathname);
+            bool needToDeleteDescriptorFile = !FileSystem::Instance()->IsFile(descriptorPathnameInDataSource);
+
+            descriptor->Save(descriptorPathnameInDataSource);
             SafeRelease(descriptor);
             
             landscape->SetTexture(Landscape::TEXTURE_TILE_FULL, sceneUtils.dataSourceFolder + workingPathname);
             
             if(needToDeleteDescriptorFile)
             {
-                FileSystem::Instance()->DeleteFile(sceneUtils.dataSourceFolder + descriptorPathname);
+                FileSystem::Instance()->DeleteFile(descriptorPathnameInDataSource);
             }
             FileSystem::Instance()->DeleteFile(sceneUtils.dataSourceFolder + workingPathname);
 
