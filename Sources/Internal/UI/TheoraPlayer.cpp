@@ -287,7 +287,7 @@ void TheoraPlayer::Update(float32 timeElapsed)
 
             if(th_decode_packetin(theoraData->thCtx, &theoraData->packet, &theoraData->videoBufGranulePos) == 0)
             {
-                if((videoBufTime = th_granule_time(theoraData->thCtx, theoraData->videoBufGranulePos)) >= videoTime)
+                if((videoBufTime = (float32)th_granule_time(theoraData->thCtx, theoraData->videoBufGranulePos)) >= videoTime)
                     isVideoBufReady = true;
                 else
                     pp_inc = (pp_level > 0)? -1 : 0;
@@ -348,7 +348,7 @@ void TheoraPlayer::Update(float32 timeElapsed)
         if(!ret)
         {
             Texture * tex = Texture::CreateFromData(FORMAT_RGBA8888, frameBuffer, frameBufferW, frameBufferH, false);
-            Sprite * spr = Sprite::CreateFromTexture(tex, 0, 0, tex->width, tex->height);
+            Sprite * spr = Sprite::CreateFromTexture(tex, 0, 0, (float32)tex->width, (float32)tex->height);
             spr->ConvertToVirtualSize();
 
             SafeRelease(tex);
@@ -382,7 +382,7 @@ unsigned char TheoraPlayer::ClampFloatToByte(const float &value)
     char result = (char)value;
     
     (value < 0) ? result = 0 : NULL;
-    (value > 255) ? result = 255 : NULL;
+    (value > 255) ? result = (char)255 : NULL;
     
     return (unsigned char)result;
 }
@@ -409,9 +409,9 @@ void TheoraPlayer::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
     {
         Rect rect = rectNode->AsRect();
         if(rect.dx == -1)
-            rect.dx = theoraData->thInfo.pic_width;
+            rect.dx = (float32)theoraData->thInfo.pic_width;
         if(rect.dy == -1)
-            rect.dy = theoraData->thInfo.pic_height;
+            rect.dy = (float32)theoraData->thInfo.pic_height;
         
         SetRect(rect);
     }
