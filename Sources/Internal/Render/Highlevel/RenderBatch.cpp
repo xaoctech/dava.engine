@@ -94,7 +94,7 @@ void RenderBatch::SetMaterialInstance(NMaterialInstance *_materialInstance)
     materialInstance = SafeRetain(_materialInstance);
 }
     
-void RenderBatch::Draw(Camera * camera)
+void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 {
 	if(!renderObject)return;
     Matrix4 * worldTransformPtr = renderObject->GetWorldTransformPtr();
@@ -110,7 +110,9 @@ void RenderBatch::Draw(Camera * camera)
 	
     Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
-    materialInstance->Draw(dataSource);
+
+    material->BindMaterialTechnique(ownerRenderPass);
+    material->Draw(dataSource);
 }
     
     
