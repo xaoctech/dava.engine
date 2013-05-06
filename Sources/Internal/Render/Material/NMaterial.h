@@ -177,8 +177,10 @@ public:
     bool LoadFromFile(const String & pathname);
     
     void AddMaterialTechnique(FastName & techniqueName, MaterialTechnique * materialTechnique);
-    void BindMaterialTechnique(MaterialTechnique * materialTechnique);
+    void BindMaterialTechnique(const FastName & techniqueName);
     MaterialTechnique * GetTechnique(const FastName & techniqueName);
+    void Draw(PolygonGroup * polygonGroup);
+
 
     const FastNameSet & GetRenderLayers() { return layers; };
     
@@ -192,6 +194,11 @@ private:
     FastNameSet layers;
     HashMap<FastName, NMaterialProperty*> materialProperties;
     HashMap<FastName, MaterialTechnique *> techniqueForRenderPass; // TODO: HashMap<FastName, NMaterialInstance*> baseInstances;
+
+    //
+    FastName activeTechniqueName;
+    MaterialTechnique * activeTechnique;
+
 };
 
 

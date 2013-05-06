@@ -46,7 +46,7 @@ public:
     RenderLayer(const FastName & name);
     virtual ~RenderLayer();
     
-    virtual void Draw(Camera * camera, RenderLayerBatchArray * renderLayerBatchArray);
+    virtual void Draw(const FastName & ownerRenderPass, Camera * camera, RenderLayerBatchArray * renderLayerBatchArray);
 
     const FastName & GetName(); 
 private:

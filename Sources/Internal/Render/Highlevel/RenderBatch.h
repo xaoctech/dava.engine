@@ -108,7 +108,7 @@ public:
     inline uint32 GetRemoveIndex();
     inline RenderLayer * GetOwnerLayer();
 
-    virtual void Draw(Camera * camera);
+    virtual void Draw(const FastName & ownerRenderPass, Camera * camera);
     
     const AABBox3 & GetBoundingBox() const;
 
