@@ -15,7 +15,7 @@ static const PixelFormat formats[] =
 DXTTest::DXTTest()
 : TestTemplate<DXTTest>("DXTTest")
 {
-    FilePath testFolder = FileSystem::Instance()->GetCurrentDocumentsDirectory() + FilePath("/DXTTest/");
+    FilePath testFolder = FileSystem::Instance()->GetCurrentDocumentsDirectory() + "DXTTest/";
     FileSystem::Instance()->CreateDirectory(testFolder, true);
 
     pngSprite = NULL;
@@ -34,7 +34,7 @@ void DXTTest::LoadResources()
 {
     GetBackground()->SetColor(Color(0.0f, 1.0f, 0.0f, 1.0f));
 
-    Font *font = FTFont::Create(FilePath("~res:/Fonts/korinna.ttf"));
+    Font *font = FTFont::Create("~res:/Fonts/korinna.ttf");
     DVASSERT(font);
 
     font->SetSize(20);
@@ -90,8 +90,8 @@ void DXTTest::TestFunction(PerfFuncData * data)
         Image *secondComparer = TextureUtils::CreateImageAsRGBA8888(dxtSprite);
         
         FilePath documentsPath = FileSystem::Instance()->GetCurrentDocumentsDirectory();
-        ImageLoader::Save(firstComparer, documentsPath + FilePath(Format("DXTTest/src_number_%d.png", currentTest)));
-        ImageLoader::Save(secondComparer, documentsPath + FilePath(Format("DXTTest/dst_number_%d.png", currentTest)));
+        ImageLoader::Save(firstComparer, documentsPath + (Format("DXTTest/src_number_%d.png", currentTest)));
+        ImageLoader::Save(secondComparer, documentsPath + (Format("DXTTest/dst_number_%d.png", currentTest)));
     }
 
     ++currentTest;

@@ -66,7 +66,6 @@ void RenderHierarchy::RemoveRenderObject(RenderObject *renderObject)
     
 void RenderHierarchy::Clip(Camera * camera, bool updateNearestLights, RenderPassBatchArray * renderPassBatchArray)
 {
-    int32 objectsCulled = 0;
     Frustum * frustum = camera->GetFrustum();
     uint32 size = renderObjectArray.size();
     for (uint32 pos = 0; pos < size; ++pos)
@@ -81,14 +80,14 @@ void RenderHierarchy::Clip(Camera * camera, bool updateNearestLights, RenderPass
         if (frustum->IsInside(renderObject->GetWorldBoundingBox()))
         {
             //renderObject->RemoveFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
-            uint32 batchCount = renderObject->GetRenderBatchCount();;
+            uint32 batchCount = renderObject->GetRenderBatchCount();
             for (uint32 batchIndex = 0; batchIndex < batchCount; ++batchIndex)
             {
                 RenderBatch * batch = renderObject->GetRenderBatch(batchIndex);
                 NMaterial * material = batch->GetMaterial();
-                const FastNameSet & layers = material->GetRenderLayers();
                 if (material)
                 {
+					const FastNameSet & layers = material->GetRenderLayers();
                     FastNameSet::Iterator layerEnd = layers.End();
                     for (FastNameSet::Iterator layerIt = layers.Begin(); layerIt != layerEnd; ++layerIt)
                     {
@@ -96,7 +95,6 @@ void RenderHierarchy::Clip(Camera * camera, bool updateNearestLights, RenderPass
                     }
                 }
             }
-            objectsCulled++;
         }
     }
 }

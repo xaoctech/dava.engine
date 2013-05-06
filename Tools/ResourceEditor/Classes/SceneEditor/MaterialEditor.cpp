@@ -338,7 +338,7 @@ UIListCell *MaterialEditor::CellAtIndex(UIList *forList, int32 index)
         UIControl *sceneFlagBox = new UIControl(r);
         sceneFlagBox->SetName("flagBox");
         sceneFlagBox->GetBackground()->SetDrawType(UIControlBackground::DRAW_SCALE_TO_RECT);
-        sceneFlagBox->SetSprite(FilePath("~res:/Gfx/UI/marker"), 1);
+        sceneFlagBox->SetSprite("~res:/Gfx/UI/marker", 1);
         sceneFlagBox->SetInputEnabled(false);
         c->AddControl(sceneFlagBox);
         SafeRelease(sceneFlagBox);

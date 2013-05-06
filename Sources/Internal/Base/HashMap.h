@@ -405,7 +405,8 @@ typename HashMap<K, V>::HashMapIterator& HashMap<K, V>::HashMapIterator::operato
 			current_item = 0;
 			while(current_index < szTable && current_item == 0)
 			{
-				current_item = table[current_index++];
+				current_item = table[current_index];
+                if(!current_item) current_index++;
 			}
 
 			if (current_item == 0)

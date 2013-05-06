@@ -63,6 +63,7 @@ int32 UIYamlLoader::GetDrawTypeFromNode(YamlNode * drawTypeNode)
     if("DRAW_STRETCH_HORIZONTAL" == type) ret = UIControlBackground::DRAW_STRETCH_HORIZONTAL;
     if("DRAW_STRETCH_VERTICAL" == type) ret = UIControlBackground::DRAW_STRETCH_VERTICAL;
     if("DRAW_STRETCH_BOTH" == type) ret = UIControlBackground::DRAW_STRETCH_BOTH;
+	if("DRAW_TILED" == type) ret = UIControlBackground::DRAW_TILED;
     
     return ret;
 }
@@ -94,6 +95,9 @@ String UIYamlLoader::GetDrawTypeNodeValue(int32 drawType)
             break;
         case UIControlBackground::DRAW_STRETCH_BOTH:
             ret = "DRAW_STRETCH_BOTH";
+			break;
+		case UIControlBackground::DRAW_TILED:
+            ret = "DRAW_TILED";
 			break;
         default:
             ret = "DRAW_ALIGNED";
@@ -508,7 +512,7 @@ void UIYamlLoader::LoadFromNode(UIControl * parentControl, YamlNode * rootNode, 
 UIControl* UIYamlLoader::CreateControl(const String& type, const String& baseType)
 {
 	// Firstly try Type (Custom Control).
-	UIControl * control = dynamic_cast<UIControl*> (ObjectFactory::Instance()->New(type));
+	UIControl * control = dynamic_cast<UIControl*> (ObjectFactory::Instance()->New<BaseObject>(type));
 	if (control)
 	{
 		// Everything is OK. Just update the custom control type for the control, if any.
@@ -532,7 +536,7 @@ UIControl* UIYamlLoader::CreateControl(const String& type, const String& baseTyp
 	// Retry with base type, if any.
 	if (!baseType.empty())
 	{
-		control = dynamic_cast<UIControl*> (ObjectFactory::Instance()->New(baseType));
+		control = dynamic_cast<UIControl*> (ObjectFactory::Instance()->New<BaseObject>(baseType));
 		if (control)
 		{
 			// Even if the control of the base type was created, we have to store its custom type.

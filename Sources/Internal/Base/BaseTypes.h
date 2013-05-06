@@ -162,16 +162,6 @@ typedef signed int		int32;
 typedef Select<sizeof(void*) == 4, uint32, uint64>::Result pointer_size;
 	
     
-enum eRC
-{
-    SUCCESS = 0,
-    ERROR_FILE_NOT_FOUND = 1,
-    ERROR_NOT_ENOUGH_MEMORY = 2,
-    ERROR_INVALID_DATA = 3,
-};
-
-    
-    
 #ifndef TRUE
 #define TRUE	1
 #endif

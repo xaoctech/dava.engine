@@ -6,6 +6,8 @@
 
 namespace DAVA
 {
+
+REGISTER_CLASS(TransformComponent)
     
 TransformComponent::TransformComponent()
 {
