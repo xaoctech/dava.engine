@@ -1,0 +1,13 @@
+RenderStep:
+    RenderSteps: ["General.Translucent"]
+    ShaderGraph: "Materials/Graphs/VertexColor.mgraph"
+    Consts: [VERTEX_COLOR]
+    RenderState:
+        state: STATE_DEFAULT_3D | STATE_BLEND
+        blendSrc: BLEND_SRC_ALPHA
+        blendDest: BLEND_ONE_MINUS_SRC_ALPHA
+
+
+
+
+

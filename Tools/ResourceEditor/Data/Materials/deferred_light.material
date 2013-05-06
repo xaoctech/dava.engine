@@ -1,0 +1,3 @@
+RenderStep: 
+    RenderSteps: ["Deferred.ApplyLight"];
+    Shader: ["Shaders/DeferredApplyLight.vsh", "Shaders/DeferredApplyLight.fsh"];
