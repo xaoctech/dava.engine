@@ -10,7 +10,7 @@
 #include "CommandLine/CommandLineManager.h"
 #include "CommandLine/SceneExporter/SceneExporter.h"
 
-#include "PVRConverter.h"
+#include "TextureCompression/PVRConverter.h"
 #include "version.h"
 
 using namespace DAVA;

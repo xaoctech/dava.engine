@@ -52,6 +52,54 @@
     <Filter Include="QtGenerated\DockSceneGraph">
       <UniqueIdentifier>{e87a49ed-6211-4ee1-998f-c9d6403385a1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\ParticlesEditorQT">
+      <UniqueIdentifier>{b82196cb-74f3-409b-b4b5-ab952345f92b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\ParticlesEditorQT\Helpers">
+      <UniqueIdentifier>{88ec8ec7-ff55-4ccd-860f-165ca426f6ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\ParticlesEditorQT\Nodes">
+      <UniqueIdentifier>{697efec6-720b-409a-b055-42065ec4dc5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\DockParticleEditor">
+      <UniqueIdentifier>{fb8e541a-57aa-4294-9a07-7fba1040c8d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\DockParticleEditor">
+      <UniqueIdentifier>{2c5e6bd2-b669-4392-a95b-cf4efc24cf88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\DockSceneGraph">
+      <UniqueIdentifier>{8ff35518-92c1-4281-a180-76183420c027}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\DockSceneGraph">
+      <UniqueIdentifier>{0409349a-926f-4e41-b1da-54caf4d02363}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\QtPropertyEditor\QtPropertyWidgets">
+      <UniqueIdentifier>{25aea96e-2c46-4777-a52d-c16b45629da1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\SpritesPacker">
+      <UniqueIdentifier>{7fd79982-9cf6-4f03-9bfe-e2641a79e968}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\QResourceEditorProgressDialog">
+      <UniqueIdentifier>{2e8e4e2d-be31-4af1-bcdd-6538b982223e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\DockSetSwitchIndex">
+      <UniqueIdentifier>{778f9502-08bc-42b8-85a3-0f2c489748eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\QtPropertyEditor\QtPropertyData">
+      <UniqueIdentifier>{f78cb3f2-cefe-4fa7-89e1-46628d2a20c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\DockHangingObjects">
+      <UniqueIdentifier>{62b455cb-7b9d-4c52-b742-c03721be1449}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\DockMaterialViewOptions">
+      <UniqueIdentifier>{e560503d-45b2-4dc6-8887-47e59d7d7eb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\DockSceneInfo">
+      <UniqueIdentifier>{eb98cf11-941e-4f68-9493-8c0e36af005e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\Commands">
+      <UniqueIdentifier>{4109d87f-cd98-43db-a669-c63245c9e788}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Sources">
       <UniqueIdentifier>{4f2db588-397c-479c-9871-d530187be966}</UniqueIdentifier>
     </Filter>
@@ -106,6 +154,15 @@
     <Filter Include="Sources\Qt\Scene">
       <UniqueIdentifier>{2a361889-0438-4c18-a4a9-3772f6d84470}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Qt\Scene\System">
+      <UniqueIdentifier>{859c9b28-5205-4a42-aede-af5566d0dbb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\Scene\System\CollisionSystem">
+      <UniqueIdentifier>{1fd9e330-0ea5-4450-a70a-59efa036c833}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\Scene\System\HoodSystem">
+      <UniqueIdentifier>{63d4cd6d-e505-48b0-9cdd-2fc699f3d987}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Sources\Qt\DockLibrary">
       <UniqueIdentifier>{a32457da-16af-47bc-9e52-3a95a269bd7e}</UniqueIdentifier>
     </Filter>
@@ -130,11 +187,35 @@
     <Filter Include="Sources\Qt\QtPropertyEditor\QtPropertyData">
       <UniqueIdentifier>{5d52e296-b346-42eb-919f-6af276dc41eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Qt\QtPropertyEditor\QtPropertyWidgets">
+      <UniqueIdentifier>{3556acf1-92d6-4fa7-9fcd-2fe2c548fcd7}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Sources\Qt\DockParticleEditor">
       <UniqueIdentifier>{77cd579c-134a-4588-b369-31462db4967b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Sources\Qt\DockSceneGraph">
       <UniqueIdentifier>{39430818-6e4e-42bf-bbd9-946b83c94b54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\SpritesPacker">
+      <UniqueIdentifier>{dbff2565-204f-4397-92f0-4fd28c7fd321}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\QResourceEditorProgressDialog">
+      <UniqueIdentifier>{a9ce818d-486f-4804-8236-33131380edb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\DockSetSwitchIndex">
+      <UniqueIdentifier>{1060010d-a6c2-4da3-9613-72895b684bf2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\DockHangingObjects">
+      <UniqueIdentifier>{06e43fbc-e3e3-484d-93ff-02f41732442e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\DockMaterialViewOptions">
+      <UniqueIdentifier>{ac0aff53-678a-41e9-976e-47ea3e28317e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\DockSceneInfo">
+      <UniqueIdentifier>{18c9c067-52e7-4949-a460-aa84289f4863}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\Commands">
+      <UniqueIdentifier>{5023523c-494e-44c1-aea2-fea202030a06}</UniqueIdentifier>
     </Filter>
     <Filter Include="Sources\LandscapeEditor">
       <UniqueIdentifier>{93b7e12d-cd91-46fd-944b-c75263b81dd9}</UniqueIdentifier>
@@ -154,90 +235,6 @@
     <Filter Include="Sources\Commands">
       <UniqueIdentifier>{7bc64643-a6f9-419d-a371-9fb4fc7cd1ae}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\ParticlesEditorQT">
-      <UniqueIdentifier>{b82196cb-74f3-409b-b4b5-ab952345f92b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\ParticlesEditorQT\Helpers">
-      <UniqueIdentifier>{88ec8ec7-ff55-4ccd-860f-165ca426f6ab}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\ParticlesEditorQT\Nodes">
-      <UniqueIdentifier>{697efec6-720b-409a-b055-42065ec4dc5b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Qt\DockParticleEditor">
-      <UniqueIdentifier>{fb8e541a-57aa-4294-9a07-7fba1040c8d3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\DockParticleEditor">
-      <UniqueIdentifier>{2c5e6bd2-b669-4392-a95b-cf4efc24cf88}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Qt\DockSceneGraph">
-      <UniqueIdentifier>{8ff35518-92c1-4281-a180-76183420c027}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\DockSceneGraph">
-      <UniqueIdentifier>{0409349a-926f-4e41-b1da-54caf4d02363}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Qt\QtPropertyEditor\QtPropertyWidgets">
-      <UniqueIdentifier>{3556acf1-92d6-4fa7-9fcd-2fe2c548fcd7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\QtPropertyEditor\QtPropertyWidgets">
-      <UniqueIdentifier>{25aea96e-2c46-4777-a52d-c16b45629da1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Qt\SpritesPacker">
-      <UniqueIdentifier>{dbff2565-204f-4397-92f0-4fd28c7fd321}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\SpritesPacker">
-      <UniqueIdentifier>{7fd79982-9cf6-4f03-9bfe-e2641a79e968}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\QResourceEditorProgressDialog">
-      <UniqueIdentifier>{2e8e4e2d-be31-4af1-bcdd-6538b982223e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Qt\QResourceEditorProgressDialog">
-      <UniqueIdentifier>{a9ce818d-486f-4804-8236-33131380edb6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Qt\DockSetSwitchIndex">
-      <UniqueIdentifier>{1060010d-a6c2-4da3-9613-72895b684bf2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\DockSetSwitchIndex">
-      <UniqueIdentifier>{778f9502-08bc-42b8-85a3-0f2c489748eb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\QtPropertyEditor\QtPropertyData">
-      <UniqueIdentifier>{f78cb3f2-cefe-4fa7-89e1-46628d2a20c6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\DockHangingObjects">
-      <UniqueIdentifier>{62b455cb-7b9d-4c52-b742-c03721be1449}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Qt\DockHangingObjects">
-      <UniqueIdentifier>{06e43fbc-e3e3-484d-93ff-02f41732442e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Qt\Scene\System">
-      <UniqueIdentifier>{859c9b28-5205-4a42-aede-af5566d0dbb2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Qt\DockMaterialViewOptions">
-      <UniqueIdentifier>{ac0aff53-678a-41e9-976e-47ea3e28317e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\DockMaterialViewOptions">
-      <UniqueIdentifier>{e560503d-45b2-4dc6-8887-47e59d7d7eb1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Qt\Scene\System\CollisionSystem">
-      <UniqueIdentifier>{1fd9e330-0ea5-4450-a70a-59efa036c833}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Qt\Scene\System\HoodSystem">
-      <UniqueIdentifier>{63d4cd6d-e505-48b0-9cdd-2fc699f3d987}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\ResourcePacker">
-      <UniqueIdentifier>{2455ec2d-6861-4bb8-b6b6-00e76010bf71}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Qt\DockSceneInfo">
-      <UniqueIdentifier>{18c9c067-52e7-4949-a460-aa84289f4863}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\DockSceneInfo">
-      <UniqueIdentifier>{eb98cf11-941e-4f68-9493-8c0e36af005e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Qt\Commands">
-      <UniqueIdentifier>{5023523c-494e-44c1-aea2-fea202030a06}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\Commands">
-      <UniqueIdentifier>{4109d87f-cd98-43db-a669-c63245c9e788}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\CommandLine">
       <UniqueIdentifier>{8508f90f-bc06-411f-986b-bccae0d3c86a}</UniqueIdentifier>
     </Filter>
@@ -252,6 +249,18 @@
     </Filter>
     <Filter Include="Sources\CommandLine\SceneUtils">
       <UniqueIdentifier>{ea1c3731-01c7-4f90-ba93-09071caa53a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Tools">
+      <UniqueIdentifier>{20d54303-4177-4223-9edf-ee1a5d3d1b2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Tools\CommandLine">
+      <UniqueIdentifier>{38e1afd1-c4c7-4cfc-8822-9045d3fafc55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Tools\TextureCompression">
+      <UniqueIdentifier>{e939f627-f3ae-4b1c-a509-ad47f4f66607}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Tools\TexturePacker">
+      <UniqueIdentifier>{7728c245-6672-42ca-890d-3f5f3562bdae}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1575,30 +1584,6 @@
     <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionRenderObject.cpp">
       <Filter>Sources\Qt\Scene\System\CollisionSystem</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Tools\TexturePacker\CommandLineParser.cpp">
-      <Filter>Sources\ResourcePacker</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Tools\TexturePacker\DefinitionFile.cpp">
-      <Filter>Sources\ResourcePacker</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Tools\TexturePacker\ImagePacker.cpp">
-      <Filter>Sources\ResourcePacker</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Tools\TexturePacker\PngImage.cpp">
-      <Filter>Sources\ResourcePacker</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Tools\TexturePacker\ResourcePacker2D.cpp">
-      <Filter>Sources\ResourcePacker</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Tools\TexturePacker\TexturePacker.cpp">
-      <Filter>Sources\ResourcePacker</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Tools\DXTConverter.cpp">
-      <Filter>Sources\ResourcePacker</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Tools\PVRConverter.cpp">
-      <Filter>Sources\ResourcePacker</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\DockParticleEditor\ParticleEffectPropertiesWidget.cpp">
       <Filter>Sources\Qt\DockParticleEditor</Filter>
     </ClCompile>
@@ -1650,9 +1635,6 @@
     <ClCompile Include="Classes\CommandLine\CommandLineTool.cpp">
       <Filter>Sources\CommandLine</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\CommandLine\EditorCommandLineParser.cpp">
-      <Filter>Sources\CommandLine</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\CommandLine\ImageSplitter\ImageSplitter.cpp">
       <Filter>Sources\CommandLine\ImageSplitter</Filter>
     </ClCompile>
@@ -1676,6 +1658,33 @@
     </ClCompile>
     <ClCompile Include="Classes\CommandLine\SceneUtils\SceneUtils.cpp">
       <Filter>Sources\CommandLine\SceneUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Tools\CommandLine\EditorCommandLineParser.cpp">
+      <Filter>Sources\Tools\CommandLine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Tools\TexturePacker\CommandLineParser.cpp">
+      <Filter>Sources\Tools\TexturePacker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Tools\TexturePacker\DefinitionFile.cpp">
+      <Filter>Sources\Tools\TexturePacker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Tools\TexturePacker\ImagePacker.cpp">
+      <Filter>Sources\Tools\TexturePacker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Tools\TexturePacker\PngImage.cpp">
+      <Filter>Sources\Tools\TexturePacker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Tools\TexturePacker\ResourcePacker2D.cpp">
+      <Filter>Sources\Tools\TexturePacker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Tools\TexturePacker\TexturePacker.cpp">
+      <Filter>Sources\Tools\TexturePacker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Tools\TextureCompression\DXTConverter.cpp">
+      <Filter>Sources\Tools\TextureCompression</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Tools\TextureCompression\PVRConverter.cpp">
+      <Filter>Sources\Tools\TextureCompression</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2843,30 +2852,6 @@
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionRenderObject.h">
       <Filter>Sources\Qt\Scene\System\CollisionSystem</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Tools\TexturePacker\CommandLineParser.h">
-      <Filter>Sources\ResourcePacker</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Tools\TexturePacker\DefinitionFile.h">
-      <Filter>Sources\ResourcePacker</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Tools\TexturePacker\ImagePacker.h">
-      <Filter>Sources\ResourcePacker</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Tools\TexturePacker\PngImage.h">
-      <Filter>Sources\ResourcePacker</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Tools\TexturePacker\ResourcePacker2D.h">
-      <Filter>Sources\ResourcePacker</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Tools\TexturePacker\TexturePacker.h">
-      <Filter>Sources\ResourcePacker</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Tools\DXTConverter.h">
-      <Filter>Sources\ResourcePacker</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Tools\PVRConverter.h">
-      <Filter>Sources\ResourcePacker</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\DockParticleEditor\ParticleEffectPropertiesWidget.h">
       <Filter>Sources\Qt\DockParticleEditor</Filter>
     </ClInclude>
@@ -2906,9 +2891,6 @@
     <ClInclude Include="Classes\CommandLine\CommandLineTool.h">
       <Filter>Sources\CommandLine</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\CommandLine\EditorCommandLineParser.h">
-      <Filter>Sources\CommandLine</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\CommandLine\ImageSplitter\ImageSplitter.h">
       <Filter>Sources\CommandLine\ImageSplitter</Filter>
     </ClInclude>
@@ -2935,6 +2917,33 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Scene\SceneTypes.h">
       <Filter>Sources\Qt\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Tools\CommandLine\EditorCommandLineParser.h">
+      <Filter>Sources\Tools\CommandLine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Tools\TexturePacker\CommandLineParser.h">
+      <Filter>Sources\Tools\TexturePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Tools\TexturePacker\DefinitionFile.h">
+      <Filter>Sources\Tools\TexturePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Tools\TexturePacker\ImagePacker.h">
+      <Filter>Sources\Tools\TexturePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Tools\TexturePacker\PngImage.h">
+      <Filter>Sources\Tools\TexturePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Tools\TexturePacker\ResourcePacker2D.h">
+      <Filter>Sources\Tools\TexturePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Tools\TexturePacker\TexturePacker.h">
+      <Filter>Sources\Tools\TexturePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Tools\TextureCompression\DXTConverter.h">
+      <Filter>Sources\Tools\TextureCompression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Tools\TextureCompression\PVRConverter.h">
+      <Filter>Sources\Tools\TextureCompression</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -58,11 +58,14 @@
     <Filter Include="Form Files\PropertyGridWidgets">
       <UniqueIdentifier>{b3f4a243-35ab-40b2-9d99-c25873885539}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\ResourcePacker">
-      <UniqueIdentifier>{79afd1d9-3d5b-4b12-856b-e49d8ec99780}</UniqueIdentifier>
+    <Filter Include="Sources\Tools">
+      <UniqueIdentifier>{96891271-63f5-4a83-8bd8-43ca9ad6dc52}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\ResourcePacker\TexturePacker">
-      <UniqueIdentifier>{6049015a-b339-4928-975b-f1a80805357a}</UniqueIdentifier>
+    <Filter Include="Sources\Tools\TextureCompression">
+      <UniqueIdentifier>{498b966c-c59c-4b23-99e8-5379c3d3ba3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Tools\TexturePacker">
+      <UniqueIdentifier>{c517ea7e-2fa7-46c7-8860-952172c82f17}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -273,27 +276,6 @@
     <ClCompile Include="Classes\Controllers\UndoRedoController.cpp">
       <Filter>Sources\Controllers</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\ResourcePacker\ResourcePacker.cpp">
-      <Filter>Sources\ResourcePacker</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\ResourcePacker\TexturePacker\CommandLineParser.cpp">
-      <Filter>Sources\ResourcePacker\TexturePacker</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\ResourcePacker\TexturePacker\DefinitionFile.cpp">
-      <Filter>Sources\ResourcePacker\TexturePacker</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\ResourcePacker\TexturePacker\ImagePacker.cpp">
-      <Filter>Sources\ResourcePacker\TexturePacker</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\ResourcePacker\TexturePacker\PngImage.cpp">
-      <Filter>Sources\ResourcePacker\TexturePacker</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\ResourcePacker\TexturePacker\PVRConverter.cpp">
-      <Filter>Sources\ResourcePacker\TexturePacker</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\ResourcePacker\TexturePacker\TexturePacker.cpp">
-      <Filter>Sources\ResourcePacker\TexturePacker</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\UI\PropertyGridWidgets\alignspropertygridwidget.cpp">
       <Filter>Sources\UI\PropertyGridWidgets</Filter>
     </ClCompile>
@@ -301,9 +283,6 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Commands\ChangePropertyCommand_moc.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Commands\ControlCommands_moc.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Commands\ItemsCommand_moc.cpp">
@@ -418,27 +397,6 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Models\HierarchyTree_moc.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ResourcePacker\ResourcePacker_moc.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ResourcePacker\TexturePacker\CommandLineParser_moc.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ResourcePacker\TexturePacker\DefinitionFile_moc.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ResourcePacker\TexturePacker\ImagePacker_moc.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ResourcePacker\TexturePacker\PngImage_moc.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ResourcePacker\TexturePacker\PVRConverter_moc.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ResourcePacker\TexturePacker\TexturePacker_moc.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\ScreenControl_moc.cpp">
@@ -627,6 +585,30 @@
     <ClCompile Include="Classes\UI\Dialogs\importdialog.cpp">
       <Filter>Sources\UI\Dialogs</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Tools\TextureCompression\DXTConverter.cpp">
+      <Filter>Sources\Tools\TextureCompression</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Tools\TextureCompression\PVRConverter.cpp">
+      <Filter>Sources\Tools\TextureCompression</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Tools\TexturePacker\CommandLineParser.cpp">
+      <Filter>Sources\Tools\TexturePacker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Tools\TexturePacker\DefinitionFile.cpp">
+      <Filter>Sources\Tools\TexturePacker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Tools\TexturePacker\ImagePacker.cpp">
+      <Filter>Sources\Tools\TexturePacker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Tools\TexturePacker\PngImage.cpp">
+      <Filter>Sources\Tools\TexturePacker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Tools\TexturePacker\ResourcePacker2D.cpp">
+      <Filter>Sources\Tools\TexturePacker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Tools\TexturePacker\TexturePacker.cpp">
+      <Filter>Sources\Tools\TexturePacker</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\DefaultScreen.h">
@@ -721,27 +703,6 @@
     </ClInclude>
     <ClInclude Include="Classes\Controllers\UndoRedoController.h">
       <Filter>Sources\Controllers</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\ResourcePacker\ResourcePacker.h">
-      <Filter>Sources\ResourcePacker</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\ResourcePacker\TexturePacker\CommandLineParser.h">
-      <Filter>Sources\ResourcePacker\TexturePacker</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\ResourcePacker\TexturePacker\DefinitionFile.h">
-      <Filter>Sources\ResourcePacker\TexturePacker</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\ResourcePacker\TexturePacker\ImagePacker.h">
-      <Filter>Sources\ResourcePacker\TexturePacker</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\ResourcePacker\TexturePacker\PngImage.h">
-      <Filter>Sources\ResourcePacker\TexturePacker</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\ResourcePacker\TexturePacker\PVRConverter.h">
-      <Filter>Sources\ResourcePacker\TexturePacker</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\ResourcePacker\TexturePacker\TexturePacker.h">
-      <Filter>Sources\ResourcePacker\TexturePacker</Filter>
     </ClInclude>
     <ClInclude Include="Classes\UI\PropertyGridWidgets\alignspropertygridwidget.h">
       <Filter>Sources\UI\PropertyGridWidgets</Filter>
@@ -979,6 +940,30 @@
     </ClInclude>
     <ClInclude Include="Classes\UI\Dialogs\importdialog.h">
       <Filter>Sources\UI\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Tools\TextureCompression\DXTConverter.h">
+      <Filter>Sources\Tools\TextureCompression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Tools\TextureCompression\PVRConverter.h">
+      <Filter>Sources\Tools\TextureCompression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Tools\TexturePacker\CommandLineParser.h">
+      <Filter>Sources\Tools\TexturePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Tools\TexturePacker\DefinitionFile.h">
+      <Filter>Sources\Tools\TexturePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Tools\TexturePacker\ImagePacker.h">
+      <Filter>Sources\Tools\TexturePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Tools\TexturePacker\PngImage.h">
+      <Filter>Sources\Tools\TexturePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Tools\TexturePacker\ResourcePacker2D.h">
+      <Filter>Sources\Tools\TexturePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Tools\TexturePacker\TexturePacker.h">
+      <Filter>Sources\Tools\TexturePacker</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
