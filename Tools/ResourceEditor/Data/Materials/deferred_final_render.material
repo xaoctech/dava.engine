@@ -1,0 +1,6 @@
+RenderStep: 
+    RenderSteps: ["Deferred.ComposeOpaque"]
+    Shader: ["Shaders/DeferredCompose.vsh", "Shaders/DeferedCompose.fsh"]
+    Consts: [VERTEX_COLOR]
+
+
