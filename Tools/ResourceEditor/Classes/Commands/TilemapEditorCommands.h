@@ -5,16 +5,6 @@
 #include "Command.h"
 #include "../SceneEditor/LandscapeEditorColor.h"
 
-class CommandTilemapEditor: public Command
-{
-public:
-	CommandTilemapEditor();
-    
-protected:
-    
-    virtual void Execute();
-};
-
 class CommandDrawTilemap: public Command
 {
 public:

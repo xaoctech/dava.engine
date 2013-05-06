@@ -39,7 +39,6 @@ RenderLayer::RenderLayer(const FastName & _name)
     : name(_name)
 
 {
-    flags = VISIBLE;
 }
     
 RenderLayer::~RenderLayer()
@@ -49,39 +48,16 @@ RenderLayer::~RenderLayer()
 
 void RenderLayer::Draw(Camera * camera, RenderLayerBatchArray * renderLayerBatchArray)
 {
-	if(flags & VISIBLE)
+	uint32 size = (uint32)renderLayerBatchArray->GetRenderBatchCount();
+	for (uint32 k = 0; k < size; ++k)
 	{
-		uint32 size = (uint32)renderLayerBatchArray->GetRenderBatchCount();
-		for (uint32 k = 0; k < size; ++k)
-		{
-			renderLayerBatchArray->Get(k)->Draw(camera);
-		}
-#if 0
-		Logger::Debug("Layer: %s Objects: %d", name.c_str(), renderBatchArray.size());
-#endif
+		renderLayerBatchArray->Get(k)->Draw(camera);
 	}
 }
 
 const FastName & RenderLayer::GetName()
 {
 	return name;
-}
-
-void RenderLayer::SetVisible(bool visible)
-{
-	if(visible)
-	{
-		flags |= VISIBLE;
-	}
-	else
-	{
-		flags &= ~VISIBLE;
-	}
-}
-
-bool RenderLayer::GetVisible()
-{
-	return (0 != (flags & VISIBLE));
 }
 
 };

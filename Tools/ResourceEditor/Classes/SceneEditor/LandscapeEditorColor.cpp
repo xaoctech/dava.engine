@@ -21,7 +21,7 @@ LandscapeEditorColor::LandscapeEditorColor(LandscapeEditorDelegate *newDelegate,
 {
 	wasTileMaskToolUpdate = false;
     tileMaskEditorShader = new Shader();
-	tileMaskEditorShader->LoadFromYaml(FilePath("~res:/Shaders/Landscape/tilemask-editor.shader"));
+	tileMaskEditorShader->LoadFromYaml("~res:/Shaders/Landscape/tilemask-editor.shader");
 	tileMaskEditorShader->Recompile();
 
     maskSprite = NULL;

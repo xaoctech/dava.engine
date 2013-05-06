@@ -9,6 +9,8 @@
 #include "Platform/Qt/Win32/CorePlatformWin32.h"
 #endif //#if defined (__DAVAENGINE_MACOS__)
 
+#include "../CommandLine/CommandLineManager.h"
+
 int main(int argc, char *argv[])
 {
 	int ret = 0;
@@ -25,11 +27,20 @@ int main(int argc, char *argv[])
 	DVASSERT(false && "Wrong platform")
 #endif
 
-
     new QtMainWindow();
-    QtMainWindow::Instance()->show();
-
-	ret = a.exec();
+    
+    bool needToQuit = false;
+    if(CommandLineManager::Instance()->IsCommandLineModeEnabled())
+    {
+        CommandLineManager::Instance()->Process();
+        needToQuit = CommandLineManager::Instance()->PrintResults();
+    }
+    
+    if(!needToQuit)
+    {
+        QtMainWindow::Instance()->show();
+        ret = a.exec();
+    }
 
 	QtMainWindow::Instance()->Release();
 	DAVA::QtLayer::Instance()->Release();

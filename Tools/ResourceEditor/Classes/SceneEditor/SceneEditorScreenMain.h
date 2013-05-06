@@ -71,6 +71,7 @@ public:
 public:
     
 	SceneEditorScreenMain();
+	~SceneEditorScreenMain();
 
     struct BodyItem;
 
@@ -160,6 +161,7 @@ private:
     Font *font12;
 	Color font12Color;
     
+	bool initialized;
 	bool useConvertedTextures;
     
     void ReleaseResizedControl(UIControl *control);

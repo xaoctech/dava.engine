@@ -57,7 +57,7 @@ void LandscapeRenderer::InitShader()
     bool isFogEnabled = false;
     
     shader = new Shader();
-    shader->LoadFromYaml(FilePath("~res:/Shaders/Landscape/fulltiled_texture.shader"));
+    shader->LoadFromYaml("~res:/Shaders/Landscape/fulltiled_texture.shader");
 	if(isFogEnabled && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
     {
         shader->SetDefineList("VERTEX_FOG");
