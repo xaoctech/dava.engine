@@ -103,7 +103,7 @@ public:
     void SetUVOffsetScale(const Vector2 & uvOffset, const Vector2 uvScale);
     
     Texture * GetLightmap() const;
-    const String & GetLightmapName() const;
+    String GetLightmapName() const;
 
     
     // Prepare and draw functions
@@ -112,7 +112,7 @@ public:
     
     bool IsExportOwnerLayerEnabled() const;
     void SetExportOwnerLayer(const bool & isEnabled);
-    const FastName & GetOwnerLayerName() const;
+    FastName GetOwnerLayerName() const;
     void SetOwnerLayerName(const FastName & fastname);
     
     NMaterialInstance * Clone();

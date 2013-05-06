@@ -266,7 +266,7 @@ Texture * NMaterialInstance::GetLightmap() const
     return 0;
 }
     
-const String & NMaterialInstance::GetLightmapName() const
+String NMaterialInstance::GetLightmapName() const
 {
     return String();
 }
@@ -288,7 +288,7 @@ void NMaterialInstance::SetExportOwnerLayer(const bool & isEnabled)
 {
     
 }
-const FastName & NMaterialInstance::GetOwnerLayerName() const
+FastName NMaterialInstance::GetOwnerLayerName() const
 {
     return FastName("");
 }
