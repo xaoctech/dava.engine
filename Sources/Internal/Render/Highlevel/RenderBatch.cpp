@@ -114,7 +114,7 @@ void RenderBatch::Draw(Camera * camera)
 }
     
     
-const FastName & RenderBatch::GetOwnerLayerName()
+FastName RenderBatch::GetOwnerLayerName()
 {
     if (ownerLayerName == INHERIT_FROM_MATERIAL)
     {

@@ -83,7 +83,7 @@ public:
     RenderBatch();
     virtual ~RenderBatch();
     
-    const FastName & GetOwnerLayerName();
+    FastName GetOwnerLayerName();
     void SetOwnerLayerName(const FastName & fastname);
     
     void SetPolygonGroup(PolygonGroup * _polygonGroup);
