@@ -46,20 +46,12 @@ public:
     RenderLayer(const FastName & name);
     virtual ~RenderLayer();
     
-    enum
-    {
-        VISIBLE = 1,
-    };
-    
     virtual void Draw(Camera * camera, RenderLayerBatchArray * renderLayerBatchArray);
 
     const FastName & GetName(); 
-	void SetVisible(bool visible);
-	bool GetVisible();
 private:
     FastName name;
     uint32 flags;
-    //RenderBatchArray * renderBatchArray;
 public:
     INTROSPECTION(RenderLayer,
         MEMBER(name, "Name", INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)

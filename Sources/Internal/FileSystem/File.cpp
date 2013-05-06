@@ -100,7 +100,7 @@ File * File::CreateFromSystemPath(const FilePath &filename, uint32 attributes)
 	uint32 size = 0;
 	if ((attributes & File::OPEN) && (attributes & File::READ))
 	{
-		file = fopen(filename.ResolvePathname().c_str(),"rb");
+		file = fopen(filename.GetAbsolutePathname().c_str(),"rb");
 		if (!file)return NULL;
 		fseek(file, 0, SEEK_END);
 		size = ftell(file);
@@ -108,12 +108,12 @@ File * File::CreateFromSystemPath(const FilePath &filename, uint32 attributes)
 	}
 	else if ((attributes & File::CREATE) && (attributes & File::WRITE))
 	{
-		file = fopen(filename.ResolvePathname().c_str(),"wb");
+		file = fopen(filename.GetAbsolutePathname().c_str(),"wb");
 		if (!file)return NULL;
 	}
 	else if ((attributes & File::APPEND) && (attributes & File::WRITE))
 	{
-		file = fopen(filename.ResolvePathname().c_str(),"ab");
+		file = fopen(filename.GetAbsolutePathname().c_str(),"ab");
 		if (!file)return NULL;
 		fseek(file, 0, SEEK_END);
 		size = ftell(file);
@@ -289,7 +289,7 @@ bool File::WriteLine(const String & string)
 
 String File::GetModificationDate(const FilePath & filePathname)
 {
-    String realPathname = filePathname.ResolvePathname();
+    String realPathname = filePathname.GetAbsolutePathname();
     
     struct stat fileInfo = {0};
     int32 ret = stat(realPathname.c_str(), &fileInfo);

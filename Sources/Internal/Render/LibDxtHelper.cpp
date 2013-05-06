@@ -645,7 +645,7 @@ bool LibDxtHelper::WriteAtcFile(const FilePath & fileNameOriginal, int32 width, 
 	
 	OutputOptions outputOptions;
 	FilePath fileName =	FilePath::CreateWithNewExtension(fileNameOriginal, "_dds");
-	outputOptions.setFileName(fileName.ResolvePathname().c_str());
+	outputOptions.setFileName(fileName.GetAbsolutePathname().c_str());
 
 	bool res = false;
 	Compressor compressor;

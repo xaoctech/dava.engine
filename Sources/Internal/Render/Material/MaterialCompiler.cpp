@@ -63,8 +63,8 @@ MaterialCompiler::eCompileResult MaterialCompiler::Compile(MaterialGraph * _mate
     materialCompiledFshName = FilePath::CreateWithNewExtension(materialGraph->GetMaterialPathname(), ".fsh");
 
 #if 1
-    materialCompiledVshName = FilePath("~doc:/temp.vsh");
-    materialCompiledFshName = FilePath("~doc:/temp.fsh");
+    materialCompiledVshName = "~doc:/temp.vsh";
+    materialCompiledFshName = "~doc:/temp.fsh";
 #endif
     
     GenerateCode(materialGraph);

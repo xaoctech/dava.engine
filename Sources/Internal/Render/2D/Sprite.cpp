@@ -90,12 +90,11 @@ Sprite* Sprite::PureCreate(const FilePath & spriteName, Sprite* forPointer)
 {
 //	Logger::Debug("pure create: %s", spriteName.c_str());
 //	Logger::Info("Sprite pure creation");
-	FilePath pathName(spriteName);
-    pathName.ReplaceExtension(".txt");
+	FilePath pathName = FilePath::CreateWithNewExtension(spriteName, ".txt");
+    
 	
 	FilePath scaledName = GetScaledName(spriteName);
-	FilePath scaledPath(scaledName);
-    scaledPath.ReplaceExtension(".txt");
+	FilePath scaledPath = FilePath::CreateWithNewExtension(scaledName, ".txt");
     
     Sprite *sprForScaledPath = GetSpriteFromMap(scaledPath);
     if(sprForScaledPath)
@@ -183,7 +182,7 @@ FilePath Sprite::GetScaledName(const FilePath &spriteName)
 File * Sprite::LoadLocalizedFile(const FilePath & spritePathname, FilePath & texturePath)
 {
     FilePath localizedScaledPath(spritePathname);
-    localizedScaledPath.ReplaceDirectory(spritePathname.GetDirectory() + FilePath(LocalizationSystem::Instance()->GetCurrentLocale() + "/"));
+    localizedScaledPath.ReplaceDirectory(spritePathname.GetDirectory() + (LocalizationSystem::Instance()->GetCurrentLocale() + "/"));
     
     texturePath = FilePath();
     File * fp = File::Create(localizedScaledPath, File::READ|File::OPEN);
@@ -225,7 +224,7 @@ void Sprite::InitFromFile(File *file, const FilePath &pathName)
 		file->ReadLine(tempBuf, 1024);
 		sscanf(tempBuf, "%s", textureCharName);
         
-		FilePath tp = pathName.GetDirectory() + FilePath(textureCharName);
+		FilePath tp = pathName.GetDirectory() + String(textureCharName);
 //		Logger::Debug("Opening texture: %s", tp.c_str());
 		textures[k] = Texture::CreateFromFile(tp);
 		textureNames[k] = tp;
@@ -507,7 +506,7 @@ void Sprite::InitFromTexture(Texture *fromTexture, int32 xOffset, int32 yOffset,
 	}
 	
 	
-	this->relativePathname = FilePath(Format("FBO sprite %d", fboCounter));
+	this->relativePathname = Format("FBO sprite %d", fboCounter);
 	spriteMap[this->relativePathname.GetAbsolutePathname()] = this;
 	fboCounter++;
 	this->Reset();
@@ -1414,7 +1413,7 @@ void Sprite::PrepareForNewSize()
 	Logger::Instance()->Debug("Seraching for file: %s", scaledName.c_str());
 	
 	
-	File *fp = File::Create(FilePath(scaledName), File::READ|File::OPEN);
+	File *fp = File::Create(scaledName, File::READ|File::OPEN);
 	
 	if (!fp)
 	{
@@ -1454,7 +1453,7 @@ void Sprite::PrepareForNewSize()
     
     
     String path = relativePathname.GetAbsolutePathname();
-	PureCreate(FilePath(path.substr(0, path.length() - 4)), this);
+	PureCreate(path.substr(0, path.length() - 4), this);
 //TODO: следующая строка кода написада здесь только до тех времен 
 //		пока defaultPivotPoint не начнет задаваться прямо в спрайте,
 //		но возможно это навсегда.

@@ -66,6 +66,7 @@ private:
 		
 		bool IsEqual(const SmartSelection* item) const;
 		HierarchyTreeNode::HIERARCHYTREENODEID GetFirst() const;
+		HierarchyTreeNode::HIERARCHYTREENODEID GetLast() const;
 		HierarchyTreeNode::HIERARCHYTREENODEID GetNext(HierarchyTreeNode::HIERARCHYTREENODEID id) const;
 	private:
 		typedef std::vector<HierarchyTreeNode::HIERARCHYTREENODEID> SelectionVector;

@@ -178,6 +178,8 @@
 		E83F10A216D6721D00C6ED39 /* DVAssertMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = C151B17516D3747E00E09BAF /* DVAssertMessage.h */; };
 		E83F10A316D6721D00C6ED39 /* DVAssertMessageApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = C151B17616D3747E00E09BAF /* DVAssertMessageApple.mm */; };
 		E83F10A416D6737300C6ED39 /* DPIHelperMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 840ED3E216D5095000D2BA6C /* DPIHelperMacOS.mm */; };
+		E845D4E11732B5DF000DA8E7 /* FilePathObjective.mm in Sources */ = {isa = PBXBuildFile; fileRef = E845D4E01732B5DF000DA8E7 /* FilePathObjective.mm */; };
+		E845D4E21732B5DF000DA8E7 /* FilePathObjective.mm in Sources */ = {isa = PBXBuildFile; fileRef = E845D4E01732B5DF000DA8E7 /* FilePathObjective.mm */; };
 		E8974E2C16CBCBB000A78091 /* ComponentHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCB4C41816CBC5B200F2B085 /* ComponentHelpers.cpp */; };
 		E8974E2D16CBCBB000A78091 /* ComponentHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = CCB4C41916CBC5B200F2B085 /* ComponentHelpers.h */; };
 		E8989D9A16BD24E500732C04 /* AnimatedObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989ABE16BD24E400732C04 /* AnimatedObject.cpp */; };
@@ -1402,6 +1404,7 @@
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E8BE07B2D77200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		E82366CD16148EF9007B40D0 /* libPVRTexLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPVRTexLib.a; path = ../../Libs/libs/libPVRTexLib.a; sourceTree = "<group>"; };
+		E845D4E01732B5DF000DA8E7 /* FilePathObjective.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FilePathObjective.mm; sourceTree = "<group>"; };
 		E8989ABE16BD24E400732C04 /* AnimatedObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnimatedObject.cpp; sourceTree = "<group>"; };
 		E8989ABF16BD24E400732C04 /* AnimatedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimatedObject.h; sourceTree = "<group>"; };
 		E8989AC016BD24E400732C04 /* Animation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Animation.cpp; sourceTree = "<group>"; };
@@ -2280,6 +2283,7 @@
 				E8989B6016BD24E400732C04 /* File.h */,
 				E8989B6116BD24E400732C04 /* FileList.cpp */,
 				E8989B6216BD24E400732C04 /* FileList.h */,
+				E845D4E01732B5DF000DA8E7 /* FilePathObjective.mm */,
 				E8989B6316BD24E400732C04 /* FilePath.cpp */,
 				E8989B6416BD24E400732C04 /* FilePath.h */,
 				E8989B6516BD24E400732C04 /* FileSystem.cpp */,
@@ -4054,6 +4058,7 @@
 				50CBAC44172D7A7300A89313 /* AssetCache.cpp in Sources */,
 				50CBAC4C172D828000A89313 /* ShaderCache.cpp in Sources */,
 				50CBAC501736A87B00A89313 /* RenderBatchArray.cpp in Sources */,
+				E845D4E11732B5DF000DA8E7 /* FilePathObjective.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4344,6 +4349,7 @@
 				50CBAC45172D7A7300A89313 /* AssetCache.cpp in Sources */,
 				50CBAC4D172D828000A89313 /* ShaderCache.cpp in Sources */,
 				50CBAC511736A87B00A89313 /* RenderBatchArray.cpp in Sources */,
+				E845D4E21732B5DF000DA8E7 /* FilePathObjective.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
