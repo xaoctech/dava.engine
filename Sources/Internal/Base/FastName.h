@@ -42,8 +42,9 @@ class FastName
 {
 public:
 	FastName();
-	FastName(const char *name);
-	FastName(const FastName &_name);
+	FastName(const char * name);
+	FastName(const FastName & _name);
+    FastName(const String & name);
 	~FastName();
 
 	const char* c_str() const;
@@ -53,7 +54,9 @@ public:
 	bool operator!=(const FastName &_name) const;
 	int Index() const;
 
+    
 private:
+    void Init(const char * name);
 	int index;
 
 #ifdef DAVA_DEBUG

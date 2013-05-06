@@ -37,7 +37,7 @@
 namespace DAVA
 {
 
-class RenderBatchArray;
+class RenderLayerBatchArray;
 class Camera;
     
 class RenderLayer
@@ -48,56 +48,23 @@ public:
     
     enum
     {
-        SORT_ENABLED = 1 << 0,
-        SORT_BY_MATERIAL = 1 << 1,
-        SORT_BY_DISTANCE = 1 << 2,
-        
-        SORT_REQUIRED = 1 << 3,
-
-		VISIBLE = 1 << 4
+        VISIBLE = 1,
     };
     
-    static const uint32 SORT_THIS_FRAME = SORT_ENABLED | SORT_REQUIRED;
-    
-    void AddRenderBatch(RenderBatch * batch);
-    void RemoveRenderBatch(RenderBatch * batch);
-    uint32 GetRenderBatchCount();
-    inline void ForceLayerSort();
-	const FastName & GetName();
+    virtual void Draw(Camera * camera, RenderLayerBatchArray * renderLayerBatchArray);
 
-    void Update(Camera * camera);
-    virtual void Draw(Camera * camera);
-
+    const FastName & GetName(); 
 	void SetVisible(bool visible);
 	bool GetVisible();
 private:
     FastName name;
-    Vector<RenderBatch*> renderBatchArray;
-    //Vector<
-    uint32 index;
     uint32 flags;
     //RenderBatchArray * renderBatchArray;
-    
-    struct RenderBatchSortItem
-    {
-        pointer_size sortingKey;
-        RenderBatch * renderBatch;
-    };
-    Vector<RenderBatchSortItem> sortArray;
-    static bool MaterialCompareFunction(const RenderBatchSortItem & a, const RenderBatchSortItem & b);
 public:
-    
     INTROSPECTION(RenderLayer,
         MEMBER(name, "Name", INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
-        COLLECTION(renderBatchArray, "Render Batch Array", INTROSPECTION_EDITOR)
     );
 };
-    
-inline void RenderLayer::ForceLayerSort()
-{
-    flags |= SORT_REQUIRED;
-}
-
     
 } // ns
 

@@ -86,6 +86,8 @@ public:
         uint32 drawArraysCalls;
         uint32 drawElementsCalls;
         uint32 primitiveCount[PRIMITIVETYPE_COUNT];
+        // highlevel
+        uint32 renderBatchDrawCount;
     };
     
     static void Create(Core::eRenderer renderer);
@@ -142,7 +144,7 @@ public:
 	void DetectRenderingCapabilities();
 	const RenderManager::Caps & GetCaps();
     
-    const RenderManager::Stats & GetStats();
+    RenderManager::Stats & GetStats();
     void ClearStats();
     void EnableOutputDebugStatsEveryNFrame(int32 frameToShowDebugStats);
     void ProcessStats();

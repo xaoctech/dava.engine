@@ -38,12 +38,12 @@
 #include "Render/RenderState.h"
 #include "Render/ShaderUniformArray.h"
 #include "Render/Material/NMaterialConsts.h"
+#include "Render/Shader.h"
 
 namespace DAVA
 {
 
 class UberShader;
-class Shader;
 class Texture;    
 class SceneFileV2;
 class Light;
@@ -139,6 +139,34 @@ private:
     Shader * shader;
     friend class NMaterial;
 };
+    
+class NMaterialProperty
+{
+public:
+    Shader::eUniformType type;
+    uint32 size;
+    void * data;
+};
+    
+class MaterialTechnique
+{
+public:
+    MaterialTechnique(const FastName & _shaderName, FastNameSet & _uniqueDefines, RenderState * _renderState);
+    ~MaterialTechnique();
+    
+    void RecompileShader();
+
+    const FastName & GetShaderName() const { return shaderName; }
+    Shader * GetShader() const { return shader; }
+    RenderState * GetRenderState() const { return renderState; }
+    const FastNameSet & GetUniqueDefineSet() { return uniqueDefines; } 
+    
+protected:
+    FastName shaderName;
+    Shader * shader;
+    RenderState * renderState;
+    FastNameSet uniqueDefines;
+};
  
 class NMaterial : public DataNode
 {
@@ -148,15 +176,20 @@ public:
     
     bool LoadFromFile(const String & pathname);
     
-    void AddShader(const FastName & fname, Shader * shader);
-    uint32 GetShaderCount();
+    void AddMaterialTechnique(FastName & techniqueName, MaterialTechnique * materialTechnique);
+    void BindMaterialTechnique(MaterialTechnique * materialTechnique);
+    MaterialTechnique * GetTechnique(const FastName & techniqueName);
 
+    const FastNameSet & GetRenderLayers() { return layers; };
     
     // Load default render state from yaml.
-    // Keep it here, by default MaterialInstance Render State should be referenced from this point. 
+    // Keep it here, by default MaterialInstance Render State should be referenced from this point.
     
 private:
-    HashMap<FastName, NMaterialInstance*> shaders; // TODO: HashMap<FastName, NMaterialInstance*> baseInstances;
+    NMaterial * parent;
+    FastNameSet layers;
+    HashMap<FastName, NMaterialProperty*> materialProperties;
+    HashMap<FastName, MaterialTechnique *> techniqueForRenderPass; // TODO: HashMap<FastName, NMaterialInstance*> baseInstances;
 };
 
 

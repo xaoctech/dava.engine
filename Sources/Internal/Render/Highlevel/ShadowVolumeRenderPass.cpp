@@ -46,8 +46,10 @@ ShadowVolumeRenderPass::~ShadowVolumeRenderPass()
     SafeRelease(shadowRect);
 }
 
+
 void ShadowVolumeRenderPass::Draw(Camera * camera)
 {
+#if 0
     // Draw all layers with their materials
     uint32 size = (uint32)renderLayers.size();
     DVASSERT(size == 1);
@@ -97,6 +99,7 @@ void ShadowVolumeRenderPass::Draw(Camera * camera)
 		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
 		shadowRect->Draw();
 	}
+#endif
 }
     
 ShadowRect * ShadowVolumeRenderPass::GetShadowRect() const

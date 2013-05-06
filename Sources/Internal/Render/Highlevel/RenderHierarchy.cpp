@@ -27,75 +27,78 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "Render/Highlevel/CullingSystem.h"
-#include "Scene3D/Entity.h"
-#include "Render/Highlevel/RenderLayer.h"
-#include "Render/Highlevel/RenderPass.h"
-#include "Render/Highlevel/RenderBatch.h"
+#include "Render/Highlevel/RenderHierarchy.h"
+#include "Render/Highlevel/RenderBatchArray.h"
 #include "Render/Highlevel/Camera.h"
-#include "Scene3D/Components/RenderComponent.h"
-#include "Scene3D/Components/TransformComponent.h"
 #include "Render/Highlevel/Frustum.h"
 
 namespace DAVA
 {
 
-CullingSystem::CullingSystem(Scene * scene)
-:	SceneSystem(scene)
+RenderHierarchy::RenderHierarchy()
 {
 }
 
-CullingSystem::~CullingSystem()
+RenderHierarchy::~RenderHierarchy()
 {
 }
+
     
-void CullingSystem::ImmediateUpdate(Entity * entity)
+void RenderHierarchy::AddRenderObject(RenderObject * object)
 {
-    RenderObject * renderObject = ((RenderComponent*)entity->GetComponent(Component::RENDER_COMPONENT))->GetRenderObject();
-    if (!renderObject)return;
-    
-    if (renderObject->GetRemoveIndex() == -1) // FAIL, SHOULD NOT HAPPEN
+    renderObjectArray.push_back(object);
+}
+
+void RenderHierarchy::RemoveRenderObject(RenderObject *renderObject)
+{
+    uint32 size = renderObjectArray.size();
+    for (uint32 k = 0; k < size; ++k)
     {
-        Logger::Error("Object in entity was replaced suddenly. ");
+        if (renderObjectArray[k] == renderObject)
+        {
+            renderObjectArray[k] = renderObjectArray[size - 1];
+            renderObjectArray.pop_back();
+            return;
+        }
     }
-    
-    // Do we need updates??? 
+    DVASSERT(0 && "Failed to find object");
 }
     
-void CullingSystem::AddEntity(Entity * entity)
-{
-    
-}
-
-void CullingSystem::RemoveEntity(Entity * entity)
-{
-    
-}
-    
-void CullingSystem::SetCamera(Camera * _camera)
-{
-    camera = _camera;
-}
-    
-void CullingSystem::Process()
+void RenderHierarchy::Clip(Camera * camera, bool updateNearestLights, RenderPassBatchArray * renderPassBatchArray)
 {
     int32 objectsCulled = 0;
-    
-    //Frustum * frustum = camera->GetFrustum();
-
+    Frustum * frustum = camera->GetFrustum();
     uint32 size = renderObjectArray.size();
     for (uint32 pos = 0; pos < size; ++pos)
     {
-        RenderObject * node = renderObjectArray[pos];
-        node->AddFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
-        //Logger::Debug("Cull Node: %s rc: %d", node->GetFullName().c_str(), node->GetRetainCount());
-        //if (!frustum->IsInside(node->GetWorldTransformedBox()))
+        RenderObject * renderObject = renderObjectArray[pos];
+        //renderObject->AddFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
+        
+        uint32 flags = renderObject->GetFlags();
+        if ((flags & RenderObject::VISIBILITY_CRITERIA) != RenderObject::VISIBILITY_CRITERIA)
+            continue;
+        
+        if (frustum->IsInside(renderObject->GetWorldBoundingBox()))
         {
-            //node->RemoveFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
+            //renderObject->RemoveFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
+            uint32 batchCount = renderObject->GetRenderBatchCount();;
+            for (uint32 batchIndex = 0; batchIndex < batchCount; ++batchIndex)
+            {
+                RenderBatch * batch = renderObject->GetRenderBatch(batchIndex);
+                NMaterial * material = batch->GetMaterial();
+                const FastNameSet & layers = material->GetRenderLayers();
+                if (material)
+                {
+                    FastNameSet::Iterator layerEnd = layers.End();
+                    for (FastNameSet::Iterator layerIt = layers.Begin(); layerIt != layerEnd; ++layerIt)
+                    {
+                        renderPassBatchArray->AddRenderBatch(layerIt.GetKey(), batch);
+                    }
+                }
+            }
             objectsCulled++;
         }
     }
 }
-    
     
 };

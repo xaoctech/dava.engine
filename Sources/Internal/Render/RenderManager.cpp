@@ -34,7 +34,7 @@
 #include "Core/Core.h"
 #include "Render/Shader.h"
 #include "Render/RenderDataObject.h"
-
+#include "Render/ShaderCache.h"
 
 #include "Render/Effects/ColorOnlyEffect.h"
 #include "Render/Effects/TextureMulColorEffect.h"
@@ -55,6 +55,10 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
     needGLScreenShot(false),
     screenShotIndex(0)
 {
+    // Create shader cache singleton
+    ShaderCache * cache = new ShaderCache();
+    cache = 0;
+    
 //	Logger::Debug("[RenderManager] created");
 
     Texture::InitializePixelFormatDescriptors();
@@ -151,6 +155,8 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
 	
 RenderManager::~RenderManager()
 {
+    ShaderCache::Instance()->Release();
+    
     SafeRelease(currentRenderData);
 	SafeRelease(currentRenderEffect);
     SafeRelease(FLAT_COLOR);
@@ -684,7 +690,7 @@ const RenderManager::Caps & RenderManager::GetCaps()
 	return caps;
 }
     
-const RenderManager::Stats & RenderManager::GetStats()
+RenderManager::Stats & RenderManager::GetStats()
 {
     return stats;
 }
@@ -773,6 +779,7 @@ void RenderManager::Stats::Clear()
     drawElementsCalls = 0;
     for (int32 k = 0; k < PRIMITIVETYPE_COUNT; ++k)
         primitiveCount[k] = 0;
+    renderBatchDrawCount = 0;
 }
 
 void RenderManager::EnableOutputDebugStatsEveryNFrame(int32 _frameToShowDebugStats)

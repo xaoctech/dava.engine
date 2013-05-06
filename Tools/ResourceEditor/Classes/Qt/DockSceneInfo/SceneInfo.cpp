@@ -109,6 +109,7 @@ void SceneInfo::Initialize3DDrawSection()
     AddChild("TriangleList", header);
     AddChild("TriangleStrip", header);
     AddChild("TriangleFan", header);
+    AddChild("RenderBatch::Draw", header);
 }
 
 void SceneInfo::Refresh3DDrawInfo()
@@ -128,6 +129,8 @@ void SceneInfo::Refresh3DDrawInfo()
     SetChild("TriangleList", renderStats.primitiveCount[PRIMITIVETYPE_TRIANGLELIST], header);
     SetChild("TriangleStrip", renderStats.primitiveCount[PRIMITIVETYPE_TRIANGLESTRIP], header);
     SetChild("TriangleFan", renderStats.primitiveCount[PRIMITIVETYPE_TRIANGLEFAN], header);
+    SetChild("RenderBatch::Draw", renderStats.renderBatchDrawCount, header);
+    
 }
 
 void SceneInfo::InitializeMaterialsSection()

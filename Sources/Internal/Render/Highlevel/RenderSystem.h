@@ -46,7 +46,8 @@ class Entity;
 class Camera;
 class Light;
 class ParticleEmitterSystem;
-    
+class RenderHierarchy;
+class RenderPassBatchArray;
 
     
 class RenderSystem
@@ -104,10 +105,6 @@ public:
 
 	RenderLayer * AddRenderLayer(const FastName & layerName, const FastName & passName, const FastName & afterLayer);
 
-	void AddRenderBatch(RenderBatch * renderBatch);
-	void RemoveRenderBatch(RenderBatch * renderBatch);
-    
-    
     void SetShadowRectColor(const Color &color);
     const Color & GetShadowRectColor();
     
@@ -118,9 +115,6 @@ private:
     void AddRenderObject(RenderObject * renderObject);
     
     void RemoveRenderObject(RenderObject * renderObject);
-    
-    void ImmediateUpdateRenderBatch(RenderBatch * renderBatch);
-    
     
     Vector<IRenderUpdatable*> objectsForUpdate;
     Vector<RenderObject*> objectsForPermanentUpdate;
@@ -135,6 +129,11 @@ private:
     Vector<RenderObject*> renderObjectArray;
 	Vector<RenderObject*> particleEmitterArray;
     Vector<Light*> lights;
+    
+    RenderHierarchy * renderHierarchy;
+    RenderPassBatchArray * globalBatchArray;
+    
+
     //Vector<AABBox> transformedBBox;
     //Vector<BSphere> transformedBSphere;
     

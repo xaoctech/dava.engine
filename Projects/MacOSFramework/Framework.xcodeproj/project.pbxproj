@@ -23,6 +23,22 @@
 		5098CF831725D0DD00FC4398 /* MaterialSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5098CF801725D0DD00FC4398 /* MaterialSystem.cpp */; };
 		5098CF841725D0DD00FC4398 /* MaterialSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 5098CF811725D0DD00FC4398 /* MaterialSystem.h */; };
 		5098CF851725D0DD00FC4398 /* MaterialSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 5098CF811725D0DD00FC4398 /* MaterialSystem.h */; };
+		50CBAC3E172D726D00A89313 /* Asset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50CBAC3C172D726D00A89313 /* Asset.cpp */; };
+		50CBAC3F172D726D00A89313 /* Asset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50CBAC3C172D726D00A89313 /* Asset.cpp */; };
+		50CBAC40172D726D00A89313 /* Asset.h in Headers */ = {isa = PBXBuildFile; fileRef = 50CBAC3D172D726D00A89313 /* Asset.h */; };
+		50CBAC41172D726D00A89313 /* Asset.h in Headers */ = {isa = PBXBuildFile; fileRef = 50CBAC3D172D726D00A89313 /* Asset.h */; };
+		50CBAC44172D7A7300A89313 /* AssetCache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50CBAC42172D7A7300A89313 /* AssetCache.cpp */; };
+		50CBAC45172D7A7300A89313 /* AssetCache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50CBAC42172D7A7300A89313 /* AssetCache.cpp */; };
+		50CBAC46172D7A7300A89313 /* AssetCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 50CBAC43172D7A7300A89313 /* AssetCache.h */; };
+		50CBAC47172D7A7300A89313 /* AssetCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 50CBAC43172D7A7300A89313 /* AssetCache.h */; };
+		50CBAC49172D7FEE00A89313 /* ShaderCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 50CBAC48172D7FEE00A89313 /* ShaderCache.h */; };
+		50CBAC4A172D7FEE00A89313 /* ShaderCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 50CBAC48172D7FEE00A89313 /* ShaderCache.h */; };
+		50CBAC4C172D828000A89313 /* ShaderCache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50CBAC4B172D828000A89313 /* ShaderCache.cpp */; };
+		50CBAC4D172D828000A89313 /* ShaderCache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50CBAC4B172D828000A89313 /* ShaderCache.cpp */; };
+		50CBAC501736A87B00A89313 /* RenderBatchArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50CBAC4E1736A87B00A89313 /* RenderBatchArray.cpp */; };
+		50CBAC511736A87B00A89313 /* RenderBatchArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50CBAC4E1736A87B00A89313 /* RenderBatchArray.cpp */; };
+		50CBAC521736A87B00A89313 /* RenderBatchArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 50CBAC4F1736A87B00A89313 /* RenderBatchArray.h */; };
+		50CBAC531736A87B00A89313 /* RenderBatchArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 50CBAC4F1736A87B00A89313 /* RenderBatchArray.h */; };
 		50D6C8EA16C107D500BB3F78 /* GlobalEventSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 50D6C8E716C107D500BB3F78 /* GlobalEventSystem.h */; };
 		50D6C8EB16C107D500BB3F78 /* GlobalEventSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 50D6C8E716C107D500BB3F78 /* GlobalEventSystem.h */; };
 		5C42C98414E3AFA400EB3F53 /* libxml_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C42C98314E3AFA400EB3F53 /* libxml_macos.a */; };
@@ -62,10 +78,10 @@
 		CCC7A42616F1D6170061EA5D /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A3FA16F1D6170061EA5D /* Camera.cpp */; };
 		CCC7A42716F1D6170061EA5D /* Camera.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A3FB16F1D6170061EA5D /* Camera.h */; };
 		CCC7A42816F1D6170061EA5D /* Camera.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A3FB16F1D6170061EA5D /* Camera.h */; };
-		CCC7A42916F1D6170061EA5D /* CullingSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A3FC16F1D6170061EA5D /* CullingSystem.cpp */; };
-		CCC7A42A16F1D6170061EA5D /* CullingSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A3FC16F1D6170061EA5D /* CullingSystem.cpp */; };
-		CCC7A42B16F1D6170061EA5D /* CullingSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A3FD16F1D6170061EA5D /* CullingSystem.h */; };
-		CCC7A42C16F1D6170061EA5D /* CullingSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A3FD16F1D6170061EA5D /* CullingSystem.h */; };
+		CCC7A42916F1D6170061EA5D /* RenderHierarchy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A3FC16F1D6170061EA5D /* RenderHierarchy.cpp */; };
+		CCC7A42A16F1D6170061EA5D /* RenderHierarchy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A3FC16F1D6170061EA5D /* RenderHierarchy.cpp */; };
+		CCC7A42B16F1D6170061EA5D /* RenderHierarchy.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A3FD16F1D6170061EA5D /* RenderHierarchy.h */; };
+		CCC7A42C16F1D6170061EA5D /* RenderHierarchy.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A3FD16F1D6170061EA5D /* RenderHierarchy.h */; };
 		CCC7A42D16F1D6170061EA5D /* Frustum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A3FE16F1D6170061EA5D /* Frustum.cpp */; };
 		CCC7A42E16F1D6170061EA5D /* Frustum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A3FE16F1D6170061EA5D /* Frustum.cpp */; };
 		CCC7A42F16F1D6170061EA5D /* Frustum.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A3FF16F1D6170061EA5D /* Frustum.h */; };
@@ -1296,6 +1312,14 @@
 		4910CBF5167B73EC00CF948A /* libdxt_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_macos.a; path = ../../Libs/libs/libdxt_macos.a; sourceTree = "<group>"; };
 		5098CF801725D0DD00FC4398 /* MaterialSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialSystem.cpp; sourceTree = "<group>"; };
 		5098CF811725D0DD00FC4398 /* MaterialSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialSystem.h; sourceTree = "<group>"; };
+		50CBAC3C172D726D00A89313 /* Asset.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Asset.cpp; path = Asset/Asset.cpp; sourceTree = "<group>"; };
+		50CBAC3D172D726D00A89313 /* Asset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Asset.h; path = Asset/Asset.h; sourceTree = "<group>"; };
+		50CBAC42172D7A7300A89313 /* AssetCache.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AssetCache.cpp; path = Asset/AssetCache.cpp; sourceTree = "<group>"; };
+		50CBAC43172D7A7300A89313 /* AssetCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AssetCache.h; path = Asset/AssetCache.h; sourceTree = "<group>"; };
+		50CBAC48172D7FEE00A89313 /* ShaderCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShaderCache.h; sourceTree = "<group>"; };
+		50CBAC4B172D828000A89313 /* ShaderCache.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShaderCache.cpp; sourceTree = "<group>"; };
+		50CBAC4E1736A87B00A89313 /* RenderBatchArray.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderBatchArray.cpp; sourceTree = "<group>"; };
+		50CBAC4F1736A87B00A89313 /* RenderBatchArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderBatchArray.h; sourceTree = "<group>"; };
 		50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GlobalEventSystem.cpp; sourceTree = "<group>"; };
 		50D6C8E716C107D500BB3F78 /* GlobalEventSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlobalEventSystem.h; sourceTree = "<group>"; };
 		5C42C98314E3AFA400EB3F53 /* libxml_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml_macos.a; path = ../../Libs/libs/libxml_macos.a; sourceTree = "<group>"; };
@@ -1328,8 +1352,8 @@
 		CCB4C41916CBC5B200F2B085 /* ComponentHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComponentHelpers.h; sourceTree = "<group>"; };
 		CCC7A3FA16F1D6170061EA5D /* Camera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Camera.cpp; sourceTree = "<group>"; };
 		CCC7A3FB16F1D6170061EA5D /* Camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Camera.h; sourceTree = "<group>"; };
-		CCC7A3FC16F1D6170061EA5D /* CullingSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CullingSystem.cpp; sourceTree = "<group>"; };
-		CCC7A3FD16F1D6170061EA5D /* CullingSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CullingSystem.h; sourceTree = "<group>"; };
+		CCC7A3FC16F1D6170061EA5D /* RenderHierarchy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderHierarchy.cpp; sourceTree = "<group>"; };
+		CCC7A3FD16F1D6170061EA5D /* RenderHierarchy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderHierarchy.h; sourceTree = "<group>"; };
 		CCC7A3FE16F1D6170061EA5D /* Frustum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Frustum.cpp; sourceTree = "<group>"; };
 		CCC7A3FF16F1D6170061EA5D /* Frustum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Frustum.h; sourceTree = "<group>"; };
 		CCC7A40016F1D6170061EA5D /* Heightmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Heightmap.cpp; sourceTree = "<group>"; };
@@ -2049,6 +2073,17 @@
 			name = "Other Sources";
 			sourceTree = "<group>";
 		};
+		50CBAC3B172D726300A89313 /* Asset */ = {
+			isa = PBXGroup;
+			children = (
+				50CBAC42172D7A7300A89313 /* AssetCache.cpp */,
+				50CBAC43172D7A7300A89313 /* AssetCache.h */,
+				50CBAC3C172D726D00A89313 /* Asset.cpp */,
+				50CBAC3D172D726D00A89313 /* Asset.h */,
+			);
+			name = Asset;
+			sourceTree = "<group>";
+		};
 		E8989ABD16BD24E400732C04 /* Animation */ = {
 			isa = PBXGroup;
 			children = (
@@ -2457,14 +2492,15 @@
 		E8989C1516BD24E400732C04 /* Render */ = {
 			isa = PBXGroup;
 			children = (
-				CCC7A47B16F1D64D0061EA5D /* RenderState.cpp */,
-				CCC7A47C16F1D64D0061EA5D /* RenderState.h */,
 				E8989C1616BD24E400732C04 /* 2D */,
 				E8989C2416BD24E400732C04 /* 3D */,
-				E8989C2D16BD24E400732C04 /* Cursor.h */,
-				E8989C2E16BD24E400732C04 /* CursorMacOS.mm */,
 				E8989C3616BD24E400732C04 /* Effects */,
 				E8989C3F16BD24E400732C04 /* Highlevel */,
+				E8989C7316BD24E400732C04 /* Material */,
+				CCC7A47B16F1D64D0061EA5D /* RenderState.cpp */,
+				CCC7A47C16F1D64D0061EA5D /* RenderState.h */,
+				E8989C2D16BD24E400732C04 /* Cursor.h */,
+				E8989C2E16BD24E400732C04 /* CursorMacOS.mm */,
 				E8989C6616BD24E400732C04 /* Image.cpp */,
 				E8989C6716BD24E400732C04 /* Image.h */,
 				E8989C6916BD24E400732C04 /* ImageConvert.h */,
@@ -2476,7 +2512,6 @@
 				E8989C7016BD24E400732C04 /* LibPngHelpers.h */,
 				E8989C7116BD24E400732C04 /* LibPVRHelper.cpp */,
 				E8989C7216BD24E400732C04 /* LibPVRHelper.h */,
-				E8989C7316BD24E400732C04 /* Material */,
 				E8989C7D16BD24E400732C04 /* Material.cpp */,
 				E8989C7E16BD24E400732C04 /* Material.h */,
 				E8989C7F16BD24E400732C04 /* OGLHelpers.h */,
@@ -2504,6 +2539,8 @@
 				E8989C9816BD24E500732C04 /* RGBColor.h */,
 				E8989C9916BD24E500732C04 /* Shader.cpp */,
 				E8989C9A16BD24E500732C04 /* Shader.h */,
+				50CBAC4B172D828000A89313 /* ShaderCache.cpp */,
+				50CBAC48172D7FEE00A89313 /* ShaderCache.h */,
 				E8989C9C16BD24E500732C04 /* ShaderGL.cpp */,
 				E8989C9D16BD24E500732C04 /* ShaderUniformArray.h */,
 				E8989C9E16BD24E500732C04 /* SharedFBO.cpp */,
@@ -2575,8 +2612,8 @@
 			children = (
 				CCC7A3FA16F1D6170061EA5D /* Camera.cpp */,
 				CCC7A3FB16F1D6170061EA5D /* Camera.h */,
-				CCC7A3FC16F1D6170061EA5D /* CullingSystem.cpp */,
-				CCC7A3FD16F1D6170061EA5D /* CullingSystem.h */,
+				CCC7A3FC16F1D6170061EA5D /* RenderHierarchy.cpp */,
+				CCC7A3FD16F1D6170061EA5D /* RenderHierarchy.h */,
 				CCC7A3FE16F1D6170061EA5D /* Frustum.cpp */,
 				CCC7A3FF16F1D6170061EA5D /* Frustum.h */,
 				CCC7A40016F1D6170061EA5D /* Heightmap.cpp */,
@@ -2598,6 +2635,8 @@
 				CCC7A41016F1D6170061EA5D /* RenderBatch.h */,
 				CCC7A41116F1D6170061EA5D /* RenderDataSource.h */,
 				CCC7A41216F1D6170061EA5D /* RenderFastNames.h */,
+				50CBAC4E1736A87B00A89313 /* RenderBatchArray.cpp */,
+				50CBAC4F1736A87B00A89313 /* RenderBatchArray.h */,
 				CCC7A41316F1D6170061EA5D /* RenderLayer.cpp */,
 				CCC7A41416F1D6170061EA5D /* RenderLayer.h */,
 				CCC7A41516F1D6170061EA5D /* RenderObject.cpp */,
@@ -2921,6 +2960,7 @@
 		FECFC0A512E87E3000C71562 /* Internal */ = {
 			isa = PBXGroup;
 			children = (
+				50CBAC3B172D726300A89313 /* Asset */,
 				E8989ABD16BD24E400732C04 /* Animation */,
 				E8989ACD16BD24E400732C04 /* Autotesting */,
 				E8989AD916BD24E400732C04 /* Base */,
@@ -3267,7 +3307,7 @@
 				CC24804216E0DF2800183D40 /* VectorSpinnerAdapter.h in Headers */,
 				E9E798AB16F0BE7600745AF5 /* UISwitch.h in Headers */,
 				CCC7A42716F1D6170061EA5D /* Camera.h in Headers */,
-				CCC7A42B16F1D6170061EA5D /* CullingSystem.h in Headers */,
+				CCC7A42B16F1D6170061EA5D /* RenderHierarchy.h in Headers */,
 				CCC7A42F16F1D6170061EA5D /* Frustum.h in Headers */,
 				CCC7A43316F1D6170061EA5D /* Heightmap.h in Headers */,
 				CCC7A43516F1D6170061EA5D /* IRenderUpdatable.h in Headers */,
@@ -3296,6 +3336,10 @@
 				840D24231703311400267C58 /* DeviceInfo.h in Headers */,
 				7410E81D17144C160028AAAA /* UIAggregatorControl.h in Headers */,
 				5098CF841725D0DD00FC4398 /* MaterialSystem.h in Headers */,
+				50CBAC40172D726D00A89313 /* Asset.h in Headers */,
+				50CBAC46172D7A7300A89313 /* AssetCache.h in Headers */,
+				50CBAC49172D7FEE00A89313 /* ShaderCache.h in Headers */,
+				50CBAC521736A87B00A89313 /* RenderBatchArray.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3598,7 +3642,7 @@
 				E9EA496F16DF93FA00C44B6F /* UISpinner.h in Headers */,
 				E9E798AC16F0BE7600745AF5 /* UISwitch.h in Headers */,
 				CCC7A42816F1D6170061EA5D /* Camera.h in Headers */,
-				CCC7A42C16F1D6170061EA5D /* CullingSystem.h in Headers */,
+				CCC7A42C16F1D6170061EA5D /* RenderHierarchy.h in Headers */,
 				CCC7A43016F1D6170061EA5D /* Frustum.h in Headers */,
 				CCC7A43416F1D6170061EA5D /* Heightmap.h in Headers */,
 				CCC7A43616F1D6170061EA5D /* IRenderUpdatable.h in Headers */,
@@ -3627,6 +3671,10 @@
 				7489A9CF1702F5A200D9AE2D /* CRC32.h in Headers */,
 				E8B6B3B11705DB26004F665E /* DeviceInfo.h in Headers */,
 				5098CF851725D0DD00FC4398 /* MaterialSystem.h in Headers */,
+				50CBAC41172D726D00A89313 /* Asset.h in Headers */,
+				50CBAC47172D7A7300A89313 /* AssetCache.h in Headers */,
+				50CBAC4A172D7FEE00A89313 /* ShaderCache.h in Headers */,
+				50CBAC531736A87B00A89313 /* RenderBatchArray.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3975,7 +4023,7 @@
 				E8B4F8CF16EF377D0072442A /* UTF8UtilsMac.mm in Sources */,
 				E9E798A916F0BE7600745AF5 /* UISwitch.cpp in Sources */,
 				CCC7A42516F1D6170061EA5D /* Camera.cpp in Sources */,
-				CCC7A42916F1D6170061EA5D /* CullingSystem.cpp in Sources */,
+				CCC7A42916F1D6170061EA5D /* RenderHierarchy.cpp in Sources */,
 				CCC7A42D16F1D6170061EA5D /* Frustum.cpp in Sources */,
 				CCC7A43116F1D6170061EA5D /* Heightmap.cpp in Sources */,
 				CCC7A43716F1D6170061EA5D /* Landscape.cpp in Sources */,
@@ -4002,6 +4050,10 @@
 				E8B6B3BB1705DD59004F665E /* DeviceInfoMacOS.mm in Sources */,
 				7410E81C17144C120028AAAA /* UIAggregatorControl.cpp in Sources */,
 				5098CF821725D0DD00FC4398 /* MaterialSystem.cpp in Sources */,
+				50CBAC3E172D726D00A89313 /* Asset.cpp in Sources */,
+				50CBAC44172D7A7300A89313 /* AssetCache.cpp in Sources */,
+				50CBAC4C172D828000A89313 /* ShaderCache.cpp in Sources */,
+				50CBAC501736A87B00A89313 /* RenderBatchArray.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4261,7 +4313,7 @@
 				E8B4F8D016EF377D0072442A /* UTF8UtilsMac.mm in Sources */,
 				E9E798AA16F0BE7600745AF5 /* UISwitch.cpp in Sources */,
 				CCC7A42616F1D6170061EA5D /* Camera.cpp in Sources */,
-				CCC7A42A16F1D6170061EA5D /* CullingSystem.cpp in Sources */,
+				CCC7A42A16F1D6170061EA5D /* RenderHierarchy.cpp in Sources */,
 				CCC7A42E16F1D6170061EA5D /* Frustum.cpp in Sources */,
 				CCC7A43216F1D6170061EA5D /* Heightmap.cpp in Sources */,
 				CCC7A43816F1D6170061EA5D /* Landscape.cpp in Sources */,
@@ -4288,6 +4340,10 @@
 				E8B6B3B01705DB26004F665E /* DeviceInfo.cpp in Sources */,
 				E8B6B3BC1705DD59004F665E /* DeviceInfoMacOS.mm in Sources */,
 				5098CF831725D0DD00FC4398 /* MaterialSystem.cpp in Sources */,
+				50CBAC3F172D726D00A89313 /* Asset.cpp in Sources */,
+				50CBAC45172D7A7300A89313 /* AssetCache.cpp in Sources */,
+				50CBAC4D172D828000A89313 /* ShaderCache.cpp in Sources */,
+				50CBAC511736A87B00A89313 /* RenderBatchArray.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
