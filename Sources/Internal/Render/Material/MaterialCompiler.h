@@ -68,8 +68,8 @@ public:
     eCompileResult Compile(MaterialGraph * materialGraph, PolygonGroup * polygonGroup, uint32 maxLights, NMaterial ** resultMaterial);
     eCompileError GenerateCodeForNode(MaterialGraphNode * node, String & vertexShader, String & pixelShader);
 
-    const String & GetCompiledVertexShaderPathname() const;
-    const String & GetCompiledFragmentShaderPathname() const;
+    String GetCompiledVertexShaderPathname() const;
+    String GetCompiledFragmentShaderPathname() const;
     
     
     
