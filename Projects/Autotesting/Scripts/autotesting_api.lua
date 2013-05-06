@@ -22,11 +22,11 @@ end
 --		... - input parameters for step function
 function Step(description, func, ...)
     autotestingSystem:OnStepStart(description)
-	
-	local status, err = copcall(func, ...)
-
-	if not status then OnError(err) end
 	Yield()
+	local status, err = copcall(func, ...)
+	
+	Yield()
+	if not status then OnError(err) end
 end
 
 -- This function for test step with assertion. Fail when step is returned NIL or FALSE
@@ -36,29 +36,39 @@ end
 --		... - input parameters for step function
 function Assert(description, func, ...)
     autotestingSystem:OnStepStart(description)
-	
+	Yield()
 	local status, err = copcall(func, ...)
 
+	Yield()
 	if not status then
 		-- Some error during test step
 		OnError(err)
 	elseif not err then
 		OnError("Assertion failed, expected result not equal to actual")
 	end
-	Yield()
+end
+
+function CheckEquals(arg1, arg2)
+	if arg1 == arg2 then
+		return true
+	else
+		Log(string.format("'%s' not equal to '%s'", tostring(arg1), tostring(arg2)), "DEBUG")
+		return false
+	end
 end
 
 function Log(message, level)
 	level = level or "DEBUG"
 	--if level ~= "DEBUG" then
-		autotestingSystem:Log(level, tostring(message))
+	autotestingSystem:Log(level, tostring(message))
 	--end
 	Yield()
 end 
 
---
 function Yield()
-    coroutine.yield()
+	for i=0, 6 do
+		coroutine.yield()
+	end
 end
 
 function ResumeTest()
@@ -83,6 +93,7 @@ end
 function StartTest(name, test)      
     CreateTest(test)
 	--print('StartTest')
+	Yield()
 	autotestingSystem:OnTestStart(name)
     Yield()
 end
@@ -102,16 +113,20 @@ end
 ----------------------------------------------------------------------------------------------------
 -- mark current device as ready to work in DB
 function ReadState(name)
+	Yield()
 	return autotestingSystem:ReadState(name)
 end
 
 function ReadCommand(name)
+	Yield()
 	return autotestingSystem:ReadCommand(name)
 end
 
 function WriteState(name, state)
+	Yield()
 	autotestingSystem:WriteState(name, state)
 	
+	Yield()
 	local afterWrite = ReadState(name)
 	if state ~= afterWrite then
 		OnError("After writing: expected state '"..state.."' on device '"..name.."', actual:"..afterWrite)
@@ -119,8 +134,10 @@ function WriteState(name, state)
 end
 
 function WriteCommand(name, command)
+	Yield()
 	autotestingSystem:WriteCommand(name, command)
 	
+	Yield()
 	local afterWrite = ReadCommand(name)
 	if command ~= afterWrite then
 		OnError("After writing: expected command '"..command.."' on device '"..name.."', actual:"..afterWrite)
@@ -130,12 +147,15 @@ end
 function InitializeDevice(name)
 	DEVICE = name
 	Log("Mark "..name.." device as Ready")
+	Yield()
 	autotestingSystem:InitializeDevice(DEVICE)
+	Yield()
 	WriteState(DEVICE, "ready")
 end
 
 function WaitForDevice(name)
 	Log("Wait while "..name.." device become Ready")
+	Yield()
 	for i=1,MULTIPLAYER_TIMEOUT do
 		if ReadState(name) == "ready" then
 			return
@@ -148,7 +168,8 @@ end
 
 function SendJob(name, command)
 	Log("Send to slave "..name.." command: "..command)
-		
+	Yield()
+	
 	for i=1,MULTIPLAYER_TIMEOUT do
 		local state = ReadState(name)
 		if state == "ready" then
@@ -168,6 +189,7 @@ end
 
 function WaitJob(name)
 	Log("Wait for job on slave "..name)
+	Yield()
 	local state
 	
 	for i=1,MULTIPLAYER_TIMEOUT do
@@ -193,15 +215,41 @@ function SendJobAndWait(name, command)
 end
 
 function noneStep()
+	Yield()
 	return true
 end
 
 -- Work with UI controls
--- !!!!! Realize visibility center of element
+function GetCenter(element)
+	local control
+	if (type(element) == "string") then
+		control = autotestingSystem:FindControl(element)
+		--Log(tostring(control))
+	else
+		control = element
+	end
+	Yield()
+	
+	--Log(tostring(control))
+	if control then
+		local position = Vector.Vector2()
+		local geomData = control:GetGeometricData()
+		local rect = geomData:GetUnrotatedRect()
+	            
+		position.x = rect.x + rect.dx/2
+		position.y = rect.y +rect.dy/2
+		--Log("Return position")
+		return position
+	else
+		OnError("Couldn't find element: "..control)
+	end
+end
+
 function IsVisible(element, background)
 	Yield()
 	local control = autotestingSystem:FindControl(element)
 	if control then
+		Yield()
 		if background then
 			local back = autotestingSystem:FindControl(background)
 			assert(back, background.." background not found")
@@ -247,7 +295,7 @@ function Wait(waitTime)
     local elapsedTime = 0.0
     while elapsedTime < waitTime do
         elapsedTime = elapsedTime + autotestingSystem:GetTimeElapsed()
-        Yield()
+        coroutine.yield()
     end
 end
 
@@ -258,7 +306,7 @@ function WaitControl(name, time)
     local elapsedTime = 0.0
     while elapsedTime < waitTime do
         elapsedTime = elapsedTime + autotestingSystem:GetTimeElapsed()
-		Yield()
+		coroutine.yield()
         
         if autotestingSystem:FindControl(name) then
             --Log("WaitControl found "..name, "DEBUG")
@@ -274,12 +322,15 @@ function TouchDownPosition(position, touchId)
     local touchId = touchId or 1
     --print("TouchDownPosition position="..position.x..","..position.y.." touchId="..touchId)
     autotestingSystem:TouchDown(position, touchId)
+     Yield()
 end
 
 function TouchDown(x, y, touchId)
     local touchId = touchId or 1
     --print("TouchDown x="..x.." y="..y.." touchId="..touchId)
+    local position = Vector.Vector2(x, y)
     autotestingSystem:TouchDown(position, touchId)
+    Yield()
 end
 
 function TouchMovePosition(position, touchId, waitTime)
@@ -287,16 +338,30 @@ function TouchMovePosition(position, touchId, waitTime)
     local touchId = touchId or 1
     Log("TouchMovePosition position="..position.x..","..position.y.." touchId="..touchId)
     autotestingSystem:TouchMove(position, touchId)
-    Wait(waitTime)
+    Yield()
 end
 
+--[[ old and deprecated
 function TouchMove(x, y, touchId, waitTime)
 	waitTime =  waitTime or TIMECLICK
     local touchId = touchId or 1
-    Log("TouchMove x="..x.." y="..y.." touchId="..touchId)
+    --Log("TouchMove x="..x.." y="..y.." touchId="..touchId)
     local position = Vector.Vector2(x, y)
     autotestingSystem:TouchMove(position, touchId)
     Wait(waitTime)
+end
+]]
+
+function TouchMove(position, new_position, waitTime, touchId)
+	waitTime =  waitTime or TIMECLICK
+    local touchId = touchId or 1
+    --Log("TouchMove x="..x.." y="..y.." touchId="..touchId)
+    autotestingSystem:TouchDown(position, touchId)
+    Wait(waitTime)
+	autotestingSystem:TouchMove(new_position, touchId)
+	Wait(waitTime)
+	autotestingSystem:TouchUp(touchId)
+	Wait(waitTime)
 end
 
 function TouchUp(touchId)
@@ -326,7 +391,7 @@ function Click(x, y, touchId)
     ClickPosition(position, touchId, waitTime)
 end
 
-function ClickControl(name, touchId, time)
+function ClickControl(name, time, touchId)
     local waitTime = time or TIMECLICK
     local touchId = touchId or 1
 	
@@ -341,24 +406,10 @@ function ClickControl(name, touchId, time)
         local screen = autotestingSystem:GetScreen()
         if control and IsOnScreen(control) then     
             -- local position = control:GetPosition(true)
-            local position = Vector.Vector2()
+            local position = GetCenter(name)
 --            print(position)
 --            print("position="..position.x..","..position.y)
-            
-            local geomData = control:GetGeometricData()
---            print(geomData)
-            local rect = geomData:GetUnrotatedRect()
---            print(rect)
-            
---            print("rect.x="..rect.x)
---            print("rect.y="..rect.y)
---            print("rect.dx="..rect.dx)
---            print("rect.dy="..rect.dy)
-            
-            position.x = rect.x + rect.dx/2
-            position.y = rect.y +rect.dy/2
---            print("position="..position.x..","..position.y)
-            
+
             ClickPosition(position, touchId, waitTime)
             
             return true
