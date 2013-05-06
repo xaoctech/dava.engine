@@ -93,7 +93,7 @@ void RenderPass::Draw(Camera * camera, RenderPassBatchArray * renderPassBatchArr
         RenderLayerBatchArray * renderLayerBatchArray = renderPassBatchArray->Get(layer->GetName());
         if (renderLayerBatchArray)
         {
-            layer->Draw(camera, renderLayerBatchArray);
+            layer->Draw(name, camera, renderLayerBatchArray);
         }
     }
 }

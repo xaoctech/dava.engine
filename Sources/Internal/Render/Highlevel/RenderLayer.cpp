@@ -47,14 +47,14 @@ RenderLayer::~RenderLayer()
     
 }
 
-void RenderLayer::Draw(Camera * camera, RenderLayerBatchArray * renderLayerBatchArray)
+void RenderLayer::Draw(const FastName & ownerRenderPass, Camera * camera, RenderLayerBatchArray * renderLayerBatchArray)
 {
 	if(flags & VISIBLE)
 	{
 		uint32 size = (uint32)renderLayerBatchArray->GetRenderBatchCount();
 		for (uint32 k = 0; k < size; ++k)
 		{
-			renderLayerBatchArray->Get(k)->Draw(camera);
+			renderLayerBatchArray->Get(k)->Draw(ownerRenderPass, camera);
 		}
 #if 0
 		Logger::Debug("Layer: %s Objects: %d", name.c_str(), renderBatchArray.size());
