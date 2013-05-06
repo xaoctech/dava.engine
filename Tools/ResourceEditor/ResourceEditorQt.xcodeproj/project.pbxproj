@@ -283,8 +283,6 @@
 		C786218A1602175100C96AA8 /* EditorConfig.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C78621881602175100C96AA8 /* EditorConfig.cpp */; };
 		CCC7A49216F1D7680061EA5D /* EditorLandscape.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = CCC7A49016F1D7680061EA5D /* EditorLandscape.cpp */; };
 		E80842DC1639277D002A6A77 /* TextureOptionsCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E80842DA1639277D002A6A77 /* TextureOptionsCommands.cpp */; };
-		E81895C0170F192E009A815A /* DXTConverter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E81895B1170F192E009A815A /* DXTConverter.cpp */; };
-		E81895C1170F192E009A815A /* PVRConverter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E81895B3170F192E009A815A /* PVRConverter.cpp */; };
 		E81895C2170F192E009A815A /* CommandLineParser.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E81895B6170F192E009A815A /* CommandLineParser.cpp */; };
 		E81895C3170F192E009A815A /* DefinitionFile.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E81895B8170F192E009A815A /* DefinitionFile.cpp */; };
 		E81895C4170F192E009A815A /* ImagePacker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E81895BA170F192E009A815A /* ImagePacker.cpp */; };
@@ -412,7 +410,9 @@
 		E84779B11669009B004CD20A /* ParticleEffectPropertyControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E84779AF1669009B004CD20A /* ParticleEffectPropertyControl.cpp */; };
 		E88F2FFC171C801600510B78 /* SceneInfo.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E88F2FFA171C801600510B78 /* SceneInfo.cpp */; };
 		E88F3002171C85A000510B78 /* SceneInfo_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E88F3001171C85A000510B78 /* SceneInfo_moc.cpp */; };
-		E8951B0417377D2300755339 /* EditorCommandLineParser.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8951B0217377D2300755339 /* EditorCommandLineParser.cpp */; };
+		E8951B3F1737AF1200755339 /* DXTConverter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8951B391737AF1200755339 /* DXTConverter.cpp */; };
+		E8951B401737AF1200755339 /* PVRConverter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8951B3B1737AF1200755339 /* PVRConverter.cpp */; };
+		E8951B451737AF2100755339 /* EditorCommandLineParser.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8951B431737AF2100755339 /* EditorCommandLineParser.cpp */; };
 		E89DFD30163ED2A900B51706 /* DataQt in Bundle Resources */ = {isa = PBXBuildFile; fileRef = E89DFD2F163ED2A900B51706 /* DataQt */; };
 		E8BD1F0016DE40ED00499E18 /* libFrameworkQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = E8BD1EFF16DE40E300499E18 /* libFrameworkQt.a */; };
 		E8C4C64F17294079004B0B3B /* CameraSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C4C63017294079004B0B3B /* CameraSystem.cpp */; };
@@ -1113,10 +1113,6 @@
 		DA18A6831232F53228631AD1 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		E80842DA1639277D002A6A77 /* TextureOptionsCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureOptionsCommands.cpp; path = Classes/Commands/TextureOptionsCommands.cpp; sourceTree = "<group>"; };
 		E80842DB1639277D002A6A77 /* TextureOptionsCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureOptionsCommands.h; path = Classes/Commands/TextureOptionsCommands.h; sourceTree = "<group>"; };
-		E81895B1170F192E009A815A /* DXTConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DXTConverter.cpp; path = ../../Sources/Tools/DXTConverter.cpp; sourceTree = "<group>"; };
-		E81895B2170F192E009A815A /* DXTConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DXTConverter.h; path = ../../Sources/Tools/DXTConverter.h; sourceTree = "<group>"; };
-		E81895B3170F192E009A815A /* PVRConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PVRConverter.cpp; path = ../../Sources/Tools/PVRConverter.cpp; sourceTree = "<group>"; };
-		E81895B4170F192E009A815A /* PVRConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PVRConverter.h; path = ../../Sources/Tools/PVRConverter.h; sourceTree = "<group>"; };
 		E81895B6170F192E009A815A /* CommandLineParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CommandLineParser.cpp; sourceTree = "<group>"; };
 		E81895B7170F192E009A815A /* CommandLineParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommandLineParser.h; sourceTree = "<group>"; };
 		E81895B8170F192E009A815A /* DefinitionFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DefinitionFile.cpp; sourceTree = "<group>"; };
@@ -1322,8 +1318,12 @@
 		E88F2FFA171C801600510B78 /* SceneInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneInfo.cpp; sourceTree = "<group>"; };
 		E88F2FFB171C801600510B78 /* SceneInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneInfo.h; sourceTree = "<group>"; };
 		E88F3001171C85A000510B78 /* SceneInfo_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneInfo_moc.cpp; sourceTree = "<group>"; };
-		E8951B0217377D2300755339 /* EditorCommandLineParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EditorCommandLineParser.cpp; path = ../../Sources/Tools/CommandLine/EditorCommandLineParser.cpp; sourceTree = "<group>"; };
-		E8951B0317377D2300755339 /* EditorCommandLineParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EditorCommandLineParser.h; path = ../../Sources/Tools/CommandLine/EditorCommandLineParser.h; sourceTree = "<group>"; };
+		E8951B391737AF1200755339 /* DXTConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DXTConverter.cpp; sourceTree = "<group>"; };
+		E8951B3A1737AF1200755339 /* DXTConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DXTConverter.h; sourceTree = "<group>"; };
+		E8951B3B1737AF1200755339 /* PVRConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PVRConverter.cpp; sourceTree = "<group>"; };
+		E8951B3C1737AF1200755339 /* PVRConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRConverter.h; sourceTree = "<group>"; };
+		E8951B431737AF2100755339 /* EditorCommandLineParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditorCommandLineParser.cpp; sourceTree = "<group>"; };
+		E8951B441737AF2100755339 /* EditorCommandLineParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorCommandLineParser.h; sourceTree = "<group>"; };
 		E89DFD2F163ED2A900B51706 /* DataQt */ = {isa = PBXFileReference; lastKnownFileType = folder; path = DataQt; sourceTree = "<group>"; };
 		E8BD1EF616DE40E300499E18 /* Framework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Framework.xcodeproj; path = ../../Projects/MacOSFramework/Framework.xcodeproj; sourceTree = "<group>"; };
 		E8C4C63017294079004B0B3B /* CameraSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CameraSystem.cpp; sourceTree = "<group>"; };
@@ -2361,10 +2361,8 @@
 		E81895AD170F1922009A815A /* Tools */ = {
 			isa = PBXGroup;
 			children = (
-				E81895B1170F192E009A815A /* DXTConverter.cpp */,
-				E81895B2170F192E009A815A /* DXTConverter.h */,
-				E81895B3170F192E009A815A /* PVRConverter.cpp */,
-				E81895B4170F192E009A815A /* PVRConverter.h */,
+				E8951B421737AF2100755339 /* CommandLine */,
+				E8951B381737AF1200755339 /* TextureCompression */,
 				E81895B5170F192E009A815A /* TexturePacker */,
 			);
 			name = Tools;
@@ -2893,6 +2891,28 @@
 			path = _GeneratedQt/DockSceneInfo;
 			sourceTree = "<group>";
 		};
+		E8951B381737AF1200755339 /* TextureCompression */ = {
+			isa = PBXGroup;
+			children = (
+				E8951B391737AF1200755339 /* DXTConverter.cpp */,
+				E8951B3A1737AF1200755339 /* DXTConverter.h */,
+				E8951B3B1737AF1200755339 /* PVRConverter.cpp */,
+				E8951B3C1737AF1200755339 /* PVRConverter.h */,
+			);
+			name = TextureCompression;
+			path = ../../Sources/Tools/TextureCompression;
+			sourceTree = "<group>";
+		};
+		E8951B421737AF2100755339 /* CommandLine */ = {
+			isa = PBXGroup;
+			children = (
+				E8951B431737AF2100755339 /* EditorCommandLineParser.cpp */,
+				E8951B441737AF2100755339 /* EditorCommandLineParser.h */,
+			);
+			name = CommandLine;
+			path = ../../Sources/Tools/CommandLine;
+			sourceTree = "<group>";
+		};
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
 			isa = PBXGroup;
 			children = (
@@ -3004,8 +3024,6 @@
 		E8FB1DF7172E867C00D1428F /* CommandLine */ = {
 			isa = PBXGroup;
 			children = (
-				E8951B0217377D2300755339 /* EditorCommandLineParser.cpp */,
-				E8951B0317377D2300755339 /* EditorCommandLineParser.h */,
 				E8FB1E19172EABE700D1428F /* SceneExporter */,
 				E8FB1E1C172EABE700D1428F /* SceneSaver */,
 				E8FB1E1F172EABE700D1428F /* SceneUtils */,
@@ -3636,8 +3654,6 @@
 				0297F311170B403100627F78 /* MaterialViewOptions.cpp in Build Sources */,
 				0297F317170B404100627F78 /* MaterialViewOptionsCommands.cpp in Build Sources */,
 				0297F31A170B40D100627F78 /* MaterialViewOptions_moc.cpp in Build Sources */,
-				E81895C0170F192E009A815A /* DXTConverter.cpp in Build Sources */,
-				E81895C1170F192E009A815A /* PVRConverter.cpp in Build Sources */,
 				E81895C2170F192E009A815A /* CommandLineParser.cpp in Build Sources */,
 				E81895C3170F192E009A815A /* DefinitionFile.cpp in Build Sources */,
 				E81895C4170F192E009A815A /* ImagePacker.cpp in Build Sources */,
@@ -3698,7 +3714,9 @@
 				E8FB1E2A172EAC0A00D1428F /* CleanFolderTool.cpp in Build Sources */,
 				E8FB1E37172EE7A100D1428F /* SceneExporterTool.cpp in Build Sources */,
 				E8FB1E3D172EF12500D1428F /* SceneSaverTool.cpp in Build Sources */,
-				E8951B0417377D2300755339 /* EditorCommandLineParser.cpp in Build Sources */,
+				E8951B3F1737AF1200755339 /* DXTConverter.cpp in Build Sources */,
+				E8951B401737AF1200755339 /* PVRConverter.cpp in Build Sources */,
+				E8951B451737AF2100755339 /* EditorCommandLineParser.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

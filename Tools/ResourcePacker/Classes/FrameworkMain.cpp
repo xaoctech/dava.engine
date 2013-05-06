@@ -13,7 +13,7 @@
 
 #include "CommandLine/EditorCommandLineParser.h"
 
-#include "PVRConverter.h"
+#include "TextureCompression/PVRConverter.h"
 
 using namespace DAVA;
  
@@ -80,9 +80,6 @@ void ProcessRecourcePacker()
         printf("[FATAL ERROR: Packer working only inside DataSource directory]");
         return;
     }
-    
-    new PVRConverter();
-    
     
     if(commandLine.size() < 3)
     {
