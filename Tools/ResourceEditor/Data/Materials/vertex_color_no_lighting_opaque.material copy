@@ -1,0 +1,28 @@
+RenderState:
+    State: STATE_DEFAULT_3D
+
+RenderStep:
+    RenderSteps: ["Forward.Opaque"]
+    ShaderGraph: "Materials/Graphs/TextureNoLighting.mgraph"
+    Consts: [VERTEX_COLOR]
+    RenderState: &RenderState
+
+RenderStep:
+    RenderSteps: ["Deferred.GBufferOpaque"]
+    ShaderGraph: "Materials/Graphs/TextureNoLighting.mgraph"
+    Consts: [VERTEX_COLOR]
+    RenderState: &RenderState
+
+RenderStep:
+    RenderSteps: ["LightPrePass.NormalDepth"]
+    ShaderGraph: "Materials/Graphs/VertexColor.mgraph"
+    Consts: [VERTEX_COLOR]
+    RenderState: &RenderState
+
+RenderStep:
+    RenderSteps: ["LightPrePass.LightingOpaque"]
+    Shader:
+    Consts:
+
+
+

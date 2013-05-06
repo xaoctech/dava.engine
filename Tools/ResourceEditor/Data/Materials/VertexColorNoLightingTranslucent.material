@@ -1,0 +1,17 @@
+Material:
+    Parent: "Global.material"
+    Layers: ["Opaque"]
+
+RenderPass:
+    Name: "Forward.Render.Pass"
+    Shader: ["~res:/Materials/Shaders/Old/materials.vsh", "Materials/Shaders/Old/materials.fsh"]
+    Defines: ["FLATCOLOR", "TRANSLUCENT 0.5"]
+    RenderState:
+        State: STATE_DEFAULT_3D_BLEND
+
+RenderPass:
+    Name: "Deferred.Render.Pass"
+    Shader: ["Materials/Shaders/Old/materials.vsh", "Materials/Shaders/Old/materials.fsh"]
+    Defines: ["TBD_LATER"]
+    RenderState:
+        State: STATE_DEFAULT_3D_BLEND

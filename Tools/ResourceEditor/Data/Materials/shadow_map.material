@@ -1,0 +1,4 @@
+RenderStep: 
+    shader: ["Shaders/ShadowMap.vsh", "Shaders/ShadowMap.fsh"]
+    consts: []
+    layers: ["OpaqueRenderLayer"]
