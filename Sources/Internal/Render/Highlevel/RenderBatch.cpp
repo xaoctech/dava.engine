@@ -103,9 +103,10 @@ void RenderBatch::Draw(Camera * camera)
         return;
     }
     
-    uint32 flags = renderObject->GetFlags();
-    if ((flags & visiblityCriteria) != visiblityCriteria)
-        return;
+//    uint32 flags = renderObject->GetFlags();
+//    if ((flags & visiblityCriteria) != visiblityCriteria)
+//        return;
+    RenderManager::Instance()->GetStats().renderBatchDrawCount++;
 	
     Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
@@ -161,7 +162,6 @@ const AABBox3 & RenderBatch::GetBoundingBox() const
 void RenderBatch::SetSortingKey(uint32 _key)
 {
     sortingKey = _key;
-    if (ownerLayer)ownerLayer->ForceLayerSort();
 }
 
 

@@ -33,12 +33,38 @@ public:
 		HashMap<FastName, int>::Insert(FastName(name), 0);
 	}
     
+    void Insert(const FastName & name)
+    {
+        HashMap<FastName, int>::Insert(name, 0);
+    }
+    
     inline bool operator == (const FastNameSet & _another) const;
 
 private:
 	int Insert(const char *name, const int &value);
 	int Value(const FastName &key) const;
 	int operator()(const FastName &key) const;
+};
+    
+template<> struct Hash <FastNameSet>
+{
+    size_t operator()(const FastNameSet & set) const
+    {
+        size_t hashVal = 2166136261;
+        FastNameSet::Iterator it = set.Begin();
+        const FastNameSet::Iterator & endIt = set.End();
+        for (; it !=  endIt; ++it)
+        {
+            const FastName & key = it.GetKey();
+            hashVal += ( hashVal * 16777619 ) ^ key.Index();
+        }
+        return hashVal;
+    }
+    
+    bool Compare(const FastNameSet & set1, const FastNameSet & set2) const
+    {
+        return (set1 == set2);
+    }
 };
 
 template <typename V>

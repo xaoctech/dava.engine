@@ -66,7 +66,6 @@ void RenderObject::AddRenderBatch(RenderBatch * batch)
     if (removeIndex != -1)
     {
         DVASSERT(renderSystem);
-		renderSystem->AddRenderBatch(batch);
     }
     
     const AABBox3 & boundingBox = batch->GetBoundingBox();
@@ -82,7 +81,6 @@ void RenderObject::RemoveRenderBatch(RenderBatch * batch)
     if (removeIndex != -1)
     {
         DVASSERT(renderSystem);
-		renderSystem->RemoveRenderBatch(batch);
     }
     
     batch->SetRenderObject(0);

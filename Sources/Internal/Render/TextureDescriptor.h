@@ -35,6 +35,7 @@
 #include "Base/BaseObject.h"
 #include "Utils/MD5.h"
 #include "FileSystem/FilePath.h"
+#include "Render/RenderBase.h"
 
 //#define TEXTURE_SPLICING_ENABLED
 

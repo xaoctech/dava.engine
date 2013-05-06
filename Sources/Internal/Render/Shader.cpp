@@ -118,6 +118,11 @@ int32 Shader::GetUniformCount()
     return activeUniforms;
 }
     
+Shader::Uniform * Shader::GetUniform(int32 index)
+{
+    return &uniforms[index];
+}
+    
 Shader::eUniformType Shader::GetUniformType(int32 index)
 {
     return uniforms[index].type;
@@ -443,6 +448,64 @@ bool Shader::Recompile()
     return true;
 }
     
+void Shader::SetUniformValue(int32 uniformLocation, eUniformType uniformType, uint32 arraySize, void * data)
+{
+    switch(uniformType)
+    {
+        case Shader::UT_FLOAT:
+            RENDER_VERIFY(glUniform1fv(uniformLocation, arraySize, (float*)data));
+            break;
+        case Shader::UT_FLOAT_VEC2:
+            RENDER_VERIFY(glUniform2fv(uniformLocation, arraySize, (float*)data));
+            break;
+        case Shader::UT_FLOAT_VEC3:
+            RENDER_VERIFY(glUniform3fv(uniformLocation, arraySize, (float*)data));
+            break;
+        case Shader::UT_FLOAT_VEC4:
+            RENDER_VERIFY(glUniform4fv(uniformLocation, arraySize, (float*)data));
+            break;
+        case Shader::UT_INT:
+            RENDER_VERIFY(glUniform1iv(uniformLocation, arraySize, (int32*)data));
+            break;
+        case Shader::UT_INT_VEC2:
+            RENDER_VERIFY(glUniform2iv(uniformLocation, arraySize, (int32*)data));
+            break;
+        case Shader::UT_INT_VEC3:
+            RENDER_VERIFY(glUniform3iv(uniformLocation, arraySize, (int32*)data));
+            break;
+        case Shader::UT_INT_VEC4:
+            RENDER_VERIFY(glUniform4iv(uniformLocation, arraySize, (int32*)data));
+            break;
+        case Shader::UT_BOOL:
+            RENDER_VERIFY(glUniform1iv(uniformLocation, arraySize, (int32*)data));
+            break;
+        case Shader::UT_BOOL_VEC2:
+            RENDER_VERIFY(glUniform2iv(uniformLocation, arraySize, (int32*)data));
+            break;
+        case Shader::UT_BOOL_VEC3:
+            RENDER_VERIFY(glUniform3iv(uniformLocation, arraySize, (int32*)data));
+            break;
+        case Shader::UT_BOOL_VEC4:
+            RENDER_VERIFY(glUniform4iv(uniformLocation, arraySize, (int32*)data));
+            break;
+        case Shader::UT_FLOAT_MAT2:
+            RENDER_VERIFY(glUniformMatrix2fv(uniformLocation, arraySize, GL_FALSE, (float32*)data));
+            break;
+        case Shader::UT_FLOAT_MAT3:
+            RENDER_VERIFY(glUniformMatrix3fv(uniformLocation, arraySize, GL_FALSE, (float32*)data));
+            break;
+        case Shader::UT_FLOAT_MAT4:
+            RENDER_VERIFY(glUniformMatrix4fv(uniformLocation, arraySize, GL_FALSE, (float32*)data));
+            break;
+        case Shader::UT_SAMPLER_2D:
+            RENDER_VERIFY(glUniform1iv(uniformLocation, arraySize, (int32*)data));
+            break;
+        case Shader::UT_SAMPLER_CUBE:
+            RENDER_VERIFY(glUniform1iv(uniformLocation, arraySize, (int32*)data));
+            break;
+    }
+}
+    
 void Shader::SetUniformValue(int32 uniformLocation, int32 value)
 {
     DVASSERT(uniformLocation >= 0);
@@ -688,9 +751,28 @@ void Shader::Dump()
         eUniform uniform = GetUniformByName(uniforms[k].name.c_str());
         Logger::Debug("uniform: %s(%d) type: %s", uniforms[k].name.c_str(), uniform, VertexTypeStringFromEnum(uniforms[k].type).c_str());
     }
-
-    
 }
+    
+Shader * Shader::CompileShader(Data * vertexShaderData, Data * fragmentShaderData, const FastNameSet & definesSet)
+{
+    Shader * shader = new Shader();
+    shader->vertexShaderData = SafeRetain(vertexShaderData);
+    shader->fragmentShaderData = SafeRetain(fragmentShaderData);
+
+    String result;
+    FastNameSet::Iterator end = definesSet.End();
+    for (FastNameSet::Iterator it = definesSet.Begin(); it != end; ++it)
+    {
+        const FastName & fname = it.GetKey();
+        result += Format("#define %s\n", fname.c_str());
+    }
+    shader->SetDefines(result);
+    
+    
+    shader->Recompile();
+    return shader;
+}
+    
     
 Shader * Shader::RecompileNewInstance(const String & combination)
 {

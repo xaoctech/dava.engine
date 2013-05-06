@@ -36,7 +36,7 @@
 
 namespace DAVA
 {
-//class RenderLayer;
+class RenderPassBatchArray;
 class Camera;
 class RenderPass
 {
@@ -46,7 +46,7 @@ public:
     
     const FastName & GetName();
     
-    virtual void Draw(Camera * camera);
+    virtual void Draw(Camera * camera, RenderPassBatchArray * renderBatchArray);
     
 protected:
     Vector<RenderLayer*> renderLayers;

@@ -160,15 +160,18 @@ typedef signed int		int32;
 #endif 
     
 typedef Select<sizeof(void*) == 4, uint32, uint64>::Result pointer_size;
-    
-//#if (sizeof(void*) == 4)
-//typedef uint32 pointer_size
-//#elif (sizeof(void*) == 8)
-//typedef uint64 pointer_size;
-//#else
-//#error(Pointer type size is invalid);
-//#endif
 	
+    
+enum eRC
+{
+    SUCCESS = 0,
+    ERROR_FILE_NOT_FOUND = 1,
+    ERROR_NOT_ENOUGH_MEMORY = 2,
+    ERROR_INVALID_DATA = 3,
+};
+
+    
+    
 #ifndef TRUE
 #define TRUE	1
 #endif

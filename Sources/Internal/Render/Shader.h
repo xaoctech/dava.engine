@@ -36,7 +36,7 @@
 #include "Base/BaseMath.h"
 #include "Base/Data.h"
 #include "Base/FastName.h"
-
+#include "Base/FastNameMap.h"
 #include "FileSystem/FilePath.h"
 
 #ifdef __DAVAENGINE_ANDROID__
@@ -89,6 +89,17 @@ public:
         UT_SAMPLER_2D = GL_SAMPLER_2D,
         UT_SAMPLER_CUBE = GL_SAMPLER_CUBE,
     };
+    
+    
+    struct Uniform
+    {
+        eUniform        id;
+        FastName        name;
+        GLint           location;
+        GLint           size;
+        eUniformType    type;
+    };
+
 
     Shader();
     virtual ~Shader();
@@ -106,8 +117,11 @@ public:
     bool LoadFromYaml(const FilePath & pathname);
     bool Load(const FilePath & vertexShaderPath, const FilePath & fragmentShaderPath);
     
-    bool Recompile();
+    // TODO: OLD FUNCTIONS: NEED TO REMOVE THEM 
     Shader * RecompileNewInstance(const String & combination);
+    
+    static Shader * CompileShader(Data * vertexShaderData, Data * fragmentShaderData, const FastNameSet & definesSet);
+    bool Recompile();
     
     void Bind();
     static void Unbind();
@@ -120,12 +134,13 @@ public:
     static const char * GetUniformTypeSLName(eUniformType type);
     const char * GetUniformName(int32 index);
     int32 GetUniformArraySize(int32 index);
+    Uniform * GetUniform(int32 index);
 
     int32 GetUniformLocation(int32 index);
     int32 FindUniformLocationByName(const FastName & name);
     
     
-    
+    void SetUniformValue(int32 uniformLocation, eUniformType type, uint32 size, void * data);
     void SetUniformValue(int32 uniformLocation, int32 value);
     void SetUniformValue(int32 uniformLocation, float32 value);
     void SetUniformValue(int32 uniformLocation, int32 count, int32 * value);
@@ -174,15 +189,6 @@ private:
 //    GLint * uniformSizes;
 //    eUniformType * uniformTypes;
     
-    
-    struct Uniform
-    {
-        eUniform        id;
-        FastName        name;
-        GLint           location;
-        GLint           size;
-        eUniformType    type;
-    };
     Uniform * uniforms;
     
     int32 vertexFormatAttribIndeces[VERTEX_FORMAT_STREAM_MAX_COUNT];

@@ -28,17 +28,18 @@
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
 #include "Render/Highlevel/RenderSystem.h"
-#include "Scene3D/Entity.h"
 #include "Render/Highlevel/RenderLayer.h"
+#include "Render/Highlevel/RenderBatchArray.h"
+#include "Render/Highlevel/RenderHierarchy.h"
 #include "Render/Highlevel/RenderPass.h"
 #include "Render/Highlevel/ShadowVolumeRenderPass.h"
 #include "Render/Highlevel/ShadowRect.h"
 #include "Render/Highlevel/RenderBatch.h"
-#include "Scene3D/Components/RenderComponent.h"
-#include "Scene3D/Components/TransformComponent.h"
 #include "Render/Highlevel/Frustum.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Light.h"
+
+// TODO: Move class to other place
 #include "Scene3D/Systems/ParticleEmitterSystem.h"
 #include "Render/Highlevel/RenderFastNames.h"
 
@@ -71,10 +72,14 @@ RenderSystem::RenderSystem()
     renderPassOrder.push_back(renderPassesMap[PASS_SHADOW_VOLUME]);
 
 	particleEmitterSystem = new ParticleEmitterSystem();
+    renderHierarchy = new RenderHierarchy();
+    globalBatchArray = new RenderPassBatchArray();
 }
 
 RenderSystem::~RenderSystem()
 {
+    SafeDelete(globalBatchArray);
+    SafeDelete(renderHierarchy);
 	SafeDelete(particleEmitterSystem);
     
     FastNameMap<RenderPass*>::Iterator endPasses = renderPassesMap.End();
@@ -104,25 +109,26 @@ void RenderSystem::RenderPermanent(RenderObject * renderObject)
     renderObject->SetRemoveIndex((uint32)(renderObjectArray.size() - 1));
     
     AddRenderObject(renderObject);
-    
-    uint32 renderBatchCount = renderObject->GetRenderBatchCount();
-    for (uint32 k = 0; k < renderBatchCount; ++k)
-    {
-        RenderBatch * batch = renderObject->GetRenderBatch(k);
-        AddRenderBatch(batch);
-    }
+    renderHierarchy->AddRenderObject(renderObject);
+//    uint32 renderBatchCount = renderObject->GetRenderBatchCount();
+//    for (uint32 k = 0; k < renderBatchCount; ++k)
+//    {
+//        RenderBatch * batch = renderObject->GetRenderBatch(k);
+//        AddRenderBatch(batch);
+//    }
 }
 
 void RenderSystem::RemoveFromRender(RenderObject * renderObject)
 {
     DVASSERT(renderObject->GetRemoveIndex() != -1);
 
-	uint32 renderBatchCount = renderObject->GetRenderBatchCount();
-	for (uint32 k = 0; k < renderBatchCount; ++k)
-	{
-		RenderBatch * batch = renderObject->GetRenderBatch(k);
-		RemoveRenderBatch(batch);
-	}
+    renderHierarchy->RemoveRenderObject(renderObject);
+//	uint32 renderBatchCount = renderObject->GetRenderBatchCount();
+//	for (uint32 k = 0; k < renderBatchCount; ++k)
+//	{
+//		RenderBatch * batch = renderObject->GetRenderBatch(k);
+//		RemoveRenderBatch(batch);
+//	}
 
 	RenderObject * lastRenderObject = renderObjectArray[renderObjectArray.size() - 1];
     renderObjectArray[renderObject->GetRemoveIndex()] = lastRenderObject;
@@ -146,34 +152,6 @@ void RenderSystem::RemoveRenderObject(RenderObject * renderObject)
     particleEmitterSystem->RemoveIfEmitter(renderObject);
 	renderObject->SetRenderSystem(0);
 }
-
-void RenderSystem::AddRenderBatch(RenderBatch * renderBatch)
-{
-    // Get Layer Name
-    const FastName & name = renderBatch->GetOwnerLayerName();
-
-    RenderLayer * oldLayer = renderBatch->GetOwnerLayer();
-    if (oldLayer != 0)
-    {
-        oldLayer->RemoveRenderBatch(renderBatch);
-    }
-    RenderLayer * layer = renderLayersMap[name];
-    layer->AddRenderBatch(renderBatch);
-}
-    
-void RenderSystem::RemoveRenderBatch(RenderBatch * renderBatch)
-{
-    RenderLayer * oldLayer = renderBatch->GetOwnerLayer();
-    if (oldLayer != 0)
-    {
-        oldLayer->RemoveRenderBatch(renderBatch);
-    }
-}
-
-void RenderSystem::ImmediateUpdateRenderBatch(RenderBatch * renderBatch)
-{
-    AddRenderBatch(renderBatch);
-}
     
 void RenderSystem::SetCamera(Camera * _camera)
 {
@@ -183,49 +161,6 @@ void RenderSystem::SetCamera(Camera * _camera)
 Camera * RenderSystem::GetCamera()
 {
 	return camera;
-}
-    
-void RenderSystem::ProcessClipping()
-{
-    int32 objectBoxesUpdated = 0;
-    List<RenderObject*>::iterator end = markedObjects.end();
-    for (List<RenderObject*>::iterator it = markedObjects.begin(); it != end; ++it)
-    {
-        RenderObject * obj = *it;
-        obj->GetBoundingBox().GetTransformedBox(*obj->GetWorldTransformPtr(), obj->GetWorldBoundingBox());
-        FindNearestLights(obj);
-        objectBoxesUpdated++;
-    }
-    markedObjects.clear();
-    
-//    List<RenderObject*>::iterator endLights = movedLights.end();
-//    for (List<LightNode*>::iterator it = movedLights.begin(); it != endLights; ++it)
-//    {
-//        FindNearestLights(*it);
-//    }
-    if (movedLights.size() > 0)
-    {
-        FindNearestLights();
-    }
-    movedLights.clear();
-    
-    
-    int32 objectsCulled = 0;
-    
-    Frustum * frustum = camera->GetFrustum();
-
-    uint32 size = renderObjectArray.size();
-    for (uint32 pos = 0; pos < size; ++pos)
-    {
-        RenderObject * node = renderObjectArray[pos];
-        node->AddFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
-        //Logger::Debug("Cull Node: %s rc: %d", node->GetFullName().c_str(), node->GetRetainCount());
-        if (!frustum->IsInside(node->GetWorldBoundingBox()))
-        {
-            node->RemoveFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
-            objectsCulled++;
-        }
-    }
 }
 
 void RenderSystem::MarkForUpdate(RenderObject * renderObject)
@@ -321,8 +256,7 @@ Vector<Light*> & RenderSystem::GetLights()
 
 void RenderSystem::Update(float32 timeElapsed)
 {
-    ProcessClipping();
-    
+    // Update all registered objects
     uint32 size = objectsForUpdate.size();
 	for(uint32 i = 0; i < size; ++i)
 	{
@@ -330,6 +264,33 @@ void RenderSystem::Update(float32 timeElapsed)
     }
 
 	particleEmitterSystem->Update(timeElapsed);
+    
+    
+    // Update nearest lights for objects    
+    int32 objectBoxesUpdated = 0;
+    List<RenderObject*>::iterator end = markedObjects.end();
+    for (List<RenderObject*>::iterator it = markedObjects.begin(); it != end; ++it)
+    {
+        RenderObject * obj = *it;
+        obj->GetBoundingBox().GetTransformedBox(*obj->GetWorldTransformPtr(), obj->GetWorldBoundingBox());
+        FindNearestLights(obj);
+        objectBoxesUpdated++;
+    }
+    markedObjects.clear();
+    
+    //    List<RenderObject*>::iterator endLights = movedLights.end();
+    //    for (List<LightNode*>::iterator it = movedLights.begin(); it != endLights; ++it)
+    //    {
+    //        FindNearestLights(*it);
+    //    }
+    if (movedLights.size() > 0)
+    {
+        FindNearestLights();
+    }
+    movedLights.clear();
+    
+    globalBatchArray->Clear();
+    renderHierarchy->Clip(camera, false, globalBatchArray);
 }
 
 void RenderSystem::Render()
@@ -337,7 +298,7 @@ void RenderSystem::Render()
     uint32 size = (uint32)renderPassOrder.size();
     for (uint32 k = 0; k < size; ++k)
     {
-        renderPassOrder[k]->Draw(camera);
+        renderPassOrder[k]->Draw(camera, globalBatchArray);
     }
 }
 

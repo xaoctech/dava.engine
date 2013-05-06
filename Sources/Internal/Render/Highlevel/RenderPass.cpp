@@ -30,6 +30,7 @@
 #include "Render/Highlevel/RenderPass.h"
 #include "Render/Highlevel/RenderFastNames.h"
 #include "Render/Highlevel/RenderLayer.h"
+#include "Render/Highlevel/RenderBatchArray.h"
 #include "Render/Highlevel/Camera.h"
 
 namespace DAVA
@@ -80,7 +81,7 @@ void RenderPass::RemoveRenderLayer(RenderLayer * layer)
 	renderLayers.erase(it);
 }
 
-void RenderPass::Draw(Camera * camera)
+void RenderPass::Draw(Camera * camera, RenderPassBatchArray * renderPassBatchArray)
 {
     // Set Render Target
     
@@ -88,7 +89,12 @@ void RenderPass::Draw(Camera * camera)
     uint32 size = (uint32)renderLayers.size();
     for (uint32 k = 0; k < size; ++k)
     {
-        renderLayers[k]->Draw(camera);
+        RenderLayer * layer = renderLayers[k];
+        RenderLayerBatchArray * renderLayerBatchArray = renderPassBatchArray->Get(layer->GetName());
+        if (renderLayerBatchArray)
+        {
+            layer->Draw(camera, renderLayerBatchArray);
+        }
     }
 }
 

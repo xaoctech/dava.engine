@@ -7,6 +7,7 @@
 #include "Render/Shader.h"
 #include "Render/Material/MaterialGraph.h"
 #include "Render/Material/MaterialCompiler.h"
+#include "Render/ShaderCache.h"
 
 
 namespace DAVA
@@ -305,8 +306,27 @@ NMaterialInstance * NMaterialInstance::Clone()
 
     
     
+MaterialTechnique::MaterialTechnique(const FastName & _shaderName, FastNameSet & _uniqueDefines, RenderState * _renderState)
+{
+    shader = 0;
+    shaderName = _shaderName;
+    uniqueDefines = _uniqueDefines;
+    renderState = _renderState;
+}
+    
+MaterialTechnique::~MaterialTechnique()
+{
+    SafeRelease(shader);
+}
+
+void MaterialTechnique::RecompileShader()
+{
+    SafeRelease(shader);
+    shader = ShaderCache::Instance()->Get(shaderName, uniqueDefines);
+}
     
 NMaterial::NMaterial()
+    : parent(0)
 {
 }
     
@@ -329,35 +349,42 @@ bool NMaterial::LoadFromFile(const String & pathname)
         SafeRelease(rootNode);
         return false;
     }
-    //YamlNode * pass =
+    
+    YamlNode * materialNode = rootNode->Get("Material");
+
+    YamlNode * layersNode = materialNode->Get("Layers");
+    if (layersNode)
+    {
+        int32 count = layersNode->GetCount();
+        for (int32 k = 0; k < count; ++k)
+        {
+            YamlNode * singleLayerNode = layersNode->Get(k);
+            layers.Insert(FastName(singleLayerNode->AsString()));
+        }
+    }
+    
     
     for (int32 k = 0; k < rootNode->GetCount(); ++k)
     {
         YamlNode * renderStepNode = rootNode->Get(k);
         
-        if (renderStepNode->AsString() == "RenderStep")
+        if (renderStepNode->AsString() == "RenderPass")
         {
-            Logger::Debug("- RenderStep found: %s", renderStepNode->AsString().c_str());
+            Logger::Debug("- RenderPass found: %s", renderStepNode->AsString().c_str());
             YamlNode * shaderNode = renderStepNode->Get("Shader");
             YamlNode * shaderGraphNode = renderStepNode->Get("ShaderGraph");
 
             if (!shaderNode && !shaderGraphNode)
             {
-                Logger::Error("Material:%s RenderStep:%s does not have shader or shader graph", pathname.c_str(), renderStepNode->AsString().c_str());
+                Logger::Error("Material:%s RenderPass:%s does not have shader or shader graph", pathname.c_str(), renderStepNode->AsString().c_str());
                 SafeRelease(parser);
                 return false;
             }
             
-            String vertexShader, fragmentShader;
+            FastName shaderName;
             if (shaderNode)
             {
-                YamlNode * vertexShaderNode = shaderNode->Get(0);
-                YamlNode * fragmentShaderNode = shaderNode->Get(1);
-                
-                DVASSERT(vertexShaderNode && fragmentShaderNode);
-                
-                vertexShader = vertexShaderNode->AsString();
-                fragmentShader = fragmentShaderNode->AsString();
+                shaderName = FastName(shaderNode->AsString().c_str());
             }
             
             if (shaderGraphNode)
@@ -369,39 +396,90 @@ bool NMaterial::LoadFromFile(const String & pathname)
                 MaterialCompiler * compiler = new MaterialCompiler();
                 compiler->Compile(graph, 0, 4, 0);
                 
-                vertexShader = compiler->GetCompiledVertexShaderPathname();
-                fragmentShader = compiler->GetCompiledFragmentShaderPathname();
+                //vertexShader = compiler->GetCompiledVertexShaderPathname();
+                //fragmentShader = compiler->GetCompiledFragmentShaderPathname();
                 
                 SafeRelease(compiler);
                 SafeRelease(graph);
             }
             
-            YamlNode * definesNode = renderStepNode->Get("Defines");
+            FastNameSet definesSet;
+            YamlNode * definesNode = renderStepNode->Get("UniqueDefines");
             if (definesNode)
             {
-                
-                
+                int32 count = definesNode->GetCount();
+                for (int32 k = 0; k < count; ++k)
+                {
+                    YamlNode * singleDefineNode = definesNode->Get(k);
+                    definesSet.Insert(FastName(singleDefineNode->AsString().c_str()));
+                }
             }
             
-            // YamlNode * n;
+            RenderState * renderState = new RenderState();
+            YamlNode * renderStateNode = renderStepNode->Get("RenderState");
+            if (renderStepNode)
+            {
+                renderState->LoadFromYamlNode(renderStateNode);
+            }
             
-        } 
+            
+            YamlNode * renderPassNameNode = renderStepNode->Get("Name");
+            FastName renderPassName;
+            if (renderPassNameNode)
+            {
+                renderPassName = renderPassNameNode->AsString();
+            }
+                        
+            MaterialTechnique * technique = new MaterialTechnique(shaderName, definesSet, renderState);
+            AddMaterialTechnique(renderPassName, technique);
+            technique->RecompileShader();
+        }
     }
 
     SafeRelease(parser);
     return true;
 }
     
-void NMaterial::AddShader(const FastName & fname, Shader * shader)
+void NMaterial::AddMaterialTechnique(FastName & techniqueName, MaterialTechnique * materialTechnique)
 {
-    DVASSERT(shader != 0);
-    //shaders.Insert(fname, SafeRetain(shader));
+    techniqueForRenderPass.Insert(techniqueName, materialTechnique);
 }
     
-uint32 NMaterial::GetShaderCount()
+MaterialTechnique * NMaterial::GetTechnique(const FastName & techniqueName)
 {
-    return (uint32)shaders.Size();
+    return techniqueForRenderPass.GetValue(techniqueName);
+}    
+    
+void NMaterial::BindMaterialTechnique(DAVA::MaterialTechnique *materialTechnique)
+{
+    Shader * shader = materialTechnique->GetShader();
+    uint32 uniformCount = shader->GetUniformCount();
+
+    for (uint32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
+    {
+        Shader::Uniform * uniform = shader->GetUniform(uniformIndex);
+        if (uniform->id == Shader::UNIFORM_NONE)
+        {
+            NMaterial * currentMaterial = this;
+            
+            while(currentMaterial != 0)
+            {
+                NMaterialProperty * property = materialProperties.GetValue(uniform->name);
+                if (property)
+                {
+                    shader->SetUniformValue(uniform->location, uniform->type, uniform->size, property->data);
+                    break;
+                }
+                currentMaterial = currentMaterial->parent;
+            }
+        }
+    }
 }
+
+//uint32 NMaterial::GetShaderCount()
+//{
+//    return (uint32)shaders.Size();
+//}
 
 
 void NMaterialInstance::PrepareRenderState()

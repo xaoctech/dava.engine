@@ -33,30 +33,26 @@
 #include "Base/BaseTypes.h"
 #include "Base/HashMap.h"
 #include "Base/FastNameMap.h"
-#include "Entity/SceneSystem.h"
 
 namespace DAVA
 {
-class RenderPass;
-class RenderLayer;
+class RenderPassBatchArray;
 class RenderObject;
-class RenderBatch;
-class Entity;
 class Camera;
 
-class CullingSystem : public SceneSystem
+class RenderHierarchy
 {
 public:
-    CullingSystem(Scene * scene);
-    virtual ~CullingSystem();
+    RenderHierarchy();
+    ~RenderHierarchy();
     
-    virtual void AddEntity(Entity * entity);
-    virtual void RemoveEntity(Entity * entity);
-    virtual void ImmediateUpdate(Entity * entity);
+    virtual void AddRenderObject(RenderObject * renderObject);
+    virtual void RemoveRenderObject(RenderObject * renderObject);
 
-    virtual void Process();
-    
-    void SetCamera(Camera * camera);
+    /**
+        Clip objects & update nearest lights for them
+     */
+    virtual void Clip(Camera * camera, bool updateNearestLights, RenderPassBatchArray * renderPassBatchArray);
     
 private:
     Vector<RenderObject*> renderObjectArray;
