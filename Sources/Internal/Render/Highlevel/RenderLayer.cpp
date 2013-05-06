@@ -46,13 +46,13 @@ RenderLayer::~RenderLayer()
     
 }
 
-void RenderLayer::Draw(Camera * camera, RenderLayerBatchArray * renderLayerBatchArray)
+void RenderLayer::Draw(const FastName & ownerRenderPass, Camera * camera, RenderLayerBatchArray * renderLayerBatchArray)
 {
-	uint32 size = (uint32)renderLayerBatchArray->GetRenderBatchCount();
-	for (uint32 k = 0; k < size; ++k)
-	{
-		renderLayerBatchArray->Get(k)->Draw(camera);
-	}
+    uint32 size = (uint32)renderLayerBatchArray->GetRenderBatchCount();
+    for (uint32 k = 0; k < size; ++k)
+    {
+        renderLayerBatchArray->Get(k)->Draw(ownerRenderPass, camera);
+    }
 }
 
 const FastName & RenderLayer::GetName()

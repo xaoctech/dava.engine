@@ -328,6 +328,7 @@ void MaterialTechnique::RecompileShader()
 NMaterial::NMaterial()
     : parent(0)
 {
+    activeTechnique = 0;
 }
     
 NMaterial::~NMaterial()
@@ -447,12 +448,24 @@ void NMaterial::AddMaterialTechnique(FastName & techniqueName, MaterialTechnique
     
 MaterialTechnique * NMaterial::GetTechnique(const FastName & techniqueName)
 {
-    return techniqueForRenderPass.GetValue(techniqueName);
+    MaterialTechnique * technique = techniqueForRenderPass.GetValue(techniqueName);
+    DVASSERT(technique != 0);
+    return technique;
 }    
     
-void NMaterial::BindMaterialTechnique(DAVA::MaterialTechnique *materialTechnique)
+void NMaterial::BindMaterialTechnique(const FastName & techniqueName)
 {
-    Shader * shader = materialTechnique->GetShader();
+    if (techniqueName != activeTechniqueName)
+    {
+        activeTechnique = GetTechnique(techniqueName);
+    }
+    
+    Shader * shader = activeTechnique->GetShader();
+    activeTechnique->GetRenderState()->SetShader(shader);
+
+    RenderManager::Instance()->FlushState(activeTechnique->GetRenderState());
+    
+    
     uint32 uniformCount = shader->GetUniformCount();
 
     for (uint32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
@@ -504,7 +517,7 @@ void NMaterialInstance::PrepareRenderState()
     
 };
 
-void NMaterialInstance::Draw(PolygonGroup * polygonGroup)
+void NMaterial::Draw(PolygonGroup * polygonGroup)
 {
     // TODO: Remove support of OpenGL ES 1.0 from attach render data
     RenderManager::Instance()->SetRenderData(polygonGroup->renderDataObject);

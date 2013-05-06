@@ -74,6 +74,12 @@ void ShaderAsset::Remove(const FastNameSet & defines)
 Shader * ShaderAsset::Get(const FastNameSet & defines)
 {
     Shader * shader = compiledShaders.GetValue(defines);
+    
+    if (!shader)
+    {
+        shader = Compile(defines);
+    }
+    
     return shader;
 }
 
@@ -120,7 +126,7 @@ ShaderAsset * ShaderCache::Load(const FastName & shaderFastName)
     return asset;
 };
 
-    
+
 ShaderAsset * ShaderCache::Get(const FastName & shader)
 {
     return shaderAssetMap.GetValue(shader);
