@@ -37,7 +37,9 @@
 #include "Scene3D/SceneNodeAnimationKey.h"
 #include "Entity/Component.h"
 #include "FileSystem/KeyedArchive.h"
+#include "Base/HashMap.h"
 
+//#define COMPONENT_STORAGE_STDMAP 1
 
 namespace DAVA
 {
@@ -75,10 +77,11 @@ public:
     
     void AddComponent(Component * component);
     void RemoveComponent(Component * component);
-    void RemoveComponent(uint32 componentType);
-    Component * GetComponent(uint32 componentType);
-	Component * GetOrCreateComponent(uint32 componentType);
+    void RemoveComponent(uint32 componentType, uint32 index = 0);
+    Component * GetComponent(uint32 componentType, uint32 index = 0);
+    Component * GetOrCreateComponent(uint32 componentType, uint32 index = 0);
     uint32 GetComponentCount();
+    uint32 GetComponentCount(uint32 componentType);
     
     inline uint32 GetAvailableComponentFlags();
 
@@ -262,7 +265,7 @@ public:
         \brief function returns debug flags of specific node
         \returns flags of this specific scene node
      */
-    uint32 GetDebugFlags() const;
+    uint32 GetDebugFlags();
     	
     void SetSolid(bool isSolid);
     bool GetSolid();
@@ -337,6 +340,13 @@ public:
 	static const char* SCENE_NODE_IS_SOLID_PROPERTY_NAME;
 
 	void FindComponentsByTypeRecursive(Component::eType type, List<DAVA::Entity*> & components);
+    
+protected:
+    
+    inline void CleanupComponent(Component* component, uint32 componentCount);
+    void RemoveAllComponents();
+    void LoadComponentsV6(KeyedArchive *compsArch, SceneFileV2 * sceneFileV2);
+    void LoadComponentsV7(KeyedArchive *compsArch, SceneFileV2 * sceneFileV2);
    
 protected:
 
@@ -357,10 +367,22 @@ protected:
     KeyedArchive *customProperties;
     
 private:
+        
 	Vector<Component *> components;
     uint32 componentFlags;
     uint32 componentUpdateMarks;
     
+#if defined(COMPONENT_STORAGE_STDMAP)
+
+    typedef Map<uint32, Vector<Component*>* > ComponentsMap;
+    ComponentsMap componentsMap;
+
+#else
+    
+    typedef HashMap<uint32, Vector<Component*>* > ComponentsMap;
+    ComponentsMap componentsMap;
+    
+#endif
 
     Matrix4 defaultLocalTransform;
    	friend class Scene;
