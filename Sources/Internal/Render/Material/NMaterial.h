@@ -182,6 +182,8 @@ public:
 
     const FastNameSet & GetRenderLayers() { return layers; };
     
+    NMaterial * CreateChildMaterial();
+    
     // Load default render state from yaml.
     // Keep it here, by default MaterialInstance Render State should be referenced from this point.
     
