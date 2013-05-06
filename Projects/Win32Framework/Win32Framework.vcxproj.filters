@@ -1086,9 +1086,6 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEmitterSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\CullingSystem.h">
-      <Filter>Internal\Render\Highlevel</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Heightmap.h">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
@@ -2062,9 +2059,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEmitterSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\CullingSystem.cpp">
-      <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Heightmap.cpp">
       <Filter>Internal\Render\Highlevel</Filter>

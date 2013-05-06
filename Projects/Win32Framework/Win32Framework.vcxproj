@@ -380,7 +380,6 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Effects\TextureMulColorAlphaTestEffect.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Effects\TextureMulColorEffect.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Camera.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\CullingSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Frustum.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Heightmap.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\IRenderUpdatable.h" />
@@ -724,7 +723,6 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Effects\TextureMulColorAlphaTestEffect.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Effects\TextureMulColorEffect.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Camera.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\CullingSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Frustum.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Heightmap.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeChunk.cpp" />
