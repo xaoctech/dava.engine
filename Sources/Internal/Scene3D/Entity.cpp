@@ -47,10 +47,17 @@
 #include "Scene3D/Systems/GlobalEventSystem.h"
 #include "Scene3D/Components/SwitchComponent.h"
 
+#define COMPONENT_COUNT_V6 16
+#define COMPONENTS_IN_MAP_COUNT 4
+#define COMPONENTS_IN_VECTOR_COUNT 3
+#define USE_VECTOR(x) (((1 << x) & vectorComponentsMask) != 0)
+#define COMPONENTS_BY_NAME_SAVE_SCENE_VERSION 7
+
 namespace DAVA
 {
     
-    
+uint32 vectorComponentsMask = (1 << Component::TRANSFORM_COMPONENT) | (1 << Component::RENDER_COMPONENT) | (1 << Component::LOD_COMPONENT);
+
 REGISTER_CLASS(Entity);
 
 // Property Names.
@@ -61,14 +68,17 @@ Entity::Entity()
 	, parent(0)
     , tag(0)
 	, entity(0)
-{
+#if !defined(COMPONENT_STORAGE_STDMAP)
+    , componentsMap(4)
+#endif
+    {
 //    Logger::Debug("Entity: %p", this);
     componentFlags = 0;
 
-	components.resize(Component::COMPONENT_COUNT);
-    for (uint32 k = 0; k < Component::COMPONENT_COUNT; ++k)
+	components.resize(COMPONENTS_IN_VECTOR_COUNT);
+    for (uint32 k = 0; k < COMPONENTS_IN_VECTOR_COUNT; ++k)
         components[k] = 0;
-    
+        
     defaultLocalTransform.Identity();
 	//animation = 0;
     //debugFlags = DEBUG_DRAW_NONE;
@@ -98,56 +108,260 @@ Entity::~Entity()
 
     SafeRelease(customProperties);
 
-	for(int32 i = 0; i < Component::COMPONENT_COUNT; ++i)
-	{
-		if(components[i])
-		{
-			RemoveComponent(components[i]);
-		}
-	}
-
+	RemoveAllComponents();
 //  Logger::Debug("~Entity: %p", this);
 }
     
 void Entity::AddComponent(Component * component)
 {
 	component->SetEntity(this);
+    
+    uint32 componentType = component->GetType();
+    if(USE_VECTOR(componentType))
+    {
+        SafeDelete(components[componentType]);
+        components[componentType] = component;
+    }
+    else
+    {
+#if defined(COMPONENT_STORAGE_STDMAP)
+        
+        ComponentsMap::iterator it = componentsMap.find(componentType);
+        if(componentsMap.end() == it)
+        {
+            Vector<Component*>* componentsVector = new Vector<Component*>();
+            std::pair<ComponentsMap::iterator, bool> insertResult =
+                componentsMap.insert(std::pair<uint32, Vector<Component*>* >(componentType, componentsVector));
+            it = insertResult.first;
+        }
+        
+        it->second->reserve(it->second->size() + 1); //reserve memory to avoid capacity growth
+        it->second->push_back(component);
+#else
+        
+        Vector<Component*>* componentsVector = componentsMap.GetValue(componentType);
+        if(NULL == componentsVector)
+        {
+            DVASSERT(componentsMap.Size() < COMPONENTS_IN_MAP_COUNT);
+            
+            componentsVector = new Vector<Component*>();
+            componentsMap.Insert(componentType, componentsVector);
+        }
+        
+        componentsVector->reserve(componentsVector->size() + 1); //reserve memory to avoid capacity growth
+        componentsVector->push_back(component);
+#endif
+    }
 
-    SafeDelete(components[component->GetType()]);
-    components[component->GetType()] = component;
     if (scene)
         scene->AddComponent(this, component);
     // SHOULD BE DONE AFTER scene->AddComponent
-    componentFlags |= 1 << component->GetType();
+    componentFlags |= 1 << componentType;
+}
+    
+void Entity::RemoveAllComponents()
+{
+    for(int32 i = 0; i < COMPONENTS_IN_VECTOR_COUNT; ++i)
+	{
+		if(components[i])
+		{
+			CleanupComponent(components[i], 0);
+            components[i] = NULL;
+		}
+	}
+
+#if defined(COMPONENT_STORAGE_STDMAP)
+    
+    for(ComponentsMap::iterator it = componentsMap.begin();
+        it != componentsMap.end(); ++it)
+    {
+        int componentCount = it->second->size();
+        for(Vector<Component*>::iterator compIt = it->second->begin();
+            compIt != it->second->end(); ++compIt)
+        {
+            componentCount--;
+            CleanupComponent(*compIt, componentCount);
+        }
+        
+        delete(it->second);
+        it->second = NULL;
+    }
+    
+    componentsMap.clear();
+    
+#else
+    
+    for(ComponentsMap::Iterator it = componentsMap.Begin();
+        it != componentsMap.End();
+        ++it)
+    {
+        Vector<Component*>* componentsVector = it.GetValue();
+        int componentCount = componentsVector->size();
+        
+        for(Vector<Component*>::iterator compIt = componentsVector->begin();
+            compIt != componentsVector->end(); ++compIt)
+        {
+            componentCount--;
+            CleanupComponent(*compIt, componentCount);
+        }
+
+        delete(componentsVector);
+    }
+    
+    componentsMap.Clear();
+    
+#endif
 }
 
 void Entity::RemoveComponent(Component * component)
 {
-	component->SetEntity(0);
+    int componentCount = 0;
+    uint32 componentType = component->GetType();
+    
+    if(USE_VECTOR(componentType))
+    {
+        components[componentType] = 0;
+    }
+    else
+    {
+#if defined(COMPONENT_STORAGE_STDMAP)
+        
+        ComponentsMap::iterator it = componentsMap.find(componentType);
+        if(componentsMap.end() != it)
+        {
+            for(Vector<Component*>::iterator i = it->second->begin();
+                i != it->second->end(); ++i)
+            {
+                if((*i) == component)
+                {
+                    it->second->erase(i);
+                    break;
+                }
+            }
+            
+            componentCount = it->second->size();
+        }
+        
+#else
+        
+        Vector<Component*>* componentsVector = componentsMap.GetValue(componentType);
+        if(NULL != componentsVector)
+        {
+            for(Vector<Component*>::iterator i = componentsVector->begin();
+                i != componentsVector->end(); ++i)
+            {
+                if((*i) == component)
+                {
+                    componentsVector->erase(i);
+                    break;
+                }
+            }
+            
+            componentCount = componentsVector->size();
 
-    components[component->GetType()] = 0;
+        }
+        
+#endif
+    }
+    
+    CleanupComponent(component, componentCount);    
+}
+    
+void Entity::RemoveComponent(uint32 componentType, uint32 index)
+{
+    Component* component = NULL;
+    int componentCount = 0;
+    if(USE_VECTOR(componentType))
+    {
+        component = components[componentType];
+        components[componentType] = NULL;
+    }
+    else
+    {
+#if defined(COMPONENT_STORAGE_STDMAP)
+        
+        ComponentsMap::iterator it = componentsMap.find(componentType);
+        if(componentsMap.end() != it &&
+           it->second->size() > index)
+        {
+            component = it->second->at(index);
+            it->second->erase(it->second->begin() + index);
+            
+            componentCount = it->second->size();
+        }
+        
+#else
+        
+        Vector<Component*>* componentsVector = componentsMap.GetValue(componentType);
+        if(NULL != componentsVector &&
+           componentsVector->size() > index)
+        {
+            component = componentsVector->at(index);
+            componentsVector->erase(componentsVector->begin() + index);
+            
+            componentCount = componentsVector->size();
+        }
+        
+#endif
+    }
+    
+    if(NULL != component)
+    {
+        CleanupComponent(component, componentCount);
+    }    
+}
+    
+inline void Entity::CleanupComponent(Component* component, uint32 componentCount)
+{
+    component->SetEntity(0);
+    
     if (scene)
         scene->RemoveComponent(this, component);
-    // SHOULD BE DONE AFTER scene->RemoveComponent
-    componentFlags &= ~(1 << component->GetType());
-	delete(component);
-}
     
-void Entity::RemoveComponent(uint32 componentType)
-{
-    if (components[componentType])
-        RemoveComponent(components[componentType]);
+    if(componentCount <= 0)
+    {
+        componentFlags &= ~(1 << component->GetType());
+    }
+    
+    delete(component);
 }
 
-    
-Component * Entity::GetComponent(uint32 componentType)
+Component * Entity::GetComponent(uint32 componentType, uint32 index)
 {
-    return components[componentType];
+    Component* component = NULL;
+    if(USE_VECTOR(componentType))
+    {
+        component = components[componentType];
+    }
+    else
+    {
+#if defined(COMPONENT_STORAGE_STDMAP)
+        
+        ComponentsMap::iterator it = componentsMap.find(componentType);
+        if(componentsMap.end() != it &&
+           it->second->size() > index)
+        {
+            component = it->second->at(index);
+        }
+        
+#else
+        
+        Vector<Component*>* componentsVector = componentsMap.GetValue(componentType);
+        if(NULL != componentsVector &&
+           componentsVector->size() > index)
+        {
+            component = componentsVector->at(index);
+        }
+        
+#endif
+    }
+    
+    return component;
 }
 
-Component * Entity::GetOrCreateComponent(uint32 componentType)
+Component * Entity::GetOrCreateComponent(uint32 componentType, uint32 index)
 {
-	Component * ret = components[componentType];
+	Component * ret = GetComponent(componentType, index);
 	if(!ret)
 	{
 		ret = Component::CreateByType(componentType);
@@ -160,13 +374,75 @@ Component * Entity::GetOrCreateComponent(uint32 componentType)
 uint32 Entity::GetComponentCount()
 {
     uint32 count = 0;
-    for (uint32 k = 0; k < Component::COMPONENT_COUNT; ++k)
+    for (uint32 k = 0; k < COMPONENTS_IN_VECTOR_COUNT; ++k)
         if (componentFlags >> k)
             count++;
+
+#if defined(COMPONENT_STORAGE_STDMAP)
+
+    if(componentsMap.size() > 0)
+    {
+        
+        for(ComponentsMap::iterator it = componentsMap.begin();
+            it != componentsMap.end(); ++it)
+        {
+            count += it->second->size();
+        }
+    }
+    
+#else
+    
+    if(componentsMap.Size() > 0)
+    {
+        ComponentsMap::Iterator end = componentsMap.End();
+        for(ComponentsMap::Iterator it = componentsMap.Begin();
+            it != end;
+            ++it)
+        {
+            Vector<Component*>* componentsVector = it.GetValue();
+            count += componentsVector->size();
+        }
+    }
+    
+#endif
+    
     return count;
 }
 
+uint32 Entity::GetComponentCount(uint32 componentType)
+{
+    int componentCount = 0;
+    
+    if(USE_VECTOR(componentType))
+    {
+        if(components[componentType] != NULL)
+        {
+            componentCount = 1;
+        }
+    }
+    else
+    {
+#if defined(COMPONENT_STORAGE_STDMAP)
 
+        ComponentsMap::iterator it = componentsMap.find(componentType);
+        if(componentsMap.end() != it)
+        {
+            componentCount = it->second->size();
+        }
+        
+#else
+        
+        Vector<Component*>* componentsVector = componentsMap.GetValue(componentType);
+        if(NULL != componentsVector)
+        {
+            componentCount = componentsVector->size();
+        }
+
+#endif
+    }
+    
+    return componentCount;
+}
 
 void Entity::SetScene(Scene * _scene)
 {
@@ -217,6 +493,8 @@ void Entity::AddNode(Entity * node)
         {
             node->parent->RemoveNode(node);
         }
+
+		node->SetParent(this);
         node->SetScene(GetScene());
         node->SetParent(this);
     }
@@ -562,15 +840,42 @@ Entity* Entity::Clone(Entity *dstNode)
     }
     dstNode->defaultLocalTransform = defaultLocalTransform;
     
-    //uint32 size = components.size();
-    for (uint32 k = 0; k < Component::COMPONENT_COUNT;++k)
+    dstNode->RemoveAllComponents();
+    for (uint32 k = 0; k < COMPONENTS_IN_VECTOR_COUNT;++k)
 	{
 		if(components[k])
 		{
-			SafeDelete(dstNode->components[k]);
 			dstNode->AddComponent(components[k]->Clone(dstNode));
 		}
 	}
+    
+#if defined(COMPONENT_STORAGE_STDMAP)
+
+    for(ComponentsMap::iterator it = componentsMap.begin();
+        it != componentsMap.end(); ++it)
+    {
+        for(Vector<Component*>::iterator compIt = it->second->begin();
+            compIt != it->second->end(); ++compIt)
+        {
+            dstNode->AddComponent((*compIt)->Clone(dstNode));
+        }
+    }
+    
+#else
+    
+    for(ComponentsMap::Iterator it = componentsMap.Begin();
+        it != componentsMap.End();
+        ++it)
+    {
+        Vector<Component*>* componentsVector = it.GetValue();
+        for(Vector<Component*>::iterator compIt = componentsVector->begin();
+            compIt != componentsVector->end(); ++compIt)
+        {
+            dstNode->AddComponent((*compIt)->Clone(dstNode));
+        }        
+    }
+    
+#endif
     
     dstNode->name = name;
     dstNode->tag = tag;
@@ -581,6 +886,7 @@ Entity* Entity::Clone(Entity *dstNode)
     
     dstNode->nodeAnimations = nodeAnimations;
     
+    DVASSERT(dstNode->GetChildrenCount() == 0);
     std::vector<Entity*>::iterator it = children.begin();
 	const std::vector<Entity*>::iterator & childsEnd = children.end();
 	for(; it != childsEnd; it++)
@@ -595,12 +901,12 @@ Entity* Entity::Clone(Entity *dstNode)
 
 void Entity::SetDebugFlags(uint32 debugFlags, bool isRecursive)
 {
-	DebugRenderComponent * debugComponent = cast_if_equal<DebugRenderComponent*>(components[Component::DEBUG_RENDER_COMPONENT]);
+	DebugRenderComponent * debugComponent = cast_if_equal<DebugRenderComponent*>(GetComponent(Component::DEBUG_RENDER_COMPONENT));
 
 	if(!debugComponent)
 	{
 		AddComponent(new DebugRenderComponent());
-		debugComponent = cast_if_equal<DebugRenderComponent*>(components[Component::DEBUG_RENDER_COMPONENT]);
+		debugComponent = cast_if_equal<DebugRenderComponent*>(GetComponent(Component::DEBUG_RENDER_COMPONENT));
 		debugComponent->SetDebugFlags(DebugRenderComponent::DEBUG_AUTOCREATED);
 	}
 
@@ -625,9 +931,9 @@ void Entity::SetDebugFlags(uint32 debugFlags, bool isRecursive)
     }
 }
 
-uint32 Entity::GetDebugFlags() const
+uint32 Entity::GetDebugFlags()
 {
-	DebugRenderComponent * debugComponent = cast_if_equal<DebugRenderComponent*>(components[Component::DEBUG_RENDER_COMPONENT]);
+	DebugRenderComponent * debugComponent = cast_if_equal<DebugRenderComponent*>(GetComponent(Component::DEBUG_RENDER_COMPONENT));
 	if(debugComponent)
 	{
 		return debugComponent->GetDebugFlags();
@@ -726,7 +1032,7 @@ void Entity::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     if(customProperties && customProperties->IsKeyExists("editor.referenceToOwner"))
     {
         savedPath = customProperties->GetString("editor.referenceToOwner");
-        String newPath = FilePath(savedPath).GetRelativePathname(sceneFileV2->GetScenePath().GetAbsolutePathname());
+        String newPath = FilePath(savedPath).GetRelativePathname(sceneFileV2->GetScenePath());
         customProperties->SetString("editor.referenceToOwner", newPath);
     }
     
@@ -744,18 +1050,58 @@ void Entity::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     {
         customProperties->SetString("editor.referenceToOwner", savedPath);
     }
-
-	KeyedArchive *compsArch = new KeyedArchive();
+	
+    KeyedArchive *compsArch = new KeyedArchive();
+    uint32 savedIndex = 0;
 	for(uint32 i = 0; i < components.size(); ++i)
 	{
 		if(NULL != components[i])
 		{
 			KeyedArchive *compArch = new KeyedArchive();
 			components[i]->Serialize(compArch, sceneFileV2);
-			compsArch->SetArchive(KeyedArchive::GenKeyFromIndex(i), compArch);
+			compsArch->SetArchive(KeyedArchive::GenKeyFromIndex(savedIndex), compArch);
 			compArch->Release();
+            savedIndex++;
 		}
 	}
+    
+#if defined(COMPONENT_STORAGE_STDMAP)
+    
+    for(ComponentsMap::iterator it = componentsMap.begin();
+        it != componentsMap.end(); ++it)
+    {
+        for(Vector<Component*>::iterator compIt = it->second->begin();
+            compIt != it->second->end(); ++compIt)
+        {
+            KeyedArchive *compArch = new KeyedArchive();
+			(*compIt)->Serialize(compArch, sceneFileV2);
+			compsArch->SetArchive(compTypeName, compArch);
+			compArch->Release();
+            savedIndex++;
+        }
+    }
+    
+#else
+    
+    for(ComponentsMap::Iterator it = componentsMap.Begin();
+        it != componentsMap.End();
+        ++it)
+    {
+        Vector<Component*>* componentsVector = it.GetValue();
+        for(Vector<Component*>::iterator compIt = componentsVector->begin();
+            compIt != componentsVector->end(); ++compIt)
+        {
+            KeyedArchive *compArch = new KeyedArchive();
+			(*compIt)->Serialize(compArch, sceneFileV2);
+			compsArch->SetArchive(KeyedArchive::GenKeyFromIndex(savedIndex), compArch);
+			compArch->Release();
+            savedIndex++;
+        }
+    }
+    
+#endif
+
+    compsArch->SetUInt32("count", savedIndex);
 	archive->SetArchive("components", compsArch);
 	compsArch->Release();
 }
@@ -789,7 +1135,7 @@ void Entity::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
         if(customProperties->IsKeyExists("editor.referenceToOwner"))
         {
             FilePath newPath(sceneFileV2->GetScenePath());
-            newPath += FilePath(customProperties->GetString("editor.referenceToOwner"));
+            newPath += customProperties->GetString("editor.referenceToOwner");
 
             //TODO: why we use absolute pathname instead of relative?
             customProperties->SetString("editor.referenceToOwner", newPath.GetAbsolutePathname());
@@ -797,9 +1143,22 @@ void Entity::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     }
 
 	KeyedArchive *compsArch = archive->GetArchive("components");
-	if(NULL != compsArch)
+    
+    if(sceneFileV2->GetVersion() < COMPONENTS_BY_NAME_SAVE_SCENE_VERSION)
+    {
+        LoadComponentsV6(compsArch, sceneFileV2);
+    }
+    else
+    {
+        LoadComponentsV7(compsArch, sceneFileV2);
+    }
+}
+    
+void Entity::LoadComponentsV6(KeyedArchive *compsArch, SceneFileV2 * sceneFileV2)
+{
+   	if(NULL != compsArch)
 	{
-		for(uint32 i = 0; i < components.size(); ++i)
+		for(uint32 i = 0; i < COMPONENT_COUNT_V6; ++i)
 		{
 			KeyedArchive *compArch = compsArch->GetArchive(KeyedArchive::GenKeyFromIndex(i));
 			if(NULL != compArch)
@@ -807,6 +1166,21 @@ void Entity::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 				uint32 compType = compArch->GetUInt32("comp.type", 0xFFFFFFFF);
 				if(compType != 0xFFFFFFFF)
 				{
+                    //VI{
+                    //Need to swap these 2 components since their order in the enum
+                    //has been changed
+                    if(Component::DEBUG_RENDER_COMPONENT == compType)
+                    {
+                        compType = Component::LOD_COMPONENT;
+                        compArch->SetUInt32("comp.type", compType);
+                    }
+                    else if(Component::LOD_COMPONENT == compType)
+                    {
+                        compType = Component::DEBUG_RENDER_COMPONENT;
+                        compArch->SetUInt32("comp.type", compType);
+                    }
+                    //}VI
+                    
 					Component *comp = Component::CreateByType(compType);
 					if(NULL != comp)
 					{
@@ -816,7 +1190,30 @@ void Entity::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 				}
 			}
 		}
-	}
+	}    
+}
+    
+void Entity::LoadComponentsV7(KeyedArchive *compsArch, SceneFileV2 * sceneFileV2)
+{
+    if(NULL != compsArch)
+	{
+        uint32 componentCount = compsArch->GetUInt32("count");
+        for(uint32 i = 0; i < componentCount; ++i)
+        {
+            KeyedArchive *compArch = compsArch->GetArchive(KeyedArchive::GenKeyFromIndex(i));
+			if(NULL != compArch)
+			{
+                String componentType = compArch->GetString("comp.typename");
+                Component* comp = ObjectFactory::Instance()->New<Component>(componentType);
+                if(NULL != comp)
+                {
+                    comp->Deserialize(compArch, sceneFileV2);
+                    AddComponent(comp);
+                }
+
+            }
+        }
+    }
 }
 
 KeyedArchive * Entity::GetCustomProperties()
@@ -838,13 +1235,41 @@ bool Entity::GetSolid()
 
 void Entity::GetDataNodes(Set<DataNode*> & dataNodes)
 {
-    for (uint32 k = 0; k < Component::COMPONENT_COUNT; ++k)
+    for (uint32 k = 0; k < components.size(); ++k)
     {
         if(components[k])
         {
             components[k]->GetDataNodes(dataNodes);
         }
     }
+   
+#if defined(COMPONENT_STORAGE_STDMAP)
+
+    for(ComponentsMap::iterator it = componentsMap.begin();
+        it != componentsMap.end(); ++it)
+    {
+        for(Vector<Component*>::iterator compIt = it->second->begin();
+            compIt != it->second->end(); ++compIt)
+        {
+            (*compIt)->GetDataNodes(dataNodes);
+        }
+    }
+    
+#else
+    
+    for(ComponentsMap::Iterator it = componentsMap.Begin();
+        it != componentsMap.End();
+        ++it)
+    {
+        Vector<Component*>* componentsVector = it.GetValue();
+        for(Vector<Component*>::iterator compIt = componentsVector->begin();
+            compIt != componentsVector->end(); ++compIt)
+        {
+            (*compIt)->GetDataNodes(dataNodes);
+        }
+    }
+    
+#endif
 
     uint32 size = (uint32)children.size();
     for (uint32 c = 0; c < size; ++c)

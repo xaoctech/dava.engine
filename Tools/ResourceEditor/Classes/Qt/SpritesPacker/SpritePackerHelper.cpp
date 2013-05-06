@@ -35,8 +35,8 @@ void SpritePackerHelper::Pack()
 {
 	void *pool = DAVA::QtLayer::Instance()->CreateAutoreleasePool();
 	FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
-	FilePath inputDir = projectPath + FilePath("DataSource/Gfx/Particles/");
-	FilePath outputDir = projectPath + FilePath("Data/Gfx/Particles/");
+	FilePath inputDir = projectPath + "DataSource/Gfx/Particles/";
+	FilePath outputDir = projectPath + "Data/Gfx/Particles/";
 
 	if(!FileSystem::Instance()->IsDirectory(inputDir))
 	{
@@ -46,7 +46,7 @@ void SpritePackerHelper::Pack()
 
 	ResourcePacker2D * resourcePacker = new ResourcePacker2D();
 	
-	bool isChanged = resourcePacker->IsMD5ChangedDir(projectPath+FilePath("DataSource/Gfx/"),inputDir,FilePath("particles.md5"),true);
+	bool isChanged = resourcePacker->IsMD5ChangedDir(projectPath+"DataSource/Gfx/",inputDir,"particles.md5",true);
 	
 	SafeDelete(resourcePacker);
 	if(!isChanged)
@@ -82,7 +82,8 @@ void SpritePackerHelper::Reload()
         it->second->Reload();
     }
     
-	ParticlesEditorController::Instance()->RefreshSelectedNode();
+    if(ParticlesEditorController::Instance())
+        ParticlesEditorController::Instance()->RefreshSelectedNode();
 }
 
 void SpritePackerHelper::EnumerateSpritesForReloading(SceneData* sceneData, Map<String, Sprite *> &sprites)

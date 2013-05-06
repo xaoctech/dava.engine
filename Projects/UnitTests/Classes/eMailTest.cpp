@@ -31,7 +31,7 @@ EMailTest::EMailTest() :
 
 void EMailTest::LoadResources()
 {
-	Font *font = FTFont::Create(FilePath("~res:/Fonts/korinna.ttf"));
+	Font *font = FTFont::Create("~res:/Fonts/korinna.ttf");
     DVASSERT(font);
 	font->SetSize(20);
     font->SetColor(Color::White());

@@ -90,7 +90,7 @@ bool HierarchyTree::Load(const QString& projectPath)
 		{
 			// Get font values into array
 			Vector<YamlNode*> fontPathArray = fontPath->AsVector();
-			EditorFontManager::DefaultFontPath defaultFontPath(FilePath(""), FilePath(""));
+			EditorFontManager::DefaultFontPath defaultFontPath("", "");
 			// True type font
 			if (fontPathArray.size() == 1)
 			{
@@ -151,6 +151,8 @@ void HierarchyTree::CreateProject()
 void HierarchyTree::CloseProject()
 {
 	projectCreated = false;
+	// Reset project path
+	rootNode.SetProjectFilePath(QString());
 	rootNode.ResetUnsavedChanges();
 	Clear();
 }

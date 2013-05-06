@@ -140,7 +140,7 @@ MusicIos::MusicIos(const FilePath & fileName)
 
 bool MusicIos::Init()
 {
-    avSound = [[AvSound alloc] initWithFileName:[NSString stringWithCString:fileName.ResolvePathname().c_str() encoding:NSASCIIStringEncoding]];
+    avSound = [[AvSound alloc] initWithFileName:[NSString stringWithCString:fileName.GetAbsolutePathname().c_str() encoding:NSASCIIStringEncoding]];
     
     if(avSound && !((AvSound *)avSound)->initSuccess)
     {

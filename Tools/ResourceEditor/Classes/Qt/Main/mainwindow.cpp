@@ -4,7 +4,7 @@
 #include "Classes/Qt/Main/QtMainWindowHandler.h"
 #include "Classes/Qt/Scene/SceneDataManager.h"
 #include "Classes/SceneEditor/EditorSettings.h"
-#include "Classes/SceneEditor/CommandLineTool.h"
+#include "Classes/CommandLine/CommandLineManager.h"
 #include "Classes/Qt/TextureBrowser/TextureConvertor.h"
 #include "Classes/Qt/DockSceneGraph/PointerHolder.h"
 #include "Classes/Qt/Project/ProjectManager.h"
@@ -16,7 +16,6 @@
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/EditorBodyControl.h"
 #include "../SceneEditor/EditorConfig.h"
-#include "../SceneEditor/CommandLineTool.h"
 #include "Classes/QT/SpritesPacker/SpritePackerHelper.h"
 #include "Classes/QT/QResourceEditorProgressDialog/QResourceEditorProgressDialog.h"
 
@@ -42,7 +41,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	ui->setupUi(this);
  
     qApp->installEventFilter(this);
-	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + FilePath("EditorConfig.yaml"));
+	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + "EditorConfig.yaml");
 
 	QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->sceneTabWidget);
 	QtMainWindowHandler::Instance()->SetResentMenu(ui->menuFile);
@@ -283,9 +282,7 @@ void QtMainWindow::SetupToolBars()
 
 void QtMainWindow::OpenLastProject()
 {
-    if(     !CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter"))
-       &&   !CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter"))
-       &&   !CommandLineTool::Instance()->CommandIsFound(String("-scenesaver")))
+    if(CommandLineManager::Instance() && !CommandLineManager::Instance()->IsCommandLineModeEnabled())
     {
         DAVA::FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
 
@@ -300,7 +297,7 @@ void QtMainWindow::OpenLastProject()
 		}
 		else
 		{
-			ProjectManager::Instance()->ProjectOpen(QString(projectPath.ResolvePathname().c_str()));
+			ProjectManager::Instance()->ProjectOpen(QString(projectPath.GetAbsolutePathname().c_str()));
 		}
     }
 }
@@ -453,10 +450,7 @@ void QtMainWindow::ProjectOpened(const QString &path)
 bool QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)
 {
 	bool ret = false;
-	if(     CommandLineTool::Instance()
-       &&   !CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter"))
-       &&   !CommandLineTool::Instance()->CommandIsFound(String("-scenesaver"))
-       &&   !CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter")) && NULL == convertWaitDialog)
+	if(CommandLineManager::Instance() && !CommandLineManager::Instance()->IsCommandLineModeEnabled() && NULL == convertWaitDialog)
 	{
 		// check if we have textures to convert - 
 		// if we have function will return true and conversion will start in new thread

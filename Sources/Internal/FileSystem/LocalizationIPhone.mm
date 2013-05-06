@@ -43,7 +43,7 @@ void LocalizationIPhone::SelecePreferedLocalizationForPath(const FilePath &direc
     if(lang)
     {
         String lid = [lang UTF8String];
-		File *fl = File::Create(directoryPath + FilePath(lid + ".yaml"), File::OPEN|File::READ);
+		File *fl = File::Create(directoryPath + (lid + ".yaml"), File::OPEN|File::READ);
 		if(fl)
 		{
 			Logger::Info("LocalizationIPhone:: selected lang = %s", lid.c_str());
@@ -60,7 +60,7 @@ void LocalizationIPhone::SelecePreferedLocalizationForPath(const FilePath &direc
             String lid = [[ar objectAtIndex:i] UTF8String];
 
             Logger::Info("LocalizationIPhone:: pref lang = %s", lid.c_str());
-            File *fl = File::Create(directoryPath + FilePath(lid + ".yaml"), File::OPEN|File::READ);
+            File *fl = File::Create(directoryPath + (lid + ".yaml"), File::OPEN|File::READ);
             if(fl)
             {
                 Logger::Info("LocalizationIPhone:: selected lang = %s", lid.c_str());

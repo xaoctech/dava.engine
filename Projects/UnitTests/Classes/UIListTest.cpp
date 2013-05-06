@@ -65,12 +65,12 @@ UIListTest::UIListTest() :
 
 void UIListTest::LoadResources()
 {
-	Font *font = FTFont::Create(FilePath("~res:/Fonts/korinna.ttf"));
+	Font *font = FTFont::Create("~res:/Fonts/korinna.ttf");
     DVASSERT(font);
 	font->SetSize(20);
     font->SetColor(Color::White());
 
-	YamlParser * parser = YamlParser::Create(FilePath("~res:/TestData/ListTest/ListData.yaml"));
+	YamlParser * parser = YamlParser::Create("~res:/TestData/ListTest/ListData.yaml");
 	UIYamlLoader * loader = new UIYamlLoader();
 			
 	if (parser && parser->GetRootNode())

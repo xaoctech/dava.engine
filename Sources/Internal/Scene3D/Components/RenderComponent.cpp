@@ -3,7 +3,9 @@
 
 namespace DAVA 
 {
-
+    
+REGISTER_CLASS(RenderComponent)
+    
 RenderComponent::RenderComponent(RenderObject * _object)
 {
     renderObject = SafeRetain(_object);
@@ -68,7 +70,7 @@ void RenderComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 		KeyedArchive *roArch = archive->GetArchive("rc.renderObj");
 		if(NULL != roArch)
 		{
-			RenderObject* ro = (RenderObject *) ObjectFactory::Instance()->New(roArch->GetString("##name"));
+			RenderObject* ro = (RenderObject *) ObjectFactory::Instance()->New<RenderObject>(roArch->GetString("##name"));
 			if(NULL != ro)
 			{
 				ro->Load(roArch, sceneFile);

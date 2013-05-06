@@ -108,6 +108,8 @@ void Core::CreateSingletons()
 	new Logger();
 
 	new FileSystem();
+    FilePath::InitializeBundleName();
+	
 	FileSystem::Instance()->SetDefaultDocumentsDirectory();
     FileSystem::Instance()->CreateDirectory(FileSystem::Instance()->GetCurrentDocumentsDirectory(), true);
 	
@@ -689,6 +691,16 @@ void Core::GoBackground(bool isLock)
             core->OnBackground();
         }
     }
+#endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
+}
+
+void Core::GoForeground()
+{
+#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
+	if (core)
+	{
+		core->OnForeground();
+	}
 #endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
 }
 

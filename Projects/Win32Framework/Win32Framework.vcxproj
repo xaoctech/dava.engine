@@ -380,7 +380,6 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Effects\TextureMulColorAlphaTestEffect.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Effects\TextureMulColorEffect.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Camera.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\CullingSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Frustum.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Heightmap.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\IRenderUpdatable.h" />
@@ -391,7 +390,10 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Mesh.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ParticleLayerBatch.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderBatch.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderBatchArray.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderDataSource.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderFastNames.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderHierarchy.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderLayer.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderObject.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderPass.h" />
@@ -412,6 +414,7 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialCompiler.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialGraph.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialGraphNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterial.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterialConsts.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\OGLHelpers.h" />
@@ -428,6 +431,7 @@
     <ClInclude Include="..\..\Sources\Internal\Render\RenderState.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\RGBColor.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Shader.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\ShaderCache.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\ShaderUniformArray.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\SharedFBO.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\StaticIndexBuffer.h" />
@@ -724,7 +728,6 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Effects\TextureMulColorAlphaTestEffect.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Effects\TextureMulColorEffect.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Camera.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\CullingSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Frustum.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Heightmap.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeChunk.cpp" />
@@ -734,6 +737,8 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Mesh.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ParticleLayerBatch.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderBatch.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderBatchArray.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderHierarchy.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderLayer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderPass.cpp" />
@@ -752,6 +757,7 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialCompiler.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialGraph.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialGraphNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material\NMaterial.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\RenderBase.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\RenderDataObject.cpp" />
@@ -767,6 +773,7 @@
     <ClCompile Include="..\..\Sources\Internal\Render\RenderResource.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\RenderState.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Shader.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\ShaderCache.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\ShaderDX.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\ShaderGL.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\SharedFBO.cpp" />

@@ -323,6 +323,30 @@ QColor UIButtonMetadata::GetFontColorForState(UIControl::eControlState state) co
     return QColor();
 }
 
+int UIButtonMetadata::GetTextAlignForState(UIControl::eControlState state) const
+{
+	UIStaticText* referenceButtonText = GetActiveUIButton()->GetStateTextControl(state);
+    if (referenceButtonText)
+    {
+		return referenceButtonText->GetTextAlign();
+    }
+    
+    return ALIGN_HCENTER|ALIGN_VCENTER;
+}
+
+void UIButtonMetadata::UpdatePropertyDirtyFlagForTextAlign()
+{
+    int statesCount = UIControlStateHelper::GetUIControlStatesCount();
+    for (int i = 0; i < statesCount; i ++)
+    {
+        UIControl::eControlState curState = UIControlStateHelper::GetUIControlState(i);
+        
+        bool curStateDirty = (GetTextAlignForState(curState) !=
+                              GetTextAlignForState(GetReferenceState()));
+        SetStateDirtyForProperty(curState, PropertyNames::TEXT_ALIGN_PROPERTY_NAME, curStateDirty);
+    }
+}
+
 void UIButtonMetadata::SetSprite(const QString& value)
 {
     if (!VerifyActiveParamID())
@@ -643,6 +667,27 @@ int UIButtonMetadata::GetSpriteModification()
 	}
 
 	return GetSpriteModificationForState(uiControlStates[GetActiveStateIndex()]);
+}
+
+int UIButtonMetadata::GetTextAlign()
+{
+	if (!VerifyActiveParamID())
+	{
+		return ALIGN_HCENTER|ALIGN_VCENTER;
+	}
+
+	return GetTextAlignForState(this->uiControlStates[GetActiveStateIndex()]);
+}
+
+void UIButtonMetadata::SetTextAlign(int align)
+{
+	if (!VerifyActiveParamID())
+    {
+        return;
+    }
+	
+	GetActiveUIButton()->GetStateTextControl(GetActiveStateIndex())->SetTextAlign(align);
+	UpdatePropertyDirtyFlagForTextAlign();
 }
 
 void UIButtonMetadata::SetSpriteModification(int value)
