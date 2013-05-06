@@ -30,7 +30,7 @@
 
 #include "CleanFolderTool.h"
 
-#include "../EditorCommandLineParser.h"
+#include "CommandLine/EditorCommandLineParser.h"
 
 using namespace DAVA;
 

@@ -31,7 +31,7 @@
 #include "SceneSaverTool.h"
 #include "SceneSaver.h"
 
-#include "../EditorCommandLineParser.h"
+#include "CommandLine/EditorCommandLineParser.h"
 
 using namespace DAVA;
 

@@ -11,7 +11,7 @@
 #include "TexturePacker/ResourcePacker2D.h"
 #include "TexturePacker/CommandLineParser.h"
 
-#include "../SceneEditor/CommandLineTool.h"
+#include "CommandLine/EditorCommandLineParser.h"
 
 #include "PVRConverter.h"
 
@@ -43,7 +43,7 @@ void PrintUsage()
 
 bool CheckPosition(int32 commandPosition)
 {
-    if(CommandLineTool::Instance()->CheckPosition(commandPosition))
+    if(EditorCommandLineParser::CheckPosition(commandPosition))
     {
         printf("Wrong arguments\n");
         PrintUsage();
@@ -108,31 +108,28 @@ void ProcessRecourcePacker()
     elapsedTime = SystemTimer::Instance()->AbsoluteMS() - elapsedTime;
     printf("[Resource Packer Compile Time: %0.3lf seconds]\n", (float64)elapsedTime / 1000.0);
     
-    PVRConverter::Instance()->Release();
-    
     SafeDelete(resourcePacker);
 }
 
 void FrameworkDidLaunched()
 {
-    new CommandLineTool();
 	if (Core::Instance()->IsConsoleMode())
 	{
-        if(     CommandLineTool::Instance()->CommandsCount() < 2 
-           ||   (CommandLineTool::Instance()->CommandIsFound(String("-usage")))
-           ||   (CommandLineTool::Instance()->CommandIsFound(String("-help")))
+        if(     EditorCommandLineParser::GetCommandsCount() < 2
+           ||   (EditorCommandLineParser::CommandIsFound(String("-usage")))
+           ||   (EditorCommandLineParser::CommandIsFound(String("-help")))
            )
         {
             PrintUsage();
 			return;
         }
 		
-        if(CommandLineTool::Instance()->CommandIsFound(String("-v")) || CommandLineTool::Instance()->CommandIsFound(String("-verbose")))
+        if(EditorCommandLineParser::CommandIsFound(String("-v")) || EditorCommandLineParser::CommandIsFound(String("-verbose")))
         {
             CommandLineParser::Instance()->SetVerbose(true);
         }
         
-        if(CommandLineTool::Instance()->CommandIsFound(String("-exo")))
+        if(EditorCommandLineParser::CommandIsFound(String("-exo")))
         {
             CommandLineParser::Instance()->SetExtendedOutput(true);
         }
@@ -144,5 +141,4 @@ void FrameworkDidLaunched()
 
 void FrameworkWillTerminate()
 {
-    CommandLineTool::Instance()->Release();
 }

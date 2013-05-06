@@ -1,6 +1,6 @@
 #include "QtUtils.h"
 #include "../../SceneEditor/SceneValidator.h"
-#include "../../CommandLine/EditorCommandLineParser.h"
+#include "CommandLine/EditorCommandLineParser.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
