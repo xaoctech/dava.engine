@@ -182,7 +182,7 @@ void MongodbClient::DropCollection()
 bool MongodbClient::IsConnected()
 {
 	int32 connectStatus = mongo_is_connected(clientData->connection);
-	if(MONGO_OK == connectStatus)
+	if(0 != connectStatus)
 	{
 		int32 checkStatus = mongo_check_connection(clientData->connection);
 		if(MONGO_OK == checkStatus)
