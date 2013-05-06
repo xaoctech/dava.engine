@@ -15,15 +15,11 @@
 		E822249F17100A0E00D1D955 /* PngImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E822249417100A0E00D1D955 /* PngImage.cpp */; };
 		E82224A017100A0E00D1D955 /* ResourcePacker2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E822249617100A0E00D1D955 /* ResourcePacker2D.cpp */; };
 		E82224A117100A0E00D1D955 /* TexturePacker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E822249817100A0E00D1D955 /* TexturePacker.cpp */; };
+		E8951AF61737775600755339 /* FrameworkMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8951AF21737775600755339 /* FrameworkMain.cpp */; };
+		E8951AF71737775600755339 /* GameCore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8951AF41737775600755339 /* GameCore.cpp */; };
+		E8951AFB1737779700755339 /* EditorCommandLineParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8951AF91737779700755339 /* EditorCommandLineParser.cpp */; };
 		E8C4C6AC1729BBAE004B0B3B /* libFramework.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FEC3E2EF133A9A5A00442ADD /* libFramework.a */; };
-		E8C4C820165F66C1009DB9E1 /* FrameworkMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8C4C81C165F66C1009DB9E1 /* FrameworkMain.cpp */; };
-		E8C4C821165F66C1009DB9E1 /* GameCore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8C4C81E165F66C1009DB9E1 /* GameCore.cpp */; };
-		E8C4C829165F66F9009DB9E1 /* CommandLineTool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8C4C827165F66F9009DB9E1 /* CommandLineTool.cpp */; };
 		E8C4C849165F6966009DB9E1 /* libpng-static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E8C4C848165F6966009DB9E1 /* libpng-static.a */; };
-		FEC3E2CB133A946000442ADD /* UIFileTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEC3E2BA133A946000442ADD /* UIFileTree.cpp */; };
-		FEC3E2CC133A946000442ADD /* UIFileTreeCell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEC3E2BC133A946000442ADD /* UIFileTreeCell.cpp */; };
-		FEC3E2CD133A946000442ADD /* UIScrollView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEC3E2BE133A946000442ADD /* UIScrollView.cpp */; };
-		FEC3E2CE133A946000442ADD /* UISpriteEditor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEC3E2C0133A946000442ADD /* UISpriteEditor.cpp */; };
 		FEC3E467133A9AA500442ADD /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FEC3E461133A9AA500442ADD /* Cocoa.framework */; };
 		FEC3E468133A9AA500442ADD /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FEC3E462133A9AA500442ADD /* OpenGL.framework */; };
 		FEC3E469133A9AA500442ADD /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FEC3E463133A9AA500442ADD /* AppKit.framework */; };
@@ -78,21 +74,13 @@
 		E822249717100A0E00D1D955 /* ResourcePacker2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResourcePacker2D.h; sourceTree = "<group>"; };
 		E822249817100A0E00D1D955 /* TexturePacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TexturePacker.cpp; sourceTree = "<group>"; };
 		E822249917100A0E00D1D955 /* TexturePacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TexturePacker.h; sourceTree = "<group>"; };
-		E8C4C81C165F66C1009DB9E1 /* FrameworkMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FrameworkMain.cpp; sourceTree = "<group>"; };
-		E8C4C81D165F66C1009DB9E1 /* FrameworkMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FrameworkMain.h; sourceTree = "<group>"; };
-		E8C4C81E165F66C1009DB9E1 /* GameCore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameCore.cpp; sourceTree = "<group>"; };
-		E8C4C81F165F66C1009DB9E1 /* GameCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameCore.h; sourceTree = "<group>"; };
-		E8C4C827165F66F9009DB9E1 /* CommandLineTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CommandLineTool.cpp; path = Classes/SceneEditor/CommandLineTool.cpp; sourceTree = "<group>"; };
-		E8C4C828165F66F9009DB9E1 /* CommandLineTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommandLineTool.h; path = Classes/SceneEditor/CommandLineTool.h; sourceTree = "<group>"; };
+		E8951AF21737775600755339 /* FrameworkMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FrameworkMain.cpp; path = Classes/FrameworkMain.cpp; sourceTree = "<group>"; };
+		E8951AF31737775600755339 /* FrameworkMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FrameworkMain.h; path = Classes/FrameworkMain.h; sourceTree = "<group>"; };
+		E8951AF41737775600755339 /* GameCore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameCore.cpp; path = Classes/GameCore.cpp; sourceTree = "<group>"; };
+		E8951AF51737775600755339 /* GameCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameCore.h; path = Classes/GameCore.h; sourceTree = "<group>"; };
+		E8951AF91737779700755339 /* EditorCommandLineParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditorCommandLineParser.cpp; sourceTree = "<group>"; };
+		E8951AFA1737779700755339 /* EditorCommandLineParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorCommandLineParser.h; sourceTree = "<group>"; };
 		E8C4C848165F6966009DB9E1 /* libpng-static.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpng-static.a"; path = "../../Libs/ImageMagick-6.7.4/delegates/lib/libpng-static.a"; sourceTree = "<group>"; };
-		FEC3E2BA133A946000442ADD /* UIFileTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIFileTree.cpp; path = Classes/UIFileTree.cpp; sourceTree = "<group>"; };
-		FEC3E2BB133A946000442ADD /* UIFileTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIFileTree.h; path = Classes/UIFileTree.h; sourceTree = "<group>"; };
-		FEC3E2BC133A946000442ADD /* UIFileTreeCell.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIFileTreeCell.cpp; path = Classes/UIFileTreeCell.cpp; sourceTree = "<group>"; };
-		FEC3E2BD133A946000442ADD /* UIFileTreeCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIFileTreeCell.h; path = Classes/UIFileTreeCell.h; sourceTree = "<group>"; };
-		FEC3E2BE133A946000442ADD /* UIScrollView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIScrollView.cpp; path = Classes/UIScrollView.cpp; sourceTree = "<group>"; };
-		FEC3E2BF133A946000442ADD /* UIScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIScrollView.h; path = Classes/UIScrollView.h; sourceTree = "<group>"; };
-		FEC3E2C0133A946000442ADD /* UISpriteEditor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UISpriteEditor.cpp; path = Classes/UISpriteEditor.cpp; sourceTree = "<group>"; };
-		FEC3E2C1133A946000442ADD /* UISpriteEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UISpriteEditor.h; path = Classes/UISpriteEditor.h; sourceTree = "<group>"; };
 		FEC3E2EA133A9A5A00442ADD /* Framework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Framework.xcodeproj; path = ../../Projects/MacOSFramework/Framework.xcodeproj; sourceTree = SOURCE_ROOT; };
 		FEC3E461133A9AA500442ADD /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		FEC3E462133A9AA500442ADD /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
@@ -142,17 +130,13 @@
 		08FB7795FE84155DC02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				E8951AF81737779700755339 /* CommandLine */,
+				E8951AF21737775600755339 /* FrameworkMain.cpp */,
+				E8951AF31737775600755339 /* FrameworkMain.h */,
+				E8951AF41737775600755339 /* GameCore.cpp */,
+				E8951AF51737775600755339 /* GameCore.h */,
 				E8222488171009F700D1D955 /* ResourcePacker */,
 				E8C4C826165F66EC009DB9E1 /* CommandLineTool */,
-				E8C4C81B165F66C1009DB9E1 /* ResourcePackerSpecific */,
-				FEC3E2BA133A946000442ADD /* UIFileTree.cpp */,
-				FEC3E2BB133A946000442ADD /* UIFileTree.h */,
-				FEC3E2BC133A946000442ADD /* UIFileTreeCell.cpp */,
-				FEC3E2BD133A946000442ADD /* UIFileTreeCell.h */,
-				FEC3E2BE133A946000442ADD /* UIScrollView.cpp */,
-				FEC3E2BF133A946000442ADD /* UIScrollView.h */,
-				FEC3E2C0133A946000442ADD /* UISpriteEditor.cpp */,
-				FEC3E2C1133A946000442ADD /* UISpriteEditor.h */,
 				FEC3E4EA133CBC1100442ADD /* main.cpp */,
 			);
 			name = Source;
@@ -206,23 +190,19 @@
 			path = ../../Sources/Tools/TexturePacker;
 			sourceTree = "<group>";
 		};
-		E8C4C81B165F66C1009DB9E1 /* ResourcePackerSpecific */ = {
+		E8951AF81737779700755339 /* CommandLine */ = {
 			isa = PBXGroup;
 			children = (
-				E8C4C81C165F66C1009DB9E1 /* FrameworkMain.cpp */,
-				E8C4C81D165F66C1009DB9E1 /* FrameworkMain.h */,
-				E8C4C81E165F66C1009DB9E1 /* GameCore.cpp */,
-				E8C4C81F165F66C1009DB9E1 /* GameCore.h */,
+				E8951AF91737779700755339 /* EditorCommandLineParser.cpp */,
+				E8951AFA1737779700755339 /* EditorCommandLineParser.h */,
 			);
-			name = ResourcePackerSpecific;
-			path = Classes/ResourcePackerSpecific;
+			name = CommandLine;
+			path = ../../Sources/Tools/CommandLine;
 			sourceTree = "<group>";
 		};
 		E8C4C826165F66EC009DB9E1 /* CommandLineTool */ = {
 			isa = PBXGroup;
 			children = (
-				E8C4C827165F66F9009DB9E1 /* CommandLineTool.cpp */,
-				E8C4C828165F66F9009DB9E1 /* CommandLineTool.h */,
 			);
 			name = CommandLineTool;
 			sourceTree = "<group>";
@@ -341,14 +321,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FEC3E2CB133A946000442ADD /* UIFileTree.cpp in Sources */,
-				FEC3E2CC133A946000442ADD /* UIFileTreeCell.cpp in Sources */,
-				FEC3E2CD133A946000442ADD /* UIScrollView.cpp in Sources */,
-				FEC3E2CE133A946000442ADD /* UISpriteEditor.cpp in Sources */,
 				FEC3E4EB133CBC1100442ADD /* main.cpp in Sources */,
-				E8C4C820165F66C1009DB9E1 /* FrameworkMain.cpp in Sources */,
-				E8C4C821165F66C1009DB9E1 /* GameCore.cpp in Sources */,
-				E8C4C829165F66F9009DB9E1 /* CommandLineTool.cpp in Sources */,
 				E822249A17100A0E00D1D955 /* DXTConverter.cpp in Sources */,
 				E822249B17100A0E00D1D955 /* PVRConverter.cpp in Sources */,
 				E822249C17100A0E00D1D955 /* CommandLineParser.cpp in Sources */,
@@ -357,6 +330,9 @@
 				E822249F17100A0E00D1D955 /* PngImage.cpp in Sources */,
 				E82224A017100A0E00D1D955 /* ResourcePacker2D.cpp in Sources */,
 				E82224A117100A0E00D1D955 /* TexturePacker.cpp in Sources */,
+				E8951AF61737775600755339 /* FrameworkMain.cpp in Sources */,
+				E8951AF71737775600755339 /* GameCore.cpp in Sources */,
+				E8951AFB1737779700755339 /* EditorCommandLineParser.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

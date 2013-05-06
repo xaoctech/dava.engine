@@ -412,6 +412,7 @@
 		E84779B11669009B004CD20A /* ParticleEffectPropertyControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E84779AF1669009B004CD20A /* ParticleEffectPropertyControl.cpp */; };
 		E88F2FFC171C801600510B78 /* SceneInfo.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E88F2FFA171C801600510B78 /* SceneInfo.cpp */; };
 		E88F3002171C85A000510B78 /* SceneInfo_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E88F3001171C85A000510B78 /* SceneInfo_moc.cpp */; };
+		E8951B0417377D2300755339 /* EditorCommandLineParser.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8951B0217377D2300755339 /* EditorCommandLineParser.cpp */; };
 		E89DFD30163ED2A900B51706 /* DataQt in Bundle Resources */ = {isa = PBXBuildFile; fileRef = E89DFD2F163ED2A900B51706 /* DataQt */; };
 		E8BD1F0016DE40ED00499E18 /* libFrameworkQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = E8BD1EFF16DE40E300499E18 /* libFrameworkQt.a */; };
 		E8C4C64F17294079004B0B3B /* CameraSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C4C63017294079004B0B3B /* CameraSystem.cpp */; };
@@ -455,7 +456,6 @@
 		E8EE7E59160DBCA000645405 /* RulerTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EE7E57160DBCA000645405 /* RulerTool.cpp */; };
 		E8F020CB16103E84000969AF /* RulerToolLandscape.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8F020C916103E84000969AF /* RulerToolLandscape.cpp */; };
 		E8FB1E02172E900300D1428F /* CommandLineManager.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8FB1DFE172E900300D1428F /* CommandLineManager.cpp */; };
-		E8FB1E03172E900300D1428F /* EditorCommandLineParser.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8FB1E00172E900300D1428F /* EditorCommandLineParser.cpp */; };
 		E8FB1E06172E93CD00D1428F /* CommandLineTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8FB1E04172E93CD00D1428F /* CommandLineTool.cpp */; };
 		E8FB1E0C172E949700D1428F /* ImageSplitter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8FB1E08172E949700D1428F /* ImageSplitter.cpp */; };
 		E8FB1E0D172E949700D1428F /* ImageSplitterTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8FB1E0A172E949700D1428F /* ImageSplitterTool.cpp */; };
@@ -1322,6 +1322,8 @@
 		E88F2FFA171C801600510B78 /* SceneInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneInfo.cpp; sourceTree = "<group>"; };
 		E88F2FFB171C801600510B78 /* SceneInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneInfo.h; sourceTree = "<group>"; };
 		E88F3001171C85A000510B78 /* SceneInfo_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneInfo_moc.cpp; sourceTree = "<group>"; };
+		E8951B0217377D2300755339 /* EditorCommandLineParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EditorCommandLineParser.cpp; path = ../../Sources/Tools/CommandLine/EditorCommandLineParser.cpp; sourceTree = "<group>"; };
+		E8951B0317377D2300755339 /* EditorCommandLineParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EditorCommandLineParser.h; path = ../../Sources/Tools/CommandLine/EditorCommandLineParser.h; sourceTree = "<group>"; };
 		E89DFD2F163ED2A900B51706 /* DataQt */ = {isa = PBXFileReference; lastKnownFileType = folder; path = DataQt; sourceTree = "<group>"; };
 		E8BD1EF616DE40E300499E18 /* Framework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Framework.xcodeproj; path = ../../Projects/MacOSFramework/Framework.xcodeproj; sourceTree = "<group>"; };
 		E8C4C63017294079004B0B3B /* CameraSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CameraSystem.cpp; sourceTree = "<group>"; };
@@ -1388,8 +1390,6 @@
 		E8F020CA16103E84000969AF /* RulerToolLandscape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RulerToolLandscape.h; path = Classes/LandscapeEditor/RulerToolLandscape.h; sourceTree = "<group>"; };
 		E8FB1DFE172E900300D1428F /* CommandLineManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CommandLineManager.cpp; path = Classes/CommandLine/CommandLineManager.cpp; sourceTree = "<group>"; };
 		E8FB1DFF172E900300D1428F /* CommandLineManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommandLineManager.h; path = Classes/CommandLine/CommandLineManager.h; sourceTree = "<group>"; };
-		E8FB1E00172E900300D1428F /* EditorCommandLineParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EditorCommandLineParser.cpp; path = Classes/CommandLine/EditorCommandLineParser.cpp; sourceTree = "<group>"; };
-		E8FB1E01172E900300D1428F /* EditorCommandLineParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EditorCommandLineParser.h; path = Classes/CommandLine/EditorCommandLineParser.h; sourceTree = "<group>"; };
 		E8FB1E04172E93CD00D1428F /* CommandLineTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CommandLineTool.cpp; path = Classes/CommandLine/CommandLineTool.cpp; sourceTree = "<group>"; };
 		E8FB1E05172E93CD00D1428F /* CommandLineTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommandLineTool.h; path = Classes/CommandLine/CommandLineTool.h; sourceTree = "<group>"; };
 		E8FB1E08172E949700D1428F /* ImageSplitter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageSplitter.cpp; sourceTree = "<group>"; };
@@ -3004,6 +3004,8 @@
 		E8FB1DF7172E867C00D1428F /* CommandLine */ = {
 			isa = PBXGroup;
 			children = (
+				E8951B0217377D2300755339 /* EditorCommandLineParser.cpp */,
+				E8951B0317377D2300755339 /* EditorCommandLineParser.h */,
 				E8FB1E19172EABE700D1428F /* SceneExporter */,
 				E8FB1E1C172EABE700D1428F /* SceneSaver */,
 				E8FB1E1F172EABE700D1428F /* SceneUtils */,
@@ -3012,8 +3014,6 @@
 				E8FB1E05172E93CD00D1428F /* CommandLineTool.h */,
 				E8FB1DFE172E900300D1428F /* CommandLineManager.cpp */,
 				E8FB1DFF172E900300D1428F /* CommandLineManager.h */,
-				E8FB1E00172E900300D1428F /* EditorCommandLineParser.cpp */,
-				E8FB1E01172E900300D1428F /* EditorCommandLineParser.h */,
 			);
 			name = CommandLine;
 			sourceTree = "<group>";
@@ -3689,7 +3689,6 @@
 				494A7CDD172A92C0005D7C7F /* CommandSignals.cpp in Build Sources */,
 				494A7CE3172A950D005D7C7F /* CommandSignals_moc.cpp in Build Sources */,
 				E8FB1E02172E900300D1428F /* CommandLineManager.cpp in Build Sources */,
-				E8FB1E03172E900300D1428F /* EditorCommandLineParser.cpp in Build Sources */,
 				E8FB1E06172E93CD00D1428F /* CommandLineTool.cpp in Build Sources */,
 				E8FB1E0C172E949700D1428F /* ImageSplitter.cpp in Build Sources */,
 				E8FB1E0D172E949700D1428F /* ImageSplitterTool.cpp in Build Sources */,
@@ -3699,6 +3698,7 @@
 				E8FB1E2A172EAC0A00D1428F /* CleanFolderTool.cpp in Build Sources */,
 				E8FB1E37172EE7A100D1428F /* SceneExporterTool.cpp in Build Sources */,
 				E8FB1E3D172EF12500D1428F /* SceneSaverTool.cpp in Build Sources */,
+				E8951B0417377D2300755339 /* EditorCommandLineParser.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
