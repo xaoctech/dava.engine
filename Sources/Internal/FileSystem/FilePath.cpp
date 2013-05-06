@@ -395,7 +395,10 @@ String FilePath::GetRelativePathname() const
     
 String FilePath::GetRelativePathname(const FilePath &forDirectory) const
 {
-    DVASSERT(forDirectory.IsDirectoryPathname() || forDirectory.IsEmpty());
+    if(forDirectory.IsEmpty())
+        return GetAbsolutePathname();
+    
+    DVASSERT(forDirectory.IsDirectoryPathname());
     
     return AbsoluteToRelative(forDirectory, *this);
 }
