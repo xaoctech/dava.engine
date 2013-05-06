@@ -1,8 +1,8 @@
 #include "SceneExporter.h"
 #include "SceneEditor/SceneValidator.h"
 
-#include "PVRConverter.h"
-#include "DXTConverter.h"
+#include "TextureCompression/PVRConverter.h"
+#include "TextureCompression/DXTConverter.h"
 
 #include "Render/TextureDescriptor.h"
 #include "Qt/Scene/SceneDataManager.h"

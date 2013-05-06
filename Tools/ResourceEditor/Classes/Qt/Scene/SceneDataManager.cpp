@@ -4,7 +4,7 @@
 
 #include "../SceneEditor/SceneValidator.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
-#include "PVRConverter.h"
+#include "TextureCompression/PVRConverter.h"
 
 #include "./Qt/SpritesPacker/SpritePackerHelper.h"
 #include "../Main/QtUtils.h"
