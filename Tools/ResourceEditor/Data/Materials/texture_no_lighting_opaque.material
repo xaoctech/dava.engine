@@ -1,0 +1,25 @@
+&RenderState:
+    State: STATE_DEFAULT_3D
+
+RenderStep:
+    RenderSteps: ["Forward.Opaque"]
+    ShaderGraph: "Materials/Graphs/TextureNoLighting.mgraph"
+    Consts: []
+    RenderState: *RenderState
+
+RenderStep:
+    RenderSteps: ["Deferred.GBufferOpaque"]
+    ShaderGraph: "Materials/Graphs/DeferredTextureNoLighting.mgraph"
+    Consts: []
+    RenderState: *RenderState
+
+RenderStep:
+    RenderSteps: ["LightPrePass.NormalDepth"]
+    Shader: ["Materials/Shaders/LightPrePassNormalDepthPass.vsh", "Materials/Shaders/LightPrePassNormalDepthPass.fsh"] 
+    RenderState: *RenderState
+
+RenderStep:
+    RenderSteps: ["LightPrePass.AlbedoPass"]
+    ShaderGraph: "Materials/Graphs/LightPrePassAlbedoPass.mgraph"
+    Consts: []
+    RenderState: *RenderState

@@ -1,0 +1,31 @@
+RenderState:
+    # support every state defined in RenderState.h except STATE_TEXTURE_N
+    state: STATE_DEFAULT_3D | STATE_BLEND | STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_STENCIL_TEST | STATE_CULL
+    # support every blend operator
+    blendSrc: BLEND_SRC_ALPHA
+    # support every blend operator
+    blendDest: BLEND_ONE_MINUS_SRC_ALPHA
+    # support all values from eFace
+    cullMode: FACE_FRONT_AND_BACK
+    # support all values from eCmpFunc
+    depthFunc: CMP_GREATER
+    #
+    stencil.ref: 1
+    #
+    stencil.mask: 255
+    #
+    stencil.func[FACE_FRONT]: CMP_GREATER
+    #
+    stencil.func[FACE_BACK]: CMP_GREATER
+    #
+    stencil.pass[FACE_FRONT]: STENCILOP_INCR
+    #
+    stencil.pass[FACE_BACK]: STENCILOP_INCR
+
+    stencil.fail[FACE_FRONT]:
+    stencil.fail[FACE_BACK]:
+
+    stencil.zFail[FACE_FRONT]:
+    stencil.zFail[FACE_BACK]:
+
+
