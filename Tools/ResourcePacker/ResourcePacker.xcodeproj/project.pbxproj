@@ -312,7 +312,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp \"${BUILT_PRODUCTS_DIR}/ResourcePacker\" \"${PROJECT_DIR}/DataSource/\"\ncp \"${BUILT_PRODUCTS_DIR}/ResourcePacker\" \"${PROJECT_DIR}/../Bin/\"";
+			shellScript = "cp \"${BUILT_PRODUCTS_DIR}/ResourcePacker\" \"${PROJECT_DIR}/../Bin/\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 
