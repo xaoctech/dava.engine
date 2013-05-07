@@ -52,7 +52,7 @@ public:
     virtual ~DLCSystem();
 
     // Get Index file of all DLCs
-    virtual void InitSystem(const String& serverURL, const FilePath & _contentPath = FilePath("~doc:/downloads/"));
+    virtual void InitSystem(const String& serverURL, const FilePath & _contentPath = "~doc:/downloads/");
 
     virtual uint16 GetDLCCount() const;
     // Return -1 if not found

@@ -81,7 +81,7 @@ TextureMulColorAlphaTestEffectGL20::TextureMulColorAlphaTestEffectGL20()
 {
     shader = new Shader();
     shader->SetDefines("#define ALPHA_TEST_ENABLED\n");
-    shader->LoadFromYaml(FilePath("~res:/Shaders/Default/fixed_func_texture.shader"));
+    shader->LoadFromYaml("~res:/Shaders/Default/fixed_func_texture.shader");
     shader->Recompile();
 }
 

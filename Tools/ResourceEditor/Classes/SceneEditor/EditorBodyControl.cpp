@@ -816,7 +816,7 @@ void EditorBodyControl::BeastProcessScene()
 	//	return;
 	//}
 
-	FilePath path = EditorSettings::Instance()->GetProjectPath()+FilePath("DataSource/lightmaps_temp/");
+	FilePath path(EditorSettings::Instance()->GetProjectPath()+"DataSource/lightmaps_temp/");
 	FileSystem::Instance()->CreateDirectory(path, false);
 
 	BeastProxy::Instance()->SetLightmapsDirectory(beastManager, path);
@@ -910,9 +910,9 @@ void EditorBodyControl::PackLightmaps()
 {
 	SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
 
-	FilePath inputDir = FilePath(EditorSettings::Instance()->GetProjectPath()+FilePath("DataSource/lightmaps_temp/"));
-	FilePath outputDir = sceneData->GetScenePathname() + FilePath("_lightmaps/");
-	FileSystem::Instance()->MoveFile(inputDir+FilePath("landscape.png"), FilePath("test_landscape.png"), true);
+	FilePath inputDir(EditorSettings::Instance()->GetProjectPath()+"DataSource/lightmaps_temp/");
+	FilePath outputDir(sceneData->GetScenePathname() + "_lightmaps/");
+	FileSystem::Instance()->MoveFile(inputDir+"landscape.png", "test_landscape.png", true);
 
 	LightmapsPacker packer;
 	packer.SetInputDir(inputDir);
@@ -924,7 +924,7 @@ void EditorBodyControl::PackLightmaps()
 
 	BeastProxy::Instance()->UpdateAtlas(beastManager, packer.GetAtlasingData());
 
-	FileSystem::Instance()->MoveFile(FilePath("test_landscape.png"), outputDir+FilePath("landscape.png"), true);
+	FileSystem::Instance()->MoveFile("test_landscape.png", outputDir+"landscape.png", true);
 }
 
 void EditorBodyControl::Draw(const UIGeometricData &geometricData)

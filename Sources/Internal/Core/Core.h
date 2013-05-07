@@ -307,7 +307,7 @@ public:
 	void SetIsActive(bool isActive);
 	
 	virtual void GoBackground(bool isLock);
-	
+	virtual void GoForeground();
 	
 	/**
 		\brief Checks if framework needs to recalculate scale multipliers.

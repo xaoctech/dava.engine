@@ -69,7 +69,7 @@ void ResultScreen::SaveResults()
 	results["TextureMemorySize"] = Format("%.2f Mb", testData.GetTextureMemorySize()/(1024.f * 1024.f));
 	results["TextureFilesSize"] = Format("%.2f Mb", testData.GetTexturesFilesSize()/(1024.f * 1024.f));
 
-	String filePath = testData.GetSceneFilePath().ResolvePathname();
+	String filePath = testData.GetSceneFilePath().GetAbsolutePathname();
     results["SceneFilePath"] = filePath.substr(filePath.find("Maps"));
     
 	FilePath folderPathname("~doc:/PerformanceTestResult/");
@@ -193,7 +193,8 @@ Vector2 ResultScreen::GetVecInRect(const Rect & rect, float32 angleInRad)
 		angleInRad -= DAVA::PI_05;
 	if(angleInRad > DAVA::PI_05 / 2)
 		angleInRad = DAVA::PI_05 - angleInRad;
-	Vector2 v = Vector2((Point2f(rect.GetSize().x / 2, 0) * m).data) / abs(cosf(angleInRad));
+	Vector2 v = Vector2((Point2f(rect.GetSize().x / 2, 0) * m).data) / Abs(cosf(angleInRad));
+    
 	retVec = v + rect.GetCenter();
 	return retVec;
 }

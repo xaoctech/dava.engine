@@ -321,9 +321,9 @@ bool HierarchyTreeController::IsNodeActive(const HierarchyTreeControlNode* contr
 	return (activeControlNodes.find((HierarchyTreeControlNode* )control) != activeControlNodes.end());
 }
 
-void HierarchyTreeController::EmitHierarchyTreeUpdated()
+void HierarchyTreeController::EmitHierarchyTreeUpdated(bool needRestoreSelection)
 {
-    emit HierarchyTreeUpdated();
+    emit HierarchyTreeUpdated(needRestoreSelection);
 }
 
 bool HierarchyTreeController::NewProject(const QString& projectPath)
@@ -448,8 +448,7 @@ void HierarchyTreeController::DeleteNodesFiles(const HierarchyTreeNode::HIERARCH
 		{
 			platformNode->SetMarked(true);
 			platformNode->SetChildrenMarked(true);
-			QString path = platformNode->GetPlatformFolder();
-			FileSystem::Instance()->DeleteDirectory(path.toStdString(), true);
+			FileSystem::Instance()->DeleteDirectory(platformNode->GetPlatformFolder(), true);
 		}
 	}
 }
@@ -504,7 +503,7 @@ void HierarchyTreeController::UpdateLocalization(bool takePathFromLocalizationSy
         const FilePath & localizationPath = activePlatformNode->GetLocalizationPath();
         const String& locale = activePlatformNode->GetLocale();
 
-        if (!localizationPath.IsInitalized() || locale.empty())
+        if (localizationPath.IsEmpty() || locale.empty())
         {
             // No Localization Path is already set - cleanup the Localization System.
             LocalizationSystem::Instance()->Cleanup();

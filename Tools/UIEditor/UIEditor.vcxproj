@@ -11,8 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Sources\Tools\DXTConverter.cpp" />
-    <ClCompile Include="..\..\Sources\Tools\PVRConverter.cpp" />
+    <ClCompile Include="..\..\Sources\Tools\TextureCompression\DXTConverter.cpp" />
+    <ClCompile Include="..\..\Sources\Tools\TextureCompression\PVRConverter.cpp" />
     <ClCompile Include="..\..\Sources\Tools\TexturePacker\CommandLineParser.cpp" />
     <ClCompile Include="..\..\Sources\Tools\TexturePacker\DefinitionFile.cpp" />
     <ClCompile Include="..\..\Sources\Tools\TexturePacker\ImagePacker.cpp" />
@@ -193,8 +193,8 @@
     <ClCompile Include="GeneratedFiles\UI\StateComboBoxItemDelegate_moc.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Sources\Tools\DXTConverter.h" />
-    <ClInclude Include="..\..\Sources\Tools\PVRConverter.h" />
+    <ClInclude Include="..\..\Sources\Tools\TextureCompression\DXTConverter.h" />
+    <ClInclude Include="..\..\Sources\Tools\TextureCompression\PVRConverter.h" />
     <ClInclude Include="..\..\Sources\Tools\TexturePacker\CommandLineParser.h" />
     <ClInclude Include="..\..\Sources\Tools\TexturePacker\DefinitionFile.h" />
     <ClInclude Include="..\..\Sources\Tools\TexturePacker\ImagePacker.h" />
@@ -655,7 +655,6 @@
     <ClInclude Include="GeneratedFiles\ui_screenpropertygridwidget.h" />
     <ClInclude Include="GeneratedFiles\ui_sliderpropertygridwidget.h" />
     <ClInclude Include="GeneratedFiles\ui_statepropertygridwidget.h" />
-    <ClInclude Include="GeneratedFiles\ui_textpropertygridwidget.h" />
     <ClInclude Include="GeneratedFiles\ui_uitextfieldpropertygridwidget.h" />
   </ItemGroup>
   <ItemGroup>
@@ -779,7 +778,6 @@
     <None Include="UI\screenpropertygridwidget.ui" />
     <None Include="UI\sliderpropertygridwidget.ui" />
     <None Include="UI\statepropertygridwidget.ui" />
-    <None Include="UI\textpropertygridwidget.ui" />
     <None Include="UI\uitextfieldpropertygridwidget.ui" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

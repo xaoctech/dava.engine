@@ -61,12 +61,13 @@ public:
 	{
 		DRAW_ALIGNED = 0,			//!<Align sprite inside ronctrol rect.
 		DRAW_SCALE_TO_RECT,			//!<Scale sprite along the all control rect.
-		DRAW_SCALE_PROPORTIONAL,	//!<Scale sptire to fit both width and height into the control rect but with keeping sprite proportions.
-        DRAW_SCALE_PROPORTIONAL_ONE,//!<Scale sptire to fit width or height into control rect but with keeping sprite proportions.
+		DRAW_SCALE_PROPORTIONAL,	//!<Scale sprite to fit both width and height into the control rect but with keeping sprite proportions.
+        DRAW_SCALE_PROPORTIONAL_ONE,//!<Scale sprite to fit width or height into control rect but with keeping sprite proportions.
 		DRAW_FILL,					//!<Fill control rect with the control color.
 		DRAW_STRETCH_HORIZONTAL,	//!<Stretch sprite horizontally along the control rect.
 		DRAW_STRETCH_VERTICAL,		//!<Stretch sprite vertically along the control rect.
-		DRAW_STRETCH_BOTH			//!<Stretch sprite along the all control rect.
+		DRAW_STRETCH_BOTH,			//!<Stretch sprite along the all control rect.
+		DRAW_TILED 					//!<Fill control with sprite tiles
 	};
 	
 	/**
@@ -258,6 +259,7 @@ public:
     
 protected:
 	void DrawStretched(const Rect &drawRect);
+	void DrawTiled(const Rect &drawRect);
 
 	Sprite *spr;
 	int32 align;
@@ -274,11 +276,13 @@ protected:
     RenderDataStream * texCoordStream;
     
     ePerPixelAccuracyType perPixelAccuracyType;//!<Is sprite should be drawn with per pixel accuracy. Used for texts, for example.
+
+private:
+	void GenerateCell(float32* vertices, int32 offset, float32 leftStretchCap, float32 topStretchCap, float32 x, float32 y, float32 tWidth = 1, float32 tHeight = 1);
     
 protected:
 	~UIControlBackground();
 	Color drawColor;
-	
 	
 };
 	

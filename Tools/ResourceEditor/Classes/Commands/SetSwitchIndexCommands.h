@@ -6,19 +6,16 @@
 #include "../Constants.h"
 #include "../Qt/DockSetSwitchIndex/SetSwitchIndexHelper.h"
 
-namespace DAVA
-{
 class CommandToggleSetSwitchIndex: public Command
 {
 public:
-	CommandToggleSetSwitchIndex(uint32 value, SetSwitchIndexHelper::eSET_SWITCH_INDEX state);
+	CommandToggleSetSwitchIndex(DAVA::uint32 value, DAVA::SetSwitchIndexHelper::eSET_SWITCH_INDEX state);
 
 protected:
-	uint32	value;
-	SetSwitchIndexHelper::eSET_SWITCH_INDEX	swtichState;
+	DAVA::uint32	value;
+	DAVA::SetSwitchIndexHelper::eSET_SWITCH_INDEX	swtichState;
 
     virtual void Execute();
 };
 
-};
 #endif // #ifndef __RESOURCE_EDITOR_SWITCH_INDEX_COMMANDS_H__

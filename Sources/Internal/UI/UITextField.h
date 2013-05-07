@@ -178,6 +178,8 @@ public:
 	 */
 	Color GetShadowColor();
 
+	int32 GetTextAlign();
+
     void SetFocused()
     {
         UIControlSystem::Instance()->SetFocusedControl(this, true);
@@ -213,6 +215,8 @@ public:
 	 \param[in] color color of text shadow.
 	 */
 	void SetShadowColor(const Color& color);
+
+	void SetTextAlign(int32 align);
 
     virtual void SetSize(const DAVA::Vector2 &newSize);
 	

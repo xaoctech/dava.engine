@@ -154,6 +154,37 @@ public:
 	virtual UIControlBackground * GetBackground();
 
 	/**
+	 \brief Sets left align of control relative to its parent. 
+	 \param[in] align left align of control.
+	 */	
+	virtual void SetLeftAlign(int32 align);	
+	/**
+	 \brief Sets horizontal central align of control relative to its parent. 
+	 \param[in] align horizontal central align of control.
+	 */
+	virtual void SetHCenterAlign(int32 align);	
+	/**
+	 \brief Sets right align of control relative to its parent. 
+	 \param[in] align right align of control.
+	 */	
+	virtual void SetRightAlign(int32 align);	
+	/**
+	 \brief Sets top align of control relative to its parent. 
+	 \param[in] align top align of control.
+	 */	
+	virtual void SetTopAlign(int32 align);	
+	/**
+	 \brief Sets vertical central align of control relative to its parent. 
+	 \param[in] align l vertical central align of control.
+	 */	
+	virtual void SetVCenterAlign(int32 align);	
+	/**
+	 \brief Sets bottom align of control relative to its parent. 
+	 \param[in] align bottom align of control.
+	 */	
+	virtual void SetBottomAlign(int32 align);	
+
+	/**
 	 \brief Sets background what will be used for draw of the requested states. 
 		Method creates UIStaticText control for the state if this is neccesary.
 	 \param[in] state state bit mask to set value for.
@@ -272,6 +303,7 @@ private:
 	virtual UIStaticText *CreateTextForState(eButtonDrawState buttonState);
 	UIStaticText *GetActualText(int32 state);
 	int32 TextIndexForState(eButtonDrawState buttonState);
+	void UpdateStateTextControlSize();
 };
 };
 

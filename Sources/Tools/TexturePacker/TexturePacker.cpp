@@ -6,8 +6,8 @@
 #include "Render/TextureDescriptor.h"
 #include "FileSystem/FileSystem.h"
 #include "Render/Texture.h"
-#include "PVRConverter.h"
-#include "DXTConverter.h"
+#include "TextureCompression/PVRConverter.h"
+#include "TextureCompression/DXTConverter.h"
 
 
 #ifdef WIN32
@@ -153,7 +153,7 @@ void TexturePacker::PackToTexturesSeparate(const FilePath & excludeFolder, const
 		{
 			char textureNameWithIndex[50];
 			sprintf(textureNameWithIndex, "texture%d", textureIndex++);
-			FilePath textureName = outputPath + FilePath(textureNameWithIndex);
+			FilePath textureName = outputPath + textureNameWithIndex;
 			if (CommandLineParser::Instance()->GetVerbose())
 				Logger::Info("* Writing final texture (%d x %d): %s\n", bestXResolution, bestYResolution , textureName.GetAbsolutePathname().c_str());
 			
@@ -173,11 +173,11 @@ void TexturePacker::PackToTexturesSeparate(const FilePath & excludeFolder, const
 				snprintf(name, 256, "%s%d.png", withoutExt.GetAbsolutePathname().c_str(), frame);
 				
 				PngImageExt image;
-				image.Read(FilePath(name));
+				image.Read(name);
 				finalImage.DrawImage(destRect->x, destRect->y, &image);
 			}
 			
-			if (!WriteDefinition(excludeFolder, outputPath, FilePath(textureNameWithIndex), defFile))
+			if (!WriteDefinition(excludeFolder, outputPath, textureNameWithIndex, defFile))
 			{
 				Logger::Error("* ERROR: failed to write definition\n");
 			}
@@ -236,7 +236,7 @@ void TexturePacker::PackToTextures(const FilePath & excludeFolder, const FilePat
 		Logger::Info("\n");
 	if (bestResolution != (maxTextureSize + 1) * (maxTextureSize + 1))
 	{
-		FilePath textureName = outputPath + FilePath("texture");
+		FilePath textureName = outputPath + "texture";
 		if (CommandLineParser::Instance()->GetVerbose())
 			Logger::Info("* Writing final texture (%d x %d): %s\n", bestXResolution, bestYResolution , textureName.GetAbsolutePathname().c_str());
 	
@@ -259,7 +259,7 @@ void TexturePacker::PackToTextures(const FilePath & excludeFolder, const FilePat
 				snprintf(name, 256, "%s%d.png", withoutExt.GetAbsolutePathname().c_str(), frame);
 
 				PngImageExt image;
-				image.Read(FilePath(name));
+				image.Read(name);
 				finalImage.DrawImage(destRect->x, destRect->y, &image);
 
 				if (CommandLineParser::Instance()->IsFlagSet("--debug"))
@@ -268,7 +268,7 @@ void TexturePacker::PackToTextures(const FilePath & excludeFolder, const FilePat
 				}
 			}
 			
-			if (!WriteDefinition(excludeFolder, outputPath, FilePath("texture"), defFile))
+			if (!WriteDefinition(excludeFolder, outputPath, "texture", defFile))
 			{
 				Logger::Error("* ERROR: failed to write definition\n");
 			}
@@ -381,7 +381,7 @@ void TexturePacker::PackToMultipleTextures(const FilePath & excludeFolder, const
 			{
 				if (CommandLineParser::Instance()->GetVerbose())Logger::Info("[MultiPack] pack to texture: %d\n", packerIndex);
 				PngImageExt image;
-				image.Read(FilePath(name));
+				image.Read(name);
 				finalImages[packerIndex]->DrawImage(destRect->x, destRect->y, &image);
 				if (CommandLineParser::Instance()->IsFlagSet("--debug"))
 				{
@@ -395,7 +395,7 @@ void TexturePacker::PackToMultipleTextures(const FilePath & excludeFolder, const
 	{
 		char temp[256];
 		sprintf(temp, "texture%d.png", image);
-		FilePath textureName = outputPath + FilePath(temp);
+		FilePath textureName = outputPath + temp;
         ExportImage(finalImages[image], textureName);
 	}
 
@@ -403,8 +403,8 @@ void TexturePacker::PackToMultipleTextures(const FilePath & excludeFolder, const
 	{
 		DefinitionFile * defFile = *defi;
 		
-		FilePath textureName = outputPath + FilePath("texture");
-		if (!WriteMultipleDefinition(excludeFolder, outputPath, FilePath("texture"), defFile))
+		FilePath textureName = outputPath + "texture";
+		if (!WriteMultipleDefinition(excludeFolder, outputPath, "texture", defFile))
 		{
 			Logger::Error("* ERROR: failed to write definition\n");
 		}
@@ -448,20 +448,20 @@ Rect2i TexturePacker::ReduceRectToOriginalSize(const Rect2i & _input)
 	return r;
 }
 
-bool TexturePacker::WriteDefinition(const FilePath & excludeFolder, const FilePath & outputPath, const FilePath & _textureName, DefinitionFile * defFile)
+bool TexturePacker::WriteDefinition(const FilePath & excludeFolder, const FilePath & outputPath, const String & _textureName, DefinitionFile * defFile)
 {
 	String fileName = defFile->filename.GetFilename();
 	if (CommandLineParser::Instance()->GetVerbose())
 		Logger::Info("* Write definition: %s\n", fileName.c_str());
 	
-	FilePath defFilePath = outputPath + FilePath(fileName);
-	FILE * fp = fopen(defFilePath.ResolvePathname().c_str(), "wt");
+	FilePath defFilePath = outputPath + fileName;
+	FILE * fp = fopen(defFilePath.GetAbsolutePathname().c_str(), "wt");
 	if (!fp)return false;
 	
 	fprintf(fp, "%d\n", 1);
 	
 	String textureExtension = TextureDescriptor::GetDescriptorExtension();
-	fprintf(fp, "%s%s\n", _textureName.GetAbsolutePathname().c_str(), textureExtension.c_str());
+	fprintf(fp, "%s%s\n", _textureName.c_str(), textureExtension.c_str());
 	
 	fprintf(fp, "%d %d\n", defFile->spriteWidth, defFile->spriteHeight);
 	fprintf(fp, "%d\n", defFile->frameCount); 
@@ -483,14 +483,14 @@ bool TexturePacker::WriteDefinition(const FilePath & excludeFolder, const FilePa
 	return true;
 }
 
-bool TexturePacker::WriteMultipleDefinition(const FilePath & excludeFolder, const FilePath & outputPath, const FilePath & _textureName, DefinitionFile * defFile)
+bool TexturePacker::WriteMultipleDefinition(const FilePath & excludeFolder, const FilePath & outputPath, const String & _textureName, DefinitionFile * defFile)
 {
 	String fileName = defFile->filename.GetFilename();
 	if (CommandLineParser::Instance()->GetVerbose())
 		Logger::Info("* Write definition: %s\n", fileName.c_str());
 	
-	FilePath defFilePath = outputPath + FilePath(fileName);
-	FILE * fp = fopen(defFilePath.ResolvePathname().c_str(), "wt");
+	FilePath defFilePath = outputPath + fileName;
+	FILE * fp = fopen(defFilePath.GetAbsolutePathname().c_str(), "wt");
 	if (!fp)return false;
 	
 	String textureExtension = TextureDescriptor::GetDescriptorExtension();
@@ -527,7 +527,7 @@ bool TexturePacker::WriteMultipleDefinition(const FilePath & excludeFolder, cons
 		if (isUsed != packerIndexToFileIndex.end())
 		{
 			// here we write filename for i-th texture and write to map real index in file for this texture
-			fprintf(fp, "%s%d%s\n", _textureName.GetAbsolutePathname().c_str(), i, textureExtension.c_str());
+			fprintf(fp, "%s%d%s\n", _textureName.c_str(), i, textureExtension.c_str());
 			packerIndexToFileIndex[i] = realIndex++;
 		}
 	}

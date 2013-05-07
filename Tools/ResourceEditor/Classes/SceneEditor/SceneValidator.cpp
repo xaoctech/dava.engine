@@ -129,30 +129,6 @@ void SceneValidator::ValidateSceneNode(Entity *sceneNode, Set<String> &errorsLog
         ValidateRenderComponent(node, errorsLog);
         ValidateLodComponent(node, errorsLog);
         ValidateParticleEmitterComponent(node, errorsLog);
-        
-        KeyedArchive *customProperties = node->GetCustomProperties();
-        if(customProperties->IsKeyExists("editor.referenceToOwner"))
-        {
-            FilePath dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
-            if(1 < dataSourcePath.GetAbsolutePathname().length())
-            {
-                if('/' == dataSourcePath.GetAbsolutePathname()[0])
-                {
-                    dataSourcePath = FilePath(dataSourcePath.GetAbsolutePathname().substr(1));
-                }
-                
-                String referencePath = customProperties->GetString("editor.referenceToOwner");
-                String::size_type pos = referencePath.rfind(dataSourcePath.GetAbsolutePathname());
-                if((String::npos != pos) && (1 != pos))
-                {
-                    referencePath.replace(pos, dataSourcePath.GetAbsolutePathname().length(), "");
-                    customProperties->SetString("editor.referenceToOwner", referencePath);
-                    
-                    errorsLog.insert(Format("Node %s: referenceToOwner isn't correct. Re-save level.", node->GetName().c_str()));
-                }
-            }
-        }
-        
         ValidateSceneNode(node, errorsLog);
     }
 }
@@ -246,6 +222,7 @@ void SceneValidator::ValidateRenderBatch(Entity *ownerNode, RenderBatch *renderB
     if(materialState)
     {
         ValidateInstanceMaterialState(materialState, errorsLog);
+		ConvertLightmapSizeFromProperty(ownerNode, materialState);
     }
     
     
@@ -295,13 +272,13 @@ void SceneValidator::ValidateInstanceMaterialState(InstanceMaterialState *materi
     {
         Texture *lightmap = SafeRetain(materialState->GetLightmap());
         
-        if(lightmapName.IsInitalized())
+        if(lightmapName.IsEmpty())
         {
-            materialState->SetLightmap(lightmap, TextureDescriptor::GetDescriptorPathname(lightmapName));
+            materialState->SetLightmap(lightmap, FilePath());
         }
         else
         {
-            materialState->SetLightmap(lightmap, FilePath());
+            materialState->SetLightmap(lightmap, TextureDescriptor::GetDescriptorPathname(lightmapName));
         }
         
         SafeRelease(lightmap);
@@ -349,8 +326,21 @@ void SceneValidator::ValidateLandscape(Landscape *landscape, Set<String> &errors
     }
 }
 
-
-
+void SceneValidator::ConvertLightmapSizeFromProperty(Entity *ownerNode, InstanceMaterialState *materialState)
+{
+	KeyedArchive * props = ownerNode->GetCustomProperties();
+	Map<String, VariantType*> map = props->GetArchieveData();
+	for(Map<String, VariantType*>::iterator it = map.begin(); it != map.end(); it++)
+	{
+		String key = it->first;
+		if(key.find("lightmap.size") != String::npos && ((RenderComponent*)ownerNode->GetComponent(Component::RENDER_COMPONENT))->GetRenderObject()->GetType() != RenderObject::TYPE_LANDSCAPE)
+		{
+			materialState->SetLightmapSize(props->GetInt32(key, 128));
+			props->DeleteKey(key);
+			break;
+		}
+	}
+}
 
 bool SceneValidator::NodeRemovingDisabled(Entity *node)
 {
@@ -492,7 +482,7 @@ FilePath SceneValidator::SetPathForChecking(const FilePath &pathname)
 
 bool SceneValidator::ValidateTexturePathname(const FilePath &pathForValidation, Set<String> &errorsLog)
 {
-	DVASSERT(pathForChecking.IsInitalized() && "Need to set pathname for DataSource folder");
+	DVASSERT_MSG(!pathForChecking.IsEmpty(), "Need to set pathname for DataSource folder");
 
 	bool pathIsCorrect = IsPathCorrectForProject(pathForValidation);
 	if(pathIsCorrect)
@@ -517,7 +507,7 @@ bool SceneValidator::ValidateTexturePathname(const FilePath &pathForValidation, 
 
 bool SceneValidator::ValidateHeightmapPathname(const FilePath &pathForValidation, Set<String> &errorsLog)
 {
-	DVASSERT(pathForChecking.IsInitalized() && "Need to set pathname for DataSource folder");
+	DVASSERT_MSG(!pathForChecking.IsEmpty(), "Need to set pathname for DataSource folder");
 
 	bool pathIsCorrect = IsPathCorrectForProject(pathForValidation);
 	if(pathIsCorrect)
@@ -591,11 +581,11 @@ void SceneValidator::CreateDescriptorIfNeed(const FilePath &forPathname)
 
 bool SceneValidator::ValidatePathname(const FilePath &pathForValidation, const String &validatedObjectName)
 {
-    DVASSERT(pathForChecking.IsInitalized());
+    DVASSERT(!pathForChecking.IsEmpty());
     //Need to set path to DataSource/3d for path correction  
     //Use SetPathForChecking();
     
-    String pathname = pathForValidation.ResolvePathname();
+    String pathname = pathForValidation.GetAbsolutePathname();
     
     String::size_type fboFound = pathname.find(String("FBO"));
     String::size_type resFound = pathname.find(String("~res:"));
@@ -609,7 +599,7 @@ bool SceneValidator::ValidatePathname(const FilePath &pathForValidation, const S
 
 bool SceneValidator::IsPathCorrectForProject(const FilePath &pathname)
 {
-    String normalizedPath = pathname.ResolvePathname();
+    String normalizedPath = pathname.GetAbsolutePathname();
     String::size_type foundPos = normalizedPath.find(pathForChecking.GetAbsolutePathname());
     return (String::npos != foundPos);
 }

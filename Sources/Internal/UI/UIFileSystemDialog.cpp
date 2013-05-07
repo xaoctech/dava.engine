@@ -202,11 +202,11 @@ void UIFileSystemDialog::SaveFinishing()
         FilePath selectedFile(currentDir);
         if (textField->GetText().find(L".") != textField->GetText().npos)
         {
-            selectedFile += FilePath(WStringToString(textField->GetText()));
+            selectedFile += WStringToString(textField->GetText());
         }
         else 
         {
-            selectedFile += FilePath(WStringToString(textField->GetText()) + extensionFilter[0]);
+            selectedFile += (WStringToString(textField->GetText()) + extensionFilter[0]);
         }
         OnFileSelected(selectedFile);
         GetParent()->RemoveControl(this);
@@ -342,9 +342,9 @@ void UIFileSystemDialog::RefreshList()
     lastSelected = NULL;
     lastSelectedIndex = -1;
     Logger::Debug("Cur Dir: %s", currentDir.GetAbsolutePathname().c_str());
-    if (!currentDir.IsInitalized())
+    if (currentDir.IsEmpty())
     {
-        currentDir += FilePath("/");
+        currentDir += "/";
     }
     
     files = new FileList(currentDir);
@@ -575,11 +575,11 @@ void UIFileSystemDialog::CreateHistoryForPath(const FilePath &pathToFile)
     Split(pathToFile.GetAbsolutePathname(), "/", folders);
 
     foldersHistory.clear();
-    foldersHistory.push_back(FilePath("/"));
+    foldersHistory.push_back("/");
     for(int32 iFolder = 0; iFolder < (int32)folders.size(); ++iFolder)
     {
         FilePath f(foldersHistory[iFolder]);
-        f += FilePath(folders[iFolder]);
+        f += folders[iFolder];
         f.MakeDirectoryPathname();
         foldersHistory.push_back(f);
     }

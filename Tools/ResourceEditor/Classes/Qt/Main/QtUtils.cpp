@@ -1,7 +1,6 @@
 #include "QtUtils.h"
 #include "../../SceneEditor/SceneValidator.h"
-#include "../../SceneEditor/CommandLineTool.h"
-
+#include "CommandLine/EditorCommandLineParser.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -27,7 +26,7 @@ DAVA::FilePath GetOpenFileName(const DAVA::String &title, const DAVA::FilePath &
     QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 
     FilePath openedPathname = PathnameToDAVAStyle(filePath);
-    if(openedPathname.IsInitalized() && !SceneValidator::Instance()->IsPathCorrectForProject(openedPathname))
+    if(!openedPathname.IsEmpty() && !SceneValidator::Instance()->IsPathCorrectForProject(openedPathname))
     {
         //Need to Show Error
 		ShowErrorDialog(String(Format("File(%s) was selected from incorect project.", openedPathname.GetAbsolutePathname().c_str())));
@@ -94,8 +93,8 @@ void ShowErrorDialog(const DAVA::Set<DAVA::String> &errors)
 
 void ShowErrorDialog(const DAVA::String &errorMessage)
 {
-	bool forceMode =    CommandLineTool::Instance()->CommandIsFound(String("-force"))
-					||  CommandLineTool::Instance()->CommandIsFound(String("-forceclose"));
+	bool forceMode =    EditorCommandLineParser::CommandIsFound(String("-force"))
+					||  EditorCommandLineParser::CommandIsFound(String("-forceclose"));
 	if(!forceMode)
 	{
 		QMessageBox::critical(QtMainWindow::Instance(), "Error", errorMessage.c_str());

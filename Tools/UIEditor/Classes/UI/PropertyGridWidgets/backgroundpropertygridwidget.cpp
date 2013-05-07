@@ -15,6 +15,7 @@
 #include "ResourcesManageHelper.h"
 
 #include "TexturePacker/ResourcePacker2D.h"
+#include "StringUtils.h"
 
 static const QString TEXT_PROPERTY_BLOCK_NAME = "Background";
 
@@ -60,15 +61,11 @@ void BackGroundPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     
     RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::DRAW_TYPE_PROPERTY_NAME, ui->drawTypeComboBox, false, true);
     RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::COLOR_INHERIT_TYPE_PROPERTY_NAME, ui->colorInheritComboBox, false, true);
-    RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::ALIGN_PROPERTY_NAME, ui->alignComboBox, false, true);
-
+	RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::ALIGN_PROPERTY_NAME, ui->alignComboBox, false, true);
+	
     RegisterColorButtonWidgetForProperty(propertiesMap, PropertyNames::BACKGROUND_COLOR_PROPERTY_NAME, ui->selectColorButton, false, true);
 
-    // Editing of sprites is not allowed for UIStaticText.
-    bool disableSpriteEditingControls = (dynamic_cast<UIStaticTextMetadata*>(activeMetadata) != NULL);
-    ui->spriteLineEdit->setDisabled(disableSpriteEditingControls);
-    ui->frameSpinBox->setDisabled(disableSpriteEditingControls);
-    ui->openSpriteButton->setDisabled(disableSpriteEditingControls);
+	ui->spriteLineEdit->setEnabled(true);
 	HandleDrawTypeComboBox();
 }
 
@@ -113,6 +110,8 @@ void BackGroundPropertyGridWidget::FillComboboxes()
     
     ui->alignComboBox->clear();
     itemsCount = BackgroundGridWidgetHelper::GetAlignTypesCount();
+	// Horizontal Justify has sense only for text
+	itemsCount--;
     for (int i = 0; i < itemsCount; i ++)
     {
         ui->alignComboBox->addItem(BackgroundGridWidgetHelper::GetAlignTypeDesc(i));
@@ -130,8 +129,8 @@ void BackGroundPropertyGridWidget::OpenSpriteDialog()
 {
 	// Pack all available sprites each time user open sprite dialog
 	ResourcePacker2D *resPacker = new ResourcePacker2D();
-	resPacker->InitFolders(FilePath(ResourcesManageHelper::GetSpritesDatasourceDirectory().toStdString()),
-                           FilePath(ResourcesManageHelper::GetSpritesDirectory().toStdString()));
+	resPacker->InitFolders(ResourcesManageHelper::GetSpritesDatasourceDirectory().toStdString(),
+                           ResourcesManageHelper::GetSpritesDirectory().toStdString());
     
     resPacker->PackResources();
 
@@ -153,6 +152,8 @@ void BackGroundPropertyGridWidget::OpenSpriteDialog()
             // Sprite name should be pre-processed to use relative path.
             ui->spriteLineEdit->setText(PreprocessSpriteName(spriteName));
             HandleLineEditEditingFinished(ui->spriteLineEdit);
+			// Update max-min values
+			SetStretchCapMaxValues();
         }
 		else
 		{
@@ -172,6 +173,16 @@ void BackGroundPropertyGridWidget::RemoveSprite()
         ui->spriteLineEdit->setText("");
         HandleLineEditEditingFinished(ui->spriteLineEdit);
     }
+}
+
+void BackGroundPropertyGridWidget::HandleChangePropertySucceeded(const QString& propertyName)
+{
+    BasePropertyGridWidget::HandleChangePropertySucceeded(propertyName);
+	// If frame property was changed - update max stretch cap values
+	if (propertyName == PropertyNames::SPRITE_FRAME_PROPERTY_NAME)
+	{
+		SetStretchCapMaxValues();
+	}
 }
 
 void BackGroundPropertyGridWidget::ProcessComboboxValueChanged(QComboBox* senderWidget, const PROPERTYGRIDWIDGETSITER& iter,
@@ -297,9 +308,11 @@ void BackGroundPropertyGridWidget::HandleDrawTypeComboBox()
 			modificationComboBoxState = false;
 			break;
 		case UIControlBackground::DRAW_STRETCH_BOTH:
+        case UIControlBackground::DRAW_TILED:
 			lrState = true;
 			tbState = true;
 			modificationComboBoxState = false;
+			SetStretchCapMaxValues();
 			break;
 		case UIControlBackground::DRAW_ALIGNED:
 			alignComboBoxState = true;
@@ -312,4 +325,42 @@ void BackGroundPropertyGridWidget::HandleDrawTypeComboBox()
 	ui->tbSpinBox->setEnabled(tbState);
 	ui->modificationComboBox->setEnabled(modificationComboBoxState);
 	ui->alignComboBox->setEnabled(alignComboBoxState);
+}
+
+void BackGroundPropertyGridWidget::SetStretchCapMaxValues()
+{
+	WidgetSignalsBlocker blocker(ui->drawTypeComboBox);
+	
+	// Get current drawType combo value
+	int selectedIndex = ui->drawTypeComboBox->currentIndex();
+	UIControlBackground::eDrawType drawType = BackgroundGridWidgetHelper::GetDrawType(selectedIndex);
+	
+	// Set default values
+	int horizontalStretchMax = 999;
+	int verticalStretchMax = 999;
+	
+	// For DRAW_TILED option we should set horizontal and vertical stretch maximum values
+	// Tiling the sprite to more than half of its size have no sence
+	if (drawType == UIControlBackground::DRAW_TILED)
+	{
+		QString spriteName =  ui->spriteLineEdit->text();
+		if (!spriteName.isEmpty())
+		{
+			Sprite* sprite = Sprite::Create(TruncateTxtFileExtension(spriteName).toStdString());
+			
+			if (sprite)
+			{
+				// Get sprite's active size
+				float32 texDx = sprite->GetRectOffsetValueForFrame(ui->frameSpinBox->value(), Sprite::ACTIVE_WIDTH);
+				float32 texDy = sprite->GetRectOffsetValueForFrame(ui->frameSpinBox->value(), Sprite::ACTIVE_HEIGHT);
+				// Calculate maximum stretch values
+				horizontalStretchMax = texDx / 2 - 1;
+				verticalStretchMax = texDy / 2 - 1;
+            }
+        	SafeRelease(sprite);
+		}
+	}
+
+	ui->lrSpinBox->setMaximum(horizontalStretchMax);
+	ui->tbSpinBox->setMaximum(verticalStretchMax);
 }

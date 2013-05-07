@@ -92,8 +92,6 @@ protected:
     
     static DAVA::uint32 CalculateTextureSize(const DAVA::Map<DAVA::String, DAVA::Texture *> &textures);
 
-    bool IsInConsoleMode();
-    
     
 protected:
     

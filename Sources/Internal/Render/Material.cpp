@@ -143,7 +143,7 @@ void InstanceMaterialState::Save(KeyedArchive * archive, SceneFileV2 *sceneFile)
 			archive->SetVector2("ims.uvscale", uvScale);
 		}
 		
-		if(lightmapName.IsInitalized())
+		if(!lightmapName.IsEmpty())
 		{
             String filename = lightmapName.GetRelativePathname(sceneFile->GetScenePath());
             archive->SetString("ims.lightmapname", filename);
@@ -176,7 +176,7 @@ void InstanceMaterialState::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 		String filename = archive->GetString("ims.lightmapname");
 		if(!filename.empty())
 		{
-            FilePath lName = sceneFile->GetScenePath() + FilePath(filename);
+            FilePath lName = sceneFile->GetScenePath() + filename;
 
 			Texture* lTexture = Texture::CreateFromFile(lName);
 			SetLightmap(lTexture, lName);
@@ -289,7 +289,7 @@ Material::Material()
     if (!uberShader)
     {
         uberShader = new UberShader();
-        uberShader->LoadShader(FilePath("~res:/Shaders/Default/materials.shader"));
+        uberShader->LoadShader("~res:/Shaders/Default/materials.shader");
         
         
         //uberShader->CompileShaderCombination("MATERIAL_TEXTURE");
@@ -591,7 +591,7 @@ void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     keyedArchive->SetInt32("mat.texCount", TEXTURE_COUNT);
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
-        if (names[k].IsInitalized())
+        if (!names[k].IsEmpty())
         {
             String filename = names[k].GetRelativePathname(sceneFile->GetScenePath());
             keyedArchive->SetString(Format("mat.tex%d", k), filename);
@@ -645,7 +645,7 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
             }
             else
             {
-                names[k] = sceneFile->GetScenePath() + FilePath(relativePathname);
+                names[k] = sceneFile->GetScenePath() + relativePathname;
             }
             
             if(sceneFile->DebugLogEnabled())

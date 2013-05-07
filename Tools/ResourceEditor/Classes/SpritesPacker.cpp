@@ -31,13 +31,8 @@ void SpritesPacker::Pack()
 	resourcePacker->inputGfxDirectory = inputDir;
 	resourcePacker->outputGfxDirectory = outputDir;
 
-	// to prevent long relative path in $process(in FileSystem::RealPath(const String & _path)
-	// '/' is skipped for win32!) and to avoid big code impact,  #ifdef(win32) was added  here
-#if defined(__DAVAENGINE_WIN32__) 
-	resourcePacker->excludeDirectory = FilePath("/")+inputDir + FilePath("../");
-#else
-	resourcePacker->excludeDirectory = inputDir + FilePath("../");
-#endif
+	resourcePacker->excludeDirectory = inputDir + "../";
+
 	resourcePacker->isLightmapsPacking = true;
 
 	resourcePacker->PackResources();

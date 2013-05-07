@@ -486,7 +486,8 @@ void ChangeNodeHeirarchy::Execute()
 		}
 	}
 	
-	HierarchyTreeController::Instance()->EmitHierarchyTreeUpdated();
+	HierarchyTreeController::Instance()->EmitHierarchyTreeUpdated(false);
+	HierarchyTreeController::Instance()->ResetSelectedControl();
 	ScreenWrapper::Instance()->RequestUpdateView();
 }
 
