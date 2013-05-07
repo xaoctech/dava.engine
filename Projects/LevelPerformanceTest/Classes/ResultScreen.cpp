@@ -61,7 +61,7 @@ void ResultScreen::SaveResults()
     
     Image* image = resultSprite->GetTexture()->CreateImageFromMemory();
     FilePath saveFileName = FileSystem::Instance()->GetUserDocumentsPath();
-    saveFileName += FilePath(filename.GetFilename() + ".png");
+    saveFileName += filename.GetFilename() + ".png";
     ImageLoader::Save(image, saveFileName);
     
     Map<String, String> results;
