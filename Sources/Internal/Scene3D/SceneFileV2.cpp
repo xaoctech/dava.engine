@@ -728,7 +728,7 @@ void SceneFileV2::ConvertOldMaterialToNewMaterial(Material * oldMaterial, Instan
 				resultMaterial = MaterialSystem::Instance()->GetMaterial(newMaterialName);
 				Texture * tex = oldMaterial->GetTexture(Material::TEXTURE_DIFFUSE);
 				MaterialTechnique * tech = resultMaterial->GetTechnique(PASS_FORWARD);
-				tech->GetRenderState()->SetTexture(tex, RenderState::STATE_TEXTURE0);
+				tech->GetRenderState()->SetTexture(tex, 0);
 			}
 			break;
 		default:
