@@ -57,7 +57,7 @@ Sound * Sound::CreateWithFlags(const FilePath & fileName, eType type, const Fast
 	switch (type)
 	{
 	case TYPE_STATIC:
-		FMOD_VERIFY(SoundSystem::Instance()->fmodSystem->createSound(fileName.GetAbsolutePathname().c_str(), FMOD_DEFAULT | flags, 0, &sound->fmodSound));
+		FMOD_VERIFY(SoundSystem::Instance()->fmodSystem->createSound(fileName.GetAbsolutePathname().c_str(), FMOD_LOOP_NORMAL | flags, 0, &sound->fmodSound));
 		break;
 	case TYPE_STREAMED:
 		FMOD_VERIFY(SoundSystem::Instance()->fmodSystem->createStream(fileName.GetAbsolutePathname().c_str(), FMOD_LOOP_NORMAL | flags, 0, &sound->fmodSound));
@@ -113,15 +113,21 @@ void Sound::Play()
 void Sound::SetPosition(const Vector3 & _position)
 {
 	position = _position;
-	FMOD_VECTOR pos = {position.x, position.y, position.z};
+}
 
-	int32 instancesCount = 0;
-	FMOD_VERIFY(fmodInstanceGroup->getNumChannels(&instancesCount));
-	for(int32 i = 0; i < instancesCount; i++)
+void Sound::UpdateInstancesPosition()
+{
+	if(is3d)
 	{
-		FMOD::Channel * inst = 0;
-		FMOD_VERIFY(fmodInstanceGroup->getChannel(i, &inst));
-		FMOD_VERIFY(inst->set3DAttributes(&pos, 0));
+		FMOD_VECTOR pos = {position.x, position.y, position.z};
+		int32 instancesCount = 0;
+		FMOD_VERIFY(fmodInstanceGroup->getNumChannels(&instancesCount));
+		for(int32 i = 0; i < instancesCount; i++)
+		{
+			FMOD::Channel * inst = 0;
+			FMOD_VERIFY(fmodInstanceGroup->getChannel(i, &inst));
+			FMOD_VERIFY(inst->set3DAttributes(&pos, 0));
+		}
 	}
 }
 
