@@ -94,6 +94,7 @@ protected:
 private:
 	int newSceneCounter;
 
+	SceneEditorProxy *curScene;
 	ST_Axis curModifAxis;
 	ST_ModifMode curModifMode;
 	ST_PivotPoint curPivotPoint;
