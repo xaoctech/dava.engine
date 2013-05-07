@@ -36,13 +36,15 @@ void ResourcePacker2D::InitFolders(const FilePath & inputPath,const FilePath & o
 	excludeDirectory = inputPath + "../";
 }
     
-void ResourcePacker2D::PackResources()
+void ResourcePacker2D::PackResources(eGPUFamily forGPU)
 {
 	Logger::Debug("Input: %s \nOutput: %s \nExclude: %s",
                   inputGfxDirectory.GetAbsolutePathname().c_str(),
                   outputGfxDirectory.GetAbsolutePathname().c_str(),
                   excludeDirectory.GetAbsolutePathname().c_str());
-	
+
+	requestedGPUFamily = forGPU;
+    
 	isGfxModified = false;
 
     gfxDirName = inputGfxDirectory.GetLastDirectoryName();
@@ -338,7 +340,7 @@ void ResourcePacker2D::ProcessFlags(const FilePath & flagsPathname)
 		}
 	}
 	
-	CommandLineParser::Instance()->SetFlags(tokens);
+	CommandLineParser::Instance()->SetArguments(tokens);
 	
 	SafeRelease(file);
 }
@@ -370,7 +372,7 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 		//Logger::Error("Can't create directory: %s", outputPath.c_str());
 	}
 	
-	CommandLineParser::Instance()->ClearFlags();
+	CommandLineParser::Instance()->Clear();
 	List<DefinitionFile *> definitionFileList;
 
 	// Find flags and setup them
@@ -445,11 +447,11 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 
 			if (CommandLineParser::Instance()->IsFlagSet("--split"))
 			{
-				packer.PackToTexturesSeparate(excludeDirectory, outputPath, definitionFileList);
+				packer.PackToTexturesSeparate(excludeDirectory, outputPath, definitionFileList, requestedGPUFamily);
 			}
 			else
 			{
-				packer.PackToTextures(excludeDirectory, outputPath, definitionFileList);
+				packer.PackToTextures(excludeDirectory, outputPath, definitionFileList, requestedGPUFamily);
 			}
 		}
 	}	
