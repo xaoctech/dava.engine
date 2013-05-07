@@ -44,6 +44,8 @@ protected:
 	void UpdateHoodPos() const;
 	void SelectedItemsWereModified();
 
+	DAVA::AABBox3 CalcAABox(DAVA::Entity *entity) const;
+
 private:
 	int drawMode;
 	bool applyOnPhaseEnd;

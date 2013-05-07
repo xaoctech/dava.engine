@@ -68,8 +68,7 @@ const FilePath & FilePath::GetBundleName()
     
 void FilePath::AddResourcesFolder(const FilePath & folder)
 {
-    auto endIt = resourceFolders.end();
-    for(auto it = resourceFolders.begin(); it != endIt; ++it)
+    for(List<FilePath>::iterator it = resourceFolders.begin(); it != resourceFolders.end(); ++it)
     {
         if(folder == *it)
         {
@@ -84,8 +83,7 @@ void FilePath::AddResourcesFolder(const FilePath & folder)
     
 void FilePath::RemoveResourcesFolder(const FilePath & folder)
 {
-    auto endIt = resourceFolders.end();
-    for(auto it = resourceFolders.begin(); it != endIt; ++it)
+    for(List<FilePath>::iterator it = resourceFolders.begin(); it != resourceFolders.end(); ++it)
     {
         if(folder == *it)
         {

@@ -3,6 +3,7 @@
 #include "Scene/System/CollisionSystem.h"
 #include "Scene/System/HoodSystem.h"
 #include "Scene/System/ModifSystem.h"
+#include "Scene/SceneSignals.h"
 
 #include <QApplication>
 #include "Scene/SceneEditorProxy.h"
@@ -41,13 +42,11 @@ void SceneSelectionSystem::ProcessUIEvent(DAVA::UIEvent *event)
 				EntityGroup selectableItems = GetSelecetableFromCollision(collisionEntities);
 
 				DAVA::Entity *firstEntity = selectableItems.GetEntity(0);
-				DAVA::Entity *nextEntity = NULL;
+				DAVA::Entity *nextEntity = selectableItems.GetEntity(0);
 
 				// search possible next item only if now there is no selection or is only single selection
 				if(curSelections.Size() <= 1)
 				{
-					bool found = false;
-
 					// find first after currently selected items
 					for(size_t i = 0; i < selectableItems.Size(); i++)
 					{
@@ -56,17 +55,10 @@ void SceneSelectionSystem::ProcessUIEvent(DAVA::UIEvent *event)
 						{
 							if((i + 1) < selectableItems.Size())
 							{
-								found = true;
-
 								nextEntity = selectableItems.GetEntity(i + 1);
 								break;
 							}
 						}
-					}
-
-					if(!found)
-					{
-						nextEntity = selectableItems.GetEntity(0);
 					}
 				}
 
@@ -117,7 +109,8 @@ void SceneSelectionSystem::Draw()
 		DAVA::eBlendMode oldBlendSrc = DAVA::RenderManager::Instance()->GetSrcBlend();
 		DAVA::eBlendMode oldBlendDst = DAVA::RenderManager::Instance()->GetDestBlend();
 
-		int newState = DAVA::RenderState::STATE_BLEND | DAVA::RenderState::STATE_COLORMASK_ALL | DAVA::RenderState::STATE_DEPTH_WRITE;
+		int newState = DAVA::RenderState::STATE_BLEND | DAVA::RenderState::STATE_COLORMASK_ALL;
+
 		if(!(drawMode & ST_SELDRAW_NO_DEEP_TEST))
 		{
 			newState |= DAVA::RenderState::STATE_DEPTH_TEST;
@@ -158,12 +151,27 @@ void SceneSelectionSystem::Draw()
 
 void SceneSelectionSystem::SetSelection(DAVA::Entity *entity)
 {
+	// emit deselection for current selected items
+	for(size_t i = 0; i < curSelections.Size(); ++i)
+	{
+		EntityGroupItem selectedItem = curSelections.GetItem(i);
+		SceneSignals::Instance()->EmitDeselected((SceneEditorProxy *) GetScene(), selectedItem.solidEntity);
+	}
+
+	// clear current selection
 	curSelections.Clear();
 
+	// add new selection
 	if(NULL != entity)
 	{
 		EntityGroupItem selectableItem = GetSelectableEntity(entity);
 		curSelections.Add(selectableItem);
+
+		SceneSignals::Instance()->EmitSelected((SceneEditorProxy *) GetScene(), selectableItem.solidEntity);
+	}
+	else
+	{
+		SceneSignals::Instance()->EmitSelected((SceneEditorProxy *) GetScene(), NULL);
 	}
 
 	UpdateHoodPos();
@@ -175,6 +183,8 @@ void SceneSelectionSystem::AddSelection(DAVA::Entity *entity)
 	{
 		EntityGroupItem selectableItem = GetSelectableEntity(entity);
 		curSelections.Add(selectableItem);
+
+		SceneSignals::Instance()->EmitSelected((SceneEditorProxy *) GetScene(), selectableItem.solidEntity);
 	}
 
 	UpdateHoodPos();
@@ -183,6 +193,9 @@ void SceneSelectionSystem::AddSelection(DAVA::Entity *entity)
 void SceneSelectionSystem::RemSelection(DAVA::Entity *entity)
 {
 	curSelections.Rem(entity);
+
+	EntityGroupItem selectableItem = GetSelectableEntity(entity);
+	SceneSignals::Instance()->EmitDeselected((SceneEditorProxy *) GetScene(), selectableItem.solidEntity);
 
 	UpdateHoodPos();
 }
@@ -258,14 +271,11 @@ EntityGroupItem SceneSelectionSystem::GetSelectableEntity(DAVA::Entity* entity)
 	
 	if(NULL != entity)
 	{
-		ret.bbox.AddAABBox(collisionSystem->GetBoundingBox(entity));
-
 		// find real solid entity
 		solidEntity = entity;
 		while(NULL != solidEntity && !solidEntity->GetSolid())
 		{
 			solidEntity = solidEntity->GetParent();
-			ret.bbox.AddAABBox(collisionSystem->GetBoundingBox(solidEntity));
 		}
 
 		// if there is no solid entity, try to find lod parent entity
@@ -288,6 +298,28 @@ EntityGroupItem SceneSelectionSystem::GetSelectableEntity(DAVA::Entity* entity)
 
 		ret.entity = entity;
 		ret.solidEntity = solidEntity;
+		ret.bbox = CalcAABox(solidEntity);
+	}
+
+	return ret;
+}
+
+DAVA::AABBox3 SceneSelectionSystem::CalcAABox(DAVA::Entity *entity) const
+{
+	DAVA::AABBox3 ret;
+
+	if(NULL != entity)
+	{
+		// we will get selection bbox from collision system
+		ret = collisionSystem->GetBoundingBox(entity);
+
+		if(ret.IsEmpty())
+		{
+			for (DAVA::int32 i = 0; i < entity->GetChildrenCount(); i++)
+			{
+				ret.AddAABBox(collisionSystem->GetBoundingBox(entity->GetChild(i)));
+			}
+		}
 	}
 
 	return ret;
