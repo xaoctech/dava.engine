@@ -220,8 +220,8 @@ public:
     TextureDescriptor * CreateDescriptor() const;
 
     void Reload();
-    void ReloadAs(ImageFileFormat fileFormat);
-	void ReloadAs(ImageFileFormat fileFormat, const TextureDescriptor *descriptor);
+    void ReloadAs(eGPUFamily gpuFamily);
+	void ReloadAs(eGPUFamily gpuFamily, const TextureDescriptor *descriptor);
 
 public:							// properties for fast access
 
@@ -284,18 +284,18 @@ public:							// properties for fast access
 
     void GenerateID();
     
-    static void SetDefaultFileFormat(ImageFileFormat fileFormat);
-    static ImageFileFormat GetDefaultFileFormat();
+    static void SetDefaultGPU(eGPUFamily gpuFamily);
+    static eGPUFamily GetDefaultGPU();
     
     
-    inline const ImageFileFormat GetSourceFileFormat() const;
+    inline const eGPUFamily GetSourceFileGPUFamily() const;
     
 private:
     
 	static Map<String, Texture*> textureMap;
 	static Texture * Get(const FilePath & name);
     
-	static Texture * CreateFromDescriptor(const FilePath & pathname, TextureDescriptor *descriptor);
+	static Texture * CreateFromDescriptor(TextureDescriptor *descriptor);
 	static Texture * CreateFromImage(const FilePath & pathname, TextureDescriptor *descriptor);
 	static Texture * CreateFromImage(File *file, TextureDescriptor *descriptor);
 
@@ -319,13 +319,13 @@ private:
     static GLint HWglConvertWrapMode(TextureWrap wrap);
 #endif //#if defined(__DAVAENGINE_OPENGL__)
     
-    static ImageFileFormat defaultFileFormat;
-    ImageFileFormat loadedAsFile;
+    static eGPUFamily defaultGPU;
+    eGPUFamily loadedAsFile;
     
-    static bool IsLoadAvailable(const ImageFileFormat fileFormat, const TextureDescriptor *descriptor);
+    static bool IsLoadAvailable(const eGPUFamily gpuFamily, const TextureDescriptor *descriptor);
     
-    static FilePath GetActualFilename(const FilePath &pathname, const ImageFileFormat fileFormat, const TextureDescriptor *descriptor);
-	static ImageFileFormat GetFormatForLoading(const ImageFileFormat requestedFormat, const TextureDescriptor *descriptor);
+    static FilePath GetActualFilename(const TextureDescriptor *descriptor, const eGPUFamily gpuFamily);
+	static eGPUFamily GetFormatForLoading(const eGPUFamily requestedGPU, const TextureDescriptor *descriptor);
 };
     
 // Implementation of inline functions
@@ -340,7 +340,7 @@ inline const FilePath & Texture::GetPathname() const
 	return relativePathname;
 }
     
-inline const ImageFileFormat Texture::GetSourceFileFormat() const
+inline const eGPUFamily Texture::GetSourceFileGPUFamily() const
 {
     return loadedAsFile;
 }

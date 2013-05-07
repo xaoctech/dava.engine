@@ -55,6 +55,9 @@
 #include "Render/TextureDescriptor.h"
 #include "Render/ImageLoader.h"
 
+#include "Render/GPUFamily.h"
+
+
 #ifdef __DAVAENGINE_ANDROID__
 #ifndef GL_COMPRESSED_RGBA_S3TC_DXT3_EXT
 #define GL_COMPRESSED_RGBA_S3TC_DXT3_EXT 0x83F2
@@ -113,7 +116,7 @@ public:
 	int	fboMemoryUsed;
 };
 
-ImageFileFormat Texture::defaultFileFormat = NOT_FILE;
+eGPUFamily Texture::defaultGPU = GPU_UNKNOWN;
     
 static TextureMemoryUsageInfo texMemoryUsageInfo;
 	
@@ -143,7 +146,7 @@ Texture::Texture()
 ,	format(FORMAT_INVALID)
 ,	depthFormat(DEPTH_NONE)
 ,	isRenderTarget(false)
-,   loadedAsFile(NOT_FILE)
+,   loadedAsFile(GPU_UNKNOWN)
 {
 #ifdef __DAVAENGINE_DIRECTX9__
 	saveTexture = 0;
@@ -550,16 +553,16 @@ bool Texture::LoadFromImage(File *file, const TextureDescriptor *descriptor)
         int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
         RenderManager::Instance()->HWglBindTexture(id);
         
-        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, HWglConvertWrapMode((TextureWrap)descriptor->wrapModeS)));
-        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, HWglConvertWrapMode((TextureWrap)descriptor->wrapModeS)));
+        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, HWglConvertWrapMode((TextureWrap)descriptor->settings.wrapModeS)));
+        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, HWglConvertWrapMode((TextureWrap)descriptor->settings.wrapModeS)));
         
         if(needGenerateMipMaps)
         {
             RENDER_VERIFY(glGenerateMipmap(GL_TEXTURE_2D));
         }
         
-        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, HWglFilterToGLFilter((TextureFilter)descriptor->minFilter)));
-        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, HWglFilterToGLFilter((TextureFilter)descriptor->magFilter)));
+        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, HWglFilterToGLFilter((TextureFilter)descriptor->settings.minFilter)));
+        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, HWglFilterToGLFilter((TextureFilter)descriptor->settings.magFilter)));
         
         RenderManager::Instance()->HWglBindTexture(saveId);
 #elif defined(__DAVAENGINE_DIRECTX9__)
@@ -677,17 +680,17 @@ Texture * Texture::PureCreate(const FilePath & pathName)
 	// TODO: add check that pathName
     if(pathName.IsEqualToExtension(TextureDescriptor::GetDescriptorExtension()))
     {
-		texture = CreateFromDescriptor(pathName, descriptor);
+		texture = CreateFromDescriptor(descriptor);
     }
     else
     {
-        ImageFileFormat fileFormat = GetFormatForLoading(TextureDescriptor::GetFormatForExtension(pathName.GetExtension()), descriptor);
-        if((NOT_FILE == defaultFileFormat) || IsLoadAvailable(fileFormat, descriptor))
+        eGPUFamily gpuFamily = GetFormatForLoading(GPUFamily::GetGPUForPathname(pathName), descriptor);
+        if((GPU_UNKNOWN == defaultGPU) || IsLoadAvailable(gpuFamily, descriptor))
         {
             texture = CreateFromImage(pathName, descriptor);
             if(texture)
             {
-                texture->loadedAsFile = fileFormat;
+                texture->loadedAsFile = gpuFamily;
             }
         }
     }
@@ -696,52 +699,35 @@ Texture * Texture::PureCreate(const FilePath & pathName)
     {
 		texture->relativePathname = descriptor->pathname;
         textureMap[texture->relativePathname.GetAbsolutePathname()] = texture;
-        texture->SetWrapMode((TextureWrap)descriptor->wrapModeS, (TextureWrap)descriptor->wrapModeT);
+        texture->SetWrapMode((TextureWrap)descriptor->settings.wrapModeS, (TextureWrap)descriptor->settings.wrapModeT);
     }
     
     SafeRelease(descriptor);
 	return texture;
 }
     
-Texture * Texture::CreateFromDescriptor(const FilePath &pathName, TextureDescriptor *descriptor)
+Texture * Texture::CreateFromDescriptor(TextureDescriptor *descriptor)
 {
-#if defined TEXTURE_SPLICING_ENABLED
-    Texture * texture = Texture::Get(pathName);
-    if (texture)return texture;
-    
-    texture = CreateFromImage(descriptor->textureFile, descriptor);
-    if(texture)
-    {
-        texture->loadedAsFile = descriptor->textureFileFormat;
-    }
-#else //#if defined TEXTURE_SPLICING_ENABLED
     Texture * texture = NULL;
     
-    ImageFileFormat formatForLoading = (NOT_FILE == defaultFileFormat) ? (ImageFileFormat)descriptor->textureFileFormat : defaultFileFormat;
-    formatForLoading = GetFormatForLoading(formatForLoading, descriptor);
-    if((NOT_FILE == defaultFileFormat) || IsLoadAvailable(formatForLoading, descriptor))
+    eGPUFamily gpuForLoading = (GPU_UNKNOWN == defaultGPU) ? (eGPUFamily)descriptor->exportedAsGpuFamily : defaultGPU;
+    gpuForLoading = GetFormatForLoading(gpuForLoading, descriptor);
+    if((GPU_UNKNOWN == defaultGPU) || IsLoadAvailable(gpuForLoading, descriptor))
     {
-        FilePath imagePathname = GetActualFilename(pathName, formatForLoading, descriptor);
+        FilePath imagePathname = GetActualFilename(descriptor, gpuForLoading);
         texture = CreateFromImage(imagePathname, descriptor);
         if(texture)
         {
-            texture->loadedAsFile = formatForLoading;
+            texture->loadedAsFile = gpuForLoading;
         }
     }
-    
-#endif //#if defined TEXTURE_SPLICING_ENABLED
     
     return texture;
 }
 
-FilePath Texture::GetActualFilename(const FilePath &pathname, const ImageFileFormat fileFormat, const TextureDescriptor *descriptor)
+FilePath Texture::GetActualFilename(const TextureDescriptor *descriptor, const eGPUFamily gpuFamily)
 {
-    if(descriptor->IsCompressedFile())
-    {
-        return TextureDescriptor::GetPathnameForFormat(pathname, (ImageFileFormat)descriptor->textureFileFormat);
-    }
-    
-    return TextureDescriptor::GetPathnameForFormat(pathname, fileFormat);
+    return GPUFamily::CreatePathnameForGPU(descriptor, gpuFamily);
 }
 
 	
@@ -760,25 +746,26 @@ void Texture::Reload()
     ReloadAs(loadedAsFile);
 }
     
-void Texture::ReloadAs(ImageFileFormat fileFormat)
+void Texture::ReloadAs(eGPUFamily gpuFamily)
 {
 	TextureDescriptor *descriptor = CreateDescriptor();
-	ReloadAs(fileFormat, descriptor);
+	ReloadAs(gpuFamily, descriptor);
 	SafeRelease(descriptor);
 }
 
-void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat, const TextureDescriptor *descriptor)
+void Texture::ReloadAs(eGPUFamily gpuFamily, const TextureDescriptor *descriptor)
 {
     ReleaseTextureData();
 	
 	DVASSERT(NULL != descriptor);
     
-	ImageFileFormat formatForLoading = GetFormatForLoading(fileFormat, descriptor);
-    FilePath imagePathname = TextureDescriptor::GetPathnameForFormat(descriptor->pathname, formatForLoading);
+	eGPUFamily gpuForLoading = GetFormatForLoading(gpuFamily, descriptor);
+    FilePath imagePathname = GPUFamily::CreatePathnameForGPU(descriptor, gpuForLoading);
+    
     File *file = File::Create(imagePathname, File::OPEN | File::READ);
 
     bool loaded = false;
-    if(descriptor && file && IsLoadAvailable(formatForLoading, descriptor))
+    if(descriptor && file && IsLoadAvailable(gpuForLoading, descriptor))
     {
         loaded = LoadFromImage(file, descriptor);
     }
@@ -822,25 +809,26 @@ void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat, const TextureDescriptor
     }
     else
     {
-        loadedAsFile = formatForLoading;
+        loadedAsFile = gpuForLoading;
     }
     
     SafeRelease(file);
 }
     
-bool Texture::IsLoadAvailable(const ImageFileFormat fileFormat, const TextureDescriptor *descriptor)
+bool Texture::IsLoadAvailable(const eGPUFamily gpuFamily, const TextureDescriptor *descriptor)
 {
     if(descriptor->IsCompressedFile())
     {
         return true;
     }
     
-    if(     (PVR_FILE == fileFormat && descriptor->pvrCompression.format == FORMAT_INVALID)
-       ||   (DXT_FILE == fileFormat && descriptor->dxtCompression.format == FORMAT_INVALID))
+    DVASSERT(gpuFamily < GPU_FAMILY_COUNT);
+    
+    if(gpuFamily != GPU_UNKNOWN && descriptor->compression[gpuFamily].format == FORMAT_INVALID)
     {
         return false;
     }
-
+    
     return true;
 }
 
@@ -1555,23 +1543,23 @@ GLint Texture::HWglFilterToGLFilter(TextureFilter filter)
 #endif //#if defined (__DAVAENGINE_OPENGL__)
     
     
-void Texture::SetDefaultFileFormat(ImageFileFormat fileFormat)
+void Texture::SetDefaultGPU(eGPUFamily gpuFamily)
 {
-    defaultFileFormat = fileFormat;
+    defaultGPU = gpuFamily;
 }
 
-ImageFileFormat Texture::GetDefaultFileFormat()
+eGPUFamily Texture::GetDefaultGPU()
 {
-    return defaultFileFormat;
+    return defaultGPU;
 }
 
     
-ImageFileFormat Texture::GetFormatForLoading(const ImageFileFormat requestedFormat, const TextureDescriptor *descriptor)
+eGPUFamily Texture::GetFormatForLoading(const eGPUFamily requestedGPU, const TextureDescriptor *descriptor)
 {
     if(descriptor->IsCompressedFile())
-        return (ImageFileFormat)descriptor->textureFileFormat;
+        return (eGPUFamily)descriptor->exportedAsGpuFamily;
     
-    return requestedFormat;
+    return requestedGPU;
 }
     
 

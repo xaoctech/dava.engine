@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		E8951AF61737775600755339 /* FrameworkMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8951AF21737775600755339 /* FrameworkMain.cpp */; };
 		E8951AF71737775600755339 /* GameCore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8951AF41737775600755339 /* GameCore.cpp */; };
-		E8951B23173780E800755339 /* EditorCommandLineParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8951B0F173780E800755339 /* EditorCommandLineParser.cpp */; };
 		E8951B24173780E800755339 /* DXTConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8951B12173780E800755339 /* DXTConverter.cpp */; };
 		E8951B25173780E800755339 /* PVRConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8951B14173780E800755339 /* PVRConverter.cpp */; };
 		E8951B26173780E800755339 /* CommandLineParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8951B17173780E800755339 /* CommandLineParser.cpp */; };
@@ -62,8 +61,6 @@
 		E8951AF31737775600755339 /* FrameworkMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FrameworkMain.h; path = Classes/FrameworkMain.h; sourceTree = "<group>"; };
 		E8951AF41737775600755339 /* GameCore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameCore.cpp; path = Classes/GameCore.cpp; sourceTree = "<group>"; };
 		E8951AF51737775600755339 /* GameCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameCore.h; path = Classes/GameCore.h; sourceTree = "<group>"; };
-		E8951B0F173780E800755339 /* EditorCommandLineParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditorCommandLineParser.cpp; sourceTree = "<group>"; };
-		E8951B10173780E800755339 /* EditorCommandLineParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorCommandLineParser.h; sourceTree = "<group>"; };
 		E8951B12173780E800755339 /* DXTConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DXTConverter.cpp; sourceTree = "<group>"; };
 		E8951B13173780E800755339 /* DXTConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DXTConverter.h; sourceTree = "<group>"; };
 		E8951B14173780E800755339 /* PVRConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PVRConverter.cpp; sourceTree = "<group>"; };
@@ -159,21 +156,11 @@
 		E8951B0D173780E800755339 /* Tools */ = {
 			isa = PBXGroup;
 			children = (
-				E8951B0E173780E800755339 /* CommandLine */,
 				E8951B11173780E800755339 /* TextureCompression */,
 				E8951B16173780E800755339 /* TexturePacker */,
 			);
 			name = Tools;
 			path = ../../Sources/Tools;
-			sourceTree = "<group>";
-		};
-		E8951B0E173780E800755339 /* CommandLine */ = {
-			isa = PBXGroup;
-			children = (
-				E8951B0F173780E800755339 /* EditorCommandLineParser.cpp */,
-				E8951B10173780E800755339 /* EditorCommandLineParser.h */,
-			);
-			path = CommandLine;
 			sourceTree = "<group>";
 		};
 		E8951B11173780E800755339 /* TextureCompression */ = {
@@ -323,7 +310,6 @@
 				FEC3E4EB133CBC1100442ADD /* main.cpp in Sources */,
 				E8951AF61737775600755339 /* FrameworkMain.cpp in Sources */,
 				E8951AF71737775600755339 /* GameCore.cpp in Sources */,
-				E8951B23173780E800755339 /* EditorCommandLineParser.cpp in Sources */,
 				E8951B24173780E800755339 /* DXTConverter.cpp in Sources */,
 				E8951B25173780E800755339 /* PVRConverter.cpp in Sources */,
 				E8951B26173780E800755339 /* CommandLineParser.cpp in Sources */,
