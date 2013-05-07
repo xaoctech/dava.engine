@@ -47,6 +47,8 @@ NMaterial * MaterialSystem::GetMaterial(const FastName & name)
     {
         material = new NMaterial();
         bool result = material->LoadFromFile(name.c_str());
+    
+        materials.Insert(name, material);
     }
     return material;
 }
