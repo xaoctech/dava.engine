@@ -170,6 +170,11 @@ void RenderSystem::RemoveRenderBatch(RenderBatch * renderBatch)
     }
 }
 
+RenderPass * RenderSystem::GetRenderPass(const FastName & passName)
+{
+	return renderPassesMap[passName];
+}
+
 void RenderSystem::ImmediateUpdateRenderBatch(RenderBatch * renderBatch)
 {
     AddRenderBatch(renderBatch);

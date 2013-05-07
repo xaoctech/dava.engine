@@ -73,6 +73,7 @@ class ParticleEffectSystem;
 class UpdateSystem;
 class LightUpdateSystem;
 class SwitchSystem;
+class SoundUpdateSystem;
     
 /**
     \ingroup scene3d
@@ -114,6 +115,7 @@ public:
     LightUpdateSystem * lightUpdateSystem;
 	SwitchSystem * switchSystem;
 	RenderSystem * renderSystem;
+	SoundUpdateSystem * soundSystem;
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.
      */
