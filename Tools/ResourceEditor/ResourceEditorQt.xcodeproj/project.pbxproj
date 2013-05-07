@@ -13,6 +13,7 @@
 		0C6D4628EE0B0D1479A20551 /* AGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = C6766F86E49E9C8701C8E637 /* AGL.framework */; };
 		1735C427169DE63D001E0468 /* ParticlesEditorSceneDataHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1735C423169DE63D001E0468 /* ParticlesEditorSceneDataHelper.cpp */; };
 		1735C428169DE63D001E0468 /* ParticlesEditorSceneModelHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1735C425169DE63D001E0468 /* ParticlesEditorSceneModelHelper.cpp */; };
+		173B278D172FA79C006CD29E /* InnerEmitterParticleEditorNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173B278B172FA79C006CD29E /* InnerEmitterParticleEditorNode.cpp */; };
 		177D1A9016CB8ADB0021104B /* SceneGraphModelStateHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 177D1A8E16CB8ADB0021104B /* SceneGraphModelStateHelper.cpp */; };
 		177D1A9316CB8C820021104B /* PropertyEditorStateHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 177D1A9116CB8C820021104B /* PropertyEditorStateHelper.cpp */; };
 		178A9B721716E584006BB1F7 /* ParticleEffectPropertiesWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 178A9B701716E583006BB1F7 /* ParticleEffectPropertiesWidget.cpp */; };
@@ -501,6 +502,8 @@
 		1735C424169DE63D001E0468 /* ParticlesEditorSceneDataHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticlesEditorSceneDataHelper.h; sourceTree = "<group>"; };
 		1735C425169DE63D001E0468 /* ParticlesEditorSceneModelHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticlesEditorSceneModelHelper.cpp; sourceTree = "<group>"; };
 		1735C426169DE63D001E0468 /* ParticlesEditorSceneModelHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticlesEditorSceneModelHelper.h; sourceTree = "<group>"; };
+		173B278B172FA79C006CD29E /* InnerEmitterParticleEditorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InnerEmitterParticleEditorNode.cpp; sourceTree = "<group>"; };
+		173B278C172FA79C006CD29E /* InnerEmitterParticleEditorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InnerEmitterParticleEditorNode.h; sourceTree = "<group>"; };
 		177D1A8D16CB8ACA0021104B /* QTreeViewStateHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTreeViewStateHelper.h; sourceTree = "<group>"; };
 		177D1A8E16CB8ADB0021104B /* SceneGraphModelStateHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneGraphModelStateHelper.cpp; sourceTree = "<group>"; };
 		177D1A8F16CB8ADB0021104B /* SceneGraphModelStateHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneGraphModelStateHelper.h; sourceTree = "<group>"; };
@@ -2354,6 +2357,8 @@
 				C18521B016831F84003D4A6F /* ForceParticleEditorNode.h */,
 				C18521B116831F84003D4A6F /* LayerParticleEditorNode.cpp */,
 				C18521B216831F84003D4A6F /* LayerParticleEditorNode.h */,
+				173B278B172FA79C006CD29E /* InnerEmitterParticleEditorNode.cpp */,
+				173B278C172FA79C006CD29E /* InnerEmitterParticleEditorNode.h */,
 			);
 			path = Nodes;
 			sourceTree = "<group>";
@@ -3666,6 +3671,7 @@
 				E88F3002171C85A000510B78 /* SceneInfo_moc.cpp in Build Sources */,
 				84EF22CE171EECA900B45031 /* ScrollZoomWidget_moc.cpp in Build Sources */,
 				84EF22D4171EECBD00B45031 /* ScrollZoomWidget.cpp in Build Sources */,
+				173B278D172FA79C006CD29E /* InnerEmitterParticleEditorNode.cpp in Build Sources */,
 				E8C4C64F17294079004B0B3B /* CameraSystem.cpp in Build Sources */,
 				E8C4C65017294079004B0B3B /* CollisionLandscape.cpp in Build Sources */,
 				E8C4C65117294079004B0B3B /* CollisionRenderObject.cpp in Build Sources */,

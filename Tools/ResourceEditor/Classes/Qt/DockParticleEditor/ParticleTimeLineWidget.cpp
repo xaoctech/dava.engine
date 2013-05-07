@@ -34,6 +34,7 @@ ParticleTimeLineWidget::ParticleTimeLineWidget(QWidget *parent/* = 0*/) :
 	selectedPoint(-1, -1),
 	emitterNode(NULL),
 	effectNode(NULL),
+	selectedLayer(NULL),
 #ifdef Q_WS_WIN
 	nameFont("Courier", 8, QFont::Normal)
 #else
@@ -103,6 +104,7 @@ void ParticleTimeLineWidget::OnNodeSelected(Entity* node)
 void ParticleTimeLineWidget::HandleNodeSelected(Entity* node, ParticleLayer* layer)
 {
 	emitterNode = node;
+	selectedLayer = layer;
 	effectNode = NULL;
 	
 	float32 minTime = 0;
@@ -635,7 +637,9 @@ void ParticleTimeLineWidget::OnValueChanged(int lineId)
 
 void ParticleTimeLineWidget::OnUpdate()
 {
-	if (emitterNode)
+	if (selectedLayer && emitterNode)
+		OnLayerSelected(emitterNode, selectedLayer);
+	else if (emitterNode)
 		OnNodeSelected(emitterNode);
 	else if (effectNode)
 		OnEffectNodeSelected(effectNode);
