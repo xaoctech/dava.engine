@@ -8,9 +8,32 @@
 
 /* Begin PBXBuildFile section */
 		0224B70015989F7400CDEF9E /* libtheora_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B6FF15989F7400CDEF9E /* libtheora_macos.a */; };
-		02E9E3A917296CD300C501BC /* libfmodex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E3A817296CD300C501BC /* libfmodex.dylib */; };
 		02E9E3AB17296D4200C501BC /* FMODUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E3AA17296D4200C501BC /* FMODUtils.h */; };
-		02E9E3AC17296DA200C501BC /* libfmodex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E3A817296CD300C501BC /* libfmodex.dylib */; };
+		02E9E40A17395FDD00C501BC /* libfmodevent.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E40817395FDD00C501BC /* libfmodevent.dylib */; };
+		02E9E40B17395FDD00C501BC /* libfmodex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E40917395FDD00C501BC /* libfmodex.dylib */; };
+		02E9E40C17395FED00C501BC /* libfmodevent.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E40817395FDD00C501BC /* libfmodevent.dylib */; };
+		02E9E40D17395FED00C501BC /* libfmodex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E40917395FDD00C501BC /* libfmodex.dylib */; };
+		02E9E41B1739615B00C501BC /* SoundEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E4151739615B00C501BC /* SoundEvent.cpp */; };
+		02E9E41C1739615B00C501BC /* SoundEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E4161739615B00C501BC /* SoundEvent.h */; };
+		02E9E41D1739615B00C501BC /* SoundEventCategory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E4171739615B00C501BC /* SoundEventCategory.cpp */; };
+		02E9E41E1739615B00C501BC /* SoundEventCategory.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E4181739615B00C501BC /* SoundEventCategory.h */; };
+		02E9E41F1739615B00C501BC /* VolumeAnimatedObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E4191739615B00C501BC /* VolumeAnimatedObject.cpp */; };
+		02E9E4201739615B00C501BC /* VolumeAnimatedObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E41A1739615B00C501BC /* VolumeAnimatedObject.h */; };
+		02E9E4231739616800C501BC /* SoundComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E4211739616800C501BC /* SoundComponent.cpp */; };
+		02E9E4241739616800C501BC /* SoundComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E4221739616800C501BC /* SoundComponent.h */; };
+		02E9E425173961DE00C501BC /* SoundEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E4151739615B00C501BC /* SoundEvent.cpp */; };
+		02E9E427173961DE00C501BC /* SoundEventCategory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E4171739615B00C501BC /* SoundEventCategory.cpp */; };
+		02E9E429173961DE00C501BC /* VolumeAnimatedObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E4191739615B00C501BC /* VolumeAnimatedObject.cpp */; };
+		02E9E42F1739622500C501BC /* SoundEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E4161739615B00C501BC /* SoundEvent.h */; };
+		02E9E4301739622800C501BC /* SoundEventCategory.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E4181739615B00C501BC /* SoundEventCategory.h */; };
+		02E9E4311739622E00C501BC /* VolumeAnimatedObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E41A1739615B00C501BC /* VolumeAnimatedObject.h */; };
+		02E9E4321739622E00C501BC /* FMODUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E3AA17296D4200C501BC /* FMODUtils.h */; };
+		02E9E4331739623700C501BC /* SoundComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E4211739616800C501BC /* SoundComponent.cpp */; };
+		02E9E4341739623900C501BC /* SoundComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E4221739616800C501BC /* SoundComponent.h */; };
+		02E9E437173964DA00C501BC /* SoundUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E435173964DA00C501BC /* SoundUpdateSystem.cpp */; };
+		02E9E438173964DA00C501BC /* SoundUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E435173964DA00C501BC /* SoundUpdateSystem.cpp */; };
+		02E9E439173964DA00C501BC /* SoundUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E436173964DA00C501BC /* SoundUpdateSystem.h */; };
+		02E9E43A173964DA00C501BC /* SoundUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E436173964DA00C501BC /* SoundUpdateSystem.h */; };
 		171F938516CE6F28007038AB /* UIWebView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 171F938316CE6F28007038AB /* UIWebView.cpp */; };
 		171F938616CE6F28007038AB /* UIWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 171F938416CE6F28007038AB /* UIWebView.h */; };
 		1723D46F16CCF1C00039CCC2 /* ParticleForce.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1799E52416CCEC030058061F /* ParticleForce.cpp */; };
@@ -1259,8 +1282,19 @@
 
 /* Begin PBXFileReference section */
 		0224B6FF15989F7400CDEF9E /* libtheora_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtheora_macos.a; path = ../../Libs/libs/libtheora_macos.a; sourceTree = "<group>"; };
-		02E9E3A817296CD300C501BC /* libfmodex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodex.dylib; path = ../../Libs/fmod/lib/libfmodex.dylib; sourceTree = "<group>"; };
 		02E9E3AA17296D4200C501BC /* FMODUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMODUtils.h; sourceTree = "<group>"; };
+		02E9E40817395FDD00C501BC /* libfmodevent.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodevent.dylib; path = ../../Libs/fmod/lib/macos/libfmodevent.dylib; sourceTree = "<group>"; };
+		02E9E40917395FDD00C501BC /* libfmodex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodex.dylib; path = ../../Libs/fmod/lib/macos/libfmodex.dylib; sourceTree = "<group>"; };
+		02E9E4151739615B00C501BC /* SoundEvent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundEvent.cpp; sourceTree = "<group>"; };
+		02E9E4161739615B00C501BC /* SoundEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundEvent.h; sourceTree = "<group>"; };
+		02E9E4171739615B00C501BC /* SoundEventCategory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundEventCategory.cpp; sourceTree = "<group>"; };
+		02E9E4181739615B00C501BC /* SoundEventCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundEventCategory.h; sourceTree = "<group>"; };
+		02E9E4191739615B00C501BC /* VolumeAnimatedObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VolumeAnimatedObject.cpp; sourceTree = "<group>"; };
+		02E9E41A1739615B00C501BC /* VolumeAnimatedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VolumeAnimatedObject.h; sourceTree = "<group>"; };
+		02E9E4211739616800C501BC /* SoundComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundComponent.cpp; sourceTree = "<group>"; };
+		02E9E4221739616800C501BC /* SoundComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundComponent.h; sourceTree = "<group>"; };
+		02E9E435173964DA00C501BC /* SoundUpdateSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundUpdateSystem.cpp; sourceTree = "<group>"; };
+		02E9E436173964DA00C501BC /* SoundUpdateSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundUpdateSystem.h; sourceTree = "<group>"; };
 		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		0867D6A5FE840307C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
@@ -1900,7 +1934,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				02E9E3AC17296DA200C501BC /* libfmodex.dylib in Frameworks */,
+				02E9E40A17395FDD00C501BC /* libfmodevent.dylib in Frameworks */,
+				02E9E40B17395FDD00C501BC /* libfmodex.dylib in Frameworks */,
 				C1DC1F001717EC1E001C5EC3 /* libTextureConverter_macos.a in Frameworks */,
 				E89CE91216C549D2006BEFF4 /* libcurl_macos.a in Frameworks */,
 				4910CBF6167B73EC00CF948A /* libdxt_macos.a in Frameworks */,
@@ -1925,7 +1960,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				02E9E3A917296CD300C501BC /* libfmodex.dylib in Frameworks */,
+				02E9E40C17395FED00C501BC /* libfmodevent.dylib in Frameworks */,
+				02E9E40D17395FED00C501BC /* libfmodex.dylib in Frameworks */,
 				C1DC1EFD1717E8B7001C5EC3 /* libTextureConverter_macos.a in Frameworks */,
 				E898A2B116BD265400732C04 /* libdxt_macos.a in Frameworks */,
 				E898A2B216BD265400732C04 /* libPVRTexLib.a in Frameworks */,
@@ -1960,7 +1996,8 @@
 		0867D691FE84028FC02AAC07 /* Framework */ = {
 			isa = PBXGroup;
 			children = (
-				02E9E3A817296CD300C501BC /* libfmodex.dylib */,
+				02E9E40817395FDD00C501BC /* libfmodevent.dylib */,
+				02E9E40917395FDD00C501BC /* libfmodex.dylib */,
 				C1DC1EFB1717E791001C5EC3 /* libTextureConverter_macos.a */,
 				C151B18B16D37DD400E09BAF /* WebKit.framework */,
 				E89CE91116C549D2006BEFF4 /* libcurl_macos.a */,
@@ -2695,6 +2732,8 @@
 		E8989CC816BD24E500732C04 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				02E9E4211739616800C501BC /* SoundComponent.cpp */,
+				02E9E4221739616800C501BC /* SoundComponent.h */,
 				CC24800616DD174E00183D40 /* UserComponent.cpp */,
 				CC24800716DD174E00183D40 /* UserComponent.h */,
 				CCB4C41816CBC5B200F2B085 /* ComponentHelpers.cpp */,
@@ -2726,6 +2765,8 @@
 		E8989D1916BD24E500732C04 /* Systems */ = {
 			isa = PBXGroup;
 			children = (
+				02E9E435173964DA00C501BC /* SoundUpdateSystem.cpp */,
+				02E9E436173964DA00C501BC /* SoundUpdateSystem.h */,
 				CCC7A48116F1D6700061EA5D /* UpdateSystem.cpp */,
 				CCC7A48216F1D6700061EA5D /* UpdateSystem.h */,
 				50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */,
@@ -2757,6 +2798,12 @@
 		E8989D3416BD24E500732C04 /* Sound */ = {
 			isa = PBXGroup;
 			children = (
+				02E9E4151739615B00C501BC /* SoundEvent.cpp */,
+				02E9E4161739615B00C501BC /* SoundEvent.h */,
+				02E9E4171739615B00C501BC /* SoundEventCategory.cpp */,
+				02E9E4181739615B00C501BC /* SoundEventCategory.h */,
+				02E9E4191739615B00C501BC /* VolumeAnimatedObject.cpp */,
+				02E9E41A1739615B00C501BC /* VolumeAnimatedObject.h */,
 				02E9E3AA17296D4200C501BC /* FMODUtils.h */,
 				E8989D3816BD24E500732C04 /* Sound.cpp */,
 				E8989D3916BD24E500732C04 /* Sound.h */,
@@ -3242,6 +3289,11 @@
 				840D24231703311400267C58 /* DeviceInfo.h in Headers */,
 				7410E81D17144C160028AAAA /* UIAggregatorControl.h in Headers */,
 				02E9E3AB17296D4200C501BC /* FMODUtils.h in Headers */,
+				02E9E41C1739615B00C501BC /* SoundEvent.h in Headers */,
+				02E9E41E1739615B00C501BC /* SoundEventCategory.h in Headers */,
+				02E9E4201739615B00C501BC /* VolumeAnimatedObject.h in Headers */,
+				02E9E4241739616800C501BC /* SoundComponent.h in Headers */,
+				02E9E439173964DA00C501BC /* SoundUpdateSystem.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3565,6 +3617,12 @@
 				C18593DD16F30BF6005D30E2 /* UIAggregatorControl.h in Headers */,
 				7489A9CF1702F5A200D9AE2D /* CRC32.h in Headers */,
 				E8B6B3B11705DB26004F665E /* DeviceInfo.h in Headers */,
+				02E9E42F1739622500C501BC /* SoundEvent.h in Headers */,
+				02E9E4301739622800C501BC /* SoundEventCategory.h in Headers */,
+				02E9E4311739622E00C501BC /* VolumeAnimatedObject.h in Headers */,
+				02E9E4321739622E00C501BC /* FMODUtils.h in Headers */,
+				02E9E4341739623900C501BC /* SoundComponent.h in Headers */,
+				02E9E43A173964DA00C501BC /* SoundUpdateSystem.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3934,6 +3992,11 @@
 				E8B6B3BB1705DD59004F665E /* DeviceInfoMacOS.mm in Sources */,
 				7410E81C17144C120028AAAA /* UIAggregatorControl.cpp in Sources */,
 				E845D4E11732B5DF000DA8E7 /* FilePathObjective.mm in Sources */,
+				02E9E41B1739615B00C501BC /* SoundEvent.cpp in Sources */,
+				02E9E41D1739615B00C501BC /* SoundEventCategory.cpp in Sources */,
+				02E9E41F1739615B00C501BC /* VolumeAnimatedObject.cpp in Sources */,
+				02E9E4231739616800C501BC /* SoundComponent.cpp in Sources */,
+				02E9E437173964DA00C501BC /* SoundUpdateSystem.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3941,6 +4004,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02E9E425173961DE00C501BC /* SoundEvent.cpp in Sources */,
+				02E9E427173961DE00C501BC /* SoundEventCategory.cpp in Sources */,
+				02E9E429173961DE00C501BC /* VolumeAnimatedObject.cpp in Sources */,
 				E898A19B16BD265400732C04 /* AnimatedObject.cpp in Sources */,
 				E898A19C16BD265400732C04 /* Animation.cpp in Sources */,
 				E898A19D16BD265400732C04 /* AnimationManager.cpp in Sources */,
@@ -4214,6 +4280,8 @@
 				E8B6B3B01705DB26004F665E /* DeviceInfo.cpp in Sources */,
 				E8B6B3BC1705DD59004F665E /* DeviceInfoMacOS.mm in Sources */,
 				E845D4E21732B5DF000DA8E7 /* FilePathObjective.mm in Sources */,
+				02E9E4331739623700C501BC /* SoundComponent.cpp in Sources */,
+				02E9E438173964DA00C501BC /* SoundUpdateSystem.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4264,6 +4332,7 @@
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/libs\"",
 					"\"$(SRCROOT)/../../Libs/fmod/lib\"",
+					"\"$(SRCROOT)/../../Libs/fmod/lib/macos\"",
 				);
 				PRODUCT_NAME = Framework;
 			};
@@ -4298,6 +4367,7 @@
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/libs\"",
 					"\"$(SRCROOT)/../../Libs/fmod/lib\"",
+					"\"$(SRCROOT)/../../Libs/fmod/lib/macos\"",
 				);
 				PRODUCT_NAME = Framework;
 			};
@@ -4400,6 +4470,7 @@
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/libs\"",
 					"\"$(SRCROOT)/../../Libs/fmod/lib\"",
+					"\"$(SRCROOT)/../../Libs/fmod/lib/macos\"",
 				);
 				LIBRARY_STYLE = STATIC;
 				OTHER_CFLAGS = (
@@ -4439,6 +4510,7 @@
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/libs\"",
 					"\"$(SRCROOT)/../../Libs/fmod/lib\"",
+					"\"$(SRCROOT)/../../Libs/fmod/lib/macos\"",
 				);
 				LIBRARY_STYLE = STATIC;
 				OTHER_CFLAGS = (
