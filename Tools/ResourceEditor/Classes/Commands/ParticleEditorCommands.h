@@ -173,8 +173,10 @@ public:
 			  float32 startTime,
 			  float32 endTime,
 			  bool frameOverLifeEnabled,
-			  float32 frameOverLifeFPS
-			  );
+			  float32 frameOverLifeFPS,
+
+			  float32 pivotPointX,
+			  float32 pivotPointY);
 
 protected:
     virtual void Execute();
@@ -214,6 +216,9 @@ private:
 	float32 endTime;
 	bool frameOverLifeEnabled;
 	float32 frameOverLifeFPS;
+
+	float32 pivotPointX;
+	float32 pivotPointY;
 };
 
 class CommandUpdateParticleLayerTime: public Command

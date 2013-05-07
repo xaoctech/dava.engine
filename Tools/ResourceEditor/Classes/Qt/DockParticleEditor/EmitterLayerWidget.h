@@ -53,6 +53,8 @@ protected slots:
 	void OnSpriteBtn();
 	void OnSpritePathChanged(const QString& text);
 	
+	void OnPivotPointReset();
+	
 private:
 	void InitWidget(QWidget* );
 	void UpdateTooltip();
@@ -79,7 +81,15 @@ private:
 	
 	QLabel* innerEmitterLabel;
 	QLineEdit* innerEmitterPathLabel;
-	
+
+	QVBoxLayout* pivotPointLayout;
+	QLabel* pivotPointLabel;
+	QSpinBox* pivotPointXSpinBox;
+	QLabel* pivotPointXSpinBoxLabel;
+	QSpinBox* pivotPointYSpinBox;
+	QLabel* pivotPointYSpinBoxLabel;
+	QPushButton* pivotPointResetButton;
+
 	TimeLineWidget* lifeTimeLine;
 	TimeLineWidget* numberTimeLine;
 	TimeLineWidget* sizeTimeLine;

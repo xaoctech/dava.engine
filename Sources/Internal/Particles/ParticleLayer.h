@@ -144,9 +144,6 @@ public:
     
 	RenderBatch * GetRenderBatch();
 
-	// Reload the layer sprite, update the Frames timeline if needed.
-	void ReloadSprite();
-	
 	virtual void SetAdditive(bool additive);
 	bool GetAdditive() const {return additive;};
 
@@ -181,6 +178,10 @@ public:
 	inline bool GetDisabled();
 	void SetDisabled(bool value);
 
+	// Get/set the Pivot Point for the layer.
+	Vector2 GetPivotPoint() const;
+	void SetPivotPoint(const Vector2& value);
+
 protected:
 	void GenerateNewParticle(int32 emitIndex);
 	void GenerateSingleParticle();
@@ -209,6 +210,9 @@ protected:
 	// Update the playback speed for all Inner Emitters.
 	void UpdatePlaybackSpeedForInnerEmitters(float value);
 
+	// Get the draw pivot point (mid of sprite + layer pivot point).
+	inline Vector2 GetDrawPivotPoint();
+
 	// list of particles
 	Particle *	head;
 	int32		count;
@@ -231,9 +235,11 @@ protected:
 	bool		additive;
 	float32		playbackSpeed;
 
+	Vector2		layerPivotPoint;
+
 public:
 	String			layerName;
-	Vector2			pivotPoint;
+
 	/*
 	 Properties of particle layer that describe particle system logic
 	 */
@@ -364,6 +370,15 @@ inline bool ParticleLayer::GetDisabled()
 	return this->isDisabled;
 }
 
+inline Vector2 ParticleLayer::GetDrawPivotPoint()
+{
+	if (this->sprite)
+	{
+		return Vector2(	sprite->GetWidth() / 2 + layerPivotPoint.x, sprite->GetHeight() / 2 + layerPivotPoint.y);
+	}
+	
+	return layerPivotPoint;
+}
 };
 
 #endif // __DAVAENGINE_PARTICLE_LAYER_H__

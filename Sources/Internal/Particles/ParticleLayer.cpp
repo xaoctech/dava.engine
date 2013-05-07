@@ -216,7 +216,7 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	dstLayer->endTime = endTime;
 	dstLayer->type = type;
 	dstLayer->sprite = SafeRetain(sprite);
-	dstLayer->pivotPoint = pivotPoint;
+	dstLayer->layerPivotPoint = layerPivotPoint;
 	
 	dstLayer->frameStart = frameStart;
 	dstLayer->frameEnd = frameEnd;
@@ -244,8 +244,6 @@ void ParticleLayer::SetSprite(Sprite * _sprite)
 
 	if(sprite)
 	{
-		pivotPoint = Vector2(_sprite->GetWidth()/2.0f, _sprite->GetHeight()/2.0f);
-
 		FilePath spritePath = sprite->GetRelativePathname();
         if(spritePath.GetType() == FilePath::PATH_IN_MEMORY)
         {
@@ -641,6 +639,7 @@ void ParticleLayer::Draw(Camera * camera)
 		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
 	}
 
+	const Vector2& drawPivotPoint = GetDrawPivotPoint();
 	switch(type)
 	{
 		case TYPE_PARTICLES:
@@ -649,7 +648,7 @@ void ParticleLayer::Draw(Camera * camera)
 			Particle * current = head;
 			while(current)
 			{
-				sprite->SetPivotPoint(pivotPoint);
+				sprite->SetPivotPoint(drawPivotPoint);
 				current->Draw();
 				current = current->next;
 			}
@@ -659,7 +658,7 @@ void ParticleLayer::Draw(Camera * camera)
 		{
 			if(head)
 			{	
-				sprite->SetPivotPoint(pivotPoint);
+				sprite->SetPivotPoint(drawPivotPoint);
 				head->Draw();
 			}
 			break;
@@ -713,27 +712,24 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 	{
 		layerName = nameNode->AsString();
 	}
-	
+
+	YamlNode * pivotPointNode = node->Get("pivotPoint");
+	if(pivotPointNode)
+	{
+		layerPivotPoint = pivotPointNode->AsPoint();
+	}
+
 	YamlNode * spriteNode = node->Get("sprite");
 	if (spriteNode)
 	{
-		YamlNode * pivotPointNode = node->Get("pivotPoint");
-		
 		const String relativePathName = spriteNode->AsString();
 		relativeSpriteName = relativePathName;
 		
         FilePath path = configPath.GetDirectory() + relativePathName;
 		Sprite * _sprite = Sprite::Create(path);
-		Vector2 pivotPointTemp;
-		if(pivotPointNode)
-		{
-			pivotPointTemp = pivotPointNode->AsPoint();
-		}
 		SetSprite(_sprite);
-		pivotPoint = Vector2(_sprite->GetWidth() / 2.0f + pivotPointTemp.x, _sprite->GetHeight() / 2.0f + pivotPointTemp.y);
         SafeRelease(_sprite);
 	}
-
 
 	colorOverLife = PropertyLineYamlReader::CreateColorPropertyLineFromYamlNode(node, "colorOverLife");
 	colorRandom = PropertyLineYamlReader::CreateColorPropertyLineFromYamlNode(node, "colorRandom");
@@ -885,13 +881,8 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
     {
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "isLong", true);
     }
-    
-    if (this->sprite)
-    {
-        Vector2 pivotPoint(this->pivotPoint.x - (this->sprite->GetWidth() / 2.0f),
-                           this->pivotPoint.y - (this->sprite->GetHeight() / 2.0f));
-        PropertyLineYamlWriter::WritePropertyValueToYamlNode<Vector2>(layerNode, "pivotPoint", pivotPoint);
-    }
+
+	PropertyLineYamlWriter::WritePropertyValueToYamlNode<Vector2>(layerNode, "pivotPoint", layerPivotPoint);
 
     // Truncate an extension of the sprite file.
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "sprite",
@@ -989,20 +980,6 @@ const String & ParticleLayer::GetRelativeSpriteName()
 RenderBatch * ParticleLayer::GetRenderBatch()
 {
 	return renderBatch;
-}
-
-void ParticleLayer::ReloadSprite()
-{
-	if (sprite)
-	{
-        DeleteAllParticles();
-        sprite->Reload();
-        UpdateFrameTimeline();
-        
-        pivotPoint = Vector2(sprite->GetWidth()/2.0f, sprite->GetHeight()/2.0f);
-	}
-	
-	UpdateFrameTimeline();
 }
 
 void ParticleLayer::UpdateFrameTimeline()
@@ -1230,6 +1207,16 @@ void ParticleLayer::SetDisabled(bool value)
 
 		current = current->next;
 	}
+}
+
+Vector2 ParticleLayer::GetPivotPoint() const
+{
+	return layerPivotPoint;
+}
+
+void ParticleLayer::SetPivotPoint(const Vector2& value)
+{
+	this->layerPivotPoint = value;
 }
 
 };
