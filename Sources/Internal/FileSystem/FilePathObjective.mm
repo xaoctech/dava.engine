@@ -39,48 +39,19 @@ namespace DAVA
 
 	
 #if defined(__DAVAENGINE_IPHONE__)
-	NSString * FilepathRelativeToBundleObjC(const FilePath &virtualBundlePath, NSString * relativePathname)
-	{
-		NSString * filePath;
-		if(virtualBundlePath.IsEmpty())
-		{
-			NSString * bundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString: @"/"];
-			filePath = [bundlePath stringByAppendingString: relativePathname];
-		}
-		else
-		{
-			NSString * bundlePath = [NSString stringWithUTF8String: virtualBundlePath.GetAbsolutePathname().c_str()];
-			filePath = [bundlePath stringByAppendingString: relativePathname];
-		}
-		
-		return filePath;
-	}
+    void FilePath::InitializeBundleName()
+    {
+        NSString * bundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString: @"/"];
+        SetBundleName([bundlePath UTF8String]);
+    }
+
 #elif defined(__DAVAENGINE_MACOS__)
-    NSString * FilepathRelativeToBundleObjC(const FilePath &virtualBundlePath,
-                                            NSString * relativePathname)
-	{
-        NSString * filePath;
-        if(virtualBundlePath.IsEmpty())
-        {
-            NSString * bundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString: @"/Contents/Resources/"];
-            filePath = [bundlePath stringByAppendingString: relativePathname];
-        }
-        else
-        {
-            NSString * bundlePath = [NSString stringWithUTF8String: virtualBundlePath.GetAbsolutePathname().c_str()];
-            filePath = [bundlePath stringByAppendingString: relativePathname];
-        }
-		
-		return filePath;
-	}
+    void FilePath::InitializeBundleName()
+    {
+        NSString * bundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString: @"/Contents/Resources/"];
+        SetBundleName([bundlePath UTF8String]);
+    }
 #endif	//#elif defined(__DAVAENGINE_MACOS__)
-	
-    
-    FilePath FilePath::FilepathRelativeToBundle(const char * relativePathname)
-	{
-		NSString * filePath = FilepathRelativeToBundleObjC(virtualBundlePath, [NSString stringWithUTF8String: relativePathname]);
-		return [filePath UTF8String];
-	}
 }
 
 #endif //#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
