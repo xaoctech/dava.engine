@@ -176,6 +176,7 @@ public:
     
     bool LoadFromFile(const String & pathname);
     
+
     void AddMaterialTechnique(FastName & techniqueName, MaterialTechnique * materialTechnique);
     void BindMaterialTechnique(const FastName & techniqueName);
     MaterialTechnique * GetTechnique(const FastName & techniqueName);
@@ -190,6 +191,8 @@ public:
     // Keep it here, by default MaterialInstance Render State should be referenced from this point.
     
 private:
+    void AddMaterialProperty(const String & keyName, YamlNode * uniformNode);
+    
     NMaterial * parent;
     FastNameSet layers;
     HashMap<FastName, NMaterialProperty*> materialProperties;
