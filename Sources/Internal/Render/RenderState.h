@@ -497,7 +497,8 @@ public:
 	static uint32 GetRenderStateByName(const String & str);
 
 private:
-	RenderState(const RenderState & renderState) {}
+	RenderState(const RenderState & renderState);
+	RenderState * operator=(const RenderState & renderState);
 
 public:
 
@@ -666,7 +667,6 @@ inline void RenderState::SetTexture(Texture *texture, uint32 textureLevel)
 {
 	SafeRelease(currentTexture[textureLevel]);
     currentTexture[textureLevel] = SafeRetain(texture);
-    //changeSet |= (STATE_CHANGED_TEXTURE0 << textureLevel);
 }
 
 inline Texture * RenderState::GetTexture(uint32 textureLevel)
@@ -677,13 +677,11 @@ inline Texture * RenderState::GetTexture(uint32 textureLevel)
 inline void RenderState::SetStencilRef(int32 ref)
 {
 	stencilState.ref = ref;
-	//changeSet |= STATE_CHANGED_STENCIL_REF;
 }
 
 inline void RenderState::SetStencilMask(uint32 mask)
 {
 	stencilState.mask = mask;
-	//changeSet |= STATE_CHANGED_STENCIL_MASK;
 }
 
 inline void RenderState::SetStencilFunc(eFace face, eCmpFunc func)
