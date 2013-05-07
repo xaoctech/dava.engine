@@ -1252,10 +1252,10 @@ namespace DAVA
 		_vcenterAlignEnabled = srcControl->_vcenterAlignEnabled;
 		_bottomAlignEnabled = srcControl->_bottomAlignEnabled;
 		
-		if (GetBackground() && srcControl->GetBackground())
+		if (background && srcControl->background)
 		{
-			GetBackground()->SetLeftRightStretchCap(srcControl->GetBackground()->GetLeftRightStretchCap());
-			GetBackground()->SetTopBottomStretchCap(srcControl->GetBackground()->GetTopBottomStretchCap());
+			background->SetLeftRightStretchCap(srcControl->background->GetLeftRightStretchCap());
+			background->SetTopBottomStretchCap(srcControl->background->GetTopBottomStretchCap());
 		}
 
         tag = srcControl->GetTag();
