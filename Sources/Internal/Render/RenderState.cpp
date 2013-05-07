@@ -249,49 +249,49 @@ void RenderState::Flush(RenderState * hardwareState) const
 		if (currentTexture[0] != hardwareState->currentTexture[0])	
 		{
             SetTextureLevelInHW(0);
-            hardwareState->currentTexture[0] = currentTexture[0];
+			hardwareState->SetTexture(currentTexture[0], 0);
         }
 		//  if (changeSet & STATE_CHANGED_TEXTURE1)
 		if (currentTexture[1] != hardwareState->currentTexture[1])	
         {
             SetTextureLevelInHW(1);
-            hardwareState->currentTexture[1] = currentTexture[1];
+            hardwareState->SetTexture(currentTexture[1], 1);
         }
 		//  if (changeSet & STATE_CHANGED_TEXTURE2)
 		if (currentTexture[2] != hardwareState->currentTexture[2])	
         {
             SetTextureLevelInHW(2);
-            hardwareState->currentTexture[2] = currentTexture[2];
+            hardwareState->SetTexture(currentTexture[2], 2);
         }
         //if (changeSet & STATE_CHANGED_TEXTURE3)
 		if (currentTexture[3] != hardwareState->currentTexture[3])		
 		{
             SetTextureLevelInHW(3);
-            hardwareState->currentTexture[3] = currentTexture[3];
+            hardwareState->SetTexture(currentTexture[3], 3);
         }
 		//if (changeSet & STATE_CHANGED_TEXTURE4)
 		if (currentTexture[4] != hardwareState->currentTexture[4])
 		{
 			SetTextureLevelInHW(4);
-			hardwareState->currentTexture[4] = currentTexture[4];
+			hardwareState->SetTexture(currentTexture[4], 4);
 		}
 		//if (changeSet & STATE_CHANGED_TEXTURE5)
 		if (currentTexture[5] != hardwareState->currentTexture[5])
 		{
 			SetTextureLevelInHW(5);
-			hardwareState->currentTexture[5] = currentTexture[5];
+			hardwareState->SetTexture(currentTexture[5], 5);
 		}
 		//if (changeSet & STATE_CHANGED_TEXTURE6)
 		if (currentTexture[6] != hardwareState->currentTexture[6])
 		{
 			SetTextureLevelInHW(6);
-			hardwareState->currentTexture[6] = currentTexture[6];
+			hardwareState->SetTexture(currentTexture[6], 6);
 		}
 		//if (changeSet & STATE_CHANGED_TEXTURE7)
 		if (currentTexture[7] != hardwareState->currentTexture[7])
 		{
 			SetTextureLevelInHW(7);
-			hardwareState->currentTexture[7] = currentTexture[7];
+			hardwareState->SetTexture(currentTexture[7], 7);
 		}
 
 		//if (changeSet & STATE_CHANGED_STENCIL_REF)
