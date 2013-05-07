@@ -503,7 +503,7 @@ bool NMaterial::LoadFromFile(const String & pathname)
             YamlNode * renderStateNode = renderStepNode->Get("RenderState");
             if (renderStepNode)
             {
-                renderState->LoadFromYamlNode(renderStateNode);
+                renderState->LoadFromYamlNode(renderStepNode);
             }
             
             
