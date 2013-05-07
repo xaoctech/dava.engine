@@ -28,66 +28,33 @@
         * Created by Igor Solovey
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_SOUND_SYSTEM_H__
-#define __DAVAENGINE_SOUND_SYSTEM_H__
+#ifndef __DAVAENGINE_VOLUME_ANIMATED_OBJECT_H__
+#define __DAVAENGINE_VOLUME_ANIMATED_OBJECT_H__
 
-#include "Base/Singleton.h"
 #include "Base/BaseTypes.h"
-#include "Base/BaseMath.h"
-#include "Base/ScopedPtr.h"
-
-namespace FMOD
-{
-class System;
-class EventSystem;
-};
+#include "Animation/AnimatedObject.h"
 
 namespace DAVA
 {
-class SoundGroup;
-class SoundEvent;
+
 class Animation;
-class SoundEventCategory;
-class VolumeAnimatedObject;
-class SoundSystem : public Singleton<SoundSystem>
+class VolumeAnimatedObject : public AnimatedObject
 {
 public:
-	SoundSystem(int32 maxChannels);
-	virtual ~SoundSystem();
+	VolumeAnimatedObject();
 
+	virtual void SetVolume(float32 volume) = 0;
+	virtual float32 GetVolume() = 0;
+
+	Animation * VolumeAnimation(float32 newVolume, float32 time, int32 track = 0);
 	void Update();
-	void Suspend();
-	void Resume();
-
-	void SetListenerPosition(const Vector3 & position);
-	void SetListenerOrientation(const Vector3 & at, const Vector3 & left);
-
-	SoundEvent * CreateSoundEvent(const String & eventPath);
-
-	void LoadFEV(const FilePath & filePath);
-
-	SoundGroup * GetSoundGroup(const FastName & groupName);
-	ScopedPtr<SoundEventCategory> GetSoundEventCategory(const String & category);
-
-	void AddVolumeAnimatedObject(VolumeAnimatedObject * object);
-	void RemoveVolumeAnimatedObject(VolumeAnimatedObject * object);
 
 private:
-	SoundGroup * CreateSoundGroup(const FastName & groupName);
+	float32 animatedVolume;
 
-
-	FMOD::System * fmodSystem;
-	FMOD::EventSystem * fmodEventSystem;
-
-	Map<int, SoundGroup*> soundGroups;
-	Vector<VolumeAnimatedObject *> animatedObjects;
-
-friend class SoundGroup;
-friend class Sound;
+	void OnVolumeAnimationEnded(BaseObject * caller, void * userData, void * callerData);
 };
-
-
 
 };
 
-#endif //__DAVAENGINE_SOUND_SYSTEM_H__
+#endif

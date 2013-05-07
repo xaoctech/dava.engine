@@ -28,66 +28,48 @@
         * Created by Igor Solovey
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_SOUND_SYSTEM_H__
-#define __DAVAENGINE_SOUND_SYSTEM_H__
-
-#include "Base/Singleton.h"
-#include "Base/BaseTypes.h"
-#include "Base/BaseMath.h"
-#include "Base/ScopedPtr.h"
-
-namespace FMOD
-{
-class System;
-class EventSystem;
-};
+#include "Sound/VolumeAnimatedObject.h"
+#include "Animation/Animation.h"
+#include "Animation/LinearAnimation.h"
+#include "Sound/SoundSystem.h"
 
 namespace DAVA
 {
-class SoundGroup;
-class SoundEvent;
-class Animation;
-class SoundEventCategory;
-class VolumeAnimatedObject;
-class SoundSystem : public Singleton<SoundSystem>
+
+VolumeAnimatedObject::VolumeAnimatedObject() :
+	animatedVolume(-1)
 {
-public:
-	SoundSystem(int32 maxChannels);
-	virtual ~SoundSystem();
 
-	void Update();
-	void Suspend();
-	void Resume();
+}
 
-	void SetListenerPosition(const Vector3 & position);
-	void SetListenerOrientation(const Vector3 & at, const Vector3 & left);
+Animation * VolumeAnimatedObject::VolumeAnimation(float32 newVolume, float32 time, int32 track)
+{
+	animatedVolume = GetVolume();
 
-	SoundEvent * CreateSoundEvent(const String & eventPath);
+	Animation * a = new LinearAnimation<float32>(this, &animatedVolume, newVolume, time, Interpolation::LINEAR);
+	a->AddEvent(Animation::EVENT_ANIMATION_END, Message(this, &VolumeAnimatedObject::OnVolumeAnimationEnded));
+	a->AddEvent(Animation::EVENT_ANIMATION_CANCELLED, Message(this, &VolumeAnimatedObject::OnVolumeAnimationEnded));
+	Retain();
+	a->Start(track);
 
-	void LoadFEV(const FilePath & filePath);
+	SoundSystem::Instance()->AddVolumeAnimatedObject(this);
 
-	SoundGroup * GetSoundGroup(const FastName & groupName);
-	ScopedPtr<SoundEventCategory> GetSoundEventCategory(const String & category);
+	return a;
+}
 
-	void AddVolumeAnimatedObject(VolumeAnimatedObject * object);
-	void RemoveVolumeAnimatedObject(VolumeAnimatedObject * object);
+void VolumeAnimatedObject::Update()
+{
+	if(animatedVolume != -1.f)
+		SetVolume(animatedVolume);
+}
 
-private:
-	SoundGroup * CreateSoundGroup(const FastName & groupName);
+void VolumeAnimatedObject::OnVolumeAnimationEnded(BaseObject * caller, void * userData, void * callerData)
+{
+	SetVolume(animatedVolume);
+	animatedVolume = -1.f;
+	Release();
 
-
-	FMOD::System * fmodSystem;
-	FMOD::EventSystem * fmodEventSystem;
-
-	Map<int, SoundGroup*> soundGroups;
-	Vector<VolumeAnimatedObject *> animatedObjects;
-
-friend class SoundGroup;
-friend class Sound;
-};
-
-
+	SoundSystem::Instance()->RemoveVolumeAnimatedObject(this);
+}
 
 };
-
-#endif //__DAVAENGINE_SOUND_SYSTEM_H__

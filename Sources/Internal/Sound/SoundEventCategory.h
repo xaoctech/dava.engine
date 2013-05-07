@@ -28,66 +28,38 @@
         * Created by Igor Solovey
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_SOUND_SYSTEM_H__
-#define __DAVAENGINE_SOUND_SYSTEM_H__
+#ifndef __DAVAENGINE_SOUND_EVENT_CATEGORY_H__
+#define __DAVAENGINE_SOUND_EVENT_CATEGORY_H__
 
-#include "Base/Singleton.h"
 #include "Base/BaseTypes.h"
-#include "Base/BaseMath.h"
-#include "Base/ScopedPtr.h"
+#include "Base/BaseObject.h"
+#include "Sound/VolumeAnimatedObject.h"
 
 namespace FMOD
 {
-class System;
-class EventSystem;
+class EventCategory;
 };
 
 namespace DAVA
 {
-class SoundGroup;
-class SoundEvent;
-class Animation;
-class SoundEventCategory;
-class VolumeAnimatedObject;
-class SoundSystem : public Singleton<SoundSystem>
+
+class SoundEventCategory : public VolumeAnimatedObject
 {
 public:
-	SoundSystem(int32 maxChannels);
-	virtual ~SoundSystem();
+	SoundEventCategory(FMOD::EventCategory * category);
+	~SoundEventCategory();
 
-	void Update();
-	void Suspend();
-	void Resume();
+	void SetVolume(float32 volume);
+	float32	GetVolume();
 
-	void SetListenerPosition(const Vector3 & position);
-	void SetListenerOrientation(const Vector3 & at, const Vector3 & left);
-
-	SoundEvent * CreateSoundEvent(const String & eventPath);
-
-	void LoadFEV(const FilePath & filePath);
-
-	SoundGroup * GetSoundGroup(const FastName & groupName);
-	ScopedPtr<SoundEventCategory> GetSoundEventCategory(const String & category);
-
-	void AddVolumeAnimatedObject(VolumeAnimatedObject * object);
-	void RemoveVolumeAnimatedObject(VolumeAnimatedObject * object);
+	void Stop();
+	void Pause(bool isPaused);
+	bool GetPaused();
 
 private:
-	SoundGroup * CreateSoundGroup(const FastName & groupName);
-
-
-	FMOD::System * fmodSystem;
-	FMOD::EventSystem * fmodEventSystem;
-
-	Map<int, SoundGroup*> soundGroups;
-	Vector<VolumeAnimatedObject *> animatedObjects;
-
-friend class SoundGroup;
-friend class Sound;
+	FMOD::EventCategory * fmodEventCategory;
 };
-
-
 
 };
 
-#endif //__DAVAENGINE_SOUND_SYSTEM_H__
+#endif //__DAVAENGINE_SOUND_EVENT_CATEGORY_H__

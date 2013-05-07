@@ -28,66 +28,24 @@
         * Created by Igor Solovey
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_SOUND_SYSTEM_H__
-#define __DAVAENGINE_SOUND_SYSTEM_H__
+#ifndef __DAVAENGINE_FMODUTILS_H__
+#define __DAVAENGINE_FMODUTILS_H__
 
-#include "Base/Singleton.h"
-#include "Base/BaseTypes.h"
-#include "Base/BaseMath.h"
-#include "Base/ScopedPtr.h"
-
-namespace FMOD
-{
-class System;
-class EventSystem;
-};
+#include "fmod_event.hpp"
+#include "fmod_errors.h"
 
 namespace DAVA
 {
-class SoundGroup;
-class SoundEvent;
-class Animation;
-class SoundEventCategory;
-class VolumeAnimatedObject;
-class SoundSystem : public Singleton<SoundSystem>
-{
-public:
-	SoundSystem(int32 maxChannels);
-	virtual ~SoundSystem();
 
-	void Update();
-	void Suspend();
-	void Resume();
+#define FMOD_VERIFY(command) \
+	{ \
+	FMOD_RESULT result = command; \
+	if(result != FMOD_OK) \
+	{ \
+		Logger::Error("FMOD: %s file:%s line:%d failed with error: %s", #command, __FILE__, __LINE__, FMOD_ErrorString(result)); \
+	} \
+} \
 
-	void SetListenerPosition(const Vector3 & position);
-	void SetListenerOrientation(const Vector3 & at, const Vector3 & left);
+}
 
-	SoundEvent * CreateSoundEvent(const String & eventPath);
-
-	void LoadFEV(const FilePath & filePath);
-
-	SoundGroup * GetSoundGroup(const FastName & groupName);
-	ScopedPtr<SoundEventCategory> GetSoundEventCategory(const String & category);
-
-	void AddVolumeAnimatedObject(VolumeAnimatedObject * object);
-	void RemoveVolumeAnimatedObject(VolumeAnimatedObject * object);
-
-private:
-	SoundGroup * CreateSoundGroup(const FastName & groupName);
-
-
-	FMOD::System * fmodSystem;
-	FMOD::EventSystem * fmodEventSystem;
-
-	Map<int, SoundGroup*> soundGroups;
-	Vector<VolumeAnimatedObject *> animatedObjects;
-
-friend class SoundGroup;
-friend class Sound;
-};
-
-
-
-};
-
-#endif //__DAVAENGINE_SOUND_SYSTEM_H__
+#endif //__DAVAENGINE_FMODUTILS_H__

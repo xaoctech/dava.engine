@@ -77,6 +77,8 @@ public class JNIApplication extends Application
 	
 	static {
 		System.loadLibrary("iconv_android");
+		System.loadLibrary("fmodex");
+		System.loadLibrary("fmodevent");
 	}
 }
 

@@ -28,66 +28,57 @@
         * Created by Igor Solovey
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_SOUND_SYSTEM_H__
-#define __DAVAENGINE_SOUND_SYSTEM_H__
+#ifndef __DAVAENGINE_SOUND_EVENT_H__
+#define __DAVAENGINE_SOUND_EVENT_H__
 
-#include "Base/Singleton.h"
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
-#include "Base/ScopedPtr.h"
+#include "Base/EventDispatcher.h"
+#include "Sound/VolumeAnimatedObject.h"
 
 namespace FMOD
 {
-class System;
-class EventSystem;
+	class Event;
 };
 
 namespace DAVA
 {
-class SoundGroup;
-class SoundEvent;
-class Animation;
-class SoundEventCategory;
-class VolumeAnimatedObject;
-class SoundSystem : public Singleton<SoundSystem>
+class SoundComponent;
+class SoundEvent : public VolumeAnimatedObject
 {
 public:
-	SoundSystem(int32 maxChannels);
-	virtual ~SoundSystem();
+	enum eEvent
+	{
+		EVENT_STARTED = 0,	//Called when an event is started. FMOD_EVENT_CALLBACKTYPE_EVENTSTARTED
+		EVENT_FINISHED,		//Called when an event is stopped for any reason. FMOD_EVENT_CALLBACKTYPE_EVENTFINISHED
+		EVENT_SYNCPOINT,	//Called when a syncpoint is encountered. Can be from wav file markers. FMOD_EVENT_CALLBACKTYPE_SYNCPOINT
 
-	void Update();
-	void Suspend();
-	void Resume();
+		EVENT_COUNT
+	};
 
-	void SetListenerPosition(const Vector3 & position);
-	void SetListenerOrientation(const Vector3 & at, const Vector3 & left);
+	void SetVolume(float32 volume);
+	float32	GetVolume();
 
-	SoundEvent * CreateSoundEvent(const String & eventPath);
+	void Play();
+	void Pause(bool isPaused);
+	bool IsPaused();
+	void Stop();
+	void PerformCallback(eEvent eventType);
 
-	void LoadFEV(const FilePath & filePath);
-
-	SoundGroup * GetSoundGroup(const FastName & groupName);
-	ScopedPtr<SoundEventCategory> GetSoundEventCategory(const String & category);
-
-	void AddVolumeAnimatedObject(VolumeAnimatedObject * object);
-	void RemoveVolumeAnimatedObject(VolumeAnimatedObject * object);
+	void SetPosition(const Vector3 & position);
 
 private:
-	SoundGroup * CreateSoundGroup(const FastName & groupName);
+	SoundEvent(FMOD::Event * fmodEvent);
+	~SoundEvent();
 
+	FMOD::Event * fmodEvent;
 
-	FMOD::System * fmodSystem;
-	FMOD::EventSystem * fmodEventSystem;
+	IMPLEMENT_EVENT_DISPATCHER(eventDispatcher);
 
-	Map<int, SoundGroup*> soundGroups;
-	Vector<VolumeAnimatedObject *> animatedObjects;
-
-friend class SoundGroup;
-friend class Sound;
+friend class SoundSystem;
+friend class SoundComponent;
 };
-
-
 
 };
 
-#endif //__DAVAENGINE_SOUND_SYSTEM_H__
+#endif
