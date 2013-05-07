@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		0224B70015989F7400CDEF9E /* libtheora_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B6FF15989F7400CDEF9E /* libtheora_macos.a */; };
+		02E9E3A917296CD300C501BC /* libfmodex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E3A817296CD300C501BC /* libfmodex.dylib */; };
+		02E9E3AB17296D4200C501BC /* FMODUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E3AA17296D4200C501BC /* FMODUtils.h */; };
+		02E9E3AC17296DA200C501BC /* libfmodex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E3A817296CD300C501BC /* libfmodex.dylib */; };
 		171F938516CE6F28007038AB /* UIWebView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 171F938316CE6F28007038AB /* UIWebView.cpp */; };
 		171F938616CE6F28007038AB /* UIWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 171F938416CE6F28007038AB /* UIWebView.h */; };
 		1723D46F16CCF1C00039CCC2 /* ParticleForce.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1799E52416CCEC030058061F /* ParticleForce.cpp */; };
@@ -602,25 +605,12 @@
 		E8989FE916BD24E500732C04 /* TransformSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D2F16BD24E500732C04 /* TransformSystem.h */; };
 		E8989FEC16BD24E500732C04 /* UserNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D3216BD24E500732C04 /* UserNode.cpp */; };
 		E8989FED16BD24E500732C04 /* UserNode.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3316BD24E500732C04 /* UserNode.h */; };
-		E8989FEE16BD24E500732C04 /* ALUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3516BD24E500732C04 /* ALUtils.h */; };
 		E8989FF116BD24E500732C04 /* Sound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D3816BD24E500732C04 /* Sound.cpp */; };
 		E8989FF216BD24E500732C04 /* Sound.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3916BD24E500732C04 /* Sound.h */; };
-		E8989FF316BD24E500732C04 /* SoundBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D3A16BD24E500732C04 /* SoundBuffer.cpp */; };
-		E8989FF416BD24E500732C04 /* SoundBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3B16BD24E500732C04 /* SoundBuffer.h */; };
-		E8989FF516BD24E500732C04 /* SoundChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D3C16BD24E500732C04 /* SoundChannel.cpp */; };
-		E8989FF616BD24E500732C04 /* SoundChannel.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3D16BD24E500732C04 /* SoundChannel.h */; };
-		E8989FF716BD24E500732C04 /* SoundDataProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D3E16BD24E500732C04 /* SoundDataProvider.cpp */; };
-		E8989FF816BD24E500732C04 /* SoundDataProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3F16BD24E500732C04 /* SoundDataProvider.h */; };
 		E8989FF916BD24E500732C04 /* SoundGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4016BD24E500732C04 /* SoundGroup.cpp */; };
 		E8989FFA16BD24E500732C04 /* SoundGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4116BD24E500732C04 /* SoundGroup.h */; };
-		E8989FFB16BD24E500732C04 /* SoundInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4216BD24E500732C04 /* SoundInstance.cpp */; };
-		E8989FFC16BD24E500732C04 /* SoundInstance.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4316BD24E500732C04 /* SoundInstance.h */; };
-		E8989FFD16BD24E500732C04 /* SoundOVProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4416BD24E500732C04 /* SoundOVProvider.cpp */; };
-		E8989FFE16BD24E500732C04 /* SoundOVProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4516BD24E500732C04 /* SoundOVProvider.h */; };
 		E8989FFF16BD24E500732C04 /* SoundSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4616BD24E500732C04 /* SoundSystem.cpp */; };
 		E898A00016BD24E500732C04 /* SoundSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4716BD24E500732C04 /* SoundSystem.h */; };
-		E898A00116BD24E500732C04 /* SoundWVProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4816BD24E500732C04 /* SoundWVProvider.cpp */; };
-		E898A00216BD24E500732C04 /* SoundWVProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4916BD24E500732C04 /* SoundWVProvider.h */; };
 		E898A00316BD24E500732C04 /* ScrollHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4B16BD24E500732C04 /* ScrollHelper.cpp */; };
 		E898A00416BD24E500732C04 /* ScrollHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4C16BD24E500732C04 /* ScrollHelper.h */; };
 		E898A00516BD24E500732C04 /* TheoraPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4D16BD24E500732C04 /* TheoraPlayer.cpp */; };
@@ -930,16 +920,9 @@
 		E898A16916BD265400732C04 /* SwitchSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D2D16BD24E500732C04 /* SwitchSystem.h */; };
 		E898A16A16BD265400732C04 /* TransformSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D2F16BD24E500732C04 /* TransformSystem.h */; };
 		E898A16C16BD265400732C04 /* UserNode.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3316BD24E500732C04 /* UserNode.h */; };
-		E898A16D16BD265400732C04 /* ALUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3516BD24E500732C04 /* ALUtils.h */; };
 		E898A16E16BD265400732C04 /* Sound.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3916BD24E500732C04 /* Sound.h */; };
-		E898A16F16BD265400732C04 /* SoundBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3B16BD24E500732C04 /* SoundBuffer.h */; };
-		E898A17016BD265400732C04 /* SoundChannel.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3D16BD24E500732C04 /* SoundChannel.h */; };
-		E898A17116BD265400732C04 /* SoundDataProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3F16BD24E500732C04 /* SoundDataProvider.h */; };
 		E898A17216BD265400732C04 /* SoundGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4116BD24E500732C04 /* SoundGroup.h */; };
-		E898A17316BD265400732C04 /* SoundInstance.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4316BD24E500732C04 /* SoundInstance.h */; };
-		E898A17416BD265400732C04 /* SoundOVProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4516BD24E500732C04 /* SoundOVProvider.h */; };
 		E898A17516BD265400732C04 /* SoundSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4716BD24E500732C04 /* SoundSystem.h */; };
-		E898A17616BD265400732C04 /* SoundWVProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4916BD24E500732C04 /* SoundWVProvider.h */; };
 		E898A17716BD265400732C04 /* ScrollHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4C16BD24E500732C04 /* ScrollHelper.h */; };
 		E898A17816BD265400732C04 /* TheoraPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4E16BD24E500732C04 /* TheoraPlayer.h */; };
 		E898A17916BD265400732C04 /* UI3DView.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D5016BD24E500732C04 /* UI3DView.h */; };
@@ -1174,14 +1157,8 @@
 		E898A28216BD265400732C04 /* TransformSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D2E16BD24E500732C04 /* TransformSystem.cpp */; };
 		E898A28416BD265400732C04 /* UserNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D3216BD24E500732C04 /* UserNode.cpp */; };
 		E898A28516BD265400732C04 /* Sound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D3816BD24E500732C04 /* Sound.cpp */; };
-		E898A28616BD265400732C04 /* SoundBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D3A16BD24E500732C04 /* SoundBuffer.cpp */; };
-		E898A28716BD265400732C04 /* SoundChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D3C16BD24E500732C04 /* SoundChannel.cpp */; };
-		E898A28816BD265400732C04 /* SoundDataProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D3E16BD24E500732C04 /* SoundDataProvider.cpp */; };
 		E898A28916BD265400732C04 /* SoundGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4016BD24E500732C04 /* SoundGroup.cpp */; };
-		E898A28A16BD265400732C04 /* SoundInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4216BD24E500732C04 /* SoundInstance.cpp */; };
-		E898A28B16BD265400732C04 /* SoundOVProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4416BD24E500732C04 /* SoundOVProvider.cpp */; };
 		E898A28C16BD265400732C04 /* SoundSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4616BD24E500732C04 /* SoundSystem.cpp */; };
-		E898A28D16BD265400732C04 /* SoundWVProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4816BD24E500732C04 /* SoundWVProvider.cpp */; };
 		E898A28E16BD265400732C04 /* ScrollHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4B16BD24E500732C04 /* ScrollHelper.cpp */; };
 		E898A28F16BD265400732C04 /* TheoraPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4D16BD24E500732C04 /* TheoraPlayer.cpp */; };
 		E898A29016BD265400732C04 /* UI3DView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4F16BD24E500732C04 /* UI3DView.cpp */; };
@@ -1282,6 +1259,8 @@
 
 /* Begin PBXFileReference section */
 		0224B6FF15989F7400CDEF9E /* libtheora_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtheora_macos.a; path = ../../Libs/libs/libtheora_macos.a; sourceTree = "<group>"; };
+		02E9E3A817296CD300C501BC /* libfmodex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodex.dylib; path = ../../Libs/fmod/lib/libfmodex.dylib; sourceTree = "<group>"; };
+		02E9E3AA17296D4200C501BC /* FMODUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMODUtils.h; sourceTree = "<group>"; };
 		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		0867D6A5FE840307C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
@@ -1824,25 +1803,12 @@
 		E8989D2F16BD24E500732C04 /* TransformSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TransformSystem.h; sourceTree = "<group>"; };
 		E8989D3216BD24E500732C04 /* UserNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UserNode.cpp; sourceTree = "<group>"; };
 		E8989D3316BD24E500732C04 /* UserNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserNode.h; sourceTree = "<group>"; };
-		E8989D3516BD24E500732C04 /* ALUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ALUtils.h; sourceTree = "<group>"; };
 		E8989D3816BD24E500732C04 /* Sound.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Sound.cpp; sourceTree = "<group>"; };
 		E8989D3916BD24E500732C04 /* Sound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sound.h; sourceTree = "<group>"; };
-		E8989D3A16BD24E500732C04 /* SoundBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundBuffer.cpp; sourceTree = "<group>"; };
-		E8989D3B16BD24E500732C04 /* SoundBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundBuffer.h; sourceTree = "<group>"; };
-		E8989D3C16BD24E500732C04 /* SoundChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundChannel.cpp; sourceTree = "<group>"; };
-		E8989D3D16BD24E500732C04 /* SoundChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundChannel.h; sourceTree = "<group>"; };
-		E8989D3E16BD24E500732C04 /* SoundDataProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundDataProvider.cpp; sourceTree = "<group>"; };
-		E8989D3F16BD24E500732C04 /* SoundDataProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundDataProvider.h; sourceTree = "<group>"; };
 		E8989D4016BD24E500732C04 /* SoundGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundGroup.cpp; sourceTree = "<group>"; };
 		E8989D4116BD24E500732C04 /* SoundGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundGroup.h; sourceTree = "<group>"; };
-		E8989D4216BD24E500732C04 /* SoundInstance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundInstance.cpp; sourceTree = "<group>"; };
-		E8989D4316BD24E500732C04 /* SoundInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundInstance.h; sourceTree = "<group>"; };
-		E8989D4416BD24E500732C04 /* SoundOVProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundOVProvider.cpp; sourceTree = "<group>"; };
-		E8989D4516BD24E500732C04 /* SoundOVProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundOVProvider.h; sourceTree = "<group>"; };
 		E8989D4616BD24E500732C04 /* SoundSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundSystem.cpp; sourceTree = "<group>"; };
 		E8989D4716BD24E500732C04 /* SoundSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundSystem.h; sourceTree = "<group>"; };
-		E8989D4816BD24E500732C04 /* SoundWVProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundWVProvider.cpp; sourceTree = "<group>"; };
-		E8989D4916BD24E500732C04 /* SoundWVProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundWVProvider.h; sourceTree = "<group>"; };
 		E8989D4B16BD24E500732C04 /* ScrollHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScrollHelper.cpp; sourceTree = "<group>"; };
 		E8989D4C16BD24E500732C04 /* ScrollHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScrollHelper.h; sourceTree = "<group>"; };
 		E8989D4D16BD24E500732C04 /* TheoraPlayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TheoraPlayer.cpp; sourceTree = "<group>"; };
@@ -1934,6 +1900,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02E9E3AC17296DA200C501BC /* libfmodex.dylib in Frameworks */,
 				C1DC1F001717EC1E001C5EC3 /* libTextureConverter_macos.a in Frameworks */,
 				E89CE91216C549D2006BEFF4 /* libcurl_macos.a in Frameworks */,
 				4910CBF6167B73EC00CF948A /* libdxt_macos.a in Frameworks */,
@@ -1958,6 +1925,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02E9E3A917296CD300C501BC /* libfmodex.dylib in Frameworks */,
 				C1DC1EFD1717E8B7001C5EC3 /* libTextureConverter_macos.a in Frameworks */,
 				E898A2B116BD265400732C04 /* libdxt_macos.a in Frameworks */,
 				E898A2B216BD265400732C04 /* libPVRTexLib.a in Frameworks */,
@@ -1992,6 +1960,7 @@
 		0867D691FE84028FC02AAC07 /* Framework */ = {
 			isa = PBXGroup;
 			children = (
+				02E9E3A817296CD300C501BC /* libfmodex.dylib */,
 				C1DC1EFB1717E791001C5EC3 /* libTextureConverter_macos.a */,
 				C151B18B16D37DD400E09BAF /* WebKit.framework */,
 				E89CE91116C549D2006BEFF4 /* libcurl_macos.a */,
@@ -2788,25 +2757,13 @@
 		E8989D3416BD24E500732C04 /* Sound */ = {
 			isa = PBXGroup;
 			children = (
-				E8989D3516BD24E500732C04 /* ALUtils.h */,
+				02E9E3AA17296D4200C501BC /* FMODUtils.h */,
 				E8989D3816BD24E500732C04 /* Sound.cpp */,
 				E8989D3916BD24E500732C04 /* Sound.h */,
-				E8989D3A16BD24E500732C04 /* SoundBuffer.cpp */,
-				E8989D3B16BD24E500732C04 /* SoundBuffer.h */,
-				E8989D3C16BD24E500732C04 /* SoundChannel.cpp */,
-				E8989D3D16BD24E500732C04 /* SoundChannel.h */,
-				E8989D3E16BD24E500732C04 /* SoundDataProvider.cpp */,
-				E8989D3F16BD24E500732C04 /* SoundDataProvider.h */,
 				E8989D4016BD24E500732C04 /* SoundGroup.cpp */,
 				E8989D4116BD24E500732C04 /* SoundGroup.h */,
-				E8989D4216BD24E500732C04 /* SoundInstance.cpp */,
-				E8989D4316BD24E500732C04 /* SoundInstance.h */,
-				E8989D4416BD24E500732C04 /* SoundOVProvider.cpp */,
-				E8989D4516BD24E500732C04 /* SoundOVProvider.h */,
 				E8989D4616BD24E500732C04 /* SoundSystem.cpp */,
 				E8989D4716BD24E500732C04 /* SoundSystem.h */,
-				E8989D4816BD24E500732C04 /* SoundWVProvider.cpp */,
-				E8989D4916BD24E500732C04 /* SoundWVProvider.h */,
 			);
 			path = Sound;
 			sourceTree = "<group>";
@@ -3204,16 +3161,9 @@
 				E8989FE716BD24E500732C04 /* SwitchSystem.h in Headers */,
 				E8989FE916BD24E500732C04 /* TransformSystem.h in Headers */,
 				E8989FED16BD24E500732C04 /* UserNode.h in Headers */,
-				E8989FEE16BD24E500732C04 /* ALUtils.h in Headers */,
 				E8989FF216BD24E500732C04 /* Sound.h in Headers */,
-				E8989FF416BD24E500732C04 /* SoundBuffer.h in Headers */,
-				E8989FF616BD24E500732C04 /* SoundChannel.h in Headers */,
-				E8989FF816BD24E500732C04 /* SoundDataProvider.h in Headers */,
 				E8989FFA16BD24E500732C04 /* SoundGroup.h in Headers */,
-				E8989FFC16BD24E500732C04 /* SoundInstance.h in Headers */,
-				E8989FFE16BD24E500732C04 /* SoundOVProvider.h in Headers */,
 				E898A00016BD24E500732C04 /* SoundSystem.h in Headers */,
-				E898A00216BD24E500732C04 /* SoundWVProvider.h in Headers */,
 				E898A00416BD24E500732C04 /* ScrollHelper.h in Headers */,
 				E898A00616BD24E500732C04 /* TheoraPlayer.h in Headers */,
 				E898A00816BD24E500732C04 /* UI3DView.h in Headers */,
@@ -3291,6 +3241,7 @@
 				74A909AC1701FA51003FDB31 /* CRC32.h in Headers */,
 				840D24231703311400267C58 /* DeviceInfo.h in Headers */,
 				7410E81D17144C160028AAAA /* UIAggregatorControl.h in Headers */,
+				02E9E3AB17296D4200C501BC /* FMODUtils.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3539,16 +3490,9 @@
 				E898A16916BD265400732C04 /* SwitchSystem.h in Headers */,
 				E898A16A16BD265400732C04 /* TransformSystem.h in Headers */,
 				E898A16C16BD265400732C04 /* UserNode.h in Headers */,
-				E898A16D16BD265400732C04 /* ALUtils.h in Headers */,
 				E898A16E16BD265400732C04 /* Sound.h in Headers */,
-				E898A16F16BD265400732C04 /* SoundBuffer.h in Headers */,
-				E898A17016BD265400732C04 /* SoundChannel.h in Headers */,
-				E898A17116BD265400732C04 /* SoundDataProvider.h in Headers */,
 				E898A17216BD265400732C04 /* SoundGroup.h in Headers */,
-				E898A17316BD265400732C04 /* SoundInstance.h in Headers */,
-				E898A17416BD265400732C04 /* SoundOVProvider.h in Headers */,
 				E898A17516BD265400732C04 /* SoundSystem.h in Headers */,
-				E898A17616BD265400732C04 /* SoundWVProvider.h in Headers */,
 				E898A17716BD265400732C04 /* ScrollHelper.h in Headers */,
 				E898A17816BD265400732C04 /* TheoraPlayer.h in Headers */,
 				E898A17916BD265400732C04 /* UI3DView.h in Headers */,
@@ -3912,14 +3856,8 @@
 				E8989FE816BD24E500732C04 /* TransformSystem.cpp in Sources */,
 				E8989FEC16BD24E500732C04 /* UserNode.cpp in Sources */,
 				E8989FF116BD24E500732C04 /* Sound.cpp in Sources */,
-				E8989FF316BD24E500732C04 /* SoundBuffer.cpp in Sources */,
-				E8989FF516BD24E500732C04 /* SoundChannel.cpp in Sources */,
-				E8989FF716BD24E500732C04 /* SoundDataProvider.cpp in Sources */,
 				E8989FF916BD24E500732C04 /* SoundGroup.cpp in Sources */,
-				E8989FFB16BD24E500732C04 /* SoundInstance.cpp in Sources */,
-				E8989FFD16BD24E500732C04 /* SoundOVProvider.cpp in Sources */,
 				E8989FFF16BD24E500732C04 /* SoundSystem.cpp in Sources */,
-				E898A00116BD24E500732C04 /* SoundWVProvider.cpp in Sources */,
 				E898A00316BD24E500732C04 /* ScrollHelper.cpp in Sources */,
 				E898A00516BD24E500732C04 /* TheoraPlayer.cpp in Sources */,
 				E898A00716BD24E500732C04 /* UI3DView.cpp in Sources */,
@@ -4202,14 +4140,8 @@
 				E898A28216BD265400732C04 /* TransformSystem.cpp in Sources */,
 				E898A28416BD265400732C04 /* UserNode.cpp in Sources */,
 				E898A28516BD265400732C04 /* Sound.cpp in Sources */,
-				E898A28616BD265400732C04 /* SoundBuffer.cpp in Sources */,
-				E898A28716BD265400732C04 /* SoundChannel.cpp in Sources */,
-				E898A28816BD265400732C04 /* SoundDataProvider.cpp in Sources */,
 				E898A28916BD265400732C04 /* SoundGroup.cpp in Sources */,
-				E898A28A16BD265400732C04 /* SoundInstance.cpp in Sources */,
-				E898A28B16BD265400732C04 /* SoundOVProvider.cpp in Sources */,
 				E898A28C16BD265400732C04 /* SoundSystem.cpp in Sources */,
-				E898A28D16BD265400732C04 /* SoundWVProvider.cpp in Sources */,
 				E898A28E16BD265400732C04 /* ScrollHelper.cpp in Sources */,
 				E898A28F16BD265400732C04 /* TheoraPlayer.cpp in Sources */,
 				E898A29016BD265400732C04 /* UI3DView.cpp in Sources */,
@@ -4322,6 +4254,7 @@
 					./../../Libs/freetype/include,
 					./../../Libs/include/,
 					./../../Libs/oggvorbis/include,
+					./../../Libs/fmod/include,
 				);
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = (
@@ -4330,6 +4263,7 @@
 					"\"$(SRCROOT)/../../Libs/feetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/libs\"",
+					"\"$(SRCROOT)/../../Libs/fmod/lib\"",
 				);
 				PRODUCT_NAME = Framework;
 			};
@@ -4354,6 +4288,7 @@
 					./../../Libs/freetype/include,
 					./../../Libs/include/,
 					./../../Libs/oggvorbis/include,
+					./../../Libs/fmod/include,
 				);
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = (
@@ -4362,6 +4297,7 @@
 					"\"$(SRCROOT)/../../Libs/feetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/libs\"",
+					"\"$(SRCROOT)/../../Libs/fmod/lib\"",
 				);
 				PRODUCT_NAME = Framework;
 			};
@@ -4454,6 +4390,7 @@
 					./../../Libs/freetype/include,
 					./../../Libs/include/,
 					./../../Libs/oggvorbis/include,
+					./../../Libs/fmod/include,
 				);
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = (
@@ -4462,6 +4399,7 @@
 					"\"$(SRCROOT)/../../Libs/feetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/libs\"",
+					"\"$(SRCROOT)/../../Libs/fmod/lib\"",
 				);
 				LIBRARY_STYLE = STATIC;
 				OTHER_CFLAGS = (
@@ -4491,6 +4429,7 @@
 					./../../Libs/freetype/include,
 					./../../Libs/include/,
 					./../../Libs/oggvorbis/include,
+					./../../Libs/fmod/include,
 				);
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = (
@@ -4499,6 +4438,7 @@
 					"\"$(SRCROOT)/../../Libs/feetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/libs\"",
+					"\"$(SRCROOT)/../../Libs/fmod/lib\"",
 				);
 				LIBRARY_STYLE = STATIC;
 				OTHER_CFLAGS = (

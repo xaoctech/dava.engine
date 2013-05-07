@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import org.fmod.FMODAudioDevice;
 
 public abstract class JNIActivity extends Activity implements JNIAccelerometer.JNIAccelerometerListener
 {
@@ -23,6 +24,8 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 	private GLSurfaceView glView = null;
 	private EditText editText = null;
     
+	private FMODAudioDevice fmodDevice = new FMODAudioDevice();
+	
     private native void nativeOnCreate(boolean isFirstRun);
     private native void nativeOnStart();
     private native void nativeOnStop();
@@ -88,6 +91,7 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
     protected void onStart()
     {
     	super.onStart();
+    	fmodDevice.start();
     	// The activity is about to become visible.
     	
         Log.i(JNIConst.LOG_TAG, "[Activity::onStart]");
@@ -183,6 +187,8 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
     protected void onStop()
     {
         Log.i(JNIConst.LOG_TAG, "[Activity::onStop] start");
+        
+        fmodDevice.stop();
         
         //call native method
         nativeOnStop();

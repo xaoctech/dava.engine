@@ -25,69 +25,48 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Igor Solovey
+        * Created by Igor Solovey 
 =====================================================================================*/
-
-#ifndef __DAVAENGINE_SOUND_SYSTEM_H__
-#define __DAVAENGINE_SOUND_SYSTEM_H__
-
-#include "Base/Singleton.h"
-#include "Base/BaseTypes.h"
-#include "Base/BaseMath.h"
-#include "Base/ScopedPtr.h"
-
-namespace FMOD
-{
-class System;
-class EventSystem;
-};
+#include "Scene3D/Systems/SoundUpdateSystem.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Entity.h"
+#include "Scene3D/Scene.h"
+#include "Scene3D/Components/TransformComponent.h"
+#include "Scene3D/Components/SoundComponent.h"
+#include "Sound/SoundEvent.h"
+#include "Sound/SoundSystem.h"
 
 namespace DAVA
 {
-class SoundGroup;
-class SoundEvent;
-class Animation;
-class SoundEventCategory;
-class VolumeAnimatedObject;
-class SoundSystem : public Singleton<SoundSystem>
+SoundUpdateSystem::SoundUpdateSystem(Scene * scene)
+:	SceneSystem(scene)
 {
-public:
-	SoundSystem(int32 maxChannels);
-	virtual ~SoundSystem();
+	scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::WORLD_TRANSFORM_CHANGED);
+	scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::SOUND_CHANGED);
+}
 
-	void Update();
-	void Suspend();
-	void Resume();
+SoundUpdateSystem::~SoundUpdateSystem()
+{
+}
 
-	void SetListenerPosition(const Vector3 & position);
-	void SetListenerOrientation(const Vector3 & at, const Vector3 & left);
+void SoundUpdateSystem::ImmediateEvent(Entity * entity, uint32 event)
+{
+	if (event == EventSystem::WORLD_TRANSFORM_CHANGED)
+	{
+		Matrix4 * worldTransformPointer = ((TransformComponent*)entity->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransformPtr();
+		Vector3 translation = worldTransformPointer->GetTranslationVector();
 
-	SoundEvent * CreateSoundEvent(const String & eventPath);
+		SoundEvent * sEvent = ((SoundComponent *)entity->GetComponent(Component::SOUND_COMPONENT))->GetSoundEvent();
+		sEvent->SetPosition(translation);
+	}
 
-	void LoadFEV(const FilePath & filePath);
-
-	SoundGroup * GetSoundGroup(const FastName & groupName);
-	ScopedPtr<SoundEventCategory> GetSoundEventCategory(const String & category);
-
-	void AddVolumeAnimatedObject(VolumeAnimatedObject * object);
-	void RemoveVolumeAnimatedObject(VolumeAnimatedObject * object);
-
-private:
-	SoundGroup * CreateSoundGroup(const FastName & groupName);
-
-
-	FMOD::System * fmodSystem;
-	FMOD::EventSystem * fmodEventSystem;
-
-	Map<int, SoundGroup*> soundGroups;
-	Vector<VolumeAnimatedObject *> animatedObjects;
-
-friend class SoundGroup;
-friend class Sound;
+	if (event == EventSystem::SOUND_CHANGED)
+	{
+		SoundComponent * soundComponent = (SoundComponent *)entity->GetComponent(Component::SOUND_COMPONENT);
+		SoundEvent * sEvent = SoundSystem::Instance()->CreateSoundEvent(soundComponent->GetEventName());
+		soundComponent->SetSoundEvent(sEvent);
+		SafeRelease(sEvent);
+	}
+}
+    
 };
-
-
-
-};
-
-#endif //__DAVAENGINE_SOUND_SYSTEM_H__

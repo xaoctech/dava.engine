@@ -25,69 +25,26 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Igor Solovey
+        * Created by Igor Solovey 
 =====================================================================================*/
+#ifndef __DAVAENGINE_SCENE3D_SOUNDUPDATESYSTEM_H__
+#define	__DAVAENGINE_SCENE3D_SOUNDUPDATESYSTEM_H__
 
-#ifndef __DAVAENGINE_SOUND_SYSTEM_H__
-#define __DAVAENGINE_SOUND_SYSTEM_H__
-
-#include "Base/Singleton.h"
 #include "Base/BaseTypes.h"
-#include "Base/BaseMath.h"
-#include "Base/ScopedPtr.h"
-
-namespace FMOD
-{
-class System;
-class EventSystem;
-};
+#include "Entity/SceneSystem.h"
 
 namespace DAVA
 {
-class SoundGroup;
-class SoundEvent;
-class Animation;
-class SoundEventCategory;
-class VolumeAnimatedObject;
-class SoundSystem : public Singleton<SoundSystem>
+class SoundUpdateSystem : public SceneSystem
 {
 public:
-	SoundSystem(int32 maxChannels);
-	virtual ~SoundSystem();
+    SoundUpdateSystem(Scene * scene);
+    virtual ~SoundUpdateSystem();
 
-	void Update();
-	void Suspend();
-	void Resume();
-
-	void SetListenerPosition(const Vector3 & position);
-	void SetListenerOrientation(const Vector3 & at, const Vector3 & left);
-
-	SoundEvent * CreateSoundEvent(const String & eventPath);
-
-	void LoadFEV(const FilePath & filePath);
-
-	SoundGroup * GetSoundGroup(const FastName & groupName);
-	ScopedPtr<SoundEventCategory> GetSoundEventCategory(const String & category);
-
-	void AddVolumeAnimatedObject(VolumeAnimatedObject * object);
-	void RemoveVolumeAnimatedObject(VolumeAnimatedObject * object);
-
-private:
-	SoundGroup * CreateSoundGroup(const FastName & groupName);
-
-
-	FMOD::System * fmodSystem;
-	FMOD::EventSystem * fmodEventSystem;
-
-	Map<int, SoundGroup*> soundGroups;
-	Vector<VolumeAnimatedObject *> animatedObjects;
-
-friend class SoundGroup;
-friend class Sound;
+    virtual void ImmediateEvent(Entity * entity, uint32 event);
 };
+    
+} // ns
 
+#endif	/* __DAVAENGINE_SCENE3D_SOUNDUPDATESYSTEM_H__ */
 
-
-};
-
-#endif //__DAVAENGINE_SOUND_SYSTEM_H__

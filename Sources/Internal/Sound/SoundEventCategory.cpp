@@ -28,66 +28,49 @@
         * Created by Igor Solovey
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_SOUND_SYSTEM_H__
-#define __DAVAENGINE_SOUND_SYSTEM_H__
-
-#include "Base/Singleton.h"
-#include "Base/BaseTypes.h"
-#include "Base/BaseMath.h"
-#include "Base/ScopedPtr.h"
-
-namespace FMOD
-{
-class System;
-class EventSystem;
-};
+#include "Sound/SoundEventCategory.h"
+#include "Animation/LinearAnimation.h"
+#include "Sound/FMODUtils.h"
 
 namespace DAVA
 {
-class SoundGroup;
-class SoundEvent;
-class Animation;
-class SoundEventCategory;
-class VolumeAnimatedObject;
-class SoundSystem : public Singleton<SoundSystem>
+
+SoundEventCategory::SoundEventCategory(FMOD::EventCategory * category) :
+	fmodEventCategory(category) 
 {
-public:
-	SoundSystem(int32 maxChannels);
-	virtual ~SoundSystem();
+}
 
-	void Update();
-	void Suspend();
-	void Resume();
+SoundEventCategory::~SoundEventCategory()
+{
+}
 
-	void SetListenerPosition(const Vector3 & position);
-	void SetListenerOrientation(const Vector3 & at, const Vector3 & left);
+void SoundEventCategory::SetVolume(float32 volume)
+{
+	FMOD_VERIFY(fmodEventCategory->setVolume(volume));
+}
 
-	SoundEvent * CreateSoundEvent(const String & eventPath);
+float32 SoundEventCategory::GetVolume()
+{
+	float32 volume;
+	FMOD_VERIFY(fmodEventCategory->getVolume(&volume));
+	return volume;
+}
 
-	void LoadFEV(const FilePath & filePath);
+void SoundEventCategory::Stop()
+{
+	FMOD_VERIFY(fmodEventCategory->stopAllEvents());
+}
 
-	SoundGroup * GetSoundGroup(const FastName & groupName);
-	ScopedPtr<SoundEventCategory> GetSoundEventCategory(const String & category);
+void SoundEventCategory::Pause(bool isPaused)
+{
+	FMOD_VERIFY(fmodEventCategory->setPaused(isPaused));
+}
 
-	void AddVolumeAnimatedObject(VolumeAnimatedObject * object);
-	void RemoveVolumeAnimatedObject(VolumeAnimatedObject * object);
-
-private:
-	SoundGroup * CreateSoundGroup(const FastName & groupName);
-
-
-	FMOD::System * fmodSystem;
-	FMOD::EventSystem * fmodEventSystem;
-
-	Map<int, SoundGroup*> soundGroups;
-	Vector<VolumeAnimatedObject *> animatedObjects;
-
-friend class SoundGroup;
-friend class Sound;
-};
-
-
+bool SoundEventCategory::GetPaused()
+{
+	bool isPaused = false;
+	FMOD_VERIFY(fmodEventCategory->getPaused(&isPaused));
+	return isPaused;
+}
 
 };
-
-#endif //__DAVAENGINE_SOUND_SYSTEM_H__
