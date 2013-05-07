@@ -10,48 +10,6 @@
       <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
       <Extensions>cpp;c;cxx;moc;h;def;odl;idl;res;</Extensions>
     </Filter>
-    <Filter Include="QtGenerated\QtPosSaver">
-      <UniqueIdentifier>{5765e078-6490-4145-8476-c5e0fdaff20b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\MaterialBrowser">
-      <UniqueIdentifier>{488c2fc8-5d57-4ddb-aa5d-148fb1170bf8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\Main">
-      <UniqueIdentifier>{7e487b0f-7ffb-4a19-a9f2-0afb6f0e3de5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\Scene">
-      <UniqueIdentifier>{112a8070-e234-41b7-8958-114f01fccf0e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\DockLibrary">
-      <UniqueIdentifier>{63adca46-3cec-4809-a2f9-792636411682}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\Project">
-      <UniqueIdentifier>{0c4ce2d3-d15f-4fbf-b897-244bc25bfa2a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\TextureBrowser">
-      <UniqueIdentifier>{2577c457-6240-473b-b893-129f4db52ed5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\DockProperties">
-      <UniqueIdentifier>{115ccc83-d704-450d-bf74-0a2f0aecea4e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\DockCustomColors">
-      <UniqueIdentifier>{2dddfd3c-1941-443c-9383-9170c373e8a5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\DockVisibilityTool">
-      <UniqueIdentifier>{42dce97f-85fe-404a-8d60-dfd27c49a1ea}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\QtPropertyBrowser">
-      <UniqueIdentifier>{d564fb81-9021-49ca-bad7-e07e527088b1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\QtPropertyBrowser\Dava">
-      <UniqueIdentifier>{313a91af-ec02-4c1c-b5e4-57c4c78af25e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\QtPropertyEditor">
-      <UniqueIdentifier>{41ccecee-349b-40f7-b2c2-b45fd9aee465}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\DockSceneGraph">
-      <UniqueIdentifier>{e87a49ed-6211-4ee1-998f-c9d6403385a1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources">
       <UniqueIdentifier>{4f2db588-397c-479c-9871-d530187be966}</UniqueIdentifier>
     </Filter>
@@ -166,9 +124,6 @@
     <Filter Include="Sources\Qt\DockParticleEditor">
       <UniqueIdentifier>{fb8e541a-57aa-4294-9a07-7fba1040c8d3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="QtGenerated\DockParticleEditor">
-      <UniqueIdentifier>{2c5e6bd2-b669-4392-a95b-cf4efc24cf88}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Qt\DockSceneGraph">
       <UniqueIdentifier>{8ff35518-92c1-4281-a180-76183420c027}</UniqueIdentifier>
     </Filter>
@@ -178,32 +133,14 @@
     <Filter Include="Sources\Qt\QtPropertyEditor\QtPropertyWidgets">
       <UniqueIdentifier>{3556acf1-92d6-4fa7-9fcd-2fe2c548fcd7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="QtGenerated\QtPropertyEditor\QtPropertyWidgets">
-      <UniqueIdentifier>{25aea96e-2c46-4777-a52d-c16b45629da1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Qt\SpritesPacker">
       <UniqueIdentifier>{dbff2565-204f-4397-92f0-4fd28c7fd321}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\SpritesPacker">
-      <UniqueIdentifier>{7fd79982-9cf6-4f03-9bfe-e2641a79e968}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\QResourceEditorProgressDialog">
-      <UniqueIdentifier>{2e8e4e2d-be31-4af1-bcdd-6538b982223e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Sources\Qt\QResourceEditorProgressDialog">
       <UniqueIdentifier>{a9ce818d-486f-4804-8236-33131380edb6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Sources\Qt\DockSetSwitchIndex">
       <UniqueIdentifier>{1060010d-a6c2-4da3-9613-72895b684bf2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\DockSetSwitchIndex">
-      <UniqueIdentifier>{778f9502-08bc-42b8-85a3-0f2c489748eb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\QtPropertyEditor\QtPropertyData">
-      <UniqueIdentifier>{f78cb3f2-cefe-4fa7-89e1-46628d2a20c6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\DockHangingObjects">
-      <UniqueIdentifier>{62b455cb-7b9d-4c52-b742-c03721be1449}</UniqueIdentifier>
     </Filter>
     <Filter Include="Sources\Qt\DockHangingObjects">
       <UniqueIdentifier>{06e43fbc-e3e3-484d-93ff-02f41732442e}</UniqueIdentifier>
@@ -213,9 +150,6 @@
     </Filter>
     <Filter Include="Sources\Qt\DockMaterialViewOptions">
       <UniqueIdentifier>{ac0aff53-678a-41e9-976e-47ea3e28317e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\DockMaterialViewOptions">
-      <UniqueIdentifier>{e560503d-45b2-4dc6-8887-47e59d7d7eb1}</UniqueIdentifier>
     </Filter>
     <Filter Include="Sources\Qt\Scene\System\CollisionSystem">
       <UniqueIdentifier>{1fd9e330-0ea5-4450-a70a-59efa036c833}</UniqueIdentifier>
@@ -229,14 +163,8 @@
     <Filter Include="Sources\Qt\DockSceneInfo">
       <UniqueIdentifier>{18c9c067-52e7-4949-a460-aa84289f4863}</UniqueIdentifier>
     </Filter>
-    <Filter Include="QtGenerated\DockSceneInfo">
-      <UniqueIdentifier>{eb98cf11-941e-4f68-9493-8c0e36af005e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Qt\Commands">
       <UniqueIdentifier>{5023523c-494e-44c1-aea2-fea202030a06}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\Commands">
-      <UniqueIdentifier>{4109d87f-cd98-43db-a669-c63245c9e788}</UniqueIdentifier>
     </Filter>
     <Filter Include="Sources\CommandLine">
       <UniqueIdentifier>{8508f90f-bc06-411f-986b-bccae0d3c86a}</UniqueIdentifier>
@@ -252,6 +180,9 @@
     </Filter>
     <Filter Include="Sources\CommandLine\SceneUtils">
       <UniqueIdentifier>{ea1c3731-01c7-4f90-ba93-09071caa53a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\DockSceneTree">
+      <UniqueIdentifier>{563224da-9996-48c7-9555-d36449b51258}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -963,9 +894,6 @@
     <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanelCustomColors.cpp">
       <Filter>Sources\SceneEditor\Landscape</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\QtPosSaver\QtPosSaver_moc.cpp">
-      <Filter>QtGenerated\QtPosSaver</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialBrowser.cpp">
       <Filter>Sources\Qt\MaterialBrowser</Filter>
     </ClCompile>
@@ -983,24 +911,6 @@
     </ClCompile>
     <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialTreeModel.cpp">
       <Filter>Sources\Qt\MaterialBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialBrowser_moc.cpp">
-      <Filter>QtGenerated\MaterialBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialTree_moc.cpp">
-      <Filter>QtGenerated\MaterialBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialTreeItem_moc.cpp">
-      <Filter>QtGenerated\MaterialBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialTreeModel_moc.cpp">
-      <Filter>QtGenerated\MaterialBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialView_moc.cpp">
-      <Filter>QtGenerated\MaterialBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialViewModel_moc.cpp">
-      <Filter>QtGenerated\MaterialBrowser</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\Scene\SceneData.cpp">
       <Filter>Sources\Qt\Scene</Filter>
@@ -1023,47 +933,17 @@
     <ClCompile Include="Classes\Qt\Main\ScenePreviewDialog.cpp">
       <Filter>Sources\Qt\Main</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\Main\davaglwidget_moc.cpp">
-      <Filter>QtGenerated\Main</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Main\mainwindow_moc.cpp">
-      <Filter>QtGenerated\Main</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Main\QtMainWindowHandler_moc.cpp">
-      <Filter>QtGenerated\Main</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Main\QtUtils_moc.cpp">
-      <Filter>QtGenerated\Main</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Main\ScenePreviewDialog_moc.cpp">
-      <Filter>QtGenerated\Main</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Scene\SceneData_moc.cpp">
-      <Filter>QtGenerated\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Scene\SceneDataManager_moc.cpp">
-      <Filter>QtGenerated\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\SceneEditor\LandscapeEditorVisibilityCheckTool.cpp">
       <Filter>Sources\SceneEditor\Landscape</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\ColorControl.cpp">
       <Filter>Sources\SceneEditor\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\QtIcons_qrc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\DockLibrary\LibraryView.cpp">
       <Filter>Sources\Qt\DockLibrary</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockLibrary\LibraryView_moc.cpp">
-      <Filter>QtGenerated\DockLibrary</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\Project\ProjectManager.cpp">
       <Filter>Sources\Qt\Project</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Project\ProjectManager_moc.cpp">
-      <Filter>QtGenerated\Project</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\DockLibrary\LibraryModel.cpp">
       <Filter>Sources\Qt\DockLibrary</Filter>
@@ -1095,53 +975,14 @@
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureScrollArea.cpp">
       <Filter>Sources\Qt\TextureBrowser</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\TextureBrowser\TextureBrowser_moc.cpp">
-      <Filter>QtGenerated\TextureBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\TextureBrowser\TextureCache_moc.cpp">
-      <Filter>QtGenerated\TextureBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\TextureBrowser\TextureConvertorWork_moc.cpp">
-      <Filter>QtGenerated\TextureBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\TextureBrowser\TextureConvertor_moc.cpp">
-      <Filter>QtGenerated\TextureBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\TextureBrowser\TextureListDelegate_moc.cpp">
-      <Filter>QtGenerated\TextureBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\TextureBrowser\TextureListModel_moc.cpp">
-      <Filter>QtGenerated\TextureBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\TextureBrowser\TextureList_moc.cpp">
-      <Filter>QtGenerated\TextureBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\TextureBrowser\TextureProperties_moc.cpp">
-      <Filter>QtGenerated\TextureBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\TextureBrowser\TextureScrollArea_moc.cpp">
-      <Filter>QtGenerated\TextureBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockLibrary\LibraryModel_moc.cpp">
-      <Filter>QtGenerated\DockLibrary</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.cpp">
       <Filter>Sources\Qt\DockVisibilityTool</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\DockCustomColors\CustomColorsView.cpp">
       <Filter>Sources\Qt\DockCustomColors</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockVisibilityTool\VisibilityToolView_moc.cpp">
-      <Filter>QtGenerated\DockVisibilityTool</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockCustomColors\CustomColorsView_moc.cpp">
-      <Filter>QtGenerated\DockCustomColors</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\QtPropertyBrowser\Dava\qtDavaVectorPropertyManager.cpp">
       <Filter>Sources\Qt\QtPropertyBrowser\Dava</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\QtPropertyBrowser\Dava\qtDavaVectorPropertyManager_moc.cpp">
-      <Filter>QtGenerated\QtPropertyBrowser\Dava</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyItem.cpp">
       <Filter>Sources\Qt\QtPropertyEditor</Filter>
@@ -1154,21 +995,6 @@
     </ClCompile>
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyEditor.cpp">
       <Filter>Sources\Qt\QtPropertyEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockProperties\PropertyEditor_moc.cpp">
-      <Filter>QtGenerated\DockProperties</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyEditor_moc.cpp">
-      <Filter>QtGenerated\QtPropertyEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyItemDelegate_moc.cpp">
-      <Filter>QtGenerated\QtPropertyEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyItem_moc.cpp">
-      <Filter>QtGenerated\QtPropertyEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyModel_moc.cpp">
-      <Filter>QtGenerated\QtPropertyEditor</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection.cpp">
       <Filter>Sources\Qt\QtPropertyEditor\QtPropertyData</Filter>
@@ -1245,21 +1071,6 @@
     <ClCompile Include="Classes\Qt\DockSceneGraph\SceneGraphModel.cpp">
       <Filter>Sources\Qt\DockSceneGraph</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockSceneGraph\GraphItem_moc.cpp">
-      <Filter>QtGenerated\DockSceneGraph</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockSceneGraph\GraphModel_moc.cpp">
-      <Filter>QtGenerated\DockSceneGraph</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockSceneGraph\QSceneGraphTreeView_moc.cpp">
-      <Filter>QtGenerated\DockSceneGraph</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockSceneGraph\SceneGraphItem_moc.cpp">
-      <Filter>QtGenerated\DockSceneGraph</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockSceneGraph\SceneGraphModel_moc.cpp">
-      <Filter>QtGenerated\DockSceneGraph</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\ParticlesEditorQT\Nodes\BaseParticleEditorNode.cpp">
       <Filter>Sources\ParticlesEditorQT\Nodes</Filter>
     </ClCompile>
@@ -1299,32 +1110,8 @@
     <ClCompile Include="Classes\Qt\DockParticleEditor\TimeLineWidget.cpp">
       <Filter>Sources\Qt\DockParticleEditor</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockParticleEditor\EmitterLayerWidget_moc.cpp">
-      <Filter>QtGenerated\DockParticleEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockParticleEditor\GradientPickerWidget_moc.cpp">
-      <Filter>QtGenerated\DockParticleEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockParticleEditor\LayerForceWidget_moc.cpp">
-      <Filter>QtGenerated\DockParticleEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticleEditorWidget_moc.cpp">
-      <Filter>QtGenerated\DockParticleEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticleEmitterPropertiesWidget_moc.cpp">
-      <Filter>QtGenerated\DockParticleEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticlesEditorController_moc.cpp">
-      <Filter>QtGenerated\DockParticleEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockParticleEditor\TimeLineWidget_moc.cpp">
-      <Filter>QtGenerated\DockParticleEditor</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\DockParticleEditor\ParticleTimeLineWidget.cpp">
       <Filter>Sources\Qt\DockParticleEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticleTimeLineWidget_moc.cpp">
-      <Filter>QtGenerated\DockParticleEditor</Filter>
     </ClCompile>
     <ClCompile Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSceneDataHelper.cpp">
       <Filter>Sources\ParticlesEditorQT\Helpers</Filter>
@@ -1392,14 +1179,8 @@
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit.cpp">
       <Filter>Sources\Qt\QtPropertyEditor\QtPropertyWidgets</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit_moc.cpp">
-      <Filter>QtGenerated\QtPropertyEditor\QtPropertyWidgets</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection.cpp">
       <Filter>Sources\Qt\QtPropertyEditor\QtPropertyData</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\DockParticleEditor\BaseParticleEditorContentWidget.cpp">
-      <Filter>QtGenerated</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\Command.cpp">
       <Filter>Sources\Commands</Filter>
@@ -1452,29 +1233,17 @@
     <ClCompile Include="Classes\Qt\Main\ModificationWidget.cpp">
       <Filter>Sources\Qt\Main</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\Main\ModificationWidget_moc.cpp">
-      <Filter>QtGenerated\Main</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\SceneEditor\ArrowsNode.cpp">
       <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\SpritesPacker\SpritePackerHelper.cpp">
       <Filter>Sources\Qt\SpritesPacker</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\SpritesPacker\SpritePackerHelper_moc.cpp">
-      <Filter>QtGenerated\SpritesPacker</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\QResourceEditorProgressDialog\QResourceEditorProgressDialog.cpp">
       <Filter>Sources\Qt\QResourceEditorProgressDialog</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\QResourceEditorProgressDialog\QResourceEditorProgressDialog_moc.cpp">
-      <Filter>QtGenerated\QResourceEditorProgressDialog</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexView.cpp">
       <Filter>Sources\Qt\DockSetSwitchIndex</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockSetSwitchIndex\SetSwitchIndexView_moc.cpp">
-      <Filter>QtGenerated\DockSetSwitchIndex</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\SetSwitchIndexCommands.cpp">
       <Filter>Sources\Commands</Filter>
@@ -1488,23 +1257,8 @@
     <ClCompile Include="Classes\Qt\DockHangingObjects\HangingObjectsView.cpp">
       <Filter>Sources\Qt\DockHangingObjects</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockHangingObjects\HangingObjectsView_moc.cpp">
-      <Filter>QtGenerated\DockHangingObjects</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\DockHangingObjects\HangingObjectsHelper.cpp">
       <Filter>Sources\Qt\DockHangingObjects</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyData_moc.cpp">
-      <Filter>QtGenerated\QtPropertyEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaVariant_moc.cpp">
-      <Filter>QtGenerated\QtPropertyEditor\QtPropertyData</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection_moc.cpp">
-      <Filter>QtGenerated\QtPropertyEditor\QtPropertyData</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection_moc.cpp">
-      <Filter>QtGenerated\QtPropertyEditor\QtPropertyData</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\DockSceneGraph\ExtraUserData.cpp">
       <Filter>Sources\Qt\DockSceneGraph</Filter>
@@ -1515,17 +1269,11 @@
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaKeyedArchive.cpp">
       <Filter>Sources\Qt\QtPropertyEditor\QtPropertyData</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaKeyedArchive_moc.cpp">
-      <Filter>QtGenerated\QtPropertyEditor\QtPropertyData</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\DockMaterialViewOptions\MaterialViewOptions.cpp">
       <Filter>Sources\Qt\DockMaterialViewOptions</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\MaterialViewOptionsCommands.cpp">
       <Filter>Sources\Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockMaterialViewOptions\MaterialViewOptions_moc.cpp">
-      <Filter>QtGenerated\DockMaterialViewOptions</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\DockProperties\PropertyEditorStateHelper.cpp">
       <Filter>Sources\Qt\DockProperties</Filter>
@@ -1538,15 +1286,6 @@
     </ClCompile>
     <ClCompile Include="Classes\Qt\Scene\SceneTabWidget.cpp">
       <Filter>Sources\Qt\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Scene\SceneEditorProxy_moc.cpp">
-      <Filter>QtGenerated\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Scene\SceneSignals_moc.cpp">
-      <Filter>QtGenerated\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Scene\SceneTabWidget_moc.cpp">
-      <Filter>QtGenerated\Scene</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\Scene\EntityGroup.cpp">
       <Filter>Sources\Qt\Scene</Filter>
@@ -1602,9 +1341,6 @@
     <ClCompile Include="Classes\Qt\DockParticleEditor\ParticleEffectPropertiesWidget.cpp">
       <Filter>Sources\Qt\DockParticleEditor</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticleEffectPropertiesWidget_moc.cpp">
-      <Filter>QtGenerated\DockParticleEditor</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\Scene\System\HoodSystem\HoodCollObject.cpp">
       <Filter>Sources\Qt\Scene\System\HoodSystem</Filter>
     </ClCompile>
@@ -1626,23 +1362,14 @@
     <ClCompile Include="Classes\Qt\DockParticleEditor\ScrollZoomWidget.cpp">
       <Filter>Sources\Qt\DockParticleEditor</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockParticleEditor\ScrollZoomWidget_moc.cpp">
-      <Filter>QtGenerated\DockParticleEditor</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\DockSceneInfo\SceneInfo.cpp">
       <Filter>Sources\Qt\DockSceneInfo</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockSceneInfo\SceneInfo_moc.cpp">
-      <Filter>QtGenerated\DockSceneInfo</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\Scene\SceneSignals.cpp">
       <Filter>Sources\Qt\Scene</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\Commands\CommandSignals.cpp">
       <Filter>Sources\Qt\Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Commands\CommandSignals_moc.cpp">
-      <Filter>QtGenerated\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Classes\CommandLine\CommandLineManager.cpp">
       <Filter>Sources\CommandLine</Filter>
@@ -1676,6 +1403,306 @@
     </ClCompile>
     <ClCompile Include="Classes\CommandLine\SceneUtils\SceneUtils.cpp">
       <Filter>Sources\CommandLine\SceneUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockSceneTree\SceneTree.cpp">
+      <Filter>Sources\Qt\DockSceneTree</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Commands\CommandSignals_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockCustomColors\CustomColorsView_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockHangingObjects\HangingObjectsHelper_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockHangingObjects\HangingObjectsView_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockLibrary\LibraryModel_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockLibrary\LibraryView_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockMaterialViewOptions\MaterialViewOptions_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\BaseParticleEditorContentWidget_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\EmitterLayerWidget_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\GradientPickerWidget_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\LayerForceWidget_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticleEditorWidget_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticleEffectPropertiesWidget_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticleEmitterPropertiesWidget_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticlesEditorController_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticleTimeLineWidget_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\ScrollZoomWidget_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\TimeLineWidget_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockProperties\PropertyEditorStateHelper_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockProperties\PropertyEditor_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockSceneGraph\ExtraUserData_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockSceneGraph\GraphItem_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockSceneGraph\GraphModel_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockSceneGraph\PointerHolder_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockSceneGraph\QSceneGraphTreeView_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockSceneGraph\SceneGraphItem_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockSceneGraph\SceneGraphModelStateHelper_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockSceneGraph\SceneGraphModel_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockSceneInfo\SceneInfo_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockSceneTree\SceneTree_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockSetSwitchIndex\SetSwitchIndexHelper_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockSetSwitchIndex\SetSwitchIndexView_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockVisibilityTool\VisibilityToolView_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Main\davaglwidget_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Main\mainwindow_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Main\ModificationWidget_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Main\QtMainWindowHandler_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Main\QTreeViewStateHelper_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Main\QtUtils_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Main\ScenePreviewDialog_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialBrowser_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialTreeItem_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialTreeModel_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialTree_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialViewModel_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialView_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\MaterialEditor\MaterialEditor_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Project\ProjectManager_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QResourceEditorProgressDialog\QResourceEditorProgressDialog_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QtIcons_qrc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QtPosSaver\QtPosSaver_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyData_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyEditor_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyItemDelegate_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyItem_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyModel_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaKeyedArchive_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaVariant_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Scene\EntityGroup_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Scene\SceneDataManager_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Scene\SceneData_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Scene\SceneEditorProxy_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Scene\SceneSignals_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Scene\SceneTabWidget_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Scene\SceneTypes_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Scene\System\CameraSystem_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Scene\System\CollisionSystem\CollisionBaseObject_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Scene\System\CollisionSystem\CollisionLandscape_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Scene\System\CollisionSystem\CollisionRenderObject_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Scene\System\CollisionSystem_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Scene\System\GridSystem_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Scene\System\HoodSystem\HoodCollObject_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Scene\System\HoodSystem\HoodObject_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Scene\System\HoodSystem\MoveHood_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Scene\System\HoodSystem\NormalHood_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Scene\System\HoodSystem\RotateHood_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Scene\System\HoodSystem\ScaleHood_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Scene\System\HoodSystem_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Scene\System\ModifSystem_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Scene\System\SelectionSystem_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\SpritesPacker\SpritePackerHelper_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\TextureBrowser\TextureBrowser_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\TextureBrowser\TextureCache_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\TextureBrowser\TextureConvertorWork_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\TextureBrowser\TextureConvertor_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\TextureBrowser\TextureListDelegate_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\TextureBrowser\TextureListModel_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\TextureBrowser\TextureList_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\TextureBrowser\TextureProperties_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\TextureBrowser\TextureScrollArea_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockParticleEditor\BaseParticleEditorContentWidget.cpp">
+      <Filter>Sources\Qt\DockParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QtPropertyBrowser\Dava\qtDavaVectorPropertyManager_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockSceneTree\SceneTreeModel.cpp">
+      <Filter>Sources\Qt\DockSceneTree</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockSceneTree\SceneTreeItem.cpp">
+      <Filter>Sources\Qt\DockSceneTree</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockSceneTree\SceneTreeItem_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockSceneTree\SceneTreeModel_moc.cpp">
+      <Filter>QtGenerated</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2438,12 +2465,6 @@
     <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanelCustomColors.h">
       <Filter>Sources\SceneEditor\Landscape</Filter>
     </ClInclude>
-    <ClInclude Include="_GeneratedQt\ui_davaglwidget.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
-    <ClInclude Include="_GeneratedQt\ui_mainwindow.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialBrowser.h">
       <Filter>Sources\Qt\MaterialBrowser</Filter>
     </ClInclude>
@@ -2524,9 +2545,6 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureScrollArea.h">
       <Filter>Sources\Qt\TextureBrowser</Filter>
-    </ClInclude>
-    <ClInclude Include="_GeneratedQt\ui_texturebrowser.h">
-      <Filter>QtGenerated</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.h">
       <Filter>Sources\Qt\DockVisibilityTool</Filter>
@@ -2627,9 +2645,6 @@
     <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphModel.h">
       <Filter>Sources\Qt\DockSceneGraph</Filter>
     </ClInclude>
-    <ClInclude Include="_GeneratedQt\ui_ParticleProperty.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\ParticlesEditorQT\Nodes\BaseParticleEditorNode.h">
       <Filter>Sources\ParticlesEditorQT\Nodes</Filter>
     </ClInclude>
@@ -2699,9 +2714,6 @@
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection.h">
       <Filter>Sources\Qt\QtPropertyEditor\QtPropertyData</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\DockParticleEditor\BaseParticleEditorContentWidget.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands\Command.h">
       <Filter>Sources\Commands</Filter>
     </ClInclude>
@@ -2755,9 +2767,6 @@
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\ArrowsNode.h">
       <Filter>Sources\SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Main\QTreeViewStateHelper.h">
-      <Filter>QtGenerated</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\SpritesPacker\SpritePackerHelper.h">
       <Filter>Sources\Qt\SpritesPacker</Filter>
@@ -2935,6 +2944,51 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Scene\SceneTypes.h">
       <Filter>Sources\Qt\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockSceneTree\SceneTree.h">
+      <Filter>Sources\Qt\DockSceneTree</Filter>
+    </ClInclude>
+    <ClInclude Include="_GeneratedQt\ui_CustomColorsView.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="_GeneratedQt\ui_davaglwidget.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="_GeneratedQt\ui_HangingObjectsView.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="_GeneratedQt\ui_mainwindow.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="_GeneratedQt\ui_materialbrowser.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="_GeneratedQt\ui_MaterialViewOptions.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="_GeneratedQt\ui_ModificationWidget.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="_GeneratedQt\ui_ParticleProperty.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="_GeneratedQt\ui_SetSwitchIndexView.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="_GeneratedQt\ui_texturebrowser.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="_GeneratedQt\ui_VisibilityToolView.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockParticleEditor\BaseParticleEditorContentWidget.h">
+      <Filter>Sources\Qt\DockParticleEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockSceneTree\SceneTreeModel.h">
+      <Filter>Sources\Qt\DockSceneTree</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockSceneTree\SceneTreeItem.h">
+      <Filter>Sources\Qt\DockSceneTree</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
