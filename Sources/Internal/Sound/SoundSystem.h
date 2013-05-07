@@ -60,7 +60,7 @@ public:
 	void Resume();
 
 	void SetListenerPosition(const Vector3 & position);
-	void SetListenerOrientation(const Vector3 & at, const Vector3 & up);
+	void SetListenerOrientation(const Vector3 & at, const Vector3 & left);
 
 	SoundEvent * CreateSoundEvent(const String & eventPath);
 
