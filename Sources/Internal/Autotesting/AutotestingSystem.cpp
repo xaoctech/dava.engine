@@ -822,9 +822,10 @@ void AutotestingSystem::InitializeDevice(const String & device)
 String AutotestingSystem::GetCurrentTimeString()
 {
     uint64 timeAbsMs = GetCurrentTimeMS();
-    uint16 hours = (timeAbsMs/3600000)%60;
+    uint16 hours = (timeAbsMs/3600000)%12;
     uint16 minutes = (timeAbsMs/60000)%60;
     uint16 seconds = (timeAbsMs/1000)%60;
+	//Logger::Debug("TIME: %02d:%02d:%02d", hours, minutes, seconds);
     return Format("%02d:%02d:%02d", hours, minutes, seconds);
 }
 
@@ -1114,7 +1115,7 @@ bool AutotestingSystem::SaveToDB(MongodbUpdateObject *dbUpdateObject)
 void AutotestingSystem::Log(const String &level, const String &message)
 {
 	Logger::Debug("AutotestingSystem::Log [%s]%s", level.c_str(), message.c_str());
-	uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
+	//uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
 	String testId = GetTestId(testIndex);
 	String stepId = GetStepId(stepIndex);
 	String logId = GetLogId(++logIndex);
@@ -1136,8 +1137,8 @@ void AutotestingSystem::Log(const String &level, const String &message)
 
     SaveToDB(dbUpdateObject);
 	SafeRelease(dbUpdateObject);
-	uint64 finishTime = SystemTimer::Instance()->AbsoluteMS();
-	Logger::Debug("AutotestingSystem::Log FINISH %d", finishTime - startTime);
+	//uint64 finishTime = SystemTimer::Instance()->AbsoluteMS();
+	//Logger::Debug("AutotestingSystem::Log FINISH start time %d - summary time %d", startTime, finishTime - startTime);
 }
 
 void AutotestingSystem::SaveScreenShotNameToDB()
