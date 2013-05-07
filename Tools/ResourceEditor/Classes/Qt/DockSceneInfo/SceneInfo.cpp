@@ -306,7 +306,7 @@ void SceneInfo::CollectSceneTextures()
         {
             RenderBatch *renderBatch = ro->GetRenderBatch(b);
 
-            Logger::Error("Uncommend code below");
+//            Logger::Error("Uncommend code below");
 //            Material *material = renderBatch->GetMaterial();
 //            if(material)
 //            {
