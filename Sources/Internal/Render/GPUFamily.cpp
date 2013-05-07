@@ -153,6 +153,20 @@ const String & GPUFamily::GetGPUName(const eGPUFamily gpuFamily)
     return gpuData[gpuFamily].name;
 }
 
+eGPUFamily GPUFamily::GetGPUByName(const String & name)
+{
+    for(int32 i = 0; i < GPU_FAMILY_COUNT; ++i)
+    {
+        eGPUFamily gpu = (eGPUFamily)i;
+        if(name == gpuData[gpu].name)
+        {
+            return gpu;
+        }
+    }
+    
+    return GPU_UNKNOWN;
+}
+
     
 const String & GPUFamily::GetCompressedFileExtension(const eGPUFamily gpuFamily, const PixelFormat pixelFormat)
 {
