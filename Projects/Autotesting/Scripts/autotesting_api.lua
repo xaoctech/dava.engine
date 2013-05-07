@@ -16,6 +16,7 @@ function assert(isTrue, errorMsg)
 	if not isTrue then OnError(tostring(errorMsg)) end
 end
 
+EPSILON = 1
 -- High-level test function
 ----------------------------------------------------------------------------------------------------
 -- This function for simple test step without any assertion. Fail while error throwing
@@ -69,7 +70,7 @@ function Log(message, level)
 end 
 
 function Yield()
-	for i=0, 6 do
+	for i=0, 10 do
 		coroutine.yield()
 	end
 end
@@ -374,16 +375,14 @@ function TouchUp(touchId)
     autotestingSystem:TouchUp(touchId)
 end
 
-function ClickPosition(position, touchId, time)
-    local waitTime = time or TIMECLICK
+function ClickPosition(position, touchId)
     local touchId = touchId or 1
-    Log("ClickPosition position="..position.x..","..position.y.." touchId="..touchId.." waitTime="..waitTime)
+    Log("ClickPosition position="..position.x..","..position.y.." touchId="..touchId)
     
-    Wait(waitTime)
     TouchDownPosition(position, touchId)
-    Wait(TIMECLICK)
+	Yield()
     TouchUp(touchId)
-    Wait(waitTime)
+    Yield()
 end
 
 function Click(x, y, touchId)
@@ -396,13 +395,13 @@ function Click(x, y, touchId)
 end
 
 function ClickControl(name, time, touchId)
-    local waitTime = time or TIMECLICK
+    local waitTime = time or TIMEOUT
     local touchId = touchId or 1
 	
     Log("ClickControl name="..name.." touchId="..touchId.." waitTime="..waitTime)
     
     local elapsedTime = 0.0
-    while elapsedTime < TIMEOUT do
+    while elapsedTime < waitTime do
         elapsedTime = elapsedTime + autotestingSystem:GetTimeElapsed()
 --        print("Searching "..elapsedTime)
         
@@ -414,7 +413,7 @@ function ClickControl(name, time, touchId)
 --            print(position)
 --            print("position="..position.x..","..position.y)
 
-            ClickPosition(position, touchId, waitTime)
+            ClickPosition(position, touchId)
             
             return true
         else
