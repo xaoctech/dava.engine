@@ -23,6 +23,7 @@ public:
 	const DAVA::Rect GetViewportRect();
 
 	DAVA::Vector2 GetScreenPos(const DAVA::Vector3 &pos3);
+	DAVA::Vector3 GetScenePos(const DAVA::float32 x, const DAVA::float32 y, const DAVA::float32 z);
 
 protected:
 	void Update(DAVA::float32 timeElapsed);

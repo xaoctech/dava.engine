@@ -53,57 +53,12 @@
 #include <sys/stat.h>
 #include <sys/errno.h>
 
-#ifdef USE_LOCAL_RESOURCES
-#define USE_LOCAL_RESOURCES_PATH "/mnt/sdcard/DavaProject/Data/"
-#endif
-
 #endif //PLATFORMS
 
 namespace DAVA
 {
 
 	
-FilePath FileSystem::virtualBundlePath = FilePath();
-	
-void FileSystem::ReplaceBundleName(const FilePath & newBundlePath)
-{
-    virtualBundlePath = newBundlePath;
-}
-	
-	
-#if defined(__DAVAENGINE_WIN32__)
-const char * FileSystem::FilepathRelativeToBundle(const char * relativePathname)
-{
-	if(!virtualBundlePath.IsEmpty())
-    {
-        return Format("%s/%s", virtualBundlePath.GetAbsolutePathname().c_str(), relativePathname);
-    }
-    else
-    {
-        FilePath currentFolder = FileSystem::Instance()->GetCurrentWorkingDirectory();
-        return Format("%s/Data/%s", currentFolder.GetAbsolutePathname().c_str(), relativePathname);
-    }
-}
-#endif //#if defined(__DAVAENGINE_WIN32__)
-	
-	
-#if defined(__DAVAENGINE_ANDROID__)
-const char * FileSystem::FilepathRelativeToBundle(const char * relativePathname)
-{
-#ifdef USE_LOCAL_RESOURCES
-	return Format("%s%s", USE_LOCAL_RESOURCES_PATH, relativePathname);
-#else
-	return Format("Data%s", relativePathname);
-#endif
-}
-#endif //#if defined(__DAVAENGINE_ANDROID__)
-	
-const char * FileSystem::FilepathRelativeToBundle(const String & relativePathname)
-{
-    return FilepathRelativeToBundle(relativePathname.c_str());
-}
-
-    
 FileSystem::FileSystem()
 {
 }
@@ -121,6 +76,8 @@ FileSystem::~FileSystem()
 
 FileSystem::eCreateDirectoryResult FileSystem::CreateDirectory(const FilePath & filePath, bool isRecursive)
 {
+    DVASSERT(filePath.GetType() != FilePath::PATH_IN_RESOURCES);
+    
 	if (!isRecursive)
 	{
         return CreateExactDirectory(filePath);
@@ -165,6 +122,8 @@ FileSystem::eCreateDirectoryResult FileSystem::CreateDirectory(const FilePath & 
     
 FileSystem::eCreateDirectoryResult FileSystem::CreateExactDirectory(const FilePath & filePath)
 {
+    DVASSERT(filePath.GetType() != FilePath::PATH_IN_RESOURCES);
+
     if(IsDirectory(filePath))
         return DIRECTORY_EXISTS;
     
@@ -180,6 +139,8 @@ FileSystem::eCreateDirectoryResult FileSystem::CreateExactDirectory(const FilePa
 
 bool FileSystem::CopyFile(const FilePath & existingFile, const FilePath & newFile)
 {
+    DVASSERT(newFile.GetType() != FilePath::PATH_IN_RESOURCES);
+
 #ifdef __DAVAENGINE_WIN32__
 	BOOL ret = ::CopyFileA(existingFile.GetAbsolutePathname().c_str(), newFile.GetAbsolutePathname().c_str(), true);
 	return ret != 0;
@@ -234,6 +195,8 @@ bool FileSystem::CopyFile(const FilePath & existingFile, const FilePath & newFil
 
 bool FileSystem::MoveFile(const FilePath & existingFile, const FilePath & newFile, bool overwriteExisting/* = false*/)
 {
+    DVASSERT(newFile.GetType() != FilePath::PATH_IN_RESOURCES);
+
 #ifdef __DAVAENGINE_WIN32__
 	DWORD flags = (overwriteExisting) ? MOVEFILE_REPLACE_EXISTING : 0;
 	BOOL ret = ::MoveFileExA(existingFile.GetAbsolutePathname().c_str(), newFile.GetAbsolutePathname().c_str(), flags);
@@ -259,6 +222,7 @@ bool FileSystem::MoveFile(const FilePath & existingFile, const FilePath & newFil
 
 bool FileSystem::CopyDirectory(const FilePath & sourceDirectory, const FilePath & destinationDirectory)
 {
+    DVASSERT(destinationDirectory.GetType() != FilePath::PATH_IN_RESOURCES);
     DVASSERT(sourceDirectory.IsDirectoryPathname() && destinationDirectory.IsDirectoryPathname());
     
 	bool ret = true;
@@ -284,6 +248,8 @@ bool FileSystem::CopyDirectory(const FilePath & sourceDirectory, const FilePath 
 	
 bool FileSystem::DeleteFile(const FilePath & filePath)
 {
+    DVASSERT(filePath.GetType() != FilePath::PATH_IN_RESOURCES);
+
 	// function unlink return 0 on success, -1 on error
 	int res = remove(filePath.GetAbsolutePathname().c_str());
 	return (res == 0);
@@ -291,6 +257,7 @@ bool FileSystem::DeleteFile(const FilePath & filePath)
 	
 bool FileSystem::DeleteDirectory(const FilePath & path, bool isRecursive)
 {
+    DVASSERT(path.GetType() != FilePath::PATH_IN_RESOURCES);
     DVASSERT(path.IsDirectoryPathname());
     
 	FileList * fileList = new FileList(path);
@@ -336,6 +303,7 @@ bool FileSystem::DeleteDirectory(const FilePath & path, bool isRecursive)
 	
 uint32 FileSystem::DeleteDirectoryFiles(const FilePath & path, bool isRecursive)
 {
+    DVASSERT(path.GetType() != FilePath::PATH_IN_RESOURCES);
     DVASSERT(path.IsDirectoryPathname());
 
 	uint32 fileCount = 0;
@@ -369,64 +337,25 @@ uint32 FileSystem::DeleteDirectoryFiles(const FilePath & path, bool isRecursive)
 File *FileSystem::CreateFileForFrameworkPath(const FilePath & frameworkPath, uint32 attributes)
 {
 #if defined(__DAVAENGINE_ANDROID__)
-    String::size_type find = frameworkPath.GetAbsolutePathname().find("~res:");
-
-	if(String::npos != find)
-	{
+    if(frameworkPath.GetType() == FilePath::PATH_IN_RESOURCES)
+    {
 #ifdef USE_LOCAL_RESOURCES
-        FilePath path(USE_LOCAL_RESOURCES_PATH);
-		path += frameworkPath.GetAbsolutePathname().c_str() + 5;
-		return File::CreateFromSystemPath(path, attributes);
+		return File::CreateFromSystemPath(frameworkPath, attributes);
 #else
 		return APKFile::CreateFromAssets(frameworkPath, attributes);
 #endif
-	}
+    }
 	else
 	{
 		return File::CreateFromSystemPath(frameworkPath, attributes);
 	}
-
+    
 #else //#if defined(__DAVAENGINE_ANDROID__)
 	return File::CreateFromSystemPath(frameworkPath, attributes);
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 }
 
-const FilePath FileSystem::SystemPathForFrameworkPath(const String & frameworkPath)
-{
-	//DVASSERT(frameworkPath.size() > 0);
-    if(frameworkPath.empty() || frameworkPath[0] != '~')
-	{
-		return FilePath(frameworkPath);
-	}
-    
-    String pathname = frameworkPath;
-    String::size_type find = pathname.find("~res:");
-	if(find != String::npos)
-	{
-        FilePath p(FilepathRelativeToBundle(""));
-        p.MakeDirectoryPathname();
-        
-		tempRetPath = p + pathname.erase(0, 5);
-	}
-	else
-	{
-		find = pathname.find("~doc:");
-		if(find != String::npos)
-		{
-            FilePath p(FilepathInDocuments(""));
-            p.MakeDirectoryPathname();
-            
-            tempRetPath = p + pathname.erase(0, 5);
-		}
-        else
-        {
-            tempRetPath = frameworkPath;
-        }
-	}
-    
-	return tempRetPath;
-}
-	
+
 const FilePath & FileSystem::GetCurrentWorkingDirectory()
 {
 	char tempDir[2048];
@@ -496,17 +425,6 @@ const FilePath & FileSystem::GetCurrentDocumentsDirectory()
 void FileSystem::SetCurrentDocumentsDirectory(const FilePath & newDocDirectory)
 {
     currentDocDirectory = newDocDirectory;
-}
-
-const FilePath FileSystem::FilepathInDocuments(const char * relativePathname)
-{
-    //return Format("./Documents/%s", relativePathname);
-    return currentDocDirectory + relativePathname;
-}
-
-const FilePath FileSystem::FilepathInDocuments(const String & relativePathname)
-{
-    return FilepathInDocuments(relativePathname.c_str());
 }
 
 void FileSystem::SetDefaultDocumentsDirectory()

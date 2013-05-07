@@ -25,7 +25,7 @@ SceneCameraSystem::SceneCameraSystem(DAVA::Scene * scene)
 		mainCamera->SetUp(DAVA::Vector3(0.0f, 0.0f, 1.0f));
 		mainCamera->SetPosition(DAVA::Vector3(0.0f, 0.0f, 0.0f));
 		mainCamera->SetTarget(DAVA::Vector3(0.0f, 1.0f, 0.0f));
-		mainCamera->Setup(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f);
+		mainCamera->SetupPerspective(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f);
 
 		DAVA::Entity *mainCameraEntity = new DAVA::Entity();
 		mainCameraEntity->SetName("editor.main-camera");
@@ -37,7 +37,7 @@ SceneCameraSystem::SceneCameraSystem(DAVA::Scene * scene)
 		topCamera->SetUp(DAVA::Vector3(0.0f, 0.0f, 1.0f));
 		topCamera->SetPosition(DAVA::Vector3(0.0f, 0.0f, 200.0f));
 		topCamera->SetTarget(DAVA::Vector3(0.0f, 250.0f, 0.0f));
-		topCamera->Setup(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f);
+		topCamera->SetupPerspective(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f);
 
 		DAVA::Entity *topCameraEntity = new DAVA::Entity();
 		topCameraEntity->SetName("editor.debug-camera");
@@ -116,6 +116,18 @@ DAVA::Vector2 SceneCameraSystem::GetScreenPos(const DAVA::Vector3 &pos3)
 	if(NULL != curSceneCamera)
 	{
 		ret = curSceneCamera->GetOnScreenPosition(pos3, viewportRect);
+	}
+
+	return ret;
+}
+
+DAVA::Vector3 SceneCameraSystem::GetScenePos(const DAVA::float32 x, const DAVA::float32 y, const DAVA::float32 z)
+{
+	DAVA::Vector3 ret;
+
+	if(NULL != curSceneCamera)
+	{
+		ret = curSceneCamera->UnProject(x, y, z, viewportRect);
 	}
 
 	return ret;
@@ -221,7 +233,6 @@ void SceneCameraSystem::ProcessKeyboardMove(DAVA::float32 timeElapsed)
 				curSceneCamera->SetPosition(pos);
 				curSceneCamera->SetDirection(dir);    // right now required because camera rebuild direction to target, and if position & target is equal after set position it produce wrong results
 			}
-
 
 			if(kd->IsKeyPressed(DAVA::DVKEY_RIGHT) || kd->IsKeyPressed(DAVA::DVKEY_D))
 			{

@@ -218,3 +218,23 @@ void UIStaticTextMetadata::SetAlign(int value)
     
     GetActiveStaticText()->SetAlign((eAlign)value);
 }
+
+int UIStaticTextMetadata::GetTextAlign()
+{
+    if (!VerifyActiveParamID())
+    {
+        return ALIGN_LEFT;
+    }
+    
+    return (int)GetActiveStaticText()->GetTextAlign();
+}
+
+void UIStaticTextMetadata::SetTextAlign(int value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+    
+    GetActiveStaticText()->SetTextAlign((eAlign)value);
+}

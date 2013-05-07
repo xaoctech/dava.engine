@@ -42,15 +42,27 @@ class ShadowRect;
 class ShadowVolumeRenderPass : public RenderPass
 {
 public:
+
+	enum eBlend
+	{
+		MODE_BLEND_ALPHA = 0,
+		MODE_BLEND_MULTIPLY,
+
+		MODE_BLEND_COUNT
+	};
+
     ShadowVolumeRenderPass(const FastName & name);
     virtual ~ShadowVolumeRenderPass();
     
     virtual void Draw(Camera * camera);
     
     ShadowRect * GetShadowRect() const;
+
+	void SetBlendMode(eBlend blendMode);
     
 private:
     ShadowRect * shadowRect;
+	eBlend blendMode;
 };
     
 } // ns

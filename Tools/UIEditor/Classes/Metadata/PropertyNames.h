@@ -33,7 +33,8 @@ namespace PropertyNames
     
     static const char* TEXT_PROPERTY_NAME = "Text";
     static const char* TEXT_COLOR_PROPERTY_NAME = "TextColor";
-	
+	static const char* TEXT_ALIGN_PROPERTY_NAME = "TextAlign";
+
 	static const char* SHADOW_OFFSET_X = "ShadowOffsetX";
 	static const char* SHADOW_OFFSET_Y = "ShadowOffsetY";
 	static const char* SHADOW_COLOR = "ShadowColor";

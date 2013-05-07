@@ -11,9 +11,9 @@ SceneSelectionSystem::SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSy
 	: DAVA::SceneSystem(scene)
 	, collisionSystem(collSys)
 	, hoodSystem(hoodSys)
-	, selectionDrawFlags(SELECTION_FILL_SHAPE | SELECTION_DRAW_CORNERS)
+	, drawMode(ST_SELDRAW_FILL_SHAPE | ST_SELDRAW_DRAW_CORNERS)
+	, curPivotPoint(ST_PIVOT_COMMON_CENTER)
 	, applyOnPhaseEnd(false)
-	, curPivotPoint(SELECTION_COMMON_CENTER)
 {
 
 }
@@ -33,11 +33,11 @@ void SceneSelectionSystem::ProcessUIEvent(DAVA::UIEvent *event)
 	if(DAVA::UIEvent::PHASE_BEGAN == event->phase)
 	{
 		// we can select only if mouse isn't over hood axis
-		if(EM_AXIS_NONE == hoodSystem->GetPassingAxis())
+		if(ST_AXIS_NONE == hoodSystem->GetPassingAxis())
 		{
 			if(event->tid == DAVA::UIEvent::BUTTON_1)
 			{
-				const EntityGroup* collisionEntities = collisionSystem->RayTestFromCamera();
+				const EntityGroup* collisionEntities = collisionSystem->ObjectsRayTestFromCamera();
 				EntityGroup selectableItems = GetSelecetableFromCollision(collisionEntities);
 
 				DAVA::Entity *firstEntity = selectableItems.GetEntity(0);
@@ -118,7 +118,7 @@ void SceneSelectionSystem::Draw()
 		DAVA::eBlendMode oldBlendDst = DAVA::RenderManager::Instance()->GetDestBlend();
 
 		int newState = DAVA::RenderState::STATE_BLEND | DAVA::RenderState::STATE_COLORMASK_ALL | DAVA::RenderState::STATE_DEPTH_WRITE;
-		if(!(selectionDrawFlags & SELECTION_NO_DEEP_TEST))
+		if(!(drawMode & ST_SELDRAW_NO_DEEP_TEST))
 		{
 			newState |= DAVA::RenderState::STATE_DEPTH_TEST;
 		}
@@ -131,20 +131,20 @@ void SceneSelectionSystem::Draw()
 			DAVA::AABBox3 selectionBox = curSelections.GetBbox(i);
 
 			// draw selection share
-			if(selectionDrawFlags & SELECTION_DRAW_SHAPE)
+			if(drawMode & ST_SELDRAW_DRAW_SHAPE)
 			{
 				DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 1.0f, 1.0f));
 				DAVA::RenderHelper::Instance()->DrawBox(selectionBox);
 			}
 			// draw selection share
-			else if(selectionDrawFlags & SELECTION_DRAW_CORNERS)
+			else if(drawMode & ST_SELDRAW_DRAW_CORNERS)
 			{
 				DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 1.0f, 1.0f));
 				DAVA::RenderHelper::Instance()->DrawCornerBox(selectionBox);
 			}
 
 			// fill selection shape
-			if(selectionDrawFlags & SELECTION_FILL_SHAPE)
+			if(drawMode & ST_SELDRAW_FILL_SHAPE)
 			{
 				DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 1.0f, 0.15f));
 				DAVA::RenderHelper::Instance()->FillBox(selectionBox);
@@ -198,12 +198,12 @@ void SceneSelectionSystem::SelectedItemsWereModified()
 	applyOnPhaseEnd = false;
 }
 
-void SceneSelectionSystem::SetPivotPoint(int pp)
+void SceneSelectionSystem::SetPivotPoint(ST_PivotPoint pp)
 {
 	curPivotPoint = pp;
 }
 
-int SceneSelectionSystem::GetPivotPoint() const
+ST_PivotPoint SceneSelectionSystem::GetPivotPoint() const
 {
 	return curPivotPoint;
 }
@@ -215,7 +215,7 @@ void SceneSelectionSystem::UpdateHoodPos() const
 		DAVA::Vector3 p;
 		switch (curPivotPoint)
 		{
-		case SELECTION_ENTITY_CENTER:
+		case ST_PIVOT_ENTITY_CENTER:
 			p = curSelections.GetBbox(0).GetCenter();
 			break;
 		default:
@@ -282,7 +282,7 @@ EntityGroupItem SceneSelectionSystem::GetSelectableEntity(DAVA::Entity* entity)
 		// still not found?
 		if(NULL == solidEntity)
 		{
-			// let it current entity bo be tread as solid
+			// let it current entity to be tread as solid
 			solidEntity = entity;
 		}
 
@@ -291,4 +291,14 @@ EntityGroupItem SceneSelectionSystem::GetSelectableEntity(DAVA::Entity* entity)
 	}
 
 	return ret;
+}
+
+void SceneSelectionSystem::SetDrawMode(int mode)
+{
+	drawMode = mode;
+}
+
+int SceneSelectionSystem::GetDrawMode() const
+{
+	return drawMode;
 }

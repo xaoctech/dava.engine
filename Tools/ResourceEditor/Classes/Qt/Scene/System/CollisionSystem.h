@@ -3,6 +3,7 @@
 
 #include <QMap>
 #include "Scene/EntityGroup.h"
+#include "Scene/SceneTypes.h"
 
 // bullet
 #include "bullet/btBulletCollisionCommon.h"
@@ -23,28 +24,19 @@ class SceneCollisionSystem : public DAVA::SceneSystem
 	friend class EntityModificationSystem;
 
 public:
-	enum DebugDrawFlags
-	{
-		DEBUG_DRAW_NOTHING = 0x0,
-
-		DEBUG_DRAW_OBJECTS = 0x1,
-		DEBUG_DRAW_SELECTED_OBJECTS = 0x2,
-		DEBUG_DRAW_LAND = 0x4,
-		DEBUG_DRAW_RAYTEST = 0x10,
-
-		DEBUG_DRAW_ALL = 0xFFFFFFFF
-	};
-
 	SceneCollisionSystem(DAVA::Scene * scene);
 	~SceneCollisionSystem();
 
-	void SetDebugDrawFlags(int flags);
+	void SetDrawMode(int mode);
 	int GetDebugDrawFlags();
 
 	DAVA::AABBox3 GetBoundingBox(DAVA::Entity *entity);
 
-	const EntityGroup* RayTest(DAVA::Vector3 from, DAVA::Vector3 to);
-	const EntityGroup* RayTestFromCamera();
+	const EntityGroup* ObjectsRayTest(const DAVA::Vector3 &from, const DAVA::Vector3 &to);
+	const EntityGroup* ObjectsRayTestFromCamera();
+
+	DAVA::Vector3 LandRayTest(const DAVA::Vector3 &from, const DAVA::Vector3 &to);
+	DAVA::Vector3 LandRayTestFromCamera();
 
 	void UpdateCollisionObject(DAVA::Entity *entity);
 
@@ -57,7 +49,7 @@ protected:
 	virtual void RemoveEntity(DAVA::Entity * entity);
 
 protected:
-	int debugDrawFlags;
+	int drawMode;
 
 	DAVA::Vector3 lastRayFrom;
 	DAVA::Vector3 lastRayTo;
@@ -65,6 +57,10 @@ protected:
 
 	EntityGroup rayIntersectedEntities;
 	bool rayIntersectCached;
+
+	DAVA::Vector3 lastLandRayFrom;
+	DAVA::Vector3 lastLandRayTo;
+	DAVA::Vector3 lastLandCollision;
 
 	btDefaultCollisionConfiguration* objectsCollConf;
 	btCollisionDispatcher* objectsCollDisp;

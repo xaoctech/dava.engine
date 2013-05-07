@@ -14,11 +14,11 @@ RotateHood::RotateHood() : HoodObject(4.0f)
 	DAVA::float32 x, y, lx = r, ly = 0;
 
 	axisX = CreateLine(DAVA::Vector3(b, 0, 0), DAVA::Vector3(baseSize, 0, 0));
-	axisX->axis = EM_AXIS_X;
+	axisX->axis = ST_AXIS_X;
 	axisY = CreateLine(DAVA::Vector3(0, b, 0), DAVA::Vector3(0, baseSize, 0));
-	axisY->axis = EM_AXIS_Y;
+	axisY->axis = ST_AXIS_Y;
 	axisZ = CreateLine(DAVA::Vector3(0, 0, b), DAVA::Vector3(0, 0, baseSize));
-	axisZ->axis = EM_AXIS_Z;
+	axisZ->axis = ST_AXIS_Z;
 
 	for(int i = 0; i < ROTATE_HOOD_CIRCLE_PARTS_COUNT; ++i)
 	{
@@ -28,11 +28,11 @@ RotateHood::RotateHood() : HoodObject(4.0f)
 		y = r * sinf(angle);
 
 		axisXc[i] = CreateLine(DAVA::Vector3(0, lx, ly), DAVA::Vector3(0, x, y));
-		axisXc[i]->axis = EM_AXIS_X;
+		axisXc[i]->axis = ST_AXIS_X;
 		axisYc[i] = CreateLine(DAVA::Vector3(lx, 0, ly), DAVA::Vector3(x, 0, y));
-		axisYc[i]->axis = EM_AXIS_Y;
+		axisYc[i]->axis = ST_AXIS_Y;
 		axisZc[i] = CreateLine(DAVA::Vector3(lx, ly, 0), DAVA::Vector3(x, y, 0));
-		axisZc[i]->axis = EM_AXIS_Z;
+		axisZc[i]->axis = ST_AXIS_Z;
 
 		lx = x;
 		ly = y;
@@ -42,7 +42,7 @@ RotateHood::RotateHood() : HoodObject(4.0f)
 RotateHood::~RotateHood()
 { }
 
-void RotateHood::Draw(int selectedAxis, int mouseOverAxis)
+void RotateHood::Draw(ST_Axis selectedAxis, ST_Axis mouseOverAxis)
 {
 	int oldState = DAVA::RenderManager::Instance()->GetState();
 	DAVA::eBlendMode oldBlendSrc = DAVA::RenderManager::Instance()->GetSrcBlend();
@@ -55,7 +55,7 @@ void RotateHood::Draw(int selectedAxis, int mouseOverAxis)
 	DAVA::Vector3 curPos = axisX->curPos;
 
 	// x
-	if(selectedAxis == EM_AXIS_X || selectedAxis == EM_AXIS_YZ) 
+	if(selectedAxis == ST_AXIS_X || selectedAxis == ST_AXIS_YZ) 
 	{
 		DAVA::RenderManager::Instance()->SetColor(colorSBlend);
 
@@ -80,7 +80,7 @@ void RotateHood::Draw(int selectedAxis, int mouseOverAxis)
 	}
 
 	// y
-	if(selectedAxis == EM_AXIS_Y || selectedAxis == EM_AXIS_XZ) 
+	if(selectedAxis == ST_AXIS_Y || selectedAxis == ST_AXIS_XZ) 
 	{
 		DAVA::RenderManager::Instance()->SetColor(colorSBlend);
 
@@ -105,7 +105,7 @@ void RotateHood::Draw(int selectedAxis, int mouseOverAxis)
 	}
 
 	// z
-	if(selectedAxis == EM_AXIS_Z || selectedAxis == EM_AXIS_XY)
+	if(selectedAxis == ST_AXIS_Z || selectedAxis == ST_AXIS_XY)
 	{
 		DAVA::RenderManager::Instance()->SetColor(colorSBlend);
 

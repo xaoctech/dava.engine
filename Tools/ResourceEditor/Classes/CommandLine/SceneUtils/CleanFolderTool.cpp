@@ -1,0 +1,81 @@
+/*==================================================================================
+    Copyright (c) 2008, DAVA Consulting, LLC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA Consulting, LLC nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+    Revision History:
+        * Created by Ivan "Dizz" Petrochenko
+=====================================================================================*/
+
+#include "CleanFolderTool.h"
+
+#include "CommandLine/EditorCommandLineParser.h"
+
+using namespace DAVA;
+
+void CleanFolderTool::PrintUsage()
+{
+    printf("\n");
+    printf("-cleanfolder [-folder [directory]]\n");
+    printf("\twill delete folder with files \n");
+    printf("\t-folder - path for /Users/User/Project/Data/3d/ folder \n");
+
+    printf("\n");
+    printf("Sample:\n");
+    printf("-cleanfolder -folder /Users/User/Project/Data/3d -forceclose\n");
+}
+
+DAVA::String CleanFolderTool::GetCommandLineKey()
+{
+    return "-cleanfolder";
+}
+
+bool CleanFolderTool::InitializeFromCommandLine()
+{
+    foldername = EditorCommandLineParser::GetCommandParam(String("-folder"));
+    if(foldername.IsEmpty())
+    {
+        errors.insert(String("Incorrect params for cleaning folder"));
+        return false;
+    }
+
+    foldername.MakeDirectoryPathname();
+    
+    return true;
+}
+
+void CleanFolderTool::Process()
+{
+    bool ret = FileSystem::Instance()->DeleteDirectory(foldername);
+    if(!ret)
+    {
+        bool folderExists = FileSystem::Instance()->IsDirectory(foldername);
+        if(folderExists)
+        {
+            errors.insert(String(Format("[CleanFolder] ret = %d, folder = %s", ret, foldername.GetAbsolutePathname().c_str())));
+        }
+    }
+}
+
+

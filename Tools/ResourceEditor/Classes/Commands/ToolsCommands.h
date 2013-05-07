@@ -21,6 +21,9 @@ public:
 
 protected:
 	virtual void Execute();
+	virtual DAVA::Set<DAVA::Entity*> GetAffectedEntities();
+
+	DAVA::Entity* affectedEntity;
 };
 
 

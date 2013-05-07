@@ -8,7 +8,7 @@ struct NormalHood : public HoodObject
 	NormalHood();
 	~NormalHood();
 
-	virtual void Draw(int selectedAxis, int mouseOverAxis);
+	virtual void Draw(ST_Axis selectedAxis, ST_Axis mouseOverAxis);
 
 	HoodCollObject *axisX;
 	HoodCollObject *axisY;
