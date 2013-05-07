@@ -74,6 +74,7 @@ public:
 	void PerformPlaybackComplete();
 
 	void SetPosition(const Vector3 & position);
+	void UpdateInstancesPosition();
 
 	void SetLoopCount(int32 looping); // -1 = infinity
 	int32 GetLoopCount() const;
