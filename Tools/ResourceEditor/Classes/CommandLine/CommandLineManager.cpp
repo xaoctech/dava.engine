@@ -1,6 +1,6 @@
 #include "CommandLineManager.h"
 #include "CommandLineTool.h"
-#include "EditorCommandLineParser.h"
+#include "CommandLine/EditorCommandLineParser.h"
 
 #include "ImageSplitter/ImageSplitterTool.h"
 #include "SceneUtils/CleanFolderTool.h"

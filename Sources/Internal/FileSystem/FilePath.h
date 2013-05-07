@@ -42,6 +42,17 @@ namespace DAVA
 class FilePath
 {
 public:
+    
+    enum ePathType
+    {
+        PATH_IN_FILESYSTEM = 0,     // not framework path /Users/... or c:/...
+        PATH_IN_RESOURCES,          // ~res:/...
+        PATH_IN_DOCUMENTS,          // ~doc:/...
+        PATH_IN_MEMORY              // FBO, TEXT, memory file
+    };
+    
+    
+public:
 
 	FilePath();
     FilePath(const FilePath & path);
@@ -63,12 +74,8 @@ public:
 
 
     FilePath& operator=(const FilePath & path);
-    FilePath operator+(const FilePath & path) const;
-    FilePath& operator+=(const FilePath & path);
     FilePath operator+(const String & path) const;
     FilePath& operator+=(const String & path);
-    FilePath operator+(const char * path) const;
-    FilePath& operator+=(const char * path);
 
     bool operator==(const FilePath & path) const;
 	bool operator!=(const FilePath & path) const;
@@ -89,7 +96,7 @@ public:
         \brief Function to retrieve pathname
         \returns pathname value
 	 */
-    inline const String & GetAbsolutePathname() const;
+    const String GetAbsolutePathname() const;
     
 	/**
         \brief Function to retrieve filename from pathname. Filename for path "/Users/Folder/image.png" is "image.png".
@@ -188,7 +195,15 @@ public:
 	 */
 	String GetFrameworkPath();
 
+	/**
+        \brief Function to set system path bundle path to project path for resolving pathnames such as "~res:/Gfx/image.png"
+	 */
+    static void InitializeBundleName();
 
+	/**
+        \brief Function to set project path for resolving pathnames such as "~res:/Gfx/image.png"
+        \param[in] new project path
+	 */
 	static void SetBundleName(const FilePath &newBundlePath);
 		
 	/**
@@ -210,50 +225,71 @@ public:
     static FilePath FilepathInDocuments(const String & relativePathname);
 
     
+    /**
+        \brief Function to retrieve type of path
+        \returns type of path
+     */
+    inline const ePathType GetType() const;
+    
+    
+    static void AddResourcesFolder(const FilePath & folder);
+    static void RemoveResourcesFolder(const FilePath & folder);
+    static const List<FilePath> GetResourcesFolders();
+    
+    
+    /**
+        \brief Function to check if path is absolute
+        \returns true if path is absolute
+     */
+    bool IsAbsolutePathname() const;
+
+    
 protected:
     
     void Initialize(const String &pathname);
 
-	String GetFrameworkPathForPrefix(const String &typePrefix);
+    String ResolveResourcesPath() const;
+    
 
     static String NormalizePathname(const FilePath &pathname);
     static String NormalizePathname(const String &pathname);
     
     static String MakeDirectory(const String &pathname);
 
-    static String AbsoluteToRelative(const String &directoryPathname, const String &absolutePathname);
+    static String AbsoluteToRelative(const FilePath &directoryPathname, const FilePath &absolutePathname);
 
     static String GetFilename(const String &pathname);
-    static FilePath GetDirectory(const String &pathname);
+    static FilePath GetDirectory(const String &pathname, const ePathType pType);
 
-    static String GetSystemPathname(const String &pathname);
+    static String GetSystemPathname(const String &pathname, const ePathType pType);
+	String GetFrameworkPathForPrefix(const String &typePrefix, const ePathType pType);
     
     static bool IsAbsolutePathname(const String &pathname);
 
-	static FilePath FilepathRelativeToBundle(const char * relativePathname);
-	static FilePath FilepathRelativeToBundle(const String & relativePathname);
-
+    static ePathType GetPathType(const String &pathname);
+    
 public:
     static String AddPath(const FilePath &folder, const String & addition);
-    static String AddPath(const FilePath &folder, const FilePath & addition);
 
 protected:
     
     String absolutePathname;
+    ePathType pathType;
 
-	static FilePath virtualBundlePath;
+    static List<FilePath> resourceFolders;
 };
     
     
-inline const String & FilePath::GetAbsolutePathname() const
-{
-    return absolutePathname;
-}
-
 inline bool FilePath::IsEmpty() const
 {
     return absolutePathname.empty();
 }
+    
+inline const FilePath::ePathType FilePath::GetType() const
+{
+    return pathType;
+}
+
 
     
 };
