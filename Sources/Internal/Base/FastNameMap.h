@@ -86,7 +86,7 @@ inline bool FastNameSet::operator == (const FastNameSet & _another) const
 {
     if (Size() != _another.Size())return false;
     FastNameSet::Iterator it = this->Begin();
-    const FastNameSet::Iterator & endIt = End();
+    const FastNameSet::Iterator & endIt = this->End();
     for (; it !=  endIt; ++it)
     {
         const FastName & name = it.GetKey();

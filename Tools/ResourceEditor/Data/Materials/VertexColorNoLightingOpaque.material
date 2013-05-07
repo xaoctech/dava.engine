@@ -1,13 +1,13 @@
 Material:
     Parent: "Global.material"
     Layers: ["OpaqueRenderLayer"]
+    Uniforms:
+        globalMulColor: [0.0, 1.0, 1.0, 1.0]
 
 RenderPass:
     Name: "ForwardPass"
     Shader: "~res:/Materials/Shaders/Old/materials"
-    UniqueDefines: ["FLATCOLOR"]
-    Uniforms:
-        VertexColor: #FF00FF00
+    UniqueDefines: ["GLOBAL_MUL_COLOR"]
 
     RenderState:
         State: STATE_DEFAULT_3D

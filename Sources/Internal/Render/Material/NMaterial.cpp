@@ -334,6 +334,76 @@ NMaterial::NMaterial()
 NMaterial::~NMaterial()
 {
 }
+    
+void NMaterial::AddMaterialProperty(const String & keyName, YamlNode * uniformNode)
+{
+    FastName uniformName = keyName;
+    Logger::Debug("Uniform Add:%s %s", keyName.c_str(), uniformName.c_str());
+    
+    Shader::eUniformType type = Shader::UT_FLOAT;
+    union 
+    {
+        float val;
+        float valArray[4];
+        float valMatrix[4 * 4];
+    }data;
+    
+    
+    if (uniformNode->GetType() == YamlNode::TYPE_STRING)
+    {
+        type = Shader::UT_FLOAT;
+    }
+    
+    uint32 size = uniformNode->GetCount();
+    uint32 arrayCount = 0;
+    for (uint32 k = 0; k < size; ++k)
+    {
+        if (uniformNode->Get(k)->GetType() == YamlNode::TYPE_ARRAY)
+        {
+            arrayCount++;
+        }
+    }
+    if (size == arrayCount)
+    {
+        if (size == 2)type = Shader::UT_FLOAT_MAT2;
+        else if (size == 3)type = Shader::UT_FLOAT_MAT3;
+        else if (size == 4)type = Shader::UT_FLOAT_MAT4;
+    }else if (arrayCount == 0)
+    {
+        if (size == 2)type = Shader::UT_FLOAT_VEC2;
+        else if (size == 3)type = Shader::UT_FLOAT_VEC3;
+        else if (size == 4)type = Shader::UT_FLOAT_VEC4;
+    }else
+    {
+        DVASSERT(0 && "Something went wrong");
+    }
+    
+    switch (type) {
+        case Shader::UT_FLOAT:
+            data.val = uniformNode->AsFloat();
+            break;
+        case Shader::UT_FLOAT_VEC2:
+        case Shader::UT_FLOAT_VEC3:
+        case Shader::UT_FLOAT_VEC4:
+            for (uint32 k = 0; k < size; ++k)
+            {
+                data.valArray[k] = uniformNode->Get(k)->AsFloat();
+            }
+            break;
+            
+        default:
+            Logger::Error("Wrong material property or format not supported.");
+            break;
+    }
+    
+    NMaterialProperty * materialProperty = new NMaterialProperty();
+    materialProperty->size = 1;
+    materialProperty->type = type;
+    materialProperty->data = new char[Shader::GetUniformTypeSize(type)];
+    memcpy(materialProperty->data, &data, Shader::GetUniformTypeSize(type));
+    
+    materialProperties.Insert(uniformName, materialProperty);
+}
 
 bool NMaterial::LoadFromFile(const String & pathname)
 {
@@ -364,7 +434,20 @@ bool NMaterial::LoadFromFile(const String & pathname)
         }
     }
     
-    
+    YamlNode * uniformsNode = materialNode->Get("Uniforms");
+    if (uniformsNode)
+    {
+        uint32 count = uniformsNode->GetCount();
+        for (uint32 k = 0; k < count; ++k)
+        {
+            YamlNode * uniformNode = uniformsNode->Get(k);
+            if (uniformNode)
+            {
+                AddMaterialProperty(uniformsNode->GetItemKeyName(k), uniformNode);
+            }
+        }
+    }
+
     for (int32 k = 0; k < rootNode->GetCount(); ++k)
     {
         YamlNode * renderStepNode = rootNode->Get(k);
@@ -458,6 +541,8 @@ void NMaterial::BindMaterialTechnique(const FastName & techniqueName)
     if (techniqueName != activeTechniqueName)
     {
         activeTechnique = GetTechnique(techniqueName);
+        if (activeTechnique)
+            activeTechniqueName = techniqueName;
     }
     
     Shader * shader = activeTechnique->GetShader();
