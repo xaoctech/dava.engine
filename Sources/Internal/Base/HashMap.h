@@ -119,9 +119,8 @@ protected:
 		HashMapItem *next;
 
 		HashMapItem(const K & k, const V & v)
-            :   key(k), value(v)
+            :   key(k), value(v), next(NULL)
 		{
-			next = NULL;
 		}
 	};
 };
@@ -227,7 +226,7 @@ V HashMap<K, V>::operator[](const K &key) const
 template <typename K, typename V>
 void HashMap<K, V>::Clear()
 {
-	const HashMapItem* item;
+	const HashMapItem* item = NULL;
 	const HashMapItem* next = NULL;
 
 	for(size_t i = 0; i < szTable; ++i)
@@ -370,6 +369,7 @@ HashMap<K, V>::HashMapIterator::HashMapIterator(const HashMap<K, V> *map)
 				GoEnd();
 			}
 	}
+    // DVASSERT(current_index < szTable);
 }
 
 template <typename K, typename V>
