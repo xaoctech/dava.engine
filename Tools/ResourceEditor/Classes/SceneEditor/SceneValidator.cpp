@@ -350,7 +350,7 @@ void SceneValidator::ConvertLightmapSizeFromProperty(Entity *ownerNode, Instance
 	for(Map<String, VariantType*>::iterator it = map.begin(); it != map.end(); it++)
 	{
 		String key = it->first;
-		if(key.find("lightmap.size") != String::npos)
+		if(key.find("lightmap.size") != String::npos && ((RenderComponent*)ownerNode->GetComponent(Component::RENDER_COMPONENT))->GetRenderObject()->GetType() != RenderObject::TYPE_LANDSCAPE)
 		{
 			materialState->SetLightmapSize(props->GetInt32(key, 128));
 			props->DeleteKey(key);
