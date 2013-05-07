@@ -102,11 +102,16 @@ void SoundSystem::SetListenerPosition(const Vector3 & position)
 	FMOD_VERIFY(fmodEventSystem->set3DListenerAttributes(0, &pos, 0, 0, 0));
 }
 
-void SoundSystem::SetListenerOrientation(const Vector3 & _at, const Vector3 & _up)
+void SoundSystem::SetListenerOrientation(const Vector3 & at, const Vector3 & left)
 {
-	FMOD_VECTOR at = {_at.x, _at.y, _at.z};
-	FMOD_VECTOR up = {_up.x, _up.y, _up.z};
-	FMOD_VERIFY(fmodEventSystem->set3DListenerAttributes(0, 0, 0, &at, &up));
+	Vector3 atNorm = at;
+	atNorm.Normalize();
+	Vector3 upNorm = at.CrossProduct(left);
+	upNorm.Normalize();
+
+	FMOD_VECTOR fmodAt = {atNorm.x, atNorm.y, atNorm.z};
+	FMOD_VECTOR fmodUp = {upNorm.x, upNorm.y, upNorm.z};
+	FMOD_VERIFY(fmodEventSystem->set3DListenerAttributes(0, 0, 0, &fmodAt, &fmodUp));
 }
 
 SoundGroup * SoundSystem::GetSoundGroup(const FastName & groupName)
