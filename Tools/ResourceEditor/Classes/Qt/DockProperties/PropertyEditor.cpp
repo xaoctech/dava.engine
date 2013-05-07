@@ -22,6 +22,10 @@ PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */)
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneReleased(SceneData *)), this, SLOT(sceneReleased(SceneData *)));
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneNodeSelected(SceneData *, DAVA::Entity *)), this, SLOT(sceneNodeSelected(SceneData *, DAVA::Entity *)));
 
+	// 
+	QObject::connect(SceneSignals::Instance(), SIGNAL(Selected(SceneEditorProxy *, DAVA::Entity *)), this, SLOT(EntitySelected(SceneEditorProxy *, DAVA::Entity *)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(Deselected(SceneEditorProxy *, DAVA::Entity *)), this, SLOT(EntityDeselected(SceneEditorProxy *, DAVA::Entity *)));
+
 	// MainWindow actions
 	QObject::connect(QtMainWindow::Instance()->GetUI()->actionShowAdvancedProp, SIGNAL(triggered()), this, SLOT(actionShowAdvanced()));
 	advancedMode = QtMainWindow::Instance()->GetUI()->actionShowAdvancedProp->isChecked();
@@ -174,4 +178,15 @@ void PropertyEditor::actionShowAdvanced()
 	{
 		SetAdvancedMode(showAdvancedAction->isChecked());
 	}
+}
+
+
+void PropertyEditor::EntitySelected(SceneEditorProxy *scene, DAVA::Entity *entity)
+{
+	SetNode(entity);
+}
+
+void PropertyEditor::EntityDeselected(SceneEditorProxy *scene, DAVA::Entity *entity)
+{
+
 }

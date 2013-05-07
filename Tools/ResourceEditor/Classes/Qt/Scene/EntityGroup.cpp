@@ -34,20 +34,23 @@ void EntityGroup::Add(const EntityGroupItem &groupItem)
 
 void EntityGroup::Rem(DAVA::Entity *entity)
 {
-	size_t i;
-	if(Index(entity, i))
+	for(size_t i = 0; i < entities.size(); ++i)
 	{
-		DAVA::Vector<EntityGroupItem>::iterator it = entities.begin();
-		entities.erase(it + i);
-
-		// recalc common ab
-		entitiesBbox.Empty();
-		for(size_t j = 0; j < entities.size(); ++j)
+		if(entities[i].entity == entity || entities[i].solidEntity == entity)
 		{
-			entitiesBbox.AddAABBox(entities[j].bbox);
+			DAVA::Vector<EntityGroupItem>::iterator it = entities.begin();
+			entities.erase(it + i);
+
+			// recalc common ab
+			entitiesBbox.Empty();
+			for(size_t j = 0; j < entities.size(); ++j)
+			{
+				entitiesBbox.AddAABBox(entities[j].bbox);
+			}
+
+			break;
 		}
 	}
-
 }
 
 void EntityGroup::Clear()

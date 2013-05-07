@@ -5,6 +5,7 @@
 #include "Scene/System/SelectionSystem.h"
 #include "Scene/System/ModifSystem.h"
 #include "Scene/System/HoodSystem.h"
+#include "Scene/SceneSignals.h"
 
 // framework
 #include "Scene3D/SceneFileV2.h"
@@ -29,10 +30,14 @@ SceneEditorProxy::SceneEditorProxy()
 
 	modifSystem = new EntityModificationSystem(this, collisionSystem, cameraSystem, hoodSystem);
 	AddSystem(modifSystem, 0);
+
+	SceneSignals::Instance()->EmitOpened(this);
 }
 
 SceneEditorProxy::~SceneEditorProxy()
-{ }
+{
+	SceneSignals::Instance()->EmitClosed(this);
+}
 
 bool SceneEditorProxy::Load(const DAVA::FilePath &path)
 {
@@ -64,6 +69,7 @@ bool SceneEditorProxy::Load(const DAVA::FilePath &path)
 		curScenePath = path;
 	}
 
+	SceneSignals::Instance()->EmitLoaded(this);
 	return ret;
 }
 
@@ -84,6 +90,7 @@ bool SceneEditorProxy::Save(const DAVA::FilePath &path)
 
 	SafeRelease(file);
 
+	SceneSignals::Instance()->EmitSaved(this);
 	return ret;
 }
 
