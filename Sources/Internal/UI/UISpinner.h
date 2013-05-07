@@ -20,6 +20,14 @@ class SpinnerAdapter : public BaseObject
 {
 
 public:
+    
+    enum eItemOrder
+    {
+        PREVIOUS = -1,
+        CURRENT = 0,
+        NEXT = 1
+    };
+    
     class SelectionObserver
     {
     public:
@@ -38,12 +46,18 @@ public:
 
     /*
      * This method actually displays selected element in a manner specific for particular control (it can be text or image or whatever).
-     * To implement it use lookup by name to find controls inside the 'spinner' and fill them with data.
      *
-     * Implementation depends on a kind of controls used to display data element.
+     * Default implementation assumes that spinner has only scrollable content, so it just calls FillScrollableContent() with order == CURRENT.
+     * If your spinner has some selected-item-dependant content outside scrollable area (e.g. text description of selected item) override this method to update this content.
      */
-    virtual void DisplaySelectedData(UISpinner * spinner) = 0;
+    virtual void DisplaySelectedData(UISpinner * spinner);
 
+    /*
+     * This method displays scrollable content of current/previous/next item.
+     * Implementation depends on a kind of controls used to display item data: use lookup by name to find controls inside the 'scrollableContent' and fill them with data.
+     */
+    virtual void FillScrollableContent(UIControl * scrollableContent, eItemOrder order) = 0;
+    
     /*
      * Select next element. Returns 'true' and calls OnSelectedChanged for all observers if next element selected successfully. Returns 'false' otherwise.
      */
@@ -89,31 +103,63 @@ public:
 
     virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
     virtual void LoadFromYamlNodeCompleted();
-    virtual void CopyDataFrom(DAVA::UIControl *srcControl);
+    virtual void CopyDataFrom(UIControl *srcControl);
     virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
 
     UIButton * GetButtonNext() {return buttonNext;}
     UIButton * GetButtonPrevious() {return buttonPrevious;}
-
+    
+    UIControl * GetContent() {return content;}
+    
+    /*
+     * You have to call it if you change 'content' from code.
+     */
+    void ContentChanged();
+    
     virtual List<UIControl* >& GetRealChildren();
     virtual List<UIControl* > GetSubcontrols();
 
     virtual UIControl *Clone();
-
+    virtual void Input(UIEvent *currentInput);
+    virtual void Update(float32 timeElapsed);
+    
 protected:
+    
+    struct Move
+    {
+        float32 dx;
+        float32 time;
+    };
+    
     SpinnerAdapter * adapter;
 
     UIButton * buttonNext;
     UIButton * buttonPrevious;
-
-    void OnNextPressed(DAVA::BaseObject * caller, void * param, void *callerData);
-    void OnPreviousPressed(DAVA::BaseObject * caller, void * param, void *callerData);
-
+    
+    //we need these 'content' controls to scroll items with slide
+    UIControl * content;
+    UIControl * nextContent;
+    UIControl * contentViewport; //area that clips items when we scroll them
+    
+    //these are for quick short slide gesure recognition
+    float32 previousTouchX;
+    float32 currentTouchX;
+    float32 totalGestureTime;
+    float32 totalGestureDx;
+    List<Move> moves;
+    
+    void OnNextPressed(BaseObject * caller, void * param, void *callerData);
+    void OnPreviousPressed(BaseObject * caller, void * param, void *callerData);
+    void OnScrollAnimationEnd(BaseObject * caller, void * param, void *callerData);
+    
     virtual void OnSelectedChanged(bool isSelectedFirst, bool isSelectedLast, bool isSelectedChanged);
 
     void InitButtons();
     void ReleaseButtons();
     void FindRequiredControls();
+    
+    void OnSelectWithSlide(bool isPrevious);
+    
 };
 
 }
