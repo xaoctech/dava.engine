@@ -32,7 +32,8 @@ public:
 
 	void SetDelegate(IUIWebViewDelegate* delegate);
 
-	bool IsInitiatedByUser(){return isInitiatedByUser;}
+    //retun current flag value and set it to true.
+	bool UpdateInitiatedByUserFlag();
 
 protected:
 	

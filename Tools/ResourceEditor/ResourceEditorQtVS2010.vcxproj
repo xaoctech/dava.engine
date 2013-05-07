@@ -187,8 +187,9 @@
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.cpp" />
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.cpp" />
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.cpp" />
-    <ClCompile Include="..\..\Sources\Tools\DXTConverter.cpp" />
-    <ClCompile Include="..\..\Sources\Tools\PVRConverter.cpp" />
+    <ClCompile Include="..\..\Sources\Tools\CommandLine\EditorCommandLineParser.cpp" />
+    <ClCompile Include="..\..\Sources\Tools\TextureCompression\DXTConverter.cpp" />
+    <ClCompile Include="..\..\Sources\Tools\TextureCompression\PVRConverter.cpp" />
     <ClCompile Include="..\..\Sources\Tools\TexturePacker\CommandLineParser.cpp" />
     <ClCompile Include="..\..\Sources\Tools\TexturePacker\DefinitionFile.cpp" />
     <ClCompile Include="..\..\Sources\Tools\TexturePacker\ImagePacker.cpp" />
@@ -332,7 +333,6 @@
     <ClCompile Include="Classes\Collada\ColladaTexture.cpp" />
     <ClCompile Include="Classes\CommandLine\CommandLineManager.cpp" />
     <ClCompile Include="Classes\CommandLine\CommandLineTool.cpp" />
-    <ClCompile Include="Classes\CommandLine\EditorCommandLineParser.cpp" />
     <ClCompile Include="Classes\CommandLine\ImageSplitter\ImageSplitter.cpp" />
     <ClCompile Include="Classes\CommandLine\ImageSplitter\ImageSplitterTool.cpp" />
     <ClCompile Include="Classes\CommandLine\SceneExporter\SceneExporter.cpp" />
@@ -656,8 +656,9 @@
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.h" />
-    <ClInclude Include="..\..\Sources\Tools\DXTConverter.h" />
-    <ClInclude Include="..\..\Sources\Tools\PVRConverter.h" />
+    <ClInclude Include="..\..\Sources\Tools\CommandLine\EditorCommandLineParser.h" />
+    <ClInclude Include="..\..\Sources\Tools\TextureCompression\DXTConverter.h" />
+    <ClInclude Include="..\..\Sources\Tools\TextureCompression\PVRConverter.h" />
     <ClInclude Include="..\..\Sources\Tools\TexturePacker\CommandLineParser.h" />
     <ClInclude Include="..\..\Sources\Tools\TexturePacker\DefinitionFile.h" />
     <ClInclude Include="..\..\Sources\Tools\TexturePacker\ImagePacker.h" />
@@ -877,7 +878,6 @@
     <ClInclude Include="Classes\Collada\stdafx.h" />
     <ClInclude Include="Classes\CommandLine\CommandLineManager.h" />
     <ClInclude Include="Classes\CommandLine\CommandLineTool.h" />
-    <ClInclude Include="Classes\CommandLine\EditorCommandLineParser.h" />
     <ClInclude Include="Classes\CommandLine\ImageSplitter\ImageSplitter.h" />
     <ClInclude Include="Classes\CommandLine\ImageSplitter\ImageSplitterTool.h" />
     <ClInclude Include="Classes\CommandLine\SceneExporter\SceneExporter.h" />

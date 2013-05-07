@@ -107,41 +107,33 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Sources\Tools\DXTConverter.cpp" />
-    <ClCompile Include="..\..\Sources\Tools\PVRConverter.cpp" />
+    <ClCompile Include="..\..\Sources\Tools\CommandLine\EditorCommandLineParser.cpp" />
+    <ClCompile Include="..\..\Sources\Tools\TextureCompression\DXTConverter.cpp" />
+    <ClCompile Include="..\..\Sources\Tools\TextureCompression\PVRConverter.cpp" />
     <ClCompile Include="..\..\Sources\Tools\TexturePacker\CommandLineParser.cpp" />
     <ClCompile Include="..\..\Sources\Tools\TexturePacker\DefinitionFile.cpp" />
     <ClCompile Include="..\..\Sources\Tools\TexturePacker\ImagePacker.cpp" />
     <ClCompile Include="..\..\Sources\Tools\TexturePacker\PngImage.cpp" />
     <ClCompile Include="..\..\Sources\Tools\TexturePacker\ResourcePacker2D.cpp" />
     <ClCompile Include="..\..\Sources\Tools\TexturePacker\TexturePacker.cpp" />
-    <ClCompile Include="Classes\ResourcePackerSpecific\FrameworkMain.cpp" />
-    <ClCompile Include="Classes\ResourcePackerSpecific\GameCore.cpp" />
-    <ClCompile Include="Classes\SceneEditor\CommandLineTool.cpp" />
+    <ClCompile Include="Classes\FrameworkMain.cpp" />
+    <ClCompile Include="Classes\GameCore.cpp" />
     <ClCompile Include="Win32Specific\ResourcePacker.cpp" />
     <ClCompile Include="Win32Specific\stdafx.cpp" />
-    <ClCompile Include="Classes\UIFileTree.cpp" />
-    <ClCompile Include="Classes\UIFileTreeCell.cpp" />
-    <ClCompile Include="Classes\UIScrollView.cpp" />
-    <ClCompile Include="Classes\UISpriteEditor.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Sources\Tools\DXTConverter.h" />
-    <ClInclude Include="..\..\Sources\Tools\PVRConverter.h" />
+    <ClInclude Include="..\..\Sources\Tools\CommandLine\EditorCommandLineParser.h" />
+    <ClInclude Include="..\..\Sources\Tools\TextureCompression\DXTConverter.h" />
+    <ClInclude Include="..\..\Sources\Tools\TextureCompression\PVRConverter.h" />
     <ClInclude Include="..\..\Sources\Tools\TexturePacker\CommandLineParser.h" />
     <ClInclude Include="..\..\Sources\Tools\TexturePacker\DefinitionFile.h" />
     <ClInclude Include="..\..\Sources\Tools\TexturePacker\ImagePacker.h" />
     <ClInclude Include="..\..\Sources\Tools\TexturePacker\PngImage.h" />
     <ClInclude Include="..\..\Sources\Tools\TexturePacker\ResourcePacker2D.h" />
     <ClInclude Include="..\..\Sources\Tools\TexturePacker\TexturePacker.h" />
-    <ClInclude Include="Classes\ResourcePackerSpecific\FrameworkMain.h" />
-    <ClInclude Include="Classes\ResourcePackerSpecific\GameCore.h" />
-    <ClInclude Include="Classes\SceneEditor\CommandLineTool.h" />
+    <ClInclude Include="Classes\FrameworkMain.h" />
+    <ClInclude Include="Classes\GameCore.h" />
     <ClInclude Include="Win32Specific\stdafx.h" />
-    <ClInclude Include="Classes\UIFileTree.h" />
-    <ClInclude Include="Classes\UIFileTreeCell.h" />
-    <ClInclude Include="Classes\UIScrollView.h" />
-    <ClInclude Include="Classes\UISpriteEditor.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
