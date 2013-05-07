@@ -117,7 +117,10 @@ void CommandUpdateParticleLayer::Init(const QString& layerName,
 									  float32 startTime,
 									  float32 endTime,
 									  bool frameOverLifeEnabled,
-									  float32 frameOverLifeFPS)
+									  float32 frameOverLifeFPS,
+									  
+									  float32 pivotPointX,
+									  float32 pivotPointY)
 {
 	this->layerName = layerName;
 	this->layerType = layerType;
@@ -150,6 +153,9 @@ void CommandUpdateParticleLayer::Init(const QString& layerName,
 	this->endTime = endTime;
 	this->frameOverLifeEnabled = frameOverLifeEnabled;
 	this->frameOverLifeFPS = frameOverLifeFPS;
+	
+	this->pivotPointX = pivotPointX;
+	this->pivotPointY = pivotPointY;
 }
 
 
@@ -185,6 +191,8 @@ void CommandUpdateParticleLayer::Execute()
 
 	layer->startTime = startTime;
 	layer->endTime = endTime;
+	
+	layer->SetPivotPoint(Vector2(pivotPointX, pivotPointY));
 
 	// This code must be after layer->frameOverlife set call, since setSprite
 	// may change the frames.

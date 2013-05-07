@@ -178,10 +178,13 @@ void ParticleLayer3D::CalcNonLong(Particle* current,
 	float32 cosine;
 	SinCosFast(current->angle, sine, cosine);
 
-	float32 pivotRight = ((sprite->GetWidth()-pivotPoint.x)*current->size.x*current->sizeOverLife.x)/2.f;
-	float32 pivotLeft = (pivotPoint.x*current->size.x*current->sizeOverLife.x)/2.f;
-	float32 pivotUp = (pivotPoint.y*current->size.y*current->sizeOverLife.y)/2.f;
-	float32 pivotDown = ((sprite->GetHeight()-pivotPoint.y)*current->size.y*current->sizeOverLife.y)/2.f;
+	// Draw pivot point is Sprite center + layer pivot point.
+	Vector2 drawPivotPoint = GetDrawPivotPoint();
+
+	float32 pivotRight = ((sprite->GetWidth() /2 - drawPivotPoint.x)*current->size.x*current->sizeOverLife.x)/2.f;
+	float32 pivotLeft = (drawPivotPoint.x*current->size.x*current->sizeOverLife.x)/2.f;
+	float32 pivotUp = (drawPivotPoint.y*current->size.y*current->sizeOverLife.y)/2.f;
+	float32 pivotDown = ((sprite->GetHeight()-drawPivotPoint.y)*current->size.y*current->sizeOverLife.y)/2.f;
 
 	Vector3 dxc = dx*cosine;
 	Vector3 dxs = dx*sine;
