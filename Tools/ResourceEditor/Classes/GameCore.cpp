@@ -18,7 +18,7 @@
 
 #include "SceneEditor/EditorSettings.h"
 #include "SceneEditor/SceneValidator.h"
-#include "PVRConverter.h"
+#include "TextureCompression/PVRConverter.h"
 
 #include "CommandLine/CommandLineManager.h"
 

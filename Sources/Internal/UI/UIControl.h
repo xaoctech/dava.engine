@@ -894,7 +894,7 @@ public:
 	 \param[in] track animation track. 0 by default.
 	 \returns Animation object
 	 */
-	Animation *		ColorAnimation(const Color & finalColor, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 0);
+	virtual Animation *	ColorAnimation(const Color & finalColor, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 0);
 
 protected:
 	void TouchableAnimationCallback(BaseObject * caller, void * param, void *callerData);

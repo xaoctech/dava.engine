@@ -108,6 +108,8 @@ void Core::CreateSingletons()
 	new Logger();
 
 	new FileSystem();
+    FilePath::InitializeBundleName();
+	
 	FileSystem::Instance()->SetDefaultDocumentsDirectory();
     FileSystem::Instance()->CreateDirectory(FileSystem::Instance()->GetCurrentDocumentsDirectory(), true);
 	

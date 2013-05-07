@@ -6,12 +6,12 @@
 #include "Scene3D/Scene.h"
 #include "Base/StaticSingleton.h"
 
-class EntityModificationSystem;
-class SceneCameraSystem;
-class SceneGridSystem;
-class SceneCollisionSystem;
-class SceneSelectionSystem;
-class HoodSystem;
+#include "Scene/System/CameraSystem.h"
+#include "Scene/System/CollisionSystem.h"
+#include "Scene/System/GridSystem.h"
+#include "Scene/System/HoodSystem.h"
+#include "Scene/System/SelectionSystem.h"
+#include "Scene/System/ModifSystem.h"
 
 class SceneEditorProxy : public DAVA::Scene
 {

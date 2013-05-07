@@ -45,11 +45,17 @@ void UIWebView::SetDelegate(IUIWebViewDelegate* delegate)
 	webViewControl->SetDelegate(delegate, this);
 }
 
+bool UIWebView::UpdateInitiatedByUserFlag()
+{
+    bool retValue = isInitiatedByUser;
+    isInitiatedByUser = true;
+    return retValue;
+}
+
 void UIWebView::OpenURL(const String& urlToOpen)
 {
 	isInitiatedByUser = false;
 	this->webViewControl->OpenURL(urlToOpen);
-	isInitiatedByUser = true;
 }
 
 void UIWebView::SetPosition(const Vector2 &position, bool positionInAbsoluteCoordinates)

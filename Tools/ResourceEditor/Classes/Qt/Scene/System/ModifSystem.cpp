@@ -1,8 +1,9 @@
-#include "Scene/System/ModifSystem.h"
-#include "Scene/System/HoodSystem.h"
-#include "Scene/System/CameraSystem.h"
-#include "Scene/System/CollisionSystem.h"
-#include "Scene/System/SelectionSystem.h"
+#include "Qt/Scene/System/ModifSystem.h"
+#include "Qt/Scene/System/HoodSystem.h"
+#include "Qt/Scene/System/CameraSystem.h"
+#include "Qt/Scene/System/CollisionSystem.h"
+#include "Qt/Scene/System/SelectionSystem.h"
+#include "Qt/Scene/SceneSignals.h"
 
 #include "Scene/EntityGroup.h"
 #include "Scene/SceneEditorProxy.h"
@@ -18,34 +19,34 @@ EntityModificationSystem::EntityModificationSystem(DAVA::Scene * scene, SceneCol
 	, inModifState(false)
 	, modified(false)
 {
-	SetModifMode(EM_MODE_MOVE);
-	SetModifAxis(EM_AXIS_Z);
+	SetModifMode(ST_MODIF_MOVE);
+	SetModifAxis(ST_AXIS_Z);
 }
 
 EntityModificationSystem::~EntityModificationSystem()
 { }
 
-void EntityModificationSystem::SetModifAxis(int axis)
+void EntityModificationSystem::SetModifAxis(ST_Axis axis)
 {
-	if(axis != EM_AXIS_NONE)
+	if(axis != ST_AXIS_NONE)
 	{
 		curAxis = axis;
-		hoodSystem->SetSelectedAxis(axis);
+		hoodSystem->SetModifAxis(axis);
 	}
 }
 
-int EntityModificationSystem::GetModifAxis() const
+ST_Axis EntityModificationSystem::GetModifAxis() const
 {
 	return curAxis;
 }
 
-void EntityModificationSystem::SetModifMode(int mode)
+void EntityModificationSystem::SetModifMode(ST_ModifMode mode)
 {
 	curMode = mode;
-	hoodSystem->SetType(mode);
+	hoodSystem->SetModifMode(mode);
 }
 
-int EntityModificationSystem::GetModifMode() const
+ST_ModifMode EntityModificationSystem::GetModifMode() const
 {
 	return curMode;
 }
@@ -73,8 +74,8 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 
 			// we can start modification only if mouse is over hood
 			// on mouse is over one of currently selected items
-			int mouseOverAxis = hoodSystem->GetPassingAxis();
-			if(mouseOverAxis != EM_AXIS_NONE)
+			ST_Axis mouseOverAxis = hoodSystem->GetPassingAxis();
+			if(mouseOverAxis != ST_AXIS_NONE)
 			{
 				// allow starting modification
 				modifCanStart = true;
@@ -95,11 +96,7 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 			// can we start modification???
 			if(modifCanStart)
 			{
-				// TODO:
-				// emit signal about mouse is over selected object
-				// to set specific cursor icon
-				// ...
-				// 
+				SceneSignals::Instance()->EmitMouseOverSelection((SceneEditorProxy *) GetScene(), selectedEntities);
 
 				if(DAVA::UIEvent::PHASE_BEGAN == event->phase)
 				{
@@ -109,7 +106,7 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 						inModifState = true;
 
 						// select current hood axis as active
-						if(curMode == EM_MODE_MOVE || curMode == EM_MODE_ROTATE)
+						if(curMode == ST_MODIF_MOVE || curMode == ST_MODIF_ROTATE)
 						{
 							SetModifAxis(mouseOverAxis);
 						}
@@ -122,6 +119,10 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 						modifStartPos2d = event->point;
 					}
 				}
+			}
+			else
+			{
+				SceneSignals::Instance()->EmitMouseOverSelection((SceneEditorProxy *) GetScene(), NULL);
 			}
 		}
 		// or we are already in modification state
@@ -136,20 +137,20 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 
 				switch (curMode)
 				{
-				case EM_MODE_MOVE:
+				case ST_MODIF_MOVE:
 					{
 						DAVA::Vector3 newPos3d = CamCursorPosToModifPos(camPosition, camToPointDirection, modifEntitiesCenter);
 						moveOffset = Move(newPos3d);
 						modified = true;
 					}
 					break;
-				case EM_MODE_ROTATE:
+				case ST_MODIF_ROTATE:
 					{
 						rotateAngle = Rotate(event->point);
 						modified = true;
 					}
 					break;
-				case EM_MODE_SCALE:
+				case ST_MODIF_SCALE:
 					{
 						scaleForce = Scale(event->point);
 						modified = true;
@@ -239,16 +240,16 @@ void EntityModificationSystem::BeginModification(const EntityGroup *entities)
 		// remember axis vector we are rotating around
 		switch(curAxis)
 		{
-		case EM_AXIS_X:
-		case EM_AXIS_YZ:
+		case ST_AXIS_X:
+		case ST_AXIS_YZ:
 			rotateAround = DAVA::Vector3(1, 0, 0);
 			break;
-		case EM_AXIS_Y:
-		case EM_AXIS_XZ:
+		case ST_AXIS_Y:
+		case ST_AXIS_XZ:
 			rotateAround = DAVA::Vector3(0, 1, 0);
 			break;
-		case EM_AXIS_XY:
-		case EM_AXIS_Z:
+		case ST_AXIS_XY:
+		case ST_AXIS_Z:
 			rotateAround = DAVA::Vector3(0, 0, 1);
 			break;
 		}
@@ -292,59 +293,33 @@ DAVA::Vector3 EntityModificationSystem::CamCursorPosToModifPos(const DAVA::Vecto
 	DAVA::Vector3 ret;
 	DAVA::Vector3 planeNormal;
 
-	printf("xy %g; xz %g; yz %g\n", crossXY, crossXZ, crossYZ);
-
 	switch(curAxis)
 	{
-	case EM_AXIS_X:
+	case ST_AXIS_X:
 		{
-			if(crossXY > crossXZ)
-			{
-				printf("XY\n");
-				planeNormal = DAVA::Vector3(0, 0, 1);
-			}
-			else
-			{
-				printf("XZ\n");
-				planeNormal = DAVA::Vector3(0, 1, 0);
-			}
+			if(crossXY > crossXZ) planeNormal = DAVA::Vector3(0, 0, 1);
+			else planeNormal = DAVA::Vector3(0, 1, 0);
 		}
 		break;
-	case EM_AXIS_Y:
+	case ST_AXIS_Y:
 		{
-			if(crossXY > crossYZ)
-			{
-				printf("XY\n");
-				planeNormal = DAVA::Vector3(0, 0, 1);
-			}
-			else
-			{
-				printf("YZ\n");
-				planeNormal = DAVA::Vector3(1, 0, 0);
-			}
+			if(crossXY > crossYZ) planeNormal = DAVA::Vector3(0, 0, 1);
+			else planeNormal = DAVA::Vector3(1, 0, 0);
 		}
 		break;
-	case EM_AXIS_Z:
+	case ST_AXIS_Z:
 		{
-			if(crossXZ > crossYZ)
-			{
-				printf("XZ\n");
-				planeNormal = DAVA::Vector3(0, 1, 0);
-			}
-			else
-			{
-				printf("YZ\n");
-				planeNormal = DAVA::Vector3(1, 0, 0);
-			}
+			if(crossXZ > crossYZ) planeNormal = DAVA::Vector3(0, 1, 0);
+			else planeNormal = DAVA::Vector3(1, 0, 0);
 		}
 		break;
-	case EM_AXIS_XZ:
+	case ST_AXIS_XZ:
 		planeNormal = DAVA::Vector3(0, 1, 0);
 		break;
-	case EM_AXIS_YZ:
+	case ST_AXIS_YZ:
 		planeNormal = DAVA::Vector3(1, 0, 0);
 		break;
-	case EM_AXIS_XY:
+	case ST_AXIS_XY:
 	default:
 		planeNormal = DAVA::Vector3(0, 0, 1);
 		break;
@@ -352,9 +327,6 @@ DAVA::Vector3 EntityModificationSystem::CamCursorPosToModifPos(const DAVA::Vecto
 
 	DAVA::Plane plane(planeNormal, planePoint);
 	DAVA::float32 distance = FLT_MAX;
-
-	//DAVA::Vector3 retOld;
-	//DAVA::GetIntersectionVectorWithPlane(camPosition, camPointDirection, planeNormal, planePoint, retOld);
 
 	plane.IntersectByRay(camPosition, camPointDirection, distance);
 	ret = camPosition + (camPointDirection * distance);
@@ -380,24 +352,24 @@ DAVA::Vector3 EntityModificationSystem::Move(const DAVA::Vector3 &newPos3d)
 
 	switch(curAxis)
 	{
-	case EM_AXIS_X:
+	case ST_AXIS_X:
 		modifPosWithLocedAxis.x += DAVA::Vector3(1, 0, 0).DotProduct(deltaPos3d);
 		break;
-	case EM_AXIS_Y:
+	case ST_AXIS_Y:
 		modifPosWithLocedAxis.y += DAVA::Vector3(0, 1, 0).DotProduct(deltaPos3d);
 		break;
-	case EM_AXIS_Z:
+	case ST_AXIS_Z:
 		modifPosWithLocedAxis.z += DAVA::Vector3(0, 0, 1).DotProduct(deltaPos3d);
 		break;
-	case EM_AXIS_XY:
+	case ST_AXIS_XY:
 		modifPosWithLocedAxis.x = newPos3d.x;
 		modifPosWithLocedAxis.y = newPos3d.y;
 		break;
-	case EM_AXIS_XZ:
+	case ST_AXIS_XZ:
 		modifPosWithLocedAxis.x = newPos3d.x;
 		modifPosWithLocedAxis.z = newPos3d.z;
 		break;
-	case EM_AXIS_YZ:
+	case ST_AXIS_YZ:
 		modifPosWithLocedAxis.z = newPos3d.z;
 		modifPosWithLocedAxis.y = newPos3d.y;
 		break;
@@ -431,11 +403,11 @@ DAVA::float32 EntityModificationSystem::Rotate(const DAVA::Vector2 &newPos2d)
 
 		switch(modifPivotPoint)
 		{
-		case SceneSelectionSystem::SELECTION_ENTITY_CENTER:
+		case ST_PIVOT_ENTITY_CENTER:
 			// move to zero, rotate, move back to original center point
 			rotateModification = (modifEntities[i].moveToZeroPos * rotateModification) * modifEntities[i].moveFromZeroPos;
 			break;
-		case SceneSelectionSystem::SELECTION_COMMON_CENTER:
+		case ST_PIVOT_COMMON_CENTER:
 			// move to zero relative selection center, rotate, move back to original center point
 			rotateModification = (moveToZeroPosRelativeCenter * rotateModification) * moveFromZeroPosRelativeCenter;
 			break;
@@ -467,11 +439,11 @@ DAVA::float32 EntityModificationSystem::Scale(const DAVA::Vector2 &newPos2d)
 
 			switch(modifPivotPoint)
 			{
-			case SceneSelectionSystem::SELECTION_ENTITY_CENTER:
+			case ST_PIVOT_ENTITY_CENTER:
 				// move to zero, rotate, move back to original center point
 				scaleModification = (modifEntities[i].moveToZeroPos * scaleModification) * modifEntities[i].moveFromZeroPos;
 				break;
-			case SceneSelectionSystem::SELECTION_COMMON_CENTER:
+			case ST_PIVOT_COMMON_CENTER:
 				// move to zero relative selection center, rotate, move back to original center point
 				scaleModification = (moveToZeroPosRelativeCenter * scaleModification) * moveFromZeroPosRelativeCenter;
 				break;

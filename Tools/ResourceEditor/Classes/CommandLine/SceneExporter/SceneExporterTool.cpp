@@ -31,7 +31,7 @@
 #include "SceneExporterTool.h"
 #include "SceneExporter.h"
 
-#include "../EditorCommandLineParser.h"
+#include "CommandLine/EditorCommandLineParser.h"
 
 using namespace DAVA;
 

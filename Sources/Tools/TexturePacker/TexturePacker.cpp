@@ -6,8 +6,8 @@
 #include "Render/TextureDescriptor.h"
 #include "FileSystem/FileSystem.h"
 #include "Render/Texture.h"
-#include "PVRConverter.h"
-#include "DXTConverter.h"
+#include "TextureCompression/PVRConverter.h"
+#include "TextureCompression/DXTConverter.h"
 
 
 #ifdef WIN32
