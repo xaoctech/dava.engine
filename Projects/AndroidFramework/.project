@@ -5507,6 +5507,16 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>src/Internal/Platform/TemplateAndroid/AndroidCrashReport.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/AndroidCrashReport.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/Internal/Platform/TemplateAndroid/AndroidCrashReport.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/AndroidCrashReport.h</locationURI>
+		</link>
+		<link>
 			<name>src/Internal/Platform/TemplateAndroid/AndroidSpecifics.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/AndroidSpecifics.h</locationURI>
@@ -6320,6 +6330,16 @@
 			<name>bin/classes/Internal/Platform/Qt/QtLayer.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/Qt/QtLayer.h</locationURI>
+		</link>
+		<link>
+			<name>bin/classes/Internal/Platform/TemplateAndroid/AndroidCrashReport.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/AndroidCrashReport.cpp</locationURI>
+		</link>
+		<link>
+			<name>bin/classes/Internal/Platform/TemplateAndroid/AndroidCrashReport.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/AndroidCrashReport.h</locationURI>
 		</link>
 		<link>
 			<name>bin/classes/Internal/Platform/TemplateAndroid/AndroidSpecifics.h</name>

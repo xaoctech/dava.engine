@@ -9,6 +9,8 @@
 #include "Utils/Utils.h"
 #include "Input/AccelerometerAndroid.h"
 #include "AndroidDelegate.h"
+#include "AndroidCrashReport.h"
+
 extern "C"
 {
 	jint JNI_OnLoad(JavaVM *vm, void *reserved);
@@ -55,6 +57,9 @@ AndroidDelegate *androidDelegate;
 jint JNI_OnLoad(JavaVM *vm, void *reserved)
 {
 	androidDelegate = new AndroidDelegate(vm);
+
+	DAVA::AndroidCrashReport::Init();
+
 	return JNI_VERSION_1_4;
 }
 
