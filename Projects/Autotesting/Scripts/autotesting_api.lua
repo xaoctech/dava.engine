@@ -12,6 +12,9 @@ function SetPackagePath(path)
 	require "coxpcall"
 end
 
+function assert(isTrue, errorMsg)
+	if not isTrue then OnError(tostring(errorMsg)) end
+end
 
 -- High-level test function
 ----------------------------------------------------------------------------------------------------
@@ -239,6 +242,7 @@ function GetCenter(element)
 		position.x = rect.x + rect.dx/2
 		position.y = rect.y +rect.dy/2
 		--Log("Return position")
+		--Log(string.format("Return position of element center [%d, %d]", position.x, position.y))
 		return position
 	else
 		OnError("Couldn't find element: "..control)
@@ -414,8 +418,7 @@ function ClickControl(name, time, touchId)
             
             return true
         else
-			Wait(DELAY)
-            Yield()
+			coroutine.yield()
         end
     end
     
