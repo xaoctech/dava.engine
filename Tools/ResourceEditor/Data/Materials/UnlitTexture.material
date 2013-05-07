@@ -1,0 +1,11 @@
+Material:
+    Parent: "Global.material"
+    Layers: ["OpaqueRenderLayer"]
+
+RenderPass:
+    Name: "ForwardPass"
+    Shader: "~res:/Materials/Shaders/Old/materials"
+    UniqueDefines: ["MATERIAL_TEXTURE"]
+
+    RenderState:
+        State: STATE_DEFAULT_3D

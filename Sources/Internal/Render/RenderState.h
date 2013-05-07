@@ -32,6 +32,7 @@
 
 #include "Render/RenderBase.h"
 #include "Core/Core.h"
+#include "Render/Texture.h"
 
 namespace DAVA
 {
@@ -162,7 +163,6 @@ inline uint32 RenderStateBlock::GetStateValue(uint32 state)
 }
     
 */
-class Texture;
 class Shader;
 
 static const String RENDER_STATES_NAMES[] = 
@@ -496,6 +496,11 @@ public:
 
 	static uint32 GetRenderStateByName(const String & str);
 
+private:
+	RenderState(const RenderState & renderState) {}
+
+public:
+
 #if defined(__DAVAENGINE_DIRECTX9__)
 	static IDirect3DDevice9 * direct3DDevice; 
 #endif
@@ -659,7 +664,8 @@ inline eBlendMode RenderState::GetDestBlend()
 // STATE_TEXTURE
 inline void RenderState::SetTexture(Texture *texture, uint32 textureLevel)
 {
-    currentTexture[textureLevel] = texture;
+	SafeRelease(currentTexture[textureLevel]);
+    currentTexture[textureLevel] = SafeRetain(texture);
     //changeSet |= (STATE_CHANGED_TEXTURE0 << textureLevel);
 }
 
