@@ -693,8 +693,8 @@ void UIControlBackground::DrawTiled(const Rect &drawRect)
 	float32 verticalStretchCap = texDy - topStretchCap * 2;
 	
 	// The overall horizontal and vertical cells number
-	int32 cellsHCount = ceilf(cellsH) + 2;
-	int32 cellsVCount = ceilf(cellsV) + 2;
+	int32 cellsHCount = (int32)ceilf(cellsH) + 2;
+	int32 cellsVCount = (int32)ceilf(cellsV) + 2;
 	
 	// The number of vertices for cells - 8 coordinates for each cells - 4 "X" and 4 "Y"
 	int32 vertexCount = cellsHCount * cellsVCount * 4 * 2;

@@ -46,12 +46,19 @@ IDirect3DDevice9 * RenderState::direct3DDevice = 0;
 RenderState::RenderState()
 {
     renderer = RenderManager::Instance()->GetRenderer();
+	for (uint32 idx = 0; idx < MAX_TEXTURE_LEVELS; ++idx)
+	{
+		currentTexture[idx] = 0;
+	}
 	Reset(false);
 }
 
 RenderState::~RenderState()
 {
-    
+	for (uint32 idx = 0; idx < MAX_TEXTURE_LEVELS; ++idx)
+	{
+		SafeRelease(currentTexture[idx]);
+	}
 }
     
 //#define LOG_FINAL_RENDER_STATE
@@ -69,7 +76,9 @@ void RenderState::Reset(bool doHardwareReset)
     sourceFactor = BLEND_ONE;
     destFactor = BLEND_ZERO;
     for (uint32 idx = 0; idx < MAX_TEXTURE_LEVELS; ++idx)
-        currentTexture[idx] = 0;
+	{
+        SafeRelease(currentTexture[idx]);
+	}
     alphaFunc = CMP_ALWAYS;
     alphaFuncCmpValue = 0;
 	depthFunc = CMP_LESS;

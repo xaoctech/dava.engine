@@ -69,6 +69,7 @@
 
 #include "Render/Material/NMaterial.h"
 #include "Render/Material/MaterialSystem.h"
+#include "Render/Highlevel/RenderFastNames.h"
 
 namespace DAVA
 {
@@ -716,8 +717,28 @@ void SceneFileV2::ConvertOldMaterialToNewMaterial(Material * oldMaterial, Instan
 {
     NMaterial * resultMaterial = 0;
     NMaterialInstance * resultMaterialInstance = 0;
+	
+	FastName newMaterialName;
     
-    resultMaterial = MaterialSystem::Instance()->GetMaterial(MATERIAL_VERTEX_COLOR_NO_LIT_OPAQUE);
+	switch (oldMaterial->type)
+	{
+		case Material::MATERIAL_UNLIT_TEXTURE:
+			{
+				newMaterialName = "~res:/Materials/UnlitTexture.material";
+				resultMaterial = MaterialSystem::Instance()->GetMaterial(newMaterialName);
+				Texture * tex = oldMaterial->GetTexture(Material::TEXTURE_DIFFUSE);
+				MaterialTechnique * tech = resultMaterial->GetTechnique(PASS_FORWARD);
+				tech->GetRenderState()->SetTexture(tex, RenderState::STATE_TEXTURE0);
+			}
+			break;
+		default:
+			{
+				newMaterialName = "~res:/Materials/VertexColorNoLightingOpaque.material";
+				resultMaterial = MaterialSystem::Instance()->GetMaterial(newMaterialName);
+			}
+			break;
+	}
+    
     resultMaterialInstance = new NMaterialInstance();
     
     
