@@ -18,12 +18,9 @@
 
 #include "SceneEditor/EditorSettings.h"
 #include "SceneEditor/SceneValidator.h"
-#include "PVRConverter.h"
+#include "TextureCompression/PVRConverter.h"
 
-#include "SceneEditor/CommandLineTool.h"
-#include "SceneEditor/SceneUtilsScreen.h"
-
-#include "ImageSplitter/ImageSplitterScreen.h"
+#include "CommandLine/CommandLineManager.h"
 
 #include "TextureBrowser/TextureConvertor.h"
 #include "DockParticleEditor/ParticlesEditorController.h"
@@ -52,34 +49,15 @@ void GameCore::OnAppStarted()
     new BeastProxy();
 #endif //__DAVAENGINE_BEAST__
 	
-	new PVRConverter();
-
 #if defined (__DAVAENGINE_MACOS__)
 	PVRConverter::Instance()->SetPVRTexTool(String("~res:/PVRTexToolCL"));
 #elif defined (__DAVAENGINE_WIN32__)
     PVRConverter::Instance()->SetPVRTexTool(String("~res:/PVRTexToolCL.exe"));
 #endif
 
-    sceneUtilsScreen = new SceneUtilsScreen();
-
 	new ParticlesEditorController();
-    imageSplitterScreen = new ImageSplitterScreen();
 
-    UIScreenManager::Instance()->RegisterScreen(SCREEN_UTILS_SCENE, sceneUtilsScreen);
-    UIScreenManager::Instance()->RegisterScreen(SCREEN_UTILS_IMAGE_SPLITTER, imageSplitterScreen);
-
-    
-    if( CommandLineTool::Instance() &&
-		(CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")) ||
-		 CommandLineTool::Instance()->CommandIsFound(String("-scenesaver"))))
-    {
-        UIScreenManager::Instance()->SetFirst(SCREEN_UTILS_SCENE);
-    }
-    else if(CommandLineTool::Instance() && CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter")))
-    {
-        UIScreenManager::Instance()->SetFirst(SCREEN_UTILS_IMAGE_SPLITTER);
-    }
-    else
+    if(!CommandLineManager::Instance()->IsCommandLineModeEnabled())
     {
         Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
     }
@@ -92,13 +70,9 @@ void GameCore::OnAppStarted()
 
 void GameCore::OnAppFinished()
 {
-	PVRConverter::Instance()->Release();
     SceneValidator::Instance()->Release();
 
 	BeastProxy::Instance()->Release();
-
-    SafeRelease(sceneUtilsScreen);
-    SafeRelease(imageSplitterScreen);
 }
 
 void GameCore::OnSuspend()

@@ -6,7 +6,7 @@
 #include "../SceneEditor/EditorBodyControl.h"
 
 CommandSaveTextureCustomColors::CommandSaveTextureCustomColors()
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_SAVE_TEXTURE_CUSTOM_COLORS)
 {
     
 }
@@ -33,7 +33,7 @@ void CommandSaveTextureCustomColors::Execute()
 }
 
 CommandLoadTextureCustomColors::CommandLoadTextureCustomColors()
-:	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+:	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_LOAD_TEXTURE_CUSTOM_COLORS)
 {
 }
 
@@ -59,7 +59,7 @@ void CommandLoadTextureCustomColors::Execute()
 
 
 CommandDrawCustomColors::CommandDrawCustomColors(Image* originalImage, Image* newImage)
-:	Command(COMMAND_UNDO_REDO)
+:	Command(COMMAND_UNDO_REDO, CommandList::ID_COMMAND_DRAW_CUSTOM_COLORS)
 {
 	commandName = "Custom Color Draw";
 

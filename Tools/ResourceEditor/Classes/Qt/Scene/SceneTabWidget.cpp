@@ -14,6 +14,11 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	, oldScreenID(SCREEN_MAIN_OLD)
 	, dava3DViewMargin(10)
 	, newSceneCounter(0)
+	, curModifAxis(ST_AXIS_X)
+	, curModifMode(ST_MODIF_OFF)
+	, curPivotPoint(ST_PIVOT_COMMON_CENTER)
+	, curSelDrawMode(ST_SELDRAW_DRAW_CORNERS | ST_SELDRAW_FILL_SHAPE)
+	, curColDrawMode(ST_COLL_DRAW_LAND_COLLISION)
 {
 	this->setMouseTracking(true);
 
@@ -26,7 +31,7 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	tabBar->setUsesScrollButtons(true);
 	tabBar->setExpanding(false);
 
-	// davawidget to displae davaengine content
+	// davawidget to display DAVAEngine content
 	davaWidget = new DavaGLWidget(this);
 	davaWidget->setFocusPolicy(Qt::StrongFocus);
 
@@ -46,11 +51,12 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	SetTabScene(oldTabIndex, NULL);
 	// <--
 
-	//OpenTab("/Projects/dava.wot.art/DataSource/3d/Maps/dike_village/dike_village.sc2");
+	OpenTab("/Projects/dava.wot.art/DataSource/3d/Maps/dike_village/dike_village.sc2");
 	//AddTab("/Projects/dava.wot.art/DataSource/3d/Maps/desert_train/desert_train.sc2");
 
 	QObject::connect(tabBar, SIGNAL(currentChanged(int)), this, SLOT(TabBarCurrentChanged(int)));
 	QObject::connect(tabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(TabBarCloseRequest(int)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(MouseOverSelection(SceneEditorProxy*, const EntityGroup*)), this, SLOT(MouseOverSelectedEntities(SceneEditorProxy*, const EntityGroup*)));
 
 	SetCurrentTab(oldTabIndex);
 }
@@ -110,6 +116,12 @@ int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 	{
 		tabIndex = tabBar->addTab(scenePapth.GetFilename().c_str());
 		SetTabScene(tabIndex, scene);
+
+		scene->modifSystem->SetModifMode(curModifMode);
+		scene->modifSystem->SetModifAxis(curModifAxis);
+		scene->selectionSystem->SetPivotPoint(curPivotPoint);
+		scene->collisionSystem->SetDrawMode(curColDrawMode);
+		scene->selectionSystem->SetDrawMode(curSelDrawMode);
 
 		tabBar->setTabToolTip(tabIndex, scenePapth.GetAbsolutePathname().c_str());
 	}
@@ -172,7 +184,7 @@ void SceneTabWidget::CloseTab(int index)
 	}
 }
 
-int SceneTabWidget::GetCurrentTab()
+int SceneTabWidget::GetCurrentTab() const
 {
 	return tabBar->currentIndex();
 }
@@ -205,7 +217,7 @@ void SceneTabWidget::SetCurrentTab(int index)
 	}
 }
 
-SceneEditorProxy* SceneTabWidget::GetTabScene(int index)
+SceneEditorProxy* SceneTabWidget::GetTabScene(int index) const
 {
 	SceneEditorProxy *ret = NULL;
 
@@ -247,6 +259,31 @@ void SceneTabWidget::TabBarCloseRequest(int index)
 	CloseTab(index);
 }
 
+void SceneTabWidget::MouseOverSelectedEntities(SceneEditorProxy* scene, const EntityGroup *entities)
+{
+	if(NULL != entities)
+	{
+		switch (curModifMode)
+		{
+		case ST_MODIF_MOVE:
+			setCursor(Qt::SizeAllCursor);
+			break;
+		case ST_MODIF_ROTATE:
+			break;
+		case ST_MODIF_SCALE:
+			break;
+		case ST_MODIF_OFF:
+		default:
+			setCursor(Qt::ArrowCursor);
+			break;
+		}
+	}
+	else
+	{
+		setCursor(Qt::ArrowCursor);
+	}
+}
+
 void SceneTabWidget::resizeEvent(QResizeEvent * event)
 {
 	QWidget::resizeEvent(event);
@@ -263,6 +300,116 @@ void SceneTabWidget::resizeEvent(QResizeEvent * event)
 		if(NULL != scene)
 		{
 			scene->SetViewportRect(dava3DView->GetRect());
+		}
+	}
+}
+
+ST_ModifMode SceneTabWidget::GetModifMode() const
+{
+	return curModifMode;
+}
+
+void SceneTabWidget::SetModifMode(ST_ModifMode mode)
+{
+	if(curModifMode != mode)
+	{
+		curModifMode = mode;
+
+		for(int i = 0; i < tabBar->count(); ++i)
+		{
+			SceneEditorProxy *scene = GetTabScene(i);
+			if(NULL != scene)
+			{
+				scene->modifSystem->SetModifMode(curModifMode);
+			}
+		}
+	}
+}
+
+ST_PivotPoint SceneTabWidget::GetPivotPoint() const
+{
+	return curPivotPoint;
+}
+
+void SceneTabWidget::SetPivotPoint(ST_PivotPoint pivotpoint)
+{
+	if(curPivotPoint != pivotpoint)
+	{
+		curPivotPoint = pivotpoint;
+
+		for(int i = 0; i < tabBar->count(); ++i)
+		{
+			SceneEditorProxy *scene = GetTabScene(i);
+			if(NULL != scene)
+			{
+				scene->selectionSystem->SetPivotPoint(curPivotPoint);
+			}
+		}
+	}
+}
+
+ST_Axis SceneTabWidget::GetModifAxis() const
+{
+	return curModifAxis;
+}
+
+void SceneTabWidget::SetModifAxis(ST_Axis axis)
+{
+	if(curModifAxis != axis)
+	{
+		curModifAxis = axis;
+
+		for(int i = 0; i < tabBar->count(); ++i)
+		{
+			SceneEditorProxy *scene = GetTabScene(i);
+			if(NULL != scene)
+			{
+				scene->modifSystem->SetModifAxis(curModifAxis);
+			}
+		}
+	}
+}
+
+int SceneTabWidget::GetSelectionDrawMode() const
+{
+	return curSelDrawMode;
+}
+
+void SceneTabWidget::SetSelectionDrawMode(int mode)
+{
+	if(curSelDrawMode != mode)
+	{
+		curSelDrawMode = mode;
+
+		for(int i = 0; i < tabBar->count(); ++i)
+		{
+			SceneEditorProxy *scene = GetTabScene(i);
+			if(NULL != scene)
+			{
+				scene->selectionSystem->SetDrawMode(curSelDrawMode);
+			}
+		}
+	}
+}
+
+int SceneTabWidget::GetCollisionDrawMode() const
+{
+	return curColDrawMode;
+}
+
+void SceneTabWidget::SetCollisionDrawMode(int mode)
+{
+	if(curColDrawMode != mode)
+	{
+		curColDrawMode = mode;
+
+		for(int i = 0; i < tabBar->count(); ++i)
+		{
+			SceneEditorProxy *scene = GetTabScene(i);
+			if(NULL != scene)
+			{
+				scene->collisionSystem->SetDrawMode(curColDrawMode);
+			}
 		}
 	}
 }

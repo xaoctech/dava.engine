@@ -15,8 +15,8 @@
 
 #include "HintManager.h"
 
-#include "SceneExporter.h"
-#include "SceneSaver.h"
+#include "CommandLine/SceneExporter/SceneExporter.h"
+#include "CommandLine/SceneSaver/SceneSaver.h"
 
 #include "../Qt/Scene/SceneData.h"
 #include "../Qt/Scene/SceneDataManager.h"
@@ -26,6 +26,7 @@
 
 #include "../Commands/SceneEditorScreenMainCommands.h"
 #include "../Commands/CommandsManager.h"
+
 
 SceneEditorScreenMain::SceneEditorScreenMain()
 	:	UIScreen()
@@ -521,32 +522,31 @@ void SceneEditorScreenMain::SaveToFolder(const FilePath & folder)
 	iBody->bodyControl->PushDebugCamera();
     
     SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
-    FilePath filePath = sceneData->GetScenePathname();
     FilePath dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
-    String::size_type pos = filePath.GetAbsolutePathname().find(dataSourcePath.GetAbsolutePathname());
-    if(String::npos != pos)
-    {
-        String path = filePath.GetAbsolutePathname();
-        path = path.replace(pos, dataSourcePath.GetAbsolutePathname().length(), "");
-        filePath = FilePath(path);
-    }
-    else
-    {
-        DVASSERT(0);
-    }
+    String filePath = sceneData->GetScenePathname().GetRelativePathname(dataSourcePath);
+//    String::size_type pos = filePath.GetAbsolutePathname().find(dataSourcePath.GetAbsolutePathname());
+//    if(String::npos != pos)
+//    {
+//        String path = filePath.GetAbsolutePathname();
+//        path = path.replace(pos, dataSourcePath.GetAbsolutePathname().length(), "");
+//        filePath = FilePath(path);
+//    }
+//    else
+//    {
+//        DVASSERT(0);
+//    }
     
 	// Get project path
     KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
     FilePath projectPath = FilePath(keyedArchieve->GetString(String("ProjectPath")));
-    
-    if(!SceneSaver::Instance()) new SceneSaver();
-    
     FilePath inFolder = projectPath + "DataSource/3d/";
-    SceneSaver::Instance()->SetInFolder(inFolder);
-    SceneSaver::Instance()->SetOutFolder(folder);
+
+    SceneSaver sceneSaver;
+    sceneSaver.SetInFolder(inFolder);
+    sceneSaver.SetOutFolder(folder);
     
     Set<String> errorsLog;
-    SceneSaver::Instance()->SaveScene(iBody->bodyControl->GetScene(), filePath, errorsLog);
+    sceneSaver.SaveScene(iBody->bodyControl->GetScene(), filePath, errorsLog);
     
 	iBody->bodyControl->PopDebugCamera();
     
@@ -580,36 +580,21 @@ void SceneEditorScreenMain::ExportAs(ImageFileFormat format)
 	iBody->bodyControl->PushDebugCamera();
     
     SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
-    FilePath filePath = sceneData->GetScenePathname();
-    FilePath dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
-    String::size_type pos = filePath.GetAbsolutePathname().find(dataSourcePath.GetAbsolutePathname());
-    if(String::npos != pos)
-    {
-        String path = filePath.GetAbsolutePathname();
-        path = path.replace(pos, dataSourcePath.GetAbsolutePathname().length(), "");
-        
-        filePath = FilePath(path);
-    }
-    else 
-    {
-        DVASSERT(0);
-    }
     
     // Get project path
     KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
     FilePath projectPath(keyedArchieve->GetString(String("ProjectPath")));
     
-    if(!SceneExporter::Instance()) new SceneExporter();
+    SceneExporter exporter;
     
-    FilePath inFolder = projectPath + "DataSource/3d/";
-    SceneExporter::Instance()->SetInFolder(inFolder);
-    SceneExporter::Instance()->SetOutFolder(projectPath + String("Data/3d/"));
+    exporter.SetInFolder(projectPath + String("DataSource/3d/"));
+    exporter.SetOutFolder(projectPath + String("Data/3d/"));
     
-    SceneExporter::Instance()->SetExportingFormat(formatStr);
+    exporter.SetExportingFormat(formatStr);
     
     //TODO: how to be with removed nodes?
     Set<String> errorsLog;
-    SceneExporter::Instance()->ExportScene(iBody->bodyControl->GetScene(), filePath, errorsLog);
+    exporter.ExportScene(iBody->bodyControl->GetScene(), sceneData->GetScenePathname(), errorsLog);
     
 	iBody->bodyControl->PopDebugCamera();
     

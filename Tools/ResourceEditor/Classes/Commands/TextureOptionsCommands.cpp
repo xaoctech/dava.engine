@@ -6,7 +6,7 @@
 using namespace DAVA;
 
 ReloadTexturesAsCommand::ReloadTexturesAsCommand(ImageFileFormat format)
-    :   Command(COMMAND_CLEAR_UNDO_QUEUE)
+    :   Command(COMMAND_CLEAR_UNDO_QUEUE, CommandList::ID_COMMAND_RELOAD_TEXTURES_AS)
     ,   fileFormat(format)
 {
 }

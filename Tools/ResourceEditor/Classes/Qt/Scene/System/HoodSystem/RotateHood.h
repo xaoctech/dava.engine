@@ -10,7 +10,7 @@ struct RotateHood : public HoodObject
 	RotateHood();
 	~RotateHood();
 
-	virtual void Draw(int selectedAxis, int mouseOverAxis);
+	virtual void Draw(ST_Axis selectedAxis, ST_Axis mouseOverAxis);
 
 	HoodCollObject* axisX;
 	HoodCollObject* axisY;
