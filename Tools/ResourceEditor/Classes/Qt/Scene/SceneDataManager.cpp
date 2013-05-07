@@ -4,7 +4,7 @@
 
 #include "../SceneEditor/SceneValidator.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
-#include "PVRConverter.h"
+#include "TextureCompression/PVRConverter.h"
 
 #include "./Qt/SpritesPacker/SpritePackerHelper.h"
 #include "../Main/QtUtils.h"
@@ -238,7 +238,7 @@ void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const FilePa
         {
             Entity *newNode = loadedNode->Clone();
             newNode->SetLocalTransform(node->GetLocalTransform());
-            newNode->GetCustomProperties()->SetString("editor.referenceToOwner", nodePathname.GetAbsolutePathname());
+            newNode->GetCustomProperties()->SetString("editor.referenceToOwner", fromPathname.GetAbsolutePathname());
             newNode->SetSolid(true);
             
             Entity *parent = node->GetParent();

@@ -128,7 +128,7 @@ void TextureHelper::CollectLandscapeTextures(DAVA::Map<DAVA::String, DAVA::Textu
 
 void TextureHelper::CollectTexture(Map<String, Texture *> &textures, const FilePath &name, Texture *tex)
 {
-	if (name.IsInitalized())
+	if (!name.IsEmpty())
 	{
 		textures[name.GetAbsolutePathname()] = tex;
 	}

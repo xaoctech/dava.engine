@@ -21,7 +21,7 @@ LandscapeEditorColor::LandscapeEditorColor(LandscapeEditorDelegate *newDelegate,
 {
 	wasTileMaskToolUpdate = false;
     tileMaskEditorShader = new Shader();
-	tileMaskEditorShader->LoadFromYaml(FilePath("~res:/Shaders/Landscape/tilemask-editor.shader"));
+	tileMaskEditorShader->LoadFromYaml("~res:/Shaders/Landscape/tilemask-editor.shader");
 	tileMaskEditorShader->Recompile();
 
     maskSprite = NULL;
@@ -366,7 +366,7 @@ void LandscapeEditorColor::TextureWillChanged(const String &forKey)
 {
     if("property.landscape.texture.tilemask" == forKey)
     {
-        if(savedPath.IsInitalized())
+        if(!savedPath.IsEmpty())
         {
             SaveTextureAction(savedPath);
         }

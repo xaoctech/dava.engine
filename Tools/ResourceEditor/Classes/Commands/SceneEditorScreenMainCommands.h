@@ -17,6 +17,7 @@ protected:
 
 	virtual void Execute();
 	virtual void Cancel();
+	virtual DAVA::Set<DAVA::Entity*> GetAffectedEntities();
 };
 
 #endif /* defined(__ResourceEditorQt__SceneEditorScreenMainCommands__) */

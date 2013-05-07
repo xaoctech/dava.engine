@@ -18,8 +18,8 @@
 
 using namespace DAVA;
 
-LibraryCommand::LibraryCommand(const DAVA::FilePath &pathname, eCommandType _type)
-    :   Command(_type)
+LibraryCommand::LibraryCommand(const DAVA::FilePath &pathname, eCommandType _type, CommandList::eCommandId id)
+    :   Command(_type, id)
     ,   filePathname(pathname)
 {
 }
@@ -33,7 +33,7 @@ bool LibraryCommand::CheckExtension(const DAVA::String &extenstionToChecking)
 
 //Add scene to current tab
 CommandAddScene::CommandAddScene(const DAVA::FilePath &pathname)
-    :   LibraryCommand(pathname, Command::COMMAND_UNDO_REDO)
+    :   LibraryCommand(pathname, Command::COMMAND_UNDO_REDO, CommandList::ID_COMMAND_ADD_SCENE)
 {
 	commandName = "Add Scene";
 }
@@ -55,7 +55,7 @@ void CommandAddScene::Cancel()
 
 //edit scene at new tab
 CommandEditScene::CommandEditScene(const DAVA::FilePath &pathname)
-    :   LibraryCommand(pathname, COMMAND_WITHOUT_UNDO_EFFECT)
+    :   LibraryCommand(pathname, COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_EDIT_SCENE)
 {
 }
 
@@ -78,7 +78,7 @@ void CommandEditScene::Execute()
 
 //reload root node at current tab
 CommandReloadScene::CommandReloadScene(const DAVA::FilePath &pathname)
-    :   LibraryCommand(pathname, COMMAND_UNDO_REDO)
+    :   LibraryCommand(pathname, COMMAND_UNDO_REDO, CommandList::ID_COMMAND_RELOAD_SCENE)
 {
 	commandName = "Reload Scene";
 }
@@ -99,7 +99,7 @@ void CommandReloadScene::Cancel()
 
 //reload root node at current tab
 CommandReloadEntityFrom::CommandReloadEntityFrom(const DAVA::FilePath &pathname)
-:   LibraryCommand(pathname, COMMAND_UNDO_REDO)
+:   LibraryCommand(pathname, COMMAND_UNDO_REDO, CommandList::ID_COMMAND_RELOAD_ENTITY_FROM)
 {
 	commandName = "Reload Entity From";
     fromPathname = FilePath();
@@ -111,7 +111,7 @@ void CommandReloadEntityFrom::Execute()
     DVASSERT(CheckExtension(String(".sc2")) && "Wrong extension");
     
     fromPathname = GetOpenFileName(String("Select Scene File"), filePathname.GetDirectory(), String("Scene File (*.sc2)"));
-    if(!fromPathname.IsInitalized())
+    if(fromPathname.IsEmpty())
     {
         return;
     }
@@ -129,7 +129,7 @@ void CommandReloadEntityFrom::Cancel()
 
 //convert from dae to sc2
 CommandConvertScene::CommandConvertScene(const DAVA::FilePath &pathname)
-    :   LibraryCommand(pathname, COMMAND_WITHOUT_UNDO_EFFECT)
+    :   LibraryCommand(pathname, COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_CONVERT_SCENE)
 {
 }
 

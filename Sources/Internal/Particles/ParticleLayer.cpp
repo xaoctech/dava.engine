@@ -234,7 +234,7 @@ void ParticleLayer::SetSprite(Sprite * _sprite)
 		pivotPoint = Vector2(_sprite->GetWidth()/2.0f, _sprite->GetHeight()/2.0f);
 
 		FilePath spritePath = sprite->GetRelativePathname();
-        if(0 == spritePath.GetAbsolutePathname().find("FBO"))
+        if(spritePath.GetType() == FilePath::PATH_IN_MEMORY)
         {
             //Sprite was saved incorrectly
             relativeSpriteName = spritePath.GetAbsolutePathname();
@@ -700,7 +700,7 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 		const String relativePathName = spriteNode->AsString();
 		relativeSpriteName = relativePathName;
 		
-        FilePath path = configPath.GetDirectory() + FilePath(relativePathName);
+        FilePath path = configPath.GetDirectory() + relativePathName;
 		Sprite * _sprite = Sprite::Create(path);
 		Vector2 pivotPointTemp;
 		if(pivotPointNode)

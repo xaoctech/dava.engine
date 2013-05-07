@@ -16,8 +16,15 @@ public:
 
 	void MacTestFunction(PerfFuncData * data);
 	void WinTestFunction(PerfFuncData * data);
+	void WinStylePathTestFunction(PerfFuncData * data);
+    void FilePathOperationsTest(PerfFuncData * data);
 
-	
+    void BundleNameTest(PerfFuncData * data);
+
+private:
+    
+    bool HasFileCorrectSize(const FilePath &path, uint32 size);
+    
 };
 
 #endif //__FILEPATH_TEST_H__

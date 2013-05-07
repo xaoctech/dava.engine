@@ -4,7 +4,7 @@
 #include "../../SceneEditor/EditorSettings.h"
 #include "../../EditorScene.h"
 
-#include "../../SceneEditor/CommandLineTool.h"
+#include "../../CommandLine/CommandLineManager.h"
 
 
 #include "Main/QtUtils.h"
@@ -213,7 +213,7 @@ uint32 SceneInfo::CalculateTextureSize(const Map<String, Texture *> &textures)
         Texture *tex = it->second;
         DVASSERT(tex);
         
-        if(String::npos == pathname.ResolvePathname().find(projectPath))
+        if(String::npos == pathname.GetAbsolutePathname().find(projectPath))
         {
             Logger::Warning("[SceneInfo::CalculateTextureSize] Path (%s) doesn't belong to project.", pathname.GetAbsolutePathname().c_str());
             continue;
@@ -371,7 +371,7 @@ void SceneInfo::CollectLODData()
 
 void SceneInfo::CollectTexture(Map<String, Texture *> &textures, const FilePath &name, Texture *tex)
 {
-    if(name.IsInitalized() && tex)
+    if(!name.IsEmpty() && tex)
 	{
 		textures[name.GetAbsolutePathname()] = tex;
 	}
@@ -444,7 +444,7 @@ void SceneInfo::showEvent ( QShowEvent * event )
 {
     QtPropertyEditor::showEvent(event);
     
-    if(isVisible() && !IsInConsoleMode())
+    if(isVisible() && !CommandLineManager::Instance()->IsCommandLineModeEnabled())
     {
         QTimer::singleShot(1000, this, SLOT(timerDone()));
     }
@@ -453,7 +453,8 @@ void SceneInfo::showEvent ( QShowEvent * event )
 void SceneInfo::timerDone()
 {
     SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
-	RefreshAllData(sceneData);
+    if(sceneData)
+        RefreshAllData(sceneData);
     
     if(isVisible())
     {
@@ -474,13 +475,5 @@ void SceneInfo::RefreshAllData(SceneData *sceneData)
 	RefreshParticlesInfo();
 
 	RestoreTreeState();
-}
-
-bool SceneInfo::IsInConsoleMode()
-{
-    return (     CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter"))
-            ||   CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter"))
-            ||   CommandLineTool::Instance()->CommandIsFound(String("-scenesaver"))
-        );
 }
 

@@ -5,8 +5,8 @@
 #include "TextureBrowser/TextureConvertor.h"
 #include "Main/mainwindow.h"
 #include "Scene/SceneDataManager.h"
-#include "PVRConverter.h"
-#include "DXTConverter.h"
+#include "TextureCompression/PVRConverter.h"
+#include "TextureCompression/DXTConverter.h"
 #include "SceneEditor/SceneValidator.h"
 #include "Render/LibDxtHelper.h"
 
@@ -197,7 +197,7 @@ QImage TextureConvertor::convertThreadPVR(JobItem *item)
 		DAVA::FilePath sourcePath = item->descriptorCopy.GetSourceTexturePathname();
 		DAVA::FilePath outputPath = PVRConverter::Instance()->GetPVRToolOutput(sourcePath);
 
-		if(outputPath.IsInitalized())
+		if(!outputPath.IsEmpty())
 		{
 			if(item->forceConvert || !DAVA::FileSystem::Instance()->IsFile(outputPath))
 			{
@@ -268,7 +268,7 @@ QImage TextureConvertor::convertThreadDXT(JobItem *item)
 	{
 		DAVA::FilePath sourcePath = item->descriptorCopy.GetSourceTexturePathname();
 		DAVA::FilePath outputPath = DXTConverter::GetDXTOutput(sourcePath);//DXTConverter::ConvertPngToDxt(sourcePath, item->descriptorCopy);
-		if(outputPath.IsInitalized())
+		if(!outputPath.IsEmpty())
 		{
 			if(item->forceConvert || !DAVA::FileSystem::Instance()->IsFile(outputPath))
 			{
@@ -360,7 +360,7 @@ void TextureConvertor::convertAllThread(DAVA::Map<DAVA::String, DAVA::Texture *>
 						{
 							DAVA::FilePath sourcePath = descriptor->GetSourceTexturePathname();
 							DAVA::FilePath outputPath = DXTConverter::GetDXTOutput(sourcePath);
-							if(outputPath.IsInitalized())
+							if(!outputPath.IsEmpty())
 							{
 								outputPath = DXTConverter::ConvertPngToDxt(sourcePath, *descriptor);
 								bool wasUpdated = descriptor->UpdateCrcForFormat(DXT_FILE);
