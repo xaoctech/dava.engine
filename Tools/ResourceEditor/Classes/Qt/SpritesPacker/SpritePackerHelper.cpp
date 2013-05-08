@@ -109,25 +109,37 @@ void SpritePackerHelper::EnumerateSpritesForReloading(SceneData* sceneData, Map<
 		{
 			Entity* childNode = curNode->GetChild(i);
 			ParticleEmitter * emitter = GetEmitter(childNode);
-            
-			if (!emitter)
-			{
-				continue;
-			}
 			
-            Vector<ParticleLayer*> & layers = emitter->GetLayers();
-            int32 layersCount = layers.size();
-            for (int il = 0; il < layersCount; ++il)
-            {
-                Sprite *sprite = layers[il]->GetSprite();
-				if(sprite)
-				{
-					sprites[sprite->GetRelativePathname().GetAbsolutePathname()] = sprite;
-				}
-            }
+			EnumerateSpritesForParticleEmitter(emitter, sprites);
 		}
         
 		effectComponent->Start();
+	}
+}
+
+void SpritePackerHelper::EnumerateSpritesForParticleEmitter(ParticleEmitter* emitter, Map<String, Sprite *> &sprites)
+{
+	if (!emitter)
+	{
+		return;
+	}
+	
+	Vector<ParticleLayer*> & layers = emitter->GetLayers();
+	int32 layersCount = layers.size();
+	for (int il = 0; il < layersCount; ++il)
+	{
+		ParticleLayer* curLayer = layers[il];
+		Sprite *sprite = curLayer->GetSprite();
+		if (sprite)
+		{
+			sprites[sprite->GetRelativePathname().GetAbsolutePathname()] = sprite;
+		}
+		
+		// Superemitter layers might have inner emitter with its own sprites.
+		if (curLayer->GetInnerEmitter())
+		{
+			EnumerateSpritesForParticleEmitter(curLayer->GetInnerEmitter(), sprites);
+		}
 	}
 }
 
