@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		02E9E487173A46B700C501BC /* libfmodevent.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E485173A46B700C501BC /* libfmodevent.dylib */; };
+		02E9E488173A46B700C501BC /* libfmodex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E486173A46B700C501BC /* libfmodex.dylib */; };
 		47A1423A12CBD3EC003E267E /* StaticTextScreen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47A1423812CBD3EC003E267E /* StaticTextScreen.cpp */; };
 		5C77AB9C14C767EA00E92D28 /* libpng_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C77AB9B14C767EA00E92D28 /* libpng_macos.a */; };
 		5C77ABAF14C76EED00E92D28 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C77ABAE14C76EED00E92D28 /* libz.dylib */; };
@@ -41,6 +43,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		02E9E48A173A46B800C501BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FE98930B11638F3C00500198 /* Framework.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E898A2C416BD265400732C04;
+			remoteInfo = FrameworkQt;
+		};
 		FE93072A12C28C1100A33E69 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = FE98930B11638F3C00500198 /* Framework.xcodeproj */;
@@ -58,6 +67,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		02E9E485173A46B700C501BC /* libfmodevent.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodevent.dylib; path = ../../Libs/fmod/lib/macos/libfmodevent.dylib; sourceTree = "<group>"; };
+		02E9E486173A46B700C501BC /* libfmodex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodex.dylib; path = ../../Libs/fmod/lib/macos/libfmodex.dylib; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
@@ -123,6 +134,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02E9E487173A46B700C501BC /* libfmodevent.dylib in Frameworks */,
+				02E9E488173A46B700C501BC /* libfmodex.dylib in Frameworks */,
 				5C77ABAF14C76EED00E92D28 /* libz.dylib in Frameworks */,
 				5C77AB9C14C767EA00E92D28 /* libpng_macos.a in Frameworks */,
 				FEA024E312DCEEC600935314 /* libFramework.a in Frameworks */,
@@ -166,6 +179,8 @@
 		29B97314FDCFA39411CA2CEA /* TemplateProjectMacOS */ = {
 			isa = PBXGroup;
 			children = (
+				02E9E485173A46B700C501BC /* libfmodevent.dylib */,
+				02E9E486173A46B700C501BC /* libfmodex.dylib */,
 				5C77ABAE14C76EED00E92D28 /* libz.dylib */,
 				5C77AB9B14C767EA00E92D28 /* libpng_macos.a */,
 				FEFCD5E712AE50860060A1A1 /* Data */,
@@ -259,6 +274,7 @@
 			isa = PBXGroup;
 			children = (
 				FE98931811638F3C00500198 /* libFramework.a */,
+				02E9E48B173A46B800C501BC /* libFrameworkQt.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -329,6 +345,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		02E9E48B173A46B800C501BC /* libFrameworkQt.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libFrameworkQt.a;
+			remoteRef = 02E9E48A173A46B800C501BC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		FE98931811638F3C00500198 /* libFramework.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -443,6 +466,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../Libs/libs\"",
+					"\"$(SRCROOT)/../../Libs/fmod/lib/macos\"",
 				);
 				PRODUCT_NAME = TemplateProjectMacOS;
 			};
@@ -462,6 +486,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../Libs/libs\"",
+					"\"$(SRCROOT)/../../Libs/fmod/lib/macos\"",
 				);
 				PRODUCT_NAME = TemplateProjectMacOS;
 			};
