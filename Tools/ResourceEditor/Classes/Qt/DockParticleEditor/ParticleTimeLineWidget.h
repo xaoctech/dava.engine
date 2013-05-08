@@ -95,6 +95,7 @@ private:
 	QPoint selectedPoint;
 	Entity* emitterNode;
 	Entity* effectNode;
+	ParticleLayer* selectedLayer;
 	
 	QTimer updateTimer;
 	ParticlesCountWidget* countWidget;
