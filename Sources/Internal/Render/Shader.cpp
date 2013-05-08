@@ -127,7 +127,7 @@ Shader::eUniformType Shader::GetUniformType(int32 index)
 {
     return uniforms[index].type;
 }
-    
+
 int32 Shader::GetUniformTypeSize(eUniformType type)
 {
     switch(type)

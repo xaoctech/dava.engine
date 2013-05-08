@@ -731,6 +731,26 @@ void SceneFileV2::ConvertOldMaterialToNewMaterial(Material * oldMaterial, Instan
 				tech->GetRenderState()->SetTexture(tex, 0);
 			}
 			break;
+		case Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP:
+        {
+            newMaterialName = "~res:/Materials/UnlitTextureLightmap.material";
+            resultMaterial = MaterialSystem::Instance()->GetMaterial(newMaterialName);
+            MaterialTechnique * tech = resultMaterial->GetTechnique(PASS_FORWARD);
+            Texture * tex = oldMaterial->GetTexture(Material::TEXTURE_DIFFUSE);
+            tech->GetRenderState()->SetTexture(tex, 0);
+            Texture * tex2 = oldMaterial->GetTexture(Material::TEXTURE_DETAIL);
+            tech->GetRenderState()->SetTexture(tex, 1);
+        }
+        break;
+		case Material::MATERIAL_VERTEX_LIT_TEXTURE:
+        {
+            newMaterialName = "~res:/Materials/VertexLitTexture.material";
+            resultMaterial = MaterialSystem::Instance()->GetMaterial(newMaterialName);
+            MaterialTechnique * tech = resultMaterial->GetTechnique(PASS_FORWARD);
+            Texture * tex = oldMaterial->GetTexture(Material::TEXTURE_DIFFUSE);
+            tech->GetRenderState()->SetTexture(tex, 0);
+        }
+        break;
 		default:
 			{
 				newMaterialName = "~res:/Materials/VertexColorNoLightingOpaque.material";

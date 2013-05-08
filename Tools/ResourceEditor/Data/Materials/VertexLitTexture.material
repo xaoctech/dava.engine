@@ -1,0 +1,11 @@
+Material:
+    Parent: "Global.material"
+    Layers: ["OpaqueRenderLayer"]
+
+RenderPass:
+    Name: "ForwardPass"
+    Shader: "~res:/Materials/Shaders/Old/materials"
+    UniqueDefines: ["MATERIAL_TEXTURE", "VERTEX_LIT"]
+
+    RenderState:
+        state: STATE_DEPTH_WRITE | STATE_DEPTH_TEST | STATE_TEXTURE0 | STATE_CULL | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE |STATE_COLORMASK_ALPHA
