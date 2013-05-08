@@ -42,6 +42,8 @@
 namespace DAVA 
 {
 
+#define PARTICLE_EMITTER_DEFAULT_LIFE_TIME 100.0f
+
 REGISTER_CLASS(ParticleEmitter);
 
 ParticleEmitter::ParticleEmitter()
@@ -74,7 +76,7 @@ void ParticleEmitter::Cleanup(bool needCleanupLayers)
 
 	time = 0.0f;
 	repeatCount = 0;
-	lifeTime = 1000000000.0f;
+	lifeTime = PARTICLE_EMITTER_DEFAULT_LIFE_TIME;
 	emitPointsCount = -1;
 	isPaused = false;
 	angle = 0.f;
@@ -198,6 +200,7 @@ void ParticleEmitter::RemoveLayer(ParticleLayer * layer)
 	Vector<DAVA::ParticleLayer*>::iterator layerIter = std::find(layers.begin(), layers.end(), layer);
 	if (layerIter != this->layers.end())
 	{
+		layer->RemoveInnerEmitter();
 		layers.erase(layerIter);
 
         RemoveRenderBatch(layer->GetRenderBatch());
@@ -299,7 +302,7 @@ void ParticleEmitter::Update(float32 timeElapsed)
 	Vector<ParticleLayer*>::iterator it;
 	for(it = layers.begin(); it != layers.end(); ++it)
 	{
-        if(!(*it)->isDisabled)
+        if(!(*it)->GetDisabled())
             (*it)->Update(timeElapsed);
 	}
 }
@@ -319,7 +322,7 @@ void ParticleEmitter::RenderUpdate(Camera *camera, float32 timeElapsed)
 	Vector<ParticleLayer*>::iterator it;
 	for(it = layers.begin(); it != layers.end(); ++it)
 	{
-		if(!(*it)->isDisabled)
+		if(!(*it)->GetDisabled())
 			(*it)->Draw(camera);
 	}
 
@@ -417,7 +420,7 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 	configPath = filename;
 	time = 0.0f;
 	repeatCount = 0;
-	lifeTime = 1000000000.0f;
+	lifeTime = PARTICLE_EMITTER_DEFAULT_LIFE_TIME;
 
 	YamlNode * rootNode = parser->GetRootNode();
 
@@ -457,7 +460,7 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 			lifeTime = lifeTimeNode->AsFloat();
 		}else
 		{
-			lifeTime = 1000000000.0f;
+			lifeTime = PARTICLE_EMITTER_DEFAULT_LIFE_TIME;
 		}
         
         is3D = false;
@@ -552,7 +555,9 @@ void ParticleEmitter::SaveToYaml(const FilePath & filename)
         Logger::Error("ParticleEmitter::SaveToYaml() - unable to create parser!");
         return;
     }
-    
+
+	configPath = filename;
+
     YamlNode* rootYamlNode = new YamlNode(YamlNode::TYPE_MAP);
     YamlNode* emitterYamlNode = new YamlNode(YamlNode::TYPE_MAP);
     rootYamlNode->AddNodeToMap("emitter", emitterYamlNode);
@@ -794,6 +799,27 @@ int32 ParticleEmitter::GetActiveParticlesCount()
 	}
 
 	return particlesCount;
+}
+
+void ParticleEmitter::RememberInitialTranslationVector()
+{
+	if (GetWorldTransformPtr())
+	{
+		this->initialTranslationVector = GetWorldTransformPtr()->GetTranslationVector();
+	}
+}
+
+const Vector3& ParticleEmitter::GetInitialTranslationVector()
+{
+	return this->initialTranslationVector;
+}
+
+void ParticleEmitter::SetDisabledForAllLayers(bool value)
+{
+	for (Vector<ParticleLayer*>::iterator iter = layers.begin(); iter != layers.end(); iter ++)
+	{
+		(*iter)->SetDisabled(value);
+	}
 }
 
 };
