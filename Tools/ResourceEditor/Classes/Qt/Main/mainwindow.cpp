@@ -136,23 +136,26 @@ void QtMainWindow::SetupMainMenu()
 	QAction *actionParticleEditor = ui->dockParticleEditor->toggleViewAction();
 	QAction *actionParticleEditorTimeLine = ui->dockParticleEditorTimeLine->toggleViewAction();
     QAction *actionSceneInfo = ui->dockSceneInfo->toggleViewAction();
+	QAction *actionSceneTree = ui->dockSceneTree->toggleViewAction();
 
-    ui->menuView->insertAction(ui->actionRestoreViews, actionSceneInfo);
-    ui->menuView->insertAction(actionSceneInfo, actionToolBar);
-    ui->menuView->insertAction(actionToolBar, actionLibrary);
-    ui->menuView->insertAction(actionLibrary, actionProperties);
-	ui->menuView->insertAction(actionProperties, actionReferences);
-    ui->menuView->insertAction(actionReferences, actionSceneGraph);
-    ui->menuView->insertAction(actionSceneGraph, actionCustomColors);
-	ui->menuView->insertAction(actionCustomColors, actionVisibilityCheckTool);
-	ui->menuView->insertAction(actionVisibilityCheckTool, actionParticleEditor);
-	ui->menuView->insertAction(actionParticleEditor, actionParticleEditorTimeLine);
-	ui->menuView->insertAction(actionParticleEditorTimeLine, actionHangingObjects);
-	ui->menuView->insertAction(actionHangingObjects, actionSetSwitchIndex);
-    
+    ui->menuView->addAction(actionSceneInfo);
+    ui->menuView->addAction(actionToolBar);
+    ui->menuView->addAction(actionLibrary);
+    ui->menuView->addAction(actionProperties);
+	ui->menuView->addAction(actionReferences);
+    ui->menuView->addAction(actionSceneGraph);
+    ui->menuView->addAction(actionCustomColors);
+	ui->menuView->addAction(actionVisibilityCheckTool);
+	ui->menuView->addAction(actionParticleEditor);
+	ui->menuView->addAction(actionParticleEditorTimeLine);
+	ui->menuView->addAction(actionHangingObjects);
+	ui->menuView->addAction(actionSetSwitchIndex);
+	ui->menuView->addAction(actionSceneTree);
+
     ui->menuView->insertSeparator(ui->actionRestoreViews);
     ui->menuView->insertSeparator(actionToolBar);
     ui->menuView->insertSeparator(actionProperties);
+
 
     actionHandler->RegisterDockActions(ResourceEditor::HIDABLEWIDGET_COUNT,
                                        actionSceneGraph,

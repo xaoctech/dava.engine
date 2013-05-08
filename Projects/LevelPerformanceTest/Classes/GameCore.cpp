@@ -68,6 +68,7 @@ void GameCore::OnAppStarted()
 	}
 	else
 	{
+		Logger::Debug("[GameCore::OnAppStarted()] testId file not found!");
 		SafeRelease(testIdFile);
 		Core::Instance()->Quit();
 		return;
@@ -99,7 +100,7 @@ void GameCore::OnAppStarted()
 
 	for(Vector<String>::const_iterator it = levelsPaths.begin(); it != levelsPaths.end(); ++it)
     {
-		Test *test = new Test(dirPath + FilePath((*it)));
+		Test *test = new Test(dirPath + (*it));
 		if(test != NULL)
         {
 			UIScreenManager::Instance()->RegisterScreen(test->GetScreenId(), test);
