@@ -120,7 +120,10 @@ void SpritePackerHelper::EnumerateSpritesForReloading(SceneData* sceneData, Map<
             for (int il = 0; il < layersCount; ++il)
             {
                 Sprite *sprite = layers[il]->GetSprite();
-                sprites[sprite->GetRelativePathname().GetAbsolutePathname()] = sprite;
+				if(sprite)
+				{
+					sprites[sprite->GetRelativePathname().GetAbsolutePathname()] = sprite;
+				}
             }
 		}
         

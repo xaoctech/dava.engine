@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		029E4D8A15D403BA004A4167 /* SplitTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 029E4D8915D403BA004A4167 /* SplitTest.cpp */; };
+		02E9E45E173A43A900C501BC /* libfmodevent.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E45C173A43A900C501BC /* libfmodevent.dylib */; };
+		02E9E45F173A43A900C501BC /* libfmodex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E45D173A43A900C501BC /* libfmodex.dylib */; };
 		49B774CD16B188A900A80FA3 /* DLCSystemTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49B774CB16B188A900A80FA3 /* DLCSystemTests.cpp */; };
 		49C2B8F816F75A39006E24CB /* DeviceInfoTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49C2B8F616F75A39006E24CB /* DeviceInfoTest.cpp */; };
 		49C432081675E370000EA877 /* DXTTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49C432061675E370000EA877 /* DXTTest.cpp */; };
@@ -75,6 +77,8 @@
 /* Begin PBXFileReference section */
 		029E4D8915D403BA004A4167 /* SplitTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SplitTest.cpp; path = Classes/SplitTest.cpp; sourceTree = "<group>"; };
 		029E4D8B15D403F6004A4167 /* SplitTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SplitTest.h; path = Classes/SplitTest.h; sourceTree = "<group>"; };
+		02E9E45C173A43A900C501BC /* libfmodevent.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodevent.dylib; path = ../../Libs/fmod/lib/macos/libfmodevent.dylib; sourceTree = "<group>"; };
+		02E9E45D173A43A900C501BC /* libfmodex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodex.dylib; path = ../../Libs/fmod/lib/macos/libfmodex.dylib; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
@@ -155,6 +159,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02E9E45E173A43A900C501BC /* libfmodevent.dylib in Frameworks */,
+				02E9E45F173A43A900C501BC /* libfmodex.dylib in Frameworks */,
 				C151B19116D37E8300E09BAF /* WebKit.framework in Frameworks */,
 				5CDC2501156CC93300742348 /* libz.dylib in Frameworks */,
 				FEA024E312DCEEC600935314 /* libFramework.a in Frameworks */,
@@ -207,6 +213,8 @@
 		29B97314FDCFA39411CA2CEA /* TemplateProjectMacOS */ = {
 			isa = PBXGroup;
 			children = (
+				02E9E45C173A43A900C501BC /* libfmodevent.dylib */,
+				02E9E45D173A43A900C501BC /* libfmodex.dylib */,
 				C151B18E16D37E2700E09BAF /* WebKit.framework */,
 				5CDC2500156CC93300742348 /* libz.dylib */,
 				FEFCD5E712AE50860060A1A1 /* Data */,
@@ -671,6 +679,10 @@
 				);
 				INFOPLIST_FILE = "TemplateProjectMacOS-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../Libs/fmod/lib/macos\"",
+				);
 				PRODUCT_NAME = UnitTests;
 			};
 			name = Debug;
@@ -691,6 +703,10 @@
 				);
 				INFOPLIST_FILE = "TemplateProjectMacOS-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../Libs/fmod/lib/macos\"",
+				);
 				PRODUCT_NAME = UnitTests;
 			};
 			name = Release;

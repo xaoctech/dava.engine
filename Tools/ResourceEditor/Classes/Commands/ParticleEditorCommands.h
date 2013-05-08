@@ -173,8 +173,10 @@ public:
 			  float32 startTime,
 			  float32 endTime,
 			  bool frameOverLifeEnabled,
-			  float32 frameOverLifeFPS
-			  );
+			  float32 frameOverLifeFPS,
+
+			  float32 pivotPointX,
+			  float32 pivotPointY);
 
 protected:
     virtual void Execute();
@@ -214,6 +216,9 @@ private:
 	float32 endTime;
 	bool frameOverLifeEnabled;
 	float32 frameOverLifeFPS;
+
+	float32 pivotPointX;
+	float32 pivotPointY;
 };
 
 class CommandUpdateParticleLayerTime: public Command
@@ -280,6 +285,27 @@ class CommandSaveParticleEmitterToYaml : public Command
 public:
     CommandSaveParticleEmitterToYaml(bool forceAskFilename);
 
+protected:
+    virtual void Execute();
+    
+    bool forceAskFilename;
+};
+
+// The same for Inner Emitters.
+class CommandLoadInnerEmitterFromYaml : public Command
+{
+public:
+    CommandLoadInnerEmitterFromYaml();
+	
+protected:
+    virtual void Execute();
+};
+
+class CommandSaveInnerEmitterToYaml : public Command
+{
+public:
+    CommandSaveInnerEmitterToYaml(bool forceAskFilename);
+	
 protected:
     virtual void Execute();
     
