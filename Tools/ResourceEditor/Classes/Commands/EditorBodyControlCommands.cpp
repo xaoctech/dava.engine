@@ -18,6 +18,164 @@ DAVA::Set<DAVA::Entity*> CommandEntityModification::GetAffectedEntities()
 	return entities;
 }
 
+CommandGroupEntitiesForMultiselect::CommandGroupEntitiesForMultiselect(const EntityGroup* entities)
+:	CommandEntityModification(COMMAND_UNDO_REDO, CommandList::ID_COMMAND_UNITE_ENTITIES_FOR_MULTISELECT)
+{
+	commandName = "Unite entities for multiselect";
+	this->entitiesToGroup = (*entities);
+	this->resultEntity = NULL;
+	Entity* en = entitiesToGroup.GetEntity(0);
+	sep = NULL;
+	if(NULL != en)
+	{
+		sep = dynamic_cast<SceneEditorProxy *>(en->GetScene());
+	}
+}
+
+void CommandGroupEntitiesForMultiselect::Execute()
+{
+	if(entitiesToGroup.Size() < 2)
+	{
+		return;
+	}
+
+	Vector3 originalModifEntitiesCenter = entitiesToGroup.GetCommonBbox().GetCenter();
+							
+	Entity* parent = entitiesToGroup.GetEntity(0)->GetParent();
+	Entity* complexEntity = new Entity();
+	//complexEntity->SetName("textComplexEntity");
+	complexEntity->SetDebugFlags(DebugRenderComponent::DEBUG_DRAW_ALL, true);
+
+	parent->AddNode(complexEntity);
+	MoveEntity(complexEntity, originalModifEntitiesCenter);
+
+	for(size_t i = 0; i < entitiesToGroup.Size(); ++i)
+	{
+		DAVA::Entity *en = entitiesToGroup.GetEntity(i);
+		
+		if(NULL != en)
+		{
+			DAVA::AABBox3 ret;
+			sep->collisionSystem->GetBoundingBox(en).GetTransformedBox(en->GetWorldTransform(), ret);
+			originalChildParentRelations[en] = en->GetParent();
+			originalMatrixes[en] = std::make_pair<Matrix4, Matrix4>(en->GetLocalTransform(), en->GetWorldTransform());
+			complexEntity->AddNode(en);
+		}
+	}
+	
+	LodSystem::MergeChildLods(complexEntity);
+
+	for(size_t i = 0; i < entitiesToGroup.Size(); ++i)
+	{
+		Entity* en = entitiesToGroup.GetEntity(i);
+		UpdateTransformMatrixes(en, originalMatrixes[en].first, originalMatrixes[en].second);
+	}
+
+	resultEntity = complexEntity;
+}
+
+void CommandGroupEntitiesForMultiselect::Cancel()
+{
+	/*if(NULL == sep)
+	{
+		return;
+	}
+
+	for(size_t i = 0; i < entitiesToGroup.Size(); ++i)
+	{
+		DAVA::Entity *en = entitiesToGroup.GetEntity(i);
+		if(NULL == en)
+		{
+			continue;
+		}
+		Map<Entity*, Entity*>::iterator itParent = originalChildParentRelations.find(en);
+		if (itParent != originalChildParentRelations.end())
+		{
+			Entity* parent = (*itParent).second;
+			if(NULL != parent)
+			{
+				parent->AddNode(en);
+			}
+		}
+		Map<Entity*, Matrix4>::iterator itPosition = originalMatrixes.find(en);
+		if (itPosition != originalMatrixes.end())
+		{
+			Matrix4 originalPosition = (*itPosition).second;
+			sep->modifSystem->MoveEntity(en, originalPosition,originalLocalMatrixes[en]);
+		}
+	}
+	resultEntity->GetParent()->RemoveNode(resultEntity);
+	SafeRelease(resultEntity);*/
+}
+
+void CommandGroupEntitiesForMultiselect::UpdateTransformMatrixes(Entity* entity, const Matrix4& localMatrix, Matrix4& worldMatrix)
+{
+	if(NULL == entity)
+	{
+		return;
+	}
+	Matrix4 originalTransform = entity->GetLocalTransform();
+	entity->SetLocalTransform(localMatrix);
+	
+	DAVA::Matrix4 newTransform = worldMatrix;
+
+	// to move the entity directly to absolute coordinates all paretn matrixes must be multiplied
+	// and be taken into consideration beacause they are procesed  in TransformSystem (HierahicFindUpdatableTransform)
+	if(entity->GetParent() != NULL)
+	{
+		Entity* parent = entity->GetParent();
+		Matrix4 parentMatrix = Matrix4::IDENTITY;
+
+		//calculate paretn matrixes through entire parent tree
+		while (parent && !(parent->GetLocalTransform() == Matrix4::IDENTITY && parent->GetWorldTransform() == Matrix4::IDENTITY))
+		{
+			Matrix4 tempMatrix = parentMatrix * parent->GetLocalTransform();
+			parentMatrix = tempMatrix;
+			parent = parent->GetParent();
+		};
+		
+		// newTransform should be devided by parentMatrix, because it would be multiplied in HierahicFindUpdatableTransform
+		// matrix operation : A / B = ( B ^ (-1) ) * A
+		Matrix4 inversedParetnMatrix;//(B ^ (-1))
+
+		bool canBeInversed = parentMatrix.GetInverse(inversedParetnMatrix);
+		if(!canBeInversed)
+		{
+			return;
+		}
+
+		Matrix4 absoluteNewTransform =  newTransform * inversedParetnMatrix ; //( B ^ (-1) ) * A
+		newTransform = absoluteNewTransform;
+	}
+
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandTransformObject(entity, originalTransform, newTransform));
+}
+
+void CommandGroupEntitiesForMultiselect::MoveEntity(Entity* entity, Vector3& destPoint)
+{
+	if(NULL == sep || NULL == entity)
+	{
+		return;
+	}
+	DAVA::AABBox3 currentItemBB;
+	sep->collisionSystem->GetBoundingBox(entity).GetTransformedBox(entity->GetWorldTransform(), currentItemBB);
+
+	Vector3 centrOfEntity = currentItemBB.GetCenter();
+	Matrix4 originalTransform = entity->GetLocalTransform();
+	DAVA::Vector3 moveOffset = destPoint - centrOfEntity;
+	DAVA::Matrix4 moveModification;
+	moveModification.CreateTranslation(moveOffset);
+	
+	DAVA::Matrix4 newTransform = entity->GetWorldTransform() * moveModification;
+
+	UpdateTransformMatrixes(entity, Matrix4::IDENTITY, newTransform);
+}
+
+Entity* CommandGroupEntitiesForMultiselect::GetResultEntity()
+{
+	return resultEntity;
+}
+
 
 CommandTransformObject::CommandTransformObject(DAVA::Entity* node, const DAVA::Matrix4& originalTransform, const DAVA::Matrix4& finalTransform)
 :	CommandEntityModification(COMMAND_UNDO_REDO, CommandList::ID_COMMAND_TRANSFORM_OBJECT)
