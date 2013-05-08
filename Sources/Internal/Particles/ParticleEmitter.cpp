@@ -553,7 +553,9 @@ void ParticleEmitter::SaveToYaml(const FilePath & filename)
         Logger::Error("ParticleEmitter::SaveToYaml() - unable to create parser!");
         return;
     }
-    
+
+	configPath = filename;
+
     YamlNode* rootYamlNode = new YamlNode(YamlNode::TYPE_MAP);
     YamlNode* emitterYamlNode = new YamlNode(YamlNode::TYPE_MAP);
     rootYamlNode->AddNodeToMap("emitter", emitterYamlNode);
