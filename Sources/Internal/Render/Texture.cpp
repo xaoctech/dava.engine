@@ -55,7 +55,7 @@
 #include "Render/TextureDescriptor.h"
 #include "Render/ImageLoader.h"
 
-#include "Render/GPUFamily.h"
+#include "Render/GPUFamilyDescriptor.h"
 
 
 #ifdef __DAVAENGINE_ANDROID__
@@ -684,7 +684,7 @@ Texture * Texture::PureCreate(const FilePath & pathName)
     }
     else
     {
-        eGPUFamily gpuFamily = GetFormatForLoading(GPUFamily::GetGPUForPathname(pathName), descriptor);
+        eGPUFamily gpuFamily = GetFormatForLoading(GPUFamilyDescriptor::GetGPUForPathname(pathName), descriptor);
         if((GPU_UNKNOWN == defaultGPU) || IsLoadAvailable(gpuFamily, descriptor))
         {
             texture = CreateFromImage(pathName, descriptor);
@@ -727,7 +727,7 @@ Texture * Texture::CreateFromDescriptor(TextureDescriptor *descriptor)
 
 FilePath Texture::GetActualFilename(const TextureDescriptor *descriptor, const eGPUFamily gpuFamily)
 {
-    return GPUFamily::CreatePathnameForGPU(descriptor, gpuFamily);
+    return GPUFamilyDescriptor::CreatePathnameForGPU(descriptor, gpuFamily);
 }
 
 	
@@ -760,7 +760,7 @@ void Texture::ReloadAs(eGPUFamily gpuFamily, const TextureDescriptor *descriptor
 	DVASSERT(NULL != descriptor);
     
 	eGPUFamily gpuForLoading = GetFormatForLoading(gpuFamily, descriptor);
-    FilePath imagePathname = GPUFamily::CreatePathnameForGPU(descriptor, gpuForLoading);
+    FilePath imagePathname = GPUFamilyDescriptor::CreatePathnameForGPU(descriptor, gpuForLoading);
     
     File *file = File::Create(imagePathname, File::OPEN | File::READ);
 

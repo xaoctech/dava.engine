@@ -13,7 +13,7 @@
 
 #include "TextureCompression/PVRConverter.h"
 
-#include "Render/GPUFamily.h"
+#include "Render/GPUFamilyDescriptor.h"
 
 using namespace DAVA;
  
@@ -100,14 +100,18 @@ void ProcessRecourcePacker()
     printf("[OUTPUT DIR] - [%s]\n", resourcePacker->outputGfxDirectory.GetAbsolutePathname().c_str());
     printf("[EXCLUDE DIR] - [%s]\n", resourcePacker->excludeDirectory.GetAbsolutePathname().c_str());
     
-    eGPUFamily exportForGPU = GPU_UNKNOWN;
-    if(CommandLineParser::CommandIsFound("--gpu"))
-    {
-        String gpuName = CommandLineParser::GetCommandParam("--gpu");
-        exportForGPU = GPUFamily::GetGPUByName(gpuName);
-    }
     
     Texture::InitializePixelFormatDescriptors();
+    GPUFamilyDescriptor::SetupGPUParameters();
+    
+    
+    eGPUFamily exportForGPU = GPU_UNKNOWN;
+    if(CommandLineParser::CommandIsFound(String("-gpu")))
+    {
+        String gpuName = CommandLineParser::GetCommandParam(String("-gpu"));
+        exportForGPU = GPUFamilyDescriptor::GetGPUByName(gpuName);
+    }
+    
     resourcePacker->PackResources(exportForGPU);
     elapsedTime = SystemTimer::Instance()->AbsoluteMS() - elapsedTime;
     printf("[Resource Packer Compile Time: %0.3lf seconds]\n", (float64)elapsedTime / 1000.0);

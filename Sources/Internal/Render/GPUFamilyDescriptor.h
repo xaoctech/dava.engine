@@ -38,7 +38,7 @@ namespace DAVA
 
 class FilePath;
 class TextureDescriptor;
-class GPUFamily
+class GPUFamilyDescriptor
 {
     
 public:
@@ -58,7 +58,6 @@ public:
 
     static eGPUFamily GetGPUForPathname(const FilePath &pathname);
     static FilePath CreatePathnameForGPU(const TextureDescriptor *descriptor, eGPUFamily gpuFamily);
-//    static FilePath CreatePathnameForGPU(const FilePath &descriptorPathname, eGPUFamily gpuFamily, const PixelFormat pixelFormat);
     
     
     static String GetFilenamePostfix(const eGPUFamily gpuFamily, const PixelFormat pixelFormat);
@@ -75,7 +74,7 @@ protected:
 
 protected:
     
-    static Vector<GPUFamily::GPUData> gpuData;
+    static GPUData gpuData[GPU_FAMILY_COUNT];
 };
     
 };

@@ -186,10 +186,10 @@
 		E83F10A416D6737300C6ED39 /* DPIHelperMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 840ED3E216D5095000D2BA6C /* DPIHelperMacOS.mm */; };
 		E845D4E11732B5DF000DA8E7 /* FilePathObjective.mm in Sources */ = {isa = PBXBuildFile; fileRef = E845D4E01732B5DF000DA8E7 /* FilePathObjective.mm */; };
 		E845D4E21732B5DF000DA8E7 /* FilePathObjective.mm in Sources */ = {isa = PBXBuildFile; fileRef = E845D4E01732B5DF000DA8E7 /* FilePathObjective.mm */; };
-		E8951B741738FEEC00755339 /* GPUFamily.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8951B721738FEEC00755339 /* GPUFamily.cpp */; };
-		E8951B751738FEEC00755339 /* GPUFamily.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8951B721738FEEC00755339 /* GPUFamily.cpp */; };
-		E8951B761738FEEC00755339 /* GPUFamily.h in Headers */ = {isa = PBXBuildFile; fileRef = E8951B731738FEEC00755339 /* GPUFamily.h */; };
-		E8951B771738FEEC00755339 /* GPUFamily.h in Headers */ = {isa = PBXBuildFile; fileRef = E8951B731738FEEC00755339 /* GPUFamily.h */; };
+		E8951B741738FEEC00755339 /* GPUFamilyDescriptor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8951B721738FEEC00755339 /* GPUFamilyDescriptor.cpp */; };
+		E8951B751738FEEC00755339 /* GPUFamilyDescriptor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8951B721738FEEC00755339 /* GPUFamilyDescriptor.cpp */; };
+		E8951B761738FEEC00755339 /* GPUFamilyDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = E8951B731738FEEC00755339 /* GPUFamilyDescriptor.h */; };
+		E8951B771738FEEC00755339 /* GPUFamilyDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = E8951B731738FEEC00755339 /* GPUFamilyDescriptor.h */; };
 		E8974E2C16CBCBB000A78091 /* ComponentHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCB4C41816CBC5B200F2B085 /* ComponentHelpers.cpp */; };
 		E8974E2D16CBCBB000A78091 /* ComponentHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = CCB4C41916CBC5B200F2B085 /* ComponentHelpers.h */; };
 		E8989D9A16BD24E500732C04 /* AnimatedObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989ABE16BD24E400732C04 /* AnimatedObject.cpp */; };
@@ -1392,8 +1392,8 @@
 		D2F7E8BE07B2D77200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		E82366CD16148EF9007B40D0 /* libPVRTexLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPVRTexLib.a; path = ../../Libs/libs/libPVRTexLib.a; sourceTree = "<group>"; };
 		E845D4E01732B5DF000DA8E7 /* FilePathObjective.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FilePathObjective.mm; sourceTree = "<group>"; };
-		E8951B721738FEEC00755339 /* GPUFamily.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GPUFamily.cpp; sourceTree = "<group>"; };
-		E8951B731738FEEC00755339 /* GPUFamily.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPUFamily.h; sourceTree = "<group>"; };
+		E8951B721738FEEC00755339 /* GPUFamilyDescriptor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GPUFamilyDescriptor.cpp; sourceTree = "<group>"; };
+		E8951B731738FEEC00755339 /* GPUFamilyDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPUFamilyDescriptor.h; sourceTree = "<group>"; };
 		E8989ABE16BD24E400732C04 /* AnimatedObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnimatedObject.cpp; sourceTree = "<group>"; };
 		E8989ABF16BD24E400732C04 /* AnimatedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimatedObject.h; sourceTree = "<group>"; };
 		E8989AC016BD24E400732C04 /* Animation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Animation.cpp; sourceTree = "<group>"; };
@@ -2467,8 +2467,8 @@
 		E8989C1516BD24E400732C04 /* Render */ = {
 			isa = PBXGroup;
 			children = (
-				E8951B721738FEEC00755339 /* GPUFamily.cpp */,
-				E8951B731738FEEC00755339 /* GPUFamily.h */,
+				E8951B721738FEEC00755339 /* GPUFamilyDescriptor.cpp */,
+				E8951B731738FEEC00755339 /* GPUFamilyDescriptor.h */,
 				CCC7A47B16F1D64D0061EA5D /* RenderState.cpp */,
 				CCC7A47C16F1D64D0061EA5D /* RenderState.h */,
 				E8989C1616BD24E400732C04 /* 2D */,
@@ -3296,7 +3296,7 @@
 				74A909AC1701FA51003FDB31 /* CRC32.h in Headers */,
 				840D24231703311400267C58 /* DeviceInfo.h in Headers */,
 				7410E81D17144C160028AAAA /* UIAggregatorControl.h in Headers */,
-				E8951B761738FEEC00755339 /* GPUFamily.h in Headers */,
+				E8951B761738FEEC00755339 /* GPUFamilyDescriptor.h in Headers */,
 				02E9E3AB17296D4200C501BC /* FMODUtils.h in Headers */,
 				02E9E41C1739615B00C501BC /* SoundEvent.h in Headers */,
 				02E9E41E1739615B00C501BC /* SoundEventCategory.h in Headers */,
@@ -3626,7 +3626,7 @@
 				C18593DD16F30BF6005D30E2 /* UIAggregatorControl.h in Headers */,
 				7489A9CF1702F5A200D9AE2D /* CRC32.h in Headers */,
 				E8B6B3B11705DB26004F665E /* DeviceInfo.h in Headers */,
-				E8951B771738FEEC00755339 /* GPUFamily.h in Headers */,
+				E8951B771738FEEC00755339 /* GPUFamilyDescriptor.h in Headers */,
 				02E9E42F1739622500C501BC /* SoundEvent.h in Headers */,
 				02E9E4301739622800C501BC /* SoundEventCategory.h in Headers */,
 				02E9E4311739622E00C501BC /* VolumeAnimatedObject.h in Headers */,
@@ -4002,7 +4002,7 @@
 				E8B6B3BB1705DD59004F665E /* DeviceInfoMacOS.mm in Sources */,
 				7410E81C17144C120028AAAA /* UIAggregatorControl.cpp in Sources */,
 				E845D4E11732B5DF000DA8E7 /* FilePathObjective.mm in Sources */,
-				E8951B741738FEEC00755339 /* GPUFamily.cpp in Sources */,
+				E8951B741738FEEC00755339 /* GPUFamilyDescriptor.cpp in Sources */,
 				02E9E41B1739615B00C501BC /* SoundEvent.cpp in Sources */,
 				02E9E41D1739615B00C501BC /* SoundEventCategory.cpp in Sources */,
 				02E9E41F1739615B00C501BC /* VolumeAnimatedObject.cpp in Sources */,
@@ -4291,7 +4291,7 @@
 				E8B6B3B01705DB26004F665E /* DeviceInfo.cpp in Sources */,
 				E8B6B3BC1705DD59004F665E /* DeviceInfoMacOS.mm in Sources */,
 				E845D4E21732B5DF000DA8E7 /* FilePathObjective.mm in Sources */,
-				E8951B751738FEEC00755339 /* GPUFamily.cpp in Sources */,
+				E8951B751738FEEC00755339 /* GPUFamilyDescriptor.cpp in Sources */,
 				02E9E4331739623700C501BC /* SoundComponent.cpp in Sources */,
 				02E9E438173964DA00C501BC /* SoundUpdateSystem.cpp in Sources */,
 			);
