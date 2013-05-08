@@ -304,6 +304,12 @@ public:
 	void SetPlaybackSpeed(float32 value);
 	float32 GetPlaybackSpeed();
 
+	/**
+	 \brief Set the "IsDisabled" flag for all the inner layers.
+	 \param[in] "Is Disabled" flag.
+	 */
+	void SetDisabledForAllLayers(bool value);
+
 	/// Particles' color is multiplied by ambientColor before drawing.
 	Color ambientColor;
 
@@ -334,6 +340,12 @@ public:
      \brief Returns the total active particles count for the whole effect.
      */
 	int32 GetActiveParticlesCount();
+
+	// This functionality is needed for SuperEmitter functionality. Each "inner" Particle Emitter
+	// must remember its initial translation vector when created. It will be used during particles
+	// movement.
+	void RememberInitialTranslationVector();
+	const Vector3& GetInitialTranslationVector();
 
 protected:
 	// Virtual methods which are different for 2D and 3D emitters.
@@ -366,6 +378,8 @@ protected:
     bool    is3D;
 	float32 playbackSpeed;
 
+	Vector3 initialTranslationVector;
+
 public:
 	RefPtr< PropertyLine<Vector3> > emissionVector;
     RefPtr< PropertyLine<float32> > emissionAngle;
@@ -382,6 +396,16 @@ public:
 	
 	friend class ParticleLayer;
     
+	// Setters needed for Clone().
+	inline void SetRepeatCount(int32 repeatCount) {this->repeatCount = repeatCount;};
+	inline void SetTime(float32 time) {this->time = time;};
+	inline void SetEmitPointsCount(int32 emitPointsCount) {this->emitPointsCount = emitPointsCount;};
+	inline void SetPaused(bool isPaused) {this->isPaused = isPaused;};
+	inline void SetAutoRestart(bool isAutorestart) {this->isAutorestart = isAutorestart;};
+    inline void Set3D(bool is3D) {this->is3D = is3D;};
+	inline void SetConfigPath(const FilePath& configPath) {this->configPath = configPath;};
+	inline void SetInitialTranslationVector(const Vector3& translationVector) {this->initialTranslationVector = translationVector;};
+
 public:
     
     INTROSPECTION_EXTEND(ParticleEmitter, RenderObject,

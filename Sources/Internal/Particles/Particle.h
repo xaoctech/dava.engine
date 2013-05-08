@@ -49,6 +49,8 @@ public:
 };
 
 class Sprite;
+class ParticleEmitter;
+	
 class Particle
 {
 public:
@@ -92,14 +94,29 @@ public:
 	// Get the area currently occupied by particle.
 	float32 GetArea();
 
+	// YuriCoder, 2013/04/25. SuperEmitter functionality.
+	// Initialize/cleanup the inner emitter for Particle.
+	void InitializeInnerEmitter(ParticleEmitter* parentEmitter, ParticleEmitter* referenceEmitter);
+	void CleanupInnerEmitter();
+	ParticleEmitter* GetInnerEmitter();
+
 	int32	frame;
 	float32 frameLastUpdateTime;
 	
 	friend class ParticleEmitter;
 	
 protected:
+	// Register/unregister Inner Emitter in Render Systtem.
+	void RegisterInnerEmitterInRenderSystem(bool isRegister);
+
+	// Update the position of Inner Emitter.
+	void UpdateInnerEmitter(float32 timeElapsed);
+
 	// Forces attached to Particle.
 	Vector<ForceData> forces;
+	
+	// Inner Particle Emitter.
+	ParticleEmitter* innerParticleEmitter;
 };
 
 // Implementation
