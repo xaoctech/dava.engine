@@ -209,14 +209,17 @@ namespace DAVA
 	void CorePlatformAndroid::StartForeground()
 	{
 		Logger::Debug("[CorePlatformAndroid::StartForeground] start");
-		//TODO: VK: add code for handling
 
 		if(wasCreated)
 		{
-			ApplicationCore * core = Core::Instance()->GetApplicationCore();
+			DAVA::ApplicationCore * core = DAVA::Core::Instance()->GetApplicationCore();
 			if(core)
 			{
-				core->OnResume();
+				DAVA::Core::Instance()->GoForeground();
+			}
+			else
+			{
+				DAVA::Core::Instance()->SetIsActive(true);
 			}
 
 			foreground = true;
@@ -224,7 +227,7 @@ namespace DAVA
 		Logger::Debug("[CorePlatformAndroid::StartForeground] end");
 	}
 
-	void CorePlatformAndroid::StopForeground()
+	void CorePlatformAndroid::StopForeground(bool isLock)
 	{
 		Logger::Debug("[CorePlatformAndroid::StopForeground]");
 		//TODO: VK: add code for handling
@@ -232,11 +235,7 @@ namespace DAVA
 		RenderResource::SaveAllResourcesToSystemMem();
 		RenderResource::LostAllResources();
 
-		ApplicationCore * core = Core::Instance()->GetApplicationCore();
-		if(core)
-		{
-			core->OnSuspend();
-		}
+		DAVA::Core::Instance()->GoBackground(isLock);
 
 		foreground = false;
 

@@ -3,8 +3,8 @@ package com.dava.framework;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
+import android.os.PowerManager;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 
 public class JNIGLSurfaceView extends GLSurfaceView 
@@ -14,7 +14,7 @@ public class JNIGLSurfaceView extends GLSurfaceView
     private native void nativeOnTouch(int action, int id, float x, float y, double time);
     private native void nativeOnKeyUp(int keyCode);
     private native void nativeOnResumeView();
-    private native void nativeOnPauseView();
+    private native void nativeOnPauseView(boolean isLock);
 
     public JNIGLSurfaceView(Context context) 
     {
@@ -47,7 +47,8 @@ public class JNIGLSurfaceView extends GLSurfaceView
     	{
     		public void run() 
     		{
-    	    	nativeOnPauseView();
+    			PowerManager pm = (PowerManager) JNIApplication.GetApplication().getSystemService(Context.POWER_SERVICE);
+    			nativeOnPauseView(!pm.isScreenOn());
     		}
     	});
 		super.onPause();
