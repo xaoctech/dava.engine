@@ -15,6 +15,8 @@
 		02E9E442173965B800C501BC /* SceneTree.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02E9E43C173965B800C501BC /* SceneTree.cpp */; };
 		02E9E443173965B800C501BC /* SceneTreeItem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02E9E43E173965B800C501BC /* SceneTreeItem.cpp */; };
 		02E9E444173965B800C501BC /* SceneTreeModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02E9E440173965B800C501BC /* SceneTreeModel.cpp */; };
+		02E9E458173A40CD00C501BC /* libfmodevent.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 02E9E40E1739612300C501BC /* libfmodevent.dylib */; };
+		02E9E459173A40CD00C501BC /* libfmodex.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 02E9E40F1739612300C501BC /* libfmodex.dylib */; };
 		0C6D4628EE0B0D1479A20551 /* AGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = C6766F86E49E9C8701C8E637 /* AGL.framework */; };
 		1735C427169DE63D001E0468 /* ParticlesEditorSceneDataHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1735C423169DE63D001E0468 /* ParticlesEditorSceneDataHelper.cpp */; };
 		1735C428169DE63D001E0468 /* ParticlesEditorSceneModelHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1735C425169DE63D001E0468 /* ParticlesEditorSceneModelHelper.cpp */; };
@@ -495,6 +497,20 @@
 			remoteInfo = FrameworkQt;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		02E9E454173A408800C501BC /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 16;
+			files = (
+				02E9E458173A40CD00C501BC /* libfmodevent.dylib in CopyFiles */,
+				02E9E459173A40CD00C501BC /* libfmodex.dylib in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		0297F30F170B403100627F78 /* MaterialViewOptions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialViewOptions.cpp; sourceTree = "<group>"; };
@@ -3201,6 +3217,7 @@
 				C29B8785722055ED95EF7B57 /* Build Sources */,
 				2A1043669E6E5A7426EA502A /* Frameworks & Libraries */,
 				3787F99312C85FF0073FD7BA /* Bundle Resources */,
+				02E9E454173A408800C501BC /* CopyFiles */,
 			);
 			buildRules = (
 			);

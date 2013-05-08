@@ -85,6 +85,10 @@
 		02D69CEB16F08CEE00F3803F /* uitextfieldpropertygridwidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C8516F08CED00F3803F /* uitextfieldpropertygridwidget_moc.cpp */; };
 		02D69CEC16F08CEE00F3803F /* QColorButton_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C8616F08CED00F3803F /* QColorButton_moc.cpp */; };
 		02D69CED16F08CEE00F3803F /* StateComboBoxItemDelegate_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02D69C8716F08CED00F3803F /* StateComboBoxItemDelegate_moc.cpp */; };
+		02E9E449173A3AED00C501BC /* libfmodevent.dylib in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 02E9E447173A3AED00C501BC /* libfmodevent.dylib */; };
+		02E9E44A173A3AED00C501BC /* libfmodex.dylib in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 02E9E448173A3AED00C501BC /* libfmodex.dylib */; };
+		02E9E44D173A3CDF00C501BC /* libfmodevent.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 02E9E447173A3AED00C501BC /* libfmodevent.dylib */; };
+		02E9E44E173A3CDF00C501BC /* libfmodex.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 02E9E448173A3AED00C501BC /* libfmodex.dylib */; };
 		0C6D4628EE0B0D1479A20551 /* AGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = C6766F86E49E9C8701C8E637 /* AGL.framework */; };
 		1700E418162EB2C20069650D /* basepropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1700E416162EB2C20069650D /* basepropertygridwidget.cpp */; };
 		1700E41D162EB8C60069650D /* rectpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1700E41B162EB8C60069650D /* rectpropertygridwidget.cpp */; };
@@ -248,6 +252,20 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		02E9E44C173A3CCF00C501BC /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 16;
+			files = (
+				02E9E44D173A3CDF00C501BC /* libfmodevent.dylib in CopyFiles */,
+				02E9E44E173A3CDF00C501BC /* libfmodex.dylib in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		00BD80432B2C7B49A27A3DC5 /* UIEditor.pro */ = {isa = PBXFileReference; lastKnownFileType = text; path = UIEditor.pro; sourceTree = "<group>"; };
 		02D69A4F16F0783000F3803F /* platformpropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = platformpropertygridwidget.ui; sourceTree = "<group>"; };
@@ -348,6 +366,8 @@
 		02D69C9916F08CEE00F3803F /* ui_sliderpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_sliderpropertygridwidget.h; sourceTree = "<group>"; };
 		02D69C9A16F08CEE00F3803F /* ui_statepropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_statepropertygridwidget.h; sourceTree = "<group>"; };
 		02D69C9C16F08CEE00F3803F /* ui_uitextfieldpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_uitextfieldpropertygridwidget.h; sourceTree = "<group>"; };
+		02E9E447173A3AED00C501BC /* libfmodevent.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodevent.dylib; path = ../../Libs/fmod/lib/macos/libfmodevent.dylib; sourceTree = "<group>"; };
+		02E9E448173A3AED00C501BC /* libfmodex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodex.dylib; path = ../../Libs/fmod/lib/macos/libfmodex.dylib; sourceTree = "<group>"; };
 		1700E416162EB2C20069650D /* basepropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = basepropertygridwidget.cpp; path = PropertyGridWidgets/basepropertygridwidget.cpp; sourceTree = "<group>"; };
 		1700E417162EB2C20069650D /* basepropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = basepropertygridwidget.h; path = PropertyGridWidgets/basepropertygridwidget.h; sourceTree = "<group>"; };
 		1700E41B162EB8C60069650D /* rectpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rectpropertygridwidget.cpp; path = PropertyGridWidgets/rectpropertygridwidget.cpp; sourceTree = "<group>"; };
@@ -610,6 +630,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02E9E449173A3AED00C501BC /* libfmodevent.dylib in Frameworks & Libraries */,
+				02E9E44A173A3AED00C501BC /* libfmodex.dylib in Frameworks & Libraries */,
 				C107916716D78CCD0081E58C /* libFrameworkQt.a in Frameworks & Libraries */,
 				5CCC10E915B460C900DA83EB /* libbz2.dylib in Frameworks & Libraries */,
 				5CCC10E715B460BF00DA83EB /* libz.dylib in Frameworks & Libraries */,
@@ -761,6 +783,8 @@
 		05596AB53D8D521C69802C27 /* TemplateProjectQt */ = {
 			isa = PBXGroup;
 			children = (
+				02E9E447173A3AED00C501BC /* libfmodevent.dylib */,
+				02E9E448173A3AED00C501BC /* libfmodex.dylib */,
 				C18593F616F312E9005D30E2 /* createaggregatordlg.ui */,
 				C107915B16D78C9E0081E58C /* Framework.xcodeproj */,
 				5C190C9E15AEC6F9005731F8 /* Data */,
@@ -1246,6 +1270,7 @@
 				C29B8785722055ED95EF7B57 /* Build Sources */,
 				2A1043669E6E5A7426EA502A /* Frameworks & Libraries */,
 				3787F99312C85FF0073FD7BA /* Bundle Resources */,
+				02E9E44C173A3CCF00C501BC /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -1671,7 +1696,9 @@
 					../dava.framework/Libs/oggvorbis/lib/,
 					"../../Libs/ImageMagick-6.7.4/lib/",
 					"../../Libs/ImageMagick-6.7.4/delegates/lib",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../Libs/fmod/lib/macos\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = UIEditor;
 				SDKROOT = macosx10.7;
@@ -1696,7 +1723,9 @@
 					../dava.framework/Libs/oggvorbis/lib/,
 					"../../Libs/ImageMagick-6.7.4/lib/",
 					"../../Libs/ImageMagick-6.7.4/delegates/lib",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../Libs/fmod/lib/macos\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = UIEditor;
 				SDKROOT = macosx10.7;
