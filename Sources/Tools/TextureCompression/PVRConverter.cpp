@@ -3,7 +3,7 @@
 #include "FileSystem/FileSystem.h"
 #include "Utils/StringFormat.h"
 
-#include "Render/GPUFamily.h"
+#include "Render/GPUFamilyDescriptor.h"
 
 namespace DAVA
 {
@@ -89,7 +89,7 @@ String PVRConverter::GetCommandLinePVR(const TextureDescriptor &descriptor, eGPU
 
 FilePath PVRConverter::GetPVRToolOutput(const TextureDescriptor &descriptor, eGPUFamily gpuFamily)
 {
-    return GPUFamily::CreatePathnameForGPU(&descriptor, gpuFamily);
+    return GPUFamilyDescriptor::CreatePathnameForGPU(&descriptor, gpuFamily);
 }
 
 void PVRConverter::SetPVRTexTool(const FilePath &textToolPathname)

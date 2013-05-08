@@ -8,7 +8,7 @@
 #include "Render/Texture.h"
 #include "TextureCompression/PVRConverter.h"
 #include "TextureCompression/DXTConverter.h"
-#include "Render/GPUFamily.h"
+#include "Render/GPUFamilyDescriptor.h"
 
 
 #ifdef WIN32
@@ -578,28 +578,28 @@ void TexturePacker::SetMaxTextureSize(int32 _maxTextureSize)
 void TexturePacker::ExportImage(PngImageExt *image, const FilePath &exportedPathname, eGPUFamily forGPU)
 {
     TextureDescriptor *descriptor = CreateDescriptor(forGPU);
+    descriptor->pathname = TextureDescriptor::GetDescriptorPathname(exportedPathname);
+    descriptor->Export(descriptor->pathname);
 
     image->DitherAlpha();
     image->Write(exportedPathname);
-    
-    if (NULL != descriptor)
+
+    eGPUFamily gpuFamily = (eGPUFamily)descriptor->exportedAsGpuFamily;
+    if(gpuFamily != GPU_UNKNOWN)
     {
-        eGPUFamily gpuFamily = (eGPUFamily)descriptor->exportedAsGpuFamily;
-        
-        const String & extension = GPUFamily::GetCompressedFileExtension(gpuFamily, (PixelFormat)descriptor->exportedAsPixelFormat);
+        const String & extension = GPUFamilyDescriptor::GetCompressedFileExtension(gpuFamily, (PixelFormat)descriptor->exportedAsPixelFormat);
         if(extension == ".pvr")
         {
-			PVRConverter::Instance()->ConvertPngToPvr(*descriptor, gpuFamily);
-			FileSystem::Instance()->DeleteFile(exportedPathname);
+            PVRConverter::Instance()->ConvertPngToPvr(*descriptor, gpuFamily);
+            FileSystem::Instance()->DeleteFile(exportedPathname);
         }
         else if(extension == ".dds")
         {
-			DXTConverter::ConvertPngToDxt(*descriptor, gpuFamily);
-			FileSystem::Instance()->DeleteFile(exportedPathname);
+            DXTConverter::ConvertPngToDxt(*descriptor, gpuFamily);
+            FileSystem::Instance()->DeleteFile(exportedPathname);
         }
     }
 
-    descriptor->Export(TextureDescriptor::GetDescriptorPathname(exportedPathname));
     SafeRelease(descriptor);
 }
 
@@ -607,40 +607,40 @@ void TexturePacker::ExportImage(PngImageExt *image, const FilePath &exportedPath
 TextureDescriptor * TexturePacker::CreateDescriptor(eGPUFamily forGPU)
 {
     TextureDescriptor *descriptor = new TextureDescriptor();
-    if(descriptor)
-    {
-        descriptor->settings.wrapModeS = descriptor->settings.wrapModeT = Texture::WRAP_CLAMP_TO_EDGE;
-        descriptor->settings.generateMipMaps = CommandLineParser::Instance()->IsFlagSet(String("--generateMipMaps"));
-        if(descriptor->settings.generateMipMaps)
-        {
-            descriptor->settings.minFilter = Texture::FILTER_LINEAR_MIPMAP_LINEAR;
-            descriptor->settings.magFilter = Texture::FILTER_LINEAR;
-        }
-        else
-        {
-            descriptor->settings.minFilter = Texture::FILTER_LINEAR;
-            descriptor->settings.magFilter = Texture::FILTER_LINEAR;
-        }
-        
-        if(forGPU == GPU_UNKNOWN)   // not need compression
-            return descriptor;
-        
-        
-        descriptor->exportedAsGpuFamily = forGPU;
-        
-        const String & gpuName = GPUFamily::GetGPUName(forGPU);
-        if(CommandLineParser::Instance()->IsFlagSet(gpuName))
-        {
-            String formatName = CommandLineParser::Instance()->GetParamForFlag(gpuName);
-            PixelFormat format = Texture::GetPixelFormatByName(formatName);
 
-            descriptor->exportedAsPixelFormat = format;
-            descriptor->compression[forGPU].format = format;
-        }
-        else
-        {
-            printf("ERROR: params for GPU %s were not set.", gpuName.c_str());
-        }
+    descriptor->settings.wrapModeS = descriptor->settings.wrapModeT = Texture::WRAP_CLAMP_TO_EDGE;
+    descriptor->settings.generateMipMaps = CommandLineParser::Instance()->IsFlagSet(String("--generateMipMaps"));
+    if(descriptor->settings.generateMipMaps)
+    {
+        descriptor->settings.minFilter = Texture::FILTER_LINEAR_MIPMAP_LINEAR;
+        descriptor->settings.magFilter = Texture::FILTER_LINEAR;
+    }
+    else
+    {
+        descriptor->settings.minFilter = Texture::FILTER_LINEAR;
+        descriptor->settings.magFilter = Texture::FILTER_LINEAR;
+    }
+    
+    if(forGPU == GPU_UNKNOWN)   // not need compression
+        return descriptor;
+    
+    
+    descriptor->exportedAsGpuFamily = forGPU;
+
+    const String gpuNameFlag = "--" + GPUFamilyDescriptor::GetGPUName(forGPU);
+    if(CommandLineParser::Instance()->IsFlagSet(gpuNameFlag))
+    {
+        String formatName = CommandLineParser::Instance()->GetParamForFlag(gpuNameFlag);
+        PixelFormat format = Texture::GetPixelFormatByName(formatName);
+        
+        descriptor->exportedAsPixelFormat = format;
+        descriptor->compression[forGPU].format = format;
+    }
+    else
+    {
+        printf("WARNING: params for GPU %s were not set.\n", gpuNameFlag.c_str());
+        
+        descriptor->exportedAsGpuFamily = GPU_UNKNOWN;
     }
     
     return descriptor;

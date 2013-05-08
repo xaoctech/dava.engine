@@ -5,7 +5,7 @@
 #include "Render/Image.h"
 #include "Render/ImageLoader.h"
 #include "Render/LibDxtHelper.h"
-#include "Render/GPUFamily.h"
+#include "Render/GPUFamilyDescriptor.h"
 
 namespace DAVA
 {
@@ -44,7 +44,7 @@ FilePath DXTConverter::ConvertPngToDxt(const TextureDescriptor &descriptor, eGPU
 
 FilePath DXTConverter::GetDXTOutput(const TextureDescriptor &descriptor, eGPUFamily gpuFamily)
 {
-    return GPUFamily::CreatePathnameForGPU(&descriptor, gpuFamily);
+    return GPUFamilyDescriptor::CreatePathnameForGPU(&descriptor, gpuFamily);
 }
 
 };

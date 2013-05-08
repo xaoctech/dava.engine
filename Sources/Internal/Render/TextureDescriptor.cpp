@@ -36,6 +36,8 @@
 #include "Render/Texture.h"
 #include "Utils/Utils.h"
 
+#include "Render/GPUFamilyDescriptor.h"
+
 namespace DAVA
 {
     
@@ -438,14 +440,14 @@ FilePath TextureDescriptor::GetSourceTexturePathname() const
 
 FilePath TextureDescriptor::GetDescriptorPathname(const FilePath &texturePathname)
 {
-    DVASSERT(texturePathname.IsEmpty());
+    DVASSERT(!texturePathname.IsEmpty());
     
     if(0 == CompareCaseInsensitive(texturePathname.GetExtension(), GetDescriptorExtension()))
     {
         return texturePathname;
     }
     
-    DVASSERT(GetGPUForPathname(texturePathname) != GPU_UNKNOWN);
+    DVASSERT(GPUFamilyDescriptor::GetGPUForPathname(texturePathname) == GPU_UNKNOWN);
     
     return FilePath::CreateWithNewExtension(texturePathname, GetDescriptorExtension());
 }

@@ -28,7 +28,7 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "Render/GPUFamily.h"
+#include "Render/GPUFamilyDescriptor.h"
 #include "FileSystem/Logger.h"
 #include "Debug/DVAssert.h"
 #include "FileSystem/FilePath.h"
@@ -38,17 +38,15 @@
 namespace DAVA
 {
     
-Vector<GPUFamily::GPUData> GPUFamily::gpuData;
+GPUFamilyDescriptor::GPUData GPUFamilyDescriptor::gpuData[GPU_FAMILY_COUNT];
 
-void GPUFamily::SetupGPUParameters()
+void GPUFamilyDescriptor::SetupGPUParameters()
 {
-    gpuData.resize(GPU_FAMILY_COUNT);
-
     SetupGPUFormats();
     SetupGPUPostfixes();
 }
 
-void GPUFamily::SetupGPUFormats()
+void GPUFamilyDescriptor::SetupGPUFormats()
 {
     //pvr ios
     gpuData[GPU_POVERVR_IOS].availableFormats[FORMAT_RGBA8888] = ".pvr";
@@ -92,7 +90,7 @@ void GPUFamily::SetupGPUFormats()
     gpuData[GPU_ADRENO].availableFormats[FORMAT_ETC1] = ".pvr";
 }
 
-void GPUFamily::SetupGPUPostfixes()
+void GPUFamilyDescriptor::SetupGPUPostfixes()
 {
     gpuData[GPU_POVERVR_IOS].name = "PoverVR_iOS";
     gpuData[GPU_POVERVR_ANDROID].name = "PoverVR_Android";
@@ -102,18 +100,18 @@ void GPUFamily::SetupGPUPostfixes()
 }
 
     
-const Map<PixelFormat, String> & GPUFamily::GetAvailableFormatsForGpu(eGPUFamily gpuFamily)
+const Map<PixelFormat, String> & GPUFamilyDescriptor::GetAvailableFormatsForGpu(eGPUFamily gpuFamily)
 {
     DVASSERT(0 <= gpuFamily && gpuFamily < GPU_FAMILY_COUNT);
     
     return gpuData[gpuFamily].availableFormats;
 }
 
-eGPUFamily GPUFamily::GetGPUForPathname(const FilePath &pathname)
+eGPUFamily GPUFamilyDescriptor::GetGPUForPathname(const FilePath &pathname)
 {
     const String filename = pathname.GetFilename();
     
-    for(int32 i = 0; GPU_FAMILY_COUNT; ++i)
+    for(int32 i = 0; i < GPU_FAMILY_COUNT; ++i)
     {
         eGPUFamily gpu = (eGPUFamily)i;
         
@@ -128,7 +126,7 @@ eGPUFamily GPUFamily::GetGPUForPathname(const FilePath &pathname)
     return GPU_UNKNOWN;
 }
  
-FilePath GPUFamily::CreatePathnameForGPU(const TextureDescriptor *descriptor, eGPUFamily gpuFamily)
+FilePath GPUFamilyDescriptor::CreatePathnameForGPU(const TextureDescriptor *descriptor, eGPUFamily gpuFamily)
 {
     DVASSERT(descriptor);
     
@@ -146,14 +144,14 @@ FilePath GPUFamily::CreatePathnameForGPU(const TextureDescriptor *descriptor, eG
 
     
     
-const String & GPUFamily::GetGPUName(const eGPUFamily gpuFamily)
+const String & GPUFamilyDescriptor::GetGPUName(const eGPUFamily gpuFamily)
 {
     DVASSERT(0 <= gpuFamily && gpuFamily < GPU_FAMILY_COUNT);
 
     return gpuData[gpuFamily].name;
 }
 
-eGPUFamily GPUFamily::GetGPUByName(const String & name)
+eGPUFamily GPUFamilyDescriptor::GetGPUByName(const String & name)
 {
     for(int32 i = 0; i < GPU_FAMILY_COUNT; ++i)
     {
@@ -168,7 +166,7 @@ eGPUFamily GPUFamily::GetGPUByName(const String & name)
 }
 
     
-const String & GPUFamily::GetCompressedFileExtension(const eGPUFamily gpuFamily, const PixelFormat pixelFormat)
+const String & GPUFamilyDescriptor::GetCompressedFileExtension(const eGPUFamily gpuFamily, const PixelFormat pixelFormat)
 {
     DVASSERT(0 <= gpuFamily && gpuFamily < GPU_FAMILY_COUNT);
 
@@ -179,7 +177,7 @@ const String & GPUFamily::GetCompressedFileExtension(const eGPUFamily gpuFamily,
 }
 
     
-String GPUFamily::GetFilenamePostfix(const eGPUFamily gpuFamily, const PixelFormat pixelFormat)
+String GPUFamilyDescriptor::GetFilenamePostfix(const eGPUFamily gpuFamily, const PixelFormat pixelFormat)
 {
     DVASSERT(0 <= gpuFamily && gpuFamily < GPU_FAMILY_COUNT);
     

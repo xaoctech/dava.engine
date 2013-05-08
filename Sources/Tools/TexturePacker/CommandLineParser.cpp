@@ -36,6 +36,9 @@ void CommandLineParser::SetArguments(const Vector<String> &arguments)
             prevIsFlag = false;
         }
 	}
+    
+    if(prevIsFlag)
+        params.push_back(String());
 }
 
     
@@ -63,6 +66,9 @@ void CommandLineParser::SetArguments(int argc, char * argv[])
             prevIsFlag = false;
         }
 	}
+    
+    if(prevIsFlag)
+        params.push_back(String());
 }
 
 void CommandLineParser::Clear()

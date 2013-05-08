@@ -40,6 +40,8 @@
 #include "Render/Effects/TextureMulColorEffect.h"
 #include "Render/Effects/TextureMulColorAlphaTestEffect.h"
 
+#include "Render/GPUFamilyDescriptor.h"
+
 namespace DAVA
 {
     
@@ -58,6 +60,7 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
 //	Logger::Debug("[RenderManager] created");
 
     Texture::InitializePixelFormatDescriptors();
+    GPUFamilyDescriptor::SetupGPUParameters();
     
 //  RENDERSTATE
 //	oldColor = Color::Clear();
