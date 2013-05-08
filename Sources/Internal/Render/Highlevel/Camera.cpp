@@ -65,7 +65,7 @@ void Camera::SetFOV(const float32 &fovxInDegrees)
     
 void Camera::SetAspect(const float32 &_aspect)
 {
-	aspect = _aspect;
+	aspect = 1.f/_aspect;
 	Recalc();
 }
     
@@ -157,7 +157,7 @@ bool Camera::GetIsOrtho() const
 
 void Camera::SetupPerspective(float32 fovxInDegrees, float32 aspectYdivX, float32 zNear, float32 zFar)
 {
-    this->aspect = aspectYdivX;
+    this->aspect = 1.f/aspectYdivX;
     
     this->fovX = fovxInDegrees;
 	this->znear = zNear;
@@ -169,7 +169,7 @@ void Camera::SetupPerspective(float32 fovxInDegrees, float32 aspectYdivX, float3
 
 void Camera::SetupOrtho(float32 width, float32 aspectYdivX, float32 zNear, float32 zFar)
 {
-	this->aspect = aspectYdivX;
+	this->aspect = 1.f/aspectYdivX;
 
 	this->orthoWidth = width;
 	this->znear = zNear;
