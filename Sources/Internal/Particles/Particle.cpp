@@ -126,7 +126,13 @@ void Particle::Draw()
 
 float32 Particle::GetArea()
 {
-	return (size.x * sizeOverLife.x) * (size.y * sizeOverLife.y);
+	float resultSize = (size.x * sizeOverLife.x) * (size.y * sizeOverLife.y);
+	if (sprite)
+	{
+		resultSize *= (sprite->GetWidth() * sprite->GetHeight());
+	}
+	
+	return resultSize;
 }
 
 void Particle::InitializeInnerEmitter(ParticleEmitter* parentEmitter, ParticleEmitter* referenceEmitter)
