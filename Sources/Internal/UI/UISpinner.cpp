@@ -67,6 +67,7 @@ UISpinner::UISpinner(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*
     , totalGestureDx(0)
     , currentTouchX(X_UNDEFINED)
     , previousTouchX(X_UNDEFINED)
+    , dragAnchorX(X_UNDEFINED)
 {
     buttonNext->SetName(UISPINNER_BUTTON_NEXT_NAME);
     buttonPrevious->SetName(UISPINNER_BUTTON_PREVIOUS_NAME);
@@ -122,9 +123,7 @@ void UISpinner::ContentChanged()
 }
     
 void UISpinner::Input(UIEvent *currentInput)
-{    
-    static float32 dragAnchorX = X_UNDEFINED;
-    
+{        
     if (content->IsAnimating(MOVE_ANIMATION_TRACK))
     {
         return;
