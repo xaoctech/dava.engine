@@ -30,6 +30,7 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 
 ParticleLayer3D::~ParticleLayer3D()
 {
+	DeleteAllParticles();
 	SafeRelease(renderData);
 }
 
@@ -177,20 +178,26 @@ void ParticleLayer3D::CalcNonLong(Particle* current,
 	float32 cosine;
 	SinCosFast(current->angle, sine, cosine);
 
-	float32 pivotRight = ((sprite->GetWidth()-pivotPoint.x)*current->size.x*current->sizeOverLife.x)/2.f;
-	float32 pivotLeft = (pivotPoint.x*current->size.x*current->sizeOverLife.x)/2.f;
-	float32 pivotUp = (pivotPoint.y*current->size.y*current->sizeOverLife.y)/2.f;
-	float32 pivotDown = ((sprite->GetHeight()-pivotPoint.y)*current->size.y*current->sizeOverLife.y)/2.f;
+	// Draw pivot point is Sprite center + layer pivot point.
+	Vector2 drawPivotPoint = GetDrawPivotPoint();
+
+	float32 pivotRight = ((sprite->GetWidth() /2 - drawPivotPoint.x)*current->size.x*current->sizeOverLife.x)/2.f;
+	float32 pivotLeft = (drawPivotPoint.x*current->size.x*current->sizeOverLife.x)/2.f;
+	float32 pivotUp = (drawPivotPoint.y*current->size.y*current->sizeOverLife.y)/2.f;
+	float32 pivotDown = ((sprite->GetHeight()-drawPivotPoint.y)*current->size.y*current->sizeOverLife.y)/2.f;
 
 	Vector3 dxc = dx*cosine;
 	Vector3 dxs = dx*sine;
 	Vector3 dyc = dy*cosine;
 	Vector3 dys = dy*sine;
 
-	topLeft = current->position+(dxs+dyc)*pivotLeft + (dxc-dys)*pivotDown;
-	topRight = current->position+(-dxc+dys)*pivotUp + (dxs+dyc)*pivotLeft;
-	botLeft = current->position+(dxc-dys)*pivotDown + (-dxs-dyc)*pivotRight;
-	botRight = current->position+(-dxs-dyc)*pivotRight + (-dxc+dys)*pivotUp;
+	// Apply offset to the current position according to the emitter position.
+	UpdateCurrentParticlePosition(current);
+
+	topLeft = currentParticlePosition+(dxs+dyc)*pivotLeft + (dxc-dys)*pivotDown;
+	topRight = currentParticlePosition+(-dxc+dys)*pivotUp + (dxs+dyc)*pivotLeft;
+	botLeft = currentParticlePosition+(dxc-dys)*pivotDown + (-dxs-dyc)*pivotRight;
+	botRight = currentParticlePosition+(-dxs-dyc)*pivotRight + (-dxc+dys)*pivotUp;
 }
 
 void ParticleLayer3D::CalcLong(Particle* current,
@@ -207,8 +214,11 @@ void ParticleLayer3D::CalcLong(Particle* current,
 	float32 widthDiv2 = sprite->GetWidth()*current->size.x*current->sizeOverLife.x;
 	float32 heightDiv2 = sprite->GetHeight()*current->size.y*current->sizeOverLife.y;
 
-	topRight = current->position + widthDiv2*vecShort;
-	topLeft = current->position - widthDiv2*vecShort;
+	// Apply offset to the current position according to the emitter position.
+	UpdateCurrentParticlePosition(current);
+
+	topRight = currentParticlePosition + widthDiv2*vecShort;
+	topLeft = currentParticlePosition - widthDiv2*vecShort;
 	botRight = topRight + heightDiv2*vecLong;
 	botLeft = topLeft + heightDiv2*vecLong;
 }
@@ -224,6 +234,8 @@ ParticleLayer * ParticleLayer3D::Clone(ParticleLayer * dstLayer /*= 0*/)
 {
 	if(!dstLayer)
 	{
+		// YuriCoder, 2013/04/30. TODO - this part isn't supposed to work, since
+		// dstLayer is always NULL here. Return to it later.
 		ParticleEmitter* parentFor3DLayer = NULL;
 		if (dynamic_cast<ParticleLayer3D*>(dstLayer))
 		{
@@ -231,6 +243,7 @@ ParticleLayer * ParticleLayer3D::Clone(ParticleLayer * dstLayer /*= 0*/)
 		}
 
 		dstLayer = new ParticleLayer3D(parentFor3DLayer);
+		dstLayer->SetLong(this->isLong);
 	}
 
 	ParticleLayer::Clone(dstLayer);
@@ -267,6 +280,27 @@ void ParticleLayer3D::SetLong(bool value)
 {
 	isLong = value;
 	renderBatch->GetMaterial()->SetTwoSided(isLong);
+}
+
+void ParticleLayer3D::UpdateCurrentParticlePosition(Particle* particle)
+{
+	if (this->parent)
+	{
+		// For Superemitter adjust the particle position according to the
+		// current emitter position.
+		this->currentParticlePosition = particle->position + (parent->GetPosition() - parent->GetInitialTranslationVector());
+	}
+	else
+	{
+		// For all other types just leave the particle position untouched.
+		this->currentParticlePosition = particle->position;
+	}
+}
+
+void ParticleLayer3D::CreateInnerEmitter()
+{
+	SafeRelease(this->innerEmitter);
+	this->innerEmitter = new ParticleEmitter3D();
 }
 
 };
