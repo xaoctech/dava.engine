@@ -28,6 +28,8 @@
  * Created by Igor Solovey
  =====================================================================================*/
 
+#if 0
+
 #include "SoundTest.h"
 
 SoundTest::SoundTest():
@@ -151,3 +153,5 @@ void SoundTest::Update(float32 timeElapsed)
 
     TestTemplate<SoundTest>::Update(timeElapsed);
 }
+
+#endif

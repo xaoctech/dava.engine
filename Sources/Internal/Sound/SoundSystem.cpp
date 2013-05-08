@@ -25,297 +25,140 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Ivan Petrochenko
+        * Created by Igor Solovey
 =====================================================================================*/
 
+#include "Base/FastName.h"
 #include "Sound/SoundSystem.h"
-#include "Sound/SoundChannel.h"
-#include "Sound/ALUtils.h"
-#include "Sound/SoundInstance.h"
 #include "Sound/SoundGroup.h"
+#include "Sound/SoundEvent.h"
+#include "Sound/SoundEventCategory.h"
+#include "Sound/VolumeAnimatedObject.h"
+#include "Sound/FMODUtils.h"
 
 #ifdef __DAVAENGINE_IPHONE__
-#include "AudioToolbox/AudioServices.h"
-#endif
-
-
-#ifdef __DAVAENGINE_IPHONE__
-void interrruptionListenerCallback(void * userData, UInt32 iterruptionState)
-{
-
-}
+#include "fmodiphone.h"
 #endif
 
 namespace DAVA
 {
-    
-#ifdef __DAVASOUND_AL__
-    ALCcontext * context = NULL;
-    ALCdevice * device = NULL;
-#endif //#ifdef __DAVASOUND_AL__
-    SoundSystem::SoundSystem(int32 _maxChannels)
-    :maxChannels(_maxChannels),
-        volume(1.f)
-    {
-#ifdef __DAVAENGINE_IPHONE__
-        OSStatus result = AudioSessionInitialize(NULL, NULL, interrruptionListenerCallback, NULL);
-        UInt32 category = kAudioSessionCategory_AmbientSound;
-        result = AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(category), &category);
-#endif
-        
-#ifdef __DAVASOUND_AL__
-	device = alcOpenDevice(0);
-	if(device)
-	{
-		context = alcCreateContext(device, 0);
-		AL_CHECKERROR();
-		AL_VERIFY(alcMakeContextCurrent(context));
-		AL_VERIFY(alDistanceModel( AL_INVERSE_DISTANCE_CLAMPED ) );
-	}
-#endif //#ifdef __DAVASOUND_AL__
-
-#ifdef __DAVAENGINE_ANDROID__    
-    SLresult result;
-    
-    engineObject = NULL;
-    engineEngine = NULL;
-    outputMixObject = NULL;
-    
-    // create engine
-    result = slCreateEngine(&engineObject, 0, NULL, 0, NULL, NULL);
-    DVASSERT(SL_RESULT_SUCCESS == result);
-    
-    // realize the engine
-    result = (*engineObject)->Realize(engineObject, SL_BOOLEAN_FALSE);
-    DVASSERT(SL_RESULT_SUCCESS == result);
-    
-    // get the engine interface, which is needed in order to create other objects
-    result = (*engineObject)->GetInterface(engineObject, SL_IID_ENGINE, &engineEngine);
-    DVASSERT(SL_RESULT_SUCCESS == result);
-    
-    // create output mix, with environmental reverb specified as a non-required interface
-    const SLInterfaceID ids[1] = {SL_IID_ENVIRONMENTALREVERB};
-    const SLboolean req[1] = {SL_BOOLEAN_FALSE};
-    result = (*engineEngine)->CreateOutputMix(engineEngine, &outputMixObject, 1, ids, req);
-    DVASSERT(SL_RESULT_SUCCESS == result);
-    
-    // realize the output mix
-    result = (*outputMixObject)->Realize(outputMixObject, SL_BOOLEAN_FALSE);
-    DVASSERT(SL_RESULT_SUCCESS == result);
-#else
-    
-	for(int32 i = 0; i < maxChannels; ++i)
-	{
-		SoundChannel * ch = new SoundChannel();
-		channelsPool.push_back(ch);
-	}
-#endif //#ifdef __DAVAENGINE_ANDROID__
-
-	groupFX = new SoundGroup();
-	groupMusic = new SoundGroup();
+SoundSystem::SoundSystem(int32 maxChannels)
+{
+	FMOD_VERIFY(FMOD::EventSystem_Create(&fmodEventSystem));
+	FMOD_VERIFY(fmodEventSystem->getSystemObject(&fmodSystem));
+	FMOD_VERIFY(fmodEventSystem->init(maxChannels, FMOD_INIT_NORMAL, 0));
 }
 
 SoundSystem::~SoundSystem()
 {
-	SafeDelete(groupMusic);
-	SafeDelete(groupFX);
-
-	for(int32 i = 0; i < maxChannels; ++i)
+	for(Map<int, SoundGroup*>::iterator it = soundGroups.begin(); it != soundGroups.end(); it++)
 	{
-		SoundChannel * ch = channelsPool[i];
-		delete(ch);
-	}
-#ifdef __DAVASOUND_AL__
-	alcMakeContextCurrent(0);
-	alcDestroyContext(context);
-	alcCloseDevice(device);
-#endif //#ifdef __DAVASOUND_AL__
-    
-#ifdef __DAVAENGINE_ANDROID__
-    // destroy output mix object, and invalidate all associated interfaces
-    if (outputMixObject != NULL)
-    {
-        (*outputMixObject)->Destroy(outputMixObject);
-        outputMixObject = NULL;
-    }
-    
-    // destroy engine object, and invalidate all associated interfaces
-    if (engineObject != NULL)
-    {
-        (*engineObject)->Destroy(engineObject);
-        engineObject = NULL;
-        engineEngine = NULL;
-    }
-
-#endif //#ifdef __DAVAENGINE_ANDROID__
-}
-    
-#ifdef __DAVAENGINE_ANDROID__
-SLObjectItf SoundSystem::getEngineObject()
-{
-    return engineObject;
-}
-
-SLEngineItf SoundSystem::getEngineEngine()
-{
-    return engineEngine;
-}
-    
-SLObjectItf SoundSystem::getOutputMixObject()
-{
-    return outputMixObject;
-}
-#endif //#ifdef __DAVAENGINE_ANDROID__
-SoundChannel * SoundSystem::FindChannel(int32 priority)
-{
-	SoundChannel * ch = 0;
-
-	Deque<SoundChannel*>::iterator it;
-	Deque<SoundChannel*>::iterator itEnd = channelsPool.end();
-	for(it = channelsPool.begin(); it != itEnd; ++it)
-	{
-		ch = *it;
-		if(SoundChannel::STATE_FREE == ch->GetState())
-		{
-			break;
-		}
+		SafeDelete(it->second);
 	}
 
-	if(!ch)
-	{
-		for(it = channelsPool.begin(); it != itEnd; ++it)
-		{
-			ch = *it;
-			if(ch->GetProirity() < priority)
-			{
-				ch->Stop();
-				break;
-			}
-		}
-	}
+	FMOD_VERIFY(fmodSystem->release());
+}
 
-	return ch;
+void SoundSystem::LoadFEV(const FilePath & filePath)
+{
+	FMOD_VERIFY(fmodEventSystem->load(filePath.GetAbsolutePathname().c_str(), 0, 0));
+}
+
+SoundEvent * SoundSystem::CreateSoundEvent(const String & eventPath)
+{
+	FMOD::Event * fmodEvent = 0;
+	FMOD_VERIFY(fmodEventSystem->getEvent(eventPath.c_str(), FMOD_EVENT_DEFAULT, &fmodEvent));
+	if(fmodEvent)
+		return new SoundEvent(fmodEvent);
+	else
+		return 0;
 }
 
 void SoundSystem::Update()
 {
-	Deque<SoundChannel*>::iterator it;
-	Deque<SoundChannel*>::iterator itEnd = channelsPool.end();
-	for(it = channelsPool.begin(); it != itEnd; ++it)
+	for(Vector<VolumeAnimatedObject *>::iterator it = animatedObjects.begin(); it != animatedObjects.end(); it++)
 	{
-		SoundChannel * ch = *it;
-		if(SoundChannel::STATE_FREE != ch->GetState())
-		{
-			ch->Update();
-		}
+		(*it)->Update();
 	}
 
-	List<SoundInstance*>::iterator sit = soundInstances.begin();
-	List<SoundInstance*>::iterator sEnd = soundInstances.end();
-	while(sit != sEnd)
-	{
-		if(!(*sit)->Update())
-		{
-			sit = soundInstances.begin();
-			continue;
-		}
-		++sit;
-	}
-}
-
-void SoundSystem::AddSoundInstance(SoundInstance * soundInstance)
-{
-	soundInstances.push_back(soundInstance);
-}
-
-void SoundSystem::RemoveSoundInstance(SoundInstance * soundInstance)
-{
-	soundInstances.remove(soundInstance);
+	fmodEventSystem->update();
 }
 
 void SoundSystem::Suspend()
 {
-#ifdef __DAVAENGINE_ANDROID__
-    groupFX->Suspend();
-    groupMusic->Suspend();
-#else
-	Deque<SoundChannel*>::iterator it;
-	Deque<SoundChannel*>::iterator itEnd = channelsPool.end();
-	for(it = channelsPool.begin(); it != itEnd; ++it)
-	{
-		SoundChannel * ch = *it;
-		if(SoundChannel::STATE_PLAYING == ch->GetState())
-		{
-			ch->Pause(true);
-		}
-	}
-#endif //#ifdef __DAVAENGINE_ANDROID__
-    
-#ifdef __DAVASOUND_AL__
-	alcSuspendContext(context);
-#endif //#ifdef __DAVASOUND_AL__
+
 }
 
 void SoundSystem::Resume()
 {
-#ifdef __DAVAENGINE_ANDROID__
-    groupFX->Resume();
-    groupMusic->Resume();
-#endif //#ifdef __DAVAENGINE_ANDROID__
-    
-#ifdef __DAVASOUND_AL__
-	alcProcessContext(context);
-	Deque<SoundChannel*>::iterator it;
-	Deque<SoundChannel*>::iterator itEnd = channelsPool.end();
-	for(it = channelsPool.begin(); it != itEnd; ++it)
+#ifdef __DAVAENGINE_IPHONE__
+    FMOD_IPhone_RestoreAudioSession();
+#endif
+}
+
+void SoundSystem::SetListenerPosition(const Vector3 & position)
+{
+	FMOD_VECTOR pos = {position.x, position.y, position.z};
+	FMOD_VERIFY(fmodEventSystem->set3DListenerAttributes(0, &pos, 0, 0, 0));
+}
+
+void SoundSystem::SetListenerOrientation(const Vector3 & at, const Vector3 & left)
+{
+	Vector3 atNorm = at;
+	atNorm.Normalize();
+	Vector3 upNorm = at.CrossProduct(left);
+	upNorm.Normalize();
+
+	FMOD_VECTOR fmodAt = {atNorm.x, atNorm.y, atNorm.z};
+	FMOD_VECTOR fmodUp = {upNorm.x, upNorm.y, upNorm.z};
+	FMOD_VERIFY(fmodEventSystem->set3DListenerAttributes(0, 0, 0, &fmodAt, &fmodUp));
+}
+
+SoundGroup * SoundSystem::GetSoundGroup(const FastName & groupName)
+{
+	if(soundGroups.find(groupName.Index()) == soundGroups.end())
+		return 0;
+	else
+		return soundGroups[groupName.Index()];
+}
+
+SoundGroup * SoundSystem::CreateSoundGroup(const FastName & groupName)
+{
+	SoundGroup * group = 0;
+	if(soundGroups.find(groupName.Index()) == soundGroups.end())
 	{
-		SoundChannel * ch = *it;
-		if(SoundChannel::STATE_PAUSED == ch->GetState())
-		{
-			ch->Pause(false);
-		}
+		group = new SoundGroup();
+		soundGroups[groupName.Index()] = group;
 	}
-#endif //#ifdef __DAVASOUND_AL__
+	else
+	{
+		group = soundGroups[groupName.Index()];
+	}
+
+	return group;
 }
 
-void SoundSystem::SetVolume(float32 _volume)
+ScopedPtr<SoundEventCategory> SoundSystem::GetSoundEventCategory(const String & category)
 {
-	volume = Clamp(_volume, 0.f, 1.f);
-#ifdef __DAVASOUND_AL__
-	AL_VERIFY(alListenerf(AL_GAIN, volume));
-#endif //#ifdef __DAVASOUND_AL__
+	FMOD::EventCategory * fmodCategory = 0;
+	FMOD_VERIFY(fmodEventSystem->getCategory(category.c_str(), &fmodCategory));
+
+	if(fmodCategory)
+		return ScopedPtr<SoundEventCategory>(new SoundEventCategory(fmodCategory));
+	else
+		return ScopedPtr<SoundEventCategory>(0);
 }
 
-void SoundSystem::SetPosition(const Vector3 & position)
+void SoundSystem::AddVolumeAnimatedObject(VolumeAnimatedObject * object)
 {
-#ifdef __DAVASOUND_AL__
-	AL_VERIFY(alListener3f(AL_POSITION, position.x, position.y, position.z));
-#endif //#ifdef __DAVASOUND_AL__
+	animatedObjects.push_back(object);
 }
 
-void SoundSystem::SetOrientation(const Vector3 & at, const Vector3 & up)
+void SoundSystem::RemoveVolumeAnimatedObject(VolumeAnimatedObject * object)
 {
-#ifdef __DAVASOUND_AL__
-	ALfloat listenerOri[]={at.x, at.y, at.z, up.x, up.y, up.z};
-	AL_VERIFY(alListenerfv(AL_ORIENTATION, listenerOri));
-#endif //#ifdef __DAVASOUND_AL__
+	Vector<VolumeAnimatedObject *>::iterator it = std::find(animatedObjects.begin(), animatedObjects.end(), object);
+	if(it != animatedObjects.end())
+		animatedObjects.erase(it);
 }
-
-float32 SoundSystem::GetVolume()
-{
-	return volume;
-}
-
-SoundGroup		* SoundSystem::GroupFX()
-{
-	return groupFX;
-}
-
-SoundGroup		* SoundSystem::GroupMusic()
-{
-	return groupMusic;
-}
-
-
 
 };

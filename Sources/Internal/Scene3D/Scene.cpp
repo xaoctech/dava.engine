@@ -65,6 +65,7 @@
 #include "Scene3D/Systems/UpdateSystem.h"
 #include "Scene3D/Systems/LightUpdateSystem.h"
 #include "Scene3D/Systems/SwitchSystem.h"
+#include "Scene3D/Systems/SoundUpdateSystem.h"
 
 //#include "Entity/Entity.h"
 //#include "Entity/EntityManager.h"
@@ -128,6 +129,9 @@ void Scene::CreateSystems()
 
 	switchSystem = new SwitchSystem(this);
 	AddSystem(switchSystem, (1 << Component::SWITCH_COMPONENT));
+
+	soundSystem = new SoundUpdateSystem(this);
+	AddSystem(soundSystem, (1 << Component::TRANSFORM_COMPONENT) | (1 << Component::SOUND_COMPONENT));
 }
 
 Scene::~Scene()
