@@ -10,20 +10,11 @@
       <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
       <Extensions>cpp;c;cxx;moc;h;def;odl;idl;res;</Extensions>
     </Filter>
-    <Filter Include="Sources\ParticlesEditorQT">
-      <UniqueIdentifier>{b82196cb-74f3-409b-b4b5-ab952345f92b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\ParticlesEditorQT\Helpers">
       <UniqueIdentifier>{88ec8ec7-ff55-4ccd-860f-165ca426f6ab}</UniqueIdentifier>
     </Filter>
     <Filter Include="Sources\ParticlesEditorQT\Nodes">
       <UniqueIdentifier>{697efec6-720b-409a-b055-42065ec4dc5b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Qt\DockParticleEditor">
-      <UniqueIdentifier>{fb8e541a-57aa-4294-9a07-7fba1040c8d3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Qt\DockSceneGraph">
-      <UniqueIdentifier>{8ff35518-92c1-4281-a180-76183420c027}</UniqueIdentifier>
     </Filter>
     <Filter Include="Classes">
       <UniqueIdentifier>{4f2db588-397c-479c-9871-d530187be966}</UniqueIdentifier>
