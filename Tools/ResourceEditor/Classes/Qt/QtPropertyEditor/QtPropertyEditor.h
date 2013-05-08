@@ -23,6 +23,9 @@ public:
 
 	void Expand(QtPropertyItem *);
 
+signals:
+	void PropertyChanged(const QString &name, QtPropertyData *data);
+
 protected:
 	QtPropertyModel *curModel;
 	QtPropertyItemDelegate *curItemDelegate;

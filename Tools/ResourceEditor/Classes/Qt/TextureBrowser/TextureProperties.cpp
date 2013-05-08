@@ -6,7 +6,6 @@
 
 TextureProperties::TextureProperties(QWidget *parent /* = 0 */)
 	: QtGroupBoxPropertyBrowser(parent)//QtTreePropertyBrowser(parent)
-	, curTexture(NULL)
 	, curTextureDescriptor(NULL)
 	, reactOnPropertyChange(true)
 	, texturePropertiesChanged(false)
@@ -139,25 +138,22 @@ TextureProperties::TextureProperties(QWidget *parent /* = 0 */)
 TextureProperties::~TextureProperties()
 {
 	Save();
-	DAVA::SafeRelease(curTexture);
 	DAVA::SafeRelease(curTextureDescriptor);
 
 	delete oneForAllParent;
 }
 
-void TextureProperties::setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor *descriptor)
+void TextureProperties::setTextureDescriptor(DAVA::TextureDescriptor *descriptor)
 {
 	reactOnPropertyChange = false;
 
 	Save();
-	DAVA::SafeRelease(curTexture);
 	DAVA::SafeRelease(curTextureDescriptor);
 
-	curTexture = DAVA::SafeRetain(texture);
 	curTextureDescriptor = DAVA::SafeRetain(descriptor);
 	origImageSize = QSize(0, 0);
 
-	if(NULL != curTexture && NULL != curTextureDescriptor)
+	if(NULL != curTextureDescriptor)
 	{
 		// enable this widget
 		setEnabled(true);
@@ -232,10 +228,10 @@ void TextureProperties::setOriginalImageSize(const QSize &size)
 	reactOnPropertyChange = true;
 }
 
-const DAVA::Texture* TextureProperties::getTexture()
-{
-	return curTexture;
-}
+//const DAVA::Texture* TextureProperties::getTexture()
+//{
+//	return curTexture;
+//}
 
 const DAVA::TextureDescriptor* TextureProperties::getTextureDescriptor()
 {
@@ -244,7 +240,7 @@ const DAVA::TextureDescriptor* TextureProperties::getTextureDescriptor()
 
 void TextureProperties::propertyChanged(QtProperty * property)
 {
-	if(reactOnPropertyChange && NULL != curTextureDescriptor && NULL != curTexture)
+	if(reactOnPropertyChange && NULL != curTextureDescriptor)
 	{
 		PropertiesType type = TYPE_COMMON;
 
