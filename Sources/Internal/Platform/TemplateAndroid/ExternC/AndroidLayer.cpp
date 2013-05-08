@@ -34,7 +34,7 @@ extern "C"
 	JNIEXPORT void JNICALL Java_com_dava_framework_JNIGLSurfaceView_nativeOnTouch(JNIEnv * env, jobject classthis, jint action, jint id, jfloat x, jfloat y, jdouble time);
 	JNIEXPORT void JNICALL Java_com_dava_framework_JNIGLSurfaceView_nativeOnKeyUp(JNIEnv * env, jobject classthis, jint keyCode);
 	JNIEXPORT void JNICALL Java_com_dava_framework_JNIGLSurfaceView_nativeOnResumeView(JNIEnv * env, jobject classthis);
-	JNIEXPORT void JNICALL Java_com_dava_framework_JNIGLSurfaceView_nativeOnPauseView(JNIEnv * env, jobject classthis);
+	JNIEXPORT void JNICALL Java_com_dava_framework_JNIGLSurfaceView_nativeOnPauseView(JNIEnv * env, jobject classthis, jboolean isLock);
 
 	//JNIRenderer
 	JNIEXPORT void JNICALL Java_com_dava_framework_JNIRenderer_nativeResize(JNIEnv * env, jobject classthis, jint w, jint h);
@@ -264,11 +264,11 @@ void Java_com_dava_framework_JNIGLSurfaceView_nativeOnResumeView(JNIEnv * env, j
 		core->StartForeground();
 	}
 }
-void Java_com_dava_framework_JNIGLSurfaceView_nativeOnPauseView(JNIEnv * env, jobject classthis)
+void Java_com_dava_framework_JNIGLSurfaceView_nativeOnPauseView(JNIEnv * env, jobject classthis, jboolean isLock)
 {
 	if(core)
 	{
-		core->StopForeground();
+		core->StopForeground(isLock);
 	}
 }
 
