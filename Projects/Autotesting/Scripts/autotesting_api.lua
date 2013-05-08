@@ -237,7 +237,9 @@ function GetCenter(element)
 	--Log(tostring(control))
 	if control then
 		local position = Vector.Vector2()
+		--Log("control:GetGeometricData")
 		local geomData = control:GetGeometricData()
+		--Log("geomData:GetUnrotatedRect")
 		local rect = geomData:GetUnrotatedRect()
 	            
 		position.x = rect.x + rect.dx/2
@@ -246,7 +248,7 @@ function GetCenter(element)
 		--Log(string.format("Return position of element center [%d, %d]", position.x, position.y))
 		return position
 	else
-		OnError("Couldn't find element: "..control)
+		OnError("Couldn't find element: "..element)
 	end
 end
 
