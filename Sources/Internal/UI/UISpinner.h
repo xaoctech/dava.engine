@@ -141,6 +141,8 @@ protected:
     UIControl * nextContent;
     UIControl * contentViewport; //area that clips items when we scroll them
     
+    float32 dragAnchorX;
+    
     //these are for quick short slide gesure recognition
     float32 previousTouchX;
     float32 currentTouchX;

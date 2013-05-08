@@ -26,7 +26,8 @@
 const EmitterLayerWidget::LayerTypeMap EmitterLayerWidget::layerTypeMap[] =
 {
 	{ParticleLayer::TYPE_SINGLE_PARTICLE, "Single Particle"},
-	{ParticleLayer::TYPE_PARTICLES, "Particles"}
+	{ParticleLayer::TYPE_PARTICLES, "Particles"},
+	{ParticleLayer::TYPE_SUPEREMITTER_PARTICLES, "SuperEmitter"}
 };
 
 EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
@@ -95,6 +96,43 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 			SLOT(OnSpriteBtn()));
 	connect(spritePathLabel, SIGNAL(textChanged(const QString&)), this, SLOT(OnSpritePathChanged(const QString&)));
 
+	QVBoxLayout* innerEmitterLayout = new QVBoxLayout();
+	innerEmitterLabel = new QLabel("Inner Emitter", this);
+	innerEmitterPathLabel = new QLineEdit(this);
+	innerEmitterPathLabel->setReadOnly(true);
+	innerEmitterLayout->addWidget(innerEmitterLabel);
+	innerEmitterLayout->addWidget(innerEmitterPathLabel);
+	mainBox->addLayout(innerEmitterLayout);
+	
+	QVBoxLayout* pivotPointLayout = new QVBoxLayout();
+	pivotPointLabel = new QLabel("Pivot Point", this);
+	pivotPointLayout->addWidget(pivotPointLabel);
+	QHBoxLayout* pivotPointInnerLayout = new QHBoxLayout();
+
+	pivotPointXSpinBoxLabel = new QLabel("X:", this);
+	pivotPointInnerLayout->addWidget(pivotPointXSpinBoxLabel);
+	pivotPointXSpinBox = new QSpinBox(this);
+	pivotPointXSpinBox->setMinimum(-9999);
+	pivotPointXSpinBox->setMaximum(9999);
+	pivotPointInnerLayout->addWidget(pivotPointXSpinBox);
+
+	pivotPointYSpinBoxLabel = new QLabel("Y:", this);
+	pivotPointInnerLayout->addWidget(pivotPointYSpinBoxLabel);
+	pivotPointYSpinBox = new QSpinBox(this);
+	pivotPointYSpinBox->setMinimum(-9999);
+	pivotPointYSpinBox->setMaximum(9999);
+	pivotPointInnerLayout->addWidget(pivotPointYSpinBox);
+	
+	pivotPointResetButton = new QPushButton("Reset", this);
+	pivotPointInnerLayout->addWidget(pivotPointResetButton);
+	connect(pivotPointResetButton, SIGNAL(clicked(bool)), this, SLOT(OnPivotPointReset()));
+
+	connect(pivotPointXSpinBox, SIGNAL(valueChanged(int)), this, SLOT(OnValueChanged()));
+	connect(pivotPointYSpinBox, SIGNAL(valueChanged(int)), this, SLOT(OnValueChanged()));
+
+	pivotPointLayout->addLayout(pivotPointInnerLayout);
+	mainBox->addLayout(pivotPointLayout);
+
 	lifeTimeLine = new TimeLineWidget(this);
 	InitWidget(lifeTimeLine);
 	numberTimeLine = new TimeLineWidget(this);
@@ -132,9 +170,11 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 	connect(frameOverlifeFPSSpin, SIGNAL(valueChanged(int)),
 			this, SLOT(OnValueChanged()));
 
+	frameOverlifeFPSLabel = new QLabel("FPS", this);
+
 	frameOverlifeLayout->addWidget(frameOverlifeCheckBox);
 	frameOverlifeLayout->addWidget(frameOverlifeFPSSpin);
-	frameOverlifeLayout->addWidget(new QLabel("FPS", this));
+	frameOverlifeLayout->addWidget(frameOverlifeFPSLabel);
 	mainBox->addLayout(frameOverlifeLayout);
 	
 	angleTimeLine = new TimeLineWidget(this);
@@ -220,6 +260,14 @@ EmitterLayerWidget::~EmitterLayerWidget()
 		   SIGNAL(valueChanged(int)),
 		   this,
 		   SLOT(OnValueChanged()));
+	disconnect(pivotPointXSpinBox,
+			   SIGNAL(valueChanged(int)),
+			   this,
+			   SLOT(OnValueChanged()));
+	disconnect(pivotPointYSpinBox,
+			SIGNAL(valueChanged(int)),
+			this,
+			SLOT(OnValueChanged()));
 }
 
 void EmitterLayerWidget::InitWidget(QWidget* widget)
@@ -247,7 +295,7 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	layerNameLineEdit->setText(QString::fromStdString(layer->layerName));
 	layerTypeComboBox->setCurrentIndex(LayerTypeToIndex(layer->type));
 
-	enableCheckBox->setChecked(!layer->isDisabled);
+	enableCheckBox->setChecked(!layer->GetDisabled());
 	additiveCheckBox->setChecked(layer->GetAdditive());
 	isLongCheckBox->setChecked(layer->IsLong());
 
@@ -365,9 +413,11 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	endTimeSpin->setMinimum(0);
 	endTimeSpin->setValue(layer->endTime);
 	endTimeSpin->setMaximum(emitter->GetLifeTime());
-	
-	//, LAYER_IS_LONG
-	
+
+	const Vector2& layerPivotPoint = layer->GetPivotPoint();
+	pivotPointXSpinBox->setValue((int)layerPivotPoint.x);
+	pivotPointYSpinBox->setValue((int)layerPivotPoint.y);
+
 	blockSignals = false;
 }
 
@@ -575,7 +625,9 @@ void EmitterLayerWidget::OnValueChanged()
 						 (float32)startTimeSpin->value(),
 						 (float32)endTimeSpin->value(),
 						 frameOverlifeCheckBox->isChecked(),
-						 (float32)frameOverlifeFPSSpin->value());
+						 (float32)frameOverlifeFPSSpin->value(),
+						 (float32)pivotPointXSpinBox->value(),
+						 (float32)pivotPointYSpinBox->value());
 
 	CommandsManager::Instance()->ExecuteAndRelease(updateLayerCmd);
 
@@ -645,4 +697,49 @@ int32 EmitterLayerWidget::LayerTypeToIndex(ParticleLayer::eType layerType)
 	}
 	
 	return 0;
+}
+
+void EmitterLayerWidget::SetSuperemitterMode(bool isSuperemitter)
+{
+	// Sprite has no sense for Superemitter.
+	spriteBtn->setVisible(!isSuperemitter);
+	spriteLabel->setVisible(!isSuperemitter);
+	spritePathLabel->setVisible(!isSuperemitter);
+	
+	// The same is for "Additive" flag, Color, Alpha and Frame.
+	additiveCheckBox->setVisible(!isSuperemitter);
+	colorRandomGradient->setVisible(!isSuperemitter);
+	colorOverLifeGradient->setVisible(!isSuperemitter);
+	alphaOverLifeTimeLine->setVisible(!isSuperemitter);
+
+	frameOverlifeCheckBox->setVisible(!isSuperemitter);
+	frameOverlifeFPSSpin->setVisible(!isSuperemitter);
+	frameOverlifeFPSLabel->setVisible(!isSuperemitter);
+
+	// The Pivot Point must be hidden for Superemitter mode.
+	pivotPointLabel->setVisible(!isSuperemitter);
+	pivotPointXSpinBox->setVisible(!isSuperemitter);
+	pivotPointXSpinBoxLabel->setVisible(!isSuperemitter);
+	pivotPointYSpinBox->setVisible(!isSuperemitter);
+	pivotPointYSpinBoxLabel->setVisible(!isSuperemitter);
+	pivotPointResetButton->setVisible(!isSuperemitter);
+
+	// Some controls are however specific for this mode only - display and update them.
+	innerEmitterLabel->setVisible(isSuperemitter);
+	innerEmitterPathLabel->setVisible(isSuperemitter);
+	
+	if (isSuperemitter && this->layer->GetInnerEmitter())
+	{
+		innerEmitterPathLabel->setText(QString::fromStdString(layer->GetInnerEmitter()->GetConfigPath().GetAbsolutePathname()));
+	}
+}
+
+void EmitterLayerWidget::OnPivotPointReset()
+{
+	blockSignals = true;
+	this->pivotPointXSpinBox->setValue(0);
+	this->pivotPointYSpinBox->setValue(0);
+	blockSignals = false;
+	
+	OnValueChanged();
 }

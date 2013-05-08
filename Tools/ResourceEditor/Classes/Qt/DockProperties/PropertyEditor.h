@@ -5,6 +5,7 @@
 #include "QtPosSaver/QtPosSaver.h"
 #include "QtPropertyEditor/QtPropertyEditor.h"
 #include "Scene/SceneData.h"
+#include "Scene/SceneSignals.h"
 
 class DAVA::Entity;
 
@@ -29,6 +30,9 @@ public slots:
 	void sceneNodeSelected(SceneData *scene, DAVA::Entity *node);
 
 	void actionShowAdvanced();
+
+	void EntitySelected(SceneEditorProxy *scene, DAVA::Entity *entity);
+	void EntityDeselected(SceneEditorProxy *scene, DAVA::Entity *entity);
 
 protected:
 	bool advancedMode;

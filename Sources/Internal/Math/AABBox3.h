@@ -84,6 +84,9 @@ public:
 	//! \brief make bounding box empty
 	inline void Empty();
 
+	//! \brief Checks is bounding box is empty
+	inline bool IsEmpty() const;
+
 	//! \brief check if bounding box intersect line
 	inline bool IsIntersectLine(const Vector3 & l1, const Vector3 &l2);
 	
@@ -198,6 +201,10 @@ inline void AABBox3::Empty()
 	max = Vector3(-AABBOX_INFINITY, -AABBOX_INFINITY, -AABBOX_INFINITY);
 }
 
+inline bool AABBox3::IsEmpty() const
+{
+	return (min.x > max.x || min.y > max.y || min.z > max.z);
+}
 
 //! \brief check if bounding box intersect line
 inline bool IsIntersectLine(const Vector3 & l1, const Vector3 &l2)
