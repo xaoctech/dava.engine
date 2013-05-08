@@ -105,6 +105,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/AndroidFramework/bin/androidframework.jar</locationURI>
 		</link>
 		<link>
+			<name>libs/fmodex.jar</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/AndroidFramework/libs/fmodex.jar</locationURI>
+		</link>
+		<link>
 			<name>src/Classes</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>

@@ -16,6 +16,8 @@ public class JNIApplication extends Application
 	private native void OnTerminate(); 
 	private native void SetAssetManager(AssetManager mngr);
 	
+	private String documentsDir;
+	
 	@Override
 	public void onCreate()
 	{
@@ -26,10 +28,10 @@ public class JNIApplication extends Application
 		
 		Log.i(JNIConst.LOG_TAG, "[Application::onCreate] start"); 
 		
-		String docDir = this.getExternalFilesDir(STORAGE_SERVICE).getAbsolutePath();
+		documentsDir = this.getExternalFilesDir(STORAGE_SERVICE).getAbsolutePath();
 		
 		Log.w(JNIConst.LOG_TAG, String.format("[Application::onCreate] apkFilePath is %s", info.publicSourceDir)); 
-		OnCreateApplication(docDir, info.publicSourceDir, JNIConst.LOG_TAG, info.packageName);
+		OnCreateApplication(documentsDir, info.publicSourceDir, JNIConst.LOG_TAG, info.packageName);
 		
 		SetAssetManager(getAssets());
 
@@ -73,6 +75,11 @@ public class JNIApplication extends Application
 	public static JNIApplication GetApplication()
 	{
 		return app;
+	}
+	
+	public String GetDocumentPath()
+	{
+		return documentsDir;
 	}
 	
 	static {

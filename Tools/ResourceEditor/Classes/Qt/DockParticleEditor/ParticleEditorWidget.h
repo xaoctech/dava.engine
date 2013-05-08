@@ -45,10 +45,13 @@ signals:
 	
 private:
 	void DeleteOldWidget();
-	void UpdateVisibleTimelines();
+	void UpdateParticleEditorWidgets();
 	
 	// Update the visible timelines for the particular Particle Emitter elements.
 	void UpdateVisibleTimelinesForParticleEmitter();
+	
+	// Update visible widgets for the layer.
+	void UpdateWidgetsForLayer();
 
 private:
 	ParticleEffectPropertiesWidget* effectPropertiesWidget;
