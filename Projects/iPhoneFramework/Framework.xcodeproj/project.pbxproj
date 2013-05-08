@@ -11,6 +11,21 @@
 		0224B7341598AC2800CDEF9E /* libtheora_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B7321598AC2800CDEF9E /* libtheora_macos.a */; };
 		0224B74A1598B40100CDEF9E /* libogg_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B7481598B40100CDEF9E /* libogg_ios.a */; };
 		0224B74B1598B40100CDEF9E /* libogg_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B7491598B40100CDEF9E /* libogg_macos.a */; };
+		02E9E3A11729669200C501BC /* FMODUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E3A01729669200C501BC /* FMODUtils.h */; };
+		02E9E3DA1734176200C501BC /* SoundEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E3D41734176100C501BC /* SoundEvent.cpp */; };
+		02E9E3DB1734176200C501BC /* SoundEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E3D51734176200C501BC /* SoundEvent.h */; };
+		02E9E3DC1734176200C501BC /* SoundEventCategory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E3D61734176200C501BC /* SoundEventCategory.cpp */; };
+		02E9E3DD1734176200C501BC /* SoundEventCategory.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E3D71734176200C501BC /* SoundEventCategory.h */; };
+		02E9E3DE1734176200C501BC /* VolumeAnimatedObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E3D81734176200C501BC /* VolumeAnimatedObject.cpp */; };
+		02E9E3DF1734176200C501BC /* VolumeAnimatedObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E3D91734176200C501BC /* VolumeAnimatedObject.h */; };
+		02E9E3E21734176D00C501BC /* SoundComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E3E01734176D00C501BC /* SoundComponent.cpp */; };
+		02E9E3E31734176D00C501BC /* SoundComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E3E11734176D00C501BC /* SoundComponent.h */; };
+		02F6403B173A597A0053F038 /* libfmodevent_iphoneos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E3D01734165D00C501BC /* libfmodevent_iphoneos.a */; };
+		02F6403C173A597A0053F038 /* libfmodevent_iphonesimulator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E3D11734165D00C501BC /* libfmodevent_iphonesimulator.a */; };
+		02F6403D173A597A0053F038 /* libfmodex_iphoneos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E3A2172967F300C501BC /* libfmodex_iphoneos.a */; };
+		02F6403E173A597A0053F038 /* libfmodex_iphonesimulator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E3A3172967F300C501BC /* libfmodex_iphonesimulator.a */; };
+		02F64041173A5A950053F038 /* SoundUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02F6403F173A5A950053F038 /* SoundUpdateSystem.cpp */; };
+		02F64042173A5A950053F038 /* SoundUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 02F64040173A5A950053F038 /* SoundUpdateSystem.h */; };
 		1799E51A16CCEBDA0058061F /* ParticleForce.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1799E51816CCEBDA0058061F /* ParticleForce.cpp */; };
 		1799E51B16CCEBDA0058061F /* ParticleForce.h in Headers */ = {isa = PBXBuildFile; fileRef = 1799E51916CCEBDA0058061F /* ParticleForce.h */; };
 		17F53E2F16D36FF3004D5099 /* IWebViewControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F53E2C16D36FF3004D5099 /* IWebViewControl.h */; };
@@ -536,27 +551,12 @@
 		E8B3CCCD16B9326E002BD35F /* TransformSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3CA1316B9326E002BD35F /* TransformSystem.h */; };
 		E8B3CCD016B9326E002BD35F /* UserNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3CA1616B9326E002BD35F /* UserNode.cpp */; };
 		E8B3CCD116B9326E002BD35F /* UserNode.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3CA1716B9326E002BD35F /* UserNode.h */; };
-		E8B3CCD216B9326E002BD35F /* ALUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3CA1916B9326E002BD35F /* ALUtils.h */; };
-		E8B3CCD316B9326E002BD35F /* MusicIos.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3CA1A16B9326E002BD35F /* MusicIos.h */; };
-		E8B3CCD416B9326E002BD35F /* MusicIos.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8B3CA1B16B9326E002BD35F /* MusicIos.mm */; };
 		E8B3CCD516B9326E002BD35F /* Sound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3CA1C16B9326E002BD35F /* Sound.cpp */; };
 		E8B3CCD616B9326E002BD35F /* Sound.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3CA1D16B9326E002BD35F /* Sound.h */; };
-		E8B3CCD716B9326E002BD35F /* SoundBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3CA1E16B9326E002BD35F /* SoundBuffer.cpp */; };
-		E8B3CCD816B9326E002BD35F /* SoundBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3CA1F16B9326E002BD35F /* SoundBuffer.h */; };
-		E8B3CCD916B9326E002BD35F /* SoundChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3CA2016B9326E002BD35F /* SoundChannel.cpp */; };
-		E8B3CCDA16B9326E002BD35F /* SoundChannel.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3CA2116B9326E002BD35F /* SoundChannel.h */; };
-		E8B3CCDB16B9326E002BD35F /* SoundDataProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3CA2216B9326E002BD35F /* SoundDataProvider.cpp */; };
-		E8B3CCDC16B9326E002BD35F /* SoundDataProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3CA2316B9326E002BD35F /* SoundDataProvider.h */; };
 		E8B3CCDD16B9326E002BD35F /* SoundGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3CA2416B9326E002BD35F /* SoundGroup.cpp */; };
 		E8B3CCDE16B9326E002BD35F /* SoundGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3CA2516B9326E002BD35F /* SoundGroup.h */; };
-		E8B3CCDF16B9326E002BD35F /* SoundInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3CA2616B9326E002BD35F /* SoundInstance.cpp */; };
-		E8B3CCE016B9326E002BD35F /* SoundInstance.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3CA2716B9326E002BD35F /* SoundInstance.h */; };
-		E8B3CCE116B9326E002BD35F /* SoundOVProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3CA2816B9326E002BD35F /* SoundOVProvider.cpp */; };
-		E8B3CCE216B9326E002BD35F /* SoundOVProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3CA2916B9326E002BD35F /* SoundOVProvider.h */; };
 		E8B3CCE316B9326E002BD35F /* SoundSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3CA2A16B9326E002BD35F /* SoundSystem.cpp */; };
 		E8B3CCE416B9326E002BD35F /* SoundSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3CA2B16B9326E002BD35F /* SoundSystem.h */; };
-		E8B3CCE516B9326E002BD35F /* SoundWVProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3CA2C16B9326E002BD35F /* SoundWVProvider.cpp */; };
-		E8B3CCE616B9326E002BD35F /* SoundWVProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3CA2D16B9326E002BD35F /* SoundWVProvider.h */; };
 		E8B3CCE716B9326E002BD35F /* ScrollHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3CA2F16B9326E002BD35F /* ScrollHelper.cpp */; };
 		E8B3CCE816B9326E002BD35F /* ScrollHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3CA3016B9326E002BD35F /* ScrollHelper.h */; };
 		E8B3CCE916B9326E002BD35F /* TheoraPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3CA3116B9326E002BD35F /* TheoraPlayer.cpp */; };
@@ -668,6 +668,21 @@
 		0224B7321598AC2800CDEF9E /* libtheora_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtheora_macos.a; path = ../../Libs/libs/libtheora_macos.a; sourceTree = "<group>"; };
 		0224B7481598B40100CDEF9E /* libogg_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libogg_ios.a; path = ../../Libs/libs/libogg_ios.a; sourceTree = "<group>"; };
 		0224B7491598B40100CDEF9E /* libogg_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libogg_macos.a; path = ../../Libs/libs/libogg_macos.a; sourceTree = "<group>"; };
+		02E9E3A01729669200C501BC /* FMODUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMODUtils.h; sourceTree = "<group>"; };
+		02E9E3A2172967F300C501BC /* libfmodex_iphoneos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfmodex_iphoneos.a; path = ../../Libs/fmod/lib/iphone/libfmodex_iphoneos.a; sourceTree = "<group>"; };
+		02E9E3A3172967F300C501BC /* libfmodex_iphonesimulator.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfmodex_iphonesimulator.a; path = ../../Libs/fmod/lib/iphone/libfmodex_iphonesimulator.a; sourceTree = "<group>"; };
+		02E9E3D01734165D00C501BC /* libfmodevent_iphoneos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfmodevent_iphoneos.a; path = ../../Libs/fmod/lib/iphone/libfmodevent_iphoneos.a; sourceTree = "<group>"; };
+		02E9E3D11734165D00C501BC /* libfmodevent_iphonesimulator.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfmodevent_iphonesimulator.a; path = ../../Libs/fmod/lib/iphone/libfmodevent_iphonesimulator.a; sourceTree = "<group>"; };
+		02E9E3D41734176100C501BC /* SoundEvent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundEvent.cpp; sourceTree = "<group>"; };
+		02E9E3D51734176200C501BC /* SoundEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundEvent.h; sourceTree = "<group>"; };
+		02E9E3D61734176200C501BC /* SoundEventCategory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundEventCategory.cpp; sourceTree = "<group>"; };
+		02E9E3D71734176200C501BC /* SoundEventCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundEventCategory.h; sourceTree = "<group>"; };
+		02E9E3D81734176200C501BC /* VolumeAnimatedObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VolumeAnimatedObject.cpp; sourceTree = "<group>"; };
+		02E9E3D91734176200C501BC /* VolumeAnimatedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VolumeAnimatedObject.h; sourceTree = "<group>"; };
+		02E9E3E01734176D00C501BC /* SoundComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundComponent.cpp; sourceTree = "<group>"; };
+		02E9E3E11734176D00C501BC /* SoundComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundComponent.h; sourceTree = "<group>"; };
+		02F6403F173A5A950053F038 /* SoundUpdateSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundUpdateSystem.cpp; sourceTree = "<group>"; };
+		02F64040173A5A950053F038 /* SoundUpdateSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundUpdateSystem.h; sourceTree = "<group>"; };
 		1799E51816CCEBDA0058061F /* ParticleForce.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleForce.cpp; sourceTree = "<group>"; };
 		1799E51916CCEBDA0058061F /* ParticleForce.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleForce.h; sourceTree = "<group>"; };
 		17F53E2C16D36FF3004D5099 /* IWebViewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IWebViewControl.h; sourceTree = "<group>"; };
@@ -1195,27 +1210,12 @@
 		E8B3CA1316B9326E002BD35F /* TransformSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TransformSystem.h; sourceTree = "<group>"; };
 		E8B3CA1616B9326E002BD35F /* UserNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UserNode.cpp; sourceTree = "<group>"; };
 		E8B3CA1716B9326E002BD35F /* UserNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserNode.h; sourceTree = "<group>"; };
-		E8B3CA1916B9326E002BD35F /* ALUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ALUtils.h; sourceTree = "<group>"; };
-		E8B3CA1A16B9326E002BD35F /* MusicIos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MusicIos.h; sourceTree = "<group>"; };
-		E8B3CA1B16B9326E002BD35F /* MusicIos.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MusicIos.mm; sourceTree = "<group>"; };
 		E8B3CA1C16B9326E002BD35F /* Sound.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Sound.cpp; sourceTree = "<group>"; };
 		E8B3CA1D16B9326E002BD35F /* Sound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sound.h; sourceTree = "<group>"; };
-		E8B3CA1E16B9326E002BD35F /* SoundBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundBuffer.cpp; sourceTree = "<group>"; };
-		E8B3CA1F16B9326E002BD35F /* SoundBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundBuffer.h; sourceTree = "<group>"; };
-		E8B3CA2016B9326E002BD35F /* SoundChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundChannel.cpp; sourceTree = "<group>"; };
-		E8B3CA2116B9326E002BD35F /* SoundChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundChannel.h; sourceTree = "<group>"; };
-		E8B3CA2216B9326E002BD35F /* SoundDataProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundDataProvider.cpp; sourceTree = "<group>"; };
-		E8B3CA2316B9326E002BD35F /* SoundDataProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundDataProvider.h; sourceTree = "<group>"; };
 		E8B3CA2416B9326E002BD35F /* SoundGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundGroup.cpp; sourceTree = "<group>"; };
 		E8B3CA2516B9326E002BD35F /* SoundGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundGroup.h; sourceTree = "<group>"; };
-		E8B3CA2616B9326E002BD35F /* SoundInstance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundInstance.cpp; sourceTree = "<group>"; };
-		E8B3CA2716B9326E002BD35F /* SoundInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundInstance.h; sourceTree = "<group>"; };
-		E8B3CA2816B9326E002BD35F /* SoundOVProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundOVProvider.cpp; sourceTree = "<group>"; };
-		E8B3CA2916B9326E002BD35F /* SoundOVProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundOVProvider.h; sourceTree = "<group>"; };
 		E8B3CA2A16B9326E002BD35F /* SoundSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundSystem.cpp; sourceTree = "<group>"; };
 		E8B3CA2B16B9326E002BD35F /* SoundSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundSystem.h; sourceTree = "<group>"; };
-		E8B3CA2C16B9326E002BD35F /* SoundWVProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundWVProvider.cpp; sourceTree = "<group>"; };
-		E8B3CA2D16B9326E002BD35F /* SoundWVProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundWVProvider.h; sourceTree = "<group>"; };
 		E8B3CA2F16B9326E002BD35F /* ScrollHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScrollHelper.cpp; sourceTree = "<group>"; };
 		E8B3CA3016B9326E002BD35F /* ScrollHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScrollHelper.h; sourceTree = "<group>"; };
 		E8B3CA3116B9326E002BD35F /* TheoraPlayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TheoraPlayer.cpp; sourceTree = "<group>"; };
@@ -1311,6 +1311,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02F6403B173A597A0053F038 /* libfmodevent_iphoneos.a in Frameworks */,
+				02F6403C173A597A0053F038 /* libfmodevent_iphonesimulator.a in Frameworks */,
+				02F6403D173A597A0053F038 /* libfmodex_iphoneos.a in Frameworks */,
+				02F6403E173A597A0053F038 /* libfmodex_iphonesimulator.a in Frameworks */,
 				C1DC1F081717FD3C001C5EC3 /* libTextureConverter_macos.a in Frameworks */,
 				E81F2B0516BFF65700C4545E /* libcurl_ios.a in Frameworks */,
 				496526D0167F173400107C70 /* libdxt_ios.a in Frameworks */,
@@ -1341,6 +1345,10 @@
 		0867D691FE84028FC02AAC07 /* Framework */ = {
 			isa = PBXGroup;
 			children = (
+				02E9E3D01734165D00C501BC /* libfmodevent_iphoneos.a */,
+				02E9E3D11734165D00C501BC /* libfmodevent_iphonesimulator.a */,
+				02E9E3A2172967F300C501BC /* libfmodex_iphoneos.a */,
+				02E9E3A3172967F300C501BC /* libfmodex_iphonesimulator.a */,
 				C1DC1F071717FD3C001C5EC3 /* libTextureConverter_macos.a */,
 				E81F2B0416BFF65700C4545E /* libcurl_ios.a */,
 				496526CF167F173400107C70 /* libdxt_ios.a */,
@@ -2042,6 +2050,8 @@
 		E8B3C9AC16B9326E002BD35F /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				02E9E3E01734176D00C501BC /* SoundComponent.cpp */,
+				02E9E3E11734176D00C501BC /* SoundComponent.h */,
 				CC24801316DD17F300183D40 /* UserComponent.cpp */,
 				CC24801416DD17F300183D40 /* UserComponent.h */,
 				CCB4C44416CBC65D00F2B085 /* ComponentHelpers.cpp */,
@@ -2073,6 +2083,8 @@
 		E8B3C9FD16B9326E002BD35F /* Systems */ = {
 			isa = PBXGroup;
 			children = (
+				02F6403F173A5A950053F038 /* SoundUpdateSystem.cpp */,
+				02F64040173A5A950053F038 /* SoundUpdateSystem.h */,
 				CCC7A4AC16F1D88C0061EA5D /* UpdateSystem.cpp */,
 				CCC7A4AD16F1D88C0061EA5D /* UpdateSystem.h */,
 				E8B3C9FE16B9326E002BD35F /* BaseProcessSystem.cpp */,
@@ -2104,27 +2116,19 @@
 		E8B3CA1816B9326E002BD35F /* Sound */ = {
 			isa = PBXGroup;
 			children = (
-				E8B3CA1916B9326E002BD35F /* ALUtils.h */,
-				E8B3CA1A16B9326E002BD35F /* MusicIos.h */,
-				E8B3CA1B16B9326E002BD35F /* MusicIos.mm */,
+				02E9E3D41734176100C501BC /* SoundEvent.cpp */,
+				02E9E3D51734176200C501BC /* SoundEvent.h */,
+				02E9E3D61734176200C501BC /* SoundEventCategory.cpp */,
+				02E9E3D71734176200C501BC /* SoundEventCategory.h */,
+				02E9E3D81734176200C501BC /* VolumeAnimatedObject.cpp */,
+				02E9E3D91734176200C501BC /* VolumeAnimatedObject.h */,
+				02E9E3A01729669200C501BC /* FMODUtils.h */,
 				E8B3CA1C16B9326E002BD35F /* Sound.cpp */,
 				E8B3CA1D16B9326E002BD35F /* Sound.h */,
-				E8B3CA1E16B9326E002BD35F /* SoundBuffer.cpp */,
-				E8B3CA1F16B9326E002BD35F /* SoundBuffer.h */,
-				E8B3CA2016B9326E002BD35F /* SoundChannel.cpp */,
-				E8B3CA2116B9326E002BD35F /* SoundChannel.h */,
-				E8B3CA2216B9326E002BD35F /* SoundDataProvider.cpp */,
-				E8B3CA2316B9326E002BD35F /* SoundDataProvider.h */,
 				E8B3CA2416B9326E002BD35F /* SoundGroup.cpp */,
 				E8B3CA2516B9326E002BD35F /* SoundGroup.h */,
-				E8B3CA2616B9326E002BD35F /* SoundInstance.cpp */,
-				E8B3CA2716B9326E002BD35F /* SoundInstance.h */,
-				E8B3CA2816B9326E002BD35F /* SoundOVProvider.cpp */,
-				E8B3CA2916B9326E002BD35F /* SoundOVProvider.h */,
 				E8B3CA2A16B9326E002BD35F /* SoundSystem.cpp */,
 				E8B3CA2B16B9326E002BD35F /* SoundSystem.h */,
-				E8B3CA2C16B9326E002BD35F /* SoundWVProvider.cpp */,
-				E8B3CA2D16B9326E002BD35F /* SoundWVProvider.h */,
 			);
 			path = Sound;
 			sourceTree = "<group>";
@@ -2546,17 +2550,9 @@
 				E8B3CCCB16B9326E002BD35F /* SwitchSystem.h in Headers */,
 				E8B3CCCD16B9326E002BD35F /* TransformSystem.h in Headers */,
 				E8B3CCD116B9326E002BD35F /* UserNode.h in Headers */,
-				E8B3CCD216B9326E002BD35F /* ALUtils.h in Headers */,
-				E8B3CCD316B9326E002BD35F /* MusicIos.h in Headers */,
 				E8B3CCD616B9326E002BD35F /* Sound.h in Headers */,
-				E8B3CCD816B9326E002BD35F /* SoundBuffer.h in Headers */,
-				E8B3CCDA16B9326E002BD35F /* SoundChannel.h in Headers */,
-				E8B3CCDC16B9326E002BD35F /* SoundDataProvider.h in Headers */,
 				E8B3CCDE16B9326E002BD35F /* SoundGroup.h in Headers */,
-				E8B3CCE016B9326E002BD35F /* SoundInstance.h in Headers */,
-				E8B3CCE216B9326E002BD35F /* SoundOVProvider.h in Headers */,
 				E8B3CCE416B9326E002BD35F /* SoundSystem.h in Headers */,
-				E8B3CCE616B9326E002BD35F /* SoundWVProvider.h in Headers */,
 				E8B3CCE816B9326E002BD35F /* ScrollHelper.h in Headers */,
 				E8B3CCEA16B9326E002BD35F /* TheoraPlayer.h in Headers */,
 				E8B3CCEC16B9326E002BD35F /* UI3DView.h in Headers */,
@@ -2618,6 +2614,12 @@
 				CCC7A4AF16F1D88C0061EA5D /* UpdateSystem.h in Headers */,
 				E8B6B3C71705DEB4004F665E /* DeviceInfo.h in Headers */,
 				E8373BD917268CD9001A9770 /* UIAggregatorControl.h in Headers */,
+				02E9E3A11729669200C501BC /* FMODUtils.h in Headers */,
+				02E9E3DB1734176200C501BC /* SoundEvent.h in Headers */,
+				02E9E3DD1734176200C501BC /* SoundEventCategory.h in Headers */,
+				02E9E3DF1734176200C501BC /* VolumeAnimatedObject.h in Headers */,
+				02E9E3E31734176D00C501BC /* SoundComponent.h in Headers */,
+				02F64042173A5A950053F038 /* SoundUpdateSystem.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2907,16 +2909,9 @@
 				E8B3CCCA16B9326E002BD35F /* SwitchSystem.cpp in Sources */,
 				E8B3CCCC16B9326E002BD35F /* TransformSystem.cpp in Sources */,
 				E8B3CCD016B9326E002BD35F /* UserNode.cpp in Sources */,
-				E8B3CCD416B9326E002BD35F /* MusicIos.mm in Sources */,
 				E8B3CCD516B9326E002BD35F /* Sound.cpp in Sources */,
-				E8B3CCD716B9326E002BD35F /* SoundBuffer.cpp in Sources */,
-				E8B3CCD916B9326E002BD35F /* SoundChannel.cpp in Sources */,
-				E8B3CCDB16B9326E002BD35F /* SoundDataProvider.cpp in Sources */,
 				E8B3CCDD16B9326E002BD35F /* SoundGroup.cpp in Sources */,
-				E8B3CCDF16B9326E002BD35F /* SoundInstance.cpp in Sources */,
-				E8B3CCE116B9326E002BD35F /* SoundOVProvider.cpp in Sources */,
 				E8B3CCE316B9326E002BD35F /* SoundSystem.cpp in Sources */,
-				E8B3CCE516B9326E002BD35F /* SoundWVProvider.cpp in Sources */,
 				E8B3CCE716B9326E002BD35F /* ScrollHelper.cpp in Sources */,
 				E8B3CCE916B9326E002BD35F /* TheoraPlayer.cpp in Sources */,
 				E8B3CCEB16B9326E002BD35F /* UI3DView.cpp in Sources */,
@@ -2979,6 +2974,11 @@
 				E8B6B3C61705DEB4004F665E /* DeviceInfo.cpp in Sources */,
 				E8373BD817268CD9001A9770 /* UIAggregatorControl.cpp in Sources */,
 				E845D4E61732B7C9000DA8E7 /* FilePathObjective.mm in Sources */,
+				02E9E3DA1734176200C501BC /* SoundEvent.cpp in Sources */,
+				02E9E3DC1734176200C501BC /* SoundEventCategory.cpp in Sources */,
+				02E9E3DE1734176200C501BC /* VolumeAnimatedObject.cpp in Sources */,
+				02E9E3E21734176D00C501BC /* SoundComponent.cpp in Sources */,
+				02F64041173A5A950053F038 /* SoundUpdateSystem.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3016,11 +3016,14 @@
 					./../../Sources/External,
 					./../../Libs/freetype/include,
 					./../../Libs/include,
+					./../../Libs/fmod/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/libs\"",
+					"\"$(SRCROOT)/../../Libs/fmod/lib\"",
+					"\"$(SRCROOT)/../../Libs/fmod/lib/iphone\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Framework;
@@ -3048,11 +3051,14 @@
 					./../../Sources/External,
 					./../../Libs/freetype/include,
 					./../../Libs/include,
+					./../../Libs/fmod/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/libs\"",
+					"\"$(SRCROOT)/../../Libs/fmod/lib\"",
+					"\"$(SRCROOT)/../../Libs/fmod/lib/iphone\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Framework;
@@ -3083,6 +3089,7 @@
 					./../../Sources/External,
 					./../../Libs/freetype/include,
 					./../../Libs/include,
+					./../../Libs/fmod/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				OTHER_CFLAGS = "-mno-thumb";
@@ -3124,6 +3131,7 @@
 					./../../Sources/External,
 					./../../Libs/freetype/include,
 					./../../Libs/include,
+					./../../Libs/fmod/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				OTHER_CFLAGS = "-mno-thumb";
@@ -3165,6 +3173,7 @@
 					./../../Sources/External,
 					./../../Libs/freetype/include,
 					./../../Libs/include,
+					./../../Libs/fmod/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				OTHER_CFLAGS = "-mno-thumb";
@@ -3204,11 +3213,14 @@
 					./../../Sources/External,
 					./../../Libs/freetype/include,
 					./../../Libs/include,
+					./../../Libs/fmod/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/libs\"",
+					"\"$(SRCROOT)/../../Libs/fmod/lib\"",
+					"\"$(SRCROOT)/../../Libs/fmod/lib/iphone\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Framework;
@@ -3238,6 +3250,7 @@
 					./../../Sources/External,
 					./../../Libs/freetype/include,
 					./../../Libs/include,
+					./../../Libs/fmod/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				OTHER_CFLAGS = "-mno-thumb";
@@ -3277,11 +3290,14 @@
 					./../../Sources/External,
 					./../../Libs/freetype/include,
 					./../../Libs/include,
+					./../../Libs/fmod/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/libs\"",
+					"\"$(SRCROOT)/../../Libs/fmod/lib\"",
+					"\"$(SRCROOT)/../../Libs/fmod/lib/iphone\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Framework;

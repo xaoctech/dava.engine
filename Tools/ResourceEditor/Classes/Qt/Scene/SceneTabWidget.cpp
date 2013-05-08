@@ -14,8 +14,9 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	, oldScreenID(SCREEN_MAIN_OLD)
 	, dava3DViewMargin(10)
 	, newSceneCounter(0)
+	, curScene(NULL)
 	, curModifAxis(ST_AXIS_X)
-	, curModifMode(ST_MODIF_OFF)
+	, curModifMode(ST_MODIF_MOVE)
 	, curPivotPoint(ST_PIVOT_COMMON_CENTER)
 	, curSelDrawMode(ST_SELDRAW_DRAW_CORNERS | ST_SELDRAW_FILL_SHAPE)
 	, curColDrawMode(ST_COLL_DRAW_LAND_COLLISION)
@@ -47,10 +48,11 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	InitOldUI();
 
 	// remove -->
-	int oldTabIndex = tabBar->addTab("OldScreenMain");
-	SetTabScene(oldTabIndex, NULL);
+	/**/ int oldTabIndex = tabBar->addTab("OldScreenMain");
+	/**/ SetTabScene(oldTabIndex, NULL);
 	// <--
 
+	OpenTab("/Projects/dava.wot.art/DataSource/3d/Tanks/USSR/T-44.sc2");
 	OpenTab("/Projects/dava.wot.art/DataSource/3d/Maps/dike_village/dike_village.sc2");
 	//AddTab("/Projects/dava.wot.art/DataSource/3d/Maps/desert_train/desert_train.sc2");
 
@@ -179,8 +181,10 @@ void SceneTabWidget::CloseTab(int index)
 
 	if(doCloseScene)
 	{
-		delete scene;
 		tabBar->removeTab(index);
+
+		SceneSignals::Instance()->EmitDeactivated(scene);
+		delete scene;
 	}
 }
 
@@ -193,26 +197,34 @@ void SceneTabWidget::SetCurrentTab(int index)
 {
 	if(index >= 0 && index < tabBar->count())
 	{
-		tabBar->setCurrentIndex(index);
-		
-		SceneEditorProxy *scene = GetTabScene(index);
+		SceneEditorProxy *oldScene = curScene;
+		curScene = GetTabScene(index);
 
-		if(NULL != scene)
+		if(NULL != oldScene)
+		{
+			SceneSignals::Instance()->EmitDeactivated(oldScene);
+		}
+
+		tabBar->setCurrentIndex(index);
+
+		if(NULL != curScene)
 		{
 			// old. remove -->
-			oldInput = false;
-			UIScreenManager::Instance()->SetScreen(davaUIScreenID);
+			/**/  oldInput = false;
+			/**/  UIScreenManager::Instance()->SetScreen(davaUIScreenID);
 			// <--
 
-			dava3DView->SetScene(scene);
-			scene->SetViewportRect(dava3DView->GetRect());
+			dava3DView->SetScene(curScene);
+			curScene->SetViewportRect(dava3DView->GetRect());
+
+			SceneSignals::Instance()->EmitActivated(curScene);
 		}
 		// old. remove -->
-		else
-		{
-			oldInput = true;
-			UIScreenManager::Instance()->SetScreen(oldScreenID);
-		}
+		/**/ else
+		/**/ {
+		/**/	oldInput = true;
+		/**/	UIScreenManager::Instance()->SetScreen(oldScreenID);
+		/**/ }
 		// <--
 	}
 }
