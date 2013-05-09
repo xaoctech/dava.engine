@@ -41,9 +41,21 @@ void CommandGroupEntitiesForMultiselect::Execute()
 
 	Vector3 originalModifEntitiesCenter = entitiesToGroup.GetCommonBbox().GetCenter();
 							
-	Entity* parent = entitiesToGroup.GetEntity(0)->GetParent();
+	Entity* solidEntityToAdd = entitiesToGroup.GetEntity(0);
+	// search of  proper parent entity(with castom property isSolid)
+	while (NULL != solidEntityToAdd)
+	{
+		KeyedArchive *customProperties = solidEntityToAdd->GetCustomProperties();
+        if(customProperties && customProperties->IsKeyExists(String(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME)))
+		{
+			break;
+		}
+
+		solidEntityToAdd = solidEntityToAdd->GetParent();
+	};
+	Entity* parent = solidEntityToAdd->GetParent();
 	Entity* complexEntity = new Entity();
-	//complexEntity->SetName("textComplexEntity");
+	complexEntity->SetName("textComplexEntity");
 	complexEntity->SetDebugFlags(DebugRenderComponent::DEBUG_DRAW_ALL, true);
 
 	parent->AddNode(complexEntity);
@@ -51,15 +63,26 @@ void CommandGroupEntitiesForMultiselect::Execute()
 
 	for(size_t i = 0; i < entitiesToGroup.Size(); ++i)
 	{
-		DAVA::Entity *en = entitiesToGroup.GetEntity(i);
-		
+		Entity *en = entitiesToGroup.GetEntity(i);
+		solidEntityToAdd = en;
+		// search of  proper parent entity(with castom property isSolid)
+		while (NULL != solidEntityToAdd)
+		{
+			KeyedArchive *customProperties = solidEntityToAdd->GetCustomProperties();
+		    if(customProperties && customProperties->IsKeyExists(String(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME)))
+			{
+				break;
+			}
+
+			solidEntityToAdd = solidEntityToAdd->GetParent();
+		};
 		if(NULL != en)
 		{
 			DAVA::AABBox3 ret;
 			sep->collisionSystem->GetBoundingBox(en).GetTransformedBox(en->GetWorldTransform(), ret);
-			originalChildParentRelations[en] = en->GetParent();
 			originalMatrixes[en] = std::make_pair<Matrix4, Matrix4>(en->GetLocalTransform(), en->GetWorldTransform());
-			complexEntity->AddNode(en);
+			originalChildParentRelations[solidEntityToAdd] = solidEntityToAdd->GetParent();
+			complexEntity->AddNode(solidEntityToAdd);
 		}
 	}
 	
@@ -76,36 +99,28 @@ void CommandGroupEntitiesForMultiselect::Execute()
 
 void CommandGroupEntitiesForMultiselect::Cancel()
 {
-	/*if(NULL == sep)
+	for(Map<Entity*, Entity*>::iterator itParent = originalChildParentRelations.begin();
+		itParent != originalChildParentRelations.end(); ++itParent)
 	{
-		return;
+		Entity* parent = (*itParent).second;
+		if(NULL != parent)
+		{
+			parent->AddNode((*itParent).first);
+		}
 	}
 
-	for(size_t i = 0; i < entitiesToGroup.Size(); ++i)
+	for(Map<Entity*, std::pair<Matrix4, Matrix4>>::iterator itPosition = originalMatrixes.begin();
+		itPosition != originalMatrixes.end(); ++itPosition)
 	{
-		DAVA::Entity *en = entitiesToGroup.GetEntity(i);
-		if(NULL == en)
+		Entity* entity = (*itPosition).first;
+
+		if(NULL != entity)
 		{
-			continue;
-		}
-		Map<Entity*, Entity*>::iterator itParent = originalChildParentRelations.find(en);
-		if (itParent != originalChildParentRelations.end())
-		{
-			Entity* parent = (*itParent).second;
-			if(NULL != parent)
-			{
-				parent->AddNode(en);
-			}
-		}
-		Map<Entity*, Matrix4>::iterator itPosition = originalMatrixes.find(en);
-		if (itPosition != originalMatrixes.end())
-		{
-			Matrix4 originalPosition = (*itPosition).second;
-			sep->modifSystem->MoveEntity(en, originalPosition,originalLocalMatrixes[en]);
+			UpdateTransformMatrixes(entity, itPosition->second.first, itPosition->second.second);
 		}
 	}
 	resultEntity->GetParent()->RemoveNode(resultEntity);
-	SafeRelease(resultEntity);*/
+	SafeRelease(resultEntity);
 }
 
 void CommandGroupEntitiesForMultiselect::UpdateTransformMatrixes(Entity* entity, const Matrix4& localMatrix, Matrix4& worldMatrix)
@@ -124,6 +139,7 @@ void CommandGroupEntitiesForMultiselect::UpdateTransformMatrixes(Entity* entity,
 	if(entity->GetParent() != NULL)
 	{
 		Entity* parent = entity->GetParent();
+		//Matrix4 parentMatrix = entity->GetParent()->GetWorldTransform();
 		Matrix4 parentMatrix = Matrix4::IDENTITY;
 
 		//calculate paretn matrixes through entire parent tree
