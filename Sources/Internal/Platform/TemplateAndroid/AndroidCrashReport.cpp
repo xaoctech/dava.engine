@@ -8,7 +8,8 @@
 #include <unistd.h>
 
 
-using namespace DAVA;
+namespace DAVA
+{
 
 typedef uint32_t  kernel_sigmask_t[2];
 typedef struct ucontext {
@@ -170,3 +171,5 @@ void AndroidCrashReport::SetCustomReport(CustomReport* logger)
 {
 	s_customReport = logger;
 }
+
+} // namespace DAVA
