@@ -268,6 +268,12 @@
 		84221F0616F8AF67000E7D74 /* HangingObjectsView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84221F0516F8AF67000E7D74 /* HangingObjectsView_moc.cpp */; };
 		84221F0C16F8AF97000E7D74 /* HangingObjectsHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84221F0816F8AF97000E7D74 /* HangingObjectsHelper.cpp */; };
 		84221F0D16F8AF97000E7D74 /* HangingObjectsView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84221F0A16F8AF97000E7D74 /* HangingObjectsView.cpp */; };
+		84DBE940173D027F005535F2 /* SceneTree_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84DBE93D173D027F005535F2 /* SceneTree_moc.cpp */; };
+		84DBE941173D027F005535F2 /* SceneTreeItem_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84DBE93E173D027F005535F2 /* SceneTreeItem_moc.cpp */; };
+		84DBE942173D027F005535F2 /* SceneTreeModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84DBE93F173D027F005535F2 /* SceneTreeModel_moc.cpp */; };
+		84DBE947173D1EFC005535F2 /* SceneTree.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84DBE944173D1EFC005535F2 /* SceneTree.cpp */; };
+		84DBE948173D1EFC005535F2 /* SceneTreeItem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84DBE946173D1EFC005535F2 /* SceneTreeItem.cpp */; };
+		84DBE94C173D1F8E005535F2 /* SceneTreeModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84DBE94A173D1F8D005535F2 /* SceneTreeModel.cpp */; };
 		84EF22CE171EECA900B45031 /* ScrollZoomWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84EF22CD171EECA900B45031 /* ScrollZoomWidget_moc.cpp */; };
 		84EF22D4171EECBD00B45031 /* ScrollZoomWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84EF22D2171EECBD00B45031 /* ScrollZoomWidget.cpp */; };
 		A51FBC516D952C0C5AB72EA1 /* QtGui.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 9B8EE51E126C761F3F797428 /* QtGui.framework */; };
@@ -1091,6 +1097,15 @@
 		84221F0916F8AF97000E7D74 /* HangingObjectsHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HangingObjectsHelper.h; path = Classes/Qt/DockHangingObjects/HangingObjectsHelper.h; sourceTree = "<group>"; };
 		84221F0A16F8AF97000E7D74 /* HangingObjectsView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HangingObjectsView.cpp; path = Classes/Qt/DockHangingObjects/HangingObjectsView.cpp; sourceTree = "<group>"; };
 		84221F0B16F8AF97000E7D74 /* HangingObjectsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HangingObjectsView.h; path = Classes/Qt/DockHangingObjects/HangingObjectsView.h; sourceTree = "<group>"; };
+		84DBE93D173D027F005535F2 /* SceneTree_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneTree_moc.cpp; path = _GeneratedQt/DockSceneTree/SceneTree_moc.cpp; sourceTree = "<group>"; };
+		84DBE93E173D027F005535F2 /* SceneTreeItem_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneTreeItem_moc.cpp; path = _GeneratedQt/DockSceneTree/SceneTreeItem_moc.cpp; sourceTree = "<group>"; };
+		84DBE93F173D027F005535F2 /* SceneTreeModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneTreeModel_moc.cpp; path = _GeneratedQt/DockSceneTree/SceneTreeModel_moc.cpp; sourceTree = "<group>"; };
+		84DBE944173D1EFC005535F2 /* SceneTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneTree.cpp; path = Classes/Qt/DockSceneTree/SceneTree.cpp; sourceTree = "<group>"; };
+		84DBE945173D1EFC005535F2 /* SceneTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneTree.h; path = Classes/Qt/DockSceneTree/SceneTree.h; sourceTree = "<group>"; };
+		84DBE946173D1EFC005535F2 /* SceneTreeItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneTreeItem.cpp; path = Classes/Qt/DockSceneTree/SceneTreeItem.cpp; sourceTree = "<group>"; };
+		84DBE949173D1F8D005535F2 /* SceneTreeItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneTreeItem.h; path = Classes/Qt/DockSceneTree/SceneTreeItem.h; sourceTree = "<group>"; };
+		84DBE94A173D1F8D005535F2 /* SceneTreeModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneTreeModel.cpp; path = Classes/Qt/DockSceneTree/SceneTreeModel.cpp; sourceTree = "<group>"; };
+		84DBE94B173D1F8E005535F2 /* SceneTreeModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneTreeModel.h; path = Classes/Qt/DockSceneTree/SceneTreeModel.h; sourceTree = "<group>"; };
 		84EF22CD171EECA900B45031 /* ScrollZoomWidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScrollZoomWidget_moc.cpp; sourceTree = "<group>"; };
 		84EF22D2171EECBD00B45031 /* ScrollZoomWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScrollZoomWidget.cpp; sourceTree = "<group>"; };
 		84EF22D3171EECBD00B45031 /* ScrollZoomWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScrollZoomWidget.h; sourceTree = "<group>"; };
@@ -1542,6 +1557,7 @@
 		5C2763A415B82BDF0030A8FD /* Qt */ = {
 			isa = PBXGroup;
 			children = (
+				84DBE943173D1ED5005535F2 /* DockSceneTree */,
 				494A7CDA172A92C0005D7C7F /* Commands */,
 				E88F2FF9171C801600510B78 /* DockSceneInfo */,
 				0297F30E170B403100627F78 /* DockMaterialViewOptions */,
@@ -2321,6 +2337,29 @@
 			name = DockHangingObjects;
 			sourceTree = "<group>";
 		};
+		84DBE939173D0243005535F2 /* DockSceneTree */ = {
+			isa = PBXGroup;
+			children = (
+				84DBE93D173D027F005535F2 /* SceneTree_moc.cpp */,
+				84DBE93E173D027F005535F2 /* SceneTreeItem_moc.cpp */,
+				84DBE93F173D027F005535F2 /* SceneTreeModel_moc.cpp */,
+			);
+			name = DockSceneTree;
+			sourceTree = "<group>";
+		};
+		84DBE943173D1ED5005535F2 /* DockSceneTree */ = {
+			isa = PBXGroup;
+			children = (
+				84DBE949173D1F8D005535F2 /* SceneTreeItem.h */,
+				84DBE94A173D1F8D005535F2 /* SceneTreeModel.cpp */,
+				84DBE94B173D1F8E005535F2 /* SceneTreeModel.h */,
+				84DBE944173D1EFC005535F2 /* SceneTree.cpp */,
+				84DBE945173D1EFC005535F2 /* SceneTree.h */,
+				84DBE946173D1EFC005535F2 /* SceneTreeItem.cpp */,
+			);
+			name = DockSceneTree;
+			sourceTree = "<group>";
+		};
 		C18521A216831F84003D4A6F /* ParticlesEditorQT */ = {
 			isa = PBXGroup;
 			children = (
@@ -2921,6 +2960,7 @@
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
 			isa = PBXGroup;
 			children = (
+				84DBE939173D0243005535F2 /* DockSceneTree */,
 				494A7CE1172A9500005D7C7F /* Commands */,
 				E88F3000171C85A000510B78 /* DockSceneInfo */,
 				0297F318170B40D100627F78 /* DockMaterialViewOptions */,
@@ -3723,6 +3763,12 @@
 				E8951B3F1737AF1200755339 /* DXTConverter.cpp in Build Sources */,
 				E8951B401737AF1200755339 /* PVRConverter.cpp in Build Sources */,
 				E8951B451737AF2100755339 /* EditorCommandLineParser.cpp in Build Sources */,
+				84DBE940173D027F005535F2 /* SceneTree_moc.cpp in Build Sources */,
+				84DBE941173D027F005535F2 /* SceneTreeItem_moc.cpp in Build Sources */,
+				84DBE942173D027F005535F2 /* SceneTreeModel_moc.cpp in Build Sources */,
+				84DBE947173D1EFC005535F2 /* SceneTree.cpp in Build Sources */,
+				84DBE948173D1EFC005535F2 /* SceneTreeItem.cpp in Build Sources */,
+				84DBE94C173D1F8E005535F2 /* SceneTreeModel.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
