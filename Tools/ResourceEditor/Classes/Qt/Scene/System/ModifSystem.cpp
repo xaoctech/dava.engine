@@ -111,22 +111,12 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 							SetModifAxis(mouseOverAxis);
 						}
 
-						if(selectedEntities->Size()>1)
-						{
-							//UniteEntities(selectedEntities);
-							auto test= new CommandGroupEntitiesForMultiselect(selectedEntities);
-							CommandsManager::Instance()->ExecuteAndRelease(test);
-							//test->Cancel();
-						}
-						else
-						{
 						// set entities to be modified
 						BeginModification(selectedEntities);
 
 						// init some values, needed for modifications
 						modifStartPos3d = CamCursorPosToModifPos(camPosition, camToPointDirection, modifEntitiesCenter);
 						modifStartPos2d = event->point;
-						}
 					}
 				}
 			}
@@ -468,141 +458,3 @@ DAVA::float32 EntityModificationSystem::Scale(const DAVA::Vector2 &newPos2d)
 
 	return scaleForce;
 }
-/*
-Entity* EntityModificationSystem::UniteEntities(const EntityGroup* selectedEntities)
-{
-	Vector3 originalModifEntitiesCenter = selectedEntities->GetCommonBbox().GetCenter();
-							
-	Entity* parent = selectedEntities->GetEntity(0)->GetParent();
-	Entity* complexEntity = new Entity();
-	//complexEntity->SetName("textComplexEntity");
-	complexEntity->SetDebugFlags(DebugRenderComponent::DEBUG_DRAW_ALL, true);
-
-	parent->AddNode(complexEntity);
-	MoveEntity(complexEntity, originalModifEntitiesCenter);
-
-	Vector<Vector3> originalCentrCoordianates;
-	for(size_t i = 0; i < selectedEntities->Size(); ++i)
-	{
-		DAVA::Entity *en = selectedEntities->GetEntity(i);
-		if(NULL != en)
-		{
-			DAVA::AABBox3 ret;
-			collisionSystem->GetBoundingBox(en).GetTransformedBox(en->GetWorldTransform(), ret);
-			originalCentrCoordianates.push_back(ret.GetCenter());
-			complexEntity->AddNode(en);
-		}
-	}
-	
-	LodSystem::MergeChildLods(complexEntity);
-
-	for(size_t i = 0; i < selectedEntities->Size(); ++i)
-	{
-		MoveEntity(selectedEntities->GetEntity(i), originalCentrCoordianates[i]);
-	}
-
-	return complexEntity;
-}*/
-
-/*
-void EntityModificationSystem::MoveEntity(DAVA::Entity* entity, DAVA::Vector3& destPoint)
-{
-	if(NULL == collisionSystem || NULL == entity)
-	{
-		return;
-	}
-	DAVA::AABBox3 currentItemBB;
-	collisionSystem->GetBoundingBox(entity).GetTransformedBox(entity->GetWorldTransform(), currentItemBB);
-
-	Vector3 centrOfEntity = currentItemBB.GetCenter();
-	Matrix4 originalTransform = entity->GetLocalTransform();
-	DAVA::Vector3 moveOffset = destPoint - centrOfEntity;
-	DAVA::Matrix4 moveModification;
-	moveModification.CreateTranslation(moveOffset);
-	
-	DAVA::Matrix4 newTransform = entity->GetWorldTransform() * moveModification;
-
-	// to move the entity directly to absolute coordinates all paretn matrixes must be multiplied
-	// and be taken into consideration beacause they are procesed  in TransformSystem (HierahicFindUpdatableTransform)
-	if(entity->GetParent() != NULL)
-	{
-		Entity* parent = entity->GetParent();
-		Matrix4 parentMatrix = Matrix4::IDENTITY;
-
-		//calculate paretn matrixes through entire parent tree
-		while (parent && !(parent->GetLocalTransform() == Matrix4::IDENTITY && parent->GetWorldTransform() == Matrix4::IDENTITY))
-		{
-			Matrix4 tempMatrix = parentMatrix * parent->GetLocalTransform();
-			parentMatrix = tempMatrix;
-			parent = parent->GetParent();
-		};
-		
-		// newTransform should be devided by parentMatrix, because it would be multiplied in HierahicFindUpdatableTransform
-		// matrix operation : A / B = ( B ^ (-1) ) * A
-		Matrix4 inversedParetnMatrix;//(B ^ (-1))
-
-		bool canBeInversed = parentMatrix.GetInverse(inversedParetnMatrix);
-		if(!canBeInversed)
-		{
-			return;
-		}
-
-		Matrix4 absoluteNewTransform =  newTransform * inversedParetnMatrix ; //( B ^ (-1) ) * A
-		newTransform = absoluteNewTransform;
-	}
-
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandTransformObject(entity, originalTransform, newTransform));
-}*/
-
-/*
-void EntityModificationSystem::MoveEntity(DAVA::Entity* entity, DAVA::Matrix4& destMatrix,  DAVA::Matrix4& origMatrix)
-{
-	if(NULL == collisionSystem || NULL == entity)
-	{
-		return;
-	}
-	Matrix4 originalTransform = entity->GetLocalTransform();
-	entity->SetLocalTransform(origMatrix);
-//DAVA::AABBox3 currentItemBB;
-//collisionSystem->GetBoundingBox(entity).GetTransformedBox(entity->GetWorldTransform(), currentItemBB);
-//
-//Vector3 centrOfEntity = currentItemBB.GetCenter();
-//
-//DAVA::Vector3 moveOffset = destPoint - centrOfEntity;
-//DAVA::Matrix4 moveModification;
-//moveModification.CreateTranslation(moveOffset);
-	
-	DAVA::Matrix4 newTransform = destMatrix;
-
-	// to move the entity directly to absolute coordinates all paretn matrixes must be multiplied
-	// and be taken into consideration beacause they are procesed  in TransformSystem (HierahicFindUpdatableTransform)
-	if(entity->GetParent() != NULL)
-	{
-		Entity* parent = entity->GetParent();
-		Matrix4 parentMatrix = Matrix4::IDENTITY;
-
-		//calculate paretn matrixes through entire parent tree
-		while (parent && !(parent->GetLocalTransform() == Matrix4::IDENTITY && parent->GetWorldTransform() == Matrix4::IDENTITY))
-		{
-			Matrix4 tempMatrix = parentMatrix * parent->GetLocalTransform();
-			parentMatrix = tempMatrix;
-			parent = parent->GetParent();
-		};
-		
-		// newTransform should be devided by parentMatrix, because it would be multiplied in HierahicFindUpdatableTransform
-		// matrix operation : A / B = ( B ^ (-1) ) * A
-		Matrix4 inversedParetnMatrix;//(B ^ (-1))
-
-		bool canBeInversed = parentMatrix.GetInverse(inversedParetnMatrix);
-		if(!canBeInversed)
-		{
-			return;
-		}
-
-		Matrix4 absoluteNewTransform =  newTransform * inversedParetnMatrix ; //( B ^ (-1) ) * A
-		newTransform = absoluteNewTransform;
-	}
-
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandTransformObject(entity, originalTransform, newTransform));
-	int k =0;
-}*/

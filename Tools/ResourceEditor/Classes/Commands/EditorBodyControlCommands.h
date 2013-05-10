@@ -40,21 +40,22 @@ class CommandGroupEntitiesForMultiselect: public CommandEntityModification
 public:
 	CommandGroupEntitiesForMultiselect(const EntityGroup* entities);
 	
-	Entity* GetResultEntity();
-	
+	Entity* GetResultEntity(){return resultEntity;}
 
 protected:
 	EntityGroup				entitiesToGroup;
 	Entity*					resultEntity;
-	Map<Entity*, std::pair<Matrix4, Matrix4>> originalMatrixes; // local, world
 	Map<Entity*, Entity*>	originalChildParentRelations;//child, paretn
 	SceneEditorProxy*		sep;
 	
+	Map<Entity*, Matrix4> originalMatrixes; // local, world
+
 	virtual void Execute();
 	virtual void Cancel();
 
-	void UpdateTransformMatrixes(Entity* entity, const Matrix4& localMatrix, Matrix4& worldMatrix);
+	void UpdateTransformMatrixes(Entity* entity, Matrix4& worldMatrix);
 	void MoveEntity(Entity* entity, Vector3& destPoint);
+	Entity* GetEntityWithSolidProp(Entity* en);
 };
 
 class CommandCloneObject: public CommandEntityModification

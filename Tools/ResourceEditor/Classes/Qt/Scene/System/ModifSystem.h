@@ -26,9 +26,6 @@ public:
 	ST_ModifMode GetModifMode() const;
 	void SetModifMode(ST_ModifMode mode);
 
-	//void MoveEntity(DAVA::Entity* entity, DAVA::Vector3& destPoint);
-	//void MoveEntity(DAVA::Entity* entity, DAVA::Matrix4& destMatrix,  DAVA::Matrix4& origMatrix);
-
 protected:
 	SceneCollisionSystem *collisionSystem;
 	SceneCameraSystem *cameraSystem;
@@ -85,11 +82,6 @@ protected:
 	void MoveDone(const DAVA::Vector2 &newPos3d);
 	void RotateDone(const DAVA::Vector2 &newPos2d);
 	void ScaleDone(const DAVA::Vector2 &newPos2d);
-	
-
-
-	// Create and return new Entity and add argument enities to it
-	//DAVA::Entity* UniteEntities(const EntityGroup* entities);
 };
 
 #endif //__ENTITY_MODIFICATION_SYSTEM_H__
