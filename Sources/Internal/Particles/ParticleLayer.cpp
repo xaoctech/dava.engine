@@ -244,17 +244,7 @@ void ParticleLayer::SetSprite(Sprite * _sprite)
 
 	if(sprite)
 	{
-		FilePath spritePath = sprite->GetRelativePathname();
-        if(spritePath.GetType() == FilePath::PATH_IN_MEMORY)
-        {
-            //Sprite was saved incorrectly
-            relativeSpriteName = spritePath.GetAbsolutePathname();
-        }
-        else
-        {
-            const FilePath configPath = emitter->GetConfigPath();
-            relativeSpriteName = spritePath.GetRelativePathname(configPath.GetDirectory());
-        }
+		spritePath = sprite->GetRelativePathname();
 	}
 }
 	
@@ -722,11 +712,10 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 	YamlNode * spriteNode = node->Get("sprite");
 	if (spriteNode)
 	{
-		const String relativePathName = spriteNode->AsString();
-		relativeSpriteName = relativePathName;
-		
-        FilePath path = configPath.GetDirectory() + relativePathName;
-		Sprite * _sprite = Sprite::Create(path);
+		// Store the absolute path to sprite.
+		spritePath = FilePath(configPath.GetDirectory(), spriteNode->AsString());
+
+		Sprite * _sprite = Sprite::Create(spritePath);
 		SetSprite(_sprite);
         SafeRelease(_sprite);
 	}
@@ -885,8 +874,9 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<Vector2>(layerNode, "pivotPoint", layerPivotPoint);
 
     // Truncate an extension of the sprite file.
+	String relativePath = spritePath.GetRelativePathname(emitter->GetConfigPath().GetDirectory());
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "sprite",
-        this->relativeSpriteName.substr(0, this->relativeSpriteName.size()-4));
+        relativePath.substr(0, relativePath.size()-4));
 
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "life", this->life);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "lifeVariation", this->lifeVariation);
@@ -970,11 +960,6 @@ void ParticleLayer::SaveForcesToYamlNode(YamlNode* layerNode)
 Particle * ParticleLayer::GetHeadParticle()
 {
 	return head;
-}
-
-const String & ParticleLayer::GetRelativeSpriteName()
-{
-	return relativeSpriteName;
 }
 
 RenderBatch * ParticleLayer::GetRenderBatch()

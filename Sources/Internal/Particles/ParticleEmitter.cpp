@@ -42,6 +42,8 @@
 namespace DAVA 
 {
 
+#define PARTICLE_EMITTER_DEFAULT_LIFE_TIME 100.0f
+
 REGISTER_CLASS(ParticleEmitter);
 
 ParticleEmitter::ParticleEmitter()
@@ -74,7 +76,7 @@ void ParticleEmitter::Cleanup(bool needCleanupLayers)
 
 	time = 0.0f;
 	repeatCount = 0;
-	lifeTime = 1000000000.0f;
+	lifeTime = PARTICLE_EMITTER_DEFAULT_LIFE_TIME;
 	emitPointsCount = -1;
 	isPaused = false;
 	angle = 0.f;
@@ -418,7 +420,7 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 	configPath = filename;
 	time = 0.0f;
 	repeatCount = 0;
-	lifeTime = 1000000000.0f;
+	lifeTime = PARTICLE_EMITTER_DEFAULT_LIFE_TIME;
 
 	YamlNode * rootNode = parser->GetRootNode();
 
@@ -458,7 +460,7 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 			lifeTime = lifeTimeNode->AsFloat();
 		}else
 		{
-			lifeTime = 1000000000.0f;
+			lifeTime = PARTICLE_EMITTER_DEFAULT_LIFE_TIME;
 		}
         
         is3D = false;
@@ -553,7 +555,9 @@ void ParticleEmitter::SaveToYaml(const FilePath & filename)
         Logger::Error("ParticleEmitter::SaveToYaml() - unable to create parser!");
         return;
     }
-    
+
+	configPath = filename;
+
     YamlNode* rootYamlNode = new YamlNode(YamlNode::TYPE_MAP);
     YamlNode* emitterYamlNode = new YamlNode(YamlNode::TYPE_MAP);
     rootYamlNode->AddNodeToMap("emitter", emitterYamlNode);

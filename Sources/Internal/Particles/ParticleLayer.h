@@ -136,8 +136,6 @@ public:
 
     float32 GetLayerTime();
 
-	const String & GetRelativeSpriteName();
-
     // Whether this layer is Long Layer?
     virtual bool IsLong() {return false;};
 	virtual void SetLong(bool /*value*/) {};
@@ -227,7 +225,7 @@ protected:
 	ParticleEmitter * emitter;
 	// particle layer sprite
 	Sprite 			* sprite;
-	String			relativeSpriteName;
+	FilePath		spritePath;
 
 	ParticleLayerBatch * renderBatch;
 

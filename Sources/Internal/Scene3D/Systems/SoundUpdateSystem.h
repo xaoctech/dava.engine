@@ -25,68 +25,26 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Ivan Petrochenko
+        * Created by Igor Solovey 
 =====================================================================================*/
-
-#ifndef __DAVAENGINE_SOUND_BUFFER_H__
-#define __DAVAENGINE_SOUND_BUFFER_H__
+#ifndef __DAVAENGINE_SCENE3D_SOUNDUPDATESYSTEM_H__
+#define	__DAVAENGINE_SCENE3D_SOUNDUPDATESYSTEM_H__
 
 #include "Base/BaseTypes.h"
-#include "Base/BaseObject.h"
-#include "FileSystem/FilePath.h"
-#include "Sound/ALUtils.h"
-
-#ifdef __DAVAENGINE_ANDROID__
-#include <SLES/OpenSLES.h>
-#include <SLES/OpenSLES_Android.h>
-#endif //#ifdef __DAVAENGINE_ANDROID__
+#include "Entity/SceneSystem.h"
 
 namespace DAVA
 {
-
-class SoundBuffer;
-class SoundDataProvider;
-class SoundBuffer : public BaseObject
+class SoundUpdateSystem : public SceneSystem
 {
 public:
-	static SoundBuffer * CreateStatic(const FilePath & fileName);
-	static SoundBuffer * CreateStreamed();
-	static SoundBuffer * CreateEmpty();
-	virtual int32 Release();
+    SoundUpdateSystem(Scene * scene);
+    virtual ~SoundUpdateSystem();
 
-	void FullFill(SoundDataProvider * provider);
-    
-#ifdef __DAVAENGINE_ANDROID__
-    void FullFill(SoundDataProvider * provider, SLAndroidSimpleBufferQueueItf playerBufferQueue);
-    int32 actualBufferSize;
-#endif //#ifdef __DAVAENGINE_ANDROID__
-    
-	bool Fill(SoundDataProvider * provider, int32 size); //false if not filled
-#ifdef __DAVASOUND_AL__
-	ALuint GetALBuffer();
-#endif //#ifdef __DAVASOUND_AL__
-
-private:
-	enum eType
-	{
-		TYPE_STATIC = 0,
-		TYPE_STREAMED
-	};
-
-	SoundBuffer();
-	virtual ~SoundBuffer();
-
-#ifdef __DAVASOUND_AL__
-	ALuint buffer;
-#endif //#ifdef __DAVASOUND_AL__
-
-	FilePath fileName;
-	int8 * data;
-	eType type;
-
-friend class SoundChannel;
+    virtual void ImmediateEvent(Entity * entity, uint32 event);
 };
+    
+} // ns
 
-};
+#endif	/* __DAVAENGINE_SCENE3D_SOUNDUPDATESYSTEM_H__ */
 
-#endif //__DAVAENGINE_SOUND_BUFFER_H__

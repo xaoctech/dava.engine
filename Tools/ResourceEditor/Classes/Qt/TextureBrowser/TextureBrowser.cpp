@@ -123,7 +123,7 @@ void TextureBrowser::setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor 
 
 	// set texture to properties control.
 	// this should be done as a first step
-	ui->textureProperties->setTexture(curTexture, curDescriptor);
+	ui->textureProperties->setTextureDescriptor(curDescriptor);
 	updatePropertiesWarning();
 
 	// if texture is ok - set it and enable texture views
