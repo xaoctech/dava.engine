@@ -25,95 +25,41 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Ivan Petrochenko
+        * Created by Igor Solovey
 =====================================================================================*/
 
-#include "Sound/SoundWVProvider.h"
-#include "FileSystem/File.h"
-#include "Sound/SoundBuffer.h"
+#ifndef __DAVAENGINE_SOUND_EVENT_CATEGORY_H__
+#define __DAVAENGINE_SOUND_EVENT_CATEGORY_H__
+
+#include "Base/BaseTypes.h"
+#include "Base/BaseObject.h"
+#include "Sound/VolumeAnimatedObject.h"
+
+namespace FMOD
+{
+class EventCategory;
+};
 
 namespace DAVA
 {
 
-SoundWVProvider::SoundWVProvider(const FilePath & _fileName)
-:	SoundDataProvider(_fileName),
-	file(0)
+class SoundEventCategory : public VolumeAnimatedObject
 {
+public:
+	SoundEventCategory(FMOD::EventCategory * category);
+	~SoundEventCategory();
 
-}
+	void SetVolume(float32 volume);
+	float32	GetVolume();
 
-SoundWVProvider::~SoundWVProvider()
-{
-	SafeRelease(file);
-}
+	void Stop();
+	void Pause(bool isPaused);
+	bool GetPaused();
 
-bool SoundWVProvider::Init()
-{
-	if(isInited)
-		return true;
-
-	SoundDataProvider::Init();
-
-	file = File::Create(fileName, File::OPEN | File::READ);
-	WaveFormat waveFormat;
-	if(0 == file)
-		return false;
-
-	if(sizeof(waveFormat) != file->Read(&waveFormat, sizeof(waveFormat)))
-		return false;
-
-	//"RIFF" 0x52494646
-	if(0x46464952 != waveFormat.riffTag)
-		return false;
-
-	//"WAVE" 0x57415645
-	if(0x45564157 != waveFormat.waveTag)
-		return false;
-
-	//"fmt" 0x666D7420
-	if(0x20746d66 != waveFormat.fmtTag)
-		return false;
-
-	//standard format
-	if(16 != waveFormat.fmtSize)
-		return false;
-
-	//PCM uncompressed
-	if(1 != waveFormat.compression)
-		return false;
-
-	channelsCount = waveFormat.channels;
-	sampleRate = waveFormat.sampleRate;
-	sampleSize = waveFormat.bitsPerSample;
-
-	//"data" 0x64617461
-	if(0x61746164 != waveFormat.dataTag)
-		return false;
-
-	leftDataSize = dataSize = waveFormat.dataSize;
-
-	//250 ms
-	streamBufferSize = channelsCount*sampleRate*sampleSize/8/4;
-
-	return true;
-}
-
-int32 SoundWVProvider::LoadData(int8 ** buffer, int32 desiredSize)
-{
-	if(-1 == desiredSize)
-	{
-		desiredSize = dataSize;
-	}
-
-	desiredSize = Min(desiredSize, leftDataSize);
-
-	int8 * data = (int8*)Alloc(desiredSize);
-	int32 actualSize = file->Read(data, desiredSize);
-	leftDataSize -= actualSize;
-    
-	*buffer = data;
-
-	return actualSize;
-}
+private:
+	FMOD::EventCategory * fmodEventCategory;
+};
 
 };
+
+#endif //__DAVAENGINE_SOUND_EVENT_CATEGORY_H__

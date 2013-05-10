@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		0260582716E79799003BE248 /* DeviceInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0260582516E79799003BE248 /* DeviceInfo.cpp */; };
+		02E9E478173A465300C501BC /* libfmodevent.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E476173A465300C501BC /* libfmodevent.dylib */; };
+		02E9E479173A465300C501BC /* libfmodex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E477173A465300C501BC /* libfmodex.dylib */; };
 		49D80A4A16E0B9A400367B12 /* TextureHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49D80A4816E0B9A400367B12 /* TextureHelper.cpp */; };
 		49DE0D3C1647BC09004965F9 /* libFramework.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 49DE0D3A1647BB9B004965F9 /* libFramework.a */; };
 		49DE0D471647BC8E004965F9 /* FileManagerWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DE0D3F1647BC8E004965F9 /* FileManagerWrapper.cpp */; };
@@ -57,6 +59,8 @@
 		0260582416E79799003BE248 /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Config.h; path = Classes/Config.h; sourceTree = "<group>"; };
 		0260582516E79799003BE248 /* DeviceInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DeviceInfo.cpp; path = Classes/DeviceInfo.cpp; sourceTree = "<group>"; };
 		0260582616E79799003BE248 /* DeviceInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DeviceInfo.h; path = Classes/DeviceInfo.h; sourceTree = "<group>"; };
+		02E9E476173A465300C501BC /* libfmodevent.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodevent.dylib; path = ../../Libs/fmod/lib/macos/libfmodevent.dylib; sourceTree = "<group>"; };
+		02E9E477173A465300C501BC /* libfmodex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodex.dylib; path = ../../Libs/fmod/lib/macos/libfmodex.dylib; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
@@ -97,6 +101,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02E9E478173A465300C501BC /* libfmodevent.dylib in Frameworks */,
+				02E9E479173A465300C501BC /* libfmodex.dylib in Frameworks */,
 				49DE0D3C1647BC09004965F9 /* libFramework.a in Frameworks */,
 				5C9676601520C0BF00EF0237 /* libz.dylib in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
@@ -139,6 +145,8 @@
 		29B97314FDCFA39411CA2CEA /* TemplateProjectMacOS */ = {
 			isa = PBXGroup;
 			children = (
+				02E9E476173A465300C501BC /* libfmodevent.dylib */,
+				02E9E477173A465300C501BC /* libfmodex.dylib */,
 				49DE0D2E1647BB9A004965F9 /* Framework.xcodeproj */,
 				5C96765F1520C0BF00EF0237 /* libz.dylib */,
 				FEFCD5E712AE50860060A1A1 /* Data */,
@@ -388,6 +396,10 @@
 				GCC_PREFIX_HEADER = LevelPerformanceTestMacOs_Prefix.pch;
 				INFOPLIST_FILE = "LevelPerformanceTestMacOs-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../Libs/fmod/lib/macos\"",
+				);
 				PRODUCT_NAME = LevelPerformanceTestMacOs;
 			};
 			name = Debug;
@@ -402,6 +414,10 @@
 				GCC_PREFIX_HEADER = LevelPerformanceTestMacOs_Prefix.pch;
 				INFOPLIST_FILE = "LevelPerformanceTestMacOs-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../Libs/fmod/lib/macos\"",
+				);
 				PRODUCT_NAME = LevelPerformanceTestMacOs;
 			};
 			name = Release;
