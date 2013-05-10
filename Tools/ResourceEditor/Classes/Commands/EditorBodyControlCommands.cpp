@@ -40,23 +40,19 @@ void CommandGroupEntitiesForMultiselect::Execute()
 	}
 
 	Vector3 originalModifEntitiesCenter = entitiesToGroup.GetCommonBbox().GetCenter();
-							
-	Entity* solidEntityToAdd = entitiesToGroup.GetEntity(0);
-	// search of  proper parent entity(with castom property isSolid)
-	while (NULL != solidEntityToAdd)
+	Entity* solidEntityToAdd = GetEntityWithSolidProp(entitiesToGroup.GetEntity(0));
+	if(NULL == solidEntityToAdd)
 	{
-		KeyedArchive *customProperties = solidEntityToAdd->GetCustomProperties();
-        if(customProperties && customProperties->IsKeyExists(String(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME)))
-		{
-			break;
-		}
-
-		solidEntityToAdd = solidEntityToAdd->GetParent();
-	};
-	Entity* parent = solidEntityToAdd->GetParent();
+		return;
+	}
+	Entity* parent = solidEntityToAdd->GetParent();//check
+	if(NULL == parent)
+	{
+		return;
+	}
 	Entity* complexEntity = new Entity();
-	complexEntity->SetName("textComplexEntity");
-	complexEntity->SetDebugFlags(DebugRenderComponent::DEBUG_DRAW_ALL, true);
+	//complexEntity->SetName("textComplexEntity");
+	//complexEntity->SetDebugFlags(DebugRenderComponent::DEBUG_DRAW_ALL, true);
 
 	parent->AddNode(complexEntity);
 	MoveEntity(complexEntity, originalModifEntitiesCenter);
@@ -64,23 +60,10 @@ void CommandGroupEntitiesForMultiselect::Execute()
 	for(size_t i = 0; i < entitiesToGroup.Size(); ++i)
 	{
 		Entity *en = entitiesToGroup.GetEntity(i);
-		solidEntityToAdd = en;
-		// search of  proper parent entity(with castom property isSolid)
-		while (NULL != solidEntityToAdd)
+		if(NULL != en )
 		{
-			KeyedArchive *customProperties = solidEntityToAdd->GetCustomProperties();
-		    if(customProperties && customProperties->IsKeyExists(String(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME)))
-			{
-				break;
-			}
-
-			solidEntityToAdd = solidEntityToAdd->GetParent();
-		};
-		if(NULL != en)
-		{
-			DAVA::AABBox3 ret;
-			sep->collisionSystem->GetBoundingBox(en).GetTransformedBox(en->GetWorldTransform(), ret);
-			originalMatrixes[en] = std::make_pair<Matrix4, Matrix4>(en->GetLocalTransform(), en->GetWorldTransform());
+			solidEntityToAdd = GetEntityWithSolidProp(en);
+			originalMatrixes[en] = en->GetWorldTransform();
 			originalChildParentRelations[solidEntityToAdd] = solidEntityToAdd->GetParent();
 			complexEntity->AddNode(solidEntityToAdd);
 		}
@@ -91,7 +74,7 @@ void CommandGroupEntitiesForMultiselect::Execute()
 	for(size_t i = 0; i < entitiesToGroup.Size(); ++i)
 	{
 		Entity* en = entitiesToGroup.GetEntity(i);
-		UpdateTransformMatrixes(en, originalMatrixes[en].first, originalMatrixes[en].second);
+		UpdateTransformMatrixes(en, originalMatrixes[en]);
 	}
 
 	resultEntity = complexEntity;
@@ -108,30 +91,46 @@ void CommandGroupEntitiesForMultiselect::Cancel()
 			parent->AddNode((*itParent).first);
 		}
 	}
-
-	for(Map<Entity*, std::pair<Matrix4, Matrix4>>::iterator itPosition = originalMatrixes.begin();
+	originalChildParentRelations.clear();
+	for(Map<Entity*, Matrix4>::iterator itPosition = originalMatrixes.begin();
 		itPosition != originalMatrixes.end(); ++itPosition)
 	{
 		Entity* entity = (*itPosition).first;
-
 		if(NULL != entity)
 		{
-			UpdateTransformMatrixes(entity, itPosition->second.first, itPosition->second.second);
+			UpdateTransformMatrixes(entity, itPosition->second);
 		}
 	}
-	resultEntity->GetParent()->RemoveNode(resultEntity);
-	SafeRelease(resultEntity);
+	originalMatrixes.clear();
+	if(NULL != resultEntity)
+	{
+		resultEntity->GetParent()->RemoveNode(resultEntity);
+		SafeRelease(resultEntity);
+	}
 }
 
-void CommandGroupEntitiesForMultiselect::UpdateTransformMatrixes(Entity* entity, const Matrix4& localMatrix, Matrix4& worldMatrix)
+Entity* CommandGroupEntitiesForMultiselect::GetEntityWithSolidProp(Entity* en)
+{
+	Entity* solidEntity = en;
+	while (NULL != solidEntity)
+	{
+		KeyedArchive *customProperties = solidEntity->GetCustomProperties();
+		if(customProperties && customProperties->IsKeyExists(String(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME)))
+		{
+			break;
+		}
+		solidEntity = solidEntity->GetParent();
+	};
+	return solidEntity;
+}
+
+void CommandGroupEntitiesForMultiselect::UpdateTransformMatrixes(Entity* entity, Matrix4& worldMatrix)
 {
 	if(NULL == entity)
 	{
 		return;
 	}
-	Matrix4 originalTransform = entity->GetLocalTransform();
-	entity->SetLocalTransform(localMatrix);
-	
+
 	DAVA::Matrix4 newTransform = worldMatrix;
 
 	// to move the entity directly to absolute coordinates all paretn matrixes must be multiplied
@@ -163,8 +162,7 @@ void CommandGroupEntitiesForMultiselect::UpdateTransformMatrixes(Entity* entity,
 		Matrix4 absoluteNewTransform =  newTransform * inversedParetnMatrix ; //( B ^ (-1) ) * A
 		newTransform = absoluteNewTransform;
 	}
-
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandTransformObject(entity, originalTransform, newTransform));
+	entity->SetLocalTransform(newTransform);
 }
 
 void CommandGroupEntitiesForMultiselect::MoveEntity(Entity* entity, Vector3& destPoint)
@@ -177,19 +175,13 @@ void CommandGroupEntitiesForMultiselect::MoveEntity(Entity* entity, Vector3& des
 	sep->collisionSystem->GetBoundingBox(entity).GetTransformedBox(entity->GetWorldTransform(), currentItemBB);
 
 	Vector3 centrOfEntity = currentItemBB.GetCenter();
-	Matrix4 originalTransform = entity->GetLocalTransform();
 	DAVA::Vector3 moveOffset = destPoint - centrOfEntity;
 	DAVA::Matrix4 moveModification;
 	moveModification.CreateTranslation(moveOffset);
 	
 	DAVA::Matrix4 newTransform = entity->GetWorldTransform() * moveModification;
 
-	UpdateTransformMatrixes(entity, Matrix4::IDENTITY, newTransform);
-}
-
-Entity* CommandGroupEntitiesForMultiselect::GetResultEntity()
-{
-	return resultEntity;
+	UpdateTransformMatrixes(entity,newTransform);
 }
 
 
