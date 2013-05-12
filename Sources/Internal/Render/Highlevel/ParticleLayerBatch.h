@@ -15,7 +15,7 @@ public:
 	ParticleLayerBatch();
 	virtual ~ParticleLayerBatch();
 
-	virtual void Draw(Camera * camera);
+	virtual void Draw(const FastName & ownerRenderPass, Camera * camera);
 	void SetTotalCount(int32 totalCount);
 	void SetParticleLayer(ParticleLayer * particleLayer);
 

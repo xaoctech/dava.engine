@@ -79,6 +79,8 @@ public:
     
     void SetLightmap(Texture * texture, const FilePath & lightmapName);
     void SetUVOffsetScale(const Vector2 & uvOffset, const Vector2 uvScale);
+    const Vector2 & GetUVScale() const { return uvScale; };
+    const Vector2 & GetUVOffset() const { return uvOffset; };
 
 	int32 GetLightmapSize();
 	void SetLightmapSize(int32 size);

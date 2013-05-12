@@ -51,6 +51,17 @@ static const FastName LAYER_SHADOW_VOLUME("ShadowVolumeRenderLayer");
     
 static const FastName INHERIT_FROM_MATERIAL("Inherit from material");
 static const FastName LAST_LAYER("Last layer");
+    
+// TEXTURES
+    
+static const FastName TEXTURE_ALBEDO = "albedo";                // can hold specular map
+static const FastName TEXTURE_LIGHTMAP = "lightmap";
+static const FastName TEXTURE_NORMALMAP = "normalmap";
+    
+// PROPERTIES
+static const FastName LIGHTMAP_UV_OFFSET = "uvOffset";
+static const FastName LIGHTMAP_UV_SCALE = "uvScale";
+
 
 } // ns
 

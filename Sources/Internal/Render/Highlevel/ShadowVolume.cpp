@@ -75,7 +75,7 @@ void ShadowVolume::Draw(Camera * camera)
     if ((flags & SHADOW_VOLUME_VISIBILITY_CRITERIA) != SHADOW_VOLUME_VISIBILITY_CRITERIA)
         return;
     
-    Light * light = GetMaterialInstance()->GetLight(0);
+    Light * light = GetMaterial()->GetLight(0);
     if((!light) || (!(light->GetFlags() & Light::CAST_SHADOW)))
 	{
 		return;

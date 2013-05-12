@@ -51,7 +51,7 @@ public:
     Mesh();
     virtual ~Mesh();
     
-    void AddPolygonGroup(PolygonGroup * polygonGroup, NMaterial * material, NMaterialInstance * materialInstance);
+    void AddPolygonGroup(PolygonGroup * polygonGroup, NMaterial * material);
 
     uint32 GetPolygonGroupCount();
     PolygonGroup * GetPolygonGroup(uint32 index);

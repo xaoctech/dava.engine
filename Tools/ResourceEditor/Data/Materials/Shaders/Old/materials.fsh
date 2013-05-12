@@ -157,6 +157,7 @@ void main()
     vec3 color = textureColor0.rgb;
 #elif defined(MATERIAL_DECAL) || defined(MATERIAL_LIGHTMAP) || defined(MATERIAL_DETAIL)
     vec3 color = textureColor0.rgb * textureColor1.rgb * 2.0;
+    //vec3 color = textureColor1.rgb;
 #elif defined(MATERIAL_TEXTURE)
     vec3 color = textureColor0.rgb;
 #else

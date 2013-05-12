@@ -93,10 +93,7 @@ public:
     inline RenderDataObject * GetRenderDataObject();
     
     void SetMaterial(NMaterial * _material);
-    void SetMaterialInstance(NMaterialInstance * _materialInstance);
-    
     inline NMaterial * GetMaterial();
-    inline NMaterialInstance * GetMaterialInstance();
     
 	void SetRenderObject(RenderObject * renderObject);
 	inline RenderObject * GetRenderObject();
@@ -131,7 +128,7 @@ protected:
     PolygonGroup * dataSource;
     RenderDataObject * renderDataObject;   // Probably should be replaced to VBO / IBO, but not sure
     NMaterial * material;                    // Should be replaced to NMaterial
-    NMaterialInstance * materialInstance; // Should be replaced by NMaterialInstance
+    // NMaterialInstance * materialInstance; // Should be replaced by NMaterialInstance
     
     
 	RenderObject * renderObject;
@@ -155,8 +152,6 @@ public:
     
     INTROSPECTION_EXTEND(RenderBatch, BaseObject,
         MEMBER(dataSource, "Data Source", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-//        MEMBER(renderDataObject, "Render Data Object", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
-//        MEMBER(renderObject, "Render Object", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
 
         MEMBER(startIndex, "Start Index", INTROSPECTION_SERIALIZABLE)
         MEMBER(indexCount, "Index Count", INTROSPECTION_SERIALIZABLE)
@@ -167,8 +162,6 @@ public:
                          
         PROPERTY("ownerLayerName", "Owner Layer", GetOwnerLayerName, SetOwnerLayerName, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
         PROPERTY("sortingKey", "Key for the sorting inside render layer", GetSortingKey, SetSortingKey, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-
-        MEMBER(materialInstance, "Material Instance", INTROSPECTION_EDITOR)
     );
 };
 
@@ -187,11 +180,6 @@ inline NMaterial * RenderBatch::GetMaterial()
     return material;
 }
     
-inline NMaterialInstance * RenderBatch::GetMaterialInstance()
-{
-    return materialInstance;
-}
-
 inline RenderObject * RenderBatch::GetRenderObject()
 {
 	return renderObject;

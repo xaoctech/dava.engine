@@ -48,12 +48,11 @@ Mesh::~Mesh()
     
 }
 
-void Mesh::AddPolygonGroup(PolygonGroup * polygonGroup, NMaterial * material, NMaterialInstance * materialInstance)
+void Mesh::AddPolygonGroup(PolygonGroup * polygonGroup, NMaterial * material)
 {
     RenderBatch * batch = new RenderBatch();
     batch->SetPolygonGroup(polygonGroup);
     batch->SetMaterial(material);
-    batch->SetMaterialInstance(materialInstance);
     batch->SetRenderDataObject(polygonGroup->renderDataObject);
     batch->SetStartIndex(0);
     batch->SetIndexCount(polygonGroup->GetIndexCount());

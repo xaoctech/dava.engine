@@ -48,7 +48,7 @@ public:
     
 	virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
 	virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
-    virtual void Draw(Camera * camera);
+    virtual void Draw(const FastName & ownerPassName, Camera * camera);
 
 private:
     Landscape * landscape;

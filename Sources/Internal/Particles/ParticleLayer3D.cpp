@@ -5,6 +5,8 @@
 #include "Math/MathHelpers.h"
 #include "Render/Highlevel/Camera.h"
 #include "ParticleEmitter3D.h"
+#include "Render/Material/MaterialSystem.h"
+#include "Render/Highlevel/RenderFastNames.h"
 
 namespace DAVA
 {
@@ -24,14 +26,10 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 //	material->SetBlendDest(BLEND_ONE);
 //	material->SetName("ParticleLayer3D_material");
 
-    NMaterial * material = new NMaterial();
-    NMaterialInstance * materialInstance = new NMaterialInstance();
-    
+    //TODO: MATERIAL TODO
+    NMaterial * material = MaterialSystem::Instance()->GetMaterial("~res:/Materials/TextureMulVertexColorAdd");
     renderBatch->SetMaterial(material);
-    renderBatch->SetMaterialInstance(materialInstance);
-
 	SafeRelease(material);
-    SafeRelease(materialInstance);
 }
 
 ParticleLayer3D::~ParticleLayer3D()
@@ -78,7 +76,7 @@ void ParticleLayer3D::DrawLayer(Camera* camera)
 	Particle * current = head;
 	if(current)
 	{
-		renderBatch->GetMaterialInstance()->GetRenderState()->SetTexture(sprite->GetTexture(current->frame));
+		renderBatch->GetMaterial()->SetTexture(TEXTURE_ALBEDO, sprite->GetTexture(current->frame));
 	}
 
 	while(current != 0)
@@ -255,13 +253,13 @@ void ParticleLayer3D::SetAdditive(bool additive)
 	ParticleLayer::SetAdditive(additive);
 	if(additive)
 	{
-		renderBatch->GetMaterialInstance()->GetRenderState()->SetBlendSrc(BLEND_SRC_ALPHA);
-		renderBatch->GetMaterialInstance()->GetRenderState()->SetBlendDest(BLEND_ONE);
-	}
+        NMaterial * material = MaterialSystem::Instance()->GetMaterial("~res:/Materials/TextureMulVertexColorAdd");
+        renderBatch->SetMaterial(material);
+    }
 	else
 	{
-		renderBatch->GetMaterialInstance()->GetRenderState()->SetBlendSrc(BLEND_SRC_ALPHA);
-		renderBatch->GetMaterialInstance()->GetRenderState()->SetBlendDest(BLEND_ONE_MINUS_SRC_ALPHA);
+        NMaterial * material = MaterialSystem::Instance()->GetMaterial("~res:/Materials/TextureMulVertexColorAlphablend");
+        renderBatch->SetMaterial(material);
 	}
 }
 

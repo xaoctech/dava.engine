@@ -71,6 +71,7 @@
 #include "Render/Material/MaterialSystem.h"
 #include "Render/Highlevel/RenderFastNames.h"
 
+
 namespace DAVA
 {
     
@@ -740,6 +741,25 @@ void SceneFileV2::ConvertOldMaterialToNewMaterial(Material * oldMaterial, Instan
             tech->GetRenderState()->SetTexture(tex, 0);
             Texture * tex2 = oldMaterial->GetTexture(Material::TEXTURE_DETAIL);
             tech->GetRenderState()->SetTexture(tex, 1);
+           
+            if (oldMaterialState)
+            {
+                resultMaterial->SetPropertyValue(LIGHTMAP_UV_OFFSET, Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVOffset());
+                resultMaterial->SetPropertyValue(LIGHTMAP_UV_SCALE, Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVScale());
+            }
+        }
+        break;
+		case Material::MATERIAL_UNLIT_TEXTURE_DETAIL:
+		case Material::MATERIAL_UNLIT_TEXTURE_DECAL:
+        {
+            newMaterialName = "~res:/Materials/UnlitTextureDetail.material";
+            resultMaterial = MaterialSystem::Instance()->GetMaterial(newMaterialName);
+            MaterialTechnique * tech = resultMaterial->GetTechnique(PASS_FORWARD);
+            Texture * tex = oldMaterial->GetTexture(Material::TEXTURE_DIFFUSE);
+            tech->GetRenderState()->SetTexture(tex, 0);
+            Texture * tex2 = oldMaterial->GetTexture(Material::TEXTURE_DETAIL);
+            tech->GetRenderState()->SetTexture(tex, 1);
+            
         }
         break;
 		case Material::MATERIAL_VERTEX_LIT_TEXTURE:
@@ -804,7 +824,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
             NMaterial * nMaterial = 0;
             NMaterialInstance * nMaterialInstance = 0;
             ConvertOldMaterialToNewMaterial(group->GetMaterial(), 0, &nMaterial, &nMaterialInstance);
-            mesh->AddPolygonGroup(group->GetPolygonGroup(), nMaterial, nMaterialInstance);
+            mesh->AddPolygonGroup(group->GetPolygonGroup(), nMaterial);
             
             
             if (group->GetMaterial()->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
@@ -821,10 +841,15 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
             if (oldMeshInstanceNode->GetLightmapCount() > 0)
             {
                 RenderBatch * batch = mesh->GetRenderBatch(k);
-                batch->GetMaterialInstance()->SetLightmap(oldMeshInstanceNode->GetLightmapDataForIndex(k)->lightmap,
-                                                          oldMeshInstanceNode->GetLightmapDataForIndex(k)->lightmapName);
-                batch->GetMaterialInstance()->SetUVOffsetScale(oldMeshInstanceNode->GetLightmapDataForIndex(k)->uvOffset,
-                                                               oldMeshInstanceNode->GetLightmapDataForIndex(k)->uvScale);
+                NMaterial * material = batch->GetMaterial();
+                MaterialTechnique * tech = material->GetTechnique(PASS_FORWARD);
+
+                tech->GetRenderState()->SetTexture(oldMeshInstanceNode->GetLightmapDataForIndex(k)->lightmap, 1);
+                batch->GetMaterial()->SetTexture(TEXTURE_LIGHTMAP, oldMeshInstanceNode->GetLightmapDataForIndex(k)->lightmap);
+
+                
+                batch->GetMaterial()->SetPropertyValue(LIGHTMAP_UV_OFFSET, Shader::UT_FLOAT_VEC2, 1, &oldMeshInstanceNode->GetLightmapDataForIndex(k)->uvOffset);
+                batch->GetMaterial()->SetPropertyValue(LIGHTMAP_UV_SCALE, Shader::UT_FLOAT_VEC2, 1, &oldMeshInstanceNode->GetLightmapDataForIndex(k)->uvScale);
             }
         }
         

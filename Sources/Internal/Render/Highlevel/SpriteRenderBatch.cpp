@@ -17,7 +17,7 @@ SpriteRenderBatch::~SpriteRenderBatch()
 {
 }
 
-void SpriteRenderBatch::Draw(Camera * camera)
+void SpriteRenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 {
 	if(!renderObject)return;
 	Matrix4 * worldTransformPtr = renderObject->GetWorldTransformPtr();
@@ -101,7 +101,7 @@ void SpriteRenderBatch::Draw(Camera * camera)
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
 
 	RenderManager::Instance()->SetRenderData(renderDataObject);
-	materialInstance->PrepareRenderState();
+	material->BindMaterialTechnique(ownerRenderPass);
 
 	RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, spriteObject->GetFrame() * 4, 4);
 }
