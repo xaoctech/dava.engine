@@ -476,7 +476,7 @@ void SceneDataManager::EnumerateTextures(DAVA::Entity *forNode, Map<String, Text
         if(!ro) continue;
         
         uint32 count = ro->GetRenderBatchCount();
-
+        // TODO: MATERIAL TODO
 //        for(uint32 b = 0; b < count; ++b)
 //        {
 //            RenderBatch *renderBatch = ro->GetRenderBatch(b);
@@ -496,7 +496,7 @@ void SceneDataManager::EnumerateTextures(DAVA::Entity *forNode, Map<String, Text
 //                CollectTexture(textures, instanceMaterial->GetLightmapName(), instanceMaterial->GetLightmap());
 //            }
 //        }
-        Logger::Error("Return code to enumerate textures");
+        // Logger::Error("Return code to enumerate textures");
         
         Landscape *land = dynamic_cast<Landscape *>(ro);
         if(land)

@@ -20,7 +20,7 @@ ParticleLayerBatch::~ParticleLayerBatch()
 {
 }
 
-void ParticleLayerBatch::Draw(Camera * camera)
+void ParticleLayerBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 {
 	if(!renderObject)return;
 	//Matrix4 * worldTransformPtr = renderObject->GetWorldTransformPtr();
@@ -39,7 +39,7 @@ void ParticleLayerBatch::Draw(Camera * camera)
 	if(!totalCount)return;
 
 	RenderManager::Instance()->SetRenderData(renderDataObject);
-	materialInstance->PrepareRenderState();
+	material->BindMaterialTechnique(ownerRenderPass);
 
 	RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLELIST, 0, 6*totalCount);
 }

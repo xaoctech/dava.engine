@@ -298,6 +298,29 @@ void NMaterialInstance::SetOwnerLayerName(const FastName & _fastname)
     
 }
     
+
+void NMaterialInstance::PrepareRenderState()
+{
+    
+    //    if (1)
+    //    {
+    //        shaderArray[0]->Dump();
+    //    }
+    
+    
+    renderState.SetShader(shader);
+    PrepareInstanceForShader(shader);
+    
+    // Bind shader & global uniforms
+    // TODO: Rethink RenderManager uniforms...
+    RenderManager::Instance()->FlushState(&renderState);
+    
+    // Here bind local uniforms of material
+    UpdateUniforms();
+    BindUniforms();
+    
+};
+    
 NMaterialInstance * NMaterialInstance::Clone()
 {
     NMaterialInstance * materialInstance = new NMaterialInstance();
@@ -346,39 +369,52 @@ void NMaterial::AddMaterialProperty(const String & keyName, YamlNode * uniformNo
         float val;
         float valArray[4];
         float valMatrix[4 * 4];
+        int32 valInt;
     }data;
     
+    uint32 size = 0;
     
     if (uniformNode->GetType() == YamlNode::TYPE_STRING)
     {
-        type = Shader::UT_FLOAT;
+        String uniformValue = uniformNode->AsString();
+        if (uniformValue.find('.') != String::npos)
+            type = Shader::UT_FLOAT;
+        else
+            type = Shader::UT_INT;
     }
-    
-    uint32 size = uniformNode->GetCount();
-    uint32 arrayCount = 0;
-    for (uint32 k = 0; k < size; ++k)
+    else if (uniformNode->GetType() == YamlNode::TYPE_ARRAY)
     {
-        if (uniformNode->Get(k)->GetType() == YamlNode::TYPE_ARRAY)
+        size = uniformNode->GetCount();
+        uint32 arrayCount = 0;
+        for (uint32 k = 0; k < size; ++k)
         {
-            arrayCount++;
+            if (uniformNode->Get(k)->GetType() == YamlNode::TYPE_ARRAY)
+            {
+                arrayCount++;
+            }
+        }
+        if (size == arrayCount)
+        {
+            if (size == 2)type = Shader::UT_FLOAT_MAT2;
+            else if (size == 3)type = Shader::UT_FLOAT_MAT3;
+            else if (size == 4)type = Shader::UT_FLOAT_MAT4;
+        }else if (arrayCount == 0)
+        {
+            if (size == 2)type = Shader::UT_FLOAT_VEC2;
+            else if (size == 3)type = Shader::UT_FLOAT_VEC3;
+            else if (size == 4)type = Shader::UT_FLOAT_VEC4;
+        }else
+        {
+            DVASSERT(0 && "Something went wrong");
         }
     }
-    if (size == arrayCount)
-    {
-        if (size == 2)type = Shader::UT_FLOAT_MAT2;
-        else if (size == 3)type = Shader::UT_FLOAT_MAT3;
-        else if (size == 4)type = Shader::UT_FLOAT_MAT4;
-    }else if (arrayCount == 0)
-    {
-        if (size == 2)type = Shader::UT_FLOAT_VEC2;
-        else if (size == 3)type = Shader::UT_FLOAT_VEC3;
-        else if (size == 4)type = Shader::UT_FLOAT_VEC4;
-    }else
-    {
-        DVASSERT(0 && "Something went wrong");
-    }
+    
+ 
     
     switch (type) {
+        case Shader::UT_INT:
+            data.valInt = uniformNode->AsInt();
+            break;
         case Shader::UT_FLOAT:
             data.val = uniformNode->AsFloat();
             break;
@@ -400,13 +436,42 @@ void NMaterial::AddMaterialProperty(const String & keyName, YamlNode * uniformNo
     materialProperty->size = 1;
     materialProperty->type = type;
     materialProperty->data = new char[Shader::GetUniformTypeSize(type)];
+    
     memcpy(materialProperty->data, &data, Shader::GetUniformTypeSize(type));
+    
+    int32 t = *(int32*)materialProperty->data;
     
     materialProperties.Insert(uniformName, materialProperty);
 }
+    
+void NMaterial::SetPropertyValue(const FastName & propertyFastName, Shader::eUniformType type, uint32 size, const void * data)
+{
+    NMaterialProperty * materialProperty = materialProperties.GetValue(propertyFastName);
+    if (materialProperty)
+    {
+        if (materialProperty->type != type || materialProperty->size != size)
+        {
+            SafeDelete(materialProperty->data);
+            materialProperty->size = size;
+            materialProperty->type = type;
+            materialProperty->data = new char[Shader::GetUniformTypeSize(type) * size];
+        }
+    }else
+    {
+        materialProperty = new NMaterialProperty;
+        materialProperty->size = size;
+        materialProperty->type = type;
+        materialProperty->data = new char[Shader::GetUniformTypeSize(type) * size];
+        materialProperties.Insert(propertyFastName, materialProperty);
+    }
+
+    memcpy(materialProperty->data, data, size * Shader::GetUniformTypeSize(type));
+}
+
 
 bool NMaterial::LoadFromFile(const String & pathname)
 {
+    materialName = pathname;
     YamlParser * parser = YamlParser::Create(pathname);
     if (!parser)
     {
@@ -534,7 +599,20 @@ MaterialTechnique * NMaterial::GetTechnique(const FastName & techniqueName)
     MaterialTechnique * technique = techniqueForRenderPass.GetValue(techniqueName);
     DVASSERT(technique != 0);
     return technique;
-}    
+}
+    
+    
+void NMaterial::SetTexture(const FastName & textureFastName, Texture * texture)
+{
+    textures.Insert(textureFastName, texture);
+}
+    
+Texture * NMaterial::GetTexture(const FastName & textureFastName) const
+{
+    return textures.GetValue(textureFastName);
+}
+
+
     
 void NMaterial::BindMaterialTechnique(const FastName & techniqueName)
 {
@@ -579,27 +657,6 @@ void NMaterial::BindMaterialTechnique(const FastName & techniqueName)
 //}
 
 
-void NMaterialInstance::PrepareRenderState()
-{
-    
-//    if (1)
-//    {
-//        shaderArray[0]->Dump();
-//    }
-    
-    
-    renderState.SetShader(shader);
-    PrepareInstanceForShader(shader);
-    
-    // Bind shader & global uniforms
-    // TODO: Rethink RenderManager uniforms...
-    RenderManager::Instance()->FlushState(&renderState);
-
-    // Here bind local uniforms of material
-    UpdateUniforms();
-    BindUniforms();
-    
-};
 
 void NMaterial::Draw(PolygonGroup * polygonGroup)
 {

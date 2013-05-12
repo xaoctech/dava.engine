@@ -176,13 +176,24 @@ public:
     
     bool LoadFromFile(const String & pathname);
     
+    // Work with textures and properties
+    void SetTexture(const FastName & textureFastName, Texture * texture);
+    Texture * GetTexture(const FastName & textureFastName) const;
+    
+    void SetPropertyValue(const FastName & propertyFastName, Shader::eUniformType type, uint32 size, const void * data);
 
+    uint32 GetLightCount() { return lightCount; };
+    void SetLight(uint32 index, Light * light) { lights[index] = light; };
+    Light * GetLight(uint32 index) { return lights[index]; };
+
+    
     void AddMaterialTechnique(FastName & techniqueName, MaterialTechnique * materialTechnique);
     void BindMaterialTechnique(const FastName & techniqueName);
     MaterialTechnique * GetTechnique(const FastName & techniqueName);
+    
     void Draw(PolygonGroup * polygonGroup);
 
-
+    
     const FastNameSet & GetRenderLayers() { return layers; };
     
     NMaterial * CreateChildMaterial();
@@ -193,14 +204,25 @@ public:
 private:
     void AddMaterialProperty(const String & keyName, YamlNode * uniformNode);
     
+    FastName materialName;
+    
     NMaterial * parent;
     FastNameSet layers;
-    HashMap<FastName, NMaterialProperty*> materialProperties;
     HashMap<FastName, MaterialTechnique *> techniqueForRenderPass; // TODO: HashMap<FastName, NMaterialInstance*> baseInstances;
+
+    
+    HashMap<FastName, NMaterialProperty*> materialProperties;
+    HashMap<FastName, Texture*> textures;
+    uint32 lightCount;
+    Light * lights[8];
 
     //
     FastName activeTechniqueName;
     MaterialTechnique * activeTechnique;
+public:
+    INTROSPECTION_EXTEND(NMaterial, DataNode,
+         MEMBER(materialName, "Material Name", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+         );
 
 };
 

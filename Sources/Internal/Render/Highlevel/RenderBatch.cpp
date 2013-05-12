@@ -56,7 +56,6 @@ RenderBatch::RenderBatch()
     indexCount = 0;
     type = PRIMITIVETYPE_TRIANGLELIST;
 	renderObject = 0;
-    materialInstance = new NMaterialInstance();
     ownerLayerName = INHERIT_FROM_MATERIAL;
 	visiblityCriteria = RenderObject::VISIBILITY_CRITERIA;
 }
@@ -66,7 +65,6 @@ RenderBatch::~RenderBatch()
 	SafeRelease(dataSource);
 	SafeRelease(renderDataObject);
 	SafeRelease(material);
-    SafeRelease(materialInstance);
 }
     
 void RenderBatch::SetPolygonGroup(PolygonGroup * _polygonGroup)
@@ -86,12 +84,6 @@ void RenderBatch::SetMaterial(NMaterial * _material)
 {
 	SafeRelease(material);
     material = SafeRetain(_material);
-}
-
-void RenderBatch::SetMaterialInstance(NMaterialInstance *_materialInstance)
-{
-    SafeRelease(materialInstance);
-    materialInstance = SafeRetain(_materialInstance);
 }
     
 void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
@@ -121,7 +113,7 @@ FastName RenderBatch::GetOwnerLayerName()
     if (ownerLayerName == INHERIT_FROM_MATERIAL)
     {
         DVASSERT(material != 0);
-        return materialInstance->GetOwnerLayerName();
+        return ownerLayerName;
     }
     else
     {
@@ -199,8 +191,6 @@ RenderBatch * RenderBatch::Clone(RenderBatch * destination)
 	rb->dataSource = SafeRetain(dataSource);
 	rb->renderDataObject = SafeRetain(renderDataObject);
 	rb->material = SafeRetain(material);
-	SafeRelease(rb->materialInstance);
-    rb->materialInstance = materialInstance->Clone();
 
 	rb->startIndex = startIndex;
 	rb->indexCount = indexCount;
@@ -228,7 +218,6 @@ void RenderBatch::Save(KeyedArchive * archive, SceneFileV2* sceneFile)
 		archive->SetVariant("rb.material", VariantType((uint64)GetMaterial()));
 		
 		KeyedArchive *mia = new KeyedArchive();
-		materialInstance->Save(mia, sceneFile);
 		archive->SetArchive("rb.matinst", mia);
 		mia->Release();
 	}
@@ -246,20 +235,23 @@ void RenderBatch::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 		PolygonGroup *pg = dynamic_cast<PolygonGroup*>(sceneFile->GetNodeByPointer(archive->GetVariant("rb.datasource")->AsUInt64()));
 		Material *mat = dynamic_cast<Material*>(sceneFile->GetNodeByPointer(archive->GetVariant("rb.material")->AsUInt64()));
 
+        InstanceMaterialState * oldMaterialInstance = new InstanceMaterialState();
+        KeyedArchive *mia = archive->GetArchive("rb.matinst");
+		if(NULL != mia)
+		{
+			oldMaterialInstance->Load(mia, sceneFile);
+		}
+
         NMaterial * newMaterial = 0;
         NMaterialInstance * newMaterialInstance = 0;
         
-        sceneFile->ConvertOldMaterialToNewMaterial(mat, 0, &newMaterial, &newMaterialInstance);
+        sceneFile->ConvertOldMaterialToNewMaterial(mat, oldMaterialInstance, &newMaterial, &newMaterialInstance);
         
+        SafeRelease(oldMaterialInstance);
 		SetPolygonGroup(pg);
         
 		// SetMaterial(mat);
 
-		KeyedArchive *mia = archive->GetArchive("rb.matinst");
-		if(NULL != mia)
-		{
-			materialInstance->Load(mia, sceneFile);
-		}
 	}
 
 	BaseObject::Load(archive);

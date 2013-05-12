@@ -29,7 +29,9 @@
 =====================================================================================*/
 #include "Render/Highlevel/SpriteObject.h"
 #include "Render/Highlevel/SpriteRenderBatch.h"
+#include "Render/Highlevel/RenderFastNames.h"
 #include "Render/Material/MaterialSystem.h"
+
 
 
 namespace DAVA 
@@ -134,7 +136,7 @@ void SpriteObject::SetFrame(int32 newFrame)
 	int32 count = GetRenderBatchCount();
 	if(count)
 	{
-		GetRenderBatch(0)->GetMaterialInstance()->GetRenderState()->SetTexture(sprite->GetTexture(frame));
+		GetRenderBatch(0)->GetMaterial()->SetTexture(TEXTURE_ALBEDO, sprite->GetTexture(frame));
 	}
 }
 

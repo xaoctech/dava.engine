@@ -1,0 +1,14 @@
+Material:
+    Parent: "Global.material"
+    Layers: ["ParticlesRenderLayer"]
+
+RenderPass:
+    Name: "ForwardPass"
+    Shader: "~res:/Materials/Shaders/Old/materials"
+    UniqueDefines: ["MATERIAL_TEXTURE", "ALPHABLEND", "VERTEX_COLOR"]
+
+    RenderState:
+        state: STATE_BLEND | STATE_DEPTH_WRITE | STATE_DEPTH_TEST | STATE_TEXTURE0 | STATE_CULL | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA
+        blendSrc: BLEND_SRC_ALPHA
+        blendDest: BLEND_ONE
+

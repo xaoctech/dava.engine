@@ -47,7 +47,7 @@ LandscapeChunk::~LandscapeChunk()
     
 }
     
-void LandscapeChunk::Draw(Camera * camera)
+void LandscapeChunk::Draw(const FastName & ownerPassName, Camera * camera)
 {
 	if(NULL != landscape)
 	{
