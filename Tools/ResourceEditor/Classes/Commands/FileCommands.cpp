@@ -213,9 +213,9 @@ void CommandSaveScene::SaveParticleEmitterNodeRecursive(Entity* parentNode)
 }
 
 //Export
-CommandExport::CommandExport(ImageFileFormat fmt)
+CommandExport::CommandExport(eGPUFamily gpu)
     :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_EXPORT)
-    ,   format(fmt)
+    ,   gpuFamily(gpu)
 {
 }
 
@@ -225,7 +225,7 @@ void CommandExport::Execute()
     SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
     if(screen)
     {
-        screen->ExportAs(format);
+        screen->ExportAs(gpuFamily);
     }
 }
 

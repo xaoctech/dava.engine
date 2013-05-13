@@ -48,10 +48,11 @@ public:
 	void				SceneHidePreview();
     
 	void				TextureCompressAllNotCompressed();
-	void				TextureReloadAll(DAVA::ImageFileFormat asFile);
-	DAVA::Texture*		TextureReload(const TextureDescriptor *descriptor, DAVA::Texture *prevTexture, DAVA::ImageFileFormat asFile);
+	void				TextureReloadAll(DAVA::eGPUFamily forGPU);
+	DAVA::Texture*		TextureReload(const TextureDescriptor *descriptor, DAVA::Texture *prevTexture, DAVA::eGPUFamily forGPU);
 
 	static void EnumerateTextures(DAVA::Entity *forNode, DAVA::Map<DAVA::String, DAVA::Texture *> &textures);
+	static void EnumerateDescriptors(DAVA::Entity *forNode, DAVA::Set<DAVA::FilePath> &descriptors);
 	static void EnumerateMaterials(DAVA::Entity *forNode, Vector<Material *> &materials);
 
 	// These methods are called by Scene Graph Tree View.
@@ -96,8 +97,11 @@ protected:
 	static void CollectLandscapeTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, DAVA::Landscape *forNode);
 	static void CollectTexture(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, const DAVA::String &name, DAVA::Texture *tex);
 
+	static void CollectLandscapeDescriptors(DAVA::Set<DAVA::FilePath> &descriptors, DAVA::Landscape *forNode);
+	static void CollectDescriptors(DAVA::Set<DAVA::FilePath> &descriptors, const DAVA::FilePath &pathname);
+
 	void RestoreTexture(const DAVA::FilePath &descriptorPathname, DAVA::Texture *texture);
-	void CompressTextures(const List<Texture *> texturesForCompression, ImageFileFormat fileFormat);
+	void CompressTextures(const List<Texture *> texturesForCompression, DAVA::eGPUFamily forGPU);
 
 	// Edit Scene implementation for any kind of scenes.
 	void EditScene(SceneData* sceneData, const FilePath &scenePathname);

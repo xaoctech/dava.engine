@@ -1,12 +1,12 @@
 #include "QtUtils.h"
 #include "../../SceneEditor/SceneValidator.h"
-#include "CommandLine/EditorCommandLineParser.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
 #include "mainwindow.h"
 #include "QtMainWindowHandler.h"
 
+#include "TexturePacker/CommandLineParser.h"
 
 #include "DAVAEngine.h"
 using namespace DAVA;
@@ -93,8 +93,8 @@ void ShowErrorDialog(const DAVA::Set<DAVA::String> &errors)
 
 void ShowErrorDialog(const DAVA::String &errorMessage)
 {
-	bool forceMode =    EditorCommandLineParser::CommandIsFound(String("-force"))
-					||  EditorCommandLineParser::CommandIsFound(String("-forceclose"));
+	bool forceMode =    CommandLineParser::CommandIsFound(String("-force"))
+					||  CommandLineParser::CommandIsFound(String("-forceclose"));
 	if(!forceMode)
 	{
 		QMessageBox::critical(QtMainWindow::Instance(), "Error", errorMessage.c_str());

@@ -70,8 +70,9 @@ public:
 	void SetEnableImposters(bool enableImposters);
 	bool GetEnableImposters();
     
-    int32 GetTextureViewFileFormat();
-    void SetTextureViewFileFormat(int32 forma);
+    eGPUFamily GetTextureViewGPU();
+    void SetTextureViewGPU(int32 gpu);
+
     
 	void SetMaterialsColor(const Color &ambient, const Color &diffuse, const Color &specular);
 	Color GetMaterialAmbientColor();

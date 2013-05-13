@@ -5,20 +5,20 @@
 
 using namespace DAVA;
 
-ReloadTexturesAsCommand::ReloadTexturesAsCommand(ImageFileFormat format)
+ReloadTexturesAsCommand::ReloadTexturesAsCommand(eGPUFamily gpu)
     :   Command(COMMAND_CLEAR_UNDO_QUEUE, CommandList::ID_COMMAND_RELOAD_TEXTURES_AS)
-    ,   fileFormat(format)
+    ,   gpuFamily(gpu)
 {
 }
 
 void ReloadTexturesAsCommand::Execute()
 {
-    Texture::SetDefaultFileFormat(fileFormat);
+    Texture::SetDefaultGPU(gpuFamily);
     
-    EditorSettings::Instance()->SetTextureViewFileFormat(fileFormat);
+    EditorSettings::Instance()->SetTextureViewGPU(gpuFamily);
     EditorSettings::Instance()->Save();
     
-    SceneDataManager::Instance()->TextureReloadAll(fileFormat);
+    SceneDataManager::Instance()->TextureReloadAll(gpuFamily);
     SceneValidator::Instance()->EnumerateSceneTextures();
 }
 

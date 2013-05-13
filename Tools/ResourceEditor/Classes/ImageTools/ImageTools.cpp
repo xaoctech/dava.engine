@@ -27,57 +27,42 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __GPU_FAMILY_H__
-#define __GPU_FAMILY_H__
+#include "ImageTools/ImageTools.h"
+#include "Render/LibPngHelpers.h"
+#include "Render/LibPVRHelper.h"
+#include "Render/LibDxtHelper.h"
 
-#include "Base/BaseTypes.h"
-#include "Render/RenderBase.h"
+using namespace DAVA;
 
-namespace DAVA
+uint32 ImageTools::GetTexturePhysicalSize(const TextureDescriptor *descriptor, const eGPUFamily forGPU)
 {
-
-class FilePath;
-class TextureDescriptor;
-class GPUFamilyDescriptor
-{
+    FilePath imagePathname = GPUFamilyDescriptor::CreatePathnameForGPU(descriptor, forGPU);
     
-public:
-    
-    struct GPUData
+    File *imageFile = File::Create(imagePathname, File::OPEN | File::READ);
+    if(!imageFile)
     {
-        eGPUFamily gpuFamilyID;
-        String name;
-        
-        Map<PixelFormat, String> availableFormats;
-    };
+        Logger::Error("[ImageTools::GetTexturePhysicalSize] Can't open file %s", imagePathname.GetAbsolutePathname().c_str());
+        return 0;
+    }
     
-public:
+    uint32 size = 0;
+    if(ImageLoader::IsPNGFile(imageFile))
+    {
+        size += LibPngWrapper::GetDataSize(imagePathname);
+    }
+    else if(ImageLoader::IsDXTFile(imageFile))
+    {
+        size += LibDxtHelper::GetDataSize(imagePathname);
+    }
+    else if(ImageLoader::IsPVRFile(imageFile))
+    {
+        size += LibPVRHelper::GetDataSize(imagePathname);
+    }
+    else
+    {
+        DVASSERT(false);
+    }
 
-    static void SetupGPUParameters();
-    static const Map<PixelFormat, String> & GetAvailableFormatsForGpu(eGPUFamily gpuFamily);
-
-    static eGPUFamily GetGPUForPathname(const FilePath &pathname);
-    static FilePath CreatePathnameForGPU(const TextureDescriptor *descriptor, const eGPUFamily gpuFamily);
-    static FilePath CreatePathnameForGPU(const FilePath & pathname, const eGPUFamily gpuFamily, const PixelFormat pixelFormat);
-    
-    
-    static String GetFilenamePostfix(const eGPUFamily gpuFamily, const PixelFormat pixelFormat);
-
-    static const String & GetGPUName(const eGPUFamily gpuFamily);
-    static const String & GetCompressedFileExtension(const eGPUFamily gpuFamily, const PixelFormat pixelFormat);
-    
-    static eGPUFamily GetGPUByName(const String & name);
-    
-protected:
-
-    static void SetupGPUFormats();
-    static void SetupGPUPostfixes();
-
-protected:
-    
-    static GPUData gpuData[GPU_FAMILY_COUNT];
-};
-    
-};
-
-#endif // __GPU_FAMILY_H__
+    SafeRelease(imageFile);
+    return size;
+}

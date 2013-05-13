@@ -90,7 +90,7 @@ private:
 	void updateInfoConverted();
 	void updatePropertiesWarning();
 
-	void reloadTextureToScene(DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, DAVA::ImageFileFormat format);
+	void reloadTextureToScene(DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu);
 
 private slots:
 	void textureListViewImages(bool checked);

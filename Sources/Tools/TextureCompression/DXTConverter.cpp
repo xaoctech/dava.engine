@@ -18,6 +18,7 @@ FilePath DXTConverter::ConvertPngToDxt(const TextureDescriptor &descriptor, eGPU
     if(inputImages.size() == 1)
     {
         Image* image = inputImages[0];
+        
         FilePath outputName = GetDXTOutput(descriptor, gpuFamily);
         
         if((descriptor.compression[gpuFamily].compressToWidth != 0) && (descriptor.compression[gpuFamily].compressToHeight != 0))
@@ -44,7 +45,8 @@ FilePath DXTConverter::ConvertPngToDxt(const TextureDescriptor &descriptor, eGPU
 
 FilePath DXTConverter::GetDXTOutput(const TextureDescriptor &descriptor, eGPUFamily gpuFamily)
 {
-    return GPUFamilyDescriptor::CreatePathnameForGPU(&descriptor, gpuFamily);
+    return FilePath::CreateWithNewExtension(descriptor.pathname, ".dds");
+//    return GPUFamilyDescriptor::CreatePathnameForGPU(&descriptor, gpuFamily);
 }
 
 };

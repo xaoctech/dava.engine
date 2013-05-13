@@ -58,7 +58,7 @@ protected:
     DAVA::FilePath inFolder;
     DAVA::FilePath outFolder;
     
-    DAVA::String format;
+    DAVA::String gpu;
 };
 
 

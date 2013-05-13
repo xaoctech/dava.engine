@@ -31,7 +31,7 @@
 #include "SceneSaverTool.h"
 #include "SceneSaver.h"
 
-#include "CommandLine/EditorCommandLineParser.h"
+#include "TexturePacker/CommandLineParser.h"
 
 using namespace DAVA;
 
@@ -62,7 +62,7 @@ bool SceneSaverTool::InitializeFromCommandLine()
 {
     commandAction = ACTION_NONE;
     
-    inFolder = EditorCommandLineParser::GetCommandParam(String("-indir"));
+    inFolder = CommandLineParser::GetCommandParam(String("-indir"));
     if(inFolder.IsEmpty())
     {
         errors.insert("Incorrect indir parameter");
@@ -70,7 +70,7 @@ bool SceneSaverTool::InitializeFromCommandLine()
     }
     inFolder.MakeDirectoryPathname();
     
-    filename = EditorCommandLineParser::GetCommandParam(String("-processfile"));
+    filename = CommandLineParser::GetCommandParam(String("-processfile"));
     if(filename.empty())
     {
         errors.insert("Filename is not set");
@@ -78,10 +78,10 @@ bool SceneSaverTool::InitializeFromCommandLine()
     }
     
     
-    if(EditorCommandLineParser::CommandIsFound(String("-save")))
+    if(CommandLineParser::CommandIsFound(String("-save")))
     {
         commandAction = ACTION_SAVE;
-        outFolder = EditorCommandLineParser::GetCommandParam(String("-outdir"));
+        outFolder = CommandLineParser::GetCommandParam(String("-outdir"));
         if(outFolder.IsEmpty())
         {
             errors.insert("Incorrect outdir parameter");
@@ -89,7 +89,7 @@ bool SceneSaverTool::InitializeFromCommandLine()
         }
         outFolder.MakeDirectoryPathname();
     }
-    else if(EditorCommandLineParser::CommandIsFound(String("-resave")))
+    else if(CommandLineParser::CommandIsFound(String("-resave")))
     {
         commandAction = ACTION_RESAVE;
     }

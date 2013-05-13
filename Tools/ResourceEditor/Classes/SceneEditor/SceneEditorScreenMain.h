@@ -175,7 +175,7 @@ public: //For Qt integration
     void SaveSceneToFile(const FilePath &pathToFile);
    
 
-    void ExportAs(ImageFileFormat format);
+    void ExportAs(eGPUFamily forGPU);
 
 	void SaveToFolder(const FilePath & folder);
 	

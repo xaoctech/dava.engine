@@ -13,7 +13,8 @@ public:
 	SceneExporter();
 	virtual ~SceneExporter();
     
-    void SetExportingFormat(const String &newFormat);
+    void SetGPUForExporting(const String &newGPU);
+    void SetGPUForExporting(const eGPUFamily newGPU);
     
     void CleanFolder(const FilePath &folderPathname, Set<String> &errorLog);
     
@@ -29,25 +30,23 @@ protected:
     
     void RemoveEditorNodes(Entity *rootNode);
     
+    void ExportDescriptors(Scene *scene, Set<String> &errorLog);
+    bool ExportTextureDescriptor(const FilePath &pathname, Set<String> &errorLog);
+    bool ExportTexture(const TextureDescriptor * descriptor, Set<String> &errorLog);
+    void CompressTextureIfNeed(const TextureDescriptor * descriptor, Set<String> &errorLog);
+
     void ExportLandscape(Scene *scene, Set<String> &errorLog);
     void ExportLandscapeFullTiledTexture(Landscape *landscape, Set<String> &errorLog);
-    bool ExportTexture(const FilePath &texturePathname, Set<String> &errorLog);
-    bool ExportTextureDescriptor(const FilePath &texturePathname, Set<String> &errorLog);
+
     
-    void ExportTextures(Scene *scene, Set<String> &errorLog);
     
-    void ReleaseTextures();
-    
-    void CompressTextureIfNeed(const FilePath &texturePathname, Set<String> &errorLog);
     
     
 protected:
     
     SceneUtils sceneUtils;
 
-    ImageFileFormat exportFormat;
-    
-    Map<String, Texture *> texturesForExport;
+    eGPUFamily exportForGPU;
 };
 
 

@@ -318,6 +318,13 @@ bool FilePath::operator!=(const FilePath &path) const
 }
 
     
+bool FilePath::operator < (const FilePath& right) const
+{
+    return GetAbsolutePathname() < right.GetAbsolutePathname();
+}
+
+    
+    
 bool FilePath::IsDirectoryPathname() const
 {
     if(IsEmpty())

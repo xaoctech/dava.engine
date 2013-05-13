@@ -27,57 +27,19 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __GPU_FAMILY_H__
-#define __GPU_FAMILY_H__
+#ifndef __IMAGE_TOOLS_H__
+#define __IMAGE_TOOLS_H__
 
-#include "Base/BaseTypes.h"
-#include "Render/RenderBase.h"
+#include "DAVAEngine.h"
 
-namespace DAVA
+class ImageTools: public DAVA::ImageLoader
 {
-
-class FilePath;
-class TextureDescriptor;
-class GPUFamilyDescriptor
-{
-    
-public:
-    
-    struct GPUData
-    {
-        eGPUFamily gpuFamilyID;
-        String name;
-        
-        Map<PixelFormat, String> availableFormats;
-    };
-    
 public:
 
-    static void SetupGPUParameters();
-    static const Map<PixelFormat, String> & GetAvailableFormatsForGpu(eGPUFamily gpuFamily);
+    static DAVA::uint32 GetTexturePhysicalSize(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily forGPU);
+    
+private:
 
-    static eGPUFamily GetGPUForPathname(const FilePath &pathname);
-    static FilePath CreatePathnameForGPU(const TextureDescriptor *descriptor, const eGPUFamily gpuFamily);
-    static FilePath CreatePathnameForGPU(const FilePath & pathname, const eGPUFamily gpuFamily, const PixelFormat pixelFormat);
-    
-    
-    static String GetFilenamePostfix(const eGPUFamily gpuFamily, const PixelFormat pixelFormat);
-
-    static const String & GetGPUName(const eGPUFamily gpuFamily);
-    static const String & GetCompressedFileExtension(const eGPUFamily gpuFamily, const PixelFormat pixelFormat);
-    
-    static eGPUFamily GetGPUByName(const String & name);
-    
-protected:
-
-    static void SetupGPUFormats();
-    static void SetupGPUPostfixes();
-
-protected:
-    
-    static GPUData gpuData[GPU_FAMILY_COUNT];
-};
-    
 };
 
-#endif // __GPU_FAMILY_H__
+#endif // __IMAGE_TOOLS_H__

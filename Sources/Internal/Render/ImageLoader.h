@@ -48,7 +48,7 @@ public:
     
     static void Save(Image *image, const FilePath & pathname);
     
-private:
+protected:
 
 	static Vector<Image *> CreateFromPNG(File *file);
 	static Vector<Image *> CreateFromPVR(File *file);

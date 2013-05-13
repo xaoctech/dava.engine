@@ -16,8 +16,8 @@
 
 SceneValidator::SceneValidator()
 {
-    sceneTextureCount = 0;
-    sceneTextureMemory = 0;
+//    sceneTextureCount = 0;
+//    sceneTextureMemory = 0;
 
     pathForChecking = String("");
 }
@@ -396,54 +396,54 @@ void SceneValidator::ValidateTexture(Texture *texture, const FilePath &texturePa
 
 
 
-void SceneValidator::EnumerateSceneTextures()
-{
-    SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
-    DVASSERT_MSG(sceneData, "Illegal situation");
-    
-    Map<String, Texture *> textureMap;
-    SceneDataManager::EnumerateTextures(sceneData->GetScene(), textureMap);
-    sceneTextureCount = textureMap.size();
+//void SceneValidator::EnumerateSceneTextures()
+//{
+//    SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
+//    DVASSERT_MSG(sceneData, "Illegal situation");
+//    
+//    Map<String, Texture *> textureMap;
+//    SceneDataManager::EnumerateTextures(sceneData->GetScene(), textureMap);
+//    sceneTextureCount = textureMap.size();
+//
+//    KeyedArchive *settings = EditorSettings::Instance()->GetSettings();
+//    String projectPath = settings->GetString("ProjectPath");
+//
+//    sceneTextureMemory = 0;
+//	for(Map<String, Texture *>::const_iterator it = textureMap.begin(); it != textureMap.end(); ++it)
+//	{
+//		Texture *t = it->second;
+//        if(String::npos == t->GetPathname().GetAbsolutePathname().find(projectPath))
+//        {   // skip all textures that are not related the scene
+//            continue;
+//        }
+//
+//        
+//        if(String::npos != t->GetPathname().GetAbsolutePathname().find(projectPath))
+//        {   //We need real info about textures size. In Editor on desktop pvr textures are decompressed to RGBA8888, so they have not real size.
+//            FilePath imageFileName = TextureDescriptor::GetPathnameForFormat(t->GetPathname(), t->GetSourceFileFormat());
+//            switch (t->GetSourceFileFormat())
+//            {
+//                case DAVA::PVR_FILE:
+//                {
+//                    sceneTextureMemory += LibPVRHelper::GetDataLength(imageFileName);
+//                    break;
+//                }
+//                    
+//                case DAVA::DXT_FILE:
+//                {
+//                    sceneTextureMemory += (int32)LibDxtHelper::GetDataSize(imageFileName);
+//                    break;
+//                }
+//                    
+//                default:
+//                    sceneTextureMemory += t->GetDataSize();
+//                    break;
+//            }
+//        }
+//	}
+//}
 
-    KeyedArchive *settings = EditorSettings::Instance()->GetSettings();
-    String projectPath = settings->GetString("ProjectPath");
-
-    sceneTextureMemory = 0;
-	for(Map<String, Texture *>::const_iterator it = textureMap.begin(); it != textureMap.end(); ++it)
-	{
-		Texture *t = it->second;
-        if(String::npos == t->GetPathname().GetAbsolutePathname().find(projectPath))
-        {   // skip all textures that are not related the scene
-            continue;
-        }
-
-        
-        if(String::npos != t->GetPathname().GetAbsolutePathname().find(projectPath))
-        {   //We need real info about textures size. In Editor on desktop pvr textures are decompressed to RGBA8888, so they have not real size.
-            FilePath imageFileName = TextureDescriptor::GetPathnameForFormat(t->GetPathname(), t->GetSourceFileFormat());
-            switch (t->GetSourceFileFormat())
-            {
-                case DAVA::PVR_FILE:
-                {
-                    sceneTextureMemory += LibPVRHelper::GetDataLength(imageFileName);
-                    break;
-                }
-                    
-                case DAVA::DXT_FILE:
-                {
-                    sceneTextureMemory += (int32)LibDxtHelper::GetDataSize(imageFileName);
-                    break;
-                }
-                    
-                default:
-                    sceneTextureMemory += t->GetDataSize();
-                    break;
-            }
-        }
-	}
-}
-
-bool SceneValidator::WasTextureChanged(Texture *texture, ImageFileFormat fileFormat)
+bool SceneValidator::WasTextureChanged(Texture *texture, eGPUFamily forGPU)
 {
     if(IsFBOTexture(texture))
     {
@@ -451,7 +451,7 @@ bool SceneValidator::WasTextureChanged(Texture *texture, ImageFileFormat fileFor
     }
     
     FilePath texturePathname = texture->GetPathname();
-    return (IsPathCorrectForProject(texturePathname) && IsTextureChanged(texturePathname, fileFormat));
+    return (IsPathCorrectForProject(texturePathname) && IsTextureChanged(texturePathname, forGPU));
 }
 
 bool SceneValidator::IsFBOTexture(Texture *texture)
@@ -569,7 +569,6 @@ void SceneValidator::CreateDescriptorIfNeed(const FilePath &forPathname)
 		Logger::Warning("[SceneValidator::CreateDescriptorIfNeed] Need descriptor for file %s", forPathname.GetAbsolutePathname().c_str());
         
 		TextureDescriptor *descriptor = new TextureDescriptor();
-		descriptor->textureFileFormat = PNG_FILE;
         
         FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(forPathname);
 		descriptor->Save(descriptorPathname);
@@ -631,19 +630,27 @@ int32 SceneValidator::EnumerateSceneNodes(DAVA::Entity *node)
 }
 
 
-bool SceneValidator::IsTextureChanged(const FilePath &texturePathname, ImageFileFormat fileFormat)
+bool SceneValidator::IsTextureChanged(const FilePath &texturePathname, eGPUFamily forGPU)
 {
     bool isChanged = false;
 
 	TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(texturePathname);
     if(descriptor)
     {
-        isChanged = descriptor->IsSourceChanged(fileFormat);
+        isChanged = IsTextureChanged(descriptor, forGPU);
         SafeRelease(descriptor);
     }
 
     return isChanged;
 }
+
+bool SceneValidator::IsTextureChanged(const TextureDescriptor *descriptor, eGPUFamily forGPU)
+{
+    DVASSERT(descriptor);
+    
+    return descriptor->IsSourceChanged(forGPU);
+}
+
 
 bool SceneValidator::IsTextureDescriptorPath(const FilePath &path)
 {

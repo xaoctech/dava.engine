@@ -96,7 +96,7 @@ void SceneGraph::FillCell(UIHierarchyCell *cell, void *node)
     //Temporary fix for loading of UI Interface to avoid reloading of texrures to different formates.
     // 1. Reset default format before loading of UI
     // 2. Restore default format after loading of UI from stored settings.
-    Texture::SetDefaultFileFormat(NOT_FILE);
+    Texture::SetDefaultGPU(GPU_UNKNOWN);
 
     Entity *n = (Entity *)node;
     UIStaticText *text =  (UIStaticText *)cell->FindByName("_Text_");
@@ -126,7 +126,7 @@ void SceneGraph::FillCell(UIHierarchyCell *cell, void *node)
         cell->SetSelected(false, false);
     }
     
-    Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
+    Texture::SetDefaultGPU(EditorSettings::Instance()->GetTextureViewGPU());
 }
 
 void SceneGraph::SelectHierarchyNode(UIHierarchyNode * node)

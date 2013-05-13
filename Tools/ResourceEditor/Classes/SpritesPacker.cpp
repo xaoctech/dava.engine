@@ -2,6 +2,8 @@
 #include "TexturePacker/ResourcePacker2D.h"
 #include "TexturePacker/CommandLineParser.h"
 
+#include "SceneEditor/EditorSettings.h"
+
 SpritesPacker::~SpritesPacker()
 {
 
@@ -25,7 +27,7 @@ void SpritesPacker::Pack()
 
 	ResourcePacker2D * resourcePacker = new ResourcePacker2D();
 
-	CommandLineParser::Instance()->ClearFlags(); //CommandLineParser is used in ResourcePackerScreen
+	CommandLineParser::Instance()->Clear(); //CommandLineParser is used in ResourcePackerScreen
 
 	resourcePacker->clearProcessDirectory = true;
 	resourcePacker->inputGfxDirectory = inputDir;
@@ -35,7 +37,7 @@ void SpritesPacker::Pack()
 
 	resourcePacker->isLightmapsPacking = true;
 
-	resourcePacker->PackResources();
+	resourcePacker->PackResources(EditorSettings::Instance()->GetTextureViewGPU());
 
 	SafeDelete(resourcePacker);
 }

@@ -116,7 +116,7 @@ public:
     static bool ReadFile(File *file, const Vector<Image *> &imageSet);
     
     static PixelFormat GetPixelFormat(const FilePath &filePathname);
-    static uint32 GetDataLength(const FilePath &filePathname);
+    static uint32 GetDataSize(const FilePath &filePathname);
     
 protected:
 
