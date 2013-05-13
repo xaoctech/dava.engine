@@ -59,6 +59,7 @@ private:
 	int32 maxTextureSize;
 
 	bool onlySquareTextures;
+    bool NeedSquareTextureForCompression(eGPUFamily forGPU);
 };
 
 };
