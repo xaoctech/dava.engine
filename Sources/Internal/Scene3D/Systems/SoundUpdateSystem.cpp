@@ -25,95 +25,48 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Ivan Petrochenko
+        * Created by Igor Solovey 
 =====================================================================================*/
-
-#include "Sound/SoundWVProvider.h"
-#include "FileSystem/File.h"
-#include "Sound/SoundBuffer.h"
+#include "Scene3D/Systems/SoundUpdateSystem.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Entity.h"
+#include "Scene3D/Scene.h"
+#include "Scene3D/Components/TransformComponent.h"
+#include "Scene3D/Components/SoundComponent.h"
+#include "Sound/SoundEvent.h"
+#include "Sound/SoundSystem.h"
 
 namespace DAVA
 {
-
-SoundWVProvider::SoundWVProvider(const FilePath & _fileName)
-:	SoundDataProvider(_fileName),
-	file(0)
+SoundUpdateSystem::SoundUpdateSystem(Scene * scene)
+:	SceneSystem(scene)
 {
-
+	scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::WORLD_TRANSFORM_CHANGED);
+	scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::SOUND_CHANGED);
 }
 
-SoundWVProvider::~SoundWVProvider()
+SoundUpdateSystem::~SoundUpdateSystem()
 {
-	SafeRelease(file);
 }
 
-bool SoundWVProvider::Init()
+void SoundUpdateSystem::ImmediateEvent(Entity * entity, uint32 event)
 {
-	if(isInited)
-		return true;
-
-	SoundDataProvider::Init();
-
-	file = File::Create(fileName, File::OPEN | File::READ);
-	WaveFormat waveFormat;
-	if(0 == file)
-		return false;
-
-	if(sizeof(waveFormat) != file->Read(&waveFormat, sizeof(waveFormat)))
-		return false;
-
-	//"RIFF" 0x52494646
-	if(0x46464952 != waveFormat.riffTag)
-		return false;
-
-	//"WAVE" 0x57415645
-	if(0x45564157 != waveFormat.waveTag)
-		return false;
-
-	//"fmt" 0x666D7420
-	if(0x20746d66 != waveFormat.fmtTag)
-		return false;
-
-	//standard format
-	if(16 != waveFormat.fmtSize)
-		return false;
-
-	//PCM uncompressed
-	if(1 != waveFormat.compression)
-		return false;
-
-	channelsCount = waveFormat.channels;
-	sampleRate = waveFormat.sampleRate;
-	sampleSize = waveFormat.bitsPerSample;
-
-	//"data" 0x64617461
-	if(0x61746164 != waveFormat.dataTag)
-		return false;
-
-	leftDataSize = dataSize = waveFormat.dataSize;
-
-	//250 ms
-	streamBufferSize = channelsCount*sampleRate*sampleSize/8/4;
-
-	return true;
-}
-
-int32 SoundWVProvider::LoadData(int8 ** buffer, int32 desiredSize)
-{
-	if(-1 == desiredSize)
+	if (event == EventSystem::WORLD_TRANSFORM_CHANGED)
 	{
-		desiredSize = dataSize;
+		Matrix4 * worldTransformPointer = ((TransformComponent*)entity->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransformPtr();
+		Vector3 translation = worldTransformPointer->GetTranslationVector();
+
+		SoundEvent * sEvent = ((SoundComponent *)entity->GetComponent(Component::SOUND_COMPONENT))->GetSoundEvent();
+		sEvent->SetPosition(translation);
 	}
 
-	desiredSize = Min(desiredSize, leftDataSize);
-
-	int8 * data = (int8*)Alloc(desiredSize);
-	int32 actualSize = file->Read(data, desiredSize);
-	leftDataSize -= actualSize;
-    
-	*buffer = data;
-
-	return actualSize;
+	if (event == EventSystem::SOUND_CHANGED)
+	{
+		SoundComponent * soundComponent = (SoundComponent *)entity->GetComponent(Component::SOUND_COMPONENT);
+		SoundEvent * sEvent = SoundSystem::Instance()->CreateSoundEvent(soundComponent->GetEventName());
+		soundComponent->SetSoundEvent(sEvent);
+		SafeRelease(sEvent);
+	}
 }
-
+    
 };

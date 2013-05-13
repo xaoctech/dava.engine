@@ -10,9 +10,18 @@
 		0297F311170B403100627F78 /* MaterialViewOptions.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 0297F30F170B403100627F78 /* MaterialViewOptions.cpp */; };
 		0297F317170B404100627F78 /* MaterialViewOptionsCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 0297F315170B404100627F78 /* MaterialViewOptionsCommands.cpp */; };
 		0297F31A170B40D100627F78 /* MaterialViewOptions_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 0297F319170B40D100627F78 /* MaterialViewOptions_moc.cpp */; };
+		02E9E4101739612300C501BC /* libfmodevent.dylib in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 02E9E40E1739612300C501BC /* libfmodevent.dylib */; };
+		02E9E4111739612300C501BC /* libfmodex.dylib in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 02E9E40F1739612300C501BC /* libfmodex.dylib */; };
+		02E9E442173965B800C501BC /* SceneTree.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02E9E43C173965B800C501BC /* SceneTree.cpp */; };
+		02E9E443173965B800C501BC /* SceneTreeItem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02E9E43E173965B800C501BC /* SceneTreeItem.cpp */; };
+		02E9E444173965B800C501BC /* SceneTreeModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02E9E440173965B800C501BC /* SceneTreeModel.cpp */; };
+		02F6404C173A8F170053F038 /* SceneTree_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02F64049173A8F170053F038 /* SceneTree_moc.cpp */; };
+		02F6404D173A8F170053F038 /* SceneTreeItem_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02F6404A173A8F170053F038 /* SceneTreeItem_moc.cpp */; };
+		02F6404E173A8F170053F038 /* SceneTreeModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02F6404B173A8F170053F038 /* SceneTreeModel_moc.cpp */; };
 		0C6D4628EE0B0D1479A20551 /* AGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = C6766F86E49E9C8701C8E637 /* AGL.framework */; };
 		1735C427169DE63D001E0468 /* ParticlesEditorSceneDataHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1735C423169DE63D001E0468 /* ParticlesEditorSceneDataHelper.cpp */; };
 		1735C428169DE63D001E0468 /* ParticlesEditorSceneModelHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1735C425169DE63D001E0468 /* ParticlesEditorSceneModelHelper.cpp */; };
+		173B278D172FA79C006CD29E /* InnerEmitterParticleEditorNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173B278B172FA79C006CD29E /* InnerEmitterParticleEditorNode.cpp */; };
 		177D1A9016CB8ADB0021104B /* SceneGraphModelStateHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 177D1A8E16CB8ADB0021104B /* SceneGraphModelStateHelper.cpp */; };
 		177D1A9316CB8C820021104B /* PropertyEditorStateHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 177D1A9116CB8C820021104B /* PropertyEditorStateHelper.cpp */; };
 		178A9B721716E584006BB1F7 /* ParticleEffectPropertiesWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 178A9B701716E583006BB1F7 /* ParticleEffectPropertiesWidget.cpp */; };
@@ -497,10 +506,23 @@
 		0297F315170B404100627F78 /* MaterialViewOptionsCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MaterialViewOptionsCommands.cpp; path = Classes/Commands/MaterialViewOptionsCommands.cpp; sourceTree = "<group>"; };
 		0297F316170B404100627F78 /* MaterialViewOptionsCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MaterialViewOptionsCommands.h; path = Classes/Commands/MaterialViewOptionsCommands.h; sourceTree = "<group>"; };
 		0297F319170B40D100627F78 /* MaterialViewOptions_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialViewOptions_moc.cpp; sourceTree = "<group>"; };
+		02E9E40E1739612300C501BC /* libfmodevent.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodevent.dylib; path = ../../Libs/fmod/lib/macos/libfmodevent.dylib; sourceTree = "<group>"; };
+		02E9E40F1739612300C501BC /* libfmodex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodex.dylib; path = ../../Libs/fmod/lib/macos/libfmodex.dylib; sourceTree = "<group>"; };
+		02E9E43C173965B800C501BC /* SceneTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneTree.cpp; sourceTree = "<group>"; };
+		02E9E43D173965B800C501BC /* SceneTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneTree.h; sourceTree = "<group>"; };
+		02E9E43E173965B800C501BC /* SceneTreeItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneTreeItem.cpp; sourceTree = "<group>"; };
+		02E9E43F173965B800C501BC /* SceneTreeItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneTreeItem.h; sourceTree = "<group>"; };
+		02E9E440173965B800C501BC /* SceneTreeModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneTreeModel.cpp; sourceTree = "<group>"; };
+		02E9E441173965B800C501BC /* SceneTreeModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneTreeModel.h; sourceTree = "<group>"; };
+		02F64049173A8F170053F038 /* SceneTree_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneTree_moc.cpp; sourceTree = "<group>"; };
+		02F6404A173A8F170053F038 /* SceneTreeItem_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneTreeItem_moc.cpp; sourceTree = "<group>"; };
+		02F6404B173A8F170053F038 /* SceneTreeModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneTreeModel_moc.cpp; sourceTree = "<group>"; };
 		1735C423169DE63D001E0468 /* ParticlesEditorSceneDataHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticlesEditorSceneDataHelper.cpp; sourceTree = "<group>"; };
 		1735C424169DE63D001E0468 /* ParticlesEditorSceneDataHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticlesEditorSceneDataHelper.h; sourceTree = "<group>"; };
 		1735C425169DE63D001E0468 /* ParticlesEditorSceneModelHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticlesEditorSceneModelHelper.cpp; sourceTree = "<group>"; };
 		1735C426169DE63D001E0468 /* ParticlesEditorSceneModelHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticlesEditorSceneModelHelper.h; sourceTree = "<group>"; };
+		173B278B172FA79C006CD29E /* InnerEmitterParticleEditorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InnerEmitterParticleEditorNode.cpp; sourceTree = "<group>"; };
+		173B278C172FA79C006CD29E /* InnerEmitterParticleEditorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InnerEmitterParticleEditorNode.h; sourceTree = "<group>"; };
 		177D1A8D16CB8ACA0021104B /* QTreeViewStateHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTreeViewStateHelper.h; sourceTree = "<group>"; };
 		177D1A8E16CB8ADB0021104B /* SceneGraphModelStateHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneGraphModelStateHelper.cpp; sourceTree = "<group>"; };
 		177D1A8F16CB8ADB0021104B /* SceneGraphModelStateHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneGraphModelStateHelper.h; sourceTree = "<group>"; };
@@ -1416,6 +1438,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02E9E4101739612300C501BC /* libfmodevent.dylib in Frameworks & Libraries */,
+				02E9E4111739612300C501BC /* libfmodex.dylib in Frameworks & Libraries */,
 				5CCC0FF115B4516900DA83EB /* libFColladaS.a in Frameworks & Libraries */,
 				E8BD1F0016DE40ED00499E18 /* libFrameworkQt.a in Frameworks & Libraries */,
 				5CCC10B415B45FC200DA83EB /* libbz2.dylib in Frameworks & Libraries */,
@@ -1454,12 +1478,39 @@
 			path = _GeneratedQt/DockMaterialViewOptions;
 			sourceTree = "<group>";
 		};
+		02E9E43B173965B800C501BC /* DockSceneTree */ = {
+			isa = PBXGroup;
+			children = (
+				02E9E43C173965B800C501BC /* SceneTree.cpp */,
+				02E9E43D173965B800C501BC /* SceneTree.h */,
+				02E9E43E173965B800C501BC /* SceneTreeItem.cpp */,
+				02E9E43F173965B800C501BC /* SceneTreeItem.h */,
+				02E9E440173965B800C501BC /* SceneTreeModel.cpp */,
+				02E9E441173965B800C501BC /* SceneTreeModel.h */,
+			);
+			name = DockSceneTree;
+			path = Classes/Qt/DockSceneTree;
+			sourceTree = "<group>";
+		};
+		02F64048173A8F170053F038 /* DockSceneTree */ = {
+			isa = PBXGroup;
+			children = (
+				02F64049173A8F170053F038 /* SceneTree_moc.cpp */,
+				02F6404A173A8F170053F038 /* SceneTreeItem_moc.cpp */,
+				02F6404B173A8F170053F038 /* SceneTreeModel_moc.cpp */,
+			);
+			name = DockSceneTree;
+			path = _GeneratedQt/DockSceneTree;
+			sourceTree = "<group>";
+		};
 		05596AB53D8D521C69802C27 /* ResourceEditorQt */ = {
 			isa = PBXGroup;
 			children = (
-				E8BD1EF616DE40E300499E18 /* Framework.xcodeproj */,
+				02E9E40E1739612300C501BC /* libfmodevent.dylib */,
+				02E9E40F1739612300C501BC /* libfmodex.dylib */,
 				5CCC10B315B45FC200DA83EB /* libbz2.dylib */,
 				5CCC10B115B45FBB00DA83EB /* libz.dylib */,
+				E8BD1EF616DE40E300499E18 /* Framework.xcodeproj */,
 				5C7F49F815B44F6D0038AF3A /* FCollada.xcodeproj */,
 				5C7F49F615B44EE50038AF3A /* icon.icns */,
 				5C190CA015AEC704005731F8 /* Info.plist */,
@@ -1539,6 +1590,7 @@
 		5C2763A415B82BDF0030A8FD /* Qt */ = {
 			isa = PBXGroup;
 			children = (
+				02E9E43B173965B800C501BC /* DockSceneTree */,
 				494A7CDA172A92C0005D7C7F /* Commands */,
 				E88F2FF9171C801600510B78 /* DockSceneInfo */,
 				0297F30E170B403100627F78 /* DockMaterialViewOptions */,
@@ -2354,6 +2406,8 @@
 				C18521B016831F84003D4A6F /* ForceParticleEditorNode.h */,
 				C18521B116831F84003D4A6F /* LayerParticleEditorNode.cpp */,
 				C18521B216831F84003D4A6F /* LayerParticleEditorNode.h */,
+				173B278B172FA79C006CD29E /* InnerEmitterParticleEditorNode.cpp */,
+				173B278C172FA79C006CD29E /* InnerEmitterParticleEditorNode.h */,
 			);
 			path = Nodes;
 			sourceTree = "<group>";
@@ -2916,6 +2970,7 @@
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
 			isa = PBXGroup;
 			children = (
+				02F64048173A8F170053F038 /* DockSceneTree */,
 				494A7CE1172A9500005D7C7F /* Commands */,
 				E88F3000171C85A000510B78 /* DockSceneInfo */,
 				0297F318170B40D100627F78 /* DockMaterialViewOptions */,
@@ -3666,6 +3721,7 @@
 				E88F3002171C85A000510B78 /* SceneInfo_moc.cpp in Build Sources */,
 				84EF22CE171EECA900B45031 /* ScrollZoomWidget_moc.cpp in Build Sources */,
 				84EF22D4171EECBD00B45031 /* ScrollZoomWidget.cpp in Build Sources */,
+				173B278D172FA79C006CD29E /* InnerEmitterParticleEditorNode.cpp in Build Sources */,
 				E8C4C64F17294079004B0B3B /* CameraSystem.cpp in Build Sources */,
 				E8C4C65017294079004B0B3B /* CollisionLandscape.cpp in Build Sources */,
 				E8C4C65117294079004B0B3B /* CollisionRenderObject.cpp in Build Sources */,
@@ -3717,6 +3773,12 @@
 				E8951B3F1737AF1200755339 /* DXTConverter.cpp in Build Sources */,
 				E8951B401737AF1200755339 /* PVRConverter.cpp in Build Sources */,
 				E8951B451737AF2100755339 /* EditorCommandLineParser.cpp in Build Sources */,
+				02E9E442173965B800C501BC /* SceneTree.cpp in Build Sources */,
+				02E9E443173965B800C501BC /* SceneTreeItem.cpp in Build Sources */,
+				02E9E444173965B800C501BC /* SceneTreeModel.cpp in Build Sources */,
+				02F6404C173A8F170053F038 /* SceneTree_moc.cpp in Build Sources */,
+				02F6404D173A8F170053F038 /* SceneTreeItem_moc.cpp in Build Sources */,
+				02F6404E173A8F170053F038 /* SceneTreeModel_moc.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3822,6 +3884,10 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../Libs/fmod/lib/macos\"",
+				);
 			};
 			name = Release;
 		};
@@ -3832,6 +3898,10 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../Libs/fmod/lib/macos\"",
+				);
 			};
 			name = Debug;
 		};

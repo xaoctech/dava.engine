@@ -19,11 +19,14 @@
 #include "ParticlesEditorQT/Nodes/EmitterParticleEditorNode.h"
 #include "ParticlesEditorQT/Nodes/LayerParticleEditorNode.h"
 #include "ParticlesEditorQT/Nodes/ForceParticleEditorNode.h"
+#include "ParticlesEditorQT/Nodes/InnerEmitterParticleEditorNode.h"
 
 #include "Scene/SceneData.h"
 #include "DockSceneGraph/SceneGraphItem.h"
 
 #include "Commands/Command.h"
+
+class SceneGraphModel;
 
 namespace DAVA {
 
@@ -74,6 +77,11 @@ public:
 	bool GetCheckableStateForGraphItem(GraphItem* graphItem) const;
 	void SetCheckableStateForGraphItem(GraphItem* graphItem, bool value);
 	
+	// Update the representation of the layer when it is refreshed.
+	void UpdateLayerRepresentation(GraphItem* rootItem,
+								   DAVA::ParticleLayer* layer,
+								   SceneGraphModel* sceneGraphModel);
+
 protected:
 	// Add the action to QT menu.
 	void AddActionToMenu(QMenu *menu, const QString &actionTitle, Command *command) const;
@@ -95,6 +103,7 @@ protected:
     void SynchronizeEffectParticleEditorNode(EffectParticleEditorNode* node, Entity* effectRootNode);
     void SynchronizeEmitterParticleEditorNode(EmitterParticleEditorNode* node);
     void SynchronizeLayerParticleEditorNode(LayerParticleEditorNode* node);
+	void SynchronizeInnerEmitterNode(LayerParticleEditorNode* node, SceneGraphItem* layerNodeItem = NULL, SceneGraphModel* sceneGraphModel = NULL);
 
 	void BuildEntitiesSets(EffectParticleEditorNode* node, Entity* effectRootNode,
 						   Set<Entity*>& entitiesInParticleEditor,

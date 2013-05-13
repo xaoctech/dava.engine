@@ -28,13 +28,12 @@ public:
 	
 	//protection from 'delete ScopedObject'
 	operator void*() const;
+	
+	ScopedPtr(const ScopedPtr&);
+	const ScopedPtr& operator=(const ScopedPtr&);
 
 private:
 	BASE_OBJECT * object;
-	
-	//noncopyable
-	ScopedPtr(const ScopedPtr&);
-	const ScopedPtr& operator=(const ScopedPtr&);
 };
 
 //implementation
@@ -42,6 +41,27 @@ template<typename BASE_OBJECT>
 ScopedPtr<BASE_OBJECT>::ScopedPtr(BASE_OBJECT * p)
 :	object(p)
 {
+}
+
+template<typename BASE_OBJECT>
+ScopedPtr<BASE_OBJECT>::ScopedPtr(const ScopedPtr& scopedPtr)
+{
+	object = scopedPtr.object;
+	object->Retain();
+}
+
+template<typename BASE_OBJECT>
+const ScopedPtr<BASE_OBJECT>& ScopedPtr<BASE_OBJECT>::operator=(const ScopedPtr& scopedPtr)
+{
+	if (this == &scopedPtr)
+	{
+		return *this;
+	}
+
+	object = scopedPtr.object;
+	object->Retain();
+
+	return *this;
 }
 
 template<typename BASE_OBJECT>

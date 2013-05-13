@@ -25,66 +25,60 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Ivan Petrochenko
+        * Created by Igor Solovey
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_SOUND_WV_PROVIDER_H__
-#define __DAVAENGINE_SOUND_WV_PROVIDER_H__
+#ifndef __DAVAENGINE_SOUND_EVENT_H__
+#define __DAVAENGINE_SOUND_EVENT_H__
 
-#include "Sound/SoundDataProvider.h"
+#include "Base/BaseTypes.h"
+#include "Base/BaseMath.h"
+#include "Base/EventDispatcher.h"
+#include "Sound/VolumeAnimatedObject.h"
+
+namespace FMOD
+{
+	class Event;
+};
 
 namespace DAVA
 {
-	
-class File;
-class SoundWVProvider : public SoundDataProvider
+class SoundComponent;
+class SoundEvent : public VolumeAnimatedObject
 {
 public:
-	SoundWVProvider(const FilePath & fileName);
-	virtual ~SoundWVProvider();
-
-	virtual bool Init();
-	virtual int32 LoadData(int8 ** buffer, int32 desiredSize);
-	virtual void Rewind() {};
-
-private:
-	File * file;
-
-	// byte-align structures
-#ifdef _MSC_VER
-# pragma pack( push, packing )
-# pragma pack( 1 )
-# define PACK_STRUCT
-#elif defined( __GNUC__ )
-# define PACK_STRUCT __attribute__((packed))
-#else
-# error compiler not supported
-#endif
-
-	struct WaveFormat//non-compressed wave
+	enum eEvent
 	{
-		uint32 riffTag;
-		uint32 riffChunkSize;
-		uint32 waveTag;
-		uint32 fmtTag;
-		uint32 fmtSize;
-		uint16 compression;
-		uint16 channels;
-		uint32 sampleRate;
-		uint32 bytesPerSecond;
-		uint16 blockAlign;
-		uint16 bitsPerSample;
-		uint32 dataTag;
-		uint32 dataSize;
+		EVENT_STARTED = 0,	//Called when an event is started. FMOD_EVENT_CALLBACKTYPE_EVENTSTARTED
+		EVENT_FINISHED,		//Called when an event is stopped for any reason. FMOD_EVENT_CALLBACKTYPE_EVENTFINISHED
+		EVENT_SYNCPOINT,	//Called when a syncpoint is encountered. Can be from wav file markers. FMOD_EVENT_CALLBACKTYPE_SYNCPOINT
+
+		EVENT_COUNT
 	};
 
-	// Default alignment
-#ifdef _MSC_VER
-# pragma pack( pop, packing )
+	void SetVolume(float32 volume);
+	float32	GetVolume();
+
+	void Play();
+	void Pause(bool isPaused);
+	bool IsPaused();
+	void Stop();
+	void PerformCallback(eEvent eventType);
+
+	void SetPosition(const Vector3 & position);
+
+private:
+	SoundEvent(FMOD::Event * fmodEvent);
+	~SoundEvent();
+
+	FMOD::Event * fmodEvent;
+
+	IMPLEMENT_EVENT_DISPATCHER(eventDispatcher);
+
+friend class SoundSystem;
+friend class SoundComponent;
+};
+
+};
+
 #endif
-#undef PACK_STRUCT
-};
-
-};
-
-#endif //__DAVAENGINE_SOUND_WV_PROVIDER_H__

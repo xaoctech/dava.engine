@@ -25,55 +25,41 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Ivan Petrochenko
+        * Created by Igor Solovey
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_ALUTILS_H__
-#define __DAVAENGINE_ALUTILS_H__
-
-#ifdef __DAVASOUND_AL__
+#ifndef __DAVAENGINE_SOUND_EVENT_CATEGORY_H__
+#define __DAVAENGINE_SOUND_EVENT_CATEGORY_H__
 
 #include "Base/BaseTypes.h"
-#include "FileSystem/Logger.h"
+#include "Base/BaseObject.h"
+#include "Sound/VolumeAnimatedObject.h"
 
-#if defined(__DAVAENGINE_WIN32__)
-#include <al.h>
-#include <alc.h>
-#elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
-#include <OpenAL/al.h>
-#include <OpenAL/alc.h>
-#elif defined(__DAVAENGINE_ANDROID__)
-#include <openal/include/al/al.h>
-#include <openal/include/al/alc.h>
-#endif
+namespace FMOD
+{
+class EventCategory;
+};
 
 namespace DAVA
 {
 
+class SoundEventCategory : public VolumeAnimatedObject
+{
+public:
+	SoundEventCategory(FMOD::EventCategory * category);
+	~SoundEventCategory();
 
-#define AL_VERIFY(command) \
-	{ \
-	alGetError(); \
-	command; \
-	ALenum error; \
-	if((error = alGetError()) != AL_NO_ERROR) \
-	{ \
-		Logger::Error("OpenAL: %s file:%s line:%d failed with errorcode: 0x%x", #command, __FILE__, __LINE__, error); \
-	} \
-} \
+	void SetVolume(float32 volume);
+	float32	GetVolume();
 
-#define  AL_CHECKERROR() \
-	{ \
-	ALenum error; \
-	if((error = alGetError()) != AL_NO_ERROR) \
-	{ \
-		Logger::Error("OpenAL: file:%s line:%d failed with errorcode: 0x%x", __FILE__, __LINE__, error); \
-	} \
-} \
+	void Stop();
+	void Pause(bool isPaused);
+	bool GetPaused();
 
+private:
+	FMOD::EventCategory * fmodEventCategory;
+};
 
-}
+};
 
-#endif //__DAVASOUND_AL__
-
-#endif //__DAVAENGINE_ALUTILS_H__
+#endif //__DAVAENGINE_SOUND_EVENT_CATEGORY_H__

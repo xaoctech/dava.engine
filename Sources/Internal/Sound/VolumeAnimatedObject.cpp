@@ -25,88 +25,51 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Ivan Petrochenko
+        * Created by Igor Solovey
 =====================================================================================*/
 
-#include "Sound/SoundDataProvider.h"
-#include "Debug/DVAssert.h"
-
+#include "Sound/VolumeAnimatedObject.h"
+#include "Animation/Animation.h"
+#include "Animation/LinearAnimation.h"
+#include "Sound/SoundSystem.h"
 
 namespace DAVA
 {
 
-SoundDataProvider::SoundDataProvider(const FilePath & _fileName)
-:	fileName(_fileName),
-	isInited(false)
+VolumeAnimatedObject::VolumeAnimatedObject() :
+	animatedVolume(-1)
 {
+
 }
 
-int32 SoundDataProvider::GetSampleRate()
+Animation * VolumeAnimatedObject::VolumeAnimation(float32 newVolume, float32 time, int32 track)
 {
-	return sampleRate;
-}
-    
-int32 SoundDataProvider::GetSampleSize()
-{
-    return sampleSize;
-}
-    
-int32 SoundDataProvider::GetChannelsCount()
-{
-    return channelsCount;
-}
-    
-bool SoundDataProvider::Init()
-{
-    isInited = true;
-    
-    return true;
+	animatedVolume = GetVolume();
+
+	Animation * a = new LinearAnimation<float32>(this, &animatedVolume, newVolume, time, Interpolation::LINEAR);
+	a->AddEvent(Animation::EVENT_ANIMATION_END, Message(this, &VolumeAnimatedObject::OnVolumeAnimationEnded));
+	a->AddEvent(Animation::EVENT_ANIMATION_CANCELLED, Message(this, &VolumeAnimatedObject::OnVolumeAnimationEnded));
+	Retain();
+	a->Start(track);
+
+	SoundSystem::Instance()->AddVolumeAnimatedObject(this);
+
+	return a;
 }
 
-    
-#ifdef __DAVASOUND_AL__
-ALenum SoundDataProvider::GetFormat()
+void VolumeAnimatedObject::Update()
 {
-	if(1 == channelsCount)
-	{
-		if(8 == sampleSize)
-		{
-			return AL_FORMAT_MONO8;
-		}
-		else if(16 == sampleSize)
-		{
-			return AL_FORMAT_MONO16;
-		}
-		else
-		{
-			DVASSERT(0);
-			return AL_FORMAT_STEREO16;
-		}
-	}
-	else if(2 == channelsCount)
-	{
-		if(8 == sampleSize)
-		{
-			return AL_FORMAT_STEREO8;
-		}
-		else if(16 == sampleSize)
-		{
-			return AL_FORMAT_STEREO16;
-		}
-		else
-		{
-			DVASSERT(0);
-			return AL_FORMAT_STEREO16;
-		}
-	}
-	else
-	{
-		DVASSERT(0);
-		return AL_FORMAT_STEREO16;
-	}
+	if(animatedVolume != -1.f)
+		SetVolume(animatedVolume);
 }
 
-#endif //#ifdef __DAVASOUND_AL__
+void VolumeAnimatedObject::OnVolumeAnimationEnded(BaseObject * caller, void * userData, void * callerData)
+{
+	SetVolume(animatedVolume);
+	animatedVolume = -1.f;
+	Release();
 
+	SoundSystem::Instance()->RemoveVolumeAnimatedObject(this);
+}
 
 };

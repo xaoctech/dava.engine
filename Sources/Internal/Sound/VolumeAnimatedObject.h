@@ -25,55 +25,36 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Ivan Petrochenko
+        * Created by Igor Solovey
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_SOUND_DATA_PROVIDER_H__
-#define __DAVAENGINE_SOUND_DATA_PROVIDER_H__
+#ifndef __DAVAENGINE_VOLUME_ANIMATED_OBJECT_H__
+#define __DAVAENGINE_VOLUME_ANIMATED_OBJECT_H__
 
 #include "Base/BaseTypes.h"
-#include "FileSystem/FilePath.h"
-#include "Sound/ALUtils.h"
+#include "Animation/AnimatedObject.h"
 
 namespace DAVA
 {
 
-class SoundBuffer;
-class SoundDataProvider
+class Animation;
+class VolumeAnimatedObject : public AnimatedObject
 {
 public:
-	SoundDataProvider(const FilePath & fileName);
-	virtual ~SoundDataProvider() {};
+	VolumeAnimatedObject();
 
-	virtual bool Init();
-	virtual int32 LoadData(int8 ** buffer, int32 desiredSize) = 0;
-	virtual void Rewind() = 0;
-	inline int32 GetStreamBufferSize();
+	virtual void SetVolume(float32 volume) = 0;
+	virtual float32 GetVolume() = 0;
 
-	int32 GetSampleRate();
-    int32 GetSampleSize();
-    int32 GetChannelsCount();
-#ifdef __DAVASOUND_AL__
-	ALenum GetFormat();
-#endif //#ifdef __DAVASOUND_AL__
+	Animation * VolumeAnimation(float32 newVolume, float32 time, int32 track = 0);
+	void Update();
 
-protected:
-	FilePath fileName;
-	int32 dataSize;
-	int32 leftDataSize;
-	int32 channelsCount;
-	int32 sampleRate;
-	int32 sampleSize;
-	int32 streamBufferSize;
+private:
+	float32 animatedVolume;
 
-	bool isInited;
+	void OnVolumeAnimationEnded(BaseObject * caller, void * userData, void * callerData);
 };
-
-int32 SoundDataProvider::GetStreamBufferSize()
-{
-	return streamBufferSize;
-}
 
 };
 
-#endif //__DAVAENGINE_SOUND_DATA_PROVIDER_H__
+#endif

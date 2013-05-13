@@ -17,3 +17,5 @@ APP_CFLAGS += -Wno-invalid-offsetof
 APP_LDLIBS := -fuse-ld=gold -fno-exceptions
 
 APP_ABI := armeabi-v7a
+
+APP_CFLAGS += -std=c++11

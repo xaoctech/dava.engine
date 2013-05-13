@@ -188,11 +188,11 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 						}
 					}
 
+					hoodSystem->Unlock();
+
 					EndModification();
 					inModifState = false;
 					modified = false;
-
-					hoodSystem->Unlock();
 				}
 			}
 		}

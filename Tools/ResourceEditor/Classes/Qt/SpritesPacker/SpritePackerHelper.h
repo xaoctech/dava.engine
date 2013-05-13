@@ -24,7 +24,7 @@ signals:
 protected:
     
     void EnumerateSpritesForReloading(SceneData* sceneData, Map<String, Sprite *> &sprites);
-    
+    void EnumerateSpritesForParticleEmitter(ParticleEmitter* emitter, Map<String, Sprite *> &sprites);
 
 	void Pack();
 	void Reload();
