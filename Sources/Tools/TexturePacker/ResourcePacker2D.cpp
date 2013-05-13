@@ -330,15 +330,15 @@ void ResourcePacker2D::ProcessFlags(const FilePath & flagsPathname)
 			Logger::Debug("Token: %s", tokens[k].c_str());
 		}
 
-	if (Core::Instance()->IsConsoleMode())
-	{
-		for (int k = 0; k < (int) tokens.size(); ++k)
-		{
-			String sub = tokens[k].substr(0, 2);
-			if (sub != "--")
-				printf("\n[WARNING: flag %s incorrect]\n", tokens[k].c_str());
-		}
-	}
+//	if (Core::Instance()->IsConsoleMode())
+//	{
+//		for (int k = 0; k < (int) tokens.size(); ++k)
+//		{
+//			String sub = tokens[k].substr(0, 2);
+//			if (sub != "--")
+//				printf("\n[WARNING: flag %s incorrect]\n", tokens[k].c_str());
+//		}
+//	}
 	
 	CommandLineParser::Instance()->SetArguments(tokens);
 	

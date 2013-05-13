@@ -214,14 +214,11 @@ void TexturePacker::PackToTextures(const FilePath & excludeFolder, const FilePat
 	if (CommandLineParser::Instance()->GetVerbose())
 		Logger::Info("* Packing tries started: ");
 	
-	bool isPvr = CommandLineParser::Instance()->IsFlagSet("--pvr");
-	bool isDxt = CommandLineParser::Instance()->IsFlagSet("--dxt");
+    bool needOnlySquareTexture = onlySquareTextures || NeedSquareTextureForCompression(forGPU);
 	for (int yResolution = 8; yResolution <= maxTextureSize; yResolution *= 2)
 		 for (int xResolution = 8; xResolution <= maxTextureSize; xResolution *= 2)
 		 {
-			 if ((isPvr || isDxt) && (xResolution != yResolution))continue;
-
-			 if ((onlySquareTextures) && (xResolution != yResolution))continue;
+			 if (needOnlySquareTexture && (xResolution != yResolution))continue;
 			 
 			 Rect2i textureRect = Rect2i(0, 0, xResolution, yResolution);
 			 
@@ -312,14 +309,11 @@ void TexturePacker::PackToMultipleTextures(const FilePath & excludeFolder, const
 		ImagePacker * bestPackerForThisStep = 0;
 		Vector<SizeSortItem> newWorkVector;
 		
-        bool isPvr = CommandLineParser::Instance()->IsFlagSet("--pvr");
-		bool isDxt = CommandLineParser::Instance()->IsFlagSet("--dxt");
+        bool needOnlySquareTexture = onlySquareTextures || NeedSquareTextureForCompression(forGPU);
 		for (int yResolution = 8; yResolution <= maxTextureSize; yResolution *= 2)
 			for (int xResolution = 8; xResolution <= maxTextureSize; xResolution *= 2)
 			{
-				if ( (isPvr || isDxt) && (xResolution != yResolution))continue;
-
-				if ((onlySquareTextures) && (xResolution != yResolution))continue;
+				if (needOnlySquareTexture && (xResolution != yResolution))continue;
 				
 				Rect2i textureRect = Rect2i(0, 0, xResolution, yResolution);
 				ImagePacker * packer = new ImagePacker(textureRect);
@@ -644,6 +638,15 @@ TextureDescriptor * TexturePacker::CreateDescriptor(eGPUFamily forGPU)
     }
     
     return descriptor;
+}
+    
+bool TexturePacker::NeedSquareTextureForCompression(eGPUFamily forGPU)
+{
+    if(forGPU == GPU_UNKNOWN)   // not need compression
+        return false;
+    
+    const String gpuNameFlag = "--" + GPUFamilyDescriptor::GetGPUName(forGPU);
+    return (CommandLineParser::Instance()->IsFlagSet(gpuNameFlag));
 }
 
 };
