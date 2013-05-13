@@ -84,7 +84,8 @@ public:
     void EnumerateSceneTextures();
     void EnumerateNodes(Scene *scene);
     
-    static bool IsTextureChanged(const FilePath &texturePathname, ImageFileFormat fileFormat);
+    static bool IsTextureChanged(const TextureDescriptor *descriptor, eGPUFamily forGPU);
+    static bool IsTextureChanged(const FilePath &texturePathname, eGPUFamily forGPU);
     
 	bool ValidateTexturePathname(const FilePath &pathForValidation, Set<String> &errorsLog);
 	bool ValidateHeightmapPathname(const FilePath &pathForValidation, Set<String> &errorsLog);
@@ -116,7 +117,7 @@ protected:
 
     bool NodeRemovingDisabled(Entity *node);
     
-    bool WasTextureChanged(Texture *texture, ImageFileFormat fileFormat);
+    bool WasTextureChanged(Texture *texture, eGPUFamily forGPU);
 
 	bool IsTextureDescriptorPath(const FilePath &path);
     
@@ -127,8 +128,8 @@ protected:
     Set<Entity *> emptyNodesForDeletion;
     Set<String> errorMessages;
     
-    int32 sceneTextureCount;
-    int32 sceneTextureMemory;
+//    int32 sceneTextureCount;
+//    int32 sceneTextureMemory;
     
     FilePath pathForChecking;
 };

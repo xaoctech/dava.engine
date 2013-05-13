@@ -116,7 +116,7 @@ int LibPngWrapper::ReadPngFile(File *infile, Image * image, PixelFormat targetFo
 	png_structp png_ptr;
 	png_infop info_ptr;
 	
-	uint8 *image_data;
+	uint8 *image_data = NULL;
 	char sig[8];
 	
 	int bit_depth;
@@ -126,7 +126,6 @@ int LibPngWrapper::ReadPngFile(File *infile, Image * image, PixelFormat targetFo
 	png_uint_32 height;
 	unsigned int rowbytes;
 	
-	image_data = NULL;
 	int i;
 	png_bytepp row_pointers = NULL;
 	
@@ -258,6 +257,80 @@ bool LibPngWrapper::IsPngFile(File *file)
     file->Read(sig, 8);
 	
     return (0 != png_check_sig((unsigned char *) sig, 8));
+}
+
+uint32 LibPngWrapper::GetDataSize(const FilePath &filePathname)
+{
+    File * infile = File::Create(filePathname, File::OPEN | File::READ);
+	if (!infile)
+	{
+		return 0;
+	}
+    
+	char sig[8];
+	infile->Read(sig, 8);
+	if (!png_check_sig((unsigned char *) sig, 8))
+	{
+        SafeRelease(infile);
+		return 0;
+	}
+
+    
+    png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+	if (!png_ptr)
+	{
+        SafeRelease(infile);
+		return 0;
+	}
+
+	png_infop info_ptr = png_create_info_struct(png_ptr);
+	if (!info_ptr)
+	{
+		png_destroy_read_struct(&png_ptr, (png_infopp) NULL, (png_infopp) NULL);
+        
+        SafeRelease(infile);
+		return 0;
+	}
+	
+    if (setjmp(png_jmpbuf(png_ptr)))
+	{
+		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+        
+        SafeRelease(infile);
+		return 0;
+	}
+
+	
+
+    png_set_sig_bytes(png_ptr, 8);
+	png_read_info(png_ptr, info_ptr);
+
+
+    int bit_depth;
+	int color_type;
+	
+	png_uint_32 width;
+	png_uint_32 height;
+	
+	
+	png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type, NULL, NULL, NULL);
+
+	PixelFormat format = FORMAT_RGBA8888;
+	if (color_type == PNG_COLOR_TYPE_GRAY ||
+		color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
+    {
+        format = (bit_depth == 16) ? FORMAT_A16 : FORMAT_A8;
+	}
+
+    uint32 imageSize = width * height * Texture::GetPixelFormatSizeInBytes(format);
+    
+    
+	/* Clean up. */
+	png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+	
+    SafeRelease(infile);
+
+	return imageSize;
 }
 
 

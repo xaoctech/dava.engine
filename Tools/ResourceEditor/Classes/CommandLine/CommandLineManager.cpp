@@ -1,6 +1,5 @@
 #include "CommandLineManager.h"
 #include "CommandLineTool.h"
-#include "CommandLine/EditorCommandLineParser.h"
 
 #include "ImageSplitter/ImageSplitterTool.h"
 #include "SceneUtils/CleanFolderTool.h"
@@ -74,18 +73,18 @@ void CommandLineManager::AddCommandLineTool(CommandLineTool *tool)
 
 void CommandLineManager::ParseCommandLine()
 {
-    if(EditorCommandLineParser::CommandIsFound(String("-usage")) || EditorCommandLineParser::CommandIsFound(String("-help")))
+    if(CommandLineParser::CommandIsFound(String("-usage")) || CommandLineParser::CommandIsFound(String("-help")))
     {
         PrintUsage();
         return;
     }
     
-    if(EditorCommandLineParser::CommandIsFound(String("-v")) || EditorCommandLineParser::CommandIsFound(String("-verbose")))
+    if(CommandLineParser::CommandIsFound(String("-v")) || CommandLineParser::CommandIsFound(String("-verbose")))
     {
         CommandLineParser::Instance()->SetVerbose(true);
     }
     
-    if(EditorCommandLineParser::CommandIsFound(String("-exo")))
+    if(CommandLineParser::CommandIsFound(String("-exo")))
     {
         CommandLineParser::Instance()->SetExtendedOutput(true);
     }
@@ -98,7 +97,7 @@ void CommandLineManager::DetectCommandLineMode()
     Map<String, CommandLineTool *>::const_iterator endIT = commandLineTools.end();
     for(auto it = commandLineTools.begin(); it != endIT; ++it)
     {
-        if(EditorCommandLineParser::CommandIsFound(it->first))
+        if(CommandLineParser::CommandIsFound(it->first))
         {
             isCommandLineModeEnabled = true;
             break;
@@ -115,7 +114,7 @@ void CommandLineManager::FindActiveTool()
         Map<String, CommandLineTool *>::const_iterator endIT = commandLineTools.end();
         for(auto it = commandLineTools.begin(); it != endIT; ++it)
         {
-            if(EditorCommandLineParser::CommandIsFound(it->first))
+            if(CommandLineParser::CommandIsFound(it->first))
             {
                 activeTool = it->second;
                 break;
@@ -154,8 +153,8 @@ bool CommandLineManager::PrintResults()
         ShowErrorDialog(errors);
     }
     
-    bool forceMode =    EditorCommandLineParser::CommandIsFound(String("-force"))
-                    ||  EditorCommandLineParser::CommandIsFound(String("-forceclose"));
+    bool forceMode =    CommandLineParser::CommandIsFound(String("-force"))
+                    ||  CommandLineParser::CommandIsFound(String("-forceclose"));
     return (forceMode || 0 == errors.size());
 }
 

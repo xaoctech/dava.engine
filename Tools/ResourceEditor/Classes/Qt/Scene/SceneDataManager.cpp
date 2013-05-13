@@ -523,6 +523,72 @@ void SceneDataManager::CollectTexture(Map<String, Texture *> &textures, const St
 }
 
 
+void SceneDataManager::EnumerateDescriptors(DAVA::Entity *forNode, DAVA::Set<DAVA::FilePath> &descriptors)
+{
+    if(!forNode)  return;
+    
+    Vector<Entity *> nodes;
+    forNode->GetChildNodes(nodes);
+    
+    nodes.push_back(forNode);
+    
+    for(int32 n = 0; n < (int32)nodes.size(); ++n)
+    {
+        RenderComponent *rc = static_cast<RenderComponent *>(nodes[n]->GetComponent(Component::RENDER_COMPONENT));
+        if(!rc) continue;
+        
+        RenderObject *ro = rc->GetRenderObject();
+        if(!ro) continue;
+        
+        uint32 count = ro->GetRenderBatchCount();
+        for(uint32 b = 0; b < count; ++b)
+        {
+            RenderBatch *renderBatch = ro->GetRenderBatch(b);
+            
+            Material *material = renderBatch->GetMaterial();
+            if(material)
+            {
+                for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
+                {
+                    CollectDescriptors(descriptors, material->GetTextureName((DAVA::Material::eTextureLevel)t));
+                }
+            }
+            
+            InstanceMaterialState *instanceMaterial = renderBatch->GetMaterialInstance();
+            if(instanceMaterial)
+            {
+                CollectDescriptors(descriptors, instanceMaterial->GetLightmapName());
+            }
+        }
+        
+        Landscape *land = dynamic_cast<Landscape *>(ro);
+        if(land)
+        {
+            CollectLandscapeDescriptors(descriptors, land);
+        }
+    }
+}
+
+
+void SceneDataManager::CollectLandscapeDescriptors(DAVA::Set<DAVA::FilePath> &descriptors, DAVA::Landscape *forNode)
+{
+    for(int32 t = 0; t < Landscape::TEXTURE_COUNT; t++)
+	{
+		CollectDescriptors(descriptors, forNode->GetTextureName((Landscape::eTextureLevel)t));
+	}
+}
+
+void SceneDataManager::CollectDescriptors(DAVA::Set<DAVA::FilePath> &descriptors, const DAVA::FilePath &pathname)
+{
+    DVASSERT(pathname.IsEqualToExtension(TextureDescriptor::GetDescriptorExtension()));
+    
+    if(!pathname.IsEmpty() && SceneValidator::Instance()->IsPathCorrectForProject(pathname))
+	{
+        descriptors.insert(pathname);
+	}
+}
+
+
 void SceneDataManager::TextureCompressAllNotCompressed()
 {
 	Map<String, Texture *> textures;
@@ -538,24 +604,34 @@ void SceneDataManager::TextureCompressAllNotCompressed()
 	Map<String, Texture *>::const_iterator endItTextures = textures.end();
 	for(Map<String, Texture *>::const_iterator it = textures.begin(); it != endItTextures; ++it)
 	{
-		if(SceneValidator::Instance()->IsTextureChanged(it->first, PVR_FILE))
-		{
-			texturesForPVRCompression.push_back(SafeRetain(it->second));
-		}
-		else if(SceneValidator::Instance()->IsTextureChanged(it->first, DXT_FILE))
-		{
-			texturesForDXTCompression.push_back(SafeRetain(it->second));
-		}
+        for(int32 i = 0; i < GPU_FAMILY_COUNT; ++i)
+        {
+            eGPUFamily gpu = (eGPUFamily)i;
+            if(SceneValidator::Instance()->IsTextureChanged(it->first, gpu))
+            {
+                //TODO: need correct code to create compression threads
+                DVASSERT(false);
+            }
+        }
+        
+//		if(SceneValidator::Instance()->IsTextureChanged(it->first, PVR_FILE))
+//		{
+//			texturesForPVRCompression.push_back(SafeRetain(it->second));
+//		}
+//		else if(SceneValidator::Instance()->IsTextureChanged(it->first, DXT_FILE))
+//		{
+//			texturesForDXTCompression.push_back(SafeRetain(it->second));
+//		}
 	}
 
-	CompressTextures(texturesForPVRCompression, PVR_FILE);
-	CompressTextures(texturesForDXTCompression, DXT_FILE);
+//	CompressTextures(texturesForPVRCompression, PVR_FILE);
+//	CompressTextures(texturesForDXTCompression, DXT_FILE);
 
 	for_each(texturesForPVRCompression.begin(), texturesForPVRCompression.end(),  SafeRelease<Texture>);
 	for_each(texturesForDXTCompression.begin(), texturesForDXTCompression.end(),  SafeRelease<Texture>);
 }
 
-void SceneDataManager::CompressTextures(const List<DAVA::Texture *> texturesForCompression, DAVA::ImageFileFormat fileFormat)
+void SceneDataManager::CompressTextures(const List<DAVA::Texture *> texturesForCompression, DAVA::eGPUFamily forGPU)
 {
 	//TODO: need to run compression at thread
 
@@ -583,7 +659,7 @@ void SceneDataManager::CompressTextures(const List<DAVA::Texture *> texturesForC
 // 	}
 }
 
-void SceneDataManager::TextureReloadAll(DAVA::ImageFileFormat asFile)
+void SceneDataManager::TextureReloadAll(DAVA::eGPUFamily forGPU)
 {
 	Map<String, Texture *> textures;
 	List<SceneData *>::const_iterator endIt = scenes.end();
@@ -598,13 +674,13 @@ void SceneDataManager::TextureReloadAll(DAVA::ImageFileFormat asFile)
 		TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(it->first);
 		if(descriptor)
 		{
-			Texture *newTexture = TextureReload(descriptor, it->second, asFile);
+			Texture *newTexture = TextureReload(descriptor, it->second, forGPU);
 			SafeRelease(descriptor);
 		}
 	}
 }
 
-DAVA::Texture * SceneDataManager::TextureReload(const TextureDescriptor *descriptor, DAVA::Texture *prevTexture, DAVA::ImageFileFormat asFile)
+DAVA::Texture * SceneDataManager::TextureReload(const TextureDescriptor *descriptor, DAVA::Texture *prevTexture, DAVA::eGPUFamily forGPU)
 {
 	if(!descriptor)
 		return NULL;
@@ -627,7 +703,7 @@ DAVA::Texture * SceneDataManager::TextureReload(const TextureDescriptor *descrip
 	}
 
 	//apply descriptor parameters
-	workingTexture->ReloadAs((ImageFileFormat)asFile, descriptor);
+	workingTexture->ReloadAs(forGPU, descriptor);
 	return workingTexture;
 }
 

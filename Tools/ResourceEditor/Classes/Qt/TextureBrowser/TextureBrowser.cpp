@@ -484,17 +484,17 @@ void TextureBrowser::resetTextureInfo()
 	updateInfoConverted();
 }
 
-void TextureBrowser::reloadTextureToScene(DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, DAVA::ImageFileFormat format)
+void TextureBrowser::reloadTextureToScene(DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu)
 {
 	if(NULL != descriptor && NULL != texture)
 	{
-		DAVA::ImageFileFormat curEditorImageFormatForTextures = (DAVA::ImageFileFormat) EditorSettings::Instance()->GetTextureViewFileFormat();
+		DAVA::eGPUFamily curEditorImageGPUForTextures = EditorSettings::Instance()->GetTextureViewGPU();
 
 		// reload only when editor view format is the same as given texture format
 		// or if given texture format if not a file (will happened if some common texture params changed - mipmap/filtering etc.)
-		if(DAVA::NOT_FILE == format || format == curEditorImageFormatForTextures)
+		if(DAVA::GPU_UNKNOWN == gpu || gpu == curEditorImageGPUForTextures)
 		{
-			DAVA::Texture *newTexture = SceneDataManager::Instance()->TextureReload(descriptor, texture, curEditorImageFormatForTextures);
+			DAVA::Texture *newTexture = SceneDataManager::Instance()->TextureReload(descriptor, texture, curEditorImageGPUForTextures);
 
 			if(NULL != newTexture)
 			{
@@ -594,7 +594,7 @@ void TextureBrowser::texturePropertyChanged(const int propGroup)
 	{
 		// common settings
 		// new texture can be applyed to scene immediately
-		reloadTextureToScene(curTexture, ui->textureProperties->getTextureDescriptor(), DAVA::NOT_FILE);
+		reloadTextureToScene(curTexture, ui->textureProperties->getTextureDescriptor(), DAVA::GPU_UNKNOWN);
 	}
 
 	// update warning message

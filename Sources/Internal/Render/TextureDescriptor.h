@@ -100,7 +100,7 @@ public:
     void Export(const FilePath &filePathname);
 
     
-    bool IsSourceChanged(eGPUFamily gpuFamily);
+    bool IsSourceChanged(eGPUFamily gpuFamily) const;
     bool UpdateCrcForFormat(eGPUFamily gpuFamily) const;
 
     const bool IsCompressedFile() const;
@@ -114,6 +114,8 @@ public:
 
     static FilePath GetDescriptorPathname(const FilePath &texturePathname);
     static String GetDescriptorExtension();
+    
+    PixelFormat GetPixelFormatForCompression(eGPUFamily forGPU);
     
 protected:
     

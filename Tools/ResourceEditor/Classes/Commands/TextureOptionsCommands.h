@@ -8,7 +8,7 @@
 class ReloadTexturesAsCommand: public Command
 {
 public:	
-	ReloadTexturesAsCommand(DAVA::ImageFileFormat format);
+	ReloadTexturesAsCommand(DAVA::eGPUFamily gpu);
 
 protected:	
     
@@ -16,7 +16,7 @@ protected:
     
 protected:
     
-    DAVA::ImageFileFormat fileFormat;
+    DAVA::eGPUFamily gpuFamily;
 };
 
 

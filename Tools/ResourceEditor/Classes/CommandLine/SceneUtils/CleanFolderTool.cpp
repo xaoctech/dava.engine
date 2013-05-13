@@ -30,7 +30,7 @@
 
 #include "CleanFolderTool.h"
 
-#include "CommandLine/EditorCommandLineParser.h"
+#include "TexturePacker/CommandLineParser.h"
 
 using namespace DAVA;
 
@@ -53,7 +53,7 @@ DAVA::String CleanFolderTool::GetCommandLineKey()
 
 bool CleanFolderTool::InitializeFromCommandLine()
 {
-    foldername = EditorCommandLineParser::GetCommandParam(String("-folder"));
+    foldername = CommandLineParser::GetCommandParam(String("-folder"));
     if(foldername.IsEmpty())
     {
         errors.insert(String("Incorrect params for cleaning folder"));

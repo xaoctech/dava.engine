@@ -53,6 +53,8 @@ public:
 	static int ReadPngFile(File *infile, Image * image, PixelFormat targetFormat = FORMAT_INVALID);
 	static void WritePngFile(const FilePath & fileName, int32 width, int32 height, uint8 * data, PixelFormat format);
 
+    static uint32 GetDataSize(const FilePath &filePathname);
+
 };
 
 class PngImage : public BaseObject

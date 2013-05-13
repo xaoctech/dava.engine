@@ -132,7 +132,7 @@ void BackGroundPropertyGridWidget::OpenSpriteDialog()
 	resPacker->InitFolders(ResourcesManageHelper::GetSpritesDatasourceDirectory().toStdString(),
                            ResourcesManageHelper::GetSpritesDirectory().toStdString());
     
-    resPacker->PackResources();
+    resPacker->PackResources(GPU_UNKNOWN);
 
 	// Get sprites directory to open
 	QString currentSpriteDir = ResourcesManageHelper::GetDefaultSpritesPath(this->ui->spriteLineEdit->text());

@@ -260,15 +260,14 @@ PropertyBoolCell::PropertyBoolCell(PropertyCellDelegate *propDelegate, PropertyC
     //Temporary fix for loading of UI Interface to avoid reloading of texrures to different formates.
     // 1. Reset default format before loading of UI
     // 2. Restore default format after loading of UI from stored settings.
-    Texture::SetDefaultFileFormat(NOT_FILE);
+    Texture::SetDefaultGPU(GPU_UNKNOWN);
 
     float32 checkBoxWidth = GetHeightForWidth(width - keyName->size.x);
     checkBox = new UICheckBox("~res:/Gfx/UI/chekBox", Rect(keyName->size.x, 0, checkBoxWidth, checkBoxWidth));
     checkBox->SetDelegate(this);
     AddControl(checkBox);
     
-    Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
-
+    Texture::SetDefaultGPU(EditorSettings::Instance()->GetTextureViewGPU());
     
     SetData(prop);
 }
@@ -715,7 +714,7 @@ PropertySliderCell::PropertySliderCell(PropertyCellDelegate *propDelegate, Prope
     //Temporary fix for loading of UI Interface to avoid reloading of texrures to different formates.
     // 1. Reset default format before loading of UI
     // 2. Restore default format after loading of UI from stored settings.
-    Texture::SetDefaultFileFormat(NOT_FILE);
+    Texture::SetDefaultGPU(GPU_UNKNOWN);
 
     slider = new UISliderWithText(Rect(textWidth, keyName->size.y, width - 2*textWidth, keyName->size.y));
     slider->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &PropertySliderCell::OnValueChanged));
@@ -728,7 +727,7 @@ PropertySliderCell::PropertySliderCell(PropertyCellDelegate *propDelegate, Prope
     slider->SetThumbSprite("~res:/Gfx/LandscapeEditor/Tools/polzunokCenter", 0);
     AddControl(slider);
     
-    Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
+    Texture::SetDefaultGPU(EditorSettings::Instance()->GetTextureViewGPU());
 
 
     SetData(prop);
@@ -785,14 +784,14 @@ PropertyTexturePreviewCell::PropertyTexturePreviewCell(PropertyCellDelegate *pro
     //Temporary fix for loading of UI Interface to avoid reloading of texrures to different formates.
     // 1. Reset default format before loading of UI
     // 2. Restore default format after loading of UI from stored settings.
-    Texture::SetDefaultFileFormat(NOT_FILE);
+    Texture::SetDefaultGPU(GPU_UNKNOWN);
 
     float32 checkBoxWidth = GetHeightForWidth(width)/2;
     checkBox = new UICheckBox("~res:/Gfx/UI/chekBox", Rect(0, keyName->size.y, checkBoxWidth, checkBoxWidth));
     checkBox->SetDelegate(this);
     AddControl(checkBox);
     
-    Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
+    Texture::SetDefaultGPU(EditorSettings::Instance()->GetTextureViewGPU());
 
 
     previewControl = new UIControl(Rect(keyName->size.x, 0, width - keyName->size.x, GetHeightForWidth(width)));

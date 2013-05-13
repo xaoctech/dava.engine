@@ -45,14 +45,14 @@ class CommandExport: public Command
 {
     
 public:	
-	CommandExport(DAVA::ImageFileFormat fmt);
+	CommandExport(DAVA::eGPUFamily gpu);
     
 protected:	
     
     virtual void Execute();
     
 protected:
-    DAVA::ImageFileFormat format;
+    DAVA::eGPUFamily gpuFamily;
     
 };
 

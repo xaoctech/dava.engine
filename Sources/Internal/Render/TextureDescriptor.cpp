@@ -463,7 +463,7 @@ String TextureDescriptor::GetSourceTextureExtension()
     return String(".png");
 }
     
-bool TextureDescriptor::IsSourceChanged(eGPUFamily gpuFamily)
+bool TextureDescriptor::IsSourceChanged(eGPUFamily gpuFamily) const
 {
     const Compression *compression = GetCompressionParams(gpuFamily);
 	uint32 sourceCRC = ReadSourceCRC();
@@ -529,6 +529,14 @@ uint32 TextureDescriptor::ReadSourceCRC() const
 
 	return crc;
 }
+    
+PixelFormat TextureDescriptor::GetPixelFormatForCompression(eGPUFamily forGPU)
+{
+    DVASSERT(0 <= forGPU && forGPU < GPU_FAMILY_COUNT);
+    
+    return compression[forGPU].format;
+}
+
     
     
 };
