@@ -25,68 +25,48 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Ivan Petrochenko
+        * Created by Igor Solovey 
 =====================================================================================*/
-
-#ifndef __DAVAENGINE_SOUND_BUFFER_H__
-#define __DAVAENGINE_SOUND_BUFFER_H__
-
-#include "Base/BaseTypes.h"
-#include "Base/BaseObject.h"
-#include "FileSystem/FilePath.h"
-#include "Sound/ALUtils.h"
-
-#ifdef __DAVAENGINE_ANDROID__
-#include <SLES/OpenSLES.h>
-#include <SLES/OpenSLES_Android.h>
-#endif //#ifdef __DAVAENGINE_ANDROID__
+#include "Scene3D/Systems/SoundUpdateSystem.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Entity.h"
+#include "Scene3D/Scene.h"
+#include "Scene3D/Components/TransformComponent.h"
+#include "Scene3D/Components/SoundComponent.h"
+#include "Sound/SoundEvent.h"
+#include "Sound/SoundSystem.h"
 
 namespace DAVA
 {
-
-class SoundBuffer;
-class SoundDataProvider;
-class SoundBuffer : public BaseObject
+SoundUpdateSystem::SoundUpdateSystem(Scene * scene)
+:	SceneSystem(scene)
 {
-public:
-	static SoundBuffer * CreateStatic(const FilePath & fileName);
-	static SoundBuffer * CreateStreamed();
-	static SoundBuffer * CreateEmpty();
-	virtual int32 Release();
+	scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::WORLD_TRANSFORM_CHANGED);
+	scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::SOUND_CHANGED);
+}
 
-	void FullFill(SoundDataProvider * provider);
-    
-#ifdef __DAVAENGINE_ANDROID__
-    void FullFill(SoundDataProvider * provider, SLAndroidSimpleBufferQueueItf playerBufferQueue);
-    int32 actualBufferSize;
-#endif //#ifdef __DAVAENGINE_ANDROID__
-    
-	bool Fill(SoundDataProvider * provider, int32 size); //false if not filled
-#ifdef __DAVASOUND_AL__
-	ALuint GetALBuffer();
-#endif //#ifdef __DAVASOUND_AL__
+SoundUpdateSystem::~SoundUpdateSystem()
+{
+}
 
-private:
-	enum eType
+void SoundUpdateSystem::ImmediateEvent(Entity * entity, uint32 event)
+{
+	if (event == EventSystem::WORLD_TRANSFORM_CHANGED)
 	{
-		TYPE_STATIC = 0,
-		TYPE_STREAMED
-	};
+		Matrix4 * worldTransformPointer = ((TransformComponent*)entity->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransformPtr();
+		Vector3 translation = worldTransformPointer->GetTranslationVector();
 
-	SoundBuffer();
-	virtual ~SoundBuffer();
+		SoundEvent * sEvent = ((SoundComponent *)entity->GetComponent(Component::SOUND_COMPONENT))->GetSoundEvent();
+		sEvent->SetPosition(translation);
+	}
 
-#ifdef __DAVASOUND_AL__
-	ALuint buffer;
-#endif //#ifdef __DAVASOUND_AL__
-
-	FilePath fileName;
-	int8 * data;
-	eType type;
-
-friend class SoundChannel;
+	if (event == EventSystem::SOUND_CHANGED)
+	{
+		SoundComponent * soundComponent = (SoundComponent *)entity->GetComponent(Component::SOUND_COMPONENT);
+		SoundEvent * sEvent = SoundSystem::Instance()->CreateSoundEvent(soundComponent->GetEventName());
+		soundComponent->SetSoundEvent(sEvent);
+		SafeRelease(sEvent);
+	}
+}
+    
 };
-
-};
-
-#endif //__DAVAENGINE_SOUND_BUFFER_H__

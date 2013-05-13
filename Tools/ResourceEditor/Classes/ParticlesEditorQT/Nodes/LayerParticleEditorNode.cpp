@@ -11,6 +11,7 @@
 
 #include "LayerParticleEditorNode.h"
 #include "ForceParticleEditorNode.h"
+#include "InnerEmitterParticleEditorNode.h"
 
 using namespace DAVA;
 
@@ -94,4 +95,20 @@ void LayerParticleEditorNode::UpdateForcesIndices()
     // We have to update exactly the same child nodes as the forces count we have.
     int32 forcesCount = curLayer->forces.size();
     DVASSERT(forcesCount == processedChildNodes);
+}
+
+int32 LayerParticleEditorNode::GetInnerEmittersCount()
+{
+	int32 innerEmittersCount = 0;
+    for (List<BaseParticleEditorNode*>::const_iterator iter = GetChildren().begin(); iter != GetChildren().end();
+         iter ++)
+    {
+        InnerEmitterParticleEditorNode* childNode = dynamic_cast<InnerEmitterParticleEditorNode*>(*iter);
+        if (childNode)
+        {
+            innerEmittersCount ++;
+        }
+    }
+    
+    return innerEmittersCount;
 }

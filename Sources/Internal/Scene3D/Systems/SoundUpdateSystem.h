@@ -25,66 +25,26 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Ivan Petrochenko
+        * Created by Igor Solovey 
 =====================================================================================*/
+#ifndef __DAVAENGINE_SCENE3D_SOUNDUPDATESYSTEM_H__
+#define	__DAVAENGINE_SCENE3D_SOUNDUPDATESYSTEM_H__
 
-#ifndef __DAVAENGINE_SOUND_WV_PROVIDER_H__
-#define __DAVAENGINE_SOUND_WV_PROVIDER_H__
-
-#include "Sound/SoundDataProvider.h"
+#include "Base/BaseTypes.h"
+#include "Entity/SceneSystem.h"
 
 namespace DAVA
 {
-	
-class File;
-class SoundWVProvider : public SoundDataProvider
+class SoundUpdateSystem : public SceneSystem
 {
 public:
-	SoundWVProvider(const FilePath & fileName);
-	virtual ~SoundWVProvider();
+    SoundUpdateSystem(Scene * scene);
+    virtual ~SoundUpdateSystem();
 
-	virtual bool Init();
-	virtual int32 LoadData(int8 ** buffer, int32 desiredSize);
-	virtual void Rewind() {};
-
-private:
-	File * file;
-
-	// byte-align structures
-#ifdef _MSC_VER
-# pragma pack( push, packing )
-# pragma pack( 1 )
-# define PACK_STRUCT
-#elif defined( __GNUC__ )
-# define PACK_STRUCT __attribute__((packed))
-#else
-# error compiler not supported
-#endif
-
-	struct WaveFormat//non-compressed wave
-	{
-		uint32 riffTag;
-		uint32 riffChunkSize;
-		uint32 waveTag;
-		uint32 fmtTag;
-		uint32 fmtSize;
-		uint16 compression;
-		uint16 channels;
-		uint32 sampleRate;
-		uint32 bytesPerSecond;
-		uint16 blockAlign;
-		uint16 bitsPerSample;
-		uint32 dataTag;
-		uint32 dataSize;
-	};
-
-	// Default alignment
-#ifdef _MSC_VER
-# pragma pack( pop, packing )
-#endif
-#undef PACK_STRUCT
+    virtual void ImmediateEvent(Entity * entity, uint32 event);
 };
+    
+} // ns
 
-};
+#endif	/* __DAVAENGINE_SCENE3D_SOUNDUPDATESYSTEM_H__ */
 
-#endif //__DAVAENGINE_SOUND_WV_PROVIDER_H__

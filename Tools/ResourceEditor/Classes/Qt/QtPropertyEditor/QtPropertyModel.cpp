@@ -62,7 +62,6 @@ QtPropertyData * QtPropertyModel::GetProperty(const QString &name, QtPropertyIte
     return NULL;
 }
 
-
 void QtPropertyModel::RemoveProperty(QtPropertyItem* item)
 {
 	removeRow(indexFromItem(item).row());
