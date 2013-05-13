@@ -173,7 +173,7 @@ MaterialCompiler::eCompileError MaterialCompiler::GenerateCodeForNode(MaterialGr
             texCoordIndex = connectorTexCoord->GetNode()->textureInputIndex;
         
         // Add uniform
-        vertexShaderAdditionaUniforms[UNIFORM_GLOBAL_TIME] = Shader::UT_FLOAT;
+        vertexShaderAdditionaUniforms[NMaterialConsts::UNIFORM_GLOBAL_TIME] = Shader::UT_FLOAT;
         node->nodeGenVarying = Format("var_%s", node->GetName().c_str());
         node->nodeCode = Format("var_%s = %s + 0.25 * globalTime;", node->GetName().c_str(), connectorTexCoord->GetNode()->GetName().c_str());
         *destinationCode += node->nodeCode;
@@ -182,7 +182,7 @@ MaterialCompiler::eCompileError MaterialCompiler::GenerateCodeForNode(MaterialGr
     if (type == MaterialGraphNode::TYPE_ROTATOR)
     {
         // Add uniform
-        vertexShaderAdditionaUniforms[UNIFORM_GLOBAL_TIME] = Shader::UT_FLOAT;
+        vertexShaderAdditionaUniforms[NMaterialConsts::UNIFORM_GLOBAL_TIME] = Shader::UT_FLOAT;
     }
     
     if (type == MaterialGraphNode::TYPE_SAMPLE_2D)

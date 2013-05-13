@@ -52,7 +52,7 @@ template<typename T> inline T PropertiesHelper::GetPropertyValue(BaseMetadata* a
     }
 
     activeMetadata->SetActiveParamID(paramID);
-    const T& paramValue = activeMetadata->property(propertyName.toStdString().c_str()).value<T>();
+    const T paramValue = activeMetadata->property(propertyName.toStdString().c_str()).value<T>();
 
     return paramValue;
 }
@@ -94,8 +94,8 @@ template<typename T>
         
     // Get the first control value.
     activeMetadata->SetActiveParamID(0);
-    const T& firstValue = activeMetadata->property(propertyName.toStdString().c_str()).value<T>();
-        
+    const T firstValue = activeMetadata->property(propertyName.toStdString().c_str()).value<T>();
+
     // Look for the other values - start from 1, since the value #0 is already processed.
     int paramsCount = activeMetadata->GetParamsCount();
     for (BaseMetadataParams::METADATAPARAMID i = 0; i < paramsCount; i ++)

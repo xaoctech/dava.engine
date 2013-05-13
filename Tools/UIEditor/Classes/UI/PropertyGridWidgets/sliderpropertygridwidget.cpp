@@ -11,8 +11,6 @@
 
 #include <QFileDialog>
 
-using namespace PropertyNames;
-
 static const QString SLIDER_PROPERTY_BLOCK_NAME = "Slider options";
 
 SliderPropertyGridWidget::SliderPropertyGridWidget(QWidget *parent) :
@@ -45,9 +43,9 @@ void SliderPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     PROPERTIESMAP propertiesMap = BuildMetadataPropertiesMap();
 
     // Initialize the widgets.
-    RegisterDoubleSpinBoxWidgetForProperty(propertiesMap, SLIDER_VALUE_PROPERTY_NAME, ui->valueSpin);
-    RegisterDoubleSpinBoxWidgetForProperty(propertiesMap, SLIDER_MIN_VALUE_PROPERTY_NAME, ui->minValueSpin);
-    RegisterDoubleSpinBoxWidgetForProperty(propertiesMap, SLIDER_MAX_VALUE_PROPERTY_NAME, ui->maxValueSpin);
+    RegisterDoubleSpinBoxWidgetForProperty(propertiesMap, PropertyNames::SLIDER_VALUE_PROPERTY_NAME, ui->valueSpin);
+    RegisterDoubleSpinBoxWidgetForProperty(propertiesMap, PropertyNames::SLIDER_MIN_VALUE_PROPERTY_NAME, ui->minValueSpin);
+    RegisterDoubleSpinBoxWidgetForProperty(propertiesMap, PropertyNames::SLIDER_MAX_VALUE_PROPERTY_NAME, ui->maxValueSpin);
 }
 
 void SliderPropertyGridWidget::Cleanup()
