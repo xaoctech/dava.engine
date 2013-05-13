@@ -49,6 +49,7 @@
     <ClCompile Include="Classes\Metadata\BaseMetadataParams.cpp" />
     <ClCompile Include="Classes\Metadata\MetadataFactory.cpp" />
     <ClCompile Include="Classes\Metadata\PlatformMetadata.cpp" />
+    <ClCompile Include="Classes\Metadata\PropertyNames.cpp" />
     <ClCompile Include="Classes\Metadata\ScreenMetadata.cpp" />
     <ClCompile Include="Classes\Metadata\UIAggregatorMetadata.cpp" />
     <ClCompile Include="Classes\Metadata\UIButtonMetadata.cpp" />
