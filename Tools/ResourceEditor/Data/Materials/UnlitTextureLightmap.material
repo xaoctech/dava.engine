@@ -4,6 +4,7 @@ Material:
     Uniforms:
         texture0: 0
         texture1: 1
+        setupLightmapSize: 
 
 RenderPass:
     Name: "ForwardPass"
