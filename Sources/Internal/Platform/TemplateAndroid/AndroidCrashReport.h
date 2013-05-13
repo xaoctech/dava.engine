@@ -1,6 +1,9 @@
 #ifndef __DAVAENGINE_ANDROID_CRASH_REPORT_H__
 #define __DAVAENGINE_ANDROID_CRASH_REPORT_H__
 
+#include "Base/BaseTypes.h"
+#if defined(__DAVAENGINE_ANDROID__)
+
 #include <signal.h>
 
 namespace DAVA
@@ -30,5 +33,7 @@ private:
 };
 
 }
+
+#endif //#if defined(__DAVAENGINE_ANDROID__)
 
 #endif /* #ifndef __DAVAENGINE_ANDROID_CRASH_HANDLER_H__ */
