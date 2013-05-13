@@ -288,7 +288,7 @@ public:							// properties for fast access
     static ImageFileFormat GetDefaultFileFormat();
     
     
-    inline const ImageFileFormat GetSourceFileFormat() const;
+    inline ImageFileFormat GetSourceFileFormat() const;
     
 private:
     
@@ -340,7 +340,7 @@ inline const FilePath & Texture::GetPathname() const
 	return relativePathname;
 }
     
-inline const ImageFileFormat Texture::GetSourceFileFormat() const
+inline ImageFileFormat Texture::GetSourceFileFormat() const
 {
     return loadedAsFile;
 }

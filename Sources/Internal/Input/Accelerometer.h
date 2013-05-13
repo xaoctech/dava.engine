@@ -68,7 +68,7 @@ public:
 	*/
 	virtual const Vector3 & GetAccelerationData() { return accelerationData; }
 
-	virtual void Enable(float32 updateRate = DEFAULT_UPDATE_RATE){}
+	virtual void Enable(float32 updateRate = DEFAULT_UPDATE_RATE);
 	virtual void Disable(){}
     virtual bool IsEnabled() const { return false; }
 

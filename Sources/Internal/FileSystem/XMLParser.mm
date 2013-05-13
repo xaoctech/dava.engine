@@ -34,6 +34,9 @@
 
 #import <Foundation/Foundation.h>
 
+void DAVA::XMLParserDelegate::OnFoundCharacters(const String & /*chars*/)
+{
+}
 
 @interface XMLParserObject : NSObject <NSXMLParserDelegate>
 {
