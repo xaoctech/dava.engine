@@ -115,7 +115,7 @@ elif (platform.system() == "Darwin"):
         print "remove "+ executableName +" from device"
         params = ["~/AIRSDK_Compiler/bin/adt", "-uninstallApp", "platform", platformName, "-appid", "com.yourcompany." + targetName]
         print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
-        subprocess.call(params)
+        subprocess.call(params, shell=True)
 		
         # ./transporter_chief.rb $2.ipa
         print "deploy "+ ipaName +" on device"
