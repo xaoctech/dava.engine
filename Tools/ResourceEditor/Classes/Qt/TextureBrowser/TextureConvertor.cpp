@@ -192,16 +192,14 @@ QImage TextureConvertor::convertThreadPVR(JobItem *item)
 
     void *pool = DAVA::QtLayer::Instance()->CreateAutoreleasePool();
 
-	if(NULL != item && item->descriptorCopy.pvrCompression.format != DAVA::FORMAT_INVALID)
+	if(NULL != item && item->descriptorCopy.compression[GPU_POVERVR_IOS].format != FORMAT_INVALID)
 	{
-		DAVA::FilePath sourcePath = item->descriptorCopy.GetSourceTexturePathname();
-		DAVA::FilePath outputPath = PVRConverter::Instance()->GetPVRToolOutput(sourcePath);
-
+		DAVA::FilePath outputPath = PVRConverter::Instance()->GetPVRToolOutput(item->descriptorCopy, GPU_POVERVR_IOS);
 		if(!outputPath.IsEmpty())
 		{
 			if(item->forceConvert || !DAVA::FileSystem::Instance()->IsFile(outputPath))
 			{
-				QString command = PVRConverter::Instance()->GetCommandLinePVR(sourcePath, item->descriptorCopy).c_str();
+				QString command = PVRConverter::Instance()->GetCommandLinePVR(item->descriptorCopy, GPU_POVERVR_IOS).c_str();
 				DAVA::Logger::Info("%s", command.toStdString().c_str());
 
 				QProcess p;
@@ -220,7 +218,7 @@ QImage TextureConvertor::convertThreadPVR(JobItem *item)
 					DAVA::Logger::Error("---");
 				}
 
-				bool wasUpdated = item->descriptorCopy.UpdateCrcForFormat(DAVA::PVR_FILE);
+				bool wasUpdated = item->descriptorCopy.UpdateCrcForFormat(DAVA::GPU_POVERVR_IOS);
                 if(wasUpdated)
                 {
                     item->descriptorCopy.Save();
@@ -264,21 +262,20 @@ QImage TextureConvertor::convertThreadDXT(JobItem *item)
 
     void *pool = DAVA::QtLayer::Instance()->CreateAutoreleasePool();
 
-	if (NULL != item && item->descriptorCopy.dxtCompression.format != DAVA::FORMAT_INVALID)
+	if (NULL != item && item->descriptorCopy.compression[GPU_TEGRA].format != FORMAT_INVALID)
 	{
-		DAVA::FilePath sourcePath = item->descriptorCopy.GetSourceTexturePathname();
-		DAVA::FilePath outputPath = DXTConverter::GetDXTOutput(sourcePath);//DXTConverter::ConvertPngToDxt(sourcePath, item->descriptorCopy);
+		DAVA::FilePath outputPath = DXTConverter::GetDXTOutput(item->descriptorCopy, GPU_TEGRA);//DXTConverter::ConvertPngToDxt(sourcePath, item->descriptorCopy);
 		if(!outputPath.IsEmpty())
 		{
 			if(item->forceConvert || !DAVA::FileSystem::Instance()->IsFile(outputPath))
 			{
-				bool wasUpdated = item->descriptorCopy.UpdateCrcForFormat(DAVA::DXT_FILE);
+				bool wasUpdated = item->descriptorCopy.UpdateCrcForFormat(GPU_TEGRA);
                 if(wasUpdated)
                 {
                     item->descriptorCopy.Save();
                 }
 
-				outputPath = DXTConverter::ConvertPngToDxt(sourcePath, item->descriptorCopy);
+				outputPath = DXTConverter::ConvertPngToDxt(item->descriptorCopy, GPU_TEGRA);
 			}
 
 			Vector<DAVA::Image *> davaImages = DAVA::ImageLoader::CreateFromFile(outputPath);
@@ -329,22 +326,22 @@ void TextureConvertor::convertAllThread(DAVA::Map<DAVA::String, DAVA::Texture *>
 
 				if(NULL != descriptor)
 				{
-					if(forceConverAll || SceneValidator::Instance()->IsTextureChanged(i->first, PVR_FILE))
+					if(forceConverAll || SceneValidator::Instance()->IsTextureChanged(i->first, GPU_POVERVR_IOS))
 					{
 						emit convertStatusFromThread(QString(descriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str()), j++, jobCount);
 
-						if(descriptor->pvrCompression.format != DAVA::FORMAT_INVALID)
+						if(descriptor->compression[GPU_POVERVR_IOS].format != DAVA::FORMAT_INVALID)
 						{
 							DAVA::FilePath sourcePath = descriptor->GetSourceTexturePathname();
 
-							QString command = PVRConverter::Instance()->GetCommandLinePVR(sourcePath, *descriptor).c_str();
+							QString command = PVRConverter::Instance()->GetCommandLinePVR(*descriptor, GPU_POVERVR_IOS).c_str();
 							DAVA::Logger::Info("%s", command.toStdString().c_str());
 
 							QProcess p;
 							p.start(command);
 							p.waitForFinished(-1);
 
-							bool wasUpdated = descriptor->UpdateCrcForFormat(PVR_FILE);
+							bool wasUpdated = descriptor->UpdateCrcForFormat(GPU_POVERVR_IOS);
 							if(wasUpdated)
 							{
 								descriptor->Save();
@@ -352,18 +349,17 @@ void TextureConvertor::convertAllThread(DAVA::Map<DAVA::String, DAVA::Texture *>
 						}
 					}
 
-					if(forceConverAll || SceneValidator::Instance()->IsTextureChanged(i->first, DXT_FILE))
+					if(forceConverAll || SceneValidator::Instance()->IsTextureChanged(i->first, GPU_TEGRA))
 					{
 						emit convertStatusFromThread(QString(descriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str()), j++, jobCount);
 
-						if(descriptor->dxtCompression.format != DAVA::FORMAT_INVALID)
+						if(descriptor->compression[GPU_TEGRA].format != DAVA::FORMAT_INVALID)
 						{
-							DAVA::FilePath sourcePath = descriptor->GetSourceTexturePathname();
-							DAVA::FilePath outputPath = DXTConverter::GetDXTOutput(sourcePath);
+							DAVA::FilePath outputPath = DXTConverter::GetDXTOutput(*descriptor, GPU_TEGRA);
 							if(!outputPath.IsEmpty())
 							{
-								outputPath = DXTConverter::ConvertPngToDxt(sourcePath, *descriptor);
-								bool wasUpdated = descriptor->UpdateCrcForFormat(DXT_FILE);
+								outputPath = DXTConverter::ConvertPngToDxt(*descriptor, GPU_TEGRA);
+								bool wasUpdated = descriptor->UpdateCrcForFormat(GPU_TEGRA);
 								if(wasUpdated)
 								{
 									descriptor->Save();

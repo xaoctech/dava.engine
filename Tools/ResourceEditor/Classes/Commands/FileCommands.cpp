@@ -132,7 +132,7 @@ void CommandNewScene::Execute()
 
 		// Can now create the scene.
 		screen->NewScene();
-        SceneValidator::Instance()->EnumerateSceneTextures();
+//        SceneValidator::Instance()->EnumerateSceneTextures();
     }
 }
 

@@ -186,7 +186,7 @@ String GPUFamilyDescriptor::GetFilenamePostfix(const eGPUFamily gpuFamily, const
 {
     DVASSERT(gpuFamily < GPU_FAMILY_COUNT);
 
-    if(gpuFamily == GPU_UNKNOWN)
+    if(gpuFamily == GPU_UNKNOWN || pixelFormat == FORMAT_INVALID)
         return ".png";
         
     

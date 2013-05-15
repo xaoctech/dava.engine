@@ -300,7 +300,10 @@ uint32 LibPngWrapper::GetDataSize(const FilePath &filePathname)
 		return 0;
 	}
 
-	
+    PngImageRawData	raw;
+	raw.file = infile;
+	png_set_read_fn (png_ptr, &raw, PngImageRead);
+
 
     png_set_sig_bytes(png_ptr, 8);
 	png_read_info(png_ptr, info_ptr);

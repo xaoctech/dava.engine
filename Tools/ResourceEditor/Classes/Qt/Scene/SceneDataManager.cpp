@@ -96,7 +96,7 @@ void SceneDataManager::AddScene(const FilePath &scenePathname)
 	
     //TODO: need save scene automatically?
     bool changesWereMade = SceneValidator::Instance()->ValidateSceneAndShowErrors(scene);
-    SceneValidator::Instance()->EnumerateSceneTextures();
+//    SceneValidator::Instance()->EnumerateSceneTextures();
 	
 	if(needUpdateLandscapeController)
 	{
@@ -164,7 +164,7 @@ void SceneDataManager::EditScene(SceneData* sceneData, const FilePath &scenePath
 
     //TODO: need save scene automatically?
     bool changesWereMade = SceneValidator::Instance()->ValidateSceneAndShowErrors(scene);
-    SceneValidator::Instance()->EnumerateSceneTextures();
+//    SceneValidator::Instance()->EnumerateSceneTextures();
 
     sceneData->SetLandscapesControllerScene(scene);
 	

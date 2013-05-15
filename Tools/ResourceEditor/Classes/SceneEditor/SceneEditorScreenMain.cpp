@@ -627,7 +627,7 @@ void SceneEditorScreenMain::MaterialsTriggered()
     else 
     {
         RemoveControl(materialEditor);
-        SceneValidator::Instance()->EnumerateSceneTextures();
+//        SceneValidator::Instance()->EnumerateSceneTextures();
     }
 }
 

@@ -165,29 +165,29 @@ void TextureProperties::setTextureDescriptor(DAVA::TextureDescriptor *descriptor
 		// set loaded descriptor to current properties
 		{
 			// pvr
-			QSize curPVRSize(curTextureDescriptor->pvrCompression.compressToWidth, curTextureDescriptor->pvrCompression.compressToHeight);
-			propertiesEnum->setValue(enumPVRFormat, helperPVRFormats.indexV(curTextureDescriptor->pvrCompression.format));
+			QSize curPVRSize(curTextureDescriptor->compression[DAVA::GPU_POVERVR_IOS].compressToWidth, curTextureDescriptor->compression[DAVA::GPU_POVERVR_IOS].compressToHeight);
+			propertiesEnum->setValue(enumPVRFormat, helperPVRFormats.indexV(curTextureDescriptor->compression[DAVA::GPU_POVERVR_IOS].format));
 			propertiesEnum->setEnumNames(enumBasePVRMipmapLevel, helperMipMapSizes.keyList());
 			propertiesEnum->setValue(enumBasePVRMipmapLevel, helperMipMapSizes.indexV(curPVRSize));
 
 			// dxt
-			QSize curDXTSize(curTextureDescriptor->dxtCompression.compressToWidth, curTextureDescriptor->dxtCompression.compressToHeight);
-			propertiesEnum->setValue(enumDXTFormat, helperDXTFormats.indexV(curTextureDescriptor->dxtCompression.format));
+			QSize curDXTSize(curTextureDescriptor->compression[DAVA::GPU_TEGRA].compressToWidth, curTextureDescriptor->compression[DAVA::GPU_TEGRA].compressToHeight);
+			propertiesEnum->setValue(enumDXTFormat, helperDXTFormats.indexV(curTextureDescriptor->compression[DAVA::GPU_TEGRA].format));
 			propertiesEnum->setEnumNames(enumBaseDXTMipmapLevel, helperMipMapSizes.keyList());
 			propertiesEnum->setValue(enumBaseDXTMipmapLevel, helperMipMapSizes.indexV(curDXTSize));
 
 			// mipmap
-			propertiesBool->setValue(boolGenerateMipMaps, curTextureDescriptor->generateMipMaps);
+			propertiesBool->setValue(boolGenerateMipMaps, curTextureDescriptor->settings.generateMipMaps);
 
 			// wrap mode
-			propertiesEnum->setValue(enumWrapModeS, helperWrapModes.indexV(curTextureDescriptor->wrapModeS));
-			propertiesEnum->setValue(enumWrapModeT, helperWrapModes.indexV(curTextureDescriptor->wrapModeT));
+			propertiesEnum->setValue(enumWrapModeS, helperWrapModes.indexV(curTextureDescriptor->settings.wrapModeS));
+			propertiesEnum->setValue(enumWrapModeT, helperWrapModes.indexV(curTextureDescriptor->settings.wrapModeT));
 
 			// min gl filter
 			MinFilterCustomSetup();
 
 			// mag lg filter
-			propertiesEnum->setValue(enumMagGL, helperMagGLModes.indexV(curTextureDescriptor->magFilter));
+			propertiesEnum->setValue(enumMagGL, helperMagGLModes.indexV(curTextureDescriptor->settings.magFilter));
 
 		}
 	}
@@ -215,12 +215,12 @@ void TextureProperties::setOriginalImageSize(const QSize &size)
 	if(NULL != curTextureDescriptor)
 	{
 		// reload values into PVR property
-		QSize curPVRSize(curTextureDescriptor->pvrCompression.compressToWidth, curTextureDescriptor->pvrCompression.compressToHeight);
+		QSize curPVRSize(curTextureDescriptor->compression[DAVA::GPU_POVERVR_IOS].compressToWidth, curTextureDescriptor->compression[DAVA::GPU_POVERVR_IOS].compressToHeight);
 		propertiesEnum->setEnumNames(enumBasePVRMipmapLevel, helperMipMapSizes.keyList());
 		propertiesEnum->setValue(enumBasePVRMipmapLevel, helperMipMapSizes.indexV(curPVRSize));
 
 		// reload values into DXT property
-		QSize curDXTSize(curTextureDescriptor->dxtCompression.compressToWidth, curTextureDescriptor->dxtCompression.compressToHeight);
+		QSize curDXTSize(curTextureDescriptor->compression[DAVA::GPU_TEGRA].compressToWidth, curTextureDescriptor->compression[DAVA::GPU_TEGRA].compressToHeight);
 		propertiesEnum->setEnumNames(enumBaseDXTMipmapLevel, helperMipMapSizes.keyList());
 		propertiesEnum->setValue(enumBaseDXTMipmapLevel, helperMipMapSizes.indexV(curDXTSize));
 	}
@@ -250,13 +250,13 @@ void TextureProperties::propertyChanged(QtProperty * property)
 		if(property == enumPVRFormat)
 		{
 			DAVA::PixelFormat newPVRFormat = (DAVA::PixelFormat) helperPVRFormats.value(enumPVRFormat->valueText());
-			curTextureDescriptor->pvrCompression.format = newPVRFormat;
+			curTextureDescriptor->compression[DAVA::GPU_POVERVR_IOS].format = newPVRFormat;
 			type = TYPE_PVR;
 		}
 		else if(property == enumDXTFormat)
 		{
 			DAVA::PixelFormat newDXTFormat = (DAVA::PixelFormat) helperDXTFormats.value(enumDXTFormat->valueText());
-			curTextureDescriptor->dxtCompression.format = newDXTFormat;
+			curTextureDescriptor->compression[DAVA::GPU_TEGRA].format = newDXTFormat;
 			type = TYPE_DXT;
 		}
 		else if(property == enumBasePVRMipmapLevel)
@@ -266,13 +266,13 @@ void TextureProperties::propertyChanged(QtProperty * property)
 
 			if(size.width() == origImageSize.width() || size.height() == origImageSize.height())
 			{
-				curTextureDescriptor->pvrCompression.compressToWidth = 0;
-				curTextureDescriptor->pvrCompression.compressToHeight = 0;
+				curTextureDescriptor->compression[DAVA::GPU_POVERVR_IOS].compressToWidth = 0;
+				curTextureDescriptor->compression[DAVA::GPU_POVERVR_IOS].compressToHeight = 0;
 			}
 			else
 			{
-				curTextureDescriptor->pvrCompression.compressToWidth = size.width();
-				curTextureDescriptor->pvrCompression.compressToHeight = size.height();
+				curTextureDescriptor->compression[DAVA::GPU_POVERVR_IOS].compressToWidth = size.width();
+				curTextureDescriptor->compression[DAVA::GPU_POVERVR_IOS].compressToHeight = size.height();
 			}
 			type = TYPE_PVR;
 		}
@@ -283,45 +283,45 @@ void TextureProperties::propertyChanged(QtProperty * property)
 
 			if(size.width() == origImageSize.width() || size.height() == origImageSize.height())
 			{
-				curTextureDescriptor->dxtCompression.compressToWidth = 0;
-				curTextureDescriptor->dxtCompression.compressToHeight = 0;
+				curTextureDescriptor->compression[DAVA::GPU_TEGRA].compressToWidth = 0;
+				curTextureDescriptor->compression[DAVA::GPU_TEGRA].compressToHeight = 0;
 			}
 			else
 			{
-				curTextureDescriptor->dxtCompression.compressToWidth = size.width();
-				curTextureDescriptor->dxtCompression.compressToHeight = size.height();
+				curTextureDescriptor->compression[DAVA::GPU_TEGRA].compressToWidth = size.width();
+				curTextureDescriptor->compression[DAVA::GPU_TEGRA].compressToHeight = size.height();
 			}
 			type = TYPE_DXT;
 		}
 		else if(property == boolGenerateMipMaps)
 		{
-			curTextureDescriptor->generateMipMaps = (int) propertiesBool->value(boolGenerateMipMaps);
+			curTextureDescriptor->settings.generateMipMaps = (int) propertiesBool->value(boolGenerateMipMaps);
 			MinFilterCustomSetup();
 
 			type = TYPE_COMMON_MIPMAP;
 		}
 		else if(property == enumWrapModeS)
 		{
-			curTextureDescriptor->wrapModeS = (DAVA::Texture::TextureWrap) helperWrapModes.value(enumWrapModeS->valueText());
+			curTextureDescriptor->settings.wrapModeS = (DAVA::Texture::TextureWrap) helperWrapModes.value(enumWrapModeS->valueText());
 		}
 		else if(property == enumWrapModeS)
 		{
-			curTextureDescriptor->wrapModeT = (DAVA::Texture::TextureWrap) helperWrapModes.value(enumWrapModeT->valueText());
+			curTextureDescriptor->settings.wrapModeT = (DAVA::Texture::TextureWrap) helperWrapModes.value(enumWrapModeT->valueText());
 		}
 		else if(property == enumMinGL)
 		{
-			if(curTextureDescriptor->generateMipMaps)
+			if(curTextureDescriptor->settings.generateMipMaps)
 			{
-				curTextureDescriptor->minFilter = helperMinGLModesWithMipmap.value(enumMinGL->valueText());
+				curTextureDescriptor->settings.minFilter = helperMinGLModesWithMipmap.value(enumMinGL->valueText());
 			}
 			else
 			{
-				curTextureDescriptor->minFilter = helperMinGLModes.value(enumMinGL->valueText());
+				curTextureDescriptor->settings.minFilter = helperMinGLModes.value(enumMinGL->valueText());
 			}
 		}
 		else if(property == enumMagGL)
 		{
-			curTextureDescriptor->magFilter = helperMinGLModes.value(enumMagGL->valueText());
+			curTextureDescriptor->settings.magFilter = helperMinGLModes.value(enumMagGL->valueText());
 		}
 
 		emit propertyChanged(type);
@@ -373,22 +373,22 @@ void TextureProperties::resetCommonProp()
 		curTextureDescriptor->SetDefaultValues();
 
 		// mipmap
-		propertiesBool->setValue(boolGenerateMipMaps, curTextureDescriptor->generateMipMaps);
+		propertiesBool->setValue(boolGenerateMipMaps, curTextureDescriptor->settings.generateMipMaps);
 
 		// wrap mode
-		propertiesEnum->setValue(enumWrapModeS, helperWrapModes.indexV(curTextureDescriptor->wrapModeS));
-		propertiesEnum->setValue(enumWrapModeT, helperWrapModes.indexV(curTextureDescriptor->wrapModeT));
+		propertiesEnum->setValue(enumWrapModeS, helperWrapModes.indexV(curTextureDescriptor->settings.wrapModeS));
+		propertiesEnum->setValue(enumWrapModeT, helperWrapModes.indexV(curTextureDescriptor->settings.wrapModeT));
 
 		// min gl filter
-        if(curTextureDescriptor->generateMipMaps)
+        if(curTextureDescriptor->settings.generateMipMaps)
         {
-            propertiesEnum->setValue(enumMinGL, helperMinGLModesWithMipmap.indexV(curTextureDescriptor->minFilter));
+            propertiesEnum->setValue(enumMinGL, helperMinGLModesWithMipmap.indexV(curTextureDescriptor->settings.minFilter));
         }
         else
         {
-            propertiesEnum->setValue(enumMinGL, helperMinGLModes.indexV(curTextureDescriptor->minFilter));
+            propertiesEnum->setValue(enumMinGL, helperMinGLModes.indexV(curTextureDescriptor->settings.minFilter));
         }
-		propertiesEnum->setValue(enumMagGL, helperMagGLModes.indexV(curTextureDescriptor->magFilter));
+		propertiesEnum->setValue(enumMagGL, helperMagGLModes.indexV(curTextureDescriptor->settings.magFilter));
 	}
 }
 
@@ -396,20 +396,20 @@ void TextureProperties::MinFilterCustomSetup()
 {
 	reactOnPropertyChange = false;
 
-	if(curTextureDescriptor->generateMipMaps)
+	if(curTextureDescriptor->settings.generateMipMaps)
 	{
 		propertiesEnum->setEnumNames(enumMinGL, helperMinGLModesWithMipmap.keyList());
-		propertiesEnum->setValue(enumMinGL, helperMinGLModesWithMipmap.indexV(curTextureDescriptor->minFilter));
+		propertiesEnum->setValue(enumMinGL, helperMinGLModesWithMipmap.indexV(curTextureDescriptor->settings.minFilter));
 	}
 	else
 	{
-		if(-1 == helperMinGLModes.indexV(curTextureDescriptor->minFilter))
+		if(-1 == helperMinGLModes.indexV(curTextureDescriptor->settings.minFilter))
 		{
-			curTextureDescriptor->minFilter =  DAVA::Texture::FILTER_LINEAR;
+			curTextureDescriptor->settings.minFilter =  DAVA::Texture::FILTER_LINEAR;
 		}
 
 		propertiesEnum->setEnumNames(enumMinGL, helperMinGLModes.keyList());
-		propertiesEnum->setValue(enumMinGL, helperMinGLModes.indexV(curTextureDescriptor->minFilter));
+		propertiesEnum->setValue(enumMinGL, helperMinGLModes.indexV(curTextureDescriptor->settings.minFilter));
 	}
 
 	reactOnPropertyChange = true;

@@ -236,8 +236,8 @@ void TextureBrowser::updatePropertiesWarning()
 		QString warningText = "";
 
 		if(
-		   ((curDescriptor->pvrCompression.format == DAVA::FORMAT_PVR4 || curDescriptor->pvrCompression.format == DAVA::FORMAT_PVR2)   ||
-		   (curDescriptor->dxtCompression.format >= DAVA::FORMAT_DXT1 && curDescriptor->dxtCompression.format <= DAVA::FORMAT_DXT5NM)) &&
+		   ((curDescriptor->compression[GPU_POVERVR_IOS].format == DAVA::FORMAT_PVR4 || curDescriptor->compression[GPU_POVERVR_IOS].format == DAVA::FORMAT_PVR2)   ||
+		   (curDescriptor->compression[GPU_TEGRA].format >= DAVA::FORMAT_DXT1 && curDescriptor->compression[GPU_TEGRA].format <= DAVA::FORMAT_DXT5NM)) &&
 		   (curTexture->width != curTexture->height))
 		{
 			warningText += "WARNING: Not square texture.\n";
@@ -320,21 +320,23 @@ void TextureBrowser::updateInfoConverted()
 		switch(curTextureView)
 		{
 		case ViewPVR:
-			if(curDescriptor->pvrCompression.format != DAVA::FORMAT_INVALID)
+			if(curDescriptor->compression[GPU_POVERVR_IOS].format != DAVA::FORMAT_INVALID)
 			{
-				DAVA::FilePath compressedTexturePath = DAVA::TextureDescriptor::GetPathnameForFormat(curTexture->GetPathname(), DAVA::PVR_FILE);
+                DAVA::FilePath compressedTexturePath = DAVA::GPUFamilyDescriptor::CreatePathnameForGPU(curDescriptor, DAVA::GPU_POVERVR_IOS);
+//				DAVA::FilePath compressedTexturePath = DAVA::TextureDescriptor::GetPathnameForFormat(curTexture->GetPathname(), DAVA::PVR_FILE);
 
-				formatStr = DAVA::Texture::GetPixelFormatString(curDescriptor->pvrCompression.format);
+				formatStr = DAVA::Texture::GetPixelFormatString(curDescriptor->compression[GPU_POVERVR_IOS].format);
 				filesize = QFileInfo(compressedTexturePath.GetAbsolutePathname().c_str()).size();
-				datasize = DAVA::LibPVRHelper::GetDataLength(compressedTexturePath);
+				datasize = DAVA::LibPVRHelper::GetDataSize(compressedTexturePath);
 			}
 			break;
 		case ViewDXT:
-			if(curDescriptor->dxtCompression.format != DAVA::FORMAT_INVALID)
+			if(curDescriptor->compression[GPU_TEGRA].format != DAVA::FORMAT_INVALID)
 			{
-				DAVA::FilePath compressedTexturePath = DAVA::TextureDescriptor::GetPathnameForFormat(curTexture->GetPathname(), DAVA::DXT_FILE);
+                DAVA::FilePath compressedTexturePath = DAVA::GPUFamilyDescriptor::CreatePathnameForGPU(curDescriptor, DAVA::GPU_TEGRA);
+//				DAVA::FilePath compressedTexturePath = DAVA::TextureDescriptor::GetPathnameForFormat(curTexture->GetPathname(), DAVA::DXT_FILE);
 
-				formatStr = DAVA::Texture::GetPixelFormatString(curDescriptor->dxtCompression.format);
+				formatStr = DAVA::Texture::GetPixelFormatString(curDescriptor->compression[GPU_TEGRA].format);
 				filesize = QFileInfo(compressedTexturePath.GetAbsolutePathname().c_str()).size();
 
 				// TODO: more accurate dxt data size calculation
@@ -649,7 +651,7 @@ void TextureBrowser::textureReadyPVR(const DAVA::TextureDescriptor *descriptor, 
 		if(NULL != texture)
 		{
 			// reload this texture into scene
-			reloadTextureToScene(texture, descriptor, DAVA::PVR_FILE);
+			reloadTextureToScene(texture, descriptor, DAVA::GPU_POVERVR_IOS);
 		}
 	}
 }
@@ -670,7 +672,7 @@ void TextureBrowser::textureReadyDXT(const DAVA::TextureDescriptor *descriptor, 
 		if(NULL != texture)
 		{
 			// reload this texture into scene
-			reloadTextureToScene(texture, descriptor, DAVA::DXT_FILE);
+			reloadTextureToScene(texture, descriptor, DAVA::GPU_TEGRA);
 		}
 	}
 }
