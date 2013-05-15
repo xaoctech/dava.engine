@@ -326,7 +326,7 @@ void SceneGraph::RemoveRootNodes()
             
             UpdatePropertyPanel();
             graphTree->Refresh();
-            SceneValidator::Instance()->EnumerateSceneTextures();
+//            SceneValidator::Instance()->EnumerateSceneTextures();
         }
     }
 }

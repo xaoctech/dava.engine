@@ -81,7 +81,7 @@ public:
 	 */
     FilePath SetPathForChecking(const FilePath &pathname);
     
-    void EnumerateSceneTextures();
+//    void EnumerateSceneTextures();
     void EnumerateNodes(Scene *scene);
     
     static bool IsTextureChanged(const TextureDescriptor *descriptor, eGPUFamily forGPU);

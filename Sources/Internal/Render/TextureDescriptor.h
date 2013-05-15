@@ -103,7 +103,7 @@ public:
     bool IsSourceChanged(eGPUFamily gpuFamily) const;
     bool UpdateCrcForFormat(eGPUFamily gpuFamily) const;
 
-    const bool IsCompressedFile() const;
+    bool IsCompressedFile() const;
     
     bool GetGenerateMipMaps() const;
 
