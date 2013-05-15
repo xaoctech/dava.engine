@@ -226,7 +226,7 @@ public:
 	 \brief Returns absolute system path from the framework specific path
 	 parse paths with specific discs ~res:/ and ~doc:/
 	 */
-	const String & SystemPathForFrameworkPath(const String & frameworkPath);
+	const String SystemPathForFrameworkPath(const String & frameworkPath);
 	
 	File *CreateFileForFrameworkPath(const String & frameworkPath, uint32 attributes);
 
@@ -316,9 +316,8 @@ private:
 	virtual eCreateDirectoryResult CreateExactDirectory(const String & filePath);
 
     
-    String tempRetPath;
 	String currentWorkingDirectory;
-        String currentDocDirectory;
+    String currentDocDirectory;
 
 	struct ResourceArchiveItem
 	{
@@ -335,8 +334,8 @@ private:
 
     static String virtualBundlePath;
 
-    static const char * FilepathRelativeToBundle(const char * relativePathname);
-    static const char * FilepathRelativeToBundle(const String & relativePathname);
+    static String FilepathRelativeToBundle(const char * relativePathname);
+    static String FilepathRelativeToBundle(const String & relativePathname);
 };
 	
 };
