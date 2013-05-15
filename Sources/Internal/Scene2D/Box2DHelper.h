@@ -160,7 +160,7 @@ namespace DAVA
 	//		filter.maskBits = 0xFFFF;
 	//		filter.groupIndex = 0;
 	//		isSensor = false;
-	b2FixtureDef Box2DHelper::FixtureDef(Box2DGameObjectManager *manager
+	b2FixtureDef Box2DHelper::FixtureDef(Box2DGameObjectManager* /*manager*/
 										  , const b2Shape &shape
 										 , float32 density/* = 0.0f*/
 										  , float32 friction/* = 0.2f*/, float32 restitution/* = 0.0f*/
@@ -176,7 +176,7 @@ namespace DAVA
 	}
 
 	
-	b2FixtureDef Box2DHelper::SensorFixtureDef(Box2DGameObjectManager *manager
+	b2FixtureDef Box2DHelper::SensorFixtureDef(Box2DGameObjectManager* /*manager*/
 												, const b2Shape &shape, float32 density/* = 0.0f*/
 												, float32 friction/* = 0.2f*/, float32 restitution/* = 0.0f*/
 												, const b2Filter &filter/* = GetDefaultCollisionFilter()*/)

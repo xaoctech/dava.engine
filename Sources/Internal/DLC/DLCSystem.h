@@ -26,11 +26,11 @@ public:
     virtual ~DLCSystemDelegate() = 0;
 
     // File with contents of all DLCs has getted 
-    virtual void InitCompleted(DLCStatusCode withStatus){};
+    virtual void InitCompleted(DLCStatusCode withStatus);
     // Single DLC file has downloaded or end with error
-    virtual void DLCCompleted(DLCStatusCode withStatus, uint16 index){};
+    virtual void DLCCompleted(DLCStatusCode withStatus, uint16 index);
     // All DLC files has downloaded
-    virtual void AllDLCCompleted(){};
+    virtual void AllDLCCompleted();
 };
 
 class DLCSource;

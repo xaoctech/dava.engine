@@ -109,7 +109,7 @@ public:
 
     void SetDefaultValues();
     
-    const bool IsCompressedFile() const;
+    bool IsCompressedFile() const;
     
 protected:
     

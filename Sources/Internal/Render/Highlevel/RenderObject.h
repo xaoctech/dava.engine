@@ -129,7 +129,7 @@ public:
 	void SetRenderSystem(RenderSystem * renderSystem);
 	RenderSystem * GetRenderSystem();
 
-	virtual void BakeTransform(const Matrix4 & transform) {}
+	virtual void BakeTransform(const Matrix4 & transform);
 	virtual ShadowVolume * CreateShadow() {return 0;}
     
 protected:
