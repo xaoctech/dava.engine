@@ -279,3 +279,13 @@ Color EditorSettings::ToColor(const Vector4 &colorVector)
 	Color color(colorVector.x, colorVector.y, colorVector.z, colorVector.w);
 	return color;
 }
+
+String EditorSettings::GetDesignerName()
+{
+    return settings->GetString("DesignerName", "nobody");
+}
+
+void EditorSettings::SetDesignerName(const String &userName)
+{
+    settings->SetString("DesignerName", userName);
+}

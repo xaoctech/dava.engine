@@ -257,6 +257,7 @@ settingsdialog.leftpanelwidth: "Ширина левой панели:"
 settingsdialog.rightpanelwidth: "Ширина правой панели:"
 settingsdialog.drawgrid: "Рисовать сетку в сцене:"
 settingsdialog.imposters: "Включить импостеры:"
+settingsdialog.designername: "Имя пользователя:"
 
 #Color Picker
 colorpicker.r: "Red:"
