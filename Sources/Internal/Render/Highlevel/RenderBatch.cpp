@@ -251,7 +251,6 @@ void RenderBatch::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 		SetPolygonGroup(pg);
         
 		SetMaterial(newMaterial);
-
 	}
 
 	BaseObject::Load(archive);
