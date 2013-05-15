@@ -131,6 +131,8 @@ void UITextField::OpenKeyboard()
 {
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->OpenKeyboard();
+#elif defined(__DAVAENGINE_ANDROID__)
+	textFieldAndroid->ShowField();
 #endif
 }
 
@@ -138,6 +140,8 @@ void UITextField::CloseKeyboard()
 {
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->CloseKeyboard();
+#elif defined(__DAVAENGINE_ANDROID__)
+	textFieldAndroid->HideField();
 #endif
 }
 	
@@ -200,14 +204,17 @@ void UITextField::DidAppear()
 {
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->ShowField();
+#elif defined(__DAVAENGINE_ANDROID__)
+	textFieldAndroid->ShowField();
 #endif
-		
 }
-	
+
 void UITextField::WillDisappear()
 {
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->HideField();
+#elif defined(__DAVAENGINE_ANDROID__)
+	textFieldAndroid->HideField();
 #endif
 }
     
