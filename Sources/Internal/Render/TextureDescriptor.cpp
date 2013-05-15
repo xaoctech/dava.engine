@@ -483,7 +483,7 @@ ImageFileFormat TextureDescriptor::GetFormatForExtension(const String &extension
     return NOT_FILE;
 }
 
-const bool TextureDescriptor::IsCompressedFile() const
+bool TextureDescriptor::IsCompressedFile() const
 {
     return isCompressedFile;
 }

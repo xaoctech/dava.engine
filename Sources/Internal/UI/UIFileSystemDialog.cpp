@@ -503,9 +503,14 @@ UIListCell *UIFileSystemDialog::CellAtIndex(UIList *forList, int32 index)
     return c;//returns cell
 }
 
-int32 UIFileSystemDialog::CellHeight(UIList *forList, int32 index)
+int32 UIFileSystemDialog::CellHeight(UIList * /*forList*/, int32 /*index*/)
 {
     return cellH;
+}
+
+int32 UIFileSystemDialog::CellWidth(UIList* /*forList*/, int32 /*index*/)
+{
+	return 20;
 }
 
 void UIFileSystemDialog::OnCellSelected(UIList *forList, UIListCell *selectedCell)

@@ -49,7 +49,32 @@ namespace DAVA
 
 REGISTER_CLASS(UITextField);
 
+void UITextFieldDelegate::TextFieldShouldReturn(UITextField * /*textField*/)
+{
+}
 
+void UITextFieldDelegate::TextFieldShouldCancel(UITextField * /*textField*/)
+{
+};
+    
+void UITextFieldDelegate::TextFieldLostFocus(UITextField * /*textField*/)
+{
+};
+
+bool UITextFieldDelegate::TextFieldKeyPressed(UITextField * /*textField*/, int32 /*replacementLocation*/, int32 /*replacementLength*/, const WideString & /*replacementString*/)
+{
+	return true;
+}
+    
+bool UITextFieldDelegate::IsTextFieldShouldSetFocusedOnAppear(UITextField * /*textField*/)
+{
+	return false;
+}
+	
+bool UITextFieldDelegate::IsTextFieldCanLostFocus(UITextField * textField)
+{
+	return true;
+}
     
 UITextField::UITextField(const Rect &rect, bool rectInAbsoluteCoordinates/*= false*/)
 :	UIControl(rect, rectInAbsoluteCoordinates)

@@ -766,4 +766,8 @@ uint32 Core::GetScreenDPI()
 	return DPIHelper::GetScreenDPI();
 }
 
+void Core::SetIcon(int32 /*iconId*/)
+{
+};
+
 };

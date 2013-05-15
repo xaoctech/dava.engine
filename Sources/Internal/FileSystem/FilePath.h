@@ -229,7 +229,7 @@ public:
         \brief Function to retrieve type of path
         \returns type of path
      */
-    inline const ePathType GetType() const;
+    inline ePathType GetType() const;
     
     
     static void AddResourcesFolder(const FilePath & folder);
@@ -285,7 +285,7 @@ inline bool FilePath::IsEmpty() const
     return absolutePathname.empty();
 }
     
-inline const FilePath::ePathType FilePath::GetType() const
+inline FilePath::ePathType FilePath::GetType() const
 {
     return pathType;
 }

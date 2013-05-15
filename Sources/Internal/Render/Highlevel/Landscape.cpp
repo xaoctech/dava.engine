@@ -595,7 +595,7 @@ const Vector2 & Landscape::GetTextureTiling(eTextureLevel level)
     return textureTiling[level];
 }
     
-const void Landscape::SetTileColor(eTextureLevel level, const Color & color)
+void Landscape::SetTileColor(eTextureLevel level, const Color & color)
 {
     tileColor[level] = color;
 }
