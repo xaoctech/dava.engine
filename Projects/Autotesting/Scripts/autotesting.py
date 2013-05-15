@@ -114,7 +114,7 @@ elif (platform.system() == "Darwin"):
 		# Remove old App from device
         print "remove "+ executableName +" from device"
         #params = ["~/AIRSDK_Compiler/bin/adt", "-uninstallApp", "platform", platformName, "-appid", "com.yourcompany." + targetName]
-		params = "~/AIRSDK_Compiler/bin/adt -uninstallApp platform iOS -appid com.yourcompany.WotBlitz"
+        params = "~/AIRSDK_Compiler/bin/adt -uninstallApp platform iOS -appid com.yourcompany.WotBlitz"
         print "subprocess.call " + params
         subprocess.call(params, shell=True)
 		
