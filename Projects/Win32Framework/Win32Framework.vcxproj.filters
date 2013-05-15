@@ -606,34 +606,10 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SpriteNode.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\ALUtils.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Sound\Sound.h">
       <Filter>Internal\Sound</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\SoundBuffer.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\SoundChannel.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\SoundDataProvider.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Sound\SoundGroup.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\SoundInstance.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\SoundOVProvider.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\SoundSystem.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\SoundWVProvider.h">
       <Filter>Internal\Sound</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\UI\ScrollHelper.h">
@@ -1263,6 +1239,30 @@
     <ClInclude Include="..\..\Sources\Internal\Platform\DeviceInfo.h">
       <Filter>Internal\Platform</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Sound\FMODUtils.h">
+      <Filter>Internal\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Sound\SoundEvent.h">
+      <Filter>Internal\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Sound\SoundSystem.h">
+      <Filter>Internal\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SoundUpdateSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Sound\SoundEventCategory.h">
+      <Filter>Internal\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Sound\VolumeAnimatedObject.h">
+      <Filter>Internal\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SoundComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Base\GlobalEnum.h">
+      <Filter>Internal\Base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1640,28 +1640,7 @@
     <ClCompile Include="..\..\Sources\Internal\Sound\Sound.cpp">
       <Filter>Internal\Sound</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\SoundBuffer.cpp">
-      <Filter>Internal\Sound</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\SoundChannel.cpp">
-      <Filter>Internal\Sound</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\SoundDataProvider.cpp">
-      <Filter>Internal\Sound</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Sound\SoundGroup.cpp">
-      <Filter>Internal\Sound</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\SoundInstance.cpp">
-      <Filter>Internal\Sound</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\SoundOVProvider.cpp">
-      <Filter>Internal\Sound</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\SoundSystem.cpp">
-      <Filter>Internal\Sound</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\SoundWVProvider.cpp">
       <Filter>Internal\Sound</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\UI\ScrollHelper.cpp">
@@ -2221,6 +2200,27 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Platform\DeviceInfo.cpp">
       <Filter>Internal\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Sound\SoundEvent.cpp">
+      <Filter>Internal\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Sound\SoundSystem.cpp">
+      <Filter>Internal\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SoundUpdateSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Sound\SoundEventCategory.cpp">
+      <Filter>Internal\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Sound\VolumeAnimatedObject.cpp">
+      <Filter>Internal\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SoundComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Base\GlobalEnum.cpp">
+      <Filter>Internal\Base</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

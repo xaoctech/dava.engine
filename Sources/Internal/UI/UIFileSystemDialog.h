@@ -34,6 +34,7 @@
 #include "UI/UIControl.h"
 #include "UI/UIList.h"
 #include "UI/UITextField.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA 
 {
@@ -55,7 +56,7 @@ public:
         \param[in] forDialog pointer to dialog that initiated the operation
         \param[in] pathToFile path to selecte file
      */
-    virtual void OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile) = 0;
+    virtual void OnFileSelected(UIFileSystemDialog *forDialog, const FilePath &pathToFile) = 0;
     /**
         \brief This function called when user canceled file selection in UIFileSystemDialog
         \param[in] forDialog pointer to dialog
@@ -88,12 +89,14 @@ public:
     class DialogFileUnit 
     {
     public:
+        FilePath path;
         String name;
+        
         int32 indexInFileList;
         int32 type;
     };
     
-    UIFileSystemDialog(const String &_fontPath);
+    UIFileSystemDialog(const FilePath &_fontPath);
 //	virtual void WillAppear();
     
     void Show(UIControl *parentControl);
@@ -121,14 +124,14 @@ public:
     }
     
     
-    void SetCurrentDir(const String &newDirPath);
+    void SetCurrentDir(const FilePath &newDirPath);
     
     /**
         \brief Function to return last directory path of this dialog
         You can use this function to get file directory in delegate
         \returns path to last visited directory 
      */
-    const String & GetCurrentDir();
+    const FilePath & GetCurrentDir();
     
     /**
         \brief Set extension filter from string variable. Each extension should be separated by semicolon(;).
@@ -147,8 +150,7 @@ public:
     
     virtual int32 ElementsCount(UIList *forList);
 	virtual UIListCell *CellAtIndex(UIList *forList, int32 index);
-	virtual int32 CellWidth(UIList *forList, int32 index)//calls only for horizontal orientation
-	{return 20;};
+	virtual int32 CellWidth(UIList *forList, int32 index);//calls only for horizontal orientation
 	virtual int32 CellHeight(UIList *forList, int32 index);//calls only for vertical orientation
 	virtual void OnCellSelected(UIList *forList, UIListCell *selectedCell);
     
@@ -161,19 +163,19 @@ public:
     
 protected:
     
-    virtual void OnFileSelected(const String &pathToFile);
+    virtual void OnFileSelected(const FilePath &pathToFile);
     
     void RefreshList();
     
     void OnIndexSelected(int32 index);
     void SaveFinishing();
     
-    String fontPath;
+    FilePath fontPath;
     int32 operationType;
     UIFileSystemDialogDelegate *delegate;
     Vector<String> extensionFilter;
-    String currentDir;
-    String selectedFile;
+    FilePath currentDir;
+    String selectedFileName;
     int32 cellH;
     
     UIList *fileListView;
@@ -193,12 +195,12 @@ protected:
     UIButton *negativeButton;
     
     //History navigation    
-    Vector<String> foldersHistory;
+    Vector<FilePath> foldersHistory;
     int32 historyPosition;
     UIButton *historyBackwardButton;
     UIButton *historyForwardButton;
     void HistoryButtonPressed(BaseObject *obj, void *data, void *callerData);
-    void CreateHistoryForPath(const String &pathToFile);
+    void CreateHistoryForPath(const FilePath &pathToFile);
 };
 };
 

@@ -34,26 +34,9 @@ protected:
     // Update of internal propeperties
     virtual void UpdateDoubleSpinBoxWidgetWithPropertyValue(QDoubleSpinBox *doubleSpinBoxWidget,
                                                                 const QMetaProperty& curProperty);
-    // Comboboxes hould be processed in the specific way.
-    virtual void ProcessComboboxValueChanged(QComboBox* senderWidget, const PROPERTYGRIDWIDGETSITER& iter,
-                                             const QString& value);
-    virtual void UpdateComboBoxWidgetWithPropertyValue(QComboBox* comboBoxWidget, const QMetaProperty& curProperty);
-
-    // Fill the combos with appropriate values.
-    void FillComboboxes();
-
-    // Handler for the custom combobox values.
-    void CustomProcessComboboxValueChanged(const PROPERTYGRIDWIDGETSITER& iter, int value);
-	
-	// Update sprite of selected control
-	void SetSprite(QWidget *senderWidget, const QString& spritePath);
-
 private slots:
     // Use this slot to update value on Value Spin according to slider position
     void OnSliderValueChanged(int);
-    // Add/remove sprites
-    void OnOpenSpriteDialog();
-    void OnRemoveSprite();
 };
 
 #endif // SLIDERPROPERTYGRIDWIDGET_H

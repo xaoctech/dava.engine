@@ -37,6 +37,7 @@
 #include "Render/3D/PolygonGroup.h"
 #include "Utils/Utils.h"
 #include "FileSystem/File.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA
 {
@@ -59,8 +60,8 @@ class SceneFile : public BaseObject
 public:
 	SceneFile();
 	
-	bool LoadScene(const String & filename, Scene * _scene, bool relToBundle = true);
-	bool SaveScene(const char * filename);
+	bool LoadScene(const FilePath & filename, Scene * _scene, bool relToBundle = true);
+	bool SaveScene(const FilePath & filename);
 	
 	bool ReadTexture();
 	bool ReadMaterial();
@@ -219,7 +220,7 @@ private:
     
     void ProcessLOD(Entity *forRootNode);
 	String scenePath;
-    String rootNodePath;
+    FilePath rootNodePath;
     Entity *rootNode;
     
     //int32 textureIndexOffset;

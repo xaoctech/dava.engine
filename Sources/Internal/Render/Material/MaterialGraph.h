@@ -34,6 +34,7 @@
 #include "Base/BaseMath.h"
 #include "Scene3D/DataNode.h"
 #include "FileSystem/YamlParser.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA
 {
@@ -47,7 +48,7 @@ public:
     MaterialGraph();
     ~MaterialGraph();
     
-    bool LoadFromFile(const String & pathname);
+    bool LoadFromFile(const FilePath & pathname);
     bool LoadNode(YamlNode * graphNode);
     
     void SortByDepthMarkerAndRemoveUnused();
@@ -65,14 +66,14 @@ public:
     uint32 GetUsedTextureCoordsCount() { return usedTextureCoordsCount; };
     uint32 GetUsedTextures() { return usedTextures; };
     
-    const String & GetMaterialFilename() const { return materialFilename; };
-    const String & GetMaterialPath() const { return materialPath; };
+    const FilePath & GetMaterialPathname() const { return materialPathname; };
+    
     const String & GetVertexShaderFilename() const { return vertexShaderFilename; };
     const String & GetPixelShaderFilename() const { return pixelShaderFilename; };
     
 protected:
-    String materialFilename;
-    String materialPath;
+    FilePath materialPathname;
+    
     String vertexShaderFilename;
     String pixelShaderFilename;
     

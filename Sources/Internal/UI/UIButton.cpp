@@ -140,7 +140,7 @@ namespace DAVA
 		}
 	}
 
-	void UIButton::SetStateSprite(int32 state, const String &spriteName, int32 spriteFrame/* = 0*/)
+	void UIButton::SetStateSprite(int32 state, const FilePath &spriteName, int32 spriteFrame/* = 0*/)
 	{
 		for(int i = 0; i < DRAW_STATE_COUNT; i++)
 		{
@@ -476,6 +476,41 @@ namespace DAVA
 	}
 
 
+	void UIButton::SetLeftAlign(int32 align)
+	{
+		UIControl::SetLeftAlign(align);	
+		UpdateStateTextControlSize();
+	}
+	
+	void UIButton::SetHCenterAlign(int32 align)
+	{
+		UIControl::SetHCenterAlign(align);
+		UpdateStateTextControlSize();
+	}
+	
+	void UIButton::SetRightAlign(int32 align)
+	{
+		UIControl::SetRightAlign(align);
+		UpdateStateTextControlSize();
+	}
+	
+	void UIButton::SetTopAlign(int32 align)
+	{
+		UIControl::SetTopAlign(align);
+		UpdateStateTextControlSize();
+	}
+
+	void UIButton::SetVCenterAlign(int32 align)
+	{
+		UIControl::SetVCenterAlign(align);
+		UpdateStateTextControlSize();
+	}
+	
+	void UIButton::SetBottomAlign(int32 align)
+	{
+		UIControl::SetBottomAlign(align);
+		UpdateStateTextControlSize();
+	}
 	
 	void UIButton::SystemDraw(const UIGeometricData &geometricData)
 	{
@@ -483,8 +518,6 @@ namespace DAVA
 		UIControl::SystemDraw(geometricData);
 		background = stateBacks[DRAW_STATE_UNPRESSED];
 	}
-	
-
 	
 	UIControlBackground *UIButton::GetActualBackground(int32 state)
 	{
@@ -810,7 +843,11 @@ namespace DAVA
 			{
 				//Create array yamlnode and add it to map
 				YamlNode *spriteNode = new YamlNode(YamlNode::TYPE_ARRAY);
-				spriteNode->AddValueToArray(TruncateTxtFileExtension(stateSprite->GetName()));
+                
+                FilePath path(stateSprite->GetRelativePathname());
+                path.TruncateExtension();
+                
+				spriteNode->AddValueToArray(path.GetAbsolutePathname());
 				spriteNode->AddValueToArray(stateFrame);
 				node->AddNodeToMap(Format("stateSprite%s", statePostfix[i].c_str()), spriteNode);
 			}
@@ -885,6 +922,20 @@ namespace DAVA
 		}
 
 		return realChildren;
+	}
+	
+	void UIButton::UpdateStateTextControlSize()
+	{
+		// Current control rect
+		const Rect rect = this->GetRect();
+		// Update size of texcontrol for each state
+		for(int i = 0; i < DRAW_STATE_COUNT; i++)
+		{
+			if(stateTexts[i])
+			{
+				stateTexts[i]->SetRect(Rect(0, 0, rect.dx, rect.dy));
+			}
+		}
 	}
 
 };

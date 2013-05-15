@@ -57,8 +57,8 @@ public:
 			WideCharToMultiByte(CP_ACP, 0, bstr, -1, str, len, NULL, NULL);
 			String s = str;
 			delete[] str;
-
-			IUIWebViewDelegate::eAction action = delegate->URLChanged(webView, s, webView->IsInitiatedByUser());
+			bool isRedirectedByMouseClick  = Flags->intVal == navHyperlink ;
+			IUIWebViewDelegate::eAction action = delegate->URLChanged(webView, s, isRedirectedByMouseClick);
 
 			switch (action)
 			{

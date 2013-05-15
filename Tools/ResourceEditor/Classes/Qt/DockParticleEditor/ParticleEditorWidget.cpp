@@ -136,7 +136,7 @@ void ParticleEditorWidget::OnEmitterSelected(Entity* emitterNode, BaseParticleEd
 		verticalScrollBar()->setValue(scrollValue);
 	}
 
-	UpdateVisibleTimelines();
+	UpdateParticleEditorWidgets();
 }
 
 void ParticleEditorWidget::OnLayerSelected(Entity* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode, bool forceRefresh)
@@ -186,7 +186,7 @@ void ParticleEditorWidget::OnLayerSelected(Entity* emitterNode, ParticleLayer* l
 		verticalScrollBar()->setValue(scrollValue);
 	}
 
-	UpdateVisibleTimelines();
+	UpdateParticleEditorWidgets();
 }
 
 void ParticleEditorWidget::OnForceSelected(Entity* emitterNode, ParticleLayer* layer, int32 forceIndex, BaseParticleEditorNode* editorNode)
@@ -236,7 +236,7 @@ void ParticleEditorWidget::OnForceSelected(Entity* emitterNode, ParticleLayer* l
 		verticalScrollBar()->setValue(scrollValue);
 	}
 
-	UpdateVisibleTimelines();
+	UpdateParticleEditorWidgets();
 }
 
 void ParticleEditorWidget::OnNodeDeselected(BaseParticleEditorNode* particleEditorNode)
@@ -270,15 +270,22 @@ void ParticleEditorWidget::OnValueChanged()
 {
 	emit ValueChanged();
 	
-	// Update the visible timelines when the value on the emitter layer is changed.
-	UpdateVisibleTimelines();
+	// Update the particle editor widgets when the value on the emitter layer is changed.
+	UpdateParticleEditorWidgets();
 }
 
-void ParticleEditorWidget::UpdateVisibleTimelines()
+void ParticleEditorWidget::UpdateParticleEditorWidgets()
 {
 	if (emitterPropertiesWidget && emitterPropertiesWidget->GetEmitter())
 	{
 		UpdateVisibleTimelinesForParticleEmitter();
+		return;
+	}
+	
+	if (emitterLayerWidget && emitterLayerWidget->GetLayer())
+	{
+		UpdateWidgetsForLayer();
+		return;
 	}
 }
 
@@ -320,4 +327,15 @@ void ParticleEditorWidget::UpdateVisibleTimelinesForParticleEmitter()
 	emitterPropertiesWidget->GetEmitterRadiusTimeline()->setVisible(radiusTimeLineVisible);
 	emitterPropertiesWidget->GetEmitterSizeTimeline()->setVisible(sizeTimeLineVisible);
 	emitterPropertiesWidget->GetEmissionVectorTimeline()->setVisible(emissionVectorTimeLineVisible);
+}
+
+void ParticleEditorWidget::UpdateWidgetsForLayer()
+{
+	if (!emitterLayerWidget || !emitterLayerWidget->GetLayer())
+	{
+		return;
+	}
+	
+	bool isSuperemitter = (emitterLayerWidget->GetLayer()->type == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES);
+	emitterLayerWidget->SetSuperemitterMode(isSuperemitter);
 }

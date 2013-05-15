@@ -28,6 +28,8 @@ protected:
     // Connect/disconnect to the signals.
     void ConnectToSignals();
 
+	virtual void HandleChangePropertySucceeded(const QString& propertyName);
+
     // Background Control contains Comboboxes which should be processed in the specific way.
     virtual void ProcessComboboxValueChanged(QComboBox* senderWidget, const PROPERTYGRIDWIDGETSITER& iter,
                                              const QString& value);
@@ -44,6 +46,9 @@ protected:
 
 	//handle elements according drawType
 	void HandleDrawTypeComboBox();
+	
+private:
+	void SetStretchCapMaxValues();
 
 private slots:
     void OpenSpriteDialog();

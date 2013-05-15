@@ -34,8 +34,8 @@ public:
 	virtual void ActivateCommandScreen();
 
 	// Access to the screen unsaved changes counter.
-	void IncrementUnsavedChanges();
-	void DecrementUnsavedChanges();
+	virtual void IncrementUnsavedChanges();
+	virtual void DecrementUnsavedChanges();
 	void ResetUnsavedChanges();
 
 protected:

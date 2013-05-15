@@ -46,17 +46,18 @@ public:
 	UISlider(const Rect & rect);
 	virtual ~UISlider();
 
-	
+	virtual void AddControl(DAVA::UIControl *control);
+
 	virtual void SetThumbSprite(Sprite * sprite, int32 frame);
-	virtual void SetThumbSprite(const String & spriteName, int32 frame);
+	virtual void SetThumbSprite(const FilePath & spriteName, int32 frame);
 	
 	virtual void SetMinSprite(Sprite * sprite, int32 frame);
-	virtual void SetMinSprite(const String & spriteName, int32 frame);
+	virtual void SetMinSprite(const FilePath & spriteName, int32 frame);
     virtual void SetMinDrawType(UIControlBackground::eDrawType drawType);
     virtual void SetMinLeftRightStretchCap(float32 stretchCap);
 
 	virtual void SetMaxSprite(Sprite * sprite, int32 frame);
-	virtual void SetMaxSprite(const String & spriteName, int32 frame);
+	virtual void SetMaxSprite(const FilePath & spriteName, int32 frame);
     virtual void SetMaxDrawType(UIControlBackground::eDrawType drawType);
     virtual void SetMaxLeftRightStretchCap(float32 stretchCap);
 	
@@ -65,6 +66,7 @@ public:
 	void SetMinMaxValue(float32 _minValue, float32 _maxValue);
 	
 	virtual void Draw(const UIGeometricData &geometricData);
+	virtual void SystemDraw(const UIGeometricData &geometricData);
 	
 	inline bool IsEventsContinuos();
 	inline void SetEventsContinuos(bool isEventsContinuos);
@@ -82,13 +84,13 @@ public:
 	inline UIControlBackground *GetBgMax();
 
 	virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
+	virtual void LoadFromYamlNodeCompleted();
+
 	virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
-	/**
-	 \brief Returns list of control children without internal controls.
-	 \returns list of control children without internal controls.
-	 */
+
 	virtual List<UIControl* >& GetRealChildren();
-	
+	virtual List<UIControl*> GetSubcontrols();
+
 	virtual UIControl *Clone();
 	virtual void CopyDataFrom(UIControl *srcControl);
 	
@@ -108,13 +110,22 @@ protected:
 	void RecalcButtonPos();
 
 	UIControl * thumbButton;
-	UIControlBackground * bgMin;
-	UIControlBackground * bgMax;
+	UIControl * bgMin;
+	UIControl * bgMax;
 
 	float32 clipPointRelative;
 	Vector2 relTouchPoint;
-	
+
+	UIControlBackground::eDrawType minDrawType;
+	UIControlBackground::eDrawType maxDrawType;
+
 	void InitThumb();
+	void InitMinBackground();
+	void InitMaxBackground();
+	
+	void InitSubcontrols();
+	void AttachToSubcontrols();
+	void ReleaseAllSubcontrols();
 };
     
     
@@ -125,12 +136,12 @@ inline UIControl *UISlider::GetThumb()
 
 inline UIControlBackground *UISlider::GetBgMin()
 {
-	return bgMin;
+	return bgMin->GetBackground();
 }
 
 inline UIControlBackground *UISlider::GetBgMax()
 {
-	return bgMax;
+	return bgMax->GetBackground();
 }
 
 inline bool UISlider::IsEventsContinuos()

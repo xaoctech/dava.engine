@@ -41,6 +41,8 @@
 #include "Base/BaseTypes.h"
 #include "Base/Singleton.h"
 
+#include "FileSystem/FilePath.h"
+
 namespace DAVA 
 {
 	

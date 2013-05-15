@@ -174,7 +174,7 @@ void QSceneGraphTreeView::ShowSceneGraphMenu(const QModelIndex &index, const QPo
 		SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
 		LandscapesController *landsacpesController = activeScene->GetLandscapesController();
 
-		SceneEditorScreenMain *screen = static_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen(SCREEN_SCENE_EDITOR_MAIN));
+		SceneEditorScreenMain *screen = static_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen(SCREEN_MAIN_OLD));
 		EditorBodyControl *c = screen->FindCurrentBody()->bodyControl;
 
 		bool canChangeScene = !landsacpesController->EditorLandscapeIsActive() && !c->LandscapeEditorActive();

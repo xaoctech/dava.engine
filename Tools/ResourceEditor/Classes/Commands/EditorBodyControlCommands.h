@@ -7,22 +7,33 @@
 
 class EditorBodyControl;
 
-class CommandTransformObject: public Command
+class CommandEntityModification: public Command
+{
+public:
+	CommandEntityModification(Command::eCommandType type, CommandList::eCommandId id);
+
+protected:
+	Set<Entity*> entities;
+
+	virtual DAVA::Set<DAVA::Entity*> GetAffectedEntities();
+};
+
+class CommandTransformObject: public CommandEntityModification
 {
 public:
 	CommandTransformObject(DAVA::Entity* node, const DAVA::Matrix4& originalTransform, const DAVA::Matrix4& finalTransform);
 
 protected:
 	DAVA::Matrix4 undoTransform;
-	DAVA::Entity* node;
-
 	DAVA::Matrix4 redoTransform;
 
 	virtual void Execute();
 	virtual void Cancel();
+
+	void UpdateCollision();
 };
 
-class CommandCloneObject: public Command
+class CommandCloneObject: public CommandEntityModification
 {
 public:
 	CommandCloneObject(DAVA::Entity* node, EditorBodyControl* bodyControl, btCollisionWorld* collisionWorld);
@@ -32,7 +43,6 @@ public:
 
 protected:
 	DAVA::Entity* originalNode;
-	DAVA::Entity* clonedNode;
 	EditorBodyControl* bodyControl;
 	btCollisionWorld* collisionWorld;
 
@@ -65,14 +75,13 @@ protected:
 	virtual void Cancel();
 };
 
-class CommandPlaceOnLandscape: public Command
+class CommandPlaceOnLandscape: public CommandEntityModification
 {
 public:
 	CommandPlaceOnLandscape(DAVA::Entity* node, EditorBodyControl* bodyControl);
 
 protected:
 	DAVA::Matrix4 undoTransform;
-	DAVA::Entity* node;
 	EditorBodyControl* bodyControl;
 
 	DAVA::Matrix4 redoTransform;
@@ -81,14 +90,13 @@ protected:
 	virtual void Cancel();
 };
 
-class CommandRestoreOriginalTransform: public Command
+class CommandRestoreOriginalTransform: public CommandEntityModification
 {
 public:
 	CommandRestoreOriginalTransform(DAVA::Entity* node);
 
 protected:
 	DAVA::Map<DAVA::Entity*, DAVA::Matrix4> undoTransforms;
-	DAVA::Entity* node;
 
 	virtual void Execute();
 	virtual void Cancel();

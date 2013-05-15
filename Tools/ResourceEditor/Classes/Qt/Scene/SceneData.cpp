@@ -22,7 +22,7 @@
 #include "Main/QtUtils.h"
 #include "DockSceneGraph/PointerHolder.h"
 
-#include "DockLibrary//LibraryModel.h"
+#include "DockLibrary/LibraryModel.h"
 
 #include <QTreeView>
 #include <QFileSystemModel>
@@ -39,7 +39,6 @@ SceneData::SceneData()
 	,	selectedNode(NULL)
 {
     landscapesController = new LandscapesController();
-    sceneFilePathname = String("");
     cameraController = new WASDCameraController(EditorSettings::Instance()->GetCameraSpeed());
 }
 
@@ -197,7 +196,7 @@ void SceneData::CreateScene(bool createEditorCameras)
         cam->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
         cam->SetTarget(Vector3(0.0f, 1.0f, 0.0f));
         
-        cam->Setup(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f);
+        cam->SetupPerspective(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f);
         
         ScopedPtr<Entity> node(new Entity());
         node->SetName("editor.main-camera");
@@ -213,7 +212,7 @@ void SceneData::CreateScene(bool createEditorCameras)
         cam2->SetPosition(Vector3(0.0f, 0.0f, 200.0f));
         cam2->SetTarget(Vector3(0.0f, 250.0f, 0.0f));
         
-        cam2->Setup(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f);
+        cam2->SetupPerspective(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f);
         
         ScopedPtr<Entity> node2(new Entity());
         node2->SetName("editor.debug-camera");
@@ -228,18 +227,16 @@ void SceneData::CreateScene(bool createEditorCameras)
     SafeRelease(createdScene);
 }
 
-void SceneData::SetScenePathname(const String &newPathname)
+void SceneData::SetScenePathname(const FilePath &newPathname)
 {
     sceneFilePathname = newPathname;
     if(scene)
     {
-        String filename, path;
-        FileSystem::Instance()->SplitPath(sceneFilePathname, path, filename);
-        scene->SetName(filename);
+        scene->SetName(sceneFilePathname.GetFilename());
     }
 }
 
-String SceneData::GetScenePathname() const
+const FilePath & SceneData::GetScenePathname() const
 {
     return sceneFilePathname;
 }
@@ -361,7 +358,7 @@ void SceneData::ResetLandsacpeSelection()
 }
 
 
-void SceneData::RestoreTexture(const DAVA::String &descriptorPathname, DAVA::Texture *texture)
+void SceneData::RestoreTexture(const DAVA::FilePath &descriptorPathname, DAVA::Texture *texture)
 {
     Vector<Entity *> nodes;
     scene->GetChildNodes(nodes);
