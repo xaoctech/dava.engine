@@ -25,9 +25,9 @@ public:
 public:
     virtual ~FileDownloaderDelegate() = 0;
     
-    virtual void DownloadGetPacket(uint64 size){};
-    virtual void DownloadReconnect(){};
-    virtual void DownloadComplete(DownloadStatusCode status){};
+    virtual void DownloadGetPacket(uint64 size);
+    virtual void DownloadReconnect();
+    virtual void DownloadComplete(DownloadStatusCode status);
 };
 
 class FileDownloader: public BaseObject

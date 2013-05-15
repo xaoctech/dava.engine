@@ -49,7 +49,32 @@ namespace DAVA
 
 REGISTER_CLASS(UITextField);
 
+void UITextFieldDelegate::TextFieldShouldReturn(UITextField * /*textField*/)
+{
+}
 
+void UITextFieldDelegate::TextFieldShouldCancel(UITextField * /*textField*/)
+{
+};
+    
+void UITextFieldDelegate::TextFieldLostFocus(UITextField * /*textField*/)
+{
+};
+
+bool UITextFieldDelegate::TextFieldKeyPressed(UITextField * /*textField*/, int32 /*replacementLocation*/, int32 /*replacementLength*/, const WideString & /*replacementString*/)
+{
+	return true;
+}
+    
+bool UITextFieldDelegate::IsTextFieldShouldSetFocusedOnAppear(UITextField * /*textField*/)
+{
+	return false;
+}
+	
+bool UITextFieldDelegate::IsTextFieldCanLostFocus(UITextField * textField)
+{
+	return true;
+}
     
 UITextField::UITextField(const Rect &rect, bool rectInAbsoluteCoordinates/*= false*/)
 :	UIControl(rect, rectInAbsoluteCoordinates)
@@ -131,6 +156,8 @@ void UITextField::OpenKeyboard()
 {
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->OpenKeyboard();
+#elif defined(__DAVAENGINE_ANDROID__)
+	textFieldAndroid->ShowField();
 #endif
 }
 
@@ -138,6 +165,8 @@ void UITextField::CloseKeyboard()
 {
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->CloseKeyboard();
+#elif defined(__DAVAENGINE_ANDROID__)
+	textFieldAndroid->HideField();
 #endif
 }
 	
@@ -200,14 +229,17 @@ void UITextField::DidAppear()
 {
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->ShowField();
+#elif defined(__DAVAENGINE_ANDROID__)
+	textFieldAndroid->ShowField();
 #endif
-		
 }
-	
+
 void UITextField::WillDisappear()
 {
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->HideField();
+#elif defined(__DAVAENGINE_ANDROID__)
+	textFieldAndroid->HideField();
 #endif
 }
     

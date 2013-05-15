@@ -29,7 +29,7 @@ TexturePacker::TexturePacker()
 	onlySquareTextures = false;
 }
 
-bool TexturePacker::TryToPack(const Rect2i & textureRect, List<DefinitionFile*> & defsList)
+bool TexturePacker::TryToPack(const Rect2i & textureRect, List<DefinitionFile*> & /*defsList*/)
 {
 	if (CommandLineParser::Instance()->GetVerbose())
     {
@@ -443,7 +443,7 @@ Rect2i TexturePacker::ReduceRectToOriginalSize(const Rect2i & _input)
 	return r;
 }
 
-bool TexturePacker::WriteDefinition(const FilePath & excludeFolder, const FilePath & outputPath, const String & _textureName, DefinitionFile * defFile)
+bool TexturePacker::WriteDefinition(const FilePath & /*excludeFolder*/, const FilePath & outputPath, const String & _textureName, DefinitionFile * defFile)
 {
 	String fileName = defFile->filename.GetFilename();
 	if (CommandLineParser::Instance()->GetVerbose())
@@ -478,7 +478,7 @@ bool TexturePacker::WriteDefinition(const FilePath & excludeFolder, const FilePa
 	return true;
 }
 
-bool TexturePacker::WriteMultipleDefinition(const FilePath & excludeFolder, const FilePath & outputPath, const String & _textureName, DefinitionFile * defFile)
+bool TexturePacker::WriteMultipleDefinition(const FilePath & /*excludeFolder*/, const FilePath & outputPath, const String & _textureName, DefinitionFile * defFile)
 {
 	String fileName = defFile->filename.GetFilename();
 	if (CommandLineParser::Instance()->GetVerbose())

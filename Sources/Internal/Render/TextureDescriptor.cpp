@@ -489,7 +489,7 @@ String TextureDescriptor::GetSupportedTextureExtensions()
 
 
 
-const bool TextureDescriptor::IsCompressedFile() const
+bool TextureDescriptor::IsCompressedFile() const
 {
     return isCompressedFile;
 }

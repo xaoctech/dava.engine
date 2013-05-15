@@ -11,9 +11,9 @@ ImportDialogFileWidget::ImportDialogFileWidget(uint32 id, QWidget *parent)
 :	QWidget(parent)
 ,	ui(new Ui::ImportDialogFileWidget)
 ,	id(id)
+,	activeAction(ImportDialog::ACTION_IGNORE)
 ,	neverShowSizeWidget(false)
 ,	showUpperIcons(false)
-,	activeAction(ImportDialog::ACTION_IGNORE)
 {
 	ui->setupUi(this);
 	ui->resetToParentButton->setIcon(QIcon(IconHelper::GetIgnoreIconPath()));

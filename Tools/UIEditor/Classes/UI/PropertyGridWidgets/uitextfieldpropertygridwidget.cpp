@@ -9,8 +9,6 @@
 #include "WidgetSignalsBlocker.h"
 #include "BackgroundGridWidgetHelper.h"
 
-using namespace PropertyNames;
-
 static const QString TEXTFIELD_PROPERTY_BLOCK_NAME = "Text";
 
 UITextFieldPropertyGridWidget::UITextFieldPropertyGridWidget(QWidget *parent) :
@@ -32,17 +30,17 @@ void UITextFieldPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
 	FillComboboxes();
     PROPERTIESMAP propertiesMap = BuildMetadataPropertiesMap();
 
-    RegisterPushButtonWidgetForProperty(propertiesMap, FONT_PROPERTY_NAME, ui->fontSelectButton);
-    RegisterSpinBoxWidgetForProperty(propertiesMap, FONT_SIZE_PROPERTY_NAME, ui->fontSizeSpinBox);
+    RegisterPushButtonWidgetForProperty(propertiesMap, PropertyNames::FONT_PROPERTY_NAME, ui->fontSelectButton);
+    RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::FONT_SIZE_PROPERTY_NAME, ui->fontSizeSpinBox);
     
-    RegisterLineEditWidgetForProperty(propertiesMap, TEXT_PROPERTY_NAME, ui->textLineEdit);
-    RegisterColorButtonWidgetForProperty(propertiesMap, TEXT_COLOR_PROPERTY_NAME, ui->textColorPushButton);
+    RegisterLineEditWidgetForProperty(propertiesMap, PropertyNames::TEXT_PROPERTY_NAME, ui->textLineEdit);
+    RegisterColorButtonWidgetForProperty(propertiesMap, PropertyNames::TEXT_COLOR_PROPERTY_NAME, ui->textColorPushButton);
 
-    RegisterSpinBoxWidgetForProperty(propertiesMap, SHADOW_OFFSET_X, ui->shadowOffsetXSpinBox);
-    RegisterSpinBoxWidgetForProperty(propertiesMap, SHADOW_OFFSET_Y, ui->shadowOffsetYSpinBox);
-    RegisterColorButtonWidgetForProperty(propertiesMap, SHADOW_COLOR, ui->shadowColorButton);
+    RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::SHADOW_OFFSET_X, ui->shadowOffsetXSpinBox);
+    RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::SHADOW_OFFSET_Y, ui->shadowOffsetYSpinBox);
+    RegisterColorButtonWidgetForProperty(propertiesMap, PropertyNames::SHADOW_COLOR, ui->shadowColorButton);
 
-	RegisterComboBoxWidgetForProperty(propertiesMap, TEXT_ALIGN_PROPERTY_NAME, ui->alignComboBox, false, true);
+	RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::TEXT_ALIGN_PROPERTY_NAME, ui->alignComboBox, false, true);
 }
 
 void UITextFieldPropertyGridWidget::Cleanup()
@@ -69,7 +67,9 @@ void UITextFieldPropertyGridWidget::ProcessPushButtonClicked(QPushButton *sender
     }
     
 	// Get current value of Font property
-	Font *fontPropertyValue = PropertiesHelper::GetPropertyValue<Font *>(this->activeMetadata, FONT_PROPERTY_NAME, false);
+	Font *fontPropertyValue = PropertiesHelper::GetPropertyValue<Font *>(this->activeMetadata,
+																		 PropertyNames::FONT_PROPERTY_NAME,
+																		 false);
 	// Get sprite path from graphics font
 	QString currentGFontPath = ResourcesManageHelper::GetGraphicsFontPath(fontPropertyValue);
 

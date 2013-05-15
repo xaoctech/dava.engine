@@ -38,6 +38,10 @@ Accelerometer::Accelerometer()
 
 Accelerometer::~Accelerometer()
 {
-	
 }
+	
+void Accelerometer::Enable(float32 /*updateRate*/)
+{
+}
+
 };
