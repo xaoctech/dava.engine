@@ -81,8 +81,8 @@ public:
 	enum eFlags
 	{
 		VISIBLE = 1 << 0,
-		VISIBLE_LOD = 1 << 1,
-		VISIBLE_SWITCH = 1 << 2,
+		VISIBLE_LOD = 1 << 2,
+		VISIBLE_SWITCH = 1 << 3,
         TRANSFORM_UPDATED = 1 << 15,
 	};
 

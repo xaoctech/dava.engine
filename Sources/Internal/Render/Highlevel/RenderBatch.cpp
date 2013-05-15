@@ -250,7 +250,7 @@ void RenderBatch::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
         SafeRelease(oldMaterialInstance);
 		SetPolygonGroup(pg);
         
-		// SetMaterial(mat);
+		SetMaterial(newMaterial);
 
 	}
 

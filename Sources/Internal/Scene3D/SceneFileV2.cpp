@@ -740,7 +740,7 @@ void SceneFileV2::ConvertOldMaterialToNewMaterial(Material * oldMaterial, Instan
             Texture * tex = oldMaterial->GetTexture(Material::TEXTURE_DIFFUSE);
             tech->GetRenderState()->SetTexture(tex, 0);
             Texture * tex2 = oldMaterial->GetTexture(Material::TEXTURE_DETAIL);
-            tech->GetRenderState()->SetTexture(tex, 1);
+            tech->GetRenderState()->SetTexture(tex2, 1);
            
             if (oldMaterialState)
             {
@@ -758,7 +758,7 @@ void SceneFileV2::ConvertOldMaterialToNewMaterial(Material * oldMaterial, Instan
             Texture * tex = oldMaterial->GetTexture(Material::TEXTURE_DIFFUSE);
             tech->GetRenderState()->SetTexture(tex, 0);
             Texture * tex2 = oldMaterial->GetTexture(Material::TEXTURE_DETAIL);
-            tech->GetRenderState()->SetTexture(tex, 1);
+            tech->GetRenderState()->SetTexture(tex2, 1);
             
         }
         break;
