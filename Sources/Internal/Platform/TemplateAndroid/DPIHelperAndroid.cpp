@@ -1,7 +1,8 @@
 #include "Platform/DPIHelper.h"
 #include "JniExtensions.h"
 
-using namespace DAVA;
+namespace DAVA
+{
 
 class JniDpiHelper: public JniExtension
 {
@@ -38,3 +39,5 @@ uint32 DPIHelper::GetScreenDPI()
 	JniDpiHelper helper;
 	return helper.GetScreenDPI();
 }
+
+} //namespace DAVA
