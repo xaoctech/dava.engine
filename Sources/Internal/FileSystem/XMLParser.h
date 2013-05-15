@@ -49,7 +49,7 @@ public:
 	virtual void OnElementEnded(const String &elementName, const String &namespaceURI
 										, const String &qualifedName) = 0;
 	
-	virtual void OnFoundCharacters(const String & chars);
+	virtual void OnFoundCharacters(const String & chars) = 0;
 
 
 	/**
