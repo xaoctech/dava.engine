@@ -32,11 +32,7 @@ public:
 
 	void SetDelegate(IUIWebViewDelegate* delegate);
 
-	bool IsInitiatedByUser(){return isInitiatedByUser;}
-
 protected:
-	
-	bool isInitiatedByUser;
 
 	// Platform-specific implementation of the Web View Control.
 	IWebViewControl* webViewControl;

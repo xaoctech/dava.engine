@@ -34,6 +34,9 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
 
+#include "FileSystem/FilePath.h"
+
+
 #if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
     #include "PVRDefines.h"
 #else //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
@@ -112,8 +115,8 @@ public:
     
     static bool ReadFile(File *file, const Vector<Image *> &imageSet);
     
-    static PixelFormat GetPixelFormat(const String &filePathname);
-    static uint32 GetDataLength(const String &filePathname);
+    static PixelFormat GetPixelFormat(const FilePath &filePathname);
+    static uint32 GetDataLength(const FilePath &filePathname);
     
 protected:
 
@@ -133,7 +136,7 @@ protected:
     
     static const PixelFormat GetTextureFormat(const PVRHeaderV3& textureHeader);
     
-    static PVRHeaderV3 GetHeader(const String &filePathname);
+    static PVRHeaderV3 GetHeader(const FilePath &filePathname);
     static PVRHeaderV3 GetHeader(File *file);
     static PVRHeaderV3 GetHeader(const uint8* pvrData, const int32 pvrDataSize);
     

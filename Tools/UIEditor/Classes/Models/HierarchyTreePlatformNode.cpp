@@ -41,12 +41,40 @@ HierarchyTreePlatformNode::HierarchyTreePlatformNode(HierarchyTreeRootNode* root
 		 iter != chilren.end();
 		 ++iter)
 	{
-		const HierarchyTreeScreenNode* baseControl = dynamic_cast<const HierarchyTreeScreenNode* >((*iter));
-		if (!baseControl)
+		const HierarchyTreeScreenNode* screen = dynamic_cast<const HierarchyTreeScreenNode* >((*iter));
+		const HierarchyTreeAggregatorNode* aggregator = dynamic_cast<const HierarchyTreeAggregatorNode* >((*iter));
+
+		if (!screen && !aggregator)
 			continue;
-		
-		HierarchyTreeScreenNode* control = new HierarchyTreeScreenNode(this, baseControl);
+
+		HierarchyTreeNode* control;
+		if (aggregator)
+		{
+			control = new HierarchyTreeAggregatorNode(this, aggregator);
+		}
+		else
+		{
+			control = new HierarchyTreeScreenNode(this, screen);
+		}
 		AddTreeNode(control);
+	}
+}
+
+HierarchyTreePlatformNode::~HierarchyTreePlatformNode()
+{
+	// Remove screens before removing aggregators
+	HierarchyTreeNode::HIERARCHYTREENODESITER it;
+	for (it = childNodes.begin(); it != childNodes.end();)
+	{
+		if (!dynamic_cast<HierarchyTreeAggregatorNode*>(*it))
+		{
+			delete (*it);
+			it = childNodes.erase(it);
+		}
+		else
+		{
+			++it;
+		}
 	}
 }
 
@@ -87,7 +115,7 @@ HierarchyTreeNode* HierarchyTreePlatformNode::GetParent()
 	return this->rootNode;
 }
 
-QString HierarchyTreePlatformNode::GetPlatformFolder() const
+FilePath HierarchyTreePlatformNode::GetPlatformFolder() const
 {
 	QString path;
 	if (rootNode)
@@ -96,15 +124,28 @@ QString HierarchyTreePlatformNode::GetPlatformFolder() const
 	}
 	path += GetName();
 
-	return path;
+    FilePath folder(path.toStdString());
+    folder.MakeDirectoryPathname();
+    
+	return folder;
+}
+
+QString HierarchyTreePlatformNode::GetScreenPath(QString screenName) const
+{
+	return QString(SCREEN_PATH).arg(QString::fromStdString(GetPlatformFolder().GetAbsolutePathname())).arg(screenName);
+}
+
+QString HierarchyTreePlatformNode::GetScreenPath(String screenName) const
+{
+	return GetScreenPath(QString::fromStdString(screenName));
 }
 
 void HierarchyTreePlatformNode::ActivatePlatform()
 {
 	if (rootNode)
 	{
-		String bundleName = ResourcesManageHelper::GetDataPath(rootNode->GetProjectDir()).toStdString();
-		FileSystem::Instance()->ReplaceBundleName(bundleName);
+		String bundleName = rootNode->GetProjectDir().toStdString();
+		FilePath::SetBundleName(bundleName);
 	}
 }
 
@@ -129,7 +170,7 @@ bool HierarchyTreePlatformNode::Load(YamlNode* platform)
 				continue;
 			String screenName = screen->AsString();
 			
-			QString screenPath = QString(SCREEN_PATH).arg(GetPlatformFolder()).arg(QString::fromStdString(screenName));
+			QString screenPath = GetScreenPath(screenName);
 			HierarchyTreeScreenNode* screenNode = new HierarchyTreeScreenNode(this, QString::fromStdString(screenName));
 			result &= screenNode->Load(screenPath);
 			AddTreeNode(screenNode);
@@ -145,10 +186,22 @@ bool HierarchyTreePlatformNode::Load(YamlNode* platform)
 			if (!aggregator)
 				continue;
 			String aggregatorName = aggregator->AsString();
-			
-			QString aggregatorPath = QString(SCREEN_PATH).arg(GetPlatformFolder()).arg(QString::fromStdString(aggregatorName));
+
+			QString aggregatorPath = GetScreenPath(aggregatorName);
 			HierarchyTreeAggregatorNode* aggregatorNode = new HierarchyTreeAggregatorNode(this, QString::fromStdString(aggregatorName), Rect());
-			result &= aggregatorNode->Load(aggregator, aggregatorPath);
+
+			YamlNode* aggregatorWidth = aggregator->Get(WIDTH_NODE);
+			YamlNode* aggregatorHeight = aggregator->Get(HEIGHT_NODE);
+			if (!aggregatorWidth || !aggregatorHeight)
+			{
+				result = false;
+			}
+			else
+			{
+				Rect r = Rect(0, 0, aggregatorWidth->AsInt(), aggregatorHeight->AsInt());
+				result &= aggregatorNode->Load(r, aggregatorPath);
+			}
+
 			AddTreeNode(aggregatorNode);			
 		}
 	}
@@ -171,6 +224,10 @@ bool HierarchyTreePlatformNode::LoadLocalization(YamlNode* platform)
         !localeNode->AsString().empty())
     {
         localizationPath = pathNode->AsString();
+		// YuriCoder, 2013/04/23. Localization path must be absolute - do the conversion
+		// for previous projects.
+		localizationPath.MakeDirectoryPathname();
+
         locale = localeNode->AsString();
     }
 
@@ -200,10 +257,10 @@ bool HierarchyTreePlatformNode::Save(YamlNode* node, bool saveAll)
     // Add the Localization info - specific for each Platform.
     SaveLocalization(platform);
 
-	QString platformFolder = GetPlatformFolder();
+	FilePath platformFolder = GetPlatformFolder();
 
 	QDir dir;
-	dir.mkpath(platformFolder);
+	dir.mkpath(QString::fromStdString(platformFolder.GetAbsolutePathname()));
 	
 	bool result = true;
 	
@@ -216,7 +273,7 @@ bool HierarchyTreePlatformNode::Save(YamlNode* node, bool saveAll)
 		if (!node)
 			continue;
 
-		QString path = QString(SCREEN_PATH).arg(platformFolder).arg(node->GetName());
+		QString path = GetScreenPath(node->GetName());
 		MultiMap<String, YamlNode*> &aggregatorsMap = aggregators->AsMap();
 		
 		YamlNode* aggregator = new YamlNode(YamlNode::TYPE_MAP);
@@ -239,7 +296,7 @@ bool HierarchyTreePlatformNode::Save(YamlNode* node, bool saveAll)
 		if (!screenNode)
 			continue;
 		
-		QString screenPath = QString(SCREEN_PATH).arg(platformFolder).arg(screenNode->GetName());
+		QString screenPath = GetScreenPath(screenNode->GetName());
 		result &= screenNode->Save(screenPath, saveAll);
 		
 		screens->AddValueToArray(screenNode->GetName().toStdString());
@@ -254,13 +311,15 @@ bool HierarchyTreePlatformNode::SaveLocalization(YamlNode* platform)
         return false;
     }
 
-    platform->Set(LOCALIZATION_PATH_NODE, this->localizationPath);
+	// YuriCoder, 2013/04/23. Localization path must be absolute.
+	this->localizationPath.MakeDirectoryPathname();
+    platform->Set(LOCALIZATION_PATH_NODE, this->localizationPath.GetAbsolutePathname());
     platform->Set(LOCALIZATION_LOCALE_NODE, locale);
 
     return true;
 }
 
-void HierarchyTreePlatformNode::SetLocalizationPath(const String& localizationPath)
+void HierarchyTreePlatformNode::SetLocalizationPath(const FilePath & localizationPath)
 {
     this->localizationPath = localizationPath;
 }

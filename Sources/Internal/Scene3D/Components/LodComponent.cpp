@@ -6,7 +6,7 @@ namespace DAVA
 
 const float32 LodComponent::INVALID_DISTANCE = -1.f;
 const float32 LodComponent::MIN_LOD_DISTANCE = 0.f;
-const float32 LodComponent::MAX_LOD_DISTANCE = 500.f;
+const float32 LodComponent::MAX_LOD_DISTANCE = 1000.f;
 
 LodComponent::LodDistance::LodDistance()
 {

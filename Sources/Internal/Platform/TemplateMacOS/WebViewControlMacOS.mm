@@ -75,7 +75,9 @@ using namespace DAVA;
 		
 		if (url)
 		{
-			IUIWebViewDelegate::eAction action = delegate->URLChanged(self->webView, [url UTF8String],  self->webView->IsInitiatedByUser());
+            NSInteger navigationTypeKey = [[actionInformation objectForKey:@"WebActionNavigationTypeKey"] integerValue];
+            bool isRedirecteByMouseClick = navigationTypeKey == WebNavigationTypeLinkClicked;
+			IUIWebViewDelegate::eAction action = delegate->URLChanged(self->webView, [url UTF8String], isRedirecteByMouseClick);
 			
 			switch (action)
 			{

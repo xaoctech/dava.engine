@@ -7,7 +7,7 @@
 class LibraryCommand: public Command
 {
 public:
-    LibraryCommand(const DAVA::String &pathname, eCommandType _type);
+    LibraryCommand(const DAVA::FilePath &pathname, eCommandType _type, CommandList::eCommandId id);
     
 protected:
     
@@ -15,14 +15,14 @@ protected:
     
 protected:
     
-    DAVA::String filePathname;
+    DAVA::FilePath filePathname;
 };
 
 
 class CommandAddScene: public LibraryCommand
 {
 public:	
-	CommandAddScene(const DAVA::String &pathname);
+	CommandAddScene(const DAVA::FilePath &pathname);
 
 protected:	
     
@@ -34,7 +34,7 @@ protected:
 class CommandEditScene: public LibraryCommand
 {
 public:
-	CommandEditScene(const DAVA::String &pathname);
+	CommandEditScene(const DAVA::FilePath &pathname);
     
 protected:
     
@@ -44,7 +44,7 @@ protected:
 class CommandReloadScene: public LibraryCommand
 {
 public:
-	CommandReloadScene(const DAVA::String &pathname);
+	CommandReloadScene(const DAVA::FilePath &pathname);
     
 protected:
     
@@ -55,7 +55,7 @@ protected:
 class CommandReloadEntityFrom: public LibraryCommand
 {
 public:
-	CommandReloadEntityFrom(const DAVA::String &pathname);
+	CommandReloadEntityFrom(const DAVA::FilePath &pathname);
     
 protected:
     
@@ -64,13 +64,13 @@ protected:
     
 protected:
     
-    DAVA::String fromPathname;
+    DAVA::FilePath fromPathname;
 };
 
 class CommandConvertScene: public LibraryCommand
 {
 public:
-	CommandConvertScene(const DAVA::String &pathname);
+	CommandConvertScene(const DAVA::FilePath &pathname);
     
 protected:
     

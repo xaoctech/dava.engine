@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		02E9E47F173A467B00C501BC /* libfmodevent.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E47D173A467B00C501BC /* libfmodevent.dylib */; };
+		02E9E480173A467B00C501BC /* libfmodex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E47E173A467B00C501BC /* libfmodex.dylib */; };
 		50979DC616D9EF95000E5E8E /* MemoryAllocationTraverseTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50979DC416D9EF95000E5E8E /* MemoryAllocationTraverseTest.cpp */; };
 		5C1066DF156D35AE00912A45 /* LandscapeTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1066DD156D35AE00912A45 /* LandscapeTest.cpp */; };
 		5C5EAC2415A5848B00279915 /* TreeTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5EAC2215A5848B00279915 /* TreeTest.cpp */; };
@@ -54,6 +56,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		02E9E47D173A467B00C501BC /* libfmodevent.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodevent.dylib; path = ../../Libs/fmod/lib/macos/libfmodevent.dylib; sourceTree = "<group>"; };
+		02E9E47E173A467B00C501BC /* libfmodex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodex.dylib; path = ../../Libs/fmod/lib/macos/libfmodex.dylib; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
@@ -104,6 +108,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02E9E47F173A467B00C501BC /* libfmodevent.dylib in Frameworks */,
+				02E9E480173A467B00C501BC /* libfmodex.dylib in Frameworks */,
 				5CDC2501156CC93300742348 /* libz.dylib in Frameworks */,
 				FEA024E312DCEEC600935314 /* libFramework.a in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
@@ -146,6 +152,8 @@
 		29B97314FDCFA39411CA2CEA /* TemplateProjectMacOS */ = {
 			isa = PBXGroup;
 			children = (
+				02E9E47D173A467B00C501BC /* libfmodevent.dylib */,
+				02E9E47E173A467B00C501BC /* libfmodex.dylib */,
 				5CDC2500156CC93300742348 /* libz.dylib */,
 				FEFCD5E712AE50860060A1A1 /* Data */,
 				FE98930B11638F3C00500198 /* Framework.xcodeproj */,
@@ -467,6 +475,10 @@
 				GCC_PREFIX_HEADER = TemplateProjectMacOS_Prefix.pch;
 				INFOPLIST_FILE = "TemplateProjectMacOS-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../Libs/fmod/lib/macos\"",
+				);
 				PRODUCT_NAME = TemplateProjectMacOS;
 			};
 			name = Debug;
@@ -481,6 +493,10 @@
 				GCC_PREFIX_HEADER = TemplateProjectMacOS_Prefix.pch;
 				INFOPLIST_FILE = "TemplateProjectMacOS-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../Libs/fmod/lib/macos\"",
+				);
 				PRODUCT_NAME = TemplateProjectMacOS;
 			};
 			name = Release;

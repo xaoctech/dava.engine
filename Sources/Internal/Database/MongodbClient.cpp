@@ -177,12 +177,21 @@ void MongodbClient::DropCollection()
     }
 }
 
-    
 bool MongodbClient::IsConnected()
 {
-    return (0 != mongo_is_connected(clientData->connection));
-}
+    int32 connectStatus = mongo_is_connected(clientData->connection);
+    if(0 != connectStatus)
+    {
+        int32 checkStatus = mongo_check_connection(clientData->connection);
+        if(MONGO_OK == checkStatus)
+            return true;
+    }
 
+    Logger::Warning("[MongodbClient::IsConnected] is not connected.");
+    return false;
+}
+    
+    
 bool MongodbClient::SaveBinary(const String &key, uint8 *data, int32 dataSize)
 {
     int32 status = MONGO_ERROR;

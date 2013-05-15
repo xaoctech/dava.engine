@@ -38,27 +38,27 @@ void EditorSettings::ApplyOptions()
 }
 
 
-void EditorSettings::SetDataSourcePath(const String &datasourcePath)
+void EditorSettings::SetDataSourcePath(const FilePath &datasourcePath)
 {
-    settings->SetString("3dDataSourcePath", datasourcePath);
+    settings->SetString("3dDataSourcePath", datasourcePath.GetAbsolutePathname());
 }
 
-String EditorSettings::GetDataSourcePath()
+FilePath EditorSettings::GetDataSourcePath()
 {
-    return settings->GetString("3dDataSourcePath", "/");
+    return FilePath(settings->GetString("3dDataSourcePath", "/"));
 }
 
-void EditorSettings::SetProjectPath(const String &projectPath)
+void EditorSettings::SetProjectPath(const FilePath &projectPath)
 {
-    settings->SetString(String("ProjectPath"), projectPath);
+    settings->SetString(String("ProjectPath"), projectPath.GetAbsolutePathname());
 }
 
-String EditorSettings::GetProjectPath()
+FilePath EditorSettings::GetProjectPath()
 {
-    return settings->GetString(String("ProjectPath"), String(""));
+    return FilePath(settings->GetString(String("ProjectPath"), String("")));
 }
 
-String EditorSettings::GetParticlesConfigsPath()
+FilePath EditorSettings::GetParticlesConfigsPath()
 {
 	return GetProjectPath() + "Data/Configs/Particles/";
 }
@@ -185,7 +185,7 @@ String EditorSettings::GetLastOpenedFile(int32 index)
     return settings->GetString(Format("LastOpenedFile_%d", index), "");
 }
 
-void EditorSettings::AddLastOpenedFile(const String & pathToFile)
+void EditorSettings::AddLastOpenedFile(const FilePath & pathToFile)
 {
     Vector<String> filesList;
     
@@ -193,13 +193,13 @@ void EditorSettings::AddLastOpenedFile(const String & pathToFile)
     for(int32 i = 0; i < count; ++i)
     {
         String path = settings->GetString(Format("LastOpenedFile_%d", i), "");
-        if(path != pathToFile)
+        if(path != pathToFile.GetAbsolutePathname())
         {
             filesList.push_back(path);
         }
     }
 
-    filesList.insert(filesList.begin(), pathToFile);
+    filesList.insert(filesList.begin(), pathToFile.GetAbsolutePathname());
     count = 0;
     for(;(count < (int32)filesList.size()) && (count < RESENT_FILES_COUNT); ++count)
     {

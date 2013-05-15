@@ -63,8 +63,10 @@ public:
 	
 	virtual void OnSuspend();
 	virtual void OnResume();
-	virtual void OnBackground();
+
 #if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
+	virtual void OnBackground();
+	virtual void OnForeground();
 	virtual void OnDeviceLocked();
 #endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
 
@@ -95,6 +97,9 @@ protected:
     MongodbObject * CreateSubObject(const String &objectName, MongodbObject *dbObject, bool needFinished);
     MongodbObject * CreateLogObject(const String &logName, const String &runTime);
 
+    const String GetErrorText(const ErrorData *error);
+    
+    
 protected:
     
     File * logFile;

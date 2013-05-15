@@ -96,8 +96,8 @@ private:
     String vertexShaderCode;
     String finalPixelShaderCode;
     String finalVertexShaderCode;
-    String materialCompiledVshName;
-    String materialCompiledFshName;
+    FilePath materialCompiledVshName;
+    FilePath materialCompiledFshName;
     
     Map<String, Shader::eUniformType> vertexShaderAdditionaUniforms;
     Map<String, Shader::eUniformType> pixelShaderAdditionaUniforms;

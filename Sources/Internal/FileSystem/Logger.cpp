@@ -57,8 +57,8 @@ void Logger::Logv(eLogLevel ll, const char8* text, va_list li)
 	OutputDebugStringA(tmp);
 	if(!logFilename.empty() && FileSystem::Instance())
 	{
-		String filename = FileSystem::Instance()->GetCurrentDocumentsDirectory()+logFilename;
-		FILE * file = fopen(filename.c_str(), "ab");
+		FilePath filename = FileSystem::Instance()->GetCurrentDocumentsDirectory()+logFilename;
+		FILE * file = fopen(filename.GetAbsolutePathname().c_str(), "ab");
 		if(file)
 		{
 			fwrite(tmp, sizeof(char), strlen(tmp), file);
@@ -81,8 +81,8 @@ void Logger::Logv(eLogLevel ll, const char16* text, va_list li)
 	OutputDebugStringW(tmp);
 	if(!logFilename.empty() && FileSystem::Instance())
 	{
-		String filename = FileSystem::Instance()->GetCurrentDocumentsDirectory()+logFilename;
-		FILE * file = fopen(filename.c_str(), "ab");
+		FilePath filename = FileSystem::Instance()->GetCurrentDocumentsDirectory()+logFilename;
+		FILE * file = fopen(filename.GetAbsolutePathname().c_str(), "ab");
 		if(file)
 		{
             fwrite(tmp, sizeof(wchar_t), wcslen(tmp), file);
@@ -104,7 +104,7 @@ static const char8 * logLevelString[4] =
 Logger::Logger()
 {
 	logLevel = LEVEL_DEBUG;
-	SetLogFilename("");
+	SetLogFilename(String());
 }
 
 Logger::~Logger()

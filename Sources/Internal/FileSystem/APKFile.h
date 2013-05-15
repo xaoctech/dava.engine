@@ -44,14 +44,14 @@ class APKFile: public DynamicMemoryFile
 {
 
 public:
-    static File * CreateFromAssets(const String &filePath, uint32 attributes);
+    static File * CreateFromAssets(const FilePath &filePath, uint32 attributes);
 
 private:
     
     APKFile();
     virtual ~APKFile();
 
-    static APKFile * CreateFromData(const String &filePath, const uint8 * data, int32 dataSize, uint32 attributes);
+    static APKFile * CreateFromData(const FilePath &filePath, const uint8 * data, int32 dataSize, uint32 attributes);
 
 };
 

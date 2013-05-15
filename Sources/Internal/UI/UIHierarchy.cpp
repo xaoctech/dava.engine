@@ -36,6 +36,14 @@
 
 namespace DAVA
 {
+void UIHierarchyDelegate::OnCellSelected(UIHierarchy* /*forHierarchy*/, UIHierarchyCell * /*selectedCell*/)
+{
+}
+
+void UIHierarchyDelegate::DragAndDrop(void * /*who*/, void * /*target*/, int32 /*mode*/)
+{
+}
+
 UIHierarchy::UIHierarchy(const Rect &rect, bool rectInAbsoluteCoordinates)
 : UIControl(rect, rectInAbsoluteCoordinates)
 {

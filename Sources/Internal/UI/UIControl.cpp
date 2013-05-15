@@ -350,7 +350,7 @@ namespace DAVA
 	{
 		return background->GetAlign();
 	}
-	void UIControl::SetSprite(const String &spriteName, int32 spriteFrame)
+	void UIControl::SetSprite(const FilePath &spriteName, int32 spriteFrame)
 	{
 		background->SetSprite(spriteName, spriteFrame);
 	}
@@ -1251,6 +1251,12 @@ namespace DAVA
 		_topAlignEnabled = srcControl->_topAlignEnabled;
 		_vcenterAlignEnabled = srcControl->_vcenterAlignEnabled;
 		_bottomAlignEnabled = srcControl->_bottomAlignEnabled;
+		
+		if (background && srcControl->background)
+		{
+			background->SetLeftRightStretchCap(srcControl->background->GetLeftRightStretchCap());
+			background->SetTopBottomStretchCap(srcControl->background->GetTopBottomStretchCap());
+		}
 
         tag = srcControl->GetTag();
         name = srcControl->name;
@@ -1500,6 +1506,14 @@ namespace DAVA
 			Draw(drawData);
 		}
 		
+		if (debugDrawEnabled)
+		{//TODO: Add debug draw for rotated controls
+			Color oldColor = RenderManager::Instance()->GetColor();
+			RenderManager::Instance()->SetColor(debugDrawColor);
+			RenderHelper::Instance()->DrawRect(drawData.GetUnrotatedRect());
+			RenderManager::Instance()->SetColor(oldColor);
+		}
+		
 		isIteratorCorrupted = false;
 		List<UIControl*>::iterator it = childs.begin();
         List<UIControl*>::iterator itEnd = childs.end();
@@ -1516,14 +1530,6 @@ namespace DAVA
 		if(clipContents)
 		{
 			RenderManager::Instance()->ClipPop();
-		}
-		
-		if (debugDrawEnabled)
-		{//TODO: Add debug draw for rotated controls
-			Color oldColor = RenderManager::Instance()->GetColor();
-			RenderManager::Instance()->SetColor(debugDrawColor);
-			RenderHelper::Instance()->DrawRect(drawData.GetUnrotatedRect());
-			RenderManager::Instance()->SetColor(oldColor);
 		}
 	}
 	
@@ -1912,7 +1918,11 @@ namespace DAVA
 		Sprite *sprite =  this->GetSprite();
 		if (sprite)
 		{
-			node->Set("sprite", TruncateTxtFileExtension(sprite->GetName()));
+            FilePath path(sprite->GetRelativePathname());
+            path.TruncateExtension();
+
+            String pathname = path.GetFrameworkPath();
+			node->Set("sprite", pathname);
 		}
 		// Color
 		Color color =  this->GetBackground()->GetColor();
@@ -2372,7 +2382,7 @@ namespace DAVA
 		return debugDrawColor;
 	}
     
-    bool UIControl::IsLostFocusAllowed( UIControl *newFocus ) const
+    bool UIControl::IsLostFocusAllowed( UIControl *newFocus )
     {
         return true;
     }

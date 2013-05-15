@@ -60,7 +60,8 @@
 		
 		if (url)
 		{
-			DAVA::IUIWebViewDelegate::eAction action = delegate->URLChanged(self->webView, [url UTF8String], self->webView->IsInitiatedByUser());
+		    bool isRedirectedByMouseClick = navigationType == UIWebViewNavigationTypeLinkClicked;
+			DAVA::IUIWebViewDelegate::eAction action = delegate->URLChanged(self->webView, [url UTF8String], isRedirectedByMouseClick);
 			
 			switch (action) {
 				case DAVA::IUIWebViewDelegate::PROCESS_IN_WEBVIEW:

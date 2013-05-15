@@ -974,7 +974,7 @@ void YamlNode::InitFromKeyedArchive(KeyedArchive* archive)
     
 /*******************************************************/
 	
-YamlParser * YamlParser::Create(const String & fileName)
+YamlParser * YamlParser::Create(const FilePath & fileName)
 {
 	YamlParser * parser = new YamlParser();
 	if (parser)
@@ -994,7 +994,7 @@ YamlParser * YamlParser::Create()
     return new YamlParser();
 }
     
-bool YamlParser::Parse(const String & pathName)
+bool YamlParser::Parse(const FilePath & pathName)
 {
 	yaml_parser_t parser;
 	yaml_event_t event;
@@ -1013,7 +1013,7 @@ bool YamlParser::Parse(const String & pathName)
 	File * yamlFile = File::Create(pathName, File::OPEN | File::READ);
     if (!yamlFile)
     {
-    Logger::Error("[YamlParser::Parse] Can't create file: %s", pathName.c_str());
+        Logger::Error("[YamlParser::Parse] Can't create file: %s", pathName.GetAbsolutePathname().c_str());
         return false;
     }
     
@@ -1235,13 +1235,13 @@ bool YamlParser::Parse(const String & pathName)
 	return true;
 }
 	
-bool YamlParser::SaveToYamlFile(const String& fileName, YamlNode * rootNode, bool skipRootNode, uint32 attr /*= File::CREATE | File::WRITE*/)
+bool YamlParser::SaveToYamlFile(const FilePath & fileName, YamlNode * rootNode, bool skipRootNode, uint32 attr /*= File::CREATE | File::WRITE*/)
 {
     // Firstly try to check whether the file can be created.
 	File * yamlFileToSave = File::Create(fileName, attr);
     if (!yamlFileToSave)
     {
-        Logger::Error("[YamlParser::Save] Can't create file: %s for output", fileName.c_str());
+        Logger::Error("[YamlParser::Save] Can't create file: %s for output", fileName.GetAbsolutePathname().c_str());
         return false;
     }
 
@@ -1292,12 +1292,12 @@ bool YamlParser::SaveToYamlFile(const String& fileName, YamlNode * rootNode, boo
     return saveSucceeded;
 }
 
-bool YamlParser::SaveStringsList(const String& fileName, YamlNode * rootNode, uint32 attr)
+bool YamlParser::SaveStringsList(const FilePath & fileName, YamlNode * rootNode, uint32 attr)
 {
 	File * yamlFileToSave = File::Create(fileName, attr);
 	if (!yamlFileToSave)
 	{
-		Logger::Error("[YamlParser::Save] Can't create file: %s for output", fileName.c_str());
+		Logger::Error("[YamlParser::Save] Can't create file: %s for output", fileName.GetAbsolutePathname().c_str());
 		return false;
 	}
 	

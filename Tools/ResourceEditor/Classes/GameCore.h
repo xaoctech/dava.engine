@@ -35,16 +35,6 @@ public:
 	virtual void Draw();
 	
 private:
-    
-    void ResizeScreens();
-    DAVA::Vector2 virtualSize;
-    
-	ResourcePackerScreen * resourcePackerScreen;
-    SceneEditorScreenMain * sceneEditorScreenMain;
-    
-    SceneUtilsScreen *sceneUtilsScreen;
-    
-    ImageSplitterScreen *imageSplitterScreen;
 };
 
 

@@ -6,6 +6,7 @@
 #include "ItemsCommand.h"
 #include "CommandsController.h"
 #include "CopyPasteController.h"
+#include "SubcontrolsHelper.h"
 
 #define TREE_MIME_DATA 0
 #define ITEM_ID 0, Qt::UserRole
@@ -206,6 +207,16 @@ void HierarchyTreeControl::dragEnterEvent(QDragEnterEvent *event)
 	const HierarchyTreeControlMimeData* mimeData = dynamic_cast<const HierarchyTreeControlMimeData* >(event->mimeData()->userData(TREE_MIME_DATA));
 	if (!mimeData)
 		return;
+
+	HierarchyTreeNode * selectedTreeNode = HierarchyTreeController::Instance()->GetTree().GetNode(*(mimeData->GetItems().begin()));
+	HierarchyTreeControlNode * selectedControlNode =  dynamic_cast<HierarchyTreeControlNode*>(selectedTreeNode);
+	if(selectedControlNode)
+	{
+		if(SubcontrolsHelper::ControlIsSubcontrol(selectedControlNode->GetUIObject()))
+		{
+			return;
+		}
+	}
 
 	event->accept();
 }

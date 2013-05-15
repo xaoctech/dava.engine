@@ -1,18 +1,11 @@
-//
-//  DLCManager.h
-//  WoTSniperMacOS
-//
-//  Created by Andrey Panasyuk on 3/1/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
-//
-
-#ifndef __DAVAENGINE_DLCManager_h__
-#define __DAVAENGINE_DLCManager_h__
+#ifndef __DAVAENGINE_DLC_SYSTEM_H__
+#define __DAVAENGINE_DLC_SYSTEM_H__
 
 #include "Base/BaseTypes.h"
 #include "Base/Singleton.h"
 #include "DLC/FileDownloader.h"
 #include "FileSystem/YamlParser.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA
 {
@@ -33,11 +26,11 @@ public:
     virtual ~DLCSystemDelegate() = 0;
 
     // File with contents of all DLCs has getted 
-    virtual void InitCompleted(DLCStatusCode withStatus){};
+    virtual void InitCompleted(DLCStatusCode withStatus);
     // Single DLC file has downloaded or end with error
-    virtual void DLCCompleted(DLCStatusCode withStatus, uint16 index){};
+    virtual void DLCCompleted(DLCStatusCode withStatus, uint16 index);
     // All DLC files has downloaded
-    virtual void AllDLCCompleted(){};
+    virtual void AllDLCCompleted();
 };
 
 class DLCSource;
@@ -59,11 +52,11 @@ public:
     virtual ~DLCSystem();
 
     // Get Index file of all DLCs
-    virtual void InitSystem(const std::string& serverURL, const std::string& _contentPath = "~doc:/downloads/");
+    virtual void InitSystem(const String& serverURL, const FilePath & _contentPath = "~doc:/downloads/");
 
     virtual uint16 GetDLCCount() const;
     // Return -1 if not found
-    virtual uint16 GetDLCIndexByName(const std::string& name) const;
+    virtual uint16 GetDLCIndexByName(const String& name) const;
     // Return NULL if out of bounds
     virtual const DLCSource * GetDLCSource(const uint16 index);
 
@@ -101,16 +94,16 @@ protected:
     void LoadOldDlcs();
     void SaveOldDlcs() const;
     
-    void CheckFileStructureDLC(const std::string& path, DLCSource * _dlc);
+    void CheckFileStructureDLC(const FilePath & path, DLCSource * _dlc);
     
 private:
-    std::string indexURL;
-    std::string indexFilePath;
-    std::string contentPath;
-    std::vector<DLCSystemDelegate*> delegates;
-    std::vector<DLCSource*> dlcs;
-    std::vector<DLCSource*> oldDlcs;
-    std::vector<DLCSource*> queueDLC;
+    String indexURL;
+    FilePath indexFilePath;
+    FilePath contentPath;
+    Vector<DLCSystemDelegate*> delegates;
+    Vector<DLCSource*> dlcs;
+    Vector<DLCSource*> oldDlcs;
+    Vector<DLCSource*> queueDLC;
     
     FileDownloader * currDownloader;
     bool isInited;
@@ -129,8 +122,8 @@ public:
     
 public:
     // Yaml fields
-    std::string name;
-    std::string pathOnServer;
+    String name;
+    String pathOnServer;
     //
     float32 curVersion;
     float32 lastVersion;
@@ -138,19 +131,19 @@ public:
     uint64 size;
     uint64 curSize;
     //
-    std::string description;
+    String description;
 
     // Not Yaml fields
     uint16 index;
     DLCSystem::DLCState state;
     uint16 reconnectCount;
-    std::string fullPath;
+    FilePath fullPath;
 };
     
     
 }
 
-#endif
+#endif//__DAVAENGINE_DLC_SYSTEM_H__
 
 
 
