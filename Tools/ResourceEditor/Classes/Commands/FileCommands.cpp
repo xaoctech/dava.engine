@@ -12,6 +12,7 @@
 #include "../Qt/Scene/SceneDataManager.h"
 
 #include <QFileDialog>
+#include <QMessageBox>
 #include <QString>
 
 using namespace DAVA;
@@ -113,7 +114,24 @@ void CommandNewScene::Execute()
     SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
     if(screen)
     {
-        screen->NewScene();
+		int answer = QMessageBox::question(NULL, "Scene was changed", "Do you want to save changes in the current scene prior to creating new one?",
+										   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel);
+		
+		if (answer == QMessageBox::Cancel)
+		{
+			return;
+		}
+		
+		if(answer == QMessageBox::Yes)
+		{
+			// Execute this command directly to do not affect the Undo/Redo queue.
+			CommandSaveScene* commandSaveScene = new CommandSaveScene();
+			commandSaveScene->Execute();
+			SafeDelete(commandSaveScene);
+		}
+
+		// Can now create the scene.
+		screen->NewScene();
         SceneValidator::Instance()->EnumerateSceneTextures();
     }
 }

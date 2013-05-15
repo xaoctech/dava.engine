@@ -16,6 +16,17 @@
 namespace DAVA
 {
 
+void FileDownloaderDelegate::DownloadGetPacket(uint64 /*size*/)
+{
+}
+
+void FileDownloaderDelegate::DownloadReconnect()
+{
+}
+
+void FileDownloaderDelegate::DownloadComplete(DownloadStatusCode /*status*/)
+{
+}
     
 bool FileDownloader::isCURLInit = false;
 

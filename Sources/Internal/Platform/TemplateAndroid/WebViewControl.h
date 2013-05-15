@@ -1,9 +1,11 @@
 #ifndef __DAVAENGINE_WEBVIEWCONTROL_H__
 #define __DAVAENGINE_WEBVIEWCONTROL_H__
 
+#include "Base/BaseTypes.h"
+#if defined(__DAVAENGINE_ANDROID__)
+
 #include "../../UI/IWebViewControl.h"
 #include "JniExtensions.h"
-#include "Base/BaseTypes.h"
 
 namespace DAVA {
 
@@ -60,5 +62,7 @@ private:
 };
 
 };
+
+#endif //#if defined(__DAVAENGINE_ANDROID__)
 
 #endif /* defined(__DAVAENGINE_WEBVIEWCONTROL_MACOS_H__) */

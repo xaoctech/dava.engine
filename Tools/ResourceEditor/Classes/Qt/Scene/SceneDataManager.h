@@ -112,6 +112,9 @@ protected:
 	// Update the Particle Editor sprites.
 	void UpdateParticleSprites();
 
+	// Apply the default fog settings for the new entity.
+	void ApplyDefaultFogSettings(Landscape* landscape, DAVA::Entity *entity);
+
 protected:
     SceneData *currentScene;
     DAVA::List<SceneData *>scenes;

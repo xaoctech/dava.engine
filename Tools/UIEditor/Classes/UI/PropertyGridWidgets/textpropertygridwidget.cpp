@@ -19,7 +19,6 @@
 #include "StringUtils.h"
 
 using namespace DAVA;
-using namespace PropertyNames;
 
 static const QString TEXT_PROPERTY_BLOCK_NAME = "Text";
 
@@ -45,17 +44,17 @@ void TextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     PROPERTIESMAP propertiesMap = BuildMetadataPropertiesMap();
 
     // All these properties are state-aware.
-    RegisterSpinBoxWidgetForProperty(propertiesMap, FONT_SIZE_PROPERTY_NAME, ui->fontSizeSpinBox, false, true);
-    RegisterPushButtonWidgetForProperty(propertiesMap, FONT_PROPERTY_NAME, ui->fontSelectButton, false, true);
-    RegisterColorButtonWidgetForProperty(propertiesMap, FONT_COLOR_PROPERTY_NAME, ui->textColorPushButton, false, true);
+    RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::FONT_SIZE_PROPERTY_NAME, ui->fontSizeSpinBox, false, true);
+    RegisterPushButtonWidgetForProperty(propertiesMap, PropertyNames::FONT_PROPERTY_NAME, ui->fontSelectButton, false, true);
+    RegisterColorButtonWidgetForProperty(propertiesMap, PropertyNames::FONT_COLOR_PROPERTY_NAME, ui->textColorPushButton, false, true);
     // Shadow properties are also state-aware
-    RegisterSpinBoxWidgetForProperty(propertiesMap, SHADOW_OFFSET_X, ui->shadowOffsetXSpinBox, false, true);
-    RegisterSpinBoxWidgetForProperty(propertiesMap, SHADOW_OFFSET_Y, ui->shadowOffsetYSpinBox, false, true);
-    RegisterColorButtonWidgetForProperty(propertiesMap, SHADOW_COLOR, ui->shadowColorButton, false, true);
+    RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::SHADOW_OFFSET_X, ui->shadowOffsetXSpinBox, false, true);
+    RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::SHADOW_OFFSET_Y, ui->shadowOffsetYSpinBox, false, true);
+    RegisterColorButtonWidgetForProperty(propertiesMap, PropertyNames::SHADOW_COLOR, ui->shadowColorButton, false, true);
     // Localized Text Key is handled through generic Property mechanism, but we need to update the
     // Localization Value widget each time Localization Key is changes.
-    RegisterLineEditWidgetForProperty(propertiesMap, LOCALIZED_TEXT_KEY_PROPERTY_NAME, localizationKeyNameLineEdit, false, true);
-	RegisterComboBoxWidgetForProperty(propertiesMap, TEXT_ALIGN_PROPERTY_NAME, ui->alignComboBox, false, true);
+    RegisterLineEditWidgetForProperty(propertiesMap, PropertyNames::LOCALIZED_TEXT_KEY_PROPERTY_NAME, localizationKeyNameLineEdit, false, true);
+	RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::TEXT_ALIGN_PROPERTY_NAME, ui->alignComboBox, false, true);
 
 	bool enableTextAlignComboBox = (dynamic_cast<UIStaticTextMetadata*>(activeMetadata)	!= NULL||
 									dynamic_cast<UITextFieldMetadata*>(activeMetadata)	!= NULL||

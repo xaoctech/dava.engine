@@ -205,13 +205,15 @@ void SceneDataManager::ReloadScene(const FilePath &scenePathname, const FilePath
         nodesToAdd.clear();
         return;
     }
-    
-    
+
+    Landscape* landscape = EditorScene::GetLandscape(currentScene->GetScene());
     for (int32 i = 0; i < (int32)nodesToAdd.size(); i++)
     {
         scene->ReleaseUserData(nodesToAdd[i].nodeToRemove);
         nodesToAdd[i].parent->RemoveNode(nodesToAdd[i].nodeToRemove);
         nodesToAdd[i].parent->AddNode(nodesToAdd[i].nodeToAdd);
+		ApplyDefaultFogSettings(landscape, nodesToAdd[i].nodeToAdd);
+
         SafeRelease(nodesToAdd[i].nodeToAdd);
     }
     nodesToAdd.clear();
@@ -742,3 +744,23 @@ void SceneDataManager::UpdateParticleSprites()
 	SpritePackerHelper::Instance()->UpdateParticleSprites();
 }
 
+void SceneDataManager::ApplyDefaultFogSettings(Landscape* landscape, DAVA::Entity *entity)
+{
+	if (!entity || !landscape)
+	{
+		return;
+	}
+	
+	// Yuri Coder, 2013/05/13. The default fog settings are taken from Landscape.
+	Vector<Material *> materials;
+	entity->GetDataNodes(materials);
+	for (Vector<Material*>::iterator iter = materials.begin(); iter != materials.end();
+		 iter ++)
+	{
+		Material* material = (*iter);
+
+		material->SetFog(landscape->IsFogEnabled());
+		material->SetFogColor(landscape->GetFogColor());
+		material->SetFogDensity(landscape->GetFogDensity());
+	}
+}
