@@ -1260,6 +1260,9 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SoundComponent.h">
       <Filter>Internal\Scene3D\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Base\GlobalEnum.h">
+      <Filter>Internal\Base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2215,6 +2218,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SoundComponent.cpp">
       <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Base\GlobalEnum.cpp">
+      <Filter>Internal\Base</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
