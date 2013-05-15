@@ -70,11 +70,22 @@ void ParticleLayer3D::DrawLayer(Camera* camera)
 	colors.clear();
 	int32 totalCount = 0;
 
+	// Reserve the memory for vectors to avoid the resize operations. Actually there can be less than count
+	// particles (for Single Particle or Superemitter one), but never more than count.
+	static const int32 POINTS_PER_PARTICLE = 6;
+	verts.reserve(count * POINTS_PER_PARTICLE * 3); // 6 vertices per each particle, 3 coords per vertex.
+	textures.reserve(count * POINTS_PER_PARTICLE * 2); // 6 texture coords per particle, 2 values per texture coord.
+	colors.reserve(count * POINTS_PER_PARTICLE);
+	
 	Particle * current = head;
 	if(current)
 	{
 		renderBatch->GetMaterial()->GetRenderState()->SetTexture(sprite->GetTexture(current->frame));
 	}
+
+	int32 verticesCount = 0;
+	int32 texturesCount = 0;
+	int32 colorsCount = 0;
 
 	while(current != 0)
 	{
@@ -92,58 +103,89 @@ void ParticleLayer3D::DrawLayer(Camera* camera)
 			CalcNonLong(current, topLeft, topRight, botLeft, botRight);
 		}
 
-		verts.push_back(topLeft.x);//0
-		verts.push_back(topLeft.y);
-		verts.push_back(topLeft.z);
+		verts[verticesCount] = topLeft.x;//0
+		verticesCount ++;
+		verts[verticesCount] = topLeft.y;
+		verticesCount ++;
+		verts[verticesCount] = topLeft.z;
+		verticesCount ++;
 
-		verts.push_back(topRight.x);//1
-		verts.push_back(topRight.y);
-		verts.push_back(topRight.z);
+		verts[verticesCount] = topRight.x;//1
+		verticesCount ++;
+		verts[verticesCount] = topRight.y;
+		verticesCount ++;
+		verts[verticesCount] = topRight.z;
+		verticesCount ++;
 
-		verts.push_back(botLeft.x);//2
-		verts.push_back(botLeft.y);
-		verts.push_back(botLeft.z);
+		verts[verticesCount] = botLeft.x;//2
+		verticesCount ++;
+		verts[verticesCount] = botLeft.y;
+		verticesCount ++;
+		verts[verticesCount] = botLeft.z;
+		verticesCount ++;
 
-		verts.push_back(botLeft.x);//2
-		verts.push_back(botLeft.y);
-		verts.push_back(botLeft.z);
+		verts[verticesCount] = botLeft.x;//2
+		verticesCount ++;
+		verts[verticesCount] = botLeft.y;
+		verticesCount ++;
+		verts[verticesCount] = botLeft.z;
+		verticesCount ++;
 
-		verts.push_back(topRight.x);//1
-		verts.push_back(topRight.y);
-		verts.push_back(topRight.z);
+		verts[verticesCount] = topRight.x;//1
+		verticesCount ++;
+		verts[verticesCount] = topRight.y;
+		verticesCount ++;
+		verts[verticesCount] = topRight.z;
+		verticesCount ++;
 
-		verts.push_back(botRight.x);//3
-		verts.push_back(botRight.y);
-		verts.push_back(botRight.z);
+		verts[verticesCount] = botRight.x;//3
+		verticesCount ++;
+		verts[verticesCount] = botRight.y;
+		verticesCount ++;
+		verts[verticesCount] = botRight.z;
+		verticesCount ++;
 
 		float32 *pT = sprite->GetTextureVerts(current->frame);
 
-		textures.push_back(pT[0]);
-		textures.push_back(pT[1]);
+		textures[texturesCount] = pT[0];
+		texturesCount ++;
+		textures[texturesCount] = pT[1];
+		texturesCount ++;
 
-		textures.push_back(pT[2]);
-		textures.push_back(pT[3]);
+		textures[texturesCount] = pT[2];
+		texturesCount ++;
+		textures[texturesCount] = pT[3];
+		texturesCount ++;
 
-		textures.push_back(pT[4]);
-		textures.push_back(pT[5]);
+		textures[texturesCount] = pT[4];
+		texturesCount ++;
+		textures[texturesCount] = pT[5];
+		texturesCount ++;
 
-		textures.push_back(pT[4]);
-		textures.push_back(pT[5]);
+		textures[texturesCount] = pT[4];
+		texturesCount ++;
+		textures[texturesCount] = pT[5];
+		texturesCount ++;
 
-		textures.push_back(pT[2]);
-		textures.push_back(pT[3]);
+		textures[texturesCount] = pT[2];
+		texturesCount ++;
+		textures[texturesCount] = pT[3];
+		texturesCount ++;
 
-		textures.push_back(pT[6]);
-		textures.push_back(pT[7]);
+		textures[texturesCount] = pT[6];
+		texturesCount ++;
+		textures[texturesCount] = pT[7];
+		texturesCount ++;
 
 		// Yuri Coder, 2013/04/03. Need to use drawColor here instead of just colot
 		// to take colorOverlife property into account.
 		uint32 color = (((uint32)(current->drawColor.a*255.f))<<24) |  (((uint32)(current->drawColor.b*255.f))<<16) |
 			(((uint32)(current->drawColor.g*255.f))<<8) | ((uint32)(current->drawColor.r*255.f));
-		for(int32 i = 0; i < 6; ++i)
+		for(int32 i = 0; i < POINTS_PER_PARTICLE; ++i)
 		{
-			colors.push_back(color);
+			colors[i + colorsCount] = color;
 		}
+		colorsCount += POINTS_PER_PARTICLE;
 
 		totalCount++;
 		current = TYPE_PARTICLES == type ? current->next : 0;
