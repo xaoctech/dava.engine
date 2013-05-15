@@ -31,6 +31,7 @@ protected:
 
 class CommandSaveScene: public Command
 {
+	friend class CommandNewScene;
 public:	
 	CommandSaveScene();
     

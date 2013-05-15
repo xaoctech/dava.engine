@@ -3,8 +3,6 @@
 #include "PropertiesGridController.h"
 #include "PropertyNames.h"
 
-using namespace PropertyNames;
-
 static const QString RECT_PROPERTY_BLOCK_NAME = "Rect";
 
 RectPropertyGridWidget::RectPropertyGridWidget(QWidget *parent) :
@@ -78,12 +76,16 @@ void RectPropertyGridWidget::HandleChangePropertySucceeded(const QString& proper
 	//If one of the align option state is changed we should check it and disable/enable appropriate Relative postion or size spinbox(es)
     BasePropertyGridWidget::HandleChangePropertySucceeded(propertyName);
 	
-	if (propertyName == LEFT_ALIGN_ENABLED || propertyName == RIGHT_ALIGN_ENABLED || propertyName == HCENTER_ALIGN_ENABLED)
+	if (propertyName == PropertyNames::LEFT_ALIGN_ENABLED ||
+		propertyName == PropertyNames::RIGHT_ALIGN_ENABLED ||
+		propertyName == PropertyNames::HCENTER_ALIGN_ENABLED)
 	{
 		UpdateHorizontalWidgetsState();
 	}
 
-	if (propertyName == TOP_ALIGN_ENABLED || propertyName == BOTTOM_ALIGN_ENABLED || propertyName == VCENTER_ALIGN_ENABLED)
+	if (propertyName == PropertyNames::TOP_ALIGN_ENABLED ||
+		propertyName == PropertyNames::BOTTOM_ALIGN_ENABLED ||
+		propertyName == PropertyNames::VCENTER_ALIGN_ENABLED)
 	{
 		UpdateVerticalWidgetsState();
 	}
@@ -92,9 +94,9 @@ void RectPropertyGridWidget::HandleChangePropertySucceeded(const QString& proper
 void RectPropertyGridWidget::UpdateHorizontalWidgetsState()
 {
 	// Get horizontal align properties values
-	bool leftAlignEnabled = BasePropertyGridWidget::GetPropertyBooleanValue(LEFT_ALIGN_ENABLED);
-	bool hcenterAlignEnabled = BasePropertyGridWidget::GetPropertyBooleanValue(HCENTER_ALIGN_ENABLED);
-	bool rightAlignEnabled = BasePropertyGridWidget::GetPropertyBooleanValue(RIGHT_ALIGN_ENABLED);
+	bool leftAlignEnabled = BasePropertyGridWidget::GetPropertyBooleanValue(PropertyNames::LEFT_ALIGN_ENABLED);
+	bool hcenterAlignEnabled = BasePropertyGridWidget::GetPropertyBooleanValue(PropertyNames::HCENTER_ALIGN_ENABLED);
+	bool rightAlignEnabled = BasePropertyGridWidget::GetPropertyBooleanValue(PropertyNames::RIGHT_ALIGN_ENABLED);
 		
 	// Change relative X position spinbox state according to align properties
 	bool disableRelativeX = leftAlignEnabled || hcenterAlignEnabled || rightAlignEnabled;
@@ -109,9 +111,9 @@ void RectPropertyGridWidget::UpdateHorizontalWidgetsState()
 void RectPropertyGridWidget::UpdateVerticalWidgetsState()
 {
 	// Get vertical align properties values
-	bool topAlignEnabled = BasePropertyGridWidget::GetPropertyBooleanValue(TOP_ALIGN_ENABLED);
-	bool vcenterAlignEnabled = BasePropertyGridWidget::GetPropertyBooleanValue(VCENTER_ALIGN_ENABLED);
-	bool bottomAlignEnabled = BasePropertyGridWidget::GetPropertyBooleanValue(BOTTOM_ALIGN_ENABLED);
+	bool topAlignEnabled = BasePropertyGridWidget::GetPropertyBooleanValue(PropertyNames::TOP_ALIGN_ENABLED);
+	bool vcenterAlignEnabled = BasePropertyGridWidget::GetPropertyBooleanValue(PropertyNames::VCENTER_ALIGN_ENABLED);
+	bool bottomAlignEnabled = BasePropertyGridWidget::GetPropertyBooleanValue(PropertyNames::BOTTOM_ALIGN_ENABLED);
 		
 	// Change relative Y position spinbox state according to align properties
 	bool disableRelativeY = topAlignEnabled || vcenterAlignEnabled || bottomAlignEnabled;

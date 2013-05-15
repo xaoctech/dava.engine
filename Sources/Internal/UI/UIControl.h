@@ -1099,9 +1099,7 @@ public:
 	 */
 	virtual bool IsPointInside(const Vector2 &point, bool expandWithFocus = false);
 
-
-    
-    virtual bool IsLostFocusAllowed(UIControl *newFocus) const;
+    virtual bool IsLostFocusAllowed(UIControl *newFocus);
 
     virtual void SystemOnFocusLost(UIControl *newFocus);
 
