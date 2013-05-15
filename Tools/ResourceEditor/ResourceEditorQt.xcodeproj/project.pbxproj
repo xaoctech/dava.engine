@@ -15,6 +15,9 @@
 		02E9E442173965B800C501BC /* SceneTree.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02E9E43C173965B800C501BC /* SceneTree.cpp */; };
 		02E9E443173965B800C501BC /* SceneTreeItem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02E9E43E173965B800C501BC /* SceneTreeItem.cpp */; };
 		02E9E444173965B800C501BC /* SceneTreeModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02E9E440173965B800C501BC /* SceneTreeModel.cpp */; };
+		02F6404C173A8F170053F038 /* SceneTree_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02F64049173A8F170053F038 /* SceneTree_moc.cpp */; };
+		02F6404D173A8F170053F038 /* SceneTreeItem_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02F6404A173A8F170053F038 /* SceneTreeItem_moc.cpp */; };
+		02F6404E173A8F170053F038 /* SceneTreeModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02F6404B173A8F170053F038 /* SceneTreeModel_moc.cpp */; };
 		0C6D4628EE0B0D1479A20551 /* AGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = C6766F86E49E9C8701C8E637 /* AGL.framework */; };
 		1735C427169DE63D001E0468 /* ParticlesEditorSceneDataHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1735C423169DE63D001E0468 /* ParticlesEditorSceneDataHelper.cpp */; };
 		1735C428169DE63D001E0468 /* ParticlesEditorSceneModelHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1735C425169DE63D001E0468 /* ParticlesEditorSceneModelHelper.cpp */; };
@@ -511,6 +514,9 @@
 		02E9E43F173965B800C501BC /* SceneTreeItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneTreeItem.h; sourceTree = "<group>"; };
 		02E9E440173965B800C501BC /* SceneTreeModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneTreeModel.cpp; sourceTree = "<group>"; };
 		02E9E441173965B800C501BC /* SceneTreeModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneTreeModel.h; sourceTree = "<group>"; };
+		02F64049173A8F170053F038 /* SceneTree_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneTree_moc.cpp; sourceTree = "<group>"; };
+		02F6404A173A8F170053F038 /* SceneTreeItem_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneTreeItem_moc.cpp; sourceTree = "<group>"; };
+		02F6404B173A8F170053F038 /* SceneTreeModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneTreeModel_moc.cpp; sourceTree = "<group>"; };
 		1735C423169DE63D001E0468 /* ParticlesEditorSceneDataHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticlesEditorSceneDataHelper.cpp; sourceTree = "<group>"; };
 		1735C424169DE63D001E0468 /* ParticlesEditorSceneDataHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticlesEditorSceneDataHelper.h; sourceTree = "<group>"; };
 		1735C425169DE63D001E0468 /* ParticlesEditorSceneModelHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticlesEditorSceneModelHelper.cpp; sourceTree = "<group>"; };
@@ -1484,6 +1490,17 @@
 			);
 			name = DockSceneTree;
 			path = Classes/Qt/DockSceneTree;
+			sourceTree = "<group>";
+		};
+		02F64048173A8F170053F038 /* DockSceneTree */ = {
+			isa = PBXGroup;
+			children = (
+				02F64049173A8F170053F038 /* SceneTree_moc.cpp */,
+				02F6404A173A8F170053F038 /* SceneTreeItem_moc.cpp */,
+				02F6404B173A8F170053F038 /* SceneTreeModel_moc.cpp */,
+			);
+			name = DockSceneTree;
+			path = _GeneratedQt/DockSceneTree;
 			sourceTree = "<group>";
 		};
 		05596AB53D8D521C69802C27 /* ResourceEditorQt */ = {
@@ -2953,6 +2970,7 @@
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
 			isa = PBXGroup;
 			children = (
+				02F64048173A8F170053F038 /* DockSceneTree */,
 				494A7CE1172A9500005D7C7F /* Commands */,
 				E88F3000171C85A000510B78 /* DockSceneInfo */,
 				0297F318170B40D100627F78 /* DockMaterialViewOptions */,
@@ -3758,6 +3776,9 @@
 				02E9E442173965B800C501BC /* SceneTree.cpp in Build Sources */,
 				02E9E443173965B800C501BC /* SceneTreeItem.cpp in Build Sources */,
 				02E9E444173965B800C501BC /* SceneTreeModel.cpp in Build Sources */,
+				02F6404C173A8F170053F038 /* SceneTree_moc.cpp in Build Sources */,
+				02F6404D173A8F170053F038 /* SceneTreeItem_moc.cpp in Build Sources */,
+				02F6404E173A8F170053F038 /* SceneTreeModel_moc.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

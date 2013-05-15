@@ -64,9 +64,10 @@ public:
 	void ChildRemove(int i);
 
 signals:
+	void ValueChanged();
 	void ChildAdded(const QString &key, QtPropertyData *data);
 	void ChildRemoving(const QString &key, QtPropertyData *data);
-    
+
 protected:
 	QVariant curValue;
 	QIcon curIcon;
