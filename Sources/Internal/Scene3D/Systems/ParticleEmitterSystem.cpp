@@ -40,15 +40,11 @@ void ParticleEmitterSystem::Update(float32 timeElapsed)
 	uint32 size = emitters.size();
 	for(uint32 i = 0; i < size; ++i)
 	{
-        uint32 flags = emitters[i]->GetFlags();
-        if ((flags & RenderObject::VISIBILITY_CRITERIA) == RenderObject::VISIBILITY_CRITERIA)
-        {
-            emitters[i]->Update(timeElapsed);
-        }
+		
+		// Yuri Coder, 2013/05/15. Have to update all emitters, even non-visible ones because
+		// of DF-1140 issue.
+        emitters[i]->Update(timeElapsed);
 	}
 }
-
-
-
 
 }
