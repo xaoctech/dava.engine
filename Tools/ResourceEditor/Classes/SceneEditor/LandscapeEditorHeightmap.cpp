@@ -630,7 +630,11 @@ void LandscapeEditorHeightmap::CreateHeightmapUndo()
 {
 	if (oldHeightmap)
 	{
-		CommandsManager::Instance()->ExecuteAndRelease(new CommandDrawHeightmap(oldHeightmap, GetHeightmap(), GetUpdatedRect()));
+		Rect updatedRect = GetUpdatedRect();
+		if(!((updatedRect.x > GetHeightmap()->Size()) || (updatedRect.y > GetHeightmap()->Size())))
+		{
+			CommandsManager::Instance()->ExecuteAndRelease(new CommandDrawHeightmap(oldHeightmap, GetHeightmap(), GetUpdatedRect()));
+		}
 		SafeRelease(oldHeightmap);
 	}
 }
