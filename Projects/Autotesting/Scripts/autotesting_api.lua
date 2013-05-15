@@ -47,8 +47,22 @@ function Assert(description, func, ...)
 	if not status then
 		-- Some error during test step
 		OnError(err)
-	elseif not err then
-		OnError("Assertion failed, expected result not equal to actual")
+	elseif err ~= true then
+		OnError("Assertion failed, expect true, but function return "..tostring(err))
+	end
+end
+
+function AssertNot(description, func, ...)
+    autotestingSystem:OnStepStart(description)
+	Yield()
+	local status, err = copcall(func, ...)
+
+	Yield()
+	if not status then
+		-- Some error during test step
+		OnError(err)
+	elseif not ((err == false) or (err == nil)) then
+		OnError("Assertion failed, expect false, but function return "..tostring(err))
 	end
 end
 
@@ -255,7 +269,7 @@ end
 function IsVisible(element, background)
 	Yield()
 	local control = autotestingSystem:FindControl(element)
-	if control then
+	if control and control:GetVisible() then
 		Yield()
 		if background then
 			local back = autotestingSystem:FindControl(background)
