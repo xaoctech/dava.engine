@@ -232,12 +232,11 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(rect.width(), rect.height());
 		params.leftMargin = rect.left;
 		params.topMargin = rect.top;
+		params.gravity = Gravity.LEFT | Gravity.TOP;
 
 		editText.setPadding(0, 0, 0, 0);
 		
 		editText.setSingleLine(true);
-		editText.setGravity(Gravity.BOTTOM);
-		//editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, 20);
 		int fontSize = (int)(rect.height() / 1.45f);
 		editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, fontSize);
 
