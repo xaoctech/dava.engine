@@ -25,7 +25,6 @@ using namespace DAVA;
 UIWebView::UIWebView()
 {
 	webViewControl = new WebViewControl();
-	isInitiatedByUser = true;
 }
 
 UIWebView::~UIWebView()
@@ -45,16 +44,8 @@ void UIWebView::SetDelegate(IUIWebViewDelegate* delegate)
 	webViewControl->SetDelegate(delegate, this);
 }
 
-bool UIWebView::UpdateInitiatedByUserFlag()
-{
-    bool retValue = isInitiatedByUser;
-    isInitiatedByUser = true;
-    return retValue;
-}
-
 void UIWebView::OpenURL(const String& urlToOpen)
 {
-	isInitiatedByUser = false;
 	this->webViewControl->OpenURL(urlToOpen);
 }
 
