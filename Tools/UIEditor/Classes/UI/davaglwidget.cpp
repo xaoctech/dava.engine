@@ -94,8 +94,6 @@ void DavaGLWidget::paintEvent(QPaintEvent *)
 void DavaGLWidget::resizeEvent(QResizeEvent *e)
 {
 	QWidget::resizeEvent(e);
-
-	QPoint newPosition = mapTo(parentWidget(), QPoint(0, 0));
 	DAVA::QtLayer::Instance()->Resize(e->size().width(), e->size().height());
 
 	//YZ fix load resource

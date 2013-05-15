@@ -13,6 +13,18 @@
 namespace DAVA
 {
 
+void DLCSystemDelegate::InitCompleted(DLCStatusCode /*withStatus*/)
+{
+}
+
+void DLCSystemDelegate::DLCCompleted(DLCStatusCode /*withStatus*/, uint16 /*index*/)
+{
+}
+	
+void DLCSystemDelegate::AllDLCCompleted()
+{
+}
+
 DLCSystem::DLCSystem()
     : Singleton<DLCSystem>()
     , indexURL("")

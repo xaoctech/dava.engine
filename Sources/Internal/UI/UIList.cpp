@@ -38,6 +38,23 @@ namespace DAVA
 {
 	REGISTER_CLASS(UIList);
 	
+int32 UIListDelegate::CellWidth(UIList* /*list*/, int32 /*index*/)
+{
+	return 20;
+};
+
+int32 UIListDelegate::CellHeight(UIList* /*list*/, int32 /*index*/)
+{
+	return 20;
+};
+
+void UIListDelegate::OnCellSelected(UIList* /*forList*/, UIListCell* /*selectedCell*/)
+{
+};
+
+void UIListDelegate::SaveToYaml(UIList* /*forList*/, YamlNode* /*node*/)
+{
+};
 	
 UIList::UIList(const Rect &rect, eListOrientation requiredOrientation, bool rectInAbsoluteCoordinates/* = FALSE*/)
 	:	UIControl(rect, rectInAbsoluteCoordinates)

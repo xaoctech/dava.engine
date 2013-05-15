@@ -140,7 +140,7 @@ public:
      \brief Get rendering mode. 
      \returns rendering mode of landscape.
      */
-    inline const eTiledShaderMode GetTiledShaderMode();
+    inline eTiledShaderMode GetTiledShaderMode();
 
     
     /**
@@ -234,8 +234,7 @@ public:
      */
     const Vector2 & GetTextureTiling(eTextureLevel level); 
 
-    
-    const void SetTileColor(eTextureLevel level, const Color & color);
+    void SetTileColor(eTextureLevel level, const Color & color);
     const Color & GetTileColor(eTextureLevel level);
 
     /**
@@ -425,7 +424,7 @@ public:
 };
 
     
-inline const Landscape::eTiledShaderMode Landscape::GetTiledShaderMode()
+inline Landscape::eTiledShaderMode Landscape::GetTiledShaderMode()
 {
     return (eTiledShaderMode)tiledShaderMode;
 }

@@ -93,7 +93,7 @@ public:
 		value = _value;
 	}	
 
-	const T & GetValue(float32 t) { return value; }
+	const T & GetValue(float32 /*t*/) { return value; }
 	PropertyLine<T>* Clone()
 	{	
 		if (this == 0)return 0;

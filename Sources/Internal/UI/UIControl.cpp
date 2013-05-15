@@ -2382,7 +2382,7 @@ namespace DAVA
 		return debugDrawColor;
 	}
     
-    bool UIControl::IsLostFocusAllowed( UIControl *newFocus ) const
+    bool UIControl::IsLostFocusAllowed( UIControl *newFocus )
     {
         return true;
     }

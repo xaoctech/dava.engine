@@ -142,7 +142,7 @@ public:
         \brief Return tag for this object
         \returns tag for this object
      */
-    inline const int32 GetTag(); 
+    inline int32 GetTag(); 
 
 	
 	// virtual updates
@@ -418,7 +418,7 @@ inline const String & Entity::GetName()
     return name;
 }
 
-inline const int32 Entity::GetTag() 
+inline int32 Entity::GetTag() 
 { 
     return tag; 
 };;
