@@ -552,7 +552,7 @@ String FilePath::GetFrameworkPath()
 }
 
 
-String FilePath::GetFrameworkPathForPrefix( const String &typePrefix, const ePathType pType)
+String FilePath::GetFrameworkPathForPrefix( const String &typePrefix, const ePathType pType) const
 {
     DVASSERT(!typePrefix.empty());
     
