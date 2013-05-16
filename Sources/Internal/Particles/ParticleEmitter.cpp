@@ -43,7 +43,8 @@ namespace DAVA
 {
 
 #define PARTICLE_EMITTER_DEFAULT_LIFE_TIME 100.0f
-
+#define PARTICLE_EMITTER_DEFERRED_UPDATE_INTERVAL 0.1f // in seconds
+	
 REGISTER_CLASS(ParticleEmitter);
 
 ParticleEmitter::ParticleEmitter()
@@ -52,6 +53,7 @@ ParticleEmitter::ParticleEmitter()
 	Cleanup(false);
 
 	bbox = AABBox3(Vector3(), Vector3());
+	deferredTimeElapsed = 0.0f;
 }
 
 ParticleEmitter::~ParticleEmitter()
@@ -276,6 +278,16 @@ void ParticleEmitter::DoRestart(bool isDeleteAllParticles)
 	repeatCount = 0;
 }
 
+void ParticleEmitter::DeferredUpdate(float32 timeElapsed)
+{
+	deferredTimeElapsed += timeElapsed;
+	if (deferredTimeElapsed > PARTICLE_EMITTER_DEFERRED_UPDATE_INTERVAL)
+	{
+		Update(deferredTimeElapsed);
+		deferredTimeElapsed = 0.0f;
+	}
+}
+	
 void ParticleEmitter::Update(float32 timeElapsed)
 {
 	timeElapsed *= playbackSpeed;
