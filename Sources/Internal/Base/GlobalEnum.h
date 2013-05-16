@@ -117,7 +117,7 @@ typename GlobalEnum<T>::ETOSMap& GlobalEnum<T>::GetMap()
 	return etosMap;
 }
 
-#define ENUM_DECLARE(eType) template<> static void GlobalEnum<eType>::RegisterAll()
+#define ENUM_DECLARE(eType) template<> void GlobalEnum<eType>::RegisterAll()
 #define ENUM_ADD(eValue) Register(eValue, #eValue)
 #define ENUM_ADD_DESCR(eValue, eDescr) Register(eValue, eDescr)
 
