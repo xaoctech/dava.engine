@@ -187,7 +187,6 @@
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.cpp" />
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.cpp" />
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.cpp" />
-    <ClCompile Include="..\..\Sources\Tools\CommandLine\EditorCommandLineParser.cpp" />
     <ClCompile Include="..\..\Sources\Tools\TextureCompression\DXTConverter.cpp" />
     <ClCompile Include="..\..\Sources\Tools\TextureCompression\PVRConverter.cpp" />
     <ClCompile Include="..\..\Sources\Tools\TexturePacker\CommandLineParser.cpp" />
@@ -362,6 +361,7 @@
     <ClCompile Include="Classes\EditorScene.cpp" />
     <ClCompile Include="Classes\FrameworkMain.cpp" />
     <ClCompile Include="Classes\GameCore.cpp" />
+    <ClCompile Include="Classes\ImageTools\ImageTools.cpp" />
     <ClCompile Include="Classes\LandscapeEditor\EditorHeightmap.cpp" />
     <ClCompile Include="Classes\LandscapeEditor\EditorLandscape.cpp" />
     <ClCompile Include="Classes\LandscapeEditor\LandscapeRenderer.cpp" />
@@ -657,7 +657,6 @@
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.h" />
-    <ClInclude Include="..\..\Sources\Tools\CommandLine\EditorCommandLineParser.h" />
     <ClInclude Include="..\..\Sources\Tools\TextureCompression\DXTConverter.h" />
     <ClInclude Include="..\..\Sources\Tools\TextureCompression\PVRConverter.h" />
     <ClInclude Include="..\..\Sources\Tools\TexturePacker\CommandLineParser.h" />
@@ -910,6 +909,7 @@
     <ClInclude Include="Classes\EditorScene.h" />
     <ClInclude Include="Classes\FrameworkMain.h" />
     <ClInclude Include="Classes\GameCore.h" />
+    <ClInclude Include="Classes\ImageTools\ImageTools.h" />
     <ClInclude Include="Classes\LandscapeEditor\EditorHeightmap.h" />
     <ClInclude Include="Classes\LandscapeEditor\EditorLandscape.h" />
     <ClInclude Include="Classes\LandscapeEditor\LandscapeRenderer.h" />

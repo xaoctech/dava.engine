@@ -163,9 +163,6 @@
     <Filter Include="Tools">
       <UniqueIdentifier>{45b2cb13-419f-47b9-99d2-89b20886f0da}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Tools\CommandLine">
-      <UniqueIdentifier>{3bc1fcf3-f004-4644-910f-2452a24d08f8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Tools\TextureCompression">
       <UniqueIdentifier>{205dab52-3e67-44b6-bbac-6f311418ba44}</UniqueIdentifier>
     </Filter>
@@ -174,6 +171,9 @@
     </Filter>
     <Filter Include="Classes\Qt\SpritePacker">
       <UniqueIdentifier>{7ef6c442-b117-4fd7-9727-2ca137b19620}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\ImageTools">
+      <UniqueIdentifier>{87b27357-f433-4f97-b346-3d4fd06bca11}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1401,9 +1401,6 @@
     <ClCompile Include="..\..\Sources\Tools\TextureCompression\PVRConverter.cpp">
       <Filter>Tools\TextureCompression</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Tools\CommandLine\EditorCommandLineParser.cpp">
-      <Filter>Tools\CommandLine</Filter>
-    </ClCompile>
     <ClCompile Include="_GeneratedQt\Commands\CommandSignals_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
@@ -1697,6 +1694,9 @@
     </ClCompile>
     <ClCompile Include="Classes\ParticlesEditorQT\Nodes\InnerEmitterParticleEditorNode.cpp">
       <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\ImageTools\ImageTools.cpp">
+      <Filter>Classes\ImageTools</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2945,9 +2945,6 @@
     <ClInclude Include="..\..\Sources\Tools\TextureCompression\PVRConverter.h">
       <Filter>Tools\TextureCompression</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Tools\CommandLine\EditorCommandLineParser.h">
-      <Filter>Tools\CommandLine</Filter>
-    </ClInclude>
     <ClInclude Include="_GeneratedQt\ui_CustomColorsView.h">
       <Filter>QtGenerated</Filter>
     </ClInclude>
@@ -2986,6 +2983,9 @@
     </ClInclude>
     <ClInclude Include="Classes\ParticlesEditorQT\Nodes\InnerEmitterParticleEditorNode.h">
       <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ImageTools\ImageTools.h">
+      <Filter>Classes\ImageTools</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
