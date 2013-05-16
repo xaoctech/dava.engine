@@ -1698,6 +1698,9 @@
     <ClCompile Include="Classes\ParticlesEditorQT\Nodes\InnerEmitterParticleEditorNode.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\EntityOwnerPropertyHelper.cpp">
+      <Filter>Classes\SceneEditor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -2986,6 +2989,9 @@
     </ClInclude>
     <ClInclude Include="Classes\ParticlesEditorQT\Nodes\InnerEmitterParticleEditorNode.h">
       <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\EntityOwnerPropertyHelper.h">
+      <Filter>Classes\SceneEditor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
