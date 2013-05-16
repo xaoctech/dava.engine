@@ -308,7 +308,6 @@ void AutotestingSystem::ClearTestInDB()
 KeyedArchive *AutotestingSystem::FindOrInsertRunArchive(MongodbUpdateObject* dbUpdateObject, const String &runId)
 {
 	Logger::Debug("AutotestingSystem::FindOrInsertRunArchive %s", runId.c_str());
-
 	
 	if(!dbClient->FindObjectByKey(runId, dbUpdateObject))
 	{
@@ -317,8 +316,10 @@ KeyedArchive *AutotestingSystem::FindOrInsertRunArchive(MongodbUpdateObject* dbU
 	}
 	dbUpdateObject->LoadData();
 
+	Logger::Debug("AutotestingSystem::FindOrInsertRunArchive finish");
 	return dbUpdateObject->GetData();
 }
+
 KeyedArchive *AutotestingSystem::FindOrInsertTestArchive(MongodbUpdateObject* dbUpdateObject, const String &testId)
 {
     Logger::Debug("AutotestingSystem::FindOrInsertTestArchive testId=%s", testId.c_str());
@@ -427,6 +428,7 @@ KeyedArchive *AutotestingSystem::FindOrInsertTestArchive(MongodbUpdateObject* db
     SafeRelease(groupArchive);
     SafeRelease(platformArchive);
     
+	Logger::Debug("AutotestingSystem::FindOrInsertTestArchive finish");
     return currentTestArchive;
 }
    
@@ -622,6 +624,7 @@ KeyedArchive *AutotestingSystem::FindOrInsertTestStepArchive(KeyedArchive *testA
     currentTestStepArchive = testStepsArchive->GetArchive(stepId);
     SafeRelease(testStepsArchive);
     
+	Logger::Debug("AutotestingSystem::FindOrInsertTestStepArchive finish");
     return currentTestStepArchive;
 }
 
@@ -705,6 +708,7 @@ KeyedArchive *AutotestingSystem::FindOrInsertTestStepLogEntryArchive(KeyedArchiv
     currentTestStepLogEntryArchive = testStepLogArchive->GetArchive(logId);
     SafeRelease(testStepLogArchive);
     
+	Logger::Debug("AutotestingSystem::FindOrInsertTestStepLogEntryArchive finish");
     return currentTestStepLogEntryArchive;
 }
     
@@ -718,9 +722,9 @@ uint64 AutotestingSystem::GetCurrentTimeMS()
 // Multiplayer API
 void AutotestingSystem::WriteState(const String & device, const String & state)
 {
-	Logger::Debug("AutotestingSystem::WriteState device=%s state=%s", device.c_str(), state.c_str());
-
 	String runId = Format("%u",testsDate);
+	Logger::Debug("AutotestingSystem::WriteState device=%s state=%s, runId = %s", device.c_str(), state.c_str(), runId.c_str());
+
 
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
 	KeyedArchive* currentRunArchive = FindOrInsertRunArchive(dbUpdateObject, runId);
@@ -737,13 +741,16 @@ void AutotestingSystem::WriteState(const String & device, const String & state)
 	SafeRelease(multiplayerArchive);
 	dbUpdateObject->SaveToDB(dbClient);
 	SafeRelease(dbUpdateObject);
+
+	Logger::Debug("AutotestingSystem::WriteState finish");
 }
 
 String AutotestingSystem::ReadState(const String & device)
 {
-	Logger::Debug("AutotestingSystem::ReadState device=%s", device.c_str());
-	
 	String runId = Format("%u",testsDate);
+
+	Logger::Debug("AutotestingSystem::ReadState device=%s, runId = %s", device.c_str(), runId.c_str());
+	
 
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
 	KeyedArchive* currentRunArchive = FindOrInsertRunArchive(dbUpdateObject, runId);
@@ -761,6 +768,7 @@ String AutotestingSystem::ReadState(const String & device)
 	}
 
 	SafeRelease(dbUpdateObject);
+	Logger::Debug("AutotestingSystem::ReadState finish");
 	return result;
 }
 
@@ -785,6 +793,7 @@ void AutotestingSystem::WriteCommand(const String & device, const String & comma
 	SafeRelease(multiplayerArchive);
 	dbUpdateObject->SaveToDB(dbClient);
 	SafeRelease(dbUpdateObject);
+	Logger::Debug("AutotestingSystem::WriteCommand finish");
 }
 
 String AutotestingSystem::ReadCommand(const String & device)
@@ -810,6 +819,8 @@ String AutotestingSystem::ReadCommand(const String & device)
 	}
 
 	SafeRelease(dbUpdateObject);
+	
+	Logger::Debug("AutotestingSystem::ReadCommand finish");
 	return result;
 }
 
@@ -1041,13 +1052,15 @@ bool AutotestingSystem::SaveToDB(MongodbUpdateObject *dbUpdateObject)
 	Logger::Debug("AutotestingSystem::SaveToDB");
 
     bool ret = dbUpdateObject->SaveToDB(dbClient);
-    return ret;
 
-	/* FOR DEBBUGING
     if(!ret)
     {
         Logger::Error("AutotestingSystem::SaveToDB failed");
     }
+
+	Logger::Debug("AutotestingSystem::SaveToDB finish");
+	return ret;
+	/*
     else
     {
 
@@ -1137,6 +1150,7 @@ void AutotestingSystem::Log(const String &level, const String &message)
 
     SaveToDB(dbUpdateObject);
 	SafeRelease(dbUpdateObject);
+	Logger::Debug("AutotestingSystem::Log finish");
 	//uint64 finishTime = SystemTimer::Instance()->AbsoluteMS();
 	//Logger::Debug("AutotestingSystem::Log FINISH start time %d - summary time %d", startTime, finishTime - startTime);
 }

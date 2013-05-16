@@ -453,6 +453,9 @@ bool MongodbClient::DBObjectToKeyedArchive(MongodbObject* dbObject, KeyedArchive
         
         return true;
     }
+
+	DVASSERT(false);
+
     return false;
 }    
 

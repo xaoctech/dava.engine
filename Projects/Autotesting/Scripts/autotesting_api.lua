@@ -131,35 +131,31 @@ end
 ----------------------------------------------------------------------------------------------------
 -- mark current device as ready to work in DB
 function ReadState(name)
-	Yield()
 	return autotestingSystem:ReadState(name)
 end
 
 function ReadCommand(name)
-	Yield()
 	return autotestingSystem:ReadCommand(name)
 end
 
 function WriteState(name, state)
-	Yield()
 	autotestingSystem:WriteState(name, state)
-	
-	Yield()
-	local afterWrite = ReadState(name)
+
+	local afterWrite = autotestingSystem:ReadState(name)
 	if state ~= afterWrite then
 		OnError("After writing: expected state '"..state.."' on device '"..name.."', actual:"..afterWrite)
 	end
+	Yield()
 end
 
 function WriteCommand(name, command)
-	Yield()
 	autotestingSystem:WriteCommand(name, command)
-	
-	Yield()
-	local afterWrite = ReadCommand(name)
+
+	local afterWrite = autotestingSystem:ReadCommand(name)
 	if command ~= afterWrite then
 		OnError("After writing: expected command '"..command.."' on device '"..name.."', actual:"..afterWrite)
 	end
+	Yield()
 end
 
 function InitializeDevice(name)
