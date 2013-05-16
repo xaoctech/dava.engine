@@ -136,7 +136,7 @@ float32 Camera::GetFOV() const
 
 float32 Camera::GetAspect() const
 {
-    return aspect;
+    return 1.f/aspect;
 }
 
 float32 Camera::GetZNear() const
