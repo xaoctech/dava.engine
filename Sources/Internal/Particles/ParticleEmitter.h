@@ -252,6 +252,16 @@ public:
 		\param[in] timeElapsed time in seconds elapsed from previous update
 	 */
 	void Update(float32 timeElapsed);
+	
+	/**
+	 \brief Function to perform deferred update for the Particle Emitter.
+	 This function accumulates update time and calls Update() if the accumulated time is
+	 more then PARTICLE_EMITTER_DEFERRED_UPDATE_INTERVAL.
+	 Call this function in case you are using ParticleEmitter directly and it is not visible.
+	 \param[in] timeElapsed time in seconds elapsed from previous update
+	 */
+	void DeferredUpdate(float32 timeElapsed);
+	
 	/**	
 		\brief function to draw particle emitter
 		If you using ParticleEmitter directly you should call this function to draw emitter.
@@ -379,6 +389,8 @@ protected:
 	float32 playbackSpeed;
 
 	Vector3 initialTranslationVector;
+
+	float32 deferredTimeElapsed;
 
 public:
 	RefPtr< PropertyLine<Vector3> > emissionVector;
