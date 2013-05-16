@@ -78,6 +78,13 @@ void CommandGroupEntitiesForMultiselect::Execute()
 	}
 
 	resultEntity = complexEntity;
+
+	entities.insert(resultEntity);
+	for(size_t i = 0; i < entitiesToGroup.Size(); ++i)
+	{
+		Entity *en = entitiesToGroup.GetEntity(i);
+		entities.insert(en);
+	}
 }
 
 void CommandGroupEntitiesForMultiselect::Cancel()
@@ -102,6 +109,7 @@ void CommandGroupEntitiesForMultiselect::Cancel()
 		}
 	}
 	originalMatrixes.clear();
+	entities.erase(entities.find(resultEntity));
 	if(NULL != resultEntity)
 	{
 		resultEntity->GetParent()->RemoveNode(resultEntity);
