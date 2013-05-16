@@ -709,13 +709,12 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 
 	void RenderHelper::DrawArrow(const Vector3 &from, const Vector3 &to, float32 arrowLength, float32 lineWidth)
 	{
-		if(0 != lineWidth)
+		if(0 != lineWidth && from != to)
 		{
-			Vector3 v = (to + from);
-			Vector3 c = v * arrowLength / v.Length();
 			Vector3 d = to - from;
+			Vector3 c = to - d / Min(arrowLength, d.Length());
 
-			DAVA::float32 k = c.Length() / 4;
+			DAVA::float32 k = (to - c).Length() / 4;
 
 			Vector3 n = c.CrossProduct(to);
 			n.Normalize();
