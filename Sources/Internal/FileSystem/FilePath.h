@@ -265,7 +265,7 @@ protected:
     static FilePath GetDirectory(const String &pathname, const ePathType pType);
 
     static String GetSystemPathname(const String &pathname, const ePathType pType);
-	String GetFrameworkPathForPrefix(const String &typePrefix, const ePathType pType);
+	String GetFrameworkPathForPrefix(const String &typePrefix, const ePathType pType) const;
     
     static bool IsAbsolutePathname(const String &pathname);
 
