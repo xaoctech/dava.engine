@@ -130,6 +130,7 @@ void DebugRenderSystem::Process()
 						{
 							Vector3 lDirection = light->GetDirection();
 
+							lDirection.Normalize();
 							RenderHelper::Instance()->DrawArrow(lPosition, lPosition + lDirection * 10, 2.5f);
 							RenderHelper::Instance()->DrawBox(AABBox3(lPosition, 0.5f), 1.5f);
 
