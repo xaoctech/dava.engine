@@ -4,44 +4,56 @@
 #include "Base/BaseTypes.h"
 #include "Debug/DVAssert.h"
 
-template<typename T>
-class GlobalEnum
+class EnumMap
 {
 public:
-	explicit GlobalEnum();
-	~GlobalEnum();
+	EnumMap();
+	~EnumMap();
 
-	static bool ToValue(const char *, int &e);
-	static const char* ToString(const int e);
+	bool ToValue(const char *, int &e) const;
+	const char* ToString(const int e) const;
 
-	static int GetCount();
-	static bool GetValue(size_t index, int &e);
+	int GetCount() const;
+	bool GetValue(size_t index, int &e) const;
 
-private:
-	typedef DAVA::Map<int, DAVA::String> ETOSMap;
-	static ETOSMap& GetMap();
+	void Register(const int e, const char *) const;
 
-	static void RegisterAll();
-	static void Register(const int e, const char *);
+protected:
+	typedef DAVA::Map<int, DAVA::String> EnumMapContainer;
+	mutable EnumMapContainer map;
 };
 
 template<typename T>
-void GlobalEnum<T>::Register(const int e, const char* s)
+class GlobalEnumMap
 {
-	ETOSMap& etos = GetMap();
+public:
+	explicit GlobalEnumMap();
+	~GlobalEnumMap();
 
-	DVASSERT(!etos.count(e));
-	etos[e] = DAVA::String(s);
+	static const EnumMap* Instance();
+
+protected:
+	static void RegisterAll();
+	static void Register(const int e, const char *s);
+};
+
+EnumMap::EnumMap()
+{}
+
+EnumMap::~EnumMap()
+{}
+
+void EnumMap::Register(const int e, const char* s) const
+{
+	DVASSERT(!map.count(e));
+	map[e] = DAVA::String(s);
 }
 
-template<typename T>
-bool GlobalEnum<T>::ToValue(const char* s, int &e)
+bool EnumMap::ToValue(const char* s, int &e) const
 {
 	bool ret = false;
-	ETOSMap &etos = GetMap();
-
-	ETOSMap::iterator i = etos.begin();
-	ETOSMap::iterator end = etos.end();
+	EnumMapContainer::const_iterator i = map.begin();
+	EnumMapContainer::const_iterator end = map.end();
 	DAVA::String str(s);
 
 	for(; i != end; ++i)
@@ -57,34 +69,29 @@ bool GlobalEnum<T>::ToValue(const char* s, int &e)
 	return ret;
 }
 
-template<typename T>
-const char* GlobalEnum<T>::ToString(const int e)
+const char* EnumMap::ToString(const int e) const
 {
 	const char* ret = NULL;
-	ETOSMap &etos = GetMap();
 
-	if(etos.count(e))
+	if(map.count(e))
 	{
-		ret = etos[e].c_str();
+		ret = map.at(e).c_str();
 	}
 
 	return ret;
 }
 
-template<typename T>
-int GlobalEnum<T>::GetCount()
+int EnumMap::GetCount() const
 {
-	return GetMap().size();
+	return map.size();
 }
 
-template<typename T>
-bool GlobalEnum<T>::GetValue(size_t index, int &e)
+bool EnumMap::GetValue(size_t index, int &e) const
 {
 	bool ret = false;
-	ETOSMap &etos = GetMap();
-	ETOSMap::iterator i = etos.begin();
+	EnumMapContainer::const_iterator i = map.begin();
 
-	if(index < etos.size())
+	if(index < map.size())
 	{
 		while(index > 0)
 		{
@@ -92,7 +99,7 @@ bool GlobalEnum<T>::GetValue(size_t index, int &e)
 			i++;
 		}
 
-		if(i != etos.end())
+		if(i != map.end())
 		{
 			e = i->first;
 			ret = true;
@@ -103,9 +110,9 @@ bool GlobalEnum<T>::GetValue(size_t index, int &e)
 }
 
 template<typename T>
-typename GlobalEnum<T>::ETOSMap& GlobalEnum<T>::GetMap()
+const EnumMap* GlobalEnumMap<T>::Instance()
 {
-	static ETOSMap etosMap;
+	static EnumMap enumMap;
 	static bool initialized = false;
 
 	if(!initialized)
@@ -114,10 +121,16 @@ typename GlobalEnum<T>::ETOSMap& GlobalEnum<T>::GetMap()
 		RegisterAll();
 	}
 
-	return etosMap;
+	return &enumMap;
 }
 
-#define ENUM_DECLARE(eType) template<> void GlobalEnum<eType>::RegisterAll()
+template<typename T>
+void GlobalEnumMap<T>::Register(const int e, const char *s)
+{
+	Instance()->Register(e, s);
+}
+
+#define ENUM_DECLARE(eType) template<> void GlobalEnumMap<eType>::RegisterAll()
 #define ENUM_ADD(eValue) Register(eValue, #eValue)
 #define ENUM_ADD_DESCR(eValue, eDescr) Register(eValue, eDescr)
 

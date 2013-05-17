@@ -4,6 +4,15 @@
 namespace DAVA
 {
 
+IntrospectionDesription::IntrospectionDesription(const char *_text)
+	: text(_text)
+{}
+
+IntrospectionDesription::IntrospectionDesription(const char *_text, const EnumMap* _enumMap)
+	: text(_text)
+	, enumMap(_enumMap)
+{ }
+
 IntrospectionMember::IntrospectionMember(const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags /* = 0 */)
 	: name(_name), desc(_desc), offset(_offset), type(_type), flags(_flags)
 { }
