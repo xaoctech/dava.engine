@@ -768,7 +768,7 @@ String AutotestingSystem::ReadState(const String & device)
 	}
 
 	SafeRelease(dbUpdateObject);
-	Logger::Debug("AutotestingSystem::ReadState finish");
+	Logger::Debug("AutotestingSystem::ReadState state=%s finish", result.c_str());
 	return result;
 }
 
@@ -820,7 +820,7 @@ String AutotestingSystem::ReadCommand(const String & device)
 
 	SafeRelease(dbUpdateObject);
 	
-	Logger::Debug("AutotestingSystem::ReadCommand finish");
+	Logger::Debug("AutotestingSystem::ReadCommand state=%s finish", result.c_str());
 	return result;
 }
 
