@@ -244,6 +244,8 @@ public:
     bool IsAbsolutePathname() const;
 
     
+    bool Exists() const;
+    
 protected:
     
     void Initialize(const String &pathname);

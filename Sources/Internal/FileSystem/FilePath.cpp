@@ -748,4 +748,20 @@ FilePath::ePathType FilePath::GetPathType(const String &pathname)
 }
 
     
+bool FilePath::Exists() const
+{
+    if(pathType == PATH_IN_MEMORY)
+    {
+        return false;
+    }
+    
+    if(IsDirectoryPathname())
+    {
+        return FileSystem::Instance()->IsDirectory(*this);
+    }
+
+    return FileSystem::Instance()->IsFile(*this);
+}
+
+    
 }
