@@ -503,7 +503,7 @@ FilePath FilePath::CreateWithNewExtension(const FilePath &pathname, const String
     
 String FilePath::GetSystemPathname(const String &pathname, const ePathType pType)
 {
-    if(pType == PATH_IN_FILESYSTEM)
+    if(pType == PATH_IN_FILESYSTEM || pType == PATH_IN_MEMORY)
         return pathname;
     
     String retPath = pathname;
