@@ -2,6 +2,7 @@
 #define __DAVAENGINE_INTROSPECTION_BASE_H__
 
 #include "Base/BaseTypes.h"
+#include "Base/GlobalEnum.h"
 #include "FileSystem/VariantType.h"
 
 namespace DAVA
@@ -10,6 +11,15 @@ namespace DAVA
 	class IntrospectionCollection;
 	class KeyedArchive;
 	struct MetaInfo;
+
+	struct IntrospectionDesription
+	{
+		IntrospectionDesription(const char *text);
+		IntrospectionDesription(const char *text, const EnumMap* enumMap);
+	
+		const char *text;
+		const EnumMap *enumMap;
+	};
 
 	// Базовое представление члена интроспекции
 	class IntrospectionMember
