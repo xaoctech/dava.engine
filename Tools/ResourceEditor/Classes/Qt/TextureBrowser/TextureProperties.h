@@ -2,6 +2,65 @@
 #define __TEXTURE_PROPERTIES_H__
 
 #include "DAVAEngine.h"
+#include "QtPropertyEditor/QtPropertyEditor.h"
+#include "QtPropertyEditor/QtPropertyData.h"
+
+template<typename T>
+struct enumPropertiesHelper
+{
+	T value(const QString &key)
+	{
+		int i = keys.indexOf(key);
+
+		if(i != -1)
+		{
+			return values[i];
+		}
+
+		return T();
+	}
+
+	void push_back(const QString &key, const T &value)
+	{
+		keys.push_back(key);
+		values.push_back(value);
+	}
+
+	void clear()
+	{
+		keys.clear();
+		values.clear();
+	}
+
+	int indexK(const QString &key)
+	{
+		return keys.indexOf(key);
+	}
+
+	int indexV(const T &value)
+	{
+		return values.indexOf(value);
+	}
+
+	QStringList keyList()
+	{
+		QStringList ret;
+
+		for(int i = 0; i < keys.count(); ++i)
+		{
+			ret.append(keys[i]);
+		}
+
+		return ret;
+	}
+
+private:
+	QVector<QString> keys;
+	QVector<T> values;
+};
+
+
+#if 0
 #include "QtPropertyBrowser/qttreepropertybrowser.h"
 #include "QtPropertyBrowser/qtgroupboxpropertybrowser.h"
 
@@ -51,60 +110,6 @@ private slots:
 	void propertyChanged(QtProperty * property);
 
 private:
-	template<typename T>
-	struct enumPropertiesHelper
-	{
-		T value(const QString &key)
-		{
-			int i = keys.indexOf(key);
-
-			if(i != -1)
-			{
-				return values[i];
-			}
-
-			return T();
-		}
-
-		void push_back(const QString &key, const T &value)
-		{
-			keys.push_back(key);
-			values.push_back(value);
-		}
-
-		void clear()
-		{
-			keys.clear();
-			values.clear();
-		}
-
-		int indexK(const QString &key)
-		{
-			return keys.indexOf(key);
-		}
-
-		int indexV(const T &value)
-		{
-			return values.indexOf(value);
-		}
-
-		QStringList keyList()
-		{
-			QStringList ret;
-
-			for(int i = 0; i < keys.count(); ++i)
-			{
-				ret.append(keys[i]);
-			}
-
-			return ret;
-		}
-
-	private:
-		QVector<QString> keys;
-		QVector<T> values;
-	};
-
 	QWidget *oneForAllParent;
 
 	enumPropertiesHelper<int> helperPVRFormats;
@@ -149,6 +154,49 @@ private:
 	void MinFilterCustomSetup();
 	void MipMapSizesInit(int baseWidth, int baseHeight);
 	void MipMapSizesReset();
+};
+#endif
+
+class TextureProperties : public QtPropertyEditor
+{
+	Q_OBJECT
+
+public:
+	typedef enum PropertiesType
+	{
+		TYPE_COMMON,
+		TYPE_COMMON_MIPMAP,
+		TYPE_PVR,
+		TYPE_DXT
+	} PropertiesType;
+
+public:
+	TextureProperties(QWidget *parent = 0);
+	~TextureProperties();
+
+	void setTextureDescriptor(DAVA::TextureDescriptor *descriptor);
+	const DAVA::TextureDescriptor* getTextureDescriptor();
+
+	void setOriginalImageSize(const QSize &size);
+
+protected:
+	DAVA::TextureDescriptor *curTextureDescriptor;
+	QSize origImageSize;
+
+	enumPropertiesHelper<QSize> helperMipMapSizes;
+
+	void MipMapSizesInit(int baseWidth, int baseHeight);
+	void MipMapSizesReset();
+};
+
+class TexturePropertyData : QtPropertyData
+{
+public:
+	TexturePropertyData();
+	~TexturePropertyData();
+
+private:
+
 };
 
 #endif // __TEXTURE_PROPERTIES_H__
