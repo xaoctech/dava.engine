@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		020AB22C17463AA70082F336 /* libfmodevent.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 02E9E447173A3AED00C501BC /* libfmodevent.dylib */; };
+		020AB22D17463AA70082F336 /* libfmodex.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 02E9E448173A3AED00C501BC /* libfmodex.dylib */; };
 		02D69A5516F0783000F3803F /* platformpropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 02D69A4F16F0783000F3803F /* platformpropertygridwidget.ui */; };
 		02D69A5616F0783000F3803F /* propertygridcontainerwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 02D69A5016F0783000F3803F /* propertygridcontainerwidget.ui */; };
 		02D69A5716F0783000F3803F /* rectpropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 02D69A5116F0783000F3803F /* rectpropertygridwidget.ui */; };
@@ -250,6 +252,20 @@
 			remoteInfo = FrameworkQt;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		020AB22A17463A9F0082F336 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				020AB22C17463AA70082F336 /* libfmodevent.dylib in CopyFiles */,
+				020AB22D17463AA70082F336 /* libfmodex.dylib in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		00BD80432B2C7B49A27A3DC5 /* UIEditor.pro */ = {isa = PBXFileReference; lastKnownFileType = text; path = UIEditor.pro; sourceTree = "<group>"; };
@@ -1257,6 +1273,8 @@
 				C29B8785722055ED95EF7B57 /* Build Sources */,
 				2A1043669E6E5A7426EA502A /* Frameworks & Libraries */,
 				3787F99312C85FF0073FD7BA /* Bundle Resources */,
+				020AB22A17463A9F0082F336 /* CopyFiles */,
+				020AB22E17463AAA0082F336 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1355,6 +1373,19 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		020AB22E17463AAA0082F336 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "install_name_tool -change ./libfmodex.dylib @executable_path/../Frameworks/libfmodex.dylib $BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH\ninstall_name_tool -change ./libfmodevent.dylib @executable_path/../Frameworks/libfmodevent.dylib $BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH\ninstall_name_tool -id @executable_path/../Frameworks/libfmodex.dylib $BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH/libfmodex.dylib\ninstall_name_tool -id @executable_path/../Frameworks/libfmodevent.dylib $BUILT_PRODUCTS_DIR/$FRAMEWORKS_FOLDER_PATH/libfmodevent.dylib\ninstall_name_tool -change ./libfmodex.dylib @executable_path/../Frameworks/libfmodex.dylib $BUILT_PRODUCTS_DIR/$FRAMEWORKS_FOLDER_PATH/libfmodevent.dylib";
+		};
 		5C42E09515B42E1C00F71425 /* Qt Qmake */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;

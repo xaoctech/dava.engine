@@ -522,7 +522,7 @@ String FilePath::GetSystemPathname(const String &pathname, const ePathType pType
 }
     
 
-String FilePath::GetFrameworkPath()
+String FilePath::GetFrameworkPath() const
 {
     String pathInRes = GetFrameworkPathForPrefix("~res:/", PATH_IN_RESOURCES);
     if(!pathInRes.empty())

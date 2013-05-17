@@ -303,11 +303,7 @@ const Vector<String> & UIFileSystemDialog::GetExtensionFilter()
 
 void UIFileSystemDialog::OnIndexSelected(int32 index)
 {
-    if (fileUnits[index].type == FUNIT_DIR_OUTSIDE) 
-    {
-        SetCurrentDir(currentDir);
-    }
-    else if (fileUnits[index].type == FUNIT_DIR_INSIDE)
+    if (fileUnits[index].type == FUNIT_DIR_INSIDE || fileUnits[index].type == FUNIT_DIR_OUTSIDE)
     {
         SetCurrentDir(files->GetPathname(fileUnits[index].indexInFileList));
     }
@@ -374,16 +370,6 @@ void UIFileSystemDialog::RefreshList()
         }
     }
 
-    if(outCnt >= 1)
-    {
-        DialogFileUnit fud;
-        fud.name = "..";
-        fud.path = currentDir;
-        fud.type = FUNIT_DIR_OUTSIDE;
-        fud.indexInFileList = -1;
-        fileUnits.push_back(fud);
-    }
-        
     for (int i = 0; i < cnt; i++)
     {
         if (!files->IsNavigationDirectory(i))
@@ -413,7 +399,7 @@ void UIFileSystemDialog::RefreshList()
                 std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
                 bool isPresent = false;
-		int32 size = extensionFilter.size();
+                int32 size = extensionFilter.size();
                 for (int32 n = 0; n < size; n++) 
                 {
                     if (extensionFilter[n] == ".*" || ext == extensionFilter[n])
@@ -430,6 +416,15 @@ void UIFileSystemDialog::RefreshList()
 
             
             fileUnits.push_back(fu);
+        }
+        else if(outCnt >= 1 && files->GetFilename(i) == "..")
+        {
+            DialogFileUnit fud;
+            fud.name = "..";
+            fud.path = currentDir;
+            fud.type = FUNIT_DIR_OUTSIDE;
+            fud.indexInFileList = i;
+            fileUnits.push_back(fud);
         }
     }
     fileListView->ResetScrollPosition();
