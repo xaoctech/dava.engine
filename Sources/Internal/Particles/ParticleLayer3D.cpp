@@ -76,7 +76,7 @@ void ParticleLayer3D::DrawLayer(Camera* camera)
 	verts.resize(count * POINTS_PER_PARTICLE * 3); // 6 vertices per each particle, 3 coords per vertex.
 	textures.resize(count * POINTS_PER_PARTICLE * 2); // 6 texture coords per particle, 2 values per texture coord.
 	colors.resize(count * POINTS_PER_PARTICLE);
-	
+
 	Particle * current = head;
 	if(current)
 	{
@@ -223,7 +223,7 @@ void ParticleLayer3D::CalcNonLong(Particle* current,
 	// Draw pivot point is Sprite center + layer pivot point.
 	Vector2 drawPivotPoint = GetDrawPivotPoint();
 
-	float32 pivotRight = ((sprite->GetWidth() - drawPivotPoint.x)*current->size.x*current->sizeOverLife.x)/2.f;
+	float32 pivotRight = ((sprite->GetWidth()-drawPivotPoint.x)*current->size.x*current->sizeOverLife.x)/2.f;
 	float32 pivotLeft = (drawPivotPoint.x*current->size.x*current->sizeOverLife.x)/2.f;
 	float32 pivotUp = (drawPivotPoint.y*current->size.y*current->sizeOverLife.y)/2.f;
 	float32 pivotDown = ((sprite->GetHeight()-drawPivotPoint.y)*current->size.y*current->sizeOverLife.y)/2.f;

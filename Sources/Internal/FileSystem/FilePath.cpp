@@ -542,7 +542,7 @@ String FilePath::GetFrameworkPath()
 }
 
 
-String FilePath::GetFrameworkPathForPrefix( const String &typePrefix, const ePathType pType)
+String FilePath::GetFrameworkPathForPrefix( const String &typePrefix, const ePathType pType) const
 {
     DVASSERT(!typePrefix.empty());
     
@@ -726,13 +726,13 @@ String FilePath::AddPath(const FilePath &folder, const String & addition)
 FilePath::ePathType FilePath::GetPathType(const String &pathname)
 {
     String::size_type find = pathname.find("~res:");
-    if(find != String::npos)
+    if(find == 0)
     {
         return PATH_IN_RESOURCES;
     }
 
     find = pathname.find("~doc:");
-    if(find != String::npos)
+    if(find == 0)
     {
         return PATH_IN_DOCUMENTS;
     }
