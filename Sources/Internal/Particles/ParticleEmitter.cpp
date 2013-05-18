@@ -822,4 +822,9 @@ void ParticleEmitter::SetDisabledForAllLayers(bool value)
 	}
 }
 
+void ParticleEmitter::RecalcBoundingBox()
+{
+	bbox = AABBox3(Vector3(), Vector3());
+}
+
 };
