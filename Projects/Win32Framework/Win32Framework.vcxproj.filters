@@ -966,9 +966,6 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SwitchNode.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayerLong.h">
-      <Filter>Internal\Particles</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Base\Observer.h">
       <Filter>Internal\Base</Filter>
     </ClInclude>
@@ -1978,9 +1975,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SwitchNode.cpp">
       <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayerLong.cpp">
-      <Filter>Internal\Particles</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Base\Observable.cpp">
       <Filter>Internal\Base</Filter>

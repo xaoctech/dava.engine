@@ -72,34 +72,34 @@ String FileSystem::virtualBundlePath = "";
 	
 	
 #if defined(__DAVAENGINE_WIN32__)
-    const char * FileSystem::FilepathRelativeToBundle(const char * relativePathname)
+    String FileSystem::FilepathRelativeToBundle(const char * relativePathname)
 	{
 		if(virtualBundlePath.empty())
 		{
 			String currentFolder = FileSystem::Instance()->GetCurrentWorkingDirectory();
 			currentFolder = FileSystem::Instance()->GetCanonicalPath(currentFolder);
-			return Format("%s/Data/%s", currentFolder.c_str(), relativePathname);
+            return (currentFolder + "/Data/" + relativePathname);
 		}
 		else
 		{
-			return Format("%s/%s", virtualBundlePath.c_str(), relativePathname);
+            return (virtualBundlePath + "/" + relativePathname);
 		}
 	}
 #endif //#if defined(__DAVAENGINE_WIN32__)
 	
 	
 #if defined(__DAVAENGINE_ANDROID__)
-    const char * FileSystem::FilepathRelativeToBundle(const char * relativePathname)
+    String FileSystem::FilepathRelativeToBundle(const char * relativePathname)
 	{
 #ifdef USE_LOCAL_RESOURCES
-		return Format("%s%s", USE_LOCAL_RESOURCES_PATH, relativePathname);
+        return String(USE_LOCAL_RESOURCES_PATH) + String(relativePathname);
 #else
-		return Format("Data%s", relativePathname);
+        return String("Data") + String(relativePathname);
 #endif
 	}
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 	
-const char * FileSystem::FilepathRelativeToBundle(const String & relativePathname)
+String FileSystem::FilepathRelativeToBundle(const String & relativePathname)
 {
     return FilepathRelativeToBundle(relativePathname.c_str());
 }
@@ -240,6 +240,11 @@ bool FileSystem::MoveFile(const String & existingFile, const String & newFile, b
 	BOOL ret = ::MoveFileExA(existingFile.c_str(), newFile.c_str(), flags);
 	return ret != 0;
 #elif defined(__DAVAENGINE_ANDROID__)
+	if (!overwriteExisting && access(newFile.c_str(), 0) != -1)
+	{
+		return false;
+	}
+	remove(newFile.c_str());
 	int ret = rename(existingFile.c_str(), newFile.c_str());
 	return ret == 0;
 #else //iphone & macos
@@ -384,14 +389,14 @@ File *FileSystem::CreateFileForFrameworkPath(const String & frameworkPath, uint3
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 }
 
-const String & FileSystem::SystemPathForFrameworkPath(const String & frameworkPath)
+const String FileSystem::SystemPathForFrameworkPath(const String & frameworkPath)
 {
 	//DVASSERT(frameworkPath.size() > 0);
 	if(frameworkPath[0] != '~')
 	{
 		return frameworkPath;
 	}
-	tempRetPath = frameworkPath;
+	String tempRetPath = frameworkPath;
 	size_t find = tempRetPath.find("~res:");
 
 	if(find != tempRetPath.npos)

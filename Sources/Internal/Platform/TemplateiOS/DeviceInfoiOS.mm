@@ -123,6 +123,12 @@ String DeviceInfo::GetModel()
 			model = "AppleTV 3G early 2012";
 		if ([modelName hasPrefix:@"AppleTV3,2"])
 			model = "AppleTV 3G early 2013";
+		
+		if (model.empty())
+		{
+			// Unknown at this moment, return what is returned by system.
+			model = [modelName UTF8String];
+		}
 	}
 
 	return model;

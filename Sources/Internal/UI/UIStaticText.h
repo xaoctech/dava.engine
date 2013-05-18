@@ -96,6 +96,8 @@ public:
 	const Color &GetTextColor() const;
 	const Color &GetShadowColor() const;
 	const Vector2 &GetShadowOffset() const;
+
+	virtual Animation *	ColorAnimation(const Color & finalColor, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 0);
 	
 protected:
 	Color textColor;

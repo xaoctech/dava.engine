@@ -622,8 +622,10 @@ bool Texture::IsCompressedFormat(PixelFormat format)
 	bool retValue =  false;
 	if(FORMAT_INVALID != format)
     {
-        if(	FORMAT_PVR2 == format || FORMAT_PVR4 == format  ||
-		   (format >= FORMAT_DXT1 && format <= FORMAT_DXT5NM) )
+        if (FORMAT_PVR2 == format ||
+			FORMAT_PVR4 == format ||
+			(format >= FORMAT_DXT1 && format <= FORMAT_DXT5NM) ||
+			FORMAT_ETC1 == format)
         {
             retValue = true;
         }
@@ -679,7 +681,7 @@ Texture * Texture::PureCreate(const String & pathName)
     }
     else
     {
-        ImageFileFormat fileFormat = TextureDescriptor::GetFormatForExtension(extension);
+        ImageFileFormat fileFormat = GetFormatForLoading(TextureDescriptor::GetFormatForExtension(extension), descriptor);
         if((NOT_FILE == defaultFileFormat) || IsLoadAvailable(fileFormat, descriptor))
         {
             texture = CreateFromImage(pathName, descriptor);
@@ -716,6 +718,7 @@ Texture * Texture::CreateFromDescriptor(const String &pathName, TextureDescripto
     Texture * texture = NULL;
     
     ImageFileFormat formatForLoading = (NOT_FILE == defaultFileFormat) ? (ImageFileFormat)descriptor->textureFileFormat : defaultFileFormat;
+    formatForLoading = GetFormatForLoading(formatForLoading, descriptor);
     if((NOT_FILE == defaultFileFormat) || IsLoadAvailable(formatForLoading, descriptor))
     {
         String imagePathname = GetActualFilename(pathName, formatForLoading, descriptor);
@@ -766,21 +769,19 @@ void Texture::ReloadAs(ImageFileFormat fileFormat)
 
 void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat, const TextureDescriptor *descriptor)
 {
-    if(descriptor->IsCompressedFile())
-    {
-        return;
-    }
-    
-    
     ReleaseTextureData();
 	
 	DVASSERT(NULL != descriptor);
     
-    String imagePathname = TextureDescriptor::GetPathnameForFormat(descriptor->pathname, fileFormat);
+    
+    ImageFileFormat formatForLoading = GetFormatForLoading(fileFormat, descriptor);
+    
+    
+    String imagePathname = TextureDescriptor::GetPathnameForFormat(descriptor->pathname, formatForLoading);
     File *file = File::Create(imagePathname, File::OPEN | File::READ);
 
     bool loaded = false;
-    if(descriptor && file && IsLoadAvailable(fileFormat, descriptor))
+    if(descriptor && file && IsLoadAvailable(formatForLoading, descriptor))
     {
         loaded = LoadFromImage(file, descriptor);
     }
@@ -824,7 +825,7 @@ void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat, const TextureDescriptor
     }
     else
     {
-        loadedAsFile = fileFormat;
+        loadedAsFile = formatForLoading;
     }
     
     SafeRelease(file);
@@ -1414,6 +1415,12 @@ void Texture::InitializePixelFormatDescriptors()
 
     SetPixelDescription(FORMAT_RGBA16161616, String("RGBA16161616"), 64, GL_HALF_FLOAT, GL_RGBA, GL_RGBA);
     SetPixelDescription(FORMAT_RGBA32323232, String("RGBA32323232"), 128, GL_FLOAT, GL_RGBA, GL_RGBA);
+
+#if defined (GL_ETC1_RGB8_OES)
+	SetPixelDescription(FORMAT_ETC1,     "ETC1", 8, GL_UNSIGNED_BYTE, GL_ETC1_RGB8_OES, GL_ETC1_RGB8_OES);
+#else
+	SetPixelDescription(FORMAT_ETC1,     "ETC1", 8, 0, 0, 0);
+#endif
 }
 
 void Texture::SetPixelDescription(PixelFormat index, const String &name, int32 size, GLenum type, GLenum format, GLenum internalFormat)
@@ -1542,6 +1549,15 @@ ImageFileFormat Texture::GetDefaultFileFormat()
     return defaultFileFormat;
 }
 
+    
+ImageFileFormat Texture::GetFormatForLoading(const ImageFileFormat requestedFormat, const TextureDescriptor *descriptor)
+{
+    if(descriptor->IsCompressedFile())
+        return (ImageFileFormat)descriptor->textureFileFormat;
+    
+    return requestedFormat;
+}
+    
 
 
 };

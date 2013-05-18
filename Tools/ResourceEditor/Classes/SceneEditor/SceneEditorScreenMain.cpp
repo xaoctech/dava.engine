@@ -14,7 +14,6 @@
 #include "PropertyControlCreator.h"
 
 #include "HintManager.h"
-#include "HelpDialog.h"
 
 #include "SceneExporter.h"
 #include "SceneSaver.h"
@@ -27,6 +26,10 @@
 
 #include "../Commands/SceneEditorScreenMainCommands.h"
 #include "../Commands/CommandsManager.h"
+#include "../Commands/FileCommands.h"
+#include "../Commands/ToolsCommands.h"
+
+#include "CommandLineTool.h"
 
 SceneEditorScreenMain::SceneEditorScreenMain()
 	:	UIScreen()
@@ -43,8 +46,6 @@ void SceneEditorScreenMain::LoadResources()
     font12 = ControlsFactory::GetFont12();
 	font12Color = ControlsFactory::GetColorLight();
 
-    helpDialog = new HelpDialog();
-    
     focusedControl = NULL;
 
     InitializeNodeDialogs();
@@ -75,7 +76,6 @@ void SceneEditorScreenMain::UnloadResources()
 {
     SafeRelease(scenePreviewDialog);
 
-    SafeRelease(helpDialog);
     SafeRelease(textureTrianglesDialog);
     SafeRelease(settingsDialog);
 
@@ -89,11 +89,39 @@ void SceneEditorScreenMain::UnloadResources()
 
 void SceneEditorScreenMain::WillAppear()
 {
+#if defined (__DAVAENGINE_WIN32__)
+	Vector<String> & commandLine = Core::Instance()->GetCommandLine();
+	if(CommandLineTool::Instance()->CommandIsFound(String("-beast")))
+	{
+		int32 inPosition = CommandLineTool::Instance()->CommandPosition(String("-file"));
+		if(CommandLineTool::Instance()->CheckPosition(inPosition))
+		{
+			String filepathname = commandLine[inPosition + 1];
+			printf("[Beast] file %s", filepathname.c_str());
+
+			CommandsManager::Instance()->ExecuteAndRelease(new CommandOpenScene(filepathname));
+		}
+		else
+		{
+			printf("[Beast] Error: wrong command line.\n");
+		}
+	}
+#endif //#if defined (__DAVAENGINE_WIN32__)
+}
+
+void SceneEditorScreenMain::DidAppear()
+{
+#if defined (__DAVAENGINE_WIN32__)
+	if(CommandLineTool::Instance()->CommandIsFound(String("-beast")))
+	{
+		Update(0.1f);
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandBeast());
+	}
+#endif //#if defined (__DAVAENGINE_WIN32__)
 }
 
 void SceneEditorScreenMain::WillDisappear()
 {
-	
 }
 
 void SceneEditorScreenMain::Update(float32 timeElapsed)
@@ -405,18 +433,6 @@ void SceneEditorScreenMain::Input(DAVA::UIEvent *event)
         UITextField *tf1 = dynamic_cast<UITextField *>(focusedControl);
         if(!tf && !tf1)
         {
-            if((DVKEY_F1 == event->tid) || (DVKEY_H == event->tid))
-            {
-                if(helpDialog->GetParent())
-                {
-                    helpDialog->Close();
-                }
-                else
-                {
-                    helpDialog->Show();
-                }
-            }
-            
             if(DVKEY_ESCAPE == event->tid)
             {
                 if(materialEditor && materialEditor->GetParent())
@@ -758,12 +774,6 @@ bool SceneEditorScreenMain::TileMaskEditorEnabled()
     return iBody->bodyControl->TileMaskEditorEnabled();
 }
 
-
-void SceneEditorScreenMain::ToggleSceneInfo()
-{
-    BodyItem *iBody = FindCurrentBody();
-    iBody->bodyControl->ToggleSceneInfo();
-}
 
 void SceneEditorScreenMain::ShowSettings()
 {

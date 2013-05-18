@@ -63,6 +63,7 @@ void Installer::UpdateConfigFinished(const AppsConfig & update) {
     }
 
     Update(m_AvailableSoftWare.m_Stable, eAppTypeStable, true);
+    Update(m_AvailableSoftWare.m_Test, eAppTypeTest, true);
 //  Update(m_AvailableSoftWare.m_Development, eAppTypeDevelopment);
     Update(m_AvailableSoftWare.m_Dependencies, eAppTypeDependencies, true);
 }
@@ -81,10 +82,12 @@ void Installer::UpdateAvailableSoftware() {
     m_AvailableSoftWare.Clear();
     //get installed soft
     FormatFromSetting(m_AvailableSoftWare.m_Stable, currentConfig.m_Stable);
+    FormatFromSetting(m_AvailableSoftWare.m_Test, currentConfig.m_Test);
     FormatFromSetting(m_AvailableSoftWare.m_Development, currentConfig.m_Development);
     FormatFromSetting(m_AvailableSoftWare.m_Dependencies, currentConfig.m_Dependencies);
     //merge with update
     FormatFromUpdate(m_AvailableSoftWare.m_Stable, m_AppsConfig.m_Stable);
+    FormatFromUpdate(m_AvailableSoftWare.m_Test, m_AppsConfig.m_Test);
     FormatFromUpdate(m_AvailableSoftWare.m_Development, m_AppsConfig.m_Development);
     FormatFromUpdate(m_AvailableSoftWare.m_Dependencies, m_AppsConfig.m_Dependencies);
 
@@ -134,6 +137,9 @@ const AppsConfig::AppMap* Installer::GetAppMap(eAppType type) const {
     case eAppTypeStable: {
         apps = &m_AppsConfig.m_Stable;
     }break;
+    case eAppTypeTest: {
+        apps = &m_AppsConfig.m_Test;
+    }break;
     case eAppTypeDevelopment: {
         apps = &m_AppsConfig.m_Development;
     }break;
@@ -148,6 +154,9 @@ QString Installer::GetInstallPath(eAppType type) const {
     switch (type) {
     case eAppTypeStable: {
         return DirectoryManager::GetInstance()->GetStableDir();
+    }break;
+    case eAppTypeTest: {
+        return DirectoryManager::GetInstance()->GetTestDir();
     }break;
     case eAppTypeDevelopment: {
         return DirectoryManager::GetInstance()->GetDevelopment();
