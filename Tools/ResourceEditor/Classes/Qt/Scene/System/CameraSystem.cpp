@@ -1,4 +1,8 @@
+#include <QApplication>
+
+#include "Scene/SceneEditorProxy.h"
 #include "Scene/System/CameraSystem.h"
+#include "Scene/System/SelectionSystem.h"
 
 // framework
 #include "Scene3D/Components/CameraComponent.h"
@@ -175,12 +179,23 @@ void SceneCameraSystem::ProcessUIEvent(DAVA::UIEvent *event)
 		}
 		else if(event->tid == DAVA::UIEvent::BUTTON_3)
 		{
-			MouseMoveCameraPosition();
+			if(Qt::AltModifier & QApplication::keyboardModifiers())
+			{
+				SceneSelectionSystem *selectionSystem = ((SceneEditorProxy *) GetScene())->selectionSystem;
+				if(NULL != selectionSystem)
+				{
+					const EntityGroup* selection = selectionSystem->GetSelection();
+					if(NULL != selection)
+					{
+						MouseMoveCameraPosAroundPoint(selection->GetCommonBbox().GetCenter());
+					}
+				}
+			}
+			else
+			{
+				MouseMoveCameraPosition();
+			}
 		}
-		//else if(event->tid == DAVA::UIEvent::BUTTON_3 && DAVA::IsKeyModificatorPressed(DVKEY_ALT))
-		//{
-		//	 MoseMoveCameraPosAndDirByLockedPoint();
-		//}
 	}
 
 	// Other event, like camera speed, or switch to next camera
@@ -321,7 +336,7 @@ void SceneCameraSystem::MouseMoveCameraPosition()
 	}
 }
 
-void SceneCameraSystem::MouseMoveCameraPosAndDirByLockedPoint(const DAVA::Vector3 &point)
+void SceneCameraSystem::MouseMoveCameraPosAroundPoint(const DAVA::Vector3 &point)
 {		
 	if(NULL != curSceneCamera)
 	{
