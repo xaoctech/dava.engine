@@ -15,11 +15,22 @@ static const float INPUT_TEST_AUTO_CLOSE_TIME = 30.0f;
 
 class UIWebViewDelegate: public IUIWebViewDelegate
 {
-	virtual eAction URLChanged(UIWebView* webview, const String& newURL);
+	virtual eAction URLChanged(UIWebView* webview, const String& newURL, bool isRedirectedByMouseClick);
+
+	virtual void PageLoaded(UIWebView* webview);
 };
 
-IUIWebViewDelegate::eAction UIWebViewDelegate::URLChanged(UIWebView* webview, const String& newURL)
+IUIWebViewDelegate::eAction UIWebViewDelegate::URLChanged(UIWebView* webview, const String& newURL, bool isInitiatedByUser)
 {
+	if(isInitiatedByUser)
+	{
+		DAVA::Logger::Debug("Link %s from browser", newURL.c_str());
+	}
+	else
+	{
+		DAVA::Logger::Debug("Link %s from source code", newURL.c_str());
+	}
+
 	if (newURL.find("google.com.ua") != String::npos)
 	{
 		return IUIWebViewDelegate::PROCESS_IN_SYSTEM_BROWSER;
@@ -34,6 +45,11 @@ IUIWebViewDelegate::eAction UIWebViewDelegate::URLChanged(UIWebView* webview, co
 	}
 
 	return IUIWebViewDelegate::PROCESS_IN_WEBVIEW;
+}
+
+void UIWebViewDelegate::PageLoaded(UIWebView* webview)
+{
+	webview->SetVisible(true);
 }
 
 
@@ -98,10 +114,15 @@ void InputTest::LoadResources()
 	testButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &InputTest::ButtonPressed));
 
 	webView1 = new UIWebView(Rect(5, 105, 500, 190));
-	webView1->OpenURL("http://www.google.com");
+	webView1->SetVisible(false);
+	delegate = new UIWebViewDelegate();
+	webView1->SetDelegate((UIWebViewDelegate*)delegate);
+	webView1->OpenURL("http://www.linux.org.ru");
 	AddControl(webView1);
 
 	webView2 = new UIWebView(Rect(305, 300, 440, 190));
+    webView2->SetVisible(false);
+    webView2->SetDelegate((UIWebViewDelegate*)delegate);
 	webView2->OpenURL("http://www.apple.com");
 	AddControl(webView2);
 
@@ -114,10 +135,11 @@ void InputTest::LoadResources()
 	FileSystem::Instance()->CopyFile(srcFile, cpyFile);
 	String url = "file:///" + cpyFile;
 
-	delegate = new UIWebViewDelegate();
+	//delegate = new UIWebViewDelegate();
 	webView3 = new UIWebView(Rect(520, 130, 215, 135));
-	webView3->OpenURL(url);
 	webView3->SetDelegate((UIWebViewDelegate*)delegate);
+	webView3->OpenURL(url);
+
 	AddControl(webView3);
 
 	AddControl(testButton);
@@ -172,3 +194,13 @@ void InputTest::ButtonPressed(BaseObject *obj, void *data, void *callerData)
 	testFinished = true;
 }
 
+void InputTest::OnPageLoaded(DAVA::BaseObject * caller, void * param, void *callerData)
+{
+	UIWebView* webView = dynamic_cast<UIWebView*>(caller);
+	if(NULL == webView)
+	{
+		return;
+	}
+	
+	webView->SetVisible(true);
+}

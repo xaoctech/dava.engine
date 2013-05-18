@@ -25,6 +25,23 @@ using namespace DAVA;
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Yuri Coder, 03/12/2012. New commands for Particle Editor QT.
 
+CommandUpdateEffect::CommandUpdateEffect(ParticleEffectComponent* particleEffect):
+Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+{
+	this->particleEffect = particleEffect;
+}
+
+void CommandUpdateEffect::Init(float32 playbackSpeed)
+{
+	this->playbackSpeed = playbackSpeed;
+}
+
+void CommandUpdateEffect::Execute()
+{
+	DVASSERT(particleEffect);
+	particleEffect->SetPlaybackSpeed(playbackSpeed);
+}
+
 CommandUpdateEmitter::CommandUpdateEmitter(ParticleEmitter* emitter):
 	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
 {
@@ -37,7 +54,8 @@ void CommandUpdateEmitter::Init(ParticleEmitter::eType emitterType,
 								RefPtr<PropertyLine<float32> > radius,
 								RefPtr<PropertyLine<Color> > colorOverLife,
 								RefPtr<PropertyLine<Vector3> > size,
-								float32 life)
+								float32 life,
+								float32 playbackSpeed)
 {
 	this->emitterType = emitterType;
 	this->emissionRange = emissionRange;
@@ -46,6 +64,7 @@ void CommandUpdateEmitter::Init(ParticleEmitter::eType emitterType,
 	this->colorOverLife = colorOverLife;
 	this->size = size;
 	this->life = life;
+	this->playbackSpeed = playbackSpeed;
 }
 
 void CommandUpdateEmitter::Execute()
@@ -59,6 +78,7 @@ void CommandUpdateEmitter::Execute()
 	emitter->colorOverLife = colorOverLife;
 	emitter->size = size;
 	emitter->SetLifeTime(life);
+	emitter->SetPlaybackSpeed(playbackSpeed);
 }
 
 CommandUpdateParticleLayer::CommandUpdateParticleLayer(ParticleEmitter* emitter, ParticleLayer* layer) :
@@ -72,6 +92,7 @@ void CommandUpdateParticleLayer::Init(const QString& layerName,
 									  ParticleLayer::eType layerType,
 									  bool isDisabled,
 									  bool additive,
+									  bool isLong,
 									  Sprite* sprite,
 									  RefPtr< PropertyLine<float32> > life,
 									  RefPtr< PropertyLine<float32> > lifeVariation,
@@ -79,7 +100,7 @@ void CommandUpdateParticleLayer::Init(const QString& layerName,
 									  RefPtr< PropertyLine<float32> > numberVariation,
 									  RefPtr< PropertyLine<Vector2> > size,
 									  RefPtr< PropertyLine<Vector2> > sizeVariation,
-									  RefPtr< PropertyLine<float32> > sizeOverLife,
+									  RefPtr< PropertyLine<Vector2> > sizeOverLife,
 									  RefPtr< PropertyLine<float32> > velocity,
 									  RefPtr< PropertyLine<float32> > velocityVariation,
 									  RefPtr< PropertyLine<float32> > velocityOverLife,
@@ -101,6 +122,7 @@ void CommandUpdateParticleLayer::Init(const QString& layerName,
 	this->layerType = layerType;
 	this->isDisabled = isDisabled;
 	this->additive = additive;
+	this->isLong = isLong;
 	this->sprite = sprite;
 	this->life = life;
 	this->lifeVariation = lifeVariation;
@@ -135,13 +157,14 @@ void CommandUpdateParticleLayer::Execute()
 	layer->layerName = layerName.toStdString();
 	layer->isDisabled = isDisabled;
 	layer->SetAdditive(additive);
+	layer->SetLong(isLong);
 	layer->life = life;
 	layer->lifeVariation = lifeVariation;
 	layer->number = number;
 	layer->numberVariation = numberVariation;
 	layer->size = size;
 	layer->sizeVariation = sizeVariation;
-	layer->sizeOverLife = sizeOverLife;
+	layer->sizeOverLifeXY = sizeOverLife;
 	layer->velocity = velocity;
 	layer->velocityVariation = velocityVariation;
 	layer->velocityOverLife = velocityOverLife;
@@ -178,6 +201,15 @@ void CommandUpdateParticleLayer::Execute()
 		layer->type = layerType;
 		emitter->Play();
 	}
+	
+	// "IsLong" flag.
+	if (layer->IsLong() != isLong)
+	{
+		emitter->Stop();
+		layer->SetLong(isLong);
+		emitter->Play();
+	}
+
 
 	SceneDataManager::Instance()->RefreshParticlesLayer(layer);
 }

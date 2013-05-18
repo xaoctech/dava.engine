@@ -35,6 +35,7 @@
 #include "Utils/StringFormat.h"
 #include "FileSystem/LocalizationSystem.h"
 #include "Render/2D/FontManager.h"
+#include "Animation/LinearAnimation.h"
 
 namespace DAVA 
 {
@@ -348,6 +349,13 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
 	SafeRelease(baseControl);
     
     return node;
+}
+
+Animation * UIStaticText::ColorAnimation(const Color & finalColor, float32 time, Interpolation::FuncType interpolationFunc /*= Interpolation::LINEAR*/, int32 track /*= 0*/)
+{
+	LinearAnimation<Color> * animation = new LinearAnimation<Color>(this, &textColor, finalColor, time, interpolationFunc);
+	animation->Start(track);
+	return animation;
 }
 
 };

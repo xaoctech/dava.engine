@@ -95,7 +95,8 @@ void ShowErrorDialog(const DAVA::Set<DAVA::String> &errors)
 void ShowErrorDialog(const DAVA::String &errorMessage)
 {
 	bool forceMode =    CommandLineTool::Instance()->CommandIsFound(String("-force"))
-					||  CommandLineTool::Instance()->CommandIsFound(String("-forceclose"));
+					||  CommandLineTool::Instance()->CommandIsFound(String("-forceclose"))
+					||  CommandLineTool::Instance()->CommandIsFound(String("-beast"));
 	if(!forceMode)
 	{
 		QMessageBox::critical(QtMainWindow::Instance(), "Error", errorMessage.c_str());

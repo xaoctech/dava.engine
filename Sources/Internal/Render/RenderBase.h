@@ -154,6 +154,8 @@ enum PixelFormat
     FORMAT_DXT3,
     FORMAT_DXT5,
     FORMAT_DXT5NM,
+	
+	FORMAT_ETC1,
 
     FORMAT_COUNT,
     FORMAT_CLOSEST = 256

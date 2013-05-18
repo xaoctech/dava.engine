@@ -6,7 +6,6 @@
 #include "../Commands/ToolsCommands.h"
 #include "../Commands/CommandViewport.h"
 #include "../Commands/SceneGraphCommands.h"
-#include "../Commands/ViewCommands.h"
 #include "../Commands/CommandReloadTextures.h"
 #include "../Commands/ParticleEditorCommands.h"
 #include "../Commands/LandscapeOptionsCommands.h"
@@ -375,11 +374,6 @@ void QtMainWindowHandler::RefreshSceneGraph()
     CommandsManager::Instance()->ExecuteAndRelease(new CommandRefreshSceneGraph());
 }
 
-void QtMainWindowHandler::ToggleSceneInfo()
-{
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandSceneInfo());
-}
-
 void QtMainWindowHandler::ShowSettings()
 {
     CommandsManager::Instance()->ExecuteAndRelease(new CommandSettings());
@@ -472,14 +466,19 @@ void QtMainWindowHandler::RulerTool()
 void QtMainWindowHandler::ReloadAsPNG()
 {
     CommandsManager::Instance()->ExecuteAndRelease(new ReloadTexturesAsCommand(PNG_FILE));
+	MenuViewOptionsWillShow();
 }
+
 void QtMainWindowHandler::ReloadAsPVR()
 {
     CommandsManager::Instance()->ExecuteAndRelease(new ReloadTexturesAsCommand(PVR_FILE));
+	MenuViewOptionsWillShow();
 }
+
 void QtMainWindowHandler::ReloadAsDXT()
 {
     CommandsManager::Instance()->ExecuteAndRelease(new ReloadTexturesAsCommand(DXT_FILE));
+	MenuViewOptionsWillShow();
 }
 
 void QtMainWindowHandler::ReloadSceneTextures()

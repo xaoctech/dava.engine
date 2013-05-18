@@ -21,7 +21,12 @@ ParticleEditorWidget::ParticleEditorWidget(QWidget *parent/* = 0*/) :
 	emitterLayerWidget = NULL;
 	layerForceWidget = NULL;
 	emitterPropertiesWidget = NULL;
-	
+	effectPropertiesWidget = NULL;
+
+	connect(ParticlesEditorController::Instance(),
+			SIGNAL(EffectSelected(Entity*)),
+			this,
+			SLOT(OnEffectSelected(Entity*)));
 	connect(ParticlesEditorController::Instance(),
 			SIGNAL(EmitterSelected(Entity*, BaseParticleEditorNode*)),
 			this,
@@ -34,6 +39,7 @@ ParticleEditorWidget::ParticleEditorWidget(QWidget *parent/* = 0*/) :
 			SIGNAL(ForceSelected(Entity*, ParticleLayer*, int32, BaseParticleEditorNode*)),
 			this,
 			SLOT(OnForceSelected(Entity*, ParticleLayer*, int32, BaseParticleEditorNode*)));
+
 	connect(ParticlesEditorController::Instance(),
 			SIGNAL(NodeDeselected(BaseParticleEditorNode*)),
 			this,
@@ -50,6 +56,38 @@ void ParticleEditorWidget::DeleteOldWidget()
 	SAFE_DELETE(emitterLayerWidget);
 	SAFE_DELETE(layerForceWidget);
 	SAFE_DELETE(emitterPropertiesWidget);
+	SAFE_DELETE(effectPropertiesWidget);
+}
+
+void ParticleEditorWidget::OnEffectSelected(Entity* effectNode)
+{
+	ParticleEffectComponent* effect = NULL;
+	if (effectNode)
+	{
+		effect = cast_if_equal<ParticleEffectComponent*>(effectNode->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+		if (!effect)
+		{
+			return;
+		}
+		
+		if (effectPropertiesWidget && effectPropertiesWidget->GetEffect() == effect)
+		{
+			return;
+		}
+	}
+
+	DeleteOldWidget();
+	if (!effect)
+	{
+		emit ChangeVisible(false);
+		return;
+	}
+	
+	emit ChangeVisible(true);
+	effectPropertiesWidget = new ParticleEffectPropertiesWidget(this);
+	effectPropertiesWidget->Init(effect);
+
+	setWidget(effectPropertiesWidget);
 }
 
 void ParticleEditorWidget::OnEmitterSelected(Entity* emitterNode, BaseParticleEditorNode* editorNode)
@@ -255,16 +293,20 @@ void ParticleEditorWidget::UpdateVisibleTimelinesForParticleEmitter()
 	// Update the visibility of particular timelines based on the emitter type.
 	bool radiusTimeLineVisible = false;
 	bool sizeTimeLineVisible = false;
+
+	bool emissionVectorTimeLineVisible = true;
+
 	switch (emitterPropertiesWidget->GetEmitter()->emitterType)
 	{
 		case DAVA::ParticleEmitter::EMITTER_ONCIRCLE:
+		case DAVA::ParticleEmitter::EMITTER_SHOCKWAVE:
 		{
 			radiusTimeLineVisible = true;
+			emissionVectorTimeLineVisible = false;
 			break;
 		}
 			
 		case DAVA::ParticleEmitter::EMITTER_RECT:
-		case DAVA::ParticleEmitter::EMITTER_LINE:
 		{
 			sizeTimeLineVisible = true;
 		}
@@ -277,4 +319,5 @@ void ParticleEditorWidget::UpdateVisibleTimelinesForParticleEmitter()
 	
 	emitterPropertiesWidget->GetEmitterRadiusTimeline()->setVisible(radiusTimeLineVisible);
 	emitterPropertiesWidget->GetEmitterSizeTimeline()->setVisible(sizeTimeLineVisible);
+	emitterPropertiesWidget->GetEmissionVectorTimeline()->setVisible(emissionVectorTimeLineVisible);
 }

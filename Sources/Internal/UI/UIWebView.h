@@ -32,7 +32,13 @@ public:
 
 	void SetDelegate(IUIWebViewDelegate* delegate);
 
+    //retun current flag value and set it to true.
+	bool UpdateInitiatedByUserFlag();
+
 protected:
+	
+	bool isInitiatedByUser;
+
 	// Platform-specific implementation of the Web View Control.
 	IWebViewControl* webViewControl;
 };

@@ -59,6 +59,8 @@ public:
     // Update the localization for all controls.
     void UpdateLocalization();
 
+	bool IsPlatformNamePresent(const QString& name) const ;
+
 protected:
 	// Do the save itself for only changed screens or for all screens.
 	bool DoSave(const QString& projectPath, bool saveAll);
