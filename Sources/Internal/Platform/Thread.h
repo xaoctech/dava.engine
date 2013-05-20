@@ -102,7 +102,7 @@ public:
     
 private:
 	Thread() {};
-	Thread(const Thread& t) {};
+	Thread(const Thread& t);
 	Thread(const Message& msg);
 	
 	Message			msg;

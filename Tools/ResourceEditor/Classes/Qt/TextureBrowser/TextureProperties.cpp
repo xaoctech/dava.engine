@@ -6,7 +6,6 @@
 
 TextureProperties::TextureProperties(QWidget *parent /* = 0 */)
 	: QtGroupBoxPropertyBrowser(parent)//QtTreePropertyBrowser(parent)
-	, curTexture(NULL)
 	, curTextureDescriptor(NULL)
 	, reactOnPropertyChange(true)
 	, texturePropertiesChanged(false)
@@ -21,6 +20,7 @@ TextureProperties::TextureProperties(QWidget *parent /* = 0 */)
 		helperPVRFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_A8), DAVA::FORMAT_A8);
 		helperPVRFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_PVR4), DAVA::FORMAT_PVR4);
 		helperPVRFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_PVR2), DAVA::FORMAT_PVR2);
+		helperPVRFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_ETC1), DAVA::FORMAT_ETC1);
 
 
 		helperDXTFormats.push_back("None", DAVA::FORMAT_INVALID);
@@ -31,6 +31,9 @@ TextureProperties::TextureProperties(QWidget *parent /* = 0 */)
 		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_DXT3), DAVA::FORMAT_DXT3);
 		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_DXT5), DAVA::FORMAT_DXT5);
 		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_DXT5NM), DAVA::FORMAT_DXT5NM);
+		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_ATC_RGB), DAVA::FORMAT_ATC_RGB);
+		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_ATC_RGBA_EXPLICIT_ALPHA), DAVA::FORMAT_ATC_RGBA_EXPLICIT_ALPHA);
+		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_ATC_RGBA_INTERPOLATED_ALPHA), DAVA::FORMAT_ATC_RGBA_INTERPOLATED_ALPHA);
 
 		helperWrapModes.push_back("Clamp", DAVA::Texture::WRAP_CLAMP_TO_EDGE);
 		helperWrapModes.push_back("Repeat", DAVA::Texture::WRAP_REPEAT);
@@ -135,25 +138,22 @@ TextureProperties::TextureProperties(QWidget *parent /* = 0 */)
 TextureProperties::~TextureProperties()
 {
 	Save();
-	DAVA::SafeRelease(curTexture);
 	DAVA::SafeRelease(curTextureDescriptor);
 
 	delete oneForAllParent;
 }
 
-void TextureProperties::setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor *descriptor)
+void TextureProperties::setTextureDescriptor(DAVA::TextureDescriptor *descriptor)
 {
 	reactOnPropertyChange = false;
 
 	Save();
-	DAVA::SafeRelease(curTexture);
 	DAVA::SafeRelease(curTextureDescriptor);
 
-	curTexture = DAVA::SafeRetain(texture);
 	curTextureDescriptor = DAVA::SafeRetain(descriptor);
 	origImageSize = QSize(0, 0);
 
-	if(NULL != curTexture && NULL != curTextureDescriptor)
+	if(NULL != curTextureDescriptor)
 	{
 		// enable this widget
 		setEnabled(true);
@@ -228,10 +228,10 @@ void TextureProperties::setOriginalImageSize(const QSize &size)
 	reactOnPropertyChange = true;
 }
 
-const DAVA::Texture* TextureProperties::getTexture()
-{
-	return curTexture;
-}
+//const DAVA::Texture* TextureProperties::getTexture()
+//{
+//	return curTexture;
+//}
 
 const DAVA::TextureDescriptor* TextureProperties::getTextureDescriptor()
 {
@@ -240,7 +240,7 @@ const DAVA::TextureDescriptor* TextureProperties::getTextureDescriptor()
 
 void TextureProperties::propertyChanged(QtProperty * property)
 {
-	if(reactOnPropertyChange && NULL != curTextureDescriptor && NULL != curTexture)
+	if(reactOnPropertyChange && NULL != curTextureDescriptor)
 	{
 		PropertiesType type = TYPE_COMMON;
 
@@ -380,7 +380,14 @@ void TextureProperties::resetCommonProp()
 		propertiesEnum->setValue(enumWrapModeT, helperWrapModes.indexV(curTextureDescriptor->wrapModeT));
 
 		// min gl filter
-		propertiesEnum->setValue(enumMinGL, helperMinGLModes.indexV(curTextureDescriptor->minFilter));
+        if(curTextureDescriptor->generateMipMaps)
+        {
+            propertiesEnum->setValue(enumMinGL, helperMinGLModesWithMipmap.indexV(curTextureDescriptor->minFilter));
+        }
+        else
+        {
+            propertiesEnum->setValue(enumMinGL, helperMinGLModes.indexV(curTextureDescriptor->minFilter));
+        }
 		propertiesEnum->setValue(enumMagGL, helperMagGLModes.indexV(curTextureDescriptor->magFilter));
 	}
 }

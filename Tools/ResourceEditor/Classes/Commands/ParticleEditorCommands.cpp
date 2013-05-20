@@ -9,6 +9,7 @@
 #include "ParticlesEditorQT/Nodes/BaseParticleEditorNode.h"
 #include "ParticlesEditorQT/Nodes/EmitterParticleEditorNode.h"
 #include "ParticlesEditorQT/Nodes/LayerParticleEditorNode.h"
+#include "ParticlesEditorQT/Nodes/InnerEmitterParticleEditorNode.h"
 
 #include "../Qt/Main/QtUtils.h"
 #include "../Qt/Main/QtMainWindowHandler.h"
@@ -25,8 +26,25 @@ using namespace DAVA;
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Yuri Coder, 03/12/2012. New commands for Particle Editor QT.
 
+CommandUpdateEffect::CommandUpdateEffect(ParticleEffectComponent* particleEffect):
+Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_UPDATE_EFFECT)
+{
+	this->particleEffect = particleEffect;
+}
+
+void CommandUpdateEffect::Init(float32 playbackSpeed)
+{
+	this->playbackSpeed = playbackSpeed;
+}
+
+void CommandUpdateEffect::Execute()
+{
+	DVASSERT(particleEffect);
+	particleEffect->SetPlaybackSpeed(playbackSpeed);
+}
+
 CommandUpdateEmitter::CommandUpdateEmitter(ParticleEmitter* emitter):
-	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_UPDATE_EMITTER)
 {
 	this->emitter = emitter;
 }
@@ -37,7 +55,8 @@ void CommandUpdateEmitter::Init(ParticleEmitter::eType emitterType,
 								RefPtr<PropertyLine<float32> > radius,
 								RefPtr<PropertyLine<Color> > colorOverLife,
 								RefPtr<PropertyLine<Vector3> > size,
-								float32 life)
+								float32 life,
+								float32 playbackSpeed)
 {
 	this->emitterType = emitterType;
 	this->emissionRange = emissionRange;
@@ -46,6 +65,7 @@ void CommandUpdateEmitter::Init(ParticleEmitter::eType emitterType,
 	this->colorOverLife = colorOverLife;
 	this->size = size;
 	this->life = life;
+	this->playbackSpeed = playbackSpeed;
 }
 
 void CommandUpdateEmitter::Execute()
@@ -59,10 +79,11 @@ void CommandUpdateEmitter::Execute()
 	emitter->colorOverLife = colorOverLife;
 	emitter->size = size;
 	emitter->SetLifeTime(life);
+	emitter->SetPlaybackSpeed(playbackSpeed);
 }
 
 CommandUpdateParticleLayer::CommandUpdateParticleLayer(ParticleEmitter* emitter, ParticleLayer* layer) :
-	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_UPDATE_PARTICLE_LAYER)
 {
 	this->emitter = emitter;
 	this->layer = layer;
@@ -72,6 +93,7 @@ void CommandUpdateParticleLayer::Init(const QString& layerName,
 									  ParticleLayer::eType layerType,
 									  bool isDisabled,
 									  bool additive,
+									  bool isLong,
 									  Sprite* sprite,
 									  RefPtr< PropertyLine<float32> > life,
 									  RefPtr< PropertyLine<float32> > lifeVariation,
@@ -79,7 +101,7 @@ void CommandUpdateParticleLayer::Init(const QString& layerName,
 									  RefPtr< PropertyLine<float32> > numberVariation,
 									  RefPtr< PropertyLine<Vector2> > size,
 									  RefPtr< PropertyLine<Vector2> > sizeVariation,
-									  RefPtr< PropertyLine<float32> > sizeOverLife,
+									  RefPtr< PropertyLine<Vector2> > sizeOverLife,
 									  RefPtr< PropertyLine<float32> > velocity,
 									  RefPtr< PropertyLine<float32> > velocityVariation,
 									  RefPtr< PropertyLine<float32> > velocityOverLife,
@@ -95,12 +117,16 @@ void CommandUpdateParticleLayer::Init(const QString& layerName,
 									  float32 startTime,
 									  float32 endTime,
 									  bool frameOverLifeEnabled,
-									  float32 frameOverLifeFPS)
+									  float32 frameOverLifeFPS,
+									  
+									  float32 pivotPointX,
+									  float32 pivotPointY)
 {
 	this->layerName = layerName;
 	this->layerType = layerType;
 	this->isDisabled = isDisabled;
 	this->additive = additive;
+	this->isLong = isLong;
 	this->sprite = sprite;
 	this->life = life;
 	this->lifeVariation = lifeVariation;
@@ -127,21 +153,25 @@ void CommandUpdateParticleLayer::Init(const QString& layerName,
 	this->endTime = endTime;
 	this->frameOverLifeEnabled = frameOverLifeEnabled;
 	this->frameOverLifeFPS = frameOverLifeFPS;
+	
+	this->pivotPointX = pivotPointX;
+	this->pivotPointY = pivotPointY;
 }
 
 
 void CommandUpdateParticleLayer::Execute()
 {
 	layer->layerName = layerName.toStdString();
-	layer->isDisabled = isDisabled;
+	layer->SetDisabled(isDisabled);
 	layer->SetAdditive(additive);
+	layer->SetLong(isLong);
 	layer->life = life;
 	layer->lifeVariation = lifeVariation;
 	layer->number = number;
 	layer->numberVariation = numberVariation;
 	layer->size = size;
 	layer->sizeVariation = sizeVariation;
-	layer->sizeOverLife = sizeOverLife;
+	layer->sizeOverLifeXY = sizeOverLife;
 	layer->velocity = velocity;
 	layer->velocityVariation = velocityVariation;
 	layer->velocityOverLife = velocityOverLife;
@@ -161,6 +191,8 @@ void CommandUpdateParticleLayer::Execute()
 
 	layer->startTime = startTime;
 	layer->endTime = endTime;
+	
+	layer->SetPivotPoint(Vector2(pivotPointX, pivotPointY));
 
 	// This code must be after layer->frameOverlife set call, since setSprite
 	// may change the frames.
@@ -178,12 +210,27 @@ void CommandUpdateParticleLayer::Execute()
 		layer->type = layerType;
 		emitter->Play();
 	}
+	
+	// "IsLong" flag.
+	if (layer->IsLong() != isLong)
+	{
+		emitter->Stop();
+		layer->SetLong(isLong);
+		emitter->Play();
+	}
+
+	// In case we are switching to "SuperEmitter" type - need to create Inner Emitter
+	// for the layer.
+	if (layer->type == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES && !layer->GetInnerEmitter())
+	{
+		layer->CreateInnerEmitter();
+	}
 
 	SceneDataManager::Instance()->RefreshParticlesLayer(layer);
 }
 
 CommandUpdateParticleLayerTime::CommandUpdateParticleLayerTime(ParticleLayer* layer) :
-	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_UPDATE_PARTICLE_LAYER_TIME)
 {
 	this->layer = layer;
 }
@@ -201,7 +248,7 @@ void CommandUpdateParticleLayerTime::Execute()
 }
 
 CommandUpdateParticleLayerEnabled::CommandUpdateParticleLayerEnabled(ParticleLayer* layer, bool isEnabled) :
-	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_UPDATE_PARTICLE_LAYER_ENABLED)
 {
 	this->layer = layer;
 	this->isEnabled = isEnabled;
@@ -211,13 +258,13 @@ void CommandUpdateParticleLayerEnabled::Execute()
 {
 	if (this->layer)
 	{
-		this->layer->isDisabled = !isEnabled;
+		this->layer->SetDisabled(!isEnabled);
 		ParticlesEditorController::Instance()->RefreshSelectedNode(true);
 	}
 }
 
 CommandUpdateParticleForce::CommandUpdateParticleForce(ParticleLayer* layer, uint32 forceId) :
-	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_UPDATE_PARTICLE_FORCE)
 {
 	this->layer = layer;
 	this->forceId = forceId;
@@ -242,7 +289,7 @@ void CommandUpdateParticleForce::Execute()
 // Yuri Coder, 03/12/2012. New commands for Particle Editor QT.
 
 CommandAddParticleEmitter::CommandAddParticleEmitter() :
-    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_ADD_PARTICLE_EMITTER)
 {
 }
 
@@ -254,7 +301,7 @@ void CommandAddParticleEmitter::Execute()
 
 
 CommandStartStopParticleEffect::CommandStartStopParticleEffect(bool isStart) :
-    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_START_STOP_PARTICLE_EFFECT)
 {
     this->isStart = isStart;
 }
@@ -279,7 +326,7 @@ void CommandStartStopParticleEffect::Execute()
 }
 
 CommandRestartParticleEffect::CommandRestartParticleEffect() :
-    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_RESTART_PARTICLE_EFFECT)
 {
 }
 
@@ -298,7 +345,7 @@ void CommandRestartParticleEffect::Execute()
 }
 
 CommandAddParticleEmitterLayer::CommandAddParticleEmitterLayer() :
-    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_ADD_PARTICLE_EMITTER_LAYER)
 {
 }
 
@@ -330,7 +377,7 @@ void CommandAddParticleEmitterLayer::Execute()
 }
 
 CommandRemoveParticleEmitterLayer::CommandRemoveParticleEmitterLayer() :
-    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_REMOVE_PARTICLE_EMITTER_LAYER)
 {
 }
 
@@ -366,7 +413,7 @@ void CommandRemoveParticleEmitterLayer::Execute()
 }
 
 CommandCloneParticleEmitterLayer::CommandCloneParticleEmitterLayer() :
-    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_CLONE_PARTICLE_EMITTER_LAYER)
 {
 }
 
@@ -391,7 +438,7 @@ void CommandCloneParticleEmitterLayer::Execute()
 }
 
 CommandAddParticleEmitterForce::CommandAddParticleEmitterForce() :
-    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_ADD_PARTICLE_EMITTER_FORCE)
 {
 }
 
@@ -420,7 +467,7 @@ void CommandAddParticleEmitterForce::Execute()
 }
 
 CommandRemoveParticleEmitterForce::CommandRemoveParticleEmitterForce() :
-    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_REMOVE_PARTICLE_EMITTER_FORCE)
 {
 }
 
@@ -456,7 +503,7 @@ void CommandRemoveParticleEmitterForce::Execute()
 }
 
 CommandLoadParticleEmitterFromYaml::CommandLoadParticleEmitterFromYaml() :
-    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_LOAD_PARTICLE_EMITTER_FROM_YAML)
 {
 }
 
@@ -469,7 +516,7 @@ void CommandLoadParticleEmitterFromYaml::Execute()
         return;
     }
     
-    QString projectPath = QString(EditorSettings::Instance()->GetParticlesConfigsPath().c_str());
+    QString projectPath = QString(EditorSettings::Instance()->GetParticlesConfigsPath().GetAbsolutePathname().c_str());
 	Logger::Debug("Project path: %s", projectPath.toStdString().c_str());
 	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open Particle Emitter Yaml file"),
                                                     projectPath, QString("YAML File (*.yaml)"));
@@ -500,7 +547,7 @@ void CommandLoadParticleEmitterFromYaml::Execute()
 }
 
 CommandSaveParticleEmitterToYaml::CommandSaveParticleEmitterToYaml(bool forceAskFilename) :
-    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_SAVE_PARTICLE_EMITTER_TO_YAML)
 {
     this->forceAskFilename = forceAskFilename;
 }
@@ -520,10 +567,10 @@ void CommandSaveParticleEmitterToYaml::Execute()
         return;
     }
 
-	String yamlPath = emitter->GetConfigPath();
-    if (this->forceAskFilename || yamlPath.empty() )
+	FilePath yamlPath = emitter->GetConfigPath();
+    if (this->forceAskFilename || yamlPath.IsEmpty() )
     {
-        QString projectPath = QString(EditorSettings::Instance()->GetParticlesConfigsPath().c_str());
+        QString projectPath = QString(EditorSettings::Instance()->GetParticlesConfigsPath().GetAbsolutePathname().c_str());
         QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save Particle Emitter YAML file"),
                                                         projectPath, QString("YAML File (*.yaml)"));
  
@@ -532,7 +579,76 @@ void CommandSaveParticleEmitterToYaml::Execute()
             return;
         }
         
-        yamlPath = filePath.toStdString();
+        yamlPath = FilePath(filePath.toStdString());
+    }
+
+    emitter->SaveToYaml(yamlPath);
+}
+
+CommandLoadInnerEmitterFromYaml::CommandLoadInnerEmitterFromYaml() :
+	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_LOAD_INNER_EMITTER_FROM_YAML)
+{
+}
+
+void CommandLoadInnerEmitterFromYaml::Execute()
+{
+    BaseParticleEditorNode* selectedNode = ParticlesEditorController::Instance()->GetSelectedNode();
+    InnerEmitterParticleEditorNode* innerEmitterNode = dynamic_cast<InnerEmitterParticleEditorNode*>(selectedNode);
+    if (!innerEmitterNode || !innerEmitterNode->GetInnerEmitter())
+    {
+        return;
+    }
+    
+    QString projectPath = QString(EditorSettings::Instance()->GetParticlesConfigsPath().GetAbsolutePathname().c_str());
+	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open Particle Emitter Yaml file"),
+                                                    projectPath, QString("YAML File (*.yaml)"));
+	if (filePath.isEmpty())
+    {
+		return;
+    }
+
+    ParticleEmitter* innerEmitter = innerEmitterNode->GetInnerEmitter();
+    innerEmitter->LoadFromYaml(filePath.toStdString());
+	
+	// Perform the validation of the Yaml file loaded.
+	String validationMessage;
+	if (ParticlesEditorSceneDataHelper::ValidateParticleEmitter(innerEmitter, validationMessage) == false)
+	{
+		ShowErrorDialog(validationMessage);
+	}
+
+    QtMainWindowHandler::Instance()->RefreshSceneGraph();
+}
+
+CommandSaveInnerEmitterToYaml::CommandSaveInnerEmitterToYaml(bool forceAskFilename) :
+	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_SAVE_INNER_EMITTER_TO_YAML)
+{
+    this->forceAskFilename = forceAskFilename;
+}
+
+void CommandSaveInnerEmitterToYaml::Execute()
+{
+    BaseParticleEditorNode* selectedNode = ParticlesEditorController::Instance()->GetSelectedNode();
+    InnerEmitterParticleEditorNode* emitterNode = dynamic_cast<InnerEmitterParticleEditorNode*>(selectedNode);
+    if (!emitterNode || !emitterNode->GetInnerEmitter())
+    {
+        return;
+    }
+	
+    ParticleEmitter * emitter = emitterNode->GetInnerEmitter();
+	FilePath yamlPath = emitter->GetConfigPath();
+    if (this->forceAskFilename || yamlPath.IsEmpty() )
+    {
+        QString projectPath = QString(EditorSettings::Instance()->GetParticlesConfigsPath().GetAbsolutePathname().c_str());
+        QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save Particle Emitter YAML file"),
+                                                        projectPath, QString("YAML File (*.yaml)"));
+		
+        if (filePath.isEmpty())
+        {
+            return;
+        }
+        
+        yamlPath = FilePath(filePath.toStdString());
     }
 
     emitter->SaveToYaml(yamlPath);

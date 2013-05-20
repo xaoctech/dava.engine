@@ -31,7 +31,6 @@
 #include "Particles/Particle.h"
 #include "Particles/ParticleLayer.h"
 #include "Particles/ParticleLayer3D.h"
-#include "Particles/ParticleLayerLong.h"
 #include "Render/RenderManager.h"
 #include "Utils/Random.h"
 #include "Utils/StringFormat.h"
@@ -43,12 +42,16 @@
 namespace DAVA 
 {
 
+#define PARTICLE_EMITTER_DEFAULT_LIFE_TIME 100.0f
+
 REGISTER_CLASS(ParticleEmitter);
 
 ParticleEmitter::ParticleEmitter()
 {
 	type = TYPE_PARTICLE_EMTITTER;
 	Cleanup(false);
+
+	bbox = AABBox3(Vector3(), Vector3());
 }
 
 ParticleEmitter::~ParticleEmitter()
@@ -68,18 +71,19 @@ void ParticleEmitter::Cleanup(bool needCleanupLayers)
 	size = RefPtr<PropertyLineValue<Vector3> >(0);
 	colorOverLife = 0;
 	radius = 0;
-	rotationMatrix.Identity();
+
 	// number = new PropertyLineValue<float>(1.0f);
 
 	time = 0.0f;
 	repeatCount = 0;
-	lifeTime = 1000000000.0f;
+	lifeTime = PARTICLE_EMITTER_DEFAULT_LIFE_TIME;
 	emitPointsCount = -1;
 	isPaused = false;
 	angle = 0.f;
 	isAutorestart = true;
 	particlesFollow = false;
     is3D = false;
+	playbackSpeed = 1.0f;
 
 	// Also cleanup layers, if needed.
 	if (needCleanupLayers)
@@ -145,7 +149,7 @@ void ParticleEmitter::Save(KeyedArchive *archive, SceneFileV2 *sceneFile)
 
 	if(NULL != archive)
 	{
-        String filename = FileSystem::Instance()->AbsoluteToRelativePath(sceneFile->GetScenePath(), configPath);
+        String filename = configPath.GetRelativePathname(sceneFile->GetScenePath());
 		archive->SetString("pe.configpath", filename);
 	}
 }
@@ -159,17 +163,7 @@ void ParticleEmitter::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
 		if(archive->IsKeyExists("pe.configpath"))
 		{
             String filename = archive->GetString("pe.configpath");
-            String sceneFilePath = FileSystem::Instance()->SystemPathForFrameworkPath(sceneFile->GetScenePath());
-            configPath = FileSystem::Instance()->GetCanonicalPath(sceneFilePath + filename);
-
-#if defined (__DAVAENGINE_ANDROID__)
-            String systemPath = FileSystem::Instance()->SystemPathForFrameworkPath("~res:/");
-            String::size_type pos = configPath.find(systemPath);
-            if(pos == 0)
-            {
-                configPath = configPath.replace(pos, systemPath.length(), "~res:/");
-            }
-#endif //#if defined (__DAVAENGINE_ANDROID__)
+			configPath = sceneFile->GetScenePath() + filename;
             
 			LoadFromYaml(configPath);
 		}
@@ -206,6 +200,7 @@ void ParticleEmitter::RemoveLayer(ParticleLayer * layer)
 	Vector<DAVA::ParticleLayer*>::iterator layerIter = std::find(layers.begin(), layers.end(), layer);
 	if (layerIter != this->layers.end())
 	{
+		layer->RemoveInnerEmitter();
 		layers.erase(layerIter);
 
         RemoveRenderBatch(layer->GetRenderBatch());
@@ -283,6 +278,7 @@ void ParticleEmitter::DoRestart(bool isDeleteAllParticles)
 
 void ParticleEmitter::Update(float32 timeElapsed)
 {
+	timeElapsed *= playbackSpeed;
 	time += timeElapsed;
 	float32 t = time / lifeTime;
 
@@ -306,7 +302,7 @@ void ParticleEmitter::Update(float32 timeElapsed)
 	Vector<ParticleLayer*>::iterator it;
 	for(it = layers.begin(); it != layers.end(); ++it)
 	{
-        if(!(*it)->isDisabled)
+        if(!(*it)->GetDisabled())
             (*it)->Update(timeElapsed);
 	}
 }
@@ -326,7 +322,7 @@ void ParticleEmitter::RenderUpdate(Camera *camera, float32 timeElapsed)
 	Vector<ParticleLayer*>::iterator it;
 	for(it = layers.begin(); it != layers.end(); ++it)
 	{
-		if(!(*it)->isDisabled)
+		if(!(*it)->GetDisabled())
 			(*it)->Draw(camera);
 	}
 
@@ -346,15 +342,6 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
     {
         particle->position = tempPosition;
     }
-    else if (emitterType == EMITTER_LINE)
-    {
-        // TODO: add emitter angle support
-        float32 rand05 = (float32)Random::Instance()->RandFloat() - 0.5f; // [-0.5f, 0.5f]
-        Vector3 lineDirection(0, 0, 0);
-        if(size)
-            lineDirection = size->GetValue(time)*rand05;
-        particle->position = tempPosition + lineDirection;
-    }
     else if (emitterType == EMITTER_RECT)
     {
         // TODO: add emitter angle support
@@ -366,11 +353,12 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
             lineDirection = Vector3(size->GetValue(time).x * rand05_x, size->GetValue(time).y * rand05_y, size->GetValue(time).z * rand05_z);
 		particle->position = tempPosition + lineDirection;
 	}
-    else if (emitterType == EMITTER_ONCIRCLE)
+    else if ((emitterType == EMITTER_ONCIRCLE) || (emitterType == EMITTER_SHOCKWAVE))
     {
         // here just set particle position
+		// Yuri Coder, 2013/04/18. Shockwave particle isn't implemented for 2D mode -
+		// currently draw them in the same way as "onCircle" ones.
         particle->position = tempPosition;
-        //if (
     }
         
     Vector3 vel;
@@ -404,7 +392,9 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
     vel.z = 0;
         
     // reuse particle velocity we've calculated
-    if (emitterType == EMITTER_ONCIRCLE)
+	// Yuri Coder, 2013/04/18. Shockwave particle isn't implemented for 2D mode -
+	// currently draw them in the same way as "onCircle" ones.
+    if ((emitterType == EMITTER_ONCIRCLE) || (emitterType == EMITTER_SHOCKWAVE))
     {
         if(radius)
             particle->position += vel * radius->GetValue(time);
@@ -416,21 +406,21 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
     particle->angle = particleAngle;
 }
 
-void ParticleEmitter::LoadFromYaml(const String & filename)
+void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 {
     Cleanup(true);
     
 	YamlParser * parser = YamlParser::Create(filename);
 	if(!parser)
 	{
-		Logger::Error("ParticleEmitter::LoadFromYaml failed (%s)", filename.c_str());
+		Logger::Error("ParticleEmitter::LoadFromYaml failed (%s)", filename.GetAbsolutePathname().c_str());
 		return;
 	}
 
 	configPath = filename;
 	time = 0.0f;
 	repeatCount = 0;
-	lifeTime = 1000000000.0f;
+	lifeTime = PARTICLE_EMITTER_DEFAULT_LIFE_TIME;
 
 	YamlNode * rootNode = parser->GetRootNode();
 
@@ -443,6 +433,14 @@ void ParticleEmitter::LoadFromYaml(const String & filename)
 		if (emitterNode->Get("emissionVector"))
 			emissionVector = PropertyLineYamlReader::CreateVector3PropertyLineFromYamlNode(emitterNode, "emissionVector");
         
+		YamlNode* emissionVectorInvertedNode = emitterNode->Get("emissionVectorInverted");
+		if (!emissionVectorInvertedNode)
+		{
+			// Yuri Coder, 2013/04/12. This means that the emission vector in the YAML file is not inverted yet.
+			// Because of [DF-1003] fix for such files we have to invert coordinates for this vector.
+			InvertEmissionVectorCoordinates();
+		}
+
 		if (emitterNode->Get("emissionRange"))
 			emissionRange = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(emitterNode, "emissionRange");
         
@@ -462,7 +460,7 @@ void ParticleEmitter::LoadFromYaml(const String & filename)
 			lifeTime = lifeTimeNode->AsFloat();
 		}else
 		{
-			lifeTime = 1000000000.0f;
+			lifeTime = PARTICLE_EMITTER_DEFAULT_LIFE_TIME;
 		}
         
         is3D = false;
@@ -478,12 +476,18 @@ void ParticleEmitter::LoadFromYaml(const String & filename)
 			if (typeNode->AsString() == "point")
 				emitterType = EMITTER_POINT;
 			else if (typeNode->AsString() == "line")
-				emitterType = EMITTER_LINE;
+			{
+				// Yuri Coder, 2013/04/09. Get rid of the "line" node type -
+				// it can be completely replaced by "rect" one.
+				emitterType = EMITTER_RECT;
+			}
 			else if (typeNode->AsString() == "rect")
 				emitterType = EMITTER_RECT;
 			else if (typeNode->AsString() == "oncircle")
 				emitterType = EMITTER_ONCIRCLE;
-			else 
+			else if (typeNode->AsString() == "shockwave")
+				emitterType = EMITTER_SHOCKWAVE;
+			else
 				emitterType = EMITTER_POINT;
 		}else
 			emitterType = EMITTER_POINT;
@@ -543,7 +547,7 @@ void ParticleEmitter::LoadFromYaml(const String & filename)
 	SafeRelease(parser);
 }
 
-void ParticleEmitter::SaveToYaml(const String & filename)
+void ParticleEmitter::SaveToYaml(const FilePath & filename)
 {
     YamlParser* parser = YamlParser::Create();
     if (!parser)
@@ -551,7 +555,9 @@ void ParticleEmitter::SaveToYaml(const String & filename)
         Logger::Error("ParticleEmitter::SaveToYaml() - unable to create parser!");
         return;
     }
-    
+
+	configPath = filename;
+
     YamlNode* rootYamlNode = new YamlNode(YamlNode::TYPE_MAP);
     YamlNode* emitterYamlNode = new YamlNode(YamlNode::TYPE_MAP);
     rootYamlNode->AddNodeToMap("emitter", emitterYamlNode);
@@ -564,13 +570,17 @@ void ParticleEmitter::SaveToYaml(const String & filename)
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(emitterYamlNode, "emissionRange", this->emissionRange);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector3>(emitterYamlNode, "emissionVector", this->emissionVector);
 
+	// Yuri Coder, 2013/04/12. After the coordinates inversion for the emission vector we need to introduce the
+	// new "emissionVectorInverted" flag to mark we don't need to invert coordinates after re-loading the YAML.
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(emitterYamlNode, "emissionVectorInverted", true);
+
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(emitterYamlNode, "radius", this->radius);
 
     PropertyLineYamlWriter::WriteColorPropertyLineToYamlNode(emitterYamlNode, "colorOverLife", this->colorOverLife);
 
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector3>(emitterYamlNode, "size", this->size);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(emitterYamlNode, "life", this->lifeTime);
-    
+
     // Now write all the Layers. Note - layers are child of root node, not the emitter one.
     int32 layersCount = this->layers.size();
     for (int32 i = 0; i < layersCount; i ++)
@@ -680,11 +690,6 @@ String ParticleEmitter::GetEmitterTypeName()
             return "point";
         }
 
-        case EMITTER_LINE:
-        {
-            return "line";
-        }
-
         case EMITTER_RECT:
         {
             return "rect";
@@ -693,6 +698,11 @@ String ParticleEmitter::GetEmitterTypeName()
         case EMITTER_ONCIRCLE:
         {
             return "oncircle";
+        }
+
+		case EMITTER_SHOCKWAVE:
+        {
+            return "shockwave";
         }
 
         default:
@@ -719,14 +729,6 @@ void ParticleEmitter::UpdateLayerNameIfEmpty(ParticleLayer* layer, int32 index)
 	}
 }
 
-void ParticleEmitter::ReloadLayerSprites()
-{
-	int32 layersCount = this->GetLayers().size();
-	for (int i = 0; i < layersCount; i ++)
-	{
-		this->GetLayers()[i]->ReloadSprite();
-	}
-}
 
 void ParticleEmitter::LoadParticleLayerFromYaml(YamlNode* yamlNode, bool isLong)
 {
@@ -741,6 +743,83 @@ bool ParticleEmitter::Is3DFlagCorrect()
 {
 	// ParticleEmitter class can be created only for non-3D Emitters.
 	return (is3D == false);
+}
+
+void ParticleEmitter::SetPlaybackSpeed(float32 value)
+{
+	this->playbackSpeed = Clamp(value, PARTICLE_EMITTER_MIN_PLAYBACK_SPEED,
+								PARTICLE_EMITTER_MAX_PLAYBACK_SPEED);
+	int32 layersCount = this->GetLayers().size();
+	for (int i = 0; i < layersCount; i ++)
+	{
+		this->layers[i]->SetPlaybackSpeed(this->playbackSpeed);
+	}
+}
+
+float32 ParticleEmitter::GetPlaybackSpeed()
+{
+	return this->playbackSpeed;
+}
+
+void ParticleEmitter::InvertEmissionVectorCoordinates()
+{
+	if (!this->emissionVector)
+	{
+		return;
+	}
+
+	PropertyLineValue<Vector3> *pv;
+    PropertyLineKeyframes<Vector3> *pk;
+
+    pk = dynamic_cast< PropertyLineKeyframes<Vector3> *>(this->emissionVector.Get());
+    if (pk)
+    {
+        for (uint32 i = 0; i < pk->keys.size(); ++i)
+        {
+			pk->keys[i].value *= -1;
+        }
+		
+		return;
+    }
+
+	pv = dynamic_cast< PropertyLineValue<Vector3> *>(this->emissionVector.Get());
+	if (pv)
+    {
+		pv->value *= -1;
+    }
+}
+
+int32 ParticleEmitter::GetActiveParticlesCount()
+{
+	uint32 particlesCount = 0;
+	int32 layersCount = this->GetLayers().size();
+	for (int i = 0; i < layersCount; i ++)
+	{
+		particlesCount += this->layers[i]->GetActiveParticlesCount();
+	}
+
+	return particlesCount;
+}
+
+void ParticleEmitter::RememberInitialTranslationVector()
+{
+	if (GetWorldTransformPtr())
+	{
+		this->initialTranslationVector = GetWorldTransformPtr()->GetTranslationVector();
+	}
+}
+
+const Vector3& ParticleEmitter::GetInitialTranslationVector()
+{
+	return this->initialTranslationVector;
+}
+
+void ParticleEmitter::SetDisabledForAllLayers(bool value)
+{
+	for (Vector<ParticleLayer*>::iterator iter = layers.begin(); iter != layers.end(); iter ++)
+	{
+		(*iter)->SetDisabled(value);
+	}
 }
 
 };

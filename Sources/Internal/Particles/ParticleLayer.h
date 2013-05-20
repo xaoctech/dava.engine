@@ -40,6 +40,7 @@
 #include "Particles/Particle.h"
 #include "Particles/ParticleForce.h"
 #include "Particles/ParticlePropertyLine.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA
 {
@@ -63,6 +64,7 @@ public:
 	{
 		TYPE_SINGLE_PARTICLE,
 		TYPE_PARTICLES,				// default for any particle layer loaded from yaml file
+		TYPE_SUPEREMITTER_PARTICLES
 	};
 	
 	ParticleLayer();
@@ -118,7 +120,7 @@ public:
 		\brief Function to load layer from yaml node.
 		Normally this function is called from ParticleEmitter. 	 
 	 */
-	virtual void LoadFromYaml(const String & configPath, YamlNode * node);
+	virtual void LoadFromYaml(const FilePath & configPath, YamlNode * node);
 
 	/**
      \brief Function to save layer to yaml node.
@@ -134,16 +136,12 @@ public:
 
     float32 GetLayerTime();
 
-	const String & GetRelativeSpriteName();
-
     // Whether this layer is Long Layer?
     virtual bool IsLong() {return false;};
+	virtual void SetLong(bool /*value*/) {};
     
 	RenderBatch * GetRenderBatch();
 
-	// Reload the layer sprite, update the Frames timeline if needed.
-	void ReloadSprite();
-	
 	virtual void SetAdditive(bool additive);
 	bool GetAdditive() const {return additive;};
 
@@ -157,7 +155,32 @@ public:
 							 RefPtr< PropertyLine<Vector3> > forceVariation,
 							 RefPtr< PropertyLine<float32> > forceOverLife);
 
-protected:	
+	// Playback speed.
+	void SetPlaybackSpeed(float32 value);
+	float32 GetPlaybackSpeed();
+
+	// Statistics for particles - count and area they use.
+	int32 GetActiveParticlesCount();
+	float32 GetActiveParticlesArea();
+
+	// Create the inner emitter where needed.
+	virtual void CreateInnerEmitter();
+
+	// Get thhe inner emitter, if exists.
+	ParticleEmitter* GetInnerEmitter();
+
+	// Stop and remove Inner Emitter.
+	virtual void RemoveInnerEmitter();
+
+	// Enable/disable the layer.
+	inline bool GetDisabled();
+	void SetDisabled(bool value);
+
+	// Get/set the Pivot Point for the layer.
+	Vector2 GetPivotPoint() const;
+	void SetPivotPoint(const Vector2& value);
+
+protected:
 	void GenerateNewParticle(int32 emitIndex);
 	void GenerateSingleParticle();
 	
@@ -175,6 +198,18 @@ protected:
 	void UpdateFrameTimeline();
 	
 	void CleanupForces();
+	
+	void FillSizeOverlifeXY(RefPtr< PropertyLine<float32> > sizeOverLife);
+	
+	// Convert from Layer Type to its name and vice versa.
+	eType StringToLayerType(const String& layerTypeName, eType defaultLayerType);
+	String LayerTypeToString(eType layerType, const String& defaultLayerTypeName);
+
+	// Update the playback speed for all Inner Emitters.
+	void UpdatePlaybackSpeedForInnerEmitters(float value);
+
+	// Get the draw pivot point (mid of sprite + layer pivot point).
+	inline Vector2 GetDrawPivotPoint();
 
 	// list of particles
 	Particle *	head;
@@ -190,15 +225,19 @@ protected:
 	ParticleEmitter * emitter;
 	// particle layer sprite
 	Sprite 			* sprite;
-	String			relativeSpriteName;
+	FilePath		spritePath;
 
 	ParticleLayerBatch * renderBatch;
 
+	bool		isDisabled;
 	bool		additive;
-	
+	float32		playbackSpeed;
+
+	Vector2		layerPivotPoint;
+
 public:
 	String			layerName;
-	Vector2			pivotPoint;
+
 	/*
 	 Properties of particle layer that describe particle system logic
 	 */
@@ -210,7 +249,8 @@ public:
 	
 	RefPtr< PropertyLine<Vector2> > size;				// size of particles in pixels 
 	RefPtr< PropertyLine<Vector2> > sizeVariation;		// size variation in pixels
-	RefPtr< PropertyLine<float32> > sizeOverLife;
+	RefPtr< PropertyLine<Vector2> > sizeOverLifeXY;
+	//RefPtr< PropertyLine<float32> > sizeOverLife;
 	
 	RefPtr< PropertyLine<float32> > velocity;			// velocity in pixels
 	RefPtr< PropertyLine<float32> > velocityVariation;	
@@ -247,8 +287,17 @@ public:
 	bool		frameOverLifeEnabled;
 	float32		frameOverLifeFPS;
 
-    bool isDisabled;
-    
+	ParticleEmitter* innerEmitter;
+	FilePath	innerEmitterPath;
+
+private:
+	struct LayerTypeNamesInfo
+	{
+		eType layerType;
+		String layerTypeName;
+	};
+	static const LayerTypeNamesInfo layerTypeNamesInfoMap[];
+
 public:
     
     INTROSPECTION_EXTEND(ParticleLayer, BaseObject,
@@ -312,6 +361,21 @@ public:
 inline int32 ParticleLayer::GetParticleCount()
 {
 	return count;
+}
+	
+inline bool ParticleLayer::GetDisabled()
+{
+	return this->isDisabled;
+}
+
+inline Vector2 ParticleLayer::GetDrawPivotPoint()
+{
+	if (this->sprite)
+	{
+		return Vector2(	sprite->GetWidth() / 2 + layerPivotPoint.x, sprite->GetHeight() / 2 + layerPivotPoint.y);
+	}
+	
+	return layerPivotPoint;
 }
 };
 

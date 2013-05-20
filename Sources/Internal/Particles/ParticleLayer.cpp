@@ -39,12 +39,20 @@
 namespace DAVA
 {
 
+const ParticleLayer::LayerTypeNamesInfo ParticleLayer::layerTypeNamesInfoMap[] =
+{
+	{ TYPE_SINGLE_PARTICLE, "single" },
+	{ TYPE_PARTICLES, "particles" },
+	{ TYPE_SUPEREMITTER_PARTICLES, "superEmitter" }
+};
+
 ParticleLayer::ParticleLayer()
 	: head(0)
 	, count(0)
 	, limit(1000)
 	, emitter(0)
 	, sprite(0)
+	, innerEmitter(NULL)
 {
 	renderBatch = new ParticleLayerBatch();
 	renderBatch->SetParticleLayer(this);
@@ -57,7 +65,6 @@ ParticleLayer::ParticleLayer()
 
 	size = 0;
 	sizeVariation = 0;
-	sizeOverLife = 0;
 
 	velocity = 0;
 	velocityVariation = 0;	
@@ -98,12 +105,16 @@ ParticleLayer::ParticleLayer()
 	frameOverLifeFPS = 0;
 
     isDisabled = false;
+
+	playbackSpeed = 1.0f;
 }
 
 ParticleLayer::~ParticleLayer()
 {
 	SafeRelease(renderBatch);
 	SafeRelease(sprite);
+	SafeRelease(innerEmitter);
+
 	head = 0;
 	CleanupForces();
 	// dynamic cache automatically delete all particles
@@ -134,8 +145,8 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	if (sizeVariation)
 		dstLayer->sizeVariation.Set(sizeVariation->Clone());
 	
-	if (sizeOverLife)
-		dstLayer->sizeOverLife.Set(sizeOverLife->Clone());
+	if (sizeOverLifeXY)
+		dstLayer->sizeOverLifeXY.Set(sizeOverLifeXY->Clone());
 	
 	if (velocity)
 		dstLayer->velocity.Set(velocity->Clone());
@@ -194,15 +205,18 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	
 	if (angleVariation)
 		dstLayer->angleVariation.Set(angleVariation->Clone());
-	
+
+	if (innerEmitter)
+		dstLayer->innerEmitter = static_cast<ParticleEmitter*>(innerEmitter->Clone(NULL));
+
 	dstLayer->layerName = layerName;
 	dstLayer->alignToMotion = alignToMotion;
-	dstLayer->additive = additive;
+	dstLayer->SetAdditive(additive);
 	dstLayer->startTime = startTime;
 	dstLayer->endTime = endTime;
 	dstLayer->type = type;
 	dstLayer->sprite = SafeRetain(sprite);
-	dstLayer->pivotPoint = pivotPoint;
+	dstLayer->layerPivotPoint = layerPivotPoint;
 	
 	dstLayer->frameStart = frameStart;
 	dstLayer->frameEnd = frameEnd;
@@ -211,7 +225,8 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	dstLayer->frameOverLifeFPS = frameOverLifeFPS;
 
     dstLayer->isDisabled = isDisabled;
-    
+	dstLayer->spritePath = spritePath;
+
 	return dstLayer;
 }
 	
@@ -230,13 +245,7 @@ void ParticleLayer::SetSprite(Sprite * _sprite)
 
 	if(sprite)
 	{
-		pivotPoint = Vector2(_sprite->GetWidth()/2.0f, _sprite->GetHeight()/2.0f);
-
-		String spritePath = FileSystem::GetCanonicalPath(sprite->GetRelativePathname());
-		const String configPath = FileSystem::Instance()->GetCanonicalPath(emitter->GetConfigPath());
-		String configFolder, configFile;
-		FileSystem::SplitPath(configPath, configFolder, configFile);
-		relativeSpriteName = FileSystem::AbsoluteToRelativePath(configFolder, spritePath);
+		spritePath = sprite->GetRelativePathname();
 	}
 }
 	
@@ -299,12 +308,14 @@ void ParticleLayer::Restart(bool isDeleteAllParticles)
 
 void ParticleLayer::Update(float32 timeElapsed)
 {
-	// increment timer	
+	// increment timer, take the playbackSpeed into account.
+	timeElapsed *= playbackSpeed;
 	layerTime += timeElapsed;
 
 	switch(type)
 	{
-	case TYPE_PARTICLES:
+		case TYPE_PARTICLES:
+		case TYPE_SUPEREMITTER_PARTICLES:
 		{
 			Particle * prev = 0;
 			Particle * current = head;
@@ -359,7 +370,8 @@ void ParticleLayer::Update(float32 timeElapsed)
 			}
 			break;
 		}
-	case TYPE_SINGLE_PARTICLE:
+
+		case TYPE_SINGLE_PARTICLE:
 		{
 			bool needUpdate = true;
 			if ((layerTime >= startTime) && (layerTime < endTime) && !emitter->IsPaused())
@@ -413,6 +425,13 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 	}
 	
 	Particle * particle = ParticleSystem::Instance()->NewParticle();
+
+	// SuperEmitter particles contains the emitter inside.
+	if (type == TYPE_SUPEREMITTER_PARTICLES)
+	{
+		particle->InitializeInnerEmitter(this->emitter, innerEmitter);
+	}
+
 	particle->CleanupForces();
 
 	particle->next = 0;
@@ -474,7 +493,8 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 	if (angleVariation)
 		particle->angle += DegToRad(angleVariation->GetValue(layerTime) * randCoeff);
 
-	particle->sizeOverLife = 1.0f;
+	particle->sizeOverLife.x = 1.0f;
+	particle->sizeOverLife.y = 1.0f;
 	particle->velocityOverLife = 1.0f;
 	particle->spinOverLife = 1.0f;
 //	particle->forceOverLife0 = 1.0f;
@@ -551,8 +571,8 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 void ParticleLayer::ProcessParticle(Particle * particle)
 {
 	float32 t = particle->life / particle->lifeTime;
-	if (sizeOverLife)
-		particle->sizeOverLife = sizeOverLife->GetValue(t);
+	if (sizeOverLifeXY)
+		particle->sizeOverLife = sizeOverLifeXY->GetValue(t);
 	if (spinOverLife)
 		particle->spinOverLife = spinOverLife->GetValue(t);
 	if (velocityOverLife)
@@ -610,14 +630,16 @@ void ParticleLayer::Draw(Camera * camera)
 		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
 	}
 
+	const Vector2& drawPivotPoint = GetDrawPivotPoint();
 	switch(type)
 	{
 		case TYPE_PARTICLES:
+		case TYPE_SUPEREMITTER_PARTICLES:
 		{
 			Particle * current = head;
 			while(current)
 			{
-				sprite->SetPivotPoint(pivotPoint);
+				sprite->SetPivotPoint(drawPivotPoint);
 				current->Draw();
 				current = current->next;
 			}
@@ -627,7 +649,7 @@ void ParticleLayer::Draw(Camera * camera)
 		{
 			if(head)
 			{	
-				sprite->SetPivotPoint(pivotPoint);
+				sprite->SetPivotPoint(drawPivotPoint);
 				head->Draw();
 			}
 			break;
@@ -636,7 +658,7 @@ void ParticleLayer::Draw(Camera * camera)
 }
 
 
-void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
+void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 {
 // 	PropertyLine<float32> * life;				// in seconds
 // 	PropertyLine<float32> * lifeVariation;		// variation part of life that added to particle life during generation of the particle
@@ -673,8 +695,7 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 	YamlNode * typeNode = node->Get("layerType");
 	if (typeNode)
 	{
-		if (typeNode->AsString() == "single")
-			type = TYPE_SINGLE_PARTICLE;
+		type = StringToLayerType(typeNode->AsString(), TYPE_PARTICLES);
 	}
 
 	YamlNode * nameNode = node->Get("name");
@@ -682,29 +703,23 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 	{
 		layerName = nameNode->AsString();
 	}
-	
+
+	YamlNode * pivotPointNode = node->Get("pivotPoint");
+	if(pivotPointNode)
+	{
+		layerPivotPoint = pivotPointNode->AsPoint();
+	}
+
 	YamlNode * spriteNode = node->Get("sprite");
 	if (spriteNode)
 	{
-		YamlNode * pivotPointNode = node->Get("pivotPoint");
-		
-		const String relativePathName = spriteNode->AsString();
-		relativeSpriteName = relativePathName;
-		String configFolder, configFile;
-		FileSystem::SplitPath(configPath, configFolder, configFile);
-		
-		String path = FileSystem::Instance()->GetCanonicalPath(configFolder+relativePathName);
-		Sprite * _sprite = Sprite::Create(path);
-		Vector2 pivotPointTemp;
-		if(pivotPointNode)
-		{
-			pivotPointTemp = pivotPointNode->AsPoint();
-		}
+		// Store the absolute path to sprite.
+		spritePath = FilePath(configPath.GetDirectory(), spriteNode->AsString());
+
+		Sprite * _sprite = Sprite::Create(spritePath);
 		SetSprite(_sprite);
-		pivotPoint = Vector2(_sprite->GetWidth() / 2.0f + pivotPointTemp.x, _sprite->GetHeight() / 2.0f + pivotPointTemp.y);
         SafeRelease(_sprite);
 	}
-
 
 	colorOverLife = PropertyLineYamlReader::CreateColorPropertyLineFromYamlNode(node, "colorOverLife");
 	colorRandom = PropertyLineYamlReader::CreateColorPropertyLineFromYamlNode(node, "colorRandom");
@@ -728,11 +743,31 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 	number = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "number");	
 	numberVariation = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "numberVariation");	
 
-	size = PropertyLineYamlReader::CreateVector2PropertyLineFromYamlNode(node, "size");	
-	sizeVariation = PropertyLineYamlReader::CreateVector2PropertyLineFromYamlNode(node, "sizeVariation");	
-	sizeOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "sizeOverLife");	
+	size = PropertyLineYamlReader::CreateVector2PropertyLineFromYamlNode(node, "size");
+	sizeVariation = PropertyLineYamlReader::CreateVector2PropertyLineFromYamlNode(node, "sizeVariation");
 
-	velocity = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "velocity");	
+	sizeOverLifeXY = PropertyLineYamlReader::CreateVector2PropertyLineFromYamlNode(node, "sizeOverLifeXY");
+
+	// Yuri Coder, 2013/04/03. sizeOverLife is outdated and kept here for the backward compatibility only.
+	// New property is sizeOverlifeXY and contains both X and Y components.
+	RefPtr< PropertyLine<float32> > sizeOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "sizeOverLife");
+	if (sizeOverLife)
+	{
+		if (sizeOverLifeXY)
+		{
+			// Both properties can't be present in the same config.
+			Logger::Error("Both sizeOverlife and sizeOverlifeXY are defined for Particle Layer %s, taking sizeOverlifeXY as default",
+						  configPath.GetAbsolutePathname().c_str());
+			DVASSERT(false);
+		}
+		else
+		{
+			// Only the outdated sizeOverlife is defined - create sizeOverlifeXY property based on outdated one.
+			FillSizeOverlifeXY(sizeOverLife);
+		}
+	}
+
+	velocity = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "velocity");
 	velocityVariation = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "velocityVariation");	
 	velocityOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "velocityOverLife");
 	
@@ -807,7 +842,16 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 	{
 		isDisabled = isDisabledNode->AsBool();
 	}
-	
+
+	// Load the Inner Emitter parameters.
+	YamlNode * innerEmitterPathNode = node->Get("innerEmitterPath");
+	if (innerEmitterPathNode)
+	{
+		innerEmitterPath = innerEmitterPathNode->AsString();
+		CreateInnerEmitter();
+		innerEmitter->LoadFromYaml(this->innerEmitterPath);
+	}
+
 	// Yuri Coder, 2013/01/31. After all the data is loaded, check the Frame Overlife timelines and
 	// synchronize them with the maximum available frames in the sprite. See also DF-573.
 	UpdateFrameTimeline();
@@ -822,22 +866,18 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "name", layerName);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "type", "layer");
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "layerType",
-                                                                 this->type == TYPE_SINGLE_PARTICLE ? "single" : "particles");
+																 LayerTypeToString(type, "particles"));
     if (this->IsLong())
     {
         PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "isLong", true);
     }
-    
-    if (this->sprite)
-    {
-        Vector2 pivotPoint(this->pivotPoint.x - (this->sprite->GetWidth() / 2.0f),
-                           this->pivotPoint.y - (this->sprite->GetHeight() / 2.0f));
-        PropertyLineYamlWriter::WritePropertyValueToYamlNode<Vector2>(layerNode, "pivotPoint", pivotPoint);
-    }
+
+	PropertyLineYamlWriter::WritePropertyValueToYamlNode<Vector2>(layerNode, "pivotPoint", layerPivotPoint);
 
     // Truncate an extension of the sprite file.
+	String relativePath = spritePath.GetRelativePathname(emitter->GetConfigPath().GetDirectory());
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "sprite",
-        this->relativeSpriteName.substr(0, this->relativeSpriteName.size()-4));
+        relativePath.substr(0, relativePath.size()-4));
 
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "life", this->life);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "lifeVariation", this->lifeVariation);
@@ -846,7 +886,7 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
     
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector2>(layerNode, "size", this->size);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector2>(layerNode, "sizeVariation", this->sizeVariation);
-    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "sizeOverLife", this->sizeOverLife);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector2>(layerNode, "sizeOverLifeXY", this->sizeOverLifeXY);
     
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "velocity", this->velocity);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "velocityVariation", this->velocityVariation);
@@ -881,6 +921,11 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "endTime", this->endTime);
 
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "isDisabled", this->isDisabled);
+
+	if (innerEmitter)
+	{
+		PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "innerEmitterPath", this->innerEmitterPath.GetAbsolutePathname());
+	}
 
     // Now write the forces.
     SaveForcesToYamlNode(layerNode);
@@ -918,24 +963,9 @@ Particle * ParticleLayer::GetHeadParticle()
 	return head;
 }
 
-const String & ParticleLayer::GetRelativeSpriteName()
-{
-	return relativeSpriteName;
-}
-
 RenderBatch * ParticleLayer::GetRenderBatch()
 {
 	return renderBatch;
-}
-
-void ParticleLayer::ReloadSprite()
-{
-	if (this->sprite)
-	{
-		this->sprite->Reload();
-	}
-	
-	UpdateFrameTimeline();
 }
 
 void ParticleLayer::UpdateFrameTimeline()
@@ -1004,4 +1034,175 @@ void ParticleLayer::CleanupForces()
 	this->forces.clear();
 }
 
+void ParticleLayer::FillSizeOverlifeXY(RefPtr< PropertyLine<float32> > sizeOverLife)
+{
+	Vector<PropValue<float32> > wrappedPropertyValues = PropLineWrapper<float32>(sizeOverLife).GetProps();
+	if (wrappedPropertyValues.empty())
+	{
+		this->sizeOverLifeXY = NULL;
+		return;
+	}
+	else if (wrappedPropertyValues.size() == 1)
+	{
+		Vector2 singleValue(wrappedPropertyValues[0].v, wrappedPropertyValues[0].v);
+		this->sizeOverLifeXY = RefPtr< PropertyLine<Vector2> >(new PropertyLineValue<Vector2>(singleValue));
+		return;
+	}
+
+	RefPtr<PropertyLineKeyframes<Vector2> > sizeOverLifeXYKeyframes =
+		RefPtr<PropertyLineKeyframes<Vector2> >(new PropertyLineKeyframes<Vector2>);
+	int32 propsCount = wrappedPropertyValues.size();
+	for (int32 i = 0; i < propsCount; i ++)
+	{
+		Vector2 curValue(wrappedPropertyValues[i].v, wrappedPropertyValues[i].v);
+		sizeOverLifeXYKeyframes->AddValue(wrappedPropertyValues[i].t, curValue);
+	}
+	
+	this->sizeOverLifeXY = sizeOverLifeXYKeyframes;
 }
+
+void ParticleLayer::SetPlaybackSpeed(float32 value)
+{
+	this->playbackSpeed = Clamp(value, PARTICLE_EMITTER_MIN_PLAYBACK_SPEED,
+								PARTICLE_EMITTER_MAX_PLAYBACK_SPEED);
+	
+	// Lookup through the active particles to update playback speed for the
+	// inner emitters.
+	UpdatePlaybackSpeedForInnerEmitters(value);
+}
+
+float32 ParticleLayer::GetPlaybackSpeed()
+{
+	return this->playbackSpeed;
+}
+
+int32 ParticleLayer::GetActiveParticlesCount()
+{
+	if (!innerEmitter)
+	{
+		return count;
+	}
+
+	// Ask each end every active particle's inner emitter regarding the total.
+	int32 totalCount = count;
+	Particle* current = head;
+	while (current)
+	{
+		if (current->GetInnerEmitter())
+		{
+			ParticleEmitter* currentInnerEmitter = current->GetInnerEmitter();
+			for (Vector<ParticleLayer*>::iterator iter = currentInnerEmitter->GetLayers().begin();
+				 iter != currentInnerEmitter->GetLayers().end(); iter ++)
+			{
+				totalCount += (*iter)->GetActiveParticlesCount();
+			}
+		}
+		
+		current = current->next;
+	}
+
+	return totalCount;
+}
+
+float32 ParticleLayer::GetActiveParticlesArea()
+{
+	// Yuri Coder, 2013/04/16. Since the particles size are updated in runtime,
+	// we have to recalculate their area each time this method is called.
+	float32 activeArea = 0;
+	Particle * current = head;
+	while(current)
+	{
+		activeArea += current->GetArea();
+		current = current->next;
+	}
+
+	return activeArea;
+}
+
+ParticleLayer::eType ParticleLayer::StringToLayerType(const String& layerTypeName, eType defaultLayerType)
+{
+	int32 layerTypesCount = sizeof(layerTypeNamesInfoMap) / sizeof(*layerTypeNamesInfoMap);
+	for (int32 i = 0; i < layerTypesCount; i ++)
+	{
+		if (layerTypeNamesInfoMap[i].layerTypeName == layerTypeName)
+		{
+			return layerTypeNamesInfoMap[i].layerType;
+		}
+	}
+	
+	return defaultLayerType;
+}
+
+String ParticleLayer::LayerTypeToString(eType layerType, const String& defaultLayerTypeName)
+{
+	int32 layerTypesCount = sizeof(layerTypeNamesInfoMap) / sizeof(*layerTypeNamesInfoMap);
+	for (int32 i = 0; i < layerTypesCount; i ++)
+	{
+		if (layerTypeNamesInfoMap[i].layerType == layerType)
+		{
+			return layerTypeNamesInfoMap[i].layerTypeName;
+		}
+	}
+	
+	return defaultLayerTypeName;
+}
+
+void ParticleLayer::UpdatePlaybackSpeedForInnerEmitters(float value)
+{
+	Particle* current = this->head;
+	while (current)
+	{
+		if (current->GetInnerEmitter())
+		{
+			current->GetInnerEmitter()->SetPlaybackSpeed(value);
+		}
+		
+		current = current->next;
+	}
+}
+
+void ParticleLayer::CreateInnerEmitter()
+{
+	SafeRelease(innerEmitter);
+	innerEmitter = new ParticleEmitter();
+}
+
+ParticleEmitter* ParticleLayer::GetInnerEmitter()
+{
+	return innerEmitter;
+}
+
+void ParticleLayer::RemoveInnerEmitter()
+{
+	DeleteAllParticles();
+	SafeRelease(innerEmitter);
+}
+
+void ParticleLayer::SetDisabled(bool value)
+{
+	this->isDisabled = value;
+	
+	// Update all the inner layers.
+	Particle* current = this->head;
+	while (current)
+	{
+		if (current->GetInnerEmitter())
+		{
+			current->GetInnerEmitter()->SetDisabledForAllLayers(value);
+		}
+
+		current = current->next;
+	}
+}
+
+Vector2 ParticleLayer::GetPivotPoint() const
+{
+	return layerPivotPoint;
+}
+
+void ParticleLayer::SetPivotPoint(const Vector2& value)
+{
+	this->layerPivotPoint = value;
+}
+
+};

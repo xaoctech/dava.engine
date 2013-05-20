@@ -210,14 +210,18 @@ namespace DAVA
 	void CorePlatformAndroid::StartForeground()
 	{
 		Logger::Debug("[CorePlatformAndroid::StartForeground] start");
-		//TODO: VK: add code for handling
 
 		if(wasCreated)
 		{
-			ApplicationCore * core = Core::Instance()->GetApplicationCore();
+			DAVA::ApplicationCore * core = DAVA::Core::Instance()->GetApplicationCore();
 			if(core)
 			{
+				DAVA::Core::Instance()->GoForeground();
 				core->OnResume();
+			}
+			else
+			{
+				DAVA::Core::Instance()->SetIsActive(true);
 			}
 
 			foreground = true;
@@ -225,7 +229,7 @@ namespace DAVA
 		Logger::Debug("[CorePlatformAndroid::StartForeground] end");
 	}
 
-	void CorePlatformAndroid::StopForeground()
+	void CorePlatformAndroid::StopForeground(bool isLock)
 	{
 		Logger::Debug("[CorePlatformAndroid::StopForeground]");
 		//TODO: VK: add code for handling
@@ -233,11 +237,7 @@ namespace DAVA
 		RenderResource::SaveAllResourcesToSystemMem();
 		RenderResource::LostAllResources();
 
-		ApplicationCore * core = Core::Instance()->GetApplicationCore();
-		if(core)
-		{
-			core->OnSuspend();
-		}
+		DAVA::Core::Instance()->GoBackground(isLock);
 
 		foreground = false;
 
@@ -282,7 +282,7 @@ namespace DAVA
 		SafeDelete(keyEvent);
 	}
 
-	UIEvent CorePlatformAndroid::CreateInputEvent(int32 action, int32 id, float32 x, float32 y, long time, int32 source)
+	UIEvent CorePlatformAndroid::CreateInputEvent(int32 action, int32 id, float32 x, float32 y, float64 time, int32 source)
 	{
 		int32 phase = DAVA::UIEvent::PHASE_DRAG;
 		switch(action)
@@ -339,10 +339,10 @@ namespace DAVA
 		assetMngr = mngr;
 	}
 
-	void CorePlatformAndroid::OnInput(int32 action, int32 id, float32 x, float32 y, long time, int32 source)
+	void CorePlatformAndroid::OnInput(int32 action, int32 id, float32 x, float32 y, float64 time, int32 source)
 	{
 //		Logger::Debug("[CorePlatformAndroid::OnTouch] IN totalTouches.size = %d", totalTouches.size());
-//		Logger::Debug("[CorePlatformAndroid::OnTouch] action is %d, id is %d, x is %f, y is %f, time is %d", action, id, x, y, time);
+//		Logger::Debug("[CorePlatformAndroid::OnTouch] action is %d, id is %d, x is %f, y is %f, time is %lf", action, id, x, y, time);
 
 		UIEvent touchEvent = CreateInputEvent(action, id, x, y, time, source);
 		Vector<DAVA::UIEvent> activeTouches;
@@ -386,8 +386,8 @@ namespace DAVA
 	{
 		if(androidDelegate)
 		{
-			String path = FileSystem::Instance()->SystemPathForFrameworkPath(documentsPathname);
-			return androidDelegate->DownloadHttpFile(url, path);
+			FilePath path(documentsPathname);
+			return androidDelegate->DownloadHttpFile(url, path.GetAbsolutePathname());
 		}
 
 		return false;

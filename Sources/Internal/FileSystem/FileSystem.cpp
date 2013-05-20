@@ -53,58 +53,12 @@
 #include <sys/stat.h>
 #include <sys/errno.h>
 
-#ifdef USE_LOCAL_RESOURCES
-#define USE_LOCAL_RESOURCES_PATH "/mnt/sdcard/DavaProject/Data/"
-#endif
-
 #endif //PLATFORMS
 
 namespace DAVA
 {
 
 	
-String FileSystem::virtualBundlePath = "";
-	
-    void FileSystem::ReplaceBundleName(const String &newBundlePath)
-	{
-		virtualBundlePath = newBundlePath;	
-	}
-	
-	
-#if defined(__DAVAENGINE_WIN32__)
-    const char * FileSystem::FilepathRelativeToBundle(const char * relativePathname)
-	{
-		if(virtualBundlePath.empty())
-		{
-			String currentFolder = FileSystem::Instance()->GetCurrentWorkingDirectory();
-			currentFolder = FileSystem::Instance()->GetCanonicalPath(currentFolder);
-			return Format("%s/Data/%s", currentFolder.c_str(), relativePathname);
-		}
-		else
-		{
-			return Format("%s/%s", virtualBundlePath.c_str(), relativePathname);
-		}
-	}
-#endif //#if defined(__DAVAENGINE_WIN32__)
-	
-	
-#if defined(__DAVAENGINE_ANDROID__)
-    const char * FileSystem::FilepathRelativeToBundle(const char * relativePathname)
-	{
-#ifdef USE_LOCAL_RESOURCES
-		return Format("%s%s", USE_LOCAL_RESOURCES_PATH, relativePathname);
-#else
-		return Format("Data%s", relativePathname);
-#endif
-	}
-#endif //#if defined(__DAVAENGINE_ANDROID__)
-	
-const char * FileSystem::FilepathRelativeToBundle(const String & relativePathname)
-{
-    return FilepathRelativeToBundle(relativePathname.c_str());
-}
-
-    
 FileSystem::FileSystem()
 {
 }
@@ -120,15 +74,17 @@ FileSystem::~FileSystem()
 	resourceArchiveList.clear();
 }
 
-FileSystem::eCreateDirectoryResult FileSystem::CreateDirectory(const String & filePath, bool isRecursive)
+FileSystem::eCreateDirectoryResult FileSystem::CreateDirectory(const FilePath & filePath, bool isRecursive)
 {
-    String path = SystemPathForFrameworkPath(filePath);
+    DVASSERT(filePath.GetType() != FilePath::PATH_IN_RESOURCES);
+    
 	if (!isRecursive)
 	{
-        return CreateExactDirectory(path);
+        return CreateExactDirectory(filePath);
 	}
 
-	std::replace(path.begin(), path.end(),'\\','/');
+    String path = filePath.GetAbsolutePathname();
+
 	Vector<String> tokens;
     Split(path, "/", tokens);
     
@@ -144,8 +100,8 @@ FileSystem::eCreateDirectoryResult FileSystem::CreateDirectory(const String & fi
         }
     }
 #else //#if defined (__DAVAENGINE_WIN32__)
-    size_t find = path.find(":");
-    if(find == path.npos)
+    String::size_type find = path.find(":");
+    if(find == String::npos)
 	{
         dir = "/";
     }
@@ -164,25 +120,29 @@ FileSystem::eCreateDirectoryResult FileSystem::CreateDirectory(const String & fi
 	return DIRECTORY_CANT_CREATE;
 }
     
-FileSystem::eCreateDirectoryResult FileSystem::CreateExactDirectory(const String & filePath)
+FileSystem::eCreateDirectoryResult FileSystem::CreateExactDirectory(const FilePath & filePath)
 {
+    DVASSERT(filePath.GetType() != FilePath::PATH_IN_RESOURCES);
+
     if(IsDirectory(filePath))
         return DIRECTORY_EXISTS;
     
 #ifdef __DAVAENGINE_WIN32__
-    BOOL res = ::CreateDirectoryA(filePath.c_str(), 0);
+    BOOL res = ::CreateDirectoryA(filePath.GetAbsolutePathname().c_str(), 0);
     return (res == 0) ? DIRECTORY_CANT_CREATE : DIRECTORY_CREATED;
 #elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-    int res = mkdir(filePath.c_str(), 0777);
+    int res = mkdir(filePath.GetAbsolutePathname().c_str(), 0777);
     return (res == 0) ? (DIRECTORY_CREATED) : (DIRECTORY_CANT_CREATE);
 #endif //PLATFORMS
 }
 
 
-bool FileSystem::CopyFile(const String & existingFile, const String & newFile)
+bool FileSystem::CopyFile(const FilePath & existingFile, const FilePath & newFile)
 {
+    DVASSERT(newFile.GetType() != FilePath::PATH_IN_RESOURCES);
+
 #ifdef __DAVAENGINE_WIN32__
-	BOOL ret = ::CopyFileA(SystemPathForFrameworkPath(existingFile).c_str(), SystemPathForFrameworkPath(newFile).c_str(), true);
+	BOOL ret = ::CopyFileA(existingFile.GetAbsolutePathname().c_str(), newFile.GetAbsolutePathname().c_str(), true);
 	return ret != 0;
 #elif defined(__DAVAENGINE_ANDROID__)
 
@@ -206,12 +166,12 @@ bool FileSystem::CopyFile(const String & existingFile, const String & newFile)
                 }
                 else
                 {
-                    Logger::Error("[FileSystem::CopyFile] can't write to file %s", newFile.c_str());
+                    Logger::Error("[FileSystem::CopyFile] can't write to file %s", newFile.GetAbsolutePathname().c_str());
                 }
             }
             else
             {
-                Logger::Error("[FileSystem::CopyFile] can't read file %s", existingFile.c_str());
+                Logger::Error("[FileSystem::CopyFile] can't read file %s", existingFile.GetAbsolutePathname().c_str());
             }
             
             SafeDeleteArray(data);
@@ -228,34 +188,43 @@ bool FileSystem::CopyFile(const String & existingFile, const String & newFile)
 	return copied;
 
 #else //iphone & macos
-    int ret = copyfile(SystemPathForFrameworkPath(existingFile).c_str(), SystemPathForFrameworkPath(newFile).c_str(), NULL, COPYFILE_ALL | COPYFILE_EXCL);
+    int ret = copyfile(existingFile.GetAbsolutePathname().c_str(), newFile.GetAbsolutePathname().c_str(), NULL, COPYFILE_ALL | COPYFILE_EXCL);
     return ret==0;
 #endif //PLATFORMS
 }
 
-bool FileSystem::MoveFile(const String & existingFile, const String & newFile, bool overwriteExisting/* = false*/)
+bool FileSystem::MoveFile(const FilePath & existingFile, const FilePath & newFile, bool overwriteExisting/* = false*/)
 {
+    DVASSERT(newFile.GetType() != FilePath::PATH_IN_RESOURCES);
+
 #ifdef __DAVAENGINE_WIN32__
 	DWORD flags = (overwriteExisting) ? MOVEFILE_REPLACE_EXISTING : 0;
-	BOOL ret = ::MoveFileExA(existingFile.c_str(), newFile.c_str(), flags);
+	BOOL ret = ::MoveFileExA(existingFile.GetAbsolutePathname().c_str(), newFile.GetAbsolutePathname().c_str(), flags);
 	return ret != 0;
 #elif defined(__DAVAENGINE_ANDROID__)
-	int ret = rename(existingFile.c_str(), newFile.c_str());
+	if (!overwriteExisting && access(newFile.GetAbsolutePathname().c_str(), 0) != -1)
+	{
+		return false;
+	}
+	remove(newFile.GetAbsolutePathname().c_str());
+	int ret = rename(existingFile.GetAbsolutePathname().c_str(), newFile.GetAbsolutePathname().c_str());
 	return ret == 0;
 #else //iphone & macos
-
 	int flags = COPYFILE_ALL | COPYFILE_MOVE;
 	if(!overwriteExisting)
 		flags |= COPYFILE_EXCL;
 	
-	int ret = copyfile(existingFile.c_str(), newFile.c_str(), NULL, flags); //
+	int ret = copyfile(existingFile.GetAbsolutePathname().c_str(), newFile.GetAbsolutePathname().c_str(), NULL, flags);
 	return ret==0;
 #endif //PLATFORMS
 }
 
 
-bool FileSystem::CopyDirectory(const String & sourceDirectory, const String & destinationDirectory)
+bool FileSystem::CopyDirectory(const FilePath & sourceDirectory, const FilePath & destinationDirectory)
 {
+    DVASSERT(destinationDirectory.GetType() != FilePath::PATH_IN_RESOURCES);
+    DVASSERT(sourceDirectory.IsDirectoryPathname() && destinationDirectory.IsDirectoryPathname());
+    
 	bool ret = true;
 
 	FileList fileList(sourceDirectory);
@@ -266,9 +235,8 @@ bool FileSystem::CopyDirectory(const String & sourceDirectory, const String & de
 	{
 		if(!fileList.IsDirectory(i) && !fileList.IsNavigationDirectory(i))
 		{
-			const String & pathName = fileList.GetPathname(i);
-			FileSystem::SplitPath(pathName, pathOnly, fileOnly);
-			if(!CopyFile(pathName, destinationDirectory+"/"+fileOnly))
+            const FilePath destinationPath = destinationDirectory + fileList.GetFilename(i);
+			if(!CopyFile(fileList.GetPathname(i), destinationPath))
 			{
 				ret = false;
 			}
@@ -278,15 +246,20 @@ bool FileSystem::CopyDirectory(const String & sourceDirectory, const String & de
 	return ret;
 }
 	
-bool FileSystem::DeleteFile(const String & filePath)
+bool FileSystem::DeleteFile(const FilePath & filePath)
 {
+    DVASSERT(filePath.GetType() != FilePath::PATH_IN_RESOURCES);
+
 	// function unlink return 0 on success, -1 on error
-	int res = remove(SystemPathForFrameworkPath(filePath).c_str());
+	int res = remove(filePath.GetAbsolutePathname().c_str());
 	return (res == 0);
 }
 	
-bool FileSystem::DeleteDirectory(const String & path, bool isRecursive)
+bool FileSystem::DeleteDirectory(const FilePath & path, bool isRecursive)
 {
+    DVASSERT(path.GetType() != FilePath::PATH_IN_RESOURCES);
+    DVASSERT(path.IsDirectoryPathname());
+    
 	FileList * fileList = new FileList(path);
 	for(int i = 0; i < fileList->GetCount(); ++i)
 	{
@@ -312,7 +285,7 @@ bool FileSystem::DeleteDirectory(const String & path, bool isRecursive)
 	}
 	SafeRelease(fileList);
 #ifdef __DAVAENGINE_WIN32__
-	String sysPath = SystemPathForFrameworkPath(path);
+	String sysPath = path.GetAbsolutePathname();
 	int32 chmodres = _chmod(sysPath.c_str(), _S_IWRITE); // change read-only file mode
 	int32 res = _rmdir(sysPath.c_str());
 	return (res == 0);
@@ -323,14 +296,17 @@ bool FileSystem::DeleteDirectory(const String & path, bool isRecursive)
 	}
 	return (res != 0);*/
 #elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-	int32 res = rmdir(SystemPathForFrameworkPath(path).c_str());
+	int32 res = rmdir(path.GetAbsolutePathname().c_str());
 	return (res == 0);
 #endif //PLATFORMS
 }
 	
-uint32 FileSystem::DeleteDirectoryFiles(const String & path, bool isRecursive)
+uint32 FileSystem::DeleteDirectoryFiles(const FilePath & path, bool isRecursive)
 {
-	uint32 fileCount = 0; 
+    DVASSERT(path.GetType() != FilePath::PATH_IN_RESOURCES);
+    DVASSERT(path.IsDirectoryPathname());
+
+	uint32 fileCount = 0;
 	
 	FileList * fileList = new FileList(path);
 	for(int i = 0; i < fileList->GetCount(); ++i)
@@ -358,93 +334,64 @@ uint32 FileSystem::DeleteDirectoryFiles(const String & path, bool isRecursive)
 
 
 	
-File *FileSystem::CreateFileForFrameworkPath(const String & frameworkPath, uint32 attributes)
+File *FileSystem::CreateFileForFrameworkPath(const FilePath & frameworkPath, uint32 attributes)
 {
 #if defined(__DAVAENGINE_ANDROID__)
-    String::size_type find = frameworkPath.find("~res:");
-
-	if(String::npos != find)
-	{
+    if(frameworkPath.GetType() == FilePath::PATH_IN_RESOURCES)
+    {
 #ifdef USE_LOCAL_RESOURCES
-		String path;
-		path = USE_LOCAL_RESOURCES_PATH;
-		path += frameworkPath.c_str() + 5;
-		return File::CreateFromSystemPath(SystemPathForFrameworkPath(path), attributes);
+		return File::CreateFromSystemPath(frameworkPath, attributes);
 #else
-		return APKFile::CreateFromAssets(SystemPathForFrameworkPath(frameworkPath), attributes);
+		return APKFile::CreateFromAssets(frameworkPath, attributes);
 #endif
-	}
+    }
 	else
 	{
-		return File::CreateFromSystemPath(SystemPathForFrameworkPath(frameworkPath), attributes);
+		return File::CreateFromSystemPath(frameworkPath, attributes);
 	}
-
+    
 #else //#if defined(__DAVAENGINE_ANDROID__)
-	return File::CreateFromSystemPath(SystemPathForFrameworkPath(frameworkPath), attributes);
+	return File::CreateFromSystemPath(frameworkPath, attributes);
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 }
 
-const String & FileSystem::SystemPathForFrameworkPath(const String & frameworkPath)
-{
-	//DVASSERT(frameworkPath.size() > 0);
-	if(frameworkPath[0] != '~')
-	{
-		return frameworkPath;
-	}
-	tempRetPath = frameworkPath;
-	size_t find = tempRetPath.find("~res:");
 
-	if(find != tempRetPath.npos)
-	{
-		tempRetPath = tempRetPath.erase(0, 5);
-		tempRetPath = FilepathRelativeToBundle("") + tempRetPath;
-	}
-	else
-	{
-		find = tempRetPath.find("~doc:");
-		if(find != tempRetPath.npos)
-		{
-			tempRetPath = tempRetPath.erase(0, 5);
-			tempRetPath = FilepathInDocuments("") + tempRetPath;
-		}
-	}
-    
-    tempRetPath = NormalizePath(tempRetPath);
-	return tempRetPath;
-}
-	
-const String & FileSystem::GetCurrentWorkingDirectory()
+const FilePath & FileSystem::GetCurrentWorkingDirectory()
 {
 	char tempDir[2048];
 #if defined(__DAVAENGINE_WIN32__)
 	::GetCurrentDirectoryA(2048, tempDir);
-	currentWorkingDirectory = tempDir;
+	currentWorkingDirectory = FilePath(tempDir);
+	currentWorkingDirectory.MakeDirectoryPathname();
 	return currentWorkingDirectory;
 #elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 	getcwd(tempDir, 2048);
-	currentWorkingDirectory = tempDir;
+	currentWorkingDirectory = FilePath(tempDir);
+	currentWorkingDirectory.MakeDirectoryPathname();
 	return currentWorkingDirectory;
 #endif //PLATFORMS
-	return currentWorkingDirectory; 
+	currentWorkingDirectory.MakeDirectoryPathname();
+	return currentWorkingDirectory;
 }
 
-bool FileSystem::SetCurrentWorkingDirectory(const String & newWorkingDirectory)
+bool FileSystem::SetCurrentWorkingDirectory(const FilePath & newWorkingDirectory)
 {
+    DVASSERT(newWorkingDirectory.IsDirectoryPathname());
+    
 #if defined(__DAVAENGINE_WIN32__)
-	BOOL res = ::SetCurrentDirectoryA(newWorkingDirectory.c_str());
+	BOOL res = ::SetCurrentDirectoryA(newWorkingDirectory.GetAbsolutePathname().c_str());
 	return (res != 0);
 #elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-	return !(chdir(newWorkingDirectory.c_str()) == 0);
+    
+	return (chdir(newWorkingDirectory.GetAbsolutePathname().c_str()) == 0);
 #endif //PLATFORMS
 	return false; 
 }
   
-bool FileSystem::IsFile(const String & pathToCheck)
+bool FileSystem::IsFile(const FilePath & pathToCheck)
 {
-    String pathname = SystemPathForFrameworkPath(pathToCheck);
-    
 	struct stat s;
- 	if(stat(pathname.c_str(),&s) == 0)
+ 	if(stat(pathToCheck.GetAbsolutePathname().c_str(),&s) == 0)
 	{
 		return (0 != (s.st_mode & S_IFREG));
 	}
@@ -452,17 +399,16 @@ bool FileSystem::IsFile(const String & pathToCheck)
     return false;
 }
 
-bool FileSystem::IsDirectory(const String & pathToCheck)
+bool FileSystem::IsDirectory(const FilePath & pathToCheck)
 {
-    String pathname = SystemPathForFrameworkPath(pathToCheck);
 
 #if defined (__DAVAENGINE_WIN32__)
-	DWORD stats = GetFileAttributesA(pathname.c_str());
+	DWORD stats = GetFileAttributesA(pathToCheck.GetAbsolutePathname().c_str());
 	return (stats != -1) && (0 != (stats & FILE_ATTRIBUTE_DIRECTORY));
 #else //#if defined (__DAVAENGINE_WIN32__)
 
 	struct stat s;
-	if(stat(pathname.c_str(), &s) == 0)
+	if(stat(pathToCheck.GetAbsolutePathname().c_str(), &s) == 0)
 	{
 		return (0 != (s.st_mode & S_IFDIR));
 	}
@@ -471,39 +417,24 @@ bool FileSystem::IsDirectory(const String & pathToCheck)
 	return false;
 }
 
-const String & FileSystem::GetCurrentDocumentsDirectory()
+const FilePath & FileSystem::GetCurrentDocumentsDirectory()
 {
     return currentDocDirectory; 
 }
 
-void FileSystem::SetCurrentDocumentsDirectory(const String & newDocDirectory)
+void FileSystem::SetCurrentDocumentsDirectory(const FilePath & newDocDirectory)
 {
     currentDocDirectory = newDocDirectory;
 }
 
-const String FileSystem::FilepathInDocuments(const char * relativePathname)
-{
-    //return Format("./Documents/%s", relativePathname);
-    return currentDocDirectory + relativePathname;
-}
-
-const String FileSystem::FilepathInDocuments(const String & relativePathname)
-{
-    return FilepathInDocuments(relativePathname.c_str());
-}
-
 void FileSystem::SetDefaultDocumentsDirectory()
 {
-#if defined(__DAVAENGINE_WIN32__)
-    SetCurrentDocumentsDirectory(GetUserDocumentsPath() + "DAVAProject\\");
-#elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
     SetCurrentDocumentsDirectory(GetUserDocumentsPath() + "DAVAProject/");
-#endif //PLATFORMS
 }
 
 
 #if defined(__DAVAENGINE_WIN32__)
-const String FileSystem::GetUserDocumentsPath()
+const FilePath FileSystem::GetUserDocumentsPath()
 {
     char * szPath = new char[MAX_PATH];
     SHGetFolderPathA(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, szPath);
@@ -512,10 +443,13 @@ const String FileSystem::GetUserDocumentsPath()
     szPath[n+1] = 0;
     String str(szPath);
     delete[] szPath;
-    return str;
+
+	FilePath docPath(str);
+	docPath.MakeDirectoryPathname();
+    return docPath;
 }
 
-const String FileSystem::GetPublicDocumentsPath()
+const FilePath FileSystem::GetPublicDocumentsPath()
 {
     char * szPath = new char[MAX_PATH];
     SHGetFolderPathA(NULL, CSIDL_COMMON_DOCUMENTS, NULL, SHGFP_TYPE_CURRENT, szPath);
@@ -524,19 +458,22 @@ const String FileSystem::GetPublicDocumentsPath()
     szPath[n+1] = 0;
     String str(szPath);
     delete[] szPath;
-    return str;
+
+	FilePath docPath(str);
+	docPath.MakeDirectoryPathname();
+	return docPath;
 }
 #endif //#if defined(__DAVAENGINE_WIN32__)
 
     
 #if defined(__DAVAENGINE_ANDROID__)
-const String FileSystem::GetUserDocumentsPath()
+const FilePath FileSystem::GetUserDocumentsPath()
 {
     CorePlatformAndroid *core = (CorePlatformAndroid *)Core::Instance();
     return core->GetExternalStoragePathname() + String("/");
 }
 
-const String FileSystem::GetPublicDocumentsPath()
+const FilePath FileSystem::GetPublicDocumentsPath()
 {
     CorePlatformAndroid *core = (CorePlatformAndroid *)Core::Instance();
     return core->GetExternalStoragePathname() + String("/");
@@ -544,197 +481,12 @@ const String FileSystem::GetPublicDocumentsPath()
 #endif //#if defined(__DAVAENGINE_ANDROID__)
     
     
-String FileSystem::RealPath(const String & _path)
-{
-	
-	String path = (_path);
-	std::replace(path.begin(), path.end(),'\\','/');
-	
-	const String & delims="/";
-	
-	// Skip delims at beginning, find start of first token
-	String::size_type lastPos = path.find_first_not_of(delims, 0);
-	// Find next delimiter @ end of token
-	String::size_type pos     = path.find_first_of(delims, lastPos);
-	
-	// output vector
-	Vector<String> tokens;
-	
-	
-	while (String::npos != pos || String::npos != lastPos)
-	{
-		// Found a token, add it to the vector.
-		tokens.push_back(path.substr(lastPos, pos - lastPos));
-		// Skip delims.  Note the "not_of". this is beginning of token
-		lastPos = path.find_first_not_of(delims, pos);
-		// Find next delimiter at end of token.
-		pos     = path.find_first_of(delims, lastPos);
-	}
-	
-	if (tokens.size() > 0)
-	{
-		if (tokens[0] == ".")
-		{
-			tokens[0] = FileSystem::Instance()->GetCurrentWorkingDirectory();
-			std::replace(tokens[0].begin(), tokens[0].end(),'\\','/');
-		}
-	}
-
-	String result;
-	
-	for (int i = 0; i < (int)tokens.size(); ++i)
-	{
-		if (tokens[i] == String("."))
-		{		
-			for (int k = i + 1; k < (int)tokens.size(); ++k)
-			{
-				tokens[k - 1] = tokens[k];
-			}
-			i--;
-			tokens.pop_back();
-			continue;
-		}
-		if (tokens[i] == String(".."))
-		{		
-			for (int k = i + 1; k < (int)tokens.size(); ++k)
-			{
-				tokens[k - 2] = tokens[k];
-			}
-			i-=2;
-			tokens.pop_back();
-			tokens.pop_back();
-			continue;
-		}	
-	}
-#if !defined(__DAVAENGINE_WIN32__)
-	result = "/";
-#endif
-	for (int k = 0; k < (int)tokens.size(); ++k)
-	{
-		result += tokens[k];
-		if (k + 1 != (int)tokens.size())
-			result += String("/");
-	}
-	return result;
-}
-
-String FileSystem::NormalizePath(const String & _path)
-{
-	if(_path.empty())
-		return String("");
-	
-	String path = (_path);
-    std::replace(path.begin(), path.end(),'\\','/');
-
-    Vector<String> tokens;
-    Split(path, "/", tokens);
-
-    //TODO: correctly process situation ../../folders/filename
-    for (int32 i = 0; i < (int32)tokens.size(); ++i)
-    {
-        if (String(".") == tokens[i])
-        {		
-            for (int32 k = i + 1; k < (int32)tokens.size(); ++k)
-            {
-                tokens[k - 1] = tokens[k];
-            }
-            --i;
-            tokens.pop_back();
-        }
-        else if ((1 <= i) && (String("..") == tokens[i] && String("..") != tokens[i-1]))
-        {		
-            for (int32 k = i + 1; k < (int32)tokens.size(); ++k)
-            {
-                tokens[k - 2] = tokens[k];
-            }
-            i-=2;
-            tokens.pop_back();
-            tokens.pop_back();
-        }	
-    }
-
-    String result = "";
-    if('/' == path[0])
-		result = "/";
-    
-    for (int32 k = 0; k < (int32)tokens.size(); ++k)
-    {
-        result += tokens[k];
-        if (k + 1 != (int32)tokens.size())
-            result += String("/");
-    }
-
-	//process last /
-	if(('/' == path[path.length() - 1]) && (path.length() != 1)) 
-		result += String("/");
-
-    return result;
-}
-
-    
-String FileSystem::GetCanonicalPath(const String &path)
-{
-	String canonicalPath = FileSystem::Instance()->NormalizePath(path);
-    
-    String::size_type resPos = canonicalPath.find("~res:");
-    String::size_type docPos = canonicalPath.find("~doc:");
-    
-    if(String::npos == resPos && String::npos == docPos)
-    {
-        String::size_type colonPos = canonicalPath.find(":");
-        if((String::npos != colonPos) && (colonPos < canonicalPath.length() - 1))
-        {
-            canonicalPath = canonicalPath.substr(colonPos + 1);
-        }
-    }
-    
-	return canonicalPath;
-}
-
-    
-String FileSystem::ReplaceExtension(const String & filename, const String & newExt)
-{
-	String::size_type dotpos = filename.rfind(".");
-	if (dotpos == String::npos)
-		return String();
-	
-	String result = filename.substr(0, dotpos) + newExt;
-	return result;
-}	
-
-String	FileSystem::GetExtension(const String & filename)
-{
-	String::size_type dotpos = filename.rfind(".");
-	if (dotpos == String::npos)
-		return String();
-	return filename.substr(dotpos);
-}
-	
-void  FileSystem::SplitPath(const String & filePath, String & path, String & filename)
-{
-	String fullPath(filePath);
-	std::replace(fullPath.begin(),fullPath.end(),'\\','/');
-	// now only Unix style slashes
-	String::size_type lastSlashPos = fullPath.find_last_of('/');
-	
-	if (lastSlashPos==String::npos)
-	{
-		path = "";
-		filename = fullPath;
-	}
-	else
-	{
-		path = fullPath.substr(0, lastSlashPos) + '/';
-		filename = fullPath.substr(lastSlashPos + 1, fullPath.size() - lastSlashPos - 1);
-	}
-}
-    
-String FileSystem::ReadFileContents(const String & pathname)
+String FileSystem::ReadFileContents(const FilePath & pathname)
 {
     File * fp = File::Create(pathname, File::OPEN|File::READ);
 	if (!fp)
 	{
-		Logger::Error("Failed to open file: %s", pathname.c_str());
+		Logger::Error("Failed to open file: %s", pathname.GetAbsolutePathname().c_str());
 		return 0;
 	}
 	uint32 fileSize = fp->GetSize();
@@ -744,7 +496,7 @@ String FileSystem::ReadFileContents(const String & pathname)
     
 	if (dataRead != fileSize)
 	{
-		Logger::Error("Failed to read data from file: %s", pathname.c_str());
+		Logger::Error("Failed to read data from file: %s", pathname.GetAbsolutePathname().c_str());
 		return 0;
 	}
     
@@ -754,12 +506,12 @@ String FileSystem::ReadFileContents(const String & pathname)
 }
 
 
-uint8 * FileSystem::ReadFileContents(const String & pathname, uint32 & fileSize)
+uint8 * FileSystem::ReadFileContents(const FilePath & pathname, uint32 & fileSize)
 {
     File * fp = File::Create(pathname, File::OPEN|File::READ);
 	if (!fp)
 	{
-		Logger::Error("Failed to open file: %s", pathname.c_str());
+		Logger::Error("Failed to open file: %s", pathname.GetAbsolutePathname().c_str());
 		return 0;
 	}
 	fileSize = fp->GetSize();
@@ -768,7 +520,7 @@ uint8 * FileSystem::ReadFileContents(const String & pathname, uint32 & fileSize)
     
 	if (dataRead != fileSize)
 	{
-		Logger::Error("Failed to read data from file: %s", pathname.c_str());
+		Logger::Error("Failed to read data from file: %s", pathname.GetAbsolutePathname().c_str());
 		return 0;
 	}
 
@@ -800,50 +552,6 @@ int32 FileSystem::Spawn(const String& command)
 	return 0;
 #endif
 }
-
-String FileSystem::AbsoluteToRelativePath(const String &folderPathname, const String &absolutePathname)
-{
-    String workingFolderPath = folderPathname;
-    String workingFilePath = absolutePathname;
-    
-    std::replace(workingFolderPath.begin(),workingFolderPath.end(),'\\','/');
-    std::replace(workingFilePath.begin(),workingFilePath.end(),'\\','/');
-    
-    if((0 == absolutePathname.length()) || ('/' != absolutePathname[0]))
-        return absolutePathname;
-
-    String filePath;
-    String fileName;
-    FileSystem::SplitPath(workingFilePath, filePath, fileName);
-    
-    Vector<String> folders;
-    Split(workingFolderPath, "/", folders);
-    Vector<String> fileFolders;
-    Split(filePath, "/", fileFolders);
-
-    Vector<String>::size_type equalCount = 0;
-    for(; equalCount < folders.size() && equalCount < fileFolders.size(); ++equalCount)
-    {
-        if(folders[equalCount] != fileFolders[equalCount])
-        {
-            break;
-        }
-    }
-    
-    String retPath = "";
-    for(Vector<String>::size_type i = equalCount; i < folders.size(); ++i)
-    {
-        retPath += "../";
-    }
-
-    for(Vector<String>::size_type i = equalCount; i < fileFolders.size(); ++i)
-    {
-        retPath += fileFolders[i] + "/";
-    }
-    
-    return (retPath + fileName);
-}
-
 
 
     

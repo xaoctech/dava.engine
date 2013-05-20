@@ -53,7 +53,7 @@ void TextinputTestScreen::SetupBackground()
 
 void TextinputTestScreen::CreateFont()
 {
-	font = FTFont::Create("~res:/Fonts/yikes.ttf");
+	font = FTFont::Create(FilePath("~res:/Fonts/yikes.ttf"));
 	font->SetSize(20.f);
 }
 

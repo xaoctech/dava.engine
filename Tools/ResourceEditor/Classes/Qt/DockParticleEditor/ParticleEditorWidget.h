@@ -12,6 +12,7 @@
 #include <QScrollArea>
 
 #include <DAVAEngine.h>
+#include "ParticleEffectPropertiesWidget.h"
 #include "ParticleEmitterPropertiesWidget.h"
 #include "ParticlesEditorQT/Nodes/LayerParticleEditorNode.h"
 
@@ -29,9 +30,11 @@ public:
     ~ParticleEditorWidget();
 	
 protected slots:
+	void OnEffectSelected(Entity* effectNode);
 	void OnEmitterSelected(Entity* emitterNode, BaseParticleEditorNode* editorNode);
     void OnLayerSelected(Entity* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode, bool forceRefresh);
     void OnForceSelected(Entity* emitterNode, ParticleLayer* layer, int32 forceIndex, BaseParticleEditorNode* editorNode);
+
 	void OnUpdate();
 	void OnValueChanged();
 	void OnNodeDeselected(BaseParticleEditorNode* particleEditorNode);
@@ -42,12 +45,16 @@ signals:
 	
 private:
 	void DeleteOldWidget();
-	void UpdateVisibleTimelines();
+	void UpdateParticleEditorWidgets();
 	
 	// Update the visible timelines for the particular Particle Emitter elements.
 	void UpdateVisibleTimelinesForParticleEmitter();
+	
+	// Update visible widgets for the layer.
+	void UpdateWidgetsForLayer();
 
 private:
+	ParticleEffectPropertiesWidget* effectPropertiesWidget;
 	EmitterLayerWidget* emitterLayerWidget;
 	LayerForceWidget* layerForceWidget;
 	ParticleEmitterPropertiesWidget* emitterPropertiesWidget;

@@ -60,25 +60,27 @@ public:
 
 	void SetMultiline(bool isMultilineEnabled, bool bySymbol = false);
 	void SetFittingOption(int32 fittingType);//may be FITTING_DISABLED, FITTING_ENLARGE, FITTING_REDUCE, FITTING_ENLARGE | FITTING_REDUCE
-	void SetAlign(int32 _align);
-	virtual void SetSpriteAlign(int32 align);
+	
+	//for background sprite
+	virtual void SetAlign(int32 _align);
+	virtual int32 GetAlign() const;
 
-	int32 GetAlign() const;
+	virtual void SetTextAlign(int32 _align);
+	virtual int32 GetTextAlign() const;
+
 	const Vector2 &GetTextSize();
 	
 	inline void PrepareSprite()
 	{
 		if (textBlock->IsSpriteReady())
 		{
-			if (background->GetSprite() != textBlock->GetSprite()) 
-			{
-				SetSprite(textBlock->GetSprite(), 0);
-				shadowBg->SetSprite(textBlock->GetSprite(), 0);
-			}
+			shadowBg->SetSprite(textBlock->GetSprite(), 0);
+			textBg->SetSprite(textBlock->GetSprite(), 0);
 		}
 		else 
 		{
-			SetSprite(NULL, 0);
+			shadowBg->SetSprite(NULL, 0);
+			textBg->SetSprite(NULL, 0);
 		}
 	}
 
@@ -95,6 +97,8 @@ public:
 	const Color &GetTextColor() const;
 	const Color &GetShadowColor() const;
 	const Vector2 &GetShadowOffset() const;
+
+	virtual Animation *	ColorAnimation(const Color & finalColor, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 0);
 	
 protected:
 	Color textColor;
@@ -103,6 +107,7 @@ protected:
 	Vector2 shadowOffset;
 	Color shadowColor;
 	UIControlBackground *shadowBg;
+	UIControlBackground *textBg;
 	
 	virtual void Draw(const UIGeometricData &geometricData);
 	

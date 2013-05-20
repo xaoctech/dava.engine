@@ -31,7 +31,7 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/SceneFileV2.h"
 #include "Render/Highlevel/RenderFastNames.h"
-
+#include "FileSystem/FilePath.h"
 
 namespace DAVA
 {
@@ -522,12 +522,26 @@ void ShadowVolume::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
     
 void ShadowVolume::SetPolygonGroup(PolygonGroup * _polygonGroup)
 {
+	SafeRelease(shadowPolygonGroup);
     shadowPolygonGroup = SafeRetain(_polygonGroup);
+
+	UpdateAABBoxFromSource();
 }
 
 PolygonGroup * ShadowVolume::GetPolygonGroup()
 {
     return shadowPolygonGroup;
+}
+
+void ShadowVolume::UpdateAABBoxFromSource()
+{
+	if(NULL != shadowPolygonGroup)
+	{
+		aabbox = shadowPolygonGroup->GetBoundingBox();
+		DVASSERT(aabbox.min.x != AABBOX_INFINITY &&
+			aabbox.min.y != AABBOX_INFINITY &&
+			aabbox.min.z != AABBOX_INFINITY);
+	}
 }
 
 

@@ -1,7 +1,8 @@
 #include "WebViewControl.h"
 #include "FileSystem/Logger.h"
 
-using namespace DAVA;
+namespace DAVA
+{
 
 JniWebView* JniWebView::jniWebView = NULL;
 int WebViewControl::webViewIdCount = 0;
@@ -99,7 +100,7 @@ IUIWebViewDelegate::eAction JniWebView::URLChanged(int id, const String& newURL)
 	if (!delegate)
 		return IUIWebViewDelegate::PROCESS_IN_WEBVIEW;
 
-	return delegate->URLChanged(control->webView, newURL);
+	return delegate->URLChanged(control->webView, newURL, false);
 }
 
 WebViewControl::WebViewControl()
@@ -142,3 +143,5 @@ void WebViewControl::SetDelegate(DAVA::IUIWebViewDelegate *delegate, DAVA::UIWeb
 	this->delegate = delegate;
 	this->webView = webView;
 }
+
+}//namespace DAVA

@@ -65,6 +65,7 @@
 #include "Scene3D/Systems/UpdateSystem.h"
 #include "Scene3D/Systems/LightUpdateSystem.h"
 #include "Scene3D/Systems/SwitchSystem.h"
+#include "Scene3D/Systems/SoundUpdateSystem.h"
 
 //#include "Entity/Entity.h"
 //#include "Entity/EntityManager.h"
@@ -128,6 +129,9 @@ void Scene::CreateSystems()
 
 	switchSystem = new SwitchSystem(this);
 	AddSystem(switchSystem, (1 << Component::SWITCH_COMPONENT));
+
+	soundSystem = new SoundUpdateSystem(this);
+	AddSystem(soundSystem, (1 << Component::TRANSFORM_COMPONENT) | (1 << Component::SOUND_COMPONENT));
 }
 
 Scene::~Scene()
@@ -350,16 +354,16 @@ Camera * Scene::GetCamera(int32 n)
 }
 
 
-void Scene::AddRootNode(Entity *node, const String &rootNodePath)
+void Scene::AddRootNode(Entity *node, const FilePath &rootNodePath)
 {
     ProxyNode * proxyNode = new ProxyNode();
     proxyNode->SetNode(node);
     
-    rootNodes[rootNodePath] = proxyNode;
-    proxyNode->SetName(rootNodePath);
+    rootNodes[rootNodePath.GetAbsolutePathname()] = proxyNode;
+    proxyNode->SetName(rootNodePath.GetAbsolutePathname());
 }
 
-Entity *Scene::GetRootNode(const String &rootNodePath)
+Entity *Scene::GetRootNode(const FilePath &rootNodePath)
 {
 //    ProxyNode * proxyNode = dynamic_cast<ProxyNode*>(scenes->FindByName(rootNodePath));
 //    if (proxyNode)
@@ -391,33 +395,32 @@ Entity *Scene::GetRootNode(const String &rootNodePath)
 //    return 0;
     
 	Map<String, ProxyNode*>::const_iterator it;
-	it = rootNodes.find(rootNodePath);
+	it = rootNodes.find(rootNodePath.GetAbsolutePathname());
 	if (it != rootNodes.end())
 	{
         ProxyNode * node = it->second;
 		return node->GetNode();
 	}
     
-    String ext = FileSystem::Instance()->GetExtension(rootNodePath);
-    if(ext == ".sce")
+    if(rootNodePath.IsEqualToExtension(".sce"))
     {
         SceneFile *file = new SceneFile();
         file->SetDebugLog(true);
         file->LoadScene(rootNodePath, this);
         SafeRelease(file);
     }
-    else if(ext == ".sc2")
+    else if(rootNodePath.IsEqualToExtension(".sc2"))
     {
         uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
         SceneFileV2 *file = new SceneFileV2();
         file->EnableDebugLog(false);
-        file->LoadScene(rootNodePath.c_str(), this);
+        file->LoadScene(rootNodePath, this);
         SafeRelease(file);
         uint64 deltaTime = SystemTimer::Instance()->AbsoluteMS() - startTime;
         Logger::Info("[GETROOTNODE TIME] %dms (%ld)", deltaTime, deltaTime);
     }
     
-	it = rootNodes.find(rootNodePath);
+	it = rootNodes.find(rootNodePath.GetAbsolutePathname());
 	if (it != rootNodes.end())
 	{
         ProxyNode * node = it->second;
@@ -427,10 +430,10 @@ Entity *Scene::GetRootNode(const String &rootNodePath)
     return 0;
 }
 
-void Scene::ReleaseRootNode(const String &rootNodePath)
+void Scene::ReleaseRootNode(const FilePath &rootNodePath)
 {
 	Map<String, ProxyNode*>::iterator it;
-	it = rootNodes.find(rootNodePath);
+	it = rootNodes.find(rootNodePath.GetAbsolutePathname());
 	if (it != rootNodes.end())
 	{
         it->second->Release();

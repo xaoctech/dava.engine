@@ -12,6 +12,7 @@
 #include "../Qt/Scene/SceneDataManager.h"
 
 #include <QFileDialog>
+#include <QMessageBox>
 #include <QString>
 
 using namespace DAVA;
@@ -67,8 +68,8 @@ void CommandOpenProject::Execute()
 
 
 //Open scene
-CommandOpenScene::CommandOpenScene(const DAVA::String &scenePathname/* = DAVA::String("") */)
-    :   Command(Command::COMMAND_CLEAR_UNDO_QUEUE)
+CommandOpenScene::CommandOpenScene(const DAVA::FilePath &scenePathname/* = DAVA::FilePath() */)
+	:   Command(Command::COMMAND_CLEAR_UNDO_QUEUE, CommandList::ID_COMMAND_OPEN_SCENE)
     ,   selectedScenePathname(scenePathname)
 {
 }
@@ -76,13 +77,13 @@ CommandOpenScene::CommandOpenScene(const DAVA::String &scenePathname/* = DAVA::S
 
 void CommandOpenScene::Execute()
 {
-    if(0 == selectedScenePathname.length())
+    if(selectedScenePathname.IsEmpty())
     {
-        String dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
-        selectedScenePathname = GetOpenFileName(String("Open Scene File"), (dataSourcePath.c_str()), String("Scene File (*.sc2)"));
+        FilePath dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
+        selectedScenePathname = GetOpenFileName(String("Open Scene File"), dataSourcePath, String("Scene File (*.sc2)"));
     }
     
-    if(0 < selectedScenePathname.size())
+    if(!selectedScenePathname.IsEmpty())
     {
         SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
         if(screen)
@@ -92,16 +93,18 @@ void CommandOpenScene::Execute()
             EditorSettings::Instance()->AddLastOpenedFile(selectedScenePathname);
             screen->OpenFileAtScene(selectedScenePathname);
             
+			QtMainWindowHandler::Instance()->SelectMaterialViewOption(Material::MATERIAL_VIEW_TEXTURE_LIGHTMAP);
+
             //GUIState::Instance()->SetNeedUpdatedFileMenu(true);
         }
         
-        QtMainWindowHandler::Instance()->ShowStatusBarMessage(selectedScenePathname);
+        QtMainWindowHandler::Instance()->ShowStatusBarMessage(selectedScenePathname.GetAbsolutePathname());
     }
 }
 
 //New
 CommandNewScene::CommandNewScene()
-:   Command(Command::COMMAND_CLEAR_UNDO_QUEUE)
+:   Command(Command::COMMAND_CLEAR_UNDO_QUEUE, CommandList::ID_COMMAND_NEW_SCENE)
 {
 }
 
@@ -111,7 +114,24 @@ void CommandNewScene::Execute()
     SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
     if(screen)
     {
-        screen->NewScene();
+		int answer = QMessageBox::question(NULL, "Scene was changed", "Do you want to save changes in the current scene prior to creating new one?",
+										   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel);
+		
+		if (answer == QMessageBox::Cancel)
+		{
+			return;
+		}
+		
+		if(answer == QMessageBox::Yes)
+		{
+			// Execute this command directly to do not affect the Undo/Redo queue.
+			CommandSaveScene* commandSaveScene = new CommandSaveScene();
+			commandSaveScene->Execute();
+			SafeDelete(commandSaveScene);
+		}
+
+		// Can now create the scene.
+		screen->NewScene();
         SceneValidator::Instance()->EnumerateSceneTextures();
     }
 }
@@ -119,7 +139,7 @@ void CommandNewScene::Execute()
 
 //Save
 CommandSaveScene::CommandSaveScene()
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_SAVE_SCENE)
 {
 }
 
@@ -131,8 +151,8 @@ void CommandSaveScene::Execute()
     {
         SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
         
-		String currentPath;
-		if(0 < screen->CurrentScenePathname().length())
+		FilePath currentPath;
+		if(!screen->CurrentScenePathname().IsEmpty())
 		{
 			currentPath = screen->CurrentScenePathname();    
 		}
@@ -141,12 +161,12 @@ void CommandSaveScene::Execute()
 			currentPath = EditorSettings::Instance()->GetDataSourcePath();
 		}
 
-        QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save Scene File"), QString(currentPath.c_str()),
+        QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save Scene File"), QString(currentPath.GetAbsolutePathname().c_str()),
                                                         QString("Scene File (*.sc2)")
                                                         );
         if(0 < filePath.size())
         {
-			String normalizedPathname = PathnameToDAVAStyle(filePath);
+			FilePath normalizedPathname = PathnameToDAVAStyle(filePath);
 
             EditorSettings::Instance()->AddLastOpenedFile(normalizedPathname);
 
@@ -184,8 +204,8 @@ void CommandSaveScene::SaveParticleEmitterNodeRecursive(Entity* parentNode)
 	if (needSaveThisLevelNode)
 	{
 		// Do we have file name? Ask for it, if not.
-		String yamlPath = emitter->GetConfigPath();
-		if (yamlPath.empty())
+		FilePath yamlPath = emitter->GetConfigPath();
+		if (yamlPath.IsEmpty())
 		{
 			QString saveDialogCaption = QString("Save Particle Emitter \"%1\"").arg(QString::fromStdString(parentNode->GetName()));
 			QString saveDialogYamlPath = QFileDialog::getSaveFileName(NULL, saveDialogCaption, "", QString("Yaml File (*.yaml)"));
@@ -196,7 +216,7 @@ void CommandSaveScene::SaveParticleEmitterNodeRecursive(Entity* parentNode)
 			}
 		}
 
-		if (!yamlPath.empty())
+		if (!yamlPath.IsEmpty())
 		{
 			emitter->SaveToYaml(yamlPath);
 		}
@@ -212,7 +232,7 @@ void CommandSaveScene::SaveParticleEmitterNodeRecursive(Entity* parentNode)
 
 //Export
 CommandExport::CommandExport(ImageFileFormat fmt)
-    :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+    :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_EXPORT)
     ,   format(fmt)
 {
 }
@@ -230,7 +250,7 @@ void CommandExport::Execute()
 
 //Save to folder with childs
 CommandSaveToFolderWithChilds::CommandSaveToFolderWithChilds()
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_SAVE_TO_FOLDER_WITH_CHILDS)
 {
 }
 
@@ -241,11 +261,8 @@ void CommandSaveToFolderWithChilds::Execute()
 	
     if(0 < path.size())
     {
-		String folderPath = PathnameToDAVAStyle(path);
-		if('/' != folderPath[folderPath.length() - 1])
-        {
-            folderPath += '/';
-        }
+		FilePath folderPath = PathnameToDAVAStyle(path);
+        folderPath.MakeDirectoryPathname();
 
 		SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
 		if(screen)

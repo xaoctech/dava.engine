@@ -96,6 +96,7 @@
 #include "FileSystem/XMLParser.h"
 #include "FileSystem/YamlParser.h"
 #include "FileSystem/Parser.h"
+#include "FileSystem/FilePath.h"
 
 
 // Collisions
@@ -186,9 +187,11 @@
 
 // Sound & Music
 #include "Sound/Sound.h"
+#include "Sound/SoundEvent.h"
+#include "Sound/SoundEventCategory.h"
 #include "Sound/SoundSystem.h"
-#include "Sound/SoundInstance.h"
 #include "Sound/SoundGroup.h"
+#include "Sound/VolumeAnimatedObject.h"
 
 // Particle System
 #include "Particles/ParticleSystem.h"
@@ -198,8 +201,6 @@
 #include "Particles/ParticleEmitterObject.h"
 #include "Particles/ParticleEmitter3D.h"
 #include "Particles/ParticleLayer3D.h"
-#include "Particles/ParticleLayerLong.h"
-
 
 // 3D core classes
 #include "Scene3D/SceneFile.h"

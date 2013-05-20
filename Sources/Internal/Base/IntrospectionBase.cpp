@@ -55,7 +55,7 @@ const IntrospectionCollection* IntrospectionMember::Collection() const
 	return NULL;
 }
 
-const int IntrospectionMember::Flags() const
+int IntrospectionMember::Flags() const
 {
 	return flags;
 }

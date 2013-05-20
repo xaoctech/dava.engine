@@ -14,6 +14,7 @@ PVRConverter::PVRConverter()
 	pixelFormatToPVRFormat[DAVA::FORMAT_PVR2] = "OGLPVRTC2";
 	pixelFormatToPVRFormat[DAVA::FORMAT_PVR4] = "OGLPVRTC4";
 	pixelFormatToPVRFormat[DAVA::FORMAT_A8] = "OGL8";
+	pixelFormatToPVRFormat[DAVA::FORMAT_ETC1] = "ETC";
 }
 
 PVRConverter::~PVRConverter()
@@ -38,7 +39,7 @@ String PVRConverter::ConvertPngToPvr(const String & fileToConvert, const DAVA::T
 
 String PVRConverter::GetCommandLinePVR(const DAVA::String & fileToConvert, const DAVA::TextureDescriptor &descriptor)
 {
-	String command = pvrTexToolPathname;
+	String command = Format("\"%s\"", pvrTexToolPathname.c_str());
 	String format = pixelFormatToPVRFormat[descriptor.pvrCompression.format];
 
 	if(command != "" && format != "")

@@ -9,6 +9,8 @@
 #include "Utils/Utils.h"
 #include "Input/AccelerometerAndroid.h"
 #include "AndroidDelegate.h"
+#include "AndroidCrashReport.h"
+
 extern "C"
 {
 	jint JNI_OnLoad(JavaVM *vm, void *reserved);
@@ -29,10 +31,11 @@ extern "C"
 	JNIEXPORT void JNICALL Java_com_dava_framework_JNIActivity_nativeOnAccelerometer(JNIEnv * env, jobject classthis, jfloat x, jfloat y, jfloat z);
 
 	//JNIGLSurfaceView
-	JNIEXPORT void JNICALL Java_com_dava_framework_JNIGLSurfaceView_nativeOnInput(JNIEnv * env, jobject classthis, jint action, jint id, jfloat x, jfloat y, jlong time, jint source);
+	JNIEXPORT void JNICALL Java_com_dava_framework_JNIGLSurfaceView_nativeOnInput(JNIEnv * env, jobject classthis, jint action, jint id, jfloat x, jfloat y, jdouble time, jint source);
 	JNIEXPORT void JNICALL Java_com_dava_framework_JNIGLSurfaceView_nativeOnKeyDown(JNIEnv * env, jobject classthis, jint keyCode);
+
 	JNIEXPORT void JNICALL Java_com_dava_framework_JNIGLSurfaceView_nativeOnResumeView(JNIEnv * env, jobject classthis);
-	JNIEXPORT void JNICALL Java_com_dava_framework_JNIGLSurfaceView_nativeOnPauseView(JNIEnv * env, jobject classthis);
+	JNIEXPORT void JNICALL Java_com_dava_framework_JNIGLSurfaceView_nativeOnPauseView(JNIEnv * env, jobject classthis, jboolean isLock);
 
 	//JNIRenderer
 	JNIEXPORT void JNICALL Java_com_dava_framework_JNIRenderer_nativeResize(JNIEnv * env, jobject classthis, jint w, jint h);
@@ -55,6 +58,9 @@ AndroidDelegate *androidDelegate;
 jint JNI_OnLoad(JavaVM *vm, void *reserved)
 {
 	androidDelegate = new AndroidDelegate(vm);
+
+	DAVA::AndroidCrashReport::Init();
+
 	return JNI_VERSION_1_4;
 }
 
@@ -236,7 +242,7 @@ void Java_com_dava_framework_JNIActivity_nativeOnAccelerometer(JNIEnv * env, job
 
 
 // CALLED FROM JNIGLSurfaceView
-void Java_com_dava_framework_JNIGLSurfaceView_nativeOnInput(JNIEnv * env, jobject classthis, jint action, jint id, jfloat x, jfloat y, jlong time, jint source)
+void Java_com_dava_framework_JNIGLSurfaceView_nativeOnInput(JNIEnv * env, jobject classthis, jint action, jint id, jfloat x, jfloat y, jdouble time, jint source)
 {
 	if(core)
 	{
@@ -259,11 +265,11 @@ void Java_com_dava_framework_JNIGLSurfaceView_nativeOnResumeView(JNIEnv * env, j
 		core->StartForeground();
 	}
 }
-void Java_com_dava_framework_JNIGLSurfaceView_nativeOnPauseView(JNIEnv * env, jobject classthis)
+void Java_com_dava_framework_JNIGLSurfaceView_nativeOnPauseView(JNIEnv * env, jobject classthis, jboolean isLock)
 {
 	if(core)
 	{
-		core->StopForeground();
+		core->StopForeground(isLock);
 	}
 }
 

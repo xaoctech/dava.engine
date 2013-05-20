@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
+import android.os.PowerManager;
 import android.util.AttributeSet;
 import android.view.InputDevice;
 import android.view.KeyEvent;
@@ -14,10 +15,10 @@ public class JNIGLSurfaceView extends GLSurfaceView
 {
 	private JNIRenderer mRenderer = null;
 
-    private native void nativeOnInput(int action, int id, float x, float y, long time, int source);
+    private native void nativeOnInput(int action, int id, float x, float y, double time, int source);
     private native void nativeOnKeyDown(int keyCode);
     private native void nativeOnResumeView();
-    private native void nativeOnPauseView();
+    private native void nativeOnPauseView(boolean isLock);
 
     public JNIGLSurfaceView(Context context) 
     {
@@ -50,7 +51,8 @@ public class JNIGLSurfaceView extends GLSurfaceView
     	{
     		public void run() 
     		{
-    	    	nativeOnPauseView();
+    			PowerManager pm = (PowerManager) JNIApplication.GetApplication().getSystemService(Context.POWER_SERVICE);
+    			nativeOnPauseView(!pm.isScreenOn());
     		}
     	});
 		super.onPause();
@@ -82,12 +84,11 @@ public class JNIGLSurfaceView extends GLSurfaceView
     	}
     	
     	ArrayList<InputEvent> events;
-		long time;
-		int action;
+	double time;
+	int action;
 		
     	public InputRunnable(final MotionEvent event)
     	{
-    		time = event.getEventTime();
     		events = new ArrayList<InputEvent>();
     		action = event.getActionMasked();
     		if(action == MotionEvent.ACTION_MOVE)

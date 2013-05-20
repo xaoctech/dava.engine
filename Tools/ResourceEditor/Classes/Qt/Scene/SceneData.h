@@ -42,8 +42,8 @@ public:
     
     void CreateScene(bool createEditorCameras);
 
-    void SetScenePathname(const DAVA::String &newPathname);
-    DAVA::String GetScenePathname() const;
+    void SetScenePathname(const DAVA::FilePath &newPathname);
+    const DAVA::FilePath & GetScenePathname() const;
 
     void ToggleNotPassableLandscape();
     
@@ -54,7 +54,7 @@ public:
     
 	void ResetLandsacpeSelection();
 
-	void RestoreTexture(const DAVA::String &descriptorPathname, DAVA::Texture *texture);
+	void RestoreTexture(const DAVA::FilePath &descriptorPathname, DAVA::Texture *texture);
 
 	// Emit the SceneChanged singal.
 	void EmitSceneChanged();
@@ -78,7 +78,7 @@ protected:
     void FindIdentityNodes(DAVA::Entity *node);
     void RemoveIdentityNodes(DAVA::Entity *node);
     
-    void ReloadNode(DAVA::Entity *node, const DAVA::String &nodePathname);
+    void ReloadNode(DAVA::Entity *node, const DAVA::FilePath &nodePathname);
 
     void ReleaseScene();
 
@@ -97,7 +97,7 @@ protected:
     DAVA::WASDCameraController *cameraController;
     LandscapesController *landscapesController;
 	
-    DAVA::String sceneFilePathname;
+    DAVA::FilePath sceneFilePathname;
     
 	// Particles Editor Scene Data Helper.
 	DAVA::ParticlesEditorSceneDataHelper particlesEditorSceneDataHelper;

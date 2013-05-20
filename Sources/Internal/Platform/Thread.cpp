@@ -44,6 +44,10 @@ Thread * Thread::Create(const Message& msg)
 	return t;
 }
 
+Thread::Thread(const Thread& t)
+{
+}
+	
 Thread::Thread(const Message& _msg)
 :	needCopyContext(false)
 {
