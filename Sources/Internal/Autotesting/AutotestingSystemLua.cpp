@@ -220,7 +220,19 @@ void AutotestingSystemLua::Log(const String &level, const String &message)
 	Logger::Debug("AutotestingSystemLua::Log [%s]%s", level.c_str(), message.c_str());
 	AutotestingSystem::Instance()->Log(level, message);
 }
-    
+
+void AutotestingSystemLua::WriteString(const String & name, const String & text)
+{
+	Logger::Debug("AutotestingSystemLua::WriteString name=%s text=%s", name.c_str(), text.c_str());
+	AutotestingSystem::Instance()->WriteString(name, text);
+}
+
+String AutotestingSystemLua::ReadString(const String & name)
+{
+	Logger::Debug("AutotestingSystemLua::ReadString name=%s", name.c_str());
+	return AutotestingSystem::Instance()->ReadString(name);
+}
+
 UIControl *AutotestingSystemLua::GetScreen()
 {
     return UIControlSystem::Instance()->GetScreen();

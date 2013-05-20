@@ -117,6 +117,10 @@ public:
     bool FindTouch(int32 id, UIEvent &touch);
     bool IsTouchDown(int32 id);
 
+	// DB storing
+	void WriteString(const String & name, const String & text);
+	String ReadString(const String & name);
+
     // DB Master-Helper relations
     void InitMultiplayer(bool _isMaster);
     void RegisterMasterInDB(int32 helpersCount);
@@ -166,8 +170,8 @@ protected:
     int32 GetIndexInFileList(FileList &fileList, int32 index);
     
     void ExitApp();
-
-    uint64 startTimeMS;
+	 
+	uint64 startTimeMS;
 
     bool isInit;
     bool isRunning;

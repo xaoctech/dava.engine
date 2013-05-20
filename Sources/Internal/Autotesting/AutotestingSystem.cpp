@@ -288,7 +288,42 @@ bool AutotestingSystem::ConnectToDB()
 #define AUTOTESTING_TESTS "Tests"
 #define AUTOTESTING_STEPS "Steps"
 #define AUTOTESTING_LOG "Log"
-    
+
+void AutotestingSystem::WriteString(const String & name, const String & text)
+{
+	String runId = Format("%u_additional",testsDate);
+	Logger::Debug("AutotestingSystem::WriteString name=%s text=%s, runId = %s", name.c_str(), text.c_str(), runId.c_str());
+
+
+	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
+	KeyedArchive* currentRunArchive = FindOrInsertRunArchive(dbUpdateObject, runId);
+
+	currentRunArchive->SetString(name, text);
+
+	SaveToDB(dbUpdateObject);
+	SafeRelease(dbUpdateObject);
+
+	Logger::Debug("AutotestingSystem::WriteString finish");
+}
+
+String AutotestingSystem::ReadString(const String & name)
+{
+	String runId = Format("%u_additional",testsDate);
+
+	Logger::Debug("AutotestingSystem::ReadString name=%s, runId = %s", name.c_str(), runId.c_str());
+	
+
+	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
+	KeyedArchive* currentRunArchive = FindOrInsertRunArchive(dbUpdateObject, runId);
+	String result;
+
+	result = currentRunArchive->GetString(name.c_str(), "not_found");
+
+	SafeRelease(dbUpdateObject);
+	Logger::Debug("AutotestingSystem::ReadString state=%s finish", result.c_str());
+	return result;
+}
+
 void AutotestingSystem::ClearTestInDB()
 {
     MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
