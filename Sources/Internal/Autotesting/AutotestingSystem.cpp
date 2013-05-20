@@ -722,24 +722,27 @@ uint64 AutotestingSystem::GetCurrentTimeMS()
 // Multiplayer API
 void AutotestingSystem::WriteState(const String & device, const String & state)
 {
-	String runId = Format("%u",testsDate);
+	String runId = Format("%u_multiplayer",testsDate);
 	Logger::Debug("AutotestingSystem::WriteState device=%s state=%s, runId = %s", device.c_str(), state.c_str(), runId.c_str());
 
 
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
 	KeyedArchive* currentRunArchive = FindOrInsertRunArchive(dbUpdateObject, runId);
-	KeyedArchive* multiplayerArchive = SafeRetain(currentRunArchive->GetArchive("Multiplayer", NULL));
 	
-	if (!multiplayerArchive)
+	/* Old version
+	KeyedArchive* multiplayerArchive = SafeRetain(currentRunArchive->GetArchive("Multiplayer", NULL));
+		if (!multiplayerArchive)
 	{
 		multiplayerArchive = new KeyedArchive();
 	}
-
 	multiplayerArchive->SetString(device, state);
-	
 	currentRunArchive->SetArchive("Multiplayer", multiplayerArchive);
-	SafeRelease(multiplayerArchive);
-	dbUpdateObject->SaveToDB(dbClient);
+	*/
+
+	currentRunArchive->SetString(device, state);
+
+	//SafeRelease(multiplayerArchive);
+	SaveToDB(dbUpdateObject);
 	SafeRelease(dbUpdateObject);
 
 	Logger::Debug("AutotestingSystem::WriteState finish");
@@ -747,16 +750,17 @@ void AutotestingSystem::WriteState(const String & device, const String & state)
 
 String AutotestingSystem::ReadState(const String & device)
 {
-	String runId = Format("%u",testsDate);
+	String runId = Format("%u_multiplayer",testsDate);
 
 	Logger::Debug("AutotestingSystem::ReadState device=%s, runId = %s", device.c_str(), runId.c_str());
 	
 
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
 	KeyedArchive* currentRunArchive = FindOrInsertRunArchive(dbUpdateObject, runId);
-	KeyedArchive* multiplayerArchive = SafeRetain(currentRunArchive->GetArchive("Multiplayer", NULL));
-
 	String result;
+	/* Old version
+	KeyedArchive* multiplayerArchive = SafeRetain(currentRunArchive->GetArchive("Multiplayer", NULL));
+	
 	if (multiplayerArchive)
 	{
 		result = multiplayerArchive->GetString(device.c_str(), "not_found");
@@ -766,7 +770,9 @@ String AutotestingSystem::ReadState(const String & device)
 	{
 		result = "not_found";
 	}
+	*/
 
+	result = currentRunArchive->GetString(device.c_str(), "not_found");
 	SafeRelease(dbUpdateObject);
 	Logger::Debug("AutotestingSystem::ReadState state=%s finish", result.c_str());
 	return result;
@@ -776,22 +782,14 @@ void AutotestingSystem::WriteCommand(const String & device, const String & comma
 {
 	Logger::Debug("AutotestingSystem::WriteCommand device=%s command=%s", device.c_str(), command.c_str());
 
-	String runId =Format("%u",testsDate);
+	String runId = Format("%u_multiplayer",testsDate);
 
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
 	KeyedArchive* currentRunArchive = FindOrInsertRunArchive(dbUpdateObject, runId);
-	KeyedArchive* multiplayerArchive = SafeRetain(currentRunArchive->GetArchive("Multiplayer", NULL));
+	
+	currentRunArchive->SetString(device + "_command", command);
 
-	if (!multiplayerArchive)
-	{
-		multiplayerArchive = new KeyedArchive();
-	}
-
-	multiplayerArchive->SetString(device + "_command", command);
-
-	currentRunArchive->SetArchive("Multiplayer", multiplayerArchive);
-	SafeRelease(multiplayerArchive);
-	dbUpdateObject->SaveToDB(dbClient);
+	SaveToDB(dbUpdateObject);
 	SafeRelease(dbUpdateObject);
 	Logger::Debug("AutotestingSystem::WriteCommand finish");
 }
@@ -800,23 +798,13 @@ String AutotestingSystem::ReadCommand(const String & device)
 {
 	Logger::Debug("AutotestingSystem::ReadCommand device=%s", device.c_str());
 
-	String runId = Format("%u",testsDate);
+	String runId = Format("%u_multiplayer",testsDate);
 
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
 	KeyedArchive* currentRunArchive = FindOrInsertRunArchive(dbUpdateObject, runId);
-	KeyedArchive* multiplayerArchive = SafeRetain(currentRunArchive->GetArchive("Multiplayer", NULL));
 
 	String result;
-	
-	if (multiplayerArchive)
-	{
-		result = multiplayerArchive->GetString(device + "_command", "not_found");
-		SafeRelease(multiplayerArchive);
-	}
-	else
-	{
-		result = "not_found";
-	}
+	result = currentRunArchive->GetString(device + "_command", "not_found");
 
 	SafeRelease(dbUpdateObject);
 	
