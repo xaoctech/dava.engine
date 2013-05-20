@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 
-DEFINES += LAUNCER_VER=\\\"0.82\\\"
+DEFINES += LAUNCER_VER=\\\"0.83\\\"
 
 QT       += core gui network
 
@@ -35,7 +35,9 @@ HEADERS  += Classes/mainwindow.h \
     Classes/processhelper.h
 
 FORMS    += UI/mainwindow.ui
-RC_FILE = Launcher.rc
+
+win32: RC_FILE = Launcher.rc
+macx: ICON = icon.icns
 
 macx: LIBS += -L$$PWD/yaml-cpp/libs/ -lyaml-cpp_osx
 macx: PRE_TARGETDEPS += $$PWD/yaml-cpp/libs/libyaml-cpp_osx.a
