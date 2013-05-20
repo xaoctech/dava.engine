@@ -35,6 +35,7 @@ HEADERS  += Classes/mainwindow.h \
     Classes/processhelper.h
 
 FORMS    += UI/mainwindow.ui
+RC_FILE = Launcher.rc
 
 macx: LIBS += -L$$PWD/yaml-cpp/libs/ -lyaml-cpp_osx
 macx: PRE_TARGETDEPS += $$PWD/yaml-cpp/libs/libyaml-cpp_osx.a
@@ -85,3 +86,5 @@ mac: SOURCES += \
     quazip/quagzipfile.cpp \
     quazip/quacrc32.cpp \
     quazip/quaadler32.cpp
+
+OTHER_FILES +=
