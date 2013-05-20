@@ -38,6 +38,8 @@ namespace DAVA
 		// Undo/Redo-related functionality.
 		void ReturnPastedControlsToScene();
 
+		virtual void IncrementUnsavedChanges();
+		virtual void DecrementUnsavedChanges();
 	private:
 		HierarchyTreeNode* parentNode;
 		CopyPasteController::CopyType copyType;

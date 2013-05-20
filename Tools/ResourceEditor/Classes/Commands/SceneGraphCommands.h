@@ -5,25 +5,20 @@
 
 class SceneData;
 class DAVA::Entity;
-class CommandRemoveRootNodes: public Command
+class CommandRemoveRootNodes: public MultiCommand
 {
 public:	
 	CommandRemoveRootNodes();
+	virtual ~CommandRemoveRootNodes();
 
 protected:
 	virtual void Execute();
+	virtual void Cancel();
+	virtual DAVA::Set<DAVA::Entity*> GetAffectedEntities();
+
+	CommandInternalRemoveSceneNode* removeCmd;
 };
 
-
-class CommandRefreshSceneGraph: public Command
-{
-public:	
-	CommandRefreshSceneGraph();
-    
-protected:	
-    
-    virtual void Execute();
-};
 
 class CommandLockAtObject: public Command
 {
@@ -36,13 +31,18 @@ protected:
 };
 
 
-class CommandRemoveSceneNode: public Command
+class CommandRemoveSceneNode: public MultiCommand
 {
 public:
 	CommandRemoveSceneNode();
+	virtual ~CommandRemoveSceneNode();
 
 protected:
     virtual void Execute();
+	virtual void Cancel();
+	virtual DAVA::Set<DAVA::Entity*> GetAffectedEntities();
+
+	CommandInternalRemoveSceneNode* removeCmd;
 };
 
 class CommandInternalRemoveSceneNode: public Command
@@ -72,6 +72,8 @@ protected:
     virtual void Cancel();
 
 	DAVA::int32 GetNodeIndex(const RemoveNodeRec& nodeRec);
+
+	virtual DAVA::Set<DAVA::Entity*> GetAffectedEntities();
 };
 
 

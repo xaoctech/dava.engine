@@ -21,8 +21,10 @@ public:
 signals:
 	void readyAll();
 
-protected: 
-	void ReloadParticleSprites(SceneData* sceneData);
+protected:
+    
+    void EnumerateSpritesForReloading(SceneData* sceneData, Map<String, Sprite *> &sprites);
+    void EnumerateSpritesForParticleEmitter(ParticleEmitter* emitter, Map<String, Sprite *> &sprites);
 
 	void Pack();
 	void Reload();

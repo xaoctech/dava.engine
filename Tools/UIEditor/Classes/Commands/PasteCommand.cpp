@@ -76,6 +76,7 @@ void PasteCommand::Execute()
 			}
 		}break;
 		case CopyPasteController::CopyTypeScreen:
+		case CopyPasteController::CopyTypeAggregator:
 		{
 			HierarchyTreePlatformNode* parentPlatform = dynamic_cast<HierarchyTreePlatformNode*>(parentNode);
 			if (parentPlatform)
@@ -136,7 +137,7 @@ void PasteCommand::Rollback()
 		// memory - we might return them in Rollback.
 		HierarchyTreeNode* curNode = (*iter);
 		curNode->PrepareRemoveFromSceneInformation();
-		HierarchyTreeController::Instance()->DeleteNode(curNode->GetId(), false, true);
+		HierarchyTreeController::Instance()->DeleteNode(curNode->GetId(), false, true, true);
 	}
 
 	HierarchyTreeController::Instance()->EmitHierarchyTreeUpdated();
@@ -231,10 +232,21 @@ int PasteCommand::PasteScreens(HierarchyTreeNode::HIERARCHYTREENODESLIST* newScr
 	{
 		HierarchyTreeNode *node = (*iter);
 		HierarchyTreeScreenNode* screen = dynamic_cast<HierarchyTreeScreenNode*>(node);
-		if (!screen)
+		HierarchyTreeAggregatorNode* aggregator = dynamic_cast<HierarchyTreeAggregatorNode*>(node);
+
+		if (!screen && !aggregator)
 			continue;
-		
-		HierarchyTreeScreenNode* copy = new HierarchyTreeScreenNode(parent, screen);
+
+		HierarchyTreeNode* copy;
+		if (aggregator)
+		{
+			copy = new HierarchyTreeAggregatorNode(parent, aggregator);
+		}
+		else
+		{
+			copy = new HierarchyTreeScreenNode(parent, screen);
+		}
+		copy->SetMarked(true);
         UpdateControlName(parent, copy, true);
 		//copy->SetName(FormatCopyName(screen->GetName(), parent));
 		
@@ -258,6 +270,10 @@ int PasteCommand::PastePlatforms(HierarchyTreeNode::HIERARCHYTREENODESLIST* newS
 			continue;
 		
 		HierarchyTreePlatformNode* copy = new HierarchyTreePlatformNode(parent, platform);
+
+		copy->SetMarked(true);
+		copy->SetChildrenMarked(true);
+
         UpdateControlName(parent, copy, true);
 		//copy->SetName(FormatCopyName(platform->GetName(), parent));
 		
@@ -348,4 +364,42 @@ void PasteCommand::ReturnPastedControlsToScene()
 	}
 
 	HierarchyTreeController::Instance()->EmitHierarchyTreeUpdated();
+}
+
+void PasteCommand::IncrementUnsavedChanges()
+{
+	switch (this->copyType)
+	{
+		case CopyPasteController::CopyTypeControl:
+			BaseCommand::IncrementUnsavedChanges();
+			break;
+
+		case CopyPasteController::CopyTypeScreen:
+		case CopyPasteController::CopyTypeAggregator:
+		case CopyPasteController::CopyTypePlatform:
+			parentNode->IncrementUnsavedChanges();
+			break;
+
+		default:
+			break;
+	}
+}
+
+void PasteCommand::DecrementUnsavedChanges()
+{
+	switch (this->copyType)
+	{
+		case CopyPasteController::CopyTypeControl:
+			BaseCommand::DecrementUnsavedChanges();
+			break;
+
+		case CopyPasteController::CopyTypeScreen:
+		case CopyPasteController::CopyTypeAggregator:
+		case CopyPasteController::CopyTypePlatform:
+			parentNode->DecrementUnsavedChanges();
+			break;
+
+		default:
+			break;
+	}
 }

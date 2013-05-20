@@ -24,33 +24,15 @@ ParticleEmitterNode::~ParticleEmitterNode()
 
 void ParticleEmitterNode::Update(float32 timeElapsed)
 {
-	if(emitter)
-	{
-		const Matrix4 & worldTransform = GetWorldTransform();
-		Vector3 position = Vector3(worldTransform._30, worldTransform._31, worldTransform._32);
-		emitter->rotationMatrix = Matrix3(worldTransform);;
-		emitter->SetPosition(position);
-		emitter->Update(timeElapsed);
-	}
+	// Yuri Coder, 2013/04/10. This method isn't called anymore.
 }
 
 void ParticleEmitterNode::Draw()
 {
-	if(emitter)
-	{
-		eBlendMode sblend = RenderManager::Instance()->GetSrcBlend();
-		eBlendMode dblend = RenderManager::Instance()->GetDestBlend();
-		RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
-
-//		ParticleEmitter3D * emitter3D = static_cast<ParticleEmitter3D*>(emitter);
-//		emitter3D->Draw(scene->GetCurrentCamera());
-		emitter->Draw(scene->GetCurrentCamera());
-
-		RenderManager::Instance()->SetBlendMode(sblend, dblend);
-	}
+	// Yuri Coder, 2013/04/10. This method isn't called anymore.
 }
 
-void ParticleEmitterNode::LoadFromYaml(const String& _yamlPath)
+void ParticleEmitterNode::LoadFromYaml(const FilePath& _yamlPath)
 {
 	yamlPath = _yamlPath;
 	SafeRelease(emitter);
@@ -84,15 +66,15 @@ void ParticleEmitterNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
 	Entity::Save(archive, sceneFile);
 
-	archive->SetString("yamlPath", sceneFile->AbsoluteToRelative(yamlPath));
+	archive->SetString("yamlPath", yamlPath.GetRelativePathname(sceneFile->GetScenePath()));
 }
 
 void ParticleEmitterNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
 	Entity::Load(archive, sceneFile);
 	
-	yamlPath = archive->GetString("yamlPath");
-	yamlPath = sceneFile->RelativeToAbsolute(yamlPath);
+	String path = archive->GetString("yamlPath");
+	yamlPath = sceneFile->GetScenePath() + path;
 	LoadFromYaml(yamlPath);
 }
 

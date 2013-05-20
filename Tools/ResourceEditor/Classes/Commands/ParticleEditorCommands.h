@@ -96,6 +96,21 @@ protected:
 	virtual void Execute();
 };
 
+class CommandUpdateEffect: public Command
+{
+public:
+	CommandUpdateEffect(ParticleEffectComponent* particleEffect);
+	void Init(float32 playbackSpeed);
+	
+protected:
+	virtual void Execute();
+	
+private:
+	ParticleEffectComponent* particleEffect;
+
+	float32 playbackSpeed;
+};
+
 class CommandUpdateEmitter: public Command
 {
 public:
@@ -106,7 +121,8 @@ public:
 			  RefPtr<PropertyLine<float32> > radius,
 			  RefPtr<PropertyLine<Color> > colorOverLife,
 			  RefPtr<PropertyLine<Vector3> > size,
-			  float32 life);
+			  float32 life,
+			  float32 playbackSpeed);
 
 protected:
 	virtual void Execute();
@@ -121,6 +137,7 @@ private:
 	RefPtr<PropertyLine<Color> > colorOverLife;
 	RefPtr<PropertyLine<Vector3> > size;
 	float32 life;
+	float32 playbackSpeed;
 };
 
 class CommandUpdateParticleLayer: public Command
@@ -131,6 +148,7 @@ public:
 			  ParticleLayer::eType layerType,
 			  bool isDisabled,
 			  bool additive,
+  			  bool isLong,
 			  Sprite* sprite,
 			  RefPtr< PropertyLine<float32> > life,
 			  RefPtr< PropertyLine<float32> > lifeVariation,
@@ -138,7 +156,7 @@ public:
 			  RefPtr< PropertyLine<float32> > numberVariation,
 			  RefPtr< PropertyLine<Vector2> > size,
 			  RefPtr< PropertyLine<Vector2> > sizeVariation,
-			  RefPtr< PropertyLine<float32> > sizeOverLife,
+			  RefPtr< PropertyLine<Vector2> > sizeOverLife,
 			  RefPtr< PropertyLine<float32> > velocity,
 			  RefPtr< PropertyLine<float32> > velocityVariation,
 			  RefPtr< PropertyLine<float32> > velocityOverLife,
@@ -155,8 +173,10 @@ public:
 			  float32 startTime,
 			  float32 endTime,
 			  bool frameOverLifeEnabled,
-			  float32 frameOverLifeFPS
-			  );
+			  float32 frameOverLifeFPS,
+
+			  float32 pivotPointX,
+			  float32 pivotPointY);
 
 protected:
     virtual void Execute();
@@ -168,6 +188,7 @@ private:
 	QString layerName;
 	ParticleLayer::eType layerType;
 	bool isDisabled;
+	bool isLong;
 	bool additive;
 	Sprite* sprite;
 	RefPtr< PropertyLine<float32> > life;
@@ -176,7 +197,7 @@ private:
 	RefPtr< PropertyLine<float32> > numberVariation;
 	RefPtr< PropertyLine<Vector2> > size;
 	RefPtr< PropertyLine<Vector2> > sizeVariation;
-	RefPtr< PropertyLine<float32> > sizeOverLife;
+	RefPtr< PropertyLine<Vector2> > sizeOverLife;
 	RefPtr< PropertyLine<float32> > velocity;
 	RefPtr< PropertyLine<float32> > velocityVariation;
 	RefPtr< PropertyLine<float32> > velocityOverLife;
@@ -195,6 +216,9 @@ private:
 	float32 endTime;
 	bool frameOverLifeEnabled;
 	float32 frameOverLifeFPS;
+
+	float32 pivotPointX;
+	float32 pivotPointY;
 };
 
 class CommandUpdateParticleLayerTime: public Command
@@ -261,6 +285,27 @@ class CommandSaveParticleEmitterToYaml : public Command
 public:
     CommandSaveParticleEmitterToYaml(bool forceAskFilename);
 
+protected:
+    virtual void Execute();
+    
+    bool forceAskFilename;
+};
+
+// The same for Inner Emitters.
+class CommandLoadInnerEmitterFromYaml : public Command
+{
+public:
+    CommandLoadInnerEmitterFromYaml();
+	
+protected:
+    virtual void Execute();
+};
+
+class CommandSaveInnerEmitterToYaml : public Command
+{
+public:
+    CommandSaveInnerEmitterToYaml(bool forceAskFilename);
+	
 protected:
     virtual void Execute();
     

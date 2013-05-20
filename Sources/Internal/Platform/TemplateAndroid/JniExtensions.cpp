@@ -1,7 +1,8 @@
 #include "JniExtensions.h"
 #include "Platform/TemplateAndroid/CorePlatformAndroid.h"
 
-using namespace DAVA;
+namespace DAVA
+{
 
 JniExtension::JniExtension(const char* className)
 {
@@ -91,3 +92,5 @@ Rect JniExtension::V2P(const Rect& srcRect) const
 	rect += offset;
 	return rect;
 }
+
+}//namespace DAVA

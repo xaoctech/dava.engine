@@ -61,7 +61,15 @@ bool ParticlesEditorSceneDataHelper::ValidateParticleEmitter(ParticleEmitter * e
 	{
 		return true;
 	}
+
+	// Don't use Format() helper here - the string with path might be too long for Format().
+	validationMsg = ("\"3d\" flag value is wrong for Particle Emitter Configuration file ");
+	validationMsg += emitter->GetConfigPath().GetAbsolutePathname().c_str();
+	validationMsg += ". Please verify whether you are using the correct configuration file.\n\"3d\" flag for this Particle Emitter will be reset to TRUE.";
 	
-	validationMsg = Format("\"3d\" flag value is wrong for Particle Emitter Configuration file %s. Please verify whether you are using the correct configuration file.", emitter->GetConfigPath().c_str());
+	// Yuri Coder, 2013/05/08. Since Particle Editor works with 3D Particles only - have to set this flag
+	// manually.
+	emitter->Set3D(true);
+
 	return false;
 }

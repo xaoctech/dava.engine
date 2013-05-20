@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1065</width>
-    <height>660</height>
+    <width>1068</width>
+    <height>830</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -38,12 +38,12 @@
    <property name="frameShadow">
     <enum>QFrame::Raised</enum>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout_8">
     <property name="spacing">
-     <number>0</number>
+     <number>3</number>
     </property>
     <property name="margin">
-     <number>0</number>
+     <number>1</number>
     </property>
     <item>
      <widget class="SceneTabWidget" name="sceneTabWidget" native="true"/>
@@ -77,28 +77,6 @@
      <property name="margin">
       <number>1</number>
      </property>
-     <item>
-      <widget class="QToolBar" name="scenegraphToolBar">
-       <property name="layoutDirection">
-        <enum>Qt::LeftToRight</enum>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>16</width>
-         <height>16</height>
-        </size>
-       </property>
-       <property name="toolButtonStyle">
-        <enum>Qt::ToolButtonIconOnly</enum>
-       </property>
-       <property name="floatable">
-        <bool>true</bool>
-       </property>
-       <addaction name="actionRefreshSceneGraph"/>
-       <addaction name="actionAddNewEntity"/>
-       <addaction name="actionRemoveEntity"/>
-      </widget>
-     </item>
      <item>
       <widget class="QSceneGraphTreeView" name="sceneGraphTree">
        <property name="contextMenuPolicy">
@@ -140,21 +118,6 @@
      </item>
     </layout>
    </widget>
-  </widget>
-  <widget class="QDockWidget" name="dockDataGraph">
-   <property name="minimumSize">
-    <size>
-     <width>150</width>
-     <height>42</height>
-    </size>
-   </property>
-   <property name="windowTitle">
-    <string>Data Graph</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="QWidget" name="dataGraphBody"/>
   </widget>
   <widget class="QDockWidget" name="dockLibrary">
    <property name="minimumSize">
@@ -331,21 +294,6 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockEntities">
-   <property name="minimumSize">
-    <size>
-     <width>150</width>
-     <height>42</height>
-    </size>
-   </property>
-   <property name="windowTitle">
-    <string>Entity Graph</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="QWidget" name="entityBody"/>
-  </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="windowTitle">
     <string>Tool Bar</string>
@@ -447,7 +395,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1065</width>
+     <width>1068</width>
      <height>21</height>
     </rect>
    </property>
@@ -537,7 +485,6 @@
     <addaction name="separator"/>
     <addaction name="actionRestoreViews"/>
     <addaction name="separator"/>
-    <addaction name="actionSceneInfo"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -769,6 +716,148 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QDockWidget" name="dockWidget">
+   <property name="windowTitle">
+    <string>Material View Options</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_5">
+    <property name="maximumSize">
+     <size>
+      <width>16777215</width>
+      <height>70</height>
+     </size>
+    </property>
+    <widget class="MaterialViewOptions" name="widget" native="true">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>251</width>
+       <height>41</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockSceneInfo">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="windowTitle">
+    <string>Scene Info</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockSceneInfoContent">
+    <layout class="QVBoxLayout" name="verticalLayout_6">
+     <property name="spacing">
+      <number>3</number>
+     </property>
+     <property name="margin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="SceneInfo" name="sceneInfo">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"> QTreeView::branch:has-children:!has-siblings:closed,
+ QTreeView::branch:closed:has-children:has-siblings {
+         border-image: none;
+         image: url(:/QtImages/tree-closed.png);
+ }
+
+ QTreeView::branch:open:has-children:!has-siblings,
+ QTreeView::branch:open:has-children:has-siblings  {
+         border-image: none;
+         image: url(:/QtImages/tree-open.png);
+ }
+</string>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
+       </property>
+       <property name="editTriggers">
+        <set>QAbstractItemView::NoEditTriggers</set>
+       </property>
+       <property name="alternatingRowColors">
+        <bool>false</bool>
+       </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::NoSelection</enum>
+       </property>
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectRows</enum>
+       </property>
+       <property name="indentation">
+        <number>16</number>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockSceneTree">
+   <property name="windowTitle">
+    <string>Scene Tree</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockSceneTreeContent">
+    <layout class="QVBoxLayout" name="verticalLayout_9">
+     <property name="spacing">
+      <number>3</number>
+     </property>
+     <property name="margin">
+      <number>1</number>
+     </property>
+     <item>
+      <widget class="QToolBar" name="scenegraphToolBar">
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>16</width>
+         <height>16</height>
+        </size>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonIconOnly</enum>
+       </property>
+       <property name="floatable">
+        <bool>true</bool>
+       </property>
+       <addaction name="actionRefreshSceneGraph"/>
+       <addaction name="actionAddNewEntity"/>
+       <addaction name="actionRemoveEntity"/>
+      </widget>
+     </item>
+     <item>
+      <widget class="SceneTree" name="sceneTree">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="editTriggers">
+        <set>QAbstractItemView::NoEditTriggers</set>
+       </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::ExtendedSelection</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
   <action name="actionNewScene">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
@@ -811,7 +900,7 @@
      <normaloff>:/QtIcons/savescenetofolder.png</normaloff>:/QtIcons/savescenetofolder.png</iconset>
    </property>
    <property name="text">
-    <string>Save To Folder with Childs</string>
+    <string>Save To Folder with Children</string>
    </property>
   </action>
   <action name="actionOpenProject">
@@ -916,7 +1005,7 @@
      <normaloff>:/QtIcons/textureeditor.png</normaloff>:/QtIcons/textureeditor.png</iconset>
    </property>
    <property name="text">
-    <string>Texture Convertor</string>
+    <string>Texture Converter</string>
    </property>
   </action>
   <action name="actionIPhone">
@@ -950,11 +1039,6 @@
   <action name="actionRestoreViews">
    <property name="text">
     <string>Restore Views</string>
-   </property>
-  </action>
-  <action name="actionSceneInfo">
-   <property name="text">
-    <string>Scene Info</string>
    </property>
   </action>
   <action name="actionShowSettings">
@@ -1307,9 +1391,25 @@
    <header>DockHangingObjects/HangingObjectsView.h</header>
   </customwidget>
   <customwidget>
+   <class>MaterialViewOptions</class>
+   <extends>QWidget</extends>
+   <header>DockMaterialViewOptions/materialviewoptions.h</header>
+  </customwidget>
+  <customwidget>
    <class>SceneTabWidget</class>
    <extends>QWidget</extends>
    <header>Scene/scenetabwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SceneInfo</class>
+   <extends>QTreeView</extends>
+   <header>DockSceneInfo/SceneInfo.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SceneTree</class>
+   <extends>QTreeView</extends>
+   <header>DockSceneTree/SceneTree.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

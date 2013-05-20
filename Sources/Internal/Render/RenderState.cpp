@@ -823,19 +823,19 @@ RenderState::StencilState::StencilState()
 	zFail[0] = zFail[1] = STENCILOP_KEEP;
 } 
 
-void RenderState::LoadFromYamlFile(const String & filePath)
+void RenderState::LoadFromYamlFile(const FilePath & filePath)
 {
 	YamlParser * parser = YamlParser::Create(filePath);
 	if (!parser)
 	{
-		Logger::Error("Failed to open yaml file: %s", filePath.c_str());
+		Logger::Error("Failed to open yaml file: %s", filePath.GetAbsolutePathname().c_str());
 		return;
 	}
 
 	YamlNode * rootNode = parser->GetRootNode();
 	if (!rootNode)
 	{
-		Logger::Warning("yaml file: %s is empty", filePath.c_str());
+		Logger::Warning("yaml file: %s is empty", filePath.GetAbsolutePathname().c_str());
 		return;
 	}
 
@@ -938,17 +938,15 @@ void RenderState::LoadFromYamlNode(YamlNode * rootNode)
 	}
 }
 
-bool RenderState::SaveToYamlFile(const String & filePath)
+bool RenderState::SaveToYamlFile(const FilePath & filePath)
 {
 	YamlParser * parser = YamlParser::Create();
-	if (!parser)
-	{
-		Logger::Error("ProcessSave: error while creating YAML parser!");
-		return false;
-	}
+	DVASSERT(parser);
 
 	YamlNode* resultNode = SaveToYamlNode();
 	parser->SaveToYamlFile(filePath, resultNode, true);
+
+	SafeRelease(parser);
 
 	return true;
 }
@@ -963,21 +961,21 @@ YamlNode * RenderState::SaveToYamlNode(YamlNode * parentNode /* = 0 */)
 	YamlNode * stencilNode = new YamlNode(YamlNode::TYPE_MAP);
 	stencilNode->Add("ref", stencilState.ref);
 	stencilNode->Add("mask", (int32)stencilState.mask);
-	stencilNode->Add("funcFront", CmpFuncNames[(int32)stencilState.func[FACE_FRONT]]);
-	stencilNode->Add("funcBack", CmpFuncNames[(int32)stencilState.func[FACE_BACK]]);
-	stencilNode->Add("passFront", StencilOpNames[(int32)stencilState.pass[FACE_FRONT]]);
-	stencilNode->Add("passBack", StencilOpNames[(int32)stencilState.pass[FACE_BACK]]);
-	stencilNode->Add("failFront", StencilOpNames[(int32)stencilState.fail[FACE_FRONT]]);
-	stencilNode->Add("failBack", StencilOpNames[(int32)stencilState.fail[FACE_BACK]]);
-	stencilNode->Add("zFailFront", StencilOpNames[(int32)stencilState.zFail[FACE_FRONT]]);
-	stencilNode->Add("zFailBack", StencilOpNames[(int32)stencilState.zFail[FACE_BACK]]);
+	stencilNode->Add("funcFront", CMP_FUNC_NAMES[(int32)stencilState.func[FACE_FRONT]]);
+	stencilNode->Add("funcBack", CMP_FUNC_NAMES[(int32)stencilState.func[FACE_BACK]]);
+	stencilNode->Add("passFront", STENCIL_OP_NAMES[(int32)stencilState.pass[FACE_FRONT]]);
+	stencilNode->Add("passBack", STENCIL_OP_NAMES[(int32)stencilState.pass[FACE_BACK]]);
+	stencilNode->Add("failFront", STENCIL_OP_NAMES[(int32)stencilState.fail[FACE_FRONT]]);
+	stencilNode->Add("failBack", STENCIL_OP_NAMES[(int32)stencilState.fail[FACE_BACK]]);
+	stencilNode->Add("zFailFront", STENCIL_OP_NAMES[(int32)stencilState.zFail[FACE_FRONT]]);
+	stencilNode->Add("zFailBack", STENCIL_OP_NAMES[(int32)stencilState.zFail[FACE_BACK]]);
 	rootNode->AddNodeToMap("stencil", stencilNode);
 
-	rootNode->Add("blendSrc", BlendModeNames[(int32)sourceFactor]);
-	rootNode->Add("blendDest", BlendModeNames[(int32)destFactor]);
-	rootNode->Add("cullMode", FaceNames[(int32)cullMode]);
-	rootNode->Add("depthFunc", CmpFuncNames[(int32)depthFunc]);
-	rootNode->Add("alphaFunc", CmpFuncNames[(int32)alphaFunc]);
+	rootNode->Add("blendSrc", BLEND_MODE_NAMES[(int32)sourceFactor]);
+	rootNode->Add("blendDest", BLEND_MODE_NAMES[(int32)destFactor]);
+	rootNode->Add("cullMode", FACE_NAMES[(int32)cullMode]);
+	rootNode->Add("depthFunc", CMP_FUNC_NAMES[(int32)depthFunc]);
+	rootNode->Add("alphaFunc", CMP_FUNC_NAMES[(int32)alphaFunc]);
 	rootNode->Add("alphaFuncCmpValue", alphaFuncCmpValue/255.f);
 
 	Vector<String> statesStrs;
@@ -1001,65 +999,28 @@ void RenderState::GetCurrentStateStrings(Vector<String> & statesStrs)
 {
 	statesStrs.clear();
 
-	if(state & STATE_BLEND)
-		statesStrs.push_back("STATE_BLEND");
-	if(state & STATE_DEPTH_TEST)
-		statesStrs.push_back("STATE_DEPTH_TEST");
-	if(state & STATE_DEPTH_WRITE)
-		statesStrs.push_back("STATE_DEPTH_WRITE");
-	if(state & STATE_STENCIL_TEST)
-		statesStrs.push_back("STATE_STENCIL_TEST");
-	if(state & STATE_CULL)
-		statesStrs.push_back("STATE_CULL");
-	if(state & STATE_ALPHA_TEST)
-		statesStrs.push_back("STATE_ALPHA_TEST");
-	if(state & STATE_SCISSOR_TEST)
-		statesStrs.push_back("STATE_SCISSOR_TEST");
-	if(state & STATE_COLORMASK_RED)
-		statesStrs.push_back("STATE_COLORMASK_RED");
-	if(state & STATE_COLORMASK_GREEN)
-		statesStrs.push_back("STATE_COLORMASK_GREEN");
-	if(state & STATE_COLORMASK_BLUE)
-		statesStrs.push_back("STATE_COLORMASK_BLUE");
-	if(state & STATE_COLORMASK_ALPHA)
-		statesStrs.push_back("STATE_COLORMASK_ALPHA");
+	for(uint32 bit = 0; bit < 32; bit++)
+	{
+		uint32 tempState = 1 << bit;
+		if ((state & tempState) && !(tempState & IGNORE_SAVE_LOAD_RENDER_STATES))
+			statesStrs.push_back(RENDER_STATES_NAMES[bit]);
+	}
 }
 
 uint32 RenderState::GetRenderStateByName(const String & str)
 {
-	if(str == "STATE_BLEND")
-		return (uint32)STATE_BLEND;
-	else if (str == "STATE_DEPTH_TEST")
-		return (uint32)STATE_DEPTH_TEST;
-	else if (str == "STATE_DEPTH_WRITE")
-		return (uint32)STATE_DEPTH_WRITE;
-	else if (str == "STATE_STENCIL_TEST")
-		return (uint32)STATE_STENCIL_TEST;
-	else if (str == "STATE_CULL")
-		return (uint32)STATE_CULL;
-	else if (str == "STATE_ALPHA_TEST")
-		return (uint32)STATE_ALPHA_TEST;
-	else if (str == "STATE_SCISSOR_TEST")
-		return (uint32)STATE_SCISSOR_TEST;
-	else if (str == "STATE_COLORMASK_RED")
-		return (uint32)STATE_COLORMASK_RED;
-	else if (str == "STATE_COLORMASK_GREEN")
-		return (uint32)STATE_COLORMASK_GREEN;
-	else if (str == "STATE_COLORMASK_BLUE")
-		return (uint32)STATE_COLORMASK_BLUE;
-	else if (str == "STATE_COLORMASK_ALPHA")
-		return (uint32)STATE_COLORMASK_ALPHA;
-	else if (str == "STATE_COLORMASK_ALL")
-		return (uint32)STATE_COLORMASK_ALL;
-	else if (str == "DEFAULT_2D_STATE")
-		return DEFAULT_2D_STATE;
-	else if (str == "DEFAULT_2D_STATE_BLEND")
-		return DEFAULT_2D_STATE_BLEND;
-	else if (str == "DEFAULT_3D_STATE")
-		return DEFAULT_3D_STATE;
-	else if (str == "DEFAULT_3D_STATE_BLEND")
-		return DEFAULT_3D_STATE_BLEND;
-	else return 0;
+	for(uint32 i = 0; i < STATE_COUNT; i++)
+	{
+		if(RENDER_STATES_NAMES[i] == str)
+		{
+			uint32 tempState = 1 << i;
+			if(tempState & IGNORE_SAVE_LOAD_RENDER_STATES)
+				return 0;
+			else
+				return tempState;
+		}
+	}
+	return 0;
 }
 
 };

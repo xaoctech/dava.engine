@@ -32,6 +32,7 @@ public:
         PROP_VALUE_SUBSECTION,
         PROP_VALUE_TEXTUREPREVIEW,
         PROP_VALUE_DISTANCE,
+        PROP_VALUE_FILEPATH,
         
         PROP_VALUE_COUNT
     };
@@ -62,6 +63,8 @@ public:
     int32 *GetTriangles();
     int32 GetDistancesCount();
     
+    const FilePath & GetFilePath() const;
+    
     Texture *GetTexture();
 
     void SetInt(int32 newInt);
@@ -83,6 +86,7 @@ public:
     void SetDistances(float32 *newDistances, int32 count);
     void SetTriangles(int32 *newTriangles, int32 count);
     void SetDistance(float32 newDistance, int32 index);
+    void SetFilePath(const FilePath &pathname);
     
     int32 cellType;
     String key;
@@ -117,6 +121,8 @@ protected:
     float32 *distances;
     int32 *triangles;
     int32 distanceCount;
+    
+    FilePath filePath;
 };
 
 #endif

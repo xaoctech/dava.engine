@@ -47,7 +47,7 @@ public:
     UberShader();
     ~UberShader();
     
-    bool LoadShader(const String & shaderFileName);
+    bool LoadShader(const FilePath & shaderFileName);
     int32 CompileShaderCombination(const String & combination);
     Shader * GetShader(const String & combination);
 

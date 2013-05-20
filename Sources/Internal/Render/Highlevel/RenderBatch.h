@@ -121,7 +121,7 @@ public:
 
 	void SetVisibilityCriteria(uint32 criteria);
 
-	void UpdateAABBoxFromSource();
+	virtual void UpdateAABBoxFromSource();
 
 protected:
     PolygonGroup * dataSource;
@@ -159,7 +159,7 @@ public:
         MEMBER(aabbox, "AABBox",  INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR )
         MEMBER(material, "Material", INTROSPECTION_EDITOR)
                          
-        PROPERTY("ownerLayerName", "Owner Layer", GetOwnerLayerName, SetOwnerLayerName, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY("ownerLayerName", "Owner Layer", GetOwnerLayerName, SetOwnerLayerName, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
         PROPERTY("sortingKey", "Key for the sorting inside render layer", GetSortingKey, SetSortingKey, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
 
         MEMBER(materialInstance, "Material Instance", INTROSPECTION_EDITOR)

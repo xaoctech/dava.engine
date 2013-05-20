@@ -64,7 +64,7 @@ void LayerForceWidget::Init(ParticleEmitter* emitter, ParticleLayer* layer, uint
 	ParticleForce* curForce = layer->forces[forceIndex];
 
 	Vector<QColor> colors;
-	colors.push_back(Qt::blue); colors.push_back(Qt::darkGreen); colors.push_back(Qt::red);
+	colors.push_back(Qt::red); colors.push_back(Qt::darkGreen); colors.push_back(Qt::blue);
 	Vector<QString> legends;
 	legends.push_back("force x"); legends.push_back("force y"); legends.push_back("force z");
 	forceTimeLine->Init(layer->startTime, lifeTime, updateMinimized, true, false);
@@ -77,7 +77,7 @@ void LayerForceWidget::Init(ParticleEmitter* emitter, ParticleLayer* layer, uint
 	forceVariationTimeLine->AddLines(PropLineWrapper<Vector3>(curForce->GetForceVariation()).GetProps(), colors, legends);
 	forceVariationTimeLine->EnableLock(true);
 
-	forceOverLifeTimeLine->Init(layer->startTime, lifeTime, updateMinimized, true, false);
+	forceOverLifeTimeLine->Init(0, 1, updateMinimized, true, false);
 	forceOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(curForce->GetForceOverlife()).GetProps(), Qt::blue, "forces over life");
 
 	blockSignals = false;

@@ -33,6 +33,9 @@ public:
     // Get the count of forces added to the layer.
     int32 GetForcesCount() const;
 
+	// Get the count of Inner Emitters added to the layer.
+	int32 GetInnerEmittersCount();
+
     // Update the forces indices.
     void UpdateForcesIndices();
 	
