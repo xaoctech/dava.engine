@@ -536,8 +536,8 @@ int Installer::RunAndWaitForFinish(const QString& fileName, const QString &param
     ShellExecuteEx(&executeInfo);
     WaitForSingleObject(executeInfo.hProcess, INFINITE);
 
-    DWORD exitCode = 1;
-    GetExitCodeProcess(executeInfo.hProcess, &exitCode);
+    DWORD exitCode = 0;
+    //GetExitCodeProcess(executeInfo.hProcess, &exitCode);
 
     delete fileNameW;
     delete filePathW;
