@@ -118,7 +118,6 @@ void SceneDataManager::EditLevelScene(const FilePath &scenePathname)
 	}
 
 	EditScene(sceneData, scenePathname);
-	emit SceneCreated(sceneData);
 }
 
 void SceneDataManager::EditActiveScene(const FilePath &scenePathname)
@@ -130,7 +129,7 @@ void SceneDataManager::EditActiveScene(const FilePath &scenePathname)
 		return;
 	}
 	
-	return EditScene(sceneData, scenePathname);
+	EditScene(sceneData, scenePathname);
 }
 
 void SceneDataManager::EditScene(SceneData* sceneData, const FilePath &scenePathname)
@@ -173,6 +172,8 @@ void SceneDataManager::EditScene(SceneData* sceneData, const FilePath &scenePath
 
 	UpdateParticleSprites();
     emit SceneGraphNeedRebuild();
+
+	emit SceneCreated(sceneData);
 }
 
 void SceneDataManager::ReloadScene(const FilePath &scenePathname, const FilePath &fromScenePathname)
