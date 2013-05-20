@@ -141,20 +141,20 @@ end
 function WriteState(name, state)
 	autotestingSystem:WriteState(name, state)
 
-	local afterWrite = autotestingSystem:ReadState(name)
+	--[[local afterWrite = autotestingSystem:ReadState(name)
 	if state ~= afterWrite then
 		OnError("After writing: expected state '"..state.."' on device '"..name.."', actual:"..afterWrite)
-	end
+	end]]
 	coroutine.yield()
 end
 
 function WriteCommand(name, command)
 	autotestingSystem:WriteCommand(name, command)
 
-	local afterWrite = autotestingSystem:ReadCommand(name)
+	--[[local afterWrite = autotestingSystem:ReadCommand(name)
 	if command ~= afterWrite then
 		OnError("After writing: expected command '"..command.."' on device '"..name.."', actual:"..afterWrite)
-	end
+	end]]
 	coroutine.yield()
 end
 
