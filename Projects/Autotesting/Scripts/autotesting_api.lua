@@ -80,11 +80,11 @@ function Log(message, level)
 	--if level ~= "DEBUG" then
 	autotestingSystem:Log(level, tostring(message))
 	--end
-	Yield()
+	coroutine.yield()
 end 
 
 function Yield()
-	for i=0, 10 do
+	for i=0, 3 do
 		coroutine.yield()
 	end
 end
@@ -145,7 +145,7 @@ function WriteState(name, state)
 	if state ~= afterWrite then
 		OnError("After writing: expected state '"..state.."' on device '"..name.."', actual:"..afterWrite)
 	end
-	Yield()
+	coroutine.yield()
 end
 
 function WriteCommand(name, command)
@@ -155,7 +155,7 @@ function WriteCommand(name, command)
 	if command ~= afterWrite then
 		OnError("After writing: expected command '"..command.."' on device '"..name.."', actual:"..afterWrite)
 	end
-	Yield()
+	coroutine.yield()
 end
 
 function InitializeDevice(name)
@@ -182,15 +182,15 @@ end
 
 function SendJob(name, command)
 	Log("Send to slave "..name.." command: "..command)
-	Yield()
+	--Yield()
 	
 	for i=1,MULTIPLAYER_TIMEOUT do
 		local state = ReadState(name)
 		if state == "ready" then
 			WriteCommand(name, command)
-			Yield()
+			--Yield()
 			WriteState(name, "wait_execution")
-			Yield()
+			--Yield()
 			Log("Device "..name.." ready, command was sent")
 			return
 		elseif state == "error" then 
@@ -203,12 +203,12 @@ end
 
 function WaitJob(name)
 	Log("Wait for job on slave "..name)
-	Yield()
+	--Yield()
 	local state
 	
 	for i=1,MULTIPLAYER_TIMEOUT do
 		state = ReadState(name)
-		Yield()
+		--Yield()
 		if state == "execution_completed" then
 			WriteState(name, "ready")
 			Log("Device "..name.." finish his job")
