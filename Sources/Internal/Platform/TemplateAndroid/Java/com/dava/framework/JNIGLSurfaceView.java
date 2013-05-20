@@ -84,8 +84,8 @@ public class JNIGLSurfaceView extends GLSurfaceView
     	}
     	
     	ArrayList<InputEvent> events;
-	double time;
-	int action;
+    	double time;
+    	int action;
 		
     	public InputRunnable(final MotionEvent event)
     	{
@@ -149,7 +149,10 @@ public class JNIGLSurfaceView extends GLSurfaceView
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
     	queueEvent(new KeyInputRunnable(keyCode));
-    	return true;
+    	if(keyCode == KeyEvent.KEYCODE_BACK)
+    		return super.onKeyDown(keyCode, event);
+    	else
+    		return true;
     }
     
     @Override

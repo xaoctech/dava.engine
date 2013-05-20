@@ -225,6 +225,7 @@ void KeyboardDevice::PrepareKeyTranslator()
     keyTranslator[0x6e] = DVKEY_BUTTON_MODE;
     keyTranslator[0x6d] = DVKEY_BUTTON_SELECT;
     keyTranslator[0x6c] = DVKEY_BUTTON_START;
+	keyTranslator[0x04] = DVKEY_BUTTON_BACK;
 
 #endif
 }
