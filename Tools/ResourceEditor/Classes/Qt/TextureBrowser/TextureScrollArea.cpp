@@ -45,6 +45,7 @@ TextureScrollArea::TextureScrollArea(QWidget* parent /* = 0 */)
 	progressBar->setTextVisible(false);
 	progressBar->setAttribute(Qt::WA_NoSystemBackground, true);
 	waitBar = textureScene->addWidget(progressBar);
+	waitBar->setGeometry(QRectF(0, 0, 200, 20));
 
 	adjustWaitBarPos();
 
