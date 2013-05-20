@@ -180,6 +180,7 @@ const static int MAX_KEYS = 256;
         DVKEY_BUTTON_MODE	,
         DVKEY_BUTTON_SELECT	,
         DVKEY_BUTTON_START	,
+		DVKEY_BUTTON_BACK	,
 
         DVKEY_COUNT
         
