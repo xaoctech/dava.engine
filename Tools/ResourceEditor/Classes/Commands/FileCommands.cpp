@@ -168,8 +168,6 @@ void CommandSaveScene::Execute()
         {
 			FilePath normalizedPathname = PathnameToDAVAStyle(filePath);
 
-            EditorSettings::Instance()->AddLastOpenedFile(normalizedPathname);
-
 			SaveParticleEmitterNodes(activeScene->GetScene());
             screen->SaveSceneToFile(normalizedPathname);
         }

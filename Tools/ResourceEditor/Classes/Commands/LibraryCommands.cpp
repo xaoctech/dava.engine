@@ -70,6 +70,7 @@ void CommandEditScene::Execute()
         screen->AddBodyItem(StringToWString(filePathname.GetFilename()), true);
     }
 
+	EditorSettings::Instance()->AddLastOpenedFile(filePathname);
     SceneDataManager::Instance()->EditActiveScene(filePathname);
 
     QtMainWindowHandler::Instance()->ShowStatusBarMessage(filePathname.GetAbsolutePathname());
