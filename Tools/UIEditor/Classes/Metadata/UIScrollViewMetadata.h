@@ -22,6 +22,8 @@ class UIScrollViewMetadata : public UIControlMetadata
     // Horizontal position of scroll
     Q_PROPERTY(float HorizontalScrollPosition READ GetHorizontalScrollPosition WRITE SetHorizontalScrollPosition);
     Q_PROPERTY(float VerticalScrollPosition READ GetVerticalScrollPosition WRITE SetVerticalScrollPosition);
+	Q_PROPERTY(float ContentSizeX READ GetContentSizeX WRITE SetContentSizeX);
+	Q_PROPERTY(float ContentSizeY READ GetContentSizeY WRITE SetContentSizeY);
 	
 	
 public:
@@ -42,6 +44,10 @@ protected:
 	void SetHorizontalScrollPosition(float value);
     float GetVerticalScrollPosition() const;
 	void SetVerticalScrollPosition(float value);
+	float GetContentSizeX() const;
+	void SetContentSizeX(float value);
+	float GetContentSizeY() const;
+	void SetContentSizeY(float value);
 };
 
 };

@@ -48,6 +48,10 @@ void ScrollViewPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     // Initialize the widgets.
     RegisterDoubleSpinBoxWidgetForProperty(propertiesMap, HORIZONTAL_SCROLL_POSITION, ui->scrollHPositionSpinBox);
     RegisterDoubleSpinBoxWidgetForProperty(propertiesMap, VERTICAL_SCROLL_POSITION, ui->scrollVPositionSpinBox);
+	RegisterSpinBoxWidgetForProperty(propertiesMap, SCROLL_CONTENT_SIZE_X, ui->contentSizeXSpinBox);
+	RegisterSpinBoxWidgetForProperty(propertiesMap, SCROLL_CONTENT_SIZE_Y, ui->contentSizeYSpinBox);
+	
+	UpdateMaximumValue();
 }
 
 void ScrollViewPropertyGridWidget::Cleanup()
@@ -55,6 +59,51 @@ void ScrollViewPropertyGridWidget::Cleanup()
     BasePropertyGridWidget::Cleanup();
     UnregisterDoubleSpinBoxWidget(ui->scrollHPositionSpinBox);
     UnregisterDoubleSpinBoxWidget(ui->scrollVPositionSpinBox);
+	UnregisterSpinBoxWidget(ui->contentSizeXSpinBox);
+	UnregisterSpinBoxWidget(ui->contentSizeYSpinBox);
+}
+
+void ScrollViewPropertyGridWidget::UpdateMaximumValue()
+{
+	int sizeX = BasePropertyGridWidget::GetPropertyIntValue(SIZE_X);
+	int contentSizeX = ui->contentSizeXSpinBox->value();
+	int maxX = contentSizeX - sizeX;
+	if (maxX > 0)
+	{
+		ui->scrollHPositionSpinBox->setMaximum(maxX);
+		ui->scrollHSlider->setMaximum(maxX);
+	}	
+	
+	int sizeY = BasePropertyGridWidget::GetPropertyIntValue(SIZE_Y);
+	int contentSizeY = ui->contentSizeYSpinBox->value();
+	int maxY = contentSizeY - sizeY;
+	if (maxY > 0)
+	{
+		ui->scrollVPositionSpinBox->setMaximum(maxY);
+		ui->scrollVSlider->setMaximum(maxY);
+	}
+}
+
+void ScrollViewPropertyGridWidget::OnPropertiesChangedFromExternalSource()
+{
+    // Re-read all the properties related to this grid.
+    for (PROPERTYGRIDWIDGETSITER iter = this->propertyGridWidgetsMap.begin();
+         iter != this->propertyGridWidgetsMap.end(); iter ++)
+    {
+        UpdateWidgetWithPropertyValue(iter);
+    }
+	UpdateMaximumValue();
+}
+
+void ScrollViewPropertyGridWidget::HandleChangePropertySucceeded(const QString& propertyName)
+{
+	//If one of the align option state is changed we should check it and disable/enable appropriate Relative postion or size spinbox(es)
+    BasePropertyGridWidget::HandleChangePropertySucceeded(propertyName);
+	
+	if ((propertyName == SIZE_X) || (propertyName == SIZE_Y))
+	{
+		UpdateMaximumValue();
+	}
 }
 
 void ScrollViewPropertyGridWidget::ProcessDoubleSpinBoxValueChanged(QDoubleSpinBox *doubleSpinBoxWidget,

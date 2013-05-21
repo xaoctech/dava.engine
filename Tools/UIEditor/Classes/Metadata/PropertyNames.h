@@ -14,6 +14,9 @@ namespace DAVA {
 namespace PropertyNames
 {
     // Property Names for different Properties.
+	static const char* SIZE_X = "SizeX";
+	static const char* SIZE_Y = "SizeY";
+	
     static const char* LOCALIZED_TEXT_KEY_PROPERTY_NAME = "LocalizedTextKey";
     static const char* FONT_PROPERTY_NAME = "Font";
     static const char* FONT_SIZE_PROPERTY_NAME = "FontSize";
@@ -68,6 +71,9 @@ namespace PropertyNames
 	// UI Scroll View properties
 	static const char* HORIZONTAL_SCROLL_POSITION = "HorizontalScrollPosition";
 	static const char* VERTICAL_SCROLL_POSITION = "VerticalScrollPosition";
+	static const char* SCROLL_CONTENT_SIZE_X = "ContentSizeX";
+	static const char* SCROLL_CONTENT_SIZE_Y = "ContentSizeY";
+
 	// UI Spinner properties.
 	static const char* UISPINNER_PREV_BUTTON_TEXT = "PrevButtonText";
 	static const char* UISPINNER_NEXT_BUTTON_TEXT = "NextButtonText";

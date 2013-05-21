@@ -188,6 +188,12 @@ Vector2 HierarchyTreeControlNode::GetParentDelta(bool skipControl/* = false*/) c
 	{
 		Rect rect = uiObject->GetRect();
 		parentDelta = rect.GetPosition();
+		// For UIScrollView we should consider scrollcontainer delta also
+		UIScrollView* scrollView = dynamic_cast<UIScrollView* >(uiObject);
+		if (scrollView)
+		{
+			parentDelta += scrollView->GetOffset();
+		}
 	}
 	
 	const HierarchyTreeControlNode* parentControl = dynamic_cast<const HierarchyTreeControlNode* >(parent);

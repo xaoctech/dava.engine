@@ -184,7 +184,7 @@ void UITextFieldMetadata::SetShadowColor(const QColor& value)
 // Initialize the control(s) attached.
 void UITextFieldMetadata::InitializeControl(const String& controlName, const Vector2& position)
 {
-    BaseMetadata::InitializeControl(controlName, position);
+    UIControlMetadata::InitializeControl(controlName, position);
     
     int paramsCount = this->GetParamsCount();
     for (BaseMetadataParams::METADATAPARAMID i = 0; i < paramsCount; i ++)
