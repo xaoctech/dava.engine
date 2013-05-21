@@ -195,7 +195,7 @@ bool Test::MoveToNextPoint()
 
 		++nextRectNum;
 
-		return false;
+		return true;
     }
 	return false;
 }
