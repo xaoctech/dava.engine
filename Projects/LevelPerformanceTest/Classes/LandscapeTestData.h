@@ -3,9 +3,11 @@
 
 #include "DAVAEngine.h"
 
+#define SECTORS_COUNT 8
+
 struct FpsStatItem
 {
-    DAVA::float32 avFps[8];
+    DAVA::float32 avFps[SECTORS_COUNT];
 	DAVA::Rect rect;
 	
 	FpsStatItem()
