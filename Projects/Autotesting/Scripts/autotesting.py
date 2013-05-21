@@ -167,10 +167,10 @@ if 5 == len(arguments):
     if testsCount <= testFilesInFolderCount:
         testFiles = testFilesInFolder[0:testsCount]
     else:
-        testFiles = testFilesInFolder;
+        testFiles = []
         
         if testFilesInFolderCount > 0:
-            testsCountLeft = testsCount - testFilesInFolderCount
+            testsCountLeft = testsCount
             while testsCountLeft > 0:
                 if testsCountLeft <= testFilesInFolderCount:
                     testFiles.extend(testFilesInFolder[0:testsCountLeft])
