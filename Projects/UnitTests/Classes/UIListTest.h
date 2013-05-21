@@ -52,7 +52,6 @@ private:
 	
 private:
 	UIButton* finishTestBtn;
-//	UIScrollView*	scrollView;
 	bool testFinished;
 		
 	float32 onScreenTime;

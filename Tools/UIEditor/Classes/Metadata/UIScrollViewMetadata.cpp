@@ -41,7 +41,6 @@ void UIScrollViewMetadata::UpdateExtraData(HierarchyTreeNodeExtraData& extraData
 	UIControlMetadata::UpdateExtraData(extraData, updateStyle);
 }
 
-
 float UIScrollViewMetadata::GetHorizontalScrollPosition() const
 {
     if (!VerifyActiveParamID())
@@ -66,7 +65,6 @@ void UIScrollViewMetadata::SetHorizontalScrollPosition(float value)
 
 	GetActiveUIScrollView()->SetOffset(offset);
 }
-
 
 float UIScrollViewMetadata::GetVerticalScrollPosition() const
 {
@@ -93,4 +91,49 @@ void UIScrollViewMetadata::SetVerticalScrollPosition(float value)
 	GetActiveUIScrollView()->SetOffset(offset);
 }
 
+float UIScrollViewMetadata::GetContentSizeX() const
+{
+	if (!VerifyActiveParamID())
+    {
+        return -1.0f;
+    }
+	
+	Vector2 contentSize = GetActiveUIScrollView()->GetContentSize();
+		
+	return contentSize.x;
+}
+
+void UIScrollViewMetadata::SetContentSizeX(float value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+	
+	Vector2 contentSize = GetActiveUIScrollView()->GetContentSize();
+	contentSize.x = value;
+}
+
+float UIScrollViewMetadata::GetContentSizeY() const
+{
+    if (!VerifyActiveParamID())
+    {
+        return -1.0f;
+    }
+	
+	Vector2 contentSize = GetActiveUIScrollView()->GetContentSize();
+		
+	return contentSize.y;
+}
+
+void UIScrollViewMetadata::SetContentSizeY(float value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+	
+	Vector2 contentSize = GetActiveUIScrollView()->GetContentSize();
+	contentSize.y = value;
+}
 }

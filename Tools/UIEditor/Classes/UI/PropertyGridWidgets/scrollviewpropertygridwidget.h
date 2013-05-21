@@ -21,10 +21,15 @@ public:
 
 private:
     Ui::ScrollViewPropertyGridWidget *ui;
+	
+	void UpdateMaximumValue();
 
 protected:
     // Connect/disconnect to the signals.
     void ConnectToSignals();
+	
+	virtual void OnPropertiesChangedFromExternalSource();
+	virtual void HandleChangePropertySucceeded(const QString& propertyName);
 
     // Change value of double spin box
     virtual void ProcessDoubleSpinBoxValueChanged(QDoubleSpinBox *doubleSpinBoxWidget, const PROPERTYGRIDWIDGETSITER &iter,

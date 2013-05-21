@@ -25,22 +25,23 @@ public:
 	
 public:
 	virtual void Update(float32 timeElapsed);
-	virtual bool SystemInput(UIEvent *currentTouch);
 	virtual void Input(UIEvent *currentTouch);
-	//virtual void SystemDraw(const UIGeometricData & geometricData);
+	
+	virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
 	
 	//called on TOUCH_UP which is now scroll or zoom event
-	virtual void		ScrollTouch(UIEvent *currentTouch) {};
+	//virtual void		ScrollTouch(UIEvent *currentTouch) {};
 
-	//virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
-	//virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
+	Vector2		scrollOrigin;
+
 protected:
 
 	void		StartScroll(Vector2 startScrollPosition);
 	void		ProcessScroll(Vector2 currentScrollPosition);
 	void		EndScroll();
-	void		PerformScroll();
+	//void		PerformScroll();
 	void		ScrollToPosition(const Vector2& position);
+	void   		SaveChilds(UIControl *parent, UIYamlLoader * loader, YamlNode * parentNode);
 
 	enum 
 	{
@@ -50,28 +51,23 @@ protected:
 		STATE_DECCELERATION,
 		STATE_SCROLL_TO_SPECIAL,
 	};
-	
-	/*void		StartScroll(Vector2 startScrollPosition);
-	void		ProcessScroll(Vector2 currentScrollPosition);
-	void		EndScroll();
-	void		PerformScroll();*/
 
 	int32		state;
 //	Vector2		scrollPosition; // Used only during rendering process
-	Vector2		scrollOrigin;
+
 	Vector2		scrollCurrentShift;	
-	Vector2		scrollZero; //point of autoscroll aim
+/*	Vector2		scrollZero; //point of autoscroll aim
 	// Click information
 	Vector2		clickStartPosition;
-	Vector2		clickEndPosition;
+	Vector2		clickEndPosition;*/
 	// Scroll information
 	Vector2		scrollStartInitialPosition;	// position of click
 	Vector2		scrollStartPosition;		// position related to current scroll start pos, can be different from scrollStartInitialPosition
 	Vector2		scrollCurrentPosition;	// scroll current position
-	Vector2		drawScrollPos;
+/*	Vector2		drawScrollPos;*/
 	bool		scrollStartMovement;
 	UIEvent		scrollTouch;
-	float64		scrollStartTime;
+/*	float64		scrollStartTime;
 	uint64		touchStartTime;
 	float32		scrollPixelsPerSecond;
 	Vector2		deccelerationSpeed;
@@ -93,7 +89,7 @@ protected:
 	Vector2		lastMousePositions[MAX_MOUSE_POSITIONS];
 	int32			positionIndex;
 	
-	uint64		lastTapTime;
+	uint64		lastTapTime;*/
 };
 };
 
