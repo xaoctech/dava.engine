@@ -7,11 +7,10 @@
 #include "CommandsController.h"
 #include "WidgetSignalsBlocker.h"
 #include "ResourcesManageHelper.h"
-#include "ResourcePacker.h"
+#include "PropertyNames.h"
+//#include "ResourcePacker.h"
 
 #include <QFileDialog>
-
-using namespace PropertyNames;
 
 static const QString SCROLL_VIEW_PROPERTY_BLOCK_NAME = "Scroll area options";
 
@@ -46,10 +45,10 @@ void ScrollViewPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     PROPERTIESMAP propertiesMap = BuildMetadataPropertiesMap();
 
     // Initialize the widgets.
-    RegisterDoubleSpinBoxWidgetForProperty(propertiesMap, HORIZONTAL_SCROLL_POSITION, ui->scrollHPositionSpinBox);
-    RegisterDoubleSpinBoxWidgetForProperty(propertiesMap, VERTICAL_SCROLL_POSITION, ui->scrollVPositionSpinBox);
-	RegisterSpinBoxWidgetForProperty(propertiesMap, SCROLL_CONTENT_SIZE_X, ui->contentSizeXSpinBox);
-	RegisterSpinBoxWidgetForProperty(propertiesMap, SCROLL_CONTENT_SIZE_Y, ui->contentSizeYSpinBox);
+    RegisterDoubleSpinBoxWidgetForProperty(propertiesMap, PropertyNames::HORIZONTAL_SCROLL_POSITION, ui->scrollHPositionSpinBox);
+    RegisterDoubleSpinBoxWidgetForProperty(propertiesMap, PropertyNames::VERTICAL_SCROLL_POSITION, ui->scrollVPositionSpinBox);
+	RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::SCROLL_CONTENT_SIZE_X, ui->contentSizeXSpinBox);
+	RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::SCROLL_CONTENT_SIZE_Y, ui->contentSizeYSpinBox);
 	
 	UpdateMaximumValue();
 }
@@ -65,7 +64,7 @@ void ScrollViewPropertyGridWidget::Cleanup()
 
 void ScrollViewPropertyGridWidget::UpdateMaximumValue()
 {
-	int sizeX = BasePropertyGridWidget::GetPropertyIntValue(SIZE_X);
+	int sizeX = BasePropertyGridWidget::GetPropertyIntValue(PropertyNames::SIZE_X);
 	int contentSizeX = ui->contentSizeXSpinBox->value();
 	int maxX = contentSizeX - sizeX;
 	if (maxX > 0)
@@ -74,7 +73,7 @@ void ScrollViewPropertyGridWidget::UpdateMaximumValue()
 		ui->scrollHSlider->setMaximum(maxX);
 	}	
 	
-	int sizeY = BasePropertyGridWidget::GetPropertyIntValue(SIZE_Y);
+	int sizeY = BasePropertyGridWidget::GetPropertyIntValue(PropertyNames::SIZE_Y);
 	int contentSizeY = ui->contentSizeYSpinBox->value();
 	int maxY = contentSizeY - sizeY;
 	if (maxY > 0)
@@ -100,7 +99,7 @@ void ScrollViewPropertyGridWidget::HandleChangePropertySucceeded(const QString& 
 	//If one of the align option state is changed we should check it and disable/enable appropriate Relative postion or size spinbox(es)
     BasePropertyGridWidget::HandleChangePropertySucceeded(propertyName);
 	
-	if ((propertyName == SIZE_X) || (propertyName == SIZE_Y))
+	if ((propertyName == PropertyNames::SIZE_X) || (propertyName == PropertyNames::SIZE_Y))
 	{
 		UpdateMaximumValue();
 	}
