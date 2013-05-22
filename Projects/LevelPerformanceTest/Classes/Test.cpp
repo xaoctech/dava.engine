@@ -94,7 +94,7 @@ void Test::OnSectorCameraAnimationEnded(BaseObject* caller, void* userData, void
 		curSectorTime = 0.f;
 	}
 
-	if(curSectorIndex < 8)
+	if(curSectorIndex < SECTORS_COUNT)
 	{
 		float32 timeToRotate = 45.f / SettingsManager::Instance()->GetCameraRotationSpeed();
 		camRotateAnimation = new LinearAnimation<float32>(this, &curCameraAngle, curCameraAngle + 45.f, timeToRotate, Interpolation::LINEAR);
@@ -248,7 +248,7 @@ void Test::ZeroCurFpsStat()
 	curSectorIndex = 0;
 	curSectorTime = 0.f;
 
-	for(int i = 0; i < 8; i++)
+	for(int i = 0; i < SECTORS_COUNT; i++)
 		fpsStatItem.avFps[i] = 0;
 }
 
