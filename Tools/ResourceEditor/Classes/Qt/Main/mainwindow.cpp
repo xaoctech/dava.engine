@@ -285,6 +285,7 @@ void QtMainWindow::OpenLastProject()
 {
     if(     !CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter"))
        &&   !CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter"))
+	   &&   !CommandLineTool::Instance()->CommandIsFound(String("-beast"))
        &&   !CommandLineTool::Instance()->CommandIsFound(String("-scenesaver")))
     {
         DAVA::String projectPath = EditorSettings::Instance()->GetProjectPath();
@@ -456,6 +457,7 @@ bool QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)
 	if(     CommandLineTool::Instance()
        &&   !CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter"))
        &&   !CommandLineTool::Instance()->CommandIsFound(String("-scenesaver"))
+	   &&   !CommandLineTool::Instance()->CommandIsFound(String("-beast"))
        &&   !CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter")) && NULL == convertWaitDialog)
 	{
 		// check if we have textures to convert - 

@@ -91,7 +91,7 @@ namespace DAVA
 	
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
 	
-    const char * FileSystem::FilepathRelativeToBundle(const char * relativePathname)
+    String FileSystem::FilepathRelativeToBundle(const char * relativePathname)
 	{
 		NSString * filePath = FilepathRelativeToBundleObjC(virtualBundlePath, [NSString stringWithUTF8String: relativePathname]);
 		return [filePath UTF8String];

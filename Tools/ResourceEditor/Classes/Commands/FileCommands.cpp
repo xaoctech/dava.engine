@@ -120,8 +120,9 @@ void CommandNewScene::Execute()
 
 
 //Save
-CommandSaveScene::CommandSaveScene()
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+CommandSaveScene::CommandSaveScene(const DAVA::String &scenePathname)
+	:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+	,   selectedScenePathname(scenePathname)
 {
 }
 
@@ -133,28 +134,31 @@ void CommandSaveScene::Execute()
     {
         SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
         
-		String currentPath;
-		if(0 < screen->CurrentScenePathname().length())
+		String currentPath = selectedScenePathname;
+		if(currentPath.empty())
 		{
-			currentPath = screen->CurrentScenePathname();    
+			if(0 < screen->CurrentScenePathname().length())
+			{
+				currentPath = screen->CurrentScenePathname();    
+			}
+			else
+			{
+				currentPath = EditorSettings::Instance()->GetDataSourcePath();
+			}
+
+			QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save Scene File"), QString(currentPath.c_str()),
+				QString("Scene File (*.sc2)")
+				);
+
+			if(filePath.isEmpty())
+				return;
+
+			currentPath = PathnameToDAVAStyle(filePath);
+			EditorSettings::Instance()->AddLastOpenedFile(currentPath);
 		}
-		else
-		{
-			currentPath = EditorSettings::Instance()->GetDataSourcePath();
-		}
 
-        QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save Scene File"), QString(currentPath.c_str()),
-                                                        QString("Scene File (*.sc2)")
-                                                        );
-        if(0 < filePath.size())
-        {
-			String normalizedPathname = PathnameToDAVAStyle(filePath);
-
-            EditorSettings::Instance()->AddLastOpenedFile(normalizedPathname);
-
-			SaveParticleEmitterNodes(activeScene->GetScene());
-            screen->SaveSceneToFile(normalizedPathname);
-        }
+		SaveParticleEmitterNodes(activeScene->GetScene());
+		screen->SaveSceneToFile(currentPath);
     }
 
 	QtMainWindowHandler::Instance()->RestoreDefaultFocus();
