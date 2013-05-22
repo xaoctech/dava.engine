@@ -43,6 +43,10 @@ namespace DAVA
 {
 
 #if defined(__DAVAENGINE_WIN32__)
+
+#define vsnprintf _vsnprintf
+#define vsnwprintf _vsnwprintf
+
 void Logger::Logv(eLogLevel ll, const char8* text, va_list li)
 {
 	if (ll < logLevel)return; 
@@ -55,6 +59,7 @@ void Logger::Logv(eLogLevel ll, const char8* text, va_list li)
 	_vsnprintf(tmp, sizeof(tmp)-2, text, li);
 	strcat(tmp, "\n");
 	OutputDebugStringA(tmp);
+
 	if(!logFilename.empty() && FileSystem::Instance())
 	{
 		FilePath filename = FileSystem::Instance()->GetCurrentDocumentsDirectory()+logFilename;
@@ -79,6 +84,7 @@ void Logger::Logv(eLogLevel ll, const char16* text, va_list li)
 	_vsnwprintf(tmp, sizeof(tmp)/sizeof(wchar_t)-2, text, li);
 	wcscat(tmp, L"\n");
 	OutputDebugStringW(tmp);
+
 	if(!logFilename.empty() && FileSystem::Instance())
 	{
 		FilePath filename = FileSystem::Instance()->GetCurrentDocumentsDirectory()+logFilename;
@@ -109,7 +115,10 @@ Logger::Logger()
 
 Logger::~Logger()
 {
-	
+	for(size_t i = 0; i < customOutputs.size(); ++i)
+	{
+		delete customOutputs[i];
+	}
 }
 	
 Logger::eLogLevel Logger::GetLogLevel()
@@ -134,6 +143,7 @@ void Logger::Log(eLogLevel ll, const char8* text, ...)
 	va_list vl;
 	va_start(vl, text);
 	Logv(ll, text, vl);
+	LogToCustomOutput(ll, text, vl);
 	va_end(vl);
 }	
 
@@ -144,6 +154,7 @@ void Logger::Log(eLogLevel ll, const char16* text, ...)
 	va_list vl;
 	va_start(vl, text);
 	Logv(ll, text, vl);
+	LogToCustomOutput(ll, text, vl);
 	va_end(vl);
 }
 	
@@ -153,7 +164,10 @@ void Logger::Debug(const char8 * text, ...)
 	va_list vl;
 	va_start(vl, text);
     if (Logger::Instance())
+	{
         Logger::Instance()->Logv(LEVEL_DEBUG, text, vl);
+		Logger::Instance()->LogToCustomOutput(LEVEL_DEBUG, text, vl);
+	}
 	va_end(vl);
 }
 	
@@ -162,7 +176,10 @@ void Logger::Info(const char8 * text, ...)
 	va_list vl;
 	va_start(vl, text);
     if (Logger::Instance())
+	{
         Logger::Instance()->Logv(LEVEL_INFO, text, vl);
+		Logger::Instance()->LogToCustomOutput(LEVEL_INFO, text, vl);
+	}
 	va_end(vl);
 }	
 	
@@ -171,7 +188,10 @@ void Logger::Warning(const char8 * text, ...)
 	va_list vl;
 	va_start(vl, text);
     if (Logger::Instance())
+	{
         Logger::Instance()->Logv(LEVEL_WARNING, text, vl);
+		Logger::Instance()->LogToCustomOutput(LEVEL_WARNING, text, vl);
+	}
 	va_end(vl);
 }
 	
@@ -180,7 +200,10 @@ void Logger::Error(const char8 * text, ...)
 	va_list vl;
 	va_start(vl, text);
     if (Logger::Instance())
+	{
         Logger::Instance()->Logv(LEVEL_ERROR, text, vl);
+		Logger::Instance()->LogToCustomOutput(LEVEL_ERROR, text, vl);
+	}
 	va_end(vl);
 }
 
@@ -189,7 +212,10 @@ void Logger::Debug(const char16 * text, ...)
 	va_list vl;
 	va_start(vl, text);
     if (Logger::Instance())
+	{
         Logger::Instance()->Logv(LEVEL_DEBUG, text, vl);
+		Logger::Instance()->LogToCustomOutput(LEVEL_DEBUG, text, vl);
+	}
 	va_end(vl);
 }
 
@@ -198,7 +224,10 @@ void Logger::Info(const char16 * text, ...)
 	va_list vl;
 	va_start(vl, text);
     if (Logger::Instance())
+	{
         Logger::Instance()->Logv(LEVEL_INFO, text, vl);
+		Logger::Instance()->LogToCustomOutput(LEVEL_INFO, text, vl);
+	}
 	va_end(vl);
 }	
 
@@ -207,7 +236,10 @@ void Logger::Warning(const char16 * text, ...)
 	va_list vl;
 	va_start(vl, text);
     if (Logger::Instance())
+	{
         Logger::Instance()->Logv(LEVEL_WARNING, text, vl);
+		Logger::Instance()->LogToCustomOutput(LEVEL_WARNING, text, vl);
+	}
 	va_end(vl);
 }
 
@@ -216,8 +248,17 @@ void Logger::Error(const char16 * text, ...)
 	va_list vl;
 	va_start(vl, text);
     if (Logger::Instance())
+	{
         Logger::Instance()->Logv(LEVEL_ERROR, text, vl);
+		Logger::Instance()->LogToCustomOutput(LEVEL_ERROR, text, vl);
+	}
 	va_end(vl);
+}
+
+void Logger::AddCustomOutput(DAVA::LoggerOutput *lo)
+{
+	if(Logger::Instance() && lo)
+		Logger::Instance()->customOutputs.push_back(lo);
 }
 
 void Logger::SetLogFilename(const String & filename)
@@ -225,6 +266,37 @@ void Logger::SetLogFilename(const String & filename)
 	logFilename = filename;
 }
 
+void Logger::LogToCustomOutput(eLogLevel ll, const char8* text, va_list li)
+{
+	char tmp[4096] = {0};
+
+	vsnprintf(tmp, sizeof(tmp) - 2, text, li);
+	strcat(tmp, "\n");
+
+	for(size_t i = 0; i < customOutputs.size(); ++i)
+	{
+		customOutputs[i]->Output(ll, tmp);
+	}
+}
+
+void Logger::LogToCustomOutput(eLogLevel ll, const char16* text, va_list li)
+{
+	wchar_t tmp[4096] = {0};
+
+	vsnwprintf(tmp, sizeof(tmp)/sizeof(wchar_t) - 2, text, li);
+	wcscat(tmp, L"\n");
+
+	for(size_t i = 0; i < customOutputs.size(); ++i)
+	{
+		customOutputs[i]->Output(ll, tmp);
+	}
+}
+
+LoggerOutput::LoggerOutput()
+{}
+
+LoggerOutput::~LoggerOutput()
+{}
 
 }
 
