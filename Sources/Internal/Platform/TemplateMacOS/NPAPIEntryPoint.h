@@ -32,6 +32,10 @@ __attribute__((visibility("default"))) NPError NP_Initialize(NPNetscapeFuncs *br
 __attribute__((visibility("default"))) NPError NP_GetEntryPoints(NPPluginFuncs *pluginFuncs);
 __attribute__((visibility("default"))) void    NP_Shutdown(void);
 
+#ifdef __cplusplus
+};
+#endif
+
 NPError NPP_New(NPMIMEType pluginType, NPP instance, uint16_t mode, int16_t argc, char* argn[], char* argv[], NPSavedData* saved);
 NPError NPP_Destroy(NPP instance, NPSavedData** save);
 NPError NPP_SetWindow(NPP instance, NPWindow* window);
@@ -45,6 +49,6 @@ int16_t NPP_HandleEvent(NPP instance, void* event);
 void    NPP_URLNotify(NPP instance, const char* URL, NPReason reason, void* notifyData);
 NPError NPP_GetValue(NPP instance, NPPVariable variable, void *value);
 NPError NPP_SetValue(NPP instance, NPNVariable variable, void *value);
-};
+
 
 #endif //__NPAPI_ENTRY_POINT_H__
