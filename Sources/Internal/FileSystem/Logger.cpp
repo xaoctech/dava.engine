@@ -32,72 +32,61 @@
 #include "Debug/DVAssert.h"
 #include <stdarg.h>
 
-
-#if defined(__DAVAENGINE_WIN32__)
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <windowsx.h>
-#endif 
-
 namespace DAVA 
 {
 
 #if defined(__DAVAENGINE_WIN32__)
 
 #define vsnprintf _vsnprintf
-#define vsnwprintf _vsnwprintf
+#define vswprintf _vsnwprintf
+
+#endif
 
 void Logger::Logv(eLogLevel ll, const char8* text, va_list li)
 {
-	if (ll < logLevel)return; 
-	//NSString * string = [NSString stringWithCString: GetLogLevelString(ll)];
-	//NSString * stringOut = [string stringByAppendingString:[NSString stringWithCString:text]];
-	//NSString * string = [NSString stringWithFormat:@"[%s] %@", GetLogLevelString(ll), [NSString stringWithCString:text]];
-	//NSLogv(string, li);
 	char tmp[4096] = {0};
-	// sizeof(tmp) - 2  - We need two characters for appending "\n" if the number of characters exceeds the size of buffer. 
-	_vsnprintf(tmp, sizeof(tmp)-2, text, li);
-	strcat(tmp, "\n");
-	OutputDebugStringA(tmp);
 
-	if(!logFilename.empty() && FileSystem::Instance())
+	vsnprintf(tmp, sizeof(tmp) - 2, text, li);
+	strcat(tmp, "\n");
+
+	// always send log to custom subscribers
+	CustomLog(ll, tmp);
+
+	// print platform log or write log to file
+	// only if log level is acceptable
+	if (ll >= logLevel)
 	{
-		FilePath filename = FileSystem::Instance()->GetCurrentDocumentsDirectory()+logFilename;
-		FILE * file = fopen(filename.GetAbsolutePathname().c_str(), "ab");
-		if(file)
+		PlatformLog(ll, tmp);
+
+		if(!logFilename.empty())
 		{
-			fwrite(tmp, sizeof(char), strlen(tmp), file);
-			fclose(file);
+			FileLog(ll, tmp);
 		}
 	}
 }
 
 void Logger::Logv(eLogLevel ll, const char16* text, va_list li)
 {
-	if (ll < logLevel)return; 
-	//NSString * ss = [NSString stringWithCString:(const char *)text encoding: NSUTF32BigEndianStringEncoding];
-	//NSString * str = [NSString stringWithFormat:@"[%s] %@", GetLogLevelString(ll), [NSString stringWithCString:(const char8*)text encoding: NSUTF32LittleEndianStringEncoding]];
-	//NSLogv(string, li);
-	//vwprintf((wchar_t*)text, li); printf("\n");
 	wchar_t tmp[4096] = {0};
-	// sizeof(tmp)/sizeof(wchar_t)-2  - We need two characters for appending L"\n" if the number of characters exceeds the size of buffer. 
-	_vsnwprintf(tmp, sizeof(tmp)/sizeof(wchar_t)-2, text, li);
-	wcscat(tmp, L"\n");
-	OutputDebugStringW(tmp);
 
-	if(!logFilename.empty() && FileSystem::Instance())
+	vswprintf(tmp, sizeof(tmp)/sizeof(wchar_t) - 2, text, li);
+	wcscat(tmp, L"\n");
+
+	// always send log to custom subscribers
+	CustomLog(ll, tmp);
+
+	// print platform log or write log to file
+	// only if log level is acceptable
+	if (ll >= logLevel)
 	{
-		FilePath filename = FileSystem::Instance()->GetCurrentDocumentsDirectory()+logFilename;
-		FILE * file = fopen(filename.GetAbsolutePathname().c_str(), "ab");
-		if(file)
+		PlatformLog(ll, tmp);
+
+		if(!logFilename.empty())
 		{
-            fwrite(tmp, sizeof(wchar_t), wcslen(tmp), file);
-            fclose(file);
-        }
+			FileLog(ll, tmp);
+		}
 	}
 }
-
-#endif 
 
 static const char8 * logLevelString[4] =
 {	
@@ -143,31 +132,25 @@ void Logger::Log(eLogLevel ll, const char8* text, ...)
 	va_list vl;
 	va_start(vl, text);
 	Logv(ll, text, vl);
-	LogToCustomOutput(ll, text, vl);
 	va_end(vl);
 }	
 
 void Logger::Log(eLogLevel ll, const char16* text, ...)
 {
-	if (ll < logLevel)return; 
+	if (ll < logLevel) return; 
 	
 	va_list vl;
 	va_start(vl, text);
 	Logv(ll, text, vl);
-	LogToCustomOutput(ll, text, vl);
 	va_end(vl);
 }
-	
 	
 void Logger::Debug(const char8 * text, ...)
 {
 	va_list vl;
 	va_start(vl, text);
     if (Logger::Instance())
-	{
         Logger::Instance()->Logv(LEVEL_DEBUG, text, vl);
-		Logger::Instance()->LogToCustomOutput(LEVEL_DEBUG, text, vl);
-	}
 	va_end(vl);
 }
 	
@@ -176,10 +159,7 @@ void Logger::Info(const char8 * text, ...)
 	va_list vl;
 	va_start(vl, text);
     if (Logger::Instance())
-	{
         Logger::Instance()->Logv(LEVEL_INFO, text, vl);
-		Logger::Instance()->LogToCustomOutput(LEVEL_INFO, text, vl);
-	}
 	va_end(vl);
 }	
 	
@@ -188,10 +168,7 @@ void Logger::Warning(const char8 * text, ...)
 	va_list vl;
 	va_start(vl, text);
     if (Logger::Instance())
-	{
         Logger::Instance()->Logv(LEVEL_WARNING, text, vl);
-		Logger::Instance()->LogToCustomOutput(LEVEL_WARNING, text, vl);
-	}
 	va_end(vl);
 }
 	
@@ -200,10 +177,7 @@ void Logger::Error(const char8 * text, ...)
 	va_list vl;
 	va_start(vl, text);
     if (Logger::Instance())
-	{
         Logger::Instance()->Logv(LEVEL_ERROR, text, vl);
-		Logger::Instance()->LogToCustomOutput(LEVEL_ERROR, text, vl);
-	}
 	va_end(vl);
 }
 
@@ -212,10 +186,7 @@ void Logger::Debug(const char16 * text, ...)
 	va_list vl;
 	va_start(vl, text);
     if (Logger::Instance())
-	{
         Logger::Instance()->Logv(LEVEL_DEBUG, text, vl);
-		Logger::Instance()->LogToCustomOutput(LEVEL_DEBUG, text, vl);
-	}
 	va_end(vl);
 }
 
@@ -224,10 +195,7 @@ void Logger::Info(const char16 * text, ...)
 	va_list vl;
 	va_start(vl, text);
     if (Logger::Instance())
-	{
         Logger::Instance()->Logv(LEVEL_INFO, text, vl);
-		Logger::Instance()->LogToCustomOutput(LEVEL_INFO, text, vl);
-	}
 	va_end(vl);
 }	
 
@@ -236,10 +204,7 @@ void Logger::Warning(const char16 * text, ...)
 	va_list vl;
 	va_start(vl, text);
     if (Logger::Instance())
-	{
         Logger::Instance()->Logv(LEVEL_WARNING, text, vl);
-		Logger::Instance()->LogToCustomOutput(LEVEL_WARNING, text, vl);
-	}
 	va_end(vl);
 }
 
@@ -248,10 +213,7 @@ void Logger::Error(const char16 * text, ...)
 	va_list vl;
 	va_start(vl, text);
     if (Logger::Instance())
-	{
         Logger::Instance()->Logv(LEVEL_ERROR, text, vl);
-		Logger::Instance()->LogToCustomOutput(LEVEL_ERROR, text, vl);
-	}
 	va_end(vl);
 }
 
@@ -263,40 +225,58 @@ void Logger::AddCustomOutput(DAVA::LoggerOutput *lo)
 
 void Logger::SetLogFilename(const String & filename)
 {
-	logFilename = filename;
-}
-
-void Logger::LogToCustomOutput(eLogLevel ll, const char8* text, va_list li)
-{
-	char tmp[4096] = {0};
-
-	vsnprintf(tmp, sizeof(tmp) - 2, text, li);
-	strcat(tmp, "\n");
-
-	for(size_t i = 0; i < customOutputs.size(); ++i)
+	if(!filename.empty())
 	{
-		customOutputs[i]->Output(ll, tmp);
+		FilePath filepath = FileSystem::Instance()->GetCurrentDocumentsDirectory() + filename;
+		logFilename = filepath.GetAbsolutePathname().c_str();
+	}
+	else
+	{
+		logFilename = filename;
 	}
 }
 
-void Logger::LogToCustomOutput(eLogLevel ll, const char16* text, va_list li)
+void Logger::FileLog(eLogLevel ll, const char8* text)
 {
-	wchar_t tmp[4096] = {0};
-
-	vsnwprintf(tmp, sizeof(tmp)/sizeof(wchar_t) - 2, text, li);
-	wcscat(tmp, L"\n");
-
-	for(size_t i = 0; i < customOutputs.size(); ++i)
+	if(FileSystem::Instance())
 	{
-		customOutputs[i]->Output(ll, tmp);
+		FILE * file = fopen(logFilename.c_str(), "ab");
+		if(file)
+		{
+			fwrite(text, sizeof(char), strlen(text), file);
+			fclose(file);
+		}
 	}
 }
 
-LoggerOutput::LoggerOutput()
-{}
+void Logger::FileLog(eLogLevel ll, const char16* text)
+{
+	if(FileSystem::Instance())
+	{
+		FILE * file = fopen(logFilename.c_str(), "ab");
+		if(file)
+		{
+			fwrite(text, sizeof(wchar_t), wcslen(text), file);
+			fclose(file);
+		}
+	}
+}
 
-LoggerOutput::~LoggerOutput()
-{}
+void Logger::CustomLog(eLogLevel ll, const char8* text)
+{
+	for(size_t i = 0; i < customOutputs.size(); ++i)
+	{
+		customOutputs[i]->Output(ll, text);
+	}
+}
+
+void Logger::CustomLog(eLogLevel ll, const char16* text)
+{
+	for(size_t i = 0; i < customOutputs.size(); ++i)
+	{
+		customOutputs[i]->Output(ll, text);
+	}
+}
 
 }
 

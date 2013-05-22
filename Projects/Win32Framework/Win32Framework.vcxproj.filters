@@ -2222,5 +2222,8 @@
     <ClCompile Include="..\..\Sources\Internal\Base\GlobalEnum.cpp">
       <Filter>Internal\Base</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\LoggerWin.cpp">
+      <Filter>Internal\FileSystem</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
