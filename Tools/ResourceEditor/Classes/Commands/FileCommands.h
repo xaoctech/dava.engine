@@ -45,13 +45,17 @@ protected:
 class CommandSaveScene: public Command
 {
 public:	
-	CommandSaveScene();
+	CommandSaveScene(const DAVA::String &scenePathname = DAVA::String(""));
     
 protected:	
     
     virtual void Execute();
 	void SaveParticleEmitterNodes(EditorScene* scene);
 	void SaveParticleEmitterNodeRecursive(Entity* parentNode);
+
+protected:
+	DAVA::String selectedScenePathname;
+
 };
 
 class CommandExport: public Command

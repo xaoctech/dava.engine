@@ -31,6 +31,10 @@
 #include "../Commands/CommandsManager.h"
 #include "../Commands/EditorBodyControlCommands.h"
 #include "../Commands/CommandReloadTextures.h"
+#include "../Commands/FileCommands.h"
+
+#include "CommandLineTool.h"
+
 
 #include "ArrowsNode.h"
 
@@ -741,6 +745,17 @@ void EditorBodyControl::Update(float32 timeElapsed)
 	{
 		PackLightmaps();
 		BeastProxy::Instance()->SafeDeleteManager(&beastManager);
+
+#if defined (__DAVAENGINE_WIN32__)
+		if(CommandLineTool::Instance()->CommandIsFound(String("-beast")))
+		{
+			String path = SceneDataManager::Instance()->SceneGetActive()->GetScenePathname();
+			CommandsManager::Instance()->ExecuteAndRelease(new CommandSaveScene(path));
+
+			Core::Instance()->Quit();
+		}
+
+#endif //#if defined (__DAVAENGINE_WIN32__)
 
 		CommandsManager::Instance()->ExecuteAndRelease(new CommandReloadTextures());
 	}
