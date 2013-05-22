@@ -7,7 +7,7 @@
 #include "processhelper.h"
 #include "settings.h"
 
-#define LAUNCER_VER "0.83"
+#define LAUNCER_VER "0.85"
 
 #define COLUMN_NAME 0
 #define COLUMN_CUR_VER 1
