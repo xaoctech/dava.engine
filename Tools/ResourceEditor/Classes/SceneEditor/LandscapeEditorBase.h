@@ -65,7 +65,7 @@ public:
     virtual NodesPropertyControl *GetPropertyControl(const Rect &rect) = 0;
     
     //file dialog delegate
-    virtual void OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile);
+    virtual void OnFileSelected(UIFileSystemDialog *forDialog, const FilePath &pathToFile);
     virtual void OnFileSytemDialogCanceled(UIFileSystemDialog *forDialog);
 
     //Tools Panel delegate
@@ -79,12 +79,12 @@ public:
 protected:
 
     virtual void SaveTexture();
-    void SaveTextureAs(const String &pathToFile, bool closeLE);
+    void SaveTextureAs(const FilePath &pathToFile, bool closeLE);
 
     virtual void InputAction(int32 phase, bool intersects) = 0;
     virtual void HideAction() = 0;
     virtual void ShowAction() = 0;
-    virtual void SaveTextureAction(const String &pathToFile) = 0;
+    virtual void SaveTextureAction(const FilePath &pathToFile) = 0;
 	virtual void UpdateCursor() = 0;
     
     virtual void RecreateHeightmapNode() = 0;
@@ -101,10 +101,11 @@ protected:
 
     HeightmapNode *heightmapNode;
     Landscape *workingLandscape;
+	Entity *workingLandscapeEntity;
 
     LandscapeTool *currentTool;
 
-    String savedPath;
+    FilePath savedPath;
     int32 landscapeSize;
 
     EditorScene *workingScene;    

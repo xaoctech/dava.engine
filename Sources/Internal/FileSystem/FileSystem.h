@@ -33,6 +33,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/Singleton.h"
 #include "FileSystem/File.h"
+#include "FileSystem/FilePath.h"
 
 #if defined (__DAVAENGINE_ANDROID__)
 #include "FileSystem/APKFile.h"
@@ -67,7 +68,7 @@ public:
 		\param[in] filePath full path for the file we want to delete
 		\returns true if deletion was successful
 	 */
-	virtual bool DeleteFile(const String & filePath);
+	virtual bool DeleteFile(const FilePath & filePath);
 	
 	
 	/*
@@ -79,7 +80,7 @@ public:
 		\param[in] isRecursive if true trying to delete all subfolders, if not just trying to delete this directory
 		\returns true if this directory was deleted
 	 */
-	virtual bool DeleteDirectory(const String & path, bool isRecursive = true);
+	virtual bool DeleteDirectory(const FilePath & path, bool isRecursive = true);
 
 	
 	/*
@@ -89,7 +90,7 @@ public:
 		\param[in] isRecursive if true go into child directories and delete files there also, false by default
 		\returns number of deleted files
 	*/ 
-	virtual uint32 DeleteDirectoryFiles(const String & path, bool isRecursive = false);
+	virtual uint32 DeleteDirectoryFiles(const FilePath & path, bool isRecursive = false);
 
 	enum eCreateDirectoryResult
 	{
@@ -102,32 +103,32 @@ public:
 		\param[in] filepath where you want to create a directory
 		\returns true if directory created successfully
 	 */
-	virtual eCreateDirectoryResult CreateDirectory(const String & filePath, bool isRecursive = false);
+	virtual eCreateDirectoryResult CreateDirectory(const FilePath & filePath, bool isRecursive = false);
 	
 	/**
 		\brief Function to retrieve current working directory
 		\returns current working directory
 	 */
-	virtual const String & GetCurrentWorkingDirectory();
+	virtual const FilePath & GetCurrentWorkingDirectory();
 
 	/**
 		\brief Function to set current working directory
 		\param[in] newWorkingDirectory new working directory to be set
 		\returns true if directory set successfully
 	 */
-	virtual bool SetCurrentWorkingDirectory(const String & newWorkingDirectory);
+	virtual bool SetCurrentWorkingDirectory(const FilePath & newWorkingDirectory);
 	
 	/**
         \brief Function to retrieve current documents directory
         \returns current documents directory
      */
-    virtual const String & GetCurrentDocumentsDirectory();
+    virtual const FilePath & GetCurrentDocumentsDirectory();
     
     /**
          \brief Function to set current documents directory
          \param[in] newDocDirectory new documents directory to be set
      */
-    virtual void SetCurrentDocumentsDirectory(const String & newDocDirectory);
+    virtual void SetCurrentDocumentsDirectory(const FilePath & newDocDirectory);
     
     /**
          \brief Function to set current documents directory to default
@@ -135,100 +136,37 @@ public:
     virtual void SetDefaultDocumentsDirectory();
     
     /**
-         \brief Function to retrieve full path relative current documents folder
-         \returns path relative corrent documents folder
-     */
-    virtual const String FilepathInDocuments(const char * relativePathname);
-    
-    /**
-         \brief Function to retrieve full path relative current documents folder
-         \returns path relative corrent documents folder
-     */
-    virtual const String FilepathInDocuments(const String & relativePathname);
-    
-    /**
          \brief Function to retrieve user's documents path
          \returns user's documents path
      */
-    virtual const String GetUserDocumentsPath();
+    virtual const FilePath GetUserDocumentsPath();
     
     /**
          \brief Function to retrieve public documents path
          \returns public documents path
      */
-    virtual const String GetPublicDocumentsPath();
+    virtual const FilePath GetPublicDocumentsPath();
 
 #if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)  
     /**
         \brief Function to retrieve user’s home path
         \returns user’s home path
     */
-    virtual const String GetHomePath();
+    virtual const FilePath GetHomePath();
 #endif
     
 	/**
 		\brief Function check if specified path is a regular file
 	*/
-	virtual bool IsFile(const String & pathToCheck);
+	virtual bool IsFile(const FilePath & pathToCheck);
 
 		
 	/**
 		\brief Function check if specified path is a directory
 	 */
-	virtual bool IsDirectory(const String & pathToCheck);
-		
-	/**
-		\brief Return canonical path name of \a path.
-
-		RealPath expands all symbolic links and resolves references to '/./', '/../' and extra '/' characters in
-		the string named by path and returns the canonicalized absolute pathname.
-		The resulting path will have no symbolic link, '/./' or '/../' components, also no trailing ones.
-		Nor will it  end on a slash: if the result is the root then the returned path is empty,
-		and unless the result is empty, it will always start with a slash.
-	 */
-	static String RealPath(const String & path);
-
-	/**
-     \brief Return canonical path name of \a path.
-     
-     GetCanonicalPath expands all symbolic links and resolves references to '/./', '/../' and extra '/' characters in
-     the string named by path and returns the canonicalized absolute pathname.
-     The resulting path will have no symbolic link, '/./' or '/../' components, also no trailing ones.
-     Nor will it  end on a slash: if the result is the root then the returned path is empty,
-     and unless the result is empty, it will always start with a slash. It also removes disk letter from path.
-	 */
-    static String GetCanonicalPath(const String & path);
-    
-    
-	/**
-		\brief Split path to file into path and filename
-		\param[in] filepath inputpath to some file 
-		\param[out] path path to the input file (always with trailing backslash character ('/').)
-		\param[out] filename filename of the input file
-	 */
-	static void	SplitPath(const String & filepath, String & path, String & filename);
-
-	/**
-		\brief Extract extension from the file path
-		Function returns extension with ".", so if you'll call GetExtension("filename.png") function will return ".png". 
-		\returns extension of the file
-	 */
-	static String GetExtension(const String & filename);
-
-	/**
-		\brief Replace extension for the given filename
-		
-	 */
-	static String ReplaceExtension(const String & filename, const String & newExt);
-
+	virtual bool IsDirectory(const FilePath & pathToCheck);
 	
-	/**
-	 \brief Returns absolute system path from the framework specific path
-	 parse paths with specific discs ~res:/ and ~doc:/
-	 */
-	const String & SystemPathForFrameworkPath(const String & frameworkPath);
-	
-	File *CreateFileForFrameworkPath(const String & frameworkPath, uint32 attributes);
+	File *CreateFileForFrameworkPath(const FilePath & frameworkPath, uint32 attributes);
 
 	/**
 		\brief Copies an existing file to a new file.
@@ -236,15 +174,16 @@ public:
 		\param[out] newFile The name of the new file.
 		\returns true if file was successfully copied, false otherwise
 	*/
-	virtual bool CopyFile(const String & existingFile, const String & newFile);
+	virtual bool CopyFile(const FilePath & existingFile, const FilePath & newFile);
 
 	/**
 		\brief Moves an existing file to a new file.
 		\param[in] existingFile The name of an existing file.
 		\param[out] newFile The name of the new file.
+		\param[in] overwriteExisting signal to overwrite existing file with name newFile.
 		\returns true if file was successfully moved, false otherwise
 	*/
-	virtual bool MoveFile(const String & existingFile, const String & newFile);
+	virtual bool MoveFile(const FilePath & existingFile, const FilePath & newFile, bool overwriteExisting = false);
 
 	/**
 		\brief Copies directory to another existing directory.
@@ -252,7 +191,7 @@ public:
 		\param[out] destinationDirectory The name of the new file.
 		\returns true if all files were successfully copied, false otherwise.
 	*/
-	virtual bool CopyDirectory(const String & sourceDirectory, const String & destinationDirectory);
+	virtual bool CopyDirectory(const FilePath & sourceDirectory, const FilePath & destinationDirectory);
     
     /**
         \brief Read whole file contents into new buffer. 
@@ -263,7 +202,7 @@ public:
         \param[out] fileSize
         \returns pointer to newly created buffer with file contents
      */
-    uint8 * ReadFileContents(const String & pathname, uint32 & fileSize);
+    uint8 * ReadFileContents(const FilePath & pathname, uint32 & fileSize);
     
     
     /**
@@ -271,7 +210,7 @@ public:
         \param[in] pathname path to the file we want to read
         \returns string with whole file contents
      */
-    String ReadFileContents(const String & pathname);
+    String ReadFileContents(const FilePath & pathname);
 
 	/**
 		\brief Function to attach ResourceArchive to filesystem
@@ -289,35 +228,12 @@ public:
 	int32 Spawn(const String& command);
     
     
-	/**
-	 \brief Creates the relative path for filePathname
-	 \param[in] path of the source folder
-	 \param[in] path name of the file 
-	 \returns relative path
-	 */
-    static String AbsoluteToRelativePath(const String &folderPathname, const String &absolutePathname);
-    
-
-    static void ReplaceBundleName(const String &newBundlePath);
-
 private:
     
-    /**
-     \brief Return canonical path name of \a path.
-     
-     NormalizePath expands all symbolic links and resolves references to '/./', '/../' and extra '/' characters in
-     the string named by path and returns the canonicalized absolute pathname.
-     The resulting path will have no symbolic link, '/./' or '/../' components, also no trailing ones.
-     Nor will it  end on a slash: if the result is the root then the returned path is empty,
-     and unless the result is empty, it will always start with a slash.
-	 */
-	static String NormalizePath(const String & path);
-	virtual eCreateDirectoryResult CreateExactDirectory(const String & filePath);
+	virtual eCreateDirectoryResult CreateExactDirectory(const FilePath & filePath);
 
-    
-    String tempRetPath;
-	String currentWorkingDirectory;
-        String currentDocDirectory;
+	FilePath currentWorkingDirectory;
+    FilePath currentDocDirectory;
 
 	struct ResourceArchiveItem
 	{
@@ -331,11 +247,6 @@ private:
 #if defined(__DAVAENGINE_ANDROID__)
 	friend class APKFile;
 #endif //#if defined(__DAVAENGINE_ANDROID__)
-
-    static String virtualBundlePath;
-
-    static const char * FilepathRelativeToBundle(const char * relativePathname);
-    static const char * FilepathRelativeToBundle(const String & relativePathname);
 };
 	
 };

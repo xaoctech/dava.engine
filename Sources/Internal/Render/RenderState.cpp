@@ -33,7 +33,7 @@
 #include "Render/Shader.h"
 #include "Platform/Thread.h"
 #include "Utils/Utils.h"
-
+#include "FileSystem/YamlParser.h"
 
 
 namespace DAVA
@@ -822,5 +822,205 @@ RenderState::StencilState::StencilState()
 	fail[0] = fail[1] = STENCILOP_KEEP;
 	zFail[0] = zFail[1] = STENCILOP_KEEP;
 } 
+
+void RenderState::LoadFromYamlFile(const FilePath & filePath)
+{
+	YamlParser * parser = YamlParser::Create(filePath);
+	if (!parser)
+	{
+		Logger::Error("Failed to open yaml file: %s", filePath.GetAbsolutePathname().c_str());
+		return;
+	}
+
+	YamlNode * rootNode = parser->GetRootNode();
+	if (!rootNode)
+	{
+		Logger::Warning("yaml file: %s is empty", filePath.GetAbsolutePathname().c_str());
+		return;
+	}
+
+	LoadFromYamlNode(rootNode);
+
+	SafeRelease(parser);
+}
+
+void RenderState::LoadFromYamlNode(YamlNode * rootNode)
+{
+	if (!rootNode)
+		return;
+
+	YamlNode * renderStateNode = rootNode->Get("RenderState");
+	if(renderStateNode)
+	{
+		YamlNode * stateNode = renderStateNode->Get("state");
+		if(stateNode)
+		{
+			Vector<String> states;
+			Split(stateNode->AsString(), "| ", states);
+			uint32 currentState = 0;
+			for(Vector<String>::const_iterator it = states.begin(); it != states.end(); it++)
+				currentState |= GetRenderStateByName((*it));
+			
+			state = currentState;
+		}
+
+		YamlNode * blendSrcNode = renderStateNode->Get("blendSrc");
+		YamlNode * blendDestNode = renderStateNode->Get("blendDest");
+		if(blendSrcNode && blendDestNode)
+		{
+			eBlendMode newBlendScr = GetBlendModeByName(blendSrcNode->AsString());
+			eBlendMode newBlendDest = GetBlendModeByName(blendDestNode->AsString());
+			SetBlendMode(newBlendScr, newBlendDest);
+		}
+
+		YamlNode * cullModeNode = renderStateNode->Get("cullMode");
+		if(cullModeNode)
+		{
+			int32 newCullMode = (int32)GetFaceByName(cullModeNode->AsString());
+			SetCullMode(newCullMode);
+		}
+
+		YamlNode * depthFuncNode = renderStateNode->Get("depthFunc");
+		if(depthFuncNode)
+		{
+			eCmpFunc newDepthFunc = GetCmpFuncByName(depthFuncNode->AsString());
+			SetDepthFunc(newDepthFunc);
+		}
+
+		YamlNode * alphaFuncNode = renderStateNode->Get("alphaFunc");
+		YamlNode * alphaFuncCmpValueNode = renderStateNode->Get("alphaFuncCmpValue");
+		if(alphaFuncNode && alphaFuncCmpValueNode)
+		{
+			eCmpFunc newAlphaFunc = GetCmpFuncByName(alphaFuncNode->AsString());
+			float32 newCmpValue = alphaFuncCmpValueNode->AsFloat();
+			SetAlphaFunc(newAlphaFunc, newCmpValue);
+		}
+
+		YamlNode * stencilNode = renderStateNode->Get("stencil");
+		if(stencilNode)
+		{
+			YamlNode * stencilRefNode = stencilNode->Get("ref");
+			if(stencilRefNode)
+				SetStencilRef(stencilRefNode->AsInt32());
+
+			YamlNode * stencilMaskNode = stencilNode->Get("mask");
+			if(stencilMaskNode)
+				SetStencilMask(stencilMaskNode->AsUInt32());
+
+			YamlNode * stencilFuncNode = stencilNode->Get("funcFront");
+			if(stencilFuncNode)
+				SetStencilFunc(FACE_FRONT, GetCmpFuncByName(stencilFuncNode->AsString()));
+			stencilFuncNode = stencilNode->Get("funcBack");
+			if(stencilFuncNode)
+				SetStencilFunc(FACE_BACK, GetCmpFuncByName(stencilFuncNode->AsString()));
+
+			YamlNode * stencilPassNode = stencilNode->Get("passFront");
+			if(stencilPassNode)
+				SetStencilPass(FACE_FRONT, GetStencilOpByName(stencilPassNode->AsString()));
+			stencilPassNode = stencilNode->Get("passBack");
+			if(stencilPassNode)
+				SetStencilPass(FACE_BACK, GetStencilOpByName(stencilPassNode->AsString()));
+
+			YamlNode * stencilFailNode = stencilNode->Get("failFront");
+			if(stencilFailNode)
+				SetStencilFail(FACE_FRONT, GetStencilOpByName(stencilFailNode->AsString()));
+			stencilFailNode = stencilNode->Get("failBack");
+			if(stencilFailNode)
+				SetStencilFail(FACE_BACK, GetStencilOpByName(stencilFailNode->AsString()));
+
+			YamlNode * stencilZFailNode = stencilNode->Get("zFailFront");
+			if(stencilZFailNode)
+				SetStencilZFail(FACE_FRONT, GetStencilOpByName(stencilZFailNode->AsString()));
+			stencilZFailNode = stencilNode->Get("zFailBack");
+			if(stencilZFailNode)
+				SetStencilZFail(FACE_BACK, GetStencilOpByName(stencilZFailNode->AsString()));
+		}
+	}
+}
+
+bool RenderState::SaveToYamlFile(const FilePath & filePath)
+{
+	YamlParser * parser = YamlParser::Create();
+	DVASSERT(parser);
+
+	YamlNode* resultNode = SaveToYamlNode();
+	parser->SaveToYamlFile(filePath, resultNode, true);
+
+	SafeRelease(parser);
+
+	return true;
+}
+	
+YamlNode * RenderState::SaveToYamlNode(YamlNode * parentNode /* = 0 */)
+{
+	if(!parentNode)
+		parentNode = new YamlNode(YamlNode::TYPE_MAP);
+
+	YamlNode * rootNode = new YamlNode(YamlNode::TYPE_MAP);
+
+	YamlNode * stencilNode = new YamlNode(YamlNode::TYPE_MAP);
+	stencilNode->Add("ref", stencilState.ref);
+	stencilNode->Add("mask", (int32)stencilState.mask);
+	stencilNode->Add("funcFront", CMP_FUNC_NAMES[(int32)stencilState.func[FACE_FRONT]]);
+	stencilNode->Add("funcBack", CMP_FUNC_NAMES[(int32)stencilState.func[FACE_BACK]]);
+	stencilNode->Add("passFront", STENCIL_OP_NAMES[(int32)stencilState.pass[FACE_FRONT]]);
+	stencilNode->Add("passBack", STENCIL_OP_NAMES[(int32)stencilState.pass[FACE_BACK]]);
+	stencilNode->Add("failFront", STENCIL_OP_NAMES[(int32)stencilState.fail[FACE_FRONT]]);
+	stencilNode->Add("failBack", STENCIL_OP_NAMES[(int32)stencilState.fail[FACE_BACK]]);
+	stencilNode->Add("zFailFront", STENCIL_OP_NAMES[(int32)stencilState.zFail[FACE_FRONT]]);
+	stencilNode->Add("zFailBack", STENCIL_OP_NAMES[(int32)stencilState.zFail[FACE_BACK]]);
+	rootNode->AddNodeToMap("stencil", stencilNode);
+
+	rootNode->Add("blendSrc", BLEND_MODE_NAMES[(int32)sourceFactor]);
+	rootNode->Add("blendDest", BLEND_MODE_NAMES[(int32)destFactor]);
+	rootNode->Add("cullMode", FACE_NAMES[(int32)cullMode]);
+	rootNode->Add("depthFunc", CMP_FUNC_NAMES[(int32)depthFunc]);
+	rootNode->Add("alphaFunc", CMP_FUNC_NAMES[(int32)alphaFunc]);
+	rootNode->Add("alphaFuncCmpValue", alphaFuncCmpValue/255.f);
+
+	Vector<String> statesStrs;
+	GetCurrentStateStrings(statesStrs);
+	String stateString;
+	for(Vector<String>::const_iterator it = statesStrs.begin(); it != statesStrs.end(); it++)
+	{
+		stateString += (*it);
+		if((it+1) != statesStrs.end())
+			stateString += " | ";
+	}
+
+	rootNode->Add("state", stateString);
+
+	parentNode->AddNodeToMap("RenderState", rootNode);
+
+	return parentNode;
+}
+
+void RenderState::GetCurrentStateStrings(Vector<String> & statesStrs)
+{
+	statesStrs.clear();
+
+	for(uint32 bit = 0; bit < 32; bit++)
+	{
+		uint32 tempState = 1 << bit;
+		if ((state & tempState) && !(tempState & IGNORE_SAVE_LOAD_RENDER_STATES))
+			statesStrs.push_back(RENDER_STATES_NAMES[bit]);
+	}
+}
+
+uint32 RenderState::GetRenderStateByName(const String & str)
+{
+	for(uint32 i = 0; i < STATE_COUNT; i++)
+	{
+		if(RENDER_STATES_NAMES[i] == str)
+		{
+			uint32 tempState = 1 << i;
+			if(tempState & IGNORE_SAVE_LOAD_RENDER_STATES)
+				return 0;
+			else
+				return tempState;
+		}
+	}
+	return 0;
+}
 
 };

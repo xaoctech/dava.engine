@@ -36,6 +36,7 @@
 #include "Base/EventDispatcher.h"
 #include "Render/2D/Font.h"
 #include "Render/2D/Sprite.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA
 {
@@ -44,7 +45,7 @@ class GraphicsFontDefinition;
 class GraphicsFont : public Font
 {
 public:
-	static GraphicsFont * Create(const String & fontDefName, const String & spriteName);
+	static GraphicsFont * Create(const FilePath & fontDefName, const FilePath & spriteName);
 	
 	virtual void	SetSize(float32 size);
 	virtual Size2i	GetStringSize(const WideString & str, Vector<int32> *charSizes = NULL);
@@ -66,7 +67,7 @@ public:
 	virtual YamlNode * SaveToYamlNode();
 	//Additional functions which allow return needed values of protected properties
 	Sprite *GetFontSprite();
-	String GetFontDefinitionName();
+	FilePath & GetFontDefinitionName();
 	
 protected:
 	GraphicsFont();
@@ -81,7 +82,7 @@ protected:
 	float32 fontScaleCoeff;
 
 	//Additional variable to keep font definition
-	String fontDefinitionName;
+	FilePath fontDefinitionName;
 };
 		
 class GraphicsFontDefinition : public BaseObject
@@ -127,7 +128,7 @@ public:
     
 	static const uint16 INVALID_CHARACTER_INDEX = 0xffff;
 	
-	bool LoadFontDefinition(const String & fontDefName);
+	bool LoadFontDefinition(const FilePath & fontDefName);
 };
 	
 

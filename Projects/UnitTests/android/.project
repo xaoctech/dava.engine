@@ -50,6 +50,10 @@
 					<value>true</value>
 				</dictionary>
 				<dictionary>
+					<key>org.eclipse.cdt.make.core.fullBuildTarget</key>
+					<value> -j 8 NDK_DEBUG=1</value>
+				</dictionary>
+				<dictionary>
 					<key>org.eclipse.cdt.make.core.stopOnError</key>
 					<value>true</value>
 				</dictionary>
@@ -99,6 +103,11 @@
 			<name>libs/androidframework.jar</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/AndroidFramework/bin/androidframework.jar</locationURI>
+		</link>
+		<link>
+			<name>libs/fmodex.jar</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/AndroidFramework/libs/fmodex.jar</locationURI>
 		</link>
 		<link>
 			<name>src/Classes</name>

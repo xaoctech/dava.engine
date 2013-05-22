@@ -20,6 +20,7 @@ Settings* Settings::m_spInstance = NULL;
 #define LAUNCHER_VER "LAUNCHER_VER"
 
 #define STABLE "STABLE"
+#define QA "QA"
 #define DEVELOPMENT "DEVELOPMENT"
 #define DEPENDENCIES "DEPENDENCIES"
 
@@ -104,6 +105,7 @@ void Settings::ParseInitConfig() {
         docParser.GetNextDocument(docSettings);
 
         ParseAppConfig(&docSettings, STABLE, newConfig.m_Stable);
+        ParseAppConfig(&docSettings, QA, newConfig.m_Test);
         ParseAppConfig(&docSettings, DEVELOPMENT, newConfig.m_Development);
         ParseAppConfig(&docSettings, DEPENDENCIES, newConfig.m_Dependencies);
     }
@@ -164,6 +166,7 @@ void Settings::UpdateInitConfig() {
 //    emitter << YAML::Value << launcher;
 
     EmitAppConfig(emitter, STABLE, m_Config.m_Stable);
+    EmitAppConfig(emitter, QA, m_Config.m_Test);
     EmitAppConfig(emitter, DEVELOPMENT, m_Config.m_Development);
     EmitAppConfig(emitter, DEPENDENCIES, m_Config.m_Dependencies);
 
@@ -242,16 +245,18 @@ QString Settings::GetLauncherUrl() const {
     return m_Config.m_Launcher.m_Url.toString();
 }
 
-int Settings::GetVersion(const QString& strVersion) {
-    //"10.123"
+QString Settings::GetVersion(const QString& strVersion) {
+
     QStringList list = strVersion.split(".");
     if (list.size() != 2) {
-        return -1;
+        return strVersion;;
     }
     int nVersion = -1;
     nVersion = list.at(0).toInt() << 16;
     nVersion += list.at(1).toInt();
-    return nVersion;
+    QString str;
+    str.sprintf("%d", nVersion);
+    return str;
 }
 
 const AppsConfig& Settings::GetCurrentConfig() const {

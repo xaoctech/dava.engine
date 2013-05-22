@@ -46,6 +46,8 @@ using namespace DAVA;
 
 - (void)webView:(WebView *)webView decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id<WebPolicyDecisionListener>)listener;
 
+- (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame;
+
 - (void)setDelegate:(IUIWebViewDelegate*)d andWebView:(UIWebView*)w;
 
 @end
@@ -73,7 +75,9 @@ using namespace DAVA;
 		
 		if (url)
 		{
-			IUIWebViewDelegate::eAction action = delegate->URLChanged(self->webView, [url UTF8String]);
+            NSInteger navigationTypeKey = [[actionInformation objectForKey:@"WebActionNavigationTypeKey"] integerValue];
+            bool isRedirecteByMouseClick = navigationTypeKey == WebNavigationTypeLinkClicked;
+			IUIWebViewDelegate::eAction action = delegate->URLChanged(self->webView, [url UTF8String], isRedirecteByMouseClick);
 			
 			switch (action)
 			{
@@ -107,6 +111,14 @@ using namespace DAVA;
 	}
 }
 
+- (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame
+{
+    if (delegate && self->webView)
+	{
+        delegate->PageLoaded(self->webView);
+    }
+}
+
 - (void)setDelegate:(DAVA::IUIWebViewDelegate *)d andWebView:(DAVA::UIWebView *)w
 {
 	if (d && w)
@@ -132,6 +144,8 @@ WebViewControl::WebViewControl()
 
 	webViewPolicyDelegatePtr = [[WebViewPolicyDelegate alloc] init];
 	[localWebView setPolicyDelegate:(WebViewPolicyDelegate*)webViewPolicyDelegatePtr];
+    
+    [localWebView setFrameLoadDelegate:(WebViewPolicyDelegate*)webViewPolicyDelegatePtr];
 
 	NSView* openGLView = (NSView*)Core::Instance()->GetOpenGLView();
 	[openGLView addSubview:localWebView];

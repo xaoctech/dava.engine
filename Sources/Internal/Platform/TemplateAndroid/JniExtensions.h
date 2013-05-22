@@ -1,10 +1,15 @@
 #ifndef __JNI_EXTENSIONS_H__
 #define __JNI_EXTENSIONS_H__
 
+#include "Base/BaseTypes.h"
+#if defined(__DAVAENGINE_ANDROID__)
+
 #include <jni.h>
 
 namespace DAVA
 {
+
+class Rect;
 
 class JniExtension
 {
@@ -12,23 +17,24 @@ public:
 	JniExtension(const char* className);
 	virtual ~JniExtension();
 
-	jmethodID GetMethodID(const char *methodName, const char *paramCode);
+	jclass GetJavaClass() const;
+	void ReleaseJavaClass(jclass javaClass) const;
+	jmethodID GetMethodID(jclass javaClass, const char *methodName, const char *paramCode) const;
 
 protected:
 	JNIEnv* GetEnvironment() {return env;};
 	Rect V2P(const Rect& rect) const;
 
-    void ReleaseJavaClass();
-    
 protected:
 	const char* className;
-	jclass javaClass;
 	JNIEnv* env;
 	JavaVM* vm;
 
-	bool isThreadAttached;
+	//bool isThreadAttached;
 };
 
 }
+
+#endif //#if defined(__DAVAENGINE_ANDROID__)
 
 #endif// __JNI_EXTENSIONS_H__

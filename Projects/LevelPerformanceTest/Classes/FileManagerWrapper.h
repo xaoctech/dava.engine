@@ -3,15 +3,13 @@
 
 #include "DAVAEngine.h"
 
-using namespace DAVA;
-
 class FileManagerWrapper
 {
 	FileManagerWrapper();
 	FileManagerWrapper(const FileManagerWrapper&);
 	FileManagerWrapper& operator=(const FileManagerWrapper&);
 public:
-	static const Vector<String> GetFileListByExtension(const String& path, const String& ext, int32 maxLevel = 0);
+	static const DAVA::Vector<DAVA::String> GetFileListByExtension(const DAVA::String& path, const DAVA::String& ext, DAVA::int32 maxLevel = 0);
 };
 
 #endif

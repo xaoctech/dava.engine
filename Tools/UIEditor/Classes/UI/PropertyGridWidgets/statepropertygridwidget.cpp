@@ -11,8 +11,8 @@ static const QString STATE_PROPERTY_BLOCK_NAME = "State";
 
 StatePropertyGridWidget::StatePropertyGridWidget(QWidget *parent) :
     BasePropertyGridWidget(parent),
-    ui(new Ui::StatePropertyGridWidget),
-	expanded(false)
+	expanded(false),
+    ui(new Ui::StatePropertyGridWidget)
 {
     ui->setupUi(this);
     SetPropertyBlockName(STATE_PROPERTY_BLOCK_NAME);
@@ -160,7 +160,7 @@ void StatePropertyGridWidget::MultiplyStateSelectionChanged()
 	emit SelectMultiplyStates(selectedStates);
 }
 
-void StatePropertyGridWidget::OnListItemChanged(QListWidgetItem* item)
+void StatePropertyGridWidget::OnListItemChanged(QListWidgetItem* /*item*/)
 {
 	ui->stateSelectListWidget->blockSignals(true);
 	ui->selectAllCheckbox->blockSignals(true);

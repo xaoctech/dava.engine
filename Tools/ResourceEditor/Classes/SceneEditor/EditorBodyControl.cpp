@@ -6,7 +6,6 @@
 #include "EditorSettings.h"
 #include "../config.h"
 
-#include "SceneInfoControl.h"
 #include "SceneValidator.h"
 #include "../LightmapsPacker.h"
 
@@ -40,6 +39,8 @@
 EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect)
 	, beastManager(0)
+	, originalNode(0)
+	, modifiedNode(0)
 {
     currentViewportType = ResourceEditor::VIEWPORT_DEFAULT;
     
@@ -57,10 +58,6 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     scene3dView->SetDebugDraw(true);
     scene3dView->SetInputEnabled(false);
     AddControl(scene3dView);
-
-    int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth();
-    sceneInfoControl = new SceneInfoControl(Rect(rect.dx - rightSideWidth * 2 , 0, rightSideWidth, rightSideWidth));
-    AddControl(sceneInfoControl);
 
 	CreateModificationPanel();
     CreateLandscapeEditor();
@@ -95,8 +92,6 @@ EditorBodyControl::~EditorBodyControl()
     
     SafeRelease(sceneGraph);
     currentGraph = NULL;
-    
-    SafeRelease(sceneInfoControl);
     
     ReleaseModificationPanel();
     
@@ -145,7 +140,7 @@ void EditorBodyControl::SetColorIndex(uint32 indexInSet)
 	landscapeEditorCustomColors->SetColor(colorVector[indexInSet]);
 }
 
-void EditorBodyControl::SaveTexture(const String &path)
+void EditorBodyControl::SaveTexture(const FilePath &path)
 {
 	if(RulerToolIsActive())
         return;
@@ -161,7 +156,7 @@ void EditorBodyControl::SaveTexture(const String &path)
 		landscapeEditorVisibilityTool->SaveColorLayer(path);
 }
 
-void EditorBodyControl::CustomColorsLoadTexture(const String &path)
+void EditorBodyControl::CustomColorsLoadTexture(const FilePath &path)
 {
 	if(RulerToolIsActive())
 		return;
@@ -172,13 +167,13 @@ void EditorBodyControl::CustomColorsLoadTexture(const String &path)
 	landscapeEditorCustomColors->LoadColorLayer(path);
 }
 
-String EditorBodyControl::CustomColorsGetCurrentSaveFileName()
+FilePath EditorBodyControl::CustomColorsGetCurrentSaveFileName()
 {
 	if(RulerToolIsActive())
-		return "";
+		return FilePath();
 
 	if(!currentLandscapeEditor || currentLandscapeEditor != landscapeEditorCustomColors)
-		return "";
+		return FilePath();
 
 	return landscapeEditorCustomColors->GetCurrentSaveFileName();
 }
@@ -424,11 +419,16 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 					{
 						isDrag = true;
 						if (InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SHIFT))
-						{//copy object
-							CommandsManager::Instance()->ExecuteAndRelease(new CommandCloneObject(selection, this, scene->collisionWorld));
+						{
+							originalNode = scene->GetProxy();
 
-							selection = scene->GetProxy();
-							modifiedNode = scene->GetProxy();
+							//create temporary node to calculate transform
+							modifiedNode = originalNode->Clone();
+							originalNode->GetParent()->AddNode(modifiedNode);
+							SelectNode(modifiedNode);
+							selection = modifiedNode;
+
+							//store original transform
 							transformBeforeModification = modifiedNode->GetLocalTransform();
 						}
 
@@ -486,9 +486,32 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 			inTouch = false;
 			if (isDrag)
 			{
-				CommandsManager::Instance()->ExecuteAndRelease(new CommandTransformObject(modifiedNode,
-																						  transformBeforeModification,
-																						  modifiedNode->GetLocalTransform()));
+				// originalNode should be non-zero only when clone node
+				if (originalNode)
+				{
+					// Get final transform from temporary node
+					Matrix4 transform = modifiedNode->GetLocalTransform();
+
+					// Remove temporary node
+					RemoveSelectedSGNode();
+					SafeRelease(modifiedNode);
+					
+					CommandCloneAndTransform* cmd = new CommandCloneAndTransform(originalNode,
+																				 transform,
+																				 this,
+																				 scene->collisionWorld);
+					CommandsManager::Instance()->ExecuteAndRelease(cmd);
+					originalNode = NULL;
+
+					// update selection to newly created node
+					selection = scene->GetProxy();
+				}
+				else
+				{
+					CommandsManager::Instance()->ExecuteAndRelease(new CommandTransformObject(modifiedNode,
+																							  transformBeforeModification,
+																							  modifiedNode->GetLocalTransform()));
+				}
 
 				if (selection)
 				{
@@ -528,13 +551,6 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 	if (arrowsNode && arrowsNode->GetVisible() && !inTouch && event->phase != UIEvent::PHASE_KEYCHAR)
 	{
 		Vector3 from, dir;
-		printf("%f - %f\n", event->point.x, event->point.y);
-
-		if(event->point.x == 0 && event->point.y == 0)
-		{
-			printf("111\n");
-		}
-
 		GetCursorVectors(&from, &dir, event->point);
 		Vector3 to = from + dir * 1000.0f;
 		arrowsNode->ProcessMouse(event, from, dir);
@@ -730,7 +746,7 @@ void EditorBodyControl::Update(float32 timeElapsed)
 	}
 }
 
-void EditorBodyControl::ReloadRootScene(const String &pathToFile)
+void EditorBodyControl::ReloadRootScene(const FilePath &pathToFile)
 {
     scene->ReleaseRootNode(pathToFile);
     
@@ -750,14 +766,14 @@ void EditorBodyControl::ReloadRootScene(const String &pathToFile)
     Refresh();
 }
 
-void EditorBodyControl::ReloadNode(Entity *node, const String &pathToFile)
+void EditorBodyControl::ReloadNode(Entity *node, const FilePath &pathToFile)
 {//если в рут ноды сложить такие же рут ноды то на релоаде все накроет пиздой
     KeyedArchive *customProperties = node->GetCustomProperties();
-    if (customProperties->GetString("editor.referenceToOwner", "") == pathToFile) 
+    if (customProperties->GetString("editor.referenceToOwner", "") == pathToFile.GetAbsolutePathname())
     {
         Entity *newNode = scene->GetRootNode(pathToFile)->Clone();
         newNode->SetLocalTransform(node->GetLocalTransform());
-        newNode->GetCustomProperties()->SetString("editor.referenceToOwner", pathToFile);
+        newNode->GetCustomProperties()->SetString("editor.referenceToOwner", pathToFile.GetAbsolutePathname());
         newNode->SetSolid(true);
         
         Entity *parent = node->GetParent();
@@ -800,7 +816,7 @@ void EditorBodyControl::BeastProcessScene()
 	//	return;
 	//}
 
-	String path = EditorSettings::Instance()->GetProjectPath()+"DataSource/lightmaps_temp/";
+	FilePath path(EditorSettings::Instance()->GetProjectPath()+"DataSource/lightmaps_temp/");
 	FileSystem::Instance()->CreateDirectory(path, false);
 
 	BeastProxy::Instance()->SetLightmapsDirectory(beastManager, path);
@@ -890,24 +906,13 @@ bool EditorBodyControl::ControlsAreLocked()
     return (ResourceEditor::VIEWPORT_DEFAULT != currentViewportType);
 }
 
-void EditorBodyControl::ToggleSceneInfo()
-{
-    if(sceneInfoControl->GetParent())
-    {
-        RemoveControl(sceneInfoControl);
-    }
-    else
-    {
-        AddControl(sceneInfoControl);
-    }
-}
-
 void EditorBodyControl::PackLightmaps()
 {
 	SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
-	String inputDir = EditorSettings::Instance()->GetProjectPath()+"DataSource/lightmaps_temp/";
-	String outputDir = sceneData->GetScenePathname() + "_lightmaps/";
-	FileSystem::Instance()->MoveFile(inputDir+"landscape.png", "test_landscape.png"); 
+
+	FilePath inputDir(EditorSettings::Instance()->GetProjectPath()+"DataSource/lightmaps_temp/");
+	FilePath outputDir(sceneData->GetScenePathname() + "_lightmaps/");
+	FileSystem::Instance()->MoveFile(inputDir+"landscape.png", "test_landscape.png", true);
 
 	LightmapsPacker packer;
 	packer.SetInputDir(inputDir);
@@ -919,7 +924,7 @@ void EditorBodyControl::PackLightmaps()
 
 	BeastProxy::Instance()->UpdateAtlas(beastManager, packer.GetAtlasingData());
 
-	FileSystem::Instance()->MoveFile("test_landscape.png", outputDir+"landscape.png");
+	FileSystem::Instance()->MoveFile("test_landscape.png", outputDir+"landscape.png", true);
 }
 
 void EditorBodyControl::Draw(const UIGeometricData &geometricData)
@@ -1043,8 +1048,6 @@ LandscapeEditorBase* EditorBodyControl::GetCurrentLandscapeEditor()
 
 void EditorBodyControl::LandscapeEditorStarted()
 {
-    RemoveControl(sceneInfoControl);
-
     RemoveControl(modificationPanel);
     savedModificatioMode = modificationPanel->IsModificationMode();
     
@@ -1118,11 +1121,6 @@ void EditorBodyControl::SetScene(EditorScene *newScene)
     scene3dView->SetScene(scene);
 	sceneGraph->SetScene(scene);
     
-    if(sceneInfoControl)
-    {
-        sceneInfoControl->SetWorkingScene(newScene);
-    }
-    
     modificationPanel->SetScene(scene);
 
 	if(landscapeEditorColor)
@@ -1190,8 +1188,6 @@ void EditorBodyControl::SetSize(const Vector2 &newSize)
     scene3dView->SetSize(viewSize);
     
     sceneGraph->SetSize(newSize);
-    
-    sceneInfoControl->SetPosition(Vector2(newSize.x - rightSideWidth * 2, 0));
 }
 
 

@@ -140,7 +140,7 @@ namespace DAVA
 		}
 	}
 
-	void UIButton::SetStateSprite(int32 state, const String &spriteName, int32 spriteFrame/* = 0*/)
+	void UIButton::SetStateSprite(int32 state, const FilePath &spriteName, int32 spriteFrame/* = 0*/)
 	{
 		for(int i = 0; i < DRAW_STATE_COUNT; i++)
 		{
@@ -843,7 +843,11 @@ namespace DAVA
 			{
 				//Create array yamlnode and add it to map
 				YamlNode *spriteNode = new YamlNode(YamlNode::TYPE_ARRAY);
-				spriteNode->AddValueToArray(TruncateTxtFileExtension(stateSprite->GetName()));
+                
+                FilePath path(stateSprite->GetRelativePathname());
+                path.TruncateExtension();
+                
+				spriteNode->AddValueToArray(path.GetAbsolutePathname());
 				spriteNode->AddValueToArray(stateFrame);
 				node->AddNodeToMap(Format("stateSprite%s", statePostfix[i].c_str()), spriteNode);
 			}

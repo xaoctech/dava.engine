@@ -32,11 +32,6 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>Internal</name>
-			<type>2</type>
-			<location>/Users/victorkleschenko/Work/WoT/dava.framework/Sources/Internal</location>
-		</link>
-		<link>
 			<name>src/com</name>
 			<type>2</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/Java/com</locationURI>
@@ -175,31 +170,6 @@
 			<name>src/Internal/Utils</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Android.mk</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Android.mk</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/DAVAConfig.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/DAVAConfig.h</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/DAVAEngine.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/DAVAEngine.cpp</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/DAVAEngine.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/DAVAEngine.h</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/DoxygenDocumenation.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/DoxygenDocumenation.h</locationURI>
 		</link>
 		<link>
 			<name>src/Internal/Animation/AnimatedObject.cpp</name>
@@ -1512,16 +1482,6 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Particles/ParticleLayer3D.h</locationURI>
 		</link>
 		<link>
-			<name>src/Internal/Particles/ParticleLayerLong.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Particles/ParticleLayerLong.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Particles/ParticleLayerLong.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Particles/ParticleLayerLong.h</locationURI>
-		</link>
-		<link>
 			<name>src/Internal/Particles/ParticlePropertyLine.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Particles/ParticlePropertyLine.cpp</locationURI>
@@ -2352,21 +2312,6 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/UserNode.h</locationURI>
 		</link>
 		<link>
-			<name>src/Internal/Sound/ALUtils.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/ALUtils.h</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Sound/MusicIos.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/MusicIos.h</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Sound/MusicIos.mm</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/MusicIos.mm</locationURI>
-		</link>
-		<link>
 			<name>src/Internal/Sound/Sound.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/Sound.cpp</locationURI>
@@ -2375,36 +2320,6 @@
 			<name>src/Internal/Sound/Sound.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/Sound.h</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Sound/SoundBuffer.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/SoundBuffer.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Sound/SoundBuffer.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/SoundBuffer.h</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Sound/SoundChannel.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/SoundChannel.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Sound/SoundChannel.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/SoundChannel.h</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Sound/SoundDataProvider.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/SoundDataProvider.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Sound/SoundDataProvider.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/SoundDataProvider.h</locationURI>
 		</link>
 		<link>
 			<name>src/Internal/Sound/SoundGroup.cpp</name>
@@ -2417,26 +2332,6 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/SoundGroup.h</locationURI>
 		</link>
 		<link>
-			<name>src/Internal/Sound/SoundInstance.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/SoundInstance.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Sound/SoundInstance.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/SoundInstance.h</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Sound/SoundOVProvider.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/SoundOVProvider.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Sound/SoundOVProvider.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/SoundOVProvider.h</locationURI>
-		</link>
-		<link>
 			<name>src/Internal/Sound/SoundSystem.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/SoundSystem.cpp</locationURI>
@@ -2445,16 +2340,6 @@
 			<name>src/Internal/Sound/SoundSystem.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/SoundSystem.h</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Sound/SoundWVProvider.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/SoundWVProvider.cpp</locationURI>
-		</link>
-		<link>
-			<name>src/Internal/Sound/SoundWVProvider.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/SoundWVProvider.h</locationURI>
 		</link>
 		<link>
 			<name>src/Internal/UI/IWebViewControl.h</name>
@@ -2880,6 +2765,11 @@
 			<name>src/Internal/Utils/Utils.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Utils/Utils.h</locationURI>
+		</link>
+		<link>
+			<name>src/Internal/Utils/UtilsAndroid.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Utils/UtilsAndroid.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/Internal/Utils/UtilsMacOS.mm</name>
@@ -4187,16 +4077,6 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Particles/ParticleLayer3D.h</locationURI>
 		</link>
 		<link>
-			<name>bin/classes/Internal/Particles/ParticleLayerLong.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Particles/ParticleLayerLong.cpp</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Particles/ParticleLayerLong.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Particles/ParticleLayerLong.h</locationURI>
-		</link>
-		<link>
 			<name>bin/classes/Internal/Particles/ParticlePropertyLine.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Particles/ParticlePropertyLine.cpp</locationURI>
@@ -4967,21 +4847,6 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Scene3D/UserNode.h</locationURI>
 		</link>
 		<link>
-			<name>bin/classes/Internal/Sound/ALUtils.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/ALUtils.h</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Sound/MusicIos.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/MusicIos.h</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Sound/MusicIos.mm</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/MusicIos.mm</locationURI>
-		</link>
-		<link>
 			<name>bin/classes/Internal/Sound/Sound.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/Sound.cpp</locationURI>
@@ -4990,36 +4855,6 @@
 			<name>bin/classes/Internal/Sound/Sound.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/Sound.h</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Sound/SoundBuffer.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/SoundBuffer.cpp</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Sound/SoundBuffer.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/SoundBuffer.h</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Sound/SoundChannel.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/SoundChannel.cpp</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Sound/SoundChannel.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/SoundChannel.h</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Sound/SoundDataProvider.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/SoundDataProvider.cpp</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Sound/SoundDataProvider.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/SoundDataProvider.h</locationURI>
 		</link>
 		<link>
 			<name>bin/classes/Internal/Sound/SoundGroup.cpp</name>
@@ -5032,26 +4867,6 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/SoundGroup.h</locationURI>
 		</link>
 		<link>
-			<name>bin/classes/Internal/Sound/SoundInstance.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/SoundInstance.cpp</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Sound/SoundInstance.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/SoundInstance.h</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Sound/SoundOVProvider.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/SoundOVProvider.cpp</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Sound/SoundOVProvider.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/SoundOVProvider.h</locationURI>
-		</link>
-		<link>
 			<name>bin/classes/Internal/Sound/SoundSystem.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/SoundSystem.cpp</locationURI>
@@ -5060,16 +4875,6 @@
 			<name>bin/classes/Internal/Sound/SoundSystem.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/SoundSystem.h</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Sound/SoundWVProvider.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/SoundWVProvider.cpp</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Sound/SoundWVProvider.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/SoundWVProvider.h</locationURI>
 		</link>
 		<link>
 			<name>bin/classes/Internal/UI/IWebViewControl.h</name>
@@ -5497,6 +5302,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Utils/Utils.h</locationURI>
 		</link>
 		<link>
+			<name>bin/classes/Internal/Utils/UtilsAndroid.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Utils/UtilsAndroid.cpp</locationURI>
+		</link>
+		<link>
 			<name>bin/classes/Internal/Utils/UtilsMacOS.mm</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Utils/UtilsMacOS.mm</locationURI>
@@ -5540,6 +5350,16 @@
 			<name>src/Internal/Platform/Qt/Win32</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/Internal/Platform/TemplateAndroid/AndroidCrashReport.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/AndroidCrashReport.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/Internal/Platform/TemplateAndroid/AndroidCrashReport.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/AndroidCrashReport.h</locationURI>
 		</link>
 		<link>
 			<name>src/Internal/Platform/TemplateAndroid/AndroidSpecifics.h</name>
@@ -6355,6 +6175,16 @@
 			<name>bin/classes/Internal/Platform/Qt/QtLayer.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/Qt/QtLayer.h</locationURI>
+		</link>
+		<link>
+			<name>bin/classes/Internal/Platform/TemplateAndroid/AndroidCrashReport.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/AndroidCrashReport.cpp</locationURI>
+		</link>
+		<link>
+			<name>bin/classes/Internal/Platform/TemplateAndroid/AndroidCrashReport.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/AndroidCrashReport.h</locationURI>
 		</link>
 		<link>
 			<name>bin/classes/Internal/Platform/TemplateAndroid/AndroidSpecifics.h</name>

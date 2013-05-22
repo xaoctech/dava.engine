@@ -48,6 +48,18 @@ public:
      */
     void SetPlaybackCompleteMessage(const Message & msg);
 
+	/**
+     \brief Access to playback speed for the particle emitters. Returns
+	 the playback speed for first emitter, sets for all ones.
+     */
+	float32 GetPlaybackSpeed();
+	void SetPlaybackSpeed(float32 value);
+
+	/**
+     \brief Returns the total active particles count for the whole effect.
+     */
+	int32 GetActiveParticlesCount();
+
 protected:
 	// Update the duration for all the child nodes.
 	void UpdateDurationForChildNodes(float32 newEmitterLifeTime);

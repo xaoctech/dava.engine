@@ -90,16 +90,16 @@ bool HierarchyTree::Load(const QString& projectPath)
 		{
 			// Get font values into array
 			Vector<YamlNode*> fontPathArray = fontPath->AsVector();
-			EditorFontManager::DefaultFontPath defaultFontPath("","");
+			EditorFontManager::DefaultFontPath defaultFontPath("", "");
 			// True type font
 			if (fontPathArray.size() == 1)
 			{
-				defaultFontPath.fontPath = fontPathArray[0]->AsString();
+				defaultFontPath.fontPath = FilePath(fontPathArray[0]->AsString());
 			}
 			else if (fontPathArray.size() == 2) // Graphics font
 			{
-				defaultFontPath.fontPath = fontPathArray[0]->AsString();
-				defaultFontPath.fontSpritePath = fontPathArray[1]->AsString();
+				defaultFontPath.fontPath = FilePath(fontPathArray[0]->AsString());
+				defaultFontPath.fontSpritePath = FilePath(fontPathArray[1]->AsString());
 			}
 			EditorFontManager::Instance()->InitDefaultFontFromPath(defaultFontPath);
 		}
@@ -321,10 +321,10 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
 	
 	// Get paths for default font
 	const EditorFontManager::DefaultFontPath& defaultFontPath = EditorFontManager::Instance()->GetDefaultFontPath();
-	String fontPath = defaultFontPath.fontPath;
-	String fontSpritePath = defaultFontPath.fontSpritePath;
+	FilePath fontPath = defaultFontPath.fontPath;
+	FilePath fontSpritePath = defaultFontPath.fontSpritePath;
 	// Check if default font path exist
-	if (!fontPath.empty())
+	if (!fontPath.IsEmpty())
 	{
 		// Create font node
 		YamlNode* fontNode = new YamlNode(YamlNode::TYPE_MAP);
@@ -336,11 +336,11 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
 		YamlNode* fontPathNode = new YamlNode(YamlNode::TYPE_ARRAY);
 		
 		// Put font path
-		fontPathNode->AddValueToArray(fontPath);
+		fontPathNode->AddValueToArray(fontPath.GetAbsolutePathname());
 		// Put font sprite path if it available
-		if (!fontSpritePath.empty())
+		if (!fontSpritePath.IsEmpty())
 		{
-			fontPathNode->AddValueToArray(fontSpritePath);
+			fontPathNode->AddValueToArray(fontSpritePath.GetAbsolutePathname());
 		}
 		// Insert array into node
 		fontMap.insert(std::pair<String, YamlNode*>(DEFAULT_FONT_PATH_NODE, fontPathNode));
@@ -510,4 +510,23 @@ List<HierarchyTreeScreenNode*> HierarchyTree::GetUnsavedScreens()
 	}
 
 	return resultList;
+}
+
+bool HierarchyTree::IsPlatformNamePresent(const QString& name) const
+{
+	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator platformIter = GetPlatforms().begin();
+	 platformIter != GetPlatforms().end(); ++platformIter)
+	{
+		HierarchyTreePlatformNode* platformNode = dynamic_cast<HierarchyTreePlatformNode*>(*platformIter);
+		if (!platformNode)
+		{
+			continue;
+		}
+		if(name.compare(platformNode->GetName()) == 0)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }

@@ -1,22 +1,43 @@
 #include "EditorBodyControlCommands.h"
 #include "../SceneEditor/EditorBodyControl.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
+#include "CommandsManager.h"
+#include "../Qt/Scene/SceneDataManager.h"
+#include "../Qt/Scene/SceneData.h"
+
+#include "Scene/SceneEditorProxy.h"
+#include "Scene/System/CollisionSystem.h"
+
+CommandEntityModification::CommandEntityModification(Command::eCommandType type, CommandList::eCommandId id)
+:	Command(type, id)
+{
+}
+
+DAVA::Set<DAVA::Entity*> CommandEntityModification::GetAffectedEntities()
+{
+	return entities;
+}
+
 
 CommandTransformObject::CommandTransformObject(DAVA::Entity* node, const DAVA::Matrix4& originalTransform, const DAVA::Matrix4& finalTransform)
-:	Command(COMMAND_UNDO_REDO)
+:	CommandEntityModification(COMMAND_UNDO_REDO, CommandList::ID_COMMAND_TRANSFORM_OBJECT)
 {
 	commandName = "Transform Object";
 
 	undoTransform = originalTransform;
 	redoTransform = finalTransform;
-	this->node = node;
+
+	entities.insert(node);
 }
 
 void CommandTransformObject::Execute()
 {
+	Entity* node = *entities.begin();
+
 	if (node)
 	{
 		node->SetLocalTransform(redoTransform);
+		UpdateCollision();
 	}
 	else
 		SetState(STATE_INVALID);
@@ -24,16 +45,33 @@ void CommandTransformObject::Execute()
 
 void CommandTransformObject::Cancel()
 {
+	Entity* node = *entities.begin();
+
 	if (node)
 	{
 		node->SetLocalTransform(undoTransform);
+		UpdateCollision();
+	}
+}
+
+void CommandTransformObject::UpdateCollision()
+{
+	Entity* node = *entities.begin();
+
+	SceneEditorProxy *sep = dynamic_cast<SceneEditorProxy *>(node->GetScene());
+	if(NULL != sep && NULL != sep->collisionSystem)
+	{
+		// make sure that worldtransform is up to date
+		sep->transformSystem->Process();
+
+		// update bullet object
+		sep->collisionSystem->UpdateCollisionObject(node);
 	}
 }
 
 
 CommandCloneObject::CommandCloneObject(DAVA::Entity* node, EditorBodyControl* bodyControl, btCollisionWorld* collisionWorld)
-:	Command(COMMAND_UNDO_REDO)
-,	clonedNode(NULL)
+:	CommandEntityModification(COMMAND_UNDO_REDO, CommandList::ID_COMMAND_CLONE_OBJECT)
 ,	collisionWorld(collisionWorld)
 {
 	commandName = "Clone Object";
@@ -44,19 +82,36 @@ CommandCloneObject::CommandCloneObject(DAVA::Entity* node, EditorBodyControl* bo
 
 CommandCloneObject::~CommandCloneObject()
 {
-	SafeRelease(clonedNode);
+	if (!entities.empty())
+	{
+		Entity* clonedNode = *entities.begin();
+		SafeRelease(clonedNode);
+	}
 }
 
 void CommandCloneObject::Execute()
 {
 	if (originalNode && bodyControl)
 	{
-		if (!clonedNode)
+		Entity* clonedNode = 0;
+
+		if (entities.empty())
 		{
-			clonedNode = SafeRetain(originalNode->Clone());
+			clonedNode = originalNode->Clone();
+			if (!clonedNode)
+			{
+				SetState(STATE_INVALID);
+				return;
+			}
 
 			if (collisionWorld)
 				UpdateCollision(clonedNode);
+
+			entities.insert(clonedNode);
+		}
+		else
+		{
+			clonedNode = *entities.begin();
 		}
 
 		originalNode->GetParent()->AddNode(clonedNode);
@@ -68,9 +123,15 @@ void CommandCloneObject::Execute()
 
 void CommandCloneObject::Cancel()
 {
+	Entity* clonedNode = GetClonedNode();
+
 	if (originalNode && clonedNode)
 	{
-		bodyControl->RemoveNode(clonedNode);
+		clonedNode->GetParent()->RemoveNode(clonedNode);
+
+		// rebuild scene graph after removing node
+		SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+		activeScene->RebuildSceneGraph();
 
 		if (bodyControl)
 			bodyControl->SelectNode(originalNode);
@@ -96,10 +157,82 @@ void CommandCloneObject::UpdateCollision(DAVA::Entity *node)
 	}
 }
 
+Entity* CommandCloneObject::GetClonedNode()
+{
+	Entity* clonedNode = 0;
+	if (!entities.empty())
+	{
+		clonedNode = *entities.begin();
+	}
+
+	return clonedNode;
+}
+
+
+CommandCloneAndTransform::CommandCloneAndTransform(DAVA::Entity* originalNode,
+												   const DAVA::Matrix4& finalTransform,
+												   EditorBodyControl* bodyControl,
+												   btCollisionWorld* collisionWorld)
+:	MultiCommand(COMMAND_UNDO_REDO, CommandList::ID_COMMAND_CLONE_AND_TRANSFORM)
+,	clonedNode(0)
+,	cloneCmd(0)
+,	transformCmd(0)
+{
+	commandName = "Clone Object";
+
+	this->originalNode = originalNode;
+	this->bodyControl = bodyControl;
+	this->collisionWorld = collisionWorld;
+	this->transform = finalTransform;
+}
+
+CommandCloneAndTransform::~CommandCloneAndTransform()
+{
+	SafeRelease(transformCmd);
+	SafeRelease(cloneCmd);
+}
+
+void CommandCloneAndTransform::Execute()
+{
+	if (!cloneCmd)
+	{
+		cloneCmd = new CommandCloneObject(originalNode, bodyControl, collisionWorld);
+	}
+	ExecuteInternal(cloneCmd);
+
+	if (GetInternalCommandState(cloneCmd) != STATE_VALID)
+	{
+		SetState(STATE_INVALID);
+		return;
+	}
+
+	if(!transformCmd)
+	{
+		transformCmd = new CommandTransformObject(cloneCmd->GetClonedNode(), originalNode->GetLocalTransform(), transform);
+	}
+
+	// Need to apply transform only once when creating command
+	ExecuteInternal(transformCmd);
+
+	if (GetInternalCommandState(transformCmd) != STATE_VALID)
+	{
+		SetState(STATE_INVALID);
+		return;
+	}
+}
+
+void CommandCloneAndTransform::Cancel()
+{
+	// No need to undo transform command, removed node will appear at the same place where it was removed
+	if (cloneCmd)
+	{
+		CancelInternal(cloneCmd);
+	}
+}
+
 
 CommandPlaceOnLandscape::CommandPlaceOnLandscape(DAVA::Entity* node, EditorBodyControl* bodyControl)
-:	Command(COMMAND_UNDO_REDO)
-,	node(node)
+:	CommandEntityModification(COMMAND_UNDO_REDO, CommandList::ID_COMMAND_PLACE_ON_LANDSCAPE)
 ,	bodyControl(bodyControl)
 {
 	commandName = "Place On Landscape";
@@ -108,10 +241,14 @@ CommandPlaceOnLandscape::CommandPlaceOnLandscape(DAVA::Entity* node, EditorBodyC
 
 	if (node)
 		undoTransform = node->GetLocalTransform();
+
+	entities.insert(node);
 }
 
 void CommandPlaceOnLandscape::Execute()
 {
+	Entity* node = *entities.begin();
+
 	if (node && bodyControl)
 	{
 		redoTransform = node->GetLocalTransform() * bodyControl->GetLandscapeOffset(node->GetWorldTransform());
@@ -123,6 +260,8 @@ void CommandPlaceOnLandscape::Execute()
 
 void CommandPlaceOnLandscape::Cancel()
 {
+	Entity* node = *entities.begin();
+
 	if (node)
 	{
 		node->SetLocalTransform(undoTransform);
@@ -131,8 +270,7 @@ void CommandPlaceOnLandscape::Cancel()
 
 
 CommandRestoreOriginalTransform::CommandRestoreOriginalTransform(DAVA::Entity* node)
-:	Command(COMMAND_UNDO_REDO)
-,	node(node)
+:	CommandEntityModification(COMMAND_UNDO_REDO, CommandList::ID_COMMAND_RESTORE_ORIGINAL_TRANSFORM)
 {
 	commandName = "Restore Original Transform";
 
@@ -140,10 +278,14 @@ CommandRestoreOriginalTransform::CommandRestoreOriginalTransform(DAVA::Entity* n
 	{
 		StoreCurrentTransform(node);
 	}
+
+	entities.insert(node);
 }
 
 void CommandRestoreOriginalTransform::Execute()
 {
+	Entity* node = *entities.begin();
+
 	if (node)
 	{
 		node->RestoreOriginalTransforms();
@@ -154,6 +296,8 @@ void CommandRestoreOriginalTransform::Execute()
 
 void CommandRestoreOriginalTransform::Cancel()
 {
+	Entity* node = *entities.begin();
+
 	if (node)
 	{
 		RestoreTransform(node);

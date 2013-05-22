@@ -19,7 +19,7 @@ public:
 private:
 	Vector<LightmapAtlasingData> atlasingData;
 
-	Vector2 GetTextureSize(const String & filePath);
+	Vector2 GetTextureSize(const FilePath & filePath);
 };
 
 #endif //__LIGHTMAPS_PACKER_H__

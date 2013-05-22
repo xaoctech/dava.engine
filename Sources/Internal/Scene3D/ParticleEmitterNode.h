@@ -4,6 +4,7 @@
 #include "Scene3D/Entity.h"
 #include "Particles/ParticleEmitter.h"
 #include "Particles/ParticleEmitter3D.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA
 {
@@ -27,11 +28,11 @@ public:
 	virtual void GetDataNodes(Set<DataNode*> & dataNodes);
 
 protected:
-	void LoadFromYaml(const String& yamlPath);
+	void LoadFromYaml(const FilePath & yamlPath);
 
 private:
 	ParticleEmitter3D * emitter;
-	String yamlPath;
+	FilePath yamlPath;
 };
 
 };

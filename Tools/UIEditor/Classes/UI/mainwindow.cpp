@@ -475,10 +475,11 @@ void MainWindow::OnImportPlatform()
 		return;
 	}
 
-	String path, platformName;
-	FileSystem::SplitPath(selectedDir.toStdString(), path, platformName);
+	FilePath selectedDirPath(selectedDir.toStdString());
+	String platformName = selectedDirPath.GetFilename();
 
-	ImportDialog importDlg(ImportDialog::IMPORT_PLATFORM, this, selectedDir);
+    selectedDirPath.MakeDirectoryPathname();
+	ImportDialog importDlg(ImportDialog::IMPORT_PLATFORM, this, selectedDirPath);
 	if (importDlg.exec() == QDialog::Accepted)
 	{
 		QSize size = importDlg.GetPlatformSize();

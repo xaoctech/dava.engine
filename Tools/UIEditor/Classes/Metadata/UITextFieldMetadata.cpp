@@ -181,6 +181,26 @@ void UITextFieldMetadata::SetShadowColor(const QColor& value)
 	GetActiveUITextField()->SetShadowColor(QTColorToDAVAColor(value));
 }
 
+int UITextFieldMetadata::GetTextAlign()
+{
+	if (!VerifyActiveParamID())
+	{
+		return ALIGN_HCENTER|ALIGN_VCENTER;
+	}
+	
+	return GetActiveUITextField()->GetTextAlign();
+}
+
+void UITextFieldMetadata::SetTextAlign(int32 align)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+	
+	GetActiveUITextField()->SetTextAlign(align);
+}
+
 // Initialize the control(s) attached.
 void UITextFieldMetadata::InitializeControl(const String& controlName, const Vector2& position)
 {

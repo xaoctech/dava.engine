@@ -4,39 +4,6 @@
 #include "Command.h"
 #include "../Constants.h"
 
-class CommandMaterials: public Command
-{
-public:	
-	CommandMaterials();
-
-protected:	
-    
-    virtual void Execute();
-};
-
-
-class CommandTextureConverter: public Command
-{
-public:	
-	CommandTextureConverter();
-    
-protected:	
-    
-    virtual void Execute();
-};
-
-
-class CommandSettings: public Command
-{
-public:
-	CommandSettings();
-    
-protected:
-    
-    virtual void Execute();
-};
-
-
 class CommandBeast: public Command
 {
 public:
@@ -47,14 +14,16 @@ protected:
     virtual void Execute();
 };
 
-class CommandRulerTool: public Command
+class CommandConvertToShadow : public Command
 {
 public:
-	CommandRulerTool();
-    
+	CommandConvertToShadow();
+
 protected:
-    
-    virtual void Execute();
+	virtual void Execute();
+	virtual DAVA::Set<DAVA::Entity*> GetAffectedEntities();
+
+	DAVA::Entity* affectedEntity;
 };
 
 

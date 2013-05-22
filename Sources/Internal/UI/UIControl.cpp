@@ -350,7 +350,7 @@ namespace DAVA
 	{
 		return background->GetAlign();
 	}
-	void UIControl::SetSprite(const String &spriteName, int32 spriteFrame)
+	void UIControl::SetSprite(const FilePath &spriteName, int32 spriteFrame)
 	{
 		background->SetSprite(spriteName, spriteFrame);
 	}
@@ -1252,10 +1252,10 @@ namespace DAVA
 		_vcenterAlignEnabled = srcControl->_vcenterAlignEnabled;
 		_bottomAlignEnabled = srcControl->_bottomAlignEnabled;
 		
-		if (GetBackground() && srcControl->GetBackground())
+		if (background && srcControl->background)
 		{
-			GetBackground()->SetLeftRightStretchCap(srcControl->GetBackground()->GetLeftRightStretchCap());
-			GetBackground()->SetTopBottomStretchCap(srcControl->GetBackground()->GetTopBottomStretchCap());
+			background->SetLeftRightStretchCap(srcControl->background->GetLeftRightStretchCap());
+			background->SetTopBottomStretchCap(srcControl->background->GetTopBottomStretchCap());
 		}
 
         tag = srcControl->GetTag();
@@ -1918,7 +1918,11 @@ namespace DAVA
 		Sprite *sprite =  this->GetSprite();
 		if (sprite)
 		{
-			node->Set("sprite", TruncateTxtFileExtension(sprite->GetName()));
+            FilePath path(sprite->GetRelativePathname());
+            path.TruncateExtension();
+
+            String pathname = path.GetFrameworkPath();
+			node->Set("sprite", pathname);
 		}
 		// Color
 		Color color =  this->GetBackground()->GetColor();
@@ -2378,7 +2382,7 @@ namespace DAVA
 		return debugDrawColor;
 	}
     
-    bool UIControl::IsLostFocusAllowed( UIControl *newFocus ) const
+    bool UIControl::IsLostFocusAllowed( UIControl *newFocus )
     {
         return true;
     }

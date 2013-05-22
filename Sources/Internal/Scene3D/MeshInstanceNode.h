@@ -33,6 +33,7 @@
 #include "Scene3D/Entity.h"
 #include "Render/Highlevel/RenderObject.h"
 #include "Render/Highlevel/RenderBatch.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA 
 {
@@ -86,7 +87,7 @@ public:
 	struct LightmapData
 	{
 		Texture * lightmap;
-		String lightmapName;
+		FilePath lightmapName;
 		Vector2 uvOffset;
 		Vector2 uvScale;
 	};

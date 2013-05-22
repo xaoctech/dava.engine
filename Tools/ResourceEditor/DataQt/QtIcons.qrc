@@ -38,7 +38,6 @@
     <file>QtIconsTextureDialog/view_list.png</file>
     <file>QtIconsTextureDialog/view_pictures.png</file>
     <file>QtIconsTextureDialog/zoom_100.png</file>
-    <file>QtImages/loading.gif</file>
     <file>QtIcons/newscene.png</file>
     <file>QtIcons/openproject.png</file>
     <file>QtIcons/openscene.png</file>
@@ -49,5 +48,7 @@
     <file>QtIcons/heightmapeditor.png</file>
     <file>QtIcons/tilemapeditor.png</file>
     <file>QtIcons/rulertool.png</file>
+    <file>QtIcons/transform_bake.png</file>
+    <file>QtIcons/shadow.png</file>
   </qresource>
 </RCC>

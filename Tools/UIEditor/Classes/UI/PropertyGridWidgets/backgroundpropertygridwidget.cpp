@@ -14,7 +14,7 @@
 #include "UIStaticTextMetadata.h"
 #include "ResourcesManageHelper.h"
 
-#include "ResourcePacker.h"
+#include "TexturePacker/ResourcePacker2D.h"
 #include "StringUtils.h"
 
 static const QString TEXT_PROPERTY_BLOCK_NAME = "Background";
@@ -61,15 +61,11 @@ void BackGroundPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     
     RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::DRAW_TYPE_PROPERTY_NAME, ui->drawTypeComboBox, false, true);
     RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::COLOR_INHERIT_TYPE_PROPERTY_NAME, ui->colorInheritComboBox, false, true);
-    RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::ALIGN_PROPERTY_NAME, ui->alignComboBox, false, true);
-
+	RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::ALIGN_PROPERTY_NAME, ui->alignComboBox, false, true);
+	
     RegisterColorButtonWidgetForProperty(propertiesMap, PropertyNames::BACKGROUND_COLOR_PROPERTY_NAME, ui->selectColorButton, false, true);
 
-    // Editing of sprites is not allowed for UIStaticText.
-    bool disableSpriteEditingControls = (dynamic_cast<UIStaticTextMetadata*>(activeMetadata) != NULL);
-    ui->spriteLineEdit->setDisabled(disableSpriteEditingControls);
-    ui->frameSpinBox->setDisabled(disableSpriteEditingControls);
-    ui->openSpriteButton->setDisabled(disableSpriteEditingControls);
+	ui->spriteLineEdit->setEnabled(true);
 	HandleDrawTypeComboBox();
 }
 
@@ -114,6 +110,8 @@ void BackGroundPropertyGridWidget::FillComboboxes()
     
     ui->alignComboBox->clear();
     itemsCount = BackgroundGridWidgetHelper::GetAlignTypesCount();
+	// Horizontal Justify has sense only for text
+	itemsCount--;
     for (int i = 0; i < itemsCount; i ++)
     {
         ui->alignComboBox->addItem(BackgroundGridWidgetHelper::GetAlignTypeDesc(i));
@@ -130,9 +128,12 @@ void BackGroundPropertyGridWidget::FillComboboxes()
 void BackGroundPropertyGridWidget::OpenSpriteDialog()
 {
 	// Pack all available sprites each time user open sprite dialog
-	ResourcePacker *resPacker = new ResourcePacker();
-	resPacker->PackResources(ResourcesManageHelper::GetSpritesDatasourceDirectory().toStdString(),
-	 					 				ResourcesManageHelper::GetSpritesDirectory().toStdString());
+	ResourcePacker2D *resPacker = new ResourcePacker2D();
+	resPacker->InitFolders(ResourcesManageHelper::GetSpritesDatasourceDirectory().toStdString(),
+                           ResourcesManageHelper::GetSpritesDirectory().toStdString());
+    
+    resPacker->PackResources();
+
 	// Get sprites directory to open
 	QString currentSpriteDir = ResourcesManageHelper::GetDefaultSpritesPath(this->ui->spriteLineEdit->text());
 	// Get sprite path from file dialog

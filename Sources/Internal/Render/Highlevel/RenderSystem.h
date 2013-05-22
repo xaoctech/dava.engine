@@ -107,6 +107,7 @@ public:
 	void AddRenderBatch(RenderBatch * renderBatch);
 	void RemoveRenderBatch(RenderBatch * renderBatch);
     
+	RenderPass * GetRenderPass(const FastName & passName);
     
     void SetShadowRectColor(const Color &color);
     const Color & GetShadowRectColor();

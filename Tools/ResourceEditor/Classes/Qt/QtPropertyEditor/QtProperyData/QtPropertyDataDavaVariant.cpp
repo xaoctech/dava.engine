@@ -42,6 +42,7 @@ QtPropertyDataDavaVariant::QtPropertyDataDavaVariant(const DAVA::VariantType &va
 	case DAVA::VariantType::TYPE_VECTOR4:
     case DAVA::VariantType::TYPE_COLOR:
     case DAVA::VariantType::TYPE_FASTNAME:
+	case DAVA::VariantType::TYPE_FILEPATH:
 	default:
 		break;
 	}
@@ -123,6 +124,9 @@ QVariant QtPropertyDataDavaVariant::GetValueInternal()
 	case DAVA::VariantType::TYPE_AABBOX3:
 		v = FromAABBox3(curVariantValue.AsAABBox3());
 		break;
+	case DAVA::VariantType::TYPE_FILEPATH:
+		v = curVariantValue.AsFilePath().GetRelativePathname(DAVA::FilePath::GetBundleName()).c_str();
+		break;
 
 	case DAVA::VariantType::TYPE_BYTE_ARRAY:
 	default:
@@ -186,6 +190,9 @@ void QtPropertyDataDavaVariant::SetValueInternal(const QVariant &value)
         break;
 	case DAVA::VariantType::TYPE_AABBOX3:
 		ToAABBox3(value);
+		break;
+	case DAVA::VariantType::TYPE_FILEPATH:
+		curVariantValue.SetFilePath(DAVA::FilePath(DAVA::FilePath::GetBundleName(), value.toString().toStdString()));
 		break;
 
 	case DAVA::VariantType::TYPE_BYTE_ARRAY:
@@ -427,7 +434,7 @@ QVariant QtPropertyDataDavaVariant::FromVector4(const DAVA::Vector4 &vector)
 {
 	QVariant v;
 
-	v = QString().sprintf("[%g, %g, %g, %g]", vector.x, vector.y, vector.z, vector.w);
+	v = QString().sprintf("[%8.2f, %8.2f, %8.2f, %8.2f]", vector.x, vector.y, vector.z, vector.w);
 
 	return v;
 }
@@ -436,7 +443,7 @@ QVariant QtPropertyDataDavaVariant::FromVector3(const DAVA::Vector3 &vector)
 {
 	QVariant v;
 
-	v = QString().sprintf("[%g, %g, %g]", vector.x, vector.y, vector.z);
+	v = QString().sprintf("[%8.2f, %8.2f, %8.2f]", vector.x, vector.y, vector.z);
 
 	return v;
 }
@@ -445,7 +452,7 @@ QVariant QtPropertyDataDavaVariant::FromVector2(const DAVA::Vector2 &vector)
 {
 	QVariant v;
 
-	v = QString().sprintf("[%g, %g]", vector.x, vector.y);
+	v = QString().sprintf("[%8.2f, %8.2f]", vector.x, vector.y);
 
 	return v;
 }
@@ -454,11 +461,11 @@ QVariant QtPropertyDataDavaVariant::FromMatrix4(const DAVA::Matrix4 &matrix)
 {
 	QVariant v;
 
-	v = QString().sprintf("[%g, %g, %g, %g]\n[%g, %g, %g, %g]\n[%g, %g, %g, %g]\n[%g, %g, %g, %g]",
-                          matrix._00, matrix._01, matrix._02, matrix._03,
-                          matrix._10, matrix._11, matrix._12, matrix._13,
-                          matrix._20, matrix._21, matrix._22, matrix._23,
-                          matrix._30, matrix._31, matrix._32, matrix._33
+	v = QString().sprintf("[%8.2f, %8.2f, %8.2f, %8.2f]\n[%8.2f, %8.2f, %8.2f, %8.2f]\n[%8.2f, %8.2f, %8.2f, %8.2f]\n[%8.2f, %8.2f, %8.2f, %8.2f]",
+                          matrix._00, matrix._10, matrix._20, matrix._30,
+                          matrix._01, matrix._11, matrix._21, matrix._31,
+                          matrix._02, matrix._12, matrix._22, matrix._32,
+                          matrix._03, matrix._13, matrix._23, matrix._33
                           );
 
 	return v;
@@ -468,10 +475,10 @@ QVariant QtPropertyDataDavaVariant::FromMatrix3(const DAVA::Matrix3 &matrix)
 {
 	QVariant v;
 
-	v = QString().sprintf("[%g, %g, %g]\n[%g, %g, %g]\n[%g, %g, %g]",
-                          matrix._00, matrix._01, matrix._02,
-                          matrix._10, matrix._11, matrix._12,
-                          matrix._20, matrix._21, matrix._22
+	v = QString().sprintf("[%8.2f, %8.2f, %8.2f]\n[%8.2f, %8.2f, %8.2f]\n[%8.2f, %8.2f, %8.2f]",
+                          matrix._00, matrix._10, matrix._20,
+                          matrix._01, matrix._11, matrix._21,
+                          matrix._02, matrix._12, matrix._22
                           );
 
 	return v;
@@ -481,9 +488,9 @@ QVariant QtPropertyDataDavaVariant::FromMatrix2(const DAVA::Matrix2 &matrix)
 {
 	QVariant v;
 
-	v = QString().sprintf("([%g, %g]\n[%g, %g])",
-		matrix._00, matrix._01,
-		matrix._10, matrix._11);
+	v = QString().sprintf("([%8.2f, %8.2f]\n[%8.2f, %8.2f])",
+		matrix._00, matrix._10,
+		matrix._01, matrix._11);
 
 	return v;
 }
@@ -503,15 +510,13 @@ QVariant QtPropertyDataDavaVariant::FromAABBox3(const DAVA::AABBox3 &aabbox)
 {
 	QVariant v;
 
-	v = QString().sprintf("[%g, %g, %g]\n[%g, %g, %g]",
+	v = QString().sprintf("[%8.2f, %8.2f, %8.2f]\n[%8.2f, %8.2f, %8.2f]",
 		aabbox.min.x, aabbox.min.y, aabbox.min.z,
 		aabbox.max.x, aabbox.max.y, aabbox.max.z
 		);
 
 	return v;
 }
-
-
 
 void QtPropertyDataDavaVariant::ToKeyedArchive(const QVariant &value)
 {

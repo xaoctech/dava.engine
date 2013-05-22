@@ -31,7 +31,7 @@ public:
 
 	HierarchyTreeNode* GetRoot() {return rootNode;};
 	
-	QString GetPlatformFolder() const;
+	FilePath GetPlatformFolder() const;
 	void ActivatePlatform();
 
 	QString GetScreenPath(QString screenName) const;
@@ -45,10 +45,10 @@ public:
     bool SaveLocalization(YamlNode* platform);
 
     // Accessors to the current localization info.
-    const String& GetLocalizationPath() const {return localizationPath;};
+    const FilePath & GetLocalizationPath() const {return localizationPath;};
     const String& GetLocale() const {return locale;};
     
-    void SetLocalizationPath(const String& localizationPath);
+    void SetLocalizationPath(const FilePath & localizationPath);
     void SetLocale(const String& locale);
     
 	// Return the Platform Node back to scene after deletion when performing Undo.
@@ -56,11 +56,13 @@ public:
 	
 	virtual void SetParent(HierarchyTreeNode* node, HierarchyTreeNode* insertAfter);
 
+	bool IsAggregatorOrScreenNamePresent(const QString& candidatName);
+
 private:
 	int width;
 	int height;
 
-    String localizationPath;
+    FilePath localizationPath;
     String locale;
 
 	HierarchyTreeRootNode* rootNode;

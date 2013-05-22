@@ -100,7 +100,9 @@ void HierarchyTreeAggregatorNode::UpdateChilds()
 		if (!aggregatorControl)
 			continue;
 		
-		List<UIControl*> aggregatorChilds = aggregatorControl->GetChildren();
+		// Remove any child controls of UIControl to prevent appearance of deleted
+		// child in case when screen child is aggregator.
+		/*List<UIControl*> aggregatorChilds = aggregatorControl->GetChildren();
 		int size = GetScreen()->GetChildren().size();
 		for (List<UIControl*>::iterator iter = aggregatorChilds.begin(); iter != aggregatorChilds.end();)
 		{
@@ -109,9 +111,10 @@ void HierarchyTreeAggregatorNode::UpdateChilds()
 			UIControl* child = (*iter);
 			++iter;
 			aggregatorControl->RemoveControl(child);
-		}
+		}*/
+
+		aggregatorControl->RemoveAllControls();
 		
-		aggregatorControl->CleanAggregatorChilds();
 		const List<UIControl*> & childsList = screen->GetChildren();
 		UIControl* belowControl = NULL;
 		List<UIControl*>::const_iterator belowIter = aggregatorControl->GetChildren().begin();
@@ -137,7 +140,6 @@ void HierarchyTreeAggregatorNode::RemoveSelection()
 bool HierarchyTreeAggregatorNode::Load(const Rect& rect, const QString& path)
 {
 	this->path = ResourcesManageHelper::GetResourceRelativePath(path, true).toStdString();
-
 	this->rect = rect;
 	screen->SetRect(rect);
 
@@ -157,8 +159,7 @@ bool HierarchyTreeAggregatorNode::Save(YamlNode* node, const QString& path, bool
 		if (!aggregatorControl)
 			continue;
 
-		String aggregatorName, aggregatorPath;
-		FileSystem::SplitPath(path.toStdString(), aggregatorPath, aggregatorName);
+		String aggregatorName = FilePath(path.toStdString()).GetFilename();
 		aggregatorControl->SetAggregatorPath(aggregatorName);
 	}
 	
@@ -199,7 +200,8 @@ void HierarchyTreeAggregatorNode::ReplaceAggregator(HierarchyTreeControlNode *no
 	UIList *list = dynamic_cast<UIList*>(node->GetUIObject());
 	// For UIList control we should should always create a delegate
 	// Set aggregator ID for list if it has saved aggregator path and it is available in tree
-	if (list && list->GetAggregatorPath().compare(path) == 0)
+// 	if (list && list->GetAggregatorPath().compare(path.re) == 0)
+	if (list && list->GetAggregatorPath() == path)
 	{
 		EditorListDelegate *listDelegate = new EditorListDelegate(list->GetRect());
 		// If loaded delegate has aggregator path - pass its id to delegate
@@ -210,12 +212,9 @@ void HierarchyTreeAggregatorNode::ReplaceAggregator(HierarchyTreeControlNode *no
 
 	UIAggregatorControl* uiAggregator = dynamic_cast<UIAggregatorControl*>(node->GetUIObject());
 
-	String aggregatorName, aggregatorPath;
-	FileSystem::SplitPath(path, aggregatorPath, aggregatorName);
-
-	if (uiAggregator && uiAggregator->GetAggregatorPath().compare(aggregatorName) == 0)
+	if (uiAggregator && uiAggregator->GetAggregatorPath().GetAbsolutePathname().compare(path.GetFilename()) == 0)
 	{
-		Logger::Debug(uiAggregator->GetAggregatorPath().c_str());
+		Logger::Debug(uiAggregator->GetAggregatorPath().GetAbsolutePathname().c_str());
 		HIERARCHYTREENODESLIST childs = node->GetChildNodes();
 		uint32 i = 0;
 		for (HIERARCHYTREENODESLIST::iterator iter = childs.begin(); iter != childs.end(); ++iter)
@@ -259,7 +258,7 @@ const HierarchyTreeAggregatorNode::CHILDS& HierarchyTreeAggregatorNode::GetChild
 	return childs;
 }
 
-const String& HierarchyTreeAggregatorNode::GetPath()
+const FilePath& HierarchyTreeAggregatorNode::GetPath()
 {
 	return path;
 }

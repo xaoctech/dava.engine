@@ -51,9 +51,11 @@ int alphasortAndroid(const dirent **a, const dirent **b)
 }
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 
-FileList::FileList(const String & filepath)
+FileList::FileList(const FilePath & filepath)
 {
-	path = FileSystem::Instance()->SystemPathForFrameworkPath(filepath);
+    DVASSERT(filepath.IsDirectoryPathname());
+    
+	path = filepath;
 
 // Windows version
 #if defined(__DAVAENGINE_WIN32__)
@@ -61,8 +63,8 @@ FileList::FileList(const String & filepath)
 	//char tmp[_MAX_PATH];
 	//_getcwd(tmp, _MAX_PATH);
 	//Path = tmp;
-	String prevDir = FileSystem::Instance()->GetCurrentWorkingDirectory();
-	BOOL res = SetCurrentDirectoryA(path.c_str());
+	FilePath prevDir = FileSystem::Instance()->GetCurrentWorkingDirectory();
+	BOOL res = SetCurrentDirectoryA(path.GetAbsolutePathname().c_str());
 
 	if (res)
 	{
@@ -74,9 +76,16 @@ FileList::FileList(const String & filepath)
 		{
 			do
 			{
+                //TODO: need to check for Win32
+				entry.path = filepath + c_file.name;
 				entry.name = c_file.name;
 				entry.size = c_file.size;
 				entry.isDirectory = (_A_SUBDIR & c_file.attrib) != 0;
+				if(entry.isDirectory)
+				{
+					entry.path.MakeDirectoryPathname();
+				}
+
 				fileList.push_back(entry);
 				//Logger::Debug("filelist: %s %s", filepath.c_str(), entry.name.c_str());
 			}
@@ -96,18 +105,23 @@ FileList::FileList(const String & filepath)
 	FileEntry entry;
 
 #if defined (__DAVAENGINE_ANDROID__)
-	int32 n = scandir(path.c_str(), &namelist, 0, alphasortAndroid);
+	int32 n = scandir(path.GetAbsolutePathname().c_str(), &namelist, 0, alphasortAndroid);
 #else //#if defined (__DAVAENGINE_ANDROID__)
-	int32 n = scandir(path.c_str(), &namelist, 0, alphasort);
+	int32 n = scandir(path.GetAbsolutePathname().c_str(), &namelist, 0, alphasort);
 #endif //#if defined (__DAVAENGINE_ANDROID__)    
     
 	if (n >= 0)
 	{
 		while(n--)
 		{
+			entry.path = path + namelist[n]->d_name;
 			entry.name = namelist[n]->d_name;
 			entry.size = 0;
 			entry.isDirectory = namelist[n]->d_type == DT_DIR;
+            if(entry.isDirectory)
+            {
+                entry.path.MakeDirectoryPathname();
+            }
 			fileList.push_back(entry);
 			free(namelist[n]);
 		}
@@ -121,8 +135,7 @@ FileList::FileList(const String & filepath)
 	{
 		if (IsDirectory(fi))
 		{
-			String filename = GetFilename(fi);
-			if ((filename != ".") && (filename != ".."))
+			if (!IsNavigationDirectory(fi))
 				directoryCount++;
 		}else
 			fileCount++;
@@ -149,31 +162,18 @@ int32 FileList::GetDirectoryCount()
 	return directoryCount;
 }
 
+const FilePath & FileList::GetPathname(int32 index)
+{
+	DVASSERT((index >= 0) && (index < (int32)fileList.size()));
+	return fileList[index].path;
+}
+    
 const String & FileList::GetFilename(int32 index)
 {
-	DVASSERT((index >= 0) && (index < (int32)fileList.size()));
-	return fileList[index].name;
+    DVASSERT((index >= 0) && (index < (int32)fileList.size()));
+    return fileList[index].name;
 }
-
-const String & FileList::GetPathname(int32 index) 
-{
-	DVASSERT((index >= 0) && (index < (int32)fileList.size()));
-	if (fileList[index].pathName.size() < fileList[index].name.size())
-	{
-		// create full name
-		fileList[index].pathName = path;
-
-            //path.size() > 3 WTF?!!
-//		if (path.size() > 3 && path[path.length()-1] != '/')
-//			fileList[index].pathName.append("/");
-		if ((0 < path.length()) && (path[path.length()-1] != '/'))
-			fileList[index].pathName.append("/");
-
-		fileList[index].pathName.append(fileList[index].name);
-	}
-
-	return fileList[index].pathName; 
-}
+    
 
 bool FileList::IsDirectory(int32 index) 
 {
@@ -187,7 +187,9 @@ bool FileList::IsNavigationDirectory(int32 index)
 	//bool isDir = fileList[index].isDirectory;
 	//if (isDir)
 	//{
-	if ((fileList[index].name == ".") || (fileList[index].name == ".."))return true;
+    
+    String filename = GetFilename(index);
+	if ((filename == ".") || (filename == ".."))return true;
 	//}
 	return false;
 }

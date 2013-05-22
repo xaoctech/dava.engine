@@ -50,7 +50,7 @@ public:
      \brief Constructor
      \param[in] filePath path to video file
 	 */
-    TheoraPlayer(const String & filePath = "");
+    TheoraPlayer(const FilePath & filePath = FilePath());
 
     virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
     
@@ -66,7 +66,7 @@ public:
      \brief open video file
      \param[in] filePath path to video file
 	 */
-    void OpenFile(const String & filePath);
+    void OpenFile(const FilePath & filePath);
     
     /**
      \brief release theora data and close file
@@ -116,7 +116,7 @@ private:
     float32             currFrameTime;
     float32             frameTime;
     
-    String              filePath;
+    FilePath              filePath;
     float32             videoTime;
     float32             videoBufTime;
     File                * file;

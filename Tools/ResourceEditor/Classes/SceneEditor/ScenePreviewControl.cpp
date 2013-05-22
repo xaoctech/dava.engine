@@ -139,7 +139,6 @@ ScenePreviewControl::ScenePreviewControl(const Rect & rect)
 {
     needSetCamera = false;
     sceCamera = false;
-    currentScenePath = "";
     rootNode = NULL;
     
     editorScene = new Scene();
@@ -186,24 +185,23 @@ void ScenePreviewControl::RecreateScene()
 
 void ScenePreviewControl::ReleaseScene()
 {
-    if(currentScenePath.length())
+    if(!currentScenePath.IsEmpty())
     {
         editorScene->RemoveNode(rootNode);
         editorScene->ReleaseRootNode(currentScenePath);
         
         rootNode = NULL;
-        currentScenePath = "";
+        currentScenePath = FilePath();
     }
 }
 
-int32 ScenePreviewControl::OpenScene(const String &pathToFile)
+int32 ScenePreviewControl::OpenScene(const FilePath &pathToFile)
 {
     ReleaseScene();
     RecreateScene();
     
     int32 retError = SceneFileV2::ERROR_NO_ERROR;
-    String ext = FileSystem::Instance()->GetExtension(pathToFile);
-    if(ext == ".sce")
+    if(pathToFile.IsEqualToExtension(".sce"))
     {
         SceneFile *file = new SceneFile();
         file->SetDebugLog(true);
@@ -214,7 +212,7 @@ int32 ScenePreviewControl::OpenScene(const String &pathToFile)
         
         SafeRelease(file);
     }
-    else if(ext == ".sc2")
+    else if(pathToFile.IsEqualToExtension(".sc2"))
     {
         SceneFileV2 *file = new SceneFileV2();
         file->EnableDebugLog(true);
@@ -244,7 +242,7 @@ int32 ScenePreviewControl::OpenScene(const String &pathToFile)
                 cam->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
                 cam->SetTarget(Vector3(0.0f, 1.0f, 0.0f));
                 
-                cam->Setup(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f); 
+                cam->SetupPerspective(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f); 
                 
 
                 

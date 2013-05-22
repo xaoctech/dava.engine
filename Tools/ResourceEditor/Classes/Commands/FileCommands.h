@@ -5,23 +5,10 @@
 #include "../Constants.h"
 #include "EditorScene.h"
 
-/*
-class CommandOpenProject: public Command
-{
-public:	
-	CommandOpenProject();
-
-protected:	
-    
-    virtual void Execute();
-};
-*/
-
-
 class CommandOpenScene: public Command
 {
 public:	
-	CommandOpenScene(const DAVA::String &scenePathname = DAVA::String(""));
+	CommandOpenScene(const DAVA::FilePath &scenePathname = DAVA::FilePath());
     
 protected:	
     
@@ -29,7 +16,7 @@ protected:
     
 protected:
     
-    DAVA::String selectedScenePathname;
+    DAVA::FilePath selectedScenePathname;
 };
 
 class CommandNewScene: public Command
@@ -44,6 +31,7 @@ protected:
 
 class CommandSaveScene: public Command
 {
+	friend class CommandNewScene;
 public:	
 	CommandSaveScene();
     

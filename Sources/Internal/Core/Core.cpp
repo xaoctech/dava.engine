@@ -105,13 +105,14 @@ void Core::CreateSingletons()
     
     
     // check types size
-    
+	new Logger();
+
 	new FileSystem();
+    FilePath::InitializeBundleName();
+	
 	FileSystem::Instance()->SetDefaultDocumentsDirectory();
     FileSystem::Instance()->CreateDirectory(FileSystem::Instance()->GetCurrentDocumentsDirectory(), true);
-
 	
-	new Logger();
 	if (isConsoleMode)
 	{
 		/*
@@ -692,6 +693,16 @@ void Core::GoBackground(bool isLock)
 #endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
 }
 
+void Core::GoForeground()
+{
+#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
+	if (core)
+	{
+		core->OnForeground();
+	}
+#endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
+}
+
 uint32 Core::GetGlobalFrameIndex()
 {
 	return globalFrameIndex;
@@ -754,5 +765,9 @@ uint32 Core::GetScreenDPI()
 {
 	return DPIHelper::GetScreenDPI();
 }
+
+void Core::SetIcon(int32 /*iconId*/)
+{
+};
 
 };

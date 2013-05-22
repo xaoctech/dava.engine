@@ -4,9 +4,10 @@
 #include "Classes/Qt/Main/QtMainWindowHandler.h"
 #include "Classes/Qt/Scene/SceneDataManager.h"
 #include "Classes/SceneEditor/EditorSettings.h"
-#include "Classes/SceneEditor/CommandLineTool.h"
+#include "Classes/CommandLine/CommandLineManager.h"
 #include "Classes/Qt/TextureBrowser/TextureConvertor.h"
 #include "Classes/Qt/DockSceneGraph/PointerHolder.h"
+#include "DockConsole/Console.h"
 #include "Classes/Qt/Project/ProjectManager.h"
 #include "DockLibrary/LibraryModel.h"
 
@@ -16,7 +17,6 @@
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/EditorBodyControl.h"
 #include "../SceneEditor/EditorConfig.h"
-#include "../SceneEditor/CommandLineTool.h"
 #include "Classes/QT/SpritesPacker/SpritePackerHelper.h"
 #include "Classes/QT/QResourceEditorProgressDialog/QResourceEditorProgressDialog.h"
 
@@ -35,6 +35,9 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	, repackSpritesWaitDialog(NULL)
 	, emitRepackAndReloadFinished(false)
 {
+	// initialize console
+	Console::Instance();
+
 	new ProjectManager();
 	new SceneDataManager();
 	new QtMainWindowHandler(this);
@@ -44,6 +47,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     qApp->installEventFilter(this);
 	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + "EditorConfig.yaml");
 
+	QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->sceneTabWidget);
 	QtMainWindowHandler::Instance()->SetResentMenu(ui->menuFile);
 	QtMainWindowHandler::Instance()->RegisterStatusBar(ui->statusBar);
 	QtMainWindowHandler::Instance()->RestoreDefaultFocus();
@@ -100,7 +104,6 @@ void QtMainWindow::SetupActions()
 	connect(ui->actionReloadAll, SIGNAL(triggered()), actionHandler, SLOT(RepackAndReloadTextures()));
 
 	//View
-	connect(ui->actionSceneInfo, SIGNAL(triggered()), actionHandler, SLOT(ToggleSceneInfo()));
 	connect(ui->actionRestoreViews, SIGNAL(triggered()), actionHandler, SLOT(RestoreViews()));
 
 	//Tools
@@ -110,7 +113,15 @@ void QtMainWindow::SetupActions()
 	connect(ui->actionTileMapEditor, SIGNAL(triggered()), actionHandler, SLOT(TilemapEditor()));
 	connect(ui->actionRulerTool, SIGNAL(triggered()), actionHandler, SLOT(RulerTool()));
 	connect(ui->actionShowSettings, SIGNAL(triggered()), actionHandler, SLOT(ShowSettings()));
+    
+#if defined (__DAVAENGINE_MACOS__)
+    ui->menuTools->removeAction(ui->actionBeast);
+#else //#if defined (__DAVAENGINE_MACOS__)
 	connect(ui->actionBeast, SIGNAL(triggered()), actionHandler, SLOT(Beast()));
+#endif //#if defined (__DAVAENGINE_MACOS__)
+    
+	//Edit
+	connect(ui->actionConvertToShadow, SIGNAL(triggered()), actionHandler, SLOT(ConvertToShadow()));
 }
 
 void QtMainWindow::SetupMainMenu()
@@ -118,8 +129,6 @@ void QtMainWindow::SetupMainMenu()
     QtMainWindowHandler *actionHandler = QtMainWindowHandler::Instance();
 
     QAction *actionSceneGraph = ui->dockSceneGraph->toggleViewAction();
-    QAction *actionDataGraph = ui->dockDataGraph->toggleViewAction();
-    QAction *actionEntities = ui->dockEntities->toggleViewAction();
     QAction *actionProperties = ui->dockProperties->toggleViewAction();
     QAction *actionLibrary = ui->dockLibrary->toggleViewAction();
 	QAction *actionReferences = ui->dockReferences->toggleViewAction();
@@ -130,35 +139,38 @@ void QtMainWindow::SetupMainMenu()
 	QAction *actionSetSwitchIndex = ui->dockSetSwitchIndex->toggleViewAction();
 	QAction *actionParticleEditor = ui->dockParticleEditor->toggleViewAction();
 	QAction *actionParticleEditorTimeLine = ui->dockParticleEditorTimeLine->toggleViewAction();
-    ui->menuView->insertAction(ui->actionRestoreViews, actionToolBar);
-    ui->menuView->insertAction(actionToolBar, actionLibrary);
-    ui->menuView->insertAction(actionLibrary, actionProperties);
-	ui->menuView->insertAction(actionProperties, actionReferences);
-    ui->menuView->insertAction(actionReferences, actionEntities);
-    ui->menuView->insertAction(actionEntities, actionDataGraph);
-    ui->menuView->insertAction(actionDataGraph, actionSceneGraph);
-    ui->menuView->insertAction(actionSceneGraph, actionCustomColors);
-	ui->menuView->insertAction(actionCustomColors, actionVisibilityCheckTool);
-	ui->menuView->insertAction(actionVisibilityCheckTool, actionParticleEditor);
-	ui->menuView->insertAction(actionParticleEditor, actionParticleEditorTimeLine);
-	ui->menuView->insertAction(actionParticleEditorTimeLine, actionHangingObjects);
-	ui->menuView->insertAction(actionHangingObjects, actionSetSwitchIndex);
-    
+    QAction *actionSceneInfo = ui->dockSceneInfo->toggleViewAction();
+	QAction *actionSceneTree = ui->dockSceneTree->toggleViewAction();
+	QAction *actionConsole = ui->dockConsole->toggleViewAction();
+
+    ui->menuView->addAction(actionSceneInfo);
+    ui->menuView->addAction(actionToolBar);
+    ui->menuView->addAction(actionLibrary);
+    ui->menuView->addAction(actionProperties);
+	ui->menuView->addAction(actionReferences);
+    ui->menuView->addAction(actionSceneGraph);
+    ui->menuView->addAction(actionCustomColors);
+	ui->menuView->addAction(actionVisibilityCheckTool);
+	ui->menuView->addAction(actionParticleEditor);
+	ui->menuView->addAction(actionParticleEditorTimeLine);
+	ui->menuView->addAction(actionHangingObjects);
+	ui->menuView->addAction(actionSetSwitchIndex);
+	ui->menuView->addAction(actionSceneTree);
+	ui->menuView->addAction(actionConsole);
+
     ui->menuView->insertSeparator(ui->actionRestoreViews);
     ui->menuView->insertSeparator(actionToolBar);
     ui->menuView->insertSeparator(actionProperties);
 
+
     actionHandler->RegisterDockActions(ResourceEditor::HIDABLEWIDGET_COUNT,
-                                       actionSceneGraph, actionDataGraph, actionEntities,
-                                       actionProperties, actionLibrary, actionToolBar, 
+                                       actionSceneGraph,
+                                       actionProperties, actionLibrary, actionToolBar,
 									   actionReferences, actionCustomColors, actionVisibilityCheckTool, 
-									   actionParticleEditor, actionHangingObjects, actionSetSwitchIndex);
+									   actionParticleEditor, actionHangingObjects, actionSetSwitchIndex, actionSceneInfo);
 
 
-    ui->dockDataGraph->hide();
-    ui->dockEntities->hide();
     ui->dockProperties->hide();
-	//ui->dockReferences->hide();
     
     
     //CreateNode
@@ -222,7 +234,8 @@ void QtMainWindow::SetupMainMenu()
 
 	//Reference
 	connect(ui->applyReferenceSuffixButton, SIGNAL(clicked()), this, SLOT(ApplyReferenceNodeSuffix()));
- 
+
+	actionHandler->MenuViewOptionsWillShow();
 }
 
 void QtMainWindow::SetupToolBars()
@@ -278,24 +291,22 @@ void QtMainWindow::SetupToolBars()
 
 void QtMainWindow::OpenLastProject()
 {
-    if(     !CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter"))
-       &&   !CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter"))
-       &&   !CommandLineTool::Instance()->CommandIsFound(String("-scenesaver")))
+    if(CommandLineManager::Instance() && !CommandLineManager::Instance()->IsCommandLineModeEnabled())
     {
-        DAVA::String projectPath = EditorSettings::Instance()->GetProjectPath();
+        DAVA::FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
 
-        if(projectPath.empty())
+        if(projectPath.IsEmpty())
         {
-			projectPath = ProjectManager::Instance()->ProjectOpenDialog().toStdString().c_str();
+			projectPath = FilePath(ProjectManager::Instance()->ProjectOpenDialog().toStdString());
         }
 
-		if(projectPath.empty())
+        if(projectPath.IsEmpty())
 		{
 			QtLayer::Instance()->Quit();
 		}
 		else
 		{
-			ProjectManager::Instance()->ProjectOpen(QString(projectPath.c_str()));
+			ProjectManager::Instance()->ProjectOpen(QString(projectPath.GetAbsolutePathname().c_str()));
 		}
     }
 }
@@ -448,10 +459,7 @@ void QtMainWindow::ProjectOpened(const QString &path)
 bool QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)
 {
 	bool ret = false;
-	if(     CommandLineTool::Instance()
-       &&   !CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter"))
-       &&   !CommandLineTool::Instance()->CommandIsFound(String("-scenesaver"))
-       &&   !CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter")) && NULL == convertWaitDialog)
+	if(CommandLineManager::Instance() && !CommandLineManager::Instance()->IsCommandLineModeEnabled() && NULL == convertWaitDialog)
 	{
 		// check if we have textures to convert - 
 		// if we have function will return true and conversion will start in new thread

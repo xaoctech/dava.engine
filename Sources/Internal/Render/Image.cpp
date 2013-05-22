@@ -56,12 +56,15 @@ Image * Image::Create(uint32 width, uint32 height, PixelFormat format)
 	image->format = format;
     
     int32 formatSize = Texture::GetPixelFormatSizeInBytes(format);
-    if(formatSize || (format >= FORMAT_DXT1 && format <= FORMAT_DXT1A))
+    if (formatSize ||
+		(format >= FORMAT_DXT1 && format <= FORMAT_DXT1A) ||
+		(format >= FORMAT_ATC_RGB && format <= FORMAT_ATC_RGBA_INTERPOLATED_ALPHA))
     {
 		//workaround, because formatSize is not designed for formats with 4 bits per pixel
 		image->dataSize = width * height * formatSize;
 		
-		if(format >= FORMAT_DXT1 && format <= FORMAT_DXT5NM)
+		if ((format >= FORMAT_DXT1 && format <= FORMAT_DXT5NM) ||
+			(format >= FORMAT_ATC_RGB && format <= FORMAT_ATC_RGBA_INTERPOLATED_ALPHA))
 		{
 			uint32 dSize = formatSize == 0 ? (width * height) / 2 : width * height ;
 			if(width < 4 || height < 4)// size lower than  block's size

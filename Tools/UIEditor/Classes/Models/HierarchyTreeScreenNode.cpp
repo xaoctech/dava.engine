@@ -13,6 +13,7 @@
 #include "HierarchyTreeAggregatorControlNode.h"
 #include <QFile>
 #include "Render/2D/FontManager.h"
+#include <qmessagebox.h>
 
 HierarchyTreeScreenNode::HierarchyTreeScreenNode(HierarchyTreePlatformNode* parent, const QString& name) :
 	HierarchyTreeNode(name)
@@ -97,6 +98,17 @@ void HierarchyTreeScreenNode::SetParent(HierarchyTreeNode* node, HierarchyTreeNo
 	if (!newPlatform)
 		return;
 	
+	// check if parent platform has aggregator with same name already
+	// if so message box will be shown
+	bool shouldInsert = ! newPlatform->IsAggregatorOrScreenNamePresent(this->GetName());
+	if(!shouldInsert)
+	{
+		QMessageBox msgBox;
+		msgBox.setText("The platform has aggregator or screen with the same name already!");
+		msgBox.exec();
+		return;
+	}
+
 	HierarchyTreePlatformNode* oldPlatform = GetPlatform();
 	if (oldPlatform)
 	{

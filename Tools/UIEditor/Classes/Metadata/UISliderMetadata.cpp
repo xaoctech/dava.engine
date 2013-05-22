@@ -34,12 +34,7 @@ void UISliderMetadata::InitializeControl(const String& controlName, const Vector
         UISlider* slider = dynamic_cast<UISlider*>(this->treeNodeParams[i].GetUIControl());
 		if (slider)
 		{
-			UIControl *thumbButton = new UIControl(Rect(0, 0, 40.0f, 40.0f));
-			
-			slider->SetThumb(thumbButton);
-    	
 			slider->SetMinMaxValue(0.0f, 100.0f);
-			SafeRelease(thumbButton);
 		}
     }
 }
@@ -123,7 +118,7 @@ QString UISliderMetadata::GetSliderThumbSprite() const
         return StringConstants::NO_SPRITE_IS_SET;
     }
     
-    return thumbSprite->GetRelativePathname().c_str();
+    return QString::fromStdString(thumbSprite->GetRelativePathname().GetAbsolutePathname());
 }
 
 void UISliderMetadata::SetSliderThumbSprite(QString value)
@@ -203,7 +198,7 @@ QString UISliderMetadata::GetSliderMinSprite() const
         return StringConstants::NO_SPRITE_IS_SET;
     }
     
-    return minSprite->GetRelativePathname().c_str();
+    return QString::fromStdString(minSprite->GetRelativePathname().GetAbsolutePathname());
 }
 
 void UISliderMetadata::SetSliderMinSprite(QString value)
@@ -303,7 +298,7 @@ QString UISliderMetadata::GetSliderMaxSprite() const
         return StringConstants::NO_SPRITE_IS_SET;
     }
     
-    return maxSprite->GetRelativePathname().c_str();
+    return QString::fromStdString(maxSprite->GetRelativePathname().GetAbsolutePathname());
 }
 
 void UISliderMetadata::SetSliderMaxSprite(QString value)
@@ -392,17 +387,4 @@ void UISliderMetadata::ApplyResize(const Rect& /*originalRect*/, const Rect& new
     }	
 	
     GetActiveUISlider()->SetRect(newRect);
-	UIControl* thumbButton = GetActiveUISlider()->GetThumb()->Clone();
-	// Update thumb button position after resize
-	if (thumbButton)
-	{
-		GetActiveUISlider()->SetThumb(thumbButton);
-		SafeRelease(thumbButton);
-	}
-	
-	/*
-	int currentValue = GetActiveUISlider()->GetValue();
-	thumbButton->relativePosition.y = GetActiveUISlider()->size.y * 0.5f;
-    thumbButton->pivotPoint = thumbButton->size*0.5f;
-	GetActiveUISlider()->SetValue(currentValue);*/
 }

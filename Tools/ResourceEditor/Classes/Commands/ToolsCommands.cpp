@@ -9,63 +9,10 @@
 
 using namespace DAVA;
 
-//Show/Hide Materials
-CommandMaterials::CommandMaterials()
-    :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
-{
-}
-
-
-void CommandMaterials::Execute()
-{
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-        screen->MaterialsTriggered();
-    }
-}
-
-
-//Show/Hide Texture Converter
-CommandTextureConverter::CommandTextureConverter()
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
-{
-}
-
-
-void CommandTextureConverter::Execute()
-{
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-		// Replaced with Qt
-		// TODO:
-		// remove this
-		// 
-        // screen->TextureConverterTriggered();
-    }
-}
-
-//Show settings
-CommandSettings::CommandSettings()
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
-{
-}
-
-
-void CommandSettings::Execute()
-{
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-        screen->ShowSettings();
-    }
-}
-
 
 //Beast
 CommandBeast::CommandBeast()
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_BEAST)
 {
 }
 
@@ -80,25 +27,49 @@ void CommandBeast::Execute()
 }
 
 
-//Ruler Tool
-CommandRulerTool::CommandRulerTool()
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+CommandConvertToShadow::CommandConvertToShadow()
+:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_CONVERT_TO_SHADOW)
 {
+
 }
 
-
-void CommandRulerTool::Execute()
+void CommandConvertToShadow::Execute()
 {
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-        screen->RulerToolTriggered();
-    }
-    
-    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
-    activeScene->RebuildSceneGraph();
-    
-    QtMainWindowHandler::Instance()->ShowStatusBarMessage(activeScene->GetScenePathname());
+	Entity * entity = SceneDataManager::Instance()->SceneGetSelectedNode(SceneDataManager::Instance()->SceneGetActive());
+	if(entity)
+	{
+		RenderComponent * rc = static_cast<RenderComponent*>(entity->GetComponent(Component::RENDER_COMPONENT));
+		RenderObject * ro = GetRenerObject(entity);
+		if (NULL == ro)
+		{
+			// Yuri Coder, 2013/05/17. This Entity doesn't have Render Object and can't be converted to Shadow.
+			// See also DF-1184.
+			return;
+		}
+
+		if(ro->GetRenderBatchCount() == 1 && typeid(*(ro->GetRenderBatch(0))) == typeid(DAVA::RenderBatch))
+		{
+			SceneDataManager::Instance()->SceneGetActive()->SelectNode(0);
+
+			ShadowVolume * shadowVolume = ro->CreateShadow();
+
+			ro->RemoveRenderBatch(ro->GetRenderBatch(0));
+			ro->AddRenderBatch(shadowVolume);
+
+			entity->SetLocalTransform(entity->GetLocalTransform());//just forced update of worldTransform
+
+			
+			SceneDataManager::Instance()->SceneGetActive()->SelectNode(entity);
+
+			affectedEntity = entity;
+		}
+	}
 }
 
+DAVA::Set<DAVA::Entity*> CommandConvertToShadow::GetAffectedEntities()
+{
+	Set<Entity*> entities;
+	entities.insert(affectedEntity);
 
+	return entities;
+}

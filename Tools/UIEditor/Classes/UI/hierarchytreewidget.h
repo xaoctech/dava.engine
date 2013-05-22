@@ -21,8 +21,11 @@ public:
 	
 private:
 	typedef Set<HierarchyTreeNode::HIERARCHYTREENODEID> EXPANDEDITEMS;
-	void AddControlItem(QTreeWidgetItem* parent, const EXPANDEDITEMS& selectedItems, const HierarchyTreeNode::HIERARCHYTREENODESLIST& items);
-    
+	void AddControlItem(QTreeWidgetItem* parent, const HierarchyTreeNode::HIERARCHYTREENODESLIST& items);
+
+	// Restore the selected/expanded tree item state.
+	void RestoreTreeItemSelectedStateRecursive(QTreeWidgetItem* parentItem, const EXPANDEDITEMS& selectedItems);
+	void RestoreTreeItemExpandedStateRecursive(QTreeWidgetItem* parentItem, const EXPANDEDITEMS& expandedItems);
 signals:
 	void CreateNewScreen();
 	void CreateNewAggregator();
@@ -30,7 +33,7 @@ signals:
 	void ImportScreenOrAggregator();
 
 protected slots:
-	void OnTreeUpdated();
+	void OnTreeUpdated(bool needRestoreSelection);
 	
 private slots:
     void on_treeWidget_itemSelectionChanged();

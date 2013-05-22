@@ -4,13 +4,16 @@
 #include "Render/Material.h"
 #include "Math/MathHelpers.h"
 #include "Render/Highlevel/Camera.h"
+#include "ParticleEmitter3D.h"
 
 namespace DAVA
 {
 
-ParticleLayer3D::ParticleLayer3D()
+ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 {
+	isLong = false;
 	renderData = new RenderDataObject();
+	this->parent = parent;
 
 	//TODO: set material from outside
 	
@@ -27,11 +30,22 @@ ParticleLayer3D::ParticleLayer3D()
 
 ParticleLayer3D::~ParticleLayer3D()
 {
+	DeleteAllParticles();
 	SafeRelease(renderData);
 }
 
 void ParticleLayer3D::Draw(Camera * camera)
 {
+	DrawLayer(camera);
+}
+
+void ParticleLayer3D::DrawLayer(Camera* camera)
+{
+	if (!sprite)
+	{
+		return;
+	}
+
     Matrix4 rotationMatrix = Matrix4::IDENTITY;
     switch(RenderManager::Instance()->GetRenderOrientation())
     {
@@ -47,13 +61,21 @@ void ParticleLayer3D::Draw(Camera * camera)
 
     Matrix4 mv = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW)*rotationMatrix;
     
-	Vector3 _up(mv._01, mv._11, mv._21);
-	Vector3 _left(mv._00, mv._10, mv._20);
+	_up = Vector3(mv._01, mv._11, mv._21);
+	_left = Vector3(mv._00, mv._10, mv._20);
+	direction = camera->GetDirection();
 
 	verts.clear();
 	textures.clear();
 	colors.clear();
 	int32 totalCount = 0;
+
+	// Reserve the memory for vectors to avoid the resize operations. Actually there can be less than count
+	// particles (for Single Particle or Superemitter one), but never more than count.
+	static const int32 POINTS_PER_PARTICLE = 6;
+	verts.resize(count * POINTS_PER_PARTICLE * 3); // 6 vertices per each particle, 3 coords per vertex.
+	textures.resize(count * POINTS_PER_PARTICLE * 2); // 6 texture coords per particle, 2 values per texture coord.
+	colors.resize(count * POINTS_PER_PARTICLE);
 
 	Particle * current = head;
 	if(current)
@@ -61,82 +83,109 @@ void ParticleLayer3D::Draw(Camera * camera)
 		renderBatch->GetMaterial()->GetRenderState()->SetTexture(sprite->GetTexture(current->frame));
 	}
 
+	int32 verticesCount = 0;
+	int32 texturesCount = 0;
+	int32 colorsCount = 0;
+
 	while(current != 0)
 	{
-		Vector3 dx(_left);
-		Vector3 dy(_up);
+		Vector3 topRight;
+		Vector3 topLeft;
+		Vector3 botRight;
+		Vector3 botLeft;
 
-		//dx *= sqrt(2.f);
-		//dy *= sqrt(2.f);
+		if (IsLong())
+		{
+			CalcLong(current, topLeft, topRight, botLeft, botRight);
+		}
+		else
+		{
+			CalcNonLong(current, topLeft, topRight, botLeft, botRight);
+		}
 
-		float32 sine;
-		float32 cosine;
-		SinCosFast(current->angle, sine, cosine);
+		verts[verticesCount] = topLeft.x;//0
+		verticesCount ++;
+		verts[verticesCount] = topLeft.y;
+		verticesCount ++;
+		verts[verticesCount] = topLeft.z;
+		verticesCount ++;
 
-		float32 pivotRight = ((sprite->GetWidth()-pivotPoint.x)*current->size.x*current->sizeOverLife)/2.f;
-		float32 pivotLeft = (pivotPoint.x*current->size.x*current->sizeOverLife)/2.f;
-		float32 pivotUp = (pivotPoint.y*current->size.y*current->sizeOverLife)/2.f;
-		float32 pivotDown = ((sprite->GetHeight()-pivotPoint.y)*current->size.y*current->sizeOverLife)/2.f;
+		verts[verticesCount] = topRight.x;//1
+		verticesCount ++;
+		verts[verticesCount] = topRight.y;
+		verticesCount ++;
+		verts[verticesCount] = topRight.z;
+		verticesCount ++;
 
-		Vector3 dxc = dx*cosine;
-		Vector3 dxs = dx*sine;
-		Vector3 dyc = dy*cosine;
-		Vector3 dys = dy*sine;
-			
-		Vector3 topLeft = current->position+(-dxc+dys)*pivotUp + (dxs+dyc)*pivotLeft;
-		Vector3 topRight = current->position+(-dxs-dyc)*pivotRight + (-dxc+dys)*pivotUp;
-		Vector3 botLeft = current->position+(dxs+dyc)*pivotLeft + (dxc-dys)*pivotDown;
-		Vector3 botRight = current->position+(dxc-dys)*pivotDown + (-dxs-dyc)*pivotRight;
+		verts[verticesCount] = botLeft.x;//2
+		verticesCount ++;
+		verts[verticesCount] = botLeft.y;
+		verticesCount ++;
+		verts[verticesCount] = botLeft.z;
+		verticesCount ++;
 
-		verts.push_back(topLeft.x);//0
-		verts.push_back(topLeft.y);
-		verts.push_back(topLeft.z);
+		verts[verticesCount] = botLeft.x;//2
+		verticesCount ++;
+		verts[verticesCount] = botLeft.y;
+		verticesCount ++;
+		verts[verticesCount] = botLeft.z;
+		verticesCount ++;
 
-		verts.push_back(topRight.x);//1
-		verts.push_back(topRight.y);
-		verts.push_back(topRight.z);
+		verts[verticesCount] = topRight.x;//1
+		verticesCount ++;
+		verts[verticesCount] = topRight.y;
+		verticesCount ++;
+		verts[verticesCount] = topRight.z;
+		verticesCount ++;
 
-		verts.push_back(botLeft.x);//2
-		verts.push_back(botLeft.y);
-		verts.push_back(botLeft.z);
-
-		verts.push_back(botLeft.x);//2
-		verts.push_back(botLeft.y);
-		verts.push_back(botLeft.z);
-
-		verts.push_back(topRight.x);//1
-		verts.push_back(topRight.y);
-		verts.push_back(topRight.z);
-
-		verts.push_back(botRight.x);//3
-		verts.push_back(botRight.y);
-		verts.push_back(botRight.z);
+		verts[verticesCount] = botRight.x;//3
+		verticesCount ++;
+		verts[verticesCount] = botRight.y;
+		verticesCount ++;
+		verts[verticesCount] = botRight.z;
+		verticesCount ++;
 
 		float32 *pT = sprite->GetTextureVerts(current->frame);
 
-		textures.push_back(pT[0]);
-		textures.push_back(pT[1]);
+		textures[texturesCount] = pT[0];
+		texturesCount ++;
+		textures[texturesCount] = pT[1];
+		texturesCount ++;
 
-		textures.push_back(pT[2]);
-		textures.push_back(pT[3]);
+		textures[texturesCount] = pT[2];
+		texturesCount ++;
+		textures[texturesCount] = pT[3];
+		texturesCount ++;
 
-		textures.push_back(pT[4]);
-		textures.push_back(pT[5]);
+		textures[texturesCount] = pT[4];
+		texturesCount ++;
+		textures[texturesCount] = pT[5];
+		texturesCount ++;
 
-		textures.push_back(pT[4]);
-		textures.push_back(pT[5]);
+		textures[texturesCount] = pT[4];
+		texturesCount ++;
+		textures[texturesCount] = pT[5];
+		texturesCount ++;
 
-		textures.push_back(pT[2]);
-		textures.push_back(pT[3]);
+		textures[texturesCount] = pT[2];
+		texturesCount ++;
+		textures[texturesCount] = pT[3];
+		texturesCount ++;
 
-		textures.push_back(pT[6]);
-		textures.push_back(pT[7]);
+		textures[texturesCount] = pT[6];
+		texturesCount ++;
+		textures[texturesCount] = pT[7];
+		texturesCount ++;
 
-		uint32 color = (((uint32)(current->color.a*255.f))<<24) |  (((uint32)(current->color.b*255.f))<<16) | (((uint32)(current->color.g*255.f))<<8) | ((uint32)(current->color.r*255.f));
-		for(int32 i = 0; i < 6; ++i)
+		// Yuri Coder, 2013/04/03. Need to use drawColor here instead of just colot
+		// to take colorOverlife property into account.
+		uint32 color = (((uint32)(current->drawColor.a*255.f))<<24) |  (((uint32)(current->drawColor.b*255.f))<<16) |
+			(((uint32)(current->drawColor.g*255.f))<<8) | ((uint32)(current->drawColor.r*255.f));
+		for(int32 i = 0; i < POINTS_PER_PARTICLE; ++i)
 		{
-			colors.push_back(color);
+			colors[i + colorsCount] = color;
 		}
+		colorsCount += POINTS_PER_PARTICLE;
 
 		totalCount++;
 		current = TYPE_PARTICLES == type ? current->next : 0;
@@ -149,11 +198,75 @@ void ParticleLayer3D::Draw(Camera * camera)
 		renderData->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &textures.front());
 		renderData->SetStream(EVF_COLOR, TYPE_UNSIGNED_BYTE, 4, 0, &colors.front());
 
+		if (IsLong())
+		{
+			RenderManager::Instance()->SetRenderData(renderData);
+			renderBatch->GetMaterial()->PrepareRenderState();
+		}
 		renderBatch->SetRenderDataObject(renderData);
 	}
 }
 
-void ParticleLayer3D::LoadFromYaml(const String & configPath, YamlNode * node)
+void ParticleLayer3D::CalcNonLong(Particle* current,
+								  Vector3& topLeft,
+								  Vector3& topRight,
+								  Vector3& botLeft,
+								  Vector3& botRight)
+{
+	Vector3 dx(_left);
+	Vector3 dy(_up);
+
+	float32 sine;
+	float32 cosine;
+	SinCosFast(current->angle, sine, cosine);
+
+	// Draw pivot point is Sprite center + layer pivot point.
+	Vector2 drawPivotPoint = GetDrawPivotPoint();
+
+	float32 pivotRight = ((sprite->GetWidth()-drawPivotPoint.x)*current->size.x*current->sizeOverLife.x)/2.f;
+	float32 pivotLeft = (drawPivotPoint.x*current->size.x*current->sizeOverLife.x)/2.f;
+	float32 pivotUp = (drawPivotPoint.y*current->size.y*current->sizeOverLife.y)/2.f;
+	float32 pivotDown = ((sprite->GetHeight()-drawPivotPoint.y)*current->size.y*current->sizeOverLife.y)/2.f;
+
+	Vector3 dxc = dx*cosine;
+	Vector3 dxs = dx*sine;
+	Vector3 dyc = dy*cosine;
+	Vector3 dys = dy*sine;
+
+	// Apply offset to the current position according to the emitter position.
+	UpdateCurrentParticlePosition(current);
+
+	topLeft = currentParticlePosition+(dxs+dyc)*pivotLeft + (dxc-dys)*pivotDown;
+	topRight = currentParticlePosition+(-dxc+dys)*pivotUp + (dxs+dyc)*pivotLeft;
+	botLeft = currentParticlePosition+(dxc-dys)*pivotDown + (-dxs-dyc)*pivotRight;
+	botRight = currentParticlePosition+(-dxs-dyc)*pivotRight + (-dxc+dys)*pivotUp;
+}
+
+void ParticleLayer3D::CalcLong(Particle* current,
+							   Vector3& topLeft,
+							   Vector3& topRight,
+							   Vector3& botLeft,
+							   Vector3& botRight)
+{
+	Vector3 vecShort = current->direction.CrossProduct(direction);
+	vecShort /= 2.f;
+		
+	Vector3 vecLong = -current->direction;
+
+	float32 widthDiv2 = sprite->GetWidth()*current->size.x*current->sizeOverLife.x;
+	float32 heightDiv2 = sprite->GetHeight()*current->size.y*current->sizeOverLife.y;
+
+	// Apply offset to the current position according to the emitter position.
+	UpdateCurrentParticlePosition(current);
+
+	topRight = currentParticlePosition + widthDiv2*vecShort;
+	topLeft = currentParticlePosition - widthDiv2*vecShort;
+	botRight = topRight + heightDiv2*vecLong;
+	botLeft = topLeft + heightDiv2*vecLong;
+}
+
+
+void ParticleLayer3D::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 {
 	ParticleLayer::LoadFromYaml(configPath, node);
 	SetAdditive(additive);
@@ -163,7 +276,16 @@ ParticleLayer * ParticleLayer3D::Clone(ParticleLayer * dstLayer /*= 0*/)
 {
 	if(!dstLayer)
 	{
-		dstLayer = new ParticleLayer3D();
+		// YuriCoder, 2013/04/30. TODO - this part isn't supposed to work, since
+		// dstLayer is always NULL here. Return to it later.
+		ParticleEmitter* parentFor3DLayer = NULL;
+		if (dynamic_cast<ParticleLayer3D*>(dstLayer))
+		{
+			parentFor3DLayer = (dynamic_cast<ParticleLayer3D*>(dstLayer))->GetParent();
+		}
+
+		dstLayer = new ParticleLayer3D(parentFor3DLayer);
+		dstLayer->SetLong(this->isLong);
 	}
 
 	ParticleLayer::Clone(dstLayer);
@@ -189,6 +311,38 @@ void ParticleLayer3D::SetAdditive(bool additive)
 		renderBatch->GetMaterial()->SetBlendSrc(BLEND_SRC_ALPHA);
 		renderBatch->GetMaterial()->SetBlendDest(BLEND_ONE_MINUS_SRC_ALPHA);
 	}
+}
+
+bool ParticleLayer3D::IsLong()
+{
+	return isLong;
+}
+
+void ParticleLayer3D::SetLong(bool value)
+{
+	isLong = value;
+	renderBatch->GetMaterial()->SetTwoSided(isLong);
+}
+
+void ParticleLayer3D::UpdateCurrentParticlePosition(Particle* particle)
+{
+	if (this->parent)
+	{
+		// For Superemitter adjust the particle position according to the
+		// current emitter position.
+		this->currentParticlePosition = particle->position + (parent->GetPosition() - parent->GetInitialTranslationVector());
+	}
+	else
+	{
+		// For all other types just leave the particle position untouched.
+		this->currentParticlePosition = particle->position;
+	}
+}
+
+void ParticleLayer3D::CreateInnerEmitter()
+{
+	SafeRelease(this->innerEmitter);
+	this->innerEmitter = new ParticleEmitter3D();
 }
 
 };
