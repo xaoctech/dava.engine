@@ -126,24 +126,30 @@ public:
 #endif    
     
 protected:	
-	void LogToCustomOutput(eLogLevel ll, const char8* text, va_list li);
-	void LogToCustomOutput(eLogLevel ll, const char16* text, va_list li);
+	eLogLevel logLevel;
+	String logFilename;
+	Vector<LoggerOutput *> customOutputs;
 
 	const char8 * GetLogLevelString(eLogLevel ll);
 
-	String logFilename;
-	
-private:
-	eLogLevel logLevel;
-	Vector<LoggerOutput *> customOutputs;
-	
+	void PlatformLog(eLogLevel ll, const char8* text);
+	void PlatformLog(eLogLevel ll, const char16* text);
+
+	void FileLog(eLogLevel ll, const char8* text);
+	void FileLog(eLogLevel ll, const char16* text);
+
+	void CustomLog(eLogLevel ll, const char8* text);
+	void CustomLog(eLogLevel ll, const char16* text);
 };
 
 class LoggerOutput
 {
 public:
-	LoggerOutput();
-	~LoggerOutput();
+	LoggerOutput()
+	{}
+
+	virtual ~LoggerOutput()
+	{}
 
 	virtual void Output(Logger::eLogLevel ll, const char8* text) const = 0;
 	virtual void Output(Logger::eLogLevel ll, const char16* text) const = 0;
