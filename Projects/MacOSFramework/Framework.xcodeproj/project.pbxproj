@@ -676,8 +676,14 @@
 		176DEB73174B5561007A983B /* libfmodex.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 02E9E40917395FDD00C501BC /* libfmodex.dylib */; };
 		1789108E1740DFBC007B72BA /* NMaterialConsts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1789108D1740DFBC007B72BA /* NMaterialConsts.cpp */; };
 		1789108F1740DFBC007B72BA /* NMaterialConsts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1789108D1740DFBC007B72BA /* NMaterialConsts.cpp */; };
+		1795E4BA174CB86800050F64 /* NPAPIPluginMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17E2706C174CACA70019EF87 /* NPAPIPluginMacOS.mm */; };
+		1795E4BB174CB86D00050F64 /* NPAPIOpenGLLayerMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1795E4B7174CB68200050F64 /* NPAPIOpenGLLayerMacOS.mm */; };
+		1795E4BF174CB87700050F64 /* NPAPIOpenGLLayerMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 1795E4B6174CB68200050F64 /* NPAPIOpenGLLayerMacOS.h */; };
+		1795E4C4174CC24D00050F64 /* NPAPICorePlatformMacOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1795E4C0174CBD2E00050F64 /* NPAPICorePlatformMacOS.cpp */; };
+		1795E4C5174CC24D00050F64 /* NPAPICorePlatformMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 1795E4C1174CBD2E00050F64 /* NPAPICorePlatformMacOS.h */; };
 		1799E52616CCEC030058061F /* ParticleForce.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1799E52416CCEC030058061F /* ParticleForce.cpp */; };
 		1799E52716CCEC030058061F /* ParticleForce.h in Headers */ = {isa = PBXBuildFile; fileRef = 1799E52516CCEC030058061F /* ParticleForce.h */; };
+		17E2706F174CB1660019EF87 /* NPAPIPluginMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E2706B174CACA60019EF87 /* NPAPIPluginMacOS.h */; };
 		17F53E2216D36DDE004D5099 /* IWebViewControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F53E2116D36DDE004D5099 /* IWebViewControl.h */; };
 		17F53E2316D36DDE004D5099 /* IWebViewControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F53E2116D36DDE004D5099 /* IWebViewControl.h */; };
 		17F687E1174B63BA000783FD /* NPAPIEntryPoint.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1795D26C174B56900023F61E /* NPAPIEntryPoint.mm */; };
@@ -1987,8 +1993,14 @@
 		1789108D1740DFBC007B72BA /* NMaterialConsts.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NMaterialConsts.cpp; sourceTree = "<group>"; };
 		1795D26C174B56900023F61E /* NPAPIEntryPoint.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NPAPIEntryPoint.mm; sourceTree = "<group>"; };
 		1795D26D174B56900023F61E /* NPAPIEntryPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NPAPIEntryPoint.h; sourceTree = "<group>"; };
+		1795E4B6174CB68200050F64 /* NPAPIOpenGLLayerMacOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NPAPIOpenGLLayerMacOS.h; sourceTree = "<group>"; };
+		1795E4B7174CB68200050F64 /* NPAPIOpenGLLayerMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NPAPIOpenGLLayerMacOS.mm; sourceTree = "<group>"; };
+		1795E4C0174CBD2E00050F64 /* NPAPICorePlatformMacOS.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NPAPICorePlatformMacOS.cpp; sourceTree = "<group>"; };
+		1795E4C1174CBD2E00050F64 /* NPAPICorePlatformMacOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NPAPICorePlatformMacOS.h; sourceTree = "<group>"; };
 		1799E52416CCEC030058061F /* ParticleForce.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleForce.cpp; sourceTree = "<group>"; };
 		1799E52516CCEC030058061F /* ParticleForce.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleForce.h; sourceTree = "<group>"; };
+		17E2706B174CACA60019EF87 /* NPAPIPluginMacOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NPAPIPluginMacOS.h; sourceTree = "<group>"; };
+		17E2706C174CACA70019EF87 /* NPAPIPluginMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NPAPIPluginMacOS.mm; sourceTree = "<group>"; };
 		17F53E2116D36DDE004D5099 /* IWebViewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IWebViewControl.h; sourceTree = "<group>"; };
 		32DBCF5E0370ADEE00C91783 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = "<group>"; };
 		4910CBF5167B73EC00CF948A /* libdxt_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_macos.a; path = ../../Libs/libs/libdxt_macos.a; sourceTree = "<group>"; };
@@ -3170,6 +3182,12 @@
 				E8989C0916BD24E400732C04 /* NSFullScreenWindow.m */,
 				E8989C0A16BD24E400732C04 /* OpenGLView.h */,
 				E8989C0B16BD24E400732C04 /* OpenGLView.mm */,
+				17E2706B174CACA60019EF87 /* NPAPIPluginMacOS.h */,
+				17E2706C174CACA70019EF87 /* NPAPIPluginMacOS.mm */,
+				1795E4B6174CB68200050F64 /* NPAPIOpenGLLayerMacOS.h */,
+				1795E4B7174CB68200050F64 /* NPAPIOpenGLLayerMacOS.mm */,
+				1795E4C0174CBD2E00050F64 /* NPAPICorePlatformMacOS.cpp */,
+				1795E4C1174CBD2E00050F64 /* NPAPICorePlatformMacOS.h */,
 			);
 			path = TemplateMacOS;
 			sourceTree = "<group>";
@@ -4012,6 +4030,9 @@
 				176DEA3F174B5561007A983B /* SoundComponent.h in Headers */,
 				176DEA40174B5561007A983B /* SoundUpdateSystem.h in Headers */,
 				17F687E2174B63C0000783FD /* NPAPIEntryPoint.h in Headers */,
+				17E2706F174CB1660019EF87 /* NPAPIPluginMacOS.h in Headers */,
+				1795E4BF174CB87700050F64 /* NPAPIOpenGLLayerMacOS.h in Headers */,
+				1795E4C5174CC24D00050F64 /* NPAPICorePlatformMacOS.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5074,6 +5095,9 @@
 				176DEB5B174B5561007A983B /* SoundUpdateSystem.cpp in Sources */,
 				176DEB5C174B5561007A983B /* NMaterialConsts.cpp in Sources */,
 				17F687E1174B63BA000783FD /* NPAPIEntryPoint.mm in Sources */,
+				1795E4BA174CB86800050F64 /* NPAPIPluginMacOS.mm in Sources */,
+				1795E4BB174CB86D00050F64 /* NPAPIOpenGLLayerMacOS.mm in Sources */,
+				1795E4C4174CC24D00050F64 /* NPAPICorePlatformMacOS.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
