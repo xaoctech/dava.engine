@@ -550,7 +550,6 @@
     <ClCompile Include="Classes\UISpriteEditor.cpp" />
     <ClCompile Include="Classes\VertexOctTree.cpp" />
     <ClCompile Include="_GeneratedQt\Commands\CommandSignals_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\DockConsole\ConsoleModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockConsole\ConsoleView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockConsole\Console_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockCustomColors\CustomColorsView_moc.cpp" />

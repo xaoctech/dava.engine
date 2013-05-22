@@ -1707,9 +1707,6 @@
     <ClCompile Include="Classes\Qt\DockConsole\ConsoleView.cpp">
       <Filter>Classes\Qt\DockConsole</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockConsole\ConsoleModel_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
     <ClCompile Include="_GeneratedQt\DockConsole\ConsoleView_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
