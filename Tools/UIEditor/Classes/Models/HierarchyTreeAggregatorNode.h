@@ -42,7 +42,7 @@ public:
 	
 	virtual void SetName(const QString& name);
 	
-	const String& GetPath();
+	const FilePath& GetPath();
 
 	void UpdateHierarchyTree();
 private:
@@ -54,7 +54,7 @@ private:
 	
 	CHILDS childs;
 	
-	String path;
+	FilePath path;
 };
 	
 }

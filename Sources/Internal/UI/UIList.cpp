@@ -38,6 +38,23 @@ namespace DAVA
 {
 	REGISTER_CLASS(UIList);
 	
+int32 UIListDelegate::CellWidth(UIList* /*list*/, int32 /*index*/)
+{
+	return 20;
+};
+
+int32 UIListDelegate::CellHeight(UIList* /*list*/, int32 /*index*/)
+{
+	return 20;
+};
+
+void UIListDelegate::OnCellSelected(UIList* /*forList*/, UIListCell* /*selectedCell*/)
+{
+};
+
+void UIListDelegate::SaveToYaml(UIList* /*forList*/, YamlNode* /*node*/)
+{
+};
 	
 UIList::UIList(const Rect &rect, eListOrientation requiredOrientation, bool rectInAbsoluteCoordinates/* = FALSE*/)
 	:	UIControl(rect, rectInAbsoluteCoordinates)
@@ -665,12 +682,12 @@ UIControl *UIList::Clone()
 	return c;
 }
 
-const String & UIList::GetAggregatorPath()
+const FilePath & UIList::GetAggregatorPath()
 {
 	return aggregatorPath;
 }
 	
-void UIList::SetAggregatorPath(const String &aggregatorPath)
+void UIList::SetAggregatorPath(const FilePath &aggregatorPath)
 {
 	this->aggregatorPath = aggregatorPath;
 }
@@ -707,9 +724,9 @@ YamlNode * UIList::SaveToYamlNode(UIYamlLoader * loader)
 	}
 
 	// Save aggregator path only if it is not empty
-	if (!aggregatorPath.empty())
+	if (!aggregatorPath.IsEmpty())
 	{
-		node->Set("aggregatorPath", aggregatorPath);
+		node->Set("aggregatorPath", aggregatorPath.GetAbsolutePathname());
 	}
     
 	return node;

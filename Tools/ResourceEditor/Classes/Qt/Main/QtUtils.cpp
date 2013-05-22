@@ -1,7 +1,6 @@
 #include "QtUtils.h"
 #include "../../SceneEditor/SceneValidator.h"
-#include "../../SceneEditor/CommandLineTool.h"
-
+#include "CommandLine/EditorCommandLineParser.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -13,25 +12,25 @@
 using namespace DAVA;
 
 
-DAVA::String PathnameToDAVAStyle(const QString &convertedPathname)
+DAVA::FilePath PathnameToDAVAStyle(const QString &convertedPathname)
 {
-	return FileSystem::Instance()->GetCanonicalPath(((const String &)QSTRING_TO_DAVASTRING(convertedPathname)));
+    return FilePath((const String &)QSTRING_TO_DAVASTRING(convertedPathname));
 }
 
 
-DAVA::String GetOpenFileName(const DAVA::String &title, const DAVA::String &pathname, const DAVA::String &filter)
+DAVA::FilePath GetOpenFileName(const DAVA::String &title, const DAVA::FilePath &pathname, const DAVA::String &filter)
 {
-    QString filePath = QFileDialog::getOpenFileName(NULL, QString(title.c_str()), QString(pathname.c_str()),
+    QString filePath = QFileDialog::getOpenFileName(NULL, QString(title.c_str()), QString(pathname.GetAbsolutePathname().c_str()),
                                                     QString(filter.c_str()));
     
     QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 
-    String openedPathname = PathnameToDAVAStyle(filePath);
-    if(!openedPathname.empty() && !SceneValidator::Instance()->IsPathCorrectForProject(openedPathname))
+    FilePath openedPathname = PathnameToDAVAStyle(filePath);
+    if(!openedPathname.IsEmpty() && !SceneValidator::Instance()->IsPathCorrectForProject(openedPathname))
     {
         //Need to Show Error
-		ShowErrorDialog(String(Format("File(%s) was selected from incorect project.", openedPathname.c_str())));
-        openedPathname = String("");
+		ShowErrorDialog(String(Format("File(%s) was selected from incorect project.", openedPathname.GetAbsolutePathname().c_str())));
+        openedPathname = FilePath();
     }
     
     return openedPathname;
@@ -64,7 +63,7 @@ DAVA::WideString SizeInBytesToWideString(DAVA::float32 size)
 }
 
 
-DAVA::Image * CreateTopLevelImage(const DAVA::String &imagePathname)
+DAVA::Image * CreateTopLevelImage(const DAVA::FilePath &imagePathname)
 {
     Image *image = NULL;
     Vector<Image *> imageSet = ImageLoader::CreateFromFile(imagePathname);
@@ -94,8 +93,8 @@ void ShowErrorDialog(const DAVA::Set<DAVA::String> &errors)
 
 void ShowErrorDialog(const DAVA::String &errorMessage)
 {
-	bool forceMode =    CommandLineTool::Instance()->CommandIsFound(String("-force"))
-					||  CommandLineTool::Instance()->CommandIsFound(String("-forceclose"));
+	bool forceMode =    EditorCommandLineParser::CommandIsFound(String("-force"))
+					||  EditorCommandLineParser::CommandIsFound(String("-forceclose"));
 	if(!forceMode)
 	{
 		QMessageBox::critical(QtMainWindow::Instance(), "Error", errorMessage.c_str());
@@ -121,3 +120,5 @@ DAVA::Color QColorToColor(const QColor &qcolor)
 {
 	return Color(qcolor.redF(), qcolor.greenF(), qcolor.blueF(), qcolor.alphaF());
 }
+
+

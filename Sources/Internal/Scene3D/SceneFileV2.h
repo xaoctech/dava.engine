@@ -105,18 +105,15 @@ public:
     SceneFileV2();
     virtual ~SceneFileV2();
     
-    eError SaveScene(const String & filename, Scene * _scene);
-    eError LoadScene(const String & filename, Scene * _scene);
+    eError SaveScene(const FilePath & filename, Scene * _scene);
+    eError LoadScene(const FilePath & filename, Scene * _scene);
 
     void EnableDebugLog(bool _isDebugLogEnabled);
     bool DebugLogEnabled();
     void EnableSaveForGame(bool _isSaveForGame);
     
-    const String & GetScenePath();
-    const String & GetSceneFilename();
+    const FilePath GetScenePath();
     
-    String AbsoluteToRelative(const String & absolutePathname);
-    String RelativeToAbsolute(const String & relativePathname);
     Material * GetMaterial(int32 index);
     StaticMesh * GetStaticMesh(int32 index);
     
@@ -159,7 +156,7 @@ private:
     
     bool isDebugLogEnabled;
     bool isSaveForGame;
-    String rootNodePathName, rootNodePath, rootNodeName; 
+    FilePath rootNodePathName;
     Scene * scene;
     eError lastError;
 };

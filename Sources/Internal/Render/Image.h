@@ -68,7 +68,7 @@ public:
 	
 	static Image * Create(uint32 width, uint32 height, PixelFormat format);
     // \todo Change function name to Image::Create for consistency
-	static Vector2 GetImageSize(const String & pathName);
+	static Vector2 GetImageSize(const FilePath & pathName);
 	
 	inline uint32 GetWidth() const;
 	inline uint32 GetHeight() const;

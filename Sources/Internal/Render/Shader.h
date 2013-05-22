@@ -37,6 +37,8 @@
 #include "Base/Data.h"
 #include "Base/FastName.h"
 
+#include "FileSystem/FilePath.h"
+
 #ifdef __DAVAENGINE_ANDROID__
 #if !defined(GLchar)
 typedef char             GLchar;
@@ -101,8 +103,8 @@ public:
     // comma ';' sepated define list
     void SetDefineList(const String & enableDefinesList);
     
-    bool LoadFromYaml(const String & pathname);
-    bool Load(const String & vertexShaderPath, const String & fragmentShaderPath);
+    bool LoadFromYaml(const FilePath & pathname);
+    bool Load(const FilePath & vertexShaderPath, const FilePath & fragmentShaderPath);
     
     bool Recompile();
     Shader * RecompileNewInstance(const String & combination);
@@ -198,7 +200,7 @@ private:
     
     Data * vertexShaderData;
     Data * fragmentShaderData;
-    String vertexShaderPath, fragmentShaderPath;
+    FilePath vertexShaderPath, fragmentShaderPath;
 /*  uint8 * vertexShaderBytes;
     uint32 vertexShaderSize;
     uint8 * fragmentShaderBytes;

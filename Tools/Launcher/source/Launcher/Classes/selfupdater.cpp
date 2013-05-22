@@ -35,9 +35,9 @@ SelfUpdater::~SelfUpdater()
 void SelfUpdater::UpdatedConfigDownloaded(const AppsConfig& config) {
     m_UpdateLauncerConfig = config.m_Launcher;
 
-    int nNewVersion = Settings::GetVersion(config.m_Launcher.m_Version);
-    int nCurVersion = Settings::GetVersion(Settings::GetInstance()->GetLauncherVersion());
-    if (nCurVersion < nNewVersion) {
+    QString nNewVersion = Settings::GetVersion(config.m_Launcher.m_Version);
+    QString nCurVersion = Settings::GetVersion(Settings::GetInstance()->GetLauncherVersion());
+    if (nCurVersion != nNewVersion) {
         //download new version
         m_pReply = m_pNetworkManager->get(QNetworkRequest(config.m_Launcher.m_Url));
         connect(m_pReply, SIGNAL(finished()), this, SLOT(DownloadFinished()));
@@ -48,6 +48,8 @@ void SelfUpdater::DownloadFinished()
 {
     if(!m_pReply)
         return;
+
+    QString runPath = qApp->applicationFilePath();
 
     QByteArray data = m_pReply->readAll();
     if (!data.size()) {
@@ -111,8 +113,8 @@ void SelfUpdater::DownloadFinished()
     QFile().rename(appDir + "/quazip1.dll", oldDir + "/quazip1.dll");
 #endif
 
-    QString baseDir = DirectoryManager::GetInstance()->GetBaseDirectory() + "/../";
-    DirectoryManager::CopyAllFromDir(strTempDir, baseDir);
+    QString baseDir = DirectoryManager::GetInstance()->GetBaseDirectory() + "/";
+    DirectoryManager::CopyAllFromDir(strTempDir + "/DAVA Tools/", baseDir);
     DirectoryManager::DeleteDir(strTempDir);
     QFile().remove(strFilePath);
 
@@ -120,5 +122,5 @@ void SelfUpdater::DownloadFinished()
     qApp->quit();
     QProcess process;
     //process.startDetached(DirectoryManager::GetInstance()->GetRunPath());
-    process.startDetached(qApp->applicationFilePath());
+    process.startDetached(runPath);
 }

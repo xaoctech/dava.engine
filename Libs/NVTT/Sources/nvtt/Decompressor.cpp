@@ -244,9 +244,9 @@ unsigned int Decompressor::getHeader(void* buffer, unsigned int & bufferSize, co
 	return  Decompressor::Private::getHeader(buffer, bufferSize, inputOptions.m, compressionOptions.m);
 }
 
-unsigned int Decompressor::Private::getHeader(void* buffer, unsigned int & bufferSize, const InputOptions::Private & inputOptions, const CompressionOptions::Private & compressionOptions)
+unsigned int Decompressor::Private::getHeader(void* buffer, const unsigned int bufferSize, const InputOptions::Private & inputOptions, const CompressionOptions::Private & compressionOptions)
 {
-	if( bufferSize < 138 )
+	if( bufferSize < DECOMPRESSOR_MIN_HEADER_SIZE )
 	{
 		return 0;
 	}
@@ -326,6 +326,15 @@ unsigned int Decompressor::Private::getHeader(void* buffer, unsigned int & buffe
 		else if (compressionOptions.format == Format_BC5) {
 			header.setFourCC('A', 'T', 'I', '2');
 			if (inputOptions.isNormalMap) header.setNormalFlag(true);
+		}
+		else if (compressionOptions.format == Format_ATC_RGB) {
+			header.setFourCC('A', 'T', 'C', ' ');
+		}
+		else if (compressionOptions.format == Format_ATC_RGBA_EXPLICIT_ALPHA) {
+			header.setFourCC('A', 'T', 'C', 'I');
+		}
+		else if (compressionOptions.format == Format_ATC_RGBA_INTERPOLATED_ALPHA) {
+			header.setFourCC('A', 'T', 'C', 'A');
 		}
 	}
 

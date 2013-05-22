@@ -119,6 +119,38 @@ void SceneGraphModel::AddNodeToTree(GraphItem *parent, DAVA::Entity *node, bool 
     }
 }
 
+void SceneGraphModel::AddNodeToTree(GraphItem* parentItem, GraphItem* childItem)
+{
+	if (!parentItem || !childItem)
+	{
+		return;
+	}
+	
+	QModelIndex parentIndex = createIndex(parentItem->Row(), 0, parentItem);
+	int32 rowToAdd = parentItem->Row();
+	beginInsertRows(parentIndex, rowToAdd, rowToAdd);
+
+	parentItem->AppendChild(childItem);
+
+	endInsertRows();
+}
+
+void SceneGraphModel::RemoveNodeFromTree(GraphItem* parentItem, GraphItem* childItem)
+{
+	if (!parentItem || !childItem)
+	{
+		return;
+	}
+	
+	QModelIndex parentIndex = createIndex(parentItem->Row(), 0, parentItem);
+	int32 rowToRemove = childItem->Row();
+	
+	// Remove the previous children and add new ones.
+	beginRemoveRows(parentIndex, rowToRemove, rowToRemove);
+	parentItem->RemoveChild(childItem);
+	endRemoveRows();
+}
+
 void SceneGraphModel::RebuildNode(DAVA::Entity* rootNode)
 {
 	if(!rootNode)
@@ -145,13 +177,7 @@ void SceneGraphModel::RebuildNode(DAVA::Entity* rootNode)
 	for (int32 i = 0; i < childrenToRemoveCount; i ++)
 	{
 		GraphItem* childItem = childrenToRemove[i];
-		QModelIndex parentIndex = createIndex(graphItem->Row(), 0, graphItem);
-		int32 rowToRemove = childItem->Row();
-
-		// Remove the previous children and add new ones.
-		beginRemoveRows(parentIndex, rowToRemove, rowToRemove);
-		graphItem->RemoveChild(childItem);
-		endRemoveRows();
+		RemoveNodeFromTree(graphItem, childItem);
 	}
 
 	// Add the child nodes only if the root node is not solid.
@@ -530,6 +556,9 @@ QVariant SceneGraphModel::data(const QModelIndex &index, int role) const
 
 void SceneGraphModel::RefreshParticlesLayer(DAVA::ParticleLayer* layer)
 {
+	// Changing the layer type might add/remove extra items (like Inner Emitter).
+	particlesEditorSceneModelHelper.UpdateLayerRepresentation(rootItem, layer, this);
+	
 	// Ask Helper to return us the SceneGraph node for this Particle layer.
 	SceneGraphItem* itemToRefresh = particlesEditorSceneModelHelper.GetGraphItemForParticlesLayer(rootItem, layer);
 	if (itemToRefresh)

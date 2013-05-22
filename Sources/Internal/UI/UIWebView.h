@@ -33,6 +33,7 @@ public:
 	void SetDelegate(IUIWebViewDelegate* delegate);
 
 protected:
+
 	// Platform-specific implementation of the Web View Control.
 	IWebViewControl* webViewControl;
 };

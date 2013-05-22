@@ -34,7 +34,7 @@ HierarchyTreeWidget::HierarchyTreeWidget(QWidget *parent) :
 {
     ui->setupUi(this);
 	
-	connect(HierarchyTreeController::Instance(), SIGNAL(HierarchyTreeUpdated()), this, SLOT(OnTreeUpdated()));
+	connect(HierarchyTreeController::Instance(), SIGNAL(HierarchyTreeUpdated(bool)), this, SLOT(OnTreeUpdated(bool)));
 	connect(HierarchyTreeController::Instance(),
 			SIGNAL(SelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES &)),
 			this,
@@ -49,9 +49,10 @@ HierarchyTreeWidget::~HierarchyTreeWidget()
     delete ui;
 }
 
-void HierarchyTreeWidget::OnTreeUpdated()
+void HierarchyTreeWidget::OnTreeUpdated(bool needRestoreSelection)
 {
 	EXPANDEDITEMS expandedItems;
+	EXPANDEDITEMS selectedItems;
 	//save opened node
 	TREEITEMS oldItems = GetAllItems();
 	for (TREEITEMS::iterator iter = oldItems.begin(); iter != oldItems.end(); ++iter) {
@@ -62,10 +63,26 @@ void HierarchyTreeWidget::OnTreeUpdated()
 			expandedItems.insert(data.toInt());
 		}
 	}
+
+	//save selected node
+	for (TREEITEMS::iterator iter = oldItems.begin(); iter != oldItems.end(); ++iter) {
+		QTreeWidgetItem* item = iter->second;
+		if (item->isSelected())
+		{
+			QVariant data = item->data(ITEM_ID);
+			selectedItems.insert(data.toInt());
+			HierarchyTreeNode* baseNode = HierarchyTreeController::Instance()->GetTree().GetNode(data.toInt());
+			HierarchyTreeControlNode* selectedControl = dynamic_cast<HierarchyTreeControlNode* >(baseNode);
+			if(NULL != selectedControl)
+			{
+				internalSelectionChanged = true;
+			}
+		}
+	}
 	
 	//reset tree
 	ui->treeWidget->clear();
-	
+
 	const HierarchyTree& tree = HierarchyTreeController::Instance()->GetTree();
 	const HierarchyTreeRootNode* rootNode = tree.GetRootNode();
 	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter = rootNode->GetChildNodes().begin();
@@ -112,19 +129,27 @@ void HierarchyTreeWidget::OnTreeUpdated()
 				screenItem->setIcon(0, QIcon(IconHelper::GetScreenIconPath()));
 			platformItem->insertChild(platformItem->childCount(), screenItem);
 			
-			AddControlItem(screenItem, expandedItems, screenNode->GetChildNodes());
-			
-			if (expandedItems.find(screenNode->GetId()) != expandedItems.end())
-				screenItem->setExpanded(true);
+			AddControlItem(screenItem, screenNode->GetChildNodes());
 		}
-		
-		if (expandedItems.find(platformNode->GetId()) != expandedItems.end())
-			platformItem->setExpanded(true);
-
 	}
+
+	// Restore the selected items only after the tree is fully built.
+	int itemsCount = ui->treeWidget->topLevelItemCount();
+	for (int i = 0; i < itemsCount; i ++)
+	{
+		QTreeWidgetItem* rootItem = ui->treeWidget->topLevelItem(i);
+		RestoreTreeItemExpandedStateRecursive(rootItem, expandedItems);
+		
+		if (needRestoreSelection)
+		{
+			RestoreTreeItemSelectedStateRecursive(rootItem, selectedItems);
+		}
+	}
+
+	internalSelectionChanged = false;
 }
 
-void HierarchyTreeWidget::AddControlItem(QTreeWidgetItem* parent, const EXPANDEDITEMS& expandedItems, const HierarchyTreeNode::HIERARCHYTREENODESLIST& items)
+void HierarchyTreeWidget::AddControlItem(QTreeWidgetItem* parent, const HierarchyTreeNode::HIERARCHYTREENODESLIST& items)
 {
 	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter = items.begin();
 		 iter != items.end();
@@ -139,11 +164,65 @@ void HierarchyTreeWidget::AddControlItem(QTreeWidgetItem* parent, const EXPANDED
 		Decorate(controlItem, controlNode->GetUIObject());
 
 		parent->insertChild(parent->childCount(), controlItem);
-		
-		AddControlItem(controlItem, expandedItems, controlNode->GetChildNodes());
-		
-		if (expandedItems.find(controlNode->GetId()) != expandedItems.end())
-			controlItem->setExpanded(true);
+
+		// Perform the recursive call.
+		AddControlItem(controlItem, controlNode->GetChildNodes());
+	}
+}
+
+void HierarchyTreeWidget::RestoreTreeItemSelectedStateRecursive(QTreeWidgetItem* parentItem,
+	const EXPANDEDITEMS& selectedItems)
+{
+	if (!parentItem )
+	{
+		return;
+	}
+
+	QVariant itemIDData = parentItem->data(ITEM_ID);
+	if (itemIDData.type() != QVariant::Int)
+	{
+		return;
+	}
+
+	int itemID = itemIDData.toInt();
+	if (selectedItems.find(itemID) != selectedItems.end() && 
+		!parentItem->isSelected())
+	{
+		parentItem->setSelected(true);
+	}
+
+	// Repeat for all children.
+	for (int i = 0; i < parentItem->childCount(); i ++)
+	{
+		RestoreTreeItemSelectedStateRecursive(parentItem->child(i), selectedItems);
+	}
+}
+
+void HierarchyTreeWidget::RestoreTreeItemExpandedStateRecursive(QTreeWidgetItem* parentItem,
+	const EXPANDEDITEMS& expandedItems)
+{
+	if (!parentItem )
+	{
+		return;
+	}
+
+	QVariant itemIDData = parentItem->data(ITEM_ID);
+	if (itemIDData.type() != QVariant::Int)
+	{
+		return;
+	}
+
+	int itemID = itemIDData.toInt();
+	if (expandedItems.find(itemID) != expandedItems.end() &&
+		parentItem->childCount() > 0 && !parentItem->isExpanded())
+	{
+		parentItem->setExpanded(true);
+	}
+
+	// Repeat for all children.
+	for (int i = 0; i < parentItem->childCount(); i ++)
+	{
+		RestoreTreeItemExpandedStateRecursive(parentItem->child(i), expandedItems);
 	}
 }
 
@@ -161,16 +240,19 @@ void HierarchyTreeWidget::Decorate(QTreeWidgetItem *item, DAVA::UIControl *uiCon
 
 void HierarchyTreeWidget::on_treeWidget_itemSelectionChanged()
 {
-	if (internalSelectionChanged)
-		return;
-
 	QTreeWidgetItem* selectedItem = ui->treeWidget->currentItem();
 	if (!selectedItem)
+	{
 		return;
+	}
+
+	if (internalSelectionChanged)
+	{
+		return;
+	}
 
 	QVariant data = selectedItem->data(ITEM_ID);
 	HierarchyTreeNode::HIERARCHYTREENODEID id = data.toInt();
-
 	HierarchyTreeNode* baseNode = HierarchyTreeController::Instance()->GetTree().GetNode(id);
 	HierarchyTreePlatformNode* selectedPlatform = dynamic_cast<HierarchyTreePlatformNode* >(baseNode);
 	HierarchyTreeScreenNode* selectedScreen =  dynamic_cast<HierarchyTreeScreenNode* >(baseNode);
@@ -240,8 +322,8 @@ void HierarchyTreeWidget::OnSelectedControlNodesChanged(const HierarchyTreeContr
 		{
             QTreeWidgetItem* item = itemIter->second;
 			item->setSelected(true);
-
-            // Force show selected item
+			
+			// Force show selected item
             QTreeWidgetItem* parentItem = item->parent();
             while (parentItem)
             {

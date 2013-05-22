@@ -84,6 +84,9 @@ public:
 	//! \brief make bounding box empty
 	inline void Empty();
 
+	//! \brief Checks is bounding box is empty
+	inline bool IsEmpty() const;
+
 	//! \brief check if bounding box intersect line
 	inline bool IsIntersectLine(const Vector3 & l1, const Vector3 &l2);
 	
@@ -184,7 +187,7 @@ inline void AABBox3::AddAABBox(const AABBox3 & bbox)
 //! \brief check if bounding box intersect other bounding box
 //! \param box another bounding box
 //! \return true if intersect, false otherwise
-inline bool AABBox3::IsIntersect(const AABBox3 & box)
+inline bool AABBox3::IsIntersect(const AABBox3 & /*box*/)
 {
 	DVASSERT(0);
 	// TODO: implement this function
@@ -198,9 +201,13 @@ inline void AABBox3::Empty()
 	max = Vector3(-AABBOX_INFINITY, -AABBOX_INFINITY, -AABBOX_INFINITY);
 }
 
+inline bool AABBox3::IsEmpty() const
+{
+	return (min.x > max.x || min.y > max.y || min.z > max.z);
+}
 
 //! \brief check if bounding box intersect line
-inline bool IsIntersectLine(const Vector3 & l1, const Vector3 &l2)
+inline bool IsIntersectLine(const Vector3 & /*l1*/, const Vector3 & /*l2*/)
 {
 	//float32 tmin[3];
 	//float32 tmax[3];

@@ -15,11 +15,22 @@ static const float INPUT_TEST_AUTO_CLOSE_TIME = 30.0f;
 
 class UIWebViewDelegate: public IUIWebViewDelegate
 {
-	virtual eAction URLChanged(UIWebView* webview, const String& newURL);
+	virtual eAction URLChanged(UIWebView* webview, const String& newURL, bool isRedirectedByMouseClick);
+
+	virtual void PageLoaded(UIWebView* webview);
 };
 
-IUIWebViewDelegate::eAction UIWebViewDelegate::URLChanged(UIWebView* webview, const String& newURL)
+IUIWebViewDelegate::eAction UIWebViewDelegate::URLChanged(UIWebView* webview, const String& newURL, bool isInitiatedByUser)
 {
+	if(isInitiatedByUser)
+	{
+		DAVA::Logger::Debug("Link %s from browser", newURL.c_str());
+	}
+	else
+	{
+		DAVA::Logger::Debug("Link %s from source code", newURL.c_str());
+	}
+
 	if (newURL.find("google.com.ua") != String::npos)
 	{
 		return IUIWebViewDelegate::PROCESS_IN_SYSTEM_BROWSER;
@@ -34,6 +45,11 @@ IUIWebViewDelegate::eAction UIWebViewDelegate::URLChanged(UIWebView* webview, co
 	}
 
 	return IUIWebViewDelegate::PROCESS_IN_WEBVIEW;
+}
+
+void UIWebViewDelegate::PageLoaded(UIWebView* webview)
+{
+	webview->SetVisible(true);
 }
 
 
@@ -54,6 +70,9 @@ void InputTest::LoadResources()
 {
 	GetBackground()->SetColor(Color(1.f, 0, 0, 1));
 	
+	Texture* texture = Texture::CreateFromFile("~res:/TestData/InputTest/rect2.png");
+	Sprite* spr = Sprite::CreateFromTexture(texture,0,0,texture->width,texture->height);
+
 	Font *font = FTFont::Create("~res:/Fonts/korinna.ttf");
     DVASSERT(font);
 	font->SetSize(20);
@@ -66,6 +85,9 @@ void InputTest::LoadResources()
 #else
 	textField->SetFont(font);
 #endif
+	textField->SetSprite(spr,0);
+    textField->SetSpriteAlign(ALIGN_RIGHT);
+	textField->SetTextAlign(ALIGN_LEFT | ALIGN_BOTTOM);
 	textField->SetText(L"textField");
 	textField->SetDebugDraw(true);
 	textField->SetDelegate(new UITextFieldDelegate());
@@ -79,6 +101,7 @@ void InputTest::LoadResources()
 #endif
 	textField->SetText(L"textField");
 	textField->SetDebugDraw(true);
+	textField->SetDelegate(new UITextFieldDelegate());
 	AddControl(textField);
 
 	textField = new UITextField(Rect(750, 10, 100, 500));
@@ -89,6 +112,7 @@ void InputTest::LoadResources()
 #endif
 	textField->SetText(L"textField");
 	textField->SetDebugDraw(true);
+	textField->SetDelegate(new UITextFieldDelegate());
 	AddControl(textField);
 
 	testButton = new UIButton(Rect(0, 300, 300, 30));
@@ -97,30 +121,47 @@ void InputTest::LoadResources()
 	testButton->SetDebugDraw(true);
 	testButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &InputTest::ButtonPressed));
 
+	staticText = new UIStaticText(Rect(500, 500, 100, 50));
+	font->SetSize(10);
+	staticText->SetFont(font);
+	staticText->SetTextAlign(12);// 12 - Rtop
+	staticText->SetText(L"StaticText");
+	staticText->SetDebugDraw(true);
+	AddControl(staticText);
+
 	webView1 = new UIWebView(Rect(5, 105, 500, 190));
-	webView1->OpenURL("http://www.google.com");
+	webView1->SetVisible(false);
+	delegate = new UIWebViewDelegate();
+	webView1->SetDelegate((UIWebViewDelegate*)delegate);
+	webView1->OpenURL("http://www.linux.org.ru");
 	AddControl(webView1);
 
 	webView2 = new UIWebView(Rect(305, 300, 440, 190));
+    webView2->SetVisible(false);
+    webView2->SetDelegate((UIWebViewDelegate*)delegate);
 	webView2->OpenURL("http://www.apple.com");
 	AddControl(webView2);
 
-	String srcDir = FileSystem::Instance()->FileSystem::SystemPathForFrameworkPath("~res:/TestData/InputTest/");
-	String cpyDir = FileSystem::Instance()->GetCurrentDocumentsDirectory() + "InputTest/";
+	FilePath srcDir("~res:/TestData/InputTest/");
+	FilePath cpyDir = FileSystem::Instance()->GetCurrentDocumentsDirectory() + "InputTest/";
 	FileSystem::Instance()->DeleteDirectory(cpyDir);
 	FileSystem::Instance()->CreateDirectory(cpyDir);
-	String srcFile = srcDir + "test.html";
-	String cpyFile = cpyDir + "test.html";
+	FilePath srcFile = srcDir + "test.html";
+	FilePath cpyFile = cpyDir + "test.html";
 	FileSystem::Instance()->CopyFile(srcFile, cpyFile);
-	String url = "file:///" + cpyFile;
+	String url = "file:///" + cpyFile.GetAbsolutePathname();
 
-	delegate = new UIWebViewDelegate();
+	//delegate = new UIWebViewDelegate();
 	webView3 = new UIWebView(Rect(520, 130, 215, 135));
-	webView3->OpenURL(url);
 	webView3->SetDelegate((UIWebViewDelegate*)delegate);
+	webView3->OpenURL(url);
+
 	AddControl(webView3);
 
 	AddControl(testButton);
+    
+    SafeRelease(spr);
+    SafeRelease(texture);
 }
 
 void InputTest::UnloadResources()
@@ -172,3 +213,13 @@ void InputTest::ButtonPressed(BaseObject *obj, void *data, void *callerData)
 	testFinished = true;
 }
 
+void InputTest::OnPageLoaded(DAVA::BaseObject * caller, void * param, void *callerData)
+{
+	UIWebView* webView = dynamic_cast<UIWebView*>(caller);
+	if(NULL == webView)
+	{
+		return;
+	}
+	
+	webView->SetVisible(true);
+}

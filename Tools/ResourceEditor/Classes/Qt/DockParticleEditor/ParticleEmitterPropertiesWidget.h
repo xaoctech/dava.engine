@@ -9,6 +9,8 @@
 
 #include <QComboBox>
 #include <QDoubleSpinBox>
+#include <QLabel>
+#include <QSlider>
 
 class ParticleEmitterPropertiesWidget: public QWidget, public BaseParticleEditorContentWidget
 {
@@ -18,13 +20,18 @@ public:
 	explicit ParticleEmitterPropertiesWidget(QWidget* parent = 0);
 	~ParticleEmitterPropertiesWidget();
 
-	void Init(DAVA::ParticleEmitter* emitter, bool updateMinimize);
+	void Init(DAVA::ParticleEmitter* emitter, bool updateMinimize, bool needUpdateTimeLimits = true);
 	void Update();
 	
 	virtual bool eventFilter( QObject * o, QEvent * e );
 
 	virtual void StoreVisualState(KeyedArchive* visualStateProps);
 	virtual void RestoreVisualState(KeyedArchive* visualStateProps);
+
+	// Accessors to timelines.
+	TimeLineWidget* GetEmitterRadiusTimeline() {return emitterRadius;};
+	TimeLineWidget* GetEmitterSizeTimeline() {return emitterSize;};
+	TimeLineWidget* GetEmissionVectorTimeline() {return emitterEmissionVector;};
 
 signals:
 	void ValueChanged();
@@ -35,13 +42,14 @@ public slots:
 
 protected:
 	void UpdateTooltip();
+	void UpdatePlaybackSpeedLabel();
 
 private:
 	QVBoxLayout* mainLayout;
 
 	QLineEdit* emitterYamlPath;
 	QComboBox* emitterType;
-	TimeLineWidget* emitterEmissionAngle;
+
 	TimeLineWidget* emitterEmissionRange;
 	TimeLineWidget* emitterEmissionVector;
 	TimeLineWidget* emitterRadius;
@@ -49,6 +57,9 @@ private:
 	QDoubleSpinBox* emitterLife;
 	GradientPickerWidget* emitterColorWidget;
 	
+	QLabel* emitterPlaybackSpeedLabel;
+	QSlider* emitterPlaybackSpeed;
+
 	bool blockSignals;
 	
 	void InitWidget(QWidget* widget, bool connectWidget = true);

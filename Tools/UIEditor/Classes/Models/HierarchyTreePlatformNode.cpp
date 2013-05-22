@@ -115,7 +115,7 @@ HierarchyTreeNode* HierarchyTreePlatformNode::GetParent()
 	return this->rootNode;
 }
 
-QString HierarchyTreePlatformNode::GetPlatformFolder() const
+FilePath HierarchyTreePlatformNode::GetPlatformFolder() const
 {
 	QString path;
 	if (rootNode)
@@ -124,12 +124,15 @@ QString HierarchyTreePlatformNode::GetPlatformFolder() const
 	}
 	path += GetName();
 
-	return path;
+    FilePath folder(path.toStdString());
+    folder.MakeDirectoryPathname();
+    
+	return folder;
 }
 
 QString HierarchyTreePlatformNode::GetScreenPath(QString screenName) const
 {
-	return QString(SCREEN_PATH).arg(GetPlatformFolder()).arg(screenName);
+	return QString(SCREEN_PATH).arg(QString::fromStdString(GetPlatformFolder().GetAbsolutePathname())).arg(screenName);
 }
 
 QString HierarchyTreePlatformNode::GetScreenPath(String screenName) const
@@ -141,8 +144,8 @@ void HierarchyTreePlatformNode::ActivatePlatform()
 {
 	if (rootNode)
 	{
-		String bundleName = ResourcesManageHelper::GetDataPath(rootNode->GetProjectDir()).toStdString();
-		FileSystem::Instance()->ReplaceBundleName(bundleName);
+		String bundleName = rootNode->GetProjectDir().toStdString();
+		FilePath::SetBundleName(bundleName);
 	}
 }
 
@@ -221,6 +224,10 @@ bool HierarchyTreePlatformNode::LoadLocalization(YamlNode* platform)
         !localeNode->AsString().empty())
     {
         localizationPath = pathNode->AsString();
+		// YuriCoder, 2013/04/23. Localization path must be absolute - do the conversion
+		// for previous projects.
+		localizationPath.MakeDirectoryPathname();
+
         locale = localeNode->AsString();
     }
 
@@ -250,10 +257,10 @@ bool HierarchyTreePlatformNode::Save(YamlNode* node, bool saveAll)
     // Add the Localization info - specific for each Platform.
     SaveLocalization(platform);
 
-	QString platformFolder = GetPlatformFolder();
+	FilePath platformFolder = GetPlatformFolder();
 
 	QDir dir;
-	dir.mkpath(platformFolder);
+	dir.mkpath(QString::fromStdString(platformFolder.GetAbsolutePathname()));
 	
 	bool result = true;
 	
@@ -304,13 +311,15 @@ bool HierarchyTreePlatformNode::SaveLocalization(YamlNode* platform)
         return false;
     }
 
-    platform->Set(LOCALIZATION_PATH_NODE, this->localizationPath);
+	// YuriCoder, 2013/04/23. Localization path must be absolute.
+	this->localizationPath.MakeDirectoryPathname();
+    platform->Set(LOCALIZATION_PATH_NODE, this->localizationPath.GetAbsolutePathname());
     platform->Set(LOCALIZATION_LOCALE_NODE, locale);
 
     return true;
 }
 
-void HierarchyTreePlatformNode::SetLocalizationPath(const String& localizationPath)
+void HierarchyTreePlatformNode::SetLocalizationPath(const FilePath & localizationPath)
 {
     this->localizationPath = localizationPath;
 }
@@ -339,3 +348,24 @@ void HierarchyTreePlatformNode::SetParent(HierarchyTreeNode* node, HierarchyTree
 	node->RemoveTreeNode(this, false, false);
 	node->AddTreeNode(this, insertAfter);
 }
+
+bool HierarchyTreePlatformNode::IsAggregatorOrScreenNamePresent(const QString& candidatName)
+{
+	for (HIERARCHYTREENODESLIST::iterator iter = childNodes.begin(); iter != childNodes.end(); ++iter)
+	{
+		HierarchyTreeNode* node = (*iter);
+		
+		HierarchyTreeAggregatorNode* aggregator = dynamic_cast<HierarchyTreeAggregatorNode*>(node);
+		HierarchyTreeScreenNode* screen = dynamic_cast<HierarchyTreeScreenNode*>(node);
+		if (NULL == aggregator && NULL == screen)
+		{
+			continue;
+		}
+		if(node->GetName().compare(candidatName) == 0)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+

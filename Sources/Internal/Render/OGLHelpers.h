@@ -73,7 +73,7 @@ namespace DAVA
         OGLDebugBreak(); \
     }\
 }
-#elif defined(__DAVAENGINE_ANDROID__)
+#elif (defined(__DAVAENGINE_ANDROID__) && defined (__DAVAENGINE_DEBUG__))
 #define RENDER_VERIFY(command) \
 { \
     command;\

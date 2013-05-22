@@ -17,7 +17,11 @@ void JniTextField::ShowField(UITextField* textField, const Rect& controlRect, co
 	if (activeTextField)
 		HideField();
 
-	jmethodID mid = GetMethodID("ShowField", "(FFFFLjava/lang/String;)V");
+	jclass javaClass = GetJavaClass();
+	if (!javaClass)
+		return;
+
+	jmethodID mid = GetMethodID(javaClass, "ShowField", "(FFFFLjava/lang/String;)V");
 	if (mid)
 	{
 		jstring jStrDefaultText = GetEnvironment()->NewStringUTF(defaultText);
@@ -26,17 +30,22 @@ void JniTextField::ShowField(UITextField* textField, const Rect& controlRect, co
 		activeTextField = textField;
 		SafeRetain(activeTextField);
 	}
+	ReleaseJavaClass(javaClass);
 }
 
 void JniTextField::HideField()
 {
-	jmethodID mid = GetMethodID("HideField", "()V");
+	jclass javaClass = GetJavaClass();
+	if (!javaClass)
+		return;
+
+	jmethodID mid = GetMethodID(javaClass, "HideField", "()V");
 	if (mid)
 	{
 		GetEnvironment()->CallStaticVoidMethod(javaClass, mid);
 	}
 
-	// SafeRelease(activeTextField);
+	ReleaseJavaClass(javaClass);
 }
 
 void JniTextField::FieldHiddenWithText(const char* text)
@@ -68,7 +77,9 @@ void JniTextField::TextFieldShouldReturn()
 
 bool JniTextField::TextFieldKeyPressed(int32 replacementLocation, int32 replacementLength, const char* text)
 {
-	DVASSERT(activeTextField);
+	if (!activeTextField)
+		return false;
+
 	UITextFieldDelegate* delegate = activeTextField->GetDelegate();
 	if (!delegate)
 		return true;

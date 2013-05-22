@@ -7,10 +7,13 @@
 #include <QString>
 #include <QDialog>
 #include <QDoubleSpinBox>
+#include <QScrollBar.h>
+#include <qslider.h>
+#include "ScrollZoomWidget.h"
 
 using namespace DAVA;
 
-class TimeLineWidget : public QWidget
+class TimeLineWidget : public ScrollZoomWidget
 {
 	Q_OBJECT
 
@@ -19,10 +22,10 @@ public:
 	~TimeLineWidget();
 	
 	void Init(float32 minT, float32 maxT, bool updateSizeState, bool aliasLinePoint = false, bool allowDeleteLine = true, bool integer = false);
+	void Init(float32 minT, float32 maxT, float32 generalMinT, float32 generalMaxT, bool updateSizeState, bool aliasLinePoint = false, bool allowDeleteLine = true, bool integer = false);
 	void SetMinLimits(float32 minV);
 	void SetMaxLimits(float32 maxV);
-	float32 GetMinBoundary();
-	float32 GetMaxBoundary();
+
 	void EnableLock(bool enable);
 	void SetVisualState(KeyedArchive* visualStateProps);
 	void GetVisualState(KeyedArchive* visualStateProps);
@@ -37,9 +40,12 @@ public:
 	
 	static bool SortPoints(const Vector2& i, const Vector2& j);
 	
+	// Add the mark to X/Y legend values (like 'deg' or 'pts').
+	void SetXLegendMark(const QString& value);
+	void SetYLegendMark(const QString& value);
+
 signals:
 	void TimeLineUpdated();
-	void ValueChanged();
 
 protected:
 	virtual void paintEvent(QPaintEvent *);
@@ -48,9 +54,6 @@ protected:
 	virtual void mouseReleaseEvent(QMouseEvent *);
 	virtual void mouseDoubleClickEvent(QMouseEvent *);
 	virtual void leaveEvent(QEvent *);
-	virtual void wheelEvent(QWheelEvent*);
-    virtual void keyPressEvent(QKeyEvent *event);
-	virtual void keyReleaseEvent (QKeyEvent *);
 
 private:
 	typedef Vector<Vector2> LOGIC_POINTS;
@@ -70,9 +73,8 @@ private:
 	QRect GetIncreaseRect() const;
 	QRect GetScaleRect() const;
 	QRect GetDecreaseRect() const;
-	QRect GetOffsetRightRect() const;
-	QRect GetOffsetLeftRect() const;
-	
+	QRect GetSliderRect() const;
+
 	void SetPointValue(uint32 lineId, uint32 pointId, Vector2 value, bool deleteSamePoints);
 	
 	void AddPoint(uint32 lineId, const Vector2& point);
@@ -90,36 +92,15 @@ private:
 	void ChangePointValueDialog(uint32 pointId, int32 lineId);
 	
 	void PostAddLine();
-	
-	QString float2QString(float32 value) const;
-	
-	int32 GetIntValue(float32 value) const;
 
-	void PerformZoom(float newScale);
+	void PerformZoom(float newScale, bool moveScroll = true);
 
-	void PerformOffset(int value);
+	void PerformOffset(int value, bool moveScroll = true);
 	void DrawUITriangle(QPainter& painter, const QRect& rect, int rotateDegree);
 
 	void GetCrossingPoint(const QPoint& firstPoint, const QPoint& secondPoint, QPoint & leftBorderCrossPoint, QPoint & rightBorderCrossPoint);
 
-	enum ePositionRelativelyToDrawRect
-	{
-		POSITION_LEFT,
-		POSITION_RIGHT,
-		POSITION_INSIDE
-	};
-	ePositionRelativelyToDrawRect GetPointPositionFromDrawingRect(QPoint point); 
-
 private:
-	QPoint mouseStartPos;
-	
-	float32 minValue;
-	float32 maxValue;
-	float32 minTime;
-	float32 maxTime;
-	float32 minValueLimit;
-	float32 maxValueLimit;
-	
 	int32 selectedPoint;
 	int32 selectedLine;
 	int32 drawLine;
@@ -127,13 +108,6 @@ private:
 	bool isLockEnable;
 	bool isLocked;
 	bool isInteger;
-	
-	enum eGridStyle
-	{
-		GRID_STYLE_ALL_POSITION,
-		GRID_STYLE_LIMITS
-	};
-	eGridStyle gridStyle;
 	
 	enum eSizeState
 	{
@@ -153,15 +127,12 @@ private:
 	}LINE;
 	typedef Map<uint32, LINE> LINES_MAP;
 	LINES_MAP lines;
-	
-	QBrush backgroundBrush;
-	
+
 	Vector2	newPoint;
 
-	bool	isCtrlPressed;
+	QString xLegendMark;
+	QString yLegendMark;
 
-	float32	scale;
-	float32	initialTimeInterval;
 };
 
 class SetPointValueDlg: public QDialog

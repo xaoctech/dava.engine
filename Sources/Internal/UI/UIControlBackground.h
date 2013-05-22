@@ -35,6 +35,7 @@
 #include "Base/BaseMath.h"
 #include "Base/BaseObject.h"
 #include "Render/2D/Sprite.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA
 {
@@ -141,7 +142,7 @@ public:
 	 \param[in] drawSprite Sprite path-name.
 	 \param[in] drawFrame Sprite frame you want to use for draw.
 	 */
-	virtual void SetSprite(const String &drawSprite, int32 drawFrame);
+	virtual void SetSprite(const FilePath &drawSprite, int32 drawFrame);
 	/**
 	 \brief Sets Sprite align in the control rect you want to use for draw.
 	 \param[in] drawAlign Sprite eAlign bit mask.

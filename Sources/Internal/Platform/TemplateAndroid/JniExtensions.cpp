@@ -1,14 +1,14 @@
 #include "JniExtensions.h"
 #include "Platform/TemplateAndroid/CorePlatformAndroid.h"
 
-using namespace DAVA;
+namespace DAVA
+{
 
 JniExtension::JniExtension(const char* className)
 {
 	Logger::Debug("JniExtension::JniExtension(%s)", className);
 	this->className = className;
-	javaClass = 0;
-	isThreadAttached = false;
+	//isThreadAttached = false;
 
 	CorePlatformAndroid *core = (CorePlatformAndroid *)Core::Instance();
 	AndroidSystemDelegate* delegate = core->GetAndroidSystemDelegate();
@@ -24,15 +24,10 @@ JniExtension::JniExtension(const char* className)
 			isThreadAttached = true;
 	}*/
 
-	if (res == JNI_OK)
-	{
-		javaClass = env->FindClass(className);
-		if (!javaClass)
-			Logger::Error("Error find class %s", className);
-	}
-	else
+	if (res != JNI_OK)
 	{
 		Logger::Error("Failed to get the environment using GetEnv()");
+		env = NULL;
 	}
 }
 
@@ -40,23 +35,41 @@ JniExtension::~JniExtension()
 {
 	Logger::Debug("JniExtension::~JniExtension(%s)", className);
 
-    ReleaseJavaClass();
-    
-	if (isThreadAttached)
+	/*if (isThreadAttached)
 	{
 		jint res = vm->DetachCurrentThread();
 		Logger::Error("vm->DetachCurrentThread() = %d", res);
 		Logger::Error("Failed to DetachCurrentThread()");
-	}
+	}*/
 }
 
-jmethodID JniExtension::GetMethodID(const char *methodName, const char *paramCode)
+jclass JniExtension::GetJavaClass() const
 {
-	jmethodID mid = NULL;
-    
-    javaClass = env->FindClass(className);
-	if (javaClass)
-		mid = env->GetStaticMethodID(javaClass, methodName, paramCode);
+	DVASSERT(env);
+	if (!env)
+		return NULL;
+
+	jclass javaClass = env->FindClass(className);
+	if (!javaClass)
+		Logger::Error("Error find class %s", className);
+
+	return javaClass;
+}
+
+void JniExtension::ReleaseJavaClass(jclass javaClass) const
+{
+	DVASSERT(env);
+	if (!env)
+		return;
+
+	env->DeleteLocalRef(javaClass);
+	javaClass = NULL;
+}
+
+jmethodID JniExtension::GetMethodID(jclass javaClass, const char *methodName, const char *paramCode) const
+{
+	DVASSERT(javaClass);
+	jmethodID mid = env->GetStaticMethodID(javaClass, methodName, paramCode);
 
 	if (!mid)
 	{
@@ -80,13 +93,4 @@ Rect JniExtension::V2P(const Rect& srcRect) const
 	return rect;
 }
 
-
-void JniExtension::ReleaseJavaClass()
-{
-	if (javaClass)
-	{
-		env->DeleteLocalRef(javaClass);
-		javaClass = 0;
-	}
-}
-
+}//namespace DAVA

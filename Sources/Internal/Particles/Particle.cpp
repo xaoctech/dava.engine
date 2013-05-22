@@ -30,6 +30,8 @@
 #include "Render/2D/Sprite.h"
 #include "Render/RenderManager.h"
 #include "Particles/Particle.h"
+#include "Particles/ParticleEmitter.h"
+#include "Particles/ParticleEmitter3D.h"
 
 namespace DAVA 
 {
@@ -45,11 +47,12 @@ ForceData::ForceData(float32 forceValue, const Vector3& forceDirection, float32 
 Particle::Particle()
 {
     frameLastUpdateTime = 0.0f;
+	innerParticleEmitter = NULL;
 }
 
 Particle::~Particle()
 {
-    
+    CleanupInnerEmitter();
 }
 
 void Particle::AddForce(float32 value, const Vector3& direction, float32 overlife,
@@ -102,18 +105,89 @@ bool Particle::Update(float32 timeElapsed)
 		speed = 1.f/invSqrt;
 		direction = velocity*invSqrt;
 	}
+	
+	// In case the particle contains inner emitter - update it too.
+	UpdateInnerEmitter(timeElapsed);
 	return true;
 }
 
 void Particle::Draw()
 {
+	// Yuri Coder, 2013/04/03. This method is called for 2D sprites only. For 3D sprites
+	// please see ParticleLayer3D::Draw()
 	if (IsDead())return;
 	RenderManager::Instance()->SetColor(drawColor.r, drawColor.g, drawColor.b, drawColor.a);
 	sprite->SetAngle(angle);
 	sprite->SetPosition(position.x, position.y);
-	sprite->SetScale(size.x * sizeOverLife, size.y * sizeOverLife);
+	sprite->SetScale(size.x * sizeOverLife.x, size.y * sizeOverLife.y);
 	sprite->SetFrame(frame);
 	sprite->Draw();
+}
+
+float32 Particle::GetArea()
+{
+	float resultSize = (size.x * sizeOverLife.x) * (size.y * sizeOverLife.y);
+	if (sprite)
+	{
+		resultSize *= (sprite->GetWidth() * sprite->GetHeight());
+	}
+	
+	return resultSize;
+}
+
+void Particle::InitializeInnerEmitter(ParticleEmitter* parentEmitter, ParticleEmitter* referenceEmitter)
+{
+	// Inner Emitter must not exist at this moment.
+	DVASSERT(innerParticleEmitter == NULL);
+	innerParticleEmitter = static_cast<ParticleEmitter*>(referenceEmitter->Clone(NULL));
+
+	// After the emitter is loaded (and all its render batches are created),
+	// register it in the Render System to get updates.
+	innerParticleEmitter->SetRenderSystem(parentEmitter->GetRenderSystem());
+	innerParticleEmitter->SetWorldTransformPtr(parentEmitter->GetWorldTransformPtr());
+	innerParticleEmitter->RememberInitialTranslationVector();
+
+	RegisterInnerEmitterInRenderSystem(true);
+}
+
+ParticleEmitter* Particle::GetInnerEmitter()
+{
+	return innerParticleEmitter;
+}
+
+void Particle::CleanupInnerEmitter()
+{
+	RegisterInnerEmitterInRenderSystem(false);
+	SafeRelease(innerParticleEmitter);
+}
+
+void Particle::UpdateInnerEmitter(float32 timeElapsed)
+{
+	if (!innerParticleEmitter)
+	{
+		return;
+	}
+	
+	innerParticleEmitter->SetPosition(this->position);
+}
+	
+void Particle::RegisterInnerEmitterInRenderSystem(bool isRegister)
+{
+	if (!innerParticleEmitter || !innerParticleEmitter->GetRenderSystem())
+	{
+		return;
+	}
+
+	RenderSystem* renderSystem = innerParticleEmitter->GetRenderSystem();
+	if (isRegister)
+	{
+		renderSystem->RenderPermanent(innerParticleEmitter);
+		renderSystem->MarkForUpdate(innerParticleEmitter);
+	}
+	else
+	{
+		renderSystem->RemoveFromRender(innerParticleEmitter);
+	}
 }
 
 };

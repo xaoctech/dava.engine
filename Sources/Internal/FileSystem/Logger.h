@@ -41,9 +41,13 @@
 #include "Base/BaseTypes.h"
 #include "Base/Singleton.h"
 
+#include "FileSystem/FilePath.h"
+
 namespace DAVA 
 {
-	
+
+class LoggerOutput;
+
 class Logger : public Singleton<Logger>
 {
 public:
@@ -54,15 +58,15 @@ public:
 
 		//! Normal log level prints only message not related to debug
 		LEVEL_INFO,
-		
+
 		//! Warning messages (for usage if we reached some limits)
 		LEVEL_WARNING,
-		
+
 		//! Error messages (critical situations)
 		LEVEL_ERROR,
-        
-        //! Disable logs
-        LEVEL__DISABLE
+
+		//! Disable logs
+		LEVEL__DISABLE
 	};
 	
 	Logger();
@@ -115,17 +119,34 @@ public:
 	static void Info(const char16 * text, ...);
 	static void Error(const char16 * text, ...);
 
+	static void AddCustomOutput(DAVA::LoggerOutput *lo);
+
 #if defined(__DAVAENGINE_ANDROID__)
     static void SetTag(const char8 *logTag);
 #endif    
     
 protected:	
+	void LogToCustomOutput(eLogLevel ll, const char8* text, va_list li);
+	void LogToCustomOutput(eLogLevel ll, const char16* text, va_list li);
+
 	const char8 * GetLogLevelString(eLogLevel ll);
+
 	String logFilename;
 	
 private:
 	eLogLevel logLevel;
+	Vector<LoggerOutput *> customOutputs;
 	
+};
+
+class LoggerOutput
+{
+public:
+	LoggerOutput();
+	~LoggerOutput();
+
+	virtual void Output(Logger::eLogLevel ll, const char8* text) const = 0;
+	virtual void Output(Logger::eLogLevel ll, const char16* text) const = 0;
 };
 
 };

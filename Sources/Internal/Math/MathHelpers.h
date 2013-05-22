@@ -42,8 +42,8 @@ namespace DAVA
 	 Radians to degrees and back conversion functions and constants
 	 */
 	
-	static const float32 RAD_TO_DEG = 180.0f / PI; 
-	static const float32 DEG_TO_RAD = PI / 180.0f;
+ 	static const float32 RAD_TO_DEG = 180.0f / 3.14159265358979323846f; 
+ 	static const float32 DEG_TO_RAD = 3.14159265358979323846f / 180.0f;
 	
 	inline float32 RadToDeg(float32 f) { return f * RAD_TO_DEG; };
 	inline float32 DegToRad(float32 f) { return f * DEG_TO_RAD; };
@@ -127,8 +127,9 @@ namespace DAVA
 	 vector (start + dir) 
 	 with plane (plane normal + plane point)
 	 */
+	DAVA_DEPRECATED(inline bool GetIntersectionVectorWithPlane(const Vector3 & start, const Vector3 & dir, const Vector3 & planeN, const Vector3 & planePoint, Vector3 & result));
 	inline bool GetIntersectionVectorWithPlane(const Vector3 & start, const Vector3 & dir, const Vector3 & planeN, const Vector3 & planePoint, Vector3 & result)
-	{	
+	{
 		Vector3 intersection;
 		float32 cosang, dist, lamda;
 		

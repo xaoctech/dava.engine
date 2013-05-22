@@ -42,6 +42,9 @@ public:
 	virtual void StoreVisualState(KeyedArchive* visualStateProps);
 	virtual void RestoreVisualState(KeyedArchive* visualStateProps);
 
+	// Switch from/to SuperEmitter mode.
+	void SetSuperemitterMode(bool isSuperemitter);
+
 signals:
 	void ValueChanged();
 	
@@ -49,6 +52,8 @@ protected slots:
 	void OnValueChanged();
 	void OnSpriteBtn();
 	void OnSpritePathChanged(const QString& text);
+	
+	void OnPivotPointReset();
 	
 private:
 	void InitWidget(QWidget* );
@@ -64,6 +69,7 @@ private:
 	QLineEdit* layerNameLineEdit;
 	QCheckBox* enableCheckBox;
 	QCheckBox* additiveCheckBox;
+	QCheckBox* isLongCheckBox;
 
 	QLabel* layerTypeLabel;
 	QComboBox* layerTypeComboBox;
@@ -71,24 +77,38 @@ private:
 	Sprite* sprite;
 	QLabel* spriteLabel;
 	QPushButton* spriteBtn;
-	//QLabel* spritePathLabel;
 	QLineEdit* spritePathLabel;
+	
+	QLabel* innerEmitterLabel;
+	QLineEdit* innerEmitterPathLabel;
+
+	QVBoxLayout* pivotPointLayout;
+	QLabel* pivotPointLabel;
+	QSpinBox* pivotPointXSpinBox;
+	QLabel* pivotPointXSpinBoxLabel;
+	QSpinBox* pivotPointYSpinBox;
+	QLabel* pivotPointYSpinBoxLabel;
+	QPushButton* pivotPointResetButton;
+
 	TimeLineWidget* lifeTimeLine;
 	TimeLineWidget* numberTimeLine;
 	TimeLineWidget* sizeTimeLine;
 	TimeLineWidget* sizeVariationTimeLine;
 	TimeLineWidget* sizeOverLifeTimeLine;
 	TimeLineWidget* velocityTimeLine;
+	TimeLineWidget* velocityOverLifeTimeLine;
 	TimeLineWidget* spinTimeLine;
-	TimeLineWidget* motionTimeLine;
-	TimeLineWidget* bounceTimeLine;
+	TimeLineWidget* spinOverLifeTimeLine;
+
 	TimeLineWidget* alphaOverLifeTimeLine;
 	QCheckBox* frameOverlifeCheckBox;
 	QSpinBox* frameOverlifeFPSSpin;
+	QLabel* frameOverlifeFPSLabel;
+
 	TimeLineWidget* angleTimeLine;
 	GradientPickerWidget* colorRandomGradient;
 	GradientPickerWidget* colorOverLifeGradient;
-	QDoubleSpinBox* alignToMotionSpin;
+
 	QDoubleSpinBox* startTimeSpin;
 	QDoubleSpinBox* endTimeSpin;
 	

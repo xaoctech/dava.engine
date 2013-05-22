@@ -97,7 +97,7 @@ public:
 	 \param[in] spriteName Sprite path-name.
 	 \param[in] spriteFrame Sprite frame you want to use for draw.
 	 */
-	virtual void SetStateSprite(int32 state, const String &spriteName, int32 spriteFrame = 0);
+	virtual void SetStateSprite(int32 state, const FilePath &spriteName, int32 spriteFrame = 0);
 	/**
 	 \brief Sets Sprite for the control UIControlBackground object for the requested state.
 		Method creates UIControlBackground object for the state if this is neccesary.

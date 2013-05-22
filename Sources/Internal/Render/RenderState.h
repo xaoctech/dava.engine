@@ -164,7 +164,33 @@ inline uint32 RenderStateBlock::GetStateValue(uint32 state)
 */
 class Texture;
 class Shader;
-    
+
+static const String RENDER_STATES_NAMES[] = 
+{
+	"STATE_BLEND",
+	"STATE_DEPTH_TEST",
+	"STATE_DEPTH_WRITE",
+	"STATE_STENCIL_TEST",
+	"STATE_CULL",
+
+	"STATE_ALPHA_TEST",
+	"STATE_SCISSOR_TEST",
+
+	"STATE_TEXTURE0",
+	"STATE_TEXTURE1",
+	"STATE_TEXTURE2",
+	"STATE_TEXTURE3",
+	"STATE_TEXTURE4",
+	"STATE_TEXTURE5",
+	"STATE_TEXTURE6",
+	"STATE_TEXTURE7",
+
+	"STATE_COLORMASK_RED",
+	"STATE_COLORMASK_GREEN",
+	"STATE_COLORMASK_BLUE",
+	"STATE_COLORMASK_ALPHA"
+};
+
 class RenderState
 {
 public:  
@@ -180,19 +206,19 @@ public:
         STATE_ALPHA_TEST = 1 << 5,          // fixed func only / in programmable pipeline can check for consistency
 		STATE_SCISSOR_TEST = 1 << 6,
 
-        STATE_TEXTURE0 = 1 << 8,            // fixed func only / in programmable pipeline only checks for consistency
-        STATE_TEXTURE1 = 1 << 9,            // fixed func only / in programmable pipeline only checks for consistency
-        STATE_TEXTURE2 = 1 << 10,            // fixed func only / in programmable pipeline only checks for consistency
-        STATE_TEXTURE3 = 1 << 11,            // fixed func only / in programmable pipeline only checks for consistency
-		STATE_TEXTURE4 = 1 << 12,
-		STATE_TEXTURE5 = 1 << 13,
-		STATE_TEXTURE6 = 1 << 14,
-		STATE_TEXTURE7 = 1 << 15,
+        STATE_TEXTURE0 = 1 << 7,            // fixed func only / in programmable pipeline only checks for consistency
+        STATE_TEXTURE1 = 1 << 8,            // fixed func only / in programmable pipeline only checks for consistency
+        STATE_TEXTURE2 = 1 << 9,            // fixed func only / in programmable pipeline only checks for consistency
+        STATE_TEXTURE3 = 1 << 10,            // fixed func only / in programmable pipeline only checks for consistency
+		STATE_TEXTURE4 = 1 << 11,
+		STATE_TEXTURE5 = 1 << 12,
+		STATE_TEXTURE6 = 1 << 13,
+		STATE_TEXTURE7 = 1 << 14,
         
-        STATE_COLORMASK_RED =  1 << 16,
-        STATE_COLORMASK_GREEN = 1 << 17,
-        STATE_COLORMASK_BLUE = 1 << 18,
-        STATE_COLORMASK_ALPHA = 1 << 19,
+        STATE_COLORMASK_RED =  1 << 15,
+        STATE_COLORMASK_GREEN = 1 << 16,
+        STATE_COLORMASK_BLUE = 1 << 17,
+        STATE_COLORMASK_ALPHA = 1 << 18,
         STATE_COLORMASK_ALL = (STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA),
         
         // 4 bits for sourceBlendFactor
@@ -201,6 +227,10 @@ public:
         // 32 bits * 4 for textures
         // 32 bits * 4 for color ??? can be switched to 4ub.
     };
+
+	static const uint32 STATE_COUNT = 19;
+
+	static const uint32 IGNORE_SAVE_LOAD_RENDER_STATES = (STATE_TEXTURE0 | STATE_TEXTURE1 | STATE_TEXTURE2 | STATE_TEXTURE3 | STATE_TEXTURE4 | STATE_TEXTURE5 | STATE_TEXTURE6 | STATE_TEXTURE7);
 
     static const uint32 DEFAULT_2D_STATE = (STATE_TEXTURE0 | STATE_COLORMASK_ALL);
     static const uint32 DEFAULT_2D_STATE_BLEND = (STATE_BLEND | STATE_TEXTURE0 | STATE_COLORMASK_ALL);
@@ -413,6 +443,30 @@ public:
 	inline void SetFillModeInHW() const;
     
     /**
+     \brief Function to load render state from yaml file.
+	 \param[in] filePath path to file
+     */
+	void LoadFromYamlFile(const FilePath & filePath);
+
+	/**
+	 \brief Function to load render state from yaml node.
+	 \param[in] rootNode root yaml node
+	 */
+	void LoadFromYamlNode(YamlNode * rootNode);
+
+    /**
+     \brief Function to save render state to yaml file.
+	 \param[in] filePath path to file
+     */
+	bool SaveToYamlFile(const FilePath & filePath);
+	
+	/**
+	 \brief Function to save render state to yaml node.
+	 \param[in] rootNode root yaml node
+	 */
+	YamlNode * SaveToYamlNode(YamlNode * rootNode = 0);
+
+    /**
         Function to reset state to original zero state.
      */
     void Reset(bool doHardwareReset);
@@ -431,6 +485,9 @@ public:
 
 	//introspection related
 
+	void GetCurrentStateStrings(Vector<String> & statesStrs);
+
+	static uint32 GetRenderStateByName(const String & str);
 
 #if defined(__DAVAENGINE_DIRECTX9__)
 	static IDirect3DDevice9 * direct3DDevice; 
