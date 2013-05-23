@@ -9,7 +9,7 @@ class DAVA::Entity;
 class CommandCreateNodeSceneEditor: public Command
 {
 public:
-	CommandCreateNodeSceneEditor(DAVA::Entity* node);
+	DAVA_DEPRECATED(CommandCreateNodeSceneEditor(DAVA::Entity* node));
 	virtual ~CommandCreateNodeSceneEditor();
 
 protected:

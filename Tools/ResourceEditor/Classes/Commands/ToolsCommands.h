@@ -7,7 +7,7 @@
 class CommandBeast: public Command
 {
 public:
-	CommandBeast();
+	DAVA_DEPRECATED(CommandBeast());
     
 protected:
     
