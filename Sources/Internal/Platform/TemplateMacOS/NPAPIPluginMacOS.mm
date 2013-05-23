@@ -11,8 +11,13 @@
 #include "NPAPICorePlatformMacOS.h"
 #include "RenderManager.h"
 
+#include <pwd.h>
+
+// Relative path to NPAPI Internet Plugins for MacOS.
+#define PATH_TO_INTERNET_PLUGINS "Library/Internet Plug-Ins"
+
 // Arguments passed to the NPAPI plugin instance.
-#define NPAPI_PLUGIN_ARGUMENT_BUNDLE_PATH "bundlepath"
+#define NPAPI_PLUGIN_ARGUMENT_BUNDLE_NAME "bundlename"
 
 extern void FrameworkDidLaunched();
 extern void FrameworkWillTerminate();
@@ -57,23 +62,23 @@ extern void FrameworkWillTerminate();
 	// Lookup for the parameters needed for the initialization.
 	NSLog(@"npNew: Params count: %i", argCount);
 	
-	// Lookup for the Bundle Path - it is needed to properly initialize Resources management.
-	bool bundlePathFound = false;
-	NSString* bundlePathArgName = [NSString stringWithCString:NPAPI_PLUGIN_ARGUMENT_BUNDLE_PATH encoding:NSASCIIStringEncoding];
+	// Lookup for the Bundle Name - it is needed to properly initialize Resources management.
+	bool bundleNameFound = false;
+	NSString* bundleNameArgName = [NSString stringWithCString:NPAPI_PLUGIN_ARGUMENT_BUNDLE_NAME encoding:NSASCIIStringEncoding];
 	for (int16_t i = 0; i < argCount; i ++)
 	{
 		NSLog(@"npNew: Param #%i name is %s, value is %s", i, argNames[i], argValues[i]);
 		NSString* argName = [NSString stringWithCString:argNames[i] encoding:NSASCIIStringEncoding];
-		if ([argName caseInsensitiveCompare:bundlePathArgName] == NSOrderedSame)
+		if ([argName caseInsensitiveCompare:bundleNameArgName] == NSOrderedSame)
 		{
-			self->bundlePath = [[NSString stringWithCString:argValues[i] encoding:NSASCIIStringEncoding] retain];
-			bundlePathFound = true;
+			[self setBundlePath: argValues[i]];
+			bundleNameFound = true;
 		}
 	}
 	
-	if (!bundlePathFound)
+	if (!bundleNameFound)
 	{
-		NSLog(@"npNew: The %s parameter for NPAPI DAVA Framework plugin is not specified", NPAPI_PLUGIN_ARGUMENT_BUNDLE_PATH);
+		NSLog(@"npNew: The %s parameter for NPAPI DAVA Framework plugin is required is not specified", NPAPI_PLUGIN_ARGUMENT_BUNDLE_NAME);
 		return NPERR_INVALID_PARAM;
 	}
 	
@@ -346,10 +351,24 @@ extern void FrameworkWillTerminate();
 	}
 }
 
--(void) setBundlePath:(NSString*) value
+-(void) setBundlePath:(const char*) bundleName
 {
-	NSLog(@"Bundle Path is set to %@", value);
-	self->bundlePath = [value retain];
+	NSString* homeDir = NULL;
+	struct passwd* pwd = getpwuid(getuid());
+	if (pwd)
+	{
+		homeDir = [NSString stringWithCString:pwd->pw_dir encoding:NSASCIIStringEncoding];
+	}
+
+	if (homeDir)
+	{
+		self->bundlePath = [[[homeDir stringByAppendingPathComponent:
+							  [NSString stringWithCString: PATH_TO_INTERNET_PLUGINS encoding:NSASCIIStringEncoding]]
+							 stringByAppendingPathComponent:
+							 [NSString stringWithCString: bundleName encoding:NSASCIIStringEncoding]] retain];
+	}
+
+	NSLog(@"Bundle Path is set to %@", self->bundlePath);
 }
 
 -(void) createOpenGLLayer
