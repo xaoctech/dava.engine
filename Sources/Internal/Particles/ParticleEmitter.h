@@ -224,6 +224,7 @@ public:
 	virtual RenderObject * Clone(RenderObject *newObject);
 	virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
 	virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void RecalcBoundingBox();
 	
 	/**
 		\brief Function to get number of repeats for current particle emitter.
