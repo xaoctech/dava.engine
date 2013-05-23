@@ -316,6 +316,10 @@ function Wait(waitTime)
     end
 end
 
+function GetTimeElapsed()
+	return autotestingSystem:GetTimeElapsed()
+
+end
 function WaitControl(name, time)
     local waitTime = time or TIMEOUT
     Log("WaitControl name="..name.." waitTime="..waitTime,"DEBUG")
