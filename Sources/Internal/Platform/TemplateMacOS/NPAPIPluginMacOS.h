@@ -47,9 +47,6 @@
 // Handle the Cocoa event came from browser.
 -(NPError) npHandleEvent:(NPCocoaEvent*) event;
 
-// Set the Bundle Path to the resources.
--(void) setBundlePath:(NSString*) value;
-
 // Called when the browser requests us to return a value.
 -(NPError) npGetValue:(NPPVariable) variable withParam:(void*)param;
 
