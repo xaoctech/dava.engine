@@ -12,13 +12,13 @@ namespace DAVA
 void Logger::PlatformLog(eLogLevel ll, const char8* text)
 {
 	OutputDebugStringA(text);
-	printf("%s", text);
+	//printf("%s", text);
 }
 
 void Logger::PlatformLog(eLogLevel ll, const char16* text)
 {
 	OutputDebugStringW(text);
-	wprintf(L"%s", text);
+	//wprintf(L"%s", text);
 }
 
 }

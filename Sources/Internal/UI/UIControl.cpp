@@ -1918,10 +1918,12 @@ namespace DAVA
 		Sprite *sprite =  this->GetSprite();
 		if (sprite)
 		{
-            FilePath path(sprite->GetRelativePathname());
-            path.TruncateExtension();
+			FilePath path(sprite->GetRelativePathname());
+			path.TruncateExtension();
 
-            String pathname = path.GetFrameworkPath();
+			//TODO VK: Fix FilePath::GetFrameworkPath()
+            String pathname = path.GetRelativePathname(FilePath::GetBundleName());
+			pathname.replace(0, 4, "~res:");
 			node->Set("sprite", pathname);
 		}
 		// Color
