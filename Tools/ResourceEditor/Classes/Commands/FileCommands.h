@@ -8,7 +8,7 @@
 class CommandOpenScene: public Command
 {
 public:	
-	CommandOpenScene(const DAVA::FilePath &scenePathname = DAVA::FilePath());
+	DAVA_DEPRECATED(CommandOpenScene(const DAVA::FilePath &scenePathname = DAVA::FilePath()));
     
 protected:	
     
@@ -22,7 +22,7 @@ protected:
 class CommandNewScene: public Command
 {
 public:	
-	CommandNewScene();
+	DAVA_DEPRECATED(CommandNewScene());
     
 protected:	
     
@@ -33,7 +33,7 @@ class CommandSaveScene: public Command
 {
 	friend class CommandNewScene;
 public:	
-	CommandSaveScene();
+	DAVA_DEPRECATED(CommandSaveScene());
     
 protected:	
     
@@ -46,7 +46,7 @@ class CommandExport: public Command
 {
     
 public:	
-	CommandExport(DAVA::ImageFileFormat fmt);
+	DAVA_DEPRECATED(CommandExport(DAVA::ImageFileFormat fmt));
     
 protected:	
     
@@ -60,7 +60,7 @@ protected:
 class CommandSaveToFolderWithChilds: public Command
 {
 public:
-	CommandSaveToFolderWithChilds();
+	DAVA_DEPRECATED(CommandSaveToFolderWithChilds());
 protected:
         virtual void Execute();
 };

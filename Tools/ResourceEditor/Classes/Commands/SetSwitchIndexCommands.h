@@ -5,12 +5,13 @@
 #include "DAVAEngine.h"
 #include "../Constants.h"
 #include "../Qt/DockSetSwitchIndex/SetSwitchIndexHelper.h"
+#include "EditorBodyControlCommands.h"
 
-class CommandToggleSetSwitchIndex: public Command
+class CommandToggleSetSwitchIndex: public CommandEntityModification
 {
 public:
-	CommandToggleSetSwitchIndex(DAVA::uint32 value, DAVA::SetSwitchIndexHelper::eSET_SWITCH_INDEX state);
-
+	DAVA_DEPRECATED(CommandToggleSetSwitchIndex(DAVA::uint32 value, DAVA::SetSwitchIndexHelper::eSET_SWITCH_INDEX state));
+	
 protected:
 	DAVA::uint32	value;
 	DAVA::SetSwitchIndexHelper::eSET_SWITCH_INDEX	swtichState;
