@@ -37,7 +37,7 @@ namespace DAVA
 InputSystem::InputSystem()
 {
     keyboard = new KeyboardDevice();
-	AddInputCallback(InputCallback(UIControlSystem::Instance(), &UIControlSystem::OnInput, INPUT_DEVICE_KEYBOARD));
+	AddInputCallback(InputCallback(UIControlSystem::Instance(), &UIControlSystem::OnInput, INPUT_DEVICE_KEYBOARD | INPUT_DEVICE_JOYSTICK));
 }
     
 InputSystem::~InputSystem()
@@ -68,7 +68,7 @@ void InputSystem::AddInputCallback(const InputCallback& inputCallback)
 
 bool InputSystem::RemoveInputCallback(const InputCallback& inputCallback)
 {
-	Vector<InputCallback>::const_iterator it = find(callbacks.begin, callbacks.end(), inputCallback);
+	Vector<InputCallback>::iterator it = find(callbacks.begin(), callbacks.end(), inputCallback);
 	if(it != callbacks.end())
 		callbacks.erase(it);
 	else
