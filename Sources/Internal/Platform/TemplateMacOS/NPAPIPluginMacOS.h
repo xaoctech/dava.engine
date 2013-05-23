@@ -9,6 +9,7 @@
 #include "npapisdk/headers/npapi.h"
 #include "npapisdk/headers/npfunctions.h"
 #include "ApplicationCore.h"
+#include "UIEvent.h"
 
 #import <Foundation/Foundation.h>
 #import "NPAPIOpenGLLayerMacOS.h"
@@ -27,6 +28,8 @@
 	
 	// Bundle Path to the Plugin (passed from the HTML page).
 	NSString* bundlePath;
+
+	DAVA::Vector<DAVA::UIEvent> activeTouches;
 }
 
 // Constructor/destructor.
@@ -57,5 +60,8 @@
 - (void) onSuspend;
 - (void) onResume;
 
+-(void) parseEvent:(NPCocoaEvent*) event;
+-(void) processEvent:(int)touchPhase touch:(NPCocoaEvent*)touch;
+-(void) moveTouchesToVector:(NPCocoaEvent*)curEvent touchPhase:(int)touchPhase outTouches:(DAVA::Vector<DAVA::UIEvent>*)outTouches;
 
 @end

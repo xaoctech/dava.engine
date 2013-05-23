@@ -99,10 +99,151 @@ extern void FrameworkWillTerminate();
 		// TODO! implement key/mouse tracking here!
 		default:
 		{
+			[self parseEvent:event];
 			return NPERR_NO_ERROR;
 		}
 	}
 }
+
+-(void) parseEvent:(NPCocoaEvent*)event
+{
+	switch (event->type)
+	{
+		case NPCocoaEventDrawRect:
+			break;
+
+		case NPCocoaEventMouseDown:
+			[self processEvent:DAVA::UIEvent::PHASE_BEGAN touch:event];
+			break;
+
+		case NPCocoaEventMouseUp:
+			[self processEvent:DAVA::UIEvent::PHASE_ENDED touch:event];
+			break;
+
+		case NPCocoaEventMouseMoved:
+			[self processEvent:DAVA::UIEvent::PHASE_MOVE touch:event];
+			break;
+
+		case NPCocoaEventMouseEntered:
+			break;
+
+		case NPCocoaEventMouseExited:
+			break;
+
+		case NPCocoaEventMouseDragged:
+			[self processEvent:DAVA::UIEvent::PHASE_DRAG touch:event];
+			break;
+
+		case NPCocoaEventKeyDown:
+			break;
+
+		case NPCocoaEventKeyUp:
+			break;
+
+		case NPCocoaEventFlagsChanged:
+			break;
+
+		case NPCocoaEventScrollWheel:
+			break;
+
+		case NPCocoaEventTextInput:
+			break;
+
+		default:
+			break;
+	}
+}
+
+-(void) moveTouchesToVector:(NPCocoaEvent*)curEvent touchPhase:(int)touchPhase outTouches:(DAVA::Vector<DAVA::UIEvent>*)outTouches
+{
+	int button = 0;
+	button = curEvent->data.mouse.buttonNumber + 1;
+	time_t timestamp = time(NULL);
+
+	if (touchPhase == DAVA::UIEvent::PHASE_DRAG)
+	{
+		for(DAVA::Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
+		{
+			NSPoint p;
+			p.x = curEvent->data.mouse.pluginX;
+			p.y = curEvent->data.mouse.pluginY;
+
+			it->physPoint.x = p.x;
+			it->physPoint.y = p.y;
+
+			it->tapCount = DAVA::Max(curEvent->data.mouse.clickCount, 1);
+			it->timestamp = timestamp;
+			it->phase = touchPhase;
+		}
+	}
+
+	bool isFind = false;
+	for(DAVA::Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
+	{
+		if(it->tid == button)
+		{
+			isFind = true;
+
+			NSPoint p;
+			p.x = curEvent->data.mouse.pluginX;
+			p.y = curEvent->data.mouse.pluginY;
+
+			it->physPoint.x = p.x;
+			it->physPoint.y = p.y;
+
+			it->tapCount = curEvent->data.mouse.clickCount;
+			it->timestamp = timestamp;
+			it->phase = touchPhase;
+
+			break;
+		}
+	}
+
+	if(!isFind)
+	{
+		DAVA::UIEvent newTouch;
+		newTouch.tid = button;
+		NSPoint p;
+		p.x = curEvent->data.mouse.pluginX;
+		p.y = curEvent->data.mouse.pluginY;
+
+		newTouch.physPoint.x = p.x;
+		newTouch.physPoint.y = p.y;
+
+		newTouch.tapCount = curEvent->data.mouse.clickCount;
+		newTouch.timestamp = timestamp;
+		newTouch.phase = touchPhase;
+		activeTouches.push_back(newTouch);
+	}
+
+	for(DAVA::Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
+	{
+		outTouches->push_back(*it);
+	}
+
+	if(touchPhase == DAVA::UIEvent::PHASE_ENDED || touchPhase == DAVA::UIEvent::PHASE_MOVE)
+	{
+		for(DAVA::Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
+		{
+			if(it->tid == button)
+			{
+				activeTouches.erase(it);
+				break;
+			}
+		}
+	}
+}
+
+-(void) processEvent:(int)touchPhase touch:(NPCocoaEvent*)touch
+{
+	DAVA::Vector<DAVA::UIEvent> touches;
+	DAVA::Vector<DAVA::UIEvent> emptyTouches;
+	[self moveTouchesToVector:touch touchPhase:touchPhase outTouches:&touches];
+
+	DAVA::UIControlSystem::Instance()->OnInput(touchPhase, emptyTouches, touches);
+	touches.clear();
+}
+
 
 // Called when the browser requests us to return a value.
 -(NPError) npGetValue:(NPPVariable) variable withParam:(void*)param
