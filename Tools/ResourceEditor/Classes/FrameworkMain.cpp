@@ -58,7 +58,7 @@ void PrintUsage()
     printf("\t-processfile - filename from DataSource/3d/ for saving\n");
     printf("\t-forceclose - to don't display error dialogs");
 
-    
+
     printf("\n");
     printf("Samples:");
     printf("-sceneexporter -clean /Users/User/Project/Data/3d/\n");
@@ -240,6 +240,7 @@ void FrameworkDidLaunched()
         if(     !CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter"))
            &&   !CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter"))
            &&   !CommandLineTool::Instance()->CommandIsFound(String("-scenesaver"))
+		   &&   !CommandLineTool::Instance()->CommandIsFound(String("-beast"))
            )
         {
             ProcessRecourcePacker();
