@@ -102,6 +102,8 @@ public:
 		,	JOYSTICK_AXIS_RZ
 		,	JOYSTICK_AXIS_LTRIGGER
 		,	JOYSTICK_AXIS_RTRIGGER
+		,	JOYSTICK_AXIS_HAT_X
+		,	JOYSTICK_AXIS_HAT_Y
 	};
 
 	int32 tid;//!< event id, for the platforms with mouse this id means mouse button id, key codes for keys, axis id for joystick
