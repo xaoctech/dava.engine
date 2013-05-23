@@ -31,6 +31,8 @@ extern void FrameworkWillTerminate();
 		self->bundlePath = NULL;
 		
 		self->hasFocused = NO;
+
+		oldModifiersFlags = 0;
 	}
 	
 	return self;
@@ -135,12 +137,15 @@ extern void FrameworkWillTerminate();
 			break;
 
 		case NPCocoaEventKeyDown:
+			[self keyDown:event];
 			break;
 
 		case NPCocoaEventKeyUp:
+			[self keyUp:event];
 			break;
 
 		case NPCocoaEventFlagsChanged:
+			[self flagsChanged:event];
 			break;
 
 		case NPCocoaEventScrollWheel:
@@ -242,6 +247,82 @@ extern void FrameworkWillTerminate();
 
 	DAVA::UIControlSystem::Instance()->OnInput(touchPhase, emptyTouches, touches);
 	touches.clear();
+}
+
+-(void) keyDown:(NPCocoaEvent*)event
+{
+	NSString* s = (NSString*)event->data.key.characters;
+	unichar c = [s characterAtIndex:0];
+
+	DAVA::Vector<DAVA::UIEvent> touches;
+	DAVA::Vector<DAVA::UIEvent> emptyTouches;
+
+	for(DAVA::Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
+	{
+		touches.push_back(*it);
+	}
+
+	time_t timestamp = time(NULL);
+
+	DAVA::UIEvent ev;
+	ev.keyChar = c;
+	ev.phase = DAVA::UIEvent::PHASE_KEYCHAR;
+	ev.timestamp = timestamp;
+	ev.tapCount = 1;
+	ev.tid = DAVA::InputSystem::Instance()->GetKeyboard()->GetDavaKeyForSystemKey(event->data.key.keyCode);
+
+	touches.push_back(ev);
+
+	DAVA::UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
+	touches.pop_back();
+	DAVA::UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
+
+	DAVA::InputSystem::Instance()->GetKeyboard()->OnSystemKeyPressed(event->data.key.keyCode);
+	if (event->data.key.modifierFlags & NSCommandKeyMask)
+	{
+		DAVA::InputSystem::Instance()->GetKeyboard()->OnSystemKeyUnpressed(event->data.key.keyCode);
+	}
+}
+
+-(void) keyUp:(NPCocoaEvent*) event
+{
+	DAVA::InputSystem::Instance()->GetKeyboard()->OnSystemKeyUnpressed(event->data.key.keyCode);
+}
+
+-(void) flagsChanged:(NPCocoaEvent*) event
+{
+	DAVA::int32 newModifiers = event->data.key.modifierFlags;
+
+	static DAVA::int32 masks[] = {
+		NSAlphaShiftKeyMask,
+		NSShiftKeyMask,
+		NSControlKeyMask,
+		NSAlternateKeyMask,
+		NSCommandKeyMask};
+
+	static DAVA::int32 keyCodes[] = {
+		DAVA::DVMACOS_CAPS_LOCK,
+		DAVA::DVMACOS_SHIFT,
+		DAVA::DVMACOS_CONTROL,
+		DAVA::DVMACOS_OPTION,
+		DAVA::DVMACOS_COMMAND};
+
+	for (int i = 0; i < 5; i++)
+	{
+		if ((oldModifiersFlags & masks[i]) != (newModifiers & masks[i]))
+		{
+			if (newModifiers & masks[i])
+			{
+				DAVA::InputSystem::Instance()->GetKeyboard()->OnSystemKeyPressed(keyCodes[i]);
+			}
+			else
+			{
+				DAVA::InputSystem::Instance()->GetKeyboard()->OnSystemKeyUnpressed(keyCodes[i]);
+			}
+		}
+	}
+
+	oldModifiersFlags = newModifiers;
 }
 
 

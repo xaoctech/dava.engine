@@ -30,6 +30,7 @@
 	NSString* bundlePath;
 
 	DAVA::Vector<DAVA::UIEvent> activeTouches;
+	DAVA::int32 oldModifiersFlags;
 }
 
 // Constructor/destructor.
@@ -63,5 +64,9 @@
 -(void) parseEvent:(NPCocoaEvent*) event;
 -(void) processEvent:(int)touchPhase touch:(NPCocoaEvent*)touch;
 -(void) moveTouchesToVector:(NPCocoaEvent*)curEvent touchPhase:(int)touchPhase outTouches:(DAVA::Vector<DAVA::UIEvent>*)outTouches;
+
+-(void) keyDown:(NPCocoaEvent*) event;
+-(void) keyUp:(NPCocoaEvent*) event;
+-(void) flagsChanged:(NPCocoaEvent*) event;
 
 @end
