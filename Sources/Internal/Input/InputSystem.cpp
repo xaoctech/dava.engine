@@ -29,6 +29,7 @@
 =====================================================================================*/
 #include "InputSystem.h"
 #include "Input/KeyboardDevice.h"
+#include "RenderManager.h"
 
 namespace DAVA 
 {
@@ -36,6 +37,7 @@ namespace DAVA
 InputSystem::InputSystem()
 {
     keyboard = new KeyboardDevice();
+    pinCursor = false;
 }
     
 InputSystem::~InputSystem()
@@ -53,9 +55,23 @@ void InputSystem::OnAfterUpdate()
     keyboard->OnAfterUpdate();
 }
     
+bool InputSystem::IsCursorPining()
+{
+    return pinCursor;
+}
+
+void InputSystem::SetCursorPining(bool isPin)
+{
+    pinCursor = isPin;
+
+#ifdef __DAVAENGINE_MACOS__
+    RenderManager::Instance()->GetCursor()->Show(!isPin);
+#endif
+}
+    
 KeyboardDevice *InputSystem::GetKeyboard()
 {
     return keyboard;
 }
-    
+
 };
