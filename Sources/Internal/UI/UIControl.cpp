@@ -37,6 +37,7 @@
 #include "UI/UIYamlLoader.h"
 #include "Render/RenderHelper.h"
 #include "Utils/Utils.h"
+#include "Input/InputSystem.h"
 
 namespace DAVA 
 {
@@ -1533,8 +1534,16 @@ namespace DAVA
 		}
 	}
 	
-	bool UIControl::IsPointInside(const Vector2 &point, bool expandWithFocus/* = false*/)
+	bool UIControl::IsPointInside(const Vector2 &_point, bool expandWithFocus/* = false*/)
 	{
+        Vector2 point = _point;
+#ifdef __DAVAENGINE_MACOS__
+		if(InputSystem::Instance()->IsCursorPining())
+		{
+			point = RenderManager::Instance()->GetCursor()->GetPosition();
+		}
+#endif
+        
 		UIGeometricData gd = GetGeometricData();
 		Rect rect = gd.GetUnrotatedRect();
 		if(expandWithFocus)
