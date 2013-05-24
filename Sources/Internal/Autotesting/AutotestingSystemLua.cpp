@@ -375,6 +375,7 @@ bool AutotestingSystemLua::LoadWrappedLuaObjects()
 {
     if(!luaState) return false; //TODO: report error?
     
+	bool ret = true;
     luaopen_AutotestingSystem(luaState);	// load the wrappered module
     luaopen_UIControl(luaState);	// load the wrappered module
     luaopen_Rect(luaState);	// load the wrappered module
@@ -382,10 +383,10 @@ bool AutotestingSystemLua::LoadWrappedLuaObjects()
     
     if(delegate)
     {
-        delegate->LoadWrappedLuaObjects();
+        ret = delegate->LoadWrappedLuaObjects(luaState);
     }
     //TODO: check if modules really loaded
-    return true;
+    return ret;
 }
 
 bool AutotestingSystemLua::LoadScript(const String &luaScript)
