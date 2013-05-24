@@ -875,6 +875,11 @@
      </property>
      <item>
       <widget class="ConsoleView" name="consoleView">
+       <property name="font">
+        <font>
+         <pointsize>9</pointsize>
+        </font>
+       </property>
        <property name="undoRedoEnabled">
         <bool>false</bool>
        </property>
