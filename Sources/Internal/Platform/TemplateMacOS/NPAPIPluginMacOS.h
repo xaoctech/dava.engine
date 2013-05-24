@@ -25,7 +25,11 @@
 	
 	// Whether browser window has focus?
 	BOOL hasFocused;
-	
+
+	// Plugin width and height.
+	int pluginWidth;
+	int pluginHeight;
+
 	// Bundle Path to the Plugin (passed from the HTML page).
 	NSString* bundlePath;
 

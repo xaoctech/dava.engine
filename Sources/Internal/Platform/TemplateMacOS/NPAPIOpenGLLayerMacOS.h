@@ -11,7 +11,6 @@
 @class NPAPIPluginMacOS;
 @interface NPAPIOpenGLLayerMacOS : CAOpenGLLayer
 {
-    GLfloat m_angle;
 	NPAPIPluginMacOS* pluginInstance;
 	
 	// We need to do extra initialization on first draw.
@@ -19,6 +18,8 @@
 }
 
 - (id) initWithPluginInstance:(NPAPIPluginMacOS*) instance;
+
++ (void) getThreadChildContext:(CGLContextObj*) childContext;
 
 @end
 
