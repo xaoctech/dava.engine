@@ -171,8 +171,6 @@ int16_t NPP_HandleEvent(NPP instance, void* event)
 	NPCocoaEvent* cocoaEvent = (NPCocoaEvent*)event;
 	if (cocoaEvent)
 	{
-		NSLog(@"NPP_HandleEvent is called with type %i", cocoaEvent->type);
-
 		NPAPIPluginMacOS* currentInstance = (NPAPIPluginMacOS*)(instance->pdata);
 		if (currentInstance)
 		{

@@ -14,10 +14,12 @@
 #include <pwd.h>
 
 // Relative path to NPAPI Internet Plugins for MacOS.
-#define PATH_TO_INTERNET_PLUGINS "Library/Internet Plug-Ins"
+#define PATH_TO_INTERNET_PLUGINS @"Library/Internet Plug-Ins"
 
 // Arguments passed to the NPAPI plugin instance.
-#define NPAPI_PLUGIN_ARGUMENT_BUNDLE_NAME "bundlename"
+#define NPAPI_PLUGIN_ARGUMENT_WIDTH @"width"
+#define NPAPI_PLUGIN_ARGUMENT_HEIGHT @"height"
+#define NPAPI_PLUGIN_ARGUMENT_BUNDLE_NAME @"bundlename"
 
 extern void FrameworkDidLaunched();
 extern void FrameworkWillTerminate();
@@ -32,7 +34,9 @@ extern void FrameworkWillTerminate();
 		self->npWindow = NULL;
 		self->openGLLayer = NULL;
 		self->appCore = NULL;
-		
+
+		self->pluginWidth = 0;
+		self->pluginHeight = 0;
 		self->bundlePath = NULL;
 		
 		self->hasFocused = NO;
@@ -62,28 +66,56 @@ extern void FrameworkWillTerminate();
 	// Lookup for the parameters needed for the initialization.
 	NSLog(@"npNew: Params count: %i", argCount);
 	
-	// Lookup for the Bundle Name - it is needed to properly initialize Resources management.
-	bool bundleNameFound = false;
-	NSString* bundleNameArgName = [NSString stringWithCString:NPAPI_PLUGIN_ARGUMENT_BUNDLE_NAME encoding:NSASCIIStringEncoding];
+	// Lookup for the params needed to initialize the plugin properly.
 	for (int16_t i = 0; i < argCount; i ++)
 	{
-		NSLog(@"npNew: Param #%i name is %s, value is %s", i, argNames[i], argValues[i]);
 		NSString* argName = [NSString stringWithCString:argNames[i] encoding:NSASCIIStringEncoding];
-		if ([argName caseInsensitiveCompare:bundleNameArgName] == NSOrderedSame)
+		NSString* argValue = [NSString stringWithCString:argValues[i] encoding:NSASCIIStringEncoding];
+		NSLog(@"npNew: Param #%i name is %@, value is %@", i, argName, argValue);
+		
+		if ([argName caseInsensitiveCompare:NPAPI_PLUGIN_ARGUMENT_WIDTH] == NSOrderedSame)
 		{
-			[self setBundlePath: argValues[i]];
-			bundleNameFound = true;
+			self->pluginWidth = [argValue integerValue];
+		}
+
+		if ([argName caseInsensitiveCompare:NPAPI_PLUGIN_ARGUMENT_HEIGHT] == NSOrderedSame)
+		{
+			self->pluginHeight = [argValue integerValue];
+		}
+
+		if ([argName caseInsensitiveCompare:NPAPI_PLUGIN_ARGUMENT_BUNDLE_NAME] == NSOrderedSame)
+		{
+			[self setBundlePath: argValue];
 		}
 	}
-	
-	if (!bundleNameFound)
+
+	// Verify all the required parameters are specified.
+	bool allParametersSpecified = true;
+	if (self->pluginHeight == 0)
 	{
-		NSLog(@"npNew: The %s parameter for NPAPI DAVA Framework plugin is required is not specified", NPAPI_PLUGIN_ARGUMENT_BUNDLE_NAME);
-		return NPERR_INVALID_PARAM;
+		[self logRequiredParameterNotSpecified: NPAPI_PLUGIN_ARGUMENT_HEIGHT];
+		allParametersSpecified = false;
 	}
 	
+	if (self->pluginWidth == 0)
+	{
+		[self logRequiredParameterNotSpecified: NPAPI_PLUGIN_ARGUMENT_WIDTH];
+		allParametersSpecified = false;
+	}
+	
+	if (self->bundlePath == NULL)
+	{
+		[self logRequiredParameterNotSpecified: NPAPI_PLUGIN_ARGUMENT_BUNDLE_NAME];
+		allParametersSpecified = false;
+	}
+
 	// Yuri Coder, 2013/05/22. Do we need to pass these parameters to some other location?
-	return NPERR_NO_ERROR;
+	return allParametersSpecified ? NPERR_NO_ERROR : NPERR_INVALID_PARAM;
+}
+
+-(void) logRequiredParameterNotSpecified:(NSString*) paramName
+{
+	NSLog(@"npNew: The %@ parameter for NPAPI DAVA Framework plugin is required is not specified", paramName);
 }
 
 // Set the NPWindow.
@@ -103,9 +135,9 @@ extern void FrameworkWillTerminate();
 			return [self handleWindowFocusChanged: event->data.focus.hasFocus];
 		}
 
-		// TODO! implement key/mouse tracking here!
 		default:
 		{
+			// Key/mouse tracking is implemented here.
 			[self parseEvent:event];
 			return NPERR_NO_ERROR;
 		}
@@ -351,7 +383,7 @@ extern void FrameworkWillTerminate();
 	}
 }
 
--(void) setBundlePath:(const char*) bundleName
+-(void) setBundlePath:(NSString*) bundleName
 {
 	NSString* homeDir = NULL;
 	struct passwd* pwd = getpwuid(getuid());
@@ -362,10 +394,8 @@ extern void FrameworkWillTerminate();
 
 	if (homeDir)
 	{
-		self->bundlePath = [[[homeDir stringByAppendingPathComponent:
-							  [NSString stringWithCString: PATH_TO_INTERNET_PLUGINS encoding:NSASCIIStringEncoding]]
-							 stringByAppendingPathComponent:
-							 [NSString stringWithCString: bundleName encoding:NSASCIIStringEncoding]] retain];
+		self->bundlePath = [[[homeDir stringByAppendingPathComponent: PATH_TO_INTERNET_PLUGINS]
+							 stringByAppendingPathComponent: bundleName] retain];
 	}
 
 	NSLog(@"Bundle Path is set to %@", self->bundlePath);
@@ -381,11 +411,13 @@ extern void FrameworkWillTerminate();
 
 	NSLog(@"Creating NPAPI OpenGL Layer");
 	openGLLayer = [[NPAPIOpenGLLayerMacOS alloc] initWithPluginInstance:self];
-	openGLLayer.autoresizingMask = kCALayerWidthSizable | kCALayerHeightSizable;
 	openGLLayer.opaque = YES;
-	openGLLayer.needsDisplayOnBoundsChange = YES;
+	
+	// Initialize the layer with the height and width of the plugin.
+	[openGLLayer setFrame:CGRectMake(0.0f,  0.0f, self->pluginWidth, self->pluginHeight)];
 
-	// Yuri Coder, 2013/05/22. Verify whether async mode is OK.
+
+	// The OpenGL layer is async and will be responsible for updates by itself.
 	openGLLayer.asynchronous = YES;
 	[openGLLayer retain];   // should be balanced by a -release in NPP_Destroy
 	
@@ -407,7 +439,6 @@ extern void FrameworkWillTerminate();
     DAVA::RenderManager::Create(DAVA::Core::RENDERER_OPENGL);
 
 	appCore = DAVA::Core::GetApplicationCore();
-	// TODO! Why animation is needed???
 }
 
 -(void) doInitializationOnFirstDraw
@@ -418,6 +449,7 @@ extern void FrameworkWillTerminate();
 	DAVA::RenderManager::Instance()->Init(rect.size.width, rect.size.height);
 	DAVA::UIControlSystem::Instance()->SetInputScreenAreaSize(rect.size.width, rect.size.height);
 	DAVA::Core::Instance()->SetPhysicalScreenSize(rect.size.width, rect.size.height);
+    DAVA::Core::Instance()->SetVirtualScreenSize(rect.size.width, rect.size.height);
 	
 	NSLog(@"[NPAPICoreMacOSPlatform] SystemAppStarted");
 	DAVA::Core::Instance()->SystemAppStarted();
