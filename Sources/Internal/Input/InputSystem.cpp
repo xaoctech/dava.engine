@@ -29,7 +29,7 @@
 =====================================================================================*/
 #include "InputSystem.h"
 #include "Input/KeyboardDevice.h"
-#include "RenderManager.h"
+#include "Render/RenderManager.h"
 
 namespace DAVA 
 {
