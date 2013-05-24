@@ -66,10 +66,14 @@ public:
     
     KeyboardDevice *GetKeyboard();
 
+    bool IsCursorPining();
+    void SetCursorPining(bool isPin);
+    
 protected:
     
     KeyboardDevice *keyboard;
 
+    bool pinCursor;
 };
 };
 
