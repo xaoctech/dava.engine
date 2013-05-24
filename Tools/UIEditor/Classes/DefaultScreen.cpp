@@ -262,7 +262,7 @@ HierarchyTreeNode::HIERARCHYTREENODEID DefaultScreen::SmartSelection::GetNext(Hi
 
 	bool peakNext = false;
 	// From top control to bottom control
-	for (int32 i = selection.size() - 1; i >= 0; i--)
+	for (uint32 i = 0; i < selection.size(); i++)
 	{
 		if (peakNext)
 			return selection[i];
@@ -336,11 +336,11 @@ HierarchyTreeControlNode* DefaultScreen::SmartGetSelectedControl(const Vector2& 
 	{
 		oldSmartSelectedId = root->GetNext(oldSmartSelectedId);
 		if (oldSmartSelectedId == HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY)
-			oldSmartSelectedId = root->GetLast();
+			oldSmartSelectedId = root->GetFirst();
 	}
 	else
 	{
-		oldSmartSelectedId = root->GetLast();
+		oldSmartSelectedId = root->GetFirst();
 	}
 	
 	SAFE_DELETE(oldSmartSelected);
