@@ -51,7 +51,7 @@ namespace DAVA
 class AutotestingSystemLuaDelegate
 {
 public:
-    virtual void LoadWrappedLuaObjects() = 0;
+    virtual bool LoadWrappedLuaObjects(lua_State *luaState) = 0;
 };
 #endif //SWIG
 
