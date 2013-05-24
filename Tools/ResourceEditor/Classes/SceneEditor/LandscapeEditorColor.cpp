@@ -340,7 +340,12 @@ void LandscapeEditorColor::SaveTextureAction(const FilePath &pathToFile)
             SafeRelease(savedTexture);
             
             FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(pathToFile);
-            workingLandscape->SetTexture(Landscape::TEXTURE_TILE_MASK, descriptorPathname);
+			Texture* texture = Texture::CreateFromFile(descriptorPathname);
+			if (texture)
+			{
+				texture->Reload();
+			}
+			workingLandscape->SetTexture(Landscape::TEXTURE_TILE_MASK, texture);
 
             savedTexture = SafeRetain(workingLandscape->GetTexture(Landscape::TEXTURE_TILE_MASK));
             workingLandscape->SetTexture(Landscape::TEXTURE_TILE_MASK, maskSprite->GetTexture());
