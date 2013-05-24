@@ -14,55 +14,77 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_GLOBAL_ENUM_H__
-#define __DAVAENGINE_GLOBAL_ENUM_H__
-
 #include "Base/EnumMap.h"
+#include "Debug/DVAssert.h"
 
-template<typename T>
-class GlobalEnumMap
+EnumMap::EnumMap()
+{}
+
+EnumMap::~EnumMap()
+{}
+
+void EnumMap::Register(const int e, const char* s) const
 {
-public:
-	explicit GlobalEnumMap();
-	~GlobalEnumMap();
+	DVASSERT(!map.count(e));
+	map[e] = DAVA::String(s);
+}
 
-	static const EnumMap* Instance();
-
-protected:
-	static void RegisterAll();
-	static void Register(const int e, const char *s);
-};
-
-template<typename T>
-const EnumMap* GlobalEnumMap<T>::Instance()
+bool EnumMap::ToValue(const char* s, int &e) const
 {
-	static EnumMap enumMap;
-	static bool initialized = false;
+	bool ret = false;
+	EnumMapContainer::const_iterator i = map.begin();
+	EnumMapContainer::const_iterator end = map.end();
+	DAVA::String str(s);
 
-	if(!initialized)
+	for(; i != end; ++i)
 	{
-		initialized = true;
-		RegisterAll();
+		if(i->second == str)
+		{
+			e = i->first;
+			ret = true;
+			break;
+		}
 	}
 
-	return &enumMap;
+	return ret;
 }
 
-template<typename T>
-void GlobalEnumMap<T>::Register(const int e, const char *s)
+const char* EnumMap::ToString(const int e) const
 {
-	Instance()->Register(e, s);
+	const char* ret = NULL;
+
+	if(map.count(e))
+	{
+		ret = map.at(e).c_str();
+	}
+
+	return ret;
 }
 
-#define ENUM_DECLARE(eType) template<> void GlobalEnumMap<eType>::RegisterAll()
-#define ENUM_ADD(eValue) Register(eValue, #eValue)
-#define ENUM_ADD_DESCR(eValue, eDescr) Register(eValue, eDescr)
+int EnumMap::GetCount() const
+{
+	return map.size();
+}
 
-// Usage:
-//	ENUM_DECLARE(AnyEnumType)
-//	{
-//		ENUM_ADDS(AnyEnumType::Value1);
-//		ENUM_ADD_DESCR(AnyEnumType::Value2, "Value2");
-//	}
+bool EnumMap::GetValue(size_t index, int &e) const
+{
+	bool ret = false;
+	EnumMapContainer::const_iterator i = map.begin();
 
-#endif // __DAVAENGINE_GLOBAL_ENUM_H__
+	if(index < map.size())
+	{
+		while(index > 0)
+		{
+			index--;
+			i++;
+		}
+
+		if(i != map.end())
+		{
+			e = i->first;
+			ret = true;
+		}
+	}
+
+	return ret;
+}

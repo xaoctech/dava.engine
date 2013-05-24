@@ -14,55 +14,28 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_GLOBAL_ENUM_H__
-#define __DAVAENGINE_GLOBAL_ENUM_H__
+#ifndef __DAVAENGINE_ENUM_MAP_H__
+#define __DAVAENGINE_ENUM_MAP_H__
 
-#include "Base/EnumMap.h"
+#include "Base/BaseTypes.h"
 
-template<typename T>
-class GlobalEnumMap
+class EnumMap
 {
 public:
-	explicit GlobalEnumMap();
-	~GlobalEnumMap();
+	EnumMap();
+	~EnumMap();
 
-	static const EnumMap* Instance();
+	bool ToValue(const char *, int &e) const;
+	const char* ToString(const int e) const;
+
+	int GetCount() const;
+	bool GetValue(size_t index, int &e) const;
+
+	void Register(const int e, const char *) const;
 
 protected:
-	static void RegisterAll();
-	static void Register(const int e, const char *s);
+	typedef DAVA::Map<int, DAVA::String> EnumMapContainer;
+	mutable EnumMapContainer map;
 };
 
-template<typename T>
-const EnumMap* GlobalEnumMap<T>::Instance()
-{
-	static EnumMap enumMap;
-	static bool initialized = false;
-
-	if(!initialized)
-	{
-		initialized = true;
-		RegisterAll();
-	}
-
-	return &enumMap;
-}
-
-template<typename T>
-void GlobalEnumMap<T>::Register(const int e, const char *s)
-{
-	Instance()->Register(e, s);
-}
-
-#define ENUM_DECLARE(eType) template<> void GlobalEnumMap<eType>::RegisterAll()
-#define ENUM_ADD(eValue) Register(eValue, #eValue)
-#define ENUM_ADD_DESCR(eValue, eDescr) Register(eValue, eDescr)
-
-// Usage:
-//	ENUM_DECLARE(AnyEnumType)
-//	{
-//		ENUM_ADDS(AnyEnumType::Value1);
-//		ENUM_ADD_DESCR(AnyEnumType::Value2, "Value2");
-//	}
-
-#endif // __DAVAENGINE_GLOBAL_ENUM_H__
+#endif // __DAVAENGINE_ENUM_MAP_H__

@@ -15,7 +15,6 @@
 =====================================================================================*/
 
 #include "Base/GlobalEnum.h"
-
 #include "Render/Texture.h"
 
 using namespace DAVA;
