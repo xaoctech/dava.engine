@@ -20,6 +20,7 @@ PVRConverter::PVRConverter()
 	pixelFormatToPVRFormat[FORMAT_PVR2] = "OGLPVRTC2";
 	pixelFormatToPVRFormat[FORMAT_PVR4] = "OGLPVRTC4";
 	pixelFormatToPVRFormat[FORMAT_A8] = "OGL8";
+	pixelFormatToPVRFormat[FORMAT_ETC1] = "ETC";
 }
 
 PVRConverter::~PVRConverter()
