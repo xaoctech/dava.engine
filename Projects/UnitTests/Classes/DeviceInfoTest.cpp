@@ -28,6 +28,7 @@ void DeviceInfoTest::TestFunction(TestTemplate<DeviceInfoTest>::PerfFuncData *da
     String locale = DeviceInfo::GetLocale();
     String region = DeviceInfo::GetRegion();
     String timezone = DeviceInfo::GetTimeZone();
+    String udid = DeviceInfo::GetUDID();
 
 	Logger::Debug("********** Device info **********");
 	Logger::Debug("Platform: %s", platform.c_str());
@@ -37,6 +38,7 @@ void DeviceInfoTest::TestFunction(TestTemplate<DeviceInfoTest>::PerfFuncData *da
 	Logger::Debug("Locale: %s", locale.c_str());
 	Logger::Debug("Region: %s", region.c_str());
 	Logger::Debug("Time zone: %s", timezone.c_str());
+    Logger::Debug("UDID: %s", udid.c_str());
 	Logger::Debug("********** Device info **********");
 
 	data->testData.message = "DeviceInfo test - passed";
