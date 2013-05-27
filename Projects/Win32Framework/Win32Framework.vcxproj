@@ -237,6 +237,7 @@
     <ClInclude Include="..\..\Sources\Internal\Database\MongodbObject.h" />
     <ClInclude Include="..\..\Sources\Internal\DAVAConfig.h" />
     <ClInclude Include="..\..\Sources\Internal\DAVAEngine.h" />
+    <ClInclude Include="..\..\Sources\Internal\DAVAVersion.h" />
     <ClInclude Include="..\..\Sources\Internal\Debug\Backtrace.h" />
     <ClInclude Include="..\..\Sources\Internal\Debug\DVAssertMessage.h" />
     <ClInclude Include="..\..\Sources\Internal\Debug\Stats.h" />
@@ -662,6 +663,7 @@
     <ClCompile Include="..\..\Sources\Internal\FileSystem\KeyedUnarchiver.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\LocalizationSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\Logger.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\LoggerWin.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\ResourceArchive.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\VariantType.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\XMLParser.cpp" />

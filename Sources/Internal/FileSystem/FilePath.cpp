@@ -148,28 +148,12 @@ FilePath::FilePath(const FilePath &path)
     
 FilePath::FilePath(const char * sourcePath)
 {
-	if(sourcePath)
-    {
-        Initialize(String(sourcePath));
-    }
-	else
-    {
-		absolutePathname = String();
-        pathType = PATH_IN_FILESYSTEM;
-    }
+    Initialize(String(sourcePath));
 }
 
 FilePath::FilePath(const String &pathname)
 {
-	if(pathname.empty())
-    {
-		absolutePathname = String();
-        pathType = PATH_IN_FILESYSTEM;
-    }
-	else
-    {
-        Initialize(String(pathname));
-    }
+    Initialize(pathname);
 }
 
     
@@ -428,18 +412,20 @@ void FilePath::ReplaceFilename(const String &filename)
     
 void FilePath::ReplaceBasename(const String &basename)
 {
-    DVASSERT(!IsEmpty());
-    
-    const String extension = GetExtension();
-    absolutePathname = NormalizePathname((GetDirectory() + (basename + extension)).absolutePathname);
+    if(!IsEmpty())
+    {
+        const String extension = GetExtension();
+        absolutePathname = NormalizePathname((GetDirectory() + (basename + extension)).absolutePathname);
+    }
 }
     
 void FilePath::ReplaceExtension(const String &extension)
 {
-    DVASSERT(!IsEmpty());
-    
-    const String basename = GetBasename();
-    absolutePathname = NormalizePathname((GetDirectory() + (basename + extension)).absolutePathname);
+    if(!IsEmpty())
+    {
+        const String basename = GetBasename();
+        absolutePathname = NormalizePathname((GetDirectory() + (basename + extension)).absolutePathname);
+    }
 }
     
 void FilePath::ReplaceDirectory(const String &directory)

@@ -79,12 +79,15 @@ public:
     
     KeyboardDevice *GetKeyboard();
 
+    bool IsCursorPining();
+    void SetCursorPining(bool isPin);
+    
 protected:
     
     KeyboardDevice *keyboard;
 
-private:
-	Vector<InputCallback> callbacks;
+    Vector<InputCallback> callbacks;
+    bool pinCursor;
 };
 };
 
