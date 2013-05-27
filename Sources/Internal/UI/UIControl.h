@@ -288,7 +288,7 @@ public:
 	 \returns background used for draw.
 	 */
 	virtual UIControlBackground * GetBackground();
-#endif //SWIG
+
 	/**
 	 \brief Sets left align of control relative to its parent. 
 	 \param[in] align left align of control.
@@ -409,6 +409,7 @@ public:
 	 \returns bottom align of control.
 	 */
 	virtual bool GetBottomAlignEnabled();	
+	#endif //SWIG
 	/**
 	 \brief Returns untransformed control rect.
 		To get control metrics that applies all control transformation you need to use 

@@ -120,7 +120,7 @@ inline Vector2 Normalize(const Vector2 & _v);
 inline float32 CrossProduct(const Vector2 & a, const Vector2 & b);
 inline Vector2 Reflect(const Vector2 & v, const Vector2 & n);
 
-#ifndef SWIG
+
 /**	
 	\ingroup math
 	\brief Vector with 3 coordinates
@@ -128,6 +128,8 @@ inline Vector2 Reflect(const Vector2 & v, const Vector2 & n);
 class Vector3
 {
 public:
+
+#ifndef SWIG
 	union{
 		struct
 		{
@@ -135,7 +137,10 @@ public:
 		};
 		float32 data[3];
 	};
-	
+#else
+    float32 x, y, z;
+#endif
+
 	inline Vector3();
 	inline Vector3(float32 _x, float32 _y, float32 _z);
 	inline Vector3(float32 *_data);
@@ -202,6 +207,7 @@ inline float32 DotProduct(const Vector3 & v1, const Vector3 & v2);
 inline Vector3 Lerp(const Vector3 & _v1, const Vector3 & _v2, float32 t);
 inline Vector3 Reflect(const Vector3 & v, const Vector3 & n);
 
+#ifndef SWIG
 /**	
 	\ingroup math
 	\brief Vector with 4 coordinates.
