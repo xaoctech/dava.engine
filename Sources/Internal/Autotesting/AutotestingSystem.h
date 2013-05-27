@@ -107,6 +107,8 @@ public:
     bool FindTouch(int32 id, UIEvent &touch);
     bool IsTouchDown(int32 id);
 
+	bool SaveKeyedArchiveToDB(const String &archiveName, KeyedArchive *archive);
+
     // DB Master-Helper relations
     void InitMultiplayer(bool _isMaster);
     void RegisterMasterInDB(int32 helpersCount);

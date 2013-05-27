@@ -302,6 +302,31 @@ void AutotestingSystem::ClearTestInDB()
     SafeRelease(dbUpdateObject);
 }
     
+bool AutotestingSystem::SaveKeyedArchiveToDB(const String &archiveName, KeyedArchive *archive)
+{
+	bool ret = false;
+	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
+
+	String storageName = Format("%u_aux", testsDate);
+    Logger::Debug("AutotestingSystem::SaveKeyedArchiveToDB storageName=%s archiveName=%s", storageName.c_str(), archiveName.c_str());
+    
+    bool isFound = dbClient->FindObjectByKey(storageName, dbUpdateObject);
+    if(!isFound)
+    {
+        dbUpdateObject->SetObjectName(storageName);
+        Logger::Debug("AutotestingSystem::SaveKeyedArchiveToDB new MongodbUpdateObject");
+    }
+    dbUpdateObject->LoadData();
+    
+    KeyedArchive* dbUpdateData = dbUpdateObject->GetData();
+
+	dbUpdateData->SetArchive(archiveName, archive);
+
+	ret = SaveToDB(dbUpdateObject);
+    SafeRelease(dbUpdateObject);
+	return ret;
+}
+
 KeyedArchive *AutotestingSystem::FindOrInsertTestArchive(MongodbUpdateObject* dbUpdateObject, const String &testId)
 {
     Logger::Debug("AutotestingSystem::FindOrInsertTestArchive testId=%s", testId.c_str());

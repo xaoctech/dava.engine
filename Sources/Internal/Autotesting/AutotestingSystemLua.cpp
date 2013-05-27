@@ -189,6 +189,11 @@ void AutotestingSystemLua::Log(const String &level, const String &message)
 	AutotestingSystem::Instance()->Log(level, message);
 }
     
+bool AutotestingSystemLua::SaveKeyedArchiveToDB(const String &archiveName, KeyedArchive *archive)
+{
+	return AutotestingSystem::Instance()->SaveKeyedArchiveToDB(archiveName, archive);
+}
+
 UIControl *AutotestingSystemLua::GetScreen()
 {
     return UIControlSystem::Instance()->GetScreen();
