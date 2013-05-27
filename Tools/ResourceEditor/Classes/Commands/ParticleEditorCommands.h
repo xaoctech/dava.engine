@@ -144,7 +144,7 @@ class CommandUpdateParticleLayer: public Command
 {
 public:
 	CommandUpdateParticleLayer(ParticleEmitter* emitter, ParticleLayer* layer);
-	DAVA_DEPRECATED(void Init(const QString& layerName,
+	DAVA_DEPRECATED(void Init(const QString& layerName,	//DEPRECATE: using QString
 			  ParticleLayer::eType layerType,
 			  bool isDisabled,
 			  bool additive,
@@ -274,7 +274,7 @@ private:
 class CommandLoadParticleEmitterFromYaml : public Command
 {
 public:
-	DAVA_DEPRECATED(CommandLoadParticleEmitterFromYaml());
+	DAVA_DEPRECATED(CommandLoadParticleEmitterFromYaml()); // DEPRECATED: using ParticlesEditorController(QOBJECT)
 
 protected:
     virtual void Execute();
@@ -283,7 +283,7 @@ protected:
 class CommandSaveParticleEmitterToYaml : public Command
 {
 public:
-	DAVA_DEPRECATED(CommandSaveParticleEmitterToYaml(bool forceAskFilename));
+	DAVA_DEPRECATED(CommandSaveParticleEmitterToYaml(bool forceAskFilename)); // DEPRECATED: using ParticlesEditorController(QOBJECT)
 
 protected:
     virtual void Execute();
@@ -295,19 +295,19 @@ protected:
 class CommandLoadInnerEmitterFromYaml : public Command
 {
 public:
-	DAVA_DEPRECATED(CommandLoadInnerEmitterFromYaml());
+	DAVA_DEPRECATED(CommandLoadInnerEmitterFromYaml()); // DEPRECATED: using ParticlesEditorController(QOBJECT)
 	
 protected:
-    virtual void Execute();
+    virtual void Execute(); 
 };
 
 class CommandSaveInnerEmitterToYaml : public Command
 {
 public:
-	DAVA_DEPRECATED(CommandSaveInnerEmitterToYaml(bool forceAskFilename));
+	DAVA_DEPRECATED(CommandSaveInnerEmitterToYaml(bool forceAskFilename)); // DEPRECATED: using ParticlesEditorController(QOBJECT)
 	
 protected:
-    virtual void Execute();
+    virtual void Execute(); 
     
     bool forceAskFilename;
 };

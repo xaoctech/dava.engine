@@ -23,7 +23,7 @@ protected:
 class CommandLockAtObject: public Command
 {
 public:
-	DAVA_DEPRECATED(CommandLockAtObject());
+	DAVA_DEPRECATED(CommandLockAtObject());// DEPRECATED: using SceneDataManager(QOBJECT)
     
 protected:
     
@@ -81,7 +81,7 @@ class CommandDebugFlags: public Command
 {
     
 public:	
-	DAVA_DEPRECATED(CommandDebugFlags());
+	DAVA_DEPRECATED(CommandDebugFlags());// DEPRECATED: using SceneDataManager(QOBJECT)
     
 protected:	
     

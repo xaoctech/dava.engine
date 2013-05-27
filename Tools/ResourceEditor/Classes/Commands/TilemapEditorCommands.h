@@ -8,7 +8,7 @@
 class CommandDrawTilemap: public Command
 {
 public:
-	DAVA_DEPRECATED(CommandDrawTilemap(Image* originalImage, Image* newImage, const FilePath & pathname, Landscape* landscape));
+	DAVA_DEPRECATED(CommandDrawTilemap(Image* originalImage, Image* newImage, const FilePath & pathname, Landscape* landscape));// DEPRECATED: using of SceneEditorScreenMain, editorBodyControl
 	virtual ~CommandDrawTilemap();
 
 protected:

@@ -7,7 +7,7 @@
 class CommandReloadTextures: public Command
 {
 public:	
-	DAVA_DEPRECATED(CommandReloadTextures());
+	DAVA_DEPRECATED(CommandReloadTextures());// DEPRECATED: using SceneDataManager
     
 protected:
     virtual void Execute();
