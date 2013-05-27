@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		020AB209174639C60082F336 /* libfmodevent.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 02E9E45C173A43A900C501BC /* libfmodevent.dylib */; };
+		020AB20A174639C60082F336 /* libfmodex.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 02E9E45D173A43A900C501BC /* libfmodex.dylib */; };
 		029E4D8A15D403BA004A4167 /* SplitTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 029E4D8915D403BA004A4167 /* SplitTest.cpp */; };
 		02E9E45E173A43A900C501BC /* libfmodevent.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E45C173A43A900C501BC /* libfmodevent.dylib */; };
 		02E9E45F173A43A900C501BC /* libfmodex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E45D173A43A900C501BC /* libfmodex.dylib */; };
@@ -73,6 +75,20 @@
 			remoteInfo = Framework;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		020AB208174639BB0082F336 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				020AB209174639C60082F336 /* libfmodevent.dylib in CopyFiles */,
+				020AB20A174639C60082F336 /* libfmodex.dylib in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		029E4D8915D403BA004A4167 /* SplitTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SplitTest.cpp; path = Classes/SplitTest.cpp; sourceTree = "<group>"; };
@@ -500,6 +516,7 @@
 				8D1107290486CEB800E47090 /* Resources */,
 				8D11072C0486CEB800E47090 /* Sources */,
 				8D11072E0486CEB800E47090 /* Frameworks */,
+				020AB208174639BB0082F336 /* CopyFiles */,
 				FE0D6CE9128AE7DE00ECAE3B /* ShellScript */,
 			);
 			buildRules = (
@@ -591,7 +608,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "touch -cm ${SRCROOT}/Data/\ntouch -cm ${SRCROOT}/Data/XGfx/\ntouch -cm ${SRCROOT}/Data/Configs/\ntouch -cm ${SRCROOT}/Data/Audio/";
+			shellScript = "install_name_tool -change ./libfmodex.dylib @executable_path/../Frameworks/libfmodex.dylib $BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH\ninstall_name_tool -change ./libfmodevent.dylib @executable_path/../Frameworks/libfmodevent.dylib $BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH\ninstall_name_tool -id @executable_path/../Frameworks/libfmodex.dylib $BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH/libfmodex.dylib\ninstall_name_tool -id @executable_path/../Frameworks/libfmodevent.dylib $BUILT_PRODUCTS_DIR/$FRAMEWORKS_FOLDER_PATH/libfmodevent.dylib\ninstall_name_tool -change ./libfmodex.dylib @executable_path/../Frameworks/libfmodex.dylib $BUILT_PRODUCTS_DIR/$FRAMEWORKS_FOLDER_PATH/libfmodevent.dylib\ntouch -cm ${SRCROOT}/Data/\ntouch -cm ${SRCROOT}/Data/XGfx/\ntouch -cm ${SRCROOT}/Data/Configs/\ntouch -cm ${SRCROOT}/Data/Audio/";
 		};
 /* End PBXShellScriptBuildPhase section */
 

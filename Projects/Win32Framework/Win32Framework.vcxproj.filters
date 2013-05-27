@@ -1263,6 +1263,9 @@
     <ClInclude Include="..\..\Sources\Internal\Base\GlobalEnum.h">
       <Filter>Internal\Base</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Base\EnumMap.h">
+      <Filter>Internal\Base</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\GPUFamilyDescriptor.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
@@ -2223,6 +2226,9 @@
       <Filter>Internal\Scene3D\Components</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Base\GlobalEnum.cpp">
+      <Filter>Internal\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Base\EnumMap.cpp">
       <Filter>Internal\Base</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\GPUFamilyDescriptor.cpp">
