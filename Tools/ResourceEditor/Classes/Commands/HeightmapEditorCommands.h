@@ -24,7 +24,7 @@ protected:
 class CommandDrawHeightmap: public HeightmapModificationCommand
 {
 public:
-	DAVA_DEPRECATED(CommandDrawHeightmap(Heightmap* originalHeightmap,
+	DAVA_DEPRECATED(CommandDrawHeightmap(Heightmap* originalHeightmap, // DEPRECATED : using SceneDataManager(QOBJECT)
 						 Heightmap* newHeightmap,
 						 const Rect& updatedRect));
 	virtual ~CommandDrawHeightmap();
@@ -40,7 +40,7 @@ protected:
 class CommandCopyPasteHeightmap: public HeightmapModificationCommand
 {
 public:
-	DAVA_DEPRECATED(CommandCopyPasteHeightmap(bool copyHeightmap, bool copyTilemap,
+	DAVA_DEPRECATED(CommandCopyPasteHeightmap(bool copyHeightmap, bool copyTilemap, //DEPRECATED: using of SceneEditorScreenMain, SceneDataManager...
 							  Heightmap* originalHeightmap, Heightmap* newHeightmap,
 							  Image* originalTilemap, Image* newTilemap,
 							  const FilePath& tilemapSavedPath, const Rect& updatedRect));

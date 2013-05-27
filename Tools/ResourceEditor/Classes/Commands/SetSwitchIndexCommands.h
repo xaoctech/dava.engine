@@ -10,7 +10,7 @@
 class CommandToggleSetSwitchIndex: public CommandEntityModification
 {
 public:
-	DAVA_DEPRECATED(CommandToggleSetSwitchIndex(DAVA::uint32 value, DAVA::SetSwitchIndexHelper::eSET_SWITCH_INDEX state));
+	DAVA_DEPRECATED(CommandToggleSetSwitchIndex(DAVA::uint32 value, DAVA::SetSwitchIndexHelper::eSET_SWITCH_INDEX state));//DEPRECATED: using SceneDataManager(QOBJECT)
 	
 protected:
 	DAVA::uint32	value;
