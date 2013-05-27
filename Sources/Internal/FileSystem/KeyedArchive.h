@@ -52,7 +52,10 @@ namespace DAVA
 class YamlNode;
 #endif
     
-class KeyedArchive : public BaseObject
+class KeyedArchive
+#if !defined(SWIG)    
+    : public BaseObject
+#endif
 {
 public:
 	KeyedArchive();
