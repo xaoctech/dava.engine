@@ -2255,5 +2255,8 @@
     <ClCompile Include="..\..\Sources\Internal\Platform\DeviceInfo.cpp">
       <Filter>Internal\Platform</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\KeyedArchiveSwig.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

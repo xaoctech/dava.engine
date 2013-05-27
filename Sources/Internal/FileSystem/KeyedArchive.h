@@ -48,8 +48,9 @@ namespace DAVA
 	\ingroup filesystem
 	\brief this is a class that should be used for serialization & deserialization of the items
  */
-
+#if !defined(SWIG)
 class YamlNode;
+#endif
     
 class KeyedArchive : public BaseObject
 {
@@ -58,10 +59,12 @@ public:
 	KeyedArchive(const KeyedArchive &arc);
 	virtual ~KeyedArchive();
 	
+#if !defined(SWIG)
 	/**
         \brief Dumps archive to console
 	 */
 	void Dump();
+#endif
 
 	/**
 		\brief Function to check if key is available in this archive.
@@ -111,6 +114,7 @@ public:
 		\param[in] defaultValue this is value that is used if variable with this key do not exists in archive
 		\returns value of variable or defaultValue if key isn't available
 	 */
+#if !defined(SWIG)
 	WideString GetWideString(const String & key, const WideString & defaultValue = L"");
 	/**
         \brief Function to get variable from archive.
@@ -135,7 +139,7 @@ public:
         \param[in] value we want to set for this key
 	 */
 	KeyedArchive * GetArchiveFromByteArray(const String & key);
-
+#endif
     /**
      \brief Function to get archive from archive. Returns pointer to the archive inside.
      \param[in] key string key
@@ -174,7 +178,7 @@ public:
      \returns value of variable or defaultValue if key isn't available
 	 */
 	Vector3 GetVector3(const String & key, const Vector3 & defaultValue = Vector3());
-    
+#if !defined(SWIG)    
     /**
      \brief Function to get variable from archive.
      \param[in] key string key
@@ -213,7 +217,7 @@ public:
      */
     template <class T>
     T GetByteArrayAsType(const String & key, const T & defaultValue = T());
-	
+
 	
 	/**
 		\brief Function to get variable from archive.
@@ -221,7 +225,7 @@ public:
 		\returns value of variable or default VariantType class if value isn't available
 	 */
 	VariantType *GetVariant(const String & key);
-	
+#endif	
 	/**
 		\brief Function to set variable in archive.
 		\param[in] key string key
@@ -258,6 +262,7 @@ public:
 		\param[in] key string key
 		\param[in] value we want to set for this key
 	 */
+#if !defined(SWIG)
 	void SetWideString(const String & key, const WideString & value);
 	/**
         \brief Function to set variable in archive.
@@ -278,7 +283,7 @@ public:
         \param[in] value we want to set for this key
 	 */
 	void SetByteArrayFromArchive(const String & key, KeyedArchive * archive);
-
+#endif
 	/**
      \brief Function to set another keyed archive as key for this archive.
      Function is copying archive inside. If you need to work with this archive later use GetArchive().
@@ -313,7 +318,7 @@ public:
      \param[in] value we want to set for this key
 	 */
 	void SetVector3(const String & key, Vector3 &value);
-    
+#if !defined(SWIG) 
     /**
      \brief Function to set variable in archive.
      \param[in] key string key
@@ -384,7 +389,7 @@ public:
      \param[in] file to save
 	 */
 	bool SaveToYamlFile(const String & pathName);
-    
+#endif
 	/**
 		\brief Deletes named key.
 		\param[in] key name of the key to delete
@@ -397,7 +402,7 @@ public:
 	void DeleteAllKeys();
 
 	uint32 Count(const String & key = "");
-    
+#if !defined(SWIG)    
 	/**
      \brief Function to get all data of archive.
      \returns map of VariantType class with names
@@ -430,15 +435,20 @@ public:
 // 	bool SaveToYaml(const String & pathName);
     
 	static const char* GenKeyFromIndex(uint32 index);
+#endif
 
 private:
+#if !defined(SWIG)
 	Map<String, VariantType*> objectMap;
-
+#endif
 public:
+#if !defined(SWIG)
 	INTROSPECTION_EXTEND(KeyedArchive, BaseObject, NULL);
+#endif
 };
     
 // Implementation 
+#if !defined(SWIG)
 template <class T>
 T KeyedArchive::GetByteArrayAsType(const String & key, const T & defaultValue)
 {
@@ -462,7 +472,7 @@ void KeyedArchive::SetByteArrayAsType(const String & key, const T & value)
 {
     SetByteArray(key, (uint8 * )&value, sizeof(T));
 }
-
+#endif
 	
 	
 };
