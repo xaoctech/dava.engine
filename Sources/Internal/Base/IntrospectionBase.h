@@ -174,7 +174,6 @@ namespace DAVA
 		}
 	};
 
-
 	// Параметризированные имплементации HasIntrospection для базовых типов 
 	// (так как наследование класса Test от базового типа невозможно)
 	template<> class HasIntrospection<void> { public: static const bool result = false; };
@@ -192,7 +191,7 @@ namespace DAVA
 	template<> class HasIntrospection<float32> { public: static const bool result = false; };
 	template<> class HasIntrospection<float64> { public: static const bool result = false; };
 	template<> class HasIntrospection<KeyedArchive *> { public: static const bool result = false; };
-
+	
 	// Глобальная шаблонная функция(#1) для получения интроспекции заданного типа
 	// Функция скомпилируется только для тех типов, для которых HasIntrospection<T>::result будет true
 	template<typename T> 
@@ -241,13 +240,69 @@ namespace DAVA
 	{
 		return NULL;
 	}
-
+	
 	template<typename T>
 	const IntrospectionInfo* GetIntrospectionByObject(void *object)
 	{
 		const T* t = (const T *) object;
 		return GetIntrospection(t);
 	}
+
+	/*
+	template<typename T> 
+	struct HasIntrospection
+	{
+		template<int N>
+		struct CheckHelper
+		{
+			char x[N];
+		};
+
+		template<typename Q>
+		static inline char Check(Q *t, CheckHelper<sizeof(&Q::GetTypeInfo)> *u)
+		{
+			return sizeof(*u);
+		}
+
+		static inline int Check(...)
+		{
+			return 4;
+		}
+
+		static const bool result = (1 == sizeof(Check((T *) 0)));
+	};
+
+
+	template<typename T, bool hasIntrospection> 
+	struct GetIntrospectionBase;
+
+	template<typename T> 
+	struct GetIntrospectionBase<T, false>
+	{
+		static inline const IntrospectionInfo* GetInfo() { return NULL; }
+	};
+
+	template<typename T> 
+	struct GetIntrospectionBase<T, true>
+	{
+		static inline const IntrospectionInfo* GetInfo() { return &T::GetTypeInfo(); }
+	};
+
+	// Глобальная шаблонная функция(#2) для получения интроспекции заданного типа
+	// Функция скомпилируется только для тех типов, для которых HasIntrospection<T>::result будет false
+	template<typename T>
+	const IntrospectionInfo* GetIntrospection() 
+	{
+		return GetIntrospectionBase<T, HasIntrospection<T>::result>::GetInfo();
+	}
+
+	template<typename T>
+	const IntrospectionInfo* GetIntrospection(const T *t) 
+	{
+		return GetIntrospectionBase<T, HasIntrospection<T>::result>::GetInfo();
+	}
+
+	*/
 };
 
 #endif // __DAVAENGINE_INTROSPECTION_BASE_H__

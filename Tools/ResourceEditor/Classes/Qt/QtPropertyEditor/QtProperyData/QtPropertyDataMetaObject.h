@@ -14,42 +14,25 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_SCENE3D_LIGHT_COMPONENT_H__
-#define __DAVAENGINE_SCENE3D_LIGHT_COMPONENT_H__
+#ifndef __QT_PROPERTY_DATA_META_OBJECT_H__
+#define __QT_PROPERTY_DATA_META_OBJECT_H__
 
-#include "Base/BaseTypes.h"
-#include "Entity/Component.h"
-#include "Scene3D/Entity.h"
-#include "Render/Highlevel/Light.h"
+#include "Base/Introspection.h"
+#include "QtPropertyEditor/QtPropertyData.h"
+#include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
 
-namespace DAVA 
-{
-
-class LightComponent : public Component
+class QtPropertyDataMetaObject : public QtPropertyDataDavaVariant
 {
 public:
-    LightComponent(Light * _light = 0);
-    ~LightComponent();
-    
-    IMPLEMENT_COMPONENT_TYPE(LIGHT_COMPONENT);
-    virtual Component * Clone(Entity * toEntity);
-	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
-	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	QtPropertyDataMetaObject(void *_object, const DAVA::MetaInfo *_meta);
+	virtual ~QtPropertyDataMetaObject();
 
-    void SetLightObject(Light * _light);
-    Light * GetLightObject();
-    
-private:
-    Light * light;
-    
-public:
-    
-    INTROSPECTION_EXTEND(LightComponent, Component,
-        MEMBER(light, "Light", I_SAVE | I_VIEW | I_EDIT)
-    );
+protected:
+	void *object;
+	const DAVA::MetaInfo *meta;
+
+	virtual QVariant GetValueInternal();
+	virtual void SetValueInternal(const QVariant &value);
 };
 
-
-};
-
-#endif //__DAVAENGINE_SCENE3D_LIGHT_COMPONENT_H__
+#endif // __QT_PROPERTY_DATA_META_OBJECT_H__

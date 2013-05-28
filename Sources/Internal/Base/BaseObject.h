@@ -145,7 +145,7 @@ protected:
 
 public:
 		INTROSPECTION(BaseObject,
-		MEMBER(referenceCount, "referenceCount", INTROSPECTION_SERIALIZABLE))
+		MEMBER(referenceCount, "referenceCount", I_SAVE))
 };
 
 

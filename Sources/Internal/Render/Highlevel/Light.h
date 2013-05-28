@@ -98,16 +98,16 @@ protected:
 public:
     
     INTROSPECTION_EXTEND(Light, BaseObject,
-        MEMBER(position, "Position", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
-        MEMBER(direction, "Direction", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
+        MEMBER(position, "Position", I_SAVE | I_VIEW)
+        MEMBER(direction, "Direction", I_SAVE | I_VIEW)
                          
-        MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(type, "Type", I_SAVE | I_VIEW | I_EDIT)
                          
-        MEMBER(ambientColor, "Ambient Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(diffuseColor, "Diffuse Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(specularColor, "Specular Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(intensity, "Intensity", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(flags, "Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(ambientColor, "Ambient Color", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(diffuseColor, "Diffuse Color", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(specularColor, "Specular Color", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(intensity, "Intensity", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(flags, "Flags", I_SAVE | I_VIEW | I_EDIT)
     );
 };
 

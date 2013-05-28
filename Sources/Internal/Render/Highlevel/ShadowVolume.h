@@ -71,7 +71,7 @@ private:
 public:
     
     INTROSPECTION_EXTEND(ShadowVolume, RenderBatch,
-        MEMBER(shadowPolygonGroup, "Shadow Polygon Group", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(shadowPolygonGroup, "Shadow Polygon Group", I_VIEW | I_EDIT | I_SAVE )
     );
 };
 

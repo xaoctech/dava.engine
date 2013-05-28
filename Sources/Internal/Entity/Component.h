@@ -80,7 +80,7 @@ protected:
 
 public:
 	INTROSPECTION(Component, 
-		MEMBER(entity, "entity", INTROSPECTION_SERIALIZABLE)
+		MEMBER(entity, "entity", I_SAVE)
 		);
 };
 

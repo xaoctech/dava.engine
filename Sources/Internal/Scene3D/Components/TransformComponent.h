@@ -61,9 +61,9 @@ private:
 public:
 
     INTROSPECTION_EXTEND(TransformComponent, Component,
-        MEMBER(localMatrix, "Local Transform", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR_READONLY | INTROSPECTION_EDITOR)
-        MEMBER(worldMatrix, "World Transform", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR_READONLY | INTROSPECTION_EDITOR)
-        MEMBER(parentMatrix, "Parent Matrix", INTROSPECTION_SERIALIZABLE)
+        MEMBER(localMatrix, "Local Transform", I_SAVE | I_VIEW)
+        MEMBER(worldMatrix, "World Transform", I_SAVE | I_VIEW)
+        MEMBER(parentMatrix, "Parent Matrix", I_SAVE)
     );
 };
 

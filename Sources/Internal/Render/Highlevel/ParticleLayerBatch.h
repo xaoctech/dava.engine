@@ -43,7 +43,7 @@ protected:
     
 public:
     INTROSPECTION_EXTEND(ParticleLayerBatch, RenderBatch,
-        MEMBER(totalCount, "Total Count", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
+        MEMBER(totalCount, "Total Count", I_SAVE | I_VIEW)
     );
 };
 

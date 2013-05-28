@@ -13,47 +13,30 @@
     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
-#ifndef __DAVAENGINE_SCENE3D_RENDER_PASS_H__
-#define	__DAVAENGINE_SCENE3D_RENDER_PASS_H__
 
-#include "Base/BaseTypes.h"
-#include "Base/FastName.h"
-#include "Render/Highlevel/RenderLayer.h"
+#include "QtPropertyEditor/QtProperyData/QtPropertyDataMetaObject.h"
 
-namespace DAVA
+QtPropertyDataMetaObject::QtPropertyDataMetaObject(void *_object, const DAVA::MetaInfo *_meta)
+	: QtPropertyDataDavaVariant(DAVA::VariantType::LoadData(_object, _meta))
+	, object(_object)
+	, meta(_meta)
+{ }
+
+QtPropertyDataMetaObject::~QtPropertyDataMetaObject()
+{ }
+
+QVariant QtPropertyDataMetaObject::GetValueInternal()
 {
-//class RenderLayer;
-class Camera;
-class RenderPass
+	DAVA::VariantType v = DAVA::VariantType::LoadData(object, meta);
+	if(v != GetVariantValue())
+	{
+		QtPropertyDataDavaVariant::SetVariantValue(v);
+	}
+
+	return QtPropertyDataDavaVariant::GetValueInternal();
+}
+
+void QtPropertyDataMetaObject::SetValueInternal(const QVariant &value)
 {
-public:
-    RenderPass(const FastName & name);
-    virtual ~RenderPass();
-    
-    const FastName & GetName();
-    
-    virtual void Draw(Camera * camera);
-    
-protected:
-    Vector<RenderLayer*> renderLayers;
-    FastName name;
-
-private:
-	void AddRenderLayer(RenderLayer * layer, const FastName & afterLayer);
-	void RemoveRenderLayer(RenderLayer * layer);
-	
-
-public:
-    
-    INTROSPECTION(RenderPass,
-        COLLECTION(renderLayers, "Render Layers", I_VIEW | I_EDIT)
-        MEMBER(name, "Name", I_VIEW)
-    );
-
-	friend class RenderSystem;
-};
-    
-} // ns
-
-#endif	/* __DAVAENGINE_SCENE3D_RENDERLAYER_H__ */
-
+	DAVA::VariantType::SaveData(object, meta, QtPropertyDataDavaVariant::GetVariantValue());
+}
