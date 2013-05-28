@@ -858,6 +858,47 @@
     </layout>
    </widget>
   </widget>
+  <widget class="QDockWidget" name="dockConsole">
+   <property name="windowTitle">
+    <string>Console</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_7">
+    <layout class="QVBoxLayout" name="verticalLayout_10">
+     <property name="spacing">
+      <number>1</number>
+     </property>
+     <property name="margin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="ConsoleView" name="consoleView">
+       <property name="undoRedoEnabled">
+        <bool>false</bool>
+       </property>
+       <property name="lineWrapMode">
+        <enum>QPlainTextEdit::NoWrap</enum>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+       <property name="backgroundVisible">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="consoleEdit">
+       <property name="frame">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
   <action name="actionNewScene">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
@@ -1411,6 +1452,11 @@
    <extends>QTreeView</extends>
    <header>DockSceneTree/SceneTree.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ConsoleView</class>
+   <extends>QPlainTextEdit</extends>
+   <header>DockConsole/ConsoleView.h</header>
   </customwidget>
  </customwidgets>
  <resources>

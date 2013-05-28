@@ -124,7 +124,7 @@ public:
     }
     
     
-    void SetCurrentDir(const FilePath &newDirPath);
+    void SetCurrentDir(const FilePath &newDirPath, bool rebuildHistory = false);
     
     /**
         \brief Function to return last directory path of this dialog

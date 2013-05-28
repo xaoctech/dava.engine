@@ -1263,6 +1263,12 @@
     <ClInclude Include="..\..\Sources\Internal\Base\GlobalEnum.h">
       <Filter>Internal\Base</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Input\InputCallback.h">
+      <Filter>Internal\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\DAVAVersion.h">
+      <Filter>Internal</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2221,6 +2227,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Base\GlobalEnum.cpp">
       <Filter>Internal\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\LoggerWin.cpp">
+      <Filter>Internal\FileSystem</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

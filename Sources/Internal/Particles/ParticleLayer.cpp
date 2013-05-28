@@ -225,7 +225,8 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	dstLayer->frameOverLifeFPS = frameOverLifeFPS;
 
     dstLayer->isDisabled = isDisabled;
-    
+	dstLayer->spritePath = spritePath;
+
 	return dstLayer;
 }
 	

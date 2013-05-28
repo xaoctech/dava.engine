@@ -18,6 +18,8 @@
 		02F6404C173A8F170053F038 /* SceneTree_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02F64049173A8F170053F038 /* SceneTree_moc.cpp */; };
 		02F6404D173A8F170053F038 /* SceneTreeItem_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02F6404A173A8F170053F038 /* SceneTreeItem_moc.cpp */; };
 		02F6404E173A8F170053F038 /* SceneTreeModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02F6404B173A8F170053F038 /* SceneTreeModel_moc.cpp */; };
+		02F640801745372B0053F038 /* libfmodevent.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 02E9E40E1739612300C501BC /* libfmodevent.dylib */; };
+		02F640811745372B0053F038 /* libfmodex.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 02E9E40F1739612300C501BC /* libfmodex.dylib */; };
 		0C6D4628EE0B0D1479A20551 /* AGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = C6766F86E49E9C8701C8E637 /* AGL.framework */; };
 		1735C427169DE63D001E0468 /* ParticlesEditorSceneDataHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1735C423169DE63D001E0468 /* ParticlesEditorSceneDataHelper.cpp */; };
 		1735C428169DE63D001E0468 /* ParticlesEditorSceneModelHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1735C425169DE63D001E0468 /* ParticlesEditorSceneModelHelper.cpp */; };
@@ -40,6 +42,10 @@
 		49C89A3716C3AB1A008AA6F0 /* ArrowsNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49C89A3516C3AB1A008AA6F0 /* ArrowsNode.cpp */; };
 		49C89A3916C3AB72008AA6F0 /* ModificationWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49C89A3816C3AB72008AA6F0 /* ModificationWidget_moc.cpp */; };
 		49C89A3C16C3ABE6008AA6F0 /* ModificationWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49C89A3A16C3ABE6008AA6F0 /* ModificationWidget.cpp */; };
+		4F3E2565174CD38E000D1187 /* Console.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4F3E2561174CD38E000D1187 /* Console.cpp */; };
+		4F3E2566174CD38E000D1187 /* ConsoleView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4F3E2563174CD38E000D1187 /* ConsoleView.cpp */; };
+		4F3E256D174CD39C000D1187 /* Console_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4F3E256B174CD39C000D1187 /* Console_moc.cpp */; };
+		4F3E256E174CD39C000D1187 /* ConsoleView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4F3E256C174CD39C000D1187 /* ConsoleView_moc.cpp */; };
 		4FB96A281705C90500EB205E /* SceneTabWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FB96A211705C90500EB205E /* SceneTabWidget.cpp */; };
 		4FB96A341705C91700EB205E /* SceneTabWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FB96A2F1705C91700EB205E /* SceneTabWidget_moc.cpp */; };
 		50474EDC16FD872600A17478 /* ExtraUserData.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50474ED816FD872600A17478 /* ExtraUserData.cpp */; };
@@ -447,7 +453,6 @@
 		E8C4C684172945FB004B0B3B /* CollisionLandscape_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C4C673172945FB004B0B3B /* CollisionLandscape_moc.cpp */; };
 		E8C4C685172945FB004B0B3B /* CollisionRenderObject_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C4C674172945FB004B0B3B /* CollisionRenderObject_moc.cpp */; };
 		E8C4C686172945FB004B0B3B /* CollisionSystem_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C4C675172945FB004B0B3B /* CollisionSystem_moc.cpp */; };
-		E8C4C687172945FB004B0B3B /* EntityMoveSystem_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C4C676172945FB004B0B3B /* EntityMoveSystem_moc.cpp */; };
 		E8C4C688172945FB004B0B3B /* GridSystem_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C4C677172945FB004B0B3B /* GridSystem_moc.cpp */; };
 		E8C4C689172945FB004B0B3B /* HoodCollObject_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C4C679172945FB004B0B3B /* HoodCollObject_moc.cpp */; };
 		E8C4C68A172945FB004B0B3B /* HoodObject_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C4C67A172945FB004B0B3B /* HoodObject_moc.cpp */; };
@@ -499,6 +504,20 @@
 			remoteInfo = FrameworkQt;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		02F6407F174537220053F038 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				02F640801745372B0053F038 /* libfmodevent.dylib in CopyFiles */,
+				02F640811745372B0053F038 /* libfmodex.dylib in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		0297F30F170B403100627F78 /* MaterialViewOptions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialViewOptions.cpp; sourceTree = "<group>"; };
@@ -562,6 +581,12 @@
 		49C89A3A16C3ABE6008AA6F0 /* ModificationWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ModificationWidget.cpp; sourceTree = "<group>"; };
 		49C89A3B16C3ABE6008AA6F0 /* ModificationWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModificationWidget.h; sourceTree = "<group>"; };
 		49EF1C7A1726A68800B899E6 /* CommandList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommandList.h; path = Classes/Commands/CommandList.h; sourceTree = "<group>"; };
+		4F3E2561174CD38E000D1187 /* Console.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Console.cpp; sourceTree = "<group>"; };
+		4F3E2562174CD38E000D1187 /* Console.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Console.h; sourceTree = "<group>"; };
+		4F3E2563174CD38E000D1187 /* ConsoleView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConsoleView.cpp; sourceTree = "<group>"; };
+		4F3E2564174CD38E000D1187 /* ConsoleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConsoleView.h; sourceTree = "<group>"; };
+		4F3E256B174CD39C000D1187 /* Console_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Console_moc.cpp; sourceTree = "<group>"; };
+		4F3E256C174CD39C000D1187 /* ConsoleView_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConsoleView_moc.cpp; sourceTree = "<group>"; };
 		4FB96A211705C90500EB205E /* SceneTabWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneTabWidget.cpp; sourceTree = "<group>"; };
 		4FB96A221705C90500EB205E /* SceneTabWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneTabWidget.h; sourceTree = "<group>"; };
 		4FB96A2F1705C91700EB205E /* SceneTabWidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneTabWidget_moc.cpp; sourceTree = "<group>"; };
@@ -1388,7 +1413,6 @@
 		E8C4C673172945FB004B0B3B /* CollisionLandscape_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CollisionLandscape_moc.cpp; sourceTree = "<group>"; };
 		E8C4C674172945FB004B0B3B /* CollisionRenderObject_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CollisionRenderObject_moc.cpp; sourceTree = "<group>"; };
 		E8C4C675172945FB004B0B3B /* CollisionSystem_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CollisionSystem_moc.cpp; sourceTree = "<group>"; };
-		E8C4C676172945FB004B0B3B /* EntityMoveSystem_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EntityMoveSystem_moc.cpp; sourceTree = "<group>"; };
 		E8C4C677172945FB004B0B3B /* GridSystem_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GridSystem_moc.cpp; sourceTree = "<group>"; };
 		E8C4C679172945FB004B0B3B /* HoodCollObject_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HoodCollObject_moc.cpp; sourceTree = "<group>"; };
 		E8C4C67A172945FB004B0B3B /* HoodObject_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HoodObject_moc.cpp; sourceTree = "<group>"; };
@@ -1542,6 +1566,28 @@
 			name = Commands;
 			sourceTree = "<group>";
 		};
+		4F3E2560174CD38E000D1187 /* DockConsole */ = {
+			isa = PBXGroup;
+			children = (
+				4F3E2561174CD38E000D1187 /* Console.cpp */,
+				4F3E2562174CD38E000D1187 /* Console.h */,
+				4F3E2563174CD38E000D1187 /* ConsoleView.cpp */,
+				4F3E2564174CD38E000D1187 /* ConsoleView.h */,
+			);
+			name = DockConsole;
+			path = Classes/Qt/DockConsole;
+			sourceTree = "<group>";
+		};
+		4F3E256A174CD39C000D1187 /* DockConsole */ = {
+			isa = PBXGroup;
+			children = (
+				4F3E256B174CD39C000D1187 /* Console_moc.cpp */,
+				4F3E256C174CD39C000D1187 /* ConsoleView_moc.cpp */,
+			);
+			name = DockConsole;
+			path = _GeneratedQt/DockConsole;
+			sourceTree = "<group>";
+		};
 		4FB96A231705C90500EB205E /* System */ = {
 			isa = PBXGroup;
 			children = (
@@ -1569,7 +1615,6 @@
 				E8C4C670172945FB004B0B3B /* CameraSystem_moc.cpp */,
 				E8C4C671172945FB004B0B3B /* CollisionSystem */,
 				E8C4C675172945FB004B0B3B /* CollisionSystem_moc.cpp */,
-				E8C4C676172945FB004B0B3B /* EntityMoveSystem_moc.cpp */,
 				E8C4C677172945FB004B0B3B /* GridSystem_moc.cpp */,
 				E8C4C678172945FB004B0B3B /* HoodSystem */,
 				E8C4C67F172945FB004B0B3B /* HoodSystem_moc.cpp */,
@@ -1590,6 +1635,7 @@
 		5C2763A415B82BDF0030A8FD /* Qt */ = {
 			isa = PBXGroup;
 			children = (
+				4F3E2560174CD38E000D1187 /* DockConsole */,
 				02E9E43B173965B800C501BC /* DockSceneTree */,
 				494A7CDA172A92C0005D7C7F /* Commands */,
 				E88F2FF9171C801600510B78 /* DockSceneInfo */,
@@ -2970,6 +3016,7 @@
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
 			isa = PBXGroup;
 			children = (
+				4F3E256A174CD39C000D1187 /* DockConsole */,
 				02F64048173A8F170053F038 /* DockSceneTree */,
 				494A7CE1172A9500005D7C7F /* Commands */,
 				E88F3000171C85A000510B78 /* DockSceneInfo */,
@@ -3224,6 +3271,8 @@
 				C29B8785722055ED95EF7B57 /* Build Sources */,
 				2A1043669E6E5A7426EA502A /* Frameworks & Libraries */,
 				3787F99312C85FF0073FD7BA /* Bundle Resources */,
+				02F6407F174537220053F038 /* CopyFiles */,
+				02F6407E174535800053F038 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -3308,6 +3357,19 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		02F6407E174535800053F038 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "install_name_tool -change ./libfmodex.dylib @executable_path/../Frameworks/libfmodex.dylib $BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH\ninstall_name_tool -change ./libfmodevent.dylib @executable_path/../Frameworks/libfmodevent.dylib $BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH\ninstall_name_tool -id @executable_path/../Frameworks/libfmodex.dylib $BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH/libfmodex.dylib\ninstall_name_tool -id @executable_path/../Frameworks/libfmodevent.dylib $BUILT_PRODUCTS_DIR/$FRAMEWORKS_FOLDER_PATH/libfmodevent.dylib\ninstall_name_tool -change ./libfmodex.dylib @executable_path/../Frameworks/libfmodex.dylib $BUILT_PRODUCTS_DIR/$FRAMEWORKS_FOLDER_PATH/libfmodevent.dylib";
+		};
 		5C42E09515B42E1C00F71425 /* Compile Qt-meta */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -3745,7 +3807,6 @@
 				E8C4C684172945FB004B0B3B /* CollisionLandscape_moc.cpp in Build Sources */,
 				E8C4C685172945FB004B0B3B /* CollisionRenderObject_moc.cpp in Build Sources */,
 				E8C4C686172945FB004B0B3B /* CollisionSystem_moc.cpp in Build Sources */,
-				E8C4C687172945FB004B0B3B /* EntityMoveSystem_moc.cpp in Build Sources */,
 				E8C4C688172945FB004B0B3B /* GridSystem_moc.cpp in Build Sources */,
 				E8C4C689172945FB004B0B3B /* HoodCollObject_moc.cpp in Build Sources */,
 				E8C4C68A172945FB004B0B3B /* HoodObject_moc.cpp in Build Sources */,
@@ -3779,6 +3840,10 @@
 				02F6404C173A8F170053F038 /* SceneTree_moc.cpp in Build Sources */,
 				02F6404D173A8F170053F038 /* SceneTreeItem_moc.cpp in Build Sources */,
 				02F6404E173A8F170053F038 /* SceneTreeModel_moc.cpp in Build Sources */,
+				4F3E2565174CD38E000D1187 /* Console.cpp in Build Sources */,
+				4F3E2566174CD38E000D1187 /* ConsoleView.cpp in Build Sources */,
+				4F3E256D174CD39C000D1187 /* Console_moc.cpp in Build Sources */,
+				4F3E256E174CD39C000D1187 /* ConsoleView_moc.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
