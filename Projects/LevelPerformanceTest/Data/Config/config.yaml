@@ -1,7 +1,7 @@
 landscapeNodeName: "Landscape"
 landscapePartitioningSize: [50, 50]
 cameraElevation: 10.0
-cameraRotationSpeed: 180.0
+cameraRotationSpeed: 45.0
 cameraSpeed: 180.0
 minFps: 30
 minFpsSectorCount: 10

@@ -37,6 +37,7 @@
 #include "UI/UIYamlLoader.h"
 #include "Render/RenderHelper.h"
 #include "Utils/Utils.h"
+#include "Input/InputSystem.h"
 
 namespace DAVA 
 {
@@ -1533,8 +1534,16 @@ namespace DAVA
 		}
 	}
 	
-	bool UIControl::IsPointInside(const Vector2 &point, bool expandWithFocus/* = false*/)
+	bool UIControl::IsPointInside(const Vector2 &_point, bool expandWithFocus/* = false*/)
 	{
+        Vector2 point = _point;
+#ifdef __DAVAENGINE_MACOS__
+		if(InputSystem::Instance()->IsCursorPining())
+		{
+			point = RenderManager::Instance()->GetCursor()->GetPosition();
+		}
+#endif
+        
 		UIGeometricData gd = GetGeometricData();
 		Rect rect = gd.GetUnrotatedRect();
 		if(expandWithFocus)
@@ -1569,12 +1578,14 @@ namespace DAVA
 		
 		switch (currentInput->phase) 
 		{
-#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)                
+#if !defined(__DAVAENGINE_IPHONE__)
 			case UIEvent::PHASE_KEYCHAR:
 			{
 					Input(currentInput);
 			}
-				break;
+			break;
+#endif
+#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)
 			case UIEvent::PHASE_MOVE:
 			{
 				if (!currentInput->touchLocker && IsPointInside(currentInput->point))
@@ -1650,7 +1661,7 @@ namespace DAVA
 									{
 										controlState |= STATE_PRESSED_INSIDE;
 										controlState &= ~STATE_PRESSED_OUTSIDE;
-#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)                                        
+#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)
 										controlState |= STATE_HOVER;
 #endif
 									}
@@ -1693,7 +1704,7 @@ namespace DAVA
 							if(currentInput->controlState == UIEvent::CONTROL_STATE_INSIDE)
 							{
 								--touchesInside;
-#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)                                        
+#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)
 								if(totalTouches == 0)
 								{
 									controlState |= STATE_HOVER;
@@ -1735,7 +1746,7 @@ namespace DAVA
 							{
 								controlState |= STATE_PRESSED_OUTSIDE;
 								controlState &= ~STATE_PRESSED_INSIDE;
-#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)                                        
+#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)
 								controlState &= ~STATE_HOVER;
 #endif
 							}
@@ -1747,6 +1758,10 @@ namespace DAVA
 				}
 			}
 				break;
+			case UIEvent::PHASE_JOYSTICK:
+			{
+				Input(currentInput);
+			}
 		}
 		
 		return false;
@@ -1760,7 +1775,8 @@ namespace DAVA
 			if(clipContents 
                && (currentInput->phase != UIEvent::PHASE_DRAG 
                    && currentInput->phase != UIEvent::PHASE_ENDED
-                   && currentInput->phase != UIEvent::PHASE_KEYCHAR))
+                   && currentInput->phase != UIEvent::PHASE_KEYCHAR
+                   && currentInput->phase != UIEvent::PHASE_JOYSTICK))
 			{
 				if(!IsPointInside(currentInput->point))
 				{
@@ -1918,10 +1934,12 @@ namespace DAVA
 		Sprite *sprite =  this->GetSprite();
 		if (sprite)
 		{
-            FilePath path(sprite->GetRelativePathname());
-            path.TruncateExtension();
+			FilePath path(sprite->GetRelativePathname());
+			path.TruncateExtension();
 
-            String pathname = path.GetFrameworkPath();
+			//TODO VK: Fix FilePath::GetFrameworkPath()
+            String pathname = path.GetRelativePathname(FilePath::GetBundleName());
+			pathname.replace(0, 4, "~res:");
 			node->Set("sprite", pathname);
 		}
 		// Color

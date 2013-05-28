@@ -193,7 +193,7 @@ public:
         \param[in] type of FilePath representation
 		\returns pathname value for requested type
 	 */
-	String GetFrameworkPath();
+	String GetFrameworkPath() const;
 
 	/**
         \brief Function to set system path bundle path to project path for resolving pathnames such as "~res:/Gfx/image.png"
@@ -251,6 +251,8 @@ public:
     bool IsAbsolutePathname() const;
 
     
+    bool Exists() const;
+    
 protected:
     
     void Initialize(const String &pathname);
@@ -269,7 +271,7 @@ protected:
     static FilePath GetDirectory(const String &pathname, const ePathType pType);
 
     static String GetSystemPathname(const String &pathname, const ePathType pType);
-	String GetFrameworkPathForPrefix(const String &typePrefix, const ePathType pType);
+	String GetFrameworkPathForPrefix(const String &typePrefix, const ePathType pType) const;
     
     static bool IsAbsolutePathname(const String &pathname);
 

@@ -298,10 +298,10 @@ bool Landscape::BuildHeightmap()
     {
         retValue = heightmap->Load(heightmapPath);
     }
-    else 
-    {
-        DVASSERT(false && "wrong extension");
-    }
+	else if(!heightmapPath.IsEmpty())
+	{
+		DVASSERT(false && "wrong extension");
+	}
 
     return retValue;
 }

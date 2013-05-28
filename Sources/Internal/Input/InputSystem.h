@@ -34,8 +34,9 @@
 #include "Base/BaseMath.h"
 #include "Base/Singleton.h"
 #include "Core/Core.h"
+#include "UI/UIEvent.h"
+#include "InputCallback.h"
 //#include "UI/UIControl.h"
-//#include "UI/UIEvent.h"
 //#include "UI/UIScreenTransition.h"
 //#include "UI/UILoadingTransition.h"
 //#include "UI/UIPopup.h"
@@ -49,6 +50,13 @@ namespace DAVA
 class KeyboardDevice;
 class InputSystem : public Singleton<InputSystem>
 {
+	enum eInputDevice
+	{
+		INPUT_DEVICE_TOUCH		= 1,
+		INPUT_DEVICE_KEYBOARD	= 1 << 1,
+		INPUT_DEVICE_JOYSTICK	= 1 << 2
+	};
+
 	friend void Core::CreateSingletons();
 	
 protected:
@@ -60,16 +68,26 @@ protected:
 			
 public:
     
+	void ProcessInputEvent(UIEvent * event);
+
+	void AddInputCallback(const InputCallback& inputCallback);
+	bool RemoveInputCallback(const InputCallback& inputCallback);
+	void RemoveAllInputCallbacks();
     
     void OnBeforeUpdate();
     void OnAfterUpdate();
     
     KeyboardDevice *GetKeyboard();
 
+    bool IsCursorPining();
+    void SetCursorPining(bool isPin);
+    
 protected:
     
     KeyboardDevice *keyboard;
 
+    Vector<InputCallback> callbacks;
+    bool pinCursor;
 };
 };
 

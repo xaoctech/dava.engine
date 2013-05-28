@@ -236,7 +236,7 @@ void UIFileSystemDialog::Show(UIControl *parentControl)
 }
 
 
-void UIFileSystemDialog::SetCurrentDir(const FilePath &newDirPath)
+void UIFileSystemDialog::SetCurrentDir(const FilePath &newDirPath, bool rebuildHistory /* = false*/)
 {
 
     //int32 ppos = newDirPath.rfind(".");
@@ -244,6 +244,9 @@ void UIFileSystemDialog::SetCurrentDir(const FilePath &newDirPath)
     //if (ppos != newDirPath.npos && ppos > spos)
     currentDir = FilePath(newDirPath.GetDirectory());
     selectedFileName = newDirPath.GetFilename();
+    
+    if(rebuildHistory)
+        CreateHistoryForPath(currentDir);
     
     //find current dir at folders history
     bool isInHistory = false;
@@ -303,11 +306,7 @@ const Vector<String> & UIFileSystemDialog::GetExtensionFilter()
 
 void UIFileSystemDialog::OnIndexSelected(int32 index)
 {
-    if (fileUnits[index].type == FUNIT_DIR_OUTSIDE) 
-    {
-        SetCurrentDir(currentDir);
-    }
-    else if (fileUnits[index].type == FUNIT_DIR_INSIDE)
+    if (fileUnits[index].type == FUNIT_DIR_INSIDE || fileUnits[index].type == FUNIT_DIR_OUTSIDE)
     {
         SetCurrentDir(files->GetPathname(fileUnits[index].indexInFileList));
     }
@@ -374,16 +373,6 @@ void UIFileSystemDialog::RefreshList()
         }
     }
 
-    if(outCnt >= 1)
-    {
-        DialogFileUnit fud;
-        fud.name = "..";
-        fud.path = currentDir;
-        fud.type = FUNIT_DIR_OUTSIDE;
-        fud.indexInFileList = -1;
-        fileUnits.push_back(fud);
-    }
-        
     for (int i = 0; i < cnt; i++)
     {
         if (!files->IsNavigationDirectory(i))
@@ -413,7 +402,7 @@ void UIFileSystemDialog::RefreshList()
                 std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
                 bool isPresent = false;
-		int32 size = extensionFilter.size();
+                int32 size = extensionFilter.size();
                 for (int32 n = 0; n < size; n++) 
                 {
                     if (extensionFilter[n] == ".*" || ext == extensionFilter[n])
@@ -430,6 +419,15 @@ void UIFileSystemDialog::RefreshList()
 
             
             fileUnits.push_back(fu);
+        }
+        else if(outCnt >= 1 && files->GetFilename(i) == "..")
+        {
+            DialogFileUnit fud;
+            fud.name = "..";
+            fud.path = currentDir;
+            fud.type = FUNIT_DIR_OUTSIDE;
+            fud.indexInFileList = i;
+            fileUnits.push_back(fud);
         }
     }
     fileListView->ResetScrollPosition();
@@ -576,15 +574,24 @@ void UIFileSystemDialog::HistoryButtonPressed(BaseObject *obj, void *data, void 
     
 void UIFileSystemDialog::CreateHistoryForPath(const FilePath &pathToFile)
 {
-    Vector<String> folders;
-    Split(pathToFile.GetAbsolutePathname(), "/", folders);
+    DVASSERT(pathToFile.IsAbsolutePathname());
 
     foldersHistory.clear();
-    foldersHistory.push_back("/");
+
+    String absPath = pathToFile.GetAbsolutePathname();
+    String::size_type pos = absPath.find("/");
+    if(pos == String::npos)
+        return;
+
+    String prefix = absPath.substr(0, pos + 1);
+    foldersHistory.push_back(prefix);
+
+    Vector<String> folders;
+    Split(absPath.substr(pos), "/", folders);
+
     for(int32 iFolder = 0; iFolder < (int32)folders.size(); ++iFolder)
     {
-        FilePath f(foldersHistory[iFolder]);
-        f += folders[iFolder];
+        FilePath f = foldersHistory[iFolder] + folders[iFolder];
         f.MakeDirectoryPathname();
         foldersHistory.push_back(f);
     }

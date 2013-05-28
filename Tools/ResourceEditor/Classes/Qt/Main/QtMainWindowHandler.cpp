@@ -129,6 +129,7 @@ void QtMainWindowHandler::OpenResentScene(int32 index)
 void QtMainWindowHandler::SaveScene()
 {
     CommandsManager::Instance()->ExecuteAndRelease(new CommandSaveScene());
+	UpdateRecentScenesList();
 }
 
 void QtMainWindowHandler::ExportAsPNG()
