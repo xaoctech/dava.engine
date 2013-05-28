@@ -960,9 +960,6 @@
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureListModel.cpp">
       <Filter>Classes\Qt\TextureBrowser</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\TextureBrowser\TextureProperties.cpp">
-      <Filter>Classes\Qt\TextureBrowser</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureScrollArea.cpp">
       <Filter>Classes\Qt\TextureBrowser</Filter>
     </ClCompile>
@@ -1697,6 +1694,12 @@
     </ClCompile>
     <ClCompile Include="Classes\ImageTools\ImageTools.cpp">
       <Filter>Classes\ImageTools</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\TextureBrowser\TextureProperties.cpp">
+      <Filter>Classes\Qt\TextureBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataMetaObject.cpp">
+      <Filter>Classes\Qt\QtPropertyEditor\QtPropertyData</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2534,9 +2537,6 @@
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureListModel.h">
       <Filter>Classes\Qt\TextureBrowser</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\TextureBrowser\TextureProperties.h">
-      <Filter>Classes\Qt\TextureBrowser</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureScrollArea.h">
       <Filter>Classes\Qt\TextureBrowser</Filter>
     </ClInclude>
@@ -2986,6 +2986,12 @@
     </ClInclude>
     <ClInclude Include="Classes\ImageTools\ImageTools.h">
       <Filter>Classes\ImageTools</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\TextureBrowser\TextureProperties.h">
+      <Filter>Classes\Qt\TextureBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataMetaObject.h">
+      <Filter>Classes\Qt\QtPropertyEditor\QtPropertyData</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

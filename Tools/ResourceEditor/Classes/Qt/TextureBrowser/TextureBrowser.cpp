@@ -40,7 +40,7 @@ TextureBrowser::TextureBrowser(QWidget *parent)
     : QDialog(parent)
 	, ui(new Ui::TextureBrowser)
 	, curScene(NULL)
-	, curTextureView(ViewPVR)
+	, curTextureView(DAVA::GPU_POVERVR_IOS)
 	, curTexture(NULL)
 	, curDescriptor(NULL)
 {
@@ -74,7 +74,7 @@ TextureBrowser::TextureBrowser(QWidget *parent)
 	setupTextureListFilter();
 	setupTextureConverAllButton();
 	setupTextureProperties();
-	setupTextureViewToolbar();
+	setupTextureViewTabBar();
 
 	resetTextureInfo();
 
@@ -125,21 +125,23 @@ void TextureBrowser::setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor 
 	ui->actionColorB->setChecked(true);
 	ui->actionColorA->setChecked(true);
 	ui->textureAreaOriginal->setColorChannel(TextureScrollArea::ChannelAll);
-	ui->textureAreaPVR->setColorChannel(TextureScrollArea::ChannelAll);
+	ui->textureAreaConverted->setColorChannel(TextureScrollArea::ChannelAll);
 
 	ui->textureAreaOriginal->resetTexturePosZoom();
-	ui->textureAreaPVR->resetTexturePosZoom();
+	ui->textureAreaConverted->resetTexturePosZoom();
 	toolbarZoomSlider->setValue(0);
 
 	// disable texture views by default
 	ui->textureToolbar->setEnabled(false);
-	ui->textureViewToolbar->setEnabled(false);
+	//ui->viewTabBar->setEnabled(false);
 	ui->textureAreaOriginal->setEnabled(false);
-	ui->textureAreaPVR->setEnabled(false);
+	ui->textureAreaConverted->setEnabled(false);
 
 	// set texture to properties control.
 	// this should be done as a first step
 	ui->textureProperties->setTextureDescriptor(curDescriptor);
+	ui->textureProperties->setTextureGPU(curTextureView);
+
 	updatePropertiesWarning();
 
 	// if texture is ok - set it and enable texture views
@@ -147,7 +149,7 @@ void TextureBrowser::setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor 
 	{
 		// enable toolbar
 		ui->textureToolbar->setEnabled(true);
-		ui->textureViewToolbar->setEnabled(true);
+		//ui->viewTabBar->setEnabled(true);
 
 		// load original image
 		// check if image is in cache
@@ -174,11 +176,11 @@ void TextureBrowser::setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor 
 	{
 		// no texture - set empty images to original/PVR views
 		ui->textureAreaOriginal->setImage(QImage());
-		ui->textureAreaPVR->setImage(QImage());
+		ui->textureAreaConverted->setImage(QImage());
 	}
 }
 
-void TextureBrowser::setTextureView(TextureView view, bool forceConvert /* */)
+void TextureBrowser::setTextureView(DAVA::eGPUFamily view, bool forceConvert /* = false */)
 {
 	// if force convert - clear cached images
 	if(forceConvert)
@@ -189,24 +191,22 @@ void TextureBrowser::setTextureView(TextureView view, bool forceConvert /* */)
 
 	curTextureView = view;
 
-	// first set texture view to default
-	ui->actionViewPVR->setChecked(false);
-	ui->actionViewDXT->setChecked(false);
-
 	// second set texture view to appropriate state
 	if(NULL != curTexture && NULL != curDescriptor)
 	{
 		// set empty image to converted image view. it will be visible until
 		// conversion done (signal by textureConvertor).
-		ui->textureAreaPVR->setImage(QImage());
-		ui->textureAreaPVR->waitbarShow(true);
+		ui->textureAreaConverted->setImage(QImage());
+		ui->textureAreaConverted->waitbarShow(true);
+
+		// set current tab
+		ui->viewTabBar->setCurrentIndex(curTextureView);
+		ui->textureProperties->setTextureGPU(curTextureView);
 
 		switch(view)
 		{
-		case ViewPVR:
+		case DAVA::GPU_POVERVR_IOS:
 			{
-				ui->actionViewPVR->setChecked(true);
-
 				QImage img = TextureCache::Instance()->getPVR(curDescriptor);
 				if(!forceConvert && !img.isNull())
 				{
@@ -220,10 +220,8 @@ void TextureBrowser::setTextureView(TextureView view, bool forceConvert /* */)
 				}
 			}
 			break;
-		case ViewDXT:
+		case DAVA::GPU_POVERVR_ANDROID:
 			{
-				ui->actionViewDXT->setChecked(true);
-
 				QImage img = TextureCache::Instance()->getDXT(curDescriptor);
 				if(!forceConvert && !img.isNull())
 				{
@@ -265,9 +263,9 @@ void TextureBrowser::updatePropertiesWarning()
 
 void TextureBrowser::updateConvertedImageAndInfo(const QImage &image)
 {
-	ui->textureAreaPVR->setImage(image);
-	ui->textureAreaPVR->setEnabled(true);
-	ui->textureAreaPVR->waitbarShow(false);
+	ui->textureAreaConverted->setImage(image);
+	ui->textureAreaConverted->setEnabled(true);
+	ui->textureAreaConverted->waitbarShow(false);
 
 	// set info about converted image
 	updateInfoConverted();
@@ -327,39 +325,29 @@ void TextureBrowser::updateInfoConverted()
 	if(NULL != curTexture && NULL != curDescriptor)
 	{
 		char tmp[1024];
-
 		const char *formatStr = "";
 
 		int datasize = 0;
 		int filesize = 0;
 
-		switch(curTextureView)
+		if(curDescriptor->compression[curTextureView].format != DAVA::FORMAT_INVALID)
 		{
-		case ViewPVR:
-			if(curDescriptor->compression[GPU_POVERVR_IOS].format != DAVA::FORMAT_INVALID)
-			{
-                DAVA::FilePath compressedTexturePath = DAVA::GPUFamilyDescriptor::CreatePathnameForGPU(curDescriptor, DAVA::GPU_POVERVR_IOS);
-//				DAVA::FilePath compressedTexturePath = DAVA::TextureDescriptor::GetPathnameForFormat(curTexture->GetPathname(), DAVA::PVR_FILE);
+			DAVA::FilePath compressedTexturePath = DAVA::GPUFamilyDescriptor::CreatePathnameForGPU(curDescriptor, curTextureView);
+			filesize = QFileInfo(compressedTexturePath.GetAbsolutePathname().c_str()).size();
 
-				formatStr = DAVA::Texture::GetPixelFormatString(curDescriptor->compression[GPU_POVERVR_IOS].format);
-				filesize = QFileInfo(compressedTexturePath.GetAbsolutePathname().c_str()).size();
+			switch(curTextureView)
+			{
+			case DAVA::GPU_POVERVR_IOS:
+			case DAVA::GPU_POVERVR_ANDROID:
 				datasize = DAVA::LibPVRHelper::GetDataSize(compressedTexturePath);
+				formatStr = "PVR";
+				break;
+			case DAVA::GPU_TEGRA:
+			case DAVA::GPU_MALI:
+			case DAVA::GPU_ADRENO:
+				// TODO:
+				break;
 			}
-			break;
-		case ViewDXT:
-			if(curDescriptor->compression[GPU_TEGRA].format != DAVA::FORMAT_INVALID)
-			{
-                DAVA::FilePath compressedTexturePath = DAVA::GPUFamilyDescriptor::CreatePathnameForGPU(curDescriptor, DAVA::GPU_TEGRA);
-//				DAVA::FilePath compressedTexturePath = DAVA::TextureDescriptor::GetPathnameForFormat(curTexture->GetPathname(), DAVA::DXT_FILE);
-
-				formatStr = DAVA::Texture::GetPixelFormatString(curDescriptor->compression[GPU_TEGRA].format);
-				filesize = QFileInfo(compressedTexturePath.GetAbsolutePathname().c_str()).size();
-
-				// TODO: more accurate dxt data size calculation
-				//datasize = (curTexture->width * curTexture->height * DAVA::Texture::GetPixelFormatSizeInBits(curDescriptor->dxtCompression.format)) >> 3;
-				datasize = LibDxtHelper::GetDataSize(compressedTexturePath);
-			}
-			break;
 		}
 
 		sprintf(tmp, "Format\t: %s\nSize\t: %dx%d\nData size\t: %s\nFile size\t: %s", formatStr, curTexture->width, curTexture->height,
@@ -401,16 +389,16 @@ void TextureBrowser::setupTexturesList()
 void TextureBrowser::setupImagesScrollAreas()
 {
 	// pos change
-	QObject::connect(ui->textureAreaOriginal, SIGNAL(texturePosChanged(const QPoint &)), ui->textureAreaPVR, SLOT(setTexturePos(const QPoint &)));
-	QObject::connect(ui->textureAreaPVR, SIGNAL(texturePosChanged(const QPoint &)), ui->textureAreaOriginal, SLOT(setTexturePos(const QPoint &)));
+	QObject::connect(ui->textureAreaOriginal, SIGNAL(texturePosChanged(const QPoint &)), ui->textureAreaConverted, SLOT(setTexturePos(const QPoint &)));
+	QObject::connect(ui->textureAreaConverted, SIGNAL(texturePosChanged(const QPoint &)), ui->textureAreaOriginal, SLOT(setTexturePos(const QPoint &)));
 
 	// mouse over pixel
 	QObject::connect(ui->textureAreaOriginal, SIGNAL(mouseOverPixel(const QPoint &)), this, SLOT(texturePixelOver(const QPoint &)));
-	QObject::connect(ui->textureAreaPVR, SIGNAL(mouseOverPixel(const QPoint &)), this, SLOT(texturePixelOver(const QPoint &)));
+	QObject::connect(ui->textureAreaConverted, SIGNAL(mouseOverPixel(const QPoint &)), this, SLOT(texturePixelOver(const QPoint &)));
 
 	// mouse wheel
 	QObject::connect(ui->textureAreaOriginal, SIGNAL(mouseWheel(int)), this, SLOT(textureAreaWheel(int)));
-	QObject::connect(ui->textureAreaPVR, SIGNAL(mouseWheel(int)), this, SLOT(textureAreaWheel(int)));
+	QObject::connect(ui->textureAreaConverted, SIGNAL(mouseWheel(int)), this, SLOT(textureAreaWheel(int)));
 }
 
 void TextureBrowser::setupTextureToolbar()
@@ -477,17 +465,40 @@ void TextureBrowser::setupTextureListFilter()
 
 void TextureBrowser::setupTextureProperties()
 {
+	/*
 	QObject::connect(ui->textureProperties, SIGNAL(propertyChanged(const int)), this, SLOT(texturePropertyChanged(const int)));
+	*/
 
 	QPalette palette = ui->warningLabel->palette();
 	palette.setColor(ui->warningLabel->foregroundRole(), Qt::red);
 	ui->warningLabel->setPalette(palette);
 }
 
-void TextureBrowser::setupTextureViewToolbar()
+void TextureBrowser::setupTextureViewTabBar()
 {
-	QObject::connect(ui->actionViewPVR, SIGNAL(triggered(bool)), this, SLOT(textureViewPVR(bool)));
-	QObject::connect(ui->actionViewDXT, SIGNAL(triggered(bool)), this, SLOT(textureViewDXT(bool)));
+	ui->viewTabBar->setTabsClosable(false);
+	ui->viewTabBar->setMovable(false);
+	ui->viewTabBar->setUsesScrollButtons(false);
+	ui->viewTabBar->setExpanding(false);
+
+	int tabIndex;
+
+	tabIndex = ui->viewTabBar->addTab("PVR iOS");
+	ui->viewTabBar->setTabData(tabIndex, GPU_POVERVR_IOS);
+
+	tabIndex = ui->viewTabBar->addTab("PVR Android");
+	ui->viewTabBar->setTabData(tabIndex, GPU_POVERVR_ANDROID);
+
+	tabIndex = ui->viewTabBar->addTab("Tegra");
+	ui->viewTabBar->setTabData(tabIndex, GPU_TEGRA);
+
+	tabIndex = ui->viewTabBar->addTab("MALI");
+	ui->viewTabBar->setTabData(tabIndex, GPU_MALI);
+
+	tabIndex = ui->viewTabBar->addTab("Adreno");
+	ui->viewTabBar->setTabData(tabIndex, GPU_ADRENO);
+
+	QObject::connect(ui->viewTabBar,  SIGNAL(currentChanged(int)), this, SLOT(textureViewChanged(int)));
 }
 
 void TextureBrowser::resetTextureInfo()
@@ -581,25 +592,26 @@ void TextureBrowser::textureColorChannelPressed(bool checked)
 	if(ui->actionColorR->isChecked()) channelsMask |= TextureScrollArea::ChannelR;
 
 	ui->textureAreaOriginal->setColorChannel(channelsMask);
-	ui->textureAreaPVR->setColorChannel(channelsMask);
+	ui->textureAreaConverted->setColorChannel(channelsMask);
 }
 
 void TextureBrowser::textureBorderPressed(bool checked)
 {
-	ui->textureAreaPVR->borderShow(checked);
+	ui->textureAreaConverted->borderShow(checked);
 	ui->textureAreaOriginal->borderShow(checked);
 }
 
 void TextureBrowser::textureBgMaskPressed(bool checked)
 {
-	ui->textureAreaPVR->bgmaskShow(checked);
+	ui->textureAreaConverted->bgmaskShow(checked);
 	ui->textureAreaOriginal->bgmaskShow(checked);
 }
 
 void TextureBrowser::texturePropertyChanged(const int propGroup)
 {
+	/*
 	// settings that need texture to reconvert
-	if( (propGroup == TextureProperties::TYPE_PVR && curTextureView == ViewPVR) ||
+	if( (propGroup == TextureProperties::TYPE_PVR && curTextureView == ViewPVRIOS) ||
 		(propGroup == TextureProperties::TYPE_DXT && curTextureView == ViewDXT) ||
 		(propGroup == TextureProperties::TYPE_COMMON_MIPMAP))
 	{
@@ -614,19 +626,10 @@ void TextureBrowser::texturePropertyChanged(const int propGroup)
 		// new texture can be applyed to scene immediately
 		reloadTextureToScene(curTexture, ui->textureProperties->getTextureDescriptor(), DAVA::GPU_UNKNOWN);
 	}
+	*/
 
 	// update warning message
 	updatePropertiesWarning();
-}
-
-void TextureBrowser::textureViewPVR(bool checked)
-{
-	setTextureView(ViewPVR);
-}
-
-void TextureBrowser::textureViewDXT(bool checked)
-{
-	setTextureView(ViewDXT);
 }
 
 void TextureBrowser::textureReadyOriginal(const DAVA::TextureDescriptor *descriptor, const QImage &image)
@@ -656,7 +659,7 @@ void TextureBrowser::textureReadyPVR(const DAVA::TextureDescriptor *descriptor, 
 	// put this image into cache
 	TextureCache::Instance()->setPVR(descriptor, image);
 
-	if(curDescriptor == descriptor && curTextureView == ViewPVR)
+	if(curDescriptor == descriptor && curTextureView == GPU_POVERVR_IOS)
 	{
 		updateConvertedImageAndInfo(image);
 	}
@@ -667,7 +670,7 @@ void TextureBrowser::textureReadyPVR(const DAVA::TextureDescriptor *descriptor, 
 		if(NULL != texture)
 		{
 			// reload this texture into scene
-			reloadTextureToScene(texture, descriptor, DAVA::GPU_POVERVR_IOS);
+			reloadTextureToScene(texture, descriptor, GPU_POVERVR_IOS);
 		}
 	}
 }
@@ -677,7 +680,7 @@ void TextureBrowser::textureReadyDXT(const DAVA::TextureDescriptor *descriptor, 
 	// put this image into cache
 	TextureCache::Instance()->setDXT(descriptor, image);
 
-	if(curDescriptor == descriptor && curTextureView == ViewDXT)
+	if(curDescriptor == descriptor && curTextureView == GPU_TEGRA)
 	{
 		updateConvertedImageAndInfo(image);
 	}
@@ -688,7 +691,7 @@ void TextureBrowser::textureReadyDXT(const DAVA::TextureDescriptor *descriptor, 
 		if(NULL != texture)
 		{
 			// reload this texture into scene
-			reloadTextureToScene(texture, descriptor, DAVA::GPU_TEGRA);
+			reloadTextureToScene(texture, descriptor, GPU_TEGRA);
 		}
 	}
 }
@@ -698,7 +701,7 @@ void TextureBrowser::texturePixelOver(const QPoint &pos)
 	if(ui->textureAreaOriginal->sceneRect().contains(QPointF(pos.x(), pos.y())))
 	{
 		QColor origColor = ui->textureAreaOriginal->getPixelColor(pos);
-		QColor convColor = ui->textureAreaPVR->getPixelColor(pos);
+		QColor convColor = ui->textureAreaConverted->getPixelColor(pos);
 
 		updateInfoPos(ui->labelOriginalXY, pos);
 		updateInfoPos(ui->labelConvertedXY, pos);
@@ -732,7 +735,7 @@ void TextureBrowser::textureZoomSlide(int value)
 	v = 100 + value;
 
 	ui->textureAreaOriginal->setTextureZoom(zoom);
-	ui->textureAreaPVR->setTextureZoom(zoom);
+	ui->textureAreaConverted->setTextureZoom(zoom);
 
 	toolbarZoomSliderValue->setText(QString("%1%").arg(v));
 }
@@ -883,4 +886,10 @@ void TextureBrowser::sceneReleased(SceneData *sceneData)
 void TextureBrowser::sceneNodeSelected(SceneData *sceneData, DAVA::Entity *node)
 {
 	textureListModel->setHighlight(node);
+}
+
+void TextureBrowser::textureViewChanged(int index)
+{
+	DAVA::eGPUFamily newView = (DAVA::eGPUFamily) ui->viewTabBar->tabData(index).toInt();
+	setTextureView(newView);
 }
