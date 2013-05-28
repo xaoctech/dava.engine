@@ -52,12 +52,14 @@ namespace DAVA
         SetBundleName([bundlePath UTF8String]);
     }
 	
+	#if defined (__DAVAENGINE_NPAPI__)
 	void FilePath::InitializeBundleNameNPAPI(const String& pathToNPAPIPlugin)
     {
 		NSString* pluginPath = [NSString stringWithCString:pathToNPAPIPlugin.c_str() encoding:NSASCIIStringEncoding];
         NSString * bundlePath = [pluginPath stringByAppendingString: @"/Contents/Resources/"];
         SetBundleName([bundlePath UTF8String]);
     }
+	#endif // #if defined (__DAVAENGINE_NPAPI__)
 
 #endif	//#elif defined(__DAVAENGINE_MACOS__)
 }

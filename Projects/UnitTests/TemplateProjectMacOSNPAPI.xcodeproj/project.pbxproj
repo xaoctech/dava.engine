@@ -690,6 +690,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					DAVA_DEBUG,
 					"XP_MACOSX=1",
+					__DAVAENGINE_NPAPI__,
 				);
 				HEADER_SEARCH_PATHS = (
 					./../../Sources/Internal,
@@ -718,7 +719,10 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = TemplateProjectMacOSNPAPI_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = "XP_MACOSX=1";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"XP_MACOSX=1",
+					__DAVAENGINE_NPAPI__,
+				);
 				HEADER_SEARCH_PATHS = (
 					./../../Sources/Internal,
 					./../../Sources/External,
