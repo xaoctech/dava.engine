@@ -8,6 +8,7 @@
 
 #include "./Qt/SpritesPacker/SpritePackerHelper.h"
 #include "../Main/QtUtils.h"
+#include "../SceneEditor/EntityOwnerPropertyHelper.h"
 
 using namespace DAVA;
 
@@ -234,6 +235,7 @@ void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const FilePa
 {
 	//если в рут ноды сложить такие же рут ноды то на релоаде все накроет пиздой
     KeyedArchive *customProperties = node->GetCustomProperties();
+	EntityOwnerPropertyHelper::Instance()->UpdateEntityOwner(node);
     if (customProperties->GetString("editor.referenceToOwner", "") == nodePathname.GetAbsolutePathname())
     {
         Entity *loadedNode = scene->GetRootNode(fromPathname)->Clone();
