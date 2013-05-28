@@ -27,17 +27,15 @@
 		840ED3C916D506F900D2BA6C /* DPIHelperiOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 840ED3C816D506F900D2BA6C /* DPIHelperiOS.mm */; };
 		840ED3CB16D5070400D2BA6C /* DPIHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 840ED3CA16D5070400D2BA6C /* DPIHelper.h */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
+		C70B565B1753CB5E008966FA /* KeyedArchiveSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C70B56591753CB5E008966FA /* KeyedArchiveSwig.cpp */; };
 		C7E76D2F16DF69370041ED9A /* AutotestingSystem_wrap.cxx in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D1F16DF69370041ED9A /* AutotestingSystem_wrap.cxx */; };
 		C7E76D3116DF69370041ED9A /* AutotestingSystemLua.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2116DF69370041ED9A /* AutotestingSystemLua.cpp */; };
 		C7E76D3216DF69370041ED9A /* AutotestingSystemLua.h in Headers */ = {isa = PBXBuildFile; fileRef = C7E76D2216DF69370041ED9A /* AutotestingSystemLua.h */; };
 		C7E76D3316DF69370041ED9A /* AutotestingSystemSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2316DF69370041ED9A /* AutotestingSystemSwig.cpp */; };
 		C7E76D3416DF69370041ED9A /* AutotestingSystemYaml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2416DF69370041ED9A /* AutotestingSystemYaml.cpp */; };
 		C7E76D3516DF69370041ED9A /* AutotestingSystemYaml.h in Headers */ = {isa = PBXBuildFile; fileRef = C7E76D2516DF69370041ED9A /* AutotestingSystemYaml.h */; };
-		C7E76D3616DF69370041ED9A /* Rect_wrap.cxx in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2616DF69370041ED9A /* Rect_wrap.cxx */; };
 		C7E76D3816DF69370041ED9A /* RectSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2816DF69370041ED9A /* RectSwig.cpp */; };
-		C7E76D3916DF69370041ED9A /* UIControl_wrap.cxx in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2916DF69370041ED9A /* UIControl_wrap.cxx */; };
 		C7E76D3B16DF69370041ED9A /* UIControlSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2B16DF69370041ED9A /* UIControlSwig.cpp */; };
-		C7E76D3C16DF69370041ED9A /* Vector_wrap.cxx in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2C16DF69370041ED9A /* Vector_wrap.cxx */; };
 		C7E76D3E16DF69370041ED9A /* VectorSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2E16DF69370041ED9A /* VectorSwig.cpp */; };
 		C7E76D4316DF6CC70041ED9A /* liblua_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C7E76D4216DF6CC70041ED9A /* liblua_ios.a */; };
 		CC247FF116D69F1700183D40 /* DVAssertMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC247FEC16D69F1700183D40 /* DVAssertMessage.cpp */; };
@@ -693,6 +691,8 @@
 		840ED3C816D506F900D2BA6C /* DPIHelperiOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DPIHelperiOS.mm; sourceTree = "<group>"; };
 		840ED3CA16D5070400D2BA6C /* DPIHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DPIHelper.h; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
+		C70B56581753CB5E008966FA /* KeyedArchive_wrap.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyedArchive_wrap.cxx; sourceTree = "<group>"; };
+		C70B56591753CB5E008966FA /* KeyedArchiveSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyedArchiveSwig.cpp; sourceTree = "<group>"; };
 		C7E76D1F16DF69370041ED9A /* AutotestingSystem_wrap.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystem_wrap.cxx; sourceTree = "<group>"; };
 		C7E76D2116DF69370041ED9A /* AutotestingSystemLua.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemLua.cpp; sourceTree = "<group>"; };
 		C7E76D2216DF69370041ED9A /* AutotestingSystemLua.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystemLua.h; sourceTree = "<group>"; };
@@ -1425,6 +1425,8 @@
 		E8B3C7B116B9326D002BD35F /* Autotesting */ = {
 			isa = PBXGroup;
 			children = (
+				C70B56581753CB5E008966FA /* KeyedArchive_wrap.cxx */,
+				C70B56591753CB5E008966FA /* KeyedArchiveSwig.cpp */,
 				C7E76D1F16DF69370041ED9A /* AutotestingSystem_wrap.cxx */,
 				C7E76D2116DF69370041ED9A /* AutotestingSystemLua.cpp */,
 				C7E76D2216DF69370041ED9A /* AutotestingSystemLua.h */,
@@ -2992,11 +2994,8 @@
 				C7E76D3116DF69370041ED9A /* AutotestingSystemLua.cpp in Sources */,
 				C7E76D3316DF69370041ED9A /* AutotestingSystemSwig.cpp in Sources */,
 				C7E76D3416DF69370041ED9A /* AutotestingSystemYaml.cpp in Sources */,
-				C7E76D3616DF69370041ED9A /* Rect_wrap.cxx in Sources */,
 				C7E76D3816DF69370041ED9A /* RectSwig.cpp in Sources */,
-				C7E76D3916DF69370041ED9A /* UIControl_wrap.cxx in Sources */,
 				C7E76D3B16DF69370041ED9A /* UIControlSwig.cpp in Sources */,
-				C7E76D3C16DF69370041ED9A /* Vector_wrap.cxx in Sources */,
 				C7E76D3E16DF69370041ED9A /* VectorSwig.cpp in Sources */,
 				17F53E3016D36FF3004D5099 /* UIWebView.cpp in Sources */,
 				17F53E3516D3705E004D5099 /* WebViewControliOS.mm in Sources */,
@@ -3017,6 +3016,7 @@
 				CCC7A4AE16F1D88C0061EA5D /* UpdateSystem.cpp in Sources */,
 				497BF6E216F751ED00AC57C6 /* DeviceInfoiOS.mm in Sources */,
 				E8B6B3C61705DEB4004F665E /* DeviceInfo.cpp in Sources */,
+				C70B565B1753CB5E008966FA /* KeyedArchiveSwig.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

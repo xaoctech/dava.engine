@@ -121,6 +121,8 @@ public:
 	void WriteString(const String & name, const String & text);
 	String ReadString(const String & name);
 
+	bool SaveKeyedArchiveToDB(const String &archiveName, KeyedArchive *archive);
+
     // DB Master-Helper relations
     void InitMultiplayer(bool _isMaster);
     void RegisterMasterInDB(int32 helpersCount);

@@ -308,12 +308,16 @@ end
 
 function Wait(waitTime)
     waitTime =  waitTime or DELAY
+    local count = 0
     
     local elapsedTime = 0.0
     while elapsedTime < waitTime do
         elapsedTime = elapsedTime + autotestingSystem:GetTimeElapsed()
         coroutine.yield()
+        count = count + 1
     end
+    
+    return count
 end
 
 function GetTimeElapsed()
