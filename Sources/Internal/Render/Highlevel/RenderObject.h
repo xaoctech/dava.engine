@@ -136,17 +136,17 @@ protected:
 
 public:
 	INTROSPECTION_EXTEND(RenderObject, AnimatedObject,
-        MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(type, "Type", I_SAVE | I_VIEW | I_EDIT)
                          
-        MEMBER(flags, "Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(debugFlags, "Debug Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(removeIndex, "Remove index", INTROSPECTION_SERIALIZABLE)
-        MEMBER(bbox, "Box", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(worldBBox, "World Box", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(flags, "Flags", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(debugFlags, "Debug Flags", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(removeIndex, "Remove index", I_SAVE)
+        MEMBER(bbox, "Box", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(worldBBox, "World Box", I_SAVE | I_VIEW | I_EDIT)
 
-        MEMBER(worldTransform, "World Transform", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(worldTransform, "World Transform", I_SAVE | I_VIEW | I_EDIT)
                  
-        COLLECTION(renderBatchArray, "Render Batch Array", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        COLLECTION(renderBatchArray, "Render Batch Array", I_SAVE | I_VIEW | I_EDIT)
     );
 };
 

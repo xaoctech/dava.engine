@@ -14,42 +14,25 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_SCENE3D_RENDER_COMPONENT_H__
-#define __DAVAENGINE_SCENE3D_RENDER_COMPONENT_H__
+#ifndef __QT_PROPERTY_DATA_META_OBJECT_H__
+#define __QT_PROPERTY_DATA_META_OBJECT_H__
 
-#include "Base/BaseTypes.h"
-#include "Entity/Component.h"
-#include "Render/Highlevel/RenderObject.h"
+#include "Base/Introspection.h"
+#include "QtPropertyEditor/QtPropertyData.h"
+#include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
 
-namespace DAVA 
-{
-
-class RenderComponent : public Component
+class QtPropertyDataMetaObject : public QtPropertyDataDavaVariant
 {
 public:
-    RenderComponent(RenderObject * _object = 0);
-    virtual ~RenderComponent();
-    
-    IMPLEMENT_COMPONENT_TYPE(RENDER_COMPONENT);
+	QtPropertyDataMetaObject(void *_object, const DAVA::MetaInfo *_meta);
+	virtual ~QtPropertyDataMetaObject();
 
-    void SetRenderObject(RenderObject * object);
-    RenderObject * GetRenderObject();
-    
-	virtual Component * Clone(Entity * toEntity);
-	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
-	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
-    virtual void GetDataNodes(Set<DataNode*> & dataNodes);
-    
-private:
-    RenderObject * renderObject;
-    
-public:
-    INTROSPECTION_EXTEND(RenderComponent, Component,
-        MEMBER(renderObject, "renderObject", I_SAVE | I_VIEW | I_EDIT)
-    );
+protected:
+	void *object;
+	const DAVA::MetaInfo *meta;
+
+	virtual QVariant GetValueInternal();
+	virtual void SetValueInternal(const QVariant &value);
 };
 
-
-};
-
-#endif //__DAVAENGINE_SCENE3D_RENDER_COMPONENT_H__
+#endif // __QT_PROPERTY_DATA_META_OBJECT_H__

@@ -52,7 +52,7 @@ private:
 
 public:
 	INTROSPECTION_EXTEND(SoundComponent, Component,
-		PROPERTY("eventName", "eventName", GetEventName, SetEventName, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+		PROPERTY("eventName", "eventName", GetEventName, SetEventName, I_SAVE | I_VIEW | I_EDIT)
 		);
 };
 
