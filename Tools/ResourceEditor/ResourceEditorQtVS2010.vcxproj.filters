@@ -46,12 +46,6 @@
     <Filter Include="Classes\Qt">
       <UniqueIdentifier>{b7306c70-2f2b-4ffc-8fe2-acb1e3bb6717}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Classes\Qt\QtPropertyBrowser">
-      <UniqueIdentifier>{d1d39e29-1b06-4a84-a2fe-17cfb8b61690}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Classes\Qt\QtPropertyBrowser\Dava">
-      <UniqueIdentifier>{ca344db2-f6c0-4a5c-9159-1b80dd5300b2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Classes\Qt\QtPosSaver">
       <UniqueIdentifier>{5139cbe9-d6b3-4aef-9d36-62293b1aad8a}</UniqueIdentifier>
     </Filter>
@@ -849,30 +843,6 @@
     <ClCompile Include="Classes\RulerTool\RulerTool.cpp">
       <Filter>Classes\RulerTool</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtbuttonpropertybrowser.cpp">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qteditorfactory.cpp">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtgroupboxpropertybrowser.cpp">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtpropertybrowser.cpp">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtpropertybrowserutils.cpp">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtpropertymanager.cpp">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qttreepropertybrowser.cpp">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtvariantproperty.cpp">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\main.cpp">
       <Filter>Classes\Qt</Filter>
     </ClCompile>
@@ -968,9 +938,6 @@
     </ClCompile>
     <ClCompile Include="Classes\Qt\DockCustomColors\CustomColorsView.cpp">
       <Filter>Classes\Qt\DockCustomColors</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\Dava\qtDavaVectorPropertyManager.cpp">
-      <Filter>Classes\Qt\QtPropertyBrowser\Dava</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyItem.cpp">
       <Filter>Classes\Qt\QtPropertyEditor</Filter>
@@ -2429,30 +2396,6 @@
     <ClInclude Include="Classes\RulerTool\RulerTool.h">
       <Filter>Classes\RulerTool</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtbuttonpropertybrowser.h">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qteditorfactory.h">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtgroupboxpropertybrowser.h">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtpropertybrowser.h">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtpropertybrowserutils_p.h">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtpropertymanager.h">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qttreepropertybrowser.h">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtvariantproperty.h">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\QtPosSaver\QtPosSaver.h">
       <Filter>Classes\Qt\QtPosSaver</Filter>
     </ClInclude>
@@ -2545,9 +2488,6 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockCustomColors\CustomColorsView.h">
       <Filter>Classes\Qt\DockCustomColors</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\QtPropertyBrowser\Dava\qtDavaVectorPropertyManager.h">
-      <Filter>Classes\Qt\QtPropertyBrowser\Dava</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtPropertyItem.h">
       <Filter>Classes\Qt\QtPropertyEditor</Filter>
