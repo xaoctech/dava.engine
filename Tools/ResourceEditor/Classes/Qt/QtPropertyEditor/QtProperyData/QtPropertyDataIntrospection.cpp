@@ -20,7 +20,7 @@
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaKeyedArchive.h"
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataIntoCollection.h"
 
-QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DAVA::IntrospectionInfo *_info, int hasAnyFlags, int hasNotAnyFlags)
+QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DAVA::IntrospectionInfo *_info, int hasAllFlags)
 	: object(_object)
 	, info(_info)
 {
@@ -31,11 +31,9 @@ QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DA
 		for(DAVA::int32 i = 0; i < info->MembersCount(); ++i)
 		{
 			const DAVA::IntrospectionMember *member = _info->Member(i);
-			if(member && 
-				(member->Flags() & hasAnyFlags) &&
-				!(member->Flags() & hasNotAnyFlags))
+			if(NULL != member && (member->Flags() & hasAllFlags) == hasAllFlags)
 			{
-                AddMember(member, hasAnyFlags, hasNotAnyFlags);
+                AddMember(member, hasAllFlags);
 			}
 		}
 
@@ -48,12 +46,17 @@ QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DA
 QtPropertyDataIntrospection::~QtPropertyDataIntrospection()
 { }
 
-void QtPropertyDataIntrospection::AddMember(const DAVA::IntrospectionMember *member, int hasAnyFlags, int hasNotAnyFlags)
+void QtPropertyDataIntrospection::AddMember(const DAVA::IntrospectionMember *member, int hasAllFlags)
 {
 	void *memberObject = member->Data(object);
 	const DAVA::MetaInfo *memberMetaInfo = member->Type();
 	const DAVA::IntrospectionInfo *memberIntrospection = memberMetaInfo->GetIntrospection(memberObject);
 	bool isKeyedArchive = false;
+
+	if(memberMetaInfo->IsPointer())
+	{
+		const DAVA::IntrospectionInfo *ii = memberMetaInfo->GetIntrospection(memberObject);
+	}
 
 	// keyed archive
 	if(NULL != memberIntrospection && (memberIntrospection->Type() == DAVA::MetaInfo::Instance<DAVA::KeyedArchive>()))
@@ -64,7 +67,7 @@ void QtPropertyDataIntrospection::AddMember(const DAVA::IntrospectionMember *mem
 	// introspection
 	else if(NULL != memberObject && NULL != memberIntrospection)
     {
-		QtPropertyDataIntrospection *childData = new QtPropertyDataIntrospection(memberObject, memberIntrospection, hasAnyFlags, hasNotAnyFlags);
+		QtPropertyDataIntrospection *childData = new QtPropertyDataIntrospection(memberObject, memberIntrospection, hasAllFlags);
 		ChildAdd(member->Name(), childData);
     }
 	// any other value
@@ -84,14 +87,14 @@ void QtPropertyDataIntrospection::AddMember(const DAVA::IntrospectionMember *mem
 			// collection
             if(member->Collection() && !isKeyedArchive)
             {
-                QtPropertyDataIntroCollection *childCollection = new QtPropertyDataIntroCollection(memberObject, member->Collection(), hasAnyFlags, hasNotAnyFlags);
+                QtPropertyDataIntroCollection *childCollection = new QtPropertyDataIntroCollection(memberObject, member->Collection(), hasAllFlags);
                 ChildAdd(member->Name(), childCollection);
             }
 			// variant
             else
             {
                 QtPropertyDataDavaVariant *childData = new QtPropertyDataDavaVariant(member->Value(object));
-                if(member->Flags() & DAVA::INTROSPECTION_EDITOR_READONLY)
+                if(!(member->Flags() & DAVA::I_EDIT))
                 {
                     childData->SetFlags(childData->GetFlags() | FLAG_IS_NOT_EDITABLE);
                 }
