@@ -175,13 +175,13 @@ void TextureListDelegate::drawPreviewBig(QPainter *painter, const QStyleOptionVi
 			if(curTextureDescriptor->compression[DAVA::GPU_POVERVR_IOS].format != DAVA::FORMAT_INVALID)
 			{
 				infoText += "\nPVR: ";
-				infoText += QString(DAVA::Texture::GetPixelFormatString(curTextureDescriptor->compression[DAVA::GPU_POVERVR_IOS].format));
+				infoText += QString(DAVA::Texture::GetPixelFormatString((DAVA::PixelFormat) curTextureDescriptor->compression[DAVA::GPU_POVERVR_IOS].format));
 			}
 
 			if(curTextureDescriptor->compression[DAVA::GPU_TEGRA].format != DAVA::FORMAT_INVALID)
 			{
 				infoText += "\nDXT: ";
-				infoText += QString(DAVA::Texture::GetPixelFormatString(curTextureDescriptor->compression[DAVA::GPU_TEGRA].format));
+				infoText += QString(DAVA::Texture::GetPixelFormatString((DAVA::PixelFormat) curTextureDescriptor->compression[DAVA::GPU_TEGRA].format));
 			}
 
 			painter->drawText(textRect, infoText);
