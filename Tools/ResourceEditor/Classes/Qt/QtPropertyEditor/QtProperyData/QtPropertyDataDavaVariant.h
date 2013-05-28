@@ -17,7 +17,11 @@
 #ifndef __QT_PROPERTY_DATA_DAVA_VARIANT_H__
 #define __QT_PROPERTY_DATA_DAVA_VARIANT_H__
 
+#include <QComboBox>
+
 #include "Base/Introspection.h"
+#include "Base/EnumMap.h"
+
 #include "QtPropertyEditor/QtPropertyData.h"
 
 class QtPropertyDataDavaVariant : public QtPropertyData
@@ -30,6 +34,13 @@ public:
 
 	const DAVA::VariantType& GetVariantValue() const;
 	void SetVariantValue(const DAVA::VariantType& value);
+
+	// TODO:
+	// void SetValuesRange();
+	// const EnumMap* GetValuesRange();
+	
+	void AddAllowedValue(const DAVA::VariantType& realValue, const QVariant& visibleValue = QVariant());
+	void ClearAllowedValues();
 
 	virtual void SetIcon(const QIcon &icon);
 	virtual QIcon GetIcon();
@@ -44,13 +55,22 @@ protected:
 	virtual void ChildNeedUpdate();
 
 	virtual QWidget* CreateEditorInternal(QWidget *parent, const QStyleOptionViewItem& option);
+	virtual void SetEditorDataInternal(QWidget *editor);
 	virtual void EditorDoneInternal(QWidget *editor);
-    virtual void SetEditorDataInternal(QWidget *editor);
 
 protected slots:
 	void ColorOWPressed();
 
 private:
+	struct AllowedValue
+	{
+		DAVA::VariantType realValue;
+		QVariant visibleValue;
+	};
+
+	QVector<AllowedValue> allowedValues;
+	bool allowedValuesLocked;
+
 	bool iconCacheIsValid;
 	QIcon iconCache;
 
@@ -58,6 +78,7 @@ private:
 	void ChildsSetFromMe();
 	void MeSetFromChilds(const QString &lastChangedChildKey, QtPropertyData *lastChangedChildData);
 
+	QVariant FromDavaVariant(const DAVA::VariantType &variant);
 	QVariant FromKeyedArchive(DAVA::KeyedArchive *archive);
 	QVariant FromVector4(const DAVA::Vector4 &vector);
 	QVariant FromVector3(const DAVA::Vector3 &vector);
@@ -77,6 +98,9 @@ private:
 	void ToMatrix2(const QVariant &value);
 	void ToColor(const QVariant &value);
 	void ToAABBox3(const QVariant &value);
+
+	QComboBox* CreateAllowedValuesComboBox(QWidget *parent);
+	void SetAllowedValueFromComboBox(QComboBox *combobox);
 };
 
 #endif // __QT_PROPERTY_DATA_DAVA_VARIANT_H__
