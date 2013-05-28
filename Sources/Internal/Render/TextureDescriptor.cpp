@@ -519,7 +519,7 @@ PixelFormat TextureDescriptor::GetPixelFormatForCompression(eGPUFamily forGPU)
 {
     DVASSERT(0 <= forGPU && forGPU < GPU_FAMILY_COUNT);
     
-    return compression[forGPU].format;
+    return (PixelFormat) compression[forGPU].format;
 }
 
     

@@ -44,17 +44,24 @@ public:
 		NOTCOMPRESSED_FILE = 0x00EE00EE
 	};
     
-    struct Compression
+    struct Compression : public BaseObject
     {
-        PixelFormat format;
+        int32 format;
         mutable uint32 crc;
         int32 compressToWidth;
         int32 compressToHeight;
         
         void Clear();
+
+		INTROSPECTION(Compression,
+			MEMBER(format, "format", I_VIEW | I_EDIT | I_SAVE)
+			MEMBER(crc, "crc", I_SAVE)
+			MEMBER(compressToWidth, "compressToWidth", I_VIEW | I_EDIT | I_SAVE)
+			MEMBER(compressToHeight, "compressToHeight", I_VIEW | I_EDIT | I_SAVE)
+		)
     };
     
-    struct TextureSettings
+    struct TextureSettings : public BaseObject
     {
         TextureSettings() { SetDefaultValues(); }
         
@@ -67,6 +74,14 @@ public:
         int8 magFilter;
 
         void SetDefaultValues();
+
+		INTROSPECTION(TextureSettings,
+			MEMBER(wrapModeS, "wrapModeS", I_VIEW | I_EDIT | I_SAVE)
+			MEMBER(wrapModeT, "wrapModeT", I_VIEW | I_EDIT)
+			MEMBER(generateMipMaps, "generateMipMaps", I_VIEW | I_EDIT | I_SAVE)
+			MEMBER(minFilter, "minFilter", I_VIEW | I_EDIT | I_SAVE)
+			MEMBER(magFilter, "magFilter", I_VIEW | I_EDIT | I_SAVE)
+		)
     };
 
 public:
