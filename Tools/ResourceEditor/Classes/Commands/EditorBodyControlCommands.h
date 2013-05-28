@@ -20,8 +20,10 @@
 #include "DAVAEngine.h"
 #include "Command.h"
 #include "BulletObject.h"
+#include "Qt/Scene/EntityGroup.h"
 
 class EditorBodyControl;
+class SceneEditorProxy;
 
 class CommandEntityModification: public Command
 {
@@ -47,6 +49,29 @@ protected:
 	virtual void Cancel();
 
 	void UpdateCollision();
+};
+
+class CommandGroupEntitiesForMultiselect: public CommandEntityModification
+{
+public:
+	CommandGroupEntitiesForMultiselect(const EntityGroup* entities);
+	
+	Entity* GetResultEntity(){return resultEntity;}
+
+protected:
+	EntityGroup				entitiesToGroup;
+	Entity*					resultEntity;
+	Map<Entity*, Entity*>	originalChildParentRelations;//child, paretn
+	SceneEditorProxy*		sep;
+	
+	Map<Entity*, Matrix4> originalMatrixes; // local, world
+
+	virtual void Execute();
+	virtual void Cancel();
+
+	void UpdateTransformMatrixes(Entity* entity, Matrix4& worldMatrix);
+	void MoveEntity(Entity* entity, Vector3& destPoint);
+	Entity* GetEntityWithSolidProp(Entity* en);
 };
 
 class CommandCloneObject: public CommandEntityModification
