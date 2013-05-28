@@ -99,7 +99,14 @@ DAVA::Vector2 Cursor::GetPosition()
     return dynamic_cast<CoreMacOSPlatform *>(CoreMacOSPlatform::Instance())->GetMousePosition();
 }
     
-void Cursor::NativeShowCursor(bool show)
+void Cursor::MoveToCenterOfWindow()
+{
+    NSRect wndRect =[[[NSApplication sharedApplication] mainWindow] frame];
+    CGPoint center = {wndRect.origin.x + wndRect.size.width / 2, wndRect.origin.y + wndRect.size.height / 2};
+    CGWarpMouseCursorPosition(center);
+}
+    
+void Cursor::ShowSystemCursor(bool show)
 {
     if(show)
         [NSCursor unhide];
@@ -109,17 +116,9 @@ void Cursor::NativeShowCursor(bool show)
     
 void Cursor::Show(bool _show)
 {
-    if(this)
-        show = _show;
+    show = _show;
     
-    NativeShowCursor(_show);
-}
-    
-void Cursor::MoveToCenter()
-{
-    NSRect wndRect =[[[NSApplication sharedApplication] mainWindow] frame];
-    CGPoint center = {wndRect.origin.x + wndRect.size.width / 2, wndRect.origin.y + wndRect.size.height / 2};
-    CGWarpMouseCursorPosition(center);
+    ShowSystemCursor(show);
 }
     
 bool Cursor::IsShow()

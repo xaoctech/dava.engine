@@ -388,7 +388,7 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 	[self process:DAVA::UIEvent::PHASE_MOVE touch:theEvent];
     if(InputSystem::Instance()->IsCursorPining())
     {
-        activeCursor->MoveToCenter();
+        Cursor::MoveToCenterOfWindow();
     }
 }
 
@@ -402,7 +402,7 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 	[self process:DAVA::UIEvent::PHASE_ENDED touch:theEvent];
     if(InputSystem::Instance()->IsCursorPining())
     {
-        activeCursor->MoveToCenter();
+        Cursor::MoveToCenterOfWindow();
     }
 }
 - (void)mouseEntered:(NSEvent *)theEvent
