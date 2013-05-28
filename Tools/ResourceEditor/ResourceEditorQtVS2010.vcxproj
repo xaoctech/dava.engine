@@ -592,7 +592,6 @@
     <ClCompile Include="_GeneratedQt\QResourceEditorProgressDialog\QResourceEditorProgressDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\QtIcons_qrc.cpp" />
     <ClCompile Include="_GeneratedQt\QtPosSaver\QtPosSaver_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\QtPropertyBrowser\Dava\qtDavaVectorPropertyManager_moc.cpp" />
     <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyData_moc.cpp" />
     <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyEditor_moc.cpp" />
     <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyItemDelegate_moc.cpp" />
