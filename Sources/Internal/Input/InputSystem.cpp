@@ -63,9 +63,9 @@ bool InputSystem::IsCursorPining()
 void InputSystem::SetCursorPining(bool isPin)
 {
     pinCursor = isPin;
-
+    
 #ifdef __DAVAENGINE_MACOS__
-    RenderManager::Instance()->GetCursor()->Show(!isPin);
+    Cursor::ShowSystemCursor(!isPin);
 #endif
 }
     
