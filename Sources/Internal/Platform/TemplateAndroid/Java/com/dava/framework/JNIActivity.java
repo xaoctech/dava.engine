@@ -13,6 +13,8 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -293,7 +295,6 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 				return false;
 			}
 		});
-		
 		addContentView(editText, params);
 		
 		editText.setInputType(EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);

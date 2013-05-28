@@ -56,7 +56,8 @@
     <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">PreBuildEvent</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>
+    </LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">
     <ClCompile>
@@ -496,6 +497,7 @@
     <ClCompile Include="Classes\SceneEditor\EditorBodyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditorConfig.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditorSettings.cpp" />
+    <ClCompile Include="Classes\SceneEditor\EntityOwnerPropertyHelper.cpp" />
     <ClCompile Include="Classes\SceneEditor\EntityPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\ExtendedDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\FogControl.cpp" />
@@ -1051,6 +1053,7 @@
     <ClInclude Include="Classes\SceneEditor\EditorBodyControl.h" />
     <ClInclude Include="Classes\SceneEditor\EditorConfig.h" />
     <ClInclude Include="Classes\SceneEditor\EditorSettings.h" />
+    <ClInclude Include="Classes\SceneEditor\EntityOwnerPropertyHelper.h" />
     <ClInclude Include="Classes\SceneEditor\EntityPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\ExtendedDialog.h" />
     <ClInclude Include="Classes\SceneEditor\FogControl.h" />
