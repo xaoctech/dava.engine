@@ -29,7 +29,7 @@ FilePath DXTConverter::ConvertPngToDxt(const TextureDescriptor &descriptor, eGPU
         
         if(LibDxtHelper::WriteDdsFile(outputName,
                                       image->width, image->height, image->data,
-                                      descriptor.compression[gpuFamily].format,
+                                      (PixelFormat) descriptor.compression[gpuFamily].format,
                                       (descriptor.settings.generateMipMaps == TextureDescriptor::OPTION_ENABLED)))
         {
             for_each(inputImages.begin(), inputImages.end(), SafeRelease<Image>);
