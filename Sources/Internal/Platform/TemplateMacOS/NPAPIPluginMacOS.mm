@@ -430,10 +430,12 @@ extern void FrameworkWillTerminate();
 	//sleep(15);
 	DAVA::NPAPICoreMacOSPlatform * core = new DAVA::NPAPICoreMacOSPlatform();
 	core->CreateSingletons();
-	
+
+	#if defined (__DAVAENGINE_NPAPI__)
 	// A Bundle Path have to be updated for the NPAPI Plugin.
 	// Yuri Coder, 2013/05/22. TODO: looks like temporary patch.
 	DAVA::FilePath::InitializeBundleNameNPAPI([bundlePath UTF8String]);
+	#endif // #if defined (__DAVAENGINE_NPAPI__)
 
 	FrameworkDidLaunched();
     DAVA::RenderManager::Create(DAVA::Core::RENDERER_OPENGL);

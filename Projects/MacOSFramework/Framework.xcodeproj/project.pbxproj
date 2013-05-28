@@ -5718,6 +5718,7 @@
 					FT2_BUILD_LIBRARY,
 					DAVA_DEBUG,
 					"XP_MACOSX=1",
+					__DAVAENGINE_NPAPI__,
 				);
 				HEADER_SEARCH_PATHS = (
 					./../../Sources/Internal,
@@ -5759,6 +5760,7 @@
 					DDARWIN_NO_CARBON,
 					FT2_BUILD_LIBRARY,
 					"XP_MACOSX=1",
+					__DAVAENGINE_NPAPI__,
 				);
 				HEADER_SEARCH_PATHS = (
 					./../../Sources/Internal,
