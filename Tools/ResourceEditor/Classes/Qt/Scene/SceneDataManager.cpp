@@ -232,7 +232,7 @@ void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const FilePa
 {
 	//если в рут ноды сложить такие же рут ноды то на релоаде все накроет пиздой
     KeyedArchive *customProperties = node->GetCustomProperties();
-	EntityOwnerPropertyHelper::Instance()->UpdateEntityOwner(node);
+	EntityOwnerPropertyHelper::Instance()->UpdateEntityOwner(customProperties);
     if (customProperties->GetString("editor.referenceToOwner", "") == nodePathname.GetAbsolutePathname())
     {
         Entity *loadedNode = scene->GetRootNode(fromPathname)->Clone();

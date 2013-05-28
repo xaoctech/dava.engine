@@ -267,12 +267,6 @@ public:
     void SetSolid(bool isSolid);
     bool GetSolid();
 
-	void SetDesignerName(const String & name);
-    String GetDesignerName();
-
-	void UpdateModificationTime();
-    String GetModificationTime();
-
     /**
         \brief function returns maximum bounding box of scene in world coordinates.
         \returns bounding box
@@ -341,8 +335,6 @@ public:
     
 	// Property names.
 	static const char* SCENE_NODE_IS_SOLID_PROPERTY_NAME;
-	static const char* SCENE_NODE_DESIGNER_NAME_PROPERTY_NAME;
-	static const char* SCENE_NODE_MODIFICATION_DATA_PROPERTY_NAME;
 
 	void FindComponentsByTypeRecursive(Component::eType type, List<DAVA::Entity*> & components);
    
