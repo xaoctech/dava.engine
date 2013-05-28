@@ -650,7 +650,7 @@ QWidget* QtPropertyDataDavaVariant::CreateEditorInternal(QWidget *parent, const 
     return ret;
 }
 
-bool QtPropertyDataDavaVariant::SetEditorDataInternal(QWidget *editor)
+void QtPropertyDataDavaVariant::SetEditorDataInternal(QWidget *editor)
 {
 	// if we have valueItems, so that means combobox was created
 	if(allowedValues.size())
