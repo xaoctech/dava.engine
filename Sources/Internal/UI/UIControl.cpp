@@ -1537,12 +1537,12 @@ namespace DAVA
 	bool UIControl::IsPointInside(const Vector2 &_point, bool expandWithFocus/* = false*/)
 	{
         Vector2 point = _point;
-#ifdef __DAVAENGINE_MACOS__
+
 		if(InputSystem::Instance()->IsCursorPining())
 		{
-			point = RenderManager::Instance()->GetCursor()->GetPosition();
+			point.x = Core::Instance()->GetVirtualScreenWidth() / 2;
+            point.y = Core::Instance()->GetVirtualScreenHeight() / 2;
 		}
-#endif
         
 		UIGeometricData gd = GetGeometricData();
 		Rect rect = gd.GetUnrotatedRect();
