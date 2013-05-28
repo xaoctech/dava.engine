@@ -138,13 +138,15 @@ QtPropertyData* PropertyEditor::AppendIntrospectionInfo(void *object, const DAVA
 
         if(hasMembers)
         {
-			int hasFlags = DAVA::INTROSPECTION_EDITOR;
-			int hasNotFlags = 0;
+			int flags = DAVA::I_VIEW;
 
-			if(!advancedMode) hasNotFlags |= DAVA::INTROSPECTION_EDITOR_READONLY;
+			// in basic mode show only field that can be viewed and edited
+			if(!advancedMode)
+			{
+				flags |= DAVA::I_EDIT;
+			}
 
-			propData = new QtPropertyDataIntrospection(object, currentInfo, hasFlags, hasNotFlags);
-
+			propData = new QtPropertyDataIntrospection(object, currentInfo, flags);
 			if(propData->ChildCount() > 0)
 			{
 				QPair<QtPropertyItem*, QtPropertyItem*> prop = AppendProperty(currentInfo->Name(), propData);
