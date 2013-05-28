@@ -233,6 +233,11 @@ String AutotestingSystemLua::ReadString(const String & name)
 	return AutotestingSystem::Instance()->ReadString(name);
 }
 
+bool AutotestingSystemLua::SaveKeyedArchiveToDB(const String &archiveName, KeyedArchive *archive)
+{
+	return AutotestingSystem::Instance()->SaveKeyedArchiveToDB(archiveName, archive);
+}
+
 UIControl *AutotestingSystemLua::GetScreen()
 {
     return UIControlSystem::Instance()->GetScreen();

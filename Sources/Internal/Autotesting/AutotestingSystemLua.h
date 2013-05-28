@@ -99,6 +99,7 @@ public:
     bool SetText(const String &path, const String &text); // lua uses ansi strings
     bool CheckText(UIControl *control, const String &expectedText);
     bool CheckMsgText(UIControl *control, const String &key);
+	bool SaveKeyedArchiveToDB(const String &archiveName, KeyedArchive *archive);
 
 	// multiplayer api
 	void WriteState(const String & device, const String & state);

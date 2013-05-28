@@ -355,6 +355,31 @@ KeyedArchive *AutotestingSystem::FindOrInsertRunArchive(MongodbUpdateObject* dbU
 	return dbUpdateObject->GetData();
 }
 
+bool AutotestingSystem::SaveKeyedArchiveToDB(const String &archiveName, KeyedArchive *archive)
+{
+	bool ret = false;
+	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
+
+	String storageName = Format("%u_aux", testsDate);
+    Logger::Debug("AutotestingSystem::SaveKeyedArchiveToDB storageName=%s archiveName=%s", storageName.c_str(), archiveName.c_str());
+    
+    bool isFound = dbClient->FindObjectByKey(storageName, dbUpdateObject);
+    if(!isFound)
+    {
+        dbUpdateObject->SetObjectName(storageName);
+        Logger::Debug("AutotestingSystem::SaveKeyedArchiveToDB new MongodbUpdateObject");
+    }
+    dbUpdateObject->LoadData();
+    
+    KeyedArchive* dbUpdateData = dbUpdateObject->GetData();
+
+	dbUpdateData->SetArchive(archiveName, archive);
+
+	ret = SaveToDB(dbUpdateObject);
+    SafeRelease(dbUpdateObject);
+	return ret;
+}
+
 KeyedArchive *AutotestingSystem::FindOrInsertTestArchive(MongodbUpdateObject* dbUpdateObject, const String &testId)
 {
     Logger::Debug("AutotestingSystem::FindOrInsertTestArchive testId=%s", testId.c_str());
@@ -856,6 +881,7 @@ void AutotestingSystem::InitializeDevice(const String & device)
 String AutotestingSystem::GetCurrentTimeString()
 {
     uint64 timeAbsMs = GetCurrentTimeMS();
+
     uint16 hours = (timeAbsMs/3600000)%12;
     uint16 minutes = (timeAbsMs/60000)%60;
     uint16 seconds = (timeAbsMs/1000)%60;
@@ -866,7 +892,7 @@ String AutotestingSystem::GetCurrentTimeString()
 String AutotestingSystem::GetCurrentTimeMsString()
 {
 	uint64 timeAbsMs = SystemTimer::Instance()->AbsoluteMS();
-	uint16 hours = (timeAbsMs/3600000)%60;
+	uint16 hours = (timeAbsMs/3600000)%12;
 	uint16 minutes = (timeAbsMs/60000)%60;
 	uint16 seconds = (timeAbsMs/1000)%60;
 	uint16 miliseconds = (timeAbsMs)%1000;
