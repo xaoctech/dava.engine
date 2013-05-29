@@ -236,7 +236,15 @@ String AutotestingSystemLua::ReadString(const String & name)
 
 bool AutotestingSystemLua::SaveKeyedArchiveToDB(const String &archiveName, KeyedArchive *archive)
 {
+	Logger::Debug("AutotestingSystemLua::SaveKeyedArchiveToDB");
 	return AutotestingSystem::Instance()->SaveKeyedArchiveToDB(archiveName, archive);
+}
+
+String AutotestingSystemLua::MakeScreenshot()
+{
+	Logger::Debug("AutotestingSystemLua::MakeScreenshot");
+	AutotestingSystem::Instance()->MakeScreenShot();
+	return AutotestingSystem::Instance()->GetScreenShotName();
 }
 
 UIControl *AutotestingSystemLua::GetScreen()

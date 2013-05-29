@@ -121,6 +121,9 @@ public:
 	void WriteString(const String & name, const String & text);
 	String ReadString(const String & name);
 
+	String GetScreenShotName();
+	void MakeScreenShot();
+
 	bool SaveKeyedArchiveToDB(const String &archiveName, KeyedArchive *archive);
 
     // DB Master-Helper relations
@@ -129,8 +132,6 @@ public:
     void RegisterHelperInDB();
     
 protected:
-	void MakeScreenShot();
-
 	String GetTestId(int32 index) { return Format("Test%03d", index); };
 	String GetStepId(int32 index) { return Format("Step%03d", index); };
 	String GetLogId(int32 index) { return  Format("Message%03d", index); };
@@ -156,7 +157,6 @@ protected:
     bool CheckSavedObjectInDB(MongodbUpdateObject *dbUpdateObject);
     bool CheckKeyedArchivesEqual(const String &name, KeyedArchive* firstKeyedArchive, KeyedArchive* secondKeyedArchive);
 
-
     bool ConnectToDB();
 //    void AddTestResult(const String &text, bool isPassed, const String & error = "");
 //    void SaveTestToDB();
@@ -172,7 +172,8 @@ protected:
     int32 GetIndexInFileList(FileList &fileList, int32 index);
     
     void ExitApp();
-	 
+	
+
 	uint64 startTimeMS;
 
     bool isInit;

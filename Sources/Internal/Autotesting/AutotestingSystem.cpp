@@ -1610,8 +1610,9 @@ void AutotestingSystem::OnError(const String & errorMessage)
 	
 	Log("ERROR", errorMessage);
     //SaveTestStepLogEntryToDB("ERROR", GetCurrentTimeString(), errorMessage);
-
+	
 	MakeScreenShot();
+	SaveScreenShotNameToDB();
     
 	if (deviceName != "not-initialized")
 	{
@@ -1630,14 +1631,20 @@ void AutotestingSystem::OnError(const String & errorMessage)
 
 void AutotestingSystem::MakeScreenShot()
 {
+	Logger::Debug("AutotestingSystem::MakeScreenShot");
 	uint64 timeAbsMs = GetCurrentTimeMS();
     uint16 hours = (timeAbsMs/3600000)%60;
     uint16 minutes = (timeAbsMs/60000)%60;
     uint16 seconds = (timeAbsMs/1000)%60;
 	screenShotName = Format("%s_%s_%02d_%02d_%02d", AUTOTESTING_PLATFORM_NAME, groupName.c_str(), hours, minutes, seconds);
-	SaveScreenShotNameToDB();
 
 	RenderManager::Instance()->RequestGLScreenShot(this);
+}
+
+String AutotestingSystem::GetScreenShotName()
+{
+	Logger::Debug("AutotestingSystem::GetScreenShotName %s", screenShotName.c_str());
+	return screenShotName.c_str();
 }
 
 void AutotestingSystem::OnScreenShot(Image *image)
