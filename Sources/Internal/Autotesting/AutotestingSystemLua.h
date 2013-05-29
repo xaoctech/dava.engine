@@ -114,6 +114,8 @@ public:
 	void WriteString(const String & name, const String & text);
 	String ReadString(const String & name);
 
+	String MakeScreenshot();
+
 protected:
 #if !defined(SWIG)
     void ParsePath(const String &path, Vector<String> &parsedPath);
@@ -125,6 +127,7 @@ protected:
     bool RunScript(const String &luaScript);
     bool RunScriptFromFile(const String &luaFilePath);
     bool LoadWrappedLuaObjects();
+	
 
 	AutotestingSystemLuaDelegate *delegate;
     lua_State *luaState; //TODO: multiple lua states

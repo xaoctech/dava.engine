@@ -133,6 +133,21 @@ function SaveArchiveToDB(name, archive)
 	autotestingSystem:SaveKeyedArchiveToDB(name, archive)
 end
 
+function ReadString(name)
+	return autotestingSystem:ReadString(name)
+end
+
+function WriteString(name, text)
+	autotestingSystem:WriteString(name, text)
+	coroutine.yield()
+end
+
+function MakeScreenshot()
+	local name = autotestingSystem:MakeScreenshot()
+	Yield()
+	return name
+end
+
 ----------------------------------------------------------------------------------------------------
 -- Multiplayer API
 ----------------------------------------------------------------------------------------------------
