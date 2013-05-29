@@ -2,6 +2,9 @@ package com.dava.framework;
 
 import java.util.ArrayList;
 
+import com.bda.controller.ControllerListener;
+import com.bda.controller.StateEvent;
+
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
@@ -11,7 +14,7 @@ import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
-public class JNIGLSurfaceView extends GLSurfaceView 
+public class JNIGLSurfaceView extends GLSurfaceView
 {
 	private JNIRenderer mRenderer = null;
 
@@ -20,6 +23,8 @@ public class JNIGLSurfaceView extends GLSurfaceView
     private native void nativeOnResumeView();
     private native void nativeOnPauseView(boolean isLock);
 
+    MOGAListener mogaListener = null;
+    
     public JNIGLSurfaceView(Context context) 
     {
         super(context);
@@ -42,6 +47,8 @@ public class JNIGLSurfaceView extends GLSurfaceView
         
         mRenderer = new JNIRenderer();
         setRenderer(mRenderer);
+        
+        mogaListener = new MOGAListener(this);
     }
     
     @Override
@@ -87,7 +94,7 @@ public class JNIGLSurfaceView extends GLSurfaceView
     	double time;
     	int action;
 		
-    	public InputRunnable(final MotionEvent event)
+    	public InputRunnable(final android.view.MotionEvent event)
     	{
     		events = new ArrayList<InputEvent>();
     		action = event.getActionMasked();
@@ -121,6 +128,22 @@ public class JNIGLSurfaceView extends GLSurfaceView
     			int actionIdx = event.getActionIndex();
     			assert(actionIdx <= event.getPointerCount());
     			events.add(new InputEvent(event.getPointerId(actionIdx), event.getX(actionIdx), event.getY(actionIdx), event.getSource()));
+    		}
+    	}
+    	public InputRunnable(final com.bda.controller.MotionEvent event)
+    	{
+    		action = MotionEvent.ACTION_MOVE;
+    		events = new ArrayList<InputEvent>();
+        	int pointerCount = event.getPointerCount();
+	    	for (int i = 0; i < pointerCount; ++i)
+	    	{
+	    		//InputEvent::id corresponds to axis id from UIEvent::eJoystickAxisID
+	        	events.add(new InputEvent(0, event.getAxisValue(com.bda.controller.MotionEvent.AXIS_X, i), 0, InputDevice.SOURCE_CLASS_JOYSTICK));
+	        	events.add(new InputEvent(1, event.getAxisValue(com.bda.controller.MotionEvent.AXIS_Y, i), 0, InputDevice.SOURCE_CLASS_JOYSTICK));
+	        	events.add(new InputEvent(2, event.getAxisValue(com.bda.controller.MotionEvent.AXIS_Z, i), 0, InputDevice.SOURCE_CLASS_JOYSTICK));
+	        	events.add(new InputEvent(5, event.getAxisValue(com.bda.controller.MotionEvent.AXIS_RZ, i), 0, InputDevice.SOURCE_CLASS_JOYSTICK));
+	        	events.add(new InputEvent(6, event.getAxisValue(com.bda.controller.MotionEvent.AXIS_LTRIGGER, i), 0, InputDevice.SOURCE_CLASS_JOYSTICK));
+	        	events.add(new InputEvent(7, event.getAxisValue(com.bda.controller.MotionEvent.AXIS_RTRIGGER, i), 0, InputDevice.SOURCE_CLASS_JOYSTICK));
     		}
     	}
 
@@ -158,7 +181,7 @@ public class JNIGLSurfaceView extends GLSurfaceView
     }
     
     @Override
-    public boolean onTouchEvent(final MotionEvent event) 
+    public boolean onTouchEvent(MotionEvent event) 
     {
     	queueEvent(new InputRunnable(event));
         return true;
@@ -169,5 +192,32 @@ public class JNIGLSurfaceView extends GLSurfaceView
     {
     	queueEvent(new InputRunnable(event));
     	return true;
+    }
+    
+    class MOGAListener implements ControllerListener
+    {
+    	GLSurfaceView parent = null;
+    	
+    	MOGAListener(GLSurfaceView parent)
+    	{
+    		this.parent = parent;
+    	}
+    	
+		@Override
+		public void onKeyEvent(com.bda.controller.KeyEvent event)
+		{
+			if(event.getAction() == com.bda.controller.KeyEvent.ACTION_DOWN)
+				parent.queueEvent(new KeyInputRunnable(event.getKeyCode()));
+		}
+		@Override
+		public void onMotionEvent(com.bda.controller.MotionEvent event)
+		{
+			parent.queueEvent(new InputRunnable(event));
+		}
+		@Override
+		public void onStateEvent(StateEvent event)
+		{
+			
+		}
     }
 }
