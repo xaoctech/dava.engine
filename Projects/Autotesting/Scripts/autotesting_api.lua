@@ -126,6 +126,13 @@ function StopTest()
     autotestingSystem:OnTestFinished()
 end
 
+-- DB communication
+function SaveArchiveToDB(name, archive)
+	Log(string.format("Save '%s' archive", name), "Debug")
+	
+	autotestingSystem:SaveKeyedArchiveToDB(name, archive)
+end
+
 ----------------------------------------------------------------------------------------------------
 -- Multiplayer API
 ----------------------------------------------------------------------------------------------------

@@ -27,6 +27,7 @@ extern "C" int luaopen_AutotestingSystem(lua_State *l);
 extern "C" int luaopen_UIControl(lua_State *l); 
 extern "C" int luaopen_Rect(lua_State *l);
 extern "C" int luaopen_Vector(lua_State *l);
+extern "C" int luaopen_KeyedArchive(lua_State *l);
 
 namespace DAVA
 {
@@ -385,7 +386,8 @@ bool AutotestingSystemLua::LoadWrappedLuaObjects()
     luaopen_UIControl(luaState);	// load the wrappered module
     luaopen_Rect(luaState);	// load the wrappered module
     luaopen_Vector(luaState);	// load the wrappered module
-    
+    luaopen_KeyedArchive(luaState);	// load the wrappered module
+
     if(delegate)
     {
         ret = delegate->LoadWrappedLuaObjects(luaState);

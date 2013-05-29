@@ -291,7 +291,7 @@ bool AutotestingSystem::ConnectToDB()
 
 void AutotestingSystem::WriteString(const String & name, const String & text)
 {
-	String runId = Format("%u_additional",testsDate);
+	String runId = Format("%u_aux",testsDate);
 	Logger::Debug("AutotestingSystem::WriteString name=%s text=%s, runId = %s", name.c_str(), text.c_str(), runId.c_str());
 
 
@@ -308,7 +308,7 @@ void AutotestingSystem::WriteString(const String & name, const String & text)
 
 String AutotestingSystem::ReadString(const String & name)
 {
-	String runId = Format("%u_additional",testsDate);
+	String runId = Format("%u_aux",testsDate);
 
 	Logger::Debug("AutotestingSystem::ReadString name=%s, runId = %s", name.c_str(), runId.c_str());
 	
