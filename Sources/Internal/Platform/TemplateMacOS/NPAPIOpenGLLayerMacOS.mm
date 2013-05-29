@@ -13,8 +13,8 @@
 
 @implementation NPAPIOpenGLLayerMacOS
 
-static CGLContextObj inFrameOpenGLContext;
-static CGLPixelFormatObj inFramePixelFormat;
+static CGLContextObj inFrameOpenGLContext = NULL;
+static CGLPixelFormatObj inFramePixelFormat = NULL;
 
 - (id) initWithPluginInstance:(NPAPIPluginMacOS*) instance
 {
@@ -25,7 +25,7 @@ static CGLPixelFormatObj inFramePixelFormat;
 
 		inFrameOpenGLContext = NULL;
     }
-	
+
     return self;
 }
 
