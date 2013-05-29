@@ -213,6 +213,12 @@ extern void FrameworkWillTerminate();
 			it->physPoint.x = p.x;
 			it->physPoint.y = p.y;
 
+			if(DAVA::InputSystem::Instance()->IsCursorPining())
+			{
+				it->physPoint.x = curEvent->data.mouse.deltaX;
+				it->physPoint.y = curEvent->data.mouse.deltaY;
+			}
+
 			it->tapCount = DAVA::Max(curEvent->data.mouse.clickCount, 1);
 			it->timestamp = timestamp;
 			it->phase = touchPhase;
@@ -232,6 +238,12 @@ extern void FrameworkWillTerminate();
 
 			it->physPoint.x = p.x;
 			it->physPoint.y = p.y;
+			
+			if(DAVA::InputSystem::Instance()->IsCursorPining())
+			{
+				it->physPoint.x = curEvent->data.mouse.deltaX;
+				it->physPoint.y = curEvent->data.mouse.deltaY;
+			}
 
 			it->tapCount = curEvent->data.mouse.clickCount;
 			it->timestamp = timestamp;
@@ -251,6 +263,12 @@ extern void FrameworkWillTerminate();
 
 		newTouch.physPoint.x = p.x;
 		newTouch.physPoint.y = p.y;
+
+		if(DAVA::InputSystem::Instance()->IsCursorPining())
+		{
+			newTouch.physPoint.x = curEvent->data.mouse.deltaX;
+			newTouch.physPoint.y = curEvent->data.mouse.deltaY;
+		}
 
 		newTouch.tapCount = curEvent->data.mouse.clickCount;
 		newTouch.timestamp = timestamp;
@@ -284,6 +302,12 @@ extern void FrameworkWillTerminate();
 
 	DAVA::UIControlSystem::Instance()->OnInput(touchPhase, emptyTouches, touches);
 	touches.clear();
+	
+	if ((touchPhase == DAVA::UIEvent::PHASE_MOVE || touchPhase == DAVA::UIEvent::PHASE_DRAG)
+		&& DAVA::InputSystem::Instance()->IsCursorPining())
+	{
+		DAVA::Cursor::MoveToCenterOfWindow();
+	}
 }
 
 -(void) keyDown:(NPCocoaEvent*)event
