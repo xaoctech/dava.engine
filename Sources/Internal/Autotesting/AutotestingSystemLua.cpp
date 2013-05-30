@@ -234,10 +234,10 @@ String AutotestingSystemLua::ReadString(const String & name)
 	return AutotestingSystem::Instance()->ReadString(name);
 }
 
-bool AutotestingSystemLua::SaveKeyedArchiveToDB(const String &archiveName, KeyedArchive *archive)
+bool AutotestingSystemLua::SaveKeyedArchiveToDB(const String &archiveName, KeyedArchive *archive, const String &docName)
 {
 	Logger::Debug("AutotestingSystemLua::SaveKeyedArchiveToDB");
-	return AutotestingSystem::Instance()->SaveKeyedArchiveToDB(archiveName, archive);
+	return AutotestingSystem::Instance()->SaveKeyedArchiveToDB(archiveName, archive, docName);
 }
 
 String AutotestingSystemLua::MakeScreenshot()

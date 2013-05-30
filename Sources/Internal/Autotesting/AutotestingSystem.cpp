@@ -355,12 +355,12 @@ KeyedArchive *AutotestingSystem::FindOrInsertRunArchive(MongodbUpdateObject* dbU
 	return dbUpdateObject->GetData();
 }
 
-bool AutotestingSystem::SaveKeyedArchiveToDB(const String &archiveName, KeyedArchive *archive)
+bool AutotestingSystem::SaveKeyedArchiveToDB(const String &archiveName, KeyedArchive *archive, const String &docName)
 {
 	bool ret = false;
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
 
-	String storageName = Format("%u_aux", testsDate);
+	String storageName = Format("%u_%s", testsDate, docName.c_str());
     Logger::Debug("AutotestingSystem::SaveKeyedArchiveToDB storageName=%s archiveName=%s", storageName.c_str(), archiveName.c_str());
     
     bool isFound = dbClient->FindObjectByKey(storageName, dbUpdateObject);
@@ -372,8 +372,8 @@ bool AutotestingSystem::SaveKeyedArchiveToDB(const String &archiveName, KeyedArc
     dbUpdateObject->LoadData();
     
     KeyedArchive* dbUpdateData = dbUpdateObject->GetData();
-
-	dbUpdateData->SetArchive(archiveName, archive);
+	
+	dbUpdateData->SetArchive(archiveName.c_str(), archive);
 
 	ret = SaveToDB(dbUpdateObject);
     SafeRelease(dbUpdateObject);

@@ -124,7 +124,7 @@ public:
 	String GetScreenShotName();
 	void MakeScreenShot();
 
-	bool SaveKeyedArchiveToDB(const String &archiveName, KeyedArchive *archive);
+	bool SaveKeyedArchiveToDB(const String &archiveName, KeyedArchive *archive, const String &docName);
 
     // DB Master-Helper relations
     void InitMultiplayer(bool _isMaster);
