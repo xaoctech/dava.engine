@@ -33,6 +33,7 @@ protected:
 
 	virtual QVariant GetValueInternal();
 	virtual void SetValueInternal(const QVariant &value);
+	virtual bool EditorDoneInternal(QWidget *editor);
 };
 
 #endif // __QT_PROPERTY_DATA_META_OBJECT_H__

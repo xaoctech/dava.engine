@@ -46,6 +46,11 @@ QPair<QtPropertyItem*, QtPropertyItem*> QtPropertyEditor::AppendProperty(const Q
 	return curModel->AppendProperty(name, data, parent);
 }
 
+QPair<QtPropertyItem*, QtPropertyItem*> QtPropertyEditor::GetProperty(const QString &name, QtPropertyItem* parent) const
+{
+	return curModel->GetProperty(name, parent);
+}
+
 void QtPropertyEditor::RemoveProperty(QtPropertyItem* item)
 {
 	curModel->RemoveProperty(item);
@@ -54,6 +59,19 @@ void QtPropertyEditor::RemoveProperty(QtPropertyItem* item)
 void QtPropertyEditor::RemovePropertyAll()
 {
 	curModel->RemovePropertyAll();
+}
+
+QtPropertyData *QtPropertyEditor::GetPropertyData(const QString &key, QtPropertyItem *parent) const
+{
+	QtPropertyData *ret = NULL;
+
+	QPair<QtPropertyItem*, QtPropertyItem*> pair = GetProperty(key, parent);
+	if(NULL != pair.second)
+	{
+		ret = pair.second->GetPropertyData();
+	}
+
+	return ret;
 }
 
 void QtPropertyEditor::Expand(QtPropertyItem *item)

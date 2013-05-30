@@ -27,8 +27,12 @@ QtPropertyItemDelegate::QtPropertyItemDelegate(QWidget *parent /* = 0 */)
 
 void QtPropertyItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-	recalcOptionalWidgets(index, (QStyleOptionViewItem *) &option);
-	QStyledItemDelegate::paint(painter, option, index);
+	QStyleOptionViewItemV4 opt = option;
+
+	initStyleOption(&opt, index);
+	recalcOptionalWidgets(index, &opt);
+
+	QStyledItemDelegate::paint(painter, opt, index);
 }
 
 QSize QtPropertyItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -58,6 +62,8 @@ QWidget* QtPropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptio
 
 void QtPropertyItemDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
 {
+	bool doneByInternalEditor = false;
+
     const QtPropertyModel *propertyModel = dynamic_cast<const QtPropertyModel *>(index.model());
 	if(NULL != propertyModel)
 	{
@@ -65,15 +71,20 @@ void QtPropertyItemDelegate::setEditorData(QWidget *editor, const QModelIndex &i
 		QtPropertyData* data = item->GetPropertyData();
 		if(NULL != data)
 		{
-            data->SetEditorData(editor);
+            doneByInternalEditor = data->SetEditorData(editor);
 		}
 	}
 
-    QStyledItemDelegate::setEditorData(editor, index);
+	if(!doneByInternalEditor)
+	{
+		QStyledItemDelegate::setEditorData(editor, index);
+	}
 }
 
 void QtPropertyItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
 {
+	bool doneByInternalEditor = false;
+
     const QtPropertyModel *propertyModel = dynamic_cast<const QtPropertyModel *>(index.model());
 	if(NULL != propertyModel)
 	{
@@ -81,11 +92,14 @@ void QtPropertyItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *m
 		QtPropertyData* data = item->GetPropertyData();
 		if(NULL != data)
 		{
-            data->EditorDone(editor);
+            doneByInternalEditor = data->EditorDone(editor);
 		}
 	}
 
-    QStyledItemDelegate::setModelData(editor, model, index);
+	if(!doneByInternalEditor)
+	{
+	    QStyledItemDelegate::setModelData(editor, model, index);
+	}
 }
 
 void QtPropertyItemDelegate::updateEditorGeometry(QWidget * editor, const QStyleOptionViewItem & option, const QModelIndex & index) const
@@ -96,9 +110,9 @@ void QtPropertyItemDelegate::updateEditorGeometry(QWidget * editor, const QStyle
 	if(NULL != editor)
 	{
 		editor->setObjectName("customPropertyEditor");
-		editor->setStyleSheet("#customPropertyEditor{ border: 2px solid gray; }");
+		editor->setStyleSheet("#customPropertyEditor{ border: 1px solid gray; }");
 		QRect r = option.rect;
-		r.adjust(0, -2, 0, 2);
+		r.adjust(2, -1, 0, 1);
 		editor->setGeometry(r);
 	}
 }

@@ -57,8 +57,10 @@ QPair<QtPropertyItem*, QtPropertyItem*> QtPropertyModel::AppendProperty(const QS
 	return QPair<QtPropertyItem*, QtPropertyItem*>(newPropertyName, newPropertyValue);
 }
 
-QtPropertyData * QtPropertyModel::GetProperty(const QString &name, QtPropertyItem* parent/* = NULL*/)
+QPair<QtPropertyItem*, QtPropertyItem*> QtPropertyModel::GetProperty(const QString &name, QtPropertyItem* parent/* = NULL*/)
 {
+	QPair<QtPropertyItem*, QtPropertyItem*> ret(NULL, NULL);
+
     QStandardItem* root = (QStandardItem *) parent;
 	if(NULL == root)
 	{
@@ -67,15 +69,19 @@ QtPropertyData * QtPropertyModel::GetProperty(const QString &name, QtPropertyIte
 
     for(DAVA::int32 r = 0; r < root->rowCount(); ++r)
     {
-        QtPropertyItem *keyItem = static_cast<QtPropertyItem *>(root->child(r, 0));
+        QtPropertyItem *keyItem = (QtPropertyItem *) root->child(r, 0);
         if(keyItem->GetPropertyData()->GetValue().toString() == name)
         {
-            QtPropertyItem *dataItem = static_cast<QtPropertyItem *>(root->child(r, 1));
-            return dataItem->GetPropertyData();
+            QtPropertyItem *dataItem = (QtPropertyItem *) root->child(r, 1);
+
+			ret.first = keyItem;
+			ret.second = dataItem;
+
+			break;
         }
     }
     
-    return NULL;
+    return ret;
 }
 
 void QtPropertyModel::RemoveProperty(QtPropertyItem* item)

@@ -390,7 +390,7 @@ QtPropertyData * SceneInfo::CreateInfoHeader(const QString &key)
 
 QtPropertyData * SceneInfo::GetInfoHeader(const QString &key)
 {
-    QtPropertyData * header = curModel->GetProperty(key);
+    QtPropertyData * header = GetPropertyData(key);
     DVASSERT(header);
     
     return header;

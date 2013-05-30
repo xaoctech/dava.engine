@@ -22,6 +22,7 @@
 
 #include "QtPropertyEditor/QtPropertyEditor.h"
 #include "QtPropertyEditor/QtPropertyData.h"
+#include "QtPropertyEditor/QtProperyData/QtPropertyDataMetaObject.h"
 
 class TextureProperties : public QtPropertyEditor
 {
@@ -49,14 +50,37 @@ public:
 protected:
 	DAVA::TextureDescriptor *curTextureDescriptor;
 	DAVA::eGPUFamily curGPU;
+
+	QtPropertyDataMetaObject *propMipMap;
+	QtPropertyDataMetaObject *propWrapModeS;
+	QtPropertyDataMetaObject *propWrapModeT;
+	QtPropertyDataMetaObject *propMinFilter;
+	QtPropertyDataMetaObject *propMagFilter;
+	QtPropertyDataMetaObject *propFormat;
+	QtPropertyDataMetaObject *propSizes;
 	
 	QSize origImageSize;
-	EnumMap mipMapSizes;
+
+	EnumMap enumFormats;
+	EnumMap enumSizes;
+	EnumMap enumWpar;
+	EnumMap enumFiltersMin;
+	EnumMap enumFiltersMag;
 
 	void MipMapSizesInit(int baseWidth, int baseHeight);
 	void MipMapSizesReset();
 
-	void reloadProperties();
+	void ReloadEnumFormats();
+	void ReloadEnumWrap();
+	void ReloadEnumFilters();
+	void ReloadProperties();
+
+	QtPropertyItem *AddHeader(const char* text);
+	QtPropertyDataMetaObject* AddPropertyItem(const char *name, DAVA::BaseObject *object, QtPropertyItem *parent);
+	void SetPropertyItemValidValues(QtPropertyDataMetaObject* item, EnumMap *validValues);
+
+protected slots:
+	void PropMipMapChanged();
 };
 
 class TexturePropertyData : QtPropertyData

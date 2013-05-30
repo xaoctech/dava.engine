@@ -44,6 +44,8 @@ QtPropertyItem::QtPropertyItem(QtPropertyData* data, QtPropertyItem *name)
 
 		QObject::connect(data, SIGNAL(ChildRemoving(const QString &, QtPropertyData *)), this, SLOT(DataChildRemoving(const QString &, QtPropertyData *)));
 		QObject::connect(data, SIGNAL(ChildAdded(const QString &, QtPropertyData *)), this, SLOT(DataChildAdded(const QString &, QtPropertyData *)));
+		QObject::connect(data, SIGNAL(ValueChanged()), this, SLOT(DataValueChanged()));
+		QObject::connect(data, SIGNAL(FlagsChanged()), this, SLOT(DataFlagsChanged()));
 	}
 }
 
@@ -182,11 +184,26 @@ void QtPropertyItem::ApplyDataFlags()
 
 		if(dataFlags & QtPropertyData::FLAG_IS_CHECKABLE)
 		{
+			// changing Checkable flag will cause model
+			// to emit itemChanged signal, but we don't want this signal to be emited
+
+			bool oldState = false;
+			if(NULL != model())
+			{
+				oldState = model()->blockSignals(true);
+			}
+			
 			setCheckable(true);
 			if(itemData->GetValue().toBool())
 			{
 				setCheckState(Qt::Checked);
 			}
+
+			if(NULL != model())
+			{
+				model()->blockSignals(oldState);
+			}
+
 		}
 
 		if(dataFlags & QtPropertyData::FLAG_IS_DISABLED)
@@ -211,4 +228,14 @@ void QtPropertyItem::DataChildRemoving(const QString &key, QtPropertyData *data)
 {
 	ChildRemove(data);
 	ApplyNameStyle();
+}
+
+void QtPropertyItem::DataFlagsChanged()
+{
+	ApplyDataFlags();
+}
+
+void QtPropertyItem::DataValueChanged()
+{
+	emitDataChanged();
 }

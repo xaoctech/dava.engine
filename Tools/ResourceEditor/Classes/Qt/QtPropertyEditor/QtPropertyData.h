@@ -67,8 +67,8 @@ public:
 	void SetFlags(int flags);
 
 	QWidget* CreateEditor(QWidget *parent, const QStyleOptionViewItem& option);
-	void EditorDone(QWidget *editor);
-	void SetEditorData(QWidget *editor);
+	bool EditorDone(QWidget *editor);
+	bool SetEditorData(QWidget *editor);
 
 	void ChildAdd(const QString &key, QtPropertyData *data);
 	void ChildAdd(const QString &key, const QVariant &value);
@@ -81,6 +81,7 @@ public:
 
 signals:
 	void ValueChanged();
+	void FlagsChanged();
 	void ChildAdded(const QString &key, QtPropertyData *data);
 	void ChildRemoving(const QString &key, QtPropertyData *data);
 
@@ -99,8 +100,8 @@ protected:
 	virtual QVariant GetValueInternal();
 	virtual void SetValueInternal(const QVariant &value);
 	virtual QWidget* CreateEditorInternal(QWidget *parent, const QStyleOptionViewItem& option);
-	virtual void EditorDoneInternal(QWidget *editor);
-	virtual void SetEditorDataInternal(QWidget *editor);
+	virtual bool EditorDoneInternal(QWidget *editor);
+	virtual bool SetEditorDataInternal(QWidget *editor);
 	virtual void ChildChanged(const QString &key, QtPropertyData *data);
 	virtual void ChildNeedUpdate();
 	
