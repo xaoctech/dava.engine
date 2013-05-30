@@ -20,6 +20,7 @@
 #include "Base/BaseObject.h"
 #include "Utils/MD5.h"
 #include "FileSystem/FilePath.h"
+#include "Render/Texture.h"
 
 namespace DAVA
 {
@@ -54,11 +55,11 @@ public:
         void Clear();
 
 		INTROSPECTION(Compression,
-			MEMBER(format, "format", I_VIEW | I_EDIT | I_SAVE)
+			MEMBER(format, IspDesc("format", GlobalEnumMap<PixelFormat>::Instance()), I_VIEW | I_EDIT | I_SAVE)
 			MEMBER(crc, "crc", I_SAVE)
-			MEMBER(compressToWidth, "compressToWidth", I_VIEW | I_EDIT | I_SAVE)
-			MEMBER(compressToHeight, "compressToHeight", I_VIEW | I_EDIT | I_SAVE)
-		)
+			MEMBER(compressToWidth, "compressToWidth", I_SAVE)
+			MEMBER(compressToHeight, "compressToHeight", I_SAVE)
+			)
     };
     
     struct TextureSettings : public BaseObject
@@ -76,11 +77,11 @@ public:
         void SetDefaultValues();
 
 		INTROSPECTION(TextureSettings,
-			MEMBER(wrapModeS, "wrapModeS", I_VIEW | I_EDIT | I_SAVE)
-			MEMBER(wrapModeT, "wrapModeT", I_VIEW | I_EDIT)
 			MEMBER(generateMipMaps, "generateMipMaps", I_VIEW | I_EDIT | I_SAVE)
-			MEMBER(minFilter, "minFilter", I_VIEW | I_EDIT | I_SAVE)
-			MEMBER(magFilter, "magFilter", I_VIEW | I_EDIT | I_SAVE)
+			MEMBER(wrapModeS, IspDesc("wrapModeS", GlobalEnumMap<Texture::TextureWrap>::Instance()), I_VIEW | I_EDIT | I_SAVE)
+			MEMBER(wrapModeT, IspDesc("wrapModeT", GlobalEnumMap<Texture::TextureWrap>::Instance()), I_VIEW | I_EDIT)
+			MEMBER(minFilter, IspDesc("minFilter", GlobalEnumMap<Texture::TextureFilter>::Instance()), I_VIEW | I_EDIT | I_SAVE)
+			MEMBER(magFilter, IspDesc("magFilter", GlobalEnumMap<Texture::TextureFilter>::Instance()), I_VIEW | I_EDIT | I_SAVE)
 		)
     };
 
