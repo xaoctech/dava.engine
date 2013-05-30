@@ -46,6 +46,8 @@
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
 #include "Scene3D/Components/SwitchComponent.h"
+#include "Utils/Random.h"
+
 
 namespace DAVA
 {

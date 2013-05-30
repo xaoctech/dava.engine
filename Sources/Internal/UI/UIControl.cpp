@@ -1537,10 +1537,12 @@ namespace DAVA
 	bool UIControl::IsPointInside(const Vector2 &_point, bool expandWithFocus/* = false*/)
 	{
         Vector2 point = _point;
-        if(InputSystem::Instance()->IsCursorPining())
-        {
-            point = RenderManager::Instance()->GetCursor()->GetPosition();
-        }
+
+		if(InputSystem::Instance()->IsCursorPining())
+		{
+			point.x = Core::Instance()->GetVirtualScreenWidth() / 2;
+            point.y = Core::Instance()->GetVirtualScreenHeight() / 2;
+		}
         
 		UIGeometricData gd = GetGeometricData();
 		Rect rect = gd.GetUnrotatedRect();
@@ -1576,12 +1578,14 @@ namespace DAVA
 		
 		switch (currentInput->phase) 
 		{
-#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)                
+#if !defined(__DAVAENGINE_IPHONE__)
 			case UIEvent::PHASE_KEYCHAR:
 			{
 					Input(currentInput);
 			}
-				break;
+			break;
+#endif
+#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)
 			case UIEvent::PHASE_MOVE:
 			{
 				if (!currentInput->touchLocker && IsPointInside(currentInput->point))
@@ -1657,7 +1661,7 @@ namespace DAVA
 									{
 										controlState |= STATE_PRESSED_INSIDE;
 										controlState &= ~STATE_PRESSED_OUTSIDE;
-#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)                                        
+#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)
 										controlState |= STATE_HOVER;
 #endif
 									}
@@ -1700,7 +1704,7 @@ namespace DAVA
 							if(currentInput->controlState == UIEvent::CONTROL_STATE_INSIDE)
 							{
 								--touchesInside;
-#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)                                        
+#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)
 								if(totalTouches == 0)
 								{
 									controlState |= STATE_HOVER;
@@ -1742,7 +1746,7 @@ namespace DAVA
 							{
 								controlState |= STATE_PRESSED_OUTSIDE;
 								controlState &= ~STATE_PRESSED_INSIDE;
-#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)                                        
+#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)
 								controlState &= ~STATE_HOVER;
 #endif
 							}
@@ -1754,6 +1758,10 @@ namespace DAVA
 				}
 			}
 				break;
+			case UIEvent::PHASE_JOYSTICK:
+			{
+				Input(currentInput);
+			}
 		}
 		
 		return false;
@@ -1767,7 +1775,8 @@ namespace DAVA
 			if(clipContents 
                && (currentInput->phase != UIEvent::PHASE_DRAG 
                    && currentInput->phase != UIEvent::PHASE_ENDED
-                   && currentInput->phase != UIEvent::PHASE_KEYCHAR))
+                   && currentInput->phase != UIEvent::PHASE_KEYCHAR
+                   && currentInput->phase != UIEvent::PHASE_JOYSTICK))
 			{
 				if(!IsPointInside(currentInput->point))
 				{

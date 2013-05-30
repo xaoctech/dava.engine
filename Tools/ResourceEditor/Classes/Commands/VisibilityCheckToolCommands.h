@@ -10,7 +10,7 @@ using namespace DAVA;
 class CommandSaveTextureVisibilityTool: public Command
 {
 public:
-	CommandSaveTextureVisibilityTool();
+	DAVA_DEPRECATED(CommandSaveTextureVisibilityTool());// DEPRECATED : use QString
 	
 protected:
 	virtual void Execute();
@@ -19,7 +19,7 @@ protected:
 class CommandPlacePointVisibilityTool: public Command
 {
 public:
-	CommandPlacePointVisibilityTool(const Vector2& newVisibilityPoint, const Vector2& oldVisibilityPoint, bool oldPointIsSet, Image* oldImage);
+	DAVA_DEPRECATED(CommandPlacePointVisibilityTool(const Vector2& newVisibilityPoint, const Vector2& oldVisibilityPoint, bool oldPointIsSet, Image* oldImage));// DEPRECATED: usage of SceneEditorScreenMain
 	virtual ~CommandPlacePointVisibilityTool();
 
 protected:
@@ -39,7 +39,7 @@ protected:
 class CommandPlaceAreaVisibilityTool: public Command
 {
 public:
-	CommandPlaceAreaVisibilityTool(const Vector2& areaPoint, uint32 areaSize, Image* oldImage);
+	DAVA_DEPRECATED(CommandPlaceAreaVisibilityTool(const Vector2& areaPoint, uint32 areaSize, Image* oldImage));// DEPRECATED: usage of SceneEditorScreenMain
 	virtual ~CommandPlaceAreaVisibilityTool();
 
 protected:

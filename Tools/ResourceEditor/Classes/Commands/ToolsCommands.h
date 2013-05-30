@@ -7,7 +7,7 @@
 class CommandBeast: public Command
 {
 public:
-	CommandBeast();
+	DAVA_DEPRECATED(CommandBeast());// DEPRECATED: cancel absent
     
 protected:
     
@@ -17,7 +17,7 @@ protected:
 class CommandConvertToShadow : public Command
 {
 public:
-	CommandConvertToShadow();
+	DAVA_DEPRECATED(CommandConvertToShadow()); //DEPRECATED : use SceneDataManager(QOBJECT)
 
 protected:
 	virtual void Execute();

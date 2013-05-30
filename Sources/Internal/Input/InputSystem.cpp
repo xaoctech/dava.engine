@@ -29,6 +29,7 @@
 =====================================================================================*/
 #include "InputSystem.h"
 #include "Input/KeyboardDevice.h"
+#include "UI/UIControlSystem.h"
 #include "Render/RenderManager.h"
 
 namespace DAVA 
@@ -37,12 +38,50 @@ namespace DAVA
 InputSystem::InputSystem()
 {
     keyboard = new KeyboardDevice();
+    AddInputCallback(InputCallback(UIControlSystem::Instance(), &UIControlSystem::OnInput, INPUT_DEVICE_KEYBOARD | INPUT_DEVICE_JOYSTICK));
     pinCursor = false;
 }
     
 InputSystem::~InputSystem()
 {
     SafeRelease(keyboard);
+}
+
+void InputSystem::ProcessInputEvent(UIEvent * event)
+{
+	for(Vector<InputCallback>::iterator it = callbacks.begin(); it != callbacks.end(); it++)
+	{
+		if(event->phase == UIEvent::PHASE_KEYCHAR && ((*it).devices & INPUT_DEVICE_KEYBOARD))
+			(*it)(event);
+		else if(event->phase == UIEvent::PHASE_JOYSTICK && ((*it).devices & INPUT_DEVICE_JOYSTICK))
+			(*it)(event);
+		else if(((*it).devices & INPUT_DEVICE_TOUCH))
+			(*it)(event);
+	}
+
+//	Logger::Debug("InputSystem::ProcessInputEvent: keyCode: %d", event->tid);
+//	UIControlSystem::Instance()->OnInput(event);
+}
+
+void InputSystem::AddInputCallback(const InputCallback& inputCallback)
+{
+	callbacks.push_back(inputCallback);
+}
+
+bool InputSystem::RemoveInputCallback(const InputCallback& inputCallback)
+{
+	Vector<InputCallback>::iterator it = find(callbacks.begin(), callbacks.end(), inputCallback);
+	if(it != callbacks.end())
+		callbacks.erase(it);
+	else
+		return false;
+
+	return true;
+}
+
+void InputSystem::RemoveAllInputCallbacks()
+{
+	callbacks.clear();
 }
 
 void InputSystem::OnBeforeUpdate()
@@ -63,9 +102,9 @@ bool InputSystem::IsCursorPining()
 void InputSystem::SetCursorPining(bool isPin)
 {
     pinCursor = isPin;
-
+    
 #ifdef __DAVAENGINE_MACOS__
-    RenderManager::Instance()->GetCursor()->Show(!isPin);
+    Cursor::ShowSystemCursor(!isPin);
 #endif
 }
     

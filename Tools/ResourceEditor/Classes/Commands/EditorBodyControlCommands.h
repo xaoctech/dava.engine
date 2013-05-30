@@ -36,7 +36,7 @@ protected:
 class CommandCloneObject: public CommandEntityModification
 {
 public:
-	CommandCloneObject(DAVA::Entity* node, EditorBodyControl* bodyControl, btCollisionWorld* collisionWorld);
+	DAVA_DEPRECATED(CommandCloneObject(DAVA::Entity* node, EditorBodyControl* bodyControl, btCollisionWorld* collisionWorld));// DEPRECATED: using SceneDataManager
 	virtual ~CommandCloneObject();
 
 	Entity* GetClonedNode();
