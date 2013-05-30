@@ -48,11 +48,12 @@ List<FilePath> FilePath::resourceFolders;
 void FilePath::SetBundleName(const FilePath & newBundlePath)
 {
 	FilePath virtualBundlePath = newBundlePath;
-    virtualBundlePath.pathType = PATH_IN_RESOURCES;
 
 	if(!virtualBundlePath.IsEmpty())
+	{
+		virtualBundlePath.pathType = PATH_IN_RESOURCES;
 		virtualBundlePath.MakeDirectoryPathname();
-    
+	}
     
     if(resourceFolders.size())
         resourceFolders.pop_front();
@@ -68,6 +69,11 @@ const FilePath & FilePath::GetBundleName()
     
 void FilePath::AddResourcesFolder(const FilePath & folder)
 {
+	if (folder.pathType == PATH_EMPTY)
+	{
+		DVASSERT(false);
+	}
+
     for(List<FilePath>::iterator it = resourceFolders.begin(); it != resourceFolders.end(); ++it)
     {
         if(folder == *it)
@@ -136,7 +142,7 @@ FilePath FilePath::FilepathInDocuments(const String & relativePathname)
 
 FilePath::FilePath()
 {
-    pathType = PATH_IN_FILESYSTEM;
+    pathType = PATH_EMPTY;
     absolutePathname = String();
 }
 
@@ -160,6 +166,7 @@ FilePath::FilePath(const String &pathname)
 FilePath::FilePath(const char * directory, const String &filename)
 {
 	FilePath directoryPath(directory);
+	DVASSERT(!directoryPath.IsEmpty());
 	directoryPath.MakeDirectoryPathname();
 
     pathType = directoryPath.pathType;
@@ -169,6 +176,7 @@ FilePath::FilePath(const char * directory, const String &filename)
 FilePath::FilePath(const String &directory, const String &filename)
 {
 	FilePath directoryPath(directory);
+	DVASSERT(!directoryPath.IsEmpty());
 	directoryPath.MakeDirectoryPathname();
 
     pathType = directoryPath.pathType;
@@ -188,8 +196,12 @@ void FilePath::Initialize(const String &_pathname)
 {
 	String pathname = NormalizePathname(_pathname);
     pathType = GetPathType(pathname);
-    
-    if(pathType == PATH_IN_RESOURCES || pathType == PATH_IN_MEMORY)
+
+	if (pathType == PATH_EMPTY)
+	{
+		absolutePathname = String();
+	}
+    else if(pathType == PATH_IN_RESOURCES || pathType == PATH_IN_MEMORY)
     {
         absolutePathname = pathname;
     }
@@ -278,13 +290,25 @@ FilePath& FilePath::operator=(const FilePath &path)
 FilePath FilePath::operator+(const String &path) const
 {
     FilePath pathname(AddPath(*this, path));
+
     pathname.pathType = this->pathType;
+	if (this->pathType == PATH_EMPTY)
+	{
+		pathname.pathType = GetPathType(pathname.absolutePathname);
+	}
+
     return pathname;
 }
 
 FilePath& FilePath::operator+=(const String & path)
 {
     absolutePathname = AddPath(*this, path);
+
+	if (pathType == PATH_EMPTY)
+	{
+		pathType = GetPathType(absolutePathname);
+	}
+
     return (*this);
 }
     
@@ -711,6 +735,11 @@ String FilePath::AddPath(const FilePath &folder, const String & addition)
 
 FilePath::ePathType FilePath::GetPathType(const String &pathname)
 {
+	if (pathname.empty())
+	{
+		return PATH_EMPTY;
+	}
+
     String::size_type find = pathname.find("~res:");
     if(find == 0)
     {
@@ -736,7 +765,7 @@ FilePath::ePathType FilePath::GetPathType(const String &pathname)
     
 bool FilePath::Exists() const
 {
-    if(pathType == PATH_IN_MEMORY)
+    if(pathType == PATH_IN_MEMORY || pathType == PATH_EMPTY)
     {
         return false;
     }
