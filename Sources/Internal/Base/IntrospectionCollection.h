@@ -24,13 +24,13 @@ namespace DAVA
 	// Класс представляет расширение базового класса IntrospectionMember и описывает члена интроспекции, как коллекцию
 	// Поддерживаемые коллекци - контейнеры с одним шаблонным параметром: Vector, List, Set
 	template<template <typename> class C, typename T>
-	class IntrospectionCollectionImpl : public IntrospectionCollection
+	class InspCollImpl : public InspColl
 	{
 	public:
 		typedef C<T> CollectionT;
 
-		IntrospectionCollectionImpl(const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags = 0)
-			: IntrospectionCollection(_name, _desc, _offset, _type, _flags)
+		InspCollImpl(const char *_name, const IspDesc &_desc, const int _offset, const MetaInfo *_type, int _flags = 0)
+			: InspColl(_name, _desc, _offset, _type, _flags)
 		{ }
 
 		DAVA::MetaInfo* CollectionType() const
@@ -159,7 +159,7 @@ namespace DAVA
 			}
 		}
 
-		const IntrospectionCollection* Collection() const
+		const InspColl* Collection() const
 		{
 			return this;
 		}
@@ -174,9 +174,9 @@ namespace DAVA
 
 	// Функция создает IntrospectionCollection, типы выводятся автоматически
 	template<template <typename> class Container, class T>
-	static IntrospectionCollection* CreateIntrospectionCollection(Container<T> *t, const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags)
+	static InspColl* CreateInspColl(Container<T> *t, const char *_name, const IspDesc &_desc, const int _offset, const MetaInfo *_type, int _flags)
 	{
-		return new IntrospectionCollectionImpl<Container, T>(_name, _desc, _offset, _type, _flags);
+		return new InspCollImpl<Container, T>(_name, _desc, _offset, _type, _flags);
 	}
 };
 

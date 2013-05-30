@@ -63,10 +63,10 @@ namespace DAVA
 	//			);
 	//	}
 	//
-	class IntrospectionInfo
+	class InspInfo
 	{
 	public:
-		IntrospectionInfo(const char *_name, const IntrospectionMember **_members, const int _members_count)
+		InspInfo(const char *_name, const InspMember **_members, const int _members_count)
 			: name(_name)
 			, meta(NULL)
 			, base_info(NULL)
@@ -76,7 +76,7 @@ namespace DAVA
 			MembersInit();
 		}
 
-		IntrospectionInfo(const IntrospectionInfo *_base, const char *_name, const IntrospectionMember **_members, const int _members_count)
+		InspInfo(const InspInfo *_base, const char *_name, const InspMember **_members, const int _members_count)
 			: name(_name)
 			, meta(NULL)
 			, base_info(_base)
@@ -86,7 +86,7 @@ namespace DAVA
 			MembersInit();
 		}
 
-		~IntrospectionInfo()
+		~InspInfo()
 		{
 			MembersRelease();
 		}
@@ -107,9 +107,9 @@ namespace DAVA
 		}
 
 		// Возвращает указатель на член интроспекции по заданному индексу, или NULL если такой не найден.
-		const IntrospectionMember* Member(int index) const
+		const InspMember* Member(int index) const
 		{
-			const IntrospectionMember *member = NULL;
+			const InspMember *member = NULL;
 
 			if(index < members_count)
 				if(NULL != members[index])
@@ -119,9 +119,9 @@ namespace DAVA
 		}
 
 		// Возвращает указатель на член интроспекции по заданному имени, или NULL если такой не найден.
-		const IntrospectionMember* Member(const char* name) const
+		const InspMember* Member(const char* name) const
 		{
-			const IntrospectionMember *member = NULL;
+			const InspMember *member = NULL;
 
 			for(int i = 0; i < members_count; ++i)
 			{
@@ -139,7 +139,7 @@ namespace DAVA
 		}
 
 		// Возвращает указатель на базовую интроспекцию, или NULL если такой не существует.
-		const IntrospectionInfo* BaseInfo() const
+		const InspInfo* BaseInfo() const
 		{
 			return base_info;
 		}
@@ -160,8 +160,8 @@ namespace DAVA
 		const char* name;
 		const MetaInfo* meta;
 
-		const IntrospectionInfo *base_info;
-		const IntrospectionMember **members;
+		const InspInfo *base_info;
+		const InspMember **members;
 		int members_count;
         
         bool metaOneTimeSet;
@@ -202,44 +202,44 @@ namespace DAVA
 
 // Определение интоспекции внутри класса. См. пример в описании класса IntrospectionInfo
 #define INTROSPECTION(_type, _members) \
-	static const DAVA::IntrospectionInfo* TypeInfo() \
+	static const DAVA::InspInfo* TypeInfo() \
 	{ \
 		typedef _type ObjectT; \
-		static const DAVA::IntrospectionMember* data[] = { _members }; \
-		static DAVA::IntrospectionInfo info = DAVA::IntrospectionInfo(#_type, data, sizeof(data)/sizeof(data[0])); \
+		static const DAVA::InspMember* data[] = { _members }; \
+		static DAVA::InspInfo info = DAVA::InspInfo(#_type, data, sizeof(data)/sizeof(data[0])); \
 		info.OneTimeMetaSafeSet<_type>(); \
         return &info; \
 	} \
-	virtual const DAVA::IntrospectionInfo* GetTypeInfo() const \
+	virtual const DAVA::InspInfo* GetTypeInfo() const \
 	{ \
 		return _type::TypeInfo(); \
 	}
 
 // Наследование интоспекции. См. пример в описании класса IntrospectionInfo
 #define  INTROSPECTION_EXTEND(_type, _base_type, _members) \
-	static const DAVA::IntrospectionInfo* TypeInfo() \
+	static const DAVA::InspInfo* TypeInfo() \
 	{ \
 		typedef _type ObjectT; \
-		static const DAVA::IntrospectionMember* data[] = { _members }; \
-		static DAVA::IntrospectionInfo info = DAVA::IntrospectionInfo(_base_type::TypeInfo(), #_type, data, sizeof(data)/sizeof(data[0])); \
+		static const DAVA::InspMember* data[] = { _members }; \
+		static DAVA::InspInfo info = DAVA::InspInfo(_base_type::TypeInfo(), #_type, data, sizeof(data)/sizeof(data[0])); \
 		info.OneTimeMetaSafeSet<_type>(); \
 		return &info; \
 	} \
-	virtual const DAVA::IntrospectionInfo* GetTypeInfo() const \
+	virtual const DAVA::InspInfo* GetTypeInfo() const \
 	{ \
 		return _type::TypeInfo(); \
 	}
 
 // Определение обычного члена интроспекции. Доступ к нему осуществляется непосредственно.
 #define MEMBER(_name, _desc, _flags) \
-	new DAVA::IntrospectionMember(#_name, _desc, (int) ((long int) &((ObjectT *) 0)->_name), DAVA::MetaInfo::Instance(&ObjectT::_name), _flags),
+	new DAVA::InspMember(#_name, _desc, (int) ((long int) &((ObjectT *) 0)->_name), DAVA::MetaInfo::Instance(&ObjectT::_name), _flags),
 
 // Определение члена интроспекции, как свойства. Доступ к нему осуществляется через функци Get/Set. 
 #define PROPERTY(_name, _desc, _getter, _setter, _flags) \
-	DAVA::CreateIntrospectionProperty(_name, _desc, &ObjectT::_getter, &ObjectT::_setter, _flags),
+	DAVA::CreateIspProp(_name, _desc, &ObjectT::_getter, &ObjectT::_setter, _flags),
 
 // Определение члена интроспекции, как коллекции. Доступ - см. IntrospectionCollection
 #define COLLECTION(_name, _desc, _flags) \
-	DAVA::CreateIntrospectionCollection(&((ObjectT *) 0)->_name, #_name, _desc, (int) ((long int) &((ObjectT *) 0)->_name), DAVA::MetaInfo::Instance(&ObjectT::_name), _flags),
+	DAVA::CreateInspColl(&((ObjectT *) 0)->_name, #_name, _desc, (int) ((long int) &((ObjectT *) 0)->_name), DAVA::MetaInfo::Instance(&ObjectT::_name), _flags),
 
 #endif // __DAVAENGINE_INTROSPECTION_H__

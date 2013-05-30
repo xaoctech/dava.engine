@@ -23,33 +23,33 @@
 
 namespace DAVA
 {
-	class IntrospectionInfo;
-	class IntrospectionCollection;
+	class InspInfo;
+	class InspColl;
 	class KeyedArchive;
 	struct MetaInfo;
 
-	struct IntrospectionDesription
+	struct IspDesc
 	{
-		IntrospectionDesription(const char *text);
-		IntrospectionDesription(const char *text, const EnumMap* enumMap);
+		IspDesc(const char *text);
+		IspDesc(const char *text, const EnumMap* enumMap);
 	
 		const char *text;
 		const EnumMap *enumMap;
 	};
 
 	// Базовое представление члена интроспекции
-	class IntrospectionMember
+	class InspMember
 	{
-		friend class IntrospectionInfo;
+		friend class InspInfo;
 
 	public:
-		IntrospectionMember(const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags = 0);
+		InspMember(const char *_name, const IspDesc &_desc, const int _offset, const MetaInfo *_type, int _flags = 0);
 
 		// Имя члена интроспекции, соответствует имени члена класса
 		const char* Name() const;
 
 		// Описание члена интроспекции, произвольно указанное пользователем при объявлении интроспекции
-		const char* Desc() const;
+		const IspDesc& Desc() const;
 
 		// Возвдащает мета-тип члена интроспекции
 		const MetaInfo* Type() const;
@@ -90,26 +90,26 @@ namespace DAVA
 		virtual void SetValue(void *object, const VariantType &val) const;
 
 		// Возвращает данные члена интроспекции в виде коллекции
-		virtual const IntrospectionCollection* Collection() const;
+		virtual const InspColl* Collection() const;
 
 		int Flags() const;
 
 	protected:
 		const char* name;
-		const char *desc;
+		IspDesc desc;
 		const int offset;
 		const MetaInfo* type;
 		const int flags;
 	};
 
 	// Базовое представление члена интроспекции, являющегося коллекцией
-	class IntrospectionCollection : public IntrospectionMember
+	class InspColl : public InspMember
 	{
 	public:
 		typedef void* Iterator;
 
-		IntrospectionCollection(const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags = 0)
-			: IntrospectionMember(_name, _desc, _offset, _type, _flags)
+		InspColl(const char *_name, const IspDesc &_desc, const int _offset, const MetaInfo *_type, int _flags = 0)
+			: InspMember(_name, _desc, _offset, _type, _flags)
 		{ }
 
 		virtual MetaInfo* CollectionType() const = 0;
@@ -130,7 +130,7 @@ namespace DAVA
 	// Вспомогательный класс для определения содержит ли указанный шаблонный тип интроспекцию
 	// Наличие интроспекции определяется по наличию функции GetTypeInfo у данного типа
 	template<typename T> 
-	class HasIntrospection
+	class HasInsp
 	{
 		class yes {	char m; };
 		class no { yes m[2]; };
@@ -138,7 +138,7 @@ namespace DAVA
 		// Базовый класс для проверки, содержит пустую искомую функцию
 		struct TestBase
 		{ 
-			const IntrospectionInfo* GetTypeInfo();
+			const InspInfo* GetTypeInfo();
 		};
 
 		// Для проверки типа Т мы создаем склаа наследованный от TestBase и Т
@@ -155,7 +155,7 @@ namespace DAVA
 		// Компилятор сможет вывести типы для класса Helper только в том случае если &U::GetTypeInfo соответствует 
 		// указателю на функцию GetTypeInfo, являющуюся членом класса TestBase
 		template <typename U> 
-		static no Check(U*, Helper<const IntrospectionInfo* (TestBase::*)(), &U::GetTypeInfo>* = 0); 
+		static no Check(U*, Helper<const InspInfo* (TestBase::*)(), &U::GetTypeInfo>* = 0); 
 
 		// В случае когда вывод типов невозможен для первой функции, будет вызвана эта. Это произойдет только тогда, 
 		// когда Т содержит свою функцию GetTypeInfo, а следовательно содержит интроспекцию
@@ -170,32 +170,32 @@ namespace DAVA
 		// переданной ссылке. 
 		static bool resultByObject(const T &t)
 		{
-			return HasIntrospection<T>::result;
+			return HasInsp<T>::result;
 		}
 	};
 
 	// Параметризированные имплементации HasIntrospection для базовых типов 
 	// (так как наследование класса Test от базового типа невозможно)
-	template<> class HasIntrospection<void> { public: static const bool result = false; };
-	template<> class HasIntrospection<bool> { public: static const bool result = false; };
-	template<> class HasIntrospection<char8> { public: static const bool result = false; };
-	template<> class HasIntrospection<char16> { public: static const bool result = false; };
-	template<> class HasIntrospection<int8> { public: static const bool result = false; };
-	template<> class HasIntrospection<uint8> { public: static const bool result = false; };
-	template<> class HasIntrospection<int16> { public: static const bool result = false; };
-	template<> class HasIntrospection<uint16> { public: static const bool result = false; };
-	template<> class HasIntrospection<int32> { public: static const bool result = false; };
-	template<> class HasIntrospection<uint32> { public: static const bool result = false; };
-	template<> class HasIntrospection<int64> { public: static const bool result = false; };
-	template<> class HasIntrospection<uint64> { public: static const bool result = false; };
-	template<> class HasIntrospection<float32> { public: static const bool result = false; };
-	template<> class HasIntrospection<float64> { public: static const bool result = false; };
-	template<> class HasIntrospection<KeyedArchive *> { public: static const bool result = false; };
+	template<> class HasInsp<void> { public: static const bool result = false; };
+	template<> class HasInsp<bool> { public: static const bool result = false; };
+	template<> class HasInsp<char8> { public: static const bool result = false; };
+	template<> class HasInsp<char16> { public: static const bool result = false; };
+	template<> class HasInsp<int8> { public: static const bool result = false; };
+	template<> class HasInsp<uint8> { public: static const bool result = false; };
+	template<> class HasInsp<int16> { public: static const bool result = false; };
+	template<> class HasInsp<uint16> { public: static const bool result = false; };
+	template<> class HasInsp<int32> { public: static const bool result = false; };
+	template<> class HasInsp<uint32> { public: static const bool result = false; };
+	template<> class HasInsp<int64> { public: static const bool result = false; };
+	template<> class HasInsp<uint64> { public: static const bool result = false; };
+	template<> class HasInsp<float32> { public: static const bool result = false; };
+	template<> class HasInsp<float64> { public: static const bool result = false; };
+	template<> class HasInsp<KeyedArchive *> { public: static const bool result = false; };
 	
 	// Глобальная шаблонная функция(#1) для получения интроспекции заданного типа
 	// Функция скомпилируется только для тех типов, для которых HasIntrospection<T>::result будет true
 	template<typename T> 
-	typename EnableIf<HasIntrospection<T>::result, const IntrospectionInfo*>::type GetIntrospection() 
+	typename EnableIf<HasInsp<T>::result, const InspInfo*>::type GetIntrospection() 
 	{
 		return T::TypeInfo();
 	}
@@ -203,7 +203,7 @@ namespace DAVA
 	// Глобальная шаблонная функция(#2) для получения интроспекции заданного типа
 	// Функция скомпилируется только для тех типов, для которых HasIntrospection<T>::result будет false
 	template<typename T>
-	typename EnableIf<!HasIntrospection<T>::result, const IntrospectionInfo*>::type GetIntrospection() 
+	typename EnableIf<!HasInsp<T>::result, const InspInfo*>::type GetIntrospection() 
 	{
 		return NULL;
 	}
@@ -220,9 +220,9 @@ namespace DAVA
 	// GetIntrospection((A *) b)	// вернет NULL, т.к. будет вызвана функция #4, см. ниже
 	//
 	template<typename T> 
-	typename EnableIf<HasIntrospection<T>::result, const IntrospectionInfo*>::type GetIntrospection(const T *t) 
+	typename EnableIf<HasInsp<T>::result, const InspInfo*>::type GetIntrospection(const T *t) 
 	{
-		const IntrospectionInfo* ret = NULL;
+		const InspInfo* ret = NULL;
 
 		if(NULL != t)
 		{
@@ -236,13 +236,13 @@ namespace DAVA
 	// Тип объекта будет выведен компилятором автоматически.
 	// Функция скомпилируется только для тех типов, для которых HasIntrospection<T>::result будет false
 	template<typename T>
-	typename EnableIf<!HasIntrospection<T>::result, const IntrospectionInfo*>::type GetIntrospection(const T *t) 
+	typename EnableIf<!HasInsp<T>::result, const InspInfo*>::type GetIntrospection(const T *t) 
 	{
 		return NULL;
 	}
 	
 	template<typename T>
-	const IntrospectionInfo* GetIntrospectionByObject(void *object)
+	const InspInfo* GetIntrospectionByObject(void *object)
 	{
 		const T* t = (const T *) object;
 		return GetIntrospection(t);
