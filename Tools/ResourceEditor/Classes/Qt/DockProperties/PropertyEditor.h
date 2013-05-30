@@ -37,7 +37,7 @@ public:
 	void SetAdvancedMode(bool set);
 
 protected:
-    QtPropertyData* AppendIntrospectionInfo(void *object, const DAVA::IntrospectionInfo * info);
+    QtPropertyData* AppendIntrospectionInfo(void *object, const DAVA::InspInfo * info);
     
 public slots:
 	void sceneActivated(SceneData *scene);

@@ -116,14 +116,14 @@ void PropertyEditor::SetAdvancedMode(bool set)
 	}
 }
 
-QtPropertyData* PropertyEditor::AppendIntrospectionInfo(void *object, const DAVA::IntrospectionInfo *info)
+QtPropertyData* PropertyEditor::AppendIntrospectionInfo(void *object, const DAVA::InspInfo *info)
 {
 	QtPropertyData* propData = NULL;
 
 	if(NULL != info)
 	{
 		bool hasMembers = false;
-		const IntrospectionInfo *currentInfo = info;
+		const InspInfo *currentInfo = info;
 
 		// check if there are any memebers
 		while (NULL != currentInfo)
