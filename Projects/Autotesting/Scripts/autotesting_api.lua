@@ -127,10 +127,10 @@ function StopTest()
 end
 
 -- DB communication
-function SaveArchiveToDB(name, archive)
-	Log(string.format("Save '%s' archive", name), "Debug")
+function SaveArchiveToDB(name, archive, document)
+	Log(string.format("Save '%s' archive to '%s' document", name, tostring(document)), "Debug")
 	
-	autotestingSystem:SaveKeyedArchiveToDB(name, archive)
+	autotestingSystem:SaveKeyedArchiveToDB(name, archive, document)
 end
 
 function ReadString(name)
