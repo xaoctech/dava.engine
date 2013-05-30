@@ -47,6 +47,8 @@
 		17F53E2216D36DDE004D5099 /* IWebViewControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F53E2116D36DDE004D5099 /* IWebViewControl.h */; };
 		17F53E2316D36DDE004D5099 /* IWebViewControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F53E2116D36DDE004D5099 /* IWebViewControl.h */; };
 		4910CBF6167B73EC00CF948A /* libdxt_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4910CBF5167B73EC00CF948A /* libdxt_macos.a */; };
+		4FA5CDBF1757AF430040CC6E /* EnumMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FA5CDBD1757AF430040CC6E /* EnumMap.cpp */; };
+		4FA5CDC01757AF430040CC6E /* EnumMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FA5CDBE1757AF430040CC6E /* EnumMap.h */; };
 		4FE7D3591745056700D2FCE6 /* GlobalEnum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FE7D3571745056700D2FCE6 /* GlobalEnum.cpp */; };
 		4FE7D35A1745056700D2FCE6 /* GlobalEnum.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FE7D3581745056700D2FCE6 /* GlobalEnum.h */; };
 		509740D816C12EED00631E71 /* IntrospectionBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8CC1BF616C109F1009B49BF /* IntrospectionBase.cpp */; };
@@ -1330,6 +1332,8 @@
 		17F53E2116D36DDE004D5099 /* IWebViewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IWebViewControl.h; sourceTree = "<group>"; };
 		32DBCF5E0370ADEE00C91783 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = "<group>"; };
 		4910CBF5167B73EC00CF948A /* libdxt_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_macos.a; path = ../../Libs/libs/libdxt_macos.a; sourceTree = "<group>"; };
+		4FA5CDBD1757AF430040CC6E /* EnumMap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EnumMap.cpp; sourceTree = "<group>"; };
+		4FA5CDBE1757AF430040CC6E /* EnumMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EnumMap.h; sourceTree = "<group>"; };
 		4FE7D3571745056700D2FCE6 /* GlobalEnum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GlobalEnum.cpp; sourceTree = "<group>"; };
 		4FE7D3581745056700D2FCE6 /* GlobalEnum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlobalEnum.h; sourceTree = "<group>"; };
 		50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GlobalEventSystem.cpp; sourceTree = "<group>"; };
@@ -2126,6 +2130,8 @@
 		E8989AD916BD24E400732C04 /* Base */ = {
 			isa = PBXGroup;
 			children = (
+				4FA5CDBD1757AF430040CC6E /* EnumMap.cpp */,
+				4FA5CDBE1757AF430040CC6E /* EnumMap.h */,
 				4FE7D3571745056700D2FCE6 /* GlobalEnum.cpp */,
 				4FE7D3581745056700D2FCE6 /* GlobalEnum.h */,
 				E8989ADA16BD24E400732C04 /* BaseMath.cpp */,
@@ -3335,6 +3341,7 @@
 				4FE7D35A1745056700D2FCE6 /* GlobalEnum.h in Headers */,
 				846CFE5F174D1A64004ECE3C /* OpenUDIDApple.h in Headers */,
 				846CFE63174D1A75004ECE3C /* OpenUDIDMacOS.h in Headers */,
+				4FA5CDC01757AF430040CC6E /* EnumMap.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4043,6 +4050,7 @@
 				4FE7D3591745056700D2FCE6 /* GlobalEnum.cpp in Sources */,
 				846CFE60174D1A64004ECE3C /* OpenUDIDApple.mm in Sources */,
 				846CFE64174D1A75004ECE3C /* OpenUDIDMacOS.mm in Sources */,
+				4FA5CDBF1757AF430040CC6E /* EnumMap.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
