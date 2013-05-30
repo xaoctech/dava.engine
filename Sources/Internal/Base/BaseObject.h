@@ -44,7 +44,7 @@ namespace DAVA
     to derive it from BaseObject. 
   */
 
-class IntrospectionInfo;
+class InspInfo;
 class KeyedArchive;
 	
 class BaseObject
