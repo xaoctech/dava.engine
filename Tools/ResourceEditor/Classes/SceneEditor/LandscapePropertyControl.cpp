@@ -55,8 +55,11 @@ void LandscapePropertyControl::ReadFrom(Entity * sceneNode)
     AABBox3 emptyBox;
     if((emptyBox.min != bbox.min) && (emptyBox.max != bbox.max))
     {
-        AABBox3 transformedBox;
-        bbox.GetTransformedBox(*landscape->GetWorldTransformPtr(), transformedBox);
+        AABBox3 transformedBox = bbox;
+		if(NULL != landscape->GetWorldTransformPtr())
+		{
+			bbox.GetTransformedBox(*landscape->GetWorldTransformPtr(), transformedBox);
+		}
         size = transformedBox.max - transformedBox.min;
     }
     propertyList->SetFloatPropertyValue("property.landscape.size", size.x);
@@ -167,9 +170,17 @@ void LandscapePropertyControl::OnFloatPropertyChanged(PropertyList *forList, con
 			
 			Set<String> errorsLog;
 			FilePath heightMap = propertyList->GetFilepathPropertyValue("property.landscape.heightmap");
-			if(SceneValidator::Instance()->ValidateHeightmapPathname(heightMap, errorsLog) && !heightMap.IsEmpty())
+			if(!SceneValidator::Instance()->ValidateHeightmapPathname(heightMap, errorsLog))
 			{
-				landscape->BuildLandscapeFromHeightmapImage(heightMap, bbox);
+				heightMap = FilePath();
+			}
+
+			landscape->BuildLandscapeFromHeightmapImage(heightMap, bbox);
+
+			// let transform system recalc worldtranform for landscape entity
+			if(NULL != currentSceneNode->GetScene())
+			{
+				currentSceneNode->GetScene()->transformSystem->Process();
 			}
         }
     }

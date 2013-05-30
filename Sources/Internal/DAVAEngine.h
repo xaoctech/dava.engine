@@ -16,6 +16,7 @@
 #ifndef __DAVAENGINE_H__
 #define __DAVAENGINE_H__
 
+#include "DAVAVersion.h"
 #include "DAVAConfig.h"
 #include "Debug/MemoryManager.h"
 #include "Debug/Stats.h"

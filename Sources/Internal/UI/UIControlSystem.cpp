@@ -470,6 +470,16 @@ void UIControlSystem::OnInput(int32 touchType, const Vector<UIEvent> &activeInpu
 	}
 }
 
+void UIControlSystem::OnInput(UIEvent * event)
+{
+	if(currentScreen)
+	{
+		if(!popupContainer->SystemInput(event))
+		{
+			currentScreen->SystemInput(event);
+		}
+	}
+}
 void UIControlSystem::CancelInput(UIEvent *touch)
 {
 	if(touch->touchLocker)

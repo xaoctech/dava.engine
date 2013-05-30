@@ -63,7 +63,7 @@ protected:
 	void RecalcCameraViewAngles();
 	void MouseMoveCameraPosition();
 	void MouseMoveCameraDirection();
-	void MouseMoveCameraPosAndDirByLockedPoint(const DAVA::Vector3 &point);
+	void MouseMoveCameraPosAroundPoint(const DAVA::Vector3 &point);
 };
 
 #endif

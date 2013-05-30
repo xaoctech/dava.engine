@@ -42,6 +42,8 @@
 #include "TextureBrowser/TextureBrowser.h"
 #include "Project/ProjectManager.h"
 #include "ModificationWidget.h"
+#include "../Commands/CommandSignals.h"
+#include "SceneEditor/EntityOwnerPropertyHelper.h"
 
 #include <QPoint>
 #include <QMenu>
@@ -85,6 +87,8 @@ QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
 	connect(sceneDataManager, SIGNAL(SceneReleased(SceneData*)), this, SLOT(OnSceneReleased(SceneData*)));
 	connect(sceneDataManager, SIGNAL(SceneCreated(SceneData*)), this, SLOT(OnSceneCreated(SceneData*)));
 	connect(QtMainWindow::Instance(), SIGNAL(RepackAndReloadFinished()), this, SLOT(ReloadSceneTextures()));
+	connect(CommandSignals::Instance(), SIGNAL(CommandAffectsEntities(DAVA::Scene* , CommandList::eCommandId , const DAVA::Set<DAVA::Entity*>& ) ) ,
+			this,SLOT( OnEntityModified(DAVA::Scene* , CommandList::eCommandId , const DAVA::Set<DAVA::Entity*>& ) ));
 }
 
 QtMainWindowHandler::~QtMainWindowHandler()
@@ -145,6 +149,7 @@ void QtMainWindowHandler::OpenResentScene(int32 index)
 void QtMainWindowHandler::SaveScene()
 {
     CommandsManager::Instance()->ExecuteAndRelease(new CommandSaveScene());
+	UpdateRecentScenesList();
 }
 
 void QtMainWindowHandler::ExportAsPNG()
@@ -533,6 +538,14 @@ void QtMainWindowHandler::ReloadAsDXT()
 void QtMainWindowHandler::ReloadSceneTextures()
 {
 	CommandsManager::Instance()->ExecuteAndRelease(new CommandReloadTextures());
+}
+
+void QtMainWindowHandler::OnEntityModified(DAVA::Scene* scene, CommandList::eCommandId id, const DAVA::Set<DAVA::Entity*>& affectedEntities)
+{
+	for(DAVA::Set<DAVA::Entity*>::iterator it = affectedEntities.begin(); it != affectedEntities.end(); ++it)
+	{
+		EntityOwnerPropertyHelper::Instance()->UpdateEntityOwner((*it)->GetCustomProperties());
+	}
 }
 
 void QtMainWindowHandler::ToggleSetSwitchIndex(DAVA::uint32  value, SetSwitchIndexHelper::eSET_SWITCH_INDEX state)

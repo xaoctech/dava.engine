@@ -66,6 +66,8 @@ public:
 	
 #if defined(__DAVAENGINE_MACOS__)
 	void * GetMacOSXCursor();
+    static void ShowSystemCursor(bool show);
+    static void MoveToCenterOfWindow();
 #endif 
 	
     

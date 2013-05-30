@@ -24,7 +24,7 @@
 class CommandOpenScene: public Command
 {
 public:	
-	CommandOpenScene(const DAVA::FilePath &scenePathname = DAVA::FilePath());
+	DAVA_DEPRECATED(CommandOpenScene(const DAVA::FilePath &scenePathname = DAVA::FilePath())); // DEPRECATED: using QFileDialog
     
 protected:	
     
@@ -38,7 +38,7 @@ protected:
 class CommandNewScene: public Command
 {
 public:	
-	CommandNewScene();
+	DAVA_DEPRECATED(CommandNewScene());// DEPRECATED : using QMessageBox
     
 protected:	
     
@@ -49,7 +49,7 @@ class CommandSaveScene: public Command
 {
 	friend class CommandNewScene;
 public:	
-	CommandSaveScene();
+	DAVA_DEPRECATED(CommandSaveScene()); // DEPRECATED: using QFileDialog
     
 protected:	
     
@@ -62,7 +62,7 @@ class CommandExport: public Command
 {
     
 public:	
-	CommandExport(DAVA::ImageFileFormat fmt);
+	DAVA_DEPRECATED(CommandExport(DAVA::ImageFileFormat fmt)); // DEPRECATED: using of SceneEditorScreenMain, Cancel absent
     
 protected:	
     
@@ -76,7 +76,7 @@ protected:
 class CommandSaveToFolderWithChilds: public Command
 {
 public:
-	CommandSaveToFolderWithChilds();
+	DAVA_DEPRECATED(CommandSaveToFolderWithChilds()); // DEPRECATED: using QFileDialog
 protected:
         virtual void Execute();
 };

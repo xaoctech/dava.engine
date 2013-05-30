@@ -21,6 +21,9 @@
 
 namespace DAVA
 {
+class Entity;
+class SwitchComponent;
+
 class SetSwitchIndexHelper
 {
 public:
@@ -30,7 +33,9 @@ public:
 		FOR_SCENE
 	};
 
-	static void ProcessSwitchIndexUpdate(uint32 value, eSET_SWITCH_INDEX state);
+	static void ProcessSwitchIndexUpdate(uint32 value, eSET_SWITCH_INDEX state, Set<Entity*>& affectedEntities, Map<SwitchComponent *, int32>& originalIndexes);
+	
+	static void RestoreOriginalIndexes(Map<SwitchComponent *, int32>& originalIndexes, Set<Entity*>& affectedEntities);
 };
 };
 

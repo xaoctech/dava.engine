@@ -23,6 +23,7 @@
 #include "Classes/CommandLine/CommandLineManager.h"
 #include "Classes/Qt/TextureBrowser/TextureConvertor.h"
 #include "Classes/Qt/DockSceneGraph/PointerHolder.h"
+#include "DockConsole/Console.h"
 #include "Classes/Qt/Project/ProjectManager.h"
 #include "DockLibrary/LibraryModel.h"
 
@@ -50,6 +51,9 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	, repackSpritesWaitDialog(NULL)
 	, emitRepackAndReloadFinished(false)
 {
+	// initialize console
+	Console::Instance();
+
 	new ProjectManager();
 	new SceneDataManager();
 	new QtMainWindowHandler(this);
@@ -153,6 +157,7 @@ void QtMainWindow::SetupMainMenu()
 	QAction *actionParticleEditorTimeLine = ui->dockParticleEditorTimeLine->toggleViewAction();
     QAction *actionSceneInfo = ui->dockSceneInfo->toggleViewAction();
 	QAction *actionSceneTree = ui->dockSceneTree->toggleViewAction();
+	QAction *actionConsole = ui->dockConsole->toggleViewAction();
 
     ui->menuView->addAction(actionSceneInfo);
     ui->menuView->addAction(actionToolBar);
@@ -167,6 +172,7 @@ void QtMainWindow::SetupMainMenu()
 	ui->menuView->addAction(actionHangingObjects);
 	ui->menuView->addAction(actionSetSwitchIndex);
 	ui->menuView->addAction(actionSceneTree);
+	ui->menuView->addAction(actionConsole);
 
     ui->menuView->insertSeparator(ui->actionRestoreViews);
     ui->menuView->insertSeparator(actionToolBar);

@@ -25,7 +25,7 @@
 class CommandChangeMaterialViewOption: public Command
 {
 public:
-	CommandChangeMaterialViewOption(DAVA::Material::eViewOptions value);
+	DAVA_DEPRECATED(CommandChangeMaterialViewOption(DAVA::Material::eViewOptions value));// DEPRECATED : using SceneDataManager(QOBJECT)
 
 protected:
 	DAVA::Material::eViewOptions	value;

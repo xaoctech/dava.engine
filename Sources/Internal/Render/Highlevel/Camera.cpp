@@ -72,7 +72,13 @@ void Camera::SetIsOrtho(const bool &_ortho)
 	ortho = _ortho;
 	Recalc();
 }
-    
+ 
+
+void Camera::SetWidth(const float32 &width)
+{
+	orthoWidth = width;
+	Recalc();
+}
     
 void Camera::SetXMin(const float32 &_xmin)
 {
@@ -728,6 +734,8 @@ void Camera::CopyMathOnly(const Camera & c)
     uniformProjModelMatrix = c.uniformProjModelMatrix;
     flags = c.flags;
 }
+
+
 
 
 } // ns

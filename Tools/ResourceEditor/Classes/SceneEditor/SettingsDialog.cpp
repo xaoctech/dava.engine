@@ -72,6 +72,8 @@ SettingsDialog::SettingsDialog(const Rect & rect, SettingsDialogDelegate *newDel
     propertyList->AddBoolProperty("settingsdialog.drawgrid", PropertyList::PROPERTY_IS_EDITABLE);
 
 	propertyList->AddBoolProperty("settingsdialog.imposters", PropertyList::PROPERTY_IS_EDITABLE);
+
+	propertyList->AddStringProperty("settingsdialog.designername", PropertyList::PROPERTY_IS_EDITABLE);
 }
     
 SettingsDialog::~SettingsDialog()
@@ -130,6 +132,7 @@ void SettingsDialog::WillAppear()
     
     propertyList->SetBoolPropertyValue("settingsdialog.drawgrid", EditorSettings::Instance()->GetDrawGrid());
 	propertyList->SetBoolPropertyValue("settingsdialog.imposters", EditorSettings::Instance()->GetEnableImposters());
+	propertyList->SetStringPropertyValue("settingsdialog.designername", EditorSettings::Instance()->GetDesignerName());
     
     
     UIScreen *activeScreen = UIScreenManager::Instance()->GetScreen();
@@ -143,9 +146,13 @@ void SettingsDialog::WillAppear()
     }
 }
 
-void SettingsDialog::OnStringPropertyChanged(PropertyList *, const String &, const String &)
+void SettingsDialog::OnStringPropertyChanged(PropertyList *, const String &forKey, const String &newValue)
 {
-    
+    if("settingsdialog.designername" == forKey)
+    {
+        EditorSettings::Instance()->SetDesignerName(newValue);
+        EditorSettings::Instance()->Save();
+    }
 }
 
 void SettingsDialog::OnFloatPropertyChanged(PropertyList *, const String &forKey, float newValue)

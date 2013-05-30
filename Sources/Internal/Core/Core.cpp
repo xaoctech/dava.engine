@@ -107,8 +107,6 @@ void Core::CreateSingletons()
 		Logger::Instance()->SetLogLevel(Logger::LEVEL_INFO);
 	}
 //	Logger::Debug("[Core::Create] successfull");
-
-    new InputSystem();
     
 	new LocalizationSystem();
 
@@ -118,6 +116,7 @@ void Core::CreateSingletons()
 	new FontManager();
 	new UIControlSystem();
 	new SoundSystem(64);
+	new InputSystem();
 	
 #if defined __DAVAENGINE_IPHONE__
 	new AccelerometeriPhoneImpl();

@@ -30,6 +30,7 @@
 #include "TextureBrowser/TextureBrowser.h"
 #include "MaterialBrowser/MaterialBrowser.h"
 #include "Classes/Qt/DockSetSwitchIndex/SetSwitchIndexHelper.h"
+#include "Classes/Commands/CommandList.h"
 
 class Command;
 class QMenu;
@@ -186,6 +187,8 @@ public slots:
 	void OnSceneCreated(SceneData *scene);
 
 	void ReloadSceneTextures();
+
+	void OnEntityModified(DAVA::Scene* scene, CommandList::eCommandId id, const DAVA::Set<DAVA::Entity*>& affectedEntities);
 
 signals:
 	void ProjectChanged();

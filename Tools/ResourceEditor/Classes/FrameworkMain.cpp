@@ -130,7 +130,8 @@ void FrameworkDidLaunched()
         DAVA::Core::Instance()->SetVirtualScreenSize(width, height);
     }
     
-	appOptions->SetString("title", Format("dava framework - resource editor | %s", RESOURCE_EDITOR_VERSION));
+
+	appOptions->SetString("title", Format("dava framework - resource editor | %s-%s", DAVAENGINE_VERSION, RESOURCE_EDITOR_VERSION));
 	appOptions->SetInt32("width",	width);
 	appOptions->SetInt32("height", height);
 
