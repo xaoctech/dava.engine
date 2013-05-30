@@ -190,6 +190,10 @@
 		CCC7A48A16F1D6B80061EA5D /* Entity.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A48716F1D6B80061EA5D /* Entity.cpp */; };
 		CCC7A48B16F1D6B80061EA5D /* Entity.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A48816F1D6B80061EA5D /* Entity.h */; };
 		CCC7A48C16F1D6B80061EA5D /* Entity.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A48816F1D6B80061EA5D /* Entity.h */; };
+		CCC7A4FA17579C680061EA5D /* GlobalEnum.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FE7D3581745056700D2FCE6 /* GlobalEnum.h */; };
+		CCC7A4FB17579C6B0061EA5D /* GlobalEnum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FE7D3571745056700D2FCE6 /* GlobalEnum.cpp */; };
+		CCC7A4FC17579C6D0061EA5D /* EnumMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FA5CDBE1757AF430040CC6E /* EnumMap.h */; };
+		CCC7A4FD17579C700061EA5D /* EnumMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FA5CDBD1757AF430040CC6E /* EnumMap.cpp */; };
 		D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
 		E82366CE16148EF9007B40D0 /* libPVRTexLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E82366CD16148EF9007B40D0 /* libPVRTexLib.a */; };
 		E83F10A116D6721D00C6ED39 /* DVAssertMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C151B17416D3747E00E09BAF /* DVAssertMessage.cpp */; };
@@ -3681,6 +3685,8 @@
 				02E9E4321739622E00C501BC /* FMODUtils.h in Headers */,
 				02E9E4341739623900C501BC /* SoundComponent.h in Headers */,
 				02E9E43A173964DA00C501BC /* SoundUpdateSystem.h in Headers */,
+				CCC7A4FA17579C680061EA5D /* GlobalEnum.h in Headers */,
+				CCC7A4FC17579C6D0061EA5D /* EnumMap.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4349,6 +4355,8 @@
 				02E9E4331739623700C501BC /* SoundComponent.cpp in Sources */,
 				02E9E438173964DA00C501BC /* SoundUpdateSystem.cpp in Sources */,
 				1789108F1740DFBC007B72BA /* NMaterialConsts.cpp in Sources */,
+				CCC7A4FB17579C6B0061EA5D /* GlobalEnum.cpp in Sources */,
+				CCC7A4FD17579C700061EA5D /* EnumMap.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
