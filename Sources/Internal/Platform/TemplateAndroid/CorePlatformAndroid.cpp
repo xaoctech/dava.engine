@@ -17,6 +17,7 @@ extern void FrameworkDidLaunched();
 extern void FrameworkWillTerminate();
 
 #include "Platform/Thread.h"
+#include "Input/InputSystem.h"
 
 namespace DAVA
 {
@@ -245,34 +246,43 @@ namespace DAVA
 	}
 
 	static Vector<DAVA::UIEvent> activeTouches;
-	void CorePlatformAndroid::KeyUp(int32 keyCode)
-	{
-		Vector<DAVA::UIEvent> touches;
-		Vector<DAVA::UIEvent> emptyTouches;
-
-		for(Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
-		{
-			touches.push_back(*it);
-		}
-
-		DAVA::UIEvent ev;
-		ev.keyChar = (char16)keyCode;
-		ev.phase = DAVA::UIEvent::PHASE_KEYCHAR;
-		ev.tapCount = 1;
-		ev.tid = (int32)keyCode;
-
-		touches.push_back(ev);
-
-		UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
-		touches.pop_back();
-		UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
-	}
+//	void CorePlatformAndroid::KeyUp(int32 keyCode)
+//	{
+//		Vector<DAVA::UIEvent> touches;
+//		Vector<DAVA::UIEvent> emptyTouches;
+//
+//		for(Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
+//		{
+//			touches.push_back(*it);
+//		}
+//
+//		DAVA::UIEvent ev;
+//		ev.keyChar = (char16)keyCode;
+//		ev.phase = DAVA::UIEvent::PHASE_KEYCHAR;
+//		ev.tapCount = 1;
+//		ev.tid = (int32)keyCode;
+//
+//		touches.push_back(ev);
+//
+//		UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
+//		touches.pop_back();
+//		UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
+//	}
 
 	void CorePlatformAndroid::KeyDown(int32 keyCode)
 	{
+		UIEvent * keyEvent = new UIEvent;
+		keyEvent->keyChar = 0;
+		keyEvent->phase = DAVA::UIEvent::PHASE_KEYCHAR;
+		keyEvent->tapCount = 1;
+		keyEvent->tid = InputSystem::Instance()->GetKeyboard()->GetDavaKeyForSystemKey(keyCode);
+
+		InputSystem::Instance()->ProcessInputEvent(keyEvent);
+
+		SafeDelete(keyEvent);
 	}
 
-	UIEvent CorePlatformAndroid::CreateTouchEvent(int32 action, int32 id, float32 x, float32 y, float64 time)
+	UIEvent CorePlatformAndroid::CreateInputEvent(int32 action, int32 id, float32 x, float32 y, float64 time, int32 source)
 	{
 		int32 phase = DAVA::UIEvent::PHASE_DRAG;
 		switch(action)
@@ -286,8 +296,16 @@ namespace DAVA
 			case 1://ACTION_UP
 			phase = DAVA::UIEvent::PHASE_ENDED;
 			break;
+
 			case 2://ACTION_MOVE
-			phase = DAVA::UIEvent::PHASE_DRAG;
+			{
+				if((source & 0x10) > 0)//SOURCE_CLASS_JOYSTICK
+				{
+					phase = DAVA::UIEvent::PHASE_JOYSTICK;
+				}
+				else //Touches
+					phase = DAVA::UIEvent::PHASE_DRAG;
+			}
 			break;
 
 			case 3://ACTION_CANCEL
@@ -298,17 +316,17 @@ namespace DAVA
 			break;
 		}
 
-		UIEvent newTouch;
-		newTouch.tid = id;
-		newTouch.physPoint.x = x;
-		newTouch.physPoint.y = y;
-		newTouch.point.x = x;
-		newTouch.point.y = y;
-		newTouch.phase = phase;
-		newTouch.tapCount = 1;
-		newTouch.timestamp = time;
+		UIEvent newEvent;
+		newEvent.tid = id;
+		newEvent.physPoint.x = x;
+		newEvent.physPoint.y = y;
+		newEvent.point.x = x;
+		newEvent.point.y = y;
+		newEvent.phase = phase;
+		newEvent.tapCount = 1;
+		newEvent.timestamp = time;
 
-		return newTouch;
+		return newEvent;
 	}
 
 	AAssetManager * CorePlatformAndroid::GetAssetManager()
@@ -321,12 +339,12 @@ namespace DAVA
 		assetMngr = mngr;
 	}
 
-	void CorePlatformAndroid::OnTouch(int32 action, int32 id, float32 x, float32 y, float64 time)
+	void CorePlatformAndroid::OnInput(int32 action, int32 id, float32 x, float32 y, float64 time, int32 source)
 	{
 //		Logger::Debug("[CorePlatformAndroid::OnTouch] IN totalTouches.size = %d", totalTouches.size());
 //		Logger::Debug("[CorePlatformAndroid::OnTouch] action is %d, id is %d, x is %f, y is %f, time is %lf", action, id, x, y, time);
 
-		UIEvent touchEvent = CreateTouchEvent(action, id, x, y, time);
+		UIEvent touchEvent = CreateInputEvent(action, id, x, y, time, source);
 		Vector<DAVA::UIEvent> activeTouches;
 		activeTouches.push_back(touchEvent);
 
@@ -352,7 +370,7 @@ namespace DAVA
 
 		for(Vector<DAVA::UIEvent>::iterator it = totalTouches.begin(); it != totalTouches.end(); )
 		{
-			if((DAVA::UIEvent::PHASE_ENDED == (*it).phase) || (DAVA::UIEvent::PHASE_CANCELLED == (*it).phase))
+			if((DAVA::UIEvent::PHASE_ENDED == (*it).phase) || (DAVA::UIEvent::PHASE_CANCELLED == (*it).phase) || (DAVA::UIEvent::PHASE_JOYSTICK == (*it).phase))
 			{
 				it = totalTouches.erase(it);
 			}

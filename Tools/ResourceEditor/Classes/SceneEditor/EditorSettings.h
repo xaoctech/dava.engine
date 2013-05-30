@@ -72,6 +72,9 @@ public:
     
     int32 GetTextureViewFileFormat();
     void SetTextureViewFileFormat(int32 forma);
+
+	String GetDesignerName();
+	void SetDesignerName(const String &userName);
     
 	void SetMaterialsColor(const Color &ambient, const Color &diffuse, const Color &specular);
 	Color GetMaterialAmbientColor();

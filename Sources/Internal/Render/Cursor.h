@@ -80,8 +80,8 @@ public:
 	
 #if defined(__DAVAENGINE_MACOS__)
 	void * GetMacOSXCursor();
-    void NativeShowCursor(bool isShow);
-    void MoveToCenter();
+    static void ShowSystemCursor(bool show);
+    static void MoveToCenterOfWindow();
 #endif 
 	
     
