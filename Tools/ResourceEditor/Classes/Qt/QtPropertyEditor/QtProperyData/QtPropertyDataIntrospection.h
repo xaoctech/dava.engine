@@ -28,15 +28,15 @@ class QtPropertyDataIntrospection : public QtPropertyData
 {
 	Q_OBJECT
 public:
-	QtPropertyDataIntrospection(void *object, const DAVA::IntrospectionInfo *info, int hasAllFlags = DAVA::I_NONE);
+	QtPropertyDataIntrospection(void *object, const DAVA::InspInfo *info, int hasAllFlags = DAVA::I_NONE);
 	virtual ~QtPropertyDataIntrospection();
 
 protected:
 	void *object;
-	const DAVA::IntrospectionInfo *info;
-	QMap<QtPropertyDataDavaVariant*, const DAVA::IntrospectionMember *> childVariantMembers;
+	const DAVA::InspInfo *info;
+	QMap<QtPropertyDataDavaVariant*, const DAVA::InspMember *> childVariantMembers;
 
-	void AddMember(const DAVA::IntrospectionMember *member, int hasAllFlags);
+	void AddMember(const DAVA::InspMember *member, int hasAllFlags);
 
 	virtual QVariant GetValueInternal();
 	virtual void ChildChanged(const QString &key, QtPropertyData *data);

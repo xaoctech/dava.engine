@@ -650,8 +650,10 @@ QWidget* QtPropertyDataDavaVariant::CreateEditorInternal(QWidget *parent, const 
     return ret;
 }
 
-void QtPropertyDataDavaVariant::SetEditorDataInternal(QWidget *editor)
+bool QtPropertyDataDavaVariant::SetEditorDataInternal(QWidget *editor)
 {
+	bool ret = false;
+
 	// if we have valueItems, so that means combobox was created
 	if(allowedValues.size())
 	{
@@ -672,6 +674,7 @@ void QtPropertyDataDavaVariant::SetEditorDataInternal(QWidget *editor)
 			}
 
 			comboBox->setCurrentIndex(index);
+			ret = true;
 		}
 	}
 	else
@@ -679,24 +682,33 @@ void QtPropertyDataDavaVariant::SetEditorDataInternal(QWidget *editor)
 		if(curVariantValue.type == DAVA::VariantType::TYPE_COLOR)
 		{
 			QtColorLineEdit *colorLineEdit = (QtColorLineEdit *) editor;
+
 			colorLineEdit->SetColor(ColorToQColor(curVariantValue.AsColor()));
+			ret = true;
 		}
 	}
+
+	return ret;
 }
 
-void QtPropertyDataDavaVariant::EditorDoneInternal(QWidget *editor)
+bool QtPropertyDataDavaVariant::EditorDoneInternal(QWidget *editor)
 {
+	bool ret = false;
+
 	// if we have allowedValues - that means combobox was created
 	if(allowedValues.size())
 	{
 		SetAllowedValueFromComboBox(dynamic_cast<QComboBox *>(editor));
+		ret = true;
 	}
 	else
 	{
 		if(curVariantValue.type == DAVA::VariantType::TYPE_COLOR)
 		{
 			QtColorLineEdit *colorLineEdit = (QtColorLineEdit *) editor;
+
 			curVariantValue.SetColor(QColorToColor(colorLineEdit->GetColor()));
+			ret = true;
 		}
 	}
 
@@ -705,6 +717,8 @@ void QtPropertyDataDavaVariant::EditorDoneInternal(QWidget *editor)
 
 	// allow modify valueItems list
 	allowedValuesLocked = false;
+
+	return ret;
 }
 
 void QtPropertyDataDavaVariant::ColorOWPressed()

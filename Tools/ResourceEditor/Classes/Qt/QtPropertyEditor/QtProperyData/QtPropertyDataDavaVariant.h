@@ -55,8 +55,8 @@ protected:
 	virtual void ChildNeedUpdate();
 
 	virtual QWidget* CreateEditorInternal(QWidget *parent, const QStyleOptionViewItem& option);
-	virtual void SetEditorDataInternal(QWidget *editor);
-	virtual void EditorDoneInternal(QWidget *editor);
+	virtual bool SetEditorDataInternal(QWidget *editor);
+	virtual bool EditorDoneInternal(QWidget *editor);
 
 protected slots:
 	void ColorOWPressed();

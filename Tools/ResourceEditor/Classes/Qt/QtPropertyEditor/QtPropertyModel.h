@@ -33,7 +33,7 @@ public:
 	~QtPropertyModel();
 
 	QPair<QtPropertyItem*, QtPropertyItem*> AppendProperty(const QString &name, QtPropertyData* data, QtPropertyItem* parent = NULL);
-	QtPropertyData * GetProperty(const QString &name, QtPropertyItem* parent = NULL);
+	QPair<QtPropertyItem*, QtPropertyItem*> GetProperty(const QString &name, QtPropertyItem* parent = NULL);
 
 	void RemoveProperty(QtPropertyItem* item);
 	void RemovePropertyAll();
