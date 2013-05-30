@@ -24,6 +24,7 @@
 
 #include "./Qt/SpritesPacker/SpritePackerHelper.h"
 #include "../Main/QtUtils.h"
+#include "../SceneEditor/EntityOwnerPropertyHelper.h"
 
 using namespace DAVA;
 
@@ -134,7 +135,6 @@ void SceneDataManager::EditLevelScene(const FilePath &scenePathname)
 	}
 
 	EditScene(sceneData, scenePathname);
-	emit SceneCreated(sceneData);
 }
 
 void SceneDataManager::EditActiveScene(const FilePath &scenePathname)
@@ -146,7 +146,7 @@ void SceneDataManager::EditActiveScene(const FilePath &scenePathname)
 		return;
 	}
 	
-	return EditScene(sceneData, scenePathname);
+	EditScene(sceneData, scenePathname);
 }
 
 void SceneDataManager::EditScene(SceneData* sceneData, const FilePath &scenePathname)
@@ -189,6 +189,8 @@ void SceneDataManager::EditScene(SceneData* sceneData, const FilePath &scenePath
 
 	UpdateParticleSprites();
     emit SceneGraphNeedRebuild();
+
+	emit SceneCreated(sceneData);
 }
 
 void SceneDataManager::ReloadScene(const FilePath &scenePathname, const FilePath &fromScenePathname)
@@ -249,6 +251,7 @@ void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const FilePa
 {
 	//если в рут ноды сложить такие же рут ноды то на релоаде все накроет пиздой
     KeyedArchive *customProperties = node->GetCustomProperties();
+	EntityOwnerPropertyHelper::Instance()->UpdateEntityOwner(customProperties);
     if (customProperties->GetString("editor.referenceToOwner", "") == nodePathname.GetAbsolutePathname())
     {
         Entity *loadedNode = scene->GetRootNode(fromPathname)->Clone();

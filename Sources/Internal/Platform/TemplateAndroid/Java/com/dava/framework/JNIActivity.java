@@ -7,6 +7,7 @@ import android.graphics.Rect;
 import android.hardware.SensorManager;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.util.Log;
@@ -19,6 +20,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import org.fmod.FMODAudioDevice;
+
+import com.bda.controller.Controller;
+
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
@@ -31,6 +35,8 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 	private EditText editText = null;
     
 	private FMODAudioDevice fmodDevice = new FMODAudioDevice();
+	
+	private Controller mController;
 	
     private native void nativeOnCreate(boolean isFirstRun);
     private native void nativeOnStart();
@@ -64,7 +70,6 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
     	// The activity is being created.
         Log.i(JNIConst.LOG_TAG, "[Activity::onCreate]");
 
-
         // initialize accelerometer
         SensorManager sensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
         accelerometer = new JNIAccelerometer(this, sensorManager);
@@ -76,10 +81,12 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
         glView.setClickable(true);
         glView.setFocusable(true);
         glView.requestFocus();
-    
-        if(0 != errorState)
-        {
 
+        mController = Controller.getInstance(this);
+        if(mController != null)
+        {
+        	mController.init();
+        	mController.setListener(GetSurfaceView().mogaListener, new Handler());
         }
 
         Log.i(JNIConst.LOG_TAG, "[Activity::onCreate] isFirstRun is " + isFirstRun); 
@@ -129,6 +136,11 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
         // The activity has become visible (it is now "resumed").
 		Log.i(JNIConst.LOG_TAG, "[Activity::onResume] start");
 
+		if(mController != null)
+		{
+			mController.onResume();
+		}
+		
         // activate accelerometer
         if(null != accelerometer)
         {
@@ -143,7 +155,7 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
         {
         	glView.onResume();
         }
-
+        
         Log.i(JNIConst.LOG_TAG, "[Activity::onResume] finish");
     }
 
@@ -156,6 +168,11 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 
         Log.i(JNIConst.LOG_TAG, "[Activity::onPause] start");
 
+		if(mController != null)
+		{
+			mController.onPause();
+		}
+		
         // deactivate accelerometer
         if(null != accelerometer)
         {
@@ -203,6 +220,9 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
     {
         Log.i(JNIConst.LOG_TAG, "[Activity::onDestroy] start");
 
+        if(mController != null)
+        	mController.exit();
+        
         //call native method
         nativeOnDestroy();
 
@@ -219,7 +239,6 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
         
     	super.onPostResume();
     }
-    
     
     public void onAccelerationChanged(float x, float y, float z)
 	{
@@ -293,7 +312,6 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 				return false;
 			}
 		});
-		
 		addContentView(editText, params);
 		
 		editText.setInputType(EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);

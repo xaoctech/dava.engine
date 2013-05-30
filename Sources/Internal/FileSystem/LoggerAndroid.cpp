@@ -25,9 +25,7 @@
 namespace DAVA 
 {
 
-
-    static DAVA::String androidLogTag = "";    
-    
+static DAVA::String androidLogTag = "";    
 
 int32 LogLevelToAndtoid(Logger::eLogLevel ll)
 {
@@ -54,36 +52,21 @@ int32 LogLevelToAndtoid(Logger::eLogLevel ll)
 	return androidLL;
 }
 
-void Logger::Logv(eLogLevel ll, const char8* text, va_list li)
+void Logger::PlatformLog(eLogLevel ll, const char8* text)
 {
-	if (ll < logLevel)return; 
-
-	char tmp[4096];
-	vsprintf(tmp, text, li);
-	strcat(tmp, "\n");
-	__android_log_print(LogLevelToAndtoid(ll), androidLogTag.c_str(), tmp);
+	__android_log_print(LogLevelToAndtoid(ll), androidLogTag.c_str(), text);
 }
 
-void Logger::Logv(eLogLevel ll, const char16* text, va_list li)
+void Logger::PlatformLog(eLogLevel ll, const char16* text)
 {
-	//TODO: VK: add code
-
-	if (ll < logLevel)return; 
-
- 	wchar_t tmp[4096];
-	vswprintf(tmp, 4096, text, li);
- 	wcscat(tmp, L"\n");
-
-// 	char tmpChar[4096];
-// 	wcstombs(tmpChar, tmp, 4096);
-// 	__android_log_print(LogLevelToAndtoid(ll), LOG_TAG, tmpChar);
+	wprintf(L"%s", text);
 }
 
 void Logger::SetTag(const char8 *logTag)
 {
-    androidLogTag = Format("%s", logTag);
+	androidLogTag = Format("%s", logTag);
 }
-    
+
 
 }
 

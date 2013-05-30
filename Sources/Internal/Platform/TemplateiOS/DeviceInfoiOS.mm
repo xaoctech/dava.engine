@@ -19,6 +19,7 @@
 #ifdef __DAVAENGINE_IPHONE__
 
 #include "Utils/StringFormat.h"
+#include "OpenUDIDios.h"
 
 #import <UIKit/UIDevice.h>
 #import <Foundation/NSLocale.h>
@@ -176,6 +177,12 @@ String DeviceInfo::GetTimeZone()
 {
 	NSTimeZone *localTime = [NSTimeZone systemTimeZone];
 	return [[localTime name] UTF8String];
+}
+    
+String DeviceInfo::GetUDID()
+{
+    OpenUDIDiOS*  udid = [[[OpenUDIDiOS alloc] init] autorelease];
+    return [[udid value] UTF8String];
 }
 
 }

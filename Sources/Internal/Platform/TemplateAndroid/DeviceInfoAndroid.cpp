@@ -136,6 +136,21 @@ String JniDeviceInfo::GetTimeZone()
 	return intermediateStr;
 }
 
+String JniDeviceInfo::GetUDID()
+{
+	jclass javaClass = GetJavaClass();
+	if (!javaClass)
+		return "";
+
+	intermediateStr = "";
+	jmethodID mid = GetMethodID(javaClass, "GetUDID", "()V");
+	if (mid)
+		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, 0);
+	ReleaseJavaClass(javaClass);
+
+	return intermediateStr;
+}
+
 String DeviceInfo::GetVersion()
 {
 	JniDeviceInfo* jniDeviceInfo = new JniDeviceInfo();
@@ -185,6 +200,15 @@ String DeviceInfo::GetTimeZone()
 {
 	JniDeviceInfo* jniDeviceInfo = new JniDeviceInfo();
 	String version = jniDeviceInfo->GetTimeZone();
+	delete jniDeviceInfo;
+
+	return version;
+}
+
+String DeviceInfo::GetUDID()
+{
+	JniDeviceInfo* jniDeviceInfo = new JniDeviceInfo();
+	String version = jniDeviceInfo->GetUDID();
 	delete jniDeviceInfo;
 
 	return version;

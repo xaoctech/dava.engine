@@ -303,11 +303,10 @@ void WASDCameraController::LookAtSelection()
     
 
     AABBox3 box = selection->GetWTMaximumBoundingBoxSlow();
-    if(box == AABBox3())
+    if(box.IsEmpty())
     {
         return;
     }
-    
     
     float32 boxSize = ((box.max - box.min).Length());
     

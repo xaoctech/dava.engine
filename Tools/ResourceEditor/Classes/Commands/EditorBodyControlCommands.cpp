@@ -299,6 +299,10 @@ void CommandCloneObject::Execute()
 
 			entities.insert(clonedNode);
 		}
+		else
+		{
+			clonedNode = *entities.begin();
+		}
 
 		originalNode->GetParent()->AddNode(clonedNode);
 		bodyControl->SelectNode(clonedNode);
@@ -392,17 +396,18 @@ void CommandCloneAndTransform::Execute()
 		return;
 	}
 
-	if (!transformCmd)
+	if(!transformCmd)
 	{
 		transformCmd = new CommandTransformObject(cloneCmd->GetClonedNode(), originalNode->GetLocalTransform(), transform);
-		// Need to apply transform only once when creating command
-		ExecuteInternal(transformCmd);
+	}
 
-		if (GetInternalCommandState(transformCmd) != STATE_VALID)
-		{
-			SetState(STATE_INVALID);
-			return;
-		}
+	// Need to apply transform only once when creating command
+	ExecuteInternal(transformCmd);
+
+	if (GetInternalCommandState(transformCmd) != STATE_VALID)
+	{
+		SetState(STATE_INVALID);
+		return;
 	}
 }
 

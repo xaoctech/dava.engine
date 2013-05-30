@@ -56,7 +56,8 @@
     <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">PreBuildEvent</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>
+    </LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">
     <ClCompile>
@@ -379,6 +380,8 @@
     <ClCompile Include="Classes\ParticlesEditorQT\Nodes\InnerEmitterParticleEditorNode.cpp" />
     <ClCompile Include="Classes\ParticlesEditorQT\Nodes\LayerParticleEditorNode.cpp" />
     <ClCompile Include="Classes\Qt\Commands\CommandSignals.cpp" />
+    <ClCompile Include="Classes\Qt\DockConsole\Console.cpp" />
+    <ClCompile Include="Classes\Qt\DockConsole\ConsoleView.cpp" />
     <ClCompile Include="Classes\Qt\DockCustomColors\CustomColorsView.cpp" />
     <ClCompile Include="Classes\Qt\DockHangingObjects\HangingObjectsHelper.cpp" />
     <ClCompile Include="Classes\Qt\DockHangingObjects\HangingObjectsView.cpp" />
@@ -494,6 +497,7 @@
     <ClCompile Include="Classes\SceneEditor\EditorBodyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditorConfig.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditorSettings.cpp" />
+    <ClCompile Include="Classes\SceneEditor\EntityOwnerPropertyHelper.cpp" />
     <ClCompile Include="Classes\SceneEditor\EntityPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\ExtendedDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\FogControl.cpp" />
@@ -548,6 +552,8 @@
     <ClCompile Include="Classes\UISpriteEditor.cpp" />
     <ClCompile Include="Classes\VertexOctTree.cpp" />
     <ClCompile Include="_GeneratedQt\Commands\CommandSignals_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockConsole\ConsoleView_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockConsole\Console_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockCustomColors\CustomColorsView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockHangingObjects\HangingObjectsHelper_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockHangingObjects\HangingObjectsView_moc.cpp" />
@@ -928,6 +934,8 @@
     <ClInclude Include="Classes\ParticlesEditorQT\Nodes\InnerEmitterParticleEditorNode.h" />
     <ClInclude Include="Classes\ParticlesEditorQT\Nodes\LayerParticleEditorNode.h" />
     <ClInclude Include="Classes\Qt\Commands\CommandSignals.h" />
+    <ClInclude Include="Classes\Qt\DockConsole\Console.h" />
+    <ClInclude Include="Classes\Qt\DockConsole\ConsoleView.h" />
     <ClInclude Include="Classes\Qt\DockCustomColors\CustomColorsView.h" />
     <ClInclude Include="Classes\Qt\DockHangingObjects\HangingObjectsHelper.h" />
     <ClInclude Include="Classes\Qt\DockHangingObjects\HangingObjectsView.h" />
@@ -1045,6 +1053,7 @@
     <ClInclude Include="Classes\SceneEditor\EditorBodyControl.h" />
     <ClInclude Include="Classes\SceneEditor\EditorConfig.h" />
     <ClInclude Include="Classes\SceneEditor\EditorSettings.h" />
+    <ClInclude Include="Classes\SceneEditor\EntityOwnerPropertyHelper.h" />
     <ClInclude Include="Classes\SceneEditor\EntityPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\ExtendedDialog.h" />
     <ClInclude Include="Classes\SceneEditor\FogControl.h" />

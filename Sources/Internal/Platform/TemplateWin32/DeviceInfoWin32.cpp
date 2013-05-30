@@ -51,6 +51,11 @@ String DeviceInfo::GetTimeZone()
 	return "Not yet implemented";
 }
 
+String DeviceInfo::GetUDID()
+{
+	return "Not yet implemented";
+}
+
 }
 
 #endif

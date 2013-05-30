@@ -252,7 +252,7 @@ public:
     	
     void SetSolid(bool isSolid);
     bool GetSolid();
-	
+
     /**
         \brief function returns maximum bounding box of scene in world coordinates.
         \returns bounding box

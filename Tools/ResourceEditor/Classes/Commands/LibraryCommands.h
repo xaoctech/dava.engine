@@ -38,7 +38,7 @@ protected:
 class CommandAddScene: public LibraryCommand
 {
 public:	
-	CommandAddScene(const DAVA::FilePath &pathname);
+	DAVA_DEPRECATED(CommandAddScene(const DAVA::FilePath &pathname));// DEPRECATED: using of SceneDataManager
 
 protected:	
     
@@ -50,7 +50,7 @@ protected:
 class CommandEditScene: public LibraryCommand
 {
 public:
-	CommandEditScene(const DAVA::FilePath &pathname);
+	DAVA_DEPRECATED(CommandEditScene(const DAVA::FilePath &pathname)); // DEPRECATED : using SceneDataManager(QOBJECT)
     
 protected:
     
@@ -60,7 +60,7 @@ protected:
 class CommandReloadScene: public LibraryCommand
 {
 public:
-	CommandReloadScene(const DAVA::FilePath &pathname);
+	DAVA_DEPRECATED(CommandReloadScene(const DAVA::FilePath &pathname)); // DEPRECATED : using SceneDataManager(QOBJECT)
     
 protected:
     
@@ -71,7 +71,7 @@ protected:
 class CommandReloadEntityFrom: public LibraryCommand
 {
 public:
-	CommandReloadEntityFrom(const DAVA::FilePath &pathname);
+	DAVA_DEPRECATED(CommandReloadEntityFrom(const DAVA::FilePath &pathname)); // DEPRECATED : using SceneDataManager(QOBJECT)
     
 protected:
     

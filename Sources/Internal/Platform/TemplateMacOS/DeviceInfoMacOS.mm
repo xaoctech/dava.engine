@@ -21,6 +21,7 @@
 #import <Foundation/NSLocale.h>
 #import <Foundation/NSTimeZone.h>
 #include "Utils/StringFormat.h"
+#include "OpenUDIDMacOS.h"
 
 namespace DAVA
 {
@@ -68,6 +69,12 @@ String DeviceInfo::GetTimeZone()
     
     String res = Format("%s", [[localTime name] UTF8String]);
 	return res;
+}
+    
+String DeviceInfo::GetUDID()
+{
+    OpenUDIDMacOS*  udid = [[[OpenUDIDMacOS alloc] init] autorelease];
+    return [[udid value] UTF8String];
 }
 
 }

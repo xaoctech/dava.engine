@@ -19,6 +19,8 @@
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 #include <QGraphicsProxyWidget>
+#include <QGraphicsLinearLayout>
+#include <QProgressBar>
 #include <QApplication>
 #include <QWheelEvent>
 #include <QScrollBar>
@@ -53,11 +55,13 @@ TextureScrollArea::TextureScrollArea(QWidget* parent /* = 0 */)
 	textureBorder = textureScene->addRect(0, 0, 10, 10, QPen(QColor(255, 255, 0, 255)), QBrush(Qt::NoBrush));
 
 	// add waitbar to scene
-	QLabel *loadingLabel = new QLabel();
-	QMovie *loadingMovie = new QMovie(":/QtImages/loading.gif");
-	loadingLabel->setMovie(loadingMovie);
-	loadingMovie->start();
-	waitBar = textureScene->addWidget(loadingLabel);
+	QProgressBar *progressBar = new QProgressBar();
+	progressBar->setMinimum(0);
+	progressBar->setMaximum(0);
+	progressBar->setTextVisible(false);
+	progressBar->setAttribute(Qt::WA_NoSystemBackground, true);
+	waitBar = textureScene->addWidget(progressBar);
+	waitBar->setGeometry(QRectF(0, 0, 200, 20));
 
 	adjustWaitBarPos();
 

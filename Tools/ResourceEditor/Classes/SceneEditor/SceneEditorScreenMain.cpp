@@ -538,31 +538,17 @@ void SceneEditorScreenMain::SaveToFolder(const FilePath & folder)
 	iBody->bodyControl->PushDebugCamera();
     
     SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
-    FilePath dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
-    String filePath = sceneData->GetScenePathname().GetRelativePathname(dataSourcePath);
-//    String::size_type pos = filePath.GetAbsolutePathname().find(dataSourcePath.GetAbsolutePathname());
-//    if(String::npos != pos)
-//    {
-//        String path = filePath.GetAbsolutePathname();
-//        path = path.replace(pos, dataSourcePath.GetAbsolutePathname().length(), "");
-//        filePath = FilePath(path);
-//    }
-//    else
-//    {
-//        DVASSERT(0);
-//    }
     
 	// Get project path
     KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
-    FilePath projectPath = FilePath(keyedArchieve->GetString(String("ProjectPath")));
-    FilePath inFolder = projectPath + "DataSource/3d/";
+    FilePath dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
 
     SceneSaver sceneSaver;
-    sceneSaver.SetInFolder(inFolder);
+    sceneSaver.SetInFolder(dataSourcePath);
     sceneSaver.SetOutFolder(folder);
     
     Set<String> errorsLog;
-    sceneSaver.SaveScene(iBody->bodyControl->GetScene(), filePath, errorsLog);
+    sceneSaver.SaveScene(iBody->bodyControl->GetScene(), sceneData->GetScenePathname(), errorsLog);
     
 	iBody->bodyControl->PopDebugCamera();
     

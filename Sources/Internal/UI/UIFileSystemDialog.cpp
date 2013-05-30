@@ -222,7 +222,7 @@ void UIFileSystemDialog::Show(UIControl *parentControl)
 }
 
 
-void UIFileSystemDialog::SetCurrentDir(const FilePath &newDirPath)
+void UIFileSystemDialog::SetCurrentDir(const FilePath &newDirPath, bool rebuildHistory /* = false*/)
 {
 
     //int32 ppos = newDirPath.rfind(".");
@@ -230,6 +230,9 @@ void UIFileSystemDialog::SetCurrentDir(const FilePath &newDirPath)
     //if (ppos != newDirPath.npos && ppos > spos)
     currentDir = FilePath(newDirPath.GetDirectory());
     selectedFileName = newDirPath.GetFilename();
+    
+    if(rebuildHistory)
+        CreateHistoryForPath(currentDir);
     
     //find current dir at folders history
     bool isInHistory = false;
@@ -557,15 +560,24 @@ void UIFileSystemDialog::HistoryButtonPressed(BaseObject *obj, void *data, void 
     
 void UIFileSystemDialog::CreateHistoryForPath(const FilePath &pathToFile)
 {
-    Vector<String> folders;
-    Split(pathToFile.GetAbsolutePathname(), "/", folders);
+    DVASSERT(pathToFile.IsAbsolutePathname());
 
     foldersHistory.clear();
-    foldersHistory.push_back("/");
+
+    String absPath = pathToFile.GetAbsolutePathname();
+    String::size_type pos = absPath.find("/");
+    if(pos == String::npos)
+        return;
+
+    String prefix = absPath.substr(0, pos + 1);
+    foldersHistory.push_back(prefix);
+
+    Vector<String> folders;
+    Split(absPath.substr(pos), "/", folders);
+
     for(int32 iFolder = 0; iFolder < (int32)folders.size(); ++iFolder)
     {
-        FilePath f(foldersHistory[iFolder]);
-        f += folders[iFolder];
+        FilePath f = foldersHistory[iFolder] + folders[iFolder];
         f.MakeDirectoryPathname();
         foldersHistory.push_back(f);
     }

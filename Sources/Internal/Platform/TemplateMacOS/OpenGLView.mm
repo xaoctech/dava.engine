@@ -15,6 +15,7 @@
 =====================================================================================*/
 #import "OpenGLView.h"
 #include "DAVAEngine.h"
+#include <ApplicationServices/ApplicationServices.h>
 
 
 extern void FrameworkMain(int argc, char *argv[]);
@@ -273,7 +274,12 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 				NSPoint p = [curEvent locationInWindow];
 				it->physPoint.x = p.x;
 				it->physPoint.y = Core::Instance()->GetPhysicalScreenHeight() - p.y;
-
+            
+                if(InputSystem::Instance()->IsCursorPining())
+                {
+                    it->physPoint.x = [curEvent deltaX];
+                    it->physPoint.y = [curEvent deltaY];
+                }
 				it->timestamp = curEvent.timestamp;
 				it->tapCount = curEvent.clickCount;
 				it->phase = phase;
@@ -290,7 +296,12 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 			NSPoint p = [curEvent locationInWindow];
 			it->physPoint.x = p.x;
 			it->physPoint.y = Core::Instance()->GetPhysicalScreenHeight() - p.y;
-
+            
+            if(InputSystem::Instance()->IsCursorPining())
+            {
+                it->physPoint.x = [curEvent deltaX];
+                it->physPoint.y = [curEvent deltaY];
+            }
 			it->timestamp = curEvent.timestamp;
 			it->tapCount = curEvent.clickCount;
 			it->phase = phase;
@@ -306,7 +317,12 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 		NSPoint p = [curEvent locationInWindow];
 		newTouch.physPoint.x = p.x;
 		newTouch.physPoint.y = Core::Instance()->GetPhysicalScreenHeight() - p.y;
-
+        
+        if(InputSystem::Instance()->IsCursorPining())
+        {
+            newTouch.physPoint.x = [curEvent deltaX];
+            newTouch.physPoint.y = [curEvent deltaY];
+        }
 		newTouch.timestamp = curEvent.timestamp;
 		newTouch.tapCount = curEvent.clickCount;
 		newTouch.phase = phase;
@@ -356,6 +372,10 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 - (void)mouseMoved:(NSEvent *)theEvent
 {
 	[self process:DAVA::UIEvent::PHASE_MOVE touch:theEvent];
+    if(InputSystem::Instance()->IsCursorPining())
+    {
+        Cursor::MoveToCenterOfWindow();
+    }
 }
 
 - (void)mouseUp:(NSEvent *)theEvent
@@ -366,6 +386,10 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 - (void)mouseDragged:(NSEvent *)theEvent
 {
 	[self process:DAVA::UIEvent::PHASE_ENDED touch:theEvent];
+    if(InputSystem::Instance()->IsCursorPining())
+    {
+        Cursor::MoveToCenterOfWindow();
+    }
 }
 - (void)mouseEntered:(NSEvent *)theEvent
 {

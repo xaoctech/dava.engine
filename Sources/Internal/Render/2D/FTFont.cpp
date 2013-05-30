@@ -177,7 +177,11 @@ YamlNode * FTFont::SaveToYamlNode()
 	YamlNode *node = Font::SaveToYamlNode();
 	//Type
 	node->Set("type", "FTFont");
-	node->Set("name", internalFont->fontPath.GetAbsolutePathname());
+
+	//TODO VK: Fix FilePath::GetFrameworkPath()
+	String pathname = internalFont->fontPath.GetRelativePathname(FilePath::GetBundleName());
+	pathname.replace(0, 4, "~res:");
+	node->Set("name", pathname);
 
 	return node;
 }

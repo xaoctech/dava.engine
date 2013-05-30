@@ -20,6 +20,8 @@
 #include "basepropertygridwidget.h"
 #include "uitextfieldpropertygridwidget.h"
 
+class QLabel;
+
 class TextPropertyGridWidget : public UITextFieldPropertyGridWidget
 {
     Q_OBJECT
@@ -49,6 +51,8 @@ private:
 
 	QLineEdit *localizationKeyNameLineEdit;
     QLineEdit *localizationKeyTextLineEdit;
+	QLabel	*localizationKeyNameLabel;
+	QLabel	*localizationKeyTextLabel;
 };
 
 #endif // TEXTPROPERTYGRIDWIDGET_H
