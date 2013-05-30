@@ -93,7 +93,7 @@ void TextureConverterCell::SetTexture(const FilePath &texturePath)
         if(pvrTex)
         {
             PixelFormat format = LibPVRHelper::GetPixelFormat(pvrPath);
-            uint32 pvrDataSize = LibPVRHelper::GetDataLength(pvrPath);
+            uint32 pvrDataSize = LibPVRHelper::GetDataSize(pvrPath);
 
             String pvrFormat = Texture::GetPixelFormatString(format);
             textureFormat->SetText(StringToWString(pngFormat + "/" + pvrFormat));
@@ -110,7 +110,7 @@ void TextureConverterCell::SetTexture(const FilePath &texturePath)
     else if(texturePath.IsEqualToExtension(".pvr"))
     {
         PixelFormat format = LibPVRHelper::GetPixelFormat(texturePath);
-        uint32 pvrDataSize = LibPVRHelper::GetDataLength(texturePath);
+        uint32 pvrDataSize = LibPVRHelper::GetDataSize(texturePath);
 
         String pvrFormat = Texture::GetPixelFormatString(format);
         textureSize->SetText(SizeInBytesToWideString(pvrDataSize));

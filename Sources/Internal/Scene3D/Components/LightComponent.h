@@ -45,7 +45,7 @@ private:
 public:
     
     INTROSPECTION_EXTEND(LightComponent, Component,
-        MEMBER(light, "Light", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(light, "Light", I_SAVE | I_VIEW | I_EDIT)
     );
 };
 

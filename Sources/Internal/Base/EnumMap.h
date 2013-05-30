@@ -32,6 +32,7 @@ public:
 	bool GetValue(size_t index, int &e) const;
 
 	void Register(const int e, const char *) const;
+	void UnregistelAll() const;
 
 protected:
 	typedef DAVA::Map<int, DAVA::String> EnumMapContainer;

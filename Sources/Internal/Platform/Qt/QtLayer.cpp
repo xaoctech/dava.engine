@@ -39,7 +39,7 @@ void QtLayer::SetDelegate(QtLayerDelegate *delegate)
     this->delegate = delegate;
 }
 
-void QtLayer::ReleaseAutoreleasePool(void */*pool*/)
+void QtLayer::ReleaseAutoreleasePool(void * /*pool*/)
 {
 }
     

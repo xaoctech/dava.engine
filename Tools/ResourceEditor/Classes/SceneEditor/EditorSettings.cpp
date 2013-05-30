@@ -247,13 +247,13 @@ bool EditorSettings::GetEnableImposters()
 	return settings->GetBool("enableImposters", true);
 }
 
-int32 EditorSettings::GetTextureViewFileFormat()
+eGPUFamily EditorSettings::GetTextureViewGPU()
 {
-    return settings->GetInt32(String("TextureViewFileFormat"), PNG_FILE);
+    return (eGPUFamily)settings->GetInt32(String("TextureViewGPU"), GPU_UNKNOWN);
 }
-void EditorSettings::SetTextureViewFileFormat(int32 format)
+void EditorSettings::SetTextureViewGPU(int32 gpu)
 {
-    settings->SetInt32(String("TextureViewFileFormat"), format);
+    settings->SetInt32(String("TextureViewGPU"), gpu);
 }
 
 

@@ -169,17 +169,18 @@ struct PixelFormatDescriptor
 };
 
     
-enum ImageFileFormat
+enum eGPUFamily
 {
-    NOT_FILE = -1,
+    GPU_UNKNOWN = -1,
     
-    PNG_FILE = 0,
-    PVR_FILE,
-    DXT_FILE,
+    GPU_POVERVR_IOS     =   0,
+    GPU_POVERVR_ANDROID,
+    GPU_TEGRA,
+    GPU_MALI,
+    GPU_ADRENO,
     
-    FILE_FORMAT_COUNT
+    GPU_FAMILY_COUNT
 };
-
     
 #if defined(__DAVAENGINE_OPENGL__)
 static const GLint BLEND_MODE_MAP[BLEND_MODE_COUNT] = 

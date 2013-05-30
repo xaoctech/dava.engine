@@ -189,6 +189,9 @@ void FilePath::Initialize(const String &_pathname)
     }
     else
     {
+        Logger::Warning("[FilePath::Initialize] FilePath was initialized from relative path name (%s)", _pathname.c_str());
+        
+        
 #if defined(__DAVAENGINE_ANDROID__)
         absolutePathname = pathname;
 #else //#if defined(__DAVAENGINE_ANDROID__)
@@ -284,6 +287,13 @@ bool FilePath::operator!=(const FilePath &path) const
     return absolutePathname != path.absolutePathname;
 }
 
+    
+bool FilePath::operator < (const FilePath& right) const
+{
+    return GetAbsolutePathname() < right.GetAbsolutePathname();
+}
+
+    
     
 bool FilePath::IsDirectoryPathname() const
 {

@@ -42,13 +42,6 @@ class TextureBrowser : public QDialog
     Q_OBJECT
 
 public:
-	enum TextureView
-	{
-		ViewPVR,
-		ViewDXT
-	};
-
-public:
     explicit TextureBrowser(QWidget *parent = 0);
     ~TextureBrowser();
 
@@ -75,9 +68,10 @@ private:
 	QLabel *statusBarLabel;
 	
 	QMap<QString, int> textureListSortModes;
+	QMap<int, DAVA::eGPUFamily> tabIndexToViewMode;
 
 	DAVA::Scene *curScene;
-	TextureView curTextureView;
+	DAVA::eGPUFamily curTextureView;
 
 	DAVA::Texture *curTexture;
 	DAVA::TextureDescriptor *curDescriptor;
@@ -92,12 +86,12 @@ private:
 	void setupTextureConverAllButton();
 	void setupStatusBar();
 	void setupTextureProperties();
-	void setupTextureViewToolbar();
+	void setupTextureViewTabBar();
 	
 	void resetTextureInfo();
 
 	void setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor *descriptor);
-	void setTextureView(TextureView view, bool forceConvert = false);
+	void setTextureView(DAVA::eGPUFamily view, bool forceConvert = false);
 
 	void updateConvertedImageAndInfo(const QImage &image);
 	void updateInfoColor(QLabel *label, const QColor &color = QColor());
@@ -106,7 +100,8 @@ private:
 	void updateInfoConverted();
 	void updatePropertiesWarning();
 
-	void reloadTextureToScene(DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, DAVA::ImageFileFormat format);
+	void reloadTextureProperties();
+	void reloadTextureToScene(DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu);
 
 private slots:
 	void textureListViewImages(bool checked);
@@ -119,8 +114,6 @@ private slots:
 	void textureBorderPressed(bool checked);
 	void textureBgMaskPressed(bool checked);
 	void texturePropertyChanged(const int propGroup);
-	void textureViewPVR(bool checked);
-	void textureViewDXT(bool checked);
 	void textureReadyOriginal(const DAVA::TextureDescriptor *descriptor, const QImage &image);
 	void textureReadyPVR(const DAVA::TextureDescriptor *descriptor, const QImage &image);
 	void textureReadyDXT(const DAVA::TextureDescriptor *descriptor, const QImage &image);
@@ -130,6 +123,7 @@ private slots:
 	void textureZoomFit(bool checked);
 	void textureAreaWheel(int delta);
 	void textureConverAll();
+	void textureViewChanged(int index);
 
 	void convertStatus(const JobItem *jobCur, int jobLeft);
 };

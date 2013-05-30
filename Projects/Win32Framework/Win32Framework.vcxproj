@@ -383,6 +383,7 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Effects\MultiTextureEffect.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Effects\TextureMulColorAlphaTestEffect.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Effects\TextureMulColorEffect.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\GPUFamilyDescriptor.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Camera.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\CullingSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Frustum.h" />
@@ -729,6 +730,7 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Effects\MultiTextureEffect.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Effects\TextureMulColorAlphaTestEffect.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Effects\TextureMulColorEffect.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\GPUFamilyDescriptor.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Camera.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\CullingSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Frustum.cpp" />

@@ -72,7 +72,7 @@ QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
     ClearActions(ResourceEditor::NODE_COUNT, nodeActions);
     ClearActions(ResourceEditor::VIEWPORT_COUNT, viewportActions);
     ClearActions(ResourceEditor::HIDABLEWIDGET_COUNT, hidablewidgetActions);
-    ClearActions(FILE_FORMAT_COUNT, textureFileFormatActions);
+    ClearActions(GPU_FAMILY_COUNT + 1, textureForGPUActions);
 	ClearActions(ResourceEditor::MODIFY_COUNT, modificationActions);
 
     for(int32 i = 0; i < EditorSettings::RESENT_FILES_COUNT; ++i)
@@ -102,7 +102,7 @@ QtMainWindowHandler::~QtMainWindowHandler()
     ClearActions(ResourceEditor::NODE_COUNT, nodeActions);
     ClearActions(ResourceEditor::VIEWPORT_COUNT, viewportActions);
     ClearActions(ResourceEditor::HIDABLEWIDGET_COUNT, hidablewidgetActions);
-    ClearActions(FILE_FORMAT_COUNT, textureFileFormatActions);
+    ClearActions(GPU_FAMILY_COUNT + 1, textureForGPUActions);
 	ClearActions(ResourceEditor::MODIFY_COUNT, modificationActions);
 	ClearActions(ResourceEditor::EDIT_COUNT, editActions);
 
@@ -152,20 +152,12 @@ void QtMainWindowHandler::SaveScene()
 	UpdateRecentScenesList();
 }
 
-void QtMainWindowHandler::ExportAsPNG()
+void QtMainWindowHandler::ExportMenuTriggered(QAction *exportAsAction)
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandExport(PNG_FILE));
+    eGPUFamily gpuFamily = (eGPUFamily)exportAsAction->data().toInt();
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandExport(gpuFamily));
 }
 
-void QtMainWindowHandler::ExportAsPVR()
-{
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandExport(PVR_FILE));
-}
-
-void QtMainWindowHandler::ExportAsDXT()
-{
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandExport(DXT_FILE));
-}
 
 void QtMainWindowHandler::SaveToFolderWithChilds()
 {
@@ -311,6 +303,8 @@ void QtMainWindowHandler::FileMenuTriggered(QAction *resentScene)
 }
 
 
+
+
 void QtMainWindowHandler::RegisterNodeActions(int32 count, ...)
 {
     DVASSERT((ResourceEditor::NODE_COUNT == count) && "Wrong count of actions");
@@ -348,14 +342,14 @@ void QtMainWindowHandler::RegisterDockActions(int32 count, ...)
     va_end(vl);
 }
 
-void QtMainWindowHandler::RegisterTextureFormatActions(DAVA::int32 count, ...)
+void QtMainWindowHandler::RegisterTextureGPUActions(DAVA::int32 count, ...)
 {
-    DVASSERT((FILE_FORMAT_COUNT == count) && "Wrong count of actions");
+    DVASSERT((GPU_FAMILY_COUNT + 1 == count) && "Wrong count of actions");
     
     va_list vl;
     va_start(vl, count);
     
-    RegisterActions(textureFileFormatActions, count, vl);
+    RegisterActions(textureForGPUActions, count, vl);
     
     va_end(vl);
 }
@@ -493,12 +487,11 @@ void QtMainWindowHandler::SetWaitingCursorEnabled(bool enabled)
 
 void QtMainWindowHandler::MenuViewOptionsWillShow()
 {
-    uint8 textureFileFormat = (uint8)EditorSettings::Instance()->GetTextureViewFileFormat();
-    
-    for(int32 i = 0; i < FILE_FORMAT_COUNT; ++i)
+    int32 textureFileFormat = EditorSettings::Instance()->GetTextureViewGPU();
+    for(int32 i = 0; i <= GPU_FAMILY_COUNT; ++i)
     {
-        textureFileFormatActions[i]->setCheckable(true);
-        textureFileFormatActions[i]->setChecked(i == textureFileFormat);
+        textureForGPUActions[i]->setCheckable(true);
+        textureForGPUActions[i]->setChecked(textureForGPUActions[i]->data().toInt() == textureFileFormat);
     }
 }
 
@@ -517,21 +510,11 @@ void QtMainWindowHandler::RulerTool()
 	}
 }
 
-void QtMainWindowHandler::ReloadAsPNG()
-{
-    CommandsManager::Instance()->ExecuteAndRelease(new ReloadTexturesAsCommand(PNG_FILE));
-	MenuViewOptionsWillShow();
-}
 
-void QtMainWindowHandler::ReloadAsPVR()
+void QtMainWindowHandler::ReloadMenuTriggered(QAction *reloadAsAction)
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new ReloadTexturesAsCommand(PVR_FILE));
-	MenuViewOptionsWillShow();
-}
-
-void QtMainWindowHandler::ReloadAsDXT()
-{
-    CommandsManager::Instance()->ExecuteAndRelease(new ReloadTexturesAsCommand(DXT_FILE));
+    eGPUFamily gpuFamily = (eGPUFamily)reloadAsAction->data().toInt();
+    CommandsManager::Instance()->ExecuteAndRelease(new ReloadTexturesAsCommand(gpuFamily));
 	MenuViewOptionsWillShow();
 }
 

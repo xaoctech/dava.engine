@@ -62,14 +62,14 @@ class CommandExport: public Command
 {
     
 public:	
-	DAVA_DEPRECATED(CommandExport(DAVA::ImageFileFormat fmt)); // DEPRECATED: using of SceneEditorScreenMain, Cancel absent
+	DAVA_DEPRECATED(CommandExport(DAVA::eGPUFamily gpu)); // DEPRECATED: using of SceneEditorScreenMain, Cancel absent
     
 protected:	
     
     virtual void Execute();
     
 protected:
-    DAVA::ImageFileFormat format;
+    DAVA::eGPUFamily gpuFamily;
     
 };
 

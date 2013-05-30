@@ -2093,7 +2093,7 @@ PixelFormat LibPVRHelper::GetPixelFormat(const FilePath &filePathname)
     return GetTextureFormat(header);
 }
     
-uint32 LibPVRHelper::GetDataLength(const FilePath &filePathname)
+uint32 LibPVRHelper::GetDataSize(const FilePath &filePathname)
 {
     PVRHeaderV3 header = GetHeader(filePathname);
     return GetTextureDataSize(header);

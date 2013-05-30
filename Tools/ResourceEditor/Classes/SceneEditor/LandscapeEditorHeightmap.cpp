@@ -450,7 +450,7 @@ void LandscapeEditorHeightmap::HideAction()
 		tilemaskWasChanged = false;
 		workingLandscape->UpdateFullTiledTexture();
 		Image* image = tilemaskTexture->CreateImageFromMemory();
-		ImageLoader::Save(image, TextureDescriptor::GetPathnameForFormat(tilemaskPathname, PNG_FILE));
+		ImageLoader::Save(image, GPUFamilyDescriptor::CreatePathnameForGPU(tilemaskPathname, GPU_UNKNOWN, FORMAT_RGBA8888));
 		SafeRelease(image);
 	}
 
@@ -503,8 +503,15 @@ void LandscapeEditorHeightmap::CreateTilemaskImage()
     if(mask)
     {
         tilemaskPathname = mask->GetPathname();
-        tilemaskImage = CreateTopLevelImage(TextureDescriptor::GetPathnameForFormat(tilemaskPathname, (ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat()));
-        tilemaskTexture = Texture::CreateFromData(tilemaskImage->format, tilemaskImage->GetData(), tilemaskImage->GetWidth(), tilemaskImage->GetHeight(), false);
+        
+        TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(tilemaskPathname);
+        if(descriptor)
+        {
+            tilemaskImage = CreateTopLevelImage(GPUFamilyDescriptor::CreatePathnameForGPU(descriptor, EditorSettings::Instance()->GetTextureViewGPU()));
+            tilemaskTexture = Texture::CreateFromData(tilemaskImage->format, tilemaskImage->GetData(), tilemaskImage->GetWidth(), tilemaskImage->GetHeight(), false);
+            
+            SafeRelease(descriptor);
+        }
     }
     
     workingLandscape->SetTexture(Landscape::TEXTURE_TILE_MASK, tilemaskTexture);

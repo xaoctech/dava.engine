@@ -45,7 +45,7 @@ private:
     
 public:
     INTROSPECTION_EXTEND(RenderComponent, Component,
-        MEMBER(renderObject, "renderObject", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(renderObject, "renderObject", I_SAVE | I_VIEW | I_EDIT)
     );
 };
 

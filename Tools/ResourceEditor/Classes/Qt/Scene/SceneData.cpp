@@ -115,7 +115,7 @@ void SceneData::RemoveSceneNode(DAVA::Entity *node)
         
         parent->RemoveNode(node);
 
-        SceneValidator::Instance()->EnumerateSceneTextures();
+//        SceneValidator::Instance()->EnumerateSceneTextures();
     }
     
     RebuildSceneGraph();

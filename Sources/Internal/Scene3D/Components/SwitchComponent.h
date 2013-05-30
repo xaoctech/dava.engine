@@ -46,7 +46,7 @@ private:
 
 public:
 	INTROSPECTION_EXTEND(SwitchComponent, Component,
-		PROPERTY("newSwitchIndex", "Switch index", GetSwitchIndex, SetSwitchIndex, INTROSPECTION_EDITOR)
+		PROPERTY("newSwitchIndex", "Switch index", GetSwitchIndex, SetSwitchIndex, I_VIEW | I_EDIT)
 		);
 };
 

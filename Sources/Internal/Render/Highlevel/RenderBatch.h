@@ -134,21 +134,21 @@ protected:
 public:
     
     INTROSPECTION_EXTEND(RenderBatch, BaseObject,
-        MEMBER(dataSource, "Data Source", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(dataSource, "Data Source", I_SAVE | I_VIEW | I_EDIT)
 //        MEMBER(renderDataObject, "Render Data Object", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
 //        MEMBER(renderObject, "Render Object", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
 
-        MEMBER(startIndex, "Start Index", INTROSPECTION_SERIALIZABLE)
-        MEMBER(indexCount, "Index Count", INTROSPECTION_SERIALIZABLE)
-        MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(startIndex, "Start Index", I_SAVE)
+        MEMBER(indexCount, "Index Count", I_SAVE)
+        MEMBER(type, "Type", I_SAVE | I_VIEW | I_EDIT)
                          
-        MEMBER(aabbox, "AABBox",  INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR )
-        MEMBER(material, "Material", INTROSPECTION_EDITOR)
+        MEMBER(aabbox, "AABBox",  I_SAVE | I_VIEW | I_EDIT )
+        MEMBER(material, "Material", I_VIEW | I_EDIT)
                          
-        PROPERTY("ownerLayerName", "Owner Layer", GetOwnerLayerName, SetOwnerLayerName, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
-        PROPERTY("sortingKey", "Key for the sorting inside render layer", GetSortingKey, SetSortingKey, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY("ownerLayerName", "Owner Layer", GetOwnerLayerName, SetOwnerLayerName, I_SAVE | I_VIEW)
+        PROPERTY("sortingKey", "Key for the sorting inside render layer", GetSortingKey, SetSortingKey, I_SAVE | I_VIEW | I_EDIT)
 
-        MEMBER(materialInstance, "Material Instance", INTROSPECTION_EDITOR)
+        MEMBER(materialInstance, "Material Instance", I_VIEW | I_EDIT)
     );
 };
 

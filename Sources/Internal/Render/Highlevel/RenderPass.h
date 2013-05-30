@@ -46,8 +46,8 @@ private:
 public:
     
     INTROSPECTION(RenderPass,
-        COLLECTION(renderLayers, "Render Layers", INTROSPECTION_EDITOR)
-        MEMBER(name, "Name", INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
+        COLLECTION(renderLayers, "Render Layers", I_VIEW | I_EDIT)
+        MEMBER(name, "Name", I_VIEW)
     );
 
 	friend class RenderSystem;

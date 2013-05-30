@@ -17,7 +17,7 @@
 #include "ImageSplitterTool.h"
 #include "ImageSplitter.h"
 
-#include "CommandLine/EditorCommandLineParser.h"
+#include "TexturePacker/CommandLineParser.h"
 
 using namespace DAVA;
 
@@ -46,21 +46,21 @@ bool ImageSplitterTool::InitializeFromCommandLine()
 {
     commandAction = ACTION_NONE;
     
-    if(EditorCommandLineParser::CommandIsFound(String("-split")))
+    if(CommandLineParser::CommandIsFound(String("-split")))
     {
         commandAction = ACTION_SPLIT;
-        filename = EditorCommandLineParser::GetCommandParam(String("-file"));
+        filename = CommandLineParser::GetCommandParam(String("-file"));
         if(filename.IsEmpty())
         {
             errors.insert(String("Incorrect params for splitting of the file"));
             return false;
         }
     }
-    else if(EditorCommandLineParser::CommandIsFound(String("-merge")))
+    else if(CommandLineParser::CommandIsFound(String("-merge")))
     {
         commandAction = ACTION_MERGE;
   
-        foldername = EditorCommandLineParser::GetCommandParam(String("-folder"));
+        foldername = CommandLineParser::GetCommandParam(String("-folder"));
         if(foldername.IsEmpty())
         {
             errors.insert(String("Incorrect params for merging of the files"));

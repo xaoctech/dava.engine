@@ -396,7 +396,7 @@
      <x>0</x>
      <y>0</y>
      <width>1068</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -407,9 +407,13 @@
      <property name="title">
       <string>Export</string>
      </property>
-     <addaction name="actionPNG"/>
-     <addaction name="actionPVR"/>
-     <addaction name="actionDXT"/>
+     <addaction name="actionExportPVRIOS"/>
+     <addaction name="actionExportPVRAndroid"/>
+     <addaction name="actionExportTegra"/>
+     <addaction name="actionExportMali"/>
+     <addaction name="actionExportAdreno"/>
+     <addaction name="separator"/>
+     <addaction name="actionExportPNG"/>
     </widget>
     <addaction name="actionNewScene"/>
     <addaction name="separator"/>
@@ -463,13 +467,17 @@
     <property name="title">
      <string>View</string>
     </property>
-    <widget class="QMenu" name="menuTextureFromat">
+    <widget class="QMenu" name="menuTexturesForGPU">
      <property name="title">
-      <string>Texture Fromat</string>
+      <string>Textures for GPU</string>
      </property>
-     <addaction name="actionReloadAsPNG"/>
-     <addaction name="actionReloadAsPVR"/>
-     <addaction name="actionReloadAsDXT"/>
+     <addaction name="actionReloadPoverVRIOS"/>
+     <addaction name="actionReloadPoverVRAndroid"/>
+     <addaction name="actionReloadTegra"/>
+     <addaction name="actionReloadMali"/>
+     <addaction name="actionReloadAdreno"/>
+     <addaction name="separator"/>
+     <addaction name="actionReloadPNG"/>
     </widget>
     <widget class="QMenu" name="menuViewPort">
      <property name="title">
@@ -481,7 +489,7 @@
      <addaction name="actionDefault"/>
     </widget>
     <addaction name="menuViewPort"/>
-    <addaction name="menuTextureFromat"/>
+    <addaction name="menuTexturesForGPU"/>
     <addaction name="separator"/>
     <addaction name="actionRestoreViews"/>
     <addaction name="separator"/>
@@ -958,19 +966,19 @@
     <string>Open Project</string>
    </property>
   </action>
-  <action name="actionPNG">
+  <action name="actionExportPVRIOS">
    <property name="text">
-    <string>PNG</string>
+    <string>PoverVR iOS</string>
    </property>
   </action>
-  <action name="actionPVR">
+  <action name="actionExportPVRAndroid">
    <property name="text">
-    <string>PVR</string>
+    <string>PoverVR Android</string>
    </property>
   </action>
-  <action name="actionDXT">
+  <action name="actionExportTegra">
    <property name="text">
-    <string>DXT</string>
+    <string>Tegra</string>
    </property>
   </action>
   <action name="actionLandscape">
@@ -1132,19 +1140,19 @@
     <string>Ctrl+R</string>
    </property>
   </action>
-  <action name="actionReloadAsPNG">
+  <action name="actionReloadPoverVRIOS">
    <property name="text">
-    <string>As PNG</string>
+    <string>PoverVR iOS</string>
    </property>
   </action>
-  <action name="actionReloadAsPVR">
+  <action name="actionReloadPoverVRAndroid">
    <property name="text">
-    <string>As PVR</string>
+    <string>PoverVR Android</string>
    </property>
   </action>
-  <action name="actionReloadAsDXT">
+  <action name="actionReloadTegra">
    <property name="text">
-    <string>As DXT</string>
+    <string>Tegra</string>
    </property>
   </action>
   <action name="actionParticleEffectNode">
@@ -1383,6 +1391,36 @@
    </property>
    <property name="shortcut">
     <string>Alt+C</string>
+   </property>
+  </action>
+  <action name="actionExportMali">
+   <property name="text">
+    <string>Mali</string>
+   </property>
+  </action>
+  <action name="actionExportAdreno">
+   <property name="text">
+    <string>Adreno</string>
+   </property>
+  </action>
+  <action name="actionReloadMali">
+   <property name="text">
+    <string>Mali</string>
+   </property>
+  </action>
+  <action name="actionReloadAdreno">
+   <property name="text">
+    <string>Adreno</string>
+   </property>
+  </action>
+  <action name="actionExportPNG">
+   <property name="text">
+    <string>PNG</string>
+   </property>
+  </action>
+  <action name="actionReloadPNG">
+   <property name="text">
+    <string>PNG</string>
    </property>
   </action>
  </widget>

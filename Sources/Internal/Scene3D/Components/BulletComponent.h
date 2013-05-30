@@ -45,7 +45,7 @@ private:
     
 public:
     INTROSPECTION_EXTEND(BulletComponent, Component,
-        PROPERTY("bulletObject", "Bullet Object", GetBulletObject, SetBulletObject, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY("bulletObject", "Bullet Object", GetBulletObject, SetBulletObject, I_SAVE | I_VIEW | I_EDIT)
     );
 };
 

@@ -341,7 +341,7 @@ UIListCell *MaterialEditor::CellAtIndex(UIList *forList, int32 index)
         //Temporary fix for loading of UI Interface to avoid reloading of texrures to different formates.
         // 1. Reset default format before loading of UI
         // 2. Restore default format after loading of UI from stored settings.
-        Texture::SetDefaultFileFormat(NOT_FILE);
+        Texture::SetDefaultGPU(GPU_UNKNOWN);
         
         Rect r = Rect(x, y, boxSize, boxSize);
         UIControl *sceneFlagBox = new UIControl(r);
@@ -352,7 +352,7 @@ UIListCell *MaterialEditor::CellAtIndex(UIList *forList, int32 index)
         c->AddControl(sceneFlagBox);
         SafeRelease(sceneFlagBox);
         
-        Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
+        Texture::SetDefaultGPU(EditorSettings::Instance()->GetTextureViewGPU());
     }
 
     Material *mat = GetMaterial(index);

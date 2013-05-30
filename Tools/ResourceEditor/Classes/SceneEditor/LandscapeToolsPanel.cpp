@@ -74,7 +74,7 @@ UISlider * LandscapeToolsPanel::CreateSlider(const Rect & rect)
     //Temporary fix for loading of UI Interface to avoid reloading of texrures to different formates.
     // 1. Reset default format before loading of UI
     // 2. Restore default format after loading of UI from stored settings.
-    Texture::SetDefaultFileFormat(NOT_FILE);
+    Texture::SetDefaultGPU(GPU_UNKNOWN);
 
     UISlider *slider = new UISlider(rect);
     slider->SetMinMaxValue(0.f, 1.0f);
@@ -90,7 +90,7 @@ UISlider * LandscapeToolsPanel::CreateSlider(const Rect & rect)
 
     slider->SetThumbSprite("~res:/Gfx/LandscapeEditor/Tools/polzunokCenter", 0);
     
-    Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
+    Texture::SetDefaultGPU(EditorSettings::Instance()->GetTextureViewGPU());
     
     return slider;
 }

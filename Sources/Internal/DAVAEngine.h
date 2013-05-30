@@ -100,6 +100,7 @@
 
 // 2D Graphics
 #include "Render/2D/Sprite.h"
+#include "Render/GPUFamilyDescriptor.h"
 #include "Render/TextureDescriptor.h"
 #include "Render/Texture.h"
 #include "Render/Image.h"

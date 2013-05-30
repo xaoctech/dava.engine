@@ -67,7 +67,7 @@ private:
     
 public:
     INTROSPECTION_EXTEND(UpdatableComponent, Component,
-        MEMBER(updatableObject, "Updatable Object", INTROSPECTION_SERIALIZABLE)
+        MEMBER(updatableObject, "Updatable Object", I_SAVE)
     );
 
 };

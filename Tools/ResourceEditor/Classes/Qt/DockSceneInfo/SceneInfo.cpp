@@ -25,9 +25,9 @@
 
 #include "Main/QtUtils.h"
 
-#include "Render/LibPVRHelper.h"
-#include "Render/LibDxtHelper.h"
 #include "Render/TextureDescriptor.h"
+
+#include "../../ImageTools/ImageTools.h"
 
 
 #include <QHeaderView>
@@ -242,25 +242,7 @@ uint32 SceneInfo::CalculateTextureSize(const Map<String, Texture *> &textures)
             continue;
         }
         
-        ImageFileFormat requestedFormat = (descriptor->isCompressedFile) ?
-                                (ImageFileFormat)descriptor->textureFileFormat :
-                                (ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat();
-                
-        FilePath imagePathname = TextureDescriptor::GetPathnameForFormat(pathname, requestedFormat);
-        switch (requestedFormat)
-        {
-            case PVR_FILE:
-                textureSize += LibPVRHelper::GetDataLength(imagePathname);
-                break;
-                
-            case DXT_FILE:
-                textureSize += LibDxtHelper::GetDataSize(imagePathname);
-                break;
-                
-            default:
-                textureSize += tex->GetDataSize();
-                break;
-        }
+        textureSize += ImageTools::GetTexturePhysicalSize(descriptor, EditorSettings::Instance()->GetTextureViewGPU());
         
         SafeRelease(descriptor);
     }
@@ -408,7 +390,7 @@ QtPropertyData * SceneInfo::CreateInfoHeader(const QString &key)
 
 QtPropertyData * SceneInfo::GetInfoHeader(const QString &key)
 {
-    QtPropertyData * header = curModel->GetProperty(key);
+    QtPropertyData * header = GetPropertyData(key);
     DVASSERT(header);
     
     return header;
