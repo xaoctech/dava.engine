@@ -29,6 +29,11 @@ void EnumMap::Register(const int e, const char* s) const
 	map[e] = DAVA::String(s);
 }
 
+void EnumMap::UnregistelAll() const
+{
+	map.clear();
+}
+
 bool EnumMap::ToValue(const char* s, int &e) const
 {
 	bool ret = false;

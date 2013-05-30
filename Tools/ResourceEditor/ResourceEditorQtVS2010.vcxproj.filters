@@ -46,12 +46,6 @@
     <Filter Include="Classes\Qt">
       <UniqueIdentifier>{b7306c70-2f2b-4ffc-8fe2-acb1e3bb6717}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Classes\Qt\QtPropertyBrowser">
-      <UniqueIdentifier>{d1d39e29-1b06-4a84-a2fe-17cfb8b61690}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Classes\Qt\QtPropertyBrowser\Dava">
-      <UniqueIdentifier>{ca344db2-f6c0-4a5c-9159-1b80dd5300b2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Classes\Qt\QtPosSaver">
       <UniqueIdentifier>{5139cbe9-d6b3-4aef-9d36-62293b1aad8a}</UniqueIdentifier>
     </Filter>
@@ -163,9 +157,6 @@
     <Filter Include="Tools">
       <UniqueIdentifier>{45b2cb13-419f-47b9-99d2-89b20886f0da}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Tools\CommandLine">
-      <UniqueIdentifier>{3bc1fcf3-f004-4644-910f-2452a24d08f8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Tools\TextureCompression">
       <UniqueIdentifier>{205dab52-3e67-44b6-bbac-6f311418ba44}</UniqueIdentifier>
     </Filter>
@@ -174,6 +165,9 @@
     </Filter>
     <Filter Include="Classes\Qt\SpritePacker">
       <UniqueIdentifier>{7ef6c442-b117-4fd7-9727-2ca137b19620}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\ImageTools">
+      <UniqueIdentifier>{87b27357-f433-4f97-b346-3d4fd06bca11}</UniqueIdentifier>
     </Filter>
     <Filter Include="Classes\Qt\DockConsole">
       <UniqueIdentifier>{3fea7404-6e38-4d26-ab20-9ab00124dc31}</UniqueIdentifier>
@@ -852,30 +846,6 @@
     <ClCompile Include="Classes\RulerTool\RulerTool.cpp">
       <Filter>Classes\RulerTool</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtbuttonpropertybrowser.cpp">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qteditorfactory.cpp">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtgroupboxpropertybrowser.cpp">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtpropertybrowser.cpp">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtpropertybrowserutils.cpp">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtpropertymanager.cpp">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qttreepropertybrowser.cpp">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtvariantproperty.cpp">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\main.cpp">
       <Filter>Classes\Qt</Filter>
     </ClCompile>
@@ -963,9 +933,6 @@
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureListModel.cpp">
       <Filter>Classes\Qt\TextureBrowser</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\TextureBrowser\TextureProperties.cpp">
-      <Filter>Classes\Qt\TextureBrowser</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureScrollArea.cpp">
       <Filter>Classes\Qt\TextureBrowser</Filter>
     </ClCompile>
@@ -974,9 +941,6 @@
     </ClCompile>
     <ClCompile Include="Classes\Qt\DockCustomColors\CustomColorsView.cpp">
       <Filter>Classes\Qt\DockCustomColors</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\Dava\qtDavaVectorPropertyManager.cpp">
-      <Filter>Classes\Qt\QtPropertyBrowser\Dava</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyItem.cpp">
       <Filter>Classes\Qt\QtPropertyEditor</Filter>
@@ -1404,9 +1368,6 @@
     <ClCompile Include="..\..\Sources\Tools\TextureCompression\PVRConverter.cpp">
       <Filter>Tools\TextureCompression</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Tools\CommandLine\EditorCommandLineParser.cpp">
-      <Filter>Tools\CommandLine</Filter>
-    </ClCompile>
     <ClCompile Include="_GeneratedQt\Commands\CommandSignals_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
@@ -1689,9 +1650,6 @@
     <ClCompile Include="_GeneratedQt\TextureBrowser\TextureScrollArea_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\QtPropertyBrowser\Dava\qtDavaVectorPropertyManager_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
     <ClCompile Include="_GeneratedQt\Main\davaglwidget_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
@@ -1700,6 +1658,15 @@
     </ClCompile>
     <ClCompile Include="Classes\ParticlesEditorQT\Nodes\InnerEmitterParticleEditorNode.cpp">
       <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\ImageTools\ImageTools.cpp">
+      <Filter>Classes\ImageTools</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\TextureBrowser\TextureProperties.cpp">
+      <Filter>Classes\Qt\TextureBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataMetaObject.cpp">
+      <Filter>Classes\Qt\QtPropertyEditor\QtPropertyData</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\DockConsole\Console.cpp">
       <Filter>Classes\Qt\DockConsole</Filter>
@@ -2444,30 +2411,6 @@
     <ClInclude Include="Classes\RulerTool\RulerTool.h">
       <Filter>Classes\RulerTool</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtbuttonpropertybrowser.h">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qteditorfactory.h">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtgroupboxpropertybrowser.h">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtpropertybrowser.h">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtpropertybrowserutils_p.h">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtpropertymanager.h">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qttreepropertybrowser.h">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtvariantproperty.h">
-      <Filter>Classes\Qt\QtPropertyBrowser</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\QtPosSaver\QtPosSaver.h">
       <Filter>Classes\Qt\QtPosSaver</Filter>
     </ClInclude>
@@ -2552,9 +2495,6 @@
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureListModel.h">
       <Filter>Classes\Qt\TextureBrowser</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\TextureBrowser\TextureProperties.h">
-      <Filter>Classes\Qt\TextureBrowser</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureScrollArea.h">
       <Filter>Classes\Qt\TextureBrowser</Filter>
     </ClInclude>
@@ -2563,9 +2503,6 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockCustomColors\CustomColorsView.h">
       <Filter>Classes\Qt\DockCustomColors</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\QtPropertyBrowser\Dava\qtDavaVectorPropertyManager.h">
-      <Filter>Classes\Qt\QtPropertyBrowser\Dava</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtPropertyItem.h">
       <Filter>Classes\Qt\QtPropertyEditor</Filter>
@@ -2963,9 +2900,6 @@
     <ClInclude Include="..\..\Sources\Tools\TextureCompression\PVRConverter.h">
       <Filter>Tools\TextureCompression</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Tools\CommandLine\EditorCommandLineParser.h">
-      <Filter>Tools\CommandLine</Filter>
-    </ClInclude>
     <ClInclude Include="_GeneratedQt\ui_CustomColorsView.h">
       <Filter>QtGenerated</Filter>
     </ClInclude>
@@ -3004,6 +2938,15 @@
     </ClInclude>
     <ClInclude Include="Classes\ParticlesEditorQT\Nodes\InnerEmitterParticleEditorNode.h">
       <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ImageTools\ImageTools.h">
+      <Filter>Classes\ImageTools</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\TextureBrowser\TextureProperties.h">
+      <Filter>Classes\Qt\TextureBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataMetaObject.h">
+      <Filter>Classes\Qt\QtPropertyEditor\QtPropertyData</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockConsole\Console.h">
       <Filter>Classes\Qt\DockConsole</Filter>

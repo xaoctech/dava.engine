@@ -46,7 +46,7 @@ struct StaticLightingParams
 	StaticLightingParams() : transparencyColor(0, 0, 0, 0) {}
 
 	INTROSPECTION(StaticLightingParams,
-	MEMBER(transparencyColor, "Transparency Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR))
+	MEMBER(transparencyColor, "Transparency Color", I_SAVE | I_VIEW | I_EDIT))
 };
 
 class InstanceMaterialState : public BaseObject
@@ -99,12 +99,12 @@ public:
     INTROSPECTION_EXTEND(InstanceMaterialState, BaseObject,
                          //MEMBER(lightmapTexture, "Texture:", INTROSPECTION_EDITOR)
 //                         MEMBER(lightmapName, "Lightmap Name:", INTROSPECTION_EDITOR)
-                         MEMBER(uvOffset, "UV Offset", INTROSPECTION_EDITOR)
-                         MEMBER(uvScale, "UV Scale", INTROSPECTION_EDITOR)
-                         MEMBER(lightmapSize, "Lightmap Size", INTROSPECTION_EDITOR)
+                         MEMBER(uvOffset, "UV Offset", I_VIEW | I_EDIT)
+                         MEMBER(uvScale, "UV Scale", I_VIEW | I_EDIT)
+                         MEMBER(lightmapSize, "Lightmap Size", I_VIEW | I_EDIT)
                          
-                         PROPERTY("flatColor", "Flat Color (works only if flat color enabled)", GetFlatColor, SetFlatColor, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-                         PROPERTY("texture0Shift", "Texture Shift", GetTextureShift, SetTextureShift, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         PROPERTY("flatColor", "Flat Color (works only if flat color enabled)", GetFlatColor, SetFlatColor, I_SAVE | I_VIEW | I_EDIT)
+                         PROPERTY("texture0Shift", "Texture Shift", GetTextureShift, SetTextureShift, I_SAVE | I_VIEW | I_EDIT)
                          
                          //MEMBER(aabbox, "AABBox", INTROSPECTION_EDITOR)
                          );
@@ -373,37 +373,37 @@ private:
 public:
     
     INTROSPECTION_EXTEND(Material, DataNode,
-		MEMBER(lightingParams, "Static Lighting Params", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+		MEMBER(lightingParams, "Static Lighting Params", I_SAVE | I_VIEW | I_EDIT)
 
-        MEMBER(isTranslucent, "Is Translucent", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(isTwoSided, "Is Two Sided", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(isSetupLightmap, "Is Setup Lightmap", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(shininess, "Shininess", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(isTranslucent, "Is Translucent", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(isTwoSided, "Is Two Sided", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(isSetupLightmap, "Is Setup Lightmap", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(shininess, "Shininess", I_SAVE | I_VIEW | I_EDIT)
 
-        MEMBER(ambientColor, "Ambient Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(diffuseColor, "Diffuse Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(specularColor, "Specular Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(emissiveColor, "Emissive Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(ambientColor, "Ambient Color", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(diffuseColor, "Diffuse Color", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(specularColor, "Specular Color", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(emissiveColor, "Emissive Color", I_SAVE | I_VIEW | I_EDIT)
 
-        MEMBER(isFogEnabled, "Is Fog Enabled", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(fogDensity, "Fog Density", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(fogColor, "Fog Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(isFogEnabled, "Is Fog Enabled", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(fogDensity, "Fog Density", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(fogColor, "Fog Color", I_SAVE | I_VIEW | I_EDIT)
                          
-        MEMBER(isAlphablend, "Is Alphablended", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(isAlphablend, "Is Alphablended", I_SAVE | I_VIEW | I_EDIT)
         
-        PROPERTY("isFlatColorEnabled", "Is flat color enabled", IsFlatColorEnabled, EnableFlatColor, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        PROPERTY("isTexture0ShiftEnabled", "Is texture shift enabled", IsTextureShiftEnabled, EnableTextureShift, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        PROPERTY("isExportOwnerLayerEnabled", "Is export owner layer enabled. (Export layer settings to render batch on set)", IsExportOwnerLayerEnabled, SetExportOwnerLayer, INTROSPECTION_SERIALIZABLE)
-        PROPERTY("ownerLayerName", "Owner layer name", GetOwnerLayerName, SetOwnerLayerName, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
+        PROPERTY("isFlatColorEnabled", "Is flat color enabled", IsFlatColorEnabled, EnableFlatColor, I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("isTexture0ShiftEnabled", "Is texture shift enabled", IsTextureShiftEnabled, EnableTextureShift, I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("isExportOwnerLayerEnabled", "Is export owner layer enabled. (Export layer settings to render batch on set)", IsExportOwnerLayerEnabled, SetExportOwnerLayer, I_SAVE)
+        PROPERTY("ownerLayerName", "Owner layer name", GetOwnerLayerName, SetOwnerLayerName, I_SAVE | I_VIEW)
                          
-        MEMBER(blendSrc, "Blend Source", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(blendDst, "Blend Destination", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(isWireframe, "Is Wire Frame", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-		MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(blendSrc, "Blend Source", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(blendDst, "Blend Destination", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(isWireframe, "Is Wire Frame", I_SAVE | I_VIEW | I_EDIT)
+		MEMBER(type, "Type", I_SAVE | I_VIEW | I_EDIT)
                          
-        COLLECTION(names, "Names", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        COLLECTION(names, "Names", I_SAVE | I_VIEW | I_EDIT)
 
-		MEMBER(renderStateBlock, "Render State", INTROSPECTION_EDITOR)
+		MEMBER(renderStateBlock, "Render State", I_VIEW | I_EDIT)
     );
 };
 

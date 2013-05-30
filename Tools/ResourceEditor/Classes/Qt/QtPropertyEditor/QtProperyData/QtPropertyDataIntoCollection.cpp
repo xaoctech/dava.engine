@@ -18,7 +18,7 @@
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataIntrospection.h"
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
 
-QtPropertyDataIntroCollection::QtPropertyDataIntroCollection(void *_object, const DAVA::IntrospectionCollection *_collection, int hasAnyFlags, int hasNotAnyFlags)
+QtPropertyDataIntroCollection::QtPropertyDataIntroCollection(void *_object, const DAVA::InspColl *_collection, int hasAllFlags)
 	: object(_object)
 	, collection(_collection)
 {
@@ -26,17 +26,17 @@ QtPropertyDataIntroCollection::QtPropertyDataIntroCollection(void *_object, cons
 	{
 		int index = 0;
 		DAVA::MetaInfo *valueType = collection->ItemType();
-		DAVA::IntrospectionCollection::Iterator i = collection->Begin(object);
+		DAVA::InspColl::Iterator i = collection->Begin(object);
 		while(NULL != i)
 		{
 			if(NULL != valueType->GetIntrospection())
 			{
 				void * itemObject = collection->ItemData(i);
-				const DAVA::IntrospectionInfo *itemInfo = valueType->GetIntrospection(itemObject);
+				const DAVA::InspInfo *itemInfo = valueType->GetIntrospection(itemObject);
 
 				if(NULL != itemInfo && NULL != itemObject)
 				{
-					QtPropertyData *childData = new QtPropertyDataIntrospection(itemObject, itemInfo, hasAnyFlags, hasNotAnyFlags);
+					QtPropertyData *childData = new QtPropertyDataIntrospection(itemObject, itemInfo, hasAllFlags);
 					ChildAdd(QString::number(index), childData);
 				}
 				else

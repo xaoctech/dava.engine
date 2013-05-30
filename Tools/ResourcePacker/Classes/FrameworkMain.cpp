@@ -11,9 +11,9 @@
 #include "TexturePacker/ResourcePacker2D.h"
 #include "TexturePacker/CommandLineParser.h"
 
-#include "CommandLine/EditorCommandLineParser.h"
-
 #include "TextureCompression/PVRConverter.h"
+
+#include "Render/GPUFamilyDescriptor.h"
 
 using namespace DAVA;
  
@@ -43,7 +43,7 @@ void PrintUsage()
 
 bool CheckPosition(int32 commandPosition)
 {
-    if(EditorCommandLineParser::CheckPosition(commandPosition))
+    if(CommandLineParser::CheckPosition(commandPosition))
     {
         printf("Wrong arguments\n");
         PrintUsage();
@@ -100,8 +100,19 @@ void ProcessRecourcePacker()
     printf("[OUTPUT DIR] - [%s]\n", resourcePacker->outputGfxDirectory.GetAbsolutePathname().c_str());
     printf("[EXCLUDE DIR] - [%s]\n", resourcePacker->excludeDirectory.GetAbsolutePathname().c_str());
     
+    
     Texture::InitializePixelFormatDescriptors();
-    resourcePacker->PackResources();
+    GPUFamilyDescriptor::SetupGPUParameters();
+    
+    
+    eGPUFamily exportForGPU = GPU_UNKNOWN;
+    if(CommandLineParser::CommandIsFound(String("-gpu")))
+    {
+        String gpuName = CommandLineParser::GetCommandParam(String("-gpu"));
+        exportForGPU = GPUFamilyDescriptor::GetGPUByName(gpuName);
+    }
+    
+    resourcePacker->PackResources(exportForGPU);
     elapsedTime = SystemTimer::Instance()->AbsoluteMS() - elapsedTime;
     printf("[Resource Packer Compile Time: %0.3lf seconds]\n", (float64)elapsedTime / 1000.0);
     
@@ -112,21 +123,21 @@ void FrameworkDidLaunched()
 {
 	if (Core::Instance()->IsConsoleMode())
 	{
-        if(     EditorCommandLineParser::GetCommandsCount() < 2
-           ||   (EditorCommandLineParser::CommandIsFound(String("-usage")))
-           ||   (EditorCommandLineParser::CommandIsFound(String("-help")))
+        if(     CommandLineParser::GetCommandsCount() < 2
+           ||   (CommandLineParser::CommandIsFound(String("-usage")))
+           ||   (CommandLineParser::CommandIsFound(String("-help")))
            )
         {
             PrintUsage();
 			return;
         }
 		
-        if(EditorCommandLineParser::CommandIsFound(String("-v")) || EditorCommandLineParser::CommandIsFound(String("-verbose")))
+        if(CommandLineParser::CommandIsFound(String("-v")) || CommandLineParser::CommandIsFound(String("-verbose")))
         {
             CommandLineParser::Instance()->SetVerbose(true);
         }
         
-        if(EditorCommandLineParser::CommandIsFound(String("-exo")))
+        if(CommandLineParser::CommandIsFound(String("-exo")))
         {
             CommandLineParser::Instance()->SetExtendedOutput(true);
         }

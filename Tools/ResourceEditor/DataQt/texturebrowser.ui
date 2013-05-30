@@ -285,6 +285,9 @@
          </widget>
         </item>
         <item>
+         <widget class="QTabBar" name="viewTabBar" native="true"/>
+        </item>
+        <item>
          <widget class="QFrame" name="frame_2">
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
@@ -308,47 +311,6 @@
            <property name="spacing">
             <number>3</number>
            </property>
-           <item row="1" column="0">
-            <widget class="TextureScrollArea" name="textureAreaOriginal">
-             <property name="cursor" stdset="0">
-              <cursorShape>ArrowCursor</cursorShape>
-             </property>
-             <property name="mouseTracking">
-              <bool>true</bool>
-             </property>
-             <property name="widgetResizable" stdset="0">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QToolBar" name="textureViewToolbar">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <addaction name="actionViewPVR"/>
-             <addaction name="actionViewDXT"/>
-            </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="TextureScrollArea" name="textureAreaPVR">
-             <property name="cursor" stdset="0">
-              <cursorShape>ArrowCursor</cursorShape>
-             </property>
-             <property name="mouseTracking">
-              <bool>true</bool>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::StyledPanel</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Sunken</enum>
-             </property>
-             <property name="widgetResizable" stdset="0">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="0">
             <widget class="QGroupBox" name="groupBox_4">
              <property name="title">
@@ -421,7 +383,26 @@
              </layout>
             </widget>
            </item>
-           <item row="0" column="2">
+           <item row="1" column="1">
+            <widget class="TextureScrollArea" name="textureAreaConverted">
+             <property name="cursor" stdset="0">
+              <cursorShape>ArrowCursor</cursorShape>
+             </property>
+             <property name="mouseTracking">
+              <bool>true</bool>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Sunken</enum>
+             </property>
+             <property name="widgetResizable" stdset="0">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
             <widget class="QGroupBox" name="groupBox_3">
              <property name="title">
               <string>Converted texture info</string>
@@ -496,6 +477,19 @@
              </layout>
             </widget>
            </item>
+           <item row="1" column="0">
+            <widget class="TextureScrollArea" name="textureAreaOriginal">
+             <property name="cursor" stdset="0">
+              <cursorShape>ArrowCursor</cursorShape>
+             </property>
+             <property name="mouseTracking">
+              <bool>true</bool>
+             </property>
+             <property name="widgetResizable" stdset="0">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
@@ -526,6 +520,28 @@
         <number>3</number>
        </property>
        <item>
+        <widget class="TextureProperties" name="textureProperties">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="alternatingRowColors">
+          <bool>true</bool>
+         </property>
+         <property name="indentation">
+          <number>16</number>
+         </property>
+         <property name="rootIsDecorated">
+          <bool>false</bool>
+         </property>
+         <property name="itemsExpandable">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QLabel" name="warningLabel">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
@@ -544,16 +560,6 @@
          </property>
          <property name="wordWrap">
           <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="TextureProperties" name="textureProperties" native="true">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
          </property>
         </widget>
        </item>
@@ -696,28 +702,6 @@
     <string>View simple textutes list</string>
    </property>
   </action>
-  <action name="actionViewPVR">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>PVR</string>
-   </property>
-   <property name="toolTip">
-    <string>PVR</string>
-   </property>
-  </action>
-  <action name="actionViewDXT">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>DXT</string>
-   </property>
-   <property name="toolTip">
-    <string>DXT</string>
-   </property>
-  </action>
   <action name="actionShowBorder">
    <property name="checkable">
     <bool>true</bool>
@@ -801,18 +785,20 @@
    <header>texturelist.h</header>
   </customwidget>
   <customwidget>
-   <class>TextureProperties</class>
+   <class>QTabBar</class>
    <extends>QWidget</extends>
-   <header>textureproperties.h</header>
+   <header>qtabbar.h</header>
    <container>1</container>
-   <slots>
-    <slot>resetCommonProp()</slot>
-   </slots>
+  </customwidget>
+  <customwidget>
+   <class>TextureProperties</class>
+   <extends>QTreeView</extends>
+   <header>textureproperties.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
   <tabstop>textureAreaOriginal</tabstop>
-  <tabstop>textureAreaPVR</tabstop>
+  <tabstop>textureAreaConverted</tabstop>
   <tabstop>textureFilterEdit</tabstop>
   <tabstop>clearFilterButton</tabstop>
  </tabstops>

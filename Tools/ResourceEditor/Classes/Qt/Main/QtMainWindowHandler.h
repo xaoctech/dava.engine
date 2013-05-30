@@ -56,7 +56,7 @@ public:
     void RegisterNodeActions(DAVA::int32 count, ...);
     void RegisterViewportActions(DAVA::int32 count, ...);
     void RegisterDockActions(DAVA::int32 count, ...);
-    void RegisterTextureFormatActions(DAVA::int32 count, ...);
+    void RegisterTextureGPUActions(DAVA::int32 count, ...);
 	void RegisterModificationActions(DAVA::int32 count, ...);
 	void RegisterEditActions(DAVA::int32 count, ...);
 
@@ -109,9 +109,7 @@ public slots:
     void OpenProject();
     void OpenResentScene(DAVA::int32 index);
     void SaveScene();
-    void ExportAsPNG();
-    void ExportAsPVR();
-    void ExportAsDXT();
+    void ExportMenuTriggered(QAction *exportAsAction);
     void SaveToFolderWithChilds();
 
 	//Edit
@@ -134,10 +132,7 @@ public slots:
     //ViewOptions
     void MenuViewOptionsWillShow();
     void ToggleNotPassableTerrain();
-    void ReloadAsPNG();
-    void ReloadAsPVR();
-    void ReloadAsDXT();
-
+    void ReloadMenuTriggered(QAction *reloadAsAction);
     
     //scene graph
     void RefreshSceneGraph();
@@ -238,7 +233,7 @@ private:
     QAction *nodeActions[ResourceEditor::NODE_COUNT];
     QAction *viewportActions[ResourceEditor::VIEWPORT_COUNT];
     QAction *hidablewidgetActions[ResourceEditor::HIDABLEWIDGET_COUNT];
-    QAction *textureFileFormatActions[DAVA::FILE_FORMAT_COUNT];
+    QAction *textureForGPUActions[DAVA::GPU_FAMILY_COUNT + 1];
 	QAction *modificationActions[ResourceEditor::MODIFY_COUNT];
 	QAction *editActions[ResourceEditor::EDIT_COUNT];
 

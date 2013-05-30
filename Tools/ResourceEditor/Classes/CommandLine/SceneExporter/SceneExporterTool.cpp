@@ -17,7 +17,7 @@
 #include "SceneExporterTool.h"
 #include "SceneExporter.h"
 
-#include "CommandLine/EditorCommandLineParser.h"
+#include "TexturePacker/CommandLineParser.h"
 
 using namespace DAVA;
 
@@ -31,7 +31,7 @@ void SceneExporterTool::PrintUsage()
     printf("\t-outdir - path for Poject/Data/3d/ folder\n");
     printf("\t-processdir - foldername from DataSource/3d/ for exporting\n");
     printf("\t-processfile - filename from DataSource/3d/ for exporting\n");
-    printf("\t-format - png, pvr, dxt\n");
+    printf("\t-gpu - PoverVR_iOS, PoverVR_Android, tegra, mali, adreno\n");
     
     printf("\n");
     printf("Samples:\n");
@@ -49,8 +49,8 @@ bool SceneExporterTool::InitializeFromCommandLine()
 {
     commandAction = ACTION_NONE;
     
-    inFolder = EditorCommandLineParser::GetCommandParam(String("-indir"));
-    outFolder = EditorCommandLineParser::GetCommandParam(String("-outdir"));
+    inFolder = CommandLineParser::GetCommandParam(String("-indir"));
+    outFolder = CommandLineParser::GetCommandParam(String("-outdir"));
     if(inFolder.IsEmpty() && outFolder.IsEmpty())
     {
         errors.insert("Incorrect indir or outdir parameter");
@@ -60,15 +60,15 @@ bool SceneExporterTool::InitializeFromCommandLine()
     inFolder.MakeDirectoryPathname();
     outFolder.MakeDirectoryPathname();
     
-    format = EditorCommandLineParser::GetCommandParam(String("-format"));
-    if(format.empty())
+    gpu = CommandLineParser::GetCommandParam(String("-gpu"));
+    if(gpu.empty())
     {
         errors.insert("Format for export is not set");
         return false;
     }
     
-    filename = EditorCommandLineParser::GetCommandParam(String("-processfile"));
-    foldername = EditorCommandLineParser::GetCommandParam(String("-processdir"));
+    filename = CommandLineParser::GetCommandParam(String("-processfile"));
+    foldername = CommandLineParser::GetCommandParam(String("-processdir"));
 
     if(!filename.empty())
     {
@@ -94,7 +94,7 @@ void SceneExporterTool::Process()
 
     exporter.SetOutFolder(outFolder);
     exporter.SetInFolder(inFolder);
-    exporter.SetExportingFormat(format);
+    exporter.SetGPUForExporting(gpu);
     
     if(commandAction == ACTION_EXPORT_FILE)
     {

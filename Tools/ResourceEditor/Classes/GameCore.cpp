@@ -67,7 +67,7 @@ void GameCore::OnAppStarted()
 
     if(!CommandLineManager::Instance()->IsCommandLineModeEnabled())
     {
-        Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
+        Texture::SetDefaultGPU(EditorSettings::Instance()->GetTextureViewGPU());
     }
 	
 	// Yuri Coder, 2013/01/23. The call below is needed for Win32 linker to notify it we are using

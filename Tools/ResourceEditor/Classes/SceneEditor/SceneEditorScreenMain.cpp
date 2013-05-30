@@ -555,29 +555,8 @@ void SceneEditorScreenMain::SaveToFolder(const FilePath & folder)
     ShowErrorDialog(errorsLog);
 }
 
-void SceneEditorScreenMain::ExportAs(ImageFileFormat format)
+void SceneEditorScreenMain::ExportAs(eGPUFamily forGPU)
 {
-    String formatStr;
-    switch (format) 
-    {
-        case DAVA::PNG_FILE:
-            formatStr = String("png");
-            break;
-            
-        case DAVA::PVR_FILE:
-            formatStr = String("pvr");
-            break;
-            
-        case DAVA::DXT_FILE:
-            formatStr = String("dds");
-            break;
-            
-        default:
-			DVASSERT(0);
-            return;
-    }
-    
-    
     BodyItem *iBody = FindCurrentBody();
 	iBody->bodyControl->PushDebugCamera();
     
@@ -592,7 +571,7 @@ void SceneEditorScreenMain::ExportAs(ImageFileFormat format)
     exporter.SetInFolder(projectPath + String("DataSource/3d/"));
     exporter.SetOutFolder(projectPath + String("Data/3d/"));
     
-    exporter.SetExportingFormat(formatStr);
+    exporter.SetGPUForExporting(forGPU);
     
     //TODO: how to be with removed nodes?
     Set<String> errorsLog;
@@ -650,7 +629,7 @@ void SceneEditorScreenMain::MaterialsTriggered()
     else 
     {
         RemoveControl(materialEditor);
-        SceneValidator::Instance()->EnumerateSceneTextures();
+//        SceneValidator::Instance()->EnumerateSceneTextures();
     }
 }
 

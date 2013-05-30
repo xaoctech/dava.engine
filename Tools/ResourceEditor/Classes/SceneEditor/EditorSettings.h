@@ -86,8 +86,8 @@ public:
 	void SetEnableImposters(bool enableImposters);
 	bool GetEnableImposters();
     
-    int32 GetTextureViewFileFormat();
-    void SetTextureViewFileFormat(int32 forma);
+    eGPUFamily GetTextureViewGPU();
+    void SetTextureViewGPU(int32 gpu);
 
 	String GetDesignerName();
 	void SetDesignerName(const String &userName);

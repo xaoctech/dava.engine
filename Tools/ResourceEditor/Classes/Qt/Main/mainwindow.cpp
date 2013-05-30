@@ -114,9 +114,16 @@ void QtMainWindow::SetupActions()
 	connect(ui->actionOpenProject, SIGNAL(triggered()), actionHandler, SLOT(OpenProject()));
 	connect(ui->actionSaveScene, SIGNAL(triggered()), actionHandler, SLOT(SaveScene()));
 	connect(ui->actionSaveToFolder, SIGNAL(triggered()), actionHandler, SLOT(SaveToFolderWithChilds()));
-	connect(ui->actionPNG, SIGNAL(triggered()), actionHandler, SLOT(ExportAsPNG()));
-	connect(ui->actionPVR, SIGNAL(triggered()), actionHandler, SLOT(ExportAsPVR()));
-	connect(ui->actionDXT, SIGNAL(triggered()), actionHandler, SLOT(ExportAsDXT()));
+    
+    ui->actionExportPVRIOS->setData(GPU_POVERVR_IOS);
+    ui->actionExportPVRAndroid->setData(GPU_POVERVR_ANDROID);
+    ui->actionExportTegra->setData(GPU_TEGRA);
+    ui->actionExportMali->setData(GPU_MALI);
+    ui->actionExportAdreno->setData(GPU_ADRENO);
+    ui->actionExportPNG->setData(GPU_UNKNOWN);
+	connect(ui->menuExport, SIGNAL(triggered(QAction *)), actionHandler, SLOT(ExportMenuTriggered(QAction *)));
+    
+    
 	connect(ui->actionReloadAll, SIGNAL(triggered()), actionHandler, SLOT(RepackAndReloadTextures()));
 
 	//View
@@ -226,10 +233,16 @@ void QtMainWindow::SetupMainMenu()
 
     //View Options
     connect(ui->actionShowNotPassableLandscape, SIGNAL(triggered()), actionHandler, SLOT(ToggleNotPassableTerrain()));
-    connect(ui->actionReloadAsPNG, SIGNAL(triggered()), actionHandler, SLOT(ReloadAsPNG()));
-    connect(ui->actionReloadAsPVR, SIGNAL(triggered()), actionHandler, SLOT(ReloadAsPVR()));
-    connect(ui->actionReloadAsDXT, SIGNAL(triggered()), actionHandler, SLOT(ReloadAsDXT()));
-    actionHandler->RegisterTextureFormatActions(FILE_FORMAT_COUNT, ui->actionReloadAsPNG, ui->actionReloadAsPVR, ui->actionReloadAsDXT);
+
+    ui->actionReloadPoverVRIOS->setData(GPU_POVERVR_IOS);
+    ui->actionReloadPoverVRAndroid->setData(GPU_POVERVR_ANDROID);
+    ui->actionReloadTegra->setData(GPU_TEGRA);
+    ui->actionReloadMali->setData(GPU_MALI);
+    ui->actionReloadAdreno->setData(GPU_ADRENO);
+    ui->actionReloadPNG->setData(GPU_UNKNOWN);
+	connect(ui->menuTexturesForGPU, SIGNAL(triggered(QAction *)), actionHandler, SLOT(ReloadMenuTriggered(QAction *)));
+    actionHandler->RegisterTextureGPUActions(GPU_FAMILY_COUNT + 1, ui->actionReloadPoverVRIOS, ui->actionReloadPoverVRAndroid,
+                                             ui->actionReloadTegra, ui->actionReloadMali, ui->actionReloadAdreno, ui->actionReloadPNG);
 
 	//Modifications Options
 	connect(ui->actionModifySelect, SIGNAL(triggered()), actionHandler, SLOT(ModificationSelect()));

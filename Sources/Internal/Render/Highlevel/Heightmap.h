@@ -66,8 +66,8 @@ protected:
 public:
     
     INTROSPECTION_EXTEND(Heightmap, BaseObject,
-        MEMBER(size, "Size", INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
-        MEMBER(tileSize, "Tile Size", INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
+        MEMBER(size, "Size", I_VIEW)
+        MEMBER(tileSize, "Tile Size", I_VIEW)
     );
 };
 

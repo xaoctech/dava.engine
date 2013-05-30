@@ -66,6 +66,9 @@ public:
     bool operator==(const FilePath & path) const;
 	bool operator!=(const FilePath & path) const;
 
+    bool operator < (const FilePath& right) const;
+
+    
 	/*
         \brief Function to check is filepath empty or no
         \returns true if absolutePathname is not empty

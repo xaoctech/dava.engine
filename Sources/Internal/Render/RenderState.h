@@ -336,20 +336,20 @@ public:
 		int32 GetZFailBack() { return zFail[1]; }
 
 		INTROSPECTION(StencilState, 
-			MEMBER(ref, "ref", INTROSPECTION_EDITOR)
-			MEMBER(mask, "mask", INTROSPECTION_EDITOR)
+			MEMBER(ref, "ref", I_VIEW | I_EDIT)
+			MEMBER(mask, "mask", I_VIEW | I_EDIT)
 
-			PROPERTY("cmpFuncFront", "cmpFuncFront", GetCmpFuncFront, SetCmpFuncFront, INTROSPECTION_EDITOR)
-			PROPERTY("cmpFuncBack", "cmpFuncBack", GetCmpFuncBack, SetCmpFuncBack, INTROSPECTION_EDITOR)
+			PROPERTY("cmpFuncFront", "cmpFuncFront", GetCmpFuncFront, SetCmpFuncFront, I_VIEW | I_EDIT)
+			PROPERTY("cmpFuncBack", "cmpFuncBack", GetCmpFuncBack, SetCmpFuncBack, I_VIEW | I_EDIT)
 
-			PROPERTY("passFront", "iPassFront", GetPassFront, SetPassFront, INTROSPECTION_EDITOR)
-			PROPERTY("passBack", "iPassBack", GetPassBack, SetPassBack, INTROSPECTION_EDITOR)
+			PROPERTY("passFront", "iPassFront", GetPassFront, SetPassFront, I_VIEW | I_EDIT)
+			PROPERTY("passBack", "iPassBack", GetPassBack, SetPassBack, I_VIEW | I_EDIT)
 
-			PROPERTY("failFront", "iFailFront", GetFailFront, SetFailFront, INTROSPECTION_EDITOR)
-			PROPERTY("failBack", "iFailBack", GetFailBack, SetFailBack, INTROSPECTION_EDITOR)
+			PROPERTY("failFront", "iFailFront", GetFailFront, SetFailFront, I_VIEW | I_EDIT)
+			PROPERTY("failBack", "iFailBack", GetFailBack, SetFailBack, I_VIEW | I_EDIT)
 
-			PROPERTY("IZFailFront", "iZFailFront", GetZFailFront, SetZFailFront, INTROSPECTION_EDITOR)
-			PROPERTY("IZFailBack", "iZFailBack", GetZFailBack, SetZFailBack, INTROSPECTION_EDITOR)
+			PROPERTY("IZFailFront", "iZFailFront", GetZFailFront, SetZFailFront, I_VIEW | I_EDIT)
+			PROPERTY("IZFailBack", "iZFailBack", GetZFailBack, SetZFailBack, I_VIEW | I_EDIT)
 			)
 	};
 	StencilState stencilState;
@@ -479,9 +479,9 @@ public:
 	static IDirect3DDevice9 * direct3DDevice; 
 #endif
 	INTROSPECTION(RenderState, 
-		MEMBER(state, "state", INTROSPECTION_EDITOR)
-		PROPERTY("CullMode", "Cull Mode", GetCullMode, SetCullMode, INTROSPECTION_EDITOR)
-		MEMBER(stencilState, "Stencil state", INTROSPECTION_EDITOR)
+		MEMBER(state, "state", I_VIEW | I_EDIT)
+		PROPERTY("CullMode", "Cull Mode", GetCullMode, SetCullMode, I_VIEW | I_EDIT)
+		MEMBER(stencilState, "Stencil state", I_VIEW | I_EDIT)
 		)
 };
 

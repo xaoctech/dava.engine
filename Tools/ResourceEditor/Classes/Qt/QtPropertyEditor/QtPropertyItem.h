@@ -59,6 +59,8 @@ protected:
 protected slots:
 	void DataChildAdded(const QString &key, QtPropertyData *data);
 	void DataChildRemoving(const QString &key, QtPropertyData *data);
+	void DataValueChanged();
+	void DataFlagsChanged();
 };
 
 #endif // __QT_PROPERTY_ITEM_H__

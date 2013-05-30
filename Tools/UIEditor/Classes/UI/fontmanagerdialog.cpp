@@ -50,7 +50,7 @@ FontManagerDialog::FontManagerDialog(bool okButtonEnable,  const QString& graphi
 	DAVA::String outDir = ResourcesManageHelper::GetFontSpritesDirectory().toStdString();
 
 	resPacker->InitFolders(inDir, outDir);
-	resPacker->PackResources();
+	resPacker->PackResources(GPU_UNKNOWN);
     // Initialize dialog
     ConnectToSignals();
     InitializeTableView();

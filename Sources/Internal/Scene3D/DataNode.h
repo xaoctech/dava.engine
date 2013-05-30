@@ -85,10 +85,10 @@ protected:
 public:
     
     INTROSPECTION_EXTEND(DataNode, BaseObject,
-        MEMBER(name, "Name", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(index, "Index", INTROSPECTION_SERIALIZABLE)
-        MEMBER(pointer, "Pointer", INTROSPECTION_SERIALIZABLE)
-        COLLECTION(children, "Children", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(name, "Name", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(index, "Index", I_SAVE)
+        MEMBER(pointer, "Pointer", I_SAVE)
+        COLLECTION(children, "Children", I_SAVE | I_VIEW | I_EDIT)
     );
 };
     

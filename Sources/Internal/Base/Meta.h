@@ -23,7 +23,7 @@ namespace DAVA
 	// Класс мета-информации типов.
 	struct MetaInfo
 	{
-		typedef const IntrospectionInfo* (*IntrospectionInfoFnPtr)(void *);
+		typedef const InspInfo* (*IntrospectionInfoFnPtr)(void *);
 
 		// MetaInfo::Instance<Т>() - возвращает постоянный для типа Т указатель на мета-информацию.
 		template <typename MetaT>
@@ -85,7 +85,7 @@ namespace DAVA
 		//
 		// ВАЖНО: Результат данной фунции будет идентичен для типа Т и Т*
 		// Пользователь должен использовать функцию IsPointer() для разрешения
-		inline const IntrospectionInfo* GetIntrospection() const
+		inline const InspInfo* GetIntrospection() const
 		{
 			return introspection;
 		}
@@ -95,9 +95,9 @@ namespace DAVA
 		// 
 		// ВАЖНО: Если тип входящего объекта не соответствует типу данной мета-информации,
 		// то результат выполнения данной функции НЕПРЕДСКАЗУЕМ
-		inline const IntrospectionInfo* GetIntrospection(void *object) const
+		inline const InspInfo* GetIntrospection(void *object) const
 		{
-			const IntrospectionInfo* intro = NULL;
+			const InspInfo* intro = NULL;
 
 			if(NULL != object)
 			{
@@ -148,7 +148,7 @@ namespace DAVA
 
 		const int type_size;
 		const char *type_name;
-        const IntrospectionInfo *introspection;
+        const InspInfo *introspection;
 		IntrospectionInfoFnPtr introspectionFnPtr;
         
         bool introspectionOneTimeSet;

@@ -58,11 +58,14 @@ void GlobalEnumMap<T>::Register(const int e, const char *s)
 #define ENUM_ADD(eValue) Register(eValue, #eValue)
 #define ENUM_ADD_DESCR(eValue, eDescr) Register(eValue, eDescr)
 
-// Usage:
+// Define:
 //	ENUM_DECLARE(AnyEnumType)
 //	{
 //		ENUM_ADDS(AnyEnumType::Value1);
 //		ENUM_ADD_DESCR(AnyEnumType::Value2, "Value2");
 //	}
+//	
+// Usage:
+//  GlobalEnumMap::Instance<AnyEnumType>();
 
 #endif // __DAVAENGINE_GLOBAL_ENUM_H__

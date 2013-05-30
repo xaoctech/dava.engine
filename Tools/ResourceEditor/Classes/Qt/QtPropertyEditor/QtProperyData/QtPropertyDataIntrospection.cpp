@@ -20,7 +20,7 @@
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaKeyedArchive.h"
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataIntoCollection.h"
 
-QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DAVA::IntrospectionInfo *_info, int hasAnyFlags, int hasNotAnyFlags)
+QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DAVA::InspInfo *_info, int hasAllFlags)
 	: object(_object)
 	, info(_info)
 {
@@ -30,12 +30,10 @@ QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DA
 	{
 		for(DAVA::int32 i = 0; i < info->MembersCount(); ++i)
 		{
-			const DAVA::IntrospectionMember *member = _info->Member(i);
-			if(member && 
-				(member->Flags() & hasAnyFlags) &&
-				!(member->Flags() & hasNotAnyFlags))
+			const DAVA::InspMember *member = _info->Member(i);
+			if(NULL != member && (member->Flags() & hasAllFlags) == hasAllFlags)
 			{
-                AddMember(member, hasAnyFlags, hasNotAnyFlags);
+                AddMember(member, hasAllFlags);
 			}
 		}
 
@@ -48,12 +46,17 @@ QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DA
 QtPropertyDataIntrospection::~QtPropertyDataIntrospection()
 { }
 
-void QtPropertyDataIntrospection::AddMember(const DAVA::IntrospectionMember *member, int hasAnyFlags, int hasNotAnyFlags)
+void QtPropertyDataIntrospection::AddMember(const DAVA::InspMember *member, int hasAllFlags)
 {
 	void *memberObject = member->Data(object);
 	const DAVA::MetaInfo *memberMetaInfo = member->Type();
-	const DAVA::IntrospectionInfo *memberIntrospection = memberMetaInfo->GetIntrospection(memberObject);
+	const DAVA::InspInfo *memberIntrospection = memberMetaInfo->GetIntrospection(memberObject);
 	bool isKeyedArchive = false;
+
+	if(memberMetaInfo->IsPointer())
+	{
+		const DAVA::InspInfo *ii = memberMetaInfo->GetIntrospection(memberObject);
+	}
 
 	// keyed archive
 	if(NULL != memberIntrospection && (memberIntrospection->Type() == DAVA::MetaInfo::Instance<DAVA::KeyedArchive>()))
@@ -64,7 +67,7 @@ void QtPropertyDataIntrospection::AddMember(const DAVA::IntrospectionMember *mem
 	// introspection
 	else if(NULL != memberObject && NULL != memberIntrospection)
     {
-		QtPropertyDataIntrospection *childData = new QtPropertyDataIntrospection(memberObject, memberIntrospection, hasAnyFlags, hasNotAnyFlags);
+		QtPropertyDataIntrospection *childData = new QtPropertyDataIntrospection(memberObject, memberIntrospection, hasAllFlags);
 		ChildAdd(member->Name(), childData);
     }
 	// any other value
@@ -84,17 +87,34 @@ void QtPropertyDataIntrospection::AddMember(const DAVA::IntrospectionMember *mem
 			// collection
             if(member->Collection() && !isKeyedArchive)
             {
-                QtPropertyDataIntroCollection *childCollection = new QtPropertyDataIntroCollection(memberObject, member->Collection(), hasAnyFlags, hasNotAnyFlags);
+                QtPropertyDataIntroCollection *childCollection = new QtPropertyDataIntroCollection(memberObject, member->Collection(), hasAllFlags);
                 ChildAdd(member->Name(), childCollection);
             }
 			// variant
             else
             {
                 QtPropertyDataDavaVariant *childData = new QtPropertyDataDavaVariant(member->Value(object));
-                if(member->Flags() & DAVA::INTROSPECTION_EDITOR_READONLY)
+                if(!(member->Flags() & DAVA::I_EDIT))
                 {
                     childData->SetFlags(childData->GetFlags() | FLAG_IS_NOT_EDITABLE);
                 }
+				else
+				{
+					// check if description has some predefines enum values
+					const DAVA::IspDesc &desc = member->Desc();
+
+					if(NULL != desc.enumMap)
+					{
+						for(int i = 0; i < desc.enumMap->GetCount(); ++i)
+						{
+							int v;
+							if(desc.enumMap->GetValue(i, v))
+							{
+								childData->AddAllowedValue(DAVA::VariantType(v), desc.enumMap->ToString(v));
+							}
+						}
+					}
+				}
                 
                 ChildAdd(member->Name(), childData);
                 childVariantMembers.insert(childData, member);
@@ -115,14 +135,14 @@ void QtPropertyDataIntrospection::ChildChanged(const QString &key, QtPropertyDat
 
 	if(childVariantMembers.contains(dataVariant))
 	{
-		const DAVA::IntrospectionMember *member = childVariantMembers[dataVariant];
+		const DAVA::InspMember *member = childVariantMembers[dataVariant];
 		member->SetValue(object, dataVariant->GetVariantValue());
 	}
 }
 
 void QtPropertyDataIntrospection::ChildNeedUpdate()
 {
-	QMapIterator<QtPropertyDataDavaVariant*, const DAVA::IntrospectionMember *> i = QMapIterator<QtPropertyDataDavaVariant*, const DAVA::IntrospectionMember *>(childVariantMembers);
+	QMapIterator<QtPropertyDataDavaVariant*, const DAVA::InspMember *> i = QMapIterator<QtPropertyDataDavaVariant*, const DAVA::InspMember *>(childVariantMembers);
 
 	while(i.hasNext())
 	{

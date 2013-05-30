@@ -20,40 +20,41 @@
 namespace DAVA
 {
 
-IntrospectionDesription::IntrospectionDesription(const char *_text)
+IspDesc::IspDesc(const char *_text)
 	: text(_text)
+	, enumMap(NULL)
 {}
 
-IntrospectionDesription::IntrospectionDesription(const char *_text, const EnumMap* _enumMap)
+IspDesc::IspDesc(const char *_text, const EnumMap* _enumMap)
 	: text(_text)
 	, enumMap(_enumMap)
 { }
 
-IntrospectionMember::IntrospectionMember(const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags /* = 0 */)
+InspMember::InspMember(const char *_name, const IspDesc &_desc, const int _offset, const MetaInfo *_type, int _flags /* = 0 */)
 	: name(_name), desc(_desc), offset(_offset), type(_type), flags(_flags)
 { }
 
-const char* IntrospectionMember::Name() const
+const char* InspMember::Name() const
 {
 	return name;
 }
 
-const char* IntrospectionMember::Desc() const
+const IspDesc& InspMember::Desc() const
 {
 	return desc;
 }
 
-const MetaInfo* IntrospectionMember::Type() const
+const MetaInfo* InspMember::Type() const
 {
 	return type;
 }
 
-void* IntrospectionMember::Pointer(void *object) const
+void* InspMember::Pointer(void *object) const
 {
 	return (((char *) object) + offset);
 }
 
-void* IntrospectionMember::Data(void *object) const
+void* InspMember::Data(void *object) const
 {
 	if(type->IsPointer())
 	{
@@ -65,22 +66,22 @@ void* IntrospectionMember::Data(void *object) const
 	}
 }
 
-VariantType IntrospectionMember::Value(void *object) const
+VariantType InspMember::Value(void *object) const
 {
 	return VariantType::LoadData(Pointer(object), type);
 }
 
-void IntrospectionMember::SetValue(void *object, const VariantType &val) const
+void InspMember::SetValue(void *object, const VariantType &val) const
 {
 	VariantType::SaveData(Pointer(object), type, val);
 }
 
-const IntrospectionCollection* IntrospectionMember::Collection() const
+const InspColl* InspMember::Collection() const
 {
 	return NULL;
 }
 
-int IntrospectionMember::Flags() const
+int InspMember::Flags() const
 {
 	return flags;
 }

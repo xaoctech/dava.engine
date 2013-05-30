@@ -76,7 +76,7 @@ void ControlsFactory::CustomizeButtonExpandable(UIButton *btn)
     //Temporary fix for loading of UI Interface to avoid reloading of texrures to different formates.
     // 1. Reset default format before loading of UI
     // 2. Restore default format after loading of UI from stored settings.
-    Texture::SetDefaultFileFormat(NOT_FILE);
+    Texture::SetDefaultGPU(GPU_UNKNOWN);
     
     UIControl *expandable = new UIControl(Rect(btn->GetSize().dx - btn->GetSize().dy, 0, btn->GetSize().dy, btn->GetSize().dy));
     expandable->SetInputEnabled(false);
@@ -85,7 +85,7 @@ void ControlsFactory::CustomizeButtonExpandable(UIButton *btn)
     
     SafeRelease(expandable);
     
-    Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
+    Texture::SetDefaultGPU(EditorSettings::Instance()->GetTextureViewGPU());
 }
 
 
@@ -409,7 +409,7 @@ void ControlsFactory::SetScrollbar(DAVA::UIList *l)
     //Temporary fix for loading of UI Interface to avoid reloading of texrures to different formates.
     // 1. Reset default format before loading of UI
     // 2. Restore default format after loading of UI from stored settings.
-    Texture::SetDefaultFileFormat(NOT_FILE);
+    Texture::SetDefaultGPU(GPU_UNKNOWN);
 
     
     UIControl *c = l->FindByName("ScrollBar");
@@ -434,7 +434,7 @@ void ControlsFactory::SetScrollbar(DAVA::UIList *l)
     SafeRelease(scrollSpr);
     SafeRelease(scrollBar);
     
-    Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
+    Texture::SetDefaultGPU(EditorSettings::Instance()->GetTextureViewGPU());
 }
 
 void ControlsFactory::RemoveScrollbar(UIList *l)
@@ -452,7 +452,7 @@ void ControlsFactory::SetScrollbar(DAVA::UIHierarchy *h)
     //Temporary fix for loading of UI Interface to avoid reloading of texrures to different formates.
     // 1. Reset default format before loading of UI
     // 2. Restore default format after loading of UI from stored settings.
-    Texture::SetDefaultFileFormat(NOT_FILE);
+    Texture::SetDefaultGPU(GPU_UNKNOWN);
     
     Rect fr = h->GetRect();
     
@@ -472,7 +472,7 @@ void ControlsFactory::SetScrollbar(DAVA::UIHierarchy *h)
     SafeRelease(scrollSpr);
     SafeRelease(scrollBar);
     
-    Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
+    Texture::SetDefaultGPU(EditorSettings::Instance()->GetTextureViewGPU());
 }
 
 void ControlsFactory::AddBorder(DAVA::UIControl *c)

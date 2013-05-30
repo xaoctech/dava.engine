@@ -102,7 +102,11 @@ int QtPropertyData::GetFlags()
 
 void QtPropertyData::SetFlags(int flags)
 {
-	curFlags = flags;
+	if(curFlags != flags)
+	{
+		curFlags = flags;
+		emit FlagsChanged();
+	}
 }
 
 QWidget* QtPropertyData::CreateEditor(QWidget *parent, const QStyleOptionViewItem& option) 
@@ -110,14 +114,14 @@ QWidget* QtPropertyData::CreateEditor(QWidget *parent, const QStyleOptionViewIte
 	return CreateEditorInternal(parent, option);
 }
 
-void QtPropertyData::EditorDone(QWidget *editor)
+bool QtPropertyData::EditorDone(QWidget *editor)
 {
-    EditorDoneInternal(editor);
+    return EditorDoneInternal(editor);
 }
 
-void QtPropertyData::SetEditorData(QWidget *editor)
+bool QtPropertyData::SetEditorData(QWidget *editor)
 {
-    SetEditorDataInternal(editor);
+    return SetEditorDataInternal(editor);
 }
 
 void QtPropertyData::ParentUpdate()
@@ -304,14 +308,16 @@ QWidget* QtPropertyData::CreateEditorInternal(QWidget *parent, const QStyleOptio
 	return NULL;
 }
 
-void QtPropertyData::EditorDoneInternal(QWidget *editor)
+bool QtPropertyData::EditorDoneInternal(QWidget *editor)
 {
 	// should be re-implemented by sub-class
+	return false;
 }
 
-void QtPropertyData::SetEditorDataInternal(QWidget *editor)
+bool QtPropertyData::SetEditorDataInternal(QWidget *editor)
 {
 	// should be re-implemented by sub-class
+	return false;
 }
 
 void QtPropertyData::ChildChanged(const QString &key, QtPropertyData *data)
