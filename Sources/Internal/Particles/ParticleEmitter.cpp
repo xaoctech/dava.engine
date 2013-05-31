@@ -53,6 +53,7 @@ ParticleEmitter::ParticleEmitter()
 	Cleanup(false);
 
 	bbox = AABBox3(Vector3(), Vector3());
+	parentParticle = NULL;
 	deferredTimeElapsed = 0.0f;
 }
 
@@ -839,4 +840,22 @@ void ParticleEmitter::RecalcBoundingBox()
 	bbox = AABBox3(Vector3(), Vector3());
 }
 
-};
+void ParticleEmitter::SetLongToAllLayers(bool isLong)
+{
+	for(Vector<ParticleLayer*>::iterator it = layers.begin(); it != layers.end(); ++it)
+	{
+		(*it)->SetLong(isLong);
+	}
+}
+
+void ParticleEmitter::SetParentParticle(Particle* parent)
+{
+	parentParticle = parent;
+}
+
+Particle* ParticleEmitter::GetParentParticle()
+{
+	return parentParticle;
+}
+
+}; 
