@@ -711,7 +711,7 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 	}
 
 	YamlNode * spriteNode = node->Get("sprite");
-	if (spriteNode)
+	if (spriteNode && !spriteNode->AsString().empty())
 	{
 		// Store the absolute path to sprite.
 		spritePath = FilePath(configPath.GetDirectory(), spriteNode->AsString());
@@ -847,8 +847,10 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 	YamlNode * innerEmitterPathNode = node->Get("innerEmitterPath");
 	if (innerEmitterPathNode)
 	{
-		innerEmitterPath = innerEmitterPathNode->AsString();
 		CreateInnerEmitter();
+
+		// Since Inner Emitter path is stored as Relative, convert it to absolute when loading.
+		innerEmitterPath = FilePath(configPath.GetDirectory(), innerEmitterPathNode->AsString());
 		innerEmitter->LoadFromYaml(this->innerEmitterPath);
 	}
 
@@ -924,7 +926,8 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
 
 	if (innerEmitter)
 	{
-		PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "innerEmitterPath", this->innerEmitterPath.GetAbsolutePathname());
+		String innerRelativePath = innerEmitterPath.GetRelativePathname(emitter->GetConfigPath().GetDirectory());
+		PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "innerEmitterPath", innerRelativePath);
 	}
 
     // Now write the forces.
