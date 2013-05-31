@@ -38,6 +38,8 @@ void ParticleEmitterSystem::RemoveIfEmitter(RenderObject * maybeEmitter)
 void ParticleEmitterSystem::Update(float32 timeElapsed)
 {
 	uint32 size = emitters.size();
+	Vector<ParticleEmitter*> emittersToBeDeleted;
+
 	for(uint32 i = 0; i < size; ++i)
 	{
 		// Yuri Coder, 2013/05/15. Visible emitters are always updated, "deferred" update
@@ -51,6 +53,20 @@ void ParticleEmitterSystem::Update(float32 timeElapsed)
 		{
 			emitters[i]->DeferredUpdate(timeElapsed);
 		}
+
+		if (emitters[i]->IsToBeDeleted())
+		{
+			emittersToBeDeleted.push_back(emitters[i]);
+		}
+	}
+
+	for(Vector<ParticleEmitter*>::iterator it = emittersToBeDeleted.begin(); it != emittersToBeDeleted.end(); ++it)
+	{
+		ParticleEmitter* partEmitter = (*it);
+		RenderSystem* renderSystem = partEmitter->GetRenderSystem();
+	
+		renderSystem->RemoveFromRender(partEmitter);
+		SafeRelease(partEmitter);
 	}
 }
 

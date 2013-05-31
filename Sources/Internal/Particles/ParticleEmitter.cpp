@@ -86,7 +86,7 @@ void ParticleEmitter::Cleanup(bool needCleanupLayers)
 	particlesFollow = false;
     is3D = false;
 	playbackSpeed = 1.0f;
-
+	shouldBeDeleted = false;
 	// Also cleanup layers, if needed.
 	if (needCleanupLayers)
 	{

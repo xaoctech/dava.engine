@@ -358,6 +358,16 @@ public:
 	void RememberInitialTranslationVector();
 	const Vector3& GetInitialTranslationVector();
 
+	bool IsToBeDeleted()
+	{
+		return shouldBeDeleted;
+	};
+
+	void SetToBeDeleted(bool value)
+	{
+		shouldBeDeleted = value;
+	}
+
 protected:
 	// Virtual methods which are different for 2D and 3D emitters.
 	virtual void PrepareEmitterParameters(Particle * particle, float32 velocity, int32 emitIndex);
@@ -392,6 +402,7 @@ protected:
 	Vector3 initialTranslationVector;
 
 	float32 deferredTimeElapsed;
+	bool	shouldBeDeleted;
 
 public:
 	RefPtr< PropertyLine<Vector3> > emissionVector;

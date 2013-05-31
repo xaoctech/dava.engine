@@ -157,8 +157,10 @@ ParticleEmitter* Particle::GetInnerEmitter()
 
 void Particle::CleanupInnerEmitter()
 {
-	RegisterInnerEmitterInRenderSystem(false);
-	SafeRelease(innerParticleEmitter);
+	if(NULL != innerParticleEmitter)
+	{
+		innerParticleEmitter->SetToBeDeleted(true);
+	}
 }
 
 void Particle::UpdateInnerEmitter(float32 timeElapsed)
