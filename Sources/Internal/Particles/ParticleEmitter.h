@@ -368,6 +368,11 @@ public:
 		shouldBeDeleted = value;
 	}
 
+	void SetLongToAllLayers(bool isLong);
+
+	void SetParentParticle(Particle* parent);
+	Particle* GetParentParticle();
+
 protected:
 	// Virtual methods which are different for 2D and 3D emitters.
 	virtual void PrepareEmitterParameters(Particle * particle, float32 velocity, int32 emitIndex);
@@ -403,6 +408,8 @@ protected:
 
 	float32 deferredTimeElapsed;
 	bool	shouldBeDeleted;
+
+	Particle*	parentParticle;
 
 public:
 	RefPtr< PropertyLine<Vector3> > emissionVector;

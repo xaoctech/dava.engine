@@ -429,6 +429,7 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 	// SuperEmitter particles contains the emitter inside.
 	if (type == TYPE_SUPEREMITTER_PARTICLES)
 	{
+		innerEmitter->SetLongToAllLayers(IsLong());
 		particle->InitializeInnerEmitter(this->emitter, innerEmitter);
 	}
 
