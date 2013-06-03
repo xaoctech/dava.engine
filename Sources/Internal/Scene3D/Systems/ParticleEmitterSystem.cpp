@@ -26,6 +26,7 @@ void ParticleEmitterSystem::RemoveIfEmitter(RenderObject * maybeEmitter)
 		{
 			if(emitters[i] == emitter)
 			{
+				emitter->HandleRemoveFromSystem();
 				emitters[i] = emitters[size-1];
 				emitters.pop_back();
 				return;
