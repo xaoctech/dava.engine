@@ -303,8 +303,12 @@ void ParticleLayer::Restart(bool isDeleteAllParticles)
 
 	layerTime = 0.0f;
 	particlesToGenerate = 0.0f;
+	
+	if (innerEmitter)
+	{
+		innerEmitter->Restart(isDeleteAllParticles);
+	}
 }
-
 
 void ParticleLayer::Update(float32 timeElapsed)
 {
@@ -1179,7 +1183,20 @@ ParticleEmitter* ParticleLayer::GetInnerEmitter()
 void ParticleLayer::RemoveInnerEmitter()
 {
 	DeleteAllParticles();
+	if (innerEmitter)
+	{
+		innerEmitter->Stop();
+	}
+
 	SafeRelease(innerEmitter);
+}
+
+void ParticleLayer::PauseInnerEmitter(bool _isPaused)
+{
+	if (innerEmitter)
+	{
+		innerEmitter->Pause(_isPaused);
+	}
 }
 
 void ParticleLayer::SetDisabled(bool value)
@@ -1209,4 +1226,9 @@ void ParticleLayer::SetPivotPoint(const Vector2& value)
 	this->layerPivotPoint = value;
 }
 
+void ParticleLayer::HandleRemoveFromSystem()
+{
+	DeleteAllParticles();
+}
+	
 };

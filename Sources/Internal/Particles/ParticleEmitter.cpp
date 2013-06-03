@@ -649,6 +649,13 @@ float32 ParticleEmitter::GetTime()
 void ParticleEmitter::Pause(bool _isPaused)
 {
 	isPaused = _isPaused;
+
+	// Also update Inner Emitters.
+	int32 layersCount = layers.size();
+	for (int32 i = 0; i < layersCount; i ++)
+	{
+		layers[i]->PauseInnerEmitter(_isPaused);
+	}
 }
 bool ParticleEmitter::IsPaused()
 {
@@ -856,6 +863,15 @@ void ParticleEmitter::SetParentParticle(Particle* parent)
 Particle* ParticleEmitter::GetParentParticle()
 {
 	return parentParticle;
+}
+
+void ParticleEmitter::HandleRemoveFromSystem()
+{
+	Vector<ParticleLayer*>::iterator it;
+	for(it = layers.begin(); it != layers.end(); ++it)
+	{
+		(*it)->HandleRemoveFromSystem();
+	}
 }
 
 }; 
