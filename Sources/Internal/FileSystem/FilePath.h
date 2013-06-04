@@ -45,6 +45,7 @@ public:
     
     enum ePathType
     {
+		PATH_EMPTY = -1,			// empty path, newly created with empty string
         PATH_IN_FILESYSTEM = 0,     // not framework path /Users/... or c:/...
         PATH_IN_RESOURCES,          // ~res:/...
         PATH_IN_DOCUMENTS,          // ~doc:/...
@@ -284,7 +285,7 @@ protected:
     
 inline bool FilePath::IsEmpty() const
 {
-    return absolutePathname.empty();
+    return (pathType == PATH_EMPTY);
 }
     
 inline FilePath::ePathType FilePath::GetType() const
