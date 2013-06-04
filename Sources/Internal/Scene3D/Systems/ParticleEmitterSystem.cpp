@@ -26,6 +26,7 @@ void ParticleEmitterSystem::RemoveIfEmitter(RenderObject * maybeEmitter)
 		{
 			if(emitters[i] == emitter)
 			{
+				emitter->HandleRemoveFromSystem();
 				emitters[i] = emitters[size-1];
 				emitters.pop_back();
 				return;
@@ -38,12 +39,35 @@ void ParticleEmitterSystem::RemoveIfEmitter(RenderObject * maybeEmitter)
 void ParticleEmitterSystem::Update(float32 timeElapsed)
 {
 	uint32 size = emitters.size();
+	Vector<ParticleEmitter*> emittersToBeDeleted;
+
 	for(uint32 i = 0; i < size; ++i)
 	{
-		
-		// Yuri Coder, 2013/05/15. Have to update all emitters, even non-visible ones because
-		// of DF-1140 issue.
-        emitters[i]->Update(timeElapsed);
+		// Yuri Coder, 2013/05/15. Visible emitters are always updated, "deferred" update
+		// is called for invisible ones. See pls issue #DF-1140.
+		uint32 flags = emitters[i]->GetFlags();
+        if ((flags & RenderObject::VISIBILITY_CRITERIA) == RenderObject::VISIBILITY_CRITERIA)
+        {
+            emitters[i]->Update(timeElapsed);
+        }
+		else
+		{
+			emitters[i]->DeferredUpdate(timeElapsed);
+		}
+
+		if (emitters[i]->IsToBeDeleted())
+		{
+			emittersToBeDeleted.push_back(emitters[i]);
+		}
+	}
+
+	for(Vector<ParticleEmitter*>::iterator it = emittersToBeDeleted.begin(); it != emittersToBeDeleted.end(); ++it)
+	{
+		ParticleEmitter* partEmitter = (*it);
+		RenderSystem* renderSystem = partEmitter->GetRenderSystem();
+	
+		renderSystem->RemoveFromRender(partEmitter);
+		SafeRelease(partEmitter);
 	}
 }
 
