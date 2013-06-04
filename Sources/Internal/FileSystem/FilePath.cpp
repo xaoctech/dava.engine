@@ -51,10 +51,11 @@ void FilePath::SetBundleName(const FilePath & newBundlePath)
 
 	if(!virtualBundlePath.IsEmpty())
 	{
-		virtualBundlePath.pathType = PATH_IN_RESOURCES;
 		virtualBundlePath.MakeDirectoryPathname();
 	}
-    
+
+    virtualBundlePath.pathType = PATH_IN_RESOURCES;
+
     if(resourceFolders.size())
         resourceFolders.pop_front();
     
