@@ -69,10 +69,7 @@ const FilePath & FilePath::GetBundleName()
     
 void FilePath::AddResourcesFolder(const FilePath & folder)
 {
-	if (folder.pathType == PATH_EMPTY)
-	{
-		DVASSERT(false);
-	}
+	DVASSERT(!folder.IsEmpty());
 
     for(List<FilePath>::iterator it = resourceFolders.begin(); it != resourceFolders.end(); ++it)
     {
@@ -167,6 +164,7 @@ FilePath::FilePath(const char * directory, const String &filename)
 {
 	FilePath directoryPath(directory);
 	DVASSERT(!directoryPath.IsEmpty());
+    
 	directoryPath.MakeDirectoryPathname();
 
     pathType = directoryPath.pathType;
