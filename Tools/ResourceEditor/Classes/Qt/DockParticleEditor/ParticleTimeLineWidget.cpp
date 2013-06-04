@@ -662,6 +662,10 @@ ParticleTimeLineWidget::SetPointValueDlg::SetPointValueDlg(float32 value, float3
 	QDialog(parent)
 {
 	setWindowTitle("Set time");
+	// DF-1248 fix - Remove help button
+	Qt::WindowFlags flags = windowFlags();
+	flags &= ~Qt::WindowContextHelpButtonHint; 
+	setWindowFlags(flags);
 	
 	QVBoxLayout* mainBox = new QVBoxLayout;
 	setLayout(mainBox);
