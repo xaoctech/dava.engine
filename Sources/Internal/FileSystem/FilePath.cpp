@@ -516,14 +516,13 @@ String FilePath::GetSystemPathname(const String &pathname, const ePathType pType
         return pathname;
     
     String retPath = pathname;
-    retPath = retPath.erase(0, 5);
-    
 	if(pType == PATH_IN_RESOURCES)
 	{
 		retPath = FilePath(retPath).GetAbsolutePathname();
 	}
 	else if(pType == PATH_IN_DOCUMENTS)
 	{
+        retPath = retPath.erase(0, 5);
         retPath = FilepathInDocuments(retPath).GetAbsolutePathname();
 	}
     
@@ -533,6 +532,9 @@ String FilePath::GetSystemPathname(const String &pathname, const ePathType pType
 
 String FilePath::GetFrameworkPath() const
 {
+    if(PATH_IN_RESOURCES == pathType)
+        return absolutePathname;
+    
     String pathInRes = GetFrameworkPathForPrefix("~res:/", PATH_IN_RESOURCES);
     if(!pathInRes.empty())
     {
