@@ -35,6 +35,9 @@
 
 #if defined (__DAVAENGINE_MACOS__)
 #import <AppKit/NSOpenGL.h>
+	#if defined (__DAVAENGINE_NPAPI__)
+	#import "NPAPIOpenGLLayerMacOS.h"
+	#endif // #if defined (__DAVAENGINE_NPAPI__)
 #endif //#if defined (__DAVAENGINE_MACOS__)
 
 @interface __ThreadMacOSInit__ : NSObject
@@ -89,6 +92,10 @@ void * PthreadMain(void * param)
 		}
 		Logger::Info("Thread context 0x%x", (int)EAGLContext.currentContext);
 #elif defined(__DAVAENGINE_MACOS__)
+	#if defined (__DAVAENGINE_NPAPI__)
+		CGLError err = CGLSetCurrentContext(t->npAPIGLContext);
+		NSLog(@"CGLSetCurrentContext returned %i", err);
+	#else
 		NSOpenGLContext * context = (NSOpenGLContext*)t->glContext;
 		[context makeCurrentContext];
 //		if(![NSOpenGLContext setCurrentContext:(NSOpenGLContext*)t->glContext])
@@ -96,6 +103,7 @@ void * PthreadMain(void * param)
 //			Logger::Error("Unable to set thread context 0x%x", (int)t->glContext);
 //		}
 //		Logger::Info("Thread context 0x%x", (int)EAGLContext.currentContext);
+	#endif // #if defined (__DAVAENGINE_NPAPI__)
 #endif
 	
 	}
@@ -115,6 +123,9 @@ void * PthreadMain(void * param)
 		// нужно ли что-то здесь освобождать после выхода из потока???
 		// зачем контекст обнуляется в iPhone версии? 
 		// [NSOpenGLContext setCurrentContext: nil];
+	#if defined (__DAVAENGINE_NPAPI__)
+		CGLDestroyContext(t->npAPIGLContext);
+	#endif // #if defined (__DAVAENGINE_NPAPI__)
 #endif
 		
 	}
@@ -130,7 +141,14 @@ void	Thread::StartMacOS()
 		glContext = [EAGLContext currentContext];
 		Logger::Info("Current context 0x%x", (int)glContext);
 #elif defined(__DAVAENGINE_MACOS__)
+	#if defined (__DAVAENGINE_NPAPI__)
+		// NPAPI code
+		this->npAPIGLContext = NULL;
+		[NPAPIOpenGLLayerMacOS getThreadChildContext:&this->npAPIGLContext];
+	#else
+		// Pure MacOS code.
 		glContext = [NSOpenGLContext currentContext];
+	#endif // #if defined (__DAVAENGINE_NPAPI__)
 #endif
 	}
 

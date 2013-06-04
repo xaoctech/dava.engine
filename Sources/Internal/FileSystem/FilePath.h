@@ -202,6 +202,13 @@ public:
     static void InitializeBundleName();
 
 	/**
+	 \brief Temporary function to set system path for NPAPI plugins for resolving pathnames such as "~res:/Gfx/image.png"
+	 */
+	#if defined (__DAVAENGINE_NPAPI__)
+	static void InitializeBundleNameNPAPI(const String& pathToNPAPIPlugin);
+	#endif // #if defined (__DAVAENGINE_NPAPI__)
+	
+	/**
         \brief Function to set project path for resolving pathnames such as "~res:/Gfx/image.png"
         \param[in] new project path
 	 */
