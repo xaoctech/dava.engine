@@ -847,11 +847,9 @@ namespace DAVA
                 FilePath path(stateSprite->GetRelativePathname());
                 path.TruncateExtension();
 
-				//TODO VK: Fix FilePath::GetFrameworkPath()
-				String pathname = path.GetRelativePathname(FilePath::GetBundleName());
-				pathname.replace(0, 4, "~res:");
-
+                String pathname = path.GetFrameworkPath();
 				spriteNode->AddValueToArray(pathname);
+                
 				spriteNode->AddValueToArray(stateFrame);
 				node->AddNodeToMap(Format("stateSprite%s", statePostfix[i].c_str()), spriteNode);
 			}
