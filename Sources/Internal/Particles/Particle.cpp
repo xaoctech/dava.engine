@@ -132,6 +132,7 @@ void Particle::InitializeInnerEmitter(ParticleEmitter* parentEmitter, ParticleEm
 	innerParticleEmitter->SetRenderSystem(parentEmitter->GetRenderSystem());
 	innerParticleEmitter->SetWorldTransformPtr(parentEmitter->GetWorldTransformPtr());
 	innerParticleEmitter->RememberInitialTranslationVector();
+	innerParticleEmitter->SetParentParticle(this);
 
 	RegisterInnerEmitterInRenderSystem(true);
 }
@@ -143,8 +144,11 @@ ParticleEmitter* Particle::GetInnerEmitter()
 
 void Particle::CleanupInnerEmitter()
 {
-	RegisterInnerEmitterInRenderSystem(false);
-	SafeRelease(innerParticleEmitter);
+	if(NULL != innerParticleEmitter)
+	{
+		innerParticleEmitter->SetParentParticle(NULL);
+		innerParticleEmitter->SetToBeDeleted(true);
+	}
 }
 
 void Particle::UpdateInnerEmitter(float32 timeElapsed)

@@ -84,10 +84,33 @@ void GPUFamilyDescriptor::SetupGPUFormats()
     gpuData[GPU_MALI].availableFormats[FORMAT_ETC1] = ".pvr";
     
 
+//    gpuData[GPU_ADRENO].availableFormats[FORMAT_ATC_RGB] = ".dds";
+//    gpuData[GPU_ADRENO].availableFormats[FORMAT_ATC_RGBA_EXPLICIT_ALPHA] = ".dds";
+//    gpuData[GPU_ADRENO].availableFormats[FORMAT_ATC_RGBA_INTERPOLATED_ALPHA] = ".dds";
+//    gpuData[GPU_ADRENO].availableFormats[FORMAT_ETC1] = ".pvr";
+    
+//
+    gpuData[GPU_ADRENO].availableFormats[FORMAT_RGBA8888] = ".pvr";
+    gpuData[GPU_ADRENO].availableFormats[FORMAT_RGBA5551] = ".pvr";
+    gpuData[GPU_ADRENO].availableFormats[FORMAT_RGBA4444] = ".pvr";
+    gpuData[GPU_ADRENO].availableFormats[FORMAT_RGB888] = ".pvr";
+    gpuData[GPU_ADRENO].availableFormats[FORMAT_RGB565] = ".pvr";
+    gpuData[GPU_ADRENO].availableFormats[FORMAT_A8] = ".pvr";
+    gpuData[GPU_ADRENO].availableFormats[FORMAT_A16] = ".pvr";
+    gpuData[GPU_ADRENO].availableFormats[FORMAT_PVR4] = ".pvr";
+    gpuData[GPU_ADRENO].availableFormats[FORMAT_PVR2] = ".pvr";
+    gpuData[GPU_ADRENO].availableFormats[FORMAT_RGBA16161616] = ".pvr";
+    gpuData[GPU_ADRENO].availableFormats[FORMAT_RGBA32323232] = ".pvr";
+    gpuData[GPU_ADRENO].availableFormats[FORMAT_DXT1] = ".dds";
+    gpuData[GPU_ADRENO].availableFormats[FORMAT_DXT1NM] = ".dds";
+    gpuData[GPU_ADRENO].availableFormats[FORMAT_DXT1A] = ".dds";
+    gpuData[GPU_ADRENO].availableFormats[FORMAT_DXT3] = ".dds";
+    gpuData[GPU_ADRENO].availableFormats[FORMAT_DXT5] = ".dds";
+    gpuData[GPU_ADRENO].availableFormats[FORMAT_DXT5NM] = ".dds";
+    gpuData[GPU_ADRENO].availableFormats[FORMAT_ETC1] = ".pvr";
     gpuData[GPU_ADRENO].availableFormats[FORMAT_ATC_RGB] = ".dds";
     gpuData[GPU_ADRENO].availableFormats[FORMAT_ATC_RGBA_EXPLICIT_ALPHA] = ".dds";
     gpuData[GPU_ADRENO].availableFormats[FORMAT_ATC_RGBA_INTERPOLATED_ALPHA] = ".dds";
-    gpuData[GPU_ADRENO].availableFormats[FORMAT_ETC1] = ".pvr";
 }
 
 void GPUFamilyDescriptor::SetupGPUPostfixes()

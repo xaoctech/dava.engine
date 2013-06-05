@@ -289,8 +289,12 @@ void ParticleLayer::Restart(bool isDeleteAllParticles)
 
 	layerTime = 0.0f;
 	particlesToGenerate = 0.0f;
+	
+	if (innerEmitter)
+	{
+		innerEmitter->Restart(isDeleteAllParticles);
+	}
 }
-
 
 void ParticleLayer::Update(float32 timeElapsed)
 {
@@ -415,6 +419,7 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 	// SuperEmitter particles contains the emitter inside.
 	if (type == TYPE_SUPEREMITTER_PARTICLES)
 	{
+		innerEmitter->SetLongToAllLayers(IsLong());
 		particle->InitializeInnerEmitter(this->emitter, innerEmitter);
 	}
 
@@ -697,7 +702,7 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 	}
 
 	YamlNode * spriteNode = node->Get("sprite");
-	if (spriteNode)
+	if (spriteNode && !spriteNode->AsString().empty())
 	{
 		// Store the absolute path to sprite.
 		spritePath = FilePath(configPath.GetDirectory(), spriteNode->AsString());
@@ -833,8 +838,10 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 	YamlNode * innerEmitterPathNode = node->Get("innerEmitterPath");
 	if (innerEmitterPathNode)
 	{
-		innerEmitterPath = innerEmitterPathNode->AsString();
 		CreateInnerEmitter();
+
+		// Since Inner Emitter path is stored as Relative, convert it to absolute when loading.
+		innerEmitterPath = FilePath(configPath.GetDirectory(), innerEmitterPathNode->AsString());
 		innerEmitter->LoadFromYaml(this->innerEmitterPath);
 	}
 
@@ -910,7 +917,8 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
 
 	if (innerEmitter)
 	{
-		PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "innerEmitterPath", this->innerEmitterPath.GetAbsolutePathname());
+		String innerRelativePath = innerEmitterPath.GetRelativePathname(emitter->GetConfigPath().GetDirectory());
+		PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "innerEmitterPath", innerRelativePath);
 	}
 
     // Now write the forces.
@@ -1161,7 +1169,20 @@ ParticleEmitter* ParticleLayer::GetInnerEmitter()
 void ParticleLayer::RemoveInnerEmitter()
 {
 	DeleteAllParticles();
+	if (innerEmitter)
+	{
+		innerEmitter->Stop();
+	}
+
 	SafeRelease(innerEmitter);
+}
+
+void ParticleLayer::PauseInnerEmitter(bool _isPaused)
+{
+	if (innerEmitter)
+	{
+		innerEmitter->Pause(_isPaused);
+	}
 }
 
 void ParticleLayer::SetDisabled(bool value)
@@ -1191,4 +1212,9 @@ void ParticleLayer::SetPivotPoint(const Vector2& value)
 	this->layerPivotPoint = value;
 }
 
+void ParticleLayer::HandleRemoveFromSystem()
+{
+	DeleteAllParticles();
+}
+	
 };

@@ -32,6 +32,10 @@ public:
 	// Access to Inner Emitter.
 	ParticleEmitter* GetInnerEmitter();
 
+	// Access to the parent Layer.
+	LayerParticleEditorNode* GetParticleLayerNode();
+	ParticleLayer* GetParticleLayer();
+
 protected:
     LayerParticleEditorNode* layerEditorNode;
 };
