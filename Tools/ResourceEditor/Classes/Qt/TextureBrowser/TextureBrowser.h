@@ -30,6 +30,7 @@ class TextureConvertor;
 class QAbstractItemDelegate;
 class QStatusBar;
 class QLabel;
+class QProgressBar;
 class QSlider;
 struct JobItem;
 
@@ -65,7 +66,8 @@ private:
 	QLabel *toolbarZoomSliderValue;
 	
 	QStatusBar *statusBar;
-	QLabel *statusBarLabel;
+	QLabel *statusQueueLabel;
+	QProgressBar *statusBarProgress;
 	
 	QMap<QString, int> textureListSortModes;
 	QMap<int, DAVA::eGPUFamily> tabIndexToViewMode;
@@ -83,7 +85,6 @@ private:
 	void setupTexturesList();
 	void setupImagesScrollAreas();
 	void setupTextureListFilter();
-	void setupTextureConverAllButton();
 	void setupStatusBar();
 	void setupTextureProperties();
 	void setupTextureViewTabBar();
@@ -113,19 +114,20 @@ private slots:
 	void textureColorChannelPressed(bool checked);
 	void textureBorderPressed(bool checked);
 	void textureBgMaskPressed(bool checked);
-	void texturePropertyChanged(const int propGroup);
+	void texturePropertyChanged(int type);
 	void textureReadyOriginal(const DAVA::TextureDescriptor *descriptor, const QImage &image);
-	void textureReadyPVR(const DAVA::TextureDescriptor *descriptor, const QImage &image);
-	void textureReadyDXT(const DAVA::TextureDescriptor *descriptor, const QImage &image);
+	void textureReadyConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, const QImage &image);
 	void texturePixelOver(const QPoint &pos);
 	void textureZoomSlide(int value);
 	void textureZoom100(bool checked);
 	void textureZoomFit(bool checked);
 	void textureAreaWheel(int delta);
-	void textureConverAll();
+	void textureConver(bool checked);
+	void textureConverAll(bool checked);
 	void textureViewChanged(int index);
 
-	void convertStatus(const JobItem *jobCur, int jobLeft);
+	void convertStatusImg(const QString &curPath, int curGpu);
+	void convertStatusQueue(int curJob, int jobCount);
 };
 
 #endif // __TEXTURE_BROWSER_H__

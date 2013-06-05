@@ -29,25 +29,15 @@ QImage TextureCache::getOriginal(const DAVA::TextureDescriptor *descriptor)
 	return img;
 }
 
-QImage TextureCache::getPVR(const DAVA::TextureDescriptor *descriptor)
+QImage TextureCache::getConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu)
 {
 	QImage img;
 
-	if(NULL != descriptor && cacheOriginal.contains(descriptor))
+	if( NULL != descriptor &&
+		gpu > DAVA::GPU_UNKNOWN && gpu < DAVA::GPU_FAMILY_COUNT &&
+		cacheConverted[gpu].contains(descriptor))
 	{
-		img = cachePVR[descriptor];
-	}
-
-	return img;
-}
-
-QImage TextureCache::getDXT(const DAVA::TextureDescriptor *descriptor)
-{
-	QImage img;
-
-	if(NULL != descriptor && cacheOriginal.contains(descriptor))
-	{
-		img = cacheDXT[descriptor];
+		img = cacheConverted[gpu][descriptor];
 	}
 
 	return img;
@@ -61,27 +51,22 @@ void TextureCache::setOriginal(const DAVA::TextureDescriptor *descriptor, const 
 	}
 }
 
-void TextureCache::setPVR(const DAVA::TextureDescriptor *descriptor, const QImage &image)
+void TextureCache::setConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, const QImage &image)
 {
-	if(NULL != descriptor)
+	if( NULL != descriptor && 
+		gpu > DAVA::GPU_UNKNOWN && gpu < DAVA::GPU_FAMILY_COUNT)
 	{
-		cachePVR[descriptor] = image;
-	}
-}
-
-void TextureCache::setDXT(const DAVA::TextureDescriptor *descriptor, const QImage &image)
-{
-	if(NULL != descriptor)
-	{
-		cacheDXT[descriptor] = image;
+		cacheConverted[gpu][descriptor] = image;
 	}
 }
 
 void TextureCache::clearAll()
 {
 	cacheOriginal.clear();
-	cachePVR.clear();
-	cacheDXT.clear();
+	for(int i = DAVA::GPU_UNKNOWN + 1; i < DAVA::GPU_FAMILY_COUNT; ++i)
+	{
+		cacheConverted[i].clear();
+	}
 }
 
 void TextureCache::clearOriginal(const DAVA::TextureDescriptor *descriptor)
@@ -89,12 +74,10 @@ void TextureCache::clearOriginal(const DAVA::TextureDescriptor *descriptor)
 	cacheOriginal.remove(descriptor);
 }
 
-void TextureCache::clearPVR(const DAVA::TextureDescriptor *descriptor)
+void TextureCache::clearConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu)
 {
-	cachePVR.remove(descriptor);
-}
-
-void TextureCache::clearDXT(const DAVA::TextureDescriptor *descriptor)
-{
-	cacheDXT.remove(descriptor);
+	if(gpu > DAVA::GPU_UNKNOWN && gpu < DAVA::GPU_FAMILY_COUNT)
+	{
+		cacheConverted[gpu].remove(descriptor);
+	}
 }

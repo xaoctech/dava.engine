@@ -26,13 +26,13 @@ TextureProperties::TextureProperties( QWidget *parent /*= 0*/ )
 { }
 
 TextureProperties::~TextureProperties()
-{ }
+{
+	Save();
+}
 
 void TextureProperties::setTextureDescriptor(DAVA::TextureDescriptor *descriptor)
 {
-	// TODO:
-	// Save();
-
+	Save();
 	DAVA::SafeRelease(curTextureDescriptor);
 
 	curTextureDescriptor = DAVA::SafeRetain(descriptor);
@@ -79,6 +79,14 @@ const DAVA::TextureDescriptor* TextureProperties::getTextureDescriptor()
 	return curTextureDescriptor;
 }
 
+void TextureProperties::Save()
+{
+	if(NULL != curTextureDescriptor)
+	{
+		curTextureDescriptor->Save();
+	}
+}
+
 void TextureProperties::MipMapSizesInit(int baseWidth, int baseHeight)
 {
 	int level = 0;
@@ -89,17 +97,37 @@ void TextureProperties::MipMapSizesInit(int baseWidth, int baseHeight)
 		QSize size(baseWidth, baseHeight);
 		QString shownKey;
 
-		shownKey.sprintf("%d - %dx%d", level, baseWidth, baseHeight);
+		if(0 == level)
+		{
+			size = QSize(0, 0);
+			shownKey = "Original";
+		}
+		else
+		{
+			shownKey.sprintf("%dx%d", baseWidth, baseHeight);
+		}
+
 		enumSizes.Register(level, shownKey.toAscii());
+		availableSizes[level] = size;
 
 		level++;
 		baseWidth = baseWidth >> 1;
 		baseHeight = baseHeight >> 1;
 	}
+
+	if(enumSizes.GetCount() > 0)
+	{
+		LoadCurSizeToProp();
+
+		propSizes->SetFlags(QtPropertyData::FLAG_EMPTY);
+		SetPropertyItemValidValues(propSizes, &enumSizes);
+	}
 }
 
 void TextureProperties::MipMapSizesReset()
 {
+	curSizeLevelObject = 0;
+	availableSizes.clear();
 	enumSizes.UnregistelAll();
 }
 
@@ -139,9 +167,19 @@ void TextureProperties::ReloadProperties()
 		header = AddHeader(GlobalEnumMap<DAVA::eGPUFamily>::Instance()->ToString(curGPU));
 		propFormat = AddPropertyItem("format", object, header);
 
-		QObject::connect(propMipMap, SIGNAL(ValueChanged()), this, SLOT(PropMipMapChanged()));
+		propSizes = new QtPropertyDataMetaObject(&curSizeLevelObject, DAVA::MetaInfo::Instance<int>());
+		AppendProperty("Size", propSizes, header);
 
-		MipMapSizesReset();
+		LoadCurSizeToProp();
+
+		QObject::connect(propMipMap, SIGNAL(ValueChanged()), this, SLOT(PropMipMapChanged()));
+		QObject::connect(propWrapModeS, SIGNAL(ValueChanged()), this, SLOT(PropWrapChanged()));
+		QObject::connect(propWrapModeT, SIGNAL(ValueChanged()), this, SLOT(PropWrapChanged()));
+		QObject::connect(propMinFilter, SIGNAL(ValueChanged()), this, SLOT(PropFilterChanged()));
+		QObject::connect(propMagFilter, SIGNAL(ValueChanged()), this, SLOT(PropFilterChanged()));
+		QObject::connect(propFormat, SIGNAL(ValueChanged()), this, SLOT(PropFormatChanged()));
+		QObject::connect(propSizes, SIGNAL(ValueChanged()), this, SLOT(PropSizeChanged()));
+
 		ReloadEnumFormats();
 		ReloadEnumWrap();
 		ReloadEnumFilters();
@@ -151,6 +189,12 @@ void TextureProperties::ReloadProperties()
 		SetPropertyItemValidValues(propMinFilter, &enumFiltersMin);
 		SetPropertyItemValidValues(propMagFilter, &enumFiltersMag);
 		SetPropertyItemValidValues(propFormat, &enumFormats);
+		SetPropertyItemValidValues(propSizes, &enumSizes);
+
+		if(0 == enumSizes.GetCount())
+		{
+			propSizes->SetFlags(QtPropertyData::FLAG_IS_DISABLED);
+		}
 
 		expandAll();
 	}
@@ -161,40 +205,13 @@ void TextureProperties::ReloadEnumFormats()
 	const EnumMap *globalFormats = GlobalEnumMap<DAVA::PixelFormat>::Instance();
 
 	enumFormats.UnregistelAll();
-	switch(curGPU)
+
+	const DAVA::Map<DAVA::PixelFormat, DAVA::String> &availableFormats = DAVA::GPUFamilyDescriptor::GetAvailableFormatsForGpu(curGPU);
+	DAVA::Map<DAVA::PixelFormat, DAVA::String>::const_iterator begin = availableFormats.begin();
+	DAVA::Map<DAVA::PixelFormat, DAVA::String>::const_iterator end = availableFormats.end();
+	for(; begin != end; ++begin)
 	{
-	case DAVA::GPU_POVERVR_IOS:
-		enumFormats.Register(DAVA::FORMAT_RGBA8888, globalFormats->ToString(DAVA::FORMAT_RGBA8888));
-		enumFormats.Register(DAVA::FORMAT_RGBA5551, globalFormats->ToString(DAVA::FORMAT_RGBA5551));
-		enumFormats.Register(DAVA::FORMAT_RGBA4444, globalFormats->ToString(DAVA::FORMAT_RGBA4444));
-		enumFormats.Register(DAVA::FORMAT_RGB565, globalFormats->ToString(DAVA::FORMAT_RGB565));
-		enumFormats.Register(DAVA::FORMAT_A8, globalFormats->ToString(DAVA::FORMAT_A8));
-		enumFormats.Register(DAVA::FORMAT_PVR4, globalFormats->ToString(DAVA::FORMAT_PVR4));
-		enumFormats.Register(DAVA::FORMAT_PVR2, globalFormats->ToString(DAVA::FORMAT_PVR2));
-		enumFormats.Register(DAVA::FORMAT_ETC1, globalFormats->ToString(DAVA::FORMAT_ETC1));
-		break;
-	case DAVA::GPU_POVERVR_ANDROID:
-		enumFormats.Register(DAVA::FORMAT_RGBA8888, globalFormats->ToString(DAVA::FORMAT_RGBA8888));
-		enumFormats.Register(DAVA::FORMAT_DXT1, globalFormats->ToString(DAVA::FORMAT_DXT1));
-		enumFormats.Register(DAVA::FORMAT_DXT1NM, globalFormats->ToString(DAVA::FORMAT_DXT1NM));
-		enumFormats.Register(DAVA::FORMAT_DXT1A, globalFormats->ToString(DAVA::FORMAT_DXT1A));
-		enumFormats.Register(DAVA::FORMAT_DXT3, globalFormats->ToString(DAVA::FORMAT_DXT3));
-		enumFormats.Register(DAVA::FORMAT_DXT5, globalFormats->ToString(DAVA::FORMAT_DXT5));
-		enumFormats.Register(DAVA::FORMAT_ATC_RGB, globalFormats->ToString(DAVA::FORMAT_ATC_RGB));
-		enumFormats.Register(DAVA::FORMAT_ATC_RGBA_EXPLICIT_ALPHA, globalFormats->ToString(DAVA::FORMAT_ATC_RGBA_EXPLICIT_ALPHA));
-		enumFormats.Register(DAVA::FORMAT_ATC_RGBA_INTERPOLATED_ALPHA, globalFormats->ToString(DAVA::FORMAT_ATC_RGBA_INTERPOLATED_ALPHA));
-		break;
-	case DAVA::GPU_TEGRA:
-		enumFormats.Register(DAVA::FORMAT_RGBA8888, globalFormats->ToString(DAVA::FORMAT_RGBA8888));
-		break;
-	case DAVA::GPU_MALI:
-		enumFormats.Register(DAVA::FORMAT_RGBA8888, globalFormats->ToString(DAVA::FORMAT_RGBA8888));
-		break;
-	case DAVA::GPU_ADRENO:
-		enumFormats.Register(DAVA::FORMAT_RGBA8888, globalFormats->ToString(DAVA::FORMAT_RGBA8888));
-		break;
-	default:
-		break;
+		enumFormats.Register(begin->first, globalFormats->ToString(begin->first));
 	}
 }
 
@@ -239,6 +256,8 @@ void TextureProperties::ReloadEnumFilters()
 void TextureProperties::ReloadEnumWrap()
 {
 	const EnumMap *globalFormats = GlobalEnumMap<DAVA::Texture::TextureWrap>::Instance();
+
+	enumWpar.UnregistelAll();
 
 	enumWpar.Register(DAVA::Texture::WRAP_REPEAT, globalFormats->ToString(DAVA::Texture::WRAP_REPEAT));
 	enumWpar.Register(DAVA::Texture::WRAP_CLAMP_TO_EDGE, globalFormats->ToString(DAVA::Texture::WRAP_CLAMP_TO_EDGE));
@@ -297,4 +316,58 @@ void TextureProperties::SetPropertyItemValidValues(QtPropertyDataMetaObject* ite
 void TextureProperties::PropMipMapChanged()
 {
 	ReloadEnumFilters();
+	SetPropertyItemValidValues(propMinFilter, &enumFiltersMin);
+
+	emit PropertyChanged(PROP_MIPMAP);
+}
+
+void TextureProperties::PropFormatChanged()
+{
+	emit PropertyChanged(PROP_FORMAT);
+}
+
+void TextureProperties::PropFilterChanged()
+{
+	emit PropertyChanged(PROP_FILTER);
+}
+
+void TextureProperties::PropWrapChanged()
+{
+	emit PropertyChanged(PROP_WRAP);
+}
+
+void TextureProperties::PropSizeChanged()
+{
+	SaveCurSizeFromProp();
+	emit PropertyChanged(PROP_SIZE);
+}
+
+void TextureProperties::LoadCurSizeToProp()
+{
+	if( NULL != curTextureDescriptor && NULL != propSizes && 
+		curGPU > DAVA::GPU_UNKNOWN && curGPU < DAVA::GPU_FAMILY_COUNT)
+	{
+		QSize curSize(curTextureDescriptor->compression[curGPU].compressToWidth, curTextureDescriptor->compression[curGPU].compressToHeight);
+		int level = availableSizes.key(curSize, -1); 
+
+		if(-1 != level)
+		{
+			propSizes->SetValue(level);
+		}
+	}
+}
+
+void TextureProperties::SaveCurSizeFromProp()
+{
+	if( NULL != curTextureDescriptor && NULL != propSizes && 
+		curGPU > DAVA::GPU_UNKNOWN && curGPU < DAVA::GPU_FAMILY_COUNT)
+	{
+		int level = propSizes->GetValue().toInt();
+
+		if(availableSizes.contains(level))
+		{
+			curTextureDescriptor->compression[curGPU].compressToWidth = availableSizes[level].width();
+			curTextureDescriptor->compression[curGPU].compressToHeight = availableSizes[level].height();
+		}
+	}
 }

@@ -20,6 +20,7 @@
 #include <QGraphicsView>
 
 class QImage;
+class QLabel;
 
 class TextureScrollArea : public QGraphicsView
 {
@@ -93,11 +94,15 @@ private:
 	bool tiledBgDoDraw;
 	QPixmap tiledBgPixmap;
 
+	bool warningVisible;
+	QLabel *warningLabel;
+	QGraphicsProxyWidget *warningProxy;
+
 	void sutupCustomTiledBg();
 
 	void applyCurrentImageToScenePixmap();
 	void applyCurrentImageBorder();
-	void adjustWaitBarPos();
+	void adjustWidgetsPos();
 };
 
 #endif // __TEXTURE_SCROLL_AREA_H__

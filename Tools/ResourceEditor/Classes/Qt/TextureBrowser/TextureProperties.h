@@ -29,12 +29,13 @@ class TextureProperties : public QtPropertyEditor
 	Q_OBJECT
 
 public:
-	typedef enum PropertiesType
+	typedef enum PropType
 	{
-		TYPE_COMMON,
-		TYPE_COMMON_MIPMAP,
-		TYPE_PVR,
-		TYPE_DXT
+		PROP_MIPMAP,
+		PROP_WRAP,
+		PROP_FILTER,
+		PROP_FORMAT,
+		PROP_SIZE
 	} PropertiesType;
 
 public:
@@ -46,6 +47,9 @@ public:
 
 	const DAVA::TextureDescriptor* getTextureDescriptor();
 	void setOriginalImageSize(const QSize &size);
+
+signals:
+	void PropertyChanged(int type);
 
 protected:
 	DAVA::TextureDescriptor *curTextureDescriptor;
@@ -60,12 +64,17 @@ protected:
 	QtPropertyDataMetaObject *propSizes;
 	
 	QSize origImageSize;
+	int curSizeLevelObject;
 
 	EnumMap enumFormats;
 	EnumMap enumSizes;
 	EnumMap enumWpar;
 	EnumMap enumFiltersMin;
 	EnumMap enumFiltersMag;
+
+	QMap<int, QSize> availableSizes;
+
+	void Save();
 
 	void MipMapSizesInit(int baseWidth, int baseHeight);
 	void MipMapSizesReset();
@@ -79,18 +88,15 @@ protected:
 	QtPropertyDataMetaObject* AddPropertyItem(const char *name, DAVA::BaseObject *object, QtPropertyItem *parent);
 	void SetPropertyItemValidValues(QtPropertyDataMetaObject* item, EnumMap *validValues);
 
+	void LoadCurSizeToProp();
+	void SaveCurSizeFromProp();
+
 protected slots:
 	void PropMipMapChanged();
-};
-
-class TexturePropertyData : QtPropertyData
-{
-public:
-	TexturePropertyData();
-	~TexturePropertyData();
-
-private:
-
+	void PropFormatChanged();
+	void PropFilterChanged();
+	void PropWrapChanged();
+	void PropSizeChanged();
 };
 
 #endif // __TEXTURE_PROPERTIES_H__

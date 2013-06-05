@@ -22,25 +22,19 @@
 
 struct JobItem
 {
-	enum JobItemType
-	{
-		JobOriginal,
-		JobPVR,
-		JobDXT
-	};
+	int id;
+	int type;
+	bool force;
+	void* data;
+	const void* identity;
 
 	JobItem()
-		: forceConvert(false)
-		, type(JobOriginal)
-		, descriptor(NULL)
+		: id(0)
+		, type(0)
+		, force(false)
+		, data(NULL)
+		, identity(NULL)
 	{ }
-
-	bool forceConvert;
-	JobItemType type;
-	const DAVA::TextureDescriptor *descriptor;
-
-	// grant thread safe access to descriptor
-	DAVA::TextureDescriptor descriptorCopy;
 };
 
 class JobStack

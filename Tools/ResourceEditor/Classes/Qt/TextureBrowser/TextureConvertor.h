@@ -20,6 +20,8 @@
 #include <QObject>
 #include <QImage>
 #include <QFutureWatcher>
+#include <QProgressDialog>
+
 #include "DAVAEngine.h"
 #include "Render/TextureDescriptor.h"
 #include "Render/RenderManager.h"
@@ -35,52 +37,56 @@ public:
 	TextureConvertor();
 	~TextureConvertor();
 
-	static QImage fromDavaImage(DAVA::Image *image);
+	static QImage FromDavaImage(DAVA::Image *image);
+	static DAVA::Image* ConvertPVR(DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, bool forceConvert);
+	static DAVA::Image* ConvertDXT(DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, bool forceConvert);
 
-	void loadOriginal(const DAVA::TextureDescriptor *descriptor);
-	void getPVR(const DAVA::TextureDescriptor *descriptor, bool forceConver = false);
-	void getDXT(const DAVA::TextureDescriptor *descriptor, bool forceConver = false);
-
-	bool checkAndCompressAll(bool forceConvertAll);
+	int GetOriginal(const DAVA::TextureDescriptor *descriptor);
+	int GetConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, bool forceConver = false);
+	int Reconvert(DAVA::Scene *scene, bool forceConvert);
+	
+	void WaitConvertedAll(QWidget *parent = NULL);
+	void CancelConvert();
 
 signals:
-	void readyOriginal(const DAVA::TextureDescriptor *descriptor, const QImage &image);
-	void readyPVR(const DAVA::TextureDescriptor *descriptor, const QImage &image);
-	void readyDXT(const DAVA::TextureDescriptor *descriptor, const QImage &image);
-	void readyAll();
+	void ReadyOriginal(const DAVA::TextureDescriptor *descriptor, const QImage &image);
+	void ReadyConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, const QImage &image);
+	void ReadyReconvert();
 
-	void convertStatus(const QString &curPath, int curJob, int jobCount);
+	void ReadyConvertedAll();
+
+	void ConvertStatusImg(const QString &imgPath, int imgGpu);
+	void ConvertStatusQueue(int curJob, int jobCount);
 
 private:
-	QFutureWatcher<QImage> loadOriginalWatcher;
-	QFutureWatcher<QImage> convertWatcher[CONVERT_JOB_COUNT];
-	QFutureWatcher<void> convertAllWatcher;
+	int jobIdCounter;
+	
+	int convertJobQueueSize;
 
-	JobStack jobStackConvert;
-	JobItem *curJobConvert[CONVERT_JOB_COUNT];
+	QString waitStatusText;
+
+	QFutureWatcher<QImage> originalWatcher;
+	QFutureWatcher<QImage> convertedWatcher;
 
 	JobStack jobStackOriginal;
+	JobStack jobStackConverted;
+
 	JobItem *curJobOriginal;
+	JobItem *curJobConverted;
+
+	QProgressDialog* waitDialog;
+	QPushButton* waitDialogCancelBnt;
 
 	void jobRunNextConvert();
 	void jobRunNextOriginal();
 
-	QImage loadOriginalThread(JobItem *item);
-	QImage convertThreadPVR(JobItem *item);
-	QImage convertThreadDXT(JobItem *item);
-	void convertAllThread(DAVA::Map<DAVA::String, DAVA::Texture *> *allTextures, bool forceConverAll);
-
-	int jobGetConvertFreeIndex();
-	int jobGetConvertIndex(QFutureWatcher<QImage> *watcher);
-
-signals:
-	void convertStatusFromThread(const QString &curPath, int curJob, int jobCount);
+	QImage GetOriginalThread(JobItem *item);
+	QImage GetConvertedThread(JobItem *item);
 
 private slots:
+	void waitCanceled();
 	void threadOriginalFinished();
-	void threadConvertFinished();
-	void threadConvertAllFinished();
-	void threadConvertStatus(const QString &curPath, int curJob, int jobCount);
+	void threadConvertedFinished();
 
 };
 
