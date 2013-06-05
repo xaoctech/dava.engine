@@ -19,6 +19,7 @@
 
 QtPropertyModel::QtPropertyModel(QObject* parent /* = 0 */)
 	: QStandardItemModel(parent)
+	, refreshTimeout(0)
 {
 	QStringList headerLabels;
 
@@ -28,7 +29,8 @@ QtPropertyModel::QtPropertyModel(QObject* parent /* = 0 */)
 	setColumnCount(2);
 	setHorizontalHeaderLabels(headerLabels);
 
-	QObject::connect(this, SIGNAL(itemChanged(QStandardItem *)), this, SLOT(ItemChanged(QStandardItem *)));
+	QObject::connect(this, SIGNAL(itemChanged(QStandardItem *)), this, SLOT(OnItemChanged(QStandardItem *)));
+	QObject::connect(&refreshTimer, SIGNAL(timeout()), this, SLOT(OnRefreshTimeout()));
 }
 
 QtPropertyModel::~QtPropertyModel()
@@ -94,7 +96,26 @@ void QtPropertyModel::RemovePropertyAll()
 	removeRows(0, rowCount());
 }
 
-void QtPropertyModel::ItemChanged(QStandardItem* item)
+void QtPropertyModel::SetRefreshTimeout(int ms)
+{
+	refreshTimeout = ms;
+
+	if(0 != refreshTimeout)
+	{
+		refreshTimer.start(refreshTimeout);
+	}
+	else
+	{
+		refreshTimer.stop();
+	}
+}
+
+int QtPropertyModel::GetRefreshTimeout()
+{
+	return refreshTimeout;
+}
+
+void QtPropertyModel::OnItemChanged(QStandardItem* item)
 {
 	QtPropertyItem *propItem = (QtPropertyItem *) item;
 
@@ -106,3 +127,11 @@ void QtPropertyModel::ItemChanged(QStandardItem* item)
 		}
 	}
 }
+
+void QtPropertyModel::OnRefreshTimeout()
+{
+	// refresh column 1, it has all properties values
+	emit dataChanged(index(0, 1), index(0, rowCount()));
+	SetRefreshTimeout(refreshTimeout);
+}
+

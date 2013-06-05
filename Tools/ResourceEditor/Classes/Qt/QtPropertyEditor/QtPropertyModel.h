@@ -18,6 +18,7 @@
 #define __QT_PROPERTY_MODEL_H__
 
 #include <QPair>
+#include <QTimer>
 #include <QStandardItemModel>
 #include "Base/Introspection.h"
 
@@ -38,8 +39,16 @@ public:
 	void RemoveProperty(QtPropertyItem* item);
 	void RemovePropertyAll();
 
+	void SetRefreshTimeout(int ms);
+	int GetRefreshTimeout();
+
+protected:
+	int refreshTimeout;
+	QTimer refreshTimer;
+	
 protected slots:
-	void ItemChanged(QStandardItem * item);
+	void OnItemChanged(QStandardItem * item);
+	void OnRefreshTimeout();
 };
 
 #endif // __QT_PROPERTY_MODEL_H__

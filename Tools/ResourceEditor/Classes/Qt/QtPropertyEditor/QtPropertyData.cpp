@@ -55,15 +55,20 @@ QtPropertyData::~QtPropertyData()
 
 QVariant QtPropertyData::GetValue()
 {
-	QVariant value = GetValueInternal();
+	QVariant internalValue = GetValueInternal();
 
-	if(value != curValue)
+	if(internalValue != curValue)
 	{
-		curValue = value;
+		curValue = internalValue;
 		ChildNeedUpdate();
 	}
 
 	return curValue;
+}
+
+QVariant QtPropertyData::GetAlias()
+{
+	return GetValueAlias();
 }
 
 void QtPropertyData::SetValue(const QVariant &value)
@@ -292,6 +297,13 @@ QVariant QtPropertyData::GetValueInternal()
 	// should be re-implemented by sub-class
 
 	return curValue;
+}
+
+QVariant QtPropertyData::GetValueAlias()
+{
+	// should be re-implemented by sub-class
+
+	return QVariant();
 }
 
 void QtPropertyData::SetValueInternal(const QVariant &value)
