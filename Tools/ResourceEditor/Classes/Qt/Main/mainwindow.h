@@ -55,15 +55,12 @@ private:
 public slots:
 	void ShowActionWithText(QToolBar *toolbar, QAction *action, bool showText);
 
-
 	void ChangeParticleDockVisible(bool visible);
 	void ChangeParticleDockTimeLineVisible(bool visible);
 	void returnToOldMaxMinSizesForDockSceneGraph();
 
 	//return true if conversion has been started
-	bool TextureCheckConvetAndWait(bool forceConvertAll = false);
 	void UpdateParticleSprites();
-
 	void RepackAndReloadScene();
 
 private slots:
@@ -72,9 +69,6 @@ private slots:
 	
 	//reference
 	void ApplyReferenceNodeSuffix();
-	void ConvertWaitDone(QObject *destroyed);
-	void ConvertWaitStatus(const QString &curPath, int curJob, int jobCount);
-
 	void RepackSpritesWaitDone(QObject *destroyed);
 
 signals:
@@ -86,7 +80,6 @@ private:
     Ui::MainWindow *ui;
 	QtPosSaver posSaver;
 
-	QProgressDialog *convertWaitDialog;
 	QProgressDialog *repackSpritesWaitDialog;
     
 	QSize oldDockSceneGraphMaxSize;
