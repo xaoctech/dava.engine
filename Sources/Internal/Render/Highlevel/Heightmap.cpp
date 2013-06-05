@@ -190,7 +190,7 @@ bool Heightmap::Load(const FilePath &filePathname)
     }
 
     
-    File * file = File::Create(filePathname.GetAbsolutePathname(), File::OPEN | File::READ);
+    File * file = File::Create(filePathname, File::OPEN | File::READ);
     if (!file)
     {
         Logger::Error("Heightmap::Load failed to create file: %s", filePathname.GetAbsolutePathname().c_str());
