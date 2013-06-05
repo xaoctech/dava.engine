@@ -1,1 +1,1 @@
---generateMipMaps --all PVR2
+--generateMipMaps --adreno PVR2

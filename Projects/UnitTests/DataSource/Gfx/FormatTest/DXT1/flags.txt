@@ -1,1 +1,1 @@
---generateMipMaps --all DXT1
+--generateMipMaps --adreno DXT1

@@ -1,1 +1,1 @@
---generateMipMaps --all DXT5NM
+--generateMipMaps --adreno DXT5NM

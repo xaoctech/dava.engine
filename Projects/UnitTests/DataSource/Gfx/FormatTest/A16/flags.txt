@@ -1,1 +1,1 @@
---generateMipMaps --all A16
+--generateMipMaps --adreno A16

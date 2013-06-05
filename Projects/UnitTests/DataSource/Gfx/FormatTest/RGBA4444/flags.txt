@@ -1,1 +1,1 @@
---generateMipMaps --all RGBA4444
+--generateMipMaps --adreno RGBA4444

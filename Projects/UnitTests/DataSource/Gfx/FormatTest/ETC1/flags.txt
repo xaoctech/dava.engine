@@ -1,1 +1,1 @@
---generateMipMaps --all ETC1
+--generateMipMaps --adreno ETC1

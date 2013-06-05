@@ -1,1 +1,1 @@
---generateMipMaps --all ATC_RGBA_I
+--generateMipMaps --adreno ATC_RGBA_I

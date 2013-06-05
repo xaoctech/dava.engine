@@ -1,1 +1,1 @@
---generateMipMaps --all A8
+--generateMipMaps --adreno A8

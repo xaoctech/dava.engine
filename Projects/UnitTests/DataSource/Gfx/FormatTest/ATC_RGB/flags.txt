@@ -1,1 +1,1 @@
---generateMipMaps --all ATC_RGB
+--generateMipMaps --adreno ATC_RGB
