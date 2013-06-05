@@ -85,6 +85,7 @@ namespace DAVA
 	{
 		Logger::Debug("[CorePlatformAndroid::Quit]");
 		QuitAction();
+		Core::Quit();
 	}
 
 	void CorePlatformAndroid::QuitAction()

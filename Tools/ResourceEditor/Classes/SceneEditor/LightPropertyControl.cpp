@@ -103,8 +103,15 @@ void LightPropertyControl::OnComboIndexChanged(PropertyList *forList, const Stri
         
         if(Light::TYPE_DIRECTIONAL == light->GetType())
         {
-            currentSceneNode->GetCustomProperties()->SetFloat("editor.staticlight.shadowangle", propertyList->GetFloatPropertyValue("Shadow angle"));
-            currentSceneNode->GetCustomProperties()->SetInt32("editor.staticlight.shadowsamples", propertyList->GetIntPropertyValue("Shadow samples"));
+            if(propertyList->IsPropertyAvaliable("Shadow angle"))
+            {
+                currentSceneNode->GetCustomProperties()->SetFloat("editor.staticlight.shadowangle", propertyList->GetFloatPropertyValue("Shadow angle"));
+            }
+            
+            if(propertyList->IsPropertyAvaliable("Shadow samples"))
+            {
+                currentSceneNode->GetCustomProperties()->SetInt32("editor.staticlight.shadowsamples", propertyList->GetIntPropertyValue("Shadow samples"));
+            }
         }
     }
 
