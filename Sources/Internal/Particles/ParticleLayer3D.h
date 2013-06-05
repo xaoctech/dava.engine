@@ -47,8 +47,8 @@ public:
 	virtual void SetLong(bool value);
 
 	// Access to parent.
-	ParticleEmitter* GetParent() const {return parent;};
-	void SetParent(ParticleEmitter* parent) {this->parent = parent;};
+	ParticleEmitter* GetParent() const {return emitter;};
+	void SetParent(ParticleEmitter* parent) {this->emitter = parent;};
 	
 	// Create the inner emitter where needed.
 	virtual void CreateInnerEmitter();
@@ -73,7 +73,6 @@ protected:
 	void UpdateCurrentParticlePosition(Particle* particle);
 
 	bool isLong;
-	ParticleEmitter* parent;
 
 	RenderDataObject * renderData;
 	Vector<float32> verts;

@@ -29,7 +29,8 @@ namespace DAVA
 {
 
 #define PARTICLE_EMITTER_DEFAULT_LIFE_TIME 100.0f
-
+#define PARTICLE_EMITTER_DEFERRED_UPDATE_INTERVAL 0.1f // in seconds
+	
 REGISTER_CLASS(ParticleEmitter);
 
 ParticleEmitter::ParticleEmitter()
@@ -38,6 +39,8 @@ ParticleEmitter::ParticleEmitter()
 	Cleanup(false);
 
 	bbox = AABBox3(Vector3(), Vector3());
+	parentParticle = NULL;
+	deferredTimeElapsed = 0.0f;
 }
 
 ParticleEmitter::~ParticleEmitter()
@@ -70,7 +73,7 @@ void ParticleEmitter::Cleanup(bool needCleanupLayers)
 	particlesFollow = false;
     is3D = false;
 	playbackSpeed = 1.0f;
-
+	shouldBeDeleted = false;
 	// Also cleanup layers, if needed.
 	if (needCleanupLayers)
 	{
@@ -262,6 +265,16 @@ void ParticleEmitter::DoRestart(bool isDeleteAllParticles)
 	repeatCount = 0;
 }
 
+void ParticleEmitter::DeferredUpdate(float32 timeElapsed)
+{
+	deferredTimeElapsed += timeElapsed;
+	if (deferredTimeElapsed > PARTICLE_EMITTER_DEFERRED_UPDATE_INTERVAL)
+	{
+		Update(deferredTimeElapsed);
+		deferredTimeElapsed = 0.0f;
+	}
+}
+	
 void ParticleEmitter::Update(float32 timeElapsed)
 {
 	timeElapsed *= playbackSpeed;
@@ -622,6 +635,13 @@ float32 ParticleEmitter::GetTime()
 void ParticleEmitter::Pause(bool _isPaused)
 {
 	isPaused = _isPaused;
+
+	// Also update Inner Emitters.
+	int32 layersCount = layers.size();
+	for (int32 i = 0; i < layersCount; i ++)
+	{
+		layers[i]->PauseInnerEmitter(_isPaused);
+	}
 }
 bool ParticleEmitter::IsPaused()
 {
@@ -813,4 +833,31 @@ void ParticleEmitter::RecalcBoundingBox()
 	bbox = AABBox3(Vector3(), Vector3());
 }
 
-};
+void ParticleEmitter::SetLongToAllLayers(bool isLong)
+{
+	for(Vector<ParticleLayer*>::iterator it = layers.begin(); it != layers.end(); ++it)
+	{
+		(*it)->SetLong(isLong);
+	}
+}
+
+void ParticleEmitter::SetParentParticle(Particle* parent)
+{
+	parentParticle = parent;
+}
+
+Particle* ParticleEmitter::GetParentParticle()
+{
+	return parentParticle;
+}
+
+void ParticleEmitter::HandleRemoveFromSystem()
+{
+	Vector<ParticleLayer*>::iterator it;
+	for(it = layers.begin(); it != layers.end(); ++it)
+	{
+		(*it)->HandleRemoveFromSystem();
+	}
+}
+
+}; 
