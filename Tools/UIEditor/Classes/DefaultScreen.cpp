@@ -264,9 +264,11 @@ void DefaultScreen::SmartSelection::FormatSelectionVector(SelectionVector &selec
 		 ++iter)
 	{
 		const SmartSelection* item = (*iter);
-		item->FormatSelectionVector(selection);
-		
+		// Add item id to set before recursive call.
+		// This will prevent adding value to array in reverse order (for controls with childs)
 		selection.push_back(item->id);
+		
+		item->FormatSelectionVector(selection);
 	}
 }
 

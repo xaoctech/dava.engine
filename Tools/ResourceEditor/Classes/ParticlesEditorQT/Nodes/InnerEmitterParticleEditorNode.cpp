@@ -35,4 +35,20 @@ ParticleEmitter* InnerEmitterParticleEditorNode::GetInnerEmitter()
 	
 	return NULL;
 }
+	
+LayerParticleEditorNode* InnerEmitterParticleEditorNode::GetParticleLayerNode()
+{
+	return layerEditorNode;
+}
+
+ParticleLayer* InnerEmitterParticleEditorNode::GetParticleLayer()
+{
+	if (layerEditorNode)
+	{
+		return layerEditorNode->GetLayer();
+	}
+	
+	return NULL;
+}
+
 };
