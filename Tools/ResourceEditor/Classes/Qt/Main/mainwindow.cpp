@@ -397,7 +397,9 @@ void QtMainWindow::returnToOldMaxMinSizesForDockSceneGraph()
 
 void QtMainWindow::ChangeParticleDockTimeLineVisible(bool visible)
 {
-	ui->dockParticleEditorTimeLine->setVisible(visible);
+	// Yuri Coder. Automatic show/hide of the Particles Timeline
+	// is disabled due to DF-1234.
+	// ui->dockParticleEditorTimeLine->setVisible(visible);
 }
 
 void QtMainWindow::ApplyReferenceNodeSuffix()
