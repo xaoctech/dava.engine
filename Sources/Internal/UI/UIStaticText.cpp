@@ -352,4 +352,11 @@ Animation * UIStaticText::ColorAnimation(const Color & finalColor, float32 time,
 	return animation;
 }
 
+Animation * UIStaticText::ShadowColorAnimation(const Color & finalColor, float32 time, Interpolation::FuncType interpolationFunc /*= Interpolation::LINEAR*/, int32 track /*= 1*/)
+{
+	LinearAnimation<Color> * animation = new LinearAnimation<Color>(this, &shadowColor, finalColor, time, interpolationFunc);
+	animation->Start(track);
+	return animation;
+}
+
 };
