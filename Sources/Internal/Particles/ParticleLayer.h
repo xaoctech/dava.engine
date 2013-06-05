@@ -158,6 +158,9 @@ public:
 	// Stop and remove Inner Emitter.
 	virtual void RemoveInnerEmitter();
 
+	// Control the Inner Emitter.
+	virtual void PauseInnerEmitter(bool _isPaused);
+
 	// Enable/disable the layer.
 	inline bool GetDisabled();
 	void SetDisabled(bool value);
@@ -165,6 +168,9 @@ public:
 	// Get/set the Pivot Point for the layer.
 	Vector2 GetPivotPoint() const;
 	void SetPivotPoint(const Vector2& value);
+
+	// Handle the situation when layer is removed from the system.
+	void HandleRemoveFromSystem();
 
 protected:
 	void GenerateNewParticle(int32 emitIndex);

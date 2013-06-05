@@ -29,7 +29,7 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 {
 	isLong = false;
 	renderData = new RenderDataObject();
-	this->parent = parent;
+	this->emitter = parent;
 
 	//TODO: set material from outside
 	
@@ -105,6 +105,12 @@ void ParticleLayer3D::DrawLayer(Camera* camera)
 
 	while(current != 0)
 	{
+		Particle* parent = emitter->GetParentParticle();
+		if(NULL != parent && IsLong())
+		{
+			current->direction = parent->direction;
+		}
+
 		Vector3 topRight;
 		Vector3 topLeft;
 		Vector3 botRight;
@@ -338,15 +344,19 @@ void ParticleLayer3D::SetLong(bool value)
 {
 	isLong = value;
 	renderBatch->GetMaterial()->SetTwoSided(isLong);
+	if(innerEmitter)
+	{
+		innerEmitter->SetLongToAllLayers(value);
+	}
 }
 
 void ParticleLayer3D::UpdateCurrentParticlePosition(Particle* particle)
 {
-	if (this->parent)
+	if (this->emitter)
 	{
 		// For Superemitter adjust the particle position according to the
 		// current emitter position.
-		this->currentParticlePosition = particle->position + (parent->GetPosition() - parent->GetInitialTranslationVector());
+		this->currentParticlePosition = particle->position + (emitter->GetPosition() - emitter->GetInitialTranslationVector());
 	}
 	else
 	{

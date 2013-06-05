@@ -68,6 +68,7 @@ public:
 	void SetVisible(int id, bool isVisible);
 
 	IUIWebViewDelegate::eAction URLChanged(int id, const String& newURL);
+	void PageLoaded(int id);
 
 public:
 	static JniWebView* jniWebView;
