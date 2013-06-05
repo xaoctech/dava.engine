@@ -45,7 +45,6 @@
 QtMainWindow::QtMainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-	, convertWaitDialog(NULL)
 	, oldDockSceneGraphMinSize(-1, -1)
 	, oldDockSceneGraphMaxSize(-1, -1)
 	, repackSpritesWaitDialog(NULL)
@@ -485,31 +484,6 @@ void QtMainWindow::ProjectOpened(const QString &path)
 	UpdateParticleSprites();
 }
 
-bool QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)
-{
-	bool ret = false;
-	if(CommandLineManager::Instance() && !CommandLineManager::Instance()->IsCommandLineModeEnabled() && NULL == convertWaitDialog)
-	{
-		// check if we have textures to convert - 
-		// if we have function will return true and conversion will start in new thread
-		// signal 'readyAll' will be emited when convention finishes
-		if(TextureConvertor::Instance()->checkAndCompressAll(forceConvertAll))
-		{
-			ret = true;
-			convertWaitDialog = new QProgressDialog(this);
-			QObject::connect(TextureConvertor::Instance(), SIGNAL(readyAll()), convertWaitDialog, SLOT(close()));
-			QObject::connect(TextureConvertor::Instance(), SIGNAL(convertStatus(const QString &, int, int)), this, SLOT(ConvertWaitStatus(const QString &, int, int)));
-			QObject::connect(convertWaitDialog, SIGNAL(destroyed(QObject *)), this, SLOT(ConvertWaitDone(QObject *)));
-			convertWaitDialog->setModal(true);
-			convertWaitDialog->setCancelButton(NULL);
-			convertWaitDialog->setAttribute(Qt::WA_DeleteOnClose);
-			convertWaitDialog->setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::CustomizeWindowHint | Qt::WindowMinimizeButtonHint);
-			convertWaitDialog->show();
-		}
-	}
-	return ret;
-}
-
 void QtMainWindow::UpdateParticleSprites()
 {
 	if(repackSpritesWaitDialog != NULL)
@@ -537,17 +511,6 @@ void QtMainWindow::UpdateParticleSprites()
 void QtMainWindow::RepackAndReloadScene()
 {
 	emitRepackAndReloadFinished = true;
-	if(!TextureCheckConvetAndWait())
-	{
-		// conversion hasn't been started, run repack immediately 
-		// in another case repack will be invoked in finishing callback (ConvertWaitDone)
-		UpdateParticleSprites();
-	}
-}
-
-void QtMainWindow::ConvertWaitDone(QObject *destroyed)
-{
-	convertWaitDialog = NULL;
 	UpdateParticleSprites();
 }
 
@@ -560,16 +523,6 @@ void QtMainWindow::RepackSpritesWaitDone(QObject *destroyed)
 
 	emitRepackAndReloadFinished = false;
 	repackSpritesWaitDialog = NULL;
-}
-
-void QtMainWindow::ConvertWaitStatus(const QString &curPath, int curJob, int jobCount)
-{
-	if(NULL != convertWaitDialog)
-	{
-		convertWaitDialog->setRange(0, jobCount);
-		convertWaitDialog->setValue(curJob);
-		convertWaitDialog->setLabelText(curPath);
-	}
 }
 
 void QtMainWindow::LibraryFileTypesChanged()
