@@ -493,6 +493,8 @@ void ParticleTimeLineWidget::UpdateLayersExtraInfoPosition()
 {
 	if (lines.size() == 0)
 	{
+		countWidget->setVisible(false);
+		areaWidget->setVisible(false);
 		return;
 	}
 	
@@ -502,9 +504,11 @@ void ParticleTimeLineWidget::UpdateLayersExtraInfoPosition()
 					   PARTICLES_INFO_CONTROL_WIDTH + 1,
 					   graphRect.height() + TOP_INDENT + 1);
 	countWidget->setGeometry(extraInfoRect);
+	countWidget->setVisible(true);
 	
 	extraInfoRect.moveRight(extraInfoRect.right() + PARTICLES_INFO_CONTROL_WIDTH);
 	areaWidget->setGeometry(extraInfoRect);
+	areaWidget->setVisible(true);
 }
 
 void ParticleTimeLineWidget::UpdateLayersExtraInfoValues()
