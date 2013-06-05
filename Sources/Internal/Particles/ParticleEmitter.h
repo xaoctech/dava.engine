@@ -239,6 +239,16 @@ public:
 		\param[in] timeElapsed time in seconds elapsed from previous update
 	 */
 	void Update(float32 timeElapsed);
+	
+	/**
+	 \brief Function to perform deferred update for the Particle Emitter.
+	 This function accumulates update time and calls Update() if the accumulated time is
+	 more then PARTICLE_EMITTER_DEFERRED_UPDATE_INTERVAL.
+	 Call this function in case you are using ParticleEmitter directly and it is not visible.
+	 \param[in] timeElapsed time in seconds elapsed from previous update
+	 */
+	void DeferredUpdate(float32 timeElapsed);
+	
 	/**	
 		\brief function to draw particle emitter
 		If you using ParticleEmitter directly you should call this function to draw emitter.
@@ -334,6 +344,24 @@ public:
 	void RememberInitialTranslationVector();
 	const Vector3& GetInitialTranslationVector();
 
+	bool IsToBeDeleted()
+	{
+		return shouldBeDeleted;
+	};
+
+	void SetToBeDeleted(bool value)
+	{
+		shouldBeDeleted = value;
+	}
+
+	void SetLongToAllLayers(bool isLong);
+
+	void SetParentParticle(Particle* parent);
+	Particle* GetParentParticle();
+
+	// This method is called when the emitter is about to remove from Emitters System.
+	virtual void HandleRemoveFromSystem();
+
 protected:
 	// Virtual methods which are different for 2D and 3D emitters.
 	virtual void PrepareEmitterParameters(Particle * particle, float32 velocity, int32 emitIndex);
@@ -366,6 +394,11 @@ protected:
 	float32 playbackSpeed;
 
 	Vector3 initialTranslationVector;
+
+	float32 deferredTimeElapsed;
+	bool	shouldBeDeleted;
+
+	Particle*	parentParticle;
 
 public:
 	RefPtr< PropertyLine<Vector3> > emissionVector;
