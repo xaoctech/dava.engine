@@ -39,7 +39,7 @@ TextureListDelegate::TextureListDelegate(QObject *parent /* = 0 */)
 	, nameFontMetrics(nameFont)
 	, drawRule(DRAW_PREVIEW_BIG)
 {
-	QObject::connect(TextureConvertor::Instance(), SIGNAL(readyOriginal(const DAVA::TextureDescriptor *, const QImage &)), this, SLOT(textureReadyOriginal(const DAVA::TextureDescriptor *, const QImage &)));
+	QObject::connect(TextureConvertor::Instance(), SIGNAL(ReadyOriginal(const DAVA::TextureDescriptor *, const QImage &)), this, SLOT(textureReadyOriginal(const DAVA::TextureDescriptor *, const QImage &)));
 };
 
 void TextureListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -142,7 +142,7 @@ void TextureListDelegate::drawPreviewBig(QPainter *painter, const QStyleOptionVi
 		{
 			// there is no image for this texture in cache
 			// so load it async
-			TextureConvertor::Instance()->loadOriginal(curTextureDescriptor);
+			TextureConvertor::Instance()->GetOriginal(curTextureDescriptor);
 			descriptorIndexes.insert(curTextureDescriptor, index);
 		}
 
