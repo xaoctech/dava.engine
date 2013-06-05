@@ -1,0 +1,1 @@
+--generateMipMaps --all RGB888

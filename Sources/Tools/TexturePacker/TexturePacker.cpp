@@ -585,13 +585,17 @@ void TexturePacker::ExportImage(PngImageExt *image, const FilePath &exportedPath
         if(extension == ".pvr")
         {
             PVRConverter::Instance()->ConvertPngToPvr(*descriptor, gpuFamily);
-            FileSystem::Instance()->DeleteFile(exportedPathname);
         }
         else if(extension == ".dds")
         {
             DXTConverter::ConvertPngToDxt(*descriptor, gpuFamily);
-            FileSystem::Instance()->DeleteFile(exportedPathname);
         }
+        else
+        {
+            DVASSERT(false);
+        }
+        
+        FileSystem::Instance()->DeleteFile(exportedPathname);
     }
 
     SafeRelease(descriptor);

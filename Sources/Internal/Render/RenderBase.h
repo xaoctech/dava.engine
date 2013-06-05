@@ -179,6 +179,8 @@ enum eGPUFamily
     GPU_MALI,
     GPU_ADRENO,
     
+    GPU_ALL_FORMATS,        //FOR testing
+    
     GPU_FAMILY_COUNT
 };
     
