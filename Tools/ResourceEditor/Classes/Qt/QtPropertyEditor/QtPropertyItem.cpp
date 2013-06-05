@@ -90,7 +90,11 @@ QVariant QtPropertyItem::data(int role) const
 			break;
 		case Qt::DisplayRole:
 		case Qt::EditRole:
-			v = itemData->GetValue();
+			v = itemData->GetAlias();
+			if(!v.isValid())
+			{
+				v = itemData->GetValue();
+			}
 			break;
 		case PropertyDataRole:
 			v = qVariantFromValue(GetPropertyData());
@@ -182,39 +186,28 @@ void QtPropertyItem::ApplyDataFlags()
 	{
 		int dataFlags = itemData->GetFlags();
 
-		if(dataFlags & QtPropertyData::FLAG_IS_CHECKABLE)
-		{
-			// changing Checkable flag will cause model
-			// to emit itemChanged signal, but we don't want this signal to be emited
+		// changing Checkable flag will cause model
+		// to emit itemChanged signal, but we don't want this signal to be emited
 
-			bool oldState = false;
-			if(NULL != model())
-			{
-				oldState = model()->blockSignals(true);
-			}
+		bool oldState = false;
+		if(NULL != model())
+		{
+			oldState = model()->blockSignals(true);
+		}
 			
-			setCheckable(true);
-			if(itemData->GetValue().toBool())
-			{
-				setCheckState(Qt::Checked);
-			}
-
-			if(NULL != model())
-			{
-				model()->blockSignals(oldState);
-			}
-
-		}
-
-		if(dataFlags & QtPropertyData::FLAG_IS_DISABLED)
+		setCheckable(dataFlags & QtPropertyData::FLAG_IS_CHECKABLE);
+		if(dataFlags & QtPropertyData::FLAG_IS_CHECKABLE && itemData->GetValue().toBool())
 		{
-			setEnabled(false);
+			setCheckState(Qt::Checked);
 		}
 
-		if(dataFlags & QtPropertyData::FLAG_IS_NOT_EDITABLE)
+		if(NULL != model())
 		{
-			setEditable(false);
+			model()->blockSignals(oldState);
 		}
+
+		setEnabled(!(dataFlags & QtPropertyData::FLAG_IS_DISABLED));
+		setEditable(!(dataFlags & QtPropertyData::FLAG_IS_NOT_EDITABLE));
 	}
 }
 

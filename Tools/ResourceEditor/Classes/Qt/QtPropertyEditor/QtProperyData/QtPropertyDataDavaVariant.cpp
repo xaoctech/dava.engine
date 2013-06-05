@@ -101,20 +101,34 @@ void QtPropertyDataDavaVariant::ClearAllowedValues()
 
 QVariant QtPropertyDataDavaVariant::GetValueInternal()
 {
+	return FromDavaVariant(curVariantValue);
+}
+
+QVariant QtPropertyDataDavaVariant::GetValueAlias()
+{
 	QVariant ret;
 
-	for (int i = 0; i < allowedValues.size(); ++i)
+	if(allowedValues.size() > 0)
 	{
-		if(allowedValues[i].realValue == curVariantValue)
+		for (int i = 0; i < allowedValues.size(); ++i)
 		{
-			ret = allowedValues[i].visibleValue;
-			break;
+			if(allowedValues[i].realValue == curVariantValue)
+			{
+				ret = allowedValues[i].visibleValue;
+				break;
+			}
 		}
-	}
 
-	if(!ret.isValid())
-	{
-		ret = FromDavaVariant(curVariantValue);
+		if(!ret.isValid())
+		{
+			// if we have allowed value, but current value isn't in set
+			// print this value as unknown
+			// 
+			QString s("Unknown - ");
+			s += FromDavaVariant(curVariantValue).toString();
+
+			ret = s;
+		}
 	}
 
 	return ret;
@@ -793,7 +807,7 @@ QComboBox* QtPropertyDataDavaVariant::CreateAllowedValuesComboBox(QWidget *paren
 			{
 				text = allowedValues[i].visibleValue.toString();
 			}
-			// if now - we will create it from dava::varianttype
+			// if not - we will create it from dava::varianttype
 			else
 			{
 				text = FromDavaVariant(curVariantValue).toString();
@@ -811,10 +825,12 @@ void QtPropertyDataDavaVariant::SetAllowedValueFromComboBox(QComboBox *comboBox)
 	if(NULL != comboBox)
 	{
 		int index = comboBox->currentIndex();
-
 		if(index >= 0 && index < allowedValues.size())
 		{
-			curVariantValue = allowedValues[index].realValue;
+			if(curVariantValue != allowedValues[index].realValue)
+			{
+				SetValue(FromDavaVariant(allowedValues[index].realValue));
+			}
 		}
 	}
 }

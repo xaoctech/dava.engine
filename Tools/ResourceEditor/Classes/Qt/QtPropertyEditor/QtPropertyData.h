@@ -58,6 +58,7 @@ public:
 	virtual ~QtPropertyData() ;
 
 	QVariant GetValue();
+	QVariant GetAlias();
 	void SetValue(const QVariant &value);
 
 	virtual QIcon GetIcon();
@@ -98,6 +99,7 @@ protected:
 
 	// Functions should be re-implemented by sub-class
 	virtual QVariant GetValueInternal();
+	virtual QVariant GetValueAlias();
 	virtual void SetValueInternal(const QVariant &value);
 	virtual QWidget* CreateEditorInternal(QWidget *parent, const QStyleOptionViewItem& option);
 	virtual bool EditorDoneInternal(QWidget *editor);

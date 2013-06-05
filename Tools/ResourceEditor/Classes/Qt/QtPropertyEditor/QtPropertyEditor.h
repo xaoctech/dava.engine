@@ -41,6 +41,9 @@ public:
 
 	void Expand(QtPropertyItem *);
 
+	void SetRefreshTimeout(int ms);
+	int GetRefreshTimeout();
+
 signals:
 	void PropertyChanged(const QString &name, QtPropertyData *data);
 

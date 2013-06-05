@@ -49,6 +49,7 @@ protected:
 	DAVA::VariantType curVariantValue;
 
 	virtual QVariant GetValueInternal();
+	virtual QVariant GetValueAlias();
 	virtual void SetValueInternal(const QVariant &value);
 
 	virtual void ChildChanged(const QString &key, QtPropertyData *data);

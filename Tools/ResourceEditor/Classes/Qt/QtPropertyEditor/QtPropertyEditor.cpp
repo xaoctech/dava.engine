@@ -79,6 +79,16 @@ void QtPropertyEditor::Expand(QtPropertyItem *item)
 	expand(curModel->indexFromItem(item));
 }
 
+void QtPropertyEditor::SetRefreshTimeout(int ms)
+{
+	curModel->SetRefreshTimeout(ms);
+}
+
+int QtPropertyEditor::GetRefreshTimeout()
+{
+	return curModel->GetRefreshTimeout();
+}
+
 void QtPropertyEditor::ItemClicked(const QModelIndex &index)
 {
 	QStandardItem *item = curModel->itemFromIndex(index);
