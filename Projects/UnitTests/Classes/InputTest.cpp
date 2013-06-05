@@ -116,7 +116,6 @@ void InputTest::LoadResources()
 	staticText = new UIStaticText(Rect(500, 500, 100, 50));
 	font->SetSize(10);
 	staticText->SetFont(font);
-	staticText->SetTextAlign(12);// 12 - Rtop
 	staticText->SetText(L"StaticText");
 	staticText->SetDebugDraw(true);
 	AddControl(staticText);
