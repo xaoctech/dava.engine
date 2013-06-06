@@ -382,9 +382,11 @@
     <ClCompile Include="Classes\Qt\Commands\CommandSignals.cpp" />
     <ClCompile Include="Classes\Qt\DockConsole\Console.cpp" />
     <ClCompile Include="Classes\Qt\DockConsole\ConsoleView.cpp" />
+    <ClCompile Include="Classes\Qt\DockCustomColorsEditor\CustomColorsPropertiesView.cpp" />
     <ClCompile Include="Classes\Qt\DockCustomColors\CustomColorsView.cpp" />
     <ClCompile Include="Classes\Qt\DockHangingObjects\HangingObjectsHelper.cpp" />
     <ClCompile Include="Classes\Qt\DockHangingObjects\HangingObjectsView.cpp" />
+    <ClCompile Include="Classes\Qt\DockHeightmapEditor\HeightmapEditorPropertiesView.cpp" />
     <ClCompile Include="Classes\Qt\DockLibrary\LibraryModel.cpp" />
     <ClCompile Include="Classes\Qt\DockLibrary\LibraryView.cpp" />
     <ClCompile Include="Classes\Qt\DockMaterialViewOptions\MaterialViewOptions.cpp" />
@@ -415,6 +417,7 @@
     <ClCompile Include="Classes\Qt\DockSceneTree\SceneTreeModel.cpp" />
     <ClCompile Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexHelper.cpp" />
     <ClCompile Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexView.cpp" />
+    <ClCompile Include="Classes\Qt\DockTilemaskEditor\TilemaskEditorPropertiesView.cpp" />
     <ClCompile Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.cpp" />
     <ClCompile Include="Classes\Qt\main.cpp" />
     <ClCompile Include="Classes\Qt\Main\davaglwidget.cpp" />
@@ -461,7 +464,9 @@
     <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionLandscape.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionRenderObject.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\CustomColorsSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\GridSystem.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\HeightmapEditorSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\HoodSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\HoodSystem\HoodCollObject.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\HoodSystem\HoodObject.cpp" />
@@ -469,8 +474,14 @@
     <ClCompile Include="Classes\Qt\Scene\System\HoodSystem\NormalHood.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\HoodSystem\RotateHood.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\HoodSystem\ScaleHood.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\CustomColorsProxy.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\HeightmapProxy.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\LandscapeProxy.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\NotPassableTerrainProxy.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\ModifSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\SelectionSystem.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\TilemaskEditorSystem.cpp" />
     <ClCompile Include="Classes\Qt\SpritesPacker\SpritePackerHelper.cpp" />
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureBrowser.cpp" />
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureCache.cpp" />
@@ -554,9 +565,11 @@
     <ClCompile Include="_GeneratedQt\Commands\CommandSignals_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockConsole\ConsoleView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockConsole\Console_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockCustomColorsEditor\CustomColorsPropertiesView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockCustomColors\CustomColorsView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockHangingObjects\HangingObjectsHelper_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockHangingObjects\HangingObjectsView_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockHeightmapEditor\HeightmapEditorPropertiesView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLibrary\LibraryModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLibrary\LibraryView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockMaterialViewOptions\MaterialViewOptions_moc.cpp" />
@@ -587,6 +600,7 @@
     <ClCompile Include="_GeneratedQt\DockSceneTree\SceneTree_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockSetSwitchIndex\SetSwitchIndexHelper_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockSetSwitchIndex\SetSwitchIndexView_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockTilemaskEditor\TilemaskEditorPropertiesView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockVisibilityTool\VisibilityToolView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\davaglwidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\mainwindow_moc.cpp" />
@@ -936,9 +950,11 @@
     <ClInclude Include="Classes\Qt\Commands\CommandSignals.h" />
     <ClInclude Include="Classes\Qt\DockConsole\Console.h" />
     <ClInclude Include="Classes\Qt\DockConsole\ConsoleView.h" />
+    <ClInclude Include="Classes\Qt\DockCustomColorsEditor\CustomColorsPropertiesView.h" />
     <ClInclude Include="Classes\Qt\DockCustomColors\CustomColorsView.h" />
     <ClInclude Include="Classes\Qt\DockHangingObjects\HangingObjectsHelper.h" />
     <ClInclude Include="Classes\Qt\DockHangingObjects\HangingObjectsView.h" />
+    <ClInclude Include="Classes\Qt\DockHeightmapEditor\HeightmapEditorPropertiesView.h" />
     <ClInclude Include="Classes\Qt\DockLibrary\LibraryModel.h" />
     <ClInclude Include="Classes\Qt\DockLibrary\LibraryView.h" />
     <ClInclude Include="Classes\Qt\DockMaterialViewOptions\MaterialViewOptions.h" />
@@ -969,6 +985,7 @@
     <ClInclude Include="Classes\Qt\DockSceneTree\SceneTreeModel.h" />
     <ClInclude Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexHelper.h" />
     <ClInclude Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexView.h" />
+    <ClInclude Include="Classes\Qt\DockTilemaskEditor\TilemaskEditorPropertiesView.h" />
     <ClInclude Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.h" />
     <ClInclude Include="Classes\Qt\Main\davaglwidget.h" />
     <ClInclude Include="Classes\Qt\Main\mainwindow.h" />
@@ -1016,7 +1033,9 @@
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionBaseObject.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionLandscape.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionRenderObject.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\CustomColorsSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\GridSystem.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\HeightmapEditorSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\HoodSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\HoodSystem\HoodCollObject.h" />
     <ClInclude Include="Classes\Qt\Scene\System\HoodSystem\HoodObject.h" />
@@ -1024,8 +1043,14 @@
     <ClInclude Include="Classes\Qt\Scene\System\HoodSystem\NormalHood.h" />
     <ClInclude Include="Classes\Qt\Scene\System\HoodSystem\RotateHood.h" />
     <ClInclude Include="Classes\Qt\Scene\System\HoodSystem\ScaleHood.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\CustomColorsProxy.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\HeightmapProxy.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\LandscapeProxy.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\NotPassableTerrainProxy.h" />
     <ClInclude Include="Classes\Qt\Scene\System\ModifSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\SelectionSystem.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\TilemaskEditorSystem.h" />
     <ClInclude Include="Classes\Qt\SpritesPacker\SpritePackerHelper.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureBrowser.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureCache.h" />
@@ -1108,9 +1133,11 @@
     <ClInclude Include="Classes\UIScrollView.h" />
     <ClInclude Include="Classes\UISpriteEditor.h" />
     <ClInclude Include="Classes\VertexOctTree.h" />
+    <ClInclude Include="_GeneratedQt\ui_CustomColorsProperties.h" />
     <ClInclude Include="_GeneratedQt\ui_CustomColorsView.h" />
     <ClInclude Include="_GeneratedQt\ui_davaglwidget.h" />
     <ClInclude Include="_GeneratedQt\ui_HangingObjectsView.h" />
+    <ClInclude Include="_GeneratedQt\ui_heightmapEditorProperties.h" />
     <ClInclude Include="_GeneratedQt\ui_mainwindow.h" />
     <ClInclude Include="_GeneratedQt\ui_materialbrowser.h" />
     <ClInclude Include="_GeneratedQt\ui_MaterialViewOptions.h" />
@@ -1118,6 +1145,7 @@
     <ClInclude Include="_GeneratedQt\ui_ParticleProperty.h" />
     <ClInclude Include="_GeneratedQt\ui_SetSwitchIndexView.h" />
     <ClInclude Include="_GeneratedQt\ui_texturebrowser.h" />
+    <ClInclude Include="_GeneratedQt\ui_tilemaskEditorProperties.h" />
     <ClInclude Include="_GeneratedQt\ui_VisibilityToolView.h" />
   </ItemGroup>
   <ItemGroup>
