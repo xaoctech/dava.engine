@@ -15,6 +15,8 @@
 #include <QMessageBox>
 #include <QString>
 
+#include "CommandsManager.h"
+
 using namespace DAVA;
 
 #if 0
@@ -114,21 +116,26 @@ void CommandNewScene::Execute()
     SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
     if(screen)
     {
-		int answer = QMessageBox::question(NULL, "Scene was changed", "Do you want to save changes in the current scene prior to creating new one?",
-										   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel);
-		
-		if (answer == QMessageBox::Cancel)
-		{
-			return;
-		}
-		
-		if(answer == QMessageBox::Yes)
-		{
-			// Execute this command directly to do not affect the Undo/Redo queue.
-			CommandSaveScene* commandSaveScene = new CommandSaveScene();
-			commandSaveScene->Execute();
-			SafeDelete(commandSaveScene);
-		}
+        SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+        int32 changesCount = CommandsManager::Instance()->GetUndoQueueLength(activeScene->GetScene());
+        if(changesCount)
+        {
+            int answer = QMessageBox::question(NULL, "Scene was changed", "Do you want to save changes in the current scene prior to creating new one?",
+                                               QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel);
+            
+            if (answer == QMessageBox::Cancel)
+            {
+                return;
+            }
+            
+            if(answer == QMessageBox::Yes)
+            {
+                // Execute this command directly to do not affect the Undo/Redo queue.
+                CommandSaveScene* commandSaveScene = new CommandSaveScene();
+                commandSaveScene->Execute();
+                SafeDelete(commandSaveScene);
+            }
+        }
 
 		// Can now create the scene.
 		screen->NewScene();
