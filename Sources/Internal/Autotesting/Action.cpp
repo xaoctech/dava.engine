@@ -167,7 +167,7 @@ UIControl* Action::FindControl(UIControl* srcControl, const String &controlName)
     if(srcControl)
     {
         int32 index = atoi(controlName.c_str());
-        if((index == 0) && (Format("%d",index) != controlName))
+        if(Format("%d",index) != controlName)
         {
             // not number
             return srcControl->FindByName(controlName);
