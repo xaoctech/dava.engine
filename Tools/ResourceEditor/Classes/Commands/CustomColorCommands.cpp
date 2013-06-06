@@ -5,6 +5,8 @@
 #include <QFileDialog>
 #include "../SceneEditor/EditorBodyControl.h"
 
+#include "../Qt/Scene/System/LandscapeEditorDrawSystem/CustomColorsProxy.h"
+
 CommandSaveTextureCustomColors::CommandSaveTextureCustomColors()
 :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_SAVE_TEXTURE_CUSTOM_COLORS)
 {
@@ -103,4 +105,65 @@ LandscapeEditorCustomColors* CommandDrawCustomColors::GetEditor()
 	}
 
 	return editor;
+}
+
+
+CommandModifyCustomColors::CommandModifyCustomColors(Image* originalImage,
+													 CustomColorsProxy* customColorsProxy,
+													 const Rect& updatedRect)
+:	Command(COMMAND_UNDO_REDO, CommandList::ID_COMMAND_DRAW_CUSTOM_COLORS)
+{
+	commandName = "Custom Color Draw";
+
+	this->updatedRect = updatedRect;
+	this->undoImage = SafeRetain(originalImage);
+	this->redoImage = customColorsProxy->GetSprite()->GetTexture()->CreateImageFromMemory();
+	this->customColorsProxy = SafeRetain(customColorsProxy);
+}
+
+CommandModifyCustomColors::~CommandModifyCustomColors()
+{
+	SafeRelease(undoImage);
+	SafeRelease(redoImage);
+	SafeRelease(customColorsProxy);
+}
+
+void CommandModifyCustomColors::Execute()
+{
+	Texture* texture = Texture::CreateFromData(redoImage->GetPixelFormat(),
+										   redoImage->GetData(),
+										   redoImage->GetWidth(),
+										   redoImage->GetHeight(),
+										   false);
+	Sprite* sprite = Sprite::CreateFromTexture(texture, updatedRect.x, updatedRect.y, updatedRect.dx, updatedRect.dy);
+
+	RenderManager::Instance()->SetRenderTarget(customColorsProxy->GetSprite());
+	sprite->SetPosition(updatedRect.GetPosition());
+	sprite->Draw();
+	RenderManager::Instance()->RestoreRenderTarget();
+
+	customColorsProxy->UpdateRect(updatedRect);
+
+	SafeRelease(sprite);
+	SafeRelease(texture);
+}
+
+void CommandModifyCustomColors::Cancel()
+{
+	Texture* texture = Texture::CreateFromData(undoImage->GetPixelFormat(),
+											   undoImage->GetData(),
+											   undoImage->GetWidth(),
+											   undoImage->GetHeight(),
+											   false);
+	Sprite* sprite = Sprite::CreateFromTexture(texture, updatedRect.x, updatedRect.y, updatedRect.dx, updatedRect.dy);
+
+	RenderManager::Instance()->SetRenderTarget(customColorsProxy->GetSprite());
+	sprite->SetPosition(updatedRect.GetPosition());
+	sprite->Draw();
+	RenderManager::Instance()->RestoreRenderTarget();
+
+	customColorsProxy->UpdateRect(updatedRect);
+
+	SafeRelease(sprite);
+	SafeRelease(texture);
 }

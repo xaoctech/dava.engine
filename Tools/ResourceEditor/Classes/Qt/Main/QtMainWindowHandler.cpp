@@ -26,8 +26,13 @@
 #include "TextureBrowser/TextureBrowser.h"
 #include "Project/ProjectManager.h"
 #include "ModificationWidget.h"
+#include "TextureBrowser/TextureConvertor.h"
 #include "../Commands/CommandSignals.h"
 #include "SceneEditor/EntityOwnerPropertyHelper.h"
+
+#include "../Scene/System/TilemaskEditorSystem.h"
+#include "../Scene/System/HeightmapEditorSystem.h"
+#include "../Scene/System/CustomColorsSystem.h"
 
 #include <QPoint>
 #include <QMenu>
@@ -984,4 +989,475 @@ void QtMainWindowHandler::OnSceneReleased(SceneData *scene)
 void QtMainWindowHandler::ConvertToShadow()
 {
 	CommandsManager::Instance()->ExecuteAndRelease(new CommandConvertToShadow());
+}
+
+
+void QtMainWindowHandler::RegisterHeightmapEditorWidgets(QPushButton* toggleButton,
+														 QSlider* brushSize,
+														 QComboBox* brushImage,
+														 QRadioButton* relativeDrawing,
+														 QRadioButton* averageDrawing,
+														 QRadioButton* absoluteDrawing,
+														 QSlider* strength,
+														 QSlider* averageStrength)
+{
+	heightmapToggleButton = toggleButton;
+	heightmapBrushSize = brushSize;
+	heightmapToolImage = brushImage;
+	heightmapDrawingRelative = relativeDrawing;
+	heightmapDrawingAverage = averageDrawing;
+	heightmapDrawingAbsolute = absoluteDrawing;
+	heightmapStrength = strength;
+	heightmapAverageStrength = averageStrength;
+}
+
+void QtMainWindowHandler::SetHeightmapEditorWidgetsState(bool state)
+{
+	DVASSERT(heightmapToggleButton && heightmapBrushSize && heightmapToolImage && heightmapDrawingRelative &&
+			 heightmapDrawingAverage && heightmapDrawingAbsolute && heightmapStrength && heightmapAverageStrength);
+
+	heightmapToggleButton->blockSignals(true);
+	heightmapToggleButton->setCheckable(state);
+	heightmapToggleButton->setChecked(state);
+	heightmapToggleButton->blockSignals(false);
+
+	QString buttonText = state ? tr("Disable Heightmap Editor") : tr("Enable Heightmap Editor");
+	heightmapToggleButton->setText(buttonText);
+
+	heightmapBrushSize->setEnabled(state);
+	heightmapToolImage->setEnabled(state);
+	heightmapDrawingRelative->setEnabled(state);
+	heightmapDrawingAverage->setEnabled(state);
+	heightmapDrawingAbsolute->setEnabled(state);
+	heightmapStrength->setEnabled(state);
+	heightmapAverageStrength->setEnabled(state);
+
+	heightmapBrushSize->blockSignals(!state);
+	heightmapToolImage->blockSignals(!state);
+	heightmapDrawingRelative->blockSignals(!state);
+	heightmapDrawingAverage->blockSignals(!state);
+	heightmapDrawingAbsolute->blockSignals(!state);
+	heightmapStrength->blockSignals(!state);
+	heightmapAverageStrength->blockSignals(!state);
+}
+
+void QtMainWindowHandler::ToggleHeightmapEditor()
+{
+	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
+	SceneEditorProxy* sep = window->GetCurrentScene();
+	if (!sep)
+	{
+		return;
+	}
+
+	if (sep->heightmapEditorSystem->IsLandscapeEditingEnabled())
+	{
+		if (sep->heightmapEditorSystem->DisableLandscapeEdititing())
+		{
+			SetHeightmapEditorWidgetsState(false);
+		}
+		else
+		{
+			// show "Couldn't disable heightmap editing" message box
+		}
+	}
+	else
+	{
+		if (sep->heightmapEditorSystem->EnableLandscapeEditing())
+		{
+			SetHeightmapEditorWidgetsState(true);
+
+			SetHeightmapEditorBrushSize(heightmapBrushSize->value());
+			SetHeightmapEditorStrength(heightmapStrength->value());
+			SetHeightmapEditorAverageStrength(heightmapAverageStrength->value());
+			SetHeightmapEditorToolImage(heightmapToolImage->currentIndex());
+		}
+		else
+		{
+			// show "Couldn't enable heightmap editing" message box
+		}
+	}
+}
+
+void QtMainWindowHandler::SetHeightmapEditorBrushSize(int brushSize)
+{
+	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
+	SceneEditorProxy* sep = window->GetCurrentScene();
+	if (!sep)
+	{
+		return;
+	}
+
+	sep->heightmapEditorSystem->SetBrushSize(brushSize);
+}
+
+void QtMainWindowHandler::SetHeightmapEditorToolImage(int imageIndex)
+{
+	QString s = heightmapToolImage->itemData(imageIndex).toString();
+
+	if (!s.isEmpty())
+	{
+		QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
+		SceneEditorProxy* sep = window->GetCurrentScene();
+		if (!sep)
+		{
+			return;
+		}
+
+		FilePath fp(s.toStdString());
+		sep->heightmapEditorSystem->SetToolImage(fp);
+	}
+}
+
+void QtMainWindowHandler::SetRelativeHeightmapDrawing()
+{
+	SetHeightmapDrawingType(HeightmapEditorSystem::HEIGHTMAP_DRAW_RELATIVE);
+}
+
+void QtMainWindowHandler::SetAverageHeightmapDrawing()
+{
+	SetHeightmapDrawingType(HeightmapEditorSystem::HEIGHTMAP_DRAW_AVERAGE);
+}
+
+void QtMainWindowHandler::SetAbsoluteHeightmapDrawing()
+{
+	SetHeightmapDrawingType(HeightmapEditorSystem::HEIGHTMAP_DRAW_ABSOLUTE_DROPPER);
+}
+
+void QtMainWindowHandler::SetHeightmapDrawingType(HeightmapEditorSystem::eHeightmapDrawType type)
+{
+	heightmapDrawingRelative->blockSignals(true);
+	heightmapDrawingAverage->blockSignals(true);
+	heightmapDrawingAbsolute->blockSignals(true);
+
+	heightmapDrawingRelative->setChecked(false);
+	heightmapDrawingAverage->setChecked(false);
+	heightmapDrawingAbsolute->setChecked(false);
+
+	switch (type) {
+		default:
+			type = HeightmapEditorSystem::HEIGHTMAP_DRAW_RELATIVE;
+
+		case HeightmapEditorSystem::HEIGHTMAP_DRAW_RELATIVE:
+			heightmapDrawingRelative->setChecked(true);
+			break;
+
+		case HeightmapEditorSystem::HEIGHTMAP_DRAW_AVERAGE:
+			heightmapDrawingAverage->setChecked(true);
+			break;
+
+		case HeightmapEditorSystem::HEIGHTMAP_DRAW_ABSOLUTE_DROPPER:
+			heightmapDrawingAbsolute->setChecked(true);
+			break;
+	}
+
+	heightmapDrawingRelative->blockSignals(false);
+	heightmapDrawingAverage->blockSignals(false);
+	heightmapDrawingAbsolute->blockSignals(false);
+
+	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
+	SceneEditorProxy* sep = window->GetCurrentScene();
+	if (!sep)
+	{
+		return;
+	}
+	
+	sep->heightmapEditorSystem->SetDrawingType(type);
+}
+
+void QtMainWindowHandler::SetHeightmapEditorStrength(int strength)
+{
+	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
+	SceneEditorProxy* sep = window->GetCurrentScene();
+	if (!sep)
+	{
+		return;
+	}
+
+	sep->heightmapEditorSystem->SetStrength(strength);
+}
+
+void QtMainWindowHandler::SetHeightmapEditorAverageStrength(int averageStrength)
+{
+	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
+	SceneEditorProxy* sep = window->GetCurrentScene();
+	if (!sep)
+	{
+		return;
+	}
+
+	float32 avStr = (float32)averageStrength;
+	float32 max = heightmapAverageStrength->maximum();
+	float32 v = avStr / max;
+	sep->heightmapEditorSystem->SetAverageStrength(v);
+}
+
+
+void QtMainWindowHandler::RegisterTilemaskEditorWidgets(QPushButton* toggleButton,
+														QSlider* brushSize,
+														QComboBox* brushImage,
+														QSlider* strength,
+														QComboBox* tileTexture)
+{
+	this->tilemaskToggleButton = toggleButton;
+	this->tilemaskBrushSize = brushSize;
+	this->tilemaskToolImage = brushImage;
+	this->tilemaskStrength = strength;
+	this->tilemaskDrawTexture = tileTexture;
+}
+
+void QtMainWindowHandler::SetTilemaskEditorWidgetsState(bool state)
+{
+	DVASSERT(tilemaskToggleButton && tilemaskBrushSize && tilemaskToolImage && tilemaskStrength && tilemaskDrawTexture);
+
+	tilemaskToggleButton->blockSignals(true);
+	tilemaskToggleButton->setCheckable(state);
+	tilemaskToggleButton->setChecked(state);
+	tilemaskToggleButton->blockSignals(false);
+
+	QString buttonText = state ? tr("Disable Tilemask Editor") : tr("Enable Tilemask Editor");
+	tilemaskToggleButton->setText(buttonText);
+
+	tilemaskBrushSize->setEnabled(state);
+	tilemaskToolImage->setEnabled(state);
+	tilemaskStrength->setEnabled(state);
+	tilemaskDrawTexture->setEnabled(state);
+
+	tilemaskBrushSize->blockSignals(!state);
+	tilemaskToolImage->blockSignals(!state);
+	tilemaskStrength->blockSignals(!state);
+	tilemaskDrawTexture->blockSignals(!state);
+}
+
+void QtMainWindowHandler::ToggleTilemaskEditor()
+{
+	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
+	SceneEditorProxy* sep = window->GetCurrentScene();
+	if (!sep)
+	{
+		return;
+	}
+
+	if (sep->tilemaskEditorSystem->IsLandscapeEditingEnabled())
+	{
+		if (sep->tilemaskEditorSystem->DisableLandscapeEdititing())
+		{
+			SetTilemaskEditorWidgetsState(false);
+		}
+		else
+		{
+			// show "Couldn't disable tilemask editing" message box
+		}
+	}
+	else
+	{
+		if (sep->tilemaskEditorSystem->EnableLandscapeEditing())
+		{
+			SetTilemaskEditorWidgetsState(true);
+
+			UpdateTilemaskTileTextures();
+
+			SetTilemaskEditorBrushSize(tilemaskBrushSize->value());
+			SetTilemaskEditorStrength(tilemaskStrength->value());
+			SetTilemaskEditorToolImage(tilemaskToolImage->currentIndex());
+		}
+		else
+		{
+			// show "Couldn't enable tilemask editing" message box
+		}
+	}
+}
+
+void QtMainWindowHandler::UpdateTilemaskTileTextures()
+{
+	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
+	SceneEditorProxy* sep = window->GetCurrentScene();
+	if (!sep)
+	{
+		return;
+	}
+
+	tilemaskDrawTexture->clear();
+
+	QSize iconSize = tilemaskDrawTexture->iconSize();
+	iconSize = iconSize.expandedTo(QSize(150, 32));
+	tilemaskDrawTexture->setIconSize(iconSize);
+
+	for (int32 i = 0; i < sep->tilemaskEditorSystem->GetTileTextureCount(); ++i)
+	{
+		Texture* tileTexture = sep->tilemaskEditorSystem->GetTileTexture(i);
+
+		uint32 previewWidth = Min(tileTexture->GetWidth(), 150);
+		uint32 previewHeight = Min(tileTexture->GetHeight(), 32);
+
+		Image* tileImage = tileTexture->CreateImageFromMemory();
+		tileImage->ResizeCanvas(previewWidth, previewHeight);
+
+		QImage img = TextureConvertor::fromDavaImage(tileImage);
+		QIcon icon = QIcon(QPixmap::fromImage(img));
+
+		tilemaskDrawTexture->addItem(icon, "");
+	}
+}
+
+void QtMainWindowHandler::SetTilemaskEditorBrushSize(int brushSize)
+{
+	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
+	SceneEditorProxy* sep = window->GetCurrentScene();
+	if (!sep)
+	{
+		return;
+	}
+
+	sep->tilemaskEditorSystem->SetBrushSize(brushSize);
+}
+
+void QtMainWindowHandler::SetTilemaskEditorToolImage(int imageIndex)
+{
+	QString s = tilemaskToolImage->itemData(imageIndex).toString();
+
+	if (!s.isEmpty())
+	{
+		QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
+		SceneEditorProxy* sep = window->GetCurrentScene();
+		if (!sep)
+		{
+			return;
+		}
+
+		FilePath fp(s.toStdString());
+		sep->tilemaskEditorSystem->SetToolImage(fp);
+	}
+}
+
+void QtMainWindowHandler::SetTilemaskEditorStrength(int strength)
+{
+	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
+	SceneEditorProxy* sep = window->GetCurrentScene();
+	if (!sep)
+	{
+		return;
+	}
+	
+	sep->tilemaskEditorSystem->SetStrength(strength);
+}
+
+void QtMainWindowHandler::SetTilemaskDrawTexture(int textureIndex)
+{
+	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
+	SceneEditorProxy* sep = window->GetCurrentScene();
+	if (!sep)
+	{
+		return;
+	}
+
+	sep->tilemaskEditorSystem->SetTileTexture(textureIndex);
+}
+
+
+void QtMainWindowHandler::RegisterCustomColorsEditorWidgets(QPushButton* toggleButton,
+															QPushButton* saveTextureButton,
+															QSlider* brushSizeSlider,
+															QComboBox* colorComboBox,
+															QPushButton* loadTextureButton)
+{
+	customColorsEditorToggleButton = toggleButton;
+	customColorsSaveTexture = saveTextureButton;
+	customColorsBrushSize = brushSizeSlider;
+	customColorsColor = colorComboBox;
+	customColorsLoadTexture = loadTextureButton;
+}
+
+void QtMainWindowHandler::SetCustomColorsEditorWidgetsState(bool state)
+{
+	DVASSERT(customColorsEditorToggleButton &&
+			 customColorsSaveTexture &&
+			 customColorsBrushSize &&
+			 customColorsColor &&
+			 customColorsLoadTexture);
+
+	customColorsEditorToggleButton->blockSignals(true);
+	customColorsEditorToggleButton->setCheckable(state);
+	customColorsEditorToggleButton->setChecked(state);
+	customColorsEditorToggleButton->blockSignals(false);
+
+	QString buttonText = state ? tr("Disable Custom Colors Editor") : tr("Enable Custom Colors Editor");
+	customColorsEditorToggleButton->setText(buttonText);
+
+	customColorsSaveTexture->setEnabled(state);
+	customColorsBrushSize->setEnabled(state);
+	customColorsColor->setEnabled(state);
+	customColorsLoadTexture->setEnabled(state);
+	customColorsSaveTexture->blockSignals(!state);
+	customColorsBrushSize->blockSignals(!state);
+	customColorsColor->blockSignals(!state);
+	customColorsLoadTexture->blockSignals(!state);
+}
+
+void QtMainWindowHandler::ToggleCustomColorsEditor()
+{
+	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
+	SceneEditorProxy* sep = window->GetCurrentScene();
+	if (!sep)
+	{
+		return;
+	}
+
+	if (sep->customColorsSystem->IsLandscapeEditingEnabled())
+	{
+		if (sep->customColorsSystem->DisableLandscapeEdititing())
+		{
+			SetCustomColorsEditorWidgetsState(false);
+		}
+		else
+		{
+			// show "Couldn't disable custom colors editing" message box
+		}
+	}
+	else
+	{
+		if (sep->customColorsSystem->EnableLandscapeEditing())
+		{
+			SetCustomColorsEditorWidgetsState(true);
+
+			SetCustomColorsBrushSize(customColorsBrushSize->value());
+			SetCustomColorsColor(customColorsColor->currentIndex());
+		}
+		else
+		{
+			// show "Couldn't enable custom colors editing" message box
+		}
+	}
+}
+
+void QtMainWindowHandler::SaveCustomColorsTexture()
+{
+}
+
+void QtMainWindowHandler::LoadCustomColorsTexture()
+{
+}
+
+void QtMainWindowHandler::SetCustomColorsBrushSize(int brushSize)
+{
+	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
+	SceneEditorProxy* sep = window->GetCurrentScene();
+	if (!sep)
+	{
+		return;
+	}
+
+	sep->customColorsSystem->SetBrushSize(brushSize);
+}
+
+void QtMainWindowHandler::SetCustomColorsColor(int colorIndex)
+{
+	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
+	SceneEditorProxy* sep = window->GetCurrentScene();
+	if (!sep)
+	{
+		return;
+	}
+
+	sep->customColorsSystem->SetColor(colorIndex);
 }

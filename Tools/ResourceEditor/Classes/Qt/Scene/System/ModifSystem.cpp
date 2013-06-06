@@ -56,6 +56,11 @@ void EntityModificationSystem::Update(DAVA::float32 timeElapsed)
 
 void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 {
+	if (IsLocked())
+	{
+		return;
+	}
+
 	if(NULL != collisionSystem)
 	{
 		// current selected entities

@@ -28,6 +28,12 @@
 		177D1A9316CB8C820021104B /* PropertyEditorStateHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 177D1A9116CB8C820021104B /* PropertyEditorStateHelper.cpp */; };
 		178A9B721716E584006BB1F7 /* ParticleEffectPropertiesWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 178A9B701716E583006BB1F7 /* ParticleEffectPropertiesWidget.cpp */; };
 		178A9B771716EB8F006BB1F7 /* ParticleEffectPropertiesWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 178A9B761716EB8F006BB1F7 /* ParticleEffectPropertiesWidget_moc.cpp */; };
+		49372E4B17608F2B00B8FEE2 /* TilemaskEditorPropertiesView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49372E4917608F2B00B8FEE2 /* TilemaskEditorPropertiesView.cpp */; };
+		49372E4E17608F3800B8FEE2 /* HeightmapEditorPropertiesView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49372E4C17608F3800B8FEE2 /* HeightmapEditorPropertiesView.cpp */; };
+		49372E5117608F4400B8FEE2 /* CustomColorsPropertiesView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49372E4F17608F4400B8FEE2 /* CustomColorsPropertiesView.cpp */; };
+		49372E5617608FF700B8FEE2 /* TilemaskEditorPropertiesView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49372E5517608FF700B8FEE2 /* TilemaskEditorPropertiesView_moc.cpp */; };
+		49372E581760900200B8FEE2 /* HeightmapEditorPropertiesView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49372E571760900200B8FEE2 /* HeightmapEditorPropertiesView_moc.cpp */; };
+		49372E5A1760900C00B8FEE2 /* CustomColorsPropertiesView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49372E591760900C00B8FEE2 /* CustomColorsPropertiesView_moc.cpp */; };
 		493BAC5D16BFD655000E5F84 /* EditorBodyControlCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 493BAC5B16BFD655000E5F84 /* EditorBodyControlCommands.cpp */; };
 		4940AF6C164C1684003E95A7 /* CustomColorCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4940AF6A164C1684003E95A7 /* CustomColorCommands.cpp */; };
 		4940AF71164C16DA003E95A7 /* LandscapeEditorCustomColors.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4940AF6D164C16DA003E95A7 /* LandscapeEditorCustomColors.cpp */; };
@@ -39,6 +45,14 @@
 		49802D4716C2596700E40105 /* SceneEditorScreenMainCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49802D4516C2596600E40105 /* SceneEditorScreenMainCommands.cpp */; };
 		498AA6FD1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498AA6FB1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp */; };
 		498AA7001653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */; };
+		49BCDBA81760B505000FCF36 /* LandscapeEditorDrawSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49BCDBA61760B505000FCF36 /* LandscapeEditorDrawSystem.cpp */; };
+		49BCDBAF1760BEB6000FCF36 /* HeightmapEditorSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49BCDBAD1760BEB6000FCF36 /* HeightmapEditorSystem.cpp */; };
+		49BCDBB21760C0AB000FCF36 /* TilemaskEditorSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49BCDBB01760C0AB000FCF36 /* TilemaskEditorSystem.cpp */; };
+		49BCDBB51760C1D0000FCF36 /* CustomColorsSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49BCDBB31760C1CF000FCF36 /* CustomColorsSystem.cpp */; };
+		49BCDBB91760C7BF000FCF36 /* LandscapeProxy.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49BCDBB71760C7BF000FCF36 /* LandscapeProxy.cpp */; };
+		49BCDBBF1760C9B6000FCF36 /* NotPassableTerrainProxy.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49BCDBBD1760C9B6000FCF36 /* NotPassableTerrainProxy.cpp */; };
+		49BCDBC21760C9D7000FCF36 /* HeightmapProxy.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49BCDBC01760C9D7000FCF36 /* HeightmapProxy.cpp */; };
+		49BCDBC51760C9EF000FCF36 /* CustomColorsProxy.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49BCDBC31760C9EE000FCF36 /* CustomColorsProxy.cpp */; };
 		49C89A3716C3AB1A008AA6F0 /* ArrowsNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49C89A3516C3AB1A008AA6F0 /* ArrowsNode.cpp */; };
 		49C89A3916C3AB72008AA6F0 /* ModificationWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49C89A3816C3AB72008AA6F0 /* ModificationWidget_moc.cpp */; };
 		49C89A3C16C3ABE6008AA6F0 /* ModificationWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49C89A3A16C3ABE6008AA6F0 /* ModificationWidget.cpp */; };
@@ -483,6 +497,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		49372E4417608BF800B8FEE2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E8BD1EF616DE40E300499E18 /* Framework.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 176DEB77174B5561007A983B;
+			remoteInfo = FrameworkNPAPI;
+		};
 		5C7F49FF15B44F6E0038AF3A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5C7F49F815B44F6D0038AF3A /* FCollada.xcodeproj */;
@@ -555,6 +576,18 @@
 		2A689518AF9C22C7AA97C9EF /* ogg_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = ogg_macos; path = ../../Libs/libs/libogg_macos.a; sourceTree = "<group>"; };
 		336CB11D929F5E35FA69020F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		419FFB6CDDEB353FF0A4F469 /* QtCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtCore.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework"; sourceTree = "<absolute>"; };
+		49372E4917608F2B00B8FEE2 /* TilemaskEditorPropertiesView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TilemaskEditorPropertiesView.cpp; path = Classes/Qt/DockTilemaskEditor/TilemaskEditorPropertiesView.cpp; sourceTree = "<group>"; };
+		49372E4A17608F2B00B8FEE2 /* TilemaskEditorPropertiesView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TilemaskEditorPropertiesView.h; path = Classes/Qt/DockTilemaskEditor/TilemaskEditorPropertiesView.h; sourceTree = "<group>"; };
+		49372E4C17608F3800B8FEE2 /* HeightmapEditorPropertiesView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HeightmapEditorPropertiesView.cpp; path = Classes/Qt/DockHeightmapEditor/HeightmapEditorPropertiesView.cpp; sourceTree = "<group>"; };
+		49372E4D17608F3800B8FEE2 /* HeightmapEditorPropertiesView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HeightmapEditorPropertiesView.h; path = Classes/Qt/DockHeightmapEditor/HeightmapEditorPropertiesView.h; sourceTree = "<group>"; };
+		49372E4F17608F4400B8FEE2 /* CustomColorsPropertiesView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CustomColorsPropertiesView.cpp; path = Classes/Qt/DockCustomColorsEditor/CustomColorsPropertiesView.cpp; sourceTree = "<group>"; };
+		49372E5017608F4400B8FEE2 /* CustomColorsPropertiesView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CustomColorsPropertiesView.h; path = Classes/Qt/DockCustomColorsEditor/CustomColorsPropertiesView.h; sourceTree = "<group>"; };
+		49372E5517608FF700B8FEE2 /* TilemaskEditorPropertiesView_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TilemaskEditorPropertiesView_moc.cpp; path = _GeneratedQt/DockTilemaskEditor/TilemaskEditorPropertiesView_moc.cpp; sourceTree = "<group>"; };
+		49372E571760900200B8FEE2 /* HeightmapEditorPropertiesView_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HeightmapEditorPropertiesView_moc.cpp; path = _GeneratedQt/DockHeightmapEditor/HeightmapEditorPropertiesView_moc.cpp; sourceTree = "<group>"; };
+		49372E591760900C00B8FEE2 /* CustomColorsPropertiesView_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CustomColorsPropertiesView_moc.cpp; path = _GeneratedQt/DockCustomColorsEditor/CustomColorsPropertiesView_moc.cpp; sourceTree = "<group>"; };
+		49372E5B1760902500B8FEE2 /* ui_CustomColorsProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_CustomColorsProperties.h; path = _GeneratedQt/ui_CustomColorsProperties.h; sourceTree = "<group>"; };
+		49372E5C1760902500B8FEE2 /* ui_heightmapEditorProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_heightmapEditorProperties.h; path = _GeneratedQt/ui_heightmapEditorProperties.h; sourceTree = "<group>"; };
+		49372E5D1760902500B8FEE2 /* ui_tilemaskEditorProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_tilemaskEditorProperties.h; path = _GeneratedQt/ui_tilemaskEditorProperties.h; sourceTree = "<group>"; };
 		493BAC5B16BFD655000E5F84 /* EditorBodyControlCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EditorBodyControlCommands.cpp; path = Classes/Commands/EditorBodyControlCommands.cpp; sourceTree = "<group>"; };
 		493BAC5C16BFD655000E5F84 /* EditorBodyControlCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EditorBodyControlCommands.h; path = Classes/Commands/EditorBodyControlCommands.h; sourceTree = "<group>"; };
 		4940AF6A164C1684003E95A7 /* CustomColorCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CustomColorCommands.cpp; path = Classes/Commands/CustomColorCommands.cpp; sourceTree = "<group>"; };
@@ -576,6 +609,22 @@
 		498AA6FC1653DC5F00E0831D /* VisibilityCheckToolCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisibilityCheckToolCommands.h; path = Classes/Commands/VisibilityCheckToolCommands.h; sourceTree = "<group>"; };
 		498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeEditorVisibilityCheckTool.cpp; path = Classes/SceneEditor/LandscapeEditorVisibilityCheckTool.cpp; sourceTree = "<group>"; };
 		498AA6FF1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeEditorVisibilityCheckTool.h; path = Classes/SceneEditor/LandscapeEditorVisibilityCheckTool.h; sourceTree = "<group>"; };
+		49BCDBA61760B505000FCF36 /* LandscapeEditorDrawSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeEditorDrawSystem.cpp; sourceTree = "<group>"; };
+		49BCDBA71760B505000FCF36 /* LandscapeEditorDrawSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeEditorDrawSystem.h; sourceTree = "<group>"; };
+		49BCDBAD1760BEB6000FCF36 /* HeightmapEditorSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HeightmapEditorSystem.cpp; sourceTree = "<group>"; };
+		49BCDBAE1760BEB6000FCF36 /* HeightmapEditorSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HeightmapEditorSystem.h; sourceTree = "<group>"; };
+		49BCDBB01760C0AB000FCF36 /* TilemaskEditorSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TilemaskEditorSystem.cpp; sourceTree = "<group>"; };
+		49BCDBB11760C0AB000FCF36 /* TilemaskEditorSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TilemaskEditorSystem.h; sourceTree = "<group>"; };
+		49BCDBB31760C1CF000FCF36 /* CustomColorsSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CustomColorsSystem.cpp; sourceTree = "<group>"; };
+		49BCDBB41760C1CF000FCF36 /* CustomColorsSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomColorsSystem.h; sourceTree = "<group>"; };
+		49BCDBB71760C7BF000FCF36 /* LandscapeProxy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeProxy.cpp; path = LandscapeEditorDrawSystem/LandscapeProxy.cpp; sourceTree = "<group>"; };
+		49BCDBB81760C7BF000FCF36 /* LandscapeProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeProxy.h; path = LandscapeEditorDrawSystem/LandscapeProxy.h; sourceTree = "<group>"; };
+		49BCDBBD1760C9B6000FCF36 /* NotPassableTerrainProxy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NotPassableTerrainProxy.cpp; path = LandscapeEditorDrawSystem/NotPassableTerrainProxy.cpp; sourceTree = "<group>"; };
+		49BCDBBE1760C9B6000FCF36 /* NotPassableTerrainProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NotPassableTerrainProxy.h; path = LandscapeEditorDrawSystem/NotPassableTerrainProxy.h; sourceTree = "<group>"; };
+		49BCDBC01760C9D7000FCF36 /* HeightmapProxy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HeightmapProxy.cpp; path = LandscapeEditorDrawSystem/HeightmapProxy.cpp; sourceTree = "<group>"; };
+		49BCDBC11760C9D7000FCF36 /* HeightmapProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HeightmapProxy.h; path = LandscapeEditorDrawSystem/HeightmapProxy.h; sourceTree = "<group>"; };
+		49BCDBC31760C9EE000FCF36 /* CustomColorsProxy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CustomColorsProxy.cpp; path = LandscapeEditorDrawSystem/CustomColorsProxy.cpp; sourceTree = "<group>"; };
+		49BCDBC41760C9EE000FCF36 /* CustomColorsProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CustomColorsProxy.h; path = LandscapeEditorDrawSystem/CustomColorsProxy.h; sourceTree = "<group>"; };
 		49C89A3516C3AB1A008AA6F0 /* ArrowsNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ArrowsNode.cpp; path = Classes/SceneEditor/ArrowsNode.cpp; sourceTree = "<group>"; };
 		49C89A3616C3AB1A008AA6F0 /* ArrowsNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ArrowsNode.h; path = Classes/SceneEditor/ArrowsNode.h; sourceTree = "<group>"; };
 		49C89A3816C3AB72008AA6F0 /* ModificationWidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ModificationWidget_moc.cpp; sourceTree = "<group>"; };
@@ -1551,6 +1600,57 @@
 			name = ResourceEditorQt;
 			sourceTree = "<group>";
 		};
+		49372E4617608EF700B8FEE2 /* DockCustomColorsEditor */ = {
+			isa = PBXGroup;
+			children = (
+				49372E4F17608F4400B8FEE2 /* CustomColorsPropertiesView.cpp */,
+				49372E5017608F4400B8FEE2 /* CustomColorsPropertiesView.h */,
+			);
+			name = DockCustomColorsEditor;
+			sourceTree = "<group>";
+		};
+		49372E4717608F0100B8FEE2 /* DockHeightmapEditor */ = {
+			isa = PBXGroup;
+			children = (
+				49372E4C17608F3800B8FEE2 /* HeightmapEditorPropertiesView.cpp */,
+				49372E4D17608F3800B8FEE2 /* HeightmapEditorPropertiesView.h */,
+			);
+			name = DockHeightmapEditor;
+			sourceTree = "<group>";
+		};
+		49372E4817608F0F00B8FEE2 /* DockTilemaskEditor */ = {
+			isa = PBXGroup;
+			children = (
+				49372E4917608F2B00B8FEE2 /* TilemaskEditorPropertiesView.cpp */,
+				49372E4A17608F2B00B8FEE2 /* TilemaskEditorPropertiesView.h */,
+			);
+			name = DockTilemaskEditor;
+			sourceTree = "<group>";
+		};
+		49372E5217608FCE00B8FEE2 /* DockCustomColorsEditor */ = {
+			isa = PBXGroup;
+			children = (
+				49372E591760900C00B8FEE2 /* CustomColorsPropertiesView_moc.cpp */,
+			);
+			name = DockCustomColorsEditor;
+			sourceTree = "<group>";
+		};
+		49372E5317608FDC00B8FEE2 /* DockHeightmapEditor */ = {
+			isa = PBXGroup;
+			children = (
+				49372E571760900200B8FEE2 /* HeightmapEditorPropertiesView_moc.cpp */,
+			);
+			name = DockHeightmapEditor;
+			sourceTree = "<group>";
+		};
+		49372E5417608FE400B8FEE2 /* DockTilemaskEditor */ = {
+			isa = PBXGroup;
+			children = (
+				49372E5517608FF700B8FEE2 /* TilemaskEditorPropertiesView_moc.cpp */,
+			);
+			name = DockTilemaskEditor;
+			sourceTree = "<group>";
+		};
 		494A7CDA172A92C0005D7C7F /* Commands */ = {
 			isa = PBXGroup;
 			children = (
@@ -1567,6 +1667,21 @@
 				494A7CE2172A950D005D7C7F /* CommandSignals_moc.cpp */,
 			);
 			name = Commands;
+			sourceTree = "<group>";
+		};
+		49BCDBB61760C79D000FCF36 /* LandscapeEditorDrawSystem */ = {
+			isa = PBXGroup;
+			children = (
+				49BCDBC01760C9D7000FCF36 /* HeightmapProxy.cpp */,
+				49BCDBC11760C9D7000FCF36 /* HeightmapProxy.h */,
+				49BCDBB71760C7BF000FCF36 /* LandscapeProxy.cpp */,
+				49BCDBB81760C7BF000FCF36 /* LandscapeProxy.h */,
+				49BCDBBD1760C9B6000FCF36 /* NotPassableTerrainProxy.cpp */,
+				49BCDBBE1760C9B6000FCF36 /* NotPassableTerrainProxy.h */,
+				49BCDBC31760C9EE000FCF36 /* CustomColorsProxy.cpp */,
+				49BCDBC41760C9EE000FCF36 /* CustomColorsProxy.h */,
+			);
+			name = LandscapeEditorDrawSystem;
 			sourceTree = "<group>";
 		};
 		4F3E2560174CD38E000D1187 /* DockConsole */ = {
@@ -1594,6 +1709,7 @@
 		4FB96A231705C90500EB205E /* System */ = {
 			isa = PBXGroup;
 			children = (
+				49BCDBB61760C79D000FCF36 /* LandscapeEditorDrawSystem */,
 				E8C4C63017294079004B0B3B /* CameraSystem.cpp */,
 				E8C4C63117294079004B0B3B /* CameraSystem.h */,
 				E8C4C63217294079004B0B3B /* CollisionSystem */,
@@ -1608,6 +1724,14 @@
 				E8C4C64C17294079004B0B3B /* ModifSystem.h */,
 				E8C4C64D17294079004B0B3B /* SelectionSystem.cpp */,
 				E8C4C64E17294079004B0B3B /* SelectionSystem.h */,
+				49BCDBA61760B505000FCF36 /* LandscapeEditorDrawSystem.cpp */,
+				49BCDBA71760B505000FCF36 /* LandscapeEditorDrawSystem.h */,
+				49BCDBAD1760BEB6000FCF36 /* HeightmapEditorSystem.cpp */,
+				49BCDBAE1760BEB6000FCF36 /* HeightmapEditorSystem.h */,
+				49BCDBB01760C0AB000FCF36 /* TilemaskEditorSystem.cpp */,
+				49BCDBB11760C0AB000FCF36 /* TilemaskEditorSystem.h */,
+				49BCDBB31760C1CF000FCF36 /* CustomColorsSystem.cpp */,
+				49BCDBB41760C1CF000FCF36 /* CustomColorsSystem.h */,
 			);
 			path = System;
 			sourceTree = "<group>";
@@ -1638,6 +1762,9 @@
 		5C2763A415B82BDF0030A8FD /* Qt */ = {
 			isa = PBXGroup;
 			children = (
+				49372E4817608F0F00B8FEE2 /* DockTilemaskEditor */,
+				49372E4717608F0100B8FEE2 /* DockHeightmapEditor */,
+				49372E4617608EF700B8FEE2 /* DockCustomColorsEditor */,
 				4F3E2560174CD38E000D1187 /* DockConsole */,
 				02E9E43B173965B800C501BC /* DockSceneTree */,
 				494A7CDA172A92C0005D7C7F /* Commands */,
@@ -3021,6 +3148,12 @@
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
 			isa = PBXGroup;
 			children = (
+				49372E5B1760902500B8FEE2 /* ui_CustomColorsProperties.h */,
+				49372E5C1760902500B8FEE2 /* ui_heightmapEditorProperties.h */,
+				49372E5D1760902500B8FEE2 /* ui_tilemaskEditorProperties.h */,
+				49372E5417608FE400B8FEE2 /* DockTilemaskEditor */,
+				49372E5317608FDC00B8FEE2 /* DockHeightmapEditor */,
+				49372E5217608FCE00B8FEE2 /* DockCustomColorsEditor */,
 				4F3E256A174CD39C000D1187 /* DockConsole */,
 				02F64048173A8F170053F038 /* DockSceneTree */,
 				494A7CE1172A9500005D7C7F /* Commands */,
@@ -3061,6 +3194,7 @@
 			children = (
 				E8BD1EFD16DE40E300499E18 /* libFramework.a */,
 				E8BD1EFF16DE40E300499E18 /* libFrameworkQt.a */,
+				49372E4517608BF800B8FEE2 /* libFrameworkNPAPI.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -3324,6 +3458,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		49372E4517608BF800B8FEE2 /* libFrameworkNPAPI.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libFrameworkNPAPI.a;
+			remoteRef = 49372E4417608BF800B8FEE2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		5C7F4A0015B44F6E0038AF3A /* libFColladaS.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -3850,6 +3991,20 @@
 				4F3E256D174CD39C000D1187 /* Console_moc.cpp in Build Sources */,
 				4F3E256E174CD39C000D1187 /* ConsoleView_moc.cpp in Build Sources */,
 				8463A51F1745309E00F2398F /* EntityOwnerPropertyHelper.cpp in Build Sources */,
+				49372E4B17608F2B00B8FEE2 /* TilemaskEditorPropertiesView.cpp in Build Sources */,
+				49372E4E17608F3800B8FEE2 /* HeightmapEditorPropertiesView.cpp in Build Sources */,
+				49372E5117608F4400B8FEE2 /* CustomColorsPropertiesView.cpp in Build Sources */,
+				49372E5617608FF700B8FEE2 /* TilemaskEditorPropertiesView_moc.cpp in Build Sources */,
+				49372E581760900200B8FEE2 /* HeightmapEditorPropertiesView_moc.cpp in Build Sources */,
+				49372E5A1760900C00B8FEE2 /* CustomColorsPropertiesView_moc.cpp in Build Sources */,
+				49BCDBA81760B505000FCF36 /* LandscapeEditorDrawSystem.cpp in Build Sources */,
+				49BCDBAF1760BEB6000FCF36 /* HeightmapEditorSystem.cpp in Build Sources */,
+				49BCDBB21760C0AB000FCF36 /* TilemaskEditorSystem.cpp in Build Sources */,
+				49BCDBB51760C1D0000FCF36 /* CustomColorsSystem.cpp in Build Sources */,
+				49BCDBB91760C7BF000FCF36 /* LandscapeProxy.cpp in Build Sources */,
+				49BCDBBF1760C9B6000FCF36 /* NotPassableTerrainProxy.cpp in Build Sources */,
+				49BCDBC21760C9D7000FCF36 /* HeightmapProxy.cpp in Build Sources */,
+				49BCDBC51760C9EF000FCF36 /* CustomColorsProxy.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

@@ -16,6 +16,8 @@
 #include "Classes/Qt/DockSetSwitchIndex/SetSwitchIndexHelper.h"
 #include "Classes/Commands/CommandList.h"
 
+#include "../Scene/System/HeightmapEditorSystem.h"
+
 class Command;
 class QMenu;
 class QAction;
@@ -56,10 +58,22 @@ public:
     void ShowStatusBarMessage(const DAVA::String &message, DAVA::int32 displayTime = 0);
     
     void SetWaitingCursorEnabled(bool enabled);
-    
+
+	//heightmap editor
+	void RegisterHeightmapEditorWidgets(QPushButton*, QSlider*, QComboBox*, QRadioButton*, QRadioButton*, QRadioButton*, QSlider*, QSlider*);
+	void SetHeightmapEditorWidgetsState(bool state);
+
+	//tilemask editor
+	void RegisterTilemaskEditorWidgets(QPushButton*, QSlider*, QComboBox*, QSlider*, QComboBox*);
+	void SetTilemaskEditorWidgetsState(bool state);
+
 	//custom colors
 	void RegisterCustomColorsWidgets(QPushButton*, QPushButton*, QSlider*, QComboBox*, QPushButton*);
     void SetCustomColorsWidgetsState(bool state);
+
+	//custom colors new
+	void RegisterCustomColorsEditorWidgets(QPushButton*, QPushButton*, QSlider*, QComboBox*, QPushButton*);
+    void SetCustomColorsEditorWidgetsState(bool state);
 
 	//set switch index
 	void RegisterSetSwitchIndexWidgets(QSpinBox*, QRadioButton*, QRadioButton*, QPushButton*);
@@ -135,13 +149,37 @@ public slots:
 	//hanging objects
 	void ToggleHangingObjects(float value, bool isEnabled);
 
+	//heightmap editor
+	void ToggleHeightmapEditor();
+	void SetHeightmapEditorBrushSize(int brushSize);
+	void SetHeightmapEditorToolImage(int imageIndex);
+	void SetRelativeHeightmapDrawing();
+	void SetAverageHeightmapDrawing();
+	void SetAbsoluteHeightmapDrawing();
+	void SetHeightmapEditorStrength(int strength);
+	void SetHeightmapEditorAverageStrength(int averageStrength);
+
+	//tilemask editor
+	void ToggleTilemaskEditor();
+	void SetTilemaskEditorBrushSize(int brushSize);
+	void SetTilemaskEditorToolImage(int imageIndex);
+	void SetTilemaskEditorStrength(int strength);
+	void SetTilemaskDrawTexture(int textureIndex);
+
     //custom colors
     void ToggleCustomColors();
     void SaveTextureCustomColors();
     void ChangeBrushSizeCustomColors(int newSize);
     void ChangeColorCustomColors(int newColorIndex);
 	void LoadTextureCustomColors();
-	
+
+	//custom colors new
+	void ToggleCustomColorsEditor();
+	void SaveCustomColorsTexture();
+	void LoadCustomColorsTexture();
+	void SetCustomColorsBrushSize(int brushSize);
+	void SetCustomColorsColor(int colorIndex);
+
 	//visibility check tool
 	void ToggleVisibilityTool();
 	void SaveTextureVisibilityTool();
@@ -189,6 +227,10 @@ private:
 
 	void UpdateModificationActions();
 
+	void SetHeightmapDrawingType(HeightmapEditorSystem::eHeightmapDrawType type);
+
+	void UpdateTilemaskTileTextures();
+
 private:
 	//set switch index
 	QPushButton*	setSwitchIndexToggleButton;
@@ -210,14 +252,38 @@ private:
 	QSlider* customColorsBrushSizeSlider;
 	QComboBox* customColorsColorComboBox;
 	QPushButton* customColorsLoadTextureButton;
-	
+
+	//custom colors new
+	QPushButton* customColorsEditorToggleButton;
+	QPushButton* customColorsSaveTexture;
+	QSlider* customColorsBrushSize;
+	QComboBox* customColorsColor;
+	QPushButton* customColorsLoadTexture;
+
 	//visibility check tool
 	QPushButton* visibilityToolToggleButton;
 	QPushButton* visibilityToolSaveTextureButton;
 	QPushButton* visibilityToolSetPointButton;
 	QPushButton* visibilityToolSetAreaButton;
 	QSlider* visibilityToolAreaSizeSlider;
-    
+
+	//heightmap editor
+	QPushButton* heightmapToggleButton;
+	QSlider* heightmapBrushSize;
+	QComboBox* heightmapToolImage;
+	QRadioButton* heightmapDrawingRelative;
+	QRadioButton* heightmapDrawingAverage;
+	QRadioButton* heightmapDrawingAbsolute;
+	QSlider* heightmapStrength;
+	QSlider* heightmapAverageStrength;
+
+	//tilemassk editor
+	QPushButton* tilemaskToggleButton;
+	QSlider* tilemaskBrushSize;
+	QComboBox* tilemaskToolImage;
+	QSlider* tilemaskStrength;
+	QComboBox* tilemaskDrawTexture;
+
     QAction *resentSceneActions[EditorSettings::RESENT_FILES_COUNT];
     QAction *nodeActions[ResourceEditor::NODE_COUNT];
     QAction *viewportActions[ResourceEditor::VIEWPORT_COUNT];

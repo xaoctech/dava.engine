@@ -35,6 +35,7 @@ namespace DAVA
 SceneSystem::SceneSystem(Scene * _scene)
 :	requiredComponents(0),
 	scene(_scene)
+,	locked(false)
 {
 }
 
@@ -76,6 +77,16 @@ void SceneSystem::Process()
 Scene * SceneSystem::GetScene()
 {
 	return scene;
+}
+
+void SceneSystem::SetLocked(bool locked)
+{
+	this->locked = locked;
+}
+
+bool SceneSystem::IsLocked()
+{
+	return locked;
 }
 
 };

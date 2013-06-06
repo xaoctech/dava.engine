@@ -25,6 +25,8 @@
 
 #include "ModificationWidget.h"
 
+#include "Qt/Scene/System/LandscapeEditorDrawSystem.h"
+
 
 QtMainWindow::QtMainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -122,6 +124,8 @@ void QtMainWindow::SetupActions()
     
 	//Edit
 	connect(ui->actionConvertToShadow, SIGNAL(triggered()), actionHandler, SLOT(ConvertToShadow()));
+
+	connect(ui->actionEnableNotPassable, SIGNAL(triggered()), this, SLOT(EnableNotPassableNew()));
 }
 
 void QtMainWindow::SetupMainMenu()
@@ -560,3 +564,25 @@ void QtMainWindow::UpdateLibraryFileTypes(bool showDAEFiles, bool showSC2Files)
 	emit LibraryFileTypesChanged(showDAEFiles, showSC2Files);
 }
 
+void QtMainWindow::EnableNotPassableNew()
+{
+	SceneEditorProxy* sep = GetCurrentScene();
+	if (!sep)
+	{
+		return;
+	}
+	
+	if (sep->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled())
+	{
+		sep->landscapeEditorDrawSystem->DisableNotPassableTerrain();
+	}
+	else
+	{
+		sep->landscapeEditorDrawSystem->EnableNotPassableTerrain();
+	}
+}
+
+SceneEditorProxy* QtMainWindow::GetCurrentScene()
+{
+	return ui->sceneTabWidget->GetCurrentScene();
+}

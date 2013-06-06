@@ -21,6 +21,27 @@ protected:
 	static void UpdateLandscapeHeightmap(const FilePath & filename);
 };
 
+
+class HeightmapProxy;
+
+class CommandModifyHeightmap: public HeightmapModificationCommand
+{
+public:
+	CommandModifyHeightmap(HeightmapProxy* heightmapProxy,
+						   Heightmap* originalHeightmap,
+						   const Rect& updatedRect);
+	virtual ~CommandModifyHeightmap();
+
+protected:
+	FilePath undoFilename;
+	FilePath redoFilename;
+	HeightmapProxy* heightmapProxy;
+
+	virtual void Execute();
+	virtual void Cancel();
+};
+
+
 class CommandDrawHeightmap: public HeightmapModificationCommand
 {
 public:

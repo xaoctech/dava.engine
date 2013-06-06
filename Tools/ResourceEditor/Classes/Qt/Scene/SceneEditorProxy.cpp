@@ -5,6 +5,10 @@
 #include "Scene/System/SelectionSystem.h"
 #include "Scene/System/ModifSystem.h"
 #include "Scene/System/HoodSystem.h"
+#include "Scene/System/LandscapeEditorDrawSystem.h"
+#include "Scene/System/HeightmapEditorSystem.h"
+#include "Scene/System/TilemaskEditorSystem.h"
+#include "Scene/System/CustomColorsSystem.h"
 #include "Scene/SceneSignals.h"
 
 // framework
@@ -30,6 +34,18 @@ SceneEditorProxy::SceneEditorProxy()
 
 	modifSystem = new EntityModificationSystem(this, collisionSystem, cameraSystem, hoodSystem);
 	AddSystem(modifSystem, 0);
+
+	landscapeEditorDrawSystem = new LandscapeEditorDrawSystem(this);
+	AddSystem(landscapeEditorDrawSystem, 0);
+
+	heightmapEditorSystem = new HeightmapEditorSystem(this);
+	AddSystem(heightmapEditorSystem, 0);
+
+	tilemaskEditorSystem = new TilemaskEditorSystem(this);
+	AddSystem(tilemaskEditorSystem, 0);
+
+	customColorsSystem = new CustomColorsSystem(this);
+	AddSystem(customColorsSystem, 0);
 
 	SceneSignals::Instance()->EmitOpened(this);
 }
@@ -119,6 +135,10 @@ void SceneEditorProxy::Update(float timeElapsed)
 	hoodSystem->Update(timeElapsed);
 	selectionSystem->Update(timeElapsed);
 	modifSystem->Update(timeElapsed);
+	landscapeEditorDrawSystem->Update(timeElapsed);
+	heightmapEditorSystem->Update(timeElapsed);
+	tilemaskEditorSystem->Update(timeElapsed);
+	customColorsSystem->Update(timeElapsed);
 }
 
 void SceneEditorProxy::PostUIEvent(DAVA::UIEvent *event)
@@ -129,6 +149,9 @@ void SceneEditorProxy::PostUIEvent(DAVA::UIEvent *event)
 	hoodSystem->ProcessUIEvent(event);
 	selectionSystem->ProcessUIEvent(event);
 	modifSystem->ProcessUIEvent(event);
+	heightmapEditorSystem->ProcessUIEvent(event);
+	tilemaskEditorSystem->ProcessUIEvent(event);
+	customColorsSystem->ProcessUIEvent(event);
 }
 
 void SceneEditorProxy::SetViewportRect(const DAVA::Rect &newViewportRect)

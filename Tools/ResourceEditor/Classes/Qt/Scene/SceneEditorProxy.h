@@ -13,6 +13,11 @@
 #include "Scene/System/SelectionSystem.h"
 #include "Scene/System/ModifSystem.h"
 
+class LandscapeEditorDrawSystem;
+class HeightmapEditorSystem;
+class TilemaskEditorSystem;
+class CustomColorsSystem;
+
 class SceneEditorProxy : public DAVA::Scene
 {
 public:
@@ -25,6 +30,10 @@ public:
 	HoodSystem *hoodSystem;
 	SceneSelectionSystem *selectionSystem;
 	EntityModificationSystem *modifSystem;
+	LandscapeEditorDrawSystem* landscapeEditorDrawSystem;
+	HeightmapEditorSystem* heightmapEditorSystem;
+	TilemaskEditorSystem* tilemaskEditorSystem;
+	CustomColorsSystem* customColorsSystem;
 
 	bool Load(const DAVA::FilePath &path);
 	bool Save(const DAVA::FilePath &path);

@@ -19,7 +19,9 @@ public:
 	Ui::MainWindow* GetUI();
     
     virtual bool eventFilter(QObject *, QEvent *);
-    
+
+	SceneEditorProxy* GetCurrentScene();
+
 private:
 	void OpenLastProject();
 
@@ -49,6 +51,8 @@ public slots:
 	void UpdateParticleSprites();
 
 	void RepackAndReloadScene();
+
+	void EnableNotPassableNew();
 
 private slots:
 	void ProjectOpened(const QString &path);
