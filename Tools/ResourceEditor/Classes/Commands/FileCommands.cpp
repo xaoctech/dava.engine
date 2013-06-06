@@ -237,6 +237,51 @@ void CommandSaveScene::SaveParticleEmitterNodeRecursive(Entity* parentNode)
 	}
 }
 
+CommandSaveSpecifiedScene::CommandSaveSpecifiedScene(Entity* activeScene, FilePath& filePath)
+:	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_SAVE_SPECIFIED_SCENE)
+{
+	this->activeScene	= activeScene;
+	this->filePath		= filePath;
+}
+
+void CommandSaveSpecifiedScene::Execute()
+{
+	if(NULL == activeScene)
+	{
+		return;
+	}
+
+	QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save Scene File"), 
+													QString(this->filePath.GetAbsolutePathname().c_str()),
+													QString("Scene File (*.sc2)"));
+	if(0 < filePath.size())
+	{
+		FilePath normalizedPathname = PathnameToDAVAStyle(filePath);	
+		EditorSettings::Instance()->AddLastOpenedFile(normalizedPathname);
+
+		DVASSERT(activeScene);
+		Entity* entityToAdd = activeScene->Clone();
+		
+		entityToAdd->RestoreOriginalTransforms();
+
+		Scene* sc = new Scene();
+		sc->AddNode(entityToAdd);
+
+		SceneFileV2 * outFile = new SceneFileV2();
+		
+		outFile->EnableSaveForGame(true);
+		outFile->EnableDebugLog(false);
+
+		outFile->SaveScene(normalizedPathname, sc);
+		
+		SafeRelease(outFile);
+		SafeRelease(entityToAdd); 
+		SafeRelease(sc);
+	}
+
+	QtMainWindowHandler::Instance()->RestoreDefaultFocus();
+}
+
 //Export
 CommandExport::CommandExport(ImageFileFormat fmt)
     :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_EXPORT)
