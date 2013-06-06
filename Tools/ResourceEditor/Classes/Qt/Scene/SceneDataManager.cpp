@@ -53,7 +53,7 @@ SceneData* SceneDataManager::CreateNewScene()
 	return levelScene;	
 }
 
-void SceneDataManager::AddScene(const FilePath &scenePathname)
+Entity* SceneDataManager::AddScene(const FilePath &scenePathname)
 {
     DVASSERT(scenePathname.IsEqualToExtension(".sc2"));
 
@@ -61,14 +61,14 @@ void SceneDataManager::AddScene(const FilePath &scenePathname)
 	if (!sceneData)
 	{
 		DVASSERT(false && "No way to add the scene when SceneGetActive() returns NULL!");
-		return;
+		return NULL;
 	}
 	
 	EditorScene* scene = sceneData->GetScene();
 	if (!scene)
 	{
 		DVASSERT(false && "sceneData->GetScene() returned NULL!");
-		return;
+		return NULL;
 	}
 
     Entity * rootNode = scene->GetRootNode(scenePathname)->Clone();
@@ -108,9 +108,6 @@ void SceneDataManager::AddScene(const FilePath &scenePathname)
     Landscape *landscape = scene->GetLandscape(scene);
     bool needUpdateLandscapeController = (landscape != NULL);
 
-	
-    SafeRelease(rootNode);
-	
     //TODO: need save scene automatically?
     bool changesWereMade = SceneValidator::Instance()->ValidateSceneAndShowErrors(scene);
 //    SceneValidator::Instance()->EnumerateSceneTextures();
@@ -123,6 +120,8 @@ void SceneDataManager::AddScene(const FilePath &scenePathname)
 	SceneHidePreview();
 	UpdateParticleSprites();
 	emit SceneGraphNeedRebuild();
+
+	return rootNode;
 }
 
 void SceneDataManager::EditLevelScene(const FilePath &scenePathname)
