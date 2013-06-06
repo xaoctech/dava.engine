@@ -188,7 +188,6 @@
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.cpp" />
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.cpp" />
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.cpp" />
-    <ClCompile Include="..\..\Sources\Tools\CommandLine\EditorCommandLineParser.cpp" />
     <ClCompile Include="..\..\Sources\Tools\TextureCompression\DXTConverter.cpp" />
     <ClCompile Include="..\..\Sources\Tools\TextureCompression\PVRConverter.cpp" />
     <ClCompile Include="..\..\Sources\Tools\TexturePacker\CommandLineParser.cpp" />
@@ -363,6 +362,7 @@
     <ClCompile Include="Classes\EditorScene.cpp" />
     <ClCompile Include="Classes\FrameworkMain.cpp" />
     <ClCompile Include="Classes\GameCore.cpp" />
+    <ClCompile Include="Classes\ImageTools\ImageTools.cpp" />
     <ClCompile Include="Classes\LandscapeEditor\EditorHeightmap.cpp" />
     <ClCompile Include="Classes\LandscapeEditor\EditorLandscape.cpp" />
     <ClCompile Include="Classes\LandscapeEditor\LandscapeRenderer.cpp" />
@@ -435,15 +435,6 @@
     <ClCompile Include="Classes\Qt\Project\ProjectManager.cpp" />
     <ClCompile Include="Classes\Qt\QResourceEditorProgressDialog\QResourceEditorProgressDialog.cpp" />
     <ClCompile Include="Classes\Qt\QtPosSaver\QtPosSaver.cpp" />
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\Dava\qtDavaVectorPropertyManager.cpp" />
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtbuttonpropertybrowser.cpp" />
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qteditorfactory.cpp" />
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtgroupboxpropertybrowser.cpp" />
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtpropertybrowser.cpp" />
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtpropertybrowserutils.cpp" />
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtpropertymanager.cpp" />
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qttreepropertybrowser.cpp" />
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtvariantproperty.cpp" />
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyData.cpp" />
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyEditor.cpp" />
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyItem.cpp" />
@@ -454,6 +445,7 @@
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaVariant.cpp" />
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection.cpp" />
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection.cpp" />
+    <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataMetaObject.cpp" />
     <ClCompile Include="Classes\Qt\Scene\EntityGroup.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneData.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneDataManager.cpp" />
@@ -620,7 +612,6 @@
     <ClCompile Include="_GeneratedQt\QResourceEditorProgressDialog\QResourceEditorProgressDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\QtIcons_qrc.cpp" />
     <ClCompile Include="_GeneratedQt\QtPosSaver\QtPosSaver_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\QtPropertyBrowser\Dava\qtDavaVectorPropertyManager_moc.cpp" />
     <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyData_moc.cpp" />
     <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyEditor_moc.cpp" />
     <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyItemDelegate_moc.cpp" />
@@ -677,7 +668,6 @@
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.h" />
-    <ClInclude Include="..\..\Sources\Tools\CommandLine\EditorCommandLineParser.h" />
     <ClInclude Include="..\..\Sources\Tools\TextureCompression\DXTConverter.h" />
     <ClInclude Include="..\..\Sources\Tools\TextureCompression\PVRConverter.h" />
     <ClInclude Include="..\..\Sources\Tools\TexturePacker\CommandLineParser.h" />
@@ -930,6 +920,7 @@
     <ClInclude Include="Classes\EditorScene.h" />
     <ClInclude Include="Classes\FrameworkMain.h" />
     <ClInclude Include="Classes\GameCore.h" />
+    <ClInclude Include="Classes\ImageTools\ImageTools.h" />
     <ClInclude Include="Classes\LandscapeEditor\EditorHeightmap.h" />
     <ClInclude Include="Classes\LandscapeEditor\EditorLandscape.h" />
     <ClInclude Include="Classes\LandscapeEditor\LandscapeRenderer.h" />
@@ -1002,15 +993,6 @@
     <ClInclude Include="Classes\Qt\Project\ProjectManager.h" />
     <ClInclude Include="Classes\Qt\QResourceEditorProgressDialog\QResourceEditorProgressDialog.h" />
     <ClInclude Include="Classes\Qt\QtPosSaver\QtPosSaver.h" />
-    <ClInclude Include="Classes\Qt\QtPropertyBrowser\Dava\qtDavaVectorPropertyManager.h" />
-    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtbuttonpropertybrowser.h" />
-    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qteditorfactory.h" />
-    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtgroupboxpropertybrowser.h" />
-    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtpropertybrowser.h" />
-    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtpropertybrowserutils_p.h" />
-    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtpropertymanager.h" />
-    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qttreepropertybrowser.h" />
-    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtvariantproperty.h" />
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtPropertyData.h" />
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtPropertyEditor.h" />
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtPropertyItem.h" />
@@ -1021,6 +1003,7 @@
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaVariant.h" />
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection.h" />
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection.h" />
+    <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataMetaObject.h" />
     <ClInclude Include="Classes\Qt\Scene\EntityGroup.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneData.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneDataManager.h" />

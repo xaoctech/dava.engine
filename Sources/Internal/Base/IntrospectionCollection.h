@@ -1,3 +1,19 @@
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
 #ifndef __DAVAENGINE_INTROSPECTION_COLLECTION_H__
 #define __DAVAENGINE_INTROSPECTION_COLLECTION_H__
 
@@ -8,13 +24,13 @@ namespace DAVA
 	// Класс представляет расширение базового класса IntrospectionMember и описывает члена интроспекции, как коллекцию
 	// Поддерживаемые коллекци - контейнеры с одним шаблонным параметром: Vector, List, Set
 	template<template <typename> class C, typename T>
-	class IntrospectionCollectionImpl : public IntrospectionCollection
+	class InspCollImpl : public InspColl
 	{
 	public:
 		typedef C<T> CollectionT;
 
-		IntrospectionCollectionImpl(const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags = 0)
-			: IntrospectionCollection(_name, _desc, _offset, _type, _flags)
+		InspCollImpl(const char *_name, const InspDesc &_desc, const int _offset, const MetaInfo *_type, int _flags = 0)
+			: InspColl(_name, _desc, _offset, _type, _flags)
 		{ }
 
 		DAVA::MetaInfo* CollectionType() const
@@ -143,7 +159,7 @@ namespace DAVA
 			}
 		}
 
-		const IntrospectionCollection* Collection() const
+		const InspColl* Collection() const
 		{
 			return this;
 		}
@@ -158,9 +174,9 @@ namespace DAVA
 
 	// Функция создает IntrospectionCollection, типы выводятся автоматически
 	template<template <typename> class Container, class T>
-	static IntrospectionCollection* CreateIntrospectionCollection(Container<T> *t, const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags)
+	static InspColl* CreateInspColl(Container<T> *t, const char *_name, const InspDesc &_desc, const int _offset, const MetaInfo *_type, int _flags)
 	{
-		return new IntrospectionCollectionImpl<Container, T>(_name, _desc, _offset, _type, _flags);
+		return new InspCollImpl<Container, T>(_name, _desc, _offset, _type, _flags);
 	}
 };
 

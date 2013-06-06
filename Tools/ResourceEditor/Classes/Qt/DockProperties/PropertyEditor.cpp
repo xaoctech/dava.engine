@@ -1,3 +1,19 @@
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
 #include "DAVAEngine.h"
 #include "Scene/SceneDataManager.h"
 #include "Entity/Component.h"
@@ -16,6 +32,8 @@ PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */)
 	, curNode(NULL)
 	, treeStateHelper(this, this->curModel)
 {
+	SetRefreshTimeout(1000);
+	
 	// global scene manager signals
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneActivated(SceneData *)), this, SLOT(sceneActivated(SceneData *)));
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneChanged(SceneData *)), this, SLOT(sceneChanged(SceneData *)));
@@ -29,7 +47,6 @@ PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */)
 	// MainWindow actions
 	QObject::connect(QtMainWindow::Instance()->GetUI()->actionShowAdvancedProp, SIGNAL(triggered()), this, SLOT(actionShowAdvanced()));
 	advancedMode = QtMainWindow::Instance()->GetUI()->actionShowAdvancedProp->isChecked();
-
 
 	posSaver.Attach(this, "DocPropetyEditor");
 	
@@ -100,14 +117,14 @@ void PropertyEditor::SetAdvancedMode(bool set)
 	}
 }
 
-QtPropertyData* PropertyEditor::AppendIntrospectionInfo(void *object, const DAVA::IntrospectionInfo *info)
+QtPropertyData* PropertyEditor::AppendIntrospectionInfo(void *object, const DAVA::InspInfo *info)
 {
 	QtPropertyData* propData = NULL;
 
 	if(NULL != info)
 	{
 		bool hasMembers = false;
-		const IntrospectionInfo *currentInfo = info;
+		const InspInfo *currentInfo = info;
 
 		// check if there are any memebers
 		while (NULL != currentInfo)
@@ -122,13 +139,15 @@ QtPropertyData* PropertyEditor::AppendIntrospectionInfo(void *object, const DAVA
 
         if(hasMembers)
         {
-			int hasFlags = DAVA::INTROSPECTION_EDITOR;
-			int hasNotFlags = 0;
+			int flags = DAVA::I_VIEW;
 
-			if(!advancedMode) hasNotFlags |= DAVA::INTROSPECTION_EDITOR_READONLY;
+			// in basic mode show only field that can be viewed and edited
+			if(!advancedMode)
+			{
+				flags |= DAVA::I_EDIT;
+			}
 
-			propData = new QtPropertyDataIntrospection(object, currentInfo, hasFlags, hasNotFlags);
-
+			propData = new QtPropertyDataIntrospection(object, currentInfo, flags);
 			if(propData->ChildCount() > 0)
 			{
 				QPair<QtPropertyItem*, QtPropertyItem*> prop = AppendProperty(currentInfo->Name(), propData);
