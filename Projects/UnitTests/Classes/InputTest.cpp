@@ -113,6 +113,13 @@ void InputTest::LoadResources()
 	testButton->SetDebugDraw(true);
 	testButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &InputTest::ButtonPressed));
 
+	staticText = new UIStaticText(Rect(500, 500, 100, 50));
+	font->SetSize(10);
+	staticText->SetFont(font);
+	staticText->SetText(L"StaticText");
+	staticText->SetDebugDraw(true);
+	AddControl(staticText);
+
 	webView1 = new UIWebView(Rect(5, 105, 500, 190));
 	webView1->SetVisible(false);
 	delegate = new UIWebViewDelegate();
@@ -143,6 +150,14 @@ void InputTest::LoadResources()
 	AddControl(webView3);
 
 	AddControl(testButton);
+	
+	//UIStaticText* hit2 = new UIStaticText();
+	staticText->SetShadowColor(DAVA::Color(0xFF/255.f, 0xC4/255.f, 0xC3/255.f, 1.f));
+	staticText->SetShadowOffset(DAVA::Vector2(4.0f, 4.0f));
+	Color faded = staticText->GetBackground()->color;
+	faded.a = 0.1f;
+	staticText->ColorAnimation(faded, 2.0f, Interpolation::LINEAR);
+	staticText->ShadowColorAnimation(faded, 2.0f, Interpolation::LINEAR);
 }
 
 void InputTest::UnloadResources()
