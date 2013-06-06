@@ -238,7 +238,7 @@ void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const FilePa
 	EntityOwnerPropertyHelper::Instance()->UpdateEntityOwner(customProperties);
     if (customProperties->GetString("editor.referenceToOwner", "") == nodePathname.GetAbsolutePathname())
     {
-        Entity *loadedNode = scene->GetRootNode(fromPathname)->Clone();
+        Entity *loadedNode = scene->GetRootNode(fromPathname);
         if(loadedNode)
         {
             Entity *newNode = loadedNode->Clone();
@@ -258,7 +258,7 @@ void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const FilePa
         {
             errors.insert(Format("Cannot load object: %s", fromPathname.GetAbsolutePathname().c_str()));
         }
-
+        
         return;
     }
     
