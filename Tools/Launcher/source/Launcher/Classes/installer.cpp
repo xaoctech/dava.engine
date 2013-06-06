@@ -519,7 +519,7 @@ bool Installer::Update(AvailableSoftWare::SoftWareMap softMap, eAppType type, bo
                                              tr("%1 update available.").arg(name),
                                              tr("Install"),
                                              tr("Cancel"))) {
-                if (!Delete(name, type, force)) {
+                if (type != eAppTypeDependencies && !Delete(name, type, force)) {
                     Logger::GetInstance()->AddLog(tr("Error update %1"));
                     return false;
                 }
