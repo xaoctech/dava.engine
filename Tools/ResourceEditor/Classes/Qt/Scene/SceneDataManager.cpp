@@ -104,7 +104,6 @@ void SceneDataManager::AddScene(const FilePath &scenePathname)
 		sceneData->SetLandscapesControllerScene(scene);
 	}
 
-	SceneHidePreview();
 	UpdateParticleSprites();
 	emit SceneGraphNeedRebuild();
 }
@@ -341,31 +340,6 @@ DAVA::Entity* SceneDataManager::SceneGetRootNode(SceneData *scene)
 	return node;
 }
 
-void SceneDataManager::SceneShowPreview(const DAVA::FilePath &path)
-{
-	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-
-	if(screen)
-	{
-		if(path.IsEqualToExtension(".sc2") && FileSystem::Instance()->IsFile(path))
-		{
-			screen->ShowScenePreview(path);
-		}
-		else
-		{
-			SceneHidePreview();
-		}
-	}
-}
-
-void SceneDataManager::SceneHidePreview()
-{
-	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	if(NULL != screen)
-	{
-		screen->HideScenePreview();
-	}
-}
 
 EditorScene * SceneDataManager::RegisterNewScene()
 {

@@ -115,8 +115,6 @@ void LibraryView::FileSelectionChanged(const QItemSelection & selected, const QI
 			previewPath = fileInfo.filePath().toStdString();
 		}
 	}
-
-	SceneDataManager::Instance()->SceneShowPreview(previewPath);
 }
 
 void LibraryView::LibraryFileTypesChanged(bool showDAEFiles, bool showSC2Files)

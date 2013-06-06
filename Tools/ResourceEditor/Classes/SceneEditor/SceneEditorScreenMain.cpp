@@ -20,7 +20,6 @@
 
 #include "../Qt/Scene/SceneData.h"
 #include "../Qt/Scene/SceneDataManager.h"
-#include "../Qt/Main/ScenePreviewDialog.h"
 #include "../Qt/Main/QtUtils.h"
 #include "FileSystem/FileSystem.h"
 
@@ -36,8 +35,6 @@ SceneEditorScreenMain::SceneEditorScreenMain()
 
 SceneEditorScreenMain::~SceneEditorScreenMain()
 {
-   	SafeRelease(scenePreviewDialog);
-
     SafeRelease(textureTrianglesDialog);
     SafeRelease(settingsDialog);
 
@@ -85,8 +82,6 @@ void SceneEditorScreenMain::InitControls()
     // add line after menu
     Rect fullRect = GetRect();
     AddLineControl(Rect(0, ControlsFactory::BUTTON_HEIGHT, fullRect.dx, LINE_HEIGHT));
-    
-    scenePreviewDialog = new ScenePreviewDialog();
 }
 
 void SceneEditorScreenMain::UnloadResources()
@@ -147,8 +142,6 @@ void SceneEditorScreenMain::ReleaseBodyList()
 
 void SceneEditorScreenMain::AddBodyItem(const WideString &text, bool isCloseable)
 {
-    HideScenePreview();
-    
     EditorScene *scene = SceneDataManager::Instance()->RegisterNewScene();
     SceneDataManager::Instance()->SetActiveScene(scene);
     
@@ -699,21 +692,6 @@ void SceneEditorScreenMain::OnReloadRootNodesQt()
     iBody->bodyControl->OnReloadRootNodesQt();
 }
 
-void SceneEditorScreenMain::ShowScenePreview(const FilePath & scenePathname)
-{
-    if(scenePreviewDialog)
-    {
-        scenePreviewDialog->Show(scenePathname);
-    }
-}
-
-void SceneEditorScreenMain::HideScenePreview()
-{
-    if(scenePreviewDialog)
-    {
-        scenePreviewDialog->Close();
-    }
-}
 
 bool SceneEditorScreenMain::LandscapeEditorModeEnabled()
 {
