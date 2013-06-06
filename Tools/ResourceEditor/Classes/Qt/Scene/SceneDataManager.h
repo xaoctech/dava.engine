@@ -27,7 +27,7 @@ public:
 	SceneData* CreateNewScene();
 
 	// Add the new scene.
-	void AddScene(const FilePath &scenePathname);
+	Entity* AddScene(const FilePath &scenePathname);
 
 	// Edit the existing level scene.
 	void EditLevelScene(const FilePath &scenePathname);
