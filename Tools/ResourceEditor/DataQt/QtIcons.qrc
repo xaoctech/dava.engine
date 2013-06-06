@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="/">
+    <file>QtIconsTextureDialog/convertall.png</file>
+    <file>QtIconsTextureDialog/convert.png</file>
     <file>QtIcons/color.png</file>
     <file>QtIcons/keyminus.png</file>
     <file>QtIcons/keyplus.png</file>

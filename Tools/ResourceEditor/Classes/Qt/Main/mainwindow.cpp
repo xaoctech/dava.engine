@@ -1,3 +1,19 @@
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
 #include "mainwindow.h"
 
 #include "DAVAEngine.h"
@@ -31,7 +47,6 @@
 QtMainWindow::QtMainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-	, convertWaitDialog(NULL)
 	, oldDockSceneGraphMinSize(-1, -1)
 	, oldDockSceneGraphMaxSize(-1, -1)
 	, repackSpritesWaitDialog(NULL)
@@ -100,9 +115,16 @@ void QtMainWindow::SetupActions()
 	connect(ui->actionOpenProject, SIGNAL(triggered()), actionHandler, SLOT(OpenProject()));
 	connect(ui->actionSaveScene, SIGNAL(triggered()), actionHandler, SLOT(SaveScene()));
 	connect(ui->actionSaveToFolder, SIGNAL(triggered()), actionHandler, SLOT(SaveToFolderWithChilds()));
-	connect(ui->actionPNG, SIGNAL(triggered()), actionHandler, SLOT(ExportAsPNG()));
-	connect(ui->actionPVR, SIGNAL(triggered()), actionHandler, SLOT(ExportAsPVR()));
-	connect(ui->actionDXT, SIGNAL(triggered()), actionHandler, SLOT(ExportAsDXT()));
+    
+    ui->actionExportPVRIOS->setData(GPU_POVERVR_IOS);
+    ui->actionExportPVRAndroid->setData(GPU_POVERVR_ANDROID);
+    ui->actionExportTegra->setData(GPU_TEGRA);
+    ui->actionExportMali->setData(GPU_MALI);
+    ui->actionExportAdreno->setData(GPU_ADRENO);
+    ui->actionExportPNG->setData(GPU_UNKNOWN);
+	connect(ui->menuExport, SIGNAL(triggered(QAction *)), actionHandler, SLOT(ExportMenuTriggered(QAction *)));
+    
+    
 	connect(ui->actionReloadAll, SIGNAL(triggered()), actionHandler, SLOT(RepackAndReloadTextures()));
 
 	//View
@@ -214,10 +236,16 @@ void QtMainWindow::SetupMainMenu()
 
     //View Options
     connect(ui->actionShowNotPassableLandscape, SIGNAL(triggered()), actionHandler, SLOT(ToggleNotPassableTerrain()));
-    connect(ui->actionReloadAsPNG, SIGNAL(triggered()), actionHandler, SLOT(ReloadAsPNG()));
-    connect(ui->actionReloadAsPVR, SIGNAL(triggered()), actionHandler, SLOT(ReloadAsPVR()));
-    connect(ui->actionReloadAsDXT, SIGNAL(triggered()), actionHandler, SLOT(ReloadAsDXT()));
-    actionHandler->RegisterTextureFormatActions(FILE_FORMAT_COUNT, ui->actionReloadAsPNG, ui->actionReloadAsPVR, ui->actionReloadAsDXT);
+
+    ui->actionReloadPoverVRIOS->setData(GPU_POVERVR_IOS);
+    ui->actionReloadPoverVRAndroid->setData(GPU_POVERVR_ANDROID);
+    ui->actionReloadTegra->setData(GPU_TEGRA);
+    ui->actionReloadMali->setData(GPU_MALI);
+    ui->actionReloadAdreno->setData(GPU_ADRENO);
+    ui->actionReloadPNG->setData(GPU_UNKNOWN);
+	connect(ui->menuTexturesForGPU, SIGNAL(triggered(QAction *)), actionHandler, SLOT(ReloadMenuTriggered(QAction *)));
+    actionHandler->RegisterTextureGPUActions(GPU_FAMILY_COUNT + 1, ui->actionReloadPoverVRIOS, ui->actionReloadPoverVRAndroid,
+                                             ui->actionReloadTegra, ui->actionReloadMali, ui->actionReloadAdreno, ui->actionReloadPNG);
 
 	//Modifications Options
 	connect(ui->actionModifySelect, SIGNAL(triggered()), actionHandler, SLOT(ModificationSelect()));
@@ -462,31 +490,6 @@ void QtMainWindow::ProjectOpened(const QString &path)
 	UpdateParticleSprites();
 }
 
-bool QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)
-{
-	bool ret = false;
-	if(CommandLineManager::Instance() && !CommandLineManager::Instance()->IsCommandLineModeEnabled() && NULL == convertWaitDialog)
-	{
-		// check if we have textures to convert - 
-		// if we have function will return true and conversion will start in new thread
-		// signal 'readyAll' will be emited when convention finishes
-		if(TextureConvertor::Instance()->checkAndCompressAll(forceConvertAll))
-		{
-			ret = true;
-			convertWaitDialog = new QProgressDialog(this);
-			QObject::connect(TextureConvertor::Instance(), SIGNAL(readyAll()), convertWaitDialog, SLOT(close()));
-			QObject::connect(TextureConvertor::Instance(), SIGNAL(convertStatus(const QString &, int, int)), this, SLOT(ConvertWaitStatus(const QString &, int, int)));
-			QObject::connect(convertWaitDialog, SIGNAL(destroyed(QObject *)), this, SLOT(ConvertWaitDone(QObject *)));
-			convertWaitDialog->setModal(true);
-			convertWaitDialog->setCancelButton(NULL);
-			convertWaitDialog->setAttribute(Qt::WA_DeleteOnClose);
-			convertWaitDialog->setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::CustomizeWindowHint | Qt::WindowMinimizeButtonHint);
-			convertWaitDialog->show();
-		}
-	}
-	return ret;
-}
-
 void QtMainWindow::UpdateParticleSprites()
 {
 	if(repackSpritesWaitDialog != NULL)
@@ -514,17 +517,6 @@ void QtMainWindow::UpdateParticleSprites()
 void QtMainWindow::RepackAndReloadScene()
 {
 	emitRepackAndReloadFinished = true;
-	if(!TextureCheckConvetAndWait())
-	{
-		// conversion hasn't been started, run repack immediately 
-		// in another case repack will be invoked in finishing callback (ConvertWaitDone)
-		UpdateParticleSprites();
-	}
-}
-
-void QtMainWindow::ConvertWaitDone(QObject *destroyed)
-{
-	convertWaitDialog = NULL;
 	UpdateParticleSprites();
 }
 
@@ -537,16 +529,6 @@ void QtMainWindow::RepackSpritesWaitDone(QObject *destroyed)
 
 	emitRepackAndReloadFinished = false;
 	repackSpritesWaitDialog = NULL;
-}
-
-void QtMainWindow::ConvertWaitStatus(const QString &curPath, int curJob, int jobCount)
-{
-	if(NULL != convertWaitDialog)
-	{
-		convertWaitDialog->setRange(0, jobCount);
-		convertWaitDialog->setValue(curJob);
-		convertWaitDialog->setLabelText(curPath);
-	}
 }
 
 void QtMainWindow::LibraryFileTypesChanged()
