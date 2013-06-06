@@ -254,9 +254,13 @@ void CommandDebugFlags::Execute()
     Entity *node = activeScene->GetSelectedNode();
     if(node)
     {
-        if (node->GetDebugFlags() & DebugRenderComponent::DEBUG_DRAW_ALL)
+        if ((node->GetDebugFlags() & DebugRenderComponent::DEBUG_DRAW_ALL) == DebugRenderComponent::DEBUG_DRAW_ALL)
         {
             node->SetDebugFlags(0, true);
+            if(activeScene->GetSelectedNode() == node)
+            {
+                node->SetDebugFlags(DebugRenderComponent::DEBUG_DRAW_AABOX_CORNERS);
+            }
         }
         else
         {
