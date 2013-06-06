@@ -82,6 +82,16 @@ void EditorScene::Update(float32 timeElapsed)
 	collisionWorld->updateAabbs();
 }
 
+void EditorScene::RemoveNode(Entity * node)
+{
+	if(NULL != node)
+	{
+		node->RemoveComponent(Component::BULLET_COMPONENT);
+	}
+
+	Scene::RemoveNode(node);
+}
+
 void EditorScene::UpdateBullet(Entity * curr)
 {
 	if(NULL != curr)
@@ -107,6 +117,7 @@ void EditorScene::CheckNodes(Entity * curr)
 		bool newDebugComp = false;
 		DebugRenderComponent *dbgComp = NULL;
 		BulletComponent * bulletComponent = (BulletComponent*)curr->GetComponent(Component::BULLET_COMPONENT);
+		bool bulletCompAdded = false;
 
 		// create debug render component for all nodes
 		dbgComp = (DebugRenderComponent *) curr->GetComponent(Component::DEBUG_RENDER_COMPONENT);
@@ -153,6 +164,8 @@ void EditorScene::CheckNodes(Entity * curr)
 				bulletComponent = (BulletComponent*) curr->GetOrCreateComponent(Component::BULLET_COMPONENT);
 				bulletComponent->SetBulletObject(bObj);
 				SafeRelease(bObj);
+
+				bulletCompAdded = true;
 			}
 		}
 
@@ -170,6 +183,8 @@ void EditorScene::CheckNodes(Entity * curr)
 				bulletComponent = (BulletComponent*) curr->GetOrCreateComponent(Component::BULLET_COMPONENT);
 				bulletComponent->SetBulletObject(bObj);
 				SafeRelease(bObj);
+
+				bulletCompAdded = true;
 			}
 		}
 
@@ -187,6 +202,8 @@ void EditorScene::CheckNodes(Entity * curr)
 					bulletComponent = (BulletComponent*) curr->GetOrCreateComponent(Component::BULLET_COMPONENT);
 					bulletComponent->SetBulletObject(bObj);
 					SafeRelease(bObj);
+
+					bulletCompAdded = true;
 				}
 			}
 		}
