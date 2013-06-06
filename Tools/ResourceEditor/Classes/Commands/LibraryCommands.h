@@ -14,7 +14,6 @@ protected:
     bool CheckExtension(const DAVA::String &extenstionToChecking);
     
 protected:
-    
     DAVA::FilePath filePathname;
 };
 
@@ -23,8 +22,10 @@ class CommandAddScene: public LibraryCommand
 {
 public:	
 	DAVA_DEPRECATED(CommandAddScene(const DAVA::FilePath &pathname));// DEPRECATED: using of SceneDataManager
+	~CommandAddScene();
 
 protected:	
+	DAVA::Entity *entity;
     
     virtual void Execute();
     virtual void Cancel();
