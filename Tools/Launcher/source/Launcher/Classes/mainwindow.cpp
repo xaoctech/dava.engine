@@ -23,7 +23,7 @@
 #include "processhelper.h"
 #include "settings.h"
 
-#define LAUNCER_VER "0.86"
+#define LAUNCER_VER "0.87"
 
 #define COLUMN_NAME 0
 #define COLUMN_CUR_VER 1
@@ -243,7 +243,11 @@ void MainWindow::UpdateBtn() {
             ui->btnRun->setVisible(true);
         } break;
         case DEP_TAB: {
-            ui->btnReinstall->setVisible(true);
+            ui->btnRemove->setEnabled(false);
+            ui->btnInstall->setVisible(false);
+            ui->btnRun->setVisible(false);
+            ui->btnReinstall->setVisible(false);
+            ui->btnCancel->setVisible(false);
         }break;
         }
 
