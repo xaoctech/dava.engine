@@ -5,9 +5,9 @@
 #-------------------------------------------------
 
 
-DEFINES += LAUNCER_VER=\\\"0.85\\\"
+DEFINES += LAUNCER_VER=\\\"0.86\\\"
 
-QT       += core gui network
+QT       += core gui network webkit
 
 TARGET = Launcher
 TEMPLATE = app
