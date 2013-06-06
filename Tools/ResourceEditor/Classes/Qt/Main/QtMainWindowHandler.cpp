@@ -1292,7 +1292,7 @@ void QtMainWindowHandler::UpdateTilemaskTileTextures()
 		Image* tileImage = tileTexture->CreateImageFromMemory();
 		tileImage->ResizeCanvas(previewWidth, previewHeight);
 
-		QImage img = TextureConvertor::fromDavaImage(tileImage);
+		QImage img = TextureConvertor::FromDavaImage(tileImage);
 		QIcon icon = QIcon(QPixmap::fromImage(img));
 
 		tilemaskDrawTexture->addItem(icon, "");

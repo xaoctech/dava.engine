@@ -286,7 +286,7 @@ void CustomColorsSystem::SetBrushSize(int32 brushSize)
 void CustomColorsSystem::SetColor(int32 colorIndex)
 {
 	Vector<Color> customColors = EditorConfig::Instance()->GetColorPropertyValues("LandscapeCustomColors");
-	if (colorIndex >= 0 && colorIndex < customColors.size())
+	if (colorIndex >= 0 && colorIndex < (int32)customColors.size())
 	{
 		drawColor = customColors[colorIndex];
 	}

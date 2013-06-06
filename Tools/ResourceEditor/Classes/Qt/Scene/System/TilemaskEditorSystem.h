@@ -54,7 +54,7 @@ public:
 	void SetToolImage(const FilePath& toolImagePath);
 	void SetTileTexture(uint32 tileTexture);
 	
-	int32 GetTileTextureCount() const;
+	uint32 GetTileTextureCount() const;
 	Texture* GetTileTexture(int32 index);
 	
 protected:
