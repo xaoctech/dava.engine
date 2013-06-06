@@ -365,14 +365,14 @@ Rect TilemaskEditorSystem::GetUpdatedRect()
 	return r;
 }
 
-int32 TilemaskEditorSystem::GetTileTextureCount() const
+uint32 TilemaskEditorSystem::GetTileTextureCount() const
 {
 	return 4;
 }
 
 Texture* TilemaskEditorSystem::GetTileTexture(int32 index)
 {
-	if (index < 0 || index >= GetTileTextureCount())
+	if (index < 0 || index >= (int32)GetTileTextureCount())
 	{
 		return NULL;
 	}

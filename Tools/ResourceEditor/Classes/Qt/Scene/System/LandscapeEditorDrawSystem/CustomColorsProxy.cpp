@@ -33,7 +33,7 @@ CustomColorsProxy::CustomColorsProxy(int32 size)
 ,	spriteChanged(false)
 ,	size(size)
 {
-	customColorsSprite = Sprite::CreateAsRenderTarget(size, size, FORMAT_RGBA8888);
+	customColorsSprite = Sprite::CreateAsRenderTarget((float32)size, (float32)size, FORMAT_RGBA8888);
 	RenderManager::Instance()->SetRenderTarget(customColorsSprite);
 	Vector<Color> customColors = EditorConfig::Instance()->GetColorPropertyValues("LandscapeCustomColors");
 	if (customColors.size())

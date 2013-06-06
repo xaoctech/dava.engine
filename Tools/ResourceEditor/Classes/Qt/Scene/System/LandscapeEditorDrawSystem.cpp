@@ -143,7 +143,7 @@ void LandscapeEditorDrawSystem::EnableNotPassableTerrain()
 	notPassableTerrainProxy->Enable();
 	notPassableTerrainProxy->UpdateTexture(heightmapProxy,
 										   landscapeProxy->GetLandscapeBoundingBox(),
-										   Rect(0.f, 0.f, heightmapProxy->Size() - 1, heightmapProxy->Size() - 1));
+										   Rect(0.f, 0.f, (float32)(heightmapProxy->Size() - 1), (float32)(heightmapProxy->Size() - 1)));
 	
 	landscapeProxy->SetNotPassableTexture(notPassableTerrainProxy->GetTexture());
 	landscapeProxy->SetNotPassableTextureEnabled(true);
@@ -166,7 +166,7 @@ void LandscapeEditorDrawSystem::DisableNotPassableTerrain()
 void LandscapeEditorDrawSystem::EnableCursor()
 {
 	landscapeProxy->CursorEnable();
-	landscapeProxy->SetBigTextureSize(heightmapProxy->Size());
+	landscapeProxy->SetBigTextureSize((float32)heightmapProxy->Size());
 }
 
 void LandscapeEditorDrawSystem::DisableCursor()
@@ -185,7 +185,7 @@ void LandscapeEditorDrawSystem::SetCursorTexture(Texture* cursorTexture)
 void LandscapeEditorDrawSystem::SetCursorSize(uint32 cursorSize)
 {
 	this->cursorSize = cursorSize;
-	landscapeProxy->SetCursorScale(cursorSize);
+	landscapeProxy->SetCursorScale((float32)cursorSize);
 	UpdateCursorPosition();
 }
 
