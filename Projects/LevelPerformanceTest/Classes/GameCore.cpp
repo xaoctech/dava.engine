@@ -92,7 +92,7 @@ void GameCore::OnAppStarted()
 			{
 				String k = rootNode->GetItemKeyName(i);
 				String levelFile = rootNode->Get(i)->AsString();
-				if(k != "default")
+				if(k != "default" && k != "tutorial")
 					levelsPaths.push_back(levelFile);
 			}
 		}
