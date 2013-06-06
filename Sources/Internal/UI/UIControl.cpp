@@ -1937,9 +1937,7 @@ namespace DAVA
 			FilePath path(sprite->GetRelativePathname());
 			path.TruncateExtension();
 
-			//TODO VK: Fix FilePath::GetFrameworkPath()
-            String pathname = path.GetRelativePathname(FilePath::GetBundleName());
-			pathname.replace(0, 4, "~res:");
+            String pathname = path.GetFrameworkPath();
 			node->Set("sprite", pathname);
 		}
 		// Color

@@ -594,7 +594,7 @@ void CommandLoadInnerEmitterFromYaml::Execute()
 {
     BaseParticleEditorNode* selectedNode = ParticlesEditorController::Instance()->GetSelectedNode();
     InnerEmitterParticleEditorNode* innerEmitterNode = dynamic_cast<InnerEmitterParticleEditorNode*>(selectedNode);
-    if (!innerEmitterNode || !innerEmitterNode->GetInnerEmitter())
+    if (!innerEmitterNode || !innerEmitterNode->GetInnerEmitter() ||!innerEmitterNode->GetParticleLayer())
     {
         return;
     }
@@ -609,7 +609,12 @@ void CommandLoadInnerEmitterFromYaml::Execute()
 
     ParticleEmitter* innerEmitter = innerEmitterNode->GetInnerEmitter();
     innerEmitter->LoadFromYaml(filePath.toStdString());
-	
+
+	// No additional NULL check is needed here - already performed at the beginning.
+	QFileInfo fileInfo(filePath);
+	ParticleLayer* innerEmitterLayer = innerEmitterNode->GetParticleLayer();
+	innerEmitterLayer->innerEmitterPath = FilePath(fileInfo.path().toStdString(), fileInfo.fileName().toStdString());
+
 	// Perform the validation of the Yaml file loaded.
 	String validationMessage;
 	if (ParticlesEditorSceneDataHelper::ValidateParticleEmitter(innerEmitter, validationMessage) == false)

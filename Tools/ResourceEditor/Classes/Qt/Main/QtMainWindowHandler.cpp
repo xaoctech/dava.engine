@@ -528,7 +528,7 @@ void QtMainWindowHandler::OnEntityModified(DAVA::Scene* scene, CommandList::eCom
 {
 	for(DAVA::Set<DAVA::Entity*>::iterator it = affectedEntities.begin(); it != affectedEntities.end(); ++it)
 	{
-		EntityOwnerPropertyHelper::Instance()->UpdateEntityOwner(*it);
+		EntityOwnerPropertyHelper::Instance()->UpdateEntityOwner((*it)->GetCustomProperties());
 	}
 }
 

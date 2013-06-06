@@ -14,4 +14,12 @@ extern "C"
 		}
 		return res;
 	}
+
+	void Java_com_dava_framework_JNIWebView_OnPageLoaded(JNIEnv* env, jobject classthis, int id)
+	{
+		if (DAVA::JniWebView::jniWebView)
+		{
+			DAVA::JniWebView::jniWebView->PageLoaded(id);
+		}
+	}
 };

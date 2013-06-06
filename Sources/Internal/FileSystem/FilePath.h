@@ -45,6 +45,7 @@ public:
     
     enum ePathType
     {
+		PATH_EMPTY = -1,			// empty path, newly created with empty string
         PATH_IN_FILESYSTEM = 0,     // not framework path /Users/... or c:/...
         PATH_IN_RESOURCES,          // ~res:/...
         PATH_IN_DOCUMENTS,          // ~doc:/...
@@ -201,6 +202,13 @@ public:
     static void InitializeBundleName();
 
 	/**
+	 \brief Temporary function to set system path for NPAPI plugins for resolving pathnames such as "~res:/Gfx/image.png"
+	 */
+	#if defined (__DAVAENGINE_NPAPI__)
+	static void InitializeBundleNameNPAPI(const String& pathToNPAPIPlugin);
+	#endif // #if defined (__DAVAENGINE_NPAPI__)
+	
+	/**
         \brief Function to set project path for resolving pathnames such as "~res:/Gfx/image.png"
         \param[in] new project path
 	 */
@@ -284,7 +292,7 @@ protected:
     
 inline bool FilePath::IsEmpty() const
 {
-    return absolutePathname.empty();
+    return (pathType == PATH_EMPTY);
 }
     
 inline FilePath::ePathType FilePath::GetType() const
