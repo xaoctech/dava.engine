@@ -32,6 +32,8 @@ signals:
 	void MouseOver(SceneEditorProxy *scene, const EntityGroup *entities);
 	void MouseOverSelection(SceneEditorProxy *scene, const EntityGroup *entities);
 
+	void UpdateDropperHeight(double height);
+
 public:
 	void EmitOpened(SceneEditorProxy *scene) { emit Opened(scene); }
 	void EmitClosed(SceneEditorProxy *scene) { emit Closed(scene); }
@@ -47,6 +49,8 @@ public:
 
 	void EmitMouseOver(SceneEditorProxy *scene, const EntityGroup *entities) { emit MouseOver(scene, entities); }
 	void EmitMouseOverSelection(SceneEditorProxy *scene, const EntityGroup *entities) { emit MouseOverSelection(scene, entities); }
+
+	void EmitUpdateDropperHeight(DAVA::float32 height) { emit UpdateDropperHeight((double)height); };
 };
 
 #endif // __SCENE_MANAGER_H__

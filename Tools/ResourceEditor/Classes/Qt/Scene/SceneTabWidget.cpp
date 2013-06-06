@@ -188,6 +188,11 @@ void SceneTabWidget::CloseTab(int index)
 	}
 }
 
+SceneEditorProxy* SceneTabWidget::GetCurrentScene() const
+{
+	return GetTabScene(GetCurrentTab());
+}
+
 int SceneTabWidget::GetCurrentTab() const
 {
 	return tabBar->currentIndex();

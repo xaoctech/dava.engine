@@ -5,6 +5,8 @@
 #include "../SceneEditor/EditorBodyControl.h"
 #include "../LandscapeEditor/LandscapesController.h"
 
+#include "../Qt/Scene/System/LandscapeEditorDrawSystem/HeightmapProxy.h"
+
 #include "Utils/Random.h"
 
 HeightmapModificationCommand::HeightmapModificationCommand(Command::eCommandType type,
@@ -290,4 +292,47 @@ LandscapeEditorBase* CommandCopyPasteHeightmap::GetActiveEditor()
 	}
 	
 	return editor;
+}
+
+CommandModifyHeightmap::CommandModifyHeightmap(HeightmapProxy* heightmapProxy,
+											   Heightmap* originalHeightmap,
+											   const Rect& updatedRect)
+:	HeightmapModificationCommand(COMMAND_UNDO_REDO, updatedRect, CommandList::ID_COMMAND_DRAW_HEIGHTMAP)
+,	heightmapProxy(heightmapProxy)
+{
+	commandName = "Heightmap Change";
+	
+	if (originalHeightmap && heightmapProxy)
+	{
+		undoFilename = SaveHeightmap(originalHeightmap);
+		redoFilename = SaveHeightmap(heightmapProxy);
+	}
+}
+
+CommandModifyHeightmap::~CommandModifyHeightmap()
+{
+	FileSystem::Instance()->DeleteFile(undoFilename);
+	FileSystem::Instance()->DeleteFile(redoFilename);
+}
+
+void CommandModifyHeightmap::Execute()
+{
+	Heightmap* h = new Heightmap();
+	h->Load(redoFilename);
+	
+	h->Clone(heightmapProxy);
+	heightmapProxy->UpdateRect(updatedRect);
+	
+	SafeRelease(h);
+}
+
+void CommandModifyHeightmap::Cancel()
+{
+	Heightmap* h = new Heightmap();
+	h->Load(undoFilename);
+	
+	h->Clone(heightmapProxy);
+	heightmapProxy->UpdateRect(updatedRect);
+	
+	SafeRelease(h);
 }
