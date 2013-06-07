@@ -31,6 +31,8 @@
 #include "../Commands/CommandsManager.h"
 #include "../Commands/SceneGraphCommands.h"
 
+#include "Scene3D/Components/CustomPropertiesComponent.h"
+
 SceneGraph::SceneGraph(GraphBaseDelegate *newDelegate, const Rect &rect)
     :   GraphBase(newDelegate, rect)
     ,   workingNode(NULL)
@@ -304,7 +306,7 @@ void SceneGraph::RemoveRootNodes()
         {
             String referenceToOwner;
             
-            KeyedArchive *customProperties = workingNode->GetCustomProperties();
+            CustomPropertiesComponent *customProperties = workingNode->GetCustomProperties();
             if(customProperties && customProperties->IsKeyExists("editor.referenceToOwner"))
             {
                 referenceToOwner = customProperties->GetString("editor.referenceToOwner");

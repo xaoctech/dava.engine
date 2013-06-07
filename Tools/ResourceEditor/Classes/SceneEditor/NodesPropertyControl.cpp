@@ -23,6 +23,8 @@
 #include "EditorConfig.h"
 #include "SceneNodePropertyNames.h"
 
+#include "Scene3D/Components/CustomPropertiesComponent.h"
+
 NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodeProperties)
     :   UIControl(rect)
 {
@@ -222,7 +224,7 @@ void NodesPropertyControl::ReadFrom(Entity *sceneNode)
     {
         propertyList->AddSection("property.scenenode.customproperties", GetHeaderState("property.scenenode.customproperties", true));
         
-        KeyedArchive *customProperties = sceneNode->GetCustomProperties();
+        CustomPropertiesComponent *customProperties = sceneNode->GetCustomProperties();
         Map<String, VariantType*> propsData = customProperties->GetArchieveData();
         for (Map<String, VariantType*>::iterator it = propsData.begin(); it != propsData.end(); ++it)
         {
@@ -265,7 +267,7 @@ void NodesPropertyControl::ReadFrom(Entity *sceneNode)
     }
     else
     {
-        KeyedArchive *customProperties = sceneNode->GetCustomProperties();
+        CustomPropertiesComponent *customProperties = sceneNode->GetCustomProperties();
         if(customProperties && customProperties->IsKeyExists("editor.isLocked"))
         {
             propertyList->AddSection("property.scenenode.customproperties", GetHeaderState("property.scenenode.customproperties", true));
@@ -492,7 +494,7 @@ void NodesPropertyControl::OnStringPropertyChanged(PropertyList *, const String 
     {
         if(currentSceneNode)
         {
-            KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
+            CustomPropertiesComponent *customProperties = currentSceneNode->GetCustomProperties();
             if(customProperties->IsKeyExists(forKey))
             {
                 customProperties->SetString(forKey, newValue);
@@ -515,7 +517,7 @@ void NodesPropertyControl::OnFloatPropertyChanged(PropertyList *, const String &
     {
         if(currentSceneNode)
         {
-            KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
+            CustomPropertiesComponent *customProperties = currentSceneNode->GetCustomProperties();
             if(customProperties->IsKeyExists(forKey))
             {
                 customProperties->SetFloat(forKey, newValue);
@@ -539,7 +541,7 @@ void NodesPropertyControl::OnIntPropertyChanged(PropertyList *, const String &fo
     {
         if(currentSceneNode)
         {
-            KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
+            CustomPropertiesComponent *customProperties = currentSceneNode->GetCustomProperties();
             if(customProperties->IsKeyExists(forKey))
             {
                 customProperties->SetInt32(forKey, newValue);
@@ -563,7 +565,7 @@ void NodesPropertyControl::OnBoolPropertyChanged(PropertyList *, const String &f
 	bool needUpdatePropertyPanel = true;
     if(currentSceneNode)
     {
-        KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
+        CustomPropertiesComponent *customProperties = currentSceneNode->GetCustomProperties();
         
         if(SCENE_NODE_USED_IN_STATIC_LIGHTING_PROPERTY_NAME == forKey)
         {
@@ -607,7 +609,7 @@ void NodesPropertyControl::OnBoolPropertyChanged(PropertyList *, const String &f
         
         if(!createNodeProperties)
         {
-            KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
+            CustomPropertiesComponent *customProperties = currentSceneNode->GetCustomProperties();
             if (forKey == SCENE_NODE_IS_VISIBLE_PROPERTY_NAME)
             {
                 currentSceneNode->SetVisible(newValue);
@@ -620,7 +622,7 @@ void NodesPropertyControl::OnBoolPropertyChanged(PropertyList *, const String &f
         }
         else
         {
-            KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
+            CustomPropertiesComponent *customProperties = currentSceneNode->GetCustomProperties();
             if(customProperties->IsKeyExists(forKey))
             {
                 customProperties->SetBool(forKey, newValue);
@@ -650,7 +652,7 @@ void NodesPropertyControl::OnComboIndexChanged(PropertyList *forList, const Stri
     {
         if(currentSceneNode)
         {
-            KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
+            CustomPropertiesComponent *customProperties = currentSceneNode->GetCustomProperties();
             if(customProperties->IsKeyExists(forKey))
             {
                 customProperties->SetInt32(forKey, newItemIndex);
@@ -708,7 +710,7 @@ void NodesPropertyControl::OnMinus(BaseObject * , void * , void * )
     
     if(currentSceneNode)
     {
-        KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
+        CustomPropertiesComponent *customProperties = currentSceneNode->GetCustomProperties();
         Map<String, VariantType*> propsData = customProperties->GetArchieveData();
         
         int32 size = propsData.size();
@@ -736,7 +738,7 @@ void NodesPropertyControl::NodeCreated(bool success, const String &name, int32 t
     RemoveControl(propControl);
     if(success && currentSceneNode)
     {
-        KeyedArchive *currentProperties = currentSceneNode->GetCustomProperties();
+        CustomPropertiesComponent *currentProperties = currentSceneNode->GetCustomProperties();
         
         switch (type) 
         {
@@ -793,7 +795,7 @@ int32 NodesPropertyControl::ElementsCount(UIList * )
 {
     if(currentSceneNode)
     {
-        KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
+        CustomPropertiesComponent *customProperties = currentSceneNode->GetCustomProperties();
         Map<String, VariantType*> propsData = customProperties->GetArchieveData();
         
         return propsData.size();
@@ -812,7 +814,7 @@ UIListCell *NodesPropertyControl::CellAtIndex(UIList *list, int32 index)
     
     if(currentSceneNode)
     {
-        KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
+        CustomPropertiesComponent *customProperties = currentSceneNode->GetCustomProperties();
         Map<String, VariantType*> propsData = customProperties->GetArchieveData();
         int32 i = 0; 
         for (Map<String, VariantType*>::iterator it = propsData.begin(); it != propsData.end(); ++it, ++i)
@@ -840,7 +842,7 @@ void NodesPropertyControl::OnCellSelected(UIList *, UIListCell *selectedCell)
     if(currentSceneNode)
     {
         int32 index = selectedCell->GetIndex();
-        KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
+        CustomPropertiesComponent *customProperties = currentSceneNode->GetCustomProperties();
         Map<String, VariantType*> propsData = customProperties->GetArchieveData();
         int32 i = 0; 
         for (Map<String, VariantType*>::iterator it = propsData.begin(); it != propsData.end(); ++it, ++i)

@@ -23,6 +23,7 @@
 #include "Scene3D/SceneNodeAnimationKey.h"
 #include "Entity/Component.h"
 #include "FileSystem/KeyedArchive.h"
+#include "Scene3D/Components/CustomPropertiesComponent.h"
 
 
 namespace DAVA
@@ -278,7 +279,7 @@ public:
         \brief Function returns keyed archive of custom properties for this object. 
         Custom properties can be set for each node in editor, and used in the game later to implement game logic.
      */
-    KeyedArchive *GetCustomProperties();
+    CustomPropertiesComponent* GetCustomProperties();
     
     /**
         \brief This function should be implemented in each node that have data nodes inside it.
@@ -339,8 +340,6 @@ protected:
 	int32	tag;
 
     uint32 flags;
-
-    KeyedArchive *customProperties;
     
 private:
 	Vector<Component *> components;
@@ -354,7 +353,6 @@ private:
 public:
 	INTROSPECTION_EXTEND(Entity, BaseObject,
 		MEMBER(name, "Name", I_SAVE | I_VIEW | I_EDIT)
-		MEMBER(customProperties, "Custom properties", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(tag, "Tag", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(flags, "Flags", I_SAVE | I_VIEW | I_EDIT)
 
