@@ -129,10 +129,14 @@ void Installer::FormatFromSetting(AvailableSoftWare::SoftWareMap& softMap, const
 }
 
 void Installer::FormatFromUpdate(AvailableSoftWare::SoftWareMap& softMap, const AppsConfig::AppMap& update) {
+
+    for(AvailableSoftWare::SoftWareMap::iterator softIt = softMap.begin(); softIt != softMap.end(); softIt++) {
+        if(!update.contains(softIt.key()))
+            softIt = softMap.erase(softIt);
+    }
+
     for (AppsConfig::AppMap::const_iterator appIter = update.begin(); appIter != update.end(); ++appIter) {
-        for (AppsConfig::AppVersion::const_iterator iter = appIter.value().begin();
-             iter != appIter.value().end();
-             ++iter) {
+        for (AppsConfig::AppVersion::const_iterator iter = appIter.value().begin(); iter != appIter.value().end(); ++iter) {
             const AppConfig& appConfig = iter.value();
 
             if (softMap.contains(appConfig.m_Name)) {
