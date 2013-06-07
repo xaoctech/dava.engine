@@ -45,7 +45,7 @@ FilePath PVRConverter::ConvertPngToPvr(const TextureDescriptor &descriptor, eGPU
 
 String PVRConverter::GetCommandLinePVR(const TextureDescriptor &descriptor, eGPUFamily gpuFamily)
 {
-	String command = pvrTexToolPathname.GetAbsolutePathname();
+	String command = "\"" + pvrTexToolPathname.GetAbsolutePathname() + "\"";
 	String format = pixelFormatToPVRFormat[(PixelFormat) descriptor.compression[gpuFamily].format];
 
 	if(command != "" && format != "")
