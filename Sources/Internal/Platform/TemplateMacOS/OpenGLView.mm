@@ -251,8 +251,6 @@ static Vector<DAVA::UIEvent> activeTouches;
 void ConvertNSEventToUIEvent(NSEvent *curEvent, UIEvent & event, int32 phase)
 {
     NSPoint p = [curEvent locationInWindow];
-    event.physPoint.x = p.x;
-    event.physPoint.y = Core::Instance()->GetPhysicalScreenHeight() - p.y;
     
     if(InputSystem::Instance()->IsCursorPining())
     {
@@ -261,7 +259,8 @@ void ConvertNSEventToUIEvent(NSEvent *curEvent, UIEvent & event, int32 phase)
     }
     else
     {
-        
+        event.physPoint.x = p.x;
+        event.physPoint.y = Core::Instance()->GetPhysicalScreenHeight() - p.y;
     }
     event.timestamp = curEvent.timestamp;
     event.tapCount = curEvent.clickCount;
