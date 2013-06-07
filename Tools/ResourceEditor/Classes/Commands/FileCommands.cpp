@@ -252,7 +252,25 @@ void CommandSaveSpecifiedScene::Execute()
 		entityToAdd->RestoreOriginalTransforms();
 
 		Scene* sc = new Scene();
-		sc->AddNode(entityToAdd);
+		
+		uint32 size = entityToAdd->GetChildrenCount();
+		KeyedArchive *customProperties = entityToAdd->GetCustomProperties();
+		if (customProperties && customProperties->IsKeyExists(String("editor.referenceToOwner")))
+		{
+			if(!size)
+			{
+				sc->AddNode(entityToAdd);
+			}
+			
+			for(uint32 i = 0; i< size; ++i)
+			{
+				sc->AddNode(entityToAdd->GetChild(i));
+			}
+		}
+		else
+		{
+			sc->AddNode(entityToAdd);
+		}
 
 		SceneFileV2 * outFile = new SceneFileV2();
 		
