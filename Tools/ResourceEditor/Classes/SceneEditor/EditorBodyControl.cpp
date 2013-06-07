@@ -50,6 +50,8 @@
 
 #include "ArrowsNode.h"
 
+#include "Scene3D/Components/CustomPropertiesComponent.h"
+
 #define ARROWS_NODE_NAME "editor.arrows-node"
 
 EditorBodyControl::EditorBodyControl(const Rect & rect)
@@ -784,7 +786,7 @@ void EditorBodyControl::ReloadRootScene(const FilePath &pathToFile)
 
 void EditorBodyControl::ReloadNode(Entity *node, const FilePath &pathToFile)
 {//если в рут ноды сложить такие же рут ноды то на релоаде все накроет пиздой
-    KeyedArchive *customProperties = node->GetCustomProperties();
+    CustomPropertiesComponent *customProperties = node->GetCustomProperties();
     if (customProperties->GetString("editor.referenceToOwner", "") == pathToFile.GetAbsolutePathname())
     {
         Entity *newNode = scene->GetRootNode(pathToFile)->Clone();
@@ -1213,7 +1215,7 @@ void EditorBodyControl::ProcessIsSolidChanging()
     Entity *selectedNode = scene->GetSelection();
     if(selectedNode)
     {
-        KeyedArchive *customProperties = selectedNode->GetCustomProperties();
+        CustomPropertiesComponent *customProperties = selectedNode->GetCustomProperties();
         if(customProperties && customProperties->IsKeyExists(String(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME)))
         {
             bool isSolid = selectedNode->GetSolid();

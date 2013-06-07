@@ -211,7 +211,7 @@ void QSceneGraphTreeView::ShowSceneGraphMenu(const QModelIndex &index, const QPo
             SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
             if(node->GetParent() == activeScene->GetScene())
             {
-                KeyedArchive *properties = node->GetCustomProperties();
+                CustomPropertiesComponent *properties = node->GetCustomProperties();
                 if (properties && properties->IsKeyExists(String("editor.referenceToOwner")))
                 {
                     String filePathname = properties->GetString(String("editor.referenceToOwner"));

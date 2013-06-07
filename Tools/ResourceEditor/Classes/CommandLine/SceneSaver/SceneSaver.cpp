@@ -19,6 +19,8 @@
 
 #include "Qt/Scene/SceneDataManager.h"
 
+#include "Scene3D/Components/CustomPropertiesComponent.h"
+
 using namespace DAVA;
 
 SceneSaver::SceneSaver()
@@ -191,7 +193,7 @@ void SceneSaver::CopyTexture(const FilePath &texturePathname, Set<String> &error
 
 void SceneSaver::CopyReferencedObject( Entity *node, Set<String> &errorLog )
 {
-	KeyedArchive *customProperties = node->GetCustomProperties();
+	CustomPropertiesComponent *customProperties = node->GetCustomProperties();
 	if(customProperties && customProperties->IsKeyExists("editor.referenceToOwner"))
 	{
 		String path = customProperties->GetString("editor.referenceToOwner");

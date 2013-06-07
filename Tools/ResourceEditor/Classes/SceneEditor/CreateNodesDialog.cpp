@@ -29,6 +29,7 @@
 #include "Qt/Scene/SceneDataManager.h"
 #include "Qt/Scene/SceneData.h"
 
+#include "Scene3D/Components/CustomPropertiesComponent.h"
 
 CreateNodesDialog::CreateNodesDialog(const Rect & rect)
     :   DraggableDialog(rect)
@@ -144,7 +145,7 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
         {
             SetHeader(LocalizedString(L"createnode.servicenode"));
             sceneNode = new Entity();
-            KeyedArchive *customProperties = sceneNode->GetCustomProperties();
+            CustomPropertiesComponent *customProperties = sceneNode->GetCustomProperties();
             customProperties->SetBool("editor.isLocked", true);
             sceneNode->SetName("Servicenode");
             break;
@@ -201,7 +202,7 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 			sceneNode->SetName("SwitchNode");
             sceneNode->AddComponent(new SwitchComponent());
             
-			KeyedArchive *customProperties = sceneNode->GetCustomProperties();
+			CustomPropertiesComponent *customProperties = sceneNode->GetCustomProperties();
 			customProperties->SetBool(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
 		}
 			break;
