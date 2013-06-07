@@ -1098,6 +1098,7 @@ bool AutotestingSystem::CheckSavedObjectInDB(MongodbUpdateObject *dbUpdateObject
     
 bool AutotestingSystem::SaveToDB(MongodbUpdateObject *dbUpdateObject)
 {
+	uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
 	Logger::Debug("AutotestingSystem::SaveToDB");
 
     bool ret = dbUpdateObject->SaveToDB(dbClient);
@@ -1107,7 +1108,8 @@ bool AutotestingSystem::SaveToDB(MongodbUpdateObject *dbUpdateObject)
         Logger::Error("AutotestingSystem::SaveToDB failed");
     }
 
-	//Logger::Debug("AutotestingSystem::SaveToDB finish");
+	uint64 finishTime = SystemTimer::Instance()->AbsoluteMS();
+	Logger::Debug("AutotestingSystem::SaveToDB FINISH result time %d", finishTime - startTime);
 	return ret;
 	/*
     else
@@ -1177,7 +1179,7 @@ bool AutotestingSystem::SaveToDB(MongodbUpdateObject *dbUpdateObject)
 void AutotestingSystem::Log(const String &level, const String &message)
 {
 	Logger::Debug("AutotestingSystem::Log [%s]%s", level.c_str(), message.c_str());
-	//uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
+	uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
 	String testId = GetTestId(testIndex);
 	String stepId = GetStepId(stepIndex);
 	String logId = GetLogId(++logIndex);
@@ -1189,7 +1191,7 @@ void AutotestingSystem::Log(const String &level, const String &message)
 	//KeyedArchive* logsArchive = currentStepArchive->GetArchive(AUTOTESTING_LOG, NULL);
 	//KeyedArchive* logEntry = new KeyedArchive();
 	KeyedArchive* logEntry = FindOrInsertTestStepLogEntryArchive(currentStepArchive, logId);
-	
+
 	logEntry->SetString("Type", level);
 	String currentTime = GetCurrentTimeString();
 	logEntry->SetString("Time", currentTime);
@@ -1200,8 +1202,8 @@ void AutotestingSystem::Log(const String &level, const String &message)
     SaveToDB(dbUpdateObject);
 	SafeRelease(dbUpdateObject);
 	//Logger::Debug("AutotestingSystem::Log finish");
-	//uint64 finishTime = SystemTimer::Instance()->AbsoluteMS();
-	//Logger::Debug("AutotestingSystem::Log FINISH start time %d - summary time %d", startTime, finishTime - startTime);
+	uint64 finishTime = SystemTimer::Instance()->AbsoluteMS();
+	Logger::Debug("AutotestingSystem::Log FINISH  summary time %d", finishTime - startTime);
 }
 
 void AutotestingSystem::SaveScreenShotNameToDB()
