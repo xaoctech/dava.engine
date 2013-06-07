@@ -23,6 +23,7 @@
 #include "../Commands/CommandsManager.h"
 #include "../Commands/SceneGraphCommands.h"
 #include "../Commands/LibraryCommands.h"
+#include "../Commands/FileCommands.h"
 
 #include "SceneGraphModel.h"
 
@@ -218,8 +219,10 @@ void QSceneGraphTreeView::ShowSceneGraphMenu(const QModelIndex &index, const QPo
                     AddActionToMenu(&menu, QString("Edit Model"), new CommandEditScene(filePathname));
                     AddActionToMenu(&menu, QString("Reload Model"), new CommandReloadScene(filePathname));
                     AddActionToMenu(&menu, QString("Reload Model From"), new CommandReloadEntityFrom(filePathname));
-                }
-            }
+				}
+			}
+			FilePath filePathForSaveAs(activeScene->GetScenePathname());
+			AddActionToMenu(&menu, QString("Save Scene As"), new CommandSaveSpecifiedScene(node, filePathForSaveAs));
 		}
 	}
 	
