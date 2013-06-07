@@ -95,7 +95,7 @@ String ParticlesEditorNodeNameHelper::GetNewLayerName(const String& name, Partic
 	int i = 0;
 	while (true)
 	{
-		String newName = String(Format("%s%i", ResourceEditor::LAYER_NODE_NAME.c_str(), ++i));
+		String newName = String(Format("%s%i", String("Layer").c_str(), ++i));
 		
 		if (!IsLayerNameExist(newName, emitter))
 			return newName;
