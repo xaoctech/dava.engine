@@ -49,7 +49,7 @@ void ParticleLayerBatch::SetTotalCount(int32 _totalCount)
 	totalCount = _totalCount;
 }
 
-RenderBatch * ParticleLayerBatch::Clone()
+RenderBatch * ParticleLayerBatch::Clone(RenderBatch * destination)
 {
 	ParticleLayerBatch * rb = new ParticleLayerBatch();
 
