@@ -15,6 +15,8 @@
 #include <QMessageBox>
 #include <QString>
 
+#include "CommandsManager.h"
+
 using namespace DAVA;
 
 #if 0
@@ -114,21 +116,26 @@ void CommandNewScene::Execute()
     SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
     if(screen)
     {
-		int answer = QMessageBox::question(NULL, "Scene was changed", "Do you want to save changes in the current scene prior to creating new one?",
-										   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel);
-		
-		if (answer == QMessageBox::Cancel)
-		{
-			return;
-		}
-		
-		if(answer == QMessageBox::Yes)
-		{
-			// Execute this command directly to do not affect the Undo/Redo queue.
-			CommandSaveScene* commandSaveScene = new CommandSaveScene();
-			commandSaveScene->Execute();
-			SafeDelete(commandSaveScene);
-		}
+        SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+        int32 changesCount = CommandsManager::Instance()->GetUndoQueueLength(activeScene->GetScene());
+        if(changesCount)
+        {
+            int answer = QMessageBox::question(NULL, "Scene was changed", "Do you want to save changes in the current scene prior to creating new one?",
+                                               QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel);
+            
+            if (answer == QMessageBox::Cancel)
+            {
+                return;
+            }
+            
+            if(answer == QMessageBox::Yes)
+            {
+                // Execute this command directly to do not affect the Undo/Redo queue.
+                CommandSaveScene* commandSaveScene = new CommandSaveScene();
+                commandSaveScene->Execute();
+                SafeDelete(commandSaveScene);
+            }
+        }
 
 		// Can now create the scene.
 		screen->NewScene();
@@ -228,6 +235,51 @@ void CommandSaveScene::SaveParticleEmitterNodeRecursive(Entity* parentNode)
 	{
 		SaveParticleEmitterNodeRecursive(parentNode->GetChild(i));
 	}
+}
+
+CommandSaveSpecifiedScene::CommandSaveSpecifiedScene(Entity* activeScene, FilePath& filePath)
+:	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_SAVE_SPECIFIED_SCENE)
+{
+	this->activeScene	= activeScene;
+	this->filePath		= filePath;
+}
+
+void CommandSaveSpecifiedScene::Execute()
+{
+	if(NULL == activeScene)
+	{
+		return;
+	}
+
+	QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save Scene File"), 
+													QString(this->filePath.GetAbsolutePathname().c_str()),
+													QString("Scene File (*.sc2)"));
+	if(0 < filePath.size())
+	{
+		FilePath normalizedPathname = PathnameToDAVAStyle(filePath);	
+		EditorSettings::Instance()->AddLastOpenedFile(normalizedPathname);
+
+		DVASSERT(activeScene);
+		Entity* entityToAdd = activeScene->Clone();
+		
+		entityToAdd->RestoreOriginalTransforms();
+
+		Scene* sc = new Scene();
+		sc->AddNode(entityToAdd);
+
+		SceneFileV2 * outFile = new SceneFileV2();
+		
+		outFile->EnableSaveForGame(true);
+		outFile->EnableDebugLog(false);
+
+		outFile->SaveScene(normalizedPathname, sc);
+		
+		SafeRelease(outFile);
+		SafeRelease(entityToAdd); 
+		SafeRelease(sc);
+	}
+
+	QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 }
 
 //Export
