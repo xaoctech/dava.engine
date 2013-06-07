@@ -32,8 +32,9 @@
 
 #include "Scene3D/Components/CameraComponent.h"
 
-#include "Main/QtMainWindowHandler.h"
+#include "ParticlesEditorQT/Helpers/ParticlesEditorNodeNameHelper.h"
 
+#include "Main/QtMainWindowHandler.h"
 
 #include "Main/QtUtils.h"
 #include "DockSceneGraph/PointerHolder.h"
@@ -85,6 +86,8 @@ void SceneData::AddSceneNode(DAVA::Entity *node)
     // Firstly ask Particle Editor to add this node.
     if (particlesEditorSceneDataHelper.AddSceneNode(node) == false)
     {
+		String newName = ParticlesEditorNodeNameHelper::GetNewNodeName(node->GetName(), scene);
+		node->SetName(newName);
         scene->AddNode(node);
     }
     
