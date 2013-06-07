@@ -370,6 +370,7 @@
     <ClCompile Include="Classes\LandscapeEditor\NotPassableTerrain.cpp" />
     <ClCompile Include="Classes\LandscapeEditor\RulerToolLandscape.cpp" />
     <ClCompile Include="Classes\LightmapsPacker.cpp" />
+    <ClCompile Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorNodeNameHelper.cpp" />
     <ClCompile Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSceneDataHelper.cpp" />
     <ClCompile Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSceneModelHelper.cpp" />
     <ClCompile Include="Classes\ParticlesEditorQT\Nodes\BaseParticleEditorNode.cpp" />
@@ -921,6 +922,7 @@
     <ClInclude Include="Classes\LandscapeEditor\RulerToolLandscape.h" />
     <ClInclude Include="Classes\LightmapAtlasingData.h" />
     <ClInclude Include="Classes\LightmapsPacker.h" />
+    <ClInclude Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorNodeNameHelper.h" />
     <ClInclude Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSceneDataHelper.h" />
     <ClInclude Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSceneModelHelper.h" />
     <ClInclude Include="Classes\ParticlesEditorQT\Nodes\BaseParticleEditorNode.h" />
