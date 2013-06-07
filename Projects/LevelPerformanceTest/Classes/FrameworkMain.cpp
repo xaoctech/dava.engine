@@ -32,20 +32,36 @@
  
 using namespace DAVA;
 
+#define IOS_WIDTH (960) // 960 2048 
+#define IOS_HEIGHT (640) // 640 1536
 
 void FrameworkDidLaunched()
 {
-#if defined(__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
-	KeyedArchive * appOptions = new KeyedArchive();
+    KeyedArchive * appOptions = new KeyedArchive();
+
+#if defined(__DAVAENGINE_IPHONE__)
 	appOptions->SetInt32("orientation", Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT);
     appOptions->SetInt32("renderer", Core::RENDERER_OPENGL_ES_2_0);
 	
 	DAVA::Core::Instance()->SetVirtualScreenSize(1024, 768);
 	DAVA::Core::Instance()->RegisterAvailableResourceSize(1024, 768, "Gfx");
+
+#elif defined(__DAVAENGINE_ANDROID__)
+
+    appOptions->SetInt32("orientation", Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT);
+
+    appOptions->SetInt32("width",  IOS_WIDTH);
+    appOptions->SetInt32("height", IOS_HEIGHT);
+
+    DAVA::Core::Instance()->SetVirtualScreenSize(IOS_WIDTH, IOS_HEIGHT);
+    DAVA::Core::Instance()->SetProportionsIsFixed(false);
+    DAVA::Core::Instance()->RegisterAvailableResourceSize(IOS_WIDTH, IOS_HEIGHT, "Gfx");
+
+    appOptions->SetBool("Android_autodetectScreenScaleFactor", true);
+    appOptions->SetFloat("phisicalToNativeControlsScaleFactor", 1.0f);
+    appOptions->SetInt32("renderer", Core::RENDERER_OPENGL_ES_2_0);
 	
 #else
-	KeyedArchive * appOptions = new KeyedArchive();
-	
 	appOptions->SetInt32("width",	1024);
 	appOptions->SetInt32("height", 768);
 	
