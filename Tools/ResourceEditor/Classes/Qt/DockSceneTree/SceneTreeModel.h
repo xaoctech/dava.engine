@@ -34,7 +34,7 @@ public:
 	SceneTreeModel(QObject* parent = 0);
 	~SceneTreeModel();
 
-	virtual QVariant data(const QModelIndex &index, int role) const;
+	// virtual QVariant data(const QModelIndex &index, int role) const;
 
 	void SetScene(SceneEditorProxy *scene);
 	SceneEditorProxy* GetScene() const;

@@ -68,6 +68,7 @@ QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
     ,   statusBar(NULL)
 {
     new CommandsManager();
+	new TextureBrowser((QWidget *) parent);
     
     ClearActions(ResourceEditor::NODE_COUNT, nodeActions);
     ClearActions(ResourceEditor::VIEWPORT_COUNT, viewportActions);
@@ -106,6 +107,7 @@ QtMainWindowHandler::~QtMainWindowHandler()
 	ClearActions(ResourceEditor::MODIFY_COUNT, modificationActions);
 	ClearActions(ResourceEditor::EDIT_COUNT, editActions);
 
+	TextureBrowser::Instance()->Release();
     CommandsManager::Instance()->Release();
 }
 
@@ -215,12 +217,11 @@ void QtMainWindowHandler::TilemapEditor()
 
 void QtMainWindowHandler::ConvertTextures()
 {
-	TextureBrowser *textureBrowser = new TextureBrowser((QWidget *) parent());
-	SceneData *activeScene =  SceneDataManager::Instance()->SceneGetActive();
+	SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
 	
-	textureBrowser->sceneActivated(activeScene);
-	textureBrowser->sceneNodeSelected(activeScene, SceneDataManager::Instance()->SceneGetSelectedNode(activeScene));
-	textureBrowser->show();
+	TextureBrowser::Instance()->sceneActivated(activeScene);
+	TextureBrowser::Instance()->sceneNodeSelected(activeScene, SceneDataManager::Instance()->SceneGetSelectedNode(activeScene));
+	TextureBrowser::Instance()->show();
 }
 
 void QtMainWindowHandler::SetViewport(ResourceEditor::eViewportType type)
