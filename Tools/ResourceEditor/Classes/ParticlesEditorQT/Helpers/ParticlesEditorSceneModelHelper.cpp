@@ -171,7 +171,7 @@ bool ParticlesEditorSceneModelHelper::AddNodeToSceneGraph(SceneGraphItem *graphI
     if (!effectEditorNode)
     {
         // Possible while loading projects - register the node in this case.
-        effectEditorNode = ParticlesEditorController::Instance()->RegisterParticleEffectNode(node);
+        effectEditorNode = ParticlesEditorController::Instance()->RegisterParticleEffectNode(node, false);
     }
     
     if (graphItem->GetExtraUserData() == NULL)
