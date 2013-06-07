@@ -126,6 +126,7 @@ protected:
 	void InitSubcontrols();
 	void AttachToSubcontrols();
 	void ReleaseAllSubcontrols();
+	void InitInactiveParts(Sprite* spr);
 };
     
     
