@@ -12,7 +12,6 @@
 #include "../Qt/Scene/SceneDataManager.h"
 
 #include <QFileDialog>
-#include <QMessageBox>
 #include <QString>
 
 #include "CommandsManager.h"
@@ -116,30 +115,19 @@ void CommandNewScene::Execute()
     SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
     if(screen)
     {
-        SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
-        int32 changesCount = CommandsManager::Instance()->GetUndoQueueLength(activeScene->GetScene());
-        if(changesCount)
+        SceneData *levelScene = SceneDataManager::Instance()->SceneGetLevel();
+        int32 saved = SaveSceneIfChanged(levelScene->GetScene());
+        if(saved == MB_FLAG_CANCEL)
         {
-            int answer = QMessageBox::question(NULL, "Scene was changed", "Do you want to save changes in the current scene prior to creating new one?",
-                                               QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel);
-            
-            if (answer == QMessageBox::Cancel)
-            {
-                return;
-            }
-            
-            if(answer == QMessageBox::Yes)
-            {
-                // Execute this command directly to do not affect the Undo/Redo queue.
-                CommandSaveScene* commandSaveScene = new CommandSaveScene();
-                commandSaveScene->Execute();
-                SafeDelete(commandSaveScene);
-            }
+            return;
         }
 
 		// Can now create the scene.
 		screen->NewScene();
-        SceneValidator::Instance()->EnumerateSceneTextures();
+        //SceneValidator::Instance()->EnumerateSceneTextures();
+        
+        SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+        SceneDataManager::Instance()->SetActiveScene(activeScene->GetScene());
     }
 }
 
@@ -149,7 +137,6 @@ CommandSaveScene::CommandSaveScene()
 :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_SAVE_SCENE)
 {
 }
-
 
 void CommandSaveScene::Execute()
 {

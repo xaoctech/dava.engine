@@ -1707,6 +1707,9 @@
     <ClCompile Include="Classes\SceneEditor\EntityOwnerPropertyHelper.cpp">
       <Filter>Classes\SceneEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorNodeNameHelper.cpp">
+      <Filter>Classes\ParticlesEditorQT\Helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3001,6 +3004,9 @@
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\EntityOwnerPropertyHelper.h">
       <Filter>Classes\SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorNodeNameHelper.h">
+      <Filter>Classes\ParticlesEditorQT\Helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
