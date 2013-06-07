@@ -78,6 +78,8 @@ void Installer::UpdateConfigFinished(const AppsConfig & update) {
         }
     }
 
+    emit WebPageUpdated(m_AppsConfig.m_pageUrl);
+
     Update(m_AvailableSoftWare.m_Stable, eAppTypeStable, true);
     Update(m_AvailableSoftWare.m_Test, eAppTypeTest, true);
 //  Update(m_AvailableSoftWare.m_Development, eAppTypeDevelopment);
@@ -344,6 +346,7 @@ void Installer::OnAppDownloaded() {
             }
 
             QString params = updateConfig.m_InstallParams;
+
             int nExitCode = RunAndWaitForFinish(installer, params);
 
             if (updateConfig.m_nSuccessInstallCode == nExitCode)
@@ -516,7 +519,7 @@ bool Installer::Update(AvailableSoftWare::SoftWareMap softMap, eAppType type, bo
                                              tr("%1 update available.").arg(name),
                                              tr("Install"),
                                              tr("Cancel"))) {
-                if (!Delete(name, type, force)) {
+                if (type != eAppTypeDependencies && !Delete(name, type, force)) {
                     Logger::GetInstance()->AddLog(tr("Error update %1"));
                     return false;
                 }

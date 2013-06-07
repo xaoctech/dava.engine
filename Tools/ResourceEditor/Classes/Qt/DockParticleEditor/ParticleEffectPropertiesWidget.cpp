@@ -39,7 +39,11 @@ QWidget(parent)
 	effectPlaybackSpeed->setSingleStep(1);
 	mainLayout->addWidget(effectPlaybackSpeed);
 
+	checkboxStopOnLoad = new QCheckBox("Stop on load");
+	mainLayout->addWidget(checkboxStopOnLoad);
+
 	connect(effectPlaybackSpeed, SIGNAL(valueChanged(int)), this, SLOT(OnValueChanged()));
+	connect(checkboxStopOnLoad, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
 
 	particleEffect = NULL;
 	blockSignals = false;
@@ -63,9 +67,10 @@ void ParticleEffectPropertiesWidget::OnValueChanged()
 	
 	DVASSERT(particleEffect != 0);
 	float playbackSpeed = ConvertFromSliderValueToPlaybackSpeed(effectPlaybackSpeed->value());
-	
+	bool stopOnLoad = checkboxStopOnLoad->isChecked();
+
 	CommandUpdateEffect* commandUpdateEffect = new CommandUpdateEffect(particleEffect);
-	commandUpdateEffect->Init(playbackSpeed);
+	commandUpdateEffect->Init(playbackSpeed, stopOnLoad);
 	CommandsManager::Instance()->ExecuteAndRelease(commandUpdateEffect);
 
 	Init(particleEffect);
@@ -84,6 +89,7 @@ void ParticleEffectPropertiesWidget::Init(DAVA::ParticleEffectComponent *effect)
 	effectPlaybackSpeed->setValue(ConvertFromPlaybackSpeedToSliderValue(playbackSpeed));
 	UpdatePlaybackSpeedLabel();
 	
+	checkboxStopOnLoad->setChecked(particleEffect->IsStopOnLoad());
 	blockSignals = false;
 }
 
