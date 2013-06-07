@@ -151,7 +151,7 @@ Entity* ParticlesEditorSceneModelHelper::PreprocessSceneNode(Entity* rawNode)
 Entity* ParticlesEditorSceneModelHelper::CreateParticleEffectNode()
 {
 	Entity * newParentNodeParticleEffect = new Entity();
-	newParentNodeParticleEffect->SetName("Particle effect");
+	newParentNodeParticleEffect->SetName("Particle Effect");
 	ParticleEffectComponent * newEffectComponent = new ParticleEffectComponent();
 	newParentNodeParticleEffect->AddComponent(newEffectComponent);
 
