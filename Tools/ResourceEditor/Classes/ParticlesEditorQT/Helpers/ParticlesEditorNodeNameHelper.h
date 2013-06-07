@@ -18,7 +18,6 @@
 #define __ResourceEditorQt__ParticlesEditorNodeNameHelper__
 
 #include "DAVAEngine.h"
-#include "../StringConstants.h"
 
 namespace DAVA {
 
