@@ -1122,7 +1122,7 @@
     <string>Not Passable Landscape</string>
    </property>
    <property name="toolTip">
-    <string>Impassable Landscape</string>
+    <string>Not Passable Landscape</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+A</string>
