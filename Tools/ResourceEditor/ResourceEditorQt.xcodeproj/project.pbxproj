@@ -268,6 +268,7 @@
 		5CDD9AC015B893E4007CA99A /* CommandsManager.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5CDD9ABD15B893E4007CA99A /* CommandsManager.cpp */; };
 		5CF17EC315B91E8600A9FC33 /* FileCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5CF17EC115B91E8600A9FC33 /* FileCommands.cpp */; };
 		5CFEEBC015CAB60B00ABF023 /* SceneGraphCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5CFEEBBE15CAB60B00ABF023 /* SceneGraphCommands.cpp */; };
+		748E55931761D5EB000E24FF /* ParticlesEditorNodeNameHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 748E55911761D5EB000E24FF /* ParticlesEditorNodeNameHelper.cpp */; };
 		77BDEC8E56A833D3814BC614 /* QtNetwork.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 82153068A36B6EA46DD82A06 /* QtNetwork.framework */; };
 		77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 336CB11D929F5E35FA69020F /* Cocoa.framework */; };
 		841703F916CBA49C00F1023D /* QResourceEditorProgressDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 841703F716CBA49C00F1023D /* QResourceEditorProgressDialog.cpp */; };
@@ -1116,6 +1117,8 @@
 		5CFEEBBF15CAB60B00ABF023 /* SceneGraphCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneGraphCommands.h; path = Classes/Commands/SceneGraphCommands.h; sourceTree = "<group>"; };
 		6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtOpenGL.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework"; sourceTree = "<absolute>"; };
 		6C21256244E578A9DE07EE60 /* xml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = xml_macos; path = ../../Libs/libs/libxml_macos.a; sourceTree = "<group>"; };
+		748E55911761D5EB000E24FF /* ParticlesEditorNodeNameHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticlesEditorNodeNameHelper.cpp; sourceTree = "<group>"; };
+		748E55921761D5EB000E24FF /* ParticlesEditorNodeNameHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticlesEditorNodeNameHelper.h; sourceTree = "<group>"; };
 		8157E7438190A1EEF4A4D363 /* mongodb_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mongodb_macos; path = ../../Libs/libs/libmongodb_macos.a; sourceTree = "<group>"; };
 		8159B90213E2E13CB65C75B4 /* vorbis_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbis_macos; path = ../../Libs/oggvorbis/lib/libvorbis_macos.a; sourceTree = "<group>"; };
 		81BBDA0F1849B4A35FAB7D00 /* freetype_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = freetype_macos; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
@@ -2431,6 +2434,8 @@
 		C18521A316831F84003D4A6F /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				748E55911761D5EB000E24FF /* ParticlesEditorNodeNameHelper.cpp */,
+				748E55921761D5EB000E24FF /* ParticlesEditorNodeNameHelper.h */,
 				1735C423169DE63D001E0468 /* ParticlesEditorSceneDataHelper.cpp */,
 				1735C424169DE63D001E0468 /* ParticlesEditorSceneDataHelper.h */,
 				1735C425169DE63D001E0468 /* ParticlesEditorSceneModelHelper.cpp */,
@@ -3849,6 +3854,9 @@
 				4F3E256D174CD39C000D1187 /* Console_moc.cpp in Build Sources */,
 				4F3E256E174CD39C000D1187 /* ConsoleView_moc.cpp in Build Sources */,
 				8463A51F1745309E00F2398F /* EntityOwnerPropertyHelper.cpp in Build Sources */,
+				E8B836261740FCC800D11EAE /* ImageTools.cpp in Build Sources */,
+				CCC7A50017579CAF0061EA5D /* QtPropertyDataMetaObject.cpp in Build Sources */,
+				748E55931761D5EB000E24FF /* ParticlesEditorNodeNameHelper.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
