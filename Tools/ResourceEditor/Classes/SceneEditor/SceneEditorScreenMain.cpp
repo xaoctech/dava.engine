@@ -26,7 +26,6 @@
 #include "../Commands/SceneEditorScreenMainCommands.h"
 #include "../Commands/CommandsManager.h"
 
-
 SceneEditorScreenMain::SceneEditorScreenMain()
 	:	UIScreen()
 	, initialized(false)
@@ -229,6 +228,12 @@ void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void *, void *)
     {
         if(btn == bodies[i]->closeButton)
         {
+            int32 saved = SaveSceneIfChanged(bodies[i]->bodyControl->GetScene());
+            if(saved == MB_FLAG_CANCEL)
+            {
+                return;
+            }
+
             if(bodies[i]->bodyControl->GetParent())
             {
                 RemoveControl(bodies[i]->bodyControl);
