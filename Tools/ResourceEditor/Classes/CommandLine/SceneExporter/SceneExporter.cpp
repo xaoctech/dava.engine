@@ -25,6 +25,8 @@
 
 #include "Render/GPUFamilyDescriptor.h"
 
+#include "../StringConstants.h"
+
 using namespace DAVA;
 
 SceneExporter::SceneExporter()
@@ -154,7 +156,7 @@ void SceneExporter::RemoveEditorNodes(DAVA::Entity *rootNode)
     for (Vector<Entity *>::reverse_iterator it = scenenodes.rbegin(); it != endItDeletion; ++it)
     {
         Entity * node = *it;
-		String::size_type pos = node->GetName().find(String("editor."));
+		String::size_type pos = node->GetName().find(ResourceEditor::EDITOR_BASE);
         if(String::npos != pos)
         {
             node->GetParent()->RemoveNode(node);
