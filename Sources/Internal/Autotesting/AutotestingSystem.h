@@ -41,8 +41,8 @@
 
 #include "Autotesting/MongodbUpdateObject.h"
 
-#define AUTOTESTING_DB_HOST    "10.128.19.33"
-//#define AUTOTESTING_DB_HOST    "by2-buildmachine.wargaming.net"
+//#define AUTOTESTING_DB_HOST    "10.128.19.33"
+#define AUTOTESTING_DB_HOST    "by2-buildmachine.wargaming.net"
 //#define AUTOTESTING_DB_HOST    "10.128.128.5"
 //#define AUTOTESTING_DB_HOST    "192.168.1.2"
 #define AUTOTESTING_DB_PORT  27017
