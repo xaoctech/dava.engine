@@ -1465,10 +1465,12 @@ Matrix4 EditorBodyControl::GetLandscapeOffset(const Matrix4& transform)
 	Matrix4 resTransform;
 	resTransform.Identity();
 
+	Landscape* landscape = scene->GetLandscape(scene);
+	if(!landscape) return resTransform;
+
 	Vector3 p = Vector3(0, 0, 0) * transform;
 
 	Vector3 result;
-	Landscape* landscape = scene->GetLandscape(scene);
 	bool res = landscape->PlacePoint(p, result);
 	if (res)
 	{

@@ -286,6 +286,7 @@ LayerParticleEditorNode* ParticlesEditorController::AddParticleLayerToNode(Emitt
 	layer->startTime = 0;
     layer->endTime = LIFETIME_FOR_NEW_PARTICLE_EMITTER;
 	layer->life = new PropertyLineValue<float32>(emitter->GetLifeTime());
+
     layer->layerName = ParticlesEditorNodeNameHelper::GetNewLayerName(ResourceEditor::LAYER_NODE_NAME, emitter);
 
     emitter->AddLayer(layer);
