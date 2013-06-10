@@ -2951,6 +2951,9 @@
     <ClInclude Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorNodeNameHelper.h">
       <Filter>Classes\ParticlesEditorQT\Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\StringConstants.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.cpp">
