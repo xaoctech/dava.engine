@@ -58,6 +58,26 @@ bool CheckPosition(int32 commandPosition)
 void ProcessRecourcePacker()
 {
     Vector<String> & commandLine = Core::Instance()->GetCommandLine();
+    if(CommandLineParser::Instance()->GetVerbose())
+    {
+        int32 count = CommandLineParser::GetCommandsCount();
+        for(int32 i = 0; i < count; ++i)
+        {
+            String command = CommandLineParser::GetCommand(i);
+            printf("\n\t command: %s, param: %s", command.c_str(), CommandLineParser::GetCommandParam(command).c_str());
+        }
+        
+        printf("\n\n");
+        
+        count = commandLine.size();
+        for(int32 i = 0; i < count; ++i)
+        {
+            String command = commandLine[i];
+            printf("\n\t command: %s", command.c_str());
+        }
+        
+        printf("\n");
+    }
     
     ResourcePacker2D * resourcePacker = new ResourcePacker2D();
     
@@ -99,7 +119,6 @@ void ProcessRecourcePacker()
     printf("[INPUT DIR] - [%s]\n", resourcePacker->inputGfxDirectory.GetAbsolutePathname().c_str());
     printf("[OUTPUT DIR] - [%s]\n", resourcePacker->outputGfxDirectory.GetAbsolutePathname().c_str());
     printf("[EXCLUDE DIR] - [%s]\n", resourcePacker->excludeDirectory.GetAbsolutePathname().c_str());
-    
     
     Texture::InitializePixelFormatDescriptors();
     GPUFamilyDescriptor::SetupGPUParameters();
