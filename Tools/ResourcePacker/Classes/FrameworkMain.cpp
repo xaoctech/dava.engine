@@ -27,17 +27,6 @@ void PrintUsage()
 
     printf("\n");
     printf("resourcepacker [src_dir] - will pack resources from src_dir\n");
-    
-    printf("\n");
-    printf("-sceneexporter [-clean [directory]] [-export [-indir [directory]] [-outdir [directory]] [-processdir [directory]] [-processfile [directory]] [-format]\n");
-    printf("\t-clean - will delete all files from Data/3d/\n"); 
-    printf("\t-export - will export level to Data/3d/\n"); 
-    printf("\t-indir - path for Poject/DataSource/3d/ folder \n"); 
-    printf("\t-outdir - path for Poject/Data/3d/ folder\n"); 
-    printf("\t-processdir - foldername from DataSource/3d/ for exporting\n"); 
-    printf("\t-processfile - filename from DataSource/3d/ for exporting\n"); 
-    printf("\t-format - png, pvr, dxt\n"); 
-    printf("\t-force - to don't display error dialogs");
 }
 
 
