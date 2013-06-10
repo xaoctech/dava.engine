@@ -31,7 +31,7 @@
 #include "../../SceneEditor/SceneEditorScreenMain.h"
 #include "../../SceneEditor/EditorBodyControl.h"
 #include "../../AppScreens.h"
-
+#include "../StringConstants.h"
 
 #include <QKeyEvent>
 
@@ -213,9 +213,9 @@ void QSceneGraphTreeView::ShowSceneGraphMenu(const QModelIndex &index, const QPo
             if(node->GetParent() == activeScene->GetScene())
             {
                 KeyedArchive *properties = node->GetCustomProperties();
-                if (properties && properties->IsKeyExists(String("editor.referenceToOwner")))
+                if (properties && properties->IsKeyExists(String(ResourceEditor::EDITOR_REFERENCE_TO_OWNER)))
                 {
-                    String filePathname = properties->GetString(String("editor.referenceToOwner"));
+                    String filePathname = properties->GetString(String(ResourceEditor::EDITOR_REFERENCE_TO_OWNER));
                     AddActionToMenu(&menu, QString("Edit Model"), new CommandEditScene(filePathname));
                     AddActionToMenu(&menu, QString("Reload Model"), new CommandReloadScene(filePathname));
                     AddActionToMenu(&menu, QString("Reload Model From"), new CommandReloadEntityFrom(filePathname));
