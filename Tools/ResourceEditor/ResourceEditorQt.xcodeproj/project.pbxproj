@@ -1112,6 +1112,7 @@
 		6C21256244E578A9DE07EE60 /* xml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = xml_macos; path = ../../Libs/libs/libxml_macos.a; sourceTree = "<group>"; };
 		748E55911761D5EB000E24FF /* ParticlesEditorNodeNameHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticlesEditorNodeNameHelper.cpp; sourceTree = "<group>"; };
 		748E55921761D5EB000E24FF /* ParticlesEditorNodeNameHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticlesEditorNodeNameHelper.h; sourceTree = "<group>"; };
+		748E55941761DB6B000E24FF /* StringConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringConstants.h; sourceTree = "<group>"; };
 		8157E7438190A1EEF4A4D363 /* mongodb_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mongodb_macos; path = ../../Libs/libs/libmongodb_macos.a; sourceTree = "<group>"; };
 		8159B90213E2E13CB65C75B4 /* vorbis_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbis_macos; path = ../../Libs/oggvorbis/lib/libvorbis_macos.a; sourceTree = "<group>"; };
 		81BBDA0F1849B4A35FAB7D00 /* freetype_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = freetype_macos; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
@@ -3174,6 +3175,7 @@
 				5C8DA28D160263C200BCE6DF /* SpritesPacker.cpp */,
 				5C8DA28E160263C200BCE6DF /* SpritesPacker.h */,
 				5CF17EC415B9385300A9FC33 /* Constants.h */,
+				748E55941761DB6B000E24FF /* StringConstants.h */,
 				5CDD9ABA15B893CF007CA99A /* Commands */,
 				5C2763A415B82BDF0030A8FD /* Qt */,
 				5C4A3F5B15FC90E6005CABFE /* LandscapeEditor */,

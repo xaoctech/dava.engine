@@ -1083,6 +1083,7 @@
     <ClInclude Include="Classes\SceneEditor\UIZoomControl.h" />
     <ClInclude Include="Classes\SceneNodeUserData.h" />
     <ClInclude Include="Classes\SpritesPacker.h" />
+    <ClInclude Include="Classes\StringConstants.h" />
     <ClInclude Include="Classes\UIFileTree.h" />
     <ClInclude Include="Classes\UIFileTreeCell.h" />
     <ClInclude Include="Classes\UIScrollView.h" />
