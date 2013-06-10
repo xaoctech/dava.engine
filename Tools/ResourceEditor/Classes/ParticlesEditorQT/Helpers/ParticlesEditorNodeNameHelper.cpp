@@ -17,7 +17,7 @@
 #include "ParticlesEditorNodeNameHelper.h"
 #include "../StringConstants.h"
 
-using namespace DAVA;
+namespace DAVA {
 
 String  ParticlesEditorNodeNameHelper::GetBaseName(const String& name)
 {
@@ -123,3 +123,5 @@ bool ParticlesEditorNodeNameHelper::IsLayerNameExist(const String &name, Particl
 	
 	return false;
 }
+
+};
