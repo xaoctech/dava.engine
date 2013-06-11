@@ -24,7 +24,6 @@
 
 #include "SceneValidator.h"
 #include "../LightmapsPacker.h"
-#include "../StringConstants.h"
 
 #include "LandscapeEditorColor.h"
 #include "LandscapeEditorHeightmap.h"
