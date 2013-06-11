@@ -16,7 +16,7 @@ TextureConvertor::TextureConvertor()
 	: curJobOriginal(NULL)
 {
 	// slots will be called in connector(this) thread
-	QObject::connect(this, SIGNAL(convertStatusFromThread(const QString &, int, int)), this, SLOT(threadConvertStatus(const QString &, int, int)), Qt::QueuedConnection);
+	QObject::connect(this, SIGNAL(convertStatusFromThread(const QString &, int, int)), this, SLOT(threadConvertStatus(const QString &, int, int)), Qt::BlockingQueuedConnection);
 	QObject::connect(&loadOriginalWatcher, SIGNAL(finished()), this, SLOT(threadOriginalFinished()), Qt::QueuedConnection);
 	QObject::connect(&convertAllWatcher, SIGNAL(finished()), this, SLOT(threadConvertAllFinished()), Qt::QueuedConnection);
 
