@@ -28,6 +28,7 @@
 
 #include "Qt/Scene/SceneDataManager.h"
 #include "Qt/Scene/SceneData.h"
+#include "../StringConstants.h"
 
 CreateNodesDialog::CreateNodesDialog(const Rect & rect)
     :   DraggableDialog(rect)
