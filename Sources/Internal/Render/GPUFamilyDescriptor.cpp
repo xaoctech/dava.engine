@@ -240,9 +240,7 @@ String GPUFamilyDescriptor::GetFilenamePostfix(const eGPUFamily gpuFamily, const
 		return ".png";
 	}
 
-//    DVASSERT(format != gpuData[gpuFamily].availableFormats.end());
-    
-    String postfix = "." + gpuData[gpuFamily].name + format->second;
+	String postfix = "." + gpuData[gpuFamily].name + format->second;
     return postfix;
 }
     
