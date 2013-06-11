@@ -68,7 +68,6 @@ public:
     const RenderManager::Stats & GetRenderStats() const;
     
 protected:
-    void SetNodeDebugFlags(Entity *selectedNode, uint32 flags);
     void SetForceLodLayerRecursive(Entity *node, int32 layer);
 
     btDefaultCollisionConfiguration* collisionConfiguration;
