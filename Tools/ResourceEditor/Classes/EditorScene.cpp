@@ -76,12 +76,22 @@ void EditorScene::Update(float32 timeElapsed)
 
 void EditorScene::RemoveNode(Entity * node)
 {
+	RemoveBullet(node);
+	Scene::RemoveNode(node);
+}
+
+void EditorScene::RemoveBullet(Entity * node)
+{
 	if(NULL != node)
 	{
 		node->RemoveComponent(Component::BULLET_COMPONENT);
-	}
 
-	Scene::RemoveNode(node);
+		int size = node->GetChildrenCount();
+		for (int i = 0; i < size; i++)
+		{
+			RemoveBullet(node->GetChild(i));
+		}
+	}
 }
 
 void EditorScene::UpdateBullet(Entity * curr)
