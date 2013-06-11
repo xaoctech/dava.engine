@@ -19,6 +19,7 @@
 #include "Commands/CommandsManager.h"
 #include "TextureBrowser/TextureConvertor.h"
 #include "SceneEditor/EditorSettings.h"
+#include "../Scene/SceneDataManager.h"
 
 #include <QHBoxLayout>
 #include <QGraphicsWidget>
@@ -624,7 +625,8 @@ void EmitterLayerWidget::OnValueChanged()
 						 (float32)pivotPointXSpinBox->value(),
 						 (float32)pivotPointYSpinBox->value());
 
-	CommandsManager::Instance()->ExecuteAndRelease(updateLayerCmd);
+	CommandsManager::Instance()->ExecuteAndRelease(updateLayerCmd,
+												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
 
 	Init(this->emitter, this->layer, false);
 	emit ValueChanged();

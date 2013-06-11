@@ -276,7 +276,7 @@ void EditorBodyControl::PlaceOnLandscape(Entity *node)
 {
 	if (node)
 	{
-		CommandsManager::Instance()->ExecuteAndRelease(new CommandPlaceOnLandscape(node, this));
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandPlaceOnLandscape(node, this), node->GetScene());
 	}
 }
 
@@ -515,7 +515,7 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 																				 transform,
 																				 this,
 																				 scene->collisionWorld);
-					CommandsManager::Instance()->ExecuteAndRelease(cmd);
+					CommandsManager::Instance()->ExecuteAndRelease(cmd, scene);
 					originalNode = NULL;
 
 					// update selection to newly created node
@@ -525,7 +525,8 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 				{
 					CommandsManager::Instance()->ExecuteAndRelease(new CommandTransformObject(modifiedNode,
 																							  transformBeforeModification,
-																							  modifiedNode->GetLocalTransform()));
+																							  modifiedNode->GetLocalTransform()),
+																   scene);
 				}
 
 				if (selection)
@@ -757,7 +758,7 @@ void EditorBodyControl::Update(float32 timeElapsed)
 		PackLightmaps();
 		BeastProxy::Instance()->SafeDeleteManager(&beastManager);
 
-		CommandsManager::Instance()->ExecuteAndRelease(new CommandReloadTextures());
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandReloadTextures(), scene);
 	}
 }
 
@@ -1404,7 +1405,7 @@ void EditorBodyControl::RestoreOriginalTransform()
 		return;
 
 	Entity* selection = scene->GetProxy();
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandRestoreOriginalTransform(selection));
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandRestoreOriginalTransform(selection), scene);
 }
 
 void EditorBodyControl::ApplyTransform(float32 x, float32 y, float32 z)
@@ -1455,7 +1456,8 @@ void EditorBodyControl::ApplyTransform(float32 x, float32 y, float32 z)
 
 		CommandsManager::Instance()->ExecuteAndRelease(new CommandTransformObject(selectedNode,
 																				  originalTransform,
-																				  modification));
+																				  modification),
+													   scene);
 	}
 }
 

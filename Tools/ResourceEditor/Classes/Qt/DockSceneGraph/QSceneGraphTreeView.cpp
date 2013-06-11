@@ -248,7 +248,8 @@ void QSceneGraphTreeView::AddActionToMenu(QMenu *menu, const QString &actionTitl
 void QSceneGraphTreeView::ProcessContextMenuAction(QAction *action)
 {
 	Command *command = PointerHolder<Command *>::ToPointer(action->data());
-	CommandsManager::Instance()->ExecuteAndRelease(command);
+	CommandsManager::Instance()->ExecuteAndRelease(command,
+												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
 }
 
 void QSceneGraphTreeView::OnSceneGraphNeedRefreshLayer(DAVA::ParticleLayer* layer)
