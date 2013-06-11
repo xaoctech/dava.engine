@@ -17,6 +17,7 @@
 #include "ParticleEffectPropertiesWidget.h"
 #include "Commands/ParticleEditorCommands.h"
 #include "Commands/CommandsManager.h"
+#include "../Scene/SceneDataManager.h"
 
 #include <QLineEdit>
 #include <QEvent>
@@ -71,7 +72,8 @@ void ParticleEffectPropertiesWidget::OnValueChanged()
 
 	CommandUpdateEffect* commandUpdateEffect = new CommandUpdateEffect(particleEffect);
 	commandUpdateEffect->Init(playbackSpeed, stopOnLoad);
-	CommandsManager::Instance()->ExecuteAndRelease(commandUpdateEffect);
+	CommandsManager::Instance()->ExecuteAndRelease(commandUpdateEffect,
+												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
 
 	Init(particleEffect);
 }
