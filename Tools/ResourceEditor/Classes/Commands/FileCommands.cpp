@@ -119,6 +119,7 @@ void CommandNewScene::Execute()
         int32 saved = SaveSceneIfChanged(levelScene->GetScene());
         if(saved == MB_FLAG_CANCEL)
         {
+            commandState = STATE_INVALID;
             return;
         }
 
@@ -135,12 +136,28 @@ void CommandNewScene::Execute()
 //Save
 CommandSaveScene::CommandSaveScene()
 :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_SAVE_SCENE)
+,   workedScene(NULL)
+{
+}
+
+CommandSaveScene::CommandSaveScene(Scene *scene)
+:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_SAVE_SCENE)
+,   workedScene(scene)
 {
 }
 
 void CommandSaveScene::Execute()
 {
-    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+    SceneData *activeScene = NULL;
+    if(workedScene)
+    {
+        activeScene = SceneDataManager::Instance()->SceneGet(workedScene);
+    }
+    else
+    {
+        activeScene = SceneDataManager::Instance()->SceneGetActive();
+    }
+    
     if(activeScene->CanSaveScene())
     {
         SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
