@@ -29,6 +29,7 @@ public:
     virtual void Update(float32 timeElapsed);
 	virtual void RemoveNode(Entity * node);
 	void UpdateBullet(Entity * curr);
+	void RemoveBullet(Entity * curr);
 
     btCollisionWorld *collisionWorld;
 	btCollisionWorld *landCollisionWorld;
