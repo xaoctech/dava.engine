@@ -261,10 +261,21 @@ void CommandSaveSpecifiedScene::Execute()
 			{
 				sc->AddNode(entityToAdd);
 			}
-			
-			for(uint32 i = 0; i< size; ++i)
+			else
 			{
-				sc->AddNode(entityToAdd->GetChild(i));
+				Vector<Entity*> tempV;
+				tempV.reserve(size);
+				for (int32 ci = 0; ci < size; ++ci)
+				{
+					Entity *child = entityToAdd->GetChild(ci);
+					child->Retain();
+					tempV.push_back(child);
+				}
+				for (int32 ci = 0; ci < (int32)tempV.size(); ++ci)
+				{
+					sc->AddNode(tempV[ci]);
+					tempV[ci]->Release();
+				}
 			}
 		}
 		else
