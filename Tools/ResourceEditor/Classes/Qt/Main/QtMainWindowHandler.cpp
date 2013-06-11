@@ -103,7 +103,7 @@ void QtMainWindowHandler::ClearActions(int32 count, QAction **actions)
 
 void QtMainWindowHandler::NewScene()
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandNewScene());
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandNewScene(), SceneDataManager::Instance()->SceneGetLevel()->GetScene());
 }
 
 

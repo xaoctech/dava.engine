@@ -34,12 +34,17 @@ class CommandSaveScene: public Command
 	friend class CommandNewScene;
 public:	
 	DAVA_DEPRECATED(CommandSaveScene()); // DEPRECATED: using QFileDialog
+	DAVA_DEPRECATED(CommandSaveScene(Scene *scene)); // DEPRECATED: using QFileDialog
     
 protected:	
     
     virtual void Execute();
 	void SaveParticleEmitterNodes(EditorScene* scene);
 	void SaveParticleEmitterNodeRecursive(Entity* parentNode);
+    
+protected:
+    
+    Scene *workedScene;
 };
 
 class CommandSaveSpecifiedScene: public Command

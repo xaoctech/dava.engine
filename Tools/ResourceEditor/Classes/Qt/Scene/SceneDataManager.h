@@ -43,6 +43,7 @@ public:
 	SceneData*			SceneGetActive();
 	SceneData*			SceneGetLevel();
 	SceneData*			SceneGet(DAVA::int32 index);
+	SceneData*			SceneGet(DAVA::Scene *scene);
 	DAVA::int32			SceneCount();
     
 	void				TextureCompressAllNotCompressed();
