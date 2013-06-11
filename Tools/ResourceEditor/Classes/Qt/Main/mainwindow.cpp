@@ -470,9 +470,8 @@ bool QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)
 		{
 			ret = true;
 			convertWaitDialog = new QProgressDialog(this);
-			QObject::connect(TextureConvertor::Instance(), SIGNAL(readyAll()), convertWaitDialog, SLOT(close()));
 			QObject::connect(TextureConvertor::Instance(), SIGNAL(convertStatus(const QString &, int, int)), this, SLOT(ConvertWaitStatus(const QString &, int, int)));
-			QObject::connect(convertWaitDialog, SIGNAL(destroyed(QObject *)), this, SLOT(ConvertWaitDone(QObject *)));
+			QObject::connect(TextureConvertor::Instance(), SIGNAL(readyAll()), this, SLOT(ConvertReadyAll()));
 			convertWaitDialog->setModal(true);
 			convertWaitDialog->setCancelButton(NULL);
 			convertWaitDialog->setAttribute(Qt::WA_DeleteOnClose);
@@ -518,10 +517,28 @@ void QtMainWindow::RepackAndReloadScene()
 	}
 }
 
-void QtMainWindow::ConvertWaitDone(QObject *destroyed)
+void QtMainWindow::ConvertReadyAll()
 {
-	convertWaitDialog = NULL;
+	if(NULL != convertWaitDialog)
+	{
+		QObject::disconnect(this, SLOT(ConvertWaitStatus(const QString &, int, int)));
+		QObject::disconnect(this, SLOT(ConvertReadyAll()));
+
+		convertWaitDialog->deleteLater();
+		convertWaitDialog = NULL;
+	}
+
 	UpdateParticleSprites();
+}
+
+void QtMainWindow::ConvertWaitStatus(const QString &curPath, int curJob, int jobCount)
+{
+	if(NULL != convertWaitDialog)
+	{
+		convertWaitDialog->setRange(0, jobCount);
+		convertWaitDialog->setValue(curJob);
+		convertWaitDialog->setLabelText(curPath);
+	}
 }
 
 void QtMainWindow::RepackSpritesWaitDone(QObject *destroyed)
@@ -533,16 +550,6 @@ void QtMainWindow::RepackSpritesWaitDone(QObject *destroyed)
 
 	emitRepackAndReloadFinished = false;
 	repackSpritesWaitDialog = NULL;
-}
-
-void QtMainWindow::ConvertWaitStatus(const QString &curPath, int curJob, int jobCount)
-{
-	if(NULL != convertWaitDialog)
-	{
-		convertWaitDialog->setRange(0, jobCount);
-		convertWaitDialog->setValue(curJob);
-		convertWaitDialog->setLabelText(curPath);
-	}
 }
 
 void QtMainWindow::LibraryFileTypesChanged()
