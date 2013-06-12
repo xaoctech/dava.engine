@@ -34,7 +34,7 @@ FilePath PVRConverter::ConvertPngToPvr(const FilePath & fileToConvert, const Tex
     
 	if(!command.empty())
 	{
-		FileSystem::Instance()->Spawn(command);
+		FileSystem::Instance()->Spawn("\"" + command + "\"");
 		outputName = GetPVRToolOutput(fileToConvert);
 	}
 
@@ -43,7 +43,7 @@ FilePath PVRConverter::ConvertPngToPvr(const FilePath & fileToConvert, const Tex
 
 String PVRConverter::GetCommandLinePVR(const FilePath & fileToConvert, const TextureDescriptor &descriptor)
 {
-	String command = "\"" + pvrTexToolPathname.GetAbsolutePathname() + "\"";
+	String command = pvrTexToolPathname.GetAbsolutePathname();
 	String format = pixelFormatToPVRFormat[descriptor.pvrCompression.format];
 
 	if(command != "" && format != "")
