@@ -27,6 +27,8 @@
 
 #include "../StringConstants.h"
 
+#include "../../Qt/Scene/SceneDataManager.h"
+
 using namespace DAVA;
 
 // Custom processing the Selection Changed in the Scene Graph model. Returns
@@ -751,7 +753,8 @@ void ParticlesEditorSceneModelHelper::SetCheckableStateForGraphItem(GraphItem* g
 	}
 	
 	// Execute the appropriate command.
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandUpdateParticleLayerEnabled(layerEditorNode->GetLayer(), value));
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandUpdateParticleLayerEnabled(layerEditorNode->GetLayer(), value),
+												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
 }
 
 LayerParticleEditorNode* ParticlesEditorSceneModelHelper::GetLayerEditorNodeByGraphItem(GraphItem* graphItem) const
