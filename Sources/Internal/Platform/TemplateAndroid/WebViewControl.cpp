@@ -102,6 +102,23 @@ IUIWebViewDelegate::eAction JniWebView::URLChanged(int id, const String& newURL)
 	return delegate->URLChanged(control->webView, newURL, false);
 }
 
+void JniWebView::PageLoaded(int id)
+{
+	CONTROLS_MAP::iterator iter = controls.find(id);
+	if (iter == controls.end())
+	{
+		Logger::Debug("Error web view id=%d", id);
+		return;
+	}
+
+	WebViewControl* control = iter->second;
+	IUIWebViewDelegate *delegate = control->delegate;
+	if (delegate)
+	{
+		delegate->PageLoaded(control->webView);
+	}
+}
+
 WebViewControl::WebViewControl()
 {
 	delegate = NULL;

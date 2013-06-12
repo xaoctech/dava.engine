@@ -23,6 +23,12 @@ public class JNIWebView {
 		}
 		
 		@Override
+		public void onPageFinished(WebView view, String url) {
+			super.onPageFinished(view, url);
+			OnPageLoaded(id);
+		};
+		
+		@Override
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {
 			int res = OnUrlChange(id, url);
 			
@@ -152,4 +158,5 @@ public class JNIWebView {
 	}
 	
 	private static native int OnUrlChange(int id, String url);
+	private static native int OnPageLoaded(int id);
 }
