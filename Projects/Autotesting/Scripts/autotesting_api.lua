@@ -505,10 +505,16 @@ end
 -- Work with List
 function SelectHorizontal(list, item)
 	Log("Select "..tostring(item).." item in horizontal list "..list)
+	
 	local cell = list.."/".. tostring(item)
 	assert(WaitControl(list), "Couldn't select "..cell)
 	
-		local last_visible = 0
+	if IsVisible(cell, list) then
+		ClickControl(cell)
+		return true
+	end
+	
+	local last_visible = 0
 	local previous_last = 0
 	local index = 0
 	
@@ -522,7 +528,7 @@ function SelectHorizontal(list, item)
 		end
 	end
     
-	-- find last wisible
+	-- find last visible
 	index = previous_last + 1
 	while true do
 		if not IsVisible(list.."/"..tostring(index)) then
@@ -539,6 +545,7 @@ function SelectHorizontal(list, item)
 		else
 			previous_last = last_visible
 			ScrollLeft(list)
+			
 			index = last_visible + 1
 			while true do
 				if not IsVisible(list.."/"..tostring(index)) then
@@ -555,15 +562,63 @@ function SelectHorizontal(list, item)
 		ClickControl(cell)
 		return true
 	else
-		Log("List "..list.." not found")
+		Log("Item "..item.." in "..list.." not found")
 		return false
 	end
+end
+
+function SelectHorizontalRightToLeft(list, item)
+	Log("Select "..tostring(item).." item in horizontal list "..list.." scrolling from right to left")
+	
+	local cell = list.."/".. tostring(item)
+	assert(WaitControl(list), "Couldn't select "..cell)
+	
+	local first_visible = 0
+	local previous_first = 0
+	local index = 0
+	
+	-- find first visible element
+	for i = 0, 100 do --to avoid hanging up in empty list
+		if IsVisible(list.."/"..tostring(i)) then
+			--previous_first = i
+			first_visible = i
+			break
+		end
+	end
+	
+	repeat
+		if IsVisible(cell, list) then
+			ClickControl(cell)
+			return true
+		else
+			previous_first = first_visible
+			ScrollLeft(list, true)
+			
+			index = first_visible - 1
+			while true do
+				if not IsVisible(list.."/"..tostring(index)) then
+					first_visible = index + 1
+					--Log( "previous_last = "..tostring(previous_last) )
+					break
+				end
+				index = index - 1
+			end
+		end
+	until previous_first == first_visible
+	
+	Log("Item "..item.." in "..list.." not found")
+	return false
 end
 
 function SelectVertical(list, item)
 	Log("Select "..tostring(item).." item in vertical list "..list)
 	local cell = list.."/".. tostring(item)
 	assert(WaitControl(list), "Couldn't select "..cell)
+	
+	if IsVisible(cell, list) then
+		ClickControl(cell)
+		return true
+	end
 	
 	local last_visible = 0
 	local previous_last = 0
@@ -596,6 +651,7 @@ function SelectVertical(list, item)
 		else
 			previous_last = last_visible
 			ScrollDown(list)
+
 			index = last_visible + 1
 			while true do
 				if not IsVisible(list.."/"..tostring(index)) then
@@ -617,7 +673,7 @@ function SelectVertical(list, item)
 	end
 end
 
-function ScrollDown(list)
+function ScrollDown(list, invert)
 	local control = autotestingSystem:FindControl(list)
     if control then	
         local position = Vector.Vector2()
@@ -630,7 +686,13 @@ function ScrollDown(list)
 		
 		TouchDownPosition(position)
 		Wait(0.5)
-        position.y = position.y - rect.dy/3
+		
+		if invert then
+			position.y = position.y + rect.dy/3
+		else
+        	position.y = position.y - rect.dy/3
+        end
+        
 		TouchMovePosition(position)
 		TouchUp()
 		Wait(0.5)
@@ -639,7 +701,7 @@ function ScrollDown(list)
 	end
 end
 
-function ScrollLeft(list)
+function ScrollLeft(list, invert)
 	local control = autotestingSystem:FindControl(list)
     if control then	
         local position = Vector.Vector2()
@@ -652,7 +714,11 @@ function ScrollLeft(list)
 		
 		TouchDownPosition(position)
 		Wait(0.5)
-        position.x = position.x - rect.dx/3
+        if invert then
+			position.x = position.x + rect.dx/3
+		else
+        	position.x = position.x - rect.dx/3
+        end
 		TouchMovePosition(position)
 		TouchUp()
 		Wait(0.5)
