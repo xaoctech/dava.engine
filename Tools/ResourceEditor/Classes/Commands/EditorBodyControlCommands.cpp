@@ -104,8 +104,8 @@ void CommandCloneObject::Execute()
 				return;
 			}
 
-			if (collisionWorld)
-				UpdateCollision(clonedNode);
+			//if (collisionWorld)
+			//	UpdateCollision(clonedNode);
 
 			entities.insert(clonedNode);
 		}

@@ -76,12 +76,22 @@ void EditorScene::Update(float32 timeElapsed)
 
 void EditorScene::RemoveNode(Entity * node)
 {
+	RemoveBullet(node);
+	Scene::RemoveNode(node);
+}
+
+void EditorScene::RemoveBullet(Entity * node)
+{
 	if(NULL != node)
 	{
 		node->RemoveComponent(Component::BULLET_COMPONENT);
-	}
 
-	Scene::RemoveNode(node);
+		int size = node->GetChildrenCount();
+		for (int i = 0; i < size; i++)
+		{
+			RemoveBullet(node->GetChild(i));
+		}
+	}
 }
 
 void EditorScene::UpdateBullet(Entity * curr)
@@ -108,7 +118,14 @@ void EditorScene::CheckNodes(Entity * curr)
 	{
 		bool newDebugComp = false;
 		DebugRenderComponent *dbgComp = NULL;
+
+		BaseObject *bulletObject = NULL;
 		BulletComponent * bulletComponent = (BulletComponent*)curr->GetComponent(Component::BULLET_COMPONENT);
+
+		if(NULL != bulletComponent)
+		{
+			bulletObject = bulletComponent->GetBulletObject();
+		}
 
 		// create debug render component for all nodes
 		dbgComp = (DebugRenderComponent *) curr->GetComponent(Component::DEBUG_RENDER_COMPONENT);
@@ -149,7 +166,7 @@ void EditorScene::CheckNodes(Entity * curr)
 				dbgComp->SetDebugFlags(dbgComp->GetDebugFlags() | DebugRenderComponent::DEBUG_DRAW_LIGHT_NODE);
 			}
 
-			if(NULL == bulletComponent)
+			if(NULL == bulletComponent || NULL == bulletObject)
 			{
 				BulletObject *bObj = new BulletObject(this, collisionWorld, curr, AABBox3(Vector3(), 2.5f), curr->GetWorldTransform());
 				bulletComponent = (BulletComponent*) curr->GetOrCreateComponent(Component::BULLET_COMPONENT);
@@ -166,7 +183,7 @@ void EditorScene::CheckNodes(Entity * curr)
 				dbgComp->SetDebugFlags(dbgComp->GetDebugFlags() | DebugRenderComponent::DEBUG_DRAW_USERNODE);
 			}
 
-			if(NULL == bulletComponent)
+			if(NULL == bulletComponent || NULL == bulletObject)
 			{
 				BulletObject *bObj = new BulletObject(this, collisionWorld, curr, AABBox3(Vector3(), 2.5f), curr->GetWorldTransform());
 				bulletComponent = (BulletComponent*) curr->GetOrCreateComponent(Component::BULLET_COMPONENT);
@@ -183,7 +200,7 @@ void EditorScene::CheckNodes(Entity * curr)
 
 			if(NULL != rObj && rObj->GetType() != RenderObject::TYPE_LANDSCAPE && curr->IsLodMain(0))
 			{
-				if(NULL == bulletComponent)
+				if(NULL == bulletComponent || NULL == bulletObject)
 				{
 					BulletObject *bObj = new BulletObject(this, collisionWorld, curr, curr->GetWorldTransform());
 					bulletComponent = (BulletComponent*) curr->GetOrCreateComponent(Component::BULLET_COMPONENT);
@@ -478,8 +495,7 @@ void EditorScene::SetSelection(Entity *newSelection)
     {
         uint32 flags = selection->GetDebugFlags();
         uint32 newFlags = flags & ~DebugRenderComponent::DEBUG_DRAW_AABOX_CORNERS;
-        
-        SetNodeDebugFlags(selection, newFlags);
+		selection->SetDebugFlags(newFlags);
     }
     
 	selection = newSelection;
@@ -514,21 +530,9 @@ void EditorScene::SetSelection(Entity *newSelection)
     {
         uint32 flags = selection->GetDebugFlags();
         uint32 newFlags = flags | DebugRenderComponent::DEBUG_DRAW_AABOX_CORNERS;
-        
-        SetNodeDebugFlags(selection, newFlags);
+		selection->SetDebugFlags(newFlags);
     }
 }
-
-void EditorScene::SetNodeDebugFlags(Entity *selectedNode, uint32 flags)
-{
-    selectedNode->SetDebugFlags(flags);
-    if(selectedEntity && selectedEntity != selectedNode)
-    {
-        selectedEntity->SetDebugFlags(flags, false);
-    }
-}
-
-
 
 void EditorScene::SetBulletUpdate(Entity* curr, bool value)
 {
