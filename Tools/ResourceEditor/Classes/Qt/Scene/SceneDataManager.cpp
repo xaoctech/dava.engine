@@ -576,6 +576,9 @@ void SceneDataManager::CollectLandscapeDescriptors(DAVA::Set<DAVA::FilePath> &de
 
 void SceneDataManager::CollectDescriptors(DAVA::Set<DAVA::FilePath> &descriptors, const DAVA::FilePath &pathname)
 {
+    if(pathname.GetType() == FilePath::PATH_EMPTY)
+        return;
+
     DVASSERT(pathname.IsEqualToExtension(TextureDescriptor::GetDescriptorExtension()));
     
     if(!pathname.IsEmpty() && SceneValidator::Instance()->IsPathCorrectForProject(pathname))
