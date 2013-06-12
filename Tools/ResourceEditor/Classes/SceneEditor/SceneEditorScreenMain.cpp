@@ -314,7 +314,8 @@ void SceneEditorScreenMain::DialogClosed(int32 retCode)
     
     if(CreateNodesDialog::RCODE_OK == retCode)
     {
-		CommandsManager::Instance()->ExecuteAndRelease(new CommandCreateNodeSceneEditor(nodeDialog->GetSceneNode()));
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandCreateNodeSceneEditor(nodeDialog->GetSceneNode()),
+													   SceneDataManager::Instance()->SceneGetActive()->GetScene());
     }
 }
 
