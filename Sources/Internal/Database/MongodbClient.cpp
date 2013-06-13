@@ -51,16 +51,23 @@ public:
 
 		Memset(connection, 0, sizeof(mongo));
 		mongo_init(connection);
+
+		/* Initialize the write concern object.*/
+		mongo_write_concern_init( write_concern );
+		write_concern->w = 1;
+		mongo_write_concern_finish( write_concern );
 	}
 
 	virtual ~MongodbClientInternalData()
 	{
+		mongo_write_concern_destroy( write_concern );
 		mongo_destroy(connection);
 		SafeDelete(connection);
 	}
 
 public:
 	mongo *connection;
+	mongo_write_concern write_concern[1];
 };
 
 
@@ -84,7 +91,7 @@ MongodbClient::MongodbClient()
 #if defined (__DAVAENGINE_WIN32__)
     mongo_init_sockets();
 #endif //#if defined (__DAVAENGINE_WIN32__)
-    
+	
 	clientData = new MongodbClientInternalData();
     
     SetDatabaseName(String("Database"));
@@ -102,6 +109,9 @@ bool MongodbClient::Connect(const String &ip, int32 port)
 {
     
     int32 status = mongo_connect(clientData->connection, ip.c_str(), port );
+
+	mongo_set_write_concern( clientData->connection, clientData->write_concern );
+
     if(MONGO_OK != status)
     {
         LogError(String("Connect"), clientData->connection->err);
@@ -181,7 +191,17 @@ void MongodbClient::DropCollection()
     
 bool MongodbClient::IsConnected()
 {
-    return (0 != mongo_is_connected(clientData->connection));
+	int32 connectStatus = mongo_is_connected(clientData->connection);
+	if(0 != connectStatus)
+	{
+		int32 checkStatus = mongo_check_connection(clientData->connection);
+		if(MONGO_OK == checkStatus)
+			return true;
+	}
+
+	Logger::Warning("[MongodbClient::IsConnected] is not connected.");
+	return false;
+    //return (0 != mongo_is_connected(clientData->connection));
 }
 
 // bool MongodbClient::SaveBufferToGridFS(const String &name, char * buffer, uint32 length)
@@ -358,6 +378,7 @@ bool MongodbClient::SaveObject(MongodbObject *object)
         }
     }
     
+	Logger::Debug("MongodbClient::SaveObject status = %d", status);
     return (MONGO_OK == status);
 }
 
@@ -442,6 +463,9 @@ bool MongodbClient::DBObjectToKeyedArchive(MongodbObject* dbObject, KeyedArchive
         
         return true;
     }
+
+	DVASSERT(false);
+
     return false;
 }    
 

@@ -111,6 +111,14 @@ elif (platform.system() == "Darwin"):
         print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
         subprocess.call(params)
     
+		# Remove old App from device
+        print "remove "+ executableName +" from device"
+        #params = ["~/AIRSDK_Compiler/bin/adt", "-uninstallApp", "-platform", platformName, "-appid", "com.yourcompany." + targetName]
+        params = "~/AIRSDK_Compiler/bin/adt -uninstallApp -platform iOS -appid com.yourcompany.WoTBlitz"
+        print "subprocess.call " + params
+        #print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
+        subprocess.call(params, shell=True)
+		
         # ./transporter_chief.rb $2.ipa
         print "deploy "+ ipaName +" on device"
         params = ["./transporter_chief.rb", ipaName]
@@ -159,10 +167,10 @@ if 5 == len(arguments):
     if testsCount <= testFilesInFolderCount:
         testFiles = testFilesInFolder[0:testsCount]
     else:
-        testFiles = testFilesInFolder;
+        testFiles = []
         
         if testFilesInFolderCount > 0:
-            testsCountLeft = testsCount - testFilesInFolderCount
+            testsCountLeft = testsCount
             while testsCountLeft > 0:
                 if testsCountLeft <= testFilesInFolderCount:
                     testFiles.extend(testFilesInFolder[0:testsCountLeft])

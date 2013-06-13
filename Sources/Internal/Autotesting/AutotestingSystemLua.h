@@ -100,8 +100,23 @@ public:
     bool CheckText(UIControl *control, const String &expectedText);
     bool CheckMsgText(UIControl *control, const String &key);
 
-	bool SaveKeyedArchiveToDB(const String &archiveName, KeyedArchive *archive);
-    
+	// multiplayer api
+	void WriteState(const String & device, const String & state);
+	void WriteCommand(const String & device, const String & state);
+
+	String ReadState(const String & device);
+	String ReadCommand(const String & device);
+
+	void InitializeDevice(const String & device);
+
+	// DB storing
+	bool SaveKeyedArchiveToDB(const String &archiveName, KeyedArchive *archive, const String &docName = "aux");
+
+	void WriteString(const String & name, const String & text);
+	String ReadString(const String & name);
+
+	String MakeScreenshot();
+
 protected:
 #if !defined(SWIG)
     void ParsePath(const String &path, Vector<String> &parsedPath);
@@ -114,7 +129,8 @@ protected:
     bool RunScriptFromFile(const String &luaFilePath);
     bool LoadWrappedLuaObjects();
 	
-    AutotestingSystemLuaDelegate *delegate;
+
+	AutotestingSystemLuaDelegate *delegate;
     lua_State *luaState; //TODO: multiple lua states
     
     //TODO: write a copy of localization system for autotesting
