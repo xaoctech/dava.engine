@@ -26,6 +26,8 @@ Image::Image()
 ,	width(0)
 ,	height(0)
 ,	format(FORMAT_RGB565)
+,	cubeFaceID(Texture::CUBE_FACE_INVALID)
+,	mipmapLevel(-1)
 {
 }
 

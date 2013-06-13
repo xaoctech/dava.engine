@@ -45,6 +45,8 @@ public:
 		uint32 dataSize;
 		uint32 mipmapsCount;
 		uint32 headerSize;
+		uint32 faceCount;
+		uint32 faceFlags;
 		
 		DDSInfo()
 		{
@@ -53,6 +55,8 @@ public:
 			dataSize	  = 0;
 			mipmapsCount = 0;
 			headerSize	  = 0;
+			faceCount = 0;
+			faceFlags = 0;
 		}
 	};
 
@@ -96,6 +100,8 @@ public:
 	static nvtt::Format GetNVTTFormatByPixelFormat(PixelFormat pixelFormat);
 	
 	static bool IsAtcFormat(nvtt::Format format);
+	
+	static uint32 GetCubeFaceId(uint32 nvttFaceDesc, int faceIndex);
 	
 private:
 	static bool DecompressAtc(const nvtt::Decompressor & dec, DDSInfo info, PixelFormat format, Vector<Image*> &imageSet);
@@ -304,7 +310,8 @@ bool NvttHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<Image*> &imageSet,
 {
     for_each(imageSet.begin(), imageSet.end(), SafeRelease<Image>);
 	imageSet.clear();
-		
+	
+	
     DDSInfo info;
     if(!GetInfo(dec, info))
     {
@@ -355,23 +362,36 @@ bool NvttHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<Image*> &imageSet,
 		bool retValue = true;
         
         uint32 offset = 0;
-		for(uint32 i = 0; i < info.mipmapsCount; ++i)
+		for(uint32 faceIndex = 0; faceIndex < info.faceCount; ++faceIndex)
 		{
-			uint32 mipSize = 0;
-            if(!dec.getMipmapSize(i, mipSize))
-            {
-                retValue = false;
-                break;
-            }
-            
-			Image* innerImage = Image::Create(info.width, info.height, pixFormat);
-			memcpy(innerImage->data, compressedImges + offset, mipSize);
-			imageSet.push_back(innerImage);
-
-            info.height = Max((uint32)1, info.height / 2);
-            info.width = Max((uint32)1, info.width / 2);
-
-            offset += mipSize;
+			uint32 faceWidth = info.width;
+			uint32 faceHeight = info.height;
+			
+			for(uint32 i = 0; i < info.mipmapsCount; ++i)
+			{
+				uint32 mipSize = 0;
+				if(!dec.getMipmapSize(i, mipSize))
+				{
+					retValue = false;
+					break;
+				}
+				
+				Image* innerImage = Image::Create(faceWidth, faceHeight, pixFormat);
+				innerImage->mipmapLevel = i;
+				
+				if(info.faceCount > 1)
+				{
+					innerImage->cubeFaceID = NvttHelper::GetCubeFaceId(info.faceFlags, faceIndex);
+				}
+				
+				memcpy(innerImage->data, compressedImges + offset, mipSize);
+				imageSet.push_back(innerImage);
+				
+				faceWidth = Max((uint32)1, faceWidth / 2);
+				faceHeight = Max((uint32)1, faceHeight / 2);
+				
+				offset += mipSize;
+			}
 		}
 
         SafeDeleteArray(compressedImges);
@@ -402,23 +422,37 @@ bool NvttHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<Image*> &imageSet,
 	
 bool NvttHelper::DecompressDxt(const nvtt::Decompressor & dec, DDSInfo info, Vector<Image*> &imageSet)
 {
-	for(uint32 i = 0; i < info.mipmapsCount; ++i)
+	for(uint32 faceIndex = 0; faceIndex < info.faceCount; ++faceIndex)
 	{
-		Image* innerImage = Image::Create(info.width, info.height, FORMAT_RGBA8888);
-		if(dec.process(innerImage->data, innerImage->dataSize, i))
+		uint32 faceWidth = info.width;
+		uint32 faceHeight = info.height;
+
+		for(uint32 i = 0; i < info.mipmapsCount; ++i)
 		{
-			SwapBRChannels(innerImage->data, innerImage->dataSize);
-			imageSet.push_back(innerImage);
+			Image* innerImage = Image::Create(faceWidth, faceHeight, FORMAT_RGBA8888);
+			if(dec.process(innerImage->data, innerImage->dataSize, i, faceIndex))
+			{
+				SwapBRChannels(innerImage->data, innerImage->dataSize);
+				
+				innerImage->mipmapLevel = i;
+				
+				if(info.faceCount > 1)
+				{
+					innerImage->cubeFaceID = NvttHelper::GetCubeFaceId(info.faceFlags, faceIndex);
+				}
+				
+				imageSet.push_back(innerImage);
+			}
+			else
+			{
+				Logger::Error("nvtt lib compression fail.");
+				SafeRelease(innerImage);
+				return false;
+			}
+			
+			faceWidth = Max((uint32)1, faceWidth / 2);
+			faceHeight = Max((uint32)1, faceHeight / 2);
 		}
-		else
-		{
-			Logger::Error("nvtt lib compression fail.");
-			SafeRelease(innerImage);
-			return false;
-		}
-		
-		info.height = Max((uint32)1, info.height / 2);
-		info.width = Max((uint32)1, info.width / 2);
 	}
 	return true;
 }
@@ -444,52 +478,66 @@ bool NvttHelper::DecompressAtc(const nvtt::Decompressor & dec, DDSInfo info, Pix
 
 	bool res = true;
 	unsigned char* buffer = compressedImges;
-	for(uint32 i = 0; i < info.mipmapsCount; ++i)
+	
+	for(uint32 faceIndex = 0; faceIndex < info.faceCount; ++faceIndex)
 	{
-		TQonvertImage srcImg = {0};
-		TQonvertImage dstImg = {0};
-		
-		srcImg.nWidth = info.width;
-		srcImg.nHeight = info.height;
-		srcImg.nFormat = QualcommHeler::GetQualcommFormat(format);
-		dec.getMipmapSize(i, srcImg.nDataSize);
-		srcImg.pData = buffer;
-		buffer += srcImg.nDataSize;
-		
-		dstImg.nWidth = info.width;
-		dstImg.nHeight = info.height;
-		dstImg.nFormat = Q_FORMAT_RGBA_8888;
-		dstImg.nDataSize = 0;
-		dstImg.pData = NULL;
-		
-		if (Qonvert(&srcImg, &dstImg) != Q_SUCCESS ||
-			dstImg.nDataSize == 0)
+		uint32 faceWidth = info.width;
+		uint32 faceHeight = info.height;
+
+		for(uint32 i = 0; i < info.mipmapsCount; ++i)
 		{
-			Logger::Error("[NvttHelper::DecompressAtc] Reading decompress atc data.");
-			res = false;
-			break;
+			TQonvertImage srcImg = {0};
+			TQonvertImage dstImg = {0};
+			
+			srcImg.nWidth = faceWidth;
+			srcImg.nHeight = faceHeight;
+			srcImg.nFormat = QualcommHeler::GetQualcommFormat(format);
+			dec.getMipmapSize(i, srcImg.nDataSize);
+			srcImg.pData = buffer;
+			buffer += srcImg.nDataSize;
+			
+			dstImg.nWidth = faceWidth;
+			dstImg.nHeight = faceHeight;
+			dstImg.nFormat = Q_FORMAT_RGBA_8888;
+			dstImg.nDataSize = 0;
+			dstImg.pData = NULL;
+			
+			if (Qonvert(&srcImg, &dstImg) != Q_SUCCESS ||
+				dstImg.nDataSize == 0)
+			{
+				Logger::Error("[NvttHelper::DecompressAtc] Reading decompress atc data.");
+				res = false;
+				break;
+			}
+			
+			dstImg.pData = new unsigned char[dstImg.nDataSize];
+			if (Qonvert(&srcImg, &dstImg) != Q_SUCCESS)
+			{
+				Logger::Error("[NvttHelper::DecompressAtc] Reading decompress atc data.");
+				SafeDeleteArray(dstImg.pData);
+				
+				res = false;
+				break;
+			}
+			
+			Image* innerImage = Image::Create(faceWidth, faceHeight, FORMAT_RGBA8888);
+			innerImage->data = dstImg.pData;
+			innerImage->dataSize = dstImg.nDataSize;
+			innerImage->mipmapLevel = i;
+			
+			if(info.faceCount > 1)
+			{
+				innerImage->cubeFaceID = NvttHelper::GetCubeFaceId(info.faceFlags, faceIndex);
+			}
+
+			//SafeDeleteArray(dstImg.pData);
+			
+			//SwapBRChannels(innerImage->data, innerImage->dataSize);
+			imageSet.push_back(innerImage);
+			
+			faceWidth = Max((uint32)1, faceWidth / 2);
+			faceHeight = Max((uint32)1, faceHeight / 2);
 		}
-
-		dstImg.pData = new unsigned char[dstImg.nDataSize];
-		if (Qonvert(&srcImg, &dstImg) != Q_SUCCESS)
-		{
-			Logger::Error("[NvttHelper::DecompressAtc] Reading decompress atc data.");
-			SafeDeleteArray(dstImg.pData);
-
-			res = false;
-			break;
-		}
-
-		Image* innerImage = Image::Create(info.width, info.height, FORMAT_RGBA8888);
-		innerImage->data = dstImg.pData;
-		innerImage->dataSize = dstImg.nDataSize;
-		//SafeDeleteArray(dstImg.pData);
-		
-		//SwapBRChannels(innerImage->data, innerImage->dataSize);
-		imageSet.push_back(innerImage);
-		
-		info.height = Max((uint32)1, info.height / 2);
-		info.width = Max((uint32)1, info.width / 2);
 	}
 	
 	SafeDeleteArray(compressedImges);
@@ -834,7 +882,7 @@ bool NvttHelper::GetTextureSize(nvtt::Decompressor & dec, uint32 & width, uint32
 
 bool NvttHelper::GetInfo(nvtt::Decompressor & dec, DDSInfo &info)
 {
-	bool retVal = dec.getInfo(info.mipmapsCount, info.width, info.height, info.dataSize, info.headerSize);
+	bool retVal = dec.getInfo(info.mipmapsCount, info.width, info.height, info.dataSize, info.headerSize, info.faceCount, info.faceFlags);
 	if(!retVal)
 	{
 		Logger::Error("[NvttHelper::GetInfo] Error: can't read info from DDS file.");
@@ -906,7 +954,54 @@ bool NvttHelper::InitDecompressor(nvtt::Decompressor & dec, const uint8 * mem, u
 		Logger::Error("[NvttHelper::InitDecompressor] Wrong buffer.");
 		return false;
 	}
+	
 	return true;
 }
+	
+uint32 NvttHelper::GetCubeFaceId(uint32 nvttFaceDesc, int faceIndex)
+{
+	uint32 faceId = Texture::CUBE_FACE_INVALID;
+	
+	if(faceIndex >= 0 && faceIndex < 6)
+	{
+		/*uint32 preparedMask = nvttFaceDesc >> faceIndex;
+		for(int i = 0; i < 6; ++i)
+		{
+			if(0 == (preparedMask & 1))
+			{
+				faceIndex++;
+				preparedMask = preparedMask >> 1;
+			}
+		}*/
+		int bitIndex = 0;
+		int faceIdIndex = 0;
+		for(int i = 0; i < 6; ++i)
+		{
+			if((nvttFaceDesc >> i) & 1)
+			{
+				bitIndex++;
+				
+				if(bitIndex >= (faceIndex + 1))
+				{
+					faceIdIndex = i;
+					break;
+				}
+			}
+		}
 
+		static uint32 faceIndexMap[] = {
+			Texture::CUBE_FACE_POSITIVE_X,
+			Texture::CUBE_FACE_NEGATIVE_X,
+			Texture::CUBE_FACE_POSITIVE_Y,
+			Texture::CUBE_FACE_NEGATIVE_Y,
+			Texture::CUBE_FACE_POSITIVE_Z,
+			Texture::CUBE_FACE_NEGATIVE_Z
+		};
+		
+		faceId = faceIndexMap[faceIdIndex];
+	}
+	
+	return faceId;
+}
+	
 };

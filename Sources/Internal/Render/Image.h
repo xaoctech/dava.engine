@@ -92,6 +92,9 @@ public:
 	uint32	width;
 	uint32	height;
 	PixelFormat format;
+	
+	uint32 cubeFaceID;
+	uint32 mipmapLevel;
 };
 	
 // Implementation of inline functions

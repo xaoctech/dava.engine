@@ -53,6 +53,9 @@
 #include "Scene3D/Systems/SwitchSystem.h"
 #include "Scene3D/Systems/SoundUpdateSystem.h"
 
+#include "Scene3D/SkyBoxNode.h"
+
+
 //#include "Entity/Entity.h"
 //#include "Entity/EntityManager.h"
 //#include "Entity/Components.h"
@@ -402,6 +405,25 @@ Entity *Scene::GetRootNode(const FilePath &rootNodePath)
         file->EnableDebugLog(false);
         file->LoadScene(rootNodePath, this);
         SafeRelease(file);
+		
+		/*it = rootNodes.find(rootNodePath.GetAbsolutePathname());
+		if (it != rootNodes.end())
+		{
+			ProxyNode * node = it->second;
+
+			AABBox3 sceneBounds = node->GetNode()->GetWTMaximumBoundingBoxSlow();
+			SkyBoxNode* skyBox = new SkyBoxNode();
+			skyBox->SetSize(Vector3(1.0, 1.0, 1.0));
+			FilePath fp = "~res:/3d/Maps/desert_train/landscape/test_cube_c.tex";
+			skyBox->SetTexturePath(fp);
+			
+			node->GetNode()->AddNode(skyBox);
+			
+			skyBox->SceneDidLoaded();
+			
+			SafeRelease(skyBox);
+		}*/
+		
         uint64 deltaTime = SystemTimer::Instance()->AbsoluteMS() - startTime;
         Logger::Info("[GETROOTNODE TIME] %dms (%ld)", deltaTime, deltaTime);
     }
@@ -585,8 +607,6 @@ void Scene::Draw()
 	{
 		imposterManager->Draw();
 	}
-    
-
 
 	RenderManager::Instance()->SetState(RenderState::DEFAULT_2D_STATE_BLEND);
 	drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
