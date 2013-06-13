@@ -14,12 +14,12 @@ import string;
 import platform;
 import shutil;
 import subprocess;
-import filecmp
+import filecmp;
 
 arguments = sys.argv[1:]
 
-if len(arguments) < 2 or 3 < len(arguments):
-    print 'Usage: ./autotesting_init.py [PlatformName] [ProjectName] [TestsGroupName]'
+if len(arguments) != 4:
+    print 'Usage: ./autotesting_init.py PlatformName ProjectName ProjectFolder TestsGroupName'
     exit(1)
 
 def copy_file(srcFolder, destFolder, fileName):
@@ -34,18 +34,20 @@ def copy_file(srcFolder, destFolder, fileName):
 print "*** DAVA Initializing autotesting"
 platformName = arguments[0]
 projectName = arguments[1]
-testsGroupName = "default"
+projectFolder = arguments[2]
+testsGroupName = arguments[3]
 
 testsSrcFolder = "/Tests"
-if 3 == len(arguments):
-    testsGroupName = arguments[2]
-    testsSrcFolder = testsSrcFolder + "/" + testsGroupName
+
+#if 3 == len(arguments):
+#    testsGroupName = arguments[2]
+#    testsSrcFolder = testsSrcFolder + "/" + testsGroupName
 
 print "platform.system: " + platform.system()
 
 currentDir = os.getcwd(); 
 frameworkDir =  os.path.realpath(currentDir + "/../../../")
-projectDir = os.path.realpath(currentDir + "/../../../../" + projectName)
+projectDir = os.path.realpath(currentDir + "/../../../../" + projectFolder)
 print "Framework directory:" + frameworkDir
 print "Project directory:" + projectDir
 

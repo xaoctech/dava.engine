@@ -18,8 +18,8 @@ import subprocess;
 
 arguments = sys.argv[1:]
 
-if 0 == len(arguments) or 5 < len(arguments):
-    print 'Usage: ./autotesting.py PlatformName ProjectName TargetName ConfigurationName [MasterPlatform]'
+if len(arguments) < 4 or len(arguments) > 5:
+    print 'Usage: ./autotesting_init.py PlatformName ProjectFolder TargetName ConfigurationName [MasterPlatform]'
     exit(1)
 
 print "*** DAVA Starting autotesting"
@@ -28,13 +28,13 @@ print "platform.system: " + platform.system()
 print sys.argv
 
 platformName = arguments[0]
-projectName = arguments[1]
+projectFolder = arguments[1]
 targetName = arguments[2]
 configurationName = arguments[3]
 
 currentDir = os.getcwd(); 
 frameworkDir =  os.path.realpath(currentDir + "/../../../")
-projectDir = os.path.realpath(currentDir + "/../../../../" + projectName)
+projectDir = os.path.realpath(currentDir + "/../../../../" + projectFolder)
 print "Framework directory:" + frameworkDir
 print "Project directory:" + projectDir
 
