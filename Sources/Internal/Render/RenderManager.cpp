@@ -122,6 +122,7 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
     
     lastBindedTexture = 0;
     lastBindedFBO = 0;
+	lastBindedTextureType = Texture::TEXTURE_2D;
 #endif //#if defined (__DAVAENGINE_OPENGL__)
     
 	cursor = 0;

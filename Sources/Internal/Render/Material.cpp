@@ -229,6 +229,8 @@ const char8 * Material::GetTypeName(eType format)
 			return "VERTEX_COLOR_ALPHABLEND";
 		case MATERIAL_FLAT_COLOR:
 			return "FLAT_COLOR";
+		case MATERIAL_SKYBOX:
+			return "SKYBOX";
         default:
             break;
     };
@@ -376,7 +378,7 @@ void Material::RebuildShader()
     
     String shaderCombileCombo = "";
     
-    switch (type) 
+    switch (type)
     {
         case MATERIAL_UNLIT_TEXTURE:
             shaderCombileCombo = "MATERIAL_TEXTURE";
@@ -412,10 +414,17 @@ void Material::RebuildShader()
         case MATERIAL_FLAT_COLOR:
             isFlatColorEnabled = true;
             break;
+		case MATERIAL_SKYBOX:
+		{
+			shaderCombileCombo = "MATERIAL_SKYBOX";
+			isFlatColorEnabled = true;
+			break;
+		}
+			
         default:
             break;
     };
-
+	 
 	switch (viewOptions)
 	{
 		case MATERIAL_VIEW_TEXTURE_LIGHTMAP:

@@ -1131,18 +1131,24 @@ int32 RenderManager::HWglGetLastTextureID()
 //    return saveId;
 //#endif //#if defined(__DAVAENGINE_ANDROID__)
 }
+	
+uint32 RenderManager::HWglGetLastTextureType()
+{
+	return lastBindedTextureType;
+}
 
-void RenderManager::HWglBindTexture(int32 tId)
+void RenderManager::HWglBindTexture(int32 tId, uint32 textureType)
 {
     if(0 != tId)
     {
-        glBindTexture(GL_TEXTURE_2D, tId);
+        glBindTexture((Texture::TEXTURE_2D == textureType) ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP, tId);
         
         //		GLenum err = glGetError();
         //		if (err != GL_NO_ERROR)
         //			Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glBindTexture(GL_TEXTURE_2D, tId)", __FILE__, __LINE__, err);
         
         lastBindedTexture = tId;
+		lastBindedTextureType = textureType;
     }
 }
 
