@@ -54,7 +54,7 @@ public:
 	void SetVisibilityArea();
 
 protected:
-	const uint32 CROSS_TEXTURE_SIZE = 128;
+	static const uint32 CROSS_TEXTURE_SIZE = 128;
 
 	bool enabled;
 

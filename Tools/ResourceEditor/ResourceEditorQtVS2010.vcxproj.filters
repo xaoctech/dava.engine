@@ -184,6 +184,9 @@
     <Filter Include="Classes\Qt\DockTilemaskEditor">
       <UniqueIdentifier>{24dace83-3347-431c-99d2-bb03dd1fb162}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\Qt\DockVisibilityToolEditor">
+      <UniqueIdentifier>{a7137385-2627-417b-af0b-650cbca7c75a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1737,6 +1740,18 @@
     <ClCompile Include="Classes\Qt\DockCustomColorsEditor\CustomColorsPropertiesView.cpp">
       <Filter>Classes\Qt\DockCustomColorsEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\DockVisibilityToolEditor\VisibilityToolPropertiesView.cpp">
+      <Filter>Classes\Qt\DockVisibilityToolEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockVisibilityToolEditor\VisibilityToolPropertiesView_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\VisibilityToolProxy.cpp">
+      <Filter>Classes\Qt\Scene\System\LandscapeEditorDrawSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\VisibilityToolSystem.cpp">
+      <Filter>Classes\Qt\Scene\System</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3052,6 +3067,18 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockCustomColorsEditor\CustomColorsPropertiesView.h">
       <Filter>Classes\Qt\DockCustomColorsEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockVisibilityToolEditor\VisibilityToolPropertiesView.h">
+      <Filter>Classes\Qt\DockVisibilityToolEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="_GeneratedQt\ui_VisibilityToolPropertiesView.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\VisibilityToolProxy.h">
+      <Filter>Classes\Qt\Scene\System\LandscapeEditorDrawSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\VisibilityToolSystem.h">
+      <Filter>Classes\Qt\Scene\System</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
