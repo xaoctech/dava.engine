@@ -27,6 +27,7 @@ extern "C" int luaopen_AutotestingSystem(lua_State *l);
 extern "C" int luaopen_UIControl(lua_State *l); 
 extern "C" int luaopen_Rect(lua_State *l);
 extern "C" int luaopen_Vector(lua_State *l);
+extern "C" int luaopen_KeyedArchive(lua_State *l);
 
 namespace DAVA
 {
@@ -143,6 +144,38 @@ void AutotestingSystemLua::WaitForHelpers(DAVA::int32 helpersCount)
     AutotestingSystem::Instance()->RegisterMasterInDB(helpersCount);
 }
 
+// Multiplayer API
+void AutotestingSystemLua::WriteState(const String & device, const String & state)
+{
+	Logger::Debug("AutotestingSystemLua::WriteState device=%s state=%s", device.c_str(), state.c_str());
+	AutotestingSystem::Instance()->WriteState(device,state);
+}
+
+void AutotestingSystemLua::WriteCommand(const String & device, const String & state)
+{
+	Logger::Debug("AutotestingSystemLua::WriteCommand device=%s command=%s", device.c_str(), state.c_str());
+	AutotestingSystem::Instance()->WriteCommand(device,state);
+}
+
+String AutotestingSystemLua::ReadState(const String & device)
+{
+	Logger::Debug("AutotestingSystemLua::ReadState device=%s", device.c_str());
+	return AutotestingSystem::Instance()->ReadState(device);
+}
+
+String AutotestingSystemLua::ReadCommand(const String & device)
+{
+	Logger::Debug("AutotestingSystemLua::ReadCommand device=%s", device.c_str());
+	return AutotestingSystem::Instance()->ReadCommand(device);
+}
+
+void AutotestingSystemLua::InitializeDevice(const String & device)
+{
+	Logger::Debug("AutotestingSystemLua::InitializeDevice device=%s", device.c_str());
+	AutotestingSystem::Instance()->InitializeDevice(device);
+}
+
+
 void AutotestingSystemLua::Update(float32 timeElapsed)
 {
     RunScript("ResumeTest()"); //TODO: time 
@@ -188,10 +221,30 @@ void AutotestingSystemLua::Log(const String &level, const String &message)
 	Logger::Debug("AutotestingSystemLua::Log [%s]%s", level.c_str(), message.c_str());
 	AutotestingSystem::Instance()->Log(level, message);
 }
-    
-bool AutotestingSystemLua::SaveKeyedArchiveToDB(const String &archiveName, KeyedArchive *archive)
+
+void AutotestingSystemLua::WriteString(const String & name, const String & text)
 {
-	return AutotestingSystem::Instance()->SaveKeyedArchiveToDB(archiveName, archive);
+	Logger::Debug("AutotestingSystemLua::WriteString name=%s text=%s", name.c_str(), text.c_str());
+	AutotestingSystem::Instance()->WriteString(name, text);
+}
+
+String AutotestingSystemLua::ReadString(const String & name)
+{
+	Logger::Debug("AutotestingSystemLua::ReadString name=%s", name.c_str());
+	return AutotestingSystem::Instance()->ReadString(name);
+}
+
+bool AutotestingSystemLua::SaveKeyedArchiveToDB(const String &archiveName, KeyedArchive *archive, const String &docName)
+{
+	Logger::Debug("AutotestingSystemLua::SaveKeyedArchiveToDB");
+	return AutotestingSystem::Instance()->SaveKeyedArchiveToDB(archiveName, archive, docName);
+}
+
+String AutotestingSystemLua::MakeScreenshot()
+{
+	Logger::Debug("AutotestingSystemLua::MakeScreenshot");
+	AutotestingSystem::Instance()->MakeScreenShot();
+	return AutotestingSystem::Instance()->GetScreenShotName();
 }
 
 UIControl *AutotestingSystemLua::GetScreen()
@@ -220,7 +273,7 @@ bool AutotestingSystemLua::SetText(const String &path, const String &text)
     }
     return false;
 }
-    
+
 bool AutotestingSystemLua::CheckText(UIControl *control, const String &expectedText)
 {
 	UIStaticText *uiStaticText = dynamic_cast<UIStaticText*>(control);
@@ -341,7 +394,8 @@ bool AutotestingSystemLua::LoadWrappedLuaObjects()
     luaopen_UIControl(luaState);	// load the wrappered module
     luaopen_Rect(luaState);	// load the wrappered module
     luaopen_Vector(luaState);	// load the wrappered module
-    
+    luaopen_KeyedArchive(luaState);	// load the wrappered module
+
     if(delegate)
     {
         ret = delegate->LoadWrappedLuaObjects(luaState);

@@ -41,6 +41,7 @@
 
 #include "Autotesting/MongodbUpdateObject.h"
 
+//#define AUTOTESTING_DB_HOST    "10.128.19.33"
 #define AUTOTESTING_DB_HOST    "by2-buildmachine.wargaming.net"
 //#define AUTOTESTING_DB_HOST    "10.128.128.5"
 //#define AUTOTESTING_DB_HOST    "192.168.1.2"
@@ -87,6 +88,15 @@ public:
     
     void RunTests();
     
+	// multiplayer api
+	void WriteState(const String & device, const String & state);
+	void WriteCommand(const String & device, const String & state);
+
+	String ReadState(const String & device);
+	String ReadCommand(const String & device);
+
+	void InitializeDevice(const String & device);
+
 	// Test organization
 	void OnTestStart(const String &testName);
 	void OnStepStart( const String & stepName );
@@ -107,7 +117,14 @@ public:
     bool FindTouch(int32 id, UIEvent &touch);
     bool IsTouchDown(int32 id);
 
-	bool SaveKeyedArchiveToDB(const String &archiveName, KeyedArchive *archive);
+	// DB storing
+	void WriteString(const String & name, const String & text);
+	String ReadString(const String & name);
+
+	String GetScreenShotName();
+	void MakeScreenShot();
+
+	bool SaveKeyedArchiveToDB(const String &archiveName, KeyedArchive *archive, const String &docName);
 
     // DB Master-Helper relations
     void InitMultiplayer(bool _isMaster);
@@ -115,15 +132,15 @@ public:
     void RegisterHelperInDB();
     
 protected:
-    String GetTestId(int32 index) { return Format("Test%03d", index); };
-    String GetStepId(int32 index) { return Format("Step%03d", index); };
-    String GetLogId(int32 index) { return Format("Message%03d", index); };
-    
-    uint64 GetCurrentTimeMS();
-    String GetCurrentTimeString();
+	String GetTestId(int32 index) { return Format("Test%03d", index); };
+	String GetStepId(int32 index) { return Format("Step%03d", index); };
+	String GetLogId(int32 index) { return  Format("Message%03d", index); };
 
-	void MakeScreenShot();
-    //DB
+	uint64 GetCurrentTimeMS();
+	String GetCurrentTimeString();
+	String GetCurrentTimeMsString();
+//DB
+	KeyedArchive *FindOrInsertRunArchive(MongodbUpdateObject* dbUpdateObject, const String &runId);
     void ClearTestInDB();
     
     KeyedArchive *FindOrInsertTestArchive(MongodbUpdateObject *dbUpdateObject, const String &testId);
@@ -155,8 +172,9 @@ protected:
     int32 GetIndexInFileList(FileList &fileList, int32 index);
     
     void ExitApp();
+	
 
-    uint64 startTimeMS;
+	uint64 startTimeMS;
 
     bool isInit;
     bool isRunning;
@@ -174,6 +192,8 @@ protected:
     String testName;
     String testFileName;
     String testFilePath;
+
+	String deviceName;
 //    struct TestResult
 //    {
 //        TestResult(const String &_name, bool _isPassed, const String &_error) : name(_name), isPassed(_isPassed), error(_error) {}

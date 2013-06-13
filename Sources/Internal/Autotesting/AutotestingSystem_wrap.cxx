@@ -1645,26 +1645,27 @@ SWIG_Lua_dostring(lua_State *L, const char* str) {
 /* -------- TYPES TABLE (BEGIN) -------- */
 
 #define SWIGTYPE_p_DAVA__AutotestingSystemLua swig_types[0]
-#define SWIGTYPE_p_DAVA__SingletonT_DAVA__AutotestingSystemLua_t swig_types[1]
-#define SWIGTYPE_p_DAVA__UIControl swig_types[2]
-#define SWIGTYPE_p_DAVA__Vector2 swig_types[3]
-#define SWIGTYPE_p_SelectT_sizeoffvoid_pF__4_DAVA__uint32_DAVA__uint64_t__Result swig_types[4]
-#define SWIGTYPE_p_char swig_types[5]
-#define SWIGTYPE_p_double swig_types[6]
-#define SWIGTYPE_p_float swig_types[7]
-#define SWIGTYPE_p_int swig_types[8]
-#define SWIGTYPE_p_long_long swig_types[9]
-#define SWIGTYPE_p_short swig_types[10]
-#define SWIGTYPE_p_signed_char swig_types[11]
-#define SWIGTYPE_p_std__string swig_types[12]
-#define SWIGTYPE_p_std__wstring swig_types[13]
-#define SWIGTYPE_p_unsigned_char swig_types[14]
-#define SWIGTYPE_p_unsigned_int swig_types[15]
-#define SWIGTYPE_p_unsigned_long_long swig_types[16]
-#define SWIGTYPE_p_unsigned_short swig_types[17]
-#define SWIGTYPE_p_wchar_t swig_types[18]
-static swig_type_info *swig_types[20];
-static swig_module_info swig_module = {swig_types, 19, 0, 0, 0, 0};
+#define SWIGTYPE_p_DAVA__KeyedArchive swig_types[1]
+#define SWIGTYPE_p_DAVA__SingletonT_DAVA__AutotestingSystemLua_t swig_types[2]
+#define SWIGTYPE_p_DAVA__UIControl swig_types[3]
+#define SWIGTYPE_p_DAVA__Vector2 swig_types[4]
+#define SWIGTYPE_p_SelectT_sizeoffvoid_pF__4_DAVA__uint32_DAVA__uint64_t__Result swig_types[5]
+#define SWIGTYPE_p_char swig_types[6]
+#define SWIGTYPE_p_double swig_types[7]
+#define SWIGTYPE_p_float swig_types[8]
+#define SWIGTYPE_p_int swig_types[9]
+#define SWIGTYPE_p_long_long swig_types[10]
+#define SWIGTYPE_p_short swig_types[11]
+#define SWIGTYPE_p_signed_char swig_types[12]
+#define SWIGTYPE_p_std__string swig_types[13]
+#define SWIGTYPE_p_std__wstring swig_types[14]
+#define SWIGTYPE_p_unsigned_char swig_types[15]
+#define SWIGTYPE_p_unsigned_int swig_types[16]
+#define SWIGTYPE_p_unsigned_long_long swig_types[17]
+#define SWIGTYPE_p_unsigned_short swig_types[18]
+#define SWIGTYPE_p_wchar_t swig_types[19]
+static swig_type_info *swig_types[21];
+static swig_module_info swig_module = {swig_types, 20, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -2358,6 +2359,30 @@ fail:
 }
 
 
+static int _wrap_AutotestingSystemLua_GetScreen(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
+  DAVA::UIControl *result = 0 ;
+  
+  SWIG_check_num_args("DAVA::AutotestingSystemLua::GetScreen",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::GetScreen",1,"DAVA::AutotestingSystemLua *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0))){
+    SWIG_fail_ptr("AutotestingSystemLua_GetScreen",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
+  }
+  
+  result = (DAVA::UIControl *)(arg1)->GetScreen();
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_DAVA__UIControl,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_AutotestingSystemLua_FindControl(lua_State* L) {
   int SWIG_arg = 0;
   DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
@@ -2580,6 +2605,387 @@ fail:
 }
 
 
+static int _wrap_AutotestingSystemLua_WriteState(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::String *arg3 = 0 ;
+  DAVA::String temp2 ;
+  DAVA::String temp3 ;
+  
+  SWIG_check_num_args("DAVA::AutotestingSystemLua::WriteState",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::WriteState",1,"DAVA::AutotestingSystemLua *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::AutotestingSystemLua::WriteState",2,"DAVA::String const &");
+  if(!lua_isstring(L,3)) SWIG_fail_arg("DAVA::AutotestingSystemLua::WriteState",3,"DAVA::String const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0))){
+    SWIG_fail_ptr("AutotestingSystemLua_WriteState",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  temp3.assign(lua_tostring(L,3),lua_rawlen(L,3)); arg3=&temp3;
+  (arg1)->WriteState((DAVA::String const &)*arg2,(DAVA::String const &)*arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_AutotestingSystemLua_WriteCommand(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::String *arg3 = 0 ;
+  DAVA::String temp2 ;
+  DAVA::String temp3 ;
+  
+  SWIG_check_num_args("DAVA::AutotestingSystemLua::WriteCommand",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::WriteCommand",1,"DAVA::AutotestingSystemLua *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::AutotestingSystemLua::WriteCommand",2,"DAVA::String const &");
+  if(!lua_isstring(L,3)) SWIG_fail_arg("DAVA::AutotestingSystemLua::WriteCommand",3,"DAVA::String const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0))){
+    SWIG_fail_ptr("AutotestingSystemLua_WriteCommand",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  temp3.assign(lua_tostring(L,3),lua_rawlen(L,3)); arg3=&temp3;
+  (arg1)->WriteCommand((DAVA::String const &)*arg2,(DAVA::String const &)*arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_AutotestingSystemLua_ReadState(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::String temp2 ;
+  DAVA::String result;
+  
+  SWIG_check_num_args("DAVA::AutotestingSystemLua::ReadState",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::ReadState",1,"DAVA::AutotestingSystemLua *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::AutotestingSystemLua::ReadState",2,"DAVA::String const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0))){
+    SWIG_fail_ptr("AutotestingSystemLua_ReadState",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  result = (arg1)->ReadState((DAVA::String const &)*arg2);
+  lua_pushlstring(L,(&result)->data(),(&result)->size()); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_AutotestingSystemLua_ReadCommand(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::String temp2 ;
+  DAVA::String result;
+  
+  SWIG_check_num_args("DAVA::AutotestingSystemLua::ReadCommand",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::ReadCommand",1,"DAVA::AutotestingSystemLua *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::AutotestingSystemLua::ReadCommand",2,"DAVA::String const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0))){
+    SWIG_fail_ptr("AutotestingSystemLua_ReadCommand",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  result = (arg1)->ReadCommand((DAVA::String const &)*arg2);
+  lua_pushlstring(L,(&result)->data(),(&result)->size()); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_AutotestingSystemLua_InitializeDevice(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::String temp2 ;
+  
+  SWIG_check_num_args("DAVA::AutotestingSystemLua::InitializeDevice",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::InitializeDevice",1,"DAVA::AutotestingSystemLua *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::AutotestingSystemLua::InitializeDevice",2,"DAVA::String const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0))){
+    SWIG_fail_ptr("AutotestingSystemLua_InitializeDevice",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  (arg1)->InitializeDevice((DAVA::String const &)*arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_AutotestingSystemLua_SaveKeyedArchiveToDB__SWIG_0(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::KeyedArchive *arg3 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg4 = 0 ;
+  DAVA::String temp2 ;
+  DAVA::String temp4 ;
+  bool result;
+  
+  SWIG_check_num_args("DAVA::AutotestingSystemLua::SaveKeyedArchiveToDB",4,4)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::SaveKeyedArchiveToDB",1,"DAVA::AutotestingSystemLua *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::AutotestingSystemLua::SaveKeyedArchiveToDB",2,"DAVA::String const &");
+  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("DAVA::AutotestingSystemLua::SaveKeyedArchiveToDB",3,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,4)) SWIG_fail_arg("DAVA::AutotestingSystemLua::SaveKeyedArchiveToDB",4,"DAVA::String const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0))){
+    SWIG_fail_ptr("AutotestingSystemLua_SaveKeyedArchiveToDB",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("AutotestingSystemLua_SaveKeyedArchiveToDB",3,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp4.assign(lua_tostring(L,4),lua_rawlen(L,4)); arg4=&temp4;
+  result = (bool)(arg1)->SaveKeyedArchiveToDB((DAVA::String const &)*arg2,arg3,(DAVA::String const &)*arg4);
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_AutotestingSystemLua_SaveKeyedArchiveToDB__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::KeyedArchive *arg3 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String temp2 ;
+  bool result;
+  
+  SWIG_check_num_args("DAVA::AutotestingSystemLua::SaveKeyedArchiveToDB",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::SaveKeyedArchiveToDB",1,"DAVA::AutotestingSystemLua *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::AutotestingSystemLua::SaveKeyedArchiveToDB",2,"DAVA::String const &");
+  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("DAVA::AutotestingSystemLua::SaveKeyedArchiveToDB",3,"DAVA::KeyedArchive *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0))){
+    SWIG_fail_ptr("AutotestingSystemLua_SaveKeyedArchiveToDB",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("AutotestingSystemLua_SaveKeyedArchiveToDB",3,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  result = (bool)(arg1)->SaveKeyedArchiveToDB((DAVA::String const &)*arg2,arg3);
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_AutotestingSystemLua_SaveKeyedArchiveToDB(lua_State* L) {
+  int argc;
+  int argv[5]={
+    1,2,3,4,5
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 3) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__AutotestingSystemLua, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isstring(L,argv[1]);
+      }
+      if (_v) {
+        {
+          void *ptr;
+          if (SWIG_isptrtype(L,argv[2])==0 || SWIG_ConvertPtr(L,argv[2], (void **) &ptr, SWIGTYPE_p_DAVA__KeyedArchive, 0)) {
+            _v = 0;
+          } else {
+            _v = 1;
+          }
+        }
+        if (_v) {
+          return _wrap_AutotestingSystemLua_SaveKeyedArchiveToDB__SWIG_1(L);
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__AutotestingSystemLua, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isstring(L,argv[1]);
+      }
+      if (_v) {
+        {
+          void *ptr;
+          if (SWIG_isptrtype(L,argv[2])==0 || SWIG_ConvertPtr(L,argv[2], (void **) &ptr, SWIGTYPE_p_DAVA__KeyedArchive, 0)) {
+            _v = 0;
+          } else {
+            _v = 1;
+          }
+        }
+        if (_v) {
+          {
+            _v = lua_isstring(L,argv[3]);
+          }
+          if (_v) {
+            return _wrap_AutotestingSystemLua_SaveKeyedArchiveToDB__SWIG_0(L);
+          }
+        }
+      }
+    }
+  }
+  
+  lua_pushstring(L,"Wrong arguments for overloaded function 'AutotestingSystemLua_SaveKeyedArchiveToDB'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    DAVA::AutotestingSystemLua::SaveKeyedArchiveToDB(DAVA::String const &,DAVA::KeyedArchive *,DAVA::String const &)\n"
+    "    DAVA::AutotestingSystemLua::SaveKeyedArchiveToDB(DAVA::String const &,DAVA::KeyedArchive *)\n");
+  lua_error(L);return 0;
+}
+
+
+static int _wrap_AutotestingSystemLua_WriteString(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::String *arg3 = 0 ;
+  DAVA::String temp2 ;
+  DAVA::String temp3 ;
+  
+  SWIG_check_num_args("DAVA::AutotestingSystemLua::WriteString",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::WriteString",1,"DAVA::AutotestingSystemLua *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::AutotestingSystemLua::WriteString",2,"DAVA::String const &");
+  if(!lua_isstring(L,3)) SWIG_fail_arg("DAVA::AutotestingSystemLua::WriteString",3,"DAVA::String const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0))){
+    SWIG_fail_ptr("AutotestingSystemLua_WriteString",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  temp3.assign(lua_tostring(L,3),lua_rawlen(L,3)); arg3=&temp3;
+  (arg1)->WriteString((DAVA::String const &)*arg2,(DAVA::String const &)*arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_AutotestingSystemLua_ReadString(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::String temp2 ;
+  DAVA::String result;
+  
+  SWIG_check_num_args("DAVA::AutotestingSystemLua::ReadString",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::ReadString",1,"DAVA::AutotestingSystemLua *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::AutotestingSystemLua::ReadString",2,"DAVA::String const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0))){
+    SWIG_fail_ptr("AutotestingSystemLua_ReadString",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  result = (arg1)->ReadString((DAVA::String const &)*arg2);
+  lua_pushlstring(L,(&result)->data(),(&result)->size()); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_AutotestingSystemLua_MakeScreenshot(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
+  DAVA::String result;
+  
+  SWIG_check_num_args("DAVA::AutotestingSystemLua::MakeScreenshot",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::MakeScreenshot",1,"DAVA::AutotestingSystemLua *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0))){
+    SWIG_fail_ptr("AutotestingSystemLua_MakeScreenshot",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
+  }
+  
+  result = (arg1)->MakeScreenshot();
+  lua_pushlstring(L,(&result)->data(),(&result)->size()); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static void swig_delete_AutotestingSystemLua(void *obj) {
 DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) obj;
 delete arg1;
@@ -2594,6 +3000,7 @@ static swig_lua_method swig_DAVA_AutotestingSystemLua_methods[] = {
     {"OnTestStart", _wrap_AutotestingSystemLua_OnTestStart}, 
     {"OnStepStart", _wrap_AutotestingSystemLua_OnStepStart}, 
     {"Log", _wrap_AutotestingSystemLua_Log}, 
+    {"GetScreen", _wrap_AutotestingSystemLua_GetScreen}, 
     {"FindControl", _wrap_AutotestingSystemLua_FindControl}, 
     {"TouchDown", _wrap_AutotestingSystemLua_TouchDown}, 
     {"TouchMove", _wrap_AutotestingSystemLua_TouchMove}, 
@@ -2601,6 +3008,15 @@ static swig_lua_method swig_DAVA_AutotestingSystemLua_methods[] = {
     {"SetText", _wrap_AutotestingSystemLua_SetText}, 
     {"CheckText", _wrap_AutotestingSystemLua_CheckText}, 
     {"CheckMsgText", _wrap_AutotestingSystemLua_CheckMsgText}, 
+    {"WriteState", _wrap_AutotestingSystemLua_WriteState}, 
+    {"WriteCommand", _wrap_AutotestingSystemLua_WriteCommand}, 
+    {"ReadState", _wrap_AutotestingSystemLua_ReadState}, 
+    {"ReadCommand", _wrap_AutotestingSystemLua_ReadCommand}, 
+    {"InitializeDevice", _wrap_AutotestingSystemLua_InitializeDevice}, 
+    {"SaveKeyedArchiveToDB", _wrap_AutotestingSystemLua_SaveKeyedArchiveToDB}, 
+    {"WriteString", _wrap_AutotestingSystemLua_WriteString}, 
+    {"ReadString", _wrap_AutotestingSystemLua_ReadString}, 
+    {"MakeScreenshot", _wrap_AutotestingSystemLua_MakeScreenshot}, 
     {0,0}
 };
 static swig_lua_attribute swig_DAVA_AutotestingSystemLua_attributes[] = {
@@ -2633,6 +3049,7 @@ static void *_p_DAVA__AutotestingSystemLuaTo_p_DAVA__SingletonT_DAVA__Autotestin
     return (void *)((DAVA::Singleton< DAVA::AutotestingSystemLua > *)  ((DAVA::AutotestingSystemLua *) x));
 }
 static swig_type_info _swigt__p_DAVA__AutotestingSystemLua = {"_p_DAVA__AutotestingSystemLua", "DAVA::AutotestingSystemLua *", 0, 0, (void*)&_wrap_class_DAVA_AutotestingSystemLua, 0};
+static swig_type_info _swigt__p_DAVA__KeyedArchive = {"_p_DAVA__KeyedArchive", "DAVA::KeyedArchive *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_DAVA__SingletonT_DAVA__AutotestingSystemLua_t = {"_p_DAVA__SingletonT_DAVA__AutotestingSystemLua_t", "DAVA::Singleton< DAVA::AutotestingSystemLua > *", 0, 0, (void*)&_wrap_class_DAVA_Singleton_Sl_DAVA_AutotestingSystemLua_Sg_, 0};
 static swig_type_info _swigt__p_DAVA__UIControl = {"_p_DAVA__UIControl", "DAVA::UIControl *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_DAVA__Vector2 = {"_p_DAVA__Vector2", "DAVA::Vector2 *", 0, 0, (void*)0, 0};
@@ -2654,6 +3071,7 @@ static swig_type_info _swigt__p_wchar_t = {"_p_wchar_t", "DAVA::char16 *|wchar_t
 
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_DAVA__AutotestingSystemLua,
+  &_swigt__p_DAVA__KeyedArchive,
   &_swigt__p_DAVA__SingletonT_DAVA__AutotestingSystemLua_t,
   &_swigt__p_DAVA__UIControl,
   &_swigt__p_DAVA__Vector2,
@@ -2675,6 +3093,7 @@ static swig_type_info *swig_type_initial[] = {
 };
 
 static swig_cast_info _swigc__p_DAVA__AutotestingSystemLua[] = {  {&_swigt__p_DAVA__AutotestingSystemLua, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_DAVA__KeyedArchive[] = {  {&_swigt__p_DAVA__KeyedArchive, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_DAVA__SingletonT_DAVA__AutotestingSystemLua_t[] = {  {&_swigt__p_DAVA__SingletonT_DAVA__AutotestingSystemLua_t, 0, 0, 0},  {&_swigt__p_DAVA__AutotestingSystemLua, _p_DAVA__AutotestingSystemLuaTo_p_DAVA__SingletonT_DAVA__AutotestingSystemLua_t, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_DAVA__UIControl[] = {  {&_swigt__p_DAVA__UIControl, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_DAVA__Vector2[] = {  {&_swigt__p_DAVA__Vector2, 0, 0, 0},{0, 0, 0, 0}};
@@ -2696,6 +3115,7 @@ static swig_cast_info _swigc__p_wchar_t[] = {  {&_swigt__p_wchar_t, 0, 0, 0},{0,
 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_DAVA__AutotestingSystemLua,
+  _swigc__p_DAVA__KeyedArchive,
   _swigc__p_DAVA__SingletonT_DAVA__AutotestingSystemLua_t,
   _swigc__p_DAVA__UIControl,
   _swigc__p_DAVA__Vector2,
@@ -2777,7 +3197,6 @@ SWIG_InitializeModule(void *clientdata) {
   size_t i;
   swig_module_info *module_head, *iter;
   int found, init;
-
 
   /* check to see if the circular list has been setup, if not, set it up */
   if (swig_module.next==0) {
