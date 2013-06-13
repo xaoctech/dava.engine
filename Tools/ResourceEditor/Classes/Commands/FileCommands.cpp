@@ -130,7 +130,7 @@ void CommandSaveSpecifiedScene::Execute()
 		DVASSERT(activeScene);
 		Entity* entityToAdd = activeScene->Clone();
 		
-		entityToAdd->RestoreOriginalTransforms();
+		entityToAdd->SetLocalTransform(Matrix4::IDENTITY);
 
 		Scene* sc = new Scene();
 		
