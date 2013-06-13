@@ -240,7 +240,10 @@ void RenderBatch::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 		if(NULL != mia)
 		{
 			oldMaterialInstance->Load(mia, sceneFile);
-		}
+		}else
+        {
+            DVASSERT(0 && "Mat Inst");
+        }
 
         NMaterial * newMaterial = 0;
         NMaterialInstance * newMaterialInstance = 0;

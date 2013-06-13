@@ -642,6 +642,10 @@ void NMaterial::BindMaterialTechnique(const FastName & techniqueName)
                 NMaterialProperty * property = materialProperties.GetValue(uniform->name);
                 if (property)
                 {
+                    Vector2 * dataVec2 = (Vector2 *)property->data;
+                    int32 * dataInt32 = (int32 *)property->data;
+                    
+                    
                     shader->SetUniformValue(uniform->location, uniform->type, uniform->size, property->data);
                     break;
                 }
