@@ -787,6 +787,8 @@ void Entity::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 		{
 			CustomPropertiesComponent* customPropsComponent = GetCustomProperties();
 			customPropsComponent->LoadFromArchive(*customProps, sceneFileV2);
+			
+			SafeRelease(customProps);
 		}
 	}
 }
