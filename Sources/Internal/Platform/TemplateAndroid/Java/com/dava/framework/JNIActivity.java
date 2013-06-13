@@ -355,10 +355,8 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 	
 	public String GetEditText()
 	{
-		return editText.getText().toString();
-	}
-
-	public boolean IsEditTextVisible() {
-		return (editText != null);
+		if (editText != null)
+			return editText.getText().toString();
+		return "";
 	}
 }
