@@ -724,14 +724,14 @@ void SceneFileV2::ConvertOldMaterialToNewMaterial(Material * oldMaterial, Instan
 	switch (oldMaterial->type)
 	{
 		case Material::MATERIAL_UNLIT_TEXTURE:
-			{
-				newMaterialName = "~res:/Materials/UnlitTexture.material";
-				resultMaterial = MaterialSystem::Instance()->GetMaterial(newMaterialName);
-				Texture * tex = oldMaterial->GetTexture(Material::TEXTURE_DIFFUSE);
-				MaterialTechnique * tech = resultMaterial->GetTechnique(PASS_FORWARD);
-				tech->GetRenderState()->SetTexture(tex, 0);
-			}
-			break;
+        {
+            newMaterialName = "~res:/Materials/UnlitTexture.material";
+            resultMaterial = MaterialSystem::Instance()->GetMaterial(newMaterialName);
+            Texture * tex = oldMaterial->GetTexture(Material::TEXTURE_DIFFUSE);
+            MaterialTechnique * tech = resultMaterial->GetTechnique(PASS_FORWARD);
+            tech->GetRenderState()->SetTexture(tex, 0);
+        }
+        break;
 		case Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP:
         {
             newMaterialName = "~res:/Materials/UnlitTextureLightmap.material";
@@ -742,11 +742,7 @@ void SceneFileV2::ConvertOldMaterialToNewMaterial(Material * oldMaterial, Instan
             Texture * tex2 = oldMaterial->GetTexture(Material::TEXTURE_DETAIL);
             tech->GetRenderState()->SetTexture(tex2, 1);
            
-            if (oldMaterialState)
-            {
-                resultMaterial->SetPropertyValue(LIGHTMAP_UV_OFFSET, Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVOffset());
-                resultMaterial->SetPropertyValue(LIGHTMAP_UV_SCALE, Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVScale());
-            }
+            //Logger::Debug("tex2: %s", tex2->GetPathname().GetAbsolutePathname().c_str());
         }
         break;
 		case Material::MATERIAL_UNLIT_TEXTURE_DETAIL:
@@ -760,6 +756,7 @@ void SceneFileV2::ConvertOldMaterialToNewMaterial(Material * oldMaterial, Instan
             Texture * tex2 = oldMaterial->GetTexture(Material::TEXTURE_DETAIL);
             tech->GetRenderState()->SetTexture(tex2, 1);
             
+            //Logger::Debug("tex2: %s", tex2->GetPathname().GetAbsolutePathname().c_str());
         }
         break;
 		case Material::MATERIAL_VERTEX_LIT_TEXTURE:
@@ -772,12 +769,33 @@ void SceneFileV2::ConvertOldMaterialToNewMaterial(Material * oldMaterial, Instan
         }
         break;
 		default:
-			{
-				newMaterialName = "~res:/Materials/VertexColorNoLightingOpaque.material";
-				resultMaterial = MaterialSystem::Instance()->GetMaterial(newMaterialName);
-			}
-			break;
+        {
+            newMaterialName = "~res:/Materials/VertexColorNoLightingOpaque.material";
+            resultMaterial = MaterialSystem::Instance()->GetMaterial(newMaterialName);
+        }
+        break;
 	}
+    
+    if (oldMaterialState)
+    {
+        Vector2 offset = oldMaterialState->GetUVOffset();
+        Vector2 scale = oldMaterialState->GetUVScale();
+        Logger::Debug("texl: %s", oldMaterialState->GetLightmapName().GetAbsolutePathname().c_str());
+        Logger::Debug("offs: %0.5f %0.5f scal: %0.5f %0.5f", offset.x, offset.y, scale.x, scale.y);
+        
+        resultMaterial->SetPropertyValue(LIGHTMAP_UV_OFFSET, Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVOffset());
+        resultMaterial->SetPropertyValue(LIGHTMAP_UV_SCALE, Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVScale());
+
+        // Right way to setup lightmaps
+        MaterialTechnique * tech = resultMaterial->GetTechnique(PASS_FORWARD);
+        Texture * tex2 = oldMaterialState->GetLightmap();
+        tech->GetRenderState()->SetTexture(tex2, 1);
+
+        
+    }else{
+        
+    }
+
     
     resultMaterialInstance = new NMaterialInstance();
     
