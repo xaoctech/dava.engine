@@ -83,8 +83,10 @@ bool HeightmapEditorSystem::EnableLandscapeEditing()
 	modifSystem->SetLocked(true);
 	
 	drawSystem->EnableCustomDraw();
-	
-	drawSystem->EnableCursor();
+
+	landscapeSize = drawSystem->GetHeightmapProxy()->Size();
+
+	drawSystem->EnableCursor(landscapeSize);
 	drawSystem->SetCursorTexture(cursorTexture);
 	drawSystem->SetCursorSize(cursorSize);
 	
@@ -140,7 +142,7 @@ void HeightmapEditorSystem::ProcessUIEvent(DAVA::UIEvent *event)
 			case UIEvent::PHASE_BEGAN:
 				if (drawingType == HEIGHTMAP_DRAW_ABSOLUTE_DROPPER)
 				{
-					curHeight = GetHeightAtPoint(cursorPosition);
+					curHeight = drawSystem->GetHeightAtPoint(cursorPosition);
 					
 					SceneSignals::Instance()->EmitUpdateDropperHeight(curHeight);
 				}
@@ -181,7 +183,6 @@ void HeightmapEditorSystem::UpdateCursorPosition()
 		point.x = (float32)((int32)point.x);
 		point.y = (float32)((int32)point.y);
 		
-		int32 landscapeSize = drawSystem->GetHeightmapProxy()->Size();
 		AABBox3 box = drawSystem->GetLandscapeProxy()->GetLandscapeBoundingBox();
 		
 		cursorPosition.x = (point.x - box.min.x) * (landscapeSize - 1) / (box.max.x - box.min.x);
@@ -284,7 +285,7 @@ void HeightmapEditorSystem::UpdateBrushTool(float32 timeElapsed)
 				float32 koef = (averageStrength * timeElapsed) * 2.0f;
 				editorHeightmap->DrawAbsoluteRGBA(toolImage, (int32)pos.x, (int32)pos.y, scaleSize, scaleSize, koef, height);
 				
-				float32 height2 = GetHeightAtPoint(cursorPosition);
+				float32 height2 = drawSystem->GetHeightAtPoint(cursorPosition);
 				SceneSignals::Instance()->EmitUpdateDropperHeight(height2);
 				
 				break;
@@ -387,17 +388,4 @@ void HeightmapEditorSystem::SetToolImage(const FilePath& toolImagePath)
 void HeightmapEditorSystem::SetDrawingType(eHeightmapDrawType type)
 {
 	drawingType = type;
-}
-
-float32 HeightmapEditorSystem::GetHeightAtPoint(const Vector2& point)
-{
-	Heightmap *heightmap = drawSystem->GetHeightmapProxy();
-	int32 index = (int32)(point.x + point.y * heightmap->Size());
-	float32 height = heightmap->Data()[index];
-	float32 maxHeight = drawSystem->GetLandscapeMaxHeight();
-	
-	height *= maxHeight;
-	height /= Heightmap::MAX_VALUE;
-	
-	return height;
 }

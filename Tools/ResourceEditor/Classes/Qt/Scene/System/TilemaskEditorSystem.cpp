@@ -82,8 +82,10 @@ bool TilemaskEditorSystem::EnableLandscapeEditing()
 	
 	drawSystem->EnableCustomDraw();
 	drawSystem->GetLandscapeProxy()->SetTilemaskTextureEnabled(true);
-	
-	drawSystem->EnableCursor();
+
+	landscapeSize = drawSystem->GetLandscapeProxy()->GetLandscapeTexture(Landscape::TEXTURE_TILE_FULL)->GetWidth();
+
+	drawSystem->EnableCursor(landscapeSize);
 	drawSystem->SetCursorTexture(cursorTexture);
 	drawSystem->SetCursorSize(cursorSize);
 	
@@ -225,7 +227,6 @@ void TilemaskEditorSystem::UpdateCursorPosition()
 		point.x = (float32)((int32)point.x);
 		point.y = (float32)((int32)point.y);
 		
-		int32 landscapeSize = drawSystem->GetHeightmapProxy()->Size();
 		AABBox3 box = drawSystem->GetLandscapeProxy()->GetLandscapeBoundingBox();
 		
 		cursorPosition.x = (point.x - box.min.x) * (landscapeSize - 1) / (box.max.x - box.min.x);

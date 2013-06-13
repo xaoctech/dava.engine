@@ -49,6 +49,7 @@
 #include "../Scene/System/TilemaskEditorSystem.h"
 #include "../Scene/System/HeightmapEditorSystem.h"
 #include "../Scene/System/CustomColorsSystem.h"
+#include "../Scene/System/VisibilityToolSystem.h"
 
 #include <QPoint>
 #include <QMenu>
@@ -1459,4 +1460,134 @@ void QtMainWindowHandler::SetCustomColorsColor(int colorIndex)
 	}
 
 	sep->customColorsSystem->SetColor(colorIndex);
+}
+
+
+void QtMainWindowHandler::RegisterVisibilityToolWidgets(QPushButton* toggleButton,
+														QPushButton* saveTextureButton,
+														QPushButton* setPointButton,
+														QPushButton* setAreaButton,
+														QSlider* areaSizeSlider)
+{
+	this->visibilityToolEditorToggleButton = toggleButton;
+	this->visibilityToolSaveTexture = saveTextureButton;
+	this->visibilityToolSetPoint = setPointButton;
+	this->visibilityToolSetArea = setAreaButton;
+	this->visibilityToolAreaSize = areaSizeSlider;
+}
+
+void QtMainWindowHandler::SetVisibilityToolWidgetsState(bool state)
+{
+	DVASSERT(visibilityToolEditorToggleButton &&
+			 visibilityToolSaveTexture &&
+			 visibilityToolSetPoint &&
+			 visibilityToolSetArea &&
+			 visibilityToolAreaSize);
+
+	visibilityToolEditorToggleButton->blockSignals(true);
+	visibilityToolEditorToggleButton->setCheckable(state);
+	visibilityToolEditorToggleButton->setChecked(state);
+	visibilityToolEditorToggleButton->blockSignals(false);
+
+	QString toggleButtonText = state ? tr("Disable Visibility Tool"): tr("Enable Visibility Tool");
+	visibilityToolEditorToggleButton->setText(toggleButtonText);
+
+	visibilityToolSaveTexture->setEnabled(state);
+	visibilityToolSetPoint->setEnabled(state);
+	visibilityToolSetArea->setEnabled(state);
+	visibilityToolAreaSize->setEnabled(state);
+	visibilityToolSaveTexture->blockSignals(!state);
+	visibilityToolSetPoint->blockSignals(!state);
+	visibilityToolSetArea->blockSignals(!state);
+	visibilityToolAreaSize->blockSignals(!state);
+}
+
+void QtMainWindowHandler::SetVisibilityToolButtonsState(bool pointButtonChecked, bool areaButtonChecked)
+{
+	bool b;
+
+	b = visibilityToolSetPoint->signalsBlocked();
+	visibilityToolSetPoint->blockSignals(true);
+	visibilityToolSetPoint->setChecked(pointButtonChecked);
+	visibilityToolSetPoint->blockSignals(b);
+
+	b = visibilityToolSetArea->signalsBlocked();
+	visibilityToolSetArea->blockSignals(true);
+	visibilityToolSetArea->setChecked(areaButtonChecked);
+	visibilityToolSetArea->blockSignals(b);
+}
+
+void QtMainWindowHandler::ToggleVisibilityToolEditor()
+{
+	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
+	SceneEditorProxy* sep = window->GetCurrentScene();
+	if (!sep)
+	{
+		return;
+	}
+
+	if (sep->visibilityToolSystem->IsLandscapeEditingEnabled())
+	{
+		if (sep->visibilityToolSystem->DisableLandscapeEdititing())
+		{
+			SetVisibilityToolWidgetsState(false);
+		}
+		else
+		{
+			// show "Couldn't disable visibility tool" message box
+		}
+	}
+	else
+	{
+		if (sep->visibilityToolSystem->EnableLandscapeEditing())
+		{
+			SetVisibilityToolWidgetsState(true);
+
+			SetVisibilityToolAreaSize(visibilityToolAreaSize->value());
+		}
+		else
+		{
+			// show "Couldn't enable visibility tool" message box
+		}
+	}
+}
+
+void QtMainWindowHandler::SaveVisibilityToolTexture()
+{
+}
+
+void QtMainWindowHandler::SetVisibilityToolAreaSize(int size)
+{
+	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
+	SceneEditorProxy* sep = window->GetCurrentScene();
+	if (!sep)
+	{
+		return;
+	}
+
+	sep->visibilityToolSystem->SetBrushSize(size);
+}
+
+void QtMainWindowHandler::SetVisibilityPoint()
+{
+	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
+	SceneEditorProxy* sep = window->GetCurrentScene();
+	if (!sep)
+	{
+		return;
+	}
+
+	sep->visibilityToolSystem->SetVisibilityPoint();
+}
+
+void QtMainWindowHandler::SetVisibilityArea()
+{
+	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
+	SceneEditorProxy* sep = window->GetCurrentScene();
+	if (!sep)
+	{
+		return;
+	}
+
+	sep->visibilityToolSystem->SetVisibilityArea();
 }

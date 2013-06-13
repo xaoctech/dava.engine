@@ -25,6 +25,7 @@
 #include "Scene/System/HeightmapEditorSystem.h"
 #include "Scene/System/TilemaskEditorSystem.h"
 #include "Scene/System/CustomColorsSystem.h"
+#include "Scene/System/VisibilityToolSystem.h"
 #include "Scene/SceneSignals.h"
 
 // framework
@@ -62,6 +63,9 @@ SceneEditorProxy::SceneEditorProxy()
 
 	customColorsSystem = new CustomColorsSystem(this);
 	AddSystem(customColorsSystem, 0);
+
+	visibilityToolSystem = new VisibilityToolSystem(this);
+	AddSystem(visibilityToolSystem, 0);
 
 	SceneSignals::Instance()->EmitOpened(this);
 }
@@ -155,6 +159,7 @@ void SceneEditorProxy::Update(float timeElapsed)
 	heightmapEditorSystem->Update(timeElapsed);
 	tilemaskEditorSystem->Update(timeElapsed);
 	customColorsSystem->Update(timeElapsed);
+	visibilityToolSystem->Update(timeElapsed);
 }
 
 void SceneEditorProxy::PostUIEvent(DAVA::UIEvent *event)
@@ -168,6 +173,7 @@ void SceneEditorProxy::PostUIEvent(DAVA::UIEvent *event)
 	heightmapEditorSystem->ProcessUIEvent(event);
 	tilemaskEditorSystem->ProcessUIEvent(event);
 	customColorsSystem->ProcessUIEvent(event);
+	visibilityToolSystem->ProcessUIEvent(event);
 }
 
 void SceneEditorProxy::SetViewportRect(const DAVA::Rect &newViewportRect)

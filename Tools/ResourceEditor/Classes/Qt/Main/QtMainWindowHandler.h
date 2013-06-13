@@ -110,6 +110,10 @@ public:
 	void SetPointButtonStateVisibilityTool(bool state);
 	void SetAreaButtonStateVisibilityTool(bool state);
 
+	//visibility tool new
+	void RegisterVisibilityToolWidgets(QPushButton*, QPushButton*, QPushButton*, QPushButton*, QSlider*);
+	void SetVisibilityToolWidgetsState(bool state);
+
 	void UpdateUndoActionsState();
 
 public slots:
@@ -198,6 +202,14 @@ public slots:
 	void SetVisibilityPointVisibilityTool();
 	void SetVisibilityAreaVisibilityTool();
 
+	//visibility check tool new
+	void ToggleVisibilityToolEditor();
+	void SaveVisibilityToolTexture();
+	void SetVisibilityToolAreaSize(int size);
+	void SetVisibilityPoint();
+	void SetVisibilityArea();
+	void SetVisibilityToolButtonsState(bool pointButtonChecked, bool areaButtonChecked);
+
     //
     void RepackAndReloadTextures();
 
@@ -277,6 +289,13 @@ private:
 	QPushButton* visibilityToolSetPointButton;
 	QPushButton* visibilityToolSetAreaButton;
 	QSlider* visibilityToolAreaSizeSlider;
+
+	//visibility check tool new
+	QPushButton* visibilityToolEditorToggleButton;
+	QPushButton* visibilityToolSaveTexture;
+	QPushButton* visibilityToolSetPoint;
+	QPushButton* visibilityToolSetArea;
+	QSlider* visibilityToolAreaSize;
 
 	//heightmap editor
 	QPushButton* heightmapToggleButton;

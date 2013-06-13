@@ -49,6 +49,7 @@ signals:
 	void MouseOverSelection(SceneEditorProxy *scene, const EntityGroup *entities);
 
 	void UpdateDropperHeight(double height);
+	void UpdateVisibilityButtonsState(bool pointButtonChecked, bool areaButtonChecked);
 
 public:
 	void EmitOpened(SceneEditorProxy *scene) { emit Opened(scene); }
@@ -67,6 +68,7 @@ public:
 	void EmitMouseOverSelection(SceneEditorProxy *scene, const EntityGroup *entities) { emit MouseOverSelection(scene, entities); }
 
 	void EmitUpdateDropperHeight(DAVA::float32 height) { emit UpdateDropperHeight((double)height); };
+	void EmitUpdateVisibilityButtonsState(bool pointButtonChecked, bool areaButtonChecked) { emit UpdateVisibilityButtonsState(pointButtonChecked, areaButtonChecked); };
 };
 
 #endif // __SCENE_MANAGER_H__

@@ -14,35 +14,81 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __RESOURCEEDITORQT__CUSTOMCOLORSPROPERTIESVIEW__
-#define __RESOURCEEDITORQT__CUSTOMCOLORSPROPERTIESVIEW__
+#include "VisibilityToolProxy.h"
 
-#include <QWidget>
-#include "DAVAEngine.h"
-
-using namespace DAVA;
-
-namespace Ui
+VisibilityToolProxy::VisibilityToolProxy(int32 size)
+:	changedRect(Rect())
+,	spriteChanged(false)
+,	size(size)
+,	isVisibilityPointSet(false)
+,	visibilityPoint(Vector2(-1.f, -1.f))
 {
-	class CustomColorsPropertiesView;
+	visibilityToolSprite = Sprite::CreateAsRenderTarget((float32)size, (float32)size, FORMAT_RGBA8888);
 }
 
-class CustomColorsPropertiesView: public QWidget
+VisibilityToolProxy::~VisibilityToolProxy()
 {
-	Q_OBJECT
+	SafeRelease(visibilityToolSprite);
+}
 
-public:
-	explicit CustomColorsPropertiesView(QWidget* parent = 0);
-	~CustomColorsPropertiesView();
+int32 VisibilityToolProxy::GetSize()
+{
+	return size;
+}
 
-	void Init();
-	void InitColors();
+Sprite* VisibilityToolProxy::GetSprite()
+{
+	return visibilityToolSprite;
+}
 
-private slots:
-	void ProjectOpened(const QString &path);
+void VisibilityToolProxy::ResetSpriteChanged()
+{
+	spriteChanged = false;
+}
 
-private:
-	Ui::CustomColorsPropertiesView* ui;
-};
+bool VisibilityToolProxy::IsSpriteChanged()
+{
+	return spriteChanged;
+}
 
-#endif /* defined(__RESOURCEEDITORQT__CUSTOMCOLORSPROPERTIESVIEW__) */
+Rect VisibilityToolProxy::GetChangedRect()
+{
+	if (IsSpriteChanged())
+	{
+		return changedRect;
+	}
+
+	return Rect();
+}
+
+void VisibilityToolProxy::UpdateRect(const DAVA::Rect &rect)
+{
+	changedRect = rect;
+
+	changedRect.x = Max(changedRect.x, 0.f);
+	changedRect.y = Max(changedRect.y, 0.f);
+	changedRect.dx = Min(changedRect.dx, size - changedRect.x);
+	changedRect.dy = Min(changedRect.dy, size - changedRect.y);
+
+	spriteChanged = true;
+}
+
+void VisibilityToolProxy::SetVisibilityPoint(const Vector2& visibilityPoint)
+{
+	this->visibilityPoint = visibilityPoint;
+}
+
+Vector2 VisibilityToolProxy::GetVisibilityPoint()
+{
+	return visibilityPoint;
+}
+
+bool VisibilityToolProxy::IsVisibilityPointSet()
+{
+	return isVisibilityPointSet;
+}
+
+void VisibilityToolProxy::UpdateVisibilityPointSet(bool visibilityPointSet)
+{
+	isVisibilityPointSet = visibilityPointSet;
+}
