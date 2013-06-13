@@ -168,7 +168,6 @@ public: //For Qt integration
     void NewScene();
 
     bool SaveIsAvailable();
-    FilePath CurrentScenePathname();
     void SaveSceneToFile(const FilePath &pathToFile);
    
 

@@ -21,6 +21,7 @@
 #include "../Qt/Scene/SceneData.h"
 #include "../Qt/Scene/SceneDataManager.h"
 #include "../Qt/Main/QtUtils.h"
+#include "../Qt/Main/QtMainWindowHandler.h"
 #include "FileSystem/FileSystem.h"
 
 #include "../Commands/SceneEditorScreenMainCommands.h"
@@ -228,10 +229,19 @@ void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void *, void *)
     {
         if(btn == bodies[i]->closeButton)
         {
-            int32 saved = SaveSceneIfChanged(bodies[i]->bodyControl->GetScene());
-            if(saved == MB_FLAG_CANCEL)
+            int32 answer = ShowSaveSceneQuestion(bodies[i]->bodyControl->GetScene());
+            if(answer == MB_FLAG_CANCEL)
             {
                 return;
+            }
+            
+            if(answer == MB_FLAG_YES)
+            {
+                bool saved = QtMainWindowHandler::Instance()->SaveScene(bodies[i]->bodyControl->GetScene());
+                if(!saved)
+                {
+                    return;
+                }
             }
 
             if(bodies[i]->bodyControl->GetParent())
@@ -471,19 +481,6 @@ bool SceneEditorScreenMain::SaveIsAvailable()
 
     return true;
 }
-
-FilePath SceneEditorScreenMain::CurrentScenePathname()
-{
-    SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
-    FilePath pathname(sceneData->GetScenePathname());
-    if (!pathname.IsEmpty())
-    {
-        pathname.ReplaceExtension(".sc2");
-    }
-
-    return pathname;
-}
-
 
 void SceneEditorScreenMain::SaveSceneToFile(const FilePath &pathToFile)
 {

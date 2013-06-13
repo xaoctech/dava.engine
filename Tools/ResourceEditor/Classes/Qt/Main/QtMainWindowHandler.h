@@ -81,6 +81,9 @@ public:
 	void SetAreaButtonStateVisibilityTool(bool state);
 
 	void UpdateUndoActionsState();
+    
+    bool SaveScene(Scene *scene);
+
 
 public slots:
     void CreateNodeTriggered(QAction *nodeAction);
@@ -92,7 +95,7 @@ public slots:
     void OpenScene();
     void OpenProject();
     void OpenResentScene(DAVA::int32 index);
-    void SaveScene();
+    bool SaveScene();
     void ExportAsPNG();
     void ExportAsPVR();
     void ExportAsDXT();
@@ -188,6 +191,10 @@ private:
     void ClearActions(int32 count, QAction **actions);
 
 	void UpdateModificationActions();
+    
+	void SaveParticleEmitterNodes(EditorScene* scene);
+	void SaveParticleEmitterNodeRecursive(Entity* parentNode);
+
 
 private:
 	//set switch index

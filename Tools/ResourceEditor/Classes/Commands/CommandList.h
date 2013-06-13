@@ -61,8 +61,6 @@ public:
 
 		ID_COMMAND_CREATE_NODE,
 		ID_COMMAND_OPEN_SCENE,
-		ID_COMMAND_NEW_SCENE,
-		ID_COMMAND_SAVE_SCENE,
 		ID_COMMAND_SAVE_SPECIFIED_SCENE,
 		ID_COMMAND_EXPORT,
 		ID_COMMAND_SAVE_TO_FOLDER_WITH_CHILDS,
@@ -183,8 +181,6 @@ class CommandCreateNode;
  * FileCommands.h
  */
 class CommandOpenScene;
-class CommandNewScene;
-class CommandSaveScene;
 class CommandExport;
 class CommandSaveToFolderWithChilds;
 
