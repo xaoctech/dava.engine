@@ -23,8 +23,8 @@
 #include "LandscapeEditorDrawSystem/LandscapeProxy.h"
 #include "LandscapeEditorDrawSystem/HeightmapProxy.h"
 #include "LandscapeEditorDrawSystem/VisibilityToolProxy.h"
-#include "EditorConfig.h"
-#include "SceneSignals.h"
+#include "../SceneEditor/EditorConfig.h"
+#include "../SceneSignals.h"
 #include "../../../Commands/CommandsManager.h"
 #include "../../../Commands/VisibilityCheckToolCommands.h"
 

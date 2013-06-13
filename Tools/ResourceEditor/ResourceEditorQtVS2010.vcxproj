@@ -418,6 +418,7 @@
     <ClCompile Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexHelper.cpp" />
     <ClCompile Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexView.cpp" />
     <ClCompile Include="Classes\Qt\DockTilemaskEditor\TilemaskEditorPropertiesView.cpp" />
+    <ClCompile Include="Classes\Qt\DockVisibilityToolEditor\VisibilityToolPropertiesView.cpp" />
     <ClCompile Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.cpp" />
     <ClCompile Include="Classes\Qt\main.cpp" />
     <ClCompile Include="Classes\Qt\Main\davaglwidget.cpp" />
@@ -471,9 +472,11 @@
     <ClCompile Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\HeightmapProxy.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\LandscapeProxy.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\NotPassableTerrainProxy.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\VisibilityToolProxy.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\ModifSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\SelectionSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\TilemaskEditorSystem.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\VisibilityToolSystem.cpp" />
     <ClCompile Include="Classes\Qt\SpritesPacker\SpritePackerHelper.cpp" />
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureBrowser.cpp" />
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureCache.cpp" />
@@ -593,6 +596,7 @@
     <ClCompile Include="_GeneratedQt\DockSetSwitchIndex\SetSwitchIndexHelper_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockSetSwitchIndex\SetSwitchIndexView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockTilemaskEditor\TilemaskEditorPropertiesView_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockVisibilityToolEditor\VisibilityToolPropertiesView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockVisibilityTool\VisibilityToolView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\davaglwidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\mainwindow_moc.cpp" />
@@ -977,6 +981,7 @@
     <ClInclude Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexHelper.h" />
     <ClInclude Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexView.h" />
     <ClInclude Include="Classes\Qt\DockTilemaskEditor\TilemaskEditorPropertiesView.h" />
+    <ClInclude Include="Classes\Qt\DockVisibilityToolEditor\VisibilityToolPropertiesView.h" />
     <ClInclude Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.h" />
     <ClInclude Include="Classes\Qt\Main\davaglwidget.h" />
     <ClInclude Include="Classes\Qt\Main\mainwindow.h" />
@@ -1031,9 +1036,11 @@
     <ClInclude Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\HeightmapProxy.h" />
     <ClInclude Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\LandscapeProxy.h" />
     <ClInclude Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\NotPassableTerrainProxy.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\VisibilityToolProxy.h" />
     <ClInclude Include="Classes\Qt\Scene\System\ModifSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\SelectionSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\TilemaskEditorSystem.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\VisibilityToolSystem.h" />
     <ClInclude Include="Classes\Qt\SpritesPacker\SpritePackerHelper.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureBrowser.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureCache.h" />
@@ -1129,6 +1136,7 @@
     <ClInclude Include="_GeneratedQt\ui_SetSwitchIndexView.h" />
     <ClInclude Include="_GeneratedQt\ui_texturebrowser.h" />
     <ClInclude Include="_GeneratedQt\ui_tilemaskEditorProperties.h" />
+    <ClInclude Include="_GeneratedQt\ui_VisibilityToolPropertiesView.h" />
     <ClInclude Include="_GeneratedQt\ui_VisibilityToolView.h" />
   </ItemGroup>
   <ItemGroup>
