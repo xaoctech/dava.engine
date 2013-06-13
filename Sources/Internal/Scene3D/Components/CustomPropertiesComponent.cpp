@@ -77,21 +77,10 @@ namespace DAVA
 		
 		if(NULL != archive && archive->IsKeyExists("cpc.properties"))
 		{
-			SafeRelease(properties);
-			properties = archive->GetArchiveFromByteArray("cpc.properties");
-			
-			if(properties && properties->IsKeyExists("editor.referenceToOwner"))
-			{
-				FilePath newPath(sceneFile->GetScenePath());
-				newPath += properties->GetString("editor.referenceToOwner");
-				
-				//TODO: why we use absolute pathname instead of relative?
-				properties->SetString("editor.referenceToOwner", newPath.GetAbsolutePathname());
-			}
+			LoadFromArchive(*archive, sceneFile);
 		}
 		
 		Component::Deserialize(archive, sceneFile);
-
 	}
 	
 	bool CustomPropertiesComponent::GetBool(const String & key, bool defaultValue)
