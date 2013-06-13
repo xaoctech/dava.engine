@@ -780,8 +780,8 @@ void SceneFileV2::ConvertOldMaterialToNewMaterial(Material * oldMaterial, Instan
     {
         Vector2 offset = oldMaterialState->GetUVOffset();
         Vector2 scale = oldMaterialState->GetUVScale();
-        Logger::Debug("texl: %s", oldMaterialState->GetLightmapName().GetAbsolutePathname().c_str());
-        Logger::Debug("offs: %0.5f %0.5f scal: %0.5f %0.5f", offset.x, offset.y, scale.x, scale.y);
+        //Logger::Debug("texl: %s", oldMaterialState->GetLightmapName().GetAbsolutePathname().c_str());
+        //Logger::Debug("offs: %0.5f %0.5f scal: %0.5f %0.5f", offset.x, offset.y, scale.x, scale.y);
         
         resultMaterial->SetPropertyValue(LIGHTMAP_UV_OFFSET, Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVOffset());
         resultMaterial->SetPropertyValue(LIGHTMAP_UV_SCALE, Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVScale());
