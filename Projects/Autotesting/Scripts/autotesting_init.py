@@ -37,11 +37,10 @@ projectName = arguments[1]
 projectFolder = arguments[2]
 testsGroupName = arguments[3]
 
-testsSrcFolder = "/Tests"
 
 #if 3 == len(arguments):
 #    testsGroupName = arguments[2]
-#    testsSrcFolder = testsSrcFolder + "/" + testsGroupName
+testsSrcFolder = "/Tests/" + testsGroupName
 
 print "platform.system: " + platform.system()
 
