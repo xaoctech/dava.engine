@@ -33,6 +33,7 @@ class LandscapeEditorDrawSystem;
 class HeightmapEditorSystem;
 class TilemaskEditorSystem;
 class CustomColorsSystem;
+class VisibilityToolSystem;
 
 class SceneEditorProxy : public DAVA::Scene
 {
@@ -50,6 +51,7 @@ public:
 	HeightmapEditorSystem* heightmapEditorSystem;
 	TilemaskEditorSystem* tilemaskEditorSystem;
 	CustomColorsSystem* customColorsSystem;
+	VisibilityToolSystem* visibilityToolSystem;
 
 	bool Load(const DAVA::FilePath &path);
 	bool Save(const DAVA::FilePath &path);

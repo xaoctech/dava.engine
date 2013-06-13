@@ -29,6 +29,7 @@
 #include "LandscapeEditorDrawSystem/LandscapeProxy.h"
 #include "LandscapeEditorDrawSystem/HeightmapProxy.h"
 #include "LandscapeEditorDrawSystem/CustomColorsProxy.h"
+#include "LandscapeEditorDrawSystem/VisibilityToolProxy.h"
 #include "LandscapeEditorDrawSystem/NotPassableTerrainProxy.h"
 #include "LandscapeEditor/LandscapeRenderer.h"
 
@@ -42,6 +43,7 @@ LandscapeEditorDrawSystem::LandscapeEditorDrawSystem(Scene* scene)
 ,	cursorTexture(NULL)
 ,	notPassableTerrainProxy(NULL)
 ,	customColorsProxy(NULL)
+,	visibilityToolProxy(NULL)
 {
 }
 
@@ -51,6 +53,7 @@ LandscapeEditorDrawSystem::~LandscapeEditorDrawSystem()
 	SafeRelease(landscapeProxy);
 	SafeRelease(heightmapProxy);
 	SafeRelease(customColorsProxy);
+	SafeRelease(visibilityToolProxy);
 }
 
 LandscapeProxy* LandscapeEditorDrawSystem::GetLandscapeProxy()
@@ -66,6 +69,11 @@ HeightmapProxy* LandscapeEditorDrawSystem::GetHeightmapProxy()
 CustomColorsProxy* LandscapeEditorDrawSystem::GetCustomColorsProxy()
 {
 	return customColorsProxy;
+}
+
+VisibilityToolProxy* LandscapeEditorDrawSystem::GetVisibilityToolProxy()
+{
+	return visibilityToolProxy;
 }
 
 void LandscapeEditorDrawSystem::EnableCustomDraw()
@@ -87,6 +95,7 @@ void LandscapeEditorDrawSystem::EnableCustomDraw()
 		
 		int32 size = baseLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL)->GetWidth();
 		customColorsProxy = new CustomColorsProxy(size);
+		visibilityToolProxy = new VisibilityToolProxy(size);
 	}
 	
 	AABBox3 landscapeBoundingBox = baseLandscape->GetBoundingBox();
@@ -163,10 +172,10 @@ void LandscapeEditorDrawSystem::DisableNotPassableTerrain()
 	DisableCustomDraw();
 }
 
-void LandscapeEditorDrawSystem::EnableCursor()
+void LandscapeEditorDrawSystem::EnableCursor(int32 landscapeSize)
 {
 	landscapeProxy->CursorEnable();
-	landscapeProxy->SetBigTextureSize((float32)heightmapProxy->Size());
+	landscapeProxy->SetBigTextureSize((float32)landscapeSize);
 }
 
 void LandscapeEditorDrawSystem::DisableCursor()
@@ -234,6 +243,15 @@ void LandscapeEditorDrawSystem::Update(DAVA::float32 timeElapsed)
 		}
 		customColorsProxy->ResetSpriteChanged();
 	}
+
+	if (visibilityToolProxy && visibilityToolProxy->IsSpriteChanged())
+	{
+		if (landscapeProxy)
+		{
+			landscapeProxy->SetVisibilityCheckToolTexture(visibilityToolProxy->GetSprite()->GetTexture());
+		}
+		visibilityToolProxy->ResetSpriteChanged();
+	}
 }
 
 void LandscapeEditorDrawSystem::UpdateBaseLandscapeHeightmap()
@@ -259,4 +277,100 @@ float32 LandscapeEditorDrawSystem::GetLandscapeMaxHeight()
 {
 	Vector3 landSize = GetLandscapeSize();
 	return landSize.z;
+}
+
+float32 LandscapeEditorDrawSystem::GetHeightAtPoint(const Vector2& point)
+{
+	Heightmap *heightmap = GetHeightmapProxy();
+	int32 x = (int32)point.x;
+	int32 y = (int32)point.y;
+
+	DVASSERT_MSG((x >= 0 && x < heightmap->Size()) && (y >= 0 && y < heightmap->Size()),
+				 "Point must be in heightmap coordinates");
+
+	int32 index = x + y * heightmap->Size();
+	float32 height = heightmap->Data()[index];
+	float32 maxHeight = GetLandscapeMaxHeight();
+
+	height *= maxHeight;
+	height /= Heightmap::MAX_VALUE;
+
+	return height;
+}
+
+float32 LandscapeEditorDrawSystem::GetHeightAtTexturePoint(const Vector2& point)
+{
+	return GetHeightAtPoint(TexturePointToHeightmapPoint(point));
+}
+
+Vector2 LandscapeEditorDrawSystem::HeightmapPointToTexturePoint(const Vector2& point)
+{
+	float32 heightmapSize = GetHeightmapProxy()->Size();
+	float32 textureSize = baseLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL)->GetWidth();
+
+	Rect heightmapRect(Vector2(0.f, 0.f), Vector2(heightmapSize, heightmapSize));
+	Rect textureRect(Vector2(0.f, 0.f), Vector2(textureSize, textureSize));
+
+	return TranslatePoint(point, heightmapRect, textureRect);
+}
+
+Vector2 LandscapeEditorDrawSystem::TexturePointToHeightmapPoint(const Vector2& point)
+{
+	float32 heightmapSize = GetHeightmapProxy()->Size();
+	float32 textureSize = baseLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL)->GetWidth();
+
+	Rect heightmapRect(Vector2(0.f, 0.f), Vector2(heightmapSize, heightmapSize));
+	Rect textureRect(Vector2(0.f, 0.f), Vector2(textureSize, textureSize));
+
+	return TranslatePoint(point, textureRect, heightmapRect);
+}
+
+Vector2 LandscapeEditorDrawSystem::TexturePointToLandscapePoint(const Vector2& point)
+{
+	AABBox3 boundingBox = GetLandscapeProxy()->GetLandscapeBoundingBox();
+	Vector2 landPos(boundingBox.min.x, boundingBox.min.y);
+	Vector2 landSize((boundingBox.max - boundingBox.min).x,
+					 (boundingBox.max - boundingBox.min).y);
+
+	float32 textureSize = baseLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL)->GetWidth();
+
+	Rect landRect(landPos, landSize);
+	Rect textureRect(Vector2(0.f, 0.f), Vector2(textureSize, textureSize));
+
+	return TranslatePoint(point, textureRect, landRect);
+}
+
+Vector2 LandscapeEditorDrawSystem::LandscapePointToTexturePoint(const Vector2& point)
+{
+	AABBox3 boundingBox = GetLandscapeProxy()->GetLandscapeBoundingBox();
+	Vector2 landPos(boundingBox.min.x, boundingBox.min.y);
+	Vector2 landSize((boundingBox.max - boundingBox.min).x,
+					 (boundingBox.max - boundingBox.min).y);
+
+	float32 textureSize = baseLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL)->GetWidth();
+
+	Rect landRect(landPos, landSize);
+	Rect textureRect(Vector2(0.f, 0.f), Vector2(textureSize, textureSize));
+
+	return TranslatePoint(point, landRect, textureRect);
+}
+
+Vector2 LandscapeEditorDrawSystem::TranslatePoint(const Vector2& point, const Rect& fromRect, const Rect& toRect)
+{
+	DVASSERT(fromRect.dx != 0.f && fromRect.dy != 0.f);
+
+	Vector2 origRectSize = fromRect.GetSize();
+	Vector2 destRectSize = toRect.GetSize();
+
+	Vector2 scale(destRectSize.x / origRectSize.x,
+				  destRectSize.y / origRectSize.y);
+
+	Vector2 relPos = point - fromRect.GetPosition();
+	relPos.DotProduct(scale);
+	Vector2 newRelPos(relPos.x * scale.x,
+					  relPos.y * scale.y);
+
+	Vector2 newPos = newRelPos + toRect.GetPosition();
+
+	return newPos;
 }

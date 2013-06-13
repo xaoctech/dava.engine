@@ -65,9 +65,7 @@ public:
 	void SetAverageStrength(float32 averageStrength);
 	void SetToolImage(const FilePath& toolImagePath);
 	void SetDrawingType(eHeightmapDrawType type);
-	
-	float32 GetHeightAtPoint(const Vector2& point);
-	
+
 protected:
 	bool enabled;
 	
@@ -76,6 +74,7 @@ protected:
 	EntityModificationSystem* modifSystem;
 	LandscapeEditorDrawSystem* drawSystem;
 	
+	int32 landscapeSize;
 	Texture* cursorTexture;
 	uint32 cursorSize;
 	uint32 curToolSize;

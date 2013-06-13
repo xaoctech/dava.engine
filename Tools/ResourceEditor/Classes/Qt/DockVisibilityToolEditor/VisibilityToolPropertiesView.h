@@ -14,8 +14,8 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __RESOURCEEDITORQT__CUSTOMCOLORSPROPERTIESVIEW__
-#define __RESOURCEEDITORQT__CUSTOMCOLORSPROPERTIESVIEW__
+#ifndef __RESOURCEEDITORQT__VISIBILITYTOOLPROPERTIESVIEW__
+#define __RESOURCEEDITORQT__VISIBILITYTOOLPROPERTIESVIEW__
 
 #include <QWidget>
 #include "DAVAEngine.h"
@@ -24,25 +24,21 @@ using namespace DAVA;
 
 namespace Ui
 {
-	class CustomColorsPropertiesView;
+	class VisibilityToolPropertiesView;
 }
 
-class CustomColorsPropertiesView: public QWidget
+class VisibilityToolPropertiesView: public QWidget
 {
 	Q_OBJECT
 
 public:
-	explicit CustomColorsPropertiesView(QWidget* parent = 0);
-	~CustomColorsPropertiesView();
+	explicit VisibilityToolPropertiesView(QWidget* parent = 0);
+	~VisibilityToolPropertiesView();
 
 	void Init();
-	void InitColors();
-
-private slots:
-	void ProjectOpened(const QString &path);
 
 private:
-	Ui::CustomColorsPropertiesView* ui;
+	Ui::VisibilityToolPropertiesView* ui;
 };
 
-#endif /* defined(__RESOURCEEDITORQT__CUSTOMCOLORSPROPERTIESVIEW__) */
+#endif /* defined(__RESOURCEEDITORQT__VISIBILITYTOOLPROPERTIESVIEW__) */

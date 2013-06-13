@@ -34,6 +34,10 @@
 		49372E5617608FF700B8FEE2 /* TilemaskEditorPropertiesView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49372E5517608FF700B8FEE2 /* TilemaskEditorPropertiesView_moc.cpp */; };
 		49372E581760900200B8FEE2 /* HeightmapEditorPropertiesView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49372E571760900200B8FEE2 /* HeightmapEditorPropertiesView_moc.cpp */; };
 		49372E5A1760900C00B8FEE2 /* CustomColorsPropertiesView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49372E591760900C00B8FEE2 /* CustomColorsPropertiesView_moc.cpp */; };
+		493A6F801761D55B001323C8 /* VisibilityToolPropertiesView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 493A6F7E1761D55B001323C8 /* VisibilityToolPropertiesView.cpp */; };
+		493A6F841761D7CA001323C8 /* VisibilityToolPropertiesView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 493A6F831761D7CA001323C8 /* VisibilityToolPropertiesView_moc.cpp */; };
+		493A6F871761D9E5001323C8 /* VisibilityToolSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 493A6F851761D9E5001323C8 /* VisibilityToolSystem.cpp */; };
+		493A6F8A1761EC39001323C8 /* VisibilityToolProxy.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 493A6F881761EC39001323C8 /* VisibilityToolProxy.cpp */; };
 		493BAC5D16BFD655000E5F84 /* EditorBodyControlCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 493BAC5B16BFD655000E5F84 /* EditorBodyControlCommands.cpp */; };
 		4940AF6C164C1684003E95A7 /* CustomColorCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4940AF6A164C1684003E95A7 /* CustomColorCommands.cpp */; };
 		4940AF71164C16DA003E95A7 /* LandscapeEditorCustomColors.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4940AF6D164C16DA003E95A7 /* LandscapeEditorCustomColors.cpp */; };
@@ -581,6 +585,14 @@
 		49372E5B1760902500B8FEE2 /* ui_CustomColorsProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_CustomColorsProperties.h; path = _GeneratedQt/ui_CustomColorsProperties.h; sourceTree = "<group>"; };
 		49372E5C1760902500B8FEE2 /* ui_heightmapEditorProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_heightmapEditorProperties.h; path = _GeneratedQt/ui_heightmapEditorProperties.h; sourceTree = "<group>"; };
 		49372E5D1760902500B8FEE2 /* ui_tilemaskEditorProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_tilemaskEditorProperties.h; path = _GeneratedQt/ui_tilemaskEditorProperties.h; sourceTree = "<group>"; };
+		493A6F7E1761D55B001323C8 /* VisibilityToolPropertiesView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VisibilityToolPropertiesView.cpp; path = Classes/Qt/DockVisibilityToolEditor/VisibilityToolPropertiesView.cpp; sourceTree = "<group>"; };
+		493A6F7F1761D55B001323C8 /* VisibilityToolPropertiesView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisibilityToolPropertiesView.h; path = Classes/Qt/DockVisibilityToolEditor/VisibilityToolPropertiesView.h; sourceTree = "<group>"; };
+		493A6F811761D7B1001323C8 /* ui_VisibilityToolPropertiesView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_VisibilityToolPropertiesView.h; path = _GeneratedQt/ui_VisibilityToolPropertiesView.h; sourceTree = "<group>"; };
+		493A6F831761D7CA001323C8 /* VisibilityToolPropertiesView_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VisibilityToolPropertiesView_moc.cpp; path = _GeneratedQt/DockVisibilityToolEditor/VisibilityToolPropertiesView_moc.cpp; sourceTree = "<group>"; };
+		493A6F851761D9E5001323C8 /* VisibilityToolSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VisibilityToolSystem.cpp; sourceTree = "<group>"; };
+		493A6F861761D9E5001323C8 /* VisibilityToolSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisibilityToolSystem.h; sourceTree = "<group>"; };
+		493A6F881761EC39001323C8 /* VisibilityToolProxy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VisibilityToolProxy.cpp; path = LandscapeEditorDrawSystem/VisibilityToolProxy.cpp; sourceTree = "<group>"; };
+		493A6F891761EC39001323C8 /* VisibilityToolProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisibilityToolProxy.h; path = LandscapeEditorDrawSystem/VisibilityToolProxy.h; sourceTree = "<group>"; };
 		493BAC5B16BFD655000E5F84 /* EditorBodyControlCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EditorBodyControlCommands.cpp; path = Classes/Commands/EditorBodyControlCommands.cpp; sourceTree = "<group>"; };
 		493BAC5C16BFD655000E5F84 /* EditorBodyControlCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EditorBodyControlCommands.h; path = Classes/Commands/EditorBodyControlCommands.h; sourceTree = "<group>"; };
 		4940AF6A164C1684003E95A7 /* CustomColorCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CustomColorCommands.cpp; path = Classes/Commands/CustomColorCommands.cpp; sourceTree = "<group>"; };
@@ -1631,6 +1643,23 @@
 			name = DockTilemaskEditor;
 			sourceTree = "<group>";
 		};
+		493A6F791761D519001323C8 /* DockVisibilityToolEditor */ = {
+			isa = PBXGroup;
+			children = (
+				493A6F7E1761D55B001323C8 /* VisibilityToolPropertiesView.cpp */,
+				493A6F7F1761D55B001323C8 /* VisibilityToolPropertiesView.h */,
+			);
+			name = DockVisibilityToolEditor;
+			sourceTree = "<group>";
+		};
+		493A6F821761D7B8001323C8 /* DockVisibilityToolEditor */ = {
+			isa = PBXGroup;
+			children = (
+				493A6F831761D7CA001323C8 /* VisibilityToolPropertiesView_moc.cpp */,
+			);
+			name = DockVisibilityToolEditor;
+			sourceTree = "<group>";
+		};
 		494A7CDA172A92C0005D7C7F /* Commands */ = {
 			isa = PBXGroup;
 			children = (
@@ -1660,6 +1689,8 @@
 				49BCDBBE1760C9B6000FCF36 /* NotPassableTerrainProxy.h */,
 				49BCDBC31760C9EE000FCF36 /* CustomColorsProxy.cpp */,
 				49BCDBC41760C9EE000FCF36 /* CustomColorsProxy.h */,
+				493A6F881761EC39001323C8 /* VisibilityToolProxy.cpp */,
+				493A6F891761EC39001323C8 /* VisibilityToolProxy.h */,
 			);
 			name = LandscapeEditorDrawSystem;
 			sourceTree = "<group>";
@@ -1712,6 +1743,8 @@
 				49BCDBB11760C0AB000FCF36 /* TilemaskEditorSystem.h */,
 				49BCDBB31760C1CF000FCF36 /* CustomColorsSystem.cpp */,
 				49BCDBB41760C1CF000FCF36 /* CustomColorsSystem.h */,
+				493A6F851761D9E5001323C8 /* VisibilityToolSystem.cpp */,
+				493A6F861761D9E5001323C8 /* VisibilityToolSystem.h */,
 			);
 			path = System;
 			sourceTree = "<group>";
@@ -1742,6 +1775,7 @@
 		5C2763A415B82BDF0030A8FD /* Qt */ = {
 			isa = PBXGroup;
 			children = (
+				493A6F791761D519001323C8 /* DockVisibilityToolEditor */,
 				49372E4817608F0F00B8FEE2 /* DockTilemaskEditor */,
 				49372E4717608F0100B8FEE2 /* DockHeightmapEditor */,
 				49372E4617608EF700B8FEE2 /* DockCustomColorsEditor */,
@@ -3086,6 +3120,8 @@
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
 			isa = PBXGroup;
 			children = (
+				493A6F821761D7B8001323C8 /* DockVisibilityToolEditor */,
+				493A6F811761D7B1001323C8 /* ui_VisibilityToolPropertiesView.h */,
 				49372E5B1760902500B8FEE2 /* ui_CustomColorsProperties.h */,
 				49372E5C1760902500B8FEE2 /* ui_heightmapEditorProperties.h */,
 				49372E5D1760902500B8FEE2 /* ui_tilemaskEditorProperties.h */,
@@ -3946,6 +3982,10 @@
 				49BCDBC51760C9EF000FCF36 /* CustomColorsProxy.cpp in Build Sources */,
 				E8B836261740FCC800D11EAE /* ImageTools.cpp in Build Sources */,
 				CCC7A50017579CAF0061EA5D /* QtPropertyDataMetaObject.cpp in Build Sources */,
+				493A6F801761D55B001323C8 /* VisibilityToolPropertiesView.cpp in Build Sources */,
+				493A6F841761D7CA001323C8 /* VisibilityToolPropertiesView_moc.cpp in Build Sources */,
+				493A6F871761D9E5001323C8 /* VisibilityToolSystem.cpp in Build Sources */,
+				493A6F8A1761EC39001323C8 /* VisibilityToolProxy.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

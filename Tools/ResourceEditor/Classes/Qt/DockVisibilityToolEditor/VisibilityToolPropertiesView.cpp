@@ -14,35 +14,44 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __RESOURCEEDITORQT__CUSTOMCOLORSPROPERTIESVIEW__
-#define __RESOURCEEDITORQT__CUSTOMCOLORSPROPERTIESVIEW__
+#include "VisibilityToolPropertiesView.h"
+#include "ui_VisibilityToolPropertiesView.h"
 
-#include <QWidget>
-#include "DAVAEngine.h"
+#include "../Main/QtMainWindowHandler.h"
+#include "../Scene/SceneSignals.h"
 
-using namespace DAVA;
-
-namespace Ui
+VisibilityToolPropertiesView::VisibilityToolPropertiesView(QWidget* parent)
+:	QWidget(parent),
+ui(new Ui::VisibilityToolPropertiesView)
 {
-	class CustomColorsPropertiesView;
+	ui->setupUi(this);
+
+	Init();
 }
 
-class CustomColorsPropertiesView: public QWidget
+VisibilityToolPropertiesView::~VisibilityToolPropertiesView()
 {
-	Q_OBJECT
+	delete ui;
+}
 
-public:
-	explicit CustomColorsPropertiesView(QWidget* parent = 0);
-	~CustomColorsPropertiesView();
+void VisibilityToolPropertiesView::Init()
+{
+	QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
 
-	void Init();
-	void InitColors();
+	connect(SceneSignals::Instance(), SIGNAL(UpdateVisibilityButtonsState(bool, bool)),
+			handler, SLOT(SetVisibilityToolButtonsState(bool, bool)));
 
-private slots:
-	void ProjectOpened(const QString &path);
+	connect(ui->buttonEnableVisibilityTool, SIGNAL(clicked()), handler, SLOT(ToggleVisibilityToolEditor()));
+	connect(ui->buttonSaveTexture, SIGNAL(clicked()), handler, SLOT(SaveVisibilityToolTexture()));
+	connect(ui->buttonSetVisibilityPoint, SIGNAL(clicked()), handler, SLOT(SetVisibilityPoint()));
+	connect(ui->buttonSetVisibilityArea, SIGNAL(clicked()), handler, SLOT(SetVisibilityArea()));
+	connect(ui->sliderBrushSize, SIGNAL(valueChanged(int)), handler, SLOT(SetVisibilityToolAreaSize(int)));
 
-private:
-	Ui::CustomColorsPropertiesView* ui;
-};
+	handler->RegisterVisibilityToolWidgets(ui->buttonEnableVisibilityTool,
+										   ui->buttonSaveTexture,
+										   ui->buttonSetVisibilityPoint,
+										   ui->buttonSetVisibilityArea,
+										   ui->sliderBrushSize);
 
-#endif /* defined(__RESOURCEEDITORQT__CUSTOMCOLORSPROPERTIESVIEW__) */
+	handler->SetVisibilityToolWidgetsState(false);
+}

@@ -14,35 +14,42 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __RESOURCEEDITORQT__CUSTOMCOLORSPROPERTIESVIEW__
-#define __RESOURCEEDITORQT__CUSTOMCOLORSPROPERTIESVIEW__
+#ifndef __RESOURCEEDITORQT__VISIBILITYTOOLPROXY__
+#define __RESOURCEEDITORQT__VISIBILITYTOOLPROXY__
 
-#include <QWidget>
 #include "DAVAEngine.h"
 
 using namespace DAVA;
 
-namespace Ui
+class VisibilityToolProxy: public BaseObject
 {
-	class CustomColorsPropertiesView;
-}
-
-class CustomColorsPropertiesView: public QWidget
-{
-	Q_OBJECT
-
 public:
-	explicit CustomColorsPropertiesView(QWidget* parent = 0);
-	~CustomColorsPropertiesView();
+	VisibilityToolProxy(int32 size);
+	~VisibilityToolProxy();
 
-	void Init();
-	void InitColors();
+	int32 GetSize();
 
-private slots:
-	void ProjectOpened(const QString &path);
+	Sprite* GetSprite();
+	void UpdateRect(const Rect& rect);
 
-private:
-	Ui::CustomColorsPropertiesView* ui;
+	void ResetSpriteChanged();
+	bool IsSpriteChanged();
+
+	Rect GetChangedRect();
+
+	void SetVisibilityPoint(const Vector2& visibilityPoint);
+	Vector2 GetVisibilityPoint();
+
+	void UpdateVisibilityPointSet(bool visibilityPointSet);
+	bool IsVisibilityPointSet();
+
+protected:
+	Sprite* visibilityToolSprite;
+	Rect changedRect;
+	bool spriteChanged;
+	int32 size;
+	Vector2 visibilityPoint;
+	bool isVisibilityPointSet;
 };
 
-#endif /* defined(__RESOURCEEDITORQT__CUSTOMCOLORSPROPERTIESVIEW__) */
+#endif /* defined(__RESOURCEEDITORQT__VISIBILITYTOOLPROXY__) */

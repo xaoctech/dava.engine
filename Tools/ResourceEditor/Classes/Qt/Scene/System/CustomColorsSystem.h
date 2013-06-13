@@ -59,6 +59,7 @@ protected:
 	EntityModificationSystem* modifSystem;
 	LandscapeEditorDrawSystem* drawSystem;
 	
+	int32 landscapeSize;
 	Texture* cursorTexture;
 	uint32 cursorSize;
 	uint32 curToolSize;

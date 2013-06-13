@@ -35,6 +35,7 @@ class LandscapeProxy;
 class HeightmapProxy;
 class NotPassableTerrainProxy;
 class CustomColorsProxy;
+class VisibilityToolProxy;
 
 class LandscapeEditorDrawSystem: public DAVA::SceneSystem
 {
@@ -45,7 +46,8 @@ public:
 	LandscapeProxy* GetLandscapeProxy();
 	HeightmapProxy* GetHeightmapProxy();
 	CustomColorsProxy* GetCustomColorsProxy();
-	
+	VisibilityToolProxy* GetVisibilityToolProxy();
+
 	void EnableCustomDraw();
 	void DisableCustomDraw();
 	
@@ -53,7 +55,7 @@ public:
 	void EnableNotPassableTerrain();
 	void DisableNotPassableTerrain();
 	
-	void EnableCursor();
+	void EnableCursor(int32 landscapeSize);
 	void DisableCursor();
 	void SetCursorTexture(Texture* cursorTexture);
 	void SetCursorSize(uint32 cursorSize);
@@ -64,7 +66,15 @@ public:
 	
 	Vector3 GetLandscapeSize();
 	float32 GetLandscapeMaxHeight();
-	
+	float32 GetHeightAtPoint(const Vector2& point);
+	float32 GetHeightAtTexturePoint(const Vector2& point);
+
+	Vector2 HeightmapPointToTexturePoint(const Vector2& point);
+	Vector2 TexturePointToHeightmapPoint(const Vector2& point);
+	Vector2 TexturePointToLandscapePoint(const Vector2& point);
+	Vector2 LandscapePointToTexturePoint(const Vector2& point);
+	Vector2 TranslatePoint(const Vector2& point, const Rect& fromRect, const Rect& toRect);
+
 private:
 	Entity* landscapeNode;
 	Landscape* baseLandscape;
@@ -72,6 +82,7 @@ private:
 	HeightmapProxy* heightmapProxy;
 	NotPassableTerrainProxy* notPassableTerrainProxy;
 	CustomColorsProxy* customColorsProxy;
+	VisibilityToolProxy* visibilityToolProxy;
 	
 	uint32 customDrawRequestCount;
 	

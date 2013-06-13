@@ -79,8 +79,10 @@ bool CustomColorsSystem::EnableLandscapeEditing()
 	modifSystem->SetLocked(true);
 	
 	drawSystem->EnableCustomDraw();
-	
-	drawSystem->EnableCursor();
+
+	landscapeSize = drawSystem->GetLandscapeProxy()->GetLandscapeTexture(Landscape::TEXTURE_TILE_FULL)->GetWidth();
+
+	drawSystem->EnableCursor(landscapeSize);
 	drawSystem->SetCursorTexture(cursorTexture);
 	drawSystem->SetCursorSize(cursorSize);
 	
@@ -184,7 +186,6 @@ void CustomColorsSystem::UpdateCursorPosition()
 		point.x = (float32)((int32)point.x);
 		point.y = (float32)((int32)point.y);
 		
-		int32 landscapeSize = drawSystem->GetHeightmapProxy()->Size();
 		AABBox3 box = drawSystem->GetLandscapeProxy()->GetLandscapeBoundingBox();
 		
 		cursorPosition.x = (point.x - box.min.x) * (landscapeSize - 1) / (box.max.x - box.min.x);
@@ -226,13 +227,9 @@ void CustomColorsSystem::UpdateBrushTool(float32 timeElapsed)
 	RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
 	
 	RenderManager::Instance()->SetColor(drawColor);
-	
-	float32 landscapeSize = drawSystem->GetHeightmapProxy()->Size();
-	float32 textureSize = colorSprite->GetSize().x;
-	float32 scaleFactor = textureSize / landscapeSize;
-	
-	Vector2 spriteSize = Vector2(cursorSize, cursorSize) * scaleFactor;
-	Vector2 spritePos = cursorPosition * scaleFactor - spriteSize / 2.f;
+
+	Vector2 spriteSize = Vector2(cursorSize, cursorSize);
+	Vector2 spritePos = cursorPosition - spriteSize / 2.f;
 	
 	toolImageSprite->SetScaleSize(spriteSize.x, spriteSize.y);
 	toolImageSprite->SetPosition(spritePos.x, spritePos.y);
