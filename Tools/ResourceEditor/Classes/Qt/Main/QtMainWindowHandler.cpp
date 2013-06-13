@@ -103,7 +103,31 @@ void QtMainWindowHandler::ClearActions(int32 count, QAction **actions)
 
 void QtMainWindowHandler::NewScene()
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandNewScene(), SceneDataManager::Instance()->SceneGetLevel()->GetScene());
+    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+    if(screen)
+    {
+        SceneData *levelScene = SceneDataManager::Instance()->SceneGetLevel();
+        int32 answer = ShowSaveSceneQuestion(levelScene->GetScene());
+        if(answer == MB_FLAG_CANCEL)
+        {
+            return;
+        }
+        
+        if(answer == MB_FLAG_YES)
+        {
+            bool saved = SaveScene(levelScene->GetScene());
+            if(!saved)
+            {
+                return;
+            }
+        }
+        
+		// Can now create the scene.
+		screen->NewScene();
+        
+        SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+        SceneDataManager::Instance()->SetActiveScene(activeScene->GetScene());
+    }
 }
 
 
@@ -130,11 +154,98 @@ void QtMainWindowHandler::OpenResentScene(int32 index)
     CommandsManager::Instance()->ExecuteAndRelease(new CommandOpenScene(path));
 }
 
-void QtMainWindowHandler::SaveScene()
+bool QtMainWindowHandler::SaveScene()
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandSaveScene());
-	UpdateRecentScenesList();
+    return SaveScene(SceneDataManager::Instance()->SceneGetActive()->GetScene());
 }
+
+bool QtMainWindowHandler::SaveScene(Scene *scene)
+{
+    bool sceneWasSaved = false;
+    
+    SceneData *activeScene = SceneDataManager::Instance()->SceneGet(scene);
+    if(activeScene->CanSaveScene())
+    {
+		FilePath currentPath = activeScene->GetScenePathname();
+        if(currentPath.IsEmpty())
+        {
+			currentPath = EditorSettings::Instance()->GetDataSourcePath();
+        }
+        
+        QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save Scene File"), QString(currentPath.GetAbsolutePathname().c_str()),
+                                                        QString("Scene File (*.sc2)")
+                                                        );
+        if(0 < filePath.size())
+        {
+			FilePath normalizedPathname = PathnameToDAVAStyle(filePath);
+            
+			EditorSettings::Instance()->AddLastOpenedFile(normalizedPathname);
+            
+			SaveParticleEmitterNodes(activeScene->GetScene());
+            
+            SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+            screen->SaveSceneToFile(normalizedPathname);
+
+            UpdateRecentScenesList();
+            
+            sceneWasSaved = true;
+        }
+    }
+    
+    QtMainWindowHandler::Instance()->RestoreDefaultFocus();
+    return sceneWasSaved;
+}
+
+void QtMainWindowHandler::SaveParticleEmitterNodes(EditorScene* scene)
+{
+	if (!scene) return;
+    
+	int32 childrenCount = scene->GetChildrenCount();
+	for (int32 i = 0; i < childrenCount; i ++)
+	{
+		SaveParticleEmitterNodeRecursive(scene->GetChild(i));
+	}
+}
+
+void QtMainWindowHandler::SaveParticleEmitterNodeRecursive(Entity* parentNode)
+{
+	bool needSaveThisLevelNode = true;
+	ParticleEmitter * emitter = GetEmitter(parentNode);
+	if (!emitter)
+	{
+		needSaveThisLevelNode = false;
+	}
+    
+	if (needSaveThisLevelNode)
+	{
+		// Do we have file name? Ask for it, if not.
+		FilePath yamlPath = emitter->GetConfigPath();
+		if (yamlPath.IsEmpty())
+		{
+			QString saveDialogCaption = QString("Save Particle Emitter \"%1\"").arg(QString::fromStdString(parentNode->GetName()));
+			QString saveDialogYamlPath = QFileDialog::getSaveFileName(NULL, saveDialogCaption, "", QString("Yaml File (*.yaml)"));
+            
+			if (!saveDialogYamlPath.isEmpty())
+			{
+				yamlPath = PathnameToDAVAStyle(saveDialogYamlPath);
+			}
+		}
+        
+		if (!yamlPath.IsEmpty())
+		{
+			emitter->SaveToYaml(yamlPath);
+		}
+	}
+    
+	// Repeat for all children.
+	int32 childrenCount = parentNode->GetChildrenCount();
+	for (int32 i = 0; i < childrenCount; i ++)
+	{
+		SaveParticleEmitterNodeRecursive(parentNode->GetChild(i));
+	}
+}
+
+
 
 void QtMainWindowHandler::ExportAsPNG()
 {
