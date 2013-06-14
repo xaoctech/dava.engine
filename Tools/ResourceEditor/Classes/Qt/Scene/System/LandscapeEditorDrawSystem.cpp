@@ -264,6 +264,11 @@ void LandscapeEditorDrawSystem::UpdateBaseLandscapeHeightmap()
 	SafeRelease(h);
 }
 
+float32 LandscapeEditorDrawSystem::GetTextureSize()
+{
+	return baseLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL)->GetWidth();
+}
+
 Vector3 LandscapeEditorDrawSystem::GetLandscapeSize()
 {
 	AABBox3 transformedBox;
@@ -300,7 +305,15 @@ float32 LandscapeEditorDrawSystem::GetHeightAtPoint(const Vector2& point)
 
 float32 LandscapeEditorDrawSystem::GetHeightAtTexturePoint(const Vector2& point)
 {
-	return GetHeightAtPoint(TexturePointToHeightmapPoint(point));
+	float32 textureSize = baseLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL)->GetWidth();
+	Rect textureRect(Vector2(0.f, 0.f), Vector2(textureSize, textureSize));
+
+	if (textureRect.PointInside(point))
+	{
+		return GetHeightAtPoint(TexturePointToHeightmapPoint(point));
+	}
+
+	return 0.f;
 }
 
 Vector2 LandscapeEditorDrawSystem::HeightmapPointToTexturePoint(const Vector2& point)

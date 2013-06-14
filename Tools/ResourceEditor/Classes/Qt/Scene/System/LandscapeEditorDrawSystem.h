@@ -63,7 +63,8 @@ public:
 	void UpdateCursorPosition();
 	
 	void Update(DAVA::float32 timeElapsed);
-	
+
+	float32 GetTextureSize();
 	Vector3 GetLandscapeSize();
 	float32 GetLandscapeMaxHeight();
 	float32 GetHeightAtPoint(const Vector2& point);
