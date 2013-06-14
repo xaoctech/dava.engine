@@ -461,6 +461,8 @@
     <addaction name="separator"/>
     <addaction name="actionBeast"/>
     <addaction name="separator"/>
+    <addaction name="actionSquareTextures"/>
+    <addaction name="separator"/>
     <addaction name="actionShowSettings"/>
    </widget>
    <widget class="QMenu" name="menuView">
@@ -1421,6 +1423,11 @@
   <action name="actionReloadPNG">
    <property name="text">
     <string>PNG</string>
+   </property>
+  </action>
+  <action name="actionSquareTextures">
+   <property name="text">
+    <string>Square Textures</string>
    </property>
   </action>
  </widget>

@@ -1677,6 +1677,9 @@
     <ClCompile Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorNodeNameHelper.cpp">
       <Filter>Classes\ParticlesEditorQT\Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\TextureSquarenessChecker.cpp">
+      <Filter>Classes\SceneEditor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -2953,6 +2956,9 @@
     </ClInclude>
     <ClInclude Include="Classes\StringConstants.h">
       <Filter>Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\TextureSquarenessChecker.h">
+      <Filter>Classes\SceneEditor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
