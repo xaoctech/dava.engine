@@ -51,10 +51,12 @@ SoundSystem::SoundSystem(int32 maxChannels)
 
 SoundSystem::~SoundSystem()
 {
-	for(Map<int, SoundGroup*>::iterator it = soundGroups.begin(); it != soundGroups.end(); it++)
+	for(FastNameMap<SoundGroup*>::Iterator it = soundGroups.Begin(); it != soundGroups.End(); ++it)
 	{
-		SafeDelete(it->second);
+        SoundGroup * soundGroup = it.GetValue();
+		SafeRelease(soundGroup);
 	}
+    soundGroups.Clear();
 
 	FMOD_VERIFY(fmodSystem->release());
 }
@@ -116,24 +118,24 @@ void SoundSystem::SetListenerOrientation(const Vector3 & at, const Vector3 & lef
 
 SoundGroup * SoundSystem::GetSoundGroup(const FastName & groupName)
 {
-	if(soundGroups.find(groupName.Index()) == soundGroups.end())
-		return 0;
-	else
-		return soundGroups[groupName.Index()];
+	if(soundGroups.IsKey(groupName))
+		return soundGroups[groupName];
+    else
+        return 0;
 }
 
 SoundGroup * SoundSystem::CreateSoundGroup(const FastName & groupName)
 {
 	SoundGroup * group = 0;
-	if(soundGroups.find(groupName.Index()) == soundGroups.end())
+	if(soundGroups.IsKey(groupName))
 	{
-		group = new SoundGroup();
-		soundGroups[groupName.Index()] = group;
+		group = soundGroups[groupName];
 	}
-	else
-	{
-		group = soundGroups[groupName.Index()];
-	}
+    else
+    {
+        group = new SoundGroup();
+        soundGroups.Insert(groupName, group);
+    }
 
 	return group;
 }
