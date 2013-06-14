@@ -24,6 +24,7 @@
 #include "../Qt/Scene/SceneDataManager.h"
 #include "../Qt/Scene/SceneData.h"
 #include "../Qt/Main/QtUtils.h"
+#include "../Qt/Main/QtMainWindowHandler.h"
 #include "../RulerTool/RulerTool.h"
 
 #include "../SceneEditor/EditorConfig.h"
@@ -31,6 +32,9 @@
 #include "../Commands/CommandsManager.h"
 #include "../Commands/EditorBodyControlCommands.h"
 #include "../Commands/CommandReloadTextures.h"
+
+#include "../CommandLine/CommandLineManager.h"
+#include "../CommandLine/Beast/BeastCommandLineTool.h"
 
 #include "ArrowsNode.h"
 
@@ -742,6 +746,14 @@ void EditorBodyControl::Update(float32 timeElapsed)
 		PackLightmaps();
 		BeastProxy::Instance()->SafeDeleteManager(&beastManager);
 
+#if defined (__DAVAENGINE_WIN32__)
+        if(dynamic_cast<BeastCommandLineTool *>(CommandLineManager::Instance()->GetActiveCommandLineTool()))
+        {
+            QtMainWindowHandler::Instance()->SaveScene(scene);
+            Core::Instance()->Quit();
+        }
+#endif //#if defined (__DAVAENGINE_WIN32__)
+        
 		CommandsManager::Instance()->ExecuteAndRelease(new CommandReloadTextures());
 	}
 }

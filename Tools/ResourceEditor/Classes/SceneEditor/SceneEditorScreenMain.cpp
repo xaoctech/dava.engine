@@ -17,6 +17,8 @@
 
 #include "CommandLine/SceneExporter/SceneExporter.h"
 #include "CommandLine/SceneSaver/SceneSaver.h"
+#include "CommandLine/CommandLineManager.h"
+#include "CommandLine/Beast/BeastCommandLineTool.h"
 
 #include "../Qt/Scene/SceneData.h"
 #include "../Qt/Scene/SceneDataManager.h"
@@ -26,6 +28,10 @@
 
 #include "../Commands/SceneEditorScreenMainCommands.h"
 #include "../Commands/CommandsManager.h"
+#include "../Commands/FileCommands.h"
+
+
+
 
 SceneEditorScreenMain::SceneEditorScreenMain()
 	:	UIScreen()
@@ -90,7 +96,26 @@ void SceneEditorScreenMain::UnloadResources()
 
 void SceneEditorScreenMain::WillAppear()
 {
+#if defined (__DAVAENGINE_WIN32__)
+    BeastCommandLineTool *beastTool = dynamic_cast<BeastCommandLineTool *>(CommandLineManager::Instance()->GetActiveCommandLineTool());
+    if(beastTool)
+    {
+        CommandsManager::Instance()->ExecuteAndRelease(new CommandOpenScene(beastTool->GetScenePathname()));
+    }
+#endif //#if defined (__DAVAENGINE_WIN32__)
 }
+
+void SceneEditorScreenMain::DidAppear()
+{
+#if defined (__DAVAENGINE_WIN32__)
+    if(dynamic_cast<BeastCommandLineTool *>(CommandLineManager::Instance()->GetActiveCommandLineTool()))
+    {
+        Update(0.1f);
+        CommandsManager::Instance()->ExecuteAndRelease(new CommandBeast());
+    }
+#endif //#if defined (__DAVAENGINE_WIN32__)
+}
+
 
 void SceneEditorScreenMain::WillDisappear()
 {
