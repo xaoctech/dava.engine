@@ -59,6 +59,8 @@
 
 #include "Render/LibDxtHelper.h"
 
+#include "Scene3D/SkyBoxNode.h"
+
 using namespace DAVA;
 
 QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
@@ -526,6 +528,8 @@ void QtMainWindowHandler::ReloadSceneTextures()
 
 void QtMainWindowHandler::OnEntityModified(DAVA::Scene* scene, CommandList::eCommandId id, const DAVA::Set<DAVA::Entity*>& affectedEntities)
 {
+	HandleMenuItemsState(id, affectedEntities);
+
 	for(DAVA::Set<DAVA::Entity*>::iterator it = affectedEntities.begin(); it != affectedEntities.end(); ++it)
 	{
 		EntityOwnerPropertyHelper::Instance()->UpdateEntityOwner((*it)->GetCustomProperties());
@@ -984,4 +988,53 @@ void QtMainWindowHandler::OnSceneReleased(SceneData *scene)
 void QtMainWindowHandler::ConvertToShadow()
 {
 	CommandsManager::Instance()->ExecuteAndRelease(new CommandConvertToShadow());
+}
+
+void QtMainWindowHandler::HandleMenuItemsState(CommandList::eCommandId id, const DAVA::Set<DAVA::Entity*>& affectedEntities)
+{
+	switch (id)
+	{
+		case CommandList::ID_COMMAND_CREATE_NODE:
+		case CommandList::ID_COMMAND_CREATE_NODE_SCENE_EDITOR:
+		{
+			CheckNeedEnableSkyboxMenu(affectedEntities, false);
+			break;
+		}
+
+		case CommandList::ID_COMMAND_REMOVE_SCENE_NODE:
+		case CommandList::ID_COMMAND_REMOVE_ROOT_NODES:
+		{
+			CheckNeedEnableSkyboxMenu(affectedEntities, true);
+			break;
+		}
+
+		// Add checks for other menu items here.
+
+		default:
+		{
+			break;
+		}
+	}
+}
+
+void QtMainWindowHandler::CheckNeedEnableSkyboxMenu(const DAVA::Set<DAVA::Entity*>& affectedEntities,
+													bool isEnabled)
+{
+	for (DAVA::Set<DAVA::Entity*>::iterator iter = affectedEntities.begin();
+		 iter != affectedEntities.end(); iter ++)
+	{
+		if (dynamic_cast<SkyBoxNode*>(*iter))
+		{
+			EnableSkyboxMenuItem(isEnabled);
+			break;
+		}
+	}
+}
+
+void QtMainWindowHandler::EnableSkyboxMenuItem(bool isEnabled)
+{
+	if (nodeActions[ResourceEditor::NODE_SKYBOX])
+	{
+		nodeActions[ResourceEditor::NODE_SKYBOX]->setEnabled(isEnabled);
+	}
 }
