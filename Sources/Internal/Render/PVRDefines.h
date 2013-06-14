@@ -37,7 +37,6 @@ namespace DAVA
 // V3 Header Identifiers.
 const uint32 PVRTEX3_IDENT			= 0x03525650;	// 'P''V''R'3
 const uint32 PVRTEX3_IDENT_REV		= 0x50565203;
-const uint32 PVRTEX3_METADATAIDENT	= 0x03525650;
 // If endianness is backwards then PVR3 will read as 3RVP, hence why it is written as an int.
 
 //Current version texture identifiers

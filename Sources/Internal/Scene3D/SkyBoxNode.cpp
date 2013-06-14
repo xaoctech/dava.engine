@@ -25,9 +25,11 @@
 
 namespace DAVA
 {
-	SkyBoxNode::SkyBoxNode() : renderBatch(NULL), skyBoxMaterial(NULL)
+	SkyBoxNode::SkyBoxNode()	:	renderBatch(NULL),
+									skyBoxMaterial(NULL),
+									zShift(0.0f),
+									boxSize(1.0f, 1.0f, 1.0f)
 	{
-		
 	}
 	
 	SkyBoxNode::~SkyBoxNode()
@@ -38,15 +40,10 @@ namespace DAVA
 	
 	void SkyBoxNode::BuildSkyBox()
 	{
-		DVASSERT(!texturePath.IsEmpty());
-		DVASSERT(boxSize.Length() > 0);
-		
-		SafeRelease(renderBatch);
-		
-		RenderDataObject* renderDataObj = new RenderDataObject();
-		
-		if(NULL == skyBoxMaterial)
+		if(NULL == renderBatch)
 		{
+			RenderDataObject* renderDataObj = new RenderDataObject();
+			
 			skyBoxMaterial = new Material();
 			skyBoxMaterial->SetType(Material::MATERIAL_SKYBOX);
 			skyBoxMaterial->SetAlphablend(false);
@@ -54,30 +51,30 @@ namespace DAVA
 			skyBoxMaterial->GetRenderState()->SetDepthFunc(CMP_LEQUAL);
 			skyBoxMaterial->GetRenderState()->state |= RenderState::STATE_DEPTH_TEST;
 			skyBoxMaterial->GetRenderState()->state &= ~RenderState::STATE_DEPTH_WRITE;
+			
+			renderBatch = new SkyBoxRenderBatch();
+			renderBatch->SetRenderDataObject(renderDataObj);
+			renderBatch->SetMaterial(skyBoxMaterial);
+			SafeRelease(renderDataObj);
+			
+			RenderObject* renderObj = new RenderObject();
+			renderObj->AddRenderBatch(renderBatch);
+			
+			RenderComponent* renderComponent = static_cast<RenderComponent*>(GetComponent(Component::RENDER_COMPONENT));
+			
+			if(NULL == renderComponent)
+			{
+				renderComponent = new RenderComponent();
+				renderComponent->SetEntity(this);
+				AddComponent(renderComponent);
+			}
+			
+			renderComponent->SetRenderObject(renderObj);
+			SafeRelease(renderObj);
+			
 		}
 		
 		skyBoxMaterial->GetRenderState()->SetTexture(DAVA::Texture::CreateFromFile(texturePath));
-		
-		renderBatch = new SkyBoxRenderBatch();
-		renderBatch->SetRenderDataObject(renderDataObj);
-		renderBatch->SetMaterial(skyBoxMaterial);
-		SafeRelease(renderDataObj);
-		
-		RenderObject* renderObj = new RenderObject();
-		renderObj->AddRenderBatch(renderBatch);
-		
-		RenderComponent* renderComponent = static_cast<RenderComponent*>(GetComponent(Component::RENDER_COMPONENT));
-		
-		if(NULL == renderComponent)
-		{
-			renderComponent = new RenderComponent();
-			renderComponent->SetEntity(this);
-			AddComponent(renderComponent);
-		}
-		
-		renderComponent->SetRenderObject(renderObj);
-		SafeRelease(renderObj);
-		
 		UpdateSkyBoxSize();
 	}
 	
@@ -90,16 +87,7 @@ namespace DAVA
 					Vector3(0.5 * boxSize.x, 0.5 * boxSize.y, 0.5 * boxSize.z));
 		
 		renderBatch->SetBox(box);
-	}
-	
-	void SkyBoxNode::SetTexturePath(FilePath& filePath)
-	{
-		texturePath = filePath;
-	}
-	
-	void SkyBoxNode::SetSize(Vector3 size)
-	{
-		boxSize = size;
+		renderBatch->SetVerticalOffset(zShift);
 	}
 	
 	void SkyBoxNode::SceneDidLoaded()
@@ -109,24 +97,62 @@ namespace DAVA
 	
 	void SkyBoxNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 	{
-		//do nothing here: this node should be created by scene at runtime
+		Entity::Save(archive, sceneFileV2);
+
+		if(archive != NULL)
+		{
+			archive->SetString("sbn.texture", GetTexture());
+			archive->SetFloat("sbn.verticalOffset", zShift);
+		}
 	}
 	
 	void SkyBoxNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 	{
-		//do nothing here: this node should be created by scene at runtime
+		Entity::Load(archive, sceneFileV2);
+		
+		if(archive != NULL)
+		{
+			SetTexture(archive->GetString("sbn.texture"));
+			SetVerticalOffset(archive->GetFloat("sbn.verticalOffset"));
+		}
 	}
 	
 	Entity* SkyBoxNode::Clone(Entity *dstNode)
 	{
-		return this;
+		return SafeRetain(this);
 	}
+	
+	void SkyBoxNode::SetTexture(const String& texPath)
+	{
+		texturePath = texPath;
+	}
+	
+	String SkyBoxNode::GetTexture()
+	{
+		return texturePath.GetFrameworkPath();
+	}
+	
+	void SkyBoxNode::SetVerticalOffset(const float32& verticalOffset)
+	{
+		zShift = verticalOffset;
+		if(renderBatch != NULL)
+		{
+			renderBatch->SetVerticalOffset(zShift);
+		}
+	}
+	
+	float32 SkyBoxNode::GetVerticalOffset()
+	{
+		return zShift;
+	}
+
 	
 	//////////////////////////////////////////////////////////////////////////////////////
 	
 	SkyBoxNode::SkyBoxRenderBatch::SkyBoxRenderBatch()	:	positionStream(NULL),
 															texCoordStream(NULL),
-															nonClippingDistance(0.0f)
+															nonClippingDistance(0.0f),
+															zOffset(0.0f)
 	{
 		SetOwnerLayerName(LAYER_AFTER_OPAQUE);
 	}
@@ -136,6 +162,11 @@ namespace DAVA
 		//don't delete streams - they are part of renderdataobject and will be free'd up with it
 		positionStream = NULL;
 		texCoordStream = NULL;
+	}
+	
+	void SkyBoxNode::SkyBoxRenderBatch::SetVerticalOffset(float32 verticalOffset)
+	{
+		zOffset = verticalOffset;
 	}
 	
 	void SkyBoxNode::SkyBoxRenderBatch::SetBox(const AABBox3& box)
@@ -310,7 +341,7 @@ namespace DAVA
 		
 		Vector3 camPos = camera->GetPosition();
 		
-		camPos.z += 0.6;
+		camPos.z += zOffset;
 		
 		Matrix4 finalMatrix = Matrix4::MakeScale(Vector3(scale, scale, scale)) * Matrix4::MakeTranslation(camPos) * camera->GetMatrix();
 		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);

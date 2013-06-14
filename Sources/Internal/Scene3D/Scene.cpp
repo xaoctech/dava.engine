@@ -411,12 +411,10 @@ Entity *Scene::GetRootNode(const FilePath &rootNodePath)
 		{
 			ProxyNode * node = it->second;
 
-			AABBox3 sceneBounds = node->GetNode()->GetWTMaximumBoundingBoxSlow();
 			SkyBoxNode* skyBox = new SkyBoxNode();
-			skyBox->SetSize(Vector3(1.0, 1.0, 1.0));
-			FilePath fp = "~res:/3d/Maps/desert_train/landscape/test_cube_c.tex";
-			skyBox->SetTexturePath(fp);
-			
+			skyBox->SetTexture("~res:/3d/Maps/desert_train/landscape/test_cube_c.tex");
+			skyBox->SetVerticalOffset(0.6f);
+						
 			node->GetNode()->AddNode(skyBox);
 			
 			skyBox->SceneDidLoaded();

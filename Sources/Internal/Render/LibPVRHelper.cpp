@@ -35,6 +35,8 @@
 
 namespace DAVA 
 {
+	
+const uint32 PVRTEX3_METADATAIDENT	= 0x03525650;
     
 uint32 LibPVRHelper::GetBitsPerPixel(uint64 pixelFormat)
 {
@@ -1853,7 +1855,7 @@ bool LibPVRHelper::ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize,
             
 				//Setup temporary variables.
 				uint8* pTempDecompData = image->data;
-				uint8* pTempCompData = (uint8*)pTextureData + GetMipMapLayerOffset(mipMapLevel, compressedHeader);
+				uint8* pTempCompData = (uint8*)pTextureData + GetMipMapLayerOffset(mipMapLevel, faceIndex, compressedHeader);
 			
 				//Get the face offset. Varies per MIP level.
 				uint32 decompressedFaceOffset = GetTextureDataSize(decompressedHeader, mipMapLevel, false, false);
@@ -1897,7 +1899,7 @@ bool LibPVRHelper::ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize,
 			
 				//Setup temporary variables.
 				uint8* pTempDecompData = (uint8*)image->data;
-				uint8* pTempCompData = (uint8*)pTextureData + GetMipMapLayerOffset(mipMapLevel, compressedHeader);
+				uint8* pTempCompData = (uint8*)pTextureData + GetMipMapLayerOffset(mipMapLevel, faceIndex, compressedHeader);
 			
 				//Get the face offset. Varies per MIP level.
 				uint32 decompressedFaceOffset = GetTextureDataSize(decompressedHeader, mipMapLevel, false, false);
@@ -2251,7 +2253,7 @@ PixelFormat LibPVRHelper::GetPixelFormat(const FilePath &filePathname)
     return GetTextureFormat(header);
 }
     
-uint32 LibPVRHelper::GetDataLength(const FilePath &filePathname)
+uint32 LibPVRHelper::GetDataSize(const FilePath &filePathname)
 {
     PVRHeaderV3 header = GetHeader(filePathname);
     return GetTextureDataSize(header);
