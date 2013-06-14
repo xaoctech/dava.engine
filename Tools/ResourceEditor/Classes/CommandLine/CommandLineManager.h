@@ -15,6 +15,8 @@ public:
     void Process();
     bool PrintResults();
     
+    CommandLineTool * GetActiveCommandLineTool() { return  activeTool; };
+    
 protected:
 
     void AddCommandLineTool(CommandLineTool *tool);

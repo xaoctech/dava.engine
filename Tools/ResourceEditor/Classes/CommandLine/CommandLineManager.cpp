@@ -7,6 +7,8 @@
 #include "SceneSaver/SceneSaverTool.h"
 #include "SceneExporter/SceneExporterTool.h"
 
+#include "Beast/BeastCommandLineTool.h"
+
 #include "TexturePacker/CommandLineParser.h"
 
 #include "../Qt/Main/QtUtils.h"
@@ -37,6 +39,11 @@ CommandLineManager::CommandLineManager()
     AddCommandLineTool(new ImageSplitterTool());
     AddCommandLineTool(new SceneExporterTool());
     AddCommandLineTool(new SceneSaverTool());
+
+#if defined (__DAVAENGINE_WIN32__)
+    
+#endif //#if defined (__DAVAENGINE_WIN32__)
+    
  
     ParseCommandLine();
     

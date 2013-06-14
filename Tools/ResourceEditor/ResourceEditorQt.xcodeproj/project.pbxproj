@@ -464,6 +464,7 @@
 		E8C4C691172945FB004B0B3B /* SelectionSystem_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C4C681172945FB004B0B3B /* SelectionSystem_moc.cpp */; };
 		E8C4C69717294CE4004B0B3B /* SceneSignals.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C4C69517294CE4004B0B3B /* SceneSignals.cpp */; };
 		E8C4C69E17294E47004B0B3B /* SceneSignals_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C4C69D17294E47004B0B3B /* SceneSignals_moc.cpp */; };
+		E8C81390176B1A8B003758F3 /* BeastCommandLineTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C8138D176B1A8B003758F3 /* BeastCommandLineTool.cpp */; };
 		E8C9B3E3166794EB00810605 /* ColorControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9B3E1166794EB00810605 /* ColorControl.cpp */; };
 		E8DD07BF16B054210013F115 /* BaseParticleEditorContentWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8DD07BD16B054210013F115 /* BaseParticleEditorContentWidget.cpp */; };
 		E8EE7E59160DBCA000645405 /* RulerTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EE7E57160DBCA000645405 /* RulerTool.cpp */; };
@@ -1431,6 +1432,8 @@
 		E8C4C69517294CE4004B0B3B /* SceneSignals.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneSignals.cpp; sourceTree = "<group>"; };
 		E8C4C69617294CE4004B0B3B /* SceneSignals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneSignals.h; sourceTree = "<group>"; };
 		E8C4C69D17294E47004B0B3B /* SceneSignals_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneSignals_moc.cpp; sourceTree = "<group>"; };
+		E8C8138D176B1A8B003758F3 /* BeastCommandLineTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BeastCommandLineTool.cpp; path = Classes/CommandLine/Beast/BeastCommandLineTool.cpp; sourceTree = "<group>"; };
+		E8C8138E176B1A8B003758F3 /* BeastCommandLineTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeastCommandLineTool.h; path = Classes/CommandLine/Beast/BeastCommandLineTool.h; sourceTree = "<group>"; };
 		E8C9B3E1166794EB00810605 /* ColorControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ColorControl.cpp; path = Classes/SceneEditor/ColorControl.cpp; sourceTree = "<group>"; };
 		E8C9B3E2166794EB00810605 /* ColorControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColorControl.h; path = Classes/SceneEditor/ColorControl.h; sourceTree = "<group>"; };
 		E8DD07BD16B054210013F115 /* BaseParticleEditorContentWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseParticleEditorContentWidget.cpp; sourceTree = "<group>"; };
@@ -3119,6 +3122,15 @@
 			path = HoodSystem;
 			sourceTree = "<group>";
 		};
+		E8C81386176B19D6003758F3 /* Beast */ = {
+			isa = PBXGroup;
+			children = (
+				E8C8138D176B1A8B003758F3 /* BeastCommandLineTool.cpp */,
+				E8C8138E176B1A8B003758F3 /* BeastCommandLineTool.h */,
+			);
+			name = Beast;
+			sourceTree = "<group>";
+		};
 		E8EE7E56160DBC8800645405 /* RulerTool */ = {
 			isa = PBXGroup;
 			children = (
@@ -3131,6 +3143,7 @@
 		E8FB1DF7172E867C00D1428F /* CommandLine */ = {
 			isa = PBXGroup;
 			children = (
+				E8C81386176B19D6003758F3 /* Beast */,
 				E8FB1E19172EABE700D1428F /* SceneExporter */,
 				E8FB1E1C172EABE700D1428F /* SceneSaver */,
 				E8FB1E1F172EABE700D1428F /* SceneUtils */,
@@ -3854,9 +3867,8 @@
 				4F3E256D174CD39C000D1187 /* Console_moc.cpp in Build Sources */,
 				4F3E256E174CD39C000D1187 /* ConsoleView_moc.cpp in Build Sources */,
 				8463A51F1745309E00F2398F /* EntityOwnerPropertyHelper.cpp in Build Sources */,
-				E8B836261740FCC800D11EAE /* ImageTools.cpp in Build Sources */,
-				CCC7A50017579CAF0061EA5D /* QtPropertyDataMetaObject.cpp in Build Sources */,
 				748E55931761D5EB000E24FF /* ParticlesEditorNodeNameHelper.cpp in Build Sources */,
+				E8C81390176B1A8B003758F3 /* BeastCommandLineTool.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
