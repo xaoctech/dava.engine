@@ -83,6 +83,7 @@ public:
 	void UpdateUndoActionsState();
     
     bool SaveScene(Scene *scene);
+	bool SaveScene(Scene *scene, const FilePath &pathname);
 
 
 public slots:
@@ -192,7 +193,7 @@ private:
 
 	void UpdateModificationActions();
     
-	void SaveParticleEmitterNodes(EditorScene* scene);
+	void SaveParticleEmitterNodes(Scene* scene);
 	void SaveParticleEmitterNodeRecursive(Entity* parentNode);
 
 

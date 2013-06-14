@@ -178,17 +178,10 @@ bool QtMainWindowHandler::SaveScene(Scene *scene)
         if(0 < filePath.size())
         {
 			FilePath normalizedPathname = PathnameToDAVAStyle(filePath);
-            
-			EditorSettings::Instance()->AddLastOpenedFile(normalizedPathname);
-            
-			SaveParticleEmitterNodes(activeScene->GetScene());
-            
-            SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-            screen->SaveSceneToFile(normalizedPathname);
+			sceneWasSaved = SaveScene(scene, normalizedPathname);
 
-            UpdateRecentScenesList();
-            
-            sceneWasSaved = true;
+			EditorSettings::Instance()->AddLastOpenedFile(normalizedPathname);
+			UpdateRecentScenesList();
         }
     }
     
@@ -196,7 +189,18 @@ bool QtMainWindowHandler::SaveScene(Scene *scene)
     return sceneWasSaved;
 }
 
-void QtMainWindowHandler::SaveParticleEmitterNodes(EditorScene* scene)
+bool QtMainWindowHandler::SaveScene(Scene *scene, const FilePath &pathname)
+{
+	SaveParticleEmitterNodes(scene);
+
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	screen->SaveSceneToFile(pathname);
+
+	return true;
+}
+
+
+void QtMainWindowHandler::SaveParticleEmitterNodes(Scene* scene)
 {
 	if (!scene) return;
     

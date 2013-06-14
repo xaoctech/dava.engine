@@ -7,6 +7,8 @@ class BeastCommandLineTool: public CommandLineTool
 {
 public:
 
+	BeastCommandLineTool();
+
     virtual DAVA::String GetCommandLineKey();
     virtual bool InitializeFromCommandLine();
     virtual void Process();

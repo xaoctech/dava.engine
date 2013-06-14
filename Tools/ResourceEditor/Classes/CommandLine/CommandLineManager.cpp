@@ -41,7 +41,7 @@ CommandLineManager::CommandLineManager()
     AddCommandLineTool(new SceneSaverTool());
 
 #if defined (__DAVAENGINE_WIN32__)
-    
+	AddCommandLineTool(new BeastCommandLineTool());
 #endif //#if defined (__DAVAENGINE_WIN32__)
     
  
@@ -139,9 +139,9 @@ void CommandLineManager::Process()
     }
 }
 
-bool CommandLineManager::PrintResults()
+void CommandLineManager::PrintResults()
 {
-    if(!activeTool) return false;
+    if(!activeTool) return;
     
     const Set<String> &errors = activeTool->GetErrorList();
     if(0 < errors.size())
@@ -160,10 +160,28 @@ bool CommandLineManager::PrintResults()
         
         ShowErrorDialog(errors);
     }
-    
-    bool forceMode =    EditorCommandLineParser::CommandIsFound(String("-force"))
-                    ||  EditorCommandLineParser::CommandIsFound(String("-forceclose"));
-    return (forceMode || 0 == errors.size());
 }
 
+DAVA::uint32 CommandLineManager::GetErrorsCount() const
+{
+	if(activeTool) 
+		return activeTool->GetErrorList().size();
 
+	return 0;
+}
+
+bool CommandLineManager::NeedCloseApplication()
+{
+	if(!activeTool) return true;
+
+
+	bool forceClose =	EditorCommandLineParser::CommandIsFound(String("-force"))
+					||  EditorCommandLineParser::CommandIsFound(String("-forceclose"));
+
+	uint32 errorsCount = GetErrorsCount();
+
+	if(activeTool->IsOneFrameCommand())
+		return (forceClose || 0 == errorsCount);
+
+	return (forceClose && errorsCount);
+}

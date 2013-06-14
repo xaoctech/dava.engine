@@ -178,6 +178,9 @@
     <Filter Include="Classes\Qt\DockConsole">
       <UniqueIdentifier>{3fea7404-6e38-4d26-ab20-9ab00124dc31}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\CommandLine\Beast">
+      <UniqueIdentifier>{0dc39ab9-3c4d-4e3c-ab77-216083362ba1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1710,6 +1713,9 @@
     <ClCompile Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorNodeNameHelper.cpp">
       <Filter>Classes\ParticlesEditorQT\Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\CommandLine\Beast\BeastCommandLineTool.cpp">
+      <Filter>Classes\CommandLine\Beast</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3007,6 +3013,9 @@
     </ClInclude>
     <ClInclude Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorNodeNameHelper.h">
       <Filter>Classes\ParticlesEditorQT\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\CommandLine\Beast\BeastCommandLineTool.h">
+      <Filter>Classes\CommandLine\Beast</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

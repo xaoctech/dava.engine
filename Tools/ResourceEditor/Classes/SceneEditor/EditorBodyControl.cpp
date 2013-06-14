@@ -35,6 +35,7 @@
 
 #include "../CommandLine/CommandLineManager.h"
 #include "../CommandLine/Beast/BeastCommandLineTool.h"
+#include "CommandLine/EditorCommandLineParser.h"
 
 #include "ArrowsNode.h"
 
@@ -747,10 +748,16 @@ void EditorBodyControl::Update(float32 timeElapsed)
 		BeastProxy::Instance()->SafeDeleteManager(&beastManager);
 
 #if defined (__DAVAENGINE_WIN32__)
-        if(dynamic_cast<BeastCommandLineTool *>(CommandLineManager::Instance()->GetActiveCommandLineTool()))
+		BeastCommandLineTool *beastTool = dynamic_cast<BeastCommandLineTool *>(CommandLineManager::Instance()->GetActiveCommandLineTool());
+        if(beastTool)
         {
-            QtMainWindowHandler::Instance()->SaveScene(scene);
-            Core::Instance()->Quit();
+            QtMainWindowHandler::Instance()->SaveScene(scene, beastTool->GetScenePathname());
+
+			bool forceClose =	EditorCommandLineParser::CommandIsFound(String("-force"))
+							||  EditorCommandLineParser::CommandIsFound(String("-forceclose"));
+			if(forceClose)
+	            Core::Instance()->Quit();
+
         }
 #endif //#if defined (__DAVAENGINE_WIN32__)
         
@@ -923,7 +930,7 @@ void EditorBodyControl::PackLightmaps()
 	SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
 
 	FilePath inputDir(EditorSettings::Instance()->GetProjectPath()+"DataSource/lightmaps_temp/");
-	FilePath outputDir(sceneData->GetScenePathname() + "_lightmaps/");
+	FilePath outputDir(sceneData->GetScenePathname().GetDirectory() + "_lightmaps/");
 	FileSystem::Instance()->MoveFile(inputDir+"landscape.png", "test_landscape.png", true);
 
 	LightmapsPacker packer;
