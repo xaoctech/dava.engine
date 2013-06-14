@@ -21,6 +21,8 @@
 #include "Commands2/Command2.h"
 #include "Commands2/CommandBatch.h"
 
+struct CommandStackNotify;
+
 class CommandStack : public CommandNotifyProvider
 {
 	friend struct CommandStackNotify;
