@@ -1275,6 +1275,9 @@
     <ClInclude Include="..\..\Sources\Internal\Render\GPUFamilyDescriptor.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SkyBoxNode.h">
+      <Filter>Internal\Scene3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2242,6 +2245,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\GPUFamilyDescriptor.cpp">
       <Filter>Internal\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SkyBoxNode.cpp">
+      <Filter>Internal\Scene3D</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

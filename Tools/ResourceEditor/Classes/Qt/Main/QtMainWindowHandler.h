@@ -209,6 +209,8 @@ private:
 	// "SkyBox menu" - specific checks.
 	void CheckNeedEnableSkyboxMenu(const DAVA::Set<DAVA::Entity*>& affectedEntities,
 								   bool isEnabled);
+	
+	void UpdateSkyboxMenuItemAfterSceneLoaded(SceneData* sceneData);
 
 private:
 	//set switch index
