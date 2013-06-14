@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		02714763176B50420011B24C /* TextureSquarenessChecker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 02714761176B50420011B24C /* TextureSquarenessChecker.cpp */; };
 		0297F311170B403100627F78 /* MaterialViewOptions.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 0297F30F170B403100627F78 /* MaterialViewOptions.cpp */; };
 		0297F317170B404100627F78 /* MaterialViewOptionsCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 0297F315170B404100627F78 /* MaterialViewOptionsCommands.cpp */; };
 		0297F31A170B40D100627F78 /* MaterialViewOptions_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 0297F319170B40D100627F78 /* MaterialViewOptions_moc.cpp */; };
@@ -524,6 +525,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		02714761176B50420011B24C /* TextureSquarenessChecker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureSquarenessChecker.cpp; path = Classes/SceneEditor/TextureSquarenessChecker.cpp; sourceTree = "<group>"; };
+		02714762176B50420011B24C /* TextureSquarenessChecker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureSquarenessChecker.h; path = Classes/SceneEditor/TextureSquarenessChecker.h; sourceTree = "<group>"; };
 		0297F30F170B403100627F78 /* MaterialViewOptions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialViewOptions.cpp; sourceTree = "<group>"; };
 		0297F310170B403100627F78 /* MaterialViewOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialViewOptions.h; sourceTree = "<group>"; };
 		0297F315170B404100627F78 /* MaterialViewOptionsCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MaterialViewOptionsCommands.cpp; path = Classes/Commands/MaterialViewOptionsCommands.cpp; sourceTree = "<group>"; };
@@ -2185,6 +2188,8 @@
 		5C7F48CD15B44B6D0038AF3A /* SceneEditor */ = {
 			isa = PBXGroup;
 			children = (
+				02714761176B50420011B24C /* TextureSquarenessChecker.cpp */,
+				02714762176B50420011B24C /* TextureSquarenessChecker.h */,
 				8463A51D1745309E00F2398F /* EntityOwnerPropertyHelper.cpp */,
 				8463A51E1745309E00F2398F /* EntityOwnerPropertyHelper.h */,
 				49C89A3516C3AB1A008AA6F0 /* ArrowsNode.cpp */,
@@ -3839,6 +3844,7 @@
 				4FFE5C85176B37B600728624 /* CommandStack.cpp in Build Sources */,
 				4FFE5C86176B37B600728624 /* TransformCommand.cpp in Build Sources */,
 				4FFE5C88176B393900728624 /* SceneEditor2_moc.cpp in Build Sources */,
+				02714763176B50420011B24C /* TextureSquarenessChecker.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
