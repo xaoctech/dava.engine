@@ -29,6 +29,7 @@
 #include "Qt/Scene/SceneDataManager.h"
 #include "Qt/Scene/SceneData.h"
 
+#include "Scene3D/SkyBoxNode.h"
 
 CreateNodesDialog::CreateNodesDialog(const Rect & rect)
     :   DraggableDialog(rect)
@@ -215,6 +216,18 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 			ParticleEffectComponent* newEffectComponent = new ParticleEffectComponent();
 			sceneNode->AddComponent(newEffectComponent);
 			sceneNode->SetName("Particle Effect");
+
+			break;
+		}
+
+		case ResourceEditor::NODE_SKYBOX:
+		{
+			SetHeader(L"SkyBox");
+			
+			SkyBoxNode* skyBoxNode = new SkyBoxNode();
+			//skyBoxNode->SceneDidLoaded();
+			sceneNode = skyBoxNode;
+			sceneNode->SetName("SkyBox");
 
 			break;
 		}
