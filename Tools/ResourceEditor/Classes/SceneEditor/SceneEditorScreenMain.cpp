@@ -29,6 +29,7 @@
 #include "../Commands/SceneEditorScreenMainCommands.h"
 #include "../Commands/CommandsManager.h"
 #include "../Commands/FileCommands.h"
+#include "../Commands/ToolsCommands.h"
 
 
 
@@ -98,9 +99,20 @@ void SceneEditorScreenMain::WillAppear()
 {
 #if defined (__DAVAENGINE_WIN32__)
     BeastCommandLineTool *beastTool = dynamic_cast<BeastCommandLineTool *>(CommandLineManager::Instance()->GetActiveCommandLineTool());
-    if(beastTool)
+    if(beastTool && (0 == CommandLineManager::Instance()->GetErrorsCount()))
     {
-        CommandsManager::Instance()->ExecuteAndRelease(new CommandOpenScene(beastTool->GetScenePathname()));
+		FilePath scenePathname = beastTool->GetScenePathname();
+
+		String path = scenePathname.GetAbsolutePathname();
+		String dataSourceFolder = "/DataSource/3d/";
+		String::size_type pos = path.find(dataSourceFolder);
+		if(pos != String::npos)
+		{
+			EditorSettings::Instance()->SetProjectPath(path.substr(0, pos + 1));
+			EditorSettings::Instance()->SetDataSourcePath(path.substr(0, pos + dataSourceFolder.length()));
+		}
+
+        CommandsManager::Instance()->ExecuteAndRelease(new CommandOpenScene(scenePathname));
     }
 #endif //#if defined (__DAVAENGINE_WIN32__)
 }
@@ -108,7 +120,8 @@ void SceneEditorScreenMain::WillAppear()
 void SceneEditorScreenMain::DidAppear()
 {
 #if defined (__DAVAENGINE_WIN32__)
-    if(dynamic_cast<BeastCommandLineTool *>(CommandLineManager::Instance()->GetActiveCommandLineTool()))
+	BeastCommandLineTool *beastTool = dynamic_cast<BeastCommandLineTool *>(CommandLineManager::Instance()->GetActiveCommandLineTool());
+	if(beastTool && (0 == CommandLineManager::Instance()->GetErrorsCount()))
     {
         Update(0.1f);
         CommandsManager::Instance()->ExecuteAndRelease(new CommandBeast());

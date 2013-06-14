@@ -34,6 +34,11 @@
 
 using namespace DAVA;
 
+BeastCommandLineTool::BeastCommandLineTool()
+	:	CommandLineTool()
+{
+	oneFrameCommand = false;
+}
 
 void BeastCommandLineTool::PrintUsage()
 {
@@ -68,7 +73,6 @@ bool BeastCommandLineTool::InitializeFromCommandLine()
         errors.insert(String("Wrong pathname. Need path ot *.sc2"));
         return false;
     }
-
     
     return true;
 }
