@@ -37,6 +37,7 @@ namespace DAVA
 			RenderDataStream* positionStream;
 			RenderDataStream* texCoordStream;
 			float32 nonClippingDistance;
+			float32 zOffset;
 			
 		public:
 			
@@ -44,6 +45,7 @@ namespace DAVA
 			~SkyBoxRenderBatch();
 			
 			void SetBox(const AABBox3& box);
+			void SetVerticalOffset(float32 verticalOffset);
 			
 			virtual void Draw(DAVA::Camera * camera);
 		};
@@ -54,25 +56,34 @@ namespace DAVA
 		Vector3 boxSize;
 		SkyBoxRenderBatch* renderBatch;
 		Material* skyBoxMaterial;
+		float32 zShift;
 		
 	private:
 		
 		void UpdateSkyBoxSize();
 		void BuildSkyBox();
-		
+				
 	public:
 		
 		SkyBoxNode();
 		virtual ~SkyBoxNode();
-		
-		void SetTexturePath(FilePath& filePath); //set these before SceneDidLoaded call
-		void SetSize(Vector3 size); ////set these before SceneDidLoaded call
-	
+			
 		virtual void SceneDidLoaded(); //initialization happens here
 		
 		virtual void Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
 		virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
 		virtual Entity* Clone(Entity *dstNode);
+		
+		void SetTexture(const String& texPath);
+		String GetTexture();
+		void SetVerticalOffset(const float32& verticalOffset);
+		float32 GetVerticalOffset();
+
+		
+		INTROSPECTION_EXTEND(SkyBoxNode, Entity,
+							 PROPERTY("texture", "Texture Path", GetTexture, SetTexture, I_SAVE | I_VIEW | I_EDIT)
+							 PROPERTY("verticalOffset", "Vertical Offset", GetVerticalOffset, SetVerticalOffset, I_SAVE | I_VIEW | I_EDIT)
+							 );
 
 	};
 };
