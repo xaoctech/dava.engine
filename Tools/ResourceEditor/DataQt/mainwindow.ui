@@ -441,6 +441,7 @@
      <addaction name="actionUserNode"/>
      <addaction name="actionSwitchNode"/>
      <addaction name="actionParticleEffectNode"/>
+     <addaction name="actionSkyboxNode"/>
     </widget>
     <addaction name="actionParticleEmitter"/>
     <addaction name="actionParticle_Emitter"/>
@@ -1421,6 +1422,11 @@
   <action name="actionReloadPNG">
    <property name="text">
     <string>PNG</string>
+   </property>
+  </action>
+  <action name="actionSkyboxNode">
+   <property name="text">
+    <string>SkyBox Node</string>
    </property>
   </action>
  </widget>

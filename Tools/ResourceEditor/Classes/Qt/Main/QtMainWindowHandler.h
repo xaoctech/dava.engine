@@ -98,6 +98,8 @@ public:
 
 	void UpdateUndoActionsState();
 
+	void EnableSkyboxMenuItem(bool isEnabled);
+
 public slots:
     void CreateNodeTriggered(QAction *nodeAction);
     void ViewportTriggered(QAction *viewportAction);
@@ -199,6 +201,14 @@ private:
     void ClearActions(int32 count, QAction **actions);
 
 	void UpdateModificationActions();
+
+	// This method is called after each action is executed and responsible
+	// for enabling/disabling appropriate menu items depending on actions.
+	void HandleMenuItemsState(CommandList::eCommandId id, const DAVA::Set<DAVA::Entity*>& affectedEntities);
+
+	// "SkyBox menu" - specific checks.
+	void CheckNeedEnableSkyboxMenu(const DAVA::Set<DAVA::Entity*>& affectedEntities,
+								   bool isEnabled);
 
 private:
 	//set switch index

@@ -205,7 +205,8 @@ void QtMainWindow::SetupMainMenu()
                                        ui->actionParticleEmitter,
                                        ui->actionUserNode,
 									   ui->actionSwitchNode,
-									   ui->actionParticleEffectNode
+									   ui->actionParticleEffectNode,
+									   ui->actionSkyboxNode
                                        );
     connect(ui->menuCreateNode, SIGNAL(triggered(QAction *)), actionHandler, SLOT(CreateNodeTriggered(QAction *)));
 
