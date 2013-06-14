@@ -53,7 +53,6 @@
 #include "Scene3D/SpriteNode.h"
 #include "Render/Highlevel/SpriteObject.h"
 
-
 namespace DAVA
 {
     
@@ -249,7 +248,7 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
     {
         LoadHierarchy(0, rootNode, file, 1);
     }
-    
+		    
     OptimizeScene(rootNode);
 	StopParticleEffectComponents(rootNode);
     

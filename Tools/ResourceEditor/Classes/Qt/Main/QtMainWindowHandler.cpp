@@ -975,6 +975,7 @@ void QtMainWindowHandler::OnSceneActivated(SceneData *scene)
 void QtMainWindowHandler::OnSceneCreated(SceneData *scene)
 {
 	UpdateRecentScenesList();
+	UpdateSkyboxMenuItemAfterSceneLoaded(scene);
 }
 
 void QtMainWindowHandler::OnSceneReleased(SceneData *scene)
@@ -1038,3 +1039,13 @@ void QtMainWindowHandler::EnableSkyboxMenuItem(bool isEnabled)
 		nodeActions[ResourceEditor::NODE_SKYBOX]->setEnabled(isEnabled);
 	}
 }
+
+void QtMainWindowHandler::UpdateSkyboxMenuItemAfterSceneLoaded(SceneData* sceneData)
+{
+	EditorScene* scene = sceneData->GetScene();
+	Vector<SkyBoxNode*> nodes;
+    scene->GetChildNodes(nodes);
+	
+	EnableSkyboxMenuItem(nodes.size() == 0);
+}
+

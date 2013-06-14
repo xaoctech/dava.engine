@@ -225,9 +225,8 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 			SetHeader(L"SkyBox");
 			
 			SkyBoxNode* skyBoxNode = new SkyBoxNode();
-			//skyBoxNode->SceneDidLoaded();
 			sceneNode = skyBoxNode;
-			sceneNode->SetName("SkyBox");
+			sceneNode->SetName("SkyBox-Singleton");
 
 			break;
 		}

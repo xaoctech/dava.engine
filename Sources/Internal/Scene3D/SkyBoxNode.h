@@ -74,8 +74,8 @@ namespace DAVA
 		virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
 		virtual Entity* Clone(Entity *dstNode);
 		
-		void SetTexture(const String& texPath);
-		String GetTexture();
+		void SetTexture(const FilePath& texPath);
+		FilePath GetTexture();
 		void SetVerticalOffset(const float32& verticalOffset);
 		float32 GetVerticalOffset();
 

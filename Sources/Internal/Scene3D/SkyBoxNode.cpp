@@ -25,6 +25,8 @@
 
 namespace DAVA
 {
+	REGISTER_CLASS(SkyBoxNode);
+	
 	SkyBoxNode::SkyBoxNode()	:	renderBatch(NULL),
 									skyBoxMaterial(NULL),
 									zShift(0.0f),
@@ -60,18 +62,12 @@ namespace DAVA
 			RenderObject* renderObj = new RenderObject();
 			renderObj->AddRenderBatch(renderBatch);
 			
-			RenderComponent* renderComponent = static_cast<RenderComponent*>(GetComponent(Component::RENDER_COMPONENT));
-			
-			if(NULL == renderComponent)
-			{
-				renderComponent = new RenderComponent();
-				renderComponent->SetEntity(this);
-				AddComponent(renderComponent);
-			}
-			
+			RenderComponent* renderComponent = new RenderComponent();
 			renderComponent->SetRenderObject(renderObj);
-			SafeRelease(renderObj);
+			renderComponent->SetEntity(this);
+			AddComponent(renderComponent);
 			
+			SafeRelease(renderObj);
 		}
 		
 		skyBoxMaterial->GetRenderState()->SetTexture(DAVA::Texture::CreateFromFile(texturePath));
@@ -101,7 +97,7 @@ namespace DAVA
 
 		if(archive != NULL)
 		{
-			archive->SetString("sbn.texture", GetTexture());
+			archive->SetString("sbn.texture", texturePath.GetRelativePathname());
 			archive->SetFloat("sbn.verticalOffset", zShift);
 		}
 	}
@@ -122,14 +118,15 @@ namespace DAVA
 		return SafeRetain(this);
 	}
 	
-	void SkyBoxNode::SetTexture(const String& texPath)
+	void SkyBoxNode::SetTexture(const FilePath& texPath)
 	{
 		texturePath = texPath;
+		BuildSkyBox();
 	}
 	
-	String SkyBoxNode::GetTexture()
+	FilePath SkyBoxNode::GetTexture()
 	{
-		return texturePath.GetFrameworkPath();
+		return texturePath;
 	}
 	
 	void SkyBoxNode::SetVerticalOffset(const float32& verticalOffset)
