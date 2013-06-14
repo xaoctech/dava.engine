@@ -531,6 +531,7 @@
     <ClCompile Include="Classes\SceneEditor\SwitchNodePropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\TextureConverterCell.cpp" />
     <ClCompile Include="Classes\SceneEditor\TextureFormatDialog.cpp" />
+    <ClCompile Include="Classes\SceneEditor\TextureSquarenessChecker.cpp" />
     <ClCompile Include="Classes\SceneEditor\TextureTrianglesDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\UICheckBox.cpp" />
     <ClCompile Include="Classes\SceneEditor\UISliderWithText.cpp" />
@@ -1077,6 +1078,7 @@
     <ClInclude Include="Classes\SceneEditor\SwitchNodePropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\TextureConverterCell.h" />
     <ClInclude Include="Classes\SceneEditor\TextureFormatDialog.h" />
+    <ClInclude Include="Classes\SceneEditor\TextureSquarenessChecker.h" />
     <ClInclude Include="Classes\SceneEditor\TextureTrianglesDialog.h" />
     <ClInclude Include="Classes\SceneEditor\UICheckBox.h" />
     <ClInclude Include="Classes\SceneEditor\UISliderWithText.h" />
