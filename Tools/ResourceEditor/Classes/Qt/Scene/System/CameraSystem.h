@@ -21,9 +21,11 @@
 #include "Render/Highlevel/Camera.h"
 #include "UI/UIEvent.h"
 
+#include "Commands2/Command2.h"
+
 class SceneCameraSystem : public DAVA::SceneSystem
 {
-	friend class SceneEditorProxy;
+	friend class SceneEditor2;
 
 public:
 	SceneCameraSystem(DAVA::Scene * scene);
@@ -43,8 +45,10 @@ public:
 
 protected:
 	void Update(DAVA::float32 timeElapsed);
-	void ProcessUIEvent(DAVA::UIEvent *event);
 	void Draw();
+
+	void ProcessUIEvent(DAVA::UIEvent *event);
+	void PropeccCommand(const Command2 *command, bool redo);
 
 protected:
 	DAVA::Rect viewportRect;
