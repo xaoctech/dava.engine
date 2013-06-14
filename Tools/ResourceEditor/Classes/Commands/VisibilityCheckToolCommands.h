@@ -98,10 +98,18 @@ protected:
 class CommandSetVisibilityArea: public Command
 {
 public:
-	CommandSetVisibilityArea();
+	CommandSetVisibilityArea(Image* originalImage,
+							 VisibilityToolProxy* visibilityToolProxy,
+							 const Rect& updatedRect);
 	virtual ~CommandSetVisibilityArea();
 
 protected:
+	Sprite* undoSprite;
+	Sprite* redoSprite;
+
+	VisibilityToolProxy* visibilityToolProxy;
+	Rect updatedRect;
+
 	virtual void Execute();
 	virtual void Cancel();
 };

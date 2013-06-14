@@ -215,19 +215,81 @@ void CommandSetVisibilityPoint::Cancel()
 }
 
 
-CommandSetVisibilityArea::CommandSetVisibilityArea()
+CommandSetVisibilityArea::CommandSetVisibilityArea(Image* originalImage,
+												   VisibilityToolProxy* visibilityToolProxy,
+												   const Rect& updatedRect)
 :	Command(COMMAND_UNDO_REDO, CommandList::ID_COMMAND_PLACE_AREA_VISIBILITY_TOOL)
 {
+	commandName = "Place Visibility Area";
+
+	undoSprite = Sprite::CreateAsRenderTarget(updatedRect.dx, updatedRect.dy, originalImage->GetPixelFormat());
+	redoSprite = Sprite::CreateAsRenderTarget(updatedRect.dx, updatedRect.dy, originalImage->GetPixelFormat());
+
+	Texture* originalTexture = Texture::CreateFromData(originalImage->GetPixelFormat(),
+													   originalImage->GetData(),
+													   originalImage->GetWidth(),
+													   originalImage->GetHeight(),
+													   false);
+	Sprite* originalSprite = Sprite::CreateFromTexture(originalTexture, 0, 0,
+													   originalImage->GetWidth(), originalImage->GetHeight());
+
+	RenderManager::Instance()->SetRenderTarget(undoSprite);
+	originalSprite->SetPosition(-updatedRect.x, -updatedRect.y);
+	originalSprite->Draw();
+	RenderManager::Instance()->RestoreRenderTarget();
+
+	RenderManager::Instance()->SetRenderTarget(redoSprite);
+	visibilityToolProxy->GetSprite()->SetPosition(-updatedRect.x, -updatedRect.y);
+	visibilityToolProxy->GetSprite()->Draw();
+	RenderManager::Instance()->RestoreRenderTarget();
+
+	this->visibilityToolProxy = SafeRetain(visibilityToolProxy);
+	this->updatedRect = updatedRect;
 }
 
 CommandSetVisibilityArea::~CommandSetVisibilityArea()
 {
+	SafeRelease(undoSprite);
+	SafeRelease(redoSprite);
+	SafeRelease(visibilityToolProxy);
 }
 
 void CommandSetVisibilityArea::Execute()
 {
+	Sprite* visibilityToolSprite = visibilityToolProxy->GetSprite();
+
+	RenderManager::Instance()->SetRenderTarget(visibilityToolSprite);
+	RenderManager::Instance()->ClipPush();
+	RenderManager::Instance()->ClipRect(updatedRect);
+
+	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
+//	RenderManager::Instance()->SetColor(1.f, 0.f, 0.f, 1.f);
+//	RenderHelper::Instance()->FillRect(updatedRect);
+	redoSprite->SetPosition(updatedRect.x, updatedRect.y);
+	redoSprite->Draw();
+
+	RenderManager::Instance()->ClipPop();
+	RenderManager::Instance()->RestoreRenderTarget();
+
+	visibilityToolProxy->UpdateRect(updatedRect);
 }
 
 void CommandSetVisibilityArea::Cancel()
 {
+	Sprite* visibilityToolSprite = visibilityToolProxy->GetSprite();
+
+	RenderManager::Instance()->SetRenderTarget(visibilityToolSprite);
+	RenderManager::Instance()->ClipPush();
+	RenderManager::Instance()->ClipRect(updatedRect);
+
+	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
+//	RenderManager::Instance()->SetColor(0.f, 1.f, 0.f, 1.f);
+//	RenderHelper::Instance()->FillRect(updatedRect);
+	undoSprite->SetPosition(updatedRect.x, updatedRect.y);
+	undoSprite->Draw();
+
+	RenderManager::Instance()->ClipPop();
+	RenderManager::Instance()->RestoreRenderTarget();
+
+	visibilityToolProxy->UpdateRect(updatedRect);
 }

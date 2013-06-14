@@ -379,7 +379,7 @@ void VisibilityToolSystem::SetVisibilityAreaInternal()
 		Vector2 areaPos = cursorPosition;// - areaSize / 2;
 
 		Rect updatedRect;
-		updatedRect.SetCenter(areaPos);
+		updatedRect.SetPosition(areaPos);
 		updatedRect.SetSize(areaSize);
 		AddRectToAccumulator(updatedRect);
 
@@ -387,12 +387,18 @@ void VisibilityToolSystem::SetVisibilityAreaInternal()
 
 		Vector3 point(visibilityPoint);
 		point.z = drawSystem->GetHeightAtPoint(drawSystem->TexturePointToHeightmapPoint(visibilityPoint));
+		point.z += visibilityPointHeight;
 
 		Vector<Vector3> resP;
 		PerformHeightTest(point, areaPos, cursorSize / 2.f, pointsDensity, areaPointHeights, &resP);
 		DrawVisibilityAreaPoints(resP);
 
-		drawSystem->GetVisibilityToolProxy()->UpdateRect(updatedRect);
+		CommandSetVisibilityArea* cmd = new CommandSetVisibilityArea(originalImage,
+																	 drawSystem->GetVisibilityToolProxy(),
+																	 GetUpdatedRect());
+		CommandsManager::Instance()->ExecuteAndRelease(cmd);
+
+		SafeRelease(originalImage);
 	}
 	else
 	{
@@ -448,6 +454,8 @@ void VisibilityToolSystem::PerformHeightTest(Vector3 spectatorCoords,
 
 	colorizedPoints->clear();
 
+	float32 textureSize = drawSystem->GetTextureSize();
+	Rect textureRect(Vector2(0.f, 0.f), Vector2(textureSize, textureSize));
 	for(uint32 x = 0; x < sideLength; ++x)
 	{
 		for(uint32 y = 0; y < sideLength; ++y)
@@ -458,9 +466,10 @@ void VisibilityToolSystem::PerformHeightTest(Vector3 spectatorCoords,
 			for(int32 layerIndex = hight - 1; layerIndex >= 0; --layerIndex)
 			{
 				Vector3 targetTmp = points[layerIndex][x][y];
-				if(!IsCircleContainsPoint(circleCenter, circleRadius, Vector2(targetTmp.x, targetTmp.y)))
+				if (!IsCircleContainsPoint(circleCenter, circleRadius, Vector2(targetTmp.x, targetTmp.y)) ||
+					!textureRect.PointInside(Vector2(targetTmp.x, targetTmp.y)))
 				{
-					continue;
+					break;
 				}
 
 				target.z = targetTmp.z;
@@ -512,7 +521,7 @@ void VisibilityToolSystem::PerformHeightTest(Vector3 spectatorCoords,
 
 bool VisibilityToolSystem::IsCircleContainsPoint(const Vector2& circleCenter, float32 circleRadius, const Vector2& point)
 {
-	return (point - circleCenter).Length() < circleRadius;
+	return (point - circleCenter).Length() < (circleRadius * 0.9f);
 }
 
 void VisibilityToolSystem::DrawVisibilityAreaPoints(const Vector<DAVA::Vector3> &points)
