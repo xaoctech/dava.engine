@@ -517,8 +517,10 @@ uint32 TextureDescriptor::ReadSourceCRC() const
     
 PixelFormat TextureDescriptor::GetPixelFormatForCompression(eGPUFamily forGPU)
 {
+	if(forGPU == GPU_UNKNOWN)	
+		return FORMAT_INVALID;
+
     DVASSERT(0 <= forGPU && forGPU < GPU_FAMILY_COUNT);
-    
     return (PixelFormat) compression[forGPU].format;
 }
 
