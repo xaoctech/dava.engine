@@ -308,7 +308,6 @@
 		C18521B916831F84003D4A6F /* LayerParticleEditorNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C18521B116831F84003D4A6F /* LayerParticleEditorNode.cpp */; };
 		C786218A1602175100C96AA8 /* EditorConfig.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C78621881602175100C96AA8 /* EditorConfig.cpp */; };
 		CCC7A49216F1D7680061EA5D /* EditorLandscape.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = CCC7A49016F1D7680061EA5D /* EditorLandscape.cpp */; };
-		CCC7A50017579CAF0061EA5D /* QtPropertyDataMetaObject.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = CCC7A4FE17579CAF0061EA5D /* QtPropertyDataMetaObject.cpp */; };
 		E80842DC1639277D002A6A77 /* TextureOptionsCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E80842DA1639277D002A6A77 /* TextureOptionsCommands.cpp */; };
 		E81895C2170F192E009A815A /* CommandLineParser.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E81895B6170F192E009A815A /* CommandLineParser.cpp */; };
 		E81895C3170F192E009A815A /* DefinitionFile.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E81895B8170F192E009A815A /* DefinitionFile.cpp */; };
@@ -430,7 +429,6 @@
 		E8951B3F1737AF1200755339 /* DXTConverter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8951B391737AF1200755339 /* DXTConverter.cpp */; };
 		E8951B401737AF1200755339 /* PVRConverter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8951B3B1737AF1200755339 /* PVRConverter.cpp */; };
 		E89DFD30163ED2A900B51706 /* DataQt in Bundle Resources */ = {isa = PBXBuildFile; fileRef = E89DFD2F163ED2A900B51706 /* DataQt */; };
-		E8B836261740FCC800D11EAE /* ImageTools.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8B836241740FCC800D11EAE /* ImageTools.cpp */; };
 		E8BD1F0016DE40ED00499E18 /* libFrameworkQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = E8BD1EFF16DE40E300499E18 /* libFrameworkQt.a */; };
 		E8C4C64F17294079004B0B3B /* CameraSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C4C63017294079004B0B3B /* CameraSystem.cpp */; };
 		E8C4C65017294079004B0B3B /* CollisionLandscape.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C4C63417294079004B0B3B /* CollisionLandscape.cpp */; };
@@ -466,6 +464,8 @@
 		E8C4C69717294CE4004B0B3B /* SceneSignals.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C4C69517294CE4004B0B3B /* SceneSignals.cpp */; };
 		E8C4C69E17294E47004B0B3B /* SceneSignals_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C4C69D17294E47004B0B3B /* SceneSignals_moc.cpp */; };
 		E8C81390176B1A8B003758F3 /* BeastCommandLineTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C8138D176B1A8B003758F3 /* BeastCommandLineTool.cpp */; };
+		E8C8139E176F4918003758F3 /* QtPropertyDataMetaObject.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = CCC7A4FE17579CAF0061EA5D /* QtPropertyDataMetaObject.cpp */; };
+		E8C813A3176F493B003758F3 /* ImageTools.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8B836241740FCC800D11EAE /* ImageTools.cpp */; };
 		E8C9B3E3166794EB00810605 /* ColorControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9B3E1166794EB00810605 /* ColorControl.cpp */; };
 		E8DD07BF16B054210013F115 /* BaseParticleEditorContentWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8DD07BD16B054210013F115 /* BaseParticleEditorContentWidget.cpp */; };
 		E8EE7E59160DBCA000645405 /* RulerTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EE7E57160DBCA000645405 /* RulerTool.cpp */; };
@@ -3885,6 +3885,8 @@
 				74A94C98176B61CF00DE03E4 /* EventFilterDoubleSpinBox.cpp in Build Sources */,
 				74A94C9C176B6BC000DE03E4 /* EventFilterDoubleSpinBox_moc.cpp in Build Sources */,
 				E8C81390176B1A8B003758F3 /* BeastCommandLineTool.cpp in Build Sources */,
+				E8C8139E176F4918003758F3 /* QtPropertyDataMetaObject.cpp in Build Sources */,
+				E8C813A3176F493B003758F3 /* ImageTools.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
