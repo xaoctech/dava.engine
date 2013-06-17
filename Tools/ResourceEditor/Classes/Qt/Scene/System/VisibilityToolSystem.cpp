@@ -196,6 +196,8 @@ void VisibilityToolSystem::UpdateCursorPosition(int32 landscapeSize)
 
 		cursorPosition.x = (point.x - box.min.x) * (landscapeSize - 1) / (box.max.x - box.min.x);
 		cursorPosition.y = (point.y - box.min.y) * (landscapeSize - 1) / (box.max.y - box.min.y);
+		cursorPosition.x = (int32)cursorPosition.x;
+		cursorPosition.y = (int32)cursorPosition.y;
 
 		drawSystem->SetCursorPosition(cursorPosition);
 	}
@@ -255,7 +257,11 @@ void VisibilityToolSystem::SetBrushSize(int32 brushSize)
 	if (brushSize > 0)
 	{
 		cursorSize = (uint32)brushSize;
-		drawSystem->SetCursorSize(cursorSize);
+
+		if (state == VT_STATE_SET_AREA)
+		{
+			drawSystem->SetCursorSize(cursorSize);
+		}
 	}
 }
 
@@ -379,7 +385,7 @@ void VisibilityToolSystem::SetVisibilityAreaInternal()
 		Vector2 areaPos = cursorPosition;// - areaSize / 2;
 
 		Rect updatedRect;
-		updatedRect.SetPosition(areaPos);
+		updatedRect.SetPosition(areaPos - areaSize / 2.f);
 		updatedRect.SetSize(areaSize);
 		AddRectToAccumulator(updatedRect);
 
@@ -538,10 +544,6 @@ void VisibilityToolSystem::DrawVisibilityAreaPoints(const Vector<DAVA::Vector3> 
 	{
 		uint32 colorIndex = (uint32)points[i].z;
 		Vector2 pos(points[i].x, points[i].y);
-
-		Color color(1.f, 0.f, 0.f, 1.f);
-		if(areaPointColors.size() > colorIndex)
-			color = areaPointColors[colorIndex];
 
 		manager->SetColor(areaPointColors[colorIndex]);
 		helper->DrawPoint(pos, 5.f);

@@ -149,7 +149,7 @@ CommandSetVisibilityPoint::CommandSetVisibilityPoint(Image* originalImage,
 													 Sprite* cursorSprite,
 													 VisibilityToolProxy* visibilityToolProxy,
 													 const Vector2& visibilityPoint)
-:	Command(COMMAND_UNDO_REDO, CommandList::ID_COMMAND_PLACE_POINT_VISIBILITY_TOOL)
+:	Command(COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_PLACE_POINT_VISIBILITY_TOOL)
 {
 	commandName = "Place Visibility Point";
 
@@ -218,30 +218,16 @@ void CommandSetVisibilityPoint::Cancel()
 CommandSetVisibilityArea::CommandSetVisibilityArea(Image* originalImage,
 												   VisibilityToolProxy* visibilityToolProxy,
 												   const Rect& updatedRect)
-:	Command(COMMAND_UNDO_REDO, CommandList::ID_COMMAND_PLACE_AREA_VISIBILITY_TOOL)
+:	Command(COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_PLACE_AREA_VISIBILITY_TOOL)
 {
 	commandName = "Place Visibility Area";
 
-	undoSprite = Sprite::CreateAsRenderTarget(updatedRect.dx, updatedRect.dy, originalImage->GetPixelFormat());
-	redoSprite = Sprite::CreateAsRenderTarget(updatedRect.dx, updatedRect.dy, originalImage->GetPixelFormat());
+	Image* currentImage = visibilityToolProxy->GetSprite()->GetTexture()->CreateImageFromMemory();
 
-	Texture* originalTexture = Texture::CreateFromData(originalImage->GetPixelFormat(),
-													   originalImage->GetData(),
-													   originalImage->GetWidth(),
-													   originalImage->GetHeight(),
-													   false);
-	Sprite* originalSprite = Sprite::CreateFromTexture(originalTexture, 0, 0,
-													   originalImage->GetWidth(), originalImage->GetHeight());
+	undoImage = Image::CopyImageRegion(originalImage, updatedRect);
+	redoImage = Image::CopyImageRegion(currentImage, updatedRect);
 
-	RenderManager::Instance()->SetRenderTarget(undoSprite);
-	originalSprite->SetPosition(-updatedRect.x, -updatedRect.y);
-	originalSprite->Draw();
-	RenderManager::Instance()->RestoreRenderTarget();
-
-	RenderManager::Instance()->SetRenderTarget(redoSprite);
-	visibilityToolProxy->GetSprite()->SetPosition(-updatedRect.x, -updatedRect.y);
-	visibilityToolProxy->GetSprite()->Draw();
-	RenderManager::Instance()->RestoreRenderTarget();
+	SafeRelease(currentImage);
 
 	this->visibilityToolProxy = SafeRetain(visibilityToolProxy);
 	this->updatedRect = updatedRect;
@@ -249,47 +235,43 @@ CommandSetVisibilityArea::CommandSetVisibilityArea(Image* originalImage,
 
 CommandSetVisibilityArea::~CommandSetVisibilityArea()
 {
-	SafeRelease(undoSprite);
-	SafeRelease(redoSprite);
+	SafeRelease(undoImage);
+	SafeRelease(redoImage);
 	SafeRelease(visibilityToolProxy);
 }
 
 void CommandSetVisibilityArea::Execute()
 {
-	Sprite* visibilityToolSprite = visibilityToolProxy->GetSprite();
-
-	RenderManager::Instance()->SetRenderTarget(visibilityToolSprite);
-	RenderManager::Instance()->ClipPush();
-	RenderManager::Instance()->ClipRect(updatedRect);
-
-	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
-//	RenderManager::Instance()->SetColor(1.f, 0.f, 0.f, 1.f);
-//	RenderHelper::Instance()->FillRect(updatedRect);
-	redoSprite->SetPosition(updatedRect.x, updatedRect.y);
-	redoSprite->Draw();
-
-	RenderManager::Instance()->ClipPop();
-	RenderManager::Instance()->RestoreRenderTarget();
-
-	visibilityToolProxy->UpdateRect(updatedRect);
+	ApplyImage(redoImage);
 }
 
 void CommandSetVisibilityArea::Cancel()
 {
+	ApplyImage(undoImage);
+}
+
+void CommandSetVisibilityArea::ApplyImage(DAVA::Image *image)
+{
 	Sprite* visibilityToolSprite = visibilityToolProxy->GetSprite();
+
+	Texture* texture = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(),
+											   image->GetWidth(), image->GetHeight(), false);
+	texture->GeneratePixelesation();
+	Sprite* sprite = Sprite::CreateFromTexture(texture, 0, 0, image->GetWidth(), image->GetHeight());
 
 	RenderManager::Instance()->SetRenderTarget(visibilityToolSprite);
 	RenderManager::Instance()->ClipPush();
 	RenderManager::Instance()->ClipRect(updatedRect);
 
 	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
-//	RenderManager::Instance()->SetColor(0.f, 1.f, 0.f, 1.f);
-//	RenderHelper::Instance()->FillRect(updatedRect);
-	undoSprite->SetPosition(updatedRect.x, updatedRect.y);
-	undoSprite->Draw();
+	sprite->SetPosition(updatedRect.x, updatedRect.y);
+	sprite->Draw();
 
 	RenderManager::Instance()->ClipPop();
 	RenderManager::Instance()->RestoreRenderTarget();
 
 	visibilityToolProxy->UpdateRect(updatedRect);
+
+	SafeRelease(texture);
+	SafeRelease(sprite);
 }
