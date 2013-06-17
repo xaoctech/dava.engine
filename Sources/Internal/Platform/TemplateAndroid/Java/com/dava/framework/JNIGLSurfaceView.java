@@ -10,6 +10,7 @@ import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -20,10 +21,14 @@ public class JNIGLSurfaceView extends GLSurfaceView
 
 	private native void nativeOnInput(int action, int id, float x, float y, double time, int source);
 	private native void nativeOnKeyDown(int keyCode);
+	private native void nativeOnKeyUp(int keyCode);
 	
 	public static int MSG_GL_INITIALIZED = 0x1;
 
 	MOGAListener mogaListener = null;
+
+	boolean[] pressedKeys = new boolean[KeyEvent.getMaxKeyCode()];
+
 	Handler messageHandler = new Handler()
 	{
 		@Override
@@ -183,11 +188,21 @@ public class JNIGLSurfaceView extends GLSurfaceView
     
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-    	queueEvent(new KeyInputRunnable(keyCode));
+    	if(pressedKeys[keyCode] == false)
+    		queueEvent(new KeyInputRunnable(keyCode));
+    	pressedKeys[keyCode] = true;
+    	
     	if(keyCode == KeyEvent.KEYCODE_BACK)
     		return super.onKeyDown(keyCode, event);
     	else
     		return true;
+    }
+    
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+    	pressedKeys[keyCode] = false;
+        nativeOnKeyUp(keyCode);
+    	return super.onKeyUp(keyCode, event);
     }
     
     @Override
