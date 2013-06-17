@@ -24,7 +24,7 @@
 
 #include <DAVAEngine.h>
 #include "ScrollZoomWidget.h"
-#include "EventFilterDoubleSpinBox.h"
+#include "../CustomControls/EventFilterDoubleSpinBox.h"
 
 using namespace DAVA;
 

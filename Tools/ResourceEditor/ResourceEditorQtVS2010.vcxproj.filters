@@ -178,6 +178,9 @@
     <Filter Include="Classes\CommandLine\Beast">
       <UniqueIdentifier>{0dc39ab9-3c4d-4e3c-ab77-216083362ba1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\Qt\CustomControls">
+      <UniqueIdentifier>{b01bcaef-a885-49ab-a146-e565b9716060}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1704,6 +1707,12 @@
     <ClCompile Include="Classes\CommandLine\Beast\BeastCommandLineTool.cpp">
       <Filter>Classes\CommandLine\Beast</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\CustomControls\EventFilterDoubleSpinBox.cpp">
+      <Filter>Classes\Qt\CustomControls</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\CustomControls\EventFilterDoubleSpinBox_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3004,6 +3013,9 @@
     </ClInclude>
     <ClInclude Include="Classes\CommandLine\Beast\BeastCommandLineTool.h">
       <Filter>Classes\CommandLine\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\CustomControls\EventFilterDoubleSpinBox.h">
+      <Filter>Classes\Qt\CustomControls</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

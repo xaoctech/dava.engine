@@ -155,7 +155,7 @@
   <customwidget>
    <class>EventFilterDoubleSpinBox</class>
    <extends>QDoubleSpinBox</extends>
-   <header location="global">eventfilterdoublespinbox.h</header>
+   <header location="global">CustomControls/EventFilterDoubleSpinBox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

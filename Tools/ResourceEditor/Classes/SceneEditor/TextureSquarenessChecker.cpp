@@ -57,8 +57,9 @@ void TextureSquarenessChecker::CheckSceneForTextureSquarenessAndResave(Scene *sc
         {
             CheckSceneNode(scene);
 
-            SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-            FilePath currentPath = screen->CurrentScenePathname();
+			FilePath currentPath = SceneDataManager::Instance()->SceneGetActive()->GetScenePathname();
+
+			SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
             screen->SaveSceneToFile(currentPath);
         }
     }
