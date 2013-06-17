@@ -14,48 +14,29 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __COMMAND_LINE_TOOL_H__
-#define __COMMAND_LINE_TOOL_H__
+#ifndef __BEAST_COMMAND_LINE_TOOL_H__
+#define __BEAST_COMMAND_LINE_TOOL_H__
 
-#include "DAVAEngine.h"
+#include "../CommandLineTool.h"
 
-class CommandLineTool
-{    
-    
+class BeastCommandLineTool: public CommandLineTool
+{
 public:
+
+	BeastCommandLineTool();
+
+    virtual DAVA::String GetCommandLineKey();
+    virtual bool InitializeFromCommandLine();
+    virtual void Process();
+    virtual void PrintUsage();
+
+    const DAVA::FilePath & GetScenePathname() const;
     
-	CommandLineTool();
-
-    virtual DAVA::String GetCommandLineKey() = 0;
-    
-    virtual bool InitializeFromCommandLine() = 0;
-  
-    virtual void Process() = 0;
-
-    virtual void PrintUsage() = 0;
-
-    inline const DAVA::Set<DAVA::String> & GetErrorList() const;
-    
-	inline bool IsOneFrameCommand() const;
-
 protected:
+
+    DAVA::FilePath scenePathname;
     
-    DAVA::Set<DAVA::String> errors;
-	bool oneFrameCommand;
 };
 
 
-inline const DAVA::Set<DAVA::String> & CommandLineTool::GetErrorList() const
-{
-    return errors;
-}
-
-inline bool CommandLineTool::IsOneFrameCommand() const
-{
-	return oneFrameCommand;
-}
-
-
-#endif // __COMMAND_LINE_TOOL_H__
-
-
+#endif // __BEAST_COMMAND_LINE_TOOL_H__

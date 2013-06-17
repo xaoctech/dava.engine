@@ -418,6 +418,23 @@ SceneData *SceneDataManager::SceneGet(DAVA::int32 index)
     return *it;
 }
 
+SceneData *SceneDataManager::SceneGet(DAVA::Scene *scene)
+{
+    DVASSERT(scene);
+    
+    auto endIt = scenes.end();
+    for(auto it = scenes.begin(); it != endIt; ++it)
+    {
+        if((*it)->GetScene() == scene)
+            return *it;
+    }
+    
+    DVASSERT(false);
+    
+    return NULL;
+}
+
+
 void SceneDataManager::InSceneData_SceneChanged(EditorScene *scene)
 {
 	SceneData *sceneData = (SceneData *) QObject::sender();

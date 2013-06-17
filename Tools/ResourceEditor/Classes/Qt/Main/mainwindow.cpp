@@ -487,6 +487,7 @@ void QtMainWindow::ProjectOpened(const QString &path)
 	UpdateParticleSprites();
 }
 
+
 void QtMainWindow::UpdateParticleSprites()
 {
 	if(repackSpritesWaitDialog != NULL)

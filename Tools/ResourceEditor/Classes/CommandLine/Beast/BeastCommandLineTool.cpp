@@ -14,48 +14,63 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __COMMAND_LINE_TOOL_H__
-#define __COMMAND_LINE_TOOL_H__
+#include "BeastCommandLineTool.h"
 
-#include "DAVAEngine.h"
+#include "TexturePacker/CommandLineParser.h"
 
-class CommandLineTool
-{    
-    
-public:
-    
-	CommandLineTool();
+using namespace DAVA;
 
-    virtual DAVA::String GetCommandLineKey() = 0;
-    
-    virtual bool InitializeFromCommandLine() = 0;
-  
-    virtual void Process() = 0;
-
-    virtual void PrintUsage() = 0;
-
-    inline const DAVA::Set<DAVA::String> & GetErrorList() const;
-    
-	inline bool IsOneFrameCommand() const;
-
-protected:
-    
-    DAVA::Set<DAVA::String> errors;
-	bool oneFrameCommand;
-};
-
-
-inline const DAVA::Set<DAVA::String> & CommandLineTool::GetErrorList() const
+BeastCommandLineTool::BeastCommandLineTool()
+	:	CommandLineTool()
 {
-    return errors;
+	oneFrameCommand = false;
 }
 
-inline bool CommandLineTool::IsOneFrameCommand() const
+void BeastCommandLineTool::PrintUsage()
 {
-	return oneFrameCommand;
+    printf("\n");
+    printf("-beast [-file [file]]\n");
+    printf("\twill beast scene file\n");
+    printf("\t-file - full pathname of scene for beasting \n");
+    printf("\t-format - png, pvr, dxt\n");
+    
+    printf("\n");
+    printf("Samples:\n");
+    printf("-beast -file /Projects/WOT/wot.blitz/DataSource/3d/Maps/karelia/karelia.sc2\n");
+
 }
 
+DAVA::String BeastCommandLineTool::GetCommandLineKey()
+{
+    return "-beast";
+}
 
-#endif // __COMMAND_LINE_TOOL_H__
+bool BeastCommandLineTool::InitializeFromCommandLine()
+{
+    scenePathname = CommandLineParser::GetCommandParam(String("-file"));
+    if(scenePathname.IsEmpty())
+    {
+        errors.insert(String("Incorrect params for beasting of the scene"));
+        return false;
+    }
+    
+    if(!scenePathname.IsEqualToExtension(".sc2"))
+    {
+        errors.insert(String("Wrong pathname. Need path ot *.sc2"));
+        return false;
+    }
+    
+    return true;
+}
+
+void BeastCommandLineTool::Process()
+{
+    //Do nothing
+}
+
+const DAVA::FilePath & BeastCommandLineTool::GetScenePathname() const
+{
+    return scenePathname;
+}
 
 
