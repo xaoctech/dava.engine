@@ -442,3 +442,8 @@ void SceneTabWidget::SetCollisionDrawMode(int mode)
 		}
 	}
 }
+
+SceneEditor2* SceneTabWidget::GetSceneEditorForCurrentTab() const
+{
+	return GetTabScene(GetCurrentTab());
+}
