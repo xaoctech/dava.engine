@@ -14,11 +14,29 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "CommandLineTool.h"
+#ifndef __BEAST_COMMAND_LINE_TOOL_H__
+#define __BEAST_COMMAND_LINE_TOOL_H__
 
-using namespace DAVA;
+#include "../CommandLineTool.h"
 
-CommandLineTool::CommandLineTool()
+class BeastCommandLineTool: public CommandLineTool
 {
-	oneFrameCommand = true;
-}
+public:
+
+	BeastCommandLineTool();
+
+    virtual DAVA::String GetCommandLineKey();
+    virtual bool InitializeFromCommandLine();
+    virtual void Process();
+    virtual void PrintUsage();
+
+    const DAVA::FilePath & GetScenePathname() const;
+    
+protected:
+
+    DAVA::FilePath scenePathname;
+    
+};
+
+
+#endif // __BEAST_COMMAND_LINE_TOOL_H__
