@@ -165,6 +165,7 @@ namespace DAVA
 		if(wasCreated)
 		{
 			ResizeView(w, h);
+			RenderManager::Instance()->Invalidate();
 			RenderResource::InvalidateAllResources();
 		}
 		else
@@ -240,7 +241,7 @@ namespace DAVA
 	{
 		Logger::Debug("[CorePlatformAndroid::StopForeground]");
 
-		RenderManager::Instance()->Invalidate();
+		RenderManager::Instance()->Lost();
 		RenderResource::SaveAllResourcesToSystemMem();
 		RenderResource::LostAllResources();
 
