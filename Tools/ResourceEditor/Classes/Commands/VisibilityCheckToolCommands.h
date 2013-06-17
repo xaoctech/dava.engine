@@ -104,14 +104,16 @@ public:
 	virtual ~CommandSetVisibilityArea();
 
 protected:
-	Sprite* undoSprite;
-	Sprite* redoSprite;
+	Image* undoImage;
+	Image* redoImage;
 
 	VisibilityToolProxy* visibilityToolProxy;
 	Rect updatedRect;
 
 	virtual void Execute();
 	virtual void Cancel();
+
+	void ApplyImage(Image* image);
 };
 
 #endif

@@ -72,6 +72,11 @@ public:
 	// changes size of image to required size (without any filtration)
 	void ResizeImage(uint32 newWidth, uint32 newHeight);
 
+	static Image* CopyImageRegion(const Image* imageToCopy,
+								  uint32 newWidth, uint32 newHeight,
+								  uint32 xOffset = 0, uint32 yOffset = 0);
+	static Image* CopyImageRegion(const Image* imageToCopy, const Rect& rect);
+
 	/*
      //	void ConvertToFormat(PixelFormat format);
         \todo extract all image format conversion functions to separate functions to allow to use them in different places, like textures.
