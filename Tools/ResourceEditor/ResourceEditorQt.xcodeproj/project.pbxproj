@@ -277,6 +277,8 @@
 		5CF17EC315B91E8600A9FC33 /* FileCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5CF17EC115B91E8600A9FC33 /* FileCommands.cpp */; };
 		5CFEEBC015CAB60B00ABF023 /* SceneGraphCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5CFEEBBE15CAB60B00ABF023 /* SceneGraphCommands.cpp */; };
 		748E55931761D5EB000E24FF /* ParticlesEditorNodeNameHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 748E55911761D5EB000E24FF /* ParticlesEditorNodeNameHelper.cpp */; };
+		74A94C98176B61CF00DE03E4 /* EventFilterDoubleSpinBox.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74A94C96176B61CF00DE03E4 /* EventFilterDoubleSpinBox.cpp */; };
+		74A94C9C176B6BC000DE03E4 /* EventFilterDoubleSpinBox_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74A94C9B176B6BC000DE03E4 /* EventFilterDoubleSpinBox_moc.cpp */; };
 		77BDEC8E56A833D3814BC614 /* QtNetwork.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 82153068A36B6EA46DD82A06 /* QtNetwork.framework */; };
 		77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 336CB11D929F5E35FA69020F /* Cocoa.framework */; };
 		841703F916CBA49C00F1023D /* QResourceEditorProgressDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 841703F716CBA49C00F1023D /* QResourceEditorProgressDialog.cpp */; };
@@ -1135,6 +1137,9 @@
 		748E55911761D5EB000E24FF /* ParticlesEditorNodeNameHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticlesEditorNodeNameHelper.cpp; sourceTree = "<group>"; };
 		748E55921761D5EB000E24FF /* ParticlesEditorNodeNameHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticlesEditorNodeNameHelper.h; sourceTree = "<group>"; };
 		7496CE1D1766058D0090AC05 /* StringConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StringConstants.h; path = Classes/StringConstants.h; sourceTree = "<group>"; };
+		74A94C96176B61CF00DE03E4 /* EventFilterDoubleSpinBox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EventFilterDoubleSpinBox.cpp; sourceTree = "<group>"; };
+		74A94C97176B61CF00DE03E4 /* EventFilterDoubleSpinBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventFilterDoubleSpinBox.h; sourceTree = "<group>"; };
+		74A94C9B176B6BC000DE03E4 /* EventFilterDoubleSpinBox_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EventFilterDoubleSpinBox_moc.cpp; sourceTree = "<group>"; };
 		8157E7438190A1EEF4A4D363 /* mongodb_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mongodb_macos; path = ../../Libs/libs/libmongodb_macos.a; sourceTree = "<group>"; };
 		8159B90213E2E13CB65C75B4 /* vorbis_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbis_macos; path = ../../Libs/oggvorbis/lib/libvorbis_macos.a; sourceTree = "<group>"; };
 		81BBDA0F1849B4A35FAB7D00 /* freetype_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = freetype_macos; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
@@ -1659,6 +1664,7 @@
 		5C2763A415B82BDF0030A8FD /* Qt */ = {
 			isa = PBXGroup;
 			children = (
+				74A94C95176B61CF00DE03E4 /* CustomControls */,
 				4F3E2560174CD38E000D1187 /* DockConsole */,
 				02E9E43B173965B800C501BC /* DockSceneTree */,
 				494A7CDA172A92C0005D7C7F /* Commands */,
@@ -2369,6 +2375,25 @@
 			name = Commands;
 			sourceTree = "<group>";
 		};
+		74A94C95176B61CF00DE03E4 /* CustomControls */ = {
+			isa = PBXGroup;
+			children = (
+				74A94C96176B61CF00DE03E4 /* EventFilterDoubleSpinBox.cpp */,
+				74A94C97176B61CF00DE03E4 /* EventFilterDoubleSpinBox.h */,
+			);
+			name = CustomControls;
+			path = Classes/Qt/CustomControls;
+			sourceTree = "<group>";
+		};
+		74A94C9A176B6BC000DE03E4 /* CustomControls */ = {
+			isa = PBXGroup;
+			children = (
+				74A94C9B176B6BC000DE03E4 /* EventFilterDoubleSpinBox_moc.cpp */,
+			);
+			name = CustomControls;
+			path = _GeneratedQt/CustomControls;
+			sourceTree = "<group>";
+		};
 		841703F616CBA48000F1023D /* QResourceEditorProgressDialog */ = {
 			isa = PBXGroup;
 			children = (
@@ -2999,6 +3024,7 @@
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
 			isa = PBXGroup;
 			children = (
+				74A94C9A176B6BC000DE03E4 /* CustomControls */,
 				4F3E256A174CD39C000D1187 /* DockConsole */,
 				02F64048173A8F170053F038 /* DockSceneTree */,
 				494A7CE1172A9500005D7C7F /* Commands */,
@@ -3845,6 +3871,8 @@
 				4FFE5C86176B37B600728624 /* TransformCommand.cpp in Build Sources */,
 				4FFE5C88176B393900728624 /* SceneEditor2_moc.cpp in Build Sources */,
 				02714763176B50420011B24C /* TextureSquarenessChecker.cpp in Build Sources */,
+				74A94C98176B61CF00DE03E4 /* EventFilterDoubleSpinBox.cpp in Build Sources */,
+				74A94C9C176B6BC000DE03E4 /* EventFilterDoubleSpinBox_moc.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
