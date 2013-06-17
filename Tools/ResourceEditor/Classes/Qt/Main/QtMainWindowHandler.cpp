@@ -544,8 +544,7 @@ void QtMainWindowHandler::Beast()
 
 void QtMainWindowHandler::SquareTextures()
 { 
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen->CurrentScenePathname().IsEmpty())
+    if(SceneDataManager::Instance()->SceneGetActive()->GetScenePathname().IsEmpty())
         return;
 
     int32 answer = ShowQuestion("Warning!", "All non-square textures will enlarged to square and scene file will resave. Do you want to continue?",
