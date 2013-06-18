@@ -1140,6 +1140,7 @@ void QtMainWindowHandler::OnSceneReleased(SceneData *scene)
 
 void QtMainWindowHandler::ConvertToShadow()
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandConvertToShadow(),
+    Entity * entity = SceneDataManager::Instance()->SceneGetSelectedNode(SceneDataManager::Instance()->SceneGetActive());
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandConvertToShadow(entity),
 												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
 }
