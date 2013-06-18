@@ -30,7 +30,8 @@ namespace DAVA
 	SkyBoxNode::SkyBoxNode()	:	renderBatch(NULL),
 									skyBoxMaterial(NULL),
 									zShift(0.0f),
-									boxSize(1.0f, 1.0f, 1.0f)
+									boxSize(1.0f, 1.0f, 1.0f),
+									rotationAngle(0.0f)
 	{
 	}
 	
@@ -84,6 +85,7 @@ namespace DAVA
 		
 		renderBatch->SetBox(box);
 		renderBatch->SetVerticalOffset(zShift);
+		renderBatch->SetRotation(rotationAngle);
 	}
 	
 	void SkyBoxNode::SceneDidLoaded()
@@ -99,6 +101,7 @@ namespace DAVA
 		{
 			archive->SetString("sbn.texture", texturePath.GetRelativePathname());
 			archive->SetFloat("sbn.verticalOffset", zShift);
+			archive->SetFloat("sbn.rotation", rotationAngle);
 		}
 	}
 	
@@ -110,6 +113,7 @@ namespace DAVA
 		{
 			SetTexture(archive->GetString("sbn.texture"));
 			SetVerticalOffset(archive->GetFloat("sbn.verticalOffset"));
+			SetRotationAngle(archive->GetFloat("sbn.rotation"));
 		}
 	}
 	
@@ -142,6 +146,21 @@ namespace DAVA
 	{
 		return zShift;
 	}
+	
+	void SkyBoxNode::SetRotationAngle(const float32& rotation)
+	{
+		rotationAngle = rotation;
+		if(renderBatch != NULL)
+		{
+			renderBatch->SetRotation(rotationAngle);
+		}
+	}
+	
+	float32 SkyBoxNode::GetRotationAngle()
+	{
+		return rotationAngle;
+	}
+
 
 	
 	//////////////////////////////////////////////////////////////////////////////////////
@@ -149,7 +168,8 @@ namespace DAVA
 	SkyBoxNode::SkyBoxRenderBatch::SkyBoxRenderBatch()	:	positionStream(NULL),
 															texCoordStream(NULL),
 															nonClippingDistance(0.0f),
-															zOffset(0.0f)
+															zOffset(0.0f),
+															rotation(0.0f)
 	{
 		SetOwnerLayerName(LAYER_AFTER_OPAQUE);
 	}
@@ -164,6 +184,11 @@ namespace DAVA
 	void SkyBoxNode::SkyBoxRenderBatch::SetVerticalOffset(float32 verticalOffset)
 	{
 		zOffset = verticalOffset;
+	}
+	
+	void SkyBoxNode::SkyBoxRenderBatch::SetRotation(float32 angle)
+	{
+		rotation = DAVA::DegToRad(angle);
 	}
 	
 	void SkyBoxNode::SkyBoxRenderBatch::SetBox(const AABBox3& box)
@@ -340,7 +365,10 @@ namespace DAVA
 		
 		camPos.z += zOffset;
 		
-		Matrix4 finalMatrix = Matrix4::MakeScale(Vector3(scale, scale, scale)) * Matrix4::MakeTranslation(camPos) * camera->GetMatrix();
+		Matrix4 finalMatrix = Matrix4::MakeScale(Vector3(scale, scale, scale)) *
+							  Matrix4::MakeTranslation(camPos) *
+							  Matrix4::MakeRotation(Vector3(0.0f, 0.0f, 1.0f), rotation) *
+							  camera->GetMatrix();
 		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
 		
 		RenderManager::Instance()->SetRenderData(renderDataObject);
