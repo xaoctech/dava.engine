@@ -747,6 +747,15 @@ void EditorBodyControl::Update(float32 timeElapsed)
 		PackLightmaps();
 		BeastProxy::Instance()->SafeDeleteManager(&beastManager);
 
+		Landscape *land = scene->GetLandscape(scene);
+		if(land)
+		{
+			FilePath textureName = land->GetTextureName(DAVA::Landscape::TEXTURE_COLOR);
+			textureName.ReplaceFilename("temp_beast.png");
+
+			FileSystem::Instance()->DeleteFile(textureName);
+		}
+
 #if defined (__DAVAENGINE_WIN32__)
 		BeastCommandLineTool *beastTool = dynamic_cast<BeastCommandLineTool *>(CommandLineManager::Instance()->GetActiveCommandLineTool());
         if(beastTool)
@@ -930,20 +939,22 @@ void EditorBodyControl::PackLightmaps()
 	SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
 
 	FilePath inputDir(EditorSettings::Instance()->GetProjectPath()+"DataSource/lightmaps_temp/");
-	FilePath outputDir(sceneData->GetScenePathname().GetDirectory() + "_lightmaps/");
-	FileSystem::Instance()->MoveFile(inputDir+"landscape.png", "test_landscape.png", true);
+
+ 	FilePath outputDir = FilePath::CreateWithNewExtension(sceneData->GetScenePathname(),  + ".sc2_lightmaps/");
+
+	FileSystem::Instance()->MoveFile(inputDir+"landscape.png", inputDir+"test_landscape.png", true);
 
 	LightmapsPacker packer;
 	packer.SetInputDir(inputDir);
 
 	packer.SetOutputDir(outputDir);
 	packer.Pack();
-	packer.Compress();
+	packer.CreateDescriptors();
 	packer.ParseSpriteDescriptors();
 
 	BeastProxy::Instance()->UpdateAtlas(beastManager, packer.GetAtlasingData());
 
-	FileSystem::Instance()->MoveFile("test_landscape.png", outputDir+"landscape.png", true);
+	FileSystem::Instance()->MoveFile(inputDir+"test_landscape.png", outputDir+"landscape.png", true);
 }
 
 void EditorBodyControl::Draw(const UIGeometricData &geometricData)
