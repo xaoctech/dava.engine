@@ -24,9 +24,7 @@ void LightmapsPacker::ParseSpriteDescriptors()
 
 		LightmapAtlasingData data;
 
-        FilePath meshname = FilePath(filePath);
-        meshname.TruncateExtension();
-		data.meshInstanceName = meshname.GetAbsolutePathname();
+		data.meshInstanceName = filePath.GetBasename();
         
 		File * file = File::Create(filePath, File::OPEN | File::READ);
 		
@@ -64,9 +62,9 @@ Vector2 LightmapsPacker::GetTextureSize(const FilePath & filePath)
 {
 	Vector2 ret;
 
-	FilePath sourceTexturePathname(filePath);
-    sourceTexturePathname.ReplaceExtension(TextureDescriptor::GetSourceTextureExtension());
-    Image * image = CreateTopLevelImage(sourceTexturePathname);
+	FilePath sourceTexturePathname = FilePath::CreateWithNewExtension(filePath, TextureDescriptor::GetSourceTextureExtension());
+
+	Image * image = CreateTopLevelImage(sourceTexturePathname);
     if(image)
     {
         ret.x = (float32)image->GetWidth();
@@ -83,7 +81,7 @@ Vector<LightmapAtlasingData> * LightmapsPacker::GetAtlasingData()
 	return &atlasingData;
 }
 
-void LightmapsPacker::Compress()
+void LightmapsPacker::CreateDescriptors()
 {
 	FileList * fileList = new FileList(outputDir);
 
