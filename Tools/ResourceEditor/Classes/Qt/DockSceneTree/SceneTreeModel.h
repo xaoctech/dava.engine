@@ -20,7 +20,7 @@
 #include <QPair>
 #include <QStandardItemModel>
 
-#include "Scene/SceneEditorProxy.h"
+#include "Scene/SceneEditor2.h"
 #include "Qt/DockSceneTree/SceneTreeItem.h"
 
 // framework
@@ -34,11 +34,18 @@ public:
 	SceneTreeModel(QObject* parent = 0);
 	~SceneTreeModel();
 
-	void SetScene(SceneEditorProxy *scene);
-	SceneEditorProxy* GetScene() const;
+	// virtual QVariant data(const QModelIndex &index, int role) const;
+
+	void SetScene(SceneEditor2 *scene);
+	SceneEditor2* GetScene() const;
 
 	QModelIndex GetEntityIndex(DAVA::Entity *entity) const;
 	DAVA::Entity* GetEntity(const QModelIndex &index) const;
+
+	// this workaround for Qt bug
+	// see https://bugreports.qt-project.org/browse/QTBUG-26229 
+	// for more information
+	bool DropIsAccepted();
 
 	// drag and drop support
 	Qt::DropActions supportedDropActions() const;
@@ -47,7 +54,8 @@ public:
 	bool dropMimeData(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent);
 
 protected:
-	SceneEditorProxy * curScene;
+	bool dropAccepted;
+	SceneEditor2 * curScene;
 };
 
 #endif // __QT_SCENE_TREE_MODEL_H__

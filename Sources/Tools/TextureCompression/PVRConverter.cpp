@@ -36,7 +36,7 @@ FilePath PVRConverter::ConvertPngToPvr(const TextureDescriptor &descriptor, eGPU
     
 	if(!command.empty())
 	{
-		FileSystem::Instance()->Spawn(command);
+		FileSystem::Instance()->Spawn("\"" + command + "\"");
 		outputName = GetPVRToolOutput(descriptor, gpuFamily);
 	}
 

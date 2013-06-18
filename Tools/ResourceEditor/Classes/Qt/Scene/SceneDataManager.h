@@ -59,9 +59,8 @@ public:
 	SceneData*			SceneGetActive();
 	SceneData*			SceneGetLevel();
 	SceneData*			SceneGet(DAVA::int32 index);
+	SceneData*			SceneGet(DAVA::Scene *scene);
 	DAVA::int32			SceneCount();
-	void				SceneShowPreview(const FilePath &path);
-	void				SceneHidePreview();
     
 	void				TextureCompressAllNotCompressed();
 	void				TextureReloadAll(DAVA::eGPUFamily forGPU);

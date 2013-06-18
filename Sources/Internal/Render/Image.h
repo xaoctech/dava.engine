@@ -77,6 +77,9 @@ public:
 								  uint32 xOffset = 0, uint32 yOffset = 0);
 	static Image* CopyImageRegion(const Image* imageToCopy, const Rect& rect);
 
+    // changes size of image canvas to square
+    void ResizeImageToSquare();
+
 	/*
      //	void ConvertToFormat(PixelFormat format);
         \todo extract all image format conversion functions to separate functions to allow to use them in different places, like textures.

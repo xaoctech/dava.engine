@@ -177,6 +177,11 @@ void Image::ResizeCanvas(uint32 newWidth, uint32 newHeight)
     }
 }
 
+void Image::ResizeImageToSquare()
+{
+    float32 newImageSize = Max(width, height);
+    ResizeCanvas(newImageSize, newImageSize);
+}
 
 Image* Image::CopyImageRegion(const Image* imageToCopy,
 							  uint32 newWidth, uint32 newHeight,

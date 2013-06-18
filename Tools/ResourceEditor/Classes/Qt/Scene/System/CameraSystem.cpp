@@ -16,7 +16,7 @@
 
 #include <QApplication>
 
-#include "Scene/SceneEditorProxy.h"
+#include "Scene/SceneEditor2.h"
 #include "Scene/System/CameraSystem.h"
 #include "Scene/System/SelectionSystem.h"
 
@@ -25,6 +25,8 @@
 #include "Scene3D/Scene.h"
 #include "Input/InputSystem.h"
 #include "Input/KeyboardDevice.h"
+
+#include "../StringConstants.h"
 
 SceneCameraSystem::SceneCameraSystem(DAVA::Scene * scene)
 	: SceneSystem(scene)
@@ -48,7 +50,7 @@ SceneCameraSystem::SceneCameraSystem(DAVA::Scene * scene)
 		mainCamera->SetupPerspective(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f);
 
 		DAVA::Entity *mainCameraEntity = new DAVA::Entity();
-		mainCameraEntity->SetName("editor.main-camera");
+		mainCameraEntity->SetName(ResourceEditor::EDITOR_MAIN_CAMERA);
 		mainCameraEntity->AddComponent(new DAVA::CameraComponent(mainCamera));
 		scene->AddNode(mainCameraEntity);
 		scene->AddCamera(mainCamera);
@@ -60,7 +62,7 @@ SceneCameraSystem::SceneCameraSystem(DAVA::Scene * scene)
 		topCamera->SetupPerspective(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f);
 
 		DAVA::Entity *topCameraEntity = new DAVA::Entity();
-		topCameraEntity->SetName("editor.debug-camera");
+		topCameraEntity->SetName(ResourceEditor::EDITOR_DEBUG_CAMERA);
 		topCameraEntity->AddComponent(new DAVA::CameraComponent(topCamera));
 		scene->AddNode(topCameraEntity);
 		scene->AddCamera(topCamera);
@@ -197,7 +199,7 @@ void SceneCameraSystem::ProcessUIEvent(DAVA::UIEvent *event)
 		{
 			if(Qt::AltModifier & QApplication::keyboardModifiers())
 			{
-				SceneSelectionSystem *selectionSystem = ((SceneEditorProxy *) GetScene())->selectionSystem;
+				SceneSelectionSystem *selectionSystem = ((SceneEditor2 *) GetScene())->selectionSystem;
 				if(NULL != selectionSystem)
 				{
 					const EntityGroup* selection = selectionSystem->GetSelection();
@@ -221,6 +223,11 @@ void SceneCameraSystem::ProcessUIEvent(DAVA::UIEvent *event)
 void SceneCameraSystem::Draw()
 {
 	// Nothing to draw
+}
+
+void SceneCameraSystem::PropeccCommand(const Command2 *command, bool redo)
+{
+
 }
 
 void SceneCameraSystem::ProcessKeyboardMove(DAVA::float32 timeElapsed)

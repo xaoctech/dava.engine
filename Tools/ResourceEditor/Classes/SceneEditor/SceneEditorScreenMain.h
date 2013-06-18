@@ -95,6 +95,7 @@ public:
 	virtual void LoadResources();
 	virtual void UnloadResources();
 	virtual void WillAppear();
+	virtual void DidAppear();
 	virtual void WillDisappear();
 	
 	virtual void Update(float32 timeElapsed);
@@ -126,9 +127,6 @@ public:
     void SelectNodeQt(Entity *node);
     void OnReloadRootNodesQt();
     
-    void ShowScenePreview(const FilePath & scenePathname);
-    void HideScenePreview();
-
     bool LandscapeEditorModeEnabled();
     bool TileMaskEditorEnabled();
     
@@ -187,7 +185,6 @@ public: //For Qt integration
     void NewScene();
 
     bool SaveIsAvailable();
-    FilePath CurrentScenePathname();
     void SaveSceneToFile(const FilePath &pathToFile);
    
 
@@ -222,7 +219,6 @@ public: //For Qt integration
     
     void ProcessBeast();
     
-    ScenePreviewDialog *scenePreviewDialog;
     UIControl *focusedControl;
 };
 

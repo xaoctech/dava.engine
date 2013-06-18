@@ -25,6 +25,7 @@
 #include "./Qt/SpritesPacker/SpritePackerHelper.h"
 #include "../Main/QtUtils.h"
 #include "../SceneEditor/EntityOwnerPropertyHelper.h"
+#include "../StringConstants.h"
 
 using namespace DAVA;
 
@@ -74,7 +75,7 @@ Entity* SceneDataManager::AddScene(const FilePath &scenePathname)
     Entity * rootNode = scene->GetRootNode(scenePathname)->Clone();
 
     KeyedArchive * customProperties = rootNode->GetCustomProperties();
-    customProperties->SetString("editor.referenceToOwner", scenePathname.GetAbsolutePathname());
+    customProperties->SetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, scenePathname.GetAbsolutePathname());
     
     rootNode->SetSolid(true);
     scene->AddNode(rootNode);
@@ -117,7 +118,6 @@ Entity* SceneDataManager::AddScene(const FilePath &scenePathname)
 		sceneData->SetLandscapesControllerScene(scene);
 	}
 
-	SceneHidePreview();
 	UpdateParticleSprites();
 	emit SceneGraphNeedRebuild();
 
@@ -251,14 +251,15 @@ void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const FilePa
 	//если в рут ноды сложить такие же рут ноды то на релоаде все накроет пиздой
     KeyedArchive *customProperties = node->GetCustomProperties();
 	EntityOwnerPropertyHelper::Instance()->UpdateEntityOwner(customProperties);
-    if (customProperties->GetString("editor.referenceToOwner", "") == nodePathname.GetAbsolutePathname())
+    if (customProperties->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, "") == nodePathname.GetAbsolutePathname())
     {
-        Entity *loadedNode = scene->GetRootNode(fromPathname)->Clone();
+        Entity *loadedNode = scene->GetRootNode(fromPathname);
         if(loadedNode)
         {
             Entity *newNode = loadedNode->Clone();
             newNode->SetLocalTransform(node->GetLocalTransform());
-            newNode->GetCustomProperties()->SetString("editor.referenceToOwner", fromPathname.GetAbsolutePathname());
+            newNode->GetCustomProperties()->SetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER,
+															fromPathname.GetAbsolutePathname());
             newNode->SetSolid(true);
             
             Entity *parent = node->GetParent();
@@ -273,7 +274,7 @@ void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const FilePa
         {
             errors.insert(Format("Cannot load object: %s", fromPathname.GetAbsolutePathname().c_str()));
         }
-
+        
         return;
     }
     
@@ -356,31 +357,6 @@ DAVA::Entity* SceneDataManager::SceneGetRootNode(SceneData *scene)
 	return node;
 }
 
-void SceneDataManager::SceneShowPreview(const DAVA::FilePath &path)
-{
-	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-
-	if(screen)
-	{
-		if(path.IsEqualToExtension(".sc2") && FileSystem::Instance()->IsFile(path))
-		{
-			screen->ShowScenePreview(path);
-		}
-		else
-		{
-			SceneHidePreview();
-		}
-	}
-}
-
-void SceneDataManager::SceneHidePreview()
-{
-	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	if(NULL != screen)
-	{
-		screen->HideScenePreview();
-	}
-}
 
 EditorScene * SceneDataManager::RegisterNewScene()
 {
@@ -441,6 +417,23 @@ SceneData *SceneDataManager::SceneGet(DAVA::int32 index)
     
     return *it;
 }
+
+SceneData *SceneDataManager::SceneGet(DAVA::Scene *scene)
+{
+    DVASSERT(scene);
+    
+    auto endIt = scenes.end();
+    for(auto it = scenes.begin(); it != endIt; ++it)
+    {
+        if((*it)->GetScene() == scene)
+            return *it;
+    }
+    
+    DVASSERT(false);
+    
+    return NULL;
+}
+
 
 void SceneDataManager::InSceneData_SceneChanged(EditorScene *scene)
 {
@@ -600,6 +593,9 @@ void SceneDataManager::CollectLandscapeDescriptors(DAVA::Set<DAVA::FilePath> &de
 
 void SceneDataManager::CollectDescriptors(DAVA::Set<DAVA::FilePath> &descriptors, const DAVA::FilePath &pathname)
 {
+    if(pathname.GetType() == FilePath::PATH_EMPTY)
+        return;
+
     DVASSERT(pathname.IsEqualToExtension(TextureDescriptor::GetDescriptorExtension()));
     
     if(!pathname.IsEmpty() && SceneValidator::Instance()->IsPathCorrectForProject(pathname))

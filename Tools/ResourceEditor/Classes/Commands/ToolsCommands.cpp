@@ -46,7 +46,7 @@ void CommandBeast::Execute()
 CommandConvertToShadow::CommandConvertToShadow()
 :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_CONVERT_TO_SHADOW)
 {
-
+	affectedEntity = 0;
 }
 
 void CommandConvertToShadow::Execute()
@@ -85,7 +85,10 @@ void CommandConvertToShadow::Execute()
 DAVA::Set<DAVA::Entity*> CommandConvertToShadow::GetAffectedEntities()
 {
 	Set<Entity*> entities;
-	entities.insert(affectedEntity);
+	if(affectedEntity)
+	{
+		entities.insert(affectedEntity);
+	}
 
 	return entities;
 }

@@ -21,6 +21,7 @@
 #include <QPushButton>
 #include "Commands/ParticleEditorCommands.h"
 #include "Commands/CommandsManager.h"
+#include "../Scene/SceneDataManager.h"
 
 #include "ParticlesEditorController.h"
 
@@ -642,7 +643,8 @@ void ParticleTimeLineWidget::OnValueChanged(int lineId)
 	
 	CommandUpdateParticleLayerTime* cmd = new CommandUpdateParticleLayerTime(iter->second.layer);
 	cmd->Init(iter->second.startTime, iter->second.endTime);
-	CommandsManager::Instance()->ExecuteAndRelease(cmd);
+	CommandsManager::Instance()->ExecuteAndRelease(cmd,
+												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
 	
 	emit ValueChanged();
 }
@@ -674,7 +676,7 @@ ParticleTimeLineWidget::SetPointValueDlg::SetPointValueDlg(float32 value, float3
 	QVBoxLayout* mainBox = new QVBoxLayout;
 	setLayout(mainBox);
 	
-	valueSpin = new QDoubleSpinBox(this);
+	valueSpin = new EventFilterDoubleSpinBox(this);
 	mainBox->addWidget(valueSpin);
 	
 	QHBoxLayout* btnBox = new QHBoxLayout;

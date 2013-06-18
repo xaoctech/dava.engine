@@ -129,10 +129,14 @@ void Installer::FormatFromSetting(AvailableSoftWare::SoftWareMap& softMap, const
 }
 
 void Installer::FormatFromUpdate(AvailableSoftWare::SoftWareMap& softMap, const AppsConfig::AppMap& update) {
+
+    for(AvailableSoftWare::SoftWareMap::iterator softIt = softMap.begin(); softIt != softMap.end(); softIt++) {
+        if(!update.contains(softIt.key()))
+            softIt = softMap.erase(softIt);
+    }
+
     for (AppsConfig::AppMap::const_iterator appIter = update.begin(); appIter != update.end(); ++appIter) {
-        for (AppsConfig::AppVersion::const_iterator iter = appIter.value().begin();
-             iter != appIter.value().end();
-             ++iter) {
+        for (AppsConfig::AppVersion::const_iterator iter = appIter.value().begin(); iter != appIter.value().end(); ++iter) {
             const AppConfig& appConfig = iter.value();
 
             if (softMap.contains(appConfig.m_Name)) {
@@ -519,7 +523,7 @@ bool Installer::Update(AvailableSoftWare::SoftWareMap softMap, eAppType type, bo
                                              tr("%1 update available.").arg(name),
                                              tr("Install"),
                                              tr("Cancel"))) {
-                if (!Delete(name, type, force)) {
+                if (type != eAppTypeDependencies && !Delete(name, type, force)) {
                     Logger::GetInstance()->AddLog(tr("Error update %1"));
                     return false;
                 }

@@ -14,38 +14,63 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __SCENE_PREVIEW_DIALOG_H__
-#define __SCENE_PREVIEW_DIALOG_H__
+#include "BeastCommandLineTool.h"
 
-#include "DAVAEngine.h"
-#include "../EditorScene.h"
-#include "../SceneEditor/ExtendedDialog.h"
+#include "TexturePacker/CommandLineParser.h"
 
 using namespace DAVA;
 
-
-class ScenePreviewControl;
-class ScenePreviewDialog: public ExtendedDialog
+BeastCommandLineTool::BeastCommandLineTool()
+	:	CommandLineTool()
 {
+	oneFrameCommand = false;
+}
+
+void BeastCommandLineTool::PrintUsage()
+{
+    printf("\n");
+    printf("-beast [-file [file]]\n");
+    printf("\twill beast scene file\n");
+    printf("\t-file - full pathname of scene for beasting \n");
+    printf("\t-format - png, pvr, dxt\n");
     
-public:
-    ScenePreviewDialog();
-    virtual ~ScenePreviewDialog();
+    printf("\n");
+    printf("Samples:\n");
+    printf("-beast -file /Projects/WOT/wot.blitz/DataSource/3d/Maps/karelia/karelia.sc2\n");
+
+}
+
+DAVA::String BeastCommandLineTool::GetCommandLineKey()
+{
+    return "-beast";
+}
+
+bool BeastCommandLineTool::InitializeFromCommandLine()
+{
+    scenePathname = CommandLineParser::GetCommandParam(String("-file"));
+    if(scenePathname.IsEmpty())
+    {
+        errors.insert(String("Incorrect params for beasting of the scene"));
+        return false;
+    }
     
-    void Show(const FilePath &scenePathname);
-    virtual void Close();
+    if(!scenePathname.IsEqualToExtension(".sc2"))
+    {
+        errors.insert(String("Wrong pathname. Need path ot *.sc2"));
+        return false;
+    }
     
-protected:
+    return true;
+}
 
-    virtual const Rect GetDialogRect() const;
-    virtual void UpdateSize();
-    
-    void OnClose(BaseObject *, void *, void *);
+void BeastCommandLineTool::Process()
+{
+    //Do nothing
+}
 
-    ScenePreviewControl *preview;
-    UIStaticText *errorMessage;
-};
+const DAVA::FilePath & BeastCommandLineTool::GetScenePathname() const
+{
+    return scenePathname;
+}
 
 
-
-#endif // __SCENE_PREVIEW_DIALOG_H__
