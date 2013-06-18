@@ -74,6 +74,8 @@ protected:
 
 	virtual void Execute();
 	virtual void Cancel();
+
+	void ApplyImage(Image* image);
 };
 
 #endif // #ifndef __RESOURCE_EDITOR_CUSTOM_COLOR_COMMANDS_H__
