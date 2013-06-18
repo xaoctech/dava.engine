@@ -40,7 +40,7 @@ public:
 	void SetViewportRect(const DAVA::Rect &rect);
 	const DAVA::Rect GetViewportRect();
 
-	void LookAt(DAVA::AABBox3 &box);
+	void LookAt(const DAVA::AABBox3 &box);
 	void MoveTo(const DAVA::Vector3 &pos, const DAVA::Vector3 &direction = DAVA::Vector3());
 
 	DAVA::Vector2 GetScreenPos(const DAVA::Vector3 &pos3);

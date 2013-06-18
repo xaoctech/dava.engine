@@ -157,7 +157,7 @@ DAVA::Vector3 SceneCameraSystem::GetScenePos(const DAVA::float32 x, const DAVA::
 	return ret;
 }
 
-void SceneCameraSystem::LookAt(DAVA::AABBox3 &box)
+void SceneCameraSystem::LookAt(const DAVA::AABBox3 &box)
 {
 	if(NULL != curSceneCamera && !box.IsEmpty())
 	{
