@@ -30,7 +30,7 @@
 #include "SelectionSystem.h"
 #include "ModifSystem.h"
 #include "LandscapeEditorDrawSystem.h"
-#include "../SceneEditorProxy.h"
+#include "../SceneEditor2.h"
 #include "LandscapeEditorDrawSystem/HeightmapProxy.h"
 #include "LandscapeEditorDrawSystem/LandscapeProxy.h"
 #include "LandscapeEditorDrawSystem/CustomColorsProxy.h"
@@ -52,10 +52,10 @@ CustomColorsSystem::CustomColorsSystem(Scene* scene)
 	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.png");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
 	
-	collisionSystem = ((SceneEditorProxy *) GetScene())->collisionSystem;
-	selectionSystem = ((SceneEditorProxy *) GetScene())->selectionSystem;
-	modifSystem = ((SceneEditorProxy *) GetScene())->modifSystem;
-	drawSystem = ((SceneEditorProxy *) GetScene())->landscapeEditorDrawSystem;
+	collisionSystem = ((SceneEditor2 *) GetScene())->collisionSystem;
+	selectionSystem = ((SceneEditor2 *) GetScene())->selectionSystem;
+	modifSystem = ((SceneEditor2 *) GetScene())->modifSystem;
+	drawSystem = ((SceneEditor2 *) GetScene())->landscapeEditorDrawSystem;
 }
 
 CustomColorsSystem::~CustomColorsSystem()
@@ -303,6 +303,6 @@ void CustomColorsSystem::CreateUndoPoint()
 	CommandModifyCustomColors* cmd = new CommandModifyCustomColors(originalImage,
 																   drawSystem->GetCustomColorsProxy(),
 																   GetUpdatedRect());
-	CommandsManager::Instance()->ExecuteAndRelease(cmd);
+	CommandsManager::Instance()->ExecuteAndRelease(cmd, GetScene());
 	SafeRelease(originalImage);
 }

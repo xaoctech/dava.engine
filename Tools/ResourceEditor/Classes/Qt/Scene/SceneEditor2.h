@@ -30,6 +30,11 @@
 #include "Scene/System/HoodSystem.h"
 #include "Scene/System/SelectionSystem.h"
 #include "Scene/System/ModifSystem.h"
+#include "Scene/System/LandscapeEditorDrawSystem.h"
+#include "Scene/System/HeightmapEditorSystem.h"
+#include "Scene/System/TilemaskEditorSystem.h"
+#include "Scene/System/CustomColorsSystem.h"
+#include "Scene/System/VisibilityToolSystem.h"
 
 class SceneEditor2 : public DAVA::Scene
 {

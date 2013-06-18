@@ -30,7 +30,7 @@
 #include "SelectionSystem.h"
 #include "ModifSystem.h"
 #include "LandscapeEditorDrawSystem.h"
-#include "../SceneEditorProxy.h"
+#include "../SceneEditor2.h"
 #include "LandscapeEditorDrawSystem/HeightmapProxy.h"
 #include "LandscapeEditorDrawSystem/LandscapeProxy.h"
 
@@ -56,10 +56,10 @@ TilemaskEditorSystem::TilemaskEditorSystem(Scene* scene)
 	tileMaskEditorShader->LoadFromYaml("~res:/Shaders/Landscape/tilemask-editor.shader");
 	tileMaskEditorShader->Recompile();
 	
-	collisionSystem = ((SceneEditorProxy *) GetScene())->collisionSystem;
-	selectionSystem = ((SceneEditorProxy *) GetScene())->selectionSystem;
-	modifSystem = ((SceneEditorProxy *) GetScene())->modifSystem;
-	drawSystem = ((SceneEditorProxy *) GetScene())->landscapeEditorDrawSystem;
+	collisionSystem = ((SceneEditor2 *) GetScene())->collisionSystem;
+	selectionSystem = ((SceneEditor2 *) GetScene())->selectionSystem;
+	modifSystem = ((SceneEditor2 *) GetScene())->modifSystem;
+	drawSystem = ((SceneEditor2 *) GetScene())->landscapeEditorDrawSystem;
 }
 
 TilemaskEditorSystem::~TilemaskEditorSystem()

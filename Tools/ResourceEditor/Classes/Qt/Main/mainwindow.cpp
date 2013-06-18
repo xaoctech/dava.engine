@@ -550,7 +550,7 @@ void QtMainWindow::UpdateLibraryFileTypes(bool showDAEFiles, bool showSC2Files)
 
 void QtMainWindow::EnableNotPassableNew()
 {
-	SceneEditorProxy* sep = GetCurrentScene();
+	SceneEditor2* sep = GetCurrentScene();
 	if (!sep)
 	{
 		return;
@@ -566,7 +566,7 @@ void QtMainWindow::EnableNotPassableNew()
 	}
 }
 
-SceneEditorProxy* QtMainWindow::GetCurrentScene()
+SceneEditor2* QtMainWindow::GetCurrentScene()
 {
 	return ui->sceneTabWidget->GetCurrentScene();
 }

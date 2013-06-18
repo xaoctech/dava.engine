@@ -19,7 +19,7 @@
 #include "SelectionSystem.h"
 #include "ModifSystem.h"
 #include "LandscapeEditorDrawSystem.h"
-#include "../SceneEditorProxy.h"
+#include "../SceneEditor2.h"
 #include "LandscapeEditorDrawSystem/LandscapeProxy.h"
 #include "LandscapeEditorDrawSystem/HeightmapProxy.h"
 #include "LandscapeEditorDrawSystem/VisibilityToolProxy.h"
@@ -44,10 +44,10 @@ VisibilityToolSystem::VisibilityToolSystem(Scene* scene)
 	crossTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/setPointCursor.png");
 	crossTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
 
-	collisionSystem = ((SceneEditorProxy *) GetScene())->collisionSystem;
-	selectionSystem = ((SceneEditorProxy *) GetScene())->selectionSystem;
-	modifSystem = ((SceneEditorProxy *) GetScene())->modifSystem;
-	drawSystem = ((SceneEditorProxy *) GetScene())->landscapeEditorDrawSystem;
+	collisionSystem = ((SceneEditor2 *) GetScene())->collisionSystem;
+	selectionSystem = ((SceneEditor2 *) GetScene())->selectionSystem;
+	modifSystem = ((SceneEditor2 *) GetScene())->modifSystem;
+	drawSystem = ((SceneEditor2 *) GetScene())->landscapeEditorDrawSystem;
 }
 
 VisibilityToolSystem::~VisibilityToolSystem()
@@ -368,7 +368,7 @@ void VisibilityToolSystem::SetVisibilityPointInternal(const Vector2& point)
 																   sprite,
 																   drawSystem->GetVisibilityToolProxy(),
 																   cursorPosition);
-	CommandsManager::Instance()->ExecuteAndRelease(cmd);
+	CommandsManager::Instance()->ExecuteAndRelease(cmd, GetScene());
 	SafeRelease(originalImage);
 
 	SafeRelease(sprite);
@@ -402,7 +402,7 @@ void VisibilityToolSystem::SetVisibilityAreaInternal()
 		CommandSetVisibilityArea* cmd = new CommandSetVisibilityArea(originalImage,
 																	 drawSystem->GetVisibilityToolProxy(),
 																	 GetUpdatedRect());
-		CommandsManager::Instance()->ExecuteAndRelease(cmd);
+		CommandsManager::Instance()->ExecuteAndRelease(cmd, GetScene());
 
 		SafeRelease(originalImage);
 	}
