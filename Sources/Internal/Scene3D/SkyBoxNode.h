@@ -38,6 +38,7 @@ namespace DAVA
 			RenderDataStream* texCoordStream;
 			float32 nonClippingDistance;
 			float32 zOffset;
+			float32 rotation;
 			
 		public:
 			
@@ -46,6 +47,7 @@ namespace DAVA
 			
 			void SetBox(const AABBox3& box);
 			void SetVerticalOffset(float32 verticalOffset);
+			void SetRotation(float32 angle);
 			
 			virtual void Draw(DAVA::Camera * camera);
 		};
@@ -57,6 +59,7 @@ namespace DAVA
 		SkyBoxRenderBatch* renderBatch;
 		Material* skyBoxMaterial;
 		float32 zShift;
+		float32 rotationAngle;
 		
 	private:
 		
@@ -78,12 +81,14 @@ namespace DAVA
 		FilePath GetTexture();
 		void SetVerticalOffset(const float32& verticalOffset);
 		float32 GetVerticalOffset();
+		void SetRotationAngle(const float32& rotation);
+		float32 GetRotationAngle();
 
 		
 		INTROSPECTION_EXTEND(SkyBoxNode, Entity,
 							 PROPERTY("texture", "Texture Path", GetTexture, SetTexture, I_SAVE | I_VIEW | I_EDIT)
 							 PROPERTY("verticalOffset", "Vertical Offset", GetVerticalOffset, SetVerticalOffset, I_SAVE | I_VIEW | I_EDIT)
-							 );
+							 PROPERTY("rotationAngle", "Rotation", GetRotationAngle, SetRotationAngle, I_SAVE | I_VIEW | I_EDIT));
 
 	};
 };
