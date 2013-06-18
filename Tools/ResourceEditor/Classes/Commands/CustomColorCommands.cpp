@@ -132,9 +132,14 @@ CommandModifyCustomColors::CommandModifyCustomColors(Image* originalImage,
 	commandName = "Custom Color Draw";
 
 	this->updatedRect = updatedRect;
-	this->undoImage = SafeRetain(originalImage);
-	this->redoImage = customColorsProxy->GetSprite()->GetTexture()->CreateImageFromMemory();
 	this->customColorsProxy = SafeRetain(customColorsProxy);
+
+	Image* currentImage = customColorsProxy->GetSprite()->GetTexture()->CreateImageFromMemory();
+
+	undoImage = Image::CopyImageRegion(originalImage, updatedRect);
+	redoImage = Image::CopyImageRegion(currentImage, updatedRect);
+
+	SafeRelease(currentImage);
 }
 
 CommandModifyCustomColors::~CommandModifyCustomColors()
@@ -146,36 +151,31 @@ CommandModifyCustomColors::~CommandModifyCustomColors()
 
 void CommandModifyCustomColors::Execute()
 {
-	Texture* texture = Texture::CreateFromData(redoImage->GetPixelFormat(),
-										   redoImage->GetData(),
-										   redoImage->GetWidth(),
-										   redoImage->GetHeight(),
-										   false);
-	Sprite* sprite = Sprite::CreateFromTexture(texture, updatedRect.x, updatedRect.y, updatedRect.dx, updatedRect.dy);
-
-	RenderManager::Instance()->SetRenderTarget(customColorsProxy->GetSprite());
-	sprite->SetPosition(updatedRect.GetPosition());
-	sprite->Draw();
-	RenderManager::Instance()->RestoreRenderTarget();
-
-	customColorsProxy->UpdateRect(updatedRect);
-
-	SafeRelease(sprite);
-	SafeRelease(texture);
+	ApplyImage(redoImage);
 }
 
 void CommandModifyCustomColors::Cancel()
 {
-	Texture* texture = Texture::CreateFromData(undoImage->GetPixelFormat(),
-											   undoImage->GetData(),
-											   undoImage->GetWidth(),
-											   undoImage->GetHeight(),
-											   false);
-	Sprite* sprite = Sprite::CreateFromTexture(texture, updatedRect.x, updatedRect.y, updatedRect.dx, updatedRect.dy);
+	ApplyImage(undoImage);
+}
 
-	RenderManager::Instance()->SetRenderTarget(customColorsProxy->GetSprite());
-	sprite->SetPosition(updatedRect.GetPosition());
+void CommandModifyCustomColors::ApplyImage(DAVA::Image *image)
+{
+	Sprite* customColorsSprite = customColorsProxy->GetSprite();
+
+	Texture* texture = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(),
+											   image->GetWidth(), image->GetHeight(), false);
+	Sprite* sprite = Sprite::CreateFromTexture(texture, 0, 0, texture->GetWidth(), texture->GetHeight());
+
+	RenderManager::Instance()->SetRenderTarget(customColorsSprite);
+	RenderManager::Instance()->ClipPush();
+	RenderManager::Instance()->ClipRect(updatedRect);
+
+	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
+	sprite->SetPosition(updatedRect.x, updatedRect.y);
 	sprite->Draw();
+
+	RenderManager::Instance()->ClipPop();
 	RenderManager::Instance()->RestoreRenderTarget();
 
 	customColorsProxy->UpdateRect(updatedRect);
