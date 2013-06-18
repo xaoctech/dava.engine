@@ -164,7 +164,12 @@ namespace DAVA
 
 		if(wasCreated)
 		{
+			RenderManager::Instance()->Lost();
+			RenderResource::SaveAllResourcesToSystemMem();
+			RenderResource::LostAllResources();
+
 			ResizeView(w, h);
+
 			RenderManager::Instance()->Invalidate();
 			RenderResource::InvalidateAllResources();
 		}
@@ -240,10 +245,6 @@ namespace DAVA
 	void CorePlatformAndroid::StopForeground(bool isLock)
 	{
 		Logger::Debug("[CorePlatformAndroid::StopForeground]");
-
-		RenderManager::Instance()->Lost();
-		RenderResource::SaveAllResourcesToSystemMem();
-		RenderResource::LostAllResources();
 
 		DAVA::Core::Instance()->GoBackground(isLock);
 
