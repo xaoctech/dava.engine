@@ -331,6 +331,7 @@
     <ClCompile Include="Classes\Collada\ColladaSceneNode.cpp" />
     <ClCompile Include="Classes\Collada\ColladaSceneNodeAnimation.cpp" />
     <ClCompile Include="Classes\Collada\ColladaTexture.cpp" />
+    <ClCompile Include="Classes\CommandLine\Beast\BeastCommandLineTool.cpp" />
     <ClCompile Include="Classes\CommandLine\CommandLineManager.cpp" />
     <ClCompile Include="Classes\CommandLine\CommandLineTool.cpp" />
     <ClCompile Include="Classes\CommandLine\ImageSplitter\ImageSplitter.cpp" />
@@ -341,6 +342,11 @@
     <ClCompile Include="Classes\CommandLine\SceneSaver\SceneSaverTool.cpp" />
     <ClCompile Include="Classes\CommandLine\SceneUtils\CleanFolderTool.cpp" />
     <ClCompile Include="Classes\CommandLine\SceneUtils\SceneUtils.cpp" />
+    <ClCompile Include="Classes\Commands2\Command2.cpp" />
+    <ClCompile Include="Classes\Commands2\CommandBatch.cpp" />
+    <ClCompile Include="Classes\Commands2\CommandNotify.cpp" />
+    <ClCompile Include="Classes\Commands2\CommandStack.cpp" />
+    <ClCompile Include="Classes\Commands2\TransformCommand.cpp" />
     <ClCompile Include="Classes\Commands\Command.cpp" />
     <ClCompile Include="Classes\Commands\CommandCreateNode.cpp" />
     <ClCompile Include="Classes\Commands\CommandReloadTextures.cpp" />
@@ -370,6 +376,7 @@
     <ClCompile Include="Classes\LandscapeEditor\NotPassableTerrain.cpp" />
     <ClCompile Include="Classes\LandscapeEditor\RulerToolLandscape.cpp" />
     <ClCompile Include="Classes\LightmapsPacker.cpp" />
+    <ClCompile Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorNodeNameHelper.cpp" />
     <ClCompile Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSceneDataHelper.cpp" />
     <ClCompile Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSceneModelHelper.cpp" />
     <ClCompile Include="Classes\ParticlesEditorQT\Nodes\BaseParticleEditorNode.cpp" />
@@ -380,6 +387,7 @@
     <ClCompile Include="Classes\ParticlesEditorQT\Nodes\InnerEmitterParticleEditorNode.cpp" />
     <ClCompile Include="Classes\ParticlesEditorQT\Nodes\LayerParticleEditorNode.cpp" />
     <ClCompile Include="Classes\Qt\Commands\CommandSignals.cpp" />
+    <ClCompile Include="Classes\Qt\CustomControls\EventFilterDoubleSpinBox.cpp" />
     <ClCompile Include="Classes\Qt\DockConsole\Console.cpp" />
     <ClCompile Include="Classes\Qt\DockConsole\ConsoleView.cpp" />
     <ClCompile Include="Classes\Qt\DockCustomColorsEditor\CustomColorsPropertiesView.cpp" />
@@ -426,7 +434,6 @@
     <ClCompile Include="Classes\Qt\Main\ModificationWidget.cpp" />
     <ClCompile Include="Classes\Qt\Main\QtMainWindowHandler.cpp" />
     <ClCompile Include="Classes\Qt\Main\QtUtils.cpp" />
-    <ClCompile Include="Classes\Qt\Main\ScenePreviewDialog.cpp" />
     <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialBrowser.cpp" />
     <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialTree.cpp" />
     <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialTreeItem.cpp" />
@@ -450,7 +457,7 @@
     <ClCompile Include="Classes\Qt\Scene\EntityGroup.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneData.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneDataManager.cpp" />
-    <ClCompile Include="Classes\Qt\Scene\SceneEditorProxy.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\SceneEditor2.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneSignals.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneTabWidget.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\CameraSystem.cpp" />
@@ -540,12 +547,12 @@
     <ClCompile Include="Classes\SceneEditor\PropertyList.cpp" />
     <ClCompile Include="Classes\SceneEditor\SceneEditorScreenMain.cpp" />
     <ClCompile Include="Classes\SceneEditor\SceneGraph.cpp" />
-    <ClCompile Include="Classes\SceneEditor\ScenePreviewControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\SceneValidator.cpp" />
     <ClCompile Include="Classes\SceneEditor\SettingsDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\SwitchNodePropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\TextureConverterCell.cpp" />
     <ClCompile Include="Classes\SceneEditor\TextureFormatDialog.cpp" />
+    <ClCompile Include="Classes\SceneEditor\TextureSquarenessChecker.cpp" />
     <ClCompile Include="Classes\SceneEditor\TextureTrianglesDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\UICheckBox.cpp" />
     <ClCompile Include="Classes\SceneEditor\UISliderWithText.cpp" />
@@ -558,6 +565,7 @@
     <ClCompile Include="Classes\UISpriteEditor.cpp" />
     <ClCompile Include="Classes\VertexOctTree.cpp" />
     <ClCompile Include="_GeneratedQt\Commands\CommandSignals_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\CustomControls\EventFilterDoubleSpinBox_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockConsole\ConsoleView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockConsole\Console_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockCustomColorsEditor\CustomColorsPropertiesView_moc.cpp" />
@@ -604,7 +612,6 @@
     <ClCompile Include="_GeneratedQt\Main\QtMainWindowHandler_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\QTreeViewStateHelper_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\QtUtils_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\Main\ScenePreviewDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialBrowser_moc.cpp" />
     <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialTreeItem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialTreeModel_moc.cpp" />
@@ -629,7 +636,7 @@
     <ClCompile Include="_GeneratedQt\Scene\EntityGroup_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\SceneDataManager_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\SceneData_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\Scene\SceneEditorProxy_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Scene\SceneEditor2_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\SceneSignals_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\SceneTabWidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\SceneTypes_moc.cpp" />
@@ -891,6 +898,7 @@
     <ClInclude Include="Classes\Collada\ColladaSceneNodeAnimation.h" />
     <ClInclude Include="Classes\Collada\ColladaTexture.h" />
     <ClInclude Include="Classes\Collada\stdafx.h" />
+    <ClInclude Include="Classes\CommandLine\Beast\BeastCommandLineTool.h" />
     <ClInclude Include="Classes\CommandLine\CommandLineManager.h" />
     <ClInclude Include="Classes\CommandLine\CommandLineTool.h" />
     <ClInclude Include="Classes\CommandLine\ImageSplitter\ImageSplitter.h" />
@@ -901,6 +909,12 @@
     <ClInclude Include="Classes\CommandLine\SceneSaver\SceneSaverTool.h" />
     <ClInclude Include="Classes\CommandLine\SceneUtils\CleanFolderTool.h" />
     <ClInclude Include="Classes\CommandLine\SceneUtils\SceneUtils.h" />
+    <ClInclude Include="Classes\Commands2\Command2.h" />
+    <ClInclude Include="Classes\Commands2\CommandBatch.h" />
+    <ClInclude Include="Classes\Commands2\CommandID.h" />
+    <ClInclude Include="Classes\Commands2\CommandNotify.h" />
+    <ClInclude Include="Classes\Commands2\CommandStack.h" />
+    <ClInclude Include="Classes\Commands2\TransformCommand.h" />
     <ClInclude Include="Classes\Commands\Command.h" />
     <ClInclude Include="Classes\Commands\CommandCreateNode.h" />
     <ClInclude Include="Classes\Commands\CommandReloadTextures.h" />
@@ -933,6 +947,7 @@
     <ClInclude Include="Classes\LandscapeEditor\RulerToolLandscape.h" />
     <ClInclude Include="Classes\LightmapAtlasingData.h" />
     <ClInclude Include="Classes\LightmapsPacker.h" />
+    <ClInclude Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorNodeNameHelper.h" />
     <ClInclude Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSceneDataHelper.h" />
     <ClInclude Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSceneModelHelper.h" />
     <ClInclude Include="Classes\ParticlesEditorQT\Nodes\BaseParticleEditorNode.h" />
@@ -943,6 +958,7 @@
     <ClInclude Include="Classes\ParticlesEditorQT\Nodes\InnerEmitterParticleEditorNode.h" />
     <ClInclude Include="Classes\ParticlesEditorQT\Nodes\LayerParticleEditorNode.h" />
     <ClInclude Include="Classes\Qt\Commands\CommandSignals.h" />
+    <ClInclude Include="Classes\Qt\CustomControls\EventFilterDoubleSpinBox.h" />
     <ClInclude Include="Classes\Qt\DockConsole\Console.h" />
     <ClInclude Include="Classes\Qt\DockConsole\ConsoleView.h" />
     <ClInclude Include="Classes\Qt\DockCustomColorsEditor\CustomColorsPropertiesView.h" />
@@ -988,7 +1004,6 @@
     <ClInclude Include="Classes\Qt\Main\ModificationWidget.h" />
     <ClInclude Include="Classes\Qt\Main\QtMainWindowHandler.h" />
     <ClInclude Include="Classes\Qt\Main\QtUtils.h" />
-    <ClInclude Include="Classes\Qt\Main\ScenePreviewDialog.h" />
     <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialBrowser.h" />
     <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialTree.h" />
     <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialTreeItem.h" />
@@ -1012,7 +1027,7 @@
     <ClInclude Include="Classes\Qt\Scene\EntityGroup.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneData.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneDataManager.h" />
-    <ClInclude Include="Classes\Qt\Scene\SceneEditorProxy.h" />
+    <ClInclude Include="Classes\Qt\Scene\SceneEditor2.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneSignals.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneTabWidget.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneTypes.h" />
@@ -1106,18 +1121,19 @@
     <ClInclude Include="Classes\SceneEditor\SceneEditorScreenMain.h" />
     <ClInclude Include="Classes\SceneEditor\SceneGraph.h" />
     <ClInclude Include="Classes\SceneEditor\SceneNodeIDs.h" />
-    <ClInclude Include="Classes\SceneEditor\ScenePreviewControl.h" />
     <ClInclude Include="Classes\SceneEditor\SceneValidator.h" />
     <ClInclude Include="Classes\SceneEditor\SettingsDialog.h" />
     <ClInclude Include="Classes\SceneEditor\SwitchNodePropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\TextureConverterCell.h" />
     <ClInclude Include="Classes\SceneEditor\TextureFormatDialog.h" />
+    <ClInclude Include="Classes\SceneEditor\TextureSquarenessChecker.h" />
     <ClInclude Include="Classes\SceneEditor\TextureTrianglesDialog.h" />
     <ClInclude Include="Classes\SceneEditor\UICheckBox.h" />
     <ClInclude Include="Classes\SceneEditor\UISliderWithText.h" />
     <ClInclude Include="Classes\SceneEditor\UIZoomControl.h" />
     <ClInclude Include="Classes\SceneNodeUserData.h" />
     <ClInclude Include="Classes\SpritesPacker.h" />
+    <ClInclude Include="Classes\StringConstants.h" />
     <ClInclude Include="Classes\UIFileTree.h" />
     <ClInclude Include="Classes\UIFileTreeCell.h" />
     <ClInclude Include="Classes\UIScrollView.h" />

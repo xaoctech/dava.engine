@@ -42,7 +42,7 @@ TextureBrowser::TextureBrowser(QWidget *parent)
     : QDialog(parent)
 	, ui(new Ui::TextureBrowser)
 	, curScene(NULL)
-	, curTextureView(DAVA::GPU_POVERVR_IOS)
+	, curTextureView(DAVA::GPU_POWERVR_IOS)
 	, curTexture(NULL)
 	, curDescriptor(NULL)
 {
@@ -96,14 +96,19 @@ TextureBrowser::TextureBrowser(QWidget *parent)
 
 TextureBrowser::~TextureBrowser()
 {
-	TextureConvertor::Instance()->CancelConvert();
-	TextureConvertor::Instance()->WaitConvertedAll();
-	
+	Close();
+
 	posSaver.SaveState(ui->splitterMain);
 
 	delete textureListImagesDelegate;
 	delete textureListModel;
     delete ui;
+}
+
+void TextureBrowser::Close()
+{
+	TextureConvertor::Instance()->CancelConvert();
+	TextureConvertor::Instance()->WaitConvertedAll();
 
 	DAVA::SafeRelease(curScene);
 
@@ -114,7 +119,7 @@ TextureBrowser::~TextureBrowser()
 void TextureBrowser::closeEvent(QCloseEvent * e)
 {
 	QDialog::closeEvent(e);
-	this->deleteLater();
+	Close();
 }
 
 void TextureBrowser::setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor *descriptor)
@@ -245,7 +250,7 @@ void TextureBrowser::updatePropertiesWarning()
 		QString warningText = "";
 
 		if(
-		   ((curDescriptor->compression[GPU_POVERVR_IOS].format == DAVA::FORMAT_PVR4 || curDescriptor->compression[GPU_POVERVR_IOS].format == DAVA::FORMAT_PVR2)   ||
+		   ((curDescriptor->compression[GPU_POWERVR_IOS].format == DAVA::FORMAT_PVR4 || curDescriptor->compression[GPU_POWERVR_IOS].format == DAVA::FORMAT_PVR2)   ||
 		   (curDescriptor->compression[GPU_TEGRA].format >= DAVA::FORMAT_DXT1 && curDescriptor->compression[GPU_TEGRA].format <= DAVA::FORMAT_DXT5NM)) &&
 		   (curTexture->width != curTexture->height))
 		{
@@ -502,10 +507,10 @@ void TextureBrowser::setupTextureViewTabBar()
 	int tabIndex;
 
 	tabIndex = ui->viewTabBar->addTab("PVR iOS");
-	ui->viewTabBar->setTabData(tabIndex, GPU_POVERVR_IOS);
+	ui->viewTabBar->setTabData(tabIndex, GPU_POWERVR_IOS);
 
 	tabIndex = ui->viewTabBar->addTab("PVR Android");
-	ui->viewTabBar->setTabData(tabIndex, GPU_POVERVR_ANDROID);
+	ui->viewTabBar->setTabData(tabIndex, GPU_POWERVR_ANDROID);
 
 	tabIndex = ui->viewTabBar->addTab("Tegra");
 	ui->viewTabBar->setTabData(tabIndex, GPU_TEGRA);

@@ -14,7 +14,7 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "Scene/SceneEditorProxy.h"
+#include "Scene/SceneEditor2.h"
 #include "Scene/System/CameraSystem.h"
 #include "Scene/System/GridSystem.h"
 #include "Scene/System/CollisionSystem.h"
@@ -31,9 +31,11 @@
 // framework
 #include "Scene3D/SceneFileV2.h"
 
-SceneEditorProxy::SceneEditorProxy()
+SceneEditor2::SceneEditor2()
 	: Scene()
 {
+	commandStack.SetNotify(new EditorCommandNotify(this), true);
+
 	cameraSystem = new SceneCameraSystem(this);
 	AddSystem(cameraSystem, 0);
 
@@ -70,12 +72,12 @@ SceneEditorProxy::SceneEditorProxy()
 	SceneSignals::Instance()->EmitOpened(this);
 }
 
-SceneEditorProxy::~SceneEditorProxy()
+SceneEditor2::~SceneEditor2()
 {
 	SceneSignals::Instance()->EmitClosed(this);
 }
 
-bool SceneEditorProxy::Load(const DAVA::FilePath &path)
+bool SceneEditor2::Load(const DAVA::FilePath &path)
 {
 	bool ret = false;
 
@@ -109,7 +111,7 @@ bool SceneEditorProxy::Load(const DAVA::FilePath &path)
 	return ret;
 }
 
-bool SceneEditorProxy::Save(const DAVA::FilePath &path)
+bool SceneEditor2::Save(const DAVA::FilePath &path)
 {
 	bool ret = false;
 
@@ -130,22 +132,57 @@ bool SceneEditorProxy::Save(const DAVA::FilePath &path)
 	return ret;
 }
 
-bool SceneEditorProxy::Save()
+bool SceneEditor2::Save()
 {
 	return Save(curScenePath);
 }
 
-DAVA::FilePath SceneEditorProxy::GetScenePath()
+DAVA::FilePath SceneEditor2::GetScenePath()
 {
 	return curScenePath;
 }
 
-void SceneEditorProxy::SetScenePath(const DAVA::FilePath &newScenePath)
+void SceneEditor2::SetScenePath(const DAVA::FilePath &newScenePath)
 {
 	curScenePath = newScenePath;
 }
 
-void SceneEditorProxy::Update(float timeElapsed)
+bool SceneEditor2::CanUndo() const
+{
+	return commandStack.CanUndo();
+}
+
+bool SceneEditor2::CanRedo() const
+{
+	return commandStack.CanRedo();
+}
+
+void SceneEditor2::Undo()
+{
+	commandStack.Undo();
+}
+
+void SceneEditor2::Redo()
+{
+	commandStack.Redo();
+}
+
+void SceneEditor2::BeginBatch(const DAVA::String &text)
+{
+	commandStack.BeginBatch(text);
+}
+
+void SceneEditor2::EndBatch()
+{
+	commandStack.EndBatch();
+}
+
+void SceneEditor2::Exec(Command2 *command)
+{
+	commandStack.Exec(command);
+}
+
+void SceneEditor2::Update(float timeElapsed)
 {
 	Scene::Update(timeElapsed);
 
@@ -162,7 +199,7 @@ void SceneEditorProxy::Update(float timeElapsed)
 	visibilityToolSystem->Update(timeElapsed);
 }
 
-void SceneEditorProxy::PostUIEvent(DAVA::UIEvent *event)
+void SceneEditor2::PostUIEvent(DAVA::UIEvent *event)
 {
 	gridSystem->ProcessUIEvent(event);
 	cameraSystem->ProcessUIEvent(event);
@@ -176,12 +213,12 @@ void SceneEditorProxy::PostUIEvent(DAVA::UIEvent *event)
 	visibilityToolSystem->ProcessUIEvent(event);
 }
 
-void SceneEditorProxy::SetViewportRect(const DAVA::Rect &newViewportRect)
+void SceneEditor2::SetViewportRect(const DAVA::Rect &newViewportRect)
 {
 	cameraSystem->SetViewportRect(newViewportRect);
 }
 
-void SceneEditorProxy::Draw()
+void SceneEditor2::Draw()
 {
 	Scene::Draw();
 
@@ -191,4 +228,26 @@ void SceneEditorProxy::Draw()
 	selectionSystem->Draw();
 	hoodSystem->Draw();
 	modifSystem->Draw();
+}
+
+void SceneEditor2::EditorCommandProcess(const Command2 *command, bool redo)
+{
+	gridSystem->PropeccCommand(command, redo);
+	cameraSystem->PropeccCommand(command, redo);
+	collisionSystem->PropeccCommand(command, redo);
+	selectionSystem->PropeccCommand(command, redo);
+	hoodSystem->PropeccCommand(command, redo);
+	modifSystem->PropeccCommand(command, redo);
+}
+
+SceneEditor2::EditorCommandNotify::EditorCommandNotify(SceneEditor2 *_editor)
+	: editor(_editor)
+{ }
+
+void SceneEditor2::EditorCommandNotify::Notify(const Command2 *command, bool redo)
+{
+	if(NULL != editor)
+	{
+		editor->EditorCommandProcess(command, redo);
+	}
 }

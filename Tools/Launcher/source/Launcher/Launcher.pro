@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 
-DEFINES += LAUNCER_VER=\\\"0.86\\\"
+DEFINES += LAUNCER_VER=\\\"0.871\\\"
 
 QT       += core gui network webkit
 

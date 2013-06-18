@@ -14,38 +14,25 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __SCENE_PREVIEW_DIALOG_H__
-#define __SCENE_PREVIEW_DIALOG_H__
+#include "EventFilterDoubleSpinBox.h"
 
-#include "DAVAEngine.h"
-#include "../EditorScene.h"
-#include "../SceneEditor/ExtendedDialog.h"
+#include <QKeyEvent>
 
-using namespace DAVA;
-
-
-class ScenePreviewControl;
-class ScenePreviewDialog: public ExtendedDialog
+EventFilterDoubleSpinBox::EventFilterDoubleSpinBox(QWidget *parent) :
+    QDoubleSpinBox(parent)
 {
-    
-public:
-    ScenePreviewDialog();
-    virtual ~ScenePreviewDialog();
-    
-    void Show(const FilePath &scenePathname);
-    virtual void Close();
-    
-protected:
+}
 
-    virtual const Rect GetDialogRect() const;
-    virtual void UpdateSize();
-    
-    void OnClose(BaseObject *, void *, void *);
-
-    ScenePreviewControl *preview;
-    UIStaticText *errorMessage;
-};
-
-
-
-#endif // __SCENE_PREVIEW_DIALOG_H__
+void EventFilterDoubleSpinBox::keyPressEvent(QKeyEvent *event)
+{
+	if (event->key() == Qt::Key_Comma)
+	{
+		// Change comma key event to period key event
+		QKeyEvent *changedKeyEvent = new QKeyEvent(QEvent::KeyPress , Qt::Key_Period, Qt::NoModifier, ".", 0);
+		QDoubleSpinBox::keyPressEvent(changedKeyEvent);
+	}
+	else
+	{
+		QDoubleSpinBox::keyPressEvent(event);
+	}
+}
