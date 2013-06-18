@@ -1191,7 +1191,7 @@ void QtMainWindowHandler::SetHeightmapEditorWidgetsState(bool state)
 void QtMainWindowHandler::ToggleHeightmapEditor()
 {
 	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
-	SceneEditorProxy* sep = window->GetCurrentScene();
+	SceneEditor2* sep = window->GetCurrentScene();
 	if (!sep)
 	{
 		return;
@@ -1229,7 +1229,7 @@ void QtMainWindowHandler::ToggleHeightmapEditor()
 void QtMainWindowHandler::SetHeightmapEditorBrushSize(int brushSize)
 {
 	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
-	SceneEditorProxy* sep = window->GetCurrentScene();
+	SceneEditor2* sep = window->GetCurrentScene();
 	if (!sep)
 	{
 		return;
@@ -1245,7 +1245,7 @@ void QtMainWindowHandler::SetHeightmapEditorToolImage(int imageIndex)
 	if (!s.isEmpty())
 	{
 		QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
-		SceneEditorProxy* sep = window->GetCurrentScene();
+		SceneEditor2* sep = window->GetCurrentScene();
 		if (!sep)
 		{
 			return;
@@ -1303,7 +1303,7 @@ void QtMainWindowHandler::SetHeightmapDrawingType(HeightmapEditorSystem::eHeight
 	heightmapDrawingAbsolute->blockSignals(false);
 
 	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
-	SceneEditorProxy* sep = window->GetCurrentScene();
+	SceneEditor2* sep = window->GetCurrentScene();
 	if (!sep)
 	{
 		return;
@@ -1315,7 +1315,7 @@ void QtMainWindowHandler::SetHeightmapDrawingType(HeightmapEditorSystem::eHeight
 void QtMainWindowHandler::SetHeightmapEditorStrength(int strength)
 {
 	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
-	SceneEditorProxy* sep = window->GetCurrentScene();
+	SceneEditor2* sep = window->GetCurrentScene();
 	if (!sep)
 	{
 		return;
@@ -1327,7 +1327,7 @@ void QtMainWindowHandler::SetHeightmapEditorStrength(int strength)
 void QtMainWindowHandler::SetHeightmapEditorAverageStrength(int averageStrength)
 {
 	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
-	SceneEditorProxy* sep = window->GetCurrentScene();
+	SceneEditor2* sep = window->GetCurrentScene();
 	if (!sep)
 	{
 		return;
@@ -1379,7 +1379,7 @@ void QtMainWindowHandler::SetTilemaskEditorWidgetsState(bool state)
 void QtMainWindowHandler::ToggleTilemaskEditor()
 {
 	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
-	SceneEditorProxy* sep = window->GetCurrentScene();
+	SceneEditor2* sep = window->GetCurrentScene();
 	if (!sep)
 	{
 		return;
@@ -1418,7 +1418,7 @@ void QtMainWindowHandler::ToggleTilemaskEditor()
 void QtMainWindowHandler::UpdateTilemaskTileTextures()
 {
 	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
-	SceneEditorProxy* sep = window->GetCurrentScene();
+	SceneEditor2* sep = window->GetCurrentScene();
 	if (!sep)
 	{
 		return;
@@ -1450,7 +1450,7 @@ void QtMainWindowHandler::UpdateTilemaskTileTextures()
 void QtMainWindowHandler::SetTilemaskEditorBrushSize(int brushSize)
 {
 	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
-	SceneEditorProxy* sep = window->GetCurrentScene();
+	SceneEditor2* sep = window->GetCurrentScene();
 	if (!sep)
 	{
 		return;
@@ -1466,7 +1466,7 @@ void QtMainWindowHandler::SetTilemaskEditorToolImage(int imageIndex)
 	if (!s.isEmpty())
 	{
 		QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
-		SceneEditorProxy* sep = window->GetCurrentScene();
+		SceneEditor2* sep = window->GetCurrentScene();
 		if (!sep)
 		{
 			return;
@@ -1480,7 +1480,7 @@ void QtMainWindowHandler::SetTilemaskEditorToolImage(int imageIndex)
 void QtMainWindowHandler::SetTilemaskEditorStrength(int strength)
 {
 	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
-	SceneEditorProxy* sep = window->GetCurrentScene();
+	SceneEditor2* sep = window->GetCurrentScene();
 	if (!sep)
 	{
 		return;
@@ -1492,7 +1492,7 @@ void QtMainWindowHandler::SetTilemaskEditorStrength(int strength)
 void QtMainWindowHandler::SetTilemaskDrawTexture(int textureIndex)
 {
 	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
-	SceneEditorProxy* sep = window->GetCurrentScene();
+	SceneEditor2* sep = window->GetCurrentScene();
 	if (!sep)
 	{
 		return;
@@ -1544,7 +1544,7 @@ void QtMainWindowHandler::SetCustomColorsEditorWidgetsState(bool state)
 void QtMainWindowHandler::ToggleCustomColorsEditor()
 {
 	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
-	SceneEditorProxy* sep = window->GetCurrentScene();
+	SceneEditor2* sep = window->GetCurrentScene();
 	if (!sep)
 	{
 		return;
@@ -1588,7 +1588,7 @@ void QtMainWindowHandler::LoadCustomColorsTexture()
 void QtMainWindowHandler::SetCustomColorsBrushSize(int brushSize)
 {
 	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
-	SceneEditorProxy* sep = window->GetCurrentScene();
+	SceneEditor2* sep = window->GetCurrentScene();
 	if (!sep)
 	{
 		return;
@@ -1600,7 +1600,7 @@ void QtMainWindowHandler::SetCustomColorsBrushSize(int brushSize)
 void QtMainWindowHandler::SetCustomColorsColor(int colorIndex)
 {
 	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
-	SceneEditorProxy* sep = window->GetCurrentScene();
+	SceneEditor2* sep = window->GetCurrentScene();
 	if (!sep)
 	{
 		return;
@@ -1667,7 +1667,7 @@ void QtMainWindowHandler::SetVisibilityToolButtonsState(bool pointButtonChecked,
 void QtMainWindowHandler::ToggleVisibilityToolEditor()
 {
 	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
-	SceneEditorProxy* sep = window->GetCurrentScene();
+	SceneEditor2* sep = window->GetCurrentScene();
 	if (!sep)
 	{
 		return;
@@ -1706,7 +1706,7 @@ void QtMainWindowHandler::SaveVisibilityToolTexture()
 void QtMainWindowHandler::SetVisibilityToolAreaSize(int size)
 {
 	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
-	SceneEditorProxy* sep = window->GetCurrentScene();
+	SceneEditor2* sep = window->GetCurrentScene();
 	if (!sep)
 	{
 		return;
@@ -1718,7 +1718,7 @@ void QtMainWindowHandler::SetVisibilityToolAreaSize(int size)
 void QtMainWindowHandler::SetVisibilityPoint()
 {
 	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
-	SceneEditorProxy* sep = window->GetCurrentScene();
+	SceneEditor2* sep = window->GetCurrentScene();
 	if (!sep)
 	{
 		return;
@@ -1730,7 +1730,7 @@ void QtMainWindowHandler::SetVisibilityPoint()
 void QtMainWindowHandler::SetVisibilityArea()
 {
 	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
-	SceneEditorProxy* sep = window->GetCurrentScene();
+	SceneEditor2* sep = window->GetCurrentScene();
 	if (!sep)
 	{
 		return;

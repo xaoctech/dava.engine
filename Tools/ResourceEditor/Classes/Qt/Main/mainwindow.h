@@ -36,7 +36,7 @@ public:
     
     virtual bool eventFilter(QObject *, QEvent *);
 
-	SceneEditorProxy* GetCurrentScene();
+	SceneEditor2* GetCurrentScene();
 
 private:
 	void OpenLastProject();
