@@ -49,12 +49,15 @@ public:
 	virtual ~CommandModifyHeightmap();
 
 protected:
-	FilePath undoFilename;
-	FilePath redoFilename;
 	HeightmapProxy* heightmapProxy;
+	uint16* undoRegion;
+	uint16* redoRegion;
 
 	virtual void Execute();
 	virtual void Cancel();
+
+	uint16* GetHeightmapRegion(Heightmap* heightmap);
+	void ApplyHeightmapRegion(uint16* region);
 };
 
 

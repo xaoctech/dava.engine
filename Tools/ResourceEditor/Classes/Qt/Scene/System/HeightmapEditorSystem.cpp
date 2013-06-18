@@ -187,7 +187,9 @@ void HeightmapEditorSystem::UpdateCursorPosition()
 		
 		cursorPosition.x = (point.x - box.min.x) * (landscapeSize - 1) / (box.max.x - box.min.x);
 		cursorPosition.y = (point.y - box.min.y) * (landscapeSize - 1) / (box.max.y - box.min.y);
-		
+		cursorPosition.x = (int32)cursorPosition.x;
+		cursorPosition.y = (int32)cursorPosition.y;
+
 		drawSystem->SetCursorPosition(cursorPosition);
 	}
 }
