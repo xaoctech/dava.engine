@@ -118,6 +118,7 @@ Entity* SceneDataManager::AddScene(const FilePath &scenePathname)
 		sceneData->SetLandscapesControllerScene(scene);
 	}
 
+    sceneData->GetScene()->UpdateCameraLightOnScene();
 	UpdateParticleSprites();
 	emit SceneGraphNeedRebuild();
 
@@ -186,6 +187,8 @@ void SceneDataManager::EditScene(SceneData* sceneData, const FilePath &scenePath
 	scene->Update(0);
 	sceneData->EmitSceneChanged();
 
+
+    scene->UpdateCameraLightOnScene();
 	UpdateParticleSprites();
     emit SceneGraphNeedRebuild();
 
@@ -241,6 +244,8 @@ void SceneDataManager::ReloadScene(const FilePath &scenePathname, const FilePath
         screen->OnReloadRootNodesQt();
     }
     
+    
+    scene->UpdateCameraLightOnScene();
 	UpdateParticleSprites();
     emit SceneGraphNeedRebuild();
 	sceneData->SetLandscapesControllerScene(scene);
@@ -275,6 +280,7 @@ void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const FilePa
             errors.insert(Format("Cannot load object: %s", fromPathname.GetAbsolutePathname().c_str()));
         }
         
+        scene->UpdateCameraLightOnScene();
         return;
     }
     
@@ -778,3 +784,15 @@ void SceneDataManager::ApplyDefaultFogSettings(Landscape* landscape, DAVA::Entit
 		material->SetFogDensity(landscape->GetFogDensity());
 	}
 }
+
+void SceneDataManager::UpdateCameraLightOnScene(bool show)
+{
+ 	List<SceneData *>::const_iterator endIt = scenes.end();
+	for(List<SceneData *>::const_iterator it = scenes.begin(); it != endIt; ++it)
+	{
+        (*it)->GetScene()->UpdateCameraLightOnScene(show);
+	}
+    
+    emit SceneGraphNeedRebuild();
+}
+

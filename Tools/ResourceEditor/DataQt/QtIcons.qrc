@@ -52,5 +52,6 @@
     <file>QtIcons/rulertool.png</file>
     <file>QtIcons/transform_bake.png</file>
     <file>QtIcons/shadow.png</file>
+    <file>QtIcons/light.png</file>
   </qresource>
 </RCC>
