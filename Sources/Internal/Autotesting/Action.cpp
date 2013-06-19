@@ -247,44 +247,21 @@ bool Action::IsInside(UIControl* parent, UIControl* child)
     bool isInside = false;
     if(parent && child)
     {
-        Rect parentRect(parent->GetGeometricData().GetUnrotatedRect());
-        Rect childRect(child->GetGeometricData().GetUnrotatedRect());
+        const Rect &parentRect = parent->GetGeometricData().GetUnrotatedRect();
+        const Rect &childRect = child->GetGeometricData().GetUnrotatedRect();
 
 		if(childRect.dx <= parentRect.dx && childRect.dy <= parentRect.dy)
 		{
-			// can be totally inside parent
-			float32 insidePartX = 1.0f;
-			float32 insidePartY = 1.0f;
-			
-			// for list and cell case we should scroll more on screen
-// 			if(2*childRect.dx <= parentRect.dx)
-// 			{
-// 				insidePartX *= 2;
-// 			}
-// 			if(2*childRect.dy <= parentRect.dy)
-// 			{
-// 				insidePartY *= 2;
-// 			}
-
-			float32 offsetPartX = (1.0f - insidePartX)*0.5f;
-			float32 offsetPartY = (1.0f - insidePartY)*0.5f;
-
-			Rect testInsideRect(childRect.x + offsetPartX*childRect.dx, childRect.y + offsetPartY*childRect.dy, insidePartX*childRect.dx, insidePartY*childRect.dy);
-
-			isInside = ((parentRect.x <= testInsideRect.x) && (testInsideRect.x + testInsideRect.dx <= parentRect.x + parentRect.dx) &&
-            (parentRect.y <= testInsideRect.y) && (testInsideRect.y + testInsideRect.dy <= parentRect.y + parentRect.dy));
+            isInside = ((parentRect.x <= childRect.x) && (childRect.x + childRect.dx <= parentRect.x + parentRect.dx) &&
+                (parentRect.y <= childRect.y) && (childRect.y + childRect.dy <= parentRect.y + parentRect.dy));
 		}
 		else
 		{
 			// check if child center is inside parent rect
 			Vector2 childCenter(childRect.x + childRect.dx/2, childRect.y + childRect.dy/2);
 			isInside = ((parentRect.x <= childCenter.x) && (childCenter.x <= parentRect.x + parentRect.dx) &&
-            (parentRect.y <= childCenter.y) && (childCenter.y <= parentRect.y + parentRect.dy));
+                (parentRect.y <= childCenter.y) && (childCenter.y <= parentRect.y + parentRect.dy));
 		}
-
-
-        //isInside = ((parentRect.x <= childRect.x) && (childRect.x + childRect.dx <= parentRect.x + parentRect.dx) &&
-        //    (parentRect.y <= childRect.y) && (childRect.y + childRect.dy <= parentRect.y + parentRect.dy));
     }
     return isInside;
 }
