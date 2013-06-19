@@ -299,10 +299,14 @@ void CustomColorsSystem::StoreOriginalState()
 
 void CustomColorsSystem::CreateUndoPoint()
 {
-	SceneEditor2* scene = dynamic_cast<SceneEditor2*>(GetScene());
-	DVASSERT(scene);
+	Rect updatedRect = GetUpdatedRect();
+	if (updatedRect.dx > 0 || updatedRect.dy > 0)
+	{
+		SceneEditor2* scene = dynamic_cast<SceneEditor2*>(GetScene());
+		DVASSERT(scene);
 
-	scene->Exec(new ModifyCustomColorsCommand(originalImage, drawSystem->GetCustomColorsProxy(), GetUpdatedRect()));
+		scene->Exec(new ModifyCustomColorsCommand(originalImage, drawSystem->GetCustomColorsProxy(), updatedRect));
+	}
 
 	SafeRelease(originalImage);
 }
