@@ -175,6 +175,10 @@ void QtMainWindow::SetupMainMenu()
     QAction *actionSceneInfo = ui->dockSceneInfo->toggleViewAction();
 	QAction *actionSceneTree = ui->dockSceneTree->toggleViewAction();
 	QAction *actionConsole = ui->dockConsole->toggleViewAction();
+	QAction *actionCustomColors2 = ui->dockCustomColorsEditor->toggleViewAction();
+	QAction *actionVisibilityTool2 = ui->dockVisibilityToolEditor->toggleViewAction();
+	QAction *actionHeightmapEditor2 = ui->dockHeightmapEditor->toggleViewAction();
+	QAction *actionTilemaskEditor2 = ui->dockTilemaskEditor->toggleViewAction();
 
     ui->menuView->addAction(actionSceneInfo);
     ui->menuView->addAction(actionToolBar);
@@ -190,6 +194,10 @@ void QtMainWindow::SetupMainMenu()
 	ui->menuView->addAction(actionSetSwitchIndex);
 	ui->menuView->addAction(actionSceneTree);
 	ui->menuView->addAction(actionConsole);
+	ui->menuView->addAction(actionCustomColors2);
+	ui->menuView->addAction(actionVisibilityTool2);
+	ui->menuView->addAction(actionHeightmapEditor2);
+	ui->menuView->addAction(actionTilemaskEditor2);
 
     ui->menuView->insertSeparator(ui->actionRestoreViews);
     ui->menuView->insertSeparator(actionToolBar);
@@ -200,7 +208,9 @@ void QtMainWindow::SetupMainMenu()
                                        actionSceneGraph,
                                        actionProperties, actionLibrary, actionToolBar,
 									   actionReferences, actionCustomColors, actionVisibilityCheckTool, 
-									   actionParticleEditor, actionHangingObjects, actionSetSwitchIndex, actionSceneInfo);
+									   actionParticleEditor, actionHangingObjects, actionSetSwitchIndex, actionSceneInfo,
+									   actionCustomColors2, actionVisibilityTool2, actionHeightmapEditor2,
+									   actionTilemaskEditor2);
 
 
     ui->dockProperties->hide();
