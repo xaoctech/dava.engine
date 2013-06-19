@@ -46,6 +46,7 @@
 #include "TextureBrowser/TextureConvertor.h"
 #include "../Commands/CommandSignals.h"
 #include "SceneEditor/EntityOwnerPropertyHelper.h"
+#include "StringConstants.h"
 
 #include "../Scene/System/TilemaskEditorSystem.h"
 #include "../Scene/System/HeightmapEditorSystem.h"
@@ -63,6 +64,8 @@
 #include <QStatusBar>
 #include <QSpinBox.h>
 #include <QFileDialog>
+#include <QDesktopServices>
+#include <QUrl>
 
 #include "Render/LibDxtHelper.h"
 
@@ -97,6 +100,8 @@ QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
 	connect(QtMainWindow::Instance(), SIGNAL(RepackAndReloadFinished()), this, SLOT(ReloadSceneTextures()));
 	connect(CommandSignals::Instance(), SIGNAL(CommandAffectsEntities(DAVA::Scene* , CommandList::eCommandId , const DAVA::Set<DAVA::Entity*>& ) ) ,
 			this,SLOT( OnEntityModified(DAVA::Scene* , CommandList::eCommandId , const DAVA::Set<DAVA::Entity*>& ) ));
+    
+    connect(this, SIGNAL(UpdateCameraLightOnScene(bool)), sceneDataManager, SLOT(UpdateCameraLightOnScene(bool)));
 }
 
 QtMainWindowHandler::~QtMainWindowHandler()
@@ -1070,12 +1075,24 @@ void QtMainWindowHandler::UndoAction()
 {
 	CommandsManager::Instance()->Undo(SceneDataManager::Instance()->SceneGetActive()->GetScene());
 	UpdateUndoActionsState();
+
+	SceneEditor2 *curScene = QtMainWindow::Instance()->GetUI()->sceneTabWidget->GetCurrentScene();
+	if(NULL != curScene)
+	{
+		curScene->Undo();
+	}
 }
 
 void QtMainWindowHandler::RedoAction()
 {
 	CommandsManager::Instance()->Redo(SceneDataManager::Instance()->SceneGetActive()->GetScene());
 	UpdateUndoActionsState();
+
+	SceneEditor2 *curScene = QtMainWindow::Instance()->GetUI()->sceneTabWidget->GetCurrentScene();
+	if(NULL != curScene)
+	{
+		curScene->Redo();
+	}
 }
 
 void QtMainWindowHandler::UpdateUndoActionsState()
@@ -1131,10 +1148,10 @@ void QtMainWindowHandler::OnSceneReleased(SceneData *scene)
 	UpdateRecentScenesList();
 }
 
-
 void QtMainWindowHandler::ConvertToShadow()
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandConvertToShadow(),
+    Entity * entity = SceneDataManager::Instance()->SceneGetSelectedNode(SceneDataManager::Instance()->SceneGetActive());
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandConvertToShadow(entity),
 												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
 }
 
@@ -1737,4 +1754,20 @@ void QtMainWindowHandler::SetVisibilityArea()
 	}
 
 	sep->visibilityToolSystem->SetVisibilityArea();
+}
+
+void QtMainWindowHandler::CameraLightTrigerred()
+{
+    bool enabled = EditorSettings::Instance()->GetShowEditorCamerLight();
+    EditorSettings::Instance()->SetShowEditorCamerLight(!enabled);
+    
+    emit UpdateCameraLightOnScene(!enabled);
+}
+
+
+void QtMainWindowHandler::OpenHelp()
+{
+    FilePath docsPath = ResourceEditor::DOCUMENTATION_PATH + "index.html";
+    QString docsFile = QString::fromStdString("file:///" + docsPath.GetAbsolutePathname());
+    QDesktopServices::openUrl(QUrl(docsFile));
 }

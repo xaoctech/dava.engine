@@ -20,6 +20,7 @@
 #include <QObject>
 #include <QDoubleSpinBox>
 #include <QWidget>
+#include <QKeyEvent>
 
 class EventFilterDoubleSpinBox : public QDoubleSpinBox
 {

@@ -35,6 +35,7 @@
 #include "Scene/System/TilemaskEditorSystem.h"
 #include "Scene/System/CustomColorsSystem.h"
 #include "Scene/System/VisibilityToolSystem.h"
+#include "Scene/System/StructureSystem.h"
 
 class SceneEditor2 : public DAVA::Scene
 {
@@ -54,6 +55,7 @@ public:
 	TilemaskEditorSystem* tilemaskEditorSystem;
 	CustomColorsSystem* customColorsSystem;
 	VisibilityToolSystem* visibilityToolSystem;
+	StructureSystem *structureSystem;
 
 	// save/load
 	bool Load(const DAVA::FilePath &path);
