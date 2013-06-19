@@ -91,6 +91,8 @@ QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
 	connect(QtMainWindow::Instance(), SIGNAL(RepackAndReloadFinished()), this, SLOT(ReloadSceneTextures()));
 	connect(CommandSignals::Instance(), SIGNAL(CommandAffectsEntities(DAVA::Scene* , CommandList::eCommandId , const DAVA::Set<DAVA::Entity*>& ) ) ,
 			this,SLOT( OnEntityModified(DAVA::Scene* , CommandList::eCommandId , const DAVA::Set<DAVA::Entity*>& ) ));
+    
+    connect(this, SIGNAL(UpdateCameraLightOnScene(bool)), sceneDataManager, SLOT(UpdateCameraLightOnScene(bool)));
 }
 
 QtMainWindowHandler::~QtMainWindowHandler()
@@ -1131,3 +1133,13 @@ void QtMainWindowHandler::ConvertToShadow()
 	CommandsManager::Instance()->ExecuteAndRelease(new CommandConvertToShadow(),
 												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
 }
+
+void QtMainWindowHandler::CameraLightTrigerred()
+{
+    bool enabled = EditorSettings::Instance()->GetShowEditorCamerLight();
+    EditorSettings::Instance()->SetShowEditorCamerLight(!enabled);
+    
+    emit UpdateCameraLightOnScene(!enabled);
+}
+
+

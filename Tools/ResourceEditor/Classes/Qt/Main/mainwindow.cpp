@@ -145,6 +145,9 @@ void QtMainWindow::SetupActions()
     
 	//Edit
 	connect(ui->actionConvertToShadow, SIGNAL(triggered()), actionHandler, SLOT(ConvertToShadow()));
+    
+    ui->actionEnableCameraLight->setChecked(EditorSettings::Instance()->GetShowEditorCamerLight());
+	connect(ui->actionEnableCameraLight, SIGNAL(triggered()), actionHandler, SLOT(CameraLightTrigerred()));
 }
 
 void QtMainWindow::SetupMainMenu()
