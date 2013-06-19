@@ -68,7 +68,7 @@ public:
     static UIControl* FindControl(UIControl* srcControl, int32 index);
     static UIControl* FindControl(UIList* srcList, int32 index);
     
-    static bool IsInside(UIControl* parent, UIControl* child);
+    static bool IsCenterInside(UIControl* parent, UIControl* child);
     
     // helper for messages
     static String PathToString(const Vector<String>& controlPath);

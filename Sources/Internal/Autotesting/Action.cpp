@@ -220,7 +220,7 @@ UIControl* Action::FindControl(UIList* srcList, int32 index)
             UIListCell* cell = dynamic_cast<UIListCell*>(*it);
             if(cell)
             {
-                if(cell->GetIndex() == index && IsInside(srcList, cell))
+                if(cell->GetIndex() == index && IsCenterInside(srcList, cell))
                 {
                     return cell;
                 }
@@ -242,7 +242,7 @@ Vector2 Action::FindControlPosition(const Vector<String>& controlPath)
     return point;
 }
 
-bool Action::IsInside(UIControl* parent, UIControl* child)
+bool Action::IsCenterInside(UIControl* parent, UIControl* child)
 {
     bool isInside = false;
     if(parent && child)
@@ -250,18 +250,10 @@ bool Action::IsInside(UIControl* parent, UIControl* child)
         const Rect &parentRect = parent->GetGeometricData().GetUnrotatedRect();
         const Rect &childRect = child->GetGeometricData().GetUnrotatedRect();
 
-		if(childRect.dx <= parentRect.dx && childRect.dy <= parentRect.dy)
-		{
-            isInside = ((parentRect.x <= childRect.x) && (childRect.x + childRect.dx <= parentRect.x + parentRect.dx) &&
-                (parentRect.y <= childRect.y) && (childRect.y + childRect.dy <= parentRect.y + parentRect.dy));
-		}
-		else
-		{
-			// check if child center is inside parent rect
-			Vector2 childCenter(childRect.x + childRect.dx/2, childRect.y + childRect.dy/2);
-			isInside = ((parentRect.x <= childCenter.x) && (childCenter.x <= parentRect.x + parentRect.dx) &&
-                (parentRect.y <= childCenter.y) && (childCenter.y <= parentRect.y + parentRect.dy));
-		}
+		// check if child center is inside parent rect
+		isInside = ((parentRect.x <= childRect.x + childRect.dx/2) && (childRect.x + childRect.dx/2 <= parentRect.x + parentRect.dx) &&
+            (parentRect.y <= childRect.y + childRect.dy/2) && (childRect.y + childRect.dy/2 <= parentRect.y + parentRect.dy));
+		
     }
     return isInside;
 }
