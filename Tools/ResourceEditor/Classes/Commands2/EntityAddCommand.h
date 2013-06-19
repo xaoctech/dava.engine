@@ -14,68 +14,24 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __SCENE_SELECTION_SYSTEM_H__
-#define __SCENE_SELECTION_SYSTEM_H__
+#ifndef __ENTITY_ADD_COMMAND_H__
+#define __ENTITY_ADD_COMMAND_H__
 
-#include "Scene/EntityGroup.h"
-#include "Scene/SceneTypes.h"
 #include "Commands2/Command2.h"
 
-// framework
-#include "Entity/SceneSystem.h"
-#include "Scene3D/Entity.h"
-#include "UI/UIEvent.h"
-
-class SceneCollisionSystem;
-class HoodSystem;
-
-class SceneSelectionSystem : public DAVA::SceneSystem
+class EntityAddCommand : public Command2
 {
-	friend class SceneEditor2;
-	friend class EntityModificationSystem;
-
 public:
-	SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSystem *collSys, HoodSystem *hoodSys);
-	~SceneSelectionSystem();
+	EntityAddCommand(DAVA::Entity* entity, DAVA::Entity *parent);
+	~EntityAddCommand();
 
-	void SetSelection(DAVA::Entity *entity);
-	void AddSelection(DAVA::Entity *entity);
-	void RemSelection(DAVA::Entity *entity);
-
-	const EntityGroup* GetSelection() const;
-
-	void SetDrawMode(int mode);
-	int GetDrawMode() const;
-
-	void SetPivotPoint(ST_PivotPoint pp);
-	ST_PivotPoint GetPivotPoint() const;
-
-	DAVA::AABBox3 CalcAABox(DAVA::Entity *entity) const;
+	virtual void Undo();
+	virtual void Redo();
+	virtual DAVA::Entity* GetEntity() const;
 
 protected:
-	void Update(DAVA::float32 timeElapsed);
-	void Draw();
-
-	void ProcessUIEvent(DAVA::UIEvent *event);
-	void PropeccCommand(const Command2 *command, bool redo);
-
-	void UpdateHoodPos() const;
-	void SelectedItemsWereModified();
-
-	EntityGroup GetSelecetableFromCollision(const EntityGroup *collisionEntities);
-	EntityGroupItem GetSelectableEntity(DAVA::Entity* entity);
-
-private:
-	int drawMode;
-	bool applyOnPhaseEnd;
-
-	SceneCollisionSystem *collisionSystem;
-	HoodSystem* hoodSystem;
-
-	EntityGroup curSelections;
-	DAVA::Entity *lastSelection;
-
-	ST_PivotPoint curPivotPoint;
+	DAVA::Entity* entity;
+	DAVA::Entity* parent;
 };
 
-#endif //__SCENE_SELECTION_SYSTEM_H__
+#endif // __ENTITY_ADD_COMMAND_H__

@@ -14,68 +14,82 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __SCENE_SELECTION_SYSTEM_H__
-#define __SCENE_SELECTION_SYSTEM_H__
+#include "Commands2/EntityMoveCommand.h"
 
-#include "Scene/EntityGroup.h"
-#include "Scene/SceneTypes.h"
-#include "Commands2/Command2.h"
-
-// framework
-#include "Entity/SceneSystem.h"
-#include "Scene3D/Entity.h"
-#include "UI/UIEvent.h"
-
-class SceneCollisionSystem;
-class HoodSystem;
-
-class SceneSelectionSystem : public DAVA::SceneSystem
+EntityMoveCommand::EntityMoveCommand(DAVA::Entity* _entity, DAVA::Entity *_newParent, DAVA::Entity *_newBefore /* = NULL */)
+	: Command2(CMDID_ENTITY_MOVE, "Move entity")
+	, entity(_entity)
+	, parent(NULL)
+	, before(NULL)
+	, newParent(_newParent)
+	, newBefore(_newBefore)
 {
-	friend class SceneEditor2;
-	friend class EntityModificationSystem;
+	SafeRetain(entity);
 
-public:
-	SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSystem *collSys, HoodSystem *hoodSys);
-	~SceneSelectionSystem();
+	if(NULL != entity)
+	{
+		parent = entity->GetParent();
 
-	void SetSelection(DAVA::Entity *entity);
-	void AddSelection(DAVA::Entity *entity);
-	void RemSelection(DAVA::Entity *entity);
+		if(NULL != parent)
+		{
+			for (int i = 0; i < parent->GetChildrenCount(); i++)
+			{
+				if(parent->GetChild(i) == entity)
+				{
+					break;
+				}
+				else
+				{
+					before = parent->GetChild(i);
+				}
+			}
+		}
+	}
+}
 
-	const EntityGroup* GetSelection() const;
+EntityMoveCommand::~EntityMoveCommand()
+{
+	SafeRelease(entity);
+}
 
-	void SetDrawMode(int mode);
-	int GetDrawMode() const;
+void EntityMoveCommand::Undo()
+{
+	if(NULL != entity)
+	{
+		if(NULL != parent)
+		{
+			if(NULL != before)
+			{
+				parent->InsertBeforeNode(entity, before);
+			}
+			else
+			{
+				parent->AddNode(entity);
+			}
+		}
+		else
+		{
+			newParent->RemoveNode(entity);
+		}
+	}
+}
 
-	void SetPivotPoint(ST_PivotPoint pp);
-	ST_PivotPoint GetPivotPoint() const;
+void EntityMoveCommand::Redo()
+{
+	if(NULL != entity && NULL != newParent)
+	{
+		if(NULL != newBefore)
+		{
+			newParent->InsertBeforeNode(entity, newBefore);
+		}
+		else
+		{
+			newParent->AddNode(entity);
+		}
+	}
+}
 
-	DAVA::AABBox3 CalcAABox(DAVA::Entity *entity) const;
-
-protected:
-	void Update(DAVA::float32 timeElapsed);
-	void Draw();
-
-	void ProcessUIEvent(DAVA::UIEvent *event);
-	void PropeccCommand(const Command2 *command, bool redo);
-
-	void UpdateHoodPos() const;
-	void SelectedItemsWereModified();
-
-	EntityGroup GetSelecetableFromCollision(const EntityGroup *collisionEntities);
-	EntityGroupItem GetSelectableEntity(DAVA::Entity* entity);
-
-private:
-	int drawMode;
-	bool applyOnPhaseEnd;
-
-	SceneCollisionSystem *collisionSystem;
-	HoodSystem* hoodSystem;
-
-	EntityGroup curSelections;
-	DAVA::Entity *lastSelection;
-
-	ST_PivotPoint curPivotPoint;
-};
-
-#endif //__SCENE_SELECTION_SYSTEM_H__
+DAVA::Entity* EntityMoveCommand::GetEntity() const
+{
+	return entity;
+}

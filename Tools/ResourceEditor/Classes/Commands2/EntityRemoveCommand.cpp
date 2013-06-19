@@ -14,68 +14,66 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __SCENE_SELECTION_SYSTEM_H__
-#define __SCENE_SELECTION_SYSTEM_H__
+#include "Commands2/EntityRemoveCommand.h"
 
-#include "Scene/EntityGroup.h"
-#include "Scene/SceneTypes.h"
-#include "Commands2/Command2.h"
-
-// framework
-#include "Entity/SceneSystem.h"
-#include "Scene3D/Entity.h"
-#include "UI/UIEvent.h"
-
-class SceneCollisionSystem;
-class HoodSystem;
-
-class SceneSelectionSystem : public DAVA::SceneSystem
+EntityRemoveCommand::EntityRemoveCommand(DAVA::Entity* _entity)
+	: Command2(CMDID_ENTITY_REMOVE, "Remove entity")
+	, entity(_entity)
+	, parent(NULL)
+	, before(NULL)
 {
-	friend class SceneEditor2;
-	friend class EntityModificationSystem;
+	SafeRetain(entity);
 
-public:
-	SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSystem *collSys, HoodSystem *hoodSys);
-	~SceneSelectionSystem();
+	if(NULL != entity)
+	{
+		parent = entity->GetParent();
 
-	void SetSelection(DAVA::Entity *entity);
-	void AddSelection(DAVA::Entity *entity);
-	void RemSelection(DAVA::Entity *entity);
+		if(NULL != parent)
+		{
+			for (int i = 0; i < parent->GetChildrenCount(); i++)
+			{
+				if(parent->GetChild(i) == entity)
+				{
+					break;
+				}
+				else
+				{
+					before = parent->GetChild(i);
+				}
+			}
+		}
+	}
+}
 
-	const EntityGroup* GetSelection() const;
+EntityRemoveCommand::~EntityRemoveCommand()
+{
+	SafeRelease(entity);
+}
 
-	void SetDrawMode(int mode);
-	int GetDrawMode() const;
+void EntityRemoveCommand::Undo()
+{
+	if(NULL != entity && NULL != parent)
+	{
+		if(NULL != before)
+		{
+			parent->InsertBeforeNode(entity, before);
+		}
+		else
+		{
+			parent->AddNode(entity);
+		}
+	}
+}
 
-	void SetPivotPoint(ST_PivotPoint pp);
-	ST_PivotPoint GetPivotPoint() const;
+void EntityRemoveCommand::Redo()
+{
+	if(NULL != entity && NULL != parent)
+	{
+		parent->RemoveNode(entity);
+	}
+}
 
-	DAVA::AABBox3 CalcAABox(DAVA::Entity *entity) const;
-
-protected:
-	void Update(DAVA::float32 timeElapsed);
-	void Draw();
-
-	void ProcessUIEvent(DAVA::UIEvent *event);
-	void PropeccCommand(const Command2 *command, bool redo);
-
-	void UpdateHoodPos() const;
-	void SelectedItemsWereModified();
-
-	EntityGroup GetSelecetableFromCollision(const EntityGroup *collisionEntities);
-	EntityGroupItem GetSelectableEntity(DAVA::Entity* entity);
-
-private:
-	int drawMode;
-	bool applyOnPhaseEnd;
-
-	SceneCollisionSystem *collisionSystem;
-	HoodSystem* hoodSystem;
-
-	EntityGroup curSelections;
-	DAVA::Entity *lastSelection;
-
-	ST_PivotPoint curPivotPoint;
-};
-
-#endif //__SCENE_SELECTION_SYSTEM_H__
+DAVA::Entity* EntityRemoveCommand::GetEntity() const
+{
+	return entity;
+}

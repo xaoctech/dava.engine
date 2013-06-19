@@ -14,68 +14,71 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __SCENE_SELECTION_SYSTEM_H__
-#define __SCENE_SELECTION_SYSTEM_H__
+#include "Scene/System/StructureSystem.h"
+#include "Scene/SceneSignals.h"
+#include "Scene/SceneEditor2.h"
 
-#include "Scene/EntityGroup.h"
-#include "Scene/SceneTypes.h"
-#include "Commands2/Command2.h"
+#include "Commands2/EntityAddCommand.h"
+#include "Commands2/EntityInsertCommand.h"
+#include "Commands2/EntityMoveCommand.h"
+#include "Commands2/EntityRemoveCommand.h"
 
-// framework
-#include "Entity/SceneSystem.h"
-#include "Scene3D/Entity.h"
-#include "UI/UIEvent.h"
-
-class SceneCollisionSystem;
-class HoodSystem;
-
-class SceneSelectionSystem : public DAVA::SceneSystem
+StructureSystem::StructureSystem(DAVA::Scene * scene)
+	: DAVA::SceneSystem(scene)
 {
-	friend class SceneEditor2;
-	friend class EntityModificationSystem;
 
-public:
-	SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSystem *collSys, HoodSystem *hoodSys);
-	~SceneSelectionSystem();
+}
 
-	void SetSelection(DAVA::Entity *entity);
-	void AddSelection(DAVA::Entity *entity);
-	void RemSelection(DAVA::Entity *entity);
+StructureSystem::~StructureSystem()
+{
 
-	const EntityGroup* GetSelection() const;
+}
 
-	void SetDrawMode(int mode);
-	int GetDrawMode() const;
+void StructureSystem::Add(DAVA::Entity *entity, DAVA::Entity *parent /*= NULL*/)
+{
 
-	void SetPivotPoint(ST_PivotPoint pp);
-	ST_PivotPoint GetPivotPoint() const;
+}
 
-	DAVA::AABBox3 CalcAABox(DAVA::Entity *entity) const;
+void StructureSystem::Remove(DAVA::Entity *entity)
+{
+	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
+	if(NULL != sceneEditor)
+	{
+		sceneEditor->Exec(new EntityRemoveCommand(entity));
+	}
+}
 
-protected:
-	void Update(DAVA::float32 timeElapsed);
-	void Draw();
+void StructureSystem::Move(DAVA::Entity *entity, DAVA::Entity *newParent)
+{
 
-	void ProcessUIEvent(DAVA::UIEvent *event);
-	void PropeccCommand(const Command2 *command, bool redo);
+}
 
-	void UpdateHoodPos() const;
-	void SelectedItemsWereModified();
+void StructureSystem::Update(DAVA::float32 timeElapsed)
+{
 
-	EntityGroup GetSelecetableFromCollision(const EntityGroup *collisionEntities);
-	EntityGroupItem GetSelectableEntity(DAVA::Entity* entity);
+}
 
-private:
-	int drawMode;
-	bool applyOnPhaseEnd;
+void StructureSystem::Draw()
+{
 
-	SceneCollisionSystem *collisionSystem;
-	HoodSystem* hoodSystem;
+}
 
-	EntityGroup curSelections;
-	DAVA::Entity *lastSelection;
+void StructureSystem::ProcessUIEvent(DAVA::UIEvent *event)
+{
 
-	ST_PivotPoint curPivotPoint;
-};
+}
 
-#endif //__SCENE_SELECTION_SYSTEM_H__
+void StructureSystem::PropeccCommand(const Command2 *command, bool redo)
+{
+
+}
+
+void StructureSystem::AddEntity(DAVA::Entity * entity)
+{
+	SceneSignals::Instance()->EmitAdded((SceneEditor2 *) GetScene(), entity);
+}
+
+void StructureSystem::RemoveEntity(DAVA::Entity * entity)
+{
+	SceneSignals::Instance()->EmitRemoved((SceneEditor2 *) GetScene(), entity);
+}

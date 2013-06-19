@@ -14,68 +14,46 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __SCENE_SELECTION_SYSTEM_H__
-#define __SCENE_SELECTION_SYSTEM_H__
+#include "Commands2/EntityInsertCommand.h"
 
-#include "Scene/EntityGroup.h"
-#include "Scene/SceneTypes.h"
-#include "Commands2/Command2.h"
-
-// framework
-#include "Entity/SceneSystem.h"
-#include "Scene3D/Entity.h"
-#include "UI/UIEvent.h"
-
-class SceneCollisionSystem;
-class HoodSystem;
-
-class SceneSelectionSystem : public DAVA::SceneSystem
+EntityInsertCommand::EntityInsertCommand(DAVA::Entity* _entity, DAVA::Entity *_parent, DAVA::Entity *_before)
+	: Command2(CMDID_ENTITY_INSERT, "Insert entity")
+	, entity(_entity)
+	, parent(_parent)
+	, before(_before)
 {
-	friend class SceneEditor2;
-	friend class EntityModificationSystem;
+	SafeRetain(entity);
+}
 
-public:
-	SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSystem *collSys, HoodSystem *hoodSys);
-	~SceneSelectionSystem();
+EntityInsertCommand::~EntityInsertCommand()
+{
+	SafeRelease(entity);
+}
 
-	void SetSelection(DAVA::Entity *entity);
-	void AddSelection(DAVA::Entity *entity);
-	void RemSelection(DAVA::Entity *entity);
+void EntityInsertCommand::Undo()
+{
+	if(NULL != entity && NULL != parent)
+	{
+		parent->RemoveNode(entity);
+	}
+}
 
-	const EntityGroup* GetSelection() const;
+void EntityInsertCommand::Redo()
+{
+	if(NULL != entity && NULL != parent)
+	{
+		if(NULL != before)
+		{
+			parent->InsertBeforeNode(entity, before);
+		}
+		else
+		{
+			parent->AddNode(entity);
+		}
+	}
+}
 
-	void SetDrawMode(int mode);
-	int GetDrawMode() const;
-
-	void SetPivotPoint(ST_PivotPoint pp);
-	ST_PivotPoint GetPivotPoint() const;
-
-	DAVA::AABBox3 CalcAABox(DAVA::Entity *entity) const;
-
-protected:
-	void Update(DAVA::float32 timeElapsed);
-	void Draw();
-
-	void ProcessUIEvent(DAVA::UIEvent *event);
-	void PropeccCommand(const Command2 *command, bool redo);
-
-	void UpdateHoodPos() const;
-	void SelectedItemsWereModified();
-
-	EntityGroup GetSelecetableFromCollision(const EntityGroup *collisionEntities);
-	EntityGroupItem GetSelectableEntity(DAVA::Entity* entity);
-
-private:
-	int drawMode;
-	bool applyOnPhaseEnd;
-
-	SceneCollisionSystem *collisionSystem;
-	HoodSystem* hoodSystem;
-
-	EntityGroup curSelections;
-	DAVA::Entity *lastSelection;
-
-	ST_PivotPoint curPivotPoint;
-};
-
-#endif //__SCENE_SELECTION_SYSTEM_H__
+DAVA::Entity* EntityInsertCommand::GetEntity() const
+{
+	return entity;
+}
