@@ -29,6 +29,9 @@
 		177D1A9316CB8C820021104B /* PropertyEditorStateHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 177D1A9116CB8C820021104B /* PropertyEditorStateHelper.cpp */; };
 		178A9B721716E584006BB1F7 /* ParticleEffectPropertiesWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 178A9B701716E583006BB1F7 /* ParticleEffectPropertiesWidget.cpp */; };
 		178A9B771716EB8F006BB1F7 /* ParticleEffectPropertiesWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 178A9B761716EB8F006BB1F7 /* ParticleEffectPropertiesWidget_moc.cpp */; };
+		491F6254177091B800F8A0B1 /* CustomColorsCommands2.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 491F6252177091B700F8A0B1 /* CustomColorsCommands2.cpp */; };
+		491F625E17719BEF00F8A0B1 /* VisibilityToolActions.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 491F625C17719BEE00F8A0B1 /* VisibilityToolActions.cpp */; };
+		491F62611771C07B00F8A0B1 /* HeightmapEditorCommands2.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 491F625F1771C07A00F8A0B1 /* HeightmapEditorCommands2.cpp */; };
 		49372E4B17608F2B00B8FEE2 /* TilemaskEditorPropertiesView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49372E4917608F2B00B8FEE2 /* TilemaskEditorPropertiesView.cpp */; };
 		49372E4E17608F3800B8FEE2 /* HeightmapEditorPropertiesView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49372E4C17608F3800B8FEE2 /* HeightmapEditorPropertiesView.cpp */; };
 		49372E5117608F4400B8FEE2 /* CustomColorsPropertiesView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49372E4F17608F4400B8FEE2 /* CustomColorsPropertiesView.cpp */; };
@@ -507,13 +510,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		49372E4417608BF800B8FEE2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E8BD1EF616DE40E300499E18 /* Framework.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 176DEB77174B5561007A983B;
-			remoteInfo = FrameworkNPAPI;
-		};
 		5C7F49FF15B44F6E0038AF3A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5C7F49F815B44F6D0038AF3A /* FCollada.xcodeproj */;
@@ -595,6 +591,12 @@
 		2A689518AF9C22C7AA97C9EF /* ogg_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = ogg_macos; path = ../../Libs/libs/libogg_macos.a; sourceTree = "<group>"; };
 		336CB11D929F5E35FA69020F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		419FFB6CDDEB353FF0A4F469 /* QtCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtCore.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework"; sourceTree = "<absolute>"; };
+		491F6252177091B700F8A0B1 /* CustomColorsCommands2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CustomColorsCommands2.cpp; sourceTree = "<group>"; };
+		491F6253177091B800F8A0B1 /* CustomColorsCommands2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomColorsCommands2.h; sourceTree = "<group>"; };
+		491F625C17719BEE00F8A0B1 /* VisibilityToolActions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VisibilityToolActions.cpp; sourceTree = "<group>"; };
+		491F625D17719BEF00F8A0B1 /* VisibilityToolActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisibilityToolActions.h; sourceTree = "<group>"; };
+		491F625F1771C07A00F8A0B1 /* HeightmapEditorCommands2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HeightmapEditorCommands2.cpp; sourceTree = "<group>"; };
+		491F62601771C07B00F8A0B1 /* HeightmapEditorCommands2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HeightmapEditorCommands2.h; sourceTree = "<group>"; };
 		49372E4917608F2B00B8FEE2 /* TilemaskEditorPropertiesView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TilemaskEditorPropertiesView.cpp; path = Classes/Qt/DockTilemaskEditor/TilemaskEditorPropertiesView.cpp; sourceTree = "<group>"; };
 		49372E4A17608F2B00B8FEE2 /* TilemaskEditorPropertiesView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TilemaskEditorPropertiesView.h; path = Classes/Qt/DockTilemaskEditor/TilemaskEditorPropertiesView.h; sourceTree = "<group>"; };
 		49372E4C17608F3800B8FEE2 /* HeightmapEditorPropertiesView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HeightmapEditorPropertiesView.cpp; path = Classes/Qt/DockHeightmapEditor/HeightmapEditorPropertiesView.cpp; sourceTree = "<group>"; };
@@ -1838,6 +1840,12 @@
 				4FFE5C7F176B37B600728624 /* CommandStack.h */,
 				4FFE5C80176B37B600728624 /* TransformCommand.cpp */,
 				4FFE5C81176B37B600728624 /* TransformCommand.h */,
+				491F6252177091B700F8A0B1 /* CustomColorsCommands2.cpp */,
+				491F6253177091B800F8A0B1 /* CustomColorsCommands2.h */,
+				491F625C17719BEE00F8A0B1 /* VisibilityToolActions.cpp */,
+				491F625D17719BEF00F8A0B1 /* VisibilityToolActions.h */,
+				491F625F1771C07A00F8A0B1 /* HeightmapEditorCommands2.cpp */,
+				491F62601771C07B00F8A0B1 /* HeightmapEditorCommands2.h */,
 			);
 			name = Commands2;
 			path = Classes/Commands2;
@@ -3553,13 +3561,6 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		49372E4517608BF800B8FEE2 /* libFrameworkNPAPI.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libFrameworkNPAPI.a;
-			remoteRef = 49372E4417608BF800B8FEE2 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		5C7F4A0015B44F6E0038AF3A /* libFColladaS.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -4117,6 +4118,9 @@
 				4FFE5C9D1770C08600728624 /* EntityMoveCommand.cpp in Build Sources */,
 				4FFE5C9E1770C08600728624 /* EntityRemoveCommand.cpp in Build Sources */,
 				49F26F1E1771D67D008012B5 /* CommandAction.cpp in Build Sources */,
+				491F6254177091B800F8A0B1 /* CustomColorsCommands2.cpp in Build Sources */,
+				491F625E17719BEF00F8A0B1 /* VisibilityToolActions.cpp in Build Sources */,
+				491F62611771C07B00F8A0B1 /* HeightmapEditorCommands2.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

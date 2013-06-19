@@ -34,8 +34,7 @@
 #include "../SceneSignals.h"
 #include "LandscapeEditorDrawSystem/HeightmapProxy.h"
 #include "LandscapeEditorDrawSystem/LandscapeProxy.h"
-#include "Commands/CommandsManager.h"
-#include "Commands/HeightmapEditorCommands.h"
+#include "../../../Commands2/HeightmapEditorCommands2.h"
 
 const float32 HeightmapEditorSystem::MAX_STRENGTH = 30.f;
 
@@ -341,11 +340,12 @@ void HeightmapEditorSystem::StoreOriginalHeightmap()
 
 void HeightmapEditorSystem::CreateUndoPoint()
 {
-	CommandModifyHeightmap* cmd = new CommandModifyHeightmap(drawSystem->GetHeightmapProxy(),
-															 originalHeightmap,
-															 GetUpdatedRect());
-	CommandsManager::Instance()->ExecuteAndRelease(cmd, GetScene());
-	
+	SceneEditor2* scene = dynamic_cast<SceneEditor2*>(GetScene());
+	DVASSERT(scene);
+	scene->Exec(new ModifyHeightmapCommand(drawSystem->GetHeightmapProxy(),
+										   originalHeightmap,
+										   GetUpdatedRect()));
+
 	SafeRelease(originalHeightmap);
 }
 
