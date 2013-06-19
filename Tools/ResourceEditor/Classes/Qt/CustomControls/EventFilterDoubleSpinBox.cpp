@@ -16,7 +16,8 @@
 
 #include "EventFilterDoubleSpinBox.h"
 
-#include <QKeyEvent>
+#include <QChar>
+#include <QLocale>
 
 EventFilterDoubleSpinBox::EventFilterDoubleSpinBox(QWidget *parent) :
     QDoubleSpinBox(parent)
@@ -25,14 +26,21 @@ EventFilterDoubleSpinBox::EventFilterDoubleSpinBox(QWidget *parent) :
 
 void EventFilterDoubleSpinBox::keyPressEvent(QKeyEvent *event)
 {
-	if (event->key() == Qt::Key_Comma)
+	QKeyEvent *changedKeyEvent = NULL;
+	// Get decimal point specific to current system
+	QChar decimalPoint = QLocale().decimalPoint();
+
+	if (event->key() == Qt::Key_Comma && decimalPoint.toAscii() == Qt::Key_Period)
 	{
 		// Change comma key event to period key event
-		QKeyEvent *changedKeyEvent = new QKeyEvent(QEvent::KeyPress , Qt::Key_Period, Qt::NoModifier, ".", 0);
-		QDoubleSpinBox::keyPressEvent(changedKeyEvent);
+		changedKeyEvent = new QKeyEvent(QEvent::KeyPress , Qt::Key_Period, Qt::NoModifier, decimalPoint, 0);
 	}
-	else
+	else if (event->key() == Qt::Key_Period && decimalPoint.toAscii() == Qt::Key_Comma)
 	{
-		QDoubleSpinBox::keyPressEvent(event);
+		// Change period key event to comma key event
+		changedKeyEvent = new QKeyEvent(QEvent::KeyPress , Qt::Key_Comma, Qt::NoModifier, decimalPoint, 0);
 	}
+	
+	// Default behaviour
+	QDoubleSpinBox::keyPressEvent(changedKeyEvent ? changedKeyEvent : event);	
 }
