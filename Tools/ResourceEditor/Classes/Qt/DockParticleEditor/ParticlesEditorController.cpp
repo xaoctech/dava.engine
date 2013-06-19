@@ -17,6 +17,8 @@
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "ParticlesEditorQT/Helpers/ParticlesEditorNodeNameHelper.h"
 
+#include "../StringConstants.h"
+
 using namespace DAVA;
 
 #define LIFETIME_FOR_NEW_PARTICLE_EMITTER 4.0f
@@ -284,7 +286,8 @@ LayerParticleEditorNode* ParticlesEditorController::AddParticleLayerToNode(Emitt
 	layer->startTime = 0;
     layer->endTime = LIFETIME_FOR_NEW_PARTICLE_EMITTER;
 	layer->life = new PropertyLineValue<float32>(emitter->GetLifeTime());
-    layer->layerName = ParticlesEditorNodeNameHelper::GetNewLayerName(String("Layer"), emitter);
+
+    layer->layerName = ParticlesEditorNodeNameHelper::GetNewLayerName(ResourceEditor::LAYER_NODE_NAME, emitter);
 
     emitter->AddLayer(layer);
 

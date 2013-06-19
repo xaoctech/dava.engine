@@ -97,6 +97,10 @@ public:
 	void SetAreaButtonStateVisibilityTool(bool state);
 
 	void UpdateUndoActionsState();
+    
+    bool SaveScene(Scene *scene);
+	bool SaveScene(Scene *scene, const FilePath &pathname);
+
 
 	void EnableSkyboxMenuItem(bool isEnabled);
 
@@ -110,9 +114,11 @@ public slots:
     void OpenScene();
     void OpenProject();
     void OpenResentScene(DAVA::int32 index);
-    void SaveScene();
+
+	bool SaveScene();
     void ExportMenuTriggered(QAction *exportAsAction);
-    void SaveToFolderWithChilds();
+
+	void SaveToFolderWithChilds();
 
 	//Edit
 	void UndoAction();
@@ -130,12 +136,16 @@ public slots:
     void RulerTool();
     void ShowSettings();
     void Beast();
-    
+    void SquareTextures();
+
     //ViewOptions
     void MenuViewOptionsWillShow();
     void ToggleNotPassableTerrain();
     void ReloadMenuTriggered(QAction *reloadAsAction);
     
+    //Help
+    void OpenHelp();
+
     //scene graph
     void RefreshSceneGraph();
     
@@ -187,8 +197,12 @@ public slots:
 
 	void OnEntityModified(DAVA::Scene* scene, CommandList::eCommandId id, const DAVA::Set<DAVA::Entity*>& affectedEntities);
 
+    void CameraLightTrigerred();
+
+    
 signals:
 	void ProjectChanged();
+    void UpdateCameraLightOnScene(bool show);
 
 private:
     //create node
@@ -201,6 +215,10 @@ private:
     void ClearActions(int32 count, QAction **actions);
 
 	void UpdateModificationActions();
+    
+	void SaveParticleEmitterNodes(Scene* scene);
+	void SaveParticleEmitterNodeRecursive(Entity* parentNode);
+
 
 	// This method is called after each action is executed and responsible
 	// for enabling/disabling appropriate menu items depending on actions.
