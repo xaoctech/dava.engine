@@ -393,6 +393,16 @@ KeyedArchive *AutotestingSystem::FindOrInsertTestArchive(MongodbUpdateObject* db
     {
         dbUpdateObject->SetObjectName(testsName);
         Logger::Debug("AutotestingSystem::FindOrInsertTestArchive new MongodbUpdateObject");
+
+		dbUpdateObject->LoadData();
+
+		KeyedArchive* dbUpdateData = dbUpdateObject->GetData();
+
+		dbUpdateData->SetString("Platform", AUTOTESTING_PLATFORM_NAME);
+		dbUpdateData->SetString("Date", Format("%u", testsDate));
+		dbUpdateData->SetString("Group", groupName);
+
+		SaveToDB(dbUpdateObject);
     }
     dbUpdateObject->LoadData();
     
@@ -410,6 +420,9 @@ KeyedArchive *AutotestingSystem::FindOrInsertTestArchive(MongodbUpdateObject* db
         
         currentTestArchive->SetString("Name", testName);
         currentTestArchive->SetString("FileName", testFileName);
+		//currentTestArchive->SetString("Platform", AUTOTESTING_PLATFORM_NAME);
+		//currentTestArchive->SetString("Date", Format("%u", testsDate));
+		//currentTestArchive->SetString("Group", groupName);
         
         dbUpdateData->SetArchive(testId, currentTestArchive);
         Logger::Debug("AutotestingSystem::FindOrInsertTestArchive new %s", testId.c_str());
@@ -434,15 +447,29 @@ KeyedArchive *AutotestingSystem::InsertTestArchive(MongodbUpdateObject* dbUpdate
 	{
 		dbUpdateObject->SetObjectName(testsName);
 		Logger::Debug("AutotestingSystem::InsertTestArchive new MongodbUpdateObject");
+		dbUpdateObject->LoadData();
+
+		KeyedArchive* dbUpdateData = dbUpdateObject->GetData();
+
+		dbUpdateData->SetString("Platform", AUTOTESTING_PLATFORM_NAME);
+		dbUpdateData->SetString("Date", Format("%u", testsDate));
+		dbUpdateData->SetString("Group", groupName);
+
+		SaveToDB(dbUpdateObject);
 	}
 	dbUpdateObject->LoadData();
 
 	KeyedArchive* dbUpdateData = dbUpdateObject->GetData();
 
+	//dbUpdateData->SetString("Platform", AUTOTESTING_PLATFORM_NAME);
+	//dbUpdateData->SetString("Date", Format("%u", testsDate));
+	//dbUpdateData->SetString("Group", groupName);
+
 	currentTestArchive = new KeyedArchive();
 
 	currentTestArchive->SetString("Name", testName);
 	currentTestArchive->SetString("FileName", testFileName);
+	
 	currentTestArchive->SetBool("Success", false);
 
 	KeyedArchive* stepsArchive = new KeyedArchive();
