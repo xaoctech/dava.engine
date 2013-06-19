@@ -34,9 +34,8 @@
 #include "LandscapeEditorDrawSystem/HeightmapProxy.h"
 #include "LandscapeEditorDrawSystem/LandscapeProxy.h"
 #include "LandscapeEditorDrawSystem/CustomColorsProxy.h"
-#include "Commands/CommandsManager.h"
-#include "Commands/CustomColorCommands.h"
 #include "../SceneEditor/EditorConfig.h"
+#include "../../../Commands2/CustomColorsCommands2.h"
 
 CustomColorsSystem::CustomColorsSystem(Scene* scene)
 :	SceneSystem(scene)
@@ -300,9 +299,10 @@ void CustomColorsSystem::StoreOriginalState()
 
 void CustomColorsSystem::CreateUndoPoint()
 {
-	CommandModifyCustomColors* cmd = new CommandModifyCustomColors(originalImage,
-																   drawSystem->GetCustomColorsProxy(),
-																   GetUpdatedRect());
-	CommandsManager::Instance()->ExecuteAndRelease(cmd, GetScene());
+	SceneEditor2* scene = dynamic_cast<SceneEditor2*>(GetScene());
+	DVASSERT(scene);
+
+	scene->Exec(new ModifyCustomColorsCommand(originalImage, drawSystem->GetCustomColorsProxy(), GetUpdatedRect()));
+
 	SafeRelease(originalImage);
 }

@@ -25,8 +25,7 @@
 #include "LandscapeEditorDrawSystem/VisibilityToolProxy.h"
 #include "../SceneEditor/EditorConfig.h"
 #include "../SceneSignals.h"
-#include "../../../Commands/CommandsManager.h"
-#include "../../../Commands/VisibilityCheckToolCommands.h"
+#include "../../../Commands2/VisibilityToolActions.h"
 
 VisibilityToolSystem::VisibilityToolSystem(Scene* scene)
 :	SceneSystem(scene)
@@ -364,13 +363,12 @@ void VisibilityToolSystem::SetVisibilityPointInternal(const Vector2& point)
 
 	RenderManager::Instance()->RestoreRenderTarget();
 
-	CommandSetVisibilityPoint* cmd = new CommandSetVisibilityPoint(originalImage,
-																   sprite,
-																   drawSystem->GetVisibilityToolProxy(),
-																   cursorPosition);
-	CommandsManager::Instance()->ExecuteAndRelease(cmd, GetScene());
-	SafeRelease(originalImage);
+	SceneEditor2* scene = dynamic_cast<SceneEditor2*>(GetScene());
+	DVASSERT(scene);
+	scene->Exec(new ActionSetVisibilityPoint(originalImage, sprite,
+											 drawSystem->GetVisibilityToolProxy(), cursorPosition));
 
+	SafeRelease(originalImage);
 	SafeRelease(sprite);
 	SafeRelease(cursorSprite);
 
@@ -399,10 +397,9 @@ void VisibilityToolSystem::SetVisibilityAreaInternal()
 		PerformHeightTest(point, areaPos, cursorSize / 2.f, pointsDensity, areaPointHeights, &resP);
 		DrawVisibilityAreaPoints(resP);
 
-		CommandSetVisibilityArea* cmd = new CommandSetVisibilityArea(originalImage,
-																	 drawSystem->GetVisibilityToolProxy(),
-																	 GetUpdatedRect());
-		CommandsManager::Instance()->ExecuteAndRelease(cmd, GetScene());
+		SceneEditor2* scene = dynamic_cast<SceneEditor2*>(GetScene());
+		DVASSERT(scene);
+		scene->Exec(new ActionSetVisibilityArea(originalImage, drawSystem->GetVisibilityToolProxy(), GetUpdatedRect()));
 
 		SafeRelease(originalImage);
 	}
