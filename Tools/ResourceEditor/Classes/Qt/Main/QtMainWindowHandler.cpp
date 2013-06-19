@@ -1150,6 +1150,6 @@ void QtMainWindowHandler::ConvertToShadow()
 void QtMainWindowHandler::OpenHelp()
 {
     FilePath docsPath = ResourceEditor::DOCUMENTATION_PATH + "index.html";
-    QString docsFile = QString::fromStdString(docsPath.GetAbsolutePathname());
+    QString docsFile = QString::fromStdString("file:///" + docsPath.GetAbsolutePathname());
     QDesktopServices::openUrl(QUrl(docsFile));
 }
