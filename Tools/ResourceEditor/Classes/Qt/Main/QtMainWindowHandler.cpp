@@ -45,6 +45,7 @@
 #include "ModificationWidget.h"
 #include "../Commands/CommandSignals.h"
 #include "SceneEditor/EntityOwnerPropertyHelper.h"
+#include "StringConstants.h"
 
 #include <QPoint>
 #include <QMenu>
@@ -57,6 +58,8 @@
 #include <QStatusBar>
 #include <QSpinBox.h>
 #include <QFileDialog>
+#include <QDesktopServices>
+#include <QUrl>
 
 #include "Render/LibDxtHelper.h"
 
@@ -1066,12 +1069,24 @@ void QtMainWindowHandler::UndoAction()
 {
 	CommandsManager::Instance()->Undo(SceneDataManager::Instance()->SceneGetActive()->GetScene());
 	UpdateUndoActionsState();
+
+	SceneEditor2 *curScene = QtMainWindow::Instance()->GetUI()->sceneTabWidget->GetCurrentScene();
+	if(NULL != curScene)
+	{
+		curScene->Undo();
+	}
 }
 
 void QtMainWindowHandler::RedoAction()
 {
 	CommandsManager::Instance()->Redo(SceneDataManager::Instance()->SceneGetActive()->GetScene());
 	UpdateUndoActionsState();
+
+	SceneEditor2 *curScene = QtMainWindow::Instance()->GetUI()->sceneTabWidget->GetCurrentScene();
+	if(NULL != curScene)
+	{
+		curScene->Redo();
+	}
 }
 
 void QtMainWindowHandler::UpdateUndoActionsState()
@@ -1127,10 +1142,10 @@ void QtMainWindowHandler::OnSceneReleased(SceneData *scene)
 	UpdateRecentScenesList();
 }
 
-
 void QtMainWindowHandler::ConvertToShadow()
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandConvertToShadow(),
+    Entity * entity = SceneDataManager::Instance()->SceneGetSelectedNode(SceneDataManager::Instance()->SceneGetActive());
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandConvertToShadow(entity),
 												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
 }
 
@@ -1143,3 +1158,9 @@ void QtMainWindowHandler::CameraLightTrigerred()
 }
 
 
+void QtMainWindowHandler::OpenHelp()
+{
+    FilePath docsPath = ResourceEditor::DOCUMENTATION_PATH + "index.html";
+    QString docsFile = QString::fromStdString(docsPath.GetAbsolutePathname());
+    QDesktopServices::openUrl(QUrl(docsFile));
+}

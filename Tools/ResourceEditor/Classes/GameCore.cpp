@@ -33,6 +33,9 @@
 #include "TextureBrowser/TextureConvertor.h"
 #include "DockParticleEditor/ParticlesEditorController.h"
 
+#include "FileSystem/ResourceArchive.h"
+#include "StringConstants.h"
+
 using namespace DAVA;
 
 
@@ -74,6 +77,17 @@ void GameCore::OnAppStarted()
 	// ParticleEffectNode and thus REGISTER_CLASS(ParticleEffectNode) must not be removed during optimization.
 	ParticleEffectNode* effectNode = new ParticleEffectNode();
 	delete effectNode;
+
+    //Unpack Help to Documents
+    ResourceArchive * helpRA = new ResourceArchive();
+    if(helpRA->Open("~res:/Help.docs"))
+    {
+        FileSystem::Instance()->DeleteDirectory(ResourceEditor::DOCUMENTATION_PATH);
+        FileSystem::Instance()->CreateDirectory(ResourceEditor::DOCUMENTATION_PATH, true);
+
+        helpRA->UnpackToFolder(ResourceEditor::DOCUMENTATION_PATH);
+    }
+    SafeRelease(helpRA);
 }
 
 void GameCore::OnAppFinished()

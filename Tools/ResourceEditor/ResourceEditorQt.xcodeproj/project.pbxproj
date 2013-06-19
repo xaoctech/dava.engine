@@ -56,6 +56,11 @@
 		4FFE5C85176B37B600728624 /* CommandStack.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FFE5C7E176B37B600728624 /* CommandStack.cpp */; };
 		4FFE5C86176B37B600728624 /* TransformCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FFE5C80176B37B600728624 /* TransformCommand.cpp */; };
 		4FFE5C88176B393900728624 /* SceneEditor2_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FFE5C87176B393900728624 /* SceneEditor2_moc.cpp */; };
+		4FFE5C8E1770C04100728624 /* StructureSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FFE5C8C1770C04100728624 /* StructureSystem.cpp */; };
+		4FFE5C9B1770C08600728624 /* EntityAddCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FFE5C931770C08600728624 /* EntityAddCommand.cpp */; };
+		4FFE5C9C1770C08600728624 /* EntityInsertCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FFE5C951770C08600728624 /* EntityInsertCommand.cpp */; };
+		4FFE5C9D1770C08600728624 /* EntityMoveCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FFE5C971770C08600728624 /* EntityMoveCommand.cpp */; };
+		4FFE5C9E1770C08600728624 /* EntityRemoveCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FFE5C991770C08600728624 /* EntityRemoveCommand.cpp */; };
 		50474EDC16FD872600A17478 /* ExtraUserData.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50474ED816FD872600A17478 /* ExtraUserData.cpp */; };
 		50474EDD16FD872600A17478 /* PointerHolder.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50474EDA16FD872600A17478 /* PointerHolder.cpp */; };
 		5C048FD816037725008631C2 /* LandscapeRenderer.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C048FD716037725008631C2 /* LandscapeRenderer.cpp */; };
@@ -614,6 +619,16 @@
 		4FFE5C80176B37B600728624 /* TransformCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TransformCommand.cpp; sourceTree = "<group>"; };
 		4FFE5C81176B37B600728624 /* TransformCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TransformCommand.h; sourceTree = "<group>"; };
 		4FFE5C87176B393900728624 /* SceneEditor2_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneEditor2_moc.cpp; sourceTree = "<group>"; };
+		4FFE5C8C1770C04100728624 /* StructureSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StructureSystem.cpp; sourceTree = "<group>"; };
+		4FFE5C8D1770C04100728624 /* StructureSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StructureSystem.h; sourceTree = "<group>"; };
+		4FFE5C931770C08600728624 /* EntityAddCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EntityAddCommand.cpp; sourceTree = "<group>"; };
+		4FFE5C941770C08600728624 /* EntityAddCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EntityAddCommand.h; sourceTree = "<group>"; };
+		4FFE5C951770C08600728624 /* EntityInsertCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EntityInsertCommand.cpp; sourceTree = "<group>"; };
+		4FFE5C961770C08600728624 /* EntityInsertCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EntityInsertCommand.h; sourceTree = "<group>"; };
+		4FFE5C971770C08600728624 /* EntityMoveCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EntityMoveCommand.cpp; sourceTree = "<group>"; };
+		4FFE5C981770C08600728624 /* EntityMoveCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EntityMoveCommand.h; sourceTree = "<group>"; };
+		4FFE5C991770C08600728624 /* EntityRemoveCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EntityRemoveCommand.cpp; sourceTree = "<group>"; };
+		4FFE5C9A1770C08600728624 /* EntityRemoveCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EntityRemoveCommand.h; sourceTree = "<group>"; };
 		50474ED816FD872600A17478 /* ExtraUserData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ExtraUserData.cpp; sourceTree = "<group>"; };
 		50474ED916FD872600A17478 /* ExtraUserData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExtraUserData.h; sourceTree = "<group>"; };
 		50474EDA16FD872600A17478 /* PointerHolder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PointerHolder.cpp; sourceTree = "<group>"; };
@@ -1604,6 +1619,8 @@
 		4FB96A231705C90500EB205E /* System */ = {
 			isa = PBXGroup;
 			children = (
+				4FFE5C8C1770C04100728624 /* StructureSystem.cpp */,
+				4FFE5C8D1770C04100728624 /* StructureSystem.h */,
 				E8C4C63017294079004B0B3B /* CameraSystem.cpp */,
 				E8C4C63117294079004B0B3B /* CameraSystem.h */,
 				E8C4C63217294079004B0B3B /* CollisionSystem */,
@@ -1640,6 +1657,14 @@
 		4FFE5C76176B37B600728624 /* Commands2 */ = {
 			isa = PBXGroup;
 			children = (
+				4FFE5C931770C08600728624 /* EntityAddCommand.cpp */,
+				4FFE5C941770C08600728624 /* EntityAddCommand.h */,
+				4FFE5C951770C08600728624 /* EntityInsertCommand.cpp */,
+				4FFE5C961770C08600728624 /* EntityInsertCommand.h */,
+				4FFE5C971770C08600728624 /* EntityMoveCommand.cpp */,
+				4FFE5C981770C08600728624 /* EntityMoveCommand.h */,
+				4FFE5C991770C08600728624 /* EntityRemoveCommand.cpp */,
+				4FFE5C9A1770C08600728624 /* EntityRemoveCommand.h */,
 				4FFE5C77176B37B600728624 /* Command2.cpp */,
 				4FFE5C78176B37B600728624 /* Command2.h */,
 				4FFE5C79176B37B600728624 /* CommandBatch.cpp */,
@@ -3887,6 +3912,11 @@
 				E8C81390176B1A8B003758F3 /* BeastCommandLineTool.cpp in Build Sources */,
 				E8C8139E176F4918003758F3 /* QtPropertyDataMetaObject.cpp in Build Sources */,
 				E8C813A3176F493B003758F3 /* ImageTools.cpp in Build Sources */,
+				4FFE5C8E1770C04100728624 /* StructureSystem.cpp in Build Sources */,
+				4FFE5C9B1770C08600728624 /* EntityAddCommand.cpp in Build Sources */,
+				4FFE5C9C1770C08600728624 /* EntityInsertCommand.cpp in Build Sources */,
+				4FFE5C9D1770C08600728624 /* EntityMoveCommand.cpp in Build Sources */,
+				4FFE5C9E1770C08600728624 /* EntityRemoveCommand.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

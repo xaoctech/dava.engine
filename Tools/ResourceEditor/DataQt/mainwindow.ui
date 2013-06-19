@@ -522,12 +522,19 @@
     <addaction name="actionAddNewComponent"/>
     <addaction name="actionRemoveComponent"/>
    </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionHelp"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
    <addaction name="menuCreateNode"/>
    <addaction name="menuComponent"/>
    <addaction name="menuTools"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QDockWidget" name="dockCustomColors">
    <property name="floating">
@@ -1445,6 +1452,18 @@
    </property>
    <property name="shortcut">
     <string>Alt+L</string>
+   </property>
+  </action>
+  <action name="actionHelp">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/help.png</normaloff>:/QtIcons/help.png</iconset>
+   </property>
+   <property name="text">
+    <string>Resource Editor Help</string>
+   </property>
+   <property name="shortcut">
+    <string>F1</string>
    </property>
   </action>
  </widget>
