@@ -19,6 +19,7 @@
 #include "Commands/CommandsManager.h"
 #include "TextureBrowser/TextureConvertor.h"
 #include "SceneEditor/EditorSettings.h"
+#include "../Scene/SceneDataManager.h"
 
 #include <QHBoxLayout>
 #include <QGraphicsWidget>
@@ -190,7 +191,7 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 
 	QHBoxLayout* startTimeHBox = new QHBoxLayout;
 	startTimeHBox->addWidget(new QLabel("startTime", this));
-	startTimeSpin = new QDoubleSpinBox(this);
+	startTimeSpin = new EventFilterDoubleSpinBox(this);
 	startTimeSpin->setMinimum(-std::numeric_limits<double>::infinity());
 	startTimeSpin->setMaximum(std::numeric_limits<double>::infinity());
 	startTimeHBox->addWidget(startTimeSpin);
@@ -202,7 +203,7 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 
 	QHBoxLayout* endTimeHBox = new QHBoxLayout;
 	endTimeHBox->addWidget(new QLabel("endTime", this));
-	endTimeSpin = new QDoubleSpinBox(this);
+	endTimeSpin = new EventFilterDoubleSpinBox(this);
 	endTimeSpin->setMinimum(-std::numeric_limits<double>::infinity());
 	endTimeSpin->setMaximum(std::numeric_limits<double>::infinity());
 	endTimeHBox->addWidget(endTimeSpin);
@@ -513,19 +514,6 @@ void EmitterLayerWidget::OnSpriteBtn()
 	// Yuri Coder. Verify that the path of the file opened is correct (i.e. inside the Project Path),
 	// this is according to the DF-551 issue.
     FilePath filePathToBeOpened(filePath.toStdString());
-
-#ifdef __DAVAENGINE_WIN32__
-    //TODO: fix this code on win32 on working FilePath
-	// Remove the drive name, if any.
-	String path = filePathToBeOpened.GetAbsolutePathname();
-	String::size_type driveNamePos = path.find(":/");
-	if (driveNamePos != String::npos && path.length() > 2)
-	{
-		path = path.substr(2, path.length() - 2);
-		filePathToBeOpened = FilePath(path);
-	}
-#endif
-
 	if (filePathToBeOpened.GetDirectory() != projectPath)
 	{
 		QString message = QString("You've opened Particle Sprite from incorrect path (%1).\n Correct one is %2.").
@@ -637,7 +625,8 @@ void EmitterLayerWidget::OnValueChanged()
 						 (float32)pivotPointXSpinBox->value(),
 						 (float32)pivotPointYSpinBox->value());
 
-	CommandsManager::Instance()->ExecuteAndRelease(updateLayerCmd);
+	CommandsManager::Instance()->ExecuteAndRelease(updateLayerCmd,
+												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
 
 	Init(this->emitter, this->layer, false);
 	emit ValueChanged();

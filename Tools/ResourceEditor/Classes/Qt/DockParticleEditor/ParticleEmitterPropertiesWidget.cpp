@@ -17,6 +17,7 @@
 #include "ParticleEmitterPropertiesWidget.h"
 #include "Commands/ParticleEditorCommands.h"
 #include "Commands/CommandsManager.h"
+#include "../Scene/SceneDataManager.h"
 
 #include <QLineEdit>
 #include <QEvent>
@@ -63,7 +64,7 @@ ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent
 
 	QHBoxLayout *emitterLifeHBox = new QHBoxLayout();
 	emitterLifeHBox->addWidget(new QLabel("life"));
-	emitterLife = new QDoubleSpinBox(this);
+	emitterLife = new EventFilterDoubleSpinBox(this);
 	emitterLife->setMinimum(0.f);
 	emitterLife->setMaximum(10000000);
 	emitterLifeHBox->addWidget(emitterLife);
@@ -148,7 +149,8 @@ void ParticleEmitterPropertiesWidget::OnValueChanged()
 							   size.GetPropLine(),
 							   life,
 							   playbackSpeed);
-	CommandsManager::Instance()->ExecuteAndRelease(commandUpdateEmitter);
+	CommandsManager::Instance()->ExecuteAndRelease(commandUpdateEmitter,
+												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
 
 	Init(emitter, false, initEmittersByDef);
 	emit ValueChanged();

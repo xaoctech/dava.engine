@@ -94,7 +94,13 @@ const List<FilePath> FilePath::GetResourcesFolders()
 #if defined(__DAVAENGINE_WIN32__)
 void FilePath::InitializeBundleName()
 {
-    SetBundleName(FileSystem::Instance()->GetCurrentWorkingDirectory());
+	FilePath execDirectory = FileSystem::Instance()->GetCurrentExecutableDirectory();
+	FilePath workingDirectory = FileSystem::Instance()->GetCurrentWorkingDirectory();
+	SetBundleName(execDirectory);
+	if(workingDirectory != execDirectory)
+	{
+		AddResourcesFolder(workingDirectory);
+	}
 }
 #endif //#if defined(__DAVAENGINE_WIN32__)
 
@@ -750,7 +756,7 @@ FilePath::ePathType FilePath::GetPathType(const String &pathname)
     }
     
     if(    (pathname.find("FBO ") == 0)
-       ||  (pathname.find("memoryfile_0x") == 0)
+       ||  (pathname.find("memoryfile_") == 0)
        ||  (pathname.find("Text ") == 0))
     {
         return PATH_IN_MEMORY;

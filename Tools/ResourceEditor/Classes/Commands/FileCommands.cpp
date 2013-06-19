@@ -28,7 +28,6 @@
 #include "../Qt/Scene/SceneDataManager.h"
 
 #include <QFileDialog>
-#include <QMessageBox>
 #include <QString>
 
 #include "CommandsManager.h"
@@ -120,139 +119,7 @@ void CommandOpenScene::Execute()
     }
 }
 
-//New
-CommandNewScene::CommandNewScene()
-:   Command(Command::COMMAND_CLEAR_UNDO_QUEUE, CommandList::ID_COMMAND_NEW_SCENE)
-{
-}
-
-
-void CommandNewScene::Execute()
-{
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-        SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
-        int32 changesCount = CommandsManager::Instance()->GetUndoQueueLength(activeScene->GetScene());
-        if(changesCount)
-        {
-            int answer = QMessageBox::question(NULL, "Scene was changed", "Do you want to save changes in the current scene prior to creating new one?",
-                                               QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel);
-            
-            if (answer == QMessageBox::Cancel)
-            {
-                return;
-            }
-            
-            if(answer == QMessageBox::Yes)
-            {
-                // Execute this command directly to do not affect the Undo/Redo queue.
-                CommandSaveScene* commandSaveScene = new CommandSaveScene();
-                commandSaveScene->Execute();
-                SafeDelete(commandSaveScene);
-            }
-        }
-
-		// Can now create the scene.
-		screen->NewScene();
-//        SceneValidator::Instance()->EnumerateSceneTextures();
-    }
-}
-
-
 //Save
-CommandSaveScene::CommandSaveScene()
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_SAVE_SCENE)
-{
-}
-
-
-void CommandSaveScene::Execute()
-{
-    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
-    if(activeScene->CanSaveScene())
-    {
-        SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-        
-		FilePath currentPath;
-		if(!screen->CurrentScenePathname().IsEmpty())
-		{
-			currentPath = screen->CurrentScenePathname();    
-		}
-		else
-		{
-			currentPath = EditorSettings::Instance()->GetDataSourcePath();
-		}
-
-        QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save Scene File"), QString(currentPath.GetAbsolutePathname().c_str()),
-                                                        QString("Scene File (*.sc2)")
-                                                        );
-        if(0 < filePath.size())
-        {
-			FilePath normalizedPathname = PathnameToDAVAStyle(filePath);
-
-			EditorSettings::Instance()->AddLastOpenedFile(normalizedPathname);
-
-			SaveParticleEmitterNodes(activeScene->GetScene());
-            screen->SaveSceneToFile(normalizedPathname);
-        }
-    }
-
-	QtMainWindowHandler::Instance()->RestoreDefaultFocus();
-}
-
-void CommandSaveScene::SaveParticleEmitterNodes(EditorScene* scene)
-{
-	if (!scene)
-	{
-		return;
-	}
-
-	int32 childrenCount = scene->GetChildrenCount();
-	for (int32 i = 0; i < childrenCount; i ++)
-	{
-		SaveParticleEmitterNodeRecursive(scene->GetChild(i));
-	}
-}
-
-void CommandSaveScene::SaveParticleEmitterNodeRecursive(Entity* parentNode)
-{
-	bool needSaveThisLevelNode = true;
-	ParticleEmitter * emitter = GetEmitter(parentNode);
-	if (!emitter)
-	{
-		needSaveThisLevelNode = false;
-	}
-
-	if (needSaveThisLevelNode)
-	{
-		// Do we have file name? Ask for it, if not.
-		FilePath yamlPath = emitter->GetConfigPath();
-		if (yamlPath.IsEmpty())
-		{
-			QString saveDialogCaption = QString("Save Particle Emitter \"%1\"").arg(QString::fromStdString(parentNode->GetName()));
-			QString saveDialogYamlPath = QFileDialog::getSaveFileName(NULL, saveDialogCaption, "", QString("Yaml File (*.yaml)"));
-
-			if (!saveDialogYamlPath.isEmpty())
-			{
-				yamlPath = PathnameToDAVAStyle(saveDialogYamlPath);
-			}
-		}
-
-		if (!yamlPath.IsEmpty())
-		{
-			emitter->SaveToYaml(yamlPath);
-		}
-	}
-
-	// Repeat for all children.
-	int32 childrenCount = parentNode->GetChildrenCount();
-	for (int32 i = 0; i < childrenCount; i ++)
-	{
-		SaveParticleEmitterNodeRecursive(parentNode->GetChild(i));
-	}
-}
-
 CommandSaveSpecifiedScene::CommandSaveSpecifiedScene(Entity* activeScene, FilePath& filePath)
 :	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_SAVE_SPECIFIED_SCENE)
 {
@@ -278,10 +145,39 @@ void CommandSaveSpecifiedScene::Execute()
 		DVASSERT(activeScene);
 		Entity* entityToAdd = activeScene->Clone();
 		
-		entityToAdd->RestoreOriginalTransforms();
+		entityToAdd->SetLocalTransform(Matrix4::IDENTITY);
 
 		Scene* sc = new Scene();
-		sc->AddNode(entityToAdd);
+		
+		uint32 size = entityToAdd->GetChildrenCount();
+		KeyedArchive *customProperties = entityToAdd->GetCustomProperties();
+		if (customProperties && customProperties->IsKeyExists(String("editor.referenceToOwner")))
+		{
+			if(!size)
+			{
+				sc->AddNode(entityToAdd);
+			}
+			else
+			{
+				Vector<Entity*> tempV;
+				tempV.reserve(size);
+				for (int32 ci = 0; ci < size; ++ci)
+				{
+					Entity *child = entityToAdd->GetChild(ci);
+					child->Retain();
+					tempV.push_back(child);
+				}
+				for (int32 ci = 0; ci < (int32)tempV.size(); ++ci)
+				{
+					sc->AddNode(tempV[ci]);
+					tempV[ci]->Release();
+				}
+			}
+		}
+		else
+		{
+			sc->AddNode(entityToAdd);
+		}
 
 		SceneFileV2 * outFile = new SceneFileV2();
 		
