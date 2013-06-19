@@ -54,6 +54,9 @@ namespace ResourceEditor
 	static const String EDITOR_REFERENCE_TO_OWNER = "editor.referenceToOwner";
 	static const String EDITOR_IS_LOCKED = "editor.isLocked";
 	static const String EDITOR_DO_NOT_REMOVE = "editor.donotremove";
+
+    //Documentation
+    static const String DOCUMENTATION_PATH = "~doc:/ResourceEditorHelp/";
 }
 
 #endif //#ifndef __STRING_CONSTANTS_H__

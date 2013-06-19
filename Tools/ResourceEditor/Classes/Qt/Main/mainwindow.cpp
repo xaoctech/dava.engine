@@ -145,6 +145,9 @@ void QtMainWindow::SetupActions()
     
 	//Edit
 	connect(ui->actionConvertToShadow, SIGNAL(triggered()), actionHandler, SLOT(ConvertToShadow()));
+
+    //Help
+    connect(ui->actionHelp, SIGNAL(triggered()), actionHandler, SLOT(OpenHelp()));
 }
 
 void QtMainWindow::SetupMainMenu()

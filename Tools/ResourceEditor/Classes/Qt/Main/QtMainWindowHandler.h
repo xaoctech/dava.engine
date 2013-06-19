@@ -141,6 +141,9 @@ public slots:
     void ToggleNotPassableTerrain();
     void ReloadMenuTriggered(QAction *reloadAsAction);
     
+    //Help
+    void OpenHelp();
+
     //scene graph
     void RefreshSceneGraph();
     
