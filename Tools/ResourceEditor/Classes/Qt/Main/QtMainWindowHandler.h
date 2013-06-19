@@ -159,6 +159,9 @@ public slots:
     void ToggleNotPassableTerrain();
     void ReloadMenuTriggered(QAction *reloadAsAction);
     
+    //Help
+    void OpenHelp();
+
     //scene graph
     void RefreshSceneGraph();
     
@@ -242,8 +245,12 @@ public slots:
 
 	void OnEntityModified(DAVA::Scene* scene, CommandList::eCommandId id, const DAVA::Set<DAVA::Entity*>& affectedEntities);
 
+    void CameraLightTrigerred();
+
+    
 signals:
 	void ProjectChanged();
+    void UpdateCameraLightOnScene(bool show);
 
 private:
     //create node

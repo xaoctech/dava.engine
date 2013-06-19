@@ -69,6 +69,9 @@ SceneEditor2::SceneEditor2()
 	visibilityToolSystem = new VisibilityToolSystem(this);
 	AddSystem(visibilityToolSystem, 0);
 
+	structureSystem = new StructureSystem(this);
+	AddSystem(structureSystem, 0);
+
 	SceneSignals::Instance()->EmitOpened(this);
 }
 
@@ -197,6 +200,7 @@ void SceneEditor2::Update(float timeElapsed)
 	tilemaskEditorSystem->Update(timeElapsed);
 	customColorsSystem->Update(timeElapsed);
 	visibilityToolSystem->Update(timeElapsed);
+	structureSystem->Update(timeElapsed);
 }
 
 void SceneEditor2::PostUIEvent(DAVA::UIEvent *event)
@@ -211,6 +215,7 @@ void SceneEditor2::PostUIEvent(DAVA::UIEvent *event)
 	tilemaskEditorSystem->ProcessUIEvent(event);
 	customColorsSystem->ProcessUIEvent(event);
 	visibilityToolSystem->ProcessUIEvent(event);
+	structureSystem->ProcessUIEvent(event);
 }
 
 void SceneEditor2::SetViewportRect(const DAVA::Rect &newViewportRect)
@@ -228,6 +233,7 @@ void SceneEditor2::Draw()
 	selectionSystem->Draw();
 	hoodSystem->Draw();
 	modifSystem->Draw();
+	structureSystem->Draw();
 }
 
 void SceneEditor2::EditorCommandProcess(const Command2 *command, bool redo)
@@ -238,6 +244,7 @@ void SceneEditor2::EditorCommandProcess(const Command2 *command, bool redo)
 	selectionSystem->PropeccCommand(command, redo);
 	hoodSystem->PropeccCommand(command, redo);
 	modifSystem->PropeccCommand(command, redo);
+	structureSystem->PropeccCommand(command, redo);
 }
 
 SceneEditor2::EditorCommandNotify::EditorCommandNotify(SceneEditor2 *_editor)

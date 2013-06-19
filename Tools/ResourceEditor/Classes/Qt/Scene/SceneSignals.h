@@ -33,6 +33,7 @@ class SceneSignals : public QObject, public DAVA::StaticSingleton<SceneSignals>
 	Q_OBJECT
 
 signals:
+	// scene
 	void Opened(SceneEditor2 *scene);
 	void Closed(SceneEditor2 *scene);
 
@@ -42,9 +43,15 @@ signals:
 	void Activated(SceneEditor2 *scene);
 	void Deactivated(SceneEditor2 *scene);
 
+	// entities
 	void Selected(SceneEditor2 *scene, DAVA::Entity *entity);
 	void Deselected(SceneEditor2 *scene, DAVA::Entity *entity);
 
+	void Added(SceneEditor2 *scene, DAVA::Entity *entity);
+	void Removed(SceneEditor2 *scene, DAVA::Entity *entity);
+	void Moved(SceneEditor2 *scene, DAVA::Entity *entity, DAVA::Entity *oldParent);
+
+	// mouse
 	void MouseOver(SceneEditor2 *scene, const EntityGroup *entities);
 	void MouseOverSelection(SceneEditor2 *scene, const EntityGroup *entities);
 
@@ -66,6 +73,10 @@ public:
 
 	void EmitUpdateDropperHeight(DAVA::float32 height) { emit UpdateDropperHeight((double)height); };
 	void EmitUpdateVisibilityButtonsState(bool pointButtonChecked, bool areaButtonChecked) { emit UpdateVisibilityButtonsState(pointButtonChecked, areaButtonChecked); };
+
+	void EmitAdded(SceneEditor2 *scene, DAVA::Entity *entity) { emit Added(scene, entity); }
+	void EmitRemoved(SceneEditor2 *scene, DAVA::Entity *entity) { emit Removed(scene, entity); }
+	void EmitMoved(SceneEditor2 *scene, DAVA::Entity *entity, DAVA::Entity *oldParent) { emit Moved(scene, entity, oldParent); }
 
 	void EmitMouseOver(SceneEditor2 *scene, const EntityGroup *entities) { emit MouseOver(scene, entities); }
 	void EmitMouseOverSelection(SceneEditor2 *scene, const EntityGroup *entities) { emit MouseOverSelection(scene, entities); }

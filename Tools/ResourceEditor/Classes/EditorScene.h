@@ -76,8 +76,19 @@ public:
     
     const RenderManager::Stats & GetRenderStats() const;
     
+    void UpdateCameraLightOnScene(bool show);
+    void UpdateCameraLightOnScene();
+    
 protected:
     void SetForceLodLayerRecursive(Entity *node, int32 layer);
+    
+    void CreateCameraLight();
+    void UpdateCameraLight();
+    void HideCameraLight();
+    bool IsLightOnSceneRecursive(Entity *entity);
+    
+    void AddEditorEntity(Entity *editorEntity);
+    
 
     btDefaultCollisionConfiguration* collisionConfiguration;
 	btCollisionDispatcher* dispatcher;
@@ -102,6 +113,8 @@ protected:
 	btBroadphaseProxy* originalHandler;
     
     RenderManager::Stats renderStats;
+    
+    Entity *cameraLight;
 };
 
 #endif

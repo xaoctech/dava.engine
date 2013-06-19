@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1068</width>
-    <height>830</height>
+    <height>796</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -322,6 +322,7 @@
    <addaction name="separator"/>
    <addaction name="actionMaterialEditor"/>
    <addaction name="actionTextureConverter"/>
+   <addaction name="actionEnableCameraLight"/>
    <addaction name="separator"/>
    <addaction name="actionHeightMapEditor"/>
    <addaction name="actionTileMapEditor"/>
@@ -396,7 +397,7 @@
      <x>0</x>
      <y>0</y>
      <width>1068</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -464,6 +465,7 @@
     <addaction name="actionSquareTextures"/>
     <addaction name="separator"/>
     <addaction name="actionShowSettings"/>
+    <addaction name="actionEnableCameraLight"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -520,12 +522,19 @@
     <addaction name="actionAddNewComponent"/>
     <addaction name="actionRemoveComponent"/>
    </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionHelp"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
    <addaction name="menuCreateNode"/>
    <addaction name="menuComponent"/>
    <addaction name="menuTools"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QDockWidget" name="dockCustomColors">
    <property name="floating">
@@ -1517,6 +1526,33 @@
   <action name="actionSquareTextures">
    <property name="text">
     <string>Square Textures</string>
+   </property>
+  </action>
+  <action name="actionEnableCameraLight">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/light.png</normaloff>:/QtIcons/light.png</iconset>
+   </property>
+   <property name="text">
+    <string>Enable Camera Light</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+L</string>
+   </property>
+  </action>
+  <action name="actionHelp">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/help.png</normaloff>:/QtIcons/help.png</iconset>
+   </property>
+   <property name="text">
+    <string>Resource Editor Help</string>
+   </property>
+   <property name="shortcut">
+    <string>F1</string>
    </property>
   </action>
  </widget>
