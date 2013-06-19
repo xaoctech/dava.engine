@@ -14,21 +14,38 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __COMMAND_ID_H__
-#define __COMMAND_ID_H__
+#include "Commands2/EntityAddCommand.h"
 
-enum CommandID
+EntityAddCommand::EntityAddCommand(DAVA::Entity* _entity, DAVA::Entity *_parent)
+	: Command2(CMDID_ENTITY_ADD, "Add entity")
+	, entity(_entity)
+	, parent(_parent)
 {
-	CMDID_UNKNOWN	= -1,
-	CMDID_BATCH		=  0,
+	SafeRetain(entity);
+}
 
-	CMDID_TRANSFORM,
-	CMDID_ENTITY_ADD,
-	CMDID_ENTITY_INSERT,
-	CMDID_ENTITY_REMOVE,
-	CMDID_ENTITY_MOVE,
+EntityAddCommand::~EntityAddCommand()
+{
+	SafeRelease(entity);
+}
 
-	CMDID_USER		= 0xF000
-};
+void EntityAddCommand::Undo()
+{
+	if(NULL != entity && NULL != parent)
+	{
+		parent->RemoveNode(entity);
+	}
+}
 
-#endif // __COMMAND_ID_H__
+void EntityAddCommand::Redo()
+{
+	if(NULL != entity && NULL != parent)
+	{
+		parent->AddNode(entity);
+	}
+}
+
+DAVA::Entity* EntityAddCommand::GetEntity() const
+{
+	return entity;
+}

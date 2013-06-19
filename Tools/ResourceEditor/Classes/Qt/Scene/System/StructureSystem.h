@@ -14,21 +14,37 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __COMMAND_ID_H__
-#define __COMMAND_ID_H__
+#ifndef __SCENE_STRUCTURE_SYSTEM_H__
+#define __SCENE_STRUCTURE_SYSTEM_H__
 
-enum CommandID
+#include "Commands2/Command2.h"
+
+// framework
+#include "Entity/SceneSystem.h"
+#include "Scene3D/Entity.h"
+#include "UI/UIEvent.h"
+
+class StructureSystem : public DAVA::SceneSystem
 {
-	CMDID_UNKNOWN	= -1,
-	CMDID_BATCH		=  0,
+	friend class SceneEditor2;
 
-	CMDID_TRANSFORM,
-	CMDID_ENTITY_ADD,
-	CMDID_ENTITY_INSERT,
-	CMDID_ENTITY_REMOVE,
-	CMDID_ENTITY_MOVE,
+public:
+	StructureSystem(DAVA::Scene * scene);
+	~StructureSystem();
 
-	CMDID_USER		= 0xF000
+	void Add(DAVA::Entity *entity, DAVA::Entity *parent = NULL);
+	void Remove(DAVA::Entity *entity);
+	void Move(DAVA::Entity *entity, DAVA::Entity *newParent);
+
+protected:
+	void Update(DAVA::float32 timeElapsed);
+	void Draw();
+
+	void ProcessUIEvent(DAVA::UIEvent *event);
+	void PropeccCommand(const Command2 *command, bool redo);
+
+	virtual void AddEntity(DAVA::Entity * entity);
+	virtual void RemoveEntity(DAVA::Entity * entity);
 };
 
-#endif // __COMMAND_ID_H__
+#endif // __SCENE_STRUCTURE_SYSTEM_H__

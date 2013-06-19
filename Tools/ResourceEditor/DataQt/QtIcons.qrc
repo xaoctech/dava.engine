@@ -1,6 +1,7 @@
 <RCC>
   <qresource prefix="/">
     <file>QtIcons/help.png</file>
+    <file>QtIcons/zoom.png</file>
     <file>QtIconsTextureDialog/convertall.png</file>
     <file>QtIconsTextureDialog/convert.png</file>
     <file>QtIcons/color.png</file>

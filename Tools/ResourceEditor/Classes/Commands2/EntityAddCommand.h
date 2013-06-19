@@ -14,21 +14,24 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __COMMAND_ID_H__
-#define __COMMAND_ID_H__
+#ifndef __ENTITY_ADD_COMMAND_H__
+#define __ENTITY_ADD_COMMAND_H__
 
-enum CommandID
+#include "Commands2/Command2.h"
+
+class EntityAddCommand : public Command2
 {
-	CMDID_UNKNOWN	= -1,
-	CMDID_BATCH		=  0,
+public:
+	EntityAddCommand(DAVA::Entity* entity, DAVA::Entity *parent);
+	~EntityAddCommand();
 
-	CMDID_TRANSFORM,
-	CMDID_ENTITY_ADD,
-	CMDID_ENTITY_INSERT,
-	CMDID_ENTITY_REMOVE,
-	CMDID_ENTITY_MOVE,
+	virtual void Undo();
+	virtual void Redo();
+	virtual DAVA::Entity* GetEntity() const;
 
-	CMDID_USER		= 0xF000
+protected:
+	DAVA::Entity* entity;
+	DAVA::Entity* parent;
 };
 
-#endif // __COMMAND_ID_H__
+#endif // __ENTITY_ADD_COMMAND_H__

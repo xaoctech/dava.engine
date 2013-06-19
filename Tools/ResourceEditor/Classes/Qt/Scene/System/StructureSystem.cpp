@@ -14,21 +14,71 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __COMMAND_ID_H__
-#define __COMMAND_ID_H__
+#include "Scene/System/StructureSystem.h"
+#include "Scene/SceneSignals.h"
+#include "Scene/SceneEditor2.h"
 
-enum CommandID
+#include "Commands2/EntityAddCommand.h"
+#include "Commands2/EntityInsertCommand.h"
+#include "Commands2/EntityMoveCommand.h"
+#include "Commands2/EntityRemoveCommand.h"
+
+StructureSystem::StructureSystem(DAVA::Scene * scene)
+	: DAVA::SceneSystem(scene)
 {
-	CMDID_UNKNOWN	= -1,
-	CMDID_BATCH		=  0,
 
-	CMDID_TRANSFORM,
-	CMDID_ENTITY_ADD,
-	CMDID_ENTITY_INSERT,
-	CMDID_ENTITY_REMOVE,
-	CMDID_ENTITY_MOVE,
+}
 
-	CMDID_USER		= 0xF000
-};
+StructureSystem::~StructureSystem()
+{
 
-#endif // __COMMAND_ID_H__
+}
+
+void StructureSystem::Add(DAVA::Entity *entity, DAVA::Entity *parent /*= NULL*/)
+{
+
+}
+
+void StructureSystem::Remove(DAVA::Entity *entity)
+{
+	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
+	if(NULL != sceneEditor)
+	{
+		sceneEditor->Exec(new EntityRemoveCommand(entity));
+	}
+}
+
+void StructureSystem::Move(DAVA::Entity *entity, DAVA::Entity *newParent)
+{
+
+}
+
+void StructureSystem::Update(DAVA::float32 timeElapsed)
+{
+
+}
+
+void StructureSystem::Draw()
+{
+
+}
+
+void StructureSystem::ProcessUIEvent(DAVA::UIEvent *event)
+{
+
+}
+
+void StructureSystem::PropeccCommand(const Command2 *command, bool redo)
+{
+
+}
+
+void StructureSystem::AddEntity(DAVA::Entity * entity)
+{
+	SceneSignals::Instance()->EmitAdded((SceneEditor2 *) GetScene(), entity);
+}
+
+void StructureSystem::RemoveEntity(DAVA::Entity * entity)
+{
+	SceneSignals::Instance()->EmitRemoved((SceneEditor2 *) GetScene(), entity);
+}

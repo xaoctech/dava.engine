@@ -14,21 +14,82 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __COMMAND_ID_H__
-#define __COMMAND_ID_H__
+#include "Commands2/EntityMoveCommand.h"
 
-enum CommandID
+EntityMoveCommand::EntityMoveCommand(DAVA::Entity* _entity, DAVA::Entity *_newParent, DAVA::Entity *_newBefore /* = NULL */)
+	: Command2(CMDID_ENTITY_MOVE, "Move entity")
+	, entity(_entity)
+	, parent(NULL)
+	, before(NULL)
+	, newParent(_newParent)
+	, newBefore(_newBefore)
 {
-	CMDID_UNKNOWN	= -1,
-	CMDID_BATCH		=  0,
+	SafeRetain(entity);
 
-	CMDID_TRANSFORM,
-	CMDID_ENTITY_ADD,
-	CMDID_ENTITY_INSERT,
-	CMDID_ENTITY_REMOVE,
-	CMDID_ENTITY_MOVE,
+	if(NULL != entity)
+	{
+		parent = entity->GetParent();
 
-	CMDID_USER		= 0xF000
-};
+		if(NULL != parent)
+		{
+			for (int i = 0; i < parent->GetChildrenCount(); i++)
+			{
+				if(parent->GetChild(i) == entity)
+				{
+					break;
+				}
+				else
+				{
+					before = parent->GetChild(i);
+				}
+			}
+		}
+	}
+}
 
-#endif // __COMMAND_ID_H__
+EntityMoveCommand::~EntityMoveCommand()
+{
+	SafeRelease(entity);
+}
+
+void EntityMoveCommand::Undo()
+{
+	if(NULL != entity)
+	{
+		if(NULL != parent)
+		{
+			if(NULL != before)
+			{
+				parent->InsertBeforeNode(entity, before);
+			}
+			else
+			{
+				parent->AddNode(entity);
+			}
+		}
+		else
+		{
+			newParent->RemoveNode(entity);
+		}
+	}
+}
+
+void EntityMoveCommand::Redo()
+{
+	if(NULL != entity && NULL != newParent)
+	{
+		if(NULL != newBefore)
+		{
+			newParent->InsertBeforeNode(entity, newBefore);
+		}
+		else
+		{
+			newParent->AddNode(entity);
+		}
+	}
+}
+
+DAVA::Entity* EntityMoveCommand::GetEntity() const
+{
+	return entity;
+}

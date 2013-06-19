@@ -14,21 +14,46 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __COMMAND_ID_H__
-#define __COMMAND_ID_H__
+#include "Commands2/EntityInsertCommand.h"
 
-enum CommandID
+EntityInsertCommand::EntityInsertCommand(DAVA::Entity* _entity, DAVA::Entity *_parent, DAVA::Entity *_before)
+	: Command2(CMDID_ENTITY_INSERT, "Insert entity")
+	, entity(_entity)
+	, parent(_parent)
+	, before(_before)
 {
-	CMDID_UNKNOWN	= -1,
-	CMDID_BATCH		=  0,
+	SafeRetain(entity);
+}
 
-	CMDID_TRANSFORM,
-	CMDID_ENTITY_ADD,
-	CMDID_ENTITY_INSERT,
-	CMDID_ENTITY_REMOVE,
-	CMDID_ENTITY_MOVE,
+EntityInsertCommand::~EntityInsertCommand()
+{
+	SafeRelease(entity);
+}
 
-	CMDID_USER		= 0xF000
-};
+void EntityInsertCommand::Undo()
+{
+	if(NULL != entity && NULL != parent)
+	{
+		parent->RemoveNode(entity);
+	}
+}
 
-#endif // __COMMAND_ID_H__
+void EntityInsertCommand::Redo()
+{
+	if(NULL != entity && NULL != parent)
+	{
+		if(NULL != before)
+		{
+			parent->InsertBeforeNode(entity, before);
+		}
+		else
+		{
+			parent->AddNode(entity);
+		}
+	}
+}
+
+DAVA::Entity* EntityInsertCommand::GetEntity() const
+{
+	return entity;
+}
