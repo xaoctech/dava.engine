@@ -32,6 +32,7 @@ CustomColorsProxy::CustomColorsProxy(int32 size)
 :	changedRect(Rect())
 ,	spriteChanged(false)
 ,	size(size)
+,	changes(0)
 {
 	customColorsSprite = Sprite::CreateAsRenderTarget((float32)size, (float32)size, FORMAT_RGBA8888);
 	RenderManager::Instance()->SetRenderTarget(customColorsSprite);
@@ -84,4 +85,24 @@ void CustomColorsProxy::UpdateRect(const DAVA::Rect &rect)
 	changedRect.dy = Min(changedRect.dy, size - changedRect.y);
 	
 	spriteChanged = true;
+}
+
+int32 CustomColorsProxy::GetChangesCount() const
+{
+	return changes;
+}
+
+void CustomColorsProxy::ResetChanges()
+{
+	changes = 0;
+}
+
+void CustomColorsProxy::IncrementChanges()
+{
+	++changes;
+}
+
+void CustomColorsProxy::DecrementChanges()
+{
+	--changes;
 }

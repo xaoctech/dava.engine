@@ -43,11 +43,13 @@ ModifyCustomColorsCommand::~ModifyCustomColorsCommand()
 void ModifyCustomColorsCommand::Undo()
 {
 	ApplyImage(undoImage);
+	customColorsProxy->DecrementChanges();
 }
 
 void ModifyCustomColorsCommand::Redo()
 {
 	ApplyImage(redoImage);
+	customColorsProxy->IncrementChanges();
 }
 
 void ModifyCustomColorsCommand::ApplyImage(DAVA::Image *image)

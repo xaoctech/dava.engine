@@ -143,7 +143,7 @@ void HeightmapEditorSystem::ProcessUIEvent(DAVA::UIEvent *event)
 				{
 					curHeight = drawSystem->GetHeightAtPoint(cursorPosition);
 					
-					SceneSignals::Instance()->EmitUpdateDropperHeight(curHeight);
+					SceneSignals::Instance()->EmitUpdateDropperHeight(dynamic_cast<SceneEditor2*>(GetScene()), curHeight);
 				}
 				
 				if (isIntersectsLandscape)
@@ -287,7 +287,7 @@ void HeightmapEditorSystem::UpdateBrushTool(float32 timeElapsed)
 				editorHeightmap->DrawAbsoluteRGBA(toolImage, (int32)pos.x, (int32)pos.y, scaleSize, scaleSize, koef, height);
 				
 				float32 height2 = drawSystem->GetHeightAtPoint(cursorPosition);
-				SceneSignals::Instance()->EmitUpdateDropperHeight(height2);
+				SceneSignals::Instance()->EmitUpdateDropperHeight(dynamic_cast<SceneEditor2*>(GetScene()), height2);
 				
 				break;
 			}
@@ -323,8 +323,14 @@ Rect HeightmapEditorSystem::GetUpdatedRect()
 	
 	r.x = Max(r.x, 0.f);
 	r.y = Max(r.y, 0.f);
-	r.dx = Min(r.dx, heightmapSize);
-	r.dy = Min(r.dy, heightmapSize);
+	if (r.x + r.dx > heightmapSize)
+	{
+		r.dx = heightmapSize - r.x;
+	}
+	if (r.y + r.dy > heightmapSize)
+	{
+		r.dy = heightmapSize - r.y;
+	}
 	
 	return r;
 }

@@ -191,7 +191,7 @@ Image* Image::CopyImageRegion(const Image* imageToCopy,
 
 	uint32 oldWidth = imageToCopy->GetWidth();
 	uint32 oldHeight = imageToCopy->GetHeight();
-	DVASSERT((newWidth + xOffset) < oldWidth && (newHeight + yOffset) < oldHeight);
+	DVASSERT((newWidth + xOffset) <= oldWidth && (newHeight + yOffset) <= oldHeight);
 
 	PixelFormat format = imageToCopy->GetPixelFormat();
 	int32 formatSize = Texture::GetPixelFormatSizeInBytes(format);

@@ -38,8 +38,8 @@ void VisibilityToolPropertiesView::Init()
 {
 	QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
 
-	connect(SceneSignals::Instance(), SIGNAL(UpdateVisibilityButtonsState(bool, bool)),
-			handler, SLOT(SetVisibilityToolButtonsState(bool, bool)));
+	connect(SceneSignals::Instance(), SIGNAL(UpdateVisibilityButtonsState(SceneEditor2*)),
+			handler, SLOT(SetVisibilityToolButtonsState(SceneEditor2*)));
 
 	connect(ui->buttonEnableVisibilityTool, SIGNAL(clicked()), handler, SLOT(ToggleVisibilityToolEditor()));
 	connect(ui->buttonSaveTexture, SIGNAL(clicked()), handler, SLOT(SaveVisibilityToolTexture()));

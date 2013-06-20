@@ -36,6 +36,9 @@
 #include "LandscapeEditorDrawSystem/CustomColorsProxy.h"
 #include "../SceneEditor/EditorConfig.h"
 #include "../../../Commands2/CustomColorsCommands2.h"
+#include "../SceneSignals.h"
+
+#define CUSTOM_COLOR_TEXTURE_PROP "customColorTexture"
 
 CustomColorsSystem::CustomColorsSystem(Scene* scene)
 :	SceneSystem(scene)
@@ -81,6 +84,12 @@ bool CustomColorsSystem::EnableLandscapeEditing()
 
 	landscapeSize = drawSystem->GetLandscapeProxy()->GetLandscapeTexture(Landscape::TEXTURE_TILE_FULL)->GetWidth();
 
+	FilePath filePath = GetCurrentSaveFileName();
+	if (!filePath.IsEmpty())
+	{
+		LoadTexture(filePath);
+	}
+
 	drawSystem->EnableCursor(landscapeSize);
 	drawSystem->SetCursorTexture(cursorTexture);
 	drawSystem->SetCursorSize(cursorSize);
@@ -115,6 +124,12 @@ bool CustomColorsSystem::DisableLandscapeEdititing()
 	drawSystem->GetLandscapeProxy()->SetCustomColorsTextureEnabled(false);
 	
 	enabled = false;
+
+	if (drawSystem->GetCustomColorsProxy()->GetChangesCount())
+	{
+		SceneSignals::Instance()->EmitNeedSaveCustomColorsTexture(((SceneEditor2 *) GetScene()));
+	}
+
 	return !enabled;
 }
 
@@ -266,8 +281,14 @@ Rect CustomColorsSystem::GetUpdatedRect()
 	
 	r.x = Max(r.x, 0.f);
 	r.y = Max(r.y, 0.f);
-	r.dx = Min(r.dx, textureSize - 1.f);
-	r.dy = Min(r.dy, textureSize - 1.f);
+	if (r.x + r.dx > textureSize)
+	{
+		r.dx = textureSize - r.x;
+	}
+	if (r.y + r.dy > textureSize)
+	{
+		r.dy = textureSize - r.y;
+	}
 	
 	return r;
 }
@@ -309,4 +330,98 @@ void CustomColorsSystem::CreateUndoPoint()
 	}
 
 	SafeRelease(originalImage);
+}
+
+void CustomColorsSystem::SaveTexture(const DAVA::FilePath &filePath)
+{
+	if(filePath.IsEmpty())
+		return;
+
+	Sprite* customColorsSprite = drawSystem->GetCustomColorsProxy()->GetSprite();
+	Texture* customColorsTexture = customColorsSprite->GetTexture();
+
+	Image* image = customColorsTexture->CreateImageFromMemory();
+	ImageLoader::Save(image, filePath);
+	SafeRelease(image);
+
+	StoreSaveFileName(filePath);
+	drawSystem->GetCustomColorsProxy()->ResetChanges();
+}
+
+void CustomColorsSystem::LoadTexture(const DAVA::FilePath &filePath)
+{
+	if(filePath.IsEmpty())
+		return;
+
+	Vector<Image*> images = ImageLoader::CreateFromFile(filePath);
+	if(images.empty())
+		return;
+
+	Image* image = images.front();
+	if(image)
+	{
+		Texture* texture = Texture::CreateFromData(image->GetPixelFormat(),
+												   image->GetData(),
+												   image->GetWidth(),
+												   image->GetHeight(),
+												   false);
+		Sprite* sprite = Sprite::CreateFromTexture(texture, 0, 0, texture->GetWidth(), texture->GetHeight());
+
+		StoreOriginalState();
+		RenderManager::Instance()->SetRenderTarget(drawSystem->GetCustomColorsProxy()->GetSprite());
+		sprite->Draw();
+		RenderManager::Instance()->RestoreRenderTarget();
+		AddRectToAccumulator(Rect(Vector2(0.f, 0.f), Vector2(texture->GetWidth(), texture->GetHeight())));
+
+		SafeRelease(sprite);
+		SafeRelease(texture);
+		for_each(images.begin(), images.end(), SafeRelease<Image>);
+
+		StoreSaveFileName(filePath);
+
+		CreateUndoPoint();
+	}
+}
+
+void CustomColorsSystem::StoreSaveFileName(const FilePath& filePath)
+{
+	KeyedArchive* customProps = drawSystem->GetLandscapeCustomProperties();
+	if (customProps)
+	{
+		customProps->SetString(CUSTOM_COLOR_TEXTURE_PROP, GetRelativePathToScenePath(filePath));
+	}
+}
+
+FilePath CustomColorsSystem::GetCurrentSaveFileName()
+{
+	String currentSaveName;
+
+	KeyedArchive* customProps = drawSystem->GetLandscapeCustomProperties();
+	if (customProps && customProps->IsKeyExists(CUSTOM_COLOR_TEXTURE_PROP))
+	{
+		currentSaveName = customProps->GetString(CUSTOM_COLOR_TEXTURE_PROP);
+	}
+
+	return GetAbsolutePathFromScenePath(currentSaveName);
+}
+
+FilePath CustomColorsSystem::GetScenePath()
+{
+	return ((SceneEditor2 *) GetScene())->GetScenePath().GetDirectory();
+}
+
+String CustomColorsSystem::GetRelativePathToScenePath(const FilePath &absolutePath)
+{
+	if(absolutePath.IsEmpty())
+		return String();
+
+	return absolutePath.GetRelativePathname(GetScenePath());
+}
+
+FilePath CustomColorsSystem::GetAbsolutePathFromScenePath(const String &relativePath)
+{
+	if(relativePath.empty())
+		return FilePath();
+
+	return (GetScenePath() + relativePath);
 }

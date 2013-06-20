@@ -45,12 +45,19 @@ public:
 	bool IsSpriteChanged();
 	
 	Rect GetChangedRect();
-	
+
+	int32 GetChangesCount() const;
+	void ResetChanges();
+	void IncrementChanges();
+	void DecrementChanges();
+
 protected:
 	Sprite* customColorsSprite;
 	Rect changedRect;
 	bool spriteChanged;
 	int32 size;
+
+	int32 changes;
 };
 
 #endif /* defined(__RESOURCEEDITORQT__CUSTOMCOLORSPROXY__) */
