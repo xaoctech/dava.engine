@@ -22,7 +22,7 @@
 #include "Scene/SceneSignals.h"
 
 #include <QApplication>
-#include "Scene/SceneEditorProxy.h"
+#include "Scene/SceneEditor2.h"
 
 SceneSelectionSystem::SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSystem *collSys, HoodSystem *hoodSys)
 	: DAVA::SceneSystem(scene)
@@ -165,13 +165,25 @@ void SceneSelectionSystem::Draw()
 	}
 }
 
+void SceneSelectionSystem::PropeccCommand(const Command2 *command, bool redo)
+{
+	if(NULL != command)
+	{
+		if(command->GetId() == CMDID_ENTITY_REMOVE)
+		{
+			// remove from selection entity that was removed by command
+			RemSelection(command->GetEntity());
+		}
+	}
+}
+
 void SceneSelectionSystem::SetSelection(DAVA::Entity *entity)
 {
 	// emit deselection for current selected items
 	for(size_t i = 0; i < curSelections.Size(); ++i)
 	{
 		EntityGroupItem selectedItem = curSelections.GetItem(i);
-		SceneSignals::Instance()->EmitDeselected((SceneEditorProxy *) GetScene(), selectedItem.solidEntity);
+		SceneSignals::Instance()->EmitDeselected((SceneEditor2 *) GetScene(), selectedItem.solidEntity);
 	}
 
 	// clear current selection
@@ -183,11 +195,11 @@ void SceneSelectionSystem::SetSelection(DAVA::Entity *entity)
 		EntityGroupItem selectableItem = GetSelectableEntity(entity);
 		curSelections.Add(selectableItem);
 
-		SceneSignals::Instance()->EmitSelected((SceneEditorProxy *) GetScene(), selectableItem.solidEntity);
+		SceneSignals::Instance()->EmitSelected((SceneEditor2 *) GetScene(), selectableItem.solidEntity);
 	}
 	else
 	{
-		SceneSignals::Instance()->EmitSelected((SceneEditorProxy *) GetScene(), NULL);
+		SceneSignals::Instance()->EmitSelected((SceneEditor2 *) GetScene(), NULL);
 	}
 
 	UpdateHoodPos();
@@ -200,7 +212,7 @@ void SceneSelectionSystem::AddSelection(DAVA::Entity *entity)
 		EntityGroupItem selectableItem = GetSelectableEntity(entity);
 		curSelections.Add(selectableItem);
 
-		SceneSignals::Instance()->EmitSelected((SceneEditorProxy *) GetScene(), selectableItem.solidEntity);
+		SceneSignals::Instance()->EmitSelected((SceneEditor2 *) GetScene(), selectableItem.solidEntity);
 	}
 
 	UpdateHoodPos();
@@ -211,7 +223,7 @@ void SceneSelectionSystem::RemSelection(DAVA::Entity *entity)
 	curSelections.Rem(entity);
 
 	EntityGroupItem selectableItem = GetSelectableEntity(entity);
-	SceneSignals::Instance()->EmitDeselected((SceneEditorProxy *) GetScene(), selectableItem.solidEntity);
+	SceneSignals::Instance()->EmitDeselected((SceneEditor2 *) GetScene(), selectableItem.solidEntity);
 
 	UpdateHoodPos();
 }

@@ -17,6 +17,7 @@
 #include <QMimeData>
 
 #include "DockSceneTree/SceneTreeModel.h"
+#include "Scene/SceneSignals.h"
 
 SceneTreeModel::SceneTreeModel(QObject* parent /*= 0*/ )
 	: QStandardItemModel(parent)
@@ -29,6 +30,8 @@ SceneTreeModel::SceneTreeModel(QObject* parent /*= 0*/ )
 	QStringList headerLabels;
 	headerLabels.append("Scene hierarchy");
 	setHorizontalHeaderLabels(headerLabels);
+
+	QObject::connect(SceneSignals::Instance(), SIGNAL(Removed(SceneEditor2 *, DAVA::Entity *)), this, SLOT(EntityRemoved(SceneEditor2 *, DAVA::Entity *)));
 }
 
 SceneTreeModel::~SceneTreeModel()
@@ -40,7 +43,7 @@ SceneTreeModel::~SceneTreeModel()
 	}
 }
 
-void SceneTreeModel::SetScene(SceneEditorProxy *scene)
+void SceneTreeModel::SetScene(SceneEditor2 *scene)
 {
 	// remove add rows
 	removeRows(0, rowCount());
@@ -69,7 +72,7 @@ void SceneTreeModel::SetScene(SceneEditorProxy *scene)
 	}
 }
 
-SceneEditorProxy* SceneTreeModel::GetScene() const
+SceneEditor2* SceneTreeModel::GetScene() const
 {
 	return curScene;
 }
@@ -151,8 +154,26 @@ bool SceneTreeModel::dropMimeData(const QMimeData * data, Qt::DropAction action,
 {
 	bool ret = false;
 
+	DAVA::Entity *parentEntity = GetEntity(parent);
+	if(NULL != parentEntity)
+	{
+
+	}
+
 	//ret = QStandardItemModel::dropMimeData(data, action, row, column, parent);
 
 	dropAccepted = ret;
 	return ret;
+}
+
+void SceneTreeModel::EntityRemoved(SceneEditor2 *scene, DAVA::Entity *entity)
+{
+	if(curScene == scene)
+	{
+		QModelIndex index = GetEntityIndex(entity);
+		if(index.isValid())
+		{
+			removeRow(index.row(), index.parent());
+		}
+	}
 }

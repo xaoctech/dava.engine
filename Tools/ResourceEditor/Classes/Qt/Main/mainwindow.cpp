@@ -114,8 +114,8 @@ void QtMainWindow::SetupActions()
 	connect(ui->actionSaveScene, SIGNAL(triggered()), actionHandler, SLOT(SaveScene()));
 	connect(ui->actionSaveToFolder, SIGNAL(triggered()), actionHandler, SLOT(SaveToFolderWithChilds()));
     
-    ui->actionExportPVRIOS->setData(GPU_POVERVR_IOS);
-    ui->actionExportPVRAndroid->setData(GPU_POVERVR_ANDROID);
+    ui->actionExportPVRIOS->setData(GPU_POWERVR_IOS);
+    ui->actionExportPVRAndroid->setData(GPU_POWERVR_ANDROID);
     ui->actionExportTegra->setData(GPU_TEGRA);
     ui->actionExportMali->setData(GPU_MALI);
     ui->actionExportAdreno->setData(GPU_ADRENO);
@@ -135,6 +135,7 @@ void QtMainWindow::SetupActions()
 	connect(ui->actionTileMapEditor, SIGNAL(triggered()), actionHandler, SLOT(TilemapEditor()));
 	connect(ui->actionRulerTool, SIGNAL(triggered()), actionHandler, SLOT(RulerTool()));
 	connect(ui->actionShowSettings, SIGNAL(triggered()), actionHandler, SLOT(ShowSettings()));
+    connect(ui->actionSquareTextures, SIGNAL(triggered()), actionHandler, SLOT(SquareTextures()));
     
 #if defined (__DAVAENGINE_MACOS__)
     ui->menuTools->removeAction(ui->actionBeast);
@@ -144,6 +145,12 @@ void QtMainWindow::SetupActions()
     
 	//Edit
 	connect(ui->actionConvertToShadow, SIGNAL(triggered()), actionHandler, SLOT(ConvertToShadow()));
+    
+    ui->actionEnableCameraLight->setChecked(EditorSettings::Instance()->GetShowEditorCamerLight());
+	connect(ui->actionEnableCameraLight, SIGNAL(triggered()), actionHandler, SLOT(CameraLightTrigerred()));
+
+    //Help
+    connect(ui->actionHelp, SIGNAL(triggered()), actionHandler, SLOT(OpenHelp()));
 }
 
 void QtMainWindow::SetupMainMenu()
@@ -233,8 +240,8 @@ void QtMainWindow::SetupMainMenu()
     //View Options
     connect(ui->actionShowNotPassableLandscape, SIGNAL(triggered()), actionHandler, SLOT(ToggleNotPassableTerrain()));
 
-    ui->actionReloadPoverVRIOS->setData(GPU_POVERVR_IOS);
-    ui->actionReloadPoverVRAndroid->setData(GPU_POVERVR_ANDROID);
+    ui->actionReloadPoverVRIOS->setData(GPU_POWERVR_IOS);
+    ui->actionReloadPoverVRAndroid->setData(GPU_POWERVR_ANDROID);
     ui->actionReloadTegra->setData(GPU_TEGRA);
     ui->actionReloadMali->setData(GPU_MALI);
     ui->actionReloadAdreno->setData(GPU_ADRENO);
@@ -313,6 +320,15 @@ void QtMainWindow::SetupToolBars()
 	ui->actionRemoveEntity->setEnabled(false);
 	ui->actionAddNewComponent->setEnabled(false);
 	ui->actionRemoveComponent->setEnabled(false);
+
+	QAction *undoSceneEditor2 = new QAction("Undo2", this);
+	QAction *redoSceneEditor2 = new QAction("Redo2", this);
+
+	QObject::connect(undoSceneEditor2, SIGNAL(triggered()), this, SLOT(Undo2()));
+	QObject::connect(redoSceneEditor2, SIGNAL(triggered()), this, SLOT(Redo2()));
+	ui->viewModeToolBar->addAction(undoSceneEditor2);
+	ui->viewModeToolBar->addAction(redoSceneEditor2);
+
 
 	// <-
 }
@@ -486,6 +502,7 @@ void QtMainWindow::ProjectOpened(const QString &path)
 	UpdateParticleSprites();
 }
 
+
 void QtMainWindow::UpdateParticleSprites()
 {
 	if(repackSpritesWaitDialog != NULL)
@@ -542,3 +559,20 @@ void QtMainWindow::UpdateLibraryFileTypes(bool showDAEFiles, bool showSC2Files)
 	emit LibraryFileTypesChanged(showDAEFiles, showSC2Files);
 }
 
+void QtMainWindow::Undo2()
+{
+	SceneEditor2* sceneEditor = ui->sceneTabWidget->GetCurrentScene();
+	if(NULL != sceneEditor)
+	{
+		sceneEditor->Undo();
+	}
+}
+
+void QtMainWindow::Redo2()
+{
+	SceneEditor2* sceneEditor = ui->sceneTabWidget->GetCurrentScene();
+	if(NULL != sceneEditor)
+	{
+		sceneEditor->Redo();
+	}
+}
