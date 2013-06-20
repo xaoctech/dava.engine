@@ -194,6 +194,7 @@ void AutotestingSystem::OnAppStarted()
             autotestingArchive->SetInt32("index", 0);
         }
         autotestingArchive->Save("~doc:/autotesting/autotesting.archive");
+        SafeRelease(autotestingArchive);
     }
 }
     
@@ -909,6 +910,7 @@ void AutotestingSystem::OnTestStart(const String &_testName)
     KeyedArchive *currentTestArchive = FindOrInsertTestArchive(dbUpdateObject, testId);
     currentTestArchive->SetString("Name", testName);
     SaveToDB(dbUpdateObject);
+    SafeRelease(dbUpdateObject);
     
     Log("DEBUG", Format("OnTestStart %s", testName.c_str()));
 }
