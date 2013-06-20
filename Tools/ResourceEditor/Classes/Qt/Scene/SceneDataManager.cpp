@@ -595,7 +595,7 @@ void SceneDataManager::TextureReloadAll(DAVA::ImageFileFormat asFile)
 		{
 			Texture *newTexture = TextureReload(descriptor, it->second, asFile);
 			SafeRelease(descriptor);
-		}
+		} //todo: need to reload texture as pinkplaceholder
 	}
 }
 
