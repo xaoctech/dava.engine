@@ -65,7 +65,7 @@ void ShadowVolumeRenderPass::Draw(Camera * camera)
 		RenderManager::Instance()->AppendState(RenderState::STATE_BLEND);
 		RenderManager::Instance()->SetBlendMode(BLEND_ZERO, BLEND_ONE);
         
-		RenderManager::Instance()->ClearStencilBuffer(0);
+		//RenderManager::Instance()->ClearStencilBuffer(0); //moved to per-frame clear
 		RenderManager::Instance()->AppendState(RenderState::STATE_STENCIL_TEST);
 		
 		RenderManager::State()->SetStencilFunc(FACE_FRONT_AND_BACK, CMP_ALWAYS);
