@@ -49,7 +49,7 @@ private:
 	Vector<Entity*> entities;
 
 	void UpdateLod(Entity * entity);
-	void RecheckLod(Entity * entity);
+	bool RecheckLod(Entity * entity);
 
 	Camera * camera;
 };
