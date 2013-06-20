@@ -1163,7 +1163,8 @@ void QtMainWindowHandler::RegisterHeightmapEditorWidgets(QPushButton* toggleButt
 														 QRadioButton* averageDrawing,
 														 QRadioButton* absoluteDrawing,
 														 QSlider* strength,
-														 QSlider* averageStrength)
+														 QSlider* averageStrength,
+														 QLabel* dropperHeight)
 {
 	heightmapToggleButton = toggleButton;
 	heightmapBrushSize = brushSize;
@@ -1173,12 +1174,14 @@ void QtMainWindowHandler::RegisterHeightmapEditorWidgets(QPushButton* toggleButt
 	heightmapDrawingAbsolute = absoluteDrawing;
 	heightmapStrength = strength;
 	heightmapAverageStrength = averageStrength;
+	heightmapDropperHeight = dropperHeight;
 }
 
 void QtMainWindowHandler::SetHeightmapEditorWidgetsState(bool state)
 {
 	DVASSERT(heightmapToggleButton && heightmapBrushSize && heightmapToolImage && heightmapDrawingRelative &&
-			 heightmapDrawingAverage && heightmapDrawingAbsolute && heightmapStrength && heightmapAverageStrength);
+			 heightmapDrawingAverage && heightmapDrawingAbsolute && heightmapStrength && heightmapAverageStrength &&
+			 heightmapDropperHeight);
 
 	heightmapToggleButton->blockSignals(true);
 	heightmapToggleButton->setCheckable(state);
@@ -1354,6 +1357,18 @@ void QtMainWindowHandler::SetHeightmapEditorAverageStrength(int averageStrength)
 	float32 max = heightmapAverageStrength->maximum();
 	float32 v = avStr / max;
 	sep->heightmapEditorSystem->SetAverageStrength(v);
+}
+
+void QtMainWindowHandler::SetHeightmapDropperHeight(SceneEditor2 *scene, double height)
+{
+	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
+	SceneEditor2* sep = window->GetCurrentScene();
+	if (sep != scene)
+	{
+		return;
+	}
+
+	heightmapDropperHeight->setText(QString::number(height));
 }
 
 
@@ -1596,10 +1611,50 @@ void QtMainWindowHandler::ToggleCustomColorsEditor()
 
 void QtMainWindowHandler::SaveCustomColorsTexture()
 {
+	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
+	SceneEditor2* scene = window->GetCurrentScene();
+	if (!scene)
+	{
+		return;
+	}
+
+	FilePath selectedPathname = scene->customColorsSystem->GetCurrentSaveFileName();
+	if (selectedPathname.IsEmpty())
+	{
+		selectedPathname = scene->GetScenePath().GetDirectory();
+	}
+
+	QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save texture"),
+													QString(selectedPathname.GetAbsolutePathname().c_str()),
+													QString("PNG image (*.png)"));
+	selectedPathname = PathnameToDAVAStyle(filePath);
+
+	if (!selectedPathname.IsEmpty())
+	{
+		scene->customColorsSystem->SaveTexture(selectedPathname);
+	}
 }
 
 void QtMainWindowHandler::LoadCustomColorsTexture()
 {
+	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
+	SceneEditor2* scene = window->GetCurrentScene();
+	if (!scene)
+	{
+		return;
+	}
+
+	FilePath currentPath = scene->customColorsSystem->GetCurrentSaveFileName();
+	if (currentPath.IsEmpty())
+	{
+		currentPath = scene->GetScenePath().GetDirectory();
+	}
+
+	FilePath selectedPathname = GetOpenFileName(String("Load texture"), currentPath, String("PNG image (*.png)"));
+	if(!selectedPathname.IsEmpty())
+	{
+		scene->customColorsSystem->LoadTexture(selectedPathname);
+	}
 }
 
 void QtMainWindowHandler::SetCustomColorsBrushSize(int brushSize)
@@ -1624,6 +1679,26 @@ void QtMainWindowHandler::SetCustomColorsColor(int colorIndex)
 	}
 
 	sep->customColorsSystem->SetColor(colorIndex);
+}
+
+void QtMainWindowHandler::NeedSaveCustomColorsTexture(SceneEditor2 *scene)
+{
+	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
+	SceneEditor2* sep = window->GetCurrentScene();
+	if (sep != scene)
+	{
+		return;
+	}
+
+	FilePath selectedPathname = scene->customColorsSystem->GetCurrentSaveFileName();
+	if(!selectedPathname.IsEmpty())
+	{
+		scene->customColorsSystem->SaveTexture(selectedPathname);
+	}
+	else
+	{
+		SaveCustomColorsTexture();
+	}
 }
 
 
@@ -1666,18 +1741,39 @@ void QtMainWindowHandler::SetVisibilityToolWidgetsState(bool state)
 	visibilityToolAreaSize->blockSignals(!state);
 }
 
-void QtMainWindowHandler::SetVisibilityToolButtonsState(bool pointButtonChecked, bool areaButtonChecked)
+void QtMainWindowHandler::SetVisibilityToolButtonsState(SceneEditor2* scene)
 {
+	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
+	SceneEditor2* sep = window->GetCurrentScene();
+
+	if (sep != scene)
+	{
+		return;
+	}
+
+	VisibilityToolSystem::eVisibilityToolState state = scene->visibilityToolSystem->GetState();
+	bool pointButton = false;
+	bool areaButton = false;
+
+	switch (state) {
+		case VisibilityToolSystem::VT_STATE_SET_AREA:
+			areaButton = true;
+			break;
+
+		case VisibilityToolSystem::VT_STATE_SET_POINT:
+			pointButton = true;
+			break;
+	}
 	bool b;
 
 	b = visibilityToolSetPoint->signalsBlocked();
 	visibilityToolSetPoint->blockSignals(true);
-	visibilityToolSetPoint->setChecked(pointButtonChecked);
+	visibilityToolSetPoint->setChecked(pointButton);
 	visibilityToolSetPoint->blockSignals(b);
 
 	b = visibilityToolSetArea->signalsBlocked();
 	visibilityToolSetArea->blockSignals(true);
-	visibilityToolSetArea->setChecked(areaButtonChecked);
+	visibilityToolSetArea->setChecked(areaButton);
 	visibilityToolSetArea->blockSignals(b);
 }
 
@@ -1718,6 +1814,25 @@ void QtMainWindowHandler::ToggleVisibilityToolEditor()
 
 void QtMainWindowHandler::SaveVisibilityToolTexture()
 {
+	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
+	SceneEditor2* scene = window->GetCurrentScene();
+	if (!scene)
+	{
+		return;
+	}
+
+    FilePath currentPath = FileSystem::Instance()->GetUserDocumentsPath();
+	QString filePath = QFileDialog::getSaveFileName(NULL,
+													QString("Save visibility tool texture"),
+													QString(currentPath.GetAbsolutePathname().c_str()),
+													QString("PNG image (*.png)"));
+
+	FilePath selectedPathname = PathnameToDAVAStyle(filePath);
+
+	if(!selectedPathname.IsEmpty())
+	{
+		scene->visibilityToolSystem->SaveTexture(selectedPathname);
+	}
 }
 
 void QtMainWindowHandler::SetVisibilityToolAreaSize(int size)

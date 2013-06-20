@@ -20,6 +20,7 @@
 #include "Project/ProjectManager.h"
 #include "Classes/Qt/Main/QtMainWindowHandler.h"
 #include "../SceneEditor/EditorConfig.h"
+#include "../Scene/SceneSignals.h"
 
 CustomColorsPropertiesView::CustomColorsPropertiesView(QWidget* parent)
 :	QWidget(parent),
@@ -41,6 +42,8 @@ void CustomColorsPropertiesView::Init()
 
 	QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
 	connect(ui->buttonEnableCustomColorsEditor, SIGNAL(clicked()), handler, SLOT(ToggleCustomColorsEditor()));
+	connect(SceneSignals::Instance(), SIGNAL(NeedSaveCustomColorsTexture(SceneEditor2*)),
+			handler, SLOT(NeedSaveCustomColorsTexture(SceneEditor2*)));
 	
 	ui->buttonSaveTexture->blockSignals(true);
 	ui->sliderBrushSize->blockSignals(true);

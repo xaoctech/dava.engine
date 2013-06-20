@@ -46,6 +46,7 @@ class ModificationWidget;
 class QSpinBox;
 class QCheckBox;
 class QDoubleSpinBox;
+class SceneEditor2;
 
 class QtMainWindowHandler: public QObject, public DAVA::Singleton<QtMainWindowHandler>
 {
@@ -76,7 +77,7 @@ public:
     void SetWaitingCursorEnabled(bool enabled);
 
 	//heightmap editor
-	void RegisterHeightmapEditorWidgets(QPushButton*, QSlider*, QComboBox*, QRadioButton*, QRadioButton*, QRadioButton*, QSlider*, QSlider*);
+	void RegisterHeightmapEditorWidgets(QPushButton*, QSlider*, QComboBox*, QRadioButton*, QRadioButton*, QRadioButton*, QSlider*, QSlider*, QLabel*);
 	void SetHeightmapEditorWidgetsState(bool state);
 
 	//tilemask editor
@@ -183,6 +184,7 @@ public slots:
 	void SetAbsoluteHeightmapDrawing();
 	void SetHeightmapEditorStrength(int strength);
 	void SetHeightmapEditorAverageStrength(int averageStrength);
+	void SetHeightmapDropperHeight(SceneEditor2* scene, double height);
 
 	//tilemask editor
 	void ToggleTilemaskEditor();
@@ -204,6 +206,7 @@ public slots:
 	void LoadCustomColorsTexture();
 	void SetCustomColorsBrushSize(int brushSize);
 	void SetCustomColorsColor(int colorIndex);
+	void NeedSaveCustomColorsTexture(SceneEditor2* scene);
 
 	//visibility check tool
 	void ToggleVisibilityTool();
@@ -218,7 +221,7 @@ public slots:
 	void SetVisibilityToolAreaSize(int size);
 	void SetVisibilityPoint();
 	void SetVisibilityArea();
-	void SetVisibilityToolButtonsState(bool pointButtonChecked, bool areaButtonChecked);
+	void SetVisibilityToolButtonsState(SceneEditor2* scene);
 
     //
     void RepackAndReloadTextures();
@@ -324,6 +327,7 @@ private:
 	QRadioButton* heightmapDrawingAbsolute;
 	QSlider* heightmapStrength;
 	QSlider* heightmapAverageStrength;
+	QLabel* heightmapDropperHeight;
 
 	//tilemassk editor
 	QPushButton* tilemaskToggleButton;

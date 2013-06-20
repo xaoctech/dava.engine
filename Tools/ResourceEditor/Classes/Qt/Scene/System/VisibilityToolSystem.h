@@ -52,6 +52,9 @@ public:
 
 	void SetVisibilityPoint();
 	void SetVisibilityArea();
+	eVisibilityToolState GetState();
+
+	void SaveTexture(const FilePath& filePath);
 
 protected:
 	static const uint32 CROSS_TEXTURE_SIZE = 64;

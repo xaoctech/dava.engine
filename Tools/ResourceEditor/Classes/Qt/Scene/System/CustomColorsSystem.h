@@ -51,6 +51,11 @@ public:
 	
 	void SetBrushSize(int32 brushSize);
 	void SetColor(int32 colorIndex);
+
+	void SaveTexture(const FilePath& filePath);
+	void LoadTexture(const FilePath& filePath);
+	FilePath GetCurrentSaveFileName();
+
 protected:
 	bool enabled;
 	
@@ -89,6 +94,14 @@ protected:
 	
 	void StoreOriginalState();
 	void CreateUndoPoint();
+
+	void StoreSaveFileName(const FilePath& filePath);
+
+	FilePath GetScenePath();
+	String GetRelativePathToScenePath(const FilePath& absolutePath);
+	FilePath GetAbsolutePathFromScenePath(const String& relativePath);
+	String GetRelativePathToProjectPath(const FilePath& absolutePath);
+	FilePath GetAbsolutePathFromProjectPath(const String& relativePath);
 };
 
 #endif /* defined(__RESOURCEEDITORQT__CUSTOMCOLORSSYSTEM__) */

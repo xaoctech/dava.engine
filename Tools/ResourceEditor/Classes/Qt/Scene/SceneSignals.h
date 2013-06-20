@@ -55,8 +55,9 @@ signals:
 	void MouseOver(SceneEditor2 *scene, const EntityGroup *entities);
 	void MouseOverSelection(SceneEditor2 *scene, const EntityGroup *entities);
 
-	void UpdateDropperHeight(double height);
-	void UpdateVisibilityButtonsState(bool pointButtonChecked, bool areaButtonChecked);
+	void UpdateDropperHeight(SceneEditor2* scene, double height);
+	void UpdateVisibilityButtonsState(SceneEditor2* scene);
+	void NeedSaveCustomColorsTexture(SceneEditor2* scene);
 
 public:
 	void EmitOpened(SceneEditor2 *scene) { emit Opened(scene); }
@@ -71,8 +72,9 @@ public:
 	void EmitSelected(SceneEditor2 *scene, DAVA::Entity *entity) { emit Selected(scene, entity); }
 	void EmitDeselected(SceneEditor2 *scene, DAVA::Entity *entity)  { emit Deselected(scene, entity); }
 
-	void EmitUpdateDropperHeight(DAVA::float32 height) { emit UpdateDropperHeight((double)height); };
-	void EmitUpdateVisibilityButtonsState(bool pointButtonChecked, bool areaButtonChecked) { emit UpdateVisibilityButtonsState(pointButtonChecked, areaButtonChecked); };
+	void EmitUpdateDropperHeight(SceneEditor2* scene, DAVA::float32 height) { emit UpdateDropperHeight(scene, (double)height); };
+	void EmitUpdateVisibilityButtonsState(SceneEditor2* scene) { emit UpdateVisibilityButtonsState(scene); };
+	void EmitNeedSaveCustomColorsTexture(SceneEditor2* scene) { emit NeedSaveCustomColorsTexture(scene); };
 
 	void EmitAdded(SceneEditor2 *scene, DAVA::Entity *entity) { emit Added(scene, entity); }
 	void EmitRemoved(SceneEditor2 *scene, DAVA::Entity *entity) { emit Removed(scene, entity); }

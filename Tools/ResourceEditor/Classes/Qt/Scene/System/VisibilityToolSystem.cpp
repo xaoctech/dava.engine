@@ -318,13 +318,11 @@ void VisibilityToolSystem::SetState(eVisibilityToolState newState)
 		case VT_STATE_SET_POINT:
 			drawSystem->SetCursorTexture(crossTexture);
 			drawSystem->SetCursorSize(CROSS_TEXTURE_SIZE);
-			SceneSignals::Instance()->EmitUpdateVisibilityButtonsState(true, false);
 			break;
 
 		case VT_STATE_SET_AREA:
 			drawSystem->SetCursorTexture(cursorTexture);
 			drawSystem->SetCursorSize(cursorSize);
-			SceneSignals::Instance()->EmitUpdateVisibilityButtonsState(false, true);
 			break;
 
 		default:
@@ -332,9 +330,9 @@ void VisibilityToolSystem::SetState(eVisibilityToolState newState)
 			{
 				drawSystem->SetCursorSize(0);
 			}
-			SceneSignals::Instance()->EmitUpdateVisibilityButtonsState(false, false);
 			break;
 	}
+	SceneSignals::Instance()->EmitUpdateVisibilityButtonsState(dynamic_cast<SceneEditor2*>(GetScene()));
 }
 
 void VisibilityToolSystem::SetVisibilityPoint()
@@ -548,4 +546,24 @@ void VisibilityToolSystem::DrawVisibilityAreaPoints(const Vector<DAVA::Vector3> 
 
 	manager->ResetColor();
 	manager->RestoreRenderTarget();
+}
+
+void VisibilityToolSystem::SaveTexture(const FilePath& filePath)
+{
+	if (filePath.IsEmpty())
+	{
+		return;
+	}
+
+	Sprite* visibilityToolSprite = drawSystem->GetVisibilityToolProxy()->GetSprite();
+	Texture* visibilityToolTexture = visibilityToolSprite->GetTexture();
+
+	Image* image = visibilityToolTexture->CreateImageFromMemory();
+	ImageLoader::Save(image, filePath);
+	SafeRelease(image);
+}
+
+VisibilityToolSystem::eVisibilityToolState VisibilityToolSystem::GetState()
+{
+	return state;
 }

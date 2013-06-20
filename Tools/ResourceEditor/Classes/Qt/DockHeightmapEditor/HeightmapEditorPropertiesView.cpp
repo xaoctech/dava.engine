@@ -54,7 +54,8 @@ void HeightmapEditorPropertiesView::Init()
 
 	connect(ui->sliderStrength, SIGNAL(valueChanged(int)), ui->labelStrength, SLOT(setNum(int)));
 	connect(ui->sliderAverageStrength, SIGNAL(valueChanged(int)), ui->labelAverageStrength, SLOT(setNum(int)));
-	connect(SceneSignals::Instance(), SIGNAL(UpdateDropperHeight(double)), ui->labelDropperHeight, SLOT(setNum(double)));
+	connect(SceneSignals::Instance(), SIGNAL(UpdateDropperHeight(SceneEditor2*, double)),
+			handler, SLOT(SetHeightmapDropperHeight(SceneEditor2*, double)));
 
 	ui->sliderBrushSize->setValue(35);
 	ui->sliderStrength->setValue(15);
@@ -76,7 +77,8 @@ void HeightmapEditorPropertiesView::Init()
 																	ui->radioAvg,
 																	ui->radioAbsDrop,
 																	ui->sliderStrength,
-																	ui->sliderAverageStrength);
+																	ui->sliderAverageStrength,
+																	ui->labelDropperHeight);
 
 	handler->SetHeightmapEditorWidgetsState(false);
 }
