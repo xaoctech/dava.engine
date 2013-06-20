@@ -32,6 +32,11 @@ public:
 	SceneTree(QWidget *parent = 0);
 	~SceneTree();
 
+public slots:
+	void ShowContextMenu(const QPoint &pos);
+	void LookAtSelection();
+	void RemoveSelection();
+
 protected:
 	SceneTreeModel * treeModel;
 	bool skipTreeSelectionProcessing;
@@ -39,12 +44,14 @@ protected:
 	void dropEvent(QDropEvent * event);
 
 protected slots:
-	void SceneActivated(SceneEditorProxy *scene);
-	void SceneDeactivated(SceneEditorProxy *scene);
-	void EntitySelected(SceneEditorProxy *scene, DAVA::Entity *entity);
-	void EntityDeselected(SceneEditorProxy *scene, DAVA::Entity *entity);
+	void SceneActivated(SceneEditor2 *scene);
+	void SceneDeactivated(SceneEditor2 *scene);
+	void EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity);
+	void EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity);
 
 	void TreeSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
+	void TreeItemClicked(const QModelIndex & index);
+	void TreeItemDoubleClicked(const QModelIndex & index);
 };
 
 #endif // __QT_SCENE_TREE_H__
