@@ -30,7 +30,7 @@
 #include "AnimationTestScreen.h"
 #include "TestScreen.h"
 #include "TouchEffectsControl.h"
-#include "Scene3D/RotatingCubeNode.h"
+//#include "Scene3D/RotatingCubeNode.h"
 
 void AnimationTestScreen::LoadResources()
 {
@@ -50,8 +50,8 @@ void AnimationTestScreen::LoadResources()
 
 	SceneFile * file = new SceneFile();
 	//file->SetDebugLog(true);
-	file->LoadScene("~res:/Scenes/vit/scene.sce", scene);
-    scene->AddNode(scene->GetRootNode("~res:/Scenes/vit/scene.sce"));
+	file->LoadScene(FilePath("~res:/Scenes/vit/scene.sce"), scene);
+    scene->AddNode(scene->GetRootNode(FilePath("~res:/Scenes/vit/scene.sce")));
 
 //	file->LoadScene("~res:/Scenes/garage_lit/hungar.sce", scene);
 //  scene->AddNode(scene->GetRootNode("~res:/Scenes/garage_lit/hungar.sce"));
@@ -105,13 +105,13 @@ void AnimationTestScreen::LoadResources()
     viewYAngle = 0; 
     
 	positionJoypad = new UIJoypad(Rect(0, 320 - 80, 80, 80));
-    positionJoypad->GetBackground()->SetSprite("~res:/Gfx/Joypad/joypad", 0);
-    positionJoypad->SetStickSprite("~res:/Gfx/Joypad/joypad", 1);
+    positionJoypad->GetBackground()->SetSprite(FilePath("~res:/Gfx/Joypad/joypad"), 0);
+    positionJoypad->SetStickSprite(FilePath("~res:/Gfx/Joypad/joypad"), 1);
 	AddControl(positionJoypad);
 
     angleJoypad = new UIJoypad(Rect(480 - 80, 320 - 80, 80, 80));
-    angleJoypad->GetBackground()->SetSprite("~res:/Gfx/Joypad/joypad", 0);
-    angleJoypad->SetStickSprite("~res:/Gfx/Joypad/joypad", 1);
+    angleJoypad->GetBackground()->SetSprite(FilePath("~res:/Gfx/Joypad/joypad"), 0);
+    angleJoypad->SetStickSprite(FilePath("~res:/Gfx/Joypad/joypad"), 1);
 	AddControl(angleJoypad);
 }  
 
@@ -235,7 +235,7 @@ bool AnimationTestScreen::IsNodeExpandable(UIHierarchy *forHierarchy, void *forN
 {
     if (forNode) 
     {
-        return ((SceneNode*)forNode)->GetChildrenCount() > 0;
+        return ((Entity*)forNode)->GetChildrenCount() > 0;
     }
     
     return scene->GetChildrenCount() > 0;
@@ -245,7 +245,7 @@ int32 AnimationTestScreen::ChildrenCount(UIHierarchy *forHierarchy, void *forPar
 {
     if (forParent) 
     {
-        return ((SceneNode*)forParent)->GetChildrenCount();
+        return ((Entity*)forParent)->GetChildrenCount();
     }
     
     return scene->GetChildrenCount();
@@ -256,7 +256,7 @@ void *AnimationTestScreen::ChildAtIndex(UIHierarchy *forHierarchy, void *forPare
 {
     if (forParent) 
     {
-        return ((SceneNode*)forParent)->GetChild(index);
+        return ((Entity*)forParent)->GetChild(index);
     }
     
     return scene->GetChild(index);
@@ -271,11 +271,11 @@ UIHierarchyCell *AnimationTestScreen::CellForNode(UIHierarchy *forHierarchy, voi
     }
         //fill cell whith data
     Font *fnt;
-    fnt = FTFont::Create("~res:/Fonts/MyriadPro-Regular.otf");
+    fnt = FTFont::Create(FilePath("~res:/Fonts/MyriadPro-Regular.otf"));
 //    fnt = GraphicsFont::Create("~res:/Fonts/korinna.def", "~res:/Gfx/Fonts2/korinna");
     fnt->SetSize(12);
     
-    SceneNode *n = (SceneNode *)node;
+    Entity *n = (Entity *)node;
     
     c->text->SetFont(fnt);
     c->text->SetText(StringToWString(n->GetName()));

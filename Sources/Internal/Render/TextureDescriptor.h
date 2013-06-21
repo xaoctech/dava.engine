@@ -34,6 +34,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
 #include "Utils/MD5.h"
+#include "FileSystem/FilePath.h"
 
 //#define TEXTURE_SPLICING_ENABLED
 
@@ -74,41 +75,41 @@ public:
     TextureDescriptor();
     virtual ~TextureDescriptor();
     
-    static TextureDescriptor *CreateFromFile(const String &filePathname);
+    static TextureDescriptor *CreateFromFile(const FilePath &filePathname);
     
     
     bool UpdateCrcForFormat(ImageFileFormat fileFormat) const;
 
-    bool Load(const String &filePathname);
+    bool Load(const FilePath &filePathname);
 
     void Save() const;
-    void Save(const String &filePathname) const;
+    void Save(const FilePath &filePathname) const;
     
 #if defined TEXTURE_SPLICING_ENABLED
-    void ExportAndSplice(const String &filePathname, const String &texturePathname);
+    void ExportAndSplice(const FilePath &filePathname, const FilePath &texturePathname);
 #else //#if defined TEXTURE_SPLICING_ENABLED
-    void Export(const String &filePathname);
+    void Export(const FilePath &filePathname);
 #endif //#if defined TEXTURE_SPLICING_ENABLED
 
     bool GetGenerateMipMaps() const;
 
-    String GetSourceTexturePathname() const; 
+    FilePath GetSourceTexturePathname() const; 
     static String GetSourceTextureExtension(); 
 
     static String GetSupportedTextureExtensions();
 
-    static String GetDescriptorPathname(const String &texturePathname);
+    static FilePath GetDescriptorPathname(const FilePath &texturePathname);
     static String GetDescriptorExtension();
     
     bool IsSourceChanged(ImageFileFormat fileFormat);
     
-    static String GetPathnameForFormat(const String &pathname, ImageFileFormat fileFormat);
-    static ImageFileFormat GetFormatForPathname(const String &pathname);
+    static FilePath GetPathnameForFormat(const FilePath &pathname, ImageFileFormat fileFormat);
+    static ImageFileFormat GetFormatForPathname(const FilePath &pathname);
     static ImageFileFormat GetFormatForExtension(const String &extension);
 
     void SetDefaultValues();
     
-    const bool IsCompressedFile() const;
+    bool IsCompressedFile() const;
     
 protected:
     
@@ -157,7 +158,7 @@ public:
     File *textureFile;
 #endif //#if defined TEXTURE_SPLICING_ENABLED
     
-    String pathname;
+    FilePath pathname;
     
     bool isCompressedFile;
 };

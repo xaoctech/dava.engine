@@ -4,25 +4,21 @@
 #include "../Commands/CommandsManager.h"
 #include "../Commands/FileCommands.h"
 #include "../Commands/ToolsCommands.h"
-#include "../Commands/CommandViewport.h"
 #include "../Commands/SceneGraphCommands.h"
 #include "../Commands/CommandReloadTextures.h"
 #include "../Commands/ParticleEditorCommands.h"
-#include "../Commands/LandscapeOptionsCommands.h"
 #include "../Commands/TextureOptionsCommands.h"
 #include "../Commands/CustomColorCommands.h"
 #include "../Commands/VisibilityCheckToolCommands.h"
 #include "../Commands/TilemapEditorCommands.h"
 #include "../Commands/HeightmapEditorCommands.h"
-#include "../Commands/ModificationOptionsCommands.h"
 #include "../Commands/SetSwitchIndexCommands.h"
-#include "../Commands/HangingObjectsCommands.h"
-#include "../Commands/EditCommands.h"
 #include "../Commands/MaterialViewOptionsCommands.h"
 #include "../Constants.h"
 #include "../SceneEditor/EditorSettings.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/EditorBodyControl.h"
+#include "../DockHangingObjects/HangingObjectsHelper.h"
 #include "Scene/SceneDataManager.h"
 #include "Scene/SceneData.h"
 #include "Main/QtUtils.h"
@@ -30,6 +26,8 @@
 #include "TextureBrowser/TextureBrowser.h"
 #include "Project/ProjectManager.h"
 #include "ModificationWidget.h"
+#include "../Commands/CommandSignals.h"
+#include "SceneEditor/EntityOwnerPropertyHelper.h"
 
 #include <QPoint>
 #include <QMenu>
@@ -41,6 +39,7 @@
 #include <QComboBox>
 #include <QStatusBar>
 #include <QSpinBox.h>
+#include <QFileDialog>
 
 #include "Render/LibDxtHelper.h"
 
@@ -72,6 +71,8 @@ QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
 	connect(sceneDataManager, SIGNAL(SceneReleased(SceneData*)), this, SLOT(OnSceneReleased(SceneData*)));
 	connect(sceneDataManager, SIGNAL(SceneCreated(SceneData*)), this, SLOT(OnSceneCreated(SceneData*)));
 	connect(QtMainWindow::Instance(), SIGNAL(RepackAndReloadFinished()), this, SLOT(ReloadSceneTextures()));
+	connect(CommandSignals::Instance(), SIGNAL(CommandAffectsEntities(DAVA::Scene* , CommandList::eCommandId , const DAVA::Set<DAVA::Entity*>& ) ) ,
+			this,SLOT( OnEntityModified(DAVA::Scene* , CommandList::eCommandId , const DAVA::Set<DAVA::Entity*>& ) ));
 }
 
 QtMainWindowHandler::~QtMainWindowHandler()
@@ -102,7 +103,31 @@ void QtMainWindowHandler::ClearActions(int32 count, QAction **actions)
 
 void QtMainWindowHandler::NewScene()
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandNewScene());
+    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+    if(screen)
+    {
+        SceneData *levelScene = SceneDataManager::Instance()->SceneGetLevel();
+        int32 answer = ShowSaveSceneQuestion(levelScene->GetScene());
+        if(answer == MB_FLAG_CANCEL)
+        {
+            return;
+        }
+        
+        if(answer == MB_FLAG_YES)
+        {
+            bool saved = SaveScene(levelScene->GetScene());
+            if(!saved)
+            {
+                return;
+            }
+        }
+        
+		// Can now create the scene.
+		screen->NewScene();
+        
+        SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+        SceneDataManager::Instance()->SetActiveScene(activeScene->GetScene());
+    }
 }
 
 
@@ -125,13 +150,106 @@ void QtMainWindowHandler::OpenProject()
 
 void QtMainWindowHandler::OpenResentScene(int32 index)
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandOpenScene(EditorSettings::Instance()->GetLastOpenedFile(index)));
+	DAVA::String path = EditorSettings::Instance()->GetLastOpenedFile(index);
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandOpenScene(path));
 }
 
-void QtMainWindowHandler::SaveScene()
+bool QtMainWindowHandler::SaveScene()
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandSaveScene());
+    return SaveScene(SceneDataManager::Instance()->SceneGetActive()->GetScene());
 }
+
+bool QtMainWindowHandler::SaveScene(Scene *scene)
+{
+    bool sceneWasSaved = false;
+    
+    SceneData *activeScene = SceneDataManager::Instance()->SceneGet(scene);
+    if(activeScene->CanSaveScene())
+    {
+		FilePath currentPath = activeScene->GetScenePathname();
+        if(currentPath.IsEmpty())
+        {
+			currentPath = EditorSettings::Instance()->GetDataSourcePath();
+        }
+        
+        QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save Scene File"), QString(currentPath.GetAbsolutePathname().c_str()),
+                                                        QString("Scene File (*.sc2)")
+                                                        );
+        if(0 < filePath.size())
+        {
+			FilePath normalizedPathname = PathnameToDAVAStyle(filePath);
+			sceneWasSaved = SaveScene(scene, normalizedPathname);
+
+			EditorSettings::Instance()->AddLastOpenedFile(normalizedPathname);
+			UpdateRecentScenesList();
+        }
+    }
+    
+    QtMainWindowHandler::Instance()->RestoreDefaultFocus();
+    return sceneWasSaved;
+}
+
+bool QtMainWindowHandler::SaveScene(Scene *scene, const FilePath &pathname)
+{
+	SaveParticleEmitterNodes(scene);
+
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	screen->SaveSceneToFile(pathname);
+
+	return true;
+}
+
+
+void QtMainWindowHandler::SaveParticleEmitterNodes(Scene* scene)
+{
+	if (!scene) return;
+    
+	int32 childrenCount = scene->GetChildrenCount();
+	for (int32 i = 0; i < childrenCount; i ++)
+	{
+		SaveParticleEmitterNodeRecursive(scene->GetChild(i));
+	}
+}
+
+void QtMainWindowHandler::SaveParticleEmitterNodeRecursive(Entity* parentNode)
+{
+	bool needSaveThisLevelNode = true;
+	ParticleEmitter * emitter = GetEmitter(parentNode);
+	if (!emitter)
+	{
+		needSaveThisLevelNode = false;
+	}
+    
+	if (needSaveThisLevelNode)
+	{
+		// Do we have file name? Ask for it, if not.
+		FilePath yamlPath = emitter->GetConfigPath();
+		if (yamlPath.IsEmpty())
+		{
+			QString saveDialogCaption = QString("Save Particle Emitter \"%1\"").arg(QString::fromStdString(parentNode->GetName()));
+			QString saveDialogYamlPath = QFileDialog::getSaveFileName(NULL, saveDialogCaption, "", QString("Yaml File (*.yaml)"));
+            
+			if (!saveDialogYamlPath.isEmpty())
+			{
+				yamlPath = PathnameToDAVAStyle(saveDialogYamlPath);
+			}
+		}
+        
+		if (!yamlPath.IsEmpty())
+		{
+			emitter->SaveToYaml(yamlPath);
+		}
+	}
+    
+	// Repeat for all children.
+	int32 childrenCount = parentNode->GetChildrenCount();
+	for (int32 i = 0; i < childrenCount; i ++)
+	{
+		SaveParticleEmitterNodeRecursive(parentNode->GetChild(i));
+	}
+}
+
+
 
 void QtMainWindowHandler::ExportAsPNG()
 {
@@ -160,7 +278,11 @@ void QtMainWindowHandler::CreateNode(ResourceEditor::eNodeType type)
 
 void QtMainWindowHandler::Materials()
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandMaterials());
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	if (screen)
+	{
+		screen->MaterialsTriggered();
+	}
 
 	/*
 	MaterialBrowser *materialBrowser = new MaterialBrowser((QWidget *) parent());
@@ -182,12 +304,20 @@ void QtMainWindowHandler::Materials()
 
 void QtMainWindowHandler::HeightmapEditor()
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandHeightmapEditor());
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	if (screen)
+	{
+		screen->HeightmapTriggered();
+	}
 }
 
 void QtMainWindowHandler::TilemapEditor()
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandTilemapEditor());
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	if (screen)
+	{
+		screen->TilemapTriggered();
+	}
 }
 
 void QtMainWindowHandler::ConvertTextures()
@@ -202,7 +332,11 @@ void QtMainWindowHandler::ConvertTextures()
 
 void QtMainWindowHandler::SetViewport(ResourceEditor::eViewportType type)
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandViewport(type));
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	if (screen)
+	{
+		screen->SetViewport(type);
+	}
 }
 
 
@@ -371,12 +505,17 @@ void QtMainWindowHandler::RestoreViews()
 
 void QtMainWindowHandler::RefreshSceneGraph()
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandRefreshSceneGraph());
+	SceneData * activeScene = SceneDataManager::Instance()->SceneGetActive();
+	activeScene->RebuildSceneGraph();
 }
 
 void QtMainWindowHandler::ShowSettings()
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandSettings());
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	if (screen)
+	{
+		screen->ShowSettings();
+	}
 }
 
 
@@ -413,7 +552,11 @@ void QtMainWindowHandler::CreateParticleEmitterNode()
 
 void QtMainWindowHandler::ToggleNotPassableTerrain()
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandNotPassableTerrain());
+	SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+	if (activeScene)
+	{
+		activeScene->ToggleNotPassableLandscape();
+	}
 }
 
 void QtMainWindowHandler::RegisterStatusBar(QStatusBar *registeredSatusBar)
@@ -460,7 +603,17 @@ void QtMainWindowHandler::MenuViewOptionsWillShow()
 
 void QtMainWindowHandler::RulerTool()
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandRulerTool());
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	if (screen)
+	{
+		screen->RulerToolTriggered();
+
+		SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+		if (activeScene)
+		{
+			ShowStatusBarMessage(activeScene->GetScenePathname().GetAbsolutePathname());
+		}
+	}
 }
 
 void QtMainWindowHandler::ReloadAsPNG()
@@ -486,6 +639,14 @@ void QtMainWindowHandler::ReloadSceneTextures()
 	CommandsManager::Instance()->ExecuteAndRelease(new CommandReloadTextures());
 }
 
+void QtMainWindowHandler::OnEntityModified(DAVA::Scene* scene, CommandList::eCommandId id, const DAVA::Set<DAVA::Entity*>& affectedEntities)
+{
+	for(DAVA::Set<DAVA::Entity*>::iterator it = affectedEntities.begin(); it != affectedEntities.end(); ++it)
+	{
+		EntityOwnerPropertyHelper::Instance()->UpdateEntityOwner((*it)->GetCustomProperties());
+	}
+}
+
 void QtMainWindowHandler::ToggleSetSwitchIndex(DAVA::uint32  value, SetSwitchIndexHelper::eSET_SWITCH_INDEX state)
 {
     CommandsManager::Instance()->ExecuteAndRelease(new CommandToggleSetSwitchIndex(value,state));
@@ -498,12 +659,16 @@ void QtMainWindowHandler::MaterialViewOptionChanged(int index)
 
 void QtMainWindowHandler::ToggleHangingObjects(float value, bool isEnabled)
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandToggleHangingObjects(value, isEnabled));
+	HangingObjectsHelper::ProcessHangingObjectsUpdate(value, isEnabled);
 }
 
 void QtMainWindowHandler::ToggleCustomColors()
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandToggleCustomColors());
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	if (screen)
+	{
+		screen->CustomColorsTriggered();
+	}
 }
 
 void QtMainWindowHandler::SaveTextureCustomColors()
@@ -518,12 +683,20 @@ void QtMainWindowHandler::LoadTextureCustomColors()
 
 void QtMainWindowHandler::ChangeBrushSizeCustomColors(int newSize)
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandChangeBrushSizeCustomColors(newSize));
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	if (screen)
+	{
+		screen->CustomColorsSetRadius(newSize);
+	}
 }
 
 void QtMainWindowHandler::ChangeColorCustomColors(int newColorIndex)
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandChangeColorCustomColors(newColorIndex));
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	if (screen)
+	{
+		screen->CustomColorsSetColor(newColorIndex);
+	}
 }
 
 void QtMainWindowHandler::RegisterCustomColorsWidgets(QPushButton* toggleButton, QPushButton* saveTextureButton, QSlider* brushSizeSlider, QComboBox* colorComboBox, QPushButton* loadTextureButton)
@@ -632,7 +805,11 @@ void QtMainWindowHandler::SetHangingObjectsWidgetsState(bool state)
 
 void QtMainWindowHandler::ToggleVisibilityTool()
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandToggleVisibilityTool());
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	if (screen)
+	{
+		screen->VisibilityToolTriggered();
+	}
 }
 
 void QtMainWindowHandler::SaveTextureVisibilityTool()
@@ -642,17 +819,29 @@ void QtMainWindowHandler::SaveTextureVisibilityTool()
 
 void QtMainWindowHandler::ChangleAreaSizeVisibilityTool(int newSize)
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandChangeAreaSizeVisibilityTool(newSize));
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	if (screen)
+	{
+		screen->VisibilityToolSetAreaSize(newSize);
+	}
 }
 
 void QtMainWindowHandler::SetVisibilityPointVisibilityTool()
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandSetPointVisibilityTool());
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	if (screen)
+	{
+		screen->VisibilityToolSetPoint();
+	}
 }
 
 void QtMainWindowHandler::SetVisibilityAreaVisibilityTool()
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandSetAreaVisibilityTool());
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	if (screen)
+	{
+		screen->VisibilityToolSetArea();
+	}
 }
 
 void QtMainWindowHandler::RegisterWidgetsVisibilityTool(QPushButton* toggleButton, QPushButton* saveTextureButton, QPushButton* setPointButton, QPushButton* setAreaButton, QSlider* areaSizeSlider)
@@ -742,29 +931,41 @@ void QtMainWindowHandler::ModificationScale()
 void QtMainWindowHandler::SetModificationMode(ResourceEditor::eModificationActions mode)
 {
 	SceneEditorScreenMain* screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	DVASSERT(screen);
+	if (screen)
+	{
+		EditorBodyControl* bodyControl = screen->FindCurrentBody()->bodyControl;
+		if (bodyControl)
+		{
+			ResourceEditor::eModificationActions curModificationMode = bodyControl->GetModificationMode();
 
-	EditorBodyControl* bodyControl = screen->FindCurrentBody()->bodyControl;
-	ResourceEditor::eModificationActions curModificationMode = bodyControl->GetModificationMode();
-
-	if (mode != curModificationMode)
-		bodyControl->SetModificationMode(mode);
+			if (mode != curModificationMode)
+				bodyControl->SetModificationMode(mode);
+		}
+	}
 }
 
 void QtMainWindowHandler::ModificationPlaceOnLand()
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new ModificationPlaceOnLandCommand());
+	SceneEditorScreenMain* screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	if (screen)
+	{
+		screen->FindCurrentBody()->bodyControl->OnPlaceOnLandscape();
+	}
 }
 
 void QtMainWindowHandler::ModificationSnapToLand()
 {
 	SceneEditorScreenMain* screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	DVASSERT(screen);
+	if (screen)
+	{
+		EditorBodyControl* bodyControl = screen->FindCurrentBody()->bodyControl;
 
-	EditorBodyControl* bodyControl = screen->FindCurrentBody()->bodyControl;
-
-	bool curSnapToLand = bodyControl->IsLandscapeRelative();
-	bodyControl->SetLandscapeRelative(!curSnapToLand);
+		if (bodyControl)
+		{
+			bool curSnapToLand = bodyControl->IsLandscapeRelative();
+			bodyControl->SetLandscapeRelative(!curSnapToLand);
+		}
+	}
 }
 
 void QtMainWindowHandler::UpdateModificationActions()
@@ -814,23 +1015,31 @@ void QtMainWindowHandler::UpdateModificationActions()
 
 void QtMainWindowHandler::OnApplyModification(double x, double y, double z)
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new ModificationApplyCommand(x, y, z));
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	if (screen)
+	{
+		screen->FindCurrentBody()->bodyControl->ApplyTransform(x, y, z);
+	}
 }
 
 void QtMainWindowHandler::OnResetModification()
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new ModificationResetCommand());
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	if (screen)
+	{
+		screen->FindCurrentBody()->bodyControl->RestoreOriginalTransform();
+	}
 }
 
 void QtMainWindowHandler::UndoAction()
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new UndoCommand());
+	CommandsManager::Instance()->Undo();
 	UpdateUndoActionsState();
 }
 
 void QtMainWindowHandler::RedoAction()
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new RedoCommand());
+	CommandsManager::Instance()->Redo();
 	UpdateUndoActionsState();
 }
 
@@ -870,8 +1079,6 @@ void QtMainWindowHandler::UpdateUndoActionsState()
 
 void QtMainWindowHandler::OnSceneActivated(SceneData *scene)
 {
-	CommandsManager::Instance()->ChangeQueue(scene);
-
 	UpdateUndoActionsState();
 	UpdateModificationActions();
 }
@@ -883,7 +1090,7 @@ void QtMainWindowHandler::OnSceneCreated(SceneData *scene)
 
 void QtMainWindowHandler::OnSceneReleased(SceneData *scene)
 {
-	CommandsManager::Instance()->SceneReleased(scene);
+	CommandsManager::Instance()->SceneReleased(scene->GetScene());
 
 	UpdateRecentScenesList();
 }

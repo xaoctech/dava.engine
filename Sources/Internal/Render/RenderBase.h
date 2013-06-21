@@ -118,7 +118,7 @@ enum eBlendMode
 	BLEND_MODE_COUNT,
 };
 
-static const String BlendModeNames[] = 
+static const String BLEND_MODE_NAMES[] = 
 {
 	"BLEND_NONE",
 	"BLEND_ZERO",
@@ -156,6 +156,10 @@ enum PixelFormat
     FORMAT_DXT5NM,
 	
 	FORMAT_ETC1,
+	
+	FORMAT_ATC_RGB,
+	FORMAT_ATC_RGBA_EXPLICIT_ALPHA,
+    FORMAT_ATC_RGBA_INTERPOLATED_ALPHA,
 
     FORMAT_COUNT,
     FORMAT_CLOSEST = 256
@@ -234,7 +238,7 @@ enum eCmpFunc
     CMP_TEST_MODE_COUNT, 
 };
 
-static const String CmpFuncNames[] = 
+static const String CMP_FUNC_NAMES[] = 
 {
 	"CMP_NEVER",
 	"CMP_LESS",
@@ -310,7 +314,7 @@ enum eFace
     FACE_COUNT,
 };
 
-static const String FaceNames[] = 
+static const String FACE_NAMES[] = 
 {
 	"FACE_FRONT",
 	"FACE_BACK",
@@ -348,7 +352,7 @@ enum eStencilOp
 	STENCILOP_COUNT
 };
 
-static const String StencilOpNames[] = 
+static const String STENCIL_OP_NAMES[] = 
 {
 	"STENCILOP_KEEP",
 	"STENCILOP_ZERO",
@@ -395,7 +399,7 @@ enum eFillMode
 	FILLMODE_COUNT
 };
 
-static const String FillModeNames[] = 
+static const String FILL_MODE_NAMES[] = 
 {
 	"FILLMODE_POINT",
 	"FILLMODE_WIREFRAME",
@@ -487,6 +491,11 @@ inline int32 GetVertexSize(int32 flags)
     return size;
 }
 
+eBlendMode GetBlendModeByName(const String & blendStr);
+eCmpFunc GetCmpFuncByName(const String & cmpFuncStr);
+eFace GetFaceByName(const String & faceStr);
+eStencilOp GetStencilOpByName(const String & stencilOpStr);
+eFillMode GetFillModeByName(const String & fillModeStr);
 
 class RenderGuard
 {

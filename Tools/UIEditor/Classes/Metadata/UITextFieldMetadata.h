@@ -50,6 +50,9 @@ protected:
 	
 	virtual QColor GetShadowColor() const;
 	virtual void SetShadowColor(const QColor& value);
+
+	virtual int GetTextAlign();
+    virtual void SetTextAlign(int align);
 };
 
 };

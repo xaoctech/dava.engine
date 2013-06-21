@@ -31,6 +31,7 @@
 #define __DAVAENGINE_LOCALIZATION_IPHONE_H__
 
 #include "Base/BaseTypes.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA 
 {
@@ -38,7 +39,7 @@ namespace DAVA
 class LocalizationIPhone 
 {
 public:
-	static void SelecePreferedLocalizationForPath(const String &directoryPath);
+	static void SelecePreferedLocalizationForPath(const FilePath &directoryPath);
 };
 	
 };

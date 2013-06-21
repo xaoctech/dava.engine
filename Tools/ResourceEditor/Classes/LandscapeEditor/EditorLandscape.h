@@ -57,7 +57,7 @@ public:
     void FlushChanges();
     
 	virtual DAVA::Texture * GetTexture(eTextureLevel level);
-    virtual void BuildLandscapeFromHeightmapImage(const DAVA::String & heightmapPathname, const DAVA::AABBox3 & landscapeBox);
+    virtual void BuildLandscapeFromHeightmapImage(const DAVA::FilePath & heightmapPathname, const DAVA::AABBox3 & landscapeBox);
     virtual void UpdateFullTiledTexture();
 
 	virtual DAVA::RenderObject * Clone(DAVA::RenderObject *newObject);

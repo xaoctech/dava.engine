@@ -102,7 +102,7 @@ public:
     
 private:
 	Thread() {};
-	Thread(const Thread& t) {};
+	Thread(const Thread& t);
 	Thread(const Message& msg);
 	
 	Message			msg;
@@ -111,6 +111,11 @@ private:
 	
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
 	void		* glContext;
+
+	#if defined (__DAVAENGINE_NPAPI__)
+		CGLContextObj npAPIGLContext;
+	#endif // #if defined (__DAVAENGINE_NPAPI__)
+
 	friend void	* PthreadMain(void * param);
 	void		StartMacOS();
 	static void	InitMacOS();

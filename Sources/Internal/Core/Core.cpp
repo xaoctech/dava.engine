@@ -108,6 +108,8 @@ void Core::CreateSingletons()
 	new Logger();
 
 	new FileSystem();
+    FilePath::InitializeBundleName();
+	
 	FileSystem::Instance()->SetDefaultDocumentsDirectory();
     FileSystem::Instance()->CreateDirectory(FileSystem::Instance()->GetCurrentDocumentsDirectory(), true);
 	
@@ -119,8 +121,6 @@ void Core::CreateSingletons()
 		Logger::Instance()->SetLogLevel(Logger::LEVEL_INFO);
 	}
 //	Logger::Debug("[Core::Create] successfull");
-
-    new InputSystem();
     
 	new LocalizationSystem();
 
@@ -130,6 +130,7 @@ void Core::CreateSingletons()
 	new FontManager();
 	new UIControlSystem();
 	new SoundSystem(64);
+	new InputSystem();
 	
 #if defined __DAVAENGINE_IPHONE__
 	new AccelerometeriPhoneImpl();
@@ -691,6 +692,16 @@ void Core::GoBackground(bool isLock)
 #endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
 }
 
+void Core::GoForeground()
+{
+#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
+	if (core)
+	{
+		core->OnForeground();
+	}
+#endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
+}
+
 uint32 Core::GetGlobalFrameIndex()
 {
 	return globalFrameIndex;
@@ -753,5 +764,9 @@ uint32 Core::GetScreenDPI()
 {
 	return DPIHelper::GetScreenDPI();
 }
+
+void Core::SetIcon(int32 /*iconId*/)
+{
+};
 
 };

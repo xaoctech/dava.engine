@@ -11,6 +11,11 @@ class IconHelper
 public:
 	static QString GetIconPathForClassName(const QString& className);
 	static QString GetIconPathForUIControl(UIControl* uiControl);
+
+	static QString GetPlatformIconPath();
+	static QString GetScreenIconPath();
+	static QString GetAggregatorIconPath();
+	static QString GetIgnoreIconPath();
 };
 
 #endif /* defined(__UIEDITOR__ICONHELPER__) */

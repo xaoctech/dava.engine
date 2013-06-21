@@ -79,6 +79,7 @@ static Vec3 EstimatePrincipleComponent( Sym3x3 const& matrix )
 
 #define POWER_ITERATION_COUNT   8
 
+#ifdef ANDROID
 #if SQUISH_USE_SIMD
 
 Vec3 ComputePrincipleComponent( Sym3x3 const& matrix )
@@ -133,5 +134,7 @@ Vec3 ComputePrincipleComponent( Sym3x3 const& matrix )
 }
 
 #endif
+
+#endif //#ifdef ANDROID
 
 } // namespace squish

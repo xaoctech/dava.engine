@@ -1,6 +1,9 @@
 #ifndef __JNI_EXTENSIONS_H__
 #define __JNI_EXTENSIONS_H__
 
+#include "Base/BaseTypes.h"
+#if defined(__DAVAENGINE_ANDROID__)
+
 #include <jni.h>
 
 namespace DAVA
@@ -31,5 +34,7 @@ protected:
 };
 
 }
+
+#endif //#if defined(__DAVAENGINE_ANDROID__)
 
 #endif// __JNI_EXTENSIONS_H__

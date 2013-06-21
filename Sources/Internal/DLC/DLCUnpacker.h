@@ -1,15 +1,8 @@
-//
-//  ZlibWrapper.h
-//  WoTSniperMacOS
-//
-//  Created by Andrey Panasyuk on 3/21/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
-//
-
-#ifndef __DAVAENGINE_ZlibWrapper_h__
-#define __DAVAENGINE_ZlibWrapper_h__
+#ifndef __DAVAENGINE_DLC_UNPACKER_H__
+#define __DAVAENGINE_DLC_UNPACKER_H__
 
 #include "Base/BaseTypes.h"
+#include "FileSystem/FilePath.h"
 
 #define CHUNK 16384
 
@@ -21,15 +14,15 @@ class File;
 class DLCUnpacker
 {
 public:
-    static void Unpack(const std::string& filePathSrc, const std::string& unpackPath, const std::string& fileForPaths = "");
+    static void Unpack(const FilePath & filePathSrc, const FilePath & unpackPath, const FilePath & fileForPaths = FilePath());
     
-    static int Inflate(File *source, File *dest);
+    static int32 Inflate(File *source, File *dest);
 };
 
 }
 
 
-#endif
+#endif//__DAVAENGINE_DLC_UNPACKER_H__
 
 
 

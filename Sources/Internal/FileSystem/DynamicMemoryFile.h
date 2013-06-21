@@ -70,20 +70,6 @@ namespace DAVA
 		void * GetData();
 		
 		
-		/**
-		 \brief Get this file name
-		 \returns filename of this file 
-		 */
-//		virtual	const char8 * GetFilename();
-		virtual	const String GetFilename();
-		
-		/**
-		 \brief Get this file full pathname
-		 \returns filename of this file 
-		 */
-//		virtual const char8 * GetPathname();
-		virtual	const String GetPathname();
-		
 		/** 
 		 \brief Write [dataSize] bytes to this file from [pointerToData]
 		 \param[in] pointerToData function get data from this pointer
