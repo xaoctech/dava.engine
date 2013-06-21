@@ -1,6 +1,6 @@
 #include "Base/BaseTypes.h"
 #include "Platform/DPIHelper.h"
-
+#include "DeviceInfo.h"
 
 #include <UIKit/UIKit.h>
 #include <UIKit/UIDevice.h>
@@ -61,7 +61,10 @@ namespace DAVA
     
     uint32 DeterminateExactDPI(List<const DeviceScreenInfo*> &devList)
     {
-        String name([[UIDevice currentDevice].name UTF8String]);
+		String model = DeviceInfo::GetModel();
+		NSString* deviceModel = [NSString stringWithCString:model.c_str()
+												   encoding:[NSString defaultCStringEncoding]];
+
         uint32 retDPI = NO_DPI_INFO_FOUND;
         
         for (List<const DeviceScreenInfo*>::const_iterator it = devList.begin(); it != devList.end(); ++it)
@@ -75,7 +78,11 @@ namespace DAVA
             }
             else
             {
-                if(String::npos !=  name.find((*it)->deviceName))
+				NSString* searchString = [NSString stringWithCString:(*it)->deviceName.c_str()
+															encoding:[NSString defaultCStringEncoding]];
+
+				NSRange range = [deviceModel rangeOfString:searchString options:NSCaseInsensitiveSearch];
+				if (range.location != NSNotFound)
                 {
                     retDPI = (*it)->screenDPI;
                     break;
