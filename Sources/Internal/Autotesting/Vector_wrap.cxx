@@ -1681,6 +1681,7 @@ typedef struct{} LANGUAGE_OBJ;
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
+
 #include "Math/Vector.h"
 
 #ifdef __cplusplus

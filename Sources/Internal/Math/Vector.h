@@ -43,7 +43,6 @@ namespace DAVA
 class Vector2
 {
 public:
-#ifndef SWIG
 	union{
 		struct
 		{
@@ -55,9 +54,6 @@ public:
 		};
 		float32 data[2];
 	};
-#else
-    float32 x, y;
-#endif
 	
 	//! Basic
 	inline Vector2();
@@ -129,7 +125,6 @@ class Vector3
 {
 public:
 
-#ifndef SWIG
 	union{
 		struct
 		{
@@ -137,9 +132,6 @@ public:
 		};
 		float32 data[3];
 	};
-#else
-    float32 x, y, z;
-#endif
 
 	inline Vector3();
 	inline Vector3(float32 _x, float32 _y, float32 _z);
@@ -207,7 +199,6 @@ inline float32 DotProduct(const Vector3 & v1, const Vector3 & v2);
 inline Vector3 Lerp(const Vector3 & _v1, const Vector3 & _v2, float32 t);
 inline Vector3 Reflect(const Vector3 & v, const Vector3 & n);
 
-#ifndef SWIG
 /**	
 	\ingroup math
 	\brief Vector with 4 coordinates.
@@ -953,8 +944,6 @@ inline Vector4 Normalize(const Vector4 & v)
 	res.Normalize();
 	return res;
 }
-
-#endif //SWIG
 
 };
 
