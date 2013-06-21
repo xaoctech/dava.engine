@@ -16,22 +16,22 @@ void LightmapsPacker::ParseSpriteDescriptors()
 	int32 itemsCount = fileList->GetCount();
 	for(int32 i = 0; i < itemsCount; ++i)
 	{
-		const String & fileName = fileList->GetPathname(i);
-		if(fileList->IsDirectory(i) || (FileSystem::Instance()->GetExtension(fileName) != ".txt"))
+		const FilePath & filePath = fileList->GetPathname(i);
+		if(fileList->IsDirectory(i) || !filePath.IsEqualToExtension(".txt"))
 		{
 			continue;
 		}
 
 		LightmapAtlasingData data;
 
-		data.meshInstanceName = String(fileList->GetFilename(i), 0, fileList->GetFilename(i).length()-4);
-
-		File * file = File::Create(fileName, File::OPEN | File::READ);
+		data.meshInstanceName = filePath.GetBasename();
+        
+		File * file = File::Create(filePath, File::OPEN | File::READ);
 		
 		file->ReadLine(buf, sizeof(buf)); //textures count
 
 		readSize = file->ReadLine(buf, sizeof(buf)); //texture name
-		String originalTextureName = outputDir + "/" + String(buf, readSize);
+		FilePath originalTextureName = outputDir + String(buf, readSize);
 		data.textureName = originalTextureName;
 
 		file->ReadLine(buf, sizeof(buf)); //image size
@@ -52,18 +52,19 @@ void LightmapsPacker::ParseSpriteDescriptors()
 
 		atlasingData.push_back(data);
 
-		FileSystem::Instance()->DeleteFile(fileName);
+		FileSystem::Instance()->DeleteFile(filePath);
 	}
 
 	fileList->Release();
 }
 
-Vector2 LightmapsPacker::GetTextureSize(const String & filePath)
+Vector2 LightmapsPacker::GetTextureSize(const FilePath & filePath)
 {
 	Vector2 ret;
 
-	String sourceTexturePathname = FileSystem::Instance()->ReplaceExtension(filePath, TextureDescriptor::GetSourceTextureExtension());
-    Image * image = CreateTopLevelImage(sourceTexturePathname);
+	FilePath sourceTexturePathname = FilePath::CreateWithNewExtension(filePath, TextureDescriptor::GetSourceTextureExtension());
+
+	Image * image = CreateTopLevelImage(sourceTexturePathname);
     if(image)
     {
         ret.x = (float32)image->GetWidth();
@@ -80,21 +81,21 @@ Vector<LightmapAtlasingData> * LightmapsPacker::GetAtlasingData()
 	return &atlasingData;
 }
 
-void LightmapsPacker::Compress()
+void LightmapsPacker::CreateDescriptors()
 {
 	FileList * fileList = new FileList(outputDir);
 
 	int32 itemsCount = fileList->GetCount();
 	for(int32 i = 0; i < itemsCount; ++i)
 	{
-		const String & fileName = fileList->GetPathname(i);
-		if(fileList->IsDirectory(i) || (FileSystem::Instance()->GetExtension(fileName) != ".png"))
+		const FilePath & filePath = fileList->GetPathname(i);
+		if(fileList->IsDirectory(i) || !filePath.IsEqualToExtension(".png"))
 		{
 			continue;
 		}
 
 		TextureDescriptor descriptor;
-        descriptor.Save(TextureDescriptor::GetDescriptorPathname(fileName));
+        descriptor.Save(TextureDescriptor::GetDescriptorPathname(filePath));
 	}
 
 	fileList->Release();

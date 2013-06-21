@@ -42,8 +42,10 @@ using namespace DAVA;
 GameCore::GameCore()
 {
 	resultScreen = NULL;
-	currentRunId = 0;
+	currentRunId = -1;
 	dbClient = NULL;
+
+	cursor = 0;
 }
 
 GameCore::~GameCore()
@@ -54,13 +56,29 @@ GameCore::~GameCore()
 void GameCore::OnAppStarted()
 {
     DeviceInfo();
+
+	File * testIdFile = File::Create("~res:/testId", File::OPEN | File::READ);
+	if(testIdFile)
+	{
+		char buf[30];
+		memset(buf, 0, sizeof(char)*30);
+		testIdFile->ReadLine(buf, 30);
+		sscanf(buf, "%d",&currentRunId);
+		SafeRelease(testIdFile);
+	}
+	else
+	{
+		Logger::Debug("[GameCore::OnAppStarted()] testId file not found!");
+		SafeRelease(testIdFile);
+		Core::Instance()->Quit();
+		return;
+	}
     
 	SettingsManager::Instance()->InitWithFile("~res:/Config/config.yaml");
 	
-	cursor = 0;
 	RenderManager::Instance()->SetFPS(60);
 
-	String dirPath = "~res:/3d/Maps/";
+	FilePath dirPath("~res:/3d/Maps/");
 	Vector<String> levelsPaths;
 	YamlParser* parser = YamlParser::Create("~res:/maps.yaml");
 	if(parser)
@@ -74,8 +92,11 @@ void GameCore::OnAppStarted()
 			{
 				String k = rootNode->GetItemKeyName(i);
 				String levelFile = rootNode->Get(i)->AsString();
-				if(k != "default")
+				if(k != "default" && k != "tutorial")
+                {
 					levelsPaths.push_back(levelFile);
+                    Logger::Debug("[GameCore::OnAppStarted()] Add test level: %s", levelFile.c_str());
+                }
 			}
 		}
 	}
@@ -90,6 +111,8 @@ void GameCore::OnAppStarted()
 		}
 	}
 
+    Logger::Debug("[GameCore::OnAppStarted()] test count %d", tests.size());
+
 	if(levelsPaths.size() > 0)
     {
 		appFinished = false;
@@ -102,14 +125,17 @@ void GameCore::OnAppStarted()
     {
 		appFinished = true;
 	}
-    
+
 	ConnectToDB();
 }
 
 void GameCore::OnAppFinished()
 {
-	dbClient->Disconnect();
-	SafeRelease(dbClient);
+	if(dbClient)
+	{
+		dbClient->Disconnect();
+		SafeRelease(dbClient);
+	}
 
 	SafeRelease(cursor);
 }
@@ -147,7 +173,7 @@ void GameCore::Update(float32 timeElapsed)
 			if(resultScreen == NULL)
             {
 				resultScreen = new ResultScreen(curTest->GetLandscapeTestData(),
-												curTest->GetFileName(),
+												curTest->GetFilePath(),
 												curTest->GetLandscapeTexture());
                 
 				UIScreenManager::Instance()->RegisterScreen(RESULT_SCREEN, resultScreen);
@@ -158,14 +184,18 @@ void GameCore::Update(float32 timeElapsed)
             {
 				tests.pop_front();
 
+                Logger::Debug("[GameCore::Update()] test count %d", tests.size());
+
 				if(tests.size() == 0)
                 {
-					appFinished = true;
+                    appFinished = true;
+                    Logger::Debug("[GameCore::Update()] All tests finished");
 				}
                 else
                 {
                     SafeRelease(resultScreen);
-					Test *newCurTest = tests.front();
+                    Test *newCurTest = tests.front();
+                    Logger::Debug("[GameCore::Update()] Start next test");
 					if(newCurTest != NULL)
                     {
 						UIScreenManager::Instance()->SetScreen(newCurTest->GetScreenId());
@@ -199,19 +229,19 @@ bool GameCore::ConnectToDB()
         dbClient->SetDatabaseName(DATABASE_NAME);
         dbClient->SetCollectionName(DATABASE_COLLECTION);
 
-		MongodbObject *globalIdObject = dbClient->FindObjectByKey("GlobalTestId");
+		//MongodbObject *globalIdObject = dbClient->FindObjectByKey("GlobalTestId");
 
-		if(globalIdObject)
-			currentRunId = globalIdObject->GetInt32("LastTestId") + 1;
+		//if(globalIdObject)
+		//	currentRunId = globalIdObject->GetInt32("LastTestId") + 1;
 
-		MongodbObject * newGlobalIdObject = new MongodbObject();
-		newGlobalIdObject->SetObjectName("GlobalTestId");
-		newGlobalIdObject->AddInt32("LastTestId", currentRunId);
-		newGlobalIdObject->Finish();
-		dbClient->SaveObject(newGlobalIdObject, globalIdObject);
+		//MongodbObject * newGlobalIdObject = new MongodbObject();
+		//newGlobalIdObject->SetObjectName("GlobalTestId");
+		//newGlobalIdObject->AddInt32("LastTestId", currentRunId);
+		//newGlobalIdObject->Finish();
+		//dbClient->SaveObject(newGlobalIdObject, globalIdObject);
 
-		SafeRelease(newGlobalIdObject);
-		SafeRelease(globalIdObject);
+		//SafeRelease(newGlobalIdObject);
+		//SafeRelease(globalIdObject);
     }
     else
     {
@@ -221,7 +251,7 @@ bool GameCore::ConnectToDB()
     return (dbClient != NULL);
 }
 
-bool GameCore::FlushToDB(const String & levelName, const Map<String, String> &results, const String &imagePath)
+bool GameCore::FlushToDB(const FilePath & levelName, const Map<String, String> &results, const FilePath &imagePath)
 {
 	if(!dbClient)
 		return false;
@@ -231,7 +261,7 @@ bool GameCore::FlushToDB(const String & levelName, const Map<String, String> &re
     MongodbObject *testResultObject = new MongodbObject();
     if(testResultObject)
     {
-        testResultObject->SetObjectName(levelName);
+        testResultObject->SetObjectName(levelName.GetFilename());
         
         Map<String, String>::const_iterator it = results.begin();
         for(; it != results.end(); it++)
@@ -271,7 +301,7 @@ bool GameCore::FlushToDB(const String & levelName, const Map<String, String> &re
 				newRunObject->AddString("DeviceDescription", DeviceInfo::GetModel() + " " + DeviceInfo::GetVersion());
 			}
 
-			newRunObject->AddObject(levelName, testResultObject);
+			newRunObject->AddObject(levelName.GetFilename(), testResultObject);
 			newRunObject->Finish();
 			dbClient->SaveObject(newRunObject, currentRunObject);
 			SafeRelease(newRunObject);

@@ -14,8 +14,9 @@
 #include "BaseCommand.h"
 #include "ChangePropertyCommand.h"
 
+#include "UIAggregatorMetadata.h"
+
 using namespace DAVA;
-using namespace PropertyNames;
 
 static const QString DEFAULT_CONTROL_PROPERTY_BLOCK_NAME = "UI Control";
 static const QString CUSTOM_CONTROL_PROPERTY_BLOCK_NAME = "Custom Control";
@@ -51,7 +52,7 @@ void ControlPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     RegisterLineEditWidgetForProperty(propertiesMap, "UIControlClassName", ui->classNameLineEdit);
     RegisterLineEditWidgetForProperty(propertiesMap, "Name", ui->objectNameLineEdit, true);
     RegisterLineEditWidgetForProperty(propertiesMap, "Tag", ui->tagLineEdit);
-	RegisterLineEditWidgetForProperty(propertiesMap, CUSTOM_CONTROL_NAME, ui->customControlLineEdit);
+	RegisterLineEditWidgetForProperty(propertiesMap, PropertyNames::CUSTOM_CONTROL_NAME, ui->customControlLineEdit);
 	
 	UpdatePropertiesForSubcontrol();
 }
@@ -193,4 +194,8 @@ void ControlPropertyGridWidget::UpdatePropertiesForSubcontrol()
 	this->ui->customControlLineEdit->setReadOnly(isSubcontrol);
 	this->ui->objectNameLineEdit->setReadOnly(isSubcontrol);
 	this->ui->btnMorphToCustomControl->setEnabled(!isSubcontrol);
+	
+	// Hide morph button for UI Aggregator
+	UIAggregatorMetadata *UIAggregatorMeta = dynamic_cast<UIAggregatorMetadata*>(activeMetadata);
+	this->ui->btnMorphToCustomControl->setHidden(UIAggregatorMeta ? true : false);
 }

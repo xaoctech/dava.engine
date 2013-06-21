@@ -7,8 +7,7 @@
 #include "PropertyNames.h"
 #include "PropertiesHelper.h"
 #include "WidgetSignalsBlocker.h"
-
-using namespace PropertyNames;
+#include "BackgroundGridWidgetHelper.h"
 
 static const QString TEXTFIELD_PROPERTY_BLOCK_NAME = "Text";
 
@@ -28,18 +27,20 @@ UITextFieldPropertyGridWidget::~UITextFieldPropertyGridWidget()
 void UITextFieldPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
 {
     BasePropertyGridWidget::Initialize(activeMetadata);
-    
+	FillComboboxes();
     PROPERTIESMAP propertiesMap = BuildMetadataPropertiesMap();
 
-    RegisterPushButtonWidgetForProperty(propertiesMap, FONT_PROPERTY_NAME, ui->fontSelectButton);
-    RegisterSpinBoxWidgetForProperty(propertiesMap, FONT_SIZE_PROPERTY_NAME, ui->fontSizeSpinBox);
+    RegisterPushButtonWidgetForProperty(propertiesMap, PropertyNames::FONT_PROPERTY_NAME, ui->fontSelectButton);
+    RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::FONT_SIZE_PROPERTY_NAME, ui->fontSizeSpinBox);
     
-    RegisterLineEditWidgetForProperty(propertiesMap, TEXT_PROPERTY_NAME, ui->textLineEdit);
-    RegisterColorButtonWidgetForProperty(propertiesMap, TEXT_COLOR_PROPERTY_NAME, ui->textColorPushButton);
+    RegisterLineEditWidgetForProperty(propertiesMap, PropertyNames::TEXT_PROPERTY_NAME, ui->textLineEdit);
+    RegisterColorButtonWidgetForProperty(propertiesMap, PropertyNames::TEXT_COLOR_PROPERTY_NAME, ui->textColorPushButton);
 
-    RegisterSpinBoxWidgetForProperty(propertiesMap, SHADOW_OFFSET_X, ui->shadowOffsetXSpinBox);
-    RegisterSpinBoxWidgetForProperty(propertiesMap, SHADOW_OFFSET_Y, ui->shadowOffsetYSpinBox);
-    RegisterColorButtonWidgetForProperty(propertiesMap, SHADOW_COLOR, ui->shadowColorButton);
+    RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::SHADOW_OFFSET_X, ui->shadowOffsetXSpinBox);
+    RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::SHADOW_OFFSET_Y, ui->shadowOffsetYSpinBox);
+    RegisterColorButtonWidgetForProperty(propertiesMap, PropertyNames::SHADOW_COLOR, ui->shadowColorButton);
+
+	RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::TEXT_ALIGN_PROPERTY_NAME, ui->alignComboBox, false, true);
 }
 
 void UITextFieldPropertyGridWidget::Cleanup()
@@ -51,20 +52,24 @@ void UITextFieldPropertyGridWidget::Cleanup()
     UnregisterSpinBoxWidget(ui->shadowOffsetXSpinBox);
     UnregisterSpinBoxWidget(ui->shadowOffsetYSpinBox);
     UnregisterColorButtonWidget(ui->shadowColorButton);
+
+	UnregisterComboBoxWidget(ui->alignComboBox);
     
     BasePropertyGridWidget::Cleanup();
 }
 
 void UITextFieldPropertyGridWidget::ProcessPushButtonClicked(QPushButton *senderWidget)
 {
-    if ((activeMetadata == NULL) || (senderWidget != this->ui->fontSelectButton))
+	    if ((activeMetadata == NULL) || (senderWidget != this->ui->fontSelectButton))
     {
         // No control already assinged or not fontSelectButton
         return;
     }
     
 	// Get current value of Font property
-	Font *fontPropertyValue = PropertiesHelper::GetPropertyValue<Font *>(this->activeMetadata, FONT_PROPERTY_NAME, false);
+	Font *fontPropertyValue = PropertiesHelper::GetPropertyValue<Font *>(this->activeMetadata,
+																		 PropertyNames::FONT_PROPERTY_NAME,
+																		 false);
 	// Get sprite path from graphics font
 	QString currentGFontPath = ResourcesManageHelper::GetGraphicsFontPath(fontPropertyValue);
 
@@ -131,7 +136,7 @@ void UITextFieldPropertyGridWidget::UpdatePushButtonWidgetWithPropertyValue(QPus
             {
                 FTFont *ftFont = dynamic_cast<FTFont*>(fontPropertyValue);
                 //Set pushbutton widget text
-                buttonText = QString::fromStdString(ftFont->GetFontPath());
+                buttonText = QString::fromStdString(ftFont->GetFontPath().GetAbsolutePathname());
                 break;
             }
             case Font::TYPE_GRAPHICAL:
@@ -145,8 +150,8 @@ void UITextFieldPropertyGridWidget::UpdatePushButtonWidgetWithPropertyValue(QPus
                     return;
                 }
                 //Get font definition and sprite relative path
-                QString fontDefinitionName = QString::fromStdString(gFont->GetFontDefinitionName());
-                QString fontSpriteName =QString::fromStdString(fontSprite->GetName());
+                QString fontDefinitionName = QString::fromStdString(gFont->GetFontDefinitionName().GetAbsolutePathname());
+                QString fontSpriteName =QString::fromStdString(fontSprite->GetRelativePathname().GetAbsolutePathname());
                 //Set push button widget text - for grapics font it contains font definition and sprite names
                 buttonText = QString("%1\n%2").arg(fontDefinitionName, fontSpriteName);
                 break;
@@ -160,4 +165,74 @@ void UITextFieldPropertyGridWidget::UpdatePushButtonWidgetWithPropertyValue(QPus
         
         pushButtonWidget->setText(buttonText);
     }
+}
+
+
+void UITextFieldPropertyGridWidget::FillComboboxes()
+{
+    ui->alignComboBox->clear();
+    int itemsCount = BackgroundGridWidgetHelper::GetAlignTypesCount();
+    for (int i = 0; i < itemsCount; i ++)
+    {
+        ui->alignComboBox->addItem(BackgroundGridWidgetHelper::GetAlignTypeDesc(i));
+    }
+
+}
+
+void UITextFieldPropertyGridWidget::CustomProcessComboboxValueChanged(const PROPERTYGRIDWIDGETSITER& iter, int value)
+{
+		// Don't update the property if the text wasn't actually changed.
+    int curValue = PropertiesHelper::GetAllPropertyValues<int>(this->activeMetadata, iter->second.getProperty().name());
+	if (curValue == value)
+	{
+		return;
+	}
+
+	BaseCommand* command = new ChangePropertyCommand<int>(activeMetadata, iter->second, value);
+    CommandsController::Instance()->ExecuteCommand(command);
+    SafeRelease(command);
+}
+
+void UITextFieldPropertyGridWidget::ProcessComboboxValueChanged(QComboBox* senderWidget, const PROPERTYGRIDWIDGETSITER& iter,
+                                             const QString& value)
+{
+	if (senderWidget == NULL)
+    {
+        Logger::Error("UITextFieldPropertyGridWidget::ProcessComboboxValueChanged: senderWidget is NULL!");
+        return;
+    }
+    
+    // Try to process this control-specific widgets.
+    int selectedIndex = senderWidget->currentIndex();
+
+	if (senderWidget == ui->alignComboBox)
+    {
+        return CustomProcessComboboxValueChanged(iter, BackgroundGridWidgetHelper::GetAlignType(selectedIndex));
+    }
+
+    // No postprocessing was applied - use the generic process.
+    BasePropertyGridWidget::ProcessComboboxValueChanged(senderWidget, iter, value);
+}
+
+void UITextFieldPropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue(QComboBox* comboBoxWidget, const QMetaProperty& curProperty)
+{
+	if (!this->activeMetadata)
+    {
+        return;
+    }
+
+    bool isPropertyValueDiffers = false;
+    const QString& propertyName = curProperty.name();
+    int propertyValue = PropertiesHelper::GetPropertyValue<int>(this->activeMetadata, propertyName, isPropertyValueDiffers);
+
+    // Firstly check the custom comboboxes.
+    if (comboBoxWidget == ui->alignComboBox)
+    {
+        UpdateWidgetPalette(comboBoxWidget, propertyName);
+        return SetComboboxSelectedItem(comboBoxWidget,
+                                       BackgroundGridWidgetHelper::GetAlignTypeDescByType(propertyValue));
+    }
+
+    // Not related to the custom combobox - call the generic one.
+    BasePropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue(comboBoxWidget, curProperty);
 }

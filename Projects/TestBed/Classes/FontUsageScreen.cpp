@@ -37,15 +37,15 @@ void FontUsageScreen::LoadResources()
 	
 	//graphicsFont1 = GraphicsFont::Create("~res:/Fonts/myrpro.def", "~res:/Gfx/Fonts2/myrpro");
 	//graphicsFont1 = GraphicsFont::Create("~res:/Fonts/korinna.def", "~res:/Gfx/Fonts2/korinna");
-	graphicsFont1 = GraphicsFont::Create("~res:/Fonts/balderll_34.def", "~res:/Gfx/Fonts/balderll_34_menu");
+	graphicsFont1 = GraphicsFont::Create(FilePath("~res:/Fonts/balderll_34.def"), FilePath("~res:/Gfx/Fonts/balderll_34_menu"));
 	originalSize = graphicsFont1->GetSize();
-	graphicsFont2 = GraphicsFont::Create("~res:/Fonts/jointby.def", "~res:/Gfx/Fonts2/jointby");
+	graphicsFont2 = GraphicsFont::Create(FilePath("~res:/Fonts/jointby.def"), FilePath("~res:/Gfx/Fonts2/jointby"));
 	//sprite = Sprite::Create("~res:/Gfx/Fonts2/jointby");
 	
-	ftFont1 = FTFont::Create("~res:/Fonts/bd_cartoon.ttf");
+	ftFont1 = FTFont::Create(FilePath("~res:/Fonts/bd_cartoon.ttf"));
 	ftFont1->SetSize(24.0f);
 	
-	ftFont2 = FTFont::Create("~res:/Fonts/jointbypizzadude.ttf");
+	ftFont2 = FTFont::Create(FilePath("~res:/Fonts/jointbypizzadude.ttf"));
 	ftFont2->SetSize(24.0f);
 	
 	textSpriteWithFreetypeSingleLineFont = TextBlock::Create(Vector2(900, 200));

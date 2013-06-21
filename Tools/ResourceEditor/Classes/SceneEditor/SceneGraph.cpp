@@ -185,6 +185,7 @@ void SceneGraph::UpdatePropertyPanel()
 
 void SceneGraph::RecreatePropertiesPanelForNode(Entity * node)
 {
+	UIControlSystem::Instance()->SetFocusedControl(0, true);
 	if(propertyControl && propertyControl->GetParent())
 	{
 		propertyPanel->RemoveControl(propertyControl);

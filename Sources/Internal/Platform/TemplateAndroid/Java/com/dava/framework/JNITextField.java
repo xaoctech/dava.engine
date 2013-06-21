@@ -1,7 +1,5 @@
 package com.dava.framework;
 
-import android.util.Log;
-
 public class JNITextField {
 	final static String TAG = "JNITextField";
 	
@@ -19,16 +17,17 @@ public class JNITextField {
 	public static void HideField()
 	{
     	final JNIActivity activity = JNIActivity.GetActivity();
-		String text = activity.GetEditText();
-
-		activity.runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				activity.HideEditText(false);
-			}
-		});
-		
-		FieldHiddenWithText(text);
+    	if (activity.IsEditTextVisible())
+    	{
+    		String text = activity.GetEditText();
+    		activity.runOnUiThread(new Runnable() {
+    			@Override
+    			public void run() {
+    				activity.HideEditText();
+    			}
+    		});
+    		FieldHiddenWithText(text);
+    	}
 	}
 	
 	public static native void FieldHiddenWithText(String text);

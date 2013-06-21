@@ -27,10 +27,10 @@ public:
 private:
     int32 currentTest;
 
-	String srcDir;
-	String cpyDir;
+	FilePath srcDir;
+	FilePath cpyDir;
 
-	bool CompareFiles(const String& file1, const String& file2);
+	bool CompareFiles(const FilePath& file1, const FilePath& file2);
 };
 
 #endif /* defined(__TEMPLATEPROJECTMACOS__LOCALIZATIONTEST__) */

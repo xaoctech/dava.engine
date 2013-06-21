@@ -4,53 +4,10 @@
 #include "Command.h"
 #include "../Constants.h"
 
-class CommandMaterials: public Command
-{
-public:	
-	CommandMaterials();
-
-protected:	
-    
-    virtual void Execute();
-};
-
-
-class CommandTextureConverter: public Command
-{
-public:	
-	CommandTextureConverter();
-    
-protected:	
-    
-    virtual void Execute();
-};
-
-
-class CommandSettings: public Command
-{
-public:
-	CommandSettings();
-    
-protected:
-    
-    virtual void Execute();
-};
-
-
 class CommandBeast: public Command
 {
 public:
-	CommandBeast();
-    
-protected:
-    
-    virtual void Execute();
-};
-
-class CommandRulerTool: public Command
-{
-public:
-	CommandRulerTool();
+	DAVA_DEPRECATED(CommandBeast());// DEPRECATED: cancel absent
     
 protected:
     
@@ -60,10 +17,13 @@ protected:
 class CommandConvertToShadow : public Command
 {
 public:
-	CommandConvertToShadow();
+	DAVA_DEPRECATED(CommandConvertToShadow()); //DEPRECATED : use SceneDataManager(QOBJECT)
 
 protected:
 	virtual void Execute();
+	virtual DAVA::Set<DAVA::Entity*> GetAffectedEntities();
+
+	DAVA::Entity* affectedEntity;
 };
 
 

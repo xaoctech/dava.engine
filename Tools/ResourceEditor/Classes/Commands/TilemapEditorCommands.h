@@ -5,26 +5,16 @@
 #include "Command.h"
 #include "../SceneEditor/LandscapeEditorColor.h"
 
-class CommandTilemapEditor: public Command
-{
-public:
-	CommandTilemapEditor();
-    
-protected:
-    
-    virtual void Execute();
-};
-
 class CommandDrawTilemap: public Command
 {
 public:
-	CommandDrawTilemap(Image* originalImage, Image* newImage, const String& pathname, Landscape* landscape);
+	DAVA_DEPRECATED(CommandDrawTilemap(Image* originalImage, Image* newImage, const FilePath & pathname, Landscape* landscape));// DEPRECATED: using of SceneEditorScreenMain, editorBodyControl
 	virtual ~CommandDrawTilemap();
 
 protected:
 	Image* undoImage;
 	Image* redoImage;
-	String savedPathname;
+	FilePath savedPathname;
 
 	Landscape* landscape;
 

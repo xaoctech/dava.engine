@@ -8,8 +8,6 @@
 #include "ResourcesManageHelper.h"
 #include "PropertiesGridController.h"
 
-using namespace PropertyNames;
-
 static const QString ALIGN_PROPERTY_BLOCK_NAME = "Align options";
 
 AlignsPropertyGridWidget::AlignsPropertyGridWidget(QWidget *parent) :
@@ -45,22 +43,22 @@ void AlignsPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     // Build the properties map to make the properties search faster.
     PROPERTIESMAP propertiesMap = BuildMetadataPropertiesMap();
 	
-	RegisterCheckBoxWidgetForProperty(propertiesMap, LEFT_ALIGN_ENABLED, ui->leftAlignCheckBox);
-	RegisterCheckBoxWidgetForProperty(propertiesMap, HCENTER_ALIGN_ENABLED, ui->hcenterAlignCheckBox);
-	RegisterCheckBoxWidgetForProperty(propertiesMap, RIGHT_ALIGN_ENABLED, ui->rightAlignCheckBox);
+	RegisterCheckBoxWidgetForProperty(propertiesMap, PropertyNames::LEFT_ALIGN_ENABLED, ui->leftAlignCheckBox);
+	RegisterCheckBoxWidgetForProperty(propertiesMap, PropertyNames::HCENTER_ALIGN_ENABLED, ui->hcenterAlignCheckBox);
+	RegisterCheckBoxWidgetForProperty(propertiesMap, PropertyNames::RIGHT_ALIGN_ENABLED, ui->rightAlignCheckBox);
 	
-	RegisterCheckBoxWidgetForProperty(propertiesMap, TOP_ALIGN_ENABLED, ui->topAlignCheckBox);
-	RegisterCheckBoxWidgetForProperty(propertiesMap, VCENTER_ALIGN_ENABLED, ui->vcenterAlignCheckBox);
-	RegisterCheckBoxWidgetForProperty(propertiesMap, BOTTOM_ALIGN_ENABLED, ui->bottomAlignCheckBox);
+	RegisterCheckBoxWidgetForProperty(propertiesMap, PropertyNames::TOP_ALIGN_ENABLED, ui->topAlignCheckBox);
+	RegisterCheckBoxWidgetForProperty(propertiesMap, PropertyNames::VCENTER_ALIGN_ENABLED, ui->vcenterAlignCheckBox);
+	RegisterCheckBoxWidgetForProperty(propertiesMap, PropertyNames::BOTTOM_ALIGN_ENABLED, ui->bottomAlignCheckBox);
 
     // Register the widgets.
-    RegisterSpinBoxWidgetForProperty(propertiesMap, LEFT_ALIGN, ui->leftAlignSpinBox);
-    RegisterSpinBoxWidgetForProperty(propertiesMap, HCENTER_ALIGN, ui->hcenterAlignSpinBox);
-	RegisterSpinBoxWidgetForProperty(propertiesMap, RIGHT_ALIGN, ui->rigthAlignSpinBox);
+    RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::LEFT_ALIGN, ui->leftAlignSpinBox);
+    RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::HCENTER_ALIGN, ui->hcenterAlignSpinBox);
+	RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::RIGHT_ALIGN, ui->rigthAlignSpinBox);
 	
-    RegisterSpinBoxWidgetForProperty(propertiesMap, TOP_ALIGN, ui->topAlignSpinBox);
-    RegisterSpinBoxWidgetForProperty(propertiesMap, VCENTER_ALIGN, ui->vcenterAlignSpinBox);
-	RegisterSpinBoxWidgetForProperty(propertiesMap, BOTTOM_ALIGN, ui->bottomAlignSpinBox);
+    RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::TOP_ALIGN, ui->topAlignSpinBox);
+    RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::VCENTER_ALIGN, ui->vcenterAlignSpinBox);
+	RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::BOTTOM_ALIGN, ui->bottomAlignSpinBox);
 }
 
 void AlignsPropertyGridWidget::Cleanup()
