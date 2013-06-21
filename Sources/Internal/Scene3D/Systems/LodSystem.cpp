@@ -110,11 +110,15 @@ void LodSystem::UpdateLod(Entity * entity)
 	LodComponent::LodData * oldLod = lodComponent->currentLod;
     if (!RecheckLod(entity))
     {
-        int32 size = oldLod->nodes.size();
-        for (int i = 0; i < size; i++) 
+        if (oldLod)
         {
-            oldLod->nodes[i]->SetLodVisible(false);
+            int32 size = oldLod->nodes.size();
+            for (int i = 0; i < size; i++) 
+            {
+                oldLod->nodes[i]->SetLodVisible(false);
+            }
         }
+        lodComponent->currentLod = NULL;
         return;
     }
 	if (oldLod != lodComponent->currentLod) 
@@ -141,12 +145,6 @@ void LodSystem::UpdateLod(Entity * entity)
 bool LodSystem::RecheckLod(Entity * entity)
 {
 	LodComponent * lodComponent = static_cast<LodComponent*>(entity->GetComponent(Component::LOD_COMPONENT));
-	if (!lodComponent->currentLod)return false;
-    if (entity->GetName() == "StoneFenceSlim01.sc2")
-    {
-        int i = 1;
-        i++;
-    }
 
 	if(LodComponent::INVALID_LOD_LAYER != lodComponent->forceLodLayer) 
 	{
@@ -160,6 +158,7 @@ bool LodSystem::RecheckLod(Entity * entity)
 		}
 		return false;
 	}
+    
 
 	{
 		float32 dst = 0.f;
@@ -176,7 +175,8 @@ bool LodSystem::RecheckLod(Entity * entity)
 			dst = lodComponent->forceDistanceSq;
 		}
 
-		if (dst > lodComponent->GetLodLayerFarSquare(lodComponent->currentLod->layer) || dst < lodComponent->GetLodLayerNearSquare(lodComponent->currentLod->layer))
+		if (!lodComponent->currentLod
+            || dst > lodComponent->GetLodLayerFarSquare(lodComponent->currentLod->layer) || dst < lodComponent->GetLodLayerNearSquare(lodComponent->currentLod->layer))
 		{
 			for (Vector<LodComponent::LodData>::iterator it = lodComponent->lodLayers.begin(); it != lodComponent->lodLayers.end(); it++)
 			{
