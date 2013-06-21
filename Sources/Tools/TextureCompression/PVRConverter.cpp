@@ -43,7 +43,7 @@ FilePath PVRConverter::ConvertPngToPvr(const FilePath & fileToConvert, const Tex
 
 String PVRConverter::GetCommandLinePVR(const FilePath & fileToConvert, const TextureDescriptor &descriptor)
 {
-	String command = pvrTexToolPathname.GetAbsolutePathname();
+	String command = "\"" + pvrTexToolPathname.GetAbsolutePathname() + "\"";
 	String format = pixelFormatToPVRFormat[descriptor.pvrCompression.format];
 
 	if(command != "" && format != "")
