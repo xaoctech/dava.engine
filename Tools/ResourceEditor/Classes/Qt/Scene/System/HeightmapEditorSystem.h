@@ -46,6 +46,8 @@ public:
 		HEIGHTMAP_DRAW_RELATIVE = 0,
 		HEIGHTMAP_DRAW_AVERAGE,
 		HEIGHTMAP_DRAW_ABSOLUTE_DROPPER,
+		HEIGHTMAP_DROPPER,
+		HEIGHTMAP_COPY_PASTE,
 		
 		HEIGHTMAP_DRAW_TYPES_COUNT
 	};
@@ -76,6 +78,7 @@ protected:
 	
 	int32 landscapeSize;
 	Texture* cursorTexture;
+	Texture* squareTexture;
 	uint32 cursorSize;
 	uint32 curToolSize;
 	Image* toolImage;
@@ -89,6 +92,8 @@ protected:
 	float32 curHeight;
 	bool isIntersectsLandscape;
 	Vector2 cursorPosition;
+	Vector2 copyPasteFrom;
+	Vector2 copyPasteTo;
 	
 	Rect updatedRectAccumulator;
 	

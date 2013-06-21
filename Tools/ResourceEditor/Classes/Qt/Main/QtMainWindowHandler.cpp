@@ -1164,7 +1164,11 @@ void QtMainWindowHandler::RegisterHeightmapEditorWidgets(QPushButton* toggleButt
 														 QRadioButton* absoluteDrawing,
 														 QSlider* strength,
 														 QSlider* averageStrength,
-														 QLabel* dropperHeight)
+														 QLabel* dropperHeight,
+														 QRadioButton* dropper,
+														 QRadioButton* copyPaste,
+														 QCheckBox* copyHeightmap,
+														 QCheckBox* copyTilemask)
 {
 	heightmapToggleButton = toggleButton;
 	heightmapBrushSize = brushSize;
@@ -1175,13 +1179,23 @@ void QtMainWindowHandler::RegisterHeightmapEditorWidgets(QPushButton* toggleButt
 	heightmapStrength = strength;
 	heightmapAverageStrength = averageStrength;
 	heightmapDropperHeight = dropperHeight;
+	heightmapDropper = dropper;
+	heightmapCopyPaste = copyPaste;
+	heightmapCopyHeightmap = copyHeightmap;
+	heightmapCopyTilemask = copyTilemask;
 }
 
 void QtMainWindowHandler::SetHeightmapEditorWidgetsState(bool state)
 {
 	DVASSERT(heightmapToggleButton && heightmapBrushSize && heightmapToolImage && heightmapDrawingRelative &&
 			 heightmapDrawingAverage && heightmapDrawingAbsolute && heightmapStrength && heightmapAverageStrength &&
-			 heightmapDropperHeight);
+			 heightmapDropperHeight && heightmapDropper && heightmapCopyPaste && heightmapCopyHeightmap &&
+			 heightmapCopyTilemask);
+
+//	heightmapDropper
+//	heightmapCopyPaste
+//	heightmapCopyHeightmap
+//	heightmapCopyTilemask
 
 	heightmapToggleButton->blockSignals(true);
 	heightmapToggleButton->setCheckable(state);
@@ -1198,6 +1212,10 @@ void QtMainWindowHandler::SetHeightmapEditorWidgetsState(bool state)
 	heightmapDrawingAbsolute->setEnabled(state);
 	heightmapStrength->setEnabled(state);
 	heightmapAverageStrength->setEnabled(state);
+	heightmapDropper->setEnabled(state);
+	heightmapCopyPaste->setEnabled(state);
+	heightmapCopyHeightmap->setEnabled(state);
+	heightmapCopyTilemask->setEnabled(state);
 
 	heightmapBrushSize->blockSignals(!state);
 	heightmapToolImage->blockSignals(!state);
@@ -1206,6 +1224,10 @@ void QtMainWindowHandler::SetHeightmapEditorWidgetsState(bool state)
 	heightmapDrawingAbsolute->blockSignals(!state);
 	heightmapStrength->blockSignals(!state);
 	heightmapAverageStrength->blockSignals(!state);
+	heightmapDropper->blockSignals(!state);
+	heightmapCopyPaste->blockSignals(!state);
+	heightmapCopyHeightmap->blockSignals(!state);
+	heightmapCopyTilemask->blockSignals(!state);
 }
 
 void QtMainWindowHandler::ToggleHeightmapEditor()
@@ -1291,15 +1313,29 @@ void QtMainWindowHandler::SetAbsoluteHeightmapDrawing()
 	SetHeightmapDrawingType(HeightmapEditorSystem::HEIGHTMAP_DRAW_ABSOLUTE_DROPPER);
 }
 
+void QtMainWindowHandler::SetHeightmapDropper()
+{
+	SetHeightmapDrawingType(HeightmapEditorSystem::HEIGHTMAP_DROPPER);
+}
+
+void QtMainWindowHandler::SetHeightmapCopyPaste()
+{
+	SetHeightmapDrawingType(HeightmapEditorSystem::HEIGHTMAP_COPY_PASTE);
+}
+
 void QtMainWindowHandler::SetHeightmapDrawingType(HeightmapEditorSystem::eHeightmapDrawType type)
 {
 	heightmapDrawingRelative->blockSignals(true);
 	heightmapDrawingAverage->blockSignals(true);
 	heightmapDrawingAbsolute->blockSignals(true);
+	heightmapDropper->blockSignals(true);
+	heightmapCopyPaste->blockSignals(true);
 
 	heightmapDrawingRelative->setChecked(false);
 	heightmapDrawingAverage->setChecked(false);
 	heightmapDrawingAbsolute->setChecked(false);
+	heightmapDropper->setChecked(false);
+	heightmapCopyPaste->setChecked(false);
 
 	switch (type) {
 		default:
@@ -1316,11 +1352,21 @@ void QtMainWindowHandler::SetHeightmapDrawingType(HeightmapEditorSystem::eHeight
 		case HeightmapEditorSystem::HEIGHTMAP_DRAW_ABSOLUTE_DROPPER:
 			heightmapDrawingAbsolute->setChecked(true);
 			break;
+
+		case HeightmapEditorSystem::HEIGHTMAP_DROPPER:
+			heightmapDropper->setChecked(true);
+			break;
+
+		case HeightmapEditorSystem::HEIGHTMAP_COPY_PASTE:
+			heightmapCopyPaste->setChecked(true);
+			break;
 	}
 
 	heightmapDrawingRelative->blockSignals(false);
 	heightmapDrawingAverage->blockSignals(false);
 	heightmapDrawingAbsolute->blockSignals(false);
+	heightmapDropper->blockSignals(false);
+	heightmapCopyPaste->blockSignals(false);
 
 	QtMainWindow *window = dynamic_cast<QtMainWindow *>(parent());
 	SceneEditor2* sep = window->GetCurrentScene();
