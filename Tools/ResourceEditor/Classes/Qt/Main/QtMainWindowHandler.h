@@ -77,7 +77,10 @@ public:
     void SetWaitingCursorEnabled(bool enabled);
 
 	//heightmap editor
-	void RegisterHeightmapEditorWidgets(QPushButton*, QSlider*, QComboBox*, QRadioButton*, QRadioButton*, QRadioButton*, QSlider*, QSlider*, QLabel*);
+	void RegisterHeightmapEditorWidgets(QPushButton*, QSlider*, QComboBox*, QRadioButton*,
+										QRadioButton*, QRadioButton*, QSlider*, QSlider*,
+										QLabel*, QRadioButton*, QRadioButton*, QCheckBox*,
+										QCheckBox*);
 	void SetHeightmapEditorWidgetsState(bool state);
 
 	//tilemask editor
@@ -185,6 +188,8 @@ public slots:
 	void SetHeightmapEditorStrength(int strength);
 	void SetHeightmapEditorAverageStrength(int averageStrength);
 	void SetHeightmapDropperHeight(SceneEditor2* scene, double height);
+	void SetHeightmapDropper();
+	void SetHeightmapCopyPaste();
 
 	//tilemask editor
 	void ToggleTilemaskEditor();
@@ -328,6 +333,10 @@ private:
 	QSlider* heightmapStrength;
 	QSlider* heightmapAverageStrength;
 	QLabel* heightmapDropperHeight;
+	QRadioButton* heightmapDropper;
+	QRadioButton* heightmapCopyPaste;
+	QCheckBox* heightmapCopyHeightmap;
+	QCheckBox* heightmapCopyTilemask;
 
 	//tilemassk editor
 	QPushButton* tilemaskToggleButton;

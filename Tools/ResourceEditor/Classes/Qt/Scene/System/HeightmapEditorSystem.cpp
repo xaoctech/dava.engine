@@ -35,6 +35,7 @@
 #include "LandscapeEditorDrawSystem/HeightmapProxy.h"
 #include "LandscapeEditorDrawSystem/LandscapeProxy.h"
 #include "../../../Commands2/HeightmapEditorCommands2.h"
+#include "QtUtils.h"
 
 const float32 HeightmapEditorSystem::MAX_STRENGTH = 30.f;
 
@@ -51,10 +52,15 @@ HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 ,	inverseDrawingEnabled(false)
 ,	toolImagePath("")
 ,	drawingType(HEIGHTMAP_DRAW_RELATIVE)
+,	copyPasteFrom(-1.f, -1.f)
+,	copyPasteTo(-1.f, -1.f)
 {
 	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.png");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
-	
+
+	squareTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/squareCursor.png");
+	squareTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
+
 	collisionSystem = ((SceneEditor2 *) GetScene())->collisionSystem;
 	selectionSystem = ((SceneEditor2 *) GetScene())->selectionSystem;
 	modifSystem = ((SceneEditor2 *) GetScene())->modifSystem;
@@ -64,6 +70,7 @@ HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 HeightmapEditorSystem::~HeightmapEditorSystem()
 {
 	SafeRelease(cursorTexture);
+	SafeRelease(squareTexture);
 }
 
 bool HeightmapEditorSystem::IsLandscapeEditingEnabled() const
@@ -84,6 +91,7 @@ bool HeightmapEditorSystem::EnableLandscapeEditing()
 	drawSystem->EnableCustomDraw();
 
 	landscapeSize = drawSystem->GetHeightmapProxy()->Size();
+	copyPasteFrom = Vector2(-1.f, -1.f);
 
 	drawSystem->EnableCursor(landscapeSize);
 	drawSystem->SetCursorTexture(cursorTexture);
@@ -139,7 +147,8 @@ void HeightmapEditorSystem::ProcessUIEvent(DAVA::UIEvent *event)
 		switch(event->phase)
 		{
 			case UIEvent::PHASE_BEGAN:
-				if (drawingType == HEIGHTMAP_DRAW_ABSOLUTE_DROPPER)
+				if (drawingType == HEIGHTMAP_DRAW_ABSOLUTE_DROPPER ||
+					drawingType == HEIGHTMAP_DROPPER)
 				{
 					curHeight = drawSystem->GetHeightAtPoint(cursorPosition);
 					
@@ -148,8 +157,24 @@ void HeightmapEditorSystem::ProcessUIEvent(DAVA::UIEvent *event)
 				
 				if (isIntersectsLandscape)
 				{
-					StoreOriginalHeightmap();
-					
+					if (drawingType == HEIGHTMAP_COPY_PASTE)
+					{
+						if (IsKeyModificatorPressed(DVKEY_ALT)) //(copyPasteFrom == Vector2(-1.f, -1.f))
+						{
+							copyPasteFrom = cursorPosition;
+							copyPasteTo = Vector2(-1.f, -1.f);
+						}
+						else
+						{
+							copyPasteTo = cursorPosition;
+							StoreOriginalHeightmap();
+						}
+					}
+					else
+					{
+						StoreOriginalHeightmap();
+					}
+
 					UpdateToolImage();
 					editingIsEnabled = true;
 				}
@@ -285,10 +310,33 @@ void HeightmapEditorSystem::UpdateBrushTool(float32 timeElapsed)
 				
 				float32 koef = (averageStrength * timeElapsed) * 2.0f;
 				editorHeightmap->DrawAbsoluteRGBA(toolImage, (int32)pos.x, (int32)pos.y, scaleSize, scaleSize, koef, height);
-				
-				float32 height2 = drawSystem->GetHeightAtPoint(cursorPosition);
-				SceneSignals::Instance()->EmitUpdateDropperHeight(dynamic_cast<SceneEditor2*>(GetScene()), height2);
-				
+				break;
+			}
+
+			case HEIGHTMAP_DROPPER:
+			{
+				float32 height = drawSystem->GetHeightAtPoint(cursorPosition);
+				SceneSignals::Instance()->EmitUpdateDropperHeight(dynamic_cast<SceneEditor2*>(GetScene()), height);
+				return;
+			}
+
+			case HEIGHTMAP_COPY_PASTE:
+			{
+				if (copyPasteFrom == Vector2(-1.f, -1.f) || copyPasteTo == Vector2(-1.f, -1.f))
+				{
+					return;
+				}
+
+				int32 scaleSize = toolImage->GetWidth();
+				Vector2 posTo = pos;
+
+				Vector2 deltaPos = cursorPosition - copyPasteTo;
+				Vector2 posFrom = copyPasteFrom + deltaPos - Vector2((float32)scaleSize, (float32)scaleSize)/2.f;
+
+				float32 koef = (averageStrength * timeElapsed) * 2.0f;
+
+				editorHeightmap->DrawCopypasteRGBA(toolImage, posFrom, posTo, scaleSize, scaleSize, koef);
+
 				break;
 			}
 				
@@ -395,5 +443,16 @@ void HeightmapEditorSystem::SetToolImage(const FilePath& toolImagePath)
 
 void HeightmapEditorSystem::SetDrawingType(eHeightmapDrawType type)
 {
+	copyPasteFrom = Vector2(-1.f, -1.f);
+
+	if (type == HEIGHTMAP_COPY_PASTE)
+	{
+		drawSystem->SetCursorTexture(squareTexture);
+	}
+	else if (drawingType == HEIGHTMAP_COPY_PASTE)
+	{
+		drawSystem->SetCursorTexture(cursorTexture);
+	}
+
 	drawingType = type;
 }

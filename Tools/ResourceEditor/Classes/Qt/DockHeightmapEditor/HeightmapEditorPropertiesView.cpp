@@ -67,6 +67,8 @@ void HeightmapEditorPropertiesView::Init()
 	connect(ui->radioRelAbs, SIGNAL(clicked()), handler, SLOT(SetRelativeHeightmapDrawing()));
 	connect(ui->radioAvg, SIGNAL(clicked()), handler, SLOT(SetAverageHeightmapDrawing()));
 	connect(ui->radioAbsDrop, SIGNAL(clicked()), handler, SLOT(SetAbsoluteHeightmapDrawing()));
+	connect(ui->radioDropper, SIGNAL(clicked()), handler, SLOT(SetHeightmapDropper()));
+	connect(ui->radioCopyPaste, SIGNAL(clicked()), handler, SLOT(SetHeightmapCopyPaste()));
 	connect(ui->sliderStrength, SIGNAL(valueChanged(int)), handler, SLOT(SetHeightmapEditorStrength(int)));
 	connect(ui->sliderAverageStrength, SIGNAL(valueChanged(int)), handler, SLOT(SetHeightmapEditorAverageStrength(int)));
 
@@ -78,7 +80,11 @@ void HeightmapEditorPropertiesView::Init()
 																	ui->radioAbsDrop,
 																	ui->sliderStrength,
 																	ui->sliderAverageStrength,
-																	ui->labelDropperHeight);
+																	ui->labelDropperHeight,
+																	ui->radioDropper,
+																	ui->radioCopyPaste,
+																	ui->checkboxHeightmap,
+																	ui->checkboxTilemask);
 
 	handler->SetHeightmapEditorWidgetsState(false);
 }
