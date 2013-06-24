@@ -82,13 +82,13 @@ void MaterialGraph::RemoveNodeRecursive(MaterialGraphNode * node)
     RemoveNode(node);
 }
 
-bool MaterialGraph::LoadFromFile(const String & pathname)
+bool MaterialGraph::LoadFromFile(const FilePath & pathname)
 {
     
     YamlParser * materialFileParser = YamlParser::Create(pathname);
     if (!materialFileParser)return false;
     
-    FileSystem::Instance()->SplitPath(pathname, materialPath, materialFilename);
+    materialPathname = pathname;
         
     
     YamlNode * rootNode = materialFileParser->GetRootNode();

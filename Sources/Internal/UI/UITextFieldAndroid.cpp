@@ -77,7 +77,9 @@ void JniTextField::TextFieldShouldReturn()
 
 bool JniTextField::TextFieldKeyPressed(int32 replacementLocation, int32 replacementLength, const char* text)
 {
-	DVASSERT(activeTextField);
+	if (!activeTextField)
+		return false;
+
 	UITextFieldDelegate* delegate = activeTextField->GetDelegate();
 	if (!delegate)
 		return true;

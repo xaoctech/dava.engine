@@ -76,17 +76,6 @@ void * DynamicMemoryFile::GetData()
 }
 
 
-
-const String DynamicMemoryFile::GetFilename()
-{
-	return filename;
-}
-
-const String DynamicMemoryFile::GetPathname()
-{
-	return filename;
-}
-
 uint32 DynamicMemoryFile::Write(const void * pointerToData, uint32 dataSize)
 {
 	if (!(fileAttributes & File::WRITE) && !(fileAttributes & File::APPEND))

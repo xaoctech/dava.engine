@@ -32,6 +32,7 @@
 #include "Render/RenderManager.h"
 #include "Render/Effects/TextureMulColorAlphaTestEffect.h"
 #include "Render/Shader.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA 
 {

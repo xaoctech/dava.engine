@@ -7,7 +7,7 @@
 class CommandCreateNode: public Command
 {
 public:	
-	CommandCreateNode(ResourceEditor::eNodeType type);
+	DAVA_DEPRECATED(CommandCreateNode(ResourceEditor::eNodeType type));// DEPRECATED: use SceneEditorScreenMain
     
 protected:
     virtual void Execute();

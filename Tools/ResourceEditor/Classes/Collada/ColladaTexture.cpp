@@ -62,7 +62,8 @@ ColladaTexture::ColladaTexture(FCDImage * _image)
 		}
 	}
 	
-	wcstombs_s(&convertedChars, nstring, origsize, orig+2/*remove C:*/, _TRUNCATE);
+	//wcstombs_s(&convertedChars, nstring, origsize, orig+2/*remove C:*/, _TRUNCATE);
+	wcstombs_s(&convertedChars, nstring, origsize, orig, _TRUNCATE);
 #else
 	swprintf(orig, 512,L"%s", image->GetFilename().c_str() );
 	const wchar_t * origTmp = &orig[0];

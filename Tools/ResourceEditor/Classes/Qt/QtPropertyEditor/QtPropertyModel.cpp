@@ -51,21 +51,16 @@ QtPropertyData * QtPropertyModel::GetProperty(const QString &name, QtPropertyIte
 
     for(DAVA::int32 r = 0; r < root->rowCount(); ++r)
     {
-        QtPropertyItem *keyItem = dynamic_cast<QtPropertyItem *>(root->child(r, 0));
-        DVASSERT(keyItem);
-        
+        QtPropertyItem *keyItem = static_cast<QtPropertyItem *>(root->child(r, 0));
         if(keyItem->GetPropertyData()->GetValue().toString() == name)
         {
-            QtPropertyItem *dataItem = dynamic_cast<QtPropertyItem *>(root->child(r, 1));
-            DVASSERT(dataItem);
-            
+            QtPropertyItem *dataItem = static_cast<QtPropertyItem *>(root->child(r, 1));
             return dataItem->GetPropertyData();
         }
     }
     
     return NULL;
 }
-
 
 void QtPropertyModel::RemoveProperty(QtPropertyItem* item)
 {

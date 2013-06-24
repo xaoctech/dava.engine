@@ -363,12 +363,12 @@ public:
 		\brief Function loads data from given file.
 		\param[in] pathName relative pathname in application documents folder
 	 */
-	bool Load(const String & pathName);
+	bool Load(const FilePath & pathName);
 	/**
 		\brief Function saves data to given file.
 		\param[in] pathName relative pathname in application documents folder
 	 */
-	bool Save(const String & pathName);
+	bool Save(const FilePath & pathName);
 
 	/**
         \brief Function loads data from given file.
@@ -385,13 +385,13 @@ public:
      \brief Function loads data from given yaml file.
      \param[in] pathName relative pathname in application documents folder
 	 */
-	bool LoadFromYamlFile(const String & pathName);
+	bool LoadFromYamlFile(const FilePath & pathName);
 
     /**
      \brief Function saves data to given yaml file.
      \param[in] file to save
 	 */
-	bool SaveToYamlFile(const String & pathName);
+	bool SaveToYamlFile(const FilePath & pathName);
 #endif
 	/**
 		\brief Deletes named key.

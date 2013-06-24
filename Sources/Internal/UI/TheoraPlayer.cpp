@@ -52,7 +52,7 @@ struct TheoraData
     ogg_int64_t         videoBufGranulePos;
 };
     
-TheoraPlayer::TheoraPlayer(const String & _filePath) :
+TheoraPlayer::TheoraPlayer(const FilePath & _filePath) :
 isPlaying(false),
 theora_p(0),
 isVideoBufReady(false),
@@ -110,11 +110,11 @@ void TheoraPlayer::ReleaseData()
     isPlaying = false;
 }
 
-void TheoraPlayer::OpenFile(const String &path)
+void TheoraPlayer::OpenFile(const FilePath &path)
 {
     ReleaseData();
     
-    if(path == "")
+    if(path.IsEmpty())
         return;
     
     filePath = path;

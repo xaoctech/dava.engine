@@ -15,7 +15,7 @@ static const PixelFormat formats[] =
 DXTTest::DXTTest()
 : TestTemplate<DXTTest>("DXTTest")
 {
-    String testFolder = FileSystem::Instance()->GetCurrentDocumentsDirectory() + String("/DXTTest/");
+    FilePath testFolder = FileSystem::Instance()->GetCurrentDocumentsDirectory() + "DXTTest/";
     FileSystem::Instance()->CreateDirectory(testFolder, true);
 
     pngSprite = NULL;
@@ -89,9 +89,9 @@ void DXTTest::TestFunction(PerfFuncData * data)
         Image *firstComparer = TextureUtils::CreateImageAsRGBA8888(decompressedPNGSprite);
         Image *secondComparer = TextureUtils::CreateImageAsRGBA8888(dxtSprite);
         
-        String documentsPath = FileSystem::Instance()->GetCurrentDocumentsDirectory();
-        ImageLoader::Save(firstComparer, documentsPath + Format("DXTTest/src_number_%d.png", currentTest));
-        ImageLoader::Save(secondComparer, documentsPath + Format("DXTTest/dst_number_%d.png", currentTest));
+        FilePath documentsPath = FileSystem::Instance()->GetCurrentDocumentsDirectory();
+        ImageLoader::Save(firstComparer, documentsPath + (Format("DXTTest/src_number_%d.png", currentTest)));
+        ImageLoader::Save(secondComparer, documentsPath + (Format("DXTTest/dst_number_%d.png", currentTest)));
     }
 
     ++currentTest;
