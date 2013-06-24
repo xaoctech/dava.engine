@@ -73,25 +73,27 @@ class UIListDelegate
         \param[in] index index of the list item
         \returns width in pixels of the cell with given index. Default value is 20px.
      */
-	virtual int32 CellWidth(UIList * list, int32 index)   //! control calls this method only when it's in horizontal orientation
-	{return 20;};
+	virtual int32 CellWidth(UIList * list, int32 index);   //! control calls this method only when it's in horizontal orientation
+
     /**
         \brief This method is called by UIList when it need to know what is the height of the cell. It called only for vertical lists. 
         \param[in] list list object that requesting the information. You can have multiple lists with same delegate.
         \param[in] index index of the list item
         \returns height in pixels of the cell with given index. Default value is 20px.
      */
-	virtual int32 CellHeight(UIList * list, int32 index)  //control calls this method only when it's in vertical orientation
-	{return 20;};
-    
+	virtual int32 CellHeight(UIList * list, int32 index);  //control calls this method only when it's in vertical orientation
     
     /**
         \brief This method is called by UIList when cell was selected by user.  
         \param[in] list list object that requesting the information. You can have multiple lists with same delegate.
         \param[in] index index of the list item
      */
-	virtual void OnCellSelected(UIList *forList, UIListCell *selectedCell)
-	{};
+	virtual void OnCellSelected(UIList *forList, UIListCell *selectedCell);
+	
+	/**
+		\brief This metod is called by UIList when need to save.
+	*/
+	virtual void SaveToYaml(UIList *forList, YamlNode *node);
 };
 /**
 	\ingroup controlsystem
@@ -167,8 +169,13 @@ public:
 	UIList(const Rect &rect, eListOrientation requiredOrientation, bool rectInAbsoluteCoordinates = false);
 	
 	void SetDelegate(UIListDelegate *newDelegate);
+	UIListDelegate * GetDelegate();
 	
     void ScrollToElement(int32 index);
+	
+	// Get and set aggregator path
+	const FilePath & GetAggregatorPath();
+	void SetAggregatorPath(const FilePath &aggregatorPath);
     
     float32 GetScrollPosition();
     void SetScrollPosition(float32 newScrollPos);
@@ -245,6 +252,7 @@ protected:
 	int32 touchHoldSize;
 	
 	bool needRefresh;
+	FilePath aggregatorPath;
 	
 
 	Map<String,Vector<UIListCell*>*> cellStore;

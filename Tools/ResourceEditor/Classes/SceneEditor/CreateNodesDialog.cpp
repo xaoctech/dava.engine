@@ -10,6 +10,10 @@
 #include "Scene3D/Components/UserComponent.h"
 #include "EditorSettings.h"
 
+#include "Qt/Scene/SceneDataManager.h"
+#include "Qt/Scene/SceneData.h"
+
+
 CreateNodesDialog::CreateNodesDialog(const Rect & rect)
     :   DraggableDialog(rect)
 {
@@ -96,8 +100,8 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 {
     SafeRelease(sceneNode);
 
-	SceneEditorScreenMain * screen = (SceneEditorScreenMain*)UIScreenManager::Instance()->GetScreen(SCREEN_SCENE_EDITOR_MAIN);
-	EditorScene * editorScene = screen->FindCurrentBody()->bodyControl->GetScene();
+    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+    EditorScene * editorScene = activeScene->GetScene();
 	scene = editorScene;
 
     switch (nodeType) 

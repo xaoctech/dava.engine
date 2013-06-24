@@ -8,14 +8,684 @@
 
 /* Begin PBXBuildFile section */
 		0224B70015989F7400CDEF9E /* libtheora_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B6FF15989F7400CDEF9E /* libtheora_macos.a */; };
+		02E9E3AB17296D4200C501BC /* FMODUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E3AA17296D4200C501BC /* FMODUtils.h */; };
+		02E9E40A17395FDD00C501BC /* libfmodevent.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E40817395FDD00C501BC /* libfmodevent.dylib */; };
+		02E9E40B17395FDD00C501BC /* libfmodex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E40917395FDD00C501BC /* libfmodex.dylib */; };
+		02E9E40C17395FED00C501BC /* libfmodevent.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E40817395FDD00C501BC /* libfmodevent.dylib */; };
+		02E9E40D17395FED00C501BC /* libfmodex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E40917395FDD00C501BC /* libfmodex.dylib */; };
+		02E9E41B1739615B00C501BC /* SoundEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E4151739615B00C501BC /* SoundEvent.cpp */; };
+		02E9E41C1739615B00C501BC /* SoundEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E4161739615B00C501BC /* SoundEvent.h */; };
+		02E9E41D1739615B00C501BC /* SoundEventCategory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E4171739615B00C501BC /* SoundEventCategory.cpp */; };
+		02E9E41E1739615B00C501BC /* SoundEventCategory.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E4181739615B00C501BC /* SoundEventCategory.h */; };
+		02E9E41F1739615B00C501BC /* VolumeAnimatedObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E4191739615B00C501BC /* VolumeAnimatedObject.cpp */; };
+		02E9E4201739615B00C501BC /* VolumeAnimatedObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E41A1739615B00C501BC /* VolumeAnimatedObject.h */; };
+		02E9E4231739616800C501BC /* SoundComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E4211739616800C501BC /* SoundComponent.cpp */; };
+		02E9E4241739616800C501BC /* SoundComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E4221739616800C501BC /* SoundComponent.h */; };
+		02E9E425173961DE00C501BC /* SoundEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E4151739615B00C501BC /* SoundEvent.cpp */; };
+		02E9E427173961DE00C501BC /* SoundEventCategory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E4171739615B00C501BC /* SoundEventCategory.cpp */; };
+		02E9E429173961DE00C501BC /* VolumeAnimatedObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E4191739615B00C501BC /* VolumeAnimatedObject.cpp */; };
+		02E9E42F1739622500C501BC /* SoundEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E4161739615B00C501BC /* SoundEvent.h */; };
+		02E9E4301739622800C501BC /* SoundEventCategory.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E4181739615B00C501BC /* SoundEventCategory.h */; };
+		02E9E4311739622E00C501BC /* VolumeAnimatedObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E41A1739615B00C501BC /* VolumeAnimatedObject.h */; };
+		02E9E4321739622E00C501BC /* FMODUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E3AA17296D4200C501BC /* FMODUtils.h */; };
+		02E9E4331739623700C501BC /* SoundComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E4211739616800C501BC /* SoundComponent.cpp */; };
+		02E9E4341739623900C501BC /* SoundComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E4221739616800C501BC /* SoundComponent.h */; };
+		02E9E437173964DA00C501BC /* SoundUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E435173964DA00C501BC /* SoundUpdateSystem.cpp */; };
+		02E9E438173964DA00C501BC /* SoundUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E435173964DA00C501BC /* SoundUpdateSystem.cpp */; };
+		02E9E439173964DA00C501BC /* SoundUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E436173964DA00C501BC /* SoundUpdateSystem.h */; };
+		02E9E43A173964DA00C501BC /* SoundUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E436173964DA00C501BC /* SoundUpdateSystem.h */; };
+		02E9E465173A453700C501BC /* libfmodevent.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 02E9E40817395FDD00C501BC /* libfmodevent.dylib */; };
+		02E9E466173A453700C501BC /* libfmodex.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 02E9E40917395FDD00C501BC /* libfmodex.dylib */; };
 		171F938516CE6F28007038AB /* UIWebView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 171F938316CE6F28007038AB /* UIWebView.cpp */; };
 		171F938616CE6F28007038AB /* UIWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 171F938416CE6F28007038AB /* UIWebView.h */; };
 		1723D46F16CCF1C00039CCC2 /* ParticleForce.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1799E52416CCEC030058061F /* ParticleForce.cpp */; };
 		1723D47016CCF1C00039CCC2 /* ParticleForce.h in Headers */ = {isa = PBXBuildFile; fileRef = 1799E52516CCEC030058061F /* ParticleForce.h */; };
+		176DE8F9174B5561007A983B /* AnimatedObject.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989ABF16BD24E400732C04 /* AnimatedObject.h */; };
+		176DE8FA174B5561007A983B /* Animation.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AC116BD24E400732C04 /* Animation.h */; };
+		176DE8FB174B5561007A983B /* AnimationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AC316BD24E400732C04 /* AnimationManager.h */; };
+		176DE8FC174B5561007A983B /* BezierSplineAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AC516BD24E400732C04 /* BezierSplineAnimation.h */; };
+		176DE8FD174B5561007A983B /* Interpolation.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AC716BD24E400732C04 /* Interpolation.h */; };
+		176DE8FE174B5561007A983B /* KeyframeAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AC916BD24E400732C04 /* KeyframeAnimation.h */; };
+		176DE8FF174B5561007A983B /* LinearAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989ACB16BD24E400732C04 /* LinearAnimation.h */; };
+		176DE900174B5561007A983B /* NamedAnimationsList.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989ACC16BD24E400732C04 /* NamedAnimationsList.h */; };
+		176DE901174B5561007A983B /* Action.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989ACF16BD24E400732C04 /* Action.h */; };
+		176DE902174B5561007A983B /* AssertAction.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AD116BD24E400732C04 /* AssertAction.h */; };
+		176DE903174B5561007A983B /* AutotestingSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AD316BD24E400732C04 /* AutotestingSystem.h */; };
+		176DE904174B5561007A983B /* Config.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AD416BD24E400732C04 /* Config.h */; };
+		176DE905174B5561007A983B /* MongodbUpdateObject.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AD616BD24E400732C04 /* MongodbUpdateObject.h */; };
+		176DE906174B5561007A983B /* TouchAction.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AD816BD24E400732C04 /* TouchAction.h */; };
+		176DE907174B5561007A983B /* BaseMath.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989ADB16BD24E400732C04 /* BaseMath.h */; };
+		176DE908174B5561007A983B /* BaseObject.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989ADD16BD24E400732C04 /* BaseObject.h */; };
+		176DE909174B5561007A983B /* BaseObjectChecker.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989ADF16BD24E400732C04 /* BaseObjectChecker.h */; };
+		176DE90A174B5561007A983B /* BaseTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AE016BD24E400732C04 /* BaseTypes.h */; };
+		176DE90B174B5561007A983B /* Data.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AE216BD24E400732C04 /* Data.h */; };
+		176DE90C174B5561007A983B /* DynamicObjectCache.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AE416BD24E400732C04 /* DynamicObjectCache.h */; };
+		176DE90D174B5561007A983B /* EventDispatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AE616BD24E400732C04 /* EventDispatcher.h */; };
+		176DE90E174B5561007A983B /* Exception.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AE716BD24E400732C04 /* Exception.h */; };
+		176DE90F174B5561007A983B /* FastName.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AE916BD24E400732C04 /* FastName.h */; };
+		176DE910174B5561007A983B /* FastNameMap.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AEA16BD24E400732C04 /* FastNameMap.h */; };
+		176DE911174B5561007A983B /* FixedSizePoolAllocator.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AEC16BD24E400732C04 /* FixedSizePoolAllocator.h */; };
+		176DE912174B5561007A983B /* Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AED16BD24E400732C04 /* Hash.h */; };
+		176DE913174B5561007A983B /* HashMap.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AEE16BD24E400732C04 /* HashMap.h */; };
+		176DE914174B5561007A983B /* Introspection.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AEF16BD24E400732C04 /* Introspection.h */; };
+		176DE915174B5561007A983B /* IntrospectionBase.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AF016BD24E400732C04 /* IntrospectionBase.h */; };
+		176DE916174B5561007A983B /* IntrospectionCollection.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AF116BD24E400732C04 /* IntrospectionCollection.h */; };
+		176DE917174B5561007A983B /* IntrospectionFlags.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AF216BD24E400732C04 /* IntrospectionFlags.h */; };
+		176DE918174B5561007A983B /* IntrospectionProperty.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AF316BD24E400732C04 /* IntrospectionProperty.h */; };
+		176DE919174B5561007A983B /* Mallocator.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AF416BD24E400732C04 /* Mallocator.h */; };
+		176DE91A174B5561007A983B /* Message.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AF616BD24E400732C04 /* Message.h */; };
+		176DE91B174B5561007A983B /* Meta.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AF716BD24E400732C04 /* Meta.h */; };
+		176DE91C174B5561007A983B /* ObjectCreator.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AF816BD24E400732C04 /* ObjectCreator.h */; };
+		176DE91D174B5561007A983B /* ObjectFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AFA16BD24E400732C04 /* ObjectFactory.h */; };
+		176DE91E174B5561007A983B /* Observable.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AFC16BD24E400732C04 /* Observable.h */; };
+		176DE91F174B5561007A983B /* Observer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AFD16BD24E400732C04 /* Observer.h */; };
+		176DE920174B5561007A983B /* Radix.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B0016BD24E400732C04 /* Radix.h */; };
+		176DE921174B5561007A983B /* RefPtr.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B0116BD24E400732C04 /* RefPtr.h */; };
+		176DE922174B5561007A983B /* ScopedPtr.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B0216BD24E400732C04 /* ScopedPtr.h */; };
+		176DE923174B5561007A983B /* Singleton.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B0316BD24E400732C04 /* Singleton.h */; };
+		176DE924174B5561007A983B /* StaticSingleton.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B0416BD24E400732C04 /* StaticSingleton.h */; };
+		176DE925174B5561007A983B /* TemplateHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B0516BD24E400732C04 /* TemplateHelpers.h */; };
+		176DE926174B5561007A983B /* CollisionObject2.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B0816BD24E400732C04 /* CollisionObject2.h */; };
+		176DE927174B5561007A983B /* CollisionPolygons.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B0A16BD24E400732C04 /* CollisionPolygons.h */; };
+		176DE928174B5561007A983B /* Collisions.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B0C16BD24E400732C04 /* Collisions.h */; };
+		176DE929174B5561007A983B /* ApplicationCore.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B0F16BD24E400732C04 /* ApplicationCore.h */; };
+		176DE92A174B5561007A983B /* Core.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B1116BD24E400732C04 /* Core.h */; };
+		176DE92B174B5561007A983B /* CoreMacOS_CarbonWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B1416BD24E400732C04 /* CoreMacOS_CarbonWindow.h */; };
+		176DE92C174B5561007A983B /* CoreMacOS_OpenGL.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B1616BD24E400732C04 /* CoreMacOS_OpenGL.h */; };
+		176DE92D174B5561007A983B /* DisplayMode.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B1716BD24E400732C04 /* DisplayMode.h */; };
+		176DE92E174B5561007A983B /* MongodbClient.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B1A16BD24E400732C04 /* MongodbClient.h */; };
+		176DE92F174B5561007A983B /* MongodbObject.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B1C16BD24E400732C04 /* MongodbObject.h */; };
+		176DE930174B5561007A983B /* DAVAConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B1D16BD24E400732C04 /* DAVAConfig.h */; };
+		176DE931174B5561007A983B /* DAVAEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B1F16BD24E400732C04 /* DAVAEngine.h */; };
+		176DE932174B5561007A983B /* Backtrace.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B2216BD24E400732C04 /* Backtrace.h */; };
+		176DE933174B5561007A983B /* DVAssert.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B2316BD24E400732C04 /* DVAssert.h */; };
+		176DE934174B5561007A983B /* List.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B2416BD24E400732C04 /* List.h */; };
+		176DE935174B5561007A983B /* ListAllocator.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B2516BD24E400732C04 /* ListAllocator.h */; };
+		176DE936174B5561007A983B /* MemoryManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B2716BD24E400732C04 /* MemoryManager.h */; };
+		176DE937174B5561007A983B /* Replay.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B2916BD24E400732C04 /* Replay.h */; };
+		176DE938174B5561007A983B /* Stats.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B2B16BD24E400732C04 /* Stats.h */; };
+		176DE939174B5561007A983B /* DLCSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B2E16BD24E400732C04 /* DLCSystem.h */; };
+		176DE93A174B5561007A983B /* DLCUnpacker.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B3216BD24E400732C04 /* DLCUnpacker.h */; };
+		176DE93B174B5561007A983B /* FileDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B3416BD24E400732C04 /* FileDownloader.h */; };
+		176DE93C174B5561007A983B /* DoxygenDocumenation.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B3516BD24E400732C04 /* DoxygenDocumenation.h */; };
+		176DE93D174B5561007A983B /* Component.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B3816BD24E400732C04 /* Component.h */; };
+		176DE93E174B5561007A983B /* SceneSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B3A16BD24E400732C04 /* SceneSystem.h */; };
+		176DE93F174B5561007A983B /* Bitstream.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B5C16BD24E400732C04 /* Bitstream.h */; };
+		176DE940174B5561007A983B /* DynamicMemoryFile.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B5E16BD24E400732C04 /* DynamicMemoryFile.h */; };
+		176DE941174B5561007A983B /* File.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B6016BD24E400732C04 /* File.h */; };
+		176DE942174B5561007A983B /* FileList.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B6216BD24E400732C04 /* FileList.h */; };
+		176DE943174B5561007A983B /* FilePath.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B6416BD24E400732C04 /* FilePath.h */; };
+		176DE944174B5561007A983B /* FileSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B6616BD24E400732C04 /* FileSystem.h */; };
+		176DE945174B5561007A983B /* KeyedArchive.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B6916BD24E400732C04 /* KeyedArchive.h */; };
+		176DE946174B5561007A983B /* KeyedArchiver.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B6B16BD24E400732C04 /* KeyedArchiver.h */; };
+		176DE947174B5561007A983B /* KeyedUnarchiver.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B6D16BD24E400732C04 /* KeyedUnarchiver.h */; };
+		176DE948174B5561007A983B /* LocalizationSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B7116BD24E400732C04 /* LocalizationSystem.h */; };
+		176DE949174B5561007A983B /* Logger.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B7316BD24E400732C04 /* Logger.h */; };
+		176DE94A174B5561007A983B /* ResourceArchive.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B7916BD24E400732C04 /* ResourceArchive.h */; };
+		176DE94B174B5561007A983B /* VariantType.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B7B16BD24E400732C04 /* VariantType.h */; };
+		176DE94C174B5561007A983B /* XMLParser.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B7D16BD24E400732C04 /* XMLParser.h */; };
+		176DE94D174B5561007A983B /* YamlArchive.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B8016BD24E400732C04 /* YamlArchive.h */; };
+		176DE94E174B5561007A983B /* YamlParser.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B8216BD24E400732C04 /* YamlParser.h */; };
+		176DE94F174B5561007A983B /* Accelerometer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B8516BD24E400732C04 /* Accelerometer.h */; };
+		176DE950174B5561007A983B /* InputSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B8B16BD24E400732C04 /* InputSystem.h */; };
+		176DE951174B5561007A983B /* KeyboardDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B8D16BD24E400732C04 /* KeyboardDevice.h */; };
+		176DE952174B5561007A983B /* AABBox2.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B9016BD24E400732C04 /* AABBox2.h */; };
+		176DE953174B5561007A983B /* AABBox3.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B9216BD24E400732C04 /* AABBox3.h */; };
+		176DE954174B5561007A983B /* BezierSpline.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B9416BD24E400732C04 /* BezierSpline.h */; };
+		176DE955174B5561007A983B /* Circle.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B9516BD24E400732C04 /* Circle.h */; };
+		176DE956174B5561007A983B /* Color.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B9616BD24E400732C04 /* Color.h */; };
+		176DE957174B5561007A983B /* Math2D.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B9816BD24E400732C04 /* Math2D.h */; };
+		176DE958174B5561007A983B /* Math2DTemplateClasses.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B9916BD24E400732C04 /* Math2DTemplateClasses.h */; };
+		176DE959174B5561007A983B /* MathConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B9A16BD24E400732C04 /* MathConstants.h */; };
+		176DE95A174B5561007A983B /* MathDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B9B16BD24E400732C04 /* MathDefines.h */; };
+		176DE95B174B5561007A983B /* MathHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B9C16BD24E400732C04 /* MathHelpers.h */; };
+		176DE95C174B5561007A983B /* Matrix2.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B9D16BD24E400732C04 /* Matrix2.h */; };
+		176DE95D174B5561007A983B /* Matrix3.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989B9E16BD24E400732C04 /* Matrix3.h */; };
+		176DE95E174B5561007A983B /* Matrix4.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BA016BD24E400732C04 /* Matrix4.h */; };
+		176DE95F174B5561007A983B /* NeonMath.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BA316BD24E400732C04 /* NeonMath.h */; };
+		176DE960174B5561007A983B /* OOBBox.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BA416BD24E400732C04 /* OOBBox.h */; };
+		176DE961174B5561007A983B /* Plane.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BA516BD24E400732C04 /* Plane.h */; };
+		176DE962174B5561007A983B /* Polygon2.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BA716BD24E400732C04 /* Polygon2.h */; };
+		176DE963174B5561007A983B /* Polygon3.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BA916BD24E400732C04 /* Polygon3.h */; };
+		176DE964174B5561007A983B /* Quaternion.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BAA16BD24E400732C04 /* Quaternion.h */; };
+		176DE965174B5561007A983B /* Ray.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BAB16BD24E400732C04 /* Ray.h */; };
+		176DE966174B5561007A983B /* Rect.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BAC16BD24E400732C04 /* Rect.h */; };
+		176DE967174B5561007A983B /* RectPacker.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BAE16BD24E400732C04 /* RectPacker.h */; };
+		176DE968174B5561007A983B /* Sphere.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BAF16BD24E400732C04 /* Sphere.h */; };
+		176DE969174B5561007A983B /* Spline.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BB116BD24E400732C04 /* Spline.h */; };
+		176DE96A174B5561007A983B /* Vector.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BB216BD24E400732C04 /* Vector.h */; };
+		176DE96B174B5561007A983B /* BaseNetworkConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BB416BD24E400732C04 /* BaseNetworkConnection.h */; };
+		176DE96C174B5561007A983B /* BTNetworkConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BB616BD24E400732C04 /* BTNetworkConnection.h */; };
+		176DE96D174B5561007A983B /* NetworkConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BB916BD24E400732C04 /* NetworkConnection.h */; };
+		176DE96E174B5561007A983B /* NetworkConnectionIPhone.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BBA16BD24E400732C04 /* NetworkConnectionIPhone.h */; };
+		176DE96F174B5561007A983B /* NetworkDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BBD16BD24E400732C04 /* NetworkDelegate.h */; };
+		176DE970174B5561007A983B /* NetworkPacket.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BBF16BD24E400732C04 /* NetworkPacket.h */; };
+		176DE971174B5561007A983B /* TCPServer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BC016BD24E400732C04 /* TCPServer.h */; };
+		176DE972174B5561007A983B /* WFNetworkConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BC216BD24E400732C04 /* WFNetworkConnection.h */; };
+		176DE973174B5561007A983B /* Particle.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BC616BD24E400732C04 /* Particle.h */; };
+		176DE974174B5561007A983B /* ParticleEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BC816BD24E400732C04 /* ParticleEmitter.h */; };
+		176DE975174B5561007A983B /* ParticleEmitter3D.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BCA16BD24E400732C04 /* ParticleEmitter3D.h */; };
+		176DE976174B5561007A983B /* ParticleEmitterObject.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BCC16BD24E400732C04 /* ParticleEmitterObject.h */; };
+		176DE977174B5561007A983B /* ParticleLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BCE16BD24E400732C04 /* ParticleLayer.h */; };
+		176DE978174B5561007A983B /* ParticleLayer3D.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BD016BD24E400732C04 /* ParticleLayer3D.h */; };
+		176DE979174B5561007A983B /* ParticlePropertyLine.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BD416BD24E400732C04 /* ParticlePropertyLine.h */; };
+		176DE97A174B5561007A983B /* ParticleSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BD616BD24E400732C04 /* ParticleSystem.h */; };
+		176DE97B174B5561007A983B /* Mutex.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BE116BD24E400732C04 /* Mutex.h */; };
+		176DE97C174B5561007A983B /* SystemTimer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BF416BD24E400732C04 /* SystemTimer.h */; };
+		176DE97D174B5561007A983B /* AppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C0216BD24E400732C04 /* AppDelegate.h */; };
+		176DE97E174B5561007A983B /* CorePlatformMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C0516BD24E400732C04 /* CorePlatformMacOS.h */; };
+		176DE97F174B5561007A983B /* MainWindowController.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C0616BD24E400732C04 /* MainWindowController.h */; };
+		176DE980174B5561007A983B /* NSFullScreenWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C0816BD24E400732C04 /* NSFullScreenWindow.h */; };
+		176DE981174B5561007A983B /* OpenGLView.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C0A16BD24E400732C04 /* OpenGLView.h */; };
+		176DE982174B5561007A983B /* Thread.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C1116BD24E400732C04 /* Thread.h */; };
+		176DE983174B5561007A983B /* Font.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C1816BD24E400732C04 /* Font.h */; };
+		176DE984174B5561007A983B /* FontManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C1A16BD24E400732C04 /* FontManager.h */; };
+		176DE985174B5561007A983B /* FTFont.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C1C16BD24E400732C04 /* FTFont.h */; };
+		176DE986174B5561007A983B /* GraphicsFont.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C1E16BD24E400732C04 /* GraphicsFont.h */; };
+		176DE987174B5561007A983B /* GridSprite.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C1F16BD24E400732C04 /* GridSprite.h */; };
+		176DE988174B5561007A983B /* Sprite.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C2116BD24E400732C04 /* Sprite.h */; };
+		176DE989174B5561007A983B /* TextBlock.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C2316BD24E400732C04 /* TextBlock.h */; };
+		176DE98A174B5561007A983B /* AnimatedMesh.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C2616BD24E400732C04 /* AnimatedMesh.h */; };
+		176DE98B174B5561007A983B /* EdgeAdjacency.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C2816BD24E400732C04 /* EdgeAdjacency.h */; };
+		176DE98C174B5561007A983B /* PolygonGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C2A16BD24E400732C04 /* PolygonGroup.h */; };
+		176DE98D174B5561007A983B /* StaticMesh.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C2C16BD24E400732C04 /* StaticMesh.h */; };
+		176DE98E174B5561007A983B /* Cursor.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C2D16BD24E400732C04 /* Cursor.h */; };
+		176DE98F174B5561007A983B /* ColorOnlyEffect.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C3816BD24E400732C04 /* ColorOnlyEffect.h */; };
+		176DE990174B5561007A983B /* MultiTextureEffect.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C3A16BD24E400732C04 /* MultiTextureEffect.h */; };
+		176DE991174B5561007A983B /* TextureMulColorAlphaTestEffect.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C3C16BD24E400732C04 /* TextureMulColorAlphaTestEffect.h */; };
+		176DE992174B5561007A983B /* TextureMulColorEffect.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C3E16BD24E400732C04 /* TextureMulColorEffect.h */; };
+		176DE993174B5561007A983B /* Image.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C6716BD24E400732C04 /* Image.h */; };
+		176DE994174B5561007A983B /* ImageConvert.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C6916BD24E400732C04 /* ImageConvert.h */; };
+		176DE995174B5561007A983B /* ImageLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C6B16BD24E400732C04 /* ImageLoader.h */; };
+		176DE996174B5561007A983B /* IndexBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C6C16BD24E400732C04 /* IndexBuffer.h */; };
+		176DE997174B5561007A983B /* LibDxtHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C6E16BD24E400732C04 /* LibDxtHelper.h */; };
+		176DE998174B5561007A983B /* LibPngHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C7016BD24E400732C04 /* LibPngHelpers.h */; };
+		176DE999174B5561007A983B /* LibPVRHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C7216BD24E400732C04 /* LibPVRHelper.h */; };
+		176DE99A174B5561007A983B /* MaterialCompiler.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C7516BD24E400732C04 /* MaterialCompiler.h */; };
+		176DE99B174B5561007A983B /* MaterialGraph.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C7716BD24E400732C04 /* MaterialGraph.h */; };
+		176DE99C174B5561007A983B /* MaterialGraphNode.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C7916BD24E400732C04 /* MaterialGraphNode.h */; };
+		176DE99D174B5561007A983B /* NMaterial.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C7B16BD24E400732C04 /* NMaterial.h */; };
+		176DE99E174B5561007A983B /* NMaterialConsts.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C7C16BD24E400732C04 /* NMaterialConsts.h */; };
+		176DE99F174B5561007A983B /* Material.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C7E16BD24E400732C04 /* Material.h */; };
+		176DE9A0174B5561007A983B /* OGLHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C7F16BD24E400732C04 /* OGLHelpers.h */; };
+		176DE9A1174B5561007A983B /* PVRDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C8016BD24E400732C04 /* PVRDefines.h */; };
+		176DE9A2174B5561007A983B /* RenderBase.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C8216BD24E400732C04 /* RenderBase.h */; };
+		176DE9A3174B5561007A983B /* RenderDataObject.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C8416BD24E400732C04 /* RenderDataObject.h */; };
+		176DE9A4174B5561007A983B /* RenderEffect.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C8616BD24E400732C04 /* RenderEffect.h */; };
+		176DE9A5174B5561007A983B /* RenderGrayscaleEffect.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C8816BD24E400732C04 /* RenderGrayscaleEffect.h */; };
+		176DE9A6174B5561007A983B /* RenderHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C8A16BD24E400732C04 /* RenderHelper.h */; };
+		176DE9A7174B5561007A983B /* RenderManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C8C16BD24E400732C04 /* RenderManager.h */; };
+		176DE9A8174B5561007A983B /* RenderManagerGL20.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C9116BD24E400732C04 /* RenderManagerGL20.h */; };
+		176DE9A9174B5561007A983B /* RenderOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C9316BD24E500732C04 /* RenderOptions.h */; };
+		176DE9AA174B5561007A983B /* RenderResource.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C9516BD24E500732C04 /* RenderResource.h */; };
+		176DE9AB174B5561007A983B /* RGBColor.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C9816BD24E500732C04 /* RGBColor.h */; };
+		176DE9AC174B5561007A983B /* Shader.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C9A16BD24E500732C04 /* Shader.h */; };
+		176DE9AD174B5561007A983B /* ShaderUniformArray.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C9D16BD24E500732C04 /* ShaderUniformArray.h */; };
+		176DE9AE174B5561007A983B /* SharedFBO.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C9F16BD24E500732C04 /* SharedFBO.h */; };
+		176DE9AF174B5561007A983B /* Texture.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CA516BD24E500732C04 /* Texture.h */; };
+		176DE9B0174B5561007A983B /* TextureDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CA716BD24E500732C04 /* TextureDescriptor.h */; };
+		176DE9B1174B5561007A983B /* UberShader.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CAA16BD24E500732C04 /* UberShader.h */; };
+		176DE9B2174B5561007A983B /* VertexBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CAB16BD24E500732C04 /* VertexBuffer.h */; };
+		176DE9B3174B5561007A983B /* Box2DDebugDraw.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CAE16BD24E500732C04 /* Box2DDebugDraw.h */; };
+		176DE9B4174B5561007A983B /* Box2DGameObject.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CB016BD24E500732C04 /* Box2DGameObject.h */; };
+		176DE9B5174B5561007A983B /* Box2DGameObjectManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CB216BD24E500732C04 /* Box2DGameObjectManager.h */; };
+		176DE9B6174B5561007A983B /* Box2DHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CB416BD24E500732C04 /* Box2DHelper.h */; };
+		176DE9B7174B5561007A983B /* Box2DTileCollider.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CB616BD24E500732C04 /* Box2DTileCollider.h */; };
+		176DE9B8174B5561007A983B /* GameObject.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CB816BD24E500732C04 /* GameObject.h */; };
+		176DE9B9174B5561007A983B /* GameObjectAnimations.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CBA16BD24E500732C04 /* GameObjectAnimations.h */; };
+		176DE9BA174B5561007A983B /* GameObjectManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CBC16BD24E500732C04 /* GameObjectManager.h */; };
+		176DE9BB174B5561007A983B /* TextGameObject.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CBE16BD24E500732C04 /* TextGameObject.h */; };
+		176DE9BC174B5561007A983B /* BillboardNode.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CC116BD24E500732C04 /* BillboardNode.h */; };
+		176DE9BD174B5561007A983B /* BoneNode.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CC316BD24E500732C04 /* BoneNode.h */; };
+		176DE9BE174B5561007A983B /* BulletComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CCA16BD24E500732C04 /* BulletComponent.h */; };
+		176DE9BF174B5561007A983B /* CameraComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CCC16BD24E500732C04 /* CameraComponent.h */; };
+		176DE9C0174B5561007A983B /* DebugRenderComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CCE16BD24E500732C04 /* DebugRenderComponent.h */; };
+		176DE9C1174B5561007A983B /* LightComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CD016BD24E500732C04 /* LightComponent.h */; };
+		176DE9C2174B5561007A983B /* LodComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CD216BD24E500732C04 /* LodComponent.h */; };
+		176DE9C3174B5561007A983B /* ParticleEffectComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CD416BD24E500732C04 /* ParticleEffectComponent.h */; };
+		176DE9C4174B5561007A983B /* RenderComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CD816BD24E500732C04 /* RenderComponent.h */; };
+		176DE9C5174B5561007A983B /* SwitchComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CDA16BD24E500732C04 /* SwitchComponent.h */; };
+		176DE9C6174B5561007A983B /* TransformComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CDC16BD24E500732C04 /* TransformComponent.h */; };
+		176DE9C7174B5561007A983B /* UpdatableComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CDE16BD24E500732C04 /* UpdatableComponent.h */; };
+		176DE9C8174B5561007A983B /* DataNode.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CE016BD24E500732C04 /* DataNode.h */; };
+		176DE9C9174B5561007A983B /* Drawable.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CE116BD24E500732C04 /* Drawable.h */; };
+		176DE9CA174B5561007A983B /* ImposterManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CE516BD24E500732C04 /* ImposterManager.h */; };
+		176DE9CB174B5561007A983B /* ImposterNode.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CE716BD24E500732C04 /* ImposterNode.h */; };
+		176DE9CC174B5561007A983B /* LodNode.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CE916BD24E500732C04 /* LodNode.h */; };
+		176DE9CD174B5561007A983B /* MeshInstance.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CEB16BD24E500732C04 /* MeshInstance.h */; };
+		176DE9CE174B5561007A983B /* MeshInstanceNode.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CED16BD24E500732C04 /* MeshInstanceNode.h */; };
+		176DE9CF174B5561007A983B /* ParticleEffectNode.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CEF16BD24E500732C04 /* ParticleEffectNode.h */; };
+		176DE9D0174B5561007A983B /* ParticleEmitterNode.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CF116BD24E500732C04 /* ParticleEmitterNode.h */; };
+		176DE9D1174B5561007A983B /* PathManip.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CF316BD24E500732C04 /* PathManip.h */; };
+		176DE9D2174B5561007A983B /* PolygonGroupInstance.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CF516BD24E500732C04 /* PolygonGroupInstance.h */; };
+		176DE9D3174B5561007A983B /* ProxyNode.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CF716BD24E500732C04 /* ProxyNode.h */; };
+		176DE9D4174B5561007A983B /* Scene.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CFF16BD24E500732C04 /* Scene.h */; };
+		176DE9D5174B5561007A983B /* SceneAnimationMixer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D0116BD24E500732C04 /* SceneAnimationMixer.h */; };
+		176DE9D6174B5561007A983B /* SceneFile.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D0316BD24E500732C04 /* SceneFile.h */; };
+		176DE9D7174B5561007A983B /* SceneFileV2.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D0516BD24E500732C04 /* SceneFileV2.h */; };
+		176DE9D8174B5561007A983B /* SceneManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D0716BD24E500732C04 /* SceneManager.h */; };
+		176DE9D9174B5561007A983B /* SceneNodeAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D0B16BD24E500732C04 /* SceneNodeAnimation.h */; };
+		176DE9DA174B5561007A983B /* SceneNodeAnimationKey.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D0D16BD24E500732C04 /* SceneNodeAnimationKey.h */; };
+		176DE9DB174B5561007A983B /* SceneNodeAnimationList.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D0F16BD24E500732C04 /* SceneNodeAnimationList.h */; };
+		176DE9DC174B5561007A983B /* ShadowVolumeNode.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D1116BD24E500732C04 /* ShadowVolumeNode.h */; };
+		176DE9DD174B5561007A983B /* SkeletonNode.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D1316BD24E500732C04 /* SkeletonNode.h */; };
+		176DE9DE174B5561007A983B /* SpriteNode.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D1516BD24E500732C04 /* SpriteNode.h */; };
+		176DE9DF174B5561007A983B /* SwitchNode.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D1816BD24E500732C04 /* SwitchNode.h */; };
+		176DE9E0174B5561007A983B /* BaseProcessSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D1B16BD24E500732C04 /* BaseProcessSystem.h */; };
+		176DE9E1174B5561007A983B /* DebugRenderSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D1D16BD24E500732C04 /* DebugRenderSystem.h */; };
+		176DE9E2174B5561007A983B /* EventSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D2116BD24E500732C04 /* EventSystem.h */; };
+		176DE9E3174B5561007A983B /* LightUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D2316BD24E500732C04 /* LightUpdateSystem.h */; };
+		176DE9E4174B5561007A983B /* LodSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D2516BD24E500732C04 /* LodSystem.h */; };
+		176DE9E5174B5561007A983B /* ParticleEffectSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D2716BD24E500732C04 /* ParticleEffectSystem.h */; };
+		176DE9E6174B5561007A983B /* ParticleEmitterSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D2916BD24E500732C04 /* ParticleEmitterSystem.h */; };
+		176DE9E7174B5561007A983B /* RenderUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D2B16BD24E500732C04 /* RenderUpdateSystem.h */; };
+		176DE9E8174B5561007A983B /* SwitchSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D2D16BD24E500732C04 /* SwitchSystem.h */; };
+		176DE9E9174B5561007A983B /* TransformSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D2F16BD24E500732C04 /* TransformSystem.h */; };
+		176DE9EA174B5561007A983B /* UserNode.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3316BD24E500732C04 /* UserNode.h */; };
+		176DE9EB174B5561007A983B /* Sound.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3916BD24E500732C04 /* Sound.h */; };
+		176DE9EC174B5561007A983B /* SoundGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4116BD24E500732C04 /* SoundGroup.h */; };
+		176DE9ED174B5561007A983B /* SoundSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4716BD24E500732C04 /* SoundSystem.h */; };
+		176DE9EE174B5561007A983B /* ScrollHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4C16BD24E500732C04 /* ScrollHelper.h */; };
+		176DE9EF174B5561007A983B /* TheoraPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4E16BD24E500732C04 /* TheoraPlayer.h */; };
+		176DE9F0174B5561007A983B /* UI3DView.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D5016BD24E500732C04 /* UI3DView.h */; };
+		176DE9F1174B5561007A983B /* UIButton.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D5216BD24E500732C04 /* UIButton.h */; };
+		176DE9F2174B5561007A983B /* UIControl.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D5416BD24E500732C04 /* UIControl.h */; };
+		176DE9F3174B5561007A983B /* UIControlBackground.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D5616BD24E500732C04 /* UIControlBackground.h */; };
+		176DE9F4174B5561007A983B /* UIControlSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D5816BD24E500732C04 /* UIControlSystem.h */; };
+		176DE9F5174B5561007A983B /* UIEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D5A16BD24E500732C04 /* UIEvent.h */; };
+		176DE9F6174B5561007A983B /* UIFadeTransition.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D5C16BD24E500732C04 /* UIFadeTransition.h */; };
+		176DE9F7174B5561007A983B /* UIFileSystemDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D5E16BD24E500732C04 /* UIFileSystemDialog.h */; };
+		176DE9F8174B5561007A983B /* UIHierarchy.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D6016BD24E500732C04 /* UIHierarchy.h */; };
+		176DE9F9174B5561007A983B /* UIHierarchyCell.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D6216BD24E500732C04 /* UIHierarchyCell.h */; };
+		176DE9FA174B5561007A983B /* UIHierarchyNode.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D6416BD24E500732C04 /* UIHierarchyNode.h */; };
+		176DE9FB174B5561007A983B /* UIHoleTransition.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D6616BD24E500732C04 /* UIHoleTransition.h */; };
+		176DE9FC174B5561007A983B /* UIJoypad.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D6816BD24E500732C04 /* UIJoypad.h */; };
+		176DE9FD174B5561007A983B /* UIList.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D6A16BD24E500732C04 /* UIList.h */; };
+		176DE9FE174B5561007A983B /* UIListCell.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D6C16BD24E500732C04 /* UIListCell.h */; };
+		176DE9FF174B5561007A983B /* UILoadingTransition.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D6E16BD24E500732C04 /* UILoadingTransition.h */; };
+		176DEA00174B5561007A983B /* UIMoveInTransition.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D7016BD24E500732C04 /* UIMoveInTransition.h */; };
+		176DEA01174B5561007A983B /* UIPopup.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D7216BD24E500732C04 /* UIPopup.h */; };
+		176DEA02174B5561007A983B /* UIScreen.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D7416BD24E500732C04 /* UIScreen.h */; };
+		176DEA03174B5561007A983B /* UIScreenManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D7516BD24E500732C04 /* UIScreenManager.h */; };
+		176DEA04174B5561007A983B /* UIScreenManagerMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D7D16BD24E500732C04 /* UIScreenManagerMacOS.h */; };
+		176DEA05174B5561007A983B /* UIScreenTransition.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D7F16BD24E500732C04 /* UIScreenTransition.h */; };
+		176DEA06174B5561007A983B /* UIScrollBar.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D8116BD24E500732C04 /* UIScrollBar.h */; };
+		176DEA07174B5561007A983B /* UISlider.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D8316BD24E500732C04 /* UISlider.h */; };
+		176DEA08174B5561007A983B /* UIStaticText.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D8516BD24E500732C04 /* UIStaticText.h */; };
+		176DEA09174B5561007A983B /* UITextField.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D8716BD24E500732C04 /* UITextField.h */; };
+		176DEA0A174B5561007A983B /* UIYamlLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D8B16BD24E500732C04 /* UIYamlLoader.h */; };
+		176DEA0B174B5561007A983B /* HTTPDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D8D16BD24E500732C04 /* HTTPDownloader.h */; };
+		176DEA0C174B5561007A983B /* MD5.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D9116BD24E500732C04 /* MD5.h */; };
+		176DEA0D174B5561007A983B /* Random.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D9216BD24E500732C04 /* Random.h */; };
+		176DEA0E174B5561007A983B /* StringFormat.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D9416BD24E500732C04 /* StringFormat.h */; };
+		176DEA0F174B5561007A983B /* UTF8Utils.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D9616BD24E500732C04 /* UTF8Utils.h */; };
+		176DEA10174B5561007A983B /* Utils.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D9816BD24E500732C04 /* Utils.h */; };
+		176DEA11174B5561007A983B /* GlobalEventSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 50D6C8E716C107D500BB3F78 /* GlobalEventSystem.h */; };
+		176DEA12174B5561007A983B /* ComponentHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = CCB4C41916CBC5B200F2B085 /* ComponentHelpers.h */; };
+		176DEA13174B5561007A983B /* ParticleForce.h in Headers */ = {isa = PBXBuildFile; fileRef = 1799E52516CCEC030058061F /* ParticleForce.h */; };
+		176DEA14174B5561007A983B /* DPIHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 840ED3E016D5089E00D2BA6C /* DPIHelper.h */; };
+		176DEA15174B5561007A983B /* UIWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 171F938416CE6F28007038AB /* UIWebView.h */; };
+		176DEA16174B5561007A983B /* IWebViewControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F53E2116D36DDE004D5099 /* IWebViewControl.h */; };
+		176DEA17174B5561007A983B /* DVAssertMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = C151B17516D3747E00E09BAF /* DVAssertMessage.h */; };
+		176DEA18174B5561007A983B /* WebViewControlMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = C151B17A16D3755000E09BAF /* WebViewControlMacOS.h */; };
+		176DEA19174B5561007A983B /* MailSender.h in Headers */ = {isa = PBXBuildFile; fileRef = C151B1B516D4FF6A00E09BAF /* MailSender.h */; };
+		176DEA1A174B5561007A983B /* UserComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = CC24800716DD174E00183D40 /* UserComponent.h */; };
+		176DEA1B174B5561007A983B /* UISpinner.h in Headers */ = {isa = PBXBuildFile; fileRef = E9EA496B16DF93FA00C44B6F /* UISpinner.h */; };
+		176DEA1C174B5561007A983B /* VectorSpinnerAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = CC24804116E0DF2800183D40 /* VectorSpinnerAdapter.h */; };
+		176DEA1D174B5561007A983B /* UISwitch.h in Headers */ = {isa = PBXBuildFile; fileRef = E9E798A816F0BE7600745AF5 /* UISwitch.h */; };
+		176DEA1E174B5561007A983B /* Camera.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A3FB16F1D6170061EA5D /* Camera.h */; };
+		176DEA1F174B5561007A983B /* CullingSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A3FD16F1D6170061EA5D /* CullingSystem.h */; };
+		176DEA20174B5561007A983B /* Frustum.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A3FF16F1D6170061EA5D /* Frustum.h */; };
+		176DEA21174B5561007A983B /* Heightmap.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A40116F1D6170061EA5D /* Heightmap.h */; };
+		176DEA22174B5561007A983B /* IRenderUpdatable.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A40216F1D6170061EA5D /* IRenderUpdatable.h */; };
+		176DEA23174B5561007A983B /* Landscape.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A40416F1D6170061EA5D /* Landscape.h */; };
+		176DEA24174B5561007A983B /* LandscapeChunk.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A40616F1D6170061EA5D /* LandscapeChunk.h */; };
+		176DEA25174B5561007A983B /* LandscapeCursor.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A40816F1D6170061EA5D /* LandscapeCursor.h */; };
+		176DEA26174B5561007A983B /* Light.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A40A16F1D6170061EA5D /* Light.h */; };
+		176DEA27174B5561007A983B /* Mesh.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A40C16F1D6170061EA5D /* Mesh.h */; };
+		176DEA28174B5561007A983B /* ParticleLayerBatch.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A40E16F1D6170061EA5D /* ParticleLayerBatch.h */; };
+		176DEA29174B5561007A983B /* RenderBatch.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A41016F1D6170061EA5D /* RenderBatch.h */; };
+		176DEA2A174B5561007A983B /* RenderDataSource.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A41116F1D6170061EA5D /* RenderDataSource.h */; };
+		176DEA2B174B5561007A983B /* RenderFastNames.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A41216F1D6170061EA5D /* RenderFastNames.h */; };
+		176DEA2C174B5561007A983B /* RenderLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A41416F1D6170061EA5D /* RenderLayer.h */; };
+		176DEA2D174B5561007A983B /* RenderObject.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A41616F1D6170061EA5D /* RenderObject.h */; };
+		176DEA2E174B5561007A983B /* RenderPass.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A41816F1D6170061EA5D /* RenderPass.h */; };
+		176DEA2F174B5561007A983B /* RenderSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A41A16F1D6170061EA5D /* RenderSystem.h */; };
+		176DEA30174B5561007A983B /* ShadowRect.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A41C16F1D6170061EA5D /* ShadowRect.h */; };
+		176DEA31174B5561007A983B /* ShadowVolume.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A41E16F1D6170061EA5D /* ShadowVolume.h */; };
+		176DEA32174B5561007A983B /* ShadowVolumeRenderPass.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A42016F1D6170061EA5D /* ShadowVolumeRenderPass.h */; };
+		176DEA33174B5561007A983B /* SpriteObject.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A42216F1D6170061EA5D /* SpriteObject.h */; };
+		176DEA34174B5561007A983B /* SpriteRenderBatch.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A42416F1D6170061EA5D /* SpriteRenderBatch.h */; };
+		176DEA35174B5561007A983B /* RenderState.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A47C16F1D64D0061EA5D /* RenderState.h */; };
+		176DEA36174B5561007A983B /* UpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A48216F1D6700061EA5D /* UpdateSystem.h */; };
+		176DEA37174B5561007A983B /* Entity.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A48816F1D6B80061EA5D /* Entity.h */; };
+		176DEA38174B5561007A983B /* CRC32.h in Headers */ = {isa = PBXBuildFile; fileRef = 74A909AA1701FA51003FDB31 /* CRC32.h */; };
+		176DEA39174B5561007A983B /* DeviceInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 840D24211703311400267C58 /* DeviceInfo.h */; };
+		176DEA3A174B5561007A983B /* UIAggregatorControl.h in Headers */ = {isa = PBXBuildFile; fileRef = C18593D916F30BED005D30E2 /* UIAggregatorControl.h */; };
+		176DEA3B174B5561007A983B /* FMODUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E3AA17296D4200C501BC /* FMODUtils.h */; };
+		176DEA3C174B5561007A983B /* SoundEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E4161739615B00C501BC /* SoundEvent.h */; };
+		176DEA3D174B5561007A983B /* SoundEventCategory.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E4181739615B00C501BC /* SoundEventCategory.h */; };
+		176DEA3E174B5561007A983B /* VolumeAnimatedObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E41A1739615B00C501BC /* VolumeAnimatedObject.h */; };
+		176DEA3F174B5561007A983B /* SoundComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E4221739616800C501BC /* SoundComponent.h */; };
+		176DEA40174B5561007A983B /* SoundUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E436173964DA00C501BC /* SoundUpdateSystem.h */; };
+		176DEA42174B5561007A983B /* AnimatedObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989ABE16BD24E400732C04 /* AnimatedObject.cpp */; };
+		176DEA43174B5561007A983B /* Animation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989AC016BD24E400732C04 /* Animation.cpp */; };
+		176DEA44174B5561007A983B /* AnimationManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989AC216BD24E400732C04 /* AnimationManager.cpp */; };
+		176DEA45174B5561007A983B /* BezierSplineAnimation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989AC416BD24E400732C04 /* BezierSplineAnimation.cpp */; };
+		176DEA46174B5561007A983B /* Interpolation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989AC616BD24E400732C04 /* Interpolation.cpp */; };
+		176DEA47174B5561007A983B /* KeyframeAnimation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989AC816BD24E400732C04 /* KeyframeAnimation.cpp */; };
+		176DEA48174B5561007A983B /* LinearAnimation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989ACA16BD24E400732C04 /* LinearAnimation.cpp */; };
+		176DEA49174B5561007A983B /* Action.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989ACE16BD24E400732C04 /* Action.cpp */; };
+		176DEA4A174B5561007A983B /* AssertAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989AD016BD24E400732C04 /* AssertAction.cpp */; };
+		176DEA4B174B5561007A983B /* AutotestingSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989AD216BD24E400732C04 /* AutotestingSystem.cpp */; };
+		176DEA4C174B5561007A983B /* MongodbUpdateObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989AD516BD24E400732C04 /* MongodbUpdateObject.cpp */; };
+		176DEA4D174B5561007A983B /* TouchAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989AD716BD24E400732C04 /* TouchAction.cpp */; };
+		176DEA4E174B5561007A983B /* BaseMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989ADA16BD24E400732C04 /* BaseMath.cpp */; };
+		176DEA4F174B5561007A983B /* BaseObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989ADC16BD24E400732C04 /* BaseObject.cpp */; };
+		176DEA50174B5561007A983B /* BaseObjectChecker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989ADE16BD24E400732C04 /* BaseObjectChecker.cpp */; };
+		176DEA51174B5561007A983B /* Data.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989AE116BD24E400732C04 /* Data.cpp */; };
+		176DEA52174B5561007A983B /* DynamicObjectCache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989AE316BD24E400732C04 /* DynamicObjectCache.cpp */; };
+		176DEA53174B5561007A983B /* EventDispatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989AE516BD24E400732C04 /* EventDispatcher.cpp */; };
+		176DEA54174B5561007A983B /* FastName.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989AE816BD24E400732C04 /* FastName.cpp */; };
+		176DEA55174B5561007A983B /* FixedSizePoolAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989AEB16BD24E400732C04 /* FixedSizePoolAllocator.cpp */; };
+		176DEA56174B5561007A983B /* Message.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989AF516BD24E400732C04 /* Message.cpp */; };
+		176DEA57174B5561007A983B /* ObjectFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989AF916BD24E400732C04 /* ObjectFactory.cpp */; };
+		176DEA58174B5561007A983B /* Observable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989AFB16BD24E400732C04 /* Observable.cpp */; };
+		176DEA59174B5561007A983B /* Radix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989AFF16BD24E400732C04 /* Radix.cpp */; };
+		176DEA5A174B5561007A983B /* CollisionObject2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B0716BD24E400732C04 /* CollisionObject2.cpp */; };
+		176DEA5B174B5561007A983B /* CollisionPolygons.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B0916BD24E400732C04 /* CollisionPolygons.cpp */; };
+		176DEA5C174B5561007A983B /* Collisions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B0B16BD24E400732C04 /* Collisions.cpp */; };
+		176DEA5D174B5561007A983B /* ApplicationCore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B0E16BD24E400732C04 /* ApplicationCore.cpp */; };
+		176DEA5E174B5561007A983B /* Core.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B1016BD24E400732C04 /* Core.cpp */; };
+		176DEA5F174B5561007A983B /* CoreMacOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B1216BD24E400732C04 /* CoreMacOS.cpp */; };
+		176DEA60174B5561007A983B /* CoreMacOS_CarbonWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B1316BD24E400732C04 /* CoreMacOS_CarbonWindow.cpp */; };
+		176DEA61174B5561007A983B /* CoreMacOS_OpenGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B1516BD24E400732C04 /* CoreMacOS_OpenGL.cpp */; };
+		176DEA62174B5561007A983B /* MongodbClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B1916BD24E400732C04 /* MongodbClient.cpp */; };
+		176DEA63174B5561007A983B /* MongodbObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B1B16BD24E400732C04 /* MongodbObject.cpp */; };
+		176DEA64174B5561007A983B /* DAVAEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B1E16BD24E400732C04 /* DAVAEngine.cpp */; };
+		176DEA65174B5561007A983B /* Backtrace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B2116BD24E400732C04 /* Backtrace.cpp */; };
+		176DEA66174B5561007A983B /* MemoryManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B2616BD24E400732C04 /* MemoryManager.cpp */; };
+		176DEA67174B5561007A983B /* Replay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B2816BD24E400732C04 /* Replay.cpp */; };
+		176DEA68174B5561007A983B /* Stats.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B2A16BD24E400732C04 /* Stats.cpp */; };
+		176DEA69174B5561007A983B /* DLCSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B2D16BD24E400732C04 /* DLCSystem.cpp */; };
+		176DEA6A174B5561007A983B /* DLCUnpacker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B3116BD24E400732C04 /* DLCUnpacker.cpp */; };
+		176DEA6B174B5561007A983B /* FileDownloader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B3316BD24E400732C04 /* FileDownloader.cpp */; };
+		176DEA6C174B5561007A983B /* Component.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B3716BD24E400732C04 /* Component.cpp */; };
+		176DEA6D174B5561007A983B /* SceneSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B3916BD24E400732C04 /* SceneSystem.cpp */; };
+		176DEA6E174B5561007A983B /* Bitstream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B5B16BD24E400732C04 /* Bitstream.cpp */; };
+		176DEA6F174B5561007A983B /* DynamicMemoryFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B5D16BD24E400732C04 /* DynamicMemoryFile.cpp */; };
+		176DEA70174B5561007A983B /* File.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B5F16BD24E400732C04 /* File.cpp */; };
+		176DEA71174B5561007A983B /* FileList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B6116BD24E400732C04 /* FileList.cpp */; };
+		176DEA72174B5561007A983B /* FilePath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B6316BD24E400732C04 /* FilePath.cpp */; };
+		176DEA73174B5561007A983B /* FileSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B6516BD24E400732C04 /* FileSystem.cpp */; };
+		176DEA74174B5561007A983B /* FileSystemObjective.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8989B6716BD24E400732C04 /* FileSystemObjective.mm */; };
+		176DEA75174B5561007A983B /* KeyedArchive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B6816BD24E400732C04 /* KeyedArchive.cpp */; };
+		176DEA76174B5561007A983B /* KeyedArchiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B6A16BD24E400732C04 /* KeyedArchiver.cpp */; };
+		176DEA77174B5561007A983B /* KeyedUnarchiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B6C16BD24E400732C04 /* KeyedUnarchiver.cpp */; };
+		176DEA78174B5561007A983B /* LocalizationSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B7016BD24E400732C04 /* LocalizationSystem.cpp */; };
+		176DEA79174B5561007A983B /* Logger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B7216BD24E400732C04 /* Logger.cpp */; };
+		176DEA7A174B5561007A983B /* LoggerMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8989B7516BD24E400732C04 /* LoggerMacOS.mm */; };
+		176DEA7B174B5561007A983B /* ResourceArchive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B7816BD24E400732C04 /* ResourceArchive.cpp */; };
+		176DEA7C174B5561007A983B /* VariantType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B7A16BD24E400732C04 /* VariantType.cpp */; };
+		176DEA7D174B5561007A983B /* XMLParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B7C16BD24E400732C04 /* XMLParser.cpp */; };
+		176DEA7E174B5561007A983B /* XMLParser.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8989B7E16BD24E400732C04 /* XMLParser.mm */; };
+		176DEA7F174B5561007A983B /* YamlArchive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B7F16BD24E400732C04 /* YamlArchive.cpp */; };
+		176DEA80174B5561007A983B /* YamlParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B8116BD24E400732C04 /* YamlParser.cpp */; };
+		176DEA81174B5561007A983B /* Accelerometer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B8416BD24E400732C04 /* Accelerometer.cpp */; };
+		176DEA82174B5561007A983B /* InputSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B8A16BD24E400732C04 /* InputSystem.cpp */; };
+		176DEA83174B5561007A983B /* KeyboardDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B8C16BD24E400732C04 /* KeyboardDevice.cpp */; };
+		176DEA84174B5561007A983B /* AABBox2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B8F16BD24E400732C04 /* AABBox2.cpp */; };
+		176DEA85174B5561007A983B /* AABBox3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B9116BD24E400732C04 /* AABBox3.cpp */; };
+		176DEA86174B5561007A983B /* BezierSpline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B9316BD24E400732C04 /* BezierSpline.cpp */; };
+		176DEA87174B5561007A983B /* Math2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B9716BD24E400732C04 /* Math2D.cpp */; };
+		176DEA88174B5561007A983B /* Matrix4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989B9F16BD24E400732C04 /* Matrix4.cpp */; };
+		176DEA89174B5561007A983B /* NeonMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BA216BD24E400732C04 /* NeonMath.cpp */; };
+		176DEA8A174B5561007A983B /* Polygon2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BA616BD24E400732C04 /* Polygon2.cpp */; };
+		176DEA8B174B5561007A983B /* Polygon3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BA816BD24E400732C04 /* Polygon3.cpp */; };
+		176DEA8C174B5561007A983B /* RectPacker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BAD16BD24E400732C04 /* RectPacker.cpp */; };
+		176DEA8D174B5561007A983B /* Spline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BB016BD24E400732C04 /* Spline.cpp */; };
+		176DEA8E174B5561007A983B /* BaseNetworkConnection.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8989BB516BD24E400732C04 /* BaseNetworkConnection.mm */; };
+		176DEA8F174B5561007A983B /* BTNetworkConnection.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8989BB716BD24E400732C04 /* BTNetworkConnection.mm */; };
+		176DEA90174B5561007A983B /* NetworkConnection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BB816BD24E400732C04 /* NetworkConnection.cpp */; };
+		176DEA91174B5561007A983B /* NetworkConnectionIPhone.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8989BBB16BD24E400732C04 /* NetworkConnectionIPhone.mm */; };
+		176DEA92174B5561007A983B /* NetworkDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BBC16BD24E400732C04 /* NetworkDelegate.cpp */; };
+		176DEA93174B5561007A983B /* NetworkPacket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BBE16BD24E400732C04 /* NetworkPacket.cpp */; };
+		176DEA94174B5561007A983B /* TCPServer.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8989BC116BD24E400732C04 /* TCPServer.mm */; };
+		176DEA95174B5561007A983B /* WFNetworkConnection.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8989BC316BD24E400732C04 /* WFNetworkConnection.mm */; };
+		176DEA96174B5561007A983B /* Particle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BC516BD24E400732C04 /* Particle.cpp */; };
+		176DEA97174B5561007A983B /* ParticleEmitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BC716BD24E400732C04 /* ParticleEmitter.cpp */; };
+		176DEA98174B5561007A983B /* ParticleEmitter3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BC916BD24E400732C04 /* ParticleEmitter3D.cpp */; };
+		176DEA99174B5561007A983B /* ParticleEmitterObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BCB16BD24E400732C04 /* ParticleEmitterObject.cpp */; };
+		176DEA9A174B5561007A983B /* ParticleLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BCD16BD24E400732C04 /* ParticleLayer.cpp */; };
+		176DEA9B174B5561007A983B /* ParticleLayer3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BCF16BD24E400732C04 /* ParticleLayer3D.cpp */; };
+		176DEA9C174B5561007A983B /* ParticlePropertyLine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BD316BD24E400732C04 /* ParticlePropertyLine.cpp */; };
+		176DEA9D174B5561007A983B /* ParticleSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BD516BD24E400732C04 /* ParticleSystem.cpp */; };
+		176DEA9E174B5561007A983B /* Mutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BE016BD24E400732C04 /* Mutex.cpp */; };
+		176DEA9F174B5561007A983B /* SystemTimer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BF316BD24E400732C04 /* SystemTimer.cpp */; };
+		176DEAA0174B5561007A983B /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8989C0316BD24E400732C04 /* AppDelegate.mm */; };
+		176DEAA1174B5561007A983B /* CorePlatformMacOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C0416BD24E400732C04 /* CorePlatformMacOS.cpp */; };
+		176DEAA2174B5561007A983B /* MainWindowController.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8989C0716BD24E400732C04 /* MainWindowController.mm */; };
+		176DEAA3174B5561007A983B /* NSFullScreenWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = E8989C0916BD24E400732C04 /* NSFullScreenWindow.m */; };
+		176DEAA4174B5561007A983B /* OpenGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8989C0B16BD24E400732C04 /* OpenGLView.mm */; };
+		176DEAA5174B5561007A983B /* Thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C1016BD24E400732C04 /* Thread.cpp */; };
+		176DEAA6174B5561007A983B /* ThreadMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8989C1316BD24E400732C04 /* ThreadMacOS.mm */; };
+		176DEAA7174B5561007A983B /* Font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C1716BD24E400732C04 /* Font.cpp */; };
+		176DEAA8174B5561007A983B /* FontManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C1916BD24E400732C04 /* FontManager.cpp */; };
+		176DEAA9174B5561007A983B /* FTFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C1B16BD24E400732C04 /* FTFont.cpp */; };
+		176DEAAA174B5561007A983B /* GraphicsFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C1D16BD24E400732C04 /* GraphicsFont.cpp */; };
+		176DEAAB174B5561007A983B /* Sprite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C2016BD24E400732C04 /* Sprite.cpp */; };
+		176DEAAC174B5561007A983B /* TextBlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C2216BD24E400732C04 /* TextBlock.cpp */; };
+		176DEAAD174B5561007A983B /* AnimatedMesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C2516BD24E400732C04 /* AnimatedMesh.cpp */; };
+		176DEAAE174B5561007A983B /* EdgeAdjacency.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C2716BD24E400732C04 /* EdgeAdjacency.cpp */; };
+		176DEAAF174B5561007A983B /* PolygonGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C2916BD24E400732C04 /* PolygonGroup.cpp */; };
+		176DEAB0174B5561007A983B /* StaticMesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C2B16BD24E400732C04 /* StaticMesh.cpp */; };
+		176DEAB1174B5561007A983B /* CursorMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8989C2E16BD24E400732C04 /* CursorMacOS.mm */; };
+		176DEAB2174B5561007A983B /* ColorOnlyEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C3716BD24E400732C04 /* ColorOnlyEffect.cpp */; };
+		176DEAB3174B5561007A983B /* MultiTextureEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C3916BD24E400732C04 /* MultiTextureEffect.cpp */; };
+		176DEAB4174B5561007A983B /* TextureMulColorAlphaTestEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C3B16BD24E400732C04 /* TextureMulColorAlphaTestEffect.cpp */; };
+		176DEAB5174B5561007A983B /* TextureMulColorEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C3D16BD24E400732C04 /* TextureMulColorEffect.cpp */; };
+		176DEAB6174B5561007A983B /* Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C6616BD24E400732C04 /* Image.cpp */; };
+		176DEAB7174B5561007A983B /* ImageLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C6A16BD24E400732C04 /* ImageLoader.cpp */; };
+		176DEAB8174B5561007A983B /* LibDxtHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C6D16BD24E400732C04 /* LibDxtHelper.cpp */; };
+		176DEAB9174B5561007A983B /* LibPngHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C6F16BD24E400732C04 /* LibPngHelpers.cpp */; };
+		176DEABA174B5561007A983B /* LibPVRHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C7116BD24E400732C04 /* LibPVRHelper.cpp */; };
+		176DEABB174B5561007A983B /* MaterialCompiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C7416BD24E400732C04 /* MaterialCompiler.cpp */; };
+		176DEABC174B5561007A983B /* MaterialGraph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C7616BD24E400732C04 /* MaterialGraph.cpp */; };
+		176DEABD174B5561007A983B /* MaterialGraphNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C7816BD24E400732C04 /* MaterialGraphNode.cpp */; };
+		176DEABE174B5561007A983B /* NMaterial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C7A16BD24E400732C04 /* NMaterial.cpp */; };
+		176DEABF174B5561007A983B /* Material.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C7D16BD24E400732C04 /* Material.cpp */; };
+		176DEAC0174B5561007A983B /* RenderBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C8116BD24E400732C04 /* RenderBase.cpp */; };
+		176DEAC1174B5561007A983B /* RenderDataObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C8316BD24E400732C04 /* RenderDataObject.cpp */; };
+		176DEAC2174B5561007A983B /* RenderEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C8516BD24E400732C04 /* RenderEffect.cpp */; };
+		176DEAC3174B5561007A983B /* RenderGrayscaleEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C8716BD24E400732C04 /* RenderGrayscaleEffect.cpp */; };
+		176DEAC4174B5561007A983B /* RenderHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C8916BD24E400732C04 /* RenderHelper.cpp */; };
+		176DEAC5174B5561007A983B /* RenderManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C8B16BD24E400732C04 /* RenderManager.cpp */; };
+		176DEAC6174B5561007A983B /* RenderManagerFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C8E16BD24E400732C04 /* RenderManagerFactory.cpp */; };
+		176DEAC7174B5561007A983B /* RenderManagerGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C8F16BD24E400732C04 /* RenderManagerGL.cpp */; };
+		176DEAC8174B5561007A983B /* RenderManagerGL20.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C9016BD24E400732C04 /* RenderManagerGL20.cpp */; };
+		176DEAC9174B5561007A983B /* RenderOptions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C9216BD24E400732C04 /* RenderOptions.cpp */; };
+		176DEACA174B5561007A983B /* RenderResource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C9416BD24E500732C04 /* RenderResource.cpp */; };
+		176DEACB174B5561007A983B /* Shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C9916BD24E500732C04 /* Shader.cpp */; };
+		176DEACC174B5561007A983B /* ShaderGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C9C16BD24E500732C04 /* ShaderGL.cpp */; };
+		176DEACD174B5561007A983B /* SharedFBO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C9E16BD24E500732C04 /* SharedFBO.cpp */; };
+		176DEACE174B5561007A983B /* Texture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CA416BD24E500732C04 /* Texture.cpp */; };
+		176DEACF174B5561007A983B /* TextureDescriptor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CA616BD24E500732C04 /* TextureDescriptor.cpp */; };
+		176DEAD0174B5561007A983B /* UberShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CA916BD24E500732C04 /* UberShader.cpp */; };
+		176DEAD1174B5561007A983B /* Box2DDebugDraw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CAD16BD24E500732C04 /* Box2DDebugDraw.cpp */; };
+		176DEAD2174B5561007A983B /* Box2DGameObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CAF16BD24E500732C04 /* Box2DGameObject.cpp */; };
+		176DEAD3174B5561007A983B /* Box2DGameObjectManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CB116BD24E500732C04 /* Box2DGameObjectManager.cpp */; };
+		176DEAD4174B5561007A983B /* Box2DHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CB316BD24E500732C04 /* Box2DHelper.cpp */; };
+		176DEAD5174B5561007A983B /* Box2DTileCollider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CB516BD24E500732C04 /* Box2DTileCollider.cpp */; };
+		176DEAD6174B5561007A983B /* GameObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CB716BD24E500732C04 /* GameObject.cpp */; };
+		176DEAD7174B5561007A983B /* GameObjectAnimations.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CB916BD24E500732C04 /* GameObjectAnimations.cpp */; };
+		176DEAD8174B5561007A983B /* GameObjectManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CBB16BD24E500732C04 /* GameObjectManager.cpp */; };
+		176DEAD9174B5561007A983B /* TextGameObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CBD16BD24E500732C04 /* TextGameObject.cpp */; };
+		176DEADA174B5561007A983B /* BillboardNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CC016BD24E500732C04 /* BillboardNode.cpp */; };
+		176DEADB174B5561007A983B /* BoneNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CC216BD24E500732C04 /* BoneNode.cpp */; };
+		176DEADC174B5561007A983B /* BulletComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CC916BD24E500732C04 /* BulletComponent.cpp */; };
+		176DEADD174B5561007A983B /* CameraComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CCB16BD24E500732C04 /* CameraComponent.cpp */; };
+		176DEADE174B5561007A983B /* DebugRenderComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CCD16BD24E500732C04 /* DebugRenderComponent.cpp */; };
+		176DEADF174B5561007A983B /* LightComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CCF16BD24E500732C04 /* LightComponent.cpp */; };
+		176DEAE0174B5561007A983B /* LodComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CD116BD24E500732C04 /* LodComponent.cpp */; };
+		176DEAE1174B5561007A983B /* ParticleEffectComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CD316BD24E500732C04 /* ParticleEffectComponent.cpp */; };
+		176DEAE2174B5561007A983B /* RenderComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CD716BD24E500732C04 /* RenderComponent.cpp */; };
+		176DEAE3174B5561007A983B /* SwitchComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CD916BD24E500732C04 /* SwitchComponent.cpp */; };
+		176DEAE4174B5561007A983B /* TransformComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CDB16BD24E500732C04 /* TransformComponent.cpp */; };
+		176DEAE5174B5561007A983B /* UpdatableComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CDD16BD24E500732C04 /* UpdatableComponent.cpp */; };
+		176DEAE6174B5561007A983B /* DataNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CDF16BD24E500732C04 /* DataNode.cpp */; };
+		176DEAE7174B5561007A983B /* ImposterManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CE416BD24E500732C04 /* ImposterManager.cpp */; };
+		176DEAE8174B5561007A983B /* ImposterNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CE616BD24E500732C04 /* ImposterNode.cpp */; };
+		176DEAE9174B5561007A983B /* LodNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CE816BD24E500732C04 /* LodNode.cpp */; };
+		176DEAEA174B5561007A983B /* MeshInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CEA16BD24E500732C04 /* MeshInstance.cpp */; };
+		176DEAEB174B5561007A983B /* MeshInstanceNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CEC16BD24E500732C04 /* MeshInstanceNode.cpp */; };
+		176DEAEC174B5561007A983B /* ParticleEffectNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CEE16BD24E500732C04 /* ParticleEffectNode.cpp */; };
+		176DEAED174B5561007A983B /* ParticleEmitterNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CF016BD24E500732C04 /* ParticleEmitterNode.cpp */; };
+		176DEAEE174B5561007A983B /* PathManip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CF216BD24E500732C04 /* PathManip.cpp */; };
+		176DEAEF174B5561007A983B /* PolygonGroupInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CF416BD24E500732C04 /* PolygonGroupInstance.cpp */; };
+		176DEAF0174B5561007A983B /* ProxyNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CF616BD24E500732C04 /* ProxyNode.cpp */; };
+		176DEAF1174B5561007A983B /* Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CFE16BD24E500732C04 /* Scene.cpp */; };
+		176DEAF2174B5561007A983B /* SceneAnimationMixer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D0016BD24E500732C04 /* SceneAnimationMixer.cpp */; };
+		176DEAF3174B5561007A983B /* SceneFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D0216BD24E500732C04 /* SceneFile.cpp */; };
+		176DEAF4174B5561007A983B /* SceneFileV2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D0416BD24E500732C04 /* SceneFileV2.cpp */; };
+		176DEAF5174B5561007A983B /* SceneManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D0616BD24E500732C04 /* SceneManager.cpp */; };
+		176DEAF6174B5561007A983B /* SceneNodeAnimation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D0A16BD24E500732C04 /* SceneNodeAnimation.cpp */; };
+		176DEAF7174B5561007A983B /* SceneNodeAnimationKey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D0C16BD24E500732C04 /* SceneNodeAnimationKey.cpp */; };
+		176DEAF8174B5561007A983B /* SceneNodeAnimationList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D0E16BD24E500732C04 /* SceneNodeAnimationList.cpp */; };
+		176DEAF9174B5561007A983B /* ShadowVolumeNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D1016BD24E500732C04 /* ShadowVolumeNode.cpp */; };
+		176DEAFA174B5561007A983B /* SkeletonNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D1216BD24E500732C04 /* SkeletonNode.cpp */; };
+		176DEAFB174B5561007A983B /* SpriteNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D1416BD24E500732C04 /* SpriteNode.cpp */; };
+		176DEAFC174B5561007A983B /* SwitchNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D1716BD24E500732C04 /* SwitchNode.cpp */; };
+		176DEAFD174B5561007A983B /* BaseProcessSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D1A16BD24E500732C04 /* BaseProcessSystem.cpp */; };
+		176DEAFE174B5561007A983B /* DebugRenderSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D1C16BD24E500732C04 /* DebugRenderSystem.cpp */; };
+		176DEAFF174B5561007A983B /* EventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D2016BD24E500732C04 /* EventSystem.cpp */; };
+		176DEB00174B5561007A983B /* LightUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D2216BD24E500732C04 /* LightUpdateSystem.cpp */; };
+		176DEB01174B5561007A983B /* LodSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D2416BD24E500732C04 /* LodSystem.cpp */; };
+		176DEB02174B5561007A983B /* ParticleEffectSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D2616BD24E500732C04 /* ParticleEffectSystem.cpp */; };
+		176DEB03174B5561007A983B /* ParticleEmitterSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D2816BD24E500732C04 /* ParticleEmitterSystem.cpp */; };
+		176DEB04174B5561007A983B /* RenderUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D2A16BD24E500732C04 /* RenderUpdateSystem.cpp */; };
+		176DEB05174B5561007A983B /* SwitchSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D2C16BD24E500732C04 /* SwitchSystem.cpp */; };
+		176DEB06174B5561007A983B /* TransformSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D2E16BD24E500732C04 /* TransformSystem.cpp */; };
+		176DEB07174B5561007A983B /* UserNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D3216BD24E500732C04 /* UserNode.cpp */; };
+		176DEB08174B5561007A983B /* Sound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D3816BD24E500732C04 /* Sound.cpp */; };
+		176DEB09174B5561007A983B /* SoundGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4016BD24E500732C04 /* SoundGroup.cpp */; };
+		176DEB0A174B5561007A983B /* SoundSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4616BD24E500732C04 /* SoundSystem.cpp */; };
+		176DEB0B174B5561007A983B /* ScrollHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4B16BD24E500732C04 /* ScrollHelper.cpp */; };
+		176DEB0C174B5561007A983B /* TheoraPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4D16BD24E500732C04 /* TheoraPlayer.cpp */; };
+		176DEB0D174B5561007A983B /* UI3DView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4F16BD24E500732C04 /* UI3DView.cpp */; };
+		176DEB0E174B5561007A983B /* UIButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D5116BD24E500732C04 /* UIButton.cpp */; };
+		176DEB0F174B5561007A983B /* UIControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D5316BD24E500732C04 /* UIControl.cpp */; };
+		176DEB10174B5561007A983B /* UIControlBackground.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D5516BD24E500732C04 /* UIControlBackground.cpp */; };
+		176DEB11174B5561007A983B /* UIControlSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D5716BD24E500732C04 /* UIControlSystem.cpp */; };
+		176DEB12174B5561007A983B /* UIEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D5916BD24E500732C04 /* UIEvent.cpp */; };
+		176DEB13174B5561007A983B /* UIFadeTransition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D5B16BD24E500732C04 /* UIFadeTransition.cpp */; };
+		176DEB14174B5561007A983B /* UIFileSystemDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D5D16BD24E500732C04 /* UIFileSystemDialog.cpp */; };
+		176DEB15174B5561007A983B /* UIHierarchy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D5F16BD24E500732C04 /* UIHierarchy.cpp */; };
+		176DEB16174B5561007A983B /* UIHierarchyCell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D6116BD24E500732C04 /* UIHierarchyCell.cpp */; };
+		176DEB17174B5561007A983B /* UIHierarchyNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D6316BD24E500732C04 /* UIHierarchyNode.cpp */; };
+		176DEB18174B5561007A983B /* UIHoleTransition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D6516BD24E500732C04 /* UIHoleTransition.cpp */; };
+		176DEB19174B5561007A983B /* UIJoypad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D6716BD24E500732C04 /* UIJoypad.cpp */; };
+		176DEB1A174B5561007A983B /* UIList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D6916BD24E500732C04 /* UIList.cpp */; };
+		176DEB1B174B5561007A983B /* UIListCell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D6B16BD24E500732C04 /* UIListCell.cpp */; };
+		176DEB1C174B5561007A983B /* UILoadingTransition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D6D16BD24E500732C04 /* UILoadingTransition.cpp */; };
+		176DEB1D174B5561007A983B /* UIMoveInTransition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D6F16BD24E500732C04 /* UIMoveInTransition.cpp */; };
+		176DEB1E174B5561007A983B /* UIPopup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D7116BD24E500732C04 /* UIPopup.cpp */; };
+		176DEB1F174B5561007A983B /* UIScreen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D7316BD24E500732C04 /* UIScreen.cpp */; };
+		176DEB20174B5561007A983B /* UIScreenManagerMacOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D7C16BD24E500732C04 /* UIScreenManagerMacOS.cpp */; };
+		176DEB21174B5561007A983B /* UIScreenTransition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D7E16BD24E500732C04 /* UIScreenTransition.cpp */; };
+		176DEB22174B5561007A983B /* UIScrollBar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D8016BD24E500732C04 /* UIScrollBar.cpp */; };
+		176DEB23174B5561007A983B /* UISlider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D8216BD24E500732C04 /* UISlider.cpp */; };
+		176DEB24174B5561007A983B /* UIStaticText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D8416BD24E500732C04 /* UIStaticText.cpp */; };
+		176DEB25174B5561007A983B /* UITextField.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D8616BD24E500732C04 /* UITextField.cpp */; };
+		176DEB26174B5561007A983B /* UIYamlLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D8A16BD24E500732C04 /* UIYamlLoader.cpp */; };
+		176DEB27174B5561007A983B /* HTTPDownloader.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8989D8E16BD24E500732C04 /* HTTPDownloader.mm */; };
+		176DEB28174B5561007A983B /* MD5.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D9016BD24E500732C04 /* MD5.cpp */; };
+		176DEB29174B5561007A983B /* StringFormat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D9316BD24E500732C04 /* StringFormat.cpp */; };
+		176DEB2A174B5561007A983B /* Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D9716BD24E500732C04 /* Utils.cpp */; };
+		176DEB2B174B5561007A983B /* UtilsMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8989D9916BD24E500732C04 /* UtilsMacOS.mm */; };
+		176DEB2C174B5561007A983B /* IntrospectionBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8CC1BF616C109F1009B49BF /* IntrospectionBase.cpp */; };
+		176DEB2D174B5561007A983B /* GlobalEventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */; };
+		176DEB2E174B5561007A983B /* ComponentHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCB4C41816CBC5B200F2B085 /* ComponentHelpers.cpp */; };
+		176DEB2F174B5561007A983B /* ParticleForce.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1799E52416CCEC030058061F /* ParticleForce.cpp */; };
+		176DEB30174B5561007A983B /* DPIHelperMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 840ED3E216D5095000D2BA6C /* DPIHelperMacOS.mm */; };
+		176DEB31174B5561007A983B /* UIWebView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 171F938316CE6F28007038AB /* UIWebView.cpp */; };
+		176DEB32174B5561007A983B /* DVAssertMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C151B17416D3747E00E09BAF /* DVAssertMessage.cpp */; };
+		176DEB33174B5561007A983B /* DVAssertMessageApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = C151B17616D3747E00E09BAF /* DVAssertMessageApple.mm */; };
+		176DEB34174B5561007A983B /* WebViewControlMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = C151B17B16D3755000E09BAF /* WebViewControlMacOS.mm */; };
+		176DEB35174B5561007A983B /* MailSender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C151B1B416D4FF6A00E09BAF /* MailSender.cpp */; };
+		176DEB36174B5561007A983B /* MailSenderMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = C151B1B616D4FF6A00E09BAF /* MailSenderMacOS.mm */; };
+		176DEB37174B5561007A983B /* UserComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC24800616DD174E00183D40 /* UserComponent.cpp */; };
+		176DEB38174B5561007A983B /* UISpinner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9EA496A16DF93FA00C44B6F /* UISpinner.cpp */; };
+		176DEB39174B5561007A983B /* UTF8UtilsMac.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8B4F8CE16EF377D0072442A /* UTF8UtilsMac.mm */; };
+		176DEB3A174B5561007A983B /* UISwitch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9E798A716F0BE7600745AF5 /* UISwitch.cpp */; };
+		176DEB3B174B5561007A983B /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A3FA16F1D6170061EA5D /* Camera.cpp */; };
+		176DEB3C174B5561007A983B /* CullingSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A3FC16F1D6170061EA5D /* CullingSystem.cpp */; };
+		176DEB3D174B5561007A983B /* Frustum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A3FE16F1D6170061EA5D /* Frustum.cpp */; };
+		176DEB3E174B5561007A983B /* Heightmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A40016F1D6170061EA5D /* Heightmap.cpp */; };
+		176DEB3F174B5561007A983B /* Landscape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A40316F1D6170061EA5D /* Landscape.cpp */; };
+		176DEB40174B5561007A983B /* LandscapeChunk.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A40516F1D6170061EA5D /* LandscapeChunk.cpp */; };
+		176DEB41174B5561007A983B /* LandscapeCursor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A40716F1D6170061EA5D /* LandscapeCursor.cpp */; };
+		176DEB42174B5561007A983B /* Light.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A40916F1D6170061EA5D /* Light.cpp */; };
+		176DEB43174B5561007A983B /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A40B16F1D6170061EA5D /* Mesh.cpp */; };
+		176DEB44174B5561007A983B /* ParticleLayerBatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A40D16F1D6170061EA5D /* ParticleLayerBatch.cpp */; };
+		176DEB45174B5561007A983B /* RenderBatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A40F16F1D6170061EA5D /* RenderBatch.cpp */; };
+		176DEB46174B5561007A983B /* RenderLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A41316F1D6170061EA5D /* RenderLayer.cpp */; };
+		176DEB47174B5561007A983B /* RenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A41516F1D6170061EA5D /* RenderObject.cpp */; };
+		176DEB48174B5561007A983B /* RenderPass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A41716F1D6170061EA5D /* RenderPass.cpp */; };
+		176DEB49174B5561007A983B /* RenderSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A41916F1D6170061EA5D /* RenderSystem.cpp */; };
+		176DEB4A174B5561007A983B /* ShadowRect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A41B16F1D6170061EA5D /* ShadowRect.cpp */; };
+		176DEB4B174B5561007A983B /* ShadowVolume.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A41D16F1D6170061EA5D /* ShadowVolume.cpp */; };
+		176DEB4C174B5561007A983B /* ShadowVolumeRenderPass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A41F16F1D6170061EA5D /* ShadowVolumeRenderPass.cpp */; };
+		176DEB4D174B5561007A983B /* SpriteObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A42116F1D6170061EA5D /* SpriteObject.cpp */; };
+		176DEB4E174B5561007A983B /* SpriteRenderBatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A42316F1D6170061EA5D /* SpriteRenderBatch.cpp */; };
+		176DEB4F174B5561007A983B /* RenderState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A47B16F1D64D0061EA5D /* RenderState.cpp */; };
+		176DEB50174B5561007A983B /* UpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A48116F1D6700061EA5D /* UpdateSystem.cpp */; };
+		176DEB51174B5561007A983B /* Entity.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A48716F1D6B80061EA5D /* Entity.cpp */; };
+		176DEB52174B5561007A983B /* CRC32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 74A909A91701FA51003FDB31 /* CRC32.cpp */; };
+		176DEB53174B5561007A983B /* DeviceInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 840D24201703311400267C58 /* DeviceInfo.cpp */; };
+		176DEB54174B5561007A983B /* DeviceInfoMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8B6B3BA1705DD59004F665E /* DeviceInfoMacOS.mm */; };
+		176DEB55174B5561007A983B /* UIAggregatorControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C18593D816F30BED005D30E2 /* UIAggregatorControl.cpp */; };
+		176DEB56174B5561007A983B /* FilePathObjective.mm in Sources */ = {isa = PBXBuildFile; fileRef = E845D4E01732B5DF000DA8E7 /* FilePathObjective.mm */; };
+		176DEB57174B5561007A983B /* SoundEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E4151739615B00C501BC /* SoundEvent.cpp */; };
+		176DEB58174B5561007A983B /* SoundEventCategory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E4171739615B00C501BC /* SoundEventCategory.cpp */; };
+		176DEB59174B5561007A983B /* VolumeAnimatedObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E4191739615B00C501BC /* VolumeAnimatedObject.cpp */; };
+		176DEB5A174B5561007A983B /* SoundComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E4211739616800C501BC /* SoundComponent.cpp */; };
+		176DEB5B174B5561007A983B /* SoundUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E435173964DA00C501BC /* SoundUpdateSystem.cpp */; };
+		176DEB5C174B5561007A983B /* NMaterialConsts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1789108D1740DFBC007B72BA /* NMaterialConsts.cpp */; };
+		176DEB5E174B5561007A983B /* libfmodevent.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E40817395FDD00C501BC /* libfmodevent.dylib */; };
+		176DEB5F174B5561007A983B /* libfmodex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E40917395FDD00C501BC /* libfmodex.dylib */; };
+		176DEB60174B5561007A983B /* libTextureConverter_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C1DC1EFB1717E791001C5EC3 /* libTextureConverter_macos.a */; };
+		176DEB61174B5561007A983B /* libcurl_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E89CE91116C549D2006BEFF4 /* libcurl_macos.a */; };
+		176DEB62174B5561007A983B /* libdxt_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4910CBF5167B73EC00CF948A /* libdxt_macos.a */; };
+		176DEB63174B5561007A983B /* libPVRTexLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E82366CD16148EF9007B40D0 /* libPVRTexLib.a */; };
+		176DEB64174B5561007A983B /* libtheora_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B6FF15989F7400CDEF9E /* libtheora_macos.a */; };
+		176DEB65174B5561007A983B /* libmongodb_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C50EA1915761947005ABED7 /* libmongodb_macos.a */; };
+		176DEB66174B5561007A983B /* libyaml_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97965914E3F09F00FFFA14 /* libyaml_macos.a */; };
+		176DEB67174B5561007A983B /* libxml_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C42C98314E3AFA400EB3F53 /* libxml_macos.a */; };
+		176DEB68174B5561007A983B /* libpng_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C77AB7C14C7509D00E92D28 /* libpng_macos.a */; };
+		176DEB69174B5561007A983B /* libBox2D_MacOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FEF4E22C12CD3BED004B850E /* libBox2D_MacOS.a */; };
+		176DEB6A174B5561007A983B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
+		176DEB6B174B5561007A983B /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE444329114D8DF600F5EFD6 /* ApplicationServices.framework */; };
+		176DEB6C174B5561007A983B /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE44442F114E77EC00F5EFD6 /* OpenAL.framework */; };
+		176DEB6D174B5561007A983B /* libogg_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE578C5D1327927C0081BDE9 /* libogg_macos.a */; };
+		176DEB6E174B5561007A983B /* libvorbis_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE578C5E1327927C0081BDE9 /* libvorbis_macos.a */; };
+		176DEB6F174B5561007A983B /* libvorbisfile_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE578C5F1327927C0081BDE9 /* libvorbisfile_macos.a */; };
+		176DEB70174B5561007A983B /* libfreetype_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA29C33F1446EF270049FD7A /* libfreetype_macos.a */; };
+		176DEB72174B5561007A983B /* libfmodevent.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 02E9E40817395FDD00C501BC /* libfmodevent.dylib */; };
+		176DEB73174B5561007A983B /* libfmodex.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 02E9E40917395FDD00C501BC /* libfmodex.dylib */; };
+		1789108E1740DFBC007B72BA /* NMaterialConsts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1789108D1740DFBC007B72BA /* NMaterialConsts.cpp */; };
+		1789108F1740DFBC007B72BA /* NMaterialConsts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1789108D1740DFBC007B72BA /* NMaterialConsts.cpp */; };
+		1795E4BA174CB86800050F64 /* NPAPIPluginMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17E2706C174CACA70019EF87 /* NPAPIPluginMacOS.mm */; };
+		1795E4BB174CB86D00050F64 /* NPAPIOpenGLLayerMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1795E4B7174CB68200050F64 /* NPAPIOpenGLLayerMacOS.mm */; };
+		1795E4BF174CB87700050F64 /* NPAPIOpenGLLayerMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 1795E4B6174CB68200050F64 /* NPAPIOpenGLLayerMacOS.h */; };
+		1795E4C4174CC24D00050F64 /* NPAPICorePlatformMacOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1795E4C0174CBD2E00050F64 /* NPAPICorePlatformMacOS.cpp */; };
+		1795E4C5174CC24D00050F64 /* NPAPICorePlatformMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 1795E4C1174CBD2E00050F64 /* NPAPICorePlatformMacOS.h */; };
 		1799E52616CCEC030058061F /* ParticleForce.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1799E52416CCEC030058061F /* ParticleForce.cpp */; };
 		1799E52716CCEC030058061F /* ParticleForce.h in Headers */ = {isa = PBXBuildFile; fileRef = 1799E52516CCEC030058061F /* ParticleForce.h */; };
+		17E2706F174CB1660019EF87 /* NPAPIPluginMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E2706B174CACA60019EF87 /* NPAPIPluginMacOS.h */; };
 		17F53E2216D36DDE004D5099 /* IWebViewControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F53E2116D36DDE004D5099 /* IWebViewControl.h */; };
 		17F53E2316D36DDE004D5099 /* IWebViewControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F53E2116D36DDE004D5099 /* IWebViewControl.h */; };
+		17F687E1174B63BA000783FD /* NPAPIEntryPoint.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1795D26C174B56900023F61E /* NPAPIEntryPoint.mm */; };
+		17F687E2174B63C0000783FD /* NPAPIEntryPoint.h in Headers */ = {isa = PBXBuildFile; fileRef = 1795D26D174B56900023F61E /* NPAPIEntryPoint.h */; };
 		4910CBF6167B73EC00CF948A /* libdxt_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4910CBF5167B73EC00CF948A /* libdxt_macos.a */; };
 		509740D816C12EED00631E71 /* IntrospectionBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8CC1BF616C109F1009B49BF /* IntrospectionBase.cpp */; };
 		509740DA16C12EEE00631E71 /* IntrospectionBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8CC1BF616C109F1009B49BF /* IntrospectionBase.cpp */; };
@@ -25,6 +695,8 @@
 		5C50EA1A15761947005ABED7 /* libmongodb_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C50EA1915761947005ABED7 /* libmongodb_macos.a */; };
 		5C77AB7D14C7509D00E92D28 /* libpng_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C77AB7C14C7509D00E92D28 /* libpng_macos.a */; };
 		5C97965A14E3F09F00FFFA14 /* libyaml_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97965914E3F09F00FFFA14 /* libyaml_macos.a */; };
+		7410E81C17144C120028AAAA /* UIAggregatorControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C18593D816F30BED005D30E2 /* UIAggregatorControl.cpp */; };
+		7410E81D17144C160028AAAA /* UIAggregatorControl.h in Headers */ = {isa = PBXBuildFile; fileRef = C18593D916F30BED005D30E2 /* UIAggregatorControl.h */; };
 		7489A9CF1702F5A200D9AE2D /* CRC32.h in Headers */ = {isa = PBXBuildFile; fileRef = 74A909AA1701FA51003FDB31 /* CRC32.h */; };
 		7489A9D01702F5A500D9AE2D /* CRC32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 74A909A91701FA51003FDB31 /* CRC32.cpp */; };
 		74A909AB1701FA51003FDB31 /* CRC32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 74A909A91701FA51003FDB31 /* CRC32.cpp */; };
@@ -33,6 +705,10 @@
 		840D24231703311400267C58 /* DeviceInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 840D24211703311400267C58 /* DeviceInfo.h */; };
 		840ED3E116D5089E00D2BA6C /* DPIHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 840ED3E016D5089E00D2BA6C /* DPIHelper.h */; };
 		840ED3E316D5095000D2BA6C /* DPIHelperMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 840ED3E216D5095000D2BA6C /* DPIHelperMacOS.mm */; };
+		846CFE5F174D1A64004ECE3C /* OpenUDIDApple.h in Headers */ = {isa = PBXBuildFile; fileRef = 846CFE5D174D1A64004ECE3C /* OpenUDIDApple.h */; };
+		846CFE60174D1A64004ECE3C /* OpenUDIDApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 846CFE5E174D1A64004ECE3C /* OpenUDIDApple.mm */; };
+		846CFE63174D1A75004ECE3C /* OpenUDIDMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 846CFE61174D1A75004ECE3C /* OpenUDIDMacOS.h */; };
+		846CFE64174D1A75004ECE3C /* OpenUDIDMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 846CFE62174D1A75004ECE3C /* OpenUDIDMacOS.mm */; };
 		C151B17716D3747E00E09BAF /* DVAssertMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C151B17416D3747E00E09BAF /* DVAssertMessage.cpp */; };
 		C151B17816D3747E00E09BAF /* DVAssertMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = C151B17516D3747E00E09BAF /* DVAssertMessage.h */; };
 		C151B17916D3747E00E09BAF /* DVAssertMessageApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = C151B17616D3747E00E09BAF /* DVAssertMessageApple.mm */; };
@@ -43,6 +719,8 @@
 		C151B1B916D4FF6A00E09BAF /* MailSenderMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = C151B1B616D4FF6A00E09BAF /* MailSenderMacOS.mm */; };
 		C18593DC16F30BF2005D30E2 /* UIAggregatorControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C18593D816F30BED005D30E2 /* UIAggregatorControl.cpp */; };
 		C18593DD16F30BF6005D30E2 /* UIAggregatorControl.h in Headers */ = {isa = PBXBuildFile; fileRef = C18593D916F30BED005D30E2 /* UIAggregatorControl.h */; };
+		C1DC1EFD1717E8B7001C5EC3 /* libTextureConverter_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C1DC1EFB1717E791001C5EC3 /* libTextureConverter_macos.a */; };
+		C1DC1F001717EC1E001C5EC3 /* libTextureConverter_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C1DC1EFB1717E791001C5EC3 /* libTextureConverter_macos.a */; };
 		C70B56421753C2BB008966FA /* KeyedArchiveSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C70B56401753C2BB008966FA /* KeyedArchiveSwig.cpp */; };
 		C7FBCFB316CD1FE5006F1B3F /* AutotestingSystem_wrap.cxx in Sources */ = {isa = PBXBuildFile; fileRef = C7FBCFA716CD1FE5006F1B3F /* AutotestingSystem_wrap.cxx */; };
 		C7FBCFB416CD1FE5006F1B3F /* AutotestingSystemLua.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7FBCFA816CD1FE5006F1B3F /* AutotestingSystemLua.cpp */; };
@@ -168,6 +846,8 @@
 		E83F10A216D6721D00C6ED39 /* DVAssertMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = C151B17516D3747E00E09BAF /* DVAssertMessage.h */; };
 		E83F10A316D6721D00C6ED39 /* DVAssertMessageApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = C151B17616D3747E00E09BAF /* DVAssertMessageApple.mm */; };
 		E83F10A416D6737300C6ED39 /* DPIHelperMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 840ED3E216D5095000D2BA6C /* DPIHelperMacOS.mm */; };
+		E845D4E11732B5DF000DA8E7 /* FilePathObjective.mm in Sources */ = {isa = PBXBuildFile; fileRef = E845D4E01732B5DF000DA8E7 /* FilePathObjective.mm */; };
+		E845D4E21732B5DF000DA8E7 /* FilePathObjective.mm in Sources */ = {isa = PBXBuildFile; fileRef = E845D4E01732B5DF000DA8E7 /* FilePathObjective.mm */; };
 		E8974E2C16CBCBB000A78091 /* ComponentHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCB4C41816CBC5B200F2B085 /* ComponentHelpers.cpp */; };
 		E8974E2D16CBCBB000A78091 /* ComponentHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = CCB4C41916CBC5B200F2B085 /* ComponentHelpers.h */; };
 		E8989D9A16BD24E500732C04 /* AnimatedObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989ABE16BD24E400732C04 /* AnimatedObject.cpp */; };
@@ -610,25 +1290,12 @@
 		E8989FE916BD24E500732C04 /* TransformSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D2F16BD24E500732C04 /* TransformSystem.h */; };
 		E8989FEC16BD24E500732C04 /* UserNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D3216BD24E500732C04 /* UserNode.cpp */; };
 		E8989FED16BD24E500732C04 /* UserNode.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3316BD24E500732C04 /* UserNode.h */; };
-		E8989FEE16BD24E500732C04 /* ALUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3516BD24E500732C04 /* ALUtils.h */; };
 		E8989FF116BD24E500732C04 /* Sound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D3816BD24E500732C04 /* Sound.cpp */; };
 		E8989FF216BD24E500732C04 /* Sound.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3916BD24E500732C04 /* Sound.h */; };
-		E8989FF316BD24E500732C04 /* SoundBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D3A16BD24E500732C04 /* SoundBuffer.cpp */; };
-		E8989FF416BD24E500732C04 /* SoundBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3B16BD24E500732C04 /* SoundBuffer.h */; };
-		E8989FF516BD24E500732C04 /* SoundChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D3C16BD24E500732C04 /* SoundChannel.cpp */; };
-		E8989FF616BD24E500732C04 /* SoundChannel.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3D16BD24E500732C04 /* SoundChannel.h */; };
-		E8989FF716BD24E500732C04 /* SoundDataProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D3E16BD24E500732C04 /* SoundDataProvider.cpp */; };
-		E8989FF816BD24E500732C04 /* SoundDataProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3F16BD24E500732C04 /* SoundDataProvider.h */; };
 		E8989FF916BD24E500732C04 /* SoundGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4016BD24E500732C04 /* SoundGroup.cpp */; };
 		E8989FFA16BD24E500732C04 /* SoundGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4116BD24E500732C04 /* SoundGroup.h */; };
-		E8989FFB16BD24E500732C04 /* SoundInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4216BD24E500732C04 /* SoundInstance.cpp */; };
-		E8989FFC16BD24E500732C04 /* SoundInstance.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4316BD24E500732C04 /* SoundInstance.h */; };
-		E8989FFD16BD24E500732C04 /* SoundOVProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4416BD24E500732C04 /* SoundOVProvider.cpp */; };
-		E8989FFE16BD24E500732C04 /* SoundOVProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4516BD24E500732C04 /* SoundOVProvider.h */; };
 		E8989FFF16BD24E500732C04 /* SoundSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4616BD24E500732C04 /* SoundSystem.cpp */; };
 		E898A00016BD24E500732C04 /* SoundSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4716BD24E500732C04 /* SoundSystem.h */; };
-		E898A00116BD24E500732C04 /* SoundWVProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4816BD24E500732C04 /* SoundWVProvider.cpp */; };
-		E898A00216BD24E500732C04 /* SoundWVProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4916BD24E500732C04 /* SoundWVProvider.h */; };
 		E898A00316BD24E500732C04 /* ScrollHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4B16BD24E500732C04 /* ScrollHelper.cpp */; };
 		E898A00416BD24E500732C04 /* ScrollHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4C16BD24E500732C04 /* ScrollHelper.h */; };
 		E898A00516BD24E500732C04 /* TheoraPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4D16BD24E500732C04 /* TheoraPlayer.cpp */; };
@@ -938,16 +1605,9 @@
 		E898A16916BD265400732C04 /* SwitchSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D2D16BD24E500732C04 /* SwitchSystem.h */; };
 		E898A16A16BD265400732C04 /* TransformSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D2F16BD24E500732C04 /* TransformSystem.h */; };
 		E898A16C16BD265400732C04 /* UserNode.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3316BD24E500732C04 /* UserNode.h */; };
-		E898A16D16BD265400732C04 /* ALUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3516BD24E500732C04 /* ALUtils.h */; };
 		E898A16E16BD265400732C04 /* Sound.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3916BD24E500732C04 /* Sound.h */; };
-		E898A16F16BD265400732C04 /* SoundBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3B16BD24E500732C04 /* SoundBuffer.h */; };
-		E898A17016BD265400732C04 /* SoundChannel.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3D16BD24E500732C04 /* SoundChannel.h */; };
-		E898A17116BD265400732C04 /* SoundDataProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D3F16BD24E500732C04 /* SoundDataProvider.h */; };
 		E898A17216BD265400732C04 /* SoundGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4116BD24E500732C04 /* SoundGroup.h */; };
-		E898A17316BD265400732C04 /* SoundInstance.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4316BD24E500732C04 /* SoundInstance.h */; };
-		E898A17416BD265400732C04 /* SoundOVProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4516BD24E500732C04 /* SoundOVProvider.h */; };
 		E898A17516BD265400732C04 /* SoundSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4716BD24E500732C04 /* SoundSystem.h */; };
-		E898A17616BD265400732C04 /* SoundWVProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4916BD24E500732C04 /* SoundWVProvider.h */; };
 		E898A17716BD265400732C04 /* ScrollHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4C16BD24E500732C04 /* ScrollHelper.h */; };
 		E898A17816BD265400732C04 /* TheoraPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D4E16BD24E500732C04 /* TheoraPlayer.h */; };
 		E898A17916BD265400732C04 /* UI3DView.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D5016BD24E500732C04 /* UI3DView.h */; };
@@ -1182,14 +1842,8 @@
 		E898A28216BD265400732C04 /* TransformSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D2E16BD24E500732C04 /* TransformSystem.cpp */; };
 		E898A28416BD265400732C04 /* UserNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D3216BD24E500732C04 /* UserNode.cpp */; };
 		E898A28516BD265400732C04 /* Sound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D3816BD24E500732C04 /* Sound.cpp */; };
-		E898A28616BD265400732C04 /* SoundBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D3A16BD24E500732C04 /* SoundBuffer.cpp */; };
-		E898A28716BD265400732C04 /* SoundChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D3C16BD24E500732C04 /* SoundChannel.cpp */; };
-		E898A28816BD265400732C04 /* SoundDataProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D3E16BD24E500732C04 /* SoundDataProvider.cpp */; };
 		E898A28916BD265400732C04 /* SoundGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4016BD24E500732C04 /* SoundGroup.cpp */; };
-		E898A28A16BD265400732C04 /* SoundInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4216BD24E500732C04 /* SoundInstance.cpp */; };
-		E898A28B16BD265400732C04 /* SoundOVProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4416BD24E500732C04 /* SoundOVProvider.cpp */; };
 		E898A28C16BD265400732C04 /* SoundSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4616BD24E500732C04 /* SoundSystem.cpp */; };
-		E898A28D16BD265400732C04 /* SoundWVProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4816BD24E500732C04 /* SoundWVProvider.cpp */; };
 		E898A28E16BD265400732C04 /* ScrollHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4B16BD24E500732C04 /* ScrollHelper.cpp */; };
 		E898A28F16BD265400732C04 /* TheoraPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4D16BD24E500732C04 /* TheoraPlayer.cpp */; };
 		E898A29016BD265400732C04 /* UI3DView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D4F16BD24E500732C04 /* UI3DView.cpp */; };
@@ -1265,6 +1919,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		176DE8F7174B5561007A983B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FEF4E22712CD3BED004B850E /* Box2D_MacOS.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC07D0554694100DB518D;
+			remoteInfo = Box2D_MacOS;
+		};
 		E898A05316BD265400732C04 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = FEF4E22712CD3BED004B850E /* Box2D_MacOS.xcodeproj */;
@@ -1288,15 +1949,74 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		02E9E464173A452400C501BC /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 16;
+			files = (
+				02E9E465173A453700C501BC /* libfmodevent.dylib in CopyFiles */,
+				02E9E466173A453700C501BC /* libfmodex.dylib in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		02E9E46B173A459E00C501BC /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 16;
+			files = (
+				02E9E46C173A45A400C501BC /* libfmodevent.dylib in CopyFiles */,
+				02E9E46D173A45A400C501BC /* libfmodex.dylib in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		176DEB71174B5561007A983B /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 16;
+			files = (
+				176DEB72174B5561007A983B /* libfmodevent.dylib in CopyFiles */,
+				176DEB73174B5561007A983B /* libfmodex.dylib in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		0224B6FF15989F7400CDEF9E /* libtheora_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtheora_macos.a; path = ../../Libs/libs/libtheora_macos.a; sourceTree = "<group>"; };
+		02E9E3AA17296D4200C501BC /* FMODUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMODUtils.h; sourceTree = "<group>"; };
+		02E9E40817395FDD00C501BC /* libfmodevent.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodevent.dylib; path = ../../Libs/fmod/lib/macos/libfmodevent.dylib; sourceTree = "<group>"; };
+		02E9E40917395FDD00C501BC /* libfmodex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodex.dylib; path = ../../Libs/fmod/lib/macos/libfmodex.dylib; sourceTree = "<group>"; };
+		02E9E4151739615B00C501BC /* SoundEvent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundEvent.cpp; sourceTree = "<group>"; };
+		02E9E4161739615B00C501BC /* SoundEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundEvent.h; sourceTree = "<group>"; };
+		02E9E4171739615B00C501BC /* SoundEventCategory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundEventCategory.cpp; sourceTree = "<group>"; };
+		02E9E4181739615B00C501BC /* SoundEventCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundEventCategory.h; sourceTree = "<group>"; };
+		02E9E4191739615B00C501BC /* VolumeAnimatedObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VolumeAnimatedObject.cpp; sourceTree = "<group>"; };
+		02E9E41A1739615B00C501BC /* VolumeAnimatedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VolumeAnimatedObject.h; sourceTree = "<group>"; };
+		02E9E4211739616800C501BC /* SoundComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundComponent.cpp; sourceTree = "<group>"; };
+		02E9E4221739616800C501BC /* SoundComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundComponent.h; sourceTree = "<group>"; };
+		02E9E435173964DA00C501BC /* SoundUpdateSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundUpdateSystem.cpp; sourceTree = "<group>"; };
+		02E9E436173964DA00C501BC /* SoundUpdateSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundUpdateSystem.h; sourceTree = "<group>"; };
 		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		0867D6A5FE840307C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		171F938316CE6F28007038AB /* UIWebView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIWebView.cpp; sourceTree = "<group>"; };
 		171F938416CE6F28007038AB /* UIWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIWebView.h; sourceTree = "<group>"; };
+		176DEB77174B5561007A983B /* libFrameworkNPAPI.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFrameworkNPAPI.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		1789108D1740DFBC007B72BA /* NMaterialConsts.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NMaterialConsts.cpp; sourceTree = "<group>"; };
+		1795D26C174B56900023F61E /* NPAPIEntryPoint.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NPAPIEntryPoint.mm; sourceTree = "<group>"; };
+		1795D26D174B56900023F61E /* NPAPIEntryPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NPAPIEntryPoint.h; sourceTree = "<group>"; };
+		1795E4B6174CB68200050F64 /* NPAPIOpenGLLayerMacOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NPAPIOpenGLLayerMacOS.h; sourceTree = "<group>"; };
+		1795E4B7174CB68200050F64 /* NPAPIOpenGLLayerMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NPAPIOpenGLLayerMacOS.mm; sourceTree = "<group>"; };
+		1795E4C0174CBD2E00050F64 /* NPAPICorePlatformMacOS.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NPAPICorePlatformMacOS.cpp; sourceTree = "<group>"; };
+		1795E4C1174CBD2E00050F64 /* NPAPICorePlatformMacOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NPAPICorePlatformMacOS.h; sourceTree = "<group>"; };
 		1799E52416CCEC030058061F /* ParticleForce.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleForce.cpp; sourceTree = "<group>"; };
 		1799E52516CCEC030058061F /* ParticleForce.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleForce.h; sourceTree = "<group>"; };
+		17E2706B174CACA60019EF87 /* NPAPIPluginMacOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NPAPIPluginMacOS.h; sourceTree = "<group>"; };
+		17E2706C174CACA70019EF87 /* NPAPIPluginMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NPAPIPluginMacOS.mm; sourceTree = "<group>"; };
 		17F53E2116D36DDE004D5099 /* IWebViewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IWebViewControl.h; sourceTree = "<group>"; };
 		32DBCF5E0370ADEE00C91783 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = "<group>"; };
 		4910CBF5167B73EC00CF948A /* libdxt_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_macos.a; path = ../../Libs/libs/libdxt_macos.a; sourceTree = "<group>"; };
@@ -1313,6 +2033,10 @@
 		840D24211703311400267C58 /* DeviceInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceInfo.h; sourceTree = "<group>"; };
 		840ED3E016D5089E00D2BA6C /* DPIHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DPIHelper.h; sourceTree = "<group>"; };
 		840ED3E216D5095000D2BA6C /* DPIHelperMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DPIHelperMacOS.mm; sourceTree = "<group>"; };
+		846CFE5D174D1A64004ECE3C /* OpenUDIDApple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenUDIDApple.h; sourceTree = "<group>"; };
+		846CFE5E174D1A64004ECE3C /* OpenUDIDApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenUDIDApple.mm; sourceTree = "<group>"; };
+		846CFE61174D1A75004ECE3C /* OpenUDIDMacOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenUDIDMacOS.h; sourceTree = "<group>"; };
+		846CFE62174D1A75004ECE3C /* OpenUDIDMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenUDIDMacOS.mm; sourceTree = "<group>"; };
 		C151B17416D3747E00E09BAF /* DVAssertMessage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DVAssertMessage.cpp; sourceTree = "<group>"; };
 		C151B17516D3747E00E09BAF /* DVAssertMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DVAssertMessage.h; sourceTree = "<group>"; };
 		C151B17616D3747E00E09BAF /* DVAssertMessageApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DVAssertMessageApple.mm; sourceTree = "<group>"; };
@@ -1324,6 +2048,7 @@
 		C151B1B616D4FF6A00E09BAF /* MailSenderMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MailSenderMacOS.mm; sourceTree = "<group>"; };
 		C18593D816F30BED005D30E2 /* UIAggregatorControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIAggregatorControl.cpp; sourceTree = "<group>"; };
 		C18593D916F30BED005D30E2 /* UIAggregatorControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIAggregatorControl.h; sourceTree = "<group>"; };
+		C1DC1EFB1717E791001C5EC3 /* libTextureConverter_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libTextureConverter_macos.a; path = ../../Libs/libs/libTextureConverter_macos.a; sourceTree = "<group>"; };
 		C70B563F1753C2BB008966FA /* KeyedArchive_wrap.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyedArchive_wrap.cxx; sourceTree = "<group>"; };
 		C70B56401753C2BB008966FA /* KeyedArchiveSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyedArchiveSwig.cpp; sourceTree = "<group>"; };
 		C7FBCFA716CD1FE5006F1B3F /* AutotestingSystem_wrap.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystem_wrap.cxx; sourceTree = "<group>"; };
@@ -1396,6 +2121,7 @@
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E8BE07B2D77200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		E82366CD16148EF9007B40D0 /* libPVRTexLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPVRTexLib.a; path = ../../Libs/libs/libPVRTexLib.a; sourceTree = "<group>"; };
+		E845D4E01732B5DF000DA8E7 /* FilePathObjective.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FilePathObjective.mm; sourceTree = "<group>"; };
 		E8989ABE16BD24E400732C04 /* AnimatedObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnimatedObject.cpp; sourceTree = "<group>"; };
 		E8989ABF16BD24E400732C04 /* AnimatedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimatedObject.h; sourceTree = "<group>"; };
 		E8989AC016BD24E400732C04 /* Animation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Animation.cpp; sourceTree = "<group>"; };
@@ -1845,25 +2571,12 @@
 		E8989D2F16BD24E500732C04 /* TransformSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TransformSystem.h; sourceTree = "<group>"; };
 		E8989D3216BD24E500732C04 /* UserNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UserNode.cpp; sourceTree = "<group>"; };
 		E8989D3316BD24E500732C04 /* UserNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserNode.h; sourceTree = "<group>"; };
-		E8989D3516BD24E500732C04 /* ALUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ALUtils.h; sourceTree = "<group>"; };
 		E8989D3816BD24E500732C04 /* Sound.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Sound.cpp; sourceTree = "<group>"; };
 		E8989D3916BD24E500732C04 /* Sound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sound.h; sourceTree = "<group>"; };
-		E8989D3A16BD24E500732C04 /* SoundBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundBuffer.cpp; sourceTree = "<group>"; };
-		E8989D3B16BD24E500732C04 /* SoundBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundBuffer.h; sourceTree = "<group>"; };
-		E8989D3C16BD24E500732C04 /* SoundChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundChannel.cpp; sourceTree = "<group>"; };
-		E8989D3D16BD24E500732C04 /* SoundChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundChannel.h; sourceTree = "<group>"; };
-		E8989D3E16BD24E500732C04 /* SoundDataProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundDataProvider.cpp; sourceTree = "<group>"; };
-		E8989D3F16BD24E500732C04 /* SoundDataProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundDataProvider.h; sourceTree = "<group>"; };
 		E8989D4016BD24E500732C04 /* SoundGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundGroup.cpp; sourceTree = "<group>"; };
 		E8989D4116BD24E500732C04 /* SoundGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundGroup.h; sourceTree = "<group>"; };
-		E8989D4216BD24E500732C04 /* SoundInstance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundInstance.cpp; sourceTree = "<group>"; };
-		E8989D4316BD24E500732C04 /* SoundInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundInstance.h; sourceTree = "<group>"; };
-		E8989D4416BD24E500732C04 /* SoundOVProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundOVProvider.cpp; sourceTree = "<group>"; };
-		E8989D4516BD24E500732C04 /* SoundOVProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundOVProvider.h; sourceTree = "<group>"; };
 		E8989D4616BD24E500732C04 /* SoundSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundSystem.cpp; sourceTree = "<group>"; };
 		E8989D4716BD24E500732C04 /* SoundSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundSystem.h; sourceTree = "<group>"; };
-		E8989D4816BD24E500732C04 /* SoundWVProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundWVProvider.cpp; sourceTree = "<group>"; };
-		E8989D4916BD24E500732C04 /* SoundWVProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundWVProvider.h; sourceTree = "<group>"; };
 		E8989D4B16BD24E500732C04 /* ScrollHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScrollHelper.cpp; sourceTree = "<group>"; };
 		E8989D4C16BD24E500732C04 /* ScrollHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScrollHelper.h; sourceTree = "<group>"; };
 		E8989D4D16BD24E500732C04 /* TheoraPlayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TheoraPlayer.cpp; sourceTree = "<group>"; };
@@ -1951,10 +2664,39 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		176DEB5D174B5561007A983B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				176DEB5E174B5561007A983B /* libfmodevent.dylib in Frameworks */,
+				176DEB5F174B5561007A983B /* libfmodex.dylib in Frameworks */,
+				176DEB60174B5561007A983B /* libTextureConverter_macos.a in Frameworks */,
+				176DEB61174B5561007A983B /* libcurl_macos.a in Frameworks */,
+				176DEB62174B5561007A983B /* libdxt_macos.a in Frameworks */,
+				176DEB63174B5561007A983B /* libPVRTexLib.a in Frameworks */,
+				176DEB64174B5561007A983B /* libtheora_macos.a in Frameworks */,
+				176DEB65174B5561007A983B /* libmongodb_macos.a in Frameworks */,
+				176DEB66174B5561007A983B /* libyaml_macos.a in Frameworks */,
+				176DEB67174B5561007A983B /* libxml_macos.a in Frameworks */,
+				176DEB68174B5561007A983B /* libpng_macos.a in Frameworks */,
+				176DEB69174B5561007A983B /* libBox2D_MacOS.a in Frameworks */,
+				176DEB6A174B5561007A983B /* Cocoa.framework in Frameworks */,
+				176DEB6B174B5561007A983B /* ApplicationServices.framework in Frameworks */,
+				176DEB6C174B5561007A983B /* OpenAL.framework in Frameworks */,
+				176DEB6D174B5561007A983B /* libogg_macos.a in Frameworks */,
+				176DEB6E174B5561007A983B /* libvorbis_macos.a in Frameworks */,
+				176DEB6F174B5561007A983B /* libvorbisfile_macos.a in Frameworks */,
+				176DEB70174B5561007A983B /* libfreetype_macos.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D2AAC07C0554694100DB518D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02E9E40A17395FDD00C501BC /* libfmodevent.dylib in Frameworks */,
+				02E9E40B17395FDD00C501BC /* libfmodex.dylib in Frameworks */,
+				C1DC1F001717EC1E001C5EC3 /* libTextureConverter_macos.a in Frameworks */,
 				C7FBCFC116CD2060006F1B3F /* liblua_macos.a in Frameworks */,
 				E89CE91216C549D2006BEFF4 /* libcurl_macos.a in Frameworks */,
 				4910CBF6167B73EC00CF948A /* libdxt_macos.a in Frameworks */,
@@ -1979,6 +2721,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02E9E40C17395FED00C501BC /* libfmodevent.dylib in Frameworks */,
+				02E9E40D17395FED00C501BC /* libfmodex.dylib in Frameworks */,
+				C1DC1EFD1717E8B7001C5EC3 /* libTextureConverter_macos.a in Frameworks */,
 				E898A2B116BD265400732C04 /* libdxt_macos.a in Frameworks */,
 				E898A2B216BD265400732C04 /* libPVRTexLib.a in Frameworks */,
 				E898A2B316BD265400732C04 /* libtheora_macos.a in Frameworks */,
@@ -2005,6 +2750,7 @@
 			children = (
 				D2AAC07E0554694100DB518D /* libFramework.a */,
 				E898A2C416BD265400732C04 /* libFrameworkQt.a */,
+				176DEB77174B5561007A983B /* libFrameworkNPAPI.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2012,6 +2758,9 @@
 		0867D691FE84028FC02AAC07 /* Framework */ = {
 			isa = PBXGroup;
 			children = (
+				02E9E40817395FDD00C501BC /* libfmodevent.dylib */,
+				02E9E40917395FDD00C501BC /* libfmodex.dylib */,
+				C1DC1EFB1717E791001C5EC3 /* libTextureConverter_macos.a */,
 				C7FBCFC016CD2060006F1B3F /* liblua_macos.a */,
 				C151B18B16D37DD400E09BAF /* WebKit.framework */,
 				E89CE91116C549D2006BEFF4 /* libcurl_macos.a */,
@@ -2276,6 +3025,7 @@
 				E8989B6016BD24E400732C04 /* File.h */,
 				E8989B6116BD24E400732C04 /* FileList.cpp */,
 				E8989B6216BD24E400732C04 /* FileList.h */,
+				E845D4E01732B5DF000DA8E7 /* FilePathObjective.mm */,
 				E8989B6316BD24E400732C04 /* FilePath.cpp */,
 				E8989B6416BD24E400732C04 /* FilePath.h */,
 				E8989B6516BD24E400732C04 /* FileSystem.cpp */,
@@ -2424,6 +3174,8 @@
 		E8989BD716BD24E400732C04 /* Platform */ = {
 			isa = PBXGroup;
 			children = (
+				846CFE5D174D1A64004ECE3C /* OpenUDIDApple.h */,
+				846CFE5E174D1A64004ECE3C /* OpenUDIDApple.mm */,
 				840D24201703311400267C58 /* DeviceInfo.cpp */,
 				840D24211703311400267C58 /* DeviceInfo.h */,
 				840ED3E016D5089E00D2BA6C /* DPIHelper.h */,
@@ -2467,6 +3219,10 @@
 		E8989C0116BD24E400732C04 /* TemplateMacOS */ = {
 			isa = PBXGroup;
 			children = (
+				1795D26C174B56900023F61E /* NPAPIEntryPoint.mm */,
+				1795D26D174B56900023F61E /* NPAPIEntryPoint.h */,
+				846CFE61174D1A75004ECE3C /* OpenUDIDMacOS.h */,
+				846CFE62174D1A75004ECE3C /* OpenUDIDMacOS.mm */,
 				E8B6B3BA1705DD59004F665E /* DeviceInfoMacOS.mm */,
 				840ED3E216D5095000D2BA6C /* DPIHelperMacOS.mm */,
 				C151B17A16D3755000E09BAF /* WebViewControlMacOS.h */,
@@ -2481,6 +3237,12 @@
 				E8989C0916BD24E400732C04 /* NSFullScreenWindow.m */,
 				E8989C0A16BD24E400732C04 /* OpenGLView.h */,
 				E8989C0B16BD24E400732C04 /* OpenGLView.mm */,
+				17E2706B174CACA60019EF87 /* NPAPIPluginMacOS.h */,
+				17E2706C174CACA70019EF87 /* NPAPIPluginMacOS.mm */,
+				1795E4B6174CB68200050F64 /* NPAPIOpenGLLayerMacOS.h */,
+				1795E4B7174CB68200050F64 /* NPAPIOpenGLLayerMacOS.mm */,
+				1795E4C0174CBD2E00050F64 /* NPAPICorePlatformMacOS.cpp */,
+				1795E4C1174CBD2E00050F64 /* NPAPICorePlatformMacOS.h */,
 			);
 			path = TemplateMacOS;
 			sourceTree = "<group>";
@@ -2663,6 +3425,7 @@
 				E8989C7A16BD24E400732C04 /* NMaterial.cpp */,
 				E8989C7B16BD24E400732C04 /* NMaterial.h */,
 				E8989C7C16BD24E400732C04 /* NMaterialConsts.h */,
+				1789108D1740DFBC007B72BA /* NMaterialConsts.cpp */,
 			);
 			path = Material;
 			sourceTree = "<group>";
@@ -2759,6 +3522,8 @@
 		E8989CC816BD24E500732C04 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				02E9E4211739616800C501BC /* SoundComponent.cpp */,
+				02E9E4221739616800C501BC /* SoundComponent.h */,
 				CC24800616DD174E00183D40 /* UserComponent.cpp */,
 				CC24800716DD174E00183D40 /* UserComponent.h */,
 				CCB4C41816CBC5B200F2B085 /* ComponentHelpers.cpp */,
@@ -2790,6 +3555,8 @@
 		E8989D1916BD24E500732C04 /* Systems */ = {
 			isa = PBXGroup;
 			children = (
+				02E9E435173964DA00C501BC /* SoundUpdateSystem.cpp */,
+				02E9E436173964DA00C501BC /* SoundUpdateSystem.h */,
 				CCC7A48116F1D6700061EA5D /* UpdateSystem.cpp */,
 				CCC7A48216F1D6700061EA5D /* UpdateSystem.h */,
 				50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */,
@@ -2821,25 +3588,19 @@
 		E8989D3416BD24E500732C04 /* Sound */ = {
 			isa = PBXGroup;
 			children = (
-				E8989D3516BD24E500732C04 /* ALUtils.h */,
+				02E9E4151739615B00C501BC /* SoundEvent.cpp */,
+				02E9E4161739615B00C501BC /* SoundEvent.h */,
+				02E9E4171739615B00C501BC /* SoundEventCategory.cpp */,
+				02E9E4181739615B00C501BC /* SoundEventCategory.h */,
+				02E9E4191739615B00C501BC /* VolumeAnimatedObject.cpp */,
+				02E9E41A1739615B00C501BC /* VolumeAnimatedObject.h */,
+				02E9E3AA17296D4200C501BC /* FMODUtils.h */,
 				E8989D3816BD24E500732C04 /* Sound.cpp */,
 				E8989D3916BD24E500732C04 /* Sound.h */,
-				E8989D3A16BD24E500732C04 /* SoundBuffer.cpp */,
-				E8989D3B16BD24E500732C04 /* SoundBuffer.h */,
-				E8989D3C16BD24E500732C04 /* SoundChannel.cpp */,
-				E8989D3D16BD24E500732C04 /* SoundChannel.h */,
-				E8989D3E16BD24E500732C04 /* SoundDataProvider.cpp */,
-				E8989D3F16BD24E500732C04 /* SoundDataProvider.h */,
 				E8989D4016BD24E500732C04 /* SoundGroup.cpp */,
 				E8989D4116BD24E500732C04 /* SoundGroup.h */,
-				E8989D4216BD24E500732C04 /* SoundInstance.cpp */,
-				E8989D4316BD24E500732C04 /* SoundInstance.h */,
-				E8989D4416BD24E500732C04 /* SoundOVProvider.cpp */,
-				E8989D4516BD24E500732C04 /* SoundOVProvider.h */,
 				E8989D4616BD24E500732C04 /* SoundSystem.cpp */,
 				E8989D4716BD24E500732C04 /* SoundSystem.h */,
-				E8989D4816BD24E500732C04 /* SoundWVProvider.cpp */,
-				E8989D4916BD24E500732C04 /* SoundWVProvider.h */,
 			);
 			path = Sound;
 			sourceTree = "<group>";
@@ -2991,6 +3752,345 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		176DE8F8174B5561007A983B /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				176DE8F9174B5561007A983B /* AnimatedObject.h in Headers */,
+				176DE8FA174B5561007A983B /* Animation.h in Headers */,
+				176DE8FB174B5561007A983B /* AnimationManager.h in Headers */,
+				176DE8FC174B5561007A983B /* BezierSplineAnimation.h in Headers */,
+				176DE8FD174B5561007A983B /* Interpolation.h in Headers */,
+				176DE8FE174B5561007A983B /* KeyframeAnimation.h in Headers */,
+				176DE8FF174B5561007A983B /* LinearAnimation.h in Headers */,
+				176DE900174B5561007A983B /* NamedAnimationsList.h in Headers */,
+				176DE901174B5561007A983B /* Action.h in Headers */,
+				176DE902174B5561007A983B /* AssertAction.h in Headers */,
+				176DE903174B5561007A983B /* AutotestingSystem.h in Headers */,
+				176DE904174B5561007A983B /* Config.h in Headers */,
+				176DE905174B5561007A983B /* MongodbUpdateObject.h in Headers */,
+				176DE906174B5561007A983B /* TouchAction.h in Headers */,
+				176DE907174B5561007A983B /* BaseMath.h in Headers */,
+				176DE908174B5561007A983B /* BaseObject.h in Headers */,
+				176DE909174B5561007A983B /* BaseObjectChecker.h in Headers */,
+				176DE90A174B5561007A983B /* BaseTypes.h in Headers */,
+				176DE90B174B5561007A983B /* Data.h in Headers */,
+				176DE90C174B5561007A983B /* DynamicObjectCache.h in Headers */,
+				176DE90D174B5561007A983B /* EventDispatcher.h in Headers */,
+				176DE90E174B5561007A983B /* Exception.h in Headers */,
+				176DE90F174B5561007A983B /* FastName.h in Headers */,
+				176DE910174B5561007A983B /* FastNameMap.h in Headers */,
+				176DE911174B5561007A983B /* FixedSizePoolAllocator.h in Headers */,
+				176DE912174B5561007A983B /* Hash.h in Headers */,
+				176DE913174B5561007A983B /* HashMap.h in Headers */,
+				176DE914174B5561007A983B /* Introspection.h in Headers */,
+				176DE915174B5561007A983B /* IntrospectionBase.h in Headers */,
+				176DE916174B5561007A983B /* IntrospectionCollection.h in Headers */,
+				176DE917174B5561007A983B /* IntrospectionFlags.h in Headers */,
+				176DE918174B5561007A983B /* IntrospectionProperty.h in Headers */,
+				176DE919174B5561007A983B /* Mallocator.h in Headers */,
+				176DE91A174B5561007A983B /* Message.h in Headers */,
+				176DE91B174B5561007A983B /* Meta.h in Headers */,
+				176DE91C174B5561007A983B /* ObjectCreator.h in Headers */,
+				176DE91D174B5561007A983B /* ObjectFactory.h in Headers */,
+				176DE91E174B5561007A983B /* Observable.h in Headers */,
+				176DE91F174B5561007A983B /* Observer.h in Headers */,
+				176DE920174B5561007A983B /* Radix.h in Headers */,
+				176DE921174B5561007A983B /* RefPtr.h in Headers */,
+				176DE922174B5561007A983B /* ScopedPtr.h in Headers */,
+				176DE923174B5561007A983B /* Singleton.h in Headers */,
+				176DE924174B5561007A983B /* StaticSingleton.h in Headers */,
+				176DE925174B5561007A983B /* TemplateHelpers.h in Headers */,
+				176DE926174B5561007A983B /* CollisionObject2.h in Headers */,
+				176DE927174B5561007A983B /* CollisionPolygons.h in Headers */,
+				176DE928174B5561007A983B /* Collisions.h in Headers */,
+				176DE929174B5561007A983B /* ApplicationCore.h in Headers */,
+				176DE92A174B5561007A983B /* Core.h in Headers */,
+				176DE92B174B5561007A983B /* CoreMacOS_CarbonWindow.h in Headers */,
+				176DE92C174B5561007A983B /* CoreMacOS_OpenGL.h in Headers */,
+				176DE92D174B5561007A983B /* DisplayMode.h in Headers */,
+				176DE92E174B5561007A983B /* MongodbClient.h in Headers */,
+				176DE92F174B5561007A983B /* MongodbObject.h in Headers */,
+				176DE930174B5561007A983B /* DAVAConfig.h in Headers */,
+				176DE931174B5561007A983B /* DAVAEngine.h in Headers */,
+				176DE932174B5561007A983B /* Backtrace.h in Headers */,
+				176DE933174B5561007A983B /* DVAssert.h in Headers */,
+				176DE934174B5561007A983B /* List.h in Headers */,
+				176DE935174B5561007A983B /* ListAllocator.h in Headers */,
+				176DE936174B5561007A983B /* MemoryManager.h in Headers */,
+				176DE937174B5561007A983B /* Replay.h in Headers */,
+				176DE938174B5561007A983B /* Stats.h in Headers */,
+				176DE939174B5561007A983B /* DLCSystem.h in Headers */,
+				176DE93A174B5561007A983B /* DLCUnpacker.h in Headers */,
+				176DE93B174B5561007A983B /* FileDownloader.h in Headers */,
+				176DE93C174B5561007A983B /* DoxygenDocumenation.h in Headers */,
+				176DE93D174B5561007A983B /* Component.h in Headers */,
+				176DE93E174B5561007A983B /* SceneSystem.h in Headers */,
+				176DE93F174B5561007A983B /* Bitstream.h in Headers */,
+				176DE940174B5561007A983B /* DynamicMemoryFile.h in Headers */,
+				176DE941174B5561007A983B /* File.h in Headers */,
+				176DE942174B5561007A983B /* FileList.h in Headers */,
+				176DE943174B5561007A983B /* FilePath.h in Headers */,
+				176DE944174B5561007A983B /* FileSystem.h in Headers */,
+				176DE945174B5561007A983B /* KeyedArchive.h in Headers */,
+				176DE946174B5561007A983B /* KeyedArchiver.h in Headers */,
+				176DE947174B5561007A983B /* KeyedUnarchiver.h in Headers */,
+				176DE948174B5561007A983B /* LocalizationSystem.h in Headers */,
+				176DE949174B5561007A983B /* Logger.h in Headers */,
+				176DE94A174B5561007A983B /* ResourceArchive.h in Headers */,
+				176DE94B174B5561007A983B /* VariantType.h in Headers */,
+				176DE94C174B5561007A983B /* XMLParser.h in Headers */,
+				176DE94D174B5561007A983B /* YamlArchive.h in Headers */,
+				176DE94E174B5561007A983B /* YamlParser.h in Headers */,
+				176DE94F174B5561007A983B /* Accelerometer.h in Headers */,
+				176DE950174B5561007A983B /* InputSystem.h in Headers */,
+				176DE951174B5561007A983B /* KeyboardDevice.h in Headers */,
+				176DE952174B5561007A983B /* AABBox2.h in Headers */,
+				176DE953174B5561007A983B /* AABBox3.h in Headers */,
+				176DE954174B5561007A983B /* BezierSpline.h in Headers */,
+				176DE955174B5561007A983B /* Circle.h in Headers */,
+				176DE956174B5561007A983B /* Color.h in Headers */,
+				176DE957174B5561007A983B /* Math2D.h in Headers */,
+				176DE958174B5561007A983B /* Math2DTemplateClasses.h in Headers */,
+				176DE959174B5561007A983B /* MathConstants.h in Headers */,
+				176DE95A174B5561007A983B /* MathDefines.h in Headers */,
+				176DE95B174B5561007A983B /* MathHelpers.h in Headers */,
+				176DE95C174B5561007A983B /* Matrix2.h in Headers */,
+				176DE95D174B5561007A983B /* Matrix3.h in Headers */,
+				176DE95E174B5561007A983B /* Matrix4.h in Headers */,
+				176DE95F174B5561007A983B /* NeonMath.h in Headers */,
+				176DE960174B5561007A983B /* OOBBox.h in Headers */,
+				176DE961174B5561007A983B /* Plane.h in Headers */,
+				176DE962174B5561007A983B /* Polygon2.h in Headers */,
+				176DE963174B5561007A983B /* Polygon3.h in Headers */,
+				176DE964174B5561007A983B /* Quaternion.h in Headers */,
+				176DE965174B5561007A983B /* Ray.h in Headers */,
+				176DE966174B5561007A983B /* Rect.h in Headers */,
+				176DE967174B5561007A983B /* RectPacker.h in Headers */,
+				176DE968174B5561007A983B /* Sphere.h in Headers */,
+				176DE969174B5561007A983B /* Spline.h in Headers */,
+				176DE96A174B5561007A983B /* Vector.h in Headers */,
+				176DE96B174B5561007A983B /* BaseNetworkConnection.h in Headers */,
+				176DE96C174B5561007A983B /* BTNetworkConnection.h in Headers */,
+				176DE96D174B5561007A983B /* NetworkConnection.h in Headers */,
+				176DE96E174B5561007A983B /* NetworkConnectionIPhone.h in Headers */,
+				176DE96F174B5561007A983B /* NetworkDelegate.h in Headers */,
+				176DE970174B5561007A983B /* NetworkPacket.h in Headers */,
+				176DE971174B5561007A983B /* TCPServer.h in Headers */,
+				176DE972174B5561007A983B /* WFNetworkConnection.h in Headers */,
+				176DE973174B5561007A983B /* Particle.h in Headers */,
+				176DE974174B5561007A983B /* ParticleEmitter.h in Headers */,
+				176DE975174B5561007A983B /* ParticleEmitter3D.h in Headers */,
+				176DE976174B5561007A983B /* ParticleEmitterObject.h in Headers */,
+				176DE977174B5561007A983B /* ParticleLayer.h in Headers */,
+				176DE978174B5561007A983B /* ParticleLayer3D.h in Headers */,
+				176DE979174B5561007A983B /* ParticlePropertyLine.h in Headers */,
+				176DE97A174B5561007A983B /* ParticleSystem.h in Headers */,
+				176DE97B174B5561007A983B /* Mutex.h in Headers */,
+				176DE97C174B5561007A983B /* SystemTimer.h in Headers */,
+				176DE97D174B5561007A983B /* AppDelegate.h in Headers */,
+				176DE97E174B5561007A983B /* CorePlatformMacOS.h in Headers */,
+				176DE97F174B5561007A983B /* MainWindowController.h in Headers */,
+				176DE980174B5561007A983B /* NSFullScreenWindow.h in Headers */,
+				176DE981174B5561007A983B /* OpenGLView.h in Headers */,
+				176DE982174B5561007A983B /* Thread.h in Headers */,
+				176DE983174B5561007A983B /* Font.h in Headers */,
+				176DE984174B5561007A983B /* FontManager.h in Headers */,
+				176DE985174B5561007A983B /* FTFont.h in Headers */,
+				176DE986174B5561007A983B /* GraphicsFont.h in Headers */,
+				176DE987174B5561007A983B /* GridSprite.h in Headers */,
+				176DE988174B5561007A983B /* Sprite.h in Headers */,
+				176DE989174B5561007A983B /* TextBlock.h in Headers */,
+				176DE98A174B5561007A983B /* AnimatedMesh.h in Headers */,
+				176DE98B174B5561007A983B /* EdgeAdjacency.h in Headers */,
+				176DE98C174B5561007A983B /* PolygonGroup.h in Headers */,
+				176DE98D174B5561007A983B /* StaticMesh.h in Headers */,
+				176DE98E174B5561007A983B /* Cursor.h in Headers */,
+				176DE98F174B5561007A983B /* ColorOnlyEffect.h in Headers */,
+				176DE990174B5561007A983B /* MultiTextureEffect.h in Headers */,
+				176DE991174B5561007A983B /* TextureMulColorAlphaTestEffect.h in Headers */,
+				176DE992174B5561007A983B /* TextureMulColorEffect.h in Headers */,
+				176DE993174B5561007A983B /* Image.h in Headers */,
+				176DE994174B5561007A983B /* ImageConvert.h in Headers */,
+				176DE995174B5561007A983B /* ImageLoader.h in Headers */,
+				176DE996174B5561007A983B /* IndexBuffer.h in Headers */,
+				176DE997174B5561007A983B /* LibDxtHelper.h in Headers */,
+				176DE998174B5561007A983B /* LibPngHelpers.h in Headers */,
+				176DE999174B5561007A983B /* LibPVRHelper.h in Headers */,
+				176DE99A174B5561007A983B /* MaterialCompiler.h in Headers */,
+				176DE99B174B5561007A983B /* MaterialGraph.h in Headers */,
+				176DE99C174B5561007A983B /* MaterialGraphNode.h in Headers */,
+				176DE99D174B5561007A983B /* NMaterial.h in Headers */,
+				176DE99E174B5561007A983B /* NMaterialConsts.h in Headers */,
+				176DE99F174B5561007A983B /* Material.h in Headers */,
+				176DE9A0174B5561007A983B /* OGLHelpers.h in Headers */,
+				176DE9A1174B5561007A983B /* PVRDefines.h in Headers */,
+				176DE9A2174B5561007A983B /* RenderBase.h in Headers */,
+				176DE9A3174B5561007A983B /* RenderDataObject.h in Headers */,
+				176DE9A4174B5561007A983B /* RenderEffect.h in Headers */,
+				176DE9A5174B5561007A983B /* RenderGrayscaleEffect.h in Headers */,
+				176DE9A6174B5561007A983B /* RenderHelper.h in Headers */,
+				176DE9A7174B5561007A983B /* RenderManager.h in Headers */,
+				176DE9A8174B5561007A983B /* RenderManagerGL20.h in Headers */,
+				176DE9A9174B5561007A983B /* RenderOptions.h in Headers */,
+				176DE9AA174B5561007A983B /* RenderResource.h in Headers */,
+				176DE9AB174B5561007A983B /* RGBColor.h in Headers */,
+				176DE9AC174B5561007A983B /* Shader.h in Headers */,
+				176DE9AD174B5561007A983B /* ShaderUniformArray.h in Headers */,
+				176DE9AE174B5561007A983B /* SharedFBO.h in Headers */,
+				176DE9AF174B5561007A983B /* Texture.h in Headers */,
+				176DE9B0174B5561007A983B /* TextureDescriptor.h in Headers */,
+				176DE9B1174B5561007A983B /* UberShader.h in Headers */,
+				176DE9B2174B5561007A983B /* VertexBuffer.h in Headers */,
+				176DE9B3174B5561007A983B /* Box2DDebugDraw.h in Headers */,
+				176DE9B4174B5561007A983B /* Box2DGameObject.h in Headers */,
+				176DE9B5174B5561007A983B /* Box2DGameObjectManager.h in Headers */,
+				176DE9B6174B5561007A983B /* Box2DHelper.h in Headers */,
+				176DE9B7174B5561007A983B /* Box2DTileCollider.h in Headers */,
+				176DE9B8174B5561007A983B /* GameObject.h in Headers */,
+				176DE9B9174B5561007A983B /* GameObjectAnimations.h in Headers */,
+				176DE9BA174B5561007A983B /* GameObjectManager.h in Headers */,
+				176DE9BB174B5561007A983B /* TextGameObject.h in Headers */,
+				176DE9BC174B5561007A983B /* BillboardNode.h in Headers */,
+				176DE9BD174B5561007A983B /* BoneNode.h in Headers */,
+				176DE9BE174B5561007A983B /* BulletComponent.h in Headers */,
+				176DE9BF174B5561007A983B /* CameraComponent.h in Headers */,
+				176DE9C0174B5561007A983B /* DebugRenderComponent.h in Headers */,
+				176DE9C1174B5561007A983B /* LightComponent.h in Headers */,
+				176DE9C2174B5561007A983B /* LodComponent.h in Headers */,
+				176DE9C3174B5561007A983B /* ParticleEffectComponent.h in Headers */,
+				176DE9C4174B5561007A983B /* RenderComponent.h in Headers */,
+				176DE9C5174B5561007A983B /* SwitchComponent.h in Headers */,
+				176DE9C6174B5561007A983B /* TransformComponent.h in Headers */,
+				176DE9C7174B5561007A983B /* UpdatableComponent.h in Headers */,
+				176DE9C8174B5561007A983B /* DataNode.h in Headers */,
+				176DE9C9174B5561007A983B /* Drawable.h in Headers */,
+				176DE9CA174B5561007A983B /* ImposterManager.h in Headers */,
+				176DE9CB174B5561007A983B /* ImposterNode.h in Headers */,
+				176DE9CC174B5561007A983B /* LodNode.h in Headers */,
+				176DE9CD174B5561007A983B /* MeshInstance.h in Headers */,
+				176DE9CE174B5561007A983B /* MeshInstanceNode.h in Headers */,
+				176DE9CF174B5561007A983B /* ParticleEffectNode.h in Headers */,
+				176DE9D0174B5561007A983B /* ParticleEmitterNode.h in Headers */,
+				176DE9D1174B5561007A983B /* PathManip.h in Headers */,
+				176DE9D2174B5561007A983B /* PolygonGroupInstance.h in Headers */,
+				176DE9D3174B5561007A983B /* ProxyNode.h in Headers */,
+				176DE9D4174B5561007A983B /* Scene.h in Headers */,
+				176DE9D5174B5561007A983B /* SceneAnimationMixer.h in Headers */,
+				176DE9D6174B5561007A983B /* SceneFile.h in Headers */,
+				176DE9D7174B5561007A983B /* SceneFileV2.h in Headers */,
+				176DE9D8174B5561007A983B /* SceneManager.h in Headers */,
+				176DE9D9174B5561007A983B /* SceneNodeAnimation.h in Headers */,
+				176DE9DA174B5561007A983B /* SceneNodeAnimationKey.h in Headers */,
+				176DE9DB174B5561007A983B /* SceneNodeAnimationList.h in Headers */,
+				176DE9DC174B5561007A983B /* ShadowVolumeNode.h in Headers */,
+				176DE9DD174B5561007A983B /* SkeletonNode.h in Headers */,
+				176DE9DE174B5561007A983B /* SpriteNode.h in Headers */,
+				176DE9DF174B5561007A983B /* SwitchNode.h in Headers */,
+				176DE9E0174B5561007A983B /* BaseProcessSystem.h in Headers */,
+				176DE9E1174B5561007A983B /* DebugRenderSystem.h in Headers */,
+				176DE9E2174B5561007A983B /* EventSystem.h in Headers */,
+				176DE9E3174B5561007A983B /* LightUpdateSystem.h in Headers */,
+				176DE9E4174B5561007A983B /* LodSystem.h in Headers */,
+				176DE9E5174B5561007A983B /* ParticleEffectSystem.h in Headers */,
+				176DE9E6174B5561007A983B /* ParticleEmitterSystem.h in Headers */,
+				176DE9E7174B5561007A983B /* RenderUpdateSystem.h in Headers */,
+				176DE9E8174B5561007A983B /* SwitchSystem.h in Headers */,
+				176DE9E9174B5561007A983B /* TransformSystem.h in Headers */,
+				176DE9EA174B5561007A983B /* UserNode.h in Headers */,
+				176DE9EB174B5561007A983B /* Sound.h in Headers */,
+				176DE9EC174B5561007A983B /* SoundGroup.h in Headers */,
+				176DE9ED174B5561007A983B /* SoundSystem.h in Headers */,
+				176DE9EE174B5561007A983B /* ScrollHelper.h in Headers */,
+				176DE9EF174B5561007A983B /* TheoraPlayer.h in Headers */,
+				176DE9F0174B5561007A983B /* UI3DView.h in Headers */,
+				176DE9F1174B5561007A983B /* UIButton.h in Headers */,
+				176DE9F2174B5561007A983B /* UIControl.h in Headers */,
+				176DE9F3174B5561007A983B /* UIControlBackground.h in Headers */,
+				176DE9F4174B5561007A983B /* UIControlSystem.h in Headers */,
+				176DE9F5174B5561007A983B /* UIEvent.h in Headers */,
+				176DE9F6174B5561007A983B /* UIFadeTransition.h in Headers */,
+				176DE9F7174B5561007A983B /* UIFileSystemDialog.h in Headers */,
+				176DE9F8174B5561007A983B /* UIHierarchy.h in Headers */,
+				176DE9F9174B5561007A983B /* UIHierarchyCell.h in Headers */,
+				176DE9FA174B5561007A983B /* UIHierarchyNode.h in Headers */,
+				176DE9FB174B5561007A983B /* UIHoleTransition.h in Headers */,
+				176DE9FC174B5561007A983B /* UIJoypad.h in Headers */,
+				176DE9FD174B5561007A983B /* UIList.h in Headers */,
+				176DE9FE174B5561007A983B /* UIListCell.h in Headers */,
+				176DE9FF174B5561007A983B /* UILoadingTransition.h in Headers */,
+				176DEA00174B5561007A983B /* UIMoveInTransition.h in Headers */,
+				176DEA01174B5561007A983B /* UIPopup.h in Headers */,
+				176DEA02174B5561007A983B /* UIScreen.h in Headers */,
+				176DEA03174B5561007A983B /* UIScreenManager.h in Headers */,
+				176DEA04174B5561007A983B /* UIScreenManagerMacOS.h in Headers */,
+				176DEA05174B5561007A983B /* UIScreenTransition.h in Headers */,
+				176DEA06174B5561007A983B /* UIScrollBar.h in Headers */,
+				176DEA07174B5561007A983B /* UISlider.h in Headers */,
+				176DEA08174B5561007A983B /* UIStaticText.h in Headers */,
+				176DEA09174B5561007A983B /* UITextField.h in Headers */,
+				176DEA0A174B5561007A983B /* UIYamlLoader.h in Headers */,
+				176DEA0B174B5561007A983B /* HTTPDownloader.h in Headers */,
+				176DEA0C174B5561007A983B /* MD5.h in Headers */,
+				176DEA0D174B5561007A983B /* Random.h in Headers */,
+				176DEA0E174B5561007A983B /* StringFormat.h in Headers */,
+				176DEA0F174B5561007A983B /* UTF8Utils.h in Headers */,
+				176DEA10174B5561007A983B /* Utils.h in Headers */,
+				176DEA11174B5561007A983B /* GlobalEventSystem.h in Headers */,
+				176DEA12174B5561007A983B /* ComponentHelpers.h in Headers */,
+				176DEA13174B5561007A983B /* ParticleForce.h in Headers */,
+				176DEA14174B5561007A983B /* DPIHelper.h in Headers */,
+				176DEA15174B5561007A983B /* UIWebView.h in Headers */,
+				176DEA16174B5561007A983B /* IWebViewControl.h in Headers */,
+				176DEA17174B5561007A983B /* DVAssertMessage.h in Headers */,
+				176DEA18174B5561007A983B /* WebViewControlMacOS.h in Headers */,
+				176DEA19174B5561007A983B /* MailSender.h in Headers */,
+				176DEA1A174B5561007A983B /* UserComponent.h in Headers */,
+				176DEA1B174B5561007A983B /* UISpinner.h in Headers */,
+				176DEA1C174B5561007A983B /* VectorSpinnerAdapter.h in Headers */,
+				176DEA1D174B5561007A983B /* UISwitch.h in Headers */,
+				176DEA1E174B5561007A983B /* Camera.h in Headers */,
+				176DEA1F174B5561007A983B /* CullingSystem.h in Headers */,
+				176DEA20174B5561007A983B /* Frustum.h in Headers */,
+				176DEA21174B5561007A983B /* Heightmap.h in Headers */,
+				176DEA22174B5561007A983B /* IRenderUpdatable.h in Headers */,
+				176DEA23174B5561007A983B /* Landscape.h in Headers */,
+				176DEA24174B5561007A983B /* LandscapeChunk.h in Headers */,
+				176DEA25174B5561007A983B /* LandscapeCursor.h in Headers */,
+				176DEA26174B5561007A983B /* Light.h in Headers */,
+				176DEA27174B5561007A983B /* Mesh.h in Headers */,
+				176DEA28174B5561007A983B /* ParticleLayerBatch.h in Headers */,
+				176DEA29174B5561007A983B /* RenderBatch.h in Headers */,
+				176DEA2A174B5561007A983B /* RenderDataSource.h in Headers */,
+				176DEA2B174B5561007A983B /* RenderFastNames.h in Headers */,
+				176DEA2C174B5561007A983B /* RenderLayer.h in Headers */,
+				176DEA2D174B5561007A983B /* RenderObject.h in Headers */,
+				176DEA2E174B5561007A983B /* RenderPass.h in Headers */,
+				176DEA2F174B5561007A983B /* RenderSystem.h in Headers */,
+				176DEA30174B5561007A983B /* ShadowRect.h in Headers */,
+				176DEA31174B5561007A983B /* ShadowVolume.h in Headers */,
+				176DEA32174B5561007A983B /* ShadowVolumeRenderPass.h in Headers */,
+				176DEA33174B5561007A983B /* SpriteObject.h in Headers */,
+				176DEA34174B5561007A983B /* SpriteRenderBatch.h in Headers */,
+				176DEA35174B5561007A983B /* RenderState.h in Headers */,
+				176DEA36174B5561007A983B /* UpdateSystem.h in Headers */,
+				176DEA37174B5561007A983B /* Entity.h in Headers */,
+				176DEA38174B5561007A983B /* CRC32.h in Headers */,
+				176DEA39174B5561007A983B /* DeviceInfo.h in Headers */,
+				176DEA3A174B5561007A983B /* UIAggregatorControl.h in Headers */,
+				176DEA3B174B5561007A983B /* FMODUtils.h in Headers */,
+				176DEA3C174B5561007A983B /* SoundEvent.h in Headers */,
+				176DEA3D174B5561007A983B /* SoundEventCategory.h in Headers */,
+				176DEA3E174B5561007A983B /* VolumeAnimatedObject.h in Headers */,
+				176DEA3F174B5561007A983B /* SoundComponent.h in Headers */,
+				176DEA40174B5561007A983B /* SoundUpdateSystem.h in Headers */,
+				17F687E2174B63C0000783FD /* NPAPIEntryPoint.h in Headers */,
+				17E2706F174CB1660019EF87 /* NPAPIPluginMacOS.h in Headers */,
+				1795E4BF174CB87700050F64 /* NPAPIOpenGLLayerMacOS.h in Headers */,
+				1795E4C5174CC24D00050F64 /* NPAPICorePlatformMacOS.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D2AAC07A0554694100DB518D /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -3237,16 +4337,9 @@
 				E8989FE716BD24E500732C04 /* SwitchSystem.h in Headers */,
 				E8989FE916BD24E500732C04 /* TransformSystem.h in Headers */,
 				E8989FED16BD24E500732C04 /* UserNode.h in Headers */,
-				E8989FEE16BD24E500732C04 /* ALUtils.h in Headers */,
 				E8989FF216BD24E500732C04 /* Sound.h in Headers */,
-				E8989FF416BD24E500732C04 /* SoundBuffer.h in Headers */,
-				E8989FF616BD24E500732C04 /* SoundChannel.h in Headers */,
-				E8989FF816BD24E500732C04 /* SoundDataProvider.h in Headers */,
 				E8989FFA16BD24E500732C04 /* SoundGroup.h in Headers */,
-				E8989FFC16BD24E500732C04 /* SoundInstance.h in Headers */,
-				E8989FFE16BD24E500732C04 /* SoundOVProvider.h in Headers */,
 				E898A00016BD24E500732C04 /* SoundSystem.h in Headers */,
-				E898A00216BD24E500732C04 /* SoundWVProvider.h in Headers */,
 				E898A00416BD24E500732C04 /* ScrollHelper.h in Headers */,
 				E898A00616BD24E500732C04 /* TheoraPlayer.h in Headers */,
 				E898A00816BD24E500732C04 /* UI3DView.h in Headers */,
@@ -3325,6 +4418,15 @@
 				CCC7A48B16F1D6B80061EA5D /* Entity.h in Headers */,
 				74A909AC1701FA51003FDB31 /* CRC32.h in Headers */,
 				840D24231703311400267C58 /* DeviceInfo.h in Headers */,
+				7410E81D17144C160028AAAA /* UIAggregatorControl.h in Headers */,
+				02E9E3AB17296D4200C501BC /* FMODUtils.h in Headers */,
+				02E9E41C1739615B00C501BC /* SoundEvent.h in Headers */,
+				02E9E41E1739615B00C501BC /* SoundEventCategory.h in Headers */,
+				02E9E4201739615B00C501BC /* VolumeAnimatedObject.h in Headers */,
+				02E9E4241739616800C501BC /* SoundComponent.h in Headers */,
+				02E9E439173964DA00C501BC /* SoundUpdateSystem.h in Headers */,
+				846CFE5F174D1A64004ECE3C /* OpenUDIDApple.h in Headers */,
+				846CFE63174D1A75004ECE3C /* OpenUDIDMacOS.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3573,16 +4675,9 @@
 				E898A16916BD265400732C04 /* SwitchSystem.h in Headers */,
 				E898A16A16BD265400732C04 /* TransformSystem.h in Headers */,
 				E898A16C16BD265400732C04 /* UserNode.h in Headers */,
-				E898A16D16BD265400732C04 /* ALUtils.h in Headers */,
 				E898A16E16BD265400732C04 /* Sound.h in Headers */,
-				E898A16F16BD265400732C04 /* SoundBuffer.h in Headers */,
-				E898A17016BD265400732C04 /* SoundChannel.h in Headers */,
-				E898A17116BD265400732C04 /* SoundDataProvider.h in Headers */,
 				E898A17216BD265400732C04 /* SoundGroup.h in Headers */,
-				E898A17316BD265400732C04 /* SoundInstance.h in Headers */,
-				E898A17416BD265400732C04 /* SoundOVProvider.h in Headers */,
 				E898A17516BD265400732C04 /* SoundSystem.h in Headers */,
-				E898A17616BD265400732C04 /* SoundWVProvider.h in Headers */,
 				E898A17716BD265400732C04 /* ScrollHelper.h in Headers */,
 				E898A17816BD265400732C04 /* TheoraPlayer.h in Headers */,
 				E898A17916BD265400732C04 /* UI3DView.h in Headers */,
@@ -3655,12 +4750,37 @@
 				C18593DD16F30BF6005D30E2 /* UIAggregatorControl.h in Headers */,
 				7489A9CF1702F5A200D9AE2D /* CRC32.h in Headers */,
 				E8B6B3B11705DB26004F665E /* DeviceInfo.h in Headers */,
+				02E9E42F1739622500C501BC /* SoundEvent.h in Headers */,
+				02E9E4301739622800C501BC /* SoundEventCategory.h in Headers */,
+				02E9E4311739622E00C501BC /* VolumeAnimatedObject.h in Headers */,
+				02E9E4321739622E00C501BC /* FMODUtils.h in Headers */,
+				02E9E4341739623900C501BC /* SoundComponent.h in Headers */,
+				02E9E43A173964DA00C501BC /* SoundUpdateSystem.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		176DE8F5174B5561007A983B /* FrameworkNPAPI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 176DEB74174B5561007A983B /* Build configuration list for PBXNativeTarget "FrameworkNPAPI" */;
+			buildPhases = (
+				176DE8F8174B5561007A983B /* Headers */,
+				176DEA41174B5561007A983B /* Sources */,
+				176DEB5D174B5561007A983B /* Frameworks */,
+				176DEB71174B5561007A983B /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				176DE8F6174B5561007A983B /* PBXTargetDependency */,
+			);
+			name = FrameworkNPAPI;
+			productName = Framework;
+			productReference = 176DEB77174B5561007A983B /* libFrameworkNPAPI.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 		D2AAC07D0554694100DB518D /* Framework */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1DEB921E08733DC00010E9CD /* Build configuration list for PBXNativeTarget "Framework" */;
@@ -3668,6 +4788,7 @@
 				D2AAC07A0554694100DB518D /* Headers */,
 				D2AAC07B0554694100DB518D /* Sources */,
 				D2AAC07C0554694100DB518D /* Frameworks */,
+				02E9E464173A452400C501BC /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -3728,6 +4849,7 @@
 			targets = (
 				D2AAC07D0554694100DB518D /* Framework */,
 				E898A05116BD265400732C04 /* FrameworkQt */,
+				176DE8F5174B5561007A983B /* FrameworkNPAPI */,
 			);
 		};
 /* End PBXProject section */
@@ -3743,6 +4865,300 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXSourcesBuildPhase section */
+		176DEA41174B5561007A983B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				176DEA42174B5561007A983B /* AnimatedObject.cpp in Sources */,
+				176DEA43174B5561007A983B /* Animation.cpp in Sources */,
+				176DEA44174B5561007A983B /* AnimationManager.cpp in Sources */,
+				176DEA45174B5561007A983B /* BezierSplineAnimation.cpp in Sources */,
+				176DEA46174B5561007A983B /* Interpolation.cpp in Sources */,
+				176DEA47174B5561007A983B /* KeyframeAnimation.cpp in Sources */,
+				176DEA48174B5561007A983B /* LinearAnimation.cpp in Sources */,
+				176DEA49174B5561007A983B /* Action.cpp in Sources */,
+				176DEA4A174B5561007A983B /* AssertAction.cpp in Sources */,
+				176DEA4B174B5561007A983B /* AutotestingSystem.cpp in Sources */,
+				176DEA4C174B5561007A983B /* MongodbUpdateObject.cpp in Sources */,
+				176DEA4D174B5561007A983B /* TouchAction.cpp in Sources */,
+				176DEA4E174B5561007A983B /* BaseMath.cpp in Sources */,
+				176DEA4F174B5561007A983B /* BaseObject.cpp in Sources */,
+				176DEA50174B5561007A983B /* BaseObjectChecker.cpp in Sources */,
+				176DEA51174B5561007A983B /* Data.cpp in Sources */,
+				176DEA52174B5561007A983B /* DynamicObjectCache.cpp in Sources */,
+				176DEA53174B5561007A983B /* EventDispatcher.cpp in Sources */,
+				176DEA54174B5561007A983B /* FastName.cpp in Sources */,
+				176DEA55174B5561007A983B /* FixedSizePoolAllocator.cpp in Sources */,
+				176DEA56174B5561007A983B /* Message.cpp in Sources */,
+				176DEA57174B5561007A983B /* ObjectFactory.cpp in Sources */,
+				176DEA58174B5561007A983B /* Observable.cpp in Sources */,
+				176DEA59174B5561007A983B /* Radix.cpp in Sources */,
+				176DEA5A174B5561007A983B /* CollisionObject2.cpp in Sources */,
+				176DEA5B174B5561007A983B /* CollisionPolygons.cpp in Sources */,
+				176DEA5C174B5561007A983B /* Collisions.cpp in Sources */,
+				176DEA5D174B5561007A983B /* ApplicationCore.cpp in Sources */,
+				176DEA5E174B5561007A983B /* Core.cpp in Sources */,
+				176DEA5F174B5561007A983B /* CoreMacOS.cpp in Sources */,
+				176DEA60174B5561007A983B /* CoreMacOS_CarbonWindow.cpp in Sources */,
+				176DEA61174B5561007A983B /* CoreMacOS_OpenGL.cpp in Sources */,
+				176DEA62174B5561007A983B /* MongodbClient.cpp in Sources */,
+				176DEA63174B5561007A983B /* MongodbObject.cpp in Sources */,
+				176DEA64174B5561007A983B /* DAVAEngine.cpp in Sources */,
+				176DEA65174B5561007A983B /* Backtrace.cpp in Sources */,
+				176DEA66174B5561007A983B /* MemoryManager.cpp in Sources */,
+				176DEA67174B5561007A983B /* Replay.cpp in Sources */,
+				176DEA68174B5561007A983B /* Stats.cpp in Sources */,
+				176DEA69174B5561007A983B /* DLCSystem.cpp in Sources */,
+				176DEA6A174B5561007A983B /* DLCUnpacker.cpp in Sources */,
+				176DEA6B174B5561007A983B /* FileDownloader.cpp in Sources */,
+				176DEA6C174B5561007A983B /* Component.cpp in Sources */,
+				176DEA6D174B5561007A983B /* SceneSystem.cpp in Sources */,
+				176DEA6E174B5561007A983B /* Bitstream.cpp in Sources */,
+				176DEA6F174B5561007A983B /* DynamicMemoryFile.cpp in Sources */,
+				176DEA70174B5561007A983B /* File.cpp in Sources */,
+				176DEA71174B5561007A983B /* FileList.cpp in Sources */,
+				176DEA72174B5561007A983B /* FilePath.cpp in Sources */,
+				176DEA73174B5561007A983B /* FileSystem.cpp in Sources */,
+				176DEA74174B5561007A983B /* FileSystemObjective.mm in Sources */,
+				176DEA75174B5561007A983B /* KeyedArchive.cpp in Sources */,
+				176DEA76174B5561007A983B /* KeyedArchiver.cpp in Sources */,
+				176DEA77174B5561007A983B /* KeyedUnarchiver.cpp in Sources */,
+				176DEA78174B5561007A983B /* LocalizationSystem.cpp in Sources */,
+				176DEA79174B5561007A983B /* Logger.cpp in Sources */,
+				176DEA7A174B5561007A983B /* LoggerMacOS.mm in Sources */,
+				176DEA7B174B5561007A983B /* ResourceArchive.cpp in Sources */,
+				176DEA7C174B5561007A983B /* VariantType.cpp in Sources */,
+				176DEA7D174B5561007A983B /* XMLParser.cpp in Sources */,
+				176DEA7E174B5561007A983B /* XMLParser.mm in Sources */,
+				176DEA7F174B5561007A983B /* YamlArchive.cpp in Sources */,
+				176DEA80174B5561007A983B /* YamlParser.cpp in Sources */,
+				176DEA81174B5561007A983B /* Accelerometer.cpp in Sources */,
+				176DEA82174B5561007A983B /* InputSystem.cpp in Sources */,
+				176DEA83174B5561007A983B /* KeyboardDevice.cpp in Sources */,
+				176DEA84174B5561007A983B /* AABBox2.cpp in Sources */,
+				176DEA85174B5561007A983B /* AABBox3.cpp in Sources */,
+				176DEA86174B5561007A983B /* BezierSpline.cpp in Sources */,
+				176DEA87174B5561007A983B /* Math2D.cpp in Sources */,
+				176DEA88174B5561007A983B /* Matrix4.cpp in Sources */,
+				176DEA89174B5561007A983B /* NeonMath.cpp in Sources */,
+				176DEA8A174B5561007A983B /* Polygon2.cpp in Sources */,
+				176DEA8B174B5561007A983B /* Polygon3.cpp in Sources */,
+				176DEA8C174B5561007A983B /* RectPacker.cpp in Sources */,
+				176DEA8D174B5561007A983B /* Spline.cpp in Sources */,
+				176DEA8E174B5561007A983B /* BaseNetworkConnection.mm in Sources */,
+				176DEA8F174B5561007A983B /* BTNetworkConnection.mm in Sources */,
+				176DEA90174B5561007A983B /* NetworkConnection.cpp in Sources */,
+				176DEA91174B5561007A983B /* NetworkConnectionIPhone.mm in Sources */,
+				176DEA92174B5561007A983B /* NetworkDelegate.cpp in Sources */,
+				176DEA93174B5561007A983B /* NetworkPacket.cpp in Sources */,
+				176DEA94174B5561007A983B /* TCPServer.mm in Sources */,
+				176DEA95174B5561007A983B /* WFNetworkConnection.mm in Sources */,
+				176DEA96174B5561007A983B /* Particle.cpp in Sources */,
+				176DEA97174B5561007A983B /* ParticleEmitter.cpp in Sources */,
+				176DEA98174B5561007A983B /* ParticleEmitter3D.cpp in Sources */,
+				176DEA99174B5561007A983B /* ParticleEmitterObject.cpp in Sources */,
+				176DEA9A174B5561007A983B /* ParticleLayer.cpp in Sources */,
+				176DEA9B174B5561007A983B /* ParticleLayer3D.cpp in Sources */,
+				176DEA9C174B5561007A983B /* ParticlePropertyLine.cpp in Sources */,
+				176DEA9D174B5561007A983B /* ParticleSystem.cpp in Sources */,
+				176DEA9E174B5561007A983B /* Mutex.cpp in Sources */,
+				176DEA9F174B5561007A983B /* SystemTimer.cpp in Sources */,
+				176DEAA0174B5561007A983B /* AppDelegate.mm in Sources */,
+				176DEAA1174B5561007A983B /* CorePlatformMacOS.cpp in Sources */,
+				176DEAA2174B5561007A983B /* MainWindowController.mm in Sources */,
+				176DEAA3174B5561007A983B /* NSFullScreenWindow.m in Sources */,
+				176DEAA4174B5561007A983B /* OpenGLView.mm in Sources */,
+				176DEAA5174B5561007A983B /* Thread.cpp in Sources */,
+				176DEAA6174B5561007A983B /* ThreadMacOS.mm in Sources */,
+				176DEAA7174B5561007A983B /* Font.cpp in Sources */,
+				176DEAA8174B5561007A983B /* FontManager.cpp in Sources */,
+				176DEAA9174B5561007A983B /* FTFont.cpp in Sources */,
+				176DEAAA174B5561007A983B /* GraphicsFont.cpp in Sources */,
+				176DEAAB174B5561007A983B /* Sprite.cpp in Sources */,
+				176DEAAC174B5561007A983B /* TextBlock.cpp in Sources */,
+				176DEAAD174B5561007A983B /* AnimatedMesh.cpp in Sources */,
+				176DEAAE174B5561007A983B /* EdgeAdjacency.cpp in Sources */,
+				176DEAAF174B5561007A983B /* PolygonGroup.cpp in Sources */,
+				176DEAB0174B5561007A983B /* StaticMesh.cpp in Sources */,
+				176DEAB1174B5561007A983B /* CursorMacOS.mm in Sources */,
+				176DEAB2174B5561007A983B /* ColorOnlyEffect.cpp in Sources */,
+				176DEAB3174B5561007A983B /* MultiTextureEffect.cpp in Sources */,
+				176DEAB4174B5561007A983B /* TextureMulColorAlphaTestEffect.cpp in Sources */,
+				176DEAB5174B5561007A983B /* TextureMulColorEffect.cpp in Sources */,
+				176DEAB6174B5561007A983B /* Image.cpp in Sources */,
+				176DEAB7174B5561007A983B /* ImageLoader.cpp in Sources */,
+				176DEAB8174B5561007A983B /* LibDxtHelper.cpp in Sources */,
+				176DEAB9174B5561007A983B /* LibPngHelpers.cpp in Sources */,
+				176DEABA174B5561007A983B /* LibPVRHelper.cpp in Sources */,
+				176DEABB174B5561007A983B /* MaterialCompiler.cpp in Sources */,
+				176DEABC174B5561007A983B /* MaterialGraph.cpp in Sources */,
+				176DEABD174B5561007A983B /* MaterialGraphNode.cpp in Sources */,
+				176DEABE174B5561007A983B /* NMaterial.cpp in Sources */,
+				176DEABF174B5561007A983B /* Material.cpp in Sources */,
+				176DEAC0174B5561007A983B /* RenderBase.cpp in Sources */,
+				176DEAC1174B5561007A983B /* RenderDataObject.cpp in Sources */,
+				176DEAC2174B5561007A983B /* RenderEffect.cpp in Sources */,
+				176DEAC3174B5561007A983B /* RenderGrayscaleEffect.cpp in Sources */,
+				176DEAC4174B5561007A983B /* RenderHelper.cpp in Sources */,
+				176DEAC5174B5561007A983B /* RenderManager.cpp in Sources */,
+				176DEAC6174B5561007A983B /* RenderManagerFactory.cpp in Sources */,
+				176DEAC7174B5561007A983B /* RenderManagerGL.cpp in Sources */,
+				176DEAC8174B5561007A983B /* RenderManagerGL20.cpp in Sources */,
+				176DEAC9174B5561007A983B /* RenderOptions.cpp in Sources */,
+				176DEACA174B5561007A983B /* RenderResource.cpp in Sources */,
+				176DEACB174B5561007A983B /* Shader.cpp in Sources */,
+				176DEACC174B5561007A983B /* ShaderGL.cpp in Sources */,
+				176DEACD174B5561007A983B /* SharedFBO.cpp in Sources */,
+				176DEACE174B5561007A983B /* Texture.cpp in Sources */,
+				176DEACF174B5561007A983B /* TextureDescriptor.cpp in Sources */,
+				176DEAD0174B5561007A983B /* UberShader.cpp in Sources */,
+				176DEAD1174B5561007A983B /* Box2DDebugDraw.cpp in Sources */,
+				176DEAD2174B5561007A983B /* Box2DGameObject.cpp in Sources */,
+				176DEAD3174B5561007A983B /* Box2DGameObjectManager.cpp in Sources */,
+				176DEAD4174B5561007A983B /* Box2DHelper.cpp in Sources */,
+				176DEAD5174B5561007A983B /* Box2DTileCollider.cpp in Sources */,
+				176DEAD6174B5561007A983B /* GameObject.cpp in Sources */,
+				176DEAD7174B5561007A983B /* GameObjectAnimations.cpp in Sources */,
+				176DEAD8174B5561007A983B /* GameObjectManager.cpp in Sources */,
+				176DEAD9174B5561007A983B /* TextGameObject.cpp in Sources */,
+				176DEADA174B5561007A983B /* BillboardNode.cpp in Sources */,
+				176DEADB174B5561007A983B /* BoneNode.cpp in Sources */,
+				176DEADC174B5561007A983B /* BulletComponent.cpp in Sources */,
+				176DEADD174B5561007A983B /* CameraComponent.cpp in Sources */,
+				176DEADE174B5561007A983B /* DebugRenderComponent.cpp in Sources */,
+				176DEADF174B5561007A983B /* LightComponent.cpp in Sources */,
+				176DEAE0174B5561007A983B /* LodComponent.cpp in Sources */,
+				176DEAE1174B5561007A983B /* ParticleEffectComponent.cpp in Sources */,
+				176DEAE2174B5561007A983B /* RenderComponent.cpp in Sources */,
+				176DEAE3174B5561007A983B /* SwitchComponent.cpp in Sources */,
+				176DEAE4174B5561007A983B /* TransformComponent.cpp in Sources */,
+				176DEAE5174B5561007A983B /* UpdatableComponent.cpp in Sources */,
+				176DEAE6174B5561007A983B /* DataNode.cpp in Sources */,
+				176DEAE7174B5561007A983B /* ImposterManager.cpp in Sources */,
+				176DEAE8174B5561007A983B /* ImposterNode.cpp in Sources */,
+				176DEAE9174B5561007A983B /* LodNode.cpp in Sources */,
+				176DEAEA174B5561007A983B /* MeshInstance.cpp in Sources */,
+				176DEAEB174B5561007A983B /* MeshInstanceNode.cpp in Sources */,
+				176DEAEC174B5561007A983B /* ParticleEffectNode.cpp in Sources */,
+				176DEAED174B5561007A983B /* ParticleEmitterNode.cpp in Sources */,
+				176DEAEE174B5561007A983B /* PathManip.cpp in Sources */,
+				176DEAEF174B5561007A983B /* PolygonGroupInstance.cpp in Sources */,
+				176DEAF0174B5561007A983B /* ProxyNode.cpp in Sources */,
+				176DEAF1174B5561007A983B /* Scene.cpp in Sources */,
+				176DEAF2174B5561007A983B /* SceneAnimationMixer.cpp in Sources */,
+				176DEAF3174B5561007A983B /* SceneFile.cpp in Sources */,
+				176DEAF4174B5561007A983B /* SceneFileV2.cpp in Sources */,
+				176DEAF5174B5561007A983B /* SceneManager.cpp in Sources */,
+				176DEAF6174B5561007A983B /* SceneNodeAnimation.cpp in Sources */,
+				176DEAF7174B5561007A983B /* SceneNodeAnimationKey.cpp in Sources */,
+				176DEAF8174B5561007A983B /* SceneNodeAnimationList.cpp in Sources */,
+				176DEAF9174B5561007A983B /* ShadowVolumeNode.cpp in Sources */,
+				176DEAFA174B5561007A983B /* SkeletonNode.cpp in Sources */,
+				176DEAFB174B5561007A983B /* SpriteNode.cpp in Sources */,
+				176DEAFC174B5561007A983B /* SwitchNode.cpp in Sources */,
+				176DEAFD174B5561007A983B /* BaseProcessSystem.cpp in Sources */,
+				176DEAFE174B5561007A983B /* DebugRenderSystem.cpp in Sources */,
+				176DEAFF174B5561007A983B /* EventSystem.cpp in Sources */,
+				176DEB00174B5561007A983B /* LightUpdateSystem.cpp in Sources */,
+				176DEB01174B5561007A983B /* LodSystem.cpp in Sources */,
+				176DEB02174B5561007A983B /* ParticleEffectSystem.cpp in Sources */,
+				176DEB03174B5561007A983B /* ParticleEmitterSystem.cpp in Sources */,
+				176DEB04174B5561007A983B /* RenderUpdateSystem.cpp in Sources */,
+				176DEB05174B5561007A983B /* SwitchSystem.cpp in Sources */,
+				176DEB06174B5561007A983B /* TransformSystem.cpp in Sources */,
+				176DEB07174B5561007A983B /* UserNode.cpp in Sources */,
+				176DEB08174B5561007A983B /* Sound.cpp in Sources */,
+				176DEB09174B5561007A983B /* SoundGroup.cpp in Sources */,
+				176DEB0A174B5561007A983B /* SoundSystem.cpp in Sources */,
+				176DEB0B174B5561007A983B /* ScrollHelper.cpp in Sources */,
+				176DEB0C174B5561007A983B /* TheoraPlayer.cpp in Sources */,
+				176DEB0D174B5561007A983B /* UI3DView.cpp in Sources */,
+				176DEB0E174B5561007A983B /* UIButton.cpp in Sources */,
+				176DEB0F174B5561007A983B /* UIControl.cpp in Sources */,
+				176DEB10174B5561007A983B /* UIControlBackground.cpp in Sources */,
+				176DEB11174B5561007A983B /* UIControlSystem.cpp in Sources */,
+				176DEB12174B5561007A983B /* UIEvent.cpp in Sources */,
+				176DEB13174B5561007A983B /* UIFadeTransition.cpp in Sources */,
+				176DEB14174B5561007A983B /* UIFileSystemDialog.cpp in Sources */,
+				176DEB15174B5561007A983B /* UIHierarchy.cpp in Sources */,
+				176DEB16174B5561007A983B /* UIHierarchyCell.cpp in Sources */,
+				176DEB17174B5561007A983B /* UIHierarchyNode.cpp in Sources */,
+				176DEB18174B5561007A983B /* UIHoleTransition.cpp in Sources */,
+				176DEB19174B5561007A983B /* UIJoypad.cpp in Sources */,
+				176DEB1A174B5561007A983B /* UIList.cpp in Sources */,
+				176DEB1B174B5561007A983B /* UIListCell.cpp in Sources */,
+				176DEB1C174B5561007A983B /* UILoadingTransition.cpp in Sources */,
+				176DEB1D174B5561007A983B /* UIMoveInTransition.cpp in Sources */,
+				176DEB1E174B5561007A983B /* UIPopup.cpp in Sources */,
+				176DEB1F174B5561007A983B /* UIScreen.cpp in Sources */,
+				176DEB20174B5561007A983B /* UIScreenManagerMacOS.cpp in Sources */,
+				176DEB21174B5561007A983B /* UIScreenTransition.cpp in Sources */,
+				176DEB22174B5561007A983B /* UIScrollBar.cpp in Sources */,
+				176DEB23174B5561007A983B /* UISlider.cpp in Sources */,
+				176DEB24174B5561007A983B /* UIStaticText.cpp in Sources */,
+				176DEB25174B5561007A983B /* UITextField.cpp in Sources */,
+				176DEB26174B5561007A983B /* UIYamlLoader.cpp in Sources */,
+				176DEB27174B5561007A983B /* HTTPDownloader.mm in Sources */,
+				176DEB28174B5561007A983B /* MD5.cpp in Sources */,
+				176DEB29174B5561007A983B /* StringFormat.cpp in Sources */,
+				176DEB2A174B5561007A983B /* Utils.cpp in Sources */,
+				176DEB2B174B5561007A983B /* UtilsMacOS.mm in Sources */,
+				176DEB2C174B5561007A983B /* IntrospectionBase.cpp in Sources */,
+				176DEB2D174B5561007A983B /* GlobalEventSystem.cpp in Sources */,
+				176DEB2E174B5561007A983B /* ComponentHelpers.cpp in Sources */,
+				176DEB2F174B5561007A983B /* ParticleForce.cpp in Sources */,
+				176DEB30174B5561007A983B /* DPIHelperMacOS.mm in Sources */,
+				176DEB31174B5561007A983B /* UIWebView.cpp in Sources */,
+				176DEB32174B5561007A983B /* DVAssertMessage.cpp in Sources */,
+				176DEB33174B5561007A983B /* DVAssertMessageApple.mm in Sources */,
+				176DEB34174B5561007A983B /* WebViewControlMacOS.mm in Sources */,
+				176DEB35174B5561007A983B /* MailSender.cpp in Sources */,
+				176DEB36174B5561007A983B /* MailSenderMacOS.mm in Sources */,
+				176DEB37174B5561007A983B /* UserComponent.cpp in Sources */,
+				176DEB38174B5561007A983B /* UISpinner.cpp in Sources */,
+				176DEB39174B5561007A983B /* UTF8UtilsMac.mm in Sources */,
+				176DEB3A174B5561007A983B /* UISwitch.cpp in Sources */,
+				176DEB3B174B5561007A983B /* Camera.cpp in Sources */,
+				176DEB3C174B5561007A983B /* CullingSystem.cpp in Sources */,
+				176DEB3D174B5561007A983B /* Frustum.cpp in Sources */,
+				176DEB3E174B5561007A983B /* Heightmap.cpp in Sources */,
+				176DEB3F174B5561007A983B /* Landscape.cpp in Sources */,
+				176DEB40174B5561007A983B /* LandscapeChunk.cpp in Sources */,
+				176DEB41174B5561007A983B /* LandscapeCursor.cpp in Sources */,
+				176DEB42174B5561007A983B /* Light.cpp in Sources */,
+				176DEB43174B5561007A983B /* Mesh.cpp in Sources */,
+				176DEB44174B5561007A983B /* ParticleLayerBatch.cpp in Sources */,
+				176DEB45174B5561007A983B /* RenderBatch.cpp in Sources */,
+				176DEB46174B5561007A983B /* RenderLayer.cpp in Sources */,
+				176DEB47174B5561007A983B /* RenderObject.cpp in Sources */,
+				176DEB48174B5561007A983B /* RenderPass.cpp in Sources */,
+				176DEB49174B5561007A983B /* RenderSystem.cpp in Sources */,
+				176DEB4A174B5561007A983B /* ShadowRect.cpp in Sources */,
+				176DEB4B174B5561007A983B /* ShadowVolume.cpp in Sources */,
+				176DEB4C174B5561007A983B /* ShadowVolumeRenderPass.cpp in Sources */,
+				176DEB4D174B5561007A983B /* SpriteObject.cpp in Sources */,
+				176DEB4E174B5561007A983B /* SpriteRenderBatch.cpp in Sources */,
+				176DEB4F174B5561007A983B /* RenderState.cpp in Sources */,
+				176DEB50174B5561007A983B /* UpdateSystem.cpp in Sources */,
+				176DEB51174B5561007A983B /* Entity.cpp in Sources */,
+				176DEB52174B5561007A983B /* CRC32.cpp in Sources */,
+				176DEB53174B5561007A983B /* DeviceInfo.cpp in Sources */,
+				176DEB54174B5561007A983B /* DeviceInfoMacOS.mm in Sources */,
+				176DEB55174B5561007A983B /* UIAggregatorControl.cpp in Sources */,
+				176DEB56174B5561007A983B /* FilePathObjective.mm in Sources */,
+				176DEB57174B5561007A983B /* SoundEvent.cpp in Sources */,
+				176DEB58174B5561007A983B /* SoundEventCategory.cpp in Sources */,
+				176DEB59174B5561007A983B /* VolumeAnimatedObject.cpp in Sources */,
+				176DEB5A174B5561007A983B /* SoundComponent.cpp in Sources */,
+				176DEB5B174B5561007A983B /* SoundUpdateSystem.cpp in Sources */,
+				176DEB5C174B5561007A983B /* NMaterialConsts.cpp in Sources */,
+				17F687E1174B63BA000783FD /* NPAPIEntryPoint.mm in Sources */,
+				1795E4BA174CB86800050F64 /* NPAPIPluginMacOS.mm in Sources */,
+				1795E4BB174CB86D00050F64 /* NPAPIOpenGLLayerMacOS.mm in Sources */,
+				1795E4C4174CC24D00050F64 /* NPAPICorePlatformMacOS.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D2AAC07B0554694100DB518D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3946,14 +5362,8 @@
 				E8989FE816BD24E500732C04 /* TransformSystem.cpp in Sources */,
 				E8989FEC16BD24E500732C04 /* UserNode.cpp in Sources */,
 				E8989FF116BD24E500732C04 /* Sound.cpp in Sources */,
-				E8989FF316BD24E500732C04 /* SoundBuffer.cpp in Sources */,
-				E8989FF516BD24E500732C04 /* SoundChannel.cpp in Sources */,
-				E8989FF716BD24E500732C04 /* SoundDataProvider.cpp in Sources */,
 				E8989FF916BD24E500732C04 /* SoundGroup.cpp in Sources */,
-				E8989FFB16BD24E500732C04 /* SoundInstance.cpp in Sources */,
-				E8989FFD16BD24E500732C04 /* SoundOVProvider.cpp in Sources */,
 				E8989FFF16BD24E500732C04 /* SoundSystem.cpp in Sources */,
-				E898A00116BD24E500732C04 /* SoundWVProvider.cpp in Sources */,
 				E898A00316BD24E500732C04 /* ScrollHelper.cpp in Sources */,
 				E898A00516BD24E500732C04 /* TheoraPlayer.cpp in Sources */,
 				E898A00716BD24E500732C04 /* UI3DView.cpp in Sources */,
@@ -4038,7 +5448,17 @@
 				74A909AB1701FA51003FDB31 /* CRC32.cpp in Sources */,
 				840D24221703311400267C58 /* DeviceInfo.cpp in Sources */,
 				E8B6B3BB1705DD59004F665E /* DeviceInfoMacOS.mm in Sources */,
+				7410E81C17144C120028AAAA /* UIAggregatorControl.cpp in Sources */,
 				C70B56421753C2BB008966FA /* KeyedArchiveSwig.cpp in Sources */,
+				E845D4E11732B5DF000DA8E7 /* FilePathObjective.mm in Sources */,
+				02E9E41B1739615B00C501BC /* SoundEvent.cpp in Sources */,
+				02E9E41D1739615B00C501BC /* SoundEventCategory.cpp in Sources */,
+				02E9E41F1739615B00C501BC /* VolumeAnimatedObject.cpp in Sources */,
+				02E9E4231739616800C501BC /* SoundComponent.cpp in Sources */,
+				02E9E437173964DA00C501BC /* SoundUpdateSystem.cpp in Sources */,
+				1789108E1740DFBC007B72BA /* NMaterialConsts.cpp in Sources */,
+				846CFE60174D1A64004ECE3C /* OpenUDIDApple.mm in Sources */,
+				846CFE64174D1A75004ECE3C /* OpenUDIDMacOS.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4046,6 +5466,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02E9E425173961DE00C501BC /* SoundEvent.cpp in Sources */,
+				02E9E427173961DE00C501BC /* SoundEventCategory.cpp in Sources */,
+				02E9E429173961DE00C501BC /* VolumeAnimatedObject.cpp in Sources */,
 				E898A19B16BD265400732C04 /* AnimatedObject.cpp in Sources */,
 				E898A19C16BD265400732C04 /* Animation.cpp in Sources */,
 				E898A19D16BD265400732C04 /* AnimationManager.cpp in Sources */,
@@ -4245,14 +5668,8 @@
 				E898A28216BD265400732C04 /* TransformSystem.cpp in Sources */,
 				E898A28416BD265400732C04 /* UserNode.cpp in Sources */,
 				E898A28516BD265400732C04 /* Sound.cpp in Sources */,
-				E898A28616BD265400732C04 /* SoundBuffer.cpp in Sources */,
-				E898A28716BD265400732C04 /* SoundChannel.cpp in Sources */,
-				E898A28816BD265400732C04 /* SoundDataProvider.cpp in Sources */,
 				E898A28916BD265400732C04 /* SoundGroup.cpp in Sources */,
-				E898A28A16BD265400732C04 /* SoundInstance.cpp in Sources */,
-				E898A28B16BD265400732C04 /* SoundOVProvider.cpp in Sources */,
 				E898A28C16BD265400732C04 /* SoundSystem.cpp in Sources */,
-				E898A28D16BD265400732C04 /* SoundWVProvider.cpp in Sources */,
 				E898A28E16BD265400732C04 /* ScrollHelper.cpp in Sources */,
 				E898A28F16BD265400732C04 /* TheoraPlayer.cpp in Sources */,
 				E898A29016BD265400732C04 /* UI3DView.cpp in Sources */,
@@ -4324,12 +5741,21 @@
 				7489A9D01702F5A500D9AE2D /* CRC32.cpp in Sources */,
 				E8B6B3B01705DB26004F665E /* DeviceInfo.cpp in Sources */,
 				E8B6B3BC1705DD59004F665E /* DeviceInfoMacOS.mm in Sources */,
+				E845D4E21732B5DF000DA8E7 /* FilePathObjective.mm in Sources */,
+				02E9E4331739623700C501BC /* SoundComponent.cpp in Sources */,
+				02E9E438173964DA00C501BC /* SoundUpdateSystem.cpp in Sources */,
+				1789108F1740DFBC007B72BA /* NMaterialConsts.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		176DE8F6174B5561007A983B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Box2D_MacOS;
+			targetProxy = 176DE8F7174B5561007A983B /* PBXContainerItemProxy */;
+		};
 		E898A05216BD265400732C04 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Box2D_MacOS;
@@ -4343,6 +5769,93 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		176DEB75174B5561007A983B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../..\"",
+				);
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Framework_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					DDARWIN_NO_CARBON,
+					FT2_BUILD_LIBRARY,
+					DAVA_DEBUG,
+					"XP_MACOSX=1",
+					__DAVAENGINE_NPAPI__,
+				);
+				HEADER_SEARCH_PATHS = (
+					./../../Sources/Internal,
+					./../../Sources/External,
+					./../../Libs/freetype/include,
+					./../../Libs/include/,
+					./../../Libs/oggvorbis/include,
+					./../../Libs/fmod/include,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../Libs/oggvorbis/lib\"",
+					"\"$(SRCROOT)/../../Libs/feetype/lib\"",
+					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
+					"\"$(SRCROOT)/../../Libs/libs\"",
+					"\"$(SRCROOT)/../../Libs/fmod/lib\"",
+					"\"$(SRCROOT)/../../Libs/fmod/lib/macos\"",
+				);
+				PRODUCT_NAME = FrameworkNPAPI;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		176DEB76174B5561007A983B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../..\"",
+				);
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Framework_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					DDARWIN_NO_CARBON,
+					FT2_BUILD_LIBRARY,
+					"XP_MACOSX=1",
+					__DAVAENGINE_NPAPI__,
+				);
+				HEADER_SEARCH_PATHS = (
+					./../../Sources/Internal,
+					./../../Sources/External,
+					./../../Libs/freetype/include,
+					./../../Libs/include/,
+					./../../Libs/oggvorbis/include,
+					./../../Libs/fmod/include,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../Libs/oggvorbis/lib\"",
+					"\"$(SRCROOT)/../../Libs/feetype/lib\"",
+					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
+					"\"$(SRCROOT)/../../Libs/libs\"",
+					"\"$(SRCROOT)/../../Libs/fmod/lib\"",
+					"\"$(SRCROOT)/../../Libs/fmod/lib/macos\"",
+				);
+				PRODUCT_NAME = FrameworkNPAPI;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
 		1DEB921F08733DC00010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -4364,8 +5877,7 @@
 					./../../Libs/freetype/include,
 					./../../Libs/include/,
 					./../../Libs/oggvorbis/include,
-					./../../Libs/lua/include,
-				);
+./../../Libs/fmod/include,./../../Libs/lua/include,				);
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4373,6 +5885,8 @@
 					"\"$(SRCROOT)/../../Libs/feetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/libs\"",
+					"\"$(SRCROOT)/../../Libs/fmod/lib\"",
+					"\"$(SRCROOT)/../../Libs/fmod/lib/macos\"",
 				);
 				PRODUCT_NAME = Framework;
 			};
@@ -4397,8 +5911,8 @@
 					./../../Libs/freetype/include,
 					./../../Libs/include/,
 					./../../Libs/oggvorbis/include,
-					./../../Libs/lua/include,
-				);
+					./../../Libs/fmod/include,
+					./../../Libs/lua/include,				);
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4406,6 +5920,8 @@
 					"\"$(SRCROOT)/../../Libs/feetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/libs\"",
+					"\"$(SRCROOT)/../../Libs/fmod/lib\"",
+					"\"$(SRCROOT)/../../Libs/fmod/lib/macos\"",
 				);
 				PRODUCT_NAME = Framework;
 			};
@@ -4500,6 +6016,7 @@
 					./../../Libs/freetype/include,
 					./../../Libs/include/,
 					./../../Libs/oggvorbis/include,
+					./../../Libs/fmod/include,
 				);
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = (
@@ -4508,6 +6025,8 @@
 					"\"$(SRCROOT)/../../Libs/feetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/libs\"",
+					"\"$(SRCROOT)/../../Libs/fmod/lib\"",
+					"\"$(SRCROOT)/../../Libs/fmod/lib/macos\"",
 				);
 				LIBRARY_STYLE = STATIC;
 				OTHER_CFLAGS = (
@@ -4537,6 +6056,7 @@
 					./../../Libs/freetype/include,
 					./../../Libs/include/,
 					./../../Libs/oggvorbis/include,
+					./../../Libs/fmod/include,
 				);
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = (
@@ -4545,6 +6065,8 @@
 					"\"$(SRCROOT)/../../Libs/feetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/libs\"",
+					"\"$(SRCROOT)/../../Libs/fmod/lib\"",
+					"\"$(SRCROOT)/../../Libs/fmod/lib/macos\"",
 				);
 				LIBRARY_STYLE = STATIC;
 				OTHER_CFLAGS = (
@@ -4560,6 +6082,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		176DEB74174B5561007A983B /* Build configuration list for PBXNativeTarget "FrameworkNPAPI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				176DEB75174B5561007A983B /* Debug */,
+				176DEB76174B5561007A983B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		1DEB921E08733DC00010E9CD /* Build configuration list for PBXNativeTarget "Framework" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

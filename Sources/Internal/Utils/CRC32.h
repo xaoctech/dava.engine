@@ -15,12 +15,13 @@
 namespace DAVA
 {
 
+class FilePath;
 class CRC32
 {
 
 public:
 	
-	static uint32 ForFile(const String & pathName);
+	static uint32 ForFile(const FilePath & pathName);
 
 };
 

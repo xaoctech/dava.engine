@@ -25,40 +25,41 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Ivan Petrochenko
+        * Created by Igor Solovey
 =====================================================================================*/
 
 #ifndef __DAVAENGINE_SOUND_GROUP_H__
 #define __DAVAENGINE_SOUND_GROUP_H__
 
 #include "Base/BaseTypes.h"
+#include "Base/BaseObject.h"
+#include "Sound/VolumeAnimatedObject.h"
+
+namespace FMOD
+{
+class SoundGroup;
+};
 
 namespace DAVA
 {
 
-class Sound;
-class SoundGroup
+class Animation;
+class SoundGroup : public VolumeAnimatedObject
 {
 public:
 	SoundGroup();
 	~SoundGroup();
 
-	void	SetVolume(float32 volume);
+	void SetVolume(float32 volume);
 	float32	GetVolume();
 
-	void	AddSound(Sound * sound);
-	void	RemoveSound(Sound * sound);
-    
-#ifdef __DAVAENGINE_ANDROID__
-    
-    void Suspend();
-    void Resume();
-    
-#endif //#ifdef __DAVAENGINE_ANDROID__
+	void Stop();
 
 private:
-	List<Sound*> sounds;
-	float32 volume;
+	FMOD::SoundGroup * fmodSoundGroup;
+
+friend class Sound;
+friend class SoundSystem;
 };
 
 };

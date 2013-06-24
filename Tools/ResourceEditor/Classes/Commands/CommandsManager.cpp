@@ -1,12 +1,14 @@
 #include "CommandsManager.h"
 #include "Command.h"
 
+#include "Scene3D/Scene.h"
+
 #include "../Qt/Main/QtMainWindowHandler.h"
+#include "../Qt/Commands/CommandSignals.h"
 
 using namespace DAVA;
 
 CommandsManager::CommandsManager()
-:	activeQueue(NULL)
 {
 }
 
@@ -25,38 +27,18 @@ void CommandsManager::ClearAllQueues()
 	queueMap.clear();
 }
 
-void CommandsManager::ChangeQueue(void *scene)
-{
-	DVASSERT(scene);
-
-	QUEUE_MAP::iterator it = queueMap.find(scene);
-
-	if (it != queueMap.end())
-	{
-		activeQueue = (*it).second;
-	}
-	else
-	{
-		UndoQueue* newQueue = new UndoQueue(scene);
-		queueMap[scene] = newQueue;
-		activeQueue = newQueue;
-	}
-}
-
 void CommandsManager::ClearQueue(UndoQueue* queue)
 {
-	UndoQueue* q = queue;
-	if (!q)
-		q = activeQueue;
+	DVASSERT(queue);
 
-	q->commandIndex = -1;
-	for_each(q->commands.begin(),
-			 q->commands.end(),
+	queue->commandIndex = -1;
+	for_each(queue->commands.begin(),
+			 queue->commands.end(),
 			 SafeRelease<Command>);
-	q->commands.clear();
+	queue->commands.clear();
 }
 
-void CommandsManager::SceneReleased(void *scene)
+void CommandsManager::SceneReleased(DAVA::Scene* scene)
 {
 	QUEUE_MAP::iterator it = queueMap.find(scene);
 
@@ -68,34 +50,43 @@ void CommandsManager::SceneReleased(void *scene)
 	}
 }
 
-void CommandsManager::ClearQueueTail()
+void CommandsManager::ClearQueueTail(UndoQueue* queue)
 {
-	if ((activeQueue->commandIndex >= -1) &&
-		(activeQueue->commandIndex < (int32)activeQueue->commands.size()))
+	DVASSERT(queue);
+
+	if ((queue->commandIndex >= -1) &&
+		(queue->commandIndex < (int32)queue->commands.size()))
 	{
-        DVASSERT(activeQueue->commandIndex <= (UNDO_QUEUE_SIZE - 1)); //Queue cannot be more than UNDO_QUEUE_SIZE
-        if(activeQueue->commandIndex == UNDO_QUEUE_SIZE - 1)
+        DVASSERT(queue->commandIndex <= (UNDO_QUEUE_SIZE - 1)); //Queue cannot be more than UNDO_QUEUE_SIZE
+        if(queue->commandIndex == UNDO_QUEUE_SIZE - 1)
         {
-            SafeRelease(activeQueue->commands[0]);
-            activeQueue->commands.erase(activeQueue->commands.begin());
-            
-            --activeQueue->commandIndex;
+            SafeRelease(queue->commands[0]);
+            queue->commands.erase(queue->commands.begin());
+
+            --queue->commandIndex;
         }
-        
-        
-		int32 newCount = activeQueue->commandIndex + 1;
-		for_each(activeQueue->commands.begin() + newCount,
-				 activeQueue->commands.end(),
+
+		int32 newCount = queue->commandIndex + 1;
+		for_each(queue->commands.begin() + newCount,
+				 queue->commands.end(),
 				 SafeRelease<Command>);
-		activeQueue->commands.resize(newCount);
+		queue->commands.resize(newCount);
 	}
 }
 
 
-void CommandsManager::Execute(Command *command)
+void CommandsManager::Execute(Command *command, DAVA::Scene* forScene)
 {
+	UndoQueue* queue = GetQueueForScene(forScene);
+	DVASSERT(queue);
+
     command->Execute();
-    
+
+	if (command->State() == Command::STATE_VALID)
+	{
+		EmitCommandExecutedSignal(command, forScene);
+	}
+
     switch (command->Type()) 
     {
         case Command::COMMAND_WITHOUT_UNDO_EFFECT:
@@ -106,16 +97,16 @@ void CommandsManager::Execute(Command *command)
             if(Command::STATE_VALID == command->State())
             {
                 //TODO: VK: if need only UNDO_QUEUE_SIZE commands at queue you may add code here
-				ClearQueueTail();
-				activeQueue->commands.push_back(SafeRetain(command));
-				++activeQueue->commandIndex;
+				ClearQueueTail(queue);
+				queue->commands.push_back(SafeRetain(command));
+				++queue->commandIndex;
             }
             break;
 
         case Command::COMMAND_CLEAR_UNDO_QUEUE:
             if(Command::STATE_VALID == command->State())
             {
-                ClearQueue();
+                ClearQueue(queue);
             }
             break;
 
@@ -127,64 +118,127 @@ void CommandsManager::Execute(Command *command)
 	QtMainWindowHandler::Instance()->UpdateUndoActionsState();
 }
 
-void CommandsManager::ExecuteAndRelease(Command* command)
+void CommandsManager::ExecuteAndRelease(Command* command, DAVA::Scene* forScene)
 {
-	Execute(command);
+	Execute(command, forScene);
 	SafeRelease(command);
 }
 
-void CommandsManager::Undo()
+void CommandsManager::Undo(DAVA::Scene* forScene)
 {
-	if ((activeQueue->commandIndex >= 0) &&
-		(activeQueue->commandIndex < (int32)activeQueue->commands.size()))
+	UndoQueue* queue = GetQueueForScene(forScene);
+	DVASSERT(queue);
+
+	if ((queue->commandIndex >= 0) &&
+		(queue->commandIndex < (int32)queue->commands.size()))
 	{
 		//TODO: need check state?
-		activeQueue->commands[activeQueue->commandIndex]->Cancel();
-		--activeQueue->commandIndex;
+		Command* command = queue->commands[queue->commandIndex];
+		command->Cancel();
+		EmitCommandExecutedSignal(command, forScene);
+
+		--queue->commandIndex;
 
 		QtMainWindowHandler::Instance()->UpdateUndoActionsState();
 	}
 }
 
-void CommandsManager::Redo()
+void CommandsManager::Redo(DAVA::Scene* forScene)
 {
-	if ((activeQueue->commandIndex >= -1) &&
-		(activeQueue->commandIndex < (int32)activeQueue->commands.size() - 1))
+	UndoQueue* queue = GetQueueForScene(forScene);
+	DVASSERT(queue);
+
+	if ((queue->commandIndex >= -1) &&
+		(queue->commandIndex < (int32)queue->commands.size() - 1))
 	{
 		//TODO: need check state?
-		++activeQueue->commandIndex;
-		activeQueue->commands[activeQueue->commandIndex]->Execute();
+		++queue->commandIndex;
+
+		Command* command = queue->commands[queue->commandIndex];
+		command->Execute();
+		EmitCommandExecutedSignal(command, forScene);
 	}
 }
 
-int32 CommandsManager::GetUndoQueueLength()
+int32 CommandsManager::GetUndoQueueLength(DAVA::Scene* forScene)
 {
-	return activeQueue->commandIndex + 1;
+	UndoQueue* queue = GetQueueForScene(forScene);
+	DVASSERT(queue);
+
+	return queue->commandIndex + 1;
 }
 
-int32 CommandsManager::GetRedoQueueLength()
+int32 CommandsManager::GetRedoQueueLength(DAVA::Scene* forScene)
 {
-	return activeQueue->commands.size() - activeQueue->commandIndex - 1;
+	UndoQueue* queue = GetQueueForScene(forScene);
+	DVASSERT(queue);
+
+	return queue->commands.size() - queue->commandIndex - 1;
 }
 
-String CommandsManager::GetUndoCommandName()
+String CommandsManager::GetUndoCommandName(DAVA::Scene* forScene)
 {
-	if ((activeQueue->commandIndex >= 0) &&
-		(activeQueue->commandIndex < (int32)activeQueue->commands.size()))
+	UndoQueue* queue = GetQueueForScene(forScene);
+	DVASSERT(queue);
+
+	if ((queue->commandIndex >= 0) &&
+		(queue->commandIndex < (int32)queue->commands.size()))
 	{
-		return activeQueue->commands[activeQueue->commandIndex]->commandName;
+		return queue->commands[queue->commandIndex]->commandName;
 	}
 
 	return "";
 }
 
-String CommandsManager::GetRedoCommandName()
+String CommandsManager::GetRedoCommandName(DAVA::Scene* forScene)
 {
-	if ((activeQueue->commandIndex >= -1) &&
-		(activeQueue->commandIndex < (int32)activeQueue->commands.size() - 1))
+	UndoQueue* queue = GetQueueForScene(forScene);
+	DVASSERT(queue);
+
+	if ((queue->commandIndex >= -1) &&
+		(queue->commandIndex < (int32)queue->commands.size() - 1))
 	{
-		return activeQueue->commands[activeQueue->commandIndex + 1]->commandName;
+		return queue->commands[queue->commandIndex + 1]->commandName;
 	}
 
 	return "";
+}
+
+CommandsManager::UndoQueue* CommandsManager::GetQueueForScene(DAVA::Scene *scene)
+{
+	if (!scene)
+	{
+		scene = SceneDataManager::Instance()->SceneGetActive()->GetScene();
+	}
+	DVASSERT(scene);
+
+	UndoQueue* res;
+
+	QUEUE_MAP::iterator it = queueMap.find(scene);
+	if (it != queueMap.end())
+	{
+		res = it->second;
+	}
+	else
+	{
+		res = new UndoQueue(scene);
+		queueMap[scene] = res;
+	}
+
+	return res;
+}
+
+void CommandsManager::EmitCommandExecutedSignal(Command* command, Scene* scene)
+{
+	if (!scene)
+	{
+		scene = SceneDataManager::Instance()->SceneGetActive()->GetScene();
+	}
+	DVASSERT(scene);
+
+	Set<Entity*> entities = command->GetAffectedEntities();
+	if (!entities.empty())
+	{
+		CommandSignals::Instance()->EmitCommandAffectsEntities(scene, command->Id(), entities);
+	}
 }

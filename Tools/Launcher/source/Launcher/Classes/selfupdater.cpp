@@ -49,6 +49,8 @@ void SelfUpdater::DownloadFinished()
     if(!m_pReply)
         return;
 
+    QString runPath = qApp->applicationFilePath();
+
     QByteArray data = m_pReply->readAll();
     if (!data.size()) {
         Logger::GetInstance()->AddLog(tr("Error download new launcer version"));
@@ -111,8 +113,8 @@ void SelfUpdater::DownloadFinished()
     QFile().rename(appDir + "/quazip1.dll", oldDir + "/quazip1.dll");
 #endif
 
-    QString baseDir = DirectoryManager::GetInstance()->GetBaseDirectory() + "/../";
-    DirectoryManager::CopyAllFromDir(strTempDir, baseDir);
+    QString baseDir = DirectoryManager::GetInstance()->GetBaseDirectory() + "/";
+    DirectoryManager::CopyAllFromDir(strTempDir + "/DAVA Tools/", baseDir);
     DirectoryManager::DeleteDir(strTempDir);
     QFile().remove(strFilePath);
 
@@ -120,5 +122,5 @@ void SelfUpdater::DownloadFinished()
     qApp->quit();
     QProcess process;
     //process.startDetached(DirectoryManager::GetInstance()->GetRunPath());
-    process.startDetached(qApp->applicationFilePath());
+    process.startDetached(runPath);
 }

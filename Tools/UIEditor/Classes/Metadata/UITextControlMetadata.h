@@ -23,6 +23,7 @@ class UITextControlMetadata : public UIControlMetadata
 	Q_PROPERTY(float ShadowOffsetX READ GetShadowOffsetX WRITE SetShadowOffsetX);
 	Q_PROPERTY(float ShadowOffsetY READ GetShadowOffsetY WRITE SetShadowOffsetY);
 	Q_PROPERTY(QColor ShadowColor READ GetShadowColor WRITE SetShadowColor);
+	Q_PROPERTY(int TextAlign READ GetTextAlign WRITE SetTextAlign);
 
 public:
     UITextControlMetadata(QObject* parent = 0);
@@ -35,6 +36,9 @@ protected:
     // Getters/setters.
     virtual Font * GetFont() = 0;
     virtual void SetFont(Font * font) = 0;
+
+	virtual int GetTextAlign() = 0;
+    virtual void SetTextAlign(int align) = 0;
     
     virtual float GetFontSize() const = 0;
     virtual void SetFontSize(float fontSize) = 0;

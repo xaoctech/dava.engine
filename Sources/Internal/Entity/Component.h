@@ -60,6 +60,7 @@ public:
         ACTION_COMPONENT,       // actions, something simplier than scripts that can influence logic, can be multiple
         SCRIPT_COMPONENT,       // multiple instances, not now, it will happen much later.
 		USER_COMPONENT,
+		SOUND_COMPONENT,
 
         COMPONENT_COUNT
     };

@@ -42,17 +42,17 @@
 // Resource folder header
 static const QString RES_HEADER = "~res:";
 // True type fonts resource folder path
-static const String FONTS_RES_PATH = "~res:/Fonts/";
+static const String FONTS_RES_PATH("~res:/Fonts/");
 // Graphics fonts definition resource folder path
-static const String GRAPHICS_FONTS_RES_PATH = "~res:/Fontdef/";
+static const String GRAPHICS_FONTS_RES_PATH("~res:/Fontdef/");
 // Button background image path
-static const String BACKGROUND_IMAGE_PATH = "~res:/Images/buttonBg.png";
+static const String BACKGROUND_IMAGE_PATH("~res:/Images/buttonBg.png");
 // Help contents path
 // Help contents path
 #if defined(__DAVAENGINE_WIN32__)
-static const String HELP_CONTENTS_PATH = "/Data/Help/UIEditor.html";
+static const String HELP_CONTENTS_PATH("/Data/Help/UIEditor.html");
 #else
-static const String HELP_CONTENTS_PATH = "~res:/Help/UIEditor.html";
+static const String HELP_CONTENTS_PATH("~res:/Help/UIEditor.html");
 #endif
 // Additional text constants
 static const QString GFX = "/Gfx/";
@@ -86,8 +86,8 @@ QString ResourcesManageHelper::projectTitle;
 
 QString ResourcesManageHelper::GetFontAbsolutePath(const QString& resourceFileName, bool graphicsFont)
 {	
-    QString fontPath = graphicsFont ? QString::fromStdString(FileSystem::Instance()->SystemPathForFrameworkPath(GRAPHICS_FONTS_RES_PATH))
-									: QString::fromStdString(FileSystem::Instance()->SystemPathForFrameworkPath(FONTS_RES_PATH));
+    QString fontPath = graphicsFont ? QString::fromStdString(FilePath(GRAPHICS_FONTS_RES_PATH).GetAbsolutePathname())
+									: QString::fromStdString(FilePath(FONTS_RES_PATH).GetAbsolutePathname());
     fontPath += resourceFileName;
 	
     return fontPath;    
@@ -95,8 +95,8 @@ QString ResourcesManageHelper::GetFontAbsolutePath(const QString& resourceFileNa
 
 QString ResourcesManageHelper::GetFontRelativePath(const QString& resourceFileName, bool graphicsFont)
 {
-    QString fontPath = graphicsFont ? QString::fromStdString(GRAPHICS_FONTS_RES_PATH)
-									: QString::fromStdString(FONTS_RES_PATH);
+    QString fontPath = graphicsFont ? QString::fromStdString(FilePath(GRAPHICS_FONTS_RES_PATH).GetAbsolutePathname())
+									: QString::fromStdString(FilePath(FONTS_RES_PATH).GetAbsolutePathname());
     fontPath += resourceFileName;
 	
     return fontPath;
@@ -119,7 +119,7 @@ QString ResourcesManageHelper::GetGraphicsFontPath(Font* font)
         if (fontSprite)
         {
 			// Save graphics font sprite path
-        	return QString::fromStdString(fontSprite->GetName());
+        	return QString::fromStdString(fontSprite->GetRelativePathname().GetAbsolutePathname());
     	}
 	}
 
@@ -131,8 +131,8 @@ QString ResourcesManageHelper::GetDefaultSpritesPath(const QString& currentSprit
 	// If sprite is already set - we should use its directory as default for file dialog
 	if (!currentSpritePath.isEmpty() && currentSpritePath.compare(StringConstants::NO_SPRITE_IS_SET) != 0)
 	{
-		String spriteAbsolutePath = FileSystem::Instance()->SystemPathForFrameworkPath(currentSpritePath.toStdString());
-		QFileInfo fileInfo(QString::fromStdString(spriteAbsolutePath));
+		FilePath spriteAbsolutePath(currentSpritePath.toStdString());
+		QFileInfo fileInfo(QString::fromStdString(spriteAbsolutePath.GetAbsolutePathname()));
 		return fileInfo.absoluteDir().absolutePath();
 	}
 
@@ -144,8 +144,8 @@ QString ResourcesManageHelper::GetDefaultFontSpritesPath(const QString& currentS
 	// If sprite is already set - we should use its directory as default for file dialog
 	if (!currentSpritePath.isEmpty() && currentSpritePath.compare(StringConstants::NO_SPRITE_IS_SET) != 0)
 	{
-		String spriteAbsolutePath = FileSystem::Instance()->SystemPathForFrameworkPath(currentSpritePath.toStdString());
-		QFileInfo fileInfo(QString::fromStdString(spriteAbsolutePath));
+		FilePath spriteAbsolutePath(currentSpritePath.toStdString());
+		QFileInfo fileInfo(QString::fromStdString(spriteAbsolutePath.GetAbsolutePathname()));
 		return fileInfo.absoluteDir().absolutePath();
 	}
 	
@@ -184,14 +184,14 @@ QStringList ResourcesManageHelper::GetFontsList()
     QStringList filesNamesList;
 	// Get true type fonts
     // Get absoulute path
-    QString fontsPath = QString::fromStdString(FileSystem::Instance()->SystemPathForFrameworkPath(FONTS_RES_PATH));
+    QString fontsPath = QString::fromStdString(FilePath(FONTS_RES_PATH).GetAbsolutePathname());
     QDir dir(fontsPath);
     // Get the list of files in fonts directory
     filesNamesList = dir.entryList(FONTS_EXTENSIONS_FILTER, QDir::Files);	
 	fontsPath.clear();
 	
 	// Get graphics fonts
-	fontsPath = QString::fromStdString(FileSystem::Instance()->SystemPathForFrameworkPath(GRAPHICS_FONTS_RES_PATH));
+	fontsPath = QString::fromStdString(FilePath(GRAPHICS_FONTS_RES_PATH).GetAbsolutePathname());
 	// If we can't open graphics font directory - do nothing
 	if (dir.cd(fontsPath))
 	{
@@ -202,13 +202,13 @@ QStringList ResourcesManageHelper::GetFontsList()
 
 void ResourcesManageHelper::InitInternalResources()
 {
-	buttonBackgroundImagePath = QString::fromStdString(FileSystem::Instance()->SystemPathForFrameworkPath(BACKGROUND_IMAGE_PATH));
+	buttonBackgroundImagePath = QString::fromStdString(FilePath(BACKGROUND_IMAGE_PATH).GetAbsolutePathname());
 
 #if defined(__DAVAENGINE_WIN32__)
-	String currentFolder = FileSystem::Instance()->GetCurrentWorkingDirectory();
-	helpContentsPath = ConvertPathToUnixStyle(QString::fromStdString(currentFolder + HELP_CONTENTS_PATH));
+	FilePath currentFolder = FileSystem::Instance()->GetCurrentWorkingDirectory();
+	helpContentsPath = ConvertPathToUnixStyle(QString::fromStdString((currentFolder + HELP_CONTENTS_PATH).GetAbsolutePathname()));
 #else
-    helpContentsPath = QString::fromStdString(FileSystem::Instance()->SystemPathForFrameworkPath(HELP_CONTENTS_PATH));
+    helpContentsPath = QString::fromStdString(FilePath(HELP_CONTENTS_PATH).GetAbsolutePathname());
 #endif
 	// Save project default title
     if(DAVA::Core::Instance())

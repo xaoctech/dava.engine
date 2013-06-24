@@ -43,7 +43,7 @@
 namespace DAVA
 {
 
-void MD5::ForFile(const String & pathName, unsigned char * digest)
+void MD5::ForFile(const FilePath & pathName, unsigned char * digest)
 {
 	MD5 md5;
 	md5.Init();
@@ -63,7 +63,7 @@ void MD5::ForFile(const String & pathName, unsigned char * digest)
 	memcpy(digest, md5.GetDigest(), DIGEST_SIZE);
 }
 
-void MD5::ForDirectory(const String & pathName, uint8 * digest, bool isRecursive)
+void MD5::ForDirectory(const FilePath & pathName, uint8 * digest, bool isRecursive)
 {
 	MD5 md5;
 	md5.Init();
@@ -73,9 +73,10 @@ void MD5::ForDirectory(const String & pathName, uint8 * digest, bool isRecursive
 	memcpy(digest, md5.GetDigest(), DIGEST_SIZE);
 }
 
-void MD5::RecursiveDirectoryMD5(const String & pathName, MD5 & md5, bool isRecursive)
+void MD5::RecursiveDirectoryMD5(const FilePath & pathName, MD5 & md5, bool isRecursive)
 {
-	md5.Update((uint8*)pathName.c_str(), (uint32)pathName.size());
+    String path = pathName.GetAbsolutePathname();
+	md5.Update((uint8*)path.c_str(), (uint32)path.size());
 
 	FileList * fileList = new FileList(pathName);
 	for(int i = 0; i < fileList->GetCount(); ++i)
@@ -94,7 +95,8 @@ void MD5::RecursiveDirectoryMD5(const String & pathName, MD5 & md5, bool isRecur
 		else 
 		{
 			// update MD5 according to the file
-			md5.Update((uint8*)fileList->GetPathname(i).c_str(), (uint32)fileList->GetPathname(i).size());
+            path = fileList->GetPathname(i).GetAbsolutePathname();
+			md5.Update((uint8*)path.c_str(), (uint32)path.size());
 			
 			uint8 fileDigest[DIGEST_SIZE];
 			MD5::ForFile(fileList->GetPathname(i), fileDigest);

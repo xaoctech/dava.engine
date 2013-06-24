@@ -417,7 +417,7 @@ void ScrollControlAction::FindScrollPoints()
             for(List<UIControl*>::const_iterator it = cells.begin(); it != cells.end(); ++it)
             {
                 UIListCell* cell = dynamic_cast<UIListCell*>(*it);
-                if(cell && IsInside(parentList, cell))
+                if(cell && IsCenterInside(parentList, cell))
                 {
                     int32 cellIndex = cell->GetIndex();
                     if(cellIndex < minVisibleIndex)
