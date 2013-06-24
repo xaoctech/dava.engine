@@ -5,23 +5,10 @@
 #include "../Constants.h"
 #include "EditorScene.h"
 
-/*
-class CommandOpenProject: public Command
-{
-public:	
-	CommandOpenProject();
-
-protected:	
-    
-    virtual void Execute();
-};
-*/
-
-
 class CommandOpenScene: public Command
 {
 public:	
-	CommandOpenScene(const DAVA::String &scenePathname = DAVA::String(""));
+	DAVA_DEPRECATED(CommandOpenScene(const DAVA::FilePath &scenePathname = DAVA::FilePath())); // DEPRECATED: using QFileDialog
     
 protected:	
     
@@ -29,40 +16,28 @@ protected:
     
 protected:
     
-    DAVA::String selectedScenePathname;
+    DAVA::FilePath selectedScenePathname;
 };
 
-class CommandNewScene: public Command
+
+class CommandSaveSpecifiedScene: public Command
 {
 public:	
-	CommandNewScene();
+	DAVA_DEPRECATED(CommandSaveSpecifiedScene(Entity *activeScene, FilePath& filePath)); // DEPRECATED: using QFileDialog
     
 protected:	
     
     virtual void Execute();
-};
 
-class CommandSaveScene: public Command
-{
-public:	
-	CommandSaveScene(const DAVA::String &scenePathname = DAVA::String(""));
-    
-protected:	
-    
-    virtual void Execute();
-	void SaveParticleEmitterNodes(EditorScene* scene);
-	void SaveParticleEmitterNodeRecursive(Entity* parentNode);
-
-protected:
-	DAVA::String selectedScenePathname;
-
+	Entity*		activeScene;
+	FilePath	filePath;
 };
 
 class CommandExport: public Command
 {
     
 public:	
-	CommandExport(DAVA::ImageFileFormat fmt);
+	DAVA_DEPRECATED(CommandExport(DAVA::ImageFileFormat fmt)); // DEPRECATED: using of SceneEditorScreenMain, Cancel absent
     
 protected:	
     
@@ -76,7 +51,7 @@ protected:
 class CommandSaveToFolderWithChilds: public Command
 {
 public:
-	CommandSaveToFolderWithChilds();
+	DAVA_DEPRECATED(CommandSaveToFolderWithChilds()); // DEPRECATED: using QFileDialog
 protected:
         virtual void Execute();
 };

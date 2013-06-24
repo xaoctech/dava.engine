@@ -15,35 +15,40 @@ using namespace DAVA;
 #define REMOVE_ROOT_NODES_COMMON_PROPERTY "editor.referenceToOwner"
 
 CommandRemoveRootNodes::CommandRemoveRootNodes()
-    :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+    :   MultiCommand(Command::COMMAND_UNDO_REDO, CommandList::ID_COMMAND_REMOVE_ROOT_NODES)
+	,	removeCmd(0)
 {
-}
+	commandName = "Remove Root Nodes";
 
-
-void CommandRemoveRootNodes::Execute()
-{
 	SceneData* activeScene = SceneDataManager::Instance()->SceneGetActive();
 	Entity *node = activeScene->GetSelectedNode();
 
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandInternalRemoveSceneNode(node, true));
+	removeCmd = new CommandInternalRemoveSceneNode(node, true);
 }
 
-
-CommandRefreshSceneGraph::CommandRefreshSceneGraph()
-    :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+CommandRemoveRootNodes::~CommandRemoveRootNodes()
 {
+	SafeRelease(removeCmd);
 }
 
-
-void CommandRefreshSceneGraph::Execute()
+void CommandRemoveRootNodes::Execute()
 {
-    SceneData * activeScene = SceneDataManager::Instance()->SceneGetActive();
-    activeScene->RebuildSceneGraph();
+	ExecuteInternal(removeCmd);
+}
+
+void CommandRemoveRootNodes::Cancel()
+{
+	CancelInternal(removeCmd);
+}
+
+DAVA::Set<DAVA::Entity*> CommandRemoveRootNodes::GetAffectedEntities()
+{
+	return GetAffectedEntitiesInternal(removeCmd);
 }
 
 
 CommandLockAtObject::CommandLockAtObject()
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_LOOK_AT_OBJECT)
 {
 }
 
@@ -65,21 +70,39 @@ void CommandLockAtObject::Execute()
 
 
 CommandRemoveSceneNode::CommandRemoveSceneNode()
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+:   MultiCommand(Command::COMMAND_UNDO_REDO, CommandList::ID_COMMAND_REMOVE_SCENE_NODE)
 {
+	commandName = "Remove Object";
+
+	SceneData* activeScene = SceneDataManager::Instance()->SceneGetActive();
+	Entity *node = activeScene->GetSelectedNode();
+
+	removeCmd = new CommandInternalRemoveSceneNode(node, false);
+}
+
+CommandRemoveSceneNode::~CommandRemoveSceneNode()
+{
+	SafeRelease(removeCmd);
 }
 
 void CommandRemoveSceneNode::Execute()
 {
-	SceneData* activeScene = SceneDataManager::Instance()->SceneGetActive();
-	Entity *node = activeScene->GetSelectedNode();
+	ExecuteInternal(removeCmd);
+}
 
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandInternalRemoveSceneNode(node, false));
+void CommandRemoveSceneNode::Cancel()
+{
+	CancelInternal(removeCmd);
+}
+
+Set<Entity*> CommandRemoveSceneNode::GetAffectedEntities()
+{
+	return GetAffectedEntitiesInternal(removeCmd);
 }
 
 
 CommandInternalRemoveSceneNode::CommandInternalRemoveSceneNode(Entity* node, bool removeSimilar)
-:	Command(Command::COMMAND_UNDO_REDO)
+:	Command(Command::COMMAND_UNDO_REDO, CommandList::ID_COMMAND_INTERNAL_REMOVE_SCENE_NODE)
 {
 	commandName = "Remove Object";
 
@@ -159,6 +182,7 @@ void CommandInternalRemoveSceneNode::Execute()
 	for (uint32 i = 0; i < nodesForDeletion.size(); ++i)
 	{
 		nodesForDeletion[i].nodeParent->RemoveNode(nodesForDeletion[i].node);
+
 	}
 
 	SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
@@ -207,9 +231,20 @@ int32 CommandInternalRemoveSceneNode::GetNodeIndex(const RemoveNodeRec& nodeRec)
 	return -1;
 }
 
+DAVA::Set<DAVA::Entity*> CommandInternalRemoveSceneNode::GetAffectedEntities()
+{
+	Set<Entity*> entities;
+	for (Vector<RemoveNodeRec>::iterator it = nodesForDeletion.begin(); it != nodesForDeletion.end(); ++it)
+	{
+		entities.insert(it->node);
+	}
+
+	return entities;
+}
+
 
 CommandDebugFlags::CommandDebugFlags()
-    :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+    :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_DEBUG_FLAGS)
 {
 }
 
@@ -220,9 +255,13 @@ void CommandDebugFlags::Execute()
     Entity *node = activeScene->GetSelectedNode();
     if(node)
     {
-        if (node->GetDebugFlags() & DebugRenderComponent::DEBUG_DRAW_ALL)
+        if ((node->GetDebugFlags() & DebugRenderComponent::DEBUG_DRAW_ALL) == DebugRenderComponent::DEBUG_DRAW_ALL)
         {
             node->SetDebugFlags(0, true);
+            if(activeScene->GetSelectedNode() == node)
+            {
+                node->SetDebugFlags(DebugRenderComponent::DEBUG_DRAW_AABOX_CORNERS);
+            }
         }
         else
         {

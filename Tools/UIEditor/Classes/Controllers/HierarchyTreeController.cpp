@@ -67,6 +67,11 @@ bool HierarchyTreeController::SaveAll(const QString& projectPath)
 	return res;
 }
 
+bool HierarchyTreeController::HasUnsavedChanges() const
+{
+	return hierarchyTree.GetRootNode()->IsNeedSave();
+}
+
 List<HierarchyTreeScreenNode*> HierarchyTreeController::GetUnsavedScreens()
 {
 	return hierarchyTree.GetUnsavedScreens();
@@ -316,9 +321,9 @@ bool HierarchyTreeController::IsNodeActive(const HierarchyTreeControlNode* contr
 	return (activeControlNodes.find((HierarchyTreeControlNode* )control) != activeControlNodes.end());
 }
 
-void HierarchyTreeController::EmitHierarchyTreeUpdated()
+void HierarchyTreeController::EmitHierarchyTreeUpdated(bool needRestoreSelection)
 {
-    emit HierarchyTreeUpdated();
+    emit HierarchyTreeUpdated(needRestoreSelection);
 }
 
 bool HierarchyTreeController::NewProject(const QString& projectPath)
@@ -370,17 +375,18 @@ void HierarchyTreeController::CloseProject()
 	activeControlNodes.clear();
 	ResetSelectedControl();
 	UpdateSelection(NULL, NULL);
-	
-	hierarchyTree.CloseProject();
-	CleanupNodesDeletedFromScene();
+	// Need clean undo/redo stack before close project
 	CommandsController::Instance()->CleanupUndoRedoStack();
+	CleanupNodesDeletedFromScene();
+	hierarchyTree.CloseProject();
 
 	EmitHierarchyTreeUpdated();
 	emit ProjectClosed();
 }
 
 void HierarchyTreeController::DeleteNode(const HierarchyTreeNode::HIERARCHYTREENODEID nodeID,
-										 bool deleteNodeFromMemory, bool deleteNodeFromScene)
+										 bool deleteNodeFromMemory, bool deleteNodeFromScene,
+										 bool deleteNodeFromDisk)
 {
 	HierarchyTreeNode::HIERARCHYTREENODESLIST nodes;
 	
@@ -391,11 +397,12 @@ void HierarchyTreeController::DeleteNode(const HierarchyTreeNode::HIERARCHYTREEN
 	}
 
 	nodes.push_back(nodeToDelete);
-	DeleteNodes(nodes, deleteNodeFromMemory, deleteNodeFromScene);
+	DeleteNodes(nodes, deleteNodeFromMemory, deleteNodeFromScene, deleteNodeFromDisk);
 }
 
 void HierarchyTreeController::DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes,
-										  bool deleteNodeFromMemory, bool deleteNodeFromScene)
+										  bool deleteNodeFromMemory, bool deleteNodeFromScene,
+										  bool deleteNodeFromDisk)
 {
 	if (!nodes.size())
 		return;
@@ -413,9 +420,37 @@ void HierarchyTreeController::DeleteNodes(const HierarchyTreeNode::HIERARCHYTREE
 	{
 		RegisterNodesDeletedFromScene(nodes);
 	}
+	if (deleteNodeFromDisk)
+	{
+		DeleteNodesFiles(nodes);
+	}
 
 	hierarchyTree.DeleteNodes(nodes, deleteNodeFromMemory, deleteNodeFromScene);
 	EmitHierarchyTreeUpdated();
+}
+
+void HierarchyTreeController::DeleteNodesFiles(const HierarchyTreeNode::HIERARCHYTREENODESLIST &nodes)
+{
+	HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter;
+	for (iter = nodes.begin(); iter != nodes.end(); ++iter)
+	{
+		HierarchyTreeScreenNode* screenNode = dynamic_cast<HierarchyTreeScreenNode*>(*iter);
+		HierarchyTreePlatformNode* platformNode = dynamic_cast<HierarchyTreePlatformNode*>(*iter);
+
+		if (screenNode)
+		{
+			screenNode->SetMarked(true);
+			QString path = screenNode->GetPlatform()->GetScreenPath(screenNode->GetName());
+			FileSystem::Instance()->DeleteFile(path.toStdString());
+		}
+
+		if (platformNode)
+		{
+			platformNode->SetMarked(true);
+			platformNode->SetChildrenMarked(true);
+			FileSystem::Instance()->DeleteDirectory(platformNode->GetPlatformFolder(), true);
+		}
+	}
 }
 
 void HierarchyTreeController::DeleteNodesInternal(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes)
@@ -465,10 +500,10 @@ void HierarchyTreeController::UpdateLocalization(bool takePathFromLocalizationSy
     else
     {
         // FROM Active Platform TO Localization System.
-        const String& localizationPath = activePlatformNode->GetLocalizationPath();
+        const FilePath & localizationPath = activePlatformNode->GetLocalizationPath();
         const String& locale = activePlatformNode->GetLocale();
 
-        if (localizationPath.empty() || locale.empty())
+        if (localizationPath.IsEmpty() || locale.empty())
         {
             // No Localization Path is already set - cleanup the Localization System.
             LocalizationSystem::Instance()->Cleanup();
@@ -526,4 +561,28 @@ void HierarchyTreeController::CleanupNodesDeletedFromScene()
 void HierarchyTreeController::OnUnsavedChangesNumberChanged()
 {
 	emit HierarchyTreeUpdated();
+}
+
+HierarchyTreeScreenNode* HierarchyTreeController::GetScreenNodeForNode(HierarchyTreeNode* node)
+{
+	bool foundScreen = false;
+	HierarchyTreeNode* screen = node->GetParent();
+	do
+	{
+		if (dynamic_cast<HierarchyTreeScreenNode*>(screen))
+		{
+			foundScreen = true;
+		}
+		else
+		{
+			screen = screen->GetParent();
+		}
+	} while (!foundScreen && screen);
+
+	if (foundScreen)
+	{
+		return dynamic_cast<HierarchyTreeScreenNode*>(screen);
+	}
+
+	return NULL;
 }

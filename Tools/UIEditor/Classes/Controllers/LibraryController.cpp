@@ -163,7 +163,11 @@ void LibraryController::UpdateLibrary()
 		if (!node)
 			continue;
 		
-		bool visible = (node->GetPlatform() == activePlatform) && (node != activeScreen);
+		bool visible = node->GetPlatform() == activePlatform;
+		if (dynamic_cast<HierarchyTreeAggregatorNode*>(activeScreen))
+		{
+			visible = false;
+		}
 		widget->SetItemVisible(iter->second, visible);
 	}
 }

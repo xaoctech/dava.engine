@@ -1,6 +1,9 @@
 #ifndef __ANDROID_LAYER_H__
 #define __ANDROID_LAYER_H__
 
+#include "Base/BaseTypes.h"
+#if defined(__DAVAENGINE_ANDROID__)
+
 #include <jni.h>
 #include <android/log.h>
 #include <stdio.h>
@@ -15,5 +18,7 @@
 #define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, "davaFrameworkLog", __VA_ARGS__)
 
 bool CreateStringFromJni(JNIEnv* env, jstring jniString, char *generalString);
+
+#endif //#if defined(__DAVAENGINE_ANDROID__)
 
 #endif //__ANDROID_LAYER_H__
