@@ -247,7 +247,64 @@ RenderObject * ParticleEmitter3D::Clone(RenderObject *newObject)
 		newObject = new ParticleEmitter3D();
 	}
 
-	((ParticleEmitter3D*)newObject)->LoadFromYaml(configPath);
+	ParticleEmitter* clonedEmitter = static_cast<ParticleEmitter*>(newObject);
+	clonedEmitter->SetConfigPath(this->configPath);
+	clonedEmitter->SetPosition(this->position);
+	clonedEmitter->SetAngle(this->angle);
+	
+	clonedEmitter->SetLifeTime(this->lifeTime);
+	clonedEmitter->SetRepeatCount(this->repeatCount);
+	clonedEmitter->SetTime(this->time);
+	clonedEmitter->SetEmitPointsCount(this->emitPointsCount);
+	clonedEmitter->SetPaused(this->isPaused);
+	clonedEmitter->SetAutoRestart(this->isAutorestart);
+	clonedEmitter->SetParticlesFollow(this->particlesFollow);
+	clonedEmitter->Set3D(this->is3D);
+	clonedEmitter->SetPlaybackSpeed(this->playbackSpeed);
+
+	clonedEmitter->SetInitialTranslationVector(this->initialTranslationVector);
+
+	if (this->emissionVector)
+	{
+		clonedEmitter->emissionVector = this->emissionVector->Clone();
+	}
+	if (this->emissionAngle)
+	{
+		clonedEmitter->emissionAngle = this->emissionAngle->Clone();
+	}
+	if (this->emissionRange)
+	{
+		clonedEmitter->emissionRange = this->emissionRange->Clone();
+	}
+	if (this->radius)
+	{
+		clonedEmitter->radius = this->radius->Clone();
+	}
+	if (this->colorOverLife)
+	{
+		clonedEmitter->colorOverLife = this->colorOverLife->Clone();
+	}
+	if (this->size)
+	{
+		clonedEmitter->size = this->size->Clone();
+	}
+	
+	clonedEmitter->emitterType = this->emitterType;
+	clonedEmitter->currentColor = this->currentColor;
+	
+	// Now can add Layers. Need to update their parents.
+	for (Vector<ParticleLayer*>::iterator iter = this->layers.begin(); iter != this->layers.end();
+		 iter ++)
+	{
+		ParticleLayer* clonedLayer = (*iter)->Clone(NULL);
+		ParticleLayer3D* clonedLayer3D = dynamic_cast<ParticleLayer3D*>(clonedLayer);
+		if (clonedLayer3D)
+		{
+			clonedLayer3D->SetParent(clonedEmitter);
+		}
+
+		clonedEmitter->AddLayer(clonedLayer);
+	}
 
 	return newObject;
 }

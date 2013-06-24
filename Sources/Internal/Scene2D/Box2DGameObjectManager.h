@@ -50,10 +50,10 @@ namespace DAVA
 class Box2DTileContactListener
 {
 public:
-	virtual void BeginContact(b2Contact* contact, b2Body *ownerBody, b2Body *oppositeBody){};/// handle begin event 
-	virtual void EndContact(b2Contact* contact, b2Body *ownerBody, b2Body *oppositeBody){};/// handle end event 
-	virtual void PreSolve(b2Contact* contact, const b2Manifold* oldManifold, b2Body *ownerBody, b2Body *oppositeBody){};/// handle pre-solve event 
-	virtual void PostSolve(b2Contact* contact, const b2ContactImpulse* impulse, b2Body *ownerBody, b2Body *oppositeBody){};/// handle post-solve event 
+	virtual void BeginContact(b2Contact* contact, b2Body *ownerBody, b2Body *oppositeBody);/// handle begin event
+	virtual void EndContact(b2Contact* contact, b2Body *ownerBody, b2Body *oppositeBody);/// handle end event
+	virtual void PreSolve(b2Contact* contact, const b2Manifold* oldManifold, b2Body *ownerBody, b2Body *oppositeBody);/// handle pre-solve event
+	virtual void PostSolve(b2Contact* contact, const b2ContactImpulse* impulse, b2Body *ownerBody, b2Body *oppositeBody);/// handle post-solve event 
 };
 	
 class Box2DGameObjectManager : public GameObjectManager, public b2ContactListener

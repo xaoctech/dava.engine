@@ -88,9 +88,10 @@ protected:
     void CollectSceneTextures();
     void CollectParticlesData();
     void CollectLODData();
-    void CollectTexture(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, const DAVA::String &name, DAVA::Texture *tex);
+    void CollectTexture(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, const DAVA::FilePath &pathname, DAVA::Texture *tex);
     
     static DAVA::uint32 CalculateTextureSize(const DAVA::Map<DAVA::String, DAVA::Texture *> &textures);
+
     
 protected:
     

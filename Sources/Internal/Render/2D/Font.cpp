@@ -368,4 +368,14 @@ YamlNode * Font::SaveToYamlNode()
     return node;
 }
 
+Size2i Font::DrawString(float32 /*offsetX*/, float32 /*offsetY*/, const WideString & /*str*/, int32 /*justifyWidth*/)
+{
+	return Size2i(0, 0);
+}
+
+Size2i Font::DrawStringToBuffer(void * /*buffer*/, int32 /*bufWidth*/, int32 /*bufHeight*/, int32 /*offsetX*/, int32 /*offsetY*/, int32 /*justifyWidth*/, int32 /*spaceAddon*/, const WideString & /*str*/, bool /*contentScaleIncluded*/)
+{
+	return  Size2i(0, 0);
+}
+
 };

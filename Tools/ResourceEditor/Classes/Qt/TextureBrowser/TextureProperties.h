@@ -35,10 +35,10 @@ public:
 		TYPE_DXT
 	} PropertiesType;
 
-	void setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor *descriptor);
+	void setTextureDescriptor(/*DAVA::Texture *texture, */DAVA::TextureDescriptor *descriptor);
 	void setOriginalImageSize(const QSize &size);
 
-	const DAVA::Texture* getTexture();
+	//const DAVA::Texture* getTexture();
 	const DAVA::TextureDescriptor* getTextureDescriptor();
 
 public slots:
@@ -115,7 +115,6 @@ private:
 	enumPropertiesHelper<int> helperMinGLModesWithMipmap;
 	enumPropertiesHelper<QSize> helperMipMapSizes;
 
-	DAVA::Texture *curTexture;
 	DAVA::TextureDescriptor *curTextureDescriptor;
 	QSize origImageSize;
 

@@ -44,7 +44,7 @@
 namespace DAVA 
 {
 
-bool DownloadFileFromURLToDocuments(const String & url, const String & documentsPathname)
+bool DownloadFileFromURLToDocuments(const String & url, const FilePath & documentsPathname)
 {
 	NSString * localizedPath = [NSString stringWithUTF8String:url.c_str()];
 //	NSError *error = nil;
@@ -52,7 +52,7 @@ bool DownloadFileFromURLToDocuments(const String & url, const String & documents
     NSData * fileContents = [NSData dataWithContentsOfURL:[NSURL URLWithString:localizedPath]];
     if (fileContents) 
     {
-        [fileContents writeToFile:[NSString stringWithCString: FileSystem::Instance()->SystemPathForFrameworkPath(documentsPathname).c_str() encoding:NSUTF8StringEncoding] atomically:true];
+        [fileContents writeToFile:[NSString stringWithCString: documentsPathname.GetAbsolutePathname().c_str() encoding:NSUTF8StringEncoding] atomically:true];
         return true;
     }
     return false;

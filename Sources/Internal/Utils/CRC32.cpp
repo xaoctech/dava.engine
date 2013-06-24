@@ -9,8 +9,7 @@
 #include "CRC32.h"
 
 #include "FileSystem/File.h"
-#include "FileSystem/FileList.h"
-#include "FileSystem/FileSystem.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA
 {
@@ -85,7 +84,7 @@ const uint32 crc32_tab[256] =
 	0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d
 };
 
-uint32 CRC32::ForFile(const String & pathName)
+uint32 CRC32::ForFile(const FilePath & pathName)
 {
 	File * f = File::Create(pathName, File::OPEN | File::READ);
 

@@ -36,7 +36,11 @@ public:
 	// SceneGraphModel expanded state.
 	void* GetPersistentDataForModelIndex(const QModelIndex &modelIndex);
 
-   const DAVA::ParticlesEditorSceneModelHelper& GetParticlesEditorSceneModelHelper() const { return particlesEditorSceneModelHelper; };
+	// Add/remove the nodes to the tree.
+	void AddNodeToTree(GraphItem* parentItem, GraphItem* childItem);
+	void RemoveNodeFromTree(GraphItem* parentItem, GraphItem* childItem);
+
+	const DAVA::ParticlesEditorSceneModelHelper& GetParticlesEditorSceneModelHelper() const { return particlesEditorSceneModelHelper; };
 
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
 

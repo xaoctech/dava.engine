@@ -56,7 +56,7 @@ int32 EditorConfig::ParseType(const String &typeStr)
 	return PT_NONE;
 }
 
-void EditorConfig::ParseConfig(const String &filePath)
+void EditorConfig::ParseConfig(const FilePath &filePath)
 {
 	ClearConfig();
 
@@ -89,7 +89,7 @@ void EditorConfig::ParseConfig(const String &filePath)
 								if(propertyNames[n] == nameStr)
 								{
 									isOk = false;
-									Logger::Error("EditorConfig::ParseConfig %s ERROR property %d property %s already exists", filePath.c_str(), i, nameStr.c_str());
+									Logger::Error("EditorConfig::ParseConfig %s ERROR property %d property %s already exists", filePath.GetAbsolutePathname().c_str(), i, nameStr.c_str());
 									break;
 								}
 							}
@@ -198,17 +198,17 @@ void EditorConfig::ParseConfig(const String &filePath)
 						}
 						else
 						{
-							Logger::Error("EditorConfig::ParseConfig %s ERROR property %d unknown type %s", filePath.c_str(), i, typeStr.c_str());
+							Logger::Error("EditorConfig::ParseConfig %s ERROR property %d unknown type %s", filePath.GetAbsolutePathname().c_str(), i, typeStr.c_str());
 						}
 					}
 					else
 					{
-						Logger::Error("EditorConfig::ParseConfig %s ERROR property %d type or name is missing", filePath.c_str(), i);
+						Logger::Error("EditorConfig::ParseConfig %s ERROR property %d type or name is missing", filePath.GetAbsolutePathname().c_str(), i);
 					}
 				}
 				else
 				{
-					Logger::Error("EditorConfig::ParseConfig %s ERROR property %d is missing", filePath.c_str(), i);
+					Logger::Error("EditorConfig::ParseConfig %s ERROR property %d is missing", filePath.GetAbsolutePathname().c_str(), i);
 				}
 			}
 		} 

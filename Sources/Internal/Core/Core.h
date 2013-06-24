@@ -212,7 +212,7 @@ public:
 		Windows: First of all, you should create icon resource through Project->Add Resource->Icon.
 		param[in] iconId resource id for icon from resource.h file. For example, 101 for #define IDI_ICON1 101
 	 */
-	virtual void SetIcon(int32 iconId) {};
+	virtual void SetIcon(int32 iconId);
 	
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 	static bool IsAutodetectContentScaleFactor();
@@ -307,7 +307,7 @@ public:
 	void SetIsActive(bool isActive);
 	
 	virtual void GoBackground(bool isLock);
-	
+	virtual void GoForeground();
 	
 	/**
 		\brief Checks if framework needs to recalculate scale multipliers.

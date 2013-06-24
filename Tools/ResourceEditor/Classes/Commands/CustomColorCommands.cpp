@@ -4,25 +4,11 @@
 #include "../Qt/Main/QtUtils.h"
 #include <QFileDialog>
 #include "../SceneEditor/EditorBodyControl.h"
-
-CommandToggleCustomColors::CommandToggleCustomColors()
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
-{
-    
-}
-
-void CommandToggleCustomColors::Execute()
-{
-	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-        screen->CustomColorsTriggered();
-    }
-
-}
+#include "../Qt/Scene/SceneDataManager.h"
+#include "../Qt/Scene/SceneData.h"
 
 CommandSaveTextureCustomColors::CommandSaveTextureCustomColors()
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_SAVE_TEXTURE_CUSTOM_COLORS)
 {
     
 }
@@ -33,25 +19,23 @@ void CommandSaveTextureCustomColors::Execute()
 	if(!screen)
 		return;
 
-	String selectedPathname = screen->CustomColorsGetCurrentSaveFileName();
+	FilePath selectedPathname = screen->CustomColorsGetCurrentSaveFileName();
 
-	if(selectedPathname.empty())
+	if(selectedPathname.IsEmpty())
 	{
-		String sceneFilePath = screen->CurrentScenePathname();
-		String sceneFileName = "";
-		FileSystem::SplitPath(sceneFilePath, selectedPathname, sceneFileName);
+        selectedPathname = SceneDataManager::Instance()->SceneGetActive()->GetScenePathname().GetDirectory();
 	}
 
-	QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save texture"), QString(selectedPathname.c_str()), QString("PNG image (*.png)"));
+	QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save texture"), QString(selectedPathname.GetAbsolutePathname().c_str()), QString("PNG image (*.png)"));
 
 	selectedPathname = PathnameToDAVAStyle(filePath);
 
-	if(!selectedPathname.empty())
+	if(!selectedPathname.IsEmpty())
 		screen->CustomColorsSaveTexture(selectedPathname);
 }
 
 CommandLoadTextureCustomColors::CommandLoadTextureCustomColors()
-:	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+:	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_LOAD_TEXTURE_CUSTOM_COLORS)
 {
 }
 
@@ -61,55 +45,22 @@ void CommandLoadTextureCustomColors::Execute()
 	if(!screen)
 		return;
 
-	String currentPath = screen->CustomColorsGetCurrentSaveFileName();
-
-	if(currentPath.empty())
+	FilePath currentPath = screen->CustomColorsGetCurrentSaveFileName();
+	if(currentPath.IsEmpty())
 	{
-		String sceneFilePath = screen->CurrentScenePathname();
-		String sceneFileName = "";
-		FileSystem::SplitPath(sceneFilePath, currentPath, sceneFileName);
+        currentPath = SceneDataManager::Instance()->SceneGetActive()->GetScenePathname().GetDirectory();
 	}
 
-	String selectedPathname = GetOpenFileName(String("Load texture"), currentPath, String("PNG image (*.png)"));
-	if(!selectedPathname.empty())
+	FilePath selectedPathname = GetOpenFileName(String("Load texture"), currentPath, String("PNG image (*.png)"));
+	if(!selectedPathname.IsEmpty())
 	{
 		screen->CustomColorsLoadTexture(selectedPathname);
 	}
 }
 
-CommandChangeBrushSizeCustomColors::CommandChangeBrushSizeCustomColors(uint32 newSize)
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT),
-    size(newSize)
-{    
-}
-
-void CommandChangeBrushSizeCustomColors::Execute()
-{
-	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-        screen->CustomColorsSetRadius(size);
-    }
-}
-
-CommandChangeColorCustomColors::CommandChangeColorCustomColors(uint32 newColorIndex)
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT),
-    colorIndex(newColorIndex)
-{
-    
-}
-
-void CommandChangeColorCustomColors::Execute()
-{
-	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-		screen->CustomColorsSetColor(colorIndex);
-    }
-}
 
 CommandDrawCustomColors::CommandDrawCustomColors(Image* originalImage, Image* newImage)
-:	Command(COMMAND_UNDO_REDO)
+:	Command(COMMAND_UNDO_REDO, CommandList::ID_COMMAND_DRAW_CUSTOM_COLORS)
 {
 	commandName = "Custom Color Draw";
 

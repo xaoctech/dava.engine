@@ -66,7 +66,7 @@ namespace DAVA
 		// Возвращает данные члена интроспекции в виде коллекции
 		virtual const IntrospectionCollection* Collection() const;
 
-		const int Flags() const;
+		int Flags() const;
 
 	protected:
 		const char* name;
@@ -142,7 +142,7 @@ namespace DAVA
 
 		// Статическая функция для автоматического вывода типа Т по
 		// переданной ссылке. 
-		static const bool resultByObject(const T &t)
+		static bool resultByObject(const T &t)
 		{
 			return HasIntrospection<T>::result;
 		}

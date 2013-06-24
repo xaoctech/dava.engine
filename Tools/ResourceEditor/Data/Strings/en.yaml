@@ -267,6 +267,7 @@ settingsdialog.leftpanelwidth: "Left Panel Width:"
 settingsdialog.rightpanelwidth: "Right Panel Width:"
 settingsdialog.drawgrid: "Draw Scene Grid:"
 settingsdialog.imposters: "Enable Imposters:"
+settingsdialog.designername: "User Name:"
 
 #Color Picker
 colorpicker.r: "Red:"

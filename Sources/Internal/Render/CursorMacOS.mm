@@ -32,6 +32,11 @@
 #include "FileSystem/FileSystem.h"
 
 #if defined(__DAVAENGINE_MACOS__) 
+
+#if defined(__DAVAENGINE_NPAPI__)
+#include "NPAPIOpenGLLayerMacOS.h"
+#endif
+
 #if defined(Q_OS_MAC)
 #include "Platform/Qt/MacOS/CorePlatformMacOS.h"
 #else //#if defined(Q_OS_MAC)
@@ -41,9 +46,9 @@
 
 namespace DAVA
 {
-Cursor * Cursor::Create(const String & cursorPathname, const Vector2 & hotSpot)
+Cursor * Cursor::Create(const FilePath & cursorPathname, const Vector2 & hotSpot)
 {
-	const String & realPath = FileSystem::Instance()->SystemPathForFrameworkPath(cursorPathname);
+	const String realPath = cursorPathname.GetAbsolutePathname();
 	NSImage * image = [[NSImage alloc] initByReferencingFile:[NSString stringWithFormat:@"%s", realPath.c_str()]];
 	if (!image)
 	{
@@ -99,13 +104,45 @@ DAVA::Vector2 Cursor::GetPosition()
     return dynamic_cast<CoreMacOSPlatform *>(CoreMacOSPlatform::Instance())->GetMousePosition();
 }
     
-void Cursor::Show(bool _show)
+void Cursor::MoveToCenterOfWindow()
 {
-    show = _show;
+#ifdef __DAVAENGINE_NPAPI__
+	// Just position to the center of the main screen.
+    NSScreen *mainScreen = [NSScreen mainScreen];
+	NSRect wndRect = [mainScreen visibleFrame];
+#else
+    NSRect wndRect =[[[NSApplication sharedApplication] mainWindow] frame];
+#endif
+
+    CGPoint center = {wndRect.origin.x + wndRect.size.width / 2, wndRect.origin.y + wndRect.size.height / 2};
+    CGWarpMouseCursorPosition(center);
+}
+    
+void Cursor::ShowSystemCursor(bool show)
+{
+#ifdef __DAVAENGINE_NPAPI__
+	CGDirectDisplayID displayID = 0; //this parameter is ignored on MacOS.
+	if (show)
+	{
+		CGDisplayShowCursor(displayID);
+	}
+	else
+	{
+		CGDisplayHideCursor(displayID);
+	}
+#else
     if(show)
         [NSCursor unhide];
     else
         [NSCursor hide];
+#endif
+}
+    
+void Cursor::Show(bool _show)
+{
+    show = _show;
+    
+    ShowSystemCursor(show);
 }
     
 bool Cursor::IsShow()

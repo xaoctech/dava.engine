@@ -28,6 +28,7 @@ public:
 	static String GetLocale();
 	static String GetRegion();
 	static String GetTimeZone();
+    static String GetUDID();
 };
 
 };
