@@ -62,7 +62,7 @@ void AutotestingSystem::OnAppStarted()
     if(!isInit)
     {
         // get files list for ~res:/Autotesting/Tests
-        FileList fileList("~res:/Autotesting/Tests");
+        FileList fileList("~res:/Autotesting/Tests/");
         int32 fileListSize = fileList.GetCount();
         if(fileListSize == 0)
         {
@@ -163,14 +163,15 @@ void AutotestingSystem::OnAppStarted()
         {
             // found direct or cycled
             
-            testFilePath = fileList.GetPathname(indexInFileList);
+            testFilePath = fileList.GetPathname(indexInFileList).GetAbsolutePathname();
             testFileName = fileList.GetFilename(indexInFileList);
             testName = testFileName;
             
             // create folder for report
-            testReportsFolder = "~doc:/autotesting";
-            FileSystem::Instance()->CreateDirectory(FileSystem::Instance()->SystemPathForFrameworkPath(testReportsFolder), true);
-            reportFile = File::Create(Format("%s/autotesting.report", testReportsFolder.c_str()), File::CREATE | File::WRITE);
+            testReportsFolder = "~doc:/autotesting/";
+            FileSystem::Instance()->CreateDirectory(testReportsFolder, true);
+            
+            reportFile = File::Create(testReportsFolder + "autotesting.report", File::CREATE | File::WRITE);
             
             // Create document for test
             ClearTestInDB();
@@ -212,7 +213,7 @@ int32 AutotestingSystem::GetIndexInFileList(FileList &fileList, int32 index)
         }
         else
         {
-            String fileExtension = FileSystem::Instance()->GetExtension(fileList.GetFilename(i));
+            String fileExtension = fileList.GetPathname(i).GetExtension();
 #ifdef AUTOTESTING_LUA
             //skip all non-lua files
             if(fileExtension != ".lua")
@@ -1487,12 +1488,12 @@ void AutotestingSystem::OnScreenShot(Image *image)
 	Logger::Debug("AutotestingSystem::OnScreenShot %s", screenShotName.c_str());
 	
 	String filePath = "~doc:/screenshot.png";//Format("~doc:/%s.png", screenShotName.c_str());
-	String systemFilePath = FileSystem::Instance()->SystemPathForFrameworkPath(filePath);
+	FilePath systemFilePath = filePath;
 	ImageLoader::Save(image, systemFilePath);
 	
 	if(dbClient)
 	{
-		dbClient->SaveFileToGridFS(screenShotName, systemFilePath);
+		dbClient->SaveFileToGridFS(screenShotName, filePath);
 	}
 }
     

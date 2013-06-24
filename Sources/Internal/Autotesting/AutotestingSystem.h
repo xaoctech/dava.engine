@@ -220,7 +220,7 @@ protected:
     float32 waitTimeLeft;
     float32 waitCheckTimeLeft;
 
-    String testReportsFolder;
+    FilePath testReportsFolder;
     File* reportFile;
 
     Map<int32, UIEvent> touches;
