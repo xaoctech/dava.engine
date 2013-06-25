@@ -289,3 +289,14 @@ void EditorSettings::SetDesignerName(const String &userName)
 {
     settings->SetString("DesignerName", userName);
 }
+
+void EditorSettings::SetPreviewDialogEnabled(bool enabled)
+{
+    settings->SetBool("PreviewDialogEnabled", enabled);
+}
+
+bool EditorSettings::GetPreviewDialogEnabled()
+{
+    return settings->GetBool("PreviewDialogEnabled", false);
+}
+
