@@ -15,8 +15,8 @@
 =====================================================================================*/
 
 #include <QtGui>
-#include "SceneTreeDelegate.h"
-#include "SceneTreeItem.h"
+#include "DockSceneTree/SceneTreeDelegate.h"
+#include "DockSceneTree/SceneTreeItem.h"
 
 SceneTreeDelegate::SceneTreeDelegate(QWidget *parent /* = 0 */)
 	: QStyledItemDelegate(parent)
