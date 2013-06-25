@@ -19,8 +19,6 @@
 
 #include <QStyledItemDelegate>
 
-class QtPropertyData;
-
 class SceneTreeDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
@@ -37,4 +35,4 @@ protected:
 	void customDraw(QPainter *painter, QStyleOptionViewItem *option, const QModelIndex &index) const;
 };
 
-#endif // __QT_PROPERY_ITEM_DELEGATE_H__
+#endif // __QT_SCENE_TREE_DELEGATE_H__
