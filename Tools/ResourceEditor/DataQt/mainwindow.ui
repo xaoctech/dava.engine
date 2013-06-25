@@ -1074,6 +1074,9 @@
    <property name="text">
     <string>Texture Converter</string>
    </property>
+   <property name="shortcut">
+    <string>Alt+T</string>
+   </property>
   </action>
   <action name="actionIPhone">
    <property name="text">
