@@ -1649,23 +1649,24 @@ SWIG_Lua_dostring(lua_State *L, const char* str) {
 #define SWIGTYPE_p_DAVA__SingletonT_DAVA__AutotestingSystemLua_t swig_types[2]
 #define SWIGTYPE_p_DAVA__UIControl swig_types[3]
 #define SWIGTYPE_p_DAVA__Vector2 swig_types[4]
-#define SWIGTYPE_p_SelectT_sizeoffvoid_pF__4_DAVA__uint32_DAVA__uint64_t__Result swig_types[5]
-#define SWIGTYPE_p_char swig_types[6]
-#define SWIGTYPE_p_double swig_types[7]
-#define SWIGTYPE_p_float swig_types[8]
-#define SWIGTYPE_p_int swig_types[9]
-#define SWIGTYPE_p_long_long swig_types[10]
-#define SWIGTYPE_p_short swig_types[11]
-#define SWIGTYPE_p_signed_char swig_types[12]
-#define SWIGTYPE_p_std__string swig_types[13]
-#define SWIGTYPE_p_std__wstring swig_types[14]
-#define SWIGTYPE_p_unsigned_char swig_types[15]
-#define SWIGTYPE_p_unsigned_int swig_types[16]
-#define SWIGTYPE_p_unsigned_long_long swig_types[17]
-#define SWIGTYPE_p_unsigned_short swig_types[18]
-#define SWIGTYPE_p_wchar_t swig_types[19]
-static swig_type_info *swig_types[21];
-static swig_module_info swig_module = {swig_types, 20, 0, 0, 0, 0};
+#define SWIGTYPE_p_DAVA__Vector3 swig_types[5]
+#define SWIGTYPE_p_SelectT_sizeoffvoid_pF__4_DAVA__uint32_DAVA__uint64_t__Result swig_types[6]
+#define SWIGTYPE_p_char swig_types[7]
+#define SWIGTYPE_p_double swig_types[8]
+#define SWIGTYPE_p_float swig_types[9]
+#define SWIGTYPE_p_int swig_types[10]
+#define SWIGTYPE_p_long_long swig_types[11]
+#define SWIGTYPE_p_short swig_types[12]
+#define SWIGTYPE_p_signed_char swig_types[13]
+#define SWIGTYPE_p_std__string swig_types[14]
+#define SWIGTYPE_p_std__wstring swig_types[15]
+#define SWIGTYPE_p_unsigned_char swig_types[16]
+#define SWIGTYPE_p_unsigned_int swig_types[17]
+#define SWIGTYPE_p_unsigned_long_long swig_types[18]
+#define SWIGTYPE_p_unsigned_short swig_types[19]
+#define SWIGTYPE_p_wchar_t swig_types[20]
+static swig_type_info *swig_types[22];
+static swig_module_info swig_module = {swig_types, 21, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1685,6 +1686,7 @@ typedef struct{} LANGUAGE_OBJ;
 #include "AutotestingSystemLua.h"
 
 
+
 #include <string>
 
 
@@ -1694,6 +1696,10 @@ SWIGINTERN int SWIG_lua_isnilstring(lua_State *L, int idx) {
    ret = lua_isnil(L, idx);
   return ret;
 }
+
+
+#include "FileSystem/KeyedArchive.h"
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -2000,6 +2006,1840 @@ static swig_lua_attribute swig_std_string_attributes[] = {
 static swig_lua_class *swig_std_string_bases[] = {0};
 static const char *swig_std_string_base_names[] = {0};
 static swig_lua_class _wrap_class_std_string = { "string", &SWIGTYPE_p_std__string,_wrap_new_string, swig_delete_string, swig_std_string_methods, swig_std_string_attributes, swig_std_string_bases, swig_std_string_base_names };
+
+static int _wrap_new_KeyedArchive__SWIG_0(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *result = 0 ;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::KeyedArchive",0,0)
+  result = (DAVA::KeyedArchive *)new DAVA::KeyedArchive();
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_DAVA__KeyedArchive,1); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_new_KeyedArchive__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = 0 ;
+  DAVA::KeyedArchive *result = 0 ;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::KeyedArchive",1,1)
+  if(!lua_isuserdata(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::KeyedArchive",1,"DAVA::KeyedArchive const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("new_KeyedArchive",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  result = (DAVA::KeyedArchive *)new DAVA::KeyedArchive((DAVA::KeyedArchive const &)*arg1);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_DAVA__KeyedArchive,1); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_new_KeyedArchive(lua_State* L) {
+  int argc;
+  int argv[2]={
+    1,2
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 0) {
+    return _wrap_new_KeyedArchive__SWIG_0(L);
+  }
+  if (argc == 1) {
+    int _v;
+    {
+      void *ptr;
+      if (lua_isuserdata(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__KeyedArchive, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      return _wrap_new_KeyedArchive__SWIG_1(L);
+    }
+  }
+  
+  lua_pushstring(L,"Wrong arguments for overloaded function 'new_KeyedArchive'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    DAVA::KeyedArchive::KeyedArchive()\n"
+    "    DAVA::KeyedArchive::KeyedArchive(DAVA::KeyedArchive const &)\n");
+  lua_error(L);return 0;
+}
+
+
+static int _wrap_KeyedArchive_IsKeyExists(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::String temp2 ;
+  bool result;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::IsKeyExists",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::IsKeyExists",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::IsKeyExists",2,"DAVA::String const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_IsKeyExists",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  result = (bool)(arg1)->IsKeyExists((DAVA::String const &)*arg2);
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_GetBool__SWIG_0(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  bool arg3 ;
+  DAVA::String temp2 ;
+  bool result;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::GetBool",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::GetBool",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::GetBool",2,"DAVA::String const &");
+  if(!lua_isboolean(L,3)) SWIG_fail_arg("DAVA::KeyedArchive::GetBool",3,"bool");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_GetBool",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  arg3 = (lua_toboolean(L, 3)!=0);
+  result = (bool)(arg1)->GetBool((DAVA::String const &)*arg2,arg3);
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_GetBool__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::String temp2 ;
+  bool result;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::GetBool",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::GetBool",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::GetBool",2,"DAVA::String const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_GetBool",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  result = (bool)(arg1)->GetBool((DAVA::String const &)*arg2);
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_GetBool(lua_State* L) {
+  int argc;
+  int argv[4]={
+    1,2,3,4
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__KeyedArchive, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isstring(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap_KeyedArchive_GetBool__SWIG_1(L);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__KeyedArchive, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isstring(L,argv[1]);
+      }
+      if (_v) {
+        {
+          _v = lua_isboolean(L,argv[2]);
+        }
+        if (_v) {
+          return _wrap_KeyedArchive_GetBool__SWIG_0(L);
+        }
+      }
+    }
+  }
+  
+  lua_pushstring(L,"Wrong arguments for overloaded function 'KeyedArchive_GetBool'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    DAVA::KeyedArchive::GetBool(DAVA::String const &,bool)\n"
+    "    DAVA::KeyedArchive::GetBool(DAVA::String const &)\n");
+  lua_error(L);return 0;
+}
+
+
+static int _wrap_KeyedArchive_GetInt32__SWIG_0(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::int32 arg3 ;
+  DAVA::String temp2 ;
+  DAVA::int32 result;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::GetInt32",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::GetInt32",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::GetInt32",2,"DAVA::String const &");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("DAVA::KeyedArchive::GetInt32",3,"DAVA::int32");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_GetInt32",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  arg3 = (DAVA::int32)lua_tonumber(L, 3);
+  result = (DAVA::int32)(arg1)->GetInt32((DAVA::String const &)*arg2,arg3);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_GetInt32__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::String temp2 ;
+  DAVA::int32 result;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::GetInt32",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::GetInt32",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::GetInt32",2,"DAVA::String const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_GetInt32",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  result = (DAVA::int32)(arg1)->GetInt32((DAVA::String const &)*arg2);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_GetInt32(lua_State* L) {
+  int argc;
+  int argv[4]={
+    1,2,3,4
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__KeyedArchive, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isstring(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap_KeyedArchive_GetInt32__SWIG_1(L);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__KeyedArchive, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isstring(L,argv[1]);
+      }
+      if (_v) {
+        {
+          _v = lua_isnumber(L,argv[2]);
+        }
+        if (_v) {
+          return _wrap_KeyedArchive_GetInt32__SWIG_0(L);
+        }
+      }
+    }
+  }
+  
+  lua_pushstring(L,"Wrong arguments for overloaded function 'KeyedArchive_GetInt32'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    DAVA::KeyedArchive::GetInt32(DAVA::String const &,DAVA::int32)\n"
+    "    DAVA::KeyedArchive::GetInt32(DAVA::String const &)\n");
+  lua_error(L);return 0;
+}
+
+
+static int _wrap_KeyedArchive_GetUInt32__SWIG_0(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::uint32 arg3 ;
+  DAVA::String temp2 ;
+  DAVA::uint32 result;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::GetUInt32",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::GetUInt32",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::GetUInt32",2,"DAVA::String const &");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("DAVA::KeyedArchive::GetUInt32",3,"DAVA::uint32");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_GetUInt32",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  SWIG_contract_assert((lua_tonumber(L,3)>=0),"number must not be negative")
+  arg3 = (DAVA::uint32)lua_tonumber(L, 3);
+  result = (DAVA::uint32)(arg1)->GetUInt32((DAVA::String const &)*arg2,arg3);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_GetUInt32__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::String temp2 ;
+  DAVA::uint32 result;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::GetUInt32",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::GetUInt32",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::GetUInt32",2,"DAVA::String const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_GetUInt32",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  result = (DAVA::uint32)(arg1)->GetUInt32((DAVA::String const &)*arg2);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_GetUInt32(lua_State* L) {
+  int argc;
+  int argv[4]={
+    1,2,3,4
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__KeyedArchive, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isstring(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap_KeyedArchive_GetUInt32__SWIG_1(L);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__KeyedArchive, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isstring(L,argv[1]);
+      }
+      if (_v) {
+        {
+          _v = lua_isnumber(L,argv[2]);
+        }
+        if (_v) {
+          return _wrap_KeyedArchive_GetUInt32__SWIG_0(L);
+        }
+      }
+    }
+  }
+  
+  lua_pushstring(L,"Wrong arguments for overloaded function 'KeyedArchive_GetUInt32'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    DAVA::KeyedArchive::GetUInt32(DAVA::String const &,DAVA::uint32)\n"
+    "    DAVA::KeyedArchive::GetUInt32(DAVA::String const &)\n");
+  lua_error(L);return 0;
+}
+
+
+static int _wrap_KeyedArchive_GetFloat__SWIG_0(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::float32 arg3 ;
+  DAVA::String temp2 ;
+  DAVA::float32 result;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::GetFloat",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::GetFloat",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::GetFloat",2,"DAVA::String const &");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("DAVA::KeyedArchive::GetFloat",3,"DAVA::float32");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_GetFloat",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  arg3 = (DAVA::float32)lua_tonumber(L, 3);
+  result = (DAVA::float32)(arg1)->GetFloat((DAVA::String const &)*arg2,arg3);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_GetFloat__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::String temp2 ;
+  DAVA::float32 result;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::GetFloat",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::GetFloat",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::GetFloat",2,"DAVA::String const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_GetFloat",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  result = (DAVA::float32)(arg1)->GetFloat((DAVA::String const &)*arg2);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_GetFloat(lua_State* L) {
+  int argc;
+  int argv[4]={
+    1,2,3,4
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__KeyedArchive, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isstring(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap_KeyedArchive_GetFloat__SWIG_1(L);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__KeyedArchive, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isstring(L,argv[1]);
+      }
+      if (_v) {
+        {
+          _v = lua_isnumber(L,argv[2]);
+        }
+        if (_v) {
+          return _wrap_KeyedArchive_GetFloat__SWIG_0(L);
+        }
+      }
+    }
+  }
+  
+  lua_pushstring(L,"Wrong arguments for overloaded function 'KeyedArchive_GetFloat'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    DAVA::KeyedArchive::GetFloat(DAVA::String const &,DAVA::float32)\n"
+    "    DAVA::KeyedArchive::GetFloat(DAVA::String const &)\n");
+  lua_error(L);return 0;
+}
+
+
+static int _wrap_KeyedArchive_GetString__SWIG_0(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::String *arg3 = 0 ;
+  DAVA::String temp2 ;
+  DAVA::String temp3 ;
+  DAVA::String result;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::GetString",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::GetString",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::GetString",2,"DAVA::String const &");
+  if(!lua_isstring(L,3)) SWIG_fail_arg("DAVA::KeyedArchive::GetString",3,"DAVA::String const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_GetString",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  temp3.assign(lua_tostring(L,3),lua_rawlen(L,3)); arg3=&temp3;
+  result = (arg1)->GetString((DAVA::String const &)*arg2,(DAVA::String const &)*arg3);
+  lua_pushlstring(L,(&result)->data(),(&result)->size()); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_GetString__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::String temp2 ;
+  DAVA::String result;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::GetString",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::GetString",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::GetString",2,"DAVA::String const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_GetString",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  result = (arg1)->GetString((DAVA::String const &)*arg2);
+  lua_pushlstring(L,(&result)->data(),(&result)->size()); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_GetString(lua_State* L) {
+  int argc;
+  int argv[4]={
+    1,2,3,4
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__KeyedArchive, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isstring(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap_KeyedArchive_GetString__SWIG_1(L);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__KeyedArchive, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isstring(L,argv[1]);
+      }
+      if (_v) {
+        {
+          _v = lua_isstring(L,argv[2]);
+        }
+        if (_v) {
+          return _wrap_KeyedArchive_GetString__SWIG_0(L);
+        }
+      }
+    }
+  }
+  
+  lua_pushstring(L,"Wrong arguments for overloaded function 'KeyedArchive_GetString'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    DAVA::KeyedArchive::GetString(DAVA::String const &,DAVA::String const &)\n"
+    "    DAVA::KeyedArchive::GetString(DAVA::String const &)\n");
+  lua_error(L);return 0;
+}
+
+
+static int _wrap_KeyedArchive_GetArchive__SWIG_0(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::KeyedArchive *arg3 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String temp2 ;
+  DAVA::KeyedArchive *result = 0 ;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::GetArchive",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::GetArchive",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::GetArchive",2,"DAVA::String const &");
+  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("DAVA::KeyedArchive::GetArchive",3,"DAVA::KeyedArchive *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_GetArchive",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_GetArchive",3,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  result = (DAVA::KeyedArchive *)(arg1)->GetArchive((DAVA::String const &)*arg2,arg3);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_DAVA__KeyedArchive,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_GetArchive__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::String temp2 ;
+  DAVA::KeyedArchive *result = 0 ;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::GetArchive",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::GetArchive",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::GetArchive",2,"DAVA::String const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_GetArchive",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  result = (DAVA::KeyedArchive *)(arg1)->GetArchive((DAVA::String const &)*arg2);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_DAVA__KeyedArchive,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_GetArchive(lua_State* L) {
+  int argc;
+  int argv[4]={
+    1,2,3,4
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__KeyedArchive, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isstring(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap_KeyedArchive_GetArchive__SWIG_1(L);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__KeyedArchive, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isstring(L,argv[1]);
+      }
+      if (_v) {
+        {
+          void *ptr;
+          if (SWIG_isptrtype(L,argv[2])==0 || SWIG_ConvertPtr(L,argv[2], (void **) &ptr, SWIGTYPE_p_DAVA__KeyedArchive, 0)) {
+            _v = 0;
+          } else {
+            _v = 1;
+          }
+        }
+        if (_v) {
+          return _wrap_KeyedArchive_GetArchive__SWIG_0(L);
+        }
+      }
+    }
+  }
+  
+  lua_pushstring(L,"Wrong arguments for overloaded function 'KeyedArchive_GetArchive'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    DAVA::KeyedArchive::GetArchive(DAVA::String const &,DAVA::KeyedArchive *)\n"
+    "    DAVA::KeyedArchive::GetArchive(DAVA::String const &)\n");
+  lua_error(L);return 0;
+}
+
+
+static int _wrap_KeyedArchive_GetInt64__SWIG_0(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::int64 arg3 ;
+  DAVA::String temp2 ;
+  DAVA::int64 result;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::GetInt64",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::GetInt64",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::GetInt64",2,"DAVA::String const &");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("DAVA::KeyedArchive::GetInt64",3,"DAVA::int64");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_GetInt64",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  arg3 = (DAVA::int64)lua_tonumber(L, 3);
+  result = (DAVA::int64)(arg1)->GetInt64((DAVA::String const &)*arg2,arg3);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_GetInt64__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::String temp2 ;
+  DAVA::int64 result;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::GetInt64",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::GetInt64",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::GetInt64",2,"DAVA::String const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_GetInt64",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  result = (DAVA::int64)(arg1)->GetInt64((DAVA::String const &)*arg2);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_GetInt64(lua_State* L) {
+  int argc;
+  int argv[4]={
+    1,2,3,4
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__KeyedArchive, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isstring(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap_KeyedArchive_GetInt64__SWIG_1(L);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__KeyedArchive, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isstring(L,argv[1]);
+      }
+      if (_v) {
+        {
+          _v = lua_isnumber(L,argv[2]);
+        }
+        if (_v) {
+          return _wrap_KeyedArchive_GetInt64__SWIG_0(L);
+        }
+      }
+    }
+  }
+  
+  lua_pushstring(L,"Wrong arguments for overloaded function 'KeyedArchive_GetInt64'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    DAVA::KeyedArchive::GetInt64(DAVA::String const &,DAVA::int64)\n"
+    "    DAVA::KeyedArchive::GetInt64(DAVA::String const &)\n");
+  lua_error(L);return 0;
+}
+
+
+static int _wrap_KeyedArchive_GetUInt64__SWIG_0(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::uint64 arg3 ;
+  DAVA::String temp2 ;
+  DAVA::uint64 result;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::GetUInt64",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::GetUInt64",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::GetUInt64",2,"DAVA::String const &");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("DAVA::KeyedArchive::GetUInt64",3,"DAVA::uint64");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_GetUInt64",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  arg3 = (DAVA::uint64)lua_tonumber(L, 3);
+  result = (DAVA::uint64)(arg1)->GetUInt64((DAVA::String const &)*arg2,arg3);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_GetUInt64__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::String temp2 ;
+  DAVA::uint64 result;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::GetUInt64",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::GetUInt64",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::GetUInt64",2,"DAVA::String const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_GetUInt64",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  result = (DAVA::uint64)(arg1)->GetUInt64((DAVA::String const &)*arg2);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_GetUInt64(lua_State* L) {
+  int argc;
+  int argv[4]={
+    1,2,3,4
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__KeyedArchive, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isstring(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap_KeyedArchive_GetUInt64__SWIG_1(L);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__KeyedArchive, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isstring(L,argv[1]);
+      }
+      if (_v) {
+        {
+          _v = lua_isnumber(L,argv[2]);
+        }
+        if (_v) {
+          return _wrap_KeyedArchive_GetUInt64__SWIG_0(L);
+        }
+      }
+    }
+  }
+  
+  lua_pushstring(L,"Wrong arguments for overloaded function 'KeyedArchive_GetUInt64'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    DAVA::KeyedArchive::GetUInt64(DAVA::String const &,DAVA::uint64)\n"
+    "    DAVA::KeyedArchive::GetUInt64(DAVA::String const &)\n");
+  lua_error(L);return 0;
+}
+
+
+static int _wrap_KeyedArchive_GetVector2__SWIG_0(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::Vector2 *arg3 = 0 ;
+  DAVA::String temp2 ;
+  DAVA::Vector2 result;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::GetVector2",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::GetVector2",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::GetVector2",2,"DAVA::String const &");
+  if(!lua_isuserdata(L,3)) SWIG_fail_arg("DAVA::KeyedArchive::GetVector2",3,"DAVA::Vector2 const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_GetVector2",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("KeyedArchive_GetVector2",3,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  result = (arg1)->GetVector2((DAVA::String const &)*arg2,(DAVA::Vector2 const &)*arg3);
+  {
+    DAVA::Vector2 * resultptr = new DAVA::Vector2((const DAVA::Vector2 &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_DAVA__Vector2,1); SWIG_arg++;
+  }
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_GetVector2__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::String temp2 ;
+  DAVA::Vector2 result;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::GetVector2",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::GetVector2",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::GetVector2",2,"DAVA::String const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_GetVector2",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  result = (arg1)->GetVector2((DAVA::String const &)*arg2);
+  {
+    DAVA::Vector2 * resultptr = new DAVA::Vector2((const DAVA::Vector2 &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_DAVA__Vector2,1); SWIG_arg++;
+  }
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_GetVector2(lua_State* L) {
+  int argc;
+  int argv[4]={
+    1,2,3,4
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__KeyedArchive, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isstring(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap_KeyedArchive_GetVector2__SWIG_1(L);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__KeyedArchive, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isstring(L,argv[1]);
+      }
+      if (_v) {
+        {
+          void *ptr;
+          if (lua_isuserdata(L,argv[2])==0 || SWIG_ConvertPtr(L,argv[2], (void **) &ptr, SWIGTYPE_p_DAVA__Vector2, 0)) {
+            _v = 0;
+          } else {
+            _v = 1;
+          }
+        }
+        if (_v) {
+          return _wrap_KeyedArchive_GetVector2__SWIG_0(L);
+        }
+      }
+    }
+  }
+  
+  lua_pushstring(L,"Wrong arguments for overloaded function 'KeyedArchive_GetVector2'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    DAVA::KeyedArchive::GetVector2(DAVA::String const &,DAVA::Vector2 const &)\n"
+    "    DAVA::KeyedArchive::GetVector2(DAVA::String const &)\n");
+  lua_error(L);return 0;
+}
+
+
+static int _wrap_KeyedArchive_GetVector3__SWIG_0(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::Vector3 *arg3 = 0 ;
+  DAVA::String temp2 ;
+  DAVA::Vector3 result;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::GetVector3",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::GetVector3",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::GetVector3",2,"DAVA::String const &");
+  if(!lua_isuserdata(L,3)) SWIG_fail_arg("DAVA::KeyedArchive::GetVector3",3,"DAVA::Vector3 const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_GetVector3",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_DAVA__Vector3,0))){
+    SWIG_fail_ptr("KeyedArchive_GetVector3",3,SWIGTYPE_p_DAVA__Vector3);
+  }
+  
+  result = (arg1)->GetVector3((DAVA::String const &)*arg2,(DAVA::Vector3 const &)*arg3);
+  {
+    DAVA::Vector3 * resultptr = new DAVA::Vector3((const DAVA::Vector3 &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_DAVA__Vector3,1); SWIG_arg++;
+  }
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_GetVector3__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::String temp2 ;
+  DAVA::Vector3 result;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::GetVector3",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::GetVector3",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::GetVector3",2,"DAVA::String const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_GetVector3",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  result = (arg1)->GetVector3((DAVA::String const &)*arg2);
+  {
+    DAVA::Vector3 * resultptr = new DAVA::Vector3((const DAVA::Vector3 &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_DAVA__Vector3,1); SWIG_arg++;
+  }
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_GetVector3(lua_State* L) {
+  int argc;
+  int argv[4]={
+    1,2,3,4
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__KeyedArchive, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isstring(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap_KeyedArchive_GetVector3__SWIG_1(L);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__KeyedArchive, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isstring(L,argv[1]);
+      }
+      if (_v) {
+        {
+          void *ptr;
+          if (lua_isuserdata(L,argv[2])==0 || SWIG_ConvertPtr(L,argv[2], (void **) &ptr, SWIGTYPE_p_DAVA__Vector3, 0)) {
+            _v = 0;
+          } else {
+            _v = 1;
+          }
+        }
+        if (_v) {
+          return _wrap_KeyedArchive_GetVector3__SWIG_0(L);
+        }
+      }
+    }
+  }
+  
+  lua_pushstring(L,"Wrong arguments for overloaded function 'KeyedArchive_GetVector3'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    DAVA::KeyedArchive::GetVector3(DAVA::String const &,DAVA::Vector3 const &)\n"
+    "    DAVA::KeyedArchive::GetVector3(DAVA::String const &)\n");
+  lua_error(L);return 0;
+}
+
+
+static int _wrap_KeyedArchive_SetBool(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  bool arg3 ;
+  DAVA::String temp2 ;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::SetBool",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::SetBool",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::SetBool",2,"DAVA::String const &");
+  if(!lua_isboolean(L,3)) SWIG_fail_arg("DAVA::KeyedArchive::SetBool",3,"bool");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_SetBool",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  arg3 = (lua_toboolean(L, 3)!=0);
+  (arg1)->SetBool((DAVA::String const &)*arg2,arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_SetInt32(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::int32 arg3 ;
+  DAVA::String temp2 ;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::SetInt32",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::SetInt32",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::SetInt32",2,"DAVA::String const &");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("DAVA::KeyedArchive::SetInt32",3,"DAVA::int32");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_SetInt32",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  arg3 = (DAVA::int32)lua_tonumber(L, 3);
+  (arg1)->SetInt32((DAVA::String const &)*arg2,arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_SetUInt32(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::uint32 arg3 ;
+  DAVA::String temp2 ;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::SetUInt32",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::SetUInt32",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::SetUInt32",2,"DAVA::String const &");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("DAVA::KeyedArchive::SetUInt32",3,"DAVA::uint32");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_SetUInt32",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  SWIG_contract_assert((lua_tonumber(L,3)>=0),"number must not be negative")
+  arg3 = (DAVA::uint32)lua_tonumber(L, 3);
+  (arg1)->SetUInt32((DAVA::String const &)*arg2,arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_SetFloat(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::float32 arg3 ;
+  DAVA::String temp2 ;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::SetFloat",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::SetFloat",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::SetFloat",2,"DAVA::String const &");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("DAVA::KeyedArchive::SetFloat",3,"DAVA::float32");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_SetFloat",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  arg3 = (DAVA::float32)lua_tonumber(L, 3);
+  (arg1)->SetFloat((DAVA::String const &)*arg2,arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_SetString(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::String *arg3 = 0 ;
+  DAVA::String temp2 ;
+  DAVA::String temp3 ;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::SetString",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::SetString",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::SetString",2,"DAVA::String const &");
+  if(!lua_isstring(L,3)) SWIG_fail_arg("DAVA::KeyedArchive::SetString",3,"DAVA::String const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_SetString",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  temp3.assign(lua_tostring(L,3),lua_rawlen(L,3)); arg3=&temp3;
+  (arg1)->SetString((DAVA::String const &)*arg2,(DAVA::String const &)*arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_SetArchive(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::KeyedArchive *arg3 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String temp2 ;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::SetArchive",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::SetArchive",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::SetArchive",2,"DAVA::String const &");
+  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("DAVA::KeyedArchive::SetArchive",3,"DAVA::KeyedArchive *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_SetArchive",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_SetArchive",3,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  (arg1)->SetArchive((DAVA::String const &)*arg2,arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_SetInt64(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::int64 *arg3 = 0 ;
+  DAVA::String temp2 ;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::SetInt64",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::SetInt64",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::SetInt64",2,"DAVA::String const &");
+  if(!lua_isuserdata(L,3)) SWIG_fail_arg("DAVA::KeyedArchive::SetInt64",3,"DAVA::int64 &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_SetInt64",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_long_long,0))){
+    SWIG_fail_ptr("KeyedArchive_SetInt64",3,SWIGTYPE_p_long_long);
+  }
+  
+  (arg1)->SetInt64((DAVA::String const &)*arg2,*arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_SetUInt64(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::uint64 *arg3 = 0 ;
+  DAVA::String temp2 ;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::SetUInt64",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::SetUInt64",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::SetUInt64",2,"DAVA::String const &");
+  if(!lua_isuserdata(L,3)) SWIG_fail_arg("DAVA::KeyedArchive::SetUInt64",3,"DAVA::uint64 &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_SetUInt64",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_unsigned_long_long,0))){
+    SWIG_fail_ptr("KeyedArchive_SetUInt64",3,SWIGTYPE_p_unsigned_long_long);
+  }
+  
+  (arg1)->SetUInt64((DAVA::String const &)*arg2,*arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_SetVector2(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::Vector2 *arg3 = 0 ;
+  DAVA::String temp2 ;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::SetVector2",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::SetVector2",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::SetVector2",2,"DAVA::String const &");
+  if(!lua_isuserdata(L,3)) SWIG_fail_arg("DAVA::KeyedArchive::SetVector2",3,"DAVA::Vector2 &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_SetVector2",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("KeyedArchive_SetVector2",3,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  (arg1)->SetVector2((DAVA::String const &)*arg2,*arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_SetVector3(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::Vector3 *arg3 = 0 ;
+  DAVA::String temp2 ;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::SetVector3",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::SetVector3",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::SetVector3",2,"DAVA::String const &");
+  if(!lua_isuserdata(L,3)) SWIG_fail_arg("DAVA::KeyedArchive::SetVector3",3,"DAVA::Vector3 &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_SetVector3",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_DAVA__Vector3,0))){
+    SWIG_fail_ptr("KeyedArchive_SetVector3",3,SWIGTYPE_p_DAVA__Vector3);
+  }
+  
+  (arg1)->SetVector3((DAVA::String const &)*arg2,*arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_DeleteKey(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::String temp2 ;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::DeleteKey",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::DeleteKey",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::DeleteKey",2,"DAVA::String const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_DeleteKey",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  (arg1)->DeleteKey((DAVA::String const &)*arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_DeleteAllKeys(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::DeleteAllKeys",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::DeleteAllKeys",1,"DAVA::KeyedArchive *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_DeleteAllKeys",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  (arg1)->DeleteAllKeys();
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_Count__SWIG_0(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  DAVA::String temp2 ;
+  DAVA::uint32 result;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::Count",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::Count",1,"DAVA::KeyedArchive *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::KeyedArchive::Count",2,"DAVA::String const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_Count",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  result = (DAVA::uint32)(arg1)->Count((DAVA::String const &)*arg2);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_Count__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) 0 ;
+  DAVA::uint32 result;
+  
+  SWIG_check_num_args("DAVA::KeyedArchive::Count",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::KeyedArchive::Count",1,"DAVA::KeyedArchive *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__KeyedArchive,0))){
+    SWIG_fail_ptr("KeyedArchive_Count",1,SWIGTYPE_p_DAVA__KeyedArchive);
+  }
+  
+  result = (DAVA::uint32)(arg1)->Count();
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_KeyedArchive_Count(lua_State* L) {
+  int argc;
+  int argv[3]={
+    1,2,3
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 1) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__KeyedArchive, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      return _wrap_KeyedArchive_Count__SWIG_1(L);
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__KeyedArchive, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isstring(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap_KeyedArchive_Count__SWIG_0(L);
+      }
+    }
+  }
+  
+  lua_pushstring(L,"Wrong arguments for overloaded function 'KeyedArchive_Count'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    DAVA::KeyedArchive::Count(DAVA::String const &)\n"
+    "    DAVA::KeyedArchive::Count()\n");
+  lua_error(L);return 0;
+}
+
+
+static void swig_delete_KeyedArchive(void *obj) {
+DAVA::KeyedArchive *arg1 = (DAVA::KeyedArchive *) obj;
+delete arg1;
+}
+static swig_lua_method swig_DAVA_KeyedArchive_methods[] = {
+    {"IsKeyExists", _wrap_KeyedArchive_IsKeyExists}, 
+    {"GetBool", _wrap_KeyedArchive_GetBool}, 
+    {"GetInt32", _wrap_KeyedArchive_GetInt32}, 
+    {"GetUInt32", _wrap_KeyedArchive_GetUInt32}, 
+    {"GetFloat", _wrap_KeyedArchive_GetFloat}, 
+    {"GetString", _wrap_KeyedArchive_GetString}, 
+    {"GetArchive", _wrap_KeyedArchive_GetArchive}, 
+    {"GetInt64", _wrap_KeyedArchive_GetInt64}, 
+    {"GetUInt64", _wrap_KeyedArchive_GetUInt64}, 
+    {"GetVector2", _wrap_KeyedArchive_GetVector2}, 
+    {"GetVector3", _wrap_KeyedArchive_GetVector3}, 
+    {"SetBool", _wrap_KeyedArchive_SetBool}, 
+    {"SetInt32", _wrap_KeyedArchive_SetInt32}, 
+    {"SetUInt32", _wrap_KeyedArchive_SetUInt32}, 
+    {"SetFloat", _wrap_KeyedArchive_SetFloat}, 
+    {"SetString", _wrap_KeyedArchive_SetString}, 
+    {"SetArchive", _wrap_KeyedArchive_SetArchive}, 
+    {"SetInt64", _wrap_KeyedArchive_SetInt64}, 
+    {"SetUInt64", _wrap_KeyedArchive_SetUInt64}, 
+    {"SetVector2", _wrap_KeyedArchive_SetVector2}, 
+    {"SetVector3", _wrap_KeyedArchive_SetVector3}, 
+    {"DeleteKey", _wrap_KeyedArchive_DeleteKey}, 
+    {"DeleteAllKeys", _wrap_KeyedArchive_DeleteAllKeys}, 
+    {"Count", _wrap_KeyedArchive_Count}, 
+    {0,0}
+};
+static swig_lua_attribute swig_DAVA_KeyedArchive_attributes[] = {
+    {0,0,0}
+};
+static swig_lua_class *swig_DAVA_KeyedArchive_bases[] = {0};
+static const char *swig_DAVA_KeyedArchive_base_names[] = {0};
+static swig_lua_class _wrap_class_DAVA_KeyedArchive = { "KeyedArchive", &SWIGTYPE_p_DAVA__KeyedArchive,_wrap_new_KeyedArchive, swig_delete_KeyedArchive, swig_DAVA_KeyedArchive_methods, swig_DAVA_KeyedArchive_attributes, swig_DAVA_KeyedArchive_bases, swig_DAVA_KeyedArchive_base_names };
 
 static int _wrap_new_AutotestingSystemLua(lua_State* L) {
   int SWIG_arg = 0;
@@ -3049,10 +4889,11 @@ static void *_p_DAVA__AutotestingSystemLuaTo_p_DAVA__SingletonT_DAVA__Autotestin
     return (void *)((DAVA::Singleton< DAVA::AutotestingSystemLua > *)  ((DAVA::AutotestingSystemLua *) x));
 }
 static swig_type_info _swigt__p_DAVA__AutotestingSystemLua = {"_p_DAVA__AutotestingSystemLua", "DAVA::AutotestingSystemLua *", 0, 0, (void*)&_wrap_class_DAVA_AutotestingSystemLua, 0};
-static swig_type_info _swigt__p_DAVA__KeyedArchive = {"_p_DAVA__KeyedArchive", "DAVA::KeyedArchive *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_DAVA__KeyedArchive = {"_p_DAVA__KeyedArchive", "DAVA::KeyedArchive *", 0, 0, (void*)&_wrap_class_DAVA_KeyedArchive, 0};
 static swig_type_info _swigt__p_DAVA__SingletonT_DAVA__AutotestingSystemLua_t = {"_p_DAVA__SingletonT_DAVA__AutotestingSystemLua_t", "DAVA::Singleton< DAVA::AutotestingSystemLua > *", 0, 0, (void*)&_wrap_class_DAVA_Singleton_Sl_DAVA_AutotestingSystemLua_Sg_, 0};
 static swig_type_info _swigt__p_DAVA__UIControl = {"_p_DAVA__UIControl", "DAVA::UIControl *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_DAVA__Vector2 = {"_p_DAVA__Vector2", "DAVA::Vector2 *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_DAVA__Vector3 = {"_p_DAVA__Vector3", "DAVA::Vector3 *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_SelectT_sizeoffvoid_pF__4_DAVA__uint32_DAVA__uint64_t__Result = {"_p_SelectT_sizeoffvoid_pF__4_DAVA__uint32_DAVA__uint64_t__Result", "DAVA::pointer_size *|Select< sizeof(void *)==4,DAVA::uint32,DAVA::uint64 >::Result *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *|DAVA::char8 *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_double = {"_p_double", "DAVA::float64 *|double *", 0, 0, (void*)0, 0};
@@ -3075,6 +4916,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_DAVA__SingletonT_DAVA__AutotestingSystemLua_t,
   &_swigt__p_DAVA__UIControl,
   &_swigt__p_DAVA__Vector2,
+  &_swigt__p_DAVA__Vector3,
   &_swigt__p_SelectT_sizeoffvoid_pF__4_DAVA__uint32_DAVA__uint64_t__Result,
   &_swigt__p_char,
   &_swigt__p_double,
@@ -3097,6 +4939,7 @@ static swig_cast_info _swigc__p_DAVA__KeyedArchive[] = {  {&_swigt__p_DAVA__Keye
 static swig_cast_info _swigc__p_DAVA__SingletonT_DAVA__AutotestingSystemLua_t[] = {  {&_swigt__p_DAVA__SingletonT_DAVA__AutotestingSystemLua_t, 0, 0, 0},  {&_swigt__p_DAVA__AutotestingSystemLua, _p_DAVA__AutotestingSystemLuaTo_p_DAVA__SingletonT_DAVA__AutotestingSystemLua_t, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_DAVA__UIControl[] = {  {&_swigt__p_DAVA__UIControl, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_DAVA__Vector2[] = {  {&_swigt__p_DAVA__Vector2, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_DAVA__Vector3[] = {  {&_swigt__p_DAVA__Vector3, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_SelectT_sizeoffvoid_pF__4_DAVA__uint32_DAVA__uint64_t__Result[] = {  {&_swigt__p_SelectT_sizeoffvoid_pF__4_DAVA__uint32_DAVA__uint64_t__Result, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_double[] = {  {&_swigt__p_double, 0, 0, 0},{0, 0, 0, 0}};
@@ -3119,6 +4962,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_DAVA__SingletonT_DAVA__AutotestingSystemLua_t,
   _swigc__p_DAVA__UIControl,
   _swigc__p_DAVA__Vector2,
+  _swigc__p_DAVA__Vector3,
   _swigc__p_SelectT_sizeoffvoid_pF__4_DAVA__uint32_DAVA__uint64_t__Result,
   _swigc__p_char,
   _swigc__p_double,
