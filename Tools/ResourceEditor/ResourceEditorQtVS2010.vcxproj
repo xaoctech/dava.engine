@@ -343,6 +343,7 @@
     <ClCompile Include="Classes\CommandLine\SceneUtils\CleanFolderTool.cpp" />
     <ClCompile Include="Classes\CommandLine\SceneUtils\SceneUtils.cpp" />
     <ClCompile Include="Classes\Commands2\Command2.cpp" />
+    <ClCompile Include="Classes\Commands2\CommandAction.cpp" />
     <ClCompile Include="Classes\Commands2\CommandBatch.cpp" />
     <ClCompile Include="Classes\Commands2\CommandNotify.cpp" />
     <ClCompile Include="Classes\Commands2\CommandStack.cpp" />
@@ -898,6 +899,7 @@
     <ClInclude Include="Classes\CommandLine\SceneUtils\CleanFolderTool.h" />
     <ClInclude Include="Classes\CommandLine\SceneUtils\SceneUtils.h" />
     <ClInclude Include="Classes\Commands2\Command2.h" />
+    <ClInclude Include="Classes\Commands2\CommandAction.h" />
     <ClInclude Include="Classes\Commands2\CommandBatch.h" />
     <ClInclude Include="Classes\Commands2\CommandID.h" />
     <ClInclude Include="Classes\Commands2\CommandNotify.h" />
