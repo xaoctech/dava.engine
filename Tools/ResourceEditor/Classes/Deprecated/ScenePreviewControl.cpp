@@ -1,6 +1,6 @@
 #include "ScenePreviewControl.h"
-#include "ControlsFactory.h"
-#include "SceneValidator.h"
+#include "SceneEditor/ControlsFactory.h"
+#include "SceneEditor/SceneValidator.h"
 #include "Scene3D/Components/CameraComponent.h"
 
 // ***************** PreviewCameraController *************** //
