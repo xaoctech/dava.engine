@@ -101,6 +101,7 @@ Entity* SceneDataManager::AddScene(const FilePath &scenePathname)
 		sceneData->SetLandscapesControllerScene(scene);
 	}
 
+    SceneHidePreview();
 	UpdateParticleSprites();
 	emit SceneGraphNeedRebuild();
 
@@ -680,4 +681,30 @@ void SceneDataManager::ApplyDefaultFogSettings(Landscape* landscape, DAVA::Entit
 		material->SetFogColor(landscape->GetFogColor());
 		material->SetFogDensity(landscape->GetFogDensity());
 	}
+}
+
+void SceneDataManager::SceneShowPreview(const DAVA::FilePath &path)
+{
+    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+
+    if(screen)
+    {
+        if(path.IsEqualToExtension(".sc2") && FileSystem::Instance()->IsFile(path))
+        {
+            screen->ShowScenePreview(path);
+        }
+        else
+        {
+            SceneHidePreview();
+        }
+    }
+}
+
+void SceneDataManager::SceneHidePreview()
+{
+    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+    if(screen)
+    {
+        screen->HideScenePreview();
+    }
 }
