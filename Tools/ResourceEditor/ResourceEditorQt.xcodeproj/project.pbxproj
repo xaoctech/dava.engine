@@ -62,6 +62,7 @@
 		4FFE5C9E1770C08600728624 /* EntityRemoveCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FFE5C991770C08600728624 /* EntityRemoveCommand.cpp */; };
 		4FFE5CAB1779DA3E00728624 /* CollisionParticleEmitter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FFE5CA91779DA3E00728624 /* CollisionParticleEmitter.cpp */; };
 		4FFE5CB51779E38300728624 /* SceneTreeDelegate.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FFE5CA61779D98100728624 /* SceneTreeDelegate.cpp */; };
+		4FFE5CB71779E60600728624 /* SceneTreeDelegate_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FFE5CB61779E60600728624 /* SceneTreeDelegate_moc.cpp */; };
 		50474EDC16FD872600A17478 /* ExtraUserData.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50474ED816FD872600A17478 /* ExtraUserData.cpp */; };
 		50474EDD16FD872600A17478 /* PointerHolder.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50474EDA16FD872600A17478 /* PointerHolder.cpp */; };
 		5C048FD816037725008631C2 /* LandscapeRenderer.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C048FD716037725008631C2 /* LandscapeRenderer.cpp */; };
@@ -632,6 +633,7 @@
 		4FFE5CA71779D98100728624 /* SceneTreeDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneTreeDelegate.h; sourceTree = "<group>"; };
 		4FFE5CA91779DA3E00728624 /* CollisionParticleEmitter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CollisionParticleEmitter.cpp; sourceTree = "<group>"; };
 		4FFE5CAA1779DA3E00728624 /* CollisionParticleEmitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CollisionParticleEmitter.h; sourceTree = "<group>"; };
+		4FFE5CB61779E60600728624 /* SceneTreeDelegate_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneTreeDelegate_moc.cpp; sourceTree = "<group>"; };
 		50474ED816FD872600A17478 /* ExtraUserData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ExtraUserData.cpp; sourceTree = "<group>"; };
 		50474ED916FD872600A17478 /* ExtraUserData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExtraUserData.h; sourceTree = "<group>"; };
 		50474EDA16FD872600A17478 /* PointerHolder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PointerHolder.cpp; sourceTree = "<group>"; };
@@ -1551,6 +1553,7 @@
 		02F64048173A8F170053F038 /* DockSceneTree */ = {
 			isa = PBXGroup;
 			children = (
+				4FFE5CB61779E60600728624 /* SceneTreeDelegate_moc.cpp */,
 				02F64049173A8F170053F038 /* SceneTree_moc.cpp */,
 				02F6404A173A8F170053F038 /* SceneTreeItem_moc.cpp */,
 				02F6404B173A8F170053F038 /* SceneTreeModel_moc.cpp */,
@@ -3923,6 +3926,7 @@
 				49F26F1E1771D67D008012B5 /* CommandAction.cpp in Build Sources */,
 				4FFE5CAB1779DA3E00728624 /* CollisionParticleEmitter.cpp in Build Sources */,
 				4FFE5CB51779E38300728624 /* SceneTreeDelegate.cpp in Build Sources */,
+				4FFE5CB71779E60600728624 /* SceneTreeDelegate_moc.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
