@@ -54,7 +54,6 @@ void CommandConvertToShadow::Execute()
 {
 	if(affectedEntity)
 	{
-		RenderComponent * rc = static_cast<RenderComponent*>(affectedEntity->GetComponent(Component::RENDER_COMPONENT));
 		RenderObject * ro = GetRenerObject(affectedEntity);
 		if (NULL == ro)
 		{
