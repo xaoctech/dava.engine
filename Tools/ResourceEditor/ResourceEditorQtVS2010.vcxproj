@@ -346,8 +346,6 @@
     <ClCompile Include="Classes\Commands2\CommandBatch.cpp" />
     <ClCompile Include="Classes\Commands2\CommandNotify.cpp" />
     <ClCompile Include="Classes\Commands2\CommandStack.cpp" />
-    <ClCompile Include="Classes\Commands2\EntityAddCommand.cpp" />
-    <ClCompile Include="Classes\Commands2\EntityInsertCommand.cpp" />
     <ClCompile Include="Classes\Commands2\EntityMoveCommand.cpp" />
     <ClCompile Include="Classes\Commands2\EntityRemoveCommand.cpp" />
     <ClCompile Include="Classes\Commands2\TransformCommand.cpp" />
@@ -423,6 +421,7 @@
     <ClCompile Include="Classes\Qt\DockSceneGraph\SceneGraphModelStateHelper.cpp" />
     <ClCompile Include="Classes\Qt\DockSceneInfo\SceneInfo.cpp" />
     <ClCompile Include="Classes\Qt\DockSceneTree\SceneTree.cpp" />
+    <ClCompile Include="Classes\Qt\DockSceneTree\SceneTreeDelegate.cpp" />
     <ClCompile Include="Classes\Qt\DockSceneTree\SceneTreeItem.cpp" />
     <ClCompile Include="Classes\Qt\DockSceneTree\SceneTreeModel.cpp" />
     <ClCompile Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexHelper.cpp" />
@@ -463,6 +462,7 @@
     <ClCompile Include="Classes\Qt\Scene\System\CameraSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionLandscape.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionParticleEmitter.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionRenderObject.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\GridSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\HoodSystem.cpp" />
@@ -587,6 +587,7 @@
     <ClCompile Include="_GeneratedQt\DockSceneGraph\SceneGraphModelStateHelper_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockSceneGraph\SceneGraphModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockSceneInfo\SceneInfo_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockSceneTree\SceneTreeDelegate_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockSceneTree\SceneTreeItem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockSceneTree\SceneTreeModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockSceneTree\SceneTree_moc.cpp" />
@@ -901,8 +902,6 @@
     <ClInclude Include="Classes\Commands2\CommandID.h" />
     <ClInclude Include="Classes\Commands2\CommandNotify.h" />
     <ClInclude Include="Classes\Commands2\CommandStack.h" />
-    <ClInclude Include="Classes\Commands2\EntityAddCommand.h" />
-    <ClInclude Include="Classes\Commands2\EntityInsertCommand.h" />
     <ClInclude Include="Classes\Commands2\EntityMoveCommand.h" />
     <ClInclude Include="Classes\Commands2\EntityRemoveCommand.h" />
     <ClInclude Include="Classes\Commands2\TransformCommand.h" />
@@ -981,6 +980,7 @@
     <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphModelStateHelper.h" />
     <ClInclude Include="Classes\Qt\DockSceneInfo\SceneInfo.h" />
     <ClInclude Include="Classes\Qt\DockSceneTree\SceneTree.h" />
+    <ClInclude Include="Classes\Qt\DockSceneTree\SceneTreeDelegate.h" />
     <ClInclude Include="Classes\Qt\DockSceneTree\SceneTreeItem.h" />
     <ClInclude Include="Classes\Qt\DockSceneTree\SceneTreeModel.h" />
     <ClInclude Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexHelper.h" />
@@ -1022,6 +1022,7 @@
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionBaseObject.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionLandscape.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionParticleEmitter.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionRenderObject.h" />
     <ClInclude Include="Classes\Qt\Scene\System\GridSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\HoodSystem.h" />

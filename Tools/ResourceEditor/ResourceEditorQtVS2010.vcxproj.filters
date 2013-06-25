@@ -1719,14 +1719,17 @@
     <ClCompile Include="Classes\Commands2\EntityRemoveCommand.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Commands2\EntityInsertCommand.cpp">
-      <Filter>Classes\Commands2</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Commands2\EntityMoveCommand.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Commands2\EntityAddCommand.cpp">
-      <Filter>Classes\Commands2</Filter>
+    <ClCompile Include="Classes\Qt\DockSceneTree\SceneTreeDelegate.cpp">
+      <Filter>Classes\Qt\DockSceneTree</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockSceneTree\SceneTreeDelegate_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionParticleEmitter.cpp">
+      <Filter>Classes\Qt\Scene\System\CollisionSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -3038,14 +3041,14 @@
     <ClInclude Include="Classes\Commands2\EntityRemoveCommand.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Commands2\EntityInsertCommand.h">
-      <Filter>Classes\Commands2</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands2\EntityMoveCommand.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Commands2\EntityAddCommand.h">
-      <Filter>Classes\Commands2</Filter>
+    <ClInclude Include="Classes\Qt\DockSceneTree\SceneTreeDelegate.h">
+      <Filter>Classes\Qt\DockSceneTree</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionParticleEmitter.h">
+      <Filter>Classes\Qt\Scene\System\CollisionSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
