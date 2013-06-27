@@ -559,8 +559,9 @@ void FileSystem::AttachArchive(const String & archiveName, const String & attach
 
 int32 FileSystem::Spawn(const String& command)
 {
+	int32 retCode = 0;
 #if defined(__DAVAENGINE_MACOS__)
-	return std::system(command.c_str());
+	retCode = std::system(command.c_str());
 #elif defined(__DAVAENGINE_WIN32__) 
 
 	/* std::system calls "start" command from Windows command line
@@ -577,11 +578,16 @@ int32 FileSystem::Spawn(const String& command)
 
 	*/
 
-	String startString = "start \"\" /WAIT " + command;
-	return std::system(startString.c_str());
-#else
-	return 0;
+ 	String startString = "start \"\" /WAIT " + command;
+	retCode = std::system(startString.c_str());
 #endif
+
+	if(retCode != 0)
+	{
+		Logger::Warning("[FileSystem::Spawn] command (%s) has return code (%d)", command.c_str(), retCode);
+	}
+
+	return retCode;
 }
 
 
