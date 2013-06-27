@@ -460,6 +460,7 @@
     <addaction name="actionTileMapEditor"/>
     <addaction name="actionShowNotPassableLandscape"/>
     <addaction name="actionRulerTool"/>
+    <addaction name="actionCubemapEditor"/>
     <addaction name="separator"/>
     <addaction name="actionBeast"/>
     <addaction name="separator"/>
@@ -1470,6 +1471,11 @@
    </property>
    <property name="shortcut">
     <string>F1</string>
+   </property>
+  </action>
+  <action name="actionCubemapEditor">
+   <property name="text">
+    <string>Cubemap Editor</string>
    </property>
   </action>
  </widget>

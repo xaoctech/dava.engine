@@ -85,6 +85,7 @@ void TextureDescriptor::InitializeValues()
     
     exportedAsGpuFamily = GPU_UNKNOWN;
     exportedAsPixelFormat = FORMAT_INVALID;
+	faceDescription = 0;
 }
     
 void TextureDescriptor::SetDefaultValues()
@@ -146,6 +147,8 @@ bool TextureDescriptor::Load(const FilePath &filePathname)
         return false;
     }
     
+	file->Read(&faceDescription, sizeof(faceDescription));
+	
     SafeRelease(file);
     
     return true;
@@ -179,6 +182,8 @@ void TextureDescriptor::Save(const FilePath &filePathname) const
     {
         WriteCompression(file, compression[i]);
     }
+	
+	file->Write(&faceDescription, sizeof(faceDescription));
     
     SafeRelease(file);
 }
@@ -201,6 +206,8 @@ void TextureDescriptor::Export(const FilePath &filePathname)
     WriteGeneralSettings(file);
     file->Write(&exportedAsGpuFamily, sizeof(exportedAsGpuFamily));
     file->Write(&exportedAsPixelFormat, sizeof(exportedAsPixelFormat));
+	
+	file->Write(&faceDescription, sizeof(faceDescription));
 
     SafeRelease(file);
 }
@@ -225,6 +232,11 @@ void TextureDescriptor::ConvertToCurrentVersion(int8 version, int32 signature, D
     {
         LoadVersion5(signature, file);
     }
+	else if(version == 6)
+	{
+		LoadVersion6(signature, file);
+	}
+	
 }
     
 void TextureDescriptor::LoadVersion2(int32 signature, DAVA::File *file)
@@ -319,7 +331,24 @@ void TextureDescriptor::LoadVersion5(int32 signature, DAVA::File *file)
         file->Read(&compression[GPU_TEGRA].crc, sizeof(compression[GPU_TEGRA].crc));
 	}
 }
- 
+	
+void TextureDescriptor::LoadVersion6(int32 signature, File *file)
+{
+    isCompressedFile = (COMPRESSED_FILE == signature);
+    if(isCompressedFile)
+    {
+        LoadCompressed(file);
+    }
+    else if(NOTCOMPRESSED_FILE == signature)
+    {
+        LoadNotCompressed(file);
+    }
+    else
+    {
+        Logger::Error("[TextureDescriptor::Load] Wrong descriptor file: %s", file->GetFilename().GetAbsolutePathname().c_str());
+	}
+}
+	
 void TextureDescriptor::LoadNotCompressed(File *file)
 {
     ReadGeneralSettings(file);
@@ -472,13 +501,16 @@ String TextureDescriptor::GetSupportedTextureExtensions()
     return String(".png;.pvr;.dxt;") + TextureDescriptor::GetDescriptorExtension();
 }
 
-
-
 bool TextureDescriptor::IsCompressedFile() const
 {
     return isCompressedFile;
 }
 
+bool TextureDescriptor::IsCubeMap() const
+{
+	return (faceDescription != 0);
+}
+	
 uint32 TextureDescriptor::ReadSourceCRC() const
 {
 	uint32 crc = 0;

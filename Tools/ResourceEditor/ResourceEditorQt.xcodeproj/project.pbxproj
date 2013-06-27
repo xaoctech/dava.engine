@@ -301,6 +301,14 @@
 		84EF22CE171EECA900B45031 /* ScrollZoomWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84EF22CD171EECA900B45031 /* ScrollZoomWidget_moc.cpp */; };
 		84EF22D4171EECBD00B45031 /* ScrollZoomWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84EF22D2171EECBD00B45031 /* ScrollZoomWidget.cpp */; };
 		A51FBC516D952C0C5AB72EA1 /* QtGui.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 9B8EE51E126C761F3F797428 /* QtGui.framework */; };
+		A671437F177204C50033FA09 /* CubemapEditorDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A671437D177204C50033FA09 /* CubemapEditorDialog.cpp */; };
+		A67143821772051E0033FA09 /* CubemapEditorDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A67143811772051E0033FA09 /* CubemapEditorDialog_moc.cpp */; };
+		A67915EE1772FC3E003509F9 /* ClickableQLabel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A67915EC1772FC3E003509F9 /* ClickableQLabel.cpp */; };
+		A67915F417730339003509F9 /* ClickableQLabel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A67915F317730339003509F9 /* ClickableQLabel_moc.cpp */; };
+		A68623FB1779903600078FE7 /* CubeMapTextureBrowser.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A68623F91779903600078FE7 /* CubeMapTextureBrowser.cpp */; };
+		A68624011779905800078FE7 /* CubeMapTextureBrowser_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A68624001779905800078FE7 /* CubeMapTextureBrowser_moc.cpp */; };
+		A68624041779A9CC00078FE7 /* CubeListItemDelegate.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A68624021779A9CB00078FE7 /* CubeListItemDelegate.cpp */; };
+		A68624071779C89800078FE7 /* CubemapUtils.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A68624051779C89800078FE7 /* CubemapUtils.cpp */; };
 		A93E34BD17283146D6E95207 /* QtCore.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 419FFB6CDDEB353FF0A4F469 /* QtCore.framework */; };
 		A9F72A8809110F713D328E52 /* OpenAL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 52F4216CE5F81A8073DE30C0 /* OpenAL.framework */; };
 		B08AE0866171E2B79EF2D621 /* QtOpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */; };
@@ -1184,6 +1192,19 @@
 		84EF22D2171EECBD00B45031 /* ScrollZoomWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScrollZoomWidget.cpp; sourceTree = "<group>"; };
 		84EF22D3171EECBD00B45031 /* ScrollZoomWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScrollZoomWidget.h; sourceTree = "<group>"; };
 		9B8EE51E126C761F3F797428 /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework"; sourceTree = "<absolute>"; };
+		A671437D177204C50033FA09 /* CubemapEditorDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CubemapEditorDialog.cpp; sourceTree = "<group>"; };
+		A671437E177204C50033FA09 /* CubemapEditorDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CubemapEditorDialog.h; sourceTree = "<group>"; };
+		A67143811772051E0033FA09 /* CubemapEditorDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CubemapEditorDialog_moc.cpp; sourceTree = "<group>"; };
+		A67915EC1772FC3E003509F9 /* ClickableQLabel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ClickableQLabel.cpp; sourceTree = "<group>"; };
+		A67915ED1772FC3E003509F9 /* ClickableQLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClickableQLabel.h; sourceTree = "<group>"; };
+		A67915F317730339003509F9 /* ClickableQLabel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ClickableQLabel_moc.cpp; sourceTree = "<group>"; };
+		A68623F91779903600078FE7 /* CubeMapTextureBrowser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CubeMapTextureBrowser.cpp; sourceTree = "<group>"; };
+		A68623FA1779903600078FE7 /* CubeMapTextureBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CubeMapTextureBrowser.h; sourceTree = "<group>"; };
+		A68624001779905800078FE7 /* CubeMapTextureBrowser_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CubeMapTextureBrowser_moc.cpp; sourceTree = "<group>"; };
+		A68624021779A9CB00078FE7 /* CubeListItemDelegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CubeListItemDelegate.cpp; sourceTree = "<group>"; };
+		A68624031779A9CC00078FE7 /* CubeListItemDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CubeListItemDelegate.h; sourceTree = "<group>"; };
+		A68624051779C89800078FE7 /* CubemapUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CubemapUtils.cpp; sourceTree = "<group>"; };
+		A68624061779C89800078FE7 /* CubemapUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CubemapUtils.h; sourceTree = "<group>"; };
 		C18521A716831F84003D4A6F /* BaseParticleEditorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseParticleEditorNode.cpp; sourceTree = "<group>"; };
 		C18521A816831F84003D4A6F /* BaseParticleEditorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseParticleEditorNode.h; sourceTree = "<group>"; };
 		C18521A916831F84003D4A6F /* EffectParticleEditorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EffectParticleEditorNode.cpp; sourceTree = "<group>"; };
@@ -1692,6 +1713,7 @@
 		5C2763A415B82BDF0030A8FD /* Qt */ = {
 			isa = PBXGroup;
 			children = (
+				A671437C177204C40033FA09 /* CubemapEditor */,
 				74A94C95176B61CF00DE03E4 /* CustomControls */,
 				4F3E2560174CD38E000D1187 /* DockConsole */,
 				02E9E43B173965B800C501BC /* DockSceneTree */,
@@ -2494,6 +2516,35 @@
 			name = DockHangingObjects;
 			sourceTree = "<group>";
 		};
+		A671437C177204C40033FA09 /* CubemapEditor */ = {
+			isa = PBXGroup;
+			children = (
+				A68623F91779903600078FE7 /* CubeMapTextureBrowser.cpp */,
+				A68623FA1779903600078FE7 /* CubeMapTextureBrowser.h */,
+				A671437D177204C50033FA09 /* CubemapEditorDialog.cpp */,
+				A671437E177204C50033FA09 /* CubemapEditorDialog.h */,
+				A67915EC1772FC3E003509F9 /* ClickableQLabel.cpp */,
+				A67915ED1772FC3E003509F9 /* ClickableQLabel.h */,
+				A68624021779A9CB00078FE7 /* CubeListItemDelegate.cpp */,
+				A68624031779A9CC00078FE7 /* CubeListItemDelegate.h */,
+				A68624051779C89800078FE7 /* CubemapUtils.cpp */,
+				A68624061779C89800078FE7 /* CubemapUtils.h */,
+			);
+			name = CubemapEditor;
+			path = Classes/Qt/CubemapEditor;
+			sourceTree = "<group>";
+		};
+		A67143801772051E0033FA09 /* CubemapEditor */ = {
+			isa = PBXGroup;
+			children = (
+				A68624001779905800078FE7 /* CubeMapTextureBrowser_moc.cpp */,
+				A67915F317730339003509F9 /* ClickableQLabel_moc.cpp */,
+				A67143811772051E0033FA09 /* CubemapEditorDialog_moc.cpp */,
+			);
+			name = CubemapEditor;
+			path = _GeneratedQt/CubemapEditor;
+			sourceTree = "<group>";
+		};
 		C18521A216831F84003D4A6F /* ParticlesEditorQT */ = {
 			isa = PBXGroup;
 			children = (
@@ -3052,6 +3103,7 @@
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
 			isa = PBXGroup;
 			children = (
+				A67143801772051E0033FA09 /* CubemapEditor */,
 				74A94C9A176B6BC000DE03E4 /* CustomControls */,
 				4F3E256A174CD39C000D1187 /* DockConsole */,
 				02F64048173A8F170053F038 /* DockSceneTree */,
@@ -3917,6 +3969,14 @@
 				4FFE5C9C1770C08600728624 /* EntityInsertCommand.cpp in Build Sources */,
 				4FFE5C9D1770C08600728624 /* EntityMoveCommand.cpp in Build Sources */,
 				4FFE5C9E1770C08600728624 /* EntityRemoveCommand.cpp in Build Sources */,
+				A671437F177204C50033FA09 /* CubemapEditorDialog.cpp in Build Sources */,
+				A67143821772051E0033FA09 /* CubemapEditorDialog_moc.cpp in Build Sources */,
+				A67915EE1772FC3E003509F9 /* ClickableQLabel.cpp in Build Sources */,
+				A67915F417730339003509F9 /* ClickableQLabel_moc.cpp in Build Sources */,
+				A68623FB1779903600078FE7 /* CubeMapTextureBrowser.cpp in Build Sources */,
+				A68624011779905800078FE7 /* CubeMapTextureBrowser_moc.cpp in Build Sources */,
+				A68624041779A9CC00078FE7 /* CubeListItemDelegate.cpp in Build Sources */,
+				A68624071779C89800078FE7 /* CubemapUtils.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
