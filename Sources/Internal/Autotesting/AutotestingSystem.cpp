@@ -1487,13 +1487,13 @@ void AutotestingSystem::OnScreenShot(Image *image)
 {
 	Logger::Debug("AutotestingSystem::OnScreenShot %s", screenShotName.c_str());
 	
-	String filePath = "~doc:/screenshot.png";//Format("~doc:/%s.png", screenShotName.c_str());
-	FilePath systemFilePath = filePath;
+	//String filePath = Format("~doc:/%s.png", screenShotName.c_str());
+	FilePath systemFilePath = "~doc:/screenshot.png";
 	ImageLoader::Save(image, systemFilePath);
 	
 	if(dbClient)
 	{
-		dbClient->SaveFileToGridFS(screenShotName, filePath);
+		dbClient->SaveFileToGridFS(screenShotName, systemFilePath.GetAbsolutePathname());
 	}
 }
     
