@@ -137,6 +137,7 @@ public slots:
     void ShowSettings();
     void Beast();
     void SquareTextures();
+	void CubemapEditor();
 
     //ViewOptions
     void MenuViewOptionsWillShow();

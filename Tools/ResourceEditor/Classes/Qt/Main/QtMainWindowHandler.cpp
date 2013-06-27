@@ -46,6 +46,8 @@
 #include "../Commands/CommandSignals.h"
 #include "SceneEditor/EntityOwnerPropertyHelper.h"
 #include "StringConstants.h"
+#include "../CubemapEditor/CubemapEditorDialog.h"
+#include "../CubemapEditor/CubemapTextureBrowser.h"
 
 #include <QPoint>
 #include <QMenu>
@@ -562,6 +564,15 @@ void QtMainWindowHandler::SquareTextures()
         SceneData * activeScene = SceneDataManager::Instance()->SceneGetActive();
         TextureSquarenessChecker::Instance()->CheckSceneForTextureSquarenessAndResave(activeScene->GetScene());
     }
+}
+
+void QtMainWindowHandler::CubemapEditor()
+{
+	//static CubemapEditorDialog dlg(dynamic_cast<QWidget*>(parent()));
+	//dlg.show();
+	
+	CubeMapTextureBrowser dlg(dynamic_cast<QWidget*>(parent()));
+	dlg.exec();
 }
 
 void QtMainWindowHandler::SetDefaultFocusWidget(QWidget *widget)

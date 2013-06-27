@@ -30,7 +30,7 @@ class TextureDescriptor: public BaseObject
 {
     static const int32 DATE_BUFFER_SIZE = 20;
     static const int32 LINE_SIZE = 256;
-    static const int8 CURRENT_VERSION = 6;
+    static const int8 CURRENT_VERSION = 7;
     
 public:
 	enum eOptionsState
@@ -108,6 +108,8 @@ public:
     bool IsCompressedFile() const;
     
     bool GetGenerateMipMaps() const;
+	
+	bool IsCubeMap() const;
 
     FilePath GetSourceTexturePathname() const; 
 
@@ -144,6 +146,7 @@ protected:
 	DAVA_DEPRECATED(void LoadVersion3(int32 signature, File *file));
 	DAVA_DEPRECATED(void LoadVersion4(int32 signature, File *file));
 	void LoadVersion5(int32 signature, File *file);
+	void LoadVersion6(int32 signature, File *file);
     
 	uint32 ReadSourceCRC() const;
     
@@ -157,6 +160,8 @@ public:
     //Binary only
     int8 exportedAsGpuFamily;
     int8 exportedAsPixelFormat;
+	
+	uint8 faceDescription;
     
     bool isCompressedFile;
 };
