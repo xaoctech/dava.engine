@@ -283,6 +283,11 @@
 		5CDD9AC015B893E4007CA99A /* CommandsManager.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5CDD9ABD15B893E4007CA99A /* CommandsManager.cpp */; };
 		5CF17EC315B91E8600A9FC33 /* FileCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5CF17EC115B91E8600A9FC33 /* FileCommands.cpp */; };
 		5CFEEBC015CAB60B00ABF023 /* SceneGraphCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5CFEEBBE15CAB60B00ABF023 /* SceneGraphCommands.cpp */; };
+		626B0095177B2F4600D8A54F /* AddSwitchEntityDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 626B0090177B2F4600D8A54F /* AddSwitchEntityDialog.cpp */; };
+		626B0096177B2F4600D8A54F /* SelectPathWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 626B0093177B2F4600D8A54F /* SelectPathWidget.cpp */; };
+		626B009E177B2FB500D8A54F /* AddSwitchEntityDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 626B009B177B2FB500D8A54F /* AddSwitchEntityDialog_moc.cpp */; };
+		626B009F177B2FB500D8A54F /* SelectPathWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 626B009D177B2FB500D8A54F /* SelectPathWidget_moc.cpp */; };
+		629E220A177C8B9C007C820F /* AddSwitchEntityCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 629E2208177C8B9B007C820F /* AddSwitchEntityCommand.cpp */; };
 		748E55931761D5EB000E24FF /* ParticlesEditorNodeNameHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 748E55911761D5EB000E24FF /* ParticlesEditorNodeNameHelper.cpp */; };
 		74A94C98176B61CF00DE03E4 /* EventFilterDoubleSpinBox.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74A94C96176B61CF00DE03E4 /* EventFilterDoubleSpinBox.cpp */; };
 		74A94C9C176B6BC000DE03E4 /* EventFilterDoubleSpinBox_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74A94C9B176B6BC000DE03E4 /* EventFilterDoubleSpinBox_moc.cpp */; };
@@ -1153,6 +1158,16 @@
 		5CF17EC415B9385300A9FC33 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Constants.h; path = Classes/Constants.h; sourceTree = "<group>"; };
 		5CFEEBBE15CAB60B00ABF023 /* SceneGraphCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneGraphCommands.cpp; path = Classes/Commands/SceneGraphCommands.cpp; sourceTree = "<group>"; };
 		5CFEEBBF15CAB60B00ABF023 /* SceneGraphCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneGraphCommands.h; path = Classes/Commands/SceneGraphCommands.h; sourceTree = "<group>"; };
+		626B0090177B2F4600D8A54F /* AddSwitchEntityDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddSwitchEntityDialog.cpp; sourceTree = "<group>"; };
+		626B0091177B2F4600D8A54F /* AddSwitchEntityDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddSwitchEntityDialog.h; sourceTree = "<group>"; };
+		626B0093177B2F4600D8A54F /* SelectPathWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SelectPathWidget.cpp; sourceTree = "<group>"; };
+		626B0094177B2F4600D8A54F /* SelectPathWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SelectPathWidget.h; sourceTree = "<group>"; };
+		626B0097177B2F8500D8A54F /* ui_AddSwitchEntityDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_AddSwitchEntityDialog.h; path = _GeneratedQt/ui_AddSwitchEntityDialog.h; sourceTree = "<group>"; };
+		626B0098177B2F8500D8A54F /* ui_SelectPathWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_SelectPathWidget.h; path = _GeneratedQt/ui_SelectPathWidget.h; sourceTree = "<group>"; };
+		626B009B177B2FB500D8A54F /* AddSwitchEntityDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddSwitchEntityDialog_moc.cpp; sourceTree = "<group>"; };
+		626B009D177B2FB500D8A54F /* SelectPathWidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SelectPathWidget_moc.cpp; sourceTree = "<group>"; };
+		629E2208177C8B9B007C820F /* AddSwitchEntityCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddSwitchEntityCommand.cpp; sourceTree = "<group>"; };
+		629E2209177C8B9B007C820F /* AddSwitchEntityCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddSwitchEntityCommand.h; sourceTree = "<group>"; };
 		6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtOpenGL.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework"; sourceTree = "<absolute>"; };
 		6C21256244E578A9DE07EE60 /* xml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = xml_macos; path = ../../Libs/libs/libxml_macos.a; sourceTree = "<group>"; };
 		748E55911761D5EB000E24FF /* ParticlesEditorNodeNameHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticlesEditorNodeNameHelper.cpp; sourceTree = "<group>"; };
@@ -1665,6 +1680,8 @@
 		4FFE5C76176B37B600728624 /* Commands2 */ = {
 			isa = PBXGroup;
 			children = (
+				629E2208177C8B9B007C820F /* AddSwitchEntityCommand.cpp */,
+				629E2209177C8B9B007C820F /* AddSwitchEntityCommand.h */,
 				49F26F1C1771D67D008012B5 /* CommandAction.cpp */,
 				49F26F1D1771D67D008012B5 /* CommandAction.h */,
 				4FFE5C971770C08600728624 /* EntityMoveCommand.cpp */,
@@ -1698,6 +1715,7 @@
 		5C2763A415B82BDF0030A8FD /* Qt */ = {
 			isa = PBXGroup;
 			children = (
+				626B008A177B2F2C00D8A54F /* Tools */,
 				74A94C95176B61CF00DE03E4 /* CustomControls */,
 				4F3E2560174CD38E000D1187 /* DockConsole */,
 				02E9E43B173965B800C501BC /* DockSceneTree */,
@@ -2409,6 +2427,62 @@
 			name = Commands;
 			sourceTree = "<group>";
 		};
+		626B008A177B2F2C00D8A54F /* Tools */ = {
+			isa = PBXGroup;
+			children = (
+				626B008F177B2F4600D8A54F /* AddSwitchEntityDialog */,
+				626B0092177B2F4600D8A54F /* SelectPathWidget */,
+			);
+			name = Tools;
+			sourceTree = "<group>";
+		};
+		626B008F177B2F4600D8A54F /* AddSwitchEntityDialog */ = {
+			isa = PBXGroup;
+			children = (
+				626B0090177B2F4600D8A54F /* AddSwitchEntityDialog.cpp */,
+				626B0091177B2F4600D8A54F /* AddSwitchEntityDialog.h */,
+			);
+			name = AddSwitchEntityDialog;
+			path = Classes/Qt/Tools/AddSwitchEntityDialog;
+			sourceTree = "<group>";
+		};
+		626B0092177B2F4600D8A54F /* SelectPathWidget */ = {
+			isa = PBXGroup;
+			children = (
+				626B0093177B2F4600D8A54F /* SelectPathWidget.cpp */,
+				626B0094177B2F4600D8A54F /* SelectPathWidget.h */,
+			);
+			name = SelectPathWidget;
+			path = Classes/Qt/Tools/SelectPathWidget;
+			sourceTree = "<group>";
+		};
+		626B0099177B2F9700D8A54F /* Tools */ = {
+			isa = PBXGroup;
+			children = (
+				626B009A177B2FB500D8A54F /* AddSwitchEntityDialog */,
+				626B009C177B2FB500D8A54F /* SelectPathWidget */,
+			);
+			name = Tools;
+			sourceTree = "<group>";
+		};
+		626B009A177B2FB500D8A54F /* AddSwitchEntityDialog */ = {
+			isa = PBXGroup;
+			children = (
+				626B009B177B2FB500D8A54F /* AddSwitchEntityDialog_moc.cpp */,
+			);
+			name = AddSwitchEntityDialog;
+			path = _GeneratedQt/Tools/AddSwitchEntityDialog;
+			sourceTree = "<group>";
+		};
+		626B009C177B2FB500D8A54F /* SelectPathWidget */ = {
+			isa = PBXGroup;
+			children = (
+				626B009D177B2FB500D8A54F /* SelectPathWidget_moc.cpp */,
+			);
+			name = SelectPathWidget;
+			path = _GeneratedQt/Tools/SelectPathWidget;
+			sourceTree = "<group>";
+		};
 		74A94C95176B61CF00DE03E4 /* CustomControls */ = {
 			isa = PBXGroup;
 			children = (
@@ -3058,6 +3132,7 @@
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
 			isa = PBXGroup;
 			children = (
+				626B0099177B2F9700D8A54F /* Tools */,
 				74A94C9A176B6BC000DE03E4 /* CustomControls */,
 				4F3E256A174CD39C000D1187 /* DockConsole */,
 				02F64048173A8F170053F038 /* DockSceneTree */,
@@ -3084,6 +3159,8 @@
 				E838D7CB16B00511006F1721 /* Scene */,
 				E838D7CE16B00511006F1721 /* TextureBrowser */,
 				E838D7D816B00511006F1721 /* ui_CustomColorsView.h */,
+				626B0097177B2F8500D8A54F /* ui_AddSwitchEntityDialog.h */,
+				626B0098177B2F8500D8A54F /* ui_SelectPathWidget.h */,
 				E838D7D916B00511006F1721 /* ui_davaglwidget.h */,
 				E838D7DA16B00511006F1721 /* ui_mainwindow.h */,
 				E838D7DB16B00511006F1721 /* ui_materialbrowser.h */,
@@ -3927,6 +4004,11 @@
 				4FFE5CAB1779DA3E00728624 /* CollisionParticleEmitter.cpp in Build Sources */,
 				4FFE5CB51779E38300728624 /* SceneTreeDelegate.cpp in Build Sources */,
 				4FFE5CB71779E60600728624 /* SceneTreeDelegate_moc.cpp in Build Sources */,
+				626B0095177B2F4600D8A54F /* AddSwitchEntityDialog.cpp in Build Sources */,
+				626B0096177B2F4600D8A54F /* SelectPathWidget.cpp in Build Sources */,
+				626B009E177B2FB500D8A54F /* AddSwitchEntityDialog_moc.cpp in Build Sources */,
+				626B009F177B2FB500D8A54F /* SelectPathWidget_moc.cpp in Build Sources */,
+				629E220A177C8B9C007C820F /* AddSwitchEntityCommand.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

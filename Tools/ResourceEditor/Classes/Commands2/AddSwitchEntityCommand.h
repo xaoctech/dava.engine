@@ -14,30 +14,26 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "AddSwitchEntityDialog.h"
-#include "ui_AddSwitchEntityDialog.h"
+#ifndef __ADD_SWITCH_ENTITY__COMMAND_H__
+#define __ADD_SWITCH_ENTITY__COMMAND_H__
 
-#include <QKeyEvent>
+#include "Commands2/Command2.h"
 
-AddSwitchEntityDialog::AddSwitchEntityDialog(QWidget* parent)
-:	QDialog(parent),
-ui(new Ui::AddSwitchEntityDialog)
+class AddSwitchEntityCommand : public Command2
 {
-	ui->setupUi(this);
-    setAcceptDrops(false);
-    ui->FirstSelectionWidget->SetDiscriptionText("Select first entity:");
-    ui->SecondSelectionWidget->SetDiscriptionText("Select second entity:");
-}
+public:
+	AddSwitchEntityCommand(DAVA::Entity* entityFirst, DAVA::Entity* entitySecond);
+	~AddSwitchEntityCommand();
 
-void AddSwitchEntityDialog::accept()
-{
+	virtual void Undo();
+	virtual void Redo();
     
+    virtual DAVA::Entity* GetAddedEntity() const;
     
-}
+	DAVA::Entity* entityFirst;
+	DAVA::Entity* entitySecond;
+    DAVA::Entity* entityToAdd;
+	
+};
 
-
-AddSwitchEntityDialog::~AddSwitchEntityDialog()
-{
-	delete ui;
-}
-
+#endif // __ADD_SWITCH_ENTITY__COMMAND_H__

@@ -19,6 +19,9 @@
 
 #include <QWidget>
 #include "DAVAEngine.h"
+#include "Base/BaseTypes.h"
+
+#include <QMimeData>
 
 namespace Ui
 {
@@ -33,15 +36,13 @@ public:
 	explicit SelectPathWidget(QWidget* parent = 0);
 	~SelectPathWidget();
     
-    void dragEnterEvent(QDragEnterEvent* event);
+
     
-    void dropEvent(QDropEvent * event);
-    
-    void SetDiscriptionText(QString& discriptioin);
+    void SetDiscriptionText(const QString &);
     
     QString GetDiscriptionText();
-    
-    void SetPathText(QString& filePath);
+
+    void SetPathText(const QString &);
     
     QString GetPathText();
     
@@ -50,12 +51,24 @@ public:
         return relativPath;
     }
     
-    void SetRelativePath(QString& newRelativPath);
+    void SetRelativePath(const QString &);
+    
+    const QMimeData* GetMimeData()
+    {
+        return &mimeData;
+    }
     //signals:
     //	void ApplyModification(double x, double y, double z);
     
     //private slots:
     //	void OnEditingFinished();
+protected:
+    
+    void dragEnterEvent(QDragEnterEvent* event);
+    
+    void dropEvent(QDropEvent * event);
+    
+    
 private slots:
 
 	void EraseClicked();
@@ -64,13 +77,13 @@ private slots:
 
 private:
     
-    QString ConvertToRelativPath(QString& path);
+    QString ConvertToRelativPath(const QString& path);
     
-	Ui::SelectPathWidget *ui;
+    Ui::SelectPathWidget*   ui;
     
-    QString     relativPath;
+    QString                 relativPath;
     
-protected:
+    QMimeData   mimeData;
 	
 };
 

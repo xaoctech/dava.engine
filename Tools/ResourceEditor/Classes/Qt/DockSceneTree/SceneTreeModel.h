@@ -56,12 +56,12 @@ public:
 	QStringList	mimeTypes() const;
 	bool dropMimeData(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent);
 
+    static const char* mimeFormatEntity;
+	static const char* mimeFormatEmitter;
+    
 protected:
 	bool dropAccepted;
 	SceneEditor2 * curScene;
-
-	static const char* mimeFormatEntity;
-	static const char* mimeFormatEmitter;
 
 protected slots:
 	void EntityMoved(SceneEditor2 *scene, DAVA::Entity *entity);

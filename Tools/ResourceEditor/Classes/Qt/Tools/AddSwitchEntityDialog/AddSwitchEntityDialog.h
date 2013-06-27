@@ -32,6 +32,7 @@ public:
 	explicit AddSwitchEntityDialog(QWidget* parent = 0);
 	~AddSwitchEntityDialog();
     
+    virtual void accept();
     //signals:
     //	void ApplyModification(double x, double y, double z);
     

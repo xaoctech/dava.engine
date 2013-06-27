@@ -14,30 +14,57 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "AddSwitchEntityDialog.h"
-#include "ui_AddSwitchEntityDialog.h"
+#include "Commands2/AddSwitchEntityCommand.h"
+#include "../Qt/Scene/SceneDataManager.h"
+#include "Scene3D/Entity.h"
+#include "StringConstants.h"
 
-#include <QKeyEvent>
 
-AddSwitchEntityDialog::AddSwitchEntityDialog(QWidget* parent)
-:	QDialog(parent),
-ui(new Ui::AddSwitchEntityDialog)
+AddSwitchEntityCommand::AddSwitchEntityCommand(DAVA::Entity* _entityFirst, DAVA::Entity* _entitySecond)
+	: Command2(CMDID_ADD_SWITCH_ENTITY, "Add Switch Entity")
+	, entityFirst(_entityFirst)
+	, entitySecond(_entitySecond)
+    , entityToAdd(NULL)
 {
-	ui->setupUi(this);
-    setAcceptDrops(false);
-    ui->FirstSelectionWidget->SetDiscriptionText("Select first entity:");
-    ui->SecondSelectionWidget->SetDiscriptionText("Select second entity:");
 }
 
-void AddSwitchEntityDialog::accept()
+AddSwitchEntityCommand::~AddSwitchEntityCommand()
 {
-    
-    
+
 }
 
-
-AddSwitchEntityDialog::~AddSwitchEntityDialog()
-{
-	delete ui;
+void AddSwitchEntityCommand::Undo()
+{/*
+	if(NULL != entity && NULL != parent)
+	{
+		if(NULL != before)
+		{
+			parent->InsertBeforeNode(entity, before);
+		}
+		else
+		{
+			parent->AddNode(entity);
+		}
+	}*/
 }
 
+void AddSwitchEntityCommand::Redo()
+{
+	if(NULL != entityFirst && NULL != entitySecond)
+	{
+		entityToAdd = new Entity();
+        entityToAdd->SetName(ResourceEditor::SWITCH_NODE_NAME);
+        
+        entityToAdd->AddNode(entityFirst);
+        entityToAdd->AddNode(entitySecond);
+        
+        entityToAdd->AddComponent(new SwitchComponent());
+        
+        SceneDataManager::Instance()->SceneGetActive()->AddSceneNode(entityToAdd);
+	}
+}
+
+Entity* AddSwitchEntityCommand::GetAddedEntity() const
+{
+	return entityToAdd;
+}
