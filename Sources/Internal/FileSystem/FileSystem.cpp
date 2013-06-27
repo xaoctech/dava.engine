@@ -559,8 +559,26 @@ void FileSystem::AttachArchive(const String & archiveName, const String & attach
 
 int32 FileSystem::Spawn(const String& command)
 {
-#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__) 
+#if defined(__DAVAENGINE_MACOS__)
 	return std::system(command.c_str());
+#elif defined(__DAVAENGINE_WIN32__) 
+
+	/* std::system calls "start" command from Windows command line
+	Start help:
+	Starts a separate window to run a specified program or command.
+
+	START ["title"] [/D path] [/I] [/MIN] [/MAX] [/SEPARATE | /SHARED]
+	[/LOW | /NORMAL | /HIGH | /REALTIME | /ABOVENORMAL | /BELOWNORMAL]
+	[/NODE <NUMA node>] [/AFFINITY <hex affinity mask>] [/WAIT] [/B]
+	[command/program] [parameters]
+
+	If we use "" for path to executable, start resolves it as title. So we need to specify call of start
+	http://stackoverflow.com/questions/5681055/how-do-i-start-a-windows-program-with-spaces-in-the-path-from-perl
+
+	*/
+
+	String startString = "start \"\" /WAIT " + command;
+	return std::system(startString.c_str());
 #else
 	return 0;
 #endif
