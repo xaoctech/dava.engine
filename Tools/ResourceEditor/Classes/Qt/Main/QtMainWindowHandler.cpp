@@ -63,6 +63,8 @@
 
 #include "Render/LibDxtHelper.h"
 
+#include "./../Qt/Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
+
 using namespace DAVA;
 
 QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
@@ -292,7 +294,14 @@ void QtMainWindowHandler::SaveToFolderWithChilds()
 }
 
 void QtMainWindowHandler::CreateNode(ResourceEditor::eNodeType type)
-{
+{/*
+    if(type == ResourceEditor::NODE_SWITCH_NODE)
+    {
+        AddSwitchEntityDialog* swDialog = new AddSwitchEntityDialog();
+        swDialog->setWindowFlags(Qt::WindowStaysOnTopHint);
+        swDialog->show();
+        return;
+    }*/
     CommandsManager::Instance()->ExecuteAndRelease(new CommandCreateNode(type),
 												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
 }
