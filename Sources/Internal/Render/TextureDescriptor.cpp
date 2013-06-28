@@ -190,7 +190,7 @@ void TextureDescriptor::Export(const FilePath &filePathname)
     File *file = File::Create(filePathname, File::WRITE | File::OPEN | File::CREATE);
     if(!file)
     {
-        Logger::Error("[TextureDescriptor::ExportAndSplice] Can't open file: %s", filePathname.GetAbsolutePathname().c_str());
+        Logger::Error("[TextureDescriptor::Export] Can't open file: %s", filePathname.GetAbsolutePathname().c_str());
         return;
     }
 
