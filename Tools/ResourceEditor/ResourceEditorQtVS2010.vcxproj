@@ -361,6 +361,8 @@
     <ClCompile Include="Classes\Commands\TilemapEditorCommands.cpp" />
     <ClCompile Include="Classes\Commands\ToolsCommands.cpp" />
     <ClCompile Include="Classes\Commands\VisibilityCheckToolCommands.cpp" />
+    <ClCompile Include="Classes\Deprecated\ScenePreviewControl.cpp" />
+    <ClCompile Include="Classes\Deprecated\ScenePreviewDialog.cpp" />
     <ClCompile Include="Classes\EditorScene.cpp" />
     <ClCompile Include="Classes\FrameworkMain.cpp" />
     <ClCompile Include="Classes\GameCore.cpp" />
@@ -913,6 +915,8 @@
     <ClInclude Include="Classes\Commands\VisibilityCheckToolCommands.h" />
     <ClInclude Include="Classes\config.h" />
     <ClInclude Include="Classes\Constants.h" />
+    <ClInclude Include="Classes\Deprecated\ScenePreviewControl.h" />
+    <ClInclude Include="Classes\Deprecated\ScenePreviewDialog.h" />
     <ClInclude Include="Classes\EditorScene.h" />
     <ClInclude Include="Classes\FrameworkMain.h" />
     <ClInclude Include="Classes\GameCore.h" />
