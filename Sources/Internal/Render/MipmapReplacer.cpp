@@ -48,7 +48,7 @@ void MipMapReplacer::EnumerateTexturesRecursive(Entity * entity, Set<Texture *> 
     for(int32 i = 0; i < childrenCount; i++)
         EnumerateTexturesRecursive(entity->GetChild(i), textures);
 
-    RenderObject * ro = GetRenerObject(entity);
+    RenderObject * ro = GetRenderObject(entity);
     if(ro)
     {
         int32 rbCount = ro->GetRenderBatchCount();

@@ -54,7 +54,7 @@ void CommandConvertToShadow::Execute()
 {
 	if(affectedEntity)
 	{
-		RenderObject * ro = GetRenerObject(affectedEntity);
+		RenderObject * ro = GetRenderObject(affectedEntity);
 		if (NULL == ro)
 		{
 			// Yuri Coder, 2013/05/17. This Entity doesn't have Render Object and can't be converted to Shadow.
@@ -85,7 +85,7 @@ void CommandConvertToShadow::Cancel()
 {
     if(changedRenderBatch && affectedEntity)
     {
-        RenderObject * ro = GetRenerObject(affectedEntity);
+        RenderObject * ro = GetRenderObject(affectedEntity);
         if(ro && ro->GetRenderBatchCount() == 1 && typeid(*(ro->GetRenderBatch(0))) == typeid(DAVA::ShadowVolume))
         {
             SceneDataManager::Instance()->SceneGetActive()->SelectNode(0);

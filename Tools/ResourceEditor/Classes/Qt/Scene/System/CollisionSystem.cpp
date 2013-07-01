@@ -387,7 +387,7 @@ CollisionBaseObject* SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity
 
 	// check if this entity is landscape
 	DAVA::Landscape *landscape = DAVA::GetLandscape(entity);
-	DAVA::RenderObject *renderObject = DAVA::GetRenerObject(entity);
+	DAVA::RenderObject *renderObject = DAVA::GetRenderObject(entity);
 	DAVA::ParticleEmitter* particleEmitter = DAVA::GetEmitter(entity);
 
 	if(NULL != landscape)

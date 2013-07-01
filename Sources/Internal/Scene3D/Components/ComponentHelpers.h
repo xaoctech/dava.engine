@@ -31,7 +31,7 @@ class Camera;
 class LodComponent;
 
 ParticleEmitter * GetEmitter(Entity * fromEntity);
-RenderObject * GetRenerObject(Entity * fromEntity);
+RenderObject * GetRenderObject(Entity * fromEntity);
 
 Light *GetLight(Entity * fromEntity);
 Landscape *GetLandscape(Entity * fromEntity);
