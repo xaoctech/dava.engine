@@ -277,7 +277,7 @@ void SceneTreeItemEntity::DoSync(QStandardItem *rootItem, DAVA::Entity *entity)
 				{
 					rootItem->appendRow(new SceneTreeItemParticleLayer(entity, childLayer));
 				}
-				else if(NULL != DAVA::GetRenerObject(entity))
+				else if(NULL != DAVA::GetRenderObject(entity))
 				{
 					rootItem->insertRow(row, new SceneTreeItemParticleLayer(entity, childLayer));
 				}
