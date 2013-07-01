@@ -223,6 +223,11 @@ void ParticleLayer::SetEmitter(ParticleEmitter * _emitter)
 	emitter = _emitter;
 }
 
+ParticleEmitter* ParticleLayer::GetEmitter() const
+{
+	return emitter;
+}
+
 void ParticleLayer::SetSprite(Sprite * _sprite)
 {
     DeleteAllParticles();
