@@ -221,8 +221,11 @@ void SceneSelectionSystem::AddSelection(DAVA::Entity *entity)
 		selectableItem.entity = entity;
 		selectableItem.bbox = GetSelectionAABox(entity);
 
-		curSelections.Add(selectableItem);
-		SceneSignals::Instance()->EmitSelected((SceneEditor2 *) GetScene(), entity);
+		if(!curSelections.HasEntity(entity))
+		{
+			curSelections.Add(selectableItem);
+			SceneSignals::Instance()->EmitSelected((SceneEditor2 *) GetScene(), entity);
+		}
 	}
 
 	UpdateHoodPos();
@@ -230,8 +233,11 @@ void SceneSelectionSystem::AddSelection(DAVA::Entity *entity)
 
 void SceneSelectionSystem::RemSelection(DAVA::Entity *entity)
 {
-	curSelections.Rem(entity);
-	SceneSignals::Instance()->EmitDeselected((SceneEditor2 *) GetScene(), entity);
+	if(curSelections.HasEntity(entity))
+	{
+		curSelections.Rem(entity);
+		SceneSignals::Instance()->EmitDeselected((SceneEditor2 *) GetScene(), entity);
+	}
 
 	UpdateHoodPos();
 }

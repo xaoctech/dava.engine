@@ -301,7 +301,7 @@ void TextureProperties::SetPropertyItemValidValues(QtPropertyDataMetaObject* ite
 {
 	if(NULL != item && NULL != validValues)
 	{
-		for(int i = 0; i < validValues->GetCount(); ++i)
+		for(size_t i = 0; i < validValues->GetCount(); ++i)
 		{
 			int v;
 

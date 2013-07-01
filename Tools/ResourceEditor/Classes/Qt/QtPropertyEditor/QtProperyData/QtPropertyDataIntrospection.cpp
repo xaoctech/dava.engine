@@ -105,7 +105,7 @@ void QtPropertyDataIntrospection::AddMember(const DAVA::InspMember *member, int 
 
 					if(NULL != desc.enumMap)
 					{
-						for(int i = 0; i < desc.enumMap->GetCount(); ++i)
+						for(size_t i = 0; i < desc.enumMap->GetCount(); ++i)
 						{
 							int v;
 							if(desc.enumMap->GetValue(i, v))

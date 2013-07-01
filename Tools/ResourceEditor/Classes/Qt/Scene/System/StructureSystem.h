@@ -23,6 +23,8 @@
 // framework
 #include "Entity/SceneSystem.h"
 #include "Scene3D/Entity.h"
+#include "Particles/ParticleLayer.h"
+#include "Particles/ParticleEmitter.h"
 #include "UI/UIEvent.h"
 
 class StructureSystem : public DAVA::SceneSystem
@@ -41,11 +43,23 @@ public:
 	void Remove(DAVA::Entity *entity);
 	void Remove(const EntityGroup *entityGroup);
 
-	void Lock();
-	void Unlock();
+	void MoveLayer(DAVA::ParticleLayer *layer, DAVA::ParticleEmitter *newEmitter, DAVA::ParticleLayer *newBefore);
+	void MoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &layers, DAVA::ParticleEmitter *newEmitter, DAVA::ParticleLayer *newBefore);
+
+	void RemoveLayer(DAVA::ParticleLayer *layer);
+	void RemoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &layers);
+
+	void MoveForce(DAVA::ParticleForce *force, DAVA::ParticleLayer *newLayer);
+	void MoveForce(const DAVA::Vector<DAVA::ParticleForce> &forces, DAVA::ParticleLayer *newLayer);
+
+	void RemoveForce(DAVA::ParticleForce *force);
+	void RemoveForce(const DAVA::Vector<DAVA::ParticleForce> &forces);
+
+	void LockSignals();
+	void UnlockSignals();
 
 protected:
-	bool locked;
+	bool lockedSignals;
 
 	void Update(DAVA::float32 timeElapsed);
 	void Draw();

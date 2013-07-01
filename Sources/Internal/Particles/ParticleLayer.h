@@ -106,6 +106,7 @@ public:
 		This function used internally in emitter, but in some situations. 
 	*/
 	void SetEmitter(ParticleEmitter * emitter);
+	ParticleEmitter* GetEmitter() const;
 	
 	/**
 		\brief Set sprite for the current layer

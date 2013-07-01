@@ -64,6 +64,10 @@ protected slots:
 
 	void SyncSelectionToTree();
 	void SyncSelectionFromTree();
+
+	void ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos);
+	void ShowContextMenuLayer(DAVA::ParticleLayer *layer, const QPoint &pos);
+	void ShowContextMenuForce(DAVA::ParticleForce *force, const QPoint &pos);
 };
 
 #endif // __QT_SCENE_TREE_H__

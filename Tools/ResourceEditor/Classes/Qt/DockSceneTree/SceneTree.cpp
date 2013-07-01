@@ -60,13 +60,10 @@ void SceneTree::dropEvent(QDropEvent * event)
 {
 	QTreeView::dropEvent(event);
 
-	// this is a workaround for Qt bug
-	// see https://bugreports.qt-project.org/browse/QTBUG-26229 
-	// for more information
-	if(!treeModel->DropIsAccepted())
-	{
-		event->setDropAction(Qt::IgnoreAction);
-	}
+	// after processing don't allow this event to go higher
+	// so no body will decide to remove/insert grag&dropped items into treeview
+	// except our model. Model will do this when scene entity remove/move signals catched
+	event->setDropAction(Qt::IgnoreAction);
 }
 
 void SceneTree::dragMoveEvent(QDragMoveEvent *event)
@@ -168,7 +165,7 @@ void SceneTree::TreeItemDoubleClicked(const QModelIndex & index)
 	SceneEditor2* sceneEditor = treeModel->GetScene();
 	if(NULL != sceneEditor)
 	{
-		DAVA::Entity *entity = treeModel->GetEntity(index);
+		DAVA::Entity *entity = SceneTreeItemEntity::GetEntity(treeModel->GetItem(index));
 		if(NULL != entity)
 		{
 			DAVA::AABBox3 box = sceneEditor->selectionSystem->GetSelectionAABox(entity, entity->GetWorldTransform());
@@ -180,9 +177,30 @@ void SceneTree::TreeItemDoubleClicked(const QModelIndex & index)
 void SceneTree::ShowContextMenu(const QPoint &pos)
 {
 	QModelIndex index = indexAt(pos);
-	DAVA::Entity *clickedEntity = treeModel->GetEntity(index);
+	SceneTreeItem *item = treeModel->GetItem(index);
 
-	if(NULL != clickedEntity)
+	if(NULL != item)
+	{
+		switch (item->ItemType())
+		{
+		case SceneTreeItem::EIT_Entity:
+			ShowContextMenuEntity(SceneTreeItemEntity::GetEntity(item), mapToGlobal(pos));
+			break;
+		case SceneTreeItem::EIT_Layer:
+			ShowContextMenuLayer(SceneTreeItemParticleLayer::GetLayer(item), mapToGlobal(pos));
+			break;
+		case SceneTreeItem::EIT_Force:
+			ShowContextMenuForce(SceneTreeItemParticleForce::GetForce(item), mapToGlobal(pos));
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos)
+{
+	if(NULL != entity)
 	{
 		QMenu contextMenu;
 
@@ -193,7 +211,7 @@ void SceneTree::ShowContextMenu(const QPoint &pos)
 		QAction *lockAction = contextMenu.addAction(QIcon(":/QtIcons/lock_add.png"), "Lock", this, SLOT(LockEntities()));
 		QAction *unlockAction = contextMenu.addAction(QIcon(":/QtIcons/lock_delete.png"), "Unlock", this, SLOT(UnlockEntities()));
 
-		if(clickedEntity->GetLocked())
+		if(entity->GetLocked())
 		{
 			lockAction->setDisabled(true);
 		}
@@ -202,8 +220,18 @@ void SceneTree::ShowContextMenu(const QPoint &pos)
 			unlockAction->setDisabled(true);
 		}
 
-		contextMenu.exec(mapToGlobal(pos));
+		contextMenu.exec(pos);
 	}
+}
+
+void SceneTree::ShowContextMenuLayer(DAVA::ParticleLayer *layer, const QPoint &pos)
+{
+
+}
+
+void SceneTree::ShowContextMenuForce(DAVA::ParticleForce *force, const QPoint &pos)
+{
+
 }
 
 void SceneTree::LookAtSelection()
@@ -303,7 +331,7 @@ void SceneTree::SyncSelectionToTree()
 		const EntityGroup* curSelection = curScene->selectionSystem->GetSelection();
 		for(size_t i = 0; i < curSelection->Size(); ++i)
 		{
-			QModelIndex index = treeModel->GetEntityIndex(curSelection->GetEntity(i));
+			QModelIndex index = treeModel->GetIndex(curSelection->GetEntity(i));
 
 			if(index.isValid())
 			{
@@ -330,10 +358,13 @@ void SceneTree::SyncSelectionFromTree()
 		QModelIndexList indexList = selectionModel()->selection().indexes();
 		for (int i = 0; i < indexList.size(); ++i)
 		{
-			DAVA::Entity *entity = treeModel->GetEntity(indexList[i]);
+			DAVA::Entity *entity = SceneTreeItemEntity::GetEntity(treeModel->GetItem(indexList[i]));
 
-			treeSelectedEntities.insert(entity);
-			curScene->selectionSystem->AddSelection(entity);
+			if(NULL != entity)
+			{
+				treeSelectedEntities.insert(entity);
+				curScene->selectionSystem->AddSelection(entity);
+			}
 		}
 
 		// remove from selection system all entities that are not selected in tree
