@@ -129,7 +129,7 @@ QIcon SceneTreeItem::GetIcon() const
 	{
 		ret = GetIconLOD();
 	}
-	else if(NULL != DAVA::GetRenerObject(entity))
+	else if(NULL != DAVA::GetRenderObject(entity))
 	{
 		ret = GetIconRenderObject();
 	}
