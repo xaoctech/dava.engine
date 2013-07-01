@@ -18,8 +18,8 @@ import filecmp;
 
 arguments = sys.argv[1:]
 
-if len(arguments) != 4:
-    print 'Usage: ./autotesting_init.py PlatformName ProjectName ProjectFolder TestsGroupName'
+if len(arguments) != 5:
+    print 'Usage: ./autotesting_init.py PlatformName Device ProjectName ProjectFolder TestsGroupName'
     exit(1)
 
 def copy_file(srcFolder, destFolder, fileName):
@@ -33,9 +33,10 @@ def copy_file(srcFolder, destFolder, fileName):
     
 print "*** DAVA Initializing autotesting"
 platformName = arguments[0]
-projectName = arguments[1]
-projectFolder = arguments[2]
-testsGroupName = arguments[3]
+device = arguments[1]
+projectName = arguments[2]
+projectFolder = arguments[3]
+testsGroupName = arguments[4]
 
 
 #if 3 == len(arguments):
@@ -114,7 +115,7 @@ params = ["python", "./copy_tests.py", testsSrcFolder, autotestingDestFolder]
 print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
 subprocess.call(params)
 
-params = ["python", "./generate_id.py", projectName, autotestingDestFolder, testsGroupName]
+params = ["python", "./generate_id.py", projectName, autotestingDestFolder, testsGroupName, device]
 print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
 subprocess.call(params)
 

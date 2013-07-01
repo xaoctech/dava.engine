@@ -140,7 +140,7 @@ protected:
 	String GetCurrentTimeString();
 	String GetCurrentTimeMsString();
 //DB
-	KeyedArchive *FindOrInsertRunArchive(MongodbUpdateObject* dbUpdateObject, const String &runId);
+	KeyedArchive *FindOrInsertRunArchive(MongodbUpdateObject* dbUpdateObject, const String &auxArg);
     void ClearTestInDB();
     
     KeyedArchive *FindOrInsertTestArchive(MongodbUpdateObject *dbUpdateObject, const String &testId);
@@ -183,6 +183,7 @@ protected:
     
     String projectName;
     String groupName;
+	String device;
     uint32 testsId;
     uint32 testsDate;
     int32 testIndex;
