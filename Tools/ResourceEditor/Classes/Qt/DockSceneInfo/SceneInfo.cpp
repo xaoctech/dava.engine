@@ -293,7 +293,7 @@ void SceneInfo::CollectSceneTextures()
 {
     for(int32 n = 0; n < (int32)nodesAtScene.size(); ++n)
     {
-        RenderObject *ro = GetRenerObject(nodesAtScene[n]);
+        RenderObject *ro = GetRenderObject(nodesAtScene[n]);
         if(!ro) continue;
         
         uint32 count = ro->GetRenderBatchCount();
