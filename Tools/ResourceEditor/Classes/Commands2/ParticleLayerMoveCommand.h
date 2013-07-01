@@ -14,24 +14,28 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __COMMAND_ID_H__
-#define __COMMAND_ID_H__
+#ifndef __PARTICLE_LAYER_MOVE_COMMAND_H__
+#define __PARTICLE_LAYER_MOVE_COMMAND_H__
 
-enum CommandID
+#include "Commands2/Command2.h"
+#include "Particles/ParticleLayer.h"
+#include "Particles/ParticleEmitter.h"
+
+class ParticleLayerMoveCommand : public Command2
 {
-	CMDID_UNKNOWN	= -1,
-	CMDID_BATCH		=  0,
+public:
+	ParticleLayerMoveCommand(DAVA::ParticleLayer* layer, DAVA::ParticleEmitter *newEmitter, DAVA::ParticleLayer *newBefore = NULL);
+	~ParticleLayerMoveCommand();
 
-	CMDID_TRANSFORM,
+	virtual void Undo();
+	virtual void Redo();
+	virtual DAVA::Entity* GetEntity() const { return NULL; }
 
-	CMDID_ENTITY_REMOVE,
-	CMDID_ENTITY_MOVE,
-	CMDID_PARTICLE_LAYER_REMOVE,
-	CMDID_PARTICLE_LAYER_MOVE,
-	CMDID_PARTICLE_FORCE_REMOVE,
-	CMDID_PARTICLE_FORCE_MOVE,
-
-	CMDID_USER		= 0xF000
+	DAVA::ParticleLayer* layer;
+	DAVA::ParticleEmitter* oldEmitter;
+	DAVA::ParticleLayer* oldBefore;
+	DAVA::ParticleEmitter* newEmitter;
+	DAVA::ParticleLayer* newBefore;
 };
 
-#endif // __COMMAND_ID_H__
+#endif // __PARTICLE_LAYER_MOVE_COMMAND_H__

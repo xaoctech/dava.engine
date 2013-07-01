@@ -14,24 +14,46 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __COMMAND_ID_H__
-#define __COMMAND_ID_H__
+#include "Commands2/ParticleLayerRemoveCommand.h"
 
-enum CommandID
+ParticleLayerRemoveCommand::ParticleLayerRemoveCommand(DAVA::ParticleLayer* _layer)
+	: Command2(CMDID_PARTICLE_LAYER_REMOVE, "Remove particle layer")
+	, layer(_layer)
+	, emitter(NULL)
+	, before(NULL)
 {
-	CMDID_UNKNOWN	= -1,
-	CMDID_BATCH		=  0,
+	SafeRetain(layer);
 
-	CMDID_TRANSFORM,
+	if(NULL != layer)
+	{
+		emitter = layer->GetEmitter();
 
-	CMDID_ENTITY_REMOVE,
-	CMDID_ENTITY_MOVE,
-	CMDID_PARTICLE_LAYER_REMOVE,
-	CMDID_PARTICLE_LAYER_MOVE,
-	CMDID_PARTICLE_FORCE_REMOVE,
-	CMDID_PARTICLE_FORCE_MOVE,
+		// TODO:
+		// before = 
+		// ...
+	}
+}
 
-	CMDID_USER		= 0xF000
-};
+ParticleLayerRemoveCommand::~ParticleLayerRemoveCommand()
+{
+	SafeRelease(layer);
+}
 
-#endif // __COMMAND_ID_H__
+void ParticleLayerRemoveCommand::Undo()
+{
+	if(NULL != layer && NULL != emitter)
+	{
+		// TODO
+		// ...
+
+		emitter->AddLayer(layer, before);
+	}
+}
+
+void ParticleLayerRemoveCommand::Redo()
+{
+	if(NULL != layer && NULL != emitter)
+	{
+		emitter->RemoveLayer(layer);
+	}
+}
