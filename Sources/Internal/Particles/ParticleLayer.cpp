@@ -216,7 +216,11 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 
 	return dstLayer;
 }
-	
+
+ParticleEmitter* ParticleLayer::GetEmitter() const
+{
+	return emitter;
+}
 
 void ParticleLayer::SetEmitter(ParticleEmitter * _emitter)
 {
