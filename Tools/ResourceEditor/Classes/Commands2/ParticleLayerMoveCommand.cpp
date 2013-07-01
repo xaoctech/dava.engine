@@ -14,24 +14,70 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __COMMAND_ID_H__
-#define __COMMAND_ID_H__
+#include "Commands2/ParticleLayerMoveCommand.h"
 
-enum CommandID
+ParticleLayerMoveCommand::ParticleLayerMoveCommand(DAVA::ParticleLayer* _layer, DAVA::ParticleEmitter *_newEmitter, DAVA::ParticleLayer *_newBefore /* = NULL */)
+	: Command2(CMDID_PARTICLE_LAYER_MOVE, "Move particle layer")
+	, layer(_layer)
+	, oldEmitter(NULL)
+	, oldBefore(NULL)
+	, newEmitter(_newEmitter)
+	, newBefore(_newBefore)
 {
-	CMDID_UNKNOWN	= -1,
-	CMDID_BATCH		=  0,
+	SafeRetain(layer);
 
-	CMDID_TRANSFORM,
+	if(NULL != layer)
+	{
+		oldEmitter = layer->GetEmitter();
+	}
 
-	CMDID_ENTITY_REMOVE,
-	CMDID_ENTITY_MOVE,
-	CMDID_PARTICLE_LAYER_REMOVE,
-	CMDID_PARTICLE_LAYER_MOVE,
-	CMDID_PARTICLE_FORCE_REMOVE,
-	CMDID_PARTICLE_FORCE_MOVE,
+	if(NULL != layer && NULL != oldEmitter)
+	{
+		// TODO:
+		// ...
+		oldBefore = NULL;
+	}
+}
 
-	CMDID_USER		= 0xF000
-};
+ParticleLayerMoveCommand::~ParticleLayerMoveCommand()
+{
+	SafeRelease(layer);
+}
 
-#endif // __COMMAND_ID_H__
+void ParticleLayerMoveCommand::Undo()
+{
+	if(NULL != layer)
+	{
+		// TODO::
+		// ...
+
+		if(NULL != newEmitter)
+		{
+			newEmitter->RemoveLayer(layer);
+		}
+
+		if(NULL != oldEmitter)
+		{
+			oldEmitter->AddLayer(layer, oldBefore);
+		}
+	}
+}
+
+void ParticleLayerMoveCommand::Redo()
+{
+	if(NULL != layer && NULL != newEmitter)
+	{
+		// TODO::
+		// ...
+
+		if(NULL != oldEmitter)
+		{
+			oldEmitter->RemoveLayer(layer);
+		}
+
+		if(NULL != newEmitter)
+		{
+			newEmitter->AddLayer(layer, newBefore);
+		}
+	}
+}
