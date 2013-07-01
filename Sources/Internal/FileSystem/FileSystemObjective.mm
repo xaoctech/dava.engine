@@ -37,6 +37,7 @@
 
 namespace DAVA
 {
+
     const FilePath FileSystem::GetUserDocumentsPath()
     {
         NSArray * paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);

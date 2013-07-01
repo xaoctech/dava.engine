@@ -214,19 +214,19 @@ public:
         \brief Function change camera position.
         \param[in] position new camera position
      */
-    void SetPosition(const Vector3 & position);
+    virtual void SetPosition(const Vector3 & position);
     /**
         \brief Function change camera direction.
         Be carefull with this function. It changing target of the camera because in calculations we use pair: position, target. 
         \param[in] direction new camera direction
      */
-	void SetDirection(const Vector3 & direction);
+	virtual void SetDirection(const Vector3 & direction);
     
     /**
         \brief Function to change camera target
         \param[in] target new camera target
      */
-	void SetTarget(const Vector3 & target);
+	virtual void SetTarget(const Vector3 & target);
     
     /**
         \brief Function to change camera up vector
@@ -246,17 +246,17 @@ public:
         It'll be just a point that located on (position, direction) ray distant on 1 from position.
         \returns target vector
      */
-	const Vector3 & GetTarget() const;
+	virtual const Vector3 & GetTarget() const;
     /**
         \brief Function returns position of camera
         \returns current position
      */
-	const Vector3 & GetPosition() const;
+	virtual const Vector3 & GetPosition() const;
     /**
         \brief Function returns normalized direction of camera
         \returns current normalized direction
      */
-	const Vector3 & GetDirection();   // camera forward direction
+	virtual const Vector3 & GetDirection();   // camera forward direction
     /**
         \brief Function returns current normalized up vector of camera
         \returns current normalized up vector

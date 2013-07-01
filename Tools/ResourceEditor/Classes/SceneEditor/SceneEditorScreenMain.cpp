@@ -31,8 +31,7 @@
 #include "../Commands/FileCommands.h"
 #include "../Commands/ToolsCommands.h"
 
-
-
+#include "../Deprecated/ScenePreviewDialog.h"
 
 SceneEditorScreenMain::SceneEditorScreenMain()
 	:	UIScreen()
@@ -42,6 +41,8 @@ SceneEditorScreenMain::SceneEditorScreenMain()
 
 SceneEditorScreenMain::~SceneEditorScreenMain()
 {
+    SafeRelease(scenePreviewDialog);
+    
     SafeRelease(textureTrianglesDialog);
     SafeRelease(settingsDialog);
 
@@ -89,6 +90,8 @@ void SceneEditorScreenMain::InitControls()
     // add line after menu
     Rect fullRect = GetRect();
     AddLineControl(Rect(0, ControlsFactory::BUTTON_HEIGHT, fullRect.dx, LINE_HEIGHT));
+    
+    scenePreviewDialog = new ScenePreviewDialog();
 }
 
 void SceneEditorScreenMain::UnloadResources()
@@ -132,7 +135,6 @@ void SceneEditorScreenMain::DidAppear()
 
 void SceneEditorScreenMain::WillDisappear()
 {
-	
 }
 
 void SceneEditorScreenMain::Update(float32 timeElapsed)
@@ -180,6 +182,8 @@ void SceneEditorScreenMain::ReleaseBodyList()
 
 void SceneEditorScreenMain::AddBodyItem(const WideString &text, bool isCloseable)
 {
+    HideScenePreview();
+    
     EditorScene *scene = SceneDataManager::Instance()->RegisterNewScene();
     SceneDataManager::Instance()->SetActiveScene(scene);
     
@@ -855,4 +859,20 @@ void SceneEditorScreenMain::ActivateBodyItem(BodyItem* activeItem, bool forceRes
 	}
 
 	SceneDataManager::Instance()->SetActiveScene(activeItem->bodyControl->GetScene());
+}
+
+void SceneEditorScreenMain::ShowScenePreview(const FilePath & scenePathname)
+{
+    if(scenePreviewDialog)
+    {
+        scenePreviewDialog->Show(scenePathname);
+    }
+}
+
+void SceneEditorScreenMain::HideScenePreview()
+{
+    if(scenePreviewDialog)
+    {
+        scenePreviewDialog->Close();
+    }
 }
