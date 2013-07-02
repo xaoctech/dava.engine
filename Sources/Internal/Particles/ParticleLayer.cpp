@@ -227,11 +227,6 @@ void ParticleLayer::SetEmitter(ParticleEmitter * _emitter)
 	emitter = _emitter;
 }
 
-ParticleEmitter* ParticleLayer::GetEmitter() const
-{
-	return emitter;
-}
-
 void ParticleLayer::SetSprite(Sprite * _sprite)
 {
     DeleteAllParticles();
@@ -1014,6 +1009,7 @@ void ParticleLayer::SetAdditive(bool additive)
 
 void ParticleLayer::AddForce(ParticleForce* force)
 {
+	SafeRetain(force);
 	this->forces.push_back(force);
 }
 
@@ -1034,8 +1030,8 @@ void ParticleLayer::RemoveForce(ParticleForce* force)
 													  force);
 	if (iter != this->forces.end())
 	{
+		SafeRelease(*iter);
 		this->forces.erase(iter);
-		SafeDelete(*iter);
 	}
 }
 
@@ -1043,7 +1039,7 @@ void ParticleLayer::RemoveForce(int32 forceIndex)
 {
 	if (forceIndex <= (int32)this->forces.size())
 	{
-		SafeDelete(this->forces[forceIndex]);
+		SafeRelease(this->forces[forceIndex]);
 		this->forces.erase(this->forces.begin() + forceIndex);
 	}
 }
@@ -1053,7 +1049,7 @@ void ParticleLayer::CleanupForces()
 	for (Vector<ParticleForce*>::iterator iter = this->forces.begin();
 		 iter != this->forces.end(); iter ++)
 	{
-		SafeDelete(*iter);
+		SafeRelease(*iter);
 	}
 	
 	this->forces.clear();
