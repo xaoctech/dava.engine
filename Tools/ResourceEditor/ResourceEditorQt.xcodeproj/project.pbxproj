@@ -288,6 +288,7 @@
 		626B009E177B2FB500D8A54F /* AddSwitchEntityDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 626B009B177B2FB500D8A54F /* AddSwitchEntityDialog_moc.cpp */; };
 		626B009F177B2FB500D8A54F /* SelectPathWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 626B009D177B2FB500D8A54F /* SelectPathWidget_moc.cpp */; };
 		629E220A177C8B9C007C820F /* AddSwitchEntityCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 629E2208177C8B9B007C820F /* AddSwitchEntityCommand.cpp */; };
+		62A4F1F11781A6CF00D79B26 /* QMimeDataHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62A4F1EF1781A6CF00D79B26 /* QMimeDataHelper.cpp */; };
 		748E55931761D5EB000E24FF /* ParticlesEditorNodeNameHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 748E55911761D5EB000E24FF /* ParticlesEditorNodeNameHelper.cpp */; };
 		74A94C98176B61CF00DE03E4 /* EventFilterDoubleSpinBox.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74A94C96176B61CF00DE03E4 /* EventFilterDoubleSpinBox.cpp */; };
 		74A94C9C176B6BC000DE03E4 /* EventFilterDoubleSpinBox_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74A94C9B176B6BC000DE03E4 /* EventFilterDoubleSpinBox_moc.cpp */; };
@@ -1168,6 +1169,8 @@
 		626B009D177B2FB500D8A54F /* SelectPathWidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SelectPathWidget_moc.cpp; sourceTree = "<group>"; };
 		629E2208177C8B9B007C820F /* AddSwitchEntityCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddSwitchEntityCommand.cpp; sourceTree = "<group>"; };
 		629E2209177C8B9B007C820F /* AddSwitchEntityCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddSwitchEntityCommand.h; sourceTree = "<group>"; };
+		62A4F1EF1781A6CF00D79B26 /* QMimeDataHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QMimeDataHelper.cpp; path = Classes/Qt/Tools/QMimeDataHelper/QMimeDataHelper.cpp; sourceTree = "<group>"; };
+		62A4F1F01781A6CF00D79B26 /* QMimeDataHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QMimeDataHelper.h; path = Classes/Qt/Tools/QMimeDataHelper/QMimeDataHelper.h; sourceTree = "<group>"; };
 		6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtOpenGL.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework"; sourceTree = "<absolute>"; };
 		6C21256244E578A9DE07EE60 /* xml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = xml_macos; path = ../../Libs/libs/libxml_macos.a; sourceTree = "<group>"; };
 		748E55911761D5EB000E24FF /* ParticlesEditorNodeNameHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticlesEditorNodeNameHelper.cpp; sourceTree = "<group>"; };
@@ -2430,6 +2433,7 @@
 		626B008A177B2F2C00D8A54F /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				62A4F1EA1781A6A100D79B26 /* QMimeDataHelper */,
 				626B008F177B2F4600D8A54F /* AddSwitchEntityDialog */,
 				626B0092177B2F4600D8A54F /* SelectPathWidget */,
 			);
@@ -2481,6 +2485,15 @@
 			);
 			name = SelectPathWidget;
 			path = _GeneratedQt/Tools/SelectPathWidget;
+			sourceTree = "<group>";
+		};
+		62A4F1EA1781A6A100D79B26 /* QMimeDataHelper */ = {
+			isa = PBXGroup;
+			children = (
+				62A4F1EF1781A6CF00D79B26 /* QMimeDataHelper.cpp */,
+				62A4F1F01781A6CF00D79B26 /* QMimeDataHelper.h */,
+			);
+			name = QMimeDataHelper;
 			sourceTree = "<group>";
 		};
 		74A94C95176B61CF00DE03E4 /* CustomControls */ = {
@@ -4009,6 +4022,7 @@
 				626B009E177B2FB500D8A54F /* AddSwitchEntityDialog_moc.cpp in Build Sources */,
 				626B009F177B2FB500D8A54F /* SelectPathWidget_moc.cpp in Build Sources */,
 				629E220A177C8B9C007C820F /* AddSwitchEntityCommand.cpp in Build Sources */,
+				62A4F1F11781A6CF00D79B26 /* QMimeDataHelper.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

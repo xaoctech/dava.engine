@@ -60,7 +60,7 @@ void SelectPathWidget::dragEnterEvent(QDragEnterEvent* event)
 {
     if(true)//TODO: MimeDataHelper::IsAcceptedMimeData(event->mimeData())
     {
-        event->acceptProposedAction();;
+        event->acceptProposedAction();
     }
     /*
     
@@ -116,8 +116,6 @@ void SelectPathWidget::dragEnterEvent(QDragEnterEvent* event)
 
 void SelectPathWidget::dropEvent(QDropEvent* event)
 {
-    
-    
     const QMimeData* sendedMimeData = event->mimeData();
     if(sendedMimeData->hasUrls())
     {
@@ -149,7 +147,10 @@ void SelectPathWidget::dropEvent(QDropEvent* event)
     
     foreach(const QString & format, event->mimeData()->formats())
     {
+        String t = format.toStdString();
+        QByteArray t2 = event->mimeData()->data(format);
         mimeData.setData(format, event->mimeData()->data(format));
+        ui->FilePathBox->setText("1");
     }
     
     event->acceptProposedAction();

@@ -20,11 +20,12 @@
 #include "StringConstants.h"
 
 
-AddSwitchEntityCommand::AddSwitchEntityCommand(DAVA::Entity* _entityFirst, DAVA::Entity* _entitySecond)
+AddSwitchEntityCommand::AddSwitchEntityCommand(DAVA::Entity* _entityFirst, DAVA::Entity* _entitySecond, DAVA::Scene* _scene)
 	: Command2(CMDID_ADD_SWITCH_ENTITY, "Add Switch Entity")
 	, entityFirst(_entityFirst)
 	, entitySecond(_entitySecond)
     , entityToAdd(NULL)
+    , scene(_scene)
 {
 }
 
@@ -34,23 +35,16 @@ AddSwitchEntityCommand::~AddSwitchEntityCommand()
 }
 
 void AddSwitchEntityCommand::Undo()
-{/*
-	if(NULL != entity && NULL != parent)
-	{
-		if(NULL != before)
-		{
-			parent->InsertBeforeNode(entity, before);
-		}
-		else
-		{
-			parent->AddNode(entity);
-		}
-	}*/
+{
+    if(NULL != scene && NULL != entityToAdd)
+    {
+        scene->RemoveNode(entityToAdd);
+    }
 }
 
 void AddSwitchEntityCommand::Redo()
 {
-	if(NULL != entityFirst && NULL != entitySecond)
+    if(NULL != entityFirst && NULL != entitySecond)
 	{
 		entityToAdd = new Entity();
         entityToAdd->SetName(ResourceEditor::SWITCH_NODE_NAME);
@@ -60,11 +54,11 @@ void AddSwitchEntityCommand::Redo()
         
         entityToAdd->AddComponent(new SwitchComponent());
         
-        SceneDataManager::Instance()->SceneGetActive()->AddSceneNode(entityToAdd);
+        scene->AddNode(entityToAdd);
 	}
 }
 
-Entity* AddSwitchEntityCommand::GetAddedEntity() const
+Entity* AddSwitchEntityCommand::GetEntity() const
 {
 	return entityToAdd;
 }

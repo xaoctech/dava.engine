@@ -22,17 +22,18 @@
 class AddSwitchEntityCommand : public Command2
 {
 public:
-	AddSwitchEntityCommand(DAVA::Entity* entityFirst, DAVA::Entity* entitySecond);
+	AddSwitchEntityCommand(DAVA::Entity* entityFirst, DAVA::Entity* entitySecond, DAVA::Scene* scene);
 	~AddSwitchEntityCommand();
 
 	virtual void Undo();
 	virtual void Redo();
     
-    virtual DAVA::Entity* GetAddedEntity() const;
+    virtual DAVA::Entity* GetEntity() const;
     
 	DAVA::Entity* entityFirst;
 	DAVA::Entity* entitySecond;
     DAVA::Entity* entityToAdd;
+    DAVA::Scene*  scene;
 	
 };
 
