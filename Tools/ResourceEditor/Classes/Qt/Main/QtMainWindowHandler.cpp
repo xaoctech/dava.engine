@@ -1,3 +1,19 @@
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
 #include "QtMainWindowHandler.h"
 
 #include "../Commands/CommandCreateNode.h"
@@ -18,6 +34,7 @@
 #include "../SceneEditor/EditorSettings.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/EditorBodyControl.h"
+#include "../SceneEditor/TextureSquarenessChecker.h"
 #include "../DockHangingObjects/HangingObjectsHelper.h"
 #include "Scene/SceneDataManager.h"
 #include "Scene/SceneData.h"
@@ -28,6 +45,7 @@
 #include "ModificationWidget.h"
 #include "../Commands/CommandSignals.h"
 #include "SceneEditor/EntityOwnerPropertyHelper.h"
+#include "StringConstants.h"
 
 #include <QPoint>
 #include <QMenu>
@@ -40,6 +58,8 @@
 #include <QStatusBar>
 #include <QSpinBox.h>
 #include <QFileDialog>
+#include <QDesktopServices>
+#include <QUrl>
 
 #include "Render/LibDxtHelper.h"
 
@@ -52,11 +72,12 @@ QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
     ,   statusBar(NULL)
 {
     new CommandsManager();
+	new TextureBrowser((QWidget *) parent);
     
     ClearActions(ResourceEditor::NODE_COUNT, nodeActions);
     ClearActions(ResourceEditor::VIEWPORT_COUNT, viewportActions);
     ClearActions(ResourceEditor::HIDABLEWIDGET_COUNT, hidablewidgetActions);
-    ClearActions(FILE_FORMAT_COUNT, textureFileFormatActions);
+    ClearActions(GPU_FAMILY_COUNT + 1, textureForGPUActions);
 	ClearActions(ResourceEditor::MODIFY_COUNT, modificationActions);
 
     for(int32 i = 0; i < EditorSettings::RESENT_FILES_COUNT; ++i)
@@ -73,6 +94,8 @@ QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
 	connect(QtMainWindow::Instance(), SIGNAL(RepackAndReloadFinished()), this, SLOT(ReloadSceneTextures()));
 	connect(CommandSignals::Instance(), SIGNAL(CommandAffectsEntities(DAVA::Scene* , CommandList::eCommandId , const DAVA::Set<DAVA::Entity*>& ) ) ,
 			this,SLOT( OnEntityModified(DAVA::Scene* , CommandList::eCommandId , const DAVA::Set<DAVA::Entity*>& ) ));
+    
+    connect(this, SIGNAL(UpdateCameraLightOnScene(bool)), sceneDataManager, SLOT(UpdateCameraLightOnScene(bool)));
 }
 
 QtMainWindowHandler::~QtMainWindowHandler()
@@ -86,10 +109,11 @@ QtMainWindowHandler::~QtMainWindowHandler()
     ClearActions(ResourceEditor::NODE_COUNT, nodeActions);
     ClearActions(ResourceEditor::VIEWPORT_COUNT, viewportActions);
     ClearActions(ResourceEditor::HIDABLEWIDGET_COUNT, hidablewidgetActions);
-    ClearActions(FILE_FORMAT_COUNT, textureFileFormatActions);
+    ClearActions(GPU_FAMILY_COUNT + 1, textureForGPUActions);
 	ClearActions(ResourceEditor::MODIFY_COUNT, modificationActions);
 	ClearActions(ResourceEditor::EDIT_COUNT, editActions);
 
+	TextureBrowser::Instance()->Release();
     CommandsManager::Instance()->Release();
 }
 
@@ -133,7 +157,8 @@ void QtMainWindowHandler::NewScene()
 
 void QtMainWindowHandler::OpenScene()
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandOpenScene());
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandOpenScene(),
+												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
 }
 
 
@@ -151,12 +176,13 @@ void QtMainWindowHandler::OpenProject()
 void QtMainWindowHandler::OpenResentScene(int32 index)
 {
 	DAVA::String path = EditorSettings::Instance()->GetLastOpenedFile(index);
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandOpenScene(path));
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandOpenScene(path),
+												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
 }
 
 bool QtMainWindowHandler::SaveScene()
 {
-    return SaveScene(SceneDataManager::Instance()->SceneGetActive()->GetScene());
+	return SaveScene(SceneDataManager::Instance()->SceneGetActive()->GetScene());
 }
 
 bool QtMainWindowHandler::SaveScene(Scene *scene)
@@ -251,29 +277,24 @@ void QtMainWindowHandler::SaveParticleEmitterNodeRecursive(Entity* parentNode)
 
 
 
-void QtMainWindowHandler::ExportAsPNG()
+void QtMainWindowHandler::ExportMenuTriggered(QAction *exportAsAction)
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandExport(PNG_FILE));
+    eGPUFamily gpuFamily = (eGPUFamily)exportAsAction->data().toInt();
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandExport(gpuFamily),
+												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
 }
 
-void QtMainWindowHandler::ExportAsPVR()
-{
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandExport(PVR_FILE));
-}
-
-void QtMainWindowHandler::ExportAsDXT()
-{
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandExport(DXT_FILE));
-}
 
 void QtMainWindowHandler::SaveToFolderWithChilds()
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandSaveToFolderWithChilds());
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandSaveToFolderWithChilds(),
+												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
 }
 
 void QtMainWindowHandler::CreateNode(ResourceEditor::eNodeType type)
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandCreateNode(type));
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandCreateNode(type),
+												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
 }
 
 void QtMainWindowHandler::Materials()
@@ -322,12 +343,11 @@ void QtMainWindowHandler::TilemapEditor()
 
 void QtMainWindowHandler::ConvertTextures()
 {
-	TextureBrowser *textureBrowser = new TextureBrowser((QWidget *) parent());
-	SceneData *activeScene =  SceneDataManager::Instance()->SceneGetActive();
+	SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
 	
-	textureBrowser->sceneActivated(activeScene);
-	textureBrowser->sceneNodeSelected(activeScene, SceneDataManager::Instance()->SceneGetSelectedNode(activeScene));
-	textureBrowser->show();
+	TextureBrowser::Instance()->sceneActivated(activeScene);
+	TextureBrowser::Instance()->sceneNodeSelected(activeScene, SceneDataManager::Instance()->SceneGetSelectedNode(activeScene));
+	TextureBrowser::Instance()->show();
 }
 
 void QtMainWindowHandler::SetViewport(ResourceEditor::eViewportType type)
@@ -410,6 +430,8 @@ void QtMainWindowHandler::FileMenuTriggered(QAction *resentScene)
 }
 
 
+
+
 void QtMainWindowHandler::RegisterNodeActions(int32 count, ...)
 {
     DVASSERT((ResourceEditor::NODE_COUNT == count) && "Wrong count of actions");
@@ -447,14 +469,14 @@ void QtMainWindowHandler::RegisterDockActions(int32 count, ...)
     va_end(vl);
 }
 
-void QtMainWindowHandler::RegisterTextureFormatActions(DAVA::int32 count, ...)
+void QtMainWindowHandler::RegisterTextureGPUActions(DAVA::int32 count, ...)
 {
-    DVASSERT((FILE_FORMAT_COUNT == count) && "Wrong count of actions");
+    DVASSERT((GPU_FAMILY_COUNT + 1 == count) && "Wrong count of actions");
     
     va_list vl;
     va_start(vl, count);
     
-    RegisterActions(textureFileFormatActions, count, vl);
+    RegisterActions(textureForGPUActions, count, vl);
     
     va_end(vl);
 }
@@ -521,7 +543,29 @@ void QtMainWindowHandler::ShowSettings()
 
 void QtMainWindowHandler::Beast()
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandBeast());
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandBeast(),
+												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
+}
+
+void QtMainWindowHandler::SquareTextures()
+{ 
+    if(SceneDataManager::Instance()->SceneGetActive()->GetScenePathname().IsEmpty())
+        return;
+
+    int32 answer = ShowQuestion("Warning!", "All non-square textures will enlarged to square and scene file will resave. Do you want to continue?",
+        MB_FLAG_YES | MB_FLAG_NO, MB_FLAG_NO);
+
+    if(answer == MB_FLAG_YES)
+    {
+        SceneData * activeScene = SceneDataManager::Instance()->SceneGetActive();
+        TextureSquarenessChecker::Instance()->CheckSceneForTextureSquarenessAndResave(activeScene->GetScene());
+    }
+}
+
+void QtMainWindowHandler::ReplaceZeroMipmaps()
+{
+    EditorScene * scene = SceneDataManager::Instance()->SceneGetActive()->GetScene();
+    CommandsManager::Instance()->ExecuteAndRelease(new ReplaceMipmapLevelCommand(0, scene), scene);
 }
 
 void QtMainWindowHandler::SetDefaultFocusWidget(QWidget *widget)
@@ -592,12 +636,11 @@ void QtMainWindowHandler::SetWaitingCursorEnabled(bool enabled)
 
 void QtMainWindowHandler::MenuViewOptionsWillShow()
 {
-    uint8 textureFileFormat = (uint8)EditorSettings::Instance()->GetTextureViewFileFormat();
-    
-    for(int32 i = 0; i < FILE_FORMAT_COUNT; ++i)
+    int32 textureFileFormat = EditorSettings::Instance()->GetTextureViewGPU();
+    for(int32 i = 0; i <= GPU_FAMILY_COUNT; ++i)
     {
-        textureFileFormatActions[i]->setCheckable(true);
-        textureFileFormatActions[i]->setChecked(i == textureFileFormat);
+        textureForGPUActions[i]->setCheckable(true);
+        textureForGPUActions[i]->setChecked(textureForGPUActions[i]->data().toInt() == textureFileFormat);
     }
 }
 
@@ -616,27 +659,19 @@ void QtMainWindowHandler::RulerTool()
 	}
 }
 
-void QtMainWindowHandler::ReloadAsPNG()
-{
-    CommandsManager::Instance()->ExecuteAndRelease(new ReloadTexturesAsCommand(PNG_FILE));
-	MenuViewOptionsWillShow();
-}
 
-void QtMainWindowHandler::ReloadAsPVR()
+void QtMainWindowHandler::ReloadMenuTriggered(QAction *reloadAsAction)
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new ReloadTexturesAsCommand(PVR_FILE));
-	MenuViewOptionsWillShow();
-}
-
-void QtMainWindowHandler::ReloadAsDXT()
-{
-    CommandsManager::Instance()->ExecuteAndRelease(new ReloadTexturesAsCommand(DXT_FILE));
+    eGPUFamily gpuFamily = (eGPUFamily)reloadAsAction->data().toInt();
+    CommandsManager::Instance()->ExecuteAndRelease(new ReloadTexturesAsCommand(gpuFamily),
+												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
 	MenuViewOptionsWillShow();
 }
 
 void QtMainWindowHandler::ReloadSceneTextures()
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandReloadTextures());
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandReloadTextures(),
+												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
 }
 
 void QtMainWindowHandler::OnEntityModified(DAVA::Scene* scene, CommandList::eCommandId id, const DAVA::Set<DAVA::Entity*>& affectedEntities)
@@ -649,12 +684,14 @@ void QtMainWindowHandler::OnEntityModified(DAVA::Scene* scene, CommandList::eCom
 
 void QtMainWindowHandler::ToggleSetSwitchIndex(DAVA::uint32  value, SetSwitchIndexHelper::eSET_SWITCH_INDEX state)
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandToggleSetSwitchIndex(value,state));
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandToggleSetSwitchIndex(value,state),
+												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
 }
 
 void QtMainWindowHandler::MaterialViewOptionChanged(int index)
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandChangeMaterialViewOption((Material::eViewOptions)index));
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandChangeMaterialViewOption((Material::eViewOptions)index),
+												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
 }
 
 void QtMainWindowHandler::ToggleHangingObjects(float value, bool isEnabled)
@@ -673,12 +710,14 @@ void QtMainWindowHandler::ToggleCustomColors()
 
 void QtMainWindowHandler::SaveTextureCustomColors()
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandSaveTextureCustomColors());
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandSaveTextureCustomColors(),
+												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
 }
 
 void QtMainWindowHandler::LoadTextureCustomColors()
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandLoadTextureCustomColors());
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandLoadTextureCustomColors(),
+												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
 }
 
 void QtMainWindowHandler::ChangeBrushSizeCustomColors(int newSize)
@@ -814,7 +853,8 @@ void QtMainWindowHandler::ToggleVisibilityTool()
 
 void QtMainWindowHandler::SaveTextureVisibilityTool()
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandSaveTextureVisibilityTool());
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandSaveTextureVisibilityTool(),
+												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
 }
 
 void QtMainWindowHandler::ChangleAreaSizeVisibilityTool(int newSize)
@@ -1033,18 +1073,31 @@ void QtMainWindowHandler::OnResetModification()
 
 void QtMainWindowHandler::UndoAction()
 {
-	CommandsManager::Instance()->Undo();
+	CommandsManager::Instance()->Undo(SceneDataManager::Instance()->SceneGetActive()->GetScene());
 	UpdateUndoActionsState();
+
+	SceneEditor2 *curScene = QtMainWindow::Instance()->GetUI()->sceneTabWidget->GetCurrentScene();
+	if(NULL != curScene)
+	{
+		curScene->Undo();
+	}
 }
 
 void QtMainWindowHandler::RedoAction()
 {
-	CommandsManager::Instance()->Redo();
+	CommandsManager::Instance()->Redo(SceneDataManager::Instance()->SceneGetActive()->GetScene());
 	UpdateUndoActionsState();
+
+	SceneEditor2 *curScene = QtMainWindow::Instance()->GetUI()->sceneTabWidget->GetCurrentScene();
+	if(NULL != curScene)
+	{
+		curScene->Redo();
+	}
 }
 
 void QtMainWindowHandler::UpdateUndoActionsState()
 {
+	Scene* scene = SceneDataManager::Instance()->SceneGetActive()->GetScene();
 	CommandsManager* commandsManager = CommandsManager::Instance();
 
 	bool isEnabled;
@@ -1052,10 +1105,10 @@ void QtMainWindowHandler::UpdateUndoActionsState()
 
 	isEnabled = false;
 	commandName = "";
-	if (commandsManager->GetUndoQueueLength())
+	if (commandsManager->GetUndoQueueLength(scene))
 	{
 		isEnabled = true;
-		commandName = commandsManager->GetUndoCommandName();
+		commandName = commandsManager->GetUndoCommandName(scene);
 	}
 	QString str = tr("Undo");
 	if (isEnabled)
@@ -1065,10 +1118,10 @@ void QtMainWindowHandler::UpdateUndoActionsState()
 
 	isEnabled = false;
 	commandName = "";
-	if (commandsManager->GetRedoQueueLength())
+	if (commandsManager->GetRedoQueueLength(scene))
 	{
 		isEnabled = true;
-		commandName = commandsManager->GetRedoCommandName();
+		commandName = commandsManager->GetRedoCommandName(scene);
 	}
 	str = tr("Redo");
 	if (isEnabled)
@@ -1095,8 +1148,25 @@ void QtMainWindowHandler::OnSceneReleased(SceneData *scene)
 	UpdateRecentScenesList();
 }
 
-
 void QtMainWindowHandler::ConvertToShadow()
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandConvertToShadow());
+    Entity * entity = SceneDataManager::Instance()->SceneGetSelectedNode(SceneDataManager::Instance()->SceneGetActive());
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandConvertToShadow(entity),
+												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
+}
+
+void QtMainWindowHandler::CameraLightTrigerred()
+{
+    bool enabled = EditorSettings::Instance()->GetShowEditorCamerLight();
+    EditorSettings::Instance()->SetShowEditorCamerLight(!enabled);
+    
+    emit UpdateCameraLightOnScene(!enabled);
+}
+
+
+void QtMainWindowHandler::OpenHelp()
+{
+    FilePath docsPath = ResourceEditor::DOCUMENTATION_PATH + "index.html";
+    QString docsFile = QString::fromStdString("file:///" + docsPath.GetAbsolutePathname());
+    QDesktopServices::openUrl(QUrl(docsFile));
 }

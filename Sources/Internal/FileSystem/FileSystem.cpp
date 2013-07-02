@@ -1,31 +1,17 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #include "FileSystem/FileSystem.h"
 #include "FileSystem/FileList.h"
@@ -385,56 +371,17 @@ const FilePath & FileSystem::GetCurrentWorkingDirectory()
 	return currentWorkingDirectory;
 }
 
-const FilePath & FileSystem::GetCurrentExecutableDirectory()
+FilePath FileSystem::GetCurrentExecutableDirectory()
 {
+    char tempDir[2048];
+    FilePath currentExecuteDirectory;
 #if defined(__DAVAENGINE_WIN32__)
-	TCHAR szFileName[MAX_PATH];
-	GetModuleFileName( NULL, szFileName, MAX_PATH );
-
-	TCHAR drive[FILENAME_MAX];
-	TCHAR folder[MAX_PATH];
-	TCHAR fName[FILENAME_MAX];
-	TCHAR ext[FILENAME_MAX];
-	_wsplitpath(szFileName, drive, folder, fName, ext);
-	
-	TCHAR currentDir[MAX_PATH];
-	_tcscpy( currentDir, drive );
-	_tcscat( currentDir, folder );
-	
-	currentExecuteDirectory = FilePath(WStringToString(WideString(currentDir)));
-	currentExecuteDirectory.MakeDirectoryPathname();
-	return currentExecuteDirectory;
-#elif defined(__DAVAENGINE_MACOS__) 
-	char tempDir[2048];
+    ::GetModuleFileNameA( NULL, tempDir, 2048 );
+    currentExecuteDirectory = FilePath(tempDir).GetDirectory();
+#elif defined(__DAVAENGINE_MACOS__)
     proc_pidpath(getpid(), tempDir, sizeof(tempDir));
-    
     currentExecuteDirectory = FilePath(dirname(tempDir));
-	currentExecuteDirectory.MakeDirectoryPathname();
-	return currentExecuteDirectory;
-#elif defined(__DAVAENGINE_IPHONE__)
-    pid_t pid = getpid();
-    int32 mib[3] = {CTL_KERN, KERN_ARGMAX, 0};
-    
-    size_t argmaxsize = sizeof(size_t);
-    size_t size;
-    
-    int32 ret = sysctl(mib, 2, &size, &argmaxsize, NULL, 0);
-    DVASSERT(ret == 0);
-
-    mib[1] = KERN_PROCARGS2;
-    mib[2] = (int32)pid;
-    
-    char *procargv = (char*)malloc(size);
-    ret = sysctl(mib, 3, procargv, &size, NULL, 0);
-        
-    DVASSERT(ret == 0);
-
-    currentExecuteDirectory = FilePath(dirname(procargv + sizeof(int32)));
-	currentExecuteDirectory.MakeDirectoryPathname();
-    free(procargv);
-	return currentExecuteDirectory;
-#elif defined(__DAVAENGINE_ANDROID__)
-	//unnecessary to find full path because of apk archive
+#elif defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 	DVASSERT(0);
 #endif //PLATFORMS
 	currentExecuteDirectory.MakeDirectoryPathname();
@@ -638,6 +585,7 @@ int32 FileSystem::Spawn(const String& command)
 #endif
 
 	if(retCode != 0)
+
 	{
 		Logger::Warning("[FileSystem::Spawn] command (%s) has return code (%d)", command.c_str(), retCode);
 	}
