@@ -107,7 +107,6 @@ public:
 	*/
 	ParticleEmitter* GetEmitter() const;
 	void SetEmitter(ParticleEmitter * emitter);
-	ParticleEmitter* GetEmitter() const;
 	
 	/**
 		\brief Set sprite for the current layer
