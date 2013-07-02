@@ -1,31 +1,17 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #ifndef __DAVAENGINE_PARTICLE_EMITTER_H__
 #define __DAVAENGINE_PARTICLE_EMITTER_H__
@@ -187,13 +173,13 @@ public:
 	virtual void AddLayer(ParticleLayer * layer);
 
 	/**
-	 \brief Function adds layer to emitter to the particular position.
+	 \brief Function insert layer to emitter to the particular position.
 	 You can use this function if you create emitters on the fly manually. It's not often case, but probably sometimes
 	 it can be required.
 	 \param[in] layer layer to be added
-  	 \param[in] layerToMoveAbove the position above which the layer will be inserted
+  	 \param[in] beforeLayer the position beforez which the layer will be inserted
 	 */
-	virtual void AddLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove);
+	virtual void InsertLayer(ParticleLayer * layer, ParticleLayer * beforeLayer);
 
 	/**
 	 \brief Function removes layer to emitter.
@@ -207,10 +193,18 @@ public:
 	/**
 	 \brief Function change the layer's order inside the same emitter.
 	 \param[in] layer layer to be moved
- 	 \param[in] layerToMoveAbove the position above which the layer will be moved
+ 	 \param[in] layerToMoveBefore the position before which the layer will be moved
 	 */
-	void MoveLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove);
+	void MoveLayer(ParticleLayer * layer, ParticleLayer * beforeLayer);
 
+	/**
+	 \brief Function returns the next layer for the layer to be passed or NULL if next layer
+	 is not found.
+	 \param[in] layer layer to be moved
+ 	 \param[in] layerToMoveBefore the position before which the layer will be moved
+	 */
+	ParticleLayer* GetNextLayer(ParticleLayer* layer);
+	
 	/**
 		\brief Function to clone emitter.
 		This function is needed then you do not want to reload emitter every time from disk.
