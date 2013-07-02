@@ -18,6 +18,8 @@
 #include "Debug/DVAssert.h"
 #include <stdarg.h>
 
+#include "Utils/Utils.h"
+
 namespace DAVA 
 {
 
@@ -42,9 +44,16 @@ void Logger::Logv(eLogLevel ll, const char8* text, va_list li)
 	// only if log level is acceptable
 	if (ll >= logLevel)
 	{
-		PlatformLog(ll, tmp);
+        if(consoleModeEnabled)
+        {
+            ConsoleLog(ll, tmp);
+        }
+        else
+        {
+            PlatformLog(ll, tmp);
+        }
 
-		if(!logFilename.empty())
+		if(!logFilename.IsEmpty())
 		{
 			FileLog(ll, tmp);
 		}
@@ -65,12 +74,20 @@ void Logger::Logv(eLogLevel ll, const char16* text, va_list li)
 	// only if log level is acceptable
 	if (ll >= logLevel)
 	{
-		PlatformLog(ll, tmp);
+        if(consoleModeEnabled)
+        {
+            ConsoleLog(ll, tmp);
+        }
+        else
+        {
+            PlatformLog(ll, tmp);
+        }
 
-		if(!logFilename.empty())
+		if(!logFilename.IsEmpty())
 		{
 			FileLog(ll, tmp);
 		}
+
 	}
 }
 
@@ -86,6 +103,8 @@ Logger::Logger()
 {
 	logLevel = LEVEL_DEBUG;
 	SetLogFilename(String());
+    
+    consoleModeEnabled = false;
 }
 
 Logger::~Logger()
@@ -211,14 +230,13 @@ void Logger::AddCustomOutput(DAVA::LoggerOutput *lo)
 
 void Logger::SetLogFilename(const String & filename)
 {
-	if(!filename.empty())
+	if(filename.empty())
 	{
-		FilePath filepath = FileSystem::Instance()->GetCurrentDocumentsDirectory() + filename;
-		logFilename = filepath.GetAbsolutePathname().c_str();
+        logFilename = FilePath();
 	}
 	else
 	{
-		logFilename = filename;
+		logFilename = FileSystem::Instance()->GetCurrentDocumentsDirectory() + filename;
 	}
 }
 
@@ -226,11 +244,14 @@ void Logger::FileLog(eLogLevel ll, const char8* text)
 {
 	if(FileSystem::Instance())
 	{
-		FILE * file = fopen(logFilename.c_str(), "ab");
+        File *file = File::Create(logFilename, File::APPEND | File::WRITE);
 		if(file)
 		{
-			fwrite(text, sizeof(char), strlen(text), file);
-			fclose(file);
+            char8 prefix[128];
+            snprintf(prefix, 127, "[%s] ", GetLogLevelString(ll));
+            file->Write(prefix, sizeof(char) * strlen(prefix));
+            file->Write(text, sizeof(char) * strlen(text));
+            file->Release();
 		}
 	}
 }
@@ -239,11 +260,15 @@ void Logger::FileLog(eLogLevel ll, const char16* text)
 {
 	if(FileSystem::Instance())
 	{
-		FILE * file = fopen(logFilename.c_str(), "ab");
+        File *file = File::Create(logFilename, File::APPEND | File::WRITE);
 		if(file)
 		{
-			fwrite(text, sizeof(wchar_t), wcslen(text), file);
-			fclose(file);
+            char16 prefix[128];
+            swprintf(prefix, 127, L"[%s] ",  StringToWString(GetLogLevelString(ll)).c_str());
+
+            file->Write(prefix, sizeof(wchar_t) * wcslen(prefix));
+            file->Write(text, sizeof(wchar_t) * wcslen(text));
+            file->Release();
 		}
 	}
 }
@@ -262,6 +287,23 @@ void Logger::CustomLog(eLogLevel ll, const char16* text)
 	{
 		customOutputs[i]->Output(ll, text);
 	}
+}
+    
+void Logger::EnableConsoleMode()
+{
+    consoleModeEnabled = true;
+}
+
+    
+void Logger::ConsoleLog(DAVA::Logger::eLogLevel ll, const char8 *text)
+{
+    printf("[%s] %s", GetLogLevelString(ll), text);
+    
+}
+
+void Logger::ConsoleLog(DAVA::Logger::eLogLevel ll, const char16 *text)
+{
+    wprintf(L"[%s] %s", StringToWString(GetLogLevelString(ll)).c_str(), text);
 }
 
 }
