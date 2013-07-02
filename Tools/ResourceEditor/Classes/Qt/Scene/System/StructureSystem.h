@@ -49,11 +49,11 @@ public:
 	void RemoveLayer(DAVA::ParticleLayer *layer);
 	void RemoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &layers);
 
-	void MoveForce(DAVA::ParticleForce *force, DAVA::ParticleLayer *newLayer);
-	void MoveForce(const DAVA::Vector<DAVA::ParticleForce> &forces, DAVA::ParticleLayer *newLayer);
+	void MoveForce(DAVA::ParticleForce *force, DAVA::ParticleLayer *oldLayer, DAVA::ParticleLayer *newLayer);
+	void MoveForce(const DAVA::Vector<DAVA::ParticleForce *> &forces, const DAVA::Vector<DAVA::ParticleLayer *> &oldLayers, DAVA::ParticleLayer *newLayer);
 
-	void RemoveForce(DAVA::ParticleForce *force);
-	void RemoveForce(const DAVA::Vector<DAVA::ParticleForce> &forces);
+	void RemoveForce(DAVA::ParticleForce *force, DAVA::ParticleLayer *layer);
+	void RemoveForce(const DAVA::Vector<DAVA::ParticleForce *> &forces, const DAVA::Vector<DAVA::ParticleLayer *> &layers);
 
 	void LockSignals();
 	void UnlockSignals();

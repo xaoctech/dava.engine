@@ -14,73 +14,50 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "Commands2/ParticleLayerMoveCommand.h"
+#include "Commands2/ParticleForceMoveCommand.h"
 
-ParticleLayerMoveCommand::ParticleLayerMoveCommand(DAVA::ParticleLayer* _layer, DAVA::ParticleEmitter *_newEmitter, DAVA::ParticleLayer *_newBefore /* = NULL */)
-	: Command2(CMDID_PARTICLE_LAYER_MOVE, "Move particle layer")
-	, layer(_layer)
-	, oldEmitter(NULL)
-	, oldBefore(NULL)
-	, newEmitter(_newEmitter)
-	, newBefore(_newBefore)
+ParticleForceMoveCommand::ParticleForceMoveCommand(DAVA::ParticleForce* _force, DAVA::ParticleLayer *_oldLayer, DAVA::ParticleLayer *_newLayer)
+	: Command2(CMDID_PARTICLE_FORCE_MOVE, "Move particle force")
+	, force(_force)
+	, oldLayer(_oldLayer)
+	, newLayer(_newLayer)
 {
-	SafeRetain(layer);
-
-	if(NULL != layer)
-	{
-		oldEmitter = layer->GetEmitter();
-	}
-
-	if(NULL != layer && NULL != oldEmitter)
-	{
-		oldBefore = oldEmitter->GetNextLayer(layer);
-	}
+	SafeRetain(force);
 }
 
-ParticleLayerMoveCommand::~ParticleLayerMoveCommand()
+ParticleForceMoveCommand::~ParticleForceMoveCommand()
 {
-	SafeRelease(layer);
+	SafeRelease(force);
 }
 
-void ParticleLayerMoveCommand::Undo()
+void ParticleForceMoveCommand::Undo()
 {
-	if(NULL != layer)
+	if(NULL != force)
 	{
-		if(NULL != newEmitter)
+		if(NULL != newLayer)
 		{
-			newEmitter->RemoveLayer(layer);
+			newLayer->RemoveForce(force);
 		}
 
-		if(NULL != oldEmitter)
+		if(NULL != oldLayer)
 		{
-			if(NULL != oldBefore)
-			{
-				oldEmitter->InsertBeforeLayer(layer, oldBefore);
-			}
-			else
-			{
-				oldEmitter->AddLayer(layer);
-			}
+			oldLayer->AddForce(force);
 		}
 	}
 }
 
-void ParticleLayerMoveCommand::Redo()
+void ParticleForceMoveCommand::Redo()
 {
-	if(NULL != layer && NULL != newEmitter)
+	if(NULL != force)
 	{
-		if(NULL != oldEmitter)
+		if(NULL != oldLayer)
 		{
-			oldEmitter->RemoveLayer(layer);
+			oldLayer->RemoveForce(force);
 		}
 
-		if(NULL != newBefore)
+		if(NULL != newLayer)
 		{
-			newEmitter->InsertBeforeLayer(layer, newBefore);
-		}
-		else
-		{
-			newEmitter->AddLayer(layer);
+			newLayer->AddForce(force);
 		}
 	}
 }
