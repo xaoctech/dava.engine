@@ -14,73 +14,25 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "Commands2/ParticleLayerMoveCommand.h"
+#ifndef __PARTICLE_FORCE_REMOVE_COMMAND_H__
+#define __PARTICLE_FORCE_REMOVE_COMMAND_H__
 
-ParticleLayerMoveCommand::ParticleLayerMoveCommand(DAVA::ParticleLayer* _layer, DAVA::ParticleEmitter *_newEmitter, DAVA::ParticleLayer *_newBefore /* = NULL */)
-	: Command2(CMDID_PARTICLE_LAYER_MOVE, "Move particle layer")
-	, layer(_layer)
-	, oldEmitter(NULL)
-	, oldBefore(NULL)
-	, newEmitter(_newEmitter)
-	, newBefore(_newBefore)
+#include "Commands2/Command2.h"
+#include "Particles/ParticleLayer.h"
+#include "Particles/ParticleForce.h"
+
+class ParticleForceRemoveCommand : public Command2
 {
-	SafeRetain(layer);
+public:
+	ParticleForceRemoveCommand(DAVA::ParticleForce *force, DAVA::ParticleLayer* layer);
+	~ParticleForceRemoveCommand();
 
-	if(NULL != layer)
-	{
-		oldEmitter = layer->GetEmitter();
-	}
+	virtual void Undo();
+	virtual void Redo();
+	virtual DAVA::Entity* GetEntity() const { return NULL; }
 
-	if(NULL != layer && NULL != oldEmitter)
-	{
-		oldBefore = oldEmitter->GetNextLayer(layer);
-	}
-}
+	DAVA::ParticleForce *force;
+	DAVA::ParticleLayer* layer;
+};
 
-ParticleLayerMoveCommand::~ParticleLayerMoveCommand()
-{
-	SafeRelease(layer);
-}
-
-void ParticleLayerMoveCommand::Undo()
-{
-	if(NULL != layer)
-	{
-		if(NULL != newEmitter)
-		{
-			newEmitter->RemoveLayer(layer);
-		}
-
-		if(NULL != oldEmitter)
-		{
-			if(NULL != oldBefore)
-			{
-				oldEmitter->InsertBeforeLayer(layer, oldBefore);
-			}
-			else
-			{
-				oldEmitter->AddLayer(layer);
-			}
-		}
-	}
-}
-
-void ParticleLayerMoveCommand::Redo()
-{
-	if(NULL != layer && NULL != newEmitter)
-	{
-		if(NULL != oldEmitter)
-		{
-			oldEmitter->RemoveLayer(layer);
-		}
-
-		if(NULL != newBefore)
-		{
-			newEmitter->InsertBeforeLayer(layer, newBefore);
-		}
-		else
-		{
-			newEmitter->AddLayer(layer);
-		}
-	}
-}
+#endif // __PARTICLE_FORCE_REMOVE_COMMAND_H__

@@ -22,6 +22,8 @@
 #include "Commands2/EntityRemoveCommand.h"
 #include "Commands2/ParticleLayerMoveCommand.h"
 #include "Commands2/ParticleLayerRemoveCommand.h"
+#include "Commands2/ParticleForceMoveCommand.h"
+#include "Commands2/ParticleForceRemoveCommand.h"
 
 StructureSystem::StructureSystem(DAVA::Scene * scene)
 	: DAVA::SceneSystem(scene)
@@ -139,6 +141,7 @@ void StructureSystem::MoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &layer
 	{
 		if(layers.size() > 1)
 		{
+			LockSignals();
 			sceneEditor->BeginBatch("Move particle layers");
 		}
 
@@ -150,20 +153,116 @@ void StructureSystem::MoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &layer
 		if(layers.size() > 1)
 		{
 			sceneEditor->EndBatch();
-		}
+			UnlockSignals();
 
-		SceneSignals::Instance()->EmitStructureChanged((SceneEditor2 *) GetScene(), NULL);
+			SceneSignals::Instance()->EmitStructureChanged((SceneEditor2 *) GetScene(), NULL);
+		}
 	}
 }
 
 void StructureSystem::RemoveLayer(DAVA::ParticleLayer *layer)
 {
-
+	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
+	if(NULL != sceneEditor)
+	{
+		sceneEditor->Exec(new ParticleLayerRemoveCommand(layer));
+	}
 }
 
 void StructureSystem::RemoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &layers)
 {
+	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
+	if(NULL != sceneEditor)
+	{
+		if(layers.size() > 1)
+		{
+			LockSignals();
+			sceneEditor->BeginBatch("Remove particle layers");
+		}
 
+		for(size_t i = 0; i < layers.size(); ++i)
+		{
+			sceneEditor->Exec(new ParticleLayerRemoveCommand(layers[i]));
+		}
+
+		if(layers.size() > 1)
+		{
+			sceneEditor->EndBatch();
+			UnlockSignals();
+
+			SceneSignals::Instance()->EmitStructureChanged((SceneEditor2 *) GetScene(), NULL);
+		}
+	}
+}
+
+void StructureSystem::MoveForce(DAVA::ParticleForce *force, DAVA::ParticleLayer *oldLayer, DAVA::ParticleLayer *newLayer)
+{
+	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
+	if(NULL != sceneEditor)
+	{
+		sceneEditor->Exec(new ParticleForceMoveCommand(force, oldLayer, newLayer));
+	}
+}
+
+void StructureSystem::MoveForce(const DAVA::Vector<DAVA::ParticleForce *> &forces, const DAVA::Vector<DAVA::ParticleLayer *> &oldLayers, DAVA::ParticleLayer *newLayer)
+{
+	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
+	if(NULL != sceneEditor)
+	{
+		if(forces.size() > 1)
+		{
+			LockSignals();
+			sceneEditor->BeginBatch("Move particle layers");
+		}
+
+		for(size_t i = 0; i < forces.size(); ++i)
+		{
+			sceneEditor->Exec(new ParticleForceMoveCommand(forces[i], oldLayers[i], newLayer));
+		}
+
+		if(forces.size() > 1)
+		{
+			sceneEditor->EndBatch();
+			UnlockSignals();
+
+			SceneSignals::Instance()->EmitStructureChanged((SceneEditor2 *) GetScene(), NULL);
+		}
+	}
+}
+
+void StructureSystem::RemoveForce(DAVA::ParticleForce *force, DAVA::ParticleLayer *layer)
+{
+	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
+	if(NULL != sceneEditor)
+	{
+		sceneEditor->Exec(new ParticleForceRemoveCommand(force, layer));
+	}
+}
+
+void StructureSystem::RemoveForce(const DAVA::Vector<DAVA::ParticleForce *> &forces, const DAVA::Vector<DAVA::ParticleLayer *> &layers)
+{
+	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
+	if(NULL != sceneEditor)
+	{
+		if(forces.size() > 1)
+		{
+			LockSignals();
+			sceneEditor->BeginBatch("Remove particle layers");
+		}
+
+		for(size_t i = 0; i < forces.size(); ++i)
+		{
+			sceneEditor->Exec(new ParticleForceRemoveCommand(forces[i], layers[i]));
+		}
+
+		if(forces.size() > 1)
+		{
+			sceneEditor->EndBatch();
+			UnlockSignals();
+
+			SceneSignals::Instance()->EmitStructureChanged((SceneEditor2 *) GetScene(), NULL);
+		}
+	}
 }
 
 void StructureSystem::LockSignals()
@@ -197,8 +296,11 @@ void StructureSystem::PropeccCommand(const Command2 *command, bool redo)
 	{
 		if(NULL != command)
 		{
-			if(command->GetId() == CMDID_PARTICLE_LAYER_REMOVE ||
-			   command->GetId() == CMDID_PARTICLE_LAYER_MOVE)
+			int cmdId = command->GetId();
+			if(cmdId == CMDID_PARTICLE_LAYER_REMOVE ||
+			   cmdId == CMDID_PARTICLE_LAYER_MOVE ||
+			   cmdId == CMDID_PARTICLE_FORCE_REMOVE ||
+			   cmdId == CMDID_PARTICLE_FORCE_MOVE)
 			{
 				SceneSignals::Instance()->EmitStructureChanged((SceneEditor2 *) GetScene(), NULL);
 			}

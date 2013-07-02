@@ -28,9 +28,10 @@ ParticleLayerRemoveCommand::ParticleLayerRemoveCommand(DAVA::ParticleLayer* _lay
 	{
 		emitter = layer->GetEmitter();
 
-		// TODO:
-		// before = 
-		// ...
+		if(NULL != emitter)
+		{
+			before = emitter->GetNextLayer(layer);
+		}
 	}
 }
 
@@ -43,10 +44,14 @@ void ParticleLayerRemoveCommand::Undo()
 {
 	if(NULL != layer && NULL != emitter)
 	{
-		// TODO
-		// ...
-
-		emitter->AddLayer(layer, before);
+		if(NULL != before)
+		{
+			emitter->InsertBeforeLayer(layer, before);
+		}
+		else
+		{
+			emitter->AddLayer(layer);
+		}
 	}
 }
 
