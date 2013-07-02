@@ -30,7 +30,7 @@ public:
 	ParticleEmitter3D();
 
 	virtual void AddLayer(ParticleLayer * layer);
-	virtual void InsertBeforeLayer(ParticleLayer * layer, ParticleLayer * beforeLayer);
+	virtual void InsertLayer(ParticleLayer * layer, ParticleLayer * beforeLayer);
 
 	virtual bool Is3DFlagCorrect();
 

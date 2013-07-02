@@ -89,11 +89,6 @@ const List<FilePath> FilePath::GetResourcesFolders()
 {
     return resourceFolders;
 }
-    
-void FilePath::CleanResourcesFolders()
-{
-    resourceFolders.clear();
-}
 
     
 #if defined(__DAVAENGINE_WIN32__)

@@ -79,7 +79,7 @@ DAVA::Core::eDeviceFamily DAVA::Core::GetDeviceFamily()
 #include "UI/UIScreenManager.h"
 
 
-- (void)applicationDidFinishLaunching:(UIApplication *)application 
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
 	UIWindow *wnd = application.keyWindow;
 	wnd.frame = [::UIScreen mainScreen].bounds;
@@ -89,6 +89,8 @@ DAVA::Core::eDeviceFamily DAVA::Core::GetDeviceFamily()
 	DAVA::UIScreenManager::Instance()->SetGLControllerId(CONTROLLER_GL);
 	
 	DAVA::Core::Instance()->SystemAppStarted();
+    
+    return YES;
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application

@@ -119,6 +119,7 @@ Entity* SceneDataManager::AddScene(const FilePath &scenePathname)
 	}
 
     sceneData->GetScene()->UpdateCameraLightOnScene();
+    SceneHidePreview();
 	UpdateParticleSprites();
 	emit SceneGraphNeedRebuild();
 
@@ -796,3 +797,28 @@ void SceneDataManager::UpdateCameraLightOnScene(bool show)
     emit SceneGraphNeedRebuild();
 }
 
+void SceneDataManager::SceneShowPreview(const DAVA::FilePath &path)
+{
+    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+
+    if(screen)
+    {
+        if(path.IsEqualToExtension(".sc2") && FileSystem::Instance()->IsFile(path))
+        {
+            screen->ShowScenePreview(path);
+        }
+        else
+        {
+            SceneHidePreview();
+        }
+    }
+}
+
+void SceneDataManager::SceneHidePreview()
+{
+    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+    if(screen)
+    {
+        screen->HideScenePreview();
+    }
+}

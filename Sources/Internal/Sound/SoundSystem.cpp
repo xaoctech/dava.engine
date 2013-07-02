@@ -28,6 +28,7 @@
 
 namespace DAVA
 {
+
 SoundSystem::SoundSystem(int32 maxChannels)
 {
 	FMOD_VERIFY(FMOD::EventSystem_Create(&fmodEventSystem));

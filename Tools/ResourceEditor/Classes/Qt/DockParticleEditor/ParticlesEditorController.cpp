@@ -579,9 +579,9 @@ bool ParticlesEditorController::PerformMoveBetweenEmitters(EmitterParticleEditor
 		layerToInsertBefore = layerNodeToInsertBefore->GetLayer();
 	}
 
-	// Yuri Coder, 2013/07/01. InsertBeforeLayer() functionality now removes layer
+	// Yuri Coder, 2013/07/01. InsertLayer() functionality now removes layer
 	// from previous emitter too.
-	newParentEmitter->InsertBeforeLayer(layerToMove, layerToInsertBefore);
+	newParentEmitter->InsertLayer(layerToMove, layerToInsertBefore);
 	
 	// Update the emitter.
 	layerNodeToMove->UpdateEmitterEditorNode(newEmitterNode);
