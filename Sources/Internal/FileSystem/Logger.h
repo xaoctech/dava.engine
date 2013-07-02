@@ -111,9 +111,11 @@ public:
     static void SetTag(const char8 *logTag);
 #endif    
     
+    void EnableConsoleMode();
+    
 protected:	
 	eLogLevel logLevel;
-	String logFilename;
+	FilePath logFilename;
 	Vector<LoggerOutput *> customOutputs;
 
 	const char8 * GetLogLevelString(eLogLevel ll);
@@ -126,6 +128,12 @@ protected:
 
 	void CustomLog(eLogLevel ll, const char8* text);
 	void CustomLog(eLogLevel ll, const char16* text);
+
+    void ConsoleLog(eLogLevel ll, const char8* text);
+	void ConsoleLog(eLogLevel ll, const char16* text);
+
+    
+    bool consoleModeEnabled;
 };
 
 class LoggerOutput
