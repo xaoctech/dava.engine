@@ -36,6 +36,7 @@ Settings* Settings::m_spInstance = NULL;
 #define LAUNCHER_VER "LAUNCHER_VER"
 
 #define STABLE "STABLE"
+#define TOMASTER "TOMASTER"
 #define QA "QA"
 #define DEVELOPMENT "DEVELOPMENT"
 #define DEPENDENCIES "DEPENDENCIES"
@@ -121,6 +122,7 @@ void Settings::ParseInitConfig() {
         docParser.GetNextDocument(docSettings);
 
         ParseAppConfig(&docSettings, STABLE, newConfig.m_Stable);
+        ParseAppConfig(&docSettings, TOMASTER, newConfig.m_toMaster);
         ParseAppConfig(&docSettings, QA, newConfig.m_Test);
         ParseAppConfig(&docSettings, DEVELOPMENT, newConfig.m_Development);
         ParseAppConfig(&docSettings, DEPENDENCIES, newConfig.m_Dependencies);
@@ -182,6 +184,7 @@ void Settings::UpdateInitConfig() {
 //    emitter << YAML::Value << launcher;
 
     EmitAppConfig(emitter, STABLE, m_Config.m_Stable);
+    EmitAppConfig(emitter, TOMASTER, m_Config.m_toMaster);
     EmitAppConfig(emitter, QA, m_Config.m_Test);
     EmitAppConfig(emitter, DEVELOPMENT, m_Config.m_Development);
     EmitAppConfig(emitter, DEPENDENCIES, m_Config.m_Dependencies);
