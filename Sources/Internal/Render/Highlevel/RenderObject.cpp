@@ -168,24 +168,21 @@ void RenderObject::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 		debugFlags = archive->GetUInt32("ro.debugflags", 0);
 
 		uint32 roBatchCount = archive->GetUInt32("ro.batchCount");
-		if(roBatchCount)
-		{
-			KeyedArchive *batchesArch = archive->GetArchive("ro.batches");
-			for(uint32 i = 0; i < roBatchCount; ++i)
-			{
-				KeyedArchive *batchArch = batchesArch->GetArchive(KeyedArchive::GenKeyFromIndex(i));
-				if(NULL != batchArch)
-				{
-					RenderBatch *batch = (RenderBatch *) ObjectFactory::Instance()->New(batchArch->GetString("rb.classname"));
-					if(NULL != batch)
-					{
-						batch->Load(batchArch, sceneFile);
-						AddRenderBatch(batch);
-						batch->Release();
-					}
-				}
-			}
-		}
+        KeyedArchive *batchesArch = archive->GetArchive("ro.batches");
+        for(uint32 i = 0; i < roBatchCount; ++i)
+        {
+            KeyedArchive *batchArch = batchesArch->GetArchive(KeyedArchive::GenKeyFromIndex(i));
+            if(NULL != batchArch)
+            {
+                RenderBatch *batch = (RenderBatch *) ObjectFactory::Instance()->New(batchArch->GetString("rb.classname"));
+                if(NULL != batch)
+                {
+                    batch->Load(batchArch, sceneFile);
+                    AddRenderBatch(batch);
+                    batch->Release();
+                }
+            }
+        }
 	}
 
 	AnimatedObject::Load(archive);
