@@ -16,7 +16,7 @@
 
 #include "SelectPathWidget.h"
 #include "ui_SelectPathWidget.h"
-#include "EditorSettings.h"
+#include "SceneEditor/EditorSettings.h"
 #include "./../Qt/Main/QtUtils.h"
 #include "./../Qt/DockSceneTree/SceneTreeModel.h"
 
@@ -102,10 +102,7 @@ void SelectPathWidget::dragEnterEvent(QDragEnterEvent* event)
 	//ret = QStandardItemModel::dropMimeData(data, action, row, column, parent);
     
     //if(event->provides(SceneTreeModel::mimeFormatEntity))
-      
-    
-    
-    
+  
     
     if(event->mimeData()->hasUrls())
     {
@@ -117,43 +114,34 @@ void SelectPathWidget::dragEnterEvent(QDragEnterEvent* event)
 void SelectPathWidget::dropEvent(QDropEvent* event)
 {
     const QMimeData* sendedMimeData = event->mimeData();
-    if(sendedMimeData->hasUrls())
+    if(!sendedMimeData->hasUrls())
     {
-        QList<QUrl> droppedUrls = event->mimeData()->urls();
-        int droppedUrlCnt = droppedUrls.size();
-        //TODO: remove loop
-        for(int i = 0; i < droppedUrlCnt; i++)
-        {
-            QString localPath = droppedUrls[i].toLocalFile();
-            QFileInfo fileInfo(localPath);
-            
-            if(fileInfo.isFile() && fileInfo.completeSuffix() == "sc2")//!
-            {
-                SetPathText(localPath);
-            }
-        }
-        
+		return;
+	}
+    
+	QList<QUrl> droppedUrls = event->mimeData()->urls();
+    
+    QString localPath = droppedUrls[0].toLocalFile();
+    QFileInfo fileInfo(localPath);
+    
+    if(fileInfo.isFile() && fileInfo.completeSuffix() == "sc2")//!
+    {
+        SetPathText(localPath);
     }
-    
-    
-    //mimeData = *event->mimeData();
-    
+
     mimeData.clear();
-    
-    
-    //copy of mimeData maybe to mimeDataHelper!
     //TODO: SetPathText with fist file name
     
-    
-    foreach(const QString & format, event->mimeData()->formats())
+	foreach(const QString & format, event->mimeData()->formats())
     {
         String t = format.toStdString();
         QByteArray t2 = event->mimeData()->data(format);
         mimeData.setData(format, event->mimeData()->data(format));
-        ui->FilePathBox->setText("1");
+        //ui->FilePathBox->setText("1");
     }
     
     event->acceptProposedAction();
+    
 }
 
 
@@ -199,7 +187,6 @@ void SelectPathWidget::SetPathText(const QString& filePath)
 {
     ui->FilePathBox->setText(ConvertToRelativPath(filePath));
 }
-
 
 QString SelectPathWidget::GetPathText()
 {

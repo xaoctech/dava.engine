@@ -19,29 +19,29 @@
 
 #include "DAVAEngine.h"
 #include <QMimeData>
-//#include "./../Qt/DockSceneTree/SceneTreeModel.h"
 
-/*
-#define MIME_HANDLER(data,name, method)\
-    if(data->hasFormat(name)){\
-        return method(data);}\
-*/
+
 class QMimeDataHelper
 {
 public:
-    
+	static DAVA::Entity* ConvertQMimeData(QMimeData* mimeData);
+
+protected:
+
 	static DAVA::Entity* ConvertQMimeDataFromSceneTree(QMimeData* mimeData);
+
+	static DAVA::Entity* ConvertQMimeDataFromFilePath(QMimeData* mimeData);
+
+	const static QString supportedMimeFormats[];
 	
-    static DAVA::Entity* ConvertQMimeData(QMimeData* mimeData)
+    enum eMimeTypes
     {
-        //MIME_HANDLER(mimeData, DAVA::SceneTreeModel::mimeFormatEntity, ConvertQMimeDataFromSceneTree)
-        if(mimeData->hasFormat("application/dava.entity"))
-        {
-            return ConvertQMimeDataFromSceneTree(mimeData);
-        }
-        
+        MIME_ENTITY = 0,
+		MIME_EMITTER,
+        MIME_FILE_PATH,
+
+        MIME_TYPES_COUNT
     };
-    
 };
 
 #endif /* defined(__RESOURCEEDITORQT__QMIMEDATAHELPER__) */
