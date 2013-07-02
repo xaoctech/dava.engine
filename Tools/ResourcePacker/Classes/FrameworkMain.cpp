@@ -104,10 +104,10 @@ void ProcessRecourcePacker()
     PVRConverter::Instance()->SetPVRTexTool(resourcePacker->excludeDirectory + (commandLine[2] + toolName));
     
     uint64 elapsedTime = SystemTimer::Instance()->AbsoluteMS();
-    Logger::Debug("[Resource Packer Started]\n");
-    Logger::Debug("[INPUT DIR] - [%s]\n", resourcePacker->inputGfxDirectory.GetAbsolutePathname().c_str());
-    Logger::Debug("[OUTPUT DIR] - [%s]\n", resourcePacker->outputGfxDirectory.GetAbsolutePathname().c_str());
-    Logger::Debug("[EXCLUDE DIR] - [%s]\n", resourcePacker->excludeDirectory.GetAbsolutePathname().c_str());
+    printf("[Resource Packer Started]\n");
+    printf("[INPUT DIR] - [%s]\n", resourcePacker->inputGfxDirectory.GetAbsolutePathname().c_str());
+    printf("[OUTPUT DIR] - [%s]\n", resourcePacker->outputGfxDirectory.GetAbsolutePathname().c_str());
+    printf("[EXCLUDE DIR] - [%s]\n", resourcePacker->excludeDirectory.GetAbsolutePathname().c_str());
     
     Texture::InitializePixelFormatDescriptors();
     GPUFamilyDescriptor::SetupGPUParameters();
@@ -122,15 +122,13 @@ void ProcessRecourcePacker()
     
     resourcePacker->PackResources(exportForGPU);
     elapsedTime = SystemTimer::Instance()->AbsoluteMS() - elapsedTime;
-    Logger::Debug("[Resource Packer Compile Time: %0.3lf seconds]\n", (float64)elapsedTime / 1000.0);
+    printf("[Resource Packer Compile Time: %0.3lf seconds]\n", (float64)elapsedTime / 1000.0);
     
     SafeDelete(resourcePacker);
 }
 
 void FrameworkDidLaunched()
 {
-    Logger::Instance()->SetLogLevel(Logger::LEVEL_DEBUG);
-
 	if (Core::Instance()->IsConsoleMode())
 	{
         if(     CommandLineParser::GetCommandsCount() < 2
