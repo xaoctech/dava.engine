@@ -60,6 +60,7 @@ public:
 	QStringList	mimeTypes() const;
 	bool dropMimeData(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent);
 	bool DropCanBeAccepted(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent) const;
+	bool DropAccepted() const;
 
 protected:
 	enum DropType
@@ -73,6 +74,7 @@ protected:
 	};
 
 	SceneEditor2 * curScene;
+	bool dropAccepted;
 
 	QMap<DAVA::Entity*, QModelIndex> indexesCacheEntities;
 	QMap<DAVA::ParticleLayer*, QModelIndex> indexesCacheLayers;

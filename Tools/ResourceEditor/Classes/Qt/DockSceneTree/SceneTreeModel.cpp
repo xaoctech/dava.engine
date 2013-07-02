@@ -29,6 +29,7 @@ const char* SceneTreeModel::mimeFormatForce = "application/dava.particleforce";
 SceneTreeModel::SceneTreeModel(QObject* parent /*= 0*/ )
 	: QStandardItemModel(parent)
 	, curScene(NULL)
+	, dropAccepted(false)
 {
 	setColumnCount(1);
 	setSupportedDragActions(Qt::MoveAction);
@@ -249,9 +250,12 @@ bool SceneTreeModel::dropMimeData(const QMimeData * data, Qt::DropAction action,
 				}
 
 				curScene->structureSystem->Move(&entityGroup, parentEntity, beforeEntity);
-				delete entitiesV;
-
 				ret = true;
+			}
+
+			if(NULL != entitiesV)
+			{
+				delete entitiesV;
 			}
 		}
 		break;
@@ -263,28 +267,63 @@ bool SceneTreeModel::dropMimeData(const QMimeData * data, Qt::DropAction action,
 
 			if(NULL != emitter && NULL != layersV && layersV->size() > 0)
 			{
+				DAVA::ParticleLayer* beforeLayer = NULL;
+
+				if(row >= 0 && row < (int) emitter->GetLayers().size())
+				{
+					beforeLayer = emitter->GetLayers()[row];
+				}
+
 				DAVA::Vector<DAVA::ParticleLayer*> layersGroup;
 				for(int i = 0; i < layersV->size(); ++i)
 				{
 					layersGroup.push_back((DAVA::ParticleLayer *) layersV->at(i));
 				}
 
-				curScene->structureSystem->MoveLayer(layersGroup, emitter, NULL);
-				delete layersV;
-
+				curScene->structureSystem->MoveLayer(layersGroup, emitter, beforeLayer);
 				ret = true;
+			}
+
+			if(NULL != layersV)
+			{
+				delete layersV;
 			}
 		}
 		break;
 	case DropingForce:
 		{
+			DAVA::ParticleLayer *newLayer = SceneTreeItemParticleLayer::GetLayer(parentItem);
+			QVector<void*> *forcesV = DecodeMimeData(data, mimeFormatForce);
 
+			if(NULL != newLayer && NULL != forcesV && forcesV->size() > 0)
+			{
+				DAVA::Vector<DAVA::ParticleForce*> forcesGroup;
+				DAVA::Vector<DAVA::ParticleLayer*> layersGroup;
+
+				for(int i = 0; i < forcesV->size(); ++i)
+				{
+					QModelIndex forceIndex = GetIndex((DAVA::ParticleForce *) forcesV->at(i));
+					DAVA::ParticleLayer *oldLayer = SceneTreeItemParticleLayer::GetLayer(GetItem(forceIndex.parent()));
+
+					forcesGroup.push_back((DAVA::ParticleForce *) forcesV->at(i));
+					layersGroup.push_back(oldLayer);
+				}
+
+				curScene->structureSystem->MoveForce(forcesGroup, layersGroup, newLayer);
+				ret = true;
+			}
+
+			if(NULL != forcesV)
+			{
+				delete forcesV;
+			}
 		}
 		break;
 	default:
 		break;
 	}
 
+	dropAccepted = ret;
 	return ret;
 }
 
@@ -345,9 +384,13 @@ bool SceneTreeModel::DropCanBeAccepted(const QMimeData * data, Qt::DropAction ac
 	case DropingForce:
 		{
 			// accept force to be dropped only to particle layer
-			if(NULL != parentItem && parentItem->ItemType() == SceneTreeItem::EIT_Layer)
+			if(NULL != parentItem && parentItem->ItemType() == SceneTreeItem::EIT_Layer) 
 			{
-				ret = true;
+				// accept only add (no insertion)
+				if(-1 == row && -1 == column)
+				{
+					ret = true;
+				}
 			}
 		}
 		break;
@@ -359,6 +402,11 @@ bool SceneTreeModel::DropCanBeAccepted(const QMimeData * data, Qt::DropAction ac
 	}
 
 	return ret;
+}
+
+bool SceneTreeModel::DropAccepted() const
+{
+	return dropAccepted;
 }
 
 void SceneTreeModel::StructureChanged(SceneEditor2 *scene, DAVA::Entity *parent)

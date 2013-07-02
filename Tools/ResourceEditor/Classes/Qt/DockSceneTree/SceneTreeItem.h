@@ -71,16 +71,9 @@ public:
 
 	virtual QString ItemName() const;
 	virtual QVariant ItemData() const;
+	virtual QIcon ItemIcon() const;
 
 	DAVA::Entity *entity;
-
-protected:
-	static QIcon GetIconDefault();
-	static QIcon GetIconRenderObject();
-	static QIcon GetIconLandscape();
-	static QIcon GetIconLOD();
-	static QIcon GetIconLight();
-	static QIcon GetIconUserObject();
 };
 
 class SceneTreeItemParticleLayer : public SceneTreeItem
@@ -94,6 +87,7 @@ public:
 
 	virtual QString ItemName() const;
 	virtual QVariant ItemData() const;
+	virtual QIcon ItemIcon() const;
 
 	DAVA::Entity *parent;
 	DAVA::ParticleLayer *layer;
@@ -109,6 +103,7 @@ public:
 
 	virtual QString ItemName() const;
 	virtual QVariant ItemData() const;
+	virtual QIcon ItemIcon() const;
 
 	DAVA::ParticleLayer *parent;
 	DAVA::ParticleForce *force;
