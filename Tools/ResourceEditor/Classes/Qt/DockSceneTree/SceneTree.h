@@ -50,6 +50,8 @@ protected:
 	void dragMoveEvent(QDragMoveEvent *event);
 	void dragEnterEvent(QDragEnterEvent *event);
 
+	void GetDropParams(const QPoint &pos, QModelIndex &index, int &row, int &col);
+
 protected slots:
 	void SceneActivated(SceneEditor2 *scene);
 	void SceneDeactivated(SceneEditor2 *scene);

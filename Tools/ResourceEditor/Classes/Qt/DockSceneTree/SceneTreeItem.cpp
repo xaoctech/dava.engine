@@ -113,6 +113,48 @@ QVariant SceneTreeItemEntity::ItemData() const
 	return qVariantFromValue(entity);
 }
 
+QIcon SceneTreeItemEntity::ItemIcon() const
+{
+	static QIcon effectIcon(":/QtIcons/effect.png");
+	static QIcon emitterIcon(":/QtIcons/emitter_particle.png");
+	static QIcon renderobjIcon(":/QtIcons/render_object.png");
+	static QIcon landscapeIcon(":/QtIcons/heightmapeditor.png");
+
+	QIcon ret;
+
+	if(NULL != entity)
+	{
+		if(NULL != DAVA::GetEmitter(entity))
+		{
+			ret = emitterIcon;
+		}
+		else if(NULL != DAVA::GetEffectComponent(entity))
+		{
+			ret = effectIcon;
+		}
+		else if(NULL != DAVA::GetLandscape(entity))
+		{
+			ret = landscapeIcon;
+		}
+		else if(NULL != GetLodComponent(entity))
+		{
+			// TODO:
+			// ...
+		}
+		else if(NULL != DAVA::GetRenderObject(entity))
+		{
+			ret = renderobjIcon;
+		}
+	}
+
+	if(ret.isNull())
+	{
+		ret = SceneTreeItem::ItemIcon();
+	}
+
+	return ret;
+}
+
 void SceneTreeItemEntity::DoSync(QStandardItem *rootItem, DAVA::Entity *entity)
 {
 	if(NULL != rootItem && NULL != entity)
@@ -259,34 +301,76 @@ void SceneTreeItemEntity::DoSync(QStandardItem *rootItem, DAVA::Entity *entity)
 		{
 			for(size_t i = 0; i < emitterLayers->size(); ++i)
 			{
+				bool repeatStep;
 				DAVA::ParticleLayer* childLayer = emitterLayers->operator[](i);
 
-				SceneTreeItem *item = (SceneTreeItem *) rootItem->child(row);
-				DAVA::ParticleLayer *itemLayer = SceneTreeItemParticleLayer::GetLayer(item);
-
-				// remove items that we already add
-				while(layersSet.contains(itemLayer))
+				do 
 				{
-					rootItem->removeRow(row);
-
 					SceneTreeItem *item = (SceneTreeItem *) rootItem->child(row);
 					DAVA::ParticleLayer *itemLayer = SceneTreeItemParticleLayer::GetLayer(item);
-				}
 
-				if(NULL == item)
-				{
-					rootItem->appendRow(new SceneTreeItemParticleLayer(entity, childLayer));
-				}
-				else if(NULL != DAVA::GetRenderObject(entity))
-				{
-					rootItem->insertRow(row, new SceneTreeItemParticleLayer(entity, childLayer));
-				}
-				else
-				{
-					SceneTreeItemParticleLayer::DoSync(item, itemLayer);
-				}
+					repeatStep = false;
+
+					// remove items that we already add
+					while(layersSet.contains(itemLayer))
+					{
+						rootItem->removeRow(row);
+
+						SceneTreeItem *item = (SceneTreeItem *) rootItem->child(row);
+						DAVA::ParticleLayer *itemLayer = SceneTreeItemParticleLayer::GetLayer(item);
+					}
+
+					if(NULL == item)
+					{
+						rootItem->appendRow(new SceneTreeItemParticleLayer(entity, childLayer));
+					}
+					else if(childLayer != itemLayer)
+					{
+						// now we should decide what to do: remove layer or insert it
+
+						// calc len until itemEntity will be found in real
+						int lenUntilRealLayer = 0;
+						for(int j = i; j < (int) emitterLayers->size(); ++j)
+						{
+							if(emitterLayers->operator[](j) == itemLayer)
+							{
+								lenUntilRealLayer = j - i;
+								break;
+							}
+						}
+
+						// calc len until current real entity child will be found in current item childs
+						int lenUntilItem = 0;
+						for(int j = i; j < rootItem->rowCount(); ++j)
+						{
+							SceneTreeItem *itm = (SceneTreeItem *) rootItem->child(j);
+							DAVA::ParticleLayer *itmLay = SceneTreeItemParticleLayer::GetLayer(itm);
+
+							if(childLayer == itmLay)
+							{
+								lenUntilItem = j - i;
+								break;
+							}
+						}
+
+						if(lenUntilRealLayer >= lenUntilItem)
+						{
+							rootItem->removeRow(row);
+							repeatStep = true;
+						}
+						else
+						{
+							rootItem->insertRow(row, new SceneTreeItemParticleLayer(entity, childLayer));
+						}
+					}
+					else
+					{
+						SceneTreeItemParticleLayer::DoSync(item, itemLayer);
+					}
+				} while (repeatStep);
 
 				row++;
+				layersSet.insert(childLayer);
 			}
 		}
 
@@ -361,19 +445,29 @@ void SceneTreeItemParticleLayer::DoSync(QStandardItem *rootItem, DAVA::ParticleL
 {
 	if(NULL != rootItem && NULL != layer)
 	{
-		// TODO:
-		// more accurate sync
-		// ...
+		size_t itemsCount = layer->forces.size();
+		QList<QStandardItem*> items;
 
-		// remove all rows
-		rootItem->removeRows(0, rootItem->rowCount());
-
-		// add rows
-		for(size_t i = 0; i < layer->forces.size(); ++i)
+		// add all items to the head
+		for(size_t i = 0; i < itemsCount; ++i)
 		{
-			rootItem->appendRow(new SceneTreeItemParticleForce(layer, layer->forces[i]));
+			items.push_back(new SceneTreeItemParticleForce(layer, layer->forces[i]));
 		}
+
+		if(items.size() > 0)
+		{
+			rootItem->insertRows(0, items);
+		}
+
+		// remove old items from the tail
+		rootItem->removeRows(itemsCount, rootItem->rowCount() - itemsCount);
 	}
+}
+
+QIcon SceneTreeItemParticleLayer::ItemIcon() const
+{
+	static QIcon icon = QIcon(":/QtIcons/layer_particle.png");
+	return icon;
 }
 
 // =========================================================================================
@@ -410,4 +504,10 @@ QString SceneTreeItemParticleForce::ItemName() const
 QVariant SceneTreeItemParticleForce::ItemData() const
 {
 	return qVariantFromValue(force);
+}
+
+QIcon SceneTreeItemParticleForce::ItemIcon() const
+{
+	static QIcon icon = QIcon(":/QtIcons/force.png");
+	return icon;
 }

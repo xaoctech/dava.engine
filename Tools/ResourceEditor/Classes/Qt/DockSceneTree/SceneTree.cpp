@@ -56,24 +56,11 @@ SceneTree::~SceneTree()
 
 }
 
-void SceneTree::dropEvent(QDropEvent * event)
+void SceneTree::GetDropParams(const QPoint &pos, QModelIndex &index, int &row, int &col)
 {
-	QTreeView::dropEvent(event);
-
-	// after processing don't allow this event to go higher
-	// so no body will decide to remove/insert grag&dropped items into treeview
-	// except our model. Model will do this when scene entity remove/move signals catched
-	event->setDropAction(Qt::IgnoreAction);
-}
-
-void SceneTree::dragMoveEvent(QDragMoveEvent *event)
-{
-	QTreeView::dragMoveEvent(event);
-
-	int row = -1;
-	int col = -1;
-
-	QModelIndex index = indexAt(event->pos());
+	row = -1;
+	col = -1;
+	index = indexAt(pos);
 
 	switch (dropIndicatorPosition()) 
 	{
@@ -91,8 +78,36 @@ void SceneTree::dragMoveEvent(QDragMoveEvent *event)
 	case QAbstractItemView::OnViewport:
 		break;
 	}
+}
 
-	if(!treeModel->DropCanBeAccepted(event->mimeData(), event->dropAction(), row, col, index))
+void SceneTree::dropEvent(QDropEvent * event)
+{
+	QTreeView::dropEvent(event);
+
+	if(treeModel->DropAccepted())
+	{
+		int row, col; 
+		QModelIndex parent;
+
+		GetDropParams(event->pos(), parent, row, col);
+		expand(parent);
+	}
+
+	// after processing don't allow this event to go higher
+	// so no body will decide to remove/insert grag&dropped items into treeview
+	// except our model. Model will do this when scene entity remove/move signals catched
+	event->setDropAction(Qt::IgnoreAction);
+}
+
+void SceneTree::dragMoveEvent(QDragMoveEvent *event)
+{
+	int row, col; 
+	QModelIndex parent;
+
+	QTreeView::dragMoveEvent(event);
+
+	GetDropParams(event->pos(), parent, row, col);
+	if(!treeModel->DropCanBeAccepted(event->mimeData(), event->dropAction(), row, col, parent))
 	{
 		event->ignore();
 	}

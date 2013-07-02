@@ -349,6 +349,8 @@
     <ClCompile Include="Classes\Commands2\CommandStack.cpp" />
     <ClCompile Include="Classes\Commands2\EntityMoveCommand.cpp" />
     <ClCompile Include="Classes\Commands2\EntityRemoveCommand.cpp" />
+    <ClCompile Include="Classes\Commands2\ParticleForceMoveCommand.cpp" />
+    <ClCompile Include="Classes\Commands2\ParticleForceRemoveCommand.cpp" />
     <ClCompile Include="Classes\Commands2\ParticleLayerMoveCommand.cpp" />
     <ClCompile Include="Classes\Commands2\ParticleLayerRemoveCommand.cpp" />
     <ClCompile Include="Classes\Commands2\TransformCommand.cpp" />
@@ -908,6 +910,8 @@
     <ClInclude Include="Classes\Commands2\CommandStack.h" />
     <ClInclude Include="Classes\Commands2\EntityMoveCommand.h" />
     <ClInclude Include="Classes\Commands2\EntityRemoveCommand.h" />
+    <ClInclude Include="Classes\Commands2\ParticleForceMoveCommand.h" />
+    <ClInclude Include="Classes\Commands2\ParticleForceRemoveCommand.h" />
     <ClInclude Include="Classes\Commands2\ParticleLayerMoveCommand.h" />
     <ClInclude Include="Classes\Commands2\ParticleLayerRemoveCommand.h" />
     <ClInclude Include="Classes\Commands2\TransformCommand.h" />
