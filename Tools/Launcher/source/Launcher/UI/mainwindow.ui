@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>755</width>
+    <width>912</width>
     <height>437</height>
    </rect>
   </property>
@@ -199,7 +199,7 @@
            <item>
             <widget class="QTableWidget" name="stableTable">
              <property name="editTriggers">
-              <set>QAbstractItemView::NoEditTriggers</set>
+              <set>QAbstractItemView::SelectedClicked</set>
              </property>
              <property name="selectionMode">
               <enum>QAbstractItemView::SingleSelection</enum>
@@ -210,7 +210,66 @@
              <property name="rowCount">
               <number>0</number>
              </property>
-             <attribute name="horizontalHeaderCascadingSectionResizes">
+             <attribute name="horizontalHeaderHighlightSections">
+              <bool>false</bool>
+             </attribute>
+             <attribute name="verticalHeaderVisible">
+              <bool>false</bool>
+             </attribute>
+             <attribute name="verticalHeaderCascadingSectionResizes">
+              <bool>false</bool>
+             </attribute>
+             <column>
+              <property name="text">
+               <string notr="true">Name</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Installed Version</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Available Version</string>
+              </property>
+             </column>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="tab_6">
+          <attribute name="title">
+           <string>to-Master</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_9">
+           <property name="spacing">
+            <number>3</number>
+           </property>
+           <property name="margin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QTableWidget" name="toMasterTable">
+             <property name="baseSize">
+              <size>
+               <width>0</width>
+               <height>20</height>
+              </size>
+             </property>
+             <property name="editTriggers">
+              <set>QAbstractItemView::SelectedClicked</set>
+             </property>
+             <property name="selectionMode">
+              <enum>QAbstractItemView::SingleSelection</enum>
+             </property>
+             <property name="selectionBehavior">
+              <enum>QAbstractItemView::SelectRows</enum>
+             </property>
+             <property name="rowCount">
+              <number>0</number>
+             </property>
+             <attribute name="horizontalHeaderHighlightSections">
               <bool>false</bool>
              </attribute>
              <attribute name="verticalHeaderVisible">
@@ -240,7 +299,7 @@
          </widget>
          <widget class="QWidget" name="tab_5">
           <attribute name="title">
-           <string>QA</string>
+           <string>Dev-QA</string>
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <property name="spacing">
@@ -258,7 +317,7 @@
               </size>
              </property>
              <property name="editTriggers">
-              <set>QAbstractItemView::NoEditTriggers</set>
+              <set>QAbstractItemView::SelectedClicked</set>
              </property>
              <property name="selectionMode">
               <enum>QAbstractItemView::SingleSelection</enum>
@@ -269,7 +328,7 @@
              <property name="rowCount">
               <number>0</number>
              </property>
-             <attribute name="horizontalHeaderCascadingSectionResizes">
+             <attribute name="horizontalHeaderHighlightSections">
               <bool>false</bool>
              </attribute>
              <attribute name="verticalHeaderVisible">
@@ -317,7 +376,7 @@
               </size>
              </property>
              <property name="editTriggers">
-              <set>QAbstractItemView::NoEditTriggers</set>
+              <set>QAbstractItemView::SelectedClicked</set>
              </property>
              <property name="selectionMode">
               <enum>QAbstractItemView::SingleSelection</enum>
@@ -328,7 +387,7 @@
              <property name="rowCount">
               <number>0</number>
              </property>
-             <attribute name="horizontalHeaderCascadingSectionResizes">
+             <attribute name="horizontalHeaderHighlightSections">
               <bool>false</bool>
              </attribute>
              <attribute name="verticalHeaderVisible">
@@ -387,7 +446,7 @@
              <property name="rowCount">
               <number>0</number>
              </property>
-             <attribute name="horizontalHeaderCascadingSectionResizes">
+             <attribute name="horizontalHeaderHighlightSections">
               <bool>false</bool>
              </attribute>
              <attribute name="verticalHeaderVisible">
