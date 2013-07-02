@@ -1,5 +1,9 @@
 <RCC>
   <qresource prefix="/">
+    <file>QtIcons/effect.png</file>
+    <file>QtIcons/emitter_particle.png</file>
+    <file>QtIcons/force.png</file>
+    <file>QtIcons/layer_particle.png</file>
     <file>QtIcons/node.png</file>
     <file>QtIcons/box_closed.png</file>
     <file>QtIcons/box_open.png</file>
