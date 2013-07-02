@@ -14,77 +14,34 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __RESOURCEEDITORQT__SELECTPATHWIDGET__
-#define __RESOURCEEDITORQT__SELECTPATHWIDGET__
+#ifndef __RESOURCEEDITORQT__QMIMEDATAHELPER__
+#define __RESOURCEEDITORQT__QMIMEDATAHELPER__
 
-#include <QWidget>
 #include "DAVAEngine.h"
-#include "Base/BaseTypes.h"
-
 #include <QMimeData>
+//#include "./../Qt/DockSceneTree/SceneTreeModel.h"
 
-namespace Ui
+/*
+#define MIME_HANDLER(data,name, method)\
+    if(data->hasFormat(name)){\
+        return method(data);}\
+*/
+class QMimeDataHelper
 {
-	class SelectPathWidget;
-}
-
-class SelectPathWidget: public QWidget
-{
-	Q_OBJECT
-    
 public:
-	explicit SelectPathWidget(QWidget* parent = 0);
-	~SelectPathWidget();
     
-
-    
-    void SetDiscriptionText(const QString &);
-    
-    QString GetDiscriptionText();
-
-    void SetPathText(const QString &);
-    
-    QString GetPathText();
-    
-    QString GetRelativPath()
-    {
-        return relativPath;
-    }
-    
-    void SetRelativePath(const QString &);
-    
-    QMimeData* GetMimeData()
-    {
-        return &mimeData;
-    }
-    //signals:
-    //	void ApplyModification(double x, double y, double z);
-    
-    //private slots:
-    //	void OnEditingFinished();
-protected:
-    
-    void dragEnterEvent(QDragEnterEvent* event);
-    
-    void dropEvent(QDropEvent * event);
-    
-    
-private slots:
-
-	void EraseClicked();
-    
-    void OpenClicked();
-
-private:
-    
-    QString ConvertToRelativPath(const QString& path);
-    
-    Ui::SelectPathWidget*   ui;
-    
-    QString                 relativPath;
-    
-    QMimeData   mimeData;
+	static DAVA::Entity* ConvertQMimeDataFromSceneTree(QMimeData* mimeData);
 	
+    static DAVA::Entity* ConvertQMimeData(QMimeData* mimeData)
+    {
+        //MIME_HANDLER(mimeData, DAVA::SceneTreeModel::mimeFormatEntity, ConvertQMimeDataFromSceneTree)
+        if(mimeData->hasFormat("application/dava.entity"))
+        {
+            return ConvertQMimeDataFromSceneTree(mimeData);
+        }
+        
+    };
+    
 };
 
-#endif /* defined(__RESOURCEEDITORQT__SELECTPATHWIDGET__) */
+#endif /* defined(__RESOURCEEDITORQT__QMIMEDATAHELPER__) */

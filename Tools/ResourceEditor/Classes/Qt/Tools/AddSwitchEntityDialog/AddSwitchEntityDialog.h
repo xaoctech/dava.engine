@@ -19,6 +19,8 @@
 
 #include <QDialog.h>
 
+class QMimeData;
+
 namespace Ui
 {
 	class AddSwitchEntityDialog;
@@ -32,7 +34,9 @@ public:
 	explicit AddSwitchEntityDialog(QWidget* parent = 0);
 	~AddSwitchEntityDialog();
     
-    virtual void accept();
+    //virtual void accept();
+    
+    void GetSlectedMimeData(QMimeData** firstChild, QMimeData** secondChild);
     //signals:
     //	void ApplyModification(double x, double y, double z);
     

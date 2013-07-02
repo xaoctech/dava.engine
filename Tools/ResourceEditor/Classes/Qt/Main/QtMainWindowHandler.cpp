@@ -60,10 +60,13 @@
 #include <QFileDialog>
 #include <QDesktopServices>
 #include <QUrl>
+#include <QMimeData>
 
 #include "Render/LibDxtHelper.h"
 
 #include "./../Qt/Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
+#include "./../Qt/Tools/QMimeDataHelper/QMimeDataHelper.h"
+#include "Commands2/AddSwitchEntityCommand.h"
 
 using namespace DAVA;
 
@@ -72,6 +75,7 @@ QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
 	,	menuResentScenes(NULL)
 	,	defaultFocusWidget(NULL)
     ,   statusBar(NULL)
+    ,   addSwitchEntityDialog(NULL)
 {
     new CommandsManager();
 	new TextureBrowser((QWidget *) parent);
@@ -294,16 +298,17 @@ void QtMainWindowHandler::SaveToFolderWithChilds()
 }
 
 void QtMainWindowHandler::CreateNode(ResourceEditor::eNodeType type)
-{/*
+{
     if(type == ResourceEditor::NODE_SWITCH_NODE)
     {
-        AddSwitchEntityDialog* swDialog = new AddSwitchEntityDialog();
-        swDialog->setWindowFlags(Qt::WindowStaysOnTopHint);
-        swDialog->show();
+        addSwitchEntityDialog = new AddSwitchEntityDialog();
+        connect(addSwitchEntityDialog, SIGNAL(accepted()), this, SLOT(AddSwitchEntity()));
+        addSwitchEntityDialog->setWindowFlags(Qt::WindowStaysOnTopHint);
+        addSwitchEntityDialog->show();
         return;
-    }*/
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandCreateNode(type),
-												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
+    }
+    //CommandsManager::Instance()->ExecuteAndRelease(new CommandCreateNode(type),
+	//											   SceneDataManager::Instance()->SceneGetActive()->GetScene());
 }
 
 void QtMainWindowHandler::Materials()
@@ -1170,6 +1175,25 @@ void QtMainWindowHandler::CameraLightTrigerred()
     EditorSettings::Instance()->SetShowEditorCamerLight(!enabled);
     
     emit UpdateCameraLightOnScene(!enabled);
+}
+
+void QtMainWindowHandler::AddSwitchEntity()
+{
+    QMimeData* firstChild = NULL;
+    QMimeData* secondChild = NULL;
+    addSwitchEntityDialog->GetSlectedMimeData(&firstChild, &secondChild);
+    
+    Scene* scene = SceneDataManager::Instance()->SceneGetActive()->GetScene();
+    
+    SceneEditor2 *curSceneEditor = QtMainWindow::Instance()->GetUI()->sceneTabWidget->GetCurrentScene();
+    if(NULL != curSceneEditor && NULL != firstChild && NULL != secondChild)
+	{
+        Entity* firstChildEntity = QMimeDataHelper::ConvertQMimeData(firstChild);
+        Entity* secondChildEntity = QMimeDataHelper::ConvertQMimeData(secondChild);
+		curSceneEditor->Exec(new AddSwitchEntityCommand(firstChildEntity, secondChildEntity, scene));
+	}
+    
+    delete addSwitchEntityDialog;
 }
 
 

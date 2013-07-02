@@ -14,39 +14,28 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "AddSwitchEntityDialog.h"
-#include "ui_AddSwitchEntityDialog.h"
-#include "./../Qt/Tools/QMimeDataHelper/QMimeDataHelper.h"
+#include "QMimeDataHelper.h"
+#include "./../Qt/DockSceneTree/SceneTreeModel.h"
 
-#include <QKeyEvent>
-
-AddSwitchEntityDialog::AddSwitchEntityDialog(QWidget* parent)
-:	QDialog(parent),
-ui(new Ui::AddSwitchEntityDialog)
+DAVA::Entity* QMimeDataHelper::ConvertQMimeDataFromSceneTree(QMimeData* mimeData)
 {
-	ui->setupUi(this);
-    setAcceptDrops(false);
-    ui->FirstSelectionWidget->SetDiscriptionText("Select first entity:");
-    ui->SecondSelectionWidget->SetDiscriptionText("Select second entity:");
-}
-/*
-void AddSwitchEntityDialog::accept()
-{
-    int k = 0;
-    QDialog::accept();
-    
-}*/
-
-void AddSwitchEntityDialog::GetSlectedMimeData(QMimeData** firstChild, QMimeData** secondChild)
-{
-    *firstChild = ui->FirstSelectionWidget->GetMimeData();
-    *secondChild = ui->SecondSelectionWidget->GetMimeData();
+    if(mimeData->hasFormat(QString("application/dava.entity")))
+	{
+        
+		DAVA::Entity *entity = NULL;
+        
+		QByteArray encodedData = mimeData->data(SceneTreeModel::mimeFormatEntity);
+		QDataStream stream(&encodedData, QIODevice::ReadOnly);
+		EntityGroup entityGroup;
+        
+		while(!stream.atEnd())
+		{
+			stream.readRawData((char *) &entity, sizeof(DAVA::Entity*));
+			if(NULL != entity)
+			{
+				return entity;
+			}
+		}
+	}
     
 }
-
-
-AddSwitchEntityDialog::~AddSwitchEntityDialog()
-{
-	delete ui;
-}
-
