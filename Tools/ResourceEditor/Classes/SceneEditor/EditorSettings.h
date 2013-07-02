@@ -99,6 +99,9 @@ public:
     bool GetShowEditorCamerLight();
     void SetShowEditorCamerLight(bool show);
     
+    void SetPreviewDialogEnabled(bool enabled);
+    bool GetPreviewDialogEnabled();
+    
 protected:
 
 	Vector4 ToVector4(const Color &color);

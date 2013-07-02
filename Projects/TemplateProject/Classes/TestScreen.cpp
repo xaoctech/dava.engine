@@ -71,7 +71,6 @@ void TestScreen::LoadResources()
 //	bigBoxEmitterClone->SetPosition(Vector2(300, 300));
 //	manager->AddObject(bigBoxEmitterClone);
 
-	testSprite = Sprite::Create(FilePath("~res:/Gfx/GameObjects/blueboxbig"));
 
 	sndClick = Sound::Create(FilePath("~res:/Sounds/click.wav"), Sound::TYPE_STATIC, "FX");
 
@@ -85,14 +84,11 @@ void TestScreen::UnloadResources()
 {
 	SafeRelease(testSprite);
 	SafeRelease(manager);
-	SafeRelease(sndClick);
-	SafeRelease(music);
 }
 
 void TestScreen::WillAppear()
 {
-	music->Play();
-	isPlaying = true;
+    
 }
 
 void TestScreen::WillDisappear()
@@ -108,20 +104,6 @@ void TestScreen::Input(UIEvent * event)
 		{
 			Core::Instance()->ToggleFullscreen();
 		}
-	}
-	if (event->phase == UIEvent::PHASE_BEGAN)
-	{
-		if(isPlaying)
-		{
-			music->Stop();
-			isPlaying = false;
-		}
-		else
-		{
-			music->Play();
-			isPlaying = true;
-		}
-		sndClick->Play();
 	}
 }
 

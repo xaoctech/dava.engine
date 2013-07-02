@@ -181,6 +181,9 @@
     <Filter Include="Classes\Qt\CustomControls">
       <UniqueIdentifier>{b01bcaef-a885-49ab-a146-e565b9716060}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\Deprecated">
+      <UniqueIdentifier>{b383f0c0-b1f2-483d-9f28-a261d8afc960}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1734,6 +1737,12 @@
     <ClCompile Include="Classes\Commands2\CommandAction.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Deprecated\ScenePreviewControl.cpp">
+      <Filter>Classes\Deprecated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Deprecated\ScenePreviewDialog.cpp">
+      <Filter>Classes\Deprecated</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3055,6 +3064,12 @@
     </ClInclude>
     <ClInclude Include="Classes\Commands2\CommandAction.h">
       <Filter>Classes\Commands2</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Deprecated\ScenePreviewControl.h">
+      <Filter>Classes\Deprecated</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Deprecated\ScenePreviewDialog.h">
+      <Filter>Classes\Deprecated</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

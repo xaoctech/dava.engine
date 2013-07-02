@@ -430,6 +430,8 @@
 		E838D8D416B00AAB006F1721 /* QtPropertyItem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D8CC16B00AAB006F1721 /* QtPropertyItem.cpp */; };
 		E838D8D516B00AAB006F1721 /* QtPropertyItemDelegate.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D8CE16B00AAB006F1721 /* QtPropertyItemDelegate.cpp */; };
 		E838D8D616B00AAB006F1721 /* QtPropertyModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D8D016B00AAB006F1721 /* QtPropertyModel.cpp */; };
+		E83AB8FA1779AF1E0037561B /* ScenePreviewControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E83AB8F81779AF1E0037561B /* ScenePreviewControl.cpp */; };
+		E83AB8FD1779B6CF0037561B /* ScenePreviewDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E83AB8FB1779B6CF0037561B /* ScenePreviewDialog.cpp */; };
 		E84779B11669009B004CD20A /* ParticleEffectPropertyControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E84779AF1669009B004CD20A /* ParticleEffectPropertyControl.cpp */; };
 		E88F2FFC171C801600510B78 /* SceneInfo.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E88F2FFA171C801600510B78 /* SceneInfo.cpp */; };
 		E88F3002171C85A000510B78 /* SceneInfo_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E88F3001171C85A000510B78 /* SceneInfo_moc.cpp */; };
@@ -1393,6 +1395,10 @@
 		E838D8CF16B00AAB006F1721 /* QtPropertyItemDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtPropertyItemDelegate.h; sourceTree = "<group>"; };
 		E838D8D016B00AAB006F1721 /* QtPropertyModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyModel.cpp; sourceTree = "<group>"; };
 		E838D8D116B00AAB006F1721 /* QtPropertyModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtPropertyModel.h; sourceTree = "<group>"; };
+		E83AB8F81779AF1E0037561B /* ScenePreviewControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ScenePreviewControl.cpp; path = Classes/Deprecated/ScenePreviewControl.cpp; sourceTree = "<group>"; };
+		E83AB8F91779AF1E0037561B /* ScenePreviewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScenePreviewControl.h; path = Classes/Deprecated/ScenePreviewControl.h; sourceTree = "<group>"; };
+		E83AB8FB1779B6CF0037561B /* ScenePreviewDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ScenePreviewDialog.cpp; path = Classes/Deprecated/ScenePreviewDialog.cpp; sourceTree = "<group>"; };
+		E83AB8FC1779B6CF0037561B /* ScenePreviewDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScenePreviewDialog.h; path = Classes/Deprecated/ScenePreviewDialog.h; sourceTree = "<group>"; };
 		E84779AF1669009B004CD20A /* ParticleEffectPropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParticleEffectPropertyControl.cpp; path = Classes/SceneEditor/ParticleEffectPropertyControl.cpp; sourceTree = "<group>"; };
 		E84779B01669009B004CD20A /* ParticleEffectPropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParticleEffectPropertyControl.h; path = Classes/SceneEditor/ParticleEffectPropertyControl.h; sourceTree = "<group>"; };
 		E88F2FFA171C801600510B78 /* SceneInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneInfo.cpp; sourceTree = "<group>"; };
@@ -3024,6 +3030,17 @@
 			path = _GeneratedQt/TextureBrowser;
 			sourceTree = "<group>";
 		};
+		E83AB8F31779AF130037561B /* Deprecated */ = {
+			isa = PBXGroup;
+			children = (
+				E83AB8FB1779B6CF0037561B /* ScenePreviewDialog.cpp */,
+				E83AB8FC1779B6CF0037561B /* ScenePreviewDialog.h */,
+				E83AB8F81779AF1E0037561B /* ScenePreviewControl.cpp */,
+				E83AB8F91779AF1E0037561B /* ScenePreviewControl.h */,
+			);
+			name = Deprecated;
+			sourceTree = "<group>";
+		};
 		E88F2FF9171C801600510B78 /* DockSceneInfo */ = {
 			isa = PBXGroup;
 			children = (
@@ -3282,6 +3299,7 @@
 			children = (
 				4FFE5C76176B37B600728624 /* Commands2 */,
 				E8B836231740FCC700D11EAE /* ImageTools */,
+				E83AB8F31779AF130037561B /* Deprecated */,
 				E8FB1DF7172E867C00D1428F /* CommandLine */,
 				C18521A216831F84003D4A6F /* ParticlesEditorQT */,
 				E8EE7E56160DBC8800645405 /* RulerTool */,
@@ -3927,6 +3945,8 @@
 				4FFE5CAB1779DA3E00728624 /* CollisionParticleEmitter.cpp in Build Sources */,
 				4FFE5CB51779E38300728624 /* SceneTreeDelegate.cpp in Build Sources */,
 				4FFE5CB71779E60600728624 /* SceneTreeDelegate_moc.cpp in Build Sources */,
+				E83AB8FA1779AF1E0037561B /* ScenePreviewControl.cpp in Build Sources */,
+				E83AB8FD1779B6CF0037561B /* ScenePreviewDialog.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
