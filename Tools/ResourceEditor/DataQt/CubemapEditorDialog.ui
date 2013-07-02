@@ -227,7 +227,7 @@
     <string>Save current texture</string>
    </property>
    <property name="text">
-    <string>Save...</string>
+    <string>Save</string>
    </property>
   </widget>
   <widget class="QPushButton" name="buttonClose">

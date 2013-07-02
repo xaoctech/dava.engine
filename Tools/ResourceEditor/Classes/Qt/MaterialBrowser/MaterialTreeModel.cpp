@@ -17,6 +17,8 @@
 #include <QtGui>
 #include "MaterialBrowser/MaterialTreeModel.h"
 
+#include "MaterialHelper.h"
+
 MaterialTreeModel::MaterialTreeModel(QObject *parent)
 	: QAbstractItemModel(parent)
 	, scene(NULL)
@@ -158,7 +160,9 @@ void MaterialTreeModel::SearchMaterialsInScene()
 	if(NULL != scene)
 	{
 		allMaterials.clear();
-		scene->GetDataNodes(allMaterials);
+		scene->GetDataNodes(allMaterials);		
+		//VI: remove skybox materials so they not to appear in the lists
+		DAVA::MaterialHelper::FilterMaterialsByType(allMaterials, DAVA::Material::MATERIAL_SKYBOX);
 
 		ApplyFilterAndSort();
 	}

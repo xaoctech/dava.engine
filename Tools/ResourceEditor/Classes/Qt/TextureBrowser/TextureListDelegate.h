@@ -45,7 +45,7 @@ public:
 	void setDrawRule(DrawRure rule);
 
 private slots:
-	void textureReadyOriginal(const DAVA::TextureDescriptor *descriptor, const QImage &image);
+	void textureReadyOriginal(const DAVA::TextureDescriptor *descriptor,  DAVA::Vector<QImage>& images);
 
 private:
 	QFont nameFont;

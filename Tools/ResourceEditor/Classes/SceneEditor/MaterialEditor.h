@@ -104,7 +104,7 @@ protected:
 
 	void OnSetupColor(BaseObject * object, void * userData, void * callerData);
 	ColorControl *colorControl;
-
+	
     UIButton *btnSetupFog;
 	UIButton *btnSetupColor;
 

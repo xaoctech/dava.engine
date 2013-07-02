@@ -301,6 +301,7 @@
 		84EF22CE171EECA900B45031 /* ScrollZoomWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84EF22CD171EECA900B45031 /* ScrollZoomWidget_moc.cpp */; };
 		84EF22D4171EECBD00B45031 /* ScrollZoomWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84EF22D2171EECBD00B45031 /* ScrollZoomWidget.cpp */; };
 		A51FBC516D952C0C5AB72EA1 /* QtGui.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 9B8EE51E126C761F3F797428 /* QtGui.framework */; };
+		A6651B231786E2B60096E941 /* MaterialHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A6651B211786E2B50096E941 /* MaterialHelper.cpp */; };
 		A671437F177204C50033FA09 /* CubemapEditorDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A671437D177204C50033FA09 /* CubemapEditorDialog.cpp */; };
 		A67143821772051E0033FA09 /* CubemapEditorDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A67143811772051E0033FA09 /* CubemapEditorDialog_moc.cpp */; };
 		A67915EE1772FC3E003509F9 /* ClickableQLabel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A67915EC1772FC3E003509F9 /* ClickableQLabel.cpp */; };
@@ -1192,6 +1193,8 @@
 		84EF22D2171EECBD00B45031 /* ScrollZoomWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScrollZoomWidget.cpp; sourceTree = "<group>"; };
 		84EF22D3171EECBD00B45031 /* ScrollZoomWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScrollZoomWidget.h; sourceTree = "<group>"; };
 		9B8EE51E126C761F3F797428 /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework"; sourceTree = "<absolute>"; };
+		A6651B211786E2B50096E941 /* MaterialHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialHelper.cpp; sourceTree = "<group>"; };
+		A6651B221786E2B60096E941 /* MaterialHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialHelper.h; sourceTree = "<group>"; };
 		A671437D177204C50033FA09 /* CubemapEditorDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CubemapEditorDialog.cpp; sourceTree = "<group>"; };
 		A671437E177204C50033FA09 /* CubemapEditorDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CubemapEditorDialog.h; sourceTree = "<group>"; };
 		A67143811772051E0033FA09 /* CubemapEditorDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CubemapEditorDialog_moc.cpp; sourceTree = "<group>"; };
@@ -3368,6 +3371,8 @@
 				5C7F48CD15B44B6D0038AF3A /* SceneEditor */,
 				5C7F489B15B44B320038AF3A /* ColladaExport */,
 				5C7F466115B44B020038AF3A /* bullet */,
+				A6651B211786E2B50096E941 /* MaterialHelper.cpp */,
+				A6651B221786E2B60096E941 /* MaterialHelper.h */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -3977,6 +3982,7 @@
 				A68624011779905800078FE7 /* CubeMapTextureBrowser_moc.cpp in Build Sources */,
 				A68624041779A9CC00078FE7 /* CubeListItemDelegate.cpp in Build Sources */,
 				A68624071779C89800078FE7 /* CubemapUtils.cpp in Build Sources */,
+				A6651B231786E2B60096E941 /* MaterialHelper.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

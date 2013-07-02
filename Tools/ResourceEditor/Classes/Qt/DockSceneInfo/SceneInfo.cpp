@@ -29,6 +29,8 @@
 
 #include "../../ImageTools/ImageTools.h"
 
+#include "MaterialHelper.h"
+
 
 #include <QHeaderView>
 #include <QTimer>
@@ -263,6 +265,9 @@ void SceneInfo::CollectSceneData(SceneData *sceneData, bool force)
  
         scene->GetChildNodes(nodesAtScene);
         scene->GetDataNodes(materialsAtScene);
+		//VI: remove skybox materials so they not to appear in the lists
+		MaterialHelper::FilterMaterialsByType(materialsAtScene, DAVA::Material::MATERIAL_SKYBOX);
+
         scene->GetDataNodes(dataNodesAtScene);
         
         CollectSceneTextures();

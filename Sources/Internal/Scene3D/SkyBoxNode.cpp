@@ -71,7 +71,7 @@ namespace DAVA
 			SafeRelease(renderObj);
 		}
 		
-		skyBoxMaterial->GetRenderState()->SetTexture(DAVA::Texture::CreateFromFile(texturePath));
+		skyBoxMaterial->SetTexture(Material::TEXTURE_DIFFUSE, DAVA::Texture::CreateFromFile(texturePath));
 		UpdateSkyBoxSize();
 	}
 	
