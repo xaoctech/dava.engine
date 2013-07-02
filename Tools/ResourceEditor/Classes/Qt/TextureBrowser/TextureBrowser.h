@@ -96,7 +96,7 @@ private:
 	void setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor *descriptor);
 	void setTextureView(DAVA::eGPUFamily view, bool forceConvert = false);
 
-	void updateConvertedImageAndInfo(const QImage &image);
+	void updateConvertedImageAndInfo(const DAVA::Vector<QImage> &images, DAVA::TextureDescriptor& descriptor);
 	void updateInfoColor(QLabel *label, const QColor &color = QColor());
 	void updateInfoPos(QLabel *label, const QPoint &pos = QPoint());
 	void updateInfoOriginal(const QImage &origImage);
@@ -117,8 +117,8 @@ private slots:
 	void textureBorderPressed(bool checked);
 	void textureBgMaskPressed(bool checked);
 	void texturePropertyChanged(int type);
-	void textureReadyOriginal(const DAVA::TextureDescriptor *descriptor, const QImage &image);
-	void textureReadyConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, const QImage &image);
+	void textureReadyOriginal(const DAVA::TextureDescriptor *descriptor, DAVA::Vector<QImage>& images);
+	void textureReadyConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu,  DAVA::Vector<QImage>& images);
 	void texturePixelOver(const QPoint &pos);
 	void textureZoomSlide(int value);
 	void textureZoom100(bool checked);

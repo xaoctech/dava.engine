@@ -247,7 +247,7 @@ void CubemapEditorDialog::SaveCubemap(const QString& path)
 	descriptor->exportedAsPixelFormat = FORMAT_INVALID;
 	descriptor->faceDescription = faceMask;
 	    
-    descriptor->Export(filePath);
+    descriptor->Save(filePath);
 	SafeRelease(descriptor);
 	
 	QMessageBox::information(this, "Cubemap texture save result", "Cubemap texture was saved successfully!");

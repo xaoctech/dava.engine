@@ -16,6 +16,18 @@
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>1024</width>
+    <height>732</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>1024</width>
+    <height>732</height>
+   </size>
+  </property>
   <property name="windowTitle">
    <string>Cube Map Texture Browser</string>
   </property>
@@ -61,14 +73,14 @@
   <widget class="QPushButton" name="buttonCreateCube">
    <property name="geometry">
     <rect>
-     <x>775</x>
+     <x>855</x>
      <y>8</y>
-     <width>131</width>
+     <width>51</width>
      <height>33</height>
     </rect>
    </property>
    <property name="text">
-    <string>New Cubemap</string>
+    <string>+</string>
    </property>
   </widget>
   <widget class="QListWidget" name="listTextures">

@@ -66,6 +66,24 @@ static GLuint CUBE_FACE_GL_NAMES[] =
 	GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
 };
 	
+static int CUBE_FACE_MAPPING[] =
+{
+	Texture::CUBE_FACE_POSITIVE_X,
+	Texture::CUBE_FACE_NEGATIVE_X,
+	Texture::CUBE_FACE_POSITIVE_Y,
+	Texture::CUBE_FACE_NEGATIVE_Y,
+	Texture::CUBE_FACE_POSITIVE_Z,
+	Texture::CUBE_FACE_NEGATIVE_Z
+};
+
+static DAVA::String FACE_NAME_SUFFIX[] = {
+		DAVA::String("_px"),
+		DAVA::String("_nx"),
+		DAVA::String("_py"),
+		DAVA::String("_ny"),
+		DAVA::String("_pz"),
+		DAVA::String("_nz")
+};
 	
 class TextureMemoryUsageInfo
 {
@@ -493,12 +511,18 @@ void Texture::GeneratePixelesation()
 
 Texture * Texture::CreateFromImage(const FilePath &pathname, DAVA::TextureDescriptor *descriptor)
 {
-    File *file = File::Create(pathname, File::OPEN | File::READ);
-    if(!file)
-    {
-        Logger::Error("[Texture::CreateFromImage] Cannot open file %s", pathname.GetAbsolutePathname().c_str());
-        return NULL;
-    }
+    File *file = NULL;
+	
+	if(!descriptor->IsCubeMap() || descriptor->exportedAsGpuFamily != GPU_UNKNOWN)
+	{
+		//VI: this cube map is split to several PNG files
+		file = File::Create(pathname, File::OPEN | File::READ);
+		if(!file)
+		{
+			Logger::Error("[Texture::CreateFromImage] Cannot open file %s", pathname.GetAbsolutePathname().c_str());
+			return NULL;
+		}		
+	}
 
     Texture *texture = CreateFromImage(file, descriptor);
     SafeRelease(file);
@@ -525,8 +549,40 @@ Texture * Texture::CreateFromImage(File *file, TextureDescriptor *descriptor)
     
 bool Texture::LoadFromImage(File *file, const TextureDescriptor *descriptor)
 {
-    Vector<Image *> imageSet = ImageLoader::CreateFromFile(file);
-    if(0 != imageSet.size())
+    Vector<Image *> imageSet;
+	
+	if(descriptor->IsCubeMap() && (GPU_UNKNOWN == descriptor->exportedAsGpuFamily))
+	{
+		DVASSERT(NULL == file);
+		
+		Vector<String> faceNames;
+		GenerateCubeFaceNames(descriptor->GetSourceTexturePathname().GetAbsolutePathname(), faceNames);
+		for(int i = 0; i < faceNames.size(); ++i)
+		{
+			file = File::Create(faceNames[i], File::OPEN | File::READ);
+			if(!file)
+			{
+				Logger::Error("[Texture::CreateFromImage] Cannot open file %s", faceNames[i].c_str());
+				return false;
+			}
+			
+			Vector<Image *> imageFace = ImageLoader::CreateFromFile(file);
+			Image* img = imageFace[0];
+			img->cubeFaceID = CUBE_FACE_MAPPING[i];
+			img->mipmapLevel = 0;
+			
+			imageSet.push_back(img);
+			
+			SafeRelease(file);
+		}
+	}
+	else
+	{
+		DVASSERT(NULL != file);
+		imageSet = ImageLoader::CreateFromFile(file);
+	}
+    
+	if(0 != imageSet.size())
     {
         bool isSizeCorrect = CheckImageSize(imageSet);
         if(!isSizeCorrect)
@@ -549,8 +605,8 @@ bool Texture::LoadFromImage(File *file, const TextureDescriptor *descriptor)
         height = imageSet[0]->height;
         format = imageSet[0]->format;
 		textureType = (imageSet[0]->cubeFaceID != (uint32)-1) ? Texture::TEXTURE_CUBE : Texture::TEXTURE_2D;
-        
-        bool needGenerateMipMaps = descriptor->GetGenerateMipMaps() && (1 == imageSet.size());
+		
+        bool needGenerateMipMaps = descriptor->GetGenerateMipMaps() && ((1 == imageSet.size()) || descriptor->IsCubeMap());
 
         RenderManager::Instance()->LockNonMain();
         for(uint32 i = 0; i < (uint32)imageSet.size(); ++i)
@@ -561,21 +617,22 @@ bool Texture::LoadFromImage(File *file, const TextureDescriptor *descriptor)
         
 #if defined(__DAVAENGINE_OPENGL__)
         
+		GLenum nativeTextureType = (Texture::TEXTURE_CUBE == textureType) ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
         int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
 		uint32 saveType = RenderManager::Instance()->HWglGetLastTextureType();
 		
         RenderManager::Instance()->HWglBindTexture(id, textureType);
         
-        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, HWglConvertWrapMode((TextureWrap)descriptor->settings.wrapModeS)));
-        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, HWglConvertWrapMode((TextureWrap)descriptor->settings.wrapModeT)));
+        RENDER_VERIFY(glTexParameteri(nativeTextureType, GL_TEXTURE_WRAP_S, HWglConvertWrapMode((TextureWrap)descriptor->settings.wrapModeS)));
+        RENDER_VERIFY(glTexParameteri(nativeTextureType, GL_TEXTURE_WRAP_T, HWglConvertWrapMode((TextureWrap)descriptor->settings.wrapModeT)));
         
         if(needGenerateMipMaps)
         {
-            RENDER_VERIFY(glGenerateMipmap(GL_TEXTURE_2D));
+            RENDER_VERIFY(glGenerateMipmap(nativeTextureType));
         }
         
-        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, HWglFilterToGLFilter((TextureFilter)descriptor->settings.minFilter)));
-        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, HWglFilterToGLFilter((TextureFilter)descriptor->settings.magFilter)));
+        RENDER_VERIFY(glTexParameteri(nativeTextureType, GL_TEXTURE_MIN_FILTER, HWglFilterToGLFilter((TextureFilter)descriptor->settings.minFilter)));
+        RENDER_VERIFY(glTexParameteri(nativeTextureType, GL_TEXTURE_MAG_FILTER, HWglFilterToGLFilter((TextureFilter)descriptor->settings.magFilter)));
         
         RenderManager::Instance()->HWglBindTexture(saveId, saveType);
 #elif defined(__DAVAENGINE_DIRECTX9__)
@@ -1426,5 +1483,38 @@ void Texture::SetInvalidater(TextureInvalidater* invalidater)
 	this->invalidater = invalidater;
 }
 
+void Texture::GenerateCubeFaceNames(const String& baseName, Vector<String>& faceNames)
+{
+	static Vector<String> defaultSuffixes;
+	if(defaultSuffixes.empty())
+	{
+		for(int i = 0; i < Texture::CUBE_FACE_MAX_COUNT; ++i)
+		{
+			defaultSuffixes.push_back(FACE_NAME_SUFFIX[i]);
+		}
+	}
+	
+	GenerateCubeFaceNames(baseName, defaultSuffixes, faceNames);
+}
 
+void Texture::GenerateCubeFaceNames(const String& baseName, const Vector<String>& faceNameSuffixes, Vector<String>& faceNames)
+{
+	faceNames.clear();
+	
+	FilePath filePath(baseName);
+		
+	String fileNameWithoutExtension = filePath.GetFilename();
+	String extension = filePath.GetExtension();
+	fileNameWithoutExtension.replace(fileNameWithoutExtension.find(extension), extension.size(), "");
+		
+	for(int i = 0; i < faceNameSuffixes.size(); ++i)
+	{
+		DAVA::FilePath faceFilePath = baseName;
+		faceFilePath.ReplaceFilename(fileNameWithoutExtension +
+									 faceNameSuffixes[i] +
+									 GPUFamilyDescriptor::GetFilenamePostfix(GPU_UNKNOWN, FORMAT_INVALID));
+			
+		faceNames.push_back(faceFilePath.GetAbsolutePathname());
+	}
+}
 };

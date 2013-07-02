@@ -59,7 +59,7 @@ void CubeMapTextureBrowser::ReloadTextures(const DAVA::String& rootPath)
 				QListWidgetItem* listItem = new QListWidgetItem();
 				listItem->setData(CUBELIST_DELEGATE_ITEMFULLPATH, QString(fp.GetAbsolutePathname().c_str()));
 				listItem->setData(CUBELIST_DELEGATE_ITEMFILENAME, str);
-				ui->listTextures->addItem(listItem);				
+				ui->listTextures->addItem(listItem);
 			}
 		}
 		

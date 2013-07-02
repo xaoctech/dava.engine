@@ -78,7 +78,7 @@ public:
 		CUBE_FACE_NEGATIVE_Y = 3,
 		CUBE_FACE_POSITIVE_Z = 4,
 		CUBE_FACE_NEGATIVE_Z = 5,
-		
+		CUBE_FACE_MAX_COUNT = 6,
 		CUBE_FACE_INVALID = 0xFFFFFFFF
 	};
 	
@@ -228,6 +228,9 @@ public:
     
     
     static PixelFormatDescriptor GetPixelFormatDescriptor(PixelFormat formatID);
+	
+	static void GenerateCubeFaceNames(const String& baseName, Vector<String>& faceNames);
+	static void GenerateCubeFaceNames(const String& baseName, const Vector<String>& faceNameSuffixes, Vector<String>& faceNames);
 
     TextureDescriptor * CreateDescriptor() const;
 

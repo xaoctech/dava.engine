@@ -74,6 +74,7 @@ void CubeListItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem 
 	{
 		//TODO: add icons caching
 		QImage faceImage;
+				
 		faceImage.load(faceNames[i].c_str());
 		
 		//VI: all images should have the same size
