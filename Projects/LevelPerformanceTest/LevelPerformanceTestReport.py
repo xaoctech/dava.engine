@@ -85,7 +85,8 @@ if None != connection:
 	
 	currTest = collection.find_one({'_id': testID})
 	if None != currTest:
-		report.write('<H2> Device: ' + currTest['DeviceDescription'] + '</H2>\n')
+		if 'DeviceDescription' in currTest:
+			report.write('<H2> Device: ' + currTest['DeviceDescription'] + '</H2>\n')
 		report.write('<H3> Date: ' + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + '</H3></br>\n')
 		
 		
@@ -110,7 +111,7 @@ if None != connection:
 		levelNames = currTest.keys()
 		levelNames.sort()
 		for levelName in levelNames:
-			if '_id' != levelName and 'globalIndex' != levelName and 'DeviceDescription' != levelName:
+			if '_id' != levelName and 'globalIndex' != levelName and 'DeviceDescription' != levelName and 'ErrorLog' != levelName:
 				report.write('<H2> Level: ' + levelName + ' </H2>\n')
 
 				level = currTest[levelName]
@@ -140,9 +141,19 @@ if None != connection:
 						else:
 							report.write('<b><i>' + reportValue + '</i>: ' + level[reportValue] + ' (Limit: 46 Mb)</b><br/>\n')
 
-				imageFile = open(levelName + '.png', 'wb')
-				imageFile.write(level['ResultImagePNG'])
-				report.write('<img src="./' + levelName + '.png"' + ' alt="'+ levelName +'"></br>\n')
+				if 'ResultImagePNG' in level:
+					imageFile = open(levelName + '.png', 'wb')
+					imageFile.write(level['ResultImagePNG'])
+					report.write('<img src="./' + levelName + '.png"' + ' alt="'+ levelName +'"></br>\n')
+		
+		if 'ErrorLog' in currTest:
+			errorsLogDb = currTest['ErrorLog']
+			if len(errorsLogDb) > 0:
+				LogError(report, "Errors:")
+				for errorKey in errorsLogDb:
+					if errorKey != '_id':
+						LogError(report, errorsLogDb[errorKey])
+		
 	else:
 		LogError(report, "There are no test with ID: " + testID)
 		
