@@ -185,7 +185,7 @@ void ParticleEmitter::AddLayer(ParticleLayer * layer)
 	AddRenderBatch(layer->GetRenderBatch());
 }
 
-void ParticleEmitter::InsertBeforeLayer(ParticleLayer * layer, ParticleLayer * beforeLayer)
+void ParticleEmitter::InsertLayer(ParticleLayer * layer, ParticleLayer * beforeLayer)
 {
 	AddLayer(layer);
 	if (beforeLayer)

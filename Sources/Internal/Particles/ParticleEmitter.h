@@ -179,7 +179,7 @@ public:
 	 \param[in] layer layer to be added
   	 \param[in] beforeLayer the position beforez which the layer will be inserted
 	 */
-	virtual void InsertBeforeLayer(ParticleLayer * layer, ParticleLayer * beforeLayer);
+	virtual void InsertLayer(ParticleLayer * layer, ParticleLayer * beforeLayer);
 
 	/**
 	 \brief Function removes layer to emitter.
