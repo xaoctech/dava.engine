@@ -308,3 +308,14 @@ void EditorSettings::SetShowEditorCamerLight(bool show)
     Save();
 }
 
+void EditorSettings::SetPreviewDialogEnabled(bool enabled)
+{
+    settings->SetBool("PreviewDialogEnabled", enabled);
+	Save();
+}
+
+bool EditorSettings::GetPreviewDialogEnabled()
+{
+    return settings->GetBool("PreviewDialogEnabled", false);
+}
+
