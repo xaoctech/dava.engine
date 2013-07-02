@@ -15,27 +15,71 @@
 =====================================================================================*/
 
 #include "QMimeDataHelper.h"
-#include "./../Qt/DockSceneTree/SceneTreeModel.h"
+#include "../Qt/DockSceneTree/SceneTreeModel.h"
+#include "../Qt/Scene/SceneDataManager.h"
+
+#include <QList>
+#include <QUrl>
+#include <QFileInfo>
+
+
+#define MIME_HANDLER(data,name, method)\
+    if(data->hasFormat(name)){\
+        return method(data);}\
+
+const QString QMimeDataHelper::supportedMimeFormats[] =
+{
+	"application/dava.entity",
+	"application/dava.emitter",
+	"text/uri-list"
+};
 
 DAVA::Entity* QMimeDataHelper::ConvertQMimeDataFromSceneTree(QMimeData* mimeData)
 {
-    if(mimeData->hasFormat(QString("application/dava.entity")))
+	DAVA::Entity *entity = NULL;
+
+	QByteArray encodedData = mimeData->data(SceneTreeModel::mimeFormatEntity);
+	QDataStream stream(&encodedData, QIODevice::ReadOnly);
+
+	while(!stream.atEnd())
 	{
-        
-		DAVA::Entity *entity = NULL;
-        
-		QByteArray encodedData = mimeData->data(SceneTreeModel::mimeFormatEntity);
-		QDataStream stream(&encodedData, QIODevice::ReadOnly);
-		EntityGroup entityGroup;
-        
-		while(!stream.atEnd())
+		stream.readRawData((char *) &entity, sizeof(DAVA::Entity*));
+		if(NULL != entity)
 		{
-			stream.readRawData((char *) &entity, sizeof(DAVA::Entity*));
-			if(NULL != entity)
-			{
-				return entity;
-			}
+			break;
 		}
 	}
-    
+	return entity;
 }
+
+DAVA::Entity* QMimeDataHelper::ConvertQMimeDataFromFilePath(QMimeData* mimeData)
+{
+	if(!mimeData->hasUrls())
+    {
+		return NULL;
+	}
+    
+	QList<QUrl> droppedUrls = mimeData->urls();
+    
+    QString localPath = droppedUrls[0].toLocalFile();
+    QFileInfo fileInfo(localPath);
+    
+    if(!(fileInfo.isFile() && fileInfo.completeSuffix() == "sc2"))
+    {
+        return NULL;
+    }
+	Entity* entity = NULL;
+	entity = SceneDataManager::Instance()->AddScene(FilePath(localPath.toStdString()));
+	return entity;
+}
+
+DAVA::Entity* QMimeDataHelper::ConvertQMimeData(QMimeData* mimeData)
+{
+	MIME_HANDLER(mimeData, supportedMimeFormats[MIME_ENTITY],	ConvertQMimeDataFromSceneTree)
+	MIME_HANDLER(mimeData, supportedMimeFormats[MIME_FILE_PATH],ConvertQMimeDataFromFilePath)
+	//if(mimeData->hasFormat(SceneTreeModel::mimeFormatEntity))
+	//{
+	//    return ConvertQMimeDataFromSceneTree(mimeData);
+	//}
+	return NULL;
+};
