@@ -63,12 +63,6 @@ CommandLineManager::CommandLineManager()
     ParseCommandLine();
     
     DetectCommandLineMode();
-    
-    if(isCommandLineModeEnabled)
-    {
-        Logger::Instance()->EnableConsoleMode();
-    }
-    
 
     FindActiveTool();
     
@@ -167,11 +161,13 @@ void CommandLineManager::PrintResults()
     const Set<String> &errors = activeTool->GetErrorList();
     if(0 < errors.size())
     {
+        printf("\nErrors:\n");
         Logger::Error("Errors:");
         Set<String>::const_iterator endIt = errors.end();
         int32 index = 0;
         for (auto it = errors.begin(); it != endIt; ++it)
         {
+            printf("[%d] %s\n", index, (*it).c_str());
             Logger::Error(Format("[%d] %s\n", index, (*it).c_str()));
             
             ++index;

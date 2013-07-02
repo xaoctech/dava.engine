@@ -52,8 +52,6 @@ namespace DAVA
 		core->EnableConsoleMode();
 		core->CreateSingletons();
 		
-        Logger::Instance()->EnableConsoleMode();
-        
 		FrameworkDidLaunched();
 		FrameworkWillTerminate();
 		
