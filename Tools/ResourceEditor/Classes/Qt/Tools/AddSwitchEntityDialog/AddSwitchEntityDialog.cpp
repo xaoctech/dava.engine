@@ -25,23 +25,15 @@ AddSwitchEntityDialog::AddSwitchEntityDialog(QWidget* parent)
 ui(new Ui::AddSwitchEntityDialog)
 {
 	ui->setupUi(this);
-    setAcceptDrops(false);
-    ui->FirstSelectionWidget->SetDiscriptionText("Select first entity:");
-    ui->SecondSelectionWidget->SetDiscriptionText("Select second entity:");
+	setAcceptDrops(false);
+	ui->FirstSelectionWidget->SetDiscriptionText("Select first entity:");
+	ui->SecondSelectionWidget->SetDiscriptionText("Select second entity:");
 }
-/*
-void AddSwitchEntityDialog::accept()
-{
-    int k = 0;
-    QDialog::accept();
-    
-}*/
 
 void AddSwitchEntityDialog::GetSlectedMimeData(QMimeData** firstChild, QMimeData** secondChild)
 {
-    *firstChild = ui->FirstSelectionWidget->GetMimeData();
-    *secondChild = ui->SecondSelectionWidget->GetMimeData();
-    
+	*firstChild  = ui->FirstSelectionWidget->GetMimeData();
+	*secondChild = ui->SecondSelectionWidget->GetMimeData();
 }
 
 

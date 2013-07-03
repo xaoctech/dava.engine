@@ -1179,21 +1179,22 @@ void QtMainWindowHandler::CameraLightTrigerred()
 
 void QtMainWindowHandler::AddSwitchEntity()
 {
-    QMimeData* firstChild = NULL;
-    QMimeData* secondChild = NULL;
-    addSwitchEntityDialog->GetSlectedMimeData(&firstChild, &secondChild);
-    
-    Scene* scene = SceneDataManager::Instance()->SceneGetActive()->GetScene();
-    
-    SceneEditor2 *curSceneEditor = QtMainWindow::Instance()->GetUI()->sceneTabWidget->GetCurrentScene();
-    if(NULL != curSceneEditor && NULL != firstChild && NULL != secondChild)
+	QMimeData* firstChild = NULL;
+	QMimeData* secondChild = NULL;
+	addSwitchEntityDialog->GetSlectedMimeData(&firstChild, &secondChild);
+
+	SceneEditor2 *curSceneEditor = QtMainWindow::Instance()->GetUI()->sceneTabWidget->GetCurrentScene();
+	if(NULL != curSceneEditor && NULL != firstChild && NULL != secondChild)
 	{
-        Entity* firstChildEntity = QMimeDataHelper::ConvertQMimeData(firstChild);
-        Entity* secondChildEntity = QMimeDataHelper::ConvertQMimeData(secondChild);
-		curSceneEditor->Exec(new AddSwitchEntityCommand(firstChildEntity, secondChildEntity, scene));
+		Entity* firstChildEntity = *QMimeDataHelper::ConvertQMimeData(firstChild).begin();
+		Entity* secondChildEntity = *QMimeDataHelper::ConvertQMimeData(secondChild).begin();
+		if(NULL != firstChildEntity && NULL != secondChild)
+		{
+			curSceneEditor->Exec(new AddSwitchEntityCommand(firstChildEntity, secondChildEntity, curSceneEditor));
+		}
 	}
-    
-    delete addSwitchEntityDialog;
+
+	delete addSwitchEntityDialog;
 }
 
 

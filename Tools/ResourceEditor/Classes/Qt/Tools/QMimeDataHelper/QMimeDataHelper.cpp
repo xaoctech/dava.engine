@@ -17,6 +17,7 @@
 #include "QMimeDataHelper.h"
 #include "../Qt/DockSceneTree/SceneTreeModel.h"
 #include "../Qt/Scene/SceneDataManager.h"
+#include "Main/mainwindow.h"
 
 #include <QList>
 #include <QUrl>
@@ -34,52 +35,113 @@ const QString QMimeDataHelper::supportedMimeFormats[] =
 	"text/uri-list"
 };
 
-DAVA::Entity* QMimeDataHelper::ConvertQMimeDataFromSceneTree(QMimeData* mimeData)
+
+bool QMimeDataHelper::IsMimeDataTypeSupported(const QMimeData* mimeData)
 {
-	DAVA::Entity *entity = NULL;
+	for(int32 i = MIME_ENTITY; i < MIME_TYPES_COUNT; ++i)
+	{
+		if(mimeData->hasFormat(QString(supportedMimeFormats[i])))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool QMimeDataHelper::ConvertToMime(List<FilePath>& filePathList, QMimeData* mimeData)
+{
+	if(mimeData == NULL)
+	{
+		return false;
+	}
+	
+	mimeData->clear();
+	QList<QUrl> list;
+	for(List<FilePath>::const_iterator it = filePathList.begin(); it != filePathList.end(); ++it)
+	{
+		list.append(QUrl(QString(it->GetAbsolutePathname().c_str())));
+	}
+	mimeData->setUrls(list);
+	return true;
+}
+
+bool QMimeDataHelper::ConvertToMime(List<Entity*>& entityList, QMimeData* mimeData)
+{
+	if(mimeData == NULL)
+	{
+		return false;
+	}
+	
+	mimeData->clear();
+	QByteArray encodedData;
+	
+	QDataStream stream(&encodedData, QIODevice::WriteOnly);
+	foreach(Entity* entity, entityList)
+	{
+		stream.writeRawData((char *) &entity, sizeof(DAVA::Entity*));
+	}
+	
+	mimeData->setData(SceneTreeModel::mimeFormatEntity, encodedData);
+	
+	return true;
+}
+
+List<Entity*> QMimeDataHelper::ConvertQMimeDataFromSceneTree(QMimeData* mimeData)
+{
+	List<Entity*> retList;
 
 	QByteArray encodedData = mimeData->data(SceneTreeModel::mimeFormatEntity);
 	QDataStream stream(&encodedData, QIODevice::ReadOnly);
 
 	while(!stream.atEnd())
 	{
-		stream.readRawData((char *) &entity, sizeof(DAVA::Entity*));
+		Entity *entity = NULL;
+		stream.readRawData((char *) &entity, sizeof(Entity*));
 		if(NULL != entity)
 		{
-			break;
+			retList.push_back(entity);
 		}
 	}
-	return entity;
+	return retList;
 }
 
-DAVA::Entity* QMimeDataHelper::ConvertQMimeDataFromFilePath(QMimeData* mimeData)
+List<Entity*> QMimeDataHelper::ConvertQMimeDataFromFilePath(QMimeData* mimeData)
 {
+	List<Entity*> retList;
 	if(!mimeData->hasUrls())
-    {
-		return NULL;
+	{
+		return retList;
 	}
-    
+
+	SceneEditor2 *curSceneEditor = QtMainWindow::Instance()->GetUI()->sceneTabWidget->GetCurrentScene();
+	
+	if(curSceneEditor == NULL)
+	{
+		return retList;
+	}
+	
 	QList<QUrl> droppedUrls = mimeData->urls();
-    
-    QString localPath = droppedUrls[0].toLocalFile();
-    QFileInfo fileInfo(localPath);
-    
-    if(!(fileInfo.isFile() && fileInfo.completeSuffix() == "sc2"))
-    {
-        return NULL;
-    }
-	Entity* entity = NULL;
-	entity = SceneDataManager::Instance()->AddScene(FilePath(localPath.toStdString()));
-	return entity;
+
+	Q_FOREACH(QUrl url, droppedUrls)
+	{
+		FilePath filePath(url.toLocalFile().toStdString());
+		if(!(filePath.Exists() && filePath.GetExtension() == ".sc2"))
+		{
+			continue;
+		}
+		
+		Entity * entity = curSceneEditor->GetRootNode(filePath);
+		
+		retList.push_back(entity);
+	}
+	
+	return retList;
 }
 
-DAVA::Entity* QMimeDataHelper::ConvertQMimeData(QMimeData* mimeData)
+List<Entity*> QMimeDataHelper::ConvertQMimeData(QMimeData* mimeData)
 {
 	MIME_HANDLER(mimeData, supportedMimeFormats[MIME_ENTITY],	ConvertQMimeDataFromSceneTree)
 	MIME_HANDLER(mimeData, supportedMimeFormats[MIME_FILE_PATH],ConvertQMimeDataFromFilePath)
-	//if(mimeData->hasFormat(SceneTreeModel::mimeFormatEntity))
-	//{
-	//    return ConvertQMimeDataFromSceneTree(mimeData);
-	//}
-	return NULL;
+	
+	return List<Entity*>();
 };
