@@ -19,6 +19,7 @@
 #include "SceneEditor/EditorSettings.h"
 #include "./../Qt/Main/QtUtils.h"
 #include "./../Qt/DockSceneTree/SceneTreeModel.h"
+#include "./../Qt/Tools/QMimeDataHelper/QMimeDataHelper.h"
 
 
 #include <QFileInfo>
@@ -36,19 +37,6 @@ ui(new Ui::SelectPathWidget)
     connect(ui->EraseBtn, SIGNAL(clicked()), this, SLOT(EraseClicked()));
     
     connect(ui->SelectDialogBtn, SIGNAL(clicked()), this, SLOT(OpenClicked()));
-    
-    //
-	//connect(ui->xAxisModify, SIGNAL(editingFinished()), this, SLOT(OnEditingFinished()));
-	//connect(ui->yAxisModify, SIGNAL(editingFinished()), this, SLOT(OnEditingFinished()));
-	//connect(ui->zAxisModify, SIGNAL(editingFinished()), this, SLOT(OnEditingFinished()));
-    
-    //FilePath dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
-    //selectedScenePathname = GetOpenFileName(String("Open Scene File"), dataSourcePath, String("Scene File (*.sc2)"));
-    /*
-     const char* SceneTreeModel::mimeFormatEntity = "application/dava.entity";
-     const char* SceneTreeModel::mimeFormatEmitter = "application/dava.emitter";
-     */
-    
 }
 
 SelectPathWidget::~SelectPathWidget()
@@ -58,57 +46,11 @@ SelectPathWidget::~SelectPathWidget()
 
 void SelectPathWidget::dragEnterEvent(QDragEnterEvent* event)
 {
-    if(true)//TODO: MimeDataHelper::IsAcceptedMimeData(event->mimeData())
+    if(QMimeDataHelper::IsMimeDataTypeSupported(event->mimeData()))
     {
         event->acceptProposedAction();
     }
-    /*
     
-    QStringList t = event->mimeData()->formats();
-    for (int i = 0; i < t.size(); ++i)
-    {
-        String dStr (t.at(i).toStdString());
-        if(strcmp(t.at(i).toStdString().c_str(), SceneTreeModel::mimeFormatEntity) == 0 )
-        {
-            
-            
-        }
-        int k = 0;
-    }
-    
- 
- 
-    const QMimeData* mimeData = event->mimeData();
-
-    
-	if(mimeData->hasFormat(SceneTreeModel::mimeFormatEntity))
-	{
-
-		DAVA::Entity *entity = NULL;
-
-		QByteArray encodedData = mimeData->data(SceneTreeModel::mimeFormatEntity);
-		QDataStream stream(&encodedData, QIODevice::ReadOnly);
-		EntityGroup entityGroup;
-        
-		while(!stream.atEnd())
-		{
-			stream.readRawData((char *) &entity, sizeof(DAVA::Entity*));
-			if(NULL != entity)
-			{
-				//entity->
-			}
-		}
-	}
-	//ret = QStandardItemModel::dropMimeData(data, action, row, column, parent);
-    
-    //if(event->provides(SceneTreeModel::mimeFormatEntity))
-  
-    
-    if(event->mimeData()->hasUrls())
-    {
-        event->acceptProposedAction();
-    }*/
-   
 }
 
 void SelectPathWidget::dropEvent(QDropEvent* event)
@@ -127,21 +69,18 @@ void SelectPathWidget::dropEvent(QDropEvent* event)
     if(fileInfo.isFile() && fileInfo.completeSuffix() == "sc2")//!
     {
         SetPathText(localPath);
+        
+        mimeData.clear();
+        foreach(const QString & format, event->mimeData()->formats())
+        {
+            //String t = format.toStdString();
+            //QByteArray t2 = event->mimeData()->data(format);
+            mimeData.setData(format, event->mimeData()->data(format));
+            //ui->FilePathBox->setText("1");
+        }
+        
+        event->acceptProposedAction();
     }
-
-    mimeData.clear();
-    //TODO: SetPathText with fist file name
-    
-	foreach(const QString & format, event->mimeData()->formats())
-    {
-        String t = format.toStdString();
-        QByteArray t2 = event->mimeData()->data(format);
-        mimeData.setData(format, event->mimeData()->data(format));
-        //ui->FilePathBox->setText("1");
-    }
-    
-    event->acceptProposedAction();
-    
 }
 
 
@@ -152,24 +91,26 @@ void SelectPathWidget::EraseClicked()
 
 void SelectPathWidget::OpenClicked()
 {
-    FilePath presentPath(ui->FilePathBox->text().toStdString());
-    FilePath dialogString = EditorSettings::Instance()->GetDataSourcePath();
-    if(presentPath.GetDirectory().Exists())
-    {
-        dialogString = presentPath.GetDirectory();
-    }
-    
-    QString filePath = QFileDialog::getOpenFileName(NULL, "Open Scene File", QString(dialogString.GetAbsolutePathname().c_str()),
+	FilePath presentPath(ui->FilePathBox->text().toStdString());
+	FilePath dialogString = EditorSettings::Instance()->GetDataSourcePath();
+	if(presentPath.GetDirectory().Exists())
+	{
+		dialogString = presentPath.GetDirectory();
+	}
+	
+	((QWidget*)parent())->setWindowFlags(Qt::WindowStaysOnBottomHint);
+	((QWidget*)parent())->showNormal();
+	QString retString = QFileDialog::getOpenFileName(this, "Open Scene File",
+                                                    QString(dialogString.GetAbsolutePathname().c_str()),
                                                     "Scene File (*.sc2)");
- 
-    SetPathText(filePath);
-    //TODO: mimeData = mimeDataHelper::ConvertToMime(List<FilePath> )
-    
-    mimeData.clear();
-    
-    QList<QUrl> list;
-    list.append(QUrl(filePath));
-    mimeData.setUrls(list);
+
+	((QWidget*)parent())->setWindowFlags(Qt::WindowStaysOnTopHint);
+	((QWidget*)parent())->showNormal();
+	SetPathText(retString);
+	FilePath filePath(retString.toStdString());
+	List<FilePath> urls;
+	urls.push_back(filePath);
+	QMimeDataHelper::ConvertToMime(urls, &mimeData);
 }
 
 

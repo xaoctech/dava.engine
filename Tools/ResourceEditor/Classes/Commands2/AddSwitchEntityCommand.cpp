@@ -54,6 +54,8 @@ void AddSwitchEntityCommand::Redo()
         
         entityToAdd->AddComponent(new SwitchComponent());
         
+        entityToAdd->SetName(entityFirst->GetName() + "+" + entitySecond->GetName());//debug
+        
         scene->AddNode(entityToAdd);
 	}
 }

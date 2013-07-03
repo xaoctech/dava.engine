@@ -20,28 +20,38 @@
 #include "DAVAEngine.h"
 #include <QMimeData>
 
+namespace DAVA
+{
 
 class QMimeDataHelper
 {
 public:
-	static DAVA::Entity* ConvertQMimeData(QMimeData* mimeData);
+
+	static List<Entity*> ConvertQMimeData(QMimeData* mimeData);
+
+	static bool IsMimeDataTypeSupported(const QMimeData* mimeData);
+	
+	static bool ConvertToMime(List<FilePath>&, QMimeData* mimeData);
+
+	static bool ConvertToMime(List<Entity*>&, QMimeData* mimeData);
 
 protected:
 
-	static DAVA::Entity* ConvertQMimeDataFromSceneTree(QMimeData* mimeData);
+	static List<Entity*> ConvertQMimeDataFromSceneTree(QMimeData* mimeData);
 
-	static DAVA::Entity* ConvertQMimeDataFromFilePath(QMimeData* mimeData);
+	static List<Entity*> ConvertQMimeDataFromFilePath(QMimeData* mimeData);
 
 	const static QString supportedMimeFormats[];
 	
-    enum eMimeTypes
-    {
-        MIME_ENTITY = 0,
+	enum eMimeTypes
+	{
+		MIME_ENTITY = 0,
 		MIME_EMITTER,
-        MIME_FILE_PATH,
+		MIME_FILE_PATH,
 
-        MIME_TYPES_COUNT
-    };
+		MIME_TYPES_COUNT
+	};
 };
 
+};//DAVA nemaspace
 #endif /* defined(__RESOURCEEDITORQT__QMIMEDATAHELPER__) */
