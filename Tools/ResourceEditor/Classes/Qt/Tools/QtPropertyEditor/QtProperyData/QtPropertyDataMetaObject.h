@@ -18,8 +18,8 @@
 #define __QT_PROPERTY_DATA_META_OBJECT_H__
 
 #include "Base/Introspection.h"
-#include "QtPropertyEditor/QtPropertyData.h"
-#include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
+#include "../QtPropertyData.h"
+#include "QtPropertyDataDavaVariant.h"
 
 class QtPropertyDataMetaObject : public QtPropertyDataDavaVariant
 {

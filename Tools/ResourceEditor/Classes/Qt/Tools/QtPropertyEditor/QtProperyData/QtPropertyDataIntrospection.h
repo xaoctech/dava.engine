@@ -14,41 +14,38 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __QT_PROPERTY_MODEL_H__
-#define __QT_PROPERTY_MODEL_H__
+#ifndef __QT_PROPERTY_DATA_INTROSPECTION_H__
+#define __QT_PROPERTY_DATA_INTROSPECTION_H__
 
-#include <QPair>
-#include <QTimer>
-#include <QStandardItemModel>
 #include "Base/Introspection.h"
+#include "../QtPropertyData.h"
 
-#include "QtPropertyEditor/QtPropertyItem.h"
-#include "QtPropertyEditor/QtPropertyData.h"
+#include <QMap>
 
-class QtPropertyModel : public QStandardItemModel
+class QtPropertyDataDavaVariant;
+
+class QtPropertyDataIntrospection : public QtPropertyData
 {
 	Q_OBJECT
-
 public:
-	QtPropertyModel(QObject* parent = 0);
-	~QtPropertyModel();
-
-	QPair<QtPropertyItem*, QtPropertyItem*> AppendProperty(const QString &name, QtPropertyData* data, QtPropertyItem* parent = NULL);
-	QPair<QtPropertyItem*, QtPropertyItem*> GetProperty(const QString &name, QtPropertyItem* parent = NULL);
-
-	void RemoveProperty(QtPropertyItem* item);
-	void RemovePropertyAll();
-
-	void SetRefreshTimeout(int ms);
-	int GetRefreshTimeout();
+	QtPropertyDataIntrospection(void *object, const DAVA::InspInfo *info, int hasAllFlags = DAVA::I_NONE);
+	virtual ~QtPropertyDataIntrospection();
 
 protected:
-	int refreshTimeout;
-	QTimer refreshTimer;
-	
+	void *object;
+	const DAVA::InspInfo *info;
+	QMap<QtPropertyDataDavaVariant*, const DAVA::InspMember *> childVariantMembers;
+
+	void AddMember(const DAVA::InspMember *member, int hasAllFlags);
+
+	virtual QVariant GetValueInternal();
+	virtual void ChildChanged(const QString &key, QtPropertyData *data);
+	virtual void ChildNeedUpdate();
+
+	DAVA_DEPRECATED(void CreateCustomButtonsForRenderObject());
+
 protected slots:
-	void OnItemChanged(QStandardItem * item);
-	void OnRefreshTimeout();
+	void BakeTransform();
 };
 
-#endif // __QT_PROPERTY_MODEL_H__
+#endif // __QT_PROPERTY_DATA_INTROSPECTION_H__

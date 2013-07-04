@@ -14,27 +14,66 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __QT_PROPERTY_DATA_INTRO_COLLECTION_H__
-#define __QT_PROPERTY_DATA_INTRO_COLLECTION_H__
+#ifndef __QT_PROPERTY_DATA_DAVA_KEYEDARCHIVE_H__
+#define __QT_PROPERTY_DATA_DAVA_KEYEDARCHIVE_H__
 
 #include "Base/Introspection.h"
-#include "QtPropertyEditor/QtPropertyData.h"
+#include "../QtPropertyData.h"
 
-class QtPropertyDataIntroCollection : public QtPropertyData
+#include <QLineEdit>
+#include <QComboBox>
+#include <QPushButton>
+
+class QtPropertyDataDavaKeyedArcive : public QtPropertyData
 {
+	Q_OBJECT;
+
 public:
-	QtPropertyDataIntroCollection(void *_object, const DAVA::InspColl *_collection, int hasAllFlags = DAVA::I_NONE);
-	virtual ~QtPropertyDataIntroCollection();
+	QtPropertyDataDavaKeyedArcive(DAVA::KeyedArchive *archive);
+	virtual ~QtPropertyDataDavaKeyedArcive();
 
 protected:
-	void *object;
-	const DAVA::InspColl *collection;
-
-	//QMap<QtPropertyDataDavaVariant*, int> childVariantIndexes;
+	DAVA::KeyedArchive* curArchive;
+	int lastAddedType;
 
 	virtual QVariant GetValueInternal();
-	//virtual void ChildChanged(const QString &key, QtPropertyData *data);
-	//virtual void ChildNeedUpdate();
+	virtual void SetValueInternal(const QVariant &value);
+	virtual void ChildChanged(const QString &key, QtPropertyData *data);
+
+private:
+	void ChildsSync();
+	void ChildCreate(const QString &key, DAVA::VariantType *value);
+
+protected slots:
+	void AddKeyedArchiveField();
+	void RemKeyedArchiveField();
+	void NewKeyedArchiveFieldReady(const DAVA::String &key, const DAVA::VariantType &value);
 };
 
-#endif // __QT_PROPERTY_DATA_INTRO_COLLECTION_H__
+class KeyedArchiveItemWidget : public QWidget
+{
+	Q_OBJECT;
+
+public:
+	KeyedArchiveItemWidget(DAVA::KeyedArchive *arch, int defaultType = DAVA::VariantType::TYPE_STRING, QWidget *parent = NULL);
+	~KeyedArchiveItemWidget();
+
+signals:
+	void ValueReady(const DAVA::String &key, const DAVA::VariantType &value);
+
+protected:
+	DAVA::KeyedArchive *arch;
+
+	QLineEdit *keyWidget;
+	QComboBox *valueWidget;
+	QComboBox *presetWidget;
+	QPushButton *defaultBtn;
+
+	virtual void showEvent(QShowEvent * event);
+	virtual void keyPressEvent(QKeyEvent *event);
+
+protected slots:
+	void OkKeyPressed();
+};
+
+#endif // __QT_PROPERTY_DATA_DAVA_KEYEDARCHIVE_H__

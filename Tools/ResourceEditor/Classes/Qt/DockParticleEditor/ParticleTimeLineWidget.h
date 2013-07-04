@@ -24,7 +24,7 @@
 
 #include <DAVAEngine.h>
 #include "ScrollZoomWidget.h"
-#include "../CustomControls/EventFilterDoubleSpinBox.h"
+#include "Tools/EventFilterDoubleSpinBox/EventFilterDoubleSpinBox.h"
 
 #include "Commands/CommandList.h"
 

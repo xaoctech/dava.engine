@@ -17,8 +17,8 @@
 #include "Base/GlobalEnum.h"
 #include "Render/TextureDescriptor.h"
 
-#include "TextureBrowser/TextureProperties.h"
-#include "QtPropertyEditor/QtPropertyItem.h"
+#include "TextureProperties.h"
+#include "Tools/QtPropertyEditor/QtPropertyItem.h"
 
 TextureProperties::TextureProperties( QWidget *parent /*= 0*/ )
 	: QtPropertyEditor(parent)

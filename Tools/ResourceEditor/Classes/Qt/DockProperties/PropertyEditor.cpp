@@ -20,9 +20,9 @@
 #include "Main/mainwindow.h"
 
 #include "DockProperties/PropertyEditor.h"
-#include "QtPropertyEditor/QtPropertyItem.h"
-#include "QtPropertyEditor/QtProperyData/QtPropertyDataIntrospection.h"
-#include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
+#include "Tools/QtPropertyEditor/QtPropertyItem.h"
+#include "Tools/QtPropertyEditor/QtProperyData/QtPropertyDataIntrospection.h"
+#include "Tools/QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
 
 #include "PropertyEditorStateHelper.h"
 
