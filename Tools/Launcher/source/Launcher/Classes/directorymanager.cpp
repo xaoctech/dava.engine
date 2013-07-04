@@ -22,6 +22,7 @@ DirectoryManager* DirectoryManager::m_spInstance = NULL;
 
 #define DOWNLOAD_DIR "/Downloads/"
 #define STABLE_DIR "/Stable/"
+#define TOMASTER_DIR "/ToMaster/"
 #define TEST_DIR "/QA/"
 #define DEVELOPMENT_DIR "/Development/"
 #define DEPENDENCIES_DIR "/Dependencies/"
@@ -41,6 +42,7 @@ void DirectoryManager::Init() {
 
     QDir().mkdir(GetDownloadDir());
     QDir().mkdir(GetStableDir());
+    QDir().mkdir(GetToMasterDir());
     QDir().mkdir(GetTestDir());
     QDir().mkdir(GetDevelopment());
     QDir().mkdir(GetDependencies());
@@ -96,6 +98,12 @@ QString DirectoryManager::GetDownloadDir() const {
 QString DirectoryManager::GetStableDir() const {
     QString baseDir = GetBaseDirectory();
     baseDir.append(STABLE_DIR);
+    return baseDir;
+}
+
+QString DirectoryManager::GetToMasterDir() const {
+    QString baseDir = GetBaseDirectory();
+    baseDir.append(TOMASTER_DIR);
     return baseDir;
 }
 

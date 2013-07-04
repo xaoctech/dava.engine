@@ -193,6 +193,9 @@
     <Filter Include="Classes\Qt\Tools\QMimeDataHelper">
       <UniqueIdentifier>{f723a8cd-eb00-4ed7-b821-e0286c1683cc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\Deprecated">
+      <UniqueIdentifier>{b383f0c0-b1f2-483d-9f28-a261d8afc960}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1763,6 +1766,12 @@
     </ClCompile>
     <ClCompile Include="Classes\Commands2\AddSwitchEntityCommand.cpp">
       <Filter>Classes\Commands2</Filter>
+	</ClCompile>
+    <ClCompile Include="Classes\Deprecated\ScenePreviewControl.cpp">
+      <Filter>Classes\Deprecated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Deprecated\ScenePreviewDialog.cpp">
+      <Filter>Classes\Deprecated</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -3103,6 +3112,12 @@
     </ClInclude>
     <ClInclude Include="Classes\Commands2\AddSwitchEntityCommand.h">
       <Filter>Classes\Commands2</Filter>
+	</ClInclude>
+    <ClInclude Include="Classes\Deprecated\ScenePreviewControl.h">
+      <Filter>Classes\Deprecated</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Deprecated\ScenePreviewDialog.h">
+      <Filter>Classes\Deprecated</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

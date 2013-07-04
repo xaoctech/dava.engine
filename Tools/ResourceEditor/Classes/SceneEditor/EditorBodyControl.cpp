@@ -48,7 +48,9 @@
 #include "../Commands/CommandsManager.h"
 #include "../Commands/EditorBodyControlCommands.h"
 #include "../Commands/CommandReloadTextures.h"
+
 #include "../StringConstants.h"
+#include "../Commands/FileCommands.h"
 
 #include "../CommandLine/CommandLineManager.h"
 #include "../CommandLine/Beast/BeastCommandLineTool.h"
@@ -957,7 +959,7 @@ void EditorBodyControl::PackLightmaps()
 
  	FilePath outputDir = FilePath::CreateWithNewExtension(sceneData->GetScenePathname(),  + ".sc2_lightmaps/");
 
-	FileSystem::Instance()->MoveFile(inputDir+"landscape.png", inputDir+"test_landscape.png", true);
+	FileSystem::Instance()->MoveFile(inputDir+"landscape.png", "test_landscape.png", true);
 
 	LightmapsPacker packer;
 	packer.SetInputDir(inputDir);
@@ -969,7 +971,7 @@ void EditorBodyControl::PackLightmaps()
 
 	BeastProxy::Instance()->UpdateAtlas(beastManager, packer.GetAtlasingData());
 
-	FileSystem::Instance()->MoveFile(inputDir+"test_landscape.png", outputDir+"landscape.png", true);
+	FileSystem::Instance()->MoveFile("test_landscape.png", outputDir+"landscape.png", true);
 }
 
 void EditorBodyControl::Draw(const UIGeometricData &geometricData)
