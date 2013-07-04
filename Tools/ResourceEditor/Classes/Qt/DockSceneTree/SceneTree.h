@@ -35,10 +35,6 @@ public:
 
 public slots:
 	void ShowContextMenu(const QPoint &pos);
-	void LookAtSelection();
-	void RemoveSelection();
-	void LockEntities();
-	void UnlockEntities();
 
 protected:
 	SceneTreeModel * treeModel;
@@ -70,6 +66,15 @@ protected slots:
 	void ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos);
 	void ShowContextMenuLayer(DAVA::ParticleLayer *layer, const QPoint &pos);
 	void ShowContextMenuForce(DAVA::ParticleForce *force, const QPoint &pos);
+
+	void LookAtSelection();
+	void RemoveSelection();
+	void LockEntities();
+	void UnlockEntities();
+	void AddEmitter();
+	void StartEmitter();
+	void StopEmitter();
+	void RestartEmitter();
 };
 
 #endif // __QT_SCENE_TREE_H__

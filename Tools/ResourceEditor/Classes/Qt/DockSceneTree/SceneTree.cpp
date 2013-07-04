@@ -19,6 +19,9 @@
 #include <QDropEvent>
 #include <QMenu>
 
+// framework
+#include "Scene3D/Components/ComponentHelpers.h"
+
 SceneTree::SceneTree(QWidget *parent /*= 0*/)
 	: QTreeView(parent)
 	, skipTreeSelectionProcessing(false)
@@ -219,13 +222,17 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos)
 	{
 		QMenu contextMenu;
 
+		// look at
 		contextMenu.addAction(QIcon(":/QtIcons/zoom.png"), "Look at", this, SLOT(LookAtSelection()));
 		contextMenu.addSeparator();
-		contextMenu.addAction(QIcon(":/QtIcons/remove.png"), "Remove", this, SLOT(RemoveSelection()));
+
+		// add/remove
+		contextMenu.addAction(QIcon(":/QtIcons/remove.png"), "Remove entity", this, SLOT(RemoveSelection()));
 		contextMenu.addSeparator();
+
+		// lock/unlock
 		QAction *lockAction = contextMenu.addAction(QIcon(":/QtIcons/lock_add.png"), "Lock", this, SLOT(LockEntities()));
 		QAction *unlockAction = contextMenu.addAction(QIcon(":/QtIcons/lock_delete.png"), "Unlock", this, SLOT(UnlockEntities()));
-
 		if(entity->GetLocked())
 		{
 			lockAction->setDisabled(true);
@@ -233,6 +240,20 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos)
 		else
 		{
 			unlockAction->setDisabled(true);
+		}
+
+		// particle effect
+		DAVA::ParticleEffectComponent* effect = DAVA::GetEffectComponent(entity);
+		if(NULL != effect)
+		{
+			contextMenu.addSeparator();
+			QMenu *particleEffectMenu = contextMenu.addMenu("Particle effect");
+			
+			particleEffectMenu->addAction("Add emitter", this, SLOT(AddEmitter()));
+			particleEffectMenu->addSeparator();
+			particleEffectMenu->addAction(QIcon(":/QtIcons/play.png"), "Start", this, SLOT(StartEmitter()));
+			particleEffectMenu->addAction(QIcon(":/QtIcons/stop.png"), "Stop", this, SLOT(StopEmitter()));
+			particleEffectMenu->addAction(QIcon(":/QtIcons/restart.png"), "Stop", this, SLOT(StopEmitter()));
 		}
 
 		contextMenu.exec(pos);
@@ -392,4 +413,33 @@ void SceneTree::SyncSelectionFromTree()
 			}
 		}
 	}
+}
+
+void SceneTree::AddEmitter()
+{
+	SceneEditor2* curScene = treeModel->GetScene();
+	if(NULL != curScene)
+	{
+		DAVA::Entity *curEntity = SceneTreeItemEntity::GetEntity(treeModel->GetItem(currentIndex()));
+		if(NULL != curEntity)
+		{
+			//DAVA::ParticleEmitter *emitter = new DAVA::ParticleEmitter();
+			//curScene->structureSystem->Move(emitter, curEntity, NULL);
+		}
+	}
+}
+
+void SceneTree::StartEmitter()
+{
+
+}
+
+void SceneTree::StopEmitter()
+{
+
+}
+
+void SceneTree::RestartEmitter()
+{
+
 }

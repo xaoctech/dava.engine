@@ -55,7 +55,7 @@ void ParticleLayerMoveCommand::Undo()
 		{
 			if(NULL != oldBefore)
 			{
-				oldEmitter->InsertBeforeLayer(layer, oldBefore);
+				oldEmitter->InsertLayer(layer, oldBefore);
 			}
 			else
 			{
@@ -76,7 +76,7 @@ void ParticleLayerMoveCommand::Redo()
 
 		if(NULL != newBefore)
 		{
-			newEmitter->InsertBeforeLayer(layer, newBefore);
+			newEmitter->InsertLayer(layer, newBefore);
 		}
 		else
 		{
