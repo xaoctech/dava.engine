@@ -47,11 +47,12 @@
 #include "Scene3D/Systems/GlobalEventSystem.h"
 #include "Scene3D/Components/SwitchComponent.h"
 
-#define COMPONENT_COUNT_V6 16
-#define COMPONENTS_IN_MAP_COUNT 4
-#define COMPONENTS_IN_VECTOR_COUNT 3
 #define USE_VECTOR(x) (((1 << x) & vectorComponentsMask) != 0)
-#define COMPONENTS_BY_NAME_SAVE_SCENE_VERSION 7
+
+const int COMPONENT_COUNT_V6 = 16;
+const int COMPONENTS_IN_MAP_COUNT = 4;
+const int COMPONENTS_IN_VECTOR_COUNT = 3;
+const int COMPONENTS_BY_NAME_SAVE_SCENE_VERSION = 7;
 
 namespace DAVA
 {
