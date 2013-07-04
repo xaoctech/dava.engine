@@ -279,6 +279,9 @@ void QtMainWindow::SetupToolBars()
 	// add combobox to select current view mode
 	// TODO:
 	// ... ->
+	ui->viewModeToolBar->addAction(ui->actionShowMipmapLevel);
+	ui->viewModeToolBar->addSeparator();
+
 	QComboBox *cbox = new QComboBox(NULL);
 	cbox->addItem("Normal mode");
 	cbox->addItem("Particles mode");
@@ -327,9 +330,11 @@ void QtMainWindow::SetupToolBars()
 
 	QObject::connect(undoSceneEditor2, SIGNAL(triggered()), this, SLOT(Undo2()));
 	QObject::connect(redoSceneEditor2, SIGNAL(triggered()), this, SLOT(Redo2()));
+	
 	ui->viewModeToolBar->addAction(undoSceneEditor2);
 	ui->viewModeToolBar->addAction(redoSceneEditor2);
 
+	ui->viewModeToolBar->setParent(NULL);
 
 	// <-
 }
