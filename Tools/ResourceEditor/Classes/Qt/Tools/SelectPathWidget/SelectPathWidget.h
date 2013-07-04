@@ -35,12 +35,11 @@ class SelectPathWidget: public QWidget
 public:
 	explicit SelectPathWidget(QWidget* parent = 0);
 	~SelectPathWidget();
-    
 
-    
-    void SetDiscriptionText(const QString &);
-    
-    QString GetDiscriptionText();
+
+	void SetDiscriptionText(const QString &);
+
+	QString GetDiscriptionText();
 
     void SetPathText(const QString &);
     
@@ -57,33 +56,29 @@ public:
     {
         return &mimeData;
     }
-    //signals:
-    //	void ApplyModification(double x, double y, double z);
-    
-    //private slots:
-    //	void OnEditingFinished();
+
 protected:
-    
+
     void dragEnterEvent(QDragEnterEvent* event);
     
     void dropEvent(QDropEvent * event);
-    
-    
+
+
 private slots:
 
 	void EraseClicked();
-    
-    void OpenClicked();
+
+	void OpenClicked();
 
 private:
-    
-    QString ConvertToRelativPath(const QString& path);
-    
-    Ui::SelectPathWidget*   ui;
-    
-    QString                 relativPath;
-    
-    QMimeData   mimeData;
+
+	QString ConvertToRelativPath(const QString& path);
+
+	Ui::SelectPathWidget*   ui;
+
+	QString                 relativPath;
+	
+	QMimeData   mimeData;
 	
 };
 

@@ -44,7 +44,7 @@ void AddSwitchEntityCommand::Undo()
 
 void AddSwitchEntityCommand::Redo()
 {
-    if(NULL != entityFirst && NULL != entitySecond)
+	if(NULL != entityFirst && NULL != entitySecond)
 	{
 		entityToAdd = new Entity();
         entityToAdd->SetName(ResourceEditor::SWITCH_NODE_NAME);

@@ -32,7 +32,7 @@ PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */)
 	, curNode(NULL)
 	, treeStateHelper(this, this->curModel)
 {
-	SetRefreshTimeout(1000);
+	SetRefreshTimeout(5000);
 	
 	// global scene manager signals
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneActivated(SceneData *)), this, SLOT(sceneActivated(SceneData *)));

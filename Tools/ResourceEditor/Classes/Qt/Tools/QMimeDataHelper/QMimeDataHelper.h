@@ -27,19 +27,25 @@ class QMimeDataHelper
 {
 public:
 
-	static List<Entity*> ConvertQMimeData(QMimeData* mimeData);
+	static bool ConvertQMimeData(const QMimeData* mimeData, List<Entity*> &);
 
 	static bool IsMimeDataTypeSupported(const QMimeData* mimeData);
+	
+	static bool GetItemNamesFromMime(const QMimeData* mimeData, List<String>& nameList);
 	
 	static bool ConvertToMime(List<FilePath>&, QMimeData* mimeData);
 
 	static bool ConvertToMime(List<Entity*>&, QMimeData* mimeData);
-
+	
 protected:
 
-	static List<Entity*> ConvertQMimeDataFromSceneTree(QMimeData* mimeData);
+	static bool ConvertQMimeDataFromSceneTree(const QMimeData* mimeData, List<Entity*>&);
 
-	static List<Entity*> ConvertQMimeDataFromFilePath(QMimeData* mimeData);
+	static bool ConvertQMimeDataFromFilePath(const QMimeData* mimeData, List<Entity*>&);
+	
+	static bool GetItemNamesFromSceneTreeMime(const QMimeData* mimeData, List<String> & nameList);
+	
+	static bool GetItemNamesFromFilePathMime(const QMimeData* mimeData, List<String> & nameList);
 
 	const static QString supportedMimeFormats[];
 	
@@ -54,4 +60,4 @@ protected:
 };
 
 };//DAVA nemaspace
-#endif /* defined(__RESOURCEEDITORQT__QMIMEDATAHELPER__) */
+#endif  /* defined(__RESOURCEEDITORQT__QMIMEDATAHELPER__) */

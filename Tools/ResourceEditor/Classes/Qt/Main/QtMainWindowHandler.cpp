@@ -299,16 +299,17 @@ void QtMainWindowHandler::SaveToFolderWithChilds()
 
 void QtMainWindowHandler::CreateNode(ResourceEditor::eNodeType type)
 {
-    if(type == ResourceEditor::NODE_SWITCH_NODE)
-    {
-        addSwitchEntityDialog = new AddSwitchEntityDialog();
-        connect(addSwitchEntityDialog, SIGNAL(accepted()), this, SLOT(AddSwitchEntity()));
-        addSwitchEntityDialog->setWindowFlags(Qt::WindowStaysOnTopHint);
-        addSwitchEntityDialog->show();
-        return;
-    }
-    //CommandsManager::Instance()->ExecuteAndRelease(new CommandCreateNode(type),
-	//											   SceneDataManager::Instance()->SceneGetActive()->GetScene());
+	/*
+	if(type == ResourceEditor::NODE_SWITCH_NODE)
+	{
+		addSwitchEntityDialog = new AddSwitchEntityDialog();
+		connect(addSwitchEntityDialog, SIGNAL(accepted()), this, SLOT(AddSwitchEntity()));
+		addSwitchEntityDialog->setWindowFlags(Qt::WindowStaysOnTopHint);
+		addSwitchEntityDialog->show();
+		return;
+	}*/
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandCreateNode(type),
+												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
 }
 
 void QtMainWindowHandler::Materials()
@@ -1186,11 +1187,13 @@ void QtMainWindowHandler::AddSwitchEntity()
 	SceneEditor2 *curSceneEditor = QtMainWindow::Instance()->GetUI()->sceneTabWidget->GetCurrentScene();
 	if(NULL != curSceneEditor && NULL != firstChild && NULL != secondChild)
 	{
-		Entity* firstChildEntity = *QMimeDataHelper::ConvertQMimeData(firstChild).begin();
-		Entity* secondChildEntity = *QMimeDataHelper::ConvertQMimeData(secondChild).begin();
-		if(NULL != firstChildEntity && NULL != secondChild)
+		List<Entity*> firstChildEntities;
+		bool successFirst = QMimeDataHelper::ConvertQMimeData(firstChild, firstChildEntities);
+		List<Entity*> secondChildEntities;
+		bool successSecond = QMimeDataHelper::ConvertQMimeData(secondChild, secondChildEntities);
+		if(successSecond && successFirst)
 		{
-			curSceneEditor->Exec(new AddSwitchEntityCommand(firstChildEntity, secondChildEntity, curSceneEditor));
+			curSceneEditor->Exec(new AddSwitchEntityCommand(*firstChildEntities.begin(), *secondChildEntities.begin(), curSceneEditor));
 		}
 	}
 
