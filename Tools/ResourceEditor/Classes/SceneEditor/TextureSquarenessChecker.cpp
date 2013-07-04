@@ -83,7 +83,7 @@ void TextureSquarenessChecker::ValidateTextureCoordsOfNodeGeometry(Entity *scene
 
         ValidateTextureCoordsOfNodeGeometry(node);
 
-        RenderObject *ro = GetRenerObject(node);
+        RenderObject *ro = GetRenderObject(node);
         if(!ro) continue;
 
         uint32 count = ro->GetRenderBatchCount();

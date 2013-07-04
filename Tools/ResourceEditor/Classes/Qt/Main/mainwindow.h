@@ -55,7 +55,7 @@ private:
 public slots:
 	void ShowActionWithText(QToolBar *toolbar, QAction *action, bool showText);
 
-	void ChangeParticleDockVisible(bool visible);
+	void ChangeParticleDockVisible(bool visible, bool forceUpdate = false);
 	void ChangeParticleDockTimeLineVisible(bool visible);
 	void returnToOldMaxMinSizesForDockSceneGraph();
 

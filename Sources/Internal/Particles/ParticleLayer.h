@@ -105,6 +105,7 @@ public:
 		IMPORTANT: This function save weak pointer to parent emitter. Emitter hold strong references to all child layers.
 		This function used internally in emitter, but in some situations. 
 	*/
+	ParticleEmitter* GetEmitter() const;
 	void SetEmitter(ParticleEmitter * emitter);
 	
 	/**
