@@ -576,7 +576,10 @@ inline Vector3 Matrix4::GetTranslationVector() const
 
 inline Vector3 Matrix4::GetScaleVector() const
 {
-	return Vector3(_00, _11, _22);	
+	Vector3 xAxis(_00, _10, _20);
+	Vector3 yAxis(_01, _11, _21);
+	Vector3 zAxis(_02, _12, _22);
+	return Vector3(xAxis.Length(), yAxis.Length(), zAxis.Length());	
 }
 	
 inline void	Matrix4::CreateScale(const Vector3 & _v)
