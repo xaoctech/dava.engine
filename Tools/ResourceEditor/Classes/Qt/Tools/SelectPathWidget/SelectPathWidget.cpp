@@ -55,38 +55,40 @@ void SelectPathWidget::dragEnterEvent(QDragEnterEvent* event)
 
 void SelectPathWidget::dropEvent(QDropEvent* event)
 {
-    const QMimeData* sendedMimeData = event->mimeData();
-    if(!sendedMimeData->hasUrls())
-    {
+	const QMimeData* sendedMimeData = event->mimeData();
+		
+	List<String> nameList;
+	
+	bool success = QMimeDataHelper::GetItemNamesFromMime(sendedMimeData, nameList);
+	if(!success)
+	{
 		return;
 	}
-    
-	QList<QUrl> droppedUrls = event->mimeData()->urls();
-    
-    QString localPath = droppedUrls[0].toLocalFile();
-    QFileInfo fileInfo(localPath);
-    
-    if(fileInfo.isFile() && fileInfo.completeSuffix() == "sc2")//!
-    {
-        SetPathText(localPath);
-        
-        mimeData.clear();
-        foreach(const QString & format, event->mimeData()->formats())
-        {
-            //String t = format.toStdString();
-            //QByteArray t2 = event->mimeData()->data(format);
-            mimeData.setData(format, event->mimeData()->data(format));
-            //ui->FilePathBox->setText("1");
-        }
-        
-        event->acceptProposedAction();
-    }
+	String itemName = *nameList.begin();
+	FilePath filePath(itemName);
+	if(filePath.Exists())
+	{
+		SetPathText(QString(filePath.GetAbsolutePathname().c_str()));
+		ui->FilePathBox->setEnabled(true);
+	}
+	else
+	{
+		SetPathText(QString(itemName.c_str()));
+		ui->FilePathBox->setEnabled(false);
+	}
+	
+	mimeData.clear();
+	foreach(const QString & format, event->mimeData()->formats())
+	{
+		mimeData.setData(format, event->mimeData()->data(format));
+	}
+	event->acceptProposedAction();
 }
 
 
 void SelectPathWidget::EraseClicked()
 {
-    ui->FilePathBox->setText("");
+	ui->FilePathBox->setText("");
 }
 
 void SelectPathWidget::OpenClicked()
@@ -110,7 +112,10 @@ void SelectPathWidget::OpenClicked()
 	FilePath filePath(retString.toStdString());
 	List<FilePath> urls;
 	urls.push_back(filePath);
-	QMimeDataHelper::ConvertToMime(urls, &mimeData);
+	if(!QMimeDataHelper::ConvertToMime(urls, &mimeData))
+	{
+		mimeData.clear();
+	}
 }
 
 
