@@ -14,66 +14,41 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __QT_PROPERTY_DATA_DAVA_KEYEDARCHIVE_H__
-#define __QT_PROPERTY_DATA_DAVA_KEYEDARCHIVE_H__
+#ifndef __QT_PROPERTY_MODEL_H__
+#define __QT_PROPERTY_MODEL_H__
 
+#include <QPair>
+#include <QTimer>
+#include <QStandardItemModel>
 #include "Base/Introspection.h"
-#include "QtPropertyEditor/QtPropertyData.h"
 
-#include <QLineEdit>
-#include <QComboBox>
-#include <QPushButton>
+#include "QtPropertyItem.h"
+#include "QtPropertyData.h"
 
-class QtPropertyDataDavaKeyedArcive : public QtPropertyData
+class QtPropertyModel : public QStandardItemModel
 {
-	Q_OBJECT;
+	Q_OBJECT
 
 public:
-	QtPropertyDataDavaKeyedArcive(DAVA::KeyedArchive *archive);
-	virtual ~QtPropertyDataDavaKeyedArcive();
+	QtPropertyModel(QObject* parent = 0);
+	~QtPropertyModel();
+
+	QPair<QtPropertyItem*, QtPropertyItem*> AppendProperty(const QString &name, QtPropertyData* data, QtPropertyItem* parent = NULL);
+	QPair<QtPropertyItem*, QtPropertyItem*> GetProperty(const QString &name, QtPropertyItem* parent = NULL);
+
+	void RemoveProperty(QtPropertyItem* item);
+	void RemovePropertyAll();
+
+	void SetRefreshTimeout(int ms);
+	int GetRefreshTimeout();
 
 protected:
-	DAVA::KeyedArchive* curArchive;
-	int lastAddedType;
-
-	virtual QVariant GetValueInternal();
-	virtual void SetValueInternal(const QVariant &value);
-	virtual void ChildChanged(const QString &key, QtPropertyData *data);
-
-private:
-	void ChildsSync();
-	void ChildCreate(const QString &key, DAVA::VariantType *value);
-
+	int refreshTimeout;
+	QTimer refreshTimer;
+	
 protected slots:
-	void AddKeyedArchiveField();
-	void RemKeyedArchiveField();
-	void NewKeyedArchiveFieldReady(const DAVA::String &key, const DAVA::VariantType &value);
+	void OnItemChanged(QStandardItem * item);
+	void OnRefreshTimeout();
 };
 
-class KeyedArchiveItemWidget : public QWidget
-{
-	Q_OBJECT;
-
-public:
-	KeyedArchiveItemWidget(DAVA::KeyedArchive *arch, int defaultType = DAVA::VariantType::TYPE_STRING, QWidget *parent = NULL);
-	~KeyedArchiveItemWidget();
-
-signals:
-	void ValueReady(const DAVA::String &key, const DAVA::VariantType &value);
-
-protected:
-	DAVA::KeyedArchive *arch;
-
-	QLineEdit *keyWidget;
-	QComboBox *valueWidget;
-	QComboBox *presetWidget;
-	QPushButton *defaultBtn;
-
-	virtual void showEvent(QShowEvent * event);
-	virtual void keyPressEvent(QKeyEvent *event);
-
-protected slots:
-	void OkKeyPressed();
-};
-
-#endif // __QT_PROPERTY_DATA_DAVA_KEYEDARCHIVE_H__
+#endif // __QT_PROPERTY_MODEL_H__

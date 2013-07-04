@@ -22,7 +22,7 @@
 #include "Base/Introspection.h"
 #include "Base/EnumMap.h"
 
-#include "QtPropertyEditor/QtPropertyData.h"
+#include "../QtPropertyData.h"
 
 class QtPropertyDataDavaVariant : public QtPropertyData
 {

@@ -33,8 +33,8 @@
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/EditorBodyControl.h"
 #include "../SceneEditor/EditorConfig.h"
-#include "Classes/QT/SpritesPacker/SpritePackerHelper.h"
-#include "Classes/QT/QResourceEditorProgressDialog/QResourceEditorProgressDialog.h"
+#include "SpritesPacker/SpritePackerHelper.h"
+#include "Tools/QResourceEditorProgressDialog/QResourceEditorProgressDialog.h"
 
 #include <QApplication>
 #include <QPixmap>
