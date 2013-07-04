@@ -46,7 +46,7 @@ void ParticleLayerRemoveCommand::Undo()
 	{
 		if(NULL != before)
 		{
-			emitter->InsertBeforeLayer(layer, before);
+			emitter->InsertLayer(layer, before);
 		}
 		else
 		{

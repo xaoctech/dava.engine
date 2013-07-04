@@ -413,18 +413,7 @@ void SceneTreeModel::StructureChanged(SceneEditor2 *scene, DAVA::Entity *parent)
 {
 	if(curScene == scene)
 	{
-		QStandardItem *parentItem = NULL;
-		if(NULL != parent)
-		{
-			parentItem = GetItem(GetIndex(parent));
-		}
-
-		if(NULL == parentItem)
-		{
-			parentItem = invisibleRootItem();
-		}
-
-		ResyncStructure(parentItem, curScene);
+		ResyncStructure(invisibleRootItem(), curScene);
 		RebuildIndexesCache();
 	}
 }
