@@ -576,9 +576,9 @@ inline Vector3 Matrix4::GetTranslationVector() const
 
 inline Vector3 Matrix4::GetScaleVector() const
 {
-	Vector3 xAxis(_00, _10, _20);
-	Vector3 yAxis(_01, _11, _21);
-	Vector3 zAxis(_02, _12, _22);
+	Vector3 xAxis(_00, _01, _02);
+	Vector3 yAxis(_10, _11, _12);
+	Vector3 zAxis(_20, _21, _22);
 	return Vector3(xAxis.Length(), yAxis.Length(), zAxis.Length());	
 }
 	
