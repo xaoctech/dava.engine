@@ -18,10 +18,13 @@
 #define APPTYPE_H
 
 enum eAppType {
-    eAppTypeStable,
+    eAppTypeStable = 0,
+    eAppTypeToMaster,
     eAppTypeTest,
     eAppTypeDevelopment,
-    eAppTypeDependencies
+    eAppTypeDependencies,
+
+    eAppTypeCount
 };
 
 #endif // APPTYPE_H
