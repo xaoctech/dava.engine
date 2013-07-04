@@ -14,8 +14,8 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "QtPropertyEditor/QtPropertyItem.h"
-#include "QtPropertyEditor/QtPropertyData.h"
+#include "QtPropertyItem.h"
+#include "QtPropertyData.h"
 
 QtPropertyItem::QtPropertyItem()
 	: QStandardItem()

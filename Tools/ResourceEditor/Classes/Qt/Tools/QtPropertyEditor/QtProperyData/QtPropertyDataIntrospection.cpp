@@ -15,10 +15,10 @@
 =====================================================================================*/
 
 #include "DAVAEngine.h"
-#include "QtPropertyEditor/QtProperyData/QtPropertyDataIntrospection.h"
-#include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
-#include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaKeyedArchive.h"
-#include "QtPropertyEditor/QtProperyData/QtPropertyDataIntoCollection.h"
+#include "QtPropertyDataIntrospection.h"
+#include "QtPropertyDataDavaVariant.h"
+#include "QtPropertyDataDavaKeyedArchive.h"
+#include "QtPropertyDataIntoCollection.h"
 
 QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DAVA::InspInfo *_info, int hasAllFlags)
 	: object(_object)
