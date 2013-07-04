@@ -15,9 +15,9 @@
 =====================================================================================*/
 
 #include <QMouseEvent>
-#include "QtPropertyEditor/QtPropertyEditor.h"
-#include "QtPropertyEditor/QtPropertyModel.h"
-#include "QtPropertyEditor/QtPropertyItemDelegate.h"
+#include "QtPropertyEditor.h"
+#include "QtPropertyModel.h"
+#include "QtPropertyItemDelegate.h"
 
 QtPropertyEditor::QtPropertyEditor(QWidget *parent /* = 0 */)
 	: QTreeView(parent)

@@ -14,7 +14,7 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "QtPropertyEditor/QtProperyData/QtPropertyDataMetaObject.h"
+#include "QtPropertyDataMetaObject.h"
 
 QtPropertyDataMetaObject::QtPropertyDataMetaObject(void *_object, const DAVA::MetaInfo *_meta)
 	: QtPropertyDataDavaVariant(DAVA::VariantType::LoadData(_object, _meta))
