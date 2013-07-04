@@ -84,22 +84,20 @@ void Component::GetDataNodes(Set<DAVA::DataNode *> &dataNodes)
 
 void Component::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 {
-	if(NULL != archive) archive->SetUInt32("comp.type", GetType());
-    if(NULL != archive) archive->SetString("comp.typename", ObjectFactory::Instance()->GetName(this));
+	if(NULL != archive)
+	{
+		archive->SetUInt32("comp.type", GetType());
+		archive->SetString("comp.typename", ObjectFactory::Instance()->GetName(this));
+	}
 }
 
 void Component::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 {
 	if(NULL != archive)
 	{
-		uint32 type = 0xFFFFFFFF;
-        
-
-		if(archive->IsKeyExists("comp.type"))
-        {
-            type = archive->GetUInt32("comp.type");            
-        }
-        
+		uint32 type = archive->GetUInt32("comp.type", 0xFFFFFFFF);        
+		
+		//VI: this check should not trigger when the key is not present (i.e. old file format version)
         if(archive->IsKeyExists("comp.typename"))
         {
             DVASSERT(archive->GetString("comp.typename") == ObjectFactory::Instance()->GetName(this));
