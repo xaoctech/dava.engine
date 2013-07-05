@@ -14,9 +14,9 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "QtPropertyEditor/QtProperyData/QtPropertyDataIntoCollection.h"
-#include "QtPropertyEditor/QtProperyData/QtPropertyDataIntrospection.h"
-#include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
+#include "QtPropertyDataIntoCollection.h"
+#include "QtPropertyDataIntrospection.h"
+#include "QtPropertyDataDavaVariant.h"
 
 QtPropertyDataIntroCollection::QtPropertyDataIntroCollection(void *_object, const DAVA::InspColl *_collection, int hasAllFlags)
 	: object(_object)

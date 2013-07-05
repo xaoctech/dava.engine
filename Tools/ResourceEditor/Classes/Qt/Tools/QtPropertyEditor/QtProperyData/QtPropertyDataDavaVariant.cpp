@@ -17,15 +17,15 @@
 #include "DAVAEngine.h"
 #include "Debug/DVAssert.h"
 #include "Main/QtUtils.h"
-#include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
-#include "QtPropertyEditor/QtPropertyWidgets/QtColorLineEdit.h"
+#include "QtPropertyDataDavaVariant.h"
+#include "../QtPropertyWidgets/QtColorLineEdit.h"
 
 #include <QColorDialog>
 #include <QPushButton>
 #include <QPainter>
 #include <QLineEdit>
 
-#include "../../../SceneEditor/EditorSettings.h"
+#include "SceneEditor/EditorSettings.h"
 
 QtPropertyDataDavaVariant::QtPropertyDataDavaVariant(const DAVA::VariantType &value)
 	: curVariantValue(value)

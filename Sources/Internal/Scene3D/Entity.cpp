@@ -217,7 +217,7 @@ void Entity::InsertBeforeNode(Entity *newNode, Entity *beforeNode)
     {
 		bool canBeInserted = false;
 
-		Vector<Entity*>::iterator &itEnd = children.end();
+		Vector<Entity*>::iterator itEnd = children.end();
         for (Vector<Entity*>::iterator it = children.begin(); it != itEnd; ++it)
         {
             if(beforeNode == (*it))
