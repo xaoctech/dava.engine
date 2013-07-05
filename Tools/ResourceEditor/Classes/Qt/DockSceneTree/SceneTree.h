@@ -25,6 +25,9 @@
 #include "DockSceneTree/SceneTreeModel.h"
 #include "DockSceneTree/SceneTreeDelegate.h"
 
+// temp include
+#include "ParticlesEditorQT/Nodes/BaseParticleEditorNode.h"
+
 class SceneTree : public QTreeView
 {
 	Q_OBJECT
@@ -33,6 +36,11 @@ public:
 	SceneTree(QWidget *parent = 0);
 	~SceneTree();
 
+signals:
+	void EmitterSelected(DAVA::Entity* emitterNode, DAVA::BaseParticleEditorNode* editorNode);
+	void LayerSelected(DAVA::Entity* emitterNode, DAVA::ParticleLayer* layer, DAVA::BaseParticleEditorNode* editorNode, bool forceRefresh);
+	void ForceSelected(DAVA::Entity* emitterNode, DAVA::ParticleLayer* layer, DAVA::int32 forceIndex, DAVA::BaseParticleEditorNode* editorNode);
+	
 public slots:
 	void ShowContextMenu(const QPoint &pos);
 
@@ -47,6 +55,8 @@ protected:
 	void dragEnterEvent(QDragEnterEvent *event);
 
 	void GetDropParams(const QPoint &pos, QModelIndex &index, int &row, int &col);
+
+	void EmitParticleSignals(const QItemSelection & selected);
 
 protected slots:
 	void SceneActivated(SceneEditor2 *scene);

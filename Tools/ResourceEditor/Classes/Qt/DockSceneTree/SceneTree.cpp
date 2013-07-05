@@ -166,6 +166,9 @@ void SceneTree::TreeSelectionChanged(const QItemSelection & selected, const QIte
 		SyncSelectionFromTree();
 		skipTreeSelectionProcessing = false;
 	}
+
+	// emit some signal about particles
+	EmitParticleSignals(selected);
 }
 
 void SceneTree::TreeItemClicked(const QModelIndex & index)
@@ -253,7 +256,7 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos)
 			particleEffectMenu->addSeparator();
 			particleEffectMenu->addAction(QIcon(":/QtIcons/play.png"), "Start", this, SLOT(StartEmitter()));
 			particleEffectMenu->addAction(QIcon(":/QtIcons/stop.png"), "Stop", this, SLOT(StopEmitter()));
-			particleEffectMenu->addAction(QIcon(":/QtIcons/restart.png"), "Stop", this, SLOT(StopEmitter()));
+			particleEffectMenu->addAction(QIcon(":/QtIcons/restart.png"), "Restart", this, SLOT(RestartEmitter()));
 		}
 
 		contextMenu.exec(pos);
@@ -412,6 +415,69 @@ void SceneTree::SyncSelectionFromTree()
 				curScene->selectionSystem->RemSelection(selGroup.GetEntity(i));
 			}
 		}
+	}
+}
+
+void SceneTree::EmitParticleSignals(const QItemSelection & selected)
+{
+	bool isParticleElements = false;
+
+	// allow only single selected entities
+	if(selected.size() == 1) 
+	{
+		QModelIndexList indexList = selectionModel()->selection().indexes();
+		SceneTreeItem *item = treeModel->GetItem(indexList[0]);
+
+		if(NULL != item)
+		{
+			switch(item->ItemType())
+			{
+			case SceneTreeItem::EIT_Entity:
+				{
+					DAVA::Entity *entity = SceneTreeItemEntity::GetEntity(item);
+					if(NULL != DAVA::GetEmitter(entity))
+					{
+						emit EmitterSelected(entity, NULL);
+						isParticleElements = true;
+					}
+				}
+				break;
+			case SceneTreeItem::EIT_Layer:
+				{
+					SceneTreeItemParticleLayer *itemLayer = (SceneTreeItemParticleLayer *) item;
+					if(NULL != itemLayer->parent && NULL != itemLayer->layer)
+					{
+						emit LayerSelected(itemLayer->parent, itemLayer->layer, NULL, false);
+						isParticleElements = true;
+					}
+				}
+				break;
+			case SceneTreeItem::EIT_Force:
+				{
+					SceneTreeItemParticleForce *itemForce = (SceneTreeItemParticleForce *) item;
+					DAVA::ParticleLayer* layer = itemForce->parent;
+					if(NULL != layer)
+					{
+						for(int i = 0; i < layer->forces.size(); ++i)
+						{
+							if(layer->forces[i] == itemForce->force)
+							{
+								emit ForceSelected(NULL, layer, i, NULL);
+								isParticleElements = true;
+
+								break;
+							}
+						}
+					}
+				}
+				break;
+			}
+		}
+	}
+
+	if(!isParticleElements)
+	{
+		emit EmitterSelected(NULL, NULL);
 	}
 }
 
