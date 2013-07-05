@@ -31,6 +31,7 @@
 #include "Scene/System/SelectionSystem.h"
 #include "Scene/System/ModifSystem.h"
 #include "Scene/System/StructureSystem.h"
+#include "Scene/System/DebugDrawSystem.h"
 
 class SceneEditor2 : public DAVA::Scene
 {
@@ -46,6 +47,7 @@ public:
 	SceneSelectionSystem *selectionSystem;
 	EntityModificationSystem *modifSystem;
 	StructureSystem *structureSystem;
+	DebugDrawSystem *debugSystem;
 
 	// save/load
 	bool Load(const DAVA::FilePath &path);
