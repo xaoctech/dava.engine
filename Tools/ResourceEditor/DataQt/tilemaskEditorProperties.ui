@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>244</width>
-    <height>230</height>
+    <height>241</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -44,7 +44,19 @@ size:</string>
       <item>
        <widget class="QSlider" name="sliderBrushSize">
         <property name="minimum">
+         <number>30</number>
+        </property>
+        <property name="maximum">
+         <number>400</number>
+        </property>
+        <property name="singleStep">
          <number>10</number>
+        </property>
+        <property name="pageStep">
+         <number>100</number>
+        </property>
+        <property name="sliderPosition">
+         <number>120</number>
         </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>

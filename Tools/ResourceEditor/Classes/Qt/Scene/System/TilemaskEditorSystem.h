@@ -48,6 +48,7 @@ public:
 	
 	void Update(DAVA::float32 timeElapsed);
 	void ProcessUIEvent(DAVA::UIEvent *event);
+	void Draw();
 	
 	void SetBrushSize(int32 brushSize);
 	void SetStrength(float32 strength);
@@ -78,6 +79,7 @@ protected:
 	
 	bool isIntersectsLandscape;
 	Vector2 cursorPosition;
+	Vector2 prevCursorPos;
 	
 	Rect updatedRectAccumulator;
 	
@@ -86,14 +88,20 @@ protected:
 	Sprite* toolSprite;
 	Sprite* maskSprite;
 	Sprite* oldMaskSprite;
-	
+	bool toolSpriteUpdated;
+
 	eBlendMode srcBlendMode;
 	eBlendMode dstBlendMode;
 	Shader* tileMaskEditorShader;
+
+	Image* originalMask;
+	Image* originalTexture;
+
+	bool needCreateUndo;
 	
 	void UpdateCursorPosition();
 	void UpdateToolImage(bool force = false);
-	void UpdateBrushTool(float32 timeElapsed);
+	void UpdateBrushTool();
 	Image* CreateToolImage(int32 sideSize, const FilePath& filePath);
 	
 	void AddRectToAccumulator(const Rect& rect);
@@ -102,6 +110,9 @@ protected:
 	
 	void CreateMaskTexture();
 	void CreateMaskFromTexture(Texture* texture);
+
+	void CreateUndoPoint();
+	void StoreOriginalState();
 };
 
 #endif /* defined(__RESOURCEEDITORQT__TILEMASKEDITORSYSTEM__) */

@@ -50,7 +50,10 @@ public:
 
 	void EnableCustomDraw();
 	void DisableCustomDraw();
-	
+
+	void EnableTilemaskEditing();
+	void DisableTilemaskEditing();
+
 	bool IsNotPassableTerrainEnabled();
 	void EnableNotPassableTerrain();
 	void DisableNotPassableTerrain();
@@ -93,6 +96,7 @@ private:
 	Vector2 cursorPosition;
 	
 	void UpdateBaseLandscapeHeightmap();
+	void Init();
 };
 
 #endif /* defined(__RESOURCEEDITORQT__LANDSCAPEEDITORDRAWSYSTEM__) */

@@ -50,6 +50,7 @@
 		494A7CE3172A950D005D7C7F /* CommandSignals_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 494A7CE2172A950D005D7C7F /* CommandSignals_moc.cpp */; };
 		496566A616BBBAA200C21DB0 /* TilemapEditorCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 496566A416BBBAA100C21DB0 /* TilemapEditorCommands.cpp */; };
 		496566A916BBCDA400C21DB0 /* HeightmapEditorCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 496566A716BBCDA300C21DB0 /* HeightmapEditorCommands.cpp */; };
+		496FFCBE17818D8400934A11 /* CustomLandscape.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 496FFCBC17818D8400934A11 /* CustomLandscape.cpp */; };
 		49802D4716C2596700E40105 /* SceneEditorScreenMainCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49802D4516C2596600E40105 /* SceneEditorScreenMainCommands.cpp */; };
 		498AA6FD1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498AA6FB1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp */; };
 		498AA7001653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */; };
@@ -61,6 +62,7 @@
 		49BCDBBF1760C9B6000FCF36 /* NotPassableTerrainProxy.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49BCDBBD1760C9B6000FCF36 /* NotPassableTerrainProxy.cpp */; };
 		49BCDBC21760C9D7000FCF36 /* HeightmapProxy.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49BCDBC01760C9D7000FCF36 /* HeightmapProxy.cpp */; };
 		49BCDBC51760C9EF000FCF36 /* CustomColorsProxy.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49BCDBC31760C9EE000FCF36 /* CustomColorsProxy.cpp */; };
+		49C3A5341786CDE200E26CE5 /* TilemaskEditorCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49C3A5321786CDE200E26CE5 /* TilemaskEditorCommands.cpp */; };
 		49C89A3716C3AB1A008AA6F0 /* ArrowsNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49C89A3516C3AB1A008AA6F0 /* ArrowsNode.cpp */; };
 		49C89A3916C3AB72008AA6F0 /* ModificationWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49C89A3816C3AB72008AA6F0 /* ModificationWidget_moc.cpp */; };
 		49C89A3C16C3ABE6008AA6F0 /* ModificationWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49C89A3A16C3ABE6008AA6F0 /* ModificationWidget.cpp */; };
@@ -632,6 +634,8 @@
 		496566A516BBBAA200C21DB0 /* TilemapEditorCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TilemapEditorCommands.h; path = Classes/Commands/TilemapEditorCommands.h; sourceTree = "<group>"; };
 		496566A716BBCDA300C21DB0 /* HeightmapEditorCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HeightmapEditorCommands.cpp; path = Classes/Commands/HeightmapEditorCommands.cpp; sourceTree = "<group>"; };
 		496566A816BBCDA400C21DB0 /* HeightmapEditorCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HeightmapEditorCommands.h; path = Classes/Commands/HeightmapEditorCommands.h; sourceTree = "<group>"; };
+		496FFCBC17818D8400934A11 /* CustomLandscape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CustomLandscape.cpp; path = LandscapeEditorDrawSystem/CustomLandscape.cpp; sourceTree = "<group>"; };
+		496FFCBD17818D8400934A11 /* CustomLandscape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CustomLandscape.h; path = LandscapeEditorDrawSystem/CustomLandscape.h; sourceTree = "<group>"; };
 		49802D4516C2596600E40105 /* SceneEditorScreenMainCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneEditorScreenMainCommands.cpp; path = Classes/Commands/SceneEditorScreenMainCommands.cpp; sourceTree = "<group>"; };
 		49802D4616C2596600E40105 /* SceneEditorScreenMainCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneEditorScreenMainCommands.h; path = Classes/Commands/SceneEditorScreenMainCommands.h; sourceTree = "<group>"; };
 		498AA6FB1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VisibilityCheckToolCommands.cpp; path = Classes/Commands/VisibilityCheckToolCommands.cpp; sourceTree = "<group>"; };
@@ -654,6 +658,8 @@
 		49BCDBC11760C9D7000FCF36 /* HeightmapProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HeightmapProxy.h; path = LandscapeEditorDrawSystem/HeightmapProxy.h; sourceTree = "<group>"; };
 		49BCDBC31760C9EE000FCF36 /* CustomColorsProxy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CustomColorsProxy.cpp; path = LandscapeEditorDrawSystem/CustomColorsProxy.cpp; sourceTree = "<group>"; };
 		49BCDBC41760C9EE000FCF36 /* CustomColorsProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CustomColorsProxy.h; path = LandscapeEditorDrawSystem/CustomColorsProxy.h; sourceTree = "<group>"; };
+		49C3A5321786CDE200E26CE5 /* TilemaskEditorCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TilemaskEditorCommands.cpp; sourceTree = "<group>"; };
+		49C3A5331786CDE200E26CE5 /* TilemaskEditorCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TilemaskEditorCommands.h; sourceTree = "<group>"; };
 		49C89A3516C3AB1A008AA6F0 /* ArrowsNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ArrowsNode.cpp; path = Classes/SceneEditor/ArrowsNode.cpp; sourceTree = "<group>"; };
 		49C89A3616C3AB1A008AA6F0 /* ArrowsNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ArrowsNode.h; path = Classes/SceneEditor/ArrowsNode.h; sourceTree = "<group>"; };
 		49C89A3816C3AB72008AA6F0 /* ModificationWidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ModificationWidget_moc.cpp; sourceTree = "<group>"; };
@@ -1741,6 +1747,8 @@
 				49BCDBC41760C9EE000FCF36 /* CustomColorsProxy.h */,
 				493A6F881761EC39001323C8 /* VisibilityToolProxy.cpp */,
 				493A6F891761EC39001323C8 /* VisibilityToolProxy.h */,
+				496FFCBC17818D8400934A11 /* CustomLandscape.cpp */,
+				496FFCBD17818D8400934A11 /* CustomLandscape.h */,
 			);
 			name = LandscapeEditorDrawSystem;
 			sourceTree = "<group>";
@@ -1846,6 +1854,8 @@
 				491F625D17719BEF00F8A0B1 /* VisibilityToolActions.h */,
 				491F625F1771C07A00F8A0B1 /* HeightmapEditorCommands2.cpp */,
 				491F62601771C07B00F8A0B1 /* HeightmapEditorCommands2.h */,
+				49C3A5321786CDE200E26CE5 /* TilemaskEditorCommands.cpp */,
+				49C3A5331786CDE200E26CE5 /* TilemaskEditorCommands.h */,
 			);
 			name = Commands2;
 			path = Classes/Commands2;
@@ -4121,6 +4131,8 @@
 				491F6254177091B800F8A0B1 /* CustomColorsCommands2.cpp in Build Sources */,
 				491F625E17719BEF00F8A0B1 /* VisibilityToolActions.cpp in Build Sources */,
 				491F62611771C07B00F8A0B1 /* HeightmapEditorCommands2.cpp in Build Sources */,
+				496FFCBE17818D8400934A11 /* CustomLandscape.cpp in Build Sources */,
+				49C3A5341786CDE200E26CE5 /* TilemaskEditorCommands.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

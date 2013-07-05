@@ -366,20 +366,16 @@ Rect HeightmapEditorSystem::GetUpdatedRect()
 {
 	EditorHeightmap* editorHeightmap = drawSystem->GetHeightmapProxy();
 	
-	float32 heightmapSize = editorHeightmap->Size() - 1.f;
+	int32 heightmapSize = editorHeightmap->Size() - 1;
 	Rect r = updatedRectAccumulator;
-	
-	r.x = Max(r.x, 0.f);
-	r.y = Max(r.y, 0.f);
-	if (r.x + r.dx > heightmapSize)
-	{
-		r.dx = heightmapSize - r.x;
-	}
-	if (r.y + r.dy > heightmapSize)
-	{
-		r.dy = heightmapSize - r.y;
-	}
-	
+
+	r.x = (float32)Clamp((int32)updatedRectAccumulator.x, 0, heightmapSize - 1);
+	r.y = (float32)Clamp((int32)updatedRectAccumulator.y, 0, heightmapSize - 1);
+	r.dx = Clamp((updatedRectAccumulator.x + updatedRectAccumulator.dx),
+				 0.f, (float32)heightmapSize - 1.f) - updatedRectAccumulator.x;
+	r.dy = Clamp((updatedRectAccumulator.y + updatedRectAccumulator.dy),
+				 0.f, (float32)heightmapSize - 1.f) - updatedRectAccumulator.y;
+
 	return r;
 }
 

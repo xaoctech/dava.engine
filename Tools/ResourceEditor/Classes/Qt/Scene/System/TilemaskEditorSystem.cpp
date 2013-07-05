@@ -33,6 +33,7 @@
 #include "../SceneEditor2.h"
 #include "LandscapeEditorDrawSystem/HeightmapProxy.h"
 #include "LandscapeEditorDrawSystem/LandscapeProxy.h"
+#include "TilemaskEditorCommands.h"
 
 TilemaskEditorSystem::TilemaskEditorSystem(Scene* scene)
 :	SceneSystem(scene)
@@ -48,6 +49,11 @@ TilemaskEditorSystem::TilemaskEditorSystem(Scene* scene)
 ,	maskSprite(NULL)
 ,	oldMaskSprite(NULL)
 ,	toolSprite(NULL)
+,	prevCursorPos(Vector2(-1.f, -1.f))
+,	toolSpriteUpdated(false)
+,	needCreateUndo(false)
+,	originalMask(NULL)
+,	originalTexture(NULL)
 {
 	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.png");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
@@ -80,10 +86,9 @@ bool TilemaskEditorSystem::EnableLandscapeEditing()
 	selectionSystem->SetLocked(true);
 	modifSystem->SetLocked(true);
 	
-	drawSystem->EnableCustomDraw();
-	drawSystem->GetLandscapeProxy()->SetTilemaskTextureEnabled(true);
+	drawSystem->EnableTilemaskEditing();
 
-	landscapeSize = drawSystem->GetLandscapeProxy()->GetLandscapeTexture(Landscape::TEXTURE_TILE_FULL)->GetWidth();
+	landscapeSize = drawSystem->GetTextureSize();
 
 	drawSystem->EnableCursor(landscapeSize);
 	drawSystem->SetCursorTexture(cursorTexture);
@@ -109,7 +114,7 @@ bool TilemaskEditorSystem::DisableLandscapeEdititing()
 	drawSystem->GetLandscapeProxy()->SetTilemaskTexture(NULL);
 	
 	drawSystem->DisableCursor();
-	drawSystem->DisableCustomDraw();
+	drawSystem->DisableTilemaskEditing();
 	
 	enabled = false;
 	return !enabled;
@@ -129,20 +134,24 @@ void TilemaskEditorSystem::Update(float32 timeElapsed)
 	
 	if (editingIsEnabled && isIntersectsLandscape)
 	{
-		float32 landscapeSize = drawSystem->GetHeightmapProxy()->Size();
-		float32 textureSize = toolSprite->GetSize().x;
-		float32 scaleFactor = textureSize / landscapeSize;
-		
-		Vector2 toolSize = Vector2(cursorSize, cursorSize) * scaleFactor;
-		Vector2 toolPos = cursorPosition * scaleFactor - toolSize / 2.f;
-		
-		RenderManager::Instance()->SetRenderTarget(toolSprite);
-		toolImageSprite->SetScaleSize(toolSize.x, toolSize.y);
-		toolImageSprite->SetPosition(toolPos.x, toolPos.y);
-		toolImageSprite->Draw();
-		RenderManager::Instance()->RestoreRenderTarget();
-		
-		UpdateBrushTool(timeElapsed);
+		if (prevCursorPos != cursorPosition)
+		{
+			Vector2 toolSize = Vector2(cursorSize, cursorSize);
+			Vector2 toolPos = cursorPosition - toolSize / 2.f;
+
+			RenderManager::Instance()->SetRenderTarget(toolSprite);
+			toolImageSprite->SetScaleSize(toolSize.x, toolSize.y);
+			toolImageSprite->SetPosition(toolPos.x, toolPos.y);
+			toolImageSprite->Draw();
+			RenderManager::Instance()->RestoreRenderTarget();
+
+			toolSpriteUpdated = true;
+
+			prevCursorPos = cursorPosition;
+
+			Rect rect(toolPos, toolSize);
+			AddRectToAccumulator(rect);
+		}
 	}
 }
 
@@ -165,6 +174,8 @@ void TilemaskEditorSystem::ProcessUIEvent(UIEvent* event)
 				if (isIntersectsLandscape)
 				{
 					UpdateToolImage();
+					ResetAccumulatorRect();
+					StoreOriginalState();
 					editingIsEnabled = true;
 				}
 				break;
@@ -175,6 +186,7 @@ void TilemaskEditorSystem::ProcessUIEvent(UIEvent* event)
 			case UIEvent::PHASE_ENDED:
 				if (editingIsEnabled)
 				{
+					needCreateUndo = true;
 					editingIsEnabled = false;
 				}
 				break;
@@ -231,6 +243,8 @@ void TilemaskEditorSystem::UpdateCursorPosition()
 		
 		cursorPosition.x = (point.x - box.min.x) * (landscapeSize - 1) / (box.max.x - box.min.x);
 		cursorPosition.y = (point.y - box.min.y) * (landscapeSize - 1) / (box.max.y - box.min.y);
+		cursorPosition.x = (int32)cursorPosition.x;
+		cursorPosition.y = (int32)cursorPosition.y;
 		
 		drawSystem->SetCursorPosition(cursorPosition);
 	}
@@ -256,14 +270,8 @@ void TilemaskEditorSystem::UpdateToolImage(bool force)
 	}
 }
 
-void TilemaskEditorSystem::UpdateBrushTool(float32 timeElapsed)
+void TilemaskEditorSystem::UpdateBrushTool()
 {
-	if (!toolImage)
-	{
-		DAVA::Logger::Error("Tool image is empty!");
-		return;
-	}
-	
 	int32 colorType = (int32)tileTextureNum;
 	
 	RenderManager::Instance()->SetRenderTarget(maskSprite);
@@ -353,16 +361,16 @@ void TilemaskEditorSystem::ResetAccumulatorRect()
 
 Rect TilemaskEditorSystem::GetUpdatedRect()
 {
-	EditorHeightmap* editorHeightmap = drawSystem->GetHeightmapProxy();
-	
-	float32 heightmapSize = editorHeightmap->Size() - 1.f;
+	int32 textureSize = drawSystem->GetTextureSize();
 	Rect r = updatedRectAccumulator;
-	
-	r.x = Max(r.x, 0.f);
-	r.y = Max(r.y, 0.f);
-	r.dx = Min(r.dx, heightmapSize);
-	r.dy = Min(r.dy, heightmapSize);
-	
+
+	r.x = (float32)Clamp((int32)updatedRectAccumulator.x, 0, textureSize - 1);
+	r.y = (float32)Clamp((int32)updatedRectAccumulator.y, 0, textureSize - 1);
+	r.dx = Clamp((updatedRectAccumulator.x + updatedRectAccumulator.dx),
+				 0.f, (float32)textureSize - 1.f) - updatedRectAccumulator.x;
+	r.dy = Clamp((updatedRectAccumulator.y + updatedRectAccumulator.dy),
+				 0.f, (float32)textureSize - 1.f) - updatedRectAccumulator.y;
+
 	return r;
 }
 
@@ -429,4 +437,39 @@ void TilemaskEditorSystem::CreateMaskFromTexture(Texture* texture)
 	}
 	
 	drawSystem->GetLandscapeProxy()->SetTilemaskTexture(oldMaskSprite->GetTexture());
+}
+
+void TilemaskEditorSystem::Draw()
+{
+	if (toolSpriteUpdated)
+	{
+		UpdateBrushTool();
+		toolSpriteUpdated = false;
+	}
+
+	if (needCreateUndo)
+	{
+		CreateUndoPoint();
+		needCreateUndo = false;
+	}
+}
+
+void TilemaskEditorSystem::CreateUndoPoint()
+{
+	SceneEditor2* scene = dynamic_cast<SceneEditor2*>(GetScene());
+	DVASSERT(scene);
+	scene->Exec(new ModifyTilemaskCommand(originalMask, originalTexture,
+										  drawSystem->GetLandscapeProxy(), GetUpdatedRect()));
+
+	SafeRelease(originalMask);
+	SafeRelease(originalTexture);
+}
+
+void TilemaskEditorSystem::StoreOriginalState()
+{
+	DVASSERT(originalMask == NULL && originalTexture == NULL);
+
+	LandscapeProxy* lp = drawSystem->GetLandscapeProxy();
+	originalMask = lp->GetLandscapeTexture(Landscape::TEXTURE_TILE_MASK)->CreateImageFromMemory();
+	originalTexture = lp->GetLandscapeTexture(Landscape::TEXTURE_TILE_FULL)->CreateImageFromMemory();
 }

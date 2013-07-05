@@ -1563,8 +1563,9 @@ void QtMainWindowHandler::SetTilemaskEditorStrength(int strength)
 	{
 		return;
 	}
-	
-	sep->tilemaskEditorSystem->SetStrength(strength);
+
+	float32 max = 2.f * tilemaskStrength->maximum();
+	sep->tilemaskEditorSystem->SetStrength(strength / max);
 }
 
 void QtMainWindowHandler::SetTilemaskDrawTexture(int textureIndex)

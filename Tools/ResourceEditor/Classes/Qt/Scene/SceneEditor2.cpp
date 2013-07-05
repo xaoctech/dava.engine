@@ -234,6 +234,7 @@ void SceneEditor2::Draw()
 	hoodSystem->Draw();
 	modifSystem->Draw();
 	structureSystem->Draw();
+	tilemaskEditorSystem->Draw();
 }
 
 void SceneEditor2::EditorCommandProcess(const Command2 *command, bool redo)
