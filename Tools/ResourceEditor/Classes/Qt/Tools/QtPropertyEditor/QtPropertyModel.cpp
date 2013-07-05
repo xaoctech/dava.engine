@@ -14,8 +14,8 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "QtPropertyEditor/QtPropertyModel.h"
-#include "QtPropertyEditor/QtPropertyItem.h"
+#include "QtPropertyModel.h"
+#include "QtPropertyItem.h"
 
 QtPropertyModel::QtPropertyModel(QObject* parent /* = 0 */)
 	: QStandardItemModel(parent)

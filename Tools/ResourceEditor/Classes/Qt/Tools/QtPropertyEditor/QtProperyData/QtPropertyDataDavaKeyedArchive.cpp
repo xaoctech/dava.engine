@@ -17,8 +17,8 @@
 #include "DAVAEngine.h"
 #include "Debug/DVAssert.h"
 #include "Main/QtUtils.h"
-#include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaKeyedArchive.h"
-#include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
+#include "QtPropertyDataDavaKeyedArchive.h"
+#include "QtPropertyDataDavaVariant.h"
 
 #include <QSet>
 #include <QMenu>
