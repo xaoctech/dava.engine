@@ -26,11 +26,11 @@
  =====================================================================================*/
 
 #include "LandscapeProxy.h"
-#include "LandscapeEditor/LandscapeRenderer.h"
+#include "CustomLandscape.h"
 
 LandscapeProxy::LandscapeProxy(Landscape* landscape)
-:	landscapeRenderer(0)
-,	displayingTexture(0)
+:	displayingTexture(0)
+,	mode(MODE_CUSTOM_LANDSCAPE)
 {
 	baseLandscape = SafeRetain(landscape);
 	for (int32 i = 0; i < TEXTURE_TYPES_COUNT; ++i)
@@ -38,67 +38,42 @@ LandscapeProxy::LandscapeProxy(Landscape* landscape)
 		texturesToBlend[i] = NULL;
 		texturesEnabled[i] = false;
 	}
+
+	customLandscape = new CustomLandscape();
+	customLandscape->SetTexture(Landscape::TEXTURE_TILE_FULL, baseLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL));
 }
 
 LandscapeProxy::~LandscapeProxy()
 {
 	SafeRelease(baseLandscape);
 	SafeRelease(displayingTexture);
+	SafeRelease(customLandscape);
+}
+
+void LandscapeProxy::SetMode(LandscapeProxy::eLandscapeMode mode)
+{
+	if (mode == this->mode)
+	{
+		return;
+	}
+
+	this->mode = mode;
 }
 
 void LandscapeProxy::SetRenderer(LandscapeRenderer *renderer)
 {
-	SafeRelease(landscapeRenderer);
-	landscapeRenderer = SafeRetain(renderer);
+	customLandscape->SetRenderer(renderer);
 }
 
 LandscapeRenderer* LandscapeProxy::GetRenderer()
 {
-	return landscapeRenderer;
+	return customLandscape->GetRenderer();
 }
 
 void LandscapeProxy::SetDisplayingTexture(DAVA::Texture *texture)
 {
 	SafeRelease(displayingTexture);
 	displayingTexture = SafeRetain(texture);
-}
-
-void LandscapeProxy::Draw(DAVA::Camera *camera)
-{
-	if(!landscapeRenderer)
-	{
-		return;
-	}
-	
-	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, camera->GetMatrix());
-	
-	Texture* texture = displayingTexture;
-	if (!displayingTexture)
-	{
-		texture = baseLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL);
-	}
-	
-	landscapeRenderer->BindMaterial(texture);
-	
-	landscapeRenderer->DrawLandscape();
-	
-	if (cursor)
-	{
-		RenderManager::Instance()->AppendState(RenderState::STATE_BLEND);
-		eBlendMode src = RenderManager::Instance()->GetSrcBlend();
-		eBlendMode dst = RenderManager::Instance()->GetDestBlend();
-		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-		RenderManager::Instance()->SetDepthFunc(CMP_LEQUAL);
-		cursor->Prepare();
-        
-		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, (heightmap->Size() - 1) * (heightmap->Size() - 1) * 6, EIF_32, landscapeRenderer->Indicies());
-        
-		RenderManager::Instance()->SetDepthFunc(CMP_LESS);
-		RenderManager::Instance()->RemoveState(RenderState::STATE_BLEND);
-		RenderManager::Instance()->SetBlendMode(src, dst);
-	}
-	
-	landscapeRenderer->UnbindMaterial();
 }
 
 AABBox3 LandscapeProxy::GetLandscapeBoundingBox()
@@ -113,12 +88,36 @@ Texture* LandscapeProxy::GetLandscapeTexture(Landscape::eTextureLevel level)
 
 void LandscapeProxy::SetTilemaskTexture(Texture* texture)
 {
-	//	SafeRelease(texturesToBlend[TEXTURE_TYPE_TILEMASK]);
-	//	texturesToBlend[TEXTURE_TYPE_TILEMASK] = SafeRetain(texture);
-	baseLandscape->SetTexture(TEXTURE_TILE_FULL, texture);
-	baseLandscape->UpdateFullTiledTexture();
-	
-	UpdateDisplayedTexture();
+	switch (mode)
+	{
+		case MODE_CUSTOM_LANDSCAPE:
+			UpdateDisplayedTexture();
+			break;
+
+		case MODE_ORIGINAL_LANDSCAPE:
+			baseLandscape->SetTexture(Landscape::TEXTURE_TILE_MASK, texture);
+			break;
+
+		default:
+			return NULL;
+	}
+}
+
+void LandscapeProxy::SetFullTiledTexture(DAVA::Texture *texture)
+{
+	switch (mode)
+	{
+		case MODE_CUSTOM_LANDSCAPE:
+			UpdateDisplayedTexture();
+			break;
+
+		case MODE_ORIGINAL_LANDSCAPE:
+			baseLandscape->SetTexture(Landscape::TEXTURE_TILE_FULL, texture);
+			break;
+
+		default:
+			return NULL;
+	}
 }
 
 void LandscapeProxy::SetTilemaskTextureEnabled(bool enabled)
@@ -238,4 +237,74 @@ void LandscapeProxy::UpdateDisplayedTexture()
 	RenderManager::Instance()->SetBlendMode(srcBlend, dstBlend);
 	
 	RenderManager::Instance()->UnlockNonMain();
+
+	customLandscape->SetTexture(Landscape::TEXTURE_TILE_FULL, displayingTexture);
+}
+
+RenderObject* LandscapeProxy::GetRenderObject()
+{
+	switch (mode)
+	{
+		case MODE_CUSTOM_LANDSCAPE:
+			return customLandscape;
+
+		case MODE_ORIGINAL_LANDSCAPE:
+			return baseLandscape;
+
+		default:
+			return NULL;
+	}
+}
+
+void LandscapeProxy::SetHeightmap(DAVA::Heightmap *heightmap)
+{
+	switch (mode)
+	{
+		case MODE_CUSTOM_LANDSCAPE:
+			customLandscape->SetHeightmap(heightmap);
+			break;
+
+		case MODE_ORIGINAL_LANDSCAPE:
+			baseLandscape->SetHeightmap(heightmap);
+			break;
+
+		default:
+			break;
+	}
+}
+
+void LandscapeProxy::CursorEnable()
+{
+	customLandscape->CursorEnable();
+	baseLandscape->CursorEnable();
+}
+
+void LandscapeProxy::CursorDisable()
+{
+	customLandscape->CursorDisable();
+	baseLandscape->CursorDisable();
+}
+
+void LandscapeProxy::SetCursorTexture(Texture* texture)
+{
+	customLandscape->SetCursorTexture(texture);
+	baseLandscape->SetCursorTexture(texture);
+}
+
+void LandscapeProxy::SetBigTextureSize(float32 size)
+{
+	customLandscape->SetBigTextureSize(size);
+	baseLandscape->SetBigTextureSize(size);
+}
+
+void LandscapeProxy::SetCursorScale(float32 scale)
+{
+	customLandscape->SetCursorScale(scale);
+	baseLandscape->SetCursorScale(scale);
+}
+
+void LandscapeProxy::SetCursorPosition(const Vector2& position)
+{
+	customLandscape->SetCursorPosition(position);
+	baseLandscape->SetCursorPosition(position);
 }

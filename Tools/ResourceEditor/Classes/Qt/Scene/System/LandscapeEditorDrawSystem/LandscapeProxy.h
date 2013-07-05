@@ -33,25 +33,36 @@
 
 using namespace DAVA;
 
-class LandscapeProxy: public DAVA::Landscape
+class CustomLandscape;
+
+class LandscapeProxy: public BaseObject
 {
 public:
+	enum eLandscapeMode
+	{
+		MODE_CUSTOM_LANDSCAPE = 0,
+		MODE_ORIGINAL_LANDSCAPE,
+
+		MODES_COUNT
+	};
+
 	LandscapeProxy(Landscape* landscape);
 	virtual ~LandscapeProxy();
-	
+
+	void SetMode(LandscapeProxy::eLandscapeMode mode);
 	void SetDisplayingTexture(Texture* texture);
 	
 	void SetRenderer(LandscapeRenderer* renderer);
 	LandscapeRenderer* GetRenderer();
-	
-	virtual void Draw(Camera* camera);
-	
+
 	AABBox3 GetLandscapeBoundingBox();
 	Texture* GetLandscapeTexture(Landscape::eTextureLevel level);
 	
 	void SetTilemaskTexture(Texture* texture);
 	void SetTilemaskTextureEnabled(bool enabled);
-	
+
+	void SetFullTiledTexture(Texture* texture);
+
 	void SetNotPassableTexture(Texture* texture);
 	void SetNotPassableTextureEnabled(bool enabled);
 	
@@ -60,7 +71,19 @@ public:
 	
 	void SetVisibilityCheckToolTexture(Texture* texture);
 	void SetVisibilityCheckToolTextureEnabled(bool enabled);
-	
+
+	RenderObject* GetRenderObject();
+	void SetHeightmap(Heightmap* heightmap);
+
+	void CursorEnable();
+	void CursorDisable();
+	void SetCursorTexture(Texture* texture);
+	void SetBigTextureSize(float32 size);
+	void SetCursorScale(float32 scale);
+	void SetCursorPosition(const Vector2& position);
+
+	void ApplyTilemask();
+
 protected:
 	enum eTextureType
 	{
@@ -77,7 +100,9 @@ protected:
 	
 	Texture* displayingTexture;
 	Landscape* baseLandscape;
-	LandscapeRenderer* landscapeRenderer;
+	CustomLandscape* customLandscape;
+
+	eLandscapeMode mode;
 	
 	void UpdateDisplayedTexture();
 };

@@ -77,13 +77,11 @@ Rect CustomColorsProxy::GetChangedRect()
 
 void CustomColorsProxy::UpdateRect(const DAVA::Rect &rect)
 {
-	changedRect = rect;
-	
-	changedRect.x = Max(changedRect.x, 0.f);
-	changedRect.y = Max(changedRect.y, 0.f);
-	changedRect.dx = Min(changedRect.dx, size - changedRect.x);
-	changedRect.dy = Min(changedRect.dy, size - changedRect.y);
-	
+	changedRect.x = (float32)Clamp((int32)rect.x, 0, size - 1);
+	changedRect.y = (float32)Clamp((int32)rect.y, 0, size - 1);
+	changedRect.dx = Clamp((rect.x + rect.dx), 0.f, (float32)size - 1.f) - rect.x;
+	changedRect.dy = Clamp((rect.y + rect.dy), 0.f, (float32)size - 1.f) - rect.y;
+
 	spriteChanged = true;
 }
 

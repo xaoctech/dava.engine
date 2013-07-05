@@ -52,7 +52,7 @@ void TilemaskEditorPropertiesView::Init()
 
 	QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
 
-	ui->sliderBrushSize->setValue(35);
+	ui->sliderBrushSize->setValue(120);
 	ui->sliderStrength->setValue(15);
 
 	connect(ui->buttonEnableTilemaskEditor, SIGNAL(clicked()), handler, SLOT(ToggleTilemaskEditor()));

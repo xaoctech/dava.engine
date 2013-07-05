@@ -83,27 +83,17 @@ void LandscapeEditorDrawSystem::EnableCustomDraw()
 		++customDrawRequestCount;
 		return;
 	}
-	
-	if (baseLandscape == 0)
-	{
-		landscapeNode = EditorScene::GetLandscapeNode(GetScene());
-		baseLandscape = SafeRetain(GetLandscape(landscapeNode));
-		
-		landscapeProxy = new LandscapeProxy(baseLandscape);
-		heightmapProxy = new HeightmapProxy(baseLandscape->GetHeightmap()->Clone(NULL));
-		landscapeProxy->SetHeightmap(heightmapProxy);
-		
-		int32 size = baseLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL)->GetWidth();
-		customColorsProxy = new CustomColorsProxy(size);
-		visibilityToolProxy = new VisibilityToolProxy(size);
-	}
-	
+
+	Init();
+	landscapeProxy->SetMode(LandscapeProxy::MODE_CUSTOM_LANDSCAPE);
+	landscapeProxy->SetHeightmap(heightmapProxy);
+
 	AABBox3 landscapeBoundingBox = baseLandscape->GetBoundingBox();
 	LandscapeRenderer* landscapeRenderer = new LandscapeRenderer(heightmapProxy, landscapeBoundingBox);
 	landscapeProxy->SetRenderer(landscapeRenderer);
 	
 	landscapeNode->RemoveComponent(Component::RENDER_COMPONENT);
-	landscapeNode->AddComponent(new RenderComponent(landscapeProxy));
+	landscapeNode->AddComponent(new RenderComponent(landscapeProxy->GetRenderObject()));
 	
 	++customDrawRequestCount;
 }
@@ -379,7 +369,6 @@ Vector2 LandscapeEditorDrawSystem::TranslatePoint(const Vector2& point, const Re
 				  destRectSize.y / origRectSize.y);
 
 	Vector2 relPos = point - fromRect.GetPosition();
-	relPos.DotProduct(scale);
 	Vector2 newRelPos(relPos.x * scale.x,
 					  relPos.y * scale.y);
 
@@ -391,4 +380,45 @@ Vector2 LandscapeEditorDrawSystem::TranslatePoint(const Vector2& point, const Re
 KeyedArchive* LandscapeEditorDrawSystem::GetLandscapeCustomProperties()
 {
 	return landscapeNode->GetCustomProperties();
+}
+
+void LandscapeEditorDrawSystem::EnableTilemaskEditing()
+{
+	Init();
+	landscapeProxy->SetMode(LandscapeProxy::MODE_ORIGINAL_LANDSCAPE);
+
+	landscapeNode->RemoveComponent(Component::RENDER_COMPONENT);
+	landscapeNode->AddComponent(new RenderComponent(landscapeProxy->GetRenderObject()));
+}
+
+void LandscapeEditorDrawSystem::DisableTilemaskEditing()
+{
+}
+
+void LandscapeEditorDrawSystem::Init()
+{
+	if (!landscapeNode)
+	{
+		landscapeNode = EditorScene::GetLandscapeNode(GetScene());
+	}
+	if (!baseLandscape)
+	{
+		baseLandscape = SafeRetain(GetLandscape(landscapeNode));
+	}
+	if (!landscapeProxy)
+	{
+		landscapeProxy = new LandscapeProxy(baseLandscape);
+	}
+	if (!heightmapProxy)
+	{
+		heightmapProxy = new HeightmapProxy(baseLandscape->GetHeightmap()->Clone(NULL));
+	}
+	if (!customColorsProxy)
+	{
+		customColorsProxy = new CustomColorsProxy(GetTextureSize());
+	}
+	if (!visibilityToolProxy)
+	{
+		visibilityToolProxy = new VisibilityToolProxy(GetTextureSize());
+	}
 }

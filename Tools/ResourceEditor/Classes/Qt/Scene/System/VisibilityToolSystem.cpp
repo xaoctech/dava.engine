@@ -240,13 +240,15 @@ void VisibilityToolSystem::AddRectToAccumulator(const Rect &rect)
 
 Rect VisibilityToolSystem::GetUpdatedRect()
 {
-	float32 textureSize = drawSystem->GetVisibilityToolProxy()->GetSprite()->GetSize().x;
+	int32 textureSize = drawSystem->GetVisibilityToolProxy()->GetSprite()->GetSize().x;
 	Rect r = updatedRectAccumulator;
 
-	r.x = Max(r.x, 0.f);
-	r.y = Max(r.y, 0.f);
-	r.dx = Min(r.dx, textureSize - 1.f);
-	r.dy = Min(r.dy, textureSize - 1.f);
+	r.x = (float32)Clamp((int32)updatedRectAccumulator.x, 0, textureSize - 1);
+	r.y = (float32)Clamp((int32)updatedRectAccumulator.y, 0, textureSize - 1);
+	r.dx = Clamp((updatedRectAccumulator.x + updatedRectAccumulator.dx),
+				 0.f, (float32)textureSize - 1.f) - updatedRectAccumulator.x;
+	r.dy = Clamp((updatedRectAccumulator.y + updatedRectAccumulator.dy),
+				 0.f, (float32)textureSize - 1.f) - updatedRectAccumulator.y;
 
 	return r;
 }

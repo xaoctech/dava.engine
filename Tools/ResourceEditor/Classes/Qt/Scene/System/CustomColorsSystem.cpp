@@ -276,20 +276,16 @@ void CustomColorsSystem::AddRectToAccumulator(const Rect &rect)
 
 Rect CustomColorsSystem::GetUpdatedRect()
 {
-	float32 textureSize = drawSystem->GetCustomColorsProxy()->GetSprite()->GetSize().x;
+	int32 textureSize = drawSystem->GetCustomColorsProxy()->GetSprite()->GetSize().x;
 	Rect r = updatedRectAccumulator;
-	
-	r.x = Max(r.x, 0.f);
-	r.y = Max(r.y, 0.f);
-	if (r.x + r.dx > textureSize)
-	{
-		r.dx = textureSize - r.x;
-	}
-	if (r.y + r.dy > textureSize)
-	{
-		r.dy = textureSize - r.y;
-	}
-	
+
+	r.x = (float32)Clamp((int32)updatedRectAccumulator.x, 0, textureSize - 1);
+	r.y = (float32)Clamp((int32)updatedRectAccumulator.y, 0, textureSize - 1);
+	r.dx = Clamp((updatedRectAccumulator.x + updatedRectAccumulator.dx),
+						   0.f, (float32)textureSize - 1.f) - updatedRectAccumulator.x;
+	r.dy = Clamp((updatedRectAccumulator.y + updatedRectAccumulator.dy),
+						   0.f, (float32)textureSize - 1.f) - updatedRectAccumulator.y;
+
 	return r;
 }
 
