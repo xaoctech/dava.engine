@@ -21,6 +21,7 @@
 
 // framework
 #include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Components/ParticleEffectComponent.h"
 
 SceneTree::SceneTree(QWidget *parent /*= 0*/)
 	: QTreeView(parent)
@@ -458,7 +459,7 @@ void SceneTree::EmitParticleSignals(const QItemSelection & selected)
 					DAVA::ParticleLayer* layer = itemForce->parent;
 					if(NULL != layer)
 					{
-						for(int i = 0; i < layer->forces.size(); ++i)
+						for(int i = 0; i < (int) layer->forces.size(); ++i)
 						{
 							if(layer->forces[i] == itemForce->force)
 							{
@@ -497,15 +498,51 @@ void SceneTree::AddEmitter()
 
 void SceneTree::StartEmitter()
 {
-
+	SceneEditor2 *sceneEditor = treeModel->GetScene();
+	if(NULL != sceneEditor)
+	{
+		const EntityGroup *selection = sceneEditor->selectionSystem->GetSelection();
+		for(size_t i = 0; i < selection->Size(); ++i)
+		{
+			DAVA::ParticleEffectComponent *effect = DAVA::GetEffectComponent(selection->GetEntity(i));
+			if(NULL != effect)
+			{
+				effect->Start();
+			}
+		}
+	}
 }
 
 void SceneTree::StopEmitter()
 {
-
+	SceneEditor2 *sceneEditor = treeModel->GetScene();
+	if(NULL != sceneEditor)
+	{
+		const EntityGroup *selection = sceneEditor->selectionSystem->GetSelection();
+		for(size_t i = 0; i < selection->Size(); ++i)
+		{
+			DAVA::ParticleEffectComponent *effect = DAVA::GetEffectComponent(selection->GetEntity(i));
+			if(NULL != effect)
+			{
+				effect->Stop();
+			}
+		}
+	}
 }
 
 void SceneTree::RestartEmitter()
 {
-
+	SceneEditor2 *sceneEditor = treeModel->GetScene();
+	if(NULL != sceneEditor)
+	{
+		const EntityGroup *selection = sceneEditor->selectionSystem->GetSelection();
+		for(size_t i = 0; i < selection->Size(); ++i)
+		{
+			DAVA::ParticleEffectComponent *effect = DAVA::GetEffectComponent(selection->GetEntity(i));
+			if(NULL != effect)
+			{
+				effect->Restart();
+			}
+		}
+	}
 }
