@@ -57,7 +57,7 @@ UberShader::~UberShader()
     SafeRelease(baseShader);
 }
     
-bool UberShader::LoadShader(const String & shaderFileName)
+bool UberShader::LoadShader(const FilePath & shaderFileName)
 {
     baseShader = new Shader();
     if (!baseShader->LoadFromYaml(shaderFileName))

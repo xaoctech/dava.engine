@@ -97,7 +97,7 @@ public:
 	 \param[in] spriteName Sprite path-name.
 	 \param[in] spriteFrame Sprite frame you want to use for draw.
 	 */
-	virtual void SetStateSprite(int32 state, const String &spriteName, int32 spriteFrame = 0);
+	virtual void SetStateSprite(int32 state, const FilePath &spriteName, int32 spriteFrame = 0);
 	/**
 	 \brief Sets Sprite for the control UIControlBackground object for the requested state.
 		Method creates UIControlBackground object for the state if this is neccesary.
@@ -152,6 +152,37 @@ public:
 	 \returns background used currently for draw.
 	 */
 	virtual UIControlBackground * GetBackground();
+
+	/**
+	 \brief Sets left align of control relative to its parent. 
+	 \param[in] align left align of control.
+	 */	
+	virtual void SetLeftAlign(int32 align);	
+	/**
+	 \brief Sets horizontal central align of control relative to its parent. 
+	 \param[in] align horizontal central align of control.
+	 */
+	virtual void SetHCenterAlign(int32 align);	
+	/**
+	 \brief Sets right align of control relative to its parent. 
+	 \param[in] align right align of control.
+	 */	
+	virtual void SetRightAlign(int32 align);	
+	/**
+	 \brief Sets top align of control relative to its parent. 
+	 \param[in] align top align of control.
+	 */	
+	virtual void SetTopAlign(int32 align);	
+	/**
+	 \brief Sets vertical central align of control relative to its parent. 
+	 \param[in] align l vertical central align of control.
+	 */	
+	virtual void SetVCenterAlign(int32 align);	
+	/**
+	 \brief Sets bottom align of control relative to its parent. 
+	 \param[in] align bottom align of control.
+	 */	
+	virtual void SetBottomAlign(int32 align);	
 
 	/**
 	 \brief Sets background what will be used for draw of the requested states. 
@@ -272,6 +303,7 @@ private:
 	virtual UIStaticText *CreateTextForState(eButtonDrawState buttonState);
 	UIStaticText *GetActualText(int32 state);
 	int32 TextIndexForState(eButtonDrawState buttonState);
+	void UpdateStateTextControlSize();
 };
 };
 

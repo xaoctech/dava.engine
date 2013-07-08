@@ -1,8 +1,8 @@
 #include "KeyedArchiveYamlTest.h"
 #include "Math/Math2D.h"
 
-#define FILE_PATH "~res:/KeyedArchives/keyed_archive_original.yaml"
-#define GENERATED_FILE_PATH "KeyedArchives/keyed_archive_created.yaml"
+#define FILE_PATH String("~res:/KeyedArchives/keyed_archive_original.yaml")
+#define GENERATED_FILE_PATH String("KeyedArchives/keyed_archive_created.yaml")
 //#define GENERATED_FILE_PATH "~res:/KeyedArchives/keyed_archive_created.yaml"
 //#define GENERATED_FILE_PATH "/Users/user/Documents/work/gitHub/dava.framework/Projects/UnitTests/Data/KeyedArchives/keyed_archive_created.yaml"
 
@@ -48,12 +48,10 @@ void KeyedArchiveYamlTest::PerformTest(PerfFuncData * data)
     loaded = loadedArchive.LoadFromYamlFile(FILE_PATH);
     TEST_VERIFY(false != loaded);
     
-    String documentsPath = FileSystem::Instance()->GetCurrentDocumentsDirectory();
-    String generatedPath = documentsPath + GENERATED_FILE_PATH;
+    FilePath documentsPath = FileSystem::Instance()->GetCurrentDocumentsDirectory();
+    FilePath generatedPath = documentsPath + GENERATED_FILE_PATH;
 
-    String folder, filename;
-    FileSystem::Instance()->SplitPath(generatedPath, folder, filename);
-    FileSystem::Instance()->CreateDirectory(folder, true);
+    FileSystem::Instance()->CreateDirectory(generatedPath.GetDirectory(), true);
     
     loadedArchive.SaveToYamlFile(generatedPath);
     

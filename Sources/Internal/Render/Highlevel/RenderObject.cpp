@@ -212,5 +212,8 @@ RenderSystem * RenderObject::GetRenderSystem()
 	return renderSystem;
 }
 
+void RenderObject::BakeTransform(const Matrix4 & /*transform*/)
+{
+}
 
 };

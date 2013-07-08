@@ -9,14 +9,14 @@ class SpritesPacker
 public:
 	virtual ~SpritesPacker();
 
-	void SetInputDir(const String & inputDir);
-	void SetOutputDir(const String & outputDir);
+	void SetInputDir(const FilePath & inputDir);
+	void SetOutputDir(const FilePath & outputDir);
 	void Pack();
 
 protected:
 
-	String inputDir;
-	String outputDir;
+	FilePath inputDir;
+	FilePath outputDir;
 };
 
 #endif //__SPRITES_PACKER_H__

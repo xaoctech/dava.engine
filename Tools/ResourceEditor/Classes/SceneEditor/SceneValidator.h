@@ -41,7 +41,7 @@ public:
      
      \param[in] texture texture for validation
 	 */
-    void ValidateTextureAndShowErrors(Texture *texture, const String &textureName, const String &validatedObjectName);
+    void ValidateTextureAndShowErrors(Texture *texture, const FilePath &textureName, const String &validatedObjectName);
 
     /*
      \brief Function to validate Texture errors
@@ -49,7 +49,7 @@ public:
      \param[out] errorsLog set for validation erros
 	 */
     
-    void ValidateTexture(Texture *texture, const String &texturePathname, const String &validatedObjectName, Set<String> &errorsLog);
+    void ValidateTexture(Texture *texture, const FilePath &texturePathname, const String &validatedObjectName, Set<String> &errorsLog);
 
 
     /*
@@ -79,21 +79,21 @@ public:
      \param[in] pathname path to DataSource/3d folder
      \return old path for checking
 	 */
-    String SetPathForChecking(const String &pathname);
+    FilePath SetPathForChecking(const FilePath &pathname);
     
     void EnumerateSceneTextures();
     void EnumerateNodes(Scene *scene);
     
-    static bool IsTextureChanged(const String &texturePathname, ImageFileFormat fileFormat);
+    static bool IsTextureChanged(const FilePath &texturePathname, ImageFileFormat fileFormat);
     
-	bool ValidateTexturePathname(const String &pathForValidation, Set<String> &errorsLog);
-	bool ValidateHeightmapPathname(const String &pathForValidation, Set<String> &errorsLog);
+	bool ValidateTexturePathname(const FilePath &pathForValidation, Set<String> &errorsLog);
+	bool ValidateHeightmapPathname(const FilePath &pathForValidation, Set<String> &errorsLog);
 
-    void CreateDefaultDescriptors(const String &folderPathname);
+    void CreateDefaultDescriptors(const FilePath &folderPathname);
 
-    bool IsPathCorrectForProject(const String &pathname);
+    bool IsPathCorrectForProject(const FilePath &pathname);
 
-	void CreateDescriptorIfNeed(const String &forPathname);
+	void CreateDescriptorIfNeed(const FilePath &forPathname);
     
     
     
@@ -112,23 +112,25 @@ protected:
     
 	void ValidateScalesInternal(Entity *sceneNode, Set<String> &errorsLog);
     
-    bool ValidatePathname(const String &pathForValidation, const String &validatedObjectName);
+    bool ValidatePathname(const FilePath &pathForValidation, const String &validatedObjectName);
 
     bool NodeRemovingDisabled(Entity *node);
     
     bool WasTextureChanged(Texture *texture, ImageFileFormat fileFormat);
 
-	bool IsTextureDescriptorPath(const String &path);
+	bool IsTextureDescriptorPath(const FilePath &path);
     
     bool IsFBOTexture(Texture *texture);
     
+	DAVA_DEPRECATED(void ConvertLightmapSizeFromProperty(Entity *ownerNode, InstanceMaterialState *materialState));
+
     Set<Entity *> emptyNodesForDeletion;
     Set<String> errorMessages;
     
     int32 sceneTextureCount;
     int32 sceneTextureMemory;
     
-    String pathForChecking;
+    FilePath pathForChecking;
 };
 
 

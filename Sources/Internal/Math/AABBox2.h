@@ -159,7 +159,7 @@ inline void AABBox2::Empty()
 
 
 //! \brief check if bounding box intersect line
-inline bool IsIntersectLine(const Vector2 & l1, const Vector2 &l2)
+inline bool IsIntersectLine(const Vector2 & /*l1*/, const Vector2 & /*l2*/)
 {
 	//float32 tmin[3];
 	//float32 tmax[3];

@@ -147,10 +147,10 @@ protected:
 	*/
     
 	
-	BaseObject(const BaseObject & b)
+	BaseObject(const BaseObject & /*b*/)
 	{ }
 
-	BaseObject & operator = (const BaseObject & b)
+	BaseObject & operator = (const BaseObject & /*b*/)
 	{
 		return *this;
 	}

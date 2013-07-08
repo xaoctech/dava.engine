@@ -38,6 +38,7 @@
 #include "Entity/Component.h"
 #include "FileSystem/KeyedArchive.h"
 
+
 namespace DAVA
 {
 
@@ -141,7 +142,7 @@ public:
         \brief Return tag for this object
         \returns tag for this object
      */
-    inline const int32 GetTag(); 
+    inline int32 GetTag(); 
 
 	
 	// virtual updates
@@ -265,7 +266,7 @@ public:
     	
     void SetSolid(bool isSolid);
     bool GetSolid();
-	
+
     /**
         \brief function returns maximum bounding box of scene in world coordinates.
         \returns bounding box
@@ -417,7 +418,7 @@ inline const String & Entity::GetName()
     return name;
 }
 
-inline const int32 Entity::GetTag() 
+inline int32 Entity::GetTag() 
 { 
     return tag; 
 };;

@@ -154,7 +154,7 @@ DAVA::Core::eDeviceFamily DAVA::Core::GetDeviceFamily()
     DAVA::ApplicationCore * core = DAVA::Core::Instance()->GetApplicationCore();
     if(core)
     {
-        core->OnResume();
+		DAVA::Core::Instance()->GoForeground();
     }
     else 
     {

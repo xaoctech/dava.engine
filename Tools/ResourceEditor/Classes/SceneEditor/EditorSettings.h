@@ -25,11 +25,11 @@ public:
 
 	void ApplyOptions();
 
-    void SetProjectPath(const String &projectPath);
-    String GetProjectPath();
+    void SetProjectPath(const FilePath &projectPath);
+    FilePath GetProjectPath();
     
-    void SetDataSourcePath(const String &datasourcePath);
-    String GetDataSourcePath();
+    void SetDataSourcePath(const FilePath &datasourcePath);
+    FilePath GetDataSourcePath();
     
     float32 GetCameraSpeed();
     void SetCameraSpeedIndex(int32 camSpeedIndex);//0 - 4
@@ -62,7 +62,7 @@ public:
 
     int32 GetLastOpenedCount();
     String GetLastOpenedFile(int32 index);
-    void AddLastOpenedFile(const String & pathToFile);
+    void AddLastOpenedFile(const FilePath & pathToFile);
     
     void SetDrawGrid(bool drawGrid);
     bool GetDrawGrid();
@@ -72,13 +72,20 @@ public:
     
     int32 GetTextureViewFileFormat();
     void SetTextureViewFileFormat(int32 forma);
+
+	String GetDesignerName();
+	void SetDesignerName(const String &userName);
     
 	void SetMaterialsColor(const Color &ambient, const Color &diffuse, const Color &specular);
 	Color GetMaterialAmbientColor();
 	Color GetMaterialDiffuseColor();
 	Color GetMaterialSpecularColor();
 
-	String GetParticlesConfigsPath();
+	FilePath GetParticlesConfigsPath();
+    
+    
+    void SetPreviewDialogEnabled(bool enabled);
+    bool GetPreviewDialogEnabled();
     
 protected:
 

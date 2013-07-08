@@ -7,7 +7,7 @@ using namespace DAVA;
 
 
 CommandCreateNode::CommandCreateNode(ResourceEditor::eNodeType type)
-    :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+    :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_CREATE_NODE)
     ,   nodeType(type)
 {
 }

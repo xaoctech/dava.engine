@@ -59,14 +59,14 @@ TextureDescriptor::~TextureDescriptor()
 {
 }
 
-TextureDescriptor *TextureDescriptor::CreateFromFile(const String &filePathname)
+TextureDescriptor *TextureDescriptor::CreateFromFile(const FilePath &filePathname)
 {
-    String descriptorPathname = GetDescriptorPathname(filePathname);
+    FilePath descriptorPathname = GetDescriptorPathname(filePathname);
     TextureDescriptor *descriptor = new TextureDescriptor();
     bool loaded = descriptor->Load(descriptorPathname);
     if(!loaded)
     {
-        Logger::Error("[TextureDescriptor::CreateFromFile(]: there are no descriptor file (%s).", descriptorPathname.c_str());
+        Logger::Error("[TextureDescriptor::CreateFromFile(]: there are no descriptor file (%s).", descriptorPathname.GetAbsolutePathname().c_str());
         SafeRelease(descriptor);
         return NULL;
     }
@@ -111,12 +111,12 @@ bool TextureDescriptor::UpdateCrcForFormat(ImageFileFormat fileFormat) const
     return wasUpdated;
 }
     
-bool TextureDescriptor::Load(const String &filePathname)
+bool TextureDescriptor::Load(const FilePath &filePathname)
 {
     File *file = File::Create(filePathname, File::READ | File::OPEN);
     if(!file)
     {
-        Logger::Error("[TextureDescriptor::Load] Can't open file: %s", filePathname.c_str());
+        Logger::Error("[TextureDescriptor::Load] Can't open file: %s", filePathname.GetAbsolutePathname().c_str());
         return false;
     }
     
@@ -145,7 +145,7 @@ bool TextureDescriptor::Load(const String &filePathname)
     }
     else
     {
-        Logger::Error("[TextureDescriptor::Load] Wrong descriptor file: %s", filePathname.c_str());
+        Logger::Error("[TextureDescriptor::Load] Wrong descriptor file: %s", filePathname.GetAbsolutePathname().c_str());
         SafeRelease(file);
         return false;
     }
@@ -157,16 +157,16 @@ bool TextureDescriptor::Load(const String &filePathname)
 
 void TextureDescriptor::Save() const
 {
-    DVASSERT_MSG(!pathname.empty(), "Can use this method only after calling Load()");
+    DVASSERT_MSG(!pathname.IsEmpty(), "Can use this method only after calling Load()");
     Save(pathname);
 }
     
-void TextureDescriptor::Save(const String &filePathname) const
+void TextureDescriptor::Save(const FilePath &filePathname) const
 {
     File *file = File::Create(filePathname, File::WRITE | File::OPEN | File::CREATE);
     if(!file)
     {
-        Logger::Error("[TextureDescriptor::Save] Can't open file: %s", filePathname.c_str());
+        Logger::Error("[TextureDescriptor::Save] Can't open file: %s", filePathname.GetAbsolutePathname().c_str());
         return;
     }
     
@@ -185,12 +185,12 @@ void TextureDescriptor::Save(const String &filePathname) const
     SafeRelease(file);
 }
   
-void TextureDescriptor::Export(const String &filePathname)
+void TextureDescriptor::Export(const FilePath &filePathname)
 {
     File *file = File::Create(filePathname, File::WRITE | File::OPEN | File::CREATE);
     if(!file)
     {
-        Logger::Error("[TextureDescriptor::ExportAndSplice] Can't open file: %s", filePathname.c_str());
+        Logger::Error("[TextureDescriptor::Export] Can't open file: %s", filePathname.GetAbsolutePathname().c_str());
         return;
     }
 
@@ -383,19 +383,22 @@ bool TextureDescriptor::GetGenerateMipMaps() const
 }
     
     
-String TextureDescriptor::GetSourceTexturePathname() const
+FilePath TextureDescriptor::GetSourceTexturePathname() const
 {
-    if(pathname.empty())
+    if(pathname.IsEmpty())
     {
-        return String("");
+        return FilePath();
     }
-    
-    return FileSystem::Instance()->ReplaceExtension(pathname, GetSourceTextureExtension());
+
+    return FilePath::CreateWithNewExtension(pathname, GetSourceTextureExtension());
 }
 
-String TextureDescriptor::GetDescriptorPathname(const String &texturePathname)
+FilePath TextureDescriptor::GetDescriptorPathname(const FilePath &texturePathname)
 {
-    return FileSystem::Instance()->ReplaceExtension(texturePathname, GetDescriptorExtension());
+    if(texturePathname.IsEmpty())
+        return FilePath();
+    
+    return FilePath::CreateWithNewExtension(texturePathname, GetDescriptorExtension());
 }
 
 
@@ -438,28 +441,27 @@ String TextureDescriptor::GetSupportedTextureExtensions()
     return String(".png;.pvr;") + TextureDescriptor::GetDescriptorExtension();
 }
 
-String TextureDescriptor::GetPathnameForFormat(const String &pathname, ImageFileFormat fileFormat)
+FilePath TextureDescriptor::GetPathnameForFormat(const FilePath &pathname, ImageFileFormat fileFormat)
 {
     if(fileFormat == PNG_FILE)
     {
-        return FileSystem::Instance()->ReplaceExtension(pathname, ".png");
+        return FilePath::CreateWithNewExtension(pathname, ".png");
     }
     else if(fileFormat == PVR_FILE)
     {
-        return FileSystem::Instance()->ReplaceExtension(pathname, ".pvr");
+        return FilePath::CreateWithNewExtension(pathname, ".pvr");
     }
     else if(fileFormat == DXT_FILE)
     {
-        return FileSystem::Instance()->ReplaceExtension(pathname, ".dds");
+        return FilePath::CreateWithNewExtension(pathname, ".dds");
     }
 
-    return String("");
+    return FilePath();
 }
     
-ImageFileFormat TextureDescriptor::GetFormatForPathname(const String &pathname)
+ImageFileFormat TextureDescriptor::GetFormatForPathname(const FilePath &pathname)
 {
-    String extension = FileSystem::GetExtension(pathname);
-    return GetFormatForExtension(extension);
+    return GetFormatForExtension(pathname.GetExtension());
 }
     
 
@@ -481,7 +483,7 @@ ImageFileFormat TextureDescriptor::GetFormatForExtension(const String &extension
     return NOT_FILE;
 }
 
-const bool TextureDescriptor::IsCompressedFile() const
+bool TextureDescriptor::IsCompressedFile() const
 {
     return isCompressedFile;
 }

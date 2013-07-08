@@ -131,7 +131,7 @@ public:
     
 protected:    
 
-    String GetPathname();
+    FilePath GetPathname();
     String GetExtensionFilter();
     
     int32 moveCounter;

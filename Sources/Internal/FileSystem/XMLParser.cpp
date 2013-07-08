@@ -16,13 +16,13 @@ namespace DAVA
 
 	}
 
-	bool XMLParser::ParseFile(const String &fileName, XMLParserDelegate *delegateptr)
+	bool XMLParser::ParseFile(const FilePath &fileName, XMLParserDelegate *delegateptr)
 	{
 // 		Logger::Debug("[XMLParser::ParseFile] fileName = %s", fileName.c_str());
 // 		Logger::Debug("[XMLParser::ParseFile] delegateptr = %p", delegateptr);
 
 		bool retValue = false;
-		File *xmlFile = FileSystem::Instance()->CreateFileForFrameworkPath(fileName, File::OPEN | File::READ);
+		File *xmlFile = File::Create(fileName, File::OPEN | File::READ);
 		if(xmlFile)
 		{
 			int32 dataSize = xmlFile->GetSize();

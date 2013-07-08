@@ -7,24 +7,25 @@
 class LibraryCommand: public Command
 {
 public:
-    LibraryCommand(const DAVA::String &pathname, eCommandType _type);
+    LibraryCommand(const DAVA::FilePath &pathname, eCommandType _type, CommandList::eCommandId id);
     
 protected:
     
     bool CheckExtension(const DAVA::String &extenstionToChecking);
     
 protected:
-    
-    DAVA::String filePathname;
+    DAVA::FilePath filePathname;
 };
 
 
 class CommandAddScene: public LibraryCommand
 {
 public:	
-	CommandAddScene(const DAVA::String &pathname);
+	DAVA_DEPRECATED(CommandAddScene(const DAVA::FilePath &pathname));// DEPRECATED: using of SceneDataManager
+	~CommandAddScene();
 
 protected:	
+	DAVA::Entity *entity;
     
     virtual void Execute();
     virtual void Cancel();
@@ -34,7 +35,7 @@ protected:
 class CommandEditScene: public LibraryCommand
 {
 public:
-	CommandEditScene(const DAVA::String &pathname);
+	DAVA_DEPRECATED(CommandEditScene(const DAVA::FilePath &pathname)); // DEPRECATED : using SceneDataManager(QOBJECT)
     
 protected:
     
@@ -44,7 +45,7 @@ protected:
 class CommandReloadScene: public LibraryCommand
 {
 public:
-	CommandReloadScene(const DAVA::String &pathname);
+	DAVA_DEPRECATED(CommandReloadScene(const DAVA::FilePath &pathname)); // DEPRECATED : using SceneDataManager(QOBJECT)
     
 protected:
     
@@ -55,7 +56,7 @@ protected:
 class CommandReloadEntityFrom: public LibraryCommand
 {
 public:
-	CommandReloadEntityFrom(const DAVA::String &pathname);
+	DAVA_DEPRECATED(CommandReloadEntityFrom(const DAVA::FilePath &pathname)); // DEPRECATED : using SceneDataManager(QOBJECT)
     
 protected:
     
@@ -64,13 +65,13 @@ protected:
     
 protected:
     
-    DAVA::String fromPathname;
+    DAVA::FilePath fromPathname;
 };
 
 class CommandConvertScene: public LibraryCommand
 {
 public:
-	CommandConvertScene(const DAVA::String &pathname);
+	CommandConvertScene(const DAVA::FilePath &pathname);
     
 protected:
     

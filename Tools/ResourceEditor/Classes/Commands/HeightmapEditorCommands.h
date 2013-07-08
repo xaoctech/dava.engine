@@ -5,40 +5,33 @@
 #include "Command.h"
 #include "../SceneEditor/LandscapeEditorHeightmap.h"
 
-class CommandHeightmapEditor: public Command
-{
-public:
-	CommandHeightmapEditor();
-    
-protected:
-    
-    virtual void Execute();
-};
-
 class HeightmapModificationCommand: public Command
 {
 public:
-	HeightmapModificationCommand(Command::eCommandType type);
+	HeightmapModificationCommand(Command::eCommandType type,
+								 const Rect& updatedRect,
+								 CommandList::eCommandId id);
 
 protected:
 	Rect updatedRect;
 
 	static String TimeString();
-	static String SaveHeightmap(Heightmap* heightmap);
+	static FilePath SaveHeightmap(Heightmap* heightmap);
 	static LandscapeEditorHeightmap* GetEditor();
-	static void UpdateLandscapeHeightmap(String filename);
-	static Rect GetDifferenceRect(Heightmap* originalHeighmap, Heightmap* modifiedHeighmap);
+	static void UpdateLandscapeHeightmap(const FilePath & filename);
 };
 
 class CommandDrawHeightmap: public HeightmapModificationCommand
 {
 public:
-	CommandDrawHeightmap(Heightmap* originalHeightmap, Heightmap* newHeightmap);
+	DAVA_DEPRECATED(CommandDrawHeightmap(Heightmap* originalHeightmap, // DEPRECATED : using SceneDataManager(QOBJECT)
+						 Heightmap* newHeightmap,
+						 const Rect& updatedRect));
 	virtual ~CommandDrawHeightmap();
 	
 protected:
-	String undoFilename;
-	String redoFilename;
+	FilePath undoFilename;
+	FilePath redoFilename;
 
 	virtual void Execute();
 	virtual void Cancel();
@@ -47,16 +40,19 @@ protected:
 class CommandCopyPasteHeightmap: public HeightmapModificationCommand
 {
 public:
-	CommandCopyPasteHeightmap(bool copyHeightmap, bool copyTilemap, Heightmap* originalHeightmap, Heightmap* newHeightmap, Image* originalTilemap, Image* newTilemap, const String& tilemapSavedPath);
+	DAVA_DEPRECATED(CommandCopyPasteHeightmap(bool copyHeightmap, bool copyTilemap, //DEPRECATED: using of SceneEditorScreenMain, SceneDataManager...
+							  Heightmap* originalHeightmap, Heightmap* newHeightmap,
+							  Image* originalTilemap, Image* newTilemap,
+							  const FilePath& tilemapSavedPath, const Rect& updatedRect));
 	virtual ~CommandCopyPasteHeightmap();
 
 protected:
-	String heightmapUndoFilename;
-	String heightmapRedoFilename;
+	FilePath heightmapUndoFilename;
+	FilePath heightmapRedoFilename;
 
 	Image* tilemapUndoImage;
 	Image* tilemapRedoImage;
-	String tilemapSavedPathname;
+	FilePath tilemapSavedPathname;
 
 	Landscape* landscape;
 

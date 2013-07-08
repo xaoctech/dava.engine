@@ -31,6 +31,8 @@
 #ifndef __SOUND_TEST_H__
 #define __SOUND_TEST_H__
 
+#if 0
+
 #include "DAVAEngine.h"
 using namespace DAVA;
 
@@ -62,5 +64,6 @@ private:
     bool effectPlayTest;
 };
 
+#endif
 
 #endif //#ifndef __SOUND_TEST_H__

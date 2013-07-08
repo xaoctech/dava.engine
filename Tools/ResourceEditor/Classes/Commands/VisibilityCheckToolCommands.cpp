@@ -4,64 +4,22 @@
 #include "../Qt/Main/QtUtils.h"
 #include "../SceneEditor/EditorBodyControl.h"
 
-CommandToggleVisibilityTool::CommandToggleVisibilityTool()
-:	Command(COMMAND_WITHOUT_UNDO_EFFECT)
-{
-}
-
-void CommandToggleVisibilityTool::Execute()
-{
-	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	if(screen)
-	{
-		screen->VisibilityToolTriggered();
-	}
-}
-
-CommandSetAreaVisibilityTool::CommandSetAreaVisibilityTool()
-:	Command(COMMAND_WITHOUT_UNDO_EFFECT)
-{
-}
-
-void CommandSetAreaVisibilityTool::Execute()
-{
-	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	if(screen)
-	{
-		screen->VisibilityToolSetArea();
-	}
-}
-
-CommandSetPointVisibilityTool::CommandSetPointVisibilityTool()
-:	Command(COMMAND_WITHOUT_UNDO_EFFECT)
-{
-}
-
-void CommandSetPointVisibilityTool::Execute()
-{
-	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	if(screen)
-	{
-		screen->VisibilityToolSetPoint();
-	}
-}
-
 CommandSaveTextureVisibilityTool::CommandSaveTextureVisibilityTool()
-:	Command(COMMAND_WITHOUT_UNDO_EFFECT)
+:	Command(COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_SAVE_TEXTURE_VISIBILITY_TOOL)
 {
 }
 
 void CommandSaveTextureVisibilityTool::Execute()
 {
-    String currentPath = FileSystem::Instance()->GetUserDocumentsPath();
+    FilePath currentPath = FileSystem::Instance()->GetUserDocumentsPath();
 	QString filePath = QFileDialog::getSaveFileName(NULL,
 													QString("Save texture"),
-													QString(currentPath.c_str()),
+													QString(currentPath.GetAbsolutePathname().c_str()),
 													QString("PNG image (*.png)"));
 
-	String selectedPathname = PathnameToDAVAStyle(filePath);
+	FilePath selectedPathname = PathnameToDAVAStyle(filePath);
 
-	if(selectedPathname.length() > 0)
+	if(!selectedPathname.IsEmpty())
 	{
 		SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
 		if(screen)
@@ -71,24 +29,8 @@ void CommandSaveTextureVisibilityTool::Execute()
 	}
 }
 
-CommandChangeAreaSizeVisibilityTool::CommandChangeAreaSizeVisibilityTool(uint32 newSize)
-:	Command(COMMAND_WITHOUT_UNDO_EFFECT),
-	size(newSize)
-{
-}
-
-void CommandChangeAreaSizeVisibilityTool::Execute()
-{
-	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	if(screen)
-	{
-		screen->VisibilityToolSetAreaSize(size);
-	}
-}
-
-
 CommandPlacePointVisibilityTool::CommandPlacePointVisibilityTool(const Vector2& newVisibilityPoint, const Vector2& oldVisibilityPoint, bool oldPointIsSet, Image* oldImage)
-:	Command(COMMAND_WITHOUT_UNDO_EFFECT)
+:	Command(COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_PLACE_POINT_VISIBILITY_TOOL)
 ,	point(newVisibilityPoint)
 ,	oldPoint(oldVisibilityPoint)
 ,	oldPointIsSet(oldPointIsSet)
@@ -133,7 +75,7 @@ LandscapeEditorVisibilityCheckTool* CommandPlacePointVisibilityTool::GetEditor()
 }
 
 CommandPlaceAreaVisibilityTool::CommandPlaceAreaVisibilityTool(const Vector2& areaPoint, uint32 areaSize, Image* oldImage)
-:	Command(COMMAND_WITHOUT_UNDO_EFFECT),
+:	Command(COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_PLACE_AREA_VISIBILITY_TOOL),
 	point(areaPoint),
 	size(areaSize),
 	redoImage(NULL)
