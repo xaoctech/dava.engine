@@ -7,6 +7,7 @@
 #include "../Commands/CommandsManager.h"
 #include "../Commands/SceneGraphCommands.h"
 #include "../Commands/LibraryCommands.h"
+#include "../Commands/FileCommands.h"
 
 #include "SceneGraphModel.h"
 
@@ -174,7 +175,7 @@ void QSceneGraphTreeView::ShowSceneGraphMenu(const QModelIndex &index, const QPo
 		SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
 		LandscapesController *landsacpesController = activeScene->GetLandscapesController();
 
-		SceneEditorScreenMain *screen = static_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen(SCREEN_SCENE_EDITOR_MAIN));
+		SceneEditorScreenMain *screen = static_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen(SCREEN_MAIN_OLD));
 		EditorBodyControl *c = screen->FindCurrentBody()->bodyControl;
 
 		bool canChangeScene = !landsacpesController->EditorLandscapeIsActive() && !c->LandscapeEditorActive();
@@ -202,8 +203,10 @@ void QSceneGraphTreeView::ShowSceneGraphMenu(const QModelIndex &index, const QPo
                     AddActionToMenu(&menu, QString("Edit Model"), new CommandEditScene(filePathname));
                     AddActionToMenu(&menu, QString("Reload Model"), new CommandReloadScene(filePathname));
                     AddActionToMenu(&menu, QString("Reload Model From"), new CommandReloadEntityFrom(filePathname));
-                }
-            }
+				}
+			}
+			FilePath filePathForSaveAs(activeScene->GetScenePathname());
+			AddActionToMenu(&menu, QString("Save Scene As"), new CommandSaveSpecifiedScene(node, filePathForSaveAs));
 		}
 	}
 	

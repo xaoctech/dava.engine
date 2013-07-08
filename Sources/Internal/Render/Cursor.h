@@ -64,7 +64,7 @@ public:
 		\param[in] hotSpot position inside cursor image that marks the center of the cursor. The offset is relative to the upper-left corner of the cursor. When the cursor is given a new position, the image is drawn at an offset from this new position determined by subtracting the hot spot coordinates from the position
 		\returns pointer to cursor object if it opened successfully. 
 	 */
-	static Cursor * Create(const String & cursorPathname, const Vector2 & hotSpot);
+	static Cursor * Create(const FilePath & cursorPathname, const Vector2 & hotSpot);
 
 	/**
 	 \brief Show or hide cursor
@@ -80,6 +80,8 @@ public:
 	
 #if defined(__DAVAENGINE_MACOS__)
 	void * GetMacOSXCursor();
+    static void ShowSystemCursor(bool show);
+    static void MoveToCenterOfWindow();
 #endif 
 	
     

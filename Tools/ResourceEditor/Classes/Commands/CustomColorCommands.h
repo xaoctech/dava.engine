@@ -8,19 +8,10 @@
 
 using namespace DAVA;
 
-class CommandToggleCustomColors: public Command
-{
-public:
-    CommandToggleCustomColors();
-
-protected:
-    virtual void Execute();
-};
-
 class CommandSaveTextureCustomColors: public Command
 {
 public:
-    CommandSaveTextureCustomColors();
+    DAVA_DEPRECATED(CommandSaveTextureCustomColors());// DEPRECATED: using QFileDialog
 protected:
     virtual void Execute();
 };
@@ -28,35 +19,15 @@ protected:
 class CommandLoadTextureCustomColors: public Command
 {
 public:
-    CommandLoadTextureCustomColors();
+	DAVA_DEPRECATED(CommandLoadTextureCustomColors());// DEPRECATED : using QFileDialog
 protected:
-    virtual void Execute();
-};
-
-class CommandChangeBrushSizeCustomColors: public Command
-{
-public:
-    CommandChangeBrushSizeCustomColors(uint32 newSize);
-protected:
-    uint32 size;
-
-    virtual void Execute();
-};
-
-class CommandChangeColorCustomColors: public Command
-{
-public:
-    CommandChangeColorCustomColors(uint32 newColorIndex);
-protected:
-    uint32 colorIndex;
-    
     virtual void Execute();
 };
 
 class CommandDrawCustomColors: public Command
 {
 public:
-	CommandDrawCustomColors(Image* originalImage, Image* newImage);
+	DAVA_DEPRECATED(CommandDrawCustomColors(Image* originalImage, Image* newImage));// DEPRECATED: using SceneDataManager
 	virtual ~CommandDrawCustomColors();
 protected:
 	Image* undoImage;

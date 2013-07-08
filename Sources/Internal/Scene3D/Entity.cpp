@@ -46,6 +46,8 @@
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
 #include "Scene3D/Components/SwitchComponent.h"
+#include "Utils/Random.h"
+
 
 namespace DAVA
 {
@@ -217,8 +219,8 @@ void Entity::AddNode(Entity * node)
         {
             node->parent->RemoveNode(node);
         }
+		node->SetParent(this);
         node->SetScene(GetScene());
-        node->SetParent(this);
     }
 }
     
@@ -726,7 +728,7 @@ void Entity::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     if(customProperties && customProperties->IsKeyExists("editor.referenceToOwner"))
     {
         savedPath = customProperties->GetString("editor.referenceToOwner");
-        String newPath = sceneFileV2->AbsoluteToRelative(savedPath);
+        String newPath = FilePath(savedPath).GetRelativePathname(sceneFileV2->GetScenePath());
         customProperties->SetString("editor.referenceToOwner", newPath);
     }
     
@@ -788,8 +790,11 @@ void Entity::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     {
         if(customProperties->IsKeyExists("editor.referenceToOwner"))
         {
-            String newPath = sceneFileV2->RelativeToAbsolute(customProperties->GetString("editor.referenceToOwner"));
-            customProperties->SetString("editor.referenceToOwner", newPath);
+            FilePath newPath(sceneFileV2->GetScenePath());
+            newPath += customProperties->GetString("editor.referenceToOwner");
+
+            //TODO: why we use absolute pathname instead of relative?
+            customProperties->SetString("editor.referenceToOwner", newPath.GetAbsolutePathname());
         }
     }
 

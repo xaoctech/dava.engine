@@ -367,36 +367,36 @@ void PropertyFilepathCell::SetData(PropertyCellData *prop)
 {
     PropertyCell::SetData(prop);
     
-    String fullpath = prop->GetString();
-    String datasourcePath = EditorSettings::Instance()->GetDataSourcePath();
-    int32 pos = fullpath.find(datasourcePath);
+    FilePath fullpath = prop->GetFilePath();
+    FilePath datasourcePath = EditorSettings::Instance()->GetDataSourcePath();
+    int32 pos = fullpath.GetAbsolutePathname().find(datasourcePath.GetAbsolutePathname());
     if(String::npos == (String::size_type)pos)
     {
-        pathText->SetText(StringToWString(prop->GetString()));
+        pathText->SetText(StringToWString(fullpath.GetFilename()));
     }
     else
     {
-        fullpath = fullpath.substr(datasourcePath.length());
-        pathText->SetText(StringToWString(fullpath));
+        String path = fullpath.GetAbsolutePathname().substr(datasourcePath.GetAbsolutePathname().length());
+        pathText->SetText(StringToWString(path));
     }
 }
 
 void PropertyFilepathCell::OnButton(BaseObject * , void * , void * )
 {
-    String pathToFile = GetOpenFileName(WStringToString(keyName->GetText()), GetPathname(), GetExtensionFilter());
-    if(!pathToFile.empty())
+    FilePath pathToFile = GetOpenFileName(WStringToString(keyName->GetText()), GetPathname(), GetExtensionFilter());
+    if(!pathToFile.IsEmpty())
     {
-        property->SetString(pathToFile);
+        property->SetFilePath(pathToFile);
         SetData(property);
         propertyDelegate->OnPropertyChanged(property);
     }
 }
 
-String PropertyFilepathCell::GetPathname()
+FilePath PropertyFilepathCell::GetPathname()
 {
-    if(0 < property->GetString().length())
+    if(!property->GetFilePath().IsEmpty())
     {
-        return property->GetString();
+        return property->GetFilePath();
     }
 
     return EditorSettings::Instance()->GetDataSourcePath();
@@ -426,7 +426,7 @@ String PropertyFilepathCell::GetExtensionFilter()
 
 void PropertyFilepathCell::OnClear(BaseObject * , void * , void * )
 {
-    property->SetString("");
+    property->SetFilePath(FilePath());
     SetData(property);
     propertyDelegate->OnPropertyChanged(property);
 }

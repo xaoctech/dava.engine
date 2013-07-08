@@ -31,6 +31,7 @@
 #include "Render/RenderBase.h"
 #include "Render/RenderManager.h"
 #include "Scene3D/Scene.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA
 {

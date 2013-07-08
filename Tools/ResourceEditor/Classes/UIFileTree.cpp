@@ -35,18 +35,15 @@ UIFileTree::~UIFileTree()
 	SafeRelease(treeHead);
 }
 
-void UIFileTree::SetPath(const String & fullpath, const String & extensionsString)
+void UIFileTree::SetPath(const FilePath & fullpath, const String & extensionsString)
 {
 	originalExtensionsString = extensionsString;
 	Split(extensionsString, ";", extensions);
 	
 	SafeRelease(treeHead);
 	
-	String path, dirname;
-	FileSystem::SplitPath(fullpath, path, dirname);
-
 	treeHead = new UITreeItemInfo(this);
-	treeHead->Set(0, dirname, fullpath, true);
+	treeHead->Set(0, String(), fullpath, true);
 	treeHead->isExpanded = true;
     
 	RecursiveTreeWalk(fullpath, treeHead);
@@ -142,9 +139,9 @@ void UIFileTree::OnDirectoryChange(BaseObject * obj, void * userData, void * cal
 		if (isRootFolderChangeEnabled && (event->tapCount == 2))
 		{
 			UITreeItemInfo * info = cell->GetItemInfo();
-			String pathname = info->GetPathname();
-			Logger::Debug("Switch to path: %s", pathname.c_str());
-			SetPath(FileSystem::RealPath(pathname), originalExtensionsString);
+			FilePath pathname = info->GetPathname();
+			Logger::Debug("Switch to path: %s", pathname.GetAbsolutePathname().c_str());
+			SetPath(pathname, originalExtensionsString);
 			treeHead->ToggleExpanded();
 		}
 	}
@@ -189,7 +186,7 @@ void UIFileTree::OnCellSelected(UIList *forList, UIListCell *selectedCell)
 };
 
 	
-void UIFileTree::RecursiveTreeWalk(const String & path, UITreeItemInfo * current)
+void UIFileTree::RecursiveTreeWalk(const FilePath & path, UITreeItemInfo * current)
 {
 	FileList * fileList = new FileList(path);
     fileList->Sort();
@@ -204,7 +201,7 @@ void UIFileTree::RecursiveTreeWalk(const String & path, UITreeItemInfo * current
 			if (extsSize > 0)
 			{
 				addElement = false;
-				String ext = FileSystem::GetExtension(fileList->GetFilename(fi));
+				String ext = fileList->GetPathname(fi).GetExtension();
 				for (size_t ei = 0; ei < extsSize; ++ei)
                 {
                     if(0 == CompareCaseInsensitive(extensions[ei], ext))
@@ -243,7 +240,10 @@ void UIFileTree::RecursiveTreeWalk(const String & path, UITreeItemInfo * current
 	
 void UITreeItemInfo::ToggleExpanded()
 {
-	if ((GetName() == "..") || (GetName() == "."))return;
+    String name = GetName();
+    
+	if ((name == "..") || (name == "."))return;
+    
 	isExpanded = !isExpanded;
 	if (isExpanded)
 	{
@@ -268,8 +268,9 @@ int32 UITreeItemInfo::GetTotalCount()
         {
             UITreeItemInfo *inf = new UITreeItemInfo(ownerTree);
             inf->level = level;
-            inf->name = GetName();
             inf->pathname = GetPathname();
+            inf->name = GetName();
+            
             inf->isDirectory = isDirectory;
             inf->isExpanded = isExpanded;
             

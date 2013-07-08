@@ -1,5 +1,7 @@
 #include "FileManagerWrapper.h"
 
+using namespace DAVA;
+
 const Vector<String> FileManagerWrapper::GetFileListByExtension(const String& path, const String& ext, int32 maxLevel)
 {
     FileList fileList(path);

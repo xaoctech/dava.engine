@@ -98,7 +98,7 @@ void LocalizationEditorDialog::ConnectToSignals()
 
 void LocalizationEditorDialog::SetLocalizationDirectoryPath()
 {
-    QString defaultPath = QString::fromStdString(LocalizationSystem::Instance()->GetDirectoryPath());
+    QString defaultPath = QString::fromStdString(LocalizationSystem::Instance()->GetDirectoryPath().GetAbsolutePathname());
     if (!defaultPath.isEmpty())
     {
         ui->localizationFilePathLineEdit->setText(defaultPath);
@@ -119,8 +119,8 @@ void LocalizationEditorDialog::SetDefaultLanguage()
 
 void LocalizationEditorDialog::OnOpenLocalizationFileButtonClicked()
 {
-	String relativeLocalizationPath = LocalizationSystem::Instance()->GetDirectoryPath();
-	QString absoluteLocalizationPath = QString::fromStdString(FileSystem::Instance()->SystemPathForFrameworkPath(relativeLocalizationPath));
+	FilePath relativeLocalizationPath = LocalizationSystem::Instance()->GetDirectoryPath();
+	QString absoluteLocalizationPath = QString::fromStdString(relativeLocalizationPath.GetAbsolutePathname());
 
 	if (absoluteLocalizationPath.isEmpty())
 	{
@@ -151,7 +151,7 @@ void LocalizationEditorDialog::OnOpenLocalizationFileButtonClicked()
 
 void LocalizationEditorDialog::OnCurrentLocaleChanged(int /*index*/)
 {
-    ReinitializeLocalizationSystem(QString::fromStdString(LocalizationSystem::Instance()->GetDirectoryPath()));
+    ReinitializeLocalizationSystem(QString::fromStdString(LocalizationSystem::Instance()->GetDirectoryPath().GetAbsolutePathname()));
 }
 
 void LocalizationEditorDialog::ReinitializeLocalizationSystem(const QString& localizationDirectory)

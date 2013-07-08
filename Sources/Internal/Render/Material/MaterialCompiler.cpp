@@ -58,8 +58,9 @@ MaterialCompiler::eCompileResult MaterialCompiler::Compile(MaterialGraph * _mate
     MaterialGraphNode::RecursiveSetRealUsageBack(rootResultNode);
     MaterialGraphNode::RecursiveSetRealUsageForward(rootResultNode);
 
-    materialCompiledVshName = materialGraph->GetMaterialPath() + FileSystem::ReplaceExtension(materialGraph->GetMaterialFilename(), ".vsh");
-    materialCompiledFshName = materialGraph->GetMaterialPath() + FileSystem::ReplaceExtension(materialGraph->GetMaterialFilename(), ".fsh");
+    
+    materialCompiledVshName = FilePath::CreateWithNewExtension(materialGraph->GetMaterialPathname(), ".vsh");
+    materialCompiledFshName = FilePath::CreateWithNewExtension(materialGraph->GetMaterialPathname(), ".fsh");
 
 #if 1
     materialCompiledVshName = "~doc:/temp.vsh";
@@ -109,8 +110,9 @@ void MaterialCompiler::GenerateCode(MaterialGraph * materialGraph)
     
     //MaterialGraphNode * rootResultNode = materialGraph->GetNodeByName("material");
 
-    String vertexShaderPath = materialGraph->GetMaterialPath() + materialGraph->GetVertexShaderFilename();
-    String fragmentShaderPath = materialGraph->GetMaterialPath() + materialGraph->GetPixelShaderFilename();
+    FilePath materialPath(materialGraph->GetMaterialPathname().GetDirectory());
+    FilePath vertexShaderPath(materialPath + materialGraph->GetVertexShaderFilename());
+    FilePath fragmentShaderPath(materialPath + materialGraph->GetPixelShaderFilename());
 
     String originalVertexShader = FileSystem::Instance()->ReadFileContents(vertexShaderPath);
     String originalFragmentShader = FileSystem::Instance()->ReadFileContents(fragmentShaderPath);
@@ -171,7 +173,7 @@ MaterialCompiler::eCompileError MaterialCompiler::GenerateCodeForNode(MaterialGr
             texCoordIndex = connectorTexCoord->GetNode()->textureInputIndex;
         
         // Add uniform
-        vertexShaderAdditionaUniforms[UNIFORM_GLOBAL_TIME] = Shader::UT_FLOAT;
+        vertexShaderAdditionaUniforms[NMaterialConsts::UNIFORM_GLOBAL_TIME] = Shader::UT_FLOAT;
         node->nodeGenVarying = Format("var_%s", node->GetName().c_str());
         node->nodeCode = Format("var_%s = %s + 0.25 * globalTime;", node->GetName().c_str(), connectorTexCoord->GetNode()->GetName().c_str());
         *destinationCode += node->nodeCode;
@@ -180,7 +182,7 @@ MaterialCompiler::eCompileError MaterialCompiler::GenerateCodeForNode(MaterialGr
     if (type == MaterialGraphNode::TYPE_ROTATOR)
     {
         // Add uniform
-        vertexShaderAdditionaUniforms[UNIFORM_GLOBAL_TIME] = Shader::UT_FLOAT;
+        vertexShaderAdditionaUniforms[NMaterialConsts::UNIFORM_GLOBAL_TIME] = Shader::UT_FLOAT;
     }
     
     if (type == MaterialGraphNode::TYPE_SAMPLE_2D)

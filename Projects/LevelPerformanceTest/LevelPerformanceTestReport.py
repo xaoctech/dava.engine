@@ -9,8 +9,13 @@ import bson
 import yaml
 import datetime
 import shutil
+import platform;
 
 mapsDir = './DataSource/3d/';
+
+executables = { "Darwin": 'Tools/ResEditor/dava.framework/Tools/ResourceEditor/ResourceEditorQt.app/Contents/MacOS/ResourceEditorQt',
+"Windows": 'Tools/ResEditor/dava.framework/Tools/ResourceEditor/ResourceEditorQtVS2010.exe',
+"Microsoft": 'Tools/ResEditor/dava.framework/Tools/ResourceEditor/ResourceEditorQtVS2010.exe' }
 
 def zipdir(basedir, archivename):
     assert os.path.isdir(basedir)
@@ -28,7 +33,7 @@ def getZippedSize(sceneFile):
 
 
 	outDir = os.getcwd() + '/export_process/';
-	executable = 'Tools/ResEditor/dava.framework/Tools/ResourceEditor/ResourceEditorQt.app/Contents/MacOS/ResourceEditorQt';
+	executable = executables[platform.system()];
 
 	os.spawnv(os.P_WAIT, executable, [executable, '-sceneexporter', '-export', '-indir', mapsDir, '-outdir', outDir, '-processfile', sceneFile, '-forceclose']);
 	zipdir(outDir[:-1], 'export_process.zip');
@@ -80,8 +85,9 @@ if None != connection:
 	
 	currTest = collection.find_one({'_id': testID})
 	if None != currTest:
-		report.write('<H2> Device: ' + currTest['DeviceDescription'] + '</H2>\n')
-		report.write('<H3> Date: ' + str(datetime.datetime.now()) + '</H3></br>\n')
+		if 'DeviceDescription' in currTest:
+			report.write('<H2> Device: ' + currTest['DeviceDescription'] + '</H2>\n')
+		report.write('<H3> Date: ' + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + '</H3></br>\n')
 		
 		
 		report.write('<table border="3" cellspacing="2"><tr>\n')
@@ -105,7 +111,7 @@ if None != connection:
 		levelNames = currTest.keys()
 		levelNames.sort()
 		for levelName in levelNames:
-			if '_id' != levelName and 'globalIndex' != levelName and 'DeviceDescription' != levelName:
+			if '_id' != levelName and 'globalIndex' != levelName and 'DeviceDescription' != levelName and 'ErrorLog' != levelName:
 				report.write('<H2> Level: ' + levelName + ' </H2>\n')
 
 				level = currTest[levelName]
@@ -120,12 +126,12 @@ if None != connection:
 						os.chdir(pervDir);
 
 						if sceneFileSize > 11. :
-							report.write('<b style="color:Red"><i>SceneFileSize</i>: ' + '{:.2f}'.format(sceneFileSize) + ' Mb (Limit: 11 Mb)</b><br/>\n')
+							report.write('<b style="color:Red"><i>SceneFileSize</i>: ' + ('%.2f' % (sceneFileSize)) + ' Mb (Limit: 11 Mb)</b><br/>\n')
 						else:
-							report.write('<b><i>SceneFileSize </i>: ' + '{:.2f}'.format(sceneFileSize) + ' Mb (Limit: 11 Mb)</b><br/>\n')
+							report.write('<b><i>SceneFileSize </i>: ' + ('%.2f' % (sceneFileSize)) + ' Mb (Limit: 11 Mb)</b><br/>\n')
 
-						zippedSceneSize = getZippedSize(sceneFilePath)/(1024. * 1024.);
-						report.write('<b><i>ZippedSceneSize</i>: ' + '{:.2f}'.format(zippedSceneSize) + ' Mb</b><br/>\n')
+						#zippedSceneSize = getZippedSize(sceneFilePath)/(1024. * 1024.);
+						#report.write('<b><i>ZippedSceneSize</i>: ' + ('%.2f' % (zippedSceneSize)) + ' Mb</b><br/>\n')
 
 					elif 'TextureFilesSize' == reportValue:
 						report.write('<b><i>' + reportValue + '</i>: ' + level[reportValue] + '</b><br/>\n')
@@ -135,13 +141,23 @@ if None != connection:
 						else:
 							report.write('<b><i>' + reportValue + '</i>: ' + level[reportValue] + ' (Limit: 46 Mb)</b><br/>\n')
 
-				imageFile = open(levelName + '.png', 'wb')
-				imageFile.write(level['ResultImagePNG'])
-				report.write('<img src="./' + levelName + '.png"' + ' alt="'+ levelName +'"></br>\n')
+				if 'ResultImagePNG' in level:
+					imageFile = open(levelName + '.png', 'wb')
+					imageFile.write(level['ResultImagePNG'])
+					report.write('<img src="./' + levelName + '.png"' + ' alt="'+ levelName +'"></br>\n')
+		
+		if 'ErrorLog' in currTest:
+			errorsLogDb = currTest['ErrorLog']
+			if len(errorsLogDb) > 0:
+				LogError(report, "Errors:")
+				for errorKey in errorsLogDb:
+					if errorKey != '_id':
+						LogError(report, errorsLogDb[errorKey])
+		
 	else:
 		LogError(report, "There are no test with ID: " + testID)
 		
-	collection.remove({"_id": testID})
+#	collection.remove({"_id": testID})
 	
 else:
 	LogError(report, "Can't connect to Database")

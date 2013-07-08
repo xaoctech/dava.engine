@@ -49,7 +49,32 @@ namespace DAVA
 
 REGISTER_CLASS(UITextField);
 
+void UITextFieldDelegate::TextFieldShouldReturn(UITextField * /*textField*/)
+{
+}
 
+void UITextFieldDelegate::TextFieldShouldCancel(UITextField * /*textField*/)
+{
+};
+    
+void UITextFieldDelegate::TextFieldLostFocus(UITextField * /*textField*/)
+{
+};
+
+bool UITextFieldDelegate::TextFieldKeyPressed(UITextField * /*textField*/, int32 /*replacementLocation*/, int32 /*replacementLength*/, const WideString & /*replacementString*/)
+{
+	return true;
+}
+    
+bool UITextFieldDelegate::IsTextFieldShouldSetFocusedOnAppear(UITextField * /*textField*/)
+{
+	return false;
+}
+	
+bool UITextFieldDelegate::IsTextFieldCanLostFocus(UITextField * textField)
+{
+	return true;
+}
     
 UITextField::UITextField(const Rect &rect, bool rectInAbsoluteCoordinates/*= false*/)
 :	UIControl(rect, rectInAbsoluteCoordinates)
@@ -131,6 +156,8 @@ void UITextField::OpenKeyboard()
 {
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->OpenKeyboard();
+#elif defined(__DAVAENGINE_ANDROID__)
+	textFieldAndroid->ShowField();
 #endif
 }
 
@@ -138,6 +165,8 @@ void UITextField::CloseKeyboard()
 {
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->CloseKeyboard();
+#elif defined(__DAVAENGINE_ANDROID__)
+	textFieldAndroid->HideField();
 #endif
 }
 	
@@ -200,14 +229,17 @@ void UITextField::DidAppear()
 {
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->ShowField();
+#elif defined(__DAVAENGINE_ANDROID__)
+	textFieldAndroid->ShowField();
 #endif
-		
 }
-	
+
 void UITextField::WillDisappear()
 {
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->HideField();
+#elif defined(__DAVAENGINE_ANDROID__)
+	textFieldAndroid->HideField();
 #endif
 }
     
@@ -283,6 +315,16 @@ void UITextField::SetShadowColor(const Color& color)
 	staticText->SetShadowColor(color);
    }
 
+void UITextField::SetTextAlign(int32 align)
+{
+#ifdef __DAVAENGINE_IPHONE__
+    textFieldiPhone->SetTextAlign(align);
+#else
+    staticText->SetTextAlign(align);
+#endif
+	
+}
+
 void UITextField::SetFontSize(float size)
 {
 #ifdef __DAVAENGINE_IPHONE__
@@ -302,11 +344,7 @@ UITextFieldDelegate * UITextField::GetDelegate()
 	
 void UITextField::SetSpriteAlign(int32 align)
 {
-#ifdef __DAVAENGINE_IPHONE__
-    textFieldiPhone->SetAlign(align);
-#else
-    staticText->SetSpriteAlign(align);
-#endif
+    UIControl::SetSpriteAlign(align);
 }
 
 void UITextField::SetSize(const DAVA::Vector2 &newSize)
@@ -358,6 +396,16 @@ const WideString & UITextField::GetText()
 	Color UITextField::GetShadowColor()
 	{
 		return staticText ? staticText->GetShadowColor() : Color(1,1,1,1);
+	}
+
+	int32 UITextField::GetTextAlign()
+	{
+#ifdef __DAVAENGINE_IPHONE__
+        return textFieldiPhone ? textFieldiPhone->GetTextAlign() : ALIGN_HCENTER|ALIGN_VCENTER;
+#else
+        return staticText ? staticText->GetTextAlign() : ALIGN_HCENTER|ALIGN_VCENTER;
+#endif
+		
 	}
 
 void UITextField::Input(UIEvent *currentInput)
@@ -489,6 +537,7 @@ void UITextField::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 		YamlNode * textColorNode = node->Get("textcolor");
 		YamlNode * shadowColorNode = node->Get("shadowcolor");
 		YamlNode * shadowOffsetNode = node->Get("shadowoffset");
+		YamlNode * textAlignNode = node->Get("textalign");
 		
 		if(textColorNode)
 		{
@@ -505,6 +554,11 @@ void UITextField::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 		if(shadowOffsetNode)
 		{
 			SetShadowOffset(shadowOffsetNode->AsVector2());
+		}
+
+		if(textAlignNode)
+		{
+			SetTextAlign(loader->GetAlignFromYamlNode(textAlignNode));
 		}
     }
     //InitAfterYaml();
@@ -529,13 +583,6 @@ void UITextField::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 YamlNode * UITextField::SaveToYamlNode(UIYamlLoader * loader)
 {
     YamlNode *node = UIControl::SaveToYamlNode(loader);
-
-    // Sprite node is not needed for UITextField.
-    YamlNode *spriteNode = node->Get("sprite");
-    if (spriteNode)
-    {
-        node->RemoveNodeFromMap("sprite");
-    }
 
     //Temp variable
     VariantType *nodeValue = new VariantType();
@@ -565,6 +612,9 @@ YamlNode * UITextField::SaveToYamlNode(UIYamlLoader * loader)
 	// ShadowOffset
 	nodeValue->SetVector2(GetShadowOffset());
 	node->Set("shadowoffset", nodeValue);
+
+	// Text align
+	node->SetNodeToMap("textalign", loader->GetAlignNodeValue(this->GetTextAlign()));
 
 	// Draw Type must be overwritten fot UITextField.
 	UIControlBackground::eDrawType drawType =  this->GetBackground()->GetDrawType();

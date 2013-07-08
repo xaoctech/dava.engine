@@ -18,7 +18,8 @@ const BackgroundGridWidgetHelper::DrawTypesData BackgroundGridWidgetHelper::draw
     {UIControlBackground::DRAW_FILL,                     "Fill"},
     {UIControlBackground::DRAW_STRETCH_HORIZONTAL,       "Stretch Horizontal"},
     {UIControlBackground::DRAW_STRETCH_VERTICAL,         "Stretch Vertical"},
-    {UIControlBackground::DRAW_STRETCH_BOTH  ,            "Stretch Both"}
+    {UIControlBackground::DRAW_STRETCH_BOTH  ,           "Stretch Both"},
+	{UIControlBackground::DRAW_TILED,					 "Tiled"}
 };
 
 const BackgroundGridWidgetHelper::ColorInheritTypesData BackgroundGridWidgetHelper::colorInheritTypesData[] =
@@ -34,8 +35,8 @@ const BackgroundGridWidgetHelper::ColorInheritTypesData BackgroundGridWidgetHelp
 const BackgroundGridWidgetHelper::SpriteModificationTypesData BackgroundGridWidgetHelper::spriteModificationTypesData[] =
 {
 	{0,						"Original"},
-	{ESM_HFLIP,				"Horizontal"},
-	{ESM_VFLIP,				"Vertical"},
+	{ESM_VFLIP,				"Horizontal"},
+	{ESM_HFLIP,				"Vertical"},
 	{ESM_HFLIP|ESM_VFLIP,	"Both"}
 
 };
