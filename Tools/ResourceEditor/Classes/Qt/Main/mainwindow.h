@@ -56,7 +56,7 @@ private slots:
 	
 	//reference
 	void ApplyReferenceNodeSuffix();
-	void ConvertWaitDone(QObject *destroyed);
+	void ConvertReadyAll();
 	void ConvertWaitStatus(const QString &curPath, int curJob, int jobCount);
 
 	void RepackSpritesWaitDone(QObject *destroyed);

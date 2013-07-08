@@ -60,8 +60,9 @@ public:
 	void ReturnNodeToScene(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodesToReturn);
 
 	// Delete one node and several nodes.
-	void DeleteNode(const HierarchyTreeNode::HIERARCHYTREENODEID nodeID, bool deleteNodeFromMemory, bool deleteNodeFromScene);
-	void DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes, bool deleteNodeFromMemory, bool deleteNodeFromScene);
+	void DeleteNode(const HierarchyTreeNode::HIERARCHYTREENODEID nodeID, bool deleteNodeFromMemory, bool deleteNodeFromScene, bool deleteNodeFromDisk);
+	void DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes, bool deleteNodeFromMemory, bool deleteNodeFromScene, bool deleteNodeFromDisk);
+	void DeleteNodesFiles(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes);
 
     const HierarchyTree& GetTree() const {return hierarchyTree;};
     
@@ -79,7 +80,7 @@ public:
 	HierarchyTreePlatformNode* GetActivePlatform() const;
     HierarchyTreeScreenNode* GetActiveScreen() const;
 	
-    void EmitHierarchyTreeUpdated();
+    void EmitHierarchyTreeUpdated(bool needRestoreSelection = true);
 
     const SELECTEDCONTROLNODES& GetActiveControlNodes() const;
 	bool IsNodeActive(const HierarchyTreeControlNode* activeControl) const;
@@ -87,6 +88,9 @@ public:
     // Look through all controls and update their localized texts.
     void UpdateLocalization(bool takePathFromLocalizationSystem);
 
+	bool HasUnsavedChanges() const;
+
+	HierarchyTreeScreenNode* GetScreenNodeForNode(HierarchyTreeNode* node);
 private:
 	void DeleteNodesInternal(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes);
 	String GetNewControlName(const String& baseName);
@@ -101,7 +105,7 @@ signals:
 //	void ScreenCreated();
 //	void Scree
 	
-	void HierarchyTreeUpdated();
+	void HierarchyTreeUpdated(bool needRestoreSelection = true);
 	void SelectedPlatformChanged(const HierarchyTreePlatformNode*);
 	void SelectedScreenChanged(const HierarchyTreeScreenNode*);
 	
@@ -121,7 +125,7 @@ protected:
 	void RegisterNodesDeletedFromScene(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes);
 	void RegisterNodeDeletedFromScene(HierarchyTreeNode* node);
 	void UnregisterNodeDeletedFromScene(HierarchyTreeNode* node);
-	
+
 	// Cleanup the memory used by nodes removed from scene.
 	void CleanupNodesDeletedFromScene();
 

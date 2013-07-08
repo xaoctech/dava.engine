@@ -116,7 +116,7 @@ void LandscapeEditorPropertyControl::OnTexturePreviewPropertyChanged(PropertyLis
 
 
 
-void LandscapeEditorPropertyControl::OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
+void LandscapeEditorPropertyControl::OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const FilePath &newValue)
 {
     if(delegate)
     {

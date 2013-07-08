@@ -35,7 +35,7 @@ void StaticTextScreen::LoadResources()
 	Font::SetDPI(160);
 
 	Font *fnt;
-	fnt = FTFont::Create("~res:/Fonts/yikes.ttf");
+	fnt = FTFont::Create(FilePath("~res:/Fonts/yikes.ttf"));
 //	fnt = GraphicsFont::Create("~res:/Fonts/korinna.def", "~res:/Gfx/Fonts2/korinna");
 	fnt->SetSize(7.5f);
 //	fnt->SetSize(12);

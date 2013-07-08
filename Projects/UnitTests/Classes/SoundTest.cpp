@@ -28,6 +28,8 @@
  * Created by Igor Solovey
  =====================================================================================*/
 
+#if 0
+
 #include "SoundTest.h"
 
 SoundTest::SoundTest():
@@ -65,17 +67,17 @@ void SoundTest::UnloadResources()
 void SoundTest::CreateInvalidSounds(PerfFuncData * data)
 {
     Sound * sound = 0;
-    sound = Sound::Create("", (Sound::eType)1111);
+    sound = Sound::Create(FilePath(), (Sound::eType)1111);
     TEST_VERIFY(sound == 0);
     sound = Sound::Create("?InvalidPath", Sound::TYPE_STATIC);
     TEST_VERIFY(sound == 0);
     
-    sound = Sound::CreateFX("", Sound::TYPE_STATIC);
+    sound = Sound::CreateFX(FilePath(), Sound::TYPE_STATIC);
     TEST_VERIFY(sound == 0);
     sound = Sound::CreateFX("//InvalidPath", (Sound::eType)333);
     TEST_VERIFY(sound == 0);
     
-    sound = Sound::CreateMusic("", (Sound::eType)222);
+    sound = Sound::CreateMusic(FilePath(), (Sound::eType)222);
     TEST_VERIFY(sound == 0);
     sound = Sound::CreateMusic(":\\InvalidPath", Sound::TYPE_STREAMED);
     TEST_VERIFY(sound == 0);
@@ -151,3 +153,5 @@ void SoundTest::Update(float32 timeElapsed)
 
     TestTemplate<SoundTest>::Update(timeElapsed);
 }
+
+#endif

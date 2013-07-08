@@ -12,14 +12,14 @@ class LightmapsPacker : public SpritesPacker
 public:
 	LightmapsPacker();
 
-	void Compress();
+	void CreateDescriptors();
 	void ParseSpriteDescriptors();
 	Vector<LightmapAtlasingData> * GetAtlasingData();
 
 private:
 	Vector<LightmapAtlasingData> atlasingData;
 
-	Vector2 GetTextureSize(const String & filePath);
+	Vector2 GetTextureSize(const FilePath & filePath);
 };
 
 #endif //__LIGHTMAPS_PACKER_H__

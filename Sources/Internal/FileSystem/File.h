@@ -32,6 +32,8 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
+#include "FileSystem/FilePath.h"
+
 
 #if defined(__DAVAENGINE_ANDROID__)
 	#include "zip/zip.h"
@@ -79,7 +81,7 @@ public:
 		\param[in] attributes combinations of eFileAttributes
 		\returns file instance
 	 */
-	static File * Create(const String &filePath, uint32 attributes);
+	static File * Create(const FilePath &filePath, uint32 attributes);
 
 	/** 
 	 \brief funciton to create a file instance with give attributes
@@ -88,22 +90,13 @@ public:
 	 \param[in] attributes combinations of eFileAttributes
 	 \returns file instance
 	 */
-	static File * CreateFromSystemPath(const String &filePath, uint32 attributes);
+	static File * CreateFromSystemPath(const FilePath &filePath, uint32 attributes);
 
 	/**
 		\brief Get this file name
-		\returns filename of this file 
+		\returns name of this file
 	 */
-//	virtual	const char8 * GetFilename();
-	virtual	const String GetFilename();
-
-	
-	/**
-		\brief Get this file full pathname
-		\returns filename of this file 
-	 */
-//	virtual const char8 * GetPathname();
-	virtual	const String GetPathname();
+	virtual	const FilePath & GetFilename();
 	
 	/** 
 		\brief Write [dataSize] bytes to this file from [pointerToData]
@@ -186,13 +179,13 @@ public:
 	//! return true if end of file reached and false in another case
 	virtual bool IsEof();
 	
-    static String GetModificationDate(const String & filePathname);
+    static String GetModificationDate(const FilePath & filePathname);
     
 private:
 	FILE	*	file;
 	uint32		size;
 protected:
-	String	filename;
+	FilePath	filename;
 };
 };
 

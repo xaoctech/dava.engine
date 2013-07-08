@@ -27,7 +27,9 @@ public:
     ~EditorScene();
     
     virtual void Update(float32 timeElapsed);
+	virtual void RemoveNode(Entity * node);
 	void UpdateBullet(Entity * curr);
+	void RemoveBullet(Entity * curr);
 
     btCollisionWorld *collisionWorld;
 	btCollisionWorld *landCollisionWorld;
@@ -67,10 +69,6 @@ public:
     const RenderManager::Stats & GetRenderStats() const;
     
 protected:
-
-    
-    void SetNodeDebugFlags(Entity *selectedNode, uint32 flags);
-    
     void SetForceLodLayerRecursive(Entity *node, int32 layer);
 
     btDefaultCollisionConfiguration* collisionConfiguration;
@@ -91,7 +89,6 @@ protected:
 	HeightmapNode * FindHeightmap(Entity * curr, btCollisionObject * coll);
 
 	Entity * lastSelectedPhysics;
-    
     bool drawGrid;
 
 	btBroadphaseProxy* originalHandler;

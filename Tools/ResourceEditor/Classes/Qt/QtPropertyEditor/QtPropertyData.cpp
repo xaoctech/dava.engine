@@ -52,10 +52,20 @@ QVariant QtPropertyData::GetValue()
 
 void QtPropertyData::SetValue(const QVariant &value)
 {
-	SetValueInternal(value);
-	curValue = value;
+	QVariant oldValue = curValue;
 
+	curValue = value;
+	SetValueInternal(curValue);
+
+	if(curValue != oldValue)
+	{
+		emit ValueChanged();
+	}
+
+	// change signal going down to childs
 	ChildNeedUpdate();
+
+	// change signal going up to parents
 	ParentUpdate();
 }
 
@@ -86,12 +96,12 @@ QWidget* QtPropertyData::CreateEditor(QWidget *parent, const QStyleOptionViewIte
 
 void QtPropertyData::EditorDone(QWidget *editor)
 {
-    return EditorDoneInternal(editor);
+    EditorDoneInternal(editor);
 }
 
 void QtPropertyData::SetEditorData(QWidget *editor)
 {
-    return SetEditorDataInternal(editor);
+    SetEditorDataInternal(editor);
 }
 
 void QtPropertyData::ParentUpdate()

@@ -2,8 +2,12 @@ package com.dava.framework;
 
 import java.util.Locale;
 import java.util.TimeZone;
+import java.security.NoSuchAlgorithmException;
+import java.security.MessageDigest;
+import java.math.BigInteger;
 
 import android.os.Build;
+import android.provider.Settings.Secure;
 
 public class JNIDeviceInfo {
 	final static String TAG = "JNIDeviceInfo";
@@ -37,6 +41,24 @@ public class JNIDeviceInfo {
 	public static void GetTimeZone()
 	{
 		SetJString(TimeZone.getDefault().getDisplayName(Locale.US));
+	}
+
+	public static void GetUDID()
+	{
+		String aid = Secure.getString(JNIActivity.GetActivity().getApplicationContext() .getContentResolver(), Secure.ANDROID_ID);
+
+		Object obj = null;
+		try {
+			((MessageDigest) (obj = MessageDigest.getInstance("MD5"))).update(aid.getBytes(), 0, aid.length());
+
+			obj = String.format("%040X", new Object[] { new BigInteger(1, ((MessageDigest) obj).digest()) });
+		} 
+		catch (NoSuchAlgorithmException localNoSuchAlgorithmException) {
+			obj = aid.substring(0, 32);
+		}
+
+
+		SetJString(obj.toString().toLowerCase());
 	}
 
 	public static native void SetJString(String str);

@@ -42,7 +42,7 @@
 namespace DAVA
 {
 	
-GameObject * GameObject::Create(const String & _pathToSprite, int32 frame)
+GameObject * GameObject::Create(const FilePath & _pathToSprite, int32 frame)
 {
 	GameObject * object = new GameObject();
 	Sprite * sprite = Sprite::Create(_pathToSprite);

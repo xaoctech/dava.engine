@@ -36,7 +36,7 @@ namespace nvtt
 
 		bool getMipmapSize(unsigned int number, unsigned int & size) const;
 
-		static unsigned int getHeader(void* buffer, unsigned int & bufferSize, const InputOptions::Private & inputOptions, const CompressionOptions::Private & compressionOptions);
+		static unsigned int getHeader(void* buffer, const unsigned int bufferSize, const InputOptions::Private & inputOptions, const CompressionOptions::Private & compressionOptions);
 
 		private:
 

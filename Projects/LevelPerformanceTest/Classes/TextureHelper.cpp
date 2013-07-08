@@ -5,82 +5,67 @@
 
 using namespace DAVA;
 
-uint32 TextureHelper::GetSceneTextureMemory(DAVA::Scene *scene, const String& scenePath)
+uint32 TextureHelper::GetSceneTextureMemory(DAVA::Scene *scene)
 {
-	return EnumerateSceneTextures(scene, scenePath);
+	return EnumerateSceneTextures(scene);
 }
 
-DAVA::uint32 TextureHelper::GetSceneTextureFilesSize(DAVA::Scene* scene, const String& scenePath)
+DAVA::uint32 TextureHelper::GetSceneTextureFilesSize(DAVA::Scene* scene)
 {
-	return EnumerateSceneTexturesFileSize(scene, scenePath);
+	return EnumerateSceneTexturesFileSize(scene);
 }
 
-uint32 TextureHelper::EnumerateSceneTextures(DAVA::Scene* scene, const String& scenePath)
+
+
+uint32 TextureHelper::EnumerateSceneTextures(DAVA::Scene* scene)
 {
 	Map<String, Texture *> textureMap;
 	EnumerateTextures(scene, textureMap);
-
-	String projectPath = scenePath;
 
 	uint32 sceneTextureMemory = 0;
 	for(Map<String, Texture *>::const_iterator it = textureMap.begin(); it != textureMap.end(); ++it)
 	{
 		Texture *t = it->second;
-		if(String::npos == t->GetPathname().find(projectPath))
-		{   // skip all textures that are not related the scene
-			continue;
-		}
-
-		if(String::npos != t->GetPathname().find(projectPath))
-		{   //We need real info about textures size. In Editor on desktop pvr textures are decompressed to RGBA8888, so they have not real size.
-			String imageFileName = TextureDescriptor::GetPathnameForFormat(t->GetPathname(), t->GetSourceFileFormat());
-			switch (t->GetSourceFileFormat())
+		//We need real info about textures size. In Editor on desktop pvr textures are decompressed to RGBA8888, so they have not real size.
+		FilePath imageFileName = TextureDescriptor::GetPathnameForFormat(t->GetPathname(), t->GetSourceFileFormat());
+		switch (t->GetSourceFileFormat())
+		{
+		case DAVA::PVR_FILE:
 			{
-				case DAVA::PVR_FILE:
-				{
-					sceneTextureMemory += LibPVRHelper::GetDataLength(imageFileName);
-					break;
-				}
-
-				case DAVA::DXT_FILE:
-				{
-					sceneTextureMemory += (int32)LibDxtHelper::GetDataSize(imageFileName);
-					break;
-				}
-
-				default:
-					sceneTextureMemory += t->GetDataSize();
-					break;
+				sceneTextureMemory += LibPVRHelper::GetDataLength(imageFileName);
+				break;
 			}
+
+		case DAVA::DXT_FILE:
+			{
+				sceneTextureMemory += (int32)LibDxtHelper::GetDataSize(imageFileName);
+				break;
+			}
+
+		default:
+			sceneTextureMemory += t->GetDataSize();
+			break;
 		}
 	}
 
 	return sceneTextureMemory;
 }
 
-DAVA::uint32 TextureHelper::EnumerateSceneTexturesFileSize(DAVA::Scene* scene, const String& scenePath)
+DAVA::uint32 TextureHelper::EnumerateSceneTexturesFileSize(DAVA::Scene* scene)
 {
 	Map<String, Texture *> textureMap;
 	EnumerateTextures(scene, textureMap);
-
-	String projectPath = scenePath;
 
 	uint32 sceneTextureFilesSize = 0;
 	for(Map<String, Texture *>::const_iterator it = textureMap.begin(); it != textureMap.end(); ++it)
 	{
 		Texture *t = it->second;
-		if(String::npos == t->GetPathname().find(projectPath))
-		{   // skip all textures that are not related the scene
-			continue;
-		}
 
-		if(String::npos != t->GetPathname().find(projectPath))
-		{   //We need real info about textures size. In Editor on desktop pvr textures are decompressed to RGBA8888, so they have not real size.
-			String imageFileName = TextureDescriptor::GetPathnameForFormat(t->GetPathname(), t->GetSourceFileFormat());
-			File * textureFile = File::Create(imageFileName, File::OPEN | File::READ);
-			sceneTextureFilesSize += textureFile->GetSize();
-			SafeRelease(textureFile);
-		}
+		FilePath imageFileName = TextureDescriptor::GetPathnameForFormat(t->GetPathname(), t->GetSourceFileFormat());
+		File * textureFile = File::Create(imageFileName, File::OPEN | File::READ);
+        if(textureFile)
+		    sceneTextureFilesSize += textureFile->GetSize();
+		SafeRelease(textureFile);
 	}
 
 	return sceneTextureFilesSize;
@@ -142,10 +127,10 @@ void TextureHelper::CollectLandscapeTextures(DAVA::Map<DAVA::String, DAVA::Textu
 
 
 
-void TextureHelper::CollectTexture(Map<String, Texture *> &textures, const String &name, Texture *tex)
+void TextureHelper::CollectTexture(Map<String, Texture *> &textures, const FilePath &name, Texture *tex)
 {
-	if (!name.empty())
+	if (!name.IsEmpty())
 	{
-		textures[name] = tex;
+		textures[name.GetAbsolutePathname()] = tex;
 	}
 }

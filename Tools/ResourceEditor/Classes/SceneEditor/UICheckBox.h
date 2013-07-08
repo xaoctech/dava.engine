@@ -18,7 +18,7 @@ class UICheckBox : public UIControl
 public:
 
 	UICheckBox();
-	UICheckBox(const String &spriteName, const Rect &rect, bool rectInAbsoluteCoordinates = false);
+	UICheckBox(const FilePath &spriteName, const Rect &rect, bool rectInAbsoluteCoordinates = false);
 
 	virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
     virtual void LoadFromYamlNodeCompleted();

@@ -176,7 +176,7 @@ public:
 		\param[in] justifyWidth - reserved
 		\returns bounding rect for string in pixels
 	*/
-	virtual Size2i DrawString(float32 offsetX, float32 offsetY, const WideString & str, int32 justifyWidth = 0) { return Size2i(0, 0);};
+	virtual Size2i DrawString(float32 offsetX, float32 offsetY, const WideString & str, int32 justifyWidth = 0);
 
 	/**
 		\brief Draw string to memory buffer
@@ -191,7 +191,7 @@ public:
 		\param[in] contentScaleIncluded - TODO
 		\returns bounding rect for string in pixels
 	*/
-	virtual Size2i DrawStringToBuffer(void * buffer, int32 bufWidth, int32 bufHeight, int32 offsetX, int32 offsetY, int32 justifyWidth, int32 spaceAddon, const WideString & str, bool contentScaleIncluded = false) { return  Size2i(0, 0); };
+	virtual Size2i DrawStringToBuffer(void * buffer, int32 bufWidth, int32 bufHeight, int32 offsetX, int32 offsetY, int32 justifyWidth, int32 spaceAddon, const WideString & str, bool contentScaleIncluded = false);
 
 	//TODO: get rid of this
 	virtual bool IsTextSupportsSoftwareRendering() { return false; };

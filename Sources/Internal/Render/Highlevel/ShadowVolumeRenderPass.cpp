@@ -39,11 +39,17 @@ ShadowVolumeRenderPass::ShadowVolumeRenderPass(const FastName & _name)
     :   RenderPass(_name)
 {
     shadowRect = ShadowRect::Create();
+	blendMode = MODE_BLEND_ALPHA;
 }
 
 ShadowVolumeRenderPass::~ShadowVolumeRenderPass()
 {
     SafeRelease(shadowRect);
+}
+
+void ShadowVolumeRenderPass::SetBlendMode(eBlend _blendMode)
+{
+	blendMode = _blendMode;
 }
 
 void ShadowVolumeRenderPass::Draw(Camera * camera)
@@ -59,6 +65,9 @@ void ShadowVolumeRenderPass::Draw(Camera * camera)
     if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::SHADOWVOLUME_DRAW)
        && renderBatchCount > 0)
 	{
+		eBlendMode sFactor = RenderManager::Instance()->GetSrcBlend();
+		eBlendMode dFactor = RenderManager::Instance()->GetDestBlend();
+
 		//2nd pass
 		RenderManager::Instance()->RemoveState(RenderState::STATE_CULL);
 		RenderManager::Instance()->RemoveState(RenderState::STATE_DEPTH_WRITE);
@@ -93,9 +102,22 @@ void ShadowVolumeRenderPass::Draw(Camera * camera)
 		RenderManager::State()->SetStencilPass(FACE_FRONT_AND_BACK, STENCILOP_KEEP);
 		RenderManager::State()->SetStencilFail(FACE_FRONT_AND_BACK, STENCILOP_KEEP);
 		RenderManager::State()->SetStencilZFail(FACE_FRONT_AND_BACK, STENCILOP_KEEP);
-        
-		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+
+		switch(blendMode)
+		{
+		case MODE_BLEND_ALPHA:
+			RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+			break;
+		case MODE_BLEND_MULTIPLY:
+			RenderManager::Instance()->SetBlendMode(BLEND_DST_COLOR, BLEND_ZERO);
+			break;
+		default:
+			break;
+		}
+
 		shadowRect->Draw();
+
+		RenderManager::Instance()->SetBlendMode(sFactor, dFactor);
 	}
 }
     

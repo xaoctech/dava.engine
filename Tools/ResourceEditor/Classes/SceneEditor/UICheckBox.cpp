@@ -14,7 +14,7 @@ UICheckBox::UICheckBox()
     AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &UICheckBox::OnClick));
 }
 
-UICheckBox::UICheckBox(const String &spriteName, const Rect &rect, bool rectInAbsoluteCoordinates)
+UICheckBox::UICheckBox(const FilePath &spriteName, const Rect &rect, bool rectInAbsoluteCoordinates)
     :   UIControl(rect, rectInAbsoluteCoordinates)
 {
     checkboxDelegate = NULL;

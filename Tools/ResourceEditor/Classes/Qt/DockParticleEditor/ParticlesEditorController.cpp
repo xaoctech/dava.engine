@@ -8,6 +8,7 @@
 
 #include "ParticlesEditorController.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
+#include "ParticlesEditorQT/Helpers/ParticlesEditorNodeNameHelper.h"
 
 using namespace DAVA;
 
@@ -216,6 +217,9 @@ void ParticlesEditorController::AddParticleEmitterNodeToScene(Entity* emitterSce
 		    return;
 		}
 		emitter->SetLifeTime(LIFETIME_FOR_NEW_PARTICLE_EMITTER);
+		
+		String newName = ParticlesEditorNodeNameHelper::GetNewNodeName(emitterSceneNode->GetName(), effectNode);
+		emitterSceneNode->SetName(newName);
 
         effectNode->AddNode(emitterSceneNode);
         effectEditorNode->AddChildNode(emitterEditorNode);
@@ -273,7 +277,7 @@ LayerParticleEditorNode* ParticlesEditorController::AddParticleLayerToNode(Emitt
 	layer->startTime = 0;
     layer->endTime = LIFETIME_FOR_NEW_PARTICLE_EMITTER;
 	layer->life = new PropertyLineValue<float32>(emitter->GetLifeTime());
-    layer->layerName = String("Layer");
+    layer->layerName = ParticlesEditorNodeNameHelper::GetNewLayerName(String("Layer"), emitter);
 
     emitter->AddLayer(layer);
 

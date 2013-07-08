@@ -38,6 +38,23 @@ namespace DAVA
 {
 	REGISTER_CLASS(UIList);
 	
+int32 UIListDelegate::CellWidth(UIList* /*list*/, int32 /*index*/)
+{
+	return 20;
+};
+
+int32 UIListDelegate::CellHeight(UIList* /*list*/, int32 /*index*/)
+{
+	return 20;
+};
+
+void UIListDelegate::OnCellSelected(UIList* /*forList*/, UIListCell* /*selectedCell*/)
+{
+};
+
+void UIListDelegate::SaveToYaml(UIList* /*forList*/, YamlNode* /*node*/)
+{
+};
 	
 UIList::UIList(const Rect &rect, eListOrientation requiredOrientation, bool rectInAbsoluteCoordinates/* = FALSE*/)
 	:	UIControl(rect, rectInAbsoluteCoordinates)
@@ -129,6 +146,11 @@ void UIList::SetRect(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*
 void UIList::SetDelegate(UIListDelegate *newDelegate)
 {
 	delegate = newDelegate;
+}
+
+UIListDelegate * UIList::GetDelegate()
+{
+	return delegate;
 }
 
 void UIList::ScrollToElement(int32 index)
@@ -642,8 +664,12 @@ void UIList::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 			DVASSERT(0 && "Orientation constant is wrong");
 		}
 	}
-		
-		
+	// Load aggregator path
+	YamlNode * aggregatorPathNode = node->Get("aggregatorPath");
+	if (aggregatorPathNode)
+	{
+		aggregatorPath = aggregatorPathNode->AsString();
+	}
 		
 		// TODO
 	InitAfterYaml();
@@ -654,6 +680,16 @@ UIControl *UIList::Clone()
 	UIList *c = new UIList(GetRect(), this->orientation);
 	c->CopyDataFrom(this);
 	return c;
+}
+
+const FilePath & UIList::GetAggregatorPath()
+{
+	return aggregatorPath;
+}
+	
+void UIList::SetAggregatorPath(const FilePath &aggregatorPath)
+{
+	this->aggregatorPath = aggregatorPath;
 }
 
 YamlNode * UIList::SaveToYamlNode(UIYamlLoader * loader)
@@ -680,6 +716,18 @@ YamlNode * UIList::SaveToYamlNode(UIYamlLoader * loader)
 			break;
 	}
 	node->Set("orientation", stringValue);
+	
+	if (delegate)
+	{
+		// Set aggregator path from current List delegate
+		delegate->SaveToYaml(this, node);
+	}
+
+	// Save aggregator path only if it is not empty
+	if (!aggregatorPath.IsEmpty())
+	{
+		node->Set("aggregatorPath", aggregatorPath.GetAbsolutePathname());
+	}
     
 	return node;
 }

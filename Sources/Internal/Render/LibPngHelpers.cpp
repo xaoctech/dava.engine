@@ -95,7 +95,7 @@ static void	PngImageRead(png_structp pngPtr, png_bytep data, png_size_t size)
 	self->file->Read(data, (uint32)size);
 }
 
-int LibPngWrapper::ReadPngFile(const String & file, Image * image, PixelFormat targetFormat/* = FORMAT_INVALID*/)
+int LibPngWrapper::ReadPngFile(const FilePath & file, Image * image, PixelFormat targetFormat/* = FORMAT_INVALID*/)
 {
 	File * infile = File::Create(file, File::OPEN | File::READ);
 	if (!infile)
@@ -262,7 +262,7 @@ bool LibPngWrapper::IsPngFile(File *file)
 
 
 
-void LibPngWrapper::WritePngFile(const String & file_name, int32 width, int32 height, uint8 * data, PixelFormat format)
+void LibPngWrapper::WritePngFile(const FilePath & file_name, int32 width, int32 height, uint8 * data, PixelFormat format)
 {
 //	printf("* Writing PNG file (%d x %d): %s\n", width, height, file_name);
 	png_color_8 sig_bit;
@@ -298,10 +298,10 @@ void LibPngWrapper::WritePngFile(const String & file_name, int32 width, int32 he
 	
 	
 	/* create file */
-	FILE *fp = fopen(file_name.c_str(), "wb");
+	FILE *fp = fopen(file_name.GetAbsolutePathname().c_str(), "wb");
 	if (!fp)
 	{
-		Logger::Error("[LibPngWrapper::WritePngFile] File %s could not be opened for writing", file_name.c_str());
+		Logger::Error("[LibPngWrapper::WritePngFile] File %s could not be opened for writing", file_name.GetAbsolutePathname().c_str());
 		//abort_("[write_png_file] File %s could not be opened for writing", file_name);
 		return;
 	}
@@ -422,13 +422,13 @@ PngImage::~PngImage()
     format = FORMAT_INVALID;
 }
 
-bool PngImage::Load(const char * filename)
+bool PngImage::Load(const FilePath & filename)
 {
 	//LibPngWrapper::ReadPngFile(filename, &width, &height, &data);
 	return true;
 }
 
-bool PngImage::Save(const char * filename)
+bool PngImage::Save(const FilePath & filename)
 {
 	LibPngWrapper::WritePngFile(filename, width, height, data, format);
 	return true;
