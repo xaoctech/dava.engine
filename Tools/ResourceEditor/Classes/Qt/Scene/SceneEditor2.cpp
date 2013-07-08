@@ -220,14 +220,14 @@ void SceneEditor2::Draw()
 
 void SceneEditor2::EditorCommandProcess(const Command2 *command, bool redo)
 {
-	debugSystem->PropeccCommand(command, redo);
-	gridSystem->PropeccCommand(command, redo);
-	cameraSystem->PropeccCommand(command, redo);
-	collisionSystem->PropeccCommand(command, redo);
-	selectionSystem->PropeccCommand(command, redo);
-	hoodSystem->PropeccCommand(command, redo);
-	modifSystem->PropeccCommand(command, redo);
-	structureSystem->PropeccCommand(command, redo);
+	debugSystem->ProcessCommand(command, redo);
+	gridSystem->ProcessCommand(command, redo);
+	cameraSystem->ProcessCommand(command, redo);
+	collisionSystem->ProcessCommand(command, redo);
+	selectionSystem->ProcessCommand(command, redo);
+	hoodSystem->ProcessCommand(command, redo);
+	modifSystem->ProcessCommand(command, redo);
+	structureSystem->ProcessCommand(command, redo);
 }
 
 SceneEditor2::EditorCommandNotify::EditorCommandNotify(SceneEditor2 *_editor)

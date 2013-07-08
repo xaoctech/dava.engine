@@ -189,7 +189,7 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 void EntityModificationSystem::Draw()
 { }
 
-void EntityModificationSystem::PropeccCommand(const Command2 *command, bool redo)
+void EntityModificationSystem::ProcessCommand(const Command2 *command, bool redo)
 {
 
 }

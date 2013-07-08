@@ -38,7 +38,7 @@ protected:
 	virtual void RemoveEntity(DAVA::Entity * entity);
 
 	void ProcessUIEvent(DAVA::UIEvent *event);
-	void PropeccCommand(const Command2 *command, bool redo);
+	void ProcessCommand(const Command2 *command, bool redo);
 	
 private:
 	DAVA::Vector<DAVA::Entity*> entities;

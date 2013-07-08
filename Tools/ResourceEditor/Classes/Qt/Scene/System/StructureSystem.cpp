@@ -290,7 +290,7 @@ void StructureSystem::ProcessUIEvent(DAVA::UIEvent *event)
 
 }
 
-void StructureSystem::PropeccCommand(const Command2 *command, bool redo)
+void StructureSystem::ProcessCommand(const Command2 *command, bool redo)
 {
 	if(!lockedSignals)
 	{

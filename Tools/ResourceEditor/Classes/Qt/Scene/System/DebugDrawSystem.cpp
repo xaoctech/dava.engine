@@ -144,7 +144,7 @@ void DebugDrawSystem::RemoveEntity(DAVA::Entity * entity)
 	}
 }
 
-void DebugDrawSystem::PropeccCommand(const Command2 *command, bool redo)
+void DebugDrawSystem::ProcessCommand(const Command2 *command, bool redo)
 {
 
 }
