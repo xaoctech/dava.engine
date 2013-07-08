@@ -169,6 +169,8 @@ public:
 	 */
 	void OnInput(int32 touchType, const Vector<UIEvent> &activeInputs, const Vector<UIEvent> &allInputs, bool fromReplay = false);
 	
+	void OnInput(UIEvent * event);
+
 	/**
 	 \brief Callse very frame by the system for update.
 	 */

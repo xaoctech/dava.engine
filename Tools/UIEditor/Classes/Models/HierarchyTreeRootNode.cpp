@@ -26,5 +26,5 @@ void HierarchyTreeRootNode::SetProjectFilePath(const QString& projectFilePath)
 	this->projectFilePath = projectFilePath;
 	// Save project directory path
 	QFileInfo fileInfo(projectFilePath);
-	this->projectDir = fileInfo.absoluteDir().absolutePath();
+	this->projectDir = projectFilePath.isEmpty() ? QString() :fileInfo.absoluteDir().absolutePath();
 }

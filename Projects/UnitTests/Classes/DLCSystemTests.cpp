@@ -35,7 +35,7 @@ void DLCSystemTests::StartTests()
 void DLCSystemTests::Test1()
 {
     // Clear before tests
-    FileSystem::Instance()->DeleteDirectory( FileSystem::Instance()->SystemPathForFrameworkPath( std::string( "~doc:/downloads/" ) ) );
+    FileSystem::Instance()->DeleteDirectory( "~doc:/downloads/" );
 
     state = TEST_1;
     isSucsess = true;
@@ -63,7 +63,7 @@ void DLCSystemTests::Test2()
     new DLCSystem();
     
     // Delete one file
-    std::string fullPath = FileSystem::Instance()->SystemPathForFrameworkPath( std::string( "~doc:/downloads/res/" ) + "Maps/tree_level1/bush01.DAE" );
+    FilePath fullPath( "~doc:/downloads/res/Maps/tree_level1/bush01.DAE" );
     FileSystem::Instance()->DeleteFile(fullPath);
     
     DLCSystem::Instance()->AddDelegate(this);
@@ -80,7 +80,7 @@ void DLCSystemTests::Test3()
     new DLCSystem();
     
     // Delete one file
-    std::string fullPath = FileSystem::Instance()->SystemPathForFrameworkPath( std::string( "~doc:/downloads/dlc_2.ka" ) );
+    FilePath fullPath( "~doc:/downloads/dlc_2.ka");
     FileSystem::Instance()->DeleteFile(fullPath);
     
     //
@@ -129,7 +129,7 @@ void DLCSystemTests::Test6()
     new DLCSystem();
     
     // Delete one file
-    std::string fullPath = FileSystem::Instance()->SystemPathForFrameworkPath( std::string( "~doc:/downloads/dlc_2.ka" ) );
+    FilePath fullPath( "~doc:/downloads/dlc_2.ka" );
     FileSystem::Instance()->DeleteFile(fullPath);
     
     //
@@ -192,7 +192,6 @@ void DLCSystemTests::InitCompleted(DLCStatusCode withStatus)
             {
                 isSucsess = false;
 				needNextTest = true;
-//                NextTest();
             }
             break;
         case TEST_2:
@@ -212,7 +211,6 @@ void DLCSystemTests::InitCompleted(DLCStatusCode withStatus)
             {
                 isSucsess = false;
 				needNextTest = true;
-//                NextTest();
             }
             break;
         case TEST_3:
@@ -233,7 +231,6 @@ void DLCSystemTests::InitCompleted(DLCStatusCode withStatus)
             {
                 isSucsess = false;
 				needNextTest = true;
-//                NextTest();
             }
             break;
         case TEST_4:
@@ -253,7 +250,6 @@ void DLCSystemTests::InitCompleted(DLCStatusCode withStatus)
             {
                 isSucsess = false;
 				needNextTest = true;
-//                NextTest();
             }
             break;
         case TEST_5:
@@ -276,7 +272,6 @@ void DLCSystemTests::InitCompleted(DLCStatusCode withStatus)
                 Logger::Debug("  INIT FALSE 3");
                 isSucsess = false;
 				needNextTest = true;
-//                NextTest();
             }
             break;
         case TEST_7:
@@ -439,7 +434,6 @@ void DLCSystemTests::NextTest()
             Logger::Debug( " TEST 8 = %s", (isSucsess) ? "Success" : "Fail" );
 			isFinished = true;
 
-//            FileSystem::Instance()->DeleteDirectory( FileSystem::Instance()->SystemPathForFrameworkPath( std::string( "~doc:/downloads/" ) ) );
             break;
         default:
             break;

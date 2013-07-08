@@ -86,12 +86,12 @@ void SceneFile::SetDebugLog(bool _debugLogEnabled)
 	debugLogEnabled = _debugLogEnabled;
 }
 
-bool SceneFile::LoadScene(const String & filename, Scene * _scene, bool relToBundle /*= true*/)
+bool SceneFile::LoadScene(const FilePath & filename, Scene * _scene, bool relToBundle /*= true*/)
 {
     materials.clear();
     
 	scene = _scene;
-    rootNodePath = FileSystem::GetCanonicalPath(filename);
+    rootNodePath = filename;
     
     
 //  textureIndexOffset = scene->GetTextureCount();
@@ -104,12 +104,13 @@ bool SceneFile::LoadScene(const String & filename, Scene * _scene, bool relToBun
 	sceneFP = File::Create(filename, File::OPEN | File::READ);
 	if(!sceneFP)
 	{
-		Logger::Warning("SceneFile::LoadScene failed to open file %s", filename.c_str());
+		Logger::Warning("SceneFile::LoadScene failed to open file %s", filename.GetAbsolutePathname().c_str());
 		return false;
 	}
 
 	// get scene path, store it to add to texture paths
-	scenePath = PathManip(filename.c_str()).GetPath();
+    //TODO: what this?
+	scenePath = PathManip(filename.GetAbsolutePathname().c_str()).GetPath();
 
 	Logger::Debug("scene start load: path = %s\n", scenePath.c_str());
 	
@@ -221,9 +222,8 @@ bool SceneFile::LoadScene(const String & filename, Scene * _scene, bool relToBun
     return true;
 }
 
-bool SceneFile::SaveScene(const char * filename)
+bool SceneFile::SaveScene(const FilePath & filename)
 {
-	
 	return true;
 };
 	
@@ -306,8 +306,7 @@ bool SceneFile::ReadMaterial()
     String diffuseTextureName = "no texture"; 
     if (mat->GetTexture(Material::TEXTURE_DIFFUSE))
     {
-        String tempPath;
-        FileSystem::SplitPath(mat->GetTexture(Material::TEXTURE_DIFFUSE)->GetPathname(), tempPath, diffuseTextureName);
+        diffuseTextureName = mat->GetTextureName(Material::TEXTURE_DIFFUSE).GetFilename();
     }
     
     if (!mat->GetTexture(Material::TEXTURE_DIFFUSE))
@@ -667,7 +666,7 @@ bool SceneFile::ReadCamera()
 	CameraDef cd;
 	sceneFP->Read(&cd, sizeof(CameraDef));
 	
-	cam->Setup(cd.fovy, 320.0f / 480.0f, cd.znear, cd.zfar, cd.ortho);
+	cam->SetupPerspective(cd.fovy, 320.0f / 480.0f, cd.znear, cd.zfar);
 	SafeRelease(cam);
 	return true;
 }

@@ -85,56 +85,17 @@ SceneFileV2::~SceneFileV2()
 {
 }
     
-const String & SceneFileV2::GetScenePath()
+const FilePath SceneFileV2::GetScenePath()
 {
-    return rootNodePath;
+    return FilePath(rootNodePathName.GetDirectory());
 }
-    
-const String & SceneFileV2::GetSceneFilename()
-{
-    return rootNodeName;
-}
-    
-static void replace(std::string & repString,const std::string & needle, const std::string & s)
-{
-    std::string::size_type lastpos = 0, thispos;
-    while ((thispos = repString.find(needle, lastpos)) != std::string::npos)
-    {
-        repString.replace(thispos, needle.length(), s);
-        lastpos = thispos + 1;
-    }
-}
+        
     
 void SceneFileV2::EnableSaveForGame(bool _isSaveForGame)
 {
     isSaveForGame = _isSaveForGame;
 }
 
-String SceneFileV2::AbsoluteToRelative(const String & absolutePathname)
-{
-    String result = FileSystem::GetCanonicalPath(absolutePathname);
-    
-    if (isSaveForGame)
-    {
-        size_t pos = result.find("DataSource");
-        if (pos != result.npos)
-        {
-            result.replace(pos, strlen("DataSource"), "Data");
-        }
-    }
-
-    result = FileSystem::AbsoluteToRelativePath(GetScenePath(), result);
-    return result;
-}
-    
-String SceneFileV2::RelativeToAbsolute(const String & relativePathname)
-{
-    String result;
-    result = GetScenePath() + relativePathname;
-    result = FileSystem::GetCanonicalPath(result);
-    return result;
-}
-    
 void SceneFileV2::EnableDebugLog(bool _isDebugLogEnabled)
 {
     isDebugLogEnabled = _isDebugLogEnabled;
@@ -181,18 +142,17 @@ SceneFileV2::eError SceneFileV2::GetError()
 }
 
 
-SceneFileV2::eError SceneFileV2::SaveScene(const String & filename, DAVA::Scene *_scene)
+SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scene *_scene)
 {
     File * file = File::Create(filename, File::CREATE | File::WRITE);
     if (!file)
     {
-        Logger::Error("SceneFileV2::SaveScene failed to create file: %s", filename.c_str());
+        Logger::Error("SceneFileV2::SaveScene failed to create file: %s", filename.GetAbsolutePathname().c_str());
         SetError(ERROR_FAILED_TO_CREATE_FILE);
         return GetError();
     }
     
-    rootNodePathName = FileSystem::GetCanonicalPath(filename);
-    FileSystem::Instance()->SplitPath(rootNodePathName, rootNodePath, rootNodeName);
+    rootNodePathName = filename;
 
     // save header
     header.signature[0] = 'S';
@@ -209,7 +169,7 @@ SceneFileV2::eError SceneFileV2::SaveScene(const String & filename, DAVA::Scene 
     if(isDebugLogEnabled)
     {
         Logger::Debug("+ save data objects");
-        Logger::Debug("- save file path: %s", rootNodePath.c_str());
+        Logger::Debug("- save file path: %s", rootNodePathName.GetDirectory().GetAbsolutePathname().c_str());
     }
     
 //    // Process file paths
@@ -244,7 +204,7 @@ SceneFileV2::eError SceneFileV2::SaveScene(const String & filename, DAVA::Scene 
     {
         if (!SaveHierarchy(_scene->GetChild(ci), file, 1))
         {
-            Logger::Error("SceneFileV2::SaveScene failed to save hierarchy file: %s", filename.c_str());
+            Logger::Error("SceneFileV2::SaveScene failed to save hierarchy file: %s", filename.GetAbsolutePathname().c_str());
             SafeRelease(file);
             return GetError();
         }
@@ -254,19 +214,18 @@ SceneFileV2::eError SceneFileV2::SaveScene(const String & filename, DAVA::Scene 
     return GetError();
 };	
     
-SceneFileV2::eError SceneFileV2::LoadScene(const String & filename, Scene * _scene)
+SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _scene)
 {
     File * file = File::Create(filename, File::OPEN | File::READ);
     if (!file)
     {
-        Logger::Error("SceneFileV2::LoadScene failed to create file: %s", filename.c_str());
+        Logger::Error("SceneFileV2::LoadScene failed to create file: %s", filename.GetAbsolutePathname().c_str());
         SetError(ERROR_FAILED_TO_CREATE_FILE);
         return GetError();
     }   
 
     scene = _scene;
-    rootNodePathName = FileSystem::GetCanonicalPath(filename);
-    FileSystem::Instance()->SplitPath(rootNodePathName, rootNodePath, rootNodeName);
+    rootNodePathName = filename;
 
     file->Read(&header, sizeof(Header));
     int requiredVersion = 3;
@@ -298,7 +257,7 @@ SceneFileV2::eError SceneFileV2::LoadScene(const String & filename, Scene * _sce
         Logger::Debug("+ load hierarchy");
         
     Entity * rootNode = new Entity();
-    rootNode->SetName(rootNodeName);
+    rootNode->SetName(rootNodePathName.GetFilename());
 	rootNode->SetScene(0);
     for (int ci = 0; ci < header.nodeCount; ++ci)
     {
@@ -312,7 +271,7 @@ SceneFileV2::eError SceneFileV2::LoadScene(const String & filename, Scene * _sce
     if (GetError() == ERROR_NO_ERROR)
     {
         // TODO: Check do we need to releae root node here
-        _scene->AddRootNode(rootNode, rootNodePathName);
+        _scene->AddRootNode(rootNode, rootNodePathName.GetAbsolutePathname());
     }
     else
     {

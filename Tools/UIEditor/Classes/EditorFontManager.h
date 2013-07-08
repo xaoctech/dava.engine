@@ -36,10 +36,10 @@ public:
 	
 	struct DefaultFontPath
 	{
-		String fontPath;
-		String fontSpritePath;
+		FilePath fontPath;
+		FilePath fontSpritePath;
 		
-		DefaultFontPath(String fontPath, String fontSpritePath)
+		DefaultFontPath(const FilePath & fontPath, const FilePath & fontSpritePath)
 		{
 			this->fontPath = fontPath;
 			this->fontSpritePath = fontSpritePath;

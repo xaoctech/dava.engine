@@ -104,8 +104,7 @@ void GameCore::RegisterScreen(BaseScreen *screen)
 
 bool GameCore::CreateLogFile()
 {
-    String documentsPath =      String(FileSystem::Instance()->GetUserDocumentsPath()) 
-                            +   String("PerfomanceTest/");
+    FilePath documentsPath = FileSystem::Instance()->GetUserDocumentsPath() + "PerfomanceTest/";
     
     bool documentsExists = FileSystem::Instance()->IsDirectory(documentsPath);
     if(!documentsExists)
@@ -115,7 +114,7 @@ bool GameCore::CreateLogFile()
     FileSystem::Instance()->SetCurrentDocumentsDirectory(documentsPath);
     
     
-    String folderPath = FileSystem::Instance()->GetCurrentDocumentsDirectory() + "Reports/";
+    FilePath folderPath = FileSystem::Instance()->GetCurrentDocumentsDirectory() + "Reports/";
     bool folderExcists = FileSystem::Instance()->IsDirectory(folderPath);
     if(!folderExcists)
     {

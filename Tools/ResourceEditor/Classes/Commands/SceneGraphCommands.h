@@ -5,30 +5,25 @@
 
 class SceneData;
 class DAVA::Entity;
-class CommandRemoveRootNodes: public Command
+class CommandRemoveRootNodes: public MultiCommand
 {
 public:	
 	CommandRemoveRootNodes();
+	virtual ~CommandRemoveRootNodes();
 
 protected:
 	virtual void Execute();
+	virtual void Cancel();
+	virtual DAVA::Set<DAVA::Entity*> GetAffectedEntities();
+
+	CommandInternalRemoveSceneNode* removeCmd;
 };
 
-
-class CommandRefreshSceneGraph: public Command
-{
-public:	
-	CommandRefreshSceneGraph();
-    
-protected:	
-    
-    virtual void Execute();
-};
 
 class CommandLockAtObject: public Command
 {
 public:
-	CommandLockAtObject();
+	DAVA_DEPRECATED(CommandLockAtObject());// DEPRECATED: using SceneDataManager(QOBJECT)
     
 protected:
     
@@ -36,13 +31,18 @@ protected:
 };
 
 
-class CommandRemoveSceneNode: public Command
+class CommandRemoveSceneNode: public MultiCommand
 {
 public:
 	CommandRemoveSceneNode();
+	virtual ~CommandRemoveSceneNode();
 
 protected:
     virtual void Execute();
+	virtual void Cancel();
+	virtual DAVA::Set<DAVA::Entity*> GetAffectedEntities();
+
+	CommandInternalRemoveSceneNode* removeCmd;
 };
 
 class CommandInternalRemoveSceneNode: public Command
@@ -72,6 +72,8 @@ protected:
     virtual void Cancel();
 
 	DAVA::int32 GetNodeIndex(const RemoveNodeRec& nodeRec);
+
+	virtual DAVA::Set<DAVA::Entity*> GetAffectedEntities();
 };
 
 
@@ -79,7 +81,7 @@ class CommandDebugFlags: public Command
 {
     
 public:	
-	CommandDebugFlags();
+	DAVA_DEPRECATED(CommandDebugFlags());// DEPRECATED: using SceneDataManager(QOBJECT)
     
 protected:	
     

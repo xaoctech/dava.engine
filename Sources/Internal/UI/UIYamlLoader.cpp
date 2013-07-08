@@ -32,6 +32,7 @@
 #include "Platform/SystemTimer.h"
 #include "UI/UIControl.h"
 #include "FileSystem/YamlParser.h"
+#include "FileSystem/FileSystem.h"
 #include "Render/2D/GraphicsFont.h"
 #include "Render/2D/FontManager.h"
 
@@ -42,6 +43,8 @@ UIYamlLoader::UIYamlLoader() :
 {
 	// Default mode is to ASSERT if custom control isn't found.
 	assertIfCustomControlNotFound = true;
+
+	currentPath = FilePath();
 }
 
 int32 UIYamlLoader::GetDrawTypeFromNode(YamlNode * drawTypeNode)
@@ -60,6 +63,7 @@ int32 UIYamlLoader::GetDrawTypeFromNode(YamlNode * drawTypeNode)
     if("DRAW_STRETCH_HORIZONTAL" == type) ret = UIControlBackground::DRAW_STRETCH_HORIZONTAL;
     if("DRAW_STRETCH_VERTICAL" == type) ret = UIControlBackground::DRAW_STRETCH_VERTICAL;
     if("DRAW_STRETCH_BOTH" == type) ret = UIControlBackground::DRAW_STRETCH_BOTH;
+	if("DRAW_TILED" == type) ret = UIControlBackground::DRAW_TILED;
     
     return ret;
 }
@@ -91,6 +95,9 @@ String UIYamlLoader::GetDrawTypeNodeValue(int32 drawType)
             break;
         case UIControlBackground::DRAW_STRETCH_BOTH:
             ret = "DRAW_STRETCH_BOTH";
+			break;
+		case UIControlBackground::DRAW_TILED:
+            ret = "DRAW_TILED";
 			break;
         default:
             ret = "DRAW_ALIGNED";
@@ -259,7 +266,7 @@ Font * UIYamlLoader::GetFontByName(const String & fontName)
 	return 0;
 }
 
-void UIYamlLoader::Load(UIControl * rootControl, const String & yamlPathname, bool assertIfCustomControlNotFound)
+void UIYamlLoader::Load(UIControl * rootControl, const FilePath & yamlPathname, bool assertIfCustomControlNotFound)
 {
 	UIYamlLoader * loader = new UIYamlLoader();
 	loader->SetAssertIfCustomControlNotFound(assertIfCustomControlNotFound);
@@ -269,7 +276,7 @@ void UIYamlLoader::Load(UIControl * rootControl, const String & yamlPathname, bo
 	loader->Release();
 }
 
-bool UIYamlLoader::Save(UIControl * rootControl, const String & yamlPathname, bool skipRootNode)
+bool UIYamlLoader::Save(UIControl * rootControl, const FilePath & yamlPathname, bool skipRootNode)
 {
 	UIYamlLoader * loader = new UIYamlLoader();
 
@@ -279,21 +286,26 @@ bool UIYamlLoader::Save(UIControl * rootControl, const String & yamlPathname, bo
 	return savedOK;
 }
 
-void UIYamlLoader::ProcessLoad(UIControl * rootControl, const String & yamlPathname)
+void UIYamlLoader::ProcessLoad(UIControl * rootControl, const FilePath & yamlPathname)
 {
 	uint64 t1 = SystemTimer::Instance()->AbsoluteMS();
 	YamlParser * parser = YamlParser::Create(yamlPathname);
 	if (!parser)
 	{
-		Logger::Error("Failed to open yaml file: %s", yamlPathname.c_str());
+		Logger::Error("Failed to open yaml file: %s", yamlPathname.GetAbsolutePathname().c_str());
 		return;
 	}
-	
+
+	currentPath = yamlPathname.GetDirectory();
+
+// 	String filename;
+// 	FileSystem::SplitPath(yamlPathname, currentPath, filename);
+
 	YamlNode * rootNode = parser->GetRootNode();
     if (!rootNode)
     {
         // Empty YAML file.
-        Logger::Warning("yaml file: %s is empty", yamlPathname.c_str());
+        Logger::Warning("yaml file: %s is empty", yamlPathname.GetAbsolutePathname().c_str());
         return;
     }
 	
@@ -402,10 +414,10 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const String & yamlPathn
 	}
 	fontMap.clear();
 	uint64 t2 = SystemTimer::Instance()->AbsoluteMS();
-	Logger::Debug("Load of %s time: %lld", yamlPathname.c_str(), t2 - t1);
+	Logger::Debug("Load of %s time: %lld", yamlPathname.GetAbsolutePathname().c_str(), t2 - t1);
 }
 	
-bool UIYamlLoader::ProcessSave(UIControl * rootControl, const String & yamlPathname, bool skipRootNode)
+bool UIYamlLoader::ProcessSave(UIControl * rootControl, const FilePath & yamlPathname, bool skipRootNode)
 {
     uint64 t1 = SystemTimer::Instance()->AbsoluteMS();
     YamlParser * parser = YamlParser::Create();
@@ -451,7 +463,7 @@ bool UIYamlLoader::ProcessSave(UIControl * rootControl, const String & yamlPathn
     SafeRelease(resultNode);
     
     uint64 t2 = SystemTimer::Instance()->AbsoluteMS();
-	Logger::Debug("Save of %s time: %lld", yamlPathname.c_str(), t2 - t1);
+	Logger::Debug("Save of %s time: %lld", yamlPathname.GetAbsolutePathname().c_str(), t2 - t1);
 
     return savedOK;
 }
@@ -567,6 +579,11 @@ YamlNode* UIYamlLoader::SaveToNode(UIControl * parentControl, YamlNode * parentN
 void UIYamlLoader::SetAssertIfCustomControlNotFound(bool value)
 {
 	this->assertIfCustomControlNotFound = value;
+}
+
+const FilePath & UIYamlLoader::GetCurrentPath() const
+{
+	return currentPath;
 }
 	
 }

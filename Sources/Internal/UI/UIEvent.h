@@ -55,12 +55,13 @@ public:
 			PHASE_BEGAN = 0	//!<Screen touch or mouse button press is began.
 		,	PHASE_DRAG		//!<User moves mouse with presset button or finger over the screen.
 		,	PHASE_ENDED		//!<Screen touch or mouse button press is ended.
-#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)                                        
+#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)
 		,	PHASE_MOVE		//!<Mouse move event. Mouse moves without pressing any buttons. Works only with mouse controller.
-#endif //#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)                                        
-		,	PHASE_CANCELLED	//!<Event was cancelled by the platform or by the control system for the some reason.
+#endif //#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__) 
+		,	PHASE_CANCELLED	//!<Event was cancelled by the platform or by the control system for the some reason.  
 
-        ,	PHASE_KEYCHAR	//!<Event is a keyboard key pressing event.
+		,	PHASE_KEYCHAR	//!<Event is a keyboard key pressing event.                                     
+		,	PHASE_JOYSTICK
 	};
 	
 	/**
@@ -91,7 +92,21 @@ public:
 		,	BUTTON_3
 	};
 	
-	int32 tid;//!< event id, for the platforms with mouse this id means mouse button id, key codes for keys
+	enum eJoystickAxisID
+	{
+			JOYSTICK_AXIS_X = 0
+		,	JOYSTICK_AXIS_Y
+		,	JOYSTICK_AXIS_Z
+		,	JOYSTICK_AXIS_RX
+		,	JOYSTICK_AXIS_RY
+		,	JOYSTICK_AXIS_RZ
+		,	JOYSTICK_AXIS_LTRIGGER
+		,	JOYSTICK_AXIS_RTRIGGER
+		,	JOYSTICK_AXIS_HAT_X
+		,	JOYSTICK_AXIS_HAT_Y
+	};
+
+	int32 tid;//!< event id, for the platforms with mouse this id means mouse button id, key codes for keys, axis id for joystick
 	Vector2 point;//!< point of pressure in virtual coordinates
 	Vector2 physPoint;//!< point of pressure in physical coordinates
 	float64 timestamp;//!< time stemp of the event occurrence

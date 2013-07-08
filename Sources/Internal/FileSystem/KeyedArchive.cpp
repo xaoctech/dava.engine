@@ -55,7 +55,7 @@ KeyedArchive::~KeyedArchive()
     DeleteAllKeys();
 }
 
-bool KeyedArchive::Load(const String & pathName)
+bool KeyedArchive::Load(const FilePath & pathName)
 {
 	File * archive = File::Create(pathName, File::OPEN|File::READ);
 	if (!archive)return false;
@@ -107,7 +107,7 @@ bool KeyedArchive::Load(File *archive)
 	return true;
 }
 	
-bool KeyedArchive::Save(const String & pathName)
+bool KeyedArchive::Save(const FilePath & pathName)
 {
 	File * archive = File::Create(pathName, File::CREATE|File::WRITE);
 	if (!archive)return false;
@@ -139,7 +139,7 @@ bool KeyedArchive::Save(File *archive)
 	return true;
 }
     
-bool KeyedArchive::LoadFromYamlFile(const String & pathName)
+bool KeyedArchive::LoadFromYamlFile(const FilePath & pathName)
 {
     File * archive = File::Create(pathName, File::OPEN|File::READ);
 	if (!archive)
@@ -192,7 +192,7 @@ bool KeyedArchive::LoadFromYamlNode(YamlNode* rootNode)
 }
 
    
-bool KeyedArchive::SaveToYamlFile(const String & pathName)
+bool KeyedArchive::SaveToYamlFile(const FilePath & pathName)
 {
     File * archive = File::Create(pathName, File::CREATE|File::WRITE);
 	if (NULL == archive)
@@ -580,6 +580,9 @@ void KeyedArchive::Dump()
 				Logger::Debug("%s : %S", it->first.c_str(), it->second->wideStringValue->c_str());
 			}
 				break;
+                
+            default:
+                break;
 		}
 	}
 	Logger::Info("============================================================");
