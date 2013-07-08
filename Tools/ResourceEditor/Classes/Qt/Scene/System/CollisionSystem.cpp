@@ -319,7 +319,7 @@ void SceneCollisionSystem::Draw()
 	DAVA::RenderManager::Instance()->SetState(oldState);
 }
 
-void SceneCollisionSystem::PropeccCommand(const Command2 *command, bool redo)
+void SceneCollisionSystem::ProcessCommand(const Command2 *command, bool redo)
 {
 	if(NULL != command)
 	{

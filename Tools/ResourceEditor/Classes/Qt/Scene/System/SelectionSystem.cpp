@@ -165,7 +165,7 @@ void SceneSelectionSystem::Draw()
 	}
 }
 
-void SceneSelectionSystem::PropeccCommand(const Command2 *command, bool redo)
+void SceneSelectionSystem::ProcessCommand(const Command2 *command, bool redo)
 {
 	if(NULL != command)
 	{
