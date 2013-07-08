@@ -203,6 +203,19 @@ DefinitionFile * ResourcePacker2D::ProcessPSD(const FilePath & processDirectoryP
 			currentLayer.crop(Magick::Geometry(width,height, 0, 0));
 			currentLayer.magick("PNG");
 			FilePath outputFile = FilePath::CreateWithNewExtension(psdNameWithoutExtension, String(Format("%d.png", k - 1)));
+			
+			// Yuri Coder, 2013/07/08. Check whether this file exists - overlapping png files
+			// can cause issues like DF-1426.
+			if (FileSystem::Instance()->IsFile(outputFile.GetAbsolutePathname()))
+			{
+				String errorMessage = Format("File %s already exists. ", outputFile.GetAbsolutePathname().c_str());
+				errorMessage += Format("PSD file name %s conflicts with other PSD files, ", psdName.c_str());
+				errorMessage += Format("terminating packing in %s directory.", processDirectoryPath.GetAbsolutePathname().c_str());
+				Logger::Error(errorMessage.c_str());
+
+				return NULL;
+			}
+
 			currentLayer.write(outputFile.GetAbsolutePathname());
 		}
 		
@@ -397,6 +410,7 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 		//	printf("[Directory changed - rebuild: %s]\n", inputGfxDirectory.c_str());
 	}
 
+	bool needPackResourcesInThisDir = true;
 	if (modified)
 	{
 		FileSystem::Instance()->DeleteDirectoryFiles(outputPath, false);
@@ -410,6 +424,13 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 				{
                     //TODO: check if we need filename or pathname
 					DefinitionFile * defFile = ProcessPSD(processDirectoryPath, fullname, fullname.GetFilename());
+					if (!defFile)
+					{
+						// An error occured while converting this PSD file - cancel converting in this directory.
+						needPackResourcesInThisDir = false;
+						break;
+					}
+
 					definitionFileList.push_back(defFile);
 				}
 				else if(isLightmapsPacking && fullname.IsEqualToExtension(".png"))
@@ -434,7 +455,7 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 		}
 
 		// 
-		if (definitionFileList.size() > 0 && modified)
+		if (needPackResourcesInThisDir && definitionFileList.size() > 0 && modified)
 		{
 			TexturePacker packer;
 			if(isLightmapsPacking)
