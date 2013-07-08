@@ -35,7 +35,9 @@ public:
 	Ui::MainWindow* GetUI();
     
     virtual bool eventFilter(QObject *, QEvent *);
-    
+
+	SceneEditor2* GetCurrentScene();
+
 private:
 	void OpenLastProject();
 
@@ -62,6 +64,8 @@ public slots:
 	//return true if conversion has been started
 	void UpdateParticleSprites();
 	void RepackAndReloadScene();
+
+	void EnableNotPassableNew();
 
 	void Undo2();
 	void Redo2();
