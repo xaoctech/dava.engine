@@ -42,11 +42,21 @@ SceneSelectionSystem::~SceneSelectionSystem()
 
 void SceneSelectionSystem::Update(DAVA::float32 timeElapsed)
 {
+	if (IsLocked())
+	{
+		return;
+	}
+
 	UpdateHoodPos();
 }
 
 void SceneSelectionSystem::ProcessUIEvent(DAVA::UIEvent *event)
 {
+	if (IsLocked())
+	{
+		return;
+	}
+
 	if(DAVA::UIEvent::PHASE_BEGAN == event->phase)
 	{
 		// we can select only if mouse isn't over hood axis
@@ -119,6 +129,11 @@ void SceneSelectionSystem::ProcessUIEvent(DAVA::UIEvent *event)
 
 void SceneSelectionSystem::Draw()
 {
+	if (IsLocked())
+	{
+		return;
+	}
+
 	if(curSelections.Size() > 0)
 	{
 		int oldState = DAVA::RenderManager::Instance()->GetState();

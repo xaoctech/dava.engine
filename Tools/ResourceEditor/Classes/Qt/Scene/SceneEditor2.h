@@ -30,6 +30,11 @@
 #include "Scene/System/HoodSystem.h"
 #include "Scene/System/SelectionSystem.h"
 #include "Scene/System/ModifSystem.h"
+#include "Scene/System/LandscapeEditorDrawSystem.h"
+#include "Scene/System/HeightmapEditorSystem.h"
+#include "Scene/System/TilemaskEditorSystem.h"
+#include "Scene/System/CustomColorsSystem.h"
+#include "Scene/System/VisibilityToolSystem.h"
 #include "Scene/System/StructureSystem.h"
 #include "Scene/System/DebugDrawSystem.h"
 
@@ -46,6 +51,11 @@ public:
 	HoodSystem *hoodSystem;
 	SceneSelectionSystem *selectionSystem;
 	EntityModificationSystem *modifSystem;
+	LandscapeEditorDrawSystem* landscapeEditorDrawSystem;
+	HeightmapEditorSystem* heightmapEditorSystem;
+	TilemaskEditorSystem* tilemaskEditorSystem;
+	CustomColorsSystem* customColorsSystem;
+	VisibilityToolSystem* visibilityToolSystem;
 	StructureSystem *structureSystem;
 	DebugDrawSystem *debugSystem;
 
