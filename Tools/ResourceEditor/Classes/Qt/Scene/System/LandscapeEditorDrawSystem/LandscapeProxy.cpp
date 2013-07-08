@@ -99,7 +99,7 @@ void LandscapeProxy::SetTilemaskTexture(Texture* texture)
 			break;
 
 		default:
-			return NULL;
+			return;
 	}
 }
 
@@ -116,7 +116,7 @@ void LandscapeProxy::SetFullTiledTexture(DAVA::Texture *texture)
 			break;
 
 		default:
-			return NULL;
+			return;
 	}
 }
 
