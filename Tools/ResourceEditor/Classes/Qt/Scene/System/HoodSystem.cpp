@@ -278,7 +278,7 @@ void HoodSystem::Draw()
 	}
 }
 
-void HoodSystem::PropeccCommand(const Command2 *command, bool redo)
+void HoodSystem::ProcessCommand(const Command2 *command, bool redo)
 {
 
 }
