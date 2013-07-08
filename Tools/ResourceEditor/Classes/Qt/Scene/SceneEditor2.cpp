@@ -30,7 +30,9 @@
 SceneEditor2::SceneEditor2()
 	: Scene()
 {
-	commandStack.SetNotify(new EditorCommandNotify(this), true);
+	EditorCommandNotify *notify = new EditorCommandNotify(this);
+	commandStack.SetNotify(notify);
+	SafeRelease(notify);
 
 	cameraSystem = new SceneCameraSystem(this);
 	AddSystem(cameraSystem, 0);
