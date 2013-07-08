@@ -196,6 +196,9 @@
     <Filter Include="Classes\Qt\Tools\QResourceEditorProgressDialog">
       <UniqueIdentifier>{a9ce818d-486f-4804-8236-33131380edb6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\Qt\Tools\AddParticleEmitterDialog">
+      <UniqueIdentifier>{503fb82f-68b2-4432-8414-d2664ea762e9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1812,6 +1815,9 @@
     <ClCompile Include="Classes\Qt\DockParticleEditor\ParticleTimeLineColumns.cpp">
       <Filter>Classes\Qt\DockParticleEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\AddParticleEmitterDialog\AddParticleEmitterDialog.cpp">
+      <Filter>Classes\Qt\Tools\AddParticleEmitterDialog</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3172,6 +3178,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockParticleEditor\ParticleTimeLineColumns.h">
       <Filter>Classes\Qt\DockParticleEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\AddParticleEmitterDialog\AddParticleEmitterDialog.h">
+      <Filter>Classes\Qt\Tools\AddParticleEmitterDialog</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
