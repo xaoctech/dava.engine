@@ -487,6 +487,7 @@
     <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionLandscape.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionParticleEmitter.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionRenderObject.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\DebugDrawSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\GridSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\HoodSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\HoodSystem\HoodCollObject.cpp" />
@@ -1102,6 +1103,7 @@
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionLandscape.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionParticleEmitter.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionRenderObject.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\DebugDrawSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\GridSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\HoodSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\HoodSystem\HoodCollObject.h" />
