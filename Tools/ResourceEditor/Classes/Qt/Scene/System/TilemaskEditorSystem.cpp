@@ -106,12 +106,11 @@ bool TilemaskEditorSystem::DisableLandscapeEdititing()
 	{
 		return true;
 	}
+
+	drawSystem->GetLandscapeProxy()->UpdateFullTiledTexture(true);
 	
 	selectionSystem->SetLocked(false);
 	modifSystem->SetLocked(false);
-	
-	drawSystem->GetLandscapeProxy()->SetTilemaskTextureEnabled(false);
-	drawSystem->GetLandscapeProxy()->SetTilemaskTexture(NULL);
 	
 	drawSystem->DisableCursor();
 	drawSystem->DisableTilemaskEditing();

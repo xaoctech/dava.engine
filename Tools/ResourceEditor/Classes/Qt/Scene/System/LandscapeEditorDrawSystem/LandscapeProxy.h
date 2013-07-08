@@ -83,6 +83,7 @@ public:
 	void SetCursorPosition(const Vector2& position);
 
 	void ApplyTilemask();
+	void UpdateFullTiledTexture(bool force = false);
 
 protected:
 	enum eTextureType
