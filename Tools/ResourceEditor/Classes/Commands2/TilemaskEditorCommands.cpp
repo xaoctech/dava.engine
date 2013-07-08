@@ -47,31 +47,25 @@ ModifyTilemaskCommand::~ModifyTilemaskCommand()
 void ModifyTilemaskCommand::Undo()
 {
 	Texture* maskTexture = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_MASK);
-	Texture* fullTexture = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_FULL);
 
 	Sprite* sprite;
 	sprite = ApplyImageToTexture(undoImageMask, maskTexture);
 	landscapeProxy->SetTilemaskTexture(sprite->GetTexture());
 	SafeRelease(sprite);
 
-	sprite = ApplyImageToTexture(undoImageTexture, fullTexture);
-	landscapeProxy->SetTilemaskTexture(sprite->GetTexture());
-	SafeRelease(sprite);
+	landscapeProxy->UpdateFullTiledTexture();
 }
 
 void ModifyTilemaskCommand::Redo()
 {
 	Texture* maskTexture = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_MASK);
-	Texture* fullTexture = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_FULL);
 
 	Sprite* sprite;
 	sprite = ApplyImageToTexture(redoImageMask, maskTexture);
 	landscapeProxy->SetTilemaskTexture(sprite->GetTexture());
 	SafeRelease(sprite);
 
-	sprite = ApplyImageToTexture(redoImageTexture, fullTexture);
-	landscapeProxy->SetTilemaskTexture(sprite->GetTexture());
-	SafeRelease(sprite);
+	landscapeProxy->UpdateFullTiledTexture();
 }
 
 Entity* ModifyTilemaskCommand::GetEntity() const
