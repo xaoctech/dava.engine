@@ -36,6 +36,7 @@
 #include "Scene/System/CustomColorsSystem.h"
 #include "Scene/System/VisibilityToolSystem.h"
 #include "Scene/System/StructureSystem.h"
+#include "Scene/System/DebugDrawSystem.h"
 
 class SceneEditor2 : public DAVA::Scene
 {
@@ -56,6 +57,7 @@ public:
 	CustomColorsSystem* customColorsSystem;
 	VisibilityToolSystem* visibilityToolSystem;
 	StructureSystem *structureSystem;
+	DebugDrawSystem *debugSystem;
 
 	// save/load
 	bool Load(const DAVA::FilePath &path);

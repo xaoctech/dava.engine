@@ -27,6 +27,7 @@
 #include "Scene/System/CustomColorsSystem.h"
 #include "Scene/System/VisibilityToolSystem.h"
 #include "Scene/SceneSignals.h"
+#include "Scene/System/DebugDrawSystem.h"
 
 // framework
 #include "Scene3D/SceneFileV2.h"
@@ -41,6 +42,9 @@ SceneEditor2::SceneEditor2()
 
 	gridSystem = new SceneGridSystem(this);
 	AddSystem(gridSystem, 0);
+	
+	debugSystem = new DebugDrawSystem(this);
+	AddSystem(debugSystem, 0);
 
 	collisionSystem = new SceneCollisionSystem(this);
 	AddSystem(collisionSystem, 0);
@@ -84,6 +88,8 @@ bool SceneEditor2::Load(const DAVA::FilePath &path)
 {
 	bool ret = false;
 
+	structureSystem->LockSignals();
+
 	Entity * rootNode = GetRootNode(path);
 	if(rootNode)
 	{
@@ -109,6 +115,9 @@ bool SceneEditor2::Load(const DAVA::FilePath &path)
 
 		curScenePath = path;
 	}
+
+	structureSystem->Init();
+	structureSystem->UnlockSignals();
 
 	SceneSignals::Instance()->EmitLoaded(this);
 	return ret;
@@ -188,7 +197,7 @@ void SceneEditor2::Exec(Command2 *command)
 void SceneEditor2::Update(float timeElapsed)
 {
 	Scene::Update(timeElapsed);
-
+	debugSystem->Update(timeElapsed);
 	gridSystem->Update(timeElapsed);
 	cameraSystem->Update(timeElapsed);
 	collisionSystem->Update(timeElapsed);
@@ -205,6 +214,7 @@ void SceneEditor2::Update(float timeElapsed)
 
 void SceneEditor2::PostUIEvent(DAVA::UIEvent *event)
 {
+	debugSystem->ProcessUIEvent(event);
 	gridSystem->ProcessUIEvent(event);
 	cameraSystem->ProcessUIEvent(event);
 	collisionSystem->ProcessUIEvent(event);
@@ -226,7 +236,8 @@ void SceneEditor2::SetViewportRect(const DAVA::Rect &newViewportRect)
 void SceneEditor2::Draw()
 {
 	Scene::Draw();
-
+	
+	debugSystem->Draw();
 	gridSystem->Draw();
 	cameraSystem->Draw();
 	collisionSystem->Draw();
@@ -239,6 +250,7 @@ void SceneEditor2::Draw()
 
 void SceneEditor2::EditorCommandProcess(const Command2 *command, bool redo)
 {
+	debugSystem->PropeccCommand(command, redo);
 	gridSystem->PropeccCommand(command, redo);
 	cameraSystem->PropeccCommand(command, redo);
 	collisionSystem->PropeccCommand(command, redo);

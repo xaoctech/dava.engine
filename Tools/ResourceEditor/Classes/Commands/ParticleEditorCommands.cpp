@@ -112,6 +112,7 @@ void CommandUpdateParticleLayer::Init(const QString& layerName,
 									  bool isDisabled,
 									  bool additive,
 									  bool isLong,
+									  bool isLooped,
 									  Sprite* sprite,
 									  RefPtr< PropertyLine<float32> > life,
 									  RefPtr< PropertyLine<float32> > lifeVariation,
@@ -144,6 +145,7 @@ void CommandUpdateParticleLayer::Init(const QString& layerName,
 	this->layerType = layerType;
 	this->isDisabled = isDisabled;
 	this->additive = additive;
+	this->isLooped = isLooped;
 	this->isLong = isLong;
 	this->sprite = sprite;
 	this->life = life;
@@ -183,6 +185,7 @@ void CommandUpdateParticleLayer::Execute()
 	layer->SetDisabled(isDisabled);
 	layer->SetAdditive(additive);
 	layer->SetLong(isLong);
+	layer->SetLooped(isLooped);
 	layer->life = life;
 	layer->lifeVariation = lifeVariation;
 	layer->number = number;
@@ -322,6 +325,7 @@ CommandStartStopParticleEffect::CommandStartStopParticleEffect(bool isStart) :
     Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_START_STOP_PARTICLE_EFFECT)
 {
     this->isStart = isStart;
+	this->affectedEntity = NULL;
 }
 
 void CommandStartStopParticleEffect::Execute()
@@ -341,11 +345,26 @@ void CommandStartStopParticleEffect::Execute()
     {
         effectComponent->Stop();
     }
+	
+	this->affectedEntity = effectNode->GetRootNode();
+}
+
+DAVA::Set<DAVA::Entity*> CommandStartStopParticleEffect::GetAffectedEntities()
+{
+	if (!this->affectedEntity)
+	{
+		return Command::GetAffectedEntities();
+	}
+	
+	DAVA::Set<DAVA::Entity*> affectedEntities;
+	affectedEntities.insert(this->affectedEntity);
+	return affectedEntities;
 }
 
 CommandRestartParticleEffect::CommandRestartParticleEffect() :
     Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_RESTART_PARTICLE_EFFECT)
 {
+	this->affectedEntity = NULL;
 }
 
 void CommandRestartParticleEffect::Execute()
@@ -360,6 +379,20 @@ void CommandRestartParticleEffect::Execute()
 	ParticleEffectComponent * effectComponent = effectNode->GetParticleEffectComponent();
 	DVASSERT(effectComponent);
     effectComponent->Restart();
+	
+	this->affectedEntity = effectNode->GetRootNode();
+}
+
+DAVA::Set<DAVA::Entity*> CommandRestartParticleEffect::GetAffectedEntities()
+{
+	if (!this->affectedEntity)
+	{
+		return Command::GetAffectedEntities();
+	}
+	
+	DAVA::Set<DAVA::Entity*> affectedEntities;
+	affectedEntities.insert(this->affectedEntity);
+	return affectedEntities;
 }
 
 CommandAddParticleEmitterLayer::CommandAddParticleEmitterLayer() :

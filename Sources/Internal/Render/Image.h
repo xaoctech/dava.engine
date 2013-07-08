@@ -78,7 +78,7 @@ public:
 	static Image* CopyImageRegion(const Image* imageToCopy, const Rect& rect);
 
     // changes size of image canvas to square
-    void ResizeImageToSquare();
+    void ResizeToSquare();
 
 	/*
      //	void ConvertToFormat(PixelFormat format);

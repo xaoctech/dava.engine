@@ -631,7 +631,7 @@ TextureDescriptor * TexturePacker::CreateDescriptor(eGPUFamily forGPU)
     }
     else
     {
-        printf("WARNING: params for GPU %s were not set.\n", gpuNameFlag.c_str());
+        Logger::Warning("params for GPU %s were not set.\n", gpuNameFlag.c_str());
         
         descriptor->exportedAsGpuFamily = GPU_UNKNOWN;
     }

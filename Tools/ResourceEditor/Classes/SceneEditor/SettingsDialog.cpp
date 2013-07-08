@@ -54,7 +54,6 @@ SettingsDialog::SettingsDialog(const Rect & rect, SettingsDialogDelegate *newDel
     
     propertyList->AddIntProperty("settingsdialog.screenwidth", PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddIntProperty("settingsdialog.screenheight", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("settingsdialog.autosave", PropertyList::PROPERTY_IS_EDITABLE);
     languages.push_back("en");
     languages.push_back("ru");
     propertyList->AddComboProperty("settingsdialog.language", languages);
@@ -74,6 +73,8 @@ SettingsDialog::SettingsDialog(const Rect & rect, SettingsDialogDelegate *newDel
 	propertyList->AddBoolProperty("settingsdialog.imposters", PropertyList::PROPERTY_IS_EDITABLE);
 
 	propertyList->AddStringProperty("settingsdialog.designername", PropertyList::PROPERTY_IS_EDITABLE);
+    
+    propertyList->AddBoolProperty("Enable Preview at Library", PropertyList::PROPERTY_IS_EDITABLE);
 }
     
 SettingsDialog::~SettingsDialog()
@@ -107,7 +108,6 @@ void SettingsDialog::WillAppear()
 {
     propertyList->SetIntPropertyValue("settingsdialog.screenwidth", EditorSettings::Instance()->GetScreenWidth());
     propertyList->SetIntPropertyValue("settingsdialog.screenheight", EditorSettings::Instance()->GetScreenHeight());
-    propertyList->SetFloatPropertyValue("settingsdialog.autosave", EditorSettings::Instance()->GetAutosaveTime());
     
     String language = EditorSettings::Instance()->GetLanguage();
     int32 index = 0;
@@ -134,6 +134,8 @@ void SettingsDialog::WillAppear()
 	propertyList->SetBoolPropertyValue("settingsdialog.imposters", EditorSettings::Instance()->GetEnableImposters());
 	propertyList->SetStringPropertyValue("settingsdialog.designername", EditorSettings::Instance()->GetDesignerName());
     
+    propertyList->SetBoolPropertyValue("Enable Preview at Library", EditorSettings::Instance()->GetPreviewDialogEnabled());
+
     
     UIScreen *activeScreen = UIScreenManager::Instance()->GetScreen();
     if(activeScreen)
@@ -157,12 +159,7 @@ void SettingsDialog::OnStringPropertyChanged(PropertyList *, const String &forKe
 
 void SettingsDialog::OnFloatPropertyChanged(PropertyList *, const String &forKey, float newValue)
 {
-    if ("settingsdialog.autosave" == forKey) 
-    {
-        EditorSettings::Instance()->SetAutosaveTime(newValue);
-        EditorSettings::Instance()->Save();
-    }
-    else if("settingsdialog.cameraspeed1" == forKey)
+    if("settingsdialog.cameraspeed1" == forKey)
     {
         EditorSettings::Instance()->SetCameraSpeed(0, newValue);
         EditorSettings::Instance()->Save();
@@ -225,6 +222,11 @@ void SettingsDialog::OnBoolPropertyChanged(PropertyList *, const String &forKey,
 		EditorSettings::Instance()->SetEnableImposters(newValue);
 		EditorSettings::Instance()->Save();
 	}
+    else if("Enable Preview at Library" == forKey)
+    {
+		EditorSettings::Instance()->SetPreviewDialogEnabled(newValue);
+		EditorSettings::Instance()->Save();
+    }
 }
 
 void SettingsDialog::OnComboIndexChanged(PropertyList *, const String &forKey, int32 , const String &newItemKey)

@@ -55,6 +55,7 @@ namespace DAVA
 {
 
 	
+
 FileSystem::FileSystem()
 {
 }
@@ -370,56 +371,17 @@ const FilePath & FileSystem::GetCurrentWorkingDirectory()
 	return currentWorkingDirectory;
 }
 
-const FilePath & FileSystem::GetCurrentExecutableDirectory()
+FilePath FileSystem::GetCurrentExecutableDirectory()
 {
+    char tempDir[2048];
+    FilePath currentExecuteDirectory;
 #if defined(__DAVAENGINE_WIN32__)
-	TCHAR szFileName[MAX_PATH];
-	GetModuleFileName( NULL, szFileName, MAX_PATH );
-
-	TCHAR drive[FILENAME_MAX];
-	TCHAR folder[MAX_PATH];
-	TCHAR fName[FILENAME_MAX];
-	TCHAR ext[FILENAME_MAX];
-	_wsplitpath(szFileName, drive, folder, fName, ext);
-	
-	TCHAR currentDir[MAX_PATH];
-	_tcscpy( currentDir, drive );
-	_tcscat( currentDir, folder );
-	
-	currentExecuteDirectory = FilePath(WStringToString(WideString(currentDir)));
-	currentExecuteDirectory.MakeDirectoryPathname();
-	return currentExecuteDirectory;
-#elif defined(__DAVAENGINE_MACOS__) 
-	char tempDir[2048];
+    ::GetModuleFileNameA( NULL, tempDir, 2048 );
+    currentExecuteDirectory = FilePath(tempDir).GetDirectory();
+#elif defined(__DAVAENGINE_MACOS__)
     proc_pidpath(getpid(), tempDir, sizeof(tempDir));
-    
     currentExecuteDirectory = FilePath(dirname(tempDir));
-	currentExecuteDirectory.MakeDirectoryPathname();
-	return currentExecuteDirectory;
-#elif defined(__DAVAENGINE_IPHONE__)
-    pid_t pid = getpid();
-    int32 mib[3] = {CTL_KERN, KERN_ARGMAX, 0};
-    
-    size_t argmaxsize = sizeof(size_t);
-    size_t size;
-    
-    int32 ret = sysctl(mib, 2, &size, &argmaxsize, NULL, 0);
-    DVASSERT(ret == 0);
-
-    mib[1] = KERN_PROCARGS2;
-    mib[2] = (int32)pid;
-    
-    char *procargv = (char*)malloc(size);
-    ret = sysctl(mib, 3, procargv, &size, NULL, 0);
-        
-    DVASSERT(ret == 0);
-
-    currentExecuteDirectory = FilePath(dirname(procargv + sizeof(int32)));
-	currentExecuteDirectory.MakeDirectoryPathname();
-    free(procargv);
-	return currentExecuteDirectory;
-#elif defined(__DAVAENGINE_ANDROID__)
-	//unnecessary to find full path because of apk archive
+#elif defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 	DVASSERT(0);
 #endif //PLATFORMS
 	currentExecuteDirectory.MakeDirectoryPathname();
@@ -598,11 +560,35 @@ void FileSystem::AttachArchive(const String & archiveName, const String & attach
 
 int32 FileSystem::Spawn(const String& command)
 {
-#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__) 
-	return std::system(command.c_str());
-#else
-	return 0;
+	int32 retCode = 0;
+#if defined(__DAVAENGINE_MACOS__)
+	retCode = std::system(command.c_str());
+#elif defined(__DAVAENGINE_WIN32__) 
+
+	/* std::system calls "start" command from Windows command line
+	Start help:
+	Starts a separate window to run a specified program or command.
+
+	START ["title"] [/D path] [/I] [/MIN] [/MAX] [/SEPARATE | /SHARED]
+	[/LOW | /NORMAL | /HIGH | /REALTIME | /ABOVENORMAL | /BELOWNORMAL]
+	[/NODE <NUMA node>] [/AFFINITY <hex affinity mask>] [/WAIT] [/B]
+	[command/program] [parameters]
+
+	If we use "" for path to executable, start resolves it as title. So we need to specify call of start
+	http://stackoverflow.com/questions/5681055/how-do-i-start-a-windows-program-with-spaces-in-the-path-from-perl
+
+	*/
+
+ 	String startString = "start \"\" /WAIT " + command;
+	retCode = std::system(startString.c_str());
 #endif
+
+	if(retCode != 0)
+	{
+		Logger::Warning("[FileSystem::Spawn] command (%s) has return code (%d)", command.c_str(), retCode);
+	}
+
+	return retCode;
 }
 
 

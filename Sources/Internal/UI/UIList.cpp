@@ -668,6 +668,14 @@ UIControl *UIList::Clone()
 	return c;
 }
 
+void UIList::CopyDataFrom(UIControl *srcControl)
+{
+	UIControl::CopyDataFrom(srcControl);
+	UIList* t = (UIList*) srcControl;
+	InitAfterYaml();
+	aggregatorPath = t->aggregatorPath;
+}
+
 const FilePath & UIList::GetAggregatorPath()
 {
 	return aggregatorPath;
@@ -712,7 +720,7 @@ YamlNode * UIList::SaveToYamlNode(UIYamlLoader * loader)
 	// Save aggregator path only if it is not empty
 	if (!aggregatorPath.IsEmpty())
 	{
-		node->Set("aggregatorPath", aggregatorPath.GetAbsolutePathname());
+		node->Set("aggregatorPath", aggregatorPath.GetFrameworkPath());
 	}
     
 	return node;

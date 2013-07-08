@@ -41,9 +41,12 @@ class CommandStartStopParticleEffect: public Command
 {
 public:
 	CommandStartStopParticleEffect(bool isStart);
+	DAVA::Set<DAVA::Entity*> GetAffectedEntities();
     
 protected:
 	virtual void Execute();
+
+	DAVA::Entity* affectedEntity;
     bool isStart;
 };
 
@@ -51,9 +54,12 @@ class CommandRestartParticleEffect: public Command
 {
 public:
 	CommandRestartParticleEffect();
-    
+    DAVA::Set<DAVA::Entity*> GetAffectedEntities();
+	
 protected:
 	virtual void Execute();
+
+	DAVA::Entity* affectedEntity;
 };
 
 
@@ -166,6 +172,7 @@ public:
 			  bool isDisabled,
 			  bool additive,
   			  bool isLong,
+			  bool isLooped,
 			  Sprite* sprite,
 			  RefPtr< PropertyLine<float32> > life,
 			  RefPtr< PropertyLine<float32> > lifeVariation,
@@ -207,6 +214,7 @@ private:
 	bool isDisabled;
 	bool isLong;
 	bool additive;
+	bool isLooped;
 	Sprite* sprite;
 	RefPtr< PropertyLine<float32> > life;
 	RefPtr< PropertyLine<float32> > lifeVariation;

@@ -33,8 +33,8 @@
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/EditorBodyControl.h"
 #include "../SceneEditor/EditorConfig.h"
-#include "Classes/QT/SpritesPacker/SpritePackerHelper.h"
-#include "Classes/QT/QResourceEditorProgressDialog/QResourceEditorProgressDialog.h"
+#include "SpritesPacker/SpritePackerHelper.h"
+#include "Tools/QResourceEditorProgressDialog/QResourceEditorProgressDialog.h"
 
 #include <QApplication>
 #include <QPixmap>
@@ -80,7 +80,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	posSaver.LoadState(this);
 	
 	ui->dockParticleEditor->installEventFilter(this);
-	ChangeParticleDockVisible(false); //hide particle editor dock on start up
+	ChangeParticleDockVisible(false, true); //hide particle editor dock on start up
 	ui->dockParticleEditorTimeLine->hide();
 
 	// Open last project
@@ -138,6 +138,7 @@ void QtMainWindow::SetupActions()
 	connect(ui->actionRulerTool, SIGNAL(triggered()), actionHandler, SLOT(RulerTool()));
 	connect(ui->actionShowSettings, SIGNAL(triggered()), actionHandler, SLOT(ShowSettings()));
     connect(ui->actionSquareTextures, SIGNAL(triggered()), actionHandler, SLOT(SquareTextures()));
+    connect(ui->actionShowMipmapLevel, SIGNAL(triggered()), actionHandler, SLOT(ReplaceZeroMipmaps()));
     
 #if defined (__DAVAENGINE_MACOS__)
     ui->menuTools->removeAction(ui->actionBeast);
@@ -372,7 +373,11 @@ void QtMainWindow::OpenLastProject()
 void QtMainWindow::SetupDocks()
 {
     connect(ui->actionRefreshSceneGraph, SIGNAL(triggered()), QtMainWindowHandler::Instance(), SLOT(RefreshSceneGraph()));
-	connect(ui->dockParticleEditor->widget(), SIGNAL(ChangeVisible(bool)), this, SLOT(ChangeParticleDockVisible(bool)));
+	
+	// Yuri Coder. Automatic show/hide of the Particles Timeline
+	// is disabled due to DF-1421.
+	//connect(ui->dockParticleEditor->widget(), SIGNAL(ChangeVisible(bool)), this, SLOT(ChangeParticleDockVisible(bool)));
+
 	connect(ui->dockParticleEditorTimeLine->widget(), SIGNAL(ChangeVisible(bool)), this, SLOT(ChangeParticleDockTimeLineVisible(bool)));
 	connect(ui->dockParticleEditorTimeLine->widget(), SIGNAL(ValueChanged()), ui->dockParticleEditor->widget(), SLOT(OnUpdate()));
 	connect(ui->dockParticleEditor->widget(), SIGNAL(ValueChanged()), ui->dockParticleEditorTimeLine->widget(), SLOT(OnUpdate()));
@@ -383,9 +388,9 @@ void QtMainWindow::SetupDocks()
 	connect(this, SIGNAL(LibraryFileTypesChanged(bool, bool)), ui->libraryView, SLOT(LibraryFileTypesChanged(bool, bool)));
 }
 
-void QtMainWindow::ChangeParticleDockVisible(bool visible)
+void QtMainWindow::ChangeParticleDockVisible(bool visible, bool forceUpdate)
 {
-	if (ui->dockParticleEditor->isVisible() == visible)
+	if (!forceUpdate && (ui->dockParticleEditor->isVisible() == visible))
 		return;
 
 	// ui magic :)

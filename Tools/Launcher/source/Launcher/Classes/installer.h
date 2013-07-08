@@ -42,6 +42,7 @@ class AvailableSoftWare
 public:
     void Clear() {
         m_Stable.clear();
+        m_toMaster.clear();
         m_Test.clear();
         m_Development.clear();
         m_Dependencies.clear();
@@ -49,6 +50,7 @@ public:
 
     typedef QMap<QString, SoftWare> SoftWareMap;
     SoftWareMap m_Stable;
+    SoftWareMap m_toMaster;
     SoftWareMap m_Test;
     SoftWareMap m_Development;
     SoftWareMap m_Dependencies;
