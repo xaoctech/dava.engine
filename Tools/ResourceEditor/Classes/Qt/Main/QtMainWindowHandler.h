@@ -47,6 +47,7 @@ class QSpinBox;
 class QCheckBox;
 class QDoubleSpinBox;
 class SceneEditor2;
+class AddSwitchEntityDialog;
 
 class QtMainWindowHandler: public QObject, public DAVA::Singleton<QtMainWindowHandler>
 {
@@ -157,6 +158,7 @@ public slots:
     void ShowSettings();
     void Beast();
     void SquareTextures();
+    void ReplaceZeroMipmaps();
 
     //ViewOptions
     void MenuViewOptionsWillShow();
@@ -255,6 +257,7 @@ public slots:
 
     void CameraLightTrigerred();
 
+    void AddSwitchEntity();
     
 signals:
 	void ProjectChanged();
@@ -357,6 +360,8 @@ private:
 	QWidget *defaultFocusWidget;
     
     QStatusBar *statusBar;
+    
+    AddSwitchEntityDialog* addSwitchEntityDialog;
 };
 
 #endif // __QT_MAIN_WINDOW_HANDLER_H__

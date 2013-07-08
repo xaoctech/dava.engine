@@ -128,15 +128,6 @@ void EditorSettings::SetScreenHeight(int32 height)
     settings->SetInt32("ScreenHeight", height);
 }
 
-float32 EditorSettings::GetAutosaveTime()
-{
-    return settings->GetFloat("AutoSaveTime", 5.0f);
-}
-void EditorSettings::SetAutosaveTime(float32 time)
-{
-    settings->SetFloat("AutoSaveTime", time);
-}
-
 String EditorSettings::GetLanguage()
 {
     return settings->GetString("Language", "en");
@@ -315,5 +306,16 @@ void EditorSettings::SetShowEditorCamerLight(bool show)
 {
     settings->SetBool("ShowEditorCamerLight", show);
     Save();
+}
+
+void EditorSettings::SetPreviewDialogEnabled(bool enabled)
+{
+    settings->SetBool("PreviewDialogEnabled", enabled);
+	Save();
+}
+
+bool EditorSettings::GetPreviewDialogEnabled()
+{
+    return settings->GetBool("PreviewDialogEnabled", false);
 }
 

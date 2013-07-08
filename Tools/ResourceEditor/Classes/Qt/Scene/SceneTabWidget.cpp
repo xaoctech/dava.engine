@@ -35,7 +35,7 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	, curModifMode(ST_MODIF_MOVE)
 	, curPivotPoint(ST_PIVOT_COMMON_CENTER)
 	, curSelDrawMode(ST_SELDRAW_DRAW_CORNERS | ST_SELDRAW_FILL_SHAPE)
-	, curColDrawMode(ST_COLL_DRAW_LAND_COLLISION)
+	, curColDrawMode(ST_COLL_DRAW_NOTHING)
 {
 	this->setMouseTracking(true);
 
@@ -69,8 +69,9 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	/**/ SetTabScene(oldTabIndex, NULL);
 	// <--
 
-	OpenTab("/Projects/dava.wot.art/DataSource/3d/Tanks/USSR/T-44.sc2");
-	OpenTab("/Projects/dava.wot.art/DataSource/3d/Maps/dike_village/dike_village.sc2");
+//	OpenTab("/Users/a_makovii/Documents/work/temp/39/mountain/mountain_switch.sc2");
+	OpenTab("/Users/a_makovii/Documents/work/temp/desertTrain/desert_train/desert_train.sc2");
+	//OpenTab("/Projects/dava.wot.art/DataSource/3d/Maps/dike_village/dike_village.sc2");
 	//AddTab("/Projects/dava.wot.art/DataSource/3d/Maps/desert_train/desert_train.sc2");
 
 	QObject::connect(tabBar, SIGNAL(currentChanged(int)), this, SLOT(TabBarCurrentChanged(int)));

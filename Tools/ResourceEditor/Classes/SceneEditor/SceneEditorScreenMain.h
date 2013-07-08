@@ -137,14 +137,10 @@ public:
     void ProcessIsSolidChanging();
 
 	void ActivateLevelBodyItem();
-
+    
 private:
     
     void InitControls();
-    
-    
-    void AutoSaveLevel(BaseObject * obj, void *, void *);
-    void SetupAnimation();
     
     void AddLineControl(Rect r);
     
@@ -220,6 +216,14 @@ public: //For Qt integration
     void ProcessBeast();
     
     UIControl *focusedControl;
+    
+    //VK: Deprecated
+public:
+    void ShowScenePreview(const FilePath & scenePathname);
+    void HideScenePreview();
+private:
+    ScenePreviewDialog *scenePreviewDialog;
+
 };
 
 #endif // __SCENE_EDITOR_SCREEN_MAIN_H__

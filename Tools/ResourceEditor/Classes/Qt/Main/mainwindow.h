@@ -20,7 +20,7 @@
 #include <QMainWindow>
 #include <QProgressDialog>
 #include "Base/Singleton.h"
-#include "QtPosSaver/QtPosSaver.h"
+#include "Tools/QtPosSaver/QtPosSaver.h"
 #include "ui_mainwindow.h"
 
 class LibraryModel;
@@ -57,7 +57,7 @@ private:
 public slots:
 	void ShowActionWithText(QToolBar *toolbar, QAction *action, bool showText);
 
-	void ChangeParticleDockVisible(bool visible);
+	void ChangeParticleDockVisible(bool visible, bool forceUpdate = false);
 	void ChangeParticleDockTimeLineVisible(bool visible);
 	void returnToOldMaxMinSizesForDockSceneGraph();
 
