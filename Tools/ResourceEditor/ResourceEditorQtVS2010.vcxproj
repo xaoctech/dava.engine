@@ -688,6 +688,7 @@
     <ClCompile Include="_GeneratedQt\TextureBrowser\TextureList_moc.cpp" />
     <ClCompile Include="_GeneratedQt\TextureBrowser\TextureProperties_moc.cpp" />
     <ClCompile Include="_GeneratedQt\TextureBrowser\TextureScrollArea_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Tools\AddParticleEmitterDialog\AddParticleEmitterDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\AddSwitchEntityDialog\AddSwitchEntityDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\EventFilterDoubleSpinBox\EventFilterDoubleSpinBox_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QMimeDataHelper\QMimeDataHelper_moc.cpp" />
