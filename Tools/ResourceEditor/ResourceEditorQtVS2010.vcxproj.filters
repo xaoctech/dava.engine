@@ -1818,6 +1818,9 @@
     <ClCompile Include="Classes\Qt\Tools\AddParticleEmitterDialog\AddParticleEmitterDialog.cpp">
       <Filter>Classes\Qt\Tools\AddParticleEmitterDialog</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\DebugDrawSystem.cpp">
+      <Filter>Classes\Qt\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3181,6 +3184,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\AddParticleEmitterDialog\AddParticleEmitterDialog.h">
       <Filter>Classes\Qt\Tools\AddParticleEmitterDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\DebugDrawSystem.h">
+      <Filter>Classes\Qt\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

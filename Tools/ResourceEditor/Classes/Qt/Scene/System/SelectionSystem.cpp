@@ -148,15 +148,15 @@ void SceneSelectionSystem::Draw()
 			// draw selection share
 			else if(drawMode & ST_SELDRAW_DRAW_CORNERS)
 			{
-				DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 1.0f, 1.0f));
-				DAVA::RenderHelper::Instance()->DrawCornerBox(selectionBox);
+			//	DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 1.0f, 1.0f));
+			//	DAVA::RenderHelper::Instance()->DrawCornerBox(selectionBox);
 			}
 
 			// fill selection shape
 			if(drawMode & ST_SELDRAW_FILL_SHAPE)
 			{
-				DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 1.0f, 0.15f));
-				DAVA::RenderHelper::Instance()->FillBox(selectionBox);
+				//DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 1.0f, 0.15f));
+				//DAVA::RenderHelper::Instance()->FillBox(selectionBox);
 			}
 		}
 
