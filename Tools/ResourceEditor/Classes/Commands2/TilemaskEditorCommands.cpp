@@ -84,12 +84,12 @@ Sprite* ModifyTilemaskCommand::ApplyImageToTexture(DAVA::Image *image, DAVA::Tex
 	int32 width = texture->GetWidth();
 	int32 height = texture->GetHeight();
 
-	Sprite* resSprite = Sprite::CreateAsRenderTarget(width, height, FORMAT_RGBA8888);
+	Sprite* resSprite = Sprite::CreateAsRenderTarget((float32)width, (float32)height, FORMAT_RGBA8888);
 	RenderManager::Instance()->SetRenderTarget(resSprite);
 	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
 	RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
 
-	Sprite* s = Sprite::CreateFromTexture(texture, 0, 0, width, height);
+	Sprite* s = Sprite::CreateFromTexture(texture, 0, 0, (float32)width, (float32)height);
 	s->SetPosition(0.f, 0.f);
 	s->Draw();
 	SafeRelease(s);
@@ -100,7 +100,7 @@ Sprite* ModifyTilemaskCommand::ApplyImageToTexture(DAVA::Image *image, DAVA::Tex
 
 	Texture* t = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(),
 										 image->GetWidth(), image->GetHeight(), false);
-	s = Sprite::CreateFromTexture(t, 0, 0, t->GetWidth(), t->GetHeight());
+	s = Sprite::CreateFromTexture(t, 0, 0, (float32)t->GetWidth(), (float32)t->GetHeight());
 	s->SetPosition(updatedRect.x, updatedRect.y);
 	s->Draw();
 	SafeRelease(s);

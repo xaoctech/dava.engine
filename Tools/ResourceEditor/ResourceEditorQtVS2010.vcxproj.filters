@@ -1809,6 +1809,12 @@
     <ClCompile Include="Classes\Commands2\VisibilityToolActions.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\CustomLandscape.cpp">
+      <Filter>Classes\Qt\Scene\System\LandscapeEditorDrawSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands2\TilemaskEditorCommands.cpp">
+      <Filter>Classes\Commands2</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3192,6 +3198,12 @@
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands2\VisibilityToolActions.h">
+      <Filter>Classes\Commands2</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\CustomLandscape.h">
+      <Filter>Classes\Qt\Scene\System\LandscapeEditorDrawSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands2\TilemaskEditorCommands.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
   </ItemGroup>

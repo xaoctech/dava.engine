@@ -33,7 +33,7 @@
 #include "../SceneEditor2.h"
 #include "LandscapeEditorDrawSystem/HeightmapProxy.h"
 #include "LandscapeEditorDrawSystem/LandscapeProxy.h"
-#include "TilemaskEditorCommands.h"
+#include "Commands2/TilemaskEditorCommands.h"
 
 TilemaskEditorSystem::TilemaskEditorSystem(Scene* scene)
 :	SceneSystem(scene)

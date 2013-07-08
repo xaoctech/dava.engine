@@ -353,6 +353,7 @@
     <ClCompile Include="Classes\Commands2\EntityMoveCommand.cpp" />
     <ClCompile Include="Classes\Commands2\EntityRemoveCommand.cpp" />
     <ClCompile Include="Classes\Commands2\HeightmapEditorCommands2.cpp" />
+    <ClCompile Include="Classes\Commands2\TilemaskEditorCommands.cpp" />
     <ClCompile Include="Classes\Commands2\TransformCommand.cpp" />
     <ClCompile Include="Classes\Commands2\VisibilityToolActions.cpp" />
     <ClCompile Include="Classes\Commands\Command.cpp" />
@@ -484,6 +485,7 @@
     <ClCompile Include="Classes\Qt\Scene\System\HoodSystem\ScaleHood.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\CustomColorsProxy.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\CustomLandscape.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\HeightmapProxy.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\LandscapeProxy.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\NotPassableTerrainProxy.cpp" />
@@ -930,6 +932,7 @@
     <ClInclude Include="Classes\Commands2\EntityMoveCommand.h" />
     <ClInclude Include="Classes\Commands2\EntityRemoveCommand.h" />
     <ClInclude Include="Classes\Commands2\HeightmapEditorCommands2.h" />
+    <ClInclude Include="Classes\Commands2\TilemaskEditorCommands.h" />
     <ClInclude Include="Classes\Commands2\TransformCommand.h" />
     <ClInclude Include="Classes\Commands2\VisibilityToolActions.h" />
     <ClInclude Include="Classes\Commands\Command.h" />
@@ -1065,6 +1068,7 @@
     <ClInclude Include="Classes\Qt\Scene\System\HoodSystem\ScaleHood.h" />
     <ClInclude Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\CustomColorsProxy.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\CustomLandscape.h" />
     <ClInclude Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\HeightmapProxy.h" />
     <ClInclude Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\LandscapeProxy.h" />
     <ClInclude Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\NotPassableTerrainProxy.h" />
