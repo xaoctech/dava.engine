@@ -89,19 +89,6 @@ Texture* LandscapeProxy::GetLandscapeTexture(Landscape::eTextureLevel level)
 void LandscapeProxy::SetTilemaskTexture(Texture* texture)
 {
 	baseLandscape->SetTexture(Landscape::TEXTURE_TILE_MASK, texture);
-	if (mode == MODE_CUSTOM_LANDSCAPE)
-	{
-		UpdateDisplayedTexture();
-	}
-}
-
-void LandscapeProxy::SetFullTiledTexture(DAVA::Texture *texture)
-{
-	baseLandscape->SetTexture(Landscape::TEXTURE_TILE_FULL, texture);
-	if (mode == MODE_CUSTOM_LANDSCAPE)
-	{
-		UpdateDisplayedTexture();
-	}
 }
 
 void LandscapeProxy::SetTilemaskTextureEnabled(bool enabled)
@@ -293,7 +280,10 @@ void LandscapeProxy::UpdateFullTiledTexture(bool force)
 {
 	if (force || mode == MODE_CUSTOM_LANDSCAPE)
 	{
+		uint32 state = RenderManager::Instance()->GetState();
 		baseLandscape->UpdateFullTiledTexture();
+		RenderManager::Instance()->SetState(state);
+
 		UpdateDisplayedTexture();
 	}
 }
