@@ -234,13 +234,6 @@ public:
     static const List<FilePath> GetResourcesFolders();
     
     
-    /**
-        \brief Function to check if path is absolute
-        \returns true if path is absolute
-     */
-    bool IsAbsolutePathname() const;
-
-    
     bool Exists() const;
     
 protected:

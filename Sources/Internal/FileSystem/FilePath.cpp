@@ -652,7 +652,6 @@ String FilePath::AbsoluteToRelative(const FilePath &directoryPathname, const Fil
     if(absolutePathname.IsEmpty())
         return String();
 
-    DVASSERT(absolutePathname.IsAbsolutePathname());
     DVASSERT(directoryPathname.IsDirectoryPathname());
 
     Vector<String> folders;
@@ -690,11 +689,6 @@ String FilePath::AbsoluteToRelative(const FilePath &directoryPathname, const Fil
     }
     
     return (retPath + absolutePathname.GetFilename());
-}
-    
-bool FilePath::IsAbsolutePathname() const
-{
-    return IsAbsolutePathname(absolutePathname);
 }
     
     
