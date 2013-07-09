@@ -88,7 +88,7 @@ void ParticlesDebugDrawSystem::Draw()
 		
 		DAVA::float32 drawRadius = GetDebugDrawRadius(entity);
 				
-		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.3f, 0.3f, 0.3f, 0.15f));
+		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.1f, 0.1f, 0.1f, 0.35f));
 		DAVA::RenderHelper::Instance()->FillDodecahedron(center, drawRadius);		
 	}
 	
@@ -96,8 +96,6 @@ void ParticlesDebugDrawSystem::Draw()
 	SceneSelectionSystem *selectionSystem = ((SceneEditor2 *) GetScene())->selectionSystem;
 	if(selectionSystem != NULL)
 	{
-		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.7f, 0.0f, 0.0f, 0.25f));
-	
 		const EntityGroup *selectedEntities = selectionSystem->GetSelection();
 		
 		for (size_t i = 0; i < selectedEntities->Size(); i++)
@@ -117,6 +115,7 @@ void ParticlesDebugDrawSystem::Draw()
 				// Draw additional effects according to emitter type
 				if (emitter)
 				{
+					DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.7f, 0.0f, 0.0f, 0.25f));
 					switch (emitter->emitterType)
 					{
 						case DAVA::ParticleEmitter::EMITTER_ONCIRCLE:
@@ -127,21 +126,23 @@ void ParticlesDebugDrawSystem::Draw()
 							{
 								emitterRadius = emitter->radius->GetValue(emitter->GetLifeTime());
 							}
-							
 							DAVA::RenderHelper::Instance()->FillDodecahedron(center, emitterRadius);
 						}
+						break;
 					
 						case DAVA::ParticleEmitter::EMITTER_RECT:
 						{
 							DrawSizeBox(emitter, center);
 							DrawVectorArrow(emitter, center);
 						}
+						break;
 					
 						case DAVA::ParticleEmitter::EMITTER_POINT:
 						{
 							DrawVectorArrow(emitter, center);
 							DAVA::RenderHelper::Instance()->FillDodecahedron(center, 0.05f);
 						}
+						break;
 					} // switch
 				} // if
 			} // if
@@ -183,30 +184,38 @@ void ParticlesDebugDrawSystem::DrawSizeBox(DAVA::ParticleEmitter *emitter, DAVA:
 void ParticlesDebugDrawSystem::DrawVectorArrow(DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
 {
 	DAVA::Vector3 emitterVector;
+	DAVA::float32 arrowBaseSize = 5.0f;
 				
 	if (emitter->emissionVector)
 	{
 		emitterVector = emitter->emissionVector->GetValue(emitter->GetLifeTime());
 	}
 	
-	float scale = 1.0f;
+	DAVA::float32 scale = 1.0f;
 	// Get current scale from HoodSystem
 	HoodSystem *hoodSystem = ((SceneEditor2 *) GetScene())->hoodSystem;
 	if(hoodSystem != NULL)
 	{
-		scale = hoodSystem->GetScale() * 3;
+		scale = hoodSystem->GetScale();
 	}
 	
-	float arrowSize = fabs(emitterVector.x + emitterVector.y + emitterVector.z) / 3;
-	// Apply scale on emitter vector
-	emitterVector.x *= scale;
-	emitterVector.y *= scale;
-	emitterVector.z *= scale;
-	arrowSize *= scale;
-
-	emitterVector.x += center.x;
-	emitterVector.y += center.y;
-	emitterVector.z += center.z;
+	//DAVA::float32 coefx = Abs(arrowBaseSize / (emitterVector.x != 0 ? emitterVector.x : 1.0f));
+	//DAVA::float32 coefy = Abs(arrowBaseSize / (emitterVector.y != 0 ? emitterVector.y : 1.0f));
+	//DAVA::float32 coefz = Abs(arrowBaseSize / (emitterVector.z != 0 ? emitterVector.z : 1.0f));
+	
+	//DAVA::float32 coef = Max(coefx, coefy);
+	//coef = Max(coef, coefz);
+	//coef /= arrowBaseSize;
+	
+	//emitterVector = arrowBaseSize / emitterVector;
+	
+	emitterVector = (emitterVector * scale * arrowBaseSize) + center;
+	
+	//emitterVector = (emitterVector * arrowBaseSize * scale) + center;
+	
+	DAVA::float32 arrowSize = (arrowBaseSize * scale) / 6;
+	
+	//DAVA::RenderHelper::Instance()->DrawLine(center, emitterVector);
 	
 	DAVA::RenderHelper::Instance()->FillArrow(center, emitterVector, arrowSize, 1);
 }
