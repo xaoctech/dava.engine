@@ -78,7 +78,9 @@ public:
     
     void UpdateCameraLightOnScene(bool show);
     void UpdateCameraLightOnScene();
-    
+
+	void AddEditorEntity(Entity *editorEntity);
+
 protected:
     void SetForceLodLayerRecursive(Entity *node, int32 layer);
     
@@ -87,9 +89,6 @@ protected:
     void HideCameraLight();
     bool IsLightOnSceneRecursive(Entity *entity);
     
-    void AddEditorEntity(Entity *editorEntity);
-    
-
     btDefaultCollisionConfiguration* collisionConfiguration;
 	btCollisionDispatcher* dispatcher;
 	btAxisSweep3* broadphase;
