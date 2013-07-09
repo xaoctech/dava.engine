@@ -531,7 +531,7 @@
     <ClCompile Include="Classes\Qt\Tools\AddParticleEmitterDialog\AddParticleEmitterDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\AddSwitchEntityDialog\AddSwitchEntityDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\EventFilterDoubleSpinBox\EventFilterDoubleSpinBox.cpp" />
-    <ClCompile Include="Classes\Qt\Tools\QMimeDataHelper\QMimeDataHelper.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\MimeDataHelper\MimeDataHelper.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QResourceEditorProgressDialog\QResourceEditorProgressDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPosSaver\QtPosSaver.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData.cpp" />
@@ -1171,7 +1171,7 @@
     <ClInclude Include="Classes\Qt\Tools\AddParticleEmitterDialog\AddParticleEmitterDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\AddSwitchEntityDialog\AddSwitchEntityDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\EventFilterDoubleSpinBox\EventFilterDoubleSpinBox.h" />
-    <ClInclude Include="Classes\Qt\Tools\QMimeDataHelper\QMimeDataHelper.h" />
+    <ClInclude Include="Classes\Qt\Tools\MimeDataHelper\MimeDataHelper.h" />
     <ClInclude Include="Classes\Qt\Tools\QResourceEditorProgressDialog\QResourceEditorProgressDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPosSaver\QtPosSaver.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData.h" />

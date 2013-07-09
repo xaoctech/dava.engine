@@ -33,7 +33,7 @@ SceneTree::SceneTree(QWidget *parent /*= 0*/)
 	treeDelegate = new SceneTreeDelegate();
 	setItemDelegate(treeDelegate);
 
-	setDragDropMode(QAbstractItemView::InternalMove);
+	setDragDropMode(QAbstractItemView::DragDrop);
 	setDragEnabled(true);
 	setAcceptDrops(true);
 	setDropIndicatorShown(true);
