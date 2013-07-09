@@ -24,6 +24,7 @@
 
 #include "./Qt/SpritesPacker/SpritePackerHelper.h"
 #include "../Main/QtUtils.h"
+#include "../Main/QtMainWindowHandler.h"
 #include "../SceneEditor/EntityOwnerPropertyHelper.h"
 #include "../StringConstants.h"
 
@@ -303,6 +304,9 @@ void SceneDataManager::SetActiveScene(EditorScene *scene)
     currentScene = FindDataForScene(scene);
     DVASSERT(currentScene && "There is no current scene. Something wrong.");
     currentScene->RebuildSceneGraph();
+
+    
+    QtMainWindowHandler::Instance()->ShowStatusBarMessage(currentScene->GetScenePathname().GetAbsolutePathname());
 
 	emit SceneActivated(currentScene);
 }
