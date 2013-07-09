@@ -518,14 +518,21 @@ DAVA::Vector<DAVA::Image*> TextureConvertor::ConvertPVR(DAVA::TextureDescriptor 
 
 DAVA::Vector<DAVA::Image*> TextureConvertor::ConvertDXT(DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, bool forceConvert)
 {
-	DAVA::Image* image = NULL;
+	DAVA::Vector<DAVA::Image*> images;
 	DAVA::FilePath outputPath = DXTConverter::GetDXTOutput(*descriptor, gpu);
 	if(!outputPath.IsEmpty())
 	{
 		if(forceConvert || !DAVA::FileSystem::Instance()->IsFile(outputPath))
 		{
-			outputPath = DXTConverter::ConvertPngToDxt(*descriptor, gpu);
-
+			if(descriptor->IsCubeMap())
+			{
+				outputPath = DXTConverter::ConvertCubemapPngToDxt(*descriptor, gpu);
+			}
+			else
+			{
+				outputPath = DXTConverter::ConvertPngToDxt(*descriptor, gpu);
+			}
+			
 			bool wasUpdated = descriptor->UpdateCrcForFormat(gpu);
             if(wasUpdated)
             {
@@ -535,17 +542,20 @@ DAVA::Vector<DAVA::Image*> TextureConvertor::ConvertDXT(DAVA::TextureDescriptor 
 
 		Vector<DAVA::Image *> davaImages = DAVA::ImageLoader::CreateFromFile(outputPath);
 
-		if(davaImages.size() > 0)
+		for(int i = 0; i < davaImages.size(); ++i)
 		{
-			image = davaImages[0];
-			image->Retain();
+			Image* image = davaImages[i];
+			
+			if(0 == image->mipmapLevel)
+			{
+				image->Retain();
+				images.push_back(image);
+			}
 		}
 
 		for_each(davaImages.begin(), davaImages.end(),  DAVA::SafeRelease< DAVA::Image>);
 	}
 
-	DAVA::Vector<DAVA::Image*> images;
-	images.push_back(image);
 	return images;
 }
 

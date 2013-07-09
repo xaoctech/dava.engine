@@ -14,6 +14,7 @@ class DXTConverter
 public:
     
     static FilePath ConvertPngToDxt(const TextureDescriptor &descriptor, eGPUFamily gpuFamily);
+	static FilePath ConvertCubemapPngToDxt(const TextureDescriptor &descriptor, eGPUFamily gpuFamily);
     static FilePath GetDXTOutput(const TextureDescriptor &descriptor, eGPUFamily gpuFamily);
 };
     
