@@ -16,7 +16,7 @@
 
 #include "AddSwitchEntityDialog.h"
 #include "ui_AddSwitchEntityDialog.h"
-#include "./../Qt/Tools/QMimeDataHelper/QMimeDataHelper.h"
+#include "./../Qt/Tools/MimeDataHelper/MimeDataHelper.h"
 
 #include <QKeyEvent>
 
@@ -26,16 +26,44 @@ ui(new Ui::AddSwitchEntityDialog)
 {
 	ui->setupUi(this);
 	setAcceptDrops(false);
-	ui->FirstSelectionWidget->SetDiscriptionText("Select first entity:");
-	ui->SecondSelectionWidget->SetDiscriptionText("Select second entity:");
+	
+	setWindowFlags(windowFlags() | Qt::Tool );
+	setAttribute( Qt::WA_MacAlwaysShowToolWindow);
+	ui->firstSelectionWidget->SetDiscriptionText("Select first entity:");
+
+	ui->secondSelectionWidget->SetDiscriptionText("Select second entity:");
+
 }
 
-void AddSwitchEntityDialog::GetSlectedMimeData(QMimeData** firstChild, QMimeData** secondChild)
+void AddSwitchEntityDialog::SetRelativePath(const DAVA::String& rPath, bool forFirstWidget )
 {
-	*firstChild  = ui->FirstSelectionWidget->GetMimeData();
-	*secondChild = ui->SecondSelectionWidget->GetMimeData();
+	if(forFirstWidget)
+	{
+		ui->firstSelectionWidget->SetRelativePath(rPath);
+	}
+	else
+	{
+		ui->firstSelectionWidget->SetRelativePath(rPath);
+	}
 }
 
+void AddSwitchEntityDialog::SetOpenDialogsDefaultPath(const DAVA::String& path)
+{
+	ui->firstSelectionWidget->SetOpenDialogDefaultPath(path);
+	ui->secondSelectionWidget->SetOpenDialogDefaultPath(path);
+}
+
+void AddSwitchEntityDialog::GetSelectedEntities(DAVA::Entity** firstChild, DAVA::Entity** secondChild, SceneEditor2* editor)
+{
+	*firstChild  = ui->firstSelectionWidget->GetOutputEntity(editor);
+	*secondChild = ui->secondSelectionWidget->GetOutputEntity(editor);
+}
+
+void AddSwitchEntityDialog::ErasePathWidgets()
+{
+	ui->firstSelectionWidget->EraseWidget();
+	ui->secondSelectionWidget->EraseWidget();
+}
 
 AddSwitchEntityDialog::~AddSwitchEntityDialog()
 {

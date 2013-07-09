@@ -71,7 +71,7 @@
 #include "Render/LibDxtHelper.h"
 
 #include "./../Qt/Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
-#include "./../Qt/Tools/QMimeDataHelper/QMimeDataHelper.h"
+#include "./../Qt/Tools/MimeDataHelper/MimeDataHelper.h"
 #include "Commands2/AddSwitchEntityCommand.h"
 
 using namespace DAVA;
@@ -81,11 +81,10 @@ QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
 	,	menuResentScenes(NULL)
 	,	defaultFocusWidget(NULL)
     ,   statusBar(NULL)
-    ,   addSwitchEntityDialog(NULL)
 {
     new CommandsManager();
 	new TextureBrowser((QWidget *) parent);
-    
+
     ClearActions(ResourceEditor::NODE_COUNT, nodeActions);
     ClearActions(ResourceEditor::VIEWPORT_COUNT, viewportActions);
     ClearActions(ResourceEditor::HIDABLEWIDGET_COUNT, hidablewidgetActions);
@@ -108,6 +107,14 @@ QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
 			this,SLOT( OnEntityModified(DAVA::Scene* , CommandList::eCommandId , const DAVA::Set<DAVA::Entity*>& ) ));
     
     connect(this, SIGNAL(UpdateCameraLightOnScene(bool)), sceneDataManager, SLOT(UpdateCameraLightOnScene(bool)));
+
+	QWidget* parentWdget = (QWidget *) parent;
+#if defined (__DAVAENGINE_MACOS__)
+	//omg, due to https://bugreports.qt-project.org/browse/QTBUG-25493s
+	parentWdget = NULL;
+#endif
+	new AddSwitchEntityDialog(parentWdget);
+	connect(AddSwitchEntityDialog::Instance(), SIGNAL(accepted()), this, SLOT(AddSwitchEntity()));
 }
 
 QtMainWindowHandler::~QtMainWindowHandler()
@@ -127,6 +134,7 @@ QtMainWindowHandler::~QtMainWindowHandler()
 
 	TextureBrowser::Instance()->Release();
     CommandsManager::Instance()->Release();
+	AddSwitchEntityDialog::Instance()->Release();
 }
 
 void QtMainWindowHandler::ClearActions(int32 count, QAction **actions)
@@ -305,17 +313,18 @@ void QtMainWindowHandler::SaveToFolderWithChilds()
 
 void QtMainWindowHandler::CreateNode(ResourceEditor::eNodeType type)
 {
-	/*
 	if(type == ResourceEditor::NODE_SWITCH_NODE)
 	{
-		addSwitchEntityDialog = new AddSwitchEntityDialog();
-		connect(addSwitchEntityDialog, SIGNAL(accepted()), this, SLOT(AddSwitchEntity()));
-		addSwitchEntityDialog->setWindowFlags(Qt::WindowStaysOnTopHint);
-		addSwitchEntityDialog->show();
+		AddSwitchEntityDialog::Instance()->ErasePathWidgets();
+		AddSwitchEntityDialog::Instance()->SetOpenDialogsDefaultPath( EditorSettings::Instance()->GetDataSourcePath().GetAbsolutePathname());
+		AddSwitchEntityDialog::Instance()->show();
 		return;
-	}*/
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandCreateNode(type),
+	}
+	else
+	{
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandCreateNode(type),
 												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
+	}
 }
 
 void QtMainWindowHandler::Materials()
@@ -1949,24 +1958,18 @@ void QtMainWindowHandler::CameraLightTrigerred()
 
 void QtMainWindowHandler::AddSwitchEntity()
 {
-	QMimeData* firstChild = NULL;
-	QMimeData* secondChild = NULL;
-	addSwitchEntityDialog->GetSlectedMimeData(&firstChild, &secondChild);
-
 	SceneEditor2 *curSceneEditor = QtMainWindow::Instance()->GetUI()->sceneTabWidget->GetCurrentScene();
-	if(NULL != curSceneEditor && NULL != firstChild && NULL != secondChild)
+	if(NULL != curSceneEditor )
 	{
-		List<Entity*> firstChildEntities;
-		bool successFirst = QMimeDataHelper::ConvertQMimeData(firstChild, firstChildEntities);
-		List<Entity*> secondChildEntities;
-		bool successSecond = QMimeDataHelper::ConvertQMimeData(secondChild, secondChildEntities);
-		if(successSecond && successFirst)
+		Entity* firstChildEntity = NULL;
+		Entity* secondChildEntity = NULL;
+		AddSwitchEntityDialog::Instance()->GetSelectedEntities(&firstChildEntity, &secondChildEntity, curSceneEditor);
+
+		if(firstChildEntity && secondChildEntity)
 		{
-			curSceneEditor->Exec(new AddSwitchEntityCommand(*firstChildEntities.begin(), *secondChildEntities.begin(), curSceneEditor));
+			curSceneEditor->Exec(new AddSwitchEntityCommand(firstChildEntity, secondChildEntity, curSceneEditor));
 		}
 	}
-
-	delete addSwitchEntityDialog;
 }
 
 

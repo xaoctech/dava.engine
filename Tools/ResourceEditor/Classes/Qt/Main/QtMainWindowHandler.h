@@ -360,8 +360,7 @@ private:
 	QWidget *defaultFocusWidget;
     
     QStatusBar *statusBar;
-    
-    AddSwitchEntityDialog* addSwitchEntityDialog;
+
 };
 
 #endif // __QT_MAIN_WINDOW_HANDLER_H__
