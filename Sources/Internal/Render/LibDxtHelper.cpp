@@ -544,7 +544,7 @@ bool NvttHelper::DecompressAtc(const nvtt::Decompressor & dec, DDSInfo info, Pix
 	return res;
 }
 
-bool LibDxtHelper::WriteDdsFile(const FilePath & fileNameOriginal, int32 width, int32 height, uint8 * data, PixelFormat compressionFormat, bool generateMipmaps)
+bool LibDxtHelper::WriteDdsFile(const FilePath & fileNameOriginal, int32 width, int32 height, uint8 ** data, uint32 dataCount, PixelFormat compressionFormat, bool generateMipmaps)
 {
 	//creating tmp dds file, nvtt accept only filename.dds as input, because of this the last letter befor "." should be changed to "_".
 	if(!fileNameOriginal.IsEqualToExtension(".dds"))
@@ -557,12 +557,12 @@ bool LibDxtHelper::WriteDdsFile(const FilePath & fileNameOriginal, int32 width, 
 		compressionFormat == FORMAT_ATC_RGBA_EXPLICIT_ALPHA ||
 		compressionFormat == FORMAT_ATC_RGBA_INTERPOLATED_ALPHA)
 	{
-		return WriteAtcFile(fileNameOriginal, width, height, data, compressionFormat, generateMipmaps);
+		return WriteAtcFile(fileNameOriginal, width, height, data, dataCount, compressionFormat, generateMipmaps);
 	}
-	return WriteDxtFile(fileNameOriginal, width, height, data, compressionFormat, generateMipmaps);
+	return WriteDxtFile(fileNameOriginal, width, height, data, dataCount, compressionFormat, generateMipmaps);
 }
 
-bool LibDxtHelper::WriteDxtFile(const FilePath & fileNameOriginal, int32 width, int32 height, uint8 * data, PixelFormat compressionFormat, bool generateMipmaps)
+bool LibDxtHelper::WriteDxtFile(const FilePath & fileNameOriginal, int32 width, int32 height, uint8 ** data, uint32 dataCount, PixelFormat compressionFormat, bool generateMipmaps)
 {
 	if(!( (compressionFormat >= FORMAT_DXT1 && compressionFormat <= FORMAT_DXT5NM)|| (compressionFormat == FORMAT_RGBA8888)) )
 	{
@@ -578,13 +578,20 @@ bool LibDxtHelper::WriteDxtFile(const FilePath & fileNameOriginal, int32 width, 
 	}
     
 	uint32 imgDataSize = width * height * Texture::GetPixelFormatSizeInBytes(FORMAT_RGBA8888);
-	NvttHelper::SwapBRChannels(data, imgDataSize);
+	for(uint32 i = 0; i < dataCount; ++i)
+	{
+		NvttHelper::SwapBRChannels(data[i], imgDataSize);
+	}
 
+	nvtt::TextureType textureType = (dataCount > 1) ? nvtt::TextureType_Cube : nvtt::TextureType_2D;
 	InputOptions inputOptions;
-	inputOptions.setTextureLayout(TextureType_2D, width, height);
+	inputOptions.setTextureLayout(textureType, width, height);
     inputOptions.setMipmapGeneration(generateMipmaps);
-    inputOptions.setMipmapData(data, width, height);
-
+	
+	for(uint32 i = 0; i < dataCount; ++i)
+	{
+		inputOptions.setMipmapData(data[i], width, height, 1, i);
+	}
 
 	CompressionOptions compressionOptions;
 	compressionOptions.setFormat(innerComprFormat);
@@ -621,7 +628,7 @@ bool LibDxtHelper::WriteDxtFile(const FilePath & fileNameOriginal, int32 width, 
 	return ret;
 }
 
-bool LibDxtHelper::WriteAtcFile(const FilePath & fileNameOriginal, int32 width, int32 height, uint8 * data, PixelFormat compressionFormat, bool generateMipmaps)
+bool LibDxtHelper::WriteAtcFile(const FilePath & fileNameOriginal, int32 width, int32 height, uint8 ** data, uint32 dataCount, PixelFormat compressionFormat, bool generateMipmaps)
 {
 	const int32 minSize = 0;
 	
@@ -632,72 +639,98 @@ bool LibDxtHelper::WriteAtcFile(const FilePath & fileNameOriginal, int32 width, 
 		Logger::Error("[LibDxtHelper::WriteAtcFile] Wrong copression format (%d).", compressionFormat);
 		return false;
 	}
-
-	TQonvertImage srcImg = {0};
 	
-	srcImg.nWidth = width;
-	srcImg.nHeight = height;
-	srcImg.nFormat = Q_FORMAT_RGBA_8888;
-	srcImg.nDataSize = width * height * 4;
-	srcImg.pData = data;
+	//VI: calculate image buffer size
 	
 	int32 bufSize = 0;
-	std::map<int32, int32> mipSize;
-	int32 baseWidth = width;
-	int32 baseHeight = height;
-	do
-	{
-		TQonvertImage dstImg = {0};
-		dstImg.nWidth = baseWidth;
-		dstImg.nHeight = baseHeight;
-		dstImg.nFormat = QualcommHeler::GetQualcommFormat(compressionFormat);
-		dstImg.nDataSize = 0;
-		dstImg.pData = NULL;
-		
-		if (Qonvert(&srcImg, &dstImg) != Q_SUCCESS || dstImg.nDataSize == 0)
-		{
-			Logger::Error("[LibDxtHelper::WriteAtcFile] Error converting (%s).", fileNameOriginal.GetAbsolutePathname().c_str());
-			return false;
-		}
-		bufSize += dstImg.nDataSize;
-		mipSize[baseWidth] = dstImg.nDataSize;
-		
-		baseWidth = baseWidth >> 1;
-		baseHeight = baseHeight >> 1;
-	}while(generateMipmaps && baseWidth > minSize && baseHeight > minSize);
+	std::map<int32, int32>* mipSize = new std::map<int32, int32>[dataCount];
+	int32 baseWidth = 0;
+	int32 baseHeight = 0;
 	
+	for(uint32 i = 0; i < dataCount; ++i)
+	{
+		TQonvertImage srcImg = {0};
+		
+		srcImg.nWidth = width;
+		srcImg.nHeight = height;
+		srcImg.nFormat = Q_FORMAT_RGBA_8888;
+		srcImg.nDataSize = width * height * 4;
+		srcImg.pData = data[i];
+		
+		baseWidth = width;
+		baseHeight = height;
+		
+		do
+		{
+			TQonvertImage dstImg = {0};
+			dstImg.nWidth = baseWidth;
+			dstImg.nHeight = baseHeight;
+			dstImg.nFormat = QualcommHeler::GetQualcommFormat(compressionFormat);
+			dstImg.nDataSize = 0;
+			dstImg.pData = NULL;
+			
+			if (Qonvert(&srcImg, &dstImg) != Q_SUCCESS || dstImg.nDataSize == 0)
+			{
+				Logger::Error("[LibDxtHelper::WriteAtcFile] Error converting (%s).", fileNameOriginal.GetAbsolutePathname().c_str());
+				SafeDeleteArray(mipSize);
+				return false;
+			}
+			bufSize += dstImg.nDataSize;
+			mipSize[i][baseWidth] = dstImg.nDataSize;
+			
+			baseWidth = baseWidth >> 1;
+			baseHeight = baseHeight >> 1;
+		}
+		while(generateMipmaps && baseWidth > minSize && baseHeight > minSize);
+	}
+	
+	//VI: convert faces
 	unsigned char* buffer = new unsigned char[bufSize];
 	unsigned char* tmpBuffer = buffer;
 
-	baseWidth = width;
-	baseHeight = height;
-	do
+	for(uint32 i = 0; i < dataCount; ++i)
 	{
-		TQonvertImage dstImg = {0};
-		dstImg.nWidth = baseWidth;
-		dstImg.nHeight = baseHeight;
-		dstImg.nFormat = QualcommHeler::GetQualcommFormat(compressionFormat);
-		dstImg.nDataSize = mipSize[baseWidth];
-		dstImg.pData = tmpBuffer;
-		tmpBuffer += dstImg.nDataSize;
+		baseWidth = width;
+		baseHeight = height;
 		
-		if (Qonvert(&srcImg, &dstImg) != Q_SUCCESS || dstImg.nDataSize == 0)
-		{
-			Logger::Error("[LibDxtHelper::WriteAtcFile] Error converting (%s).", fileNameOriginal.GetAbsolutePathname().c_str());
-			SafeDeleteArray(buffer);
-			return false;
-		}
+		TQonvertImage srcImg = {0};
 		
-		baseWidth = baseWidth >> 1;
-		baseHeight = baseHeight >> 1;
-	}while(generateMipmaps && baseWidth > minSize && baseHeight > minSize);
+		srcImg.nWidth = width;
+		srcImg.nHeight = height;
+		srcImg.nFormat = Q_FORMAT_RGBA_8888;
+		srcImg.nDataSize = width * height * 4;
+		srcImg.pData = data[i];
 
+		do
+		{
+			TQonvertImage dstImg = {0};
+			dstImg.nWidth = baseWidth;
+			dstImg.nHeight = baseHeight;
+			dstImg.nFormat = QualcommHeler::GetQualcommFormat(compressionFormat);
+			dstImg.nDataSize = mipSize[i][baseWidth];
+			dstImg.pData = tmpBuffer;
+			tmpBuffer += dstImg.nDataSize;
+			
+			if (Qonvert(&srcImg, &dstImg) != Q_SUCCESS || dstImg.nDataSize == 0)
+			{
+				Logger::Error("[LibDxtHelper::WriteAtcFile] Error converting (%s).", fileNameOriginal.GetAbsolutePathname().c_str());
+				SafeDeleteArray(buffer);
+				SafeDeleteArray(mipSize);
+				return false;
+			}
+			
+			baseWidth = baseWidth >> 1;
+			baseHeight = baseHeight >> 1;
+		}
+		while(generateMipmaps && baseWidth > minSize && baseHeight > minSize);
+	}
 	
 	nvtt::Format innerComprFormat = NvttHelper::GetNVTTFormatByPixelFormat(compressionFormat);
 	
+	nvtt::TextureType textureType = (dataCount > 1) ? nvtt::TextureType_Cube : nvtt::TextureType_2D;
 	InputOptions inputOptions;
-	inputOptions.setTextureLayout(TextureType_2D, width, height);
-    inputOptions.setMipmapGeneration(generateMipmaps, mipSize.size() - 1);
+	inputOptions.setTextureLayout(textureType, width, height);
+    inputOptions.setMipmapGeneration(generateMipmaps, mipSize[0].size() - 1);
 	
 	CompressionOptions compressionOptions;
 	compressionOptions.setFormat(innerComprFormat);
@@ -707,12 +740,8 @@ bool LibDxtHelper::WriteAtcFile(const FilePath & fileNameOriginal, int32 width, 
 	unsigned char header[DECOMPRESSOR_MIN_HEADER_SIZE];
 	headerSize = decompress.getHeader(header, headerSize, inputOptions, compressionOptions);
 	
-	OutputOptions outputOptions;
 	FilePath fileName =	FilePath::CreateWithNewExtension(fileNameOriginal, "_dds");
-	outputOptions.setFileName(fileName.GetAbsolutePathname().c_str());
-
 	bool res = false;
-	Compressor compressor;
 	File *file = File::Create(fileName, File::CREATE | File::WRITE);
 	if (file)
 	{
@@ -729,6 +758,7 @@ bool LibDxtHelper::WriteAtcFile(const FilePath & fileNameOriginal, int32 width, 
 		Logger::Error("[LibDxtHelper::WriteDxtFile] Temporary dds file renamig failed.");
 	}
 
+	SafeDeleteArray(mipSize);
 	SafeDeleteArray(buffer);
 	return res;
 }
