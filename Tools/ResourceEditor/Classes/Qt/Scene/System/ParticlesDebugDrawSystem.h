@@ -43,7 +43,7 @@ protected:
 private:
 	DAVA::Vector<DAVA::Entity*> entities;
 	
-	double GetDebugDrawRadius(DAVA::Entity* parentEntity);
+	DAVA::float32 GetDebugDrawRadius(DAVA::Entity* parentEntity);
 	
 	void DrawSizeBox(DAVA::ParticleEmitter *emitter, DAVA::Vector3 center);
 	void DrawVectorArrow(DAVA::ParticleEmitter *emitter, DAVA::Vector3 center);

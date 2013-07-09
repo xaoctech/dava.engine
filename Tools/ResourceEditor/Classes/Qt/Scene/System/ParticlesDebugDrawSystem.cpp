@@ -51,10 +51,10 @@ void ParticlesDebugDrawSystem::ProcessUIEvent(DAVA::UIEvent *event)
 
 }
 
-double ParticlesDebugDrawSystem::GetDebugDrawRadius(DAVA::Entity* parentEntity)
+DAVA::float32 ParticlesDebugDrawSystem::GetDebugDrawRadius(DAVA::Entity* parentEntity)
 {
-	double drawRadius = 0.1f;
-	double currentMax = 0.0f;
+	DAVA::float32 drawRadius = 0.1f;
+	DAVA::float32 currentMax = 0.0f;
 	SceneCollisionSystem *collisionSystem = ((SceneEditor2 *) GetScene())->collisionSystem;
 	
 	if (collisionSystem)
@@ -64,12 +64,12 @@ double ParticlesDebugDrawSystem::GetDebugDrawRadius(DAVA::Entity* parentEntity)
 			DAVA::Entity *entity = parentEntity->GetChild(i);
 			DAVA::AABBox3 entityBox = collisionSystem->GetBoundingBox(entity);
 			
-			currentMax = Max(currentMax, fabs(entityBox.max.x));
-			currentMax = Max(currentMax, fabs(entityBox.max.y));
-			currentMax = Max(currentMax, fabs(entityBox.max.z));
-			currentMax = Max(currentMax, fabs(entityBox.min.x));
-			currentMax = Max(currentMax, fabs(entityBox.min.y));
-			currentMax = Max(currentMax, fabs(entityBox.min.z));
+			currentMax = Max(currentMax, Abs(entityBox.max.x));
+			currentMax = Max(currentMax, Abs(entityBox.max.y));
+			currentMax = Max(currentMax, Abs(entityBox.max.z));
+			currentMax = Max(currentMax, Abs(entityBox.min.x));
+			currentMax = Max(currentMax, Abs(entityBox.min.y));
+			currentMax = Max(currentMax, Abs(entityBox.min.z));
 		}
 	}
 	
@@ -86,7 +86,7 @@ void ParticlesDebugDrawSystem::Draw()
 		DAVA::AABBox3 box = entity->GetWTMaximumBoundingBoxSlow();		
 		DAVA::Vector3 center = box.GetCenter();
 		
-		double drawRadius = GetDebugDrawRadius(entity);
+		DAVA::float32 drawRadius = GetDebugDrawRadius(entity);
 				
 		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.3f, 0.3f, 0.3f, 0.15f));
 		DAVA::RenderHelper::Instance()->FillDodecahedron(center, drawRadius);		

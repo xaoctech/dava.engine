@@ -1833,9 +1833,6 @@
     <ClCompile Include="Classes\Qt\Tools\AddParticleEmitterDialog\AddParticleEmitterDialog.cpp">
       <Filter>Classes\Qt\Tools\AddParticleEmitterDialog</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Scene\System\DebugDrawSystem.cpp">
-      <Filter>Classes\Qt\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="_GeneratedQt\Tools\AddParticleEmitterDialog\AddParticleEmitterDialog_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
@@ -1907,6 +1904,9 @@
     </ClCompile>
     <ClCompile Include="_GeneratedQt\DockVisibilityToolEditor\VisibilityToolPropertiesView_moc.cpp">
       <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\ParticlesDebugDrawSystem.cpp">
+      <Filter>Classes\Qt\Scene\System</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -3272,9 +3272,6 @@
     <ClInclude Include="Classes\Qt\Tools\AddParticleEmitterDialog\AddParticleEmitterDialog.h">
       <Filter>Classes\Qt\Tools\AddParticleEmitterDialog</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Scene\System\DebugDrawSystem.h">
-      <Filter>Classes\Qt\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands2\CustomColorsCommands2.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
@@ -3343,6 +3340,9 @@
     </ClInclude>
     <ClInclude Include="_GeneratedQt\ui_heightmapEditorProperties.h">
       <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\ParticlesDebugDrawSystem.h">
+      <Filter>Classes\Qt\Scene\System</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
