@@ -308,14 +308,20 @@ void ResourcePacker2D::ProcessFlags(const FilePath & flagsPathname)
 	{
 		Logger::Error("Failed to open file: %s", flagsPathname.GetAbsolutePathname().c_str());
 	}
-	char flagsTmpBuffer[4096];
+	char flagsTmpBuffer[4096] = {0};
 	int flagsSize = 0;
 	while(!file->IsEof())
 	{
-		char c;
+		char c = 0x00;
 		int32 readSize = file->Read(&c, 1);
 		if (readSize == 1)
 		{
+			// Terminate reading if end-of-line is detected.
+			if (c == 0x0D || c == 0x0A)
+			{
+				break;
+			}
+
 			flagsTmpBuffer[flagsSize++] = c;
 		}	
 	}
