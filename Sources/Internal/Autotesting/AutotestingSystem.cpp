@@ -352,10 +352,15 @@ void AutotestingSystem::ClearTestInDB()
 
 KeyedArchive *AutotestingSystem::FindOrInsertRunArchive(MongodbUpdateObject* dbUpdateObject, const String &auxArg)
 {
-	String testsName = Format("%u_%s", testsDate, device.c_str());
+	String testsName = NULL;
+
 	if (auxArg.length() != 0)
 	{
-		testsName = Format("%s_%s", testsName.c_str(), auxArg.c_str());
+		testsName = Format("%u_%s", testsDate, auxArg.c_str());
+	}
+	else
+	{
+		testsName = Format("%u_%s_%s_%s", testsDate, AUTOTESTING_PLATFORM_NAME, device.c_str(), groupName.c_str());
 	}
 
 	KeyedArchive* dbUpdateData;
