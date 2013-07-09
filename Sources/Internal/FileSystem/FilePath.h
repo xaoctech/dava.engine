@@ -49,7 +49,7 @@ public:
     FilePath(const String & directory, const String & filename);
     FilePath(const char *directory, const String & filename);
 
-	virtual ~FilePath();
+	~FilePath();
 
     /**
         \brief Function to retrieve FilePath with new extension without changing of source FilePath object
