@@ -63,7 +63,7 @@ bool SceneExporterTool::InitializeFromCommandLine()
     gpu = CommandLineParser::GetCommandParam(String("-gpu"));
     if(gpu.empty())
     {
-        errors.insert("Format for export is not set");
+        errors.insert("GPU for export is not set");
         return false;
     }
     
