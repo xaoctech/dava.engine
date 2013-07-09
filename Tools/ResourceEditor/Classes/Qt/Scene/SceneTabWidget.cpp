@@ -70,10 +70,11 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	// <--
 
 //	OpenTab("/Users/a_makovii/Documents/work/temp/39/mountain/mountain_switch.sc2");
-	OpenTab("/Users/a_makovii/Documents/work/temp/desertTrain/desert_train/desert_train.sc2");
+	//OpenTab("/Users/a_makovii/Documents/work/temp/desertTrain/desert_train/desert_train.sc2");
 	//OpenTab("/Projects/dava.wot.art/DataSource/3d/Maps/dike_village/dike_village.sc2");
 	//AddTab("/Projects/dava.wot.art/DataSource/3d/Maps/desert_train/desert_train.sc2");
-
+	//OpenTab("/Users/denisbespalov/Desktop/Test/DataSource/3d/FX/1.sc2");
+	OpenTab("/Users/denisbespalov/Desktop/Test2/DataSource/3d/FX/test2.sc2");
 	QObject::connect(tabBar, SIGNAL(currentChanged(int)), this, SLOT(TabBarCurrentChanged(int)));
 	QObject::connect(tabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(TabBarCloseRequest(int)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(MouseOverSelection(SceneEditor2*, const EntityGroup*)), this, SLOT(MouseOverSelectedEntities(SceneEditor2*, const EntityGroup*)));

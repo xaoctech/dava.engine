@@ -427,7 +427,7 @@
 		629E220A177C8B9C007C820F /* AddSwitchEntityCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 629E2208177C8B9B007C820F /* AddSwitchEntityCommand.cpp */; };
 		62A4F1F11781A6CF00D79B26 /* QMimeDataHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62A4F1EF1781A6CF00D79B26 /* QMimeDataHelper.cpp */; };
 		748E55931761D5EB000E24FF /* ParticlesEditorNodeNameHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 748E55911761D5EB000E24FF /* ParticlesEditorNodeNameHelper.cpp */; };
-		749EDAE61781C31A00539BF1 /* DebugDrawSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 749EDAE41781C31900539BF1 /* DebugDrawSystem.cpp */; };
+		74FE1CE5178B117500693D15 /* ParticlesDebugDrawSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74FE1CE3178B117300693D15 /* ParticlesDebugDrawSystem.cpp */; };
 		77BDEC8E56A833D3814BC614 /* QtNetwork.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 82153068A36B6EA46DD82A06 /* QtNetwork.framework */; };
 		77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 336CB11D929F5E35FA69020F /* Cocoa.framework */; };
 		8417040216CBCEAD00F1023D /* SpritePackerHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8417040016CBCEAD00F1023D /* SpritePackerHelper.cpp */; };
@@ -1413,8 +1413,8 @@
 		748E55911761D5EB000E24FF /* ParticlesEditorNodeNameHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticlesEditorNodeNameHelper.cpp; sourceTree = "<group>"; };
 		748E55921761D5EB000E24FF /* ParticlesEditorNodeNameHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticlesEditorNodeNameHelper.h; sourceTree = "<group>"; };
 		7496CE1D1766058D0090AC05 /* StringConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StringConstants.h; path = Classes/StringConstants.h; sourceTree = "<group>"; };
-		749EDAE41781C31900539BF1 /* DebugDrawSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DebugDrawSystem.cpp; sourceTree = "<group>"; };
-		749EDAE51781C31900539BF1 /* DebugDrawSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugDrawSystem.h; sourceTree = "<group>"; };
+		74FE1CE3178B117300693D15 /* ParticlesDebugDrawSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticlesDebugDrawSystem.cpp; sourceTree = "<group>"; };
+		74FE1CE4178B117400693D15 /* ParticlesDebugDrawSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticlesDebugDrawSystem.h; sourceTree = "<group>"; };
 		8157E7438190A1EEF4A4D363 /* mongodb_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mongodb_macos; path = ../../Libs/libs/libmongodb_macos.a; sourceTree = "<group>"; };
 		8159B90213E2E13CB65C75B4 /* vorbis_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbis_macos; path = ../../Libs/oggvorbis/lib/libvorbis_macos.a; sourceTree = "<group>"; };
 		81BBDA0F1849B4A35FAB7D00 /* freetype_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = freetype_macos; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
@@ -2296,8 +2296,8 @@
 				E8C4C64C17294079004B0B3B /* ModifSystem.h */,
 				E8C4C64D17294079004B0B3B /* SelectionSystem.cpp */,
 				E8C4C64E17294079004B0B3B /* SelectionSystem.h */,
-				749EDAE41781C31900539BF1 /* DebugDrawSystem.cpp */,
-				749EDAE51781C31900539BF1 /* DebugDrawSystem.h */,
+				74FE1CE3178B117300693D15 /* ParticlesDebugDrawSystem.cpp */,
+				74FE1CE4178B117400693D15 /* ParticlesDebugDrawSystem.h */,
 			);
 			path = System;
 			sourceTree = "<group>";
@@ -4346,7 +4346,7 @@
 				4FAD0D401785EC6E00B05A35 /* QtPropertyDataIntrospection_moc.cpp in Build Sources */,
 				4FAD0D411785EC6E00B05A35 /* QtPropertyDataMetaObject_moc.cpp in Build Sources */,
 				4FAD0D421785EC6E00B05A35 /* SelectPathWidget_moc.cpp in Build Sources */,
-				749EDAE61781C31A00539BF1 /* DebugDrawSystem.cpp in Build Sources */,
+				74FE1CE5178B117500693D15 /* ParticlesDebugDrawSystem.cpp in Build Sources */,
 				499E4A79178ABDD20067FA56 /* CustomColorsSystem.cpp in Build Sources */,
 				499E4A7A178ABDD20067FA56 /* HeightmapEditorSystem.cpp in Build Sources */,
 				499E4A7B178ABDD20067FA56 /* LandscapeEditorDrawSystem.cpp in Build Sources */,

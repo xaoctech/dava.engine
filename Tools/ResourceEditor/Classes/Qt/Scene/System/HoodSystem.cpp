@@ -129,6 +129,11 @@ void HoodSystem::SetScale(DAVA::float32 scale)
 	}
 }
 
+DAVA::float32 HoodSystem::GetScale() const
+{
+	return curScale;
+}
+
 void HoodSystem::SetModifMode(ST_ModifMode mode)
 {
 	if(curMode != mode)

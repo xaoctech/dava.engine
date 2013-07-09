@@ -14,21 +14,21 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __DEBUG_DRAW_SYSTEM_H__
-#define __DEBUG_DRAW_SYSTEM_H__
+#ifndef __PARTICLES_DEBUG_DRAW_SYSTEM_H__
+#define __PARTICLES_DEBUG_DRAW_SYSTEM_H__
 
 #include "Commands2/Command2.h"
 
 #include "Entity/SceneSystem.h"
 #include "UI/UIEvent.h"
 
-class DebugDrawSystem : public DAVA::SceneSystem
+class ParticlesDebugDrawSystem : public DAVA::SceneSystem
 {
 	friend class SceneEditor2;
 
 public:
-	DebugDrawSystem(DAVA::Scene * scene);
-	~DebugDrawSystem();
+	ParticlesDebugDrawSystem(DAVA::Scene * scene);
+	~ParticlesDebugDrawSystem();
 
 protected:
 	void Update(DAVA::float32 timeElapsed);
@@ -42,7 +42,14 @@ protected:
 	
 private:
 	DAVA::Vector<DAVA::Entity*> entities;
+	
+	double GetDebugDrawRadius(DAVA::Entity* parentEntity);
+	
+	void DrawSizeBox(DAVA::ParticleEmitter *emitter, DAVA::Vector3 center);
+	void DrawVectorArrow(DAVA::ParticleEmitter *emitter, DAVA::Vector3 center);
+	
 };
 
 
-#endif /* defined(__DEBUG_DRAW_SYSTEM_H__) */
+#endif /* defined(__PARTICLES_DEBUG_DRAW_SYSTEM_H__) */
+
