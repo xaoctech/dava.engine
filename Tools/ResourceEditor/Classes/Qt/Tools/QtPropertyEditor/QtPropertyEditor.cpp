@@ -94,7 +94,7 @@ int QtPropertyEditor::GetRefreshTimeout()
 
 void QtPropertyEditor::drawRow(QPainter * painter, const QStyleOptionViewItem &option, const QModelIndex & index) const
 {
-	QColor gridColor = option.palette.color(QPalette::Normal, QPalette::Dark);
+	QColor gridColor = option.palette.color(QPalette::Normal, QPalette::Window);
 
 	// draw horizontal bottom line
 	painter->setPen(gridColor);
