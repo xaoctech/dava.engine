@@ -9,30 +9,30 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>300</height>
+    <width>525</width>
+    <height>230</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>600</width>
-    <height>300</height>
+    <width>525</width>
+    <height>230</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>600</width>
-    <height>300</height>
+    <width>525</width>
+    <height>230</height>
    </size>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Add switch entity dialog</string>
   </property>
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>
-     <x>170</x>
-     <y>240</y>
+     <x>180</x>
+     <y>190</y>
      <width>341</width>
      <height>32</height>
     </rect>
@@ -44,21 +44,21 @@
     <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
    </property>
   </widget>
-  <widget class="SelectPathWidget" name="FirstSelectionWidget" native="true">
+  <widget class="SelectPathWidget" name="firstSelectionWidget" native="true">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>10</y>
+     <x>0</x>
+     <y>0</y>
      <width>521</width>
      <height>90</height>
     </rect>
    </property>
   </widget>
-  <widget class="SelectPathWidget" name="SecondSelectionWidget" native="true">
+  <widget class="SelectPathWidget" name="secondSelectionWidget" native="true">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>120</y>
+     <x>0</x>
+     <y>95</y>
      <width>521</width>
      <height>90</height>
     </rect>

@@ -424,10 +424,10 @@
 		5CFEEBC015CAB60B00ABF023 /* SceneGraphCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5CFEEBBE15CAB60B00ABF023 /* SceneGraphCommands.cpp */; };
 		626B0095177B2F4600D8A54F /* AddSwitchEntityDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 626B0090177B2F4600D8A54F /* AddSwitchEntityDialog.cpp */; };
 		626B0096177B2F4600D8A54F /* SelectPathWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 626B0093177B2F4600D8A54F /* SelectPathWidget.cpp */; };
+		6295E409178B08050007F9EC /* MimeDataHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 6295E407178B08050007F9EC /* MimeDataHelper.cpp */; };
 		629E220A177C8B9C007C820F /* AddSwitchEntityCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 629E2208177C8B9B007C820F /* AddSwitchEntityCommand.cpp */; };
-		62A4F1F11781A6CF00D79B26 /* QMimeDataHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62A4F1EF1781A6CF00D79B26 /* QMimeDataHelper.cpp */; };
 		748E55931761D5EB000E24FF /* ParticlesEditorNodeNameHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 748E55911761D5EB000E24FF /* ParticlesEditorNodeNameHelper.cpp */; };
-		749EDAE61781C31A00539BF1 /* DebugDrawSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 749EDAE41781C31900539BF1 /* DebugDrawSystem.cpp */; };
+		74FE1CE5178B117500693D15 /* ParticlesDebugDrawSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74FE1CE3178B117300693D15 /* ParticlesDebugDrawSystem.cpp */; };
 		77BDEC8E56A833D3814BC614 /* QtNetwork.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 82153068A36B6EA46DD82A06 /* QtNetwork.framework */; };
 		77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 336CB11D929F5E35FA69020F /* Cocoa.framework */; };
 		8417040216CBCEAD00F1023D /* SpritePackerHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8417040016CBCEAD00F1023D /* SpritePackerHelper.cpp */; };
@@ -1404,17 +1404,17 @@
 		626B0091177B2F4600D8A54F /* AddSwitchEntityDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddSwitchEntityDialog.h; sourceTree = "<group>"; };
 		626B0093177B2F4600D8A54F /* SelectPathWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SelectPathWidget.cpp; sourceTree = "<group>"; };
 		626B0094177B2F4600D8A54F /* SelectPathWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SelectPathWidget.h; sourceTree = "<group>"; };
+		6295E407178B08050007F9EC /* MimeDataHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MimeDataHelper.cpp; path = Classes/Qt/Tools/MimeDataHelper/MimeDataHelper.cpp; sourceTree = "<group>"; };
+		6295E408178B08050007F9EC /* MimeDataHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MimeDataHelper.h; path = Classes/Qt/Tools/MimeDataHelper/MimeDataHelper.h; sourceTree = "<group>"; };
 		629E2208177C8B9B007C820F /* AddSwitchEntityCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddSwitchEntityCommand.cpp; sourceTree = "<group>"; };
 		629E2209177C8B9B007C820F /* AddSwitchEntityCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddSwitchEntityCommand.h; sourceTree = "<group>"; };
-		62A4F1EF1781A6CF00D79B26 /* QMimeDataHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QMimeDataHelper.cpp; path = Classes/Qt/Tools/QMimeDataHelper/QMimeDataHelper.cpp; sourceTree = "<group>"; };
-		62A4F1F01781A6CF00D79B26 /* QMimeDataHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QMimeDataHelper.h; path = Classes/Qt/Tools/QMimeDataHelper/QMimeDataHelper.h; sourceTree = "<group>"; };
 		6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtOpenGL.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework"; sourceTree = "<absolute>"; };
 		6C21256244E578A9DE07EE60 /* xml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = xml_macos; path = ../../Libs/libs/libxml_macos.a; sourceTree = "<group>"; };
 		748E55911761D5EB000E24FF /* ParticlesEditorNodeNameHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticlesEditorNodeNameHelper.cpp; sourceTree = "<group>"; };
 		748E55921761D5EB000E24FF /* ParticlesEditorNodeNameHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticlesEditorNodeNameHelper.h; sourceTree = "<group>"; };
 		7496CE1D1766058D0090AC05 /* StringConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StringConstants.h; path = Classes/StringConstants.h; sourceTree = "<group>"; };
-		749EDAE41781C31900539BF1 /* DebugDrawSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DebugDrawSystem.cpp; sourceTree = "<group>"; };
-		749EDAE51781C31900539BF1 /* DebugDrawSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugDrawSystem.h; sourceTree = "<group>"; };
+		74FE1CE3178B117300693D15 /* ParticlesDebugDrawSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticlesDebugDrawSystem.cpp; sourceTree = "<group>"; };
+		74FE1CE4178B117400693D15 /* ParticlesDebugDrawSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticlesDebugDrawSystem.h; sourceTree = "<group>"; };
 		8157E7438190A1EEF4A4D363 /* mongodb_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mongodb_macos; path = ../../Libs/libs/libmongodb_macos.a; sourceTree = "<group>"; };
 		8159B90213E2E13CB65C75B4 /* vorbis_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbis_macos; path = ../../Libs/oggvorbis/lib/libvorbis_macos.a; sourceTree = "<group>"; };
 		81BBDA0F1849B4A35FAB7D00 /* freetype_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = freetype_macos; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
@@ -2296,8 +2296,8 @@
 				E8C4C64C17294079004B0B3B /* ModifSystem.h */,
 				E8C4C64D17294079004B0B3B /* SelectionSystem.cpp */,
 				E8C4C64E17294079004B0B3B /* SelectionSystem.h */,
-				749EDAE41781C31900539BF1 /* DebugDrawSystem.cpp */,
-				749EDAE51781C31900539BF1 /* DebugDrawSystem.h */,
+				74FE1CE3178B117300693D15 /* ParticlesDebugDrawSystem.cpp */,
+				74FE1CE4178B117400693D15 /* ParticlesDebugDrawSystem.h */,
 			);
 			path = System;
 			sourceTree = "<group>";
@@ -3071,11 +3071,11 @@
 		626B008A177B2F2C00D8A54F /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				6295E406178B07EB0007F9EC /* MimeDataHelper */,
 				4FAD0B061785EB8E00B05A35 /* EventFilterDoubleSpinBox */,
 				4FAD0B091785EB8E00B05A35 /* QResourceEditorProgressDialog */,
 				4FAD0B0C1785EB8E00B05A35 /* QtPosSaver */,
 				4FAD0B0F1785EB8E00B05A35 /* QtPropertyEditor */,
-				62A4F1EA1781A6A100D79B26 /* QMimeDataHelper */,
 				626B008F177B2F4600D8A54F /* AddSwitchEntityDialog */,
 				626B0092177B2F4600D8A54F /* SelectPathWidget */,
 			);
@@ -3102,13 +3102,13 @@
 			path = Classes/Qt/Tools/SelectPathWidget;
 			sourceTree = "<group>";
 		};
-		62A4F1EA1781A6A100D79B26 /* QMimeDataHelper */ = {
+		6295E406178B07EB0007F9EC /* MimeDataHelper */ = {
 			isa = PBXGroup;
 			children = (
-				62A4F1EF1781A6CF00D79B26 /* QMimeDataHelper.cpp */,
-				62A4F1F01781A6CF00D79B26 /* QMimeDataHelper.h */,
+				6295E407178B08050007F9EC /* MimeDataHelper.cpp */,
+				6295E408178B08050007F9EC /* MimeDataHelper.h */,
 			);
-			name = QMimeDataHelper;
+			name = MimeDataHelper;
 			sourceTree = "<group>";
 		};
 		841703FF16CBCE9700F1023D /* SpritesPacker */ = {
@@ -4215,7 +4215,6 @@
 				626B0095177B2F4600D8A54F /* AddSwitchEntityDialog.cpp in Build Sources */,
 				626B0096177B2F4600D8A54F /* SelectPathWidget.cpp in Build Sources */,
 				629E220A177C8B9C007C820F /* AddSwitchEntityCommand.cpp in Build Sources */,
-				62A4F1F11781A6CF00D79B26 /* QMimeDataHelper.cpp in Build Sources */,
 				E83AB8FA1779AF1E0037561B /* ScenePreviewControl.cpp in Build Sources */,
 				E83AB8FD1779B6CF0037561B /* ScenePreviewDialog.cpp in Build Sources */,
 				172E7E0C17840BA000B20FFA /* ParticleTimeLineColumns.cpp in Build Sources */,
@@ -4346,7 +4345,7 @@
 				4FAD0D401785EC6E00B05A35 /* QtPropertyDataIntrospection_moc.cpp in Build Sources */,
 				4FAD0D411785EC6E00B05A35 /* QtPropertyDataMetaObject_moc.cpp in Build Sources */,
 				4FAD0D421785EC6E00B05A35 /* SelectPathWidget_moc.cpp in Build Sources */,
-				749EDAE61781C31A00539BF1 /* DebugDrawSystem.cpp in Build Sources */,
+				74FE1CE5178B117500693D15 /* ParticlesDebugDrawSystem.cpp in Build Sources */,
 				499E4A79178ABDD20067FA56 /* CustomColorsSystem.cpp in Build Sources */,
 				499E4A7A178ABDD20067FA56 /* HeightmapEditorSystem.cpp in Build Sources */,
 				499E4A7B178ABDD20067FA56 /* LandscapeEditorDrawSystem.cpp in Build Sources */,
@@ -4370,6 +4369,7 @@
 				499E4AB7178AC15B0067FA56 /* TilemaskEditorPropertiesView_moc.cpp in Build Sources */,
 				499E4AB9178AC16A0067FA56 /* HeightmapEditorPropertiesView_moc.cpp in Build Sources */,
 				499E4ABB178AC17F0067FA56 /* CustomColorsPropertiesView_moc.cpp in Build Sources */,
+				6295E409178B08050007F9EC /* MimeDataHelper.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
