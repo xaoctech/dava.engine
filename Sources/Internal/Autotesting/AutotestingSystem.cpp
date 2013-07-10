@@ -352,7 +352,7 @@ void AutotestingSystem::ClearTestInDB()
 
 KeyedArchive *AutotestingSystem::FindOrInsertRunArchive(MongodbUpdateObject* dbUpdateObject, const String &auxArg)
 {
-	String testsName = NULL;
+	String testsName;
 
 	if (auxArg.length() != 0)
 	{
