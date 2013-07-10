@@ -436,7 +436,12 @@ void SceneTree::EmitParticleSignals(const QItemSelection & selected)
 			case SceneTreeItem::EIT_Entity:
 				{
 					DAVA::Entity *entity = SceneTreeItemEntity::GetEntity(item);
-					if(NULL != DAVA::GetEmitter(entity))
+					if(NULL != DAVA::GetEffectComponent(entity))
+					{
+						emit EffectSelected(entity);
+						isParticleElements = true;
+					}
+					else if(NULL != DAVA::GetEmitter(entity))
 					{
 						emit EmitterSelected(entity, NULL);
 						isParticleElements = true;
