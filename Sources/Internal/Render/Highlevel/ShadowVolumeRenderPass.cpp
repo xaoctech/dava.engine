@@ -79,7 +79,7 @@ void ShadowVolumeRenderPass::Draw(Camera * camera)
 		
 		RenderManager::State()->SetStencilFunc(FACE_FRONT_AND_BACK, CMP_ALWAYS);
 		RenderManager::State()->SetStencilRef(1);
-		RenderManager::State()->SetStencilMask(0xFFFFFFFF);
+		RenderManager::State()->SetStencilMask(0x0000000F);
         
 		RenderManager::State()->SetStencilPass(FACE_FRONT, STENCILOP_KEEP);
 		RenderManager::State()->SetStencilFail(FACE_FRONT, STENCILOP_KEEP);
