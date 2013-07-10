@@ -19,12 +19,7 @@ namespace DAVA
 
 TexturePacker::TexturePacker()
 {
-	maxTextureSize = 1024;
-	if (CommandLineParser::Instance()->IsFlagSet("--tsize2048"))
-	{
-		maxTextureSize = 2048;
-	}
-
+	maxTextureSize = TEXTURE_SIZE;
 	onlySquareTextures = false;
 }
 
