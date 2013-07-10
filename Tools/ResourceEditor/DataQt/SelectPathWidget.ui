@@ -32,7 +32,7 @@
    <item>
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
-      <widget class="QLabel" name="DiscriptionLabel">
+      <widget class="QLabel" name="descriptionLabel">
        <property name="text">
         <string/>
        </property>
@@ -41,17 +41,21 @@
      <item row="1" column="0">
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QLineEdit" name="FilePathBox"/>
+        <widget class="QLineEdit" name="filePathBox">
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="SelectDialogBtn">
+        <widget class="QPushButton" name="selectDialogBtn">
          <property name="text">
           <string>...</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="EraseBtn">
+        <widget class="QPushButton" name="eraseBtn">
          <property name="text">
           <string>x</string>
          </property>

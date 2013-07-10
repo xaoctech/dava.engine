@@ -16,10 +16,7 @@
 
 #include "SelectPathWidget.h"
 #include "ui_SelectPathWidget.h"
-#include "SceneEditor/EditorSettings.h"
-#include "./../Qt/Main/QtUtils.h"
-#include "./../Qt/DockSceneTree/SceneTreeModel.h"
-#include "./../Qt/Tools/QMimeDataHelper/QMimeDataHelper.h"
+#include "./../Qt/Tools/MimeDataHelper/MimeDataHelper.h"
 
 
 #include <QFileInfo>
@@ -27,16 +24,11 @@
 #include <QUrl>
 #include <QFileDialog>
 
-SelectPathWidget::SelectPathWidget(QWidget* parent)
-:	QWidget(parent),
+SelectPathWidget::SelectPathWidget(QWidget* _parent, DAVA::String _openDialogDefualtPath, DAVA::String _relativPath)
+:	QWidget(_parent),
 ui(new Ui::SelectPathWidget)
 {
-	ui->setupUi(this);
-    setAcceptDrops(true);
-    
-    connect(ui->EraseBtn, SIGNAL(clicked()), this, SLOT(EraseClicked()));
-    
-    connect(ui->SelectDialogBtn, SIGNAL(clicked()), this, SLOT(OpenClicked()));
+	Init(_openDialogDefualtPath, _relativPath);
 }
 
 SelectPathWidget::~SelectPathWidget()
@@ -44,115 +36,149 @@ SelectPathWidget::~SelectPathWidget()
 	delete ui;
 }
 
+void SelectPathWidget::Init(DAVA::String& _openDialogDefualtPath, DAVA::String& _relativPath)
+{
+	ui->setupUi(this);
+	setAcceptDrops(true);
+	
+	connect(ui->eraseBtn, SIGNAL(clicked()), this, SLOT(EraseClicked()));
+	connect(ui->selectDialogBtn, SIGNAL(clicked()), this, SLOT(OpenClicked()));
+	
+	relativePath = DAVA::FilePath(_relativPath);
+	openDialogDefaultPath = _openDialogDefualtPath;
+}
+
 void SelectPathWidget::dragEnterEvent(QDragEnterEvent* event)
 {
-    if(QMimeDataHelper::IsMimeDataTypeSupported(event->mimeData()))
-    {
-        event->acceptProposedAction();
-    }
-    
+	if(DAVA::MimeDataHelper::IsMimeDataTypeSupported(event->mimeData()))
+	{
+		event->acceptProposedAction();
+	}
 }
 
 void SelectPathWidget::dropEvent(QDropEvent* event)
 {
 	const QMimeData* sendedMimeData = event->mimeData();
 		
-	List<String> nameList;
+	DAVA::List<DAVA::String> nameList;
 	
-	bool success = QMimeDataHelper::GetItemNamesFromMime(sendedMimeData, nameList);
-	if(!success)
+	DAVA::MimeDataHelper::GetItemNamesFromMimeData(sendedMimeData, nameList);
+	if(nameList.size() == 0)
 	{
 		return;
 	}
-	String itemName = *nameList.begin();
-	FilePath filePath(itemName);
-	if(filePath.Exists())
+	
+	mimeData.clear();
+
+	
+	foreach(const QString & format, event->mimeData()->formats())
 	{
-		SetPathText(QString(filePath.GetAbsolutePathname().c_str()));
-		ui->FilePathBox->setEnabled(true);
+		if(DAVA::MimeDataHelper::IsMimeDataTypeSupported(format.toStdString()))
+		{
+			mimeData.setData(format, event->mimeData()->data(format));
+		}
+	}
+	
+	DAVA::String itemName = *nameList.begin();
+	DAVA::FilePath filePath(itemName);
+	if(filePath.Exists())// check is it item form scene tree or file system
+	{
+		SetPathText(filePath.GetAbsolutePathname().c_str());
 	}
 	else
 	{
-		SetPathText(QString(itemName.c_str()));
-		ui->FilePathBox->setEnabled(false);
+		SetPathText(itemName.c_str());
 	}
 	
-	mimeData.clear();
-	foreach(const QString & format, event->mimeData()->formats())
-	{
-		mimeData.setData(format, event->mimeData()->data(format));
-	}
 	event->acceptProposedAction();
 }
 
+void SelectPathWidget::EraseWidget()
+{
+	ui->filePathBox->setText("");
+	mimeData.clear();
+}
 
 void SelectPathWidget::EraseClicked()
 {
-	ui->FilePathBox->setText("");
+	EraseWidget();
 }
 
 void SelectPathWidget::OpenClicked()
 {
-	FilePath presentPath(ui->FilePathBox->text().toStdString());
-	FilePath dialogString = EditorSettings::Instance()->GetDataSourcePath();
-	if(presentPath.GetDirectory().Exists())
+	DAVA::FilePath presentPath(ui->filePathBox->text().toStdString());
+	DAVA::FilePath dialogString(openDialogDefaultPath);
+	if(presentPath.GetDirectory().Exists())//check if file text box clean
 	{
 		dialogString = presentPath.GetDirectory();
 	}
 	
-	((QWidget*)parent())->setWindowFlags(Qt::WindowStaysOnBottomHint);
-	((QWidget*)parent())->showNormal();
-	QString retString = QFileDialog::getOpenFileName(this, "Open Scene File",
+	DAVA::String retString = QFileDialog::getOpenFileName(this, "Open Scene File",
                                                     QString(dialogString.GetAbsolutePathname().c_str()),
-                                                    "Scene File (*.sc2)");
+                                                    "Scene File (*.sc2)").toStdString();
 
-	((QWidget*)parent())->setWindowFlags(Qt::WindowStaysOnTopHint);
-	((QWidget*)parent())->showNormal();
-	SetPathText(retString);
-	FilePath filePath(retString.toStdString());
-	List<FilePath> urls;
-	urls.push_back(filePath);
-	if(!QMimeDataHelper::ConvertToMime(urls, &mimeData))
+	if(!retString.empty())
 	{
-		mimeData.clear();
+		SetPathText(retString);
+		
+		DAVA::FilePath fullPath(retString);
+		
+		DVASSERT(fullPath.Exists());
+		DAVA::List<DAVA::FilePath> urls;
+		urls.push_back(fullPath);
+		DAVA::MimeDataHelper::ConvertToMimeData(urls, &mimeData);
 	}
 }
 
 
-void SelectPathWidget::SetDiscriptionText(const QString& discription)
+void SelectPathWidget::SetDiscriptionText(const DAVA::String& discription)
 {
-    ui->DiscriptionLabel->setText(discription);
+	ui->descriptionLabel->setText(QString(discription.c_str()));
 }
 
-QString SelectPathWidget::GetDiscriptionText()
+DAVA::String SelectPathWidget::GetDiscriptionText()
 {
-    return ui->DiscriptionLabel->text();
+	return ui->descriptionLabel->text().toStdString();
 }
 
-void SelectPathWidget::SetPathText(const QString& filePath)
+void SelectPathWidget::SetPathText(const DAVA::String& filePath)
 {
-    ui->FilePathBox->setText(ConvertToRelativPath(filePath));
+	ui->filePathBox->setText(QString(ConvertToRelativPath(filePath).c_str()));
 }
 
-QString SelectPathWidget::GetPathText()
+DAVA::String SelectPathWidget::GetPathText()
 {
-    return ui->FilePathBox->text();
+	return ui->filePathBox->text().toStdString();
 }
 
-void SelectPathWidget::SetRelativePath(const QString& newRelativPath)
+void SelectPathWidget::SetRelativePath(const DAVA::String& newRelativPath)
 {
-    relativPath = newRelativPath;
-    QString existingPath = ui->FilePathBox->text();
-    if(!existingPath.isEmpty())
-    {
-        ui->FilePathBox->setText(ConvertToRelativPath(existingPath));
-    }
+	relativePath = DAVA::FilePath(newRelativPath);
+	DAVA::String existingPath = ui->filePathBox->text().toStdString();
+	if(!existingPath.empty())
+	{
+		ui->filePathBox->setText(QString(ConvertToRelativPath(existingPath).c_str()));
+	}
 }
 
-QString SelectPathWidget::ConvertToRelativPath(const QString& path)
+DAVA::Entity* SelectPathWidget::GetOutputEntity(SceneEditor2* editor)
 {
-    //QString retValue = path;
-    int index = path.indexOf(relativPath);
-    QString retValue = path.right(path.length() - index);
-    return retValue;
+	DAVA::List<DAVA::Entity*> retList;
+	DAVA::MimeDataHelper::ConvertFromMimeData(&mimeData, retList, editor);
+	DAVA::Entity* retEntity = retList.size() > 0 ? *retList.begin(): NULL;
+	return retEntity;
 }
+
+DAVA::String SelectPathWidget::ConvertToRelativPath(const DAVA::String& path)
+{
+	DAVA::FilePath fullPath(path);
+	if(fullPath.Exists())
+	{
+		return fullPath.GetRelativePathname(relativePath);
+	}
+	else
+	{
+		return path;
+	}
+}
+
