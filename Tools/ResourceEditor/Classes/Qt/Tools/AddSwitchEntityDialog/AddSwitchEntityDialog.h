@@ -18,37 +18,34 @@
 #define __RESOURCEEDITORQT__ADDSWITCHENTITYDIALOG__
 
 #include <QDialog.h>
+#include "DAVAEngine.h"
 
 class QMimeData;
+class SceneEditor2;
 
 namespace Ui
 {
 	class AddSwitchEntityDialog;
 }
 
-class AddSwitchEntityDialog: public QDialog
+class AddSwitchEntityDialog: public QDialog,public DAVA::Singleton<AddSwitchEntityDialog>
 {
 	Q_OBJECT
     
 public:
 	explicit AddSwitchEntityDialog(QWidget* parent = 0);
 	~AddSwitchEntityDialog();
-    
-    //virtual void accept();
-    
-    void GetSlectedMimeData(QMimeData** firstChild, QMimeData** secondChild);
-    //signals:
-    //	void ApplyModification(double x, double y, double z);
-    
-    //private slots:
-    //	void OnEditingFinished();
-    
-private:
-	Ui::AddSwitchEntityDialog *ui;
-    
-//	void ResetSpinBoxes();
-    
+	
+	void SetRelativePath(const DAVA::String& rPath, bool forFirstWidget = true);
+
+	void SetOpenDialogsDefaultPath(const DAVA::String& path);
+
+	void GetSelectedEntities(DAVA::Entity** firstChild, DAVA::Entity** secondChild, SceneEditor2 * );
+
+	void ErasePathWidgets();
+	
 protected:
+	Ui::AddSwitchEntityDialog *ui;
 	
 };
 

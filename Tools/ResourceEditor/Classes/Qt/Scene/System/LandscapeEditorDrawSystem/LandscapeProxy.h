@@ -61,8 +61,6 @@ public:
 	void SetTilemaskTexture(Texture* texture);
 	void SetTilemaskTextureEnabled(bool enabled);
 
-	void SetFullTiledTexture(Texture* texture);
-
 	void SetNotPassableTexture(Texture* texture);
 	void SetNotPassableTextureEnabled(bool enabled);
 	

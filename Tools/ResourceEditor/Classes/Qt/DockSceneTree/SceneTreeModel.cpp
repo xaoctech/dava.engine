@@ -32,7 +32,7 @@ SceneTreeModel::SceneTreeModel(QObject* parent /*= 0*/ )
 	, dropAccepted(false)
 {
 	setColumnCount(1);
-	setSupportedDragActions(Qt::MoveAction);
+	setSupportedDragActions(Qt::MoveAction|Qt::CopyAction);
 
 	QStringList headerLabels;
 	headerLabels.append("Scene hierarchy");

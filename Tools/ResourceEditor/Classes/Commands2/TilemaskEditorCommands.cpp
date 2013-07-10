@@ -81,6 +81,9 @@ Sprite* ModifyTilemaskCommand::ApplyImageToTexture(DAVA::Image *image, DAVA::Tex
 	Sprite* resSprite = Sprite::CreateAsRenderTarget((float32)width, (float32)height, FORMAT_RGBA8888);
 	RenderManager::Instance()->SetRenderTarget(resSprite);
 	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
+
+	eBlendMode srcBlend = RenderManager::Instance()->GetSrcBlend();
+	eBlendMode dstBlend = RenderManager::Instance()->GetDestBlend();
 	RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
 
 	Sprite* s = Sprite::CreateFromTexture(texture, 0, 0, (float32)width, (float32)height);
@@ -101,6 +104,8 @@ Sprite* ModifyTilemaskCommand::ApplyImageToTexture(DAVA::Image *image, DAVA::Tex
 	SafeRelease(t);
 
 	RenderManager::Instance()->ClipPop();
+	RenderManager::Instance()->SetBlendMode(srcBlend, dstBlend);
+	RenderManager::Instance()->ResetColor();
 	RenderManager::Instance()->RestoreRenderTarget();
 
 	return resSprite;

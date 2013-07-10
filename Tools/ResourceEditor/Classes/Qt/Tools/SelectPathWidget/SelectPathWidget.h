@@ -18,10 +18,10 @@
 #define __RESOURCEEDITORQT__SELECTPATHWIDGET__
 
 #include <QWidget>
-#include "DAVAEngine.h"
-#include "Base/BaseTypes.h"
-
 #include <QMimeData>
+
+#include "DAVAEngine.h"
+class SceneEditor2;
 
 namespace Ui
 {
@@ -31,54 +31,68 @@ namespace Ui
 class SelectPathWidget: public QWidget
 {
 	Q_OBJECT
-    
+
 public:
-	explicit SelectPathWidget(QWidget* parent = 0);
+	explicit SelectPathWidget( QWidget* parent = 0, DAVA::String openDialoDefualtPath = "", DAVA::String relativPath = "");
+	
 	~SelectPathWidget();
+	
+	void SetDiscriptionText(const DAVA::String &);
 
+	DAVA::String GetDiscriptionText();
 
-	void SetDiscriptionText(const QString &);
+	void SetPathText(const DAVA::String &);
 
-	QString GetDiscriptionText();
+	DAVA::String GetPathText();
 
-    void SetPathText(const QString &);
-    
-    QString GetPathText();
-    
-    QString GetRelativPath()
-    {
-        return relativPath;
-    }
-    
-    void SetRelativePath(const QString &);
-    
-    QMimeData* GetMimeData()
-    {
-        return &mimeData;
-    }
+	void EraseWidget();
+	
+	DAVA::FilePath GetRelativPath()
+	{
+		return relativePath;
+	}
+
+	void SetRelativePath(const DAVA::String& );
+
+	DAVA::Entity* GetOutputEntity(SceneEditor2*);
+
+	DAVA::String GetOpenDialogDefaultPath()
+	{
+		return openDialogDefaultPath;
+	}
+
+	void SetOpenDialogDefaultPath(const DAVA::String& newPath)
+	{
+		openDialogDefaultPath = newPath;
+	}
+	
+	
 
 protected:
 
-    void dragEnterEvent(QDragEnterEvent* event);
-    
-    void dropEvent(QDropEvent * event);
+	void dragEnterEvent(QDragEnterEvent* event);
 
+	void dropEvent(QDropEvent * event);
+	
+	void Init(DAVA::String& _openDialogDefualtPath, DAVA::String& _relativPath);
+	
+	DAVA::String ConvertToRelativPath(const DAVA::String& path);
+	
+	Ui::SelectPathWidget*	ui;
+	
+	DAVA::FilePath			relativePath;
+	
+	DAVA::String			openDialogDefaultPath;
+	
+	QMimeData				mimeData;
+	
 
-private slots:
+protected slots:
 
 	void EraseClicked();
 
 	void OpenClicked();
 
-private:
-
-	QString ConvertToRelativPath(const QString& path);
-
-	Ui::SelectPathWidget*   ui;
-
-	QString                 relativPath;
-	
-	QMimeData   mimeData;
 	
 };
 
