@@ -14,48 +14,38 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __UIEditor__UIListMetadata__
-#define __UIEditor__UIListMetadata__
+#ifndef __LIST_PROPERTY_GRID_WIDGET_HELPER__
+#define __LIST_PROPERTY_GRID_WIDGET_HELPER__
 
-#include "UIControlMetadata.h"
 #include "UI/UIList.h"
+#include <QString>
 
 namespace DAVA {
 
-// Metadata class for DAVA UIList control.
-class UIListMetadata : public UIControlMetadata
+class ListPropertyGridWidgetHelper
 {
-    Q_OBJECT
-	
-	Q_PROPERTY(int AggregatorID READ GetAggregatorID WRITE SetAggregatorID);
-	Q_PROPERTY(int Orientation READ GetOrientation WRITE SetOrientation);
-
 public:
-    UIListMetadata(QObject* parent = 0);
-
+    // Draw Type.
+    static int GetOrientationCount();
+	
+    static UIList::eListOrientation GetOrientation(int index);
+    static QString GetOrientationDesc(int index);
+    static QString GetOrientationDescByType(UIList::eListOrientation orientation);
+    
 protected:
-    // Initialize the appropriate control.
-    virtual void InitializeControl(const String& controlName, const Vector2& position);
-    virtual void UpdateExtraData(HierarchyTreeNodeExtraData& extraData, eExtraDataUpdateStyle updateStyle);
+    // Validate the indexes.
+    static bool ValidateOrientationIndex(int index);
 
-    virtual QString GetUIControlClassName() { return "UIList"; };
-	
-    // Helper to access active UI List.
-    UIList* GetActiveUIList() const;
-	
-	// Properties getters/setters
-	int GetAggregatorID();
-    void SetAggregatorID(int value);
-	
-	int GetOrientation();
-	void SetOrientation(int value);
-	
-	virtual void SetActiveControlRect(const Rect& rect);
+    // Maps.
+    struct OrientationData
+    {
+        UIList::eListOrientation orientation;
+        const char* orientationDesc;
+    };
 
-private:
-	void UpdateListCellSize(const Rect& rect, UIList::eListOrientation orientation);
+    static const OrientationData orientationData[];
 };
 
 };
 
-#endif /* defined(__UIEditor__UIListMetadata__) */
+#endif /* defined(__LIST_PROPERTY_GRID_WIDGET_HELPER__) */

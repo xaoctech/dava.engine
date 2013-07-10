@@ -166,6 +166,7 @@
 		7497D74D1705AD5500E1DE60 /* UISwitchMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7497D74B1705AD5500E1DE60 /* UISwitchMetadata.cpp */; };
 		7497D74F1705AD7200E1DE60 /* UISwitchMetadata_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7497D74E1705AD7200E1DE60 /* UISwitchMetadata_moc.cpp */; };
 		749D71271636920600C99861 /* textpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 749D71251636920600C99861 /* textpropertygridwidget.cpp */; };
+		749EBEF4178D9C3000D0699F /* ListPropertyGridWidgetHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 749EBEF2178D9C3000D0699F /* ListPropertyGridWidgetHelper.cpp */; };
 		74EED62F16B187CF00262D63 /* alignspropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 74EED62E16B187CF00262D63 /* alignspropertygridwidget.ui */; };
 		74EED63216B18C7600262D63 /* alignspropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74EED63016B18C7600262D63 /* alignspropertygridwidget.cpp */; };
 		77BDEC8E56A833D3814BC614 /* QtNetwork.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 82153068A36B6EA46DD82A06 /* QtNetwork.framework */; };
@@ -521,6 +522,8 @@
 		7497D74E1705AD7200E1DE60 /* UISwitchMetadata_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UISwitchMetadata_moc.cpp; sourceTree = "<group>"; };
 		749D71251636920600C99861 /* textpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = textpropertygridwidget.cpp; path = PropertyGridWidgets/textpropertygridwidget.cpp; sourceTree = "<group>"; };
 		749D71261636920600C99861 /* textpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = textpropertygridwidget.h; path = PropertyGridWidgets/textpropertygridwidget.h; sourceTree = "<group>"; };
+		749EBEF2178D9C3000D0699F /* ListPropertyGridWidgetHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ListPropertyGridWidgetHelper.cpp; path = Helpers/ListPropertyGridWidgetHelper.cpp; sourceTree = "<group>"; };
+		749EBEF3178D9C3000D0699F /* ListPropertyGridWidgetHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ListPropertyGridWidgetHelper.h; path = Helpers/ListPropertyGridWidgetHelper.h; sourceTree = "<group>"; };
 		74EED62E16B187CF00262D63 /* alignspropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = alignspropertygridwidget.ui; sourceTree = "<group>"; };
 		74EED63016B18C7600262D63 /* alignspropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = alignspropertygridwidget.cpp; path = PropertyGridWidgets/alignspropertygridwidget.cpp; sourceTree = "<group>"; };
 		74EED63116B18C7600262D63 /* alignspropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = alignspropertygridwidget.h; path = PropertyGridWidgets/alignspropertygridwidget.h; sourceTree = "<group>"; };
@@ -861,6 +864,8 @@
 				17FBCE45163A7ED100FD96C0 /* UIControlStateHelper.h */,
 				17607FC0164121FB004E36DE /* LocalizationSystemHelper.cpp */,
 				17607FC1164121FB004E36DE /* LocalizationSystemHelper.h */,
+				749EBEF2178D9C3000D0699F /* ListPropertyGridWidgetHelper.cpp */,
+				749EBEF3178D9C3000D0699F /* ListPropertyGridWidgetHelper.h */,
 				7487A43D170ADBED005EA703 /* StringConstants.h */,
 				178F303C165677BF008678AD /* StringUtils.cpp */,
 				178F303D165677BF008678AD /* StringUtils.h */,
@@ -1599,6 +1604,7 @@
 				E8951B691737B03100755339 /* ResourcePacker2D.cpp in Build Sources */,
 				E8951B6A1737B03100755339 /* TexturePacker.cpp in Build Sources */,
 				1712331E1741118F0051D960 /* PropertyNames.cpp in Build Sources */,
+				749EBEF4178D9C3000D0699F /* ListPropertyGridWidgetHelper.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

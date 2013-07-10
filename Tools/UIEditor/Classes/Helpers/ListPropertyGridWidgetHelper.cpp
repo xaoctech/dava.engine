@@ -14,48 +14,64 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __UIEditor__UIListMetadata__
-#define __UIEditor__UIListMetadata__
+#include "ListPropertyGridWidgetHelper.h"
 
-#include "UIControlMetadata.h"
-#include "UI/UIList.h"
+using namespace DAVA;
 
-namespace DAVA {
-
-// Metadata class for DAVA UIList control.
-class UIListMetadata : public UIControlMetadata
+const ListPropertyGridWidgetHelper::OrientationData ListPropertyGridWidgetHelper::orientationData[] =
 {
-    Q_OBJECT
-	
-	Q_PROPERTY(int AggregatorID READ GetAggregatorID WRITE SetAggregatorID);
-	Q_PROPERTY(int Orientation READ GetOrientation WRITE SetOrientation);
-
-public:
-    UIListMetadata(QObject* parent = 0);
-
-protected:
-    // Initialize the appropriate control.
-    virtual void InitializeControl(const String& controlName, const Vector2& position);
-    virtual void UpdateExtraData(HierarchyTreeNodeExtraData& extraData, eExtraDataUpdateStyle updateStyle);
-
-    virtual QString GetUIControlClassName() { return "UIList"; };
-	
-    // Helper to access active UI List.
-    UIList* GetActiveUIList() const;
-	
-	// Properties getters/setters
-	int GetAggregatorID();
-    void SetAggregatorID(int value);
-	
-	int GetOrientation();
-	void SetOrientation(int value);
-	
-	virtual void SetActiveControlRect(const Rect& rect);
-
-private:
-	void UpdateListCellSize(const Rect& rect, UIList::eListOrientation orientation);
+    {UIList::ORIENTATION_VERTICAL,           "Vertical"},
+    {UIList::ORIENTATION_HORIZONTAL,   		"Horizontal"}
 };
 
-};
+// Get the list of UIControlStates supported:
+int ListPropertyGridWidgetHelper::GetOrientationCount()
+{
+    return sizeof(orientationData) / sizeof(*orientationData);
+}
 
-#endif /* defined(__UIEditor__UIListMetadata__) */
+UIList::eListOrientation ListPropertyGridWidgetHelper::GetOrientation(int index)
+{
+	if (ValidateOrientationIndex(index) == false)
+	{
+		return UIList::ORIENTATION_VERTICAL;
+	}
+	
+	return orientationData[index].orientation;
+}
+
+QString ListPropertyGridWidgetHelper::GetOrientationDesc(int index)
+{
+    if (ValidateOrientationIndex(index) == false)
+    {
+        return orientationData[0].orientationDesc;
+    }
+    
+    return orientationData[index].orientationDesc;
+}
+
+QString ListPropertyGridWidgetHelper::GetOrientationDescByType(UIList::eListOrientation orientation)
+{
+	int count = GetOrientationCount();
+	for (int i = 0; i < count; i++)
+	{
+		if (orientation == orientationData[i].orientation)
+		{
+			return orientationData[i].orientationDesc;
+		}
+	}
+	
+	Logger::Error("Unknown/unsupported Orientation Type %i!", orientation);
+    return QString();
+}
+
+bool ListPropertyGridWidgetHelper::ValidateOrientationIndex(int index)
+{
+    if (index < 0 || index >= GetOrientationCount())
+    {
+        Logger::Error("Orientation index %i is out of bounds!", index);
+        return false;
+    }
+    
+    return true;
+}
