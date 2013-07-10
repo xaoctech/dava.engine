@@ -172,9 +172,6 @@
     <Filter Include="Classes\Qt\Tools\SelectPathWidget">
       <UniqueIdentifier>{64374ff4-e7a1-4b4b-86c1-d2ef1ff0a199}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Classes\Qt\Tools\QMimeDataHelper">
-      <UniqueIdentifier>{f723a8cd-eb00-4ed7-b821-e0286c1683cc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Classes\Deprecated">
       <UniqueIdentifier>{b383f0c0-b1f2-483d-9f28-a261d8afc960}</UniqueIdentifier>
     </Filter>
@@ -213,6 +210,9 @@
     </Filter>
     <Filter Include="Classes\Qt\Tools\AddParticleEmitterDialog">
       <UniqueIdentifier>{503fb82f-68b2-4432-8414-d2664ea762e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Qt\Tools\MimeDataHelper">
+      <UniqueIdentifier>{6d3f4be9-f1f7-4e9d-806c-61a057978588}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1446,9 +1446,6 @@
     <ClCompile Include="Classes\Qt\Tools\SelectPathWidget\SelectPathWidget.cpp">
       <Filter>Classes\Qt\Tools\SelectPathWidget</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Tools\QMimeDataHelper\QMimeDataHelper.cpp">
-      <Filter>Classes\Qt\Tools\QMimeDataHelper</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Commands2\AddSwitchEntityCommand.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
@@ -1907,6 +1904,9 @@
     </ClCompile>
     <ClCompile Include="Classes\Qt\Scene\System\ParticlesDebugDrawSystem.cpp">
       <Filter>Classes\Qt\Scene\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\MimeDataHelper\MimeDataHelper.cpp">
+      <Filter>Classes\Qt\Tools\MimeDataHelper</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -3170,9 +3170,6 @@
     <ClInclude Include="Classes\Qt\Tools\SelectPathWidget\SelectPathWidget.h">
       <Filter>Classes\Qt\Tools\SelectPathWidget</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Tools\QMimeDataHelper\QMimeDataHelper.h">
-      <Filter>Classes\Qt\Tools\QMimeDataHelper</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands2\AddSwitchEntityCommand.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
@@ -3343,6 +3340,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Scene\System\ParticlesDebugDrawSystem.h">
       <Filter>Classes\Qt\Scene\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\MimeDataHelper\MimeDataHelper.h">
+      <Filter>Classes\Qt\Tools\MimeDataHelper</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

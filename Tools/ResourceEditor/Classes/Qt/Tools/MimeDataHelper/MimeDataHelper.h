@@ -14,50 +14,63 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __RESOURCEEDITORQT__QMIMEDATAHELPER__
-#define __RESOURCEEDITORQT__QMIMEDATAHELPER__
+#ifndef __RESOURCEEDITORQT__MIMEDATAHELPER__
+#define __RESOURCEEDITORQT__MIMEDATAHELPER__
 
 #include "DAVAEngine.h"
 #include <QMimeData>
 
+class SceneEditor2;
+
 namespace DAVA
 {
 
-class QMimeDataHelper
+class MimeDataHelper
 {
 public:
-
-	static bool ConvertQMimeData(const QMimeData* mimeData, List<Entity*> &);
+	
+	static void ConvertFromMimeData(const QMimeData* mimeData, List<Entity*> &, SceneEditor2* sceneEditor );
 
 	static bool IsMimeDataTypeSupported(const QMimeData* mimeData);
 	
-	static bool GetItemNamesFromMime(const QMimeData* mimeData, List<String>& nameList);
+	static bool IsMimeDataTypeSupported(const String& mimeType);
 	
-	static bool ConvertToMime(List<FilePath>&, QMimeData* mimeData);
+	static void GetItemNamesFromMimeData(const QMimeData* mimeData, List<String>& nameList);
+	
+	static void ConvertToMimeData(List<FilePath>&, QMimeData* mimeData);
 
-	static bool ConvertToMime(List<Entity*>&, QMimeData* mimeData);
+	static void ConvertToMimeData(List<Entity*>&, QMimeData* mimeData);
 	
 protected:
 
-	static bool ConvertQMimeDataFromSceneTree(const QMimeData* mimeData, List<Entity*>&);
+	static void ConvertQMimeDataFromSceneTree(const QMimeData* mimeData, List<Entity*>&,
+											  SceneEditor2* sceneEditor = NULL);
 
-	static bool ConvertQMimeDataFromFilePath(const QMimeData* mimeData, List<Entity*>&);
+	static void ConvertQMimeDataFromFilePath(const QMimeData* mimeData, List<Entity*>&,
+											 SceneEditor2* sceneEditor = NULL);
 	
-	static bool GetItemNamesFromSceneTreeMime(const QMimeData* mimeData, List<String> & nameList);
+	static void GetItemNamesFromSceneTreeMime(const QMimeData* mimeData, List<String> & nameList);
 	
-	static bool GetItemNamesFromFilePathMime(const QMimeData* mimeData, List<String> & nameList);
+	static void GetItemNamesFromFilePathMime(const QMimeData* mimeData, List<String> & nameList);
 
-	const static QString supportedMimeFormats[];
-	
-	enum eMimeTypes
+	struct MimeHandler
 	{
-		MIME_ENTITY = 0,
-		MIME_EMITTER,
-		MIME_FILE_PATH,
-
-		MIME_TYPES_COUNT
+		DAVA::String format;
+		void (*getNameFuncPtr) (const QMimeData* mimeData, List<String> & nameList);
+		void (*convertFuncPtr) (const QMimeData* mimeData, List<Entity*> & nameList, SceneEditor2* sceneEditor);
+		MimeHandler(DAVA::String _format,
+					void (*_getNameFuncPtr) (const QMimeData* mimeData, List<String> & nameList),
+					void (*_convertFuncPtr) (const QMimeData* mimeData, List<Entity*> & nameList,
+					SceneEditor2* sceneEditor))
+		{
+			format = _format;
+			getNameFuncPtr = _getNameFuncPtr;
+			convertFuncPtr = _convertFuncPtr;
+		}
 	};
+	
+	const static MimeHandler mimeHandlerMap[];
 };
 
 };//DAVA nemaspace
-#endif  /* defined(__RESOURCEEDITORQT__QMIMEDATAHELPER__) */
+#endif  /* defined(__RESOURCEEDITORQT__MIMEDATAHELPER__) */
