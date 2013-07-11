@@ -37,6 +37,7 @@
     <ClCompile Include="Classes\FrameworkMain.cpp" />
     <ClCompile Include="Classes\GameCore.cpp" />
     <ClCompile Include="Classes\Helpers\BackgroundGridWidgetHelper.cpp" />
+    <ClCompile Include="Classes\Helpers\ListPropertyGridWidgetHelper.cpp" />
     <ClCompile Include="Classes\Helpers\LocalizationSystemHelper.cpp" />
     <ClCompile Include="Classes\Helpers\PropertiesHelper.cpp" />
     <ClCompile Include="Classes\Helpers\ResourcesManageHelper.cpp" />
@@ -261,6 +262,7 @@
     <ClInclude Include="Classes\FrameworkMain.h" />
     <ClInclude Include="Classes\GameCore.h" />
     <ClInclude Include="Classes\Helpers\BackgroundGridWidgetHelper.h" />
+    <ClInclude Include="Classes\Helpers\ListPropertyGridWidgetHelper.h" />
     <ClInclude Include="Classes\Helpers\LocalizationSystemHelper.h" />
     <ClInclude Include="Classes\Helpers\PropertiesHelper.h" />
     <ClInclude Include="Classes\Helpers\ResourcesManageHelper.h" />
