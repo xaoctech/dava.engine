@@ -41,9 +41,20 @@ template<class T>
 class PropertyLine : public BaseObject
 {
 public:
-	virtual const T & GetValue(float32 t) = 0;
-	virtual PropertyLine<T>* Clone() {return 0;};
 
+	struct PropertyKey
+	{
+		float32 t;
+		T value;
+	};
+
+	Vector<PropertyKey> keys;
+	Vector<PropertyKey> & GetValues() { return keys; };
+
+
+	virtual const T & GetValue(float32 t) = 0;
+
+	virtual PropertyLine<T>* Clone() {return 0;};
 };
 
 class PropertyLineYamlReader
@@ -87,17 +98,21 @@ template<class T>
 class PropertyLineValue : public PropertyLine<T>
 {
 public:
-	T value;
+
 	PropertyLineValue(T _value)
 	{
-		value = _value;
+		PropertyKey v;
+		v.t = 0;
+		v.value = _value;
+		keys.push_back(v);
 	}	
 
-	const T & GetValue(float32 /*t*/) { return value; }
+	const T & GetValue(float32 /*t*/) { return keys[0].value; }
+
 	PropertyLine<T>* Clone()
 	{	
 		if (this == 0)return 0;
-		return new PropertyLineValue<T>(value); 
+		return new PropertyLineValue<T>(keys[0].value); 
 	}	
 };
 
@@ -105,12 +120,6 @@ template<class T>
 class PropertyLineKeyframes : public PropertyLine<T>
 {
 public:
-	struct PropertyKey
-	{
-		float32 t;
-		T value;
-	};
-	std::vector<PropertyKey> keys;
 	T resultValue;
 	
 	const T & GetValue(float32 t) 
