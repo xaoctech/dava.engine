@@ -20,12 +20,7 @@ namespace DAVA
 
 TexturePacker::TexturePacker()
 {
-	maxTextureSize = 1024;
-	if (CommandLineParser::Instance()->IsFlagSet("--tsize2048"))
-	{
-		maxTextureSize = 2048;
-	}
-
+	maxTextureSize = TEXTURE_SIZE;
 	onlySquareTextures = false;
 }
 
@@ -623,15 +618,26 @@ TextureDescriptor * TexturePacker::CreateDescriptor(eGPUFamily forGPU)
     const String gpuNameFlag = "--" + GPUFamilyDescriptor::GetGPUName(forGPU);
     if(CommandLineParser::Instance()->IsFlagSet(gpuNameFlag))
     {
-        String formatName = CommandLineParser::Instance()->GetParamForFlag(gpuNameFlag);
-        PixelFormat format = Texture::GetPixelFormatByName(formatName);
-        
-        descriptor->exportedAsPixelFormat = format;
-        descriptor->compression[forGPU].format = format;
+		String formatName = CommandLineParser::Instance()->GetParamForFlag(gpuNameFlag);
+		PixelFormat format = Texture::GetPixelFormatByName(formatName);
+
+		// Additional check whether this format type is accepted for this GPU.
+		if (IsFormatSupportedForGPU(format, forGPU))
+		{
+			descriptor->exportedAsPixelFormat = format;
+			descriptor->compression[forGPU].format = format;
+		}
+		else
+		{
+			Logger::Error("Compression format '%s' is not supported for GPU '%s'",
+				formatName.c_str(),
+				GPUFamilyDescriptor::GetGPUName(forGPU).c_str());
+			descriptor->exportedAsGpuFamily = GPU_UNKNOWN;
+		}
     }
     else
     {
-        printf("WARNING: params for GPU %s were not set.\n", gpuNameFlag.c_str());
+        Logger::Warning("params for GPU %s were not set.\n", gpuNameFlag.c_str());
         
         descriptor->exportedAsGpuFamily = GPU_UNKNOWN;
     }
@@ -646,6 +652,19 @@ bool TexturePacker::NeedSquareTextureForCompression(eGPUFamily forGPU)
     
     const String gpuNameFlag = "--" + GPUFamilyDescriptor::GetGPUName(forGPU);
     return (CommandLineParser::Instance()->IsFlagSet(gpuNameFlag));
+}
+
+bool TexturePacker::IsFormatSupportedForGPU(PixelFormat format, eGPUFamily forGPU)
+{
+	if (format == FORMAT_INVALID)
+	{
+		return false;
+	}
+
+	Map<PixelFormat, String> supportedFormats = GPUFamilyDescriptor::GetAvailableFormatsForGpu(forGPU);
+	Map<PixelFormat, String>::iterator curFormatIter = supportedFormats.find(format);
+
+	return (curFormatIter != supportedFormats.end());
 }
 
 };

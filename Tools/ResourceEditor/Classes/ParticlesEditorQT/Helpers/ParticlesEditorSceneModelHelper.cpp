@@ -27,6 +27,8 @@
 
 #include "../StringConstants.h"
 
+#include "../../Qt/Scene/SceneDataManager.h"
+
 using namespace DAVA;
 
 // Custom processing the Selection Changed in the Scene Graph model. Returns
@@ -141,7 +143,7 @@ Entity* ParticlesEditorSceneModelHelper::PreprocessSceneNode(Entity* rawNode)
         ParticlesEditorController::Instance()->RegisterParticleEffectNode(newParentNodeParticleEffect);
         EmitterParticleEditorNode* emitterEditorNode = new EmitterParticleEditorNode(newParentNodeParticleEffect,
             rawNode, QString::fromStdString(rawNode->GetName()));
-        effectEditorNode->AddChildNode(emitterEditorNode);
+        effectEditorNode->AddNode(emitterEditorNode);
 
         return newParentNodeParticleEffect;
     }
@@ -282,7 +284,7 @@ void ParticlesEditorSceneModelHelper::SynchronizeEmitterParticleEditorNode(Emitt
         {
             // Create the new node and add it to the tree.
             LayerParticleEditorNode* layerNode = new LayerParticleEditorNode(node, emitter->GetLayers()[i]);
-            node->AddChildNode(layerNode);
+            node->AddNode(layerNode);
         }
      }
 }
@@ -319,7 +321,7 @@ void ParticlesEditorSceneModelHelper::SynchronizeLayerParticleEditorNode(LayerPa
         for (int32 i = 0; i < forcesCountInLayer; i ++)
         {
             ForceParticleEditorNode* forceNode = new ForceParticleEditorNode(node, i);
-            node->AddChildNode(forceNode);
+            node->AddNode(forceNode);
         }
 
         node->UpdateForcesIndices();
@@ -354,7 +356,7 @@ void ParticlesEditorSceneModelHelper::SynchronizeInnerEmitterNode(LayerParticleE
 		// Need to add it.
 		InnerEmitterParticleEditorNode* innerEmitterEditorNode = new InnerEmitterParticleEditorNode(node);
 		
-		node->AddChildNode(innerEmitterEditorNode);
+		node->AddNode(innerEmitterEditorNode);
 
 		// Also update the Scene Graph, if requested.
 		if (layerNodeItem && sceneGraphModel)
@@ -414,7 +416,7 @@ void ParticlesEditorSceneModelHelper::SynchronizeInnerEmitterNode(LayerParticleE
 		for (BaseParticleEditorNode::PARTICLEEDITORNODESLIST::iterator removeIter = nodesToRemove.begin();
 			 removeIter != nodesToRemove.end(); removeIter ++)
 		{
-			node->RemoveChildNode(*removeIter);
+			node->RemoveNode(*removeIter);
 		}
 	}
 }
@@ -751,7 +753,8 @@ void ParticlesEditorSceneModelHelper::SetCheckableStateForGraphItem(GraphItem* g
 	}
 	
 	// Execute the appropriate command.
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandUpdateParticleLayerEnabled(layerEditorNode->GetLayer(), value));
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandUpdateParticleLayerEnabled(layerEditorNode->GetLayer(), value),
+												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
 }
 
 LayerParticleEditorNode* ParticlesEditorSceneModelHelper::GetLayerEditorNodeByGraphItem(GraphItem* graphItem) const
@@ -822,7 +825,7 @@ void ParticlesEditorSceneModelHelper::AddNewNodesToSceneGraph(EffectParticleEdit
 		
 		EmitterParticleEditorNode* emitterEditorNode = new EmitterParticleEditorNode(effectRootNode, effectRootNode->GetChild(i),
 																					 QString::fromStdString(effectRootNode->GetChild(i)->GetName()));
-		node->AddChildNode(emitterEditorNode);
+		node->AddNode(emitterEditorNode);
 	}
 }
 

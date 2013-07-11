@@ -20,7 +20,7 @@
 #include <QPair>
 #include <QStandardItemModel>
 
-#include "Scene/SceneEditorProxy.h"
+#include "Scene/SceneEditor2.h"
 #include "Qt/DockSceneTree/SceneTreeItem.h"
 
 // framework
@@ -36,16 +36,19 @@ public:
 
 	// virtual QVariant data(const QModelIndex &index, int role) const;
 
-	void SetScene(SceneEditorProxy *scene);
-	SceneEditorProxy* GetScene() const;
+	void SetScene(SceneEditor2 *scene);
+	SceneEditor2* GetScene() const;
 
 	QModelIndex GetEntityIndex(DAVA::Entity *entity) const;
 	DAVA::Entity* GetEntity(const QModelIndex &index) const;
+
+	void SetSolid(const QModelIndex &index, bool solid);
 
 	// this workaround for Qt bug
 	// see https://bugreports.qt-project.org/browse/QTBUG-26229 
 	// for more information
 	bool DropIsAccepted();
+	bool DropCanBeAccepted(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent) const;
 
 	// drag and drop support
 	Qt::DropActions supportedDropActions() const;
@@ -55,7 +58,14 @@ public:
 
 protected:
 	bool dropAccepted;
-	SceneEditorProxy * curScene;
+	SceneEditor2 * curScene;
+
+	static const char* mimeFormatEntity;
+	static const char* mimeFormatEmitter;
+
+protected slots:
+	void EntityMoved(SceneEditor2 *scene, DAVA::Entity *entity);
+	void EntityRemoved(SceneEditor2 *scene, DAVA::Entity *entity);
 };
 
 #endif // __QT_SCENE_TREE_MODEL_H__

@@ -39,19 +39,6 @@ SceneExporter::~SceneExporter()
 }
 
 
-void SceneExporter::CleanFolder(const FilePath &folderPathname, Set<String> &errorLog)
-{
-    bool ret = FileSystem::Instance()->DeleteDirectory(folderPathname);
-    if(!ret)
-    {
-        bool folderExists = FileSystem::Instance()->IsDirectory(folderPathname);
-        if(folderExists)
-        {
-            errorLog.insert(String(Format("[CleanFolder] ret = %d, folder = %s", ret, folderPathname.GetAbsolutePathname().c_str())));
-        }
-    }
-}
-
 void SceneExporter::SetInFolder(const FilePath &folderPathname)
 {
     sceneUtils.SetInFolder(folderPathname);
@@ -363,8 +350,6 @@ void SceneExporter::ExportLandscapeFullTiledTexture(Landscape *landscape, Set<St
 
 
 
-
-
 void SceneExporter::CompressTextureIfNeed(const TextureDescriptor * descriptor, Set<String> &errorLog)
 {
     if(descriptor->exportedAsGpuFamily == GPU_UNKNOWN)
@@ -384,7 +369,7 @@ void SceneExporter::CompressTextureIfNeed(const TextureDescriptor * descriptor, 
         
         const String & extension = GPUFamilyDescriptor::GetCompressedFileExtension((eGPUFamily)descriptor->exportedAsGpuFamily, (PixelFormat)descriptor->exportedAsPixelFormat);
         
-        if(extension == ".png")
+        if(extension == ".pvr")
         {
             PVRConverter::Instance()->ConvertPngToPvr(*descriptor, (eGPUFamily)descriptor->exportedAsGpuFamily);
         }

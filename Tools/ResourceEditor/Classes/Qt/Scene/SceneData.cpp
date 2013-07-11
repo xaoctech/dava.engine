@@ -27,6 +27,7 @@
 #include "../Commands/SceneGraphCommands.h"
 #include "../Commands/LibraryCommands.h"
 #include "../Commands/CommandsManager.h"
+#include "../StringConstants.h"
 
 #include "../LandscapeEditor/LandscapesController.h"
 
@@ -121,6 +122,7 @@ void SceneData::RemoveSceneNode(DAVA::Entity *node)
 //        SceneValidator::Instance()->EnumerateSceneTextures();
     }
     
+    scene->UpdateCameraLightOnScene();
     RebuildSceneGraph();
 }
 

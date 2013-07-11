@@ -24,6 +24,10 @@ struct SizeSortItem
 class TexturePacker 
 {
 public:
+
+	static const int32 TEXTURE_SIZE = 2048;
+
+public:
 	TexturePacker();
 	
 	// pack textures to single texture
@@ -60,6 +64,7 @@ private:
 
 	bool onlySquareTextures;
     bool NeedSquareTextureForCompression(eGPUFamily forGPU);
+	bool IsFormatSupportedForGPU(PixelFormat format, eGPUFamily forGPU);
 };
 
 };

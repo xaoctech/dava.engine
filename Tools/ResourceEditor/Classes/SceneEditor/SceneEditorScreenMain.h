@@ -95,6 +95,7 @@ public:
 	virtual void LoadResources();
 	virtual void UnloadResources();
 	virtual void WillAppear();
+	virtual void DidAppear();
 	virtual void WillDisappear();
 	
 	virtual void Update(float32 timeElapsed);
@@ -136,14 +137,10 @@ public:
     void ProcessIsSolidChanging();
 
 	void ActivateLevelBodyItem();
-
+    
 private:
     
     void InitControls();
-    
-    
-    void AutoSaveLevel(BaseObject * obj, void *, void *);
-    void SetupAnimation();
     
     void AddLineControl(Rect r);
     
@@ -184,7 +181,6 @@ public: //For Qt integration
     void NewScene();
 
     bool SaveIsAvailable();
-    FilePath CurrentScenePathname();
     void SaveSceneToFile(const FilePath &pathToFile);
    
 
@@ -220,6 +216,14 @@ public: //For Qt integration
     void ProcessBeast();
     
     UIControl *focusedControl;
+    
+    //VK: Deprecated
+public:
+    void ShowScenePreview(const FilePath & scenePathname);
+    void HideScenePreview();
+private:
+    ScenePreviewDialog *scenePreviewDialog;
+
 };
 
 #endif // __SCENE_EDITOR_SCREEN_MAIN_H__
