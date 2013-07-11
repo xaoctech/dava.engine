@@ -48,9 +48,9 @@ float UIScrollViewMetadata::GetHorizontalScrollPosition() const
         return -1.0f;
     }
     
-	Vector2 offset = GetActiveUIScrollView()->GetOffset();
+	Vector2 padding = GetActiveUIScrollView()->GetPadding();
 	
-	return (-1) * qRound(offset.x);
+	return (-1) * qRound(padding.x);
 }
 
 void UIScrollViewMetadata::SetHorizontalScrollPosition(float value)
@@ -60,10 +60,10 @@ void UIScrollViewMetadata::SetHorizontalScrollPosition(float value)
         return;
     }
 	
-	Vector2 offset = GetActiveUIScrollView()->GetOffset();
-	offset.x = (-1) * value;	
+	Vector2 padding = GetActiveUIScrollView()->GetPadding();
+	padding.x = (-1) * value;	
 
-	GetActiveUIScrollView()->SetOffset(offset);
+	GetActiveUIScrollView()->SetPadding(padding);
 }
 
 float UIScrollViewMetadata::GetVerticalScrollPosition() const
@@ -73,9 +73,9 @@ float UIScrollViewMetadata::GetVerticalScrollPosition() const
         return -1.0f;
     }
 	
-	Vector2 offset = GetActiveUIScrollView()->GetOffset();
+	Vector2 padding = GetActiveUIScrollView()->GetPadding();
 	
-	return (-1) * qRound(offset.y);
+	return (-1) * qRound(padding.y);
 }
 
 void UIScrollViewMetadata::SetVerticalScrollPosition(float value)
@@ -85,10 +85,10 @@ void UIScrollViewMetadata::SetVerticalScrollPosition(float value)
         return;
     }
 
-	Vector2 offset = GetActiveUIScrollView()->GetOffset();
-	offset.y = (-1) * value;
+	Vector2 padding = GetActiveUIScrollView()->GetPadding();
+	padding.y = (-1) * value;
 
-	GetActiveUIScrollView()->SetOffset(offset);
+	GetActiveUIScrollView()->SetPadding(padding);
 }
 
 float UIScrollViewMetadata::GetContentSizeX() const

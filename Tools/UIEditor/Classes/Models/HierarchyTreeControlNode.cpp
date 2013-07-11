@@ -201,7 +201,7 @@ Vector2 HierarchyTreeControlNode::GetParentDelta(bool skipControl/* = false*/) c
 		UIScrollView* scrollView = dynamic_cast<UIScrollView* >(uiObject);
 		if (scrollView)
 		{
-			parentDelta += scrollView->GetOffset();
+			parentDelta += scrollView->GetPadding();
 		}
 	}
 	

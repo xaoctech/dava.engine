@@ -1,10 +1,18 @@
-//
-//  UIScrollViewContainer.cpp
-//  Framework
-//
-//  Created by Denis Bespalov on 4/29/13.
-//
-//
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
 
 #include "UI/UIScrollViewContainer.h"
 
@@ -21,9 +29,6 @@ UIScrollViewContainer::UIScrollViewContainer(const Rect &rect, bool rectInAbsolu
 	this->SetInputEnabled(true);
 	this->SetMultiInput(true);
 	this->SetDebugDraw(true);
-//	this->SetDebugDrawColor(Color(0.0f, 1.0f, 0.0f, 1.0f));
-//	this->GetBackground()->SetColor(Color(0.0f, 1.0f, 0.0f, 1.0f));
-//	this->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
 }
 
 UIScrollViewContainer::~UIScrollViewContainer()
@@ -86,22 +91,6 @@ void UIScrollViewContainer::EndScroll()
 	scrollCurrentShift.y = 0;
 }
 
-/*void UIScrollViewContainer::PerformScroll()
-{
-	Vector2 clickEndPosition = clickStartPosition;
-	clickEndPosition.x -= (scrollOrigin.x);
-	clickEndPosition.y -= (scrollOrigin.y);
-	
-	clickEndPosition.x /= zoomScale;
-	clickEndPosition.y /= zoomScale;
-	
-	UIEvent modifiedTouch = scrollTouch;
-	modifiedTouch.phase = UIEvent::PHASE_ENDED;
-	modifiedTouch.point = clickEndPosition;
-	
-	ScrollTouch(&modifiedTouch);
-}*/
-
 void UIScrollViewContainer::ScrollToPosition(const DAVA::Vector2 &position)
 {
 	Rect rect = this->GetRect();	
@@ -124,14 +113,7 @@ void UIScrollViewContainer::Input(UIEvent *currentTouch)
 				
 				Vector2 start = currentTouch->point;
 				StartScroll(start);
-
-				// init scrolling speed parameters
-				//scrollPixelsPerSecond = 0.0f;
-				//scrollStartTime = currentTouch->timestamp;//to avoid cast from uint64 to float64 SystemTimer::Instance()->AbsoluteMS();
-				//touchStartTime = SystemTimer::Instance()->AbsoluteMS();
 				state = STATE_SCROLL;
-
-				//clickStartPosition = start;
 			}
 			break;
 			case UIEvent::PHASE_DRAG:
@@ -140,23 +122,8 @@ void UIScrollViewContainer::Input(UIEvent *currentTouch)
 				{
 					if(currentTouch->tid == scrollTouch.tid)
 					{
-						// scrolling speed get parameters
-						//float64 scrollCurrentTime = currentTouch->timestamp;
-						//Vector2 scrollPrevPosition = scrollCurrentPosition;
-						
 						// perform scrolling
 						ProcessScroll(currentTouch->point);
-						
-						// calculate scrolling speed
-						/*float64 tmp = scrollCurrentTime;
-						if(fabs(scrollCurrentTime - scrollStartTime) < 1e-9)
-						{
-							tmp += .1f;
-						}
-						
-						Vector2 lineLength = scrollCurrentPosition - scrollPrevPosition;
-						scrollPixelsPerSecond = (float32)((float64)lineLength.Length() / (tmp - scrollStartTime));
-						scrollStartTime = scrollCurrentTime;*/
 					}
 				}
 			}
@@ -167,41 +134,9 @@ void UIScrollViewContainer::Input(UIEvent *currentTouch)
 				{
 					if(currentTouch->tid == scrollTouch.tid)
 					{
-						/*Vector2 scrollPrevPos = lastMousePositions[(positionIndex - 3) & (MAX_MOUSE_POSITIONS - 1)];
-						Vector2 currentTouchPos = currentTouch->point; 
-						
-						deccelerationSpeed = Vector2(currentTouchPos.x, currentTouchPos.y);
-						deccelerationSpeed.x -= scrollPrevPos.x;
-						deccelerationSpeed.y -= scrollPrevPos.y;
-						
-						float32 deccelerationSpeedLen = sqrtf(deccelerationSpeed.x * deccelerationSpeed.x + deccelerationSpeed.y * deccelerationSpeed.y);
-						if (deccelerationSpeedLen >= 0.00001f)
-						{
-							deccelerationSpeed.x /= deccelerationSpeedLen;
-							deccelerationSpeed.y /= deccelerationSpeedLen;
-						}
-						else
-						{
-							deccelerationSpeed.x = 0.0f;
-							deccelerationSpeed.y = 0.0f;
-						}
-						*/
 						EndScroll();
-						
-						//scrollTouch = 0;
-						//if(scrollStartMovement)
-						{
-							state = STATE_DECCELERATION;
-						}
-						
-						//clickEndPosition = currentTouchPos;
+						state = STATE_DECCELERATION;						
 					}
-					
-					/*if(touchStartTime)
-					{
-						touchStartTime = 0;
-						PerformScroll();
-					}*/
 				}
 			}
 				break;
@@ -252,88 +187,7 @@ void UIScrollViewContainer::Update(float32 timeElapsed)
 			this->SetRect(contentRect);
 		}
 	}
-	
-/*	if(touchStartTime)
-	{
-		uint64 delta = SystemTimer::Instance()->AbsoluteMS() - touchStartTime;
-		if(delta > TOUCH_BEGIN_MS)
-		{
-			touchStartTime = 0;
-		
-			PerformScroll();
-		}
-	}
-	
-	if(state == STATE_DECCELERATION)
-	{
-		float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
-		
-		scrollOrigin.x += deccelerationSpeed.x * scrollPixelsPerSecond * timeElapsed;
-		scrollOrigin.y += deccelerationSpeed.y * scrollPixelsPerSecond * timeElapsed;
-		
-		scrollPixelsPerSecond *= 0.7f;
-		
-		if (scrollPixelsPerSecond <= 0.1f)
-		{
-			scrollPixelsPerSecond = 0.f;
-			state = STATE_NONE;
-		}
-	}
-	
-	if(state != STATE_ZOOM && state != STATE_SCROLL)
-	{
-		// hcenter
-		if((scrollOrigin.x > 0) && ((scrollOrigin.x + GetRect().dx * zoomScale) < (size.x)))
-		{
-			float32 delta = scrollOrigin.x-scrollZero.x;
-			scrollOrigin.x -= delta * timeElapsed * 5;
-		}
-		else if(scrollOrigin.x > 0)
-		{
-			scrollOrigin.x -= (scrollOrigin.x) * timeElapsed * 5;
-		}
-		else if((scrollOrigin.x + GetRect().dx * zoomScale) < (size.x))
-		{
-			scrollOrigin.x += ((size.x) - (scrollOrigin.x + GetRect().dx * zoomScale)) * timeElapsed * 5;
-		}
-		
-		// vcenter
-		if((scrollOrigin.y > 0) && ((scrollOrigin.y + GetRect().dy * zoomScale) < (size.y)))
-		{
-			float32 delta = scrollOrigin.y-scrollZero.y;
-			scrollOrigin.y -= delta * timeElapsed * 5;
-		}
-		else if(scrollOrigin.y > 0)
-		{
-			scrollOrigin.y -= (scrollOrigin.y) * timeElapsed * 5;
-		}
-		else if((scrollOrigin.y + GetRect().dy * zoomScale) < (size.y))
-		{
-			scrollOrigin.y += ((size.y) - (scrollOrigin.y + GetRect().dy * zoomScale)) * timeElapsed * 5;
-		}		
-	}
-
-	//scrolling over the edge
-	drawScrollPos.x = scrollCurrentShift.x;
-	drawScrollPos.y = scrollCurrentShift.y;*/
 }
-
-/*void UIScrollViewContainer::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
-{
-	UIControl::LoadFromYamlNode(node, loader);
-	// Load size of contents
-//	YamlNode *contentSizeNode = node->Get("contentSize");
-//	if (contentSizeNode)
-	{
-//		SetContentSize(contentSizeNode->AsPoint());
-	}
-	// Load curent scroll positions
-//	YamlNode * scrollOriginNode = node->Get("scrollOrigin");
-//	if (scrollOriginNode)
-//	{
-	//	SetOffset(scrollOriginNode->AsPoint());
-//	}
-}*/
 
 YamlNode * UIScrollViewContainer::SaveToYamlNode(UIYamlLoader * loader)
 {
