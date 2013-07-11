@@ -161,7 +161,7 @@ void TexturePacker::PackToTexturesSeparate(const FilePath & excludeFolder, const
                 withoutExt.TruncateExtension();
 
 				PngImageExt image;
-				image.Read(FramePathHelper::GetFramePathRelative(withoutExt.GetAbsolutePathname(), frame).c_str());
+				image.Read(FramePathHelper::GetFramePathRelative(withoutExt, frame));
 				finalImage.DrawImage(destRect->x, destRect->y, &image);
 			}
 			
@@ -241,7 +241,7 @@ void TexturePacker::PackToTextures(const FilePath & excludeFolder, const FilePat
                 withoutExt.TruncateExtension();
 
 				PngImageExt image;
-				image.Read(FramePathHelper::GetFramePathRelative(withoutExt.GetAbsolutePathname(), frame).c_str());
+				image.Read(FramePathHelper::GetFramePathRelative(withoutExt, frame));
 				finalImage.DrawImage(destRect->x, destRect->y, &image);
 
 				if (CommandLineParser::Instance()->IsFlagSet("--debug"))
@@ -339,7 +339,7 @@ void TexturePacker::PackToMultipleTextures(const FilePath & excludeFolder, const
 			Rect2i * destRect;
 			ImagePacker * foundPacker = 0;
 			int packerIndex = 0;
-			String imagePath;
+			FilePath imagePath;
 			
 			for (packerIndex = 0; packerIndex < (int)packers.size(); ++packerIndex)
 			{
@@ -351,7 +351,7 @@ void TexturePacker::PackToMultipleTextures(const FilePath & excludeFolder, const
                     FilePath withoutExt(defFile->filename);
                     withoutExt.TruncateExtension();
 
-					imagePath = FramePathHelper::GetFramePathRelative(withoutExt.GetAbsolutePathname(), frame);
+					imagePath = FramePathHelper::GetFramePathRelative(withoutExt, frame);
 					break;
 				}
 			}
