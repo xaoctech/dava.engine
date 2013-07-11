@@ -135,7 +135,7 @@ void UIScrollViewContainer::Input(UIEvent *currentTouch)
 					if(currentTouch->tid == scrollTouch.tid)
 					{
 						EndScroll();
-						state = STATE_DECCELERATION;						
+						state = STATE_DECCELERATION;
 					}
 				}
 			}
