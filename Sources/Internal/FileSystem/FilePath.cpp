@@ -89,11 +89,6 @@ const List<FilePath> FilePath::GetResourcesFolders()
 {
     return resourceFolders;
 }
-    
-void FilePath::CleanResourcesFolders()
-{
-    resourceFolders.clear();
-}
 
     
 #if defined(__DAVAENGINE_WIN32__)
@@ -253,6 +248,7 @@ String FilePath::ResolveResourcesPath() const
         List<FilePath>::reverse_iterator endIt = resourceFolders.rend();
         for(List<FilePath>::reverse_iterator it = resourceFolders.rbegin(); it != endIt; ++it)
         {
+            FilePath t = *it;
             path = *it + relativePathname;
             
             if(isDirectory)

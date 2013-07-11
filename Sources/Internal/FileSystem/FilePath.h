@@ -232,7 +232,6 @@ public:
     static void AddResourcesFolder(const FilePath & folder);
     static void RemoveResourcesFolder(const FilePath & folder);
     static const List<FilePath> GetResourcesFolders();
-    static void CleanResourcesFolders();
     
     
     /**
