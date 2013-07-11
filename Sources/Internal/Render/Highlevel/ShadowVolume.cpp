@@ -34,8 +34,9 @@ ShadowVolume::ShadowVolume()
 	shader->LoadFromYaml("~res:/Shaders/ShadowVolume/shadowvolume.shader");
 	shader->Recompile();
 
-    
     SetOwnerLayerName(LAYER_SHADOW_VOLUME);
+    
+    aabbox = AABBox3(Vector3(), Vector3());
 }
 
 ShadowVolume::~ShadowVolume()
@@ -496,11 +497,9 @@ void ShadowVolume::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
 
 	if(NULL != archive && NULL != sceneFile)
 	{
-		PolygonGroup *pg = NULL;
-
 		if(archive->IsKeyExists("sv.spg"))
 		{
-			pg = (PolygonGroup *) sceneFile->GetNodeByPointer(archive->GetVariant("sv.spg")->AsUInt64());
+			PolygonGroup *pg = (PolygonGroup *) sceneFile->GetNodeByPointer(archive->GetVariant("sv.spg")->AsUInt64());
 			if(NULL != pg)
 			{
 				SetPolygonGroup(pg);

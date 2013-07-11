@@ -149,11 +149,10 @@ void ParticleEmitter::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
 
 	if(NULL != archive)
 	{
-		if(archive->IsKeyExists("pe.configpath"))
+		String filename = archive->GetString("pe.configpath");
+		if(!filename.empty())
 		{
-            String filename = archive->GetString("pe.configpath");
 			configPath = sceneFile->GetScenePath() + filename;
-            
 			LoadFromYaml(configPath);
 		}
 	}
@@ -161,21 +160,37 @@ void ParticleEmitter::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
 
 void ParticleEmitter::AddLayer(ParticleLayer * layer)
 {
-	if (layer)
+	if (!layer)
 	{
-		layers.push_back(layer);
-		layer->Retain();
-		layer->SetEmitter(this);
-		AddRenderBatch(layer->GetRenderBatch());
-	}	
+		return;
+	}
+
+	// Don't allow the same layer to be added twice.
+	Vector<DAVA::ParticleLayer*>::iterator layerIter = std::find(layers.begin(), layers.end(),
+																 layer);
+	if (layerIter != layers.end())
+	{
+		DVASSERT(false);
+		return;
+	}
+
+	layer->Retain();
+	if (layer->GetEmitter())
+	{
+		layer->GetEmitter()->RemoveLayer(layer);
+	}
+
+	layers.push_back(layer);
+	layer->SetEmitter(this);
+	AddRenderBatch(layer->GetRenderBatch());
 }
 
-void ParticleEmitter::AddLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove)
+void ParticleEmitter::InsertLayer(ParticleLayer * layer, ParticleLayer * beforeLayer)
 {
 	AddLayer(layer);
-	if (layerToMoveAbove)
+	if (beforeLayer)
 	{
-		MoveLayer(layer, layerToMoveAbove);
+		MoveLayer(layer, beforeLayer);
 	}
 }
 	
@@ -201,18 +216,17 @@ void ParticleEmitter::RemoveLayer(ParticleLayer * layer)
 void ParticleEmitter::RemoveLayer(int32 index)
 {
     DVASSERT(0 <= index && index < (int32)layers.size());
-
     RemoveLayer(layers[index]);
 }
 
 	
-void ParticleEmitter::MoveLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove)
+void ParticleEmitter::MoveLayer(ParticleLayer * layer, ParticleLayer * beforeLayer)
 {
 	Vector<DAVA::ParticleLayer*>::iterator layerIter = std::find(layers.begin(), layers.end(), layer);
-	Vector<DAVA::ParticleLayer*>::iterator layerToMoveAboveIter = std::find(layers.begin(), layers.end(),layerToMoveAbove);
+	Vector<DAVA::ParticleLayer*>::iterator beforeLayerIter = std::find(layers.begin(), layers.end(),beforeLayer);
 
-	if (layerIter == layers.end() || layerToMoveAboveIter == layers.end() ||
-		layerIter == layerToMoveAboveIter)
+	if (layerIter == layers.end() || beforeLayerIter == layers.end() ||
+		layerIter == beforeLayerIter)
 	{
 		return;
 	}
@@ -220,8 +234,28 @@ void ParticleEmitter::MoveLayer(ParticleLayer * layer, ParticleLayer * layerToMo
 	layers.erase(layerIter);
 
 	// Look for the position again - an iterator might be changed.
-	layerToMoveAboveIter = std::find(layers.begin(), layers.end(),layerToMoveAbove);
-	layers.insert(layerToMoveAboveIter, layer);
+	beforeLayerIter = std::find(layers.begin(), layers.end(), beforeLayer);
+	layers.insert(beforeLayerIter, layer);
+}
+
+ParticleLayer* ParticleEmitter::GetNextLayer(ParticleLayer* layer)
+{
+	if (!layer || layers.size() < 2)
+	{
+		return NULL;
+	}
+
+	int32 layersToCheck = layers.size() - 1;
+	for (int32 i = 0; i < layersToCheck; i ++)
+	{
+		ParticleLayer* curLayer = layers[i];
+		if (curLayer == layer)
+		{
+			return layers[i + 1];
+		}
+	}
+	
+	return NULL;
 }
 
 /* float32 ParticleEmitter::GetCurrentNumberScale()

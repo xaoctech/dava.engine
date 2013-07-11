@@ -24,6 +24,7 @@
 
 #include "./Qt/SpritesPacker/SpritePackerHelper.h"
 #include "../Main/QtUtils.h"
+#include "../Main/QtMainWindowHandler.h"
 #include "../SceneEditor/EntityOwnerPropertyHelper.h"
 #include "../StringConstants.h"
 
@@ -118,6 +119,8 @@ Entity* SceneDataManager::AddScene(const FilePath &scenePathname)
 		sceneData->SetLandscapesControllerScene(scene);
 	}
 
+    sceneData->GetScene()->UpdateCameraLightOnScene();
+    SceneHidePreview();
 	UpdateParticleSprites();
 	emit SceneGraphNeedRebuild();
 
@@ -186,6 +189,8 @@ void SceneDataManager::EditScene(SceneData* sceneData, const FilePath &scenePath
 	scene->Update(0);
 	sceneData->EmitSceneChanged();
 
+
+    scene->UpdateCameraLightOnScene();
 	UpdateParticleSprites();
     emit SceneGraphNeedRebuild();
 
@@ -241,6 +246,8 @@ void SceneDataManager::ReloadScene(const FilePath &scenePathname, const FilePath
         screen->OnReloadRootNodesQt();
     }
     
+    
+    scene->UpdateCameraLightOnScene();
 	UpdateParticleSprites();
     emit SceneGraphNeedRebuild();
 	sceneData->SetLandscapesControllerScene(scene);
@@ -275,6 +282,7 @@ void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const FilePa
             errors.insert(Format("Cannot load object: %s", fromPathname.GetAbsolutePathname().c_str()));
         }
         
+        scene->UpdateCameraLightOnScene();
         return;
     }
     
@@ -296,6 +304,9 @@ void SceneDataManager::SetActiveScene(EditorScene *scene)
     currentScene = FindDataForScene(scene);
     DVASSERT(currentScene && "There is no current scene. Something wrong.");
     currentScene->RebuildSceneGraph();
+
+    
+    QtMainWindowHandler::Instance()->ShowStatusBarMessage(currentScene->GetScenePathname().GetAbsolutePathname());
 
 	emit SceneActivated(currentScene);
 }
@@ -417,6 +428,23 @@ SceneData *SceneDataManager::SceneGet(DAVA::int32 index)
     
     return *it;
 }
+
+SceneData *SceneDataManager::SceneGet(DAVA::Scene *scene)
+{
+    DVASSERT(scene);
+    
+    auto endIt = scenes.end();
+    for(auto it = scenes.begin(); it != endIt; ++it)
+    {
+        if((*it)->GetScene() == scene)
+            return *it;
+    }
+    
+    DVASSERT(false);
+    
+    return NULL;
+}
+
 
 void SceneDataManager::InSceneData_SceneChanged(EditorScene *scene)
 {
@@ -576,6 +604,9 @@ void SceneDataManager::CollectLandscapeDescriptors(DAVA::Set<DAVA::FilePath> &de
 
 void SceneDataManager::CollectDescriptors(DAVA::Set<DAVA::FilePath> &descriptors, const DAVA::FilePath &pathname)
 {
+    if(pathname.GetType() == FilePath::PATH_EMPTY)
+        return;
+
     DVASSERT(pathname.IsEqualToExtension(TextureDescriptor::GetDescriptorExtension()));
     
     if(!pathname.IsEmpty() && SceneValidator::Instance()->IsPathCorrectForProject(pathname))
@@ -672,7 +703,7 @@ void SceneDataManager::TextureReloadAll(DAVA::eGPUFamily forGPU)
 		{
 			Texture *newTexture = TextureReload(descriptor, it->second, forGPU);
 			SafeRelease(descriptor);
-		}
+		} //todo: need to reload texture as pinkplaceholder
 	}
 }
 
@@ -757,4 +788,41 @@ void SceneDataManager::ApplyDefaultFogSettings(Landscape* landscape, DAVA::Entit
 		material->SetFogColor(landscape->GetFogColor());
 		material->SetFogDensity(landscape->GetFogDensity());
 	}
+}
+
+void SceneDataManager::UpdateCameraLightOnScene(bool show)
+{
+ 	List<SceneData *>::const_iterator endIt = scenes.end();
+	for(List<SceneData *>::const_iterator it = scenes.begin(); it != endIt; ++it)
+	{
+        (*it)->GetScene()->UpdateCameraLightOnScene(show);
+	}
+    
+    emit SceneGraphNeedRebuild();
+}
+
+void SceneDataManager::SceneShowPreview(const DAVA::FilePath &path)
+{
+    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+
+    if(screen)
+    {
+        if(path.IsEqualToExtension(".sc2") && FileSystem::Instance()->IsFile(path))
+        {
+            screen->ShowScenePreview(path);
+        }
+        else
+        {
+            SceneHidePreview();
+        }
+    }
+}
+
+void SceneDataManager::SceneHidePreview()
+{
+    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+    if(screen)
+    {
+        screen->HideScenePreview();
+    }
 }

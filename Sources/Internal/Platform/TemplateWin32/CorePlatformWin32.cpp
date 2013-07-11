@@ -69,6 +69,8 @@ namespace DAVA
 
 		core->InitArgs();
 
+		Logger::Instance()->EnableConsoleMode();
+		
 		FrameworkDidLaunched();
 		FrameworkWillTerminate();
 		core->ReleaseSingletons();

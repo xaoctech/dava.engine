@@ -29,7 +29,7 @@
 namespace DAVA
 {
 
-RenderObject * GetRenerObject(Entity * fromEntity)
+RenderObject * GetRenderObject(Entity * fromEntity)
 {
 	RenderObject * object = 0;
 
@@ -51,7 +51,7 @@ ParticleEmitter * GetEmitter(Entity * fromEntity)
 
 	if(NULL != fromEntity)
 	{
-		RenderObject * object = GetRenerObject(fromEntity);
+		RenderObject * object = GetRenderObject(fromEntity);
 		if(object && object->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
 		{
 			emitter = static_cast<ParticleEmitter*>(object);
@@ -80,7 +80,7 @@ Landscape * GetLandscape( Entity * fromEntity )
 {
 	if(NULL != fromEntity)
 	{
-		RenderObject * object = GetRenerObject(fromEntity);
+		RenderObject * object = GetRenderObject(fromEntity);
 		if(object && object->GetType() == RenderObject::TYPE_LANDSCAPE)
 		{
 			Landscape *landscape = static_cast<Landscape *>(object);

@@ -38,12 +38,12 @@ void ParticleEmitter3D::AddLayer(ParticleLayer * layer)
 	}
 }
 	
-void ParticleEmitter3D::AddLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove)
+void ParticleEmitter3D::InsertLayer(ParticleLayer * layer, ParticleLayer * beforeLayer)
 {
 	// Only ParticleLayer3Ds are allowed on this level.
 	if (dynamic_cast<ParticleLayer3D*>(layer))
 	{
-		ParticleEmitter::AddLayer(layer, layerToMoveAbove);
+		ParticleEmitter::InsertLayer(layer, beforeLayer);
 	}
 }
 

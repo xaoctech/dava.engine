@@ -19,6 +19,7 @@
 
 #include "Scene/EntityGroup.h"
 #include "Scene/SceneTypes.h"
+#include "Commands2/Command2.h"
 
 // framework
 #include "Entity/SceneSystem.h"
@@ -30,7 +31,7 @@ class HoodSystem;
 
 class SceneSelectionSystem : public DAVA::SceneSystem
 {
-	friend class SceneEditorProxy;
+	friend class SceneEditor2;
 	friend class EntityModificationSystem;
 
 public:
@@ -49,18 +50,21 @@ public:
 	void SetPivotPoint(ST_PivotPoint pp);
 	ST_PivotPoint GetPivotPoint() const;
 
+	DAVA::AABBox3 GetSelectionAABox(DAVA::Entity *entity) const;
+	DAVA::AABBox3 GetSelectionAABox(DAVA::Entity *entity, const DAVA::Matrix4 &transform) const;
+
 protected:
 	void Update(DAVA::float32 timeElapsed);
-	void ProcessUIEvent(DAVA::UIEvent *event);
 	void Draw();
 
-	EntityGroup GetSelecetableFromCollision(const EntityGroup *collisionEntities);
-	EntityGroupItem GetSelectableEntity(DAVA::Entity* entity);
+	void ProcessUIEvent(DAVA::UIEvent *event);
+	void PropeccCommand(const Command2 *command, bool redo);
 
 	void UpdateHoodPos() const;
 	void SelectedItemsWereModified();
 
-	DAVA::AABBox3 CalcAABox(DAVA::Entity *entity) const;
+	EntityGroup GetSelecetableFromCollision(const EntityGroup *collisionEntities);
+	DAVA::Entity* GetSelectableEntity(DAVA::Entity* entity);
 
 private:
 	int drawMode;

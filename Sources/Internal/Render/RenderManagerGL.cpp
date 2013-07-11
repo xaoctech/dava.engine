@@ -1186,7 +1186,19 @@ void RenderManager::HWglBindFBO(const int32 fbo)
     }
 }
 
-    
+#if defined(__DAVAENGINE_ANDROID__)
+void RenderManager::Lost()
+{
+	enabledAttribCount = 0;
+	lastBindedTexture = 0;
+	lastBindedFBO = 0;
+}
+
+void RenderManager::Invalidate()
+{
+
+}
+#endif
 
 
 };
