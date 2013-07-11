@@ -8,7 +8,7 @@
 #include "Render/Texture.h"
 #include "TextureCompression/PVRConverter.h"
 #include "TextureCompression/DXTConverter.h"
-
+#include "FramePathHelper.h"
 
 #ifdef WIN32
 #define snprintf _snprintf
@@ -161,14 +161,11 @@ void TexturePacker::PackToTexturesSeparate(const FilePath & excludeFolder, const
 				Rect2i *destRect = lastPackedPacker->SearchRectForPtr(&defFile->frameRects[frame]);
 				if (!destRect)Logger::Error("*** ERROR Can't find rect for frame\n");
 				
-				char name[256];
 				FilePath withoutExt(defFile->filename);
                 withoutExt.TruncateExtension();
-                
-				snprintf(name, 256, "%s%d.png", withoutExt.GetAbsolutePathname().c_str(), frame);
-				
+
 				PngImageExt image;
-				image.Read(name);
+				image.Read(FramePathHelper::GetFramePathRelative(withoutExt.GetAbsolutePathname(), frame).c_str());
 				finalImage.DrawImage(destRect->x, destRect->y, &image);
 			}
 			
@@ -247,14 +244,11 @@ void TexturePacker::PackToTextures(const FilePath & excludeFolder, const FilePat
 				Rect2i *destRect = lastPackedPacker->SearchRectForPtr(&defFile->frameRects[frame]);
 				if (!destRect)Logger::Error("*** ERROR Can't find rect for frame\n");
 				
-				char name[256];
                 FilePath withoutExt(defFile->filename);
                 withoutExt.TruncateExtension();
 
-				snprintf(name, 256, "%s%d.png", withoutExt.GetAbsolutePathname().c_str(), frame);
-
 				PngImageExt image;
-				image.Read(name);
+				image.Read(FramePathHelper::GetFramePathRelative(withoutExt.GetAbsolutePathname(), frame).c_str());
 				finalImage.DrawImage(destRect->x, destRect->y, &image);
 
 				if (CommandLineParser::Instance()->IsFlagSet("--debug"))
@@ -355,7 +349,7 @@ void TexturePacker::PackToMultipleTextures(const FilePath & excludeFolder, const
 			Rect2i * destRect;
 			ImagePacker * foundPacker = 0;
 			int packerIndex = 0;
-			char name[256];
+			String imagePath;
 			
 			for (packerIndex = 0; packerIndex < (int)packers.size(); ++packerIndex)
 			{
@@ -367,7 +361,7 @@ void TexturePacker::PackToMultipleTextures(const FilePath & excludeFolder, const
                     FilePath withoutExt(defFile->filename);
                     withoutExt.TruncateExtension();
 
-					snprintf(name, 256, "%s%d.png", withoutExt.GetAbsolutePathname().c_str(), frame);
+					imagePath = FramePathHelper::GetFramePathRelative(withoutExt.GetAbsolutePathname(), frame);
 					break;
 				}
 			}
@@ -376,7 +370,7 @@ void TexturePacker::PackToMultipleTextures(const FilePath & excludeFolder, const
 			{
 				if (CommandLineParser::Instance()->GetVerbose())Logger::Info("[MultiPack] pack to texture: %d\n", packerIndex);
 				PngImageExt image;
-				image.Read(name);
+				image.Read(imagePath);
 				finalImages[packerIndex]->DrawImage(destRect->x, destRect->y, &image);
 				if (CommandLineParser::Instance()->IsFlagSet("--debug"))
 				{
