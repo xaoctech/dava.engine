@@ -55,6 +55,10 @@ ParticleEditorWidget::ParticleEditorWidget(QWidget *parent/* = 0*/) :
 	
 	// New signals for Scene Tree.
 	connect(SceneSignals::Instance(),
+			SIGNAL(EffectSelected(DAVA::Entity*)),
+			this,
+			SLOT(OnEffectSelectedFromSceneTree(DAVA::Entity*)));
+	connect(SceneSignals::Instance(),
 			SIGNAL(EmitterSelected(DAVA::Entity*)),
 			this,
 			SLOT(OnEmitterSelectedFromSceneTree(DAVA::Entity*)));
@@ -374,10 +378,14 @@ void ParticleEditorWidget::OnEmitterSelectedFromSceneTree(DAVA::Entity* emitterN
 		// This means nothing Particle Emitter-related is selected.
 		OnNodeDeselected(NULL);
 	}
-	else
-	{
-		OnEmitterSelected(emitterNode, NULL);
-	}
+	
+	// NULL is accepted here too.
+	OnEmitterSelected(emitterNode, NULL);
+}
+
+void ParticleEditorWidget::OnEffectSelectedFromSceneTree(DAVA::Entity* effectNode)
+{
+	OnEffectSelected(effectNode);
 }
 
 void ParticleEditorWidget::OnLayerSelectedFromSceneTree(DAVA::ParticleLayer* layer, bool forceRefresh)

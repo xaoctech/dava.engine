@@ -64,7 +64,10 @@ ParticleTimeLineWidget::ParticleTimeLineWidget(QWidget *parent/* = 0*/) :
 			SLOT(OnNodeSelected(Entity*)));
 
 	// New signals handling from Scene Tree.
-	// New signals for Scene Tree.
+	connect(SceneSignals::Instance(),
+			SIGNAL(EffectSelected(DAVA::Entity*)),
+			this,
+			SLOT(OnEffectSelectedFromSceneTree(DAVA::Entity*)));
 	connect(SceneSignals::Instance(),
 			SIGNAL(EmitterSelected(DAVA::Entity*)),
 			this,
@@ -118,6 +121,7 @@ void ParticleTimeLineWidget::OnLayerSelected(Entity* node, ParticleLayer* layer)
 {
 	if (!node || !layer)
 	{
+		CleanupTimelines();
 		emit ChangeVisible(false);
 		return;
 	}
@@ -136,6 +140,7 @@ void ParticleTimeLineWidget::HandleEmitterSelected(ParticleEmitter* emitter, Par
 {
 	if (!emitter)
 	{
+		CleanupTimelines();
 		emit ChangeVisible(false);
 		return;
 	}
@@ -742,6 +747,11 @@ void ParticleTimeLineWidget::OnCommandExecuted(DAVA::Scene* scene, CommandList::
 	}
 }
 
+void ParticleTimeLineWidget::OnEffectSelectedFromSceneTree(DAVA::Entity* effectNode)
+{
+	OnEffectNodeSelected(effectNode);
+}
+
 void ParticleTimeLineWidget::OnEmitterSelectedFromSceneTree(DAVA::Entity* emitterNode)
 {
 	ParticleEmitter* emitter = NULL;
@@ -774,6 +784,14 @@ void ParticleTimeLineWidget::OnForceSelectedFromSceneTree(DAVA::ParticleLayer* l
 	}
 	
 	HandleEmitterSelected(emitter, layer);
+}
+
+void ParticleTimeLineWidget::CleanupTimelines()
+{
+	lines.clear();
+	UpdateSizePolicy();
+	NotifyLayersExtraInfoChanged();
+	UpdateLayersExtraInfoPosition();
 }
 
 ParticleTimeLineWidget::SetPointValueDlg::SetPointValueDlg(float32 value, float32 minValue, float32 maxValue, QWidget *parent) :

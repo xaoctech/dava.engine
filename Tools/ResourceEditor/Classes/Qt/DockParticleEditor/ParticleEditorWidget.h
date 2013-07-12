@@ -45,6 +45,7 @@ protected slots:
     void OnForceSelected(Entity* emitterNode, ParticleLayer* layer, int32 forceIndex, BaseParticleEditorNode* editorNode);
 
 	// New signals for SceneTree.
+	void OnEffectSelectedFromSceneTree(DAVA::Entity* effectNode);
 	void OnEmitterSelectedFromSceneTree(DAVA::Entity* emitterNode);
 	void OnLayerSelectedFromSceneTree(DAVA::ParticleLayer* layer, bool forceRefresh);
     void OnForceSelectedFromSceneTree(DAVA::ParticleLayer* layer, DAVA::int32 forceIndex);

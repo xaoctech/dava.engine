@@ -73,6 +73,7 @@ protected slots:
 	void OnLayerSelected(Entity* node, ParticleLayer* layer);
 	
 	// New signals for SceneTree.
+	void OnEffectSelectedFromSceneTree(DAVA::Entity* effectNode);
 	void OnEmitterSelectedFromSceneTree(DAVA::Entity* emitterNode);
 	void OnLayerSelectedFromSceneTree(DAVA::ParticleLayer* layer, bool forceRefresh);
     void OnForceSelectedFromSceneTree(DAVA::ParticleLayer* layer, DAVA::int32 forceIndex);
@@ -123,6 +124,10 @@ private:
 private:
 	// Get the width/height for particle counter label.
 	void GetParticlesCountWidthHeight(const LINE& line, int32& width, int32& height);
+
+	
+	// Cleanup all the timelines and info.
+	void CleanupTimelines();
 
 	LINE_MAP lines;
 	QFont nameFont;
