@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/">
+    <file>QtIcons/error.png</file>
     <file>QtIcons/box_closed.png</file>
     <file>QtIcons/box_open.png</file>
     <file>QtIcons/render_object.png</file>
