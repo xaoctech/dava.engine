@@ -27,6 +27,8 @@
 
 #include "../StringConstants.h"
 
+#include "../Qt/Main/QtUtils.h"
+
 using namespace DAVA;
 
 SceneExporter::SceneExporter()
@@ -38,19 +40,6 @@ SceneExporter::~SceneExporter()
 {
 }
 
-
-void SceneExporter::CleanFolder(const FilePath &folderPathname, Set<String> &errorLog)
-{
-    bool ret = FileSystem::Instance()->DeleteDirectory(folderPathname);
-    if(!ret)
-    {
-        bool folderExists = FileSystem::Instance()->IsDirectory(folderPathname);
-        if(folderExists)
-        {
-            errorLog.insert(String(Format("[CleanFolder] ret = %d, folder = %s", ret, folderPathname.GetAbsolutePathname().c_str())));
-        }
-    }
-}
 
 void SceneExporter::SetInFolder(const FilePath &folderPathname)
 {
@@ -384,6 +373,7 @@ void SceneExporter::CompressTextureIfNeed(const TextureDescriptor * descriptor, 
         
         if(extension == ".pvr")
         {
+            DeleteOldPVRTextureIfPowerVr_IOS(descriptor, (eGPUFamily)descriptor->exportedAsGpuFamily);
             PVRConverter::Instance()->ConvertPngToPvr(*descriptor, (eGPUFamily)descriptor->exportedAsGpuFamily);
         }
         else if(extension == ".dds")

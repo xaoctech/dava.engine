@@ -147,6 +147,8 @@ void QtMainWindow::SetupActions()
 	//Edit
 	connect(ui->actionConvertToShadow, SIGNAL(triggered()), actionHandler, SLOT(ConvertToShadow()));
     
+	//Temporary hided for development-qa branch
+	ui->actionEnableCameraLight->setVisible(false);
     ui->actionEnableCameraLight->setChecked(EditorSettings::Instance()->GetShowEditorCamerLight());
 	connect(ui->actionEnableCameraLight, SIGNAL(triggered()), actionHandler, SLOT(CameraLightTrigerred()));
 

@@ -299,7 +299,10 @@ void EditorSettings::SetDesignerName(const String &userName)
 
 bool EditorSettings::GetShowEditorCamerLight()
 {
-    return settings->GetBool("ShowEditorCamerLight", true);
+//    return settings->GetBool("ShowEditorCamerLight", true);
+	
+	//Temporary disabled for development-qa branch
+	return false;
 }
 
 void EditorSettings::SetShowEditorCamerLight(bool show)

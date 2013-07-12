@@ -104,6 +104,7 @@ CommandPlaceAreaVisibilityTool::CommandPlaceAreaVisibilityTool(const Vector2& ar
 CommandPlaceAreaVisibilityTool::~CommandPlaceAreaVisibilityTool()
 {
 	SafeRelease(oldImage);
+	SafeRelease(redoImage);
 }
 
 void CommandPlaceAreaVisibilityTool::Execute()
