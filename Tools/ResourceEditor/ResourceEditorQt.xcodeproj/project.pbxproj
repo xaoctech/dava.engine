@@ -25,6 +25,7 @@
 		177D1A9016CB8ADB0021104B /* SceneGraphModelStateHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 177D1A8E16CB8ADB0021104B /* SceneGraphModelStateHelper.cpp */; };
 		177D1A9316CB8C820021104B /* PropertyEditorStateHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 177D1A9116CB8C820021104B /* PropertyEditorStateHelper.cpp */; };
 		178A9B721716E584006BB1F7 /* ParticleEffectPropertiesWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 178A9B701716E583006BB1F7 /* ParticleEffectPropertiesWidget.cpp */; };
+		17B8201B178FEFCD00954A81 /* FramePathHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17B82019178FEFCD00954A81 /* FramePathHelper.cpp */; };
 		17D9FE251784220500A621A0 /* BaseParticleEditorContentWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17D9FE231784220500A621A0 /* BaseParticleEditorContentWidget_moc.cpp */; };
 		493BAC5D16BFD655000E5F84 /* EditorBodyControlCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 493BAC5B16BFD655000E5F84 /* EditorBodyControlCommands.cpp */; };
 		4940AF6C164C1684003E95A7 /* CustomColorCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4940AF6A164C1684003E95A7 /* CustomColorCommands.cpp */; };
@@ -617,6 +618,8 @@
 		177D1A9216CB8C820021104B /* PropertyEditorStateHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyEditorStateHelper.h; sourceTree = "<group>"; };
 		178A9B701716E583006BB1F7 /* ParticleEffectPropertiesWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEffectPropertiesWidget.cpp; sourceTree = "<group>"; };
 		178A9B711716E583006BB1F7 /* ParticleEffectPropertiesWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEffectPropertiesWidget.h; sourceTree = "<group>"; };
+		17B82019178FEFCD00954A81 /* FramePathHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FramePathHelper.cpp; sourceTree = "<group>"; };
+		17B8201A178FEFCD00954A81 /* FramePathHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FramePathHelper.h; sourceTree = "<group>"; };
 		17D9FE231784220500A621A0 /* BaseParticleEditorContentWidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BaseParticleEditorContentWidget_moc.cpp; path = _GeneratedQt/DockParticleEditor/BaseParticleEditorContentWidget_moc.cpp; sourceTree = SOURCE_ROOT; };
 		29FF4FD1BCB9408020402F99 /* theora_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = theora_macos; path = ../../Libs/libs/libtheora_macos.a; sourceTree = "<group>"; };
 		2A689518AF9C22C7AA97C9EF /* ogg_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = ogg_macos; path = ../../Libs/libs/libogg_macos.a; sourceTree = "<group>"; };
@@ -3198,6 +3201,8 @@
 		E81895B5170F192E009A815A /* TexturePacker */ = {
 			isa = PBXGroup;
 			children = (
+				17B82019178FEFCD00954A81 /* FramePathHelper.cpp */,
+				17B8201A178FEFCD00954A81 /* FramePathHelper.h */,
 				E81895B6170F192E009A815A /* CommandLineParser.cpp */,
 				E81895B7170F192E009A815A /* CommandLineParser.h */,
 				E81895B8170F192E009A815A /* DefinitionFile.cpp */,
@@ -4370,6 +4375,7 @@
 				499E4AB9178AC16A0067FA56 /* HeightmapEditorPropertiesView_moc.cpp in Build Sources */,
 				499E4ABB178AC17F0067FA56 /* CustomColorsPropertiesView_moc.cpp in Build Sources */,
 				6295E409178B08050007F9EC /* MimeDataHelper.cpp in Build Sources */,
+				17B8201B178FEFCD00954A81 /* FramePathHelper.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
