@@ -105,6 +105,9 @@ public:
 	//! \brief get center
 	inline Vector3 GetCenter() const;
 
+    //! \brief get size
+    inline Vector3 GetSize() const;
+
 	//! \brief copy operator of bounding box class
 	inline AABBox3 & operator =(const AABBox3 & _bbox);
 
@@ -266,6 +269,10 @@ inline Vector3 AABBox3::GetCenter() const
 	return (min + max) / 2.0f;
 }
 
+inline Vector3 AABBox3::GetSize() const
+{
+    return Vector3(Abs(max.x - min.x), Abs(max.y - min.y), Abs(max.z - min.z));
+}
 
 
 };
