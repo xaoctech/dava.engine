@@ -89,11 +89,6 @@ const List<FilePath> FilePath::GetResourcesFolders()
 {
     return resourceFolders;
 }
-    
-void FilePath::CleanResourcesFolders()
-{
-    resourceFolders.clear();
-}
 
     
 #if defined(__DAVAENGINE_WIN32__)
@@ -253,6 +248,7 @@ String FilePath::ResolveResourcesPath() const
         List<FilePath>::reverse_iterator endIt = resourceFolders.rend();
         for(List<FilePath>::reverse_iterator it = resourceFolders.rbegin(); it != endIt; ++it)
         {
+            FilePath t = *it;
             path = *it + relativePathname;
             
             if(isDirectory)
@@ -661,9 +657,18 @@ String FilePath::AbsoluteToRelative(const FilePath &directoryPathname, const Fil
     DVASSERT(directoryPathname.IsDirectoryPathname());
 
     Vector<String> folders;
-    Split(directoryPathname.GetAbsolutePathname(), "/", folders);
-    Vector<String> fileFolders;
-    Split(absolutePathname.GetDirectory().GetAbsolutePathname(), "/", fileFolders);
+	Vector<String> fileFolders;
+
+	if(directoryPathname.GetType() == PATH_IN_RESOURCES &&	absolutePathname.GetType() == PATH_IN_RESOURCES)
+	{
+		Split(directoryPathname.absolutePathname, "/", folders);
+		Split(absolutePathname.GetDirectory().absolutePathname, "/", fileFolders);
+	}
+	else
+	{
+		Split(directoryPathname.GetAbsolutePathname(), "/", folders);
+		Split(absolutePathname.GetDirectory().GetAbsolutePathname(), "/", fileFolders);
+	}
     
     Vector<String>::size_type equalCount = 0;
     for(; equalCount < folders.size() && equalCount < fileFolders.size(); ++equalCount)
@@ -715,8 +720,6 @@ bool FilePath::IsAbsolutePathname(const String &pathname)
     
 String FilePath::AddPath(const FilePath &folder, const String & addition)
 {
-    DVASSERT(folder.IsDirectoryPathname() || folder.IsEmpty());
-
     String absPathname = folder.absolutePathname + addition;
     if(folder.pathType == PATH_IN_RESOURCES && absPathname.find("~res:") != String::npos)
     {

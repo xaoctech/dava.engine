@@ -612,6 +612,12 @@
     <ClCompile Include="Classes\Metadata\PropertyNames.cpp">
       <Filter>Sources\Metadata</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Helpers\ListPropertyGridWidgetHelper.cpp">
+      <Filter>Sources\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Tools\TexturePacker\FramePathHelper.cpp">
+      <Filter>Sources\Tools\TexturePacker</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\DefaultScreen.h">
@@ -966,6 +972,12 @@
       <Filter>Sources\Tools\TexturePacker</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Tools\TexturePacker\TexturePacker.h">
+      <Filter>Sources\Tools\TexturePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Helpers\ListPropertyGridWidgetHelper.h">
+      <Filter>Sources\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Tools\TexturePacker\FramePathHelper.h">
       <Filter>Sources\Tools\TexturePacker</Filter>
     </ClInclude>
   </ItemGroup>
