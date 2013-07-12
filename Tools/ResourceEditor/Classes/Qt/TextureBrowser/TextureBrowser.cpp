@@ -38,12 +38,12 @@
 #include <QMessageBox>
 #include <QProgressBar>
 
-QColor TextureBrowser::gpuColor_PVR_ISO = QColor(0, 155, 0, 255);
-QColor TextureBrowser::gpuColor_PVR_Android = QColor(0, 0, 155, 255);
-QColor TextureBrowser::gpuColor_Tegra = QColor(0, 155, 155, 255);
-QColor TextureBrowser::gpuColor_MALI = QColor(155, 155, 0, 255);
-QColor TextureBrowser::gpuColor_Adreno = QColor(155, 0, 155, 255);
-QColor TextureBrowser::errorColor = QColor(200, 0, 0, 255);
+QColor TextureBrowser::gpuColor_PVR_ISO = QColor(0, 200, 0, 255);
+QColor TextureBrowser::gpuColor_PVR_Android = QColor(0, 0, 200, 255);
+QColor TextureBrowser::gpuColor_Tegra = QColor(0, 200, 200, 255);
+QColor TextureBrowser::gpuColor_MALI = QColor(200, 200, 0, 255);
+QColor TextureBrowser::gpuColor_Adreno = QColor(200, 0, 200, 255);
+QColor TextureBrowser::errorColor = QColor(255, 0, 0, 255);
 
 TextureBrowser::TextureBrowser(QWidget *parent)
     : QDialog(parent)
@@ -114,6 +114,8 @@ TextureBrowser::~TextureBrowser()
 
 void TextureBrowser::Close()
 {
+	hide();
+
 	TextureConvertor::Instance()->CancelConvert();
 	TextureConvertor::Instance()->WaitConvertedAll();
 
@@ -256,10 +258,7 @@ void TextureBrowser::updatePropertiesWarning()
 	{
 		QString warningText = "";
 
-		if(
-		   ((curDescriptor->compression[GPU_POWERVR_IOS].format == DAVA::FORMAT_PVR4 || curDescriptor->compression[GPU_POWERVR_IOS].format == DAVA::FORMAT_PVR2)   ||
-		   (curDescriptor->compression[GPU_TEGRA].format >= DAVA::FORMAT_DXT1 && curDescriptor->compression[GPU_TEGRA].format <= DAVA::FORMAT_DXT5NM)) &&
-		   (curTexture->width != curTexture->height))
+		if(curTexture->width != curTexture->height)
 		{
 			warningText += "WARNING: Not square texture.\n";
 		}
