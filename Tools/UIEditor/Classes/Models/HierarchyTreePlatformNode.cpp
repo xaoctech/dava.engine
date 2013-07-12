@@ -162,6 +162,8 @@ void HierarchyTreePlatformNode::ActivatePlatform()
         {
             FilePath::AddResourcesFolder(bundleName);
         }
+		// DF-1502 fix - We should always set proper bundle name
+		FilePath::SetBundleName(bundleName);
 	}
 }
 
