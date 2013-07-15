@@ -11,7 +11,11 @@ import datetime
 import shutil
 import platform;
 
+import shlex
+import subprocess
+
 mapsDir = './DataSource/3d/';
+formatParam = 'tegra'
 
 executables = { "Darwin": 'Tools/ResEditor/dava.framework/Tools/ResourceEditor/ResourceEditorQt.app/Contents/MacOS/ResourceEditorQt',
 "Windows": 'Tools/ResEditor/dava.framework/Tools/ResourceEditor/ResourceEditorQtVS2010.exe',
@@ -27,15 +31,35 @@ def zipdir(basedir, archivename):
                 zfn = absfn[len(basedir)+len(os.sep):] #XXX: relative path
                 z.write(absfn, zfn)
 
+def run_command(command):
+    p = subprocess.Popen(command,
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
+    return iter(p.stdout.readline, b'')
+
 def getZippedSize(sceneFile):
 	pervDir = os.getcwd();
 	os.chdir("../../../wot.blitz/");
 
+    	currentDir = os.getcwd(); 
+    	dataDir =  os.path.realpath(currentDir + "/../Data/3d/");
+    	dataSourceDir = os.path.realpath(currentDir + "/DataSource/3d/");
+    	index = dataSourceDir.find(':');
+    	if ( index != -1):
+        	dataSourceDir = dataSourceDir[index + 1:];
 
 	outDir = os.getcwd() + '/export_process/';
+
+	exportDir = os.path.realpath(outDir);
+	index = exportDir.find(':')
+    	if ( index != -1):
+        	exportDir = exportDir[index + 1:];
+
+
 	executable = executables[platform.system()];
 
-	os.spawnv(os.P_WAIT, executable, [executable, '-sceneexporter', '-export', '-indir', mapsDir, '-outdir', outDir, '-processfile', sceneFile, '-forceclose']);
+	os.spawnv(os.P_WAIT, executable, [executable, '-sceneexporter', '-export', '-indir', dataSourceDir, '-outdir', exportDir, '-processfile', sceneFile, '-forceclose', '-format', formatParam]);
+
 	zipdir(outDir[:-1], 'export_process.zip');
 	zipSize = os.path.getsize('export_process.zip');
 
@@ -49,12 +73,14 @@ def getZippedSize(sceneFile):
 
 arguments = sys.argv[1:]
 
-if 0 == len(arguments) or 1 != len(arguments):
-	print 'Usage: ./LevelPerformanceTestReport.py [Test ID]'
+if 0 == len(arguments) or 2 < len(arguments):
+	print 'Usage: ./LevelPerformanceTestReport.py [Test ID] <Texture Format>'
 	exit(1)
 
 testID = arguments[0]
 
+if 2 == len(arguments):
+	formatParam = arguments[1]
 
 def LogError(logfile, message):
 	logfile.write('<br/><font color="red">')
@@ -85,7 +111,8 @@ if None != connection:
 	
 	currTest = collection.find_one({'_id': testID})
 	if None != currTest:
-		report.write('<H2> Device: ' + currTest['DeviceDescription'] + '</H2>\n')
+		if 'DeviceDescription' in currTest:
+			report.write('<H2> Device: ' + currTest['DeviceDescription'] + '</H2>\n')
 		report.write('<H3> Date: ' + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + '</H3></br>\n')
 		
 		
@@ -110,7 +137,7 @@ if None != connection:
 		levelNames = currTest.keys()
 		levelNames.sort()
 		for levelName in levelNames:
-			if '_id' != levelName and 'globalIndex' != levelName and 'DeviceDescription' != levelName:
+			if '_id' != levelName and 'globalIndex' != levelName and 'DeviceDescription' != levelName and 'ErrorLog' != levelName:
 				report.write('<H2> Level: ' + levelName + ' </H2>\n')
 
 				level = currTest[levelName]
@@ -140,9 +167,19 @@ if None != connection:
 						else:
 							report.write('<b><i>' + reportValue + '</i>: ' + level[reportValue] + ' (Limit: 46 Mb)</b><br/>\n')
 
-				imageFile = open(levelName + '.png', 'wb')
-				imageFile.write(level['ResultImagePNG'])
-				report.write('<img src="./' + levelName + '.png"' + ' alt="'+ levelName +'"></br>\n')
+				if 'ResultImagePNG' in level:
+					imageFile = open(levelName + '.png', 'wb')
+					imageFile.write(level['ResultImagePNG'])
+					report.write('<img src="./' + levelName + '.png"' + ' alt="'+ levelName +'"></br>\n')
+		
+		if 'ErrorLog' in currTest:
+			errorsLogDb = currTest['ErrorLog']
+			if len(errorsLogDb) > 0:
+				LogError(report, "Errors:")
+				for errorKey in errorsLogDb:
+					if errorKey != '_id':
+						LogError(report, errorsLogDb[errorKey])
+		
 	else:
 		LogError(report, "There are no test with ID: " + testID)
 		

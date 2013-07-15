@@ -83,6 +83,10 @@ public:
 
 	FilePath GetParticlesConfigsPath();
     
+    
+    void SetPreviewDialogEnabled(bool enabled);
+    bool GetPreviewDialogEnabled();
+    
 protected:
 
 	Vector4 ToVector4(const Color &color);
