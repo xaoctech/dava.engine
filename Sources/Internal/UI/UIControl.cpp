@@ -1493,12 +1493,9 @@ namespace DAVA
 			Draw(drawData);
 		}
 		
-		if (debugDrawEnabled)
-		{//TODO: Add debug draw for rotated controls
-			Color oldColor = RenderManager::Instance()->GetColor();
-			RenderManager::Instance()->SetColor(debugDrawColor);
-			RenderHelper::Instance()->DrawRect(drawData.GetUnrotatedRect());
-			RenderManager::Instance()->SetColor(oldColor);
+		if (debugDrawEnabled && !clipContents)
+		{	//TODO: Add debug draw for rotated controls
+			DrawDebugRect(drawData.GetUnrotatedRect());
 		}
 		
 		isIteratorCorrupted = false;
@@ -1517,7 +1514,20 @@ namespace DAVA
 		if(clipContents)
 		{
 			RenderManager::Instance()->ClipPop();
+			// Always draw debug rect on top for parent contols which have clipcontents option enabled
+			if (debugDrawEnabled)
+			{	//TODO: Add debug draw for rotated controls
+				DrawDebugRect(drawData.GetUnrotatedRect());
+			}
 		}
+	}
+	
+	void UIControl::DrawDebugRect(const Rect &drawRect)
+	{
+		Color oldColor = RenderManager::Instance()->GetColor();
+		RenderManager::Instance()->SetColor(debugDrawColor);
+		RenderHelper::Instance()->DrawRect(drawRect);
+		RenderManager::Instance()->SetColor(oldColor);
 	}
 	
 	bool UIControl::IsPointInside(const Vector2 &_point, bool expandWithFocus/* = false*/)
