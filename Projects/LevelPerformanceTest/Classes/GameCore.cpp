@@ -69,6 +69,7 @@ void GameCore::OnAppStarted()
 	else
 	{
 		Logger::Debug("[GameCore::OnAppStarted()] testId file not found!");
+        logToDb.push_back("'testId' file not found!");
 		SafeRelease(testIdFile);
 		Core::Instance()->Quit();
 		return;
@@ -92,14 +93,28 @@ void GameCore::OnAppStarted()
 			{
 				String k = rootNode->GetItemKeyName(i);
 				String levelFile = rootNode->Get(i)->AsString();
-				if(k != "default" && k != "tutorial")
+                if(levelFile.rfind(".sc2") != String::npos)
                 {
-					levelsPaths.push_back(levelFile);
-                    Logger::Debug("[GameCore::OnAppStarted()] Add test level: %s", levelFile.c_str());
+                    File * file = File::Create(dirPath + levelFile, File::OPEN | File::READ);
+                    if(file)
+                    {
+                        levelsPaths.push_back(levelFile);
+                        Logger::Debug("[GameCore::OnAppStarted()] Add test level: %s", levelFile.c_str());
+                    }
+                    else
+                    {
+                        Logger::Debug("[GameCore::OnAppStarted()] Scenefile not found: %s", levelFile.c_str());
+                        logToDb.push_back(Format("Scenefile not found: %s", levelFile.c_str()));
+                    }
+                    SafeRelease(file);
                 }
 			}
 		}
 	}
+    else
+    {
+        logToDb.push_back("File '~res:/maps.yaml' not found");
+    }
 
 	for(Vector<String>::const_iterator it = levelsPaths.begin(); it != levelsPaths.end(); ++it)
     {
@@ -208,6 +223,9 @@ void GameCore::Update(float32 timeElapsed)
 	}
     else
     {
+        if(!FlushLogToDB())
+            Logger::Debug("Error sending data to DB (connection is lost) !!!");
+
 		Core::Instance()->Quit();
 	}
 }
@@ -219,8 +237,11 @@ void GameCore::Draw()
 
 bool GameCore::ConnectToDB()
 {
-	if(dbClient)
+	if(dbClient && dbClient->IsConnected())
 		return true;
+
+    if(dbClient)
+        SafeRelease(dbClient);
     
 	dbClient = MongodbClient::Create(DATABASE_IP, DATAPASE_PORT);
     
@@ -251,9 +272,76 @@ bool GameCore::ConnectToDB()
     return (dbClient != NULL);
 }
 
+bool GameCore::FlushLogToDB()
+{
+    ConnectToDB();
+
+    if(!dbClient && !dbClient->IsConnected())
+        return false;
+
+    if(logToDb.size() == 0)
+    {
+        Logger::Debug("Error log is empty");
+        return true;
+    }
+
+    Logger::Debug("Sending Log to DB...");
+
+    MongodbObject *logObject = new MongodbObject();
+    if(logObject)
+    {
+        logObject->SetObjectName("ErrorLog");
+
+        for(int32 i = 0; i < logToDb.size(); ++i)
+        {
+            logObject->AddString(Format("%d", i), logToDb[i]);
+        }
+
+        logObject->Finish();
+
+        logToDb.clear();
+
+        MongodbObject * currentRunObject = dbClient->FindObjectByKey(Format("%d", currentRunId));
+        MongodbObject * newRunObject = new MongodbObject();
+        if(newRunObject)
+        {
+            if(currentRunObject)
+            {
+                newRunObject->Copy(currentRunObject);
+            }
+            else
+            {
+                newRunObject->SetObjectName(Format("%d", currentRunId));
+            }
+
+            newRunObject->AddObject("ErrorLog", logObject);
+            newRunObject->Finish();
+            dbClient->SaveObject(newRunObject, currentRunObject);
+            SafeRelease(newRunObject);
+        }
+        else
+        {
+            Logger::Debug("Can't create log object in DB");
+            return false;
+        }
+
+        SafeRelease(currentRunObject);
+        SafeRelease(logObject);
+    }
+    else
+    {
+        Logger::Debug("Can't create tests results object");
+        return false;
+    }
+
+    Logger::Debug("Log successful sent to DB");
+}
+
 bool GameCore::FlushToDB(const FilePath & levelName, const Map<String, String> &results, const FilePath &imagePath)
 {
-	if(!dbClient)
+    ConnectToDB();
+
+	if(!dbClient && !dbClient->IsConnected())
 		return false;
 
     Logger::Debug("Sending results to DB...");
