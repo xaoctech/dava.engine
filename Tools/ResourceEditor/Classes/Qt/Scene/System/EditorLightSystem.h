@@ -14,61 +14,54 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "SceneEditorScreenMainCommands.h"
-#include "../SceneEditor/SceneEditorScreenMain.h"
-#include "../SceneEditor/EditorBodyControl.h"
-#include "../Qt/Scene/SceneDataManager.h"
-#include "../Qt/Scene/SceneData.h"
+#ifndef __EDITOR_LIGHT_SYSTEM_H__
+#define __EDITOR_LIGHT_SYSTEM_H__
 
-CommandCreateNodeSceneEditor::CommandCreateNodeSceneEditor(DAVA::Entity* node)
-:	Command(COMMAND_UNDO_REDO, CommandList::ID_COMMAND_CREATE_NODE_SCENE_EDITOR)
+#include "Entity/SceneSystem.h"
+
+class Command2;
+class EditorLightSystem : public DAVA::SceneSystem
 {
-	commandName = "Create Node";
-	this->node = SafeRetain(node);
+	friend class SceneEditor2;
+
+public:
+	EditorLightSystem(DAVA::Scene * scene);
+	virtual ~EditorLightSystem();
+
+	virtual void AddEntity(DAVA::Entity * entity);
+	virtual void RemoveEntity(DAVA::Entity * entity);
+
+	void SetCameraLightEnabled(bool enabled);
+	inline bool GetCameraLightEnabled();
+
+
+protected:
+	void Update(DAVA::float32 timeElapsed);
+	void ProcessCommand(const Command2 *command, bool redo);
+
+	void UpdateCameraLightState();
+
+
+	void UpdateCameraLightPosition();
+	void AddCameraLightOnScene();
+	void RemoveCameraLightFromScene();
+
+	DAVA::int32 CountLightsForEntityRecursive(DAVA::Entity *entity);
+
+protected:
+
+	bool isEnabled;
+	DAVA::Entity *cameraLight;
+
+	DAVA::int32 lightCountOnScene;
+};
+
+
+
+inline bool EditorLightSystem::GetCameraLightEnabled()
+{
+	return isEnabled;
 }
 
-CommandCreateNodeSceneEditor::~CommandCreateNodeSceneEditor()
-{
-	SafeRelease(node);
-}
 
-void CommandCreateNodeSceneEditor::Execute()
-{
-	if (node)
-	{
-		SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-		if(screen)
-		{
-			screen->FindCurrentBody()->bodyControl->AddNode(node);
-//            screen->FindCurrentBody()->bodyControl->GetScene()->UpdateCameraLightOnScene();
-            
-            SceneDataManager::Instance()->SceneGetActive()->RebuildSceneGraph();
-		}
-	}
-	else
-	{
-		SetState(STATE_INVALID);
-	}
-}
-
-void CommandCreateNodeSceneEditor::Cancel()
-{
-	if (node)
-	{
-		SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-		if(screen)
-		{
-			SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
-			if (activeScene)
-				activeScene->RemoveSceneNode(node);
-		}
-	}
-}
-
-DAVA::Set<DAVA::Entity*> CommandCreateNodeSceneEditor::GetAffectedEntities()
-{
-	Set<Entity*> entities;
-	entities.insert(node);
-
-	return entities;
-}
+#endif // __EDITOR_LIGHT_SYSTEM_H__

@@ -497,6 +497,7 @@
     <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionParticleEmitter.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionRenderObject.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\CustomColorsSystem.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\EditorLightSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\GridSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\HeightmapEditorSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\HoodSystem.cpp" />
@@ -1138,6 +1139,7 @@
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionParticleEmitter.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionRenderObject.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CustomColorsSystem.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\EditorLightSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\GridSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\HeightmapEditorSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\HoodSystem.h" />
