@@ -798,6 +798,8 @@ namespace DAVA
 		size = newSize;
 		// Update size and align of childs		
 		RecalculateChildsSize();
+		// DF-1482 - Each time we resize control - we have to reset tiles arrays for DRAW_TILED option
+		GetBackground()->ResetTilesArrays();
 	}
 	
 	float32 UIControl::GetAngle() const
@@ -881,6 +883,8 @@ namespace DAVA
 			scale.y = rect.dy / (size.y * gd.scale.y);
 			SetPosition(Vector2(rect.x + pivotPoint.x * scale.x, rect.y + pivotPoint.y * scale.y), rectInAbsoluteCoordinates);
 		}
+		// DF-1482 - Each time we change control rect - we have to reset tiles arrays for DRAW_TILED option
+		GetBackground()->ResetTilesArrays();
 	}
 
 	
