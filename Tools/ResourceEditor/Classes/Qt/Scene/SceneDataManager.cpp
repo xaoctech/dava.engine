@@ -119,7 +119,7 @@ Entity* SceneDataManager::AddScene(const FilePath &scenePathname)
 		sceneData->SetLandscapesControllerScene(scene);
 	}
 
-    sceneData->GetScene()->UpdateCameraLightOnScene();
+//    sceneData->GetScene()->UpdateCameraLightOnScene();
     SceneHidePreview();
 	UpdateParticleSprites();
 	emit SceneGraphNeedRebuild();
@@ -190,7 +190,7 @@ void SceneDataManager::EditScene(SceneData* sceneData, const FilePath &scenePath
 	sceneData->EmitSceneChanged();
 
 
-    scene->UpdateCameraLightOnScene();
+//    scene->UpdateCameraLightOnScene();
 	UpdateParticleSprites();
     emit SceneGraphNeedRebuild();
 
@@ -247,7 +247,7 @@ void SceneDataManager::ReloadScene(const FilePath &scenePathname, const FilePath
     }
     
     
-    scene->UpdateCameraLightOnScene();
+//    scene->UpdateCameraLightOnScene();
 	UpdateParticleSprites();
     emit SceneGraphNeedRebuild();
 	sceneData->SetLandscapesControllerScene(scene);
@@ -282,7 +282,7 @@ void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const FilePa
             errors.insert(Format("Cannot load object: %s", fromPathname.GetAbsolutePathname().c_str()));
         }
         
-        scene->UpdateCameraLightOnScene();
+//        scene->UpdateCameraLightOnScene();
         return;
     }
     
@@ -790,16 +790,16 @@ void SceneDataManager::ApplyDefaultFogSettings(Landscape* landscape, DAVA::Entit
 	}
 }
 
-void SceneDataManager::UpdateCameraLightOnScene(bool show)
-{
- 	List<SceneData *>::const_iterator endIt = scenes.end();
-	for(List<SceneData *>::const_iterator it = scenes.begin(); it != endIt; ++it)
-	{
-        (*it)->GetScene()->UpdateCameraLightOnScene(show);
-	}
-    
-    emit SceneGraphNeedRebuild();
-}
+// void SceneDataManager::UpdateCameraLightOnScene(bool show)
+// {
+//  	List<SceneData *>::const_iterator endIt = scenes.end();
+// 	for(List<SceneData *>::const_iterator it = scenes.begin(); it != endIt; ++it)
+// 	{
+//         (*it)->GetScene()->UpdateCameraLightOnScene(show);
+// 	}
+//     
+//     emit SceneGraphNeedRebuild();
+// }
 
 void SceneDataManager::SceneShowPreview(const DAVA::FilePath &path)
 {

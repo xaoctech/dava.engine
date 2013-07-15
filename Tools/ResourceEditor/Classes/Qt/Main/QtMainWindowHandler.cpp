@@ -106,7 +106,7 @@ QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
 	connect(CommandSignals::Instance(), SIGNAL(CommandAffectsEntities(DAVA::Scene* , CommandList::eCommandId , const DAVA::Set<DAVA::Entity*>& ) ) ,
 			this,SLOT( OnEntityModified(DAVA::Scene* , CommandList::eCommandId , const DAVA::Set<DAVA::Entity*>& ) ));
     
-    connect(this, SIGNAL(UpdateCameraLightOnScene(bool)), sceneDataManager, SLOT(UpdateCameraLightOnScene(bool)));
+//    connect(this, SIGNAL(UpdateCameraLightOnScene(bool)), sceneDataManager, SLOT(UpdateCameraLightOnScene(bool)));
 
 	QWidget* parentWdget = (QWidget *) parent;
 #if defined (__DAVAENGINE_MACOS__)
@@ -1950,10 +1950,17 @@ void QtMainWindowHandler::SetVisibilityArea()
 
 void QtMainWindowHandler::CameraLightTrigerred()
 {
-    bool enabled = EditorSettings::Instance()->GetShowEditorCamerLight();
-    EditorSettings::Instance()->SetShowEditorCamerLight(!enabled);
-    
-    emit UpdateCameraLightOnScene(!enabled);
+	SceneEditor2 *curScene = QtMainWindow::Instance()->GetUI()->sceneTabWidget->GetCurrentScene();
+	if(NULL != curScene)
+	{
+		bool enabled = curScene->editorLightSystem->GetCameraLightEnabled();
+		curScene->editorLightSystem->SetCameraLightEnabled(!enabled);
+	}
+
+//     bool enabled = EditorSettings::Instance()->GetShowEditorCamerLight();
+//     EditorSettings::Instance()->SetShowEditorCamerLight(!enabled);
+//
+//    emit UpdateCameraLightOnScene(!enabled);
 }
 
 void QtMainWindowHandler::AddSwitchEntity()
