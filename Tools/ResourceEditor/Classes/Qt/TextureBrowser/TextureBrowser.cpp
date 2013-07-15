@@ -149,10 +149,9 @@ void TextureBrowser::setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor 
 	toolbarZoomSlider->setValue(0);
 
 	// disable texture views by default
-	//ui->textureToolbar->setEnabled(false);
-	//ui->viewTabBar->setEnabled(false);
 	ui->textureAreaOriginal->setEnabled(false);
 	ui->textureAreaConverted->setEnabled(false);
+	ui->convertToolButton->setEnabled(false);
 
 	// set texture to properties control.
 	// this should be done as a first step
@@ -164,9 +163,8 @@ void TextureBrowser::setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor 
 	// if texture is ok - set it and enable texture views
 	if(NULL != curTexture)
 	{
-		// enable toolbar
-		//ui->textureToolbar->setEnabled(true);
-		//ui->viewTabBar->setEnabled(true);
+		// enable convert button
+		ui->convertToolButton->setEnabled(true);
 
 		// load original image
 		// check if image is in cache
@@ -434,20 +432,9 @@ void TextureBrowser::setupTextureToolbar()
 	toolbarZoomSlider->setSingleStep(5);
 	textureZoomSlide(0);
 
-	ui->textureToolbar->insertWidget(ui->actionConvert, textureZoomLabel);
-	ui->textureToolbar->insertWidget(ui->actionConvert, toolbarZoomSlider);
-	ui->textureToolbar->insertWidget(ui->actionConvert, toolbarZoomSliderValue);
-	ui->textureToolbar->insertSeparator(ui->actionConvert);
-
-	// insert blank widget to align convert actions right
-	QWidget *spacerWidget = new QWidget(this);
-	spacerWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-	spacerWidget->setVisible(true);
-	ui->textureToolbar->insertWidget(ui->actionConvert, spacerWidget);
-	ui->textureToolbar->insertSeparator(ui->actionConvert);
-
-	QtMainWindow::Instance()->ShowActionWithText(ui->textureToolbar, ui->actionConvert, true);
-	QtMainWindow::Instance()->ShowActionWithText(ui->textureToolbar, ui->actionConvertAll, true);
+	ui->textureToolbar->addWidget(textureZoomLabel);
+	ui->textureToolbar->addWidget(toolbarZoomSlider);
+	ui->textureToolbar->addWidget(toolbarZoomSliderValue);
 
 	QObject::connect(ui->actionColorA, SIGNAL(triggered(bool)), this, SLOT(textureColorChannelPressed(bool)));
 	QObject::connect(ui->actionColorB, SIGNAL(triggered(bool)), this, SLOT(textureColorChannelPressed(bool)));
@@ -480,8 +467,17 @@ void TextureBrowser::setupTextureListToolbar()
 
 	texturesSortComboLabel->setText("Sort by: ");
 
-	ui->textureListToolbar->addWidget(texturesSortComboLabel);
-	ui->textureListToolbar->addWidget(texturesSortCombo);
+	// insert blank widget to align convert actions right
+	QWidget *spacerWidget = new QWidget(this);
+	spacerWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+	spacerWidget->setVisible(true);
+
+	ui->textureListToolbar->insertWidget(ui->actionConvertAll, spacerWidget);
+	ui->textureListToolbar->insertSeparator(ui->actionConvertAll);
+	QtMainWindow::Instance()->ShowActionWithText(ui->textureListToolbar, ui->actionConvertAll, true);
+
+	ui->textureListSortToolbar->addWidget(texturesSortComboLabel);
+	ui->textureListSortToolbar->addWidget(texturesSortCombo);
 
 	QObject::connect(texturesSortCombo, SIGNAL(activated(const QString &)), this, SLOT(textureListSortChanged(const QString &)));
 	QObject::connect(ui->actionViewTextList, SIGNAL(triggered(bool)), this, SLOT(textureListViewText(bool)));
@@ -497,6 +493,8 @@ void TextureBrowser::setupTextureListFilter()
 void TextureBrowser::setupTextureProperties()
 {
 	QObject::connect(ui->textureProperties, SIGNAL(PropertyChanged(int)), this, SLOT(texturePropertyChanged(int)));
+
+	ui->convertToolButton->setDefaultAction(ui->actionConvert);
 
 	QPalette palette = ui->warningLabel->palette();
 	palette.setColor(ui->warningLabel->foregroundRole(), Qt::red);
