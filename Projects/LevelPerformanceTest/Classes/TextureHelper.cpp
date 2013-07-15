@@ -63,7 +63,8 @@ DAVA::uint32 TextureHelper::EnumerateSceneTexturesFileSize(DAVA::Scene* scene)
 
 		FilePath imageFileName = TextureDescriptor::GetPathnameForFormat(t->GetPathname(), t->GetSourceFileFormat());
 		File * textureFile = File::Create(imageFileName, File::OPEN | File::READ);
-		sceneTextureFilesSize += textureFile->GetSize();
+        if(textureFile)
+		    sceneTextureFilesSize += textureFile->GetSize();
 		SafeRelease(textureFile);
 	}
 

@@ -34,7 +34,7 @@ FilePath PVRConverter::ConvertPngToPvr(const FilePath & fileToConvert, const Tex
     
 	if(!command.empty())
 	{
-		FileSystem::Instance()->Spawn("\"" + command + "\"");
+		FileSystem::Instance()->Spawn(command);
 		outputName = GetPVRToolOutput(fileToConvert);
 	}
 

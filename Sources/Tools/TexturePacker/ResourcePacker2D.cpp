@@ -13,6 +13,8 @@
 #include <magick/MagickCore.h>
 #include <magick/property.h>
 
+#include "FramePathHelper.h"
+
 namespace DAVA
 {
 
@@ -164,11 +166,7 @@ DefinitionFile * ResourcePacker2D::ProcessPSD(const FilePath & processDirectoryP
 {
     DVASSERT(processDirectoryPath.IsDirectoryPathname());
     
-	int32 maxTextureSize = 1024;
-	if (CommandLineParser::Instance()->IsFlagSet("--tsize2048"))
-	{
-		maxTextureSize = 2048;
-	}
+	int32 maxTextureSize = TexturePacker::TEXTURE_SIZE;
 	
 	// TODO: Check CRC32
 	Vector<Magick::Image> layers;
@@ -202,11 +200,10 @@ DefinitionFile * ResourcePacker2D::ProcessPSD(const FilePath & processDirectoryP
 			
 			currentLayer.crop(Magick::Geometry(width,height, 0, 0));
 			currentLayer.magick("PNG");
-			FilePath outputFile = FilePath::CreateWithNewExtension(psdNameWithoutExtension, String(Format("%d.png", k - 1)));
+			FilePath outputFile = FramePathHelper::GetFramePathRelative(psdNameWithoutExtension, k - 1);
 			currentLayer.write(outputFile.GetAbsolutePathname());
 		}
-		
-		
+
 		DefinitionFile * defFile = new DefinitionFile;
 		defFile->filename = FilePath::CreateWithNewExtension(psdNameWithoutExtension, ".txt");
 		defFile->spriteWidth = width;
@@ -397,6 +394,7 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 		//	printf("[Directory changed - rebuild: %s]\n", inputGfxDirectory.c_str());
 	}
 
+	bool needPackResourcesInThisDir = true;
 	if (modified)
 	{
 		FileSystem::Instance()->DeleteDirectoryFiles(outputPath, false);
@@ -410,6 +408,13 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 				{
                     //TODO: check if we need filename or pathname
 					DefinitionFile * defFile = ProcessPSD(processDirectoryPath, fullname, fullname.GetFilename());
+					if (!defFile)
+					{
+						// An error occured while converting this PSD file - cancel converting in this directory.
+						needPackResourcesInThisDir = false;
+						break;
+					}
+
 					definitionFileList.push_back(defFile);
 				}
 				else if(isLightmapsPacking && fullname.IsEqualToExtension(".png"))
@@ -434,7 +439,7 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 		}
 
 		// 
-		if (definitionFileList.size() > 0 && modified)
+		if (needPackResourcesInThisDir && definitionFileList.size() > 0 && modified)
 		{
 			TexturePacker packer;
 			if(isLightmapsPacking)

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.bda.controller.ControllerListener;
 import com.bda.controller.StateEvent;
 
+import android.app.ActionBar.OnNavigationListener;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
@@ -220,8 +221,18 @@ public class JNIGLSurfaceView extends GLSurfaceView
 		@Override
 		public void onKeyEvent(com.bda.controller.KeyEvent event)
 		{
+			int keyCode = event.getKeyCode();
 			if(event.getAction() == com.bda.controller.KeyEvent.ACTION_DOWN)
-				parent.queueEvent(new KeyInputRunnable(event.getKeyCode()));
+			{
+		    	if(pressedKeys[keyCode] == false)
+		    		parent.queueEvent(new KeyInputRunnable(keyCode));
+		    	pressedKeys[keyCode] = true;
+			}
+			else if(event.getAction() == com.bda.controller.KeyEvent.ACTION_UP)
+			{
+		    	pressedKeys[keyCode] = false;
+		        nativeOnKeyUp(keyCode);
+			}
 		}
 		@Override
 		public void onMotionEvent(com.bda.controller.MotionEvent event)
