@@ -74,6 +74,8 @@ SceneEditor2::SceneEditor2()
 
 SceneEditor2::~SceneEditor2()
 {
+    editorLightSystem->SetCameraLightEnabled(false);
+
 	SceneSignals::Instance()->EmitClosed(this);
 }
 
