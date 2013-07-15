@@ -38,9 +38,11 @@ masterTargetName = arguments[3]
 helperPlatformName = arguments[4]
 helperTargetName = arguments[5]
 
+device = arguments[6]
 
-masterParams = ["python", "./autotesting.py", masterPlatformName, projectFolder, masterTargetName, configurationName]
-helperParams = ["python", "./autotesting.py", helperPlatformName, projectFolder, helperTargetName, configurationName, masterPlatformName]
+
+masterParams = ["python", "./autotesting.py", masterPlatformName, projectFolder, masterTargetName, configurationName, device]
+helperParams = ["python", "./autotesting.py", helperPlatformName, projectFolder, helperTargetName, configurationName, device, masterPlatformName]
 
 allParams = [masterParams, helperParams]
 running_procs = []
