@@ -14,6 +14,7 @@
 #include <magick/property.h>
 
 #include "Render/GPUFamilyDescriptor.h"
+#include "FramePathHelper.h"
 
 namespace DAVA
 {
@@ -206,24 +207,10 @@ DefinitionFile * ResourcePacker2D::ProcessPSD(const FilePath & processDirectoryP
 			
 			currentLayer.crop(Magick::Geometry(width,height, 0, 0));
 			currentLayer.magick("PNG");
-			FilePath outputFile = FilePath::CreateWithNewExtension(psdNameWithoutExtension, String(Format("%d.png", k - 1)));
-			
-			// Yuri Coder, 2013/07/08. Check whether this file exists - overlapping png files
-			// can cause issues like DF-1426.
-			if (FileSystem::Instance()->IsFile(outputFile.GetAbsolutePathname()))
-			{
-				String errorMessage = Format("File %s already exists. ", outputFile.GetAbsolutePathname().c_str());
-				errorMessage += Format("PSD file name %s conflicts with other PSD files, ", psdName.c_str());
-				errorMessage += Format("terminating packing in %s directory.", processDirectoryPath.GetAbsolutePathname().c_str());
-				Logger::Error(errorMessage.c_str());
-
-				return NULL;
-			}
-
+			FilePath outputFile = FramePathHelper::GetFramePathRelative(psdNameWithoutExtension, k - 1);
 			currentLayer.write(outputFile.GetAbsolutePathname());
 		}
-		
-		
+
 		DefinitionFile * defFile = new DefinitionFile;
 		defFile->filename = FilePath::CreateWithNewExtension(psdNameWithoutExtension, ".txt");
 		defFile->spriteWidth = width;
