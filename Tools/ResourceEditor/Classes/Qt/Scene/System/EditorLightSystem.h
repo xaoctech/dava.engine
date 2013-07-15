@@ -14,71 +14,54 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __SCENE_CAMERA_SYSTEM_H__
-#define __SCENE_CAMERA_SYSTEM_H__
+#ifndef __EDITOR_LIGHT_SYSTEM_H__
+#define __EDITOR_LIGHT_SYSTEM_H__
 
 #include "Entity/SceneSystem.h"
-#include "Render/Highlevel/Camera.h"
-#include "UI/UIEvent.h"
 
-#include "Commands2/Command2.h"
-
-class SceneCameraSystem : public DAVA::SceneSystem
+class Command2;
+class EditorLightSystem : public DAVA::SceneSystem
 {
 	friend class SceneEditor2;
-	friend class EditorLightSystem;
 
 public:
-	SceneCameraSystem(DAVA::Scene * scene);
-	~SceneCameraSystem();
+	EditorLightSystem(DAVA::Scene * scene);
+	virtual ~EditorLightSystem();
 
-	DAVA::Vector3 GetPointDirection(const DAVA::Vector2 &point);
-	DAVA::Vector3 GetCameraPosition();
+	virtual void AddEntity(DAVA::Entity * entity);
+	virtual void RemoveEntity(DAVA::Entity * entity);
 
-	void SetMoveSeep(DAVA::float32 speed);
-	DAVA::float32 GetMoveSpeed();
+	void SetCameraLightEnabled(bool enabled);
+	inline bool GetCameraLightEnabled();
 
-	void SetViewportRect(const DAVA::Rect &rect);
-	const DAVA::Rect GetViewportRect();
-
-	void LookAt(const DAVA::AABBox3 &box);
-	void MoveTo(const DAVA::Vector3 &pos, const DAVA::Vector3 &direction = DAVA::Vector3());
-
-	DAVA::Vector2 GetScreenPos(const DAVA::Vector3 &pos3);
-	DAVA::Vector3 GetScenePos(const DAVA::float32 x, const DAVA::float32 y, const DAVA::float32 z);
 
 protected:
 	void Update(DAVA::float32 timeElapsed);
-	void Draw();
-
-	void ProcessUIEvent(DAVA::UIEvent *event);
 	void ProcessCommand(const Command2 *command, bool redo);
 
+	void UpdateCameraLightState();
+
+
+	void UpdateCameraLightPosition();
+	void AddCameraLightOnScene();
+	void RemoveCameraLightFromScene();
+
+	DAVA::int32 CountLightsForEntityRecursive(DAVA::Entity *entity);
+
 protected:
-	DAVA::Rect viewportRect;
 
-	DAVA::float32 curSpeed;
-	DAVA::Camera* curSceneCamera;
+	bool isEnabled;
+	DAVA::Entity *cameraLight;
 
-	DAVA::Vector2 rotateStartPoint;
-	DAVA::Vector2 rotateStopPoint;
-
-	bool animateToNewPos;
-	DAVA::float32 animateToNewPosTime;
-	DAVA::Vector3 newPos;
-	DAVA::Vector3 newDir;
-
-	DAVA::float32 curViewAngleZ, curViewAngleY;
-	const DAVA::float32 maxViewAngle;
-
-	void ProcessKeyboardMove(float timeElapsed);
-
-	void RecalcCameraViewAngles();
-	void MouseMoveCameraPosition();
-	void MouseMoveCameraDirection();
-	void MouseMoveCameraPosAroundPoint(const DAVA::Vector3 &point);
-
-	void MoveAnimate(DAVA::float32 timeElapsed);
+	DAVA::int32 lightCountOnScene;
 };
 
-#endif
+
+
+inline bool EditorLightSystem::GetCameraLightEnabled()
+{
+	return isEnabled;
+}
+
+
+#endif // __EDITOR_LIGHT_SYSTEM_H__

@@ -40,7 +40,7 @@ void CommandCreateNodeSceneEditor::Execute()
 		if(screen)
 		{
 			screen->FindCurrentBody()->bodyControl->AddNode(node);
-            screen->FindCurrentBody()->bodyControl->GetScene()->UpdateCameraLightOnScene();
+//            screen->FindCurrentBody()->bodyControl->GetScene()->UpdateCameraLightOnScene();
             
             SceneDataManager::Instance()->SceneGetActive()->RebuildSceneGraph();
 		}
