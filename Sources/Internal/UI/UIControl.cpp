@@ -1493,7 +1493,7 @@ namespace DAVA
 			Draw(drawData);
 		}
 		
-		if (debugDrawEnabled && !clipContents)
+		if (debugDrawEnabled)
 		{	//TODO: Add debug draw for rotated controls
 			DrawDebugRect(drawData.GetUnrotatedRect());
 		}
@@ -1514,18 +1514,27 @@ namespace DAVA
 		if(clipContents)
 		{
 			RenderManager::Instance()->ClipPop();
-			// Always draw debug rect on top for parent contols which have clipcontents option enabled
-			if (debugDrawEnabled)
-			{	//TODO: Add debug draw for rotated controls
-				DrawDebugRect(drawData.GetUnrotatedRect());
-			}
+		}
+
+		if (debugDrawEnabled)
+		{	//TODO: Add debug draw for rotated controls
+			DrawDebugRect(drawData.GetUnrotatedRect(), true);
 		}
 	}
 	
-	void UIControl::DrawDebugRect(const Rect &drawRect)
+	void UIControl::DrawDebugRect(const Rect &drawRect, bool useAlpha)
 	{
 		Color oldColor = RenderManager::Instance()->GetColor();
-		RenderManager::Instance()->SetColor(debugDrawColor);
+		if (useAlpha)
+		{
+			Color drawColor = debugDrawColor;
+			drawColor.a = 0.75f;
+			RenderManager::Instance()->SetColor(drawColor);
+		}
+		else
+		{
+			RenderManager::Instance()->SetColor(debugDrawColor);
+		}
 		RenderHelper::Instance()->DrawRect(drawRect);
 		RenderManager::Instance()->SetColor(oldColor);
 	}
