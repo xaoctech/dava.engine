@@ -20,7 +20,6 @@
 #include "Commands2/CommandID.h"
 #include "StringConstants.h"
 #include "Constants.h"
-#include "DAVAEngine.h"
 
 using namespace DAVA;
 
@@ -76,8 +75,9 @@ void EditorLightSystem::UpdateCameraLightPosition()
 {
 	if(GetScene() && cameraLight && cameraLight->GetParent())
 	{
-		SceneCameraSystem *cameraSystem	= ((SceneEditor2 *) GetScene())->cameraSystem;
-		Camera *camera = cameraSystem->curSceneCamera;
+//		SceneCameraSystem *cameraSystem	= ((SceneEditor2 *) GetScene())->cameraSystem;
+//		Camera *camera = cameraSystem->curSceneCamera;
+        Camera *camera = GetScene()->GetCurrentCamera();
 		if(!camera) return;
 
 		Matrix4 m = Matrix4::MakeTranslation(camera->GetPosition() + camera->GetLeft() * 20.f + camera->GetUp() * 20.f);
@@ -95,11 +95,13 @@ void EditorLightSystem::SetCameraLightEnabled( bool enabled )
 
 void EditorLightSystem::AddCameraLightOnScene()
 {
-	SceneEditor2 *sc = (SceneEditor2 *)GetScene();
-	if(sc)
-	{
-		sc->AddEditorEntity(cameraLight);
-	}
+//	SceneEditor2 *sc = (SceneEditor2 *)GetScene();
+//	if(sc)
+//	{
+//		sc->AddEditorEntity(cameraLight);
+//	}
+    
+    AddEditorEntity(cameraLight);
 }
 
 
@@ -154,4 +156,16 @@ DAVA::int32 EditorLightSystem::CountLightsForEntityRecursive( DAVA::Entity *enti
 	return lightsCount;
 }
 
-
+void EditorLightSystem::AddEditorEntity(DAVA::Entity *entity)
+{
+    Scene *sc = GetScene();
+    
+    if(sc->GetChildrenCount())
+	{
+		sc->InsertBeforeNode(entity, sc->GetChild(0));
+	}
+	else
+	{
+		sc->AddNode(entity);
+	}
+}

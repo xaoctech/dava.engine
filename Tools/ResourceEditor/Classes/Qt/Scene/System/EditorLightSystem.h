@@ -17,12 +17,13 @@
 #ifndef __EDITOR_LIGHT_SYSTEM_H__
 #define __EDITOR_LIGHT_SYSTEM_H__
 
-#include "Entity/SceneSystem.h"
+#include "DAVAEngine.h"
 
 class Command2;
 class EditorLightSystem : public DAVA::SceneSystem
 {
 	friend class SceneEditor2;
+	friend class EditorScene;
 
 public:
 	EditorLightSystem(DAVA::Scene * scene);
@@ -48,6 +49,8 @@ protected:
 
 	DAVA::int32 CountLightsForEntityRecursive(DAVA::Entity *entity);
 
+    DAVA_DEPRECATED(void AddEditorEntity(DAVA::Entity *entity)); //need to work with SceneEditor2 && EditorScene classes
+    
 protected:
 
 	bool isEnabled;
