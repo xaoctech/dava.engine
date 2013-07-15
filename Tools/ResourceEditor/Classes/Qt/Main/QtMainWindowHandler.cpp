@@ -1959,11 +1959,17 @@ void QtMainWindowHandler::CameraLightTrigerred()
         int32 currentTab = QtMainWindow::Instance()->GetUI()->sceneTabWidget->GetCurrentTab();
         if(0 == currentTab)
         {
+            int32 count = SceneDataManager::Instance()->SceneCount();
+            for(int32 i = 0 ; i < count; ++i)
+            {
+                SceneData *sc = SceneDataManager::Instance()->SceneGet(i);
+
+                bool enabled = sc->GetScene()->editorLightSystem->GetCameraLightEnabled();
+                sc->GetScene()->editorLightSystem->SetCameraLightEnabled(!enabled);
+                
+            }
+            
             SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
-            
-            bool enabled = activeScene->GetScene()->editorLightSystem->GetCameraLightEnabled();
-            activeScene->GetScene()->editorLightSystem->SetCameraLightEnabled(!enabled);
-            
             activeScene->RebuildSceneGraph();
         }
     }
