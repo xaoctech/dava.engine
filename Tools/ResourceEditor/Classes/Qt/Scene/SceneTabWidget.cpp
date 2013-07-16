@@ -71,7 +71,7 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 
 //	OpenTab("/Users/a_makovii/Documents/work/temp/39/mountain/mountain_switch.sc2");
 	//OpenTab("/Users/a_makovii/Documents/work/temp/desertTrain/desert_train/desert_train.sc2");
-	OpenTab("/Users/yuricoder/Work/DAVA_Framework/ParticleEditorGraphIssues/Particles/DataSource/3d/FX/gun_shot.sc2");
+	//OpenTab("/Users/yuricoder/Work/DAVA_Framework/ParticleEditorGraphIssues/Particles/DataSource/3d/FX/gun_shot.sc2");
 	//OpenTab("/Projects/dava.wot.art/DataSource/3d/Maps/dike_village/dike_village.sc2");
 	//AddTab("/Projects/dava.wot.art/DataSource/3d/Maps/desert_train/desert_train.sc2");
 
