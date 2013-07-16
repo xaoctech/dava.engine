@@ -91,6 +91,7 @@ ParticleLayer::ParticleLayer()
 	frameOverLifeFPS = 0;
 
     isDisabled = false;
+	isLooped = false;
 
 	playbackSpeed = 1.0f;
 }
