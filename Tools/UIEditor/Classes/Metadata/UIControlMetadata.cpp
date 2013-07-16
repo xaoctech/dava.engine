@@ -548,7 +548,7 @@ void UIControlMetadata::SetSprite(const QString& value)
     }
     else
     {
-        Sprite* sprite = Sprite::Create(TruncateTxtFileExtension(value).toStdString());
+        Sprite* sprite = Sprite::Create(value.toStdString());
         if (sprite)
         {
             GetActiveUIControl()->GetBackground()->SetSprite(sprite, 0);
