@@ -6,7 +6,7 @@ echo "get udid device"
 
 if [[ -n $2 ]]
 then
-	UDID_device=`~/AIRSDK_Compiler/bin adt -devices -platform iOS | grep "$2" | awk '{print $3}'`
+	UDID_device=`~/AIRSDK_Compiler/bin/adt -devices -platform iOS | grep "$2" | awk '{print $3}'`
 else
 	UDID_device=`system_profiler SPUSBDataType | sed -n -e '/iPad/,/Serial/p' -e '/iPhone/,/Serial/p' -e '/iPod/,/Serial/p' | grep "Serial Number:" | awk -F ": " '{print $2}'`
 fi
