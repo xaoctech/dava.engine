@@ -281,7 +281,6 @@
    <addaction name="actionMaterialEditor"/>
    <addaction name="actionTextureConverter"/>
    <addaction name="actionEnableCameraLight"/>
-   <addaction name="actionShowMipmapLevel"/>
    <addaction name="separator"/>
    <addaction name="actionHeightMapEditor"/>
    <addaction name="actionTileMapEditor"/>
@@ -425,7 +424,6 @@
     <addaction name="separator"/>
     <addaction name="actionShowSettings"/>
     <addaction name="actionEnableCameraLight"/>
-    <addaction name="actionShowMipmapLevel"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -693,6 +691,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionShowMipmapLevel"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockWidget">
