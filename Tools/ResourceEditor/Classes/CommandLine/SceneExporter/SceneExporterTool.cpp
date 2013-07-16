@@ -61,11 +61,6 @@ bool SceneExporterTool::InitializeFromCommandLine()
     outFolder.MakeDirectoryPathname();
     
     gpu = CommandLineParser::GetCommandParam(String("-gpu"));
-//    if(gpu.empty())
-//    {
-//        errors.insert("GPU for export is not set");
-//        return false;
-//    }
     
     filename = CommandLineParser::GetCommandParam(String("-processfile"));
     foldername = CommandLineParser::GetCommandParam(String("-processdir"));
@@ -83,7 +78,6 @@ bool SceneExporterTool::InitializeFromCommandLine()
         errors.insert("File or folder for export is not set");
         return false;
     }
-    
     
     return true;
 }
