@@ -312,7 +312,7 @@ bool ParticleLayer::GetLooped()
 	return isLooped;
 }
 
-void ParticleLayer::CheckLayerNeedRestart()
+void ParticleLayer::RestartLayerIfNeed()
 {
 	// Restart layer effect if auto restart option is on and layer time exceeds its endtime
 	if(isLooped && (layerTime > endTime) && !emitter->IsPaused())
@@ -327,7 +327,7 @@ void ParticleLayer::Update(float32 timeElapsed)
 	timeElapsed *= playbackSpeed;
 	layerTime += timeElapsed;
 	
-	CheckLayerNeedRestart();
+	RestartLayerIfNeed();
 
 	switch(type)
 	{
