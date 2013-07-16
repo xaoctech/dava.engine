@@ -261,7 +261,6 @@ public slots:
     
 signals:
 	void ProjectChanged();
-    void UpdateCameraLightOnScene(bool show);
 
 private:
     //create node
