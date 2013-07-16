@@ -372,8 +372,7 @@ void UIButtonMetadata::SetSprite(const QString& value)
 		}
 		else
 		{
-			GetActiveUIButton()->SetStateSprite(this->uiControlStates[i],
-												TruncateTxtFileExtension(value).toStdString());
+			GetActiveUIButton()->SetStateSprite(this->uiControlStates[i], value.toStdString());
 		}
 	}
 
