@@ -163,6 +163,10 @@ void QtMainWindowHandler::NewScene()
                 return;
             }
         }
+
+        //Release CommandsQueue for Level Tab at old scene editor
+        CommandsManager::Instance()->SceneReleased(levelScene->GetScene());
+
         
 		// Can now create the scene.
 		screen->NewScene();
