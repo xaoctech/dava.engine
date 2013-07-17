@@ -40,15 +40,31 @@ Sound * Sound::CreateWithFlags(const FilePath & fileName, eType type, const Fast
 	if(flags & FMOD_3D)
 		sound->is3d = true;
 
+    File * file = File::Create(fileName, File::OPEN | File::READ);
+    int32 fileSize = file->GetSize();
+    sound->soundData = new uint8[fileSize];
+    file->Read(sound->soundData, fileSize);
+    SafeRelease(file);
+
+    FMOD_CREATESOUNDEXINFO exInfo;
+    memset(&exInfo, 0, sizeof(FMOD_CREATESOUNDEXINFO));
+    exInfo.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);
+    exInfo.length = fileSize;
+
 	switch (type)
 	{
 	case TYPE_STATIC:
-		FMOD_VERIFY(SoundSystem::Instance()->fmodSystem->createSound(fileName.GetAbsolutePathname().c_str(), FMOD_LOOP_NORMAL | flags, 0, &sound->fmodSound));
+        FMOD_VERIFY(SoundSystem::Instance()->fmodSystem->createSound((char *)sound->soundData, FMOD_LOOP_NORMAL | FMOD_OPENMEMORY | flags, &exInfo, &sound->fmodSound));
+        SafeDelete(sound->soundData);
 		break;
 	case TYPE_STREAMED:
-		FMOD_VERIFY(SoundSystem::Instance()->fmodSystem->createStream(fileName.GetAbsolutePathname().c_str(), FMOD_LOOP_NORMAL | flags, 0, &sound->fmodSound));
+		FMOD_VERIFY(SoundSystem::Instance()->fmodSystem->createStream((char *)sound->soundData, FMOD_LOOP_NORMAL | FMOD_OPENMEMORY | flags, &exInfo, &sound->fmodSound));
 		break;
 	}
+#if !defined DONT_USE_DEFAULT_3D_SOUND_SETTINGS
+    if( sound->is3d && sound->fmodSound )
+        FMOD_VERIFY( sound->fmodSound->set3DMinMaxDistance(5.0f, 100.0f) );
+#endif
 
 	sound->SetSoundGroup(groupName);
 	sound->SetLoopCount(0);
@@ -61,12 +77,15 @@ Sound::Sound(const FilePath & _fileName, eType _type, int32 _priority)
 :	fileName(_fileName),
 	type(_type),
 	priority(_priority),
-	is3d(false)
+	is3d(false),
+    soundData(0)
 {
 }
 
 Sound::~Sound()
 {
+    SafeDeleteArray(soundData);
+
 	FMOD_VERIFY(fmodInstanceGroup->release());
 	FMOD_VERIFY(fmodSound->release());
 }

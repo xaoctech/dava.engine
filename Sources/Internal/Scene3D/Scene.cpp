@@ -265,9 +265,21 @@ void Scene::AddSystem(SceneSystem * sceneSystem, uint32 componentFlags)
     systems.push_back(sceneSystem);
 }
     
-void Scene::RemoveSystem(SceneSystem * sceneSystem, uint32 componentFlags)
+void Scene::RemoveSystem(SceneSystem * sceneSystem, uint32 /*componentFlags*/)
 {
-    DVASSERT(0 && "Need to write remove system function");
+    //TODO: need to check if sceneSystem is one of scene-needed systems such as transform/lod/article etc?
+    
+    Vector<SceneSystem*>::const_iterator endIt = systems.end();
+    for(Vector<SceneSystem*>::iterator it = systems.begin(); it != endIt; ++it)
+    {
+        if(*it == sceneSystem)
+        {
+            systems.erase(it);
+            return;
+        }
+    }
+
+    DVASSERT_MSG(false, "System must be at systems array");
 }
 
 Scene * Scene::GetScene()

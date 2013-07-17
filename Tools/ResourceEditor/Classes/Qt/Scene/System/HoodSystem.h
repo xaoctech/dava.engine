@@ -55,14 +55,13 @@ public:
 	void SetScale(DAVA::float32 scale);
 	DAVA::float32 GetScale() const;
 
-	void Lock();
-	void Unlock();
-
-	void Show();
-	void Hide();
+	void LockScale(bool lock);
+	void LockModif(bool lock);
+	void Show(bool show);
 
 protected:
-	bool locked;
+	bool lockedScale;
+	bool lockedModif;
 	bool visible;
 
 	ST_ModifMode curMode;
@@ -78,7 +77,7 @@ protected:
 	void Draw();
 
 	void ProcessUIEvent(DAVA::UIEvent *event);
-	void PropeccCommand(const Command2 *command, bool redo);
+	void ProcessCommand(const Command2 *command, bool redo);
 
 	void AddCollObjects(const DAVA::Vector<HoodCollObject*>* objects);
 	void RemCollObjects(const DAVA::Vector<HoodCollObject*>* objects);

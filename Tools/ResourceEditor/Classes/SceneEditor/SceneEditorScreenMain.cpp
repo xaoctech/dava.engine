@@ -47,8 +47,7 @@
 #include "../Commands/FileCommands.h"
 #include "../Commands/ToolsCommands.h"
 
-
-
+#include "../Deprecated/ScenePreviewDialog.h"
 
 SceneEditorScreenMain::SceneEditorScreenMain()
 	:	UIScreen()
@@ -58,6 +57,8 @@ SceneEditorScreenMain::SceneEditorScreenMain()
 
 SceneEditorScreenMain::~SceneEditorScreenMain()
 {
+    SafeRelease(scenePreviewDialog);
+    
     SafeRelease(textureTrianglesDialog);
     SafeRelease(settingsDialog);
 
@@ -94,7 +95,6 @@ void SceneEditorScreenMain::LoadResources()
 	    InitControls();
     
 	    InitializeBodyList();
-	    SetupAnimation();
 	}
 }
 
@@ -105,6 +105,8 @@ void SceneEditorScreenMain::InitControls()
     // add line after menu
     Rect fullRect = GetRect();
     AddLineControl(Rect(0, ControlsFactory::BUTTON_HEIGHT, fullRect.dx, LINE_HEIGHT));
+    
+    scenePreviewDialog = new ScenePreviewDialog();
 }
 
 void SceneEditorScreenMain::UnloadResources()
@@ -155,7 +157,6 @@ void SceneEditorScreenMain::DidAppear()
 
 void SceneEditorScreenMain::WillDisappear()
 {
-	
 }
 
 void SceneEditorScreenMain::Update(float32 timeElapsed)
@@ -203,6 +204,8 @@ void SceneEditorScreenMain::ReleaseBodyList()
 
 void SceneEditorScreenMain::AddBodyItem(const WideString &text, bool isCloseable)
 {
+    HideScenePreview();
+    
     EditorScene *scene = SceneDataManager::Instance()->RegisterNewScene();
     SceneDataManager::Instance()->SetActiveScene(scene);
     
@@ -409,43 +412,6 @@ void SceneEditorScreenMain::EditMaterial(Material *material)
 }
 
 
-void SceneEditorScreenMain::AutoSaveLevel(BaseObject *, void *, void *)
-{
-    time_t now = time(0);
-    tm* utcTime = localtime(&now);
-    
-    FilePath folderPath = EditorSettings::Instance()->GetDataSourcePath() + "Autosave/";
-    bool folderExcists = FileSystem::Instance()->IsDirectory(folderPath);
-    if(!folderExcists)
-    {
-        FileSystem::Instance()->CreateDirectory(folderPath);
-    }
-
-    
-    
-    FilePath pathToFile = folderPath + String(Format("AutoSave_%04d.%02d.%02d_%02d_%02d.sc2",
-                                            utcTime->tm_year + 1900, utcTime->tm_mon + 1, utcTime->tm_mday, 
-                                            utcTime->tm_hour, utcTime->tm_min));
-    
-    BodyItem *iBody = bodies[0];
-    Scene * scene = iBody->bodyControl->GetScene();
-    SceneFileV2 * file = new SceneFileV2();
-    file->EnableDebugLog(false);
-    file->SaveScene(pathToFile, scene);
-    SafeRelease(file);
-    
-    SetupAnimation();
-}
-
-void SceneEditorScreenMain::SetupAnimation()
-{
-    float32 minutes = EditorSettings::Instance()->GetAutosaveTime();
-    Animation * anim = WaitAnimation(minutes * 60.f); 
-    anim->AddEvent(Animation::EVENT_ANIMATION_END, Message(this, &SceneEditorScreenMain::AutoSaveLevel));
-}
-
-
-
 void SceneEditorScreenMain::SettingsChanged()
 {
     for(int32 i = 0; i < (int32)bodies.size(); ++i)
@@ -550,7 +516,7 @@ void SceneEditorScreenMain::SaveSceneToFile(const FilePath &pathToFile)
     sceneData->SetScenePathname(pathToFile);
 
     BodyItem *iBody = FindCurrentBody();
-    iBody->bodyControl->PushDebugCamera();
+    iBody->bodyControl->PushEditorEntities();
     
     Scene * scene = iBody->bodyControl->GetScene();
     
@@ -562,7 +528,7 @@ void SceneEditorScreenMain::SaveSceneToFile(const FilePath &pathToFile)
     uint64 endTime = SystemTimer::Instance()->AbsoluteMS();
     Logger::Info("[SAVE SCENE TIME] %d ms", (endTime - startTime));
     
-    iBody->bodyControl->PopDebugCamera();			
+    iBody->bodyControl->PopEditorEntities();			
 }
 
 void SceneEditorScreenMain::UpdateModificationPanel(void)
@@ -576,7 +542,7 @@ void SceneEditorScreenMain::UpdateModificationPanel(void)
 void SceneEditorScreenMain::SaveToFolder(const FilePath & folder)
 {
     BodyItem *iBody = FindCurrentBody();
-	iBody->bodyControl->PushDebugCamera();
+	iBody->bodyControl->PushEditorEntities();
     
     SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
     
@@ -591,7 +557,7 @@ void SceneEditorScreenMain::SaveToFolder(const FilePath & folder)
     Set<String> errorsLog;
     sceneSaver.SaveScene(iBody->bodyControl->GetScene(), sceneData->GetScenePathname(), errorsLog);
     
-	iBody->bodyControl->PopDebugCamera();
+	iBody->bodyControl->PopEditorEntities();
     
     ShowErrorDialog(errorsLog);
 }
@@ -599,7 +565,7 @@ void SceneEditorScreenMain::SaveToFolder(const FilePath & folder)
 void SceneEditorScreenMain::ExportAs(eGPUFamily forGPU)
 {
     BodyItem *iBody = FindCurrentBody();
-	iBody->bodyControl->PushDebugCamera();
+	iBody->bodyControl->PushEditorEntities();
     
     SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
     
@@ -618,7 +584,7 @@ void SceneEditorScreenMain::ExportAs(eGPUFamily forGPU)
     Set<String> errorsLog;
     exporter.ExportScene(iBody->bodyControl->GetScene(), sceneData->GetScenePathname(), errorsLog);
     
-	iBody->bodyControl->PopDebugCamera();
+	iBody->bodyControl->PopEditorEntities();
     
     ShowErrorDialog(errorsLog);
 }
@@ -858,4 +824,20 @@ void SceneEditorScreenMain::ActivateBodyItem(BodyItem* activeItem, bool forceRes
 	}
 
 	SceneDataManager::Instance()->SetActiveScene(activeItem->bodyControl->GetScene());
+}
+
+void SceneEditorScreenMain::ShowScenePreview(const FilePath & scenePathname)
+{
+    if(scenePreviewDialog)
+    {
+        scenePreviewDialog->Show(scenePathname);
+    }
+}
+
+void SceneEditorScreenMain::HideScenePreview()
+{
+    if(scenePreviewDialog)
+    {
+        scenePreviewDialog->Close();
+    }
 }

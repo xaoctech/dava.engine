@@ -47,14 +47,14 @@ public:
 	void SetUndoLimit(size_t limit);
 
 protected:
-	std::list<Command2 *> commandList;
+	DAVA::List<Command2 *> commandList;
 	size_t commandListLimit;
 	size_t nextCommandIndex;
 
 	CommandBatch* curBatchCommand;
 	CommandStackNotify *stackCommandsNotify;
 
-	void ExecInternal(Command2 *command);
+	void ExecInternal(Command2 *command, bool runCommand);
 
 	void ClearRedoCommands();
 	void ClearLimitedCommands();

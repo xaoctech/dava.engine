@@ -33,13 +33,15 @@
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/EditorBodyControl.h"
 #include "../SceneEditor/EditorConfig.h"
-#include "Classes/QT/SpritesPacker/SpritePackerHelper.h"
-#include "Classes/QT/QResourceEditorProgressDialog/QResourceEditorProgressDialog.h"
+#include "SpritesPacker/SpritePackerHelper.h"
+#include "Tools/QResourceEditorProgressDialog/QResourceEditorProgressDialog.h"
 
 #include <QApplication>
 #include <QPixmap>
 
 #include "ModificationWidget.h"
+
+#include "Qt/Scene/System/LandscapeEditorDrawSystem.h"
 
 
 QtMainWindow::QtMainWindow(QWidget *parent)
@@ -78,7 +80,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	posSaver.LoadState(this);
 	
 	ui->dockParticleEditor->installEventFilter(this);
-	ChangeParticleDockVisible(false); //hide particle editor dock on start up
+	ChangeParticleDockVisible(false, true); //hide particle editor dock on start up
 	ui->dockParticleEditorTimeLine->hide();
 
 	// Open last project
@@ -136,8 +138,9 @@ void QtMainWindow::SetupActions()
 	connect(ui->actionRulerTool, SIGNAL(triggered()), actionHandler, SLOT(RulerTool()));
 	connect(ui->actionShowSettings, SIGNAL(triggered()), actionHandler, SLOT(ShowSettings()));
     connect(ui->actionSquareTextures, SIGNAL(triggered()), actionHandler, SLOT(SquareTextures()));
-	connect(ui->actionCubemapEditor, SIGNAL(triggered()), actionHandler, SLOT(CubemapEditor()));
-    
+    connect(ui->actionShowMipmapLevel, SIGNAL(triggered()), actionHandler, SLOT(ReplaceZeroMipmaps()));
+    connect(ui->actionCubemapEditor, SIGNAL(triggered()), actionHandler, SLOT(CubemapEditor()));
+
 #if defined (__DAVAENGINE_MACOS__)
     ui->menuTools->removeAction(ui->actionBeast);
 #else //#if defined (__DAVAENGINE_MACOS__)
@@ -146,8 +149,11 @@ void QtMainWindow::SetupActions()
     
 	//Edit
 	connect(ui->actionConvertToShadow, SIGNAL(triggered()), actionHandler, SLOT(ConvertToShadow()));
+
+	connect(ui->actionEnableNotPassable, SIGNAL(triggered()), this, SLOT(EnableNotPassableNew()));
     
-    ui->actionEnableCameraLight->setChecked(EditorSettings::Instance()->GetShowEditorCamerLight());
+//     ui->actionEnableCameraLight->setChecked(EditorSettings::Instance()->GetShowEditorCamerLight());
+	ui->actionEnableCameraLight->setChecked(true);
 	connect(ui->actionEnableCameraLight, SIGNAL(triggered()), actionHandler, SLOT(CameraLightTrigerred()));
 
     //Help
@@ -172,6 +178,10 @@ void QtMainWindow::SetupMainMenu()
     QAction *actionSceneInfo = ui->dockSceneInfo->toggleViewAction();
 	QAction *actionSceneTree = ui->dockSceneTree->toggleViewAction();
 	QAction *actionConsole = ui->dockConsole->toggleViewAction();
+	QAction *actionCustomColors2 = ui->dockCustomColorsEditor->toggleViewAction();
+	QAction *actionVisibilityTool2 = ui->dockVisibilityToolEditor->toggleViewAction();
+	QAction *actionHeightmapEditor2 = ui->dockHeightmapEditor->toggleViewAction();
+	QAction *actionTilemaskEditor2 = ui->dockTilemaskEditor->toggleViewAction();
 
     ui->menuView->addAction(actionSceneInfo);
     ui->menuView->addAction(actionToolBar);
@@ -187,6 +197,10 @@ void QtMainWindow::SetupMainMenu()
 	ui->menuView->addAction(actionSetSwitchIndex);
 	ui->menuView->addAction(actionSceneTree);
 	ui->menuView->addAction(actionConsole);
+	ui->menuView->addAction(actionCustomColors2);
+	ui->menuView->addAction(actionVisibilityTool2);
+	ui->menuView->addAction(actionHeightmapEditor2);
+	ui->menuView->addAction(actionTilemaskEditor2);
 
     ui->menuView->insertSeparator(ui->actionRestoreViews);
     ui->menuView->insertSeparator(actionToolBar);
@@ -197,7 +211,9 @@ void QtMainWindow::SetupMainMenu()
                                        actionSceneGraph,
                                        actionProperties, actionLibrary, actionToolBar,
 									   actionReferences, actionCustomColors, actionVisibilityCheckTool, 
-									   actionParticleEditor, actionHangingObjects, actionSetSwitchIndex, actionSceneInfo);
+									   actionParticleEditor, actionHangingObjects, actionSetSwitchIndex, actionSceneInfo,
+									   actionCustomColors2, actionVisibilityTool2, actionHeightmapEditor2,
+									   actionTilemaskEditor2);
 
 
     ui->dockProperties->hide();
@@ -280,6 +296,9 @@ void QtMainWindow::SetupToolBars()
 	// add combobox to select current view mode
 	// TODO:
 	// ... ->
+	ui->viewModeToolBar->addAction(ui->actionShowMipmapLevel);
+	ui->viewModeToolBar->addSeparator();
+
 	QComboBox *cbox = new QComboBox(NULL);
 	cbox->addItem("Normal mode");
 	cbox->addItem("Particles mode");
@@ -328,9 +347,11 @@ void QtMainWindow::SetupToolBars()
 
 	QObject::connect(undoSceneEditor2, SIGNAL(triggered()), this, SLOT(Undo2()));
 	QObject::connect(redoSceneEditor2, SIGNAL(triggered()), this, SLOT(Redo2()));
+	
 	ui->viewModeToolBar->addAction(undoSceneEditor2);
 	ui->viewModeToolBar->addAction(redoSceneEditor2);
 
+	ui->viewModeToolBar->setParent(NULL);
 
 	// <-
 }
@@ -360,7 +381,11 @@ void QtMainWindow::OpenLastProject()
 void QtMainWindow::SetupDocks()
 {
     connect(ui->actionRefreshSceneGraph, SIGNAL(triggered()), QtMainWindowHandler::Instance(), SLOT(RefreshSceneGraph()));
-	connect(ui->dockParticleEditor->widget(), SIGNAL(ChangeVisible(bool)), this, SLOT(ChangeParticleDockVisible(bool)));
+	
+	// Yuri Coder. Automatic show/hide of the Particles Timeline
+	// is disabled due to DF-1421.
+	//connect(ui->dockParticleEditor->widget(), SIGNAL(ChangeVisible(bool)), this, SLOT(ChangeParticleDockVisible(bool)));
+
 	connect(ui->dockParticleEditorTimeLine->widget(), SIGNAL(ChangeVisible(bool)), this, SLOT(ChangeParticleDockTimeLineVisible(bool)));
 	connect(ui->dockParticleEditorTimeLine->widget(), SIGNAL(ValueChanged()), ui->dockParticleEditor->widget(), SLOT(OnUpdate()));
 	connect(ui->dockParticleEditor->widget(), SIGNAL(ValueChanged()), ui->dockParticleEditorTimeLine->widget(), SLOT(OnUpdate()));
@@ -371,9 +396,9 @@ void QtMainWindow::SetupDocks()
 	connect(this, SIGNAL(LibraryFileTypesChanged(bool, bool)), ui->libraryView, SLOT(LibraryFileTypesChanged(bool, bool)));
 }
 
-void QtMainWindow::ChangeParticleDockVisible(bool visible)
+void QtMainWindow::ChangeParticleDockVisible(bool visible, bool forceUpdate)
 {
-	if (ui->dockParticleEditor->isVisible() == visible)
+	if (!forceUpdate && (ui->dockParticleEditor->isVisible() == visible))
 		return;
 
 	// ui magic :)
@@ -559,6 +584,29 @@ void QtMainWindow::UpdateLibraryFileTypes()
 void QtMainWindow::UpdateLibraryFileTypes(bool showDAEFiles, bool showSC2Files)
 {
 	emit LibraryFileTypesChanged(showDAEFiles, showSC2Files);
+}
+
+void QtMainWindow::EnableNotPassableNew()
+{
+	SceneEditor2* sep = GetCurrentScene();
+	if (!sep)
+	{
+		return;
+	}
+	
+	if (sep->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled())
+	{
+		sep->landscapeEditorDrawSystem->DisableNotPassableTerrain();
+	}
+	else
+	{
+		sep->landscapeEditorDrawSystem->EnableNotPassableTerrain();
+	}
+}
+
+SceneEditor2* QtMainWindow::GetCurrentScene()
+{
+	return ui->sceneTabWidget->GetCurrentScene();
 }
 
 void QtMainWindow::Undo2()

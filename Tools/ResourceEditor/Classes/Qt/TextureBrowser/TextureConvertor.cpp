@@ -30,6 +30,8 @@
 #include "FileSystem/FileSystem.h"
 
 #include "Platform/Qt/QtLayer.h"
+#include "../Main/QtUtils.h"
+
 
 static DAVA::String CUBEMAP_TMP_DIR = "~doc:/ResourceEditor_Cubemap_Tmp/";
 
@@ -454,6 +456,9 @@ DAVA::Vector<DAVA::Image*> TextureConvertor::ConvertPVR(DAVA::TextureDescriptor 
 	{
 		if(forceConvert || !DAVA::FileSystem::Instance()->IsFile(outputPath))
 		{
+            DeleteOldPVRTextureIfPowerVr_IOS(descriptor, gpu);
+
+            
 			DAVA::FilePath pathToConvert = (descriptor->IsCubeMap()) ? PrepareCubeMapForConvert(*descriptor) : FilePath::CreateWithNewExtension(descriptor->pathname, ".png");
 			
 			QString command = PVRConverter::Instance()->GetCommandLinePVR(*descriptor, pathToConvert, gpu).c_str();
@@ -524,6 +529,8 @@ DAVA::Vector<DAVA::Image*> TextureConvertor::ConvertDXT(DAVA::TextureDescriptor 
 	{
 		if(forceConvert || !DAVA::FileSystem::Instance()->IsFile(outputPath))
 		{
+            DeleteOldDXTTextureIfTegra(descriptor, gpu);
+
 			if(descriptor->IsCubeMap())
 			{
 				outputPath = DXTConverter::ConvertCubemapPngToDxt(*descriptor, gpu);

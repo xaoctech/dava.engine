@@ -156,7 +156,7 @@ void Core::ReleaseSingletons()
 	//SoundSystem::Instance()->Release();
 #endif //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 	LocalizationSystem::Instance()->Release();
-	Logger::Debug("[Core::Release] successfull");
+//	Logger::Debug("[Core::Release] successfull");
 	FileSystem::Instance()->Release();
 	Random::Instance()->Release();
 	RenderManager::Instance()->Release();
@@ -381,7 +381,11 @@ void Core::RegisterAvailableResourceSize(int32 width, int32 height, const String
 	
 	allowedSizes.push_back(newSize);
 }
-	
+
+void Core::UnregisterAllAvailableResourceSizes()
+{
+	allowedSizes.clear();
+}
 	
 float32 Core::GetPhysicalScreenWidth()
 {

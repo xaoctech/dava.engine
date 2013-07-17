@@ -15,6 +15,7 @@
 =====================================================================================*/
 
 #include "Commands2/CommandStack.h"
+#include "Commands2/CommandAction.h"
 
 CommandStack::CommandStack()
 	: commandListLimit(0)
@@ -27,8 +28,7 @@ CommandStack::CommandStack()
 CommandStack::~CommandStack()
 {
 	Clear();
-
-	delete stackCommandsNotify;
+	SafeRelease(stackCommandsNotify);
 }
 
 bool CommandStack::CanUndo() const
@@ -104,13 +104,22 @@ void CommandStack::Exec(Command2 *command)
 {
 	if(NULL != command)
 	{
-		if(NULL != curBatchCommand)
+		CommandAction* action = dynamic_cast<CommandAction*>(command);
+		if (!action)
 		{
-			curBatchCommand->Add(command);
+			if(NULL != curBatchCommand)
+			{
+				curBatchCommand->AddAndExec(command);
+			}
+			else
+			{
+				ExecInternal(command, true);
+			}
 		}
 		else
 		{
-			ExecInternal(command);
+			action->Redo();
+			delete action;
 		}
 	}
 }
@@ -121,6 +130,7 @@ void CommandStack::BeginBatch(const DAVA::String &text)
 	{
 		curBatchCommand = new CommandBatch();
 		curBatchCommand->SetText(text);
+		curBatchCommand->SetNotify(stackCommandsNotify);
 	}
 }
 
@@ -130,7 +140,9 @@ void CommandStack::EndBatch()
 	{
 		if(curBatchCommand->Size() > 0)
 		{
-			ExecInternal(curBatchCommand);
+			// all command were already executed in batch
+			// so just add them to stack without calling redo
+			ExecInternal(curBatchCommand, false);
 		}
 		else
 		{
@@ -151,17 +163,20 @@ void CommandStack::SetUndoLimit(size_t limit)
 	commandListLimit = limit;
 }
 
-void CommandStack::ExecInternal(Command2 *command)
+void CommandStack::ExecInternal(Command2 *command, bool runCommand)
 {
 	ClearRedoCommands();
 
 	commandList.push_back(command);
 	nextCommandIndex++;
 
-	command->SetNotify(stackCommandsNotify, false);
-	command->Redo();
-	EmitNotify(command, true);
+	if(runCommand)
+	{
+		command->SetNotify(stackCommandsNotify);
+		command->Redo();
+	}
 
+	EmitNotify(command, true);
 	ClearLimitedCommands();
 }
 

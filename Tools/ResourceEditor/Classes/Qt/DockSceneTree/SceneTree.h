@@ -23,6 +23,10 @@
 
 #include "Scene/SceneSignals.h"
 #include "DockSceneTree/SceneTreeModel.h"
+#include "DockSceneTree/SceneTreeDelegate.h"
+
+// temp include
+#include "ParticlesEditorQT/Nodes/BaseParticleEditorNode.h"
 
 class SceneTree : public QTreeView
 {
@@ -34,14 +38,20 @@ public:
 
 public slots:
 	void ShowContextMenu(const QPoint &pos);
-	void LookAtSelection();
-	void RemoveSelection();
 
 protected:
 	SceneTreeModel * treeModel;
+	SceneTreeDelegate *treeDelegate;
+
 	bool skipTreeSelectionProcessing;
 
 	void dropEvent(QDropEvent * event);
+	void dragMoveEvent(QDragMoveEvent *event);
+	void dragEnterEvent(QDragEnterEvent *event);
+
+	void GetDropParams(const QPoint &pos, QModelIndex &index, int &row, int &col);
+
+	void EmitParticleSignals(const QItemSelection & selected);
 
 protected slots:
 	void SceneActivated(SceneEditor2 *scene);
@@ -52,6 +62,24 @@ protected slots:
 	void TreeSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
 	void TreeItemClicked(const QModelIndex & index);
 	void TreeItemDoubleClicked(const QModelIndex & index);
+	void TreeItemCollapsed(const QModelIndex &index);
+	void TreeItemExpanded(const QModelIndex &index);
+
+	void SyncSelectionToTree();
+	void SyncSelectionFromTree();
+
+	void ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos);
+	void ShowContextMenuLayer(DAVA::ParticleLayer *layer, const QPoint &pos);
+	void ShowContextMenuForce(DAVA::ParticleForce *force, const QPoint &pos);
+
+	void LookAtSelection();
+	void RemoveSelection();
+	void LockEntities();
+	void UnlockEntities();
+	void AddEmitter();
+	void StartEmitter();
+	void StopEmitter();
+	void RestartEmitter();
 };
 
 #endif // __QT_SCENE_TREE_H__

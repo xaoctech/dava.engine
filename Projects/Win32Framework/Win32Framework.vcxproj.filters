@@ -1275,8 +1275,14 @@
     <ClInclude Include="..\..\Sources\Internal\Render\GPUFamilyDescriptor.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\SkyBoxNode.h">
-      <Filter>Internal\Scene3D</Filter>
+    <ClInclude Include="..\..\Sources\Internal\Render\MipmapReplacer.h">
+      <Filter>Internal\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\UI\UIScrollView.h">
+      <Filter>Internal\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\UI\UIScrollViewContainer.h">
+      <Filter>Internal\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2246,8 +2252,14 @@
     <ClCompile Include="..\..\Sources\Internal\Render\GPUFamilyDescriptor.cpp">
       <Filter>Internal\Render</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\SkyBoxNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
+    <ClCompile Include="..\..\Sources\Internal\Render\MipmapReplacer.cpp">
+      <Filter>Internal\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\UI\UIScrollView.cpp">
+      <Filter>Internal\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\UI\UIScrollViewContainer.cpp">
+      <Filter>Internal\UI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
