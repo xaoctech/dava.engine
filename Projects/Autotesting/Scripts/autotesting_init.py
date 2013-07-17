@@ -14,12 +14,12 @@ import string;
 import platform;
 import shutil;
 import subprocess;
-import filecmp
+import filecmp;
 
 arguments = sys.argv[1:]
 
-if len(arguments) < 2 or 3 < len(arguments):
-    print 'Usage: ./autotesting_init.py [PlatformName] [ProjectName] [TestsGroupName]'
+if len(arguments) != 5:
+    print 'Usage: ./autotesting_init.py PlatformName Device ProjectName ProjectFolder TestsGroupName'
     exit(1)
 
 def copy_file(srcFolder, destFolder, fileName):
@@ -33,19 +33,21 @@ def copy_file(srcFolder, destFolder, fileName):
     
 print "*** DAVA Initializing autotesting"
 platformName = arguments[0]
-projectName = arguments[1]
-testsGroupName = "default"
+device = arguments[1]
+projectName = arguments[2]
+projectFolder = arguments[3]
+testsGroupName = arguments[4]
 
-testsSrcFolder = "/Tests"
-if 3 == len(arguments):
-    testsGroupName = arguments[2]
-    testsSrcFolder = testsSrcFolder + "/" + testsGroupName
+
+#if 3 == len(arguments):
+#    testsGroupName = arguments[2]
+testsSrcFolder = "/Tests/" + testsGroupName
 
 print "platform.system: " + platform.system()
 
 currentDir = os.getcwd(); 
 frameworkDir =  os.path.realpath(currentDir + "/../../../")
-projectDir = os.path.realpath(currentDir + "/../../../../" + projectName)
+projectDir = os.path.realpath(currentDir + "/../../../../" + projectFolder)
 print "Framework directory:" + frameworkDir
 print "Project directory:" + projectDir
 
@@ -113,7 +115,7 @@ params = ["python", "./copy_tests.py", testsSrcFolder, autotestingDestFolder]
 print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
 subprocess.call(params)
 
-params = ["python", "./generate_id.py", projectName, autotestingDestFolder, testsGroupName]
+params = ["python", "./generate_id.py", projectName, autotestingDestFolder, testsGroupName, device]
 print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
 subprocess.call(params)
 

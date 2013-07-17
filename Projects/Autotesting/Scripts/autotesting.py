@@ -18,8 +18,8 @@ import subprocess;
 
 arguments = sys.argv[1:]
 
-if 0 == len(arguments) or 5 < len(arguments):
-    print 'Usage: ./autotesting.py PlatformName ProjectName TargetName ConfigurationName [MasterPlatform]'
+if len(arguments) < 5 or len(arguments) > 6:
+    print 'Usage: ./autotesting_init.py PlatformName ProjectFolder TargetName ConfigurationName Device [MasterPlatform]'
     exit(1)
 
 print "*** DAVA Starting autotesting"
@@ -28,13 +28,14 @@ print "platform.system: " + platform.system()
 print sys.argv
 
 platformName = arguments[0]
-projectName = arguments[1]
+projectFolder = arguments[1]
 targetName = arguments[2]
 configurationName = arguments[3]
+device = arguments[4]
 
 currentDir = os.getcwd(); 
 frameworkDir =  os.path.realpath(currentDir + "/../../../")
-projectDir = os.path.realpath(currentDir + "/../../../../" + projectName)
+projectDir = os.path.realpath(currentDir + "/../../../../" + projectFolder)
 print "Framework directory:" + frameworkDir
 print "Project directory:" + projectDir
 
@@ -114,7 +115,7 @@ elif (platform.system() == "Darwin"):
 		# Remove old App from device
         print "remove "+ executableName +" from device"
         #params = ["~/AIRSDK_Compiler/bin/adt", "-uninstallApp", "-platform", platformName, "-appid", "com.yourcompany." + targetName]
-        params = "~/AIRSDK_Compiler/bin/adt -uninstallApp -platform iOS -appid com.yourcompany.WoTBlitz"
+        params = "~/AIRSDK_Compiler/bin/adt -uninstallApp -platform iOS -appid com.davainc."+targetName
         print "subprocess.call " + params
         #print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
         subprocess.call(params, shell=True)
@@ -144,9 +145,9 @@ else:
 os.chdir(projectDir)
 
 # the following code is specially for configuration that runs iOS and MacOS autotests on single agent
-if 5 == len(arguments):
+if 6 == len(arguments):
     
-    masterPlatform = arguments[4]
+    masterPlatform = arguments[5]
     print "get tests count from master " + masterPlatform
 
     testFilesInFolder = os.listdir(testsFolder)
@@ -202,7 +203,7 @@ for testFile in testFiles:
             
             #instruments -w $4 -t /Developer/Platforms/iPhoneOS.platform/Developer/Library/Instruments/PlugIns/AutomationInstrument.bundle/Contents/Resources/Automation.tracetemplate "$2" -e UIASCRIPT testRun.js
 
-            params = ["sh", "./runOnDevice.sh", targetName]
+            params = ["sh", "./runOnDevice.sh", targetName, device]
             print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
             subprocess.call(params)
         

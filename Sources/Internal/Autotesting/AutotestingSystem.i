@@ -9,6 +9,7 @@
 
 %{
 #include "AutotestingSystemLua.h"
+
 %}
 
 %template(Singleton_Autotesting) DAVA::Singleton<DAVA::AutotestingSystemLua>;
@@ -17,6 +18,6 @@
 %include "std_string.i"
 
 %import "UIControl.i"
-%import FileSystem/KeyedArchive.h
+%include "KeyedArchive.i"
 
 %include "AutotestingSystemLua.h"

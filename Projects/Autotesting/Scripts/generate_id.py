@@ -19,13 +19,14 @@ print "generate id"
 
 arguments = sys.argv[1:]
 
-if len(arguments) < 2 or 3 < len(arguments):
-	print 'Usage: ./generate_id.py [ProjectName] [DestFolder] [TestsGroupName]'
+if len(arguments) != 4:
+	print 'Usage: ./generate_id.py ProjectName DestFolder TestsGroupName Device'
 	exit(1)
 
 projectName = arguments[0]
 destFolder = arguments[1]
 testsGroupName = arguments[2]
+device = arguments[3]
 
 #testsId = random.randint(0, 100000)
 testsId = int(round(time.time()))
@@ -48,6 +49,8 @@ file.write("\n")
 file.write(projectName)
 file.write("\n")
 file.write(testsGroupName)
+file.write("\n")
+file.write(device)
 file.close()
    
 print "generated id"
