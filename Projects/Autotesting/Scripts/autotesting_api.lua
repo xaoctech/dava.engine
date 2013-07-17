@@ -111,7 +111,7 @@ end
 function StartTest(name, test)      
     CreateTest(test)
 	--print('StartTest')
-	Yield()
+	--Yield()
 	autotestingSystem:OnTestStart(name)
     Yield()
 end

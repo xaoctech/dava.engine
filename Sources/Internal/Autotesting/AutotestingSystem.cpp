@@ -28,6 +28,7 @@ AutotestingSystem::AutotestingSystem()
     , needClearGroupInDB(false)
     , reportFile(NULL)
     , groupName("default")
+	, device("default")
 	, deviceName("not-initialized")
     , isMaster(true)
     , requestedHelpers(0)
@@ -62,7 +63,7 @@ void AutotestingSystem::OnAppStarted()
     if(!isInit)
     {
         // get files list for ~res:/Autotesting/Tests
-        FileList fileList("~res:/Autotesting/Tests");
+        FileList fileList("~res:/Autotesting/Tests/");
         int32 fileListSize = fileList.GetCount();
         if(fileListSize == 0)
         {
@@ -120,6 +121,18 @@ void AutotestingSystem::OnAppStarted()
                     groupName = gName;
                 }
             }
+
+			if(!file->IsEof())
+			{
+				char deviceCharName[128];
+				file->ReadLine(tempBuf, 1024);
+				sscanf(tempBuf, "%s", deviceCharName);
+				String dName = deviceCharName;
+				if(!dName.empty())
+				{
+					device = dName;
+				}
+			}
             isDB = true;
         }
 		else
@@ -163,14 +176,15 @@ void AutotestingSystem::OnAppStarted()
         {
             // found direct or cycled
             
-            testFilePath = fileList.GetPathname(indexInFileList);
+            testFilePath = fileList.GetPathname(indexInFileList).GetAbsolutePathname();
             testFileName = fileList.GetFilename(indexInFileList);
             testName = testFileName;
             
             // create folder for report
-            testReportsFolder = "~doc:/autotesting";
-            FileSystem::Instance()->CreateDirectory(FileSystem::Instance()->SystemPathForFrameworkPath(testReportsFolder), true);
-            reportFile = File::Create(Format("%s/autotesting.report", testReportsFolder.c_str()), File::CREATE | File::WRITE);
+            testReportsFolder = "~doc:/autotesting/";
+            FileSystem::Instance()->CreateDirectory(testReportsFolder, true);
+            
+            reportFile = File::Create(testReportsFolder + "autotesting.report", File::CREATE | File::WRITE);
             
             // Create document for test
             ClearTestInDB();
@@ -212,7 +226,7 @@ int32 AutotestingSystem::GetIndexInFileList(FileList &fileList, int32 index)
         }
         else
         {
-            String fileExtension = FileSystem::Instance()->GetExtension(fileList.GetFilename(i));
+            String fileExtension = fileList.GetPathname(i).GetExtension();
 #ifdef AUTOTESTING_LUA
             //skip all non-lua files
             if(fileExtension != ".lua")
@@ -292,12 +306,10 @@ bool AutotestingSystem::ConnectToDB()
 
 void AutotestingSystem::WriteString(const String & name, const String & text)
 {
-	String runId = Format("%u_aux",testsDate);
-	Logger::Debug("AutotestingSystem::WriteString name=%s text=%s, runId = %s", name.c_str(), text.c_str(), runId.c_str());
-
+	Logger::Debug("AutotestingSystem::WriteString name=%s text=%s", name.c_str(), text.c_str());
 
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
-	KeyedArchive* currentRunArchive = FindOrInsertRunArchive(dbUpdateObject, runId);
+	KeyedArchive* currentRunArchive = FindOrInsertRunArchive(dbUpdateObject, "_aux");
 
 	currentRunArchive->SetString(name, text);
 
@@ -309,13 +321,10 @@ void AutotestingSystem::WriteString(const String & name, const String & text)
 
 String AutotestingSystem::ReadString(const String & name)
 {
-	String runId = Format("%u_aux",testsDate);
-
-	Logger::Debug("AutotestingSystem::ReadString name=%s, runId = %s", name.c_str(), runId.c_str());
+	Logger::Debug("AutotestingSystem::ReadString name=%s", name.c_str());
 	
-
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
-	KeyedArchive* currentRunArchive = FindOrInsertRunArchive(dbUpdateObject, runId);
+	KeyedArchive* currentRunArchive = FindOrInsertRunArchive(dbUpdateObject, "_aux");
 	String result;
 
 	result = currentRunArchive->GetString(name.c_str(), "not_found");
@@ -341,40 +350,53 @@ void AutotestingSystem::ClearTestInDB()
     SafeRelease(dbUpdateObject);
 }
 
-KeyedArchive *AutotestingSystem::FindOrInsertRunArchive(MongodbUpdateObject* dbUpdateObject, const String &runId)
+KeyedArchive *AutotestingSystem::FindOrInsertRunArchive(MongodbUpdateObject* dbUpdateObject, const String &auxArg)
 {
-	Logger::Debug("AutotestingSystem::FindOrInsertRunArchive %s", runId.c_str());
-	
-	if(!dbClient->FindObjectByKey(runId, dbUpdateObject))
-	{
-		dbUpdateObject->SetObjectName(runId);
-		Logger::Debug("AutotestingSystem::InsertTestArchive new MongodbUpdateObject");
-	}
-	dbUpdateObject->LoadData();
+	String testsName;
 
-	//Logger::Debug("AutotestingSystem::FindOrInsertRunArchive finish");
-	return dbUpdateObject->GetData();
+	if (auxArg.length() != 0)
+	{
+		testsName = Format("%u_%s", testsDate, auxArg.c_str());
+	}
+	else
+	{
+		testsName = Format("%u_%s_%s_%s", testsDate, AUTOTESTING_PLATFORM_NAME, device.c_str(), groupName.c_str());
+	}
+
+	KeyedArchive* dbUpdateData;
+	bool isFound = dbClient->FindObjectByKey(testsName, dbUpdateObject);
+	if(!isFound)
+	{
+		dbUpdateObject->SetObjectName(testsName);
+		Logger::Debug("AutotestingSystem::InsertTestArchive new MongodbUpdateObject %s", testsName.c_str());
+		dbUpdateObject->LoadData();
+		dbUpdateData = dbUpdateObject->GetData();
+
+		dbUpdateData->SetString("Platform", AUTOTESTING_PLATFORM_NAME);
+		dbUpdateData->SetString("Date", Format("%u", testsDate));
+		dbUpdateData->SetString("Group", groupName);
+		dbUpdateData->SetString("Device", device);
+
+		//SaveToDB(dbUpdateObject);
+	}
+	else
+	{
+		dbUpdateObject->LoadData();
+		dbUpdateData = dbUpdateObject->GetData();
+	}
+	
+	return dbUpdateData;
 }
 
 bool AutotestingSystem::SaveKeyedArchiveToDB(const String &archiveName, KeyedArchive *archive, const String &docName)
 {
 	bool ret = false;
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
-
-	String storageName = Format("%u_%s", testsDate, docName.c_str());
-    Logger::Debug("AutotestingSystem::SaveKeyedArchiveToDB storageName=%s archiveName=%s", storageName.c_str(), archiveName.c_str());
     
-    bool isFound = dbClient->FindObjectByKey(storageName, dbUpdateObject);
-    if(!isFound)
-    {
-        dbUpdateObject->SetObjectName(storageName);
-        Logger::Debug("AutotestingSystem::SaveKeyedArchiveToDB new MongodbUpdateObject");
-    }
-    dbUpdateObject->LoadData();
-    
-    KeyedArchive* dbUpdateData = dbUpdateObject->GetData();
+    KeyedArchive* dbUpdateData = FindOrInsertRunArchive(dbUpdateObject, docName);
 	
 	dbUpdateData->SetArchive(archiveName.c_str(), archive);
+	dbUpdateData->SetString("Map", docName.c_str());
 
 	ret = SaveToDB(dbUpdateObject);
     SafeRelease(dbUpdateObject);
@@ -386,68 +408,10 @@ KeyedArchive *AutotestingSystem::FindOrInsertTestArchive(MongodbUpdateObject* db
     Logger::Debug("AutotestingSystem::FindOrInsertTestArchive testId=%s", testId.c_str());
     KeyedArchive* currentTestArchive = NULL;
     
-    KeyedArchive* platformArchive = NULL;
-    KeyedArchive* groupArchive = NULL;
-    KeyedArchive* testsArchive = NULL;
+    KeyedArchive* dbUpdateData = FindOrInsertRunArchive(dbUpdateObject, "");
     
-    String testsName = Format("%u",testsDate);
-    Logger::Debug("AutotestingSystem::FindOrInsertTestArchive testsName=%s", testsName.c_str());
-    
-    bool isFound = dbClient->FindObjectByKey(testsName, dbUpdateObject);
-    if(!isFound)
-    {
-        dbUpdateObject->SetObjectName(testsName);
-        Logger::Debug("AutotestingSystem::FindOrInsertTestArchive new MongodbUpdateObject");
-    }
-    dbUpdateObject->LoadData();
-    
-    KeyedArchive* dbUpdateData = dbUpdateObject->GetData();
-    
-    // find platform object
-    if(isFound)
-    {
-        //found database object
-        
-//        if(needClearDB)
-//        {
-//            needClearDB = false;
-//        }
-//        else
-//        {
-            // find platform object
-            platformArchive = SafeRetain(dbUpdateData->GetArchive(AUTOTESTING_PLATFORM_NAME, NULL));
-//        }
-        
-        if(platformArchive)
-        {
-            // found platform object
-            // find group object
-            groupArchive = SafeRetain(platformArchive->GetArchive(groupName, NULL));
-            
-            if(groupArchive)
-            {
-//                if(testIndex == 0 && isMaster)
-//                {
-//                    // remove prev results
-//                    // only for master tests, helpers should just overwrite results (assumed they never share the same group with master)
-//                    SafeRelease(groupArchive);
-//                }
-//                else
-//                {
-                    // found group object
-                    // find tests object
-                    testsArchive = SafeRetain(groupArchive->GetArchive(AUTOTESTING_TESTS, NULL));
-                    
-                    if(testsArchive)
-                    {
-                        // find test object
-                        currentTestArchive = SafeRetain(testsArchive->GetArchive(testId, NULL));
-                    }
-//                }
-            }
-        }
-    }
-    
+	currentTestArchive = SafeRetain(dbUpdateData->GetArchive(testId, NULL));
+	    
     if(!currentTestArchive)
     {
         currentTestArchive = new KeyedArchive();
@@ -455,162 +419,25 @@ KeyedArchive *AutotestingSystem::FindOrInsertTestArchive(MongodbUpdateObject* db
         currentTestArchive->SetString("Name", testName);
         currentTestArchive->SetString("FileName", testFileName);
         
-        if(!testsArchive)
-        {
-            testsArchive = new KeyedArchive();
-            if(!groupArchive)
-            {
-                groupArchive = new KeyedArchive();
-                if(!platformArchive)
-                {
-                    platformArchive = new KeyedArchive();
-                    dbUpdateData->SetArchive(AUTOTESTING_PLATFORM_NAME, platformArchive);
-                    Logger::Debug("AutotestingSystem::FindOrInsertTestArchive new %s", AUTOTESTING_PLATFORM_NAME);
-                    SafeRelease(platformArchive);
-                    platformArchive = SafeRetain(dbUpdateData->GetArchive(AUTOTESTING_PLATFORM_NAME));
-                }
-                platformArchive->SetArchive(groupName, groupArchive);
-                Logger::Debug("AutotestingSystem::FindOrInsertTestArchive new %s", groupName.c_str());
-                SafeRelease(groupArchive);
-                groupArchive = SafeRetain(platformArchive->GetArchive(groupName));
-            }
-            groupArchive->SetArchive(AUTOTESTING_TESTS, testsArchive);
-            Logger::Debug("AutotestingSystem::FindOrInsertTestArchive new %s", AUTOTESTING_TESTS);
-            SafeRelease(testsArchive);
-            testsArchive = SafeRetain(groupArchive->GetArchive(AUTOTESTING_TESTS));
-        }
-        
-        testsArchive->SetArchive(testId, currentTestArchive);
+        dbUpdateData->SetArchive(testId, currentTestArchive);
         Logger::Debug("AutotestingSystem::FindOrInsertTestArchive new %s", testId.c_str());
     }
     SafeRelease(currentTestArchive);
-    currentTestArchive = testsArchive->GetArchive(testId);
-    SafeRelease(testsArchive);
-    SafeRelease(groupArchive);
-    SafeRelease(platformArchive);
+    currentTestArchive = dbUpdateData->GetArchive(testId);
     
 	//Logger::Debug("AutotestingSystem::FindOrInsertTestArchive finish");
     return currentTestArchive;
 }
    
-//KeyedArchive *AutotestingSystem::FindTestArchive(MongodbUpdateObject* dbUpdateObject, const String &testId)
-//{
-//	Logger::Debug("AutotestingSystem::FindTestArchive testId=%s", testId.c_str());
-//	KeyedArchive* currentTestArchive = NULL;
-//	KeyedArchive* platformArchive = NULL;
-//	KeyedArchive* groupArchive = NULL;
-//	KeyedArchive* testsArchive = NULL;
-//
-//	String testsName = Format("%u",testsDate);
-//	Logger::Debug("AutotestingSystem::FindTestArchive testsName=%s", testsName.c_str());
-//
-//	bool isFound = dbClient->FindObjectByKey(testsName, dbUpdateObject);
-//	dbUpdateObject->LoadData();
-//
-//	if(isFound)
-//	{
-//		KeyedArchive* dbUpdateData = dbUpdateObject->GetData();
-//
-//		// find platform object
-//		platformArchive = SafeRetain(dbUpdateData->GetArchive(AUTOTESTING_PLATFORM_NAME, NULL));
-//
-//		if(platformArchive)
-//		{
-//			// found platform object
-//			// find group object
-//			groupArchive = SafeRetain(platformArchive->GetArchive(groupName, NULL));
-//
-//			if(groupArchive)
-//			{
-//				// found group object
-//				// find tests object
-//				testsArchive = SafeRetain(groupArchive->GetArchive(AUTOTESTING_TESTS, NULL));
-//
-//				if(testsArchive)
-//				{
-//					// find test object
-//					currentTestArchive = SafeRetain(testsArchive->GetArchive(testId, NULL));
-//				}
-//			}
-//		}
-//	}
-//
-//	SafeRelease(currentTestArchive);
-//	currentTestArchive = testsArchive->GetArchive(testId);
-//	SafeRelease(testsArchive);
-//	SafeRelease(groupArchive);
-//	SafeRelease(platformArchive);
-//
-//	return currentTestArchive;
-//}
-
 KeyedArchive *AutotestingSystem::InsertTestArchive(MongodbUpdateObject* dbUpdateObject, const String &testId, const String &testName, bool needClearGroup)
 {
 	Logger::Debug("AutotestingSystem::InsertTestArchive testId=%s testName=%s", testId.c_str(), testName.c_str());
 	KeyedArchive* currentTestArchive = NULL;
 
-	KeyedArchive* platformArchive = NULL;
-	KeyedArchive* groupArchive = NULL;
-	KeyedArchive* testsArchive = NULL;
-
-	String testsName = Format("%u",testsDate);
-	Logger::Debug("AutotestingSystem::InsertTestArchive testsName=%s", testsName.c_str());
-
-	bool isFound = dbClient->FindObjectByKey(testsName, dbUpdateObject);
-	if(!isFound)
-	{
-		dbUpdateObject->SetObjectName(testsName);
-		Logger::Debug("AutotestingSystem::InsertTestArchive new MongodbUpdateObject");
-	}
-	dbUpdateObject->LoadData();
-
-	KeyedArchive* dbUpdateData = dbUpdateObject->GetData();
-
-	// find platform object
-	if(isFound)
-	{
-		//found database object
-
-//		if(needClearDB)
-//		{
-//			needClearDB = false;
-//		}
-//		else
-//		{
-			// find platform object
-			platformArchive = SafeRetain(dbUpdateData->GetArchive(AUTOTESTING_PLATFORM_NAME, NULL));
-//		}
-
-		if(platformArchive)
-		{
-            if(needClearGroup)
-            {
-                groupArchive = new KeyedArchive();
-                platformArchive->SetArchive(groupName, groupArchive);
-                Logger::Debug("AutotestingSystem::InsertTestArchive new %s", groupName.c_str());
-                SafeRelease(groupArchive);
-                groupArchive = SafeRetain(platformArchive->GetArchive(groupName));
-            }
-            else
-            {
-                // found platform object
-                // find group object
-                groupArchive = SafeRetain(platformArchive->GetArchive(groupName, NULL));
-            }
-            
-            if(groupArchive)
-            {
-                // found group object
-                // find tests object
-                testsArchive = SafeRetain(groupArchive->GetArchive(AUTOTESTING_TESTS, NULL));
-                
-            }
-		}
-	}
+	KeyedArchive* dbUpdateData = FindOrInsertRunArchive(dbUpdateObject, "");
 
 	currentTestArchive = new KeyedArchive();
 
-	currentTestArchive->SetString("Name", testName);
 	currentTestArchive->SetString("FileName", testFileName);
 	currentTestArchive->SetBool("Success", false);
 
@@ -618,39 +445,11 @@ KeyedArchive *AutotestingSystem::InsertTestArchive(MongodbUpdateObject* dbUpdate
 	currentTestArchive->SetArchive(AUTOTESTING_STEPS, stepsArchive);
 	SafeRelease(stepsArchive);
 
-	if(!testsArchive)
-	{
-		testsArchive = new KeyedArchive();
-		if(!groupArchive)
-		{
-			groupArchive = new KeyedArchive();
-			if(!platformArchive)
-			{
-				platformArchive = new KeyedArchive();
-				dbUpdateData->SetArchive(AUTOTESTING_PLATFORM_NAME, platformArchive);
-				Logger::Debug("AutotestingSystem::InsertTestArchive new %s", AUTOTESTING_PLATFORM_NAME);
-				SafeRelease(platformArchive);
-				platformArchive = SafeRetain(dbUpdateData->GetArchive(AUTOTESTING_PLATFORM_NAME));
-			}
-			platformArchive->SetArchive(groupName, groupArchive);
-			Logger::Debug("AutotestingSystem::InsertTestArchive new %s", groupName.c_str());
-			SafeRelease(groupArchive);
-			groupArchive = SafeRetain(platformArchive->GetArchive(groupName));
-		}
-		groupArchive->SetArchive(AUTOTESTING_TESTS, testsArchive);
-		Logger::Debug("AutotestingSystem::InsertTestArchive new %s", AUTOTESTING_TESTS);
-		SafeRelease(testsArchive);
-		testsArchive = SafeRetain(groupArchive->GetArchive(AUTOTESTING_TESTS));
-	}
-
-	testsArchive->SetArchive(testId, currentTestArchive);
+	dbUpdateData->SetArchive(testId, currentTestArchive);
 	Logger::Debug("AutotestingSystem::InsertTestArchive new %s", testId.c_str());
 
 	SafeRelease(currentTestArchive);
-	currentTestArchive = testsArchive->GetArchive(testId);
-	SafeRelease(testsArchive);
-	SafeRelease(groupArchive);
-	SafeRelease(platformArchive);
+	currentTestArchive = dbUpdateData->GetArchive(testId);
 
 	return currentTestArchive;
 }
@@ -783,22 +582,10 @@ uint64 AutotestingSystem::GetCurrentTimeMS()
 // Multiplayer API
 void AutotestingSystem::WriteState(const String & device, const String & state)
 {
-	String runId = Format("%u_multiplayer",testsDate);
-	Logger::Debug("AutotestingSystem::WriteState device=%s state=%s, runId = %s", device.c_str(), state.c_str(), runId.c_str());
-
+	Logger::Debug("AutotestingSystem::WriteState device=%s state=%s", device.c_str(), state.c_str());
 
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
-	KeyedArchive* currentRunArchive = FindOrInsertRunArchive(dbUpdateObject, runId);
-	
-	/* Old version
-	KeyedArchive* multiplayerArchive = SafeRetain(currentRunArchive->GetArchive("Multiplayer", NULL));
-		if (!multiplayerArchive)
-	{
-		multiplayerArchive = new KeyedArchive();
-	}
-	multiplayerArchive->SetString(device, state);
-	currentRunArchive->SetArchive("Multiplayer", multiplayerArchive);
-	*/
+	KeyedArchive* currentRunArchive = FindOrInsertRunArchive(dbUpdateObject, "_multiplayer");
 
 	currentRunArchive->SetString(device, state);
 
@@ -811,27 +598,12 @@ void AutotestingSystem::WriteState(const String & device, const String & state)
 
 String AutotestingSystem::ReadState(const String & device)
 {
-	String runId = Format("%u_multiplayer",testsDate);
-
-	Logger::Debug("AutotestingSystem::ReadState device=%s, runId = %s", device.c_str(), runId.c_str());
+	Logger::Debug("AutotestingSystem::ReadState device=%s", device.c_str());
 	
 
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
-	KeyedArchive* currentRunArchive = FindOrInsertRunArchive(dbUpdateObject, runId);
+		KeyedArchive* currentRunArchive = FindOrInsertRunArchive(dbUpdateObject, "_multiplayer");
 	String result;
-	/* Old version
-	KeyedArchive* multiplayerArchive = SafeRetain(currentRunArchive->GetArchive("Multiplayer", NULL));
-	
-	if (multiplayerArchive)
-	{
-		result = multiplayerArchive->GetString(device.c_str(), "not_found");
-		SafeRelease(multiplayerArchive);
-	}
-	else
-	{
-		result = "not_found";
-	}
-	*/
 
 	result = currentRunArchive->GetString(device.c_str(), "not_found");
 	SafeRelease(dbUpdateObject);
@@ -843,10 +615,8 @@ void AutotestingSystem::WriteCommand(const String & device, const String & comma
 {
 	Logger::Debug("AutotestingSystem::WriteCommand device=%s command=%s", device.c_str(), command.c_str());
 
-	String runId = Format("%u_multiplayer",testsDate);
-
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
-	KeyedArchive* currentRunArchive = FindOrInsertRunArchive(dbUpdateObject, runId);
+	KeyedArchive* currentRunArchive = FindOrInsertRunArchive(dbUpdateObject, "_multiplayer");
 	
 	currentRunArchive->SetString(device + "_command", command);
 
@@ -859,10 +629,8 @@ String AutotestingSystem::ReadCommand(const String & device)
 {
 	Logger::Debug("AutotestingSystem::ReadCommand device=%s", device.c_str());
 
-	String runId = Format("%u_multiplayer",testsDate);
-
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
-	KeyedArchive* currentRunArchive = FindOrInsertRunArchive(dbUpdateObject, runId);
+	KeyedArchive* currentRunArchive = FindOrInsertRunArchive(dbUpdateObject, "_multiplayer");
 
 	String result;
 	result = currentRunArchive->GetString(device + "_command", "not_found");
@@ -1655,13 +1423,13 @@ void AutotestingSystem::OnScreenShot(Image *image)
 {
 	Logger::Debug("AutotestingSystem::OnScreenShot %s", screenShotName.c_str());
 	
-	String filePath = "~doc:/screenshot.png";//Format("~doc:/%s.png", screenShotName.c_str());
-	String systemFilePath = FileSystem::Instance()->SystemPathForFrameworkPath(filePath);
+	//String filePath = Format("~doc:/%s.png", screenShotName.c_str());
+	FilePath systemFilePath = "~doc:/screenshot.png";
 	ImageLoader::Save(image, systemFilePath);
 	
 	if(dbClient)
 	{
-		dbClient->SaveFileToGridFS(screenShotName, systemFilePath);
+		dbClient->SaveFileToGridFS(screenShotName, systemFilePath.GetAbsolutePathname());
 	}
 }
     

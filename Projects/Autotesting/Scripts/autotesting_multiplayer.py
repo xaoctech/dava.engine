@@ -20,7 +20,7 @@ import time
 arguments = sys.argv[1:]
 
 if len(arguments) != 6:
-    print 'Usage: ./autotesting_multiplayer.py [ProjectName] [ConfigurationName] [MasterPlatformName] [MasterTargetName] [HelperPlatformName] [HelperTargetName]'
+    print 'Usage: ./autotesting_multiplayer.py [ProjectFolder] [ConfigurationName] [MasterPlatformName] [MasterTargetName] [HelperPlatformName] [HelperTargetName]'
     exit(1)
 
 
@@ -29,7 +29,7 @@ print "*** DAVA Starting multiplayer autotesting"
 print "platform.system: " + platform.system()
 print sys.argv
 
-projectName = arguments[0]
+projectFolder = arguments[0]
 configurationName = arguments[1]
 
 masterPlatformName = arguments[2]
@@ -38,9 +38,11 @@ masterTargetName = arguments[3]
 helperPlatformName = arguments[4]
 helperTargetName = arguments[5]
 
+device = arguments[6]
 
-masterParams = ["python", "./autotesting.py", masterPlatformName, projectName, masterTargetName, configurationName]
-helperParams = ["python", "./autotesting.py", helperPlatformName, projectName, helperTargetName, configurationName, masterPlatformName]
+
+masterParams = ["python", "./autotesting.py", masterPlatformName, projectFolder, masterTargetName, configurationName, device]
+helperParams = ["python", "./autotesting.py", helperPlatformName, projectFolder, helperTargetName, configurationName, device, masterPlatformName]
 
 allParams = [masterParams, helperParams]
 running_procs = []

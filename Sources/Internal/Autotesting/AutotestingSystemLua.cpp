@@ -59,7 +59,7 @@ void AutotestingSystemLua::InitFromFile(const String &luaFilePath)
     if(!luaState)
     {
         autotestingLocalizationSystem->SetCurrentLocale(LocalizationSystem::Instance()->GetCurrentLocale());
-        autotestingLocalizationSystem->InitWithDirectory("~res:/Autotesting/Strings");
+        autotestingLocalizationSystem->InitWithDirectory("~res:/Autotesting/Strings/");
         
         bool isOk = true;
         luaState = lua_open();
@@ -84,8 +84,8 @@ void AutotestingSystemLua::InitFromFile(const String &luaFilePath)
             errors += ", LoadWrappedLuaObjects failed";
         }
         
-        String pathToAutotesting = FileSystem::Instance()->SystemPathForFrameworkPath("~res:/Autotesting/");
-        String setPackagePathScript = Format("SetPackagePath(\"%s\")", pathToAutotesting.c_str());
+        FilePath pathToAutotesting = "~res:/Autotesting/";
+        String setPackagePathScript = Format("SetPackagePath(\"%s\")", pathToAutotesting.GetAbsolutePathname().c_str());
         if(isOk)
         {
             isOk = RunScript(setPackagePathScript);
@@ -420,7 +420,7 @@ bool AutotestingSystemLua::LoadScriptFromFile(const String &luaFilePath)
 {
     if(!luaState) return false;
     
-    String realPath = FileSystem::Instance()->SystemPathForFrameworkPath(luaFilePath);
+    String realPath = FilePath(luaFilePath).GetAbsolutePathname();
     if(luaL_loadfile(luaState, realPath.c_str()) != 0)
     {
         Logger::Error("AutotestingSystemLua::LoadScriptFromFile Error: unable to load %s", realPath.c_str());
