@@ -50,7 +50,6 @@
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
 		C1DC1F081717FD3C001C5EC3 /* libTextureConverter_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C1DC1F071717FD3C001C5EC3 /* libTextureConverter_macos.a */; };
 		C70B565B1753CB5E008966FA /* KeyedArchiveSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C70B56591753CB5E008966FA /* KeyedArchiveSwig.cpp */; };
-		C7E76D2F16DF69370041ED9A /* AutotestingSystem_wrap.cxx in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D1F16DF69370041ED9A /* AutotestingSystem_wrap.cxx */; };
 		C7E76D3116DF69370041ED9A /* AutotestingSystemLua.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2116DF69370041ED9A /* AutotestingSystemLua.cpp */; };
 		C7E76D3216DF69370041ED9A /* AutotestingSystemLua.h in Headers */ = {isa = PBXBuildFile; fileRef = C7E76D2216DF69370041ED9A /* AutotestingSystemLua.h */; };
 		C7E76D3316DF69370041ED9A /* AutotestingSystemSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2316DF69370041ED9A /* AutotestingSystemSwig.cpp */; };
@@ -3018,7 +3017,6 @@
 				E89CE92C16C54A36006BEFF4 /* SpriteRenderBatch.cpp in Sources */,
 				CCB4C44616CBC65D00F2B085 /* ComponentHelpers.cpp in Sources */,
 				1799E51A16CCEBDA0058061F /* ParticleForce.cpp in Sources */,
-				C7E76D2F16DF69370041ED9A /* AutotestingSystem_wrap.cxx in Sources */,
 				C7E76D3116DF69370041ED9A /* AutotestingSystemLua.cpp in Sources */,
 				C7E76D3316DF69370041ED9A /* AutotestingSystemSwig.cpp in Sources */,
 				C7E76D3416DF69370041ED9A /* AutotestingSystemYaml.cpp in Sources */,
