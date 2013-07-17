@@ -30,7 +30,15 @@
 #include "Scene/System/HoodSystem.h"
 #include "Scene/System/SelectionSystem.h"
 #include "Scene/System/ModifSystem.h"
+#include "Scene/System/LandscapeEditorDrawSystem.h"
+#include "Scene/System/HeightmapEditorSystem.h"
+#include "Scene/System/TilemaskEditorSystem.h"
+#include "Scene/System/CustomColorsSystem.h"
+#include "Scene/System/VisibilityToolSystem.h"
 #include "Scene/System/StructureSystem.h"
+#include "Scene/System/ParticlesDebugDrawSystem.h"
+#include "Scene/System/EditorLightSystem.h"
+
 
 class SceneEditor2 : public DAVA::Scene
 {
@@ -45,7 +53,15 @@ public:
 	HoodSystem *hoodSystem;
 	SceneSelectionSystem *selectionSystem;
 	EntityModificationSystem *modifSystem;
+	LandscapeEditorDrawSystem* landscapeEditorDrawSystem;
+	HeightmapEditorSystem* heightmapEditorSystem;
+	TilemaskEditorSystem* tilemaskEditorSystem;
+	CustomColorsSystem* customColorsSystem;
+	VisibilityToolSystem* visibilityToolSystem;
 	StructureSystem *structureSystem;
+	ParticlesDebugDrawSystem *particlesSystem;
+	EditorLightSystem *editorLightSystem;
+
 
 	// save/load
 	bool Load(const DAVA::FilePath &path);
@@ -73,6 +89,9 @@ public:
 	// this function should be called each time UI3Dview changes its position
 	// viewport rect is used to calc. ray from camera to any 2d point on this viewport
 	void SetViewportRect(const DAVA::Rect &newViewportRect);
+
+	//Insert entity to begin of scene hierarchy to display editor entities at one place on top og scene tree
+	void AddEditorEntity(Entity *editorEntity);
 
 protected:
 	DAVA::FilePath curScenePath;

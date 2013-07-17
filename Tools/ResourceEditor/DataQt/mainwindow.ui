@@ -85,20 +85,6 @@
        <property name="acceptDrops">
         <bool>true</bool>
        </property>
-       <property name="styleSheet">
-        <string notr="true"> QTreeView::branch:has-children:!has-siblings:closed,
- QTreeView::branch:closed:has-children:has-siblings {
-         border-image: none;
-         image: url(:/QtImages/tree-closed.png);
- }
-
- QTreeView::branch:open:has-children:!has-siblings,
- QTreeView::branch:open:has-children:has-siblings  {
-         border-image: none;
-         image: url(:/QtImages/tree-open.png);
- }
-</string>
-       </property>
        <property name="dragEnabled">
         <bool>true</bool>
        </property>
@@ -195,20 +181,6 @@
        <property name="contextMenuPolicy">
         <enum>Qt::CustomContextMenu</enum>
        </property>
-       <property name="styleSheet">
-        <string notr="true"> QTreeView::branch:has-children:!has-siblings:closed,
- QTreeView::branch:closed:has-children:has-siblings {
-         border-image: none;
-         image: url(:/QtImages/tree-closed.png);
- }
-
- QTreeView::branch:open:has-children:!has-siblings,
- QTreeView::branch:open:has-children:has-siblings  {
-         border-image: none;
-         image: url(:/QtImages/tree-open.png);
- }
-</string>
-       </property>
       </widget>
      </item>
     </layout>
@@ -262,20 +234,6 @@
       <widget class="PropertyEditor" name="propertyEditor">
        <property name="mouseTracking">
         <bool>false</bool>
-       </property>
-       <property name="styleSheet">
-        <string notr="true"> QTreeView::branch:has-children:!has-siblings:closed,
- QTreeView::branch:closed:has-children:has-siblings {
-         border-image: none;
-         image: url(:/QtImages/tree-closed.png);
- }
-
- QTreeView::branch:open:has-children:!has-siblings,
- QTreeView::branch:open:has-children:has-siblings  {
-         border-image: none;
-         image: url(:/QtImages/tree-open.png);
- }
-</string>
        </property>
        <property name="editTriggers">
         <set>QAbstractItemView::AllEditTriggers</set>
@@ -397,7 +355,7 @@
      <x>0</x>
      <y>0</y>
      <width>1068</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -735,6 +693,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionShowMipmapLevel"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockWidget">
@@ -788,20 +747,6 @@
        </property>
        <property name="autoFillBackground">
         <bool>false</bool>
-       </property>
-       <property name="styleSheet">
-        <string notr="true"> QTreeView::branch:has-children:!has-siblings:closed,
- QTreeView::branch:closed:has-children:has-siblings {
-         border-image: none;
-         image: url(:/QtImages/tree-closed.png);
- }
-
- QTreeView::branch:open:has-children:!has-siblings,
- QTreeView::branch:open:has-children:has-siblings  {
-         border-image: none;
-         image: url(:/QtImages/tree-open.png);
- }
-</string>
        </property>
        <property name="frameShadow">
         <enum>QFrame::Plain</enum>
@@ -865,9 +810,6 @@
      </item>
      <item>
       <widget class="SceneTree" name="sceneTree">
-       <property name="styleSheet">
-        <string notr="true"/>
-       </property>
        <property name="editTriggers">
         <set>QAbstractItemView::NoEditTriggers</set>
        </property>
@@ -875,6 +817,72 @@
         <enum>QAbstractItemView::ExtendedSelection</enum>
        </property>
       </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionEnableNotPassable"/>
+  </widget>
+  <widget class="QDockWidget" name="dockHeightmapEditor">
+   <property name="windowTitle">
+    <string>Heightmap Editor</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_7">
+    <layout class="QVBoxLayout" name="verticalLayout_10">
+     <property name="margin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="HeightmapEditorPropertiesView" name="heightmapEditorPropertiesView" native="true"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockTilemaskEditor">
+   <property name="windowTitle">
+    <string>Tilemask Editor</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_8">
+    <layout class="QVBoxLayout" name="verticalLayout_11">
+     <property name="margin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="TilemaskEditorPropertiesView" name="widget_2" native="true"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockCustomColorsEditor">
+   <property name="windowTitle">
+    <string>Custom Colors Editor</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_9">
+    <layout class="QVBoxLayout" name="verticalLayout_12">
+     <property name="margin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="CustomColorsPropertiesView" name="widget_3" native="true"/>
      </item>
     </layout>
    </widget>
@@ -921,6 +929,24 @@
         <bool>true</bool>
        </property>
       </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockVisibilityToolEditor">
+   <property name="windowTitle">
+    <string>Visibility Tool Editor</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_10">
+    <layout class="QVBoxLayout" name="verticalLayout_13">
+     <property name="margin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="VisibilityToolPropertiesView" name="widget_4" native="true"/>
      </item>
     </layout>
    </widget>
@@ -981,12 +1007,12 @@
   </action>
   <action name="actionExportPVRIOS">
    <property name="text">
-    <string>PoverVR iOS</string>
+    <string>PowerVR iOS</string>
    </property>
   </action>
   <action name="actionExportPVRAndroid">
    <property name="text">
-    <string>PoverVR Android</string>
+    <string>PowerVR Android</string>
    </property>
   </action>
   <action name="actionExportTegra">
@@ -1074,6 +1100,9 @@
    <property name="text">
     <string>Texture Converter</string>
    </property>
+   <property name="shortcut">
+    <string>Alt+T</string>
+   </property>
   </action>
   <action name="actionIPhone">
    <property name="text">
@@ -1155,12 +1184,12 @@
   </action>
   <action name="actionReloadPoverVRIOS">
    <property name="text">
-    <string>PoverVR iOS</string>
+    <string>PowerVR iOS</string>
    </property>
   </action>
   <action name="actionReloadPoverVRAndroid">
    <property name="text">
-    <string>PoverVR Android</string>
+    <string>PowerVR Android</string>
    </property>
   </action>
   <action name="actionReloadTegra">
@@ -1406,6 +1435,11 @@
     <string>Alt+C</string>
    </property>
   </action>
+  <action name="actionEnableNotPassable">
+   <property name="text">
+    <string>Enable not passable</string>
+   </property>
+  </action>
   <action name="actionExportMali">
    <property name="text">
     <string>Mali</string>
@@ -1471,6 +1505,18 @@
    </property>
    <property name="shortcut">
     <string>F1</string>
+   </property>
+  </action>
+  <action name="actionShowMipmapLevel">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/mipmap.png</normaloff>:/QtIcons/mipmap.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show Zero Mipmap Level</string>
+   </property>
+   <property name="toolTip">
+    <string>Show Zero Mipmap Level</string>
    </property>
   </action>
   <action name="actionCubemapEditor">
@@ -1552,9 +1598,33 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>HeightmapEditorPropertiesView</class>
+   <extends>QWidget</extends>
+   <header>DockHeightmapEditor/HeightmapEditorPropertiesView.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TilemaskEditorPropertiesView</class>
+   <extends>QWidget</extends>
+   <header>DockTilemaskEditor/TilemaskEditorPropertiesView.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CustomColorsPropertiesView</class>
+   <extends>QWidget</extends>
+   <header>DockCustomColorsEditor/CustomColorsPropertiesView.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>ConsoleView</class>
    <extends>QPlainTextEdit</extends>
    <header>DockConsole/ConsoleView.h</header>
+  </customwidget>
+  <customwidget>
+   <class>VisibilityToolPropertiesView</class>
+   <extends>QWidget</extends>
+   <header>DockVisibilityToolEditor/VisibilityToolPropertiesView.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

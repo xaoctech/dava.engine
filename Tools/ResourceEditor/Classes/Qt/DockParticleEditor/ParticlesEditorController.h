@@ -79,7 +79,7 @@ public:
 	bool MoveEmitter(EmitterParticleEditorNode* movedItemEmitterNode, EffectParticleEditorNode* newEffectParentNode);
 	
 	// Move the Layer between Emitters or inside the same Emitter.
-	bool MoveLayer(LayerParticleEditorNode* movedItemNode, LayerParticleEditorNode* moveAboveNode);
+	bool MoveLayer(LayerParticleEditorNode* movedItemNode, LayerParticleEditorNode* beforeNode);
 
 	// Move the Layer to the end of another Emitter.
 	bool MoveLayer(LayerParticleEditorNode* moveItemNode, EmitterParticleEditorNode* newEmitterNode);
@@ -112,16 +112,16 @@ protected:
 
 	// Change the layers order for the same Particle Emitter node.
 	// Move the layer in same or different Emitter Nodes.
-	bool ChangeLayersOrderInSameEmitter(LayerParticleEditorNode* movedItemNode, LayerParticleEditorNode* moveAboveNode);
+	bool ChangeLayersOrderInSameEmitter(LayerParticleEditorNode* movedItemNode, LayerParticleEditorNode* beforeNode);
 	
-	bool ChangeLayersOrderInDifferentEmitters(LayerParticleEditorNode* moveItemNode, LayerParticleEditorNode* moveAboveNode);
+	bool ChangeLayersOrderInDifferentEmitters(LayerParticleEditorNode* moveItemNode, LayerParticleEditorNode* beforeNode);
 
 	// Move the layer to the end of the new emitter node.
 	bool MoveLayerToEmitter(LayerParticleEditorNode* moveItemNode, EmitterParticleEditorNode* newEmitterNode);
 
 	// Common function to move layer between emitters.
 	bool PerformMoveBetweenEmitters(EmitterParticleEditorNode* oldEmitterNode, EmitterParticleEditorNode* newEmitterNode,
-									LayerParticleEditorNode* layerToMove,LayerParticleEditorNode* layerToInsertAbove);
+									LayerParticleEditorNode* layerToMove,LayerParticleEditorNode* layerToInsertBefore);
 
 	// Cleanup the selected node in case it is one to be deleted.
 	void CleanupSelectedNodeIfDeleting(BaseParticleEditorNode* nodeToBeDeleted);

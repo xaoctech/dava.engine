@@ -27,7 +27,6 @@
 #include "CommandLine/CommandLineManager.h"
 #include "CommandLine/SceneExporter/SceneExporter.h"
 
-#include "TextureCompression/PVRConverter.h"
 #include "version.h"
 
 using namespace DAVA;
@@ -157,6 +156,7 @@ void FrameworkWillTerminate()
 	SceneValidator::Instance()->Release();
 	EditorConfig::Instance()->Release();
 	EditorSettings::Instance()->Release();
+    TextureSquarenessChecker::Instance()->Release();
 
 	CommandLineManager::Instance()->Release();
 }

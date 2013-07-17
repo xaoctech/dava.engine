@@ -48,17 +48,19 @@ public:
     struct Compression : public BaseObject
     {
         int32 format;
-        mutable uint32 crc;
+        mutable uint32 sourceFileCrc;
         int32 compressToWidth;
         int32 compressToHeight;
+        mutable uint32 convertedFileCrc;
         
         void Clear();
 
 		INTROSPECTION(Compression,
 			MEMBER(format, InspDesc("format", GlobalEnumMap<PixelFormat>::Instance()), I_VIEW | I_EDIT | I_SAVE)
-			MEMBER(crc, "crc", I_SAVE)
+			MEMBER(sourceFileCrc, "Source File CRC", I_SAVE)
 			MEMBER(compressToWidth, "compressToWidth", I_SAVE)
 			MEMBER(compressToHeight, "compressToHeight", I_SAVE)
+            MEMBER(convertedFileCrc, "Converted File CRC", I_SAVE)
 			)
     };
     
@@ -101,10 +103,10 @@ public:
 
     void Export(const FilePath &filePathname);
 
+    bool IsCompressedTextureActual(eGPUFamily forGPU) const;
+    bool UpdateCrcForFormat(eGPUFamily forGPU) const;
     
-    bool IsSourceChanged(eGPUFamily gpuFamily) const;
-    bool UpdateCrcForFormat(eGPUFamily gpuFamily) const;
-
+    
     bool IsCompressedFile() const;
     
     bool GetGenerateMipMaps() const;
@@ -123,7 +125,7 @@ public:
     
 protected:
     
-    const Compression * GetCompressionParams(eGPUFamily gpuFamily) const;
+    const Compression * GetCompressionParams(eGPUFamily forGPU) const;
     
     void LoadNotCompressed(File *file);
     void LoadCompressed(File *file);
@@ -149,6 +151,7 @@ protected:
 	void LoadVersion6(int32 signature, File *file);
     
 	uint32 ReadSourceCRC() const;
+	uint32 ReadConvertedCRC(eGPUFamily forGPU) const;
     
 public:
     

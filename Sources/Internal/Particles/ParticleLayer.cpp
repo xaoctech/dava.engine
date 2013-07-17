@@ -91,6 +91,7 @@ ParticleLayer::ParticleLayer()
 	frameOverLifeFPS = 0;
 
     isDisabled = false;
+	isLooped = false;
 
 	playbackSpeed = 1.0f;
 }
@@ -215,7 +216,11 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 
 	return dstLayer;
 }
-	
+
+ParticleEmitter* ParticleLayer::GetEmitter() const
+{
+	return emitter;
+}
 
 void ParticleLayer::SetEmitter(ParticleEmitter * _emitter)
 {
@@ -296,11 +301,40 @@ void ParticleLayer::Restart(bool isDeleteAllParticles)
 	}
 }
 
+void ParticleLayer::SetLooped(bool _isLooped)
+{
+	isLooped = _isLooped;
+}
+
+bool ParticleLayer::GetLooped()
+{
+	return isLooped;
+}
+
+void ParticleLayer::RestartLayerIfNeed()
+{
+	float32 lifeVariationTime = 0;
+	if (lifeVariation)
+	{
+		lifeVariationTime = lifeVariation->GetValue(layerTime);
+	}
+	
+	float32 layerEndTime = Max(endTime, lifeVariationTime);
+	// Restart layer effect if auto restart option is on and layer time exceeds its endtime
+	// Don't restart layer if it's endTime or liveVariationTime is not "ended"
+	if(isLooped && (layerTime > layerEndTime) && !emitter->IsPaused())
+	{
+		Restart(true);
+	}
+}
+
 void ParticleLayer::Update(float32 timeElapsed)
 {
 	// increment timer, take the playbackSpeed into account.
 	timeElapsed *= playbackSpeed;
 	layerTime += timeElapsed;
+	
+	RestartLayerIfNeed();
 
 	switch(type)
 	{
@@ -983,6 +1017,7 @@ void ParticleLayer::SetAdditive(bool additive)
 
 void ParticleLayer::AddForce(ParticleForce* force)
 {
+	SafeRetain(force);
 	this->forces.push_back(force);
 }
 
@@ -1003,8 +1038,8 @@ void ParticleLayer::RemoveForce(ParticleForce* force)
 													  force);
 	if (iter != this->forces.end())
 	{
+		SafeRelease(*iter);
 		this->forces.erase(iter);
-		SafeDelete(*iter);
 	}
 }
 
@@ -1012,7 +1047,7 @@ void ParticleLayer::RemoveForce(int32 forceIndex)
 {
 	if (forceIndex <= (int32)this->forces.size())
 	{
-		SafeDelete(this->forces[forceIndex]);
+		SafeRelease(this->forces[forceIndex]);
 		this->forces.erase(this->forces.begin() + forceIndex);
 	}
 }
@@ -1022,7 +1057,7 @@ void ParticleLayer::CleanupForces()
 	for (Vector<ParticleForce*>::iterator iter = this->forces.begin();
 		 iter != this->forces.end(); iter ++)
 	{
-		SafeDelete(*iter);
+		SafeRelease(*iter);
 	}
 	
 	this->forces.clear();

@@ -41,10 +41,10 @@ CommandGroupEntitiesForMultiselect::CommandGroupEntitiesForMultiselect(const Ent
 	this->entitiesToGroup = (*entities);
 	this->resultEntity = NULL;
 	Entity* en = entitiesToGroup.GetEntity(0);
-	sep = NULL;
+	sceneEditor = NULL;
 	if(NULL != en)
 	{
-		sep = dynamic_cast<SceneEditor2 *>(en->GetScene());
+		sceneEditor = dynamic_cast<SceneEditor2 *>(en->GetScene());
 	}
 }
 
@@ -191,12 +191,12 @@ void CommandGroupEntitiesForMultiselect::UpdateTransformMatrixes(Entity* entity,
 
 void CommandGroupEntitiesForMultiselect::MoveEntity(Entity* entity, Vector3& destPoint)
 {
-	if(NULL == sep || NULL == entity)
+	if(NULL == sceneEditor || NULL == entity)
 	{
 		return;
 	}
 	DAVA::AABBox3 currentItemBB;
-	sep->collisionSystem->GetBoundingBox(entity).GetTransformedBox(entity->GetWorldTransform(), currentItemBB);
+	sceneEditor->collisionSystem->GetBoundingBox(entity).GetTransformedBox(entity->GetWorldTransform(), currentItemBB);
 
 	Vector3 centrOfEntity = currentItemBB.GetCenter();
 	DAVA::Vector3 moveOffset = destPoint - centrOfEntity;
@@ -478,7 +478,8 @@ void CommandRestoreOriginalTransform::Execute()
 
 	if (node)
 	{
-		node->RestoreOriginalTransforms();
+		// DF-1326 fix - Restore local matrix to identity
+		node->SetLocalTransform(Matrix4::IDENTITY);
 	}
 	else
 		SetState(STATE_INVALID);

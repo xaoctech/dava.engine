@@ -22,6 +22,8 @@
 #include "bullet/btBulletDynamicsCommon.h"
 #include "BulletObject.h"
 
+#include "Scene/System/EditorLightSystem.h"
+
 using namespace DAVA;
 
 static const FastName LAYER_ARROWS("ArrowsRenderLayer");
@@ -76,20 +78,11 @@ public:
     
     const RenderManager::Stats & GetRenderStats() const;
     
-    void UpdateCameraLightOnScene(bool show);
-    void UpdateCameraLightOnScene();
-    
+	void AddEditorEntity(Entity *editorEntity);
+
 protected:
     void SetForceLodLayerRecursive(Entity *node, int32 layer);
     
-    void CreateCameraLight();
-    void UpdateCameraLight();
-    void HideCameraLight();
-    bool IsLightOnSceneRecursive(Entity *entity);
-    
-    void AddEditorEntity(Entity *editorEntity);
-    
-
     btDefaultCollisionConfiguration* collisionConfiguration;
 	btCollisionDispatcher* dispatcher;
 	btAxisSweep3* broadphase;
@@ -114,7 +107,10 @@ protected:
     
     RenderManager::Stats renderStats;
     
-    Entity *cameraLight;
+public:
+
+    EditorLightSystem *editorLightSystem;
+
 };
 
 #endif

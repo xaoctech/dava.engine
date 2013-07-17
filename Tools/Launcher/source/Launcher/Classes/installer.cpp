@@ -37,6 +37,8 @@
 
 #define APP_INSTALLER_DIR "Installers"
 
+QString AppTypeNames[eAppTypeCount] = {"Stable", "to-Master", "Dev-QA", "Development", "Dependencies"};
+
 Installer::Installer(QObject *parent) :
     QObject(parent)
 {
@@ -81,6 +83,7 @@ void Installer::UpdateConfigFinished(const AppsConfig & update) {
     emit WebPageUpdated(m_AppsConfig.m_pageUrl);
 
     Update(m_AvailableSoftWare.m_Stable, eAppTypeStable, true);
+    Update(m_AvailableSoftWare.m_toMaster, eAppTypeToMaster, true);
     Update(m_AvailableSoftWare.m_Test, eAppTypeTest, true);
 //  Update(m_AvailableSoftWare.m_Development, eAppTypeDevelopment);
     Update(m_AvailableSoftWare.m_Dependencies, eAppTypeDependencies, true);
@@ -100,11 +103,13 @@ void Installer::UpdateAvailableSoftware() {
     m_AvailableSoftWare.Clear();
     //get installed soft
     FormatFromSetting(m_AvailableSoftWare.m_Stable, currentConfig.m_Stable);
+    FormatFromSetting(m_AvailableSoftWare.m_toMaster, currentConfig.m_toMaster);
     FormatFromSetting(m_AvailableSoftWare.m_Test, currentConfig.m_Test);
     FormatFromSetting(m_AvailableSoftWare.m_Development, currentConfig.m_Development);
     FormatFromSetting(m_AvailableSoftWare.m_Dependencies, currentConfig.m_Dependencies);
     //merge with update
     FormatFromUpdate(m_AvailableSoftWare.m_Stable, m_AppsConfig.m_Stable);
+    FormatFromUpdate(m_AvailableSoftWare.m_toMaster, m_AppsConfig.m_toMaster);
     FormatFromUpdate(m_AvailableSoftWare.m_Test, m_AppsConfig.m_Test);
     FormatFromUpdate(m_AvailableSoftWare.m_Development, m_AppsConfig.m_Development);
     FormatFromUpdate(m_AvailableSoftWare.m_Dependencies, m_AppsConfig.m_Dependencies);
@@ -159,6 +164,9 @@ const AppsConfig::AppMap* Installer::GetAppMap(eAppType type) const {
     case eAppTypeStable: {
         apps = &m_AppsConfig.m_Stable;
     }break;
+    case eAppTypeToMaster: {
+        apps = &m_AppsConfig.m_toMaster;
+    }break;
     case eAppTypeTest: {
         apps = &m_AppsConfig.m_Test;
     }break;
@@ -177,6 +185,9 @@ QString Installer::GetInstallPath(eAppType type) const {
     case eAppTypeStable: {
         return DirectoryManager::GetInstance()->GetStableDir();
     }break;
+    case eAppTypeToMaster: {
+        return DirectoryManager::GetInstance()->GetToMasterDir();
+    }break;
     case eAppTypeTest: {
         return DirectoryManager::GetInstance()->GetTestDir();
     }break;
@@ -191,7 +202,7 @@ QString Installer::GetInstallPath(eAppType type) const {
 }
 
 bool Installer::Install(const QString& appName, const QString& appVersion, eAppType type) {
-    Logger::GetInstance()->AddLog(tr("Installing %1").arg(appName));
+    Logger::GetInstance()->AddLog(tr("Installing %1 (%2)").arg(appName).arg(AppTypeNames[type]));
 
     const AppsConfig::AppMap* apps = GetAppMap(type);
     if (!apps)

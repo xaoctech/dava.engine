@@ -160,3 +160,20 @@ int ShowSaveSceneQuestion(DAVA::Scene *scene)
     return answer;
 }
 
+void DeleteOldPVRTextureIfPowerVr_IOS(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu)
+{
+    if(!descriptor || gpu != GPU_POWERVR_IOS) return;
+    
+    FilePath oldPvrPath = FilePath::CreateWithNewExtension(descriptor->pathname, ".pvr");
+    FileSystem::Instance()->DeleteFile(oldPvrPath);
+}
+
+void DeleteOldDXTTextureIfTegra(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu)
+{
+    if(!descriptor || gpu != GPU_TEGRA) return;
+    
+    FilePath oldDdsPath = FilePath::CreateWithNewExtension(descriptor->pathname, ".dds");
+    FileSystem::Instance()->DeleteFile(oldDdsPath);
+}
+
+

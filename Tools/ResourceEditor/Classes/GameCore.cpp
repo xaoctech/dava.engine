@@ -35,6 +35,7 @@
 
 #include "FileSystem/ResourceArchive.h"
 #include "StringConstants.h"
+#include "version.h"
 
 using namespace DAVA;
 
@@ -79,15 +80,23 @@ void GameCore::OnAppStarted()
 	delete effectNode;
 
     //Unpack Help to Documents
-    ResourceArchive * helpRA = new ResourceArchive();
-    if(helpRA->Open("~res:/Help.docs"))
+    KeyedArchive * settings = EditorSettings::Instance()->GetSettings();
+    String editorVer = settings->GetString("editor.version");
+    FilePath docsPath = FilePath(ResourceEditor::DOCUMENTATION_PATH);
+    if(editorVer != RESOURCE_EDITOR_VERSION || !docsPath.Exists())
     {
-        FileSystem::Instance()->DeleteDirectory(ResourceEditor::DOCUMENTATION_PATH);
-        FileSystem::Instance()->CreateDirectory(ResourceEditor::DOCUMENTATION_PATH, true);
+        Logger::Debug("[GameCore::OnAppStarted()] Unpacking Help");
+        ResourceArchive * helpRA = new ResourceArchive();
+        if(helpRA->Open("~res:/Help.docs"))
+        {
+            FileSystem::Instance()->DeleteDirectory(docsPath);
+            FileSystem::Instance()->CreateDirectory(docsPath, true);
 
-        helpRA->UnpackToFolder(ResourceEditor::DOCUMENTATION_PATH);
+            helpRA->UnpackToFolder(docsPath);
+        }
+        SafeRelease(helpRA);
     }
-    SafeRelease(helpRA);
+    settings->SetString("editor.version", RESOURCE_EDITOR_VERSION);
 }
 
 void GameCore::OnAppFinished()
