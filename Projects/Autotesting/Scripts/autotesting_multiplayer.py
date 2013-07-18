@@ -20,7 +20,7 @@ import time
 arguments = sys.argv[1:]
 
 if len(arguments) != 6:
-    print 'Usage: ./autotesting_multiplayer.py [ProjectFolder] [ConfigurationName] [MasterPlatformName] [MasterTargetName] [HelperPlatformName] [HelperTargetName]'
+    print 'Usage: ./autotesting_multiplayer.py ProjectFolder ConfigurationName MasterPlatformName MasterTargetName HelperPlatformName HelperTargetName Device'
     exit(1)
 
 
