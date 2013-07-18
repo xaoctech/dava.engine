@@ -214,6 +214,9 @@
     <Filter Include="Classes\Qt\Tools\MimeDataHelper">
       <UniqueIdentifier>{6d3f4be9-f1f7-4e9d-806c-61a057978588}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\Qt\CubemapEditor">
+      <UniqueIdentifier>{575e7ef2-c3d3-4fd3-85aa-9d353733bf68}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1914,6 +1917,42 @@
     <ClCompile Include="Classes\Qt\Scene\System\EditorLightSystem.cpp">
       <Filter>Classes\Qt\Scene\System</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\CubemapEditor\ClickableQLabel.cpp">
+      <Filter>Classes\Qt\CubemapEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\CubemapEditor\CubeListItemDelegate.cpp">
+      <Filter>Classes\Qt\CubemapEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\CubemapEditor\CubemapEditorDialog.cpp">
+      <Filter>Classes\Qt\CubemapEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\CubemapEditor\CubeMapTextureBrowser.cpp">
+      <Filter>Classes\Qt\CubemapEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\CubemapEditor\CubemapUtils.cpp">
+      <Filter>Classes\Qt\CubemapEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\CubemapEditor\MaterialHelper.cpp">
+      <Filter>Classes\Qt\CubemapEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\CubemapEditor\ClickableQLabel_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\CubemapEditor\CubeListItemDelegate_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\CubemapEditor\CubemapEditorDialog_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\CubemapEditor\CubeMapTextureBrowser_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\CubemapEditor\CubemapUtils_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\CubemapEditor\MaterialHelper_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3355,6 +3394,24 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Scene\System\EditorLightSystem.h">
       <Filter>Classes\Qt\Scene\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\CubemapEditor\ClickableQLabel.h">
+      <Filter>Classes\Qt\CubemapEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\CubemapEditor\CubeListItemDelegate.h">
+      <Filter>Classes\Qt\CubemapEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\CubemapEditor\CubemapEditorDialog.h">
+      <Filter>Classes\Qt\CubemapEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\CubemapEditor\CubeMapTextureBrowser.h">
+      <Filter>Classes\Qt\CubemapEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\CubemapEditor\CubemapUtils.h">
+      <Filter>Classes\Qt\CubemapEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\CubemapEditor\MaterialHelper.h">
+      <Filter>Classes\Qt\CubemapEditor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -22,7 +22,7 @@
 #include "Qt/Scene/SceneDataManager.h"
 #include "Qt/Scene/SceneData.h"
 
-#include "MaterialHelper.h"
+#include "Qt/CubemapEditor/MaterialHelper.h"
 
 MeshInstancePropertyControl::MeshInstancePropertyControl(const Rect & rect, bool createNodeProperties)
 :	NodesPropertyControl(rect, createNodeProperties)

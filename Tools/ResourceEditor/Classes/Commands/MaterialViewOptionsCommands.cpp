@@ -22,7 +22,7 @@
 #include "../SceneEditor/EditorBodyControl.h"
 #include "../Qt/Scene/SceneDataManager.h"
 
-#include "MaterialHelper.h"
+#include "../Qt/CubemapEditor/MaterialHelper.h"
 
 
 CommandChangeMaterialViewOption::CommandChangeMaterialViewOption(Material::eViewOptions value)

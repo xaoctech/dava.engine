@@ -17,7 +17,7 @@
 #include <QtGui>
 #include "MaterialBrowser/MaterialTreeModel.h"
 
-#include "MaterialHelper.h"
+#include "../Qt/CubemapEditor/MaterialHelper.h"
 
 MaterialTreeModel::MaterialTreeModel(QObject *parent)
 	: QAbstractItemModel(parent)

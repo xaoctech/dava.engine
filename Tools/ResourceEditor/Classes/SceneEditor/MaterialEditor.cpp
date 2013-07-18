@@ -24,7 +24,7 @@
 #include "EditorSettings.h"
 #include "../EditorScene.h"
 
-#include "MaterialHelper.h"
+#include "../Qt/CubemapEditor/MaterialHelper.h"
 
 static const float32 materialListPart = 0.33f;
 static const float32 previewHeightPart = 0.5f;
