@@ -1,5 +1,10 @@
 <RCC>
   <qresource prefix="/">
+    <file>QtIcons/pivot_center.png</file>
+    <file>QtIcons/pivot_common.png</file>
+    <file>QtIcons/pivot_zero.png</file>
+    <file>QtIcons/lod_object.png</file>
+    <file>QtIcons/user_object.png</file>
     <file>QtIcons/file.png</file>
     <file>QtIcons/play.png</file>
     <file>QtIcons/restart.png</file>

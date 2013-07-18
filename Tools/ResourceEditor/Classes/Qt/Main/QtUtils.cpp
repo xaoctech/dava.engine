@@ -41,7 +41,8 @@ DAVA::FilePath GetOpenFileName(const DAVA::String &title, const DAVA::FilePath &
     QString filePath = QFileDialog::getOpenFileName(NULL, QString(title.c_str()), QString(pathname.GetAbsolutePathname().c_str()),
                                                     QString(filter.c_str()));
     
-    QtMainWindowHandler::Instance()->RestoreDefaultFocus();
+	// TODO: mainwindow
+    //QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 
     FilePath openedPathname = PathnameToDAVAStyle(filePath);
     if(!openedPathname.IsEmpty() && !SceneValidator::Instance()->IsPathCorrectForProject(openedPathname))

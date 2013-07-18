@@ -132,6 +132,9 @@ bool SceneEditor2::Save(const DAVA::FilePath &path)
 	if(ret)
 	{
 		curScenePath = path;
+
+		// mark current position in command stack as clean
+		commandStack.SetClean();
 	}
 
 	SafeRelease(file);
@@ -188,6 +191,11 @@ void SceneEditor2::EndBatch()
 void SceneEditor2::Exec(Command2 *command)
 {
 	commandStack.Exec(command);
+}
+
+bool SceneEditor2::IsChanged() const
+{
+	return (!commandStack.IsClean());
 }
 
 void SceneEditor2::Update(float timeElapsed)
@@ -279,5 +287,6 @@ void SceneEditor2::EditorCommandNotify::Notify(const Command2 *command, bool red
 	if(NULL != editor)
 	{
 		editor->EditorCommandProcess(command, redo);
+		SceneSignals::Instance()->EmitCommandExecuted(editor, command, redo);
 	}
 }
