@@ -302,7 +302,8 @@ void SceneDataManager::SetActiveScene(EditorScene *scene)
     currentScene->RebuildSceneGraph();
 
     
-    QtMainWindowHandler::Instance()->ShowStatusBarMessage(currentScene->GetScenePathname().GetAbsolutePathname());
+	// TODO: mainwindow
+    //QtMainWindowHandler::Instance()->ShowStatusBarMessage(currentScene->GetScenePathname().GetAbsolutePathname());
 
 	emit SceneActivated(currentScene);
 }

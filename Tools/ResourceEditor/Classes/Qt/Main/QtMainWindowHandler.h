@@ -17,6 +17,8 @@
 #ifndef __QT_MAIN_WINDOW_HANDLER_H__
 #define __QT_MAIN_WINDOW_HANDLER_H__
 
+#if 0
+
 #include <QObject>
 #include <QPoint>
 #include <QVector>
@@ -363,5 +365,7 @@ private:
     QStatusBar *statusBar;
 
 };
+
+#endif
 
 #endif // __QT_MAIN_WINDOW_HANDLER_H__
