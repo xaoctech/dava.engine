@@ -14,6 +14,421 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "DAVAEngine.h"
+
+#include "mainwindow.h"
+#include "Project/ProjectManager.h"
+#include "DockConsole/Console.h"
+
+#include "Classes/SceneEditor/EditorSettings.h"
+#include "Classes/SceneEditor/EditorConfig.h"
+
+#include <QFileDialog>
+#include <QMessageBox>
+
+QtMainWindow::QtMainWindow(QWidget *parent)
+	: QMainWindow(parent)
+	, ui(new Ui::MainWindow)
+{
+	Console::Instance();
+	new ProjectManager();
+
+	ui->setupUi(this);
+
+	qApp->installEventFilter(this);
+	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + "EditorConfig.yaml");
+
+	SetupMainMenu();
+	SetupToolBars();
+	SetupActions();
+
+	// initial state is as project closed
+	ProjectClosed();
+
+	posSaver.Attach(this);
+	posSaver.LoadState(this);
+
+	QObject::connect(ProjectManager::Instance(), SIGNAL(ProjectOpened(const QString &)), this, SLOT(ProjectOpened(const QString &)));
+	QObject::connect(ProjectManager::Instance(), SIGNAL(ProjectClosed()), this, SLOT(ProjectClosed()));
+
+	QObject::connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2 *, const Command2*, bool)), this, SLOT(SceneCommandExecuted(SceneEditor2 *, const Command2*, bool)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(SceneActivated(SceneEditor2 *)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(SceneDeactivated(SceneEditor2 *)));
+
+	ui->sceneTabWidget->OpenTab("/Projects/dava.wot.art/DataSource/3d/Maps/dike_village/dike_village.sc2");
+	//ui->sceneTabWidget->OpenTab("/Users/a_makovii/Documents/work/temp/39/mountain/mountain_switch.sc2");
+	//ui->sceneTabWidget->OpenTab("/Users/a_makovii/Documents/work/temp/desertTrain/desert_train/desert_train.sc2");
+	//ui->sceneTabWidget->OpenTab("/Users/yuricoder/Work/DAVA_Framework/ParticleEditorGraphIssues/Particles/DataSource/3d/FX/gun_shot.sc2");
+}
+
+QtMainWindow::~QtMainWindow()
+{
+	posSaver.SaveState(this);
+
+	delete ui;
+	ui = NULL;
+
+	ProjectManager::Instance()->Release();
+}
+
+Ui::MainWindow* QtMainWindow::GetUI()
+{
+	return ui;
+}
+
+SceneTabWidget* QtMainWindow::GetSceneWidget()
+{
+	return ui->sceneTabWidget;
+}
+
+SceneEditor2* QtMainWindow::GetCurrentScene()
+{
+	return ui->sceneTabWidget->GetCurrentScene();
+}
+
+bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
+{
+	if(qApp == obj && ProjectManager::Instance()->IsOpened())
+	{
+		if(QEvent::ApplicationActivate == event->type())
+		{
+			if(QtLayer::Instance())
+			{
+				QtLayer::Instance()->OnResume();
+				Core::Instance()->GetApplicationCore()->OnResume();
+			}
+		}
+		else if(QEvent::ApplicationDeactivate == event->type())
+		{
+			if(QtLayer::Instance())
+			{
+				QtLayer::Instance()->OnSuspend();
+				Core::Instance()->GetApplicationCore()->OnSuspend();
+			}
+		}
+	}
+
+	return QMainWindow::eventFilter(obj, event);
+}
+
+void QtMainWindow::SetupMainMenu()
+{
+	QAction *actionProperties = ui->dockProperties->toggleViewAction();
+	QAction *actionLibrary = ui->dockLibrary->toggleViewAction();
+	QAction *actionHangingObjects = ui->dockHangingObjects->toggleViewAction();
+	QAction *actionSetSwitchIndex = ui->dockSetSwitchIndex->toggleViewAction();
+	QAction *actionParticleEditor = ui->dockParticleEditor->toggleViewAction();
+	QAction *actionParticleEditorTimeLine = ui->dockParticleEditorTimeLine->toggleViewAction();
+	QAction *actionSceneInfo = ui->dockSceneInfo->toggleViewAction();
+	QAction *actionSceneTree = ui->dockSceneTree->toggleViewAction();
+	QAction *actionConsole = ui->dockConsole->toggleViewAction();
+	QAction *actionCustomColors2 = ui->dockCustomColorsEditor->toggleViewAction();
+	QAction *actionVisibilityTool2 = ui->dockVisibilityToolEditor->toggleViewAction();
+	QAction *actionHeightmapEditor2 = ui->dockHeightmapEditor->toggleViewAction();
+	QAction *actionTilemaskEditor2 = ui->dockTilemaskEditor->toggleViewAction();
+
+	ui->menuView->addAction(actionSceneInfo);
+	ui->menuView->addAction(actionLibrary);
+	ui->menuView->addAction(actionProperties);
+	ui->menuView->addAction(actionParticleEditor);
+	ui->menuView->addAction(actionParticleEditorTimeLine);
+	ui->menuView->addAction(actionHangingObjects);
+	ui->menuView->addAction(actionSetSwitchIndex);
+	ui->menuView->addAction(actionSceneTree);
+	ui->menuView->addAction(actionConsole);
+	ui->menuView->addAction(actionCustomColors2);
+	ui->menuView->addAction(actionVisibilityTool2);
+	ui->menuView->addAction(actionHeightmapEditor2);
+	ui->menuView->addAction(actionTilemaskEditor2);
+}
+
+void QtMainWindow::SetupToolBars()
+{
+	QAction *actionMainToolBar = ui->mainToolBar->toggleViewAction();
+	QAction *actionModifToolBar = ui->modificationToolBar->toggleViewAction();
+	QAction *actionViewModeToolBar = ui->viewModeToolBar->toggleViewAction();
+
+	ui->menuToolbars->addAction(actionMainToolBar);
+	ui->menuToolbars->addAction(actionModifToolBar);
+	ui->menuToolbars->addAction(actionViewModeToolBar);
+}
+
+void QtMainWindow::SetupActions()
+{
+	// scene file actions
+	QObject::connect(ui->actionOpenProject, SIGNAL(triggered()), this, SLOT(OnProjectOpen()));
+	QObject::connect(ui->actionOpenScene, SIGNAL(triggered()), this, SLOT(OnSceneOpen()));
+	QObject::connect(ui->actionNewScene, SIGNAL(triggered()), this, SLOT(OnSceneNew()));
+	QObject::connect(ui->actionSaveScene, SIGNAL(triggered()), this, SLOT(OnSceneSave()));
+	QObject::connect(ui->actionSaveSceneAs, SIGNAL(triggered()), this, SLOT(OnSceneSaveAs()));
+	QObject::connect(ui->actionSaveToFolder, SIGNAL(triggered()), this, SLOT(OnSceneSaveToFolder()));
+
+	// scene undo/redo
+	QObject::connect(ui->actionUndo, SIGNAL(triggered()), this, SLOT(OnUndo()));
+	QObject::connect(ui->actionRedo, SIGNAL(triggered()), this, SLOT(OnRedo()));
+
+	// scene modifications
+	QObject::connect(ui->actionModifySelect, SIGNAL(triggered()), this, SLOT(OnSelectMode()));
+	QObject::connect(ui->actionModifyMove, SIGNAL(triggered()), this, SLOT(OnMoveMode()));
+	QObject::connect(ui->actionModifyRotate, SIGNAL(triggered()), this, SLOT(OnRotateMode()));
+	QObject::connect(ui->actionModifyScale, SIGNAL(triggered()), this, SLOT(OnScaleMode()));
+	QObject::connect(ui->actionPivotCenter, SIGNAL(triggered()), this, SLOT(OnPivotCenterMode()));
+	QObject::connect(ui->actionPivotCommon, SIGNAL(triggered()), this, SLOT(OnPivotCommonMode()));
+
+}
+
+// ###################################################################################################
+// Scene signals
+// ###################################################################################################
+
+void QtMainWindow::ProjectOpened(const QString &path)
+{
+	ui->actionNewScene->setEnabled(true);
+	ui->actionOpenScene->setEnabled(true);
+	ui->actionSaveScene->setEnabled(true);
+	ui->actionSaveToFolder->setEnabled(true);
+}
+
+void QtMainWindow::ProjectClosed()
+{
+	ui->actionNewScene->setEnabled(false);
+	ui->actionOpenScene->setEnabled(false);
+	ui->actionSaveScene->setEnabled(false);
+	ui->actionSaveToFolder->setEnabled(false);
+}
+
+void QtMainWindow::SceneActivated(SceneEditor2 *scene)
+{
+	LoadUndoRedoState(scene);
+	LoadModificationState(scene);
+}
+
+void QtMainWindow::SceneDeactivated(SceneEditor2 *scene)
+{
+	// TODO:
+	// block some actions, when there is no scene
+	// ...
+	// 
+
+}
+
+void QtMainWindow::SceneCommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
+{
+	if(scene == GetCurrentScene())
+	{
+		LoadUndoRedoState(scene);
+	}
+}
+
+// ###################################################################################################
+// Mainwindow Qt actions
+// ###################################################################################################
+
+void QtMainWindow::OnProjectOpen()
+{
+	QString newPath = ProjectManager::Instance()->ProjectOpenDialog();
+	ProjectManager::Instance()->ProjectOpen(newPath);
+}
+
+void QtMainWindow::OnProjectClose()
+{
+	// TODO:
+	// Close all scenes
+	// ...
+	// 
+
+	ProjectManager::Instance()->ProjectClose();
+}
+
+void QtMainWindow::OnSceneNew()
+{
+	ui->sceneTabWidget->OpenTab();
+}
+
+void QtMainWindow::OnSceneOpen()
+{
+	QString path = QFileDialog::getOpenFileName(this, "Open scene file", ProjectManager::Instance()->CurProjectDataSourcePath(), "*.sc2");
+	ui->sceneTabWidget->OpenTab(DAVA::FilePath(path.toStdString()));
+}
+
+void QtMainWindow::OnSceneSave()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(NULL != scene && scene->IsChanged())
+	{
+		bool saveResult = false;
+
+		if(scene->GetScenePath().IsEmpty())
+		{
+			QString path = QFileDialog::getSaveFileName(this, "Save scene file", ProjectManager::Instance()->CurProjectDataSourcePath(), "*.sc2");
+			saveResult = scene->Save(DAVA::FilePath(path.toStdString()));
+		}
+		else
+		{
+			saveResult = scene->Save();
+		}
+
+		if(!saveResult)
+		{
+			QMessageBox::warning(this, "Save error", "An error occurred while saving the scene. See log for more info.", QMessageBox::Ok);
+		}
+	}
+}
+
+void QtMainWindow::OnSceneSaveAs()
+{
+	// TODO:
+	// ...
+	// 
+
+}
+
+void QtMainWindow::OnSceneSaveToFolder()
+{
+	// TODO:
+	// ...
+	// 
+
+}
+
+void QtMainWindow::OnUndo()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(NULL != scene)
+	{
+		scene->Undo();
+	}
+}
+
+void QtMainWindow::OnRedo()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(NULL != scene)
+	{
+		scene->Redo();
+	}
+}
+
+void QtMainWindow::OnSelectMode()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(NULL != scene)
+	{
+		scene->modifSystem->SetModifMode(ST_MODIF_OFF);
+		LoadModificationState(scene);
+	}
+}
+
+void QtMainWindow::OnMoveMode()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(NULL != scene)
+	{
+		scene->modifSystem->SetModifMode(ST_MODIF_MOVE);
+		LoadModificationState(scene);
+	}
+}
+
+void QtMainWindow::OnRotateMode()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(NULL != scene)
+	{
+		scene->modifSystem->SetModifMode(ST_MODIF_ROTATE);
+		LoadModificationState(scene);
+	}
+}
+
+void QtMainWindow::OnScaleMode()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(NULL != scene)
+	{
+		scene->modifSystem->SetModifMode(ST_MODIF_SCALE);
+		LoadModificationState(scene);
+	}
+}
+
+void QtMainWindow::OnPivotCenterMode()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(NULL != scene)
+	{
+		scene->selectionSystem->SetPivotPoint(ST_PIVOT_ENTITY_CENTER);
+		LoadModificationState(scene);
+	}
+}
+
+void QtMainWindow::OnPivotCommonMode()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(NULL != scene)
+	{
+		scene->selectionSystem->SetPivotPoint(ST_PIVOT_COMMON_CENTER);
+		LoadModificationState(scene);
+	}
+}
+
+
+// ###################################################################################################
+// Mainwindow load state functions
+// ###################################################################################################
+
+void QtMainWindow::LoadModificationState(SceneEditor2 *scene)
+{
+	if(NULL != scene)
+	{
+		ui->actionModifySelect->setChecked(false);
+		ui->actionModifyMove->setChecked(false);
+		ui->actionModifyRotate->setChecked(false);
+		ui->actionModifyScale->setChecked(false);
+
+		ST_ModifMode modifMode = scene->modifSystem->GetModifMode();
+		switch (modifMode)
+		{
+		case ST_MODIF_OFF:
+			ui->actionModifySelect->setChecked(true);
+			break;
+		case ST_MODIF_MOVE:
+			ui->actionModifyMove->setChecked(true);
+			break;
+		case ST_MODIF_ROTATE:
+			ui->actionModifyRotate->setChecked(true);
+			break;
+		case ST_MODIF_SCALE:
+			ui->actionModifyScale->setChecked(true);
+			break;
+		default:
+			break;
+		}
+
+		
+		if(scene->selectionSystem->GetPivotPoint() == ST_PIVOT_ENTITY_CENTER)
+		{
+			ui->actionPivotCenter->setChecked(true);
+			ui->actionPivotCommon->setChecked(false);
+		}
+		else
+		{
+			ui->actionPivotCenter->setChecked(false);
+			ui->actionPivotCommon->setChecked(true);
+		}
+
+	}
+}
+
+void QtMainWindow::LoadUndoRedoState(SceneEditor2 *scene)
+{
+	if(NULL != scene)
+	{
+		ui->actionUndo->setEnabled(scene->CanUndo());
+		ui->actionRedo->setEnabled(scene->CanRedo());
+	}
+}
+
+
+
+#if 0
 #include "mainwindow.h"
 
 #include "DAVAEngine.h"
@@ -166,7 +581,6 @@ void QtMainWindow::SetupMainMenu()
     QAction *actionSceneGraph = ui->dockSceneGraph->toggleViewAction();
     QAction *actionProperties = ui->dockProperties->toggleViewAction();
     QAction *actionLibrary = ui->dockLibrary->toggleViewAction();
-	QAction *actionReferences = ui->dockReferences->toggleViewAction();
     QAction *actionToolBar = ui->mainToolBar->toggleViewAction();
     QAction *actionCustomColors = ui->dockCustomColors->toggleViewAction();
 	QAction *actionVisibilityCheckTool = ui->dockVisibilityTool->toggleViewAction();
@@ -186,7 +600,6 @@ void QtMainWindow::SetupMainMenu()
     ui->menuView->addAction(actionToolBar);
     ui->menuView->addAction(actionLibrary);
     ui->menuView->addAction(actionProperties);
-	ui->menuView->addAction(actionReferences);
     ui->menuView->addAction(actionSceneGraph);
     ui->menuView->addAction(actionCustomColors);
 	ui->menuView->addAction(actionVisibilityCheckTool);
@@ -209,7 +622,7 @@ void QtMainWindow::SetupMainMenu()
     actionHandler->RegisterDockActions(ResourceEditor::HIDABLEWIDGET_COUNT,
                                        actionSceneGraph,
                                        actionProperties, actionLibrary, actionToolBar,
-									   actionReferences, actionCustomColors, actionVisibilityCheckTool, 
+									   actionCustomColors, actionVisibilityCheckTool, 
 									   actionParticleEditor, actionHangingObjects, actionSetSwitchIndex, actionSceneInfo,
 									   actionCustomColors2, actionVisibilityTool2, actionHeightmapEditor2,
 									   actionTilemaskEditor2);
@@ -282,9 +695,6 @@ void QtMainWindow::SetupMainMenu()
 											   ui->actionModifyScale,
 											   ui->actionModifyPlaceOnLandscape,
 											   ui->actionModifySnapToLandscape);
-
-	//Reference
-	connect(ui->applyReferenceSuffixButton, SIGNAL(clicked()), this, SLOT(ApplyReferenceNodeSuffix()));
 
 	actionHandler->MenuViewOptionsWillShow();
 }
@@ -440,18 +850,6 @@ void QtMainWindow::ChangeParticleDockTimeLineVisible(bool visible)
 	// Yuri Coder. Automatic show/hide of the Particles Timeline
 	// is disabled due to DF-1234.
 	// ui->dockParticleEditorTimeLine->setVisible(visible);
-}
-
-void QtMainWindow::ApplyReferenceNodeSuffix()
-{
-	QString qStr = ui->referenceSuffixEdit->text();
-	QByteArray array = qStr.toLatin1();
-	char * chars = array.data();
-	String str(chars);
-
-	SceneEditorScreenMain * screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	Scene * scene = screen->FindCurrentBody()->bodyControl->GetScene();
-	scene->SetReferenceNodeSuffix(str);
 }
 
 void QtMainWindow::ShowActionWithText(QToolBar *toolbar, QAction *action, bool showText)
@@ -624,3 +1022,5 @@ void QtMainWindow::Redo2()
 		sceneEditor->Redo();
 	}
 }
+
+#endif

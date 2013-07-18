@@ -110,12 +110,14 @@ void CommandOpenScene::Execute()
             EditorSettings::Instance()->AddLastOpenedFile(selectedScenePathname);
             screen->OpenFileAtScene(selectedScenePathname);
             
-			QtMainWindowHandler::Instance()->SelectMaterialViewOption(Material::MATERIAL_VIEW_TEXTURE_LIGHTMAP);
+			// TODO: mainwindow
+			//QtMainWindowHandler::Instance()->SelectMaterialViewOption(Material::MATERIAL_VIEW_TEXTURE_LIGHTMAP);
 
             //GUIState::Instance()->SetNeedUpdatedFileMenu(true);
         }
         
-        QtMainWindowHandler::Instance()->ShowStatusBarMessage(selectedScenePathname.GetAbsolutePathname());
+		// TODO: mainwindow
+        //QtMainWindowHandler::Instance()->ShowStatusBarMessage(selectedScenePathname.GetAbsolutePathname());
     }
 }
 
@@ -191,7 +193,8 @@ void CommandSaveSpecifiedScene::Execute()
 		SafeRelease(sc);
 	}
 
-	QtMainWindowHandler::Instance()->RestoreDefaultFocus();
+	// TODO: mainwindow
+	//QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 }
 
 //Export

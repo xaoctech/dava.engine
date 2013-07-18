@@ -43,7 +43,7 @@ void QtPropertyItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem
 QSize QtPropertyItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
 	QSize s = QStyledItemDelegate::sizeHint(option, index);
-    return QSize(s.width(), s.height() + 4);
+    return QSize(s.width(), s.height() + 3);
 }
 
 QWidget* QtPropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const

@@ -43,6 +43,9 @@ public:
 	void BeginBatch(const DAVA::String &text);
 	void EndBatch();
 
+	bool IsClean() const;
+	void SetClean();
+
 	size_t GetUndoLimit() const;
 	void SetUndoLimit(size_t limit);
 
@@ -50,6 +53,7 @@ protected:
 	DAVA::List<Command2 *> commandList;
 	size_t commandListLimit;
 	size_t nextCommandIndex;
+	size_t cleanCommandIndex;
 
 	CommandBatch* curBatchCommand;
 	CommandStackNotify *stackCommandsNotify;

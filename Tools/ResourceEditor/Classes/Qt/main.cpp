@@ -16,6 +16,7 @@
 
 #include <QtGui/QApplication>
 #include "Main/mainwindow.h"
+#include "Project/ProjectManager.h"
 #include "DAVAEngine.h"
 
 #if defined (__DAVAENGINE_MACOS__)
@@ -43,8 +44,9 @@ int main(int argc, char *argv[])
 	DVASSERT(false && "Wrong platform")
 #endif
 
+	new CommandLineManager();
     new QtMainWindow();
-    
+
     bool needToQuit = false;
     if(CommandLineManager::Instance()->IsCommandLineModeEnabled())
     {
@@ -56,12 +58,15 @@ int main(int argc, char *argv[])
     if(!needToQuit)
     {
         QtMainWindow::Instance()->show();
+		ProjectManager::Instance()->ProjectOpenLast();
+
         ret = a.exec();
     }
 
 	QtMainWindow::Instance()->Release();
-	DAVA::QtLayer::Instance()->Release();
+	CommandLineManager::Instance()->Release();
 
+	DAVA::QtLayer::Instance()->Release();
 	DAVA::Core::Instance()->ReleaseSingletons();
 	DAVA::Core::Instance()->Release();
 

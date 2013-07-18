@@ -50,6 +50,8 @@ void HeightmapEditorPropertiesView::Init()
 {
 	InitBrushImages();
 
+	// TODO: mainwindow
+	/*
 	QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
 
 	connect(ui->sliderStrength, SIGNAL(valueChanged(int)), ui->labelStrength, SLOT(setNum(int)));
@@ -87,6 +89,7 @@ void HeightmapEditorPropertiesView::Init()
 																	ui->checkboxTilemask);
 
 	handler->SetHeightmapEditorWidgetsState(false);
+	*/
 }
 
 void HeightmapEditorPropertiesView::InitBrushImages()

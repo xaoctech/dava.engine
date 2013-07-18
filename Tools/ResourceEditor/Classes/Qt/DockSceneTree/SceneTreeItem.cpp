@@ -118,6 +118,8 @@ QIcon SceneTreeItemEntity::ItemIcon() const
 	static QIcon effectIcon(":/QtIcons/effect.png");
 	static QIcon emitterIcon(":/QtIcons/emitter_particle.png");
 	static QIcon renderobjIcon(":/QtIcons/render_object.png");
+	static QIcon lodobjIcon(":/QtIcons/lod_object.png");
+	static QIcon userobjIcon(":/QtIcons/user_object.png");
 	static QIcon landscapeIcon(":/QtIcons/heightmapeditor.png");
 
 	QIcon ret;
@@ -138,12 +140,15 @@ QIcon SceneTreeItemEntity::ItemIcon() const
 		}
 		else if(NULL != GetLodComponent(entity))
 		{
-			// TODO:
-			// ...
+			ret = lodobjIcon;
 		}
 		else if(NULL != DAVA::GetRenderObject(entity))
 		{
 			ret = renderobjIcon;
+		}
+		else if(NULL != entity->GetComponent(DAVA::Component::USER_COMPONENT))
+		{
+			ret = userobjIcon;
 		}
 	}
 

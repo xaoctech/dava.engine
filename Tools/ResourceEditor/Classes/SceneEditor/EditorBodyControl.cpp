@@ -753,7 +753,8 @@ void EditorBodyControl::Update(float32 timeElapsed)
 		BeastCommandLineTool *beastTool = dynamic_cast<BeastCommandLineTool *>(CommandLineManager::Instance()->GetActiveCommandLineTool());
         if(beastTool)
         {
-            QtMainWindowHandler::Instance()->SaveScene(scene, beastTool->GetScenePathname());
+			// TODO: mainwindow
+            // QtMainWindowHandler::Instance()->SaveScene(scene, beastTool->GetScenePathname());
 
 			bool forceClose =	CommandLineParser::CommandIsFound(String("-force"))
 							||  CommandLineParser::CommandIsFound(String("-forceclose"));
