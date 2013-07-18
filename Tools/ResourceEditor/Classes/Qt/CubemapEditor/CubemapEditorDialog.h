@@ -48,6 +48,7 @@ protected:
 	void UpdateFaceInfo();
 	void UpdateButtonState();
 	bool AnyFaceLoaded();
+	bool AllFacesLoaded();
 	void LoadCubemap(const QString& path);
 	void SaveCubemap(const QString& path);
 	DAVA::uint8 GetFaceMask();

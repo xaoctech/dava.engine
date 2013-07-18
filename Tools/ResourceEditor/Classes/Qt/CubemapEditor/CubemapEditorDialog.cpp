@@ -118,16 +118,9 @@ void CubemapEditorDialog::UpdateFaceInfo()
 
 void CubemapEditorDialog::UpdateButtonState()
 {
-	bool enableSave = false;
-	for(int i = 0; i < CubemapUtils::GetMaxFaces(); ++i)
-	{
-		if(QString::null != facePath[i])
-		{
-			enableSave = true;
-			break;
-		}
-	}
-	
+	//check if all files are present.
+	//while file formats specs allow to specify cubemaps partially actual implementations don't allow that
+	bool enableSave = AllFacesLoaded();
 	ui->buttonSave->setEnabled(enableSave);
 }
 
@@ -144,6 +137,22 @@ bool CubemapEditorDialog::AnyFaceLoaded()
 	}
 
 	return faceLoaded;
+}
+
+bool CubemapEditorDialog::AllFacesLoaded()
+{
+	bool faceLoaded = true;
+	for(int i = 0; i < CubemapUtils::GetMaxFaces(); ++i)
+	{
+		if(QString::null == facePath[i])
+		{
+			faceLoaded = false;
+			break;
+		}
+	}
+	
+	return faceLoaded;
+
 }
 
 void CubemapEditorDialog::LoadCubemap(const QString& path)
@@ -188,7 +197,7 @@ void CubemapEditorDialog::SaveCubemap(const QString& path)
 {
 	FilePath filePath(path.toStdString());
 	DAVA::uint8 faceMask = GetFaceMask();
-	
+		
 	//copy file to the location where .tex will be put. Add suffixes to file names to distinguish faces
 	String fileNameWithoutExtension = filePath.GetFilename();
 	String extension = filePath.GetExtension();
@@ -341,16 +350,13 @@ void CubemapEditorDialog::OnLoadTexture()
 
 void CubemapEditorDialog::OnSave()
 {
-	/*FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
-	QString fileName = QFileDialog::getSaveFileName(this,
-													tr("Save Cube Texture"),
-													QString::fromStdString(projectPath.GetAbsolutePathname()),
-													tr("Tex File (*.tex)"));
-	
-	if(!fileName.isNull())
+	//check if all files are present.
+	//while file formats specs allows to specify cubemaps partially actual implementations don't allow that
+	if(!AllFacesLoaded())
 	{
-		SaveCubemap(fileName);
-	}*/
+		ShowErrorDialog("Please specify ALL cube map faces.");
+		return;
+	}
 	
 	SaveCubemap(targetFile.GetAbsolutePathname().c_str());
 	
