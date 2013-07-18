@@ -477,6 +477,7 @@
    <addaction name="actionModifyPlaceOnLandscape"/>
    <addaction name="actionModifySnapToLandscape"/>
    <addaction name="separator"/>
+   <addaction name="actionManualModifMode"/>
    <addaction name="actionModifyReset"/>
   </widget>
   <widget class="QDockWidget" name="dockHangingObjects">
@@ -731,8 +732,8 @@
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents_7">
-    <layout class="QVBoxLayout" name="verticalLayout_10">
+   <widget class="QWidget" name="dockWidgetContents_11">
+    <layout class="QVBoxLayout" name="verticalLayout_20">
      <property name="spacing">
       <number>1</number>
      </property>
@@ -1378,6 +1379,22 @@
    </property>
    <property name="toolTip">
     <string>Use Selection Center</string>
+   </property>
+  </action>
+  <action name="actionManualModifMode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/move_absolute.png</normaloff>
+     <normalon>:/QtIcons/move_offset.png</normalon>:/QtIcons/move_absolute.png</iconset>
+   </property>
+   <property name="text">
+    <string>manualModifMode</string>
+   </property>
+   <property name="toolTip">
+    <string>Manual transform mode - Absolute/Offset</string>
    </property>
   </action>
  </widget>

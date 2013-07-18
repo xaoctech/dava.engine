@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="/">
+    <file>QtIcons/move_absolute.png</file>
+    <file>QtIcons/move_offset.png</file>
     <file>QtIcons/pivot_center.png</file>
     <file>QtIcons/pivot_common.png</file>
     <file>QtIcons/pivot_zero.png</file>

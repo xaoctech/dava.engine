@@ -19,6 +19,7 @@
 
 #include <QMainWindow>
 #include "ui_mainwindow.h"
+#include "ModificationWidget.h"
 
 #include "Base/Singleton.h"
 
@@ -71,10 +72,13 @@ protected slots:
 	void OnScaleMode();
 	void OnPivotCenterMode();
 	void OnPivotCommonMode();
+	void OnManualModifMode();
 
 private:
 	Ui::MainWindow *ui;
 	QtPosSaver posSaver;
+
+	ModificationWidget *modificationWidget;
 
 	void LoadUndoRedoState(SceneEditor2 *scene);
 	void LoadModificationState(SceneEditor2 *scene);
