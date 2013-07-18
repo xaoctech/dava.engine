@@ -34,6 +34,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	new ProjectManager();
 
 	ui->setupUi(this);
+	modificationWidget = new ModificationWidget(this);
 
 	qApp->installEventFilter(this);
 	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + "EditorConfig.yaml");
@@ -151,6 +152,8 @@ void QtMainWindow::SetupToolBars()
 	ui->menuToolbars->addAction(actionMainToolBar);
 	ui->menuToolbars->addAction(actionModifToolBar);
 	ui->menuToolbars->addAction(actionViewModeToolBar);
+
+	ui->modificationToolBar->insertWidget(ui->actionModifyReset, modificationWidget);
 }
 
 void QtMainWindow::SetupActions()
@@ -174,6 +177,7 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionModifyScale, SIGNAL(triggered()), this, SLOT(OnScaleMode()));
 	QObject::connect(ui->actionPivotCenter, SIGNAL(triggered()), this, SLOT(OnPivotCenterMode()));
 	QObject::connect(ui->actionPivotCommon, SIGNAL(triggered()), this, SLOT(OnPivotCommonMode()));
+	QObject::connect(ui->actionManualModifMode, SIGNAL(triggered()), this, SLOT(OnManualModifMode()));
 
 }
 
@@ -366,6 +370,18 @@ void QtMainWindow::OnPivotCommonMode()
 	{
 		scene->selectionSystem->SetPivotPoint(ST_PIVOT_COMMON_CENTER);
 		LoadModificationState(scene);
+	}
+}
+
+void QtMainWindow::OnManualModifMode()
+{
+	if(ui->actionManualModifMode->isChecked())
+	{
+		modificationWidget->SetMode(ModificationWidget::ModifyRelative);
+	}
+	else
+	{
+		modificationWidget->SetMode(ModificationWidget::ModifyAbsolute);
 	}
 }
 
