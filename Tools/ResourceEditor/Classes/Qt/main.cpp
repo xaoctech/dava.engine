@@ -35,16 +35,17 @@ int main(int argc, char *argv[])
 
 #if defined (__DAVAENGINE_MACOS__)
     DAVA::Core::Run(argc, argv);
+	new CommandLineManager();
 	new DAVA::QtLayerMacOS();
 #elif defined (__DAVAENGINE_WIN32__)
 	HINSTANCE hInstance = (HINSTANCE)::GetModuleHandle(NULL);
 	DAVA::Core::Run(argc, argv, hInstance);
+	new CommandLineManager();
 	new DAVA::QtLayerWin32();
 #else
 	DVASSERT(false && "Wrong platform")
 #endif
 
-	new CommandLineManager();
     new QtMainWindow();
 
     bool needToQuit = false;
