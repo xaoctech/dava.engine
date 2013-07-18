@@ -303,7 +303,31 @@ Vector4 YamlNode::AsVector4()
         if (w)
             result.w = w->AsFloat();
     }
-    return result;        
+    return result;
+}
+
+Color YamlNode::AsColor()
+{
+    Color result = Color::White();
+    if (type == TYPE_ARRAY)
+    {
+        YamlNode * r = Get(0);
+        if (r)
+            result.r = r->AsFloat();
+
+        YamlNode * g = Get(1);
+        if (g)
+            result.g = g->AsFloat();
+
+        YamlNode * b = Get(2);
+        if (b)
+            result.b = b->AsFloat();
+
+        YamlNode * a = Get(3);
+        if (a)
+            result.a = a->AsFloat();
+    }
+    return result;
 }
 
 Vector2 YamlNode::AsVector2()
@@ -460,6 +484,10 @@ VariantType YamlNode::AsVariantType()
                                         sRowVect.x,sRowVect.y,sRowVect.z,sRowVect.w,
                                         tRowVect.x,tRowVect.y,tRowVect.z,tRowVect.w,
                                         foRowVect.x,foRowVect.y,foRowVect.z,foRowVect.w));
+        }
+        if(innerTypeName == DAVA::VariantType::TYPENAME_COLOR)
+        {
+            retValue.SetColor(it->second->AsColor());
         }
     }
     
