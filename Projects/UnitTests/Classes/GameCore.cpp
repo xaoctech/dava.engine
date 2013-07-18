@@ -55,6 +55,7 @@
 #include "DeviceInfoTest.h"
 #include "LocalizationTest.h"
 #include "UIListTest.h"
+#include "TransparentWebViewTest.h"
 
 using namespace DAVA;
 
@@ -81,6 +82,7 @@ void GameCore::OnAppStarted()
     CreateDocumentsFolder();
 
 	new DeviceInfoTest();
+	new TransparentWebViewTest();
     new FilePathTest();
     new FileListTest();
     new FileSystemTest();
