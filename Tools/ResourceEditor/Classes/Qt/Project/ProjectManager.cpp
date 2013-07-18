@@ -24,6 +24,7 @@
 
 ProjectManager::ProjectManager()
 	: curProjectPath("")
+	, curProjectPathDataSource("")
 {
 
 }
@@ -45,7 +46,7 @@ QString ProjectManager::CurProjectPath()
 
 QString ProjectManager::CurProjectDataSourcePath()
 {
-	return QString(EditorSettings::Instance()->GetDataSourcePath().GetAbsolutePathname().c_str());
+	return curProjectPathDataSource;
 }
 
 QString ProjectManager::ProjectOpenDialog()
@@ -67,6 +68,7 @@ void ProjectManager::ProjectOpen(const QString &path)
             projectPath.MakeDirectoryPathname();
 
 			DAVA::FilePath dataSource3Dpathname = projectPath + "DataSource/3d/";
+			curProjectPathDataSource = dataSource3Dpathname.GetAbsolutePathname().c_str();
 
 			EditorSettings::Instance()->SetProjectPath(projectPath);
 			EditorSettings::Instance()->SetDataSourcePath(dataSource3Dpathname);
@@ -91,12 +93,22 @@ void ProjectManager::ProjectOpen(const QString &path)
 	}
 }
 
+void ProjectManager::ProjectOpenLast()
+{
+	DAVA::FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
+
+	if(!projectPath.IsEmpty())
+	{
+		ProjectOpen(QString(projectPath.GetAbsolutePathname().c_str()));
+	}
+}
+
 void ProjectManager::ProjectClose()
 {
 	if("" != curProjectPath)
 	{
-		emit ProjectClosed(curProjectPath);
 		curProjectPath = "";
+		emit ProjectClosed();
 		
 		// TODO:
 		// DAVA::FilePath::SetProjectPathname(curProjectPath.toStdString());

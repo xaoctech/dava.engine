@@ -36,14 +36,16 @@ public:
 public slots:
 	QString ProjectOpenDialog();
 	void ProjectOpen(const QString &path);
+	void ProjectOpenLast();
 	void ProjectClose();
 
 signals:
 	void ProjectOpened(const QString &path);
-	void ProjectClosed(const QString &path);
+	void ProjectClosed();
 
 private:
 	QString curProjectPath;
+	QString curProjectPathDataSource;
 };
 
 #endif // __PROJECT_MANAGER_H__ 

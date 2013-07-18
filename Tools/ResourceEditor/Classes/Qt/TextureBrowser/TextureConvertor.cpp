@@ -18,6 +18,7 @@
 #include <QPainter>
 #include <QProcess>
 #include <QTextOption>
+#include <QPushButton>
 #include <QLabel>
 
 #include "Main/mainwindow.h"

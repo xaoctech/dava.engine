@@ -83,6 +83,9 @@ public:
 
 	void Exec(Command2 *command);
 
+	// checks whether the scene changed since the last save
+	bool IsChanged() const;
+
 	// DAVA events
 	void PostUIEvent(DAVA::UIEvent *event);
 

@@ -129,7 +129,10 @@ void SceneTree::SceneActivated(SceneEditor2 *scene)
 
 void SceneTree::SceneDeactivated(SceneEditor2 *scene)
 {
-	treeModel->SetScene(NULL);
+	if(treeModel->GetScene() == scene)
+	{
+		treeModel->SetScene(NULL);
+	}
 }
 
 void SceneTree::EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity)

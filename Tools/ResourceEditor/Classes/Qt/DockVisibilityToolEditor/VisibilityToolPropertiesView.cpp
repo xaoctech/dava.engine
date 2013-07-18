@@ -36,6 +36,8 @@ VisibilityToolPropertiesView::~VisibilityToolPropertiesView()
 
 void VisibilityToolPropertiesView::Init()
 {
+	// TODO: mainwindow
+	/*
 	QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
 
 	connect(SceneSignals::Instance(), SIGNAL(UpdateVisibilityButtonsState(SceneEditor2*)),
@@ -54,4 +56,5 @@ void VisibilityToolPropertiesView::Init()
 										   ui->sliderBrushSize);
 
 	handler->SetVisibilityToolWidgetsState(false);
+	*/
 }

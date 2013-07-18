@@ -301,11 +301,13 @@ void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void *, void *)
             
             if(answer == MB_FLAG_YES)
             {
-                bool saved = QtMainWindowHandler::Instance()->SaveScene(bodies[i]->bodyControl->GetScene());
+				// TODO: mainwindow
+                /*bool saved = QtMainWindowHandler::Instance()->SaveScene(bodies[i]->bodyControl->GetScene());
                 if(!saved)
                 {
                     return;
                 }
+                */
             }
 
             if(bodies[i]->bodyControl->GetParent())
