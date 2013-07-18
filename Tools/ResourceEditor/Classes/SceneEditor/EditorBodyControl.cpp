@@ -940,7 +940,7 @@ void EditorBodyControl::PackLightmaps()
 	packer.SetInputDir(inputDir);
 
 	packer.SetOutputDir(outputDir);
-	packer.Pack(true);
+	packer.PackLightmaps();
 	packer.CreateDescriptors();
 	packer.ParseSpriteDescriptors();
 

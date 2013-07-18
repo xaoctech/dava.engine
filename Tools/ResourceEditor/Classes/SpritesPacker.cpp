@@ -37,7 +37,17 @@ void SpritesPacker::SetOutputDir(const FilePath & _outputDir)
 	outputDir = _outputDir;
 }
 
-void SpritesPacker::Pack(bool isLightmapPacking)
+void SpritesPacker::PackLightmaps()
+{
+	return PerformPack(true);
+}
+
+void SpritesPacker::PackTextures()
+{
+	return PerformPack(false);
+}
+
+void SpritesPacker::PerformPack(bool isLightmapPacking)
 {
 	FileSystem::Instance()->CreateDirectory(outputDir, true);
 
