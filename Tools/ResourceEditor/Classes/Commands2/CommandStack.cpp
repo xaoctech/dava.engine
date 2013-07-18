@@ -20,6 +20,7 @@
 CommandStack::CommandStack()
 	: commandListLimit(0)
 	, nextCommandIndex(0)
+	, cleanCommandIndex(0)
 	, curBatchCommand(NULL)
 {
 	stackCommandsNotify = new CommandStackNotify(this);
@@ -58,6 +59,7 @@ bool CommandStack::CanRedo() const
 void CommandStack::Clear()
 {
 	nextCommandIndex = 0;
+	cleanCommandIndex = 0;
 	
 	std::list<Command2 *>::iterator i = commandList.begin();
 	std::list<Command2 *>::iterator end = commandList.end();
@@ -75,8 +77,8 @@ void CommandStack::Undo()
 	if(CanUndo())
 	{
 		nextCommandIndex--;
-
 		Command2* commandToUndo = GetCommand(nextCommandIndex);
+
 		if(NULL != commandToUndo)
 		{
 			commandToUndo->Undo();
@@ -90,13 +92,13 @@ void CommandStack::Redo()
 	if(CanRedo())
 	{
 		Command2* commandToRedo = GetCommand(nextCommandIndex);
+		nextCommandIndex++;
+
 		if(NULL != commandToRedo)
 		{
 			commandToRedo->Redo();
 			EmitNotify(commandToRedo, true);
 		}
-
-		nextCommandIndex++;
 	}
 }
 
@@ -151,6 +153,16 @@ void CommandStack::EndBatch()
 
 		curBatchCommand = NULL;
 	}
+}
+
+bool CommandStack::IsClean() const
+{
+	return (cleanCommandIndex == nextCommandIndex);
+}
+
+void CommandStack::SetClean()
+{
+	cleanCommandIndex = nextCommandIndex;
 }
 
 size_t CommandStack::GetUndoLimit() const
@@ -214,7 +226,9 @@ void CommandStack::ClearLimitedCommands()
 		}
 
 		commandList.pop_front();
+
 		nextCommandIndex--;
+		cleanCommandIndex--;
 	}
 }
 

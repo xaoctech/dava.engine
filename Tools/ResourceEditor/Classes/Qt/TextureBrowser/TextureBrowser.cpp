@@ -474,7 +474,9 @@ void TextureBrowser::setupTextureListToolbar()
 
 	ui->textureListToolbar->insertWidget(ui->actionConvertAll, spacerWidget);
 	ui->textureListToolbar->insertSeparator(ui->actionConvertAll);
-	QtMainWindow::Instance()->ShowActionWithText(ui->textureListToolbar, ui->actionConvertAll, true);
+
+	// TODO: mainwindow
+	//QtMainWindow::Instance()->ShowActionWithText(ui->textureListToolbar, ui->actionConvertAll, true);
 
 	ui->textureListSortToolbar->addWidget(texturesSortComboLabel);
 	ui->textureListSortToolbar->addWidget(texturesSortCombo);
