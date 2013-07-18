@@ -50,6 +50,8 @@ void TilemaskEditorPropertiesView::Init()
 {
 	InitBrushImages();
 
+	// TODO: mainwindow
+	/*
 	QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
 
 	ui->sliderBrushSize->setValue(120);
@@ -68,6 +70,7 @@ void TilemaskEditorPropertiesView::Init()
 																	ui->comboTileTexture);
 
 	handler->SetTilemaskEditorWidgetsState(false);
+	*/
 }
 
 void TilemaskEditorPropertiesView::InitBrushImages()

@@ -183,6 +183,8 @@ void LandscapeEditorVisibilityCheckTool::SetState(eVisibilityCheckToolState newS
 	else
 		state = newState;
 
+	// TODO: mainwindow
+	/*
 	QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
 	switch(state)
 	{
@@ -201,6 +203,7 @@ void LandscapeEditorVisibilityCheckTool::SetState(eVisibilityCheckToolState newS
 			handler->SetAreaButtonStateVisibilityTool(false);
 			break;
 	}
+	*/
 }
 
 void LandscapeEditorVisibilityCheckTool::SaveColorLayer(const FilePath &pathName)
@@ -565,7 +568,8 @@ void LandscapeEditorVisibilityCheckTool::HideAction()
 	SafeRelease(texSurf);
 	
 	SetState(VCT_STATE_NORMAL);
-	QtMainWindowHandler::Instance()->SetWidgetsStateVisibilityTool(false);
+	// TODO: mainwindow
+	//QtMainWindowHandler::Instance()->SetWidgetsStateVisibilityTool(false);
 }
 
 void LandscapeEditorVisibilityCheckTool::ShowAction()
@@ -593,7 +597,8 @@ void LandscapeEditorVisibilityCheckTool::ShowAction()
 	if(visibilityAreaSprite == 0)
 		RecreateVisibilityAreaSprite();
 
-	QtMainWindowHandler::Instance()->SetWidgetsStateVisibilityTool(true);
+	// TODO: mainwindow
+	//QtMainWindowHandler::Instance()->SetWidgetsStateVisibilityTool(true);
 }
 
 void LandscapeEditorVisibilityCheckTool::SaveTextureAction(const FilePath &pathToFile)

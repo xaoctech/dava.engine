@@ -314,7 +314,8 @@ CommandAddParticleEmitter::CommandAddParticleEmitter() :
 void CommandAddParticleEmitter::Execute()
 {
     // This command is done through Main Window to reuse the existing code.
-    QtMainWindowHandler::Instance()->CreateParticleEmitterNode();
+	// TODO: mainwindow
+    //QtMainWindowHandler::Instance()->CreateParticleEmitterNode();
 }
 
 
@@ -421,7 +422,8 @@ void CommandAddParticleEmitterLayer::Execute()
 	effectComponent->Restart();
 
     // Update the scene graph.
-    QtMainWindowHandler::Instance()->RefreshSceneGraph();
+	// TODO: mainwindow
+    //QtMainWindowHandler::Instance()->RefreshSceneGraph();
 }
 
 CommandRemoveParticleEmitterLayer::CommandRemoveParticleEmitterLayer() :
@@ -457,7 +459,8 @@ void CommandRemoveParticleEmitterLayer::Execute()
 	}
 	
     // Update the scene graph.
-    QtMainWindowHandler::Instance()->RefreshSceneGraph();
+	// TODO: mainwindow
+    //QtMainWindowHandler::Instance()->RefreshSceneGraph();
 }
 
 CommandCloneParticleEmitterLayer::CommandCloneParticleEmitterLayer() :
@@ -482,7 +485,8 @@ void CommandCloneParticleEmitterLayer::Execute()
     }
     
     // Update the scene graph.
-    QtMainWindowHandler::Instance()->RefreshSceneGraph();
+	// TODO: mainwindow
+    //QtMainWindowHandler::Instance()->RefreshSceneGraph();
 }
 
 CommandAddParticleEmitterForce::CommandAddParticleEmitterForce() :
@@ -511,7 +515,8 @@ void CommandAddParticleEmitterForce::Execute()
 	effectComponent->Restart();
 	
     // Update the scene graph.
-    QtMainWindowHandler::Instance()->RefreshSceneGraph();
+	// TODO: mainwindow
+    //QtMainWindowHandler::Instance()->RefreshSceneGraph();
 }
 
 CommandRemoveParticleEmitterForce::CommandRemoveParticleEmitterForce() :
@@ -547,7 +552,8 @@ void CommandRemoveParticleEmitterForce::Execute()
 	}
 
     // Update the scene graph.
-    QtMainWindowHandler::Instance()->RefreshSceneGraph();
+	// TODO: mainwindow
+    //QtMainWindowHandler::Instance()->RefreshSceneGraph();
 }
 
 CommandLoadParticleEmitterFromYaml::CommandLoadParticleEmitterFromYaml() :
@@ -591,7 +597,8 @@ void CommandLoadParticleEmitterFromYaml::Execute()
 		ShowErrorDialog(validationMessage);
 	}
 
-    QtMainWindowHandler::Instance()->RefreshSceneGraph();
+	// TODO: mainwindow
+    //QtMainWindowHandler::Instance()->RefreshSceneGraph();
 }
 
 CommandSaveParticleEmitterToYaml::CommandSaveParticleEmitterToYaml(bool forceAskFilename) :
@@ -670,7 +677,8 @@ void CommandLoadInnerEmitterFromYaml::Execute()
 		ShowErrorDialog(validationMessage);
 	}
 
-    QtMainWindowHandler::Instance()->RefreshSceneGraph();
+	// TODO: mainwindow
+    //QtMainWindowHandler::Instance()->RefreshSceneGraph();
 }
 
 CommandSaveInnerEmitterToYaml::CommandSaveInnerEmitterToYaml(bool forceAskFilename) :

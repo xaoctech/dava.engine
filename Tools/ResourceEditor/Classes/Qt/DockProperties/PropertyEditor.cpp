@@ -19,6 +19,8 @@
 #include "Entity/Component.h"
 #include "Main/mainwindow.h"
 
+#include <QPushButton>
+
 #include "DockProperties/PropertyEditor.h"
 #include "Tools/QtPropertyEditor/QtPropertyItem.h"
 #include "Tools/QtPropertyEditor/QtProperyData/QtPropertyDataIntrospection.h"
