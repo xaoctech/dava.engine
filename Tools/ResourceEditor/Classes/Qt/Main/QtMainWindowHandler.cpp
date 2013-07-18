@@ -565,7 +565,7 @@ void QtMainWindowHandler::SquareTextures()
 void QtMainWindowHandler::ReplaceZeroMipmaps()
 {
     EditorScene * scene = SceneDataManager::Instance()->SceneGetActive()->GetScene();
-    CommandsManager::Instance()->ExecuteAndRelease(new ReplaceMipmapLevelCommand(0, scene), scene);
+    MipMapReplacer::ReplaceMipMaps(scene, 0);
 }
 
 void QtMainWindowHandler::SetDefaultFocusWidget(QWidget *widget)
