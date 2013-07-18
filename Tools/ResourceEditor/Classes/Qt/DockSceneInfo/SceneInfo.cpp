@@ -29,7 +29,7 @@
 
 #include "../../ImageTools/ImageTools.h"
 
-#include "MaterialHelper.h"
+#include "../Qt/CubemapEditor/MaterialHelper.h"
 
 
 #include <QHeaderView>

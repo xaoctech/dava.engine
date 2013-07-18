@@ -28,7 +28,7 @@
 #include "../SceneEditor/EntityOwnerPropertyHelper.h"
 #include "../StringConstants.h"
 
-#include "MaterialHelper.h"
+#include "../Qt/CubemapEditor/MaterialHelper.h"
 
 using namespace DAVA;
 

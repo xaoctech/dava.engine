@@ -36,7 +36,7 @@
 #include "LandscapeEditorDrawSystem/LandscapeProxy.h"
 #include "../../../Commands2/HeightmapEditorCommands2.h"
 #include "../../Main/QtUtils.h"
-#include "EditorSettings.h"
+#include "SceneEditor/EditorSettings.h"
 
 const float32 HeightmapEditorSystem::MAX_STRENGTH = 30.f;
 
