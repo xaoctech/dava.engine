@@ -20,6 +20,8 @@ CubemapEditorDialog::CubemapEditorDialog(QWidget *parent) :
 		facePath[i] = QString::null;
 	}
 	
+	edited = false;
+	
 	ConnectSignals();
 }
 
@@ -82,6 +84,8 @@ void CubemapEditorDialog::LoadImageTo(const DAVA::String& filePath, int face)
 		}
 		
 		UpdateButtonState();
+		
+		edited = true;
 	}
 	else
 	{
@@ -290,20 +294,26 @@ DAVA::uint8 CubemapEditorDialog::GetFaceMask()
 	return mask;
 }
 
-void CubemapEditorDialog::InitForEditing(DAVA::FilePath& textureDescriptorPath)
+void CubemapEditorDialog::InitForEditing(DAVA::FilePath& textureDescriptorPath, DAVA::FilePath& root)
 {
 	targetFile = textureDescriptorPath;
 	editorMode = CubemapEditorDialog::eEditorModeEditing;
+	rootPath = QString::fromStdString(root.GetAbsolutePathname());
 	
 	LoadCubemap(targetFile.GetAbsolutePathname().c_str());
 	
 	ui->buttonSave->setEnabled(false);
+	
+	edited = false;
 }
 
-void CubemapEditorDialog::InitForCreating(DAVA::FilePath& textureDescriptorPath)
+void CubemapEditorDialog::InitForCreating(DAVA::FilePath& textureDescriptorPath, DAVA::FilePath& root)
 {
 	targetFile = textureDescriptorPath;
 	editorMode = CubemapEditorDialog::eEditorModeCreating;
+	rootPath = QString::fromStdString(root.GetAbsolutePathname());
+	
+	edited = false;
 }
 
 ////////////////////////////////////////////////////
@@ -343,7 +353,7 @@ void CubemapEditorDialog::OnLoadTexture()
 	int answer = MB_FLAG_YES;
 	if(AnyFaceLoaded())
 	{
-		int answer = ShowQuestion("Warning",
+		answer = ShowQuestion("Warning",
 								  "Do you really want to load new cube texture over currently loaded one?",
 								  MB_FLAG_YES | MB_FLAG_NO,
 								  MB_FLAG_NO);		
@@ -351,10 +361,9 @@ void CubemapEditorDialog::OnLoadTexture()
 	
 	if(MB_FLAG_YES == answer)
 	{
-		FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
 		QString fileName = QFileDialog::getOpenFileName(this,
 														tr("Open Cube Texture"),
-														QString::fromStdString(projectPath.GetAbsolutePathname()),
+														rootPath,
 														tr("Tex File (*.tex)"));
 		
 		if(!fileName.isNull())
@@ -376,11 +385,25 @@ void CubemapEditorDialog::OnSave()
 	
 	SaveCubemap(targetFile.GetAbsolutePathname().c_str());
 	
+	edited = false;
+	
 	close();
 }
 
 void CubemapEditorDialog::OnClose()
 {
-	close();
+	int answer = MB_FLAG_YES;
+	if(edited)
+	{
+		answer = ShowQuestion("Warning",
+							  "Cubemap was edited. Do you want to close it without saving?",
+							  MB_FLAG_YES | MB_FLAG_NO,
+							  MB_FLAG_NO);
+	}
+
+	if(MB_FLAG_YES == answer)
+	{
+		close();
+	}
 }
 
