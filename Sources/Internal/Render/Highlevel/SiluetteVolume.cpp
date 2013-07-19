@@ -52,6 +52,9 @@ SiluetteVolume::SiluetteVolume()
 
     uniformSiluetteColor = shader->FindUniformLocationByName("siluetteColor");
     DVASSERT(uniformSiluetteColor != -1);
+
+    uniformSiluetteExponent = shader->FindUniformLocationByName("siluetteExponent");
+    DVASSERT(uniformSiluetteExponent != -1);
 }
 
 SiluetteVolume::~SiluetteVolume()
@@ -94,6 +97,7 @@ void SiluetteVolume::Draw(Camera * camera)
     RenderManager::Instance()->AttachRenderData();
 
     shader->SetUniformValue(uniformSiluetteScale, siluetteScale);
+    shader->SetUniformValue(uniformSiluetteExponent, siluetteExponent);
     shader->SetUniformColor4(uniformSiluetteColor, siluetteColor);
 
 	if (siluettePolygonGroup->renderDataObject->GetIndexBufferID() != 0)
@@ -108,6 +112,11 @@ void SiluetteVolume::Draw(Camera * camera)
     RenderManager::Instance()->AppendState(RenderState::STATE_CULL);
     RenderManager::Instance()->AppendState(RenderState::STATE_BLEND);
     RenderManager::Instance()->AppendState(RenderState::STATE_DEPTH_TEST);
+}
+
+void SiluetteVolume::SetSiluetteExponent(float32 value)
+{
+    siluetteExponent = value;
 }
 
 void SiluetteVolume::SetSiluetteScale(float32 scale)
