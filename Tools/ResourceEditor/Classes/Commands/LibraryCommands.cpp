@@ -29,6 +29,7 @@
 
 #include "../SceneEditor/SceneValidator.h"
 #include "../SceneEditor/EditorSettings.h"
+#include "../CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
 
 #include "DAVAEngine.h"
 
@@ -175,7 +176,7 @@ CommandConvertScene::CommandConvertScene(const DAVA::FilePath &pathname)
 void CommandConvertScene::Execute()
 {
     DVASSERT(CheckExtension(String(".dae")) && "Wrong extension");
-    SceneValidator::Instance()->CreateDefaultDescriptors(EditorSettings::Instance()->GetDataSourcePath());
+    TextureDescriptorUtils::CreateDescriptors(EditorSettings::Instance()->GetDataSourcePath());
     
     eColladaErrorCodes code = ConvertDaeToSce(filePathname);
     if(code == COLLADA_OK)

@@ -23,6 +23,7 @@
 #include "SceneExporter/SceneExporterTool.h"
 
 #include "Beast/BeastCommandLineTool.h"
+#include "TextureDescriptor/TextureDescriptorTool.h"
 
 #include "TexturePacker/CommandLineParser.h"
 
@@ -58,6 +59,8 @@ CommandLineManager::CommandLineManager()
 #if defined (__DAVAENGINE_WIN32__)
 	AddCommandLineTool(new BeastCommandLineTool());
 #endif //#if defined (__DAVAENGINE_WIN32__)
+    
+    AddCommandLineTool(new TextureDescriptorTool());
     
  
     ParseCommandLine();
