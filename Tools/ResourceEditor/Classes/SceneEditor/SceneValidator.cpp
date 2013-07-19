@@ -31,6 +31,8 @@
 
 #include "Scene3D/Components/ComponentHelpers.h"
 
+#include "../CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
+
 SceneValidator::SceneValidator()
 {
 //    sceneTextureCount = 0;
@@ -409,7 +411,7 @@ void SceneValidator::ValidateTexture(Texture *texture, const FilePath &texturePa
 		if(!IsFBOTexture(texture))
 		{
 			// if there is no descriptor file for this texture - generate it
-			CreateDescriptorIfNeed(texturePathname);
+			TextureDescriptorUtils::CreateDescriptorIfNeed(texturePathname);
 		}
 	}
 	else
@@ -529,7 +531,7 @@ bool SceneValidator::ValidateTexturePathname(const FilePath &pathForValidation, 
 			return false;
 		}
 
-		CreateDescriptorIfNeed(pathForValidation);
+        TextureDescriptorUtils::CreateDescriptorIfNeed(pathForValidation);
 	}
 	else
 	{
@@ -592,23 +594,6 @@ bool SceneValidator::ValidateHeightmapPathname(const FilePath &pathForValidation
 	}
 
 	return pathIsCorrect;
-}
-
-
-void SceneValidator::CreateDescriptorIfNeed(const FilePath &forPathname)
-{
-    FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(forPathname);
-    if(! FileSystem::Instance()->IsFile(descriptorPathname))
-    {
-		Logger::Warning("[SceneValidator::CreateDescriptorIfNeed] Need descriptor for file %s", forPathname.GetAbsolutePathname().c_str());
-        
-		TextureDescriptor *descriptor = new TextureDescriptor();
-        
-        FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(forPathname);
-		descriptor->Save(descriptorPathname);
-
-        SafeRelease(descriptor);
-    }
 }
 
 
@@ -693,33 +678,6 @@ bool SceneValidator::IsTextureDescriptorPath(const FilePath &path)
 
 
 
-void SceneValidator::CreateDefaultDescriptors(const FilePath &folderPathname)
-{
-	FileList * fileList = new FileList(folderPathname);
-    if(!fileList) return;
-    
-	for (int32 fi = 0; fi < fileList->GetCount(); ++fi)
-	{
-		if (fileList->IsDirectory(fi))
-		{
-            String name = fileList->GetFilename(fi);
-            
-            if(0 != CompareCaseInsensitive(String(".svn"), name) && !fileList->IsNavigationDirectory(fi))
-            {
-                CreateDefaultDescriptors(fileList->GetPathname(fi));
-            }
-		}
-        else
-        {
-			if(fileList->GetPathname(fi).IsEqualToExtension(".png"))
-            {
-                CreateDescriptorIfNeed(fileList->GetPathname(fi));
-            }
-        }
-	}
-
-	SafeRelease(fileList);
-}
 
 
 

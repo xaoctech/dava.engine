@@ -53,7 +53,7 @@ bool SceneExporterTool::InitializeFromCommandLine()
     outFolder = CommandLineParser::GetCommandParam(String("-outdir"));
     if(inFolder.IsEmpty() && outFolder.IsEmpty())
     {
-        errors.insert(Format("Incorrect indir (%s) or outdir (%s) parameter",inFolder.GetAbsolutePathname().c_str(), outFolder.GetAbsolutePathname().c_str()));
+        errors.insert(Format("[SceneExporterTool] Incorrect indir (%s) or outdir (%s) parameter",inFolder.GetAbsolutePathname().c_str(), outFolder.GetAbsolutePathname().c_str()));
         return false;
     }
     
@@ -75,7 +75,7 @@ bool SceneExporterTool::InitializeFromCommandLine()
     }
     else
     {
-        errors.insert("File or folder for export is not set");
+        errors.insert("[SceneExporterTool] File or folder for export is not set");
         return false;
     }
     
