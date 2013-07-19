@@ -38,6 +38,7 @@ void CubeMapTextureBrowser::ConnectSignals()
 
 void CubeMapTextureBrowser::ReloadTextures(const DAVA::String& rootPath)
 {
+	cubeListItemDelegate.ClearCache();
 	ui->listTextures->clear();
 	
 	QDir dir(rootPath.c_str());
@@ -45,25 +46,35 @@ void CubeMapTextureBrowser::ReloadTextures(const DAVA::String& rootPath)
 	
 	if(filesList.size() > 0)
 	{
+		QStringList fixedFilesList;
 		FilePath fp = rootPath;
 		for(int i = 0; i < filesList.size(); ++i)
 		{
 			QString str = filesList.at(i);
 			fp.ReplaceFilename(str.toStdString());
-			
+
+			fixedFilesList.append(QString(fp.GetAbsolutePathname().c_str()));
+		}
+		
+		cubeListItemDelegate.UpdateCache(fixedFilesList);
+		
+		for(int i = 0; i < filesList.size(); ++i)
+		{
 			DAVA::TextureDescriptor* texDesc = DAVA::TextureDescriptor::CreateFromFile(fp);
 			
 			if(texDesc && texDesc->IsCubeMap())
 			{
 				QListWidgetItem* listItem = new QListWidgetItem();
-				listItem->setData(CUBELIST_DELEGATE_ITEMFULLPATH, QString(fp.GetAbsolutePathname().c_str()));
-				listItem->setData(CUBELIST_DELEGATE_ITEMFILENAME, str);
+				listItem->setData(CUBELIST_DELEGATE_ITEMFULLPATH, fixedFilesList.at(i));
+				listItem->setData(CUBELIST_DELEGATE_ITEMFILENAME, filesList.at(i));
 				ui->listTextures->addItem(listItem);
 			}
 		}
 		
 		ui->listTextures->setCurrentItem(ui->listTextures->item(0));
 	}
+	
+	ui->listTextures->setVisible(filesList.size() > 0);
 }
 
 void CubeMapTextureBrowser::ReloadTexturesFromUI(QString& path)
@@ -119,7 +130,9 @@ void CubeMapTextureBrowser::OnCreateCubemapClicked()
 	{
 		CubemapEditorDialog dlg(this);
 		FilePath fp = fileName.toStdString();
-		dlg.InitForCreating(fp);
+		
+		DAVA::FilePath rootPath = ui->textRootPath->text().toStdString();
+		dlg.InitForCreating(fp, rootPath);
 		dlg.exec();
 		
 		int currentRow = ui->listTextures->currentRow();
@@ -133,8 +146,9 @@ void CubeMapTextureBrowser::OnCreateCubemapClicked()
 void CubeMapTextureBrowser::OnListItemDoubleClicked(QListWidgetItem* item)
 {
 	CubemapEditorDialog dlg(this);
+	DAVA::FilePath rootPath = ui->textRootPath->text().toStdString();
 	FilePath fp = item->data(CUBELIST_DELEGATE_ITEMFULLPATH).toString().toStdString();
-	dlg.InitForEditing(fp);
+	dlg.InitForEditing(fp, rootPath);
 	dlg.exec();
 
 	int currentRow = ui->listTextures->currentRow();

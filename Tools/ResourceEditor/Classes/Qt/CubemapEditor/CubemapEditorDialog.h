@@ -20,8 +20,8 @@ public:
     explicit CubemapEditorDialog(QWidget *parent = 0);
     ~CubemapEditorDialog();
 	
-	void InitForEditing(DAVA::FilePath& textureDescriptorPath);
-	void InitForCreating(DAVA::FilePath& textureDescriptorPath);
+	void InitForEditing(DAVA::FilePath& textureDescriptorPath, DAVA::FilePath& rootPath);
+	void InitForCreating(DAVA::FilePath& textureDescriptorPath, DAVA::FilePath& rootPath);
 	
 protected:
 	
@@ -36,6 +36,9 @@ protected:
 	float faceWidth;
 	float faceHeight;
 	QString* facePath;
+	QString rootPath;
+	
+	bool edited;
 	
 	eEditorMode editorMode;
 	DAVA::FilePath targetFile;

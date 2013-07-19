@@ -83,6 +83,38 @@
     <enum>Qt::ScrollBarAlwaysOff</enum>
    </property>
   </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>210</y>
+     <width>611</width>
+     <height>281</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>16</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>There are no cubemap textures here. Try to create a new one (use + button) or switch to another directory (use ... button). </string>
+   </property>
+   <property name="textFormat">
+    <enum>Qt::AutoText</enum>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <zorder>textRootPath</zorder>
+  <zorder>buttonSelectRootPath</zorder>
+  <zorder>buttonCreateCube</zorder>
+  <zorder>label</zorder>
+  <zorder>listTextures</zorder>
  </widget>
  <resources/>
  <connections/>

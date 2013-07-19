@@ -3,13 +3,13 @@
 #include "Render/Texture.h"
 #include "Render/TextureDescriptor.h"
 
-#define FACE_IMAGE_SIZE 64
-#define FACE_IMAGE_BORDER 5
-#define LIST_ITEM_OFFSET 1
-#define LIST_ITEMS_PER_PAGE 9
+const int FACE_IMAGE_SIZE = 64;
+const int FACE_IMAGE_BORDER = 5;
+const int LIST_ITEM_OFFSET = 1;
+const int LIST_ITEMS_PER_PAGE = 9;
 
-#define SELECTION_BORDER_COLOR QColor(0, 0, 0, 50)
-#define SELECTION_COLOR_ALPHA 100
+const QColor SELECTION_BORDER_COLOR = QColor(0, 0, 0, 50);
+const int SELECTION_COLOR_ALPHA = 100;
 
 CubeListItemDelegate::CubeListItemDelegate(QObject *parent) : currentPage(0)
 {
@@ -18,7 +18,19 @@ CubeListItemDelegate::CubeListItemDelegate(QObject *parent) : currentPage(0)
 
 CubeListItemDelegate::~CubeListItemDelegate()
 {
+	ClearCache();
+}
+
+void CubeListItemDelegate::ClearCache()
+{
+	for(std::map<std::string, QImage*>::iterator i = iconsCache.begin();
+		i != iconsCache.end();
+		++i)
+	{
+		delete i->second;
+	}
 	
+	iconsCache.clear();
 }
 
 void CubeListItemDelegate::SetNeedsRepaint()
@@ -34,6 +46,31 @@ void CubeListItemDelegate::SetCurrentPage(int newPage)
 	}
 	
 	currentPage = newPage;
+}
+
+void CubeListItemDelegate::UpdateCache(QStringList& filesList)
+{
+	ClearCache();
+	
+	for(int i = 0; i < filesList.size(); ++i)
+	{
+		QString str = filesList.at(i);
+		
+		DAVA::Vector<DAVA::String> faceNames;
+		CubemapUtils::GenerateFaceNames(str.toStdString(), faceNames);
+		for(int faceIndex = 0; faceIndex < faceNames.size(); ++faceIndex)
+		{
+			QImage* scaledFace = NULL;
+			QImage faceImage;
+			
+			faceImage.load(faceNames[faceIndex].c_str());
+			
+			QImage scaledFaceTemp = faceImage.scaled(FACE_IMAGE_SIZE, FACE_IMAGE_SIZE);
+			scaledFace = new QImage(scaledFaceTemp);
+			
+			iconsCache[faceNames[faceIndex]] = scaledFace;
+		}
+	}
 }
 
 void CubeListItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
@@ -72,19 +109,14 @@ void CubeListItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem 
 	CubemapUtils::GenerateFaceNames(description.toStdString(), faceNames);
 	for(int i = 0; i < faceNames.size(); ++i)
 	{
-		//TODO: add icons caching
-		QImage faceImage;
-				
-		faceImage.load(faceNames[i].c_str());
-		
-		//VI: all images should have the same size
-		//VI: may be should add additional check here
-		imageWidth = faceImage.width();
-		imageHeight = faceImage.height();
-		
-		QImage scaledFace = faceImage.scaled(FACE_IMAGE_SIZE, FACE_IMAGE_SIZE);
-		
-		painter->drawImage(QPoint(faceStartX + i * (FACE_IMAGE_SIZE + FACE_IMAGE_BORDER), y + FACE_IMAGE_BORDER), scaledFace);
+		std::map<std::string, QImage*>::const_iterator cachedImage = iconsCache.find(faceNames[i]);
+		if(iconsCache.end() != cachedImage)
+		{
+			imageHeight = cachedImage->second->width();
+			imageHeight = cachedImage->second->height();
+			
+			painter->drawImage(QPoint(faceStartX + i * (FACE_IMAGE_SIZE + FACE_IMAGE_BORDER), y + FACE_IMAGE_BORDER), *cachedImage->second);
+		}
 	}
 	
 	//FACE SIZE
