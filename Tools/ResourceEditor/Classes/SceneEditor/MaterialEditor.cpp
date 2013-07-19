@@ -28,8 +28,8 @@ static const float32 materialListPart = 0.33f;
 static const float32 previewHeightPart = 0.5f;
 
 
-MaterialEditor::MaterialEditor()
-: DraggableDialog(Rect(GetScreenWidth()/8, GetScreenHeight()/8, GetScreenWidth()/4*3, GetScreenHeight()/4*3))
+MaterialEditor::MaterialEditor(const Rect &rect)
+: DraggableDialog(rect)
 {//todo: create draggable dealog
     
     ControlsFactory::CustomizeDialog(this);

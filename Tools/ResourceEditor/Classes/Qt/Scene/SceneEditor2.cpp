@@ -123,6 +123,26 @@ bool SceneEditor2::Save(const DAVA::FilePath &path)
 {
 	bool ret = false;
 
+	DAVA::Vector<DAVA::Entity *> allEntities;
+	DAVA::Vector<DAVA::Entity *> editorEntities;
+
+	// remember and remove all nodes, with name editor.*
+	{
+		GetChildNodes(allEntities);
+
+		DAVA::uint32 count = allEntities.size();
+		for(DAVA::uint32 i = 0; i < count; ++i)
+		{
+			if(allEntities[i]->GetName().find("editor.") != String::npos)
+			{
+				allEntities[i]->Retain();
+				editorEntities.push_back(allEntities[i]);
+
+				allEntities[i]->GetParent()->RemoveNode(allEntities[i]);
+			}
+		}
+	}
+
 	DAVA::SceneFileV2 *file = new DAVA::SceneFileV2();
 	file->EnableDebugLog(false);
 
@@ -138,6 +158,15 @@ bool SceneEditor2::Save(const DAVA::FilePath &path)
 	}
 
 	SafeRelease(file);
+
+	// restore editor nodes
+	{
+		for(DAVA::uint32 i = 0; i < editorEntities.size(); ++i)
+		{
+			AddEditorEntity(editorEntities[i]);
+			editorEntities[i]->Release();
+		}
+	}
 
 	SceneSignals::Instance()->EmitSaved(this);
 	return ret;

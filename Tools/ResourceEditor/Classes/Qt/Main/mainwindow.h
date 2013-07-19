@@ -26,6 +26,10 @@
 #include "Scene/SceneEditor2.h"
 #include "Tools/QtPosSaver/QtPosSaver.h"
 
+// TODO: remove old screen -->
+#include "Classes/SceneEditor/MaterialEditor.h"
+// <---
+
 class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
 {
 	Q_OBJECT
@@ -74,14 +78,23 @@ protected slots:
 	void OnPivotCommonMode();
 	void OnManualModifMode();
 
+	void OnMaterialEditor();
+	void OnTextureBrowser();
+	void OnSceneLightMode();
+
 private:
 	Ui::MainWindow *ui;
 	QtPosSaver posSaver;
 
 	ModificationWidget *modificationWidget;
 
+	// TODO: remove this old screen -->
+	MaterialEditor *materialEditor;
+	// <--
+
 	void LoadUndoRedoState(SceneEditor2 *scene);
 	void LoadModificationState(SceneEditor2 *scene);
+	void LoadEditorLightState(SceneEditor2 *scene);
 };
 
 #if 0
