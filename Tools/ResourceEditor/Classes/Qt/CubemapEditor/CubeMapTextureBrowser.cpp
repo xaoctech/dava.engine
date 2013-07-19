@@ -32,7 +32,6 @@ CubeMapTextureBrowser::~CubeMapTextureBrowser()
 void CubeMapTextureBrowser::ConnectSignals()
 {    
 	QObject::connect(ui->buttonSelectRootPath, SIGNAL(pressed()), this, SLOT(OnChooseDirectoryClicked()));
-	QObject::connect(ui->buttonReload, SIGNAL(pressed()), this, SLOT(OnReloadClicked()));
 	QObject::connect(ui->buttonCreateCube, SIGNAL(pressed()), this, SLOT(OnCreateCubemapClicked()));
 	QObject::connect(ui->listTextures, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(OnListItemDoubleClicked(QListWidgetItem*)));
 }

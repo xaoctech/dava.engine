@@ -85,7 +85,7 @@ void CubemapEditorDialog::LoadImageTo(const DAVA::String& filePath, int face)
 	}
 	else
 	{
-		//TODO: display warning
+		ShowErrorDialog("This image is not suitable as cubemap face!");
 	}
 
 }
@@ -107,7 +107,21 @@ ClickableQLabel* CubemapEditorDialog::GetLabelForFace(int face)
 
 bool CubemapEditorDialog::VerifyImage(const QImage& image)
 {
-	return true;
+	bool result = true;
+	if(AnyFaceLoaded())
+	{
+		if(image.width() != faceWidth ||
+		   image.height() != faceHeight)
+		{
+			result = false;
+		}
+	}
+	else if(image.height() != image.width())
+	{
+		result = false;
+	}
+	
+	return result;
 }
 
 void CubemapEditorDialog::UpdateFaceInfo()
@@ -282,6 +296,8 @@ void CubemapEditorDialog::InitForEditing(DAVA::FilePath& textureDescriptorPath)
 	editorMode = CubemapEditorDialog::eEditorModeEditing;
 	
 	LoadCubemap(targetFile.GetAbsolutePathname().c_str());
+	
+	ui->buttonSave->setEnabled(false);
 }
 
 void CubemapEditorDialog::InitForCreating(DAVA::FilePath& textureDescriptorPath)
