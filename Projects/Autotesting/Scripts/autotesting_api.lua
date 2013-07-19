@@ -312,6 +312,20 @@ function IsVisible(element, background)
 	end
 end
 
+function IsDisabled(element)
+	Yield()
+	local control = autotestingSystem:FindControl(element)
+	if control then
+		if control:GetDisabled() then
+			return true
+		else
+			return false
+		end 
+	else
+		OnError(element.." not found")
+	end
+end
+
 function IsOnScreen(control)
 	local screen = autotestingSystem:GetScreen()
 	local geomData = control:GetGeometricData()
@@ -500,6 +514,21 @@ function CheckMsgText(name, key)
 	else
 		error("Control " .. name .. " not found")
 	end
+end
+
+function KeyPress(key, control)
+	--Log("Emulate key press key="..key)
+	if control then
+		ClickControl(control)
+	end
+	autotestingSystem:KeyPress(key)
+end
+
+function ClearField(field)
+	--Log("Emulate key press key="..key)
+	SetText(field, "")
+	ClickControl(field)
+	KeyPress(2)
 end
 
 -- Work with List
