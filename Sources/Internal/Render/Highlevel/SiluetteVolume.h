@@ -44,6 +44,7 @@ public:
 
     virtual void Draw(Camera * camera);
 
+    void SetSiluetteExponent(float32 value);
     void SetSiluetteScale(float32 scale);
     void SetSiluetteColor(const Color & c);
 
@@ -54,9 +55,11 @@ private:
 
     PolygonGroup * siluettePolygonGroup;
 
+    float32 siluetteExponent;
     float32 siluetteScale;
     Color siluetteColor;
 
+    int32 uniformSiluetteExponent;
     int32 uniformSiluetteScale;
     int32 uniformSiluetteColor;
 };
