@@ -31,7 +31,7 @@ class MaterialEditor: public DraggableDialog, public UIListDelegate, public Node
 {
 public:
     
-    MaterialEditor();
+    MaterialEditor(const Rect &rect = Rect(GetScreenWidth()/8, GetScreenHeight()/8, GetScreenWidth()/4*3, GetScreenHeight()/4*3));
     virtual ~MaterialEditor();
     
     void SetWorkingScene(Scene *newWorkingScene, Entity *newWorkingSceneNode);

@@ -20,6 +20,9 @@
 #include "Project/ProjectManager.h"
 #include "DockConsole/Console.h"
 
+#include "TextureBrowser/TextureBrowser.h"
+#include "MaterialBrowser/MaterialBrowser.h"
+
 #include "Classes/SceneEditor/EditorSettings.h"
 #include "Classes/SceneEditor/EditorConfig.h"
 
@@ -56,6 +59,10 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(SceneActivated(SceneEditor2 *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(SceneDeactivated(SceneEditor2 *)));
 
+	new TextureBrowser(this);
+	//new MaterialBrowser();
+	materialEditor = new MaterialEditor(DAVA::Rect(20, 20, 500, 600));
+
 	ui->sceneTabWidget->OpenTab("/Projects/dava.wot.art/DataSource/3d/Maps/dike_village/dike_village.sc2");
 	//ui->sceneTabWidget->OpenTab("/Users/a_makovii/Documents/work/temp/39/mountain/mountain_switch.sc2");
 	//ui->sceneTabWidget->OpenTab("/Users/a_makovii/Documents/work/temp/desertTrain/desert_train/desert_train.sc2");
@@ -64,6 +71,9 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 QtMainWindow::~QtMainWindow()
 {
+	materialEditor->Release();
+	TextureBrowser::Instance()->Release();
+
 	posSaver.SaveState(this);
 
 	delete ui;
@@ -179,6 +189,11 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionPivotCommon, SIGNAL(triggered()), this, SLOT(OnPivotCommonMode()));
 	QObject::connect(ui->actionManualModifMode, SIGNAL(triggered()), this, SLOT(OnManualModifMode()));
 
+	// tools
+	QObject::connect(ui->actionMaterialEditor, SIGNAL(triggered()), this, SLOT(OnMaterialEditor()));
+	QObject::connect(ui->actionTextureConverter, SIGNAL(triggered()), this, SLOT(OnTextureBrowser()));
+	QObject::connect(ui->actionEnableCameraLight, SIGNAL(triggered()), this, SLOT(OnSceneLightMode()));
+
 }
 
 // ###################################################################################################
@@ -205,6 +220,17 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 {
 	LoadUndoRedoState(scene);
 	LoadModificationState(scene);
+	LoadEditorLightState(scene);
+
+	// TODO: remove this code. it is for old material editor -->
+	DAVA::UIControl* parent = materialEditor->GetParent();
+	if(NULL != parent && NULL != scene)
+	{
+		parent->RemoveControl(materialEditor);
+		materialEditor->SetWorkingScene(scene, scene->selectionSystem->GetSelection()->GetEntity(0));
+		parent->AddControl(materialEditor);
+	}
+	// <---
 }
 
 void QtMainWindow::SceneDeactivated(SceneEditor2 *scene)
@@ -385,6 +411,58 @@ void QtMainWindow::OnManualModifMode()
 	}
 }
 
+void QtMainWindow::OnMaterialEditor()
+{
+	if(NULL == materialEditor->GetParent())
+	{
+		SceneEditor2* sceneEditor = GetCurrentScene();
+		if(NULL != sceneEditor)
+		{
+			materialEditor->SetWorkingScene(sceneEditor, sceneEditor->selectionSystem->GetSelection()->GetEntity(0));
+		}
+
+		DAVA::UIScreen *curScreen = DAVA::UIScreenManager::Instance()->GetScreen();
+		curScreen->AddControl(materialEditor);
+	}
+	else
+	{
+		materialEditor->GetParent()->RemoveControl(materialEditor);
+		materialEditor->SetWorkingScene(NULL, NULL);
+	}
+}
+
+void QtMainWindow::OnTextureBrowser()
+{
+	SceneEditor2* sceneEditor = GetCurrentScene();
+	DAVA::Entity *selectedEntity = NULL;
+
+	if(NULL != sceneEditor)
+	{
+		selectedEntity = sceneEditor->selectionSystem->GetSelection()->GetEntity(0);
+	}
+
+	TextureBrowser::Instance()->sceneActivated(sceneEditor);
+	TextureBrowser::Instance()->sceneNodeSelected(sceneEditor, selectedEntity); 
+	TextureBrowser::Instance()->show();
+}
+
+void QtMainWindow::OnSceneLightMode()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(NULL != scene)
+	{
+		if(ui->actionEnableCameraLight->isChecked())
+		{
+			scene->editorLightSystem->SetCameraLightEnabled(true);
+		}
+		else
+		{
+			scene->editorLightSystem->SetCameraLightEnabled(false);
+		}
+
+		LoadEditorLightState(scene);
+	}
+}
 
 // ###################################################################################################
 // Mainwindow load state functions
@@ -418,7 +496,7 @@ void QtMainWindow::LoadModificationState(SceneEditor2 *scene)
 			break;
 		}
 
-		
+		// pivot piont
 		if(scene->selectionSystem->GetPivotPoint() == ST_PIVOT_ENTITY_CENTER)
 		{
 			ui->actionPivotCenter->setChecked(true);
@@ -429,7 +507,6 @@ void QtMainWindow::LoadModificationState(SceneEditor2 *scene)
 			ui->actionPivotCenter->setChecked(false);
 			ui->actionPivotCommon->setChecked(true);
 		}
-
 	}
 }
 
@@ -439,6 +516,14 @@ void QtMainWindow::LoadUndoRedoState(SceneEditor2 *scene)
 	{
 		ui->actionUndo->setEnabled(scene->CanUndo());
 		ui->actionRedo->setEnabled(scene->CanRedo());
+	}
+}
+
+void QtMainWindow::LoadEditorLightState(SceneEditor2 *scene)
+{
+	if(NULL != scene)
+	{
+		ui->actionEnableCameraLight->setChecked(scene->editorLightSystem->GetCameraLightEnabled());
 	}
 }
 
