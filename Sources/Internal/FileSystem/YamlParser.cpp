@@ -895,6 +895,13 @@ void  YamlNode::FillContentAccordingToVariantTypeValue(VariantType* varType)
             ProcessMatrix( array, dimension );
         }
             break;
+        case VariantType::TYPE_COLOR:
+            {
+                type = TYPE_ARRAY;
+                const Color& color = varType->AsColor();
+                ProcessVector(color.color,COUNT_OF(color.color));
+            }
+            break;
         default:
             break;
     }
