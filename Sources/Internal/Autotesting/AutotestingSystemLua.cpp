@@ -274,6 +274,23 @@ bool AutotestingSystemLua::SetText(const String &path, const String &text)
     return false;
 }
 
+void AutotestingSystemLua::KeyPress(int32 keyChar)
+{
+	UIEvent keyPress;
+	keyPress.tid = keyChar;
+	keyPress.phase = UIEvent::PHASE_KEYCHAR;
+	keyPress.tapCount = 1;
+	keyPress.keyChar = keyChar;
+
+	Logger::Debug("AutotestingSystemLua::KeyPress %d phase=%d count=%d point=(%f, %f) physPoint=(%f,%f) key=%c", keyPress.tid, keyPress.phase, keyPress.tapCount, keyPress.point.x, keyPress.point.y, keyPress.physPoint.x, keyPress.physPoint.y, keyPress.keyChar);
+
+	Vector<UIEvent> emptyTouches;
+	Vector<UIEvent> touches;
+	touches.push_back(keyPress);
+	UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
+	AutotestingSystem::Instance()->OnInput(keyPress);
+}
+
 bool AutotestingSystemLua::CheckText(UIControl *control, const String &expectedText)
 {
 	UIStaticText *uiStaticText = dynamic_cast<UIStaticText*>(control);
