@@ -43,6 +43,7 @@ void GPUFamilyDescriptor::SetupGPUFormats()
     gpuData[GPU_POWERVR_IOS].availableFormats[FORMAT_A8] = ".pvr";
     gpuData[GPU_POWERVR_IOS].availableFormats[FORMAT_PVR4] = ".pvr";
     gpuData[GPU_POWERVR_IOS].availableFormats[FORMAT_PVR2] = ".pvr";
+	gpuData[GPU_POWERVR_IOS].availableFormats[FORMAT_ETC1] = ".pvr"; //VI: hack in order to avoid crash
     
 
     //pvr android

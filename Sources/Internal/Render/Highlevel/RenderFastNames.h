@@ -30,6 +30,7 @@ static const FastName PASS_DEFERRED("DeferredPass");
 
 // GLOBAL LAYERS
 static const FastName LAYER_OPAQUE("OpaqueRenderLayer");
+static const FastName LAYER_AFTER_OPAQUE("AfterOpaqueRenderLayer");
 static const FastName LAYER_ALPHA_TEST_LAYER("AlphaTestLayer");
 static const FastName LAYER_TRANSLUCENT("TransclucentRenderLayer");
 static const FastName LAYER_AFTER_TRANSLUCENT("AfterTransclucentRenderLayer");

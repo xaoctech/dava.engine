@@ -28,7 +28,7 @@ void RenderGrayscaleEffect::StartEffect()
 	
 	float constColor[] = {0.67f, 0.67f, 0.67f, 0.25f};
 	RENDER_VERIFY(glActiveTexture(GL_TEXTURE0));
-	RenderManager::Instance()->HWglBindTexture(RenderManager::Instance()->GetTexture()->id);
+	RenderManager::Instance()->HWglBindTexture(RenderManager::Instance()->GetTexture()->id, RenderManager::Instance()->GetTexture()->textureType);
 	
 	RENDER_VERIFY(glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, constColor));
 	RENDER_VERIFY(glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE));
@@ -42,7 +42,7 @@ void RenderGrayscaleEffect::StartEffect()
 	
 	RENDER_VERIFY(glActiveTexture(GL_TEXTURE1));
 	RENDER_VERIFY(glEnable(GL_TEXTURE_2D));
-	RenderManager::Instance()->HWglBindTexture(RenderManager::Instance()->GetTexture()->id);
+	RenderManager::Instance()->HWglBindTexture(RenderManager::Instance()->GetTexture()->id, RenderManager::Instance()->GetTexture()->textureType);
 	RENDER_VERIFY(glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE));
 	RENDER_VERIFY(glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_DOT3_RGB));
 	RENDER_VERIFY(glTexEnvi(GL_TEXTURE_ENV, GL_SRC0_RGB, GL_PREVIOUS));
@@ -63,7 +63,7 @@ void RenderGrayscaleEffect::StopEffect()
 
 	RENDER_VERIFY(glClientActiveTexture(GL_TEXTURE0));
 	RENDER_VERIFY(glActiveTexture(GL_TEXTURE0));
-	RenderManager::Instance()->HWglBindTexture(RenderManager::Instance()->GetTexture()->id);
+	RenderManager::Instance()->HWglBindTexture(RenderManager::Instance()->GetTexture()->id, RenderManager::Instance()->GetTexture()->textureType);
 	RENDER_VERIFY(glEnable(GL_TEXTURE_2D));
 	RENDER_VERIFY(glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE));
 	float constColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
@@ -79,9 +79,9 @@ void RenderGrayscaleEffect::SetColor(float r, float g, float b, float a)
 void RenderGrayscaleEffect::SetTexture(Texture *texture)
 {
 	RENDER_VERIFY(glActiveTexture(GL_TEXTURE1));
-	RenderManager::Instance()->HWglBindTexture(texture->id);
+	RenderManager::Instance()->HWglBindTexture(texture->id, texture->textureType);
 	RENDER_VERIFY(glActiveTexture(GL_TEXTURE0));
-	RenderManager::Instance()->HWglBindTexture(texture->id);
+	RenderManager::Instance()->HWglBindTexture(texture->id, texture->textureType);
 
 }
 	

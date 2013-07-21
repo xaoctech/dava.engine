@@ -496,6 +496,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationList.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ShadowVolumeNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SkeletonNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SkyBoxNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SpriteNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SwitchNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\BaseProcessSystem.h" />
@@ -841,6 +842,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationList.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ShadowVolumeNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SkeletonNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SkyBoxNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SpriteNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SwitchNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\BaseProcessSystem.cpp" />

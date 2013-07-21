@@ -655,7 +655,8 @@ void QtMainWindow::SetupActions()
 	connect(ui->actionShowSettings, SIGNAL(triggered()), actionHandler, SLOT(ShowSettings()));
     connect(ui->actionSquareTextures, SIGNAL(triggered()), actionHandler, SLOT(SquareTextures()));
     connect(ui->actionShowMipmapLevel, SIGNAL(triggered()), actionHandler, SLOT(ReplaceZeroMipmaps()));
-    
+    connect(ui->actionCubemapEditor, SIGNAL(triggered()), actionHandler, SLOT(CubemapEditor()));
+
 #if defined (__DAVAENGINE_MACOS__)
     ui->menuTools->removeAction(ui->actionBeast);
 #else //#if defined (__DAVAENGINE_MACOS__)
@@ -742,7 +743,8 @@ void QtMainWindow::SetupMainMenu()
                                        ui->actionParticleEmitter,
                                        ui->actionUserNode,
 									   ui->actionSwitchNode,
-									   ui->actionParticleEffectNode
+									   ui->actionParticleEffectNode,
+									   ui->actionSkyboxNode
                                        );
     connect(ui->menuCreateNode, SIGNAL(triggered(QAction *)), actionHandler, SLOT(CreateNodeTriggered(QAction *)));
 

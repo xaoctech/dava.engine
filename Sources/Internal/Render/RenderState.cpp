@@ -470,7 +470,7 @@ inline void RenderState::SetTextureLevelInHW(uint32 textureLevel) const
 #if defined (LOG_FINAL_RENDER_STATE)
         Logger::Debug("RenderState::bind_texture %d = (%d)", textureLevel, currentTexture[textureLevel]->id);
 #endif    
-        RenderManager::Instance()->HWglBindTexture(currentTexture[textureLevel]->id);
+        RenderManager::Instance()->HWglBindTexture(currentTexture[textureLevel]->id, currentTexture[textureLevel]->textureType);
     }else
     {
 #if defined (LOG_FINAL_RENDER_STATE)
