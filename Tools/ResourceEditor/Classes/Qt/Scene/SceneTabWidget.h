@@ -53,6 +53,7 @@ public:
 	int GetCurrentTab() const;
 	void SetCurrentTab(int index);
 
+	/*
 	ST_ModifMode GetModifMode() const;
 	void SetModifMode(ST_ModifMode mode);
 
@@ -67,6 +68,7 @@ public:
 
 	int GetCollisionDrawMode() const;
 	void SetCollisionDrawMode(int mode);
+	*/
 	
 	SceneEditor2* GetCurrentScene() const;
 
@@ -82,16 +84,6 @@ public slots:
 
 	// scene mouse over selected object
 	void MouseOverSelectedEntities(SceneEditor2* scene, const EntityGroup *entities);
-
-// old ui. should be removed later -->
-protected:
-	SceneEditorScreenMain * sceneEditorScreenMain;
-	const int oldScreenID;
-	bool oldInput;
-
-	void InitOldUI();
-	void ReleaseOldUI();
-// <--
 
 protected:
 	QTabBar *tabBar;
@@ -113,11 +105,12 @@ private:
 	int newSceneCounter;
 
 	SceneEditor2 *curScene;
-	ST_Axis curModifAxis;
-	ST_ModifMode curModifMode;
-	ST_PivotPoint curPivotPoint;
-	int curSelDrawMode;
-	int curColDrawMode;
+
+	//ST_Axis curModifAxis;
+	//ST_ModifMode curModifMode;
+	//ST_PivotPoint curPivotPoint;
+	//int curSelDrawMode;
+	//int curColDrawMode;
 };
 
 // this is helper class

@@ -131,7 +131,8 @@ void CommandsManager::Execute(Command *command, DAVA::Scene* forScene)
             break;
     }
 
-	QtMainWindowHandler::Instance()->UpdateUndoActionsState();
+	// TODO: mainwindow
+	//QtMainWindowHandler::Instance()->UpdateUndoActionsState();
 }
 
 void CommandsManager::ExecuteAndRelease(Command* command, DAVA::Scene* forScene)
@@ -155,7 +156,8 @@ void CommandsManager::Undo(DAVA::Scene* forScene)
 
 		--queue->commandIndex;
 
-		QtMainWindowHandler::Instance()->UpdateUndoActionsState();
+		// TODO: mainwindow
+		//QtMainWindowHandler::Instance()->UpdateUndoActionsState();
 	}
 }
 

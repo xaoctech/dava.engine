@@ -18,6 +18,7 @@
 #include <QPainter>
 #include <QProcess>
 #include <QTextOption>
+#include <QPushButton>
 #include <QLabel>
 
 #include "Main/mainwindow.h"
@@ -555,6 +556,7 @@ DAVA::Vector<DAVA::Image*> TextureConvertor::ConvertDXT(DAVA::TextureDescriptor 
 			
 			if(0 == image->mipmapLevel)
 			{
+			image = davaImages[0];
 				image->Retain();
 				images.push_back(image);
 			}

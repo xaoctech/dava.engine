@@ -202,7 +202,7 @@ public:
 
 	inline Vector4();
 	inline Vector4(float32 _x, float32 _y, float32 _z, float32 _w);
-	inline Vector4(float32 *_data);
+	inline Vector4(const float32 *_data);
 	explicit inline Vector4(const Vector3 & v);
 	inline Vector4 & operator =(const Vector4 & _v);
 	inline Vector4 & operator =(const Vector3 & _v);
@@ -709,7 +709,7 @@ inline Vector4::Vector4(float32 _x, float32 _y, float32 _z, float32 _w)
 	w = _w;
 }
 
-inline Vector4::Vector4(float32 *_data)
+inline Vector4::Vector4(const float32 *_data)
 {
 	data[0] = _data[0];
 	data[1] = _data[1];

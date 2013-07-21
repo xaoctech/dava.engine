@@ -54,6 +54,7 @@ void TextureProperties::setTextureDescriptor(DAVA::TextureDescriptor *descriptor
 	{
 		// no texture - disable this widget
 		setEnabled(false);
+		RemovePropertyAll();
 	}
 }
 

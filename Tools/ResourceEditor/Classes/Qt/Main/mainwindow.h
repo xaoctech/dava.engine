@@ -18,10 +18,92 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "ui_mainwindow.h"
+#include "ModificationWidget.h"
+
+#include "Base/Singleton.h"
+
+#include "Scene/SceneEditor2.h"
+#include "Tools/QtPosSaver/QtPosSaver.h"
+
+// TODO: remove old screen -->
+#include "Classes/SceneEditor/MaterialEditor.h"
+// <---
+
+class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
+{
+	Q_OBJECT
+
+public:
+	explicit QtMainWindow(QWidget *parent = 0);
+	~QtMainWindow();
+
+	Ui::MainWindow* GetUI();
+	SceneTabWidget* GetSceneWidget();
+	SceneEditor2* GetCurrentScene();
+
+protected:
+	virtual bool eventFilter(QObject *object, QEvent *event);
+
+	void SetupMainMenu();
+	void SetupToolBars();
+	void SetupActions();
+
+protected slots:
+	void ProjectOpened(const QString &path);
+	void ProjectClosed();
+
+	void SceneCommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
+	void SceneActivated(SceneEditor2 *scene);
+	void SceneDeactivated(SceneEditor2 *scene);
+
+// qt actions slots
+protected slots:
+	void OnProjectOpen();
+	void OnProjectClose();
+	void OnSceneNew();
+	void OnSceneOpen();
+	void OnSceneSave();
+	void OnSceneSaveAs();
+	void OnSceneSaveToFolder();
+	
+	void OnUndo();
+	void OnRedo();
+
+	void OnSelectMode();
+	void OnMoveMode();
+	void OnRotateMode();
+	void OnScaleMode();
+	void OnPivotCenterMode();
+	void OnPivotCommonMode();
+	void OnManualModifMode();
+
+	void OnMaterialEditor();
+	void OnTextureBrowser();
+	void OnSceneLightMode();
+
+private:
+	Ui::MainWindow *ui;
+	QtPosSaver posSaver;
+
+	ModificationWidget *modificationWidget;
+
+	// TODO: remove this old screen -->
+	MaterialEditor *materialEditor;
+	// <--
+
+	void LoadUndoRedoState(SceneEditor2 *scene);
+	void LoadModificationState(SceneEditor2 *scene);
+	void LoadEditorLightState(SceneEditor2 *scene);
+};
+
+#if 0
+#include <QMainWindow>
 #include <QProgressDialog>
 #include "Base/Singleton.h"
 #include "Tools/QtPosSaver/QtPosSaver.h"
 #include "ui_mainwindow.h"
+
 
 class LibraryModel;
 class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
@@ -74,8 +156,6 @@ private slots:
 	void ProjectOpened(const QString &path);
 	void LibraryFileTypesChanged();
 	
-	//reference
-	void ApplyReferenceNodeSuffix();
 	void RepackSpritesWaitDone(QObject *destroyed);
 
 signals:
@@ -95,5 +175,6 @@ private:
 	bool emitRepackAndReloadFinished;
 };
 
+#endif
 
 #endif // MAINWINDOW_H

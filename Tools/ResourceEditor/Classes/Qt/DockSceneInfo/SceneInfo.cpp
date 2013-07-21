@@ -455,6 +455,9 @@ void SceneInfo::showEvent ( QShowEvent * event )
 
 void SceneInfo::timerDone()
 {
+	// TODO: mainwindow
+	// ...
+	/*
     SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
     if(sceneData)
         RefreshAllData(sceneData);
@@ -463,6 +466,7 @@ void SceneInfo::timerDone()
     {
         QTimer::singleShot(1000, this, SLOT(timerDone()));
     }
+    */
 }
 
 void SceneInfo::RefreshAllData(SceneData *sceneData)

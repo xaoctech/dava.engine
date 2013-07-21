@@ -65,10 +65,10 @@ TextureBrowser::TextureBrowser(QWidget *parent)
 	textureListSortModes["Name"] = TextureListModel::SortByName;
 
 	// global scene manager signals
-	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneActivated(SceneData *)), this, SLOT(sceneActivated(SceneData *)));
-	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneChanged(SceneData *)), this, SLOT(sceneChanged(SceneData *)));
-	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneReleased(SceneData *)), this, SLOT(sceneReleased(SceneData *)));
-	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneNodeSelected(SceneData *, DAVA::Entity *)), this, SLOT(sceneNodeSelected(SceneData *, DAVA::Entity *)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(sceneActivated(SceneEditor2 *)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(sceneDeactivated(SceneEditor2 *)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(Selected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(sceneNodeSelected(SceneEditor2 *, DAVA::Entity *)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(Deselected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(sceneNodeDeselected(SceneEditor2 *, DAVA::Entity *)));
 
 	// convertor signals
 	QObject::connect(TextureConvertor::Instance(), SIGNAL(ReadyOriginal(const DAVA::TextureDescriptor *, DAVA::Vector<QImage>&)), this, SLOT(textureReadyOriginal(const DAVA::TextureDescriptor *, DAVA::Vector<QImage>&)));
@@ -484,7 +484,9 @@ void TextureBrowser::setupTextureListToolbar()
 
 	ui->textureListToolbar->insertWidget(ui->actionConvertAll, spacerWidget);
 	ui->textureListToolbar->insertSeparator(ui->actionConvertAll);
-	QtMainWindow::Instance()->ShowActionWithText(ui->textureListToolbar, ui->actionConvertAll, true);
+
+	// TODO: mainwindow
+	//QtMainWindow::Instance()->ShowActionWithText(ui->textureListToolbar, ui->actionConvertAll, true);
 
 	ui->textureListSortToolbar->addWidget(texturesSortComboLabel);
 	ui->textureListSortToolbar->addWidget(texturesSortCombo);
@@ -916,55 +918,38 @@ void TextureBrowser::setScene(DAVA::Scene *scene)
 	DAVA::SafeRelease(curScene);
 	curScene = DAVA::SafeRetain(scene);
 
+	// reset current texture
+	setTexture(NULL, NULL);
+
+	// set new scene
 	textureListModel->setScene(curScene);
 }
 
-void TextureBrowser::sceneChanged(SceneData *sceneData)
+void TextureBrowser::sceneActivated(SceneEditor2 *scene)
 {
-	DAVA::Scene *scene = NULL;
-	if(NULL != sceneData)
+	// set new scene
+	if(curScene != scene)
 	{
-		scene = sceneData->GetScene();
-
-		// reload current scene if it is the same as changed
-		// or if there is no current scene now - set it
-		//if(scene == curScene || curScene == NULL)
-		{
-			setScene(scene);
-		}
-	}
-}
-
-void TextureBrowser::sceneActivated(SceneData *sceneData)
-{
-	DAVA::Scene *scene = NULL;
-	if(NULL != sceneData)
-	{
-		scene = sceneData->GetScene();
-
-		// set new scene
 		setScene(scene);
 	}
 }
 
-void TextureBrowser::sceneReleased(SceneData *sceneData)
+void TextureBrowser::sceneDeactivated(SceneEditor2 *scene)
 {
-	DAVA::Scene *scene = NULL;
-	if(NULL != sceneData)
+	if(curScene == scene)
 	{
-		scene = sceneData->GetScene();
-
-		// close current scene
-		if(scene == curScene)
-		{
-			setScene(NULL);
-		}
+		setScene(NULL);
 	}
 }
 
-void TextureBrowser::sceneNodeSelected(SceneData *sceneData, DAVA::Entity *node)
+void TextureBrowser::sceneNodeSelected(SceneEditor2 *scene, DAVA::Entity *entity)
 {
-	textureListModel->setHighlight(node);
+	textureListModel->setHighlight(entity);
+}
+
+void TextureBrowser::sceneNodeDeselected(SceneEditor2 *scene, DAVA::Entity *entity)
+{
+	textureListModel->setHighlight(NULL);
 }
 
 void TextureBrowser::textureViewChanged(int index)

@@ -19,6 +19,9 @@
 
 #include <QWidget>
 
+#include "Scene/SceneEditor2.h"
+#include "Scene/SceneSignals.h"
+
 namespace Ui
 {
 	class ModificationWidget;
@@ -29,22 +32,35 @@ class ModificationWidget: public QWidget
 	Q_OBJECT
 
 public:
+	enum ModificationMode
+	{
+		ModifyAbsolute,
+		ModifyRelative
+	};
+
 	explicit ModificationWidget(QWidget* parent = 0);
 	~ModificationWidget();
 
-signals:
-	void ApplyModification(double x, double y, double z);
+	void SetMode(ModificationMode mode);
 
 private slots:
-	void OnEditingFinished();
+	void OnSceneActivated(SceneEditor2 *scene);
+	void OnSceneDeactivated(SceneEditor2 *scene);
+	void OnSceneEntitySelected(SceneEditor2 *scene, DAVA::Entity *entity);
+	void OnSceneEntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity);
+
+	void OnEditingFinishedX();
+	void OnEditingFinishedY();
+	void OnEditingFinishedZ();
 
 private:
 	Ui::ModificationWidget *ui;
+	SceneEditor2 *curScene;
+	bool groupMode;
+	ModificationMode modifMode;
 
-	void ResetSpinBoxes();
-
-protected:
-	virtual void keyPressEvent(QKeyEvent* event);
+	void ReloadValues();
+	void ApplyValues(ST_Axis axis);
 };
 
 #endif /* defined(__RESOURCEEDITORQT__MODIFICATIONWIDGET__) */

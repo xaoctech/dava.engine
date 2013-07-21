@@ -21,7 +21,7 @@
 #include <QMap>
 #include "DAVAEngine.h"
 #include "Tools/QtPosSaver/QtPosSaver.h"
-#include "Scene/SceneDataManager.h"
+#include "Scene/SceneSignals.h"
 
 class QModelIndex;
 class TextureListDelegate;
@@ -59,10 +59,10 @@ protected:
 	void closeEvent(QCloseEvent * e);
 
 public slots:
-	void sceneActivated(SceneData *scene);
-	void sceneChanged(SceneData *scene);
-	void sceneReleased(SceneData *scene);
-	void sceneNodeSelected(SceneData *scene, DAVA::Entity *node);
+	void sceneActivated(SceneEditor2 *scene);
+	void sceneDeactivated(SceneEditor2 *scene);
+	void sceneNodeSelected(SceneEditor2 *scene, DAVA::Entity *entity);
+	void sceneNodeDeselected(SceneEditor2 *scene, DAVA::Entity *entity);
 
 private:
     Ui::TextureBrowser *ui;

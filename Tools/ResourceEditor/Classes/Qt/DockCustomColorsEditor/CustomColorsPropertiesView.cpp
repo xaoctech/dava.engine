@@ -38,6 +38,8 @@ CustomColorsPropertiesView::~CustomColorsPropertiesView()
 
 void CustomColorsPropertiesView::Init()
 {
+	// TODO: mainwindow
+	/*
 	QObject::connect(ProjectManager::Instance(), SIGNAL(ProjectOpened(const QString &)), this, SLOT(ProjectOpened(const QString &)));
 
 	QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
@@ -61,6 +63,7 @@ void CustomColorsPropertiesView::Init()
 																 ui->buttonLoadTexture);
 
 	handler->SetCustomColorsEditorWidgetsState(false);
+	*/
 }
 
 void CustomColorsPropertiesView::InitColors()
