@@ -384,7 +384,7 @@ void HeightmapEditorSystem::UpdateBrushTool(float32 timeElapsed)
 					if(texture)
 					{
 						texture->TexImage(0, tilemaskImage->GetWidth(), tilemaskImage->GetHeight(),
-										  tilemaskImage->GetData(), 0);
+										  tilemaskImage->GetData(), 0, 0); //TODO: check if cubemap face id needed
 						//TODO: is code useful?
 						texture->GenerateMipmaps();
 						texture->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);

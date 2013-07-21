@@ -28,6 +28,8 @@
 #include "../SceneEditor/EntityOwnerPropertyHelper.h"
 #include "../StringConstants.h"
 
+#include "../Qt/CubemapEditor/MaterialHelper.h"
+
 using namespace DAVA;
 
 SceneDataManager::SceneDataManager()
@@ -745,6 +747,8 @@ void SceneDataManager::EnumerateMaterials(DAVA::Entity *forNode, Vector<Material
 	if(forNode)
 	{
 		forNode->GetDataNodes(materials);
+		//VI: remove skybox materials so they not to appear in the lists
+		MaterialHelper::FilterMaterialsByType(materials, DAVA::Material::MATERIAL_SKYBOX);
 	}
 }
 
@@ -776,6 +780,9 @@ void SceneDataManager::ApplyDefaultFogSettings(Landscape* landscape, DAVA::Entit
 	// Yuri Coder, 2013/05/13. The default fog settings are taken from Landscape.
 	Vector<Material *> materials;
 	entity->GetDataNodes(materials);
+	//VI: remove skybox materials so they not to appear in the lists
+	MaterialHelper::FilterMaterialsByType(materials, DAVA::Material::MATERIAL_SKYBOX);
+
 	for (Vector<Material*>::iterator iter = materials.begin(); iter != materials.end();
 		 iter ++)
 	{

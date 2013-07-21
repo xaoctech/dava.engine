@@ -98,6 +98,7 @@ public:
 
     static bool IsPvrFile(File *file);
     static uint32 GetMipMapLevelsCount(File *file);
+	static uint32 GetCubemapFaceCount(File* file);
     
     static bool ReadFile(File *file, const Vector<Image *> &imageSet);
     
@@ -125,17 +126,24 @@ protected:
     static PVRHeaderV3 GetHeader(const FilePath &filePathname);
     static PVRHeaderV3 GetHeader(File *file);
     static PVRHeaderV3 GetHeader(const uint8* pvrData, const int32 pvrDataSize);
+	
+	static uint32 GetCubemapLayout(PVRHeaderV3* pvrHeader, const char* pvrData, const int32 pvrDataSize);
+	static bool IsCubemap(PVRHeaderV3* pvrHeader, const char* pvrData, const int32 pvrDataSize);
+	static const char* GetCubemapMetadata(PVRHeaderV3* pvrHeader, const char* pvrData, const int32 pvrDataSize, uint32* outDataSize);
     
     static bool IsFormatSupported(const PixelFormatDescriptor &format);
     
-    static bool ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize, Image *image, uint32 mipMapLevel);
+    //static bool ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize, Image *image, uint32 mipMapLevel);
     
-    static bool CopyToImage(Image *image, uint32 mipMapLevel, const PVRHeaderV3 &header, const uint8 *pvrData);
+	//load cubemap
+	static bool ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize, const Vector<Image*>& images, uint32 mipMapLevel);
+    
+    static bool CopyToImage(Image *image, uint32 mipMapLevel, uint32 faceIndex, const PVRHeaderV3 &header, const uint8 *pvrData);
     
     static PVRHeaderV3 CreateDecompressedHeader(const PVRHeaderV3 &compressedHeader);
     static bool AllocateImageData(Image *image, uint32 mipMapLevel, const PVRHeaderV3 &header);
     
-    static int32 GetMipMapLayerOffset(uint32 mipMapLevel, const PVRHeaderV3 &header);
+    static int32 GetMipMapLayerOffset(uint32 mipMapLevel, uint32 faceIndex, const PVRHeaderV3 &header);
     
 };
     

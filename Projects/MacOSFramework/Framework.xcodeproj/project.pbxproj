@@ -42,6 +42,12 @@
 		171F938616CE6F28007038AB /* UIWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 171F938416CE6F28007038AB /* UIWebView.h */; };
 		1723D46F16CCF1C00039CCC2 /* ParticleForce.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1799E52416CCEC030058061F /* ParticleForce.cpp */; };
 		1723D47016CCF1C00039CCC2 /* ParticleForce.h in Headers */ = {isa = PBXBuildFile; fileRef = 1799E52516CCEC030058061F /* ParticleForce.h */; };
+		17677EAC176B098600306201 /* SkyBoxNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17677EAA176B098600306201 /* SkyBoxNode.cpp */; };
+		17677EAD176B098600306201 /* SkyBoxNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17677EAA176B098600306201 /* SkyBoxNode.cpp */; };
+		17677EAE176B098600306201 /* SkyBoxNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17677EAA176B098600306201 /* SkyBoxNode.cpp */; };
+		17677EAF176B098600306201 /* SkyBoxNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 17677EAB176B098600306201 /* SkyBoxNode.h */; };
+		17677EB0176B098600306201 /* SkyBoxNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 17677EAB176B098600306201 /* SkyBoxNode.h */; };
+		17677EB1176B098600306201 /* SkyBoxNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 17677EAB176B098600306201 /* SkyBoxNode.h */; };
 		176DE8F9174B5561007A983B /* AnimatedObject.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989ABF16BD24E400732C04 /* AnimatedObject.h */; };
 		176DE8FA174B5561007A983B /* Animation.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AC116BD24E400732C04 /* Animation.h */; };
 		176DE8FB174B5561007A983B /* AnimationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AC316BD24E400732C04 /* AnimationManager.h */; };
@@ -2008,6 +2014,8 @@
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		171F938316CE6F28007038AB /* UIWebView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIWebView.cpp; sourceTree = "<group>"; };
 		171F938416CE6F28007038AB /* UIWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIWebView.h; sourceTree = "<group>"; };
+		17677EAA176B098600306201 /* SkyBoxNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyBoxNode.cpp; sourceTree = "<group>"; };
+		17677EAB176B098600306201 /* SkyBoxNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkyBoxNode.h; sourceTree = "<group>"; };
 		176DEB77174B5561007A983B /* libFrameworkNPAPI.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFrameworkNPAPI.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		1789108D1740DFBC007B72BA /* NMaterialConsts.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NMaterialConsts.cpp; sourceTree = "<group>"; };
 		1795D26C174B56900023F61E /* NPAPIEntryPoint.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NPAPIEntryPoint.mm; sourceTree = "<group>"; };
@@ -3501,6 +3509,8 @@
 				E8989D1116BD24E500732C04 /* ShadowVolumeNode.h */,
 				E8989D1216BD24E500732C04 /* SkeletonNode.cpp */,
 				E8989D1316BD24E500732C04 /* SkeletonNode.h */,
+				17677EAA176B098600306201 /* SkyBoxNode.cpp */,
+				17677EAB176B098600306201 /* SkyBoxNode.h */,
 				E8989D1416BD24E500732C04 /* SpriteNode.cpp */,
 				E8989D1516BD24E500732C04 /* SpriteNode.h */,
 				E8989D1716BD24E500732C04 /* SwitchNode.cpp */,
@@ -4084,6 +4094,7 @@
 				17E2706F174CB1660019EF87 /* NPAPIPluginMacOS.h in Headers */,
 				1795E4BF174CB87700050F64 /* NPAPIOpenGLLayerMacOS.h in Headers */,
 				1795E4C5174CC24D00050F64 /* NPAPICorePlatformMacOS.h in Headers */,
+				17677EB1176B098600306201 /* SkyBoxNode.h in Headers */,
 				4FFE5CB31779E0B200728624 /* MipmapReplacer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4427,6 +4438,7 @@
 				846CFE5F174D1A64004ECE3C /* OpenUDIDApple.h in Headers */,
 				846CFE63174D1A75004ECE3C /* OpenUDIDMacOS.h in Headers */,
 				4FA5CDC01757AF430040CC6E /* EnumMap.h in Headers */,
+				17677EAF176B098600306201 /* SkyBoxNode.h in Headers */,
 				4FFE5CAF1779DBC700728624 /* MipmapReplacer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4762,6 +4774,7 @@
 				02E9E43A173964DA00C501BC /* SoundUpdateSystem.h in Headers */,
 				CCC7A4FA17579C680061EA5D /* GlobalEnum.h in Headers */,
 				CCC7A4FC17579C6D0061EA5D /* EnumMap.h in Headers */,
+				17677EB0176B098600306201 /* SkyBoxNode.h in Headers */,
 				4FFE5CB21779E09C00728624 /* MipmapReplacer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -5163,6 +5176,7 @@
 				1795E4BA174CB86800050F64 /* NPAPIPluginMacOS.mm in Sources */,
 				1795E4BB174CB86D00050F64 /* NPAPIOpenGLLayerMacOS.mm in Sources */,
 				1795E4C4174CC24D00050F64 /* NPAPICorePlatformMacOS.cpp in Sources */,
+				17677EAE176B098600306201 /* SkyBoxNode.cpp in Sources */,
 				4FFE5CB41779E0B400728624 /* MipmapReplacer.cpp in Sources */,
 				0211D551177C26D600EB7011 /* OpenUDIDApple.mm in Sources */,
 				0211D552177C26E000EB7011 /* OpenUDIDMacOS.mm in Sources */,
@@ -5463,6 +5477,7 @@
 				846CFE60174D1A64004ECE3C /* OpenUDIDApple.mm in Sources */,
 				846CFE64174D1A75004ECE3C /* OpenUDIDMacOS.mm in Sources */,
 				4FA5CDBF1757AF430040CC6E /* EnumMap.cpp in Sources */,
+				17677EAC176B098600306201 /* SkyBoxNode.cpp in Sources */,
 				4FFE5CAE1779DBC700728624 /* MipmapReplacer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -5755,6 +5770,7 @@
 				1789108F1740DFBC007B72BA /* NMaterialConsts.cpp in Sources */,
 				CCC7A4FB17579C6B0061EA5D /* GlobalEnum.cpp in Sources */,
 				CCC7A4FD17579C700061EA5D /* EnumMap.cpp in Sources */,
+				17677EAD176B098600306201 /* SkyBoxNode.cpp in Sources */,
 				4FFE5CB11779E09300728624 /* MipmapReplacer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

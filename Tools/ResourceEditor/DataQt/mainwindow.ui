@@ -240,7 +240,7 @@
      <x>0</x>
      <y>0</y>
      <width>1068</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -287,6 +287,7 @@
      <addaction name="actionUserNode"/>
      <addaction name="actionSwitchNode"/>
      <addaction name="actionParticleEffectNode"/>
+     <addaction name="actionSkyboxNode"/>
     </widget>
     <addaction name="actionParticleEmitter"/>
     <addaction name="actionParticle_Emitter"/>
@@ -304,6 +305,7 @@
     <addaction name="actionTileMapEditor"/>
     <addaction name="actionShowNotPassableLandscape"/>
     <addaction name="actionRulerTool"/>
+    <addaction name="actionCubemapEditor"/>
     <addaction name="separator"/>
     <addaction name="actionBeast"/>
     <addaction name="separator"/>
@@ -1299,6 +1301,11 @@
     <string>PNG</string>
    </property>
   </action>
+  <action name="actionSkyboxNode">
+   <property name="text">
+    <string>SkyBox Node</string>
+   </property>
+  </action>
   <action name="actionSquareTextures">
    <property name="text">
     <string>Square Textures</string>
@@ -1397,6 +1404,16 @@
     <string>Manual transform mode - Absolute/Offset</string>
    </property>
   </action>
+  <action name="actionCubemapEditor">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/cubemap.png</normaloff>:/QtIcons/cubemap.png</iconset>
+   </property>
+   <property name="text">
+    <string>Cubemap Editor</string>
+   </property>
+  </action>
+
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>

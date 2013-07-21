@@ -31,7 +31,7 @@ PVRConverter::~PVRConverter()
 FilePath PVRConverter::ConvertPngToPvr(const TextureDescriptor &descriptor, eGPUFamily gpuFamily)
 {
 	FilePath outputName;
-	String command = GetCommandLinePVR(descriptor, gpuFamily);
+	String command = GetCommandLinePVR(descriptor, FilePath::CreateWithNewExtension(descriptor.pathname, ".png"), gpuFamily);
     Logger::Info("[PVRConverter::ConvertPngToPvr] (%s)", command.c_str());
     
 	if(!command.empty())
@@ -43,20 +43,22 @@ FilePath PVRConverter::ConvertPngToPvr(const TextureDescriptor &descriptor, eGPU
 	return outputName;
 }
 
-String PVRConverter::GetCommandLinePVR(const TextureDescriptor &descriptor, eGPUFamily gpuFamily)
+String PVRConverter::GetCommandLinePVR(const TextureDescriptor &descriptor, FilePath fileToConvert, eGPUFamily gpuFamily)
 {
 	String command = "\"" + pvrTexToolPathname.GetAbsolutePathname() + "\"";
 	String format = pixelFormatToPVRFormat[(PixelFormat) descriptor.compression[gpuFamily].format];
 
 	if(command != "" && format != "")
 	{
-        FilePath fileToConvert = FilePath::CreateWithNewExtension(descriptor.pathname, ".png");
 		FilePath outputFile = GetPVRToolOutput(descriptor, gpuFamily);
 
 		// assemble command
-
-		// input file
 		command += Format(" -i \"%s\"", fileToConvert.GetAbsolutePathname().c_str());
+
+		if(descriptor.IsCubeMap())
+		{
+			command += " -s";
+		}
 
 		// output format
 		command += Format(" -f%s", format.c_str());

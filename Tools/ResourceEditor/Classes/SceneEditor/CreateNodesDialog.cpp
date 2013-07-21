@@ -28,6 +28,7 @@
 
 #include "Qt/Scene/SceneDataManager.h"
 #include "Qt/Scene/SceneData.h"
+#include "Scene3D/SkyBoxNode.h"
 #include "../StringConstants.h"
 
 CreateNodesDialog::CreateNodesDialog(const Rect & rect)
@@ -215,6 +216,17 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 			ParticleEffectComponent* newEffectComponent = new ParticleEffectComponent();
 			sceneNode->AddComponent(newEffectComponent);
 			sceneNode->SetName(ResourceEditor::PARTICLE_EFFECT_NODE_NAME);
+
+			break;
+		}
+
+		case ResourceEditor::NODE_SKYBOX:
+		{
+			SetHeader(L"SkyBox");
+			
+			SkyBoxNode* skyBoxNode = new SkyBoxNode();
+			sceneNode = skyBoxNode;
+			sceneNode->SetName("SkyBox-Singleton");
 
 			break;
 		}

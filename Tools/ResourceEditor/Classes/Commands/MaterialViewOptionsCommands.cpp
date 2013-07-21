@@ -22,6 +22,8 @@
 #include "../SceneEditor/EditorBodyControl.h"
 #include "../Qt/Scene/SceneDataManager.h"
 
+#include "../Qt/CubemapEditor/MaterialHelper.h"
+
 
 CommandChangeMaterialViewOption::CommandChangeMaterialViewOption(Material::eViewOptions value)
 :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_CHANGE_MATERIAL_VIEW_OPTION)
@@ -36,6 +38,8 @@ void CommandChangeMaterialViewOption::Execute()
 		Scene *scene = SceneDataManager::Instance()->SceneGet(i)->GetScene();
 		List<DAVA::Material*> materials;
 		scene->GetDataNodes(materials);
+		//VI: remove skybox materials so they not to appear in the lists
+		MaterialHelper::FilterMaterialsByType(materials, DAVA::Material::MATERIAL_SKYBOX);
 
 		for(List<Material*>::iterator it = materials.begin(); it != materials.end(); it++)
 		{

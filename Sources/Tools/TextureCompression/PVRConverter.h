@@ -19,7 +19,7 @@ public:
 
 	FilePath ConvertPngToPvr(const TextureDescriptor &descriptor, eGPUFamily gpuFamily);
 
-	String GetCommandLinePVR(const TextureDescriptor &descriptor, eGPUFamily gpuFamily);
+	String GetCommandLinePVR(const TextureDescriptor &descriptor, FilePath fileToConvert, eGPUFamily gpuFamily);
 
 	void SetPVRTexTool(const FilePath &textToolPathname);
 

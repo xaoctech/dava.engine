@@ -69,6 +69,25 @@ public:
 		DEPTH_RENDERBUFFER
 	};
 	
+	//VI: each face is optional
+	enum CubemapFace
+	{
+		CUBE_FACE_POSITIVE_X = 0,
+		CUBE_FACE_NEGATIVE_X = 1,
+		CUBE_FACE_POSITIVE_Y = 2,
+		CUBE_FACE_NEGATIVE_Y = 3,
+		CUBE_FACE_POSITIVE_Z = 4,
+		CUBE_FACE_NEGATIVE_Z = 5,
+		CUBE_FACE_MAX_COUNT = 6,
+		CUBE_FACE_INVALID = 0xFFFFFFFF
+	};
+	
+	enum TextureType
+	{
+		TEXTURE_2D = 0,
+		TEXTURE_CUBE = 1
+	};
+	
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 	static const int MAX_WIDTH = 1024;
 	static const int MIN_WIDTH = 8;
@@ -178,7 +197,7 @@ public:
 	void GenerateMipmaps();
 	void GeneratePixelesation();
 	
-	void TexImage(int32 level, uint32 width, uint32 height, const void * _data, uint32 dataSize);
+	void TexImage(int32 level, uint32 width, uint32 height, const void * _data, uint32 dataSize, uint32 cubeFaceId);
     
 	void SetWrapMode(TextureWrap wrapS, TextureWrap wrapT);
 	
@@ -209,6 +228,9 @@ public:
     
     
     static PixelFormatDescriptor GetPixelFormatDescriptor(PixelFormat formatID);
+	
+	static void GenerateCubeFaceNames(const String& baseName, Vector<String>& faceNames);
+	static void GenerateCubeFaceNames(const String& baseName, const Vector<String>& faceNameSuffixes, Vector<String>& faceNames);
 
     TextureDescriptor * CreateDescriptor() const;
 
@@ -255,6 +277,7 @@ public:							// properties for fast access
 	PixelFormat format;			// texture format 
 	DepthFormat depthFormat;
 	bool		isRenderTarget;
+	uint32		textureType;
 	TextureInvalidater* invalidater;
 
 	void SetDebugInfo(const String & _debugInfo);

@@ -45,6 +45,8 @@
 		84E5E0FF174D02EA0001C74F /* OpenUDIDApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 84E5E0FD174D02EA0001C74F /* OpenUDIDApple.mm */; };
 		84E5E102174D02F60001C74F /* OpenUDIDios.h in Headers */ = {isa = PBXBuildFile; fileRef = 84E5E100174D02F60001C74F /* OpenUDIDios.h */; };
 		84E5E103174D02F60001C74F /* OpenUDIDios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 84E5E101174D02F60001C74F /* OpenUDIDios.mm */; };
+		A667C6691767475000E5AC56 /* SkyBoxNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A667C6671767475000E5AC56 /* SkyBoxNode.cpp */; };
+		A667C66A1767475000E5AC56 /* SkyBoxNode.h in Headers */ = {isa = PBXBuildFile; fileRef = A667C6681767475000E5AC56 /* SkyBoxNode.h */; };
 		A6A1E8691785688600AA3A86 /* CRC32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6A1E8671785688600AA3A86 /* CRC32.cpp */; };
 		A6A1E86A1785688600AA3A86 /* CRC32.h in Headers */ = {isa = PBXBuildFile; fileRef = A6A1E8681785688600AA3A86 /* CRC32.h */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
@@ -714,6 +716,8 @@
 		84E5E0FD174D02EA0001C74F /* OpenUDIDApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenUDIDApple.mm; sourceTree = "<group>"; };
 		84E5E100174D02F60001C74F /* OpenUDIDios.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenUDIDios.h; sourceTree = "<group>"; };
 		84E5E101174D02F60001C74F /* OpenUDIDios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenUDIDios.mm; sourceTree = "<group>"; };
+		A667C6671767475000E5AC56 /* SkyBoxNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyBoxNode.cpp; sourceTree = "<group>"; };
+		A667C6681767475000E5AC56 /* SkyBoxNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkyBoxNode.h; sourceTree = "<group>"; };
 		A6A1E8671785688600AA3A86 /* CRC32.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CRC32.cpp; sourceTree = "<group>"; };
 		A6A1E8681785688600AA3A86 /* CRC32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRC32.h; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
@@ -2077,6 +2081,8 @@
 				E8B3C9FD16B9326E002BD35F /* Systems */,
 				E8B3CA1616B9326E002BD35F /* UserNode.cpp */,
 				E8B3CA1716B9326E002BD35F /* UserNode.h */,
+				A667C6671767475000E5AC56 /* SkyBoxNode.cpp */,
+				A667C6681767475000E5AC56 /* SkyBoxNode.h */,
 			);
 			path = Scene3D;
 			sourceTree = "<group>";
@@ -2661,6 +2667,7 @@
 				E867917D175F620400C5A6A2 /* GlobalEnum.h in Headers */,
 				E8679181175F621E00C5A6A2 /* GPUFamilyDescriptor.h in Headers */,
 				E8679185175F62D600C5A6A2 /* EnumMap.h in Headers */,
+				A667C66A1767475000E5AC56 /* SkyBoxNode.h in Headers */,
 				A6A1E86A1785688600AA3A86 /* CRC32.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3026,6 +3033,7 @@
 				E867917C175F620400C5A6A2 /* GlobalEnum.cpp in Sources */,
 				E8679180175F621E00C5A6A2 /* GPUFamilyDescriptor.cpp in Sources */,
 				E8679184175F62D600C5A6A2 /* EnumMap.cpp in Sources */,
+				A667C6691767475000E5AC56 /* SkyBoxNode.cpp in Sources */,
 				A6A1E8691785688600AA3A86 /* CRC32.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

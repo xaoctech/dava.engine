@@ -414,6 +414,7 @@ Entity *Scene::GetRootNode(const FilePath &rootNodePath)
         file->EnableDebugLog(false);
         file->LoadScene(rootNodePath, this);
         SafeRelease(file);
+				
         uint64 deltaTime = SystemTimer::Instance()->AbsoluteMS() - startTime;
         Logger::Info("[GETROOTNODE TIME] %dms (%ld)", deltaTime, deltaTime);
     }
@@ -597,8 +598,6 @@ void Scene::Draw()
 	{
 		imposterManager->Draw();
 	}
-    
-
 
 	RenderManager::Instance()->SetState(RenderState::DEFAULT_2D_STATE_BLEND);
 	drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
