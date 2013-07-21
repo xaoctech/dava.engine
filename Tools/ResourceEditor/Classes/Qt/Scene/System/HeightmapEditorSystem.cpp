@@ -36,7 +36,7 @@
 #include "LandscapeEditorDrawSystem/LandscapeProxy.h"
 #include "../../../Commands2/HeightmapEditorCommands2.h"
 #include "../../Main/QtUtils.h"
-#include "SceneEditor/EditorSettings.h"
+#include "../../../SceneEditor/EditorSettings.h"
 
 const float32 HeightmapEditorSystem::MAX_STRENGTH = 30.f;
 
@@ -59,6 +59,7 @@ HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 ,	tilemaskImage(NULL)
 ,	tilemaskCopyPasteTool(NULL)
 ,	originalTilemaskImage(NULL)
+,   squareTexture(NULL)
 {
 	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.png");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);

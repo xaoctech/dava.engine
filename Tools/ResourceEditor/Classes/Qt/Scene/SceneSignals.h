@@ -43,6 +43,7 @@ signals:
 	void Activated(SceneEditor2 *scene);
 	void Deactivated(SceneEditor2 *scene);
 
+	void CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
 	void StructureChanged(SceneEditor2 *scene, DAVA::Entity *parent);
 
 	// entities
@@ -73,6 +74,7 @@ public:
 	void EmitActivated(SceneEditor2 *scene) { emit Activated(scene); }
 	void EmitDeactivated(SceneEditor2 *scene) { emit Deactivated(scene); }
 
+	void EmitCommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo) { emit CommandExecuted(scene, command, redo); };
 	void EmitStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent) { emit StructureChanged(scene, parent); }
 
 	void EmitSelected(SceneEditor2 *scene, DAVA::Entity *entity) { emit Selected(scene, entity); }

@@ -74,6 +74,7 @@ public:
 	Vector2			AsVector2();
 	Vector3			AsVector3();
   	Vector4			AsVector4();
+	Color			AsColor();
 	Rect			AsRect();	
     VariantType     AsVariantType();
 	
