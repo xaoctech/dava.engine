@@ -26,6 +26,8 @@
 #include "Classes/SceneEditor/EditorSettings.h"
 #include "Classes/SceneEditor/EditorConfig.h"
 
+#include "../CubemapEditor/CubemapTextureBrowser.h"
+
 #include <QFileDialog>
 #include <QMessageBox>
 
@@ -193,6 +195,7 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionMaterialEditor, SIGNAL(triggered()), this, SLOT(OnMaterialEditor()));
 	QObject::connect(ui->actionTextureConverter, SIGNAL(triggered()), this, SLOT(OnTextureBrowser()));
 	QObject::connect(ui->actionEnableCameraLight, SIGNAL(triggered()), this, SLOT(OnSceneLightMode()));
+	QObject::connect(ui->actionCubemapEditor, SIGNAL(triggered()), this, SLOT(OnCubemapEditor()));
 
 }
 
@@ -462,6 +465,12 @@ void QtMainWindow::OnSceneLightMode()
 
 		LoadEditorLightState(scene);
 	}
+}
+
+void QtMainWindow::OnCubemapEditor()
+{
+	CubeMapTextureBrowser dlg(dynamic_cast<QWidget*>(parent()));
+	dlg.exec();
 }
 
 // ###################################################################################################
