@@ -46,6 +46,7 @@ private:
 	void DrawDebugInfoForEmitter(DAVA::Entity* parentEntity);
 	DAVA::float32 GetDebugDrawRadius(DAVA::AABBox3 entitySizeBox);
 	
+	void DrawSizeCircle(DAVA::ParticleEmitter *emitter, DAVA::Vector3 center);
 	void DrawSizeBox(DAVA::ParticleEmitter *emitter, DAVA::Vector3 center);
 	void DrawVectorArrow(DAVA::ParticleEmitter *emitter, DAVA::Vector3 center);
 	
