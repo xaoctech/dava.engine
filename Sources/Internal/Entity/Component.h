@@ -47,6 +47,7 @@ public:
         SCRIPT_COMPONENT,       // multiple instances, not now, it will happen much later.
 		USER_COMPONENT,
 		SOUND_COMPONENT,
+		CUSTOM_PROPERTIES_COMPONENT,
 
         COMPONENT_COUNT
     };

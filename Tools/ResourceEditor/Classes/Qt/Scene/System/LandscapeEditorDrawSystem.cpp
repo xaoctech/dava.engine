@@ -377,7 +377,7 @@ Vector2 LandscapeEditorDrawSystem::TranslatePoint(const Vector2& point, const Re
 	return newPos;
 }
 
-KeyedArchive* LandscapeEditorDrawSystem::GetLandscapeCustomProperties()
+CustomPropertiesComponent* LandscapeEditorDrawSystem::GetLandscapeCustomProperties()
 {
 	return landscapeNode->GetCustomProperties();
 }

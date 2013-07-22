@@ -30,6 +30,8 @@
 
 #include "../Qt/CubemapEditor/MaterialHelper.h"
 
+#include "Scene3D/Components/CustomPropertiesComponent.h"
+
 using namespace DAVA;
 
 SceneDataManager::SceneDataManager()
@@ -77,7 +79,7 @@ Entity* SceneDataManager::AddScene(const FilePath &scenePathname)
 
     Entity * rootNode = scene->GetRootNode(scenePathname)->Clone();
 
-    KeyedArchive * customProperties = rootNode->GetCustomProperties();
+    CustomPropertiesComponent * customProperties = rootNode->GetCustomProperties();
     customProperties->SetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, scenePathname.GetAbsolutePathname());
     
     rootNode->SetSolid(true);
@@ -255,7 +257,7 @@ void SceneDataManager::ReloadScene(const FilePath &scenePathname, const FilePath
 void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const FilePath &nodePathname, const FilePath &fromPathname, Set<String> &errors)
 {
 	//если в рут ноды сложить такие же рут ноды то на релоаде все накроет пиздой
-    KeyedArchive *customProperties = node->GetCustomProperties();
+    CustomPropertiesComponent *customProperties = node->GetCustomProperties();
 	EntityOwnerPropertyHelper::Instance()->UpdateEntityOwner(customProperties);
     if (customProperties->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, "") == nodePathname.GetAbsolutePathname())
     {

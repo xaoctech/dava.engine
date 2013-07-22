@@ -28,6 +28,8 @@
 
 #include "Qt/Scene/SceneDataManager.h"
 #include "Qt/Scene/SceneData.h"
+
+#include "Scene3D/Components/CustomPropertiesComponent.h"
 #include "Scene3D/SkyBoxNode.h"
 #include "../StringConstants.h"
 
@@ -145,7 +147,7 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
         {
             SetHeader(LocalizedString(ResourceEditor::CREATE_NODE_SERVICE));
             sceneNode = new Entity();
-            KeyedArchive *customProperties = sceneNode->GetCustomProperties();
+            CustomPropertiesComponent *customProperties = sceneNode->GetCustomProperties();
             customProperties->SetBool(ResourceEditor::EDITOR_IS_LOCKED, true);
             sceneNode->SetName(ResourceEditor::SERVICE_NODE_NAME);
             break;
@@ -202,7 +204,7 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 			sceneNode->SetName(ResourceEditor::SWITCH_NODE_NAME);
             sceneNode->AddComponent(new SwitchComponent());
             
-			KeyedArchive *customProperties = sceneNode->GetCustomProperties();
+			CustomPropertiesComponent *customProperties = sceneNode->GetCustomProperties();
 			customProperties->SetBool(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
 		}
 			break;
