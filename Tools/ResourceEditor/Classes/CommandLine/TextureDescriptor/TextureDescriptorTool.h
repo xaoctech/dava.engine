@@ -28,7 +28,8 @@ class TextureDescriptorTool: public CommandLineTool
         ACTION_RESAVE_DESCRIPTORS,
         ACTION_COPY_COMPRESSION,
         ACTION_CREATE_DESCRIPTORS,
-		ACTION_SET_COMPRESSION
+		ACTION_SET_COMPRESSION_FOR_FOLDER,
+		ACTION_SET_COMPRESSION_FOR_DESCRIPTOR
     };
     
 public:
@@ -41,7 +42,10 @@ public:
 
 protected:
 
-	DAVA::FilePath ReadPathnameFromParams() const;
+	DAVA::FilePath ReadFolderPathname() const;
+	DAVA::FilePath ReadFilePathname() const;
+
+	void ReadCompressionParams();
 
 protected:
 

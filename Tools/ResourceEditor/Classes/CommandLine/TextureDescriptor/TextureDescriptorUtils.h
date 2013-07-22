@@ -25,17 +25,21 @@ using namespace DAVA;
 class TextureDescriptorUtils
 {
 public:
-    static void ResaveDescriptors(const FilePath &folderPathname);
-    static void CopyCompressionParams(const FilePath &folderPathname);
-    static void CreateDescriptors(const FilePath &folderPathname);
+    static void ResaveDescriptorsForFolder(const FilePath &folderPathname);
+	static void CopyCompressionParamsForFolder(const FilePath &folderPathname);
+    static void CreateDescriptorsForFolder(const FilePath &folderPathname);
+	static void SetCompressionParamsForFolder(const FilePath &folderPathname, const DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> & compressionParams, bool force);
 
-	static void SetCompressionParams(const FilePath &filePathname, const DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> & compressionParams, bool force);
-
+	static void SetCompressionParams(const FilePath &descriptorPathname, const DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> & compressionParams, bool force);
     static void CreateDescriptorIfNeed(const FilePath &pngPathname);
     
-protected:
+private:
     
-    static void CopyCompression(const FilePath &descriptorPathname);
+	static void ResaveDescriptor(const FilePath & descriptorPathname);
+    static void CopyCompressionParams(const FilePath &descriptorPathname);
+
+	static bool IsCorrectDirectory(FileList *fileList, const int32 fileIndex);
+	static bool IsDescriptorPathname(const FilePath &pathname);
 };
 
 
