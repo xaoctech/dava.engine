@@ -39,6 +39,10 @@
 		5C77ABBF14C7703800E92D28 /* libpng_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C77ABBE14C7703800E92D28 /* libpng_ios.a */; };
 		5C97964714E3E75000FFFA14 /* libxml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964514E3E75000FFFA14 /* libxml_ios.a */; };
 		5C97964814E3E75000FFFA14 /* libyaml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964614E3E75000FFFA14 /* libyaml_ios.a */; };
+		74338646179D18F60014FBD3 /* UIScrollView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 74338642179D18F60014FBD3 /* UIScrollView.cpp */; };
+		74338647179D18F60014FBD3 /* UIScrollView.h in Headers */ = {isa = PBXBuildFile; fileRef = 74338643179D18F60014FBD3 /* UIScrollView.h */; };
+		74338648179D18F60014FBD3 /* UIScrollViewContainer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 74338644179D18F60014FBD3 /* UIScrollViewContainer.cpp */; };
+		74338649179D18F60014FBD3 /* UIScrollViewContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = 74338645179D18F60014FBD3 /* UIScrollViewContainer.h */; };
 		840ED3C916D506F900D2BA6C /* DPIHelperiOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 840ED3C816D506F900D2BA6C /* DPIHelperiOS.mm */; };
 		840ED3CB16D5070400D2BA6C /* DPIHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 840ED3CA16D5070400D2BA6C /* DPIHelper.h */; };
 		84E5E0FE174D02EA0001C74F /* OpenUDIDApple.h in Headers */ = {isa = PBXBuildFile; fileRef = 84E5E0FC174D02EA0001C74F /* OpenUDIDApple.h */; };
@@ -710,6 +714,10 @@
 		5C77ABBE14C7703800E92D28 /* libpng_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng_ios.a; path = ../../Libs/libs/libpng_ios.a; sourceTree = "<group>"; };
 		5C97964514E3E75000FFFA14 /* libxml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml_ios.a; path = ../../Libs/libs/libxml_ios.a; sourceTree = "<group>"; };
 		5C97964614E3E75000FFFA14 /* libyaml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyaml_ios.a; path = ../../Libs/libs/libyaml_ios.a; sourceTree = "<group>"; };
+		74338642179D18F60014FBD3 /* UIScrollView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIScrollView.cpp; sourceTree = "<group>"; };
+		74338643179D18F60014FBD3 /* UIScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIScrollView.h; sourceTree = "<group>"; };
+		74338644179D18F60014FBD3 /* UIScrollViewContainer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIScrollViewContainer.cpp; sourceTree = "<group>"; };
+		74338645179D18F60014FBD3 /* UIScrollViewContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIScrollViewContainer.h; sourceTree = "<group>"; };
 		840ED3C816D506F900D2BA6C /* DPIHelperiOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DPIHelperiOS.mm; sourceTree = "<group>"; };
 		840ED3CA16D5070400D2BA6C /* DPIHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DPIHelper.h; sourceTree = "<group>"; };
 		84E5E0FC174D02EA0001C74F /* OpenUDIDApple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenUDIDApple.h; sourceTree = "<group>"; };
@@ -2221,6 +2229,10 @@
 				E8B3CA5416B9326E002BD35F /* UIMoveInTransition.h */,
 				E8B3CA5516B9326E002BD35F /* UIPopup.cpp */,
 				E8B3CA5616B9326E002BD35F /* UIPopup.h */,
+				74338642179D18F60014FBD3 /* UIScrollView.cpp */,
+				74338643179D18F60014FBD3 /* UIScrollView.h */,
+				74338644179D18F60014FBD3 /* UIScrollViewContainer.cpp */,
+				74338645179D18F60014FBD3 /* UIScrollViewContainer.h */,
 				E8B3CA5716B9326E002BD35F /* UIScreen.cpp */,
 				E8B3CA5816B9326E002BD35F /* UIScreen.h */,
 				E8B3CA5916B9326E002BD35F /* UIScreenManager.h */,
@@ -2669,6 +2681,8 @@
 				E8679185175F62D600C5A6A2 /* EnumMap.h in Headers */,
 				A667C66A1767475000E5AC56 /* SkyBoxNode.h in Headers */,
 				A6A1E86A1785688600AA3A86 /* CRC32.h in Headers */,
+				74338647179D18F60014FBD3 /* UIScrollView.h in Headers */,
+				74338649179D18F60014FBD3 /* UIScrollViewContainer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3035,6 +3049,8 @@
 				E8679184175F62D600C5A6A2 /* EnumMap.cpp in Sources */,
 				A667C6691767475000E5AC56 /* SkyBoxNode.cpp in Sources */,
 				A6A1E8691785688600AA3A86 /* CRC32.cpp in Sources */,
+				74338646179D18F60014FBD3 /* UIScrollView.cpp in Sources */,
+				74338648179D18F60014FBD3 /* UIScrollViewContainer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

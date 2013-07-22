@@ -21,6 +21,7 @@ namespace DAVA
 	
 REGISTER_CLASS(UIScrollViewContainer);
 
+const float32 SCROLL_BEGIN_PIXELS = 8.0f;
 
 UIScrollViewContainer::UIScrollViewContainer(const Rect &rect, bool rectInAbsoluteCoordinates/* = false*/)
 :	UIControl(rect, rectInAbsoluteCoordinates),
