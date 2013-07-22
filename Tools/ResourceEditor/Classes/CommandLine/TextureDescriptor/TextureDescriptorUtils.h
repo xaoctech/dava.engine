@@ -29,6 +29,8 @@ public:
     static void CopyCompressionParams(const FilePath &folderPathname);
     static void CreateDescriptors(const FilePath &folderPathname);
 
+	static void SetCompressionParams(const FilePath &filePathname, const DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> & compressionParams, bool force);
+
     static void CreateDescriptorIfNeed(const FilePath &pngPathname);
     
 protected:

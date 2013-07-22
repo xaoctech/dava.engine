@@ -26,16 +26,20 @@ void TextureDescriptorTool::PrintUsage()
 {
     printf("\n");
     printf("-texdescriptor [-resave] [-copycompression] [-create] [-folder [folder for action with descriptors]]\n");
+	printf("-texdescriptor [-setcompression] [-file [descriptors folderPathname]] [-folder [folder with descriptors]] [-gpuName gpuValue] [-f]\n");
     printf("\tDo different operations with *.tex files\n");
     printf("\t-resave - resave all *.tex with new format\n");
-    printf("\t-copycompression - copy compression parameters from PowerVR_iOS to other gpus\n");
+    printf("\t-copycompression - copy compressionParams parameters from PowerVR_iOS to other gpus\n");
     printf("\t-create - create *.tex for *.png if need\n");
+	printf("\t-setcompression - set compressionParams parameters for *tex or for all *text in folder. -f enables force mode\n");
     
     printf("\n");
     printf("Samples:\n");
     printf("-texdescriptor -resave -folder /Users/User/Project/DataSource/3d/\n");
     printf("-texdescriptor -copycompression -folder /Users/User/Project/DataSource/3d/\n");
     printf("-texdescriptor -create -folder /Users/User/Project/DataSource/3d/\n");
+	printf("-texdescriptor -setcompression -file /Users/User/Project/DataSource/3d/Tanks/images/a-20.tex -PowerVR_iOS PVR4 -tegra DXT1 -mali ETC1 -adreno RGBA4444\n");
+	printf("-texdescriptor -setcompression -folder /Users/User/Project/DataSource/3d/Tanks/images/-PowerVR_iOS PVR4 -tegra DXT1 -mali ETC1 -adreno RGBA4444 -f\n");
 }
 
 DAVA::String TextureDescriptorTool::GetCommandLineKey()
@@ -47,16 +51,13 @@ bool TextureDescriptorTool::InitializeFromCommandLine()
 {
     commandAction = ACTION_NONE;
     
-    folderPath = CommandLineParser::GetCommandParam(String("-folder"));
-    if(folderPath.IsEmpty())
+	folderPathname = ReadPathnameFromParams();
+    if(folderPathname.IsEmpty())
     {
-        errors.insert(Format("[TextureDescriptorTool]: Incorrect folder parameter", folderPath.GetAbsolutePathname().c_str()));
+        errors.insert(Format("[TextureDescriptorTool]: Incorrect path parameter", folderPathname.GetAbsolutePathname().c_str()));
         return false;
     }
     
-    folderPath.MakeDirectoryPathname();
-
-
     if(CommandLineParser::CommandIsFound("-resave"))
     {
         commandAction = ACTION_RESAVE_DESCRIPTORS;
@@ -69,6 +70,27 @@ bool TextureDescriptorTool::InitializeFromCommandLine()
     {
         commandAction = ACTION_CREATE_DESCRIPTORS;
     }
+	else if(CommandLineParser::CommandIsFound("-setcompression"))
+	{
+		commandAction = ACTION_SET_COMPRESSION;
+
+		compressionParams.clear();
+		for(int32 i = GPU_POWERVR_IOS; i < GPU_FAMILY_COUNT; ++i)
+		{
+			eGPUFamily gpu = (eGPUFamily)i;
+			String gpuFlag = "-" + GPUFamilyDescriptor::GetGPUName(gpu);
+			if(CommandLineParser::CommandIsFound(gpuFlag))
+			{
+				String formatName = CommandLineParser::Instance()->GetParamForFlag(gpuFlag);
+
+				TextureDescriptor::Compression compression;
+				compression.format = Texture::GetPixelFormatByName(formatName);
+				compression.compressToWidth = compression.compressToHeight = 0;
+
+				compressionParams[gpu] = compression;
+			}
+		}
+	}
     else
     {
         errors.insert("[TextureDescriptorTool]: action not set");
@@ -83,19 +105,37 @@ void TextureDescriptorTool::Process()
     switch(commandAction)
     {
         case ACTION_RESAVE_DESCRIPTORS:
-            TextureDescriptorUtils::ResaveDescriptors(folderPath);
+            TextureDescriptorUtils::ResaveDescriptors(folderPathname);
             break;
             
         case ACTION_COPY_COMPRESSION:
-            TextureDescriptorUtils::CopyCompressionParams(folderPath);
+            TextureDescriptorUtils::CopyCompressionParams(folderPathname);
             break;
             
         case ACTION_CREATE_DESCRIPTORS:
-            TextureDescriptorUtils::CreateDescriptors(folderPath);
+            TextureDescriptorUtils::CreateDescriptors(folderPathname);
+			break;
+
+		case ACTION_SET_COMPRESSION:
+			TextureDescriptorUtils::SetCompressionParams(folderPathname, compressionParams, false);
+			break;
+
             
         default:
             Logger::Error("[TextureDescriptorTool::Process] Unhandled action!");
     }
+}
+
+DAVA::FilePath TextureDescriptorTool::ReadPathnameFromParams() const
+{
+	FilePath folder = CommandLineParser::GetCommandParam(String("-folder"));
+	if(!folder.IsEmpty())
+	{
+		folder.MakeDirectoryPathname();
+		return folder;
+	}
+
+	return CommandLineParser::GetCommandParam(String("-file"));
 }
 
 

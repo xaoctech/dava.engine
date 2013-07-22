@@ -27,7 +27,8 @@ class TextureDescriptorTool: public CommandLineTool
         
         ACTION_RESAVE_DESCRIPTORS,
         ACTION_COPY_COMPRESSION,
-        ACTION_CREATE_DESCRIPTORS
+        ACTION_CREATE_DESCRIPTORS,
+		ACTION_SET_COMPRESSION
     };
     
 public:
@@ -36,13 +37,22 @@ public:
     virtual bool InitializeFromCommandLine();
     virtual void Process();
     virtual void PrintUsage();
-    
+
+
+protected:
+
+	DAVA::FilePath ReadPathnameFromParams() const;
+
 protected:
 
     eAction commandAction;
     
-    DAVA::FilePath folderPath;
+    DAVA::FilePath folderPathname;
+	DAVA::FilePath filePathname;
+
+	bool forceModeEnabled;
     
+	DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> compressionParams;
 };
 
 
