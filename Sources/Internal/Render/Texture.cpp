@@ -1126,7 +1126,7 @@ void Texture::Invalidate()
 		}
 		
 		GenerateID();
-		TexImage(0, width, height, data, 0);
+		TexImage(0, width, height, data, 0, Texture::CUBE_FACE_INVALID);
 		
 		int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
 		RenderManager::Instance()->HWglBindTexture(id);
