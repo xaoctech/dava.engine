@@ -35,27 +35,18 @@ protected:
     DAVA::FilePath selectedScenePathname;
 };
 
-class CommandNewScene: public Command
-{
-public:	
-	DAVA_DEPRECATED(CommandNewScene());// DEPRECATED : using QMessageBox
-    
-protected:	
-    
-    virtual void Execute();
-};
 
-class CommandSaveScene: public Command
+class CommandSaveSpecifiedScene: public Command
 {
-	friend class CommandNewScene;
 public:	
-	DAVA_DEPRECATED(CommandSaveScene()); // DEPRECATED: using QFileDialog
+	DAVA_DEPRECATED(CommandSaveSpecifiedScene(Entity *activeScene, FilePath& filePath)); // DEPRECATED: using QFileDialog
     
 protected:	
     
     virtual void Execute();
-	void SaveParticleEmitterNodes(EditorScene* scene);
-	void SaveParticleEmitterNodeRecursive(Entity* parentNode);
+
+	Entity*		activeScene;
+	FilePath	filePath;
 };
 
 class CommandExport: public Command

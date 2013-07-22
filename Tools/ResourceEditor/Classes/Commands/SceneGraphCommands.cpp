@@ -25,12 +25,11 @@
 
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/EditorBodyControl.h"
+#include "../StringConstants.h"
 
 #include "Scene3D/Components/CustomPropertiesComponent.h"
 
 using namespace DAVA;
-
-#define REMOVE_ROOT_NODES_COMMON_PROPERTY "editor.referenceToOwner"
 
 CommandRemoveRootNodes::CommandRemoveRootNodes()
     :   MultiCommand(Command::COMMAND_UNDO_REDO, CommandList::ID_COMMAND_REMOVE_ROOT_NODES)
@@ -136,9 +135,9 @@ CommandInternalRemoveSceneNode::CommandInternalRemoveSceneNode(Entity* node, boo
 		Entity* nodeParent = node->GetParent();
 
 		CustomPropertiesComponent *customProperties = node->GetCustomProperties();
-		if(customProperties && customProperties->IsKeyExists(REMOVE_ROOT_NODES_COMMON_PROPERTY))
+		if(customProperties && customProperties->IsKeyExists(ResourceEditor::EDITOR_REFERENCE_TO_OWNER))
 		{
-			referenceToOwner = customProperties->GetString(REMOVE_ROOT_NODES_COMMON_PROPERTY);
+			referenceToOwner = customProperties->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
 		}
 
 		nodesForDeletion.reserve(nodeParent->GetChildrenCount());
@@ -148,9 +147,9 @@ CommandInternalRemoveSceneNode::CommandInternalRemoveSceneNode(Entity* node, boo
 			Entity* child = nodeParent->GetChild(i);
 
 			customProperties = child->GetCustomProperties();
-			if (customProperties && customProperties->IsKeyExists(REMOVE_ROOT_NODES_COMMON_PROPERTY))
+			if (customProperties && customProperties->IsKeyExists(ResourceEditor::EDITOR_REFERENCE_TO_OWNER))
 			{
-				if (customProperties->GetString(REMOVE_ROOT_NODES_COMMON_PROPERTY) == referenceToOwner)
+				if (customProperties->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER) == referenceToOwner)
 				{
 					RemoveNodeRec removeNodeRec;
 					removeNodeRec.node = SafeRetain(child);
@@ -200,7 +199,6 @@ void CommandInternalRemoveSceneNode::Execute()
 	for (uint32 i = 0; i < nodesForDeletion.size(); ++i)
 	{
 		nodesForDeletion[i].nodeParent->RemoveNode(nodesForDeletion[i].node);
-
 	}
 
 	SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
@@ -273,9 +271,13 @@ void CommandDebugFlags::Execute()
     Entity *node = activeScene->GetSelectedNode();
     if(node)
     {
-        if (node->GetDebugFlags() & DebugRenderComponent::DEBUG_DRAW_ALL)
+        if ((node->GetDebugFlags() & DebugRenderComponent::DEBUG_DRAW_ALL) == DebugRenderComponent::DEBUG_DRAW_ALL)
         {
             node->SetDebugFlags(0, true);
+            if(activeScene->GetSelectedNode() == node)
+            {
+                node->SetDebugFlags(DebugRenderComponent::DEBUG_DRAW_AABOX_CORNERS);
+            }
         }
         else
         {

@@ -115,7 +115,11 @@ public:
 	bool Create();
 #endif 
 	bool ChangeDisplayMode(DisplayMode mode, bool isFullscreen);
+	
+#if defined(__DAVAENGINE_ANDROID__)
+	void Lost();
 	void Invalidate();
+#endif
 
 	void Release();
 	
@@ -488,8 +492,10 @@ public:
     GLuint bufferBindingId[2];
     
     int32 HWglGetLastTextureID();
-    void HWglBindTexture(int32 tId);
+	uint32 HWglGetLastTextureType();
+    void HWglBindTexture(int32 tId, uint32 textureType = Texture::TEXTURE_2D);
     int32 lastBindedTexture;
+	uint32 lastBindedTextureType;
 
     
     int32 HWglGetLastFBO();

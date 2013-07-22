@@ -92,8 +92,17 @@ void GameCore::OnAppStarted()
 			{
 				String k = rootNode->GetItemKeyName(i);
 				String levelFile = rootNode->Get(i)->AsString();
-				if(k != "default" && k != "tutorial")
-					levelsPaths.push_back(levelFile);
+                File * file = File::Create(dirPath + levelFile, File::OPEN | File::READ);
+                if(file)
+                {
+                    levelsPaths.push_back(levelFile);
+                    Logger::Debug("[GameCore::OnAppStarted()] Add test level: %s", levelFile.c_str());
+                }
+                else
+                {
+                    Logger::Debug("[GameCore::OnAppStarted()] Scenefile not found: %s", levelFile.c_str());
+                }
+                SafeRelease(file);
 			}
 		}
 	}
@@ -107,6 +116,8 @@ void GameCore::OnAppStarted()
 			tests.push_back(test);
 		}
 	}
+
+    Logger::Debug("[GameCore::OnAppStarted()] test count %d", tests.size());
 
 	if(levelsPaths.size() > 0)
     {
@@ -179,14 +190,18 @@ void GameCore::Update(float32 timeElapsed)
             {
 				tests.pop_front();
 
+                Logger::Debug("[GameCore::Update()] test count %d", tests.size());
+
 				if(tests.size() == 0)
                 {
-					appFinished = true;
+                    appFinished = true;
+                    Logger::Debug("[GameCore::Update()] All tests finished");
 				}
                 else
                 {
                     SafeRelease(resultScreen);
-					Test *newCurTest = tests.front();
+                    Test *newCurTest = tests.front();
+                    Logger::Debug("[GameCore::Update()] Start next test");
 					if(newCurTest != NULL)
                     {
 						UIScreenManager::Instance()->SetScreen(newCurTest->GetScreenId());

@@ -246,7 +246,7 @@ void LandscapeEditorHeightmap::UpdateCopypasteTool(float32 timeElapsed)
                 Texture *tex = tilemaskTexture;
                 if(tex)
                 {
-                    tex->TexImage(0, tilemaskImage->GetWidth(), tilemaskImage->GetHeight(), tilemaskImage->GetData(), 0);
+                    tex->TexImage(0, tilemaskImage->GetWidth(), tilemaskImage->GetHeight(), tilemaskImage->GetData(), 0, 0);
                     //TODO: is code useful?
                     tex->GenerateMipmaps();
                     tex->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
@@ -656,7 +656,8 @@ void LandscapeEditorHeightmap::CreateHeightmapUndo()
 		Rect updatedRect = GetUpdatedRect();
 		if(!((updatedRect.x > GetHeightmap()->Size()) || (updatedRect.y > GetHeightmap()->Size())))
 		{
-			CommandsManager::Instance()->ExecuteAndRelease(new CommandDrawHeightmap(oldHeightmap, GetHeightmap(), GetUpdatedRect()));
+			CommandsManager::Instance()->ExecuteAndRelease(new CommandDrawHeightmap(oldHeightmap, GetHeightmap(), GetUpdatedRect()),
+														   workingScene);
 		}
 		SafeRelease(oldHeightmap);
 	}
@@ -677,7 +678,8 @@ void LandscapeEditorHeightmap::CreateCopyPasteUndo()
 																					 oldTilemap,
 																					 image,
 																					 tilemaskPathname,
-																					 GetUpdatedRect()));
+																					 GetUpdatedRect()),
+													   workingScene);
 		SafeRelease(oldHeightmap);
 		SafeRelease(oldTilemap);
 		SafeRelease(image);

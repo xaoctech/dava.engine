@@ -37,6 +37,8 @@ HangingObjectsView::~HangingObjectsView()
 
 void HangingObjectsView::Init()
 {
+	// TODO: mainwindow
+	/*
 	QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
 	connect(this, SIGNAL(Clicked(float,bool)), handler, SLOT(ToggleHangingObjects(float,bool)));
 	connect(ui->btnUpdate, SIGNAL(clicked()), this, SLOT(Clicked()));
@@ -49,6 +51,7 @@ void HangingObjectsView::Init()
 
 	handler->SetHangingObjectsWidgetsState(false);
 	ui->checkBoxEnable->setEnabled(true);
+	*/
 }
 
 

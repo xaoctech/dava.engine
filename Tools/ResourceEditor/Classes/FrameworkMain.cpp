@@ -22,11 +22,11 @@
 #include "SceneEditor/EditorSettings.h"
 #include "SceneEditor/EditorConfig.h"
 #include "SceneEditor/SceneValidator.h"
+#include "SceneEditor/TextureSquarenessChecker.h"
 
 #include "CommandLine/CommandLineManager.h"
 #include "CommandLine/SceneExporter/SceneExporter.h"
 
-#include "TextureCompression/PVRConverter.h"
 #include "version.h"
 
 using namespace DAVA;
@@ -98,11 +98,11 @@ void FrameworkDidLaunched()
     uint32 size = sizeof(EntityX);
     uint32 size2 = sizeof(EntitySTL);
     
-    new CommandLineManager();
     new SceneExporter();
     new EditorSettings();
 	new EditorConfig();
     new SceneValidator();
+    new TextureSquarenessChecker();
 
     
     SceneValidator::Instance()->SetPathForChecking(EditorSettings::Instance()->GetProjectPath());
@@ -155,6 +155,5 @@ void FrameworkWillTerminate()
 	SceneValidator::Instance()->Release();
 	EditorConfig::Instance()->Release();
 	EditorSettings::Instance()->Release();
-
-	CommandLineManager::Instance()->Release();
+    TextureSquarenessChecker::Instance()->Release();
 }

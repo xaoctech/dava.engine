@@ -22,6 +22,8 @@
 #include "SceneSaver/SceneSaverTool.h"
 #include "SceneExporter/SceneExporterTool.h"
 
+#include "Beast/BeastCommandLineTool.h"
+
 #include "TexturePacker/CommandLineParser.h"
 
 #include "../Qt/Main/QtUtils.h"
@@ -52,10 +54,21 @@ CommandLineManager::CommandLineManager()
     AddCommandLineTool(new ImageSplitterTool());
     AddCommandLineTool(new SceneExporterTool());
     AddCommandLineTool(new SceneSaverTool());
+
+#if defined (__DAVAENGINE_WIN32__)
+	AddCommandLineTool(new BeastCommandLineTool());
+#endif //#if defined (__DAVAENGINE_WIN32__)
+    
  
     ParseCommandLine();
     
     DetectCommandLineMode();
+    
+    if(isCommandLineModeEnabled)
+    {
+        Logger::Instance()->EnableConsoleMode();
+    }
+    
 
     FindActiveTool();
     
@@ -147,20 +160,18 @@ void CommandLineManager::Process()
     }
 }
 
-bool CommandLineManager::PrintResults()
+void CommandLineManager::PrintResults()
 {
-    if(!activeTool) return false;
+    if(!activeTool) return;
     
     const Set<String> &errors = activeTool->GetErrorList();
     if(0 < errors.size())
     {
-        printf("\nErrors:\n");
         Logger::Error("Errors:");
         Set<String>::const_iterator endIt = errors.end();
         int32 index = 0;
         for (auto it = errors.begin(); it != endIt; ++it)
         {
-            printf("[%d] %s\n", index, (*it).c_str());
             Logger::Error(Format("[%d] %s\n", index, (*it).c_str()));
             
             ++index;
@@ -168,10 +179,28 @@ bool CommandLineManager::PrintResults()
         
         ShowErrorDialog(errors);
     }
-    
-    bool forceMode =    CommandLineParser::CommandIsFound(String("-force"))
-                    ||  CommandLineParser::CommandIsFound(String("-forceclose"));
-    return (forceMode || 0 == errors.size());
 }
 
+DAVA::uint32 CommandLineManager::GetErrorsCount() const
+{
+	if(activeTool) 
+		return activeTool->GetErrorList().size();
 
+	return 0;
+}
+
+bool CommandLineManager::NeedCloseApplication()
+{
+	if(!activeTool) return true;
+
+
+	bool forceClose =	CommandLineParser::CommandIsFound(String("-force"))
+					||  CommandLineParser::CommandIsFound(String("-forceclose"));
+
+	uint32 errorsCount = GetErrorsCount();
+
+	if(activeTool->IsOneFrameCommand())
+		return (forceClose || 0 == errorsCount);
+
+	return (forceClose && errorsCount);
+}

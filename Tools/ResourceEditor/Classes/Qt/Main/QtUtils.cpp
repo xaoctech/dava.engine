@@ -23,6 +23,8 @@
 #include "QtMainWindowHandler.h"
 
 #include "TexturePacker/CommandLineParser.h"
+#include "../../Commands/FileCommands.h"
+#include "../../Commands/CommandsManager.h"
 
 #include "DAVAEngine.h"
 using namespace DAVA;
@@ -39,7 +41,8 @@ DAVA::FilePath GetOpenFileName(const DAVA::String &title, const DAVA::FilePath &
     QString filePath = QFileDialog::getOpenFileName(NULL, QString(title.c_str()), QString(pathname.GetAbsolutePathname().c_str()),
                                                     QString(filter.c_str()));
     
-    QtMainWindowHandler::Instance()->RestoreDefaultFocus();
+	// TODO: mainwindow
+    //QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 
     FilePath openedPathname = PathnameToDAVAStyle(filePath);
     if(!openedPathname.IsEmpty() && !SceneValidator::Instance()->IsPathCorrectForProject(openedPathname))
@@ -109,9 +112,9 @@ void ShowErrorDialog(const DAVA::Set<DAVA::String> &errors)
 
 void ShowErrorDialog(const DAVA::String &errorMessage)
 {
-	bool forceMode =    CommandLineParser::CommandIsFound(String("-force"))
+	bool forceClose =    CommandLineParser::CommandIsFound(String("-force"))
 					||  CommandLineParser::CommandIsFound(String("-forceclose"));
-	if(!forceMode)
+	if(!forceClose)
 	{
 		QMessageBox::critical(QtMainWindow::Instance(), "Error", errorMessage.c_str());
 	}
@@ -135,6 +138,43 @@ QColor ColorToQColor(const DAVA::Color& color)
 DAVA::Color QColorToColor(const QColor &qcolor)
 {
 	return Color(qcolor.redF(), qcolor.greenF(), qcolor.blueF(), qcolor.alphaF());
+}
+
+int ShowQuestion(const DAVA::String &header, const DAVA::String &question, int buttons, int defaultButton)
+{
+    int answer = QMessageBox::question(NULL, QString::fromStdString(header), QString::fromStdString(question),
+                                       (QMessageBox::StandardButton)buttons, (QMessageBox::StandardButton)defaultButton);
+    return answer;
+}
+
+int ShowSaveSceneQuestion(DAVA::Scene *scene)
+{
+    int answer = MB_FLAG_NO;
+    
+    int32 changesCount = CommandsManager::Instance()->GetUndoQueueLength(scene);
+    if(changesCount)
+    {
+        answer = ShowQuestion("Scene was changed", "Do you want to save changes in the current scene prior to creating new one?",
+                                    MB_FLAG_YES | MB_FLAG_NO | MB_FLAG_CANCEL, MB_FLAG_CANCEL);
+    }
+    
+    return answer;
+}
+
+void DeleteOldPVRTextureIfPowerVr_IOS(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu)
+{
+    if(!descriptor || gpu != GPU_POWERVR_IOS) return;
+    
+    FilePath oldPvrPath = FilePath::CreateWithNewExtension(descriptor->pathname, ".pvr");
+    FileSystem::Instance()->DeleteFile(oldPvrPath);
+}
+
+void DeleteOldDXTTextureIfTegra(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu)
+{
+    if(!descriptor || gpu != GPU_TEGRA) return;
+    
+    FilePath oldDdsPath = FilePath::CreateWithNewExtension(descriptor->pathname, ".dds");
+    FileSystem::Instance()->DeleteFile(oldDdsPath);
 }
 
 

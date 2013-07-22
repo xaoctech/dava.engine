@@ -19,10 +19,12 @@
 #include "Entity/Component.h"
 #include "Main/mainwindow.h"
 
+#include <QPushButton>
+
 #include "DockProperties/PropertyEditor.h"
-#include "QtPropertyEditor/QtPropertyItem.h"
-#include "QtPropertyEditor/QtProperyData/QtPropertyDataIntrospection.h"
-#include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
+#include "Tools/QtPropertyEditor/QtPropertyItem.h"
+#include "Tools/QtPropertyEditor/QtProperyData/QtPropertyDataIntrospection.h"
+#include "Tools/QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
 
 #include "PropertyEditorStateHelper.h"
 
@@ -32,7 +34,7 @@ PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */)
 	, curNode(NULL)
 	, treeStateHelper(this, this->curModel)
 {
-	SetRefreshTimeout(1000);
+	SetRefreshTimeout(5000);
 	
 	// global scene manager signals
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneActivated(SceneData *)), this, SLOT(sceneActivated(SceneData *)));
@@ -41,8 +43,8 @@ PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */)
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneNodeSelected(SceneData *, DAVA::Entity *)), this, SLOT(sceneNodeSelected(SceneData *, DAVA::Entity *)));
 
 	// 
-	QObject::connect(SceneSignals::Instance(), SIGNAL(Selected(SceneEditorProxy *, DAVA::Entity *)), this, SLOT(EntitySelected(SceneEditorProxy *, DAVA::Entity *)));
-	QObject::connect(SceneSignals::Instance(), SIGNAL(Deselected(SceneEditorProxy *, DAVA::Entity *)), this, SLOT(EntityDeselected(SceneEditorProxy *, DAVA::Entity *)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(Selected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(EntitySelected(SceneEditor2 *, DAVA::Entity *)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(Deselected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(EntityDeselected(SceneEditor2 *, DAVA::Entity *)));
 
 	// MainWindow actions
 	QObject::connect(QtMainWindow::Instance()->GetUI()->actionShowAdvancedProp, SIGNAL(triggered()), this, SLOT(actionShowAdvanced()));
@@ -200,12 +202,12 @@ void PropertyEditor::actionShowAdvanced()
 }
 
 
-void PropertyEditor::EntitySelected(SceneEditorProxy *scene, DAVA::Entity *entity)
+void PropertyEditor::EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity)
 {
 	SetNode(entity);
 }
 
-void PropertyEditor::EntityDeselected(SceneEditorProxy *scene, DAVA::Entity *entity)
+void PropertyEditor::EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity)
 {
 
 }

@@ -23,7 +23,7 @@
 #include "Qt/Scene/EntityGroup.h"
 
 class EditorBodyControl;
-class SceneEditorProxy;
+class SceneEditor2;
 
 class CommandEntityModification: public Command
 {
@@ -62,7 +62,7 @@ protected:
 	EntityGroup				entitiesToGroup;
 	Entity*					resultEntity;
 	Map<Entity*, Entity*>	originalChildParentRelations;//child, paretn
-	SceneEditorProxy*		sep;
+	SceneEditor2*		sceneEditor;
 	
 	Map<Entity*, Matrix4> originalMatrixes; // local, world
 
@@ -90,7 +90,7 @@ protected:
 	virtual void Execute();
 	virtual void Cancel();
 
-	void UpdateCollision(DAVA::Entity* node);
+	DAVA_DEPRECATED(void UpdateCollision(DAVA::Entity* node));
 };
 
 class CommandCloneAndTransform: public MultiCommand

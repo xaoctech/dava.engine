@@ -33,10 +33,10 @@
 // old ui. should be removed later -->
 class SceneEditorScreenMain;
 // <--
-class SceneEditorProxy;
+class SceneEditor2;
 class DAVAUI3DView;
 
-Q_DECLARE_METATYPE(SceneEditorProxy *);
+Q_DECLARE_METATYPE(SceneEditor2 *);
 
 class SceneTabWidget : public QWidget
 {
@@ -53,6 +53,7 @@ public:
 	int GetCurrentTab() const;
 	void SetCurrentTab(int index);
 
+	/*
 	ST_ModifMode GetModifMode() const;
 	void SetModifMode(ST_ModifMode mode);
 
@@ -67,7 +68,10 @@ public:
 
 	int GetCollisionDrawMode() const;
 	void SetCollisionDrawMode(int mode);
+	*/
 	
+	SceneEditor2* GetCurrentScene() const;
+
 public slots:
 	// this slot redirects any UIEvent to the active sceneProxy for processing
 	void ProcessDAVAUIEvent(DAVA::UIEvent *event);
@@ -79,17 +83,7 @@ public slots:
 	void TabBarCloseRequest(int index);
 
 	// scene mouse over selected object
-	void MouseOverSelectedEntities(SceneEditorProxy* scene, const EntityGroup *entities);
-
-// old ui. should be removed later -->
-protected:
-	SceneEditorScreenMain * sceneEditorScreenMain;
-	const int oldScreenID;
-	bool oldInput;
-
-	void InitOldUI();
-	void ReleaseOldUI();
-// <--
+	void MouseOverSelectedEntities(SceneEditor2* scene, const EntityGroup *entities);
 
 protected:
 	QTabBar *tabBar;
@@ -102,20 +96,21 @@ protected:
 	void InitDAVAUI();
 	void ReleaseDAVAUI();
 
-	SceneEditorProxy* GetTabScene(int index) const;
-	void SetTabScene(int index, SceneEditorProxy* scene);
+	SceneEditor2* GetTabScene(int index) const;
+	void SetTabScene(int index, SceneEditor2* scene);
 
 	virtual void resizeEvent(QResizeEvent * event);
 
 private:
 	int newSceneCounter;
 
-	SceneEditorProxy *curScene;
-	ST_Axis curModifAxis;
-	ST_ModifMode curModifMode;
-	ST_PivotPoint curPivotPoint;
-	int curSelDrawMode;
-	int curColDrawMode;
+	SceneEditor2 *curScene;
+
+	//ST_Axis curModifAxis;
+	//ST_ModifMode curModifMode;
+	//ST_PivotPoint curPivotPoint;
+	//int curSelDrawMode;
+	//int curColDrawMode;
 };
 
 // this is helper class

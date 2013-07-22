@@ -75,7 +75,8 @@ public:
 	{
 		EMITTER_POINT,
 		EMITTER_RECT,
-		EMITTER_ONCIRCLE,
+		EMITTER_ONCIRCLE_VOLUME,
+		EMITTER_ONCIRCLE_EDGES,
 		EMITTER_SHOCKWAVE
 	};
 
@@ -173,13 +174,13 @@ public:
 	virtual void AddLayer(ParticleLayer * layer);
 
 	/**
-	 \brief Function adds layer to emitter to the particular position.
+	 \brief Function insert layer to emitter to the particular position.
 	 You can use this function if you create emitters on the fly manually. It's not often case, but probably sometimes
 	 it can be required.
 	 \param[in] layer layer to be added
-  	 \param[in] layerToMoveAbove the position above which the layer will be inserted
+  	 \param[in] beforeLayer the position beforez which the layer will be inserted
 	 */
-	virtual void AddLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove);
+	virtual void InsertLayer(ParticleLayer * layer, ParticleLayer * beforeLayer);
 
 	/**
 	 \brief Function removes layer to emitter.
@@ -193,10 +194,18 @@ public:
 	/**
 	 \brief Function change the layer's order inside the same emitter.
 	 \param[in] layer layer to be moved
- 	 \param[in] layerToMoveAbove the position above which the layer will be moved
+ 	 \param[in] layerToMoveBefore the position before which the layer will be moved
 	 */
-	void MoveLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove);
+	void MoveLayer(ParticleLayer * layer, ParticleLayer * beforeLayer);
 
+	/**
+	 \brief Function returns the next layer for the layer to be passed or NULL if next layer
+	 is not found.
+	 \param[in] layer layer to be moved
+ 	 \param[in] layerToMoveBefore the position before which the layer will be moved
+	 */
+	ParticleLayer* GetNextLayer(ParticleLayer* layer);
+	
 	/**
 		\brief Function to clone emitter.
 		This function is needed then you do not want to reload emitter every time from disk.

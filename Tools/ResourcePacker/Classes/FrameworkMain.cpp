@@ -27,17 +27,6 @@ void PrintUsage()
 
     printf("\n");
     printf("resourcepacker [src_dir] - will pack resources from src_dir\n");
-    
-    printf("\n");
-    printf("-sceneexporter [-clean [directory]] [-export [-indir [directory]] [-outdir [directory]] [-processdir [directory]] [-processfile [directory]] [-format]\n");
-    printf("\t-clean - will delete all files from Data/3d/\n"); 
-    printf("\t-export - will export level to Data/3d/\n"); 
-    printf("\t-indir - path for Poject/DataSource/3d/ folder \n"); 
-    printf("\t-outdir - path for Poject/Data/3d/ folder\n"); 
-    printf("\t-processdir - foldername from DataSource/3d/ for exporting\n"); 
-    printf("\t-processfile - filename from DataSource/3d/ for exporting\n"); 
-    printf("\t-format - png, pvr, dxt\n"); 
-    printf("\t-force - to don't display error dialogs");
 }
 
 
@@ -58,6 +47,26 @@ bool CheckPosition(int32 commandPosition)
 void ProcessRecourcePacker()
 {
     Vector<String> & commandLine = Core::Instance()->GetCommandLine();
+    if(CommandLineParser::Instance()->GetVerbose())
+    {
+        int32 count = CommandLineParser::GetCommandsCount();
+        for(int32 i = 0; i < count; ++i)
+        {
+            String command = CommandLineParser::GetCommand(i);
+            printf("\n\t command: %s, param: %s", command.c_str(), CommandLineParser::GetCommandParam(command).c_str());
+        }
+        
+        printf("\n\n");
+        
+        count = commandLine.size();
+        for(int32 i = 0; i < count; ++i)
+        {
+            String command = commandLine[i];
+            printf("\n\t command: %s", command.c_str());
+        }
+        
+        printf("\n");
+    }
     
     ResourcePacker2D * resourcePacker = new ResourcePacker2D();
     
@@ -95,11 +104,10 @@ void ProcessRecourcePacker()
     PVRConverter::Instance()->SetPVRTexTool(resourcePacker->excludeDirectory + (commandLine[2] + toolName));
     
     uint64 elapsedTime = SystemTimer::Instance()->AbsoluteMS();
-    printf("[Resource Packer Started]\n");
-    printf("[INPUT DIR] - [%s]\n", resourcePacker->inputGfxDirectory.GetAbsolutePathname().c_str());
-    printf("[OUTPUT DIR] - [%s]\n", resourcePacker->outputGfxDirectory.GetAbsolutePathname().c_str());
-    printf("[EXCLUDE DIR] - [%s]\n", resourcePacker->excludeDirectory.GetAbsolutePathname().c_str());
-    
+    Logger::Debug("[Resource Packer Started]\n");
+    Logger::Debug("[INPUT DIR] - [%s]\n", resourcePacker->inputGfxDirectory.GetAbsolutePathname().c_str());
+    Logger::Debug("[OUTPUT DIR] - [%s]\n", resourcePacker->outputGfxDirectory.GetAbsolutePathname().c_str());
+    Logger::Debug("[EXCLUDE DIR] - [%s]\n", resourcePacker->excludeDirectory.GetAbsolutePathname().c_str());
     
     Texture::InitializePixelFormatDescriptors();
     GPUFamilyDescriptor::SetupGPUParameters();
@@ -114,13 +122,15 @@ void ProcessRecourcePacker()
     
     resourcePacker->PackResources(exportForGPU);
     elapsedTime = SystemTimer::Instance()->AbsoluteMS() - elapsedTime;
-    printf("[Resource Packer Compile Time: %0.3lf seconds]\n", (float64)elapsedTime / 1000.0);
+    Logger::Debug("[Resource Packer Compile Time: %0.3lf seconds]\n", (float64)elapsedTime / 1000.0);
     
     SafeDelete(resourcePacker);
 }
 
 void FrameworkDidLaunched()
 {
+    Logger::Instance()->SetLogLevel(Logger::LEVEL_DEBUG);
+
 	if (Core::Instance()->IsConsoleMode())
 	{
         if(     CommandLineParser::GetCommandsCount() < 2

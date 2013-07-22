@@ -52,13 +52,19 @@ void BaseParticleEditorNode::Cleanup()
 	SafeRelease(extraData);
 }
 
-void BaseParticleEditorNode::AddChildNode(BaseParticleEditorNode* childNode)
+void BaseParticleEditorNode::AddNode(BaseParticleEditorNode* childNode)
 {
     if (!childNode)
     {
         return;
     }
     
+	// The node is just changed its parent, don't physically remove it from memory.
+	if (childNode->GetParentNode())
+    {
+         childNode->GetParentNode()->RemoveNode(childNode, false);
+    }
+
 	childNode->SetParentNode(this);
     this->childNodes.push_back(childNode);
 }
@@ -70,16 +76,16 @@ ParticleEffectComponent* BaseParticleEditorNode::GetParticleEffectComponent() co
 	return effectComponent;
 }
 
-void BaseParticleEditorNode::AddChildNodeAbove(BaseParticleEditorNode* childNode, BaseParticleEditorNode* childNodeToMoveAbove)
+void BaseParticleEditorNode::InsertBeforeNode(BaseParticleEditorNode* childNode, BaseParticleEditorNode* beforeNode)
 {
-	AddChildNode(childNode);
-	if (childNodeToMoveAbove)
+	AddNode(childNode);
+	if (beforeNode)
 	{
-		MoveChildNode(childNode, childNodeToMoveAbove);
+		MoveNode(childNode, beforeNode);
 	}
 }
 
-void BaseParticleEditorNode::RemoveChildNode(BaseParticleEditorNode* childNode, bool needDeleteNode)
+void BaseParticleEditorNode::RemoveNode(BaseParticleEditorNode* childNode, bool needDeleteNode)
 {
     this->childNodes.remove(childNode);
 	
@@ -90,14 +96,14 @@ void BaseParticleEditorNode::RemoveChildNode(BaseParticleEditorNode* childNode, 
 	}
 }
 
-void BaseParticleEditorNode::MoveChildNode(BaseParticleEditorNode* childNode, BaseParticleEditorNode* childNodeToMoveAbove)
+void BaseParticleEditorNode::MoveNode(BaseParticleEditorNode* childNode, BaseParticleEditorNode* beforeNode)
 {
 	PARTICLEEDITORNODESLIST::iterator curPositionIter = std::find(this->childNodes.begin(),
 																  this->childNodes.end(),
 																  childNode);
 	PARTICLEEDITORNODESLIST::iterator newPositionIter = std::find(this->childNodes.begin(),
 																  this->childNodes.end(),
-																  childNodeToMoveAbove);
+																  beforeNode);
 
 	if (curPositionIter == this->childNodes.end() ||
 		newPositionIter == this->childNodes.end() ||
@@ -110,7 +116,7 @@ void BaseParticleEditorNode::MoveChildNode(BaseParticleEditorNode* childNode, Ba
 	childNodes.remove(childNode);
 	
 	// Re-calculate the new position iter - it might be changed during remove.
-	newPositionIter = std::find(this->childNodes.begin(), this->childNodes.end(), childNodeToMoveAbove);
+	newPositionIter = std::find(this->childNodes.begin(), this->childNodes.end(), beforeNode);
 	childNodes.insert(newPositionIter, childNode);
 }
 

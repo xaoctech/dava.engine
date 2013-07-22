@@ -24,6 +24,7 @@
 #include "SceneNodePropertyNames.h"
 
 #include "Scene3D/Components/CustomPropertiesComponent.h"
+#include "../StringConstants.h"
 
 NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodeProperties)
     :   UIControl(rect)
@@ -268,11 +269,12 @@ void NodesPropertyControl::ReadFrom(Entity *sceneNode)
     else
     {
         CustomPropertiesComponent *customProperties = sceneNode->GetCustomProperties();
-        if(customProperties && customProperties->IsKeyExists("editor.isLocked"))
+        if(customProperties && customProperties->IsKeyExists(ResourceEditor::EDITOR_IS_LOCKED))
         {
             propertyList->AddSection("property.scenenode.customproperties", GetHeaderState("property.scenenode.customproperties", true));
-            propertyList->AddBoolProperty("editor.isLocked", PropertyList::PROPERTY_IS_EDITABLE);
-            propertyList->SetBoolPropertyValue("editor.isLocked", customProperties->GetBool("editor.isLocked"));
+            propertyList->AddBoolProperty(ResourceEditor::EDITOR_IS_LOCKED, PropertyList::PROPERTY_IS_EDITABLE);
+            propertyList->SetBoolPropertyValue(ResourceEditor::EDITOR_IS_LOCKED,
+												customProperties->GetBool(ResourceEditor::EDITOR_IS_LOCKED));
         }
     }
 }
@@ -991,7 +993,7 @@ int32 NodesPropertyControl::GetTrianglesForLodLayer(LodComponent::LodData *lodDa
         
         for(int32 m = 0; m < (int32)meshes.size(); ++m)
         {
-            RenderObject *ro = GetRenerObject(meshes[m]);
+            RenderObject *ro = GetRenderObject(meshes[m]);
             if(!ro || ro->GetType() != RenderObject::TYPE_MESH) continue;
 
             uint32 count = ro->GetRenderBatchCount();

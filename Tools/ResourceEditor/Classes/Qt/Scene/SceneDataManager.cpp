@@ -24,7 +24,11 @@
 
 #include "./Qt/SpritesPacker/SpritePackerHelper.h"
 #include "../Main/QtUtils.h"
+#include "../Main/QtMainWindowHandler.h"
 #include "../SceneEditor/EntityOwnerPropertyHelper.h"
+#include "../StringConstants.h"
+
+#include "../Qt/CubemapEditor/MaterialHelper.h"
 
 #include "Scene3D/Components/CustomPropertiesComponent.h"
 
@@ -76,7 +80,7 @@ Entity* SceneDataManager::AddScene(const FilePath &scenePathname)
     Entity * rootNode = scene->GetRootNode(scenePathname)->Clone();
 
     CustomPropertiesComponent * customProperties = rootNode->GetCustomProperties();
-    customProperties->SetString("editor.referenceToOwner", scenePathname.GetAbsolutePathname());
+    customProperties->SetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, scenePathname.GetAbsolutePathname());
     
     rootNode->SetSolid(true);
     scene->AddNode(rootNode);
@@ -119,7 +123,7 @@ Entity* SceneDataManager::AddScene(const FilePath &scenePathname)
 		sceneData->SetLandscapesControllerScene(scene);
 	}
 
-	SceneHidePreview();
+    SceneHidePreview();
 	UpdateParticleSprites();
 	emit SceneGraphNeedRebuild();
 
@@ -188,6 +192,7 @@ void SceneDataManager::EditScene(SceneData* sceneData, const FilePath &scenePath
 	scene->Update(0);
 	sceneData->EmitSceneChanged();
 
+
 	UpdateParticleSprites();
     emit SceneGraphNeedRebuild();
 
@@ -243,6 +248,7 @@ void SceneDataManager::ReloadScene(const FilePath &scenePathname, const FilePath
         screen->OnReloadRootNodesQt();
     }
     
+    
 	UpdateParticleSprites();
     emit SceneGraphNeedRebuild();
 	sceneData->SetLandscapesControllerScene(scene);
@@ -253,14 +259,15 @@ void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const FilePa
 	//если в рут ноды сложить такие же рут ноды то на релоаде все накроет пиздой
     CustomPropertiesComponent *customProperties = node->GetCustomProperties();
 	EntityOwnerPropertyHelper::Instance()->UpdateEntityOwner(customProperties);
-    if (customProperties->GetString("editor.referenceToOwner", "") == nodePathname.GetAbsolutePathname())
+    if (customProperties->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, "") == nodePathname.GetAbsolutePathname())
     {
-        Entity *loadedNode = scene->GetRootNode(fromPathname)->Clone();
+        Entity *loadedNode = scene->GetRootNode(fromPathname);
         if(loadedNode)
         {
             Entity *newNode = loadedNode->Clone();
             newNode->SetLocalTransform(node->GetLocalTransform());
-            newNode->GetCustomProperties()->SetString("editor.referenceToOwner", fromPathname.GetAbsolutePathname());
+            newNode->GetCustomProperties()->SetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER,
+															fromPathname.GetAbsolutePathname());
             newNode->SetSolid(true);
             
             Entity *parent = node->GetParent();
@@ -275,7 +282,7 @@ void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const FilePa
         {
             errors.insert(Format("Cannot load object: %s", fromPathname.GetAbsolutePathname().c_str()));
         }
-
+        
         return;
     }
     
@@ -297,6 +304,10 @@ void SceneDataManager::SetActiveScene(EditorScene *scene)
     currentScene = FindDataForScene(scene);
     DVASSERT(currentScene && "There is no current scene. Something wrong.");
     currentScene->RebuildSceneGraph();
+
+    
+	// TODO: mainwindow
+    //QtMainWindowHandler::Instance()->ShowStatusBarMessage(currentScene->GetScenePathname().GetAbsolutePathname());
 
 	emit SceneActivated(currentScene);
 }
@@ -358,31 +369,6 @@ DAVA::Entity* SceneDataManager::SceneGetRootNode(SceneData *scene)
 	return node;
 }
 
-void SceneDataManager::SceneShowPreview(const DAVA::FilePath &path)
-{
-	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-
-	if(screen)
-	{
-		if(path.IsEqualToExtension(".sc2") && FileSystem::Instance()->IsFile(path))
-		{
-			screen->ShowScenePreview(path);
-		}
-		else
-		{
-			SceneHidePreview();
-		}
-	}
-}
-
-void SceneDataManager::SceneHidePreview()
-{
-	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	if(NULL != screen)
-	{
-		screen->HideScenePreview();
-	}
-}
 
 EditorScene * SceneDataManager::RegisterNewScene()
 {
@@ -443,6 +429,23 @@ SceneData *SceneDataManager::SceneGet(DAVA::int32 index)
     
     return *it;
 }
+
+SceneData *SceneDataManager::SceneGet(DAVA::Scene *scene)
+{
+    DVASSERT(scene);
+    
+    auto endIt = scenes.end();
+    for(auto it = scenes.begin(); it != endIt; ++it)
+    {
+        if((*it)->GetScene() == scene)
+            return *it;
+    }
+    
+    DVASSERT(false);
+    
+    return NULL;
+}
+
 
 void SceneDataManager::InSceneData_SceneChanged(EditorScene *scene)
 {
@@ -602,6 +605,9 @@ void SceneDataManager::CollectLandscapeDescriptors(DAVA::Set<DAVA::FilePath> &de
 
 void SceneDataManager::CollectDescriptors(DAVA::Set<DAVA::FilePath> &descriptors, const DAVA::FilePath &pathname)
 {
+    if(pathname.GetType() == FilePath::PATH_EMPTY)
+        return;
+
     DVASSERT(pathname.IsEqualToExtension(TextureDescriptor::GetDescriptorExtension()));
     
     if(!pathname.IsEmpty() && SceneValidator::Instance()->IsPathCorrectForProject(pathname))
@@ -698,7 +704,7 @@ void SceneDataManager::TextureReloadAll(DAVA::eGPUFamily forGPU)
 		{
 			Texture *newTexture = TextureReload(descriptor, it->second, forGPU);
 			SafeRelease(descriptor);
-		}
+		} //todo: need to reload texture as pinkplaceholder
 	}
 }
 
@@ -743,6 +749,8 @@ void SceneDataManager::EnumerateMaterials(DAVA::Entity *forNode, Vector<Material
 	if(forNode)
 	{
 		forNode->GetDataNodes(materials);
+		//VI: remove skybox materials so they not to appear in the lists
+		MaterialHelper::FilterMaterialsByType(materials, DAVA::Material::MATERIAL_SKYBOX);
 	}
 }
 
@@ -774,6 +782,9 @@ void SceneDataManager::ApplyDefaultFogSettings(Landscape* landscape, DAVA::Entit
 	// Yuri Coder, 2013/05/13. The default fog settings are taken from Landscape.
 	Vector<Material *> materials;
 	entity->GetDataNodes(materials);
+	//VI: remove skybox materials so they not to appear in the lists
+	MaterialHelper::FilterMaterialsByType(materials, DAVA::Material::MATERIAL_SKYBOX);
+
 	for (Vector<Material*>::iterator iter = materials.begin(); iter != materials.end();
 		 iter ++)
 	{
@@ -783,4 +794,30 @@ void SceneDataManager::ApplyDefaultFogSettings(Landscape* landscape, DAVA::Entit
 		material->SetFogColor(landscape->GetFogColor());
 		material->SetFogDensity(landscape->GetFogDensity());
 	}
+}
+
+void SceneDataManager::SceneShowPreview(const DAVA::FilePath &path)
+{
+    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+
+    if(screen)
+    {
+        if(path.IsEqualToExtension(".sc2") && FileSystem::Instance()->IsFile(path))
+        {
+            screen->ShowScenePreview(path);
+        }
+        else
+        {
+            SceneHidePreview();
+        }
+    }
+}
+
+void SceneDataManager::SceneHidePreview()
+{
+    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+    if(screen)
+    {
+        screen->HideScenePreview();
+    }
 }

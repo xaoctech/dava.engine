@@ -101,7 +101,7 @@
     </ClCompile>
     <Lib>
       <AdditionalOptions>/VERBOSE:LIB /ignore:4006 /ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>freetype246MT_D.lib;opengl32.lib;glew32.lib;d3d9.lib;dxerr.lib;libogg_static_d.lib;libvorbis_static_d.lib;libvorbisfile_static_d.lib;OpenAL32.lib;libyaml_wind.lib;libxml_wind.lib;pnglib_wind.lib;libmongodb_wind.lib;libtheora_win.lib;PVRTexLib32.lib;libdxtd.lib;libcurl.lib;ws2_32.lib;winmm.lib;wldap32.lib;TextureConverterD.lib;fmodexL_vc.lib;fmod_eventL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype246MT_D.lib;opengl32.lib;glew32.lib;d3d9.lib;dxerr.lib;libogg_static_d.lib;libvorbis_static_d.lib;libvorbisfile_static_d.lib;OpenAL32.lib;libyaml_wind.lib;libxml_wind.lib;pnglib_wind.lib;libmongodb_wind.lib;libtheora_win.lib;PVRTexLib32.lib;libdxtd.lib;libcurl.lib;ws2_32.lib;winmm.lib;wldap32.lib;TextureConverterD.lib;fmodex_vc.lib;fmod_event.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(ProjectDir)\$(Configuration)\$(ProjectName).lib</OutputFile>
       <AdditionalLibraryDirectories>./../../Libs/freetype/lib;./../../Libs/libs;./../../Libs/glew/lib;$(DXSDK_DIR)/lib/x86;./../../Libs/oggvorbis/lib/;C:\Program Files\OpenAL 1.1 SDK\libs\Win32;C:\Program Files (x86)\OpenAL 1.1 SDK\libs\Win32;./../../Libs/fmod/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
@@ -122,7 +122,7 @@
     </ClCompile>
     <Lib>
       <AdditionalOptions>/VERBOSE:LIB /ignore:4006 /ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>freetype246MT_D.lib;opengl32.lib;glew32.lib;d3d9.lib;dxerr.lib;libogg_static_d.lib;libvorbis_static_d.lib;libvorbisfile_static_d.lib;OpenAL32.lib;libyaml_wind.lib;libxml_wind.lib;pnglib_wind.lib;libmongodb_wind.lib;libtheora_win.lib;PVRTexLib32.lib;libdxtd.lib;TextureConverterD.lib;fmodexL_vc.lib;fmod_eventL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype246MT_D.lib;opengl32.lib;glew32.lib;d3d9.lib;dxerr.lib;libogg_static_d.lib;libvorbis_static_d.lib;libvorbisfile_static_d.lib;OpenAL32.lib;libyaml_wind.lib;libxml_wind.lib;pnglib_wind.lib;libmongodb_wind.lib;libtheora_win.lib;PVRTexLib32.lib;libdxtd.lib;TextureConverterD.lib;fmodex_vc.lib;fmod_event.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(ProjectDir)\$(Configuration)\$(ProjectName).lib</OutputFile>
       <AdditionalLibraryDirectories>./../../Libs/freetype/lib;./../../Libs/libs;./../../Libs/glew/lib;$(DXSDK_DIR)/lib/x86;./../../Libs/oggvorbis/lib/;C:\Program Files\OpenAL 1.1 SDK\libs\Win32;C:\Program Files (x86)\OpenAL 1.1 SDK\libs\Win32;./../../Libs/fmod/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
@@ -419,6 +419,7 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialGraphNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterial.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterialConsts.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\MipmapReplacer.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\OGLHelpers.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\PVRDefines.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\RenderBase.h" />
@@ -497,6 +498,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationList.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ShadowVolumeNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SkeletonNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SkyBoxNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SpriteNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SwitchNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\ActionUpdateSystem.h" />
@@ -549,6 +551,8 @@
     <ClInclude Include="..\..\Sources\Internal\UI\UIScreenManagerMacOS.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIScreenTransition.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIScrollBar.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIScrollView.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIScrollViewContainer.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UISlider.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UISpinner.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIStaticText.h" />
@@ -764,6 +768,7 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialGraph.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialGraphNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material\NMaterial.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\MipmapReplacer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\RenderBase.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\RenderDataObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\RenderEffect.cpp" />
@@ -842,6 +847,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationList.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ShadowVolumeNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SkeletonNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SkyBoxNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SpriteNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SwitchNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ActionUpdateSystem.cpp" />
@@ -890,6 +896,8 @@
     <ClCompile Include="..\..\Sources\Internal\UI\UIScreenManagerMacOS.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIScreenTransition.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIScrollBar.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIScrollView.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIScrollViewContainer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UISlider.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UISpinner.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIStaticText.cpp" />

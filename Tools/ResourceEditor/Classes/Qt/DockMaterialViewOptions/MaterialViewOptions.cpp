@@ -37,8 +37,6 @@ MaterialViewOptions::~MaterialViewOptions()
 
 void MaterialViewOptions::Init()
 {
-	QtMainWindowHandler * handler = QtMainWindowHandler::Instance();
-	
 	QComboBox * comboBox = ui->comboBox;
 	
 	for(int i = 0; i < Material::MATERIAL_VIEW_COUNT; i++)
@@ -56,10 +54,4 @@ void MaterialViewOptions::Init()
 				break;
 		}
 	}
-
-	connect(ui->comboBox, SIGNAL(currentIndexChanged(int)), handler, SLOT(MaterialViewOptionChanged(int)));
-
-	handler->RegisterMaterialViewOptionsWidgets(ui->comboBox);
-
-	handler->SetMaterialViewOptionsWidgetsState(true);
 }

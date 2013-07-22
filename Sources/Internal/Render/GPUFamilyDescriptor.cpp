@@ -1,32 +1,17 @@
-
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #include "Render/GPUFamilyDescriptor.h"
 #include "FileSystem/Logger.h"
@@ -34,6 +19,7 @@
 #include "FileSystem/FilePath.h"
 #include "Utils/StringFormat.h"
 #include "Render/TextureDescriptor.h"
+#include "Render/Texture.h"
 
 namespace DAVA
 {
@@ -49,26 +35,27 @@ void GPUFamilyDescriptor::SetupGPUParameters()
 void GPUFamilyDescriptor::SetupGPUFormats()
 {
     //pvr ios
-    gpuData[GPU_POVERVR_IOS].availableFormats[FORMAT_RGBA8888] = ".pvr";
-    gpuData[GPU_POVERVR_IOS].availableFormats[FORMAT_RGBA5551] = ".pvr";
-    gpuData[GPU_POVERVR_IOS].availableFormats[FORMAT_RGBA4444] = ".pvr";
-    gpuData[GPU_POVERVR_IOS].availableFormats[FORMAT_RGB888] = ".pvr";
-    gpuData[GPU_POVERVR_IOS].availableFormats[FORMAT_RGB565] = ".pvr";
-    gpuData[GPU_POVERVR_IOS].availableFormats[FORMAT_A8] = ".pvr";
-    gpuData[GPU_POVERVR_IOS].availableFormats[FORMAT_PVR4] = ".pvr";
-    gpuData[GPU_POVERVR_IOS].availableFormats[FORMAT_PVR2] = ".pvr";
+    gpuData[GPU_POWERVR_IOS].availableFormats[FORMAT_RGBA8888] = ".pvr";
+    gpuData[GPU_POWERVR_IOS].availableFormats[FORMAT_RGBA5551] = ".pvr";
+    gpuData[GPU_POWERVR_IOS].availableFormats[FORMAT_RGBA4444] = ".pvr";
+    gpuData[GPU_POWERVR_IOS].availableFormats[FORMAT_RGB888] = ".pvr";
+    gpuData[GPU_POWERVR_IOS].availableFormats[FORMAT_RGB565] = ".pvr";
+    gpuData[GPU_POWERVR_IOS].availableFormats[FORMAT_A8] = ".pvr";
+    gpuData[GPU_POWERVR_IOS].availableFormats[FORMAT_PVR4] = ".pvr";
+    gpuData[GPU_POWERVR_IOS].availableFormats[FORMAT_PVR2] = ".pvr";
+	gpuData[GPU_POWERVR_IOS].availableFormats[FORMAT_ETC1] = ".pvr"; //VI: hack in order to avoid crash
     
 
     //pvr android
-    gpuData[GPU_POVERVR_ANDROID].availableFormats[FORMAT_RGBA8888] = ".pvr";
-    gpuData[GPU_POVERVR_ANDROID].availableFormats[FORMAT_RGBA5551] = ".pvr";
-    gpuData[GPU_POVERVR_ANDROID].availableFormats[FORMAT_RGBA4444] = ".pvr";
-    gpuData[GPU_POVERVR_ANDROID].availableFormats[FORMAT_RGB888] = ".pvr";
-    gpuData[GPU_POVERVR_ANDROID].availableFormats[FORMAT_RGB565] = ".pvr";
-    gpuData[GPU_POVERVR_ANDROID].availableFormats[FORMAT_A8] = ".pvr";
-    gpuData[GPU_POVERVR_ANDROID].availableFormats[FORMAT_PVR4] = ".pvr";
-    gpuData[GPU_POVERVR_ANDROID].availableFormats[FORMAT_PVR2] = ".pvr";
-    gpuData[GPU_POVERVR_ANDROID].availableFormats[FORMAT_ETC1] = ".pvr";
+    gpuData[GPU_POWERVR_ANDROID].availableFormats[FORMAT_RGBA8888] = ".pvr";
+    gpuData[GPU_POWERVR_ANDROID].availableFormats[FORMAT_RGBA5551] = ".pvr";
+    gpuData[GPU_POWERVR_ANDROID].availableFormats[FORMAT_RGBA4444] = ".pvr";
+    gpuData[GPU_POWERVR_ANDROID].availableFormats[FORMAT_RGB888] = ".pvr";
+    gpuData[GPU_POWERVR_ANDROID].availableFormats[FORMAT_RGB565] = ".pvr";
+    gpuData[GPU_POWERVR_ANDROID].availableFormats[FORMAT_A8] = ".pvr";
+    gpuData[GPU_POWERVR_ANDROID].availableFormats[FORMAT_PVR4] = ".pvr";
+    gpuData[GPU_POWERVR_ANDROID].availableFormats[FORMAT_PVR2] = ".pvr";
+    gpuData[GPU_POWERVR_ANDROID].availableFormats[FORMAT_ETC1] = ".pvr";
 
     //tegra
     gpuData[GPU_TEGRA].availableFormats[FORMAT_RGBA8888] = ".pvr";
@@ -104,6 +91,8 @@ void GPUFamilyDescriptor::SetupGPUFormats()
     gpuData[GPU_ADRENO].availableFormats[FORMAT_A8] = ".pvr";
     gpuData[GPU_ADRENO].availableFormats[FORMAT_ETC1] = ".pvr";
     gpuData[GPU_ADRENO].availableFormats[FORMAT_ATC_RGB] = ".dds";
+	gpuData[GPU_ADRENO].availableFormats[FORMAT_ATC_RGBA_EXPLICIT_ALPHA] = ".dds";
+	gpuData[GPU_ADRENO].availableFormats[FORMAT_ATC_RGBA_INTERPOLATED_ALPHA] = ".dds";
 
     
     //for test all formats
@@ -132,8 +121,8 @@ void GPUFamilyDescriptor::SetupGPUFormats()
 
 void GPUFamilyDescriptor::SetupGPUPostfixes()
 {
-    gpuData[GPU_POVERVR_IOS].name = "PoverVR_iOS";
-    gpuData[GPU_POVERVR_ANDROID].name = "PoverVR_Android";
+    gpuData[GPU_POWERVR_IOS].name = "PowerVR_iOS";
+    gpuData[GPU_POWERVR_ANDROID].name = "PowerVR_Android";
     gpuData[GPU_TEGRA].name = "tegra";
     gpuData[GPU_MALI].name = "mali";
     gpuData[GPU_ADRENO].name = "adreno";
@@ -231,9 +220,13 @@ String GPUFamilyDescriptor::GetFilenamePostfix(const eGPUFamily gpuFamily, const
         
     
     Map<PixelFormat, String>::const_iterator format = gpuData[gpuFamily].availableFormats.find(pixelFormat);
-    DVASSERT(format != gpuData[gpuFamily].availableFormats.end());
-    
-    String postfix = "." + gpuData[gpuFamily].name + format->second;
+	if(format == gpuData[gpuFamily].availableFormats.end())
+	{
+		Logger::Error("[GPUFamilyDescriptor::GetFilenamePostfix: can't find format %s for gpu %s]", Texture::GetPixelFormatString(pixelFormat), gpuData[gpuFamily].name.c_str());
+		return ".png";
+	}
+
+	String postfix = "." + gpuData[gpuFamily].name + format->second;
     return postfix;
 }
     

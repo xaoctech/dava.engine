@@ -37,7 +37,17 @@ void SpritesPacker::SetOutputDir(const FilePath & _outputDir)
 	outputDir = _outputDir;
 }
 
-void SpritesPacker::Pack()
+void SpritesPacker::PackLightmaps()
+{
+	return PerformPack(true);
+}
+
+void SpritesPacker::PackTextures()
+{
+	return PerformPack(false);
+}
+
+void SpritesPacker::PerformPack(bool isLightmapPacking)
 {
 	FileSystem::Instance()->CreateDirectory(outputDir, true);
 
@@ -51,7 +61,7 @@ void SpritesPacker::Pack()
 
 	resourcePacker->excludeDirectory = inputDir + "../";
 
-	resourcePacker->isLightmapsPacking = true;
+	resourcePacker->isLightmapsPacking = isLightmapPacking;
 
 	resourcePacker->PackResources(EditorSettings::Instance()->GetTextureViewGPU());
 

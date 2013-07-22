@@ -33,6 +33,7 @@ public:
 		ID_COMMAND_PLACE_AREA_VISIBILITY_TOOL,
 
 		ID_COMMAND_RELOAD_TEXTURES_AS,
+        ID_COMMAND_REPLACE_MIPMAP_LEVEL,
 
 		ID_COMMAND_SAVE_TEXTURE_CUSTOM_COLORS,
 		ID_COMMAND_LOAD_TEXTURE_CUSTOM_COLORS,
@@ -77,8 +78,7 @@ public:
 
 		ID_COMMAND_CREATE_NODE,
 		ID_COMMAND_OPEN_SCENE,
-		ID_COMMAND_NEW_SCENE,
-		ID_COMMAND_SAVE_SCENE,
+		ID_COMMAND_SAVE_SPECIFIED_SCENE,
 		ID_COMMAND_EXPORT,
 		ID_COMMAND_SAVE_TO_FOLDER_WITH_CHILDS,
 
@@ -200,8 +200,6 @@ class CommandCreateNode;
  * FileCommands.h
  */
 class CommandOpenScene;
-class CommandNewScene;
-class CommandSaveScene;
 class CommandExport;
 class CommandSaveToFolderWithChilds;
 

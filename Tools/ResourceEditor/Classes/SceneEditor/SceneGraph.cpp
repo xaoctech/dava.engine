@@ -30,6 +30,7 @@
 
 #include "../Commands/CommandsManager.h"
 #include "../Commands/SceneGraphCommands.h"
+#include "../StringConstants.h"
 
 #include "Scene3D/Components/CustomPropertiesComponent.h"
 
@@ -294,7 +295,8 @@ void SceneGraph::RemoveWorkingNode()
 {
 	if (workingNode)
 	{
-		CommandsManager::Instance()->ExecuteAndRelease(new CommandInternalRemoveSceneNode(workingNode));
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandInternalRemoveSceneNode(workingNode),
+													   workingNode->GetScene());
     }
 }
 
@@ -307,9 +309,9 @@ void SceneGraph::RemoveRootNodes()
             String referenceToOwner;
             
             CustomPropertiesComponent *customProperties = workingNode->GetCustomProperties();
-            if(customProperties && customProperties->IsKeyExists("editor.referenceToOwner"))
+            if(customProperties && customProperties->IsKeyExists(ResourceEditor::EDITOR_REFERENCE_TO_OWNER))
             {
-                referenceToOwner = customProperties->GetString("editor.referenceToOwner");
+                referenceToOwner = customProperties->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
             }
 
             
@@ -321,9 +323,9 @@ void SceneGraph::RemoveRootNodes()
                 Entity *node = workingScene->GetChild(i);
 
                 customProperties = node->GetCustomProperties();
-                if(customProperties && customProperties->IsKeyExists("editor.referenceToOwner"))
+                if(customProperties && customProperties->IsKeyExists(ResourceEditor::EDITOR_REFERENCE_TO_OWNER))
                 {
-                    if(customProperties->GetString("editor.referenceToOwner") == referenceToOwner)
+                    if(customProperties->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER) == referenceToOwner)
                     {
                         nodesForDeletion.push_back(SafeRetain(node));
                     }
