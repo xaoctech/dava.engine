@@ -848,7 +848,7 @@ void Entity::SetSolid(bool isSolid)
     GetCustomProperties()->SetBool(SCENE_NODE_IS_SOLID_PROPERTY_NAME, isSolid);
 }
     
-bool Entity::GetSolid() const
+bool Entity::GetSolid()
 {
 //    return isSolidNode;
     return GetCustomProperties()->GetBool(SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
@@ -859,7 +859,7 @@ void Entity::SetLocked(bool isLocked)
 	GetCustomProperties()->SetBool(SCENE_NODE_IS_LOCKED_PROPERTY_NAME, isLocked);
 }
 
-bool Entity::GetLocked() const
+bool Entity::GetLocked()
 {
 	return GetCustomProperties()->GetBool(SCENE_NODE_IS_LOCKED_PROPERTY_NAME, false);
 }

@@ -253,10 +253,10 @@ public:
     uint32 GetDebugFlags() const;
     	
     void SetSolid(bool isSolid);
-    bool GetSolid() const;
+    bool GetSolid();
 
 	void SetLocked(bool isLocked);
-	bool GetLocked() const;
+	bool GetLocked();
 
     /**
         \brief function returns maximum bounding box of scene in world coordinates.
