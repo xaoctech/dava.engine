@@ -39,7 +39,7 @@ void TextureDescriptorTool::PrintUsage()
     printf("-texdescriptor -copycompression -folder /Users/User/Project/DataSource/3d/\n");
     printf("-texdescriptor -create -folder /Users/User/Project/DataSource/3d/\n");
 	printf("-texdescriptor -setcompression -file /Users/User/Project/DataSource/3d/Tanks/images/a-20.tex -PowerVR_iOS PVR4 -tegra DXT1 -mali ETC1 -adreno RGBA4444\n");
-	printf("-texdescriptor -setcompression -folder /Users/User/Project/DataSource/3d/Tanks/images/-PowerVR_iOS PVR4 -tegra DXT1 -mali ETC1 -adreno RGBA4444 -f\n");
+	printf("-texdescriptor -setcompression -folder /Users/User/Project/DataSource/3d/Tanks/images/ -PowerVR_iOS PVR4 -tegra DXT1 -mali ETC1 -adreno RGBA4444 -f\n");
 }
 
 DAVA::String TextureDescriptorTool::GetCommandLineKey()
@@ -51,45 +51,42 @@ bool TextureDescriptorTool::InitializeFromCommandLine()
 {
     commandAction = ACTION_NONE;
     
-	folderPathname = ReadPathnameFromParams();
-    if(folderPathname.IsEmpty())
-    {
-        errors.insert(Format("[TextureDescriptorTool]: Incorrect path parameter", folderPathname.GetAbsolutePathname().c_str()));
-        return false;
-    }
-    
     if(CommandLineParser::CommandIsFound("-resave"))
     {
         commandAction = ACTION_RESAVE_DESCRIPTORS;
+		folderPathname = ReadFolderPathname();
     }
     else if(CommandLineParser::CommandIsFound("-copycompression"))
     {
         commandAction = ACTION_COPY_COMPRESSION;
+		folderPathname = ReadFolderPathname();
     }
     else if(CommandLineParser::CommandIsFound("-create"))
     {
         commandAction = ACTION_CREATE_DESCRIPTORS;
+		folderPathname = ReadFolderPathname();
     }
 	else if(CommandLineParser::CommandIsFound("-setcompression"))
 	{
-		commandAction = ACTION_SET_COMPRESSION;
+		folderPathname = ReadFolderPathname();
+		filePathname = ReadFilePathname();
 
-		compressionParams.clear();
-		for(int32 i = GPU_POWERVR_IOS; i < GPU_FAMILY_COUNT; ++i)
+		if(!folderPathname.IsEmpty())
 		{
-			eGPUFamily gpu = (eGPUFamily)i;
-			String gpuFlag = "-" + GPUFamilyDescriptor::GetGPUName(gpu);
-			if(CommandLineParser::CommandIsFound(gpuFlag))
-			{
-				String formatName = CommandLineParser::Instance()->GetParamForFlag(gpuFlag);
-
-				TextureDescriptor::Compression compression;
-				compression.format = Texture::GetPixelFormatByName(formatName);
-				compression.compressToWidth = compression.compressToHeight = 0;
-
-				compressionParams[gpu] = compression;
-			}
+			commandAction = ACTION_SET_COMPRESSION_FOR_FOLDER;
 		}
+		else if(!filePathname.IsEmpty())
+		{
+			commandAction = ACTION_SET_COMPRESSION_FOR_DESCRIPTOR;
+		}
+		else
+		{
+			errors.insert("[TextureDescriptorTool]: path not set");
+			return false;
+		}
+
+		forceModeEnabled = CommandLineParser::CommandIsFound("-f");
+		ReadCompressionParams();
 	}
     else
     {
@@ -100,33 +97,57 @@ bool TextureDescriptorTool::InitializeFromCommandLine()
     return true;
 }
 
+void TextureDescriptorTool::ReadCompressionParams()
+{
+	compressionParams.clear();
+	for(int32 i = GPU_POWERVR_IOS; i < GPU_FAMILY_COUNT; ++i)
+	{
+		eGPUFamily gpu = (eGPUFamily)i;
+		String gpuFlag = "-" + GPUFamilyDescriptor::GetGPUName(gpu);
+		if(CommandLineParser::CommandIsFound(gpuFlag))
+		{
+			String formatName = CommandLineParser::GetCommandParam(gpuFlag);
+
+			TextureDescriptor::Compression compression;
+			compression.format = Texture::GetPixelFormatByName(formatName);
+			compression.compressToWidth = compression.compressToHeight = 0;
+
+			compressionParams[gpu] = compression;
+		}
+	}
+}
+
+
 void TextureDescriptorTool::Process()
 {
     switch(commandAction)
     {
         case ACTION_RESAVE_DESCRIPTORS:
-            TextureDescriptorUtils::ResaveDescriptors(folderPathname);
+            TextureDescriptorUtils::ResaveDescriptorsForFolder(folderPathname);
             break;
             
         case ACTION_COPY_COMPRESSION:
-            TextureDescriptorUtils::CopyCompressionParams(folderPathname);
+            TextureDescriptorUtils::CopyCompressionParamsForFolder(folderPathname);
             break;
             
         case ACTION_CREATE_DESCRIPTORS:
-            TextureDescriptorUtils::CreateDescriptors(folderPathname);
+            TextureDescriptorUtils::CreateDescriptorsForFolder(folderPathname);
 			break;
 
-		case ACTION_SET_COMPRESSION:
-			TextureDescriptorUtils::SetCompressionParams(folderPathname, compressionParams, false);
+		case ACTION_SET_COMPRESSION_FOR_FOLDER:
+			TextureDescriptorUtils::SetCompressionParamsForFolder(folderPathname, compressionParams, forceModeEnabled);
 			break;
 
-            
+		case ACTION_SET_COMPRESSION_FOR_DESCRIPTOR:
+			TextureDescriptorUtils::SetCompressionParams(filePathname, compressionParams, forceModeEnabled);
+			break;
+
         default:
             Logger::Error("[TextureDescriptorTool::Process] Unhandled action!");
     }
 }
 
-DAVA::FilePath TextureDescriptorTool::ReadPathnameFromParams() const
+DAVA::FilePath TextureDescriptorTool::ReadFolderPathname() const
 {
 	FilePath folder = CommandLineParser::GetCommandParam(String("-folder"));
 	if(!folder.IsEmpty())
@@ -135,6 +156,11 @@ DAVA::FilePath TextureDescriptorTool::ReadPathnameFromParams() const
 		return folder;
 	}
 
+	return FilePath();
+}
+
+DAVA::FilePath TextureDescriptorTool::ReadFilePathname() const
+{
 	return CommandLineParser::GetCommandParam(String("-file"));
 }
 

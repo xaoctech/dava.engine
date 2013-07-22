@@ -89,7 +89,7 @@ void CreateDefaultDescriptorsAtDataSource3D()
     if(sourceFolder.length() <= dataSourcePathname.GetAbsolutePathname().length())
     {
 //        uint64 creationTime = SystemTimer::Instance()->AbsoluteMS();
-        TextureDescriptorUtils::CreateDescriptors(dataSourcePathname);
+        TextureDescriptorUtils::CreateDescriptorsForFolder(dataSourcePathname);
 //        creationTime = SystemTimer::Instance()->AbsoluteMS() - creationTime;
 //      Logger::Info("[CreateDefaultDescriptors time is %ldms]", creationTime);
     }
