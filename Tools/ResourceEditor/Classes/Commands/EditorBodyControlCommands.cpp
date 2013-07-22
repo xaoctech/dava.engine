@@ -24,6 +24,8 @@
 #include "Scene/SceneEditor2.h"
 #include "Scene/System/CollisionSystem.h"
 
+#include "Scene3D/Components/CustomPropertiesComponent.h"
+
 CommandEntityModification::CommandEntityModification(Command::eCommandType type, CommandList::eCommandId id)
 :	Command(type, id)
 {
@@ -138,7 +140,7 @@ Entity* CommandGroupEntitiesForMultiselect::GetEntityWithSolidProp(Entity* en)
 	Entity* solidEntity = en;
 	while (NULL != solidEntity)
 	{
-		KeyedArchive *customProperties = solidEntity->GetCustomProperties();
+		CustomPropertiesComponent *customProperties = solidEntity->GetCustomProperties();
 		if(customProperties && customProperties->IsKeyExists(String(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME)))
 		{
 			break;

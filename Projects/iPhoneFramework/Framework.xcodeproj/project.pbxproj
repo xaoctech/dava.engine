@@ -51,6 +51,12 @@
 		84E5E0FF174D02EA0001C74F /* OpenUDIDApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 84E5E0FD174D02EA0001C74F /* OpenUDIDApple.mm */; };
 		84E5E102174D02F60001C74F /* OpenUDIDios.h in Headers */ = {isa = PBXBuildFile; fileRef = 84E5E100174D02F60001C74F /* OpenUDIDios.h */; };
 		84E5E103174D02F60001C74F /* OpenUDIDios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 84E5E101174D02F60001C74F /* OpenUDIDios.mm */; };
+		A6E4FDF31761D40200B48E41 /* ActionComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6E4FDEF1761D40200B48E41 /* ActionComponent.cpp */; };
+		A6E4FDF41761D40200B48E41 /* ActionComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = A6E4FDF01761D40200B48E41 /* ActionComponent.h */; };
+		A6E4FDF51761D40200B48E41 /* CustomPropertiesComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6E4FDF11761D40200B48E41 /* CustomPropertiesComponent.cpp */; };
+		A6E4FDF61761D40200B48E41 /* CustomPropertiesComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = A6E4FDF21761D40200B48E41 /* CustomPropertiesComponent.h */; };
+		A6E4FDFB1761D83100B48E41 /* ActionUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6E4FDF91761D83100B48E41 /* ActionUpdateSystem.cpp */; };
+		A6E4FDFC1761D83100B48E41 /* ActionUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A6E4FDFA1761D83100B48E41 /* ActionUpdateSystem.h */; };
 		A667C6691767475000E5AC56 /* SkyBoxNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A667C6671767475000E5AC56 /* SkyBoxNode.cpp */; };
 		A667C66A1767475000E5AC56 /* SkyBoxNode.h in Headers */ = {isa = PBXBuildFile; fileRef = A667C6681767475000E5AC56 /* SkyBoxNode.h */; };
 		A6A1E8691785688600AA3A86 /* CRC32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6A1E8671785688600AA3A86 /* CRC32.cpp */; };
@@ -728,6 +734,12 @@
 		84E5E0FD174D02EA0001C74F /* OpenUDIDApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenUDIDApple.mm; sourceTree = "<group>"; };
 		84E5E100174D02F60001C74F /* OpenUDIDios.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenUDIDios.h; sourceTree = "<group>"; };
 		84E5E101174D02F60001C74F /* OpenUDIDios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenUDIDios.mm; sourceTree = "<group>"; };
+		A6E4FDEF1761D40200B48E41 /* ActionComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActionComponent.cpp; sourceTree = "<group>"; };
+		A6E4FDF01761D40200B48E41 /* ActionComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionComponent.h; sourceTree = "<group>"; };
+		A6E4FDF11761D40200B48E41 /* CustomPropertiesComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CustomPropertiesComponent.cpp; sourceTree = "<group>"; };
+		A6E4FDF21761D40200B48E41 /* CustomPropertiesComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomPropertiesComponent.h; sourceTree = "<group>"; };
+		A6E4FDF91761D83100B48E41 /* ActionUpdateSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActionUpdateSystem.cpp; sourceTree = "<group>"; };
+		A6E4FDFA1761D83100B48E41 /* ActionUpdateSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionUpdateSystem.h; sourceTree = "<group>"; };
 		A667C6671767475000E5AC56 /* SkyBoxNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyBoxNode.cpp; sourceTree = "<group>"; };
 		A667C6681767475000E5AC56 /* SkyBoxNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkyBoxNode.h; sourceTree = "<group>"; };
 		A6A1E8671785688600AA3A86 /* CRC32.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CRC32.cpp; sourceTree = "<group>"; };
@@ -2104,6 +2116,10 @@
 		E8B3C9AC16B9326E002BD35F /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				A6E4FDEF1761D40200B48E41 /* ActionComponent.cpp */,
+				A6E4FDF01761D40200B48E41 /* ActionComponent.h */,
+				A6E4FDF11761D40200B48E41 /* CustomPropertiesComponent.cpp */,
+				A6E4FDF21761D40200B48E41 /* CustomPropertiesComponent.h */,
 				02E9E3E01734176D00C501BC /* SoundComponent.cpp */,
 				02E9E3E11734176D00C501BC /* SoundComponent.h */,
 				CC24801316DD17F300183D40 /* UserComponent.cpp */,
@@ -2137,6 +2153,8 @@
 		E8B3C9FD16B9326E002BD35F /* Systems */ = {
 			isa = PBXGroup;
 			children = (
+				A6E4FDF91761D83100B48E41 /* ActionUpdateSystem.cpp */,
+				A6E4FDFA1761D83100B48E41 /* ActionUpdateSystem.h */,
 				02F6403F173A5A950053F038 /* SoundUpdateSystem.cpp */,
 				02F64040173A5A950053F038 /* SoundUpdateSystem.h */,
 				CCC7A4AC16F1D88C0061EA5D /* UpdateSystem.cpp */,
@@ -2685,6 +2703,9 @@
 				E867917D175F620400C5A6A2 /* GlobalEnum.h in Headers */,
 				E8679181175F621E00C5A6A2 /* GPUFamilyDescriptor.h in Headers */,
 				E8679185175F62D600C5A6A2 /* EnumMap.h in Headers */,
+				A6E4FDF41761D40200B48E41 /* ActionComponent.h in Headers */,
+				A6E4FDF61761D40200B48E41 /* CustomPropertiesComponent.h in Headers */,
+				A6E4FDFC1761D83100B48E41 /* ActionUpdateSystem.h in Headers */,
 				A667C66A1767475000E5AC56 /* SkyBoxNode.h in Headers */,
 				A6A1E86A1785688600AA3A86 /* CRC32.h in Headers */,
 				74338647179D18F60014FBD3 /* UIScrollView.h in Headers */,
@@ -3054,6 +3075,9 @@
 				E867917C175F620400C5A6A2 /* GlobalEnum.cpp in Sources */,
 				E8679180175F621E00C5A6A2 /* GPUFamilyDescriptor.cpp in Sources */,
 				E8679184175F62D600C5A6A2 /* EnumMap.cpp in Sources */,
+				A6E4FDF31761D40200B48E41 /* ActionComponent.cpp in Sources */,
+				A6E4FDF51761D40200B48E41 /* CustomPropertiesComponent.cpp in Sources */,
+				A6E4FDFB1761D83100B48E41 /* ActionUpdateSystem.cpp in Sources */,
 				A667C6691767475000E5AC56 /* SkyBoxNode.cpp in Sources */,
 				A6A1E8691785688600AA3A86 /* CRC32.cpp in Sources */,
 				74338646179D18F60014FBD3 /* UIScrollView.cpp in Sources */,
