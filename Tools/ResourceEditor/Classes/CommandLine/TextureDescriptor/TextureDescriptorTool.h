@@ -55,6 +55,7 @@ protected:
 	DAVA::FilePath filePathname;
 
 	bool forceModeEnabled;
+	bool convertEnabled;
     
 	DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> compressionParams;
 };

@@ -26,12 +26,12 @@ void TextureDescriptorTool::PrintUsage()
 {
     printf("\n");
     printf("-texdescriptor [-resave] [-copycompression] [-create] [-folder [folder for action with descriptors]]\n");
-	printf("-texdescriptor [-setcompression] [-file [descriptors folderPathname]] [-folder [folder with descriptors]] [-gpuName gpuValue] [-f]\n");
+	printf("-texdescriptor [-setcompression] [-file [descriptors folderPathname]] [-folder [folder with descriptors]] [-gpuName gpuValue] [-f] [-convert]\n");
     printf("\tDo different operations with *.tex files\n");
     printf("\t-resave - resave all *.tex with new format\n");
     printf("\t-copycompression - copy compressionParams parameters from PowerVR_iOS to other gpus\n");
     printf("\t-create - create *.tex for *.png if need\n");
-	printf("\t-setcompression - set compressionParams parameters for *tex or for all *text in folder. -f enables force mode\n");
+	printf("\t-setcompression - set compressionParams parameters for *tex or for all *text in folder. -f enables force mode. -convert runs convertation to selected format\n");
     
     printf("\n");
     printf("Samples:\n");
@@ -39,7 +39,7 @@ void TextureDescriptorTool::PrintUsage()
     printf("-texdescriptor -copycompression -folder /Users/User/Project/DataSource/3d/\n");
     printf("-texdescriptor -create -folder /Users/User/Project/DataSource/3d/\n");
 	printf("-texdescriptor -setcompression -file /Users/User/Project/DataSource/3d/Tanks/images/a-20.tex -PowerVR_iOS PVR4 -tegra DXT1 -mali ETC1 -adreno RGBA4444\n");
-	printf("-texdescriptor -setcompression -folder /Users/User/Project/DataSource/3d/Tanks/images/ -PowerVR_iOS PVR4 -tegra DXT1 -mali ETC1 -adreno RGBA4444 -f\n");
+	printf("-texdescriptor -setcompression -folder /Users/User/Project/DataSource/3d/Tanks/images/ -PowerVR_iOS PVR4 -tegra DXT1 -mali ETC1 -adreno RGBA4444 -f -convert\n");
 }
 
 DAVA::String TextureDescriptorTool::GetCommandLineKey()
@@ -86,6 +86,8 @@ bool TextureDescriptorTool::InitializeFromCommandLine()
 		}
 
 		forceModeEnabled = CommandLineParser::CommandIsFound("-f");
+		convertEnabled = CommandLineParser::CommandIsFound("-convert");
+
 		ReadCompressionParams();
 	}
     else
@@ -112,6 +114,22 @@ void TextureDescriptorTool::ReadCompressionParams()
 			compression.format = Texture::GetPixelFormatByName(formatName);
 			compression.compressToWidth = compression.compressToHeight = 0;
 
+
+			String widthStr = CommandLineParser::GetCommandParamAdditional(gpuFlag, 1);
+			String heightStr = CommandLineParser::GetCommandParamAdditional(gpuFlag, 2);
+
+			if(!widthStr.empty() && !heightStr.empty())
+			{
+				compression.compressToWidth = atoi(widthStr.c_str());
+				compression.compressToHeight = atoi(heightStr.c_str());
+
+				if(compression.compressToWidth < 0 || compression.compressToHeight < 0)
+				{
+					Logger::Error("[TextureDescriptorTool::ReadCompressionParams] Wrong size parameters for flag: %s", gpuFlag.c_str());
+					compression.compressToWidth = compression.compressToHeight = 0;
+				}
+			}
+
 			compressionParams[gpu] = compression;
 		}
 	}
@@ -135,15 +153,16 @@ void TextureDescriptorTool::Process()
 			break;
 
 		case ACTION_SET_COMPRESSION_FOR_FOLDER:
-			TextureDescriptorUtils::SetCompressionParamsForFolder(folderPathname, compressionParams, forceModeEnabled);
+			TextureDescriptorUtils::SetCompressionParamsForFolder(folderPathname, compressionParams, convertEnabled, forceModeEnabled);
 			break;
 
 		case ACTION_SET_COMPRESSION_FOR_DESCRIPTOR:
-			TextureDescriptorUtils::SetCompressionParams(filePathname, compressionParams, forceModeEnabled);
+			TextureDescriptorUtils::SetCompressionParams(filePathname, compressionParams, convertEnabled, forceModeEnabled);
 			break;
 
         default:
             Logger::Error("[TextureDescriptorTool::Process] Unhandled action!");
+			break;
     }
 }
 

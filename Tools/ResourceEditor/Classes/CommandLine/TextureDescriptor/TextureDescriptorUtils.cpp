@@ -16,6 +16,8 @@
 
 #include "TextureDescriptorUtils.h"
 
+#include "Classes/ImageTools/ImageTools.h"
+
 void TextureDescriptorUtils::ResaveDescriptorsForFolder(const FilePath &folderPathname)
 {
 	FileList * fileList = new FileList(folderPathname);
@@ -133,7 +135,7 @@ void TextureDescriptorUtils::CreateDescriptorIfNeed(const FilePath &pngPathname)
     }
 }
 
-void TextureDescriptorUtils::SetCompressionParamsForFolder( const FilePath &folderPathname, const DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> & compressionParams, bool force )
+void TextureDescriptorUtils::SetCompressionParamsForFolder( const FilePath &folderPathname, const DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> & compressionParams, bool convertionEnabled, bool force )
 {
 	FileList * fileList = new FileList(folderPathname);
 	if(!fileList) return;
@@ -143,11 +145,11 @@ void TextureDescriptorUtils::SetCompressionParamsForFolder( const FilePath &fold
 		const FilePath &pathname = fileList->GetPathname(fi);
 		if(IsCorrectDirectory(fileList, fi))
 		{
-			SetCompressionParamsForFolder(pathname, compressionParams, force);
+			SetCompressionParamsForFolder(pathname, compressionParams, convertionEnabled, force);
 		}
 		else if(IsDescriptorPathname(pathname))
 		{
-			SetCompressionParams(pathname, compressionParams, force);
+			SetCompressionParams(pathname, compressionParams, convertionEnabled, force);
 		}
 	}
 
@@ -155,7 +157,7 @@ void TextureDescriptorUtils::SetCompressionParamsForFolder( const FilePath &fold
 }
 
 
-void TextureDescriptorUtils::SetCompressionParams( const FilePath &descriptorPathname, const DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> & compressionParams, bool force)
+void TextureDescriptorUtils::SetCompressionParams( const FilePath &descriptorPathname, const DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> & compressionParams, bool convertionEnabled, bool force)
 {
 	TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
 	if(!descriptor) return;
@@ -168,6 +170,11 @@ void TextureDescriptorUtils::SetCompressionParams( const FilePath &descriptorPat
 		if(force || (descriptor->compression[gpu].format == FORMAT_INVALID))
 		{
 			descriptor->compression[gpu] = it->second;
+
+			if(convertionEnabled)
+			{
+				ImageTools::ConvertImage(descriptor, gpu, (PixelFormat)descriptor->compression[gpu].format);
+			}
 		}
 	}
 
