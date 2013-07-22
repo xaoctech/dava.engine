@@ -101,8 +101,25 @@ public:
      */
 	void DrawCircle(const Vector3 & center, float32 radius);
 	
-	// polygon & line helper functions
+	/**
+        \brief Draws circle in 3D space on XYZ plane
+        \param center center of the circle
+		\param emVector direction vector of the circle
+        \param radius radius of the circle
+		\param useFilling flag that indicates if figure have to be filled with current color
+		
+     */	 
+	void DrawCircle3D(const Vector3 & center, const Vector3 &directionVector, float32 radius, bool useFilling = false);
 
+	/**
+        \brief Draws cylinder in 3D space on XY plane
+        \param center center of the cylinder
+        \param radius radius of the cylinder
+		\param useFilling flag that indicates if figure have to be filled with current color
+     */
+	void DrawCylinder(const Vector3 & center, float32 radius, bool useFilling = false);
+	
+	// polygon & line helper functions
 	
     /**
         \brief Draws all concecutive lines from given polygon
