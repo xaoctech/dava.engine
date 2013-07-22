@@ -1,5 +1,9 @@
 package com.dava.framework;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -258,7 +262,6 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 		nativeOnAccelerometer(x, y, z);
 	}
     
-    static boolean inputFilterRes = false;
     private void InitEditText(EditText editText, Rect rect)
     {
 		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(rect.width(), rect.height());
@@ -282,32 +285,35 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 			@Override
 			public CharSequence filter(final CharSequence source, final int start, final int end,
 					Spanned dest, final int dstart, final int dend) {
-				if (source.length() > 1)
-					return source;
-				
-				inputFilterRes = false;
-				final Object mutex = new Object();
-				synchronized (mutex) {
-					glView.queueEvent(new Runnable() {
-						public void run() {
-							inputFilterRes = JNITextField.TextFieldKeyPressed(dstart, dend - dstart, source.toString());
-							synchronized (mutex) {
-								mutex.notify();
-							}
-						}
-					});
-					try {
-						mutex.wait();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+				Callable<Boolean> b = new Callable<Boolean>() {
+					
+					@Override
+					public Boolean call() throws Exception {
+						return JNITextField.TextFieldKeyPressed(dstart, dend - dstart, source.toString());
 					}
+				};
+				
+				FutureTask<Boolean> t = new FutureTask<Boolean>(b);
+				
+				glView.queueEvent(t);
+				
+				while (!t.isDone()) {
+					Thread.yield();
 				}
-				if (inputFilterRes)
-					return source;
+				
+				try {
+					if (t.get())
+						return source;
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					e.printStackTrace();
+				}
+				
 				return "";
 			}
 		};
-        editText.setFilters(new InputFilter[]{inputFilter});
+		editText.setFilters(new InputFilter[]{inputFilter});
 
 		editText.setOnEditorActionListener(new OnEditorActionListener() {
 			
