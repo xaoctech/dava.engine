@@ -184,6 +184,9 @@
     <Filter Include="Classes\Deprecated">
       <UniqueIdentifier>{b383f0c0-b1f2-483d-9f28-a261d8afc960}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\CommandLine\TextureDescriptor">
+      <UniqueIdentifier>{0a088ade-5d9f-4b54-9645-040c63c435f8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1746,6 +1749,12 @@
     <ClCompile Include="..\..\Sources\Tools\TexturePacker\FramePathHelper.cpp">
       <Filter>Tools\TexturePacker</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorTool.cpp">
+      <Filter>Classes\CommandLine\TextureDescriptor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorUtils.cpp">
+      <Filter>Classes\CommandLine\TextureDescriptor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3076,6 +3085,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Tools\TexturePacker\FramePathHelper.h">
       <Filter>Tools\TexturePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorTool.h">
+      <Filter>Classes\CommandLine\TextureDescriptor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorUtils.h">
+      <Filter>Classes\CommandLine\TextureDescriptor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

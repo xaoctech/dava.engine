@@ -141,3 +141,24 @@ void TextureDescriptorUtils::CreateDescriptorIfNeed(const FilePath &pngPathname)
     }
 }
 
+void TextureDescriptorUtils::SetCompressionParams( const FilePath &filePathname, const DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> & compressionParams, bool force)
+{
+	TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(filePathname);
+	if(!descriptor) return;
+
+	auto endIt = compressionParams.end();
+	for(auto it = compressionParams.begin(); it != endIt; ++it)
+	{
+		eGPUFamily gpu = it->first;
+		const TextureDescriptor::Compression & compression = it->second;
+
+		if(force || descriptor->compression[gpu].format == FORMAT_INVALID)
+		{
+			descriptor->compression[gpu] = compression;
+		}
+	}
+
+	descriptor->Save();
+	SafeRelease(descriptor);
+}
+
