@@ -23,11 +23,14 @@ public:
 	void TestFunction(PerfFuncData * data);
 
 private:
+	UIButton* testButton;
 	UIWebView* webView1;
 	UIWebView* webView2;
 
 	bool testFinished;
 	float onScreenTime;
+
+	void ButtonPressed(BaseObject *obj, void *data, void *callerData);
 };
 
 #endif /* defined(__TEMPLATEPROJECTIPHONE__TRANSPARENTWEBVIEWTEST__) */
