@@ -28,6 +28,8 @@
 		02F64042173A5A950053F038 /* SoundUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 02F64040173A5A950053F038 /* SoundUpdateSystem.h */; };
 		1799E51A16CCEBDA0058061F /* ParticleForce.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1799E51816CCEBDA0058061F /* ParticleForce.cpp */; };
 		1799E51B16CCEBDA0058061F /* ParticleForce.h in Headers */ = {isa = PBXBuildFile; fileRef = 1799E51916CCEBDA0058061F /* ParticleForce.h */; };
+		17D30ADD1799793E007A4594 /* UIDismissionHandlerAlertView.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D30ADB1799793E007A4594 /* UIDismissionHandlerAlertView.h */; };
+		17D30ADE1799793E007A4594 /* UIDismissionHandlerAlertView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17D30ADC1799793E007A4594 /* UIDismissionHandlerAlertView.mm */; };
 		17F53E2F16D36FF3004D5099 /* IWebViewControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F53E2C16D36FF3004D5099 /* IWebViewControl.h */; };
 		17F53E3016D36FF3004D5099 /* UIWebView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17F53E2D16D36FF3004D5099 /* UIWebView.cpp */; };
 		17F53E3116D36FF3004D5099 /* UIWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F53E2E16D36FF3004D5099 /* UIWebView.h */; };
@@ -703,6 +705,8 @@
 		02F64040173A5A950053F038 /* SoundUpdateSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundUpdateSystem.h; sourceTree = "<group>"; };
 		1799E51816CCEBDA0058061F /* ParticleForce.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleForce.cpp; sourceTree = "<group>"; };
 		1799E51916CCEBDA0058061F /* ParticleForce.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleForce.h; sourceTree = "<group>"; };
+		17D30ADB1799793E007A4594 /* UIDismissionHandlerAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDismissionHandlerAlertView.h; sourceTree = "<group>"; };
+		17D30ADC1799793E007A4594 /* UIDismissionHandlerAlertView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UIDismissionHandlerAlertView.mm; sourceTree = "<group>"; };
 		17F53E2C16D36FF3004D5099 /* IWebViewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IWebViewControl.h; sourceTree = "<group>"; };
 		17F53E2D16D36FF3004D5099 /* UIWebView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIWebView.cpp; sourceTree = "<group>"; };
 		17F53E2E16D36FF3004D5099 /* UIWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIWebView.h; sourceTree = "<group>"; };
@@ -1571,6 +1575,8 @@
 				CC247FEE16D69F1700183D40 /* DVAssertMessageApple.mm */,
 				CC247FEF16D69F1700183D40 /* UIAlertView_Modal.h */,
 				CC247FF016D69F1700183D40 /* UIAlertView_Modal.m */,
+				17D30ADB1799793E007A4594 /* UIDismissionHandlerAlertView.h */,
+				17D30ADC1799793E007A4594 /* UIDismissionHandlerAlertView.mm */,
 				E8B3C80516B9326D002BD35F /* Backtrace.cpp */,
 				E8B3C80616B9326D002BD35F /* Backtrace.h */,
 				E8B3C80716B9326D002BD35F /* DVAssert.h */,
@@ -2683,6 +2689,7 @@
 				A6A1E86A1785688600AA3A86 /* CRC32.h in Headers */,
 				74338647179D18F60014FBD3 /* UIScrollView.h in Headers */,
 				74338649179D18F60014FBD3 /* UIScrollViewContainer.h in Headers */,
+				17D30ADD1799793E007A4594 /* UIDismissionHandlerAlertView.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3051,6 +3058,7 @@
 				A6A1E8691785688600AA3A86 /* CRC32.cpp in Sources */,
 				74338646179D18F60014FBD3 /* UIScrollView.cpp in Sources */,
 				74338648179D18F60014FBD3 /* UIScrollViewContainer.cpp in Sources */,
+				17D30ADE1799793E007A4594 /* UIDismissionHandlerAlertView.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
