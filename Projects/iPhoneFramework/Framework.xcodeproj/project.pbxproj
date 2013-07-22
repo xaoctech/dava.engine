@@ -39,6 +39,12 @@
 		5C77ABBF14C7703800E92D28 /* libpng_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C77ABBE14C7703800E92D28 /* libpng_ios.a */; };
 		5C97964714E3E75000FFFA14 /* libxml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964514E3E75000FFFA14 /* libxml_ios.a */; };
 		5C97964814E3E75000FFFA14 /* libyaml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964614E3E75000FFFA14 /* libyaml_ios.a */; };
+		7433865D179D1E170014FBD3 /* UIScrollView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 74338659179D1E170014FBD3 /* UIScrollView.cpp */; };
+		7433865E179D1E170014FBD3 /* UIScrollView.h in Headers */ = {isa = PBXBuildFile; fileRef = 7433865A179D1E170014FBD3 /* UIScrollView.h */; };
+		7433865F179D1E170014FBD3 /* UIScrollViewContainer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7433865B179D1E170014FBD3 /* UIScrollViewContainer.cpp */; };
+		74338660179D1E170014FBD3 /* UIScrollViewContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = 7433865C179D1E170014FBD3 /* UIScrollViewContainer.h */; };
+		74338669179D1E8E0014FBD3 /* CRC32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 74338667179D1E8E0014FBD3 /* CRC32.cpp */; };
+		7433866A179D1E8E0014FBD3 /* CRC32.h in Headers */ = {isa = PBXBuildFile; fileRef = 74338668179D1E8E0014FBD3 /* CRC32.h */; };
 		840ED3C916D506F900D2BA6C /* DPIHelperiOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 840ED3C816D506F900D2BA6C /* DPIHelperiOS.mm */; };
 		840ED3CB16D5070400D2BA6C /* DPIHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 840ED3CA16D5070400D2BA6C /* DPIHelper.h */; };
 		84E5E0FE174D02EA0001C74F /* OpenUDIDApple.h in Headers */ = {isa = PBXBuildFile; fileRef = 84E5E0FC174D02EA0001C74F /* OpenUDIDApple.h */; };
@@ -706,6 +712,12 @@
 		5C77ABBE14C7703800E92D28 /* libpng_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng_ios.a; path = ../../Libs/libs/libpng_ios.a; sourceTree = "<group>"; };
 		5C97964514E3E75000FFFA14 /* libxml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml_ios.a; path = ../../Libs/libs/libxml_ios.a; sourceTree = "<group>"; };
 		5C97964614E3E75000FFFA14 /* libyaml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyaml_ios.a; path = ../../Libs/libs/libyaml_ios.a; sourceTree = "<group>"; };
+		74338659179D1E170014FBD3 /* UIScrollView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIScrollView.cpp; sourceTree = "<group>"; };
+		7433865A179D1E170014FBD3 /* UIScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIScrollView.h; sourceTree = "<group>"; };
+		7433865B179D1E170014FBD3 /* UIScrollViewContainer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIScrollViewContainer.cpp; sourceTree = "<group>"; };
+		7433865C179D1E170014FBD3 /* UIScrollViewContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIScrollViewContainer.h; sourceTree = "<group>"; };
+		74338667179D1E8E0014FBD3 /* CRC32.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CRC32.cpp; sourceTree = "<group>"; };
+		74338668179D1E8E0014FBD3 /* CRC32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRC32.h; sourceTree = "<group>"; };
 		840ED3C816D506F900D2BA6C /* DPIHelperiOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DPIHelperiOS.mm; sourceTree = "<group>"; };
 		840ED3CA16D5070400D2BA6C /* DPIHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DPIHelper.h; sourceTree = "<group>"; };
 		84E5E0FC174D02EA0001C74F /* OpenUDIDApple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenUDIDApple.h; sourceTree = "<group>"; };
@@ -2211,6 +2223,10 @@
 				E8B3CA5416B9326E002BD35F /* UIMoveInTransition.h */,
 				E8B3CA5516B9326E002BD35F /* UIPopup.cpp */,
 				E8B3CA5616B9326E002BD35F /* UIPopup.h */,
+				74338659179D1E170014FBD3 /* UIScrollView.cpp */,
+				7433865A179D1E170014FBD3 /* UIScrollView.h */,
+				7433865B179D1E170014FBD3 /* UIScrollViewContainer.cpp */,
+				7433865C179D1E170014FBD3 /* UIScrollViewContainer.h */,
 				E8B3CA5716B9326E002BD35F /* UIScreen.cpp */,
 				E8B3CA5816B9326E002BD35F /* UIScreen.h */,
 				E8B3CA5916B9326E002BD35F /* UIScreenManager.h */,
@@ -2244,6 +2260,8 @@
 		E8B3CA7016B9326E002BD35F /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				74338667179D1E8E0014FBD3 /* CRC32.cpp */,
+				74338668179D1E8E0014FBD3 /* CRC32.h */,
 				E8B3CA7116B9326E002BD35F /* HTTPDownloader.h */,
 				E8B3CA7216B9326E002BD35F /* HTTPDownloader.mm */,
 				E8B3CA7416B9326E002BD35F /* MD5.cpp */,
@@ -2655,6 +2673,9 @@
 				E867917D175F620400C5A6A2 /* GlobalEnum.h in Headers */,
 				E8679181175F621E00C5A6A2 /* GPUFamilyDescriptor.h in Headers */,
 				E8679185175F62D600C5A6A2 /* EnumMap.h in Headers */,
+				7433865E179D1E170014FBD3 /* UIScrollView.h in Headers */,
+				74338660179D1E170014FBD3 /* UIScrollViewContainer.h in Headers */,
+				7433866A179D1E8E0014FBD3 /* CRC32.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3019,6 +3040,9 @@
 				E867917C175F620400C5A6A2 /* GlobalEnum.cpp in Sources */,
 				E8679180175F621E00C5A6A2 /* GPUFamilyDescriptor.cpp in Sources */,
 				E8679184175F62D600C5A6A2 /* EnumMap.cpp in Sources */,
+				7433865D179D1E170014FBD3 /* UIScrollView.cpp in Sources */,
+				7433865F179D1E170014FBD3 /* UIScrollViewContainer.cpp in Sources */,
+				74338669179D1E8E0014FBD3 /* CRC32.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
