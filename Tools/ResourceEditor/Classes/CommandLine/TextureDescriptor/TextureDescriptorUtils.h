@@ -28,9 +28,9 @@ public:
     static void ResaveDescriptorsForFolder(const FilePath &folderPathname);
 	static void CopyCompressionParamsForFolder(const FilePath &folderPathname);
     static void CreateDescriptorsForFolder(const FilePath &folderPathname);
-	static void SetCompressionParamsForFolder(const FilePath &folderPathname, const DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> & compressionParams, bool force);
+	static void SetCompressionParamsForFolder(const FilePath &folderPathname, const DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> & compressionParams, bool convertionEnabled, bool force);
 
-	static void SetCompressionParams(const FilePath &descriptorPathname, const DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> & compressionParams, bool force);
+	static void SetCompressionParams(const FilePath &descriptorPathname, const DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> & compressionParams, bool convertionEnabled, bool force);
     static void CreateDescriptorIfNeed(const FilePath &pngPathname);
     
 private:
