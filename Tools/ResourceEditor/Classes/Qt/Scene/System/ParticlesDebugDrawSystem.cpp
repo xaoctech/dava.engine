@@ -28,8 +28,6 @@
 #include "Particles/ParticleEmitter.h"
 #include "Scene3D/Components/RenderComponent.h"
 
-#define DEFAULT_EFFECT_SIZE 0.5f
-
 ParticlesDebugDrawSystem::ParticlesDebugDrawSystem(DAVA::Scene * scene)
 	: DAVA::SceneSystem(scene)
 {
@@ -65,27 +63,27 @@ void ParticlesDebugDrawSystem::DrawDebugInfoForEmitter(DAVA::Entity* parentEntit
 			DAVA::AABBox3 entityCenterBox = entity->GetWTMaximumBoundingBoxSlow();
 			DAVA::Vector3 center = entityCenterBox.GetCenter();				
 			// Get sphere radius (size) of debug effect
-			DAVA::float32 radius = GetDebugDrawRadius(entitySizeBox) * 2;
+			DAVA::float32 radius = GetDebugDrawRadius(entitySizeBox);
 			
 			DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.9f, 0.9f, 0.9f, 0.35f));
 			DAVA::RenderHelper::Instance()->FillDodecahedron(center, radius);
 		}
+		DAVA::RenderManager::Instance()->ResetColor();
 	}
 }
 
 DAVA::float32 ParticlesDebugDrawSystem::GetDebugDrawRadius(DAVA::AABBox3 entitySizeBox)
 {
-	DAVA::float32 drawRadius = 0.1f;
-	DAVA::float32 currentMax = 0.0f;
-			
-	currentMax = Max(currentMax, Abs(entitySizeBox.max.x));
-	currentMax = Max(currentMax, Abs(entitySizeBox.max.y));
-	currentMax = Max(currentMax, Abs(entitySizeBox.max.z));
-	currentMax = Max(currentMax, Abs(entitySizeBox.min.x));
-	currentMax = Max(currentMax, Abs(entitySizeBox.min.y));
-	currentMax = Max(currentMax, Abs(entitySizeBox.min.z));
+	DAVA::float32 drawRadius;
+	// The radius of sphere - should be equal half-size of box edge
+	DAVA::float32 sizeX = (Abs(entitySizeBox.max.x) + Abs(entitySizeBox.min.x)) / 2;
+	DAVA::float32 sizeY = (Abs(entitySizeBox.max.y) + Abs(entitySizeBox.min.y)) / 2;
+	DAVA::float32 sizeZ = (Abs(entitySizeBox.max.z) + Abs(entitySizeBox.min.z)) / 2;
+	// We should get minimuz size - the figure edges may not be equal
+	drawRadius = Min(sizeX, sizeY);
+	drawRadius = Min(drawRadius, sizeZ);
 	
-	return Max(drawRadius, currentMax);
+	return drawRadius;
 }
 
 void ParticlesDebugDrawSystem::Draw()
@@ -120,31 +118,27 @@ void ParticlesDebugDrawSystem::Draw()
 				if (emitter)
 				{
 					DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.7f, 0.0f, 0.0f, 0.25f));
+					// Always draw emission vector arrow for emitter
+					DrawVectorArrow(emitter, center);
+					
 					switch (emitter->emitterType)
 					{
 						case DAVA::ParticleEmitter::EMITTER_ONCIRCLE_VOLUME:
 						case DAVA::ParticleEmitter::EMITTER_ONCIRCLE_EDGES:
 						case DAVA::ParticleEmitter::EMITTER_SHOCKWAVE:
 						{
-							float emitterRadius = DEFAULT_EFFECT_SIZE;
-							if (emitter->radius)
-							{
-								emitterRadius = emitter->radius->GetValue(emitter->GetLifeTime());
-							}
-							DAVA::RenderHelper::Instance()->FillDodecahedron(center, emitterRadius);
+							DrawSizeCircle(emitter, center);
 						}
 						break;
 					
 						case DAVA::ParticleEmitter::EMITTER_RECT:
 						{
 							DrawSizeBox(emitter, center);
-							DrawVectorArrow(emitter, center);
 						}
 						break;
 					
 						case DAVA::ParticleEmitter::EMITTER_POINT:
 						{
-							DrawVectorArrow(emitter, center);
 							DAVA::RenderHelper::Instance()->FillDodecahedron(center, 0.05f);
 						}
 						break;
@@ -157,17 +151,35 @@ void ParticlesDebugDrawSystem::Draw()
 	DAVA::RenderManager::Instance()->ResetColor();
 }
 
+void ParticlesDebugDrawSystem::DrawSizeCircle(DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
+{
+	float32 emitterRadius = 0.0f;
+	DAVA::Vector3 emitterVector;
+							
+	if (emitter->radius)
+	{
+		emitterRadius = emitter->radius->GetValue(emitter->GetTime());
+	}
+
+	if (emitter->emissionVector)
+	{
+		emitterVector = emitter->emissionVector->GetValue(emitter->GetTime());
+	}
+							
+	DAVA::RenderHelper::Instance()->DrawCircle3D(center, emitterVector, emitterRadius, true);
+}
+
 void ParticlesDebugDrawSystem::DrawSizeBox(DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
 {
 	// Default value of emitter size
-	DAVA::Vector3 emitterSize(DEFAULT_EFFECT_SIZE, DEFAULT_EFFECT_SIZE, DEFAULT_EFFECT_SIZE);
+	DAVA::Vector3 emitterSize;
 
 	DAVA::Vector3 min;
 	DAVA::Vector3 max;
 	
 	if (emitter->size)
 	{
-		emitterSize = emitter->size->GetValue(emitter->GetLifeTime());
+		emitterSize = emitter->size->GetValue(emitter->GetTime());
 	}
 	
 	float halfSizeX = emitterSize.x / 2;
@@ -188,12 +200,12 @@ void ParticlesDebugDrawSystem::DrawSizeBox(DAVA::ParticleEmitter *emitter, DAVA:
 
 void ParticlesDebugDrawSystem::DrawVectorArrow(DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
 {
-	DAVA::Vector3 emitterVector(1.0f, 1.0f, 1.0f);
+	DAVA::Vector3 emitterVector;
 	DAVA::float32 arrowBaseSize = 5.0f;
 				
 	if (emitter->emissionVector)
 	{
-		emitterVector = emitter->emissionVector->GetValue(emitter->GetLifeTime());
+		emitterVector = emitter->emissionVector->GetValue(emitter->GetTime());
 	}
 	
 	DAVA::float32 scale = 1.0f;

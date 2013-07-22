@@ -103,8 +103,6 @@ void FormatsTest::Update(float32 timeElapsed)
 
 bool FormatsTest::RunTest(int32 testNum)
 {
-	DVWARNING(false, "This is just a WARNING - execution continues after closing");
-
 	TestTemplate<FormatsTest>::RunTest(testNum);
 	return testFinished;
 }
