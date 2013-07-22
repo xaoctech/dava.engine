@@ -21,10 +21,10 @@
 #include "TimeLineWidget.h"
 #include "GradientPickerWidget.h"
 #include "BaseParticleEditorContentWidget.h"
+#include "Tools/EventFilterDoubleSpinBox/EventFilterDoubleSpinBox.h"
 
 #include <QWidget>
 #include <QVBoxLayout>
-#include <QDoubleSpinBox>
 #include <QLabel>
 #include <QPushButton>
 #include <QLineEdit>
@@ -78,6 +78,7 @@ private:
 	QCheckBox* enableCheckBox;
 	QCheckBox* additiveCheckBox;
 	QCheckBox* isLongCheckBox;
+	QCheckBox* isLoopedCheckBox;
 
 	QLabel* layerTypeLabel;
 	QComboBox* layerTypeComboBox;
@@ -117,8 +118,8 @@ private:
 	GradientPickerWidget* colorRandomGradient;
 	GradientPickerWidget* colorOverLifeGradient;
 
-	QDoubleSpinBox* startTimeSpin;
-	QDoubleSpinBox* endTimeSpin;
+	EventFilterDoubleSpinBox* startTimeSpin;
+	EventFilterDoubleSpinBox* endTimeSpin;
 	
 	bool blockSignals;
 

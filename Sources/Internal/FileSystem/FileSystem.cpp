@@ -21,17 +21,27 @@
 #include "FileSystem/ResourceArchive.h"
 
 
-#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
+#if defined(__DAVAENGINE_MACOS__)
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/errno.h>
 #include <copyfile.h>
+#include <libproc.h>
+#include <libgen.h>
+#elif defined(__DAVAENGINE_IPHONE__)
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/errno.h>
+#include <copyfile.h>
+#include <libgen.h>
+#include <sys/sysctl.h>
 #elif defined(__DAVAENGINE_WIN32__)
 #include <direct.h>
 #include <io.h> 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <Shlobj.h>
+#include <tchar.h>
 #elif defined(__DAVAENGINE_ANDROID__)
 #include "Platform/TemplateAndroid/CorePlatformAndroid.h"
 #include <unistd.h>
@@ -45,6 +55,7 @@ namespace DAVA
 {
 
 	
+
 FileSystem::FileSystem()
 {
 }
@@ -360,6 +371,23 @@ const FilePath & FileSystem::GetCurrentWorkingDirectory()
 	return currentWorkingDirectory;
 }
 
+FilePath FileSystem::GetCurrentExecutableDirectory()
+{
+    char tempDir[2048];
+    FilePath currentExecuteDirectory;
+#if defined(__DAVAENGINE_WIN32__)
+    ::GetModuleFileNameA( NULL, tempDir, 2048 );
+    currentExecuteDirectory = FilePath(tempDir).GetDirectory();
+#elif defined(__DAVAENGINE_MACOS__)
+    proc_pidpath(getpid(), tempDir, sizeof(tempDir));
+    currentExecuteDirectory = FilePath(dirname(tempDir));
+#elif defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+	DVASSERT(0);
+#endif //PLATFORMS
+	currentExecuteDirectory.MakeDirectoryPathname();
+	return currentExecuteDirectory;
+}
+
 bool FileSystem::SetCurrentWorkingDirectory(const FilePath & newWorkingDirectory)
 {
     DVASSERT(newWorkingDirectory.IsDirectoryPathname());
@@ -530,15 +558,40 @@ void FileSystem::AttachArchive(const String & archiveName, const String & attach
 	resourceArchiveList.push_back(item);
 }
 
+
 int32 FileSystem::Spawn(const String& command)
 {
-#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__) 
-	return std::system(command.c_str());
-#else
-	return 0;
-#endif
-}
+	int32 retCode = 0;
+#if defined(__DAVAENGINE_MACOS__)
+	retCode = std::system(command.c_str());
+#elif defined(__DAVAENGINE_WIN32__) 
 
+	/* std::system calls "start" command from Windows command line
+	Start help:
+	Starts a separate window to run a specified program or command.
+
+	START ["title"] [/D path] [/I] [/MIN] [/MAX] [/SEPARATE | /SHARED]
+	[/LOW | /NORMAL | /HIGH | /REALTIME | /ABOVENORMAL | /BELOWNORMAL]
+	[/NODE <NUMA node>] [/AFFINITY <hex affinity mask>] [/WAIT] [/B]
+	[command/program] [parameters]
+
+	If we use "" for path to executable, start resolves it as title. So we need to specify call of start
+	http://stackoverflow.com/questions/5681055/how-do-i-start-a-windows-program-with-spaces-in-the-path-from-perl
+
+	*/
+
+ 	String startString = "start \"\" /WAIT " + command;
+	retCode = std::system(startString.c_str());
+#endif
+
+	if(retCode != 0)
+
+	{
+		Logger::Warning("[FileSystem::Spawn] command (%s) has return code (%d)", command.c_str(), retCode);
+	}
+
+	return retCode;
+}
 
     
 }

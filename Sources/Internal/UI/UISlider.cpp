@@ -102,10 +102,12 @@ void UISlider::AddControl(DAVA::UIControl *control)
 	else if (control->GetName() == UISLIDER_MIN_SPRITE_CONTROL_NAME)
 	{
 		bgMin = control;
+		PostInitBackground(bgMin);
 	}
 	else if (control->GetName() == UISLIDER_MAX_SPRITE_CONTROL_NAME)
 	{
 		bgMax = control;
+		PostInitBackground(bgMax);
 	}
 }
 		
@@ -116,6 +118,8 @@ void UISlider::InitMinBackground()
 		bgMin = new UIControl(this->GetRect());
 		bgMin->SetName(UISLIDER_MIN_SPRITE_CONTROL_NAME);
 		UIControl::AddControl(bgMin);
+		
+		PostInitBackground(bgMin);
 	}
 }
 
@@ -126,6 +130,8 @@ void UISlider::InitMaxBackground()
 		bgMax = new UIControl(this->GetRect());
 		bgMax->SetName(UISLIDER_MAX_SPRITE_CONTROL_NAME);
 		UIControl::AddControl(bgMax);
+		
+		PostInitBackground(bgMin);
 	}
 }
 
@@ -148,6 +154,16 @@ void UISlider::ReleaseAllSubcontrols()
 		RemoveControl(bgMax);
 		SafeRelease(bgMax);
 	}
+}
+
+void UISlider::InitInactiveParts(Sprite* spr)
+{
+	if(NULL == spr)
+	{
+		return;
+	}
+
+	leftInactivePart = rightInactivePart = (int32)((spr->GetWidth() / 2.0f) + 1.0f); /* 1 px added to align it and make touches easier, with default setup */
 }
 
 void UISlider::SetThumb(UIControl *newThumb)
@@ -178,16 +194,13 @@ UISlider::~UISlider()
 void UISlider::SetThumbSprite(Sprite * sprite, int32 frame)
 {
 	thumbButton->SetSprite(sprite, frame);
-	if (sprite)
-	{
-		leftInactivePart = rightInactivePart = (int32)((sprite->GetWidth() / 2.0f) + 1.0f); /* 1 px added to align it and make touches easier, with default setup */
-	}
+	InitInactiveParts(sprite);
 }
 
 void UISlider::SetThumbSprite(const FilePath & spriteName, int32 frame)
 {
 	thumbButton->SetSprite(spriteName, frame);
-	leftInactivePart = rightInactivePart = (int32)((thumbButton->GetBackground()->GetSprite()->GetWidth() / 2.0f) + 1.0f); /* 1 px added to align it and make touches easier, with default setup */
+	InitInactiveParts(thumbButton->GetBackground()->GetSprite());
 }
 
 void UISlider::SetMinSprite(Sprite * sprite, int32 frame)
@@ -571,11 +584,13 @@ void UISlider::CopyDataFrom(UIControl *srcControl)
 	{
 		bgMin = t->bgMin->Clone();
 		AddControl(bgMin);
+		PostInitBackground(bgMin);
 	}
 	if (t->bgMax)
 	{
 		bgMax = t->bgMax->Clone();
 		AddControl(bgMax);
+		PostInitBackground(bgMax);
 	}
 	
 	clipPointRelative = t->clipPointRelative;
@@ -595,6 +610,7 @@ void UISlider::AttachToSubcontrols()
 	{
 		thumbButton = FindByName(UISLIDER_THUMB_SPRITE_CONTROL_NAME);
 		DVASSERT(thumbButton);
+		InitInactiveParts(thumbButton->GetBackground()->GetSprite());
 	}
 	
 	if (!bgMin)
@@ -608,7 +624,10 @@ void UISlider::AttachToSubcontrols()
 		bgMax = FindByName(UISLIDER_MAX_SPRITE_CONTROL_NAME);
 		DVASSERT(bgMax);
 	}
-	
+
+	PostInitBackground(bgMin);
+	PostInitBackground(bgMax);
+
 	// All the controls will be released in the destructor, so need to addref.
 	SafeRetain(thumbButton);
 	SafeRetain(bgMin);
@@ -623,6 +642,20 @@ List<UIControl*> UISlider::GetSubcontrols()
 	AddControlToList(subControls, UISLIDER_MAX_SPRITE_CONTROL_NAME);
 
 	return subControls;
+}
+
+void UISlider::PostInitBackground(UIControl* backgroundControl)
+{
+	if (!backgroundControl)
+	{
+		return;
+	}
+	
+	// UISlider's background are drawn in specific way, so they have to be
+	// positioned to (0.0) coordinates to avoid input interception. See pls
+	// DF-1379 for details.
+	backgroundControl->SetInputEnabled(false);
+	backgroundControl->SetPosition(Vector2(0.0f, 0.0f));
 }
 	
 } // ns

@@ -25,6 +25,10 @@
 
 #include "Render/GPUFamilyDescriptor.h"
 
+#include "../StringConstants.h"
+
+#include "../Qt/Main/QtUtils.h"
+
 using namespace DAVA;
 
 SceneExporter::SceneExporter()
@@ -36,19 +40,6 @@ SceneExporter::~SceneExporter()
 {
 }
 
-
-void SceneExporter::CleanFolder(const FilePath &folderPathname, Set<String> &errorLog)
-{
-    bool ret = FileSystem::Instance()->DeleteDirectory(folderPathname);
-    if(!ret)
-    {
-        bool folderExists = FileSystem::Instance()->IsDirectory(folderPathname);
-        if(folderExists)
-        {
-            errorLog.insert(String(Format("[CleanFolder] ret = %d, folder = %s", ret, folderPathname.GetAbsolutePathname().c_str())));
-        }
-    }
-}
 
 void SceneExporter::SetInFolder(const FilePath &folderPathname)
 {
@@ -154,7 +145,7 @@ void SceneExporter::RemoveEditorNodes(DAVA::Entity *rootNode)
     for (Vector<Entity *>::reverse_iterator it = scenenodes.rbegin(); it != endItDeletion; ++it)
     {
         Entity * node = *it;
-		String::size_type pos = node->GetName().find(String("editor."));
+		String::size_type pos = node->GetName().find(ResourceEditor::EDITOR_BASE);
         if(String::npos != pos)
         {
             node->GetParent()->RemoveNode(node);
@@ -361,8 +352,6 @@ void SceneExporter::ExportLandscapeFullTiledTexture(Landscape *landscape, Set<St
 
 
 
-
-
 void SceneExporter::CompressTextureIfNeed(const TextureDescriptor * descriptor, Set<String> &errorLog)
 {
     if(descriptor->exportedAsGpuFamily == GPU_UNKNOWN)
@@ -382,12 +371,14 @@ void SceneExporter::CompressTextureIfNeed(const TextureDescriptor * descriptor, 
         
         const String & extension = GPUFamilyDescriptor::GetCompressedFileExtension((eGPUFamily)descriptor->exportedAsGpuFamily, (PixelFormat)descriptor->exportedAsPixelFormat);
         
-        if(extension == ".png")
+        if(extension == ".pvr")
         {
+            DeleteOldPVRTextureIfPowerVr_IOS(descriptor, (eGPUFamily)descriptor->exportedAsGpuFamily);
             PVRConverter::Instance()->ConvertPngToPvr(*descriptor, (eGPUFamily)descriptor->exportedAsGpuFamily);
         }
         else if(extension == ".dds")
         {
+            DeleteOldDXTTextureIfTegra(descriptor, (eGPUFamily)descriptor->exportedAsGpuFamily);
             DXTConverter::ConvertPngToDxt(*descriptor, (eGPUFamily)descriptor->exportedAsGpuFamily);
         }
         else

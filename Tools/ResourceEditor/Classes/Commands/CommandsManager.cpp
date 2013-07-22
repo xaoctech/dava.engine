@@ -131,7 +131,8 @@ void CommandsManager::Execute(Command *command, DAVA::Scene* forScene)
             break;
     }
 
-	QtMainWindowHandler::Instance()->UpdateUndoActionsState();
+	// TODO: mainwindow
+	//QtMainWindowHandler::Instance()->UpdateUndoActionsState();
 }
 
 void CommandsManager::ExecuteAndRelease(Command* command, DAVA::Scene* forScene)
@@ -155,7 +156,8 @@ void CommandsManager::Undo(DAVA::Scene* forScene)
 
 		--queue->commandIndex;
 
-		QtMainWindowHandler::Instance()->UpdateUndoActionsState();
+		// TODO: mainwindow
+		//QtMainWindowHandler::Instance()->UpdateUndoActionsState();
 	}
 }
 
@@ -222,10 +224,6 @@ String CommandsManager::GetRedoCommandName(DAVA::Scene* forScene)
 
 CommandsManager::UndoQueue* CommandsManager::GetQueueForScene(DAVA::Scene *scene)
 {
-	if (!scene)
-	{
-		scene = SceneDataManager::Instance()->SceneGetActive()->GetScene();
-	}
 	DVASSERT(scene);
 
 	UndoQueue* res;
@@ -246,10 +244,6 @@ CommandsManager::UndoQueue* CommandsManager::GetQueueForScene(DAVA::Scene *scene
 
 void CommandsManager::EmitCommandExecutedSignal(Command* command, Scene* scene)
 {
-	if (!scene)
-	{
-		scene = SceneDataManager::Instance()->SceneGetActive()->GetScene();
-	}
 	DVASSERT(scene);
 
 	Set<Entity*> entities = command->GetAffectedEntities();

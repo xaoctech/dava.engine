@@ -18,9 +18,10 @@
 #define __QT_SCENE_TREE_MODEL_H__
 
 #include <QPair>
+#include <QMap>
 #include <QStandardItemModel>
 
-#include "Scene/SceneEditorProxy.h"
+#include "Scene/SceneEditor2.h"
 #include "Qt/DockSceneTree/SceneTreeItem.h"
 
 // framework
@@ -31,23 +32,68 @@ class SceneTreeModel : public QStandardItemModel
 	Q_OBJECT
 
 public:
+	static const char* mimeFormatEntity;
+	static const char* mimeFormatLayer;
+	static const char* mimeFormatForce;
+
 	SceneTreeModel(QObject* parent = 0);
 	~SceneTreeModel();
 
-	void SetScene(SceneEditorProxy *scene);
-	SceneEditorProxy* GetScene() const;
+	void SetScene(SceneEditor2 *scene);
+	SceneEditor2* GetScene() const;
 
-	QModelIndex GetEntityIndex(DAVA::Entity *entity) const;
-	DAVA::Entity* GetEntity(const QModelIndex &index) const;
+	QModelIndex GetIndex(DAVA::Entity *entity) const;
+	QModelIndex GetIndex(DAVA::ParticleLayer *layer) const;
+	QModelIndex GetIndex(DAVA::ParticleForce *force) const;
+
+	SceneTreeItem* GetItem(const QModelIndex &index) const;
+
+	void SetSolid(const QModelIndex &index, bool solid);
+	bool GetSolid(const QModelIndex &index) const;
+
+	void SetLocked(const QModelIndex &index, bool locked);
+	bool GetLocked(const QModelIndex &index) const;
 
 	// drag and drop support
 	Qt::DropActions supportedDropActions() const;
 	QMimeData *	mimeData(const QModelIndexList & indexes) const;
 	QStringList	mimeTypes() const;
 	bool dropMimeData(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent);
+	bool DropCanBeAccepted(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent) const;
+	bool DropAccepted() const;
 
 protected:
-	SceneEditorProxy * curScene;
+	enum DropType
+	{
+		DropingUnknown = -1,
+		DropingMixed = 0,
+
+		DropingEntity,
+		DropingLayer,
+		DropingForce
+	};
+
+	SceneEditor2 * curScene;
+	bool dropAccepted;
+
+	QMap<DAVA::Entity*, QModelIndex> indexesCacheEntities;
+	QMap<DAVA::ParticleLayer*, QModelIndex> indexesCacheLayers;
+	QMap<DAVA::ParticleForce*, QModelIndex> indexesCacheForces;
+
+	void ResyncStructure(QStandardItem *item, DAVA::Entity *entity);
+
+	void RebuildIndexesCache();
+	void AddIndexesCache(SceneTreeItem *item);
+
+	bool AreSameType(const QModelIndexList & indexes) const;
+	int GetDropType(const QMimeData *data) const;
+
+	QMimeData* EncodeMimeData(const QVector<void*> &data, const QString &format) const;
+	QVector<void*>* DecodeMimeData(const QMimeData* data, const QString &format) const;
+
+protected slots:
+	void ItemChanged(QStandardItem * item);
+	void StructureChanged(SceneEditor2 *scene, DAVA::Entity *parent);
 };
 
 #endif // __QT_SCENE_TREE_MODEL_H__

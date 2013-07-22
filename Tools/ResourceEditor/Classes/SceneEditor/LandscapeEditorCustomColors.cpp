@@ -21,6 +21,7 @@
 #include "PropertyControlCreator.h"
 #include "EditorScene.h"
 #include "EditorConfig.h"
+#include "EditorSettings.h"
 
 #include "HeightmapNode.h"
 
@@ -397,7 +398,8 @@ void LandscapeEditorCustomColors::HideAction()
 	SafeRelease(texSurf);
 	SafeRelease(circleTexture);
 	
-	QtMainWindowHandler::Instance()->SetCustomColorsWidgetsState(false);
+	// TODO: mainwindow
+	//QtMainWindowHandler::Instance()->SetCustomColorsWidgetsState(false);
 }
 
 void LandscapeEditorCustomColors::ShowAction()
@@ -429,7 +431,8 @@ void LandscapeEditorCustomColors::ShowAction()
 
 	PerformLandscapeDraw();
 
-	QtMainWindowHandler::Instance()->SetCustomColorsWidgetsState(true);
+	// TODO: mainwindow
+	//QtMainWindowHandler::Instance()->SetCustomColorsWidgetsState(true);
 }
 
 void LandscapeEditorCustomColors::SaveTextureAction(const FilePath &pathToFile)
@@ -607,7 +610,7 @@ void LandscapeEditorCustomColors::SaveTexture()
 {
 	if (unsavedChanges)
 	{
-		CommandsManager::Instance()->ExecuteAndRelease(new CommandSaveTextureCustomColors());
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandSaveTextureCustomColors(), workingScene);
 	}
 	Close();
 }
@@ -639,7 +642,7 @@ void LandscapeEditorCustomColors::CreateUndoPoint()
 	if (originalTexture)
 	{
 		Image* newTexture = StoreState();
-		CommandsManager::Instance()->ExecuteAndRelease(new CommandDrawCustomColors(originalTexture, newTexture));
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandDrawCustomColors(originalTexture, newTexture), workingScene);
 		SafeRelease(originalTexture);
 		SafeRelease(newTexture);
 	}

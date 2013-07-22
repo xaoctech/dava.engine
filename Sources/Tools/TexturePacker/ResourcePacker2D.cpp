@@ -13,6 +13,9 @@
 #include <magick/MagickCore.h>
 #include <magick/property.h>
 
+#include "Render/GPUFamilyDescriptor.h"
+#include "FramePathHelper.h"
+
 namespace DAVA
 {
 
@@ -38,11 +41,15 @@ void ResourcePacker2D::InitFolders(const FilePath & inputPath,const FilePath & o
     
 void ResourcePacker2D::PackResources(eGPUFamily forGPU)
 {
-	Logger::Debug("Input: %s \nOutput: %s \nExclude: %s",
+	Logger::Debug("Input: %s \nOutput: %s \nExclude: %s\n",
                   inputGfxDirectory.GetAbsolutePathname().c_str(),
                   outputGfxDirectory.GetAbsolutePathname().c_str(),
                   excludeDirectory.GetAbsolutePathname().c_str());
 
+    if(CommandLineParser::Instance()->GetVerbose())
+        printf("For GPU: %s \n", GPUFamilyDescriptor::GetGPUName(forGPU).c_str());
+
+    
 	requestedGPUFamily = forGPU;
     
 	isGfxModified = false;
@@ -166,11 +173,7 @@ DefinitionFile * ResourcePacker2D::ProcessPSD(const FilePath & processDirectoryP
 {
     DVASSERT(processDirectoryPath.IsDirectoryPathname());
     
-	int32 maxTextureSize = 1024;
-	if (CommandLineParser::Instance()->IsFlagSet("--tsize2048"))
-	{
-		maxTextureSize = 2048;
-	}
+	int32 maxTextureSize = TexturePacker::TEXTURE_SIZE;
 	
 	// TODO: Check CRC32
 	Vector<Magick::Image> layers;
@@ -204,11 +207,10 @@ DefinitionFile * ResourcePacker2D::ProcessPSD(const FilePath & processDirectoryP
 			
 			currentLayer.crop(Magick::Geometry(width,height, 0, 0));
 			currentLayer.magick("PNG");
-			FilePath outputFile = FilePath::CreateWithNewExtension(psdNameWithoutExtension, String(Format("%d.png", k - 1)));
+			FilePath outputFile = FramePathHelper::GetFramePathRelative(psdNameWithoutExtension, k - 1);
 			currentLayer.write(outputFile.GetAbsolutePathname());
 		}
-		
-		
+
 		DefinitionFile * defFile = new DefinitionFile;
 		defFile->filename = FilePath::CreateWithNewExtension(psdNameWithoutExtension, ".txt");
 		defFile->spriteWidth = width;
@@ -289,14 +291,20 @@ void ResourcePacker2D::ProcessFlags(const FilePath & flagsPathname)
 	{
 		Logger::Error("Failed to open file: %s", flagsPathname.GetAbsolutePathname().c_str());
 	}
-	char flagsTmpBuffer[4096];
+	char flagsTmpBuffer[4096] = {0};
 	int flagsSize = 0;
 	while(!file->IsEof())
 	{
-		char c;
+		char c = 0x00;
 		int32 readSize = file->Read(&c, 1);
 		if (readSize == 1)
 		{
+			// Terminate reading if end-of-line is detected.
+			if (c == 0x0D || c == 0x0A)
+			{
+				break;
+			}
+
 			flagsTmpBuffer[flagsSize++] = c;
 		}	
 	}
@@ -399,6 +407,7 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 		//	printf("[Directory changed - rebuild: %s]\n", inputGfxDirectory.c_str());
 	}
 
+	bool needPackResourcesInThisDir = true;
 	if (modified)
 	{
 		FileSystem::Instance()->DeleteDirectoryFiles(outputPath, false);
@@ -412,6 +421,13 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 				{
                     //TODO: check if we need filename or pathname
 					DefinitionFile * defFile = ProcessPSD(processDirectoryPath, fullname, fullname.GetFilename());
+					if (!defFile)
+					{
+						// An error occured while converting this PSD file - cancel converting in this directory.
+						needPackResourcesInThisDir = false;
+						break;
+					}
+
 					definitionFileList.push_back(defFile);
 				}
 				else if(isLightmapsPacking && fullname.IsEqualToExtension(".png"))
@@ -436,7 +452,7 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 		}
 
 		// 
-		if (definitionFileList.size() > 0 && modified)
+		if (needPackResourcesInThisDir && definitionFileList.size() > 0 && modified)
 		{
 			TexturePacker packer;
 			if(isLightmapsPacking)

@@ -37,6 +37,8 @@ SetSwitchIndexView::~SetSwitchIndexView()
 
 void SetSwitchIndexView::Init()
 {
+	// TODO: mainwindow
+	/*
 	QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
 	connect(this, SIGNAL(Clicked(DAVA::uint32, DAVA::SetSwitchIndexHelper::eSET_SWITCH_INDEX)), handler, SLOT(ToggleSetSwitchIndex(DAVA::uint32, DAVA::SetSwitchIndexHelper::eSET_SWITCH_INDEX)));
 	connect(ui->btnOK, SIGNAL(clicked()), this, SLOT(Clicked()));
@@ -48,7 +50,7 @@ void SetSwitchIndexView::Init()
 		ui->btnOK);
 
 	handler->SetSwitchIndexWidgetsState(true);
-	
+	*/	
 }
 
 void SetSwitchIndexView::Clicked()

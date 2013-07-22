@@ -152,8 +152,16 @@ void HierarchyTreePlatformNode::ActivatePlatform()
 {
 	if (rootNode)
 	{
-		String bundleName = rootNode->GetProjectDir().toStdString();
-		FilePath::SetBundleName(bundleName);
+		FilePath bundleName(rootNode->GetProjectDir().toStdString());
+        bundleName.MakeDirectoryPathname();
+        
+        List<FilePath> resFolders = FilePath::GetResourcesFolders();
+        List<FilePath>::const_iterator searchIt = find(resFolders.begin(), resFolders.end(), bundleName);
+        
+        if(searchIt == resFolders.end())
+        {
+            FilePath::AddResourcesFolder(bundleName);
+        }
 	}
 }
 
@@ -320,11 +328,14 @@ bool HierarchyTreePlatformNode::SaveLocalization(YamlNode* platform)
     }
 
 	// YuriCoder, 2013/04/23. Localization path must be absolute.
+	if(this->localizationPath.IsEmpty())
+	{
+		return false;
+	}
 	this->localizationPath.MakeDirectoryPathname();
 
 	//TODO VK: Fix FilePath::GetFrameworkPath()
-	String pathname = this->localizationPath.GetRelativePathname(FilePath::GetBundleName());
-	pathname.replace(0, 4, "~res:");
+	String pathname = this->localizationPath.GetFrameworkPath();
 
     platform->Set(LOCALIZATION_PATH_NODE, pathname);
     platform->Set(LOCALIZATION_LOCALE_NODE, locale);

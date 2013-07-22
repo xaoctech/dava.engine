@@ -16,47 +16,58 @@
 
 #include "TextureBrowser/TextureCache.h"
 
-
-QImage TextureCache::getOriginal(const DAVA::TextureDescriptor *descriptor)
+DAVA::Vector<QImage> TextureCache::getOriginal(const DAVA::TextureDescriptor *descriptor)
 {
-	QImage img;
+	DAVA::Vector<QImage> images;
 
 	if(NULL != descriptor && cacheOriginal.contains(descriptor))
 	{
-		img = cacheOriginal[descriptor];
+		images = cacheOriginal[descriptor];
 	}
 
-	return img;
+	return images;
 }
 
-QImage TextureCache::getConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu)
+DAVA::Vector<QImage> TextureCache::getConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu)
 {
-	QImage img;
+	DAVA::Vector<QImage> images;
 
 	if( NULL != descriptor &&
 		gpu > DAVA::GPU_UNKNOWN && gpu < DAVA::GPU_FAMILY_COUNT &&
 		cacheConverted[gpu].contains(descriptor))
 	{
-		img = cacheConverted[gpu][descriptor];
+		images = cacheConverted[gpu][descriptor];
 	}
 
-	return img;
+	return images;
 }
 
-void TextureCache::setOriginal(const DAVA::TextureDescriptor *descriptor, const QImage &image)
+void TextureCache::setOriginal(const DAVA::TextureDescriptor *descriptor, DAVA::Vector<QImage>& images)
 {
 	if(NULL != descriptor)
 	{
-		cacheOriginal[descriptor] = image;
+		DAVA::Vector<QImage> tmpImages;
+		for(int i = 0; i < images.size(); ++i)
+		{
+			tmpImages.push_back(images[i]);
+		}
+		
+		cacheOriginal[descriptor] = tmpImages;
 	}
 }
 
-void TextureCache::setConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, const QImage &image)
+void TextureCache::setConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, DAVA::Vector<QImage>& images)
 {
 	if( NULL != descriptor && 
 		gpu > DAVA::GPU_UNKNOWN && gpu < DAVA::GPU_FAMILY_COUNT)
 	{
-		cacheConverted[gpu][descriptor] = image;
+		DAVA::Vector<QImage> tmpImages;
+		for(int i = 0; i < images.size(); ++i)
+		{
+			tmpImages.push_back(images[i]);
+		}
+
+		cacheConverted[gpu][descriptor] = tmpImages;
 	}
 }
 

@@ -40,6 +40,8 @@ void CommandCreateNodeSceneEditor::Execute()
 		if(screen)
 		{
 			screen->FindCurrentBody()->bodyControl->AddNode(node);
+            
+            SceneDataManager::Instance()->SceneGetActive()->RebuildSceneGraph();
 		}
 	}
 	else

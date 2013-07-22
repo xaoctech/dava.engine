@@ -58,9 +58,6 @@ public:
     int32 GetScreenHeight();
     void SetScreenHeight(int32 height);
     
-    float32 GetAutosaveTime();
-    void SetAutosaveTime(float32 time);
-    
     String GetLanguage();
     void SetLanguage(const String &language);
     
@@ -98,6 +95,12 @@ public:
 	Color GetMaterialSpecularColor();
 
 	FilePath GetParticlesConfigsPath();
+    
+//     bool GetShowEditorCamerLight();
+//     void SetShowEditorCamerLight(bool show);
+    
+    void SetPreviewDialogEnabled(bool enabled);
+    bool GetPreviewDialogEnabled();
     
 protected:
 

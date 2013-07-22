@@ -160,6 +160,11 @@ void UIList::ScrollToElement(int32 index)
 	}
     SetScrollPosition(newScrollPos);
 }
+
+void UIList::SetOrientation(eListOrientation _orientation)
+{
+	orientation = _orientation;
+}
     
 float32 UIList::GetScrollPosition()
 {
@@ -356,7 +361,7 @@ void UIList::Update(float32 timeElapsed)
             }
             else 
             {
-                borderPos = (int32)(viewRect.dy + viewRect.dy / 22.0f);
+                borderPos = (int32)(viewRect.dy + viewRect.dy / 2.0f);
                 off = (int32)scrollContainer->GetRect().y;
                 rPos = (int32)(fc->GetRect().y + fc->GetRect().dy + off);
             }
@@ -668,6 +673,15 @@ UIControl *UIList::Clone()
 	return c;
 }
 
+void UIList::CopyDataFrom(UIControl *srcControl)
+{
+	UIControl::CopyDataFrom(srcControl);
+	UIList* t = (UIList*) srcControl;
+	InitAfterYaml();
+	aggregatorPath = t->aggregatorPath;
+	orientation = t->orientation;
+}
+
 const FilePath & UIList::GetAggregatorPath()
 {
 	return aggregatorPath;
@@ -712,7 +726,7 @@ YamlNode * UIList::SaveToYamlNode(UIYamlLoader * loader)
 	// Save aggregator path only if it is not empty
 	if (!aggregatorPath.IsEmpty())
 	{
-		node->Set("aggregatorPath", aggregatorPath.GetAbsolutePathname());
+		node->Set("aggregatorPath", aggregatorPath.GetFrameworkPath());
 	}
     
 	return node;

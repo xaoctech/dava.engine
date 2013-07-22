@@ -59,9 +59,8 @@ public:
 	SceneData*			SceneGetActive();
 	SceneData*			SceneGetLevel();
 	SceneData*			SceneGet(DAVA::int32 index);
+	SceneData*			SceneGet(DAVA::Scene *scene);
 	DAVA::int32			SceneCount();
-	void				SceneShowPreview(const FilePath &path);
-	void				SceneHidePreview();
     
 	void				TextureCompressAllNotCompressed();
 	void				TextureReloadAll(DAVA::eGPUFamily forGPU);
@@ -130,7 +129,7 @@ protected:
 
 	// Apply the default fog settings for the new entity.
 	void ApplyDefaultFogSettings(Landscape* landscape, DAVA::Entity *entity);
-
+    
 protected:
     SceneData *currentScene;
     DAVA::List<SceneData *>scenes;
@@ -144,6 +143,11 @@ protected:
     };
 	
     DAVA::Vector<AddedNode> nodesToAdd;
+    
+    //Deprecated
+public:
+    void SceneShowPreview(const FilePath &path);
+    void SceneHidePreview();
 };
 
 #endif // __SCENE_DATA_MANAGER_H__

@@ -21,9 +21,12 @@
 #include "Render/Highlevel/Camera.h"
 #include "UI/UIEvent.h"
 
+#include "Commands2/Command2.h"
+
 class SceneCameraSystem : public DAVA::SceneSystem
 {
-	friend class SceneEditorProxy;
+	friend class SceneEditor2;
+	friend class EditorLightSystem;
 
 public:
 	SceneCameraSystem(DAVA::Scene * scene);
@@ -38,13 +41,18 @@ public:
 	void SetViewportRect(const DAVA::Rect &rect);
 	const DAVA::Rect GetViewportRect();
 
+	void LookAt(const DAVA::AABBox3 &box);
+	void MoveTo(const DAVA::Vector3 &pos, const DAVA::Vector3 &direction = DAVA::Vector3());
+
 	DAVA::Vector2 GetScreenPos(const DAVA::Vector3 &pos3);
 	DAVA::Vector3 GetScenePos(const DAVA::float32 x, const DAVA::float32 y, const DAVA::float32 z);
 
 protected:
 	void Update(DAVA::float32 timeElapsed);
-	void ProcessUIEvent(DAVA::UIEvent *event);
 	void Draw();
+
+	void ProcessUIEvent(DAVA::UIEvent *event);
+	void ProcessCommand(const Command2 *command, bool redo);
 
 protected:
 	DAVA::Rect viewportRect;
@@ -55,6 +63,11 @@ protected:
 	DAVA::Vector2 rotateStartPoint;
 	DAVA::Vector2 rotateStopPoint;
 
+	bool animateToNewPos;
+	DAVA::float32 animateToNewPosTime;
+	DAVA::Vector3 newPos;
+	DAVA::Vector3 newDir;
+
 	DAVA::float32 curViewAngleZ, curViewAngleY;
 	const DAVA::float32 maxViewAngle;
 
@@ -64,6 +77,8 @@ protected:
 	void MouseMoveCameraPosition();
 	void MouseMoveCameraDirection();
 	void MouseMoveCameraPosAroundPoint(const DAVA::Vector3 &point);
+
+	void MoveAnimate(DAVA::float32 timeElapsed);
 };
 
 #endif

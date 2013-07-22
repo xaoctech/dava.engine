@@ -22,6 +22,7 @@
 #include "Scene/System/HoodSystem/MoveHood.h"
 #include "Scene/System/HoodSystem/ScaleHood.h"
 #include "Scene/System/HoodSystem/RotateHood.h"
+#include "Commands2/Command2.h"
 
 // bullet
 #include "bullet/btBulletCollisionCommon.h"
@@ -34,7 +35,7 @@ class SceneCameraSystem;
 
 class HoodSystem : public DAVA::SceneSystem
 {
-	friend class SceneEditorProxy;
+	friend class SceneEditor2;
 
 public:
 	HoodSystem(DAVA::Scene * scene, SceneCameraSystem *camSys);
@@ -54,14 +55,13 @@ public:
 	void SetScale(DAVA::float32 scale);
 	DAVA::float32 GetScale() const;
 
-	void Lock();
-	void Unlock();
-
-	void Show();
-	void Hide();
+	void LockScale(bool lock);
+	void LockModif(bool lock);
+	void Show(bool show);
 
 protected:
-	bool locked;
+	bool lockedScale;
+	bool lockedModif;
 	bool visible;
 
 	ST_ModifMode curMode;
@@ -74,8 +74,10 @@ protected:
 	SceneCameraSystem *cameraSystem;
 
 	virtual void Update(float timeElapsed);
-	void ProcessUIEvent(DAVA::UIEvent *event);
 	void Draw();
+
+	void ProcessUIEvent(DAVA::UIEvent *event);
+	void ProcessCommand(const Command2 *command, bool redo);
 
 	void AddCollObjects(const DAVA::Vector<HoodCollObject*>* objects);
 	void RemCollObjects(const DAVA::Vector<HoodCollObject*>* objects);

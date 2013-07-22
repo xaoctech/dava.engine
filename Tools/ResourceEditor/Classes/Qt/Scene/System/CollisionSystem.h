@@ -20,6 +20,7 @@
 #include <QMap>
 #include "Scene/EntityGroup.h"
 #include "Scene/SceneTypes.h"
+#include "Commands2/Command2.h"
 
 // bullet
 #include "bullet/btBulletCollisionCommon.h"
@@ -36,7 +37,7 @@ class SceneCollisionDebugDrawer;
 
 class SceneCollisionSystem : public DAVA::SceneSystem
 {
-	friend class SceneEditorProxy;
+	friend class SceneEditor2;
 	friend class EntityModificationSystem;
 
 public:
@@ -51,15 +52,19 @@ public:
 	const EntityGroup* ObjectsRayTest(const DAVA::Vector3 &from, const DAVA::Vector3 &to);
 	const EntityGroup* ObjectsRayTestFromCamera();
 
-	DAVA::Vector3 LandRayTest(const DAVA::Vector3 &from, const DAVA::Vector3 &to);
-	DAVA::Vector3 LandRayTestFromCamera();
+	bool LandRayTest(const DAVA::Vector3 &from,
+					 const DAVA::Vector3 &to,
+					 DAVA::Vector3& intersectionPoint);
+	bool LandRayTestFromCamera(DAVA::Vector3& intersectionPoint);
 
 	void UpdateCollisionObject(DAVA::Entity *entity);
 
 protected:
 	void Update(DAVA::float32 timeElapsed);
-	void ProcessUIEvent(DAVA::UIEvent *event);
 	void Draw();
+
+	void ProcessUIEvent(DAVA::UIEvent *event);
+	void ProcessCommand(const Command2 *command, bool redo);
 
 	virtual void AddEntity(DAVA::Entity * entity);
 	virtual void RemoveEntity(DAVA::Entity * entity);
@@ -77,6 +82,7 @@ protected:
 	DAVA::Vector3 lastLandRayFrom;
 	DAVA::Vector3 lastLandRayTo;
 	DAVA::Vector3 lastLandCollision;
+	bool lastResult;
 
 	btDefaultCollisionConfiguration* objectsCollConf;
 	btCollisionDispatcher* objectsCollDisp;
@@ -93,7 +99,7 @@ protected:
 	QMap<DAVA::Entity*, CollisionBaseObject*> entityToCollision;
 	QMap<btCollisionObject*, DAVA::Entity*> collisionToEntity;
 
-	void BuildFromEntity(DAVA::Entity * entity);
+	CollisionBaseObject* BuildFromEntity(DAVA::Entity * entity);
 	void DestroyFromEntity(DAVA::Entity * entity);
 };
 

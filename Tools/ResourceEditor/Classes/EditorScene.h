@@ -22,6 +22,8 @@
 #include "bullet/btBulletDynamicsCommon.h"
 #include "BulletObject.h"
 
+#include "Scene/System/EditorLightSystem.h"
+
 using namespace DAVA;
 
 static const FastName LAYER_ARROWS("ArrowsRenderLayer");
@@ -37,6 +39,7 @@ public:
     virtual void Update(float32 timeElapsed);
 	virtual void RemoveNode(Entity * node);
 	void UpdateBullet(Entity * curr);
+	void RemoveBullet(Entity * curr);
 
     btCollisionWorld *collisionWorld;
 	btCollisionWorld *landCollisionWorld;
@@ -75,10 +78,11 @@ public:
     
     const RenderManager::Stats & GetRenderStats() const;
     
-protected:
-    void SetNodeDebugFlags(Entity *selectedNode, uint32 flags);
-    void SetForceLodLayerRecursive(Entity *node, int32 layer);
+	void AddEditorEntity(Entity *editorEntity);
 
+protected:
+    void SetForceLodLayerRecursive(Entity *node, int32 layer);
+    
     btDefaultCollisionConfiguration* collisionConfiguration;
 	btCollisionDispatcher* dispatcher;
 	btAxisSweep3* broadphase;
@@ -102,6 +106,11 @@ protected:
 	btBroadphaseProxy* originalHandler;
     
     RenderManager::Stats renderStats;
+    
+public:
+
+    EditorLightSystem *editorLightSystem;
+
 };
 
 #endif

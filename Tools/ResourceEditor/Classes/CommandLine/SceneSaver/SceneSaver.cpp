@@ -18,6 +18,7 @@
 #include "SceneEditor/SceneValidator.h"
 
 #include "Qt/Scene/SceneDataManager.h"
+#include "../StringConstants.h"
 
 #include "Scene3D/Components/CustomPropertiesComponent.h"
 
@@ -79,8 +80,6 @@ void SceneSaver::SaveFile(const String &fileName, Set<String> &errorLog)
 
 void SceneSaver::ResaveFile(const String &fileName, Set<String> &errorLog)
 {
-    DVASSERT(0);    //TODO: check save
-
 	Logger::Info("[SceneSaver::ResaveFile] %s", fileName.c_str());
 
 	FilePath sc2Filename = sceneUtils.dataSourceFolder + fileName;
@@ -194,9 +193,9 @@ void SceneSaver::CopyTexture(const FilePath &texturePathname, Set<String> &error
 void SceneSaver::CopyReferencedObject( Entity *node, Set<String> &errorLog )
 {
 	CustomPropertiesComponent *customProperties = node->GetCustomProperties();
-	if(customProperties && customProperties->IsKeyExists("editor.referenceToOwner"))
+	if(customProperties && customProperties->IsKeyExists(ResourceEditor::EDITOR_REFERENCE_TO_OWNER))
 	{
-		String path = customProperties->GetString("editor.referenceToOwner");
+		String path = customProperties->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
 		sceneUtils.CopyFile(path, errorLog);
 	}
 	for (int i = 0; i < node->GetChildrenCount(); i++)

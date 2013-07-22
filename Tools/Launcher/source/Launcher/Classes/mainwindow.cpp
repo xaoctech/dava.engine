@@ -23,16 +23,17 @@
 #include "processhelper.h"
 #include "settings.h"
 
-#define LAUNCER_VER "0.87"
+#define LAUNCER_VER "0.87.5"
 
 #define COLUMN_NAME 0
 #define COLUMN_CUR_VER 1
 #define COLUMN_NEW_VER 2
 
 #define ST_TAB 0
-#define QA_TAB 1
-#define DEV_TAB 2
-#define DEP_TAB 3
+#define TM_TAB 1
+#define QA_TAB 2
+#define DEV_TAB 3
+#define DEP_TAB 4
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -54,21 +55,34 @@ MainWindow::MainWindow(QWidget *parent) :
     m_pUpdateTimer->start(Settings::GetInstance()->GetUpdateTimerInterval());
 
     ui->stableTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    ui->toMasterTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
     ui->testTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
     ui->developmentTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
     ui->dependenciesTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
     ui->stableTable->verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+    ui->toMasterTable->verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
     ui->testTable->verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
     ui->developmentTable->verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
     ui->dependenciesTable->verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
 
     connect(ui->stableTable, SIGNAL(itemSelectionChanged()), this, SLOT(UpdateBtn()));
+    connect(ui->toMasterTable, SIGNAL(itemSelectionChanged()), this, SLOT(UpdateBtn()));
     connect(ui->testTable, SIGNAL(itemSelectionChanged()), this, SLOT(UpdateBtn()));
     connect(ui->dependenciesTable, SIGNAL(itemSelectionChanged()), this, SLOT(UpdateBtn()));
     connect(ui->developmentTable, SIGNAL(itemSelectionChanged()), this, SLOT(UpdateBtn()));
     connect(ui->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(UpdateBtn()));
 
+    connect(ui->stableTable, SIGNAL(itemClicked(QTableWidgetItem *)), this, SLOT(tableItemClicked(QTableWidgetItem *)));
+    connect(ui->stableTable, SIGNAL(itemChanged(QTableWidgetItem *)), this, SLOT(tableItemChanged(QTableWidgetItem *)));
+    connect(ui->toMasterTable, SIGNAL(itemClicked(QTableWidgetItem *)), this, SLOT(tableItemClicked(QTableWidgetItem *)));
+    connect(ui->toMasterTable, SIGNAL(itemChanged(QTableWidgetItem *)), this, SLOT(tableItemChanged(QTableWidgetItem *)));
+    connect(ui->testTable, SIGNAL(itemClicked(QTableWidgetItem *)), this, SLOT(tableItemClicked(QTableWidgetItem *)));
+    connect(ui->testTable, SIGNAL(itemChanged(QTableWidgetItem *)), this, SLOT(tableItemChanged(QTableWidgetItem *)));
+    connect(ui->developmentTable, SIGNAL(itemClicked(QTableWidgetItem *)), this, SLOT(tableItemClicked(QTableWidgetItem *)));
+    connect(ui->developmentTable, SIGNAL(itemChanged(QTableWidgetItem *)), this, SLOT(tableItemChanged(QTableWidgetItem *)));
+
     connect(ui->stableTable, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_btnRun_clicked()));
+    connect(ui->toMasterTable, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_btnRun_clicked()));
     connect(ui->testTable, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_btnRun_clicked()));
     connect(ui->developmentTable, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_btnRun_clicked()));
 
@@ -77,6 +91,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->downloadProgress->setVisible(false);
     ui->downloadProgress->setRange(0, 100);
 
+    isTablesFilling = false;
     m_bBusy = false;
     UpdateBtn();
     m_pInstaller->Init();
@@ -86,12 +101,27 @@ MainWindow::~MainWindow() {
     delete ui;
 }
 
+void MainWindow::tableItemClicked(QTableWidgetItem * item)
+{
+    if(!isTablesFilling)
+        lastSelectedValue = item->text();
+}
+
+void MainWindow::tableItemChanged(QTableWidgetItem * item)
+{
+    if(!isTablesFilling)
+        item->setText(lastSelectedValue);
+}
+
 void MainWindow::AvailableSoftWareUpdated(const AvailableSoftWare& software) {
+    isTablesFilling = true;
     m_SoftWare = software;
     FillTableSoft(ui->stableTable, software.m_Stable);
+    FillTableSoft(ui->toMasterTable, software.m_toMaster);
     FillTableSoft(ui->testTable, software.m_Test);
     FillTableSoft(ui->developmentTable, software.m_Development);
     FillTableDependencies(ui->dependenciesTable, software.m_Dependencies);
+    isTablesFilling = false;
 }
 
 void MainWindow::OnComboBoxValueChanged(const QString& value) {
@@ -197,6 +227,11 @@ void MainWindow::UpdateBtn() {
         m_SelectedAppType = eAppTypeStable;
         UpdateSelectedApp(ui->stableTable);
     }break;
+    case TM_TAB: {
+        pSelectedMap = &m_SoftWare.m_toMaster;
+        m_SelectedAppType = eAppTypeToMaster;
+        UpdateSelectedApp(ui->toMasterTable);
+    }break;
     case QA_TAB: {
         pSelectedMap = &m_SoftWare.m_Test;
         m_SelectedAppType = eAppTypeTest;
@@ -236,12 +271,12 @@ void MainWindow::UpdateBtn() {
                 ui->btnInstall->setVisible(true);
             }
         };
-        case ST_TAB: {
-            ui->btnRun->setVisible(true);
-        } break;
+        case ST_TAB:
+        case TM_TAB:
         case QA_TAB: {
             ui->btnRun->setVisible(true);
         } break;
+
         case DEP_TAB: {
             ui->btnRemove->setEnabled(false);
             ui->btnInstall->setVisible(false);

@@ -38,6 +38,7 @@ RenderSystem::RenderSystem()
     renderPassesMap.Insert(PASS_SHADOW_VOLUME, new ShadowVolumeRenderPass(PASS_SHADOW_VOLUME));
 
     renderLayersMap.Insert(LAYER_OPAQUE, new RenderLayer(LAYER_OPAQUE));
+	renderLayersMap.Insert(LAYER_AFTER_OPAQUE, new RenderLayer(LAYER_AFTER_OPAQUE));
     renderLayersMap.Insert(LAYER_ALPHA_TEST_LAYER, new RenderLayer(LAYER_ALPHA_TEST_LAYER));
     
     renderLayersMap.Insert(LAYER_TRANSLUCENT, new RenderLayer(LAYER_TRANSLUCENT));
@@ -48,6 +49,7 @@ RenderSystem::RenderSystem()
     
     RenderPass * forwardPass = renderPassesMap[PASS_FORWARD];
     forwardPass->AddRenderLayer(renderLayersMap[LAYER_OPAQUE], LAST_LAYER);
+	forwardPass->AddRenderLayer(renderLayersMap[LAYER_AFTER_OPAQUE], LAST_LAYER);
     forwardPass->AddRenderLayer(renderLayersMap[LAYER_TRANSLUCENT], LAST_LAYER);
 
     ShadowVolumeRenderPass * shadowVolumePass = (ShadowVolumeRenderPass*)renderPassesMap[PASS_SHADOW_VOLUME];
@@ -110,6 +112,17 @@ void RenderSystem::RemoveFromRender(RenderObject * renderObject)
 		RemoveRenderBatch(batch);
 	}
 
+    List<RenderObject*>::iterator end = markedObjects.end();
+    for (List<RenderObject*>::iterator it = markedObjects.begin(); it != end; ++it)
+    {
+        if(*it == renderObject)
+        {
+            markedObjects.erase(it);
+            break;
+        }
+    }
+
+    
 	RenderObject * lastRenderObject = renderObjectArray[renderObjectArray.size() - 1];
     renderObjectArray[renderObject->GetRemoveIndex()] = lastRenderObject;
     renderObjectArray.pop_back();
@@ -209,6 +222,14 @@ void RenderSystem::ProcessClipping()
     for (uint32 pos = 0; pos < size; ++pos)
     {
         RenderObject * node = renderObjectArray[pos];
+		
+		uint32 flags = node->GetFlags();
+		flags = (flags | RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME) & RenderObject::VISIBILITY_CRITERIA;
+		if (flags != RenderObject::VISIBILITY_CRITERIA)
+		{
+			continue;
+		}
+
         node->AddFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
         //Logger::Debug("Cull Node: %s rc: %d", node->GetFullName().c_str(), node->GetRetainCount());
         if (!frustum->IsInside(node->GetWorldBoundingBox()))

@@ -34,6 +34,14 @@ namespace DAVA
 class Image;
 class TextureDescriptor;
 class File;
+class Texture;
+	
+class TextureInvalidater
+{
+public:
+	virtual void InvalidateTexture(Texture * texure) = 0;
+};
+	
 class Texture : public RenderResource
 {
 public:
@@ -59,6 +67,25 @@ public:
 	{
 		DEPTH_NONE = 0,
 		DEPTH_RENDERBUFFER
+	};
+	
+	//VI: each face is optional
+	enum CubemapFace
+	{
+		CUBE_FACE_POSITIVE_X = 0,
+		CUBE_FACE_NEGATIVE_X = 1,
+		CUBE_FACE_POSITIVE_Y = 2,
+		CUBE_FACE_NEGATIVE_Y = 3,
+		CUBE_FACE_POSITIVE_Z = 4,
+		CUBE_FACE_NEGATIVE_Z = 5,
+		CUBE_FACE_MAX_COUNT = 6,
+		CUBE_FACE_INVALID = 0xFFFFFFFF
+	};
+	
+	enum TextureType
+	{
+		TEXTURE_2D = 0,
+		TEXTURE_CUBE = 1
 	};
 	
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
@@ -170,7 +197,7 @@ public:
 	void GenerateMipmaps();
 	void GeneratePixelesation();
 	
-	void TexImage(int32 level, uint32 width, uint32 height, const void * _data, uint32 dataSize);
+	void TexImage(int32 level, uint32 width, uint32 height, const void * _data, uint32 dataSize, uint32 cubeFaceId);
     
 	void SetWrapMode(TextureWrap wrapS, TextureWrap wrapT);
 	
@@ -201,34 +228,26 @@ public:
     
     
     static PixelFormatDescriptor GetPixelFormatDescriptor(PixelFormat formatID);
+	
+	static void GenerateCubeFaceNames(const String& baseName, Vector<String>& faceNames);
+	static void GenerateCubeFaceNames(const String& baseName, const Vector<String>& faceNameSuffixes, Vector<String>& faceNames);
 
     TextureDescriptor * CreateDescriptor() const;
 
     void Reload();
     void ReloadAs(eGPUFamily gpuFamily);
 	void ReloadAs(eGPUFamily gpuFamily, const TextureDescriptor *descriptor);
+	void SetInvalidater(TextureInvalidater* invalidater);
 
 public:							// properties for fast access
 
 #if defined(__DAVAENGINE_OPENGL__)
 	uint32		id;				// OpenGL id for texture
 
-//#if defined(__DAVAENGINE_ANDROID__)
-//	bool		 renderTargetModified;
-//    bool         renderTargetAutosave;
-//
-//	virtual void SaveToSystemMemory();
-//	virtual void Lost();
-//	virtual void Invalidate();
-//	void InvalidateFromFile();
-//	void InvalidateFromSavedData();
-//
-//    void SaveData(PixelFormat format, uint8 * data, uint32 width, uint32 height);
-//    void SaveData(uint8 * data, int32 dataSize);
-//    
-//	uint8 *savedData;
-//	int32 savedDataSize;
-//#endif //#if defined(__DAVAENGINE_ANDROID__) 
+#if defined(__DAVAENGINE_ANDROID__)
+	virtual void Lost();
+	virtual void Invalidate();
+#endif
 
 #elif defined(__DAVAENGINE_DIRECTX9__)
 	static LPDIRECT3DTEXTURE9 CreateTextureNative(Vector2 & size, PixelFormat & format, bool isRenderTarget, int32 flags);
@@ -258,6 +277,8 @@ public:							// properties for fast access
 	PixelFormat format;			// texture format 
 	DepthFormat depthFormat;
 	bool		isRenderTarget;
+	uint32		textureType;
+	TextureInvalidater* invalidater;
 
 	void SetDebugInfo(const String & _debugInfo);
 
