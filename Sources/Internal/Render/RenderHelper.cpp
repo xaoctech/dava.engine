@@ -281,27 +281,24 @@ void RenderHelper::DrawCylinder(const Vector3 & center, float32 radius, bool use
     float32 angle = seglength / radius;
 	int32 ptsCount = (int32)(PI_2 / (DegToRad(angle))) + 1;
 
-	float32 vertexes[ptsCount][2];
- 	int32 c = 0;
+	Vector<Vector2> vertexes;
 	for(int32 i = 0; i < ptsCount + 1; i++)
  	{
 		float32 seta = i * 360.0 / ptsCount;
   		float32 x = sin(DegToRad(seta)) * radius;
   		float32 y = cos(DegToRad(seta)) * radius;
 
-		vertexes[c][0] = x;
-		vertexes[c][1] = y;
-		c += 1;
+		vertexes.push_back(Vector2(x, y));
 	}
-
+	
 	for(int32 i = 0; i < ptsCount; ++i)
 	{
-		pts.AddPoint((Vector3(vertexes[i][0],  vertexes[i][1],  1) * radius) + center);
-		pts.AddPoint((Vector3(vertexes[i][0],  vertexes[i][1],  -1) * radius) + center);
-		pts.AddPoint((Vector3(vertexes[i+1][0], vertexes[i+1][1],  -1) * radius) + center);
-		pts.AddPoint((Vector3(vertexes[i][0],  vertexes[i][1],  1) * radius) + center);
-		pts.AddPoint((Vector3(vertexes[i+1][0], vertexes[i+1][1],  1) * radius) + center);
-		pts.AddPoint((Vector3(vertexes[i+1][0], vertexes[i+1][1],  -1) * radius) + center);
+		pts.AddPoint((Vector3(vertexes[i].x,  vertexes[i].y,  1) * radius) + center);
+		pts.AddPoint((Vector3(vertexes[i].x,  vertexes[i].y,  -1) * radius) + center);
+		pts.AddPoint((Vector3(vertexes[i+1].x, vertexes[i+1].y,  -1) * radius) + center);
+		pts.AddPoint((Vector3(vertexes[i].x,  vertexes[i].y,  1) * radius) + center);
+		pts.AddPoint((Vector3(vertexes[i+1].x, vertexes[i+1].y,  1) * radius) + center);
+		pts.AddPoint((Vector3(vertexes[i+1].x, vertexes[i+1].y,  -1) * radius) + center);
 	}
 	
 	if (useFilling)
