@@ -85,11 +85,10 @@ void HoodSystem::SetPosition(const DAVA::Vector3 &pos)
 {
 	if(!lockedScale)
 	{
-		if(curPos != pos)
+		if(curPos != pos || !curOffset.IsZero())
 		{
 			curPos = pos;
 			curOffset = DAVA::Vector3(0, 0, 0);
-
 			if(NULL != curHood)
 			{
 				curHood->UpdatePos(curPos);

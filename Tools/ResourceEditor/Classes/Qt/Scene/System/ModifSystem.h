@@ -44,6 +44,11 @@ public:
 	ST_ModifMode GetModifMode() const;
 	void SetModifMode(ST_ModifMode mode);
 
+	bool GetLandscapeSnap() const;
+	void SetLandscapeSnap(bool snap);
+
+	void PlaceOnLandscape(const EntityGroup *entities);
+
 protected:
 	SceneCollisionSystem *collisionSystem;
 	SceneCameraSystem *cameraSystem;
@@ -60,6 +65,7 @@ protected:
 	{
 		DAVA::Entity* entity;
 		DAVA::Matrix4 inversedParentWorldTransform;
+		DAVA::Matrix4 originalParentWorldTransform;
 		DAVA::Matrix4 originalTransform;
 		DAVA::Vector3 originalCenter;
 		DAVA::Matrix4 moveToZeroPos;
@@ -71,6 +77,8 @@ protected:
 
 	ST_ModifMode curMode;
 	ST_Axis curAxis;
+
+	bool snapToLandscape;
 
 	// starting modification pos
 	DAVA::Vector3 modifStartPos3d;
@@ -102,6 +110,8 @@ protected:
 	DAVA::Vector3 Move(const DAVA::Vector3 &newPos3d);
 	DAVA::float32 Rotate(const DAVA::Vector2 &newPos2d);
 	DAVA::float32 Scale(const DAVA::Vector2 &newPos2d);
+
+	DAVA::Matrix4 SnapToLandscape(const DAVA::Vector3 &point, const DAVA::Matrix4 &originalParentTransform) const;
 
 	void MoveDone(const DAVA::Vector2 &newPos3d);
 	void RotateDone(const DAVA::Vector2 &newPos2d);
