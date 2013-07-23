@@ -1116,9 +1116,6 @@
     <ClCompile Include="Classes\Commands\CommandCreateNode.cpp">
       <Filter>Classes\Commands</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Commands\CommandReloadTextures.cpp">
-      <Filter>Classes\Commands</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Commands\CommandsManager.cpp">
       <Filter>Classes\Commands</Filter>
     </ClCompile>
@@ -2736,9 +2733,6 @@
       <Filter>Classes\Commands</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands\CommandCreateNode.h">
-      <Filter>Classes\Commands</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Commands\CommandReloadTextures.h">
       <Filter>Classes\Commands</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands\CommandsManager.h">
