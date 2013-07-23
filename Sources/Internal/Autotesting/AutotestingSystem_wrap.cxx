@@ -4343,6 +4343,32 @@ fail:
 }
 
 
+static int _wrap_AutotestingSystemLua_KeyPress(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
+  DAVA::int32 arg2 ;
+  
+  SWIG_check_num_args("DAVA::AutotestingSystemLua::KeyPress",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::KeyPress",1,"DAVA::AutotestingSystemLua *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("DAVA::AutotestingSystemLua::KeyPress",2,"DAVA::int32");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0))){
+    SWIG_fail_ptr("AutotestingSystemLua_KeyPress",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
+  }
+  
+  arg2 = (DAVA::int32)lua_tonumber(L, 2);
+  (arg1)->KeyPress(arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_AutotestingSystemLua_SetText(lua_State* L) {
   int SWIG_arg = 0;
   DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
@@ -4845,6 +4871,7 @@ static swig_lua_method swig_DAVA_AutotestingSystemLua_methods[] = {
     {"TouchDown", _wrap_AutotestingSystemLua_TouchDown}, 
     {"TouchMove", _wrap_AutotestingSystemLua_TouchMove}, 
     {"TouchUp", _wrap_AutotestingSystemLua_TouchUp}, 
+    {"KeyPress", _wrap_AutotestingSystemLua_KeyPress}, 
     {"SetText", _wrap_AutotestingSystemLua_SetText}, 
     {"CheckText", _wrap_AutotestingSystemLua_CheckText}, 
     {"CheckMsgText", _wrap_AutotestingSystemLua_CheckMsgText}, 
