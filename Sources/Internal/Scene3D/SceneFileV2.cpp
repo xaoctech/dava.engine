@@ -612,7 +612,7 @@ bool SceneFileV2::RemoveEmptySceneNodes(DAVA::Entity * currentNode)
     }
     if ((currentNode->GetChildrenCount() == 0) && (typeid(*currentNode) == typeid(Entity)))
     {
-        CustomPropertiesComponent *customProperties = currentNode->GetCustomProperties();
+        KeyedArchive *customProperties = currentNode->GetCustomProperties();
         bool doNotRemove = customProperties && customProperties->IsKeyExists("editor.donotremove");
         
         uint32 componentCount = currentNode->GetComponentCount();
@@ -671,14 +671,14 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
             {
                 Entity * childNode = SafeRetain(currentNode->GetChild(0));
                 String currentName = currentNode->GetName();
-				CustomPropertiesComponent * currentProperties = currentNode->GetCustomProperties();
+				KeyedArchive * currentProperties = currentNode->GetCustomProperties();
                 
                 //Logger::Debug("remove node: %s %p", currentNode->GetName().c_str(), currentNode);
 				parent->InsertBeforeNode(childNode, currentNode);
                 
                 childNode->SetName(currentName);
 				//merge custom properties
-				CustomPropertiesComponent * newProperties = childNode->GetCustomProperties();
+				KeyedArchive * newProperties = childNode->GetCustomProperties();
 				const Map<String, VariantType*> & oldMap = currentProperties->GetArchieveData();
 				Map<String, VariantType*>::const_iterator itEnd = oldMap.end();
 				for(Map<String, VariantType*>::const_iterator it = oldMap.begin(); it != itEnd; ++it)

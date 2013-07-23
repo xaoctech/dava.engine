@@ -79,7 +79,7 @@ Entity* SceneDataManager::AddScene(const FilePath &scenePathname)
 
     Entity * rootNode = scene->GetRootNode(scenePathname)->Clone();
 
-    CustomPropertiesComponent * customProperties = rootNode->GetCustomProperties();
+    KeyedArchive * customProperties = rootNode->GetCustomProperties();
     customProperties->SetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, scenePathname.GetAbsolutePathname());
     
     rootNode->SetSolid(true);
@@ -257,7 +257,7 @@ void SceneDataManager::ReloadScene(const FilePath &scenePathname, const FilePath
 void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const FilePath &nodePathname, const FilePath &fromPathname, Set<String> &errors)
 {
 	//если в рут ноды сложить такие же рут ноды то на релоаде все накроет пиздой
-    CustomPropertiesComponent *customProperties = node->GetCustomProperties();
+    KeyedArchive *customProperties = node->GetCustomProperties();
 	EntityOwnerPropertyHelper::Instance()->UpdateEntityOwner(customProperties);
     if (customProperties->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, "") == nodePathname.GetAbsolutePathname())
     {

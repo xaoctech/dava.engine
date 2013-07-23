@@ -38,13 +38,13 @@ class CustomPropertiesComponent;
 class EntityOwnerPropertyHelper: public DAVA::StaticSingleton<EntityOwnerPropertyHelper>
 {
 public:
-	void UpdateEntityOwner(CustomPropertiesComponent *customProperties);
+	void UpdateEntityOwner(KeyedArchive *customProperties);
 
-	void SetDesignerName(CustomPropertiesComponent *customProperties, const String & name);
-	String GetDesignerName(CustomPropertiesComponent *customProperties);
+	void SetDesignerName(KeyedArchive *customProperties, const String & name);
+	String GetDesignerName(KeyedArchive *customProperties);
 
-	void UpdateModificationTime(CustomPropertiesComponent *customProperties);
-	String GetModificationTime(CustomPropertiesComponent *customProperties);
+	void UpdateModificationTime(KeyedArchive *customProperties);
+	String GetModificationTime(KeyedArchive *customProperties);
 
 	static const char* SCENE_NODE_DESIGNER_NAME_PROPERTY_NAME;
 	static const char* SCENE_NODE_MODIFICATION_DATA_PROPERTY_NAME;
