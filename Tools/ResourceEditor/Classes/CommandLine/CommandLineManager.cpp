@@ -34,7 +34,7 @@ using namespace DAVA;
 
 void CommandLineManager::PrintUsage()
 {
-    printf("Usage:\n");
+    printf("\nUsage:\n");
     
     printf("\t-usage or --help to display this help\n");
     printf("\t-exo - extended output\n");
@@ -46,8 +46,24 @@ void CommandLineManager::PrintUsage()
     {
         it->second->PrintUsage();
     }
+    
+    printf("\n");
 }
 
+void CommandLineManager::PrintUsageForActiveTool()
+{
+    printf("\nUsage:\n");
+    
+    printf("\t-usage or --help to display this help\n");
+    printf("\t-exo - extended output\n");
+    printf("\t-v or --verbose - detailed output\n");
+    printf("\t-forceclose - close editor after job would be finished\n");
+    
+    if(activeTool)
+        activeTool->PrintUsage();
+
+    printf("\n");
+}
 
 CommandLineManager::CommandLineManager()
 {
@@ -75,9 +91,10 @@ CommandLineManager::CommandLineManager()
 
     FindActiveTool();
     
+    isToolInitialized = false;
     if(activeTool)
     {
-        activeTool->InitializeFromCommandLine();
+        isToolInitialized = activeTool->InitializeFromCommandLine();
     }
 }
 
@@ -180,7 +197,8 @@ void CommandLineManager::PrintResults()
             ++index;
         }
         
-        ShowErrorDialog(errors);
+        if(isToolInitialized)
+            ShowErrorDialog(errors);
     }
 }
 

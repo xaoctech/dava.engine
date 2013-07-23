@@ -48,9 +48,18 @@ int main(int argc, char *argv[])
     bool needToQuit = false;
     if(CommandLineManager::Instance()->IsCommandLineModeEnabled())
     {
-        CommandLineManager::Instance()->Process();
-		CommandLineManager::Instance()->PrintResults();
-        needToQuit = CommandLineManager::Instance()->NeedCloseApplication();
+        if(CommandLineManager::Instance()->IsToolInitialized())
+        {
+            CommandLineManager::Instance()->Process();
+            CommandLineManager::Instance()->PrintResults();
+            needToQuit = CommandLineManager::Instance()->NeedCloseApplication();
+        }
+        else
+        {
+            CommandLineManager::Instance()->PrintResults();
+            CommandLineManager::Instance()->PrintUsageForActiveTool();
+            needToQuit = true;
+        }
     }
     
     if(!needToQuit)
