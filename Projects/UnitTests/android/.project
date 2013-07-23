@@ -330,6 +330,16 @@
 			<locationURI>PARENT-1-PROJECT_LOC/Classes/TextureUtils.h</locationURI>
 		</link>
 		<link>
+			<name>src/Classes/TransparentWebViewTest.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Classes/TransparentWebViewTest.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/Classes/TransparentWebViewTest.h</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Classes/TransparentWebViewTest.h</locationURI>
+		</link>
+		<link>
 			<name>src/Classes/eMailTest.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Classes/eMailTest.cpp</locationURI>
@@ -553,6 +563,16 @@
 			<name>bin/classes/Classes/TextureUtils.h</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Classes/TextureUtils.h</locationURI>
+		</link>
+		<link>
+			<name>bin/classes/Classes/TransparentWebViewTest.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Classes/TransparentWebViewTest.cpp</locationURI>
+		</link>
+		<link>
+			<name>bin/classes/Classes/TransparentWebViewTest.h</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Classes/TransparentWebViewTest.h</locationURI>
 		</link>
 		<link>
 			<name>bin/classes/Classes/eMailTest.cpp</name>
