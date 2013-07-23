@@ -36,6 +36,7 @@ ModificationWidget::ModificationWidget(QWidget* parent)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Deselected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(OnSceneEntityDeselected(SceneEditor2 *, DAVA::Entity *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(OnSceneActivated(SceneEditor2 *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(OnSceneDeactivated(SceneEditor2 *)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2 *, const Command2* , bool)), this, SLOT(OnSceneCommand(SceneEditor2 *, const Command2* , bool)));
 
 }
 
@@ -175,6 +176,14 @@ void ModificationWidget::ApplyValues(ST_Axis axis)
 	}
 
 	ReloadValues();
+}
+
+void ModificationWidget::OnSceneCommand(SceneEditor2 *scene, const Command2* command, bool redo)
+{
+	if(curScene == scene)
+	{
+		ReloadValues();
+	}
 }
 
 void ModificationWidget::OnEditingFinishedX()

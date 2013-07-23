@@ -21,6 +21,7 @@ CommandStack::CommandStack()
 	: commandListLimit(0)
 	, nextCommandIndex(0)
 	, cleanCommandIndex(0)
+	, lastCheckCleanState(true)
 	, curBatchCommand(NULL)
 {
 	stackCommandsNotify = new CommandStackNotify(this);
@@ -70,6 +71,8 @@ void CommandStack::Clear()
 	}
 
 	commandList.clear();
+
+	CleanCheck();
 }
 
 void CommandStack::Undo()
@@ -85,6 +88,8 @@ void CommandStack::Undo()
 			EmitNotify(commandToUndo, false);
 		}
 	}
+
+	CleanCheck();
 }
 
 void CommandStack::Redo()
@@ -100,6 +105,8 @@ void CommandStack::Redo()
 			EmitNotify(commandToRedo, true);
 		}
 	}
+
+	CleanCheck();
 }
 
 void CommandStack::Exec(Command2 *command)
@@ -160,9 +167,18 @@ bool CommandStack::IsClean() const
 	return (cleanCommandIndex == nextCommandIndex);
 }
 
-void CommandStack::SetClean()
+void CommandStack::SetClean(bool clean)
 {
-	cleanCommandIndex = nextCommandIndex;
+	if(clean)
+	{
+		cleanCommandIndex = nextCommandIndex;
+	}
+	else
+	{
+		cleanCommandIndex = -1;
+	}
+
+	CleanCheck();
 }
 
 size_t CommandStack::GetUndoLimit() const
@@ -190,6 +206,8 @@ void CommandStack::ExecInternal(Command2 *command, bool runCommand)
 
 	EmitNotify(command, true);
 	ClearLimitedCommands();
+
+	CleanCheck();
 }
 
 void CommandStack::ClearRedoCommands()
@@ -229,6 +247,15 @@ void CommandStack::ClearLimitedCommands()
 
 		nextCommandIndex--;
 		cleanCommandIndex--;
+	}
+}
+
+void CommandStack::CleanCheck()
+{
+	if(lastCheckCleanState != IsClean())
+	{
+		lastCheckCleanState = IsClean();
+		EmitCleanChanged(lastCheckCleanState);
 	}
 }
 

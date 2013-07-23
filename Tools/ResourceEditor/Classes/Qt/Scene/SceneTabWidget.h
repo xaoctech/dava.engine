@@ -82,8 +82,10 @@ public slots:
 	// tab request close
 	void TabBarCloseRequest(int index);
 
-	// scene mouse over selected object
+	// scene signals
 	void MouseOverSelectedEntities(SceneEditor2* scene, const EntityGroup *entities);
+	void SceneSaved(SceneEditor2 *scene);
+	void SceneModifyStatusChanged(SceneEditor2 *scene, bool modified);
 
 protected:
 	QTabBar *tabBar;
@@ -95,6 +97,7 @@ protected:
 
 	void InitDAVAUI();
 	void ReleaseDAVAUI();
+	void UpdateTabName(int index);
 
 	SceneEditor2* GetTabScene(int index) const;
 	void SetTabScene(int index, SceneEditor2* scene);

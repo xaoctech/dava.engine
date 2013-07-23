@@ -29,6 +29,7 @@ public:
 	~CommandNotify();
 
 	virtual void Notify(const Command2 *command, bool redo) = 0;
+	virtual void CleanChanged(bool clean) { };
 };
 
 class CommandNotifyProvider
@@ -41,6 +42,7 @@ public:
 	CommandNotify* GetNotify() const;
 
 	void EmitNotify(const Command2 *command, bool redo);
+	void EmitCleanChanged(bool clean);
 
 protected:
 	CommandNotify* curNotify;

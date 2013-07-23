@@ -50,3 +50,11 @@ void CommandNotifyProvider::EmitNotify(const Command2 *command, bool redo)
 		curNotify->Notify(command, redo);
 	}
 }
+
+void CommandNotifyProvider::EmitCleanChanged(bool clean)
+{
+	if(NULL != curNotify)
+	{
+		curNotify->CleanChanged(clean);
+	}
+}

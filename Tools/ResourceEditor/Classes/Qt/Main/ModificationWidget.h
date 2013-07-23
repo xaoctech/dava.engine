@@ -48,6 +48,7 @@ private slots:
 	void OnSceneDeactivated(SceneEditor2 *scene);
 	void OnSceneEntitySelected(SceneEditor2 *scene, DAVA::Entity *entity);
 	void OnSceneEntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity);
+	void OnSceneCommand(SceneEditor2 *scene, const Command2* command, bool redo);
 
 	void OnEditingFinishedX();
 	void OnEditingFinishedY();
