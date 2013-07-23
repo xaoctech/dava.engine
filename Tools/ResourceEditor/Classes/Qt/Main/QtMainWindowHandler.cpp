@@ -21,7 +21,6 @@
 #include "../Commands/FileCommands.h"
 #include "../Commands/ToolsCommands.h"
 #include "../Commands/SceneGraphCommands.h"
-#include "../Commands/CommandReloadTextures.h"
 #include "../Commands/ParticleEditorCommands.h"
 #include "../Commands/TextureOptionsCommands.h"
 #include "../Commands/CustomColorCommands.h"
@@ -670,8 +669,7 @@ void QtMainWindowHandler::ReloadMenuTriggered(QAction *reloadAsAction)
 
 void QtMainWindowHandler::ReloadSceneTextures()
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandReloadTextures(),
-												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
+	SceneDataManager::Instance()->TextureReloadAll(EditorSettings::Instance()->GetTextureViewGPU());
 }
 
 void QtMainWindowHandler::OnEntityModified(DAVA::Scene* scene, CommandList::eCommandId id, const DAVA::Set<DAVA::Entity*>& affectedEntities)

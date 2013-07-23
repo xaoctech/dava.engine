@@ -47,7 +47,6 @@
 
 #include "../Commands/CommandsManager.h"
 #include "../Commands/EditorBodyControlCommands.h"
-#include "../Commands/CommandReloadTextures.h"
 
 #include "../StringConstants.h"
 #include "../Commands/FileCommands.h"
@@ -761,8 +760,8 @@ void EditorBodyControl::Update(float32 timeElapsed)
 	            Core::Instance()->Quit();
         }
 #endif //#if defined (__DAVAENGINE_WIN32__)
-        
-		CommandsManager::Instance()->ExecuteAndRelease(new CommandReloadTextures(), scene);
+
+		QtMainWindowHandler::Instance()->ReloadSceneTextures();
 	}
 }
 
