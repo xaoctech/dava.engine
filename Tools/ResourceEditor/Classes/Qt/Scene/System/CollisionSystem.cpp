@@ -34,6 +34,7 @@ SceneCollisionSystem::SceneCollisionSystem(DAVA::Scene * scene)
 	: DAVA::SceneSystem(scene)
 	, rayIntersectCached(false)
 	, drawMode(ST_COLL_DRAW_NOTHING)
+	, curLandscape(NULL)
 {
 	btVector3 worldMin(-1000,-1000,-1000);
 	btVector3 worldMax(1000,1000,1000);
@@ -218,6 +219,11 @@ bool SceneCollisionSystem::LandRayTestFromCamera(DAVA::Vector3& intersectionPoin
 	return LandRayTest(traceFrom, traceTo, intersectionPoint);
 }
 
+DAVA::Landscape* SceneCollisionSystem::GetLandscape() const
+{
+	return curLandscape;
+}
+
 void SceneCollisionSystem::UpdateCollisionObject(DAVA::Entity *entity)
 {
 	if(NULL != entity)
@@ -398,6 +404,7 @@ CollisionBaseObject* SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity
 	if(NULL != landscape)
 	{
 		collObj = new CollisionLandscape(entity, landCollWorld, landscape);
+		curLandscape = landscape;
 	}
 	else if(NULL != particleEmitter)
 	{
@@ -420,6 +427,11 @@ CollisionBaseObject* SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity
 void SceneCollisionSystem::DestroyFromEntity(DAVA::Entity * entity)
 {
 	CollisionBaseObject *cObj = entityToCollision.value(entity, NULL);
+
+	if(curLandscape == DAVA::GetLandscape(entity))
+	{
+		curLandscape = NULL;
+	}
 
 	if(NULL != cObj)
 	{

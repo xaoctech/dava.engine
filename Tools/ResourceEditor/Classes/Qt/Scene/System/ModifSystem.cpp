@@ -36,6 +36,7 @@ EntityModificationSystem::EntityModificationSystem(DAVA::Scene * scene, SceneCol
 	, hoodSystem(hoodSys)
 	, inModifState(false)
 	, modified(false)
+	, snapToLandscape(false)
 {
 	SetModifMode(ST_MODIF_MOVE);
 	SetModifAxis(ST_AXIS_Z);
@@ -67,6 +68,37 @@ void EntityModificationSystem::SetModifMode(ST_ModifMode mode)
 ST_ModifMode EntityModificationSystem::GetModifMode() const
 {
 	return curMode;
+}
+
+bool EntityModificationSystem::GetLandscapeSnap() const
+{
+	return snapToLandscape;
+}
+
+void EntityModificationSystem::SetLandscapeSnap(bool snap)
+{
+	snapToLandscape = snap;
+}
+
+void EntityModificationSystem::PlaceOnLandscape(const EntityGroup *entities)
+{
+	if(NULL != entities)
+	{
+		bool prevSnapToLandscape = snapToLandscape;
+
+		snapToLandscape = true;
+		BeginModification(entities);
+
+		// move by z axis, so we will snap to landscape and keep x,y coords unmodified
+		DAVA::Vector3 newPos3d = modifStartPos3d;
+		newPos3d.z += 1.0f;
+		Move(newPos3d);
+
+		ApplyModification();
+		EndModification();
+
+		snapToLandscape = prevSnapToLandscape;
+	}
 }
 
 void EntityModificationSystem::Update(DAVA::float32 timeElapsed)
@@ -199,7 +231,6 @@ void EntityModificationSystem::ProcessCommand(const Command2 *command, bool redo
 
 }
 
-
 void EntityModificationSystem::BeginModification(const EntityGroup *entities)
 {
 	// clear any priv. selection
@@ -220,7 +251,7 @@ void EntityModificationSystem::BeginModification(const EntityGroup *entities)
 			{
 				EntityToModify etm;
 				etm.entity = en;
-				etm.originalCenter = en->GetWorldTransform().GetTranslationVector();
+				etm.originalCenter = en->GetLocalTransform().GetTranslationVector();
 				etm.originalTransform = en->GetLocalTransform();
 				etm.moveToZeroPos.CreateTranslation(-etm.originalCenter);
 				etm.moveFromZeroPos.CreateTranslation(etm.originalCenter);
@@ -228,7 +259,8 @@ void EntityModificationSystem::BeginModification(const EntityGroup *entities)
 				// inverse parent world transform, and remember it
 				if(NULL != en->GetParent())
 				{
-					etm.inversedParentWorldTransform = en->GetParent()->GetWorldTransform();
+					etm.originalParentWorldTransform = en->GetParent()->GetWorldTransform();
+					etm.inversedParentWorldTransform = etm.originalParentWorldTransform;
 					etm.inversedParentWorldTransform.SetTranslationVector(DAVA::Vector3(0, 0, 0));
 					if(!etm.inversedParentWorldTransform.Inverse())
 					{
@@ -238,6 +270,7 @@ void EntityModificationSystem::BeginModification(const EntityGroup *entities)
 				else
 				{
 					etm.inversedParentWorldTransform.Identity();
+					etm.originalParentWorldTransform.Identity();
 				}
 
 				modifEntities.push_back(etm);
@@ -489,6 +522,12 @@ DAVA::Vector3 EntityModificationSystem::Move(const DAVA::Vector3 &newPos3d)
 		moveModification.CreateTranslation(moveOffset * modifEntities[i].inversedParentWorldTransform);
 
 		DAVA::Matrix4 newLocalTransform = modifEntities[i].originalTransform * moveModification;
+
+		if(snapToLandscape)
+		{
+			newLocalTransform = newLocalTransform * SnapToLandscape(newLocalTransform.GetTranslationVector(), modifEntities[i].originalParentWorldTransform);
+		}
+
 		modifEntities[i].entity->SetLocalTransform(newLocalTransform);
 	}
 
@@ -562,6 +601,27 @@ DAVA::float32 EntityModificationSystem::Scale(const DAVA::Vector2 &newPos2d)
 	}
 
 	return scaleForce;
+}
+
+DAVA::Matrix4 EntityModificationSystem::SnapToLandscape(const DAVA::Vector3 &point, const DAVA::Matrix4 &originalParentTransform) const
+{
+	DAVA::Matrix4 ret;
+	ret.Identity();
+
+	DAVA::Landscape *landscape = collisionSystem->GetLandscape();
+	if(NULL != landscape)
+	{
+		DAVA::Vector3 resPoint;
+		DAVA::Vector3 realPoint = point * originalParentTransform;
+
+		if(landscape->PlacePoint(point, resPoint))
+		{
+			resPoint = resPoint - point;
+			ret.SetTranslationVector(resPoint);
+		}
+	}
+
+	return ret;
 }
 
 bool EntityModificationSystem::IsEntityContainRecursive(const DAVA::Entity *entity, const DAVA::Entity *child) const
