@@ -192,7 +192,7 @@ void SceneSaver::CopyTexture(const FilePath &texturePathname, Set<String> &error
 
 void SceneSaver::CopyReferencedObject( Entity *node, Set<String> &errorLog )
 {
-	CustomPropertiesComponent *customProperties = node->GetCustomProperties();
+	KeyedArchive *customProperties = node->GetCustomProperties();
 	if(customProperties && customProperties->IsKeyExists(ResourceEditor::EDITOR_REFERENCE_TO_OWNER))
 	{
 		String path = customProperties->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);

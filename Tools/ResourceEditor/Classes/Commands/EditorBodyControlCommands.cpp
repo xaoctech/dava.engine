@@ -140,7 +140,7 @@ Entity* CommandGroupEntitiesForMultiselect::GetEntityWithSolidProp(Entity* en)
 	Entity* solidEntity = en;
 	while (NULL != solidEntity)
 	{
-		CustomPropertiesComponent *customProperties = solidEntity->GetCustomProperties();
+		KeyedArchive *customProperties = solidEntity->GetCustomProperties();
 		if(customProperties && customProperties->IsKeyExists(String(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME)))
 		{
 			break;

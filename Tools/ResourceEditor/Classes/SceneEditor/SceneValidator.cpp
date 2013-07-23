@@ -362,7 +362,7 @@ void SceneValidator::ValidateLandscapeTexture(Landscape *landscape, Landscape::e
 
 void SceneValidator::ConvertLightmapSizeFromProperty(Entity *ownerNode, InstanceMaterialState *materialState)
 {
-	CustomPropertiesComponent * props = ownerNode->GetCustomProperties();
+	KeyedArchive * props = ownerNode->GetCustomProperties();
 	Map<String, VariantType*> map = props->GetArchieveData();
 	for(Map<String, VariantType*>::iterator it = map.begin(); it != map.end(); it++)
 	{
@@ -378,7 +378,7 @@ void SceneValidator::ConvertLightmapSizeFromProperty(Entity *ownerNode, Instance
 
 bool SceneValidator::NodeRemovingDisabled(Entity *node)
 {
-    CustomPropertiesComponent *customProperties = node->GetCustomProperties();
+    KeyedArchive *customProperties = node->GetCustomProperties();
     return (customProperties && customProperties->IsKeyExists(ResourceEditor::EDITOR_DO_NOT_REMOVE));
 }
 

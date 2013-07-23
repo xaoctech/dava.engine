@@ -28,30 +28,28 @@
 #include "EntityOwnerPropertyHelper.h"
 #include "EditorSettings.h"
 
-#include "Scene3D/Components/CustomPropertiesComponent.h"
-
 namespace DAVA {
 
 const char* EntityOwnerPropertyHelper::SCENE_NODE_DESIGNER_NAME_PROPERTY_NAME = "editor.designerName";
 const char* EntityOwnerPropertyHelper::SCENE_NODE_MODIFICATION_DATA_PROPERTY_NAME = "editor.modificationData";
 
-void EntityOwnerPropertyHelper::UpdateEntityOwner(CustomPropertiesComponent *customProperties)
+void EntityOwnerPropertyHelper::UpdateEntityOwner(KeyedArchive *customProperties)
 {
 	SetDesignerName(customProperties, EditorSettings::Instance()->GetDesignerName());
 	UpdateModificationTime(customProperties);
 }
 
-void EntityOwnerPropertyHelper::SetDesignerName(CustomPropertiesComponent *customProperties, const String & name)
+void EntityOwnerPropertyHelper::SetDesignerName(KeyedArchive *customProperties, const String & name)
 {
 	customProperties->SetString(SCENE_NODE_DESIGNER_NAME_PROPERTY_NAME, name);
 }
 
-String EntityOwnerPropertyHelper::GetDesignerName(CustomPropertiesComponent *customProperties)
+String EntityOwnerPropertyHelper::GetDesignerName(KeyedArchive *customProperties)
 {
 	return customProperties->GetString(SCENE_NODE_DESIGNER_NAME_PROPERTY_NAME, "nobody");
 }
 
-void EntityOwnerPropertyHelper::UpdateModificationTime(CustomPropertiesComponent *customProperties)
+void EntityOwnerPropertyHelper::UpdateModificationTime(KeyedArchive *customProperties)
 {
 	time_t now = time(0);
     tm* utcTime = localtime(&now);
@@ -63,7 +61,7 @@ void EntityOwnerPropertyHelper::UpdateModificationTime(CustomPropertiesComponent
 	customProperties->SetString(SCENE_NODE_MODIFICATION_DATA_PROPERTY_NAME, timeString);
 }
 
-String EntityOwnerPropertyHelper::GetModificationTime(CustomPropertiesComponent *customProperties)
+String EntityOwnerPropertyHelper::GetModificationTime(KeyedArchive *customProperties)
 {
 	return customProperties->GetString(SCENE_NODE_MODIFICATION_DATA_PROPERTY_NAME, "unknown");
 }
