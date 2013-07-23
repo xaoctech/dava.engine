@@ -764,20 +764,19 @@ namespace DAVA
 			{
 				SetStateShadowOffset(stateArray[k], stateShadowOffsetNode->AsVector2());
 			}
-		}
-		for (int k = 0; k < STATE_COUNT; ++k)
-		{
-			YamlNode * colorInheritNode = node->Get("colorInherit");
-			UIControlBackground::eColorInheritType type = (UIControlBackground::eColorInheritType)loader->GetColorInheritTypeFromNode(colorInheritNode);
+			
+			YamlNode * colorInheritNode = node->Get(Format("stateColorInherit%s", statePostfix[k].c_str()));
 			if(colorInheritNode)
 			{
-				for(int32 i = 0; i < DRAW_STATE_COUNT; ++i)
-				{
-					if(stateBacks[i])
-					{
-						stateBacks[i]->SetColorInheritType(type);
-					}
-				}
+				UIControlBackground::eColorInheritType type = (UIControlBackground::eColorInheritType)loader->GetColorInheritTypeFromNode(colorInheritNode);
+				GetActualBackground(stateArray[k])->SetColorInheritType(type);
+			}
+			
+			YamlNode * colorNode = node->Get(Format("stateColor%s", statePostfix[k].c_str()));
+			if(colorNode)
+			{
+				Color color = loader->GetColorFromYamlNode(colorNode);
+				GetActualBackground(stateArray[k])->SetColor(color);
 			}
 		}
 	}
@@ -796,6 +795,7 @@ namespace DAVA
         
 		//Remove values of UIControl
 		//UIButton has state specific properties
+		YamlNode *colorNode = node->Get("color");
 		YamlNode *spriteNode = node->Get("sprite");
 		YamlNode *drawTypeNode = node->Get("drawType");
 		YamlNode *colorInheritNode = node->Get("colorInherit");
@@ -803,6 +803,10 @@ namespace DAVA
 		YamlNode *leftRightStretchCapNode = node->Get("leftRightStretchCap");
 		YamlNode *topBottomStretchCapNode = node->Get("topBottomStretchCap");
         
+		if (colorNode)
+		{
+			node->RemoveNodeFromMap("color");
+		}
 		if (spriteNode)
 		{
 			node->RemoveNodeFromMap("sprite");
@@ -898,11 +902,24 @@ namespace DAVA
 				nodeValue->SetVector2(shadowOffset);
 				node->Set(Format("stateShadowoffset%s", statePostfix[i].c_str()), nodeValue);
 			}
-            
-			//colorInherit ???? For different states?
-			// Yuri Coder, 2012/11/16. Temporarily commented out until clarification.
-			//UIControlBackground::eColorInheritType colorInheritType = this->GetStateBackground(stateArray[i])->GetColorInheritType();
-			//node->Set(Format("stateColorInherit%s", statePostfix[i].c_str()), loader->GetColorInheritTypeNodeValue(colorInheritType));
+			
+			// State background color
+			Color color = this->GetActualBackground(stateArray[i])->GetColor();
+			Color baseColor =  baseControl->GetActualBackground(stateArray[i])->GetColor();
+			if (baseColor != color)
+			{
+				Vector4 colorVector4(color.r, color.g, color.b, color.a);
+				nodeValue->SetVector4(colorVector4);
+				node->Set(Format("stateColor%s", statePostfix[i].c_str()), nodeValue);
+			}
+			
+ 			// State color inherittype
+			UIControlBackground::eColorInheritType colorInheritType = this->GetActualBackground(stateArray[i])->GetColorInheritType();
+			UIControlBackground::eColorInheritType baseColorInheritType = baseControl->GetActualBackground(stateArray[i])->GetColorInheritType();
+			if (baseColorInheritType != colorInheritType)
+			{
+				node->Set(Format("stateColorInherit%s", statePostfix[i].c_str()), loader->GetColorInheritTypeNodeValue(colorInheritType));
+			}
 		}
         
 		SafeDelete(nodeValue);
