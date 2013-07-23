@@ -17,6 +17,7 @@
 #include "DAVAEngine.h"
 
 #include "mainwindow.h"
+#include "QtUtils.h"
 #include "Project/ProjectManager.h"
 #include "DockConsole/Console.h"
 
@@ -164,6 +165,11 @@ void QtMainWindow::SetupToolBars()
 	ui->menuToolbars->addAction(actionViewModeToolBar);
 
 	ui->modificationToolBar->insertWidget(ui->actionModifyReset, modificationWidget);
+
+	QAction *reloadMenuAction = ui->menuReload->menuAction();
+	reloadMenuAction->setIcon(QIcon(":/QtIcons/reloadtextures.png"));
+	ui->mainToolBar->addAction(reloadMenuAction);
+	ShowActionWithText(ui->mainToolBar, reloadMenuAction, true);
 }
 
 void QtMainWindow::SetupActions()
@@ -188,6 +194,8 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionPivotCenter, SIGNAL(triggered()), this, SLOT(OnPivotCenterMode()));
 	QObject::connect(ui->actionPivotCommon, SIGNAL(triggered()), this, SLOT(OnPivotCommonMode()));
 	QObject::connect(ui->actionManualModifMode, SIGNAL(triggered()), this, SLOT(OnManualModifMode()));
+	QObject::connect(ui->actionModifyPlaceOnLandscape, SIGNAL(triggered()), this, SLOT(OnPlaceOnLandscape()));
+	QObject::connect(ui->actionModifySnapToLandscape, SIGNAL(triggered()), this, SLOT(OnSnapToLandscape()));
 
 	// tools
 	QObject::connect(ui->actionMaterialEditor, SIGNAL(triggered()), this, SLOT(OnMaterialEditor()));
@@ -286,31 +294,41 @@ void QtMainWindow::OnSceneSave()
 	SceneEditor2* scene = GetCurrentScene();
 	if(NULL != scene && scene->IsChanged())
 	{
-		bool saveResult = false;
+		DAVA::FilePath scenePath = scene->GetScenePath();
 
-		if(scene->GetScenePath().IsEmpty())
+		if(scenePath.IsEmpty())
 		{
-			QString path = QFileDialog::getSaveFileName(this, "Save scene file", ProjectManager::Instance()->CurProjectDataSourcePath(), "*.sc2");
-			saveResult = scene->Save(DAVA::FilePath(path.toStdString()));
-		}
-		else
-		{
-			saveResult = scene->Save();
+			QString selectedPath = QFileDialog::getSaveFileName(this, "Save scene file", ProjectManager::Instance()->CurProjectDataSourcePath(), "*.sc2");
+			if(!selectedPath.isEmpty())
+			{
+				scenePath = DAVA::FilePath(selectedPath.toStdString());
+			}
 		}
 
-		if(!saveResult)
+		if(!scenePath.IsEmpty())
 		{
-			QMessageBox::warning(this, "Save error", "An error occurred while saving the scene. See log for more info.", QMessageBox::Ok);
+			if(!scene->Save(scenePath))
+			{
+				QMessageBox::warning(this, "Save error", "An error occurred while saving the scene. See log for more info.", QMessageBox::Ok);
+			}
 		}
 	}
 }
 
 void QtMainWindow::OnSceneSaveAs()
 {
-	// TODO:
-	// ...
-	// 
+	SceneEditor2* scene = GetCurrentScene();
+	if(NULL != scene)
+	{
+		QString selectedPath = QFileDialog::getSaveFileName(this, "Save scene as", ProjectManager::Instance()->CurProjectDataSourcePath(), "*.sc2");
+		if(!selectedPath.isEmpty())
+		{
+			DAVA::FilePath scenePath = DAVA::FilePath(selectedPath.toStdString());
+			scene->SetScenePath(scenePath);
 
+			OnSceneSave();
+		}
+	}
 }
 
 void QtMainWindow::OnSceneSaveToFolder()
@@ -411,6 +429,25 @@ void QtMainWindow::OnManualModifMode()
 	}
 }
 
+void QtMainWindow::OnPlaceOnLandscape()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(NULL != scene)
+	{
+		scene->modifSystem->PlaceOnLandscape(scene->selectionSystem->GetSelection());
+	}
+}
+
+void QtMainWindow::OnSnapToLandscape()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(NULL != scene)
+	{
+		scene->modifSystem->SetLandscapeSnap(ui->actionModifySnapToLandscape->isChecked());
+		LoadModificationState(scene);
+	}
+}
+
 void QtMainWindow::OnMaterialEditor()
 {
 	if(NULL == materialEditor->GetParent())
@@ -496,7 +533,7 @@ void QtMainWindow::LoadModificationState(SceneEditor2 *scene)
 			break;
 		}
 
-		// pivot piont
+		// pivot point
 		if(scene->selectionSystem->GetPivotPoint() == ST_PIVOT_ENTITY_CENTER)
 		{
 			ui->actionPivotCenter->setChecked(true);
@@ -507,6 +544,9 @@ void QtMainWindow::LoadModificationState(SceneEditor2 *scene)
 			ui->actionPivotCenter->setChecked(false);
 			ui->actionPivotCommon->setChecked(true);
 		}
+
+		// landscape snap
+		ui->actionModifySnapToLandscape->setChecked(scene->modifSystem->GetLandscapeSnap());
 	}
 }
 

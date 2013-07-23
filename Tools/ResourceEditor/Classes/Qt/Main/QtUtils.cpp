@@ -19,6 +19,7 @@
 
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QToolButton>
 #include "mainwindow.h"
 #include "QtMainWindowHandler.h"
 
@@ -177,4 +178,22 @@ void DeleteOldDXTTextureIfTegra(const DAVA::TextureDescriptor *descriptor, const
     FileSystem::Instance()->DeleteFile(oldDdsPath);
 }
 
+void ShowActionWithText(QToolBar *toolbar, QAction *action, bool showText)
+{
+	if(NULL != toolbar && NULL != action)
+	{
+		QToolButton *toolBnt = dynamic_cast<QToolButton *>(toolbar->widgetForAction(action));
+		if(NULL != toolBnt)
+		{
+			if(showText)
+			{
+				toolBnt->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+			}
+			else
+			{
+				toolBnt->setToolButtonStyle(Qt::ToolButtonIconOnly);
+			}
+		}
+	}
+}
 

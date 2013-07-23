@@ -77,6 +77,8 @@ protected slots:
 	void OnPivotCenterMode();
 	void OnPivotCommonMode();
 	void OnManualModifMode();
+	void OnPlaceOnLandscape();
+	void OnSnapToLandscape();
 
 	void OnMaterialEditor();
 	void OnTextureBrowser();

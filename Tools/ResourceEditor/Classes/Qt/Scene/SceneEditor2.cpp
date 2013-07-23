@@ -110,6 +110,8 @@ bool SceneEditor2::Load(const DAVA::FilePath &path)
 		}
 
 		curScenePath = path;
+
+		commandStack.SetClean(true);
 	}
 
 	structureSystem->Init();
@@ -154,7 +156,7 @@ bool SceneEditor2::Save(const DAVA::FilePath &path)
 		curScenePath = path;
 
 		// mark current position in command stack as clean
-		commandStack.SetClean();
+		commandStack.SetClean(true);
 	}
 
 	SafeRelease(file);
@@ -225,6 +227,11 @@ void SceneEditor2::Exec(Command2 *command)
 bool SceneEditor2::IsChanged() const
 {
 	return (!commandStack.IsClean());
+}
+
+void SceneEditor2::SetChanged(bool changed)
+{
+	commandStack.SetClean(!changed);
 }
 
 void SceneEditor2::Update(float timeElapsed)
@@ -317,5 +324,13 @@ void SceneEditor2::EditorCommandNotify::Notify(const Command2 *command, bool red
 	{
 		editor->EditorCommandProcess(command, redo);
 		SceneSignals::Instance()->EmitCommandExecuted(editor, command, redo);
+	}
+}
+
+void SceneEditor2::EditorCommandNotify::CleanChanged(bool clean)
+{
+	if(NULL != editor)
+	{
+		SceneSignals::Instance()->EmitModifyStatusChanged(editor, !clean);
 	}
 }

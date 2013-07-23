@@ -352,6 +352,17 @@
     <property name="title">
      <string>Edit</string>
     </property>
+    <widget class="QMenu" name="menuReload">
+     <property name="title">
+      <string>Reload</string>
+     </property>
+     <addaction name="actionReloadAll"/>
+     <addaction name="separator"/>
+     <addaction name="actionReload_Textures"/>
+     <addaction name="actionConvert_New_Textures"/>
+     <addaction name="actionReload_Particles"/>
+     <addaction name="actionConvert_New_Particles"/>
+    </widget>
     <addaction name="actionUndo"/>
     <addaction name="actionRedo"/>
     <addaction name="separator"/>
@@ -362,6 +373,8 @@
     <addaction name="separator"/>
     <addaction name="actionModifyPlaceOnLandscape"/>
     <addaction name="actionModifySnapToLandscape"/>
+    <addaction name="separator"/>
+    <addaction name="menuReload"/>
     <addaction name="separator"/>
     <addaction name="actionConvertToShadow"/>
    </widget>
@@ -1395,6 +1408,38 @@
    </property>
    <property name="toolTip">
     <string>Manual transform mode - Absolute/Offset</string>
+   </property>
+  </action>
+  <action name="actionReload_Textures">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Reload Textures</string>
+   </property>
+  </action>
+  <action name="actionReload_Particles">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Reload Particles</string>
+   </property>
+  </action>
+  <action name="actionConvert_New_Textures">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Convert New Textures</string>
+   </property>
+  </action>
+  <action name="actionConvert_New_Particles">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Convert New Particles</string>
    </property>
   </action>
  </widget>

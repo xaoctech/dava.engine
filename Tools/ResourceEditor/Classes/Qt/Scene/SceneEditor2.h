@@ -85,6 +85,7 @@ public:
 
 	// checks whether the scene changed since the last save
 	bool IsChanged() const;
+	void SetChanged(bool changed);
 
 	// DAVA events
 	void PostUIEvent(DAVA::UIEvent *event);
@@ -113,6 +114,7 @@ private:
 
 		EditorCommandNotify(SceneEditor2 *_editor);
 		virtual void Notify(const Command2 *command, bool redo);
+		virtual void CleanChanged(bool clean);
 	};
 };
 

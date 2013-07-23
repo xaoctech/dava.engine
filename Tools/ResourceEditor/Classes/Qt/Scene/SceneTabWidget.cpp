@@ -48,6 +48,7 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	tabBar->setMovable(true);
 	tabBar->setUsesScrollButtons(true);
 	tabBar->setExpanding(false);
+	tabBar->setMinimumHeight(tabBar->sizeHint().height());
 
 	// davawidget to display DAVAEngine content
 	davaWidget = new DavaGLWidget(this);
@@ -66,7 +67,10 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 
 	QObject::connect(tabBar, SIGNAL(currentChanged(int)), this, SLOT(TabBarCurrentChanged(int)));
 	QObject::connect(tabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(TabBarCloseRequest(int)));
+
 	QObject::connect(SceneSignals::Instance(), SIGNAL(MouseOverSelection(SceneEditor2*, const EntityGroup*)), this, SLOT(MouseOverSelectedEntities(SceneEditor2*, const EntityGroup*)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(Saved(SceneEditor2*)), this, SLOT(SceneSaved(SceneEditor2*)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(ModifyStatusChanged(SceneEditor2 *, bool)), this, SLOT(SceneModifyStatusChanged(SceneEditor2 *, bool)));
 }
 
 SceneTabWidget::~SceneTabWidget()
@@ -113,14 +117,6 @@ int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 	{
 		tabIndex = tabBar->addTab(scenePapth.GetFilename().c_str());
 		SetTabScene(tabIndex, scene);
-
-		/*
-		scene->modifSystem->SetModifMode(curModifMode);
-		scene->modifSystem->SetModifAxis(curModifAxis);
-		scene->selectionSystem->SetPivotPoint(curPivotPoint);
-		scene->collisionSystem->SetDrawMode(curColDrawMode);
-		scene->selectionSystem->SetDrawMode(curSelDrawMode);
-		*/
 
 		tabBar->setTabToolTip(tabIndex, scenePapth.GetAbsolutePathname().c_str());
 	}
@@ -254,10 +250,9 @@ void SceneTabWidget::TabBarCloseRequest(int index)
 
 void SceneTabWidget::MouseOverSelectedEntities(SceneEditor2* scene, const EntityGroup *entities)
 {
-	/*
-	if(NULL != entities)
+	if(GetCurrentScene() == scene && NULL != entities)
 	{
-		switch (curModifMode)
+		switch(scene->modifSystem->GetModifMode())
 		{
 		case ST_MODIF_MOVE:
 			setCursor(Qt::SizeAllCursor);
@@ -271,14 +266,40 @@ void SceneTabWidget::MouseOverSelectedEntities(SceneEditor2* scene, const Entity
 			setCursor(Qt::ArrowCursor);
 			break;
 		}
-		
 	}
 	else
 	{
 		setCursor(Qt::ArrowCursor);
 	}
+}
 
-	*/
+void SceneTabWidget::SceneSaved(SceneEditor2 *scene)
+{
+	// update scene name on tabBar
+	for(int i = 0; i < tabBar->count(); ++i)
+	{
+		SceneEditor2 *tabScene = GetTabScene(i);
+		if(tabScene == scene)
+		{
+			UpdateTabName(i);
+			break;
+		}
+	}
+
+}
+
+void SceneTabWidget::SceneModifyStatusChanged(SceneEditor2 *scene, bool modified)
+{
+	// update scene name on tabBar
+	for(int i = 0; i < tabBar->count(); ++i)
+	{
+		SceneEditor2 *tabScene = GetTabScene(i);
+		if(tabScene == scene)
+		{
+			UpdateTabName(i);
+			break;
+		}
+	}
 }
 
 void SceneTabWidget::resizeEvent(QResizeEvent * event)
@@ -297,6 +318,24 @@ void SceneTabWidget::resizeEvent(QResizeEvent * event)
 		{
 			scene->SetViewportRect(dava3DView->GetRect());
 		}
+	}
+}
+
+void SceneTabWidget::UpdateTabName(int index)
+{
+	SceneEditor2 *scene = GetTabScene(index);
+	if(NULL != scene)
+	{
+		DAVA::String tabName = scene->GetScenePath().GetFilename();
+		DAVA::String tabTooltip = scene->GetScenePath().GetAbsolutePathname();
+
+		if(scene->IsChanged())
+		{
+			tabName += "*";
+		}
+
+		tabBar->setTabText(index, tabName.c_str());
+		tabBar->setTabToolTip(index, tabTooltip.c_str());
 	}
 }
 
