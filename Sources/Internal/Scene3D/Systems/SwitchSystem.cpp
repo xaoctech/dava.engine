@@ -21,6 +21,7 @@
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Scene.h"
 #include "Debug/Stats.h"
+#include "Scene3D/Components/ActionComponent.h"
 
 namespace DAVA
 {
@@ -52,6 +53,12 @@ void SwitchSystem::Process()
 				SetVisibleHierarchy(entity->GetChild(i), (sw->newSwitchIndex == i));
 			}
 			sw->oldSwitchIndex = sw->newSwitchIndex;
+			
+			ActionComponent* actionComponent = cast_if_equal<ActionComponent*>(entity->GetComponent(Component::ACTION_COMPONENT));
+			if(NULL != actionComponent)
+			{
+				actionComponent->Start(sw->newSwitchIndex);
+			}
 		}
 	}
 

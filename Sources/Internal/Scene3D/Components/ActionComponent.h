@@ -36,10 +36,11 @@ namespace DAVA
 			};
 			
 			eType type;
+			int32 switchIndex;
 			float32 delay;
 			String entityName;
 			
-			Action() : type(TYPE_NONE), delay(0.0f)
+			Action() : type(TYPE_NONE), delay(0.0f), switchIndex(-1)
 			{
 			}
 			
@@ -48,6 +49,7 @@ namespace DAVA
 				type = action.type;
 				delay = action.delay;
 				entityName = action.entityName;
+				switchIndex = action.switchIndex;
 				
 				return *this;
 			}
@@ -58,9 +60,10 @@ namespace DAVA
 		ActionComponent();
 		virtual ~ActionComponent();
 		
-		void Start();
+		void Start(int32 switchIndex = -1);
 		bool IsStarted();
-		void Stop();
+		void StopAll();
+		void Stop(int32 switchIndex = -1);
 		
 		void Add(ActionComponent::Action action);
 		void Remove(const ActionComponent::Action& action);
@@ -75,6 +78,7 @@ namespace DAVA
 		virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 		
 		static ActionComponent::Action MakeAction(ActionComponent::Action::eType type, String targetName, float32 delay);
+		static ActionComponent::Action MakeAction(ActionComponent::Action::eType type, String targetName, float32 delay, int32 switchIndex);
 		
 		IMPLEMENT_COMPONENT_TYPE(ACTION_COMPONENT);
 		
@@ -94,8 +98,9 @@ namespace DAVA
 			Action action;
 			float32 timer;
 			bool active;
+			bool markedForUpdate;
 			
-			ActionContainer() : timer(0.0f), active(false)
+			ActionContainer() : timer(0.0f), active(false), markedForUpdate(false)
 			{
 			}
 			
