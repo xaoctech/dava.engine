@@ -95,6 +95,9 @@ public:
     void TouchMove(const Vector2 &point, int32 touchId);
     void TouchUp(int32 touchId);
     
+	// Keyboard action
+	void KeyPress(int32 keyChar);
+
     // helpers
     bool SetText(const String &path, const String &text); // lua uses ansi strings
     bool CheckText(UIControl *control, const String &expectedText);

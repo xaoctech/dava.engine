@@ -274,6 +274,65 @@ bool AutotestingSystemLua::SetText(const String &path, const String &text)
     return false;
 }
 
+void AutotestingSystemLua::KeyPress(int32 keyChar)
+{
+	UITextField *uiTextField = dynamic_cast<UITextField*>(UIControlSystem::Instance()->GetFocusedControl()); 
+	if (uiTextField)
+	{
+		UIEvent keyPress;
+		keyPress.tid = keyChar;
+		keyPress.phase = UIEvent::PHASE_KEYCHAR;
+		keyPress.tapCount = 1;
+		keyPress.keyChar = keyChar;
+
+		Logger::Debug("AutotestingSystemLua::KeyPress %d phase=%d count=%d point=(%f, %f) physPoint=(%f,%f) key=%c", keyPress.tid, keyPress.phase, keyPress.tapCount, keyPress.point.x, keyPress.point.y, keyPress.physPoint.x, keyPress.physPoint.y, keyPress.keyChar);
+
+		if (keyPress.tid == DVKEY_BACKSPACE)
+		{
+			//TODO: act the same way on iPhone
+			WideString str = L"";
+			if(uiTextField->GetDelegate()->TextFieldKeyPressed(uiTextField, (int32)uiTextField->GetText().length(), -1, str))
+			{
+				uiTextField->SetText(uiTextField->GetAppliedChanges((int32)uiTextField->GetText().length(),  -1, str));
+			}
+			
+		}
+		else if (keyPress.tid == DVKEY_ENTER)
+		{
+			uiTextField->GetDelegate()->TextFieldShouldReturn(uiTextField);
+		}
+		else if (keyPress.tid == DVKEY_ESCAPE)
+		{
+			uiTextField->GetDelegate()->TextFieldShouldCancel(uiTextField);
+		}
+		else if(keyPress.keyChar != 0)
+		{
+			WideString str;
+			str += keyPress.keyChar;
+			if(uiTextField->GetDelegate()->TextFieldKeyPressed(uiTextField, (int32)uiTextField->GetText().length(), 1, str))
+			{
+				uiTextField->SetText(uiTextField->GetAppliedChanges((int32)uiTextField->GetText().length(),  1, str));
+			}
+		}
+	}
+
+	/*
+	UIEvent keyPress;
+	keyPress.tid = keyChar;
+	keyPress.phase = UIEvent::PHASE_KEYCHAR;
+	keyPress.tapCount = 1;
+	keyPress.keyChar = keyChar;
+
+	Logger::Debug("AutotestingSystemLua::KeyPress %d phase=%d count=%d point=(%f, %f) physPoint=(%f,%f) key=%c", keyPress.tid, keyPress.phase, keyPress.tapCount, keyPress.point.x, keyPress.point.y, keyPress.physPoint.x, keyPress.physPoint.y, keyPress.keyChar);
+
+	Vector<UIEvent> emptyTouches;
+	Vector<UIEvent> touches;
+	touches.push_back(keyPress);
+	UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
+	AutotestingSystem::Instance()->OnInput(keyPress);
+	*/
+}
+
 bool AutotestingSystemLua::CheckText(UIControl *control, const String &expectedText)
 {
 	UIStaticText *uiStaticText = dynamic_cast<UIStaticText*>(control);
