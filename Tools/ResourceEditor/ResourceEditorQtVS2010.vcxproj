@@ -381,6 +381,7 @@
     <ClCompile Include="Classes\Commands2\EntityMoveCommand.cpp" />
     <ClCompile Include="Classes\Commands2\EntityRemoveCommand.cpp" />
     <ClCompile Include="Classes\Commands2\HeightmapEditorCommands2.cpp" />
+    <ClCompile Include="Classes\Commands2\ParticleEditorCommands.cpp" />
     <ClCompile Include="Classes\Commands2\ParticleForceMoveCommand.cpp" />
     <ClCompile Include="Classes\Commands2\ParticleForceRemoveCommand.cpp" />
     <ClCompile Include="Classes\Commands2\ParticleLayerMoveCommand.cpp" />
@@ -398,7 +399,6 @@
     <ClCompile Include="Classes\Commands\HeightmapEditorCommands.cpp" />
     <ClCompile Include="Classes\Commands\LibraryCommands.cpp" />
     <ClCompile Include="Classes\Commands\MaterialViewOptionsCommands.cpp" />
-    <ClCompile Include="Classes\Commands\ParticleEditorCommands.cpp" />
     <ClCompile Include="Classes\Commands\SceneEditorScreenMainCommands.cpp" />
     <ClCompile Include="Classes\Commands\SceneGraphCommands.cpp" />
     <ClCompile Include="Classes\Commands\SetSwitchIndexCommands.cpp" />
@@ -501,6 +501,7 @@
     <ClCompile Include="Classes\Qt\Scene\System\CollisionSystem\CollisionRenderObject.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\CustomColorsSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\EditorLightSystem.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\EditorParticlesSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\GridSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\HeightmapEditorSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\HoodSystem.cpp" />
@@ -518,7 +519,6 @@
     <ClCompile Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\NotPassableTerrainProxy.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\VisibilityToolProxy.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\ModifSystem.cpp" />
-    <ClCompile Include="Classes\Qt\Scene\System\ParticlesDebugDrawSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\SelectionSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\StructureSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\TilemaskEditorSystem.cpp" />
@@ -1038,6 +1038,7 @@
     <ClInclude Include="Classes\Commands2\EntityMoveCommand.h" />
     <ClInclude Include="Classes\Commands2\EntityRemoveCommand.h" />
     <ClInclude Include="Classes\Commands2\HeightmapEditorCommands2.h" />
+    <ClInclude Include="Classes\Commands2\ParticleEditorCommands.h" />
     <ClInclude Include="Classes\Commands2\ParticleForceMoveCommand.h" />
     <ClInclude Include="Classes\Commands2\ParticleForceRemoveCommand.h" />
     <ClInclude Include="Classes\Commands2\ParticleLayerMoveCommand.h" />
@@ -1056,7 +1057,6 @@
     <ClInclude Include="Classes\Commands\HeightmapEditorCommands.h" />
     <ClInclude Include="Classes\Commands\LibraryCommands.h" />
     <ClInclude Include="Classes\Commands\MaterialViewOptionsCommands.h" />
-    <ClInclude Include="Classes\Commands\ParticleEditorCommands.h" />
     <ClInclude Include="Classes\Commands\SceneEditorScreenMainCommands.h" />
     <ClInclude Include="Classes\Commands\SceneGraphCommands.h" />
     <ClInclude Include="Classes\Commands\SetSwitchIndexCommands.h" />
@@ -1165,6 +1165,7 @@
     <ClInclude Include="Classes\Qt\Scene\System\CollisionSystem\CollisionRenderObject.h" />
     <ClInclude Include="Classes\Qt\Scene\System\CustomColorsSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\EditorLightSystem.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\EditorParticlesSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\GridSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\HeightmapEditorSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\HoodSystem.h" />
@@ -1182,7 +1183,6 @@
     <ClInclude Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\NotPassableTerrainProxy.h" />
     <ClInclude Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\VisibilityToolProxy.h" />
     <ClInclude Include="Classes\Qt\Scene\System\ModifSystem.h" />
-    <ClInclude Include="Classes\Qt\Scene\System\ParticlesDebugDrawSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\SelectionSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\StructureSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\TilemaskEditorSystem.h" />

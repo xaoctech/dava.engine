@@ -18,7 +18,7 @@
 #define __PARTICLE_EDITOR_COMMANDS_H__
 
 #include <DAVAEngine.h>
-#include "Command.h"
+#include "Commands2/CommandAction.h"
 
 using namespace DAVA;
 
@@ -26,115 +26,99 @@ using namespace DAVA;
 // Yuri Coder, 03/12/2012. New commands for Particle Editor QT.
 
 // Add new Particle Emitter.
-class CommandAddParticleEmitter: public Command
+class CommandAddParticleEmitter: public CommandAction
 {
 public:
 	CommandAddParticleEmitter();
-
-protected:
-    
-	virtual void Execute();
+	virtual void Redo();
 };
 
 // Start/stop/restart Particle Effect.
-class CommandStartStopParticleEffect: public Command
+class CommandStartStopParticleEffect: public CommandAction
 {
 public:
-	CommandStartStopParticleEffect(bool isStart);
-	DAVA::Set<DAVA::Entity*> GetAffectedEntities();
-    
-protected:
-	virtual void Execute();
+	CommandStartStopParticleEffect(DAVA::Entity* effect, bool isStart);
+	
+	virtual DAVA::Entity* GetEntity() const;
+   	virtual void Redo();
 
-	DAVA::Entity* affectedEntity;
+	bool GetStarted() const {return isStart;};
+
+protected:
+	DAVA::Entity* effectEntity;
     bool isStart;
 };
 
-class CommandRestartParticleEffect: public Command
+class CommandRestartParticleEffect: public CommandAction
 {
 public:
-	CommandRestartParticleEffect();
-    DAVA::Set<DAVA::Entity*> GetAffectedEntities();
-	
-protected:
-	virtual void Execute();
+	CommandRestartParticleEffect(DAVA::Entity* effect);
 
-	DAVA::Entity* affectedEntity;
+	virtual DAVA::Entity* GetEntity() const;
+	virtual void Redo();
+
+protected:
+	DAVA::Entity* effectEntity;
 };
 
 
 // Add new layer to Particle Emitter.
-class CommandAddParticleEmitterLayer: public Command
+class CommandAddParticleEmitterLayer: public CommandAction
 {
 public:
 	CommandAddParticleEmitterLayer();
-    
+	virtual void Redo();
+
 protected:
-    
-	virtual void Execute();
 };
 
 // Remove a layer from Particle Emitter.
-class CommandRemoveParticleEmitterLayer: public Command
+class CommandRemoveParticleEmitterLayer: public CommandAction
 {
 public:
 	CommandRemoveParticleEmitterLayer();
-    
-protected:
-
-	virtual void Execute();
+	virtual void Redo();
 };
 
 // Clone a layer inside Particle Emitter.
-class CommandCloneParticleEmitterLayer: public Command
+class CommandCloneParticleEmitterLayer: public CommandAction
 {
 public:
 	CommandCloneParticleEmitterLayer();
-    
-protected:
-    
-	virtual void Execute();
+	virtual void Redo();
 };
 
 // Add new force to Particle Emitter layer.
-class CommandAddParticleEmitterForce: public Command
+class CommandAddParticleEmitterForce: public CommandAction
 {
 public:
 	CommandAddParticleEmitterForce();
-    
-protected:
-    
-	virtual void Execute();
+	virtual void Redo();
 };
 
 // Remove a force from Particle Emitter layer.
-class CommandRemoveParticleEmitterForce: public Command
+class CommandRemoveParticleEmitterForce: public CommandAction
 {
 public:
 	CommandRemoveParticleEmitterForce();
-    
-protected:
-    
-	virtual void Execute();
+	virtual void Redo();
 };
 
-class CommandUpdateEffect: public Command
+class CommandUpdateEffect: public CommandAction
 {
 public:
 	CommandUpdateEffect(ParticleEffectComponent* particleEffect);
 	void Init(float32 playbackSpeed, bool stopOnLoad);
-	
+	virtual void Redo();
+
 protected:
-	virtual void Execute();
-	
-private:
 	ParticleEffectComponent* particleEffect;
 
 	float32 playbackSpeed;
 	bool stopOnLoad;
 };
 
-class CommandUpdateEmitter: public Command
+class CommandUpdateEmitter: public CommandAction
 {
 public:
 	CommandUpdateEmitter(ParticleEmitter* emitter);
@@ -147,10 +131,11 @@ public:
 			  float32 life,
 			  float32 playbackSpeed);
 
+	ParticleEmitter* GetEmitter() const {return emitter;};
+
+	virtual void Redo();
+
 protected:
-	virtual void Execute();
-	
-private:
 	ParticleEmitter* emitter;
 
 	ParticleEmitter::eType emitterType;
@@ -163,11 +148,25 @@ private:
 	float32 playbackSpeed;
 };
 
-class CommandUpdateParticleLayer: public Command
+class CommandUpdateParticleLayerBase : public CommandAction
+{
+public:
+	CommandUpdateParticleLayerBase(CommandID cmdID) :
+		CommandAction(cmdID)
+	{
+	}
+
+	ParticleLayer* GetLayer() const {return layer;};
+	
+protected:
+	ParticleLayer* layer;
+};
+
+class CommandUpdateParticleLayer: public CommandUpdateParticleLayerBase
 {
 public:
 	CommandUpdateParticleLayer(ParticleEmitter* emitter, ParticleLayer* layer);
-	DAVA_DEPRECATED(void Init(const QString& layerName,	//DEPRECATE: using QString
+	void Init(const String& layerName,
 			  ParticleLayer::eType layerType,
 			  bool isDisabled,
 			  bool additive,
@@ -200,16 +199,14 @@ public:
 			  float32 frameOverLifeFPS,
 
 			  float32 pivotPointX,
-			  float32 pivotPointY));
+			  float32 pivotPointY);
+
+	virtual void Redo();
 
 protected:
-    virtual void Execute();
-	
-private:
 	ParticleEmitter* emitter;
-	ParticleLayer* layer;
 
-	QString layerName;
+	String layerName;
 	ParticleLayer::eType layerType;
 	bool isDisabled;
 	bool isLong;
@@ -246,35 +243,30 @@ private:
 	float32 pivotPointY;
 };
 
-class CommandUpdateParticleLayerTime: public Command
+class CommandUpdateParticleLayerTime: public CommandUpdateParticleLayerBase
 {
 public:
 	CommandUpdateParticleLayerTime(ParticleLayer* layer);
 	void Init(float32 startTime, float32 endTime);
 
+	virtual void Redo();
+
 protected:
-    virtual void Execute();
-	
-private:
-	ParticleLayer* layer;
 	float32 startTime;
 	float32 endTime;
 };
 
-class CommandUpdateParticleLayerEnabled: public Command
+class CommandUpdateParticleLayerEnabled: public CommandUpdateParticleLayerBase
 {
 public:
 	CommandUpdateParticleLayerEnabled(ParticleLayer* layer, bool isEnabled);
-
-protected:
-    virtual void Execute();
+	virtual void Redo();
 	
-private:
-	ParticleLayer* layer;
+protected:
 	bool isEnabled;
 };
 
-class CommandUpdateParticleForce: public Command
+class CommandUpdateParticleForce: public CommandAction
 {
 public:
 	CommandUpdateParticleForce(ParticleLayer* layer, uint32 forceId);
@@ -283,10 +275,12 @@ public:
 			  RefPtr< PropertyLine<Vector3> > forcesVariation,
 			  RefPtr< PropertyLine<float32> > forcesOverLife);
 	
-protected:
-    virtual void Execute();
+	virtual void Redo();
 	
-private:
+	ParticleLayer* GetLayer() const {return layer;};
+	uint32 GetForceIndex() const {return forceId;};
+
+protected:
 	ParticleLayer* layer;
 	uint32 forceId;
 	
@@ -294,9 +288,9 @@ private:
 	RefPtr< PropertyLine<Vector3> > forcesVariation;
 	RefPtr< PropertyLine<float32> > forcesOverLife;
 };
-
+/*
 // Load/save Particle Emitter Node.
-class CommandLoadParticleEmitterFromYaml : public Command
+class CommandLoadParticleEmitterFromYaml : public CommandAction
 {
 public:
 	DAVA_DEPRECATED(CommandLoadParticleEmitterFromYaml()); // DEPRECATED: using ParticlesEditorController(QOBJECT)
@@ -305,7 +299,7 @@ protected:
     virtual void Execute();
 };
 
-class CommandSaveParticleEmitterToYaml : public Command
+class CommandSaveParticleEmitterToYaml : public CommandAction
 {
 public:
 	DAVA_DEPRECATED(CommandSaveParticleEmitterToYaml(bool forceAskFilename)); // DEPRECATED: using ParticlesEditorController(QOBJECT)
@@ -317,7 +311,7 @@ protected:
 };
 
 // The same for Inner Emitters.
-class CommandLoadInnerEmitterFromYaml : public Command
+class CommandLoadInnerEmitterFromYaml : public CommandAction
 {
 public:
 	DAVA_DEPRECATED(CommandLoadInnerEmitterFromYaml()); // DEPRECATED: using ParticlesEditorController(QOBJECT)
@@ -326,7 +320,7 @@ protected:
     virtual void Execute(); 
 };
 
-class CommandSaveInnerEmitterToYaml : public Command
+class CommandSaveInnerEmitterToYaml : public CommandAction
 {
 public:
 	DAVA_DEPRECATED(CommandSaveInnerEmitterToYaml(bool forceAskFilename)); // DEPRECATED: using ParticlesEditorController(QOBJECT)
@@ -336,6 +330,6 @@ protected:
     
     bool forceAskFilename;
 };
-
+*/
 
 #endif //__PARTICLE_EDITOR_COMMANDS_H__

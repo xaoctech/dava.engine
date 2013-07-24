@@ -43,7 +43,7 @@ using namespace DAVA;
 // Yuri Coder, 03/12/2012. New commands for Particle Editor QT.
 
 CommandUpdateEffect::CommandUpdateEffect(ParticleEffectComponent* particleEffect):
-Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_UPDATE_EFFECT)
+	CommandAction(CMDID_UPDATE_PARTICLE_EFFECT)
 {
 	this->particleEffect = particleEffect;
 }
@@ -54,7 +54,7 @@ void CommandUpdateEffect::Init(float32 playbackSpeed, bool stopOnLoad)
 	this->stopOnLoad = stopOnLoad;
 }
 
-void CommandUpdateEffect::Execute()
+void CommandUpdateEffect::Redo()
 {
 	DVASSERT(particleEffect);
 	particleEffect->SetPlaybackSpeed(playbackSpeed);
@@ -62,7 +62,7 @@ void CommandUpdateEffect::Execute()
 }
 
 CommandUpdateEmitter::CommandUpdateEmitter(ParticleEmitter* emitter):
-	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_UPDATE_EMITTER)
+	CommandAction(CMDID_UPDATE_PARTICLE_EMITTER)
 {
 	this->emitter = emitter;
 }
@@ -86,7 +86,7 @@ void CommandUpdateEmitter::Init(ParticleEmitter::eType emitterType,
 	this->playbackSpeed = playbackSpeed;
 }
 
-void CommandUpdateEmitter::Execute()
+void CommandUpdateEmitter::Redo()
 {
 	DVASSERT(emitter);
 
@@ -101,13 +101,13 @@ void CommandUpdateEmitter::Execute()
 }
 
 CommandUpdateParticleLayer::CommandUpdateParticleLayer(ParticleEmitter* emitter, ParticleLayer* layer) :
-	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_UPDATE_PARTICLE_LAYER)
+	CommandUpdateParticleLayerBase(CMDID_UPDATE_PARTICLE_LAYER)
 {
 	this->emitter = emitter;
 	this->layer = layer;
 }
 
-void CommandUpdateParticleLayer::Init(const QString& layerName,
+void CommandUpdateParticleLayer::Init(const String& layerName,
 									  ParticleLayer::eType layerType,
 									  bool isDisabled,
 									  bool additive,
@@ -179,9 +179,9 @@ void CommandUpdateParticleLayer::Init(const QString& layerName,
 }
 
 
-void CommandUpdateParticleLayer::Execute()
+void CommandUpdateParticleLayer::Redo()
 {
-	layer->layerName = layerName.toStdString();
+	layer->layerName = layerName;
 	layer->SetDisabled(isDisabled);
 	layer->SetAdditive(additive);
 	layer->SetLong(isLong);
@@ -247,11 +247,13 @@ void CommandUpdateParticleLayer::Execute()
 		layer->CreateInnerEmitter();
 	}
 
-	SceneDataManager::Instance()->RefreshParticlesLayer(layer);
+	// TODO: Yuri Coder, 2013/07/23. Refresh Particle Layer is needed for Superemitter.
+	// Currently it is temporarily commented out but have to be recovered soon.
+	// SceneDataManager::Instance()->RefreshParticlesLayer(layer);
 }
 
 CommandUpdateParticleLayerTime::CommandUpdateParticleLayerTime(ParticleLayer* layer) :
-	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_UPDATE_PARTICLE_LAYER_TIME)
+	CommandUpdateParticleLayerBase(CMDID_UPDATE_PARTILCE_LAYER_TIME)
 {
 	this->layer = layer;
 }
@@ -262,20 +264,20 @@ void CommandUpdateParticleLayerTime::Init(float32 startTime, float32 endTime)
 	this->endTime = endTime;
 }
 
-void CommandUpdateParticleLayerTime::Execute()
+void CommandUpdateParticleLayerTime::Redo()
 {
 	layer->startTime = startTime;
 	layer->endTime = endTime;
 }
 
 CommandUpdateParticleLayerEnabled::CommandUpdateParticleLayerEnabled(ParticleLayer* layer, bool isEnabled) :
-	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_UPDATE_PARTICLE_LAYER_ENABLED)
+	CommandUpdateParticleLayerBase(CMDID_UPDATE_PARTICLE_LAYER_ENABLED)
 {
 	this->layer = layer;
 	this->isEnabled = isEnabled;
 }
 
-void CommandUpdateParticleLayerEnabled::Execute()
+void CommandUpdateParticleLayerEnabled::Redo()
 {
 	if (this->layer)
 	{
@@ -285,7 +287,7 @@ void CommandUpdateParticleLayerEnabled::Execute()
 }
 
 CommandUpdateParticleForce::CommandUpdateParticleForce(ParticleLayer* layer, uint32 forceId) :
-	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_UPDATE_PARTICLE_FORCE)
+	CommandAction(CMDID_UPDATE_PARTICLE_FORCE)
 {
 	this->layer = layer;
 	this->forceId = forceId;
@@ -300,7 +302,7 @@ void CommandUpdateParticleForce::Init(RefPtr< PropertyLine<Vector3> > force,
 	this->forcesOverLife = forcesOverLife;
 }
 
-void CommandUpdateParticleForce::Execute()
+void CommandUpdateParticleForce::Redo()
 {
 	layer->UpdateForce(forceId, force, forcesVariation, forcesOverLife);
 }
@@ -310,11 +312,11 @@ void CommandUpdateParticleForce::Execute()
 // Yuri Coder, 03/12/2012. New commands for Particle Editor QT.
 
 CommandAddParticleEmitter::CommandAddParticleEmitter() :
-    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_ADD_PARTICLE_EMITTER)
+    CommandAction(CMDID_ADD_PARTICLE_EMITTER)
 {
 }
 
-void CommandAddParticleEmitter::Execute()
+void CommandAddParticleEmitter::Redo()
 {
     // This command is done through Main Window to reuse the existing code.
 	// TODO: mainwindow
@@ -322,22 +324,23 @@ void CommandAddParticleEmitter::Execute()
 }
 
 
-CommandStartStopParticleEffect::CommandStartStopParticleEffect(bool isStart) :
-    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_START_STOP_PARTICLE_EFFECT)
+CommandStartStopParticleEffect::CommandStartStopParticleEffect(DAVA::Entity* effect, bool isStart) :
+    CommandAction(CMDID_START_STOP_PARTICLE_EFFECT)
 {
     this->isStart = isStart;
-	this->affectedEntity = NULL;
+	this->effectEntity = effect;
 }
 
-void CommandStartStopParticleEffect::Execute()
+void CommandStartStopParticleEffect::Redo()
 {
-    BaseParticleEditorNode* selectedNode = ParticlesEditorController::Instance()->GetSelectedNode();
-    EffectParticleEditorNode* effectNode = dynamic_cast<EffectParticleEditorNode*>(selectedNode);
-    if (!effectNode || !effectNode->GetRootNode())
-    {
-        return;
-    }
-    ParticleEffectComponent* effectComponent = effectNode->GetParticleEffectComponent();
+	if (!effectEntity)
+	{
+		return;
+	}
+
+	ParticleEffectComponent * effectComponent = cast_if_equal<ParticleEffectComponent*>(effectEntity->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+	DVASSERT(effectComponent);
+
     if (this->isStart)
     {
         effectComponent->Start();
@@ -346,62 +349,42 @@ void CommandStartStopParticleEffect::Execute()
     {
         effectComponent->Stop();
     }
-	
-	this->affectedEntity = effectNode->GetRootNode();
 }
 
-DAVA::Set<DAVA::Entity*> CommandStartStopParticleEffect::GetAffectedEntities()
+DAVA::Entity* CommandStartStopParticleEffect::GetEntity() const
 {
-	if (!this->affectedEntity)
+	return this->effectEntity;
+}
+
+CommandRestartParticleEffect::CommandRestartParticleEffect(DAVA::Entity* effect) :
+    CommandAction(CMDID_RESTART_PARTICLE_EFFECT)
+{
+	this->effectEntity = effect;
+}
+
+void CommandRestartParticleEffect::Redo()
+{
+	if (!effectEntity)
 	{
-		return Command::GetAffectedEntities();
+		return;
 	}
 	
-	DAVA::Set<DAVA::Entity*> affectedEntities;
-	affectedEntities.insert(this->affectedEntity);
-	return affectedEntities;
-}
-
-CommandRestartParticleEffect::CommandRestartParticleEffect() :
-    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_RESTART_PARTICLE_EFFECT)
-{
-	this->affectedEntity = NULL;
-}
-
-void CommandRestartParticleEffect::Execute()
-{
-    BaseParticleEditorNode* selectedNode = ParticlesEditorController::Instance()->GetSelectedNode();
-    EffectParticleEditorNode* effectNode = dynamic_cast<EffectParticleEditorNode*>(selectedNode);
-    if (!effectNode || !effectNode->GetRootNode() || !effectNode->GetRootNode())
-    {
-        return;
-    }
-    
-	ParticleEffectComponent * effectComponent = effectNode->GetParticleEffectComponent();
+	ParticleEffectComponent * effectComponent = cast_if_equal<ParticleEffectComponent*>(effectEntity->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
 	DVASSERT(effectComponent);
     effectComponent->Restart();
-	
-	this->affectedEntity = effectNode->GetRootNode();
 }
 
-DAVA::Set<DAVA::Entity*> CommandRestartParticleEffect::GetAffectedEntities()
+DAVA::Entity* CommandRestartParticleEffect::GetEntity() const
 {
-	if (!this->affectedEntity)
-	{
-		return Command::GetAffectedEntities();
-	}
-	
-	DAVA::Set<DAVA::Entity*> affectedEntities;
-	affectedEntities.insert(this->affectedEntity);
-	return affectedEntities;
+	return this->effectEntity;
 }
 
 CommandAddParticleEmitterLayer::CommandAddParticleEmitterLayer() :
-    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_ADD_PARTICLE_EMITTER_LAYER)
+    CommandAction(CMDID_ADD_PARTICLE_EMITTER_LAYER)
 {
 }
 
-void CommandAddParticleEmitterLayer::Execute()
+void CommandAddParticleEmitterLayer::Redo()
 {
     // Need to know selected Particle Emitter Layers Root.
     BaseParticleEditorNode* selectedNode = ParticlesEditorController::Instance()->GetSelectedNode();
@@ -430,11 +413,11 @@ void CommandAddParticleEmitterLayer::Execute()
 }
 
 CommandRemoveParticleEmitterLayer::CommandRemoveParticleEmitterLayer() :
-    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_REMOVE_PARTICLE_EMITTER_LAYER)
+    CommandAction(CMDID_REMOVE_PARTICLE_EMITTER_LAYER)
 {
 }
 
-void CommandRemoveParticleEmitterLayer::Execute()
+void CommandRemoveParticleEmitterLayer::Redo()
 {
     // Need to know selected Layer Node to remove it.
     BaseParticleEditorNode* selectedNode = ParticlesEditorController::Instance()->GetSelectedNode();
@@ -467,11 +450,11 @@ void CommandRemoveParticleEmitterLayer::Execute()
 }
 
 CommandCloneParticleEmitterLayer::CommandCloneParticleEmitterLayer() :
-    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_CLONE_PARTICLE_EMITTER_LAYER)
+	CommandAction(CMDID_CLONE_PARTICLE_EMITTER_LAYER)
 {
 }
 
-void CommandCloneParticleEmitterLayer::Execute()
+void CommandCloneParticleEmitterLayer::Redo()
 {
     // Need to know selected Layer Node to remove it.
     BaseParticleEditorNode* selectedNode = ParticlesEditorController::Instance()->GetSelectedNode();
@@ -493,11 +476,11 @@ void CommandCloneParticleEmitterLayer::Execute()
 }
 
 CommandAddParticleEmitterForce::CommandAddParticleEmitterForce() :
-    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_ADD_PARTICLE_EMITTER_FORCE)
+    CommandAction(CMDID_ADD_PARTICLE_EMITTER_FORCE)
 {
 }
 
-void CommandAddParticleEmitterForce::Execute()
+void CommandAddParticleEmitterForce::Redo()
 {
     // Need to know selected Layer Node to add the Force to.
     BaseParticleEditorNode* selectedNode = ParticlesEditorController::Instance()->GetSelectedNode();
@@ -523,11 +506,11 @@ void CommandAddParticleEmitterForce::Execute()
 }
 
 CommandRemoveParticleEmitterForce::CommandRemoveParticleEmitterForce() :
-    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_REMOVE_PARTICLE_EMITTER_FORCE)
+    CommandAction(CMDID_REMOVE_PARTICLE_EMITTER_FORCE)
 {
 }
 
-void CommandRemoveParticleEmitterForce::Execute()
+void CommandRemoveParticleEmitterForce::Redo()
 {
     // Need to know selected Layer Node to add the Force to.
     BaseParticleEditorNode* selectedNode = ParticlesEditorController::Instance()->GetSelectedNode();
@@ -559,6 +542,8 @@ void CommandRemoveParticleEmitterForce::Execute()
     //QtMainWindowHandler::Instance()->RefreshSceneGraph();
 }
 
+// TODO! these commands use QT! Think about how to get rid of it.
+/*
 CommandLoadParticleEmitterFromYaml::CommandLoadParticleEmitterFromYaml() :
     Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_LOAD_PARTICLE_EMITTER_FROM_YAML)
 {
@@ -717,3 +702,4 @@ void CommandSaveInnerEmitterToYaml::Execute()
 
     emitter->SaveToYaml(yamlPath);
 }
+ */

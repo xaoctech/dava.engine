@@ -22,6 +22,7 @@
 		1735C427169DE63D001E0468 /* ParticlesEditorSceneDataHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1735C423169DE63D001E0468 /* ParticlesEditorSceneDataHelper.cpp */; };
 		1735C428169DE63D001E0468 /* ParticlesEditorSceneModelHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1735C425169DE63D001E0468 /* ParticlesEditorSceneModelHelper.cpp */; };
 		173B278D172FA79C006CD29E /* InnerEmitterParticleEditorNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173B278B172FA79C006CD29E /* InnerEmitterParticleEditorNode.cpp */; };
+		176D7F0E179D5C6800795610 /* ParticleEditorCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 176D7F0C179D5C6800795610 /* ParticleEditorCommands.cpp */; };
 		177D1A9016CB8ADB0021104B /* SceneGraphModelStateHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 177D1A8E16CB8ADB0021104B /* SceneGraphModelStateHelper.cpp */; };
 		177D1A9316CB8C820021104B /* PropertyEditorStateHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 177D1A9116CB8C820021104B /* PropertyEditorStateHelper.cpp */; };
 		178A9B721716E584006BB1F7 /* ParticleEffectPropertiesWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 178A9B701716E583006BB1F7 /* ParticleEffectPropertiesWidget.cpp */; };
@@ -208,7 +209,6 @@
 		5C44DB4415F4DA9800A42B52 /* CommandReloadTextures.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C44DB4215F4DA9800A42B52 /* CommandReloadTextures.cpp */; };
 		5C45EB971606483E007EE300 /* LandscapesController.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C45EB951606483E007EE300 /* LandscapesController.cpp */; };
 		5C4A3F5E15FC910F005CABFE /* EditorHeightmap.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C4A3F5C15FC910F005CABFE /* EditorHeightmap.cpp */; };
-		5C4F6D7115F88CF900C5A222 /* ParticleEditorCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C4F6D6F15F88CF900C5A222 /* ParticleEditorCommands.cpp */; };
 		5C574E3915C9463C0015537A /* btAxisSweep3.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C574CFC15C9463C0015537A /* btAxisSweep3.cpp */; };
 		5C574E3A15C9463C0015537A /* btBroadphaseProxy.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C574CFF15C9463C0015537A /* btBroadphaseProxy.cpp */; };
 		5C574E3B15C9463C0015537A /* btCollisionAlgorithm.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C574D0115C9463C0015537A /* btCollisionAlgorithm.cpp */; };
@@ -425,7 +425,7 @@
 		6295E409178B08050007F9EC /* MimeDataHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 6295E407178B08050007F9EC /* MimeDataHelper.cpp */; };
 		629E220A177C8B9C007C820F /* AddSwitchEntityCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 629E2208177C8B9B007C820F /* AddSwitchEntityCommand.cpp */; };
 		748E55931761D5EB000E24FF /* ParticlesEditorNodeNameHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 748E55911761D5EB000E24FF /* ParticlesEditorNodeNameHelper.cpp */; };
-		74FE1CE5178B117500693D15 /* ParticlesDebugDrawSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74FE1CE3178B117300693D15 /* ParticlesDebugDrawSystem.cpp */; };
+		74FE1CE5178B117500693D15 /* EditorParticlesSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74FE1CE3178B117300693D15 /* EditorParticlesSystem.cpp */; };
 		77BDEC8E56A833D3814BC614 /* QtNetwork.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 82153068A36B6EA46DD82A06 /* QtNetwork.framework */; };
 		77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 336CB11D929F5E35FA69020F /* Cocoa.framework */; };
 		8417040216CBCEAD00F1023D /* SpritePackerHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8417040016CBCEAD00F1023D /* SpritePackerHelper.cpp */; };
@@ -619,6 +619,8 @@
 		1735C426169DE63D001E0468 /* ParticlesEditorSceneModelHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticlesEditorSceneModelHelper.h; sourceTree = "<group>"; };
 		173B278B172FA79C006CD29E /* InnerEmitterParticleEditorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InnerEmitterParticleEditorNode.cpp; sourceTree = "<group>"; };
 		173B278C172FA79C006CD29E /* InnerEmitterParticleEditorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InnerEmitterParticleEditorNode.h; sourceTree = "<group>"; };
+		176D7F0C179D5C6800795610 /* ParticleEditorCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEditorCommands.cpp; sourceTree = "<group>"; };
+		176D7F0D179D5C6800795610 /* ParticleEditorCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEditorCommands.h; sourceTree = "<group>"; };
 		177D1A8D16CB8ACA0021104B /* QTreeViewStateHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTreeViewStateHelper.h; sourceTree = "<group>"; };
 		177D1A8E16CB8ADB0021104B /* SceneGraphModelStateHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneGraphModelStateHelper.cpp; sourceTree = "<group>"; };
 		177D1A8F16CB8ADB0021104B /* SceneGraphModelStateHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneGraphModelStateHelper.h; sourceTree = "<group>"; };
@@ -909,8 +911,6 @@
 		5C45EB961606483E007EE300 /* LandscapesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapesController.h; path = Classes/LandscapeEditor/LandscapesController.h; sourceTree = "<group>"; };
 		5C4A3F5C15FC910F005CABFE /* EditorHeightmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EditorHeightmap.cpp; path = Classes/LandscapeEditor/EditorHeightmap.cpp; sourceTree = "<group>"; };
 		5C4A3F5D15FC910F005CABFE /* EditorHeightmap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EditorHeightmap.h; path = Classes/LandscapeEditor/EditorHeightmap.h; sourceTree = "<group>"; };
-		5C4F6D6F15F88CF900C5A222 /* ParticleEditorCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParticleEditorCommands.cpp; path = Classes/Commands/ParticleEditorCommands.cpp; sourceTree = "<group>"; };
-		5C4F6D7015F88CF900C5A222 /* ParticleEditorCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParticleEditorCommands.h; path = Classes/Commands/ParticleEditorCommands.h; sourceTree = "<group>"; };
 		5C574CF715C9462D0015537A /* btBulletCollisionCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = btBulletCollisionCommon.h; path = Classes/bullet/btBulletCollisionCommon.h; sourceTree = "<group>"; };
 		5C574CF815C9462D0015537A /* btBulletDynamicsCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = btBulletDynamicsCommon.h; path = Classes/bullet/btBulletDynamicsCommon.h; sourceTree = "<group>"; };
 		5C574CF915C9462D0015537A /* Bullet-C-Api.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "Bullet-C-Api.h"; path = "Classes/bullet/Bullet-C-Api.h"; sourceTree = "<group>"; };
@@ -1421,8 +1421,8 @@
 		748E55911761D5EB000E24FF /* ParticlesEditorNodeNameHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticlesEditorNodeNameHelper.cpp; sourceTree = "<group>"; };
 		748E55921761D5EB000E24FF /* ParticlesEditorNodeNameHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticlesEditorNodeNameHelper.h; sourceTree = "<group>"; };
 		7496CE1D1766058D0090AC05 /* StringConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StringConstants.h; path = Classes/StringConstants.h; sourceTree = "<group>"; };
-		74FE1CE3178B117300693D15 /* ParticlesDebugDrawSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticlesDebugDrawSystem.cpp; sourceTree = "<group>"; };
-		74FE1CE4178B117400693D15 /* ParticlesDebugDrawSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticlesDebugDrawSystem.h; sourceTree = "<group>"; };
+		74FE1CE3178B117300693D15 /* EditorParticlesSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditorParticlesSystem.cpp; sourceTree = "<group>"; };
+		74FE1CE4178B117400693D15 /* EditorParticlesSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorParticlesSystem.h; sourceTree = "<group>"; };
 		8157E7438190A1EEF4A4D363 /* mongodb_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mongodb_macos; path = ../../Libs/libs/libmongodb_macos.a; sourceTree = "<group>"; };
 		8159B90213E2E13CB65C75B4 /* vorbis_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbis_macos; path = ../../Libs/oggvorbis/lib/libvorbis_macos.a; sourceTree = "<group>"; };
 		81BBDA0F1849B4A35FAB7D00 /* freetype_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = freetype_macos; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
@@ -2295,8 +2295,8 @@
 				E8C4C64C17294079004B0B3B /* ModifSystem.h */,
 				E8C4C64D17294079004B0B3B /* SelectionSystem.cpp */,
 				E8C4C64E17294079004B0B3B /* SelectionSystem.h */,
-				74FE1CE3178B117300693D15 /* ParticlesDebugDrawSystem.cpp */,
-				74FE1CE4178B117400693D15 /* ParticlesDebugDrawSystem.h */,
+				74FE1CE3178B117300693D15 /* EditorParticlesSystem.cpp */,
+				74FE1CE4178B117400693D15 /* EditorParticlesSystem.h */,
 			);
 			path = System;
 			sourceTree = "<group>";
@@ -2304,6 +2304,8 @@
 		4FFE5C76176B37B600728624 /* Commands2 */ = {
 			isa = PBXGroup;
 			children = (
+				176D7F0C179D5C6800795610 /* ParticleEditorCommands.cpp */,
+				176D7F0D179D5C6800795610 /* ParticleEditorCommands.h */,
 				499E4A90178ABDF00067FA56 /* CustomColorsCommands2.cpp */,
 				499E4A91178ABDF00067FA56 /* CustomColorsCommands2.h */,
 				499E4A92178ABDF00067FA56 /* HeightmapEditorCommands2.cpp */,
@@ -3036,8 +3038,6 @@
 				E80842DB1639277D002A6A77 /* TextureOptionsCommands.h */,
 				4940AF6A164C1684003E95A7 /* CustomColorCommands.cpp */,
 				4940AF6B164C1684003E95A7 /* CustomColorCommands.h */,
-				5C4F6D6F15F88CF900C5A222 /* ParticleEditorCommands.cpp */,
-				5C4F6D7015F88CF900C5A222 /* ParticleEditorCommands.h */,
 				5C44DB4215F4DA9800A42B52 /* CommandReloadTextures.cpp */,
 				5C44DB4315F4DA9800A42B52 /* CommandReloadTextures.h */,
 				5C6549C615D3CE2900C3AC3F /* LibraryCommands.cpp */,
@@ -4082,7 +4082,6 @@
 				5C6549C815D3CE2900C3AC3F /* LibraryCommands.cpp in Build Sources */,
 				5C44DB4115F4BD6C00A42B52 /* SwitchNodePropertyControl.cpp in Build Sources */,
 				5C44DB4415F4DA9800A42B52 /* CommandReloadTextures.cpp in Build Sources */,
-				5C4F6D7115F88CF900C5A222 /* ParticleEditorCommands.cpp in Build Sources */,
 				5C4A3F5E15FC910F005CABFE /* EditorHeightmap.cpp in Build Sources */,
 				C786218A1602175100C96AA8 /* EditorConfig.cpp in Build Sources */,
 				5C8DA28C16024F4200BCE6DF /* NotPassableTerrain.cpp in Build Sources */,
@@ -4358,7 +4357,7 @@
 				4FAD0D401785EC6E00B05A35 /* QtPropertyDataIntrospection_moc.cpp in Build Sources */,
 				4FAD0D411785EC6E00B05A35 /* QtPropertyDataMetaObject_moc.cpp in Build Sources */,
 				4FAD0D421785EC6E00B05A35 /* SelectPathWidget_moc.cpp in Build Sources */,
-				74FE1CE5178B117500693D15 /* ParticlesDebugDrawSystem.cpp in Build Sources */,
+				74FE1CE5178B117500693D15 /* EditorParticlesSystem.cpp in Build Sources */,
 				499E4A79178ABDD20067FA56 /* CustomColorsSystem.cpp in Build Sources */,
 				499E4A7A178ABDD20067FA56 /* HeightmapEditorSystem.cpp in Build Sources */,
 				499E4A7B178ABDD20067FA56 /* LandscapeEditorDrawSystem.cpp in Build Sources */,
@@ -4398,6 +4397,7 @@
 				A69AA3B21796F1A60008B683 /* CubeMapTextureBrowser_moc.cpp in Build Sources */,
 				A69AA3B31796F1A60008B683 /* CubemapUtils_moc.cpp in Build Sources */,
 				A69AA3B41796F1A60008B683 /* MaterialHelper_moc.cpp in Build Sources */,
+				176D7F0E179D5C6800795610 /* ParticleEditorCommands.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
