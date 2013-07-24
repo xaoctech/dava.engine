@@ -51,6 +51,10 @@
 		84E5E0FF174D02EA0001C74F /* OpenUDIDApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 84E5E0FD174D02EA0001C74F /* OpenUDIDApple.mm */; };
 		84E5E102174D02F60001C74F /* OpenUDIDios.h in Headers */ = {isa = PBXBuildFile; fileRef = 84E5E100174D02F60001C74F /* OpenUDIDios.h */; };
 		84E5E103174D02F60001C74F /* OpenUDIDios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 84E5E101174D02F60001C74F /* OpenUDIDios.mm */; };
+		A60AE95E17A010F300B5626A /* ActionComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A60AE95C17A010F300B5626A /* ActionComponent.cpp */; };
+		A60AE95F17A010F300B5626A /* ActionComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = A60AE95D17A010F300B5626A /* ActionComponent.h */; };
+		A60AE96217A0110B00B5626A /* ActionUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A60AE96017A0110B00B5626A /* ActionUpdateSystem.cpp */; };
+		A60AE96317A0110B00B5626A /* ActionUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A60AE96117A0110B00B5626A /* ActionUpdateSystem.h */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
 		C1DC1F081717FD3C001C5EC3 /* libTextureConverter_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C1DC1F071717FD3C001C5EC3 /* libTextureConverter_macos.a */; };
 		CC247FF116D69F1700183D40 /* DVAssertMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC247FEC16D69F1700183D40 /* DVAssertMessage.cpp */; };
@@ -724,6 +728,10 @@
 		84E5E0FD174D02EA0001C74F /* OpenUDIDApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenUDIDApple.mm; sourceTree = "<group>"; };
 		84E5E100174D02F60001C74F /* OpenUDIDios.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenUDIDios.h; sourceTree = "<group>"; };
 		84E5E101174D02F60001C74F /* OpenUDIDios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenUDIDios.mm; sourceTree = "<group>"; };
+		A60AE95C17A010F300B5626A /* ActionComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActionComponent.cpp; sourceTree = "<group>"; };
+		A60AE95D17A010F300B5626A /* ActionComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionComponent.h; sourceTree = "<group>"; };
+		A60AE96017A0110B00B5626A /* ActionUpdateSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActionUpdateSystem.cpp; sourceTree = "<group>"; };
+		A60AE96117A0110B00B5626A /* ActionUpdateSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionUpdateSystem.h; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		C1DC1F071717FD3C001C5EC3 /* libTextureConverter_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libTextureConverter_macos.a; path = ../../Libs/libs/libTextureConverter_macos.a; sourceTree = "<group>"; };
 		CC247FEC16D69F1700183D40 /* DVAssertMessage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DVAssertMessage.cpp; sourceTree = "<group>"; };
@@ -2092,6 +2100,8 @@
 		E8B3C9AC16B9326E002BD35F /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				A60AE95C17A010F300B5626A /* ActionComponent.cpp */,
+				A60AE95D17A010F300B5626A /* ActionComponent.h */,
 				02E9E3E01734176D00C501BC /* SoundComponent.cpp */,
 				02E9E3E11734176D00C501BC /* SoundComponent.h */,
 				CC24801316DD17F300183D40 /* UserComponent.cpp */,
@@ -2125,6 +2135,8 @@
 		E8B3C9FD16B9326E002BD35F /* Systems */ = {
 			isa = PBXGroup;
 			children = (
+				A60AE96017A0110B00B5626A /* ActionUpdateSystem.cpp */,
+				A60AE96117A0110B00B5626A /* ActionUpdateSystem.h */,
 				02F6403F173A5A950053F038 /* SoundUpdateSystem.cpp */,
 				02F64040173A5A950053F038 /* SoundUpdateSystem.h */,
 				CCC7A4AC16F1D88C0061EA5D /* UpdateSystem.cpp */,
@@ -2676,6 +2688,8 @@
 				7433865E179D1E170014FBD3 /* UIScrollView.h in Headers */,
 				74338660179D1E170014FBD3 /* UIScrollViewContainer.h in Headers */,
 				7433866A179D1E8E0014FBD3 /* CRC32.h in Headers */,
+				A60AE95F17A010F300B5626A /* ActionComponent.h in Headers */,
+				A60AE96317A0110B00B5626A /* ActionUpdateSystem.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3043,6 +3057,8 @@
 				7433865D179D1E170014FBD3 /* UIScrollView.cpp in Sources */,
 				7433865F179D1E170014FBD3 /* UIScrollViewContainer.cpp in Sources */,
 				74338669179D1E8E0014FBD3 /* CRC32.cpp in Sources */,
+				A60AE95E17A010F300B5626A /* ActionComponent.cpp in Sources */,
+				A60AE96217A0110B00B5626A /* ActionUpdateSystem.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
