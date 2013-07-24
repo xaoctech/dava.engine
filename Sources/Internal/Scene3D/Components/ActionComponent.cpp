@@ -43,13 +43,40 @@ namespace DAVA
 		
 		return action;
 	}
-	
-	void ActionComponent::Start()
+
+	ActionComponent::Action ActionComponent::MakeAction(ActionComponent::Action::eType type, String targetName, float32 delay, int32 switchIndex)
 	{
-		Stop();
+		Action action;
 		
-		started = true;
-		allActionsActive = false;
+		action.type = type;
+		action.entityName = targetName;
+		action.delay = delay;
+		action.switchIndex = switchIndex;
+		
+		return action;
+	}
+
+	
+	void ActionComponent::Start(int32 switchIndex)
+	{
+		Stop(switchIndex);
+		
+		uint32 markedCount = 0;
+		uint32 count = actions.size();
+		for(uint32 i = 0; i < count; ++i)
+		{
+			if(actions[i].action.switchIndex == switchIndex)
+			{
+				actions[i].markedForUpdate = true;
+				markedCount++;
+			}
+		}
+		
+		if(markedCount > 0)
+		{
+			started = true;
+			allActionsActive = false;
+		}
 	}
 	
 	bool ActionComponent::IsStarted()
@@ -57,7 +84,7 @@ namespace DAVA
 		return started;
 	}
 	
-	void ActionComponent::Stop()
+	void ActionComponent::StopAll()
 	{
 		if(started)
 		{
@@ -69,6 +96,37 @@ namespace DAVA
 			{
 				actions[i].active = false;
 				actions[i].timer = 0.0f;
+				actions[i].markedForUpdate = false;
+			}
+		}
+	}
+	
+	void ActionComponent::Stop(int32 switchIndex)
+	{
+		if(started)
+		{
+			uint32 activeCount = 0;
+			uint32 count = actions.size();
+			for(uint32 i = 0; i < count; ++i)
+			{
+				if(actions[i].markedForUpdate &&
+				   (actions[i].action.switchIndex == switchIndex))
+				{
+					actions[i].active = false;
+					actions[i].timer = 0.0f;
+					actions[i].markedForUpdate = false;
+				}
+				
+				if(actions[i].active)
+				{
+					activeCount++;
+				}
+			}
+			
+			if(0 == activeCount)
+			{
+				started = false;
+				allActionsActive = false;
 			}
 		}
 	}
@@ -104,7 +162,6 @@ namespace DAVA
 		}
 		
 		allActionsActive = (activeActionCount == count);
-
 	}
 	
 	void ActionComponent::Remove(const ActionComponent::Action& action)
@@ -133,7 +190,8 @@ namespace DAVA
 			for(uint32 i = 0; i < count; ++i)
 			{
 				ActionContainer& container = actions[i];
-				if(!container.active)
+				if(!container.active &&
+				   container.markedForUpdate)
 				{
 					container.timer += timeElapsed;
 					
@@ -184,6 +242,7 @@ namespace DAVA
 				actionArchive->SetFloat("act.delay", actions[i].action.delay);
 				actionArchive->SetUInt32("act.type", actions[i].action.type);
 				actionArchive->SetString("act.entityName", actions[i].action.entityName);
+				actionArchive->SetInt32("act.switchIndex", actions[i].action.switchIndex);
 			
 				archive->SetArchive(KeyedArchive::GenKeyFromIndex(i), actionArchive);
 				SafeRelease(actionArchive);
@@ -206,6 +265,7 @@ namespace DAVA
 				action.type = (Action::eType)actionArchive->GetUInt32("act.type");
 				action.delay = actionArchive->GetFloat("act.delay");
 				action.entityName = actionArchive->GetString("act.entityName");
+				action.switchIndex = actionArchive->GetInt32("act.switchIndex", -1);
 				
 				Add(action);
 			}

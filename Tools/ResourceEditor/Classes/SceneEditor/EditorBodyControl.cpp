@@ -792,7 +792,7 @@ void EditorBodyControl::ReloadRootScene(const FilePath &pathToFile)
 
 void EditorBodyControl::ReloadNode(Entity *node, const FilePath &pathToFile)
 {//если в рут ноды сложить такие же рут ноды то на релоаде все накроет пиздой
-    CustomPropertiesComponent *customProperties = node->GetCustomProperties();
+    KeyedArchive *customProperties = node->GetCustomProperties();
     if (customProperties->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, "") == pathToFile.GetAbsolutePathname())
     {
         Entity *newNode = scene->GetRootNode(pathToFile)->Clone();
@@ -1223,7 +1223,7 @@ void EditorBodyControl::ProcessIsSolidChanging()
     Entity *selectedNode = scene->GetSelection();
     if(selectedNode)
     {
-        CustomPropertiesComponent *customProperties = selectedNode->GetCustomProperties();
+        KeyedArchive *customProperties = selectedNode->GetCustomProperties();
         if(customProperties && customProperties->IsKeyExists(String(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME)))
         {
             bool isSolid = selectedNode->GetSolid();

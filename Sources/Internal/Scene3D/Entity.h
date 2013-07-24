@@ -25,7 +25,6 @@
 #include "FileSystem/KeyedArchive.h"
 #include "Scene3D/Components/CustomPropertiesComponent.h"
 
-
 namespace DAVA
 {
 
@@ -283,7 +282,7 @@ public:
         \brief Function returns keyed archive of custom properties for this object. 
         Custom properties can be set for each node in editor, and used in the game later to implement game logic.
      */
-    CustomPropertiesComponent* GetCustomProperties();
+    KeyedArchive* GetCustomProperties();
     
     /**
         \brief This function should be implemented in each node that have data nodes inside it.
@@ -333,6 +332,7 @@ public:
 protected:
 
     String RecursiveBuildFullName(Entity * node, Entity * endNode);
+	CustomPropertiesComponent* GetCustomPropertiesComponent();
 
 //    virtual Entity* CopyDataTo(Entity *dstNode);
 	void SetParent(Entity * node);

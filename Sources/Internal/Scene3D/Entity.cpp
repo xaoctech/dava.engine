@@ -413,7 +413,7 @@ void Entity::BakeTransforms()
 
 void Entity::PropagateBoolProperty(String name, bool value)
 {
-	CustomPropertiesComponent *currentProperties = GetCustomProperties();
+	KeyedArchive *currentProperties = GetCustomProperties();
 	currentProperties->SetBool(name, value);
 
 	uint32 size = (uint32)children.size();
@@ -758,7 +758,7 @@ void Entity::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 			if(Component::CUSTOM_PROPERTIES_COMPONENT == i)
 			{
 				CustomPropertiesComponent* customProps = cast_if_equal<CustomPropertiesComponent*>(components[i]);
-				if(customProps && customProps->Count() <= 0)
+				if(customProps && customProps->GetArchive()->Count() <= 0)
 				{
 					continue;
 				}
@@ -821,15 +821,15 @@ void Entity::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 		
 		if(customProps != NULL)
 		{
-			CustomPropertiesComponent* customPropsComponent = GetCustomProperties();
+			CustomPropertiesComponent* customPropsComponent = GetCustomPropertiesComponent();
 			customPropsComponent->LoadFromArchive(*customProps, sceneFileV2);
 			
 			SafeRelease(customProps);
 		}
 	}
 }
-
-CustomPropertiesComponent* Entity::GetCustomProperties()
+	
+CustomPropertiesComponent* Entity::GetCustomPropertiesComponent()
 {
 	CustomPropertiesComponent* component = cast_if_equal<CustomPropertiesComponent*>(GetComponent(Component::CUSTOM_PROPERTIES_COMPONENT));
 	
@@ -840,6 +840,13 @@ CustomPropertiesComponent* Entity::GetCustomProperties()
 	}
 	
     return component;
+
+}
+	
+KeyedArchive* Entity::GetCustomProperties()
+{
+	CustomPropertiesComponent* component = GetCustomPropertiesComponent();	
+    return component->GetArchive();
 }
     
 void Entity::SetSolid(bool isSolid)

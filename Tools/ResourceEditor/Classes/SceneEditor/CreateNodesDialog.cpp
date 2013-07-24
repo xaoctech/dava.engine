@@ -147,7 +147,7 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
         {
             SetHeader(LocalizedString(ResourceEditor::CREATE_NODE_SERVICE));
             sceneNode = new Entity();
-            CustomPropertiesComponent *customProperties = sceneNode->GetCustomProperties();
+            KeyedArchive *customProperties = sceneNode->GetCustomProperties();
             customProperties->SetBool(ResourceEditor::EDITOR_IS_LOCKED, true);
             sceneNode->SetName(ResourceEditor::SERVICE_NODE_NAME);
             break;
@@ -204,7 +204,7 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 			sceneNode->SetName(ResourceEditor::SWITCH_NODE_NAME);
             sceneNode->AddComponent(new SwitchComponent());
             
-			CustomPropertiesComponent *customProperties = sceneNode->GetCustomProperties();
+			KeyedArchive *customProperties = sceneNode->GetCustomProperties();
 			customProperties->SetBool(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
 		}
 			break;

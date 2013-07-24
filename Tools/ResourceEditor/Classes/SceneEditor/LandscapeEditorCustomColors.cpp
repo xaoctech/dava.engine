@@ -546,7 +546,7 @@ void LandscapeEditorCustomColors::StoreSaveFileName(const FilePath& fileName)
 	parent->GetSceneGraph()->UpdatePropertyPanel();
 	if(NULL != workingLandscapeEntity)
 	{
-		CustomPropertiesComponent* customProps = workingLandscapeEntity->GetCustomProperties();
+		KeyedArchive* customProps = workingLandscapeEntity->GetCustomProperties();
 		customProps->SetString(CUSTOM_COLOR_TEXTURE_PROP, GetRelativePathToScenePath(fileName));
 	}
 }
@@ -557,7 +557,7 @@ FilePath LandscapeEditorCustomColors::GetCurrentSaveFileName()
 
 	if(NULL != workingLandscapeEntity)
 	{
-		CustomPropertiesComponent* customProps = workingLandscapeEntity->GetCustomProperties();
+		KeyedArchive* customProps = workingLandscapeEntity->GetCustomProperties();
 		if(customProps->IsKeyExists(CUSTOM_COLOR_TEXTURE_PROP))
 		{
 			currentSaveName = customProps->GetString(CUSTOM_COLOR_TEXTURE_PROP);
