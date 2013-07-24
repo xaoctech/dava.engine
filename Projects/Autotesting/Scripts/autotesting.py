@@ -112,19 +112,19 @@ elif (platform.system() == "Darwin"):
         print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
         subprocess.call(params)
     
-		# Remove old App from device
-        print "remove "+ executableName +" from device"
+		# Remove old App from device - MOVED to RunOnDevice.sh
+        #print "remove "+ executableName +" from device"
         #params = ["~/AIRSDK_Compiler/bin/adt", "-uninstallApp", "-platform", platformName, "-appid", "com.yourcompany." + targetName]
-        params = "~/AIRSDK_Compiler/bin/adt -uninstallApp -platform iOS -appid com.davainc."+targetName
-        print "subprocess.call " + params
+        #params = "~/AIRSDK_Compiler/bin/adt -uninstallApp -platform iOS -appid com.davainc."+targetName
+        #print "subprocess.call " + params
         #print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
-        subprocess.call(params, shell=True)
+        #subprocess.call(params, shell=True)
 		
-        # ./transporter_chief.rb $2.ipa
-        print "deploy "+ ipaName +" on device"
-        params = ["./transporter_chief.rb", ipaName]
-        print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
-        subprocess.call(params)
+        # ./transporter_chief.rb $2.ipa - MOVED to RunOnDevice.sh
+        #print "deploy "+ ipaName +" on device"
+        #params = ["./transporter_chief.rb", ipaName]
+        #print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
+        #subprocess.call(params)
 
         
         testsFolder = testsFolderiOS
