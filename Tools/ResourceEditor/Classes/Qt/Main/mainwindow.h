@@ -42,23 +42,10 @@ public:
 	SceneTabWidget* GetSceneWidget();
 	SceneEditor2* GetCurrentScene();
 
-protected:
-	virtual bool eventFilter(QObject *object, QEvent *event);
-
-	void SetupMainMenu();
-	void SetupToolBars();
-	void SetupActions();
-
-protected slots:
-	void ProjectOpened(const QString &path);
-	void ProjectClosed();
-
-	void SceneCommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
-	void SceneActivated(SceneEditor2 *scene);
-	void SceneDeactivated(SceneEditor2 *scene);
+	bool SaveSceneAs(SceneEditor2 *scene);
 
 // qt actions slots
-protected slots:
+public slots:
 	void OnProjectOpen();
 	void OnProjectClose();
 	void OnSceneNew();
@@ -66,7 +53,7 @@ protected slots:
 	void OnSceneSave();
 	void OnSceneSaveAs();
 	void OnSceneSaveToFolder();
-	
+
 	void OnUndo();
 	void OnRedo();
 
@@ -83,8 +70,23 @@ protected slots:
 	void OnMaterialEditor();
 	void OnTextureBrowser();
 	void OnSceneLightMode();
-	
+
 	void OnCubemapEditor();
+
+protected:
+	virtual bool eventFilter(QObject *object, QEvent *event);
+
+	void SetupMainMenu();
+	void SetupToolBars();
+	void SetupActions();
+
+protected slots:
+	void ProjectOpened(const QString &path);
+	void ProjectClosed();
+
+	void SceneCommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
+	void SceneActivated(SceneEditor2 *scene);
+	void SceneDeactivated(SceneEditor2 *scene);
 
 private:
 	Ui::MainWindow *ui;

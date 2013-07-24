@@ -100,11 +100,41 @@ SceneEditor2* QtMainWindow::GetCurrentScene()
 	return ui->sceneTabWidget->GetCurrentScene();
 }
 
+bool QtMainWindow::SaveSceneAs(SceneEditor2 *scene)
+{
+	bool ret = false;
+
+	if(NULL != scene)
+	{
+		DAVA::FilePath saveAsPath = DAVA::FilePath(ProjectManager::Instance()->CurProjectDataSourcePath().toStdString()) + scene->GetScenePath().GetFilename();
+
+		QString selectedPath = QFileDialog::getSaveFileName(this, "Save scene as", saveAsPath.GetAbsolutePathname().c_str(), "DAVA Scene V2 (*.sc2)");
+		if(!selectedPath.isEmpty())
+		{
+			DAVA::FilePath scenePath = DAVA::FilePath(selectedPath.toStdString());
+			if(!scenePath.IsEmpty())
+			{
+				scene->SetScenePath(scenePath);
+				ret = scene->Save(scenePath);
+
+				if(!ret)
+				{
+					QMessageBox::warning(this, "Save error", "An error occurred while saving the scene. Please, see logs for more info.", QMessageBox::Ok);
+				}
+			}
+		}
+	}
+
+	return ret;
+}
+
 bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
 {
+	QEvent::Type eventType = event->type();
+
 	if(qApp == obj && ProjectManager::Instance()->IsOpened())
 	{
-		if(QEvent::ApplicationActivate == event->type())
+		if(QEvent::ApplicationActivate == eventType)
 		{
 			if(QtLayer::Instance())
 			{
@@ -112,13 +142,21 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
 				Core::Instance()->GetApplicationCore()->OnResume();
 			}
 		}
-		else if(QEvent::ApplicationDeactivate == event->type())
+		else if(QEvent::ApplicationDeactivate == eventType)
 		{
 			if(QtLayer::Instance())
 			{
 				QtLayer::Instance()->OnSuspend();
 				Core::Instance()->GetApplicationCore()->OnSuspend();
 			}
+		}
+	}
+
+	if(obj == this && QEvent::WindowUnblocked == eventType)
+	{
+		if(isActiveWindow())
+		{
+			ui->sceneTabWidget->setFocus(Qt::ActiveWindowFocusReason);
 		}
 	}
 
@@ -168,10 +206,12 @@ void QtMainWindow::SetupToolBars()
 
 	ui->modificationToolBar->insertWidget(ui->actionModifyReset, modificationWidget);
 
+	/*
 	QAction *reloadMenuAction = ui->menuReload->menuAction();
 	reloadMenuAction->setIcon(QIcon(":/QtIcons/reloadtextures.png"));
 	ui->mainToolBar->addAction(reloadMenuAction);
 	ShowActionWithText(ui->mainToolBar, reloadMenuAction, true);
+	*/
 }
 
 void QtMainWindow::SetupActions()
@@ -283,36 +323,35 @@ void QtMainWindow::OnProjectClose()
 
 void QtMainWindow::OnSceneNew()
 {
-	ui->sceneTabWidget->OpenTab();
+	int index = ui->sceneTabWidget->OpenTab();
+	ui->sceneTabWidget->SetCurrentTab(index);
 }
 
 void QtMainWindow::OnSceneOpen()
 {
-	QString path = QFileDialog::getOpenFileName(this, "Open scene file", ProjectManager::Instance()->CurProjectDataSourcePath(), "*.sc2");
-	ui->sceneTabWidget->OpenTab(DAVA::FilePath(path.toStdString()));
+	QString path = QFileDialog::getOpenFileName(this, "Open scene file", ProjectManager::Instance()->CurProjectDataSourcePath(), "DAVA Scene V2 (*.sc2)");
+	int index = ui->sceneTabWidget->OpenTab(DAVA::FilePath(path.toStdString()));
+	ui->sceneTabWidget->SetCurrentTab(index);
 }
 
 void QtMainWindow::OnSceneSave()
 {
 	SceneEditor2* scene = GetCurrentScene();
-	if(NULL != scene && scene->IsChanged())
+	if(NULL != scene)
 	{
 		DAVA::FilePath scenePath = scene->GetScenePath();
-
-		if(scenePath.IsEmpty())
+		if(!scene->IsLoaded() || scenePath.IsEmpty())
 		{
-			QString selectedPath = QFileDialog::getSaveFileName(this, "Save scene file", ProjectManager::Instance()->CurProjectDataSourcePath(), "*.sc2");
-			if(!selectedPath.isEmpty())
-			{
-				scenePath = DAVA::FilePath(selectedPath.toStdString());
-			}
-		}
-
-		if(!scenePath.IsEmpty())
+			SaveSceneAs(scene);
+		} 
+		else
 		{
-			if(!scene->Save(scenePath))
+			if(scene->IsChanged())
 			{
-				QMessageBox::warning(this, "Save error", "An error occurred while saving the scene. See log for more info.", QMessageBox::Ok);
+				if(!scene->Save(scenePath))
+				{
+					QMessageBox::warning(this, "Save error", "An error occurred while saving the scene. See log for more info.", QMessageBox::Ok);
+				}
 			}
 		}
 	}
@@ -320,18 +359,7 @@ void QtMainWindow::OnSceneSave()
 
 void QtMainWindow::OnSceneSaveAs()
 {
-	SceneEditor2* scene = GetCurrentScene();
-	if(NULL != scene)
-	{
-		QString selectedPath = QFileDialog::getSaveFileName(this, "Save scene as", ProjectManager::Instance()->CurProjectDataSourcePath(), "*.sc2");
-		if(!selectedPath.isEmpty())
-		{
-			DAVA::FilePath scenePath = DAVA::FilePath(selectedPath.toStdString());
-			scene->SetScenePath(scenePath);
-
-			OnSceneSave();
-		}
-	}
+	SaveSceneAs(GetCurrentScene());
 }
 
 void QtMainWindow::OnSceneSaveToFolder()

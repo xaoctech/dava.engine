@@ -22,6 +22,7 @@
 
 SceneEditor2::SceneEditor2()
 	: Scene()
+	, isLoaded(false)
 {
 	EditorCommandNotify *notify = new EditorCommandNotify(this);
 	commandStack.SetNotify(notify);
@@ -110,6 +111,7 @@ bool SceneEditor2::Load(const DAVA::FilePath &path)
 		}
 
 		curScenePath = path;
+		isLoaded = true;
 
 		commandStack.SetClean(true);
 	}
@@ -154,6 +156,7 @@ bool SceneEditor2::Save(const DAVA::FilePath &path)
 	if(ret)
 	{
 		curScenePath = path;
+		isLoaded = true;
 
 		// mark current position in command stack as clean
 		commandStack.SetClean(true);
@@ -222,6 +225,11 @@ void SceneEditor2::EndBatch()
 void SceneEditor2::Exec(Command2 *command)
 {
 	commandStack.Exec(command);
+}
+
+bool SceneEditor2::IsLoaded() const
+{
+	return isLoaded;
 }
 
 bool SceneEditor2::IsChanged() const
