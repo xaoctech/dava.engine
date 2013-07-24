@@ -52,6 +52,7 @@
 #include "Scene3D/Systems/LightUpdateSystem.h"
 #include "Scene3D/Systems/SwitchSystem.h"
 #include "Scene3D/Systems/SoundUpdateSystem.h"
+#include "Scene3D/Systems/ActionUpdateSystem.h"
 
 //#include "Entity/Entity.h"
 //#include "Entity/EntityManager.h"
@@ -118,6 +119,9 @@ void Scene::CreateSystems()
 
 	soundSystem = new SoundUpdateSystem(this);
 	AddSystem(soundSystem, (1 << Component::TRANSFORM_COMPONENT) | (1 << Component::SOUND_COMPONENT));
+	
+	actionSystem = new ActionUpdateSystem(this);
+	AddSystem(actionSystem, (1 << Component::ACTION_COMPONENT));
 }
 
 Scene::~Scene()
@@ -414,6 +418,7 @@ Entity *Scene::GetRootNode(const FilePath &rootNodePath)
         file->EnableDebugLog(false);
         file->LoadScene(rootNodePath, this);
         SafeRelease(file);
+				
         uint64 deltaTime = SystemTimer::Instance()->AbsoluteMS() - startTime;
         Logger::Info("[GETROOTNODE TIME] %dms (%ld)", deltaTime, deltaTime);
     }
@@ -586,6 +591,7 @@ void Scene::Draw()
     Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
     renderSystem->SetCamera(currentCamera);
     renderUpdateSystem->Process();
+	actionSystem->Process(); //update action system before particles and render
 	particleEffectSystem->Process();
     renderSystem->Render();
     debugRenderSystem->SetCamera(currentCamera);
@@ -597,8 +603,6 @@ void Scene::Draw()
 	{
 		imposterManager->Draw();
 	}
-    
-
 
 	RenderManager::Instance()->SetState(RenderState::DEFAULT_2D_STATE_BLEND);
 	drawTime = SystemTimer::Instance()->AbsoluteMS() - time;

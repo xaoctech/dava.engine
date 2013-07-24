@@ -152,7 +152,7 @@ void CommandSaveSpecifiedScene::Execute()
 		Scene* sc = new Scene();
 		
 		uint32 size = entityToAdd->GetChildrenCount();
-		KeyedArchive *customProperties = entityToAdd->GetCustomProperties();
+		CustomPropertiesComponent *customProperties = entityToAdd->GetCustomProperties();
 		if (customProperties && customProperties->IsKeyExists(String("editor.referenceToOwner")))
 		{
 			if(!size)

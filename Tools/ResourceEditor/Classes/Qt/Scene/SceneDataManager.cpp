@@ -28,6 +28,10 @@
 #include "../SceneEditor/EntityOwnerPropertyHelper.h"
 #include "../StringConstants.h"
 
+#include "../Qt/CubemapEditor/MaterialHelper.h"
+
+#include "Scene3D/Components/CustomPropertiesComponent.h"
+
 using namespace DAVA;
 
 SceneDataManager::SceneDataManager()
@@ -75,7 +79,7 @@ Entity* SceneDataManager::AddScene(const FilePath &scenePathname)
 
     Entity * rootNode = scene->GetRootNode(scenePathname)->Clone();
 
-    KeyedArchive * customProperties = rootNode->GetCustomProperties();
+    CustomPropertiesComponent * customProperties = rootNode->GetCustomProperties();
     customProperties->SetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, scenePathname.GetAbsolutePathname());
     
     rootNode->SetSolid(true);
@@ -253,7 +257,7 @@ void SceneDataManager::ReloadScene(const FilePath &scenePathname, const FilePath
 void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const FilePath &nodePathname, const FilePath &fromPathname, Set<String> &errors)
 {
 	//если в рут ноды сложить такие же рут ноды то на релоаде все накроет пиздой
-    KeyedArchive *customProperties = node->GetCustomProperties();
+    CustomPropertiesComponent *customProperties = node->GetCustomProperties();
 	EntityOwnerPropertyHelper::Instance()->UpdateEntityOwner(customProperties);
     if (customProperties->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, "") == nodePathname.GetAbsolutePathname())
     {
@@ -745,6 +749,8 @@ void SceneDataManager::EnumerateMaterials(DAVA::Entity *forNode, Vector<Material
 	if(forNode)
 	{
 		forNode->GetDataNodes(materials);
+		//VI: remove skybox materials so they not to appear in the lists
+		MaterialHelper::FilterMaterialsByType(materials, DAVA::Material::MATERIAL_SKYBOX);
 	}
 }
 
@@ -776,6 +782,9 @@ void SceneDataManager::ApplyDefaultFogSettings(Landscape* landscape, DAVA::Entit
 	// Yuri Coder, 2013/05/13. The default fog settings are taken from Landscape.
 	Vector<Material *> materials;
 	entity->GetDataNodes(materials);
+	//VI: remove skybox materials so they not to appear in the lists
+	MaterialHelper::FilterMaterialsByType(materials, DAVA::Material::MATERIAL_SKYBOX);
+
 	for (Vector<Material*>::iterator iter = materials.begin(); iter != materials.end();
 		 iter ++)
 	{

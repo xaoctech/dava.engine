@@ -27,6 +27,8 @@
 #include "../SceneEditor/EditorBodyControl.h"
 #include "../StringConstants.h"
 
+#include "Scene3D/Components/CustomPropertiesComponent.h"
+
 using namespace DAVA;
 
 CommandRemoveRootNodes::CommandRemoveRootNodes()
@@ -132,7 +134,7 @@ CommandInternalRemoveSceneNode::CommandInternalRemoveSceneNode(Entity* node, boo
 		String referenceToOwner;
 		Entity* nodeParent = node->GetParent();
 
-		KeyedArchive *customProperties = node->GetCustomProperties();
+		CustomPropertiesComponent *customProperties = node->GetCustomProperties();
 		if(customProperties && customProperties->IsKeyExists(ResourceEditor::EDITOR_REFERENCE_TO_OWNER))
 		{
 			referenceToOwner = customProperties->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);

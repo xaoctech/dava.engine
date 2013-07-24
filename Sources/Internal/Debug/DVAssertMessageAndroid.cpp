@@ -50,7 +50,7 @@ void JniDVAssertMessage::ShowMessage(const char* message)
 }
 
 
-void DVAssertMessage::InnerShow(const char* message)
+void DVAssertMessage::InnerShow(eModalType modalType, const char* message)
 {
 	JniDVAssertMessage msg;
 	msg.ShowMessage(message);
