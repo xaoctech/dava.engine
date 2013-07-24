@@ -36,7 +36,7 @@
 #include "Scene/System/CustomColorsSystem.h"
 #include "Scene/System/VisibilityToolSystem.h"
 #include "Scene/System/StructureSystem.h"
-#include "Scene/System/ParticlesDebugDrawSystem.h"
+#include "Scene/System/EditorParticlesSystem.h"
 #include "Scene/System/EditorLightSystem.h"
 
 
@@ -59,7 +59,7 @@ public:
 	CustomColorsSystem* customColorsSystem;
 	VisibilityToolSystem* visibilityToolSystem;
 	StructureSystem *structureSystem;
-	ParticlesDebugDrawSystem *particlesSystem;
+	EditorParticlesSystem *particlesSystem;
 	EditorLightSystem *editorLightSystem;
 
 

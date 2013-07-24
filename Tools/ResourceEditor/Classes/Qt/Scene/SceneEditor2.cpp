@@ -42,7 +42,7 @@ SceneEditor2::SceneEditor2()
 	selectionSystem = new SceneSelectionSystem(this, collisionSystem, hoodSystem);
 	AddSystem(selectionSystem, 0);
 	
-	particlesSystem = new ParticlesDebugDrawSystem(this);
+	particlesSystem = new EditorParticlesSystem(this);
 	AddSystem(particlesSystem, (1 << DAVA::Component::PARTICLE_EFFECT_COMPONENT));
 
 	modifSystem = new EntityModificationSystem(this, collisionSystem, cameraSystem, hoodSystem);

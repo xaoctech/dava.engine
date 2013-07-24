@@ -15,15 +15,15 @@
 =====================================================================================*/
 
 #include "ParticleEffectPropertiesWidget.h"
-#include "Commands/ParticleEditorCommands.h"
-#include "Commands/CommandsManager.h"
+#include "Commands2/ParticleEditorCommands.h"
 #include "../Scene/SceneDataManager.h"
 
 #include <QLineEdit>
 #include <QEvent>
 
-ParticleEffectPropertiesWidget::ParticleEffectPropertiesWidget(QWidget* parent) :
-QWidget(parent)
+ParticleEffectPropertiesWidget::ParticleEffectPropertiesWidget(SceneEditor2* scene, QWidget* parent) :
+	QWidget(parent),
+	BaseParticleEditorContentWidget(scene)
 {
 	mainLayout = new QVBoxLayout();
 	mainLayout->setAlignment(Qt::AlignTop);
@@ -72,8 +72,9 @@ void ParticleEffectPropertiesWidget::OnValueChanged()
 
 	CommandUpdateEffect* commandUpdateEffect = new CommandUpdateEffect(particleEffect);
 	commandUpdateEffect->Init(playbackSpeed, stopOnLoad);
-	CommandsManager::Instance()->ExecuteAndRelease(commandUpdateEffect,
-												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
+
+	DVASSERT(activeScene != 0);
+	activeScene->Exec(commandUpdateEffect);
 
 	Init(particleEffect);
 }

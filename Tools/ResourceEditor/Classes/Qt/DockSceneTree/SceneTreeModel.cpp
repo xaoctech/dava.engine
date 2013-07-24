@@ -22,6 +22,9 @@
 // framework
 #include "Scene3d/Components/ComponentHelpers.h"
 
+// commands
+#include "Commands2/ParticleEditorCommands.h"
+
 const char* SceneTreeModel::mimeFormatEntity = "application/dava.entity";
 const char* SceneTreeModel::mimeFormatLayer = "application/dava.particlelayer";
 const char* SceneTreeModel::mimeFormatForce = "application/dava.particleforce";
@@ -425,8 +428,11 @@ void SceneTreeModel::ItemChanged(QStandardItem * item)
 	{
 		if(treeItem->ItemType() == SceneTreeItem::EIT_Layer)
 		{
+			bool isLayerEnabled = (item->checkState() == Qt::Checked);
 			SceneTreeItemParticleLayer *itemLayer = (SceneTreeItemParticleLayer *) treeItem;
-			itemLayer->layer->SetDisabled(item->checkState() == Qt::Unchecked);
+
+			CommandUpdateParticleLayerEnabled* command = new CommandUpdateParticleLayerEnabled(itemLayer->layer, isLayerEnabled);
+			curScene->Exec(command);
 		}
 	}
 }
