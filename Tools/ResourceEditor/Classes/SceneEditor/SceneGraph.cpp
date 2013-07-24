@@ -308,7 +308,7 @@ void SceneGraph::RemoveRootNodes()
         {
             String referenceToOwner;
             
-            CustomPropertiesComponent *customProperties = workingNode->GetCustomProperties();
+            KeyedArchive *customProperties = workingNode->GetCustomProperties();
             if(customProperties && customProperties->IsKeyExists(ResourceEditor::EDITOR_REFERENCE_TO_OWNER))
             {
                 referenceToOwner = customProperties->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);

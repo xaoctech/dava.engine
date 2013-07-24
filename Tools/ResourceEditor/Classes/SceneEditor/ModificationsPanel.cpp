@@ -177,7 +177,7 @@ void ModificationsPanel::ChangeCollisionModeShow(Entity * node)
 
 	if (modeCollision)
 	{
-		CustomPropertiesComponent * customProperties = node->GetCustomProperties();
+		KeyedArchive * customProperties = node->GetCustomProperties();
 		if(customProperties && customProperties->IsKeyExists("CollisionType") && customProperties->GetInt32("CollisionType", 0) == modeCollision)
 		{
 			node->SetDebugFlags(node->GetDebugFlags() | (DebugRenderComponent::DEBUG_DRAW_RED_AABBOX));

@@ -689,8 +689,10 @@ void UIControlBackground::DrawTiled(const Rect &drawRect)
 	
 	float32 texX = spr->GetRectOffsetValueForFrame(frame, Sprite::X_POSITION_IN_TEXTURE);
 	float32 texY = spr->GetRectOffsetValueForFrame(frame, Sprite::Y_POSITION_IN_TEXTURE);
-	float32 texDx = spr->GetRectOffsetValueForFrame(frame, Sprite::ACTIVE_WIDTH);
-	float32 texDy = spr->GetRectOffsetValueForFrame(frame, Sprite::ACTIVE_HEIGHT);
+	// DF-1470 - We should always use sprite actual size instead of using active frame
+	// Textures for tiling shouldn't have transparent corners
+	float32 texDx = spr->GetWidth(); // spr->GetRectOffsetValueForFrame(frame, Sprite::ACTIVE_WIDTH);
+	float32 texDy = spr->GetHeight(); // spr->GetRectOffsetValueForFrame(frame, Sprite::ACTIVE_HEIGHT);
 
 	float32 textureWidth = (float32)texture->GetWidth();
     float32 textureHeight = (float32)texture->GetHeight();

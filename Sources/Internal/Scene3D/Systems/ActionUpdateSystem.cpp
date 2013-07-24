@@ -18,18 +18,17 @@
 #include "Platform/SystemTimer.h"
 #include "Scene3D/Components/ActionComponent.h"
 #include "Scene3D/Systems/ActionUpdateSystem.h"
-
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Scene.h"
 
 namespace DAVA
 {
 	
 ActionUpdateSystem::ActionUpdateSystem(Scene * scene)
 :	BaseProcessSystem(Component::ACTION_COMPONENT, scene)
-
 {
-		
 }
-	
+		
 void ActionUpdateSystem::Process()
 {
 	float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
