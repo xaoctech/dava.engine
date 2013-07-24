@@ -397,7 +397,7 @@
      <x>0</x>
      <y>0</y>
      <width>1068</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -521,6 +521,9 @@
     </property>
     <addaction name="actionAddNewComponent"/>
     <addaction name="actionRemoveComponent"/>
+    <addaction name="separator"/>
+    <addaction name="actionAddActionComponent"/>
+    <addaction name="actionRemoveActionComponent"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -1480,6 +1483,24 @@
    </property>
    <property name="toolTip">
     <string>Show Zero Mipmap Level</string>
+   </property>
+  </action>
+  <action name="actionAddActionComponent">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/addcomponent.png</normaloff>:/QtIcons/addcomponent.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add ActionComponent</string>
+   </property>
+  </action>
+  <action name="actionRemoveActionComponent">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/removecomponent.png</normaloff>:/QtIcons/removecomponent.png</iconset>
+   </property>
+   <property name="text">
+    <string>Remove ActionComponent</string>
    </property>
   </action>
  </widget>

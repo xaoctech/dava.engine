@@ -272,6 +272,9 @@ void QtMainWindow::SetupMainMenu()
 
 	//Reference
 	connect(ui->applyReferenceSuffixButton, SIGNAL(clicked()), this, SLOT(ApplyReferenceNodeSuffix()));
+	
+	connect(ui->actionAddActionComponent, SIGNAL(triggered()), actionHandler, SLOT(AddActionComponent()));
+	connect(ui->actionRemoveActionComponent, SIGNAL(triggered()), actionHandler, SLOT(RemoveActionComponent()));
 
 	actionHandler->MenuViewOptionsWillShow();
 }
@@ -321,7 +324,7 @@ void QtMainWindow::SetupToolBars()
 	// remove this ->
 	// (is done before merging development to to_master)
 
-	cbox->setEnabled(false);
+	//cbox->setEnabled(false);
 	ui->actionAddNewEntity->setEnabled(false);
 	ui->actionRemoveEntity->setEnabled(false);
 	ui->actionAddNewComponent->setEnabled(false);

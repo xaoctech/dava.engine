@@ -61,6 +61,7 @@
 #include <QUrl>
 
 #include "Render/LibDxtHelper.h"
+#include "Scene3D/Components/ActionComponent.h"
 
 using namespace DAVA;
 
@@ -1168,3 +1169,38 @@ void QtMainWindowHandler::OpenHelp()
     QString docsFile = QString::fromStdString("file:///" + docsPath.GetAbsolutePathname());
     QDesktopServices::openUrl(QUrl(docsFile));
 }
+
+void QtMainWindowHandler::AddActionComponent()
+{
+	SceneData* sceneData = SceneDataManager::Instance()->SceneGetActive();
+	
+	if(sceneData)
+	{
+		Entity* entity = SceneDataManager::Instance()->SceneGetSelectedNode(sceneData);
+		
+		if(entity)
+		{
+			//need to remove component at first in order to clean ActionUpdateSystem
+			entity->RemoveComponent(Component::ACTION_COMPONENT);
+			
+			ActionComponent* actionComponent = new ActionComponent();
+			entity->AddComponent(actionComponent);
+		}
+	}
+}
+
+void QtMainWindowHandler::RemoveActionComponent()
+{
+	SceneData* sceneData = SceneDataManager::Instance()->SceneGetActive();
+	
+	if(sceneData)
+	{
+		Entity* entity = SceneDataManager::Instance()->SceneGetSelectedNode(sceneData);
+		
+		if(entity)
+		{
+			entity->RemoveComponent(Component::ACTION_COMPONENT);
+		}
+	}
+}
+

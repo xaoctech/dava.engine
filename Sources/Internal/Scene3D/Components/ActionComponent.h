@@ -113,6 +113,13 @@ namespace DAVA
 		Vector<ActionComponent::ActionContainer> actions;
 		bool started;
 		bool allActionsActive; //skip processing when all actions are active
+		
+	public:
+		
+		INTROSPECTION_EXTEND(ActionComponent, Component,
+							 COLLECTION(actions, "Actions Array", I_SAVE | I_VIEW | I_EDIT)
+							 );
+
 	};
 };
 
