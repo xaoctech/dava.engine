@@ -237,7 +237,7 @@ void SceneTree::TreeItemDoubleClicked(const QModelIndex & index)
 	SceneEditor2* sceneEditor = treeModel->GetScene();
 	if(NULL != sceneEditor)
 	{
-		DAVA::Entity *entity = SceneTreeItemEntity::GetEntity(treeModel->GetItem(index));
+		DAVA::Entity *entity = SceneTreeItemEntity::GetEntity(treeModel->GetItem(filteringProxyModel->mapToSource(index)));
 		if(NULL != entity)
 		{
 			DAVA::AABBox3 box = sceneEditor->selectionSystem->GetSelectionAABox(entity, entity->GetWorldTransform());
@@ -426,7 +426,7 @@ void SceneTree::ReloadModelAs()
 
 void SceneTree::TreeItemCollapsed(const QModelIndex &index)
 {
-	treeModel->SetSolid(index, true);
+	treeModel->SetSolid(filteringProxyModel->mapToSource(index), true);
 
 	bool needSync = false;
 
@@ -457,7 +457,7 @@ void SceneTree::TreeItemCollapsed(const QModelIndex &index)
 
 void SceneTree::TreeItemExpanded(const QModelIndex &index)
 {
-	treeModel->SetSolid(index, false);
+	treeModel->SetSolid(filteringProxyModel->mapToSource(index), false);
 }
 
 void SceneTree::SyncSelectionToTree()
@@ -472,13 +472,13 @@ void SceneTree::SyncSelectionToTree()
 		const EntityGroup* curSelection = curScene->selectionSystem->GetSelection();
 		for(size_t i = 0; i < curSelection->Size(); ++i)
 		{
-			QModelIndex index = treeModel->GetIndex(curSelection->GetEntity(i));
-			index = filteringProxyModel->mapFromSource(index);
+			QModelIndex sIndex = treeModel->GetIndex(curSelection->GetEntity(i));
+			sIndex = filteringProxyModel->mapFromSource(sIndex);
 
-			if(index.isValid())
+			if(sIndex.isValid())
 			{
-				lastValidIndex = index;
-				selectionModel()->select(index, QItemSelectionModel::Select | QItemSelectionModel::Rows);
+				lastValidIndex = sIndex;
+				selectionModel()->select(sIndex, QItemSelectionModel::Select | QItemSelectionModel::Rows);
 			}
 		}
 
