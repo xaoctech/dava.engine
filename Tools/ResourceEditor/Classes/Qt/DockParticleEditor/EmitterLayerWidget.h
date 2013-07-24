@@ -38,7 +38,7 @@ class EmitterLayerWidget: public QWidget, public BaseParticleEditorContentWidget
     Q_OBJECT
     
 public:
-    explicit EmitterLayerWidget(QWidget *parent = 0);
+    explicit EmitterLayerWidget(SceneEditor2* scene, QWidget *parent = 0);
     ~EmitterLayerWidget();
 
 	void Init(ParticleEmitter* emitter, ParticleLayer* layer, bool updateMinimized);
@@ -52,6 +52,9 @@ public:
 
 	// Switch from/to SuperEmitter mode.
 	void SetSuperemitterMode(bool isSuperemitter);
+
+	// Notify yhe widget layer value is changed.
+	void OnLayerValueChanged();
 
 signals:
 	void ValueChanged();

@@ -20,7 +20,7 @@
 #include <QMouseEvent>
 #include <QVBoxLayout>
 #include <QPushButton>
-#include "Commands/ParticleEditorCommands.h"
+#include "Commands2/ParticleEditorCommands.h"
 #include "Commands/CommandsManager.h"
 #include "Commands/CommandSignals.h"
 #include "../Scene/SceneDataManager.h"
@@ -33,6 +33,7 @@ ParticleTimeLineWidget::ParticleTimeLineWidget(QWidget *parent/* = 0*/) :
 	selectedEffect(NULL),
 	selectedEmitter(NULL),
 	selectedLayer(NULL),
+	activeScene(NULL),
 #ifdef Q_WS_WIN
 	nameFont("Courier", 8, QFont::Normal)
 #else
@@ -43,49 +44,40 @@ ParticleTimeLineWidget::ParticleTimeLineWidget(QWidget *parent/* = 0*/) :
 	backgroundBrush.setStyle(Qt::SolidPattern);
 	
 	gridStyle = GRID_STYLE_LIMITS;
-
-	// "Old" signals handling.
-	connect(ParticlesEditorController::Instance(),
-			SIGNAL(EffectSelected(Entity*)),
-			this,
-			SLOT(OnEffectNodeSelected(Entity*)));
-
-	connect(ParticlesEditorController::Instance(),
-			SIGNAL(EmitterSelected(Entity*, BaseParticleEditorNode*)),
-			this,
-			SLOT(OnNodeSelected(Entity*)));
-	connect(ParticlesEditorController::Instance(),
-			SIGNAL(LayerSelected(Entity*, ParticleLayer*, BaseParticleEditorNode*, bool)),
-			this,
-			SLOT(OnLayerSelected(Entity*, ParticleLayer*)));
-	connect(ParticlesEditorController::Instance(),
-			SIGNAL(ForceSelected(Entity*, ParticleLayer*, int32, BaseParticleEditorNode*)),
-			this,
-			SLOT(OnNodeSelected(Entity*)));
-
-	// New signals handling from Scene Tree.
-	connect(SceneSignals::Instance(),
-			SIGNAL(EffectSelected(DAVA::Entity*)),
-			this,
-			SLOT(OnEffectSelectedFromSceneTree(DAVA::Entity*)));
-	connect(SceneSignals::Instance(),
-			SIGNAL(EmitterSelected(DAVA::Entity*)),
-			this,
-			SLOT(OnEmitterSelectedFromSceneTree(DAVA::Entity*)));
-	connect(SceneSignals::Instance(),
-			SIGNAL(LayerSelected(DAVA::ParticleLayer*, bool)),
-			this,
-			SLOT(OnLayerSelectedFromSceneTree(DAVA::ParticleLayer*, bool)));
-	connect(SceneSignals::Instance(),
-			SIGNAL(ForceSelected(DAVA::ParticleLayer*, DAVA::int32)),
-			this,
-			SLOT(OnForceSelectedFromSceneTree(DAVA::ParticleLayer*, DAVA::int32)));
-
-	connect(CommandSignals::Instance(),
-			SIGNAL(CommandAffectsEntities(DAVA::Scene*, CommandList::eCommandId, const DAVA::Set<DAVA::Entity*>&) ) ,
-			this,
-			SLOT(OnCommandExecuted(DAVA::Scene*, CommandList::eCommandId, const DAVA::Set<DAVA::Entity*>&)));
 	
+	// Signals handling from Scene Tree.
+	connect(SceneSignals::Instance(),
+			SIGNAL(EffectSelected(SceneEditor2*, DAVA::Entity*)),
+			this,
+			SLOT(OnEffectSelectedFromSceneTree(SceneEditor2*, DAVA::Entity*)));
+	connect(SceneSignals::Instance(),
+			SIGNAL(EmitterSelected(SceneEditor2*, DAVA::Entity*)),
+			this,
+			SLOT(OnEmitterSelectedFromSceneTree(SceneEditor2*, DAVA::Entity*)));
+	connect(SceneSignals::Instance(),
+			SIGNAL(LayerSelected(SceneEditor2*, DAVA::ParticleLayer*, bool)),
+			this,
+			SLOT(OnLayerSelectedFromSceneTree(SceneEditor2*, DAVA::ParticleLayer*, bool)));
+	connect(SceneSignals::Instance(),
+			SIGNAL(ForceSelected(SceneEditor2*, DAVA::ParticleLayer*, DAVA::int32)),
+			this,
+			SLOT(OnForceSelectedFromSceneTree(SceneEditor2*, DAVA::ParticleLayer*, DAVA::int32)));
+
+	// Get the notification about changes in Particle Editor items.
+	connect(SceneSignals::Instance(),
+			SIGNAL(ParticleEmitterValueChanged(SceneEditor2*, DAVA::ParticleEmitter*)),
+			this,
+			SLOT(OnParticleEmitterValueChanged(SceneEditor2*, DAVA::ParticleEmitter*)));
+	connect(SceneSignals::Instance(),
+			SIGNAL(ParticleLayerValueChanged(SceneEditor2*, DAVA::ParticleLayer*)),
+			this,
+			SLOT(OnParticleLayerValueChanged(SceneEditor2*, DAVA::ParticleLayer*)));
+
+	// Particle Effect Started/Stopped notification is also needed to set/reset stats.
+	connect(SceneSignals::Instance(),
+			SIGNAL(ParticleEffectStateChanged(SceneEditor2*, DAVA::Entity*, bool)),
+			this,
+			SLOT(OnParticleEffectStateChanged(SceneEditor2*, DAVA::Entity*, bool)));
 	Init(0, 0);
 	
 	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
@@ -731,11 +723,13 @@ void ParticleTimeLineWidget::OnValueChanged(int lineId)
 	if (iter == lines.end())
 		return;
 	
-	CommandUpdateParticleLayerTime* cmd = new CommandUpdateParticleLayerTime(iter->second.layer);
-	cmd->Init(iter->second.startTime, iter->second.endTime);
-	CommandsManager::Instance()->ExecuteAndRelease(cmd,
-												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
-	
+	if (activeScene)
+	{
+		CommandUpdateParticleLayerTime* cmd = new CommandUpdateParticleLayerTime(iter->second.layer);
+		cmd->Init(iter->second.startTime, iter->second.endTime);
+		activeScene->Exec(cmd);
+	}
+
 	emit ValueChanged();
 }
 
@@ -756,33 +750,23 @@ void ParticleTimeLineWidget::OnUpdateLayersExtraInfoNeeded()
 	UpdateLayersExtraInfoValues();
 }
 
-void ParticleTimeLineWidget::OnCommandExecuted(DAVA::Scene* scene, CommandList::eCommandId id,
-											   const DAVA::Set<DAVA::Entity*>& affectedEntities)
+void ParticleTimeLineWidget::OnParticleEffectStateChanged(SceneEditor2* scene, DAVA::Entity* effect, bool isStarted)
 {
-	switch (id)
-	{
-		case CommandList::ID_COMMAND_START_STOP_PARTICLE_EFFECT:
-		case CommandList::ID_COMMAND_RESTART_PARTICLE_EFFECT:
-		{
-			// The particle effect was started, stopped or restarted. Reset all the extra info.
-			ResetLayersExtraInfoValues();
-			break;
-		}
-			
-		default:
-		{
-			break;
-		}
-	}
+	// The particle effect was started, stopped or restarted. Reset all the extra info.
+	ResetLayersExtraInfoValues();
 }
 
-void ParticleTimeLineWidget::OnEffectSelectedFromSceneTree(DAVA::Entity* effectNode)
+void ParticleTimeLineWidget::OnEffectSelectedFromSceneTree(SceneEditor2* scene, DAVA::Entity* effectNode)
 {
+	activeScene = scene;
+
 	OnEffectNodeSelected(effectNode);
 }
 
-void ParticleTimeLineWidget::OnEmitterSelectedFromSceneTree(DAVA::Entity* emitterNode)
+void ParticleTimeLineWidget::OnEmitterSelectedFromSceneTree(SceneEditor2* scene, DAVA::Entity* emitterNode)
 {
+	activeScene = scene;
+
 	ParticleEmitter* emitter = NULL;
 	if (emitterNode)
 	{
@@ -792,8 +776,10 @@ void ParticleTimeLineWidget::OnEmitterSelectedFromSceneTree(DAVA::Entity* emitte
 	HandleEmitterSelected(emitter, NULL);
 }
 
-void ParticleTimeLineWidget::OnLayerSelectedFromSceneTree(DAVA::ParticleLayer* layer, bool forceRefresh)
+void ParticleTimeLineWidget::OnLayerSelectedFromSceneTree(SceneEditor2* scene, DAVA::ParticleLayer* layer, bool forceRefresh)
 {
+	activeScene = scene;
+
 	ParticleEmitter* emitter = NULL;
 	if (layer)
 	{
@@ -803,8 +789,10 @@ void ParticleTimeLineWidget::OnLayerSelectedFromSceneTree(DAVA::ParticleLayer* l
 	HandleEmitterSelected(emitter, layer);
 }
 
-void ParticleTimeLineWidget::OnForceSelectedFromSceneTree(DAVA::ParticleLayer* layer, DAVA::int32 forceIndex)
+void ParticleTimeLineWidget::OnForceSelectedFromSceneTree(SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::int32 forceIndex)
 {
+	activeScene = scene;
+
 	// Handle in the same way as Layer.
 	ParticleEmitter* emitter = NULL;
 	if (layer)
@@ -813,6 +801,50 @@ void ParticleTimeLineWidget::OnForceSelectedFromSceneTree(DAVA::ParticleLayer* l
 	}
 	
 	HandleEmitterSelected(emitter, layer);
+}
+
+void ParticleTimeLineWidget::OnParticleEmitterValueChanged(SceneEditor2* /*scene*/, DAVA::ParticleEmitter* emitter)
+{
+	if (!emitter)
+	{
+		return;
+	}
+
+	// Update the timeline parameters which are related to the whole emitter.
+	if (this->maxTime != emitter->GetLifeTime())
+	{
+		this->maxTime = emitter->GetLifeTime();
+		repaint();
+	}
+}
+
+void ParticleTimeLineWidget::OnParticleLayerValueChanged(SceneEditor2* scene, DAVA::ParticleLayer* layer)
+{
+	// Update the params related to the particular layer.
+	int lineIndex = 0;
+	for (LINE_MAP::iterator iter = lines.begin(); iter != lines.end(); ++iter, ++ lineIndex)
+	{
+		LINE& line = iter->second;
+		if (line.layer != layer)
+		{
+			continue;
+		}
+		
+		if (line.startTime != layer->startTime || line.endTime != layer->endTime)
+		{
+			line.startTime = layer->startTime;
+			line.endTime = layer->endTime;
+			repaint();
+		}
+		
+		if (line.isLooped != layer->GetLooped())
+		{
+			line.isLooped = layer->GetLooped();
+			repaint();
+		}
+
+		break;
+	}
 }
 
 void ParticleTimeLineWidget::CleanupTimelines()

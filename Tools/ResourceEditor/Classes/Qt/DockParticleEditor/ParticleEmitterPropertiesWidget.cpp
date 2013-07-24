@@ -15,8 +15,7 @@
 =====================================================================================*/
 
 #include "ParticleEmitterPropertiesWidget.h"
-#include "Commands/ParticleEditorCommands.h"
-#include "Commands/CommandsManager.h"
+#include "Commands2/ParticleEditorCommands.h"
 #include "../Scene/SceneDataManager.h"
 
 #include <QLineEdit>
@@ -25,8 +24,9 @@
 #define EMISSION_RANGE_MIN_LIMIT_DEGREES 0.0f
 #define EMISSION_RANGE_MAX_LIMIT_DEGREES 180.0f
 
-ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent) :
-	QWidget(parent)
+ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(SceneEditor2* scene, QWidget* parent) :
+	QWidget(parent),
+	BaseParticleEditorContentWidget(scene)
 {
 	mainLayout = new QVBoxLayout();
 	this->setLayout(mainLayout);
@@ -150,8 +150,9 @@ void ParticleEmitterPropertiesWidget::OnValueChanged()
 							   size.GetPropLine(),
 							   life,
 							   playbackSpeed);
-	CommandsManager::Instance()->ExecuteAndRelease(commandUpdateEmitter,
-												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
+
+	DVASSERT(activeScene != 0);
+	activeScene->Exec(commandUpdateEmitter);
 
 	Init(emitter, false, initEmittersByDef);
 	emit ValueChanged();

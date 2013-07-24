@@ -26,6 +26,7 @@
 #include "ScrollZoomWidget.h"
 #include "Tools/EventFilterDoubleSpinBox/EventFilterDoubleSpinBox.h"
 
+#include "Scene/SceneEditor2.h"
 #include "Commands/CommandList.h"
 
 using namespace DAVA;
@@ -74,19 +75,20 @@ protected slots:
 	void OnEffectNodeSelected(Entity* node);
 	void OnLayerSelected(Entity* node, ParticleLayer* layer);
 	
-	// New signals for SceneTree.
-	void OnEffectSelectedFromSceneTree(DAVA::Entity* effectNode);
-	void OnEmitterSelectedFromSceneTree(DAVA::Entity* emitterNode);
-	void OnLayerSelectedFromSceneTree(DAVA::ParticleLayer* layer, bool forceRefresh);
-    void OnForceSelectedFromSceneTree(DAVA::ParticleLayer* layer, DAVA::int32 forceIndex);
+	// Scene Tree signals - Particles are selected.
+	void OnEffectSelectedFromSceneTree(SceneEditor2* scene, DAVA::Entity* effectNode);
+	void OnEmitterSelectedFromSceneTree(SceneEditor2* scene, DAVA::Entity* emitterNode);
+	void OnLayerSelectedFromSceneTree(SceneEditor2* scene, DAVA::ParticleLayer* layer, bool forceRefresh);
+    void OnForceSelectedFromSceneTree(SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::int32 forceIndex);
+
+	// Scene Tree signals - values are changed for Particles.
+	void OnParticleEmitterValueChanged(SceneEditor2* scene, DAVA::ParticleEmitter* emitter);
+	void OnParticleLayerValueChanged(SceneEditor2* scene, DAVA::ParticleLayer* layer);
+	void OnParticleEffectStateChanged(SceneEditor2* scene, DAVA::Entity* effect, bool isStarted);
 	
 	void OnUpdate();
 
 	void OnUpdateLayersExtraInfoNeeded();
-
-	// Handle the "Command Executed" signal.
-	void OnCommandExecuted(DAVA::Scene* scene, CommandList::eCommandId id,
-						   const DAVA::Set<DAVA::Entity*>& affectedEntities);
 
 protected:
 	virtual void paintEvent(QPaintEvent *);
@@ -144,6 +146,9 @@ private:
 
 	// List of data columns.
 	List<ParticlesExtraInfoColumn*> infoColumns;
+	
+	// Scene currently selected.
+	SceneEditor2* activeScene;
 
 	class SetPointValueDlg: public QDialog
 	{

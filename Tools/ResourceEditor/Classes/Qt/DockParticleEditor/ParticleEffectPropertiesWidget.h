@@ -30,7 +30,7 @@ class ParticleEffectPropertiesWidget: public QWidget, public BaseParticleEditorC
 	Q_OBJECT
 	
 public:
-	explicit ParticleEffectPropertiesWidget(QWidget* parent = 0);
+	explicit ParticleEffectPropertiesWidget(SceneEditor2* scene, QWidget* parent = 0);
 	~ParticleEffectPropertiesWidget();
 
 	void Init(DAVA::ParticleEffectComponent* effect);

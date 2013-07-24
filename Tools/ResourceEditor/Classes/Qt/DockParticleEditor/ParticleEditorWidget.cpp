@@ -31,45 +31,29 @@ ParticleEditorWidget::ParticleEditorWidget(QWidget *parent/* = 0*/) :
 	emitterPropertiesWidget = NULL;
 	effectPropertiesWidget = NULL;
 
-	connect(ParticlesEditorController::Instance(),
-			SIGNAL(EffectSelected(Entity*)),
-			this,
-			SLOT(OnEffectSelected(Entity*)));
-	connect(ParticlesEditorController::Instance(),
-			SIGNAL(EmitterSelected(Entity*, BaseParticleEditorNode*)),
-			this,
-			SLOT(OnEmitterSelected(Entity*, BaseParticleEditorNode*)));
-	connect(ParticlesEditorController::Instance(),
-			SIGNAL(LayerSelected(Entity*, ParticleLayer*, BaseParticleEditorNode*, bool)),
-			this,
-			SLOT(OnLayerSelected(Entity*, ParticleLayer*, BaseParticleEditorNode*, bool)));
-	connect(ParticlesEditorController::Instance(),
-			SIGNAL(ForceSelected(Entity*, ParticleLayer*, int32, BaseParticleEditorNode*)),
-			this,
-			SLOT(OnForceSelected(Entity*, ParticleLayer*, int32, BaseParticleEditorNode*)));
-
-	connect(ParticlesEditorController::Instance(),
-			SIGNAL(NodeDeselected(BaseParticleEditorNode*)),
-			this,
-			SLOT(OnNodeDeselected(BaseParticleEditorNode*)));
-	
 	// New signals for Scene Tree.
 	connect(SceneSignals::Instance(),
-			SIGNAL(EffectSelected(DAVA::Entity*)),
+			SIGNAL(EffectSelected(SceneEditor2*, DAVA::Entity*)),
 			this,
-			SLOT(OnEffectSelectedFromSceneTree(DAVA::Entity*)));
+			SLOT(OnEffectSelectedFromSceneTree(SceneEditor2*, DAVA::Entity*)));
 	connect(SceneSignals::Instance(),
-			SIGNAL(EmitterSelected(DAVA::Entity*)),
+			SIGNAL(EmitterSelected(SceneEditor2*, DAVA::Entity*)),
 			this,
-			SLOT(OnEmitterSelectedFromSceneTree(DAVA::Entity*)));
+			SLOT(OnEmitterSelectedFromSceneTree(SceneEditor2*, DAVA::Entity*)));
 	connect(SceneSignals::Instance(),
-			SIGNAL(LayerSelected(DAVA::ParticleLayer*, bool)),
+			SIGNAL(LayerSelected(SceneEditor2*, DAVA::ParticleLayer*, bool)),
 			this,
-			SLOT(OnLayerSelectedFromSceneTree(DAVA::ParticleLayer*, bool)));
+			SLOT(OnLayerSelectedFromSceneTree(SceneEditor2*, DAVA::ParticleLayer*, bool)));
 	connect(SceneSignals::Instance(),
-			SIGNAL(ForceSelected(DAVA::ParticleLayer*, DAVA::int32)),
+			SIGNAL(ForceSelected(SceneEditor2*, DAVA::ParticleLayer*, DAVA::int32)),
 			this,
-			SLOT(OnForceSelectedFromSceneTree(DAVA::ParticleLayer*, DAVA::int32)));
+			SLOT(OnForceSelectedFromSceneTree(SceneEditor2*, DAVA::ParticleLayer*, DAVA::int32)));
+	
+	// Get the notification about changes in Particle Editor items.
+	connect(SceneSignals::Instance(),
+			SIGNAL(ParticleLayerValueChanged(SceneEditor2*, DAVA::ParticleLayer*)),
+			this,
+			SLOT(OnParticleLayerValueChanged(SceneEditor2*, DAVA::ParticleLayer*)));
 }
 
 ParticleEditorWidget::~ParticleEditorWidget()
@@ -83,191 +67,6 @@ void ParticleEditorWidget::DeleteOldWidget()
 	SAFE_DELETE(layerForceWidget);
 	SAFE_DELETE(emitterPropertiesWidget);
 	SAFE_DELETE(effectPropertiesWidget);
-}
-
-void ParticleEditorWidget::OnEffectSelected(Entity* effectNode)
-{
-	ParticleEffectComponent* effect = NULL;
-	if (effectNode)
-	{
-		effect = cast_if_equal<ParticleEffectComponent*>(effectNode->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
-		if (!effect)
-		{
-			return;
-		}
-		
-		if (effectPropertiesWidget && effectPropertiesWidget->GetEffect() == effect)
-		{
-			return;
-		}
-	}
-
-	DeleteOldWidget();
-	if (!effect)
-	{
-		emit ChangeVisible(false);
-		return;
-	}
-	
-	emit ChangeVisible(true);
-	effectPropertiesWidget = new ParticleEffectPropertiesWidget(this);
-	effectPropertiesWidget->Init(effect);
-
-	setWidget(effectPropertiesWidget);
-}
-
-void ParticleEditorWidget::OnEmitterSelected(Entity* emitterNode, BaseParticleEditorNode* editorNode)
-{
-	ParticleEmitter* emitter = NULL;
-	if (emitterNode)
-	{
-		emitter = GetEmitter(emitterNode);
-		if (!emitter)
-		{
-			return;
-		}
-
-		if (emitterPropertiesWidget &&
-			emitterPropertiesWidget->GetEmitter() == emitter)
-			return;
-	}
-	
-	DeleteOldWidget();
-	
-	if (!emitterNode)
-	{
-		emit ChangeVisible(false);
-		return;
-	}
-	
-	emit ChangeVisible(true);
-	if (!emitter)
-		return;
-
-	emitterPropertiesWidget = new ParticleEmitterPropertiesWidget(this);
-	emitterPropertiesWidget->Init(emitter, true);
-
-	setWidget(emitterPropertiesWidget);
-	connect(emitterPropertiesWidget,
-			SIGNAL(ValueChanged()),
-			this,
-			SLOT(OnValueChanged()));
-
-	// Yuri Coder, 2013/07/05. Yuri Coder - this storage is outdated.
-	if (editorNode)
-	{
-		KeyedArchive* stateProps = editorNode->GetExtraData();
-		emitterPropertiesWidget->RestoreVisualState(stateProps);
-		
-		int32 scrollValue = stateProps->GetInt32("EDITOR_SCROLL_VALUE", 0);
-		verticalScrollBar()->setValue(scrollValue);
-	}
-
-	UpdateParticleEditorWidgets();
-}
-
-void ParticleEditorWidget::OnLayerSelected(Entity* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode, bool forceRefresh)
-{
-	ParticleEmitter* emitter = NULL;
-	if (emitterNode)
-	{
-		emitter = GetEmitter(emitterNode);
-	}
-	
-	HandleLayerSelected(emitter, layer, editorNode, forceRefresh);
-}
-
-void ParticleEditorWidget::HandleLayerSelected(ParticleEmitter* emitter, ParticleLayer* layer, BaseParticleEditorNode* editorNode, bool forceRefresh)
-{
-	if (!forceRefresh && emitterLayerWidget &&
-		emitterLayerWidget->GetLayer() == layer &&
-		emitterLayerWidget->GetEmitter() == emitter &&
-		!forceRefresh)
-	{
-		return;
-	}
-
-	DeleteOldWidget();
-
-	if (!emitter || !layer)
-	{
-		emit ChangeVisible(false);
-		return;
-	}
-
-	emit ChangeVisible(true);
-
-	emitterLayerWidget = new EmitterLayerWidget(this);
-	emitterLayerWidget->Init(emitter, layer, true);
-
-	setWidget(emitterLayerWidget);
-	connect(emitterLayerWidget,
-			SIGNAL(ValueChanged()),
-			this,
-			SLOT(OnValueChanged()));
-
-	if (editorNode)
-	{
-		KeyedArchive* stateProps = editorNode->GetExtraData();
-		emitterLayerWidget->RestoreVisualState(stateProps);
-	
-		int32 scrollValue = stateProps->GetInt32("EDITOR_SCROLL_VALUE", 0);
-		verticalScrollBar()->setValue(scrollValue);
-	}
-
-	UpdateParticleEditorWidgets();
-}
-
-void ParticleEditorWidget::OnForceSelected(Entity* emitterNode, ParticleLayer* layer, int32 forceIndex, BaseParticleEditorNode* editorNode)
-{
-	ParticleEmitter* emitter = NULL;
-	if (emitterNode)
-	{
-		emitter =  GetEmitter(emitterNode);
-	}
-
-	HandleForceSelected(emitter, layer, forceIndex, editorNode);
-}
-
-void ParticleEditorWidget::HandleForceSelected(ParticleEmitter* emitter, ParticleLayer* layer, int32 forceIndex, BaseParticleEditorNode* editorNode)
-{
-	if (layerForceWidget &&
-		layerForceWidget->GetLayer() == layer &&
-		layerForceWidget->GetForceIndex() == forceIndex &&
-		layerForceWidget->GetEmitter() == emitter)
-	{
-		return;
-	}
-	
-	DeleteOldWidget();
-	
-	if (!emitter || !layer)
-	{
-		emit ChangeVisible(false);
-		return;
-	}
-
-	emit ChangeVisible(true);
-
-	layerForceWidget = new LayerForceWidget(this);
-	layerForceWidget->Init(emitter, layer, forceIndex, true);
-	
-	setWidget(layerForceWidget);
-	connect(layerForceWidget,
-			SIGNAL(ValueChanged()),
-			this,
-			SLOT(OnValueChanged()));
-	
-	if (editorNode)
-	{
-		KeyedArchive* stateProps = editorNode->GetExtraData();
-		layerForceWidget->RestoreVisualState(stateProps);
-		
-		int32 scrollValue = stateProps->GetInt32("EDITOR_SCROLL_VALUE", 0);
-		verticalScrollBar()->setValue(scrollValue);
-	}
-	
-	UpdateParticleEditorWidgets();
 }
 
 void ParticleEditorWidget::OnNodeDeselected(BaseParticleEditorNode* particleEditorNode)
@@ -299,8 +98,6 @@ void ParticleEditorWidget::OnUpdate()
 
 void ParticleEditorWidget::OnValueChanged()
 {
-	emit ValueChanged();
-	
 	// Update the particle editor widgets when the value on the emitter layer is changed.
 	UpdateParticleEditorWidgets();
 }
@@ -368,7 +165,7 @@ void ParticleEditorWidget::UpdateWidgetsForLayer()
 	emitterLayerWidget->SetSuperemitterMode(isSuperemitter);
 }
 
-void ParticleEditorWidget::OnEmitterSelectedFromSceneTree(DAVA::Entity* emitterNode)
+void ParticleEditorWidget::OnEmitterSelectedFromSceneTree(SceneEditor2* scene, DAVA::Entity* emitterNode)
 {
 	if (!emitterNode)
 	{
@@ -377,22 +174,186 @@ void ParticleEditorWidget::OnEmitterSelectedFromSceneTree(DAVA::Entity* emitterN
 	}
 	
 	// NULL is accepted here too.
-	OnEmitterSelected(emitterNode, NULL);
+	ParticleEmitter* emitter = NULL;
+	if (emitterNode)
+	{
+		emitter = GetEmitter(emitterNode);
+		if (!emitter)
+		{
+			return;
+		}
+
+		if (emitterPropertiesWidget &&
+			emitterPropertiesWidget->GetEmitter() == emitter)
+			return;
+	}
+	
+	DeleteOldWidget();
+	
+	if (!emitterNode)
+	{
+		emit ChangeVisible(false);
+		return;
+	}
+	
+	emit ChangeVisible(true);
+	if (!emitter)
+		return;
+
+	emitterPropertiesWidget = new ParticleEmitterPropertiesWidget(scene, this);
+	emitterPropertiesWidget->Init(emitter, true);
+
+	setWidget(emitterPropertiesWidget);
+	connect(emitterPropertiesWidget,
+			SIGNAL(ValueChanged()),
+			this,
+			SLOT(OnValueChanged()));
+
+	// Yuri Coder, 2013/07/05. Yuri Coder - this storage is outdated.
+	/*
+	if (editorNode)
+	{
+		KeyedArchive* stateProps = editorNode->GetExtraData();
+		emitterPropertiesWidget->RestoreVisualState(stateProps);
+		
+		int32 scrollValue = stateProps->GetInt32("EDITOR_SCROLL_VALUE", 0);
+		verticalScrollBar()->setValue(scrollValue);
+	}
+	 */
+	
+	UpdateParticleEditorWidgets();
 }
 
-void ParticleEditorWidget::OnEffectSelectedFromSceneTree(DAVA::Entity* effectNode)
+void ParticleEditorWidget::OnEffectSelectedFromSceneTree(SceneEditor2* scene, DAVA::Entity* effectNode)
 {
-	OnEffectSelected(effectNode);
+	ParticleEffectComponent* effect = NULL;
+	if (effectNode)
+	{
+		effect = cast_if_equal<ParticleEffectComponent*>(effectNode->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+		if (!effect)
+		{
+			return;
+		}
+		
+		if (effectPropertiesWidget && effectPropertiesWidget->GetEffect() == effect)
+		{
+			return;
+		}
+	}
+	
+	DeleteOldWidget();
+	if (!effect)
+	{
+		emit ChangeVisible(false);
+		return;
+	}
+	
+	emit ChangeVisible(true);
+	effectPropertiesWidget = new ParticleEffectPropertiesWidget(scene, this);
+	effectPropertiesWidget->Init(effect);
+	
+	setWidget(effectPropertiesWidget);
 }
 
-void ParticleEditorWidget::OnLayerSelectedFromSceneTree(DAVA::ParticleLayer* layer, bool forceRefresh)
+void ParticleEditorWidget::OnLayerSelectedFromSceneTree(SceneEditor2* scene, DAVA::ParticleLayer* layer, bool forceRefresh)
 {
 	ParticleEmitter* emitter = layer->GetEmitter();
-	HandleLayerSelected(emitter,layer, NULL, forceRefresh);
+
+	if (!forceRefresh && emitterLayerWidget &&
+		emitterLayerWidget->GetLayer() == layer &&
+		emitterLayerWidget->GetEmitter() == emitter &&
+		!forceRefresh)
+	{
+		return;
+	}
+
+	DeleteOldWidget();
+
+	if (!emitter || !layer)
+	{
+		emit ChangeVisible(false);
+		return;
+	}
+
+	emit ChangeVisible(true);
+
+	emitterLayerWidget = new EmitterLayerWidget(scene, this);
+	emitterLayerWidget->Init(emitter, layer, true);
+
+	setWidget(emitterLayerWidget);
+	connect(emitterLayerWidget,
+			SIGNAL(ValueChanged()),
+			this,
+			SLOT(OnValueChanged()));
+
+	// TODO: Yuri Coder, 2013/07/22. This code does not work now.
+	/*
+	if (editorNode)
+	{
+		KeyedArchive* stateProps = editorNode->GetExtraData();
+		emitterLayerWidget->RestoreVisualState(stateProps);
+	
+		int32 scrollValue = stateProps->GetInt32("EDITOR_SCROLL_VALUE", 0);
+		verticalScrollBar()->setValue(scrollValue);
+	}
+	 */
+
+	UpdateParticleEditorWidgets();
 }
 
-void ParticleEditorWidget::OnForceSelectedFromSceneTree(DAVA::ParticleLayer* layer, DAVA::int32 forceIndex)
+void ParticleEditorWidget::OnForceSelectedFromSceneTree(SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::int32 forceIndex)
 {
 	ParticleEmitter* emitter = layer->GetEmitter();
-	HandleForceSelected(emitter, layer, forceIndex, NULL);
+	if (layerForceWidget &&
+		layerForceWidget->GetLayer() == layer &&
+		layerForceWidget->GetForceIndex() == forceIndex &&
+		layerForceWidget->GetEmitter() == emitter)
+	{
+		return;
+	}
+	
+	DeleteOldWidget();
+	
+	if (!emitter || !layer)
+	{
+		emit ChangeVisible(false);
+		return;
+	}
+
+	emit ChangeVisible(true);
+
+	layerForceWidget = new LayerForceWidget(scene, this);
+	layerForceWidget->Init(emitter, layer, forceIndex, true);
+	
+	setWidget(layerForceWidget);
+	connect(layerForceWidget,
+			SIGNAL(ValueChanged()),
+			this,
+			SLOT(OnValueChanged()));
+
+	// TODO: Yuri Coder, 2013/07/22. This code does not work now.
+	/*
+	if (editorNode)
+	{
+		KeyedArchive* stateProps = editorNode->GetExtraData();
+		layerForceWidget->RestoreVisualState(stateProps);
+		
+		int32 scrollValue = stateProps->GetInt32("EDITOR_SCROLL_VALUE", 0);
+		verticalScrollBar()->setValue(scrollValue);
+	}
+	 */
+
+	UpdateParticleEditorWidgets();
+}
+
+void ParticleEditorWidget::OnParticleLayerValueChanged(SceneEditor2* /*scene*/, DAVA::ParticleLayer* layer)
+{
+	if (!emitterLayerWidget || emitterLayerWidget->GetLayer() != layer)
+	{
+		return;
+	}
+	
+	// Notify the Emitter Layer widget about its inner layer value is changed and
+	// the widget needs to be resynchronized with its values.
+	emitterLayerWidget->OnLayerValueChanged();
 }
