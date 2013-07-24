@@ -1497,9 +1497,6 @@
     <ClCompile Include="Classes\Qt\DockVisibilityToolEditor\VisibilityToolPropertiesView.cpp">
       <Filter>Classes\Qt\DockVisibilityToolEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Scene\System\ParticlesDebugDrawSystem.cpp">
-      <Filter>Classes\Qt\Scene\System</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\Tools\MimeDataHelper\MimeDataHelper.cpp">
       <Filter>Classes\Qt\Tools\MimeDataHelper</Filter>
     </ClCompile>
@@ -1537,9 +1534,6 @@
       <Filter>Classes\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\MaterialViewOptionsCommands.cpp">
-      <Filter>Classes\Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Commands\ParticleEditorCommands.cpp">
       <Filter>Classes\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\SceneEditorScreenMainCommands.cpp">
@@ -1973,6 +1967,12 @@
     </ClCompile>
     <ClCompile Include="_GeneratedQt\CubemapEditor\MaterialHelper_moc.cpp">
       <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands2\ParticleEditorCommands.cpp">
+      <Filter>Classes\Commands2</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\EditorParticlesSystem.cpp">
+      <Filter>Classes\Qt\Scene\System</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -3290,9 +3290,6 @@
     <ClInclude Include="Classes\Qt\DockVisibilityToolEditor\VisibilityToolPropertiesView.h">
       <Filter>Classes\Qt\DockVisibilityToolEditor</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Scene\System\ParticlesDebugDrawSystem.h">
-      <Filter>Classes\Qt\Scene\System</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\MimeDataHelper\MimeDataHelper.h">
       <Filter>Classes\Qt\Tools\MimeDataHelper</Filter>
     </ClInclude>
@@ -3333,9 +3330,6 @@
       <Filter>Classes\Commands</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands\MaterialViewOptionsCommands.h">
-      <Filter>Classes\Commands</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Commands\ParticleEditorCommands.h">
       <Filter>Classes\Commands</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands\SceneEditorScreenMainCommands.h">
@@ -3427,6 +3421,12 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\CubemapEditor\MaterialHelper.h">
       <Filter>Classes\Qt\CubemapEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands2\ParticleEditorCommands.h">
+      <Filter>Classes\Commands2</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\EditorParticlesSystem.h">
+      <Filter>Classes\Qt\Scene\System</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
