@@ -20,6 +20,7 @@
 #include <QPair>
 #include <QMap>
 #include <QStandardItemModel>
+#include <QSortFilterProxyModel>
 
 #include "Scene/SceneEditor2.h"
 #include "Qt/DockSceneTree/SceneTreeItem.h"
@@ -94,6 +95,19 @@ protected:
 protected slots:
 	void ItemChanged(QStandardItem * item);
 	void StructureChanged(SceneEditor2 *scene, DAVA::Entity *parent);
+};
+
+class SceneTreeFilteringModel : public QSortFilterProxyModel
+{
+public:
+	SceneTreeFilteringModel(SceneTreeModel *treeModel, QObject *parent = NULL);
+	bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
+
+protected:
+	SceneTreeModel *treeModel;
+
+	bool selfAcceptRow(int sourceRow, const QModelIndex &sourceParent) const;
+	bool childrenAcceptRow(int sourceRow, const QModelIndex &sourceParent) const;
 };
 
 #endif // __QT_SCENE_TREE_MODEL_H__

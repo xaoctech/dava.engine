@@ -47,6 +47,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 	SetupMainMenu();
 	SetupToolBars();
+	SetupDocks();
 	SetupActions();
 
 	// initial state is as project closed
@@ -212,6 +213,12 @@ void QtMainWindow::SetupToolBars()
 	ui->mainToolBar->addAction(reloadMenuAction);
 	ShowActionWithText(ui->mainToolBar, reloadMenuAction, true);
 	*/
+}
+
+void QtMainWindow::SetupDocks()
+{
+	QObject::connect(ui->sceneTreeFilterClear, SIGNAL(pressed()), ui->sceneTreeFilterEdit, SLOT(clear()));
+	QObject::connect(ui->sceneTreeFilterEdit, SIGNAL(textChanged(const QString &)), ui->sceneTree, SLOT(SetFilter(const QString &)));
 }
 
 void QtMainWindow::SetupActions()

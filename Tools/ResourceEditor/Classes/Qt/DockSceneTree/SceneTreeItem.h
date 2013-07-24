@@ -42,7 +42,7 @@ public:
 	enum eItemDataRole
 	{
 		EIDR_Type = Qt::UserRole,
-		EIDR_Data
+		EIDR_Data,
 	};
 
 	SceneTreeItem(eItemType type);

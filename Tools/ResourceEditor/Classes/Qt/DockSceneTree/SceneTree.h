@@ -38,9 +38,11 @@ public:
 
 public slots:
 	void ShowContextMenu(const QPoint &pos);
+	void SetFilter(const QString &filter);
 
 protected:
 	SceneTreeModel * treeModel;
+	SceneTreeFilteringModel *filteringProxyModel;
 	SceneTreeDelegate *treeDelegate;
 
 	bool skipTreeSelectionProcessing;

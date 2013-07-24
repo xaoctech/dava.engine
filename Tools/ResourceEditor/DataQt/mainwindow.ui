@@ -661,6 +661,51 @@
       </widget>
      </item>
      <item>
+      <widget class="QWidget" name="widget_5" native="true">
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <property name="spacing">
+         <number>5</number>
+        </property>
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>3</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Search:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="sceneTreeFilterEdit"/>
+        </item>
+        <item>
+         <widget class="QToolButton" name="sceneTreeFilterClear">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="QtIcons.qrc">
+            <normaloff>:/QtIconsTextureDialog/editclear.png</normaloff>:/QtIconsTextureDialog/editclear.png</iconset>
+          </property>
+          <property name="autoRaise">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
       <widget class="SceneTree" name="sceneTree">
        <property name="editTriggers">
         <set>QAbstractItemView::NoEditTriggers</set>
@@ -1399,7 +1444,7 @@
     <string>Manual transform mode - Absolute/Offset</string>
    </property>
   </action>
- <action name="actionCubemapEditor">
+  <action name="actionCubemapEditor">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
      <normaloff>:/QtIcons/cubemap.png</normaloff>:/QtIcons/cubemap.png</iconset>
