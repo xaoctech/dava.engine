@@ -729,6 +729,18 @@
 		846CFE60174D1A64004ECE3C /* OpenUDIDApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 846CFE5E174D1A64004ECE3C /* OpenUDIDApple.mm */; };
 		846CFE63174D1A75004ECE3C /* OpenUDIDMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 846CFE61174D1A75004ECE3C /* OpenUDIDMacOS.h */; };
 		846CFE64174D1A75004ECE3C /* OpenUDIDMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 846CFE62174D1A75004ECE3C /* OpenUDIDMacOS.mm */; };
+		A60AE94C17A00D5100B5626A /* ActionComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A60AE94A17A00D5100B5626A /* ActionComponent.cpp */; };
+		A60AE94D17A00D5100B5626A /* ActionComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = A60AE94B17A00D5100B5626A /* ActionComponent.h */; };
+		A60AE95017A00D9C00B5626A /* ActionUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A60AE94E17A00D9C00B5626A /* ActionUpdateSystem.cpp */; };
+		A60AE95117A00D9C00B5626A /* ActionUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A60AE94E17A00D9C00B5626A /* ActionUpdateSystem.cpp */; };
+		A60AE95217A00D9C00B5626A /* ActionUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A60AE94E17A00D9C00B5626A /* ActionUpdateSystem.cpp */; };
+		A60AE95317A00D9C00B5626A /* ActionUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A60AE94F17A00D9C00B5626A /* ActionUpdateSystem.h */; };
+		A60AE95417A00D9C00B5626A /* ActionUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A60AE94F17A00D9C00B5626A /* ActionUpdateSystem.h */; };
+		A60AE95517A00D9C00B5626A /* ActionUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A60AE94F17A00D9C00B5626A /* ActionUpdateSystem.h */; };
+		A60AE95617A00E2C00B5626A /* ActionComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A60AE94A17A00D5100B5626A /* ActionComponent.cpp */; };
+		A60AE95717A00E2D00B5626A /* ActionComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A60AE94A17A00D5100B5626A /* ActionComponent.cpp */; };
+		A60AE95817A00E3100B5626A /* ActionComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = A60AE94B17A00D5100B5626A /* ActionComponent.h */; };
+		A60AE95917A00E3200B5626A /* ActionComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = A60AE94B17A00D5100B5626A /* ActionComponent.h */; };
 		C151B17716D3747E00E09BAF /* DVAssertMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C151B17416D3747E00E09BAF /* DVAssertMessage.cpp */; };
 		C151B17816D3747E00E09BAF /* DVAssertMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = C151B17516D3747E00E09BAF /* DVAssertMessage.h */; };
 		C151B17916D3747E00E09BAF /* DVAssertMessageApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = C151B17616D3747E00E09BAF /* DVAssertMessageApple.mm */; };
@@ -2050,6 +2062,10 @@
 		846CFE5E174D1A64004ECE3C /* OpenUDIDApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenUDIDApple.mm; sourceTree = "<group>"; };
 		846CFE61174D1A75004ECE3C /* OpenUDIDMacOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenUDIDMacOS.h; sourceTree = "<group>"; };
 		846CFE62174D1A75004ECE3C /* OpenUDIDMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenUDIDMacOS.mm; sourceTree = "<group>"; };
+		A60AE94A17A00D5100B5626A /* ActionComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActionComponent.cpp; sourceTree = "<group>"; };
+		A60AE94B17A00D5100B5626A /* ActionComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionComponent.h; sourceTree = "<group>"; };
+		A60AE94E17A00D9C00B5626A /* ActionUpdateSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActionUpdateSystem.cpp; sourceTree = "<group>"; };
+		A60AE94F17A00D9C00B5626A /* ActionUpdateSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionUpdateSystem.h; sourceTree = "<group>"; };
 		C151B17416D3747E00E09BAF /* DVAssertMessage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DVAssertMessage.cpp; sourceTree = "<group>"; };
 		C151B17516D3747E00E09BAF /* DVAssertMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DVAssertMessage.h; sourceTree = "<group>"; };
 		C151B17616D3747E00E09BAF /* DVAssertMessageApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DVAssertMessageApple.mm; sourceTree = "<group>"; };
@@ -3514,6 +3530,8 @@
 		E8989CC816BD24E500732C04 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				A60AE94A17A00D5100B5626A /* ActionComponent.cpp */,
+				A60AE94B17A00D5100B5626A /* ActionComponent.h */,
 				02E9E4211739616800C501BC /* SoundComponent.cpp */,
 				02E9E4221739616800C501BC /* SoundComponent.h */,
 				CC24800616DD174E00183D40 /* UserComponent.cpp */,
@@ -3547,6 +3565,8 @@
 		E8989D1916BD24E500732C04 /* Systems */ = {
 			isa = PBXGroup;
 			children = (
+				A60AE94E17A00D9C00B5626A /* ActionUpdateSystem.cpp */,
+				A60AE94F17A00D9C00B5626A /* ActionUpdateSystem.h */,
 				02E9E435173964DA00C501BC /* SoundUpdateSystem.cpp */,
 				02E9E436173964DA00C501BC /* SoundUpdateSystem.h */,
 				CCC7A48116F1D6700061EA5D /* UpdateSystem.cpp */,
@@ -4085,6 +4105,8 @@
 				1795E4BF174CB87700050F64 /* NPAPIOpenGLLayerMacOS.h in Headers */,
 				1795E4C5174CC24D00050F64 /* NPAPICorePlatformMacOS.h in Headers */,
 				4FFE5CB31779E0B200728624 /* MipmapReplacer.h in Headers */,
+				A60AE95517A00D9C00B5626A /* ActionUpdateSystem.h in Headers */,
+				A60AE95917A00E3200B5626A /* ActionComponent.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4428,6 +4450,8 @@
 				846CFE63174D1A75004ECE3C /* OpenUDIDMacOS.h in Headers */,
 				4FA5CDC01757AF430040CC6E /* EnumMap.h in Headers */,
 				4FFE5CAF1779DBC700728624 /* MipmapReplacer.h in Headers */,
+				A60AE94D17A00D5100B5626A /* ActionComponent.h in Headers */,
+				A60AE95317A00D9C00B5626A /* ActionUpdateSystem.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4763,6 +4787,8 @@
 				CCC7A4FA17579C680061EA5D /* GlobalEnum.h in Headers */,
 				CCC7A4FC17579C6D0061EA5D /* EnumMap.h in Headers */,
 				4FFE5CB21779E09C00728624 /* MipmapReplacer.h in Headers */,
+				A60AE95417A00D9C00B5626A /* ActionUpdateSystem.h in Headers */,
+				A60AE95817A00E3100B5626A /* ActionComponent.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5166,6 +5192,8 @@
 				4FFE5CB41779E0B400728624 /* MipmapReplacer.cpp in Sources */,
 				0211D551177C26D600EB7011 /* OpenUDIDApple.mm in Sources */,
 				0211D552177C26E000EB7011 /* OpenUDIDMacOS.mm in Sources */,
+				A60AE95217A00D9C00B5626A /* ActionUpdateSystem.cpp in Sources */,
+				A60AE95717A00E2D00B5626A /* ActionComponent.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5464,6 +5492,8 @@
 				846CFE64174D1A75004ECE3C /* OpenUDIDMacOS.mm in Sources */,
 				4FA5CDBF1757AF430040CC6E /* EnumMap.cpp in Sources */,
 				4FFE5CAE1779DBC700728624 /* MipmapReplacer.cpp in Sources */,
+				A60AE94C17A00D5100B5626A /* ActionComponent.cpp in Sources */,
+				A60AE95017A00D9C00B5626A /* ActionUpdateSystem.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5756,6 +5786,8 @@
 				CCC7A4FB17579C6B0061EA5D /* GlobalEnum.cpp in Sources */,
 				CCC7A4FD17579C700061EA5D /* EnumMap.cpp in Sources */,
 				4FFE5CB11779E09300728624 /* MipmapReplacer.cpp in Sources */,
+				A60AE95117A00D9C00B5626A /* ActionUpdateSystem.cpp in Sources */,
+				A60AE95617A00E2C00B5626A /* ActionComponent.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
