@@ -112,12 +112,15 @@ void Entity::AddComponent(Component * component)
 
 void Entity::RemoveComponent(Component * component)
 {
-	component->SetEntity(0);
-
-    components[component->GetType()] = 0;
     if (scene)
+	{
         scene->RemoveComponent(this, component);
-    // SHOULD BE DONE AFTER scene->RemoveComponent
+	}
+
+	component->SetEntity(0);
+	components[component->GetType()] = 0;
+
+	// SHOULD BE DONE AFTER scene->RemoveComponent
     componentFlags &= ~(1 << component->GetType());
 	delete(component);
 }
