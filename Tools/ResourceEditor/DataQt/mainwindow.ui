@@ -634,7 +634,7 @@
    <widget class="QWidget" name="dockSceneTreeContent">
     <layout class="QVBoxLayout" name="verticalLayout_9">
      <property name="spacing">
-      <number>3</number>
+      <number>2</number>
      </property>
      <property name="margin">
       <number>1</number>
@@ -661,32 +661,20 @@
       </widget>
      </item>
      <item>
-      <widget class="QWidget" name="widget_5" native="true">
+      <widget class="QFrame" name="frame_5">
        <layout class="QHBoxLayout" name="horizontalLayout">
         <property name="spacing">
-         <number>5</number>
-        </property>
-        <property name="leftMargin">
-         <number>5</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
          <number>3</number>
         </property>
-        <property name="bottomMargin">
+        <property name="margin">
          <number>0</number>
         </property>
         <item>
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Search:</string>
+         <widget class="QLineEdit" name="sceneTreeFilterEdit">
+          <property name="placeholderText">
+           <string>Type here to search</string>
           </property>
          </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="sceneTreeFilterEdit"/>
         </item>
         <item>
          <widget class="QToolButton" name="sceneTreeFilterClear">
