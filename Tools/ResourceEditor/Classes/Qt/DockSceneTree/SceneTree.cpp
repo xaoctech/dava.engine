@@ -15,6 +15,8 @@
 =====================================================================================*/
 
 #include "DockSceneTree/SceneTree.h"
+#include "Main/mainwindow.h"
+#include "StringConstants.h"
 #include <QBoxLayout>
 #include <QDropEvent>
 #include <QMenu>
@@ -125,6 +127,7 @@ void SceneTree::dragEnterEvent(QDragEnterEvent *event)
 void SceneTree::SceneActivated(SceneEditor2 *scene)
 {
 	treeModel->SetScene(scene);
+	SyncSelectionToTree();
 }
 
 void SceneTree::SceneDeactivated(SceneEditor2 *scene)
@@ -249,6 +252,22 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos)
 			unlockAction->setDisabled(true);
 		}
 
+		// custom properties
+		DAVA::CustomPropertiesComponent *customProp = entity->GetCustomProperties();
+		if(NULL != customProp)
+		{
+			DAVA::KeyedArchive *archive = customProp->GetKeyedArchive();
+			DAVA::FilePath ownerRef = archive->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
+			if(!ownerRef.IsEmpty())
+			{
+				contextMenu.addSeparator();
+
+				QAction *editModelAction = contextMenu.addAction("Edit Model", this, SLOT(EditModel()));
+				QAction *reloadModelAction = contextMenu.addAction("Reload Model", this, SLOT(ReloadModel()));
+				QAction *reloadModelAsAction = contextMenu.addAction("Reload Model As...", this, SLOT(ReloadModelAs()));
+			}
+		}
+
 		// particle effect
 		DAVA::ParticleEffectComponent* effect = DAVA::GetEffectComponent(entity);
 		if(NULL != effect)
@@ -324,6 +343,42 @@ void SceneTree::UnlockEntities()
 			selection->GetEntity(i)->SetLocked(false);
 		}
 	}
+}
+
+void SceneTree::EditModel()
+{
+	SceneEditor2 *sceneEditor = treeModel->GetScene();
+	if(NULL != sceneEditor)
+	{
+		const EntityGroup *selection = sceneEditor->selectionSystem->GetSelection();
+		int tabIndex = -1;
+
+		for(size_t i = 0; i < selection->Size(); ++i)
+		{
+			DAVA::Entity *entity = selection->GetEntity(i);
+			if(NULL != entity && NULL != entity->GetCustomProperties())
+			{
+				DAVA::KeyedArchive *archive = entity->GetCustomProperties()->GetKeyedArchive();
+				DAVA::FilePath entityRefPath = archive->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
+				if(entityRefPath.Exists())
+				{
+					tabIndex = QtMainWindow::Instance()->GetSceneWidget()->OpenTab(entityRefPath);
+				}
+			}
+		}
+
+		QtMainWindow::Instance()->GetSceneWidget()->SetCurrentTab(tabIndex);
+	}
+}
+
+void SceneTree::ReloadModel()
+{
+
+}
+
+void SceneTree::ReloadModelAs()
+{
+
 }
 
 void SceneTree::TreeItemCollapsed(const QModelIndex &index)
