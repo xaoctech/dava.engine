@@ -16,6 +16,7 @@
 
 #include "SceneEditor/SceneEditorScreenMain.h"
 
+#include "Main/mainwindow.h"
 #include "Scene/SceneTabWidget.h"
 #include "Scene/SceneEditor2.h"
 #include "AppScreens.h"
@@ -101,7 +102,12 @@ int SceneTabWidget::OpenTab()
 {
 	SceneEditor2 *scene = new SceneEditor2();
 
-	int tabIndex = tabBar->addTab("NewScene" + QString::number(++newSceneCounter));
+	DAVA::FilePath newScenePath = (QString("newscene") + QString::number(++newSceneCounter)).toStdString();
+	newScenePath.ReplaceExtension(".sc2");
+
+	scene->SetScenePath(newScenePath);
+
+	int tabIndex = tabBar->addTab(newScenePath.GetFilename().c_str());
 	SetTabScene(tabIndex, scene);
 
 	SetCurrentTab(tabIndex);
@@ -129,13 +135,17 @@ int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 		delete scene;
 	}
 
-	SetCurrentTab(tabIndex);
+	if(tabBar->count() == 1)
+	{
+		SetCurrentTab(tabIndex);
+	}
+
 	return tabIndex;
 }
 
 void SceneTabWidget::CloseTab(int index)
 {
-	bool doCloseScene = false;
+	bool doCloseScene = true;
 	SceneEditor2 *scene = GetTabScene(index);
 
 	if(NULL != scene)
@@ -147,23 +157,12 @@ void SceneTabWidget::CloseTab(int index)
 			
 			if(answer == QMessageBox::Yes)
 			{
-				if(scene->Save())
-				{
-					doCloseScene = true;
-				}
-				else
-				{
-					QMessageBox::critical(NULL, "Scene save error", "Error saving scene. Please try again.");
-				}
+
 			}
-			else if(answer == QMessageBox::No)
+			else if(answer == QMessageBox::Cancel)
 			{
-				doCloseScene = true;
+				doCloseScene = false;
 			}
-		}
-		else
-		{
-			doCloseScene = true;
 		}
 	}
 
@@ -194,6 +193,7 @@ void SceneTabWidget::SetCurrentTab(int index)
 
 		if(NULL != oldScene)
 		{
+			oldScene->selectionSystem->LockSelection(true);
 			SceneSignals::Instance()->EmitDeactivated(oldScene);
 		}
 
@@ -205,6 +205,7 @@ void SceneTabWidget::SetCurrentTab(int index)
 			curScene->SetViewportRect(dava3DView->GetRect());
 
 			SceneSignals::Instance()->EmitActivated(curScene);
+			curScene->selectionSystem->LockSelection(false);
 		}
 	}
 }
