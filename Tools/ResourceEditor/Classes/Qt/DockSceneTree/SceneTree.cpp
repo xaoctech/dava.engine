@@ -29,8 +29,11 @@ SceneTree::SceneTree(QWidget *parent /*= 0*/)
 	: QTreeView(parent)
 	, skipTreeSelectionProcessing(false)
 {
+
 	treeModel = new SceneTreeModel();
-	setModel(treeModel);
+	filteringProxyModel = new SceneTreeFilteringModel(treeModel);
+
+	setModel(filteringProxyModel);
 
 	treeDelegate = new SceneTreeDelegate();
 	setItemDelegate(treeDelegate);
@@ -60,6 +63,11 @@ SceneTree::SceneTree(QWidget *parent /*= 0*/)
 SceneTree::~SceneTree()
 {
 
+}
+
+void SceneTree::SetFilter(const QString &filter)
+{
+	filteringProxyModel->setFilterRegExp(QRegExp(filter, Qt::CaseInsensitive, QRegExp::FixedString));
 }
 
 void SceneTree::GetDropParams(const QPoint &pos, QModelIndex &index, int &row, int &col)
@@ -204,7 +212,7 @@ void SceneTree::TreeItemDoubleClicked(const QModelIndex & index)
 
 void SceneTree::ShowContextMenu(const QPoint &pos)
 {
-	QModelIndex index = indexAt(pos);
+	QModelIndex index = filteringProxyModel->mapToSource(indexAt(pos));
 	SceneTreeItem *item = treeModel->GetItem(index);
 
 	if(NULL != item)
@@ -253,11 +261,10 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos)
 		}
 
 		// custom properties
-		DAVA::CustomPropertiesComponent *customProp = entity->GetCustomProperties();
+		DAVA::KeyedArchive *customProp = entity->GetCustomProperties();
 		if(NULL != customProp)
 		{
-			DAVA::KeyedArchive *archive = customProp->GetKeyedArchive();
-			DAVA::FilePath ownerRef = archive->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
+			DAVA::FilePath ownerRef = customProp->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
 			if(!ownerRef.IsEmpty())
 			{
 				contextMenu.addSeparator();
@@ -358,7 +365,7 @@ void SceneTree::EditModel()
 			DAVA::Entity *entity = selection->GetEntity(i);
 			if(NULL != entity && NULL != entity->GetCustomProperties())
 			{
-				DAVA::KeyedArchive *archive = entity->GetCustomProperties()->GetKeyedArchive();
+				DAVA::KeyedArchive *archive = entity->GetCustomProperties();
 				DAVA::FilePath entityRefPath = archive->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
 				if(entityRefPath.Exists())
 				{
@@ -430,6 +437,7 @@ void SceneTree::SyncSelectionToTree()
 		for(size_t i = 0; i < curSelection->Size(); ++i)
 		{
 			QModelIndex index = treeModel->GetIndex(curSelection->GetEntity(i));
+			index = filteringProxyModel->mapFromSource(index);
 
 			if(index.isValid())
 			{
@@ -456,7 +464,7 @@ void SceneTree::SyncSelectionFromTree()
 		QModelIndexList indexList = selectionModel()->selection().indexes();
 		for (int i = 0; i < indexList.size(); ++i)
 		{
-			DAVA::Entity *entity = SceneTreeItemEntity::GetEntity(treeModel->GetItem(indexList[i]));
+			DAVA::Entity *entity = SceneTreeItemEntity::GetEntity(treeModel->GetItem(filteringProxyModel->mapToSource(indexList[i])));
 
 			if(NULL != entity)
 			{

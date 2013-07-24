@@ -15,6 +15,8 @@
 =====================================================================================*/
 
 #include <QtGui>
+#include <QSortFilterProxyModel>
+
 #include "DockSceneTree/SceneTreeDelegate.h"
 #include "DockSceneTree/SceneTreeModel.h"
 #include "DockSceneTree/SceneTreeItem.h"
@@ -42,17 +44,24 @@ QSize SceneTreeDelegate::sizeHint(const QStyleOptionViewItem &option, const QMod
 
 void SceneTreeDelegate::customDraw(QPainter *painter, QStyleOptionViewItem *option, const QModelIndex &index) const
 {
-	SceneTreeModel *model = (SceneTreeModel *) index.model();
-	if(NULL != model)
+	QSortFilterProxyModel *proxyModel = (QSortFilterProxyModel *) index.model();
+	if(NULL != proxyModel)
 	{
-		if(model->GetLocked(index))
+		SceneTreeModel *model = (SceneTreeModel *) proxyModel->sourceModel();
+
+		if(NULL != model)
 		{
-			QRect owRect = option->rect;
-			owRect.setLeft(owRect.right() - 16);
+			QModelIndex realIndex = proxyModel->mapToSource(index);
 
-			lockedIcon.paint(painter, owRect);
+			if(model->GetLocked(realIndex))
+			{
+				QRect owRect = option->rect;
+				owRect.setLeft(owRect.right() - 16);
 
-			option->rect.setRight(owRect.left());
+				lockedIcon.paint(painter, owRect);
+
+				option->rect.setRight(owRect.left());
+			}
 		}
 	}
 }

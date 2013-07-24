@@ -40,10 +40,10 @@ QVariant SceneTreeItem::data(int role) const
 		v = ItemName();
 		break;
 	case EIDR_Type:
-		v = ItemData();
+		v = ItemType();
 		break;
 	case EIDR_Data:
-		v = ItemType();
+		v = ItemData();
 		break;
 	default:
 		break;

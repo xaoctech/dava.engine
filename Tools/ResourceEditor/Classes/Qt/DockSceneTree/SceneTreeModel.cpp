@@ -580,3 +580,68 @@ QVector<void*>* SceneTreeModel::DecodeMimeData(const QMimeData* data, const QStr
 
 	return ret;
 }
+
+
+SceneTreeFilteringModel::SceneTreeFilteringModel(SceneTreeModel *_treeModel, QObject *parent /* = NULL */)
+	: QSortFilterProxyModel(parent)
+	, treeModel(_treeModel)
+{
+	setSourceModel(treeModel);
+}
+
+bool SceneTreeFilteringModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
+{
+	if(NULL != treeModel)
+	{
+		// check self accept
+		if(selfAcceptRow(sourceRow, sourceParent))
+		{
+			return true;
+		}
+
+		//accept if any of the parents is accepted
+		QModelIndex parent = sourceParent;
+		while(parent.isValid()) 
+		{
+			if(selfAcceptRow(parent.row(), parent.parent()))
+			{
+				return true;
+			}
+
+			parent = parent.parent();
+		}
+
+		// accept if any child is accepted
+		if(childrenAcceptRow(sourceRow, sourceParent))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool SceneTreeFilteringModel::selfAcceptRow(int sourceRow, const QModelIndex &sourceParent) const
+{
+	return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
+}
+
+bool SceneTreeFilteringModel::childrenAcceptRow(int sourceRow, const QModelIndex &sourceParent) const
+{
+	bool ret = false;
+
+	QModelIndex index = treeModel->index(sourceRow, 0, sourceParent);
+	if(treeModel->rowCount(index) > 0)
+	{
+		for(int i = 0; i < treeModel->rowCount(index); i++)
+		{
+			if(selfAcceptRow(i, index) || childrenAcceptRow(i, index))
+			{
+				ret = true;
+				break;
+			}
+		}
+	}
+
+	return ret;
+}

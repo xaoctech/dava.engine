@@ -78,6 +78,7 @@ protected:
 
 	void SetupMainMenu();
 	void SetupToolBars();
+	void SetupDocks();
 	void SetupActions();
 
 protected slots:
