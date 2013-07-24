@@ -31,6 +31,7 @@ SceneSelectionSystem::SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSy
 	, drawMode(ST_SELDRAW_FILL_SHAPE | ST_SELDRAW_DRAW_CORNERS)
 	, curPivotPoint(ST_PIVOT_COMMON_CENTER)
 	, applyOnPhaseEnd(false)
+	, selectionLocked(false)
 {
 
 }
@@ -203,58 +204,67 @@ void SceneSelectionSystem::ProcessCommand(const Command2 *command, bool redo)
 
 void SceneSelectionSystem::SetSelection(DAVA::Entity *entity)
 {
-	DAVA::Entity *selectedEntity = NULL;
-
-	// emit deselection for current selected items
-	for(size_t i = 0; i < curSelections.Size(); ++i)
+	if(!selectionLocked)
 	{
-		EntityGroupItem* selectedItem = curSelections.GetItem(i);
-		SceneSignals::Instance()->EmitDeselected((SceneEditor2 *) GetScene(), selectedItem->entity);
-	}
+		DAVA::Entity *selectedEntity = NULL;
 
-	// clear current selection
-	curSelections.Clear();
+		// emit deselection for current selected items
+		for(size_t i = 0; i < curSelections.Size(); ++i)
+		{
+			EntityGroupItem* selectedItem = curSelections.GetItem(i);
+			SceneSignals::Instance()->EmitDeselected((SceneEditor2 *) GetScene(), selectedItem->entity);
+		}
 
-	// add new selection
-	if(NULL != entity)
-	{
-		AddSelection(entity);
-	}
-	else
-	{
-		SceneSignals::Instance()->EmitSelected((SceneEditor2 *) GetScene(), NULL);
-		UpdateHoodPos();
+		// clear current selection
+		curSelections.Clear();
+
+		// add new selection
+		if(NULL != entity)
+		{
+			AddSelection(entity);
+		}
+		else
+		{
+			SceneSignals::Instance()->EmitSelected((SceneEditor2 *) GetScene(), NULL);
+			UpdateHoodPos();
+		}
 	}
 }
 
 void SceneSelectionSystem::AddSelection(DAVA::Entity *entity)
 {
-	if(NULL != entity)
+	if(!selectionLocked)
 	{
-		EntityGroupItem selectableItem;
-
-		selectableItem.entity = entity;
-		selectableItem.bbox = GetSelectionAABox(entity);
-
-		if(!curSelections.HasEntity(entity))
+		if(NULL != entity)
 		{
-			curSelections.Add(selectableItem);
-			SceneSignals::Instance()->EmitSelected((SceneEditor2 *) GetScene(), entity);
-		}
-	}
+			EntityGroupItem selectableItem;
 
-	UpdateHoodPos();
+			selectableItem.entity = entity;
+			selectableItem.bbox = GetSelectionAABox(entity);
+
+			if(!curSelections.HasEntity(entity))
+			{
+				curSelections.Add(selectableItem);
+				SceneSignals::Instance()->EmitSelected((SceneEditor2 *) GetScene(), entity);
+			}
+		}
+
+		UpdateHoodPos();
+	}
 }
 
 void SceneSelectionSystem::RemSelection(DAVA::Entity *entity)
 {
-	if(curSelections.HasEntity(entity))
+	if(!selectionLocked)
 	{
-		curSelections.Rem(entity);
-		SceneSignals::Instance()->EmitDeselected((SceneEditor2 *) GetScene(), entity);
-	}
+		if(curSelections.HasEntity(entity))
+		{
+			curSelections.Rem(entity);
+			SceneSignals::Instance()->EmitDeselected((SceneEditor2 *) GetScene(), entity);
+		}
 
-	UpdateHoodPos();
+		UpdateHoodPos();
+	}
 }
 
 const EntityGroup* SceneSelectionSystem::GetSelection() const
@@ -276,6 +286,11 @@ void SceneSelectionSystem::SetPivotPoint(ST_PivotPoint pp)
 ST_PivotPoint SceneSelectionSystem::GetPivotPoint() const
 {
 	return curPivotPoint;
+}
+
+void SceneSelectionSystem::LockSelection(bool lock)
+{
+	selectionLocked = lock;
 }
 
 void SceneSelectionSystem::UpdateHoodPos() const
