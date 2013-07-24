@@ -80,6 +80,9 @@ protected slots:
 	void StartEmitter();
 	void StopEmitter();
 	void RestartEmitter();
+	void EditModel();
+	void ReloadModel();
+	void ReloadModelAs();
 };
 
 #endif // __QT_SCENE_TREE_H__
