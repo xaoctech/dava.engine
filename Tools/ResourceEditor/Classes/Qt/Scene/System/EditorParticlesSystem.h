@@ -14,21 +14,21 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __PARTICLES_DEBUG_DRAW_SYSTEM_H__
-#define __PARTICLES_DEBUG_DRAW_SYSTEM_H__
+#ifndef __EDITOR_PARTICLES_SYSTEM_H__
+#define __EDITOR_PARTICLES_SYSTEM_H__
 
 #include "Commands2/Command2.h"
 
 #include "Entity/SceneSystem.h"
 #include "UI/UIEvent.h"
 
-class ParticlesDebugDrawSystem : public DAVA::SceneSystem
+class EditorParticlesSystem : public DAVA::SceneSystem
 {
 	friend class SceneEditor2;
 
 public:
-	ParticlesDebugDrawSystem(DAVA::Scene * scene);
-	~ParticlesDebugDrawSystem();
+	EditorParticlesSystem(DAVA::Scene * scene);
+	~EditorParticlesSystem();
 
 protected:
 	void Update(DAVA::float32 timeElapsed);
@@ -53,5 +53,5 @@ private:
 };
 
 
-#endif /* defined(__PARTICLES_DEBUG_DRAW_SYSTEM_H__) */
+#endif /* defined(__EDITOR_PARTICLES_SYSTEM_H__) */
 

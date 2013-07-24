@@ -16,16 +16,16 @@
 
 #include "LayerForceWidget.h"
 #include "TimeLineWidget.h"
-#include "Commands/ParticleEditorCommands.h"
-#include "Commands/CommandsManager.h"
+#include "Commands2/ParticleEditorCommands.h"
 #include "../Scene/SceneDataManager.h"
 
 #include <QVBoxLayout>
 #include <QScrollArea>
 #include <QSizePolicy>
 
-LayerForceWidget::LayerForceWidget(QWidget *parent):
-	QWidget(parent)
+LayerForceWidget::LayerForceWidget(SceneEditor2* scene, QWidget *parent):
+	QWidget(parent),
+	BaseParticleEditorContentWidget(scene)
 {
 	mainBox = new QVBoxLayout;
 	this->setLayout(mainBox);
@@ -140,8 +140,8 @@ void LayerForceWidget::OnValueChanged()
 						 propForceVariable.GetPropLine(),
 						 propForceOverLife.GetPropLine());
 	
-	CommandsManager::Instance()->ExecuteAndRelease(updateForceCmd,
-												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
+	DVASSERT(activeScene);
+	activeScene->Exec(updateForceCmd);
 
 	Init(emitter, layer, forceIndex, false);
 	emit ValueChanged();

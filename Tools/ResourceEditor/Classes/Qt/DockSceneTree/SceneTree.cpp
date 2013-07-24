@@ -25,6 +25,9 @@
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
 
+// commands
+#include "Commands2/ParticleEditorCommands.h"
+
 SceneTree::SceneTree(QWidget *parent /*= 0*/)
 	: QTreeView(parent)
 	, skipTreeSelectionProcessing(false)
@@ -49,6 +52,9 @@ SceneTree::SceneTree(QWidget *parent /*= 0*/)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(SceneDeactivated(SceneEditor2 *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Selected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(EntitySelected(SceneEditor2 *, DAVA::Entity *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Deselected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(EntityDeselected(SceneEditor2 *, DAVA::Entity *)));
+
+	// particles signals
+	QObject::connect(SceneSignals::Instance(), SIGNAL(ParticleLayerValueChanged(SceneEditor2*, DAVA::ParticleLayer*)), this, SLOT(ParticleLayerValueChanged(SceneEditor2*, DAVA::ParticleLayer*)));
 
 	// this widget signals
 	QObject::connect(selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(TreeSelectionChanged(const QItemSelection &, const QItemSelection &)));
@@ -193,6 +199,36 @@ void SceneTree::TreeItemClicked(const QModelIndex & index)
 	{
 		// TODO:
 		// ...
+	}
+}
+
+void SceneTree::ParticleLayerValueChanged(SceneEditor2* scene, DAVA::ParticleLayer* layer)
+{
+	QModelIndexList indexList = selectionModel()->selection().indexes();
+	if (indexList.empty())
+	{
+		return;
+	}
+
+	SceneTreeItem *item = treeModel->GetItem(indexList[0]);
+	if (item->ItemType() != SceneTreeItem::EIT_Layer)
+	{
+		return;
+	}
+
+	ParticleLayer* selectedLayer = SceneTreeItemParticleLayer::GetLayer(item);
+	if (selectedLayer != layer)
+	{
+		return;
+	}
+	
+	// Update the "isEnabled" flag, if it is changed.
+	bool sceneTreeItemChecked = item->checkState() == Qt::Checked;
+	if (layer->GetDisabled() == sceneTreeItemChecked)
+	{
+		blockSignals(true);
+		item->setCheckState(sceneTreeItemChecked ? Qt::Unchecked : Qt::Checked);
+		blockSignals(false);
 	}
 }
 
@@ -487,6 +523,7 @@ void SceneTree::SyncSelectionFromTree()
 
 void SceneTree::EmitParticleSignals(const QItemSelection & selected)
 {
+	SceneEditor2* curScene = treeModel->GetScene();
 	bool isParticleElements = false;
 
 	// allow only single selected entities
@@ -504,12 +541,12 @@ void SceneTree::EmitParticleSignals(const QItemSelection & selected)
 					DAVA::Entity *entity = SceneTreeItemEntity::GetEntity(item);
 					if(NULL != DAVA::GetEffectComponent(entity))
 					{
-						SceneSignals::Instance()->EmitEffectSelected(entity);
+						SceneSignals::Instance()->EmitEffectSelected(curScene, entity);
 						isParticleElements = true;
 					}
 					else if(NULL != DAVA::GetEmitter(entity))
 					{
-						SceneSignals::Instance()->EmitEmitterSelected(entity);
+						SceneSignals::Instance()->EmitEmitterSelected(curScene, entity);
 						isParticleElements = true;
 					}
 				}
@@ -519,7 +556,7 @@ void SceneTree::EmitParticleSignals(const QItemSelection & selected)
 					SceneTreeItemParticleLayer *itemLayer = (SceneTreeItemParticleLayer *) item;
 					if(NULL != itemLayer->parent && NULL != itemLayer->layer)
 					{
-						SceneSignals::Instance()->EmitLayerSelected(itemLayer->layer, false);
+						SceneSignals::Instance()->EmitLayerSelected(curScene, itemLayer->layer, false);
 						isParticleElements = true;
 					}
 				}
@@ -534,7 +571,7 @@ void SceneTree::EmitParticleSignals(const QItemSelection & selected)
 						{
 							if(layer->forces[i] == itemForce->force)
 							{
-								SceneSignals::Instance()->EmitForceSelected(layer, i);
+								SceneSignals::Instance()->EmitForceSelected(curScene, layer, i);
 								isParticleElements = true;
 
 								break;
@@ -549,7 +586,7 @@ void SceneTree::EmitParticleSignals(const QItemSelection & selected)
 
 	if(!isParticleElements)
 	{
-		SceneSignals::Instance()->EmitEmitterSelected(NULL);
+		SceneSignals::Instance()->EmitEmitterSelected(NULL, NULL);
 	}
 }
 
@@ -578,7 +615,10 @@ void SceneTree::StartEmitter()
 			DAVA::ParticleEffectComponent *effect = DAVA::GetEffectComponent(selection->GetEntity(i));
 			if(NULL != effect)
 			{
-				effect->Start();
+				// TODO, Yuri Coder, 2013/07/24. Think about CommandAction's batching.
+				CommandStartStopParticleEffect* command = new CommandStartStopParticleEffect(selection->GetEntity(i),
+																							 true);
+				sceneEditor->Exec(command);
 			}
 		}
 	}
@@ -595,7 +635,10 @@ void SceneTree::StopEmitter()
 			DAVA::ParticleEffectComponent *effect = DAVA::GetEffectComponent(selection->GetEntity(i));
 			if(NULL != effect)
 			{
-				effect->Stop();
+				// TODO, Yuri Coder, 2013/07/24. Think about CommandAction's batching.
+				CommandStartStopParticleEffect* command = new CommandStartStopParticleEffect(selection->GetEntity(i),
+																							 false);
+				sceneEditor->Exec(command);
 			}
 		}
 	}
@@ -612,7 +655,9 @@ void SceneTree::RestartEmitter()
 			DAVA::ParticleEffectComponent *effect = DAVA::GetEffectComponent(selection->GetEntity(i));
 			if(NULL != effect)
 			{
-				effect->Restart();
+				// TODO, Yuri Coder, 2013/07/24. Think about CommandAction's batching.
+				CommandRestartParticleEffect* command = new CommandRestartParticleEffect(selection->GetEntity(i));
+				sceneEditor->Exec(command);
 			}
 		}
 	}

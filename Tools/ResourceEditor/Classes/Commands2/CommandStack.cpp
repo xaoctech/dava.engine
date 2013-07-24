@@ -128,6 +128,7 @@ void CommandStack::Exec(Command2 *command)
 		else
 		{
 			action->Redo();
+			EmitNotify(command, true);
 			delete action;
 		}
 	}

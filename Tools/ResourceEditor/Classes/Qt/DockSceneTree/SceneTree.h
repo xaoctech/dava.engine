@@ -61,6 +61,8 @@ protected slots:
 	void EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity);
 	void EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity);
 
+	void ParticleLayerValueChanged(SceneEditor2* scene, DAVA::ParticleLayer* layer);
+
 	void TreeSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
 	void TreeItemClicked(const QModelIndex & index);
 	void TreeItemDoubleClicked(const QModelIndex & index);

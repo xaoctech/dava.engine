@@ -32,7 +32,7 @@
 #include "Scene/SceneData.h"
 #include "DockSceneGraph/SceneGraphItem.h"
 
-#include "Commands/Command.h"
+#include "Commands2/Command2.h"
 
 class SceneGraphModel;
 
@@ -92,7 +92,7 @@ public:
 
 protected:
 	// Add the action to QT menu.
-	void AddActionToMenu(QMenu *menu, const QString &actionTitle, Command *command) const;
+	void AddActionToMenu(QMenu *menu, const QString &actionTitle, Command2 *command) const;
 	
     // Build the Scene Graph in a recursive way.
     void BuildSceneGraphRecursive(BaseParticleEditorNode* rootNode, SceneGraphItem* rootItem);

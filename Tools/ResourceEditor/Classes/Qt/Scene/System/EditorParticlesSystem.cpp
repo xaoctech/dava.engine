@@ -15,10 +15,11 @@
 =====================================================================================*/
 
 #include "Scene/SceneEditor2.h"
-#include "Scene/System/ParticlesDebugDrawSystem.h"
+#include "Scene/System/EditorParticlesSystem.h"
 #include "Scene/System/SelectionSystem.h"
 #include "Scene/System/CollisionSystem.h"
 #include "Scene/System/HoodSystem.h"
+#include "Scene/SceneSignals.h"
 
 // framework
 #include "Base/BaseTypes.h"
@@ -28,28 +29,31 @@
 #include "Particles/ParticleEmitter.h"
 #include "Scene3D/Components/RenderComponent.h"
 
-ParticlesDebugDrawSystem::ParticlesDebugDrawSystem(DAVA::Scene * scene)
+// particles-related commands
+#include "Commands2/ParticleEditorCommands.h"
+
+EditorParticlesSystem::EditorParticlesSystem(DAVA::Scene * scene)
 	: DAVA::SceneSystem(scene)
 {
 
 }
 
-ParticlesDebugDrawSystem::~ParticlesDebugDrawSystem()
+EditorParticlesSystem::~EditorParticlesSystem()
 {
 
 }
 
-void ParticlesDebugDrawSystem::Update(DAVA::float32 timeElapsed)
+void EditorParticlesSystem::Update(DAVA::float32 timeElapsed)
 {
 
 }
 
-void ParticlesDebugDrawSystem::ProcessUIEvent(DAVA::UIEvent *event)
+void EditorParticlesSystem::ProcessUIEvent(DAVA::UIEvent *event)
 {
 
 }
 
-void ParticlesDebugDrawSystem::DrawDebugInfoForEmitter(DAVA::Entity* parentEntity)
+void EditorParticlesSystem::DrawDebugInfoForEmitter(DAVA::Entity* parentEntity)
 {
 	SceneCollisionSystem *collisionSystem = ((SceneEditor2 *) GetScene())->collisionSystem;
 	
@@ -72,7 +76,7 @@ void ParticlesDebugDrawSystem::DrawDebugInfoForEmitter(DAVA::Entity* parentEntit
 	}
 }
 
-DAVA::float32 ParticlesDebugDrawSystem::GetDebugDrawRadius(DAVA::AABBox3 entitySizeBox)
+DAVA::float32 EditorParticlesSystem::GetDebugDrawRadius(DAVA::AABBox3 entitySizeBox)
 {
 	DAVA::float32 drawRadius;
 	// The radius of sphere - should be equal half-size of box edge
@@ -86,7 +90,7 @@ DAVA::float32 ParticlesDebugDrawSystem::GetDebugDrawRadius(DAVA::AABBox3 entityS
 	return drawRadius;
 }
 
-void ParticlesDebugDrawSystem::Draw()
+void EditorParticlesSystem::Draw()
 {
 	// Draw debug information for non-selected entities
 	for(int i = 0; i < entities.size(); ++i)
@@ -151,7 +155,7 @@ void ParticlesDebugDrawSystem::Draw()
 	DAVA::RenderManager::Instance()->ResetColor();
 }
 
-void ParticlesDebugDrawSystem::DrawSizeCircle(DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
+void EditorParticlesSystem::DrawSizeCircle(DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
 {
 	float32 emitterRadius = 0.0f;
 	DAVA::Vector3 emitterVector;
@@ -169,7 +173,7 @@ void ParticlesDebugDrawSystem::DrawSizeCircle(DAVA::ParticleEmitter *emitter, DA
 	DAVA::RenderHelper::Instance()->DrawCircle3D(center, emitterVector, emitterRadius, true);
 }
 
-void ParticlesDebugDrawSystem::DrawSizeBox(DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
+void EditorParticlesSystem::DrawSizeBox(DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
 {
 	// Default value of emitter size
 	DAVA::Vector3 emitterSize;
@@ -198,7 +202,7 @@ void ParticlesDebugDrawSystem::DrawSizeBox(DAVA::ParticleEmitter *emitter, DAVA:
 	DAVA::RenderHelper::Instance()->FillBox(DAVA::AABBox3(min, max));
 }
 
-void ParticlesDebugDrawSystem::DrawVectorArrow(DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
+void EditorParticlesSystem::DrawVectorArrow(DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
 {
 	DAVA::Vector3 emitterVector;
 	DAVA::float32 arrowBaseSize = 5.0f;
@@ -224,12 +228,12 @@ void ParticlesDebugDrawSystem::DrawVectorArrow(DAVA::ParticleEmitter *emitter, D
 	DAVA::RenderHelper::Instance()->FillArrow(center, emitterVector, arrowSize, 1);
 }
 
-void ParticlesDebugDrawSystem::AddEntity(DAVA::Entity * entity)
+void EditorParticlesSystem::AddEntity(DAVA::Entity * entity)
 {
 	entities.push_back(entity);
 }
 
-void ParticlesDebugDrawSystem::RemoveEntity(DAVA::Entity * entity)
+void EditorParticlesSystem::RemoveEntity(DAVA::Entity * entity)
 {	
     int size = entities.size();
 	for(int i = 0; i < size; ++i)
@@ -243,9 +247,72 @@ void ParticlesDebugDrawSystem::RemoveEntity(DAVA::Entity * entity)
 	}
 }
 
-void ParticlesDebugDrawSystem::ProcessCommand(const Command2 *command, bool redo)
+void EditorParticlesSystem::ProcessCommand(const Command2 *command, bool redo)
 {
+	if (!command)
+	{
+		return;
+	}
 
+	// Notify that the Particles-related value is changed.
+	SceneEditor2* activeScene = (SceneEditor2 *) GetScene();
+	switch (command->GetId())
+	{
+		case CMDID_UPDATE_PARTICLE_EMITTER:
+		{
+			const CommandUpdateEmitter* castedCmd = static_cast<const CommandUpdateEmitter*>(command);
+			SceneSignals::Instance()->EmitParticleEmitterValueChanged(activeScene,
+																	  castedCmd->GetEmitter());
+			break;
+		}
+
+		case CMDID_UPDATE_PARTICLE_LAYER:
+		case CMDID_UPDATE_PARTILCE_LAYER_TIME:
+		case CMDID_UPDATE_PARTICLE_LAYER_ENABLED:
+		{
+			const CommandUpdateParticleLayerBase* castedCmd = static_cast<const CommandUpdateParticleLayerBase*>(command);
+			SceneSignals::Instance()->EmitParticleLayerValueChanged(activeScene,
+																	  castedCmd->GetLayer());
+			break;
+		}
+
+		case CMDID_UPDATE_PARTICLE_FORCE:
+		{
+			const CommandUpdateParticleForce* castedCmd = static_cast<const CommandUpdateParticleForce*>(command);
+			SceneSignals::Instance()->EmitParticleForceValueChanged(activeScene,
+																	castedCmd->GetLayer(),
+																	castedCmd->GetForceIndex());
+			break;
+		}
+
+		case CMDID_START_STOP_PARTICLE_EFFECT:
+		{
+			const CommandStartStopParticleEffect* castedCmd = static_cast<const CommandStartStopParticleEffect*>(command);
+			SceneSignals::Instance()->EmitParticleEffectStateChanged(activeScene,
+																	 castedCmd->GetEntity(),
+																	 castedCmd->GetStarted());
+			break;
+		}
+			
+		case CMDID_RESTART_PARTICLE_EFFECT:
+		{
+			const CommandRestartParticleEffect* castedCmd = static_cast<const CommandRestartParticleEffect*>(command);
+			
+			// An effect was stopped and then started.
+			SceneSignals::Instance()->EmitParticleEffectStateChanged(activeScene,
+																	 castedCmd->GetEntity(),
+																	 false);
+			SceneSignals::Instance()->EmitParticleEffectStateChanged(activeScene,
+																	 castedCmd->GetEntity(),
+																	 true);
+			break;
+		}
+
+		default:
+		{
+			break;
+		}
+	}
 }
 
 

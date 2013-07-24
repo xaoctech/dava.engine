@@ -32,7 +32,7 @@ class LayerForceWidget: public QWidget, public BaseParticleEditorContentWidget
     Q_OBJECT
     
 public:
-    explicit LayerForceWidget(QWidget *parent = 0);
+    explicit LayerForceWidget(SceneEditor2* scene, QWidget *parent = 0);
     ~LayerForceWidget();
 	
 	void Init(ParticleEmitter* emitter, ParticleLayer* layer, uint32 forceIndex, bool updateMinimized);
