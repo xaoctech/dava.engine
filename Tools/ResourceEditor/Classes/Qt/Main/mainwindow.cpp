@@ -27,6 +27,8 @@
 #include "Classes/SceneEditor/EditorSettings.h"
 #include "Classes/SceneEditor/EditorConfig.h"
 
+#include "../CubemapEditor/CubemapTextureBrowser.h"
+
 #include <QFileDialog>
 #include <QMessageBox>
 
@@ -201,6 +203,7 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionMaterialEditor, SIGNAL(triggered()), this, SLOT(OnMaterialEditor()));
 	QObject::connect(ui->actionTextureConverter, SIGNAL(triggered()), this, SLOT(OnTextureBrowser()));
 	QObject::connect(ui->actionEnableCameraLight, SIGNAL(triggered()), this, SLOT(OnSceneLightMode()));
+	QObject::connect(ui->actionCubemapEditor, SIGNAL(triggered()), this, SLOT(OnCubemapEditor()));
 
 }
 
@@ -501,6 +504,12 @@ void QtMainWindow::OnSceneLightMode()
 	}
 }
 
+void QtMainWindow::OnCubemapEditor()
+{
+	CubeMapTextureBrowser dlg(dynamic_cast<QWidget*>(parent()));
+	dlg.exec();
+}
+
 // ###################################################################################################
 // Mainwindow load state functions
 // ###################################################################################################
@@ -695,7 +704,8 @@ void QtMainWindow::SetupActions()
 	connect(ui->actionShowSettings, SIGNAL(triggered()), actionHandler, SLOT(ShowSettings()));
     connect(ui->actionSquareTextures, SIGNAL(triggered()), actionHandler, SLOT(SquareTextures()));
     connect(ui->actionShowMipmapLevel, SIGNAL(triggered()), actionHandler, SLOT(ReplaceZeroMipmaps()));
-    
+    connect(ui->actionCubemapEditor, SIGNAL(triggered()), actionHandler, SLOT(CubemapEditor()));
+
 #if defined (__DAVAENGINE_MACOS__)
     ui->menuTools->removeAction(ui->actionBeast);
 #else //#if defined (__DAVAENGINE_MACOS__)
@@ -782,7 +792,8 @@ void QtMainWindow::SetupMainMenu()
                                        ui->actionParticleEmitter,
                                        ui->actionUserNode,
 									   ui->actionSwitchNode,
-									   ui->actionParticleEffectNode
+									   ui->actionParticleEffectNode,
+									   ui->actionSkyboxNode
                                        );
     connect(ui->menuCreateNode, SIGNAL(triggered(QAction *)), actionHandler, SLOT(CreateNodeTriggered(QAction *)));
 

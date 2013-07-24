@@ -83,6 +83,8 @@ protected slots:
 	void OnMaterialEditor();
 	void OnTextureBrowser();
 	void OnSceneLightMode();
+	
+	void OnCubemapEditor();
 
 private:
 	Ui::MainWindow *ui;

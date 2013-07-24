@@ -72,7 +72,7 @@ public:
 	float32 GetLandscapeMaxHeight();
 	float32 GetHeightAtPoint(const Vector2& point);
 	float32 GetHeightAtTexturePoint(const Vector2& point);
-	KeyedArchive* GetLandscapeCustomProperties();
+	CustomPropertiesComponent* GetLandscapeCustomProperties();
 
 	Vector2 HeightmapPointToTexturePoint(const Vector2& point);
 	Vector2 TexturePointToHeightmapPoint(const Vector2& point);

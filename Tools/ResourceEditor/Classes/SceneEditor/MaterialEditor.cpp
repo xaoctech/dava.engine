@@ -24,6 +24,8 @@
 #include "EditorSettings.h"
 #include "../EditorScene.h"
 
+#include "../Qt/CubemapEditor/MaterialHelper.h"
+
 static const float32 materialListPart = 0.33f;
 static const float32 previewHeightPart = 0.5f;
 
@@ -141,6 +143,8 @@ void MaterialEditor::UpdateInternalMaterialsVector()
     materials.clear();
     
     workingScene->GetDataNodes(materials);
+	//VI: remove skybox materials so they not to appear in the lists
+	MaterialHelper::FilterMaterialsByType(materials, DAVA::Material::MATERIAL_SKYBOX);
     
     for (int32 k = 0; k < (int32)materials.size(); ++k)
     {
@@ -155,6 +159,9 @@ void MaterialEditor::UpdateNodeMaterialsVector()
     if(workingSceneNode)
     {
         workingSceneNode->GetDataNodes(workingNodeMaterials);
+		//VI: remove skybox materials so they not to appear in the lists
+		MaterialHelper::FilterMaterialsByType(workingNodeMaterials, DAVA::Material::MATERIAL_SKYBOX);
+
     }
     else if(workingMaterial)
     {
@@ -587,4 +594,3 @@ void MaterialEditor::SetSize(const Vector2 &newSize)
     
     SelectMaterial(selectedMaterial);
 }
-

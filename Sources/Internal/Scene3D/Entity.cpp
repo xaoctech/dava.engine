@@ -34,6 +34,8 @@
 #include "Scene3D/Components/SwitchComponent.h"
 #include "Utils/Random.h"
 
+#define CUSTOM_PROPERTIES_COMPONENT_SAVE_SCENE_VERSION 8
+
 
 namespace DAVA
 {
@@ -63,8 +65,6 @@ Entity::Entity()
     //debugFlags = DEBUG_DRAW_NONE;
     flags = NODE_VISIBLE | NODE_UPDATABLE | NODE_LOCAL_MATRIX_IDENTITY;
     
-    customProperties = new KeyedArchive();
-
 	AddComponent(new TransformComponent());
     
 //    Stats::Instance()->RegisterEvent("Scene.Update.Entity.Update", "Entity update time");
@@ -84,8 +84,6 @@ Entity::~Entity()
 
 	RemoveAllChildren();
 	SetScene(0);
-
-    SafeRelease(customProperties);
 
 	for(int32 i = 0; i < Component::COMPONENT_COUNT; ++i)
 	{
@@ -415,7 +413,7 @@ void Entity::BakeTransforms()
 
 void Entity::PropagateBoolProperty(String name, bool value)
 {
-	KeyedArchive *currentProperties = GetCustomProperties();
+	CustomPropertiesComponent *currentProperties = GetCustomProperties();
 	currentProperties->SetBool(name, value);
 
 	uint32 size = (uint32)children.size();
@@ -599,9 +597,6 @@ Entity* Entity::Clone(Entity *dstNode)
     dstNode->name = name;
     dstNode->tag = tag;
     //dstNode->flags = flags;
-
-    SafeRelease(dstNode->customProperties);
-    dstNode->customProperties = new KeyedArchive(*customProperties);
     
     dstNode->nodeAnimations = nodeAnimations;
     
@@ -745,15 +740,7 @@ void Entity::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 {
     // Perform refactoring and add Matrix4, Vector4 types to VariantType and KeyedArchive
     BaseObject::Save(archive);
-    
-    String savedPath = "";
-    if(customProperties && customProperties->IsKeyExists("editor.referenceToOwner"))
-    {
-        savedPath = customProperties->GetString("editor.referenceToOwner");
-        String newPath = FilePath(savedPath).GetRelativePathname(sceneFileV2->GetScenePath());
-        customProperties->SetString("editor.referenceToOwner", newPath);
-    }
-    
+        
     archive->SetString("name", name);
     archive->SetInt32("tag", tag);
     archive->SetByteArrayAsType("localTransform", GetLocalTransform());
@@ -761,25 +748,29 @@ void Entity::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     
     archive->SetUInt32("flags", flags);
 //    archive->SetUInt32("debugFlags", debugFlags);
-    
-    archive->SetByteArrayFromArchive("customprops", customProperties);
-    
-    if(customProperties && savedPath.length())
-    {
-        customProperties->SetString("editor.referenceToOwner", savedPath);
-    }
-
+        
 	KeyedArchive *compsArch = new KeyedArchive();
 	for(uint32 i = 0; i < components.size(); ++i)
 	{
 		if(NULL != components[i])
 		{
+			//don't save empty custom properties
+			if(Component::CUSTOM_PROPERTIES_COMPONENT == i)
+			{
+				CustomPropertiesComponent* customProps = cast_if_equal<CustomPropertiesComponent*>(components[i]);
+				if(customProps && customProps->Count() <= 0)
+				{
+					continue;
+				}
+			}
+			
 			KeyedArchive *compArch = new KeyedArchive();
 			components[i]->Serialize(compArch, sceneFileV2);
 			compsArch->SetArchive(KeyedArchive::GenKeyFromIndex(i), compArch);
 			compArch->Release();
 		}
 	}
+	
 	archive->SetArchive("components", compsArch);
 	compsArch->Release();
 }
@@ -802,24 +793,6 @@ void Entity::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     /// InvalidateLocalTransform();
 //    debugFlags = archive->GetUInt32("debugFlags", 0);
     
-    SafeRelease(customProperties);
-    customProperties = archive->GetArchiveFromByteArray("customprops");
-    if (!customProperties)
-    {
-        customProperties = new KeyedArchive();
-    }
-    else
-    {
-        if(customProperties->IsKeyExists("editor.referenceToOwner"))
-        {
-            FilePath newPath(sceneFileV2->GetScenePath());
-            newPath += customProperties->GetString("editor.referenceToOwner");
-
-            //TODO: why we use absolute pathname instead of relative?
-            customProperties->SetString("editor.referenceToOwner", newPath.GetAbsolutePathname());
-        }
-    }
-
 	KeyedArchive *compsArch = archive->GetArchive("components");
 	if(NULL != compsArch)
 	{
@@ -841,33 +814,54 @@ void Entity::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 			}
 		}
 	}
+	
+	if(sceneFileV2->GetVersion() < CUSTOM_PROPERTIES_COMPONENT_SAVE_SCENE_VERSION)
+	{
+		KeyedArchive* customProps = archive->GetArchiveFromByteArray("customprops");
+		
+		if(customProps != NULL)
+		{
+			CustomPropertiesComponent* customPropsComponent = GetCustomProperties();
+			customPropsComponent->LoadFromArchive(*customProps, sceneFileV2);
+			
+			SafeRelease(customProps);
+		}
+	}
 }
 
-KeyedArchive * Entity::GetCustomProperties()
+CustomPropertiesComponent* Entity::GetCustomProperties()
 {
-    return customProperties;
+	CustomPropertiesComponent* component = cast_if_equal<CustomPropertiesComponent*>(GetComponent(Component::CUSTOM_PROPERTIES_COMPONENT));
+	
+	if(NULL == component)
+	{
+		component = new CustomPropertiesComponent();
+		AddComponent(component);
+	}
+	
+    return component;
 }
     
 void Entity::SetSolid(bool isSolid)
 {
 //    isSolidNode = isSolid;
-    customProperties->SetBool(SCENE_NODE_IS_SOLID_PROPERTY_NAME, isSolid);
+    GetCustomProperties()->SetBool(SCENE_NODE_IS_SOLID_PROPERTY_NAME, isSolid);
 }
     
-bool Entity::GetSolid() const
+bool Entity::GetSolid()
 {
 //    return isSolidNode;
-    return customProperties->GetBool(SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
+    return GetCustomProperties()->GetBool(SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
 }
 
 void Entity::SetLocked(bool isLocked)
 {
-	customProperties->SetBool(SCENE_NODE_IS_LOCKED_PROPERTY_NAME, isLocked);
+	GetCustomProperties()->SetBool(SCENE_NODE_IS_LOCKED_PROPERTY_NAME, isLocked);
 }
 
-bool Entity::GetLocked() const
+bool Entity::GetLocked()
 {
-	return customProperties->GetBool(SCENE_NODE_IS_LOCKED_PROPERTY_NAME, false);
+	return GetCustomProperties()->GetBool(SCENE_NODE_IS_LOCKED_PROPERTY_NAME, false);
 }
 
 void Entity::GetDataNodes(Set<DataNode*> & dataNodes)

@@ -22,6 +22,8 @@
 #include "EditorConfig.h"
 #include "Scene3D/Components/DebugRenderComponent.h"
 
+#include "Scene3D/Components/CustomPropertiesComponent.h"
+
 
 static const float32 BUTTON_W = 20.0f;
 static const float32 BUTTON_B = 5.0f;
@@ -175,7 +177,7 @@ void ModificationsPanel::ChangeCollisionModeShow(Entity * node)
 
 	if (modeCollision)
 	{
-		KeyedArchive * customProperties = node->GetCustomProperties();
+		CustomPropertiesComponent * customProperties = node->GetCustomProperties();
 		if(customProperties && customProperties->IsKeyExists("CollisionType") && customProperties->GetInt32("CollisionType", 0) == modeCollision)
 		{
 			node->SetDebugFlags(node->GetDebugFlags() | (DebugRenderComponent::DEBUG_DRAW_RED_AABBOX));

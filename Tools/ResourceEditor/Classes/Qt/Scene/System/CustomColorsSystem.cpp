@@ -381,7 +381,7 @@ void CustomColorsSystem::LoadTexture(const DAVA::FilePath &filePath)
 
 void CustomColorsSystem::StoreSaveFileName(const FilePath& filePath)
 {
-	KeyedArchive* customProps = drawSystem->GetLandscapeCustomProperties();
+	CustomPropertiesComponent* customProps = drawSystem->GetLandscapeCustomProperties();
 	if (customProps)
 	{
 		customProps->SetString(CUSTOM_COLOR_TEXTURE_PROP, GetRelativePathToScenePath(filePath));
@@ -392,7 +392,7 @@ FilePath CustomColorsSystem::GetCurrentSaveFileName()
 {
 	String currentSaveName;
 
-	KeyedArchive* customProps = drawSystem->GetLandscapeCustomProperties();
+	CustomPropertiesComponent* customProps = drawSystem->GetLandscapeCustomProperties();
 	if (customProps && customProps->IsKeyExists(CUSTOM_COLOR_TEXTURE_PROP))
 	{
 		currentSaveName = customProps->GetString(CUSTOM_COLOR_TEXTURE_PROP);

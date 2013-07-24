@@ -29,6 +29,8 @@
 #include "Scene3D/Components/SwitchComponent.h"
 #include "Scene3D/Components/UserComponent.h"
 #include "Scene3D/Components/SoundComponent.h"
+#include "Scene3D/Components/ActionComponent.h"
+#include "Scene3D/Components/CustomPropertiesComponent.h"
 
 namespace DAVA
 {
@@ -66,9 +68,12 @@ Component * Component::CreateByType(uint32 componentType)
 	case SOUND_COMPONENT:
 		return new SoundComponent();
 		break;
+	case CUSTOM_PROPERTIES_COMPONENT:
+		return new CustomPropertiesComponent();
+	case ACTION_COMPONENT:
+		return new ActionComponent();
 	case ANIMATION_COMPONENT:
 	case COLLISION_COMPONENT:
-	case ACTION_COMPONENT:
 	case SCRIPT_COMPONENT:
 	default:
 		DVASSERT(0);
