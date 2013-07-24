@@ -84,6 +84,7 @@ public:
 	void Exec(Command2 *command);
 
 	// checks whether the scene changed since the last save
+	bool IsLoaded() const;
 	bool IsChanged() const;
 	void SetChanged(bool changed);
 
@@ -98,6 +99,8 @@ public:
 	void AddEditorEntity(Entity *editorEntity);
 
 protected:
+	bool isLoaded;
+
 	DAVA::FilePath curScenePath;
 	CommandStack commandStack;
 
