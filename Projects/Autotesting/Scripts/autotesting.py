@@ -130,7 +130,7 @@ elif (platform.system() == "Darwin"):
         # Install app to device
         print "remove "+ executableName +" from device"
         #params = ["~/AIRSDK_Compiler/bin/adt", "-uninstallApp", "-platform", platformName, "-appid", "com.yourcompany." + targetName]
-        params = "-installApp -device " + HANDLE + " -platform iOS -package " + ipaName
+        params = "~/AIRSDK_Compiler/bin/adt -installApp -device " + HANDLE + " -platform iOS -package " + ipaName
         print "subprocess.call " + params
         #print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
         subprocess.call(params, shell=True)
@@ -213,8 +213,8 @@ for testFile in testFiles:
             
             #instruments -w $4 -t /Developer/Platforms/iPhoneOS.platform/Developer/Library/Instruments/PlugIns/AutomationInstrument.bundle/Contents/Resources/Automation.tracetemplate "$2" -e UIASCRIPT testRun.js
 
-            params = ["sh", "./runOnDevice.sh", targetName, device]
-            params = ["instruments", "-w", UID, "-t", "$PATH_TO_AUTO_TEMPL/Automation.tracetemplate", "targetName", "-e", "UIASCRIPT", "testRun.js"]
+            #params = ["sh", "./runOnDevice.sh", targetName, device]
+            params = ["instruments", "-w", UID, "-t", os.environ["PATH_TO_AUTO_TEMPL"] + "/Automation.tracetemplate", targetName, "-e", "UIASCRIPT", "testRun.js"]
             print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
             subprocess.call(params)
         
