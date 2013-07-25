@@ -23,7 +23,7 @@
 #include "Scene3D/SceneNodeAnimationKey.h"
 #include "Entity/Component.h"
 #include "FileSystem/KeyedArchive.h"
-
+#include "Scene3D/Components/CustomPropertiesComponent.h"
 
 namespace DAVA
 {
@@ -75,10 +75,11 @@ public:
     virtual void    InsertBeforeNode(Entity *newNode, Entity *beforeNode);
     
 	virtual void	RemoveNode(Entity * node);
-	virtual Entity * GetChild(int32 index);
-	virtual int32   GetChildrenCount();
-    virtual int32   GetChildrenCountRecursive();
+	virtual Entity* GetChild(int32 index) const;
+	virtual int32   GetChildrenCount() const;
+    virtual int32   GetChildrenCountRecursive() const;
 	virtual void	RemoveAllChildren();
+	virtual Entity*	GetNextChild(Entity *child);
         
 	virtual bool FindNodesByNamePart(const String & namePart, List<Entity *> &outNodeList);
     
@@ -253,6 +254,9 @@ public:
     void SetSolid(bool isSolid);
     bool GetSolid();
 
+	void SetLocked(bool isLocked);
+	bool GetLocked();
+
     /**
         \brief function returns maximum bounding box of scene in world coordinates.
         \returns bounding box
@@ -278,7 +282,7 @@ public:
         \brief Function returns keyed archive of custom properties for this object. 
         Custom properties can be set for each node in editor, and used in the game later to implement game logic.
      */
-    KeyedArchive *GetCustomProperties();
+    KeyedArchive* GetCustomProperties();
     
     /**
         \brief This function should be implemented in each node that have data nodes inside it.
@@ -321,12 +325,14 @@ public:
     
 	// Property names.
 	static const char* SCENE_NODE_IS_SOLID_PROPERTY_NAME;
+	static const char* SCENE_NODE_IS_LOCKED_PROPERTY_NAME;
 
 	void FindComponentsByTypeRecursive(Component::eType type, List<DAVA::Entity*> & components);
    
 protected:
 
     String RecursiveBuildFullName(Entity * node, Entity * endNode);
+	CustomPropertiesComponent* GetCustomPropertiesComponent();
 
 //    virtual Entity* CopyDataTo(Entity *dstNode);
 	void SetParent(Entity * node);
@@ -339,8 +345,6 @@ protected:
 	int32	tag;
 
     uint32 flags;
-
-    KeyedArchive *customProperties;
     
 private:
 	Vector<Component *> components;
@@ -354,7 +358,6 @@ private:
 public:
 	INTROSPECTION_EXTEND(Entity, BaseObject,
 		MEMBER(name, "Name", I_SAVE | I_VIEW | I_EDIT)
-		MEMBER(customProperties, "Custom properties", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(tag, "Tag", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(flags, "Flags", I_SAVE | I_VIEW | I_EDIT)
 

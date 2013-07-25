@@ -23,6 +23,7 @@ namespace DAVA
 {
 
 class ParticleEmitter;
+class ParticleEffectComponent;
 class Entity;
 class RenderObject;
 class Light;
@@ -31,7 +32,9 @@ class Camera;
 class LodComponent;
 
 ParticleEmitter * GetEmitter(Entity * fromEntity);
-RenderObject * GetRenerObject(Entity * fromEntity);
+ParticleEffectComponent * GetEffectComponent(Entity * fromEntity);
+
+RenderObject * GetRenderObject(Entity * fromEntity);
 
 Light *GetLight(Entity * fromEntity);
 Landscape *GetLandscape(Entity * fromEntity);

@@ -24,16 +24,30 @@
 
 #include <DAVAEngine.h>
 #include "ScrollZoomWidget.h"
-#include "../CustomControls/EventFilterDoubleSpinBox.h"
+#include "Tools/EventFilterDoubleSpinBox/EventFilterDoubleSpinBox.h"
+
+#include "Scene/SceneEditor2.h"
+#include "Commands/CommandList.h"
 
 using namespace DAVA;
 
-class ParticlesCountWidget;
-class ParticlesAreaWidget;
+#define LEFT_INDENT 20
+#define TOP_INDENT 14
+#define BOTTOM_INDENT 24
+#define RIGHT_INDENT 317
+#define LINE_STEP 16
+#define RECT_SIZE 3
+#define LINE_WIDTH 3
+
+#define PARTICLES_INFO_CONTROL_OFFSET 8
+
+#define UPDATE_LAYERS_EXTRA_INFO_PERIOD 250 // in milliseconds
+
+class ParticlesExtraInfoColumn;
 class ParticleTimeLineWidget : public ScrollZoomWidget
 {
 	Q_OBJECT
-	friend class ParticlesExtraInfoWidget;
+	friend class ParticlesExtraInfoColumn;
 
 public:
 	explicit ParticleTimeLineWidget(QWidget *parent = 0);
@@ -45,6 +59,8 @@ public:
 	{
 		float32 startTime;
 		float32 endTime;
+		float32 loopedEndTime;
+		bool isLooped;
 		QColor color;
 		QString legend;
 		ParticleLayer* layer;
@@ -58,6 +74,18 @@ protected slots:
 	void OnNodeSelected(Entity* node);
 	void OnEffectNodeSelected(Entity* node);
 	void OnLayerSelected(Entity* node, ParticleLayer* layer);
+	
+	// Scene Tree signals - Particles are selected.
+	void OnEffectSelectedFromSceneTree(SceneEditor2* scene, DAVA::Entity* effectNode);
+	void OnEmitterSelectedFromSceneTree(SceneEditor2* scene, DAVA::Entity* emitterNode);
+	void OnLayerSelectedFromSceneTree(SceneEditor2* scene, DAVA::ParticleLayer* layer, bool forceRefresh);
+    void OnForceSelectedFromSceneTree(SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::int32 forceIndex);
+
+	// Scene Tree signals - values are changed for Particles.
+	void OnParticleEmitterValueChanged(SceneEditor2* scene, DAVA::ParticleEmitter* emitter);
+	void OnParticleLayerValueChanged(SceneEditor2* scene, DAVA::ParticleLayer* layer);
+	void OnParticleEffectStateChanged(SceneEditor2* scene, DAVA::Entity* effect, bool isStarted);
+	
 	void OnUpdate();
 
 	void OnUpdateLayersExtraInfoNeeded();
@@ -70,23 +98,27 @@ protected:
 	virtual void mouseDoubleClickEvent(QMouseEvent *);
 
 private:
-	bool GetLineRect(uint32 id, QRect& startPoint, QRect& endPoint) const;
+	bool GetLineRect(uint32 id, QRect& startPoint, QRect& endPoint, bool useLoopedTime = false) const;
 	QRect GetGraphRect() const;
 	QPoint GetPoint(const QPoint&) const;
 	
 	void AddLayerLine(uint32 layerLineID, float32 minTime, float32 maxTime,
 					  const QColor& layerColor, ParticleLayer* layer);
-	void AddLine(uint32 lineId, float32 startTime, float32 endTime, const QColor& color, const QString& legend, ParticleLayer* layer);
+	void AddLine(uint32 lineId, float32 startTime, float32 endTime, float32 loopedEndTime, bool isLooped, const QColor& color, const QString& legend, ParticleLayer* layer);
 
 	void OnValueChanged(int lineId);
 	void UpdateSizePolicy();
 
+	void ShowLayersExtraInfoValues(bool isVisible);
+	
+	void NotifyLayersExtraInfoChanged();
 	void UpdateLayersExtraInfoPosition();
 	void UpdateLayersExtraInfoValues();
+	void ResetLayersExtraInfoValues();
 
 	// Handle situation when the Particle Emitter Node is selected (including
 	// case when separate Layer node is selected.
-	void HandleNodeSelected(Entity* node, ParticleLayer* layer);
+	void HandleEmitterSelected(ParticleEmitter* emitter, ParticleLayer* layer);
 	
 	virtual QRect GetSliderRect() const;
 	virtual QRect GetIncreaseRect() const;
@@ -97,17 +129,26 @@ private:
 	// Get the width/height for particle counter label.
 	void GetParticlesCountWidthHeight(const LINE& line, int32& width, int32& height);
 
+	
+	// Cleanup all the timelines and info.
+	void CleanupTimelines();
+
 	LINE_MAP lines;
 	QFont nameFont;
 	
 	QPoint selectedPoint;
-	Entity* emitterNode;
-	Entity* effectNode;
+
+	Entity* selectedEffect;
+	ParticleEmitter* selectedEmitter;
 	ParticleLayer* selectedLayer;
 	
 	QTimer updateTimer;
-	ParticlesCountWidget* countWidget;
-	ParticlesAreaWidget* areaWidget;
+
+	// List of data columns.
+	List<ParticlesExtraInfoColumn*> infoColumns;
+	
+	// Scene currently selected.
+	SceneEditor2* activeScene;
 
 	class SetPointValueDlg: public QDialog
 	{
@@ -121,76 +162,6 @@ private:
 	private:
 		EventFilterDoubleSpinBox* valueSpin;
 	};
-};
-
-////////////////////////////////////////////////////////////////////////////////////
-// A specific class to display the per-layer particles info.
-const int32 EXTRA_INFO_LEFT_PADDING = 3;
-
-class ParticlesExtraInfoWidget : public QWidget
-{
-	Q_OBJECT
-	
-public:
-	explicit ParticlesExtraInfoWidget(const ParticleTimeLineWidget* timeLineWidget,
-									  QWidget *parent = 0);
-
-protected:
-	virtual void paintEvent(QPaintEvent *);
-	
-	// These methods are to be overriden for derived classes.
-	// Get an extra information to be displayed near the line.
-	virtual QString GetExtraInfoForLayerLine(const ParticleTimeLineWidget::LINE& line) {return QString();};
-
-	// Get the extra info for the header/footer.
-	virtual QString GetExtraInfoHeader() {return QString(); };
-	virtual QString GetExtraInfoFooter() {return QString(); };
-
-	// In case some information should be accumulated during the loop,
-	// these methods are called just before the loop and just after it.
-	virtual void OnBeforeGetExtraInfoLoop() {};
-	virtual void OnAfterGetExtraInfoLoop() {};
-
-	// The timeline widget being used.
-	const ParticleTimeLineWidget* timeLineWidget;
-};
-
-// Particles Count information.
-class ParticlesCountWidget : public ParticlesExtraInfoWidget
-{
-	Q_OBJECT
-public:
-	explicit ParticlesCountWidget(const ParticleTimeLineWidget* timeLineWidget,
-									  QWidget *parent = 0);
-protected:
-	virtual void OnBeforeGetExtraInfoLoop();
-	virtual QString GetExtraInfoForLayerLine(const ParticleTimeLineWidget::LINE& line);
-
-	virtual QString GetExtraInfoHeader();
-	virtual QString GetExtraInfoFooter();
-
-private:
-	int32 totalParticlesCount;
-};
-
-// Particles Area information.
-class ParticlesAreaWidget : public ParticlesExtraInfoWidget
-{
-	Q_OBJECT
-public:
-	explicit ParticlesAreaWidget(const ParticleTimeLineWidget* timeLineWidget,
-								 QWidget *parent = 0);
-protected:
-	virtual void OnBeforeGetExtraInfoLoop();
-	virtual QString GetExtraInfoForLayerLine(const ParticleTimeLineWidget::LINE& line);
-	
-	virtual QString GetExtraInfoHeader();
-	virtual QString GetExtraInfoFooter();
-	
-private:
-	QString FormatFloat(float32 value);
-
-	float32 totalParticlesArea;
 };
 
 #endif /* defined(__ResourceEditorQt__ParticleTimeLineWidget__) */

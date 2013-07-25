@@ -58,7 +58,7 @@ Vector<Image *> ImageLoader::CreateFromFile(File *file)
     {
         return CreateFromPVR(file);
     }
-    
+	
 	return Vector<Image *>();
 }
 
@@ -122,11 +122,13 @@ Vector<Image *> ImageLoader::CreateFromPVR(DAVA::File *file)
     uint64 loadTime = SystemTimer::Instance()->AbsoluteMS();
 
     int32 mipMapLevelsCount = LibPVRHelper::GetMipMapLevelsCount(file);
-    if(mipMapLevelsCount)
+	int32 faceCount = LibPVRHelper::GetCubemapFaceCount(file);
+	int32 totalImageCount = mipMapLevelsCount * faceCount;
+    if(totalImageCount)
     {
         Vector<Image *> imageSet;
-        imageSet.reserve(mipMapLevelsCount);
-        for(int32 i = 0; i < mipMapLevelsCount; ++i)
+        imageSet.reserve(totalImageCount);
+        for(int32 i = 0; i < totalImageCount; ++i)
         {
             Image *image = new Image();
             if(!image)

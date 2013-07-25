@@ -19,6 +19,7 @@
 
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QToolButton>
 #include "mainwindow.h"
 #include "QtMainWindowHandler.h"
 
@@ -41,7 +42,8 @@ DAVA::FilePath GetOpenFileName(const DAVA::String &title, const DAVA::FilePath &
     QString filePath = QFileDialog::getOpenFileName(NULL, QString(title.c_str()), QString(pathname.GetAbsolutePathname().c_str()),
                                                     QString(filter.c_str()));
     
-    QtMainWindowHandler::Instance()->RestoreDefaultFocus();
+	// TODO: mainwindow
+    //QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 
     FilePath openedPathname = PathnameToDAVAStyle(filePath);
     if(!openedPathname.IsEmpty() && !SceneValidator::Instance()->IsPathCorrectForProject(openedPathname))
@@ -158,5 +160,40 @@ int ShowSaveSceneQuestion(DAVA::Scene *scene)
     }
     
     return answer;
+}
+
+void DeleteOldPVRTextureIfPowerVr_IOS(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu)
+{
+    if(!descriptor || gpu != GPU_POWERVR_IOS) return;
+    
+    FilePath oldPvrPath = FilePath::CreateWithNewExtension(descriptor->pathname, ".pvr");
+    FileSystem::Instance()->DeleteFile(oldPvrPath);
+}
+
+void DeleteOldDXTTextureIfTegra(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu)
+{
+    if(!descriptor || gpu != GPU_TEGRA) return;
+    
+    FilePath oldDdsPath = FilePath::CreateWithNewExtension(descriptor->pathname, ".dds");
+    FileSystem::Instance()->DeleteFile(oldDdsPath);
+}
+
+void ShowActionWithText(QToolBar *toolbar, QAction *action, bool showText)
+{
+	if(NULL != toolbar && NULL != action)
+	{
+		QToolButton *toolBnt = dynamic_cast<QToolButton *>(toolbar->widgetForAction(action));
+		if(NULL != toolBnt)
+		{
+			if(showText)
+			{
+				toolBnt->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+			}
+			else
+			{
+				toolBnt->setToolButtonStyle(Qt::ToolButtonIconOnly);
+			}
+		}
+	}
 }
 

@@ -245,15 +245,18 @@ String FilePath::ResolveResourcesPath() const
         String relativePathname = "Data" + absolutePathname.substr(5);
         FilePath path;
         
+		bool isResolved = false;
         List<FilePath>::reverse_iterator endIt = resourceFolders.rend();
         for(List<FilePath>::reverse_iterator it = resourceFolders.rbegin(); it != endIt; ++it)
         {
+            FilePath t = *it;
             path = *it + relativePathname;
             
             if(isDirectory)
             {
                 if(FileSystem::Instance()->IsDirectory(path))
                 {
+					isResolved = true;
                     break;
                 }
             }
@@ -261,9 +264,18 @@ String FilePath::ResolveResourcesPath() const
             {
                 if(FileSystem::Instance()->IsFile(path))
                 {
+					isResolved = true;
                     break;
                 }
             }
+        }
+		
+		if (!isResolved)
+		{
+			String warningMsg = "Unable to resolve relative path " + absolutePathname + "\n";
+			warningMsg += "Returning default absolute path found ";
+			warningMsg += path.absolutePathname;
+			Logger::Warning(warningMsg.c_str());
         }
         
         return path.absolutePathname;
@@ -652,13 +664,21 @@ String FilePath::AbsoluteToRelative(const FilePath &directoryPathname, const Fil
     if(absolutePathname.IsEmpty())
         return String();
 
-    DVASSERT(absolutePathname.IsAbsolutePathname());
     DVASSERT(directoryPathname.IsDirectoryPathname());
 
     Vector<String> folders;
-    Split(directoryPathname.GetAbsolutePathname(), "/", folders);
-    Vector<String> fileFolders;
-    Split(absolutePathname.GetDirectory().GetAbsolutePathname(), "/", fileFolders);
+	Vector<String> fileFolders;
+
+	if(directoryPathname.GetType() == PATH_IN_RESOURCES &&	absolutePathname.GetType() == PATH_IN_RESOURCES)
+	{
+		Split(directoryPathname.absolutePathname, "/", folders);
+		Split(absolutePathname.GetDirectory().absolutePathname, "/", fileFolders);
+	}
+	else
+	{
+		Split(directoryPathname.GetAbsolutePathname(), "/", folders);
+		Split(absolutePathname.GetDirectory().GetAbsolutePathname(), "/", fileFolders);
+	}
     
     Vector<String>::size_type equalCount = 0;
     for(; equalCount < folders.size() && equalCount < fileFolders.size(); ++equalCount)
@@ -683,11 +703,6 @@ String FilePath::AbsoluteToRelative(const FilePath &directoryPathname, const Fil
     return (retPath + absolutePathname.GetFilename());
 }
     
-bool FilePath::IsAbsolutePathname() const
-{
-    return IsAbsolutePathname(absolutePathname);
-}
-    
     
 bool FilePath::IsAbsolutePathname(const String &pathname)
 {
@@ -710,8 +725,6 @@ bool FilePath::IsAbsolutePathname(const String &pathname)
     
 String FilePath::AddPath(const FilePath &folder, const String & addition)
 {
-    DVASSERT(folder.IsDirectoryPathname() || folder.IsEmpty());
-
     String absPathname = folder.absolutePathname + addition;
     if(folder.pathType == PATH_IN_RESOURCES && absPathname.find("~res:") != String::npos)
     {

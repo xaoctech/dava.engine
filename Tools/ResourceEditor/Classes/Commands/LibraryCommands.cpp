@@ -110,7 +110,8 @@ void CommandEditScene::Execute()
 	EditorSettings::Instance()->AddLastOpenedFile(filePathname);
     SceneDataManager::Instance()->EditActiveScene(filePathname);
 
-    QtMainWindowHandler::Instance()->ShowStatusBarMessage(filePathname.GetAbsolutePathname());
+	// TODO: mainwindow
+    //QtMainWindowHandler::Instance()->ShowStatusBarMessage(filePathname.GetAbsolutePathname());
 }
 
 

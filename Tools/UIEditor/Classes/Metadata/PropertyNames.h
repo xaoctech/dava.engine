@@ -24,6 +24,9 @@ class PropertyNames
 {
 public:
     // Property Names for different Properties.
+	static const char* SIZE_X;
+	static const char* SIZE_Y;
+	
     static const char* LOCALIZED_TEXT_KEY_PROPERTY_NAME;
     static const char* FONT_PROPERTY_NAME;
     static const char* FONT_SIZE_PROPERTY_NAME;
@@ -42,6 +45,7 @@ public:
     static const char* ALIGN_PROPERTY_NAME;
     
     static const char* TEXT_PROPERTY_NAME;
+	static const char* TEXT_PROPERTY_MULTILINE;
     static const char* TEXT_COLOR_PROPERTY_NAME;
 	static const char* TEXT_ALIGN_PROPERTY_NAME;
 
@@ -75,6 +79,12 @@ public:
 	static const char* VCENTER_ALIGN_ENABLED;
 	static const char* BOTTOM_ALIGN;
 	static const char* BOTTOM_ALIGN_ENABLED;
+	
+	// UI Scroll View properties
+	static const char* HORIZONTAL_SCROLL_POSITION;
+	static const char* VERTICAL_SCROLL_POSITION;
+	static const char* SCROLL_CONTENT_SIZE_X;
+	static const char* SCROLL_CONTENT_SIZE_Y;
 
 	// UI Spinner properties.
 	static const char* UISPINNER_PREV_BUTTON_TEXT;

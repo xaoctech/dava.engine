@@ -113,8 +113,27 @@ public:
 	 \param[in] align Sprite align.
 	 */
 	virtual void SetStateAlign(int32 state, int32 align);
-
-
+	/**
+	 \brief Sets Sprite reflection you want to use for draw for the control UIControlBackground object for the requested state.
+		Method creates UIControlBackground object for the state if this is neccesary.
+	 \param[in] state state bit mask to set value for.
+	 \param[in] modification Sprite modification(reflection).
+	 */
+	virtual void SetStateModification(int32 state, int32 modification);
+	/**
+	 \brief Sets Sprite color you want to use for draw for the control UIControlBackground object for the requested state.
+		Method creates UIControlBackground object for the state if this is neccesary.
+	 \param[in] state state bit mask to set value for.
+	 \param[in] color Sprite color.
+	 */
+	virtual void SetStateColor(int32 state, Color color);
+	/**
+	 \brief Sets Sprite's color inheritence type you want to use for draw for the control UIControlBackground object for the requested state.
+		Method creates UIControlBackground object for the state if this is neccesary.
+	 \param[in] state state bit mask to set value for.
+	 \param[in] value type of color inheritence.
+	 */
+	virtual void SetStateColorInheritType(int32 state, UIControlBackground::eColorInheritType value);
 	/**
 	 \brief Returns background used for drawing of the requested state.
 	 \param[in] state state to get value for.

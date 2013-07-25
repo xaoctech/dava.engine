@@ -44,6 +44,11 @@ public:
 	ST_ModifMode GetModifMode() const;
 	void SetModifMode(ST_ModifMode mode);
 
+	bool GetLandscapeSnap() const;
+	void SetLandscapeSnap(bool snap);
+
+	void PlaceOnLandscape(const EntityGroup *entities);
+
 protected:
 	SceneCollisionSystem *collisionSystem;
 	SceneCameraSystem *cameraSystem;
@@ -53,12 +58,14 @@ protected:
 	void Draw();
 
 	void ProcessUIEvent(DAVA::UIEvent *event);
-	void PropeccCommand(const Command2 *command, bool redo);
+	void ProcessCommand(const Command2 *command, bool redo);
 
 protected:
 	struct EntityToModify
 	{
 		DAVA::Entity* entity;
+		DAVA::Matrix4 inversedParentWorldTransform;
+		DAVA::Matrix4 originalParentWorldTransform;
 		DAVA::Matrix4 originalTransform;
 		DAVA::Vector3 originalCenter;
 		DAVA::Matrix4 moveToZeroPos;
@@ -70,6 +77,8 @@ protected:
 
 	ST_ModifMode curMode;
 	ST_Axis curAxis;
+
+	bool snapToLandscape;
 
 	// starting modification pos
 	DAVA::Vector3 modifStartPos3d;
@@ -93,6 +102,7 @@ protected:
 	void EndModification();
 
 	void ApplyModification();
+	bool ModifCanStart(const EntityGroup *selectedEntities) const;
 
 	DAVA::Vector3 CamCursorPosToModifPos(const DAVA::Vector3 &camPosition, const DAVA::Vector3 &camPointDirection, const DAVA::Vector3 &planePoint);
 	DAVA::Vector2 Cam2dProjection(const DAVA::Vector3 &from, const DAVA::Vector3 &to);
@@ -101,9 +111,13 @@ protected:
 	DAVA::float32 Rotate(const DAVA::Vector2 &newPos2d);
 	DAVA::float32 Scale(const DAVA::Vector2 &newPos2d);
 
+	DAVA::Matrix4 SnapToLandscape(const DAVA::Vector3 &point, const DAVA::Matrix4 &originalParentTransform) const;
+
 	void MoveDone(const DAVA::Vector2 &newPos3d);
 	void RotateDone(const DAVA::Vector2 &newPos2d);
 	void ScaleDone(const DAVA::Vector2 &newPos2d);
+
+	bool IsEntityContainRecursive(const DAVA::Entity *entity, const DAVA::Entity *child) const;
 };
 
 #endif //__ENTITY_MODIFICATION_SYSTEM_H__

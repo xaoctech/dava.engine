@@ -28,19 +28,19 @@ class TextureCache : public QObject, public DAVA::StaticSingleton<TextureCache>
 	Q_OBJECT
 
 public:
-	QImage getOriginal(const DAVA::TextureDescriptor *descriptor);
-	QImage getConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu);
+	DAVA::Vector<QImage> getOriginal(const DAVA::TextureDescriptor *descriptor);
+	DAVA::Vector<QImage> getConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu);
 
-	void setOriginal(const DAVA::TextureDescriptor *descriptor, const QImage &image);
-	void setConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, const QImage &image);
+	void setOriginal(const DAVA::TextureDescriptor *descriptor, DAVA::Vector<QImage>& images);
+	void setConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, DAVA::Vector<QImage>& images);
 
 	void clearAll();
 	void clearOriginal(const DAVA::TextureDescriptor *descriptor);
 	void clearConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu);
 
 private:
-	QMap<const DAVA::TextureDescriptor*, QImage> cacheOriginal;
-	QMap<const DAVA::TextureDescriptor*, QImage> cacheConverted[DAVA::GPU_FAMILY_COUNT];
+	QMap<const DAVA::TextureDescriptor*, DAVA::Vector<QImage> > cacheOriginal;
+	QMap<const DAVA::TextureDescriptor*, DAVA::Vector<QImage> > cacheConverted[DAVA::GPU_FAMILY_COUNT];
 };
 
 #endif // __TEXTURE_CACHE_H__

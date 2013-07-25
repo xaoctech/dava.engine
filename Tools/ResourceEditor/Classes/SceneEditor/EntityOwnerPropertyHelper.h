@@ -32,6 +32,9 @@
 
 namespace DAVA {
 	//entityOwnerPropertyHelper
+
+	
+class CustomPropertiesComponent;
 class EntityOwnerPropertyHelper: public DAVA::StaticSingleton<EntityOwnerPropertyHelper>
 {
 public:

@@ -15,8 +15,7 @@
 =====================================================================================*/
 
 #include "EmitterLayerWidget.h"
-#include "Commands/ParticleEditorCommands.h"
-#include "Commands/CommandsManager.h"
+#include "Commands2/ParticleEditorCommands.h"
 #include "TextureBrowser/TextureConvertor.h"
 #include "SceneEditor/EditorSettings.h"
 #include "../Scene/SceneDataManager.h"
@@ -39,8 +38,9 @@ const EmitterLayerWidget::LayerTypeMap EmitterLayerWidget::layerTypeMap[] =
 	{ParticleLayer::TYPE_SUPEREMITTER_PARTICLES, "SuperEmitter"}
 };
 
-EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
-	QWidget(parent)
+EmitterLayerWidget::EmitterLayerWidget(SceneEditor2* scene, QWidget *parent) :
+	QWidget(parent),
+	BaseParticleEditorContentWidget(scene)
 {
 	mainBox = new QVBoxLayout;
 	this->setLayout(mainBox);
@@ -212,6 +212,13 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 			SIGNAL(valueChanged(double)),
 			this,
 			SLOT(OnValueChanged()));
+			
+	isLoopedCheckBox = new QCheckBox("Loop layer");
+	mainBox->addWidget(isLoopedCheckBox);
+	connect(isLoopedCheckBox,
+			SIGNAL(stateChanged(int)),
+			this,
+			SLOT(OnValueChanged()));
 	
 	Q_FOREACH( QAbstractSpinBox * sp, findChildren<QAbstractSpinBox*>() ) {
         sp->installEventFilter( this );
@@ -307,6 +314,7 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	enableCheckBox->setChecked(!layer->GetDisabled());
 	additiveCheckBox->setChecked(layer->GetAdditive());
 	isLongCheckBox->setChecked(layer->IsLong());
+	isLoopedCheckBox->setChecked(layer->GetLooped());
 
 	//LAYER_SPRITE = 0,
 	sprite = layer->GetSprite();
@@ -592,11 +600,12 @@ void EmitterLayerWidget::OnValueChanged()
 	ParticleLayer::eType propLayerType = layerTypeMap[layerTypeComboBox->currentIndex()].layerType;
 
 	CommandUpdateParticleLayer* updateLayerCmd = new CommandUpdateParticleLayer(emitter, layer);
-	updateLayerCmd->Init(layerNameLineEdit->text(),
+	updateLayerCmd->Init(layerNameLineEdit->text().toStdString(),
 						 propLayerType,
 						 !enableCheckBox->isChecked(),
 						 additiveCheckBox->isChecked(),
 						 isLongCheckBox->isChecked(),
+						 isLoopedCheckBox->isChecked(),
 						 sprite,
 						 propLife.GetPropLine(),
 						 propLifeVariation.GetPropLine(),
@@ -625,8 +634,8 @@ void EmitterLayerWidget::OnValueChanged()
 						 (float32)pivotPointXSpinBox->value(),
 						 (float32)pivotPointYSpinBox->value());
 
-	CommandsManager::Instance()->ExecuteAndRelease(updateLayerCmd,
-												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
+	DVASSERT(activeScene);
+	activeScene->Exec(updateLayerCmd);
 
 	Init(this->emitter, this->layer, false);
 	emit ValueChanged();
@@ -739,4 +748,23 @@ void EmitterLayerWidget::OnPivotPointReset()
 	blockSignals = false;
 	
 	OnValueChanged();
+}
+
+void EmitterLayerWidget::OnLayerValueChanged()
+{
+	// Start/End time and Enabled flag can be changed from external side.
+	blockSignals = true;
+	if (startTimeSpin->value() != layer->startTime || endTimeSpin->value() != layer->endTime)
+	{
+		startTimeSpin->setValue(layer->startTime);
+		endTimeSpin->setValue(layer->endTime);
+	}
+	
+	// NOTE: inverse logic here.
+	if (enableCheckBox->isChecked() == layer->GetDisabled())
+	{
+		enableCheckBox->setChecked(!layer->GetDisabled());
+	}
+	
+	blockSignals = false;
 }

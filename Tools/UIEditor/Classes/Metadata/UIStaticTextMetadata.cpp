@@ -94,7 +94,7 @@ void UIStaticTextMetadata::SetFontSize(float fontSize)
 // Initialize the control(s) attached.
 void UIStaticTextMetadata::InitializeControl(const String& controlName, const Vector2& position)
 {
-    BaseMetadata::InitializeControl(controlName, position);
+    UIControlMetadata::InitializeControl(controlName, position);
     
     int paramsCount = this->GetParamsCount();
     for (BaseMetadataParams::METADATAPARAMID i = 0; i < paramsCount; i ++)
@@ -102,7 +102,6 @@ void UIStaticTextMetadata::InitializeControl(const String& controlName, const Ve
         UIStaticText* staticText = dynamic_cast<UIStaticText*>(this->treeNodeParams[i].GetUIControl());
 
         staticText->SetFont(EditorFontManager::Instance()->GetDefaultFont());
-		staticText->SetMultiline(true);
         staticText->GetBackground()->SetDrawType(UIControlBackground::DRAW_ALIGNED);
     
         // Initialize both control text and localization key.
@@ -246,4 +245,24 @@ void UIStaticTextMetadata::SetTextAlign(int value)
     }
     
     GetActiveStaticText()->SetTextAlign((eAlign)value);
+}
+
+bool UIStaticTextMetadata::GetMultiline() const
+{
+    if (!VerifyActiveParamID())
+    {
+        return false;
+    }
+	
+	return GetActiveStaticText()->GetMultiline();
+}
+
+void UIStaticTextMetadata::SetMultiline(const bool value)
+{
+	if (!VerifyActiveParamID())
+    {
+        return;
+    }
+	
+	GetActiveStaticText()->SetMultiline(value);
 }

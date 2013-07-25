@@ -53,21 +53,6 @@ public:
 	int GetCurrentTab() const;
 	void SetCurrentTab(int index);
 
-	ST_ModifMode GetModifMode() const;
-	void SetModifMode(ST_ModifMode mode);
-
-	ST_PivotPoint GetPivotPoint() const;
-	void SetPivotPoint(ST_PivotPoint pivotpoint);
-
-	ST_Axis GetModifAxis() const;
-	void SetModifAxis(ST_Axis axis);
-
-	int GetSelectionDrawMode() const;
-	void SetSelectionDrawMode(int mode);
-
-	int GetCollisionDrawMode() const;
-	void SetCollisionDrawMode(int mode);
-	
 	SceneEditor2* GetCurrentScene() const;
 
 public slots:
@@ -80,18 +65,10 @@ public slots:
 	// tab request close
 	void TabBarCloseRequest(int index);
 
-	// scene mouse over selected object
+	// scene signals
 	void MouseOverSelectedEntities(SceneEditor2* scene, const EntityGroup *entities);
-
-// old ui. should be removed later -->
-protected:
-	SceneEditorScreenMain * sceneEditorScreenMain;
-	const int oldScreenID;
-	bool oldInput;
-
-	void InitOldUI();
-	void ReleaseOldUI();
-// <--
+	void SceneSaved(SceneEditor2 *scene);
+	void SceneModifyStatusChanged(SceneEditor2 *scene, bool modified);
 
 protected:
 	QTabBar *tabBar;
@@ -103,6 +80,7 @@ protected:
 
 	void InitDAVAUI();
 	void ReleaseDAVAUI();
+	void UpdateTabName(int index);
 
 	SceneEditor2* GetTabScene(int index) const;
 	void SetTabScene(int index, SceneEditor2* scene);
@@ -111,13 +89,7 @@ protected:
 
 private:
 	int newSceneCounter;
-
 	SceneEditor2 *curScene;
-	ST_Axis curModifAxis;
-	ST_ModifMode curModifMode;
-	ST_PivotPoint curPivotPoint;
-	int curSelDrawMode;
-	int curColDrawMode;
 };
 
 // this is helper class

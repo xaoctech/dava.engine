@@ -43,21 +43,28 @@ public:
 	void BeginBatch(const DAVA::String &text);
 	void EndBatch();
 
+	bool IsClean() const;
+	void SetClean(bool clean);
+
 	size_t GetUndoLimit() const;
 	void SetUndoLimit(size_t limit);
 
 protected:
-	std::list<Command2 *> commandList;
+	DAVA::List<Command2 *> commandList;
 	size_t commandListLimit;
 	size_t nextCommandIndex;
+	size_t cleanCommandIndex;
+	bool lastCheckCleanState;
 
 	CommandBatch* curBatchCommand;
 	CommandStackNotify *stackCommandsNotify;
 
-	void ExecInternal(Command2 *command);
+	void ExecInternal(Command2 *command, bool runCommand);
 
 	void ClearRedoCommands();
 	void ClearLimitedCommands();
+
+	void CleanCheck();
 
 	Command2* GetCommand(size_t index);
 	void CommandExecuted(const Command2 *command, bool redo);

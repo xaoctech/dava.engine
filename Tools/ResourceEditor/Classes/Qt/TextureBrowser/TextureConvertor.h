@@ -17,6 +17,8 @@
 #ifndef __TEXTURE_CONVERTOR_H__
 #define __TEXTURE_CONVERTOR_H__
 
+#include "Base/BaseTypes.h"
+
 #include <QObject>
 #include <QImage>
 #include <QFutureWatcher>
@@ -38,8 +40,8 @@ public:
 	~TextureConvertor();
 
 	static QImage FromDavaImage(DAVA::Image *image);
-	static DAVA::Image* ConvertPVR(DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, bool forceConvert);
-	static DAVA::Image* ConvertDXT(DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, bool forceConvert);
+	static DAVA::Vector<DAVA::Image*> ConvertPVR(DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, bool forceConvert);
+	static DAVA::Vector<DAVA::Image*> ConvertDXT(DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, bool forceConvert);
 
 	int GetOriginal(const DAVA::TextureDescriptor *descriptor);
 	int GetConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, bool forceConver = false);
@@ -49,8 +51,8 @@ public:
 	void CancelConvert();
 
 signals:
-	void ReadyOriginal(const DAVA::TextureDescriptor *descriptor, const QImage &image);
-	void ReadyConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, const QImage &image);
+	void ReadyOriginal(const DAVA::TextureDescriptor *descriptor, DAVA::Vector<QImage>& image);
+	void ReadyConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, DAVA::Vector<QImage>& image);
 	void ReadyReconvert();
 
 	void ReadyConvertedAll();
@@ -65,8 +67,8 @@ private:
 
 	QString waitStatusText;
 
-	QFutureWatcher<QImage> originalWatcher;
-	QFutureWatcher<QImage> convertedWatcher;
+	QFutureWatcher< DAVA::Vector<QImage> > originalWatcher;
+	QFutureWatcher< DAVA::Vector<QImage> > convertedWatcher;
 
 	JobStack jobStackOriginal;
 	JobStack jobStackConverted;
@@ -80,10 +82,18 @@ private:
 	void jobRunNextConvert();
 	void jobRunNextOriginal();
 
-	QImage GetOriginalThread(JobItem *item);
-	QImage GetConvertedThread(JobItem *item);
+	DAVA::Vector<QImage> GetOriginalThread(JobItem *item);
+	DAVA::Vector<QImage> GetConvertedThread(JobItem *item);
+	
+	static DAVA::FilePath PrepareCubeMapForConvert(DAVA::TextureDescriptor& descriptor);
+	static void CleanupCubemapAfterConversion(DAVA::TextureDescriptor& descriptor);
+	static void InitFileSuffixes();
+	
+	static DAVA::Vector<DAVA::String> pvrToolSuffixes;
+	static DAVA::Vector<DAVA::String> cubemapSuffixes;
 
 private slots:
+	
 	void waitCanceled();
 	void threadOriginalFinished();
 	void threadConvertedFinished();

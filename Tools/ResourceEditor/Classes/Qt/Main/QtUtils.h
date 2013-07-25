@@ -20,6 +20,8 @@
 #include "DAVAEngine.h"
 #include <QString>
 #include <QColor>
+#include <QToolBar>
+#include <QAction>
 #include <QMessageBox>
 
 
@@ -29,6 +31,7 @@ DAVA::FilePath PathnameToDAVAStyle(const QString &convertedPathname);
 
 DAVA::FilePath GetOpenFileName(const DAVA::String &title, const DAVA::FilePath &pathname, const DAVA::String &filter);
 
+void ShowActionWithText(QToolBar *toolbar, QAction *action, bool showText);
 
 DAVA::WideString SizeInBytesToWideString(DAVA::float32 size);
 DAVA::String SizeInBytesToString(DAVA::float32 size);
@@ -54,6 +57,8 @@ enum eMessageBoxFlags
 int ShowQuestion(const DAVA::String &header, const DAVA::String &question, int buttons, int defaultButton);
 int ShowSaveSceneQuestion(DAVA::Scene *scene);
 
+DAVA_DEPRECATED(void DeleteOldPVRTextureIfPowerVr_IOS(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu));
+DAVA_DEPRECATED(void DeleteOldDXTTextureIfTegra(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu));
 
 
 #endif // __QT_UTILS_H__

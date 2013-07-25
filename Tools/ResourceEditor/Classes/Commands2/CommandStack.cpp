@@ -20,6 +20,8 @@
 CommandStack::CommandStack()
 	: commandListLimit(0)
 	, nextCommandIndex(0)
+	, cleanCommandIndex(0)
+	, lastCheckCleanState(true)
 	, curBatchCommand(NULL)
 {
 	stackCommandsNotify = new CommandStackNotify(this);
@@ -28,8 +30,7 @@ CommandStack::CommandStack()
 CommandStack::~CommandStack()
 {
 	Clear();
-
-	delete stackCommandsNotify;
+	SafeRelease(stackCommandsNotify);
 }
 
 bool CommandStack::CanUndo() const
@@ -59,6 +60,7 @@ bool CommandStack::CanRedo() const
 void CommandStack::Clear()
 {
 	nextCommandIndex = 0;
+	cleanCommandIndex = 0;
 	
 	std::list<Command2 *>::iterator i = commandList.begin();
 	std::list<Command2 *>::iterator end = commandList.end();
@@ -69,6 +71,8 @@ void CommandStack::Clear()
 	}
 
 	commandList.clear();
+
+	CleanCheck();
 }
 
 void CommandStack::Undo()
@@ -76,14 +80,16 @@ void CommandStack::Undo()
 	if(CanUndo())
 	{
 		nextCommandIndex--;
-
 		Command2* commandToUndo = GetCommand(nextCommandIndex);
+
 		if(NULL != commandToUndo)
 		{
 			commandToUndo->Undo();
 			EmitNotify(commandToUndo, false);
 		}
 	}
+
+	CleanCheck();
 }
 
 void CommandStack::Redo()
@@ -91,14 +97,16 @@ void CommandStack::Redo()
 	if(CanRedo())
 	{
 		Command2* commandToRedo = GetCommand(nextCommandIndex);
+		nextCommandIndex++;
+
 		if(NULL != commandToRedo)
 		{
 			commandToRedo->Redo();
 			EmitNotify(commandToRedo, true);
 		}
-
-		nextCommandIndex++;
 	}
+
+	CleanCheck();
 }
 
 void CommandStack::Exec(Command2 *command)
@@ -110,16 +118,17 @@ void CommandStack::Exec(Command2 *command)
 		{
 			if(NULL != curBatchCommand)
 			{
-				curBatchCommand->Add(command);
+				curBatchCommand->AddAndExec(command);
 			}
 			else
 			{
-				ExecInternal(command);
+				ExecInternal(command, true);
 			}
 		}
 		else
 		{
 			action->Redo();
+			EmitNotify(command, true);
 			delete action;
 		}
 	}
@@ -131,6 +140,7 @@ void CommandStack::BeginBatch(const DAVA::String &text)
 	{
 		curBatchCommand = new CommandBatch();
 		curBatchCommand->SetText(text);
+		curBatchCommand->SetNotify(stackCommandsNotify);
 	}
 }
 
@@ -140,7 +150,9 @@ void CommandStack::EndBatch()
 	{
 		if(curBatchCommand->Size() > 0)
 		{
-			ExecInternal(curBatchCommand);
+			// all command were already executed in batch
+			// so just add them to stack without calling redo
+			ExecInternal(curBatchCommand, false);
 		}
 		else
 		{
@@ -149,6 +161,25 @@ void CommandStack::EndBatch()
 
 		curBatchCommand = NULL;
 	}
+}
+
+bool CommandStack::IsClean() const
+{
+	return (cleanCommandIndex == nextCommandIndex);
+}
+
+void CommandStack::SetClean(bool clean)
+{
+	if(clean)
+	{
+		cleanCommandIndex = nextCommandIndex;
+	}
+	else
+	{
+		cleanCommandIndex = -1;
+	}
+
+	CleanCheck();
 }
 
 size_t CommandStack::GetUndoLimit() const
@@ -161,18 +192,23 @@ void CommandStack::SetUndoLimit(size_t limit)
 	commandListLimit = limit;
 }
 
-void CommandStack::ExecInternal(Command2 *command)
+void CommandStack::ExecInternal(Command2 *command, bool runCommand)
 {
 	ClearRedoCommands();
 
 	commandList.push_back(command);
 	nextCommandIndex++;
 
-	command->SetNotify(stackCommandsNotify, false);
-	command->Redo();
-	EmitNotify(command, true);
+	if(runCommand)
+	{
+		command->SetNotify(stackCommandsNotify);
+		command->Redo();
+	}
 
+	EmitNotify(command, true);
 	ClearLimitedCommands();
+
+	CleanCheck();
 }
 
 void CommandStack::ClearRedoCommands()
@@ -209,7 +245,18 @@ void CommandStack::ClearLimitedCommands()
 		}
 
 		commandList.pop_front();
+
 		nextCommandIndex--;
+		cleanCommandIndex--;
+	}
+}
+
+void CommandStack::CleanCheck()
+{
+	if(lastCheckCleanState != IsClean())
+	{
+		lastCheckCleanState = IsClean();
+		EmitCleanChanged(lastCheckCleanState);
 	}
 }
 

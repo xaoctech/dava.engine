@@ -133,13 +133,13 @@ void InputTest::LoadResources()
 	webView1->SetVisible(false);
 	delegate = new UIWebViewDelegate();
 	webView1->SetDelegate((UIWebViewDelegate*)delegate);
-	webView1->OpenURL("http://www.linux.org.ru");
+	webView1->OpenURL("http://www.google.com");
 	AddControl(webView1);
 
 	webView2 = new UIWebView(Rect(305, 300, 440, 190));
     webView2->SetVisible(false);
     webView2->SetDelegate((UIWebViewDelegate*)delegate);
-	webView2->OpenURL("http://www.apple.com");
+	webView2->OpenURL("http://www.google.com");
 	AddControl(webView2);
 
 	FilePath srcDir("~res:/TestData/InputTest/");

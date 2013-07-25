@@ -60,6 +60,7 @@ class UpdateSystem;
 class LightUpdateSystem;
 class SwitchSystem;
 class SoundUpdateSystem;
+class ActionUpdateSystem;
     
 /**
     \ingroup scene3d
@@ -102,6 +103,7 @@ public:
 	SwitchSystem * switchSystem;
 	RenderSystem * renderSystem;
 	SoundUpdateSystem * soundSystem;
+	ActionUpdateSystem* actionSystem;
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.
      */
@@ -252,7 +254,7 @@ protected:
 	Vector<SceneNodeAnimationList*> animations;
     
     Map<String, ProxyNode*> rootNodes;
-    
+    	
 //    // TODO: move to nodes
 //    Vector<LodLayer> lodLayers;
 //    int32 forceLodLayer;
