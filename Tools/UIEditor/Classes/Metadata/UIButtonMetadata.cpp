@@ -372,8 +372,7 @@ void UIButtonMetadata::SetSprite(const QString& value)
 		}
 		else
 		{
-			GetActiveUIButton()->SetStateSprite(this->uiControlStates[i],
-												TruncateTxtFileExtension(value).toStdString());
+			GetActiveUIButton()->SetStateSprite(this->uiControlStates[i], value.toStdString());
 		}
 	}
 
@@ -495,17 +494,7 @@ void UIButtonMetadata::SetColor(const QColor& value)
 
 	for (uint32 i = 0; i < this->GetStatesCount(); ++i)
 	{
-		// Yuri Coder, 08/11/2012. According to Dizzer's request update the button background
-		// before assigning color - otherwise it might be assigned to the default background.
-		GetActiveUIButton()->CreateBackgroundForState(this->uiControlStates[i]);
-
-		UIControlBackground* background = GetActiveUIButton()->GetStateBackground(this->uiControlStates[i]);
-		if (!background)
-		{
-			continue;
-		}
-
-		background->color = QTColorToDAVAColor(value);
+		GetActiveUIButton()->SetStateColor(this->uiControlStates[i],QTColorToDAVAColor(value));
 	}
     UpdatePropertyDirtyFlagForColor();
 }
@@ -590,13 +579,7 @@ void UIButtonMetadata::SetColorInheritType(int value)
 
 	for (uint32 i = 0; i < this->GetStatesCount(); ++i)
 	{
-		UIControlBackground* background = GetActiveUIButton()->GetStateBackground(this->uiControlStates[i]);
-		if (!background)
-		{
-			continue;
-		}
-
-		background->SetColorInheritType((UIControlBackground::eColorInheritType)value);
+		GetActiveUIButton()->SetStateColorInheritType(this->uiControlStates[i],(UIControlBackground::eColorInheritType)value);
 	}
     UpdatePropertyDirtyFlagForColorInheritType();
 }
@@ -708,13 +691,7 @@ void UIButtonMetadata::SetSpriteModification(int value)
 
 	for (uint32 i = 0; i < GetStatesCount(); ++i)
 	{
-		UIControlBackground* background = GetActiveUIButton()->GetStateBackground(uiControlStates[i]);
-		if (!background)
-		{
-			continue;
-		}
-
-		background->SetModification(value);
+		GetActiveUIButton()->SetStateModification(this->uiControlStates[i],(UIControlBackground::eColorInheritType)value);
 	}
 	UpdatePropertyDirtyFlagForSpriteModification();
 }
@@ -748,7 +725,7 @@ void UIButtonMetadata::UpdatePropertyDirtyFlagForSpriteModification()
 // Initialize the control(s) attached.
 void UIButtonMetadata::InitializeControl(const String& controlName, const Vector2& position)
 {
-    BaseMetadata::InitializeControl(controlName, position);
+    UIControlMetadata::InitializeControl(controlName, position);
 
     int paramsCount = this->GetParamsCount();
     for (BaseMetadataParams::METADATAPARAMID i = 0; i < paramsCount; i ++)

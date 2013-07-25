@@ -30,7 +30,15 @@
 #include "Scene/System/HoodSystem.h"
 #include "Scene/System/SelectionSystem.h"
 #include "Scene/System/ModifSystem.h"
+#include "Scene/System/LandscapeEditorDrawSystem.h"
+#include "Scene/System/HeightmapEditorSystem.h"
+#include "Scene/System/TilemaskEditorSystem.h"
+#include "Scene/System/CustomColorsSystem.h"
+#include "Scene/System/VisibilityToolSystem.h"
 #include "Scene/System/StructureSystem.h"
+#include "Scene/System/EditorParticlesSystem.h"
+#include "Scene/System/EditorLightSystem.h"
+
 
 class SceneEditor2 : public DAVA::Scene
 {
@@ -45,7 +53,15 @@ public:
 	HoodSystem *hoodSystem;
 	SceneSelectionSystem *selectionSystem;
 	EntityModificationSystem *modifSystem;
+	LandscapeEditorDrawSystem* landscapeEditorDrawSystem;
+	HeightmapEditorSystem* heightmapEditorSystem;
+	TilemaskEditorSystem* tilemaskEditorSystem;
+	CustomColorsSystem* customColorsSystem;
+	VisibilityToolSystem* visibilityToolSystem;
 	StructureSystem *structureSystem;
+	EditorParticlesSystem *particlesSystem;
+	EditorLightSystem *editorLightSystem;
+
 
 	// save/load
 	bool Load(const DAVA::FilePath &path);
@@ -67,6 +83,11 @@ public:
 
 	void Exec(Command2 *command);
 
+	// checks whether the scene changed since the last save
+	bool IsLoaded() const;
+	bool IsChanged() const;
+	void SetChanged(bool changed);
+
 	// DAVA events
 	void PostUIEvent(DAVA::UIEvent *event);
 
@@ -74,7 +95,12 @@ public:
 	// viewport rect is used to calc. ray from camera to any 2d point on this viewport
 	void SetViewportRect(const DAVA::Rect &newViewportRect);
 
+	//Insert entity to begin of scene hierarchy to display editor entities at one place on top og scene tree
+	void AddEditorEntity(Entity *editorEntity);
+
 protected:
+	bool isLoaded;
+
 	DAVA::FilePath curScenePath;
 	CommandStack commandStack;
 
@@ -91,6 +117,7 @@ private:
 
 		EditorCommandNotify(SceneEditor2 *_editor);
 		virtual void Notify(const Command2 *command, bool redo);
+		virtual void CleanChanged(bool clean);
 	};
 };
 

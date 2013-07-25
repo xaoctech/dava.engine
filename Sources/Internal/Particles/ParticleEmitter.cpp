@@ -149,11 +149,10 @@ void ParticleEmitter::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
 
 	if(NULL != archive)
 	{
-		if(archive->IsKeyExists("pe.configpath"))
+		String filename = archive->GetString("pe.configpath");
+		if(!filename.empty())
 		{
-            String filename = archive->GetString("pe.configpath");
 			configPath = sceneFile->GetScenePath() + filename;
-            
 			LoadFromYaml(configPath);
 		}
 	}
@@ -161,21 +160,37 @@ void ParticleEmitter::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
 
 void ParticleEmitter::AddLayer(ParticleLayer * layer)
 {
-	if (layer)
+	if (!layer)
 	{
-		layers.push_back(layer);
-		layer->Retain();
-		layer->SetEmitter(this);
-		AddRenderBatch(layer->GetRenderBatch());
-	}	
+		return;
+	}
+
+	// Don't allow the same layer to be added twice.
+	Vector<DAVA::ParticleLayer*>::iterator layerIter = std::find(layers.begin(), layers.end(),
+																 layer);
+	if (layerIter != layers.end())
+	{
+		DVASSERT(false);
+		return;
+	}
+
+	layer->Retain();
+	if (layer->GetEmitter())
+	{
+		layer->GetEmitter()->RemoveLayer(layer);
+	}
+
+	layers.push_back(layer);
+	layer->SetEmitter(this);
+	AddRenderBatch(layer->GetRenderBatch());
 }
 
-void ParticleEmitter::AddLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove)
+void ParticleEmitter::InsertLayer(ParticleLayer * layer, ParticleLayer * beforeLayer)
 {
 	AddLayer(layer);
-	if (layerToMoveAbove)
+	if (beforeLayer)
 	{
-		MoveLayer(layer, layerToMoveAbove);
+		MoveLayer(layer, beforeLayer);
 	}
 }
 	
@@ -201,18 +216,17 @@ void ParticleEmitter::RemoveLayer(ParticleLayer * layer)
 void ParticleEmitter::RemoveLayer(int32 index)
 {
     DVASSERT(0 <= index && index < (int32)layers.size());
-
     RemoveLayer(layers[index]);
 }
 
 	
-void ParticleEmitter::MoveLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove)
+void ParticleEmitter::MoveLayer(ParticleLayer * layer, ParticleLayer * beforeLayer)
 {
 	Vector<DAVA::ParticleLayer*>::iterator layerIter = std::find(layers.begin(), layers.end(), layer);
-	Vector<DAVA::ParticleLayer*>::iterator layerToMoveAboveIter = std::find(layers.begin(), layers.end(),layerToMoveAbove);
+	Vector<DAVA::ParticleLayer*>::iterator beforeLayerIter = std::find(layers.begin(), layers.end(),beforeLayer);
 
-	if (layerIter == layers.end() || layerToMoveAboveIter == layers.end() ||
-		layerIter == layerToMoveAboveIter)
+	if (layerIter == layers.end() || beforeLayerIter == layers.end() ||
+		layerIter == beforeLayerIter)
 	{
 		return;
 	}
@@ -220,8 +234,28 @@ void ParticleEmitter::MoveLayer(ParticleLayer * layer, ParticleLayer * layerToMo
 	layers.erase(layerIter);
 
 	// Look for the position again - an iterator might be changed.
-	layerToMoveAboveIter = std::find(layers.begin(), layers.end(),layerToMoveAbove);
-	layers.insert(layerToMoveAboveIter, layer);
+	beforeLayerIter = std::find(layers.begin(), layers.end(), beforeLayer);
+	layers.insert(beforeLayerIter, layer);
+}
+
+ParticleLayer* ParticleEmitter::GetNextLayer(ParticleLayer* layer)
+{
+	if (!layer || layers.size() < 2)
+	{
+		return NULL;
+	}
+
+	int32 layersToCheck = layers.size() - 1;
+	for (int32 i = 0; i < layersToCheck; i ++)
+	{
+		ParticleLayer* curLayer = layers[i];
+		if (curLayer == layer)
+		{
+			return layers[i + 1];
+		}
+	}
+	
+	return NULL;
 }
 
 /* float32 ParticleEmitter::GetCurrentNumberScale()
@@ -357,7 +391,9 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
             lineDirection = Vector3(size->GetValue(time).x * rand05_x, size->GetValue(time).y * rand05_y, size->GetValue(time).z * rand05_z);
 		particle->position = tempPosition + lineDirection;
 	}
-    else if ((emitterType == EMITTER_ONCIRCLE) || (emitterType == EMITTER_SHOCKWAVE))
+    else if ((emitterType == EMITTER_ONCIRCLE_VOLUME) ||
+			 (emitterType == EMITTER_ONCIRCLE_EDGES) ||
+			 (emitterType == EMITTER_SHOCKWAVE))
     {
         // here just set particle position
 		// Yuri Coder, 2013/04/18. Shockwave particle isn't implemented for 2D mode -
@@ -398,7 +434,9 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
     // reuse particle velocity we've calculated
 	// Yuri Coder, 2013/04/18. Shockwave particle isn't implemented for 2D mode -
 	// currently draw them in the same way as "onCircle" ones.
-    if ((emitterType == EMITTER_ONCIRCLE) || (emitterType == EMITTER_SHOCKWAVE))
+    if ((emitterType == EMITTER_ONCIRCLE_VOLUME) ||
+		(emitterType == EMITTER_ONCIRCLE_EDGES) ||
+		(emitterType == EMITTER_SHOCKWAVE))
     {
         if(radius)
             particle->position += vel * radius->GetValue(time);
@@ -488,7 +526,9 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 			else if (typeNode->AsString() == "rect")
 				emitterType = EMITTER_RECT;
 			else if (typeNode->AsString() == "oncircle")
-				emitterType = EMITTER_ONCIRCLE;
+				emitterType = EMITTER_ONCIRCLE_VOLUME;
+			else if (typeNode->AsString() == "oncircle_edges")
+				emitterType = EMITTER_ONCIRCLE_EDGES;
 			else if (typeNode->AsString() == "shockwave")
 				emitterType = EMITTER_SHOCKWAVE;
 			else
@@ -706,9 +746,14 @@ String ParticleEmitter::GetEmitterTypeName()
             return "rect";
         }
 
-        case EMITTER_ONCIRCLE:
+        case EMITTER_ONCIRCLE_VOLUME:
         {
             return "oncircle";
+        }
+
+		case EMITTER_ONCIRCLE_EDGES:
+        {
+            return "oncircle_edges";
         }
 
 		case EMITTER_SHOCKWAVE:
@@ -779,25 +824,12 @@ void ParticleEmitter::InvertEmissionVectorCoordinates()
 		return;
 	}
 
-	PropertyLineValue<Vector3> *pv;
-    PropertyLineKeyframes<Vector3> *pk;
-
-    pk = dynamic_cast< PropertyLineKeyframes<Vector3> *>(this->emissionVector.Get());
-    if (pk)
-    {
-        for (uint32 i = 0; i < pk->keys.size(); ++i)
-        {
-			pk->keys[i].value *= -1;
-        }
-		
-		return;
-    }
-
-	pv = dynamic_cast< PropertyLineValue<Vector3> *>(this->emissionVector.Get());
-	if (pv)
-    {
-		pv->value *= -1;
-    }
+	PropertyLine<Vector3> *pvk = emissionVector.Get();
+	uint32 keysSize = pvk->keys.size();
+	for (uint32 i = 0; i < keysSize; ++i)
+	{
+		pvk->keys[i].value *= -1;
+	}
 }
 
 int32 ParticleEmitter::GetActiveParticlesCount()

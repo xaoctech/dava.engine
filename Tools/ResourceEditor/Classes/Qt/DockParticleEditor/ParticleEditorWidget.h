@@ -24,6 +24,8 @@
 #include "ParticleEmitterPropertiesWidget.h"
 #include "ParticlesEditorQT/Nodes/LayerParticleEditorNode.h"
 
+#include "Scene/SceneEditor2.h"
+
 class EmitterLayerWidget;
 class LayerForceWidget;
 
@@ -38,18 +40,21 @@ public:
     ~ParticleEditorWidget();
 	
 protected slots:
-	void OnEffectSelected(Entity* effectNode);
-	void OnEmitterSelected(Entity* emitterNode, BaseParticleEditorNode* editorNode);
-    void OnLayerSelected(Entity* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode, bool forceRefresh);
-    void OnForceSelected(Entity* emitterNode, ParticleLayer* layer, int32 forceIndex, BaseParticleEditorNode* editorNode);
+	// SceneTree-specific slots.
+	void OnEffectSelectedFromSceneTree(SceneEditor2* scene, DAVA::Entity* effectNode);
+	void OnEmitterSelectedFromSceneTree(SceneEditor2* scene, DAVA::Entity* emitterNode);
+	void OnLayerSelectedFromSceneTree(SceneEditor2* scene, DAVA::ParticleLayer* layer, bool forceRefresh);
+    void OnForceSelectedFromSceneTree(SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::int32 forceIndex);
 
 	void OnUpdate();
 	void OnValueChanged();
 	void OnNodeDeselected(BaseParticleEditorNode* particleEditorNode);
-	
+
+	// Notifications about changes in the Particles items.
+	void OnParticleLayerValueChanged(SceneEditor2* scene, DAVA::ParticleLayer* layer);
+
 signals:
 	void ChangeVisible(bool bVisible);
-	void ValueChanged();
 	
 private:
 	void DeleteOldWidget();
@@ -60,6 +65,9 @@ private:
 	
 	// Update visible widgets for the layer.
 	void UpdateWidgetsForLayer();
+
+	// Emit the "Value Changed" signal depending on the active widget.
+	void EmitValueChangedSceneSignal();
 
 private:
 	ParticleEffectPropertiesWidget* effectPropertiesWidget;

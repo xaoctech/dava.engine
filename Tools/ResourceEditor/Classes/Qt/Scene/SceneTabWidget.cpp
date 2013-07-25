@@ -16,6 +16,7 @@
 
 #include "SceneEditor/SceneEditorScreenMain.h"
 
+#include "Main/mainwindow.h"
 #include "Scene/SceneTabWidget.h"
 #include "Scene/SceneEditor2.h"
 #include "AppScreens.h"
@@ -27,15 +28,16 @@
 SceneTabWidget::SceneTabWidget(QWidget *parent)
 	: QWidget(parent)
 	, davaUIScreenID(SCREEN_MAIN)
-	, oldScreenID(SCREEN_MAIN_OLD)
 	, dava3DViewMargin(3)
 	, newSceneCounter(0)
 	, curScene(NULL)
+	/*
 	, curModifAxis(ST_AXIS_X)
 	, curModifMode(ST_MODIF_MOVE)
 	, curPivotPoint(ST_PIVOT_COMMON_CENTER)
 	, curSelDrawMode(ST_SELDRAW_DRAW_CORNERS | ST_SELDRAW_FILL_SHAPE)
-	, curColDrawMode(ST_COLL_DRAW_LAND_COLLISION)
+	, curColDrawMode(ST_COLL_DRAW_NOTHING)
+	*/
 {
 	this->setMouseTracking(true);
 
@@ -47,6 +49,7 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	tabBar->setMovable(true);
 	tabBar->setUsesScrollButtons(true);
 	tabBar->setExpanding(false);
+	tabBar->setMinimumHeight(tabBar->sizeHint().height());
 
 	// davawidget to display DAVAEngine content
 	davaWidget = new DavaGLWidget(this);
@@ -62,40 +65,18 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 
 	// create DAVA UI
 	InitDAVAUI();
-	InitOldUI();
-
-	// remove -->
-	/**/ int oldTabIndex = tabBar->addTab("OldScreenMain");
-	/**/ SetTabScene(oldTabIndex, NULL);
-	// <--
-
-	OpenTab("/Projects/dava.wot.art/DataSource/3d/Tanks/USSR/T-44.sc2");
-	OpenTab("/Projects/dava.wot.art/DataSource/3d/Maps/dike_village/dike_village.sc2");
-	//AddTab("/Projects/dava.wot.art/DataSource/3d/Maps/desert_train/desert_train.sc2");
 
 	QObject::connect(tabBar, SIGNAL(currentChanged(int)), this, SLOT(TabBarCurrentChanged(int)));
 	QObject::connect(tabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(TabBarCloseRequest(int)));
-	QObject::connect(SceneSignals::Instance(), SIGNAL(MouseOverSelection(SceneEditor2*, const EntityGroup*)), this, SLOT(MouseOverSelectedEntities(SceneEditor2*, const EntityGroup*)));
 
-	SetCurrentTab(oldTabIndex);
+	QObject::connect(SceneSignals::Instance(), SIGNAL(MouseOverSelection(SceneEditor2*, const EntityGroup*)), this, SLOT(MouseOverSelectedEntities(SceneEditor2*, const EntityGroup*)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(Saved(SceneEditor2*)), this, SLOT(SceneSaved(SceneEditor2*)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(ModifyStatusChanged(SceneEditor2 *, bool)), this, SLOT(SceneModifyStatusChanged(SceneEditor2 *, bool)));
 }
 
 SceneTabWidget::~SceneTabWidget()
 {
-	ReleaseOldUI();
 	ReleaseDAVAUI();
-}
-
-void SceneTabWidget::InitOldUI()
-{
-	// old screen 
-	sceneEditorScreenMain = new SceneEditorScreenMain();
-	UIScreenManager::Instance()->RegisterScreen(oldScreenID, sceneEditorScreenMain);
-}
-
-void SceneTabWidget::ReleaseOldUI()
-{
-	SafeRelease(sceneEditorScreenMain);
 }
 
 void SceneTabWidget::InitDAVAUI()
@@ -109,6 +90,7 @@ void SceneTabWidget::InitDAVAUI()
 	davaUIScreen->GetBackground()->SetColor(DAVA::Color(0.3f, 0.3f, 0.3f, 1.0f));
 
 	UIScreenManager::Instance()->RegisterScreen(davaUIScreenID, davaUIScreen);
+	UIScreenManager::Instance()->SetScreen(davaUIScreenID);
 }
 
 void SceneTabWidget::ReleaseDAVAUI()
@@ -120,9 +102,15 @@ int SceneTabWidget::OpenTab()
 {
 	SceneEditor2 *scene = new SceneEditor2();
 
-	int tabIndex = tabBar->addTab("NewScene" + QString::number(++newSceneCounter));
+	DAVA::FilePath newScenePath = (QString("newscene") + QString::number(++newSceneCounter)).toStdString();
+	newScenePath.ReplaceExtension(".sc2");
+
+	scene->SetScenePath(newScenePath);
+
+	int tabIndex = tabBar->addTab(newScenePath.GetFilename().c_str());
 	SetTabScene(tabIndex, scene);
 
+	SetCurrentTab(tabIndex);
 	return tabIndex;
 }
 
@@ -136,12 +124,6 @@ int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 		tabIndex = tabBar->addTab(scenePapth.GetFilename().c_str());
 		SetTabScene(tabIndex, scene);
 
-		scene->modifSystem->SetModifMode(curModifMode);
-		scene->modifSystem->SetModifAxis(curModifAxis);
-		scene->selectionSystem->SetPivotPoint(curPivotPoint);
-		scene->collisionSystem->SetDrawMode(curColDrawMode);
-		scene->selectionSystem->SetDrawMode(curSelDrawMode);
-
 		tabBar->setTabToolTip(tabIndex, scenePapth.GetAbsolutePathname().c_str());
 	}
 	else
@@ -153,54 +135,46 @@ int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 		delete scene;
 	}
 
+	if(tabBar->count() == 1)
+	{
+		SetCurrentTab(tabIndex);
+	}
+
 	return tabIndex;
 }
 
 void SceneTabWidget::CloseTab(int index)
 {
-	bool doCloseScene = false;
+	bool doCloseScene = true;
 	SceneEditor2 *scene = GetTabScene(index);
 
 	if(NULL != scene)
 	{
-		bool sceneChanged = true;
-
-		// TODO: 
-		// check if scene changed
-		// ...
-		
-		if(sceneChanged)
+		if(scene->IsChanged())
 		{
 			int answer = QMessageBox::question(NULL, "Scene was changed", "Do you want to save changes, made to scene?", 
 				QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel);
 			
 			if(answer == QMessageBox::Yes)
 			{
-				if(scene->Save())
-				{
-					doCloseScene = true;
-				}
-				else
-				{
-					QMessageBox::critical(NULL, "Scene save error", "Error saving scene. Please try again.");
-				}
+
 			}
-			else if(answer == QMessageBox::No)
+			else if(answer == QMessageBox::Cancel)
 			{
-				doCloseScene = true;
+				doCloseScene = false;
 			}
-		}
-		else
-		{
-			doCloseScene = true;
 		}
 	}
 
 	if(doCloseScene)
 	{
-		tabBar->removeTab(index);
+		if(index == tabBar->currentIndex())
+		{
+			dava3DView->SetScene(NULL);
+			SceneSignals::Instance()->EmitDeactivated(scene);
+		}
 
-		SceneSignals::Instance()->EmitDeactivated(scene);
+		tabBar->removeTab(index);
 		delete scene;
 	}
 }
@@ -219,6 +193,7 @@ void SceneTabWidget::SetCurrentTab(int index)
 
 		if(NULL != oldScene)
 		{
+			oldScene->selectionSystem->LockSelection(true);
 			SceneSignals::Instance()->EmitDeactivated(oldScene);
 		}
 
@@ -226,23 +201,12 @@ void SceneTabWidget::SetCurrentTab(int index)
 
 		if(NULL != curScene)
 		{
-			// old. remove -->
-			/**/  oldInput = false;
-			/**/  UIScreenManager::Instance()->SetScreen(davaUIScreenID);
-			// <--
-
 			dava3DView->SetScene(curScene);
 			curScene->SetViewportRect(dava3DView->GetRect());
 
 			SceneSignals::Instance()->EmitActivated(curScene);
+			curScene->selectionSystem->LockSelection(false);
 		}
-		// old. remove -->
-		/**/ else
-		/**/ {
-		/**/	oldInput = true;
-		/**/	UIScreenManager::Instance()->SetScreen(oldScreenID);
-		/**/ }
-		// <--
 	}
 }
 
@@ -250,7 +214,7 @@ SceneEditor2* SceneTabWidget::GetTabScene(int index) const
 {
 	SceneEditor2 *ret = NULL;
 
-	if(index > 0 && index < tabBar->count())
+	if(index >= 0 && index < tabBar->count())
 	{
 		ret = tabBar->tabData(index).value<SceneEditor2 *>();
 	}
@@ -260,7 +224,7 @@ SceneEditor2* SceneTabWidget::GetTabScene(int index) const
 
 void SceneTabWidget::SetTabScene(int index, SceneEditor2* scene)
 {
-	if(index > 0 && index < tabBar->count())
+	if(index >= 0 && index < tabBar->count())
 	{
 		tabBar->setTabData(index, qVariantFromValue(scene));
 	}
@@ -268,13 +232,10 @@ void SceneTabWidget::SetTabScene(int index, SceneEditor2* scene)
 
 void SceneTabWidget::ProcessDAVAUIEvent(DAVA::UIEvent *event)
 {
-	if(!oldInput)
+	SceneEditor2* scene = GetTabScene(tabBar->currentIndex());
+	if(NULL != scene)
 	{
-		SceneEditor2* scene = GetTabScene(tabBar->currentIndex());
-		if(NULL != scene)
-		{
-			scene->PostUIEvent(event);
-		}
+		scene->PostUIEvent(event);
 	}
 }
 
@@ -290,9 +251,9 @@ void SceneTabWidget::TabBarCloseRequest(int index)
 
 void SceneTabWidget::MouseOverSelectedEntities(SceneEditor2* scene, const EntityGroup *entities)
 {
-	if(NULL != entities)
+	if(GetCurrentScene() == scene && NULL != entities)
 	{
-		switch (curModifMode)
+		switch(scene->modifSystem->GetModifMode())
 		{
 		case ST_MODIF_MOVE:
 			setCursor(Qt::SizeAllCursor);
@@ -313,6 +274,35 @@ void SceneTabWidget::MouseOverSelectedEntities(SceneEditor2* scene, const Entity
 	}
 }
 
+void SceneTabWidget::SceneSaved(SceneEditor2 *scene)
+{
+	// update scene name on tabBar
+	for(int i = 0; i < tabBar->count(); ++i)
+	{
+		SceneEditor2 *tabScene = GetTabScene(i);
+		if(tabScene == scene)
+		{
+			UpdateTabName(i);
+			break;
+		}
+	}
+
+}
+
+void SceneTabWidget::SceneModifyStatusChanged(SceneEditor2 *scene, bool modified)
+{
+	// update scene name on tabBar
+	for(int i = 0; i < tabBar->count(); ++i)
+	{
+		SceneEditor2 *tabScene = GetTabScene(i);
+		if(tabScene == scene)
+		{
+			UpdateTabName(i);
+			break;
+		}
+	}
+}
+
 void SceneTabWidget::resizeEvent(QResizeEvent * event)
 {
 	QWidget::resizeEvent(event);
@@ -323,7 +313,6 @@ void SceneTabWidget::resizeEvent(QResizeEvent * event)
 
 		davaUIScreen->SetSize(DAVA::Vector2(s.width(), s.height()));
 		dava3DView->SetSize(DAVA::Vector2(s.width() - 2 * dava3DViewMargin, s.height() - 2 * dava3DViewMargin));
-		sceneEditorScreenMain->SetSize(DAVA::Vector2(s.width(), s.height()));
 
 		SceneEditor2* scene = GetTabScene(tabBar->currentIndex());
 		if(NULL != scene)
@@ -333,6 +322,25 @@ void SceneTabWidget::resizeEvent(QResizeEvent * event)
 	}
 }
 
+void SceneTabWidget::UpdateTabName(int index)
+{
+	SceneEditor2 *scene = GetTabScene(index);
+	if(NULL != scene)
+	{
+		DAVA::String tabName = scene->GetScenePath().GetFilename();
+		DAVA::String tabTooltip = scene->GetScenePath().GetAbsolutePathname();
+
+		if(scene->IsChanged())
+		{
+			tabName += "*";
+		}
+
+		tabBar->setTabText(index, tabName.c_str());
+		tabBar->setTabToolTip(index, tabTooltip.c_str());
+	}
+}
+
+/*
 ST_ModifMode SceneTabWidget::GetModifMode() const
 {
 	return curModifMode;
@@ -442,6 +450,7 @@ void SceneTabWidget::SetCollisionDrawMode(int mode)
 		}
 	}
 }
+*/
 
 SceneEditor2* SceneTabWidget::GetCurrentScene() const
 {

@@ -34,6 +34,8 @@
 #include "Scene3D/Components/SwitchComponent.h"
 #include "Utils/Random.h"
 
+#define CUSTOM_PROPERTIES_COMPONENT_SAVE_SCENE_VERSION 8
+
 
 namespace DAVA
 {
@@ -43,6 +45,7 @@ REGISTER_CLASS(Entity);
 
 // Property Names.
 const char* Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME = "editor.isSolid";
+const char* Entity::SCENE_NODE_IS_LOCKED_PROPERTY_NAME = "editor.isLocked";
 
 Entity::Entity()
 	: scene(0)
@@ -62,8 +65,6 @@ Entity::Entity()
     //debugFlags = DEBUG_DRAW_NONE;
     flags = NODE_VISIBLE | NODE_UPDATABLE | NODE_LOCAL_MATRIX_IDENTITY;
     
-    customProperties = new KeyedArchive();
-
 	AddComponent(new TransformComponent());
     
 //    Stats::Instance()->RegisterEvent("Scene.Update.Entity.Update", "Entity update time");
@@ -83,8 +84,6 @@ Entity::~Entity()
 
 	RemoveAllChildren();
 	SetScene(0);
-
-    SafeRelease(customProperties);
 
 	for(int32 i = 0; i < Component::COMPONENT_COUNT; ++i)
 	{
@@ -212,24 +211,40 @@ void Entity::AddNode(Entity * node)
     
 void Entity::InsertBeforeNode(Entity *newNode, Entity *beforeNode)
 {
-    if (newNode)
+    if(newNode && newNode != beforeNode)
     {
-        const Vector<Entity*>::iterator &itEnd = children.end();
+		bool canBeInserted = false;
+
+		Vector<Entity*>::iterator itEnd = children.end();
         for (Vector<Entity*>::iterator it = children.begin(); it != itEnd; ++it)
         {
             if(beforeNode == (*it))
             {
-                newNode->Retain();
-                children.insert(it, newNode);
-                if (newNode->parent)
-                {
-                    newNode->parent->RemoveNode(newNode);
-                }
-                newNode->SetParent(this);
-                newNode->SetScene(GetScene());
+				canBeInserted = true;
                 break;
             }
         }
+
+		if(canBeInserted)
+		{
+			newNode->Retain();
+			if (newNode->parent)
+			{
+				newNode->parent->RemoveNode(newNode);
+			}
+
+			itEnd = children.end();
+			for (Vector<Entity*>::iterator it = children.begin(); it != itEnd; ++it)
+			{
+				if(beforeNode == (*it))
+				{
+					children.insert(it, newNode);
+					newNode->SetParent(this);
+					newNode->SetScene(GetScene());
+					break;
+				}
+			}
+		}
     }
 }
 
@@ -258,20 +273,39 @@ void Entity::RemoveNode(Entity * node)
 	
 }
 	
-Entity * Entity::GetChild(int32 index)
+Entity * Entity::GetChild(int32 index) const
 {
 	return children[index];
 }
 
-int32 Entity::GetChildrenCount()
+Entity* Entity::GetNextChild(Entity *child)
+{
+	Entity* next = NULL;
+
+	for(uint32 i = 0; i < children.size(); i++)
+	{
+		if(children[i] == child)
+		{
+			if((i + 1) < children.size())
+			{
+				next = children[i + 1];
+			}
+			break;
+		}
+	}
+
+	return next;
+}
+
+int32 Entity::GetChildrenCount() const
 {
     return (int32)children.size();
 }
-int32 Entity::GetChildrenCountRecursive()
+int32 Entity::GetChildrenCountRecursive() const
 {
     int32 result = 0;
     result += (int32)children.size();
-    for (std::vector<Entity*>::iterator t = children.begin(); t != children.end(); ++t)
+    for (std::vector<Entity*>::const_iterator t = children.begin(); t != children.end(); ++t)
 	{
         Entity *node = *t;
         result += node->GetChildrenCountRecursive();
@@ -563,9 +597,6 @@ Entity* Entity::Clone(Entity *dstNode)
     dstNode->name = name;
     dstNode->tag = tag;
     //dstNode->flags = flags;
-
-    SafeRelease(dstNode->customProperties);
-    dstNode->customProperties = new KeyedArchive(*customProperties);
     
     dstNode->nodeAnimations = nodeAnimations;
     
@@ -709,15 +740,7 @@ void Entity::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 {
     // Perform refactoring and add Matrix4, Vector4 types to VariantType and KeyedArchive
     BaseObject::Save(archive);
-    
-    String savedPath = "";
-    if(customProperties && customProperties->IsKeyExists("editor.referenceToOwner"))
-    {
-        savedPath = customProperties->GetString("editor.referenceToOwner");
-        String newPath = FilePath(savedPath).GetRelativePathname(sceneFileV2->GetScenePath());
-        customProperties->SetString("editor.referenceToOwner", newPath);
-    }
-    
+        
     archive->SetString("name", name);
     archive->SetInt32("tag", tag);
     archive->SetByteArrayAsType("localTransform", GetLocalTransform());
@@ -725,25 +748,29 @@ void Entity::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     
     archive->SetUInt32("flags", flags);
 //    archive->SetUInt32("debugFlags", debugFlags);
-    
-    archive->SetByteArrayFromArchive("customprops", customProperties);
-    
-    if(customProperties && savedPath.length())
-    {
-        customProperties->SetString("editor.referenceToOwner", savedPath);
-    }
-
+        
 	KeyedArchive *compsArch = new KeyedArchive();
 	for(uint32 i = 0; i < components.size(); ++i)
 	{
 		if(NULL != components[i])
 		{
+			//don't save empty custom properties
+			if(Component::CUSTOM_PROPERTIES_COMPONENT == i)
+			{
+				CustomPropertiesComponent* customProps = cast_if_equal<CustomPropertiesComponent*>(components[i]);
+				if(customProps && customProps->GetArchive()->Count() <= 0)
+				{
+					continue;
+				}
+			}
+			
 			KeyedArchive *compArch = new KeyedArchive();
 			components[i]->Serialize(compArch, sceneFileV2);
 			compsArch->SetArchive(KeyedArchive::GenKeyFromIndex(i), compArch);
 			compArch->Release();
 		}
 	}
+	
 	archive->SetArchive("components", compsArch);
 	compsArch->Release();
 }
@@ -766,24 +793,6 @@ void Entity::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     /// InvalidateLocalTransform();
 //    debugFlags = archive->GetUInt32("debugFlags", 0);
     
-    SafeRelease(customProperties);
-    customProperties = archive->GetArchiveFromByteArray("customprops");
-    if (!customProperties)
-    {
-        customProperties = new KeyedArchive();
-    }
-    else
-    {
-        if(customProperties->IsKeyExists("editor.referenceToOwner"))
-        {
-            FilePath newPath(sceneFileV2->GetScenePath());
-            newPath += customProperties->GetString("editor.referenceToOwner");
-
-            //TODO: why we use absolute pathname instead of relative?
-            customProperties->SetString("editor.referenceToOwner", newPath.GetAbsolutePathname());
-        }
-    }
-
 	KeyedArchive *compsArch = archive->GetArchive("components");
 	if(NULL != compsArch)
 	{
@@ -805,23 +814,61 @@ void Entity::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 			}
 		}
 	}
+	
+	if(sceneFileV2->GetVersion() < CUSTOM_PROPERTIES_COMPONENT_SAVE_SCENE_VERSION)
+	{
+		KeyedArchive* customProps = archive->GetArchiveFromByteArray("customprops");
+		
+		if(customProps != NULL)
+		{
+			CustomPropertiesComponent* customPropsComponent = GetCustomPropertiesComponent();
+			customPropsComponent->LoadFromArchive(*customProps, sceneFileV2);
+			
+			SafeRelease(customProps);
+		}
+	}
 }
-
-KeyedArchive * Entity::GetCustomProperties()
+	
+CustomPropertiesComponent* Entity::GetCustomPropertiesComponent()
 {
-    return customProperties;
+	CustomPropertiesComponent* component = cast_if_equal<CustomPropertiesComponent*>(GetComponent(Component::CUSTOM_PROPERTIES_COMPONENT));
+	
+	if(NULL == component)
+	{
+		component = new CustomPropertiesComponent();
+		AddComponent(component);
+	}
+	
+    return component;
+
+}
+	
+KeyedArchive* Entity::GetCustomProperties()
+{
+	CustomPropertiesComponent* component = GetCustomPropertiesComponent();	
+    return component->GetArchive();
 }
     
 void Entity::SetSolid(bool isSolid)
 {
 //    isSolidNode = isSolid;
-    customProperties->SetBool(SCENE_NODE_IS_SOLID_PROPERTY_NAME, isSolid);
+    GetCustomProperties()->SetBool(SCENE_NODE_IS_SOLID_PROPERTY_NAME, isSolid);
 }
     
 bool Entity::GetSolid()
 {
 //    return isSolidNode;
-    return customProperties->GetBool(SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
+    return GetCustomProperties()->GetBool(SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
+}
+
+void Entity::SetLocked(bool isLocked)
+{
+	GetCustomProperties()->SetBool(SCENE_NODE_IS_LOCKED_PROPERTY_NAME, isLocked);
+}
+
+bool Entity::GetLocked()
+{
+	return GetCustomProperties()->GetBool(SCENE_NODE_IS_LOCKED_PROPERTY_NAME, false);
 }
 
 void Entity::GetDataNodes(Set<DataNode*> & dataNodes)

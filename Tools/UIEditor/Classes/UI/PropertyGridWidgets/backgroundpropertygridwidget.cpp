@@ -361,13 +361,13 @@ void BackGroundPropertyGridWidget::SetStretchCapMaxValues()
 		QString spriteName =  ui->spriteLineEdit->text();
 		if (!spriteName.isEmpty())
 		{
-			Sprite* sprite = Sprite::Create(TruncateTxtFileExtension(spriteName).toStdString());
+			Sprite* sprite = Sprite::Create(spriteName.toStdString());
 			
 			if (sprite)
 			{
 				// Get sprite's active size
-				float32 texDx = sprite->GetRectOffsetValueForFrame(ui->frameSpinBox->value(), Sprite::ACTIVE_WIDTH);
-				float32 texDy = sprite->GetRectOffsetValueForFrame(ui->frameSpinBox->value(), Sprite::ACTIVE_HEIGHT);
+				float32 texDx = sprite->GetWidth();
+				float32 texDy = sprite->GetHeight();
 				// Calculate maximum stretch values
 				horizontalStretchMax = texDx / 2 - 1;
 				verticalStretchMax = texDy / 2 - 1;

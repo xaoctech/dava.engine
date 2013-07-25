@@ -30,7 +30,7 @@ public:
 	ParticleEmitter3D();
 
 	virtual void AddLayer(ParticleLayer * layer);
-	virtual void AddLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove);
+	virtual void InsertLayer(ParticleLayer * layer, ParticleLayer * beforeLayer);
 
 	virtual bool Is3DFlagCorrect();
 
@@ -45,6 +45,8 @@ protected:
 	virtual void LoadParticleLayerFromYaml(YamlNode* yamlNode, bool isLiong);
 	
 	// 3D-specific methods.
+	void CalculateParticlePositionForCircle(Particle* particle, const Vector3& tempPosition,
+											const Matrix3& rotationMatrix);
 	void PrepareEmitterParametersShockwave(Particle * particle, float32 velocity,
 										   int32 emitIndex, const Vector3& tempPosition,
 										   const Matrix3& rotationMatrix);

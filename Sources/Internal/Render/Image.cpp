@@ -26,6 +26,8 @@ Image::Image()
 ,	width(0)
 ,	height(0)
 ,	format(FORMAT_RGB565)
+,	cubeFaceID(Texture::CUBE_FACE_INVALID)
+,	mipmapLevel(-1)
 {
 }
 
@@ -177,10 +179,44 @@ void Image::ResizeCanvas(uint32 newWidth, uint32 newHeight)
     }
 }
 
-void Image::ResizeImageToSquare()
+void Image::ResizeToSquare()
 {
     float32 newImageSize = Max(width, height);
     ResizeCanvas(newImageSize, newImageSize);
 }
+
+Image* Image::CopyImageRegion(const Image* imageToCopy,
+							  uint32 newWidth, uint32 newHeight,
+							  uint32 xOffset, uint32 yOffset)
+{
+	DVASSERT(newWidth > 0 && newHeight > 0 && xOffset >= 0 && yOffset >= 0);
+
+	uint32 oldWidth = imageToCopy->GetWidth();
+	uint32 oldHeight = imageToCopy->GetHeight();
+	DVASSERT((newWidth + xOffset) <= oldWidth && (newHeight + yOffset) <= oldHeight);
+
+	PixelFormat format = imageToCopy->GetPixelFormat();
+	int32 formatSize = Texture::GetPixelFormatSizeInBytes(format);
+
+	Image* newImage = Image::Create(newWidth, newHeight, format);
+
+	uint8* oldData = imageToCopy->GetData();
+	uint8* newData = newImage->data;
+
+	for (uint32 i = 0; i < newHeight; ++i)
+	{
+		memcpy((newData + newWidth * i * formatSize),
+			   (oldData + (oldWidth * (yOffset + i) + xOffset) * formatSize),
+			   formatSize * newWidth);
+	}
+
+	return newImage;
+}
+
+Image* Image::CopyImageRegion(const Image* imageToCopy, const Rect& rect)
+{
+	return CopyImageRegion(imageToCopy, (uint32)rect.dx, (uint32)rect.dy, (uint32)rect.x, (uint32)rect.y);
+}
+
 
 };

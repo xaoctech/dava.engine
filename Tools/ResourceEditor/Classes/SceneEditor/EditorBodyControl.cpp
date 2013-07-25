@@ -48,12 +48,17 @@
 #include "../Commands/CommandsManager.h"
 #include "../Commands/EditorBodyControlCommands.h"
 #include "../Commands/CommandReloadTextures.h"
+
 #include "../StringConstants.h"
+#include "../Commands/FileCommands.h"
 
 #include "../CommandLine/CommandLineManager.h"
 #include "../CommandLine/Beast/BeastCommandLineTool.h"
 #include "TexturePacker/CommandLineParser.h"
 
+#include "Scene3D/Components/CustomPropertiesComponent.h"
+
+#define ARROWS_NODE_NAME "editor.arrows-node"
 #include "ArrowsNode.h"
 
 EditorBodyControl::EditorBodyControl(const Rect & rect)
@@ -85,9 +90,6 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     scene = NULL;
     cameraController = NULL;
 
-	mainCam = 0;
-	debugCam = 0;
-	
 	modificationMode = ResourceEditor::MODIFY_NONE;
 	landscapeRelative = false;
     
@@ -108,6 +110,9 @@ void EditorBodyControl::InitControls()
 
 EditorBodyControl::~EditorBodyControl()
 {
+	for_each(poppedEditorEntitiesForSave.begin(), poppedEditorEntitiesForSave.end(), SafeRelease<Entity>);
+	poppedEditorEntitiesForSave.clear();
+
     SafeRelease(landscapeRulerTool);
     
     SafeRelease(sceneGraph);
@@ -198,60 +203,35 @@ FilePath EditorBodyControl::CustomColorsGetCurrentSaveFileName()
 	return landscapeEditorCustomColors->GetCurrentSaveFileName();
 }
 
-void RemoveDeepCamera(Entity * curr)
+
+void EditorBodyControl::PushEditorEntities()
 {
-	Entity * cam;
-	
-	cam = curr->FindByName(ResourceEditor::EDITOR_MAIN_CAMERA);
-	while (cam)
+	DVASSERT(poppedEditorEntitiesForSave.size() == 0);
+
+	Vector<Entity *>entities;
+	scene->GetChildNodes(entities);
+
+	uint32 count = entities.size();
+	for(uint32 i = 0; i < count; ++i)
 	{
-		cam->GetParent()->RemoveNode(cam);
-		cam = curr->FindByName(ResourceEditor::EDITOR_MAIN_CAMERA);
+		if(entities[i]->GetName().find("editor.") != String::npos)
+		{
+			poppedEditorEntitiesForSave.push_back(SafeRetain(entities[i]));
+			entities[i]->GetParent()->RemoveNode(entities[i]);
+		}
 	}
-	
-	cam = curr->FindByName(ResourceEditor::EDITOR_DEBUG_CAMERA);
-	while (cam)
-	{
-		cam->GetParent()->RemoveNode(cam);
-		cam = curr->FindByName(ResourceEditor::EDITOR_DEBUG_CAMERA);
-	}	
 }
 
-void EditorBodyControl::PushDebugCamera()
+void EditorBodyControl::PopEditorEntities()
 {
-	mainCam = scene->FindByName(ResourceEditor::EDITOR_MAIN_CAMERA);
-	if (mainCam)
+	uint32 count = poppedEditorEntitiesForSave.size();
+	for(uint32 i = 0; i < count; ++i)
 	{
-		SafeRetain(mainCam);
-		scene->RemoveNode(mainCam);
+		scene->AddEditorEntity(poppedEditorEntitiesForSave[i]);
+		SafeRelease(poppedEditorEntitiesForSave[i]);
 	}
 	
-	debugCam = scene->FindByName(ResourceEditor::EDITOR_DEBUG_CAMERA);
-	if (debugCam)
-	{
-		SafeRetain(debugCam);
-		scene->RemoveNode(debugCam);
-	}
-	
-	RemoveDeepCamera(scene);
-}
-
-void EditorBodyControl::PopDebugCamera()
-{
-	if (mainCam)
-	{
-		scene->AddNode(mainCam);
-		SafeRelease(mainCam);
-	}
-	
-	if (debugCam)
-	{
-		scene->AddNode(debugCam);
-		SafeRelease(debugCam);
-	}
-	
-	mainCam = 0;
-	debugCam = 0;
+	poppedEditorEntitiesForSave.clear();
 }
 
 void EditorBodyControl::CreateModificationPanel(void)
@@ -776,7 +756,8 @@ void EditorBodyControl::Update(float32 timeElapsed)
 		BeastCommandLineTool *beastTool = dynamic_cast<BeastCommandLineTool *>(CommandLineManager::Instance()->GetActiveCommandLineTool());
         if(beastTool)
         {
-            QtMainWindowHandler::Instance()->SaveScene(scene, beastTool->GetScenePathname());
+			// TODO: mainwindow
+            // QtMainWindowHandler::Instance()->SaveScene(scene, beastTool->GetScenePathname());
 
 			bool forceClose =	CommandLineParser::CommandIsFound(String("-force"))
 							||  CommandLineParser::CommandIsFound(String("-forceclose"));
@@ -957,19 +938,19 @@ void EditorBodyControl::PackLightmaps()
 
  	FilePath outputDir = FilePath::CreateWithNewExtension(sceneData->GetScenePathname(),  + ".sc2_lightmaps/");
 
-	FileSystem::Instance()->MoveFile(inputDir+"landscape.png", inputDir+"test_landscape.png", true);
+	FileSystem::Instance()->MoveFile(inputDir+"landscape.png", "test_landscape.png", true);
 
 	LightmapsPacker packer;
 	packer.SetInputDir(inputDir);
 
 	packer.SetOutputDir(outputDir);
-	packer.Pack();
+	packer.PackLightmaps();
 	packer.CreateDescriptors();
 	packer.ParseSpriteDescriptors();
 
 	BeastProxy::Instance()->UpdateAtlas(beastManager, packer.GetAtlasingData());
 
-	FileSystem::Instance()->MoveFile(inputDir+"test_landscape.png", outputDir+"landscape.png", true);
+	FileSystem::Instance()->MoveFile("test_landscape.png", outputDir+"landscape.png", true);
 }
 
 void EditorBodyControl::Draw(const UIGeometricData &geometricData)
@@ -1372,7 +1353,7 @@ ArrowsNode* EditorBodyControl::GetArrowsNode(bool createIfNotExist)
         arrowsNode->SetName(ResourceEditor::EDITOR_ARROWS_NODE);
 
         EditorScene *scene = SceneDataManager::Instance()->SceneGetActive()->GetScene();
-        scene->InsertBeforeNode(arrowsNode, scene->GetChild(0));
+        scene->AddEditorEntity(arrowsNode);
 
 		arrowsNode->Release();
 	}

@@ -53,6 +53,7 @@
 #include "Scene3D/SpriteNode.h"
 #include "Render/Highlevel/SpriteObject.h"
 
+#include "Scene3D/Components/CustomPropertiesComponent.h"
 
 namespace DAVA
 {
@@ -146,7 +147,8 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
     header.signature[2] = 'V';
     header.signature[3] = '2';
     
-    header.version = 6;
+	//VI: version = 7 is in the feature-new-materials branch
+    header.version = 8;
     header.nodeCount = _scene->GetChildrenCount();
     
     file->Write(&header, sizeof(Header));
@@ -249,7 +251,7 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
     {
         LoadHierarchy(0, rootNode, file, 1);
     }
-    
+		    
     OptimizeScene(rootNode);
 	StopParticleEffectComponents(rootNode);
     
@@ -669,11 +671,10 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
             {
                 Entity * childNode = SafeRetain(currentNode->GetChild(0));
                 String currentName = currentNode->GetName();
-				KeyedArchive * currentProperties = SafeRetain(currentNode->GetCustomProperties());
+				KeyedArchive * currentProperties = currentNode->GetCustomProperties();
                 
                 //Logger::Debug("remove node: %s %p", currentNode->GetName().c_str(), currentNode);
 				parent->InsertBeforeNode(childNode, currentNode);
-                parent->RemoveNode(currentNode);
                 
                 childNode->SetName(currentName);
 				//merge custom properties
@@ -684,9 +685,13 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
 				{
 					newProperties->SetVariant(it->first, *it->second);
 				}
+				
+				//VI: remove node after copying its properties since properties become invalid after node removal
+				parent->RemoveNode(currentNode);
+				
                 removedNodeCount++;
                 SafeRelease(childNode);
-				SafeRelease(currentProperties);
+				
                 return true;
             }
             //RemoveEmptyHierarchy(childNode);

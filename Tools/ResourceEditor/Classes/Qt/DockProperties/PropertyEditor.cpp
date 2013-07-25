@@ -19,10 +19,12 @@
 #include "Entity/Component.h"
 #include "Main/mainwindow.h"
 
+#include <QPushButton>
+
 #include "DockProperties/PropertyEditor.h"
-#include "QtPropertyEditor/QtPropertyItem.h"
-#include "QtPropertyEditor/QtProperyData/QtPropertyDataIntrospection.h"
-#include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
+#include "Tools/QtPropertyEditor/QtPropertyItem.h"
+#include "Tools/QtPropertyEditor/QtProperyData/QtPropertyDataIntrospection.h"
+#include "Tools/QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
 
 #include "PropertyEditorStateHelper.h"
 
@@ -32,17 +34,12 @@ PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */)
 	, curNode(NULL)
 	, treeStateHelper(this, this->curModel)
 {
-	SetRefreshTimeout(1000);
+	SetRefreshTimeout(5000);
 	
-	// global scene manager signals
-	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneActivated(SceneData *)), this, SLOT(sceneActivated(SceneData *)));
-	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneChanged(SceneData *)), this, SLOT(sceneChanged(SceneData *)));
-	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneReleased(SceneData *)), this, SLOT(sceneReleased(SceneData *)));
-	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneNodeSelected(SceneData *, DAVA::Entity *)), this, SLOT(sceneNodeSelected(SceneData *, DAVA::Entity *)));
-
-	// 
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Selected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(EntitySelected(SceneEditor2 *, DAVA::Entity *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Deselected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(EntityDeselected(SceneEditor2 *, DAVA::Entity *)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(sceneActivated(SceneEditor2 *)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(sceneDeactivated(SceneEditor2 *)));
 
 	// MainWindow actions
 	QObject::connect(QtMainWindow::Instance()->GetUI()->actionShowAdvancedProp, SIGNAL(triggered()), this, SLOT(actionShowAdvanced()));
@@ -166,28 +163,17 @@ QtPropertyData* PropertyEditor::AppendIntrospectionInfo(void *object, const DAVA
 	return propData;
 }
 
-void PropertyEditor::sceneChanged(SceneData *sceneData)
+void PropertyEditor::sceneActivated(SceneEditor2 *scene)
 {
-	if(NULL != sceneData)
+	if(NULL != scene)
 	{
-		SetNode(sceneData->GetSelectedNode());
+		SetNode(scene->selectionSystem->GetSelection()->GetEntity(0));
 	}
 }
 
-void PropertyEditor::sceneActivated(SceneData *sceneData)
+void PropertyEditor::sceneDeactivated(SceneEditor2 *scene)
 {
-	if(NULL != sceneData)
-	{
-		SetNode(sceneData->GetSelectedNode());
-	}
-}
-
-void PropertyEditor::sceneReleased(SceneData *sceneData)
-{ }
-
-void PropertyEditor::sceneNodeSelected(SceneData *sceneData, DAVA::Entity *node)
-{
-	SetNode(node);
+	SetNode(NULL);
 }
 
 void PropertyEditor::actionShowAdvanced()

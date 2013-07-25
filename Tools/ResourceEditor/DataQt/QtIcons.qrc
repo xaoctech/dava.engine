@@ -1,5 +1,29 @@
 <RCC>
   <qresource prefix="/">
+    <file>QtIcons/move_absolute.png</file>
+    <file>QtIcons/move_offset.png</file>
+    <file>QtIcons/pivot_center.png</file>
+    <file>QtIcons/pivot_common.png</file>
+    <file>QtIcons/pivot_zero.png</file>
+    <file>QtIcons/lod_object.png</file>
+    <file>QtIcons/user_object.png</file>
+    <file>QtIcons/file.png</file>
+    <file>QtIcons/play.png</file>
+    <file>QtIcons/restart.png</file>
+    <file>QtIcons/stop.png</file>
+    <file>QtIcons/effect.png</file>
+    <file>QtIcons/emitter_particle.png</file>
+    <file>QtIcons/force.png</file>
+    <file>QtIcons/layer_particle.png</file>
+    <file>QtIcons/node.png</file>
+    <file>QtIcons/error.png</file>
+    <file>QtIcons/box_closed.png</file>
+    <file>QtIcons/box_open.png</file>
+    <file>QtIcons/render_object.png</file>
+    <file>QtIcons/lock_add.png</file>
+    <file>QtIcons/lock_delete.png</file>
+    <file>QtIcons/locked.png</file>
+    <file>QtIcons/mipmap.png</file>
     <file>QtIcons/help.png</file>
     <file>QtIcons/zoom.png</file>
     <file>QtIconsTextureDialog/convertall.png</file>
@@ -55,5 +79,6 @@
     <file>QtIcons/transform_bake.png</file>
     <file>QtIcons/shadow.png</file>
     <file>QtIcons/light.png</file>
+	<file>QtIcons/cubemap.png</file>
   </qresource>
 </RCC>

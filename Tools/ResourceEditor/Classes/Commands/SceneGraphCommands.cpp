@@ -27,6 +27,8 @@
 #include "../SceneEditor/EditorBodyControl.h"
 #include "../StringConstants.h"
 
+#include "Scene3D/Components/CustomPropertiesComponent.h"
+
 using namespace DAVA;
 
 CommandRemoveRootNodes::CommandRemoveRootNodes()
@@ -200,7 +202,6 @@ void CommandInternalRemoveSceneNode::Execute()
 	}
 
 	SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
-    activeScene->GetScene()->UpdateCameraLightOnScene();
 	activeScene->RebuildSceneGraph();
 }
 

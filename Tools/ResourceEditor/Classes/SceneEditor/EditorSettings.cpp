@@ -128,15 +128,6 @@ void EditorSettings::SetScreenHeight(int32 height)
     settings->SetInt32("ScreenHeight", height);
 }
 
-float32 EditorSettings::GetAutosaveTime()
-{
-    return settings->GetFloat("AutoSaveTime", 5.0f);
-}
-void EditorSettings::SetAutosaveTime(float32 time)
-{
-    settings->SetFloat("AutoSaveTime", time);
-}
-
 String EditorSettings::GetLanguage()
 {
     return settings->GetString("Language", "en");
@@ -306,14 +297,25 @@ void EditorSettings::SetDesignerName(const String &userName)
     settings->SetString("DesignerName", userName);
 }
 
-bool EditorSettings::GetShowEditorCamerLight()
+// bool EditorSettings::GetShowEditorCamerLight()
+// {
+//     return settings->GetBool("ShowEditorCamerLight", true);
+// }
+// 
+// void EditorSettings::SetShowEditorCamerLight(bool show)
+// {
+//     settings->SetBool("ShowEditorCamerLight", show);
+//     Save();
+// }
+
+void EditorSettings::SetPreviewDialogEnabled(bool enabled)
 {
-    return settings->GetBool("ShowEditorCamerLight", true);
+    settings->SetBool("PreviewDialogEnabled", enabled);
+	Save();
 }
 
-void EditorSettings::SetShowEditorCamerLight(bool show)
+bool EditorSettings::GetPreviewDialogEnabled()
 {
-    settings->SetBool("ShowEditorCamerLight", show);
-    Save();
+    return settings->GetBool("PreviewDialogEnabled", false);
 }
 

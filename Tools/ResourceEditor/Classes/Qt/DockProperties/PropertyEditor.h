@@ -18,8 +18,8 @@
 #define __QT_PROPERTY_WIDGET_H__
 
 #include "PropertyEditorStateHelper.h"
-#include "QtPosSaver/QtPosSaver.h"
-#include "QtPropertyEditor/QtPropertyEditor.h"
+#include "Tools/QtPosSaver/QtPosSaver.h"
+#include "Tools/QtPropertyEditor/QtPropertyEditor.h"
 #include "Scene/SceneData.h"
 #include "Scene/SceneSignals.h"
 
@@ -40,15 +40,12 @@ protected:
     QtPropertyData* AppendIntrospectionInfo(void *object, const DAVA::InspInfo * info);
     
 public slots:
-	void sceneActivated(SceneData *scene);
-	void sceneChanged(SceneData *scene);
-	void sceneReleased(SceneData *scene);
-	void sceneNodeSelected(SceneData *scene, DAVA::Entity *node);
-
-	void actionShowAdvanced();
-
+	void sceneActivated(SceneEditor2 *scene);
+	void sceneDeactivated(SceneEditor2 *scene);
 	void EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity);
 	void EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity);
+
+	void actionShowAdvanced();
 
 protected:
 	bool advancedMode;

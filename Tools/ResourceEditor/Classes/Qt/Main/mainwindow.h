@@ -18,10 +18,99 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "ui_mainwindow.h"
+#include "ModificationWidget.h"
+
+#include "Base/Singleton.h"
+
+#include "Scene/SceneEditor2.h"
+#include "Tools/QtPosSaver/QtPosSaver.h"
+
+// TODO: remove old screen -->
+#include "Classes/SceneEditor/MaterialEditor.h"
+// <---
+
+class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
+{
+	Q_OBJECT
+
+public:
+	explicit QtMainWindow(QWidget *parent = 0);
+	~QtMainWindow();
+
+	Ui::MainWindow* GetUI();
+	SceneTabWidget* GetSceneWidget();
+	SceneEditor2* GetCurrentScene();
+
+	bool SaveSceneAs(SceneEditor2 *scene);
+
+// qt actions slots
+public slots:
+	void OnProjectOpen();
+	void OnProjectClose();
+	void OnSceneNew();
+	void OnSceneOpen();
+	void OnSceneSave();
+	void OnSceneSaveAs();
+	void OnSceneSaveToFolder();
+
+	void OnUndo();
+	void OnRedo();
+
+	void OnSelectMode();
+	void OnMoveMode();
+	void OnRotateMode();
+	void OnScaleMode();
+	void OnPivotCenterMode();
+	void OnPivotCommonMode();
+	void OnManualModifMode();
+	void OnPlaceOnLandscape();
+	void OnSnapToLandscape();
+
+	void OnMaterialEditor();
+	void OnTextureBrowser();
+	void OnSceneLightMode();
+
+	void OnCubemapEditor();
+
+protected:
+	virtual bool eventFilter(QObject *object, QEvent *event);
+
+	void SetupMainMenu();
+	void SetupToolBars();
+	void SetupDocks();
+	void SetupActions();
+
+protected slots:
+	void ProjectOpened(const QString &path);
+	void ProjectClosed();
+
+	void SceneCommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
+	void SceneActivated(SceneEditor2 *scene);
+	void SceneDeactivated(SceneEditor2 *scene);
+
+private:
+	Ui::MainWindow *ui;
+	QtPosSaver posSaver;
+
+	ModificationWidget *modificationWidget;
+
+	// TODO: remove this old screen -->
+	MaterialEditor *materialEditor;
+	// <--
+
+	void LoadUndoRedoState(SceneEditor2 *scene);
+	void LoadModificationState(SceneEditor2 *scene);
+	void LoadEditorLightState(SceneEditor2 *scene);
+};
+
+#if 0
+#include <QMainWindow>
 #include <QProgressDialog>
 #include "Base/Singleton.h"
-#include "QtPosSaver/QtPosSaver.h"
+#include "Tools/QtPosSaver/QtPosSaver.h"
 #include "ui_mainwindow.h"
+
 
 class LibraryModel;
 class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
@@ -35,7 +124,9 @@ public:
 	Ui::MainWindow* GetUI();
     
     virtual bool eventFilter(QObject *, QEvent *);
-    
+
+	SceneEditor2* GetCurrentScene();
+
 private:
 	void OpenLastProject();
 
@@ -55,13 +146,15 @@ private:
 public slots:
 	void ShowActionWithText(QToolBar *toolbar, QAction *action, bool showText);
 
-	void ChangeParticleDockVisible(bool visible);
+	void ChangeParticleDockVisible(bool visible, bool forceUpdate = false);
 	void ChangeParticleDockTimeLineVisible(bool visible);
 	void returnToOldMaxMinSizesForDockSceneGraph();
 
 	//return true if conversion has been started
 	void UpdateParticleSprites();
 	void RepackAndReloadScene();
+
+	void EnableNotPassableNew();
 
 	void Undo2();
 	void Redo2();
@@ -70,8 +163,6 @@ private slots:
 	void ProjectOpened(const QString &path);
 	void LibraryFileTypesChanged();
 	
-	//reference
-	void ApplyReferenceNodeSuffix();
 	void RepackSpritesWaitDone(QObject *destroyed);
 
 signals:
@@ -91,5 +182,6 @@ private:
 	bool emitRepackAndReloadFinished;
 };
 
+#endif
 
 #endif // MAINWINDOW_H

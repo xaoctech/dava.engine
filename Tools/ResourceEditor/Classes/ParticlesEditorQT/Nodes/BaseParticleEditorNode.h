@@ -32,14 +32,14 @@ public:
     virtual ~BaseParticleEditorNode();
     
     // Add/remove child node.
-    virtual void AddChildNode(BaseParticleEditorNode* childNode);
-    virtual void AddChildNodeAbove(BaseParticleEditorNode* childNode, BaseParticleEditorNode* childNodeToMoveAbove);
+	virtual void AddNode(BaseParticleEditorNode* childNode);
+    virtual void InsertBeforeNode(BaseParticleEditorNode* childNode, BaseParticleEditorNode* beforeNode);
 	
-    void RemoveChildNode(BaseParticleEditorNode* childNode, bool needDeleteNode = true);
+	void RemoveNode(BaseParticleEditorNode* childNode, bool needDeleteNode = true);
 
 	// Change the order of the children.
-	void MoveChildNode(BaseParticleEditorNode* childNode, BaseParticleEditorNode* childNodeToMoveAbove);
-	
+	void MoveNode(BaseParticleEditorNode* childNode, BaseParticleEditorNode* beforeNode);
+
     // Access to the root node.
     Entity* GetRootNode() const {return rootNode;};
 
