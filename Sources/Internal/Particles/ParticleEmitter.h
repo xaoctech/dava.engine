@@ -40,6 +40,7 @@
 #include "Render/Highlevel/RenderObject.h"
 #include "Render/Highlevel/IRenderUpdatable.h"
 #include "Particles/ParticleLayer.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA 
 {
@@ -100,13 +101,13 @@ public:
 		 Function do not cache emitters so you'll need to cache them yourself in your code.
 		 \param[in] pathName path to resource you want to load
 	 */
-	void LoadFromYaml(const String & pathName);
+	void LoadFromYaml(const FilePath & pathName);
 	
 	/**
      \brief Function saves emitter to yaml file.
      \param[in] pathName path to resource you want to load
 	 */
-    void SaveToYaml(const String & pathName);
+    void SaveToYaml(const FilePath & pathName);
     
 	/**
 		\brief Function sets the position of emitter.
@@ -223,6 +224,7 @@ public:
 	virtual RenderObject * Clone(RenderObject *newObject);
 	virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
 	virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void RecalcBoundingBox();
 	
 	/**
 		\brief Function to get number of repeats for current particle emitter.
@@ -251,6 +253,16 @@ public:
 		\param[in] timeElapsed time in seconds elapsed from previous update
 	 */
 	void Update(float32 timeElapsed);
+	
+	/**
+	 \brief Function to perform deferred update for the Particle Emitter.
+	 This function accumulates update time and calls Update() if the accumulated time is
+	 more then PARTICLE_EMITTER_DEFERRED_UPDATE_INTERVAL.
+	 Call this function in case you are using ParticleEmitter directly and it is not visible.
+	 \param[in] timeElapsed time in seconds elapsed from previous update
+	 */
+	void DeferredUpdate(float32 timeElapsed);
+	
 	/**	
 		\brief function to draw particle emitter
 		If you using ParticleEmitter directly you should call this function to draw emitter.
@@ -303,6 +315,12 @@ public:
 	void SetPlaybackSpeed(float32 value);
 	float32 GetPlaybackSpeed();
 
+	/**
+	 \brief Set the "IsDisabled" flag for all the inner layers.
+	 \param[in] "Is Disabled" flag.
+	 */
+	void SetDisabledForAllLayers(bool value);
+
 	/// Particles' color is multiplied by ambientColor before drawing.
 	Color ambientColor;
 
@@ -323,7 +341,7 @@ public:
     inline bool GetIs3D();
 	virtual bool Is3DFlagCorrect();
 
-	const String & GetConfigPath() { return configPath; }
+	const FilePath & GetConfigPath() { return configPath; }
 	void Cleanup(bool needCleanupLayers = true);
 
 	void UpdateEmptyLayerNames();
@@ -333,6 +351,30 @@ public:
      \brief Returns the total active particles count for the whole effect.
      */
 	int32 GetActiveParticlesCount();
+
+	// This functionality is needed for SuperEmitter functionality. Each "inner" Particle Emitter
+	// must remember its initial translation vector when created. It will be used during particles
+	// movement.
+	void RememberInitialTranslationVector();
+	const Vector3& GetInitialTranslationVector();
+
+	bool IsToBeDeleted()
+	{
+		return shouldBeDeleted;
+	};
+
+	void SetToBeDeleted(bool value)
+	{
+		shouldBeDeleted = value;
+	}
+
+	void SetLongToAllLayers(bool isLong);
+
+	void SetParentParticle(Particle* parent);
+	Particle* GetParentParticle();
+
+	// This method is called when the emitter is about to remove from Emitters System.
+	virtual void HandleRemoveFromSystem();
 
 protected:
 	// Virtual methods which are different for 2D and 3D emitters.
@@ -349,7 +391,7 @@ protected:
 
 	void CleanupLayers();
 
-	String configPath;
+	FilePath configPath;
 	
 	Vector<ParticleLayer*> layers;
 	Vector3 position;
@@ -364,6 +406,13 @@ protected:
 	bool	particlesFollow;
     bool    is3D;
 	float32 playbackSpeed;
+
+	Vector3 initialTranslationVector;
+
+	float32 deferredTimeElapsed;
+	bool	shouldBeDeleted;
+
+	Particle*	parentParticle;
 
 public:
 	RefPtr< PropertyLine<Vector3> > emissionVector;
@@ -381,6 +430,16 @@ public:
 	
 	friend class ParticleLayer;
     
+	// Setters needed for Clone().
+	inline void SetRepeatCount(int32 repeatCount) {this->repeatCount = repeatCount;};
+	inline void SetTime(float32 time) {this->time = time;};
+	inline void SetEmitPointsCount(int32 emitPointsCount) {this->emitPointsCount = emitPointsCount;};
+	inline void SetPaused(bool isPaused) {this->isPaused = isPaused;};
+	inline void SetAutoRestart(bool isAutorestart) {this->isAutorestart = isAutorestart;};
+    inline void Set3D(bool is3D) {this->is3D = is3D;};
+	inline void SetConfigPath(const FilePath& configPath) {this->configPath = configPath;};
+	inline void SetInitialTranslationVector(const Vector3& translationVector) {this->initialTranslationVector = translationVector;};
+
 public:
     
     INTROSPECTION_EXTEND(ParticleEmitter, RenderObject,

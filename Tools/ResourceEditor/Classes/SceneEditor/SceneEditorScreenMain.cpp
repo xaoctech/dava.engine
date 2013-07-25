@@ -15,13 +15,15 @@
 
 #include "HintManager.h"
 
-#include "SceneExporter.h"
-#include "SceneSaver.h"
+#include "CommandLine/SceneExporter/SceneExporter.h"
+#include "CommandLine/SceneSaver/SceneSaver.h"
+#include "CommandLine/CommandLineManager.h"
+#include "CommandLine/Beast/BeastCommandLineTool.h"
 
 #include "../Qt/Scene/SceneData.h"
 #include "../Qt/Scene/SceneDataManager.h"
-#include "../Qt/Main/ScenePreviewDialog.h"
 #include "../Qt/Main/QtUtils.h"
+#include "../Qt/Main/QtMainWindowHandler.h"
 #include "FileSystem/FileSystem.h"
 
 #include "../Commands/SceneEditorScreenMainCommands.h"
@@ -29,36 +31,56 @@
 #include "../Commands/FileCommands.h"
 #include "../Commands/ToolsCommands.h"
 
-#include "CommandLineTool.h"
+#include "../Deprecated/ScenePreviewDialog.h"
 
 SceneEditorScreenMain::SceneEditorScreenMain()
 	:	UIScreen()
+	, initialized(false)
 {
+}
+
+SceneEditorScreenMain::~SceneEditorScreenMain()
+{
+    SafeRelease(scenePreviewDialog);
+    
+    SafeRelease(textureTrianglesDialog);
+    SafeRelease(settingsDialog);
+
+    ReleaseNodeDialogs();
+    ReleaseBodyList();
+
+    HintManager::Instance()->Release();
+    PropertyControlCreator::Instance()->Release();
 }
 
 void SceneEditorScreenMain::LoadResources()
 {
-    new HintManager();
-    new PropertyControlCreator();
+	if(!initialized)
+	{
+		initialized = true;
+		
+	    new HintManager();
+	    new PropertyControlCreator();
     
-    ControlsFactory::CustomizeScreenBack(this);
+	    ControlsFactory::CustomizeScreenBack(this);
 
-    font12 = ControlsFactory::GetFont12();
-	font12Color = ControlsFactory::GetColorLight();
+	    font12 = ControlsFactory::GetFont12();
+		font12Color = ControlsFactory::GetColorLight();
 
-    focusedControl = NULL;
+	    focusedControl = NULL;
 
-    InitializeNodeDialogs();
+	    InitializeNodeDialogs();
 
-    Rect fullRect = GetRect();
-    settingsDialog = new SettingsDialog(fullRect, this);
-    textureTrianglesDialog = new TextureTrianglesDialog();
-    materialEditor = new MaterialEditor();
+	    Rect fullRect = GetRect();
+	    settingsDialog = new SettingsDialog(fullRect, this);
+	    textureTrianglesDialog = new TextureTrianglesDialog();
+	    materialEditor = new MaterialEditor();
     
-    InitControls();
+	    InitControls();
     
-    InitializeBodyList();
-    SetupAnimation();
+	    InitializeBodyList();
+	    SetupAnimation();
+	}
 }
 
 
@@ -74,51 +96,42 @@ void SceneEditorScreenMain::InitControls()
 
 void SceneEditorScreenMain::UnloadResources()
 {
-    SafeRelease(scenePreviewDialog);
-
-    SafeRelease(textureTrianglesDialog);
-    SafeRelease(settingsDialog);
-
-    ReleaseNodeDialogs();
-    ReleaseBodyList();
-
-    HintManager::Instance()->Release();
-    PropertyControlCreator::Instance()->Release();
 }
-
 
 void SceneEditorScreenMain::WillAppear()
 {
 #if defined (__DAVAENGINE_WIN32__)
-	Vector<String> & commandLine = Core::Instance()->GetCommandLine();
-	if(CommandLineTool::Instance()->CommandIsFound(String("-beast")))
-	{
-		int32 inPosition = CommandLineTool::Instance()->CommandPosition(String("-file"));
-		if(CommandLineTool::Instance()->CheckPosition(inPosition))
-		{
-			String filepathname = commandLine[inPosition + 1];
-			printf("[Beast] file %s", filepathname.c_str());
+    BeastCommandLineTool *beastTool = dynamic_cast<BeastCommandLineTool *>(CommandLineManager::Instance()->GetActiveCommandLineTool());
+    if(beastTool && (0 == CommandLineManager::Instance()->GetErrorsCount()))
+    {
+		FilePath scenePathname = beastTool->GetScenePathname();
 
-			CommandsManager::Instance()->ExecuteAndRelease(new CommandOpenScene(filepathname));
-		}
-		else
+		String path = scenePathname.GetAbsolutePathname();
+		String dataSourceFolder = "/DataSource/3d/";
+		String::size_type pos = path.find(dataSourceFolder);
+		if(pos != String::npos)
 		{
-			printf("[Beast] Error: wrong command line.\n");
+			EditorSettings::Instance()->SetProjectPath(path.substr(0, pos + 1));
+			EditorSettings::Instance()->SetDataSourcePath(path.substr(0, pos + dataSourceFolder.length()));
 		}
-	}
+
+        CommandsManager::Instance()->ExecuteAndRelease(new CommandOpenScene(scenePathname));
+    }
 #endif //#if defined (__DAVAENGINE_WIN32__)
 }
 
 void SceneEditorScreenMain::DidAppear()
 {
 #if defined (__DAVAENGINE_WIN32__)
-	if(CommandLineTool::Instance()->CommandIsFound(String("-beast")))
-	{
-		Update(0.1f);
-		CommandsManager::Instance()->ExecuteAndRelease(new CommandBeast());
-	}
+	BeastCommandLineTool *beastTool = dynamic_cast<BeastCommandLineTool *>(CommandLineManager::Instance()->GetActiveCommandLineTool());
+	if(beastTool && (0 == CommandLineManager::Instance()->GetErrorsCount()))
+    {
+        Update(0.1f);
+        CommandsManager::Instance()->ExecuteAndRelease(new CommandBeast());
+    }
 #endif //#if defined (__DAVAENGINE_WIN32__)
 }
+
 
 void SceneEditorScreenMain::WillDisappear()
 {
@@ -258,6 +271,21 @@ void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void *, void *)
     {
         if(btn == bodies[i]->closeButton)
         {
+            int32 answer = ShowSaveSceneQuestion(bodies[i]->bodyControl->GetScene());
+            if(answer == MB_FLAG_CANCEL)
+            {
+                return;
+            }
+            
+            if(answer == MB_FLAG_YES)
+            {
+                bool saved = QtMainWindowHandler::Instance()->SaveScene(bodies[i]->bodyControl->GetScene());
+                if(!saved)
+                {
+                    return;
+                }
+            }
+
             if(bodies[i]->bodyControl->GetParent())
             {
                 RemoveControl(bodies[i]->bodyControl);
@@ -366,7 +394,7 @@ void SceneEditorScreenMain::AutoSaveLevel(BaseObject *, void *, void *)
     time_t now = time(0);
     tm* utcTime = localtime(&now);
     
-    String folderPath = EditorSettings::Instance()->GetDataSourcePath() + "Autosave";
+    FilePath folderPath = EditorSettings::Instance()->GetDataSourcePath() + "Autosave/";
     bool folderExcists = FileSystem::Instance()->IsDirectory(folderPath);
     if(!folderExcists)
     {
@@ -375,9 +403,9 @@ void SceneEditorScreenMain::AutoSaveLevel(BaseObject *, void *, void *)
 
     
     
-    String pathToFile = folderPath + Format("/AutoSave_%04d.%02d.%02d_%02d_%02d.sc2",   
+    FilePath pathToFile = folderPath + String(Format("AutoSave_%04d.%02d.%02d_%02d_%02d.sc2",
                                             utcTime->tm_year + 1900, utcTime->tm_mon + 1, utcTime->tm_mday, 
-                                            utcTime->tm_hour, utcTime->tm_min);
+                                            utcTime->tm_hour, utcTime->tm_min));
     
     BodyItem *iBody = bodies[0];
     Scene * scene = iBody->bodyControl->GetScene();
@@ -445,7 +473,7 @@ void SceneEditorScreenMain::Input(DAVA::UIEvent *event)
     }
 }
 
-void SceneEditorScreenMain::OpenFileAtScene(const String &pathToFile)
+void SceneEditorScreenMain::OpenFileAtScene(const FilePath &pathToFile)
 {
 	// In case the current scene isn't the "level" one, switch to it firstly.
 	if (SceneDataManager::Instance()->SceneGetActive() != SceneDataManager::Instance()->SceneGetLevel())
@@ -496,20 +524,7 @@ bool SceneEditorScreenMain::SaveIsAvailable()
     return true;
 }
 
-String SceneEditorScreenMain::CurrentScenePathname()
-{
-    SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
-    String pathname = sceneData->GetScenePathname();
-    if (0 < pathname.length())
-    {
-        pathname = FileSystem::Instance()->ReplaceExtension(pathname, ".sc2");
-    }
-
-    return pathname;
-}
-
-
-void SceneEditorScreenMain::SaveSceneToFile(const String &pathToFile)
+void SceneEditorScreenMain::SaveSceneToFile(const FilePath &pathToFile)
 {
     SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
     sceneData->SetScenePathname(pathToFile);
@@ -538,36 +553,23 @@ void SceneEditorScreenMain::UpdateModificationPanel(void)
 	}
 }
 
-void SceneEditorScreenMain::SaveToFolder(const String & folder)
+void SceneEditorScreenMain::SaveToFolder(const FilePath & folder)
 {
     BodyItem *iBody = FindCurrentBody();
 	iBody->bodyControl->PushDebugCamera();
     
     SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
-    String filePath = sceneData->GetScenePathname();
-    String dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
-    String::size_type pos = filePath.find(dataSourcePath);
-    if(String::npos != pos)
-    {
-        filePath = filePath.replace(pos, dataSourcePath.length(), "");
-    }
-    else
-    {
-        DVASSERT(0);
-    }
     
 	// Get project path
     KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
-    String projectPath = keyedArchieve->GetString(String("ProjectPath"));
-    
-    if(!SceneSaver::Instance()) new SceneSaver();
-    
-    String inFolder = projectPath + String("DataSource/3d/");
-    SceneSaver::Instance()->SetInFolder(inFolder);
-    SceneSaver::Instance()->SetOutFolder(folder);
+    FilePath dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
+
+    SceneSaver sceneSaver;
+    sceneSaver.SetInFolder(dataSourcePath);
+    sceneSaver.SetOutFolder(folder);
     
     Set<String> errorsLog;
-    SceneSaver::Instance()->SaveScene(iBody->bodyControl->GetScene(), filePath, errorsLog);
+    sceneSaver.SaveScene(iBody->bodyControl->GetScene(), sceneData->GetScenePathname(), errorsLog);
     
 	iBody->bodyControl->PopDebugCamera();
     
@@ -601,33 +603,21 @@ void SceneEditorScreenMain::ExportAs(ImageFileFormat format)
 	iBody->bodyControl->PushDebugCamera();
     
     SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
-    String filePath = sceneData->GetScenePathname();
-    String dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
-    String::size_type pos = filePath.find(dataSourcePath);
-    if(String::npos != pos)
-    {
-        filePath = filePath.replace(pos, dataSourcePath.length(), "");
-    }
-    else 
-    {
-        DVASSERT(0);
-    }
     
     // Get project path
     KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
-    String projectPath = keyedArchieve->GetString(String("ProjectPath"));
+    FilePath projectPath(keyedArchieve->GetString(String("ProjectPath")));
     
-    if(!SceneExporter::Instance()) new SceneExporter();
+    SceneExporter exporter;
     
-    String inFolder = projectPath + String("DataSource/3d/");
-    SceneExporter::Instance()->SetInFolder(inFolder);
-    SceneExporter::Instance()->SetOutFolder(projectPath + String("Data/3d/"));
+    exporter.SetInFolder(projectPath + String("DataSource/3d/"));
+    exporter.SetOutFolder(projectPath + String("Data/3d/"));
     
-    SceneExporter::Instance()->SetExportingFormat(formatStr);
+    exporter.SetExportingFormat(formatStr);
     
     //TODO: how to be with removed nodes?
     Set<String> errorsLog;
-    SceneExporter::Instance()->ExportScene(iBody->bodyControl->GetScene(), filePath, errorsLog);
+    exporter.ExportScene(iBody->bodyControl->GetScene(), sceneData->GetScenePathname(), errorsLog);
     
 	iBody->bodyControl->PopDebugCamera();
     
@@ -715,19 +705,19 @@ void SceneEditorScreenMain::CustomColorsSetColor(uint32 indexInSet)
     iBody->bodyControl->SetColorIndex(indexInSet);
 }
 
-void SceneEditorScreenMain::CustomColorsSaveTexture(const String &path)
+void SceneEditorScreenMain::CustomColorsSaveTexture(const FilePath &path)
 {
 	BodyItem *iBody = FindCurrentBody();
     iBody->bodyControl->SaveTexture(path);
 }
 
-void SceneEditorScreenMain::CustomColorsLoadTexture(const String &path)
+void SceneEditorScreenMain::CustomColorsLoadTexture(const FilePath &path)
 {
 	BodyItem *iBody = FindCurrentBody();
     iBody->bodyControl->CustomColorsLoadTexture(path);
 }
 
-String SceneEditorScreenMain::CustomColorsGetCurrentSaveFileName()
+FilePath SceneEditorScreenMain::CustomColorsGetCurrentSaveFileName()
 {
 	BodyItem *iBody = FindCurrentBody();
 	return iBody->bodyControl->CustomColorsGetCurrentSaveFileName();
@@ -746,21 +736,6 @@ void SceneEditorScreenMain::OnReloadRootNodesQt()
     iBody->bodyControl->OnReloadRootNodesQt();
 }
 
-void SceneEditorScreenMain::ShowScenePreview(const String scenePathname)
-{
-    if(scenePreviewDialog)
-    {
-        scenePreviewDialog->Show(scenePathname);
-    }
-}
-
-void SceneEditorScreenMain::HideScenePreview()
-{
-    if(scenePreviewDialog)
-    {
-        scenePreviewDialog->Close();
-    }
-}
 
 bool SceneEditorScreenMain::LandscapeEditorModeEnabled()
 {
@@ -829,7 +804,7 @@ void SceneEditorScreenMain::VisibilityToolTriggered()
     bool ret = iBody->bodyControl->ToggleLandscapeEditor(ELEMID_VISIBILITY_CHECK_TOOL);
 }
 
-void SceneEditorScreenMain::VisibilityToolSaveTexture(const String &path)
+void SceneEditorScreenMain::VisibilityToolSaveTexture(const FilePath &path)
 {
 	BodyItem *iBody = FindCurrentBody();
     iBody->bodyControl->SaveTexture(path);
@@ -884,4 +859,20 @@ void SceneEditorScreenMain::ActivateBodyItem(BodyItem* activeItem, bool forceRes
 	}
 
 	SceneDataManager::Instance()->SetActiveScene(activeItem->bodyControl->GetScene());
+}
+
+void SceneEditorScreenMain::ShowScenePreview(const FilePath & scenePathname)
+{
+    if(scenePreviewDialog)
+    {
+        scenePreviewDialog->Show(scenePathname);
+    }
+}
+
+void SceneEditorScreenMain::HideScenePreview()
+{
+    if(scenePreviewDialog)
+    {
+        scenePreviewDialog->Close();
+    }
 }

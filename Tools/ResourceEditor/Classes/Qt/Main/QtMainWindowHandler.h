@@ -14,6 +14,7 @@
 #include "TextureBrowser/TextureBrowser.h"
 #include "MaterialBrowser/MaterialBrowser.h"
 #include "Classes/Qt/DockSetSwitchIndex/SetSwitchIndexHelper.h"
+#include "Classes/Commands/CommandList.h"
 
 class Command;
 class QMenu;
@@ -80,6 +81,10 @@ public:
 	void SetAreaButtonStateVisibilityTool(bool state);
 
 	void UpdateUndoActionsState();
+    
+    bool SaveScene(Scene *scene);
+	bool SaveScene(Scene *scene, const FilePath &pathname);
+
 
 public slots:
     void CreateNodeTriggered(QAction *nodeAction);
@@ -91,7 +96,7 @@ public slots:
     void OpenScene();
     void OpenProject();
     void OpenResentScene(DAVA::int32 index);
-    void SaveScene();
+    bool SaveScene();
     void ExportAsPNG();
     void ExportAsPVR();
     void ExportAsDXT();
@@ -171,6 +176,8 @@ public slots:
 
 	void ReloadSceneTextures();
 
+	void OnEntityModified(DAVA::Scene* scene, CommandList::eCommandId id, const DAVA::Set<DAVA::Entity*>& affectedEntities);
+
 signals:
 	void ProjectChanged();
 
@@ -185,6 +192,10 @@ private:
     void ClearActions(int32 count, QAction **actions);
 
 	void UpdateModificationActions();
+    
+	void SaveParticleEmitterNodes(Scene* scene);
+	void SaveParticleEmitterNodeRecursive(Entity* parentNode);
+
 
 private:
 	//set switch index

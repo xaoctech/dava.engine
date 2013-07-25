@@ -35,7 +35,24 @@
 
 namespace DAVA
 {
+void Box2DTileContactListenerBeginContact(b2Contact* /*contact*/, b2Body* /*ownerBody*/, b2Body* /*oppositeBody*/)
+{
+}
+
+void Box2DTileContactListener::EndContact(b2Contact* /*contact*/, b2Body* /*ownerBody*/, b2Body* /*oppositeBody*/)
+{
+}
 	
+void Box2DTileContactListener::PreSolve(b2Contact* /*contact*/, const b2Manifold* /*oldManifold*/, b2Body* /*ownerBody*/, b2Body* /*oppositeBody*/)
+{
+}
+	
+void Box2DTileContactListener::PostSolve(b2Contact* /*contact*/, const b2ContactImpulse* /*impulse*/, b2Body* /*ownerBody*/, b2Body* /*oppositeBody*/)
+{
+}
+
+/*=====================================================================================*/
+
 Box2DGameObjectManager::Box2DGameObjectManager(float32 stepsPerSecond, float32 pixelsInMeter, int32 velocityIterationsCount/* = 8*/, int32 positionIterationsCount/* = 2*/)
 {
 	isInUpdate = false;

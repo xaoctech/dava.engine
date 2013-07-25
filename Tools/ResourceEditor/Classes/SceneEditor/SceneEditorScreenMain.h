@@ -71,6 +71,7 @@ public:
 public:
     
 	SceneEditorScreenMain();
+	~SceneEditorScreenMain();
 
     struct BodyItem;
 
@@ -110,9 +111,6 @@ public:
     void SelectNodeQt(Entity *node);
     void OnReloadRootNodesQt();
     
-    void ShowScenePreview(const String scenePathname);
-    void HideScenePreview();
-
     bool LandscapeEditorModeEnabled();
     bool TileMaskEditorEnabled();
     
@@ -123,7 +121,7 @@ public:
     void ProcessIsSolidChanging();
 
 	void ActivateLevelBodyItem();
-
+    
 private:
     
     void InitControls();
@@ -161,22 +159,22 @@ private:
     Font *font12;
 	Color font12Color;
     
+	bool initialized;
 	bool useConvertedTextures;
     
     void ReleaseResizedControl(UIControl *control);
 
 public: //For Qt integration
-    void OpenFileAtScene(const String &pathToFile);
+    void OpenFileAtScene(const FilePath &pathToFile);
     void NewScene();
 
     bool SaveIsAvailable();
-    String CurrentScenePathname();
-    void SaveSceneToFile(const String &pathToFile);
+    void SaveSceneToFile(const FilePath &pathToFile);
    
 
     void ExportAs(ImageFileFormat format);
 
-	void SaveToFolder(const String & folder);
+	void SaveToFolder(const FilePath & folder);
 	
     void CreateNode(ResourceEditor::eNodeType nodeType);
     void SetViewport(ResourceEditor::eViewportType viewportType);
@@ -190,13 +188,13 @@ public: //For Qt integration
     void CustomColorsTriggered();
 	void CustomColorsSetRadius(uint32 newRadius);
 	void CustomColorsSetColor(uint32 indexInSet);
-	void CustomColorsSaveTexture(const String &path);
-	void CustomColorsLoadTexture(const String& path);
-	String CustomColorsGetCurrentSaveFileName();
+	void CustomColorsSaveTexture(const FilePath & path);
+	void CustomColorsLoadTexture(const FilePath & path);
+	FilePath CustomColorsGetCurrentSaveFileName();
 	
 	//visibility check tool
 	void VisibilityToolTriggered();
-	void VisibilityToolSaveTexture(const String& path);
+	void VisibilityToolSaveTexture(const FilePath& path);
 	void VisibilityToolSetPoint();
 	void VisibilityToolSetArea();
 	void VisibilityToolSetAreaSize(uint32 size);
@@ -205,8 +203,15 @@ public: //For Qt integration
     
     void ProcessBeast();
     
-    ScenePreviewDialog *scenePreviewDialog;
     UIControl *focusedControl;
+    
+    //VK: Deprecated
+public:
+    void ShowScenePreview(const FilePath & scenePathname);
+    void HideScenePreview();
+private:
+    ScenePreviewDialog *scenePreviewDialog;
+
 };
 
 #endif // __SCENE_EDITOR_SCREEN_MAIN_H__

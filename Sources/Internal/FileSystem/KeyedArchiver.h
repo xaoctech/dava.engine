@@ -46,7 +46,7 @@ public:
 	KeyedArchiver();
 	virtual ~KeyedArchiver();
 
-	bool StartEncodingToFile(const String & pathName);
+	bool StartEncodingToFile(const FilePath & pathName);
 	bool StartEncodingToFile(File *file);
 
 	void EncodeBool(const String & key, bool value);

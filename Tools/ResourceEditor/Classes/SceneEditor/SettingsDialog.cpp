@@ -56,6 +56,10 @@ SettingsDialog::SettingsDialog(const Rect & rect, SettingsDialogDelegate *newDel
     propertyList->AddBoolProperty("settingsdialog.drawgrid", PropertyList::PROPERTY_IS_EDITABLE);
 
 	propertyList->AddBoolProperty("settingsdialog.imposters", PropertyList::PROPERTY_IS_EDITABLE);
+
+	propertyList->AddStringProperty("settingsdialog.designername", PropertyList::PROPERTY_IS_EDITABLE);
+    
+    propertyList->AddBoolProperty("Enable Preview at Library", PropertyList::PROPERTY_IS_EDITABLE);
 }
     
 SettingsDialog::~SettingsDialog()
@@ -114,7 +118,10 @@ void SettingsDialog::WillAppear()
     
     propertyList->SetBoolPropertyValue("settingsdialog.drawgrid", EditorSettings::Instance()->GetDrawGrid());
 	propertyList->SetBoolPropertyValue("settingsdialog.imposters", EditorSettings::Instance()->GetEnableImposters());
+	propertyList->SetStringPropertyValue("settingsdialog.designername", EditorSettings::Instance()->GetDesignerName());
     
+    propertyList->SetBoolPropertyValue("Enable Preview at Library", EditorSettings::Instance()->GetPreviewDialogEnabled());
+
     
     UIScreen *activeScreen = UIScreenManager::Instance()->GetScreen();
     if(activeScreen)
@@ -127,9 +134,13 @@ void SettingsDialog::WillAppear()
     }
 }
 
-void SettingsDialog::OnStringPropertyChanged(PropertyList *, const String &, const String &)
+void SettingsDialog::OnStringPropertyChanged(PropertyList *, const String &forKey, const String &newValue)
 {
-    
+    if("settingsdialog.designername" == forKey)
+    {
+        EditorSettings::Instance()->SetDesignerName(newValue);
+        EditorSettings::Instance()->Save();
+    }
 }
 
 void SettingsDialog::OnFloatPropertyChanged(PropertyList *, const String &forKey, float newValue)
@@ -202,6 +213,11 @@ void SettingsDialog::OnBoolPropertyChanged(PropertyList *, const String &forKey,
 		EditorSettings::Instance()->SetEnableImposters(newValue);
 		EditorSettings::Instance()->Save();
 	}
+    else if("Enable Preview at Library" == forKey)
+    {
+		EditorSettings::Instance()->SetPreviewDialogEnabled(newValue);
+		EditorSettings::Instance()->Save();
+    }
 }
 
 void SettingsDialog::OnComboIndexChanged(PropertyList *, const String &forKey, int32 , const String &newItemKey)

@@ -42,6 +42,9 @@
 namespace DAVA 
 {
 
+#define PARTICLE_EMITTER_DEFAULT_LIFE_TIME 100.0f
+#define PARTICLE_EMITTER_DEFERRED_UPDATE_INTERVAL 0.1f // in seconds
+	
 REGISTER_CLASS(ParticleEmitter);
 
 ParticleEmitter::ParticleEmitter()
@@ -50,6 +53,8 @@ ParticleEmitter::ParticleEmitter()
 	Cleanup(false);
 
 	bbox = AABBox3(Vector3(), Vector3());
+	parentParticle = NULL;
+	deferredTimeElapsed = 0.0f;
 }
 
 ParticleEmitter::~ParticleEmitter()
@@ -74,7 +79,7 @@ void ParticleEmitter::Cleanup(bool needCleanupLayers)
 
 	time = 0.0f;
 	repeatCount = 0;
-	lifeTime = 1000000000.0f;
+	lifeTime = PARTICLE_EMITTER_DEFAULT_LIFE_TIME;
 	emitPointsCount = -1;
 	isPaused = false;
 	angle = 0.f;
@@ -82,7 +87,7 @@ void ParticleEmitter::Cleanup(bool needCleanupLayers)
 	particlesFollow = false;
     is3D = false;
 	playbackSpeed = 1.0f;
-
+	shouldBeDeleted = false;
 	// Also cleanup layers, if needed.
 	if (needCleanupLayers)
 	{
@@ -147,7 +152,7 @@ void ParticleEmitter::Save(KeyedArchive *archive, SceneFileV2 *sceneFile)
 
 	if(NULL != archive)
 	{
-		String filename = FileSystem::Instance()->AbsoluteToRelativePath(FileSystem::Instance()->GetCanonicalPath(sceneFile->GetScenePath()), FileSystem::Instance()->GetCanonicalPath(configPath));
+        String filename = configPath.GetRelativePathname(sceneFile->GetScenePath());
 		archive->SetString("pe.configpath", filename);
 	}
 }
@@ -161,17 +166,7 @@ void ParticleEmitter::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
 		if(archive->IsKeyExists("pe.configpath"))
 		{
             String filename = archive->GetString("pe.configpath");
-            String sceneFilePath = FileSystem::Instance()->SystemPathForFrameworkPath(sceneFile->GetScenePath());
-            configPath = FileSystem::Instance()->GetCanonicalPath(sceneFilePath + filename);
-
-#if defined (__DAVAENGINE_ANDROID__)
-            String systemPath = FileSystem::Instance()->SystemPathForFrameworkPath("~res:/");
-            String::size_type pos = configPath.find(systemPath);
-            if(pos == 0)
-            {
-                configPath = configPath.replace(pos, systemPath.length(), "~res:/");
-            }
-#endif //#if defined (__DAVAENGINE_ANDROID__)
+			configPath = sceneFile->GetScenePath() + filename;
             
 			LoadFromYaml(configPath);
 		}
@@ -208,6 +203,7 @@ void ParticleEmitter::RemoveLayer(ParticleLayer * layer)
 	Vector<DAVA::ParticleLayer*>::iterator layerIter = std::find(layers.begin(), layers.end(), layer);
 	if (layerIter != this->layers.end())
 	{
+		layer->RemoveInnerEmitter();
 		layers.erase(layerIter);
 
         RemoveRenderBatch(layer->GetRenderBatch());
@@ -283,6 +279,16 @@ void ParticleEmitter::DoRestart(bool isDeleteAllParticles)
 	repeatCount = 0;
 }
 
+void ParticleEmitter::DeferredUpdate(float32 timeElapsed)
+{
+	deferredTimeElapsed += timeElapsed;
+	if (deferredTimeElapsed > PARTICLE_EMITTER_DEFERRED_UPDATE_INTERVAL)
+	{
+		Update(deferredTimeElapsed);
+		deferredTimeElapsed = 0.0f;
+	}
+}
+	
 void ParticleEmitter::Update(float32 timeElapsed)
 {
 	timeElapsed *= playbackSpeed;
@@ -309,7 +315,7 @@ void ParticleEmitter::Update(float32 timeElapsed)
 	Vector<ParticleLayer*>::iterator it;
 	for(it = layers.begin(); it != layers.end(); ++it)
 	{
-        if(!(*it)->isDisabled)
+        if(!(*it)->GetDisabled())
             (*it)->Update(timeElapsed);
 	}
 }
@@ -329,7 +335,7 @@ void ParticleEmitter::RenderUpdate(Camera *camera, float32 timeElapsed)
 	Vector<ParticleLayer*>::iterator it;
 	for(it = layers.begin(); it != layers.end(); ++it)
 	{
-		if(!(*it)->isDisabled)
+		if(!(*it)->GetDisabled())
 			(*it)->Draw(camera);
 	}
 
@@ -413,21 +419,21 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
     particle->angle = particleAngle;
 }
 
-void ParticleEmitter::LoadFromYaml(const String & filename)
+void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 {
     Cleanup(true);
     
 	YamlParser * parser = YamlParser::Create(filename);
 	if(!parser)
 	{
-		Logger::Error("ParticleEmitter::LoadFromYaml failed (%s)", filename.c_str());
+		Logger::Error("ParticleEmitter::LoadFromYaml failed (%s)", filename.GetAbsolutePathname().c_str());
 		return;
 	}
 
 	configPath = filename;
 	time = 0.0f;
 	repeatCount = 0;
-	lifeTime = 1000000000.0f;
+	lifeTime = PARTICLE_EMITTER_DEFAULT_LIFE_TIME;
 
 	YamlNode * rootNode = parser->GetRootNode();
 
@@ -467,7 +473,7 @@ void ParticleEmitter::LoadFromYaml(const String & filename)
 			lifeTime = lifeTimeNode->AsFloat();
 		}else
 		{
-			lifeTime = 1000000000.0f;
+			lifeTime = PARTICLE_EMITTER_DEFAULT_LIFE_TIME;
 		}
         
         is3D = false;
@@ -554,7 +560,7 @@ void ParticleEmitter::LoadFromYaml(const String & filename)
 	SafeRelease(parser);
 }
 
-void ParticleEmitter::SaveToYaml(const String & filename)
+void ParticleEmitter::SaveToYaml(const FilePath & filename)
 {
     YamlParser* parser = YamlParser::Create();
     if (!parser)
@@ -562,7 +568,9 @@ void ParticleEmitter::SaveToYaml(const String & filename)
         Logger::Error("ParticleEmitter::SaveToYaml() - unable to create parser!");
         return;
     }
-    
+
+	configPath = filename;
+
     YamlNode* rootYamlNode = new YamlNode(YamlNode::TYPE_MAP);
     YamlNode* emitterYamlNode = new YamlNode(YamlNode::TYPE_MAP);
     rootYamlNode->AddNodeToMap("emitter", emitterYamlNode);
@@ -641,6 +649,13 @@ float32 ParticleEmitter::GetTime()
 void ParticleEmitter::Pause(bool _isPaused)
 {
 	isPaused = _isPaused;
+
+	// Also update Inner Emitters.
+	int32 layersCount = layers.size();
+	for (int32 i = 0; i < layersCount; i ++)
+	{
+		layers[i]->PauseInnerEmitter(_isPaused);
+	}
 }
 bool ParticleEmitter::IsPaused()
 {
@@ -773,25 +788,12 @@ void ParticleEmitter::InvertEmissionVectorCoordinates()
 		return;
 	}
 
-	PropertyLineValue<Vector3> *pv;
-    PropertyLineKeyframes<Vector3> *pk;
-
-    pk = dynamic_cast< PropertyLineKeyframes<Vector3> *>(this->emissionVector.Get());
-    if (pk)
-    {
-        for (uint32 i = 0; i < pk->keys.size(); ++i)
-        {
-			pk->keys[i].value *= -1;
-        }
-		
-		return;
-    }
-
-	pv = dynamic_cast< PropertyLineValue<Vector3> *>(this->emissionVector.Get());
-	if (pv)
-    {
-		pv->value *= -1;
-    }
+	PropertyLine<Vector3> *pvk = emissionVector.Get();
+	uint32 keysSize = pvk->keys.size();
+	for (uint32 i = 0; i < keysSize; ++i)
+	{
+		pvk->keys[i].value *= -1;
+	}
 }
 
 int32 ParticleEmitter::GetActiveParticlesCount()
@@ -806,4 +808,57 @@ int32 ParticleEmitter::GetActiveParticlesCount()
 	return particlesCount;
 }
 
-};
+void ParticleEmitter::RememberInitialTranslationVector()
+{
+	if (GetWorldTransformPtr())
+	{
+		this->initialTranslationVector = GetWorldTransformPtr()->GetTranslationVector();
+	}
+}
+
+const Vector3& ParticleEmitter::GetInitialTranslationVector()
+{
+	return this->initialTranslationVector;
+}
+
+void ParticleEmitter::SetDisabledForAllLayers(bool value)
+{
+	for (Vector<ParticleLayer*>::iterator iter = layers.begin(); iter != layers.end(); iter ++)
+	{
+		(*iter)->SetDisabled(value);
+	}
+}
+
+void ParticleEmitter::RecalcBoundingBox()
+{
+	bbox = AABBox3(Vector3(), Vector3());
+}
+
+void ParticleEmitter::SetLongToAllLayers(bool isLong)
+{
+	for(Vector<ParticleLayer*>::iterator it = layers.begin(); it != layers.end(); ++it)
+	{
+		(*it)->SetLong(isLong);
+	}
+}
+
+void ParticleEmitter::SetParentParticle(Particle* parent)
+{
+	parentParticle = parent;
+}
+
+Particle* ParticleEmitter::GetParentParticle()
+{
+	return parentParticle;
+}
+
+void ParticleEmitter::HandleRemoveFromSystem()
+{
+	Vector<ParticleLayer*>::iterator it;
+	for(it = layers.begin(); it != layers.end(); ++it)
+	{
+		(*it)->HandleRemoveFromSystem();
+	}
+}
+
+}; 

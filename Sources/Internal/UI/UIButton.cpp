@@ -140,7 +140,7 @@ namespace DAVA
 		}
 	}
 
-	void UIButton::SetStateSprite(int32 state, const String &spriteName, int32 spriteFrame/* = 0*/)
+	void UIButton::SetStateSprite(int32 state, const FilePath &spriteName, int32 spriteFrame/* = 0*/)
 	{
 		for(int i = 0; i < DRAW_STATE_COUNT; i++)
 		{
@@ -476,6 +476,41 @@ namespace DAVA
 	}
 
 
+	void UIButton::SetLeftAlign(int32 align)
+	{
+		UIControl::SetLeftAlign(align);	
+		UpdateStateTextControlSize();
+	}
+	
+	void UIButton::SetHCenterAlign(int32 align)
+	{
+		UIControl::SetHCenterAlign(align);
+		UpdateStateTextControlSize();
+	}
+	
+	void UIButton::SetRightAlign(int32 align)
+	{
+		UIControl::SetRightAlign(align);
+		UpdateStateTextControlSize();
+	}
+	
+	void UIButton::SetTopAlign(int32 align)
+	{
+		UIControl::SetTopAlign(align);
+		UpdateStateTextControlSize();
+	}
+
+	void UIButton::SetVCenterAlign(int32 align)
+	{
+		UIControl::SetVCenterAlign(align);
+		UpdateStateTextControlSize();
+	}
+	
+	void UIButton::SetBottomAlign(int32 align)
+	{
+		UIControl::SetBottomAlign(align);
+		UpdateStateTextControlSize();
+	}
 	
 	void UIButton::SystemDraw(const UIGeometricData &geometricData)
 	{
@@ -483,8 +518,6 @@ namespace DAVA
 		UIControl::SystemDraw(geometricData);
 		background = stateBacks[DRAW_STATE_UNPRESSED];
 	}
-	
-
 	
 	UIControlBackground *UIButton::GetActualBackground(int32 state)
 	{
@@ -666,12 +699,21 @@ namespace DAVA
 			{
 				YamlNode * spriteNode = stateSpriteNode->Get(0);
 				YamlNode * frameNode = stateSpriteNode->Get(1);
+				YamlNode * backgroundModificationNode = NULL;
+				if(stateSpriteNode->GetCount() > 2)
+				{
+					backgroundModificationNode = stateSpriteNode->Get(2);
+				}
 				
 				int32 frame = 0;
 				if (frameNode)frame = frameNode->AsInt();
 				if (spriteNode)
 				{
 					SetStateSprite(stateArray[k], spriteNode->AsString(), frame);
+				}
+				if (backgroundModificationNode)
+				{
+					stateBacks[k]->SetModification(backgroundModificationNode->AsInt());
 				}
 			}
             
@@ -736,20 +778,19 @@ namespace DAVA
 			{
 				SetStateShadowOffset(stateArray[k], stateShadowOffsetNode->AsVector2());
 			}
-		}
-		for (int k = 0; k < STATE_COUNT; ++k)
-		{
-			YamlNode * colorInheritNode = node->Get("colorInherit");
-			UIControlBackground::eColorInheritType type = (UIControlBackground::eColorInheritType)loader->GetColorInheritTypeFromNode(colorInheritNode);
+			
+			YamlNode * colorInheritNode = node->Get(Format("stateColorInherit%s", statePostfix[k].c_str()));
 			if(colorInheritNode)
 			{
-				for(int32 i = 0; i < DRAW_STATE_COUNT; ++i)
-				{
-					if(stateBacks[i])
-					{
-						stateBacks[i]->SetColorInheritType(type);
-					}
-				}
+				UIControlBackground::eColorInheritType type = (UIControlBackground::eColorInheritType)loader->GetColorInheritTypeFromNode(colorInheritNode);
+				GetActualBackground(stateArray[k])->SetColorInheritType(type);
+			}
+			
+			YamlNode * colorNode = node->Get(Format("stateColor%s", statePostfix[k].c_str()));
+			if(colorNode)
+			{
+				Color color = loader->GetColorFromYamlNode(colorNode);
+				GetActualBackground(stateArray[k])->SetColor(color);
 			}
 		}
 	}
@@ -768,6 +809,7 @@ namespace DAVA
         
 		//Remove values of UIControl
 		//UIButton has state specific properties
+		YamlNode *colorNode = node->Get("color");
 		YamlNode *spriteNode = node->Get("sprite");
 		YamlNode *drawTypeNode = node->Get("drawType");
 		YamlNode *colorInheritNode = node->Get("colorInherit");
@@ -775,6 +817,10 @@ namespace DAVA
 		YamlNode *leftRightStretchCapNode = node->Get("leftRightStretchCap");
 		YamlNode *topBottomStretchCapNode = node->Get("topBottomStretchCap");
         
+		if (colorNode)
+		{
+			node->RemoveNodeFromMap("color");
+		}
 		if (spriteNode)
 		{
 			node->RemoveNodeFromMap("sprite");
@@ -810,8 +856,15 @@ namespace DAVA
 			{
 				//Create array yamlnode and add it to map
 				YamlNode *spriteNode = new YamlNode(YamlNode::TYPE_ARRAY);
-				spriteNode->AddValueToArray(TruncateTxtFileExtension(stateSprite->GetName()));
+                
+                FilePath path(stateSprite->GetRelativePathname());
+                path.TruncateExtension();
+
+                String pathname = path.GetFrameworkPath();
+				spriteNode->AddValueToArray(pathname);
+                
 				spriteNode->AddValueToArray(stateFrame);
+				spriteNode->AddValueToArray(stateBacks[i]->GetModification());
 				node->AddNodeToMap(Format("stateSprite%s", statePostfix[i].c_str()), spriteNode);
 			}
 
@@ -863,11 +916,24 @@ namespace DAVA
 				nodeValue->SetVector2(shadowOffset);
 				node->Set(Format("stateShadowoffset%s", statePostfix[i].c_str()), nodeValue);
 			}
-            
-			//colorInherit ???? For different states?
-			// Yuri Coder, 2012/11/16. Temporarily commented out until clarification.
-			//UIControlBackground::eColorInheritType colorInheritType = this->GetStateBackground(stateArray[i])->GetColorInheritType();
-			//node->Set(Format("stateColorInherit%s", statePostfix[i].c_str()), loader->GetColorInheritTypeNodeValue(colorInheritType));
+			
+			// State background color
+			Color color = this->GetActualBackground(stateArray[i])->GetColor();
+			Color baseColor =  baseControl->GetActualBackground(stateArray[i])->GetColor();
+			if (baseColor != color)
+			{
+				Vector4 colorVector4(color.r, color.g, color.b, color.a);
+				nodeValue->SetVector4(colorVector4);
+				node->Set(Format("stateColor%s", statePostfix[i].c_str()), nodeValue);
+			}
+			
+ 			// State color inherittype
+			UIControlBackground::eColorInheritType colorInheritType = this->GetActualBackground(stateArray[i])->GetColorInheritType();
+			UIControlBackground::eColorInheritType baseColorInheritType = baseControl->GetActualBackground(stateArray[i])->GetColorInheritType();
+			if (baseColorInheritType != colorInheritType)
+			{
+				node->Set(Format("stateColorInherit%s", statePostfix[i].c_str()), loader->GetColorInheritTypeNodeValue(colorInheritType));
+			}
 		}
         
 		SafeDelete(nodeValue);
@@ -885,6 +951,20 @@ namespace DAVA
 		}
 
 		return realChildren;
+	}
+	
+	void UIButton::UpdateStateTextControlSize()
+	{
+		// Current control rect
+		const Rect rect = this->GetRect();
+		// Update size of texcontrol for each state
+		for(int i = 0; i < DRAW_STATE_COUNT; i++)
+		{
+			if(stateTexts[i])
+			{
+				stateTexts[i]->SetRect(Rect(0, 0, rect.dx, rect.dy));
+			}
+		}
 	}
 
 };

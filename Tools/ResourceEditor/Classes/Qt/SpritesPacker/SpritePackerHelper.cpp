@@ -7,7 +7,7 @@
 
 #include <QtConcurrentRun>
 
-#include "ResourcePackerScreen.h"
+#include "TexturePacker/ResourcePacker2D.h"
 #include "Platform/Qt/QtLayer.h"
 
 using namespace DAVA;
@@ -19,8 +19,8 @@ SpritePackerHelper::SpritePackerHelper()
 
 void SpritePackerHelper::UpdateParticleSprites()
 {
-	String projectPath = EditorSettings::Instance()->GetProjectPath();
-    if(projectPath.empty())
+	FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
+    if(projectPath.IsEmpty())
     {
         Logger::Warning("[ParticlesEditorSpritePackerHelper::UpdateParticleSprites] Project path not set.");
         return;
@@ -34,21 +34,21 @@ void SpritePackerHelper::UpdateParticleSprites()
 void SpritePackerHelper::Pack()
 {
 	void *pool = DAVA::QtLayer::Instance()->CreateAutoreleasePool();
-	String projectPath = EditorSettings::Instance()->GetProjectPath();
-	String inputDir = projectPath+"DataSource/Gfx/Particles";
-	String outputDir = projectPath+"Data/Gfx/Particles";
+	FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
+	FilePath inputDir = projectPath + "DataSource/Gfx/Particles/";
+	FilePath outputDir = projectPath + "Data/Gfx/Particles/";
 
 	if(!FileSystem::Instance()->IsDirectory(inputDir))
 	{
-		Logger::Error("[SpritePackerHelper::Pack] inputDir is not directory (%s)", inputDir.c_str());
+		Logger::Error("[SpritePackerHelper::Pack] inputDir is not directory (%s)", inputDir.GetAbsolutePathname().c_str());
 		return;
 	}
 
-	ResourcePackerScreen * resourcePackerScreen = new ResourcePackerScreen();
+	ResourcePacker2D * resourcePacker = new ResourcePacker2D();
 	
-	bool isChanged = resourcePackerScreen->IsMD5ChangedDir(projectPath+"DataSource/Gfx",inputDir,"particles.md5",true);
+	bool isChanged = resourcePacker->IsMD5ChangedDir(projectPath+"DataSource/Gfx/",inputDir,"particles.md5",true);
 	
-	SafeRelease(resourcePackerScreen);
+	SafeDelete(resourcePacker);
 	if(!isChanged)
 	{
 		return;
@@ -82,7 +82,8 @@ void SpritePackerHelper::Reload()
         it->second->Reload();
     }
     
-	ParticlesEditorController::Instance()->RefreshSelectedNode();
+    if(ParticlesEditorController::Instance())
+        ParticlesEditorController::Instance()->RefreshSelectedNode();
 }
 
 void SpritePackerHelper::EnumerateSpritesForReloading(SceneData* sceneData, Map<String, Sprite *> &sprites)
@@ -108,29 +109,44 @@ void SpritePackerHelper::EnumerateSpritesForReloading(SceneData* sceneData, Map<
 		{
 			Entity* childNode = curNode->GetChild(i);
 			ParticleEmitter * emitter = GetEmitter(childNode);
-            
-			if (!emitter)
-			{
-				continue;
-			}
 			
-            Vector<ParticleLayer*> & layers = emitter->GetLayers();
-            int32 layersCount = layers.size();
-            for (int il = 0; il < layersCount; ++il)
-            {
-                Sprite *sprite = layers[il]->GetSprite();
-                sprites[sprite->GetRelativePathname()] = sprite;
-            }
+			EnumerateSpritesForParticleEmitter(emitter, sprites);
 		}
         
 		effectComponent->Start();
 	}
 }
 
+void SpritePackerHelper::EnumerateSpritesForParticleEmitter(ParticleEmitter* emitter, Map<String, Sprite *> &sprites)
+{
+	if (!emitter)
+	{
+		return;
+	}
+	
+	Vector<ParticleLayer*> & layers = emitter->GetLayers();
+	int32 layersCount = layers.size();
+	for (int il = 0; il < layersCount; ++il)
+	{
+		ParticleLayer* curLayer = layers[il];
+		Sprite *sprite = curLayer->GetSprite();
+		if (sprite)
+		{
+			sprites[sprite->GetRelativePathname().GetAbsolutePathname()] = sprite;
+		}
+		
+		// Superemitter layers might have inner emitter with its own sprites.
+		if (curLayer->GetInnerEmitter())
+		{
+			EnumerateSpritesForParticleEmitter(curLayer->GetInnerEmitter(), sprites);
+		}
+	}
+}
+
 void SpritePackerHelper::UpdateParticleSpritesAsync()
 {
-	String projectPath = EditorSettings::Instance()->GetProjectPath();
-    if(projectPath.empty())
+	FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
+    if(projectPath.IsEmpty())
     {
         Logger::Warning("[ParticlesEditorSpritePackerHelper::UpdateParticleSprites] Project path not set.");
         return;

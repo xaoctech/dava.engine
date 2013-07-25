@@ -9,7 +9,7 @@ class DAVA::Entity;
 class CommandCreateNodeSceneEditor: public Command
 {
 public:
-	CommandCreateNodeSceneEditor(DAVA::Entity* node);
+	DAVA_DEPRECATED(CommandCreateNodeSceneEditor(DAVA::Entity* node));// DEPRECATED : using SceneDataManager(QOBJECT)
 	virtual ~CommandCreateNodeSceneEditor();
 
 protected:
@@ -17,6 +17,7 @@ protected:
 
 	virtual void Execute();
 	virtual void Cancel();
+	virtual DAVA::Set<DAVA::Entity*> GetAffectedEntities();
 };
 
 #endif /* defined(__ResourceEditorQt__SceneEditorScreenMainCommands__) */

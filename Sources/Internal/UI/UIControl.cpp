@@ -37,6 +37,7 @@
 #include "UI/UIYamlLoader.h"
 #include "Render/RenderHelper.h"
 #include "Utils/Utils.h"
+#include "Input/InputSystem.h"
 
 namespace DAVA 
 {
@@ -350,7 +351,7 @@ namespace DAVA
 	{
 		return background->GetAlign();
 	}
-	void UIControl::SetSprite(const String &spriteName, int32 spriteFrame)
+	void UIControl::SetSprite(const FilePath &spriteName, int32 spriteFrame)
 	{
 		background->SetSprite(spriteName, spriteFrame);
 	}
@@ -1251,6 +1252,12 @@ namespace DAVA
 		_topAlignEnabled = srcControl->_topAlignEnabled;
 		_vcenterAlignEnabled = srcControl->_vcenterAlignEnabled;
 		_bottomAlignEnabled = srcControl->_bottomAlignEnabled;
+		
+		if (background && srcControl->background)
+		{
+			background->SetLeftRightStretchCap(srcControl->background->GetLeftRightStretchCap());
+			background->SetTopBottomStretchCap(srcControl->background->GetTopBottomStretchCap());
+		}
 
         tag = srcControl->GetTag();
         name = srcControl->name;
@@ -1500,6 +1507,14 @@ namespace DAVA
 			Draw(drawData);
 		}
 		
+		if (debugDrawEnabled)
+		{//TODO: Add debug draw for rotated controls
+			Color oldColor = RenderManager::Instance()->GetColor();
+			RenderManager::Instance()->SetColor(debugDrawColor);
+			RenderHelper::Instance()->DrawRect(drawData.GetUnrotatedRect());
+			RenderManager::Instance()->SetColor(oldColor);
+		}
+		
 		isIteratorCorrupted = false;
 		List<UIControl*>::iterator it = childs.begin();
         List<UIControl*>::iterator itEnd = childs.end();
@@ -1517,18 +1532,18 @@ namespace DAVA
 		{
 			RenderManager::Instance()->ClipPop();
 		}
-		
-		if (debugDrawEnabled)
-		{//TODO: Add debug draw for rotated controls
-			Color oldColor = RenderManager::Instance()->GetColor();
-			RenderManager::Instance()->SetColor(debugDrawColor);
-			RenderHelper::Instance()->DrawRect(drawData.GetUnrotatedRect());
-			RenderManager::Instance()->SetColor(oldColor);
-		}
 	}
 	
-	bool UIControl::IsPointInside(const Vector2 &point, bool expandWithFocus/* = false*/)
+	bool UIControl::IsPointInside(const Vector2 &_point, bool expandWithFocus/* = false*/)
 	{
+        Vector2 point = _point;
+
+		if(InputSystem::Instance()->IsCursorPining())
+		{
+			point.x = Core::Instance()->GetVirtualScreenWidth() / 2;
+            point.y = Core::Instance()->GetVirtualScreenHeight() / 2;
+		}
+        
 		UIGeometricData gd = GetGeometricData();
 		Rect rect = gd.GetUnrotatedRect();
 		if(expandWithFocus)
@@ -1563,12 +1578,14 @@ namespace DAVA
 		
 		switch (currentInput->phase) 
 		{
-#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)                
+#if !defined(__DAVAENGINE_IPHONE__)
 			case UIEvent::PHASE_KEYCHAR:
 			{
 					Input(currentInput);
 			}
-				break;
+			break;
+#endif
+#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)
 			case UIEvent::PHASE_MOVE:
 			{
 				if (!currentInput->touchLocker && IsPointInside(currentInput->point))
@@ -1644,7 +1661,7 @@ namespace DAVA
 									{
 										controlState |= STATE_PRESSED_INSIDE;
 										controlState &= ~STATE_PRESSED_OUTSIDE;
-#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)                                        
+#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)
 										controlState |= STATE_HOVER;
 #endif
 									}
@@ -1687,7 +1704,7 @@ namespace DAVA
 							if(currentInput->controlState == UIEvent::CONTROL_STATE_INSIDE)
 							{
 								--touchesInside;
-#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)                                        
+#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)
 								if(totalTouches == 0)
 								{
 									controlState |= STATE_HOVER;
@@ -1729,7 +1746,7 @@ namespace DAVA
 							{
 								controlState |= STATE_PRESSED_OUTSIDE;
 								controlState &= ~STATE_PRESSED_INSIDE;
-#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)                                        
+#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)
 								controlState &= ~STATE_HOVER;
 #endif
 							}
@@ -1741,6 +1758,10 @@ namespace DAVA
 				}
 			}
 				break;
+			case UIEvent::PHASE_JOYSTICK:
+			{
+				Input(currentInput);
+			}
 		}
 		
 		return false;
@@ -1754,7 +1775,8 @@ namespace DAVA
 			if(clipContents 
                && (currentInput->phase != UIEvent::PHASE_DRAG 
                    && currentInput->phase != UIEvent::PHASE_ENDED
-                   && currentInput->phase != UIEvent::PHASE_KEYCHAR))
+                   && currentInput->phase != UIEvent::PHASE_KEYCHAR
+                   && currentInput->phase != UIEvent::PHASE_JOYSTICK))
 			{
 				if(!IsPointInside(currentInput->point))
 				{
@@ -1912,7 +1934,11 @@ namespace DAVA
 		Sprite *sprite =  this->GetSprite();
 		if (sprite)
 		{
-			node->Set("sprite", TruncateTxtFileExtension(sprite->GetName()));
+			FilePath path(sprite->GetRelativePathname());
+			path.TruncateExtension();
+
+            String pathname = path.GetFrameworkPath();
+			node->Set("sprite", pathname);
 		}
 		// Color
 		Color color =  this->GetBackground()->GetColor();
@@ -2372,7 +2398,7 @@ namespace DAVA
 		return debugDrawColor;
 	}
     
-    bool UIControl::IsLostFocusAllowed( UIControl *newFocus ) const
+    bool UIControl::IsLostFocusAllowed( UIControl *newFocus )
     {
         return true;
     }

@@ -7,57 +7,19 @@
 
 using namespace DAVA;
 
-class CommandToggleVisibilityTool: public Command
-{
-public:
-	CommandToggleVisibilityTool();
-	
-protected:
-	virtual void Execute();
-};
-
-class CommandSetAreaVisibilityTool: public Command
-{
-public:
-	CommandSetAreaVisibilityTool();
-	
-protected:
-	virtual void Execute();
-};
-
-class CommandSetPointVisibilityTool: public Command
-{
-public:
-	CommandSetPointVisibilityTool();
-	
-protected:
-	virtual void Execute();
-};
-
 class CommandSaveTextureVisibilityTool: public Command
 {
 public:
-	CommandSaveTextureVisibilityTool();
+	DAVA_DEPRECATED(CommandSaveTextureVisibilityTool());// DEPRECATED : use QString
 	
 protected:
-	virtual void Execute();
-};
-
-class CommandChangeAreaSizeVisibilityTool: public Command
-{
-public:
-	CommandChangeAreaSizeVisibilityTool(uint32 newSize);
-	
-protected:
-	uint32 size;
-	
 	virtual void Execute();
 };
 
 class CommandPlacePointVisibilityTool: public Command
 {
 public:
-	CommandPlacePointVisibilityTool(const Vector2& newVisibilityPoint, const Vector2& oldVisibilityPoint, bool oldPointIsSet, Image* oldImage);
+	DAVA_DEPRECATED(CommandPlacePointVisibilityTool(const Vector2& newVisibilityPoint, const Vector2& oldVisibilityPoint, bool oldPointIsSet, Image* oldImage));// DEPRECATED: usage of SceneEditorScreenMain
 	virtual ~CommandPlacePointVisibilityTool();
 
 protected:
@@ -77,7 +39,7 @@ protected:
 class CommandPlaceAreaVisibilityTool: public Command
 {
 public:
-	CommandPlaceAreaVisibilityTool(const Vector2& areaPoint, uint32 areaSize, Image* oldImage);
+	DAVA_DEPRECATED(CommandPlaceAreaVisibilityTool(const Vector2& areaPoint, uint32 areaSize, Image* oldImage));// DEPRECATED: usage of SceneEditorScreenMain
 	virtual ~CommandPlaceAreaVisibilityTool();
 
 protected:

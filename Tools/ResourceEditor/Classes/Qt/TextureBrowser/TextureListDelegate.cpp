@@ -86,7 +86,7 @@ void TextureListDelegate::drawPreviewBig(QPainter *painter, const QStyleOptionVi
 	{
 		DAVA::Texture *curTexture = curModel->getTexture(index);
 
-		QString texturePath = curTextureDescriptor->GetSourceTexturePathname().c_str();
+		QString texturePath = curTextureDescriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str();
 		QString textureName = QFileInfo(texturePath).fileName();
 		QSize textureDimension = QSize();
 		QVariant textureDataSize = 0;

@@ -27,6 +27,8 @@
         <activity
             android:name="com.dava.levelperformancetest.LevelPerfomanceTest"
             android:label="@string/app_name"
+            android:screenOrientation="landscape"
+            android:configChanges="keyboard|keyboardHidden|orientation"
             android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
