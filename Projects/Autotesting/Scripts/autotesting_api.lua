@@ -433,7 +433,7 @@ end
 
 function ClickPosition(position, touchId)
     local touchId = touchId or 1
-    Log("ClickPosition position="..position.x..","..position.y.." touchId="..touchId)
+    --Log("ClickPosition position="..position.x..","..position.y.." touchId="..touchId)
     
     TouchDownPosition(position, touchId)
 	Yield()
