@@ -702,6 +702,7 @@
     <ClCompile Include="_GeneratedQt\Scene\System\CollisionSystem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\System\CustomColorsSystem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\System\EditorLightSystem_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Scene\System\EditorParticlesSystem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\System\GridSystem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\System\HeightmapEditorSystem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\System\HoodSystem\HoodCollObject_moc.cpp" />
@@ -719,7 +720,6 @@
     <ClCompile Include="_GeneratedQt\Scene\System\LandscapeEditorDrawSystem\VisibilityToolProxy_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\System\LandscapeEditorDrawSystem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\System\ModifSystem_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\Scene\System\ParticlesDebugDrawSystem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\System\SelectionSystem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\System\StructureSystem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\System\TilemaskEditorSystem_moc.cpp" />
@@ -1322,4 +1322,8 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
+  <Target Name="BeforeClean">
+    <Message Text="Cleaning up QT-generated data" Importance="normal" />
+    <RemoveDir Directories="_GeneratedQt" />
+  </Target>
 </Project>
