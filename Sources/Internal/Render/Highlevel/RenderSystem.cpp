@@ -27,6 +27,7 @@
 #include "Render/Highlevel/Light.h"
 #include "Scene3D/Systems/ParticleEmitterSystem.h"
 #include "Render/Highlevel/RenderFastNames.h"
+#include "Utils/Utils.h"
 
 namespace DAVA
 {
@@ -59,6 +60,8 @@ RenderSystem::RenderSystem()
     renderPassOrder.push_back(renderPassesMap[PASS_SHADOW_VOLUME]);
 
 	particleEmitterSystem = new ParticleEmitterSystem();
+
+	markedObjects.reserve(100);
 }
 
 RenderSystem::~RenderSystem()
@@ -112,17 +115,8 @@ void RenderSystem::RemoveFromRender(RenderObject * renderObject)
 		RemoveRenderBatch(batch);
 	}
 
-    List<RenderObject*>::iterator end = markedObjects.end();
-    for (List<RenderObject*>::iterator it = markedObjects.begin(); it != end; ++it)
-    {
-        if(*it == renderObject)
-        {
-            markedObjects.erase(it);
-            break;
-        }
-    }
+	FindAndRemoveExchangingWithLast(markedObjects, renderObject);
 
-    
 	RenderObject * lastRenderObject = renderObjectArray[renderObjectArray.size() - 1];
     renderObjectArray[renderObject->GetRemoveIndex()] = lastRenderObject;
     renderObjectArray.pop_back();
@@ -192,8 +186,8 @@ Camera * RenderSystem::GetCamera()
 void RenderSystem::ProcessClipping()
 {
     int32 objectBoxesUpdated = 0;
-    List<RenderObject*>::iterator end = markedObjects.end();
-    for (List<RenderObject*>::iterator it = markedObjects.begin(); it != end; ++it)
+    Vector<RenderObject*>::iterator end = markedObjects.end();
+    for (Vector<RenderObject*>::iterator it = markedObjects.begin(); it != end; ++it)
     {
         RenderObject * obj = *it;
         obj->GetBoundingBox().GetTransformedBox(*obj->GetWorldTransformPtr(), obj->GetWorldBoundingBox());
