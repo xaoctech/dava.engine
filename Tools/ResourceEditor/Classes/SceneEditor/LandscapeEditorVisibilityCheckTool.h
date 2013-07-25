@@ -44,7 +44,7 @@ public:
 
 	void SetState(eVisibilityCheckToolState newState);
 	void SetVisibilityAreaSize(uint32 size);
-	void SaveColorLayer(const String &pathName);
+	void SaveColorLayer(const FilePath &pathName);
 	void ClearSceneResources();
 
 	void StorePointState(Vector2* point, bool* pointIsSet, Image** image);
@@ -64,7 +64,7 @@ protected:
     virtual void InputAction(int32 phase, bool intersects);
     virtual void HideAction();
     virtual void ShowAction();
-    virtual void SaveTextureAction(const String &pathToFile);
+    virtual void SaveTextureAction(const FilePath &pathToFile);
 	virtual void UpdateCursor();
 	
     virtual void RecreateHeightmapNode();

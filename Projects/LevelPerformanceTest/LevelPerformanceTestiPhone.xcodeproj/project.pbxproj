@@ -18,6 +18,8 @@
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
 		4929815E16E0ACAF00F2C7B6 /* TextureHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4929815C16E0ACAF00F2C7B6 /* TextureHelper.cpp */; };
+		49F388B0179E84B40038625F /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49F388AF179E84B40038625F /* MessageUI.framework */; };
+		49F388B3179E84BA0038625F /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49F388B2179E84BA0038625F /* AdSupport.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C110F03416C2537A001EEAB2 /* FileManagerWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C110F02F16C2537A001EEAB2 /* FileManagerWrapper.cpp */; };
 		C110F03516C2537A001EEAB2 /* LandscapeTestData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C110F03016C2537A001EEAB2 /* LandscapeTestData.cpp */; };
 		C110F03616C2537A001EEAB2 /* SettingsManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C110F03216C2537A001EEAB2 /* SettingsManager.cpp */; };
@@ -64,6 +66,8 @@
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		4929815C16E0ACAF00F2C7B6 /* TextureHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureHelper.cpp; sourceTree = "<group>"; };
 		4929815D16E0ACAF00F2C7B6 /* TextureHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureHelper.h; sourceTree = "<group>"; };
+		49F388AF179E84B40038625F /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
+		49F388B2179E84BA0038625F /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
 		C110F02F16C2537A001EEAB2 /* FileManagerWrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileManagerWrapper.cpp; sourceTree = "<group>"; };
 		C110F03016C2537A001EEAB2 /* LandscapeTestData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeTestData.cpp; sourceTree = "<group>"; };
 		C110F03116C2537A001EEAB2 /* LandscapeTestData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeTestData.h; sourceTree = "<group>"; };
@@ -92,6 +96,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				49F388B3179E84BA0038625F /* AdSupport.framework in Frameworks */,
+				49F388B0179E84B40038625F /* MessageUI.framework in Frameworks */,
 				18B1F5121622FEC8007FBF1B /* AssetsLibrary.framework in Frameworks */,
 				185A26A61611921E00C2554E /* libFramework.a in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
@@ -189,6 +195,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				49F388B2179E84BA0038625F /* AdSupport.framework */,
+				49F388AF179E84B40038625F /* MessageUI.framework */,
 				18B1F5111622FEC8007FBF1B /* AssetsLibrary.framework */,
 				FEFB01D211C8F28A00B65B8B /* GameKit.framework */,
 				FE76DA031163F32F009E83B6 /* QuartzCore.framework */,
@@ -354,7 +362,6 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = DAVA_DEBUG;
 				GCC_THUMB_SUPPORT = NO;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
@@ -364,6 +371,7 @@
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				LIBRARY_SEARCH_PATHS = ./../../Libs/libs;
+				OTHER_CFLAGS = "-mno-thumb";
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lz",
@@ -382,7 +390,6 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_THUMB_SUPPORT = NO;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
@@ -392,6 +399,7 @@
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				LIBRARY_SEARCH_PATHS = ./../../Libs/libs;
+				OTHER_CFLAGS = "-mno-thumb";
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lz",

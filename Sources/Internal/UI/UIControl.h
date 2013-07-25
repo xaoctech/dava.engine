@@ -247,7 +247,7 @@ public:
 	 \param[in] spriteName Sprite path-name.
 	 \param[in] spriteFrame Sprite frame you want to use for draw.
 	 */
-	virtual void SetSprite(const String &spriteName, int32 spriteFrame);
+	virtual void SetSprite(const FilePath &spriteName, int32 spriteFrame);
 	/**
 	 \brief Sets Sprite for the control UIControlBackground object.
 	 \param[in] newSprite Pointer for a Sprite.
@@ -1099,9 +1099,7 @@ public:
 	 */
 	virtual bool IsPointInside(const Vector2 &point, bool expandWithFocus = false);
 
-
-    
-    virtual bool IsLostFocusAllowed(UIControl *newFocus) const;
+    virtual bool IsLostFocusAllowed(UIControl *newFocus);
 
     virtual void SystemOnFocusLost(UIControl *newFocus);
 

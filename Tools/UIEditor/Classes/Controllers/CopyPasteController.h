@@ -23,6 +23,7 @@ namespace DAVA {
 			CopyTypeNone,
 			CopyTypeControl,
 			CopyTypeScreen,
+			CopyTypeAggregator,
 			CopyTypePlatform,
 		};
 		

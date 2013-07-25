@@ -31,13 +31,9 @@ public:
 	virtual void SetVisible(bool isVisible, bool hierarchic = true);
 
 	void SetDelegate(IUIWebViewDelegate* delegate);
-
-    //retun current flag value and set it to true.
-	bool UpdateInitiatedByUserFlag();
+	void SetBackgroundTransparency(bool enabled);
 
 protected:
-	
-	bool isInitiatedByUser;
 
 	// Platform-specific implementation of the Web View Control.
 	IWebViewControl* webViewControl;

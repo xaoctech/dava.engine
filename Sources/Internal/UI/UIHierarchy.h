@@ -66,9 +66,9 @@ class UIHierarchyDelegate
     virtual int32 ChildrenCount(UIHierarchy *forHierarchy, void *forParent) = 0;
     virtual void *ChildAtIndex(UIHierarchy *forHierarchy, void *forParent, int32 index) = 0;
     virtual UIHierarchyCell *CellForNode(UIHierarchy *forHierarchy, void *node) = 0;
-    virtual void OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCell *selectedCell)
-    {};
-    virtual void DragAndDrop(void *who, void *target, int32 mode) {};
+
+    virtual void OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCell *selectedCell);
+    virtual void DragAndDrop(void *who, void *target, int32 mode);
 };
 
 

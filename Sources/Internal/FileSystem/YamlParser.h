@@ -88,6 +88,7 @@ public:
 	Vector2			AsVector2();
 	Vector3			AsVector3();
   	Vector4			AsVector4();
+	Color			AsColor();
 	Rect			AsRect();	
     VariantType     AsVariantType();
 	
@@ -196,20 +197,20 @@ protected:
 	YamlParser();
 	virtual ~YamlParser();
 
-	bool Parse(const String & fileName);
+	bool Parse(const FilePath & fileName);
 	
 public:
     // This method just creates the YAML parser.
     static YamlParser   * Create();
     
     // This method creates the parser and parses the input file.
-	static YamlParser	* Create(const String & fileName);
+	static YamlParser	* Create(const FilePath & fileName);
 	
     // Save to YAML file.
-	bool SaveToYamlFile(const String& fileName, YamlNode * rootNode, bool skipRootNode, uint32 attr = File::CREATE | File::WRITE);
+	bool SaveToYamlFile(const FilePath & fileName, YamlNode * rootNode, bool skipRootNode, uint32 attr = File::CREATE | File::WRITE);
     
 	// Save the strings list (needed for Localization).
-	bool SaveStringsList(const String& fileName, YamlNode * rootNode, uint32 attr = File::CREATE | File::WRITE);
+	bool SaveStringsList(const FilePath & fileName, YamlNode * rootNode, uint32 attr = File::CREATE | File::WRITE);
 
 	// Get the root node.
 	YamlNode			* GetRootNode();
@@ -248,7 +249,7 @@ private:
 	YamlNode			* rootObject;
 	String				lastMapKey;
 	
-	std::stack<YamlNode *> objectStack;
+	Stack<YamlNode *> objectStack;
 
 	YamlDataHolder dataHolder;
 };

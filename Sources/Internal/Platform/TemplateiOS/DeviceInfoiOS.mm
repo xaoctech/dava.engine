@@ -3,10 +3,12 @@
 #ifdef __DAVAENGINE_IPHONE__
 
 #include "Utils/StringFormat.h"
+#include "OpenUDIDios.h"
 
 #import <UIKit/UIDevice.h>
 #import <Foundation/NSLocale.h>
 #import <sys/utsname.h>
+#import <AdSupport/ASIdentifierManager.h>
 
 namespace DAVA
 {
@@ -160,6 +162,31 @@ String DeviceInfo::GetTimeZone()
 {
 	NSTimeZone *localTime = [NSTimeZone systemTimeZone];
 	return [[localTime name] UTF8String];
+}
+    
+String DeviceInfo::GetUDID()
+{
+	bool hasAdvertisingId = (NSClassFromString(@"ASIdentifierManager") != nil);
+
+	bool iOSLowerThan7 = false;
+	NSString* version = [NSString stringWithCString:GetVersion().c_str()
+										   encoding:[NSString defaultCStringEncoding]];
+	if ([version compare:@"7.0" options:NSNumericSearch] == NSOrderedAscending)
+	{
+		iOSLowerThan7 = true;
+	}
+
+	NSString* udid = nil;
+	if (iOSLowerThan7 || !hasAdvertisingId)
+	{
+		udid = [[[[OpenUDIDiOS alloc] init] autorelease] value];
+	}
+	else
+	{
+		udid = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
+	}
+
+	return [udid UTF8String];
 }
 
 }

@@ -98,7 +98,7 @@ public:
     
     void AddRenderBatch(RenderBatch * batch);
     void RemoveRenderBatch(RenderBatch * batch);
-    void RecalcBoundingBox();
+    virtual void RecalcBoundingBox();
     
     uint32 GetRenderBatchCount();
     RenderBatch * GetRenderBatch(uint32 batchIndex);
@@ -129,7 +129,7 @@ public:
 	void SetRenderSystem(RenderSystem * renderSystem);
 	RenderSystem * GetRenderSystem();
 
-	virtual void BakeTransform(const Matrix4 & transform) {}
+	virtual void BakeTransform(const Matrix4 & transform);
 	virtual ShadowVolume * CreateShadow() {return 0;}
     
 protected:

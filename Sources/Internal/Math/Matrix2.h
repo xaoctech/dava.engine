@@ -33,6 +33,7 @@
 #include <math.h>
 #include "Base/BaseTypes.h"
 #include "Math/MathDefines.h"
+#include "Math/MathConstants.h"
 
 namespace DAVA
 {

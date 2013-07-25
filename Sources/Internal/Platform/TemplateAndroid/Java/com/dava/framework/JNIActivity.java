@@ -1,19 +1,34 @@
 package com.dava.framework;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.hardware.SensorManager;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import org.fmod.FMODAudioDevice;
+
+import com.bda.controller.Controller;
+
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 
 public abstract class JNIActivity extends Activity implements JNIAccelerometer.JNIAccelerometerListener
 {
@@ -23,6 +38,10 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 	private GLSurfaceView glView = null;
 	private EditText editText = null;
     
+	private FMODAudioDevice fmodDevice = new FMODAudioDevice();
+	
+	private Controller mController;
+	
     private native void nativeOnCreate(boolean isFirstRun);
     private native void nativeOnStart();
     private native void nativeOnStop();
@@ -55,11 +74,6 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
     	// The activity is being created.
         Log.i(JNIConst.LOG_TAG, "[Activity::onCreate]");
 
-        /*requestWindowFeature(Window.FEATURE_NO_TITLE);
-        
-        super.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        super.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);*/
-
         // initialize accelerometer
         SensorManager sensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
         accelerometer = new JNIAccelerometer(this, sensorManager);
@@ -71,13 +85,12 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
         glView.setClickable(true);
         glView.setFocusable(true);
         glView.requestFocus();
-        
-        editText = new EditText(this);
-        InitEditText(editText);
-    
-        if(0 != errorState)
-        {
 
+        mController = Controller.getInstance(this);
+        if(mController != null)
+        {
+        	mController.init();
+        	mController.setListener(GetSurfaceView().mogaListener, new Handler());
         }
 
         Log.i(JNIConst.LOG_TAG, "[Activity::onCreate] isFirstRun is " + isFirstRun); 
@@ -88,6 +101,7 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
     protected void onStart()
     {
     	super.onStart();
+    	fmodDevice.start();
     	// The activity is about to become visible.
     	
         Log.i(JNIConst.LOG_TAG, "[Activity::onStart]");
@@ -126,6 +140,11 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
         // The activity has become visible (it is now "resumed").
 		Log.i(JNIConst.LOG_TAG, "[Activity::onResume] start");
 
+		if(mController != null)
+		{
+			mController.onResume();
+		}
+		
         // activate accelerometer
         if(null != accelerometer)
         {
@@ -140,7 +159,7 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
         {
         	glView.onResume();
         }
-
+        
         Log.i(JNIConst.LOG_TAG, "[Activity::onResume] finish");
     }
 
@@ -153,6 +172,11 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 
         Log.i(JNIConst.LOG_TAG, "[Activity::onPause] start");
 
+		if(mController != null)
+		{
+			mController.onPause();
+		}
+		
         // deactivate accelerometer
         if(null != accelerometer)
         {
@@ -178,11 +202,12 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
         Log.i(JNIConst.LOG_TAG, "[Activity::onPause] finish");
     }
 
-    
     @Override
     protected void onStop()
     {
         Log.i(JNIConst.LOG_TAG, "[Activity::onStop] start");
+        
+        fmodDevice.stop();
         
         //call native method
         nativeOnStop();
@@ -199,6 +224,9 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
     {
         Log.i(JNIConst.LOG_TAG, "[Activity::onDestroy] start");
 
+        if(mController != null)
+        	mController.exit();
+        
         //call native method
         nativeOnDestroy();
 
@@ -216,62 +244,69 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
     	super.onPostResume();
     }
     
-    
     public void onAccelerationChanged(float x, float y, float z)
 	{
 		nativeOnAccelerometer(x, y, z);
 	}
     
-    static boolean inputFilterRes = false;
-    private void InitEditText(EditText editText)
+    private void InitEditText(EditText editText, Rect rect)
     {
-    	FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(new FrameLayout.MarginLayoutParams(0, 0));
-        params.leftMargin = -1;
-        params.topMargin = -1;
-        addContentView(editText, params);
+		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(rect.width(), rect.height());
+		params.leftMargin = rect.left;
+		params.topMargin = rect.top;
+		params.gravity = Gravity.LEFT | Gravity.TOP;
 
-        editText.setMaxLines(1);
-        editText.setBackgroundColor(Color.BLACK);
-        editText.setTextColor(Color.WHITE);
-        
-        InputFilter inputFilter = new InputFilter() {
+		editText.setPadding(0, 0, 0, 0);
+		
+		editText.setSingleLine(true);
+		int fontSize = (int)(rect.height() / 1.45f);
+		editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, fontSize);
+
+		editText.setBackgroundColor(Color.BLACK);
+		editText.setTextColor(Color.WHITE);
+
+		editText.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI | EditorInfo.IME_ACTION_DONE);
+
+		InputFilter inputFilter = new InputFilter() {
 			
 			@Override
 			public CharSequence filter(final CharSequence source, final int start, final int end,
-					Spanned dest, int dstart, int dend) {
-				if (source.length() > 1)
-					return source;
+					Spanned dest, final int dstart, final int dend) {
+				Callable<Boolean> b = new Callable<Boolean>() {
+					
+					@Override
+					public Boolean call() throws Exception {
+						return JNITextField.TextFieldKeyPressed(dstart, dend - dstart, source.toString());
+					}
+				};
 				
-				inputFilterRes = false;
-				final Object mutex = new Object();
-				glView.queueEvent(new Runnable() {
-					public void run() {
-						inputFilterRes = JNITextField.TextFieldKeyPressed(start, end - start, source.toString());
-						synchronized (mutex) {
-							mutex.notify();
-						}
-					}
-				});
-				synchronized (mutex) {
-					try {
-						mutex.wait();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
+				FutureTask<Boolean> t = new FutureTask<Boolean>(b);
+				
+				glView.queueEvent(t);
+				
+				while (!t.isDone()) {
+					Thread.yield();
 				}
-				if (inputFilterRes)
-					return source;
+				
+				try {
+					if (t.get())
+						return source;
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					e.printStackTrace();
+				}
+				
 				return "";
 			}
 		};
-        editText.setFilters(new InputFilter[]{inputFilter});
+		editText.setFilters(new InputFilter[]{inputFilter});
 
-        editText.setOnKeyListener(new View.OnKeyListener() {
+		editText.setOnEditorActionListener(new OnEditorActionListener() {
 			
 			@Override
-			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER)
-				{
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+				if (actionId == EditorInfo.IME_ACTION_DONE) {
 					glView.queueEvent(new Runnable() {
 						@Override
 						public void run() {
@@ -283,54 +318,54 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 				return false;
 			}
 		});
+		addContentView(editText, params);
+		
+		editText.setInputType(EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
     }
 	
 	public void ShowEditText(float x, float y, float dx, float dy, String defaultText)
 	{
+		if (editText != null) {
+			RemoveEditText();
+		}
+
+		editText = new EditText(this);
+		InitEditText(editText, new Rect((int)x, (int)y, (int)(x + dx), (int)(y + dy)));
+
 		editText.setText(defaultText);
 		editText.setSelection(editText.getText().length());
-		
-		//TODO: YZ fix incorrect control height
-		dy += 5f;	
-		//dy += editText.getPaddingBottom() - editText.getPaddingTop();
-		
-		FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) editText.getLayoutParams();
-		params.leftMargin = (int)x;
-		params.topMargin = (int)y;
-		params.width = (int)(dx + 0.5f);
-		params.height = (int)(dy + 0.5f); 
-		editText.setLayoutParams(params);
-		
+
 		editText.requestFocus();
 		InputMethodManager input = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-		input.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
+		input.showSoftInput(editText, InputMethodManager.SHOW_FORCED);
 	}
 	
-	public void HideEditText(boolean notifyCore)
+	public void HideEditText()
 	{
+		if (editText == null)
+			return;
+
 		InputMethodManager input = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		input.hideSoftInputFromWindow(editText.getWindowToken(), 0);
-		
-		FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) editText.getLayoutParams();
-		params.leftMargin = (int)-1;
-		params.topMargin = (int)-1;
-		params.width = (int)0;
-		params.height = (int)0;
-		editText.setLayoutParams(params);
-		if (notifyCore)
-		{
-			final String text = editText.getText().toString();
-			glView.queueEvent(new Runnable() {
-				@Override
-				public void run() {
-					JNITextField.FieldHiddenWithText(text);
-				}
-			});
+
+		RemoveEditText();
+	}
+
+	private void RemoveEditText() {
+		if (editText != null) {
+			ViewGroup parent = (ViewGroup) editText.getParent();
+			if (parent != null)
+				parent.removeView(editText);
+			editText = null;
 		}
 	}
 	
 	public String GetEditText()
 	{
 		return editText.getText().toString();
+	}
+
+	public boolean IsEditTextVisible() {
+		return (editText != null);
 	}
 }

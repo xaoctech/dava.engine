@@ -105,6 +105,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/AndroidFramework/bin/androidframework.jar</locationURI>
 		</link>
 		<link>
+			<name>libs/fmodex.jar</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/AndroidFramework/libs/fmodex.jar</locationURI>
+		</link>
+		<link>
 			<name>src/Classes</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -323,6 +328,16 @@
 			<name>src/Classes/TextureUtils.h</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Classes/TextureUtils.h</locationURI>
+		</link>
+		<link>
+			<name>src/Classes/TransparentWebViewTest.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Classes/TransparentWebViewTest.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/Classes/TransparentWebViewTest.h</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Classes/TransparentWebViewTest.h</locationURI>
 		</link>
 		<link>
 			<name>src/Classes/eMailTest.cpp</name>
@@ -548,6 +563,16 @@
 			<name>bin/classes/Classes/TextureUtils.h</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Classes/TextureUtils.h</locationURI>
+		</link>
+		<link>
+			<name>bin/classes/Classes/TransparentWebViewTest.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Classes/TransparentWebViewTest.cpp</locationURI>
+		</link>
+		<link>
+			<name>bin/classes/Classes/TransparentWebViewTest.h</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Classes/TransparentWebViewTest.h</locationURI>
 		</link>
 		<link>
 			<name>bin/classes/Classes/eMailTest.cpp</name>

@@ -25,7 +25,6 @@ using namespace DAVA;
 UIWebView::UIWebView()
 {
 	webViewControl = new WebViewControl();
-	isInitiatedByUser = true;
 }
 
 UIWebView::~UIWebView()
@@ -45,16 +44,8 @@ void UIWebView::SetDelegate(IUIWebViewDelegate* delegate)
 	webViewControl->SetDelegate(delegate, this);
 }
 
-bool UIWebView::UpdateInitiatedByUserFlag()
-{
-    bool retValue = isInitiatedByUser;
-    isInitiatedByUser = true;
-    return retValue;
-}
-
 void UIWebView::OpenURL(const String& urlToOpen)
 {
-	isInitiatedByUser = false;
 	this->webViewControl->OpenURL(urlToOpen);
 }
 
@@ -80,4 +71,9 @@ void UIWebView::SetVisible(bool isVisible, bool hierarchic)
 {
 	UIControl::SetVisible(isVisible, hierarchic);
 	this->webViewControl->SetVisible(isVisible, hierarchic);
+}
+
+void UIWebView::SetBackgroundTransparency(bool enabled)
+{
+	this->webViewControl->SetBackgroundTransparency(enabled);
 }

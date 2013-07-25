@@ -37,7 +37,7 @@ namespace DAVA
 {
     
 
-SpriteNode::SpriteNode(const String &pathToSprite, int32 _frame
+SpriteNode::SpriteNode(const FilePath &pathToSprite, int32 _frame
                        , const Vector2 &reqScale, const Vector2 &pivotPoint)
 :   Entity()
 {

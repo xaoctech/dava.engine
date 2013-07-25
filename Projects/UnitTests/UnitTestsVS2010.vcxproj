@@ -20,6 +20,9 @@
     <ClInclude Include="Classes\DXTTest.h" />
     <ClInclude Include="Classes\EMailTest.h" />
     <ClInclude Include="Classes\EntityTest.h" />
+    <ClInclude Include="Classes\FileListTest.h" />
+    <ClInclude Include="Classes\FilePathTest.h" />
+    <ClInclude Include="Classes\FileSystemTest.h" />
     <ClInclude Include="Classes\FrameworkMain.h" />
     <ClInclude Include="Classes\GameCore.h" />
     <ClInclude Include="Classes\HashMapTest.h" />
@@ -35,6 +38,8 @@
     <ClInclude Include="Classes\SplitTest.h" />
     <ClInclude Include="Classes\TestTemplate.h" />
     <ClInclude Include="Classes\TextureUtils.h" />
+    <ClInclude Include="Classes\TransparentWebViewTest.h" />
+    <ClInclude Include="Classes\UIListTest.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\BaseScreen.cpp" />
@@ -45,6 +50,9 @@
     <ClCompile Include="Classes\DXTTest.cpp" />
     <ClCompile Include="Classes\EMailTest.cpp" />
     <ClCompile Include="Classes\EntityTest.cpp" />
+    <ClCompile Include="Classes\FileListTest.cpp" />
+    <ClCompile Include="Classes\FilePathTest.cpp" />
+    <ClCompile Include="Classes\FileSystemTest.cpp" />
     <ClCompile Include="Classes\FrameworkMain.cpp" />
     <ClCompile Include="Classes\GameCore.cpp" />
     <ClCompile Include="Classes\HashMapTest.cpp" />
@@ -60,6 +68,8 @@
     <ClCompile Include="Classes\SplitTest.cpp" />
     <ClCompile Include="Classes\TestTemplate.cpp" />
     <ClCompile Include="Classes\TextureUtils.cpp" />
+    <ClCompile Include="Classes\TransparentWebViewTest.cpp" />
+    <ClCompile Include="Classes\UIListTest.cpp" />
     <ClCompile Include="Win32Specific\main.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

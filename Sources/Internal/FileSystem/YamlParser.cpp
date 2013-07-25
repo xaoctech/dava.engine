@@ -303,7 +303,31 @@ Vector4 YamlNode::AsVector4()
         if (w)
             result.w = w->AsFloat();
     }
-    return result;        
+    return result;
+}
+
+Color YamlNode::AsColor()
+{
+    Color result = Color::White();
+    if (type == TYPE_ARRAY)
+    {
+        YamlNode * r = Get(0);
+        if (r)
+            result.r = r->AsFloat();
+
+        YamlNode * g = Get(1);
+        if (g)
+            result.g = g->AsFloat();
+
+        YamlNode * b = Get(2);
+        if (b)
+            result.b = b->AsFloat();
+
+        YamlNode * a = Get(3);
+        if (a)
+            result.a = a->AsFloat();
+    }
+    return result;
 }
 
 Vector2 YamlNode::AsVector2()
@@ -460,6 +484,10 @@ VariantType YamlNode::AsVariantType()
                                         sRowVect.x,sRowVect.y,sRowVect.z,sRowVect.w,
                                         tRowVect.x,tRowVect.y,tRowVect.z,tRowVect.w,
                                         foRowVect.x,foRowVect.y,foRowVect.z,foRowVect.w));
+        }
+        if(innerTypeName == DAVA::VariantType::TYPENAME_COLOR)
+        {
+            retValue.SetColor(it->second->AsColor());
         }
     }
     
@@ -867,6 +895,13 @@ void  YamlNode::FillContentAccordingToVariantTypeValue(VariantType* varType)
             ProcessMatrix( array, dimension );
         }
             break;
+        case VariantType::TYPE_COLOR:
+            {
+                type = TYPE_ARRAY;
+                const Color& color = varType->AsColor();
+                ProcessVector(color.color,COUNT_OF(color.color));
+            }
+            break;
         default:
             break;
     }
@@ -974,7 +1009,7 @@ void YamlNode::InitFromKeyedArchive(KeyedArchive* archive)
     
 /*******************************************************/
 	
-YamlParser * YamlParser::Create(const String & fileName)
+YamlParser * YamlParser::Create(const FilePath & fileName)
 {
 	YamlParser * parser = new YamlParser();
 	if (parser)
@@ -994,7 +1029,7 @@ YamlParser * YamlParser::Create()
     return new YamlParser();
 }
     
-bool YamlParser::Parse(const String & pathName)
+bool YamlParser::Parse(const FilePath & pathName)
 {
 	yaml_parser_t parser;
 	yaml_event_t event;
@@ -1013,7 +1048,7 @@ bool YamlParser::Parse(const String & pathName)
 	File * yamlFile = File::Create(pathName, File::OPEN | File::READ);
     if (!yamlFile)
     {
-    Logger::Error("[YamlParser::Parse] Can't create file: %s", pathName.c_str());
+        Logger::Error("[YamlParser::Parse] Can't create file: %s", pathName.GetAbsolutePathname().c_str());
         return false;
     }
     
@@ -1235,13 +1270,13 @@ bool YamlParser::Parse(const String & pathName)
 	return true;
 }
 	
-bool YamlParser::SaveToYamlFile(const String& fileName, YamlNode * rootNode, bool skipRootNode, uint32 attr /*= File::CREATE | File::WRITE*/)
+bool YamlParser::SaveToYamlFile(const FilePath & fileName, YamlNode * rootNode, bool skipRootNode, uint32 attr /*= File::CREATE | File::WRITE*/)
 {
     // Firstly try to check whether the file can be created.
 	File * yamlFileToSave = File::Create(fileName, attr);
     if (!yamlFileToSave)
     {
-        Logger::Error("[YamlParser::Save] Can't create file: %s for output", fileName.c_str());
+        Logger::Error("[YamlParser::Save] Can't create file: %s for output", fileName.GetAbsolutePathname().c_str());
         return false;
     }
 
@@ -1292,12 +1327,12 @@ bool YamlParser::SaveToYamlFile(const String& fileName, YamlNode * rootNode, boo
     return saveSucceeded;
 }
 
-bool YamlParser::SaveStringsList(const String& fileName, YamlNode * rootNode, uint32 attr)
+bool YamlParser::SaveStringsList(const FilePath & fileName, YamlNode * rootNode, uint32 attr)
 {
 	File * yamlFileToSave = File::Create(fileName, attr);
 	if (!yamlFileToSave)
 	{
-		Logger::Error("[YamlParser::Save] Can't create file: %s for output", fileName.c_str());
+		Logger::Error("[YamlParser::Save] Can't create file: %s for output", fileName.GetAbsolutePathname().c_str());
 		return false;
 	}
 	

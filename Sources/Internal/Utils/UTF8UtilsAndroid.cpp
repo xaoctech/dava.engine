@@ -28,6 +28,7 @@
         * Created by Vitaliy Borodovsky
 =====================================================================================*/
 #include "Utils/UTF8Utils.h"
+#include "Utils/Utils.h"
 #include "FileSystem/Logger.h"
 
 #if defined(__DAVAENGINE_ANDROID__)

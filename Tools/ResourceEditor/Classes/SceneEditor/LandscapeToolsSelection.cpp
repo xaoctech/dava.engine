@@ -100,16 +100,14 @@ void LandscapeToolsSelection::EnumerateTools()
 {
     ReleaseTools();
     
-    String toolsPath = "~res:/LandscapeEditor/Tools/";
+    FilePath toolsPath("~res:/LandscapeEditor/Tools/");
     
     FileList *fileList = new FileList(toolsPath);
     int32 toolID = 0;
     for(int32 iFile = 0; iFile < fileList->GetCount(); ++iFile)
 	{
         String filename = fileList->GetFilename(iFile);
-        String extension = FileSystem::Instance()->GetExtension(filename);
-        
-        if(".png" == extension)
+        if(fileList->GetPathname(iFile).IsEqualToExtension(".png"))
         {
             LandscapeTool *tool = new LandscapeTool(toolID, LandscapeTool::TOOL_BRUSH, toolsPath + filename);
             ++toolID;

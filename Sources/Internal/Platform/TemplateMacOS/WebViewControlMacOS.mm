@@ -75,8 +75,9 @@ using namespace DAVA;
 		
 		if (url)
 		{
-            bool currentInitiatedByUser = self->webView->UpdateInitiatedByUserFlag();
-            IUIWebViewDelegate::eAction action = delegate->URLChanged(self->webView, [url UTF8String], currentInitiatedByUser);
+            NSInteger navigationTypeKey = [[actionInformation objectForKey:@"WebActionNavigationTypeKey"] integerValue];
+            bool isRedirecteByMouseClick = navigationTypeKey == WebNavigationTypeLinkClicked;
+			IUIWebViewDelegate::eAction action = delegate->URLChanged(self->webView, [url UTF8String], isRedirecteByMouseClick);
 			
 			switch (action)
 			{
@@ -205,3 +206,8 @@ void WebViewControl::SetVisible(bool isVisible, bool hierarchic)
 	[(WebView*)webViewPtr setHidden:!isVisible];
 }
 
+void WebViewControl::SetBackgroundTransparency(bool enabled)
+{
+	WebView* webView = (WebView*)webViewPtr;
+	[webView setDrawsBackground:(enabled ? NO : YES)];
+}
