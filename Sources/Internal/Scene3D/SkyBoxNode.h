@@ -24,73 +24,73 @@
 
 namespace DAVA
 {
-	class Material;
-	class RenderDataStream;
-	class SkyBoxNode : public Entity
+class Material;
+class RenderDataStream;
+class SkyBoxNode : public Entity
+{
+private:
+		
+	class SkyBoxRenderBatch : public RenderBatch
 	{
 	private:
-		
-		class SkyBoxRenderBatch : public RenderBatch
-		{
-		private:
 			
-			RenderDataStream* positionStream;
-			RenderDataStream* texCoordStream;
-			float32 nonClippingDistance;
-			float32 zOffset;
-			float32 rotation;
+		RenderDataStream* positionStream;
+		RenderDataStream* texCoordStream;
+		float32 nonClippingDistance;
+		float32 zOffset;
+		float32 rotation;
 			
-		public:
-			
-			SkyBoxRenderBatch();
-			~SkyBoxRenderBatch();
-			
-			void SetBox(const AABBox3& box);
-			void SetVerticalOffset(float32 verticalOffset);
-			void SetRotation(float32 angle);
-			
-			virtual void Draw(DAVA::Camera * camera);
-		};
-		
-	private:
-		
-		FilePath texturePath;
-		Vector3 boxSize;
-		SkyBoxRenderBatch* renderBatch;
-		Material* skyBoxMaterial;
-		float32 zShift;
-		float32 rotationAngle;
-		
-	private:
-		
-		void UpdateSkyBoxSize();
-		void BuildSkyBox();
-				
 	public:
-		
-		SkyBoxNode();
-		virtual ~SkyBoxNode();
 			
-		virtual void SceneDidLoaded(); //initialization happens here
-		
-		virtual void Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
-		virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
-		virtual Entity* Clone(Entity *dstNode);
-		
-		void SetTexture(const FilePath& texPath);
-		FilePath GetTexture();
-		void SetVerticalOffset(const float32& verticalOffset);
-		float32 GetVerticalOffset();
-		void SetRotationAngle(const float32& rotation);
-		float32 GetRotationAngle();
-
-		
-		INTROSPECTION_EXTEND(SkyBoxNode, Entity,
-							 PROPERTY("texture", "Texture Path", GetTexture, SetTexture, I_SAVE | I_VIEW | I_EDIT)
-							 PROPERTY("verticalOffset", "Vertical Offset", GetVerticalOffset, SetVerticalOffset, I_SAVE | I_VIEW | I_EDIT)
-							 PROPERTY("rotationAngle", "Rotation", GetRotationAngle, SetRotationAngle, I_SAVE | I_VIEW | I_EDIT));
-
+		SkyBoxRenderBatch();
+		~SkyBoxRenderBatch();
+			
+		void SetBox(const AABBox3& box);
+		void SetVerticalOffset(float32 verticalOffset);
+		void SetRotation(float32 angle);
+			
+		virtual void Draw(DAVA::Camera * camera);
 	};
+		
+private:
+		
+	FilePath texturePath;
+	Vector3 boxSize;
+	SkyBoxRenderBatch* renderBatch;
+	Material* skyBoxMaterial;
+	float32 zShift;
+	float32 rotationAngle;
+		
+private:
+		
+	void UpdateSkyBoxSize();
+	void BuildSkyBox();
+				
+public:
+		
+	SkyBoxNode();
+	virtual ~SkyBoxNode();
+			
+	virtual void SceneDidLoaded(); //initialization happens here
+		
+	virtual void Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
+	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
+	virtual Entity* Clone(Entity *dstNode);
+		
+	void SetTexture(const FilePath& texPath);
+	FilePath GetTexture();
+	void SetVerticalOffset(const float32& verticalOffset);
+	float32 GetVerticalOffset();
+	void SetRotationAngle(const float32& rotation);
+	float32 GetRotationAngle();
+
+		
+	INTROSPECTION_EXTEND(SkyBoxNode, Entity,
+							PROPERTY("texture", "Texture Path", GetTexture, SetTexture, I_SAVE | I_VIEW | I_EDIT)
+							PROPERTY("verticalOffset", "Vertical Offset", GetVerticalOffset, SetVerticalOffset, I_SAVE | I_VIEW | I_EDIT)
+							PROPERTY("rotationAngle", "Rotation", GetRotationAngle, SetRotationAngle, I_SAVE | I_VIEW | I_EDIT));
+
+};
 };
 
 #endif /* defined(__DAVAENGINE_SKYBOXNODE_H__) */
