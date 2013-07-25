@@ -296,7 +296,8 @@ void StatePropertyGridWidget::MarkupDirtyStates()
     }
 
     stateComboboxItemDelegate.SetBoldTextIndexesList(markedTextIndexesList);
-
+	
+	ui->stateSelectListWidget->blockSignals(true);
 	for (int32 i = 0; i < ui->stateSelectListWidget->count(); ++i)
 	{
 		QListWidgetItem* item = ui->stateSelectListWidget->item(i);
@@ -304,4 +305,5 @@ void StatePropertyGridWidget::MarkupDirtyStates()
 		f.setBold(markedTextIndexesList.contains(i));
 		item->setFont(f);
 	}
+	ui->stateSelectListWidget->blockSignals(false);
 }
