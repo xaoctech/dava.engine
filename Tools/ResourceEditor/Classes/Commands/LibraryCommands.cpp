@@ -195,7 +195,7 @@ void CommandConvertScene::Execute()
         // Export to *.sc2
         path.ReplaceExtension(".sc2");
         SceneFileV2 * file = new SceneFileV2();
-        file->EnableDebugLog(true);
+        file->EnableDebugLog(false);
         file->SaveScene(path, scene);
         SafeRelease(file);
         
