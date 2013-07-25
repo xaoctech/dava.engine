@@ -27,31 +27,22 @@ print "*** DAVA Starting autotesting"
 print "platform.system: " + platform.system()
 print sys.argv
 
+# Parse CLI args
 platformName = arguments[0]
 projectFolder = arguments[1]
 targetName = arguments[2]
 configurationName = arguments[3]
 device = arguments[4]
 
+# Prepare working path's
 currentDir = os.getcwd(); 
 frameworkDir =  os.path.realpath(currentDir + "/../../../")
 projectDir = os.path.realpath(currentDir + "/../../../../" + projectFolder)
 print "Framework directory:" + frameworkDir
 print "Project directory:" + projectDir
 
-# Set env variable LUA_PATH to make avaliable access to LUA modules
-# UPDATE: Now LUA_PATH setups in C-part
-# os.environ["LUA_PATH"] = projectDir + "/Data/Autotesting/Scripts/?.lua;" + projectDir + "/Data/Autotesting/Actions/?.lua;;";
-# print "set LUA_PATH: " + os.environ["LUA_PATH"]
-
 autotestingSrcFolder = os.path.realpath(projectDir + "/Autotesting")
-autotestingDestFolder = os.path.realpath(projectDir + "/Data/Autotesting")
-
-# Remove log file
-#autotestingLogFilePath = os.path.realpath(projectDir + "/test_log.txt")
-#if os.path.exists(autotestingLogFilePath): 
-#    print "delete log file: " + autotestingLogFilePath
-#    os.remove(autotestingLogFilePath)		
+autotestingDestFolder = os.path.realpath(projectDir + "/Data/Autotesting")	
 
 executableName = ""
 executableBuildPath = ""
@@ -61,6 +52,10 @@ testsFolder = os.path.realpath(projectDir + "/Data/Autotesting/Tests")
 testsFolderiOS = os.path.realpath(projectDir + "/build/" + configurationName + "-iphoneos/" + targetName + ".app/Data/Autotesting/Tests")
 testsFolderMacOS = os.path.realpath(projectDir + "/build/" + configurationName + "/" + targetName + ".app/Contents/Resources/Data/Autotesting/Tests")
 
+UID = ""
+HANDLE = ""
+
+# Prepare application to launch
 if (platform.system() == "Windows"):
     executableName = targetName + ".exe"
     print "executableName: " +executableName
@@ -82,15 +77,14 @@ if (platform.system() == "Windows"):
     
     else:
         print "Error: wrong OS " + platformName
-
 elif (platform.system() == "Darwin"):
     executableName = targetName + ".app"
     print "executableName: " +executableName
     
     if (platformName == "iOS"):
-        #TODO: iOS
+
         print "prepare to run " + executableName + " on iOS"
-        #TODO: copy executable to Autotesting
+        # copy executable to Autotesting
         executableBuildPath = os.path.realpath(projectDir + "/build/" + configurationName + "-iphoneos/" + executableName)
         executableRunPath = os.path.realpath(autotestingSrcFolder + "/" + executableName)
         if os.path.exists(executableRunPath):    
@@ -112,19 +106,34 @@ elif (platform.system() == "Darwin"):
         print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
         subprocess.call(params)
     
-		# Remove old App from device - MOVED to RunOnDevice.sh
-        #print "remove "+ executableName +" from device"
+        # Delete and installl app to device
+        print "get device id"
+        params = "~/AIRSDK_Compiler/bin/adt -devices -platform iOS | grep '" + device + "' | awk '{print $3}'"
+        print "subprocess.call " + params
+        UID = subprocess.check_output(params, shell=True).split('\n')[0]
+        
+        params = "~/AIRSDK_Compiler/bin/adt -devices -platform iOS | grep '" + device + "' | awk '{print $1}'"
+        print "subprocess.call " + params
+        HANDLE = subprocess.check_output(params, shell=True).split('\n')[0]
+        
+        print "Device id " + UID + ", device handle " + HANDLE
+
+
+		# Remove old App from device
+        print "remove "+ executableName +" from device"
         #params = ["~/AIRSDK_Compiler/bin/adt", "-uninstallApp", "-platform", platformName, "-appid", "com.yourcompany." + targetName]
-        #params = "~/AIRSDK_Compiler/bin/adt -uninstallApp -platform iOS -appid com.davainc."+targetName
-        #print "subprocess.call " + params
+        params = "~/AIRSDK_Compiler/bin/adt -uninstallApp -platform iOS -device " + HANDLE + " -appid com.davainc."+targetName
+        print "subprocess.call " + params
         #print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
-        #subprocess.call(params, shell=True)
+        subprocess.call(params, shell=True)
 		
-        # ./transporter_chief.rb $2.ipa - MOVED to RunOnDevice.sh
-        #print "deploy "+ ipaName +" on device"
-        #params = ["./transporter_chief.rb", ipaName]
+        # Install app to device
+        print "remove "+ executableName +" from device"
+        #params = ["~/AIRSDK_Compiler/bin/adt", "-uninstallApp", "-platform", platformName, "-appid", "com.yourcompany." + targetName]
+        params = "-installApp -device " + HANDLE + " -platform iOS -package " + ipaName
+        print "subprocess.call " + params
         #print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
-        #subprocess.call(params)
+        subprocess.call(params, shell=True)
 
         
         testsFolder = testsFolderiOS
@@ -182,6 +191,7 @@ if 6 == len(arguments):
 else:
     testFiles = os.listdir(testsFolder)
 
+# Launch tests
 for testFile in testFiles:
     print "current test file is: " + testFile
     
@@ -204,6 +214,7 @@ for testFile in testFiles:
             #instruments -w $4 -t /Developer/Platforms/iPhoneOS.platform/Developer/Library/Instruments/PlugIns/AutomationInstrument.bundle/Contents/Resources/Automation.tracetemplate "$2" -e UIASCRIPT testRun.js
 
             params = ["sh", "./runOnDevice.sh", targetName, device]
+            params = ["instruments", "-w", UID, "-t", "$PATH_TO_AUTO_TEMPL/Automation.tracetemplate", "targetName", "-e", "UIASCRIPT", "testRun.js"]
             print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
             subprocess.call(params)
         
