@@ -125,10 +125,13 @@ void QtPropertyItemDelegate::recalcOptionalWidgets(const QModelIndex &index, QSt
 	{
 		QWidget *owViewport = data->GetOWViewport();
 
-		for (int i = data->GetOWCount() - 1; i >= 0; i--)
+		int prevOWSpace = 0;
+		int owSpacing = 1;
+		int optionRectRight = option->rect.right();
+
+		int dataCount = data->GetOWCount();
+		for (int i = 0; i < dataCount; ++i)
 		{
-			int prevOWSpace = 0;
-			int owSpacing = 1;
 
 			const QtPropertyOW *ow = data->GetOW(i);
 			if(NULL != ow && NULL != owViewport && NULL != ow->widget)
@@ -139,8 +142,9 @@ void QtPropertyItemDelegate::recalcOptionalWidgets(const QModelIndex &index, QSt
 				if(0 != owWidth)
 				{
 					QRect owRect = option->rect;
-					owRect.setLeft(owRect.right() - owWidth - prevOWSpace);
-
+					owRect.setLeft(optionRectRight - owWidth - prevOWSpace);
+					owRect.setRight(owRect.left() + owWidth);
+									
 					owWidget->setGeometry(owRect);
 					owWidget->show();
 
