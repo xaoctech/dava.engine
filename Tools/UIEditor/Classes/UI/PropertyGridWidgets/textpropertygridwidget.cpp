@@ -53,6 +53,7 @@ TextPropertyGridWidget::~TextPropertyGridWidget()
 	delete localizationKeyTextLineEdit;
 	delete localizationKeyNameLabel;
 	delete localizationKeyTextLabel;
+	delete multilineCheckBox;
 }
 
 void TextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
@@ -66,6 +67,7 @@ void TextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::FONT_SIZE_PROPERTY_NAME, ui->fontSizeSpinBox, false, true);
     RegisterPushButtonWidgetForProperty(propertiesMap, PropertyNames::FONT_PROPERTY_NAME, ui->fontSelectButton, false, true);
     RegisterColorButtonWidgetForProperty(propertiesMap, PropertyNames::FONT_COLOR_PROPERTY_NAME, ui->textColorPushButton, false, true);
+
     // Shadow properties are also state-aware
     RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::SHADOW_OFFSET_X, ui->shadowOffsetXSpinBox, false, true);
     RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::SHADOW_OFFSET_Y, ui->shadowOffsetYSpinBox, false, true);
@@ -73,13 +75,20 @@ void TextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     // Localized Text Key is handled through generic Property mechanism, but we need to update the
     // Localization Value widget each time Localization Key is changes.
     RegisterLineEditWidgetForProperty(propertiesMap, PropertyNames::LOCALIZED_TEXT_KEY_PROPERTY_NAME, localizationKeyNameLineEdit, false, true);
+	RegisterCheckBoxWidgetForProperty(propertiesMap, PropertyNames::TEXT_PROPERTY_MULTILINE, multilineCheckBox, false, true);
 	RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::TEXT_ALIGN_PROPERTY_NAME, ui->alignComboBox, false, true);
 
 	bool enableTextAlignComboBox = (dynamic_cast<UIStaticTextMetadata*>(activeMetadata)	!= NULL||
 									dynamic_cast<UITextFieldMetadata*>(activeMetadata)	!= NULL||
 									dynamic_cast<UIButtonMetadata*>(activeMetadata)		!= NULL);
-	ui->alignComboBox->setEnabled(enableTextAlignComboBox);
 
+	ui->alignComboBox->setEnabled(enableTextAlignComboBox);
+	
+	bool enableMultilineCheckBox = (dynamic_cast<UIStaticTextMetadata*>(activeMetadata)	!= NULL);
+
+	multilineCheckBox->setEnabled(enableMultilineCheckBox);
+	multilineCheckBox->setVisible(enableMultilineCheckBox);
+		
     UpdateLocalizationValue();
 
     RegisterGridWidgetAsStateAware();
@@ -91,11 +100,11 @@ void TextPropertyGridWidget::InsertLocalizationFields()
 	ui->textLineEdit->setVisible(false);
 	ui->textLabel->setVisible(false);
 	
-	this->resize(300, 302);
-    this->setMinimumSize(QSize(300, 302));
+	this->resize(300, 322);
+    this->setMinimumSize(QSize(300, 322));
 
-	ui->groupBox->resize(300, 302);
-    ui->groupBox->setMinimumSize(QSize(300, 302));
+	ui->groupBox->resize(300, 322);
+    ui->groupBox->setMinimumSize(QSize(300, 322));
 	
 	localizationKeyNameLabel = new QLabel(ui->groupBox);
 	localizationKeyNameLabel->setObjectName(QString::fromUtf8("localizationKeyNameLabel"));
@@ -114,27 +123,34 @@ void TextPropertyGridWidget::InsertLocalizationFields()
 	localizationKeyTextLineEdit->setEnabled(false);
 	localizationKeyTextLineEdit->setGeometry(QRect(10, 95, 281, 22));
 	localizationKeyTextLineEdit->setReadOnly(true);
-
-	ui->fontNameLabel->setGeometry(QRect(10, 135, 31, 16));
-	ui->fontSizeSpinBox->setGeometry(QRect(234, 131, 57, 25));
-	ui->fontSelectButton->setGeometry(QRect(50, 126, 181, 38));
-	ui->fontColorLabel->setGeometry(QRect(10, 180, 71, 16));
-	ui->textColorPushButton->setGeometry(QRect(85, 178, 205, 21));
-	ui->shadowOffsetLabel->setGeometry(QRect(10, 212, 91, 16));
-	ui->offsetYLabel->setGeometry(QRect(210, 212, 16, 16));
-	ui->shadowColorLabel->setGeometry(QRect(10, 242, 91, 16));
-	ui->shadowOffsetXSpinBox->setGeometry(QRect(140, 208, 57, 25));
-	ui->shadowOffsetYSpinBox->setGeometry(QRect(230, 208, 57, 25));
-	ui->shadowColorButton->setGeometry(QRect(105, 240, 185, 21));
-	ui->offsetXLabel->setGeometry(QRect(120, 212, 16, 16));
-	ui->AlignLabel->setGeometry(QRect(10, 276, 62, 16));
-	ui->alignComboBox->setGeometry(QRect(80, 270, 209, 26));
+	
+	multilineCheckBox = new QCheckBox(ui->groupBox);
+	multilineCheckBox->setObjectName(QString::fromUtf8("multilineCheckBox"));
+	multilineCheckBox->setGeometry(QRect(200, 125, 91, 20));
+	multilineCheckBox->setText(QString::fromUtf8("Wrap text:"));
+	multilineCheckBox->setLayoutDirection(Qt::RightToLeft);
+	
+	ui->fontNameLabel->setGeometry(QRect(10, 155, 31, 16));
+	ui->fontSizeSpinBox->setGeometry(QRect(234, 151, 57, 25));
+	ui->fontSelectButton->setGeometry(QRect(50, 146, 181, 38));
+	ui->fontColorLabel->setGeometry(QRect(10, 200, 71, 16));
+	ui->textColorPushButton->setGeometry(QRect(85, 198, 205, 21));
+	ui->shadowOffsetLabel->setGeometry(QRect(10, 232, 91, 16));
+	ui->offsetYLabel->setGeometry(QRect(210, 232, 16, 16));
+	ui->shadowColorLabel->setGeometry(QRect(10, 262, 91, 16));
+	ui->shadowOffsetXSpinBox->setGeometry(QRect(140, 228, 57, 25));
+	ui->shadowOffsetYSpinBox->setGeometry(QRect(230, 228, 57, 25));
+	ui->shadowColorButton->setGeometry(QRect(105, 260, 185, 21));
+	ui->offsetXLabel->setGeometry(QRect(120, 232, 16, 16));
+	ui->AlignLabel->setGeometry(QRect(10, 296, 62, 16));
+	ui->alignComboBox->setGeometry(QRect(80, 290, 209, 26));
 }
 
 void TextPropertyGridWidget::Cleanup()
 {
     UnregisterGridWidgetAsStateAware();
     UnregisterLineEditWidget(localizationKeyNameLineEdit);
+	UnregisterCheckBoxWidget(multilineCheckBox);
     UITextFieldPropertyGridWidget::Cleanup();
 }
 

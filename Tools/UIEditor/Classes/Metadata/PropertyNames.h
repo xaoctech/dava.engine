@@ -45,6 +45,7 @@ public:
     static const char* ALIGN_PROPERTY_NAME;
     
     static const char* TEXT_PROPERTY_NAME;
+	static const char* TEXT_PROPERTY_MULTILINE;
     static const char* TEXT_COLOR_PROPERTY_NAME;
 	static const char* TEXT_ALIGN_PROPERTY_NAME;
 
