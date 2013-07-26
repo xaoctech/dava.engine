@@ -1294,6 +1294,9 @@
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SkyBoxNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialOptimazer.h">
+      <Filter>Internal\Render\Material</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2280,6 +2283,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ActionUpdateSystem.cpp">
       <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialOptimazer.cpp">
+      <Filter>Internal\Render\Material</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
