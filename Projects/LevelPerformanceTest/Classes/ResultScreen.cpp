@@ -69,6 +69,39 @@ void ResultScreen::SaveResults()
 	results["TextureMemorySize"] = Format("%.2f Mb", testData.GetTextureMemorySize()/(1024.f * 1024.f));
 	results["TextureFilesSize"] = Format("%.2f Mb", testData.GetTexturesFilesSize()/(1024.f * 1024.f));
 
+ 
+    float32 avFps = 0.f;
+    int32 count = testData.GetItemCount();
+	results["FPS items count"] = Format("%d", count);
+    for(int32 i = 0; i < count; ++i)
+    {
+        const FpsStatItem& item = testData.GetItem(i);
+        
+        float32 avPerItem = 0.f;
+        
+        for(int32 fps = 0; fps < SECTORS_COUNT; ++fps)
+        {
+            avPerItem += item.avFps[fps];
+        }
+        
+        avPerItem /= (float32)SECTORS_COUNT;
+        
+        results[Format("FPS average fps per %d item", i)] = Format("%f fps", avPerItem);
+        
+        avFps += avPerItem;
+    }
+    
+    if(count)
+    {
+        results["FPS average value"] = Format("%f fps", avFps / (float32)count);
+    }
+    else
+    {
+        results["FPS average value"] = "0 fps";
+    }
+    
+    
+    
 	String filePath = testData.GetSceneFilePath().GetAbsolutePathname();
     results["SceneFilePath"] = filePath.substr(filePath.find("Maps"));
     
