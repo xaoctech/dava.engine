@@ -545,8 +545,6 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionShowMipmapLevel"/>
-   <addaction name="separator"/>
-   <addaction name="actionEnableNotPassable"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockWidget">
@@ -1027,7 +1025,7 @@
   </action>
   <action name="actionShowNotPassableLandscape">
    <property name="checkable">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="icon">
     <iconset resource="QtIcons.qrc">
@@ -1297,11 +1295,6 @@
    </property>
    <property name="shortcut">
     <string>Alt+C</string>
-   </property>
-  </action>
-  <action name="actionEnableNotPassable">
-   <property name="text">
-    <string>Enable not passable</string>
    </property>
   </action>
   <action name="actionExportMali">

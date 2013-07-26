@@ -569,3 +569,8 @@ VisibilityToolSystem::eVisibilityToolState VisibilityToolSystem::GetState()
 {
 	return state;
 }
+
+int32 VisibilityToolSystem::GetBrushSize()
+{
+	return cursorSize;
+}

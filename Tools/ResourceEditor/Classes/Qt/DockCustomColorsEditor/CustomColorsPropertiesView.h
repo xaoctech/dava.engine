@@ -22,6 +22,8 @@
 
 using namespace DAVA;
 
+class SceneEditor2;
+
 namespace Ui
 {
 	class CustomColorsPropertiesView;
@@ -40,9 +42,23 @@ public:
 
 private slots:
 	void ProjectOpened(const QString &path);
+	void SceneActivated(SceneEditor2* scene);
+	void SceneDeactivated(SceneEditor2* scene);
+	void NeedSaveCustomColorsTexture(SceneEditor2* scene);
+
+	void Toggle();
+	void SetBrushSize(int brushSize);
+	void SetColor(int color);
+	void SaveTexture();
+	void LoadTexture();
 
 private:
 	Ui::CustomColorsPropertiesView* ui;
+	SceneEditor2* activeScene;
+
+	void SetWidgetsState(bool enabled);
+	void BlockAllSignals(bool block);
+	void UpdateFromScene(SceneEditor2* scene);
 };
 
 #endif /* defined(__RESOURCEEDITORQT__CUSTOMCOLORSPROPERTIESVIEW__) */

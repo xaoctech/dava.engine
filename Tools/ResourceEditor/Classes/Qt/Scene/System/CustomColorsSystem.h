@@ -50,7 +50,9 @@ public:
 	void ProcessUIEvent(DAVA::UIEvent *event);
 	
 	void SetBrushSize(int32 brushSize);
+	int32 GetBrushSize();
 	void SetColor(int32 colorIndex);
+	int32 GetColor();
 
 	void SaveTexture(const FilePath& filePath);
 	void LoadTexture(const FilePath& filePath);
@@ -69,10 +71,10 @@ protected:
 	uint32 cursorSize;
 	uint32 curToolSize;
 	Sprite* toolImageSprite;
-	
-	//	Sprite* colorSprite;
+
 	Color drawColor;
-	
+	int32 colorIndex;
+
 	bool isIntersectsLandscape;
 	Vector2 cursorPosition;
 	Vector2 prevCursorPos;

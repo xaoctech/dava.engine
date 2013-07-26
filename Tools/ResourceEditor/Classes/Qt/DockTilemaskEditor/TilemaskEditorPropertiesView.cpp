@@ -28,13 +28,15 @@
 #include "TilemaskEditorPropertiesView.h"
 #include "ui_tilemaskEditorProperties.h"
 
-#include "../Main/QtMainWindowHandler.h"
+#include "../Scene/SceneEditor2.h"
+#include "TextureBrowser/TextureConvertor.h"
 
 #include "Qt/Scene/SceneSignals.h"
 
 TilemaskEditorPropertiesView::TilemaskEditorPropertiesView(QWidget* parent)
 :	QWidget(parent)
 ,	ui(new Ui::TilemaskEditorPropertiesView)
+,	activeScene(NULL)
 {
 	ui->setupUi(this);
 
@@ -50,27 +52,16 @@ void TilemaskEditorPropertiesView::Init()
 {
 	InitBrushImages();
 
-	// TODO: mainwindow
-	/*
-	QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
+	connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2*)), this, SLOT(SceneActivated(SceneEditor2*)));
+	connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2*)), this, SLOT(SceneDeactivated(SceneEditor2*)));
 
-	ui->sliderBrushSize->setValue(120);
-	ui->sliderStrength->setValue(15);
+	connect(ui->buttonEnableTilemaskEditor, SIGNAL(clicked()), this, SLOT(Toggle()));
+	connect(ui->sliderBrushSize, SIGNAL(valueChanged(int)), this, SLOT(SetBrushSize(int)));
+	connect(ui->comboBrushImage, SIGNAL(currentIndexChanged(int)), this, SLOT(SetToolImage(int)));
+	connect(ui->sliderStrength, SIGNAL(valueChanged(int)), this, SLOT(SetStrength(int)));
+	connect(ui->comboTileTexture, SIGNAL(currentIndexChanged(int)), this, SLOT(SetDrawTexture(int)));
 
-	connect(ui->buttonEnableTilemaskEditor, SIGNAL(clicked()), handler, SLOT(ToggleTilemaskEditor()));
-	connect(ui->sliderBrushSize, SIGNAL(valueChanged(int)), handler, SLOT(SetTilemaskEditorBrushSize(int)));
-	connect(ui->comboBrushImage, SIGNAL(currentIndexChanged(int)), handler, SLOT(SetTilemaskEditorToolImage(int)));
-	connect(ui->sliderStrength, SIGNAL(valueChanged(int)), handler, SLOT(SetTilemaskEditorStrength(int)));
-	connect(ui->comboTileTexture, SIGNAL(currentIndexChanged(int)), handler, SLOT(SetTilemaskDrawTexture(int)));
-
-	QtMainWindowHandler::Instance()->RegisterTilemaskEditorWidgets(ui->buttonEnableTilemaskEditor,
-																	ui->sliderBrushSize,
-																	ui->comboBrushImage,
-																	ui->sliderStrength,
-																	ui->comboTileTexture);
-
-	handler->SetTilemaskEditorWidgetsState(false);
-	*/
+	SetWidgetsState(false);
 }
 
 void TilemaskEditorPropertiesView::InitBrushImages()
@@ -96,4 +87,175 @@ void TilemaskEditorPropertiesView::InitBrushImages()
 			ui->comboBrushImage->addItem(toolIcon, f.GetFilename().c_str(), QVariant(qFullname));
 		}
 	}
+}
+
+void TilemaskEditorPropertiesView::SceneActivated(SceneEditor2* scene)
+{
+	DVASSERT(scene);
+	activeScene = scene;
+	UpdateFromScene(scene);
+}
+
+void TilemaskEditorPropertiesView::SceneDeactivated(SceneEditor2* scene)
+{
+	activeScene = NULL;
+}
+
+void TilemaskEditorPropertiesView::SetWidgetsState(bool enabled)
+{
+	ui->buttonEnableTilemaskEditor->blockSignals(true);
+	ui->buttonEnableTilemaskEditor->setCheckable(enabled);
+	ui->buttonEnableTilemaskEditor->setChecked(enabled);
+	ui->buttonEnableTilemaskEditor->blockSignals(false);
+
+	QString buttonText = enabled ? tr("Disable Tilemask Editor") : tr("Enable Tilemask Editor");
+	ui->buttonEnableTilemaskEditor->setText(buttonText);
+
+	ui->sliderBrushSize->setEnabled(enabled);
+	ui->comboBrushImage->setEnabled(enabled);
+	ui->sliderStrength->setEnabled(enabled);
+	ui->comboTileTexture->setEnabled(enabled);
+	BlockAllSignals(!enabled);
+}
+
+void TilemaskEditorPropertiesView::BlockAllSignals(bool block)
+{
+	ui->sliderBrushSize->blockSignals(block);
+	ui->comboBrushImage->blockSignals(block);
+	ui->sliderStrength->blockSignals(block);
+	ui->comboTileTexture->blockSignals(block);
+}
+
+void TilemaskEditorPropertiesView::UpdateFromScene(SceneEditor2* scene)
+{
+	bool enabled = scene->tilemaskEditorSystem->IsLandscapeEditingEnabled();
+	int32 brushSize = scene->tilemaskEditorSystem->GetBrushSize();
+	float32 strength = scene->tilemaskEditorSystem->GetStrength();
+	int32 strengthVal = (int32)(strength * 2.f * ui->sliderStrength->maximum());
+	uint32 tileTexture = scene->tilemaskEditorSystem->GetTileTextureIndex();
+	int32 toolImage = scene->tilemaskEditorSystem->GetToolImage();
+
+	SetWidgetsState(enabled);
+
+	BlockAllSignals(true);
+	ui->sliderBrushSize->setValue(brushSize);
+	ui->sliderStrength->setValue(strengthVal);
+	ui->comboTileTexture->setCurrentIndex(tileTexture);
+	ui->comboBrushImage->setCurrentIndex(toolImage);
+	BlockAllSignals(!enabled);
+}
+
+void TilemaskEditorPropertiesView::UpdateTileTextures()
+{
+	if (!activeScene)
+	{
+		return;
+	}
+
+	ui->comboTileTexture->clear();
+
+	QSize iconSize = ui->comboTileTexture->iconSize();
+	iconSize = iconSize.expandedTo(QSize(150, 32));
+	ui->comboTileTexture->setIconSize(iconSize);
+
+	for (int32 i = 0; i < (int32)activeScene->tilemaskEditorSystem->GetTileTextureCount(); ++i)
+	{
+		Texture* tileTexture = activeScene->tilemaskEditorSystem->GetTileTexture(i);
+
+		uint32 previewWidth = Min(tileTexture->GetWidth(), 150);
+		uint32 previewHeight = Min(tileTexture->GetHeight(), 32);
+
+		Image* tileImage = tileTexture->CreateImageFromMemory();
+		tileImage->ResizeCanvas(previewWidth, previewHeight);
+
+		QImage img = TextureConvertor::FromDavaImage(tileImage);
+		QIcon icon = QIcon(QPixmap::fromImage(img));
+
+		ui->comboTileTexture->addItem(icon, "");
+	}
+}
+
+void TilemaskEditorPropertiesView::Toggle()
+{
+	if (!activeScene)
+	{
+		return;
+	}
+
+	if (activeScene->tilemaskEditorSystem->IsLandscapeEditingEnabled())
+	{
+		if (activeScene->tilemaskEditorSystem->DisableLandscapeEdititing())
+		{
+			SetWidgetsState(false);
+		}
+		else
+		{
+			// show "Couldn't disable tilemask editing" message box
+		}
+	}
+	else
+	{
+		if (activeScene->tilemaskEditorSystem->EnableLandscapeEditing())
+		{
+			SetWidgetsState(true);
+
+			UpdateTileTextures();
+
+			SetBrushSize(ui->sliderBrushSize->value());
+			SetStrength(ui->sliderStrength->value());
+			SetToolImage(ui->comboBrushImage->currentIndex());
+			SetDrawTexture(ui->comboTileTexture->currentIndex());
+		}
+		else
+		{
+			// show "Couldn't enable tilemask editing" message box
+		}
+	}
+}
+
+void TilemaskEditorPropertiesView::SetBrushSize(int brushSize)
+{
+	if (!activeScene)
+	{
+		return;
+	}
+
+	activeScene->tilemaskEditorSystem->SetBrushSize(brushSize);
+}
+
+void TilemaskEditorPropertiesView::SetToolImage(int imageIndex)
+{
+	if (!activeScene)
+	{
+		return;
+	}
+
+	QString s = ui->comboBrushImage->itemData(imageIndex).toString();
+
+	if (!s.isEmpty())
+	{
+		FilePath fp(s.toStdString());
+		activeScene->tilemaskEditorSystem->SetToolImage(fp, imageIndex);
+	}
+}
+
+void TilemaskEditorPropertiesView::SetStrength(int strength)
+{
+	if (!activeScene)
+	{
+		return;
+	}
+
+	float32 max = 2.f * ui->sliderStrength->maximum();
+	activeScene->tilemaskEditorSystem->SetStrength(strength / max);
+}
+
+void TilemaskEditorPropertiesView::SetDrawTexture(int textureIndex)
+{
+	if (!activeScene)
+	{
+		return;
+	}
+
+	activeScene->tilemaskEditorSystem->SetTileTexture(textureIndex);
 }

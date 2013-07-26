@@ -51,10 +51,14 @@ public:
 	void Draw();
 	
 	void SetBrushSize(int32 brushSize);
+	int32 GetBrushSize();
 	void SetStrength(float32 strength);
-	void SetToolImage(const FilePath& toolImagePath);
+	float32 GetStrength();
+	void SetToolImage(const FilePath& toolImagePath, int32 index);
+	int32 GetToolImage();
 	void SetTileTexture(uint32 tileTexture);
-	
+	uint32 GetTileTextureIndex();
+
 	uint32 GetTileTextureCount() const;
 	Texture* GetTileTexture(int32 index);
 	
@@ -76,6 +80,7 @@ protected:
 	
 	float32 strength;
 	FilePath toolImagePath;
+	int32 toolImageIndex;
 	
 	bool isIntersectsLandscape;
 	Vector2 cursorPosition;

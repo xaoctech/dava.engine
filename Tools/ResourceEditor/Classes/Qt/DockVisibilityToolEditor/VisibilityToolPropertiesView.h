@@ -22,6 +22,8 @@
 
 using namespace DAVA;
 
+class SceneEditor2;
+
 namespace Ui
 {
 	class VisibilityToolPropertiesView;
@@ -37,8 +39,24 @@ public:
 
 	void Init();
 
+private slots:
+	void SceneActivated(SceneEditor2* scene);
+	void SceneDeactivated(SceneEditor2* scene);
+
+	void SetVisibilityToolButtonsState(SceneEditor2* scene);
+	void Toggle();
+	void SaveTexture();
+	void SetVisibilityPoint();
+	void SetVisibilityArea();
+	void SetVisibilityAreaSize(int areaSize);
+
 private:
 	Ui::VisibilityToolPropertiesView* ui;
+	SceneEditor2* activeScene;
+
+	void SetWidgetsState(bool enabled);
+	void BlockAllSignals(bool block);
+	void UpdateFromScene(SceneEditor2* scene);
 };
 
 #endif /* defined(__RESOURCEEDITORQT__VISIBILITYTOOLPROPERTIESVIEW__) */

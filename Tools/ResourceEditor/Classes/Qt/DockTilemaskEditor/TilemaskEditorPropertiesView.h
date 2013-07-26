@@ -33,6 +33,8 @@
 
 using namespace DAVA;
 
+class SceneEditor2;
+
 namespace Ui
 {
 	class TilemaskEditorPropertiesView;
@@ -49,8 +51,24 @@ public:
 	void Init();
 	void InitBrushImages();
 
+private slots:
+	void SceneActivated(SceneEditor2* scene);
+	void SceneDeactivated(SceneEditor2* scene);
+
+	void Toggle();
+	void SetBrushSize(int brushSize);
+	void SetToolImage(int imageIndex);
+	void SetStrength(int strength);
+	void SetDrawTexture(int textureIndex);
+
 private:
 	Ui::TilemaskEditorPropertiesView* ui;
+	SceneEditor2* activeScene;
+
+	void SetWidgetsState(bool enabled);
+	void BlockAllSignals(bool block);
+	void UpdateFromScene(SceneEditor2* scene);
+	void UpdateTileTextures();
 };
 
 #endif /* defined(__RESOURCEEDITORQT__TILEMASKEDITORPROPERTIESVIEW__) */

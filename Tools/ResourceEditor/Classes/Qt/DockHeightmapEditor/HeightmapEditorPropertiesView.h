@@ -30,8 +30,11 @@
 
 #include <QWidget>
 #include "DAVAEngine.h"
+#include "Qt/Scene/System/HeightmapEditorSystem.h"
 
 using namespace DAVA;
+
+class SceneEditor2;
 
 namespace Ui
 {
@@ -49,8 +52,32 @@ public:
 	void Init();
 	void InitBrushImages();
 
+private slots:
+	void SceneActivated(SceneEditor2* scene);
+	void SceneDeactivated(SceneEditor2* scene);
+	void SetDropperHeight(SceneEditor2* scene, double height);
+
+	void Toggle();
+	void SetBrushSize(int brushSize);
+	void SetToolImage(int toolImage);
+	void SetRelativeDrawing();
+	void SetAverageDrawing();
+	void SetAbsoluteDrawing();
+	void SetDropper();
+	void SetHeightmapCopyPaste();
+	void SetStrength(int strength);
+	void SetAverageStrength(int averageStrength);
+	void SetCopyPasteHeightmap(int state);
+	void SetCopyPasteTilemask(int state);
+
 private:
 	Ui::HeightmapEditorPropertiesView* ui;
+	SceneEditor2* activeScene;
+
+	void SetWidgetsState(bool enabled);
+	void BlockAllSignals(bool block);
+	void UpdateFromScene(SceneEditor2* scene);
+	void SetDrawingType(HeightmapEditorSystem::eHeightmapDrawType type);
 };
 
 #endif /* defined(__RESOURCEEDITORQT__HEIGHTMAPEDITORPROPERTIESVIEW__) */

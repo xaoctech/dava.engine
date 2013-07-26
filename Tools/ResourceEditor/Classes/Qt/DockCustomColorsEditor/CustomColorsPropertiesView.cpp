@@ -17,14 +17,17 @@
 #include "CustomColorsPropertiesView.h"
 #include "ui_CustomColorsProperties.h"
 
+#include "Main/QtUtils.h"
 #include "Project/ProjectManager.h"
-#include "Classes/Qt/Main/QtMainWindowHandler.h"
 #include "../SceneEditor/EditorConfig.h"
 #include "../Scene/SceneSignals.h"
 
+#include <QFileDialog>
+
 CustomColorsPropertiesView::CustomColorsPropertiesView(QWidget* parent)
-:	QWidget(parent),
-ui(new Ui::CustomColorsPropertiesView)
+:	QWidget(parent)
+,	ui(new Ui::CustomColorsPropertiesView)
+,	activeScene(NULL)
 {
 	ui->setupUi(this);
 
@@ -38,32 +41,20 @@ CustomColorsPropertiesView::~CustomColorsPropertiesView()
 
 void CustomColorsPropertiesView::Init()
 {
-	// TODO: mainwindow
-	/*
-	QObject::connect(ProjectManager::Instance(), SIGNAL(ProjectOpened(const QString &)), this, SLOT(ProjectOpened(const QString &)));
+	connect(ProjectManager::Instance(), SIGNAL(ProjectOpened(const QString &)), this, SLOT(ProjectOpened(const QString &)));
+	connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2*)), this, SLOT(SceneActivated(SceneEditor2*)));
+	connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2*)), this, SLOT(SceneDeactivated(SceneEditor2*)));
 
-	QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
-	connect(ui->buttonEnableCustomColorsEditor, SIGNAL(clicked()), handler, SLOT(ToggleCustomColorsEditor()));
+	connect(ui->buttonEnableCustomColorsEditor, SIGNAL(clicked()), this, SLOT(Toggle()));
 	connect(SceneSignals::Instance(), SIGNAL(NeedSaveCustomColorsTexture(SceneEditor2*)),
-			handler, SLOT(NeedSaveCustomColorsTexture(SceneEditor2*)));
-	
-	ui->buttonSaveTexture->blockSignals(true);
-	ui->sliderBrushSize->blockSignals(true);
-	ui->comboColor->blockSignals(true);
+			this, SLOT(NeedSaveCustomColorsTexture(SceneEditor2*)));
 
-	connect(ui->buttonSaveTexture, SIGNAL(clicked()), handler, SLOT(SaveCustomColorsTexture()));
-	connect(ui->sliderBrushSize, SIGNAL(valueChanged(int)), handler, SLOT(SetCustomColorsBrushSize(int)));
-	connect(ui->comboColor, SIGNAL(currentIndexChanged(int)), handler, SLOT(SetCustomColorsColor(int)));
-	connect(ui->buttonLoadTexture, SIGNAL(clicked()), handler, SLOT(LoadCustomColorsTexture()));
+	connect(ui->sliderBrushSize, SIGNAL(valueChanged(int)), this, SLOT(SetBrushSize(int)));
+	connect(ui->comboColor, SIGNAL(currentIndexChanged(int)), this, SLOT(SetColor(int)));
+	connect(ui->buttonSaveTexture, SIGNAL(clicked()), this, SLOT(SaveTexture()));
+	connect(ui->buttonLoadTexture, SIGNAL(clicked()), this, SLOT(LoadTexture()));
 
-	QtMainWindowHandler::Instance()->RegisterCustomColorsEditorWidgets(ui->buttonEnableCustomColorsEditor,
-																 ui->buttonSaveTexture,
-																 ui->sliderBrushSize,
-																 ui->comboColor,
-																 ui->buttonLoadTexture);
-
-	handler->SetCustomColorsEditorWidgetsState(false);
-	*/
+	SetWidgetsState(false);
 }
 
 void CustomColorsPropertiesView::InitColors()
@@ -93,4 +84,171 @@ void CustomColorsPropertiesView::InitColors()
 void CustomColorsPropertiesView::ProjectOpened(const QString& path)
 {
 	InitColors();
+}
+
+void CustomColorsPropertiesView::Toggle()
+{
+	if (!activeScene)
+	{
+		return;
+	}
+
+	if (activeScene->customColorsSystem->IsLandscapeEditingEnabled())
+	{
+		if (activeScene->customColorsSystem->DisableLandscapeEdititing())
+		{
+			SetWidgetsState(false);
+		}
+		else
+		{
+			// show "Couldn't disable custom colors editing" message box
+		}
+	}
+	else
+	{
+		if (activeScene->customColorsSystem->EnableLandscapeEditing())
+		{
+			SetWidgetsState(true);
+
+			SetBrushSize(ui->sliderBrushSize->value());
+			SetColor(ui->comboColor->currentIndex());
+		}
+		else
+		{
+			// show "Couldn't enable custom colors editing" message box
+		}
+	}
+}
+
+void CustomColorsPropertiesView::SetWidgetsState(bool enabled)
+{
+	ui->buttonEnableCustomColorsEditor->blockSignals(true);
+	ui->buttonEnableCustomColorsEditor->setCheckable(enabled);
+	ui->buttonEnableCustomColorsEditor->setChecked(enabled);
+	ui->buttonEnableCustomColorsEditor->blockSignals(false);
+
+	QString buttonText = enabled ? tr("Disable Custom Colors Editor") : tr("Enable Custom Colors Editor");
+	ui->buttonEnableCustomColorsEditor->setText(buttonText);
+
+	ui->buttonSaveTexture->setEnabled(enabled);
+	ui->sliderBrushSize->setEnabled(enabled);
+	ui->comboColor->setEnabled(enabled);
+	ui->buttonLoadTexture->setEnabled(enabled);
+	BlockAllSignals(!enabled);
+}
+
+void CustomColorsPropertiesView::BlockAllSignals(bool block)
+{
+	ui->buttonSaveTexture->blockSignals(block);
+	ui->sliderBrushSize->blockSignals(block);
+	ui->comboColor->blockSignals(block);
+	ui->buttonLoadTexture->blockSignals(block);
+}
+
+void CustomColorsPropertiesView::UpdateFromScene(SceneEditor2* scene)
+{
+	bool enabled = scene->customColorsSystem->IsLandscapeEditingEnabled();
+	int32 brushSize = scene->customColorsSystem->GetBrushSize();
+	int32 colorIndex = scene->customColorsSystem->GetColor();
+
+	SetWidgetsState(enabled);
+
+	BlockAllSignals(true);
+	ui->sliderBrushSize->setValue(brushSize);
+	ui->comboColor->setCurrentIndex(colorIndex);
+	BlockAllSignals(!enabled);
+}
+
+void CustomColorsPropertiesView::SceneActivated(SceneEditor2* scene)
+{
+	DVASSERT(scene);
+	activeScene = scene;
+	UpdateFromScene(scene);
+}
+
+void CustomColorsPropertiesView::SceneDeactivated(SceneEditor2* scene)
+{
+	activeScene = NULL;
+}
+
+void CustomColorsPropertiesView::SetBrushSize(int brushSize)
+{
+	if (!activeScene)
+	{
+		return;
+	}
+
+	activeScene->customColorsSystem->SetBrushSize(brushSize);
+}
+
+void CustomColorsPropertiesView::SetColor(int color)
+{
+	if (!activeScene)
+	{
+		return;
+	}
+
+	activeScene->customColorsSystem->SetColor(color);
+}
+
+void CustomColorsPropertiesView::SaveTexture()
+{
+	if (!activeScene)
+	{
+		return;
+	}
+
+	FilePath selectedPathname = activeScene->customColorsSystem->GetCurrentSaveFileName();
+	if (selectedPathname.IsEmpty())
+	{
+		selectedPathname = activeScene->GetScenePath().GetDirectory();
+	}
+
+	QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save texture"),
+													QString(selectedPathname.GetAbsolutePathname().c_str()),
+													QString("PNG image (*.png)"));
+	selectedPathname = PathnameToDAVAStyle(filePath);
+
+	if (!selectedPathname.IsEmpty())
+	{
+		activeScene->customColorsSystem->SaveTexture(selectedPathname);
+	}
+}
+
+void CustomColorsPropertiesView::LoadTexture()
+{
+	if (!activeScene)
+	{
+		return;
+	}
+
+	FilePath currentPath = activeScene->customColorsSystem->GetCurrentSaveFileName();
+	if (currentPath.IsEmpty())
+	{
+		currentPath = activeScene->GetScenePath().GetDirectory();
+	}
+
+	FilePath selectedPathname = GetOpenFileName(String("Load texture"), currentPath, String("PNG image (*.png)"));
+	if(!selectedPathname.IsEmpty())
+	{
+		activeScene->customColorsSystem->LoadTexture(selectedPathname);
+	}
+}
+
+void CustomColorsPropertiesView::NeedSaveCustomColorsTexture(SceneEditor2* scene)
+{
+	if (!activeScene)
+	{
+		return;
+	}
+
+	FilePath selectedPathname = scene->customColorsSystem->GetCurrentSaveFileName();
+	if(!selectedPathname.IsEmpty())
+	{
+		activeScene->customColorsSystem->SaveTexture(selectedPathname);
+	}
+	else
+	{
+		SaveTexture();
+	}
 }
