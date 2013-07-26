@@ -416,7 +416,12 @@ void SceneTree::EditModel()
 
 void SceneTree::ReloadModel()
 {
-
+	SceneEditor2 *sceneEditor = treeModel->GetScene();
+	if(NULL != sceneEditor)
+	{
+		const EntityGroup *selection = sceneEditor->selectionSystem->GetSelection();
+		sceneEditor->structureSystem->Reload(selection);
+	}
 }
 
 void SceneTree::ReloadModelAs()
