@@ -16,6 +16,8 @@
 
 #include "Scene/SceneEditor2.h"
 #include "Scene/SceneSignals.h"
+#include "CommandLine/SceneExporter/SceneExporter.h"
+#include "SceneEditor/EditorSettings.h"
 
 // framework
 #include "Scene3D/SceneFileV2.h"
@@ -180,6 +182,25 @@ bool SceneEditor2::Save(const DAVA::FilePath &path)
 bool SceneEditor2::Save()
 {
 	return Save(curScenePath);
+}
+
+bool SceneEditor2::Export(const DAVA::eGPUFamily newGPU)
+{
+	SceneExporter exporter;
+	
+	KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
+    FilePath projectPath(keyedArchieve->GetString(String("ProjectPath")));
+	
+	exporter.SetInFolder(projectPath + String("DataSource/3d/"));
+    exporter.SetOutFolder(projectPath + String("Data/3d/"));
+	exporter.SetGPUForExporting(newGPU);
+	Set<String> errorLog;
+	exporter.ExportScene(this, GetScenePath(), errorLog);
+	for (Set<String>::iterator iter = errorLog.begin(); iter != errorLog.end(); ++iter)
+	{
+		Logger::Error("Export error: %s", iter->c_str());
+	}
+	return (errorLog.size() == 0);
 }
 
 DAVA::FilePath SceneEditor2::GetScenePath()

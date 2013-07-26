@@ -67,6 +67,7 @@ public:
 	bool Load(const DAVA::FilePath &path);
 	bool Save(const DAVA::FilePath &path);
 	bool Save();
+	bool Export(const DAVA::eGPUFamily newGPU);
 
 	DAVA::FilePath GetScenePath();
 	void SetScenePath(const DAVA::FilePath &newScenePath);
