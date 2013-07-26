@@ -463,7 +463,7 @@ function ClickControl(name, time, touchId)
         
         local control = autotestingSystem:FindControl(name)
         local screen = autotestingSystem:GetScreen()
-        if control and IsOnScreen(control) then     
+        if control and IsVisible(name) and IsOnScreen(control) then     
             -- local position = control:GetPosition(true)
             local position = GetCenter(name)
 --            print(position)
