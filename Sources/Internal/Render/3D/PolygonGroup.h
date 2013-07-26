@@ -149,7 +149,7 @@ public:
     /*
         Go through all vertices and optimize it, remove redundant vertices. 
      */ 
-    void    OptimizeVertices(float32 eplison = 1e-6f);
+    void    OptimizeVertices(uint32 newVertexFormat, float32 eplison = 1e-6f);
     
     /*
         Use greedy algorithm to convert mesh from triangle lists to triangle strips
@@ -170,6 +170,9 @@ public:
 
 private:	
     void    UpdateDataPointersAndStreams();
+	void	CopyData(uint8 ** meshData, uint8 ** newMeshData, uint32 vertexFormat, uint32 newVertexFormat, uint32 format) const;
+	bool	IsFloatDataEqual(const float32 ** meshData, const float32 ** optData, uint32 vertexFormat, uint32 format) const;
+ 	int32	OptimazeVertexes(const uint8 * meshData, Vector<uint8> & optMeshData, uint32 vertexFormat)	const;
     
 public:
     
