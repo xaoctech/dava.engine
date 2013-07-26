@@ -97,6 +97,8 @@ ParticleLayer::ParticleLayer()
 
 ParticleLayer::~ParticleLayer()
 {
+	DeleteAllParticles();
+
 	SafeRelease(renderBatch);
 	SafeRelease(sprite);
 	SafeRelease(innerEmitter);

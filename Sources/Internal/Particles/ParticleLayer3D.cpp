@@ -46,7 +46,6 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 
 ParticleLayer3D::~ParticleLayer3D()
 {
-	DeleteAllParticles();
 	SafeRelease(renderData);
 }
 
