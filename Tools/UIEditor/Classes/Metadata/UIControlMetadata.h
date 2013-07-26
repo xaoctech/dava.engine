@@ -182,41 +182,41 @@ protected:
 	
 	// Align getters/setters
 	int GetLeftAlign();
-	void SetLeftAlign(int value);
+	virtual void SetLeftAlign(int value);
 	
 	int GetHCenterAlign();
-	void SetHCenterAlign(int value);
+	virtual void SetHCenterAlign(int value);
 	
 	int GetRightAlign();
-	void SetRightAlign(int value);
+	virtual void SetRightAlign(int value);
 	
 	int GetTopAlign();
-	void SetTopAlign(int value);
+	virtual void SetTopAlign(int value);
 	
 	int GetVCenterAlign();
-	void SetVCenterAlign(int value);
+	virtual void SetVCenterAlign(int value);
 	
 	int GetBottomAlign();
-	void SetBottomAlign(int value);
+	virtual void SetBottomAlign(int value);
 	
 	// Enable align getters/setters
 	bool GetLeftAlignEnabled() const;
-	void SetLeftAlignEnabled(const bool value);
+	virtual void SetLeftAlignEnabled(const bool value);
 	
 	bool GetHCenterAlignEnabled() const;
-	void SetHCenterAlignEnabled(const bool value);
+	virtual void SetHCenterAlignEnabled(const bool value);
 	
 	bool GetRightAlignEnabled() const;
-	void SetRightAlignEnabled(const bool value);
+	virtual void SetRightAlignEnabled(const bool value);
 	
 	bool GetTopAlignEnabled() const;
-	void SetTopAlignEnabled(const bool value);
+	virtual void SetTopAlignEnabled(const bool value);
 	
 	bool GetVCenterAlignEnabled() const;
-	void SetVCenterAlignEnabled(const bool value);
+	virtual void SetVCenterAlignEnabled(const bool value);
 	
 	bool GetBottomAlignEnabled() const;
-	void SetBottomAlignEnabled(const bool value);
+	virtual void SetBottomAlignEnabled(const bool value);
 
 	QString GetCustomControlName() const;
 	void SetCustomControlName(const QString& value);

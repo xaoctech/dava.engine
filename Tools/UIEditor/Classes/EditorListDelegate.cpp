@@ -31,7 +31,10 @@ namespace DAVA
 {
 	EditorListDelegate::EditorListDelegate(const Rect &rect, UIList::eListOrientation orientation /*ORIENTATION_VERTICAL*/
 																			, bool rectInAbsoluteCoordinates/* = FALSE*/)
-	: UIControl(rect, rectInAbsoluteCoordinates)
+	: UIControl(rect, rectInAbsoluteCoordinates),
+		aggregatorID(DEFAULT_AGGREGATOR_ID),
+		cellsCount(CELLS_COUNT),
+		isElementsCountNeedUpdate(false)
 	{
 		if (orientation == UIList::ORIENTATION_VERTICAL)
 		{
@@ -41,16 +44,16 @@ namespace DAVA
 		{
 			cellSize = Vector2((rect.dx / CELLS_COUNT), rect.dy);
 		}
-		aggregatorID = DEFAULT_AGGREGATOR_ID;
 	}
 	
 	EditorListDelegate::~EditorListDelegate()
 	{
 	}
 	
-	void EditorListDelegate::SetAggregatorID(int32 id)
+	void EditorListDelegate::SetAggregatorID(int32 agId)
 	{
-		aggregatorID = id;
+		aggregatorID = agId;
+		ResetElementsCount();
 	}
 	
 	int32 EditorListDelegate::GetAggregatorID()
@@ -63,10 +66,41 @@ namespace DAVA
 		cellSize = size;
 	}
 	
-	// UIListDelegate implementation	
-	int32 EditorListDelegate::ElementsCount(UIList *)
+	void EditorListDelegate::UpdateCellSize(UIList *forList)
+	{		
+		if (isElementsCountNeedUpdate && forList)
+		{
+			isElementsCountNeedUpdate = false;
+			// Change cell size only if aggregator control is available
+			UIControl *aggregatorControl = GetCurrentAggregatorControl();
+			if (aggregatorControl)
+			{
+				Vector2 aggregatorSize = aggregatorControl->GetSize();
+				SetCellSize(aggregatorSize);
+			}
+			
+			Vector2 listSize = forList->GetSize();			
+			if (forList->GetOrientation() == UIList::ORIENTATION_HORIZONTAL)
+			{
+				cellsCount =  ceilf( listSize.x / cellSize.x );
+			}
+			else
+			{
+				cellsCount =  ceilf( listSize.y / cellSize.y );
+			}
+		}
+	}
+	
+	void EditorListDelegate::ResetElementsCount()
 	{
-		return CELLS_COUNT;
+		isElementsCountNeedUpdate = true;
+	}
+	
+	// UIListDelegate implementation	
+	int32 EditorListDelegate::ElementsCount(UIList *forList)
+	{
+		UpdateCellSize(forList);
+		return cellsCount;
 	}
 	
 	UIListCell *EditorListDelegate::CellAtIndex(UIList *forList, int32 index)
@@ -83,23 +117,15 @@ namespace DAVA
 			// Reset reusable cells relative positions - new proper positions will be calculated at UIList::AddCellAtPost() method
 			cell->SetPosition(Vector2(0.0f, 0.0f));
 		}
-		
-		// Get aggregator node
-		HierarchyTreeNode *node = HierarchyTreeController::Instance()->GetTree().GetNode(aggregatorID);
-		HierarchyTreeAggregatorNode *aggregatorNode = dynamic_cast<HierarchyTreeAggregatorNode*>(node);
 	
 		cell->RemoveAllControls();
-		
-		if (aggregatorNode)
+		// Get aggregator control
+		UIControl *aggregatorControl = GetCurrentAggregatorControl();
+		if (aggregatorControl)
 		{
 			UIAggregatorControl* control = new UIAggregatorControl();
-			control->CopyDataFrom(aggregatorNode->GetScreen());
+			control->CopyDataFrom(aggregatorControl);
 			cell->AddControl(control);
-			
-			control->SetRightAlignEnabled(true);
-			control->SetLeftAlignEnabled(true);
-			control->SetTopAlignEnabled(true);
-			control->SetBottomAlignEnabled(true);
 		}
 		else
 		{			
@@ -133,5 +159,19 @@ namespace DAVA
 		{
 			forList->SetAggregatorPath(String());
 		}
+	}
+	
+	UIControl* EditorListDelegate::GetCurrentAggregatorControl()
+	{
+		HierarchyTreeNode *node = HierarchyTreeController::Instance()->GetTree().GetNode(aggregatorID);
+		HierarchyTreeAggregatorNode *aggregatorNode = dynamic_cast<HierarchyTreeAggregatorNode*>(node);
+		
+		// Update cell size to fit new aggregator control size
+		if (aggregatorNode)
+		{
+			return aggregatorNode->GetScreen();
+		}
+		
+		return NULL;
 	}
 };
