@@ -29,8 +29,11 @@ using namespace DAVA;
 class CommandAddParticleEmitter: public CommandAction
 {
 public:
-	CommandAddParticleEmitter();
+	CommandAddParticleEmitter(DAVA::Entity* effect);
 	virtual void Redo();
+	
+protected:
+	DAVA::Entity* effectEntity;
 };
 
 // Start/stop/restart Particle Effect.
@@ -66,10 +69,14 @@ protected:
 class CommandAddParticleEmitterLayer: public CommandAction
 {
 public:
-	CommandAddParticleEmitterLayer();
+	CommandAddParticleEmitterLayer(ParticleEmitter* emitter);
 	virtual void Redo();
 
+	ParticleLayer* GetCreatedLayer() const {return createdLayer;};
+
 protected:
+	ParticleEmitter* selectedEmitter;
+	ParticleLayer* createdLayer;
 };
 
 // Remove a layer from Particle Emitter.
@@ -288,28 +295,35 @@ protected:
 	RefPtr< PropertyLine<Vector3> > forcesVariation;
 	RefPtr< PropertyLine<float32> > forcesOverLife;
 };
-/*
+
 // Load/save Particle Emitter Node.
 class CommandLoadParticleEmitterFromYaml : public CommandAction
 {
 public:
-	DAVA_DEPRECATED(CommandLoadParticleEmitterFromYaml()); // DEPRECATED: using ParticlesEditorController(QOBJECT)
+	CommandLoadParticleEmitterFromYaml(ParticleEmitter* emitter, const FilePath& path);
+    virtual void Redo();
+	
+	ParticleEmitter* GetEmitter() const {return selectedEmitter;};
 
 protected:
-    virtual void Execute();
+	ParticleEmitter* selectedEmitter;
+	FilePath filePath;
 };
 
 class CommandSaveParticleEmitterToYaml : public CommandAction
 {
 public:
-	DAVA_DEPRECATED(CommandSaveParticleEmitterToYaml(bool forceAskFilename)); // DEPRECATED: using ParticlesEditorController(QOBJECT)
+	CommandSaveParticleEmitterToYaml(ParticleEmitter* emitter, const FilePath& path);
+	virtual void Redo();
+
+	ParticleEmitter* GetEmitter() const {return selectedEmitter;};
 
 protected:
-    virtual void Execute();
-    
-    bool forceAskFilename;
+	ParticleEmitter* selectedEmitter;
+	FilePath filePath;
 };
 
+/*
 // The same for Inner Emitters.
 class CommandLoadInnerEmitterFromYaml : public CommandAction
 {

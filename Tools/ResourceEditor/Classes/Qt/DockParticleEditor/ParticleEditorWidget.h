@@ -52,6 +52,8 @@ protected slots:
 
 	// Notifications about changes in the Particles items.
 	void OnParticleLayerValueChanged(SceneEditor2* scene, DAVA::ParticleLayer* layer);
+	void OnParticleEmitterLoaded(SceneEditor2* scene, DAVA::ParticleEmitter* emitter);
+	void OnParticleEmitterSaved(SceneEditor2* scene, DAVA::ParticleEmitter* emitter);
 
 signals:
 	void ChangeVisible(bool bVisible);
@@ -59,6 +61,9 @@ signals:
 private:
 	void DeleteOldWidget();
 	void UpdateParticleEditorWidgets();
+	
+	// Handle the "Emitter Selected" notification for different cases.
+	void HandleEmitterSelected(SceneEditor2* scene, DAVA::ParticleEmitter* emitter, bool forceUpdate);
 	
 	// Update the visible timelines for the particular Particle Emitter elements.
 	void UpdateVisibleTimelinesForParticleEmitter();

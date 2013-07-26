@@ -70,6 +70,7 @@
     <file>QtIcons/openproject.png</file>
     <file>QtIcons/openscene.png</file>
     <file>QtIcons/savescene.png</file>
+    <file>QtIcons/save_as.png</file>
     <file>QtIcons/materialeditor.png</file>
     <file>QtIcons/reloadtextures.png</file>
     <file>QtIcons/notpassableterrain.png</file>

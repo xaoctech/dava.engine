@@ -259,47 +259,6 @@ void ParticlesEditorController::CleanupParticleEmitterEditorNode(EmitterParticle
     }
 }
 
-LayerParticleEditorNode* ParticlesEditorController::AddParticleLayerToNode(EmitterParticleEditorNode* emitterNode)
-{
-    if (!emitterNode)
-    {
-        return NULL;
-    }
-    
-    ParticleEmitter* emitter = emitterNode->GetParticleEmitter();
-    if (!emitter)
-    {
-        return NULL;
-    }
-    
-    // Create the new layer.
-    ParticleLayer *layer;
-    if(emitter->GetIs3D())
-    {
-        layer = new ParticleLayer3D(emitter);
-    }
-    else
-    {
-        layer = new ParticleLayer();
-    }
-
-	layer->startTime = 0;
-    layer->endTime = LIFETIME_FOR_NEW_PARTICLE_EMITTER;
-	layer->life = new PropertyLineValue<float32>(emitter->GetLifeTime());
-
-    layer->layerName = ParticlesEditorNodeNameHelper::GetNewLayerName(ResourceEditor::LAYER_NODE_NAME, emitter);
-
-    emitter->AddLayer(layer);
-
-    // Create the new node and add it to the tree.
-    LayerParticleEditorNode* layerNode = new LayerParticleEditorNode(emitterNode, layer);
-    emitterNode->AddNode(layerNode);
-
-    SafeRelease(layer);
-
-    return layerNode;
-}
-
 LayerParticleEditorNode* ParticlesEditorController::CloneParticleLayerNode(LayerParticleEditorNode* layerToClone)
 {
     if (!layerToClone || !layerToClone->GetLayer())
