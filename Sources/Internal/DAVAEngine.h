@@ -184,7 +184,6 @@
 #include "Sound/VolumeAnimatedObject.h"
 
 // Particle System
-#include "Particles/ParticleSystem.h"
 #include "Particles/ParticleEmitter.h"
 #include "Particles/ParticleLayer.h"
 #include "Particles/Particle.h"

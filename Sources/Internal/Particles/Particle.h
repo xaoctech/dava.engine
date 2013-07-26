@@ -18,6 +18,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
+#include "Base/AllocatorFactory.h"
 
 namespace DAVA 
 {
@@ -40,6 +41,8 @@ class ParticleEmitter;
 class Particle
 {
 public:
+	IMPLEMENT_POOL_ALLOCATOR(Particle, 1000);
+
 	Particle();
 	virtual ~Particle();
 	

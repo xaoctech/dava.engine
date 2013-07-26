@@ -213,6 +213,7 @@
     <ClInclude Include="..\..\Sources\Internal\Autotesting\Config.h" />
     <ClInclude Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.h" />
     <ClInclude Include="..\..\Sources\Internal\Autotesting\TouchAction.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\AllocatorFactory.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\Data.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\EnumMap.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\FastName.h" />
@@ -343,7 +344,6 @@
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayer.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayer3D.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticlePropertyLine.h" />
-    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\DeviceInfo.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\DPIHelper.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\Mutex.h" />
@@ -619,6 +619,7 @@
     <ClCompile Include="..\..\Sources\Internal\Autotesting\Action.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Autotesting\TouchAction.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Base\AllocatorFactory.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\BaseObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\Data.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\EnumMap.cpp" />
@@ -704,7 +705,6 @@
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayer3D.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticlePropertyLine.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\DeviceInfo.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\Mutex.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\Qt\QtLayer.cpp">
