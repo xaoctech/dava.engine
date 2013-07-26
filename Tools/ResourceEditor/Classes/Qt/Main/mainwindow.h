@@ -53,6 +53,7 @@ public slots:
 	void OnSceneSave();
 	void OnSceneSaveAs();
 	void OnSceneSaveToFolder();
+	void ExportMenuTriggered(QAction *exportAsAction);
 
 	void OnUndo();
 	void OnRedo();

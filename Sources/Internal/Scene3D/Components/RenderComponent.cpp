@@ -16,6 +16,7 @@
 
 #include "Scene3D/Components/RenderComponent.h"
 #include "Base/ObjectFactory.h"
+#include "MaterialOptimazer.h"
 
 namespace DAVA 
 {
@@ -49,6 +50,24 @@ Component * RenderComponent::Clone(Entity * toEntity)
     //TODO: Do not forget ot check what does it means.
     component->renderObject = renderObject->Clone(component->renderObject);
     return component;
+}
+	
+void RenderComponent::OptimizeBeforeExport()
+{
+    uint32 count = renderObject->GetRenderBatchCount();
+    for(uint32 i = 0; i < count; ++i)
+    {
+        RenderBatch *renderBatch = renderObject->GetRenderBatch(i);
+		if(NULL != renderBatch)
+		{
+			PolygonGroup* polygonGroup = renderBatch->GetPolygonGroup();
+			if (polygonGroup)
+			{
+				uint32 newFormat = MaterialOptimizer::GetOptimizedVertexFormat((Material::eType)renderBatch->GetMaterial()->type);
+				polygonGroup->OptimizeVertices(newFormat);
+			}
+		}
+	}
 }
 
 void RenderComponent::GetDataNodes(Set<DAVA::DataNode *> &dataNodes)
