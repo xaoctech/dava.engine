@@ -45,7 +45,7 @@ void ParticleEffectComponent::Start()
 	this->emittersCurrentlyStopped = 0;
 }
 
-void ParticleEffectComponent::Stop()
+void ParticleEffectComponent::Stop(bool isDeleteAllParticles)
 {
 	int32 childrenCount = entity->GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
@@ -54,7 +54,7 @@ void ParticleEffectComponent::Stop()
 		if(component && component->GetRenderObject() && component->GetRenderObject()->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
 		{
 			ParticleEmitter * emitter = static_cast<ParticleEmitter*>(component->GetRenderObject());
-			emitter->Stop();
+			emitter->Stop(isDeleteAllParticles);
 		}
 		emittersCurrentlyStopped++;
 	}
