@@ -210,7 +210,8 @@ void SceneTree::ParticleLayerValueChanged(SceneEditor2* scene, DAVA::ParticleLay
 		return;
 	}
 
-	SceneTreeItem *item = treeModel->GetItem(indexList[0]);
+	QModelIndex realIndex = filteringProxyModel->mapToSource(indexList[0]);
+	SceneTreeItem *item = treeModel->GetItem(realIndex);
 	if (item->ItemType() != SceneTreeItem::EIT_Layer)
 	{
 		return;
@@ -535,7 +536,7 @@ void SceneTree::EmitParticleSignals(const QItemSelection & selected)
 	if(selected.size() == 1) 
 	{
 		QModelIndexList indexList = selectionModel()->selection().indexes();
-		SceneTreeItem *item = treeModel->GetItem(indexList[0]);
+		SceneTreeItem *item = treeModel->GetItem(filteringProxyModel->mapToSource(indexList[0]));
 
 		if(NULL != item)
 		{
@@ -600,7 +601,8 @@ void SceneTree::AddEmitter()
 	SceneEditor2* curScene = treeModel->GetScene();
 	if(NULL != curScene)
 	{
-		DAVA::Entity *curEntity = SceneTreeItemEntity::GetEntity(treeModel->GetItem(currentIndex()));
+		QModelIndex realIndex = filteringProxyModel->mapToSource(currentIndex());
+		DAVA::Entity *curEntity = SceneTreeItemEntity::GetEntity(treeModel->GetItem(realIndex));
 		if(NULL != curEntity)
 		{
 			//DAVA::ParticleEmitter *emitter = new DAVA::ParticleEmitter();
