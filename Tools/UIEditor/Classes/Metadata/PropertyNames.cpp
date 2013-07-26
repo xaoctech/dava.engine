@@ -39,6 +39,7 @@ const char* PropertyNames::COLOR_INHERIT_TYPE_PROPERTY_NAME = "ColorInheritType"
 const char* PropertyNames::ALIGN_PROPERTY_NAME = "Align";
 
 const char* PropertyNames::TEXT_PROPERTY_NAME = "Text";
+const char* PropertyNames::TEXT_PROPERTY_MULTILINE = "Multiline";
 const char* PropertyNames::TEXT_COLOR_PROPERTY_NAME = "TextColor";
 const char* PropertyNames::TEXT_ALIGN_PROPERTY_NAME = "TextAlign";
 
