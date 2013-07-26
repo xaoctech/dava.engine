@@ -16,8 +16,8 @@
 
 #include "Scene/SceneEditor2.h"
 #include "Scene/SceneSignals.h"
-#include "SceneExporter.h"
-#include "EditorSettings.h"
+#include "CommandLine/SceneExporter/SceneExporter.h"
+#include "SceneEditor/EditorSettings.h"
 
 // framework
 #include "Scene3D/SceneFileV2.h"

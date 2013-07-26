@@ -719,7 +719,6 @@
     <ClCompile Include="_GeneratedQt\Scene\System\LandscapeEditorDrawSystem\VisibilityToolProxy_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\System\LandscapeEditorDrawSystem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\System\ModifSystem_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\Scene\System\ParticlesDebugDrawSystem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\System\SelectionSystem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\System\StructureSystem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\System\TilemaskEditorSystem_moc.cpp" />

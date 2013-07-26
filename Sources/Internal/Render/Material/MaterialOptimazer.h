@@ -16,8 +16,8 @@
 #ifndef __DAVAENGINE_MATERIAL_OPTIMIZER_H__
 #define __DAVAENGINE_MATERIAL_OPTIMIZER_H__
 
-#include "Material.h"
-#include "RenderBatch.h"
+#include "Render/Material.h"
+#include "Render/Highlevel/RenderBatch.h"
 
 namespace DAVA
 {

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="External">
@@ -1293,6 +1293,10 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\ActionUpdateSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SkyBoxNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialOptimazer.h">
+      <Filter>Internal\Render\Material</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2269,6 +2273,13 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\UI\UIScrollViewContainer.cpp">
       <Filter>Internal\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\ActionComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\CustomPropertiesComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SkyBoxNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ActionUpdateSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialOptimazer.cpp">
+      <Filter>Internal\Render\Material</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

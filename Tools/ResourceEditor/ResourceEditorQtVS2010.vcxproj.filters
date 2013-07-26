@@ -1833,9 +1833,6 @@
     <ClCompile Include="_GeneratedQt\Scene\System\ModifSystem_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\Scene\System\ParticlesDebugDrawSystem_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
     <ClCompile Include="_GeneratedQt\Scene\System\SelectionSystem_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
