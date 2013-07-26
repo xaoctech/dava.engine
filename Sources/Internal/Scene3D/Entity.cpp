@@ -888,6 +888,20 @@ void Entity::GetDataNodes(Set<DataNode*> & dataNodes)
     }
 }
 
+void Entity::OptimizeBeforeExport()
+{
+	for (uint32 i = 0; i < Component::COMPONENT_COUNT; ++i)
+	{
+		if (components[i])
+			components[i]->OptimizeBeforeExport();
+	}
+	
+	uint32 size = (uint32)children.size();
+	for (uint32 c = 0; c < size; ++c)
+	{
+		children[c]->OptimizeBeforeExport();
+	}
+}
     
 void Entity::AddFlagRecursive(int32 flagToAdd)
 {

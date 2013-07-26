@@ -128,7 +128,6 @@ SceneFileV2::eError SceneFileV2::GetError()
     return lastError;
 }
 
-
 SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scene *_scene)
 {
     File * file = File::Create(filename, File::CREATE | File::WRITE);
@@ -178,6 +177,8 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
 //    SaveDataHierarchy(_scene->GetStaticMeshes(), file, 1);
 
     List<DataNode*> nodes;
+	if (isSaveForGame)
+		_scene->OptimizeBeforeExport();
     _scene->GetDataNodes(nodes);
     int32 dataNodesCount = (int32)nodes.size();
     file->Write(&dataNodesCount, sizeof(int32));

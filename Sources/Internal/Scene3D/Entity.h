@@ -293,7 +293,11 @@ public:
      */
     template<template <typename> class Container, class T>
 	void GetDataNodes(Container<T> & container);
-    
+	/**
+	 \brief Optimize scene before export.
+     */
+	void OptimizeBeforeExport();
+
     /**
         \brief Function to get child nodes of requested type and move them to specific container you provide.
         For example if you want to get a list of MeshInstanceNodes you should do the following.
