@@ -22,7 +22,7 @@
 #include <QMenu>
 #include <QFileDialog>
 
-#include "EditorSettings.h"
+#include "SceneEditor/EditorSettings.h"
 #include "SceneEditor/SceneValidator.h"
 #include "Main/QTUtils.h"
 
