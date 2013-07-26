@@ -54,6 +54,15 @@ ParticleEditorWidget::ParticleEditorWidget(QWidget *parent/* = 0*/) :
 			SIGNAL(ParticleLayerValueChanged(SceneEditor2*, DAVA::ParticleLayer*)),
 			this,
 			SLOT(OnParticleLayerValueChanged(SceneEditor2*, DAVA::ParticleLayer*)));
+	
+	connect(SceneSignals::Instance(),
+			SIGNAL(ParticleEmitterLoaded(SceneEditor2*, DAVA::ParticleEmitter*)),
+			this,
+			SLOT(OnParticleEmitterLoaded(SceneEditor2*, DAVA::ParticleEmitter*)));
+	connect(SceneSignals::Instance(),
+			SIGNAL(ParticleEmitterSaved(SceneEditor2*, DAVA::ParticleEmitter*)),
+			this,
+			SLOT(OnParticleEmitterSaved(SceneEditor2*, DAVA::ParticleEmitter*)));
 }
 
 ParticleEditorWidget::~ParticleEditorWidget()
@@ -174,32 +183,28 @@ void ParticleEditorWidget::OnEmitterSelectedFromSceneTree(SceneEditor2* scene, D
 	}
 	
 	// NULL is accepted here too.
-	ParticleEmitter* emitter = NULL;
-	if (emitterNode)
-	{
-		emitter = GetEmitter(emitterNode);
-		if (!emitter)
-		{
-			return;
-		}
+	ParticleEmitter* emitter = GetEmitter(emitterNode);
+	HandleEmitterSelected(scene, emitter, false);
+}
 
-		if (emitterPropertiesWidget &&
-			emitterPropertiesWidget->GetEmitter() == emitter)
-			return;
+void ParticleEditorWidget::HandleEmitterSelected(SceneEditor2* scene, DAVA::ParticleEmitter* emitter, bool forceUpdate)
+{
+	if (emitter &&
+		emitterPropertiesWidget &&
+		(!forceUpdate && (emitterPropertiesWidget->GetEmitter() == emitter)))
+	{
+		return;
 	}
-	
+
 	DeleteOldWidget();
 	
-	if (!emitterNode)
+	if (!emitter)
 	{
 		emit ChangeVisible(false);
 		return;
 	}
 	
 	emit ChangeVisible(true);
-	if (!emitter)
-		return;
-
 	emitterPropertiesWidget = new ParticleEmitterPropertiesWidget(scene, this);
 	emitterPropertiesWidget->Init(emitter, true);
 
@@ -357,3 +362,18 @@ void ParticleEditorWidget::OnParticleLayerValueChanged(SceneEditor2* /*scene*/, 
 	// the widget needs to be resynchronized with its values.
 	emitterLayerWidget->OnLayerValueChanged();
 }
+
+void ParticleEditorWidget::OnParticleEmitterLoaded(SceneEditor2* scene, DAVA::ParticleEmitter* emitter)
+{
+	// Handle in the same way emitter is selected to update the values. However
+	// cause widget to be force updated.
+	HandleEmitterSelected(scene, emitter, true);
+}
+
+void ParticleEditorWidget::OnParticleEmitterSaved(SceneEditor2* scene, DAVA::ParticleEmitter* emitter)
+{
+	// Handle in the same way emitter is selected to update the values. However
+	// cause widget to be force updated.
+	HandleEmitterSelected(scene, emitter, true);
+}
+

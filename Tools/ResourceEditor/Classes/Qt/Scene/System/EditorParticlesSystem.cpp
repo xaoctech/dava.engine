@@ -308,6 +308,35 @@ void EditorParticlesSystem::ProcessCommand(const Command2 *command, bool redo)
 			break;
 		}
 
+		case CMDID_LOAD_PARTICLE_EMITTER_FROM_YAML:
+		{
+			const CommandLoadParticleEmitterFromYaml* castedCmd = static_cast<const CommandLoadParticleEmitterFromYaml*>(command);
+			SceneSignals::Instance()->EmitParticleEmitterLoaded(activeScene, castedCmd->GetEmitter());
+			break;
+		}
+
+		case CMDID_SAVE_PARTICLE_EMITTER_TO_YAML:
+		{
+			const CommandSaveParticleEmitterToYaml* castedCmd = static_cast<const CommandSaveParticleEmitterToYaml*>(command);
+			SceneSignals::Instance()->EmitParticleEmitterSaved(activeScene, castedCmd->GetEmitter());
+			break;
+		}
+
+		case CMDID_ADD_PARTICLE_EMITTER_LAYER:
+		{
+			const CommandAddParticleEmitterLayer* castedCmd = static_cast<const CommandAddParticleEmitterLayer*>(command);
+			SceneSignals::Instance()->EmitParticleLayerAdded(activeScene, castedCmd->GetCreatedLayer());
+			break;
+		}
+// Return to this code when implementing Layer popup menus.
+/*
+		case CMDID_REMOVE_PARTICLE_EMITTER_LAYER:
+		{
+			const CommandRemoveParticleEmitterLayer* castedCmd = static_cast<const CommandRemoveParticleEmitterLayer*>(command);
+			SceneSignals::Instance()->EmitParticleLayerRemoved(activeScene, castedCmd->GetEmitter());
+			break;
+		}
+*/
 		default:
 		{
 			break;

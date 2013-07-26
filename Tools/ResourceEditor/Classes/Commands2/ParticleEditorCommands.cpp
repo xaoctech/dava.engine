@@ -27,11 +27,15 @@
 #include "ParticlesEditorQT/Nodes/LayerParticleEditorNode.h"
 #include "ParticlesEditorQT/Nodes/InnerEmitterParticleEditorNode.h"
 
+#include "ParticlesEditorQT/Helpers/ParticlesEditorNodeNameHelper.h"
+
 #include "../Qt/Main/QtUtils.h"
 #include "../Qt/Main/QtMainWindowHandler.h"
 #include "../Qt/Scene/SceneData.h"
 #include "../Qt/Scene/SceneDataManager.h"
 #include "SceneEditor/EditorSettings.h"
+#include "StringConstants.h"
+
 #include <QFileDialog>
 #include <QString>
 
@@ -311,18 +315,32 @@ void CommandUpdateParticleForce::Redo()
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Yuri Coder, 03/12/2012. New commands for Particle Editor QT.
 
-CommandAddParticleEmitter::CommandAddParticleEmitter() :
+CommandAddParticleEmitter::CommandAddParticleEmitter(DAVA::Entity* effect) :
     CommandAction(CMDID_ADD_PARTICLE_EMITTER)
 {
+	this->effectEntity = effect;
 }
 
 void CommandAddParticleEmitter::Redo()
 {
-    // This command is done through Main Window to reuse the existing code.
-	// TODO: mainwindow
-    //QtMainWindowHandler::Instance()->CreateParticleEmitterNode();
-}
+	if (!effectEntity)
+	{
+		return;
+	}
+	
+	ParticleEffectComponent * effectComponent = cast_if_equal<ParticleEffectComponent*>(effectEntity->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+	DVASSERT(effectComponent);
 
+	ParticleEmitter3D* newEmitter = new ParticleEmitter3D();
+	RenderComponent * renderComponent = new RenderComponent();
+	renderComponent->SetRenderObject(newEmitter);
+	newEmitter->Release();
+
+	Entity* emitterEntity = new Entity();
+	emitterEntity->SetName("Particle Emitter");
+	emitterEntity->AddComponent(renderComponent);
+	effectEntity->AddNode(emitterEntity);
+}
 
 CommandStartStopParticleEffect::CommandStartStopParticleEffect(DAVA::Entity* effect, bool isStart) :
     CommandAction(CMDID_START_STOP_PARTICLE_EFFECT)
@@ -379,37 +397,42 @@ DAVA::Entity* CommandRestartParticleEffect::GetEntity() const
 	return this->effectEntity;
 }
 
-CommandAddParticleEmitterLayer::CommandAddParticleEmitterLayer() :
+CommandAddParticleEmitterLayer::CommandAddParticleEmitterLayer(ParticleEmitter* emitter) :
     CommandAction(CMDID_ADD_PARTICLE_EMITTER_LAYER)
 {
+	this->selectedEmitter = emitter;
+	this->createdLayer = NULL;
 }
 
 void CommandAddParticleEmitterLayer::Redo()
 {
-    // Need to know selected Particle Emitter Layers Root.
-    BaseParticleEditorNode* selectedNode = ParticlesEditorController::Instance()->GetSelectedNode();
-    EmitterParticleEditorNode* emitterNode = dynamic_cast<EmitterParticleEditorNode*>(selectedNode);
-    if (!emitterNode)
-    {
-        return;
-    }
+	static const float32 LIFETIME_FOR_NEW_PARTICLE_EMITTER = 4.0f;
+	if (!selectedEmitter)
+	{
+		return;
+	}
 
-	ParticleEffectComponent * effectComponent = emitterNode->GetParticleEffectComponent();
-	DVASSERT(effectComponent);
-    effectComponent->Stop();
-	
-    // Lets select this node when the tree will be rebuilt.
-    LayerParticleEditorNode* layerNode = ParticlesEditorController::Instance()->AddParticleLayerToNode(emitterNode);
-    if (layerNode)
-    {
-        layerNode->SetMarkedToSelection(true);
-    }
+	bool isStopped = selectedEmitter->IsStopped();
+	if (!isStopped)
+	{
+		selectedEmitter->Stop();
+	}
 
-	effectComponent->Restart();
+    // Create the new layer. NOTE: only 3D layers are supported!
+	DVASSERT(selectedEmitter->GetIs3D());
+    createdLayer = new ParticleLayer3D(selectedEmitter);
 
-    // Update the scene graph.
-	// TODO: mainwindow
-    //QtMainWindowHandler::Instance()->RefreshSceneGraph();
+	createdLayer->startTime = 0;
+    createdLayer->endTime = LIFETIME_FOR_NEW_PARTICLE_EMITTER;
+	createdLayer->life = new PropertyLineValue<float32>(selectedEmitter->GetLifeTime());
+    createdLayer->layerName = ParticlesEditorNodeNameHelper::GetNewLayerName(ResourceEditor::LAYER_NODE_NAME, selectedEmitter);
+
+    selectedEmitter->AddLayer(createdLayer);
+
+	if (!isStopped)
+	{
+		selectedEmitter->Restart();
+	}
 }
 
 CommandRemoveParticleEmitterLayer::CommandRemoveParticleEmitterLayer() :
@@ -542,92 +565,51 @@ void CommandRemoveParticleEmitterForce::Redo()
     //QtMainWindowHandler::Instance()->RefreshSceneGraph();
 }
 
-// TODO! these commands use QT! Think about how to get rid of it.
-/*
-CommandLoadParticleEmitterFromYaml::CommandLoadParticleEmitterFromYaml() :
-    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_LOAD_PARTICLE_EMITTER_FROM_YAML)
+CommandLoadParticleEmitterFromYaml::CommandLoadParticleEmitterFromYaml(ParticleEmitter* emitter, const FilePath& path) :
+	CommandAction(CMDID_LOAD_PARTICLE_EMITTER_FROM_YAML)
 {
+	this->selectedEmitter = emitter;
+	this->filePath = path;
 }
 
-void CommandLoadParticleEmitterFromYaml::Execute()
+void CommandLoadParticleEmitterFromYaml::Redo()
 {
-    BaseParticleEditorNode* selectedNode = ParticlesEditorController::Instance()->GetSelectedNode();
-    EmitterParticleEditorNode* emitterNode = dynamic_cast<EmitterParticleEditorNode*>(selectedNode);
-    if (!emitterNode || !emitterNode->GetEmitterNode())
-    {
-        return;
-    }
-    
-    QString projectPath = QString(EditorSettings::Instance()->GetParticlesConfigsPath().GetAbsolutePathname().c_str());
-	Logger::Debug("Project path: %s", projectPath.toStdString().c_str());
-	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open Particle Emitter Yaml file"),
-                                                    projectPath, QString("YAML File (*.yaml)"));
-	if (filePath.isEmpty())
-    {
-		return;
-    }
-
-    // In case this emitter already has Editor Nodes - remove them before loading.
-    ParticlesEditorController::Instance()->CleanupParticleEmitterEditorNode(emitterNode);
-    ParticleEmitter* emitter = emitterNode->GetParticleEmitter();
-
-    if(!emitter)
+    if(!selectedEmitter)
     {
     	return;
     }
 
-    emitter->LoadFromYaml(filePath.toStdString());
-
-	// Perform the validation of the Yaml file loaded.
-	String validationMessage;
-	if (ParticlesEditorSceneDataHelper::ValidateParticleEmitter(emitter, validationMessage) == false)
+	bool isStopped = selectedEmitter->IsStopped();
+	if (!isStopped)
 	{
-		ShowErrorDialog(validationMessage);
+		selectedEmitter->Stop();
 	}
 
-	// TODO: mainwindow
-    //QtMainWindowHandler::Instance()->RefreshSceneGraph();
+    selectedEmitter->LoadFromYaml(filePath);
+
+	if (!isStopped)
+	{
+		selectedEmitter->Restart();
+	}
 }
 
-CommandSaveParticleEmitterToYaml::CommandSaveParticleEmitterToYaml(bool forceAskFilename) :
-    Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_SAVE_PARTICLE_EMITTER_TO_YAML)
+CommandSaveParticleEmitterToYaml::CommandSaveParticleEmitterToYaml(ParticleEmitter* emitter, const FilePath& path) :
+	CommandAction(CMDID_SAVE_PARTICLE_EMITTER_TO_YAML)
 {
-    this->forceAskFilename = forceAskFilename;
+	this->selectedEmitter = emitter;
+	this->filePath = path;
 }
 
-void CommandSaveParticleEmitterToYaml::Execute()
+void CommandSaveParticleEmitterToYaml::Redo()
 {
-    BaseParticleEditorNode* selectedNode = ParticlesEditorController::Instance()->GetSelectedNode();
-    EmitterParticleEditorNode* emitterNode = dynamic_cast<EmitterParticleEditorNode*>(selectedNode);
-    if (!emitterNode || !emitterNode->GetEmitterNode())
-    {
-        return;
-    }
-
-    ParticleEmitter * emitter = emitterNode->GetParticleEmitter();
-    if (!emitter)
-    {
-        return;
-    }
-
-	FilePath yamlPath = emitter->GetConfigPath();
-    if (this->forceAskFilename || yamlPath.IsEmpty() )
-    {
-        QString projectPath = QString(EditorSettings::Instance()->GetParticlesConfigsPath().GetAbsolutePathname().c_str());
-        QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save Particle Emitter YAML file"),
-                                                        projectPath, QString("YAML File (*.yaml)"));
- 
-        if (filePath.isEmpty())
-        {
-            return;
-        }
-        
-        yamlPath = FilePath(filePath.toStdString());
-    }
-
-    emitter->SaveToYaml(yamlPath);
+	if (!selectedEmitter)
+	{
+		return;
+	}
+	
+	selectedEmitter->SaveToYaml(filePath);
 }
-
+/*
 CommandLoadInnerEmitterFromYaml::CommandLoadInnerEmitterFromYaml() :
 	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_LOAD_INNER_EMITTER_FROM_YAML)
 {

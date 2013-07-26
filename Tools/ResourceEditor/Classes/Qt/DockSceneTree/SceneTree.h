@@ -80,13 +80,29 @@ protected slots:
 	void RemoveSelection();
 	void LockEntities();
 	void UnlockEntities();
+	
+	// Particle Emitter handlers.
 	void AddEmitter();
 	void StartEmitter();
 	void StopEmitter();
 	void RestartEmitter();
+	
+	void AddLayer();
+	void LoadEmitterFromYaml();
+	void SaveEmitterToYaml();
+	void SaveEmitterToYamlAs();
+
 	void EditModel();
 	void ReloadModel();
 	void ReloadModelAs();
+	
+protected:
+	// Helpers for Particles.
+	// Get the default path to Particles Config.
+	QString GetParticlesConfigPath();
+	
+	// Perform save for selected Emitters.
+	void PerformSaveEmitter(bool forceAskFileName);
 };
 
 #endif // __QT_SCENE_TREE_H__

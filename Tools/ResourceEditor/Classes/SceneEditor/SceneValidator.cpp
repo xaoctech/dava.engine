@@ -212,17 +212,38 @@ void SceneValidator::ValidateLodComponent(Entity *ownerNode, Set<String> &errors
 void SceneValidator::ValidateParticleEmitterComponent(DAVA::Entity *ownerNode, Set<String> &errorsLog)
 {
 	ParticleEmitter * emitter = GetEmitter(ownerNode);
-    if(!emitter) 
-		return;
+    if(!emitter)
+	{
+		return true;
+	}
 
-    String validationMsg;
-    if (!ParticlesEditorSceneDataHelper::ValidateParticleEmitter(emitter, validationMsg))
-    {
-        errorsLog.insert(validationMsg);
-    }
+	ValidateParticleEmitter(emitter, errorsLog);
 }
 
-
+bool SceneValidator::ValidateParticleEmitter(ParticleEmitter* emitter, Set<String> &errorsLog)
+{
+	if (!emitter)
+	{
+		return true;
+	}
+	
+	if (emitter->Is3DFlagCorrect())
+	{
+		return true;
+	}
+	
+	// Don't use Format() helper here - the string with path might be too long for Format().
+	String validationMsg = ("\"3d\" flag value is wrong for Particle Emitter Configuration file ");
+	validationMsg += emitter->GetConfigPath().GetAbsolutePathname().c_str();
+	validationMsg += ". Please verify whether you are using the correct configuration file.\n\"3d\" flag for this Particle Emitter will be reset to TRUE.";
+	errorsLog.insert(validationMsg);
+	
+	// Yuri Coder, 2013/05/08. Since Particle Editor works with 3D Particles only - have to set this flag
+	// manually.
+	emitter->Set3D(true);
+	
+	return false;
+}
 
 void SceneValidator::ValidateRenderBatch(Entity *ownerNode, RenderBatch *renderBatch, Set<String> &errorsLog)
 {

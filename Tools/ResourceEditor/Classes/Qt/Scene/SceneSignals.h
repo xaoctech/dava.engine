@@ -69,6 +69,14 @@ signals:
 	// particles - effect started/stopped.
 	void ParticleEffectStateChanged(SceneEditor2* scene, DAVA::Entity* effect, bool isStarted);
 
+	// particles - loading/saving.
+	void ParticleEmitterLoaded(SceneEditor2* scene, DAVA::ParticleEmitter* emitter);
+	void ParticleEmitterSaved(SceneEditor2* scene, DAVA::ParticleEmitter* emitter);
+	
+	// particles - structure changes.
+	void ParticleLayerAdded(SceneEditor2* scene, DAVA::ParticleLayer* layer);
+	void ParticleLayerRemoved(SceneEditor2* scene, DAVA::ParticleEmitter* emitter);
+
 	void UpdateDropperHeight(SceneEditor2* scene, double height);
 	void UpdateVisibilityButtonsState(SceneEditor2* scene);
 	void NeedSaveCustomColorsTexture(SceneEditor2* scene);
@@ -128,6 +136,26 @@ public:
 	void EmitParticleEffectStateChanged(SceneEditor2* scene, DAVA::Entity* effect, bool isStarted)
 	{
 		emit ParticleEffectStateChanged(scene, effect, isStarted);
+	}
+	
+	void EmitParticleEmitterLoaded(SceneEditor2* scene, DAVA::ParticleEmitter* emitter)
+	{
+		emit ParticleEmitterLoaded(scene, emitter);
+	}
+	
+	void EmitParticleEmitterSaved(SceneEditor2* scene, DAVA::ParticleEmitter* emitter)
+	{
+		emit ParticleEmitterSaved(scene, emitter);
+	}
+
+	void EmitParticleLayerAdded(SceneEditor2* scene, DAVA::ParticleLayer* layer)
+	{
+		emit ParticleLayerAdded(scene, layer);
+	}
+	
+	void EmitParticleLayerRemoved(SceneEditor2* scene, DAVA::ParticleEmitter* emitter)
+	{
+		emit ParticleLayerRemoved(scene, emitter);
 	}
 };
 
