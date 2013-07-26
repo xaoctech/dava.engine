@@ -214,7 +214,7 @@ void SceneValidator::ValidateParticleEmitterComponent(DAVA::Entity *ownerNode, S
 	ParticleEmitter * emitter = GetEmitter(ownerNode);
     if(!emitter)
 	{
-		return true;
+		return;
 	}
 
 	ValidateParticleEmitter(emitter, errorsLog);
