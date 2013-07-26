@@ -444,9 +444,6 @@
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticlePropertyLine.h">
       <Filter>Internal\Particles</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleSystem.h">
-      <Filter>Internal\Particles</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Platform\Mutex.h">
       <Filter>Internal\Platform</Filter>
     </ClInclude>
@@ -1297,6 +1294,9 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialOptimazer.h">
       <Filter>Internal\Render\Material</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Base\AllocatorFactory.h">
+      <Filter>Internal\Base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1510,9 +1510,6 @@
       <Filter>Internal\Particles</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticlePropertyLine.cpp">
-      <Filter>Internal\Particles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleSystem.cpp">
       <Filter>Internal\Particles</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Platform\Mutex.cpp">
@@ -2286,6 +2283,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialOptimazer.cpp">
       <Filter>Internal\Render\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Base\AllocatorFactory.cpp">
+      <Filter>Internal\Base</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
