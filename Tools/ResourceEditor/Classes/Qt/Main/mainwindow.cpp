@@ -251,7 +251,7 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionTextureConverter, SIGNAL(triggered()), this, SLOT(OnTextureBrowser()));
 	QObject::connect(ui->actionEnableCameraLight, SIGNAL(triggered()), this, SLOT(OnSceneLightMode()));
 	QObject::connect(ui->actionCubemapEditor, SIGNAL(triggered()), this, SLOT(OnCubemapEditor()));
-
+	QObject::connect(ui->actionShowNotPassableLandscape, SIGNAL(triggered()), this, SLOT(OnNotPassableTerrain()));
 }
 
 // ###################################################################################################
@@ -279,6 +279,7 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 	LoadUndoRedoState(scene);
 	LoadModificationState(scene);
 	LoadEditorLightState(scene);
+	LoadNotPassableState(scene);
 
 	// TODO: remove this code. it is for old material editor -->
 	DAVA::UIControl* parent = materialEditor->GetParent();
@@ -545,6 +546,24 @@ void QtMainWindow::OnCubemapEditor()
 	dlg.exec();
 }
 
+void QtMainWindow::OnNotPassableTerrain()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if (!scene)
+	{
+		return;
+	}
+
+	if (ui->actionShowNotPassableLandscape->isChecked())
+	{
+		scene->landscapeEditorDrawSystem->EnableNotPassableTerrain();
+	}
+	else
+	{
+		scene->landscapeEditorDrawSystem->DisableNotPassableTerrain();
+	}
+}
+
 // ###################################################################################################
 // Mainwindow load state functions
 // ###################################################################################################
@@ -609,6 +628,16 @@ void QtMainWindow::LoadEditorLightState(SceneEditor2 *scene)
 	{
 		ui->actionEnableCameraLight->setChecked(scene->editorLightSystem->GetCameraLightEnabled());
 	}
+}
+
+void QtMainWindow::LoadNotPassableState(SceneEditor2* scene)
+{
+	if (!scene)
+	{
+		return;
+	}
+
+	ui->actionShowNotPassableLandscape->setChecked(scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled());
 }
 
 
