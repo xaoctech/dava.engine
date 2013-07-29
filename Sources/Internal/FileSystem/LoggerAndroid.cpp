@@ -38,7 +38,7 @@ int32 LogLevelToAndtoid(Logger::eLogLevel ll)
 
 void Logger::PlatformLog(eLogLevel ll, const char8* text)
 {
-	__android_log_print(LogLevelToAndtoid(ll), androidLogTag.c_str(), text);
+	__android_log_print(LogLevelToAndtoid(ll), androidLogTag.c_str(), text, "");
 }
 
 void Logger::PlatformLog(eLogLevel ll, const char16* text)
