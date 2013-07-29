@@ -674,8 +674,6 @@
 		176DEB73174B5561007A983B /* libfmodex.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 02E9E40917395FDD00C501BC /* libfmodex.dylib */; };
 		1789108E1740DFBC007B72BA /* NMaterialConsts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1789108D1740DFBC007B72BA /* NMaterialConsts.cpp */; };
 		1789108F1740DFBC007B72BA /* NMaterialConsts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1789108D1740DFBC007B72BA /* NMaterialConsts.cpp */; };
-		1794211517A6A5B300783123 /* UIDismissionHandlerAlertView.h in Headers */ = {isa = PBXBuildFile; fileRef = 1794211317A6A5B300783123 /* UIDismissionHandlerAlertView.h */; };
-		1794211617A6A5B300783123 /* UIDismissionHandlerAlertView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1794211417A6A5B300783123 /* UIDismissionHandlerAlertView.mm */; };
 		1795E4BA174CB86800050F64 /* NPAPIPluginMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17E2706C174CACA70019EF87 /* NPAPIPluginMacOS.mm */; };
 		1795E4BB174CB86D00050F64 /* NPAPIOpenGLLayerMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1795E4B7174CB68200050F64 /* NPAPIOpenGLLayerMacOS.mm */; };
 		1795E4BF174CB87700050F64 /* NPAPIOpenGLLayerMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 1795E4B6174CB68200050F64 /* NPAPIOpenGLLayerMacOS.h */; };
@@ -1984,8 +1982,6 @@
 		171F938416CE6F28007038AB /* UIWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIWebView.h; sourceTree = "<group>"; };
 		176DEB77174B5561007A983B /* libFrameworkNPAPI.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFrameworkNPAPI.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		1789108D1740DFBC007B72BA /* NMaterialConsts.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NMaterialConsts.cpp; sourceTree = "<group>"; };
-		1794211317A6A5B300783123 /* UIDismissionHandlerAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDismissionHandlerAlertView.h; sourceTree = "<group>"; };
-		1794211417A6A5B300783123 /* UIDismissionHandlerAlertView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UIDismissionHandlerAlertView.mm; sourceTree = "<group>"; };
 		1795D26C174B56900023F61E /* NPAPIEntryPoint.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NPAPIEntryPoint.mm; sourceTree = "<group>"; };
 		1795D26D174B56900023F61E /* NPAPIEntryPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NPAPIEntryPoint.h; sourceTree = "<group>"; };
 		1795E4B6174CB68200050F64 /* NPAPIOpenGLLayerMacOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NPAPIOpenGLLayerMacOS.h; sourceTree = "<group>"; };
@@ -2923,8 +2919,6 @@
 				C151B17416D3747E00E09BAF /* DVAssertMessage.cpp */,
 				C151B17516D3747E00E09BAF /* DVAssertMessage.h */,
 				C151B17616D3747E00E09BAF /* DVAssertMessageApple.mm */,
-				1794211317A6A5B300783123 /* UIDismissionHandlerAlertView.h */,
-				1794211417A6A5B300783123 /* UIDismissionHandlerAlertView.mm */,
 				E8989B2116BD24E400732C04 /* Backtrace.cpp */,
 				E8989B2216BD24E400732C04 /* Backtrace.h */,
 				E8989B2316BD24E400732C04 /* DVAssert.h */,
@@ -4375,7 +4369,6 @@
 				02E9E439173964DA00C501BC /* SoundUpdateSystem.h in Headers */,
 				846CFE5F174D1A64004ECE3C /* OpenUDIDApple.h in Headers */,
 				846CFE63174D1A75004ECE3C /* OpenUDIDMacOS.h in Headers */,
-				1794211517A6A5B300783123 /* UIDismissionHandlerAlertView.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5397,7 +5390,6 @@
 				1789108E1740DFBC007B72BA /* NMaterialConsts.cpp in Sources */,
 				846CFE60174D1A64004ECE3C /* OpenUDIDApple.mm in Sources */,
 				846CFE64174D1A75004ECE3C /* OpenUDIDMacOS.mm in Sources */,
-				1794211617A6A5B300783123 /* UIDismissionHandlerAlertView.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
