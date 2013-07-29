@@ -28,9 +28,9 @@ public:
 };
 
 JniDVAssertMessage::JniDVAssertMessage() :
-	JniExtension("com/dava/framework/JNIAssert")
+JniExtension("com/dava/framework/JNIAssert")
 {
-
+	
 }
 
 void JniDVAssertMessage::ShowMessage(const char* message)
@@ -38,7 +38,7 @@ void JniDVAssertMessage::ShowMessage(const char* message)
 	jclass javaClass = GetJavaClass();
 	if (!javaClass)
 		return;
-
+	
 	jmethodID mid = GetMethodID(javaClass, "Assert", "(Ljava/lang/String;)V");
 	if (mid)
 	{
@@ -50,7 +50,7 @@ void JniDVAssertMessage::ShowMessage(const char* message)
 }
 
 
-void DVAssertMessage::InnerShow(const char* message)
+void DVAssertMessage::InnerShow(eModalType modalType, const char* message)
 {
 	JniDVAssertMessage msg;
 	msg.ShowMessage(message);
