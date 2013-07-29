@@ -90,7 +90,7 @@ bool LandscapeEditorDrawSystem::EnableCustomDraw()
 	if (customDrawRequestCount != 0)
 	{
 		++customDrawRequestCount;
-		return;
+		return true;
 	}
 
 	if (!Init())
