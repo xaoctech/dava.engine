@@ -642,31 +642,33 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
     for (int32 c = 0; c < currentNode->GetChildrenCount(); ++c)
     {
         Entity * childNode = currentNode->GetChild(c);
+
         bool dec = RemoveEmptyHierarchy(childNode);
         if(dec)c--;
     }
     
-//    if (currentNode->GetName() == "back_plain02.sc2")
-//    {
-//        int32 k = 0;
-//        k++;
-//        Logger::Debug("found node: %s %p", currentNode->GetName().c_str(), currentNode);
-//    }
-
-    if ((currentNode->GetChildrenCount() == 1) && (typeid(*currentNode) == typeid(Entity)))
+    if(currentNode->GetChildrenCount() == 1)
     {
-        if (currentNode->GetComponentCount() == 1)
-        {
-            bool isTransfrom = currentNode->GetComponent(Component::TRANSFORM_COMPONENT) != 0;
-            if (!isTransfrom)
-                return false;
-        }
-        else if (currentNode->GetComponentCount() >= 2)
+		uint32 allowed_comp_count = 0;
+		if(NULL != currentNode->GetComponent(Component::TRANSFORM_COMPONENT))
+		{
+			allowed_comp_count++;
+		}
+
+		if(NULL != currentNode->GetComponent(Component::CUSTOM_PROPERTIES_COMPONENT))
+		{
+			allowed_comp_count++;
+		}
+
+		if (currentNode->GetComponentCount() > allowed_comp_count)
+		{
             return false;
+		}
         
         if (currentNode->GetFlags() & Entity::NODE_LOCAL_MATRIX_IDENTITY)
         {
             Entity * parent  = currentNode->GetParent();
+
             if (parent)
             {
                 Entity * childNode = SafeRetain(currentNode->GetChild(0));

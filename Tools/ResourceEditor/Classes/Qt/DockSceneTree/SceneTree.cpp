@@ -420,8 +420,13 @@ void SceneTree::ReloadModel()
 	SceneEditor2 *sceneEditor = treeModel->GetScene();
 	if(NULL != sceneEditor)
 	{
+		QItemSelection curSelection = selectionModel()->selection();
+
 		const EntityGroup *selection = sceneEditor->selectionSystem->GetSelection();
 		sceneEditor->structureSystem->Reload(selection);
+
+		selectionModel()->clear();
+		selectionModel()->select(curSelection, QItemSelectionModel::Select | QItemSelectionModel::Rows);
 	}
 }
 

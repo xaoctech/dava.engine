@@ -240,18 +240,29 @@ void StructureSystem::Reload(const EntityGroup *entityGroup, const DAVA::FilePat
 			if(loadModelPath.Exists())
 			{
 				DAVA::Scene *scene = new DAVA::Scene();
-				DAVA::Entity *rootEntity = scene->GetRootNode(loadModelPath);
+				DAVA::SceneFileV2 *sceneFile = new DAVA::SceneFileV2();
+				DAVA::Entity *rootEntity = new DAVA::Entity();
+				DAVA::Entity *modelEntity = scene->GetRootNode(loadModelPath);
 
-				if(NULL != rootEntity)
+				rootEntity->AddNode(modelEntity);
+				sceneFile->OptimizeScene(modelEntity);
+
+				sceneFile->Release();
+				scene->Release();
+
+				modelEntity = rootEntity->GetChild(0);
+
+				if(NULL != modelEntity)
 				{
-					rootEntity->Retain();
-					rootEntity->BakeTransforms();
+					modelEntity->Retain();
+					modelEntity->SetSolid(true);
+					modelEntity->GetCustomProperties()->SetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, loadModelPath.GetAbsolutePathname());
 
-					newEntities[i] = rootEntity;
+					newEntities[i] = modelEntity;
 					loadSuccess = true;
 				}
 
-				SafeRelease(scene);
+				rootEntity->Release();
 			}
 		}
 
