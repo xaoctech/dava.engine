@@ -35,6 +35,7 @@
 #include "Scene/System/TilemaskEditorSystem.h"
 #include "Scene/System/CustomColorsSystem.h"
 #include "Scene/System/VisibilityToolSystem.h"
+#include "Scene/System/RulerToolSystem.h"
 #include "Scene/System/StructureSystem.h"
 #include "Scene/System/EditorParticlesSystem.h"
 #include "Scene/System/EditorLightSystem.h"
@@ -58,6 +59,7 @@ public:
 	TilemaskEditorSystem* tilemaskEditorSystem;
 	CustomColorsSystem* customColorsSystem;
 	VisibilityToolSystem* visibilityToolSystem;
+	RulerToolSystem* rulerToolSystem;
 	StructureSystem *structureSystem;
 	EditorParticlesSystem *particlesSystem;
 	EditorLightSystem *editorLightSystem;

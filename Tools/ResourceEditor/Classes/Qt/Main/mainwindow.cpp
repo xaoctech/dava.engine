@@ -63,6 +63,9 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(SceneActivated(SceneEditor2 *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(SceneDeactivated(SceneEditor2 *)));
 
+	QObject::connect(SceneSignals::Instance(), SIGNAL(RulerToolLengthUpdated(SceneEditor2*, double, double)),
+					 this, SLOT(UpdateRulerToolLength(SceneEditor2*, double, double)));
+
 	new TextureBrowser(this);
 	//new MaterialBrowser();
 	materialEditor = new MaterialEditor(DAVA::Rect(20, 20, 500, 600));
@@ -260,6 +263,7 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionEnableCameraLight, SIGNAL(triggered()), this, SLOT(OnSceneLightMode()));
 	QObject::connect(ui->actionCubemapEditor, SIGNAL(triggered()), this, SLOT(OnCubemapEditor()));
 	QObject::connect(ui->actionShowNotPassableLandscape, SIGNAL(triggered()), this, SLOT(OnNotPassableTerrain()));
+	QObject::connect(ui->actionRulerTool, SIGNAL(triggered()), this, SLOT(OnRulerTool()));
 }
 
 // ###################################################################################################
@@ -288,6 +292,7 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 	LoadModificationState(scene);
 	LoadEditorLightState(scene);
 	LoadNotPassableState(scene);
+	LoadRulerToolState(scene);
 
 	// TODO: remove this code. it is for old material editor -->
 	DAVA::UIControl* parent = materialEditor->GetParent();
@@ -315,6 +320,24 @@ void QtMainWindow::SceneCommandExecuted(SceneEditor2 *scene, const Command2* com
 	{
 		LoadUndoRedoState(scene);
 	}
+}
+
+void QtMainWindow::UpdateRulerToolLength(SceneEditor2 *scene, double length, double previewLength)
+{
+	QString l = QString("Current length: %1").arg(length);
+	QString pL = QString("Preview length: %1").arg(previewLength);
+
+	QString msg;
+	if (length >= 0.0)
+	{
+		msg = l;
+	}
+	if (previewLength >= 0.0)
+	{
+		msg += ";    " + pL;
+	}
+
+	ui->statusBar->showMessage(msg);
 }
 
 // ###################################################################################################
@@ -588,6 +611,24 @@ void QtMainWindow::OnNotPassableTerrain()
 	}
 }
 
+void QtMainWindow::OnRulerTool()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if (!scene)
+	{
+		return;
+	}
+
+	if (ui->actionRulerTool->isChecked())
+	{
+		scene->rulerToolSystem->EnableLandscapeEditing();
+	}
+	else
+	{
+		scene->rulerToolSystem->DisableLandscapeEdititing();
+	}
+}
+
 // ###################################################################################################
 // Mainwindow load state functions
 // ###################################################################################################
@@ -664,6 +705,15 @@ void QtMainWindow::LoadNotPassableState(SceneEditor2* scene)
 	ui->actionShowNotPassableLandscape->setChecked(scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled());
 }
 
+void QtMainWindow::LoadRulerToolState(SceneEditor2* scene)
+{
+	if (!scene)
+	{
+		return;
+	}
+
+	ui->actionRulerTool->setChecked(scene->rulerToolSystem->IsLandscapeEditingEnabled());
+}
 
 
 #if 0

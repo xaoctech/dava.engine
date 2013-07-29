@@ -75,6 +75,7 @@ public slots:
 	void OnCubemapEditor();
 
 	void OnNotPassableTerrain();
+	void OnRulerTool();
 
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
@@ -92,6 +93,8 @@ protected slots:
 	void SceneActivated(SceneEditor2 *scene);
 	void SceneDeactivated(SceneEditor2 *scene);
 
+	void UpdateRulerToolLength(SceneEditor2* scene, double length, double previewLength);
+
 private:
 	Ui::MainWindow *ui;
 	QtPosSaver posSaver;
@@ -106,6 +109,7 @@ private:
 	void LoadModificationState(SceneEditor2 *scene);
 	void LoadEditorLightState(SceneEditor2 *scene);
 	void LoadNotPassableState(SceneEditor2* scene);
+	void LoadRulerToolState(SceneEditor2* scene);
 };
 
 #if 0
