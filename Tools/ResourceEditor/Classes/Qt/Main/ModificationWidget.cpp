@@ -24,7 +24,8 @@ ModificationWidget::ModificationWidget(QWidget* parent)
 	: QWidget(parent)
 	, ui(new Ui::ModificationWidget)
 	, groupMode(false)
-	, modifMode(ModifyAbsolute)
+	, pivotMode(PivotAbsolute)
+	, modifMode(ST_MODIF_OFF)
 {
 	ui->setupUi(this);
 
@@ -45,7 +46,13 @@ ModificationWidget::~ModificationWidget()
 	delete ui;
 }
 
-void ModificationWidget::SetMode(ModificationMode mode)
+void ModificationWidget::SetPivotMode(PivotMode mode)
+{
+	pivotMode = mode;
+	ReloadValues();
+}
+
+void ModificationWidget::SetModifMode(ST_ModifMode mode)
 {
 	modifMode = mode;
 	ReloadValues();
@@ -55,60 +62,106 @@ void ModificationWidget::ReloadValues()
 {
 	if(NULL != curScene)
 	{
-		const EntityGroup* selection = curScene->selectionSystem->GetSelection();
+		ui->xAxisModify->clear();
+		ui->xAxisModify->setEnabled(false);
+		ui->yAxisModify->clear();
+		ui->yAxisModify->setEnabled(false);
+		ui->zAxisModify->clear();
+		ui->zAxisModify->setEnabled(false);
 
-		if(NULL != selection && selection->Size() > 0)
+		switch (modifMode)
 		{
-			ui->xAxisModify->setEnabled(true);
-			ui->yAxisModify->setEnabled(true);
-			ui->zAxisModify->setEnabled(true);
-
-			if(selection->Size() > 1)
-			{
-				groupMode = true;
-
-				ui->xAxisModify->clear();
-				ui->yAxisModify->clear();
-				ui->zAxisModify->clear();
-			}
-			else
-			{
-				groupMode = false;
-
-				if(modifMode == ModifyRelative)
-				{
-					ui->xAxisModify->setValue(0);
-					ui->yAxisModify->setValue(0);
-					ui->zAxisModify->setValue(0);
-				}
-				else
-				{
-					DAVA::Entity *singleEntity = selection->GetEntity(0);
-					if(NULL != singleEntity)
-					{
-						DAVA::Matrix4 localMatrix = singleEntity->GetLocalTransform();
-						DAVA::Vector3 translation = localMatrix.GetTranslationVector();
-
-						ui->xAxisModify->setValue(translation.x);
-						ui->yAxisModify->setValue(translation.y);
-						ui->zAxisModify->setValue(translation.z);
-					}
-				}
-			}
-		}
-		else
-		{
-			ui->xAxisModify->clear();
-			ui->xAxisModify->setEnabled(false);
-			ui->yAxisModify->clear();
-			ui->yAxisModify->setEnabled(false);
-			ui->zAxisModify->clear();
-			ui->zAxisModify->setEnabled(false);
+		case ST_MODIF_MOVE:
+			ReloadModeValues();
+			break;
+		case ST_MODIF_ROTATE:
+			ReloadRotateValues();
+			break;
+		case ST_MODIF_SCALE:
+			ReloadScaleValues();
+			break;
+		default:
+			break;
 		}
 	}
 }
 
+void ModificationWidget::ReloadModeValues()
+{
+	const EntityGroup* selection = curScene->selectionSystem->GetSelection();
+
+	if(NULL != selection && selection->Size() > 0)
+	{
+		ui->xAxisModify->setEnabled(true);
+		ui->yAxisModify->setEnabled(true);
+		ui->zAxisModify->setEnabled(true);
+
+		if(selection->Size() > 1)
+		{
+			groupMode = true;
+
+			ui->xAxisModify->clear();
+			ui->yAxisModify->clear();
+			ui->zAxisModify->clear();
+		}
+		else
+		{
+			groupMode = false;
+
+			if(pivotMode == PivotRelative)
+			{
+				ui->xAxisModify->setValue(0);
+				ui->yAxisModify->setValue(0);
+				ui->zAxisModify->setValue(0);
+			}
+			else
+			{
+				DAVA::Entity *singleEntity = selection->GetEntity(0);
+				if(NULL != singleEntity)
+				{
+					DAVA::Matrix4 localMatrix = singleEntity->GetLocalTransform();
+					DAVA::Vector3 translation = localMatrix.GetTranslationVector();
+
+					ui->xAxisModify->setValue(translation.x);
+					ui->yAxisModify->setValue(translation.y);
+					ui->zAxisModify->setValue(translation.z);
+				}
+			}
+		}
+	}
+}
+
+void ModificationWidget::ReloadRotateValues()
+{
+
+}
+
+void ModificationWidget::ReloadScaleValues()
+{
+
+}
+
 void ModificationWidget::ApplyValues(ST_Axis axis)
+{
+	switch (modifMode)
+	{
+	case ST_MODIF_MOVE:
+		ApplyMoveValues(axis);
+		break;
+	case ST_MODIF_ROTATE:
+		ApplyRotateValues(axis);
+		break;
+	case ST_MODIF_SCALE:
+		ApplyScaleValues(axis);
+		break;
+	default:
+		break;
+	}
+
+	ReloadValues();
+}
+
+void ModificationWidget::ApplyMoveValues(ST_Axis axis)
 {
 	DAVA::float32 x = (DAVA::float32) ui->xAxisModify->value();
 	DAVA::float32 y = (DAVA::float32) ui->yAxisModify->value();
@@ -128,7 +181,7 @@ void ModificationWidget::ApplyValues(ST_Axis axis)
 					DAVA::Vector3 origPos = origMatrix.GetTranslationVector();
 					DAVA::Vector3 newPos = origPos;
 
-					if(modifMode == ModifyAbsolute)
+					if(pivotMode == PivotAbsolute)
 					{
 						switch (axis)
 						{
@@ -174,8 +227,16 @@ void ModificationWidget::ApplyValues(ST_Axis axis)
 			}
 		}
 	}
+}
 
-	ReloadValues();
+void ModificationWidget::ApplyRotateValues(ST_Axis axis)
+{
+
+}
+
+void ModificationWidget::ApplyScaleValues(ST_Axis axis)
+{
+
 }
 
 void ModificationWidget::OnSceneCommand(SceneEditor2 *scene, const Command2* command, bool redo)
