@@ -32,6 +32,7 @@
 #include "TextureBrowser/TextureConvertor.h"
 
 #include "Qt/Scene/SceneSignals.h"
+#include "../Main/mainwindow.h"
 
 #include <QMessageBox>
 
@@ -53,6 +54,7 @@ TilemaskEditorPropertiesView::~TilemaskEditorPropertiesView()
 void TilemaskEditorPropertiesView::Init()
 {
 	InitBrushImages();
+	toolbarAction = QtMainWindow::Instance()->GetUI()->actionTileMapEditor;
 
 	connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2*)), this, SLOT(SceneActivated(SceneEditor2*)));
 	connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2*)), this, SLOT(SceneDeactivated(SceneEditor2*)));
@@ -62,6 +64,8 @@ void TilemaskEditorPropertiesView::Init()
 	connect(ui->comboBrushImage, SIGNAL(currentIndexChanged(int)), this, SLOT(SetToolImage(int)));
 	connect(ui->sliderStrength, SIGNAL(valueChanged(int)), this, SLOT(SetStrength(int)));
 	connect(ui->comboTileTexture, SIGNAL(currentIndexChanged(int)), this, SLOT(SetDrawTexture(int)));
+
+	connect(toolbarAction, SIGNAL(triggered()), this, SLOT(Toggle()));
 
 	SetWidgetsState(false);
 }
@@ -109,6 +113,7 @@ void TilemaskEditorPropertiesView::SetWidgetsState(bool enabled)
 	ui->buttonEnableTilemaskEditor->setCheckable(enabled);
 	ui->buttonEnableTilemaskEditor->setChecked(enabled);
 	ui->buttonEnableTilemaskEditor->blockSignals(false);
+	toolbarAction->setChecked(enabled);
 
 	QString buttonText = enabled ? tr("Disable Tilemask Editor") : tr("Enable Tilemask Editor");
 	ui->buttonEnableTilemaskEditor->setText(buttonText);
