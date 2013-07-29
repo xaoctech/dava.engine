@@ -67,6 +67,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	//new MaterialBrowser();
 	materialEditor = new MaterialEditor(DAVA::Rect(20, 20, 500, 600));
 
+	//ui->sceneTabWidget->OpenTab("/Projects/dava.wot.art/DataSource/3d/Maps/karelia/karelia.sc2");
 	ui->sceneTabWidget->OpenTab("/Projects/dava.wot.art/DataSource/3d/Maps/dike_village/dike_village.sc2");
 	//ui->sceneTabWidget->OpenTab("/Users/a_makovii/Documents/work/temp/39/mountain/mountain_switch.sc2");
 	//ui->sceneTabWidget->OpenTab("/Users/a_makovii/Documents/work/temp/desertTrain/desert_train/desert_train.sc2");

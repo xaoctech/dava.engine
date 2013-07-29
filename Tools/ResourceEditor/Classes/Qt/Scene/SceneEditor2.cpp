@@ -95,10 +95,14 @@ bool SceneEditor2::Load(const DAVA::FilePath &path)
 		DAVA::Vector<DAVA::Entity*> tmpEntities;
 		int entitiesCount = rootNode->GetChildrenCount();
 
-		tmpEntities.reserve(entitiesCount);
+		// optimize scene
+		SceneFileV2 *sceneFile = new SceneFileV2();
+		sceneFile->OptimizeScene(rootNode);
+		sceneFile->Release();
 
 		// remember all child pointers, but don't add them to scene in this cycle
 		// because when entity is adding it is automatically removing from its old hierarchy
+		tmpEntities.reserve(entitiesCount);
 		for (DAVA::int32 i = 0; i < entitiesCount; ++i)
 		{
 			tmpEntities.push_back(rootNode->GetChild(i));
