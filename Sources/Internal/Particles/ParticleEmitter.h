@@ -157,8 +157,10 @@ public:
 
     /**
      \brief Function to stop generation from this emitter
+
+	 \param[in] isDeleteAllParticles if it's set to true emitter deletes all previous particles that was generated
 	 */
-	void Stop();
+	void Stop(bool isDeleteAllParticles = true);
 
 	/**
      \brief Function returns is emitter stopped

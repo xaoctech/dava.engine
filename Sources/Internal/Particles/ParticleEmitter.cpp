@@ -249,9 +249,9 @@ void ParticleEmitter::Play()
     DoRestart(false);
 }
     
-void ParticleEmitter::Stop()
+void ParticleEmitter::Stop(bool isDeleteAllParticles)
 {
-    DoRestart(true);
+    DoRestart(isDeleteAllParticles);
     Pause(true);
 }
     
