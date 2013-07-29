@@ -66,6 +66,9 @@ SceneEditor2::SceneEditor2()
 	visibilityToolSystem = new VisibilityToolSystem(this);
 	AddSystem(visibilityToolSystem, 0);
 
+	rulerToolSystem = new RulerToolSystem(this);
+	AddSystem(rulerToolSystem, 0);
+
 	structureSystem = new StructureSystem(this);
 	AddSystem(structureSystem, 0);
 
@@ -281,6 +284,7 @@ void SceneEditor2::Update(float timeElapsed)
 	tilemaskEditorSystem->Update(timeElapsed);
 	customColorsSystem->Update(timeElapsed);
 	visibilityToolSystem->Update(timeElapsed);
+	rulerToolSystem->Update(timeElapsed);
 	structureSystem->Update(timeElapsed);
 	particlesSystem->Update(timeElapsed);
 	editorLightSystem->Update(timeElapsed);
@@ -298,6 +302,7 @@ void SceneEditor2::PostUIEvent(DAVA::UIEvent *event)
 	tilemaskEditorSystem->ProcessUIEvent(event);
 	customColorsSystem->ProcessUIEvent(event);
 	visibilityToolSystem->ProcessUIEvent(event);
+	rulerToolSystem->ProcessUIEvent(event);
 	structureSystem->ProcessUIEvent(event);
 	particlesSystem->ProcessUIEvent(event);
 }

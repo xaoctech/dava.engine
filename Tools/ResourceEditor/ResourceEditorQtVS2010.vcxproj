@@ -517,8 +517,10 @@
     <ClCompile Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\HeightmapProxy.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\LandscapeProxy.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\NotPassableTerrainProxy.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\RulerToolProxy.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\VisibilityToolProxy.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\ModifSystem.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\System\RulerToolSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\SelectionSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\StructureSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\TilemaskEditorSystem.cpp" />
@@ -1181,8 +1183,10 @@
     <ClInclude Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\HeightmapProxy.h" />
     <ClInclude Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\LandscapeProxy.h" />
     <ClInclude Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\NotPassableTerrainProxy.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\RulerToolProxy.h" />
     <ClInclude Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\VisibilityToolProxy.h" />
     <ClInclude Include="Classes\Qt\Scene\System\ModifSystem.h" />
+    <ClInclude Include="Classes\Qt\Scene\System\RulerToolSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\SelectionSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\StructureSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\TilemaskEditorSystem.h" />
