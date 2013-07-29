@@ -63,13 +63,20 @@ public:
 	void ProcessUIEvent(DAVA::UIEvent *event);
 	
 	void SetBrushSize(int32 brushSize);
+	int32 GetBrushSize();
 	void SetStrength(float32 strength);
+	float32 GetStrength();
 	void SetAverageStrength(float32 averageStrength);
-	void SetToolImage(const FilePath& toolImagePath);
+	float32 GetAverageStrength();
+	void SetToolImage(const FilePath& toolImagePath, int32 index);
+	int32 GetToolImage();
 	void SetDrawingType(eHeightmapDrawType type);
+	eHeightmapDrawType GetDrawingType();
 
 	void SetCopyPasteHeightmap(bool active);
+	bool GetCopyPasteHeightmap();
 	void SetCopyPasteTilemask(bool active);
+	bool GetCopyPasteTilemask();
 
 protected:
 	bool enabled;
@@ -92,7 +99,8 @@ protected:
 	float32 averageStrength;
 	bool inverseDrawingEnabled;
 	FilePath toolImagePath;
-	
+	int32 toolImageIndex;
+
 	float32 curHeight;
 	bool isIntersectsLandscape;
 	Vector2 cursorPosition;

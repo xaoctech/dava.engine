@@ -86,6 +86,13 @@ protected slots:
 	void OnParticleLayerValueChanged(SceneEditor2* scene, DAVA::ParticleLayer* layer);
 	void OnParticleEffectStateChanged(SceneEditor2* scene, DAVA::Entity* effect, bool isStarted);
 	
+	// Scene Tree signals - Particle Emitter is loaded.
+	void OnParticleEmitterLoaded(SceneEditor2* scene, DAVA::ParticleEmitter* emitter);
+
+	// Scene Tree signals - structure changes.
+	void OnParticleLayerAdded(SceneEditor2* scene, DAVA::ParticleLayer* layer);
+	void OnParticleLayerRemoved(SceneEditor2* scene, DAVA::ParticleEmitter* emitter);
+
 	void OnUpdate();
 
 	void OnUpdateLayersExtraInfoNeeded();

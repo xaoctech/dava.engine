@@ -60,6 +60,9 @@ HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 ,	tilemaskCopyPasteTool(NULL)
 ,	originalTilemaskImage(NULL)
 ,   squareTexture(NULL)
+,	toolImageIndex(0)
+,	copyPasteHeightmap(false)
+,	copyPasteTilemask(false)
 {
 	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.png");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
@@ -538,9 +541,10 @@ void HeightmapEditorSystem::SetAverageStrength(float32 averageStrength)
 	}
 }
 
-void HeightmapEditorSystem::SetToolImage(const FilePath& toolImagePath)
+void HeightmapEditorSystem::SetToolImage(const FilePath& toolImagePath, int32 index)
 {
 	this->toolImagePath = toolImagePath;
+	this->toolImageIndex = index;
 	UpdateToolImage(true);
 }
 
@@ -577,4 +581,45 @@ void HeightmapEditorSystem::CreateTilemaskCopyPasteTool()
 {
 	SafeRelease(tilemaskCopyPasteTool);
 	tilemaskCopyPasteTool = CreateToolImage(128, toolImagePath);
+}
+
+int32 HeightmapEditorSystem::GetBrushSize()
+{
+	return cursorSize;
+}
+
+float32 HeightmapEditorSystem::GetStrength()
+{
+	float32 s = strength;
+	if (inverseDrawingEnabled)
+	{
+		s = -s;
+	}
+
+	return s;
+}
+
+float32 HeightmapEditorSystem::GetAverageStrength()
+{
+	return averageStrength;
+}
+
+int32 HeightmapEditorSystem::GetToolImage()
+{
+	return toolImageIndex;
+}
+
+HeightmapEditorSystem::eHeightmapDrawType HeightmapEditorSystem::GetDrawingType()
+{
+	return drawingType;
+}
+
+bool HeightmapEditorSystem::GetCopyPasteHeightmap()
+{
+	return copyPasteHeightmap;
+}
+
+bool HeightmapEditorSystem::GetCopyPasteTilemask()
+{
+	return copyPasteTilemask;
 }

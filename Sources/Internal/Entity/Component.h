@@ -69,6 +69,10 @@ public:
          \brief This function should be implemented in each node that have data nodes inside it.
      */
     virtual void GetDataNodes(Set<DataNode*> & dataNodes);
+	/**
+	 \brief This function optimize component before export.
+	*/
+	virtual void OptimizeBeforeExport() {};
 
     /**
          \brief Function to get data nodes of requested type to specific container you provide.

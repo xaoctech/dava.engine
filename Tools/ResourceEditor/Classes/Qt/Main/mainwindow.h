@@ -53,6 +53,7 @@ public slots:
 	void OnSceneSave();
 	void OnSceneSaveAs();
 	void OnSceneSaveToFolder();
+	void ExportMenuTriggered(QAction *exportAsAction);
 
 	void OnUndo();
 	void OnRedo();
@@ -72,6 +73,8 @@ public slots:
 	void OnSceneLightMode();
 
 	void OnCubemapEditor();
+
+	void OnNotPassableTerrain();
 
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
@@ -102,6 +105,7 @@ private:
 	void LoadUndoRedoState(SceneEditor2 *scene);
 	void LoadModificationState(SceneEditor2 *scene);
 	void LoadEditorLightState(SceneEditor2 *scene);
+	void LoadNotPassableState(SceneEditor2* scene);
 };
 
 #if 0

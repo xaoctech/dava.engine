@@ -78,6 +78,23 @@ ParticleTimeLineWidget::ParticleTimeLineWidget(QWidget *parent/* = 0*/) :
 			SIGNAL(ParticleEffectStateChanged(SceneEditor2*, DAVA::Entity*, bool)),
 			this,
 			SLOT(OnParticleEffectStateChanged(SceneEditor2*, DAVA::Entity*, bool)));
+	
+	// Particle Emitter Loaded notification is needed to re-initialize the Timeline.
+	connect(SceneSignals::Instance(),
+			SIGNAL(ParticleEmitterLoaded(SceneEditor2*, DAVA::ParticleEmitter*)),
+			this,
+			SLOT(OnParticleEmitterLoaded(SceneEditor2*, DAVA::ParticleEmitter*)));
+
+	// Notifications about structure changes are needed to re-initialize the Timeline.
+	connect(SceneSignals::Instance(),
+			SIGNAL(ParticleLayerAdded(SceneEditor2*, DAVA::ParticleLayer*)),
+			this,
+			SLOT(OnParticleLayerAdded(SceneEditor2*, DAVA::ParticleLayer*)));
+	connect(SceneSignals::Instance(),
+			SIGNAL(ParticleLayerRemoved(SceneEditor2*, DAVA::ParticleEmitter*)),
+			this,
+			SLOT(OnParticleLayerRemoved(SceneEditor2*, DAVA::ParticleEmitter*)));
+	
 	Init(0, 0);
 	
 	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
@@ -845,6 +862,42 @@ void ParticleTimeLineWidget::OnParticleLayerValueChanged(SceneEditor2* scene, DA
 
 		break;
 	}
+}
+
+void ParticleTimeLineWidget::OnParticleEmitterLoaded(SceneEditor2* scene, DAVA::ParticleEmitter* emitter)
+{
+	if (!emitter)
+	{
+		return;
+	}
+
+	// Handle in the same way as new emitter is selected.
+	activeScene = scene;
+	HandleEmitterSelected(emitter, NULL);
+}
+
+void ParticleTimeLineWidget::OnParticleLayerAdded(SceneEditor2* scene, DAVA::ParticleLayer* layer)
+{
+	if (!layer)
+	{
+		return;
+	}
+	
+	// Handle in the same way as new emitter is selected.
+	activeScene = scene;
+	HandleEmitterSelected(layer->GetEmitter(), NULL);
+}
+
+void ParticleTimeLineWidget::OnParticleLayerRemoved(SceneEditor2* scene, DAVA::ParticleEmitter* emitter)
+{
+	if (!emitter)
+	{
+		return;
+	}
+	
+	// Handle in the same way as new emitter is selected.
+	activeScene = scene;
+	HandleEmitterSelected(emitter, NULL);
 }
 
 void ParticleTimeLineWidget::CleanupTimelines()

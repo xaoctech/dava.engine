@@ -94,40 +94,97 @@ void UIListMetadata::SetOrientation(int value)
         return;
     }	
     
-	UpdateListCellSize(GetActiveUIList()->GetRect(), (UIList::eListOrientation)value);
+	UpdateListCellSize();
 	GetActiveUIList()->SetOrientation((UIList::eListOrientation)value);	
 }
 
 void UIListMetadata::SetActiveControlRect(const Rect& rect)
 {
 	UIControlMetadata::SetActiveControlRect(rect);
-	UpdateListCellSize(rect, GetActiveUIList()->GetOrientation());
+	UpdateListCellSize();
+}
+
+void UIListMetadata::SetLeftAlign(int value)
+{
+	UIControlMetadata::SetLeftAlign(value);
+	UpdateListCellSize();
+}
+
+void UIListMetadata::SetHCenterAlign(int value)
+{
+	UIControlMetadata::SetHCenterAlign(value);
+	UpdateListCellSize();
+}
+
+void UIListMetadata::SetRightAlign(int value)
+{
+	UIControlMetadata::SetRightAlign(value);
+	UpdateListCellSize();
+}
+
+void UIListMetadata::SetTopAlign(int value)
+{
+	UIControlMetadata::SetTopAlign(value);
+	UpdateListCellSize();
+}
+
+void UIListMetadata::SetVCenterAlign(int value)
+{
+	UIControlMetadata::SetVCenterAlign(value);
+	UpdateListCellSize();
+}
+
+void UIListMetadata::SetBottomAlign(int value)
+{
+	UIControlMetadata::SetBottomAlign(value);
+	UpdateListCellSize();
+}
+
+void UIListMetadata::SetLeftAlignEnabled(const bool value)
+{
+	UIControlMetadata::SetLeftAlignEnabled(value);
+	UpdateListCellSize();
+}
+
+void UIListMetadata::SetHCenterAlignEnabled(const bool value)
+{
+	UIControlMetadata::SetHCenterAlignEnabled(value);
+	UpdateListCellSize();
+}
+
+void UIListMetadata::SetRightAlignEnabled(const bool value)
+{
+	UIControlMetadata::SetRightAlignEnabled(value);
+	UpdateListCellSize();
+}
+
+void UIListMetadata::SetTopAlignEnabled(const bool value)
+{
+	UIControlMetadata::SetTopAlignEnabled(value);
+	UpdateListCellSize();
+}
+
+void UIListMetadata::SetVCenterAlignEnabled(const bool value)
+{
+	UIControlMetadata::SetVCenterAlignEnabled(value);
+	UpdateListCellSize();
+}
+
+void UIListMetadata::SetBottomAlignEnabled(const bool value)
+{
+	UIControlMetadata::SetBottomAlignEnabled(value);
+	UpdateListCellSize();
 }
 
 
-void UIListMetadata::UpdateListCellSize(const Rect& rect, UIList::eListOrientation orientation)
+void UIListMetadata::UpdateListCellSize()
 {
 	// Get delegate for current list
-	EditorListDelegate *editorList = (EditorListDelegate *)GetActiveUIList()->GetDelegate();	
+	EditorListDelegate *editorList = (EditorListDelegate *)GetActiveUIList()->GetDelegate();
 	if (!editorList)
 		return;
-
-	float32 width = 0;
-	float32 height = 0;		
-	// Calculate cell width and cell height
-	if (orientation == UIList::ORIENTATION_VERTICAL)
-	{
-		width = rect.dx;
-		height = rect.dy / editorList->ElementsCount(GetActiveUIList());
-	}
-	else
-	{
-		width = rect.dx / editorList->ElementsCount(GetActiveUIList());;
-		height = rect.dy;
-	}
-
-	// Update cell size with new height and width
-	editorList->SetCellSize(Vector2(width, height));
+	
+	editorList->ResetElementsCount();
 	// Refresh list - and recreate cells
 	GetActiveUIList()->Refresh();
 }

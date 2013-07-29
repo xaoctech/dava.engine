@@ -14,49 +14,62 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __RESOURCEEDITORQT__VISIBILITYTOOLPROPERTIESVIEW__
-#define __RESOURCEEDITORQT__VISIBILITYTOOLPROPERTIESVIEW__
+#include "MaterialOptimazer.h"
 
-#include <QWidget>
-#include "DAVAEngine.h"
-
-using namespace DAVA;
-
-class SceneEditor2;
-
-namespace Ui
+namespace DAVA
 {
-	class VisibilityToolPropertiesView;
+	
+uint32 MaterialOptimizer::GetOptimizedVertexFormat(Material::eType type)
+{
+	uint32 optimazedFormat = EVF_FORCE_DWORD;
+	switch (type)
+	{
+		case Material::MATERIAL_UNLIT_TEXTURE:
+		{
+			optimazedFormat = EVF_VERTEX | EVF_TEXCOORD0;
+		}break;
+		case Material::MATERIAL_UNLIT_TEXTURE_DETAIL:
+		case Material::MATERIAL_UNLIT_TEXTURE_DECAL:
+		case Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP:
+		{
+			optimazedFormat = EVF_VERTEX | EVF_TEXCOORD0 | EVF_TEXCOORD1;
+		}break;
+		case Material::MATERIAL_VERTEX_LIT_TEXTURE:
+		{
+			optimazedFormat = EVF_VERTEX | EVF_NORMAL | EVF_TEXCOORD0;
+		}break;
+		case Material::MATERIAL_VERTEX_LIT_DETAIL:
+		case Material::MATERIAL_VERTEX_LIT_DECAL:
+		case Material::MATERIAL_VERTEX_LIT_LIGHTMAP:
+		{
+			optimazedFormat = EVF_VERTEX | EVF_NORMAL | EVF_TEXCOORD0 | EVF_TEXCOORD1;
+		}break;
+		case Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE:
+		case Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR:
+		case Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP:
+		{
+			optimazedFormat = EVF_VERTEX | EVF_NORMAL | EVF_TANGENT | EVF_TEXCOORD0;
+		}break;
+		case Material::MATERIAL_VERTEX_COLOR_ALPHABLENDED:
+		{
+			optimazedFormat = EVF_VERTEX | EVF_TEXCOORD0 | EVF_COLOR;
+		}break;
+		case Material::MATERIAL_FLAT_COLOR:
+		{
+			optimazedFormat = EVF_VERTEX | EVF_TEXCOORD0;
+		}break;
+			
+		case Material::MATERIAL_SKYBOX:
+		{
+			optimazedFormat = EVF_VERTEX | EVF_TEXCOORD0;
+		}break;
+
+		default:
+			DVASSERT(false);
+			Logger::Error("Unknown material format");
+			break;
+	}
+	return optimazedFormat;
 }
 
-class VisibilityToolPropertiesView: public QWidget
-{
-	Q_OBJECT
-
-public:
-	explicit VisibilityToolPropertiesView(QWidget* parent = 0);
-	~VisibilityToolPropertiesView();
-
-	void Init();
-
-private slots:
-	void SceneActivated(SceneEditor2* scene);
-	void SceneDeactivated(SceneEditor2* scene);
-
-	void SetVisibilityToolButtonsState(SceneEditor2* scene);
-	void Toggle();
-	void SaveTexture();
-	void SetVisibilityPoint();
-	void SetVisibilityArea();
-	void SetVisibilityAreaSize(int areaSize);
-
-private:
-	Ui::VisibilityToolPropertiesView* ui;
-	SceneEditor2* activeScene;
-
-	void SetWidgetsState(bool enabled);
-	void BlockAllSignals(bool block);
-	void UpdateFromScene(SceneEditor2* scene);
-};
-
-#endif /* defined(__RESOURCEEDITORQT__VISIBILITYTOOLPROPERTIESVIEW__) */
+}

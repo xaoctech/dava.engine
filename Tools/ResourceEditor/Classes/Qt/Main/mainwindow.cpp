@@ -231,7 +231,15 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionSaveScene, SIGNAL(triggered()), this, SLOT(OnSceneSave()));
 	QObject::connect(ui->actionSaveSceneAs, SIGNAL(triggered()), this, SLOT(OnSceneSaveAs()));
 	QObject::connect(ui->actionSaveToFolder, SIGNAL(triggered()), this, SLOT(OnSceneSaveToFolder()));
-
+	
+	ui->actionExportPVRIOS->setData(GPU_POWERVR_IOS);
+    ui->actionExportPVRAndroid->setData(GPU_POWERVR_ANDROID);
+    ui->actionExportTegra->setData(GPU_TEGRA);
+    ui->actionExportMali->setData(GPU_MALI);
+    ui->actionExportAdreno->setData(GPU_ADRENO);
+    ui->actionExportPNG->setData(GPU_UNKNOWN);
+	connect(ui->menuExport, SIGNAL(triggered(QAction *)), this, SLOT(ExportMenuTriggered(QAction *)));
+	
 	// scene undo/redo
 	QObject::connect(ui->actionUndo, SIGNAL(triggered()), this, SLOT(OnUndo()));
 	QObject::connect(ui->actionRedo, SIGNAL(triggered()), this, SLOT(OnRedo()));
@@ -252,7 +260,7 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionTextureConverter, SIGNAL(triggered()), this, SLOT(OnTextureBrowser()));
 	QObject::connect(ui->actionEnableCameraLight, SIGNAL(triggered()), this, SLOT(OnSceneLightMode()));
 	QObject::connect(ui->actionCubemapEditor, SIGNAL(triggered()), this, SLOT(OnCubemapEditor()));
-
+	QObject::connect(ui->actionShowNotPassableLandscape, SIGNAL(triggered()), this, SLOT(OnNotPassableTerrain()));
 }
 
 // ###################################################################################################
@@ -280,6 +288,7 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 	LoadUndoRedoState(scene);
 	LoadModificationState(scene);
 	LoadEditorLightState(scene);
+	LoadNotPassableState(scene);
 
 	// TODO: remove this code. it is for old material editor -->
 	DAVA::UIControl* parent = materialEditor->GetParent();
@@ -338,8 +347,11 @@ void QtMainWindow::OnSceneNew()
 void QtMainWindow::OnSceneOpen()
 {
 	QString path = QFileDialog::getOpenFileName(this, "Open scene file", ProjectManager::Instance()->CurProjectDataSourcePath(), "DAVA Scene V2 (*.sc2)");
-	int index = ui->sceneTabWidget->OpenTab(DAVA::FilePath(path.toStdString()));
-	ui->sceneTabWidget->SetCurrentTab(index);
+	if (!path.isEmpty())
+	{
+		int index = ui->sceneTabWidget->OpenTab(DAVA::FilePath(path.toStdString()));
+		ui->sceneTabWidget->SetCurrentTab(index);
+	}
 }
 
 void QtMainWindow::OnSceneSave()
@@ -376,6 +388,19 @@ void QtMainWindow::OnSceneSaveToFolder()
 	// ...
 	// 
 
+}
+
+void QtMainWindow::ExportMenuTriggered(QAction *exportAsAction)
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if (scene)
+	{
+		eGPUFamily gpuFamily = (eGPUFamily)exportAsAction->data().toInt();
+		if (!scene->Export(gpuFamily))
+		{
+			QMessageBox::warning(this, "Export error", "An error occurred while exporting the scene. See log for more info.", QMessageBox::Ok);
+		}
+	}
 }
 
 void QtMainWindow::OnUndo()
@@ -546,6 +571,24 @@ void QtMainWindow::OnCubemapEditor()
 	dlg.exec();
 }
 
+void QtMainWindow::OnNotPassableTerrain()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if (!scene)
+	{
+		return;
+	}
+
+	if (ui->actionShowNotPassableLandscape->isChecked())
+	{
+		scene->landscapeEditorDrawSystem->EnableNotPassableTerrain();
+	}
+	else
+	{
+		scene->landscapeEditorDrawSystem->DisableNotPassableTerrain();
+	}
+}
+
 // ###################################################################################################
 // Mainwindow load state functions
 // ###################################################################################################
@@ -610,6 +653,16 @@ void QtMainWindow::LoadEditorLightState(SceneEditor2 *scene)
 	{
 		ui->actionEnableCameraLight->setChecked(scene->editorLightSystem->GetCameraLightEnabled());
 	}
+}
+
+void QtMainWindow::LoadNotPassableState(SceneEditor2* scene)
+{
+	if (!scene)
+	{
+		return;
+	}
+
+	ui->actionShowNotPassableLandscape->setChecked(scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled());
 }
 
 

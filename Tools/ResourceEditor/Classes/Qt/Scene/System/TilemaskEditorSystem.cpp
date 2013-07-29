@@ -53,6 +53,7 @@ TilemaskEditorSystem::TilemaskEditorSystem(Scene* scene)
 ,	toolSpriteUpdated(false)
 ,	needCreateUndo(false)
 ,	originalMask(NULL)
+,	toolImageIndex(0)
 {
 	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.png");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
@@ -209,9 +210,10 @@ void TilemaskEditorSystem::SetStrength(float32 strength)
 	}
 }
 
-void TilemaskEditorSystem::SetToolImage(const FilePath& toolImagePath)
+void TilemaskEditorSystem::SetToolImage(const FilePath& toolImagePath, int32 index)
 {
 	this->toolImagePath = toolImagePath;
+	this->toolImageIndex = index;
 	UpdateToolImage(true);
 }
 
@@ -467,4 +469,24 @@ void TilemaskEditorSystem::StoreOriginalState()
 
 	LandscapeProxy* lp = drawSystem->GetLandscapeProxy();
 	originalMask = lp->GetLandscapeTexture(Landscape::TEXTURE_TILE_MASK)->CreateImageFromMemory();
+}
+
+int32 TilemaskEditorSystem::GetBrushSize()
+{
+	return cursorSize;
+}
+
+float32 TilemaskEditorSystem::GetStrength()
+{
+	return strength;
+}
+
+int32 TilemaskEditorSystem::GetToolImage()
+{
+	return toolImageIndex;
+}
+
+uint32 TilemaskEditorSystem::GetTileTextureIndex()
+{
+	return tileTextureNum;
 }

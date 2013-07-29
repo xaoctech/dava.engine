@@ -53,6 +53,7 @@ public:
 	void SetVisibilityPoint();
 	void SetVisibilityArea();
 	eVisibilityToolState GetState();
+	int32 GetBrushSize();
 
 	void SaveTexture(const FilePath& filePath);
 

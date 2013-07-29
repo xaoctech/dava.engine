@@ -17,12 +17,16 @@
 #include "VisibilityToolPropertiesView.h"
 #include "ui_VisibilityToolPropertiesView.h"
 
-#include "../Main/QtMainWindowHandler.h"
+#include "Main/QtUtils.h"
 #include "../Scene/SceneSignals.h"
+#include "../Scene/SceneEditor2.h"
+
+#include <QFileDialog>
 
 VisibilityToolPropertiesView::VisibilityToolPropertiesView(QWidget* parent)
-:	QWidget(parent),
-ui(new Ui::VisibilityToolPropertiesView)
+:	QWidget(parent)
+,	ui(new Ui::VisibilityToolPropertiesView)
+,	activeScene(NULL)
 {
 	ui->setupUi(this);
 
@@ -36,25 +40,182 @@ VisibilityToolPropertiesView::~VisibilityToolPropertiesView()
 
 void VisibilityToolPropertiesView::Init()
 {
-	// TODO: mainwindow
-	/*
-	QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
+	connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2*)), this, SLOT(SceneActivated(SceneEditor2*)));
+	connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2*)), this, SLOT(SceneDeactivated(SceneEditor2*)));
+	connect(SceneSignals::Instance(), SIGNAL(UpdateVisibilityButtonsState(SceneEditor2*)), this, SLOT(SetVisibilityToolButtonsState(SceneEditor2*)));
 
-	connect(SceneSignals::Instance(), SIGNAL(UpdateVisibilityButtonsState(SceneEditor2*)),
-			handler, SLOT(SetVisibilityToolButtonsState(SceneEditor2*)));
+	connect(ui->buttonEnableVisibilityTool, SIGNAL(clicked()), this, SLOT(Toggle()));
+	connect(ui->buttonSaveTexture, SIGNAL(clicked()), this, SLOT(SaveTexture()));
+	connect(ui->buttonSetVisibilityPoint, SIGNAL(clicked()), this, SLOT(SetVisibilityPoint()));
+	connect(ui->buttonSetVisibilityArea, SIGNAL(clicked()), this, SLOT(SetVisibilityArea()));
+	connect(ui->sliderBrushSize, SIGNAL(valueChanged(int)), this, SLOT(SetVisibilityAreaSize(int)));
 
-	connect(ui->buttonEnableVisibilityTool, SIGNAL(clicked()), handler, SLOT(ToggleVisibilityToolEditor()));
-	connect(ui->buttonSaveTexture, SIGNAL(clicked()), handler, SLOT(SaveVisibilityToolTexture()));
-	connect(ui->buttonSetVisibilityPoint, SIGNAL(clicked()), handler, SLOT(SetVisibilityPoint()));
-	connect(ui->buttonSetVisibilityArea, SIGNAL(clicked()), handler, SLOT(SetVisibilityArea()));
-	connect(ui->sliderBrushSize, SIGNAL(valueChanged(int)), handler, SLOT(SetVisibilityToolAreaSize(int)));
+	SetWidgetsState(false);
+}
 
-	handler->RegisterVisibilityToolWidgets(ui->buttonEnableVisibilityTool,
-										   ui->buttonSaveTexture,
-										   ui->buttonSetVisibilityPoint,
-										   ui->buttonSetVisibilityArea,
-										   ui->sliderBrushSize);
+void VisibilityToolPropertiesView::SetWidgetsState(bool enabled)
+{
+	ui->buttonEnableVisibilityTool->blockSignals(true);
+	ui->buttonEnableVisibilityTool->setCheckable(enabled);
+	ui->buttonEnableVisibilityTool->setChecked(enabled);
+	ui->buttonEnableVisibilityTool->blockSignals(false);
 
-	handler->SetVisibilityToolWidgetsState(false);
-	*/
+	QString toggleButtonText = enabled ? tr("Disable Visibility Tool"): tr("Enable Visibility Tool");
+	ui->buttonEnableVisibilityTool->setText(toggleButtonText);
+
+	ui->buttonSaveTexture->setEnabled(enabled);
+	ui->buttonSetVisibilityPoint->setEnabled(enabled);
+	ui->buttonSetVisibilityArea->setEnabled(enabled);
+	ui->sliderBrushSize->setEnabled(enabled);
+	BlockAllSignals(!enabled);
+}
+
+void VisibilityToolPropertiesView::BlockAllSignals(bool block)
+{
+	ui->buttonSaveTexture->blockSignals(block);
+	ui->buttonSetVisibilityPoint->blockSignals(block);
+	ui->buttonSetVisibilityArea->blockSignals(block);
+	ui->sliderBrushSize->blockSignals(block);
+}
+
+void VisibilityToolPropertiesView::SceneActivated(SceneEditor2* scene)
+{
+	DVASSERT(scene);
+	activeScene = scene;
+	UpdateFromScene(scene);
+}
+
+void VisibilityToolPropertiesView::SceneDeactivated(SceneEditor2* scene)
+{
+	activeScene = NULL;
+}
+
+void VisibilityToolPropertiesView::UpdateFromScene(SceneEditor2* scene)
+{
+	bool enabled = scene->visibilityToolSystem->IsLandscapeEditingEnabled();
+	int32 brushSize = scene->visibilityToolSystem->GetBrushSize();
+
+	SetWidgetsState(enabled);
+
+	BlockAllSignals(true);
+	ui->sliderBrushSize->setValue(brushSize);
+	BlockAllSignals(!enabled);
+}
+
+void VisibilityToolPropertiesView::SetVisibilityToolButtonsState(SceneEditor2* scene)
+{
+	if (!activeScene)
+	{
+		return;
+	}
+
+	VisibilityToolSystem::eVisibilityToolState state = scene->visibilityToolSystem->GetState();
+	bool pointButton = false;
+	bool areaButton = false;
+
+	switch (state)
+	{
+		case VisibilityToolSystem::VT_STATE_SET_AREA:
+			areaButton = true;
+			break;
+
+		case VisibilityToolSystem::VT_STATE_SET_POINT:
+			pointButton = true;
+			break;
+	}
+	bool b;
+
+	b = ui->buttonSetVisibilityPoint->signalsBlocked();
+	ui->buttonSetVisibilityPoint->blockSignals(true);
+	ui->buttonSetVisibilityPoint->setChecked(pointButton);
+	ui->buttonSetVisibilityPoint->blockSignals(b);
+
+	b = ui->buttonSetVisibilityArea->signalsBlocked();
+	ui->buttonSetVisibilityArea->blockSignals(true);
+	ui->buttonSetVisibilityArea->setChecked(areaButton);
+	ui->buttonSetVisibilityArea->blockSignals(b);
+}
+
+void VisibilityToolPropertiesView::Toggle()
+{
+	if (!activeScene)
+	{
+		return;
+	}
+
+	if (activeScene->visibilityToolSystem->IsLandscapeEditingEnabled())
+	{
+		if (activeScene->visibilityToolSystem->DisableLandscapeEdititing())
+		{
+			SetWidgetsState(false);
+		}
+		else
+		{
+			// show "Couldn't disable visibility tool" message box
+		}
+	}
+	else
+	{
+		if (activeScene->visibilityToolSystem->EnableLandscapeEditing())
+		{
+			SetWidgetsState(true);
+
+			SetVisibilityAreaSize(ui->sliderBrushSize->value());
+		}
+		else
+		{
+			// show "Couldn't enable visibility tool" message box
+		}
+	}
+}
+
+void VisibilityToolPropertiesView::SaveTexture()
+{
+	if (!activeScene)
+	{
+		return;
+	}
+
+	FilePath currentPath = FileSystem::Instance()->GetUserDocumentsPath();
+	QString filePath = QFileDialog::getSaveFileName(NULL,
+													QString("Save visibility tool texture"),
+													QString(currentPath.GetAbsolutePathname().c_str()),
+													QString("PNG image (*.png)"));
+
+	FilePath selectedPathname = PathnameToDAVAStyle(filePath);
+
+	if(!selectedPathname.IsEmpty())
+	{
+		activeScene->visibilityToolSystem->SaveTexture(selectedPathname);
+	}
+}
+
+void VisibilityToolPropertiesView::SetVisibilityPoint()
+{
+	if (!activeScene)
+	{
+		return;
+	}
+
+	activeScene->visibilityToolSystem->SetVisibilityPoint();
+}
+
+void VisibilityToolPropertiesView::SetVisibilityArea()
+{
+	if (!activeScene)
+	{
+		return;
+	}
+
+	activeScene->visibilityToolSystem->SetVisibilityArea();
+}
+
+void VisibilityToolPropertiesView::SetVisibilityAreaSize(int areaSize)
+{
+	if (!activeScene)
+	{
+		return;
+	}
+
+	activeScene->visibilityToolSystem->SetBrushSize(areaSize);
 }
