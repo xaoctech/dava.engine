@@ -78,17 +78,18 @@ HoodSystem::~HoodSystem()
 
 DAVA::Vector3 HoodSystem::GetPosition() const
 {
-	return (curPos + curOffset);
+	return (curPos + modifOffset);
 }
 
 void HoodSystem::SetPosition(const DAVA::Vector3 &pos)
 {
 	if(!lockedScale)
 	{
-		if(curPos != pos || !curOffset.IsZero())
+		if(curPos != pos || !modifOffset.IsZero())
 		{
 			curPos = pos;
-			curOffset = DAVA::Vector3(0, 0, 0);
+			ResetModifValues();
+
 			if(NULL != curHood)
 			{
 				curHood->UpdatePos(curPos);
@@ -98,17 +99,33 @@ void HoodSystem::SetPosition(const DAVA::Vector3 &pos)
 	}
 }
 
-void HoodSystem::MovePosition(const DAVA::Vector3 &offset)
+void HoodSystem::SetModifOffset(const DAVA::Vector3 &offset)
 {
-	if(curOffset != offset)
+	if(modifOffset != offset)
 	{
-		curOffset = offset;
+		modifOffset = offset;
 
 		if(NULL != curHood)
 		{
-			curHood->UpdatePos(curPos + curOffset);
-			normalHood.UpdatePos(curPos + curOffset);
+			curHood->UpdatePos(curPos + modifOffset);
+			normalHood.UpdatePos(curPos + modifOffset);
 		}
+	}
+}
+
+void HoodSystem::SetModifRotate(const DAVA::float32 &angle)
+{
+	if(curHood == &rotateHood)
+	{
+		rotateHood.modifRotate = angle;
+	}
+}
+
+void HoodSystem::SetModifScale(const DAVA::float32 &scale)
+{
+	if(curHood == &scaleHood)
+	{
+		scaleHood.modifScale = scale;
 	}
 }
 
@@ -163,7 +180,7 @@ void HoodSystem::SetModifMode(ST_ModifMode mode)
 		{
 			AddCollObjects(&curHood->collObjects);
 
-			curHood->UpdatePos(curPos + curOffset);
+			curHood->UpdatePos(curPos + modifOffset);
 			curHood->UpdateScale(curScale);
 		}
 
@@ -203,6 +220,13 @@ void HoodSystem::RemCollObjects(const DAVA::Vector<HoodCollObject*>* objects)
 	}
 }
 
+void HoodSystem::ResetModifValues()
+{
+	modifOffset = DAVA::Vector3(0, 0, 0);
+
+	rotateHood.modifRotate = 0;
+	scaleHood.modifScale = 0;
+}
 
 void HoodSystem::Update(float timeElapsed)
 {
