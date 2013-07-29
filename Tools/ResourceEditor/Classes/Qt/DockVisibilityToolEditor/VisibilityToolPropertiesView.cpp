@@ -42,7 +42,8 @@ void VisibilityToolPropertiesView::Init()
 {
 	connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2*)), this, SLOT(SceneActivated(SceneEditor2*)));
 	connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2*)), this, SLOT(SceneDeactivated(SceneEditor2*)));
-	connect(SceneSignals::Instance(), SIGNAL(UpdateVisibilityButtonsState(SceneEditor2*)), this, SLOT(SetVisibilityToolButtonsState(SceneEditor2*)));
+	connect(SceneSignals::Instance(), SIGNAL(VisibilityToolStateChanged(SceneEditor2*, VisibilityToolSystem::eVisibilityToolState)),
+			this, SLOT(SetVisibilityToolButtonsState(SceneEditor2*, VisibilityToolSystem::eVisibilityToolState)));
 
 	connect(ui->buttonEnableVisibilityTool, SIGNAL(clicked()), this, SLOT(Toggle()));
 	connect(ui->buttonSaveTexture, SIGNAL(clicked()), this, SLOT(SaveTexture()));
@@ -102,14 +103,14 @@ void VisibilityToolPropertiesView::UpdateFromScene(SceneEditor2* scene)
 	BlockAllSignals(!enabled);
 }
 
-void VisibilityToolPropertiesView::SetVisibilityToolButtonsState(SceneEditor2* scene)
+void VisibilityToolPropertiesView::SetVisibilityToolButtonsState(SceneEditor2* scene,
+																 VisibilityToolSystem::eVisibilityToolState state)
 {
-	if (!activeScene)
+	if (!activeScene || scene != activeScene)
 	{
 		return;
 	}
 
-	VisibilityToolSystem::eVisibilityToolState state = scene->visibilityToolSystem->GetState();
 	bool pointButton = false;
 	bool areaButton = false;
 
@@ -121,6 +122,9 @@ void VisibilityToolPropertiesView::SetVisibilityToolButtonsState(SceneEditor2* s
 
 		case VisibilityToolSystem::VT_STATE_SET_POINT:
 			pointButton = true;
+			break;
+
+		default:
 			break;
 	}
 	bool b;
@@ -164,7 +168,8 @@ void VisibilityToolPropertiesView::Toggle()
 		}
 		else
 		{
-			// show "Couldn't enable visibility tool" message box
+			QMessageBox::critical(0, "Error enabling Visibility Check Tool",
+								  "Error enabling Visibility Check Tool.\nMake sure there is landscape in scene and disable other landscape editors.");
 		}
 	}
 }

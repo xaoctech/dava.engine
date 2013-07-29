@@ -22,6 +22,8 @@
 #include "Scene/EntityGroup.h"
 #include "Scene/SceneEditor2.h"
 
+#include "Scene/System/VisibilityToolSystem.h"
+
 // framework
 #include "Base/StaticSingleton.h"
 #include "Scene3D/Entity.h"
@@ -77,10 +79,10 @@ signals:
 	void ParticleLayerAdded(SceneEditor2* scene, DAVA::ParticleLayer* layer);
 	void ParticleLayerRemoved(SceneEditor2* scene, DAVA::ParticleEmitter* emitter);
 
-	void UpdateDropperHeight(SceneEditor2* scene, double height);
-	void UpdateVisibilityButtonsState(SceneEditor2* scene);
-	void NeedSaveCustomColorsTexture(SceneEditor2* scene);
-	void RulerToolLengthUpdated(SceneEditor2* scene, double length, double previewLength);
+	void DropperHeightChanged(SceneEditor2* scene, double height);
+	void VisibilityToolStateChanged(SceneEditor2* scene, VisibilityToolSystem::eVisibilityToolState state);
+	void CustomColorsTextureShouldBeSaved(SceneEditor2* scene);
+	void RulerToolLengthChanged(SceneEditor2* scene, double length, double previewLength);
 
 public:
 	void EmitOpened(SceneEditor2 *scene) { emit Opened(scene); }
@@ -99,12 +101,15 @@ public:
 	void EmitSelected(SceneEditor2 *scene, DAVA::Entity *entity) { emit Selected(scene, entity); }
 	void EmitDeselected(SceneEditor2 *scene, DAVA::Entity *entity)  { emit Deselected(scene, entity); }
 
-	void EmitUpdateDropperHeight(SceneEditor2* scene, DAVA::float32 height) { emit UpdateDropperHeight(scene, (double)height); };
-	void EmitUpdateVisibilityButtonsState(SceneEditor2* scene) { emit UpdateVisibilityButtonsState(scene); };
-	void EmitNeedSaveCustomColorsTexture(SceneEditor2* scene) { emit NeedSaveCustomColorsTexture(scene); };
-	void EmitRulerToolLengthUpdated(SceneEditor2* scene, double length, double previewLength)
+	void EmitDropperHeightChanged(SceneEditor2* scene, DAVA::float32 height) { emit DropperHeightChanged(scene, (double)height); };
+	void EmitVisibilityToolStateChanged(SceneEditor2* scene, VisibilityToolSystem::eVisibilityToolState state)
 	{
-		emit RulerToolLengthUpdated(scene, length, previewLength);
+		emit VisibilityToolStateChanged(scene, state);
+	};
+	void EmitCustomColorsTextureShouldBeSaved(SceneEditor2* scene) { emit CustomColorsTextureShouldBeSaved(scene); };
+	void EmitRulerToolLengthChanged(SceneEditor2* scene, double length, double previewLength)
+	{
+		emit RulerToolLengthChanged(scene, length, previewLength);
 	}
 
 	void EmitMouseOver(SceneEditor2 *scene, const EntityGroup *entities) { emit MouseOver(scene, entities); }

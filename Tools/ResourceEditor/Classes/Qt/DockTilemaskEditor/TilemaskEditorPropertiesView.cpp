@@ -33,6 +33,8 @@
 
 #include "Qt/Scene/SceneSignals.h"
 
+#include <QMessageBox>
+
 TilemaskEditorPropertiesView::TilemaskEditorPropertiesView(QWidget* parent)
 :	QWidget(parent)
 ,	ui(new Ui::TilemaskEditorPropertiesView)
@@ -208,7 +210,8 @@ void TilemaskEditorPropertiesView::Toggle()
 		}
 		else
 		{
-			// show "Couldn't enable tilemask editing" message box
+			QMessageBox::critical(0, "Error enabling Tilemask editor",
+								  "Error enabling Tilemask editor.\nMake sure there is landscape in scene and disable other landscape editors.");
 		}
 	}
 }

@@ -19,6 +19,7 @@
 
 #include <QWidget>
 #include "DAVAEngine.h"
+#include "../Scene/System/VisibilityToolSystem.h"
 
 using namespace DAVA;
 
@@ -43,7 +44,8 @@ private slots:
 	void SceneActivated(SceneEditor2* scene);
 	void SceneDeactivated(SceneEditor2* scene);
 
-	void SetVisibilityToolButtonsState(SceneEditor2* scene);
+	void SetVisibilityToolButtonsState(SceneEditor2* scene,
+									   VisibilityToolSystem::eVisibilityToolState state);
 	void Toggle();
 	void SaveTexture();
 	void SetVisibilityPoint();
