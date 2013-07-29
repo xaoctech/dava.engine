@@ -2,10 +2,11 @@
 
 using namespace DAVA;
 
+void* DVAssertMessage::messageBoxPtr = NULL;
+
 #if defined (ENABLE_ASSERT_MESSAGE)
 
-
-void DVAssertMessage::ShowMessage(const char8 * text, ...)
+void DVAssertMessage::ShowMessage(eModalType modalType, const char8 * text, ...)
 {
 	va_list vl;
 	va_start(vl, text);
@@ -15,7 +16,7 @@ void DVAssertMessage::ShowMessage(const char8 * text, ...)
 	vsnprintf(tmp, sizeof(tmp)-2, text, vl);
 	strcat(tmp, "\n");
 
-	InnerShow(tmp);
+	InnerShow(modalType, tmp);
 
 	va_end(vl);
 }
