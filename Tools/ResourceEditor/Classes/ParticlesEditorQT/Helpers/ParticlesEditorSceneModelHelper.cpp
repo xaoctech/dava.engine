@@ -490,12 +490,11 @@ void ParticlesEditorSceneModelHelper::AddPopupMenuItems(QMenu& menu, const QMode
     // Which kind of Node is it?
     if (dynamic_cast<EffectParticleEditorNode*>(extraUserData))
     {
+		// Yuri Coder, 2013/07/24. These commands aren't used now and to be removed soon.
+		/*
         // Effect Node. Allow to add Particle Emitters and start/stop the animation.
 		QMenu* emittersMenu = menu.addMenu("Particle Effect");
         AddActionToMenu(emittersMenu, QString("Add Particle Emitter"), new CommandAddParticleEmitter());
-		
-		// Yuri Coder, 2013/07/24. These commands aren't used now and to be removed soon.
-		/*
         AddActionToMenu(emittersMenu, QString("Start Particle Effect"), new CommandStartStopParticleEffect(true));
         AddActionToMenu(emittersMenu, QString("Stop Particle Effect"), new CommandStartStopParticleEffect(false));
         AddActionToMenu(emittersMenu, QString("Restart Particle Effect"), new CommandRestartParticleEffect());
@@ -503,7 +502,7 @@ void ParticlesEditorSceneModelHelper::AddPopupMenuItems(QMenu& menu, const QMode
     }
     else if (dynamic_cast<EmitterParticleEditorNode*>(extraUserData))
     {
-		// TODO!!! YURI CODER, 2013/07/22. TEMPORARILY commented out!!!
+		// Yuri Coder, 2013/07/24. These commands aren't used now and to be removed soon.
 		/*
         // For Particle Emitter we also allow to load/save it.
         AddActionToMenu(&menu, QString("Load Emitter from Yaml"), new CommandLoadParticleEmitterFromYaml());
@@ -512,8 +511,8 @@ void ParticlesEditorSceneModelHelper::AddPopupMenuItems(QMenu& menu, const QMode
         
         // Emitter node. Allow to remove it and also add Layers.
         AddActionToMenu(&menu, QString("Remove Particle Emitter"), new CommandRemoveSceneNode());
-		 */
         AddActionToMenu(&menu, QString("Add Layer"), new CommandAddParticleEmitterLayer());
+		*/
     }
     else if (dynamic_cast<LayerParticleEditorNode*>(extraUserData))
     {

@@ -417,6 +417,7 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialCompiler.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialGraph.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialGraphNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialOptimazer.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterial.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterialConsts.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\MipmapReplacer.h" />
@@ -767,6 +768,7 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialCompiler.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialGraph.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialGraphNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialOptimazer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material\NMaterial.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\MipmapReplacer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\RenderBase.cpp" />

@@ -63,6 +63,8 @@ public:
 	bool DropCanBeAccepted(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent) const;
 	bool DropAccepted() const;
 
+	void ResyncStructure(QStandardItem *item, DAVA::Entity *entity);
+
 protected:
 	enum DropType
 	{
@@ -80,8 +82,6 @@ protected:
 	QMap<DAVA::Entity*, QModelIndex> indexesCacheEntities;
 	QMap<DAVA::ParticleLayer*, QModelIndex> indexesCacheLayers;
 	QMap<DAVA::ParticleForce*, QModelIndex> indexesCacheForces;
-
-	void ResyncStructure(QStandardItem *item, DAVA::Entity *entity);
 
 	void RebuildIndexesCache();
 	void AddIndexesCache(SceneTreeItem *item);

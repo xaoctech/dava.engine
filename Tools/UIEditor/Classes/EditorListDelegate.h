@@ -37,14 +37,20 @@ public:
 	virtual int32 CellWidth(UIList *forList, int32 index);
 	virtual void SaveToYaml(UIList *forList, YamlNode *node);
 	
-	void SetAggregatorID(int32 id);
+	void SetAggregatorID(int32 agId);
 	int32 GetAggregatorID();
 	
-	void SetCellSize(const Vector2 &size);
+	void ResetElementsCount();
 
 private:
 	int32 aggregatorID;
+	int32 cellsCount;
 	Vector2 cellSize;
+	bool isElementsCountNeedUpdate;
+	
+	void SetCellSize(const Vector2 &size);
+	void UpdateCellSize(UIList *forList);
+	UIControl *GetCurrentAggregatorControl();
 };
 
 };

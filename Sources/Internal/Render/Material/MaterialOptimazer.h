@@ -13,50 +13,21 @@
  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
+#ifndef __DAVAENGINE_MATERIAL_OPTIMIZER_H__
+#define __DAVAENGINE_MATERIAL_OPTIMIZER_H__
 
-#ifndef __RESOURCEEDITORQT__VISIBILITYTOOLPROPERTIESVIEW__
-#define __RESOURCEEDITORQT__VISIBILITYTOOLPROPERTIESVIEW__
+#include "Render/Material.h"
+#include "Render/Highlevel/RenderBatch.h"
 
-#include <QWidget>
-#include "DAVAEngine.h"
-
-using namespace DAVA;
-
-class SceneEditor2;
-
-namespace Ui
+namespace DAVA
 {
-	class VisibilityToolPropertiesView;
-}
-
-class VisibilityToolPropertiesView: public QWidget
+	
+class MaterialOptimizer
 {
-	Q_OBJECT
-
 public:
-	explicit VisibilityToolPropertiesView(QWidget* parent = 0);
-	~VisibilityToolPropertiesView();
-
-	void Init();
-
-private slots:
-	void SceneActivated(SceneEditor2* scene);
-	void SceneDeactivated(SceneEditor2* scene);
-
-	void SetVisibilityToolButtonsState(SceneEditor2* scene);
-	void Toggle();
-	void SaveTexture();
-	void SetVisibilityPoint();
-	void SetVisibilityArea();
-	void SetVisibilityAreaSize(int areaSize);
-
-private:
-	Ui::VisibilityToolPropertiesView* ui;
-	SceneEditor2* activeScene;
-
-	void SetWidgetsState(bool enabled);
-	void BlockAllSignals(bool block);
-	void UpdateFromScene(SceneEditor2* scene);
+	static uint32 GetOptimizedVertexFormat(Material::eType type);
 };
 
-#endif /* defined(__RESOURCEEDITORQT__VISIBILITYTOOLPROPERTIESVIEW__) */
+}
+
+#endif //__DAVAENGINE_MATERIAL_OPTIMIZER_H__

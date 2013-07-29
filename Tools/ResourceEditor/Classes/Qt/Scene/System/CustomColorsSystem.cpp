@@ -50,6 +50,7 @@ CustomColorsSystem::CustomColorsSystem(Scene* scene)
 ,	toolImageSprite(NULL)
 ,	prevCursorPos(Vector2(-1.f, -1.f))
 ,	originalImage(NULL)
+,	colorIndex(0)
 {
 	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.png");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
@@ -304,6 +305,7 @@ void CustomColorsSystem::SetColor(int32 colorIndex)
 	if (colorIndex >= 0 && colorIndex < (int32)customColors.size())
 	{
 		drawColor = customColors[colorIndex];
+		this->colorIndex = colorIndex;
 	}
 }
 
@@ -420,4 +422,14 @@ FilePath CustomColorsSystem::GetAbsolutePathFromScenePath(const String &relative
 		return FilePath();
 
 	return (GetScenePath() + relativePath);
+}
+
+int32 CustomColorsSystem::GetBrushSize()
+{
+	return cursorSize;
+}
+
+int32 CustomColorsSystem::GetColor()
+{
+	return colorIndex;
 }

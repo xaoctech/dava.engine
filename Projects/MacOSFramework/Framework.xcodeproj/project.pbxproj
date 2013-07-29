@@ -761,6 +761,10 @@
 		C151B1B716D4FF6A00E09BAF /* MailSender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C151B1B416D4FF6A00E09BAF /* MailSender.cpp */; };
 		C151B1B816D4FF6A00E09BAF /* MailSender.h in Headers */ = {isa = PBXBuildFile; fileRef = C151B1B516D4FF6A00E09BAF /* MailSender.h */; };
 		C151B1B916D4FF6A00E09BAF /* MailSenderMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = C151B1B616D4FF6A00E09BAF /* MailSenderMacOS.mm */; };
+		C18577EE17A16DA800331A95 /* MaterialOptimazer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C18577EC17A16DA800331A95 /* MaterialOptimazer.cpp */; };
+		C18577EF17A16DA800331A95 /* MaterialOptimazer.h in Headers */ = {isa = PBXBuildFile; fileRef = C18577ED17A16DA800331A95 /* MaterialOptimazer.h */; };
+		C18577F017A2600300331A95 /* MaterialOptimazer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C18577EC17A16DA800331A95 /* MaterialOptimazer.cpp */; };
+		C18577F117A2600400331A95 /* MaterialOptimazer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C18577EC17A16DA800331A95 /* MaterialOptimazer.cpp */; };
 		C18593DC16F30BF2005D30E2 /* UIAggregatorControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C18593D816F30BED005D30E2 /* UIAggregatorControl.cpp */; };
 		C18593DD16F30BF6005D30E2 /* UIAggregatorControl.h in Headers */ = {isa = PBXBuildFile; fileRef = C18593D916F30BED005D30E2 /* UIAggregatorControl.h */; };
 		C1DC1EFD1717E8B7001C5EC3 /* libTextureConverter_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C1DC1EFB1717E791001C5EC3 /* libTextureConverter_macos.a */; };
@@ -2091,6 +2095,8 @@
 		C151B1B416D4FF6A00E09BAF /* MailSender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MailSender.cpp; sourceTree = "<group>"; };
 		C151B1B516D4FF6A00E09BAF /* MailSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MailSender.h; sourceTree = "<group>"; };
 		C151B1B616D4FF6A00E09BAF /* MailSenderMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MailSenderMacOS.mm; sourceTree = "<group>"; };
+		C18577EC17A16DA800331A95 /* MaterialOptimazer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialOptimazer.cpp; sourceTree = "<group>"; };
+		C18577ED17A16DA800331A95 /* MaterialOptimazer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialOptimazer.h; sourceTree = "<group>"; };
 		C18593D816F30BED005D30E2 /* UIAggregatorControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIAggregatorControl.cpp; sourceTree = "<group>"; };
 		C18593D916F30BED005D30E2 /* UIAggregatorControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIAggregatorControl.h; sourceTree = "<group>"; };
 		C1DC1EFB1717E791001C5EC3 /* libTextureConverter_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libTextureConverter_macos.a; path = ../../Libs/libs/libTextureConverter_macos.a; sourceTree = "<group>"; };
@@ -3450,6 +3456,8 @@
 				E8989C7B16BD24E400732C04 /* NMaterial.h */,
 				E8989C7C16BD24E400732C04 /* NMaterialConsts.h */,
 				1789108D1740DFBC007B72BA /* NMaterialConsts.cpp */,
+				C18577EC17A16DA800331A95 /* MaterialOptimazer.cpp */,
+				C18577ED17A16DA800331A95 /* MaterialOptimazer.h */,
 			);
 			path = Material;
 			sourceTree = "<group>";
@@ -4476,6 +4484,7 @@
 				A6E4FE0A1761D97C00B48E41 /* ActionUpdateSystem.h in Headers */,
 				17677EAF176B098600306201 /* SkyBoxNode.h in Headers */,
 				4FFE5CAF1779DBC700728624 /* MipmapReplacer.h in Headers */,
+				C18577EF17A16DA800331A95 /* MaterialOptimazer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5222,6 +5231,7 @@
 				4FFE5CB41779E0B400728624 /* MipmapReplacer.cpp in Sources */,
 				0211D551177C26D600EB7011 /* OpenUDIDApple.mm in Sources */,
 				0211D552177C26E000EB7011 /* OpenUDIDMacOS.mm in Sources */,
+				C18577F117A2600400331A95 /* MaterialOptimazer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5524,6 +5534,7 @@
 				A6E4FE091761D97C00B48E41 /* ActionUpdateSystem.cpp in Sources */,
 				17677EAC176B098600306201 /* SkyBoxNode.cpp in Sources */,
 				4FFE5CAE1779DBC700728624 /* MipmapReplacer.cpp in Sources */,
+				C18577EE17A16DA800331A95 /* MaterialOptimazer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5820,6 +5831,7 @@
 				A6E4FE131761D9E000B48E41 /* ActionUpdateSystem.cpp in Sources */,
 				17677EAD176B098600306201 /* SkyBoxNode.cpp in Sources */,
 				4FFE5CB11779E09300728624 /* MipmapReplacer.cpp in Sources */,
+				C18577F017A2600300331A95 /* MaterialOptimazer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
