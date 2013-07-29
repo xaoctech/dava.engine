@@ -191,7 +191,7 @@ void RulerToolSystem::AddPoint(const DAVA::Vector3 &point)
 
 void RulerToolSystem::CalcPreviewPoint(const Vector3& point)
 {
-	if (isIntersectsLandscape && previewPoint != point)
+	if (isIntersectsLandscape && previewPoint != point && linePoints.size() > 0)
 	{
 		Vector3 lastPoint = linePoints.back();
 		float32 previewLen = GetLength(lastPoint, point);
@@ -235,12 +235,16 @@ void RulerToolSystem::DrawPoints()
 	RenderManager::Instance()->SetRenderTarget(sprite);
 	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
 
+	Vector<Vector3> points;
+	points.reserve(linePoints.size() + 1);
+	std::copy(linePoints.begin(), linePoints.end(), std::back_inserter(points));
+
 	if (isIntersectsLandscape)
 	{
-		linePoints.push_back(previewPoint);
+		points.push_back(previewPoint);
 	}
 
-	if(1 < linePoints.size())
+	if(points.size() > 1)
 	{
 		Color red(1.0f, 0.0f, 0.0f, 1.0f);
 		Color blue(0.f, 0.f, 1.f, 1.f);
@@ -252,21 +256,15 @@ void RulerToolSystem::DrawPoints()
 
 		float32 koef = (float32)targetTexture->GetWidth() / landSize.x;
 
-		List<Vector3>::const_iterator it = linePoints.begin();
-		List<Vector3>::const_iterator endIt = linePoints.end();
-		List<Vector3>::const_iterator tmpPoint = linePoints.end();
-		--tmpPoint;
-
-		Vector3 startPoint = *it;
-		++it;
-		for( ; it != endIt; ++it)
+		Vector3 startPoint = points[0];
+		for (uint32 i = 1; i < points.size(); ++i)
 		{
-			if (it == tmpPoint && isIntersectsLandscape)
+			if (isIntersectsLandscape && i == (points.size() - 1))
 			{
 				RenderManager::Instance()->SetColor(blue);
 			}
 
-			Vector3 endPoint = *it;
+			Vector3 endPoint = points[i];
 
 			Vector3 startPosition = (startPoint - offsetPoint) * koef;
 			Vector3 endPosition = (endPoint - offsetPoint) * koef;
@@ -274,13 +272,6 @@ void RulerToolSystem::DrawPoints()
 
 			startPoint = endPoint;
 		}
-	}
-
-	if (isIntersectsLandscape)
-	{
-		List<Vector3>::iterator endIt = linePoints.end();
-		--endIt;
-		linePoints.erase(endIt);
 	}
 
 	RenderManager::Instance()->ResetColor();
