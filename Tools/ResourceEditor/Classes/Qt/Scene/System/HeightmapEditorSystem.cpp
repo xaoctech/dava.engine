@@ -48,8 +48,8 @@ HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 ,	cursorSize(30)
 ,	originalHeightmap(NULL)
 ,	toolImage(NULL)
-,	strength(0)
-,	averageStrength(0)
+,	strength(15)
+,	averageStrength(0.5f)
 ,	inverseDrawingEnabled(false)
 ,	toolImagePath("")
 ,	drawingType(HEIGHTMAP_DRAW_RELATIVE)
@@ -211,7 +211,10 @@ void HeightmapEditorSystem::ProcessUIEvent(DAVA::UIEvent *event)
 					}
 					else
 					{
-						StoreOriginalHeightmap();
+						if (drawingType != HEIGHTMAP_DROPPER)
+						{
+							StoreOriginalHeightmap();
+						}
 					}
 
 					UpdateToolImage();
@@ -229,7 +232,7 @@ void HeightmapEditorSystem::ProcessUIEvent(DAVA::UIEvent *event)
 					{
 						CreateCopyPasteUndo();
 					}
-					else
+					else if (drawingType != HEIGHTMAP_DROPPER)
 					{
 						CreateHeightmapUndo();
 					}
