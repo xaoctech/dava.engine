@@ -76,17 +76,41 @@ TilemaskEditorSystem::~TilemaskEditorSystem()
 	SafeRelease(toolImageSprite);
 }
 
+bool TilemaskEditorSystem::IsCanBeEnabled()
+{
+	SceneEditor2* scene = dynamic_cast<SceneEditor2*>(GetScene());
+	DVASSERT(scene);
+	
+	bool canBeEnabled = true;
+	canBeEnabled &= !(scene->visibilityToolSystem->IsLandscapeEditingEnabled());
+	canBeEnabled &= !(scene->heightmapEditorSystem->IsLandscapeEditingEnabled());
+//	canBeEnabled &= !(scene->tilemaskEditorSystem->IsLandscapeEditingEnabled());
+	canBeEnabled &= !(scene->rulerToolSystem->IsLandscapeEditingEnabled());
+	canBeEnabled &= !(scene->customColorsSystem->IsLandscapeEditingEnabled());
+	canBeEnabled &= !(scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled());
+	
+	return canBeEnabled;
+}
+
 bool TilemaskEditorSystem::EnableLandscapeEditing()
 {
 	if (enabled)
 	{
 		return true;
 	}
-	
+
+	if (!IsCanBeEnabled())
+	{
+		return false;
+	}
+
+	if (!drawSystem->EnableTilemaskEditing())
+	{
+		return false;
+	}
+
 	selectionSystem->SetLocked(true);
 	modifSystem->SetLocked(true);
-	
-	drawSystem->EnableTilemaskEditing();
 
 	landscapeSize = drawSystem->GetTextureSize();
 
