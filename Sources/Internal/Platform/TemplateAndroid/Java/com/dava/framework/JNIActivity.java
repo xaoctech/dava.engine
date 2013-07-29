@@ -9,7 +9,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.hardware.SensorManager;
-import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.InputFilter;
@@ -35,7 +34,7 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 	private static int errorState = 0;
 
 	private JNIAccelerometer accelerometer = null;
-	private GLSurfaceView glView = null;
+	private JNIGLSurfaceView glView = null;
 	private EditText editText = null;
     
 	private FMODAudioDevice fmodDevice = new FMODAudioDevice();
@@ -90,7 +89,7 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
         if(mController != null)
         {
         	mController.init();
-        	mController.setListener(GetSurfaceView().mogaListener, new Handler());
+        	mController.setListener(glView.mogaListener, new Handler());
         }
 
         Log.i(JNIConst.LOG_TAG, "[Activity::onCreate] isFirstRun is " + isFirstRun); 
@@ -160,6 +159,13 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
         	glView.onResume();
         }
         
+        if (editText != null)
+        {
+        	//YZ restore keyboard
+    		InputMethodManager input = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+    		input.showSoftInput(editText, InputMethodManager.SHOW_FORCED);
+        }
+        
         Log.i(JNIConst.LOG_TAG, "[Activity::onResume] finish");
     }
 
@@ -199,6 +205,13 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
         	nativeIsFinishing();
         }
         
+        if (editText != null)
+        {
+        	//YZ hide keyboard
+        	InputMethodManager input = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        	input.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+        }
+
         Log.i(JNIConst.LOG_TAG, "[Activity::onPause] finish");
     }
 
@@ -362,10 +375,8 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 	
 	public String GetEditText()
 	{
-		return editText.getText().toString();
-	}
-
-	public boolean IsEditTextVisible() {
-		return (editText != null);
+		if (editText != null)
+			return editText.getText().toString();
+		return "";
 	}
 }
