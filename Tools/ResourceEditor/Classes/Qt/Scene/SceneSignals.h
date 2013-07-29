@@ -80,6 +80,7 @@ signals:
 	void UpdateDropperHeight(SceneEditor2* scene, double height);
 	void UpdateVisibilityButtonsState(SceneEditor2* scene);
 	void NeedSaveCustomColorsTexture(SceneEditor2* scene);
+	void RulerToolLengthUpdated(SceneEditor2* scene, double length, double previewLength);
 
 public:
 	void EmitOpened(SceneEditor2 *scene) { emit Opened(scene); }
@@ -101,6 +102,10 @@ public:
 	void EmitUpdateDropperHeight(SceneEditor2* scene, DAVA::float32 height) { emit UpdateDropperHeight(scene, (double)height); };
 	void EmitUpdateVisibilityButtonsState(SceneEditor2* scene) { emit UpdateVisibilityButtonsState(scene); };
 	void EmitNeedSaveCustomColorsTexture(SceneEditor2* scene) { emit NeedSaveCustomColorsTexture(scene); };
+	void EmitRulerToolLengthUpdated(SceneEditor2* scene, double length, double previewLength)
+	{
+		emit RulerToolLengthUpdated(scene, length, previewLength);
+	}
 
 	void EmitMouseOver(SceneEditor2 *scene, const EntityGroup *entities) { emit MouseOver(scene, entities); }
 	void EmitMouseOverSelection(SceneEditor2 *scene, const EntityGroup *entities) { emit MouseOverSelection(scene, entities); }

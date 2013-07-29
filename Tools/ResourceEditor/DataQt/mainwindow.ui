@@ -1042,6 +1042,9 @@
    </property>
   </action>
   <action name="actionRulerTool">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="QtIcons.qrc">
      <normaloff>:/QtIcons/rulertool.png</normaloff>:/QtIcons/rulertool.png</iconset>

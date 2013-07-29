@@ -36,6 +36,7 @@ class HeightmapProxy;
 class NotPassableTerrainProxy;
 class CustomColorsProxy;
 class VisibilityToolProxy;
+class RulerToolProxy;
 
 class LandscapeEditorDrawSystem: public DAVA::SceneSystem
 {
@@ -47,6 +48,7 @@ public:
 	HeightmapProxy* GetHeightmapProxy();
 	CustomColorsProxy* GetCustomColorsProxy();
 	VisibilityToolProxy* GetVisibilityToolProxy();
+	RulerToolProxy* GetRulerToolProxy();
 
 	void EnableCustomDraw();
 	void DisableCustomDraw();
@@ -88,7 +90,8 @@ private:
 	NotPassableTerrainProxy* notPassableTerrainProxy;
 	CustomColorsProxy* customColorsProxy;
 	VisibilityToolProxy* visibilityToolProxy;
-	
+	RulerToolProxy* rulerToolProxy;
+
 	uint32 customDrawRequestCount;
 	
 	Texture* cursorTexture;
