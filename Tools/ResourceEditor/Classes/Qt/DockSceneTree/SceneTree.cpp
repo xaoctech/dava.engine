@@ -439,19 +439,29 @@ void SceneTree::ReloadModel()
 	SceneEditor2 *sceneEditor = treeModel->GetScene();
 	if(NULL != sceneEditor)
 	{
-		QItemSelection curSelection = selectionModel()->selection();
-
 		const EntityGroup *selection = sceneEditor->selectionSystem->GetSelection();
 		sceneEditor->structureSystem->Reload(selection);
-
-		selectionModel()->clear();
-		selectionModel()->select(curSelection, QItemSelectionModel::Select | QItemSelectionModel::Rows);
 	}
 }
 
 void SceneTree::ReloadModelAs()
 {
+	SceneEditor2 *sceneEditor = treeModel->GetScene();
+	if(NULL != sceneEditor)
+	{
+		const EntityGroup *selection = sceneEditor->selectionSystem->GetSelection();
+		DAVA::Entity *entity = selection->GetEntity(0);
+		if(NULL != entity)
+		{
+			DAVA::String ownerPath = entity->GetCustomProperties()->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
+			QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open scene file"), ownerPath.c_str(), QString("DAVA SceneV2 (*.sc2)"));
 
+			if(!filePath.isEmpty())
+			{
+				sceneEditor->structureSystem->Reload(selection, filePath.toStdString());
+			}
+		}
+	}
 }
 
 void SceneTree::TreeItemCollapsed(const QModelIndex &index)
