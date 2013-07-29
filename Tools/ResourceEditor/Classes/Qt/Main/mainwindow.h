@@ -84,6 +84,7 @@ protected:
 	void SetupToolBars();
 	void SetupDocks();
 	void SetupActions();
+	void SetupTitle();
 
 protected slots:
 	void ProjectOpened(const QString &path);
