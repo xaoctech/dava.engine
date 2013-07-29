@@ -22,7 +22,7 @@ public:
 
 	void Start();
 
-	void Stop();
+	void Stop(bool isDeleteAllParticles = true);
 
 	void Restart();
     
