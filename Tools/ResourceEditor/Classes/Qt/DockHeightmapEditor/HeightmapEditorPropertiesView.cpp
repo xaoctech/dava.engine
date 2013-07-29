@@ -32,6 +32,8 @@
 
 #include "Qt/Scene/SceneSignals.h"
 
+#include <QMessageBox>
+
 HeightmapEditorPropertiesView::HeightmapEditorPropertiesView(QWidget* parent)
 :	QWidget(parent)
 ,	ui(new Ui::HeightmapEditorPropertiesView)
@@ -53,7 +55,7 @@ void HeightmapEditorPropertiesView::Init()
 
 	connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2*)), this, SLOT(SceneActivated(SceneEditor2*)));
 	connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2*)), this, SLOT(SceneDeactivated(SceneEditor2*)));
-	connect(SceneSignals::Instance(), SIGNAL(UpdateDropperHeight(SceneEditor2*, double)),
+	connect(SceneSignals::Instance(), SIGNAL(DropperHeightChanged(SceneEditor2*, double)),
 			this, SLOT(SetDropperHeight(SceneEditor2*, double)));
 
 	connect(ui->sliderStrength, SIGNAL(valueChanged(int)), ui->labelStrength, SLOT(setNum(int)));
@@ -252,7 +254,8 @@ void HeightmapEditorPropertiesView::Toggle()
 		}
 		else
 		{
-			// show "Couldn't enable heightmap editing" message box
+			QMessageBox::critical(0, "Error enabling Heightmap editor",
+								  "Error enabling Heightmap editor.\nMake sure there is landscape in scene and disable other landscape editors.");
 		}
 	}
 }

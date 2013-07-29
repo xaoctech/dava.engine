@@ -63,7 +63,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(SceneActivated(SceneEditor2 *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(SceneDeactivated(SceneEditor2 *)));
 
-	QObject::connect(SceneSignals::Instance(), SIGNAL(RulerToolLengthUpdated(SceneEditor2*, double, double)),
+	QObject::connect(SceneSignals::Instance(), SIGNAL(RulerToolLengthChanged(SceneEditor2*, double, double)),
 					 this, SLOT(UpdateRulerToolLength(SceneEditor2*, double, double)));
 
 	new TextureBrowser(this);
@@ -620,14 +620,21 @@ void QtMainWindow::OnNotPassableTerrain()
 		return;
 	}
 
-	if (ui->actionShowNotPassableLandscape->isChecked())
+	bool enabled = scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled();
+	if (!enabled)
 	{
-		scene->landscapeEditorDrawSystem->EnableNotPassableTerrain();
+		if (!scene->landscapeEditorDrawSystem->EnableNotPassableTerrain())
+		{
+			QMessageBox::critical(0, "Error enabling Not Passable Landscape",
+								  "Error enabling Not Passable Landscape.\nMake sure there is landscape in scene and disable other landscape editors.");
+		}
 	}
 	else
 	{
 		scene->landscapeEditorDrawSystem->DisableNotPassableTerrain();
 	}
+
+	ui->actionShowNotPassableLandscape->setChecked(scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled());
 }
 
 void QtMainWindow::OnRulerTool()
@@ -638,14 +645,21 @@ void QtMainWindow::OnRulerTool()
 		return;
 	}
 
-	if (ui->actionRulerTool->isChecked())
+	bool enabled = scene->rulerToolSystem->IsLandscapeEditingEnabled();
+	if (!enabled)
 	{
-		scene->rulerToolSystem->EnableLandscapeEditing();
+		if (!scene->rulerToolSystem->EnableLandscapeEditing())
+		{
+			QMessageBox::critical(0, "Error enabling Ruler Tool",
+								  "Error enabling Ruler Tool.\nMake sure there is landscape in scene and disable other landscape editors.");
+		}
 	}
 	else
 	{
 		scene->rulerToolSystem->DisableLandscapeEdititing();
 	}
+
+	ui->actionRulerTool->setChecked(scene->rulerToolSystem->IsLandscapeEditingEnabled());
 }
 
 // ###################################################################################################
