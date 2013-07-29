@@ -44,6 +44,22 @@ RulerToolSystem::~RulerToolSystem()
 {
 }
 
+bool RulerToolSystem::IsCanBeEnabled()
+{
+	SceneEditor2* scene = dynamic_cast<SceneEditor2*>(GetScene());
+	DVASSERT(scene);
+	
+	bool canBeEnabled = true;
+	canBeEnabled &= !(scene->visibilityToolSystem->IsLandscapeEditingEnabled());
+	canBeEnabled &= !(scene->heightmapEditorSystem->IsLandscapeEditingEnabled());
+	canBeEnabled &= !(scene->tilemaskEditorSystem->IsLandscapeEditingEnabled());
+//	canBeEnabled &= !(scene->rulerToolSystem->IsLandscapeEditingEnabled());
+	canBeEnabled &= !(scene->customColorsSystem->IsLandscapeEditingEnabled());
+	canBeEnabled &= !(scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled());
+	
+	return canBeEnabled;
+}
+
 bool RulerToolSystem::EnableLandscapeEditing()
 {
 	if (enabled)
@@ -51,10 +67,18 @@ bool RulerToolSystem::EnableLandscapeEditing()
 		return true;
 	}
 
+	if (!IsCanBeEnabled())
+	{
+		return false;
+	}
+
+	if (!drawSystem->EnableCustomDraw())
+	{
+		return false;
+	}
+
 	selectionSystem->SetLocked(true);
 	modifSystem->SetLocked(true);
-
-	drawSystem->EnableCustomDraw();
 
 	Texture* rulerToolTexture = drawSystem->GetRulerToolProxy()->GetSprite()->GetTexture();
 	drawSystem->GetLandscapeProxy()->SetRulerToolTexture(rulerToolTexture);
@@ -66,7 +90,7 @@ bool RulerToolSystem::EnableLandscapeEditing()
 
 	previewLength = 0;
 
-	SceneSignals::Instance()->EmitRulerToolLengthUpdated(dynamic_cast<SceneEditor2*>(GetScene()), length, previewLength);
+	SceneSignals::Instance()->EmitRulerToolLengthChanged(dynamic_cast<SceneEditor2*>(GetScene()), length, previewLength);
 
 	enabled = true;
 	return enabled;
@@ -88,7 +112,7 @@ bool RulerToolSystem::DisableLandscapeEdititing()
 	drawSystem->GetLandscapeProxy()->SetRulerToolTexture(NULL);
 	drawSystem->GetLandscapeProxy()->SetRulerToolTextureEnabled(false);
 
-	SceneSignals::Instance()->EmitRulerToolLengthUpdated(dynamic_cast<SceneEditor2*>(GetScene()), -1.0, -1.0);
+	SceneSignals::Instance()->EmitRulerToolLengthChanged(dynamic_cast<SceneEditor2*>(GetScene()), -1.0, -1.0);
 
 	enabled = false;
 	return !enabled;
@@ -173,7 +197,8 @@ void RulerToolSystem::SetStartPoint(const DAVA::Vector3 &point)
 	linePoints.push_back(point);
 
 	length = 0;
-	SceneSignals::Instance()->EmitRulerToolLengthUpdated(dynamic_cast<SceneEditor2*>(GetScene()), length, length);
+	previewPoint = point;
+	SceneSignals::Instance()->EmitRulerToolLengthChanged(dynamic_cast<SceneEditor2*>(GetScene()), length, length);
 }
 
 void RulerToolSystem::AddPoint(const DAVA::Vector3 &point)
@@ -185,7 +210,7 @@ void RulerToolSystem::AddPoint(const DAVA::Vector3 &point)
 
 		linePoints.push_back(point);
 
-		SceneSignals::Instance()->EmitRulerToolLengthUpdated(dynamic_cast<SceneEditor2*>(GetScene()), length, length);
+		SceneSignals::Instance()->EmitRulerToolLengthChanged(dynamic_cast<SceneEditor2*>(GetScene()), length, length);
 	}
 }
 
@@ -203,7 +228,7 @@ void RulerToolSystem::CalcPreviewPoint(const Vector3& point)
 	{
 		previewLength = -1.f;
 	}
-	SceneSignals::Instance()->EmitRulerToolLengthUpdated(dynamic_cast<SceneEditor2*>(GetScene()), length, previewLength);
+	SceneSignals::Instance()->EmitRulerToolLengthChanged(dynamic_cast<SceneEditor2*>(GetScene()), length, previewLength);
 }
 
 DAVA::float32 RulerToolSystem::GetLength(const DAVA::Vector3 &startPoint, const DAVA::Vector3 &endPoint)

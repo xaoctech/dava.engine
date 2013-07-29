@@ -25,6 +25,7 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
+#include "../SceneEditor2.h"
 #include "LandscapeEditorDrawSystem.h"
 #include "LandscapeEditorDrawSystem/LandscapeProxy.h"
 #include "LandscapeEditorDrawSystem/HeightmapProxy.h"
@@ -84,7 +85,7 @@ RulerToolProxy* LandscapeEditorDrawSystem::GetRulerToolProxy()
 	return rulerToolProxy;
 }
 
-void LandscapeEditorDrawSystem::EnableCustomDraw()
+bool LandscapeEditorDrawSystem::EnableCustomDraw()
 {
 	if (customDrawRequestCount != 0)
 	{
@@ -92,7 +93,11 @@ void LandscapeEditorDrawSystem::EnableCustomDraw()
 		return;
 	}
 
-	Init();
+	if (!Init())
+	{
+		return false;
+	}
+
 	landscapeProxy->SetMode(LandscapeProxy::MODE_CUSTOM_LANDSCAPE);
 	landscapeProxy->SetHeightmap(heightmapProxy);
 
@@ -104,6 +109,8 @@ void LandscapeEditorDrawSystem::EnableCustomDraw()
 	landscapeNode->AddComponent(new RenderComponent(landscapeProxy->GetRenderObject()));
 	
 	++customDrawRequestCount;
+
+	return true;
 }
 
 void LandscapeEditorDrawSystem::DisableCustomDraw()
@@ -134,7 +141,23 @@ bool LandscapeEditorDrawSystem::IsNotPassableTerrainEnabled()
 	return notPassableTerrainProxy->IsEnabled();
 }
 
-void LandscapeEditorDrawSystem::EnableNotPassableTerrain()
+bool LandscapeEditorDrawSystem::IsNotPassableTerrainCanBeEnabled()
+{
+	SceneEditor2* scene = dynamic_cast<SceneEditor2*>(GetScene());
+	DVASSERT(scene);
+
+	bool canBeEnabled = true;
+	canBeEnabled &= !(scene->visibilityToolSystem->IsLandscapeEditingEnabled());
+//	canBeEnabled &= !(scene->heightmapEditorSystem->IsLandscapeEditingEnabled());
+	canBeEnabled &= !(scene->tilemaskEditorSystem->IsLandscapeEditingEnabled());
+	canBeEnabled &= !(scene->rulerToolSystem->IsLandscapeEditingEnabled());
+	canBeEnabled &= !(scene->customColorsSystem->IsLandscapeEditingEnabled());
+//	canBeEnabled &= !(scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled());
+	
+	return canBeEnabled;
+}
+
+bool LandscapeEditorDrawSystem::EnableNotPassableTerrain()
 {
 	if (!notPassableTerrainProxy)
 	{
@@ -143,10 +166,19 @@ void LandscapeEditorDrawSystem::EnableNotPassableTerrain()
 	
 	if (notPassableTerrainProxy->IsEnabled())
 	{
-		return;
+		return true;
 	}
-	
-	EnableCustomDraw();
+
+	if (!IsNotPassableTerrainCanBeEnabled())
+	{
+		return false;
+	}
+
+	if (!EnableCustomDraw())
+	{
+		return false;
+	}
+
 	notPassableTerrainProxy->Enable();
 	notPassableTerrainProxy->UpdateTexture(heightmapProxy,
 										   landscapeProxy->GetLandscapeBoundingBox(),
@@ -154,6 +186,8 @@ void LandscapeEditorDrawSystem::EnableNotPassableTerrain()
 	
 	landscapeProxy->SetNotPassableTexture(notPassableTerrainProxy->GetTexture());
 	landscapeProxy->SetNotPassableTextureEnabled(true);
+
+	return true;
 }
 
 void LandscapeEditorDrawSystem::DisableNotPassableTerrain()
@@ -399,20 +433,26 @@ KeyedArchive* LandscapeEditorDrawSystem::GetLandscapeCustomProperties()
 	return landscapeNode->GetCustomProperties();
 }
 
-void LandscapeEditorDrawSystem::EnableTilemaskEditing()
+bool LandscapeEditorDrawSystem::EnableTilemaskEditing()
 {
-	Init();
+	if (!Init())
+	{
+		return false;
+	}
+
 	landscapeProxy->SetMode(LandscapeProxy::MODE_ORIGINAL_LANDSCAPE);
 
 	landscapeNode->RemoveComponent(Component::RENDER_COMPONENT);
 	landscapeNode->AddComponent(new RenderComponent(landscapeProxy->GetRenderObject()));
+
+	return true;
 }
 
 void LandscapeEditorDrawSystem::DisableTilemaskEditing()
 {
 }
 
-void LandscapeEditorDrawSystem::Init()
+bool LandscapeEditorDrawSystem::Init()
 {
 	if (!landscapeNode)
 	{
@@ -422,7 +462,11 @@ void LandscapeEditorDrawSystem::Init()
 	{
 		baseLandscape = SafeRetain(GetLandscape(landscapeNode));
 	}
-	if (!landscapeProxy)
+	if (!baseLandscape)
+	{
+		return false;
+	}
+	if (baseLandscape && !landscapeProxy)
 	{
 		landscapeProxy = new LandscapeProxy(baseLandscape);
 	}
@@ -442,4 +486,6 @@ void LandscapeEditorDrawSystem::Init()
 	{
 		rulerToolProxy = new RulerToolProxy((int32)GetTextureSize());
 	}
+
+	return true;
 }

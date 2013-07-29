@@ -70,6 +70,8 @@ protected:
 	void CalcPreviewPoint(const Vector3& point);
 	float32 GetLength(const Vector3 &startPoint, const Vector3 &endPoint);
 	void DrawPoints();
+
+	bool IsCanBeEnabled();
 };
 
 #endif /* defined(__RESOURCEEDITORQT__RULERTOOLSYSTEM__) */

@@ -139,6 +139,8 @@ protected:
 
 	Image* CreateTilemaskImage();
 	void CreateTilemaskCopyPasteTool();
+
+	bool IsCanBeEnabled();
 };
 
 #endif /* defined(__RESOURCEEDITORQT__HEIGHTMAPEDITORSYSTEM__) */
