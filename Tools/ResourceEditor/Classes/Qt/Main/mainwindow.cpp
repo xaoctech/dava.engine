@@ -168,6 +168,20 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
 	return QMainWindow::eventFilter(obj, event);
 }
 
+void QtMainWindow::SetupTitle()
+{
+	DAVA::KeyedArchive *options = DAVA::Core::Instance()->GetOptions();
+	QString title = options->GetString("title").c_str();
+
+	if(ProjectManager::Instance()->IsOpened())
+	{
+		title += " | Project - ";
+		title += ProjectManager::Instance()->CurProjectPath();
+	}
+
+	this->setWindowTitle(title);
+}
+
 void QtMainWindow::SetupMainMenu()
 {
 	QAction *actionProperties = ui->dockProperties->toggleViewAction();
@@ -277,6 +291,8 @@ void QtMainWindow::ProjectOpened(const QString &path)
 	ui->actionOpenScene->setEnabled(true);
 	ui->actionSaveScene->setEnabled(true);
 	ui->actionSaveToFolder->setEnabled(true);
+
+	SetupTitle();
 }
 
 void QtMainWindow::ProjectClosed()
@@ -285,6 +301,8 @@ void QtMainWindow::ProjectClosed()
 	ui->actionOpenScene->setEnabled(false);
 	ui->actionSaveScene->setEnabled(false);
 	ui->actionSaveToFolder->setEnabled(false);
+
+	SetupTitle();
 }
 
 void QtMainWindow::SceneActivated(SceneEditor2 *scene)
@@ -508,11 +526,11 @@ void QtMainWindow::OnManualModifMode()
 {
 	if(ui->actionManualModifMode->isChecked())
 	{
-		modificationWidget->SetMode(ModificationWidget::ModifyRelative);
+		modificationWidget->SetPivotMode(ModificationWidget::PivotRelative);
 	}
 	else
 	{
-		modificationWidget->SetMode(ModificationWidget::ModifyAbsolute);
+		modificationWidget->SetPivotMode(ModificationWidget::PivotAbsolute);
 	}
 }
 
@@ -644,6 +662,8 @@ void QtMainWindow::LoadModificationState(SceneEditor2 *scene)
 		ui->actionModifyScale->setChecked(false);
 
 		ST_ModifMode modifMode = scene->modifSystem->GetModifMode();
+		modificationWidget->SetModifMode(modifMode);
+
 		switch (modifMode)
 		{
 		case ST_MODIF_OFF:
@@ -661,6 +681,7 @@ void QtMainWindow::LoadModificationState(SceneEditor2 *scene)
 		default:
 			break;
 		}
+
 
 		// pivot point
 		if(scene->selectionSystem->GetPivotPoint() == ST_PIVOT_ENTITY_CENTER)
