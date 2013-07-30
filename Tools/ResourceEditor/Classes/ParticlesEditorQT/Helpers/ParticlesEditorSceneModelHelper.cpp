@@ -551,6 +551,12 @@ bool ParticlesEditorSceneModelHelper::NeedMoveItemToParent(GraphItem* movedItem,
 		return true;
 	}
 
+	// Moving Emitters inside the same Effect Node is also allowed.
+	if (dynamic_cast<EmitterParticleEditorNode*>(movedItemUserData) && dynamic_cast<EmitterParticleEditorNode*>(newParentItemUserData))
+	{
+		return true;
+	}
+
 	// The move should be separately handled in the following cases:
 	// The Moved Item is Layer or Force.
 	// The New Parent Item is Layer or Force.
@@ -601,7 +607,14 @@ bool ParticlesEditorSceneModelHelper::MoveItemToParent(GraphItem* movedItem, Gra
 	if (movedItemEmitterNode && newEffectParentNode)
 	{
 		// We are moving Emitter from one effect to another one.
-		return ParticlesEditorController::Instance()->MoveEmitter(movedItemEmitterNode, newEffectParentNode);
+		return ParticlesEditorController::Instance()->MoveEmitter(movedItemEmitterNode, newEffectParentNode, NULL);
+	}
+
+	newEmitterParentNode = dynamic_cast<EmitterParticleEditorNode*>(newParentItemUserData);
+	if (movedItemEmitterNode && newEmitterParentNode)
+	{
+		// We are moving Emitters within the same Effect or between Effects.
+		return ParticlesEditorController::Instance()->MoveEmitter(movedItemEmitterNode, newEmitterParentNode);
 	}
 
 	if (IsMoveItemToParentForbidden(movedItem, newParentItem))
@@ -648,7 +661,6 @@ bool ParticlesEditorSceneModelHelper::IsMoveItemToParentForbidden(GraphItem* mov
 	}
 	
 	// The following situations are forbidden:
-	// The Particle Emitter node is moved to other Particle Emitter;
 	// The Particle Effect node is moved to other Particle Effect.
 	// The Particle Effect node is moved to Particle Emitter (vise versa is possible though).
 	if (dynamic_cast<EffectParticleEditorNode*>(movedItemData) &&
@@ -657,12 +669,6 @@ bool ParticlesEditorSceneModelHelper::IsMoveItemToParentForbidden(GraphItem* mov
 		return true;
 	}
 
-	if (dynamic_cast<EmitterParticleEditorNode*>(movedItemData) &&
-		dynamic_cast<EmitterParticleEditorNode*>(newParentItemData))
-	{
-		return true;
-	}
-	
 	if (dynamic_cast<EffectParticleEditorNode*>(movedItemData) &&
 		dynamic_cast<EmitterParticleEditorNode*>(newParentItemData))
 	{

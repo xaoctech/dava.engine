@@ -67,8 +67,14 @@ public:
     void RemoveParticleForceNode(ForceParticleEditorNode* forceNode);
 
 	// Move different nodes logic.
+	// Move the emitters inside the same layer.
+	bool MoveEmitter(EmitterParticleEditorNode* movedItemEmitterNode,
+					 EmitterParticleEditorNode* newItemEmitterNode);
+
 	// Move the emitter from one effect to another one.
-	bool MoveEmitter(EmitterParticleEditorNode* movedItemEmitterNode, EffectParticleEditorNode* newEffectParentNode);
+	bool MoveEmitter(EmitterParticleEditorNode* movedItemEmitterNode,
+					 EffectParticleEditorNode* newEffectParentNode,
+					 EmitterParticleEditorNode* newEffectReferenceEmitterNode);
 	
 	// Move the Layer between Emitters or inside the same Emitter.
 	bool MoveLayer(LayerParticleEditorNode* movedItemNode, LayerParticleEditorNode* moveAboveNode);

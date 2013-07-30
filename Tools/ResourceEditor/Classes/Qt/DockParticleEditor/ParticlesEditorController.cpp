@@ -438,7 +438,7 @@ void ParticlesEditorController::FindEmitterEditorNode(Entity* emitterSceneNode,
     }
 }
 
-bool ParticlesEditorController::MoveEmitter(EmitterParticleEditorNode* movedItemEmitterNode, EffectParticleEditorNode* newEffectParentNode)
+bool ParticlesEditorController::MoveEmitter(EmitterParticleEditorNode* movedItemEmitterNode, EffectParticleEditorNode* newEffectParentNode, EmitterParticleEditorNode* newEffectReferenceEmitterNode)
 {
 	if (!movedItemEmitterNode || !newEffectParentNode)
 	{
@@ -454,7 +454,19 @@ bool ParticlesEditorController::MoveEmitter(EmitterParticleEditorNode* movedItem
 	// Move the Emitter to the new Effect inside the Particles Editor hierarchy...
 	BaseParticleEditorNode* oldEffectParentNode = movedItemEmitterNode->GetParentNode();
 	oldEffectParentNode->RemoveChildNode(movedItemEmitterNode, false);
-	newEffectParentNode->AddChildNode(movedItemEmitterNode);
+	
+	if (newEffectReferenceEmitterNode)
+	{
+		// The particular position of the Emitter Node in the new Effect is defined, however need
+		// to be sure that reference emitter node belongs to the correct parent.
+		DVASSERT(newEffectReferenceEmitterNode->GetParentNode() == newEffectParentNode);
+		newEffectParentNode->AddChildNodeAbove(movedItemEmitterNode, newEffectReferenceEmitterNode);
+	}
+	else
+	{
+		// No particular position specified - just move to the end.
+		newEffectParentNode->AddChildNode(movedItemEmitterNode);
+	}
 
 	// and inside the SceneGraph.
 	Entity* movedNode = movedItemEmitterNode->GetEmitterNode();
@@ -463,9 +475,54 @@ bool ParticlesEditorController::MoveEmitter(EmitterParticleEditorNode* movedItem
 
     SafeRetain(movedNode);
     oldParentNode->RemoveNode(movedNode);
-    newParentNode->AddNode(movedNode);
+	if (newEffectReferenceEmitterNode)
+	{
+		// Position the new Emitter correctly according to the reference node.
+		Entity* referenceEmitterNode = newEffectReferenceEmitterNode->GetEmitterNode();
+		DVASSERT(referenceEmitterNode->GetParent() == newParentNode);
+		newParentNode->InsertBeforeNode(movedNode, referenceEmitterNode);
+	}
+	else
+	{
+		// No particular position specified - just move to the end.
+		newParentNode->AddNode(movedNode);
+	}
     SafeRelease(movedNode);
 
+	return true;
+}
+
+bool ParticlesEditorController::MoveEmitter(EmitterParticleEditorNode* movedItemEmitterNode, EmitterParticleEditorNode* newItemEmitterNode)
+{
+	if (!movedItemEmitterNode || !newItemEmitterNode ||
+		!movedItemEmitterNode->GetParentNode() || !newItemEmitterNode->GetParentNode())
+	{
+		return false;
+	}
+	
+	if (movedItemEmitterNode->GetParentNode() != newItemEmitterNode->GetParentNode())
+	{
+		// We are moving emitter between Effects.
+		EffectParticleEditorNode* effectNode = dynamic_cast<EffectParticleEditorNode*>(newItemEmitterNode->GetParentNode());
+		DVASSERT(effectNode);
+		return MoveEmitter(movedItemEmitterNode, effectNode, newItemEmitterNode);
+	}
+
+	// Just move the emitter inside the Entity...
+	Entity* referenceNode = newItemEmitterNode->GetEmitterNode();
+	Entity* movedNode = movedItemEmitterNode->GetEmitterNode();
+	Entity* effectNode = movedItemEmitterNode->GetRootNode();
+	
+	movedNode->Retain();
+	effectNode->RemoveNode(movedNode);
+	effectNode->InsertBeforeNode(movedNode, referenceNode);
+	movedNode->Release();
+	
+	// and update the editor structure.
+	BaseParticleEditorNode* effectEditorNode = movedItemEmitterNode->GetParentNode();
+	effectEditorNode->RemoveChildNode(movedItemEmitterNode, false);
+	effectEditorNode->AddChildNodeAbove(movedItemEmitterNode, newItemEmitterNode);
+	
 	return true;
 }
 
