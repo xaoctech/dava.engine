@@ -53,6 +53,7 @@ public slots:
 	void OnSceneSave();
 	void OnSceneSaveAs();
 	void OnSceneSaveToFolder();
+	void OnRecentTriggered(QAction *recentAction);
 	void ExportMenuTriggered(QAction *exportAsAction);
 
 	void OnUndo();
@@ -86,6 +87,9 @@ protected:
 	void SetupActions();
 	void SetupTitle();
 
+	void InitRecent();
+	void AddRecent(const QString &path);
+
 protected slots:
 	void ProjectOpened(const QString &path);
 	void ProjectClosed();
@@ -100,6 +104,7 @@ private:
 	Ui::MainWindow *ui;
 	QtPosSaver posSaver;
 
+	QList<QAction *> recentScenes;
 	ModificationWidget *modificationWidget;
 
 	// TODO: remove this old screen -->
