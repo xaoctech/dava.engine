@@ -435,134 +435,132 @@ void CommandAddParticleEmitterLayer::Redo()
 	}
 }
 
-CommandRemoveParticleEmitterLayer::CommandRemoveParticleEmitterLayer() :
+CommandRemoveParticleEmitterLayer::CommandRemoveParticleEmitterLayer(ParticleLayer* layer) :
     CommandAction(CMDID_REMOVE_PARTICLE_EMITTER_LAYER)
 {
+	this->selectedLayer = layer;
 }
 
 void CommandRemoveParticleEmitterLayer::Redo()
 {
-    // Need to know selected Layer Node to remove it.
-    BaseParticleEditorNode* selectedNode = ParticlesEditorController::Instance()->GetSelectedNode();
-    LayerParticleEditorNode* layerNode = dynamic_cast<LayerParticleEditorNode*>(selectedNode);
-    if (!layerNode || !layerNode->GetRootNode())
-    {
-        return;
-    }
-
-    // Mark the "parent" Emitter Node to selection.
-    layerNode->GetEmitterEditorNode()->SetMarkedToSelection(true);
-
-	ParticleEffectComponent * effectComponent = layerNode->GetParticleEffectComponent();
-
-	if (effectComponent)
+	if (!selectedLayer)
 	{
-		effectComponent->Stop();
-	}
-
-    ParticlesEditorController::Instance()->RemoveParticleLayerNode(layerNode);
-
-	if (effectComponent)
-	{
-		effectComponent->Restart();
+		return;
 	}
 	
-    // Update the scene graph.
-	// TODO: mainwindow
-    //QtMainWindowHandler::Instance()->RefreshSceneGraph();
+	ParticleEmitter* emitter = selectedLayer->GetEmitter();
+    if (!emitter)
+    {
+        return NULL;
+    }
+
+	bool isStopped = emitter->IsStopped();
+	if (!isStopped)
+	{
+		emitter->Stop();
+	}
+
+	emitter->RemoveLayer(selectedLayer);
+    
+	if (!isStopped)
+	{
+		emitter->Restart();
+	}
 }
 
-CommandCloneParticleEmitterLayer::CommandCloneParticleEmitterLayer() :
+CommandCloneParticleEmitterLayer::CommandCloneParticleEmitterLayer(ParticleLayer* layer) :
 	CommandAction(CMDID_CLONE_PARTICLE_EMITTER_LAYER)
 {
+	this->selectedLayer = layer;
 }
 
 void CommandCloneParticleEmitterLayer::Redo()
 {
-    // Need to know selected Layer Node to remove it.
-    BaseParticleEditorNode* selectedNode = ParticlesEditorController::Instance()->GetSelectedNode();
-    LayerParticleEditorNode* layerNode = dynamic_cast<LayerParticleEditorNode*>(selectedNode);
-    if (!layerNode)
+	if (!selectedLayer)
+	{
+		return;
+	}
+
+	ParticleEmitter* emitter = selectedLayer->GetEmitter();
+    if (!emitter)
     {
-        return;
+        return NULL;
     }
-    
-    LayerParticleEditorNode* clonedNode = ParticlesEditorController::Instance()->CloneParticleLayerNode(layerNode);
-    if (clonedNode)
-    {
-        clonedNode->SetMarkedToSelection(true);
-    }
-    
-    // Update the scene graph.
-	// TODO: mainwindow
-    //QtMainWindowHandler::Instance()->RefreshSceneGraph();
+
+    ParticleLayer* clonedLayer = selectedLayer->Clone();
+	clonedLayer->layerName = selectedLayer->layerName + " Clone";
+    emitter->AddLayer(clonedLayer);
 }
 
-CommandAddParticleEmitterForce::CommandAddParticleEmitterForce() :
+CommandAddParticleEmitterForce::CommandAddParticleEmitterForce(ParticleLayer* layer) :
     CommandAction(CMDID_ADD_PARTICLE_EMITTER_FORCE)
 {
+	this->selectedLayer = layer;
 }
 
 void CommandAddParticleEmitterForce::Redo()
 {
-    // Need to know selected Layer Node to add the Force to.
-    BaseParticleEditorNode* selectedNode = ParticlesEditorController::Instance()->GetSelectedNode();
-    LayerParticleEditorNode* layerNode = dynamic_cast<LayerParticleEditorNode*>(selectedNode);
-    if (!layerNode || !layerNode->GetRootNode())
+	if (!selectedLayer)
+	{
+		return;
+	}
+
+	ParticleEmitter* emitter = selectedLayer->GetEmitter();
+    if (!emitter)
     {
         return;
     }
-
-	ParticleEffectComponent * effectComponent = layerNode->GetParticleEffectComponent();
-	DVASSERT(effectComponent);
-	effectComponent->Stop();
-    ForceParticleEditorNode* forceNode = ParticlesEditorController::Instance()->AddParticleForceToNode(layerNode);
-    if (forceNode)
-    {
-        forceNode->SetMarkedToSelection(true);
-    }
-	effectComponent->Restart();
 	
-    // Update the scene graph.
-	// TODO: mainwindow
-    //QtMainWindowHandler::Instance()->RefreshSceneGraph();
+	bool isStopped = emitter->IsStopped();
+	if (!isStopped)
+	{
+		emitter->Stop();
+	}
+	
+    // Add the new Force to the Layer.
+	ParticleForce* newForce = new ParticleForce(RefPtr<PropertyLine<Vector3> >(new PropertyLineValue<Vector3>(Vector3(0, 0, 0))),
+												RefPtr<PropertyLine<Vector3> >(NULL), RefPtr<PropertyLine<float32> >(NULL));
+	selectedLayer->AddForce(newForce);
+	newForce->Release();
+
+	if (!isStopped)
+	{
+		emitter->Restart();
+	}
 }
 
-CommandRemoveParticleEmitterForce::CommandRemoveParticleEmitterForce() :
+CommandRemoveParticleEmitterForce::CommandRemoveParticleEmitterForce(ParticleLayer* layer, ParticleForce* force) :
     CommandAction(CMDID_REMOVE_PARTICLE_EMITTER_FORCE)
 {
+	this->selectedLayer = layer;
+	this->selectedForce = force;
 }
 
 void CommandRemoveParticleEmitterForce::Redo()
 {
-    // Need to know selected Layer Node to add the Force to.
-    BaseParticleEditorNode* selectedNode = ParticlesEditorController::Instance()->GetSelectedNode();
-    ForceParticleEditorNode* forceNode = dynamic_cast<ForceParticleEditorNode*>(selectedNode);
-    if (!forceNode || !forceNode->GetRootNode())
+	if (!selectedLayer || !selectedForce)
+	{
+		return;
+	}
+	
+	ParticleEmitter* emitter = selectedLayer->GetEmitter();
+    if (!emitter)
     {
         return;
     }
 
-    // Mark the "parent" Layer Node to selection.
-    forceNode->GetLayerEditorNode()->SetMarkedToSelection(true);
-
+	bool isStopped = emitter->IsStopped();
+	if (!isStopped)
+	{
+		emitter->Stop();
+	}
 	
-	ParticleEffectComponent * effectComponent = forceNode->GetParticleEffectComponent();
-	if (effectComponent)
+	selectedLayer->RemoveForce(selectedForce);
+	
+	if (!isStopped)
 	{
-		effectComponent->Stop();
+		emitter->Restart();
 	}
-
-    ParticlesEditorController::Instance()->RemoveParticleForceNode(forceNode);
-
-	if (effectComponent)
-	{
-		effectComponent->Restart();
-	}
-
-    // Update the scene graph.
-	// TODO: mainwindow
-    //QtMainWindowHandler::Instance()->RefreshSceneGraph();
 }
 
 CommandLoadParticleEmitterFromYaml::CommandLoadParticleEmitterFromYaml(ParticleEmitter* emitter, const FilePath& path) :
