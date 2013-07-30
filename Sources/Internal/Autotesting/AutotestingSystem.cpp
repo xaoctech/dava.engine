@@ -51,16 +51,12 @@ AutotestingSystem::AutotestingSystem()
 
 AutotestingSystem::~AutotestingSystem()
 {
-#ifdef AUTOTESTING_LUA
     AutotestingSystemLua::Instance()->Release();
-#else
-    AutotestingSystemYaml::Instance()->Release();
-#endif
 }
 
 void AutotestingSystem::OnAppStarted()
 {
-    if(!isInit)
+	if(!isInit)
     {
         // get files list for ~res:/Autotesting/Tests
         FileList fileList("~res:/Autotesting/Tests/");
@@ -1425,11 +1421,14 @@ void AutotestingSystem::OnScreenShot(Image *image)
 	
 	//String filePath = Format("~doc:/%s.png", screenShotName.c_str());
 	FilePath systemFilePath = "~doc:/screenshot.png";
+	image->ResizeImage(800, 600);
+	Logger::Debug("AutotestingSystem::OnScreenShot Resize");
 	ImageLoader::Save(image, systemFilePath);
-	
+	Logger::Debug("AutotestingSystem::OnScreenShot Save");
 	if(dbClient)
 	{
 		dbClient->SaveFileToGridFS(screenShotName, systemFilePath.GetAbsolutePathname());
+		Logger::Debug("AutotestingSystem::OnScreenShot Upload");
 	}
 }
     
