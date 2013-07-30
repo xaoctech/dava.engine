@@ -126,6 +126,10 @@ bool QtMainWindow::SaveSceneAs(SceneEditor2 *scene)
 				{
 					QMessageBox::warning(this, "Save error", "An error occurred while saving the scene. Please, see logs for more info.", QMessageBox::Ok);
 				}
+				else
+				{
+					AddRecent(scenePath.GetAbsolutePathname().c_str());
+				}
 			}
 		}
 	}
@@ -211,6 +215,8 @@ void QtMainWindow::SetupMainMenu()
 	ui->menuView->addAction(actionVisibilityTool2);
 	ui->menuView->addAction(actionHeightmapEditor2);
 	ui->menuView->addAction(actionTilemaskEditor2);
+
+	InitRecent();
 }
 
 void QtMainWindow::SetupToolBars()
@@ -279,6 +285,49 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionCubemapEditor, SIGNAL(triggered()), this, SLOT(OnCubemapEditor()));
 	QObject::connect(ui->actionShowNotPassableLandscape, SIGNAL(triggered()), this, SLOT(OnNotPassableTerrain()));
 	QObject::connect(ui->actionRulerTool, SIGNAL(triggered()), this, SLOT(OnRulerTool()));
+}
+
+void QtMainWindow::InitRecent()
+{
+	for(int i = 0; i < EditorSettings::Instance()->GetLastOpenedCount(); ++i)
+	{
+		DAVA::String path = EditorSettings::Instance()->GetLastOpenedFile(i);
+		QAction *action = ui->menuFile->addAction(path.c_str());
+
+		action->setData(QString(path.c_str()));
+		recentScenes.push_back(action);
+	}
+
+	QObject::connect(ui->menuFile, SIGNAL(triggered(QAction *)), this, SLOT(OnRecentTriggered(QAction *)));
+}
+
+void QtMainWindow::AddRecent(const QString &path)
+{
+	for(int i = 0; i < recentScenes.size(); ++i)
+	{
+		if(recentScenes[i]->data() == path)
+		{
+			ui->menuFile->removeAction(recentScenes[i]);
+			recentScenes.removeAt(i);
+			i--;
+		}
+	}
+
+	QAction *action = new QAction(path, NULL);
+	action->setData(path);
+
+	if(recentScenes.size() > 0)
+	{
+		ui->menuFile->insertAction(recentScenes[0], action);
+	}
+	else
+	{
+		ui->menuFile->addAction(action);
+	}
+
+	recentScenes.push_front(action);
+
+	EditorSettings::Instance()->AddLastOpenedFile(DAVA::FilePath(path.toStdString()));
 }
 
 // ###################################################################################################
@@ -392,6 +441,8 @@ void QtMainWindow::OnSceneOpen()
 	{
 		int index = ui->sceneTabWidget->OpenTab(DAVA::FilePath(path.toStdString()));
 		ui->sceneTabWidget->SetCurrentTab(index);
+
+		AddRecent(path);
 	}
 }
 
@@ -440,6 +491,22 @@ void QtMainWindow::ExportMenuTriggered(QAction *exportAsAction)
 		if (!scene->Export(gpuFamily))
 		{
 			QMessageBox::warning(this, "Export error", "An error occurred while exporting the scene. See log for more info.", QMessageBox::Ok);
+		}
+	}
+}
+
+void QtMainWindow::OnRecentTriggered(QAction *recentAction)
+{
+	if(recentScenes.contains(recentAction))
+	{
+		QString path = recentAction->data().toString();
+
+		int index = ui->sceneTabWidget->OpenTab(DAVA::FilePath(path.toStdString()));
+		ui->sceneTabWidget->SetCurrentTab(index);
+
+		if(-1 != index)
+		{
+			AddRecent(path);
 		}
 	}
 }
