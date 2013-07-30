@@ -451,7 +451,7 @@ void CommandRemoveParticleEmitterLayer::Redo()
 	ParticleEmitter* emitter = selectedLayer->GetEmitter();
     if (!emitter)
     {
-        return NULL;
+        return;
     }
 
 	bool isStopped = emitter->IsStopped();
@@ -484,7 +484,7 @@ void CommandCloneParticleEmitterLayer::Redo()
 	ParticleEmitter* emitter = selectedLayer->GetEmitter();
     if (!emitter)
     {
-        return NULL;
+        return;
     }
 
     ParticleLayer* clonedLayer = selectedLayer->Clone();
