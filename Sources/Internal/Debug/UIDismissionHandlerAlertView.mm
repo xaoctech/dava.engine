@@ -1,7 +1,3 @@
-//
-// UIDismissionHandlerAlertView.mm
-// UIDismissionHandlerAlertView
-//
 /*==================================================================================
  Copyright (c) 2008, DAVA, INC
  All rights reserved.
