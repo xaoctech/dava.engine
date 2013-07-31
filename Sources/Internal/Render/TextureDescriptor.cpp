@@ -63,6 +63,9 @@ TextureDescriptor::~TextureDescriptor()
 
 TextureDescriptor *TextureDescriptor::CreateFromFile(const FilePath &filePathname)
 {
+	if(filePathname.IsEmpty() || filePathname.GetType() == FilePath::PATH_IN_MEMORY)
+		return NULL;
+
     FilePath descriptorPathname = GetDescriptorPathname(filePathname);
     TextureDescriptor *descriptor = new TextureDescriptor();
     bool loaded = descriptor->Load(descriptorPathname);
