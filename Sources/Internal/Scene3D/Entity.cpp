@@ -1,31 +1,17 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #include "Scene3D/Entity.h"
 #include "Scene3D/Scene.h"
@@ -57,6 +43,7 @@ REGISTER_CLASS(Entity);
 
 // Property Names.
 const char* Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME = "editor.isSolid";
+const char* Entity::SCENE_NODE_IS_LOCKED_PROPERTY_NAME = "editor.isLocked";
 
 Entity::Entity()
 	: scene(0)
@@ -125,12 +112,15 @@ void Entity::AddComponent(Component * component)
 
 void Entity::RemoveComponent(Component * component)
 {
-	component->SetEntity(0);
-
-    components[component->GetType()] = 0;
     if (scene)
+	{
         scene->RemoveComponent(this, component);
-    // SHOULD BE DONE AFTER scene->RemoveComponent
+	}
+
+	component->SetEntity(0);
+	components[component->GetType()] = 0;
+
+	// SHOULD BE DONE AFTER scene->RemoveComponent
     componentFlags &= ~(1 << component->GetType());
 	delete(component);
 }
@@ -234,11 +224,11 @@ void Entity::InsertBeforeNode(Entity *newNode, Entity *beforeNode)
             if(beforeNode == (*it))
             {
                 newNode->Retain();
-                children.insert(it, newNode);
                 if (newNode->parent)
                 {
                     newNode->parent->RemoveNode(newNode);
                 }
+				children.insert(it, newNode);
                 newNode->SetParent(this);
                 newNode->SetScene(GetScene());
                 break;
@@ -272,20 +262,39 @@ void Entity::RemoveNode(Entity * node)
 	
 }
 	
-Entity * Entity::GetChild(int32 index)
+Entity * Entity::GetChild(int32 index) const
 {
 	return children[index];
 }
 
-int32 Entity::GetChildrenCount()
+Entity* Entity::GetNextChild(Entity *child)
+{
+	Entity* next = NULL;
+
+	for(uint32 i = 0; i < children.size(); i++)
+	{
+		if(children[i] == child)
+		{
+			if((i + 1) < children.size())
+			{
+				next = children[i + 1];
+			}
+			break;
+		}
+	}
+
+	return next;
+}
+
+int32 Entity::GetChildrenCount() const
 {
     return (int32)children.size();
 }
-int32 Entity::GetChildrenCountRecursive()
+int32 Entity::GetChildrenCountRecursive() const
 {
     int32 result = 0;
     result += (int32)children.size();
-    for (std::vector<Entity*>::iterator t = children.begin(); t != children.end(); ++t)
+    for (std::vector<Entity*>::const_iterator t = children.begin(); t != children.end(); ++t)
 	{
         Entity *node = *t;
         result += node->GetChildrenCountRecursive();
@@ -832,10 +841,20 @@ void Entity::SetSolid(bool isSolid)
     customProperties->SetBool(SCENE_NODE_IS_SOLID_PROPERTY_NAME, isSolid);
 }
     
-bool Entity::GetSolid()
+bool Entity::GetSolid() const
 {
 //    return isSolidNode;
     return customProperties->GetBool(SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
+}
+
+void Entity::SetLocked(bool isLocked)
+{
+	customProperties->SetBool(SCENE_NODE_IS_LOCKED_PROPERTY_NAME, isLocked);
+}
+
+bool Entity::GetLocked() const
+{
+	return customProperties->GetBool(SCENE_NODE_IS_LOCKED_PROPERTY_NAME, false);
 }
 
 void Entity::GetDataNodes(Set<DataNode*> & dataNodes)

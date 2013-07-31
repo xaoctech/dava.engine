@@ -1,3 +1,19 @@
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
 #include "EditorBodyControl.h"
 #include "ControlsFactory.h"
 #include "../BeastProxy.h"
@@ -31,16 +47,15 @@
 
 #include "../Commands/CommandsManager.h"
 #include "../Commands/EditorBodyControlCommands.h"
-#include "../Commands/CommandReloadTextures.h"
+
+#include "../StringConstants.h"
 #include "../Commands/FileCommands.h"
 
 #include "../CommandLine/CommandLineManager.h"
 #include "../CommandLine/Beast/BeastCommandLineTool.h"
-#include "CommandLine/EditorCommandLineParser.h"
+#include "TexturePacker/CommandLineParser.h"
 
 #include "ArrowsNode.h"
-
-#define ARROWS_NODE_NAME "editor.arrows-node"
 
 EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect)
@@ -71,9 +86,6 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     scene = NULL;
     cameraController = NULL;
 
-	mainCam = 0;
-	debugCam = 0;
-	
 	modificationMode = ResourceEditor::MODIFY_NONE;
 	landscapeRelative = false;
     
@@ -94,6 +106,9 @@ void EditorBodyControl::InitControls()
 
 EditorBodyControl::~EditorBodyControl()
 {
+	for_each(poppedEditorEntitiesForSave.begin(), poppedEditorEntitiesForSave.end(), SafeRelease<Entity>);
+	poppedEditorEntitiesForSave.clear();
+
     SafeRelease(landscapeRulerTool);
     
     SafeRelease(sceneGraph);
@@ -184,60 +199,35 @@ FilePath EditorBodyControl::CustomColorsGetCurrentSaveFileName()
 	return landscapeEditorCustomColors->GetCurrentSaveFileName();
 }
 
-void RemoveDeepCamera(Entity * curr)
+
+void EditorBodyControl::PushEditorEntities()
 {
-	Entity * cam;
-	
-	cam = curr->FindByName("editor.main-camera");
-	while (cam)
+	DVASSERT(poppedEditorEntitiesForSave.size() == 0);
+
+	Vector<Entity *>entities;
+	scene->GetChildNodes(entities);
+
+	uint32 count = entities.size();
+	for(uint32 i = 0; i < count; ++i)
 	{
-		cam->GetParent()->RemoveNode(cam);
-		cam = curr->FindByName("editor.main-camera");
+		if(entities[i]->GetName().find("editor.") != String::npos)
+		{
+			poppedEditorEntitiesForSave.push_back(SafeRetain(entities[i]));
+			entities[i]->GetParent()->RemoveNode(entities[i]);
+		}
 	}
-	
-	cam = curr->FindByName("editor.debug-camera");
-	while (cam)
-	{
-		cam->GetParent()->RemoveNode(cam);
-		cam = curr->FindByName("editor.debug-camera");
-	}	
 }
 
-void EditorBodyControl::PushDebugCamera()
+void EditorBodyControl::PopEditorEntities()
 {
-	mainCam = scene->FindByName("editor.main-camera");
-	if (mainCam)
+	uint32 count = poppedEditorEntitiesForSave.size();
+	for(uint32 i = 0; i < count; ++i)
 	{
-		SafeRetain(mainCam);
-		scene->RemoveNode(mainCam);
+		scene->AddEditorEntity(poppedEditorEntitiesForSave[i]);
+		SafeRelease(poppedEditorEntitiesForSave[i]);
 	}
 	
-	debugCam = scene->FindByName("editor.debug-camera");
-	if (debugCam)
-	{
-		SafeRetain(debugCam);
-		scene->RemoveNode(debugCam);
-	}
-	
-	RemoveDeepCamera(scene);
-}
-
-void EditorBodyControl::PopDebugCamera()
-{
-	if (mainCam)
-	{
-		scene->AddNode(mainCam);
-		SafeRelease(mainCam);
-	}
-	
-	if (debugCam)
-	{
-		scene->AddNode(debugCam);
-		SafeRelease(debugCam);
-	}
-	
-	mainCam = 0;
-	debugCam = 0;
+	poppedEditorEntitiesForSave.clear();
 }
 
 void EditorBodyControl::CreateModificationPanel(void)
@@ -267,7 +257,7 @@ void EditorBodyControl::PlaceOnLandscape(Entity *node)
 {
 	if (node)
 	{
-		CommandsManager::Instance()->ExecuteAndRelease(new CommandPlaceOnLandscape(node, this));
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandPlaceOnLandscape(node, this), scene);
 	}
 }
 
@@ -506,7 +496,7 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 																				 transform,
 																				 this,
 																				 scene->collisionWorld);
-					CommandsManager::Instance()->ExecuteAndRelease(cmd);
+					CommandsManager::Instance()->ExecuteAndRelease(cmd, scene);
 					originalNode = NULL;
 
 					// update selection to newly created node
@@ -516,7 +506,8 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 				{
 					CommandsManager::Instance()->ExecuteAndRelease(new CommandTransformObject(modifiedNode,
 																							  transformBeforeModification,
-																							  modifiedNode->GetLocalTransform()));
+																							  modifiedNode->GetLocalTransform()),
+																   scene);
 				}
 
 				if (selection)
@@ -763,15 +754,14 @@ void EditorBodyControl::Update(float32 timeElapsed)
         {
             QtMainWindowHandler::Instance()->SaveScene(scene, beastTool->GetScenePathname());
 
-			bool forceClose =	EditorCommandLineParser::CommandIsFound(String("-force"))
-							||  EditorCommandLineParser::CommandIsFound(String("-forceclose"));
+			bool forceClose =	CommandLineParser::CommandIsFound(String("-force"))
+							||  CommandLineParser::CommandIsFound(String("-forceclose"));
 			if(forceClose)
 	            Core::Instance()->Quit();
-
         }
 #endif //#if defined (__DAVAENGINE_WIN32__)
 
-		CommandsManager::Instance()->ExecuteAndRelease(new CommandReloadTextures());
+		QtMainWindowHandler::Instance()->ReloadSceneTextures();
 	}
 }
 
@@ -798,11 +788,11 @@ void EditorBodyControl::ReloadRootScene(const FilePath &pathToFile)
 void EditorBodyControl::ReloadNode(Entity *node, const FilePath &pathToFile)
 {//если в рут ноды сложить такие же рут ноды то на релоаде все накроет пиздой
     KeyedArchive *customProperties = node->GetCustomProperties();
-    if (customProperties->GetString("editor.referenceToOwner", "") == pathToFile.GetAbsolutePathname())
+    if (customProperties->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, "") == pathToFile.GetAbsolutePathname())
     {
         Entity *newNode = scene->GetRootNode(pathToFile)->Clone();
         newNode->SetLocalTransform(node->GetLocalTransform());
-        newNode->GetCustomProperties()->SetString("editor.referenceToOwner", pathToFile.GetAbsolutePathname());
+        newNode->GetCustomProperties()->SetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, pathToFile.GetAbsolutePathname());
         newNode->SetSolid(true);
         
         Entity *parent = node->GetParent();
@@ -949,7 +939,7 @@ void EditorBodyControl::PackLightmaps()
 	packer.SetInputDir(inputDir);
 
 	packer.SetOutputDir(outputDir);
-	packer.Pack();
+	packer.PackLightmaps();
 	packer.CreateDescriptors();
 	packer.ParseSpriteDescriptors();
 
@@ -1351,12 +1341,15 @@ ArrowsNode* EditorBodyControl::GetArrowsNode(bool createIfNotExist)
 {
 	DVASSERT(scene);
 
-	ArrowsNode* arrowsNode = dynamic_cast<ArrowsNode*>(scene->FindByName(ARROWS_NODE_NAME));
+	ArrowsNode* arrowsNode = dynamic_cast<ArrowsNode*>(scene->FindByName(ResourceEditor::EDITOR_ARROWS_NODE));
 	if (!arrowsNode && createIfNotExist)
 	{
 		arrowsNode = new ArrowsNode();
-		arrowsNode->SetName(ARROWS_NODE_NAME);
-		AddNode(arrowsNode);
+        arrowsNode->SetName(ResourceEditor::EDITOR_ARROWS_NODE);
+
+        EditorScene *scene = SceneDataManager::Instance()->SceneGetActive()->GetScene();
+        scene->InsertBeforeNode(arrowsNode, scene->GetChild(0));
+
 		arrowsNode->Release();
 	}
 
@@ -1420,7 +1413,7 @@ void EditorBodyControl::RestoreOriginalTransform()
 		return;
 
 	Entity* selection = scene->GetProxy();
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandRestoreOriginalTransform(selection));
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandRestoreOriginalTransform(selection), scene);
 }
 
 void EditorBodyControl::ApplyTransform(float32 x, float32 y, float32 z)
@@ -1471,7 +1464,8 @@ void EditorBodyControl::ApplyTransform(float32 x, float32 y, float32 z)
 
 		CommandsManager::Instance()->ExecuteAndRelease(new CommandTransformObject(selectedNode,
 																				  originalTransform,
-																				  modification));
+																				  modification),
+													   scene);
 	}
 }
 

@@ -6,6 +6,7 @@ TransparentWebViewTest::TransparentWebViewTest()
 :	TestTemplate<TransparentWebViewTest>("TransparentWebViewTest")
 ,	webView1(NULL)
 ,	webView2(NULL)
+,	testFinished(false)
 {
 	RegisterFunction(this, &TransparentWebViewTest::TestFunction, Format("TransparentWebViewTest"), NULL);
 }
@@ -31,6 +32,20 @@ void TransparentWebViewTest::LoadResources()
 	webView2->SetBackgroundTransparency(true);
 	webView2->OpenURL(url);
 	AddControl(webView2);
+
+	Font *font = FTFont::Create("~res:/Fonts/korinna.ttf");
+    DVASSERT(font);
+	font->SetSize(20);
+
+	testButton = new UIButton(Rect(0, 510, 300, 30));
+	testButton->SetStateFont(0xFF, font);
+	testButton->SetStateText(0xFF, L"Finish Test");
+	testButton->SetStateFontColor(0xFF, Color::White());
+	testButton->SetDebugDraw(true);
+	testButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &TransparentWebViewTest::ButtonPressed));
+	AddControl(testButton);
+
+	SafeRelease(font);
 }
 
 void TransparentWebViewTest::UnloadResources()
@@ -39,6 +54,7 @@ void TransparentWebViewTest::UnloadResources()
 
 	SafeRelease(webView1);
 	SafeRelease(webView2);
+	SafeRelease(testButton);
 }
 
 bool TransparentWebViewTest::RunTest(int32 testNum)
@@ -66,4 +82,9 @@ void TransparentWebViewTest::Update(float32 timeElapsed)
 void TransparentWebViewTest::TestFunction(PerfFuncData * data)
 {
 	return;
+}
+
+void TransparentWebViewTest::ButtonPressed(BaseObject *obj, void *data, void *callerData)
+{
+	testFinished = true;
 }

@@ -1,15 +1,26 @@
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
 
-//
-//  PropertyNames.c
-//  UIEditor
-//
-//  Created by Yuri Coder on 5/10/13.
-//
-//
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
 
 #include "PropertyNames.h"
 namespace DAVA {
 // Property Names for different Properties.
+const char* PropertyNames::SIZE_X = "SizeX";
+const char* PropertyNames::SIZE_Y = "SizeY";
+	
 const char* PropertyNames::LOCALIZED_TEXT_KEY_PROPERTY_NAME = "LocalizedTextKey";
 const char* PropertyNames::FONT_PROPERTY_NAME = "Font";
 const char* PropertyNames::FONT_SIZE_PROPERTY_NAME = "FontSize";
@@ -61,6 +72,12 @@ const char* PropertyNames::VCENTER_ALIGN = "VCenterAlign";
 const char* PropertyNames::VCENTER_ALIGN_ENABLED = "VCenterAlignEnabled";
 const char* PropertyNames::BOTTOM_ALIGN = "BottomAlign";
 const char* PropertyNames::BOTTOM_ALIGN_ENABLED = "BottomAlignEnabled";
+
+// UI Scroll View properties
+const char* PropertyNames::HORIZONTAL_SCROLL_POSITION = "HorizontalScrollPosition";
+const char* PropertyNames::VERTICAL_SCROLL_POSITION = "VerticalScrollPosition";
+const char* PropertyNames::SCROLL_CONTENT_SIZE_X = "ContentSizeX";
+const char* PropertyNames::SCROLL_CONTENT_SIZE_Y = "ContentSizeY";
 
 // UI Spinner properties.
 const char* PropertyNames::UISPINNER_PREV_BUTTON_TEXT = "PrevButtonText";

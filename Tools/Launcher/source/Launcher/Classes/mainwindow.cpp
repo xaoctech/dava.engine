@@ -1,3 +1,19 @@
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "logger.h"
@@ -7,7 +23,7 @@
 #include "processhelper.h"
 #include "settings.h"
 
-#define LAUNCER_VER "0.85"
+#define LAUNCER_VER "0.871"
 
 #define COLUMN_NAME 0
 #define COLUMN_CUR_VER 1
@@ -31,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_pInstaller, SIGNAL(StartDownload()), this, SLOT(OnDownloadStarted()));
     connect(m_pInstaller, SIGNAL(DownloadFinished()), this, SLOT(OnDownloadFinished()));
     connect(m_pInstaller, SIGNAL(DownloadProgress(int)), this, SLOT(OnDownloadProgress(int)));
+    connect(m_pInstaller, SIGNAL(WebPageUpdated(QString)), this, SLOT(UpdateWebPage(QString)));
 
     m_pUpdateTimer = new QTimer(this);
     connect(m_pUpdateTimer, SIGNAL(timeout()), this, SLOT(on_btnRefresh_clicked()));
@@ -40,6 +57,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->testTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
     ui->developmentTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
     ui->dependenciesTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    ui->stableTable->verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+    ui->testTable->verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+    ui->developmentTable->verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+    ui->dependenciesTable->verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
 
     connect(ui->stableTable, SIGNAL(itemSelectionChanged()), this, SLOT(UpdateBtn()));
     connect(ui->testTable, SIGNAL(itemSelectionChanged()), this, SLOT(UpdateBtn()));
@@ -222,7 +243,11 @@ void MainWindow::UpdateBtn() {
             ui->btnRun->setVisible(true);
         } break;
         case DEP_TAB: {
-            ui->btnReinstall->setVisible(true);
+            ui->btnRemove->setEnabled(false);
+            ui->btnInstall->setVisible(false);
+            ui->btnRun->setVisible(false);
+            ui->btnReinstall->setVisible(false);
+            ui->btnCancel->setVisible(false);
         }break;
         }
 
@@ -256,7 +281,7 @@ void MainWindow::on_btnRemove_clicked() {
     if (0 == QMessageBox::information(this,
                                      tr("Confirmation"),
                                      tr("Are you sure you want to remove %1.").arg(m_SelectedApp),
-                                     tr("ok"),
+                                     tr("OK"),
                                      tr("Cancel"))) {
         m_pInstaller->Delete(m_SelectedApp, m_SelectedAppType);
     }
@@ -292,4 +317,8 @@ void MainWindow::OnDownloadFinished() {
     m_bBusy = false;
     ui->downloadProgress->setVisible(false);
     UpdateBtn();
+}
+
+void MainWindow::UpdateWebPage(const QString& url) {
+    ui->webView->setUrl(url);
 }
