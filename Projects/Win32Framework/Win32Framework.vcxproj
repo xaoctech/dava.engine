@@ -216,6 +216,7 @@
     <ClInclude Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.h" />
     <ClInclude Include="..\..\Sources\Internal\Autotesting\TouchAction.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\Data.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\EnumMap.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\FastName.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\FastNameMap.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\FixedSizePoolAllocator.h" />
@@ -384,6 +385,7 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Effects\MultiTextureEffect.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Effects\TextureMulColorAlphaTestEffect.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Effects\TextureMulColorEffect.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\GPUFamilyDescriptor.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Camera.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\CullingSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Frustum.h" />
@@ -419,6 +421,7 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialGraphNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterial.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterialConsts.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\MipmapReplacer.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\OGLHelpers.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\PVRDefines.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\RenderBase.h" />
@@ -462,6 +465,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene2D\TextGameObject.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\BillboardNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\BoneNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ActionComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\BulletComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\CameraComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ComponentHelpers.h" />
@@ -497,6 +501,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SkeletonNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SpriteNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SwitchNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\ActionUpdateSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\BaseProcessSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\DebugRenderSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\EventSystem.h" />
@@ -546,6 +551,8 @@
     <ClInclude Include="..\..\Sources\Internal\UI\UIScreenManagerMacOS.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIScreenTransition.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIScrollBar.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIScrollView.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIScrollViewContainer.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UISlider.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UISpinner.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIStaticText.h" />
@@ -625,6 +632,7 @@
     <ClCompile Include="..\..\Sources\Internal\Autotesting\TouchAction.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\BaseObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\Data.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Base\EnumMap.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\FastName.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\FixedSizePoolAllocator.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\GlobalEnum.cpp" />
@@ -741,6 +749,7 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Effects\MultiTextureEffect.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Effects\TextureMulColorAlphaTestEffect.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Effects\TextureMulColorEffect.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\GPUFamilyDescriptor.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Camera.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\CullingSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Frustum.cpp" />
@@ -771,6 +780,7 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialGraph.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialGraphNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material\NMaterial.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\MipmapReplacer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\RenderBase.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\RenderDataObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\RenderEffect.cpp" />
@@ -814,6 +824,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene2D\TextGameObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\BillboardNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\BoneNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\ActionComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\BulletComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\CameraComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\ComponentHelpers.cpp" />
@@ -849,6 +860,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SkeletonNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SpriteNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SwitchNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ActionUpdateSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\BaseProcessSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\DebugRenderSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\EventSystem.cpp" />
@@ -894,6 +906,8 @@
     <ClCompile Include="..\..\Sources\Internal\UI\UIScreenManagerMacOS.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIScreenTransition.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIScrollBar.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIScrollView.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIScrollViewContainer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UISlider.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UISpinner.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIStaticText.cpp" />

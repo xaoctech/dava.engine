@@ -1,31 +1,17 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #include "FileSystem/File.h"
 #include "FileSystem/VariantType.h"
@@ -1301,12 +1287,23 @@ VariantType VariantType::LoadData(const void *src, const MetaInfo *meta)
 		v.SetFilePath(*((DAVA::FilePath *) src));
 		break;
 	default:
-		printf("MetaType: %s, size %d, is pointer %d, introspection %p\n", meta->GetTypeName(), meta->GetSize(), meta->IsPointer(), meta->GetIntrospection());
-		if(NULL != meta->GetIntrospection())
+		if(meta == MetaInfo::Instance<int8>())
 		{
-			printf("Introspection: %s\n", meta->GetIntrospection()->Name());
+			v.SetInt32(*((DAVA::int8 *) src));
 		}
-		DVASSERT(0 && "Don't know how to load data for such VariantType");
+		else if(meta == MetaInfo::Instance<uint8>())
+		{
+			v.SetUInt32(*((DAVA::uint8 *) src));
+		}
+		else
+		{
+			printf("MetaType: %s, size %d, is pointer %d, introspection %p\n", meta->GetTypeName(), meta->GetSize(), meta->IsPointer(), meta->GetIntrospection());
+			if(NULL != meta->GetIntrospection())
+			{
+				printf("Introspection: %s\n", meta->GetIntrospection()->Name());
+			}
+			DVASSERT(0 && "Don't know how to load data for such VariantType");
+		}
 	}
 
 	return v;
@@ -1328,84 +1325,104 @@ void VariantType::SaveData(void *dst, const MetaInfo *meta, const VariantType &v
 	}
 
 	DVASSERT(NULL != valMeta)
-	DVASSERT(meta == valMeta && "Destination type differ from source type");
 
-	switch(val.type)
+	// Destination meta type differ from source meta type
+	// this happen only for int8 and uint8 types, because we are storing them in int32 and uint32
+	if(meta != valMeta)
 	{
-	case TYPE_BOOLEAN:
-		*((bool *) dst) = val.AsBool();
-		break;
-	case TYPE_INT32:
-		*((int32 *) dst) = val.AsInt32();
-		break;
-	case TYPE_FLOAT:
-		*((float *) dst) = val.AsFloat();
-		break;
-	case TYPE_STRING:
-		*((DAVA::String *) dst) = val.AsString();
-		break;
-	case TYPE_WIDE_STRING:
-		*((DAVA::WideString *) dst) = val.AsWideString();
-		break;
-	case TYPE_UINT32:
-		*((uint32 *) dst) = val.AsUInt32();
-		break;
-	//case TYPE_BYTE_ARRAY:
-	//	break;
-	case TYPE_KEYED_ARCHIVE:
+		if(meta == MetaInfo::Instance<int8>() && valMeta == MetaInfo::Instance<int32>())
 		{
-			DAVA::KeyedArchive *dstArchive = *((DAVA::KeyedArchive **) dst);
-			if(NULL != dstArchive)
+			*((DAVA::int8 *) dst) = (int8) val.AsInt32();
+		}
+		else if(meta == MetaInfo::Instance<uint8>() && valMeta == MetaInfo::Instance<int32>())
+		{
+			*((DAVA::uint8 *) dst) = (uint8) val.AsUInt32();
+		}
+		else
+		{
+			DVASSERT(0 && "Destination type differ from source type");
+		}
+	}
+	else
+	{
+		switch(val.type)
+		{
+		case TYPE_BOOLEAN:
+			*((bool *) dst) = val.AsBool();
+			break;
+		case TYPE_INT32:
+			*((int32 *) dst) = val.AsInt32();
+			break;
+		case TYPE_FLOAT:
+			*((float *) dst) = val.AsFloat();
+			break;
+		case TYPE_STRING:
+			*((DAVA::String *) dst) = val.AsString();
+			break;
+		case TYPE_WIDE_STRING:
+			*((DAVA::WideString *) dst) = val.AsWideString();
+			break;
+		case TYPE_UINT32:
+			*((uint32 *) dst) = val.AsUInt32();
+			break;
+			//case TYPE_BYTE_ARRAY:
+			//	break;
+		case TYPE_KEYED_ARCHIVE:
 			{
-				dstArchive->DeleteAllKeys();
-				Map<String, VariantType*> values = val.AsKeyedArchive()->GetArchieveData();
-				Map<String, VariantType*>::iterator i;
-
-				for(i = values.begin(); i != values.end(); ++i)
+				DAVA::KeyedArchive *dstArchive = *((DAVA::KeyedArchive **) dst);
+				if(NULL != dstArchive)
 				{
-					dstArchive->SetVariant(i->first, *i->second);
+					dstArchive->DeleteAllKeys();
+					Map<String, VariantType*> values = val.AsKeyedArchive()->GetArchieveData();
+					Map<String, VariantType*>::iterator i;
+
+					for(i = values.begin(); i != values.end(); ++i)
+					{
+						dstArchive->SetVariant(i->first, *i->second);
+					}
 				}
 			}
+			break;
+		case TYPE_INT64:
+			*((DAVA::int64 *) dst) = val.AsInt64();
+			break;
+		case TYPE_UINT64:
+			*((DAVA::uint64 *) dst) = val.AsUInt64();
+			break;
+		case TYPE_VECTOR2:
+			*((DAVA::Vector2 *) dst) = val.AsVector2();
+			break;
+		case TYPE_VECTOR3:
+			*((DAVA::Vector3 *) dst) = val.AsVector3();
+			break;
+		case TYPE_VECTOR4:
+			*((DAVA::Vector4 *) dst) = val.AsVector4();
+			break;
+		case TYPE_MATRIX2:
+			*((DAVA::Matrix2 *) dst) = val.AsMatrix2();
+			break;
+		case TYPE_MATRIX3:
+			*((DAVA::Matrix3 *) dst) = val.AsMatrix3();
+			break;
+		case TYPE_MATRIX4:
+			*((DAVA::Matrix4 *) dst) = val.AsMatrix4();
+			break;
+		case TYPE_COLOR:
+			*((DAVA::Color *) dst) = val.AsColor();
+			break;
+		case TYPE_FASTNAME:
+			*((DAVA::FastName *) dst) = val.AsFastName();
+			break;
+		case TYPE_AABBOX3:
+			*((DAVA::AABBox3 *) dst) = val.AsAABBox3();
+			break;
+		case TYPE_FILEPATH:
+			*((DAVA::FilePath *) dst) = val.AsFilePath();
+			break;
+		default:
+			DVASSERT(0 && "Don't know how to save data from such VariantType");
+			break;
 		}
-		break;
-	case TYPE_INT64:
-		*((DAVA::int64 *) dst) = val.AsInt64();
-		break;
-	case TYPE_UINT64:
-		*((DAVA::uint64 *) dst) = val.AsUInt64();
-		break;
-	case TYPE_VECTOR2:
-		*((DAVA::Vector2 *) dst) = val.AsVector2();
-		break;
-	case TYPE_VECTOR3:
-		*((DAVA::Vector3 *) dst) = val.AsVector3();
-		break;
-	case TYPE_VECTOR4:
-		*((DAVA::Vector4 *) dst) = val.AsVector4();
-		break;
-	case TYPE_MATRIX2:
-		*((DAVA::Matrix2 *) dst) = val.AsMatrix2();
-		break;
-	case TYPE_MATRIX3:
-		*((DAVA::Matrix3 *) dst) = val.AsMatrix3();
-		break;
-	case TYPE_MATRIX4:
-		*((DAVA::Matrix4 *) dst) = val.AsMatrix4();
-		break;
-    case TYPE_COLOR:
-        *((DAVA::Color *) dst) = val.AsColor();
-        break;
-    case TYPE_FASTNAME:
-        *((DAVA::FastName *) dst) = val.AsFastName();
-        break;
-	case TYPE_AABBOX3:
-		*((DAVA::AABBox3 *) dst) = val.AsAABBox3();
-		break;
-	case TYPE_FILEPATH:
-		*((DAVA::FilePath *) dst) = val.AsFilePath();
-		break;
-	default:
-		DVASSERT(0 && "Don't know how to save data from such VariantType");
 	}
 }
 
