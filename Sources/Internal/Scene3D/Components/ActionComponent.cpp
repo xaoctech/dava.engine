@@ -137,14 +137,15 @@ namespace DAVA
 		allActionsActive = false;
 	}
 	
-	void ActionComponent::Remove(const ActionComponent::Action::eType type, const String& entityName)
+	void ActionComponent::Remove(const ActionComponent::Action::eType type, const String& entityName, const int switchIndex)
 	{
 		Vector<ActionComponent::ActionContainer>::iterator i = actions.begin();
 		for(; i < actions.end(); ++i)
 		{
 			const Action& innerAction = (*i).action;
 			if(innerAction.type == type &&
-			   innerAction.entityName == entityName)
+			   innerAction.entityName == entityName &&
+			   innerAction.switchIndex == switchIndex)
 			{
 				actions.erase(i);
 				break;
@@ -166,7 +167,7 @@ namespace DAVA
 	
 	void ActionComponent::Remove(const ActionComponent::Action& action)
 	{
-		Remove(action.type, action.entityName);
+		Remove(action.type, action.entityName, action.switchIndex);
 	}
 	
 	uint32 ActionComponent::GetCount()
@@ -174,7 +175,7 @@ namespace DAVA
 		return actions.size();
 	}
 	
-	const ActionComponent::Action& ActionComponent::Get(uint32 index)
+	ActionComponent::Action& ActionComponent::Get(uint32 index)
 	{
 		DVASSERT(index >= 0 && index < actions.size());
 		return actions[index].action;

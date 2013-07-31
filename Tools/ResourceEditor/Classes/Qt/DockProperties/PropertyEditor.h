@@ -49,6 +49,8 @@ public slots:
 
 	void EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity);
 	void EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity);
+	
+	void EditActionComponent();
 
 protected:
 	bool advancedMode;
