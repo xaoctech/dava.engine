@@ -105,6 +105,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/AndroidFramework/bin/androidframework.jar</locationURI>
 		</link>
 		<link>
+			<name>libs/com.bda.controller.jar</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/AndroidFramework/libs/com.bda.controller.jar</locationURI>
+		</link>
+		<link>
 			<name>libs/fmodex.jar</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/AndroidFramework/libs/fmodex.jar</locationURI>
@@ -178,6 +183,16 @@
 			<name>src/Classes/EntityTest.h</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Classes/EntityTest.h</locationURI>
+		</link>
+		<link>
+			<name>src/Classes/FormatsTest.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Classes/FormatsTest.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/Classes/FormatsTest.h</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Classes/FormatsTest.h</locationURI>
 		</link>
 		<link>
 			<name>src/Classes/FrameworkMain.cpp</name>
@@ -330,6 +345,16 @@
 			<locationURI>PARENT-1-PROJECT_LOC/Classes/TextureUtils.h</locationURI>
 		</link>
 		<link>
+			<name>src/Classes/TransparentWebViewTest.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Classes/TransparentWebViewTest.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/Classes/TransparentWebViewTest.h</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Classes/TransparentWebViewTest.h</locationURI>
+		</link>
+		<link>
 			<name>src/Classes/eMailTest.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Classes/eMailTest.cpp</locationURI>
@@ -403,6 +428,16 @@
 			<name>bin/classes/Classes/EntityTest.h</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Classes/EntityTest.h</locationURI>
+		</link>
+		<link>
+			<name>bin/classes/Classes/FormatsTest.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Classes/FormatsTest.cpp</locationURI>
+		</link>
+		<link>
+			<name>bin/classes/Classes/FormatsTest.h</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Classes/FormatsTest.h</locationURI>
 		</link>
 		<link>
 			<name>bin/classes/Classes/FrameworkMain.cpp</name>
@@ -553,6 +588,16 @@
 			<name>bin/classes/Classes/TextureUtils.h</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Classes/TextureUtils.h</locationURI>
+		</link>
+		<link>
+			<name>bin/classes/Classes/TransparentWebViewTest.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Classes/TransparentWebViewTest.cpp</locationURI>
+		</link>
+		<link>
+			<name>bin/classes/Classes/TransparentWebViewTest.h</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Classes/TransparentWebViewTest.h</locationURI>
 		</link>
 		<link>
 			<name>bin/classes/Classes/eMailTest.cpp</name>

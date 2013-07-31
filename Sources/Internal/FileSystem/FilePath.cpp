@@ -1,31 +1,17 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #include "FileSystem/FilePath.h"
 #include "FileSystem/FileSystem.h"
@@ -220,6 +206,9 @@ void FilePath::Initialize(const String &_pathname)
     }
     else
     {
+        Logger::Warning("[FilePath::Initialize] FilePath was initialized from relative path name (%s)", _pathname.c_str());
+        
+        
 #if defined(__DAVAENGINE_ANDROID__)
         absolutePathname = pathname;
 #else //#if defined(__DAVAENGINE_ANDROID__)
@@ -256,15 +245,18 @@ String FilePath::ResolveResourcesPath() const
         String relativePathname = "Data" + absolutePathname.substr(5);
         FilePath path;
         
+		bool isResolved = false;
         List<FilePath>::reverse_iterator endIt = resourceFolders.rend();
         for(List<FilePath>::reverse_iterator it = resourceFolders.rbegin(); it != endIt; ++it)
         {
+            FilePath t = *it;
             path = *it + relativePathname;
             
             if(isDirectory)
             {
                 if(FileSystem::Instance()->IsDirectory(path))
                 {
+					isResolved = true;
                     break;
                 }
             }
@@ -272,9 +264,18 @@ String FilePath::ResolveResourcesPath() const
             {
                 if(FileSystem::Instance()->IsFile(path))
                 {
+					isResolved = true;
                     break;
                 }
             }
+        }
+		
+		if (!isResolved)
+		{
+			String warningMsg = "Unable to resolve relative path " + absolutePathname + "\n";
+			warningMsg += "Returning default absolute path found ";
+			warningMsg += path.absolutePathname;
+			Logger::Warning(warningMsg.c_str());
         }
         
         return path.absolutePathname;
@@ -327,6 +328,13 @@ bool FilePath::operator!=(const FilePath &path) const
     return absolutePathname != path.absolutePathname;
 }
 
+    
+bool FilePath::operator < (const FilePath& right) const
+{
+    return GetAbsolutePathname() < right.GetAbsolutePathname();
+}
+
+    
     
 bool FilePath::IsDirectoryPathname() const
 {
@@ -767,7 +775,7 @@ FilePath::ePathType FilePath::GetPathType(const String &pathname)
     }
     
     if(    (pathname.find("FBO ") == 0)
-       ||  (pathname.find("memoryfile_0x") == 0)
+       ||  (pathname.find("memoryfile_") == 0)
        ||  (pathname.find("Text ") == 0))
     {
         return PATH_IN_MEMORY;

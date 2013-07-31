@@ -1,3 +1,19 @@
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
 #include "UISpinner.h"
 
 namespace DAVA 
@@ -270,6 +286,7 @@ void UISpinner::CopyDataFrom(UIControl *srcControl)
 {
 	UIControl* buttonPrevClone = buttonPrevious->Clone();
 	UIControl* buttonNextClone = buttonNext->Clone();
+	UIControl* contentClone = content->Clone();
     ReleaseButtons();
 
     UIControl::CopyDataFrom(srcControl);
@@ -282,7 +299,9 @@ void UISpinner::CopyDataFrom(UIControl *srcControl)
 	AddControl(buttonNextClone);
 	SafeRelease(buttonNextClone);
 
-    FindRequiredControls();
+	AddControl(contentClone);
+	SafeRelease(contentClone);
+
     if (IsPointerToExactClass<UISpinner>(srcControl)) //we can also copy other controls, that's why we check
     {
         UISpinner * srcSpinner = static_cast<UISpinner*>(srcControl);
@@ -297,6 +316,25 @@ UIControl* UISpinner::Clone()
 	UISpinner *t = new UISpinner(GetRect());
 	t->CopyDataFrom(this);
 	return t;
+}
+
+void UISpinner::AddControl(UIControl *control)
+{
+	// Synchronize the pointers to the buttons each time new control is added.
+	UIControl::AddControl(control);
+
+	if (control->GetName() == UISPINNER_BUTTON_NEXT_NAME)
+	{
+		buttonNext = (UIButton*)control;
+	}
+	else if (control->GetName() == UISPINNER_BUTTON_PREVIOUS_NAME)
+	{
+		buttonPrevious = (UIButton*)control;
+	}
+	else if (control->GetName() == UISPINNER_CONTENT_NAME)
+	{
+		content = control;		
+	}
 }
 
 void UISpinner::FindRequiredControls()
@@ -329,9 +367,11 @@ YamlNode * UISpinner::SaveToYamlNode(UIYamlLoader * loader)
 	// "Prev/Next" buttons have to be saved too.
 	YamlNode* prevButtonNode = buttonPrevious->SaveToYamlNode(loader);
 	YamlNode* nextButtonNode = buttonNext->SaveToYamlNode(loader);
+	YamlNode* contentNode = content->SaveToYamlNode(loader);
 	
 	node->AddNodeToMap(UISPINNER_BUTTON_PREVIOUS_NAME, prevButtonNode);
 	node->AddNodeToMap(UISPINNER_BUTTON_NEXT_NAME, nextButtonNode);
+	node->AddNodeToMap(UISPINNER_CONTENT_NAME, contentNode);
 
 	return node;
 }
@@ -341,6 +381,7 @@ List<UIControl* >& UISpinner::GetRealChildren()
 	List<UIControl* >& realChildren = UIControl::GetRealChildren();
 	realChildren.remove(FindByName(UISPINNER_BUTTON_PREVIOUS_NAME));
 	realChildren.remove(FindByName(UISPINNER_BUTTON_NEXT_NAME));
+	realChildren.remove(FindByName(UISPINNER_CONTENT_NAME));
 
 	return realChildren;
 }
@@ -352,7 +393,6 @@ List<UIControl* > UISpinner::GetSubcontrols()
 	// Lookup for the contols by their names.
 	AddControlToList(subControls, UISPINNER_BUTTON_PREVIOUS_NAME);
 	AddControlToList(subControls, UISPINNER_BUTTON_NEXT_NAME);
-    AddControlToList(subControls, UISPINNER_BUTTON_NEXT_NAME);
     
 	return subControls;
 }

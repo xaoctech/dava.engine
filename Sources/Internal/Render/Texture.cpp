@@ -1,31 +1,17 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #include "Render/RenderBase.h"
 #include "Render/Texture.h"
@@ -54,6 +40,9 @@
 
 #include "Render/TextureDescriptor.h"
 #include "Render/ImageLoader.h"
+
+#include "Render/GPUFamilyDescriptor.h"
+
 
 #ifdef __DAVAENGINE_ANDROID__
 #ifndef GL_COMPRESSED_RGBA_S3TC_DXT3_EXT
@@ -113,7 +102,7 @@ public:
 	int	fboMemoryUsed;
 };
 
-ImageFileFormat Texture::defaultFileFormat = NOT_FILE;
+eGPUFamily Texture::defaultGPU = GPU_UNKNOWN;
     
 static TextureMemoryUsageInfo texMemoryUsageInfo;
 	
@@ -143,7 +132,7 @@ Texture::Texture()
 ,	format(FORMAT_INVALID)
 ,	depthFormat(DEPTH_NONE)
 ,	isRenderTarget(false)
-,   loadedAsFile(NOT_FILE)
+,   loadedAsFile(GPU_UNKNOWN)
 {
 #ifdef __DAVAENGINE_DIRECTX9__
 	saveTexture = 0;
@@ -157,12 +146,7 @@ Texture::Texture()
 	rboID = -1;
 #endif
 
-//#if defined(__DAVAENGINE_ANDROID__)
-//	savedData = NULL;
-//	savedDataSize = 0;
-//	renderTargetModified = false;
-//    renderTargetAutosave = true;
-//#endif //#if defined(__DAVAENGINE_ANDROID__)
+	invalidater = NULL;
 }
 
 Texture::~Texture()
@@ -550,16 +534,16 @@ bool Texture::LoadFromImage(File *file, const TextureDescriptor *descriptor)
         int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
         RenderManager::Instance()->HWglBindTexture(id);
         
-        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, HWglConvertWrapMode((TextureWrap)descriptor->wrapModeS)));
-        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, HWglConvertWrapMode((TextureWrap)descriptor->wrapModeS)));
+        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, HWglConvertWrapMode((TextureWrap)descriptor->settings.wrapModeS)));
+        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, HWglConvertWrapMode((TextureWrap)descriptor->settings.wrapModeS)));
         
         if(needGenerateMipMaps)
         {
             RENDER_VERIFY(glGenerateMipmap(GL_TEXTURE_2D));
         }
         
-        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, HWglFilterToGLFilter((TextureFilter)descriptor->minFilter)));
-        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, HWglFilterToGLFilter((TextureFilter)descriptor->magFilter)));
+        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, HWglFilterToGLFilter((TextureFilter)descriptor->settings.minFilter)));
+        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, HWglFilterToGLFilter((TextureFilter)descriptor->settings.magFilter)));
         
         RenderManager::Instance()->HWglBindTexture(saveId);
 #elif defined(__DAVAENGINE_DIRECTX9__)
@@ -680,17 +664,17 @@ Texture * Texture::PureCreate(const FilePath & pathName)
 	// TODO: add check that pathName
     if(pathName.IsEqualToExtension(TextureDescriptor::GetDescriptorExtension()))
     {
-		texture = CreateFromDescriptor(pathName, descriptor);
+		texture = CreateFromDescriptor(descriptor);
     }
     else
     {
-        ImageFileFormat fileFormat = GetFormatForLoading(TextureDescriptor::GetFormatForExtension(pathName.GetExtension()), descriptor);
-        if((NOT_FILE == defaultFileFormat) || IsLoadAvailable(fileFormat, descriptor))
+        eGPUFamily gpuFamily = GetFormatForLoading(GPUFamilyDescriptor::GetGPUForPathname(pathName), descriptor);
+        if((GPU_UNKNOWN == defaultGPU) || IsLoadAvailable(gpuFamily, descriptor))
         {
             texture = CreateFromImage(pathName, descriptor);
             if(texture)
             {
-                texture->loadedAsFile = fileFormat;
+                texture->loadedAsFile = gpuFamily;
             }
         }
     }
@@ -699,52 +683,35 @@ Texture * Texture::PureCreate(const FilePath & pathName)
     {
 		texture->relativePathname = descriptor->pathname;
         textureMap[texture->relativePathname.GetAbsolutePathname()] = texture;
-        texture->SetWrapMode((TextureWrap)descriptor->wrapModeS, (TextureWrap)descriptor->wrapModeT);
+        texture->SetWrapMode((TextureWrap)descriptor->settings.wrapModeS, (TextureWrap)descriptor->settings.wrapModeT);
     }
     
     SafeRelease(descriptor);
 	return texture;
 }
     
-Texture * Texture::CreateFromDescriptor(const FilePath &pathName, TextureDescriptor *descriptor)
+Texture * Texture::CreateFromDescriptor(TextureDescriptor *descriptor)
 {
-#if defined TEXTURE_SPLICING_ENABLED
-    Texture * texture = Texture::Get(pathName);
-    if (texture)return texture;
-    
-    texture = CreateFromImage(descriptor->textureFile, descriptor);
-    if(texture)
-    {
-        texture->loadedAsFile = descriptor->textureFileFormat;
-    }
-#else //#if defined TEXTURE_SPLICING_ENABLED
     Texture * texture = NULL;
     
-    ImageFileFormat formatForLoading = (NOT_FILE == defaultFileFormat) ? (ImageFileFormat)descriptor->textureFileFormat : defaultFileFormat;
-    formatForLoading = GetFormatForLoading(formatForLoading, descriptor);
-    if((NOT_FILE == defaultFileFormat) || IsLoadAvailable(formatForLoading, descriptor))
+    eGPUFamily gpuForLoading = (GPU_UNKNOWN == defaultGPU) ? (eGPUFamily)descriptor->exportedAsGpuFamily : defaultGPU;
+    gpuForLoading = GetFormatForLoading(gpuForLoading, descriptor);
+    if((GPU_UNKNOWN == defaultGPU) || IsLoadAvailable(gpuForLoading, descriptor))
     {
-        FilePath imagePathname = GetActualFilename(pathName, formatForLoading, descriptor);
+        FilePath imagePathname = GetActualFilename(descriptor, gpuForLoading);
         texture = CreateFromImage(imagePathname, descriptor);
         if(texture)
         {
-            texture->loadedAsFile = formatForLoading;
+            texture->loadedAsFile = gpuForLoading;
         }
     }
-    
-#endif //#if defined TEXTURE_SPLICING_ENABLED
     
     return texture;
 }
 
-FilePath Texture::GetActualFilename(const FilePath &pathname, const ImageFileFormat fileFormat, const TextureDescriptor *descriptor)
+FilePath Texture::GetActualFilename(const TextureDescriptor *descriptor, const eGPUFamily gpuFamily)
 {
-    if(descriptor->IsCompressedFile())
-    {
-        return TextureDescriptor::GetPathnameForFormat(pathname, (ImageFileFormat)descriptor->textureFileFormat);
-    }
-    
-    return TextureDescriptor::GetPathnameForFormat(pathname, fileFormat);
+    return GPUFamilyDescriptor::CreatePathnameForGPU(descriptor, gpuFamily);
 }
 
 	
@@ -763,25 +730,26 @@ void Texture::Reload()
     ReloadAs(loadedAsFile);
 }
     
-void Texture::ReloadAs(ImageFileFormat fileFormat)
+void Texture::ReloadAs(eGPUFamily gpuFamily)
 {
 	TextureDescriptor *descriptor = CreateDescriptor();
-	ReloadAs(fileFormat, descriptor);
+	ReloadAs(gpuFamily, descriptor);
 	SafeRelease(descriptor);
 }
 
-void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat, const TextureDescriptor *descriptor)
+void Texture::ReloadAs(eGPUFamily gpuFamily, const TextureDescriptor *descriptor)
 {
     ReleaseTextureData();
 	
 	DVASSERT(NULL != descriptor);
     
-	ImageFileFormat formatForLoading = GetFormatForLoading(fileFormat, descriptor);
-    FilePath imagePathname = TextureDescriptor::GetPathnameForFormat(descriptor->pathname, formatForLoading);
+	eGPUFamily gpuForLoading = GetFormatForLoading(gpuFamily, descriptor);
+    FilePath imagePathname = GPUFamilyDescriptor::CreatePathnameForGPU(descriptor, gpuForLoading);
+    
     File *file = File::Create(imagePathname, File::OPEN | File::READ);
 
     bool loaded = false;
-    if(descriptor && file && IsLoadAvailable(formatForLoading, descriptor))
+    if(descriptor && file && IsLoadAvailable(gpuForLoading, descriptor))
     {
         loaded = LoadFromImage(file, descriptor);
     }
@@ -825,25 +793,26 @@ void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat, const TextureDescriptor
     }
     else
     {
-        loadedAsFile = formatForLoading;
+        loadedAsFile = gpuForLoading;
     }
     
     SafeRelease(file);
 }
     
-bool Texture::IsLoadAvailable(const ImageFileFormat fileFormat, const TextureDescriptor *descriptor)
+bool Texture::IsLoadAvailable(const eGPUFamily gpuFamily, const TextureDescriptor *descriptor)
 {
     if(descriptor->IsCompressedFile())
     {
         return true;
     }
     
-    if(     (PVR_FILE == fileFormat && descriptor->pvrCompression.format == FORMAT_INVALID)
-       ||   (DXT_FILE == fileFormat && descriptor->dxtCompression.format == FORMAT_INVALID))
+    DVASSERT(gpuFamily < GPU_FAMILY_COUNT);
+    
+    if(gpuFamily != GPU_UNKNOWN && descriptor->compression[gpuFamily].format == FORMAT_INVALID)
     {
         return false;
     }
-
+    
     return true;
 }
 
@@ -996,248 +965,92 @@ void Texture::SetDebugInfo(const String & _debugInfo)
 	debugInfo = _debugInfo;	
 #endif
 }
+	
+#if defined(__DAVAENGINE_ANDROID__)
+	
+void Texture::Lost()
+{
+	RenderResource::Lost();
+	
+	RenderManager::Instance()->LockNonMain();
+	
+	if(RenderManager::Instance()->GetTexture() == this)
+	{//to avoid drawing deleted textures
+		RenderManager::Instance()->SetTexture(0);
+	}
+	
+	if(fboID != (uint32)-1)
+	{
+		RENDER_VERIFY(glDeleteFramebuffers(1, &fboID));
+		fboID = -1;
+	}
+	
+	if(id)
+	{
+		RENDER_VERIFY(glDeleteTextures(1, &id));
+		id = 0;
+	}
+	
+	RenderManager::Instance()->UnlockNonMain();
+}
 
-//#if defined(__DAVAENGINE_ANDROID__)
-//void Texture::SaveData(PixelFormat format, uint8 * data, uint32 width, uint32 height)
-//{
-//    DVASSERT(false && "Need to refacor code acording last changes of Texture");
-//
-//    int32 textureSize = width * height * GetPixelFormatSizeInBytes(format);
-//    SaveData(data, textureSize);
-//}
-//
-//void Texture::SaveData(uint8 * data, int32 dataSize)
-//{
-//    DVASSERT(false && "Need to refacor code acording last changes of Texture");
-//
-//    if(data)
-//    {
-//        if(savedDataSize != dataSize)
-//        {
-//            SafeDeleteArray(savedData);
-//            savedData = new uint8[dataSize];
-//            savedDataSize = dataSize;
-//        }
-//        
-//        memmove(savedData, data, dataSize);
-//    }
-//}
-//
-//
-//void Texture::SaveToSystemMemory()
-//{
-//    DVASSERT(false && "Need to refacor code acording last changes of Texture");
-//
-//	RenderManager::Instance()->LockNonMain();
-//	if(RenderManager::Instance()->GetTexture() == this)
-//	{//to avoid drawing deleted textures
-////		RenderManager::Instance()->SetTexture(0);
-//	}
-//
-//	if(id)
-//	{
-//		if(isRenderTarget)
-//		{
-//            if (!renderTargetAutosave)
-//                return;
-//
-//            if (!renderTargetModified)
-//                return;
-//
-//            
-//			int32 textureSize = width * height * GetPixelFormatSizeInBytes(format);
-//			if(savedDataSize != textureSize)
-//			{
-//				SafeDeleteArray(savedData);
-//				savedData = new uint8[textureSize];
-//				savedDataSize = textureSize;
-//			}
-//
-//			if(savedData)
-//			{
-//				int32 saveFBO = RenderManager::Instance()->HWglGetLastFBO();
-//				RenderManager::Instance()->HWglBindFBO(fboID);
-//
-//				int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
-//				RenderManager::Instance()->HWglBindTexture(id);
-//
-//				RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
-//                
-//                DVASSERT((0 <= format) && (format < FORMAT_COUNT));
-//                if(FORMAT_INVALID != format)
-//                {
-//                    RENDER_VERIFY(glReadPixels(0, 0, width, height, pixelDescriptors[format].format, pixelDescriptors[format].type, (GLvoid *)savedData));
-//                }
-//                
-//				RenderManager::Instance()->HWglBindFBO(saveFBO);
-//
-//				if (saveId != 0)
-//				{
-//					RenderManager::Instance()->HWglBindTexture(saveId);
-//				}
-//			}
-//            
-//            renderTargetModified = false;
-//		}
-//	}
-//	RenderManager::Instance()->UnlockNonMain();
-//}
-//
-//void Texture::Lost()
-//{
-//    DVASSERT(false && "Need to refacor code acording last changes of Texture");
-//
-////	Logger::Debug("[Texture::Lost] id = %d, isrendertarget = %d, fboID = %d, file = %s", id, isRenderTarget, fboID, relativePathname.c_str());
-//
-//	RenderManager::Instance()->LockNonMain();
-//	if(RenderManager::Instance()->GetTexture() == this)
-//	{//to avoid drawing deleted textures
-//		RenderManager::Instance()->SetTexture(0);
-//	}
-//
-//	if(fboID != (uint32)-1)
-//	{
-//		RENDER_VERIFY(glDeleteFramebuffers(1, &fboID));
-//		fboID = -1;
-//	}
-//
-//	if(id)
-//	{
-//		RENDER_VERIFY(glDeleteTextures(1, &id));
-//		id = 0;
-//	}
-//
-//	RenderManager::Instance()->UnlockNonMain();
-//}
-//
-//void Texture::Invalidate()
-//{
-//    DVASSERT(false && "Need to refacor code acording last changes of Texture");
-//    
-//    
-////	Logger::Debug("[Texture::Invalidate] id is %d, isRenderTarget is %d", id, isRenderTarget);
-////	if(id)
-////	{
-////		Logger::Warning("[Texture::Invalidate] id is %d, exit", id);
-////		return;
-////	}
-////
-////    RenderManager::Instance()->LockNonMain();
-////
-////	if(isRenderTarget)
-////	{
-////		//////////////////////////////////////////////////////////////////////////
-////		InvalidateFromSavedData();
-////		//////////////////////////////////////////////////////////////////////////
-////
-////		GLint saveFBO = RenderManager::Instance()->HWglGetLastFBO();
-////		GLint saveTexture = RenderManager::Instance()->HWglGetLastTextureID();
-////
-////		// Now setup a texture to render to
-////		RenderManager::Instance()->HWglBindTexture(id);
-////
-////		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-////		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-////		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-////		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-////
-////#if defined(__DAVAENGINE_ANDROID__) || defined(__DAVAENGINE_IPHONE__)        
-////		// Setup our FBO
-////		RENDER_VERIFY(glGenFramebuffersOES(1, &fboID));
-////		BindFBO(fboID);
-////
-////		// And attach it to the FBO so we can render to it
-////		RENDER_VERIFY(glFramebufferTexture2DOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_TEXTURE_2D, id, 0));
-////
-////		GLenum status = glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES);
-////		if(status != GL_FRAMEBUFFER_COMPLETE_OES)
-////		{
-////			Logger::Error("[Texture::Invalidate] glCheckFramebufferStatusOES: %d", status);
-////		}
-////#elif defined(__DAVAENGINE_MACOS__)
-////        RENDER_VERIFY(glGenFramebuffersEXT(1, &fboID));
-////        RenderManager::Instance()->HWglBindFBO(fboID);
-////        
-////		// And attach it to the FBO so we can render to it
-////		RENDER_VERIFY(glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, id, 0));
-////        
-////		GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-////		if(status != GL_FRAMEBUFFER_COMPLETE_EXT)
-////		{
-////			Logger::Error("[Texture::CreateFBO] glCheckFramebufferStatusEXT: %d", status);
-////		}
-////#endif 
-////
-////		RenderManager::Instance()->HWglBindFBO(saveFBO);
-////
-////		if(saveTexture)
-////		{
-////			RenderManager::Instance()->HWglBindTexture(saveTexture);
-////		}
-////	}
-////	else if(savedData)
-////	{
-//////		Logger::Debug("[Texture::Invalidate] from savedData, relativePathname: %s", relativePathname.c_str());
-////
-////		InvalidateFromSavedData();
-////	}
-////	else
-////	{
-//////		Logger::Debug("[Texture::Invalidate] from file, relativePathname: %s", relativePathname.c_str());
-////
-////		InvalidateFromFile();
-////	}
-////
-////	RenderManager::Instance()->UnlockNonMain();
-//}
-//
-//void Texture::InvalidateFromSavedData()
-//{
-//    DVASSERT(false && "Need to refacor code acording last changes of Texture");
-//
-////    GenerateID();
-////    TexImage(0, width, height, (GLvoid *)savedData, savedDataSize);
-////    
-////	int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
-////	RenderManager::Instance()->HWglBindTexture(id);
-////    RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-////    RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-//////	if (descriptor->isMipMapTexture)
-//////	{
-//////		GenerateMipmaps();
-//////	}
-//////	else
-//////	{
-//////		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-//////		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-//////	}
-////
-////	if (saveId != 0)
-////	{
-////		RenderManager::Instance()->HWglBindTexture(saveId);
-////	}
-//}
-//
-//void Texture::InvalidateFromFile()
-//{
-//    DVASSERT(false && "Need to refacor code acording last changes of Texture");
-////
-//////	Logger::Debug("[Texture::InvalidateFromFile] load image from: %s", relativePathname.c_str());
-////
-////	Image * image = Image::CreateFromFile(relativePathname);
-////	if (!image)
-////	{
-////		Logger::Error("[Texture::InvalidateFromFile] Failed to load image from: %s", relativePathname.c_str());
-////		return;
-////	}
-////
-////	savedData = image->GetData();
-////	InvalidateFromSavedData();
-////	savedData = NULL;
-//}
-//
-//#endif //#if defined(__DAVAENGINE_ANDROID__)
-    
+void Texture::Invalidate()
+{
+	RenderResource::Invalidate();
+	
+	DVASSERT(id == 0 && "Texture always invalidated");
+	if (id)
+	{
+		return;
+	}
+	
+	if (relativePathname.GetType() == FilePath::PATH_IN_FILESYSTEM ||
+		relativePathname.GetType() == FilePath::PATH_IN_RESOURCES ||
+		relativePathname.GetType() == FilePath::PATH_IN_DOCUMENTS)
+	{
+		Reload();
+	}
+	else if (relativePathname.GetType() == FilePath::PATH_IN_MEMORY)
+	{
+		if (invalidater)
+			invalidater->InvalidateTexture(this);
+	}
+	else if (this == pinkPlaceholder)
+	{
+		uint32 width = 16;
+		uint32 height = 16;
+		uint8 * data = new uint8[width*height*4];
+		uint32 pink = 0xffff00ff;
+		uint32 gray = 0xff7f7f7f;
+		bool pinkOrGray = false;
+		
+		uint32 * writeData = (uint32*)data;
+		for(uint32 w = 0; w < width; ++w)
+		{
+			pinkOrGray = !pinkOrGray;
+			for(uint32 h = 0; h < height; ++h)
+			{
+				*writeData++ = pinkOrGray ? pink : gray;
+				pinkOrGray = !pinkOrGray;
+			}
+		}
+		
+		GenerateID();
+		TexImage(0, width, height, data, 0);
+		
+		int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
+		RenderManager::Instance()->HWglBindTexture(id);
+		
+		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+		
+		SafeDelete(data);
+	}
+}
+#endif
+
 Image * Texture::ReadDataToImage()
 {
     Image *image = Image::Create(width, height, format);
@@ -1430,15 +1243,15 @@ void Texture::InitializePixelFormatDescriptors()
 #endif
 	
 #if defined (GL_ATC_RGBA_EXPLICIT_ALPHA_AMD)
-	SetPixelDescription(FORMAT_ATC_RGBA_EXPLICIT_ALPHA, "ATC_RGBA_E", 8, GL_UNSIGNED_BYTE, GL_ATC_RGBA_EXPLICIT_ALPHA_AMD, GL_ATC_RGBA_EXPLICIT_ALPHA_AMD);
+	SetPixelDescription(FORMAT_ATC_RGBA_EXPLICIT_ALPHA, "ATC_RGBA_EXPLICIT_ALPHA", 8, GL_UNSIGNED_BYTE, GL_ATC_RGBA_EXPLICIT_ALPHA_AMD, GL_ATC_RGBA_EXPLICIT_ALPHA_AMD);
 #else
-	SetPixelDescription(FORMAT_ATC_RGBA_EXPLICIT_ALPHA, "ATC_RGBA_E", 8, 0, 0, 0);
+	SetPixelDescription(FORMAT_ATC_RGBA_EXPLICIT_ALPHA, "ATC_RGBA_EXPLICIT_ALPHA", 8, 0, 0, 0);
 #endif
 
 #if defined (GL_ATC_RGBA_INTERPOLATED_ALPHA_AMD)
-	SetPixelDescription(FORMAT_ATC_RGBA_INTERPOLATED_ALPHA, "ATC_RGBA_I", 8, GL_UNSIGNED_BYTE, GL_ATC_RGBA_INTERPOLATED_ALPHA_AMD, GL_ATC_RGBA_INTERPOLATED_ALPHA_AMD);
+	SetPixelDescription(FORMAT_ATC_RGBA_INTERPOLATED_ALPHA, "ATC_RGBA_INTERPOLATED_ALPHA", 8, GL_UNSIGNED_BYTE, GL_ATC_RGBA_INTERPOLATED_ALPHA_AMD, GL_ATC_RGBA_INTERPOLATED_ALPHA_AMD);
 #else
-	SetPixelDescription(FORMAT_ATC_RGBA_INTERPOLATED_ALPHA, "ATC_RGBA_I", 8, 0, 0, 0);
+	SetPixelDescription(FORMAT_ATC_RGBA_INTERPOLATED_ALPHA, "ATC_RGBA_INTERPOLATED_ALPHA", 8, 0, 0, 0);
 #endif
 }
 
@@ -1558,25 +1371,29 @@ GLint Texture::HWglFilterToGLFilter(TextureFilter filter)
 #endif //#if defined (__DAVAENGINE_OPENGL__)
     
     
-void Texture::SetDefaultFileFormat(ImageFileFormat fileFormat)
+void Texture::SetDefaultGPU(eGPUFamily gpuFamily)
 {
-    defaultFileFormat = fileFormat;
+    defaultGPU = gpuFamily;
 }
 
-ImageFileFormat Texture::GetDefaultFileFormat()
+eGPUFamily Texture::GetDefaultGPU()
 {
-    return defaultFileFormat;
+    return defaultGPU;
 }
 
     
-ImageFileFormat Texture::GetFormatForLoading(const ImageFileFormat requestedFormat, const TextureDescriptor *descriptor)
+eGPUFamily Texture::GetFormatForLoading(const eGPUFamily requestedGPU, const TextureDescriptor *descriptor)
 {
     if(descriptor->IsCompressedFile())
-        return (ImageFileFormat)descriptor->textureFileFormat;
+        return (eGPUFamily)descriptor->exportedAsGpuFamily;
     
-    return requestedFormat;
+    return requestedGPU;
 }
-    
+
+void Texture::SetInvalidater(TextureInvalidater* invalidater)
+{
+	this->invalidater = invalidater;
+}
 
 
 };
