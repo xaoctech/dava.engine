@@ -56,6 +56,8 @@
 #include "LocalizationTest.h"
 #include "UIListTest.h"
 #include "TransparentWebViewTest.h"
+#include "FormatsTest.h"
+#include "UIScrollViewTest.h"
 
 using namespace DAVA;
 
@@ -81,6 +83,7 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
 
+    new FormatsTest();
 	new DeviceInfoTest();
 	new TransparentWebViewTest();
     new FilePathTest();
@@ -106,6 +109,8 @@ void GameCore::OnAppStarted()
 	new SplitTest();
 	new KeyedArchiveYamlTest();
 	new DLCTest();
+	new UIListTest();
+	new UIScrollViewTest();
     
     errors.reserve(TestCount());
 

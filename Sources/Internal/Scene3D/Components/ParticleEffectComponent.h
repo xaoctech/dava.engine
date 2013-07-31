@@ -1,3 +1,19 @@
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
 #ifndef __PARTICLE_EFFECT_COMPONENT_H__
 #define __PARTICLE_EFFECT_COMPONENT_H__
 
@@ -19,13 +35,20 @@ public:
 	ParticleEffectComponent();
 
 	virtual Component * Clone(Entity * toEntity);
+	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 
 	void Start();
 
-	void Stop();
+	void Stop(bool isDeleteAllParticles = true);
 
 	void Restart();
-    
+
+	/**
+     \brief Returns true if all the emitters in the Particle Effect are stopped.    
+	 */
+	bool IsStopped();
+
     /**
      \brief Function marks that all the emitters must be stopped after N repeats of emitter animation.
      \param[in] numberOfRepeats number of times we need to repeat emitter animation before stop.
@@ -60,6 +83,14 @@ public:
      */
 	int32 GetActiveParticlesCount();
 
+	/**
+     \brief Set/reset the "stop Particle Effect on load" flag.
+	 // TODO: Yuri Coder, 2013/06/05 - this logic is temporary, since all the effects
+	 // should be loaded in "stopped" state.
+     */
+	DAVA_DEPRECATED(void SetStopOnLoad(bool value));
+	DAVA_DEPRECATED(bool IsStopOnLoad() const);
+
 protected:
 	// Update the duration for all the child nodes.
 	void UpdateDurationForChildNodes(float32 newEmitterLifeTime);
@@ -89,12 +120,19 @@ private:
 	// Count of emitters currently stopped.
 	int32 emittersCurrentlyStopped;
 
+	// Whether the effect should be stopped immediately after load.
+	// TODO: Yuri Coder, 2013/06/05 - this logic is temporary, since all the effects
+	// should be loaded in "stopped" state.
+	bool stopOnLoad;
+
 public:
 	INTROSPECTION_EXTEND(ParticleEffectComponent, Component,
-		MEMBER(stopAfterNRepeats, "stopAfterNRepeats", INTROSPECTION_SERIALIZABLE)
-        MEMBER(stopWhenEmpty, "stopWhenEmpty", INTROSPECTION_SERIALIZABLE)
+		MEMBER(stopAfterNRepeats, "stopAfterNRepeats", I_SAVE)
+        MEMBER(stopWhenEmpty, "stopWhenEmpty", I_SAVE)
 //        MEMBER(needEmitPlaybackComplete, "needEmitPlaybackComplete", INTROSPECTION_SERIALIZABLE)
-        MEMBER(effectDuration, "effectDuration", INTROSPECTION_SERIALIZABLE)
+        MEMBER(effectDuration, "effectDuration", I_SAVE)
+		MEMBER(stopOnLoad, "stopOnLoad", I_SAVE)
+
     );
 };
 

@@ -63,6 +63,13 @@
 	}
 	else
 	{
+		NSString* mailtoString = [NSString stringWithFormat:@"mailto:?to=%@&subject=%@&body=%@",
+								  msgEmail, msgSubj, msgBody];
+		NSString* encodedString = [mailtoString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+
+		//as it's impossible to show settings window directrly from our app, call one throught openURL
+		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:encodedString]];
+		
 		NSLog(@"Device is unable to send email in its current state.");
 		return false;
 	}
