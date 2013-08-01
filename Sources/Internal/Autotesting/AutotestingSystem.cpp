@@ -1433,17 +1433,18 @@ String AutotestingSystem::GetScreenShotName()
 void AutotestingSystem::OnScreenShot(Image *image)
 {
 	Logger::Debug("AutotestingSystem::OnScreenShot %s", screenShotName.c_str());
-	
-	//String filePath = Format("~doc:/%s.png", screenShotName.c_str());
+	uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
 	FilePath systemFilePath = "~doc:/screenshot.png";
-	image->ResizeImage(800, 600);
-	Logger::Debug("AutotestingSystem::OnScreenShot Resize");
-	ImageLoader::Save(image, systemFilePath);
-	Logger::Debug("AutotestingSystem::OnScreenShot Save");
+	image->ResizeImage(1024, 768);
+	image->ResizeCanvas(1024, 768);
+
 	if(dbClient)
 	{
-		dbClient->SaveFileToGridFS(screenShotName, systemFilePath.GetAbsolutePathname());
-		Logger::Debug("AutotestingSystem::OnScreenShot Upload");
+		//Logger::Debug("Image: datasize %d, %d x %d", image->dataSize, image->GetHeight(), image->GetWidth());
+		dbClient->SaveBufferToGridFS(screenShotName, reinterpret_cast<char*>( image->GetData()), image->dataSize);
+		
+		uint64 finishTime = SystemTimer::Instance()->AbsoluteMS();
+		Logger::Debug("AutotestingSystem::OnScreenShot Upload: %d", finishTime - startTime);
 	}
 }
     
