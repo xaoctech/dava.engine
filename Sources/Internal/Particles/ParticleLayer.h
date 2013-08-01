@@ -70,6 +70,8 @@ public:
 	 */
 	void Restart(bool isDeleteAllParticles = true);
 	
+	void RestartLoop(bool isDeleteAllParticles = true);
+	
 	/**
 	 \brief Enable/disable loop otion.
 	 If loop option is enabled, layer will automatically restart after it's lifeTime ends.
@@ -83,6 +85,22 @@ public:
 	 \returns current autorestart state.
 	 */
 	bool GetLooped();
+	
+	void SetDeltaTime(float32 deltaTime);
+	
+	float32 GetDeltaTime();
+	
+	void SetDeltaVariation(float32 deltaVariation);
+	
+	float32 GetDeltaVariation();
+	
+	void SetLoopVariation(float32 loopVariation);
+	
+	float32 GetLoopVariation();
+	
+	void SetLoopEndTime(float32 endTime);
+	
+	float32 GetLoopEndTime();
 	
 	/**
 		\brief This function retrieve current particle count from current layer.
@@ -228,6 +246,7 @@ protected:
 	// time properties for the particle layer
 	float32 particlesToGenerate;
 	float32 layerTime;
+	float32 loopLayerTime;
 	
 	// parent emitter (required to know emitter params during generation)
 	ParticleEmitter * emitter;
@@ -289,6 +308,10 @@ public:
 	float32		alignToMotion;
 	float32		startTime;
 	float32		endTime;
+	float32		deltaTime;
+	float32 	deltaVariation;
+	float32 	loopVariation;
+	float32 	loopEndTime;
 	int32		frameStart;
 	int32		frameEnd;
 	eType		type;
@@ -306,6 +329,9 @@ private:
 		String layerTypeName;
 	};
 	static const LayerTypeNamesInfo layerTypeNamesInfoMap[];
+	void RecalculateVariation();
+	float32 currentLoopVariation;
+	float32 currentDeltaVariation;
 
 public:
     
