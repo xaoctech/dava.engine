@@ -213,12 +213,68 @@ EmitterLayerWidget::EmitterLayerWidget(SceneEditor2* scene, QWidget *parent) :
 			this,
 			SLOT(OnValueChanged()));
 			
+			
+	QHBoxLayout* loopHBox = new QHBoxLayout;	
 	isLoopedCheckBox = new QCheckBox("Loop layer");
-	mainBox->addWidget(isLoopedCheckBox);
+	loopHBox->addWidget(isLoopedCheckBox);
 	connect(isLoopedCheckBox,
 			SIGNAL(stateChanged(int)),
 			this,
 			SLOT(OnValueChanged()));
+			
+	loopEndSpinLabel = new QLabel("loopEnd", this);
+	loopEndSpin = new EventFilterDoubleSpinBox(this);
+	loopEndSpin->setMinimum(-std::numeric_limits<double>::infinity());
+	loopEndSpin->setMaximum(std::numeric_limits<double>::infinity());
+	loopHBox->addWidget(loopEndSpinLabel);
+	loopHBox->addWidget(loopEndSpin);
+	connect(loopEndSpin,
+			SIGNAL(valueChanged(double)),
+			this,
+			SLOT(OnValueChanged()));
+	
+	loopVariationSpinLabel = new QLabel("loopVariation", this);
+	loopVariationSpin = new EventFilterDoubleSpinBox(this);
+	loopVariationSpin->setMinimum(-std::numeric_limits<double>::infinity());
+	loopVariationSpin->setMaximum(std::numeric_limits<double>::infinity());
+	loopHBox->addWidget(loopVariationSpinLabel);
+	loopHBox->addWidget(loopVariationSpin);
+	connect(loopVariationSpin,
+			SIGNAL(valueChanged(double)),
+			this,
+			SLOT(OnValueChanged()));
+			
+	loopHBox->setStretch(0, 1);
+	loopHBox->setStretch(2, 1);
+	loopHBox->setStretch(4, 1);
+	mainBox->addLayout(loopHBox);
+	
+	QHBoxLayout *deltaHBox = new QHBoxLayout();
+	
+	deltaSpinLabel = new QLabel("delta", this);
+	deltaSpin = new EventFilterDoubleSpinBox(this);
+	deltaSpin->setMinimum(-std::numeric_limits<double>::infinity());
+	deltaSpin->setMaximum(std::numeric_limits<double>::infinity());
+	deltaHBox->addWidget(deltaSpinLabel);
+	deltaHBox->addWidget(deltaSpin);
+	connect(deltaSpin,
+			SIGNAL(valueChanged(double)),
+			this,
+			SLOT(OnValueChanged()));
+			
+	deltaVariationSpinLabel = new QLabel("deltaVariation", this);
+	deltaVariationSpin = new EventFilterDoubleSpinBox(this);
+	deltaVariationSpin->setMinimum(-std::numeric_limits<double>::infinity());
+	deltaVariationSpin->setMaximum(std::numeric_limits<double>::infinity());
+	deltaHBox->addWidget(deltaVariationSpinLabel);
+	deltaHBox->addWidget(deltaVariationSpin);
+	connect(deltaVariationSpin,
+			SIGNAL(valueChanged(double)),
+			this,
+			SLOT(OnValueChanged()));
+	deltaHBox->setStretch(1, 1);
+	deltaHBox->setStretch(3, 1);
+	mainBox->addLayout(deltaHBox);	
 	
 	Q_FOREACH( QAbstractSpinBox * sp, findChildren<QAbstractSpinBox*>() ) {
         sp->installEventFilter( this );
@@ -259,7 +315,18 @@ EmitterLayerWidget::~EmitterLayerWidget()
 			SIGNAL(textChanged(const QString&)),
 			this,
 			SLOT(OnSpritePathChanged(const QString&)));
-
+	disconnect(isLoopedCheckBox,
+			SIGNAL(stateChanged(int)),
+			this,
+			SLOT(OnValueChanged()));
+	disconnect(deltaSpin,
+			SIGNAL(valueChanged(double)),
+			this,
+			SLOT(OnValueChanged()));
+	disconnect(loopEndSpin,
+			SIGNAL(valueChanged(double)),
+			this,
+			SLOT(OnValueChanged()));
 	disconnect(startTimeSpin,
 			SIGNAL(valueChanged(double)),
 			this,
@@ -430,6 +497,31 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	endTimeSpin->setMinimum(0);
 	endTimeSpin->setValue(layer->endTime);
 	endTimeSpin->setMaximum(emitter->GetLifeTime());
+
+	// LAYER delta, deltaVariation, loopEnd and loopVariation
+	bool isLoopedChecked = isLoopedCheckBox->isChecked();	
+	deltaSpin->setMinimum(0);
+	deltaSpin->setValue(layer->GetDeltaTime());
+	deltaSpin->setVisible(isLoopedChecked);
+	deltaSpinLabel->setVisible(isLoopedChecked);
+	
+	deltaVariationSpin->setMinimum(0);
+	deltaVariationSpin->setMaximum(emitter->GetLifeTime());
+	deltaVariationSpin->setValue(layer->GetDeltaVariation());
+	deltaVariationSpin->setVisible(isLoopedChecked);
+	deltaVariationSpinLabel->setVisible(isLoopedChecked);
+
+	loopEndSpin->setMinimum(0);
+	loopEndSpin->setMaximum(emitter->GetLifeTime());
+	loopEndSpin->setValue(layer->GetLoopEndTime());
+	loopEndSpin->setVisible(isLoopedChecked);
+	loopEndSpinLabel->setVisible(isLoopedChecked);
+	
+	loopVariationSpin->setMinimum(0);
+	loopVariationSpin->setMaximum(emitter->GetLifeTime());
+	loopVariationSpin->setValue(layer->GetLoopVariation());
+	loopVariationSpin->setVisible(isLoopedChecked);
+	loopVariationSpinLabel->setVisible(isLoopedChecked);
 
 	const Vector2& layerPivotPoint = layer->GetPivotPoint();
 	pivotPointXSpinBox->setValue((int)layerPivotPoint.x);
@@ -629,6 +721,10 @@ void EmitterLayerWidget::OnValueChanged()
 
 						 (float32)startTimeSpin->value(),
 						 (float32)endTimeSpin->value(),
+						 (float32)deltaSpin->value(),
+						 (float32)deltaVariationSpin->value(),
+						 (float32)loopEndSpin->value(),
+						 (float32)loopVariationSpin->value(),
 						 frameOverlifeCheckBox->isChecked(),
 						 (float32)frameOverlifeFPSSpin->value(),
 						 (float32)pivotPointXSpinBox->value(),
@@ -758,6 +854,12 @@ void EmitterLayerWidget::OnLayerValueChanged()
 	{
 		startTimeSpin->setValue(layer->startTime);
 		endTimeSpin->setValue(layer->endTime);
+	}
+	
+	if (deltaSpin->value() != layer->deltaTime || loopEndSpin->value() != layer->loopEndTime)
+	{
+		deltaSpin->setValue(layer->deltaTime);
+		loopEndSpin->setValue(layer->loopEndTime);
 	}
 	
 	// NOTE: inverse logic here.

@@ -179,7 +179,7 @@ void ParticleEmitter::AddLayer(ParticleLayer * layer)
 	{
 		layer->GetEmitter()->RemoveLayer(layer);
 	}
-
+	layer->SetLoopEndTime(this->GetLifeTime());
 	layers.push_back(layer);
 	layer->SetEmitter(this);
 	AddRenderBatch(layer->GetRenderBatch());
