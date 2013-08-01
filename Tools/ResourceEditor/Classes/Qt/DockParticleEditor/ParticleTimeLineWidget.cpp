@@ -294,8 +294,10 @@ void ParticleTimeLineWidget::OnEffectNodeSelected(Entity* node)
 						float32 deltaTime = layers[iLayer]->GetDeltaTime();
 						float32 loopEndTime = layers[iLayer]->GetLoopEndTime();
 						bool isLooped = layers[iLayer]->GetLooped();
-						AddLine(iLines, startTime, endTime, deltaTime, loopEndTime, isLooped, colors[iLines % 3],
-								QString::fromStdString(layers[iLayer]->layerName), layers[iLayer]);
+						bool hasLoopVariation = (layers[iLayer]->GetLoopVariation() > 0) ||
+												(layers[iLayer]->GetDeltaVariation() > 0);
+						AddLine(iLines, startTime, endTime, deltaTime, loopEndTime, isLooped, hasLoopVariation,
+								colors[iLines % 3],	QString::fromStdString(layers[iLayer]->layerName), layers[iLayer]);
 						iLines++;
 					}
 				}
@@ -334,13 +336,14 @@ void ParticleTimeLineWidget::AddLayerLine(uint32 layerLineID, float32 minTime, f
 	float32 deltaTime = layer->GetDeltaTime();
 	float32 loopEndTime = layer->GetLoopEndTime();
 	bool isLooped = layer->GetLooped();
+	bool hasLoopVariation = (layer->GetLoopVariation() > 0) || (layer->GetDeltaVariation() > 0);
 	
-	AddLine(layerLineID, startTime, endTime, deltaTime, loopEndTime, isLooped, layerColor,
+	AddLine(layerLineID, startTime, endTime, deltaTime, loopEndTime, isLooped, hasLoopVariation, layerColor,
 			 QString::fromStdString(layer->layerName), layer);
 }
 
 void ParticleTimeLineWidget::AddLine(uint32 lineId, float32 startTime, float32 endTime, float32 deltaTime, float32 loopEndTime,
-bool isLooped, const QColor& color, const QString& legend, ParticleLayer* layer)
+	bool isLooped, bool hasLoopVariation, const QColor& color, const QString& legend, ParticleLayer* layer)
 {
 	LINE line;
 	line.startTime = startTime;
@@ -348,6 +351,7 @@ bool isLooped, const QColor& color, const QString& legend, ParticleLayer* layer)
 	line.deltaTime = deltaTime;
 	line.loopEndTime = loopEndTime;
 	line.isLooped = isLooped;
+	line.hasLoopVariation = hasLoopVariation;
 	line.color = color;
 	line.legend = legend;
 	line.layer = layer;
@@ -454,8 +458,7 @@ void ParticleTimeLineWidget::paintEvent(QPaintEvent *e)
 			}
 		}
 		painter.drawText(QPoint(LEFT_INDENT, startRect.bottom()), legend);
-	
-		painter.setPen(QPen(line.color, LINE_WIDTH));
+		painter.setPen(QPen(line.hasLoopVariation ? Qt::gray: line.color, LINE_WIDTH));
 		if (selectedPoint.x() == iter->first)
 		{
 			QBrush brush(line.color);
@@ -494,9 +497,19 @@ void ParticleTimeLineWidget::paintEvent(QPaintEvent *e)
 			
 			bool useDeltaTime = (line.deltaTime > 0);
 			Qt::PenStyle lineStyle;
+			QColor lineColor;
 			
 			while (currentStartTime < loopEndTime)
 			{
+				// Use gray color for layer which has time variations.
+				if (line.hasLoopVariation)
+				{
+					lineColor = Qt::gray;
+				}
+				else
+				{
+					lineColor = line.color;
+				}
 				// If delta time is used - we should use different calculations
 				// and draw dotted line
 				if (useDeltaTime)
@@ -528,10 +541,10 @@ void ParticleTimeLineWidget::paintEvent(QPaintEvent *e)
 			
 				if(!(startPosition == endPosition && startPosition != POSITION_INSIDE))
 				{
-					painter.setPen(QPen(line.color, LINE_WIDTH));
+					painter.setPen(QPen(lineColor, LINE_WIDTH));
 					painter.drawRect(endRect);
 			
-					painter.setPen(QPen(line.color, LINE_WIDTH, lineStyle));
+					painter.setPen(QPen(lineColor, LINE_WIDTH, lineStyle));
 					painter.drawLine(startPoint, endPoint);
 				}
 			}
@@ -692,6 +705,9 @@ void ParticleTimeLineWidget::mouseMoveEvent(QMouseEvent * event)
 	
 	LINE& line = iter->second;
 	
+	if (line.hasLoopVariation)
+		return;
+		
 	QRect graphRect = GetGraphRect();
 	float32 value = (event->pos().x() - graphRect.left()) / (float32)graphRect.width() * (maxTime - minTime) + minTime;
 	value = Max(minTime, Min(maxTime, value));
@@ -734,6 +750,10 @@ void ParticleTimeLineWidget::mouseDoubleClickEvent(QMouseEvent * event)
 	if (iter != lines.end())
 	{
 		LINE& line = iter->second;
+		
+		if (line.hasLoopVariation)
+			return;
+			
 		float32 value = point.y() == 0 ? line.startTime : line.endTime;
 		float32 minValue = point.y() == 0 ? minTime : line.startTime;
 		float32 maxValue = point.y() == 0 ? line.endTime : maxTime;
@@ -918,6 +938,13 @@ void ParticleTimeLineWidget::OnParticleLayerValueChanged(SceneEditor2* scene, DA
 		{
 			line.deltaTime = layer->deltaTime;
 			line.loopEndTime = layer->loopEndTime;
+			repaint();
+		}
+		
+		bool hasLoopVariation = (layer->GetLoopVariation() > 0) || (layer->GetDeltaVariation() > 0);
+		if (line.hasLoopVariation !=  hasLoopVariation)
+		{
+			line.hasLoopVariation = hasLoopVariation;
 			repaint();
 		}
 

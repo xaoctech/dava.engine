@@ -62,6 +62,7 @@ public:
 		float32 deltaTime;
 		float32 loopEndTime;
 		bool isLooped;
+		bool hasLoopVariation;
 		QColor color;
 		QString legend;
 		ParticleLayer* layer;
@@ -113,7 +114,8 @@ private:
 	
 	void AddLayerLine(uint32 layerLineID, float32 minTime, float32 maxTime,
 					  const QColor& layerColor, ParticleLayer* layer);
-	void AddLine(uint32 lineId, float32 startTime, float32 endTime, float32 deltaTime, float32 loopEndTime, bool isLooped, const QColor& color, const QString& legend, ParticleLayer* layer);
+	void AddLine(uint32 lineId, float32 startTime, float32 endTime, float32 deltaTime, float32 loopEndTime, bool isLooped,
+					bool hasLoopVariation, const QColor& color, const QString& legend, ParticleLayer* layer);
 
 	void OnValueChanged(int lineId);
 	void UpdateSizePolicy();
