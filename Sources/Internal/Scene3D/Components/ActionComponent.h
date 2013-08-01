@@ -22,6 +22,7 @@
 namespace DAVA
 {
 	class Entity;
+	class Scene;
 	class ActionComponent : public Component
 	{
 	public:
@@ -53,6 +54,10 @@ namespace DAVA
 				
 				return *this;
 			}
+			
+			INTROSPECTION(Action,
+						  NULL);
+
 		};
 		
 	public:
@@ -67,15 +72,16 @@ namespace DAVA
 		
 		void Add(ActionComponent::Action action);
 		void Remove(const ActionComponent::Action& action);
-		void Remove(const ActionComponent::Action::eType type, const String& entityName);
+		void Remove(const ActionComponent::Action::eType type, const String& entityName, const int switchIndex);
 		uint32 GetCount();
-		const ActionComponent::Action& Get(uint32 index);
+		ActionComponent::Action& Get(uint32 index);
 		
 		void Update(float32 timeElapsed);
 		
 		virtual Component * Clone(Entity * toEntity);
 		virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 		virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
+		virtual void SetEntity(Entity * entity);
 		
 		static ActionComponent::Action MakeAction(ActionComponent::Action::eType type, String targetName, float32 delay);
 		static ActionComponent::Action MakeAction(ActionComponent::Action::eType type, String targetName, float32 delay, int32 switchIndex);
@@ -108,11 +114,22 @@ namespace DAVA
 			{
 				action = srcAction;
 			}
+			
+			INTROSPECTION(ActionContainer,
+						  NULL);
 		};
 		
 		Vector<ActionComponent::ActionContainer> actions;
 		bool started;
 		bool allActionsActive; //skip processing when all actions are active
+		Scene* parentScene;
+		
+	public:
+		
+		INTROSPECTION_EXTEND(ActionComponent, Component,
+							 COLLECTION(actions, "Actions Array",  I_VIEW | I_EDIT)
+							 );
+
 	};
 };
 
