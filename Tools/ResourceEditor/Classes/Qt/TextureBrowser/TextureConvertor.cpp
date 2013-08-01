@@ -406,7 +406,7 @@ DAVA::Vector<QImage> TextureConvertor::GetConvertedThread(JobItem *item)
 			const String& outExtension = GPUFamilyDescriptor::GetCompressedFileExtension(gpu, (DAVA::PixelFormat) descriptor->compression[gpu].format);
 			if(outExtension == ".pvr")
 			{
-				DAVA::Logger::Info("Starting PVR conversion (%s), id %d...", 
+				DAVA::Logger::Info("Starting PVR conversion (%s), id %d...",
 					GlobalEnumMap<DAVA::PixelFormat>::Instance()->ToString(descriptor->compression[gpu].format), item->id);
 				convertedImages = ConvertPVR(descriptor, gpu, item->force);
 				DAVA::Logger::Info("Done, id %d", item->id);
@@ -437,9 +437,33 @@ DAVA::Vector<QImage> TextureConvertor::GetConvertedThread(JobItem *item)
 			{
 				QImage img = FromDavaImage(convertedImages[i]);
 				ret.push_back(img);
-				
+			
 				convertedImages[i]->Release();
 			}
+			else
+			{
+				QImage img;
+				ret.push_back(img);
+			}
+		}
+	}
+	else
+	{
+		int stubImageCount = Texture::CUBE_FACE_MAX_COUNT;
+		if(NULL != item)
+		{
+			DAVA::TextureDescriptor *descriptor = (DAVA::TextureDescriptor*) item->data;
+			if(NULL != descriptor &&
+			   !descriptor->IsCubeMap())
+			{
+				stubImageCount = 1;
+			}
+		}
+		
+		for(int i = 0; i < stubImageCount; ++i)
+		{
+			QImage img;
+			ret.push_back(img);
 		}
 	}
 
@@ -459,7 +483,6 @@ DAVA::Vector<DAVA::Image*> TextureConvertor::ConvertPVR(DAVA::TextureDescriptor 
 		{
             DeleteOldPVRTextureIfPowerVr_IOS(descriptor, gpu);
 
-            
 			DAVA::FilePath pathToConvert = (descriptor->IsCubeMap()) ? PrepareCubeMapForConvert(*descriptor) : FilePath::CreateWithNewExtension(descriptor->pathname, ".png");
 			
 			QString command = PVRConverter::Instance()->GetCommandLinePVR(*descriptor, pathToConvert, gpu).c_str();
@@ -513,10 +536,27 @@ DAVA::Vector<DAVA::Image*> TextureConvertor::ConvertPVR(DAVA::TextureDescriptor 
 						resultImages.push_back(image);
 					}
 				}
+				
+				if(resultImages.size() < Texture::CUBE_FACE_MAX_COUNT)
+				{
+					int imagesToAdd = Texture::CUBE_FACE_MAX_COUNT - resultImages.size();
+					for(int i = 0; i < imagesToAdd; ++i)
+					{
+						resultImages.push_back(NULL);
+					}
+				}
+			}
+			
+			for_each(davaImages.begin(), davaImages.end(),  DAVA::SafeRelease<DAVA::Image>);
+		}
+		else
+		{
+			int stubImageCount = (descriptor->IsCubeMap()) ? Texture::CUBE_FACE_MAX_COUNT : 1;
+			for(int i = 0; i < stubImageCount; ++i)
+			{
+				resultImages.push_back(NULL);
 			}
 		}
-		
-		for_each(davaImages.begin(), davaImages.end(),  DAVA::SafeRelease<DAVA::Image>);
 	}
 	
 	return resultImages;
@@ -550,20 +590,49 @@ DAVA::Vector<DAVA::Image*> TextureConvertor::ConvertDXT(DAVA::TextureDescriptor 
 
 		Vector<DAVA::Image *> davaImages = DAVA::ImageLoader::CreateFromFile(outputPath);
 
-		for(int i = 0; i < davaImages.size(); ++i)
+		if(davaImages.size() > 0)
 		{
-			Image* image = davaImages[i];
-			
-			if(0 == image->mipmapLevel)
+			for(int i = 0; i < davaImages.size(); ++i)
 			{
-				image->Retain();
-				images.push_back(image);
+				Image* image = davaImages[i];
+				
+				if(0 == image->mipmapLevel)
+				{
+					image->Retain();
+					images.push_back(image);
+				}
+			}
+			
+			if(descriptor->IsCubeMap() &&
+			   images.size() < Texture::CUBE_FACE_MAX_COUNT)
+			{
+				int imagesToAdd = Texture::CUBE_FACE_MAX_COUNT - images.size();
+				for(int i = 0; i < imagesToAdd; ++i)
+				{
+					images.push_back(NULL);
+				}
+			}
+			
+			for_each(davaImages.begin(), davaImages.end(),  DAVA::SafeRelease< DAVA::Image>);
+		}
+		else
+		{
+			int stubImageCount = (descriptor->IsCubeMap()) ? Texture::CUBE_FACE_MAX_COUNT : 1;
+			for(int i = 0; i < stubImageCount; ++i)
+			{
+				images.push_back(NULL);
 			}
 		}
-
-		for_each(davaImages.begin(), davaImages.end(),  DAVA::SafeRelease< DAVA::Image>);
 	}
-
+	else
+	{
+		int stubImageCount = (descriptor->IsCubeMap()) ? Texture::CUBE_FACE_MAX_COUNT : 1;
+		for(int i = 0; i < stubImageCount; ++i)
+		{
+			images.push_back(NULL);
+		}
+	}
+	
 	return images;
 }
 
