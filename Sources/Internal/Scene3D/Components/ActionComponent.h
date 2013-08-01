@@ -53,6 +53,10 @@ namespace DAVA
 				
 				return *this;
 			}
+			
+			INTROSPECTION(Action,
+						  NULL);
+
 		};
 		
 	public:
@@ -67,9 +71,9 @@ namespace DAVA
 		
 		void Add(ActionComponent::Action action);
 		void Remove(const ActionComponent::Action& action);
-		void Remove(const ActionComponent::Action::eType type, const String& entityName);
+		void Remove(const ActionComponent::Action::eType type, const String& entityName, const int switchIndex);
 		uint32 GetCount();
-		const ActionComponent::Action& Get(uint32 index);
+		ActionComponent::Action& Get(uint32 index);
 		
 		void Update(float32 timeElapsed);
 		
@@ -108,6 +112,9 @@ namespace DAVA
 			{
 				action = srcAction;
 			}
+			
+			INTROSPECTION(ActionContainer,
+						  NULL);
 		};
 		
 		Vector<ActionComponent::ActionContainer> actions;
@@ -117,7 +124,7 @@ namespace DAVA
 	public:
 		
 		INTROSPECTION_EXTEND(ActionComponent, Component,
-							 COLLECTION(actions, "Actions Array", I_SAVE | I_VIEW | I_EDIT)
+							 COLLECTION(actions, "Actions Array",  I_VIEW | I_EDIT)
 							 );
 
 	};

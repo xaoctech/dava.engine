@@ -414,6 +414,7 @@
     <ClCompile Include="Classes\Qt\DockParticleEditor\ParticleTimeLineWidget.cpp" />
     <ClCompile Include="Classes\Qt\DockParticleEditor\ScrollZoomWidget.cpp" />
     <ClCompile Include="Classes\Qt\DockParticleEditor\TimeLineWidget.cpp" />
+    <ClCompile Include="Classes\Qt\DockProperties\ActionComponentEditor.cpp" />
     <ClCompile Include="Classes\Qt\DockProperties\PropertyEditor.cpp" />
     <ClCompile Include="Classes\Qt\DockProperties\PropertyEditorStateHelper.cpp" />
     <ClCompile Include="Classes\Qt\DockSceneGraph\ExtraUserData.cpp" />
@@ -581,6 +582,7 @@
     <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticleTimeLineWidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockParticleEditor\ScrollZoomWidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockParticleEditor\TimeLineWidget_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockProperties\ActionComponentEditor_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockProperties\PropertyEditorStateHelper_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockProperties\PropertyEditor_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockSceneGraph\ExtraUserData_moc.cpp" />
@@ -978,6 +980,7 @@
     <ClInclude Include="Classes\Qt\DockParticleEditor\ParticleTimeLineWidget.h" />
     <ClInclude Include="Classes\Qt\DockParticleEditor\ScrollZoomWidget.h" />
     <ClInclude Include="Classes\Qt\DockParticleEditor\TimeLineWidget.h" />
+    <ClInclude Include="Classes\Qt\DockProperties\ActionComponentEditor.h" />
     <ClInclude Include="Classes\Qt\DockProperties\PropertyEditor.h" />
     <ClInclude Include="Classes\Qt\DockProperties\PropertyEditorStateHelper.h" />
     <ClInclude Include="Classes\Qt\DockSceneGraph\ExtraUserData.h" />
