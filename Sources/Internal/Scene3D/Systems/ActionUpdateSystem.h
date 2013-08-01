@@ -20,13 +20,22 @@
 #include "Base/BaseTypes.h"
 #include "Scene3D/Systems/BaseProcessSystem.h"
 
+
 namespace DAVA
 {
+	class ActionComponent;
 	class ActionUpdateSystem : public BaseProcessSystem
 	{
 	public:
 		ActionUpdateSystem(Scene * scene);
 		virtual void Process();
+		
+		void Watch(ActionComponent* component);
+		void UnWatch(ActionComponent* component);
+		
+	protected:
+		
+		Vector<ActionComponent*> activeActions;
 	};
 	
 }
