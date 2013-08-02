@@ -28,7 +28,7 @@ QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DA
 
 	while(NULL != _info && NULL != object)
 	{
-		for(DAVA::int32 i = 0; i < info->MembersCount(); ++i)
+		for(DAVA::int32 i = 0; i < _info->MembersCount(); ++i)
 		{
 			const DAVA::InspMember *member = _info->Member(i);
 			if(NULL != member && (member->Flags() & hasAllFlags) == hasAllFlags)
