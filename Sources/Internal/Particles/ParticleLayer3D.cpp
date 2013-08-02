@@ -39,6 +39,7 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 	material->SetBlendSrc(BLEND_SRC_ALPHA);
 	material->SetBlendDest(BLEND_ONE);
 	material->SetName("ParticleLayer3D_material");
+	material->SetFog(true);
 
 	renderBatch->SetMaterial(material);
 	SafeRelease(material);
