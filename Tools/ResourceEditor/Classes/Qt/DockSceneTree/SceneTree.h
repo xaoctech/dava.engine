@@ -74,7 +74,7 @@ protected slots:
 
 	void ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos);
 	void ShowContextMenuLayer(DAVA::ParticleLayer *layer, const QPoint &pos);
-	void ShowContextMenuForce(DAVA::ParticleForce *force, const QPoint &pos);
+	void ShowContextMenuForce(DAVA::ParticleLayer *layer, DAVA::ParticleForce *force, const QPoint &pos);
 
 	void LookAtSelection();
 	void RemoveSelection();
@@ -92,6 +92,11 @@ protected slots:
 	void SaveEmitterToYaml();
 	void SaveEmitterToYamlAs();
 
+	void CloneLayer();
+	void RemoveLayer();
+	void AddForce();
+	void RemoveForce();
+
 	void EditModel();
 	void ReloadModel();
 	void ReloadModelAs();
@@ -103,6 +108,14 @@ protected:
 	
 	// Perform save for selected Emitters.
 	void PerformSaveEmitter(bool forceAskFileName);
+
+	// Cleanup the selected Particle Editor items.
+	void CleanupParticleEditorSelectedItems();
+
+private:
+	// Selected Particle Layer.
+	ParticleLayer* selectedLayer;
+	ParticleForce* selectedForce;
 };
 
 #endif // __QT_SCENE_TREE_H__

@@ -14,30 +14,78 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __DAVAENGINE_SCENE3D_ACTIONUPDATESYSTEM_H__
-#define __DAVAENGINE_SCENE3D_ACTIONUPDATESYSTEM_H__
+#ifndef __DAVAENGINE_SKYBOX_SYSTEM_H__
+#define __DAVAENGINE_SKYBOX_SYSTEM_H__
 
 #include "Base/BaseTypes.h"
+#include "Math/MathConstants.h"
+#include "Math/Matrix4.h"
+#include "Base/Singleton.h"
 #include "Scene3D/Systems/BaseProcessSystem.h"
+#include "Render/Highlevel/RenderBatch.h"
 
 
 namespace DAVA
 {
-	class ActionComponent;
-	class ActionUpdateSystem : public BaseProcessSystem
+	class Material;
+	class Entity;
+	class Scene;
+	class SkyboxSystem : public BaseProcessSystem
 	{
+	private:
+		
+		enum SkyboxState
+		{
+			SYSTEM_NONE = 0,
+			SYSTEM_INITIAL_STATE,
+			SYSTEM_DIRTY,
+			SYSTEM_READY
+		};
+		
+		class SkyBoxRenderBatch : public RenderBatch
+		{
+		private:
+			
+			RenderDataStream* positionStream;
+			RenderDataStream* texCoordStream;
+			float32 nonClippingDistance;
+			float32 zOffset;
+			float32 rotation;
+			
+		public:
+			
+			SkyBoxRenderBatch();
+			~SkyBoxRenderBatch();
+			
+			void SetBox(const AABBox3& box);
+			void SetVerticalOffset(float32 verticalOffset);
+			void SetRotation(float32 angle);
+			
+			virtual void Draw(DAVA::Camera * camera);
+		};
+		
+	private:
+		
+		SkyboxState state;
+		Entity* skyboxEntity;
+		SkyBoxRenderBatch* skyboxRenderBatch;
+		Material* skyboxMaterial;
+		
+	private:
+		
+		void CreateSkybox();
+		void UpdateSkybox();
+		
 	public:
-		ActionUpdateSystem(Scene * scene);
+		SkyboxSystem(Scene* scene);
+		~SkyboxSystem();
 		virtual void Process();
 		
-		void Watch(ActionComponent* component);
-		void UnWatch(ActionComponent* component);
+		virtual void AddEntity(Entity * entity);
+		virtual void RemoveEntity(Entity * entity);
 		
-	protected:
-		
-		Vector<ActionComponent*> activeActions;
+		void SetSystemStateDirty();
 	};
-	
-}
+};
 
-#endif //__DAVAENGINE_SCENE3D_ACTIONUPDATESYSTEM_H__
+#endif //__DAVAENGINE_SKYBOX_SYSTEM_H__

@@ -37,6 +37,7 @@ SceneTree::SceneTree(QWidget *parent /*= 0*/)
 	: QTreeView(parent)
 	, skipTreeSelectionProcessing(false)
 {
+	CleanupParticleEditorSelectedItems();
 
 	treeModel = new SceneTreeModel();
 	filteringProxyModel = new SceneTreeFilteringModel(treeModel);
@@ -254,6 +255,7 @@ void SceneTree::TreeItemDoubleClicked(const QModelIndex & index)
 
 void SceneTree::ShowContextMenu(const QPoint &pos)
 {
+	CleanupParticleEditorSelectedItems();
 	QModelIndex index = filteringProxyModel->mapToSource(indexAt(pos));
 	SceneTreeItem *item = treeModel->GetItem(index);
 
@@ -264,12 +266,28 @@ void SceneTree::ShowContextMenu(const QPoint &pos)
 		case SceneTreeItem::EIT_Entity:
 			ShowContextMenuEntity(SceneTreeItemEntity::GetEntity(item), mapToGlobal(pos));
 			break;
+
 		case SceneTreeItem::EIT_Layer:
 			ShowContextMenuLayer(SceneTreeItemParticleLayer::GetLayer(item), mapToGlobal(pos));
 			break;
+
 		case SceneTreeItem::EIT_Force:
-			ShowContextMenuForce(SceneTreeItemParticleForce::GetForce(item), mapToGlobal(pos));
+		{
+			// We have to know both Layer and Force.
+			QStandardItem* parentItem = item->parent();
+			if (!parentItem)
+			{
+				DVASSERT(false);
+				return;
+			}
+
+			SceneTreeItem* layerItem = treeModel->GetItem(parentItem->index());
+			DVASSERT(layerItem->ItemType() == SceneTreeItem::EIT_Layer);
+			ShowContextMenuForce(SceneTreeItemParticleLayer::GetLayer(layerItem),
+								 SceneTreeItemParticleForce::GetForce(item), mapToGlobal(pos));
 			break;
+		}
+
 		default:
 			break;
 		}
@@ -351,12 +369,31 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos)
 
 void SceneTree::ShowContextMenuLayer(DAVA::ParticleLayer *layer, const QPoint &pos)
 {
+	this->selectedLayer = layer;
 
+	if (NULL == layer)
+	{
+		return;
+	}
+
+	QMenu contextMenu;
+	contextMenu.addAction(QIcon(":/QtIcons/clone.png"), "Clone Layer", this, SLOT(CloneLayer()));
+	contextMenu.addAction(QIcon(":/QtIcons/remove_layer.png"), "Remove Layer", this, SLOT(RemoveLayer()));
+	contextMenu.addSeparator();
+	contextMenu.addAction(QIcon(":/QtIcons/force.png"), "Add Force", this, SLOT(AddForce()));
+
+	contextMenu.exec(pos);
 }
 
-void SceneTree::ShowContextMenuForce(DAVA::ParticleForce *force, const QPoint &pos)
+void SceneTree::ShowContextMenuForce(DAVA::ParticleLayer* layer, DAVA::ParticleForce *force, const QPoint &pos)
 {
+	this->selectedLayer = layer;
+	this->selectedForce = force;
 
+	QMenu contextMenu;
+	contextMenu.addAction(QIcon(":/QtIcons/remove_force.png"), "Remove Force", this, SLOT(RemoveForce()));
+	contextMenu.exec(pos);
+	
 }
 
 void SceneTree::LookAtSelection()
@@ -776,6 +813,86 @@ void SceneTree::SaveEmitterToYamlAs()
 	PerformSaveEmitter(true);
 }
 
+void SceneTree::CloneLayer()
+{
+	SceneEditor2 *sceneEditor = treeModel->GetScene();
+	if (sceneEditor == NULL)
+	{
+		return;
+	}
+
+	if (!selectedLayer)
+	{
+		DVASSERT(false);
+		return;
+	}
+
+	CommandCloneParticleEmitterLayer* command = new CommandCloneParticleEmitterLayer(selectedLayer);
+	sceneEditor->Exec(command);
+
+	treeModel->ResyncStructure(treeModel->invisibleRootItem(), sceneEditor);
+}
+
+void SceneTree::RemoveLayer()
+{
+	SceneEditor2 *sceneEditor = treeModel->GetScene();
+	if (sceneEditor == NULL)
+	{
+		return;
+	}
+	
+	if (!selectedLayer)
+	{
+		DVASSERT(false);
+		return;
+	}
+	
+	CommandRemoveParticleEmitterLayer* command = new CommandRemoveParticleEmitterLayer(selectedLayer);
+	sceneEditor->Exec(command);
+	
+	treeModel->ResyncStructure(treeModel->invisibleRootItem(), sceneEditor);
+}
+
+void SceneTree::AddForce()
+{
+	SceneEditor2 *sceneEditor = treeModel->GetScene();
+	if (sceneEditor == NULL)
+	{
+		return;
+	}
+	
+	if (!selectedLayer)
+	{
+		DVASSERT(false);
+		return;
+	}
+	
+	CommandAddParticleEmitterForce* command = new CommandAddParticleEmitterForce(selectedLayer);
+	sceneEditor->Exec(command);
+
+	treeModel->ResyncStructure(treeModel->invisibleRootItem(), sceneEditor);
+}
+
+void SceneTree::RemoveForce()
+{
+	SceneEditor2 *sceneEditor = treeModel->GetScene();
+	if (sceneEditor == NULL)
+	{
+		return;
+	}
+
+	if (!selectedLayer || !selectedForce)
+	{
+		DVASSERT(false);
+		return;
+	}
+
+	CommandRemoveParticleEmitterForce* command = new CommandRemoveParticleEmitterForce(selectedLayer, selectedForce);
+	sceneEditor->Exec(command);
+	
+	treeModel->ResyncStructure(treeModel->invisibleRootItem(), sceneEditor);
+}
+
 void SceneTree::PerformSaveEmitter(bool forceAskFileName)
 {
 	SceneEditor2 *sceneEditor = treeModel->GetScene();
@@ -843,4 +960,10 @@ void SceneTree::PerformSaveEmitter(bool forceAskFileName)
 QString SceneTree::GetParticlesConfigPath()
 {
 	return QString(EditorSettings::Instance()->GetParticlesConfigsPath().GetAbsolutePathname().c_str());
+}
+
+void SceneTree::CleanupParticleEditorSelectedItems()
+{
+	this->selectedLayer = NULL;
+	this->selectedForce = NULL;
 }

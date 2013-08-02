@@ -30,7 +30,6 @@
 #include "Qt/Scene/SceneData.h"
 
 #include "Scene3D/Components/CustomPropertiesComponent.h"
-#include "Scene3D/SkyBoxNode.h"
 #include "../StringConstants.h"
 
 CreateNodesDialog::CreateNodesDialog(const Rect & rect)
@@ -226,10 +225,7 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 		{
 			SetHeader(L"SkyBox");
 			
-			SkyBoxNode* skyBoxNode = new SkyBoxNode();
-			sceneNode = skyBoxNode;
-			sceneNode->SetName("SkyBox-Singleton");
-
+			//TODO: add skybox creation code here
 			break;
 		}
 
