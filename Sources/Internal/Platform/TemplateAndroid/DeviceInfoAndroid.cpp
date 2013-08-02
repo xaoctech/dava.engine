@@ -214,6 +214,12 @@ String DeviceInfo::GetUDID()
 	return version;
 }
 
+WideString DeviceInfo::GetName()
+{
+    //TODO: need code here
+    return WideString ();
+}
+
 }
 
 #endif

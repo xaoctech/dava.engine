@@ -27,25 +27,25 @@ uint32 TextureHelper::EnumerateSceneTextures(DAVA::Scene* scene)
 	{
 		Texture *t = it->second;
 		//We need real info about textures size. In Editor on desktop pvr textures are decompressed to RGBA8888, so they have not real size.
-		FilePath imageFileName = TextureDescriptor::GetPathnameForFormat(t->GetPathname(), t->GetSourceFileFormat());
-		switch (t->GetSourceFileFormat())
-		{
-		case DAVA::PVR_FILE:
-			{
-				sceneTextureMemory += LibPVRHelper::GetDataLength(imageFileName);
-				break;
-			}
-
-		case DAVA::DXT_FILE:
-			{
-				sceneTextureMemory += (int32)LibDxtHelper::GetDataSize(imageFileName);
-				break;
-			}
-
-		default:
-			sceneTextureMemory += t->GetDataSize();
-			break;
-		}
+        TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(t->GetPathname());
+        if(descriptor)
+        {
+            FilePath imageFileName = GPUFamilyDescriptor::CreatePathnameForGPU(descriptor, (eGPUFamily)descriptor->exportedAsGpuFamily);
+            if(imageFileName.IsEqualToExtension(".pvr"))
+            {
+                sceneTextureMemory += LibPVRHelper::GetDataSize(imageFileName);
+            }
+            else if(imageFileName.IsEqualToExtension(".dds"))
+            {
+                sceneTextureMemory += LibDxtHelper::GetDataSize(imageFileName);
+            }
+            else
+            {
+                sceneTextureMemory += t->GetDataSize();
+            }
+            
+            descriptor->Release();
+        }
 	}
 
 	return sceneTextureMemory;
@@ -61,11 +61,21 @@ DAVA::uint32 TextureHelper::EnumerateSceneTexturesFileSize(DAVA::Scene* scene)
 	{
 		Texture *t = it->second;
 
-		FilePath imageFileName = TextureDescriptor::GetPathnameForFormat(t->GetPathname(), t->GetSourceFileFormat());
-		File * textureFile = File::Create(imageFileName, File::OPEN | File::READ);
-        if(textureFile)
-		    sceneTextureFilesSize += textureFile->GetSize();
-		SafeRelease(textureFile);
+        TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(t->GetPathname());
+        if(descriptor)
+        {
+            FilePath imageFileName = GPUFamilyDescriptor::CreatePathnameForGPU(descriptor, (eGPUFamily)descriptor->exportedAsGpuFamily);
+
+            File * textureFile = File::Create(imageFileName, File::OPEN | File::READ);
+            if(textureFile)
+            {
+                sceneTextureFilesSize += textureFile->GetSize();
+                
+                textureFile->Release();
+            }
+            
+            descriptor->Release();
+        }
 	}
 
 	return sceneTextureFilesSize;
