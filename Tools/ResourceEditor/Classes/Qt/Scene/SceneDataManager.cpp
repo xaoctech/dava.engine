@@ -483,6 +483,8 @@ void SceneDataManager::InSceneData_SceneGraphModelNeedsSelectNode(DAVA::Entity* 
 	emit SceneGraphNeedSelectNode(sceneData, node);
 }
 
+/*
+
 void SceneDataManager::EnumerateTextures(DAVA::Entity *forNode, Map<String, Texture *> &textures)
 {
 	if(!forNode)  return;
@@ -753,7 +755,7 @@ void SceneDataManager::EnumerateMaterials(DAVA::Entity *forNode, Vector<Material
 		MaterialHelper::FilterMaterialsByType(materials, DAVA::Material::MATERIAL_SKYBOX);
 	}
 }
-
+*/
 void SceneDataManager::SceneNodeSelectedInSceneGraph(Entity* node)
 {
 	SceneData *activeScene = SceneGetActive();
@@ -821,3 +823,4 @@ void SceneDataManager::SceneHidePreview()
         screen->HideScenePreview();
     }
 }
+

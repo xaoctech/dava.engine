@@ -163,6 +163,7 @@ Texture::Texture()
 ,	isRenderTarget(false)
 ,   loadedAsFile(GPU_UNKNOWN)
 ,	textureType(Texture::TEXTURE_2D)
+,	isPink(false)
 {
 #ifdef __DAVAENGINE_DIRECTX9__
 	saveTexture = 0;
@@ -219,6 +220,8 @@ void Texture::ReleaseTextureData()
 	D3DSafeRelease(saveTexture);
 #endif //#if defined(__DAVAENGINE_OPENGL__)
 	RenderManager::Instance()->UnlockNonMain();
+
+	isPink = false;
 }
 
 
@@ -509,7 +512,7 @@ void Texture::GeneratePixelesation()
 }
     
 
-Texture * Texture::CreateFromImage(const FilePath &pathname, DAVA::TextureDescriptor *descriptor)
+Texture * Texture::CreateFromImage(const FilePath &pathname, const DAVA::TextureDescriptor *descriptor)
 {
     File *file = NULL;
 	
@@ -529,7 +532,7 @@ Texture * Texture::CreateFromImage(const FilePath &pathname, DAVA::TextureDescri
 	return texture;
 }
     
-Texture * Texture::CreateFromImage(File *file, TextureDescriptor *descriptor)
+Texture * Texture::CreateFromImage(File *file, const TextureDescriptor *descriptor)
 {
     Texture * texture = new Texture();
     if(!texture)
@@ -557,7 +560,7 @@ bool Texture::LoadFromImage(File *file, const TextureDescriptor *descriptor)
 		
 		Vector<String> faceNames;
 		GenerateCubeFaceNames(descriptor->GetSourceTexturePathname().GetAbsolutePathname(), faceNames);
-		for(int i = 0; i < faceNames.size(); ++i)
+		for(size_t i = 0; i < faceNames.size(); ++i)
 		{
 			file = File::Create(faceNames[i], File::OPEN | File::READ);
 			if(!file)
@@ -729,7 +732,7 @@ Texture * Texture::CreateFromFile(const FilePath & pathName)
 	Texture * texture = PureCreate(pathName);
 	if(!texture)
 	{
-		texture = GetPinkPlaceholder();
+		texture = CreatePink(pathName);
 	}
 
 	return texture;
@@ -779,23 +782,49 @@ Texture * Texture::PureCreate(const FilePath & pathName)
 	return texture;
 }
     
-Texture * Texture::CreateFromDescriptor(TextureDescriptor *descriptor)
+Texture * Texture::CreateFromDescriptor(const TextureDescriptor *descriptor)
 {
-    Texture * texture = NULL;
-    
     eGPUFamily gpuForLoading = (GPU_UNKNOWN == defaultGPU) ? (eGPUFamily)descriptor->exportedAsGpuFamily : defaultGPU;
     gpuForLoading = GetFormatForLoading(gpuForLoading, descriptor);
-    if((GPU_UNKNOWN == defaultGPU) || IsLoadAvailable(gpuForLoading, descriptor))
-    {
-        FilePath imagePathname = GetActualFilename(descriptor, gpuForLoading);
-        texture = CreateFromImage(imagePathname, descriptor);
-        if(texture)
-        {
-            texture->loadedAsFile = gpuForLoading;
-        }
-    }
-    
-    return texture;
+
+	return CreateFromDescriptor(descriptor, gpuForLoading);
+}
+
+Texture * Texture::CreateFromDescriptor(const TextureDescriptor *descriptor, eGPUFamily gpu)
+{
+	Texture * texture = NULL;
+
+	if(NULL != descriptor)
+	{
+		texture = Texture::Get(descriptor->pathname);
+		if(NULL != texture)
+		{
+			return texture;
+		}
+	}
+
+	if(IsLoadAvailable(gpu, descriptor))
+	{
+		FilePath imagePathname = GetActualFilename(descriptor, gpu);
+		texture = CreateFromImage(imagePathname, descriptor);
+		if(texture)
+		{
+			texture->loadedAsFile = gpu;
+		}
+	}
+
+	if(NULL == texture)
+	{
+		FilePath path;
+		if(NULL != descriptor)
+		{
+			path = descriptor->pathname;
+		}
+
+		texture = CreatePink(path);
+	}
+
+	return texture;
 }
 
 FilePath Texture::GetActualFilename(const TextureDescriptor *descriptor, const eGPUFamily gpuFamily)
@@ -879,6 +908,8 @@ void Texture::ReloadAs(eGPUFamily gpuFamily, const TextureDescriptor *descriptor
         
         TexImage(0, width, height, data, dataSize, Texture::CUBE_FACE_INVALID);
         GeneratePixelesation();
+
+		isPink = true;
     }
     else
     {
@@ -1221,47 +1252,43 @@ int32 Texture::GetDataSize() const
     return allocSize;
 }
 
-Texture * Texture::GetPinkPlaceholder()
+Texture * Texture::CreatePink(const FilePath &path)
 {
-	if(pinkPlaceholder)
+	static bool pinkInitialized = false;
+	static const uint32 pinkW = 16;
+	static const uint32 pinkH = 16;
+	static uint8 pinkData[16 * 16 * 4];
+
+	if(!pinkInitialized)
 	{
-		return SafeRetain(pinkPlaceholder);
-	}
-	else
-	{
-		uint32 width = 16;
-		uint32 height = 16;
-		uint8 * data = new uint8[width*height*4];
 		uint32 pink = 0xffff00ff;
 		uint32 gray = 0xff7f7f7f;
 		bool pinkOrGray = false;
 
-		uint32 * writeData = (uint32*)data;
-		for(uint32 w = 0; w < width; ++w)
+		uint32 * writeData = (uint32*) pinkData;
+		for(uint32 w = 0; w < pinkW; ++w)
 		{
 			pinkOrGray = !pinkOrGray;
-			for(uint32 h = 0; h < height; ++h)
+			for(uint32 h = 0; h < pinkH; ++h)
 			{
 				*writeData++ = pinkOrGray ? pink : gray;
 				pinkOrGray = !pinkOrGray;
 			}
 		}
 
-		pinkPlaceholder = Texture::CreateFromData(FORMAT_RGBA8888, data, width, height, false);
-		SafeDelete(data);
-
-		return SafeRetain(pinkPlaceholder);
+		pinkInitialized = true;
 	}
-}
 
-void Texture::ReleasePinkPlaceholder()
-{
-	SafeRelease(pinkPlaceholder);
+	Texture *ret = Texture::CreateFromData(FORMAT_RGBA8888, pinkData, pinkW, pinkH, false);
+	ret->relativePathname = path;
+	ret->isPink = true;
+
+	return ret;
 }
 
 bool Texture::IsPinkPlaceholder()
 {
-	return ((pinkPlaceholder != 0) && (pinkPlaceholder == this));
+	return isPink;
 }
 
 PixelFormatDescriptor Texture::pixelDescriptors[FORMAT_COUNT];
@@ -1510,7 +1537,7 @@ void Texture::GenerateCubeFaceNames(const String& baseName, const Vector<String>
 	String extension = filePath.GetExtension();
 	fileNameWithoutExtension.replace(fileNameWithoutExtension.find(extension), extension.size(), "");
 		
-	for(int i = 0; i < faceNameSuffixes.size(); ++i)
+	for(size_t i = 0; i < faceNameSuffixes.size(); ++i)
 	{
 		DAVA::FilePath faceFilePath = baseName;
 		faceFilePath.ReplaceFilename(fileNameWithoutExtension +

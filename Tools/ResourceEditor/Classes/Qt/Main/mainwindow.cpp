@@ -20,6 +20,8 @@
 #include "QtUtils.h"
 #include "Project/ProjectManager.h"
 #include "DockConsole/Console.h"
+#include "Scene/SceneHelper.h"
+#include "SpritesPacker/SpritePackerHelper.h"
 
 #include "TextureBrowser/TextureBrowser.h"
 #include "MaterialBrowser/MaterialBrowser.h"
@@ -35,12 +37,12 @@
 QtMainWindow::QtMainWindow(QWidget *parent)
 	: QMainWindow(parent)
 	, ui(new Ui::MainWindow)
+	, waitDialog(NULL)
 {
 	Console::Instance();
 	new ProjectManager();
 
 	ui->setupUi(this);
-	modificationWidget = new ModificationWidget(this);
 
 	qApp->installEventFilter(this);
 	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + "EditorConfig.yaml");
@@ -49,6 +51,11 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	SetupToolBars();
 	SetupDocks();
 	SetupActions();
+
+	// create tool windows
+	new TextureBrowser(this);
+	materialEditor = new MaterialEditor(DAVA::Rect(20, 20, 500, 600));
+	waitDialog = new QtWaitDialog(this);
 
 	// initial state is as project closed
 	ProjectClosed();
@@ -63,18 +70,9 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(SceneActivated(SceneEditor2 *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(SceneDeactivated(SceneEditor2 *)));
 
-	QObject::connect(SceneSignals::Instance(), SIGNAL(RulerToolLengthChanged(SceneEditor2*, double, double)),
-					 this, SLOT(UpdateRulerToolLength(SceneEditor2*, double, double)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(RulerToolLengthChanged(SceneEditor2*, double, double)), this, SLOT(UpdateRulerToolLength(SceneEditor2*, double, double)));
 
-	new TextureBrowser(this);
-	//new MaterialBrowser();
-	materialEditor = new MaterialEditor(DAVA::Rect(20, 20, 500, 600));
-
-	//ui->sceneTabWidget->OpenTab("/Projects/dava.wot.art/DataSource/3d/Maps/karelia/karelia.sc2");
-	ui->sceneTabWidget->OpenTab("/Projects/dava.wot.art/DataSource/3d/Maps/dike_village/dike_village.sc2");
-	//ui->sceneTabWidget->OpenTab("/Users/a_makovii/Documents/work/temp/39/mountain/mountain_switch.sc2");
-	//ui->sceneTabWidget->OpenTab("/Users/a_makovii/Documents/work/temp/desertTrain/desert_train/desert_train.sc2");
-	//ui->sceneTabWidget->OpenTab("/Users/yuricoder/Work/DAVA_Framework/ParticleEditorGraphIssues/Particles/DataSource/3d/FX/gun_shot.sc2");
+	LoadGPUFormat();
 }
 
 QtMainWindow::~QtMainWindow()
@@ -135,6 +133,66 @@ bool QtMainWindow::SaveSceneAs(SceneEditor2 *scene)
 	}
 
 	return ret;
+}
+
+DAVA::eGPUFamily QtMainWindow::GetGPUFormat()
+{
+	return EditorSettings::Instance()->GetTextureViewGPU();
+}
+
+void QtMainWindow::SetGPUFormat(DAVA::eGPUFamily gpu)
+{
+	EditorSettings::Instance()->SetTextureViewGPU(gpu);
+	DAVA::Texture::SetDefaultGPU(gpu);
+
+	DAVA::Map<DAVA::String, DAVA::Texture *> allScenesTextures;
+	for(int tab = 0; tab < GetSceneWidget()->GetTabCount(); ++tab)
+	{
+		SceneEditor2 *scene = GetSceneWidget()->GetTabScene(tab);
+		SceneHelper::EnumerateTextures(scene, allScenesTextures);
+	}
+
+	if(allScenesTextures.size() > 0)
+	{
+		int progress = 0;
+		WaitStart("Textures reload", "", 0, allScenesTextures.size());
+
+		DAVA::Map<DAVA::String, DAVA::Texture *>::const_iterator it = allScenesTextures.begin();
+		DAVA::Map<DAVA::String, DAVA::Texture *>::const_iterator end = allScenesTextures.end();
+
+		for(; it != end; ++it)
+		{
+			it->second->ReloadAs(gpu);
+
+			WaitSetMessage(it->first.c_str());
+			WaitSetValue(progress++);
+		}
+
+		WaitStop();
+	}
+
+	LoadGPUFormat();
+}
+
+void QtMainWindow::WaitStart(const QString &title, const QString &message, int min /* = 0 */, int max /* = 100 */)
+{
+	waitDialog->SetRange(min, max);
+	waitDialog->Exec(message, title, false, false);
+}
+
+void QtMainWindow::WaitSetMessage(const QString &messsage)
+{
+	waitDialog->SetMessage(messsage);
+}
+
+void QtMainWindow::WaitSetValue(int value)
+{
+	waitDialog->SetValue(value);
+}
+
+void QtMainWindow::WaitStop()
+{
+	waitDialog->Reset();
 }
 
 bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
@@ -229,7 +287,20 @@ void QtMainWindow::SetupToolBars()
 	ui->menuToolbars->addAction(actionModifToolBar);
 	ui->menuToolbars->addAction(actionViewModeToolBar);
 
+	modificationWidget = new ModificationWidget(NULL);
 	ui->modificationToolBar->insertWidget(ui->actionModifyReset, modificationWidget);
+
+	// reload
+	QToolButton *reloadTexturesBtn = new QToolButton();
+	reloadTexturesBtn->setMenu(ui->menuTexturesForGPU);
+	reloadTexturesBtn->setPopupMode(QToolButton::MenuButtonPopup);
+	reloadTexturesBtn->setDefaultAction(ui->actionReloadTextures);
+	reloadTexturesBtn->setMaximumWidth(100);
+	reloadTexturesBtn->setMinimumWidth(100);
+	ui->mainToolBar->addSeparator();
+	ui->mainToolBar->addWidget(reloadTexturesBtn);
+	reloadTexturesBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+	reloadTexturesBtn->setAutoRaise(false);
 
 	/*
 	QAction *reloadMenuAction = ui->menuReload->menuAction();
@@ -254,14 +325,19 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionSaveScene, SIGNAL(triggered()), this, SLOT(OnSceneSave()));
 	QObject::connect(ui->actionSaveSceneAs, SIGNAL(triggered()), this, SLOT(OnSceneSaveAs()));
 	QObject::connect(ui->actionSaveToFolder, SIGNAL(triggered()), this, SLOT(OnSceneSaveToFolder()));
+
+	// export
+	QObject::connect(ui->menuExport, SIGNAL(triggered(QAction *)), this, SLOT(ExportMenuTriggered(QAction *)));
 	
-	ui->actionExportPVRIOS->setData(GPU_POWERVR_IOS);
-    ui->actionExportPVRAndroid->setData(GPU_POWERVR_ANDROID);
-    ui->actionExportTegra->setData(GPU_TEGRA);
-    ui->actionExportMali->setData(GPU_MALI);
-    ui->actionExportAdreno->setData(GPU_ADRENO);
-    ui->actionExportPNG->setData(GPU_UNKNOWN);
-	connect(ui->menuExport, SIGNAL(triggered(QAction *)), this, SLOT(ExportMenuTriggered(QAction *)));
+	// reload
+	ui->actionReloadPoverVRIOS->setData(GPU_POWERVR_IOS);
+	ui->actionReloadPoverVRAndroid->setData(GPU_POWERVR_ANDROID);
+	ui->actionReloadTegra->setData(GPU_TEGRA);
+	ui->actionReloadMali->setData(GPU_MALI);
+	ui->actionReloadAdreno->setData(GPU_ADRENO);
+	ui->actionReloadPNG->setData(GPU_UNKNOWN);
+	QObject::connect(ui->menuTexturesForGPU, SIGNAL(triggered(QAction *)), this, SLOT(OnReloadTexturesTriggered(QAction *)));
+	QObject::connect(ui->actionReloadTextures, SIGNAL(triggered()), this, SLOT(OnReloadTextures()));
 	
 	// scene undo/redo
 	QObject::connect(ui->actionUndo, SIGNAL(triggered()), this, SLOT(OnUndo()));
@@ -526,6 +602,24 @@ void QtMainWindow::OnRedo()
 	if(NULL != scene)
 	{
 		scene->Redo();
+	}
+}
+
+void QtMainWindow::OnReloadTextures()
+{
+	SetGPUFormat(GetGPUFormat());
+}
+
+void QtMainWindow::OnReloadTexturesTriggered(QAction *reloadAction)
+{
+	DAVA::eGPUFamily gpu = (DAVA::eGPUFamily) reloadAction->data().toInt();
+	if(gpu >= DAVA::GPU_UNKNOWN && gpu < DAVA::GPU_FAMILY_COUNT)
+	{
+		// TODO:
+		// show wait message
+		// ...
+
+		SetGPUFormat(gpu);
 	}
 }
 
@@ -817,6 +911,29 @@ void QtMainWindow::LoadRulerToolState(SceneEditor2* scene)
 
 	ui->actionRulerTool->setChecked(scene->rulerToolSystem->IsLandscapeEditingEnabled());
 }
+
+void QtMainWindow::LoadGPUFormat()
+{
+	int curGPU = GetGPUFormat();
+
+	QList<QAction *> allActions = ui->menuTexturesForGPU->actions();
+	for(int i = 0; i < allActions.size(); ++i)
+	{
+		QAction *actionN = allActions[i];
+
+		if(!actionN->data().isNull() &&
+			actionN->data().toInt() == curGPU)
+		{
+			actionN->setChecked(true);
+			ui->actionReloadTextures->setText(actionN->text());
+		}
+		else
+		{
+			actionN->setChecked(false);
+		}
+	}
+}
+
 
 
 #if 0
