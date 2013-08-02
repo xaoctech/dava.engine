@@ -64,12 +64,6 @@ public:
     void AddParticleEmitterNodeToScene(Entity* emitterSceneNode);
     void RemoveParticleEmitterNode(Entity* emitterSceneNode);
     
-    // Cleanup the Editor nodes of the node.
-    void CleanupParticleEmitterEditorNode(EmitterParticleEditorNode* emitterNode);
-    
-    void RemoveParticleLayerNode(LayerParticleEditorNode* layerToRemove);
-    LayerParticleEditorNode* CloneParticleLayerNode(LayerParticleEditorNode* layerToClone);
-
     ForceParticleEditorNode* AddParticleForceToNode(LayerParticleEditorNode* layerNode);
     void RemoveParticleForceNode(ForceParticleEditorNode* forceNode);
 

@@ -61,6 +61,7 @@ class LightUpdateSystem;
 class SwitchSystem;
 class SoundUpdateSystem;
 class ActionUpdateSystem;
+class SkyboxSystem;
     
 /**
     \ingroup scene3d
@@ -104,6 +105,8 @@ public:
 	RenderSystem * renderSystem;
 	SoundUpdateSystem * soundSystem;
 	ActionUpdateSystem* actionSystem;
+	SkyboxSystem* skyboxSystem;
+	
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.
      */

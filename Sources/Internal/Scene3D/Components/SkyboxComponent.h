@@ -14,30 +14,48 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __DAVAENGINE_SCENE3D_ACTIONUPDATESYSTEM_H__
-#define __DAVAENGINE_SCENE3D_ACTIONUPDATESYSTEM_H__
+#ifndef __DAVAENGINE_SKYBOX_COMPONENT_H__
+#define __DAVAENGINE_SKYBOX_COMPONENT_H__
 
 #include "Base/BaseTypes.h"
-#include "Scene3D/Systems/BaseProcessSystem.h"
-
+#include "Entity/Component.h"
 
 namespace DAVA
 {
-	class ActionComponent;
-	class ActionUpdateSystem : public BaseProcessSystem
+	class SkyboxComponent : public Component
 	{
 	public:
-		ActionUpdateSystem(Scene * scene);
-		virtual void Process();
+		IMPLEMENT_COMPONENT_TYPE(SKYBOX_COMPONENT);
 		
-		void Watch(ActionComponent* component);
-		void UnWatch(ActionComponent* component);
+		SkyboxComponent();
+		~SkyboxComponent();
+				
+		virtual Component* Clone(Entity * toEntity);
+		virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
+		virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 		
-	protected:
+		void SetTexture(const FilePath& texPath);
+		FilePath GetTexture();
+		void SetVerticalOffset(const float32& offset);
+		float32 GetVerticalOffset();
+		void SetRotationAngle(const float32& rotation);
+		float32 GetRotationAngle();
 		
-		Vector<ActionComponent*> activeActions;
-	};
+		Vector3 GetBoxSize();
+		
+		INTROSPECTION_EXTEND(SkyboxComponent, Component,
+							 PROPERTY("texture", "Texture Path", GetTexture, SetTexture, I_SAVE | I_VIEW | I_EDIT)
+							 PROPERTY("verticalOffset", "Vertical Offset", GetVerticalOffset, SetVerticalOffset, I_SAVE | I_VIEW | I_EDIT)
+							 PROPERTY("rotationAngle", "Rotation", GetRotationAngle, SetRotationAngle, I_SAVE | I_VIEW | I_EDIT));
+
 	
+	
+	private:
+		
+		FilePath texturePath;
+		float32 verticalOffset;
+		float32 rotationAngle;
+	};
 }
 
-#endif //__DAVAENGINE_SCENE3D_ACTIONUPDATESYSTEM_H__
+#endif //__DAVAENGINE_SKYBOX_COMPONENT_H__
