@@ -53,7 +53,9 @@ public:
 	int GetCurrentTab() const;
 	void SetCurrentTab(int index);
 
+	int GetTabCount() const;
 	SceneEditor2* GetCurrentScene() const;
+	SceneEditor2* GetTabScene(int index) const;
 
 public slots:
 	// this slot redirects any UIEvent to the active sceneProxy for processing
@@ -82,7 +84,6 @@ protected:
 	void ReleaseDAVAUI();
 	void UpdateTabName(int index);
 
-	SceneEditor2* GetTabScene(int index) const;
 	void SetTabScene(int index, SceneEditor2* scene);
 
 	virtual void resizeEvent(QResizeEvent * event);

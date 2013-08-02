@@ -174,6 +174,11 @@ void SceneTabWidget::CloseTab(int index)
 			SceneSignals::Instance()->EmitDeactivated(scene);
 		}
 
+		if(scene == curScene)
+		{
+			curScene = NULL;
+		}
+
 		tabBar->removeTab(index);
 		delete scene;
 	}
@@ -228,6 +233,11 @@ void SceneTabWidget::SetTabScene(int index, SceneEditor2* scene)
 	{
 		tabBar->setTabData(index, qVariantFromValue(scene));
 	}
+}
+
+int SceneTabWidget::GetTabCount() const
+{
+	return tabBar->count();
 }
 
 void SceneTabWidget::ProcessDAVAUIEvent(DAVA::UIEvent *event)

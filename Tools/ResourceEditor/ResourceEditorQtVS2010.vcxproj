@@ -492,6 +492,7 @@
     <ClCompile Include="Classes\Qt\Scene\SceneData.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneDataManager.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneEditor2.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\SceneHelper.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneSignals.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneTabWidget.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\CameraSystem.cpp" />
@@ -552,6 +553,7 @@
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtProperyData\QtPropertyDataMetaObject.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\QtWaitDialog\QtWaitDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\SelectPathWidget\SelectPathWidget.cpp" />
     <ClCompile Include="Classes\RulerTool\RulerTool.cpp" />
     <ClCompile Include="Classes\SceneEditor\ArrowsNode.cpp" />
@@ -677,7 +679,6 @@
     <ClCompile Include="_GeneratedQt\Main\davaglwidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\mainwindow_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\ModificationWidget_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\Main\QtMainWindowHandler_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\QTreeViewStateHelper_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\QtUtils_moc.cpp" />
     <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialBrowser_moc.cpp" />
@@ -753,6 +754,7 @@
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtProperyData\QtPropertyDataMetaObject_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Tools\QtWaitDialog\QtWaitDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\SelectPathWidget\SelectPathWidget_moc.cpp" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
@@ -1156,6 +1158,7 @@
     <ClInclude Include="Classes\Qt\Scene\SceneData.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneDataManager.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneEditor2.h" />
+    <ClInclude Include="Classes\Qt\Scene\SceneHelper.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneSignals.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneTabWidget.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneTypes.h" />
@@ -1218,6 +1221,7 @@
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtProperyData\QtPropertyDataMetaObject.h" />
+    <ClInclude Include="Classes\Qt\Tools\QtWaitDialog\QtWaitDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\SelectPathWidget\SelectPathWidget.h" />
     <ClInclude Include="Classes\RulerTool\RulerTool.h" />
     <ClInclude Include="Classes\SceneEditor\ArrowsNode.h" />

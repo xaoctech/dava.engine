@@ -144,7 +144,6 @@ void Core::CreateRenderManager()
         
 void Core::ReleaseSingletons()
 {
-	Texture::ReleasePinkPlaceholder();
 	UIScreenManager::Instance()->Release();
 	UIControlSystem::Instance()->Release();
 	SoundSystem::Instance()->Release();

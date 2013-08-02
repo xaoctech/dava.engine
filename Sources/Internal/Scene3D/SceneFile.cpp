@@ -297,7 +297,9 @@ bool SceneFile::ReadMaterial()
     
     if (!mat->GetTexture(Material::TEXTURE_DIFFUSE))
     {
-        mat->SetTexture(Material::TEXTURE_DIFFUSE, Texture::GetPinkPlaceholder());
+		Texture *pinkTexture = Texture::CreatePink();
+        mat->SetTexture(Material::TEXTURE_DIFFUSE, pinkTexture);
+		pinkTexture->Release();
     }
 
     if (strlen(materialDef.lightmapTexture))
