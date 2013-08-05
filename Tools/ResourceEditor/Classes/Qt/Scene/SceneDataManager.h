@@ -13,7 +13,6 @@
     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
-
 #ifndef __SCENE_DATA_MANAGER_H__
 #define __SCENE_DATA_MANAGER_H__
 
@@ -62,13 +61,13 @@ public:
 	SceneData*			SceneGet(DAVA::Scene *scene);
 	DAVA::int32			SceneCount();
     
-	void				TextureCompressAllNotCompressed();
-	void				TextureReloadAll(DAVA::eGPUFamily forGPU);
-	DAVA::Texture*		TextureReload(const TextureDescriptor *descriptor, DAVA::Texture *prevTexture, DAVA::eGPUFamily forGPU);
+	//void				TextureCompressAllNotCompressed();
+	//void				TextureReloadAll(DAVA::eGPUFamily forGPU);
+	//DAVA::Texture*		TextureReload(const TextureDescriptor *descriptor, DAVA::Texture *prevTexture, DAVA::eGPUFamily forGPU);
 
-	static void EnumerateTextures(DAVA::Entity *forNode, DAVA::Map<DAVA::String, DAVA::Texture *> &textures);
-	static void EnumerateDescriptors(DAVA::Entity *forNode, DAVA::Set<DAVA::FilePath> &descriptors);
-	static void EnumerateMaterials(DAVA::Entity *forNode, Vector<Material *> &materials);
+	//static void EnumerateTextures(DAVA::Entity *forNode, DAVA::Map<DAVA::String, DAVA::Texture *> &textures);
+	//static void EnumerateDescriptors(DAVA::Entity *forNode, DAVA::Set<DAVA::FilePath> &descriptors);
+	//static void EnumerateMaterials(DAVA::Entity *forNode, Vector<Material *> &materials);
 
 	// These methods are called by Scene Graph Tree View.
 	void SceneNodeSelectedInSceneGraph(Entity* node);

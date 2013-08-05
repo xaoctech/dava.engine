@@ -14,38 +14,46 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "TextureOptionsCommands.h"
-#include "../SceneEditor/EditorSettings.h"
-#include "../SceneEditor/SceneValidator.h"
-#include "../Qt/Scene/SceneDataManager.h"
+#ifndef __RESOURCEEDITORQT__QTWAITDIALOG__
+#define __RESOURCEEDITORQT__QTWAITDIALOG__
 
-using namespace DAVA;
+#include <QDialog>
+#include <QLabel>
+#include <QPushButton>
+#include <QProgressBar>
 
-ReloadTexturesAsCommand::ReloadTexturesAsCommand(eGPUFamily gpu)
-    :   Command(COMMAND_CLEAR_UNDO_QUEUE, CommandList::ID_COMMAND_RELOAD_TEXTURES_AS)
-    ,   gpuFamily(gpu)
-{
+namespace Ui {
+	class QtWaitDialog;
 }
 
-void ReloadTexturesAsCommand::Execute()
+class QtWaitDialog: public QDialog
 {
-    Texture::SetDefaultGPU(gpuFamily);
-    
-    EditorSettings::Instance()->SetTextureViewGPU(gpuFamily);
-    EditorSettings::Instance()->Save();
-    
-    //SceneDataManager::Instance()->TextureReloadAll(gpuFamily);
-//    SceneValidator::Instance()->EnumerateSceneTextures();
-}
+	Q_OBJECT
 
-ReplaceMipmapLevelCommand::ReplaceMipmapLevelCommand(int32 _mipmapLevel, Entity * forEntity)
-    :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_REPLACE_MIPMAP_LEVEL)
-    ,   mipmapLevel(_mipmapLevel)
-    ,   entity(forEntity)
-{
-}
+public:
+	QtWaitDialog(QWidget *parent = 0);
+	~QtWaitDialog();
 
-void ReplaceMipmapLevelCommand::Execute()
-{
-    MipMapReplacer::ReplaceMipMaps(entity, mipmapLevel);
-}
+	void Exec(const QString &title, const QString &message, bool hasWaitbar, bool hasCancel);
+	void Show(const QString &title, const QString &message, bool hasWaitbar, bool hasCancel);
+	void Reset();
+
+	void SetMessage(const QString &message);
+
+	void SetRange(int min, int max);
+	void SetRangeMin(int min);
+	void SetRangeMax(int max);
+	void SetValue(int value);
+
+signals:
+	void canceled();
+
+protected slots:
+	void CancelPressed();
+	void WaitCanceled();
+
+private:
+	Ui::QtWaitDialog *ui;
+};
+
+#endif // __RESOURCEEDITORQT__MAINWAITDIALOG__

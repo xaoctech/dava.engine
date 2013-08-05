@@ -342,10 +342,12 @@ Sprite* Sprite::Create(const FilePath &spriteName)
 	Sprite * spr = PureCreate(spriteName,NULL);
 	if (!spr)
 	{
-		spr = CreateFromTexture(Vector2(16.f, 16.f), Texture::GetPinkPlaceholder(), Vector2(0.f, 0.f), Vector2(16.f, 16.f));
+		Texture *pinkTexture = Texture::CreatePink();
+		spr = CreateFromTexture(Vector2(16.f, 16.f), pinkTexture, Vector2(0.f, 0.f), Vector2(16.f, 16.f));
         
         spr->type = SPRITE_FROM_FILE;
         spr->relativePathname = spriteName;
+		pinkTexture->Release();
 	}
 	return spr;
 }
@@ -1582,7 +1584,9 @@ void Sprite::Reload()
             
             FilePath spriteName = relativePathname;
             
-			InitFromTexture(Texture::GetPinkPlaceholder(), 0, 0, 16.0f, 16.0f, 16, 16, false);
+			Texture *pinkTexture = Texture::CreatePink();
+			InitFromTexture(pinkTexture, 0, 0, 16.0f, 16.0f, 16, 16, false);
+			pinkTexture->Release();
             
             type = SPRITE_FROM_FILE;
             relativePathname = spriteName;
@@ -1594,12 +1598,7 @@ void Sprite::ReloadSpriteTextures()
 {
     for(int32 i = 0; i < textureCount; ++i)
     {
-        if(textures[i] == Texture::GetPinkPlaceholder())
-        {
-            SafeRelease(textures[i]);
-            textures[i] = Texture::CreateFromFile(textureNames[i]);
-        }
-        else if(textures[i] && !textures[i]->GetPathname().IsEmpty())
+        if(textures[i] && !textures[i]->GetPathname().IsEmpty())
         {
             textures[i]->Reload();
         }

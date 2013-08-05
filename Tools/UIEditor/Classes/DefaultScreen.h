@@ -14,16 +14,20 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #include "DAVAEngine.h"
+#include <QObject>
 #include <qnamespace.h>
 #include "HierarchyTreeNode.h"
 #include "HierarchyTreeController.h"
 
 using namespace DAVA;
 
+class QAction;
 class HierarchyTreeControlNode;
 
-class DefaultScreen : public UIScreen
+class DefaultScreen : public QObject, public UIScreen
 {
+	Q_OBJECT
+	
 public:
 	DefaultScreen();
 	virtual ~DefaultScreen();
@@ -77,14 +81,15 @@ private:
 	class SmartSelection
 	{
 	public:
+		typedef std::vector<HierarchyTreeNode::HIERARCHYTREENODEID> SelectionVector;
 		SmartSelection(HierarchyTreeNode::HIERARCHYTREENODEID id);
 		
 		bool IsEqual(const SmartSelection* item) const;
 		HierarchyTreeNode::HIERARCHYTREENODEID GetFirst() const;
 		HierarchyTreeNode::HIERARCHYTREENODEID GetLast() const;
 		HierarchyTreeNode::HIERARCHYTREENODEID GetNext(HierarchyTreeNode::HIERARCHYTREENODEID id) const;
+		SelectionVector GetAll() const;
 	private:
-		typedef std::vector<HierarchyTreeNode::HIERARCHYTREENODEID> SelectionVector;
 		void FormatSelectionVector(SelectionVector& selection) const;
 	public:
 		class childsSet: public std::vector<SmartSelection *>
@@ -149,4 +154,11 @@ private:
 
 	// Whether the Mouse Begin event happened?
 	bool mouseAlreadyPressed;
+	
+	void HandleMouseRightButtonClick(const Vector2& point);
+	void HandleMouseLeftButtonClick(const Vector2& point);	
+	void ShowControlContextMenu(const SmartSelection& selection);
+	
+private slots:
+	void ControlContextMenuTriggered(QAction* action);
 };

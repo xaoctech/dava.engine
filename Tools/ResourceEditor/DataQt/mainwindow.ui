@@ -231,8 +231,6 @@
    <addaction name="actionTileMapEditor"/>
    <addaction name="actionShowNotPassableLandscape"/>
    <addaction name="actionRulerTool"/>
-   <addaction name="separator"/>
-   <addaction name="actionReloadAll"/>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -1057,16 +1055,25 @@
    </property>
   </action>
   <action name="actionReloadPoverVRIOS">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>PowerVR iOS</string>
    </property>
   </action>
   <action name="actionReloadPoverVRAndroid">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>PowerVR Android</string>
    </property>
   </action>
   <action name="actionReloadTegra">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Tegra</string>
    </property>
@@ -1311,11 +1318,17 @@
    </property>
   </action>
   <action name="actionReloadMali">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Mali</string>
    </property>
   </action>
   <action name="actionReloadAdreno">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Adreno</string>
    </property>
@@ -1326,6 +1339,9 @@
    </property>
   </action>
   <action name="actionReloadPNG">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>PNG</string>
    </property>
@@ -1435,6 +1451,15 @@
    </property>
    <property name="text">
     <string>Cubemap Editor</string>
+   </property>
+  </action>
+  <action name="actionReloadTextures">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/reloadtextures.png</normaloff>:/QtIcons/reloadtextures.png</iconset>
+   </property>
+   <property name="text">
+    <string>Reload Textures</string>
    </property>
   </action>
  </widget>

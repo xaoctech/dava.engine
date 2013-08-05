@@ -15,7 +15,7 @@
 =====================================================================================*/
 
 #include "TextureListModel.h"
-#include "Scene/SceneDataManager.h"
+#include "Scene/SceneHelper.h"
 #include <QPainter>
 #include <QFileInfo>
 
@@ -150,7 +150,7 @@ void TextureListModel::setScene(DAVA::Scene *scene)
 	clear();
 
 	DAVA::Map<DAVA::String, DAVA::Texture *> texturesInNode;
-	SceneDataManager::EnumerateTextures(scene, texturesInNode);
+	SceneHelper::EnumerateTextures(scene, texturesInNode);
 
 	for(DAVA::Map<DAVA::String, DAVA::Texture *>::iterator t = texturesInNode.begin(); t != texturesInNode.end(); ++t)
 	{
@@ -181,7 +181,7 @@ void TextureListModel::setHighlight(DAVA::Entity *node)
 	textureDescriptorsHighlight.clear();
 
 	DAVA::Map<DAVA::String, DAVA::Texture *> texturesInNode;
-	SceneDataManager::EnumerateTextures(node, texturesInNode);
+	SceneHelper::EnumerateTextures(node, texturesInNode);
 
 	for(DAVA::Map<DAVA::String, DAVA::Texture *>::iterator t = texturesInNode.begin(); t != texturesInNode.end(); ++t)
 	{
