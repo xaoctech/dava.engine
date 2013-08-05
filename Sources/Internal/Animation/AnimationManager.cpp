@@ -170,6 +170,8 @@ Animation * AnimationManager::FindPlayingAnimation(AnimatedObject * owner, int32
 
 void AnimationManager::Update(float timeElapsed)
 {
+	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_ANIMATIONS))
+		return;
 	//int animationsCount = (int)animations.size();
 	//NSLog(@"animations: %d\n", animations.size());
 	

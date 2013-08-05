@@ -24,7 +24,7 @@ RenderOptions::RenderOptions()
 	for(int32 i = 0; i < OPTIONS_COUNT; ++i)
 	{
 		options[i] = true;
-	}
+	}		
 }
 
 bool RenderOptions::IsOptionEnabled(RenderOption option)
