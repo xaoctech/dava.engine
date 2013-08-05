@@ -298,7 +298,7 @@ void HoodSystem::Draw()
 			curHood->Draw(showAsSelected, moseOverAxis);
 
 			// debug draw axis collision word
-			collWorld->debugDrawWorld();
+			//collWorld->debugDrawWorld();
 		}
 		else
 		{
