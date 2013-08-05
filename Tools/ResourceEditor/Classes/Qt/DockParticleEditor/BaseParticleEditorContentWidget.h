@@ -27,13 +27,15 @@ using namespace DAVA;
 class BaseParticleEditorContentWidget
 {
 public:
-	BaseParticleEditorContentWidget(SceneEditor2* scene);
+	BaseParticleEditorContentWidget();
 	
 	virtual void StoreVisualState(KeyedArchive* visualStateProps) = 0;
 	virtual void RestoreVisualState(KeyedArchive* visualStateProps) = 0;
 	
 	ParticleEmitter* GetEmitter() const {return emitter;};
-	
+
+	// Get/set the active scene.
+	void SetActiveScene(SceneEditor2* scene) {activeScene = scene;};
 	SceneEditor2* GetActiveScene() const {return activeScene;};
 
 protected:
