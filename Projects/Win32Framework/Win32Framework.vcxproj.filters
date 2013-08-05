@@ -1290,12 +1290,17 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\ActionUpdateSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\SkyBoxNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialOptimazer.h">
       <Filter>Internal\Render\Material</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Base\AllocatorFactory.h">
       <Filter>Internal\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SkyboxSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SkyboxComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2271,7 +2276,6 @@
     <ClCompile Include="..\..\Sources\Internal\UI\UIScrollViewContainer.cpp">
       <Filter>Internal\UI</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\SkyBoxNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\CustomPropertiesComponent.cpp">
       <Filter>Internal\Scene3D\Components</Filter>
     </ClCompile>
@@ -2286,6 +2290,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Base\AllocatorFactory.cpp">
       <Filter>Internal\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SkyboxSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SkyboxComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

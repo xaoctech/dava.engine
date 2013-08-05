@@ -146,14 +146,14 @@ Component * Entity::GetOrCreateComponent(uint32 componentType)
     
 uint32 Entity::GetComponentCount()
 {
-    uint32 count = 0;
-    for (uint32 k = 0; k < Component::COMPONENT_COUNT; ++k)
-        if (componentFlags >> k)
-            count++;
-    return count;
+	uint32 bits = componentFlags;
+	uint32 count = 0;
+	for(; 0 != bits; count++)
+	{
+		bits &= bits - 1;
+	}
+	return count;
 }
-
-
 
 void Entity::SetScene(Scene * _scene)
 {

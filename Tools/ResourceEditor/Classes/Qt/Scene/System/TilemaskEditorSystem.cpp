@@ -40,10 +40,10 @@ TilemaskEditorSystem::TilemaskEditorSystem(Scene* scene)
 ,	enabled(false)
 ,	editingIsEnabled(false)
 ,	curToolSize(0)
-,	cursorSize(30)
+,	cursorSize(120)
 ,	toolImage(NULL)
 ,	toolImageSprite(NULL)
-,	strength(0)
+,	strength(0.25f)
 ,	toolImagePath("")
 ,	tileTextureNum(0)
 ,	maskSprite(NULL)
@@ -76,17 +76,41 @@ TilemaskEditorSystem::~TilemaskEditorSystem()
 	SafeRelease(toolImageSprite);
 }
 
+bool TilemaskEditorSystem::IsCanBeEnabled()
+{
+	SceneEditor2* scene = dynamic_cast<SceneEditor2*>(GetScene());
+	DVASSERT(scene);
+	
+	bool canBeEnabled = true;
+	canBeEnabled &= !(scene->visibilityToolSystem->IsLandscapeEditingEnabled());
+	canBeEnabled &= !(scene->heightmapEditorSystem->IsLandscapeEditingEnabled());
+//	canBeEnabled &= !(scene->tilemaskEditorSystem->IsLandscapeEditingEnabled());
+	canBeEnabled &= !(scene->rulerToolSystem->IsLandscapeEditingEnabled());
+	canBeEnabled &= !(scene->customColorsSystem->IsLandscapeEditingEnabled());
+	canBeEnabled &= !(scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled());
+	
+	return canBeEnabled;
+}
+
 bool TilemaskEditorSystem::EnableLandscapeEditing()
 {
 	if (enabled)
 	{
 		return true;
 	}
-	
+
+	if (!IsCanBeEnabled())
+	{
+		return false;
+	}
+
+	if (!drawSystem->EnableTilemaskEditing())
+	{
+		return false;
+	}
+
 	selectionSystem->SetLocked(true);
 	modifSystem->SetLocked(true);
-	
-	drawSystem->EnableTilemaskEditing();
 
 	landscapeSize = drawSystem->GetTextureSize();
 

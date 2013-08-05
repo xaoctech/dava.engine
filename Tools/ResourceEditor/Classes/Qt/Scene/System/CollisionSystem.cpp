@@ -33,7 +33,7 @@
 SceneCollisionSystem::SceneCollisionSystem(DAVA::Scene * scene)
 	: DAVA::SceneSystem(scene)
 	, rayIntersectCached(false)
-	, drawMode(ST_COLL_DRAW_NOTHING)
+	, drawMode(ST_COLL_DRAW_OBJECTS_SELECTED)
 	, curLandscape(NULL)
 {
 	btVector3 worldMin(-1000,-1000,-1000);
@@ -338,9 +338,11 @@ void SceneCollisionSystem::ProcessCommand(const Command2 *command, bool redo)
 		switch(command->GetId())
 		{
 		case CMDID_TRANSFORM:
+		case CMDID_ENTITY_MOVE:
 			// update bullet object
 			UpdateCollisionObject(entity);
 			break;
+			/*
 		case CMDID_ENTITY_MOVE:
 			{
 				const EntityMoveCommand* moveCommand = (EntityMoveCommand*) command;
@@ -351,6 +353,7 @@ void SceneCollisionSystem::ProcessCommand(const Command2 *command, bool redo)
 				}
 			}
 			break;
+			*/
 		default:
 			break;
 		}

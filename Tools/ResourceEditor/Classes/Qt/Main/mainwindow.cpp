@@ -63,10 +63,14 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(SceneActivated(SceneEditor2 *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(SceneDeactivated(SceneEditor2 *)));
 
+	QObject::connect(SceneSignals::Instance(), SIGNAL(RulerToolLengthChanged(SceneEditor2*, double, double)),
+					 this, SLOT(UpdateRulerToolLength(SceneEditor2*, double, double)));
+
 	new TextureBrowser(this);
 	//new MaterialBrowser();
 	materialEditor = new MaterialEditor(DAVA::Rect(20, 20, 500, 600));
 
+	//ui->sceneTabWidget->OpenTab("/Projects/dava.wot.art/DataSource/3d/Maps/karelia/karelia.sc2");
 	ui->sceneTabWidget->OpenTab("/Projects/dava.wot.art/DataSource/3d/Maps/dike_village/dike_village.sc2");
 	//ui->sceneTabWidget->OpenTab("/Users/a_makovii/Documents/work/temp/39/mountain/mountain_switch.sc2");
 	//ui->sceneTabWidget->OpenTab("/Users/a_makovii/Documents/work/temp/desertTrain/desert_train/desert_train.sc2");
@@ -162,6 +166,20 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
 	}
 
 	return QMainWindow::eventFilter(obj, event);
+}
+
+void QtMainWindow::SetupTitle()
+{
+	DAVA::KeyedArchive *options = DAVA::Core::Instance()->GetOptions();
+	QString title = options->GetString("title").c_str();
+
+	if(ProjectManager::Instance()->IsOpened())
+	{
+		title += " | Project - ";
+		title += ProjectManager::Instance()->CurProjectPath();
+	}
+
+	this->setWindowTitle(title);
 }
 
 void QtMainWindow::SetupMainMenu()
@@ -260,6 +278,7 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionEnableCameraLight, SIGNAL(triggered()), this, SLOT(OnSceneLightMode()));
 	QObject::connect(ui->actionCubemapEditor, SIGNAL(triggered()), this, SLOT(OnCubemapEditor()));
 	QObject::connect(ui->actionShowNotPassableLandscape, SIGNAL(triggered()), this, SLOT(OnNotPassableTerrain()));
+	QObject::connect(ui->actionRulerTool, SIGNAL(triggered()), this, SLOT(OnRulerTool()));
 }
 
 // ###################################################################################################
@@ -272,6 +291,8 @@ void QtMainWindow::ProjectOpened(const QString &path)
 	ui->actionOpenScene->setEnabled(true);
 	ui->actionSaveScene->setEnabled(true);
 	ui->actionSaveToFolder->setEnabled(true);
+
+	SetupTitle();
 }
 
 void QtMainWindow::ProjectClosed()
@@ -280,6 +301,8 @@ void QtMainWindow::ProjectClosed()
 	ui->actionOpenScene->setEnabled(false);
 	ui->actionSaveScene->setEnabled(false);
 	ui->actionSaveToFolder->setEnabled(false);
+
+	SetupTitle();
 }
 
 void QtMainWindow::SceneActivated(SceneEditor2 *scene)
@@ -288,6 +311,7 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 	LoadModificationState(scene);
 	LoadEditorLightState(scene);
 	LoadNotPassableState(scene);
+	LoadRulerToolState(scene);
 
 	// TODO: remove this code. it is for old material editor -->
 	DAVA::UIControl* parent = materialEditor->GetParent();
@@ -315,6 +339,24 @@ void QtMainWindow::SceneCommandExecuted(SceneEditor2 *scene, const Command2* com
 	{
 		LoadUndoRedoState(scene);
 	}
+}
+
+void QtMainWindow::UpdateRulerToolLength(SceneEditor2 *scene, double length, double previewLength)
+{
+	QString l = QString("Current length: %1").arg(length);
+	QString pL = QString("Preview length: %1").arg(previewLength);
+
+	QString msg;
+	if (length >= 0.0)
+	{
+		msg = l;
+	}
+	if (previewLength >= 0.0)
+	{
+		msg += ";    " + pL;
+	}
+
+	ui->statusBar->showMessage(msg);
 }
 
 // ###################################################################################################
@@ -484,11 +526,11 @@ void QtMainWindow::OnManualModifMode()
 {
 	if(ui->actionManualModifMode->isChecked())
 	{
-		modificationWidget->SetMode(ModificationWidget::ModifyRelative);
+		modificationWidget->SetPivotMode(ModificationWidget::PivotRelative);
 	}
 	else
 	{
-		modificationWidget->SetMode(ModificationWidget::ModifyAbsolute);
+		modificationWidget->SetPivotMode(ModificationWidget::PivotAbsolute);
 	}
 }
 
@@ -578,14 +620,46 @@ void QtMainWindow::OnNotPassableTerrain()
 		return;
 	}
 
-	if (ui->actionShowNotPassableLandscape->isChecked())
+	bool enabled = scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled();
+	if (!enabled)
 	{
-		scene->landscapeEditorDrawSystem->EnableNotPassableTerrain();
+		if (!scene->landscapeEditorDrawSystem->EnableNotPassableTerrain())
+		{
+			QMessageBox::critical(0, "Error enabling Not Passable Landscape",
+								  "Error enabling Not Passable Landscape.\nMake sure there is landscape in scene and disable other landscape editors.");
+		}
 	}
 	else
 	{
 		scene->landscapeEditorDrawSystem->DisableNotPassableTerrain();
 	}
+
+	ui->actionShowNotPassableLandscape->setChecked(scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled());
+}
+
+void QtMainWindow::OnRulerTool()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if (!scene)
+	{
+		return;
+	}
+
+	bool enabled = scene->rulerToolSystem->IsLandscapeEditingEnabled();
+	if (!enabled)
+	{
+		if (!scene->rulerToolSystem->EnableLandscapeEditing())
+		{
+			QMessageBox::critical(0, "Error enabling Ruler Tool",
+								  "Error enabling Ruler Tool.\nMake sure there is landscape in scene and disable other landscape editors.");
+		}
+	}
+	else
+	{
+		scene->rulerToolSystem->DisableLandscapeEdititing();
+	}
+
+	ui->actionRulerTool->setChecked(scene->rulerToolSystem->IsLandscapeEditingEnabled());
 }
 
 // ###################################################################################################
@@ -602,6 +676,8 @@ void QtMainWindow::LoadModificationState(SceneEditor2 *scene)
 		ui->actionModifyScale->setChecked(false);
 
 		ST_ModifMode modifMode = scene->modifSystem->GetModifMode();
+		modificationWidget->SetModifMode(modifMode);
+
 		switch (modifMode)
 		{
 		case ST_MODIF_OFF:
@@ -619,6 +695,7 @@ void QtMainWindow::LoadModificationState(SceneEditor2 *scene)
 		default:
 			break;
 		}
+
 
 		// pivot point
 		if(scene->selectionSystem->GetPivotPoint() == ST_PIVOT_ENTITY_CENTER)
@@ -664,6 +741,15 @@ void QtMainWindow::LoadNotPassableState(SceneEditor2* scene)
 	ui->actionShowNotPassableLandscape->setChecked(scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled());
 }
 
+void QtMainWindow::LoadRulerToolState(SceneEditor2* scene)
+{
+	if (!scene)
+	{
+		return;
+	}
+
+	ui->actionRulerTool->setChecked(scene->rulerToolSystem->IsLandscapeEditingEnabled());
+}
 
 
 #if 0

@@ -122,6 +122,8 @@ protected:
 							   float32 circleRadius,
 							   const Vector2& point);
 	void DrawVisibilityAreaPoints(const Vector<DAVA::Vector3> &points);
+
+	bool IsCanBeEnabled();
 };
 
 #endif /* defined(__RESOURCEEDITORQT__VISIBILITYTOOLSYSTEM__) */

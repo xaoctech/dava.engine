@@ -81,5 +81,8 @@
     <file>QtIcons/shadow.png</file>
     <file>QtIcons/light.png</file>
 	<file>QtIcons/cubemap.png</file>
+	<file>QtIcons/clone.png</file>
+	<file>QtIcons/remove_layer.png</file>
+	<file>QtIcons/remove_force.png</file>
   </qresource>
 </RCC>

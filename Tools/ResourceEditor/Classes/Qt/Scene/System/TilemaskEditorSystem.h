@@ -117,6 +117,8 @@ protected:
 
 	void CreateUndoPoint();
 	void StoreOriginalState();
+
+	bool IsCanBeEnabled();
 };
 
 #endif /* defined(__RESOURCEEDITORQT__TILEMASKEDITORSYSTEM__) */

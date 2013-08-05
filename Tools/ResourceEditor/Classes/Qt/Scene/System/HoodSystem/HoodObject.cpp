@@ -18,6 +18,7 @@
 
 HoodObject::HoodObject(DAVA::float32 bs)
 	: baseSize(bs)
+	, objScale(1)
 { }
 
 HoodObject::~HoodObject()
@@ -38,6 +39,8 @@ void HoodObject::UpdatePos(const DAVA::Vector3 &pos)
 
 void HoodObject::UpdateScale(const DAVA::float32 &scale)
 {
+	objScale = scale;
+
 	for (size_t i = 0; i < collObjects.size(); i++)
 	{
 		collObjects[i]->UpdateScale(scale);

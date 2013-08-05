@@ -70,6 +70,9 @@ public:
 	void SetVisibilityCheckToolTexture(Texture* texture);
 	void SetVisibilityCheckToolTextureEnabled(bool enabled);
 
+	void SetRulerToolTexture(Texture* texture);
+	void SetRulerToolTextureEnabled(bool enabled);
+
 	RenderObject* GetRenderObject();
 	void SetHeightmap(Heightmap* heightmap);
 
@@ -83,14 +86,16 @@ public:
 	void ApplyTilemask();
 	void UpdateFullTiledTexture(bool force = false);
 
+	Vector3 PlacePoint(const Vector3& point);
+
 protected:
 	enum eTextureType
 	{
-		TEXTURE_TYPE_TILEMASK = 0,
-		TEXTURE_TYPE_NOT_PASSABLE,
+		TEXTURE_TYPE_NOT_PASSABLE = 0,
 		TEXTURE_TYPE_CUSTOM_COLORS,
 		TEXTURE_TYPE_VISIBILITY_CHECK_TOOL,
-		
+		TEXTURE_TYPE_RULER_TOOL,
+
 		TEXTURE_TYPES_COUNT
 	};
 	

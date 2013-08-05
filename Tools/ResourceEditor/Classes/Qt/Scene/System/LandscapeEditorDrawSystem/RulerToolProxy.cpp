@@ -14,57 +14,41 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __Framework__UIScrollViewContainer__
-#define __Framework__UIScrollViewContainer__
+#include "RulerToolProxy.h"
 
-#include "DAVAEngine.h"
-
-namespace DAVA 
+RulerToolProxy::RulerToolProxy(int32 size)
+:	size(size)
+,	spriteChanged(false)
 {
+	rulerToolSprite = Sprite::CreateAsRenderTarget((float32)size, (float32)size, FORMAT_RGBA8888);
+}
 
-class UIScrollViewContainer : public UIControl
+RulerToolProxy::~RulerToolProxy()
 {
-public:
-	UIScrollViewContainer(const Rect &rect = Rect(), bool rectInAbsoluteCoordinates = false);
-	virtual ~UIScrollViewContainer();
-	
-	virtual UIControl *Clone();
-	virtual void CopyDataFrom(UIControl *srcControl);
-	
-public:
-	virtual void Update(float32 timeElapsed);
-	virtual void Input(UIEvent *currentTouch);
-	
-	virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
+	SafeRelease(rulerToolSprite);
+}
 
-	Vector2		scrollOrigin;
+int32 RulerToolProxy::GetSize()
+{
+	return size;
+}
 
-protected:
+Sprite* RulerToolProxy::GetSprite()
+{
+	return rulerToolSprite;
+}
 
-	void		StartScroll(Vector2 startScrollPosition);
-	void		ProcessScroll(Vector2 currentScrollPosition);
-	void		EndScroll();
-	void		ScrollToPosition(const Vector2& position);
-	void   		SaveChildren(UIControl *parent, UIYamlLoader * loader, YamlNode * parentNode);
+bool RulerToolProxy::IsSpriteChanged()
+{
+	return spriteChanged;
+}
 
-	enum 
-	{
-		STATE_NONE = 0,
-		STATE_SCROLL,
-		STATE_ZOOM,
-		STATE_DECCELERATION,
-		STATE_SCROLL_TO_SPECIAL,
-	};
+void RulerToolProxy::ResetSpriteChanged()
+{
+	spriteChanged = false;
+}
 
-	int32		state;
-	Vector2		scrollCurrentShift;
-	// Scroll information
-	Vector2		scrollStartInitialPosition;	// position of click
-	Vector2		scrollStartPosition;		// position related to current scroll start pos, can be different from scrollStartInitialPosition
-	Vector2		scrollCurrentPosition;	// scroll current position
-	bool		scrollStartMovement;
-	UIEvent		scrollTouch;
-};
-};
-
-#endif /* defined(__Framework__UIScrollViewContainer__) */
+void RulerToolProxy::UpdateSprite()
+{
+	spriteChanged = true;
+}
