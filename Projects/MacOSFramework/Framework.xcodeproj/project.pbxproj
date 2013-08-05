@@ -171,7 +171,6 @@
 		176DE977174B5561007A983B /* ParticleLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BCE16BD24E400732C04 /* ParticleLayer.h */; };
 		176DE978174B5561007A983B /* ParticleLayer3D.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BD016BD24E400732C04 /* ParticleLayer3D.h */; };
 		176DE979174B5561007A983B /* ParticlePropertyLine.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BD416BD24E400732C04 /* ParticlePropertyLine.h */; };
-		176DE97A174B5561007A983B /* ParticleSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BD616BD24E400732C04 /* ParticleSystem.h */; };
 		176DE97B174B5561007A983B /* Mutex.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BE116BD24E400732C04 /* Mutex.h */; };
 		176DE97C174B5561007A983B /* SystemTimer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BF416BD24E400732C04 /* SystemTimer.h */; };
 		176DE97D174B5561007A983B /* AppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C0216BD24E400732C04 /* AppDelegate.h */; };
@@ -461,7 +460,6 @@
 		176DEA9A174B5561007A983B /* ParticleLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BCD16BD24E400732C04 /* ParticleLayer.cpp */; };
 		176DEA9B174B5561007A983B /* ParticleLayer3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BCF16BD24E400732C04 /* ParticleLayer3D.cpp */; };
 		176DEA9C174B5561007A983B /* ParticlePropertyLine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BD316BD24E400732C04 /* ParticlePropertyLine.cpp */; };
-		176DEA9D174B5561007A983B /* ParticleSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BD516BD24E400732C04 /* ParticleSystem.cpp */; };
 		176DEA9E174B5561007A983B /* Mutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BE016BD24E400732C04 /* Mutex.cpp */; };
 		176DEA9F174B5561007A983B /* SystemTimer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BF316BD24E400732C04 /* SystemTimer.cpp */; };
 		176DEAA0174B5561007A983B /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8989C0316BD24E400732C04 /* AppDelegate.mm */; };
@@ -689,6 +687,12 @@
 		17F687E1174B63BA000783FD /* NPAPIEntryPoint.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1795D26C174B56900023F61E /* NPAPIEntryPoint.mm */; };
 		17F687E2174B63C0000783FD /* NPAPIEntryPoint.h in Headers */ = {isa = PBXBuildFile; fileRef = 1795D26D174B56900023F61E /* NPAPIEntryPoint.h */; };
 		4910CBF6167B73EC00CF948A /* libdxt_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4910CBF5167B73EC00CF948A /* libdxt_macos.a */; };
+		4F64848117AFB73C00034454 /* AllocatorFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F64847F17AFB73C00034454 /* AllocatorFactory.cpp */; };
+		4F64848217AFB73C00034454 /* AllocatorFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F64848017AFB73C00034454 /* AllocatorFactory.h */; };
+		4F64848C17AFCAF800034454 /* AllocatorFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F64848017AFB73C00034454 /* AllocatorFactory.h */; };
+		4F64848D17AFCAF900034454 /* AllocatorFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F64848017AFB73C00034454 /* AllocatorFactory.h */; };
+		4F64848E17AFCAFC00034454 /* AllocatorFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F64847F17AFB73C00034454 /* AllocatorFactory.cpp */; };
+		4F64848F17AFCAFD00034454 /* AllocatorFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F64847F17AFB73C00034454 /* AllocatorFactory.cpp */; };
 		4FA5CDBF1757AF430040CC6E /* EnumMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FA5CDBD1757AF430040CC6E /* EnumMap.cpp */; };
 		4FA5CDC01757AF430040CC6E /* EnumMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FA5CDBE1757AF430040CC6E /* EnumMap.h */; };
 		4FE7D3591745056700D2FCE6 /* GlobalEnum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FE7D3571745056700D2FCE6 /* GlobalEnum.cpp */; };
@@ -1118,8 +1122,6 @@
 		E8989E9C16BD24E500732C04 /* ParticleLayer3D.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BD016BD24E400732C04 /* ParticleLayer3D.h */; };
 		E8989E9F16BD24E500732C04 /* ParticlePropertyLine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BD316BD24E400732C04 /* ParticlePropertyLine.cpp */; };
 		E8989EA016BD24E500732C04 /* ParticlePropertyLine.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BD416BD24E400732C04 /* ParticlePropertyLine.h */; };
-		E8989EA116BD24E500732C04 /* ParticleSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BD516BD24E400732C04 /* ParticleSystem.cpp */; };
-		E8989EA216BD24E500732C04 /* ParticleSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BD616BD24E400732C04 /* ParticleSystem.h */; };
 		E8989EAA16BD24E500732C04 /* Mutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BE016BD24E400732C04 /* Mutex.cpp */; };
 		E8989EAB16BD24E500732C04 /* Mutex.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BE116BD24E400732C04 /* Mutex.h */; };
 		E8989EBA16BD24E500732C04 /* SystemTimer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BF316BD24E400732C04 /* SystemTimer.cpp */; };
@@ -1541,7 +1543,6 @@
 		E898A0D416BD265400732C04 /* ParticleLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BCE16BD24E400732C04 /* ParticleLayer.h */; };
 		E898A0D516BD265400732C04 /* ParticleLayer3D.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BD016BD24E400732C04 /* ParticleLayer3D.h */; };
 		E898A0D716BD265400732C04 /* ParticlePropertyLine.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BD416BD24E400732C04 /* ParticlePropertyLine.h */; };
-		E898A0D816BD265400732C04 /* ParticleSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BD616BD24E400732C04 /* ParticleSystem.h */; };
 		E898A0D916BD265400732C04 /* Mutex.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BE116BD24E400732C04 /* Mutex.h */; };
 		E898A0DA16BD265400732C04 /* CorePlatformMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BE516BD24E400732C04 /* CorePlatformMacOS.h */; };
 		E898A0DB16BD265400732C04 /* OpenGLView.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BE616BD24E400732C04 /* OpenGLView.h */; };
@@ -1782,7 +1783,6 @@
 		E898A1F416BD265400732C04 /* ParticleLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BCD16BD24E400732C04 /* ParticleLayer.cpp */; };
 		E898A1F516BD265400732C04 /* ParticleLayer3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BCF16BD24E400732C04 /* ParticleLayer3D.cpp */; };
 		E898A1F716BD265400732C04 /* ParticlePropertyLine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BD316BD24E400732C04 /* ParticlePropertyLine.cpp */; };
-		E898A1F816BD265400732C04 /* ParticleSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BD516BD24E400732C04 /* ParticleSystem.cpp */; };
 		E898A1F916BD265400732C04 /* Mutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BE016BD24E400732C04 /* Mutex.cpp */; };
 		E898A1FA16BD265400732C04 /* CorePlatformMacOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BE416BD24E400732C04 /* CorePlatformMacOS.cpp */; };
 		E898A1FB16BD265400732C04 /* OpenGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8989BE716BD24E400732C04 /* OpenGLView.mm */; };
@@ -2057,6 +2057,8 @@
 		17F53E2116D36DDE004D5099 /* IWebViewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IWebViewControl.h; sourceTree = "<group>"; };
 		32DBCF5E0370ADEE00C91783 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = "<group>"; };
 		4910CBF5167B73EC00CF948A /* libdxt_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_macos.a; path = ../../Libs/libs/libdxt_macos.a; sourceTree = "<group>"; };
+		4F64847F17AFB73C00034454 /* AllocatorFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AllocatorFactory.cpp; sourceTree = "<group>"; };
+		4F64848017AFB73C00034454 /* AllocatorFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AllocatorFactory.h; sourceTree = "<group>"; };
 		4FA5CDBD1757AF430040CC6E /* EnumMap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EnumMap.cpp; sourceTree = "<group>"; };
 		4FA5CDBE1757AF430040CC6E /* EnumMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EnumMap.h; sourceTree = "<group>"; };
 		4FE7D3571745056700D2FCE6 /* GlobalEnum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GlobalEnum.cpp; sourceTree = "<group>"; };
@@ -2388,8 +2390,6 @@
 		E8989BD016BD24E400732C04 /* ParticleLayer3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayer3D.h; sourceTree = "<group>"; };
 		E8989BD316BD24E400732C04 /* ParticlePropertyLine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticlePropertyLine.cpp; sourceTree = "<group>"; };
 		E8989BD416BD24E400732C04 /* ParticlePropertyLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticlePropertyLine.h; sourceTree = "<group>"; };
-		E8989BD516BD24E400732C04 /* ParticleSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleSystem.cpp; sourceTree = "<group>"; };
-		E8989BD616BD24E400732C04 /* ParticleSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleSystem.h; sourceTree = "<group>"; };
 		E8989BE016BD24E400732C04 /* Mutex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mutex.cpp; sourceTree = "<group>"; };
 		E8989BE116BD24E400732C04 /* Mutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mutex.h; sourceTree = "<group>"; };
 		E8989BE416BD24E400732C04 /* CorePlatformMacOS.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CorePlatformMacOS.cpp; sourceTree = "<group>"; };
@@ -2902,6 +2902,8 @@
 		E8989AD916BD24E400732C04 /* Base */ = {
 			isa = PBXGroup;
 			children = (
+				4F64847F17AFB73C00034454 /* AllocatorFactory.cpp */,
+				4F64848017AFB73C00034454 /* AllocatorFactory.h */,
 				4FA5CDBD1757AF430040CC6E /* EnumMap.cpp */,
 				4FA5CDBE1757AF430040CC6E /* EnumMap.h */,
 				4FE7D3571745056700D2FCE6 /* GlobalEnum.cpp */,
@@ -3199,8 +3201,6 @@
 				E8989BD016BD24E400732C04 /* ParticleLayer3D.h */,
 				E8989BD316BD24E400732C04 /* ParticlePropertyLine.cpp */,
 				E8989BD416BD24E400732C04 /* ParticlePropertyLine.h */,
-				E8989BD516BD24E400732C04 /* ParticleSystem.cpp */,
-				E8989BD616BD24E400732C04 /* ParticleSystem.h */,
 			);
 			path = Particles;
 			sourceTree = "<group>";
@@ -3939,7 +3939,6 @@
 				176DE977174B5561007A983B /* ParticleLayer.h in Headers */,
 				176DE978174B5561007A983B /* ParticleLayer3D.h in Headers */,
 				176DE979174B5561007A983B /* ParticlePropertyLine.h in Headers */,
-				176DE97A174B5561007A983B /* ParticleSystem.h in Headers */,
 				176DE97B174B5561007A983B /* Mutex.h in Headers */,
 				176DE97C174B5561007A983B /* SystemTimer.h in Headers */,
 				176DE97D174B5561007A983B /* AppDelegate.h in Headers */,
@@ -4148,6 +4147,7 @@
 				4FFE5CB31779E0B200728624 /* MipmapReplacer.h in Headers */,
 				A68B3EED17AA82CE00E129C1 /* SkyboxComponent.h in Headers */,
 				A68B3EF517AA8C4000E129C1 /* SkyboxSystem.h in Headers */,
+				4F64848D17AFCAF900034454 /* AllocatorFactory.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4284,7 +4284,6 @@
 				E8989E9A16BD24E500732C04 /* ParticleLayer.h in Headers */,
 				E8989E9C16BD24E500732C04 /* ParticleLayer3D.h in Headers */,
 				E8989EA016BD24E500732C04 /* ParticlePropertyLine.h in Headers */,
-				E8989EA216BD24E500732C04 /* ParticleSystem.h in Headers */,
 				E8989EAB16BD24E500732C04 /* Mutex.h in Headers */,
 				E8989EBB16BD24E500732C04 /* SystemTimer.h in Headers */,
 				E8989EC716BD24E500732C04 /* AppDelegate.h in Headers */,
@@ -4497,6 +4496,7 @@
 				C18577EF17A16DA800331A95 /* MaterialOptimazer.h in Headers */,
 				A68B3EE917AA82B800E129C1 /* SkyboxComponent.h in Headers */,
 				A68B3EF317AA8C4000E129C1 /* SkyboxSystem.h in Headers */,
+				4F64848217AFB73C00034454 /* AllocatorFactory.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4633,7 +4633,6 @@
 				E898A0D416BD265400732C04 /* ParticleLayer.h in Headers */,
 				E898A0D516BD265400732C04 /* ParticleLayer3D.h in Headers */,
 				E898A0D716BD265400732C04 /* ParticlePropertyLine.h in Headers */,
-				E898A0D816BD265400732C04 /* ParticleSystem.h in Headers */,
 				E898A0D916BD265400732C04 /* Mutex.h in Headers */,
 				E898A0DA16BD265400732C04 /* CorePlatformMacOS.h in Headers */,
 				E898A0DB16BD265400732C04 /* OpenGLView.h in Headers */,
@@ -4837,6 +4836,7 @@
 				4FFE5CB21779E09C00728624 /* MipmapReplacer.h in Headers */,
 				A68B3EEC17AA82CD00E129C1 /* SkyboxComponent.h in Headers */,
 				A68B3EF417AA8C4000E129C1 /* SkyboxSystem.h in Headers */,
+				4F64848C17AFCAF800034454 /* AllocatorFactory.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5041,7 +5041,6 @@
 				176DEA9A174B5561007A983B /* ParticleLayer.cpp in Sources */,
 				176DEA9B174B5561007A983B /* ParticleLayer3D.cpp in Sources */,
 				176DEA9C174B5561007A983B /* ParticlePropertyLine.cpp in Sources */,
-				176DEA9D174B5561007A983B /* ParticleSystem.cpp in Sources */,
 				176DEA9E174B5561007A983B /* Mutex.cpp in Sources */,
 				176DEA9F174B5561007A983B /* SystemTimer.cpp in Sources */,
 				176DEAA0174B5561007A983B /* AppDelegate.mm in Sources */,
@@ -5246,6 +5245,7 @@
 				C18577F117A2600400331A95 /* MaterialOptimazer.cpp in Sources */,
 				A68B3EEB17AA82C700E129C1 /* SkyboxComponent.cpp in Sources */,
 				A68B3EF217AA8C4000E129C1 /* SkyboxSystem.cpp in Sources */,
+				4F64848F17AFCAFD00034454 /* AllocatorFactory.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5344,7 +5344,6 @@
 				E8989E9916BD24E500732C04 /* ParticleLayer.cpp in Sources */,
 				E8989E9B16BD24E500732C04 /* ParticleLayer3D.cpp in Sources */,
 				E8989E9F16BD24E500732C04 /* ParticlePropertyLine.cpp in Sources */,
-				E8989EA116BD24E500732C04 /* ParticleSystem.cpp in Sources */,
 				E8989EAA16BD24E500732C04 /* Mutex.cpp in Sources */,
 				E8989EBA16BD24E500732C04 /* SystemTimer.cpp in Sources */,
 				E8989EC816BD24E500732C04 /* AppDelegate.mm in Sources */,
@@ -5550,6 +5549,7 @@
 				C18577EE17A16DA800331A95 /* MaterialOptimazer.cpp in Sources */,
 				A68B3EE817AA82B800E129C1 /* SkyboxComponent.cpp in Sources */,
 				A68B3EF017AA8C4000E129C1 /* SkyboxSystem.cpp in Sources */,
+				4F64848117AFB73C00034454 /* AllocatorFactory.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5651,7 +5651,6 @@
 				E898A1F416BD265400732C04 /* ParticleLayer.cpp in Sources */,
 				E898A1F516BD265400732C04 /* ParticleLayer3D.cpp in Sources */,
 				E898A1F716BD265400732C04 /* ParticlePropertyLine.cpp in Sources */,
-				E898A1F816BD265400732C04 /* ParticleSystem.cpp in Sources */,
 				E898A1F916BD265400732C04 /* Mutex.cpp in Sources */,
 				E898A1FA16BD265400732C04 /* CorePlatformMacOS.cpp in Sources */,
 				E898A1FB16BD265400732C04 /* OpenGLView.mm in Sources */,
@@ -5848,6 +5847,7 @@
 				C18577F017A2600300331A95 /* MaterialOptimazer.cpp in Sources */,
 				A68B3EEA17AA82C500E129C1 /* SkyboxComponent.cpp in Sources */,
 				A68B3EF117AA8C4000E129C1 /* SkyboxSystem.cpp in Sources */,
+				4F64848E17AFCAFC00034454 /* AllocatorFactory.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

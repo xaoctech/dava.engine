@@ -46,7 +46,7 @@ void AllocatorFactory::Dump()
 	for(Map<String, FixedSizePoolAllocator*>::iterator it = allocators.begin(); it != itEnd; ++it)
 	{
 		FixedSizePoolAllocator * alloc = (*it).second;
-		Logger::Info("  %s: %u", (*it).first, alloc->maxItemCount);
+		Logger::Info("  %s: %u", it->first.c_str(), alloc->maxItemCount);
 	}
 
 	Logger::Info("End of AllocatorFactory::Dump ==========================");

@@ -68,6 +68,9 @@
 		49F26F1E1771D67D008012B5 /* CommandAction.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49F26F1C1771D67D008012B5 /* CommandAction.cpp */; };
 		4F3E2565174CD38E000D1187 /* Console.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4F3E2561174CD38E000D1187 /* Console.cpp */; };
 		4F3E2566174CD38E000D1187 /* ConsoleView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4F3E2563174CD38E000D1187 /* ConsoleView.cpp */; };
+		4F64847A17AFB5AB00034454 /* QtWaitDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4F64847817AFB5AB00034454 /* QtWaitDialog.cpp */; };
+		4F64848517AFCAA300034454 /* SceneHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4F64848317AFCAA300034454 /* SceneHelper.cpp */; };
+		4F64848B17AFCAD100034454 /* QtWaitDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4F64848717AFCAD100034454 /* QtWaitDialog_moc.cpp */; };
 		4FAD0AFE1785EB3900B05A35 /* ParticleForceMoveCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0AF61785EB3900B05A35 /* ParticleForceMoveCommand.cpp */; };
 		4FAD0AFF1785EB3900B05A35 /* ParticleForceRemoveCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0AF81785EB3900B05A35 /* ParticleForceRemoveCommand.cpp */; };
 		4FAD0B001785EB3900B05A35 /* ParticleLayerMoveCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0AFA1785EB3900B05A35 /* ParticleLayerMoveCommand.cpp */; };
@@ -718,6 +721,14 @@
 		4F3E2562174CD38E000D1187 /* Console.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Console.h; sourceTree = "<group>"; };
 		4F3E2563174CD38E000D1187 /* ConsoleView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConsoleView.cpp; sourceTree = "<group>"; };
 		4F3E2564174CD38E000D1187 /* ConsoleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConsoleView.h; sourceTree = "<group>"; };
+		4F64847817AFB5AB00034454 /* QtWaitDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtWaitDialog.cpp; sourceTree = "<group>"; };
+		4F64847917AFB5AB00034454 /* QtWaitDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtWaitDialog.h; sourceTree = "<group>"; };
+		4F64848317AFCAA300034454 /* SceneHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneHelper.cpp; sourceTree = "<group>"; };
+		4F64848417AFCAA300034454 /* SceneHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneHelper.h; sourceTree = "<group>"; };
+		4F64848717AFCAD100034454 /* QtWaitDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtWaitDialog_moc.cpp; sourceTree = "<group>"; };
+		4F64848817AFCAD100034454 /* ui_CubemapEditorDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_CubemapEditorDialog.h; path = _GeneratedQt/ui_CubemapEditorDialog.h; sourceTree = "<group>"; };
+		4F64848917AFCAD100034454 /* ui_CubeMapTextureBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_CubeMapTextureBrowser.h; path = _GeneratedQt/ui_CubeMapTextureBrowser.h; sourceTree = "<group>"; };
+		4F64848A17AFCAD100034454 /* ui_waitdialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_waitdialog.h; path = _GeneratedQt/ui_waitdialog.h; sourceTree = "<group>"; };
 		4FAD0AF61785EB3900B05A35 /* ParticleForceMoveCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleForceMoveCommand.cpp; sourceTree = "<group>"; };
 		4FAD0AF71785EB3900B05A35 /* ParticleForceMoveCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleForceMoveCommand.h; sourceTree = "<group>"; };
 		4FAD0AF81785EB3900B05A35 /* ParticleForceRemoveCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleForceRemoveCommand.cpp; sourceTree = "<group>"; };
@@ -1848,6 +1859,25 @@
 			);
 			name = DockConsole;
 			path = Classes/Qt/DockConsole;
+			sourceTree = "<group>";
+		};
+		4F64847717AFB5AB00034454 /* QtWaitDialog */ = {
+			isa = PBXGroup;
+			children = (
+				4F64847817AFB5AB00034454 /* QtWaitDialog.cpp */,
+				4F64847917AFB5AB00034454 /* QtWaitDialog.h */,
+			);
+			name = QtWaitDialog;
+			path = Classes/Qt/Tools/QtWaitDialog;
+			sourceTree = "<group>";
+		};
+		4F64848617AFCAD100034454 /* QtWaitDialog */ = {
+			isa = PBXGroup;
+			children = (
+				4F64848717AFCAD100034454 /* QtWaitDialog_moc.cpp */,
+			);
+			name = QtWaitDialog;
+			path = _GeneratedQt/Tools/QtWaitDialog;
 			sourceTree = "<group>";
 		};
 		4FAD0B061785EB8E00B05A35 /* EventFilterDoubleSpinBox */ = {
@@ -3079,6 +3109,7 @@
 		626B008A177B2F2C00D8A54F /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				4F64847717AFB5AB00034454 /* QtWaitDialog */,
 				6295E406178B07EB0007F9EC /* MimeDataHelper */,
 				4FAD0B061785EB8E00B05A35 /* EventFilterDoubleSpinBox */,
 				4FAD0B091785EB8E00B05A35 /* QResourceEditorProgressDialog */,
@@ -3400,6 +3431,8 @@
 		E838D55616AFFED4006F1721 /* Scene */ = {
 			isa = PBXGroup;
 			children = (
+				4F64848317AFCAA300034454 /* SceneHelper.cpp */,
+				4F64848417AFCAA300034454 /* SceneHelper.h */,
 				4FFE5C73176B379600728624 /* SceneEditor2.cpp */,
 				4FFE5C74176B379600728624 /* SceneEditor2.h */,
 				E826131D1734170100BF60B6 /* SceneTypes.h */,
@@ -3481,6 +3514,10 @@
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
 			isa = PBXGroup;
 			children = (
+				4F64848617AFCAD100034454 /* QtWaitDialog */,
+				4F64848817AFCAD100034454 /* ui_CubemapEditorDialog.h */,
+				4F64848917AFCAD100034454 /* ui_CubeMapTextureBrowser.h */,
+				4F64848A17AFCAD100034454 /* ui_waitdialog.h */,
 				A69AA3A81796F1A60008B683 /* CubemapEditor */,
 				499E4AB3178AC1340067FA56 /* DockVisibilityToolEditor */,
 				499E4AB2178AC1290067FA56 /* DockTilemaskEditor */,
@@ -4410,6 +4447,9 @@
 				176D7F0E179D5C6800795610 /* ParticleEditorCommands.cpp in Build Sources */,
 				49CAAF7A17A65FA400C91496 /* RulerToolSystem.cpp in Build Sources */,
 				49CAAF8117A65FB200C91496 /* RulerToolProxy.cpp in Build Sources */,
+				4F64847A17AFB5AB00034454 /* QtWaitDialog.cpp in Build Sources */,
+				4F64848517AFCAA300034454 /* SceneHelper.cpp in Build Sources */,
+				4F64848B17AFCAD100034454 /* QtWaitDialog_moc.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
