@@ -544,8 +544,6 @@ void SceneEditorScreenMain::SaveToFolder(const FilePath & folder)
     BodyItem *iBody = FindCurrentBody();
 	iBody->bodyControl->PushEditorEntities();
     
-    SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
-    
 	// Get project path
     KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
     FilePath dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
@@ -555,6 +553,8 @@ void SceneEditorScreenMain::SaveToFolder(const FilePath & folder)
     sceneSaver.SetOutFolder(folder);
     
     Set<String> errorsLog;
+
+	SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
     sceneSaver.SaveScene(iBody->bodyControl->GetScene(), sceneData->GetScenePathname(), errorsLog);
     
 	iBody->bodyControl->PopEditorEntities();
@@ -564,10 +564,15 @@ void SceneEditorScreenMain::SaveToFolder(const FilePath & folder)
 
 void SceneEditorScreenMain::ExportAs(eGPUFamily forGPU)
 {
-    BodyItem *iBody = FindCurrentBody();
+	SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
+	if(sceneData->GetScenePathname().IsEmpty())
+	{
+		ShowErrorDialog("Can't export not saved scene.");
+		return;
+	}
+
+	BodyItem *iBody = FindCurrentBody();
 	iBody->bodyControl->PushEditorEntities();
-    
-    SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
     
     // Get project path
     KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
