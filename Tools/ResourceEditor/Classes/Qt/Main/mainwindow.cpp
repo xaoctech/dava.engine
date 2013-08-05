@@ -155,7 +155,7 @@ void QtMainWindow::SetGPUFormat(DAVA::eGPUFamily gpu)
 	if(allScenesTextures.size() > 0)
 	{
 		int progress = 0;
-		WaitStart("Textures reload", "", 0, allScenesTextures.size());
+		WaitStart("Reloading textures...", "", 0, allScenesTextures.size());
 
 		DAVA::Map<DAVA::String, DAVA::Texture *>::const_iterator it = allScenesTextures.begin();
 		DAVA::Map<DAVA::String, DAVA::Texture *>::const_iterator end = allScenesTextures.end();
@@ -177,7 +177,7 @@ void QtMainWindow::SetGPUFormat(DAVA::eGPUFamily gpu)
 void QtMainWindow::WaitStart(const QString &title, const QString &message, int min /* = 0 */, int max /* = 100 */)
 {
 	waitDialog->SetRange(min, max);
-	waitDialog->Exec(message, title, false, false);
+	waitDialog->Show(title, message, false, false);
 }
 
 void QtMainWindow::WaitSetMessage(const QString &messsage)

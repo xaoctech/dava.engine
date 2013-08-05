@@ -119,6 +119,8 @@ int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 	int tabIndex = -1;
 	SceneEditor2 *scene = new SceneEditor2();
 
+	QtMainWindow::Instance()->WaitStart("Opening scene...", scenePapth.GetAbsolutePathname().c_str());
+
 	if(scene->Load(scenePapth))
 	{
 		tabIndex = tabBar->addTab(scenePapth.GetFilename().c_str());
@@ -139,6 +141,8 @@ int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 	{
 		SetCurrentTab(tabIndex);
 	}
+
+	QtMainWindow::Instance()->WaitStop();
 
 	return tabIndex;
 }
