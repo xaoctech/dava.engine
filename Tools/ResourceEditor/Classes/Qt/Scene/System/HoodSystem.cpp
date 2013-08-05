@@ -26,6 +26,7 @@ HoodSystem::HoodSystem(DAVA::Scene * scene, SceneCameraSystem *camSys)
 	, cameraSystem(camSys)
 	, curMode(ST_MODIF_OFF)
 	, moseOverAxis(ST_AXIS_NONE)
+    , curScale(1.0f)
 	, curHood(NULL)
 	, moveHood()
 	, lockedScale(false)
@@ -297,7 +298,7 @@ void HoodSystem::Draw()
 			curHood->Draw(showAsSelected, moseOverAxis);
 
 			// debug draw axis collision word
-			//collWorld->debugDrawWorld();
+			collWorld->debugDrawWorld();
 		}
 		else
 		{
