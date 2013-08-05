@@ -72,10 +72,14 @@ ParticleEditorWidget::~ParticleEditorWidget()
 
 void ParticleEditorWidget::DeleteOldWidget()
 {
+	DAVA::uint64 tt = DAVA::SystemTimer::Instance()->AbsoluteMS();
+
 	SAFE_DELETE(emitterLayerWidget);
 	SAFE_DELETE(layerForceWidget);
 	SAFE_DELETE(emitterPropertiesWidget);
 	SAFE_DELETE(effectPropertiesWidget);
+
+	printf("delete %lld\n", DAVA::SystemTimer::Instance()->AbsoluteMS() - tt);
 }
 
 void ParticleEditorWidget::OnNodeDeselected(BaseParticleEditorNode* particleEditorNode)
@@ -282,6 +286,8 @@ void ParticleEditorWidget::OnLayerSelectedFromSceneTree(SceneEditor2* scene, DAV
 
 	emit ChangeVisible(true);
 
+	DAVA::uint64 tt = DAVA::SystemTimer::Instance()->AbsoluteMS();
+
 	emitterLayerWidget = new EmitterLayerWidget(scene, this);
 	emitterLayerWidget->Init(emitter, layer, true);
 
@@ -290,6 +296,8 @@ void ParticleEditorWidget::OnLayerSelectedFromSceneTree(SceneEditor2* scene, DAV
 			SIGNAL(ValueChanged()),
 			this,
 			SLOT(OnValueChanged()));
+
+	printf("create: %lld\n", DAVA::SystemTimer::Instance()->AbsoluteMS() - tt);
 
 	// TODO: Yuri Coder, 2013/07/22. This code does not work now.
 	/*
