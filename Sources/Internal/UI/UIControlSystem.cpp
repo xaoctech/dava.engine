@@ -237,13 +237,15 @@ void UIControlSystem::Update()
 	ProcessScreenLogic();
 	
 	float32 timeElapsed = SystemTimer::FrameDelta();
-	
-	if(currentScreen)
-	{
-		currentScreen->SystemUpdate(timeElapsed);
-	}
 
-	popupContainer->SystemUpdate(timeElapsed);
+	if (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_UI_CONTROL_SYSTEM)){
+		if(currentScreen)
+		{
+			currentScreen->SystemUpdate(timeElapsed);
+		}
+
+		popupContainer->SystemUpdate(timeElapsed);
+	}
 	
 	SafeRelease(prevScreen);
 }

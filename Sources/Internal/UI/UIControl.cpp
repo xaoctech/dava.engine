@@ -1438,7 +1438,7 @@ namespace DAVA
 	
 
 	void UIControl::SystemUpdate(float32 timeElapsed)
-	{
+	{		
 		Update(timeElapsed);
 		isUpdated = true;
 		List<UIControl*>::iterator it = childs.begin();
