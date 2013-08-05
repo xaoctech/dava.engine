@@ -17,7 +17,7 @@ QtWaitDialog::QtWaitDialog(QWidget *parent /*= 0*/)
 
 	setMinimumSize(400, 150);
 	setMaximumWidth(400);
-	setWindowModified(Qt::WindowModal);
+	setWindowModality(Qt::WindowModal);
 }
 
 QtWaitDialog::~QtWaitDialog()
