@@ -17,12 +17,16 @@
 #ifndef __RESOURCEEDITORQT__QTWAITDIALOG__
 #define __RESOURCEEDITORQT__QTWAITDIALOG__
 
-#include <QProgressDialog>
+#include <QDialog>
 #include <QLabel>
 #include <QPushButton>
 #include <QProgressBar>
 
-class QtWaitDialog: public QProgressDialog
+namespace Ui {
+	class QtWaitDialog;
+}
+
+class QtWaitDialog: public QDialog
 {
 	Q_OBJECT
 
@@ -41,13 +45,15 @@ public:
 	void SetRangeMax(int max);
 	void SetValue(int value);
 
+signals:
+	void canceled();
+
 protected slots:
+	void CancelPressed();
 	void WaitCanceled();
 
 private:
-	QLabel *waitLabel;
-	QPushButton *waitButton;
-	QProgressBar *waitBar;
+	Ui::QtWaitDialog *ui;
 };
 
 #endif // __RESOURCEEDITORQT__MAINWAITDIALOG__

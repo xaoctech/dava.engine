@@ -1,22 +1,22 @@
+#include <QApplication>
 #include "Tools/QtWaitDialog/QtWaitDialog.h"
-
+#include "ui_waitdialog.h"
 
 QtWaitDialog::QtWaitDialog(QWidget *parent /*= 0*/)
-	: QProgressDialog(parent, Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowSystemMenuHint)
+	: QDialog(parent, Qt::Dialog | Qt::Tool | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowSystemMenuHint)
+	, ui(new Ui::QtWaitDialog)
 {
-	waitLabel = new QLabel(this);
-	waitLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-	setLabel(waitLabel);
+	ui->setupUi(this);
 
-	waitButton = new QPushButton("Cancel", this);
-	setCancelButton(waitButton);
+	QPalette pal = palette();
+	pal.setColor(QPalette::Base, Qt::transparent);
+	ui->waitLabel->setPalette(pal);
 
-	waitBar = new QProgressBar(this);
-	setBar(waitBar);
-
+	QObject::connect(ui->waitButton, SIGNAL(pressed()), this, SLOT(CancelPressed()));
 	QObject::connect(this, SIGNAL(canceled()), this, SLOT(WaitCanceled()));
 
 	setMinimumSize(400, 150);
+	setMaximumWidth(400);
 	setWindowModified(Qt::WindowModal);
 }
 
@@ -28,10 +28,10 @@ QtWaitDialog::~QtWaitDialog()
 void QtWaitDialog::Exec(const QString &title, const QString &message, bool hasWaitbar, bool hasCancel)
 {
 	setWindowTitle(title);
-	setLabelText(message);
+	SetMessage(message);
 
-	waitButton->setEnabled(hasCancel);
-	waitBar->setVisible(hasWaitbar);
+	ui->waitButton->setEnabled(hasCancel);
+	ui->waitBar->setVisible(hasWaitbar);
 
 	exec();
 }
@@ -39,47 +39,62 @@ void QtWaitDialog::Exec(const QString &title, const QString &message, bool hasWa
 void QtWaitDialog::Show(const QString &title, const QString &message, bool hasWaitbar, bool hasCancel)
 {
 	setWindowTitle(title);
-	setLabelText(message);
+	SetMessage(message);
 
-	waitButton->setEnabled(hasCancel);
-	waitBar->setVisible(hasWaitbar);
+	ui->waitButton->setEnabled(hasCancel);
+	ui->waitBar->setVisible(hasWaitbar);
 
 	show();
+
+	QApplication::processEvents();
 }
 
 void QtWaitDialog::Reset()
 {
-	reset();
+	emit canceled();
 	close();
+
+	QApplication::processEvents();
 }
 
-void QtWaitDialog::SetMessage( const QString &message )
+void QtWaitDialog::SetMessage(const QString &message)
 {
-	setLabelText(message);
+	ui->waitLabel->setPlainText(message);
+	QApplication::processEvents();
 }
 
 void QtWaitDialog::SetRange(int min, int max)
 {
-	setRange(0, 100);
+	ui->waitBar->setRange(min, max);
+	QApplication::processEvents();
 }
 
 void QtWaitDialog::SetRangeMin(int min)
 {
-	setMinimum(min);
+	ui->waitBar->setMinimum(min);
+	QApplication::processEvents();
 }
 
 void QtWaitDialog::SetRangeMax(int max)
 {
-	setMaximum(max);
+	ui->waitBar->setMaximum(max);
+	QApplication::processEvents();
 }
 
 void QtWaitDialog::SetValue(int value)
 {
-	waitBar->setVisible(true);
-	setValue(value);
+	ui->waitBar->setVisible(true);
+	ui->waitBar->setValue(value);
+	QApplication::processEvents();
+}
+
+void QtWaitDialog::CancelPressed()
+{
+	emit canceled();
 }
 
 void QtWaitDialog::WaitCanceled()
 {
-	waitButton->setEnabled(false);
+	ui->waitButton->setEnabled(false);
+	QApplication::processEvents();
 }
