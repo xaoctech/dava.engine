@@ -48,8 +48,8 @@ HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 ,	cursorSize(30)
 ,	originalHeightmap(NULL)
 ,	toolImage(NULL)
-,	strength(0)
-,	averageStrength(0)
+,	strength(15)
+,	averageStrength(0.5f)
 ,	inverseDrawingEnabled(false)
 ,	toolImagePath("")
 ,	drawingType(HEIGHTMAP_DRAW_RELATIVE)
@@ -84,17 +84,41 @@ bool HeightmapEditorSystem::IsLandscapeEditingEnabled() const
 	return enabled;
 }
 
+bool HeightmapEditorSystem::IsCanBeEnabled()
+{
+	SceneEditor2* scene = dynamic_cast<SceneEditor2*>(GetScene());
+	DVASSERT(scene);
+	
+	bool canBeEnabled = true;
+	canBeEnabled &= !(scene->visibilityToolSystem->IsLandscapeEditingEnabled());
+//	canBeEnabled &= !(scene->heightmapEditorSystem->IsLandscapeEditingEnabled());
+	canBeEnabled &= !(scene->tilemaskEditorSystem->IsLandscapeEditingEnabled());
+	canBeEnabled &= !(scene->rulerToolSystem->IsLandscapeEditingEnabled());
+	canBeEnabled &= !(scene->customColorsSystem->IsLandscapeEditingEnabled());
+//	canBeEnabled &= !(scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled());
+	
+	return canBeEnabled;
+}
+
 bool HeightmapEditorSystem::EnableLandscapeEditing()
 {
 	if (enabled)
 	{
 		return true;
 	}
-	
+
+	if (!IsCanBeEnabled())
+	{
+		return false;
+	}
+
+	if (!drawSystem->EnableCustomDraw())
+	{
+		return false;
+	}
+
 	selectionSystem->SetLocked(true);
 	modifSystem->SetLocked(true);
-	
-	drawSystem->EnableCustomDraw();
 
 	landscapeSize = drawSystem->GetHeightmapProxy()->Size();
 	copyPasteFrom = Vector2(-1.f, -1.f);
@@ -158,7 +182,7 @@ void HeightmapEditorSystem::ProcessUIEvent(DAVA::UIEvent *event)
 				{
 					curHeight = drawSystem->GetHeightAtPoint(cursorPosition);
 					
-					SceneSignals::Instance()->EmitUpdateDropperHeight(dynamic_cast<SceneEditor2*>(GetScene()), curHeight);
+					SceneSignals::Instance()->EmitDropperHeightChanged(dynamic_cast<SceneEditor2*>(GetScene()), curHeight);
 				}
 				
 				if (isIntersectsLandscape)
@@ -187,7 +211,10 @@ void HeightmapEditorSystem::ProcessUIEvent(DAVA::UIEvent *event)
 					}
 					else
 					{
-						StoreOriginalHeightmap();
+						if (drawingType != HEIGHTMAP_DROPPER)
+						{
+							StoreOriginalHeightmap();
+						}
 					}
 
 					UpdateToolImage();
@@ -205,7 +232,7 @@ void HeightmapEditorSystem::ProcessUIEvent(DAVA::UIEvent *event)
 					{
 						CreateCopyPasteUndo();
 					}
-					else
+					else if (drawingType != HEIGHTMAP_DROPPER)
 					{
 						CreateHeightmapUndo();
 					}
@@ -338,7 +365,7 @@ void HeightmapEditorSystem::UpdateBrushTool(float32 timeElapsed)
 			case HEIGHTMAP_DROPPER:
 			{
 				float32 height = drawSystem->GetHeightAtPoint(cursorPosition);
-				SceneSignals::Instance()->EmitUpdateDropperHeight(dynamic_cast<SceneEditor2*>(GetScene()), height);
+				SceneSignals::Instance()->EmitDropperHeightChanged(dynamic_cast<SceneEditor2*>(GetScene()), height);
 				return;
 			}
 

@@ -14,57 +14,64 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __Framework__UIScrollViewContainer__
-#define __Framework__UIScrollViewContainer__
+#ifndef __RESOURCEEDITORQT__RULERTOOLSYSTEM__
+#define __RESOURCEEDITORQT__RULERTOOLSYSTEM__
 
-#include "DAVAEngine.h"
+#include "Entity/SceneSystem.h"
+#include "EditorScene.h"
 
-namespace DAVA 
+class SceneCollisionSystem;
+class SceneSelectionSystem;
+class EntityModificationSystem;
+class LandscapeEditorDrawSystem;
+
+class RulerToolSystem: public DAVA::SceneSystem
 {
+	static const DAVA::int32 APPROXIMATION_COUNT = 10;
 
-class UIScrollViewContainer : public UIControl
-{
 public:
-	UIScrollViewContainer(const Rect &rect = Rect(), bool rectInAbsoluteCoordinates = false);
-	virtual ~UIScrollViewContainer();
-	
-	virtual UIControl *Clone();
-	virtual void CopyDataFrom(UIControl *srcControl);
-	
-public:
-	virtual void Update(float32 timeElapsed);
-	virtual void Input(UIEvent *currentTouch);
-	
-	virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
+	RulerToolSystem(Scene* scene);
+	virtual ~RulerToolSystem();
 
-	Vector2		scrollOrigin;
+	bool EnableLandscapeEditing();
+	bool DisableLandscapeEdititing();
+	bool IsLandscapeEditingEnabled() const;
+
+	void Update(DAVA::float32 timeElapsed);
+	void ProcessUIEvent(DAVA::UIEvent *event);
 
 protected:
+	bool enabled;
 
-	void		StartScroll(Vector2 startScrollPosition);
-	void		ProcessScroll(Vector2 currentScrollPosition);
-	void		EndScroll();
-	void		ScrollToPosition(const Vector2& position);
-	void   		SaveChildren(UIControl *parent, UIYamlLoader * loader, YamlNode * parentNode);
+	SceneCollisionSystem* collisionSystem;
+	SceneSelectionSystem* selectionSystem;
+	EntityModificationSystem* modifSystem;
+	LandscapeEditorDrawSystem* drawSystem;
 
-	enum 
-	{
-		STATE_NONE = 0,
-		STATE_SCROLL,
-		STATE_ZOOM,
-		STATE_DECCELERATION,
-		STATE_SCROLL_TO_SPECIAL,
-	};
+	Texture* cursorTexture;
+	uint32 cursorSize;
+	uint32 curToolSize;
+	Sprite* toolImageSprite;
 
-	int32		state;
-	Vector2		scrollCurrentShift;
-	// Scroll information
-	Vector2		scrollStartInitialPosition;	// position of click
-	Vector2		scrollStartPosition;		// position related to current scroll start pos, can be different from scrollStartInitialPosition
-	Vector2		scrollCurrentPosition;	// scroll current position
-	bool		scrollStartMovement;
-	UIEvent		scrollTouch;
+	int32 landscapeSize;
+	bool isIntersectsLandscape;
+	Vector2 cursorPosition;
+	Vector2 prevCursorPos;
+
+	List<Vector3> linePoints;
+	float32 length;
+	Vector3 previewPoint;
+	float32 previewLength;
+
+	void UpdateCursorPosition(int32 landscapeSize);
+
+	void SetStartPoint(const Vector3 &point);
+	void AddPoint(const Vector3 &point);
+	void CalcPreviewPoint(const Vector3& point);
+	float32 GetLength(const Vector3 &startPoint, const Vector3 &endPoint);
+	void DrawPoints();
+
+	bool IsCanBeEnabled();
 };
-};
 
-#endif /* defined(__Framework__UIScrollViewContainer__) */
+#endif /* defined(__RESOURCEEDITORQT__RULERTOOLSYSTEM__) */

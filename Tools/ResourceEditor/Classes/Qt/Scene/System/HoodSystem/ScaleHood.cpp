@@ -23,6 +23,7 @@
 
 
 ScaleHood::ScaleHood() : HoodObject(4.0f)
+	, modifScale(0)
 {
 	DAVA::float32 c = 2 * baseSize / 3;
 

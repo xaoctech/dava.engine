@@ -14,57 +14,31 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __Framework__UIScrollViewContainer__
-#define __Framework__UIScrollViewContainer__
+#ifndef __RESOURCEEDITORQT__RULERTOOLPROXY__
+#define __RESOURCEEDITORQT__RULERTOOLPROXY__
 
 #include "DAVAEngine.h"
 
-namespace DAVA 
-{
+using namespace DAVA;
 
-class UIScrollViewContainer : public UIControl
+class RulerToolProxy: public BaseObject
 {
 public:
-	UIScrollViewContainer(const Rect &rect = Rect(), bool rectInAbsoluteCoordinates = false);
-	virtual ~UIScrollViewContainer();
-	
-	virtual UIControl *Clone();
-	virtual void CopyDataFrom(UIControl *srcControl);
-	
-public:
-	virtual void Update(float32 timeElapsed);
-	virtual void Input(UIEvent *currentTouch);
-	
-	virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
+	RulerToolProxy(int32 size);
+	~RulerToolProxy();
 
-	Vector2		scrollOrigin;
+	int32 GetSize();
+
+	Sprite* GetSprite();
+
+	void UpdateSprite();
+	void ResetSpriteChanged();
+	bool IsSpriteChanged();
 
 protected:
-
-	void		StartScroll(Vector2 startScrollPosition);
-	void		ProcessScroll(Vector2 currentScrollPosition);
-	void		EndScroll();
-	void		ScrollToPosition(const Vector2& position);
-	void   		SaveChildren(UIControl *parent, UIYamlLoader * loader, YamlNode * parentNode);
-
-	enum 
-	{
-		STATE_NONE = 0,
-		STATE_SCROLL,
-		STATE_ZOOM,
-		STATE_DECCELERATION,
-		STATE_SCROLL_TO_SPECIAL,
-	};
-
-	int32		state;
-	Vector2		scrollCurrentShift;
-	// Scroll information
-	Vector2		scrollStartInitialPosition;	// position of click
-	Vector2		scrollStartPosition;		// position related to current scroll start pos, can be different from scrollStartInitialPosition
-	Vector2		scrollCurrentPosition;	// scroll current position
-	bool		scrollStartMovement;
-	UIEvent		scrollTouch;
-};
+	Sprite* rulerToolSprite;
+	int32 size;
+	bool spriteChanged;
 };
 
-#endif /* defined(__Framework__UIScrollViewContainer__) */
+#endif /* defined(__RESOURCEEDITORQT__RULERTOOLPROXY__) */

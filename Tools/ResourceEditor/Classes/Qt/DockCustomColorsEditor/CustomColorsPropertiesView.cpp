@@ -23,6 +23,7 @@
 #include "../Scene/SceneSignals.h"
 
 #include <QFileDialog>
+#include <QMessageBox>
 
 CustomColorsPropertiesView::CustomColorsPropertiesView(QWidget* parent)
 :	QWidget(parent)
@@ -46,7 +47,7 @@ void CustomColorsPropertiesView::Init()
 	connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2*)), this, SLOT(SceneDeactivated(SceneEditor2*)));
 
 	connect(ui->buttonEnableCustomColorsEditor, SIGNAL(clicked()), this, SLOT(Toggle()));
-	connect(SceneSignals::Instance(), SIGNAL(NeedSaveCustomColorsTexture(SceneEditor2*)),
+	connect(SceneSignals::Instance(), SIGNAL(CustomColorsTextureShouldBeSaved(SceneEditor2*)),
 			this, SLOT(NeedSaveCustomColorsTexture(SceneEditor2*)));
 
 	connect(ui->sliderBrushSize, SIGNAL(valueChanged(int)), this, SLOT(SetBrushSize(int)));
@@ -115,7 +116,7 @@ void CustomColorsPropertiesView::Toggle()
 		}
 		else
 		{
-			// show "Couldn't enable custom colors editing" message box
+			QMessageBox::critical(0, "Error enabling Custom Colors editor", "Error enabling Custom Colors editor.\nMake sure there is landscape in scene and disable other landscape editors.");
 		}
 	}
 }

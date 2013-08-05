@@ -73,6 +73,7 @@ private slots:
 private:
 	Ui::HeightmapEditorPropertiesView* ui;
 	SceneEditor2* activeScene;
+	QAction* toolbarAction;
 
 	void SetWidgetsState(bool enabled);
 	void BlockAllSignals(bool block);

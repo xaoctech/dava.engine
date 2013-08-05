@@ -53,6 +53,7 @@
 #include "Scene3D/Systems/SwitchSystem.h"
 #include "Scene3D/Systems/SoundUpdateSystem.h"
 #include "Scene3D/Systems/ActionUpdateSystem.h"
+#include "Scene3D/Systems/SkyboxSystem.h"
 
 //#include "Entity/Entity.h"
 //#include "Entity/EntityManager.h"
@@ -122,6 +123,9 @@ void Scene::CreateSystems()
 	
 	actionSystem = new ActionUpdateSystem(this);
 	AddSystem(actionSystem, (1 << Component::ACTION_COMPONENT));
+	
+	skyboxSystem = new SkyboxSystem(this);
+	AddSystem(skyboxSystem, (1 << Component::SKYBOX_COMPONENT));
 }
 
 Scene::~Scene()
@@ -593,6 +597,7 @@ void Scene::Draw()
     renderUpdateSystem->Process();
 	actionSystem->Process(); //update action system before particles and render
 	particleEffectSystem->Process();
+	skyboxSystem->Process();
     renderSystem->Render();
     debugRenderSystem->SetCamera(currentCamera);
     debugRenderSystem->Process();

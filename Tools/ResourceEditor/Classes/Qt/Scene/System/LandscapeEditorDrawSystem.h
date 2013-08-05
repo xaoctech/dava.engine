@@ -36,6 +36,7 @@ class HeightmapProxy;
 class NotPassableTerrainProxy;
 class CustomColorsProxy;
 class VisibilityToolProxy;
+class RulerToolProxy;
 
 class LandscapeEditorDrawSystem: public DAVA::SceneSystem
 {
@@ -47,15 +48,16 @@ public:
 	HeightmapProxy* GetHeightmapProxy();
 	CustomColorsProxy* GetCustomColorsProxy();
 	VisibilityToolProxy* GetVisibilityToolProxy();
+	RulerToolProxy* GetRulerToolProxy();
 
-	void EnableCustomDraw();
+	bool EnableCustomDraw();
 	void DisableCustomDraw();
 
-	void EnableTilemaskEditing();
+	bool EnableTilemaskEditing();
 	void DisableTilemaskEditing();
 
 	bool IsNotPassableTerrainEnabled();
-	void EnableNotPassableTerrain();
+	bool EnableNotPassableTerrain();
 	void DisableNotPassableTerrain();
 	
 	void EnableCursor(int32 landscapeSize);
@@ -88,7 +90,8 @@ private:
 	NotPassableTerrainProxy* notPassableTerrainProxy;
 	CustomColorsProxy* customColorsProxy;
 	VisibilityToolProxy* visibilityToolProxy;
-	
+	RulerToolProxy* rulerToolProxy;
+
 	uint32 customDrawRequestCount;
 	
 	Texture* cursorTexture;
@@ -96,7 +99,9 @@ private:
 	Vector2 cursorPosition;
 	
 	void UpdateBaseLandscapeHeightmap();
-	void Init();
+	bool Init();
+
+	bool IsNotPassableTerrainCanBeEnabled();
 };
 
 #endif /* defined(__RESOURCEEDITORQT__LANDSCAPEEDITORDRAWSYSTEM__) */

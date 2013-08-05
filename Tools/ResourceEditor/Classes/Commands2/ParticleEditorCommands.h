@@ -64,7 +64,6 @@ protected:
 	DAVA::Entity* effectEntity;
 };
 
-
 // Add new layer to Particle Emitter.
 class CommandAddParticleEmitterLayer: public CommandAction
 {
@@ -83,32 +82,45 @@ protected:
 class CommandRemoveParticleEmitterLayer: public CommandAction
 {
 public:
-	CommandRemoveParticleEmitterLayer();
+	CommandRemoveParticleEmitterLayer(ParticleLayer* layer);
 	virtual void Redo();
+
+protected:
+	ParticleLayer* selectedLayer;
 };
 
 // Clone a layer inside Particle Emitter.
 class CommandCloneParticleEmitterLayer: public CommandAction
 {
 public:
-	CommandCloneParticleEmitterLayer();
+	CommandCloneParticleEmitterLayer(ParticleLayer* layer);
 	virtual void Redo();
+	
+protected:
+	ParticleLayer* selectedLayer;
 };
 
 // Add new force to Particle Emitter layer.
 class CommandAddParticleEmitterForce: public CommandAction
 {
 public:
-	CommandAddParticleEmitterForce();
+	CommandAddParticleEmitterForce(ParticleLayer* layer);
 	virtual void Redo();
+	
+protected:
+	ParticleLayer* selectedLayer;
 };
 
 // Remove a force from Particle Emitter layer.
 class CommandRemoveParticleEmitterForce: public CommandAction
 {
 public:
-	CommandRemoveParticleEmitterForce();
+	CommandRemoveParticleEmitterForce(ParticleLayer* layer, ParticleForce* force);
 	virtual void Redo();
+	
+protected:
+	ParticleLayer* selectedLayer;
+	ParticleForce* selectedForce;
 };
 
 class CommandUpdateEffect: public CommandAction
