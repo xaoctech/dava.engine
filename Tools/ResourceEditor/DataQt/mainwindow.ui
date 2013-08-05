@@ -238,7 +238,7 @@
      <x>0</x>
      <y>0</y>
      <width>1068</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -285,6 +285,7 @@
      <addaction name="actionUserNode"/>
      <addaction name="actionSwitchNode"/>
      <addaction name="actionParticleEffectNode"/>
+     <addaction name="actionSkyboxNode"/>
     </widget>
     <addaction name="actionParticleEmitter"/>
     <addaction name="actionParticle_Emitter"/>
@@ -1460,6 +1461,11 @@
    </property>
    <property name="text">
     <string>Reload Textures</string>
+   </property>
+  </action>
+  <action name="actionSkyboxNode">
+   <property name="text">
+    <string>Skybox Node</string>
    </property>
   </action>
  </widget>

@@ -105,17 +105,15 @@ namespace DAVA
 		RenderComponent* renderComponent =
 			static_cast<RenderComponent*>(skyboxEntity->GetComponent(Component::RENDER_COMPONENT));
 		
-		if(NULL == renderComponent)
+		if(NULL != renderComponent)
 		{
-			renderComponent = new RenderComponent();
-			renderComponent->SetRenderObject(renderObj);
-			skyboxEntity->AddComponent(renderComponent);
+			skyboxEntity->RemoveComponent(Component::RENDER_COMPONENT);
 		}
-		else
-		{
-			renderComponent->SetRenderObject(renderObj);
-		}
-		
+
+		renderComponent = new RenderComponent();
+		renderComponent->SetRenderObject(renderObj);
+		skyboxEntity->AddComponent(renderComponent);
+
 		SafeRelease(renderObj);
 	}
 	
@@ -139,6 +137,11 @@ namespace DAVA
 	void SkyboxSystem::SetSystemStateDirty()
 	{
 		state = SYSTEM_DIRTY;
+	}
+	
+	bool SkyboxSystem::IsSkyboxPresent()
+	{
+		return (skyboxEntity != NULL);
 	}
 	
 	//////////////////////////////////////////////////////////////////////////////////////
@@ -345,10 +348,10 @@ namespace DAVA
 		
 		camPos.z += zOffset;
 		
-		Matrix4 finalMatrix = Matrix4::MakeScale(Vector3(scale, scale, scale)) *
-		Matrix4::MakeTranslation(camPos) *
-		Matrix4::MakeRotation(Vector3(0.0f, 0.0f, 1.0f), rotation) *
-		camera->GetMatrix();
+		Matrix4 finalMatrix = Matrix4::MakeRotation(Vector3(0.0f, 0.0f, 1.0f), rotation) *
+								Matrix4::MakeScale(Vector3(scale, scale, scale)) *
+								Matrix4::MakeTranslation(camPos) *
+								camera->GetMatrix();
 		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
 		
 		RenderManager::Instance()->SetRenderData(renderDataObject);
