@@ -15,6 +15,7 @@
 =====================================================================================*/
 
 #include "../../Platform/DeviceInfo.h"
+#include "../../Utils/Utils.h"
 
 #if defined(__DAVAENGINE_ANDROID__)
 
@@ -151,6 +152,21 @@ String JniDeviceInfo::GetUDID()
 	return intermediateStr;
 }
 
+String JniDeviceInfo::GetName()
+{
+	jclass javaClass = GetJavaClass();
+	if (!javaClass)
+		return "";
+
+	intermediateStr = "";
+	jmethodID mid = GetMethodID(javaClass, "GetName", "()V");
+	if (mid)
+		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, 0);
+	ReleaseJavaClass(javaClass);
+
+	return intermediateStr;
+}
+
 String DeviceInfo::GetVersion()
 {
 	JniDeviceInfo* jniDeviceInfo = new JniDeviceInfo();
@@ -208,16 +224,19 @@ String DeviceInfo::GetTimeZone()
 String DeviceInfo::GetUDID()
 {
 	JniDeviceInfo* jniDeviceInfo = new JniDeviceInfo();
-	String version = jniDeviceInfo->GetUDID();
+	String udid = jniDeviceInfo->GetUDID();
 	delete jniDeviceInfo;
 
-	return version;
+	return udid;
 }
 
 WideString DeviceInfo::GetName()
 {
-    //TODO: need code here
-    return WideString ();
+	JniDeviceInfo* jniDeviceInfo = new JniDeviceInfo();
+	String name = jniDeviceInfo->GetName();
+	delete jniDeviceInfo;
+
+	return StringToWString(name);
 }
 
 }
