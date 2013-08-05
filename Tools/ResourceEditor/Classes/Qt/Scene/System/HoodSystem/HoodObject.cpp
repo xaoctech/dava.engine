@@ -18,7 +18,7 @@
 
 HoodObject::HoodObject(DAVA::float32 bs)
 	: baseSize(bs)
-	, objScale(1)
+	, objScale(1.0f)
 { }
 
 HoodObject::~HoodObject()
