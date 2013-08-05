@@ -211,6 +211,9 @@
     <Filter Include="Classes\Commands">
       <UniqueIdentifier>{39885a43-ef7e-4dc8-9f3c-3eb4630635af}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\Qt\Tools\QtWaitDialog">
+      <UniqueIdentifier>{987cb66b-dcf1-4607-9867-8bbbd00934d6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1701,9 +1704,6 @@
     <ClCompile Include="_GeneratedQt\Main\ModificationWidget_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\Main\QtMainWindowHandler_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
     <ClCompile Include="_GeneratedQt\Main\QTreeViewStateHelper_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
@@ -1979,6 +1979,15 @@
     </ClCompile>
     <ClCompile Include="Classes\Qt\Scene\System\RulerToolSystem.cpp">
       <Filter>Classes\Qt\Scene\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\SceneHelper.cpp">
+      <Filter>Classes\Qt\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\QtWaitDialog\QtWaitDialog.cpp">
+      <Filter>Classes\Qt\Tools\QtWaitDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\QtWaitDialog\QtWaitDialog_moc.cpp">
+      <Filter>QtGenerated</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -3439,6 +3448,12 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Scene\System\RulerToolSystem.h">
       <Filter>Classes\Qt\Scene\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\SceneHelper.h">
+      <Filter>Classes\Qt\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\QtWaitDialog\QtWaitDialog.h">
+      <Filter>Classes\Qt\Tools\QtWaitDialog</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

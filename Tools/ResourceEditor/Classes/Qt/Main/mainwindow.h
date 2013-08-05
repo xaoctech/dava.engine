@@ -20,6 +20,7 @@
 #include <QMainWindow>
 #include "ui_mainwindow.h"
 #include "ModificationWidget.h"
+#include "Tools/QtWaitDialog/QtWaitDialog.h"
 
 #include "Base/Singleton.h"
 
@@ -44,6 +45,14 @@ public:
 
 	bool SaveSceneAs(SceneEditor2 *scene);
 
+	void SetGPUFormat(DAVA::eGPUFamily gpu);
+	DAVA::eGPUFamily GetGPUFormat();
+
+	void WaitStart(const QString &title, const QString &message, int min = 0, int max = 100);
+	void WaitSetMessage(const QString &messsage);
+	void WaitSetValue(int value);
+	void WaitStop();
+
 // qt actions slots
 public slots:
 	void OnProjectOpen();
@@ -53,10 +62,14 @@ public slots:
 	void OnSceneSave();
 	void OnSceneSaveAs();
 	void OnSceneSaveToFolder();
+	void OnRecentTriggered(QAction *recentAction);
 	void ExportMenuTriggered(QAction *exportAsAction);
 
 	void OnUndo();
 	void OnRedo();
+
+	void OnReloadTextures();
+	void OnReloadTexturesTriggered(QAction *reloadAction);
 
 	void OnSelectMode();
 	void OnMoveMode();
@@ -86,6 +99,9 @@ protected:
 	void SetupActions();
 	void SetupTitle();
 
+	void InitRecent();
+	void AddRecent(const QString &path);
+
 protected slots:
 	void ProjectOpened(const QString &path);
 	void ProjectClosed();
@@ -98,8 +114,10 @@ protected slots:
 
 private:
 	Ui::MainWindow *ui;
+	QtWaitDialog *waitDialog;
 	QtPosSaver posSaver;
 
+	QList<QAction *> recentScenes;
 	ModificationWidget *modificationWidget;
 
 	// TODO: remove this old screen -->
@@ -111,6 +129,7 @@ private:
 	void LoadEditorLightState(SceneEditor2 *scene);
 	void LoadNotPassableState(SceneEditor2* scene);
 	void LoadRulerToolState(SceneEditor2* scene);
+	void LoadGPUFormat();
 };
 
 #if 0

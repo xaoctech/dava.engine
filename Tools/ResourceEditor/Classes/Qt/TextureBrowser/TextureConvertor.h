@@ -28,6 +28,7 @@
 #include "Render/TextureDescriptor.h"
 #include "Render/RenderManager.h"
 #include "TextureBrowser/TextureConvertorWork.h"
+#include "Tools/QtWaitDialog/QtWaitDialog.h"
 
 #define CONVERT_JOB_COUNT 2
 
@@ -62,9 +63,9 @@ signals:
 
 private:
 	int jobIdCounter;
-	
 	int convertJobQueueSize;
 
+	bool waitingComletion;
 	QString waitStatusText;
 
 	QFutureWatcher< DAVA::Vector<QImage> > originalWatcher;
@@ -76,8 +77,7 @@ private:
 	JobItem *curJobOriginal;
 	JobItem *curJobConverted;
 
-	QProgressDialog* waitDialog;
-	QPushButton* waitDialogCancelBnt;
+	QtWaitDialog* waitDialog;
 
 	void jobRunNextConvert();
 	void jobRunNextOriginal();
