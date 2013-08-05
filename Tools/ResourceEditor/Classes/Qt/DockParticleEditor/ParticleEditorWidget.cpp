@@ -74,8 +74,6 @@ ParticleEditorWidget::~ParticleEditorWidget()
 
 void ParticleEditorWidget::CreateInnerWidgets()
 {
-	DAVA::uint64 tt = DAVA::SystemTimer::Instance()->AbsoluteMS();
-
 	effectPropertiesWidget = new ParticleEffectPropertiesWidget(this);
 	effectPropertiesWidget->hide();
 
@@ -89,19 +87,14 @@ void ParticleEditorWidget::CreateInnerWidgets()
 	layerForceWidget->hide();
 
 	widgetMode = MODE_NONE;
-	printf("create: %lld\n", DAVA::SystemTimer::Instance()->AbsoluteMS() - tt);
 }
 
 void ParticleEditorWidget::DeleteInnerWidgets()
 {
-	DAVA::uint64 tt = DAVA::SystemTimer::Instance()->AbsoluteMS();
-
 	SAFE_DELETE(effectPropertiesWidget);
 	SAFE_DELETE(emitterPropertiesWidget);
 	SAFE_DELETE(emitterLayerWidget);
 	SAFE_DELETE(layerForceWidget);
-
-	printf("delete %lld\n", DAVA::SystemTimer::Instance()->AbsoluteMS() - tt);
 }
 
 void ParticleEditorWidget::OnNodeDeselected(BaseParticleEditorNode* particleEditorNode)
@@ -397,8 +390,6 @@ void ParticleEditorWidget::SwitchEditorToLayerMode(SceneEditor2* scene, DAVA::Pa
 	emit ChangeVisible(true);
 	this->widgetMode = MODE_LAYER;
 
-	DAVA::uint64 tt = DAVA::SystemTimer::Instance()->AbsoluteMS();
-
 	emitterLayerWidget->Init(scene, emitter, layer, true);
 	setWidget(emitterLayerWidget);
 	emitterLayerWidget->show();
@@ -407,8 +398,6 @@ void ParticleEditorWidget::SwitchEditorToLayerMode(SceneEditor2* scene, DAVA::Pa
 			SIGNAL(ValueChanged()),
 			this,
 			SLOT(OnValueChanged()));
-
-	printf("create: %lld\n", DAVA::SystemTimer::Instance()->AbsoluteMS() - tt);
 
 	UpdateParticleEditorWidgets();
 }
