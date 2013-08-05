@@ -89,6 +89,9 @@ public slots:
 
 	void OnNotPassableTerrain();
 	void OnRulerTool();
+	
+	void OnAddSkyboxNode();
+	void OnAddEntityMenuAboutToShow();
 
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);

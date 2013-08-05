@@ -85,6 +85,8 @@ namespace DAVA
 		virtual void RemoveEntity(Entity * entity);
 		
 		void SetSystemStateDirty();
+		
+		bool IsSkyboxPresent();
 	};
 };
 
