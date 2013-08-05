@@ -632,6 +632,31 @@ QImage TextureConvertor::FromDavaImage(DAVA::Image *image)
 			}
 			break;
 
+		case DAVA::FORMAT_RGB888:
+			{
+				DAVA::uint8 *data = (DAVA::uint8 *) image->data;
+
+				qtImage = QImage(image->width, image->height, QImage::Format_ARGB32);
+
+				// convert DAVA:RGB888 into Qt ARGB8888
+				int32 imagewidth = image->width * 3;
+				for (int y = 0; y < (int)image->height; y++) 
+				{
+					line = (QRgb *) qtImage.scanLine(y);
+					for (int x = 0, i = 0; x < imagewidth; x += 3, i++) 
+					{
+						DAVA::uint32 a = 0xff000000;
+						DAVA::uint32 r = data[y * imagewidth + x];
+						DAVA::uint32 g = data[y * imagewidth + x + 1];
+						DAVA::uint32 b = data[y * imagewidth + x + 2];
+
+ 						line[i] = (a) | (r << 16) | (g << 8) | (b);
+					}
+				}
+			}
+			break;
+
+
 		default:
 			break;
 		}
