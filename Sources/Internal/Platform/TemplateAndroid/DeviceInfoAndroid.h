@@ -35,6 +35,7 @@ public:
 	String GetRegion();
 	String GetTimeZone();
 	String GetUDID();
+	String GetName();
 };
 
 };
