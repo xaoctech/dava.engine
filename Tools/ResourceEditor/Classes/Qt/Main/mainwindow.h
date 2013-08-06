@@ -30,6 +30,7 @@
 // TODO: remove old screen -->
 #include "Classes/SceneEditor/MaterialEditor.h"
 // <---
+class AddSwitchEntityDialog;
 
 class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
 {
@@ -86,7 +87,17 @@ public slots:
 	void OnSceneLightMode();
 
 	void OnCubemapEditor();
+		
+	void OnLandscapeDialog();
+	void OnLightDialog();
+	void OnServiceNodeDialog();
+	void OnCameraDialog();
+	void OnImposterDialog();
 
+	void OnUserNodeDialog();
+	void OnSwitchEntityDialog();
+	void OnParticleEffectDialog();
+	
 	void OnNotPassableTerrain();
 	void OnRulerTool();
 	
@@ -112,6 +123,8 @@ protected slots:
 	void SceneCommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
 	void SceneActivated(SceneEditor2 *scene);
 	void SceneDeactivated(SceneEditor2 *scene);
+	
+	void AddSwitchDialogFinished(int result);
 
 	void UpdateRulerToolLength(SceneEditor2* scene, double length, double previewLength);
 
@@ -122,6 +135,7 @@ private:
 
 	QList<QAction *> recentScenes;
 	ModificationWidget *modificationWidget;
+	AddSwitchEntityDialog* addSwitchEntityDialog;
 
 	// TODO: remove this old screen -->
 	MaterialEditor *materialEditor;
@@ -133,6 +147,7 @@ private:
 	void LoadNotPassableState(SceneEditor2* scene);
 	void LoadRulerToolState(SceneEditor2* scene);
 	void LoadGPUFormat();
+	void CreateAndDisplayAddEntityDialog(Entity* sceneNode);
 };
 
 #if 0

@@ -14,56 +14,25 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "AddSwitchEntityDialog.h"
-#include "./../Qt/Tools/MimeDataHelper/MimeDataHelper.h"
-#include "./../Qt/Tools/SelectPathWidget/SelectPathWidget.h"
+#ifndef __ADD_ENTITY__COMMAND_H__
+#define __ADD_ENTITY__COMMAND_H__
 
+#include "Commands2/Command2.h"
 
-AddSwitchEntityDialog::AddSwitchEntityDialog(DAVA::Entity* entityToDisplay, QWidget* parent)
-		:BaseAddEntityDialog(entityToDisplay,parent)
+class AddEntityCommand : public Command2
 {
-	setAcceptDrops(false);
+public:
+	AddEntityCommand(DAVA::Entity* entityToAdd, DAVA::Scene* scene);
+	~AddEntityCommand();
+
+	virtual void Undo();
+	virtual void Redo();
+
+	virtual DAVA::Entity* GetEntity() const;
+
+	DAVA::Entity* entityToAdd;
+	DAVA::Scene*  scene;
 	
-		
-	SelectPathWidget* firstWidget = new SelectPathWidget(parent);
-	SelectPathWidget* secondWidget = new SelectPathWidget(parent);
-	SelectPathWidget* thirdWidget = new SelectPathWidget(parent);
+};
 
-	firstWidget->SetDiscriptionText("First Entity:");
-	secondWidget->SetDiscriptionText("Second Entity:");
-	thirdWidget->SetDiscriptionText("Third Entity:");
-	
-	AddControlToUserContainer(firstWidget);
-	AddControlToUserContainer(secondWidget);
-	AddControlToUserContainer(thirdWidget);
-
-	pathWidgets.push_back(firstWidget);
-	pathWidgets.push_back(secondWidget);
-	pathWidgets.push_back(thirdWidget);
-}
-
-AddSwitchEntityDialog::~AddSwitchEntityDialog()
-{
-	RemoveAllControlsFromUserContainer();
-	
-	Q_FOREACH(SelectPathWidget* widget, pathWidgets)
-	{
-		delete widget;
-	}
-}
-
-void AddSwitchEntityDialog::CleanupPathWidgets()
-{
-	Q_FOREACH(SelectPathWidget* widget, pathWidgets)
-	{
-		widget->EraseWidget();
-	}
-}
-
-void AddSwitchEntityDialog::GetPathEntities(DAVA::Vector<DAVA::Entity*>& entities, SceneEditor2* editor)
-{
-	Q_FOREACH(SelectPathWidget* widget, pathWidgets)
-	{
-		entities.push_back(widget->GetOutputEntity(editor));
-	}
-}
+#endif // __ADD_ENTITY__COMMAND_H__

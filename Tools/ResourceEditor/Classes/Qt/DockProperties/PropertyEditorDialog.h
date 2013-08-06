@@ -14,27 +14,18 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __ADD_SWITCH_ENTITY__COMMAND_H__
-#define __ADD_SWITCH_ENTITY__COMMAND_H__
+#ifndef __QT_PROPERTY_DIALOG_WIDGET_H__
+#define __QT_PROPERTY_DIALOG_WIDGET_H__
 
-#include "Commands2/Command2.h"
+#include "PropertyEditor.h"
 
-class AddSwitchEntityCommand : public Command2
+//class added to put second bool argument to constructor of PropertyEditor
+class PropertyEditorDialog : public PropertyEditor
 {
-public:
-	AddSwitchEntityCommand(DAVA::Entity* entityFirst, DAVA::Entity* entitySecond, DAVA::Scene* scene);
-	~AddSwitchEntityCommand();
 
-	virtual void Undo();
-	virtual void Redo();
-    
-    virtual DAVA::Entity* GetEntity() const;
-    
-	DAVA::Entity* entityFirst;
-	DAVA::Entity* entitySecond;
-    DAVA::Entity* entityToAdd;
-    DAVA::Scene*  scene;
+public:
 	
+	PropertyEditorDialog(QWidget *parent = 0):PropertyEditor(parent,false){};
 };
 
-#endif // __ADD_SWITCH_ENTITY__COMMAND_H__
+#endif // __QT_PROPERTY_DIALOG_WIDGET_H__

@@ -14,35 +14,55 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __RESOURCEEDITORQT__ADDSWITCHENTITYDIALOG__
-#define __RESOURCEEDITORQT__ADDSWITCHENTITYDIALOG__
+#ifndef __RESOURCEEDITORQT__BASEADDENTITYDIALOG__
+#define __RESOURCEEDITORQT__BASEADDENTITYDIALOG__
 
-#include "../BaseAddEntityDialog/BaseAddEntityDialog.h"
+#include <QDialog.h>
 #include "DAVAEngine.h"
-#include "SceneEditor2.h"
+#include "Scene3D/Entity.h"
+//#include "QtPropertyData.h"
+//#include "Base/Introspection.h"
 
-class SelectPathWidget;
+class DAVA::Entity;
 
-class AddSwitchEntityDialog: public BaseAddEntityDialog
+
+namespace Ui
 {
-public:
-	AddSwitchEntityDialog(DAVA::Entity* entityToDisplay, QWidget* parent = 0);
-	
-	~AddSwitchEntityDialog();
-	
-	void CleanupPathWidgets();
+	class BaseAddEntityDialog;
+}
 
-	const DAVA::Vector<SelectPathWidget*>& GetPathWidgets()
+class BaseAddEntityDialog: public QDialog
+{
+	Q_OBJECT
+
+public:
+	explicit BaseAddEntityDialog(DAVA::Entity* _entity, QWidget* parent = 0);
+
+	~BaseAddEntityDialog();
+	
+	void GetIncludedControls(QList<QWidget*>& includedWidgets);
+	
+	void showEvent ( QShowEvent * event );
+	
+	DAVA::Entity* GetEntity()
 	{
-		return pathWidgets;
+		return entity;
 	}
 	
-	void GetPathEntities(DAVA::Vector<DAVA::Entity*>& entities, SceneEditor2* editor);
-
+	void SetEntity(DAVA::Entity* );
+	
 protected:
 	
-	DAVA::Vector<SelectPathWidget*> pathWidgets;
+	void AddControlToUserContainer(QWidget* widget);
+	
+	void RemoveControlFromUserContainer(QWidget* widget);
+	
+	void RemoveAllControlsFromUserContainer();
+
+	DAVA::Entity* entity;
+	
+	Ui::BaseAddEntityDialog *ui;
 	
 };
 
-#endif /* defined(__RESOURCEEDITORQT__ADDSWITCHENTITYDIALOG__) */
+#endif /* defined(__RESOURCEEDITORQT__BASEADDENTITYDIALOG__) */

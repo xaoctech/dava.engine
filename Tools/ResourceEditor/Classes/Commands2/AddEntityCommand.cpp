@@ -14,27 +14,21 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "Commands2/AddSwitchEntityCommand.h"
+#include "Commands2/AddEntityCommand.h"
 #include "../Qt/Scene/SceneDataManager.h"
 #include "Scene3D/Entity.h"
-#include "StringConstants.h"
 
 
-AddSwitchEntityCommand::AddSwitchEntityCommand(DAVA::Entity* _entityFirst, DAVA::Entity* _entitySecond, DAVA::Scene* _scene)
-	: Command2(CMDID_ADD_SWITCH_ENTITY, "Add Switch Entity")
-	, entityFirst(_entityFirst)
-	, entitySecond(_entitySecond)
-    , entityToAdd(NULL)
+AddEntityCommand::AddEntityCommand(DAVA::Entity* _entityToAdd, DAVA::Scene* _scene)
+	: Command2(CMDID_ADD_ENTITY, "Add Entity")
+    , entityToAdd(_entityToAdd)
     , scene(_scene)
 {
 }
 
-AddSwitchEntityCommand::~AddSwitchEntityCommand()
-{
+AddEntityCommand::~AddEntityCommand(){}
 
-}
-
-void AddSwitchEntityCommand::Undo()
+void AddEntityCommand::Undo()
 {
     if(NULL != scene && NULL != entityToAdd)
     {
@@ -42,25 +36,12 @@ void AddSwitchEntityCommand::Undo()
     }
 }
 
-void AddSwitchEntityCommand::Redo()
+void AddEntityCommand::Redo()
 {
-	if(NULL != entityFirst && NULL != entitySecond)
-	{
-		entityToAdd = new Entity();
-        entityToAdd->SetName(ResourceEditor::SWITCH_NODE_NAME);
-        
-        entityToAdd->AddNode(entityFirst);
-        entityToAdd->AddNode(entitySecond);
-        
-        entityToAdd->AddComponent(new SwitchComponent());
-        
-        entityToAdd->SetName(entityFirst->GetName() + "+" + entitySecond->GetName());//debug
-        
-        scene->AddNode(entityToAdd);
-	}
+	scene->AddNode(entityToAdd);
 }
 
-Entity* AddSwitchEntityCommand::GetEntity() const
+Entity* AddEntityCommand::GetEntity() const
 {
 	return entityToAdd;
 }
