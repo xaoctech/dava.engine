@@ -33,10 +33,10 @@ class ParticleEmitterPropertiesWidget: public QWidget, public BaseParticleEditor
 	Q_OBJECT
 	
 public:
-	explicit ParticleEmitterPropertiesWidget(SceneEditor2* scene, QWidget* parent = 0);
+	explicit ParticleEmitterPropertiesWidget(QWidget* parent = 0);
 	~ParticleEmitterPropertiesWidget();
 
-	void Init(DAVA::ParticleEmitter* emitter, bool updateMinimize, bool needUpdateTimeLimits = true);
+	void Init(SceneEditor2* scene, DAVA::ParticleEmitter* emitter, bool updateMinimize, bool needUpdateTimeLimits = true);
 	void Update();
 	
 	virtual bool eventFilter( QObject * o, QEvent * e );

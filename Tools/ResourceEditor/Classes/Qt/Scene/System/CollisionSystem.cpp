@@ -33,7 +33,7 @@
 SceneCollisionSystem::SceneCollisionSystem(DAVA::Scene * scene)
 	: DAVA::SceneSystem(scene)
 	, rayIntersectCached(false)
-	, drawMode(ST_COLL_DRAW_OBJECTS_SELECTED)
+	, drawMode(ST_COLL_DRAW_NOTHING)
 	, curLandscape(NULL)
 {
 	btVector3 worldMin(-1000,-1000,-1000);

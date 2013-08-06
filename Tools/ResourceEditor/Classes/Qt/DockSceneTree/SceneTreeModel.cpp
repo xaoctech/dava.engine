@@ -148,7 +148,7 @@ SceneTreeItem* SceneTreeModel::GetItem(const QModelIndex &index) const
 
 Qt::DropActions SceneTreeModel::supportedDropActions() const
 {
-	return Qt::MoveAction;
+	return Qt::CopyAction | Qt::MoveAction;
 }
 
 QMimeData * SceneTreeModel::mimeData(const QModelIndexList & indexes) const

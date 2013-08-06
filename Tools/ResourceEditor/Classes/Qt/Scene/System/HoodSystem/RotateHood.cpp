@@ -237,7 +237,7 @@ void RotateHood::Draw(ST_Axis selectedAxis, ST_Axis mouseOverAxis)
 	}
 
 	// draw axis spheres
-	DAVA::float32 radius = axisX->curScale * baseSize / 12;
+	DAVA::float32 radius = axisX->curScale * baseSize / 24;
 
 	DAVA::RenderManager::Instance()->SetColor(colorX);
 	DAVA::RenderHelper::Instance()->FillDodecahedron(axisX->curTo, radius);

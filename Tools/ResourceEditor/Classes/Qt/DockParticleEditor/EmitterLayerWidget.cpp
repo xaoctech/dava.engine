@@ -38,9 +38,9 @@ const EmitterLayerWidget::LayerTypeMap EmitterLayerWidget::layerTypeMap[] =
 	{ParticleLayer::TYPE_SUPEREMITTER_PARTICLES, "SuperEmitter"}
 };
 
-EmitterLayerWidget::EmitterLayerWidget(SceneEditor2* scene, QWidget *parent) :
+EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 	QWidget(parent),
-	BaseParticleEditorContentWidget(scene)
+	BaseParticleEditorContentWidget()
 {
 	mainBox = new QVBoxLayout;
 	this->setLayout(mainBox);
@@ -362,7 +362,7 @@ void EmitterLayerWidget::InitWidget(QWidget* widget)
 			SLOT(OnValueChanged()));
 }
 
-void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *layer, bool updateMinimized)
+void EmitterLayerWidget::Init(SceneEditor2* scene, ParticleEmitter* emitter, DAVA::ParticleLayer *layer, bool updateMinimized)
 {
 	if (!emitter || !layer)
 		return;
@@ -371,6 +371,7 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	
 	this->emitter = emitter;
 	this->layer = layer;
+	SetActiveScene(scene);
 	
 	float32 emitterLifeTime = emitter->GetLifeTime();
 	float32 lifeTime = Min(emitterLifeTime, layer->endTime);
@@ -733,13 +734,13 @@ void EmitterLayerWidget::OnValueChanged()
 	DVASSERT(activeScene);
 	activeScene->Exec(updateLayerCmd);
 
-	Init(this->emitter, this->layer, false);
+	Init(activeScene, emitter, layer, false);
 	emit ValueChanged();
 }
 
 void EmitterLayerWidget::Update()
 {
-	Init(this->emitter, this->layer, false);
+	Init(activeScene, emitter, layer, false);
 }
 
 void EmitterLayerWidget::UpdateTooltip()

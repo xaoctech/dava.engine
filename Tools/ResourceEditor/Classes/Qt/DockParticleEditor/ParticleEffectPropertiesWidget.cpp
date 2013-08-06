@@ -21,9 +21,9 @@
 #include <QLineEdit>
 #include <QEvent>
 
-ParticleEffectPropertiesWidget::ParticleEffectPropertiesWidget(SceneEditor2* scene, QWidget* parent) :
+ParticleEffectPropertiesWidget::ParticleEffectPropertiesWidget(QWidget* parent) :
 	QWidget(parent),
-	BaseParticleEditorContentWidget(scene)
+	BaseParticleEditorContentWidget()
 {
 	mainLayout = new QVBoxLayout();
 	mainLayout->setAlignment(Qt::AlignTop);
@@ -76,14 +76,15 @@ void ParticleEffectPropertiesWidget::OnValueChanged()
 	DVASSERT(activeScene != 0);
 	activeScene->Exec(commandUpdateEffect);
 
-	Init(particleEffect);
+	Init(activeScene, particleEffect);
 }
 
-void ParticleEffectPropertiesWidget::Init(DAVA::ParticleEffectComponent *effect)
+void ParticleEffectPropertiesWidget::Init(SceneEditor2* scene, DAVA::ParticleEffectComponent *effect)
 {
 	DVASSERT(effect != 0);
 	this->particleEffect = effect;
 	this->emitter = NULL;
+	SetActiveScene(scene);
 
 	blockSignals = true;
 

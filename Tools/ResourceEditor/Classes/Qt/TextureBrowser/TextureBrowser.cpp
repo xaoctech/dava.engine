@@ -21,11 +21,10 @@
 #include "TextureBrowser/TextureCache.h"
 #include "Main/QtUtils.h"
 #include "Main/mainwindow.h"
-#include "Scene/SceneData.h"
 #include "Render/LibPVRHelper.h"
 #include "Render/LibDxtHelper.h"
 #include "SceneEditor/EditorSettings.h"
-#include "Scene/SceneDataManager.h"
+#include "Scene/SceneHelper.h"
 
 #include "ui_texturebrowser.h"
 
@@ -585,19 +584,7 @@ void TextureBrowser::reloadTextureToScene(DAVA::Texture *texture, const DAVA::Te
 		// or if given texture format if not a file (will happened if some common texture params changed - mipmap/filtering etc.)
 		if(DAVA::GPU_UNKNOWN == gpu || gpu == curEditorImageGPUForTextures)
 		{
-			DAVA::Texture *newTexture = SceneDataManager::Instance()->TextureReload(descriptor, texture, curEditorImageGPUForTextures);
-
-			if(NULL != newTexture)
-			{
-				// need reset cur texture to newly loaded
-				if(curTexture == texture)
-				{
-					curTexture = newTexture;
-				}
-
-				// need to set new Texture into Textures list model
-				textureListModel->setTexture(descriptor, newTexture);
-			}
+			texture->ReloadAs(gpu);
 		}
 	}
 }
@@ -791,7 +778,7 @@ void TextureBrowser::textureZoomFit(bool checked)
 		int w = 0;
 		int h = 0;
 
-		if(curTexture == Texture::GetPinkPlaceholder())
+		if(curTexture->IsPinkPlaceholder())
 		{
 			QImage img = ui->textureAreaOriginal->getImage();
 			w = img.width();
@@ -860,11 +847,11 @@ void TextureBrowser::textureConver(bool checked)
 
 void TextureBrowser::textureConverAll(bool checked)
 {
-	DAVA::Scene* activeScene = SceneDataManager::Instance()->SceneGetActive()->GetScene();
+	DAVA::Scene* activeScene = QtMainWindow::Instance()->GetCurrentScene();
 	if(NULL != activeScene)
 	{
 		QMessageBox msgBox(this);
-		msgBox.setText("You chose to convert all textures.");
+		msgBox.setText("You are going to convert all textures.");
 		msgBox.setInformativeText("This could take a long time. Would you like to continue?");
 		msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
 		msgBox.setDefaultButton(QMessageBox::Cancel);
