@@ -59,6 +59,15 @@ signals:
 	void ChangeVisible(bool bVisible);
 	
 private:
+	enum ParticleEditorWidgetMode
+	{
+		MODE_NONE = 0,
+		MODE_EFFECT,
+		MODE_EMITTER,
+		MODE_LAYER,
+		MODE_FORCE
+	};
+
 	void DeleteOldWidget();
 	void UpdateParticleEditorWidgets();
 	
@@ -74,11 +83,28 @@ private:
 	// Emit the "Value Changed" signal depending on the active widget.
 	void EmitValueChangedSceneSignal();
 
+	// Create/delete Inner Widgets. Note - they are created once only.
+	void CreateInnerWidgets();
+	void DeleteInnerWidgets();
+
+	// Switch editor to the particular mode.
+	void SwitchEditorToEffectMode(SceneEditor2* scene, ParticleEffectComponent* effect);
+	void SwitchEditorToEmitterMode(SceneEditor2* scene, DAVA::ParticleEmitter* emitter);
+	void SwitchEditorToLayerMode(SceneEditor2* scene, DAVA::ParticleLayer* layer);
+	void SwitchEditorToForceMode(SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::int32 forceIndex);
+
+	// Reset the editor mode, hide/disconnect appropriate widgets.
+	void ResetEditorMode();
+
 private:
+	// Current Particle Editor Widget mode.
+	ParticleEditorWidgetMode widgetMode;
+
+	// Inner widgets.
 	ParticleEffectPropertiesWidget* effectPropertiesWidget;
+	ParticleEmitterPropertiesWidget* emitterPropertiesWidget;
 	EmitterLayerWidget* emitterLayerWidget;
 	LayerForceWidget* layerForceWidget;
-	ParticleEmitterPropertiesWidget* emitterPropertiesWidget;
 };
 
 #endif /* defined(__ResourceEditorQt__ParticleEditorWidget__) */

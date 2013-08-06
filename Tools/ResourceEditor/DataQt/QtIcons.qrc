@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/">
+    <file>QtIcons/wait.png</file>
     <file>QtIcons/move_absolute.png</file>
     <file>QtIcons/move_offset.png</file>
     <file>QtIcons/pivot_center.png</file>
@@ -80,9 +81,9 @@
     <file>QtIcons/transform_bake.png</file>
     <file>QtIcons/shadow.png</file>
     <file>QtIcons/light.png</file>
-	<file>QtIcons/cubemap.png</file>
-	<file>QtIcons/clone.png</file>
-	<file>QtIcons/remove_layer.png</file>
-	<file>QtIcons/remove_force.png</file>
+    <file>QtIcons/cubemap.png</file>
+    <file>QtIcons/clone.png</file>
+    <file>QtIcons/remove_layer.png</file>
+    <file>QtIcons/remove_force.png</file>
   </qresource>
 </RCC>

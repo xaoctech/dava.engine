@@ -41,7 +41,7 @@ private:
     
 public:
     INTROSPECTION_EXTEND(LandscapeChunk, RenderBatch,
-        MEMBER(landscape, "landscape", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(landscape, "landscape", I_SAVE)
     );
 };
     

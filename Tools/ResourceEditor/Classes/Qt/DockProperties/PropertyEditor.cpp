@@ -28,7 +28,7 @@
 
 #include "PropertyEditorStateHelper.h"
 
-PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */)
+PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */, bool connectToSceneSignals /*= true*/)
 	: QtPropertyEditor(parent)
 	, advancedMode(false)
 	, curNode(NULL)
@@ -36,15 +36,17 @@ PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */)
 {
 	SetRefreshTimeout(5000);
 	
-	QObject::connect(SceneSignals::Instance(), SIGNAL(Selected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(EntitySelected(SceneEditor2 *, DAVA::Entity *)));
-	QObject::connect(SceneSignals::Instance(), SIGNAL(Deselected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(EntityDeselected(SceneEditor2 *, DAVA::Entity *)));
-	QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(sceneActivated(SceneEditor2 *)));
-	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(sceneDeactivated(SceneEditor2 *)));
+	if(connectToSceneSignals)
+	{
+		QObject::connect(SceneSignals::Instance(), SIGNAL(Selected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(EntitySelected(SceneEditor2 *, DAVA::Entity *)));
+		QObject::connect(SceneSignals::Instance(), SIGNAL(Deselected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(EntityDeselected(SceneEditor2 *, DAVA::Entity *)));
+		QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(sceneActivated(SceneEditor2 *)));
+		QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(sceneDeactivated(SceneEditor2 *)));
 
-	// MainWindow actions
-	QObject::connect(QtMainWindow::Instance()->GetUI()->actionShowAdvancedProp, SIGNAL(triggered()), this, SLOT(actionShowAdvanced()));
-	advancedMode = QtMainWindow::Instance()->GetUI()->actionShowAdvancedProp->isChecked();
-
+		// MainWindow actions
+		QObject::connect(QtMainWindow::Instance()->GetUI()->actionShowAdvancedProp, SIGNAL(triggered()), this, SLOT(actionShowAdvanced()));
+		advancedMode = QtMainWindow::Instance()->GetUI()->actionShowAdvancedProp->isChecked();
+	}
 	posSaver.Attach(this, "DocPropetyEditor");
 	
 	DAVA::VariantType v = posSaver.LoadValue("splitPos");

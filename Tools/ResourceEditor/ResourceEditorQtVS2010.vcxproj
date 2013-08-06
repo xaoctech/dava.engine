@@ -371,7 +371,7 @@
     <ClCompile Include="Classes\CommandLine\SceneSaver\SceneSaverTool.cpp" />
     <ClCompile Include="Classes\CommandLine\SceneUtils\CleanFolderTool.cpp" />
     <ClCompile Include="Classes\CommandLine\SceneUtils\SceneUtils.cpp" />
-    <ClCompile Include="Classes\Commands2\AddSwitchEntityCommand.cpp" />
+    <ClCompile Include="Classes\Commands2\AddEntityCommand.cpp" />
     <ClCompile Include="Classes\Commands2\Command2.cpp" />
     <ClCompile Include="Classes\Commands2\CommandAction.cpp" />
     <ClCompile Include="Classes\Commands2\CommandBatch.cpp" />
@@ -492,6 +492,7 @@
     <ClCompile Include="Classes\Qt\Scene\SceneData.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneDataManager.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneEditor2.cpp" />
+    <ClCompile Include="Classes\Qt\Scene\SceneHelper.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneSignals.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneTabWidget.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\CameraSystem.cpp" />
@@ -537,6 +538,7 @@
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureScrollArea.cpp" />
     <ClCompile Include="Classes\Qt\Tools\AddParticleEmitterDialog\AddParticleEmitterDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\AddSwitchEntityDialog\AddSwitchEntityDialog.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\BaseAddEntityDialog\BaseAddEntityDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\EventFilterDoubleSpinBox\EventFilterDoubleSpinBox.cpp" />
     <ClCompile Include="Classes\Qt\Tools\MimeDataHelper\MimeDataHelper.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QResourceEditorProgressDialog\QResourceEditorProgressDialog.cpp" />
@@ -552,6 +554,7 @@
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtProperyData\QtPropertyDataMetaObject.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\QtWaitDialog\QtWaitDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\SelectPathWidget\SelectPathWidget.cpp" />
     <ClCompile Include="Classes\RulerTool\RulerTool.cpp" />
     <ClCompile Include="Classes\SceneEditor\ArrowsNode.cpp" />
@@ -677,7 +680,6 @@
     <ClCompile Include="_GeneratedQt\Main\davaglwidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\mainwindow_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\ModificationWidget_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\Main\QtMainWindowHandler_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\QTreeViewStateHelper_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\QtUtils_moc.cpp" />
     <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialBrowser_moc.cpp" />
@@ -738,6 +740,7 @@
     <ClCompile Include="_GeneratedQt\TextureBrowser\TextureScrollArea_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\AddParticleEmitterDialog\AddParticleEmitterDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\AddSwitchEntityDialog\AddSwitchEntityDialog_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Tools\BaseAddEntityDialog\BaseAddEntityDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\EventFilterDoubleSpinBox\EventFilterDoubleSpinBox_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\MimeDataHelper\MimeDataHelper_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QResourceEditorProgressDialog\QResourceEditorProgressDialog_moc.cpp" />
@@ -753,6 +756,7 @@
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtProperyData\QtPropertyDataMetaObject_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Tools\QtWaitDialog\QtWaitDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\SelectPathWidget\SelectPathWidget_moc.cpp" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
@@ -1029,7 +1033,7 @@
     <ClInclude Include="Classes\CommandLine\SceneSaver\SceneSaverTool.h" />
     <ClInclude Include="Classes\CommandLine\SceneUtils\CleanFolderTool.h" />
     <ClInclude Include="Classes\CommandLine\SceneUtils\SceneUtils.h" />
-    <ClInclude Include="Classes\Commands2\AddSwitchEntityCommand.h" />
+    <ClInclude Include="Classes\Commands2\AddEntityCommand.h" />
     <ClInclude Include="Classes\Commands2\Command2.h" />
     <ClInclude Include="Classes\Commands2\CommandAction.h" />
     <ClInclude Include="Classes\Commands2\CommandBatch.h" />
@@ -1123,6 +1127,7 @@
     <ClInclude Include="Classes\Qt\DockParticleEditor\ScrollZoomWidget.h" />
     <ClInclude Include="Classes\Qt\DockParticleEditor\TimeLineWidget.h" />
     <ClInclude Include="Classes\Qt\DockProperties\PropertyEditor.h" />
+    <ClInclude Include="Classes\Qt\DockProperties\PropertyEditorDialog.h" />
     <ClInclude Include="Classes\Qt\DockProperties\PropertyEditorStateHelper.h" />
     <ClInclude Include="Classes\Qt\DockSceneGraph\ExtraUserData.h" />
     <ClInclude Include="Classes\Qt\DockSceneGraph\GraphItem.h" />
@@ -1156,6 +1161,7 @@
     <ClInclude Include="Classes\Qt\Scene\SceneData.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneDataManager.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneEditor2.h" />
+    <ClInclude Include="Classes\Qt\Scene\SceneHelper.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneSignals.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneTabWidget.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneTypes.h" />
@@ -1203,6 +1209,7 @@
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureScrollArea.h" />
     <ClInclude Include="Classes\Qt\Tools\AddParticleEmitterDialog\AddParticleEmitterDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\AddSwitchEntityDialog\AddSwitchEntityDialog.h" />
+    <ClInclude Include="Classes\Qt\Tools\BaseAddEntityDialog\BaseAddEntityDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\EventFilterDoubleSpinBox\EventFilterDoubleSpinBox.h" />
     <ClInclude Include="Classes\Qt\Tools\MimeDataHelper\MimeDataHelper.h" />
     <ClInclude Include="Classes\Qt\Tools\QResourceEditorProgressDialog\QResourceEditorProgressDialog.h" />
@@ -1218,6 +1225,7 @@
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtProperyData\QtPropertyDataMetaObject.h" />
+    <ClInclude Include="Classes\Qt\Tools\QtWaitDialog\QtWaitDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\SelectPathWidget\SelectPathWidget.h" />
     <ClInclude Include="Classes\RulerTool\RulerTool.h" />
     <ClInclude Include="Classes\SceneEditor\ArrowsNode.h" />
@@ -1311,6 +1319,8 @@
     <ClInclude Include="_GeneratedQt\ui_VisibilityToolView.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="DataQt\AddSwitchEntityDialog.ui" />
+    <None Include="DataQt\BaseAddEntityDialog.ui" />
     <None Include="DataQt\HangingObjectsView.ui" />
     <None Include="DataQt\mainwindow.ui">
       <SubType>Designer</SubType>
@@ -1320,6 +1330,7 @@
     <None Include="DataQt\MaterialViewOptions.ui" />
     <None Include="DataQt\ModificationWidget.ui" />
     <None Include="DataQt\ParticleProperty.ui" />
+    <None Include="DataQt\SelectPathWidget.ui" />
     <None Include="DataQt\texturebrowser.ui" />
     <None Include="DataQt\SetSwitchIndexView.ui" />
     <None Include="DataQt\VisibilityToolView.ui" />

@@ -15,7 +15,6 @@
 =====================================================================================*/
 #include "Particles/ParticleLayer.h"
 #include "Particles/ParticleEmitter.h"
-#include "Particles/ParticleSystem.h"
 #include "Utils/StringFormat.h"
 #include "Render/RenderManager.h"
 #include "Render/Image.h"
@@ -105,6 +104,8 @@ ParticleLayer::ParticleLayer()
 
 ParticleLayer::~ParticleLayer()
 {
+	DeleteAllParticles();
+
 	SafeRelease(renderBatch);
 	SafeRelease(sprite);
 	SafeRelease(innerEmitter);
@@ -274,7 +275,7 @@ void ParticleLayer::DeleteAllParticles()
 	while(current)
 	{
 		Particle * next = current->next;
-		ParticleSystem::Instance()->DeleteParticle(current);
+		delete(current);
 		count--;
 		current = next;
 	}
@@ -453,7 +454,7 @@ void ParticleLayer::Update(float32 timeElapsed)
 				{
 					if (prev == 0)head = next;
 					else prev->next = next;
-					ParticleSystem::Instance()->DeleteParticle(current);
+					delete(current);
 					count--;
 				}else
 				{
@@ -515,7 +516,7 @@ void ParticleLayer::Update(float32 timeElapsed)
             {
 				if (!head->Update(timeElapsed))
 				{
-					ParticleSystem::Instance()->DeleteParticle(head);
+					delete(head);
 					count--;
 					DVASSERT(0 == count);
 					head = 0;
@@ -554,7 +555,7 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 		return;
 	}
 	
-	Particle * particle = ParticleSystem::Instance()->NewParticle();
+	Particle * particle = new Particle();
 
 	// SuperEmitter particles contains the emitter inside.
 	if (type == TYPE_SUPEREMITTER_PARTICLES)
