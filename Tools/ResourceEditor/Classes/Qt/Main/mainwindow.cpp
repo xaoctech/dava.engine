@@ -33,6 +33,15 @@
 #include "Scene3D/Components/SkyboxComponent.h"
 #include "Scene3D/Systems/SkyboxSystem.h"
 
+#include "../Tools/BaseAddEntityDialog/BaseAddEntityDialog.h"
+//#include "../Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
+#include "../Tools/SelectPathWidget/SelectPathWidget.h"
+
+#include "../Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
+#include "../../Commands2/AddEntityCommand.h"
+#include "StringConstants.h"
+
+
 #include <QFileDialog>
 #include <QMessageBox>
 
@@ -75,6 +84,8 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(RulerToolLengthChanged(SceneEditor2*, double, double)), this, SLOT(UpdateRulerToolLength(SceneEditor2*, double, double)));
 
 	LoadGPUFormat();
+
+	addSwitchEntityDialog = new AddSwitchEntityDialog( NULL, dynamic_cast<QWidget*>(QObject::parent()));
 }
 
 QtMainWindow::~QtMainWindow()
@@ -88,6 +99,7 @@ QtMainWindow::~QtMainWindow()
 	ui = NULL;
 
 	ProjectManager::Instance()->Release();
+	delete addSwitchEntityDialog;
 }
 
 Ui::MainWindow* QtMainWindow::GetUI()
@@ -366,6 +378,15 @@ void QtMainWindow::SetupActions()
 
 	QObject::connect(ui->menuAdd, SIGNAL(aboutToShow()), this, SLOT(OnAddEntityMenuAboutToShow()));
 	QObject::connect(ui->actionSkyboxNode, SIGNAL(triggered()), this, SLOT(OnAddSkyboxNode()));
+
+	QObject::connect(ui->actionLandscape, SIGNAL(triggered()), this, SLOT(OnLandscapeDialog()));
+	QObject::connect(ui->actionLight, SIGNAL(triggered()), this, SLOT(OnLightDialog()));
+	QObject::connect(ui->actionServiceNode, SIGNAL(triggered()), this, SLOT(OnServiceNodeDialog()));
+	QObject::connect(ui->actionCamera, SIGNAL(triggered()), this, SLOT(OnCameraDialog()));
+	QObject::connect(ui->actionImposter, SIGNAL(triggered()), this, SLOT(OnImposterDialog()));
+	QObject::connect(ui->actionUserNode, SIGNAL(triggered()), this, SLOT(OnUserNodeDialog()));
+	QObject::connect(ui->actionSwitchNode, SIGNAL(triggered()), this, SLOT(OnSwitchEntityDialog()));
+	QObject::connect(ui->actionParticleEffectNode, SIGNAL(triggered()), this, SLOT(OnParticleEffectDialog()));
 }
 
 void QtMainWindow::InitRecent()
@@ -461,6 +482,35 @@ void QtMainWindow::SceneDeactivated(SceneEditor2 *scene)
 	// ...
 	// 
 
+}
+
+void QtMainWindow::AddSwitchDialogFinished(int result)
+{
+	QObject::disconnect(addSwitchEntityDialog, SIGNAL(finished(int)), this, SLOT(AddSwitchDialogFinished(int)));
+
+	SceneEditor2* scene = GetCurrentScene();
+
+	Entity* switchEntity = addSwitchEntityDialog->GetEntity();
+
+	if(result != QDialog::Accepted || NULL == scene)
+	{
+		addSwitchEntityDialog->CleanupPathWidgets();
+		addSwitchEntityDialog->SetEntity(NULL);
+		return;
+	}
+
+	Vector<Entity*> vector;
+	addSwitchEntityDialog->GetPathEntities(vector, scene);	
+	addSwitchEntityDialog->CleanupPathWidgets();
+	
+	Q_FOREACH(Entity* item, vector)
+	{
+		switchEntity->AddNode(item);
+	}
+	if(vector.size())
+	{
+		scene->Exec(new AddEntityCommand(switchEntity, scene));
+	}
 }
 
 void QtMainWindow::SceneCommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
@@ -862,6 +912,100 @@ void QtMainWindow::OnAddEntityMenuAboutToShow()
 	
 	//disable adding of skybox if it was present
 	ui->actionSkyboxNode->setEnabled(!scene->skyboxSystem->IsSkyboxPresent());
+}
+void QtMainWindow::OnSwitchEntityDialog()
+{
+	if(addSwitchEntityDialog->GetEntity() != NULL)//dialog is on screen, do nothing
+	{
+		return;
+	}
+	
+	Entity* entityToAdd = new Entity();
+	entityToAdd->SetName(ResourceEditor::SWITCH_NODE_NAME);
+	entityToAdd->AddComponent(new SwitchComponent());
+	KeyedArchive *customProperties = entityToAdd->GetCustomProperties();
+	customProperties->SetBool(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
+	addSwitchEntityDialog->SetEntity(entityToAdd);
+	
+	QObject::connect(addSwitchEntityDialog, SIGNAL(finished(int)), this, SLOT(AddSwitchDialogFinished(int)));
+	addSwitchEntityDialog->show();
+}
+
+
+void QtMainWindow::OnLandscapeDialog()
+{
+	Entity* sceneNode = new Entity();
+	sceneNode->AddComponent(new RenderComponent(ScopedPtr<Landscape>(new Landscape())));
+	sceneNode->SetName(ResourceEditor::LANDSCAPE_NODE_NAME);
+	CreateAndDisplayAddEntityDialog(sceneNode);
+}
+
+void QtMainWindow::OnLightDialog()
+{
+	Entity* sceneNode = new Entity();
+	sceneNode->AddComponent(new LightComponent(ScopedPtr<Light>(new Light)));
+	sceneNode->SetName(ResourceEditor::LIGHT_NODE_NAME);
+	CreateAndDisplayAddEntityDialog(sceneNode);
+}
+
+void QtMainWindow::OnServiceNodeDialog()
+{	
+	Entity* sceneNode = new Entity();
+	KeyedArchive *customProperties = sceneNode->GetCustomProperties();
+	customProperties->SetBool("editor.isLocked", true);
+	sceneNode->SetName(ResourceEditor::SERVICE_NODE_NAME);
+	CreateAndDisplayAddEntityDialog(sceneNode);
+}
+
+void QtMainWindow::OnCameraDialog()
+{
+	Entity* sceneNode = new Entity();
+	Camera * camera = new Camera();
+	camera->SetUp(Vector3(0.0f, 0.0f, 1.0f));
+	sceneNode->AddComponent(new CameraComponent(camera));
+	sceneNode->SetName(ResourceEditor::CAMERA_NODE_NAME);
+	CreateAndDisplayAddEntityDialog(sceneNode);
+	SafeRelease(camera);
+}
+
+void QtMainWindow::OnImposterDialog()
+{
+	Entity* sceneNode = new ImposterNode();
+	sceneNode->SetName(ResourceEditor::IMPOSTER_NODE_NAME);
+	CreateAndDisplayAddEntityDialog(sceneNode);
+}
+
+void QtMainWindow::OnUserNodeDialog()
+{
+	Entity* sceneNode = new Entity();
+	sceneNode->AddComponent(new UserComponent());
+	sceneNode->SetName(ResourceEditor::USER_NODE_NAME);
+	CreateAndDisplayAddEntityDialog(sceneNode);
+}
+
+void QtMainWindow::OnParticleEffectDialog()
+{
+	Entity* sceneNode = new Entity();
+	sceneNode->AddComponent(new ParticleEffectComponent());
+	sceneNode->SetName(ResourceEditor::PARTICLE_EFFECT_NODE_NAME);
+	CreateAndDisplayAddEntityDialog(sceneNode);
+}
+
+
+void QtMainWindow::CreateAndDisplayAddEntityDialog(Entity* sceneNode)
+{
+	SceneEditor2* sceneEditor = GetCurrentScene();
+	BaseAddEntityDialog* dlg = new BaseAddEntityDialog(sceneNode, dynamic_cast<QWidget*>(QObject::parent()));
+	dlg->exec();
+	if(dlg->result() == QDialog::Accepted && sceneEditor)
+	{
+		sceneEditor->Exec(new AddEntityCommand(sceneNode, sceneEditor));
+	}
+	else
+	{
+		SafeRelease(sceneNode);
+	}
+	delete dlg;
 }
 
 // ###################################################################################################
