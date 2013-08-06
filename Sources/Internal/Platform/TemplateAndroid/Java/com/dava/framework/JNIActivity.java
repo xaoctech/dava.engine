@@ -343,10 +343,10 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 		}
 
 		editText = new EditText(this);
-		InitEditText(editText, new Rect((int)x, (int)y, (int)(x + dx), (int)(y + dy)));
 
 		editText.setText(defaultText);
 		editText.setSelection(editText.getText().length());
+		InitEditText(editText, new Rect((int)x, (int)y, (int)(x + dx), (int)(y + dy)));
 
 		editText.requestFocus();
 		InputMethodManager input = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
