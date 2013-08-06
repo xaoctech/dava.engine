@@ -221,8 +221,7 @@ void AutotestingSystem::OnAppStarted()
         autotestingArchive->Save("~doc:/autotesting/autotesting.archive");
         SafeRelease(autotestingArchive);
     }
-}
-    
+}  
     
 int32 AutotestingSystem::GetIndexInFileList(FileList &fileList, int32 index)
 {
@@ -341,7 +340,7 @@ String AutotestingSystem::ReadString(const String & name)
 	result = currentRunArchive->GetString(name.c_str(), "not_found");
 
 	SafeRelease(dbUpdateObject);
-	Logger::Debug("AutotestingSystem::ReadString state=%s finish", result.c_str());
+	Logger::Debug("AutotestingSystem::ReadString name=%name: '%s'", name.c_str(), result.c_str());
 	return result;
 }
 
@@ -618,7 +617,7 @@ String AutotestingSystem::ReadState(const String & device)
 
 	result = currentRunArchive->GetString(device.c_str(), "not_found");
 	SafeRelease(dbUpdateObject);
-	//Logger::Debug("AutotestingSystem::ReadState state=%s finish", result.c_str());
+	Logger::Debug("AutotestingSystem::ReadState device=%s: '%s'", device.c_str(), result.c_str());
 	return result;
 }
 
@@ -648,7 +647,7 @@ String AutotestingSystem::ReadCommand(const String & device)
 
 	SafeRelease(dbUpdateObject);
 	
-	//Logger::Debug("AutotestingSystem::ReadCommand state=%s finish", result.c_str());
+	Logger::Debug("AutotestingSystem::ReadCommand device=%s: '%s'", device.c_str(), result.c_str());
 	return result;
 }
 
