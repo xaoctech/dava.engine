@@ -7,12 +7,12 @@ import java.util.concurrent.FutureTask;
 public class JNITextField {
 	final static String TAG = "JNITextField";
 	
-	public static void ShowField(final float x, final float y, final float dx, final float dy, final String defaultText)
+	public static void ShowField(final float x, final float y, final float dx, final float dy, final String defaultText, final boolean isPassword)
 	{
 		final FutureTask<Void> task = new FutureTask<Void> (new Callable<Void>() {
 			@Override
 			public Void call() throws Exception {
-				JNIActivity.GetActivity().ShowEditText(x, y, dx, dy, defaultText);
+				JNIActivity.GetActivity().ShowEditText(x, y, dx, dy, defaultText, isPassword);
 				return null;
 			}
 		});
@@ -26,7 +26,6 @@ public class JNITextField {
 		
 		while (!task.isDone())
 			Thread.yield();
-		TextFieldKeyPressed(0, 0, defaultText);
 	}
 	
 	static String text;

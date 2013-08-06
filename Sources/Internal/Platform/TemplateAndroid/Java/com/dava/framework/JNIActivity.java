@@ -13,10 +13,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.InputFilter;
 import android.text.Spanned;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -262,7 +264,7 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 		nativeOnAccelerometer(x, y, z);
 	}
     
-    private void InitEditText(EditText editText, Rect rect)
+    private void InitEditText(EditText editText, Rect rect, boolean isPassword)
     {
 		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(rect.width(), rect.height());
 		params.leftMargin = rect.left;
@@ -313,7 +315,6 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 				return "";
 			}
 		};
-		editText.setFilters(new InputFilter[]{inputFilter});
 
 		editText.setOnEditorActionListener(new OnEditorActionListener() {
 			
@@ -331,12 +332,42 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 				return false;
 			}
 		});
-		addContentView(editText, params);
+		
+		if (isPassword)
+		{
+			class PswTransformationMethod extends PasswordTransformationMethod {
+				@Override
+				public CharSequence getTransformation(CharSequence source, View view) {
+					return new PasswordCharSequence(source);
+				}
+	
+				class PasswordCharSequence implements CharSequence {
+					private CharSequence source;
+					public PasswordCharSequence(CharSequence source) {
+						this.source = source;
+					}
+					public char charAt(int index) {
+						return '*';
+					}
+					public int length() {
+						return source.length();
+					}
+					public CharSequence subSequence(int start, int end) {
+						return source.subSequence(start, end);
+					}
+				}
+			};
+	
+			editText.setTransformationMethod(new PswTransformationMethod());
+		}
 		
 		editText.setInputType(EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-    }
+		addContentView(editText, params);
+		
+		editText.setFilters(new InputFilter[]{inputFilter});
+	}
 	
-	public void ShowEditText(float x, float y, float dx, float dy, String defaultText)
+	public void ShowEditText(float x, float y, float dx, float dy, String defaultText, boolean isPassword)
 	{
 		if (editText != null) {
 			RemoveEditText();
@@ -346,7 +377,7 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 
 		editText.setText(defaultText);
 		editText.setSelection(editText.getText().length());
-		InitEditText(editText, new Rect((int)x, (int)y, (int)(x + dx), (int)(y + dy)));
+		InitEditText(editText, new Rect((int)x, (int)y, (int)(x + dx), (int)(y + dy)), isPassword);
 
 		editText.requestFocus();
 		InputMethodManager input = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
