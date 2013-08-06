@@ -269,17 +269,25 @@ void MainWindow::OnScaleComboTextEditingFinished()
 	}
 
 	// Do the validation.
+	bool needSetDefaultIndex = false;
 	if ((scaleValue < SCALE_PERCENTAGES[0]) ||
 		(scaleValue > SCALE_PERCENTAGES[COUNT_OF(SCALE_PERCENTAGES) - 1]))
 	{
 		// The value is wrong or can't be parsed, use the default one.
 		scaleValue = SCALE_PERCENTAGES[DEFAULT_SCALE_PERCENTAGE_INDEX];
+		needSetDefaultIndex = true;
 	}
 
 	// Update the value in the combo.
 	ui->scaleCombo->blockSignals(true);
 	ui->scaleCombo->lineEdit()->blockSignals(true);
+
 	ui->scaleCombo->setEditText(QString(PERCENTAGE_FORMAT).arg((int)scaleValue));
+	if (needSetDefaultIndex)
+	{
+		ui->scaleCombo->setCurrentIndex(DEFAULT_SCALE_PERCENTAGE_INDEX);
+	}
+
 	ui->scaleCombo->lineEdit()->blockSignals(false);
 	ui->scaleCombo->blockSignals(false);
 
