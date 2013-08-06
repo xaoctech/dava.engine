@@ -59,7 +59,7 @@ String DeviceInfo::GetUDID()
 WideString DeviceInfo::GetName()
 {
 	char16 compName[100];
-	uint32 length = 98;
+	uint32 length = 100;
 
 	bool nameRecieved = GetComputerNameW(compName, (LPDWORD) &length);
 	if(nameRecieved)
