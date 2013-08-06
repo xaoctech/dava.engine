@@ -66,9 +66,10 @@ UITextField::UITextField(const Rect &rect, bool rectInAbsoluteCoordinates/*= fal
 :	UIControl(rect, rectInAbsoluteCoordinates)
 ,	text()
 ,	delegate(0)
-,	cursorBlinkingTime(0.0f),
-        textFont(NULL),
-        staticText(NULL)
+,	cursorBlinkingTime(0.0f)
+,   textFont(NULL)
+,   staticText(NULL)
+,   isPassword(false)
 {
 #ifdef __DAVAENGINE_ANDROID__
 	textFieldAndroid = new UITextFieldAndroid(this);
@@ -87,8 +88,12 @@ UITextField::UITextField(const Rect &rect, bool rectInAbsoluteCoordinates/*= fal
     showCursor = true;    
 }
 
-UITextField::UITextField() : delegate(NULL), cursorBlinkingTime(0.f),
-        textFont(NULL), staticText(NULL)
+UITextField::UITextField()
+:   delegate(NULL)
+,   cursorBlinkingTime(0.f)
+,   textFont(NULL)
+,   staticText(NULL)
+,   isPassword(false)
 {
 #ifdef __DAVAENGINE_ANDROID__
 	textFieldAndroid = new UITextFieldAndroid(this);
@@ -169,36 +174,36 @@ void UITextField::Update(float32 timeElapsed)
 	Rect rect = GetGeometricData().GetUnrotatedRect();//GetRect(true);
 	textFieldiPhone->UpdateRect(rect);
 #else
-
-    cursorTime += timeElapsed;
-
-    if (cursorTime >= 0.5f)
+    
+#ifndef __DAVAENGINE_ANDROID__
+    if(this == UIControlSystem::Instance()->GetFocusedControl())
     {
-        cursorTime = 0;
-        showCursor = !showCursor;
-        needRedraw = true;
-    }
+        cursorTime += timeElapsed;
 
+        if (cursorTime >= 0.5f)
+        {
+            cursorTime = 0;
+            showCursor = !showCursor;
+            needRedraw = true;
+        }
+    }
+#endif
+    
+    if (!needRedraw)
+        return;
+
+#ifndef __DAVAENGINE_ANDROID__
 	if(this == UIControlSystem::Instance()->GetFocusedControl())
 	{
-		if(needRedraw)
-		{
-			WideString txt = text;
-
-			if (showCursor)
-				txt += L"_";
-			else
-				txt += L" ";
-
-			staticText->SetText(txt);
-			needRedraw = false;
-		}
+        WideString txt = GetVisibleText();
+        txt += showCursor ? L"_" : L" ";
+        staticText->SetText(txt);
 	}
 	else
-	{
-		staticText->SetText(text);
-	}
+#endif
+		staticText->SetText(GetVisibleText());
 
+    needRedraw = false;
 #endif
 }
 
@@ -299,7 +304,7 @@ void UITextField::SetShadowOffset(const DAVA::Vector2 &offset)
 void UITextField::SetShadowColor(const Color& color)
 {
 	staticText->SetShadowColor(color);
-   }
+}
 
 void UITextField::SetTextAlign(int32 align)
 {
@@ -307,8 +312,7 @@ void UITextField::SetTextAlign(int32 align)
     textFieldiPhone->SetTextAlign(align);
 #else
     staticText->SetTextAlign(align);
-#endif
-	
+#endif	
 }
 
 void UITextField::SetFontSize(float size)
@@ -344,12 +348,9 @@ void UITextField::SetSize(const DAVA::Vector2 &newSize)
     
 void UITextField::SetText(const WideString & _text)
 {
-	text = _text;
+	this->text = _text;
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->SetText(text);
-
-#else
-    //staticText->SetText(text);
 #endif
 
     needRedraw = true;
@@ -515,6 +516,12 @@ void UITextField::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
         if (font)
             SetFont(font);
     }
+    
+    YamlNode * passwordNode = node->Get("isPassword");
+    if (passwordNode)
+    {
+        isPassword = passwordNode->AsBool();
+    }
 
     if(staticText)
     {
@@ -605,6 +612,9 @@ YamlNode * UITextField::SaveToYamlNode(UIYamlLoader * loader)
 	// Draw Type must be overwritten fot UITextField.
 	UIControlBackground::eDrawType drawType =  this->GetBackground()->GetDrawType();
 	node->Set("drawType", loader->GetDrawTypeNodeValue(drawType));
+    
+    // Is password
+    node->Set("isPassword", isPassword);
 
     SafeDelete(nodeValue);
     
@@ -632,6 +642,7 @@ void UITextField::CopyDataFrom(UIControl *srcControl)
 		
 	cursorTime = t->cursorTime;
     showCursor = t->showCursor;
+    isPassword = t->isPassword;
 	SetText(t->text);
 	SetRect(t->GetRect());
 	
@@ -643,6 +654,27 @@ void UITextField::CopyDataFrom(UIControl *srcControl)
 	}
 	if (t->textFont)
 		SetFont(t->textFont);
+}
+    
+void UITextField::SetIsPassword(bool isPassword)
+{
+    this->isPassword = isPassword;
+    needRedraw = true;
+}
+    
+bool UITextField::IsPassword() const
+{
+    return isPassword;
+}
+    
+WideString UITextField::GetVisibleText() const
+{
+    if (!isPassword)
+        return text;
+    
+    WideString text = this->text;
+    text.replace(0, text.length(), text.length(), L'*');
+    return text;
 }
 	
 }; // namespace
