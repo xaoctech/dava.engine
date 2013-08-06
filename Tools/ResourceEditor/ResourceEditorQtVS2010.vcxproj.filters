@@ -214,6 +214,9 @@
     <Filter Include="Classes\Qt\Tools\QtWaitDialog">
       <UniqueIdentifier>{987cb66b-dcf1-4607-9867-8bbbd00934d6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\Qt\Tools\BaseAddEntityDialog">
+      <UniqueIdentifier>{f5717c29-6eb0-43a0-818b-f1c51dcf0cba}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1344,9 +1347,6 @@
     <ClCompile Include="Classes\Qt\Tools\SelectPathWidget\SelectPathWidget.cpp">
       <Filter>Classes\Qt\Tools\SelectPathWidget</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Commands2\AddSwitchEntityCommand.cpp">
-      <Filter>Classes\Commands2</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Deprecated\ScenePreviewControl.cpp">
       <Filter>Classes\Deprecated</Filter>
     </ClCompile>
@@ -1987,6 +1987,15 @@
       <Filter>Classes\Qt\Tools\QtWaitDialog</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\Tools\QtWaitDialog\QtWaitDialog_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands2\AddEntityCommand.cpp">
+      <Filter>Classes\Commands2</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\BaseAddEntityDialog\BaseAddEntityDialog.cpp">
+      <Filter>Classes\Qt\Tools\BaseAddEntityDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\BaseAddEntityDialog\BaseAddEntityDialog_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
   </ItemGroup>
@@ -3188,9 +3197,6 @@
     <ClInclude Include="Classes\Qt\Tools\SelectPathWidget\SelectPathWidget.h">
       <Filter>Classes\Qt\Tools\SelectPathWidget</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Commands2\AddSwitchEntityCommand.h">
-      <Filter>Classes\Commands2</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Deprecated\ScenePreviewControl.h">
       <Filter>Classes\Deprecated</Filter>
     </ClInclude>
@@ -3455,6 +3461,15 @@
     <ClInclude Include="Classes\Qt\Tools\QtWaitDialog\QtWaitDialog.h">
       <Filter>Classes\Qt\Tools\QtWaitDialog</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Commands2\AddEntityCommand.h">
+      <Filter>Classes\Commands2</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\BaseAddEntityDialog\BaseAddEntityDialog.h">
+      <Filter>Classes\Qt\Tools\BaseAddEntityDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockProperties\PropertyEditorDialog.h">
+      <Filter>Classes\Qt\DockProperties</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.cpp">
@@ -3649,6 +3664,15 @@
       <Filter>QtData</Filter>
     </None>
     <None Include="DataQt\MaterialViewOptions.ui">
+      <Filter>QtData</Filter>
+    </None>
+    <None Include="DataQt\AddSwitchEntityDialog.ui">
+      <Filter>QtData</Filter>
+    </None>
+    <None Include="DataQt\BaseAddEntityDialog.ui">
+      <Filter>QtData</Filter>
+    </None>
+    <None Include="DataQt\SelectPathWidget.ui">
       <Filter>QtData</Filter>
     </None>
   </ItemGroup>
