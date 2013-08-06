@@ -492,6 +492,8 @@ void SceneEditorScreenMain::RecreteFullTilingTexture()
 
 void SceneEditorScreenMain::NewScene()
 {
+    bodies[0]->bodyControl->SetScene(NULL); // need to correctly close landscape editors
+
 	SceneData *levelScene = SceneDataManager::Instance()->CreateNewScene();
     
     bodies[0]->bodyControl->SetScene(levelScene->GetScene());
