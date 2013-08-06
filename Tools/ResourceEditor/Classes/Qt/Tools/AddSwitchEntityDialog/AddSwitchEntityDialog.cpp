@@ -17,29 +17,36 @@
 #include "AddSwitchEntityDialog.h"
 #include "./../Qt/Tools/MimeDataHelper/MimeDataHelper.h"
 #include "./../Qt/Tools/SelectPathWidget/SelectPathWidget.h"
-
+#include <QLabel>
 
 AddSwitchEntityDialog::AddSwitchEntityDialog(DAVA::Entity* entityToDisplay, QWidget* parent)
 		:BaseAddEntityDialog(entityToDisplay,parent)
 {
 	setAcceptDrops(false);
 	
-		
 	SelectPathWidget* firstWidget = new SelectPathWidget(parent);
 	SelectPathWidget* secondWidget = new SelectPathWidget(parent);
 	SelectPathWidget* thirdWidget = new SelectPathWidget(parent);
 
-	firstWidget->SetDiscriptionText("First Entity:");
-	secondWidget->SetDiscriptionText("Second Entity:");
-	thirdWidget->SetDiscriptionText("Third Entity:");
+	QLabel* label1 = new QLabel("First Entity:", parent);
+	QLabel* label2 = new QLabel("Second Entity:", parent);
+	QLabel* label3 = new QLabel("Third Entity:", parent);
 	
+	
+	AddControlToUserContainer(label1);
 	AddControlToUserContainer(firstWidget);
+	AddControlToUserContainer(label2);
 	AddControlToUserContainer(secondWidget);
+	AddControlToUserContainer(label3);
 	AddControlToUserContainer(thirdWidget);
 
 	pathWidgets.push_back(firstWidget);
 	pathWidgets.push_back(secondWidget);
 	pathWidgets.push_back(thirdWidget);
+	
+	additionalWidgets.push_back(label1);
+	additionalWidgets.push_back(label2);
+	additionalWidgets.push_back(label3);
 }
 
 AddSwitchEntityDialog::~AddSwitchEntityDialog()
@@ -47,6 +54,10 @@ AddSwitchEntityDialog::~AddSwitchEntityDialog()
 	RemoveAllControlsFromUserContainer();
 	
 	Q_FOREACH(SelectPathWidget* widget, pathWidgets)
+	{
+		delete widget;
+	}
+	Q_FOREACH(QWidget* widget, additionalWidgets)
 	{
 		delete widget;
 	}

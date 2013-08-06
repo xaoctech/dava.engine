@@ -27,7 +27,7 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>525</width>
+    <width>1000</width>
     <height>9999</height>
    </size>
   </property>
@@ -47,7 +47,7 @@
    <item row="0" column="0">
     <layout class="QVBoxLayout" name="verticalLayout">
      <property name="spacing">
-      <number>0</number>
+      <number>-1</number>
      </property>
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_4">
