@@ -159,6 +159,12 @@ bool HierarchyTreeAggregatorNode::Load(const Rect& rect, const QString& path)
 
 bool HierarchyTreeAggregatorNode::Save(YamlNode* node, const QString& path, bool saveAll)
 {
+	// Always update aggregator path if it is empty while save
+	if (this->path.IsEmpty())
+	{
+		this->path = ResourcesManageHelper::GetResourceRelativePath(path, true).toStdString();
+	}
+	
 	for (CHILDS::iterator iter = childs.begin(); iter != childs.end(); ++iter)
 	{
 		HierarchyTreeControlNode* controlNode = (*iter);
