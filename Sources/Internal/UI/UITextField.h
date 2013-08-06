@@ -186,6 +186,15 @@ public:
 	void SetTextAlign(int32 align);
 
     virtual void SetSize(const DAVA::Vector2 &newSize);
+    /**
+	 \brief Set control text style hide.
+	 \param[in] isPassword draw text with hide char.
+	 */
+    void SetIsPassword(bool isPassword);
+    /**
+	 \brief Return is text style is hide.
+	 */
+    bool IsPassword() const;
 	
 	/**
 	 \brief Returns list of control children without internal controls.
@@ -202,13 +211,14 @@ protected:
 	UITextFieldDelegate * delegate;
 	float32	cursorBlinkingTime;
     Font * textFont;
+    bool isPassword;
 //    Sprite *textSprite;
 
 //    virtual void Draw(const UIGeometricData &geometricData);
 
     void RenderText();
 private:
-//    void InitAfterYaml();
+    WideString GetVisibleText() const;
 
 #ifdef __DAVAENGINE_IPHONE__
 	UITextFieldiPhone * textFieldiPhone;
