@@ -58,8 +58,9 @@ String DeviceInfo::GetUDID()
 
 WideString DeviceInfo::GetName()
 {
-	char16 compName[100];
-	uint32 length = 100;
+	//http://msdn.microsoft.com/en-us/library/windows/desktop/ms724295(v=vs.85).aspx
+	char16 compName[MAX_COMPUTERNAME_LENGTH + 1];
+	uint32 length = MAX_COMPUTERNAME_LENGTH + 1;
 
 	bool nameRecieved = GetComputerNameW(compName, (LPDWORD) &length);
 	if(nameRecieved)
