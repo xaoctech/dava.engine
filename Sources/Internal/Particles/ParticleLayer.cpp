@@ -398,15 +398,18 @@ float32 ParticleLayer::GetLoopVariation()
 	return loopVariation;
 }
 
+float32 ParticleLayer::GetRandomFactor()
+{
+	return (float32)(Rand() & 255) / 255.0f;
+}
+
 void ParticleLayer::RecalculateVariation()
 {
-	float32 randCoeff = (float32)(Rand() & 255) / 255.0f;
-	currentLoopVariation = (loopVariation * randCoeff);
+	currentLoopVariation = (loopVariation * GetRandomFactor());
 	
 	if (deltaTime > 0)
 	{
-		randCoeff = (float32)(Rand() & 255) / 255.0f;
-		currentDeltaVariation = (deltaVariation * randCoeff);
+		currentDeltaVariation = (deltaVariation * GetRandomFactor());
 	}	
 }
 
@@ -473,12 +476,11 @@ void ParticleLayer::Update(float32 timeElapsed)
 			if ((layerTime >= startTime) && (layerTime < (endTime + currentLoopVariation)) &&
 				!emitter->IsPaused() && !useLoopStop)
 			{
-				float32 randCoeff = (float32)(Rand() & 255) / 255.0f;
 				float32 newParticles = 0.0f;
 				if (number)
 					newParticles += timeElapsed * number->GetValue(layerTime);
 				if (numberVariation)
-					newParticles += randCoeff * timeElapsed * numberVariation->GetValue(layerTime);
+					newParticles += GetRandomFactor() * timeElapsed * numberVariation->GetValue(layerTime);
 				//newParticles *= emitter->GetCurrentNumberScale();
 				particlesToGenerate += newParticles;
 
@@ -570,15 +572,13 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 	particle->sprite = sprite;
 	particle->life = 0.0f;
 
-	float32 randCoeff = (float32)(Rand() & 255) / 255.0f;
-	
+	float32 randCoeff = GetRandomFactor();	
 	
 	particle->color = Color();
 	if (colorRandom)
 	{
 		particle->color = colorRandom->GetValue(randCoeff);
 	}
-	
 
 	particle->lifeTime = 0.0f;
 	if (life)

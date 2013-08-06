@@ -376,6 +376,7 @@ private:
 	};
 	static const LayerTypeNamesInfo layerTypeNamesInfoMap[];
 	void RecalculateVariation();
+	float32 GetRandomFactor();
 	float32 currentLoopVariation;
 	float32 currentDeltaVariation;
 
