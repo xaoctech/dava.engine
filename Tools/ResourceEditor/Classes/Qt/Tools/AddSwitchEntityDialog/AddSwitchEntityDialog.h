@@ -19,7 +19,7 @@
 
 #include "../BaseAddEntityDialog/BaseAddEntityDialog.h"
 #include "DAVAEngine.h"
-#include "SceneEditor2.h"
+#include "Qt/Scene/SceneEditor2.h"
 
 class SelectPathWidget;
 
