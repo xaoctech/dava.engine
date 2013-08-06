@@ -75,7 +75,6 @@ void TextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     // Localized Text Key is handled through generic Property mechanism, but we need to update the
     // Localization Value widget each time Localization Key is changes.
     RegisterLineEditWidgetForProperty(propertiesMap, PropertyNames::LOCALIZED_TEXT_KEY_PROPERTY_NAME, localizationKeyNameLineEdit, false, true);
-	RegisterCheckBoxWidgetForProperty(propertiesMap, PropertyNames::TEXT_PROPERTY_MULTILINE, multilineCheckBox, false, true);
 	RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::TEXT_ALIGN_PROPERTY_NAME, ui->alignComboBox, false, true);
 
 	bool enableTextAlignComboBox = (dynamic_cast<UIStaticTextMetadata*>(activeMetadata)	!= NULL||
@@ -85,7 +84,11 @@ void TextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
 	ui->alignComboBox->setEnabled(enableTextAlignComboBox);
 	
 	bool enableMultilineCheckBox = (dynamic_cast<UIStaticTextMetadata*>(activeMetadata)	!= NULL);
-
+	// Register checkbox widget for property Multiline only for UIStaticText
+	if (enableMultilineCheckBox)
+	{
+		RegisterCheckBoxWidgetForProperty(propertiesMap, PropertyNames::TEXT_PROPERTY_MULTILINE, multilineCheckBox, false, true);
+	}
 	multilineCheckBox->setEnabled(enableMultilineCheckBox);
 	multilineCheckBox->setVisible(enableMultilineCheckBox);
 		
@@ -150,7 +153,11 @@ void TextPropertyGridWidget::Cleanup()
 {
     UnregisterGridWidgetAsStateAware();
     UnregisterLineEditWidget(localizationKeyNameLineEdit);
-	UnregisterCheckBoxWidget(multilineCheckBox);
+	// Don't unregister multiline property for UIButton and UITextField
+	if (dynamic_cast<UIStaticTextMetadata*>(this->activeMetadata) != NULL)
+	{
+		UnregisterCheckBoxWidget(multilineCheckBox);
+	}
     UITextFieldPropertyGridWidget::Cleanup();
 }
 
