@@ -43,6 +43,8 @@ protected:
 	
 	DAVA::Vector<SelectPathWidget*> pathWidgets;
 	
+	DAVA::Vector<QWidget*>			additionalWidgets;
+	
 };
 
 #endif /* defined(__RESOURCEEDITORQT__ADDSWITCHENTITYDIALOG__) */
