@@ -586,7 +586,7 @@ void Scene::Draw()
     renderSystem->SetCamera(currentCamera);
     renderUpdateSystem->Process();
 	actionSystem->Process(); //update action system before particles and render
-	//particleEffectSystem->Process();
+	particleEffectSystem->Process();
     renderSystem->Render();
     debugRenderSystem->SetCamera(currentCamera);
     debugRenderSystem->Process();
