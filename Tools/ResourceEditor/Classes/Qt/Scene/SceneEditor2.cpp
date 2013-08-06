@@ -320,11 +320,13 @@ void SceneEditor2::Draw()
 	cameraSystem->Draw();
 	collisionSystem->Draw();
 	selectionSystem->Draw();
-	hoodSystem->Draw();
 	modifSystem->Draw();
 	structureSystem->Draw();
 	tilemaskEditorSystem->Draw();
 	particlesSystem->Draw();
+
+	// should be last
+	hoodSystem->Draw();
 }
 
 void SceneEditor2::EditorCommandProcess(const Command2 *command, bool redo)
