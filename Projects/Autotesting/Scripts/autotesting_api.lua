@@ -596,7 +596,7 @@ function SelectHorizontal(list, item)
 	end
 end
 
-function SelectHorizontalRightToLeft(list, item)
+function SelectHorizontalRightToLeft(list)
 	Log("Select "..tostring(item).." item in horizontal list "..list.." scrolling from right to left")
 	
 	local cell = list.."/".. tostring(item)
@@ -700,6 +700,22 @@ function SelectVertical(list, item)
 		Log("Item "..item.." in "..list.." not found")
 		return false
 	end
+end
+
+function SelectFirstVertical(list)
+	Log("Selectfirst item in vertical list "..list)
+	
+	-- find first visible element
+	for i = 0, 100 do --to avoid hanging up in empty list
+		if IsVisible(list.."/0", list) then
+			return true
+		else
+			ScrollDown(list, true)
+		end
+	end
+    
+	Log("First item in "..list.." not found")
+	return false
 end
 
 function ScrollDown(list, invert)
