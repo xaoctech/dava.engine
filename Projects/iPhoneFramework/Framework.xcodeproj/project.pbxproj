@@ -65,6 +65,10 @@
 		A6E4FDF61761D40200B48E41 /* CustomPropertiesComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = A6E4FDF21761D40200B48E41 /* CustomPropertiesComponent.h */; };
 		A6E4FDFB1761D83100B48E41 /* ActionUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6E4FDF91761D83100B48E41 /* ActionUpdateSystem.cpp */; };
 		A6E4FDFC1761D83100B48E41 /* ActionUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A6E4FDFA1761D83100B48E41 /* ActionUpdateSystem.h */; };
+		A60AE95E17A010F300B5626A /* ActionComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A60AE95C17A010F300B5626A /* ActionComponent.cpp */; };
+		A60AE95F17A010F300B5626A /* ActionComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = A60AE95D17A010F300B5626A /* ActionComponent.h */; };
+		A60AE96217A0110B00B5626A /* ActionUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A60AE96017A0110B00B5626A /* ActionUpdateSystem.cpp */; };
+		A60AE96317A0110B00B5626A /* ActionUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A60AE96117A0110B00B5626A /* ActionUpdateSystem.h */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
 		C1DC1F081717FD3C001C5EC3 /* libTextureConverter_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C1DC1F071717FD3C001C5EC3 /* libTextureConverter_macos.a */; };
 		CC247FF116D69F1700183D40 /* DVAssertMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC247FEC16D69F1700183D40 /* DVAssertMessage.cpp */; };

@@ -166,6 +166,7 @@
     <Filter Include="Classes\Deprecated">
       <UniqueIdentifier>{b383f0c0-b1f2-483d-9f28-a261d8afc960}</UniqueIdentifier>
     </Filter>
+<<<<<<< HEAD
     <Filter Include="Classes\Qt\Tools\QtPosSaver">
       <UniqueIdentifier>{5139cbe9-d6b3-4aef-9d36-62293b1aad8a}</UniqueIdentifier>
     </Filter>
@@ -216,6 +217,8 @@
     </Filter>
     <Filter Include="Classes\Qt\Tools\BaseAddEntityDialog">
       <UniqueIdentifier>{f5717c29-6eb0-43a0-818b-f1c51dcf0cba}</UniqueIdentifier>
+    <Filter Include="Classes\CommandLine\TextureDescriptor">
+      <UniqueIdentifier>{0a088ade-5d9f-4b54-9645-040c63c435f8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1100,6 +1103,57 @@
     </ClCompile>
     <ClCompile Include="Classes\Qt\DockProperties\PropertyEditor.cpp">
       <Filter>Classes\Qt\DockProperties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit.cpp">
+      <Filter>Classes\Qt\QtPropertyEditor\QtPropertyWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection.cpp">
+      <Filter>Classes\Qt\QtPropertyEditor\QtPropertyData</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\Command.cpp">
+      <Filter>Classes\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\CommandCreateNode.cpp">
+      <Filter>Classes\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\CommandsManager.cpp">
+      <Filter>Classes\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\CustomColorCommands.cpp">
+      <Filter>Classes\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\EditorBodyControlCommands.cpp">
+      <Filter>Classes\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\FileCommands.cpp">
+      <Filter>Classes\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\HeightmapEditorCommands.cpp">
+      <Filter>Classes\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\LibraryCommands.cpp">
+      <Filter>Classes\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\ParticleEditorCommands.cpp">
+      <Filter>Classes\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\SceneEditorScreenMainCommands.cpp">
+      <Filter>Classes\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\SceneGraphCommands.cpp">
+      <Filter>Classes\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\TextureOptionsCommands.cpp">
+      <Filter>Classes\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\TilemapEditorCommands.cpp">
+      <Filter>Classes\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\ToolsCommands.cpp">
+      <Filter>Classes\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\VisibilityCheckToolCommands.cpp">
+      <Filter>Classes\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\Main\ModificationWidget.cpp">
       <Filter>Classes\Qt\Main</Filter>
@@ -1997,6 +2051,12 @@
     </ClCompile>
     <ClCompile Include="_GeneratedQt\Tools\BaseAddEntityDialog\BaseAddEntityDialog_moc.cpp">
       <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorTool.cpp">
+      <Filter>Classes\CommandLine\TextureDescriptor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorUtils.cpp">
+      <Filter>Classes\CommandLine\TextureDescriptor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2936,6 +2996,57 @@
     <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphModel.h">
       <Filter>Sources\Qt\DockSceneGraph</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Qt\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit.h">
+      <Filter>Classes\Qt\QtPropertyEditor\QtPropertyWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection.h">
+      <Filter>Classes\Qt\QtPropertyEditor\QtPropertyData</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\Command.h">
+      <Filter>Classes\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\CommandCreateNode.h">
+      <Filter>Classes\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\CommandsManager.h">
+      <Filter>Classes\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\CustomColorCommands.h">
+      <Filter>Classes\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\EditorBodyControlCommands.h">
+      <Filter>Classes\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\FileCommands.h">
+      <Filter>Classes\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\HeightmapEditorCommands.h">
+      <Filter>Classes\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\LibraryCommands.h">
+      <Filter>Classes\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSceneDataHelper.h">
+      <Filter>Sources\ParticlesEditorQT\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSceneModelHelper.h">
+      <Filter>Sources\ParticlesEditorQT\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockSceneGraph\GraphItem.h">
+      <Filter>Sources\Qt\DockSceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockSceneGraph\GraphModel.h">
+      <Filter>Sources\Qt\DockSceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockSceneGraph\QSceneGraphTreeView.h">
+      <Filter>Sources\Qt\DockSceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphItem.h">
+      <Filter>Sources\Qt\DockSceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphModel.h">
+      <Filter>Sources\Qt\DockSceneGraph</Filter>
+    </ClInclude>
     <ClInclude Include="Classes\Qt\Main\ModificationWidget.h">
       <Filter>Classes\Qt\Main</Filter>
     </ClInclude>
@@ -3466,6 +3577,11 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockProperties\PropertyEditorDialog.h">
       <Filter>Classes\Qt\DockProperties</Filter>
+    <ClInclude Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorTool.h">
+      <Filter>Classes\CommandLine\TextureDescriptor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorUtils.h">
+      <Filter>Classes\CommandLine\TextureDescriptor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

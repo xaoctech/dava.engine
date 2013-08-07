@@ -81,21 +81,24 @@ void QSceneGraphTreeView::DisconnectFromSignals()
 {
 	disconnect(sceneGraphModel, SIGNAL(SceneNodeSelected(DAVA::Entity *)), this, SLOT(OnSceneNodeSelectedInGraph(DAVA::Entity *)));
 	
-	disconnect(SceneDataManager::Instance(), SIGNAL(SceneGraphNeedRebuildNode(DAVA::Entity*)), this, SLOT(OnSceneGraphNeedRebuildNode(DAVA::Entity*)));
-	disconnect(SceneDataManager::Instance(), SIGNAL(SceneGraphNeedRebuild()), this, SLOT(OnSceneGraphNeedRebuild()));
-	disconnect(SceneDataManager::Instance(), SIGNAL(SceneGraphNeedRefreshLayer(DAVA::ParticleLayer*)), this, SLOT(OnSceneGraphNeedRefreshLayer(DAVA::ParticleLayer*)));
-
-	
-	disconnect(SceneDataManager::Instance(), SIGNAL(SceneGraphNeedSetScene(SceneData*, EditorScene*)),
-			   this, SLOT(OnSceneGraphNeedSetScene(SceneData*, EditorScene*)));
-	disconnect(SceneDataManager::Instance(), SIGNAL(SceneGraphNeedSelectNode(SceneData*, DAVA::Entity*)),
-				this, SLOT(OnSceneGraphNeedSelectNode(SceneData*, DAVA::Entity*)));
-	
-	// Signals related to the whole Scene.
-	disconnect(SceneDataManager::Instance(), SIGNAL(SceneCreated(SceneData*)),	this, SLOT(OnSceneCreated(SceneData*)));
-	disconnect(SceneDataManager::Instance(), SIGNAL(SceneReleased(SceneData*)), this, SLOT(OnSceneReleased(SceneData*)));
-	disconnect(SceneDataManager::Instance(), SIGNAL(SceneActivated(SceneData*)),	this, SLOT(OnSceneActivated(SceneData*)));
-	disconnect(SceneDataManager::Instance(), SIGNAL(SceneDeactivated(SceneData*)), this, SLOT(OnSceneDeactivated(SceneData*)));
+    if(SceneDataManager::Instance())
+    {
+        disconnect(SceneDataManager::Instance(), SIGNAL(SceneGraphNeedRebuildNode(DAVA::Entity*)), this, SLOT(OnSceneGraphNeedRebuildNode(DAVA::Entity*)));
+        disconnect(SceneDataManager::Instance(), SIGNAL(SceneGraphNeedRebuild()), this, SLOT(OnSceneGraphNeedRebuild()));
+        disconnect(SceneDataManager::Instance(), SIGNAL(SceneGraphNeedRefreshLayer(DAVA::ParticleLayer*)), this, SLOT(OnSceneGraphNeedRefreshLayer(DAVA::ParticleLayer*)));
+        
+        
+        disconnect(SceneDataManager::Instance(), SIGNAL(SceneGraphNeedSetScene(SceneData*, EditorScene*)),
+                   this, SLOT(OnSceneGraphNeedSetScene(SceneData*, EditorScene*)));
+        disconnect(SceneDataManager::Instance(), SIGNAL(SceneGraphNeedSelectNode(SceneData*, DAVA::Entity*)),
+                   this, SLOT(OnSceneGraphNeedSelectNode(SceneData*, DAVA::Entity*)));
+        
+        // Signals related to the whole Scene.
+        disconnect(SceneDataManager::Instance(), SIGNAL(SceneCreated(SceneData*)),	this, SLOT(OnSceneCreated(SceneData*)));
+        disconnect(SceneDataManager::Instance(), SIGNAL(SceneReleased(SceneData*)), this, SLOT(OnSceneReleased(SceneData*)));
+        disconnect(SceneDataManager::Instance(), SIGNAL(SceneActivated(SceneData*)),	this, SLOT(OnSceneActivated(SceneData*)));
+        disconnect(SceneDataManager::Instance(), SIGNAL(SceneDeactivated(SceneData*)), this, SLOT(OnSceneDeactivated(SceneData*)));
+    }
 }
 
 void QSceneGraphTreeView::keyPressEvent(QKeyEvent *event)

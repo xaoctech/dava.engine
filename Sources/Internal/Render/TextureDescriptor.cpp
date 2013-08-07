@@ -335,19 +335,50 @@ void TextureDescriptor::LoadVersion5(int32 signature, DAVA::File *file)
 	{
         int8 format;
         file->Read(&format, sizeof(format));
-        compression[GPU_POWERVR_IOS].format = (PixelFormat)format;
-        
-        file->Read(&compression[GPU_POWERVR_IOS].compressToWidth, sizeof(compression[GPU_POWERVR_IOS].compressToWidth));
-        file->Read(&compression[GPU_POWERVR_IOS].compressToHeight, sizeof(compression[GPU_POWERVR_IOS].compressToHeight));
-        file->Read(&compression[GPU_POWERVR_IOS].sourceFileCrc, sizeof(compression[GPU_POWERVR_IOS].sourceFileCrc));
 
+		if(format == FORMAT_ETC1)
+		{
+			Logger::Warning("[TextureDescriptor::LoadVersion5] format for pvr was ETC1");
+
+			compression[GPU_POWERVR_IOS].Clear();
+
+			uint32 dummy32 = 0;
+
+			file->Read(&dummy32, sizeof(dummy32));
+			file->Read(&dummy32, sizeof(dummy32));
+			file->Read(&dummy32, sizeof(dummy32));
+		}
+		else
+		{
+			compression[GPU_POWERVR_IOS].format = (PixelFormat)format;
+
+			file->Read(&compression[GPU_POWERVR_IOS].compressToWidth, sizeof(compression[GPU_POWERVR_IOS].compressToWidth));
+			file->Read(&compression[GPU_POWERVR_IOS].compressToHeight, sizeof(compression[GPU_POWERVR_IOS].compressToHeight));
+			file->Read(&compression[GPU_POWERVR_IOS].sourceFileCrc, sizeof(compression[GPU_POWERVR_IOS].sourceFileCrc));
+		}
 
         file->Read(&format, sizeof(format));
-        compression[GPU_TEGRA].format = (PixelFormat)format;
-        
-        file->Read(&compression[GPU_TEGRA].compressToWidth, sizeof(compression[GPU_TEGRA].compressToWidth));
-        file->Read(&compression[GPU_TEGRA].compressToHeight, sizeof(compression[GPU_TEGRA].compressToHeight));
-        file->Read(&compression[GPU_TEGRA].sourceFileCrc, sizeof(compression[GPU_TEGRA].sourceFileCrc));
+
+		if(format == FORMAT_ATC_RGB || format == FORMAT_ATC_RGBA_EXPLICIT_ALPHA || format == FORMAT_ATC_RGBA_INTERPOLATED_ALPHA)
+		{
+			Logger::Warning("[TextureDescriptor::LoadVersion5] format for dds was ATC_...");
+
+			compression[GPU_TEGRA].Clear();
+
+			uint32 dummy32 = 0;
+
+			file->Read(&dummy32, sizeof(dummy32));
+			file->Read(&dummy32, sizeof(dummy32));
+			file->Read(&dummy32, sizeof(dummy32));
+		}
+		else
+		{
+			compression[GPU_TEGRA].format = (PixelFormat)format;
+
+			file->Read(&compression[GPU_TEGRA].compressToWidth, sizeof(compression[GPU_TEGRA].compressToWidth));
+			file->Read(&compression[GPU_TEGRA].compressToHeight, sizeof(compression[GPU_TEGRA].compressToHeight));
+			file->Read(&compression[GPU_TEGRA].sourceFileCrc, sizeof(compression[GPU_TEGRA].sourceFileCrc));
+		}
 	}
 }
 

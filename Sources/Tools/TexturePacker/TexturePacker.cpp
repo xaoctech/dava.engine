@@ -450,6 +450,11 @@ bool TexturePacker::WriteDefinition(const FilePath & /*excludeFolder*/, const Fi
 		Rect2i origRect = defFile->frameRects[frame];
 		Rect2i writeRect = ReduceRectToOriginalSize(*destRect);
 		fprintf(fp, "%d %d %d %d %d %d %d\n", writeRect.x, writeRect.y, writeRect.dx, writeRect.dy, origRect.x, origRect.y, 0);
+
+		if((writeRect.dx > defFile->spriteWidth) || (writeRect.dy > defFile->spriteHeight))
+		{
+			Logger::Error("[!!!!] frame %d has size bigger than sprite size!", frame);
+		}
 	}
 	
 	for (int pathInfoLine = 0; pathInfoLine < (int)defFile->pathsInfo.size(); ++pathInfoLine)
@@ -527,6 +532,12 @@ bool TexturePacker::WriteMultipleDefinition(const FilePath & /*excludeFolder*/, 
 			Rect2i origRect = defFile->frameRects[frame];
 			Rect2i writeRect = ReduceRectToOriginalSize(*destRect);
 			fprintf(fp, "%d %d %d %d %d %d %d\n", writeRect.x, writeRect.y, writeRect.dx, writeRect.dy, origRect.x, origRect.y, packerIndex);
+
+			if((writeRect.dx > defFile->spriteWidth) || (writeRect.dy > defFile->spriteHeight))
+			{
+				Logger::Error("[!!!!] frame %d has size bigger than sprite size!", frame);
+			}
+
 		}else
 		{
 			Logger::Error("*** FATAL ERROR: can't find rect in all of packers");

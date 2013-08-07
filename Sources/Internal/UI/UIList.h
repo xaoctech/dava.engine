@@ -28,6 +28,21 @@
 namespace DAVA 
 {
 
+/**
+	\ingroup controlsystem
+	\brief Class container for other controls and display them as list
+	
+	This class can show inner controls (UIListCell) as list.
+	Inner controls are not real childs of UIList. Each List has scrollContainer which contain cells.
+	All cells are build from specified by ID UIAggregatorControl.	
+	
+	Aggregator ID of specific aggregator is set inside user's implementation of UIListDelegate::CellAtIndex.
+	Only one aggregator for cells is allowed for a list.
+	
+	Aggregator Path is used for Save/Load procedure. Using this path, system can locate proper aggregator and get
+	its ID.
+*/
+
 class UIList;
 /**
 	\ingroup controlsystem
