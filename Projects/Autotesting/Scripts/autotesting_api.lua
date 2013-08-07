@@ -433,7 +433,7 @@ end
 
 function ClickPosition(position, touchId)
     local touchId = touchId or 1
-    Log("ClickPosition position="..position.x..","..position.y.." touchId="..touchId)
+    --Log("ClickPosition position="..position.x..","..position.y.." touchId="..touchId)
     
     TouchDownPosition(position, touchId)
 	Yield()
@@ -463,7 +463,7 @@ function ClickControl(name, time, touchId)
         
         local control = autotestingSystem:FindControl(name)
         local screen = autotestingSystem:GetScreen()
-        if control and IsOnScreen(control) then     
+        if control and IsVisible(name) and IsOnScreen(control) then     
             -- local position = control:GetPosition(true)
             local position = GetCenter(name)
 --            print(position)
@@ -596,7 +596,7 @@ function SelectHorizontal(list, item)
 	end
 end
 
-function SelectHorizontalRightToLeft(list, item)
+function SelectHorizontalRightToLeft(list)
 	Log("Select "..tostring(item).." item in horizontal list "..list.." scrolling from right to left")
 	
 	local cell = list.."/".. tostring(item)
@@ -700,6 +700,22 @@ function SelectVertical(list, item)
 		Log("Item "..item.." in "..list.." not found")
 		return false
 	end
+end
+
+function SelectFirstVertical(list)
+	Log("Selectfirst item in vertical list "..list)
+	
+	-- find first visible element
+	for i = 0, 100 do --to avoid hanging up in empty list
+		if IsVisible(list.."/0", list) then
+			return true
+		else
+			ScrollDown(list, true)
+		end
+	end
+    
+	Log("First item in "..list.." not found")
+	return false
 end
 
 function ScrollDown(list, invert)

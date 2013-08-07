@@ -56,7 +56,7 @@ public:
     
     bool IsConnected();
 
-	//bool SaveBufferToGridFS(const String &name, char * buffer, uint32 length);
+	bool SaveBufferToGridFS(const String &name, char * buffer, uint32 length);
 	bool SaveFileToGridFS(const String &name, const String &pathToFile);
 
     MongodbObject * FindObjectByKey(const String &key);

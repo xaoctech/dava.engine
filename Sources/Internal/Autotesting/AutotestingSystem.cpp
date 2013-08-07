@@ -66,16 +66,12 @@ AutotestingSystem::AutotestingSystem()
 
 AutotestingSystem::~AutotestingSystem()
 {
-#ifdef AUTOTESTING_LUA
     AutotestingSystemLua::Instance()->Release();
-#else
-    AutotestingSystemYaml::Instance()->Release();
-#endif
 }
 
 void AutotestingSystem::OnAppStarted()
 {
-    if(!isInit)
+	if(!isInit)
     {
         // get files list for ~res:/Autotesting/Tests
         FileList fileList("~res:/Autotesting/Tests/");
@@ -225,8 +221,7 @@ void AutotestingSystem::OnAppStarted()
         autotestingArchive->Save("~doc:/autotesting/autotesting.archive");
         SafeRelease(autotestingArchive);
     }
-}
-    
+}  
     
 int32 AutotestingSystem::GetIndexInFileList(FileList &fileList, int32 index)
 {
@@ -345,7 +340,7 @@ String AutotestingSystem::ReadString(const String & name)
 	result = currentRunArchive->GetString(name.c_str(), "not_found");
 
 	SafeRelease(dbUpdateObject);
-	Logger::Debug("AutotestingSystem::ReadString state=%s finish", result.c_str());
+	Logger::Debug("AutotestingSystem::ReadString name=%name: '%s'", name.c_str(), result.c_str());
 	return result;
 }
 
@@ -622,7 +617,7 @@ String AutotestingSystem::ReadState(const String & device)
 
 	result = currentRunArchive->GetString(device.c_str(), "not_found");
 	SafeRelease(dbUpdateObject);
-	//Logger::Debug("AutotestingSystem::ReadState state=%s finish", result.c_str());
+	Logger::Debug("AutotestingSystem::ReadState device=%s: '%s'", device.c_str(), result.c_str());
 	return result;
 }
 
@@ -652,7 +647,7 @@ String AutotestingSystem::ReadCommand(const String & device)
 
 	SafeRelease(dbUpdateObject);
 	
-	//Logger::Debug("AutotestingSystem::ReadCommand state=%s finish", result.c_str());
+	Logger::Debug("AutotestingSystem::ReadCommand device=%s: '%s'", device.c_str(), result.c_str());
 	return result;
 }
 
@@ -1437,14 +1432,18 @@ String AutotestingSystem::GetScreenShotName()
 void AutotestingSystem::OnScreenShot(Image *image)
 {
 	Logger::Debug("AutotestingSystem::OnScreenShot %s", screenShotName.c_str());
-	
-	//String filePath = Format("~doc:/%s.png", screenShotName.c_str());
+	uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
 	FilePath systemFilePath = "~doc:/screenshot.png";
-	ImageLoader::Save(image, systemFilePath);
-	
+	image->ResizeImage(1024, 768);
+	image->ResizeCanvas(1024, 768);
+
 	if(dbClient)
 	{
-		dbClient->SaveFileToGridFS(screenShotName, systemFilePath.GetAbsolutePathname());
+		//Logger::Debug("Image: datasize %d, %d x %d", image->dataSize, image->GetHeight(), image->GetWidth());
+		dbClient->SaveBufferToGridFS(screenShotName, reinterpret_cast<char*>( image->GetData()), image->dataSize);
+		
+		uint64 finishTime = SystemTimer::Instance()->AbsoluteMS();
+		Logger::Debug("AutotestingSystem::OnScreenShot Upload: %d", finishTime - startTime);
 	}
 }
     
