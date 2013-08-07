@@ -995,7 +995,7 @@ void QtMainWindow::OnParticleEffectDialog()
 void QtMainWindow::CreateAndDisplayAddEntityDialog(Entity* sceneNode)
 {
 	SceneEditor2* sceneEditor = GetCurrentScene();
-	BaseAddEntityDialog* dlg = new BaseAddEntityDialog(sceneNode, dynamic_cast<QWidget*>(QObject::parent()));
+	BaseAddEntityDialog* dlg = new BaseAddEntityDialog(sceneNode, this);
 	dlg->exec();
 	if(dlg->result() == QDialog::Accepted && sceneEditor)
 	{
