@@ -26,6 +26,7 @@ struct HoodObject
 	virtual ~HoodObject();
 
 	DAVA::float32 baseSize;
+	DAVA::float32 objScale;
 	DAVA::Color colorX; // axis X
 	DAVA::Color colorY; // axis X
 	DAVA::Color colorZ; // axis X

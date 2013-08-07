@@ -20,17 +20,22 @@
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Scene3D/Components/SoundComponent.h"
 #include "Sound/SoundEvent.h"
+#include "Scene3D/Systems/ActionUpdateSystem.h"
 
 namespace DAVA
 {
 
-	ActionComponent::ActionComponent() : started(false), allActionsActive(false)
+	ActionComponent::ActionComponent() : started(false), allActionsActive(false), parentScene(NULL)
 	{
 		
 	}
 	
 	ActionComponent::~ActionComponent()
 	{
+		if(parentScene)
+		{
+			parentScene->actionSystem->UnWatch(this);
+		}
 	}
 	
 	ActionComponent::Action ActionComponent::MakeAction(ActionComponent::Action::eType type, String targetName, float32 delay)
@@ -74,6 +79,11 @@ namespace DAVA
 		
 		if(markedCount > 0)
 		{
+			if(!started)
+			{
+				parentScene->actionSystem->Watch(this);
+			}
+			
 			started = true;
 			allActionsActive = false;
 		}
@@ -98,6 +108,8 @@ namespace DAVA
 				actions[i].timer = 0.0f;
 				actions[i].markedForUpdate = false;
 			}
+			
+			parentScene->actionSystem->UnWatch(this);
 		}
 	}
 	
@@ -127,6 +139,8 @@ namespace DAVA
 			{
 				started = false;
 				allActionsActive = false;
+				
+				parentScene->actionSystem->UnWatch(this);
 			}
 		}
 	}
@@ -137,14 +151,15 @@ namespace DAVA
 		allActionsActive = false;
 	}
 	
-	void ActionComponent::Remove(const ActionComponent::Action::eType type, const String& entityName)
+	void ActionComponent::Remove(const ActionComponent::Action::eType type, const String& entityName, const int switchIndex)
 	{
 		Vector<ActionComponent::ActionContainer>::iterator i = actions.begin();
 		for(; i < actions.end(); ++i)
 		{
 			const Action& innerAction = (*i).action;
 			if(innerAction.type == type &&
-			   innerAction.entityName == entityName)
+			   innerAction.entityName == entityName &&
+			   innerAction.switchIndex == switchIndex)
 			{
 				actions.erase(i);
 				break;
@@ -161,12 +176,19 @@ namespace DAVA
 			}
 		}
 		
+		bool prevActionsActive = allActionsActive;
 		allActionsActive = (activeActionCount == count);
+		
+		if(!prevActionsActive &&
+		   allActionsActive != prevActionsActive)
+		{
+			parentScene->actionSystem->UnWatch(this);
+		}
 	}
 	
 	void ActionComponent::Remove(const ActionComponent::Action& action)
 	{
-		Remove(action.type, action.entityName);
+		Remove(action.type, action.entityName, action.switchIndex);
 	}
 	
 	uint32 ActionComponent::GetCount()
@@ -174,7 +196,7 @@ namespace DAVA
 		return actions.size();
 	}
 	
-	const ActionComponent::Action& ActionComponent::Get(uint32 index)
+	ActionComponent::Action& ActionComponent::Get(uint32 index)
 	{
 		DVASSERT(index >= 0 && index < actions.size());
 		return actions[index].action;
@@ -208,7 +230,15 @@ namespace DAVA
 				}
 			}
 			
+			bool prevActionsActive = allActionsActive;
 			allActionsActive = (activeActionCount == count);
+			
+			if(!prevActionsActive &&
+			   allActionsActive != prevActionsActive)
+			{
+				started = false;
+				parentScene->actionSystem->UnWatch(this);
+			}
 		}
 	}
 	
@@ -221,6 +251,8 @@ namespace DAVA
 		for(uint32 i = 0; i < count; ++i)
 		{
 			actionComponent->actions[i] = actions[i];
+			actionComponent->actions[i].active = false;
+			actionComponent->actions[i].timer = 0.0f;
 		}
 		
 		return actionComponent;
@@ -273,7 +305,16 @@ namespace DAVA
 		
 		Component::Deserialize(archive, sceneFile);
 	}
-
+	
+	void ActionComponent::SetEntity(Entity * entity)
+	{
+		if(entity)
+		{
+			parentScene = entity->GetScene();
+		}
+		
+		Component::SetEntity(entity);
+	}
 	
 	void ActionComponent::EvaluateAction(const Action& action)
 	{

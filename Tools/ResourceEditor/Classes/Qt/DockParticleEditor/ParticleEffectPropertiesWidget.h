@@ -30,10 +30,10 @@ class ParticleEffectPropertiesWidget: public QWidget, public BaseParticleEditorC
 	Q_OBJECT
 	
 public:
-	explicit ParticleEffectPropertiesWidget(SceneEditor2* scene, QWidget* parent = 0);
+	explicit ParticleEffectPropertiesWidget(QWidget* parent = 0);
 	~ParticleEffectPropertiesWidget();
 
-	void Init(DAVA::ParticleEffectComponent* effect);
+	void Init(SceneEditor2* scene, DAVA::ParticleEffectComponent* effect);
 	ParticleEffectComponent* GetEffect() {return particleEffect;};
 
 	virtual void StoreVisualState(KeyedArchive* visualStateProps);

@@ -329,7 +329,7 @@ void TextureDescriptor::LoadVersion5(int32 signature, DAVA::File *file)
 
     if(signature == COMPRESSED_FILE)
 	{
-		file->Read(&exportedAsGpuFamily, sizeof(exportedAsGpuFamily));
+		// file->Read(&exportedAsGpuFamily, sizeof(exportedAsGpuFamily));
 	}
 	else if(signature == NOTCOMPRESSED_FILE)
 	{

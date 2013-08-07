@@ -34,7 +34,7 @@ void ReloadTexturesAsCommand::Execute()
     EditorSettings::Instance()->SetTextureViewGPU(gpuFamily);
     EditorSettings::Instance()->Save();
     
-    SceneDataManager::Instance()->TextureReloadAll(gpuFamily);
+    //SceneDataManager::Instance()->TextureReloadAll(gpuFamily);
 //    SceneValidator::Instance()->EnumerateSceneTextures();
 }
 

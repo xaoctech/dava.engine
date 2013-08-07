@@ -176,7 +176,7 @@ protected:
     void InitButtons();
     void ReleaseButtons();
     void FindRequiredControls();
-    void SaveChilds(UIControl *parent, UIYamlLoader * loader, YamlNode * parentNode);
+    void SaveChildren(UIControl *parent, UIYamlLoader * loader, YamlNode * parentNode);
     void OnSelectWithSlide(bool isPrevious);
     
 };

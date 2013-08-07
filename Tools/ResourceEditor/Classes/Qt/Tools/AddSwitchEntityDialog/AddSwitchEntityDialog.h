@@ -17,35 +17,33 @@
 #ifndef __RESOURCEEDITORQT__ADDSWITCHENTITYDIALOG__
 #define __RESOURCEEDITORQT__ADDSWITCHENTITYDIALOG__
 
-#include <QDialog.h>
+#include "../BaseAddEntityDialog/BaseAddEntityDialog.h"
 #include "DAVAEngine.h"
+#include "Qt/Scene/SceneEditor2.h"
 
-class QMimeData;
-class SceneEditor2;
+class SelectPathWidget;
 
-namespace Ui
+class AddSwitchEntityDialog: public BaseAddEntityDialog
 {
-	class AddSwitchEntityDialog;
-}
-
-class AddSwitchEntityDialog: public QDialog,public DAVA::Singleton<AddSwitchEntityDialog>
-{
-	Q_OBJECT
-    
 public:
-	explicit AddSwitchEntityDialog(QWidget* parent = 0);
+	AddSwitchEntityDialog(DAVA::Entity* entityToDisplay, QWidget* parent = 0);
+	
 	~AddSwitchEntityDialog();
 	
-	void SetRelativePath(const DAVA::String& rPath, bool forFirstWidget = true);
+	void CleanupPathWidgets();
 
-	void SetOpenDialogsDefaultPath(const DAVA::String& path);
-
-	void GetSelectedEntities(DAVA::Entity** firstChild, DAVA::Entity** secondChild, SceneEditor2 * );
-
-	void ErasePathWidgets();
+	const DAVA::Vector<SelectPathWidget*>& GetPathWidgets()
+	{
+		return pathWidgets;
+	}
 	
+	void GetPathEntities(DAVA::Vector<DAVA::Entity*>& entities, SceneEditor2* editor);
+
 protected:
-	Ui::AddSwitchEntityDialog *ui;
+	
+	DAVA::Vector<SelectPathWidget*> pathWidgets;
+	
+	DAVA::Vector<QWidget*>			additionalWidgets;
 	
 };
 

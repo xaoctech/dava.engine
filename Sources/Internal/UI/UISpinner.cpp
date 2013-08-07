@@ -373,7 +373,7 @@ YamlNode * UISpinner::SaveToYamlNode(UIYamlLoader * loader)
 	node->AddNodeToMap(UISPINNER_BUTTON_NEXT_NAME, nextButtonNode);
 	node->AddNodeToMap(UISPINNER_CONTENT_NAME, contentNode);
 	
-	SaveChilds(content, loader, contentNode);
+	SaveChildren(content, loader, contentNode);
 
 	return node;
 }
@@ -454,19 +454,17 @@ void UISpinner::OnSelectedChanged(bool isSelectedFirst, bool isSelectedLast, boo
     }
 }
 
-void UISpinner::SaveChilds(UIControl *parent, UIYamlLoader * loader, YamlNode * parentNode)
+void UISpinner::SaveChildren(UIControl *parent, UIYamlLoader * loader, YamlNode * parentNode)
 {
 	List<UIControl*> childslist = parent->GetRealChildren();
 	for(List<UIControl*>::iterator it = childslist.begin(); it != childslist.end(); ++it)
     {
        	UIControl *childControl = (UIControl*)(*it);
-	   	if (!childControl)
-	   		continue;
-
+		// Save child node
 		YamlNode* childNode = childControl->SaveToYamlNode(loader);		
 		parentNode->AddNodeToMap(childControl->GetName(), childNode);
 		// Save sub-childs
-		SaveChilds(childControl, loader, childNode);
+		SaveChildren(childControl, loader, childNode);
 	}
 }
 

@@ -19,16 +19,13 @@
 
 #include <QWidget>
 #include <QMimeData>
+#include <qlineedit.h>
+#include <qtoolbutton.h>
 
 #include "DAVAEngine.h"
 class SceneEditor2;
 
-namespace Ui
-{
-	class SelectPathWidget;
-}
-
-class SelectPathWidget: public QWidget
+class SelectPathWidget: public QLineEdit
 {
 	Q_OBJECT
 
@@ -37,10 +34,6 @@ public:
 	
 	~SelectPathWidget();
 	
-	void SetDiscriptionText(const DAVA::String &);
-
-	DAVA::String GetDiscriptionText();
-
 	void SetPathText(const DAVA::String &);
 
 	DAVA::String GetPathText();
@@ -65,12 +58,12 @@ public:
 	{
 		openDialogDefaultPath = newPath;
 	}
-	
-	
 
 protected:
 
 	void dragEnterEvent(QDragEnterEvent* event);
+	
+	void resizeEvent(QResizeEvent *);
 
 	void dropEvent(QDropEvent * event);
 	
@@ -78,7 +71,7 @@ protected:
 	
 	DAVA::String ConvertToRelativPath(const DAVA::String& path);
 	
-	Ui::SelectPathWidget*	ui;
+	QToolButton* CreateToolButton(const DAVA::String& iconPath);
 	
 	DAVA::FilePath			relativePath;
 	
@@ -92,8 +85,11 @@ protected slots:
 	void EraseClicked();
 
 	void OpenClicked();
-
 	
+private:
+
+	QToolButton *clearButton;
+	QToolButton *openButton;
 };
 
 #endif /* defined(__RESOURCEEDITORQT__SELECTPATHWIDGET__) */

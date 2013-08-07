@@ -29,7 +29,6 @@ UIScrollViewContainer::UIScrollViewContainer(const Rect &rect, bool rectInAbsolu
 {
 	this->SetInputEnabled(true);
 	this->SetMultiInput(true);
-	this->SetDebugDraw(true);
 }
 
 UIScrollViewContainer::~UIScrollViewContainer()
@@ -197,24 +196,22 @@ YamlNode * UIScrollViewContainer::SaveToYamlNode(UIYamlLoader * loader)
     // Control Type
 	SetPreferredNodeType(node, "UIScrollViewContainer");
 	// Save scroll view container childs including all sub-childs
-	SaveChilds(this, loader, node);
+	SaveChildren(this, loader, node);
     
     return node;
 }
 
-void UIScrollViewContainer::SaveChilds(UIControl *parent, UIYamlLoader * loader, YamlNode * parentNode)
+void UIScrollViewContainer::SaveChildren(UIControl *parent, UIYamlLoader * loader, YamlNode * parentNode)
 {
 	List<UIControl*> childslist = parent->GetRealChildren();
 	for(List<UIControl*>::iterator it = childslist.begin(); it != childslist.end(); ++it)
     {
        	UIControl *childControl = (UIControl*)(*it);
-	   	if (!childControl)
-	   		continue;
 
-		YamlNode* childNode = childControl->SaveToYamlNode(loader);		
+		YamlNode* childNode = childControl->SaveToYamlNode(loader);
 		parentNode->AddNodeToMap(childControl->GetName(), childNode);
 		// Save sub-childs
-		SaveChilds(childControl, loader, childNode);
+		SaveChildren(childControl, loader, childNode);
 	}
 }
 

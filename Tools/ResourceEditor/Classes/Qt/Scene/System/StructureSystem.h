@@ -19,6 +19,7 @@
 
 #include "Commands2/Command2.h"
 #include "Scene/EntityGroup.h"
+#include "StringConstants.h"
 
 // framework
 #include "Entity/SceneSystem.h"
@@ -37,23 +38,13 @@ public:
 
 	void Init();
 
-	void Move(DAVA::Entity *entity, DAVA::Entity *newParent, DAVA::Entity *newBefore);
 	void Move(const EntityGroup *entityGroup, DAVA::Entity *newParent, DAVA::Entity *newBefore);
-
-	void Remove(DAVA::Entity *entity);
 	void Remove(const EntityGroup *entityGroup);
-
-	void MoveLayer(DAVA::ParticleLayer *layer, DAVA::ParticleEmitter *newEmitter, DAVA::ParticleLayer *newBefore);
 	void MoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &layers, DAVA::ParticleEmitter *newEmitter, DAVA::ParticleLayer *newBefore);
-
-	void RemoveLayer(DAVA::ParticleLayer *layer);
 	void RemoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &layers);
-
-	void MoveForce(DAVA::ParticleForce *force, DAVA::ParticleLayer *oldLayer, DAVA::ParticleLayer *newLayer);
 	void MoveForce(const DAVA::Vector<DAVA::ParticleForce *> &forces, const DAVA::Vector<DAVA::ParticleLayer *> &oldLayers, DAVA::ParticleLayer *newLayer);
-
-	void RemoveForce(DAVA::ParticleForce *force, DAVA::ParticleLayer *layer);
 	void RemoveForce(const DAVA::Vector<DAVA::ParticleForce *> &forces, const DAVA::Vector<DAVA::ParticleLayer *> &layers);
+	void Reload(const EntityGroup *entityGroup, const DAVA::FilePath &newModelPath = "");
 
 	void LockSignals();
 	void UnlockSignals();

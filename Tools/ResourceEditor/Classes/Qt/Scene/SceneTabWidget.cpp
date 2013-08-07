@@ -119,6 +119,8 @@ int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 	int tabIndex = -1;
 	SceneEditor2 *scene = new SceneEditor2();
 
+	QtMainWindow::Instance()->WaitStart("Opening scene...", scenePapth.GetAbsolutePathname().c_str());
+
 	if(scene->Load(scenePapth))
 	{
 		tabIndex = tabBar->addTab(scenePapth.GetFilename().c_str());
@@ -139,6 +141,8 @@ int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 	{
 		SetCurrentTab(tabIndex);
 	}
+
+	QtMainWindow::Instance()->WaitStop();
 
 	return tabIndex;
 }
@@ -172,6 +176,11 @@ void SceneTabWidget::CloseTab(int index)
 		{
 			dava3DView->SetScene(NULL);
 			SceneSignals::Instance()->EmitDeactivated(scene);
+		}
+
+		if(scene == curScene)
+		{
+			curScene = NULL;
 		}
 
 		tabBar->removeTab(index);
@@ -228,6 +237,11 @@ void SceneTabWidget::SetTabScene(int index, SceneEditor2* scene)
 	{
 		tabBar->setTabData(index, qVariantFromValue(scene));
 	}
+}
+
+int SceneTabWidget::GetTabCount() const
+{
+	return tabBar->count();
 }
 
 void SceneTabWidget::ProcessDAVAUIEvent(DAVA::UIEvent *event)

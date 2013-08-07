@@ -21,11 +21,16 @@
 #include "CopyPasteController.h"
 #include "HierarchyTreeAggregatorControlNode.h"
 
+#include <QMenu>
+#include <QAction>
+
 #define SIZE_CURSOR_DELTA 4
 #define MIN_DRAG_DELTA 3
 #define KEY_MOVE_DELTA 5
 
 #define MOVE_SCREEN_KEY DVKEY_SPACE
+
+const char* MENU_PROPERTY_ID = "id";
 
 class UISelectorControl: public UIControl
 {
@@ -255,6 +260,14 @@ HierarchyTreeNode::HIERARCHYTREENODEID DefaultScreen::SmartSelection::GetLast() 
 	}
 
 	return this->id;
+}
+
+DefaultScreen::SmartSelection::SelectionVector DefaultScreen::SmartSelection::GetAll() const
+{
+	SelectionVector selection;
+	FormatSelectionVector(selection);
+	
+	return selection;
 }
 
 void DefaultScreen::SmartSelection::FormatSelectionVector(SelectionVector &selection) const
@@ -912,6 +925,8 @@ void DefaultScreen::MouseInputEnd(const DAVA::UIEvent* event)
 		Vector2 delta = GetInputDelta(event->point);
 		ResetMoveDelta();
 		MoveControl(delta);
+		startControlPos.clear();
+
 	}
 	
 	if (inputState == InputStateSize)
@@ -926,29 +941,101 @@ void DefaultScreen::MouseInputEnd(const DAVA::UIEvent* event)
 	
 	//Use additional control selection. This will allow to scroll through multiple contols
 	//located in the same area
+	bool bResetControlPosition = true;
 	if ((inputState == InputStateSelection) && useMouseUpSelection)
 	{		
 		Vector2 localPoint = event->point;
 		Vector2 point = LocalToInternal(localPoint);
-		
-		HierarchyTreeControlNode* selectedControlNode = SmartGetSelectedControl(point);
-		
-		if (selectedControlNode)
+			
+		switch(event->tid)
 		{
-			if (!HierarchyTreeController::Instance()->IsNodeActive(selectedControlNode))
+			case UIEvent::BUTTON_1: // For left mouse button we use standard selection
+				HandleMouseLeftButtonClick(point);
+				break;
+			case UIEvent::BUTTON_2: // For right mouse button we should show context menu with avaiable controls at current point
 			{
-				if (!InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SHIFT))
-					HierarchyTreeController::Instance()->ResetSelectedControl();
-
-					HierarchyTreeController::Instance()->SelectControl(selectedControlNode);
+				HandleMouseRightButtonClick(point);
+				bResetControlPosition = false;
+				break;
 			}
-			SaveControlsPostion();
+			default: // Do nothing for other buttons
+				break;
 		}
 	}
+	// We don't have to reset control for right mouse click. Control position is not changed and we don't select another control
+	// So we have to keep previous "selection" for that case
+	if (bResetControlPosition)
+	{
+		lastSelectedControl = NULL;
+		inputState = InputStateSelection;
+		startControlPos.clear();
+	}
+}
 
-	lastSelectedControl = NULL;
-	inputState = InputStateSelection;
-	startControlPos.clear();
+void DefaultScreen::HandleMouseRightButtonClick(const Vector2& point)
+{
+	SmartSelection selection(HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY);
+	SmartGetSelectedControl(&selection, HierarchyTreeController::Instance()->GetActiveScreen(), point);
+	ShowControlContextMenu(selection);
+}
+
+void DefaultScreen::HandleMouseLeftButtonClick(const Vector2& point)
+{
+	HierarchyTreeControlNode* selectedControlNode = SmartGetSelectedControl(point);
+	if (selectedControlNode)
+	{
+		if (!HierarchyTreeController::Instance()->IsNodeActive(selectedControlNode))
+		{
+			if (!InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SHIFT))
+				HierarchyTreeController::Instance()->ResetSelectedControl();
+
+				HierarchyTreeController::Instance()->SelectControl(selectedControlNode);
+		}
+		SaveControlsPostion();
+	}
+}
+
+void DefaultScreen::ShowControlContextMenu(const SmartSelection& selection)
+{
+	QMenu menu;
+	// Get the whole selection vector available
+	const DefaultScreen::SmartSelection::SelectionVector selectionVector = selection.GetAll();
+	for (int32 i = selectionVector.size() - 1; i >= 0; i--)
+	{
+		HierarchyTreeNode *node = HierarchyTreeController::Instance()->GetTree().GetNode(selectionVector[i]);
+		HierarchyTreeControlNode *controlNode = dynamic_cast<HierarchyTreeControlNode*>(node);
+			
+		if (!controlNode)
+			continue;
+		// Create menu action and put nodeId to it as property
+		QAction* controlAction = new QAction(controlNode->GetName(), &menu);
+		controlAction->setProperty(MENU_PROPERTY_ID, selectionVector[i]);
+		menu.addAction(controlAction);
+	}
+	
+  	connect(&menu, SIGNAL(triggered(QAction*)), this, SLOT(ControlContextMenuTriggered(QAction*)));
+	menu.exec(QCursor::pos());
+}
+
+void DefaultScreen::ControlContextMenuTriggered(QAction* action)
+{
+	// Get controlNode for specific action triggered
+	int nodeId = action->property(MENU_PROPERTY_ID).toInt();
+	HierarchyTreeNode *node = HierarchyTreeController::Instance()->GetTree().GetNode(nodeId);
+	HierarchyTreeControlNode *controlNode = dynamic_cast<HierarchyTreeControlNode*>(node);
+			
+	if (controlNode)
+	{
+		if (!HierarchyTreeController::Instance()->IsNodeActive(controlNode))
+		{
+			HierarchyTreeController::Instance()->ResetSelectedControl();
+			HierarchyTreeController::Instance()->SelectControl(controlNode);			
+			// Reset smart selection
+			SAFE_DELETE(oldSmartSelected);
+		}
+		
+		SaveControlsPostion();
+	}
 }
 
 void DefaultScreen::KeyboardInput(const DAVA::UIEvent* event)

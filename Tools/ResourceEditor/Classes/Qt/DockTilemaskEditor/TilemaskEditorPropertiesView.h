@@ -64,6 +64,7 @@ private slots:
 private:
 	Ui::TilemaskEditorPropertiesView* ui;
 	SceneEditor2* activeScene;
+	QAction* toolbarAction;
 
 	void SetWidgetsState(bool enabled);
 	void BlockAllSignals(bool block);

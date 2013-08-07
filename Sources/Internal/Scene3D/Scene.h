@@ -61,6 +61,7 @@ class LightUpdateSystem;
 class SwitchSystem;
 class SoundUpdateSystem;
 class ActionUpdateSystem;
+class SkyboxSystem;
     
 /**
     \ingroup scene3d
@@ -87,7 +88,7 @@ public:
     virtual void    RemoveComponent(Entity * entity, Component * component);
     
     virtual void    AddSystem(SceneSystem * sceneSystem, uint32 componentFlags);
-    virtual void    RemoveSystem(SceneSystem * sceneSystem, uint32 componentFlags);
+    virtual void    RemoveSystem(SceneSystem * sceneSystem);
     
 	virtual void ImmediateEvent(Entity * entity, uint32 componentType, uint32 event);
 
@@ -104,6 +105,8 @@ public:
 	RenderSystem * renderSystem;
 	SoundUpdateSystem * soundSystem;
 	ActionUpdateSystem* actionSystem;
+	SkyboxSystem* skyboxSystem;
+	
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.
      */

@@ -418,7 +418,7 @@ void SceneValidator::ValidateTexture(Texture *texture, const FilePath &texturePa
 	String path = texturePathname.GetRelativePathname(EditorSettings::Instance()->GetProjectPath());
 	String textureInfo = path + " for object: " + validatedObjectName;
 
-	if(texture == Texture::GetPinkPlaceholder())
+	if(texture->IsPinkPlaceholder())
 	{
 		errorsLog.insert("Can't load texture: " + textureInfo);
 	}

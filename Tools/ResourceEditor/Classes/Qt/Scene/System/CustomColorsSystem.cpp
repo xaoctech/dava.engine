@@ -45,7 +45,7 @@ CustomColorsSystem::CustomColorsSystem(Scene* scene)
 ,	enabled(false)
 ,	editingIsEnabled(false)
 ,	curToolSize(0)
-,	cursorSize(0)
+,	cursorSize(120)
 ,	drawColor(Color(0.f, 0.f, 0.f, 0.f))
 ,	toolImageSprite(NULL)
 ,	prevCursorPos(Vector2(-1.f, -1.f))
@@ -71,17 +71,41 @@ bool CustomColorsSystem::IsLandscapeEditingEnabled() const
 	return enabled;
 }
 
+bool CustomColorsSystem::IsCanBeEnabled()
+{
+	SceneEditor2* scene = dynamic_cast<SceneEditor2*>(GetScene());
+	DVASSERT(scene);
+	
+	bool canBeEnabled = true;
+	canBeEnabled &= !(scene->visibilityToolSystem->IsLandscapeEditingEnabled());
+	canBeEnabled &= !(scene->heightmapEditorSystem->IsLandscapeEditingEnabled());
+	canBeEnabled &= !(scene->tilemaskEditorSystem->IsLandscapeEditingEnabled());
+	canBeEnabled &= !(scene->rulerToolSystem->IsLandscapeEditingEnabled());
+//	canBeEnabled &= !(scene->customColorsSystem->IsLandscapeEditingEnabled());
+	canBeEnabled &= !(scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled());
+	
+	return canBeEnabled;
+}
+
 bool CustomColorsSystem::EnableLandscapeEditing()
 {
 	if (enabled)
 	{
 		return true;
 	}
-	
+
+	if (!IsCanBeEnabled())
+	{
+		return false;
+	}
+
+	if (!drawSystem->EnableCustomDraw())
+	{
+		return false;
+	}
+
 	selectionSystem->SetLocked(true);
 	modifSystem->SetLocked(true);
-	
-	drawSystem->EnableCustomDraw();
 
 	landscapeSize = drawSystem->GetLandscapeProxy()->GetLandscapeTexture(Landscape::TEXTURE_TILE_FULL)->GetWidth();
 
@@ -128,7 +152,7 @@ bool CustomColorsSystem::DisableLandscapeEdititing()
 
 	if (drawSystem->GetCustomColorsProxy()->GetChangesCount())
 	{
-		SceneSignals::Instance()->EmitNeedSaveCustomColorsTexture(((SceneEditor2 *) GetScene()));
+		SceneSignals::Instance()->EmitCustomColorsTextureShouldBeSaved(((SceneEditor2 *) GetScene()));
 	}
 
 	return !enabled;
