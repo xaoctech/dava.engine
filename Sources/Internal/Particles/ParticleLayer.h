@@ -1,31 +1,17 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #ifndef __DAVAENGINE_PARTICLE_LAYER_H__
 #define __DAVAENGINE_PARTICLE_LAYER_H__
@@ -64,6 +50,7 @@ public:
 	{
 		TYPE_SINGLE_PARTICLE,
 		TYPE_PARTICLES,				// default for any particle layer loaded from yaml file
+		TYPE_SUPEREMITTER_PARTICLES
 	};
 	
 	ParticleLayer();
@@ -82,6 +69,20 @@ public:
 		\param[in] isDeleteAllParticles if it's set to true layer deletes all previous particles that was generated
 	 */
 	void Restart(bool isDeleteAllParticles = true);
+	
+	/**
+	 \brief Enable/disable loop otion.
+	 If loop option is enabled, layer will automatically restart after it's lifeTime ends.
+	 Option is enabled by default.
+	 \param[in] autoRestart enable autorestart if true
+	 */
+	void SetLooped(bool isLopped);
+
+	/**
+	 \brief Get isLooped state.
+	 \returns current autorestart state.
+	 */
+	bool GetLooped();
 	
 	/**
 		\brief This function retrieve current particle count from current layer.
@@ -104,6 +105,7 @@ public:
 		IMPORTANT: This function save weak pointer to parent emitter. Emitter hold strong references to all child layers.
 		This function used internally in emitter, but in some situations. 
 	*/
+	ParticleEmitter* GetEmitter() const;
 	void SetEmitter(ParticleEmitter * emitter);
 	
 	/**
@@ -135,17 +137,12 @@ public:
 
     float32 GetLayerTime();
 
-	const String & GetRelativeSpriteName();
-
     // Whether this layer is Long Layer?
     virtual bool IsLong() {return false;};
 	virtual void SetLong(bool /*value*/) {};
     
 	RenderBatch * GetRenderBatch();
 
-	// Reload the layer sprite, update the Frames timeline if needed.
-	void ReloadSprite();
-	
 	virtual void SetAdditive(bool additive);
 	bool GetAdditive() const {return additive;};
 
@@ -167,10 +164,34 @@ public:
 	int32 GetActiveParticlesCount();
 	float32 GetActiveParticlesArea();
 
+	// Create the inner emitter where needed.
+	virtual void CreateInnerEmitter();
+
+	// Get thhe inner emitter, if exists.
+	ParticleEmitter* GetInnerEmitter();
+
+	// Stop and remove Inner Emitter.
+	virtual void RemoveInnerEmitter();
+
+	// Control the Inner Emitter.
+	virtual void PauseInnerEmitter(bool _isPaused);
+
+	// Enable/disable the layer.
+	inline bool GetDisabled();
+	void SetDisabled(bool value);
+
+	// Get/set the Pivot Point for the layer.
+	Vector2 GetPivotPoint() const;
+	void SetPivotPoint(const Vector2& value);
+
+	// Handle the situation when layer is removed from the system.
+	void HandleRemoveFromSystem();
+
 protected:
 	void GenerateNewParticle(int32 emitIndex);
 	void GenerateSingleParticle();
-	
+
+	void RestartLayerIfNeed();
 
 	void DeleteAllParticles();
 	
@@ -187,6 +208,16 @@ protected:
 	void CleanupForces();
 	
 	void FillSizeOverlifeXY(RefPtr< PropertyLine<float32> > sizeOverLife);
+	
+	// Convert from Layer Type to its name and vice versa.
+	eType StringToLayerType(const String& layerTypeName, eType defaultLayerType);
+	String LayerTypeToString(eType layerType, const String& defaultLayerTypeName);
+
+	// Update the playback speed for all Inner Emitters.
+	void UpdatePlaybackSpeedForInnerEmitters(float value);
+
+	// Get the draw pivot point (mid of sprite + layer pivot point).
+	inline Vector2 GetDrawPivotPoint();
 
 	// list of particles
 	Particle *	head;
@@ -202,16 +233,20 @@ protected:
 	ParticleEmitter * emitter;
 	// particle layer sprite
 	Sprite 			* sprite;
-	String			relativeSpriteName;
+	FilePath		spritePath;
 
 	ParticleLayerBatch * renderBatch;
 
+	bool		isDisabled;
 	bool		additive;
+	bool		isLooped;
 	float32		playbackSpeed;
+
+	Vector2		layerPivotPoint;
 
 public:
 	String			layerName;
-	Vector2			pivotPoint;
+
 	/*
 	 Properties of particle layer that describe particle system logic
 	 */
@@ -261,8 +296,17 @@ public:
 	bool		frameOverLifeEnabled;
 	float32		frameOverLifeFPS;
 
-    bool isDisabled;
-    
+	ParticleEmitter* innerEmitter;
+	FilePath	innerEmitterPath;
+
+private:
+	struct LayerTypeNamesInfo
+	{
+		eType layerType;
+		String layerTypeName;
+	};
+	static const LayerTypeNamesInfo layerTypeNamesInfoMap[];
+
 public:
     
     INTROSPECTION_EXTEND(ParticleLayer, BaseObject,
@@ -326,6 +370,21 @@ public:
 inline int32 ParticleLayer::GetParticleCount()
 {
 	return count;
+}
+	
+inline bool ParticleLayer::GetDisabled()
+{
+	return this->isDisabled;
+}
+
+inline Vector2 ParticleLayer::GetDrawPivotPoint()
+{
+	if (this->sprite)
+	{
+		return Vector2(	sprite->GetWidth() / 2 + layerPivotPoint.x, sprite->GetHeight() / 2 + layerPivotPoint.y);
+	}
+	
+	return layerPivotPoint;
 }
 };
 

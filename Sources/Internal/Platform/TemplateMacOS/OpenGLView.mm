@@ -1,34 +1,21 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #import "OpenGLView.h"
 #include "DAVAEngine.h"
+#include <ApplicationServices/ApplicationServices.h>
 
 
 extern void FrameworkMain(int argc, char *argv[]);
@@ -246,6 +233,26 @@ extern void FrameworkMain(int argc, char *argv[]);
 }
 
 static Vector<DAVA::UIEvent> activeTouches;
+
+void ConvertNSEventToUIEvent(NSEvent *curEvent, UIEvent & event, int32 phase)
+{
+    NSPoint p = [curEvent locationInWindow];
+    
+    if(InputSystem::Instance()->IsCursorPining())
+    {
+        event.physPoint.x = [curEvent deltaX];
+        event.physPoint.y = [curEvent deltaY];
+    }
+    else
+    {
+        event.physPoint.x = p.x;
+        event.physPoint.y = Core::Instance()->GetPhysicalScreenHeight() - p.y;
+    }
+    event.timestamp = curEvent.timestamp;
+    event.tapCount = curEvent.clickCount;
+    event.phase = phase;
+}
+
 void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outTouches)
 {
 	int button = 0;
@@ -284,13 +291,7 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 	{
 		for(Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
 		{
-				NSPoint p = [curEvent locationInWindow];
-				it->physPoint.x = p.x;
-				it->physPoint.y = Core::Instance()->GetPhysicalScreenHeight() - p.y;
-
-				it->timestamp = curEvent.timestamp;
-				it->tapCount = curEvent.clickCount;
-				it->phase = phase;
+            ConvertNSEventToUIEvent(curEvent, (*it), phase);
 		}
 	}
 	
@@ -301,13 +302,7 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 		{
 			isFind = true;
 			
-			NSPoint p = [curEvent locationInWindow];
-			it->physPoint.x = p.x;
-			it->physPoint.y = Core::Instance()->GetPhysicalScreenHeight() - p.y;
-
-			it->timestamp = curEvent.timestamp;
-			it->tapCount = curEvent.clickCount;
-			it->phase = phase;
+            ConvertNSEventToUIEvent(curEvent, (*it), phase);
 
 			break;
 		}
@@ -317,13 +312,9 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 	{
 		UIEvent newTouch;
 		newTouch.tid = button;
-		NSPoint p = [curEvent locationInWindow];
-		newTouch.physPoint.x = p.x;
-		newTouch.physPoint.y = Core::Instance()->GetPhysicalScreenHeight() - p.y;
-
-		newTouch.timestamp = curEvent.timestamp;
-		newTouch.tapCount = curEvent.clickCount;
-		newTouch.phase = phase;
+        
+        ConvertNSEventToUIEvent(curEvent, newTouch, phase);
+        
 		activeTouches.push_back(newTouch);
 	}
 
@@ -370,6 +361,10 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 - (void)mouseMoved:(NSEvent *)theEvent
 {
 	[self process:DAVA::UIEvent::PHASE_MOVE touch:theEvent];
+    if(InputSystem::Instance()->IsCursorPining())
+    {
+        Cursor::MoveToCenterOfWindow();
+    }
 }
 
 - (void)mouseUp:(NSEvent *)theEvent
@@ -380,6 +375,10 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 - (void)mouseDragged:(NSEvent *)theEvent
 {
 	[self process:DAVA::UIEvent::PHASE_ENDED touch:theEvent];
+    if(InputSystem::Instance()->IsCursorPining())
+    {
+        Cursor::MoveToCenterOfWindow();
+    }
 }
 - (void)mouseEntered:(NSEvent *)theEvent
 {

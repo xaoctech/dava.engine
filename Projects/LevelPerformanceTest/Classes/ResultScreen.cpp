@@ -61,7 +61,7 @@ void ResultScreen::SaveResults()
     
     Image* image = resultSprite->GetTexture()->CreateImageFromMemory();
     FilePath saveFileName = FileSystem::Instance()->GetUserDocumentsPath();
-    saveFileName += FilePath(filename.GetFilename() + ".png");
+    saveFileName += filename.GetFilename() + ".png";
     ImageLoader::Save(image, saveFileName);
     
     Map<String, String> results;
@@ -168,14 +168,14 @@ void ResultScreen::DrawStatImage(Rect rect)
 	{
 		FpsStatItem item = testData.GetItem(i);
 		Rect curRect = testData.TranslateRect(item.rect, rect);
-		for(uint32 j = 0; j < 8; j++)
+		for(uint32 j = 0; j < SECTORS_COUNT; j++)
 		{
 			manager->SetColor(SettingsManager::Instance()->GetColorByFps(item.avFps[j]));
 			Polygon2 curSector;
 			curSector.AddPoint(curRect.GetCenter());
-			curSector.AddPoint(GetVecInRect(curRect, DegToRad(j * 45.f - 22.5f)));
-			curSector.AddPoint(GetVecInRect(curRect, DegToRad(j * 45.f)));
-			curSector.AddPoint(GetVecInRect(curRect, DegToRad(j * 45.f + 22.5f)));
+			curSector.AddPoint(GetVecInRect(curRect, DegToRad((SECTORS_COUNT - j) * 45.f - 22.5f)));
+			curSector.AddPoint(GetVecInRect(curRect, DegToRad((SECTORS_COUNT - j) * 45.f)));
+			curSector.AddPoint(GetVecInRect(curRect, DegToRad((SECTORS_COUNT - j) * 45.f + 22.5f)));
 			helper->FillPolygon(curSector);
 			manager->SetColor(Color::Black());
 			helper->DrawPolygon(curSector, true);

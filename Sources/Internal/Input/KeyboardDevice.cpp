@@ -1,31 +1,17 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Alexey 'Hottych' Prosin
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #include "KeyboardDevice.h"
 
@@ -203,6 +189,30 @@ void KeyboardDevice::PrepareKeyTranslator()
         keyTranslator[0x52 + i] = DVKEY_0 + i;
     }
     
+#endif
+
+#if defined(__DAVAENGINE_ANDROID__)
+
+    keyTranslator[0x60] = DVKEY_BUTTON_A;
+    keyTranslator[0x61] = DVKEY_BUTTON_B;
+    keyTranslator[0x62] = DVKEY_BUTTON_C;
+    keyTranslator[0x63] = DVKEY_BUTTON_X;
+    keyTranslator[0x64] = DVKEY_BUTTON_Y;
+    keyTranslator[0x65] = DVKEY_BUTTON_Z;
+    keyTranslator[0x66] = DVKEY_BUTTON_L1;
+    keyTranslator[0x68] = DVKEY_BUTTON_L2;
+    keyTranslator[0x67] = DVKEY_BUTTON_R1;
+    keyTranslator[0x69] = DVKEY_BUTTON_R2;
+    keyTranslator[0x15] = DVKEY_DPAD_LEFT;
+    keyTranslator[0x16] = DVKEY_DPAD_RIGHT;
+    keyTranslator[0x13] = DVKEY_DPAD_UP;
+    keyTranslator[0x14] = DVKEY_DPAD_DOWN;
+    keyTranslator[0x17] = DVKEY_DPAD_CENTER;
+    keyTranslator[0x6e] = DVKEY_BUTTON_MODE;
+    keyTranslator[0x6d] = DVKEY_BUTTON_SELECT;
+    keyTranslator[0x6c] = DVKEY_BUTTON_START;
+	keyTranslator[0x04] = DVKEY_BUTTON_BACK;
+
 #endif
 }
 

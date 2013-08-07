@@ -1,3 +1,19 @@
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
 #include "FileCommands.h"
 
 #include "DAVAEngine.h"
@@ -13,6 +29,8 @@
 
 #include <QFileDialog>
 #include <QString>
+
+#include "CommandsManager.h"
 
 using namespace DAVA;
 
@@ -92,130 +110,97 @@ void CommandOpenScene::Execute()
             EditorSettings::Instance()->AddLastOpenedFile(selectedScenePathname);
             screen->OpenFileAtScene(selectedScenePathname);
             
-			QtMainWindowHandler::Instance()->SelectMaterialViewOption(Material::MATERIAL_VIEW_TEXTURE_LIGHTMAP);
+			// TODO: mainwindow
+			//QtMainWindowHandler::Instance()->SelectMaterialViewOption(Material::MATERIAL_VIEW_TEXTURE_LIGHTMAP);
 
             //GUIState::Instance()->SetNeedUpdatedFileMenu(true);
         }
         
-        QtMainWindowHandler::Instance()->ShowStatusBarMessage(selectedScenePathname.GetAbsolutePathname());
+		// TODO: mainwindow
+        //QtMainWindowHandler::Instance()->ShowStatusBarMessage(selectedScenePathname.GetAbsolutePathname());
     }
 }
-
-//New
-CommandNewScene::CommandNewScene()
-:   Command(Command::COMMAND_CLEAR_UNDO_QUEUE, CommandList::ID_COMMAND_NEW_SCENE)
-{
-}
-
-
-void CommandNewScene::Execute()
-{
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-        screen->NewScene();
-        SceneValidator::Instance()->EnumerateSceneTextures();
-    }
-}
-
 
 //Save
-CommandSaveScene::CommandSaveScene()
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_SAVE_SCENE)
+CommandSaveSpecifiedScene::CommandSaveSpecifiedScene(Entity* activeScene, FilePath& filePath)
+:	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_SAVE_SPECIFIED_SCENE)
 {
+	this->activeScene	= activeScene;
+	this->filePath		= filePath;
 }
 
-
-void CommandSaveScene::Execute()
+void CommandSaveSpecifiedScene::Execute()
 {
-    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
-    if(activeScene->CanSaveScene())
-    {
-        SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-        
-		FilePath currentPath;
-		if(!screen->CurrentScenePathname().IsEmpty())
-		{
-			currentPath = screen->CurrentScenePathname();    
-		}
-		else
-		{
-			currentPath = EditorSettings::Instance()->GetDataSourcePath();
-		}
-
-        QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save Scene File"), QString(currentPath.GetAbsolutePathname().c_str()),
-                                                        QString("Scene File (*.sc2)")
-                                                        );
-        if(0 < filePath.size())
-        {
-			FilePath normalizedPathname = PathnameToDAVAStyle(filePath);
-
-            EditorSettings::Instance()->AddLastOpenedFile(normalizedPathname);
-
-			SaveParticleEmitterNodes(activeScene->GetScene());
-            screen->SaveSceneToFile(normalizedPathname);
-        }
-    }
-
-	QtMainWindowHandler::Instance()->RestoreDefaultFocus();
-}
-
-void CommandSaveScene::SaveParticleEmitterNodes(EditorScene* scene)
-{
-	if (!scene)
+	if(NULL == activeScene)
 	{
 		return;
 	}
 
-	int32 childrenCount = scene->GetChildrenCount();
-	for (int32 i = 0; i < childrenCount; i ++)
+	QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save Scene File"), 
+													QString(this->filePath.GetAbsolutePathname().c_str()),
+													QString("Scene File (*.sc2)"));
+	if(0 < filePath.size())
 	{
-		SaveParticleEmitterNodeRecursive(scene->GetChild(i));
-	}
-}
+		FilePath normalizedPathname = PathnameToDAVAStyle(filePath);	
+		EditorSettings::Instance()->AddLastOpenedFile(normalizedPathname);
 
-void CommandSaveScene::SaveParticleEmitterNodeRecursive(Entity* parentNode)
-{
-	bool needSaveThisLevelNode = true;
-	ParticleEmitter * emitter = GetEmitter(parentNode);
-	if (!emitter)
-	{
-		needSaveThisLevelNode = false;
-	}
+		DVASSERT(activeScene);
+		Entity* entityToAdd = activeScene->Clone();
+		
+		entityToAdd->SetLocalTransform(Matrix4::IDENTITY);
 
-	if (needSaveThisLevelNode)
-	{
-		// Do we have file name? Ask for it, if not.
-		FilePath yamlPath = emitter->GetConfigPath();
-		if (yamlPath.IsEmpty())
+		Scene* sc = new Scene();
+		
+		uint32 size = entityToAdd->GetChildrenCount();
+		KeyedArchive *customProperties = entityToAdd->GetCustomProperties();
+		if (customProperties && customProperties->IsKeyExists(String("editor.referenceToOwner")))
 		{
-			QString saveDialogCaption = QString("Save Particle Emitter \"%1\"").arg(QString::fromStdString(parentNode->GetName()));
-			QString saveDialogYamlPath = QFileDialog::getSaveFileName(NULL, saveDialogCaption, "", QString("Yaml File (*.yaml)"));
-
-			if (!saveDialogYamlPath.isEmpty())
+			if(!size)
 			{
-				yamlPath = PathnameToDAVAStyle(saveDialogYamlPath);
+				sc->AddNode(entityToAdd);
+			}
+			else
+			{
+				Vector<Entity*> tempV;
+				tempV.reserve(size);
+				for (int32 ci = 0; ci < size; ++ci)
+				{
+					Entity *child = entityToAdd->GetChild(ci);
+					child->Retain();
+					tempV.push_back(child);
+				}
+				for (int32 ci = 0; ci < (int32)tempV.size(); ++ci)
+				{
+					sc->AddNode(tempV[ci]);
+					tempV[ci]->Release();
+				}
 			}
 		}
-
-		if (!yamlPath.IsEmpty())
+		else
 		{
-			emitter->SaveToYaml(yamlPath);
+			sc->AddNode(entityToAdd);
 		}
+
+		SceneFileV2 * outFile = new SceneFileV2();
+		
+		outFile->EnableSaveForGame(true);
+		outFile->EnableDebugLog(false);
+
+		outFile->SaveScene(normalizedPathname, sc);
+		
+		SafeRelease(outFile);
+		SafeRelease(entityToAdd); 
+		SafeRelease(sc);
 	}
 
-	// Repeat for all children.
-	int32 childrenCount = parentNode->GetChildrenCount();
-	for (int32 i = 0; i < childrenCount; i ++)
-	{
-		SaveParticleEmitterNodeRecursive(parentNode->GetChild(i));
-	}
+	// TODO: mainwindow
+	//QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 }
 
 //Export
-CommandExport::CommandExport(ImageFileFormat fmt)
+CommandExport::CommandExport(eGPUFamily gpu)
     :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_EXPORT)
-    ,   format(fmt)
+    ,   gpuFamily(gpu)
 {
 }
 
@@ -225,7 +210,7 @@ void CommandExport::Execute()
     SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
     if(screen)
     {
-        screen->ExportAs(format);
+        screen->ExportAs(gpuFamily);
     }
 }
 

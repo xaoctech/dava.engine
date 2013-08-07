@@ -1,11 +1,19 @@
-/*
- *  EditorScene.cpp
- *  SceneEditor
- *
- *  Created by Yury Danilov on 14.12.11
- *  Copyright 2011 DAVA. All rights reserved.
- *
- */
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
 
 #include "EditorScene.h"
 #include "SceneNodeUserData.h"
@@ -17,6 +25,7 @@
 #include "Scene3D/Components/BulletComponent.h"
 #include "Render/Highlevel/RenderObject.h"
 
+#include "StringConstants.h"
 
 /*
     This means that if we'll call GameScene->GetClassName() it'll return "Scene"
@@ -48,10 +57,16 @@ EditorScene::EditorScene()
 	renderSystem->AddRenderLayer(LAYER_ARROWS, PASS_FORWARD, LAST_LAYER);
 
     SetDrawGrid(true);
+
+    editorLightSystem = 0;
+    editorLightSystem = new EditorLightSystem(this);
+	AddSystem(editorLightSystem, 0);
 }
 
 EditorScene::~EditorScene()
 {
+    editorLightSystem->SetCameraLightEnabled(false);
+    
 	ReleaseUserData(this);
 	SafeDelete(collisionWorld);
 	SafeDelete(broadphase);
@@ -68,10 +83,32 @@ void EditorScene::Update(float32 timeElapsed)
 {    
 	Scene::Update(timeElapsed);
 
+	editorLightSystem->Update(timeElapsed);
+
 	CheckNodes(this);
 	UpdateBullet(this);
 
 	collisionWorld->updateAabbs();
+}
+
+void EditorScene::RemoveNode(Entity * node)
+{
+	RemoveBullet(node);
+	Scene::RemoveNode(node);
+}
+
+void EditorScene::RemoveBullet(Entity * node)
+{
+	if(NULL != node)
+	{
+		node->RemoveComponent(Component::BULLET_COMPONENT);
+
+		int size = node->GetChildrenCount();
+		for (int i = 0; i < size; i++)
+		{
+			RemoveBullet(node->GetChild(i));
+		}
+	}
 }
 
 void EditorScene::UpdateBullet(Entity * curr)
@@ -98,7 +135,14 @@ void EditorScene::CheckNodes(Entity * curr)
 	{
 		bool newDebugComp = false;
 		DebugRenderComponent *dbgComp = NULL;
+
+		BaseObject *bulletObject = NULL;
 		BulletComponent * bulletComponent = (BulletComponent*)curr->GetComponent(Component::BULLET_COMPONENT);
+
+		if(NULL != bulletComponent)
+		{
+			bulletObject = bulletComponent->GetBulletObject();
+		}
 
 		// create debug render component for all nodes
 		dbgComp = (DebugRenderComponent *) curr->GetComponent(Component::DEBUG_RENDER_COMPONENT);
@@ -139,7 +183,7 @@ void EditorScene::CheckNodes(Entity * curr)
 				dbgComp->SetDebugFlags(dbgComp->GetDebugFlags() | DebugRenderComponent::DEBUG_DRAW_LIGHT_NODE);
 			}
 
-			if(NULL == bulletComponent)
+			if(NULL == bulletComponent || NULL == bulletObject)
 			{
 				BulletObject *bObj = new BulletObject(this, collisionWorld, curr, AABBox3(Vector3(), 2.5f), curr->GetWorldTransform());
 				bulletComponent = (BulletComponent*) curr->GetOrCreateComponent(Component::BULLET_COMPONENT);
@@ -156,7 +200,7 @@ void EditorScene::CheckNodes(Entity * curr)
 				dbgComp->SetDebugFlags(dbgComp->GetDebugFlags() | DebugRenderComponent::DEBUG_DRAW_USERNODE);
 			}
 
-			if(NULL == bulletComponent)
+			if(NULL == bulletComponent || NULL == bulletObject)
 			{
 				BulletObject *bObj = new BulletObject(this, collisionWorld, curr, AABBox3(Vector3(), 2.5f), curr->GetWorldTransform());
 				bulletComponent = (BulletComponent*) curr->GetOrCreateComponent(Component::BULLET_COMPONENT);
@@ -173,7 +217,7 @@ void EditorScene::CheckNodes(Entity * curr)
 
 			if(NULL != rObj && rObj->GetType() != RenderObject::TYPE_LANDSCAPE && curr->IsLodMain(0))
 			{
-				if(NULL == bulletComponent)
+				if(NULL == bulletComponent || NULL == bulletObject)
 				{
 					BulletObject *bObj = new BulletObject(this, collisionWorld, curr, curr->GetWorldTransform());
 					bulletComponent = (BulletComponent*) curr->GetOrCreateComponent(Component::BULLET_COMPONENT);
@@ -468,8 +512,7 @@ void EditorScene::SetSelection(Entity *newSelection)
     {
         uint32 flags = selection->GetDebugFlags();
         uint32 newFlags = flags & ~DebugRenderComponent::DEBUG_DRAW_AABOX_CORNERS;
-        
-        SetNodeDebugFlags(selection, newFlags);
+		selection->SetDebugFlags(newFlags);
     }
     
 	selection = newSelection;
@@ -504,21 +547,9 @@ void EditorScene::SetSelection(Entity *newSelection)
     {
         uint32 flags = selection->GetDebugFlags();
         uint32 newFlags = flags | DebugRenderComponent::DEBUG_DRAW_AABOX_CORNERS;
-        
-        SetNodeDebugFlags(selection, newFlags);
+		selection->SetDebugFlags(newFlags);
     }
 }
-
-void EditorScene::SetNodeDebugFlags(Entity *selectedNode, uint32 flags)
-{
-    selectedNode->SetDebugFlags(flags);
-    if(selectedEntity && selectedEntity != selectedNode)
-    {
-        selectedEntity->SetDebugFlags(flags, false);
-    }
-}
-
-
 
 void EditorScene::SetBulletUpdate(Entity* curr, bool value)
 {
@@ -645,3 +676,21 @@ const RenderManager::Stats & EditorScene::GetRenderStats() const
 {
     return renderStats;
 }
+
+
+
+void EditorScene::AddEditorEntity(Entity *editorEntity)
+{
+    if(GetChildrenCount())
+    {
+        InsertBeforeNode(editorEntity, GetChild(0));
+    }
+    else
+    {
+        AddNode(editorEntity);
+    }
+}
+
+
+
+

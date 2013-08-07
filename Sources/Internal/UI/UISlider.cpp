@@ -1,31 +1,17 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Alexey 'Hottych' Prosin
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
 #include "UI/UISlider.h"
@@ -116,10 +102,12 @@ void UISlider::AddControl(DAVA::UIControl *control)
 	else if (control->GetName() == UISLIDER_MIN_SPRITE_CONTROL_NAME)
 	{
 		bgMin = control;
+		PostInitBackground(bgMin);
 	}
 	else if (control->GetName() == UISLIDER_MAX_SPRITE_CONTROL_NAME)
 	{
 		bgMax = control;
+		PostInitBackground(bgMax);
 	}
 }
 		
@@ -130,6 +118,8 @@ void UISlider::InitMinBackground()
 		bgMin = new UIControl(this->GetRect());
 		bgMin->SetName(UISLIDER_MIN_SPRITE_CONTROL_NAME);
 		UIControl::AddControl(bgMin);
+		
+		PostInitBackground(bgMin);
 	}
 }
 
@@ -140,6 +130,8 @@ void UISlider::InitMaxBackground()
 		bgMax = new UIControl(this->GetRect());
 		bgMax->SetName(UISLIDER_MAX_SPRITE_CONTROL_NAME);
 		UIControl::AddControl(bgMax);
+		
+		PostInitBackground(bgMin);
 	}
 }
 
@@ -162,6 +154,16 @@ void UISlider::ReleaseAllSubcontrols()
 		RemoveControl(bgMax);
 		SafeRelease(bgMax);
 	}
+}
+
+void UISlider::InitInactiveParts(Sprite* spr)
+{
+	if(NULL == spr)
+	{
+		return;
+	}
+
+	leftInactivePart = rightInactivePart = (int32)((spr->GetWidth() / 2.0f) + 1.0f); /* 1 px added to align it and make touches easier, with default setup */
 }
 
 void UISlider::SetThumb(UIControl *newThumb)
@@ -192,16 +194,13 @@ UISlider::~UISlider()
 void UISlider::SetThumbSprite(Sprite * sprite, int32 frame)
 {
 	thumbButton->SetSprite(sprite, frame);
-	if (sprite)
-	{
-		leftInactivePart = rightInactivePart = (int32)((sprite->GetWidth() / 2.0f) + 1.0f); /* 1 px added to align it and make touches easier, with default setup */
-	}
+	InitInactiveParts(sprite);
 }
 
 void UISlider::SetThumbSprite(const FilePath & spriteName, int32 frame)
 {
 	thumbButton->SetSprite(spriteName, frame);
-	leftInactivePart = rightInactivePart = (int32)((thumbButton->GetBackground()->GetSprite()->GetWidth() / 2.0f) + 1.0f); /* 1 px added to align it and make touches easier, with default setup */
+	InitInactiveParts(thumbButton->GetBackground()->GetSprite());
 }
 
 void UISlider::SetMinSprite(Sprite * sprite, int32 frame)
@@ -585,11 +584,13 @@ void UISlider::CopyDataFrom(UIControl *srcControl)
 	{
 		bgMin = t->bgMin->Clone();
 		AddControl(bgMin);
+		PostInitBackground(bgMin);
 	}
 	if (t->bgMax)
 	{
 		bgMax = t->bgMax->Clone();
 		AddControl(bgMax);
+		PostInitBackground(bgMax);
 	}
 	
 	clipPointRelative = t->clipPointRelative;
@@ -609,6 +610,7 @@ void UISlider::AttachToSubcontrols()
 	{
 		thumbButton = FindByName(UISLIDER_THUMB_SPRITE_CONTROL_NAME);
 		DVASSERT(thumbButton);
+		InitInactiveParts(thumbButton->GetBackground()->GetSprite());
 	}
 	
 	if (!bgMin)
@@ -622,7 +624,10 @@ void UISlider::AttachToSubcontrols()
 		bgMax = FindByName(UISLIDER_MAX_SPRITE_CONTROL_NAME);
 		DVASSERT(bgMax);
 	}
-	
+
+	PostInitBackground(bgMin);
+	PostInitBackground(bgMax);
+
 	// All the controls will be released in the destructor, so need to addref.
 	SafeRetain(thumbButton);
 	SafeRetain(bgMin);
@@ -637,6 +642,20 @@ List<UIControl*> UISlider::GetSubcontrols()
 	AddControlToList(subControls, UISLIDER_MAX_SPRITE_CONTROL_NAME);
 
 	return subControls;
+}
+
+void UISlider::PostInitBackground(UIControl* backgroundControl)
+{
+	if (!backgroundControl)
+	{
+		return;
+	}
+	
+	// UISlider's background are drawn in specific way, so they have to be
+	// positioned to (0.0) coordinates to avoid input interception. See pls
+	// DF-1379 for details.
+	backgroundControl->SetInputEnabled(false);
+	backgroundControl->SetPosition(Vector2(0.0f, 0.0f));
 }
 	
 } // ns

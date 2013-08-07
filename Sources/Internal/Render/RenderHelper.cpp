@@ -1,31 +1,17 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #include "Render/RenderHelper.h"
 #include "Render/RenderManager.h"
@@ -233,6 +219,96 @@ void RenderHelper::DrawCircle(const Vector3 & center, float32 radius)
 		pts.AddPoint(pos);
 	}
     DrawPolygon(pts, false);
+}
+
+void RenderHelper::DrawCircle3D(const Vector3 & center, const Vector3 &emissionVector, float32 radius, bool useFilling)
+{
+	Polygon3 pts;
+    float32 seglength = 15.0f;
+    float32 angle = seglength / radius;
+	int ptsCount = (int)(PI_2 / (DegToRad(angle))) + 1;
+
+	for (int k = 0; k < ptsCount; ++k)
+	{
+		float32 angleA = ((float)k / (ptsCount - 1)) * PI_2;
+		float sinAngle = 0.0f;
+		float cosAngle = 0.0f;
+		SinCosFast(angleA, sinAngle, cosAngle);
+
+		Vector3 directionVector(radius * cosAngle,
+								radius * sinAngle,
+								0.0f);
+		
+		// Rotate the direction vector according to the current emission vector value.
+		Vector3 zNormalVector(0.0f, 0.0f, 1.0f);
+		Vector3 curEmissionVector = emissionVector;
+		curEmissionVector.Normalize();
+		
+		// This code rotates the (XY) plane with the particles to the direction vector.
+		// Taking into account that a normal vector to the (XY) plane is (0,0,1) this
+		// code is very simplified version of the generic "plane rotation" code.
+		float32 length = curEmissionVector.Length();
+		if (FLOAT_EQUAL(length, 0.0f) == false)
+		{
+			float32 cosAngleRot = curEmissionVector.z / length;
+			float32 angleRot = acos(cosAngleRot);
+			Vector3 axisRot(curEmissionVector.y, -curEmissionVector.x, 0);
+
+			Matrix3 planeRotMatrix;
+			planeRotMatrix.CreateRotation(axisRot, angleRot);
+			Vector3 rotatedVector = directionVector * planeRotMatrix;
+			directionVector = rotatedVector;
+		}
+		
+		Vector3 pos = center - directionVector;
+		pts.AddPoint(pos);
+	}
+	
+	if (useFilling)
+	{
+		FillPolygon(pts);
+	}
+	else
+	{
+    	DrawPolygon(pts, false);
+	}
+}
+
+void RenderHelper::DrawCylinder(const Vector3 & center, float32 radius, bool useFilling)
+{
+	Polygon3 pts;
+    float32 seglength = 15.0f;
+    float32 angle = seglength / radius;
+	int32 ptsCount = (int32)(PI_2 / (DegToRad(angle))) + 1;
+
+	Vector<Vector2> vertexes;
+	for(int32 i = 0; i < ptsCount + 1; i++)
+ 	{
+		float32 seta = i * 360.0 / ptsCount;
+  		float32 x = sin(DegToRad(seta)) * radius;
+  		float32 y = cos(DegToRad(seta)) * radius;
+
+		vertexes.push_back(Vector2(x, y));
+	}
+	
+	for(int32 i = 0; i < ptsCount; ++i)
+	{
+		pts.AddPoint((Vector3(vertexes[i].x,  vertexes[i].y,  1) * radius) + center);
+		pts.AddPoint((Vector3(vertexes[i].x,  vertexes[i].y,  -1) * radius) + center);
+		pts.AddPoint((Vector3(vertexes[i+1].x, vertexes[i+1].y,  -1) * radius) + center);
+		pts.AddPoint((Vector3(vertexes[i].x,  vertexes[i].y,  1) * radius) + center);
+		pts.AddPoint((Vector3(vertexes[i+1].x, vertexes[i+1].y,  1) * radius) + center);
+		pts.AddPoint((Vector3(vertexes[i+1].x, vertexes[i+1].y,  -1) * radius) + center);
+	}
+	
+	if (useFilling)
+	{
+		FillPolygon(pts);
+	}
+	else
+	{
+		DrawPolygon(pts, true);
+	}
 }
 
 void RenderHelper::DrawPolygonPoints(const Polygon2 & polygon)
@@ -709,13 +785,12 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 
 	void RenderHelper::DrawArrow(const Vector3 &from, const Vector3 &to, float32 arrowLength, float32 lineWidth)
 	{
-		if(0 != lineWidth)
+		if(0 != lineWidth && from != to)
 		{
-			Vector3 v = (to + from);
-			Vector3 c = v * arrowLength / v.Length();
 			Vector3 d = to - from;
+			Vector3 c = to - d / Min(arrowLength, d.Length());
 
-			DAVA::float32 k = c.Length() / 4;
+			DAVA::float32 k = (to - c).Length() / 4;
 
 			Vector3 n = c.CrossProduct(to);
 			n.Normalize();
@@ -752,6 +827,14 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 		DAVA::float32 k = arrowLength / 4;
 
 		Vector3 n = c.CrossProduct(to);
+
+		if(n.IsZero())
+		{
+			if(0 == to.x) n = Vector3(1, 0, 0);
+			else if(0 == to.y) n = Vector3(0, 1, 0);
+			else if(0 == to.z) n = Vector3(0, 0, 1);
+		}
+
 		n.Normalize();
 		n *= k;
 

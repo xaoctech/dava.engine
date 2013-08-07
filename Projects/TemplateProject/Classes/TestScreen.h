@@ -47,11 +47,6 @@ public:
 private:
 	Sprite * testSprite;
 
-	Sound * sndClick;
-	Sound * music;
-
-	bool isPlaying;
-
 	float32 time;
 	GameObjectManager * manager;
 

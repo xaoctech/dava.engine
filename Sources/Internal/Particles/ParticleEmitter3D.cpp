@@ -1,3 +1,19 @@
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
 #include "Particles/ParticleEmitter3D.h"
 #include "Particles/ParticleLayer3D.h"
 #include "Render/Highlevel/Camera.h"
@@ -22,12 +38,12 @@ void ParticleEmitter3D::AddLayer(ParticleLayer * layer)
 	}
 }
 	
-void ParticleEmitter3D::AddLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove)
+void ParticleEmitter3D::InsertLayer(ParticleLayer * layer, ParticleLayer * beforeLayer)
 {
 	// Only ParticleLayer3Ds are allowed on this level.
 	if (dynamic_cast<ParticleLayer3D*>(layer))
 	{
-		ParticleEmitter::AddLayer(layer, layerToMoveAbove);
+		ParticleEmitter::InsertLayer(layer, beforeLayer);
 	}
 }
 
@@ -75,10 +91,10 @@ void ParticleEmitter3D::PrepareEmitterParameters(Particle * particle, float32 ve
             lineDirection = Vector3(size->GetValue(time).x * rand05_x, size->GetValue(time).y * rand05_y, size->GetValue(time).z * rand05_z);
         particle->position = tempPosition + lineDirection;
     }
-	else if (emitterType == EMITTER_ONCIRCLE)
+	else if ((emitterType == EMITTER_ONCIRCLE_VOLUME) ||
+			 (emitterType == EMITTER_ONCIRCLE_EDGES))
 	{
-		// here just set particle position
-		particle->position = tempPosition;
+		CalculateParticlePositionForCircle(particle, tempPosition, rotationMatrix);
 	}
 
     if (emitterType == EMITTER_SHOCKWAVE)
@@ -97,6 +113,58 @@ void ParticleEmitter3D::PrepareEmitterParameters(Particle * particle, float32 ve
 		newTransform._30 = newTransform._31 = newTransform._32 = 0;
 		particle->direction = particle->direction*newTransform;
 	}
+}
+
+void ParticleEmitter3D::CalculateParticlePositionForCircle(Particle* particle, const Vector3& tempPosition,
+														   const Matrix3& rotationMatrix)
+{
+	float32 curRadius = 1.0f;
+	if (radius)
+	{
+		curRadius = radius->GetValue(time);
+	}
+
+	float32 curAngle = PI_2 * (float32)Random::Instance()->RandFloat();
+	if (emitterType == EMITTER_ONCIRCLE_VOLUME)
+	{
+		// "Volume" means we have to emit particles from the whole circle.
+		curRadius *= (float32)Random::Instance()->RandFloat();
+	}
+
+	float sinAngle = 0.0f;
+	float cosAngle = 0.0f;
+	SinCosFast(curAngle, sinAngle, cosAngle);
+
+	Vector3 directionVector(curRadius * cosAngle,
+							curRadius * sinAngle,
+							0.0f);
+		
+	// Rotate the direction vector according to the current emission vector value.
+	Vector3 zNormalVector(0.0f, 0.0f, 1.0f);
+	Vector3 curEmissionVector;
+	if (emissionVector)
+	{
+		curEmissionVector = emissionVector->GetValue(time);
+		curEmissionVector.Normalize();
+	}
+		
+	// This code rotates the (XY) plane with the particles to the direction vector.
+	// Taking into account that a normal vector to the (XY) plane is (0,0,1) this
+	// code is very simplified version of the generic "plane rotation" code.
+	float32 length = curEmissionVector.Length();
+	if (FLOAT_EQUAL(length, 0.0f) == false)
+	{
+		float32 cosAngleRot = curEmissionVector.z / length;
+		float32 angleRot = acos(cosAngleRot);
+		Vector3 axisRot(curEmissionVector.y, -curEmissionVector.x, 0);
+
+		Matrix3 planeRotMatrix;
+		planeRotMatrix.CreateRotation(axisRot, angleRot);
+		Vector3 rotatedVector = directionVector * planeRotMatrix;
+		directionVector = rotatedVector;
+	}
+		
+	particle->position = (directionVector + tempPosition) * rotationMatrix;
 }
 	
 void ParticleEmitter3D::PrepareEmitterParametersShockwave(Particle * particle, float32 velocity,
@@ -210,13 +278,6 @@ void ParticleEmitter3D::PrepareEmitterParametersGeneric(Particle * particle, flo
 	if (particle->direction.z <= EPSILON && particle->direction.z >= -EPSILON)
 		particle->direction.z = 0.f;
 	
-	if (emitterType == EMITTER_ONCIRCLE)
-	{
-		qvq1_v.Normalize();
-		if(radius)
-			particle->position += qvq1_v * radius->GetValue(time);
-	}
-	
 	// Yuri Coder, 2013/03/26. After discussion with Ivan it appears this angle
 	// calculation is incorrect. TODO: return to this code later on.
     
@@ -247,7 +308,64 @@ RenderObject * ParticleEmitter3D::Clone(RenderObject *newObject)
 		newObject = new ParticleEmitter3D();
 	}
 
-	((ParticleEmitter3D*)newObject)->LoadFromYaml(configPath);
+	ParticleEmitter* clonedEmitter = static_cast<ParticleEmitter*>(newObject);
+	clonedEmitter->SetConfigPath(this->configPath);
+	clonedEmitter->SetPosition(this->position);
+	clonedEmitter->SetAngle(this->angle);
+	
+	clonedEmitter->SetLifeTime(this->lifeTime);
+	clonedEmitter->SetRepeatCount(this->repeatCount);
+	clonedEmitter->SetTime(this->time);
+	clonedEmitter->SetEmitPointsCount(this->emitPointsCount);
+	clonedEmitter->SetPaused(this->isPaused);
+	clonedEmitter->SetAutoRestart(this->isAutorestart);
+	clonedEmitter->SetParticlesFollow(this->particlesFollow);
+	clonedEmitter->Set3D(this->is3D);
+	clonedEmitter->SetPlaybackSpeed(this->playbackSpeed);
+
+	clonedEmitter->SetInitialTranslationVector(this->initialTranslationVector);
+
+	if (this->emissionVector)
+	{
+		clonedEmitter->emissionVector = this->emissionVector->Clone();
+	}
+	if (this->emissionAngle)
+	{
+		clonedEmitter->emissionAngle = this->emissionAngle->Clone();
+	}
+	if (this->emissionRange)
+	{
+		clonedEmitter->emissionRange = this->emissionRange->Clone();
+	}
+	if (this->radius)
+	{
+		clonedEmitter->radius = this->radius->Clone();
+	}
+	if (this->colorOverLife)
+	{
+		clonedEmitter->colorOverLife = this->colorOverLife->Clone();
+	}
+	if (this->size)
+	{
+		clonedEmitter->size = this->size->Clone();
+	}
+	
+	clonedEmitter->emitterType = this->emitterType;
+	clonedEmitter->currentColor = this->currentColor;
+	
+	// Now can add Layers. Need to update their parents.
+	for (Vector<ParticleLayer*>::iterator iter = this->layers.begin(); iter != this->layers.end();
+		 iter ++)
+	{
+		ParticleLayer* clonedLayer = (*iter)->Clone(NULL);
+		ParticleLayer3D* clonedLayer3D = dynamic_cast<ParticleLayer3D*>(clonedLayer);
+		if (clonedLayer3D)
+		{
+			clonedLayer3D->SetParent(clonedEmitter);
+		}
+
+		clonedEmitter->AddLayer(clonedLayer);
+	}
 
 	return newObject;
 }

@@ -1,31 +1,17 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Alexey 'Hottych' Prosin
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
 #include "UI/UIButton.h"
@@ -150,6 +136,8 @@ namespace DAVA
 			}
 			state >>= 1;
 		}
+		
+		selectedBackground = GetActualBackground(controlState);
 	}
 	
 	void UIButton::SetStateSprite(int32 state, Sprite *newSprite, int32 spriteFrame/* = 0*/)
@@ -162,6 +150,8 @@ namespace DAVA
 			}
 			state >>= 1;
 		}
+		
+		selectedBackground = GetActualBackground(controlState);
 	}
 	
 	void UIButton::SetStateFrame(int32 state, int32 spriteFrame)
@@ -174,6 +164,8 @@ namespace DAVA
 			}
 			state >>= 1;
 		}
+		
+		selectedBackground = GetActualBackground(controlState);
 	}
 	
 	void UIButton::SetStateDrawType(int32 state, UIControlBackground::eDrawType drawType)
@@ -186,6 +178,8 @@ namespace DAVA
 			}
 			state >>= 1;
 		}
+		
+		selectedBackground = GetActualBackground(controlState);
 	}
 	
 	void UIButton::SetStateAlign(int32 state, int32 align)
@@ -198,6 +192,50 @@ namespace DAVA
 			}
 			state >>= 1;
 		}
+		
+		selectedBackground = GetActualBackground(controlState);
+	}
+
+	void UIButton::SetStateModification(int32 state, int32 modification)
+	{
+		for(int i = 0; i < DRAW_STATE_COUNT; i++)
+		{
+			if(state & 0x01)
+			{
+				CreateBackForState((eButtonDrawState)i)->SetModification(modification);
+			}
+			state >>= 1;
+		}
+		
+		selectedBackground = GetActualBackground(controlState);
+	}
+	
+	void UIButton::SetStateColor(int32 state, Color color)
+	{
+		for(int i = 0; i < DRAW_STATE_COUNT; i++)
+		{
+			if(state & 0x01)
+			{
+				CreateBackForState((eButtonDrawState)i)->SetColor(color);
+			}
+			state >>= 1;
+		}
+		
+		selectedBackground = GetActualBackground(controlState);
+	}
+	
+	void UIButton::SetStateColorInheritType(int32 state, UIControlBackground::eColorInheritType value)
+	{
+		for(int i = 0; i < DRAW_STATE_COUNT; i++)
+		{
+			if(state & 0x01)
+			{
+				CreateBackForState((eButtonDrawState)i)->SetColorInheritType(value);
+			}
+			state >>= 1;
+		}
+		
+		selectedBackground = GetActualBackground(controlState);
 	}
 
     void UIButton::CreateBackgroundForState(int32 state)
@@ -529,7 +567,6 @@ namespace DAVA
 		return stateTexts[TextIndexForState(GetDrawStateForControlState(state))];
 	}
 
-	
 	UIControlBackground *UIButton::CreateBackForState(eButtonDrawState buttonState)
 	{
 		if(stateBacks[buttonState])
@@ -537,7 +574,15 @@ namespace DAVA
 			return stateBacks[buttonState];
 		}
 		
-		stateBacks[buttonState] = new UIControlBackground();
+		UIControlBackground* targetBack = stateBacks[BackgroundIndexForState(buttonState)];
+		if(!targetBack)
+		{
+			stateBacks[buttonState] = new UIControlBackground();
+		}
+		else
+		{
+			stateBacks[buttonState] = targetBack->Clone();
+		}
 		return stateBacks[buttonState];
 	}
 	
@@ -699,12 +744,21 @@ namespace DAVA
 			{
 				YamlNode * spriteNode = stateSpriteNode->Get(0);
 				YamlNode * frameNode = stateSpriteNode->Get(1);
+				YamlNode * backgroundModificationNode = NULL;
+				if(stateSpriteNode->GetCount() > 2)
+				{
+					backgroundModificationNode = stateSpriteNode->Get(2);
+				}
 				
 				int32 frame = 0;
 				if (frameNode)frame = frameNode->AsInt();
 				if (spriteNode)
 				{
 					SetStateSprite(stateArray[k], spriteNode->AsString(), frame);
+				}
+				if (backgroundModificationNode)
+				{
+					stateBacks[k]->SetModification(backgroundModificationNode->AsInt());
 				}
 			}
             
@@ -728,6 +782,10 @@ namespace DAVA
                     float32 topStretchCap = topBottomStretchCapNode->AsFloat();
                     GetActualBackground(stateArray[k])->SetTopBottomStretchCap(topStretchCap);
                 }
+			}
+			else
+			{
+                SetStateDrawType(stateArray[k],UIControlBackground::DRAW_ALIGNED);
 			}
             
             YamlNode * stateAlignNode = node->Get(Format("stateAlign%s", statePostfix[k].c_str()));
@@ -769,20 +827,19 @@ namespace DAVA
 			{
 				SetStateShadowOffset(stateArray[k], stateShadowOffsetNode->AsVector2());
 			}
-		}
-		for (int k = 0; k < STATE_COUNT; ++k)
-		{
-			YamlNode * colorInheritNode = node->Get("colorInherit");
-			UIControlBackground::eColorInheritType type = (UIControlBackground::eColorInheritType)loader->GetColorInheritTypeFromNode(colorInheritNode);
+			
+			YamlNode * colorInheritNode = node->Get(Format("stateColorInherit%s", statePostfix[k].c_str()));
 			if(colorInheritNode)
 			{
-				for(int32 i = 0; i < DRAW_STATE_COUNT; ++i)
-				{
-					if(stateBacks[i])
-					{
-						stateBacks[i]->SetColorInheritType(type);
-					}
-				}
+				UIControlBackground::eColorInheritType type = (UIControlBackground::eColorInheritType)loader->GetColorInheritTypeFromNode(colorInheritNode);
+				GetActualBackground(stateArray[k])->SetColorInheritType(type);
+			}
+			
+			YamlNode * colorNode = node->Get(Format("stateColor%s", statePostfix[k].c_str()));
+			if(colorNode)
+			{
+				Color color = loader->GetColorFromYamlNode(colorNode);
+				GetActualBackground(stateArray[k])->SetColor(color);
 			}
 		}
 	}
@@ -801,13 +858,19 @@ namespace DAVA
         
 		//Remove values of UIControl
 		//UIButton has state specific properties
+		YamlNode *colorNode = node->Get("color");
 		YamlNode *spriteNode = node->Get("sprite");
 		YamlNode *drawTypeNode = node->Get("drawType");
 		YamlNode *colorInheritNode = node->Get("colorInherit");
 		YamlNode *alignNode = node->Get("align");
 		YamlNode *leftRightStretchCapNode = node->Get("leftRightStretchCap");
 		YamlNode *topBottomStretchCapNode = node->Get("topBottomStretchCap");
+		YamlNode *spriteModificationNode = node->Get("spriteModification");
         
+		if (colorNode)
+		{
+			node->RemoveNodeFromMap("color");
+		}
 		if (spriteNode)
 		{
 			node->RemoveNodeFromMap("sprite");
@@ -832,6 +895,10 @@ namespace DAVA
 		{
 			node->RemoveNodeFromMap("topBottomStretchCap");
 		}
+		if (spriteModificationNode)
+		{
+			node->RemoveNodeFromMap("spriteModification");
+		}
         
 		//States cycle for values
 		for (int i = 0; i < STATE_COUNT; ++i)
@@ -846,9 +913,13 @@ namespace DAVA
                 
                 FilePath path(stateSprite->GetRelativePathname());
                 path.TruncateExtension();
+
+                String pathname = path.GetFrameworkPath();
+				spriteNode->AddValueToArray(pathname);
                 
-				spriteNode->AddValueToArray(path.GetAbsolutePathname());
 				spriteNode->AddValueToArray(stateFrame);
+				int32 modification = stateBacks[BackgroundIndexForState((eButtonDrawState)i)]->GetModification();
+				spriteNode->AddValueToArray(modification);
 				node->AddNodeToMap(Format("stateSprite%s", statePostfix[i].c_str()), spriteNode);
 			}
 
@@ -900,11 +971,24 @@ namespace DAVA
 				nodeValue->SetVector2(shadowOffset);
 				node->Set(Format("stateShadowoffset%s", statePostfix[i].c_str()), nodeValue);
 			}
-            
-			//colorInherit ???? For different states?
-			// Yuri Coder, 2012/11/16. Temporarily commented out until clarification.
-			//UIControlBackground::eColorInheritType colorInheritType = this->GetStateBackground(stateArray[i])->GetColorInheritType();
-			//node->Set(Format("stateColorInherit%s", statePostfix[i].c_str()), loader->GetColorInheritTypeNodeValue(colorInheritType));
+			
+			// State background color
+			Color color = this->GetActualBackground(stateArray[i])->GetColor();
+			Color baseColor =  baseControl->GetActualBackground(stateArray[i])->GetColor();
+			if (baseColor != color)
+			{
+				Vector4 colorVector4(color.r, color.g, color.b, color.a);
+				nodeValue->SetVector4(colorVector4);
+				node->Set(Format("stateColor%s", statePostfix[i].c_str()), nodeValue);
+			}
+			
+ 			// State color inherittype
+			UIControlBackground::eColorInheritType colorInheritType = this->GetActualBackground(stateArray[i])->GetColorInheritType();
+			UIControlBackground::eColorInheritType baseColorInheritType = baseControl->GetActualBackground(stateArray[i])->GetColorInheritType();
+			if (baseColorInheritType != colorInheritType)
+			{
+				node->Set(Format("stateColorInherit%s", statePostfix[i].c_str()), loader->GetColorInheritTypeNodeValue(colorInheritType));
+			}
 		}
         
 		SafeDelete(nodeValue);

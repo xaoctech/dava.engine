@@ -1,3 +1,19 @@
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
 #include "DAVAEngine.h"
 #include "DockSceneInfo/SceneInfo.h"
 #include "Scene/SceneDataManager.h"
@@ -9,9 +25,11 @@
 
 #include "Main/QtUtils.h"
 
-#include "Render/LibPVRHelper.h"
-#include "Render/LibDxtHelper.h"
 #include "Render/TextureDescriptor.h"
+
+#include "../../ImageTools/ImageTools.h"
+
+#include "../Qt/CubemapEditor/MaterialHelper.h"
 
 
 #include <QHeaderView>
@@ -229,25 +247,7 @@ uint32 SceneInfo::CalculateTextureSize(const Map<String, Texture *> &textures)
             continue;
         }
         
-        ImageFileFormat requestedFormat = (descriptor->isCompressedFile) ?
-                                (ImageFileFormat)descriptor->textureFileFormat :
-                                (ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat();
-                
-        FilePath imagePathname = TextureDescriptor::GetPathnameForFormat(pathname, requestedFormat);
-        switch (requestedFormat)
-        {
-            case PVR_FILE:
-                textureSize += LibPVRHelper::GetDataLength(imagePathname);
-                break;
-                
-            case DXT_FILE:
-                textureSize += LibDxtHelper::GetDataSize(imagePathname);
-                break;
-                
-            default:
-                textureSize += tex->GetDataSize();
-                break;
-        }
+        textureSize += ImageTools::GetTexturePhysicalSize(descriptor, EditorSettings::Instance()->GetTextureViewGPU());
         
         SafeRelease(descriptor);
     }
@@ -268,6 +268,9 @@ void SceneInfo::CollectSceneData(SceneData *sceneData, bool force)
  
         scene->GetChildNodes(nodesAtScene);
         scene->GetDataNodes(materialsAtScene);
+		//VI: remove skybox materials so they not to appear in the lists
+		MaterialHelper::FilterMaterialsByType(materialsAtScene, DAVA::Material::MATERIAL_SKYBOX);
+
         scene->GetDataNodes(dataNodesAtScene);
         
         CollectSceneTextures();
@@ -298,7 +301,7 @@ void SceneInfo::CollectSceneTextures()
 {
     for(int32 n = 0; n < (int32)nodesAtScene.size(); ++n)
     {
-        RenderObject *ro = GetRenerObject(nodesAtScene[n]);
+        RenderObject *ro = GetRenderObject(nodesAtScene[n]);
         if(!ro) continue;
         
         uint32 count = ro->GetRenderBatchCount();
@@ -396,7 +399,7 @@ QtPropertyData * SceneInfo::CreateInfoHeader(const QString &key)
 
 QtPropertyData * SceneInfo::GetInfoHeader(const QString &key)
 {
-    QtPropertyData * header = curModel->GetProperty(key);
+    QtPropertyData * header = GetPropertyData(key);
     DVASSERT(header);
     
     return header;
@@ -456,6 +459,9 @@ void SceneInfo::showEvent ( QShowEvent * event )
 
 void SceneInfo::timerDone()
 {
+	// TODO: mainwindow
+	// ...
+	/*
     SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
     if(sceneData)
         RefreshAllData(sceneData);
@@ -464,6 +470,7 @@ void SceneInfo::timerDone()
     {
         QTimer::singleShot(1000, this, SLOT(timerDone()));
     }
+    */
 }
 
 void SceneInfo::RefreshAllData(SceneData *sceneData)

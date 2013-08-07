@@ -1,10 +1,18 @@
-//
-//  ParticlesEditorSceneModelHelper.h
-//  ResourceEditorQt
-//
-//  Created by Yuri Coder on 11/26/12.
-//
-//
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
 
 #ifndef __ResourceEditorQt__ParticlesEditorSceneModelHelper__
 #define __ResourceEditorQt__ParticlesEditorSceneModelHelper__
@@ -19,11 +27,14 @@
 #include "ParticlesEditorQT/Nodes/EmitterParticleEditorNode.h"
 #include "ParticlesEditorQT/Nodes/LayerParticleEditorNode.h"
 #include "ParticlesEditorQT/Nodes/ForceParticleEditorNode.h"
+#include "ParticlesEditorQT/Nodes/InnerEmitterParticleEditorNode.h"
 
 #include "Scene/SceneData.h"
 #include "DockSceneGraph/SceneGraphItem.h"
 
-#include "Commands/Command.h"
+#include "Commands2/Command2.h"
+
+class SceneGraphModel;
 
 namespace DAVA {
 
@@ -74,9 +85,14 @@ public:
 	bool GetCheckableStateForGraphItem(GraphItem* graphItem) const;
 	void SetCheckableStateForGraphItem(GraphItem* graphItem, bool value);
 	
+	// Update the representation of the layer when it is refreshed.
+	void UpdateLayerRepresentation(GraphItem* rootItem,
+								   DAVA::ParticleLayer* layer,
+								   SceneGraphModel* sceneGraphModel);
+
 protected:
 	// Add the action to QT menu.
-	void AddActionToMenu(QMenu *menu, const QString &actionTitle, Command *command) const;
+	void AddActionToMenu(QMenu *menu, const QString &actionTitle, Command2 *command) const;
 	
     // Build the Scene Graph in a recursive way.
     void BuildSceneGraphRecursive(BaseParticleEditorNode* rootNode, SceneGraphItem* rootItem);
@@ -95,6 +111,7 @@ protected:
     void SynchronizeEffectParticleEditorNode(EffectParticleEditorNode* node, Entity* effectRootNode);
     void SynchronizeEmitterParticleEditorNode(EmitterParticleEditorNode* node);
     void SynchronizeLayerParticleEditorNode(LayerParticleEditorNode* node);
+	void SynchronizeInnerEmitterNode(LayerParticleEditorNode* node, SceneGraphItem* layerNodeItem = NULL, SceneGraphModel* sceneGraphModel = NULL);
 
 	void BuildEntitiesSets(EffectParticleEditorNode* node, Entity* effectRootNode,
 						   Set<Entity*>& entitiesInParticleEditor,

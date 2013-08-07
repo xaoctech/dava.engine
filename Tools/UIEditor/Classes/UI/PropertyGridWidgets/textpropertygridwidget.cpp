@@ -1,3 +1,18 @@
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
 #include "textpropertygridwidget.h"
 #include "ui_uitextfieldpropertygridwidget.h"
 
@@ -18,8 +33,9 @@
 
 #include "StringUtils.h"
 
+#include <QLabel>
+
 using namespace DAVA;
-using namespace PropertyNames;
 
 static const QString TEXT_PROPERTY_BLOCK_NAME = "Text";
 
@@ -35,6 +51,9 @@ TextPropertyGridWidget::~TextPropertyGridWidget()
 {
 	delete localizationKeyNameLineEdit;
 	delete localizationKeyTextLineEdit;
+	delete localizationKeyNameLabel;
+	delete localizationKeyTextLabel;
+	delete multilineCheckBox;
 }
 
 void TextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
@@ -45,23 +64,31 @@ void TextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     PROPERTIESMAP propertiesMap = BuildMetadataPropertiesMap();
 
     // All these properties are state-aware.
-    RegisterSpinBoxWidgetForProperty(propertiesMap, FONT_SIZE_PROPERTY_NAME, ui->fontSizeSpinBox, false, true);
-    RegisterPushButtonWidgetForProperty(propertiesMap, FONT_PROPERTY_NAME, ui->fontSelectButton, false, true);
-    RegisterColorButtonWidgetForProperty(propertiesMap, FONT_COLOR_PROPERTY_NAME, ui->textColorPushButton, false, true);
+    RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::FONT_SIZE_PROPERTY_NAME, ui->fontSizeSpinBox, false, true);
+    RegisterPushButtonWidgetForProperty(propertiesMap, PropertyNames::FONT_PROPERTY_NAME, ui->fontSelectButton, false, true);
+    RegisterColorButtonWidgetForProperty(propertiesMap, PropertyNames::FONT_COLOR_PROPERTY_NAME, ui->textColorPushButton, false, true);
+
     // Shadow properties are also state-aware
-    RegisterSpinBoxWidgetForProperty(propertiesMap, SHADOW_OFFSET_X, ui->shadowOffsetXSpinBox, false, true);
-    RegisterSpinBoxWidgetForProperty(propertiesMap, SHADOW_OFFSET_Y, ui->shadowOffsetYSpinBox, false, true);
-    RegisterColorButtonWidgetForProperty(propertiesMap, SHADOW_COLOR, ui->shadowColorButton, false, true);
+    RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::SHADOW_OFFSET_X, ui->shadowOffsetXSpinBox, false, true);
+    RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::SHADOW_OFFSET_Y, ui->shadowOffsetYSpinBox, false, true);
+    RegisterColorButtonWidgetForProperty(propertiesMap, PropertyNames::SHADOW_COLOR, ui->shadowColorButton, false, true);
     // Localized Text Key is handled through generic Property mechanism, but we need to update the
     // Localization Value widget each time Localization Key is changes.
-    RegisterLineEditWidgetForProperty(propertiesMap, LOCALIZED_TEXT_KEY_PROPERTY_NAME, localizationKeyNameLineEdit, false, true);
-	RegisterComboBoxWidgetForProperty(propertiesMap, TEXT_ALIGN_PROPERTY_NAME, ui->alignComboBox, false, true);
+    RegisterLineEditWidgetForProperty(propertiesMap, PropertyNames::LOCALIZED_TEXT_KEY_PROPERTY_NAME, localizationKeyNameLineEdit, false, true);
+	RegisterCheckBoxWidgetForProperty(propertiesMap, PropertyNames::TEXT_PROPERTY_MULTILINE, multilineCheckBox, false, true);
+	RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::TEXT_ALIGN_PROPERTY_NAME, ui->alignComboBox, false, true);
 
 	bool enableTextAlignComboBox = (dynamic_cast<UIStaticTextMetadata*>(activeMetadata)	!= NULL||
 									dynamic_cast<UITextFieldMetadata*>(activeMetadata)	!= NULL||
 									dynamic_cast<UIButtonMetadata*>(activeMetadata)		!= NULL);
-	ui->alignComboBox->setEnabled(enableTextAlignComboBox);
 
+	ui->alignComboBox->setEnabled(enableTextAlignComboBox);
+	
+	bool enableMultilineCheckBox = (dynamic_cast<UIStaticTextMetadata*>(activeMetadata)	!= NULL);
+
+	multilineCheckBox->setEnabled(enableMultilineCheckBox);
+	multilineCheckBox->setVisible(enableMultilineCheckBox);
+		
     UpdateLocalizationValue();
 
     RegisterGridWidgetAsStateAware();
@@ -71,43 +98,59 @@ void TextPropertyGridWidget::InsertLocalizationFields()
 {
 	ui->textLineEdit->setEnabled(false);
 	ui->textLineEdit->setVisible(false);
-	ui->label->setVisible(false);
+	ui->textLabel->setVisible(false);
 	
-	this->resize(300, 262);
-    this->setMinimumSize(QSize(300, 262));
+	this->resize(300, 322);
+    this->setMinimumSize(QSize(300, 322));
 
-	ui->groupBox->resize(300, 262);
-    ui->groupBox->setMinimumSize(QSize(300, 262));
-
+	ui->groupBox->resize(300, 322);
+    ui->groupBox->setMinimumSize(QSize(300, 322));
+	
+	localizationKeyNameLabel = new QLabel(ui->groupBox);
+	localizationKeyNameLabel->setObjectName(QString::fromUtf8("localizationKeyNameLabel"));
+	localizationKeyNameLabel->setGeometry(QRect(10, 25, 281, 16));
+	localizationKeyNameLabel->setText(QString::fromUtf8("Localization Key:"));
 	localizationKeyNameLineEdit = new QLineEdit(ui->groupBox);
 	localizationKeyNameLineEdit->setObjectName(QString::fromUtf8("localizationKeyNameLineEdit"));
-	localizationKeyNameLineEdit->setGeometry(QRect(10, 25, 281, 22));
+	localizationKeyNameLineEdit->setGeometry(QRect(10, 45, 281, 22));
+	
+	localizationKeyTextLabel = new QLabel(ui->groupBox);
+	localizationKeyTextLabel->setObjectName(QString::fromUtf8("localizationKeyTextLabel"));
+	localizationKeyTextLabel->setGeometry(QRect(10, 75, 281, 16));
+	localizationKeyTextLabel->setText(QString::fromUtf8("Localization Value for current language:"));
 	localizationKeyTextLineEdit = new QLineEdit(ui->groupBox);
 	localizationKeyTextLineEdit->setObjectName(QString::fromUtf8("localizationKeyTextLineEdit"));
 	localizationKeyTextLineEdit->setEnabled(false);
-	localizationKeyTextLineEdit->setGeometry(QRect(10, 55, 281, 22));
+	localizationKeyTextLineEdit->setGeometry(QRect(10, 95, 281, 22));
 	localizationKeyTextLineEdit->setReadOnly(true);
-
-	ui->fontNameLabel->setGeometry(QRect(10, 95, 31, 16));
-	ui->fontSizeSpinBox->setGeometry(QRect(234, 91, 57, 25));
-	ui->fontSelectButton->setGeometry(QRect(50, 86, 181, 38));
-	ui->fontColorLabel->setGeometry(QRect(10, 140, 71, 16));
-	ui->textColorPushButton->setGeometry(QRect(85, 138, 205, 21));
-	ui->shadowOffsetLabel->setGeometry(QRect(10, 172, 91, 16));
-	ui->offsetYLabel->setGeometry(QRect(210, 172, 16, 16));
-	ui->shadowColorLabel->setGeometry(QRect(10, 202, 91, 16));
-	ui->shadowOffsetXSpinBox->setGeometry(QRect(140, 168, 57, 25));
-	ui->shadowOffsetYSpinBox->setGeometry(QRect(230, 168, 57, 25));
-	ui->shadowColorButton->setGeometry(QRect(105, 200, 185, 21));
-	ui->offsetXLabel->setGeometry(QRect(120, 172, 16, 16));
-	ui->AlignLabel->setGeometry(QRect(10, 236, 62, 16));
-	ui->alignComboBox->setGeometry(QRect(80, 230, 209, 26));
+	
+	multilineCheckBox = new QCheckBox(ui->groupBox);
+	multilineCheckBox->setObjectName(QString::fromUtf8("multilineCheckBox"));
+	multilineCheckBox->setGeometry(QRect(200, 125, 91, 20));
+	multilineCheckBox->setText(QString::fromUtf8("Wrap text:"));
+	multilineCheckBox->setLayoutDirection(Qt::RightToLeft);
+	
+	ui->fontNameLabel->setGeometry(QRect(10, 155, 31, 16));
+	ui->fontSizeSpinBox->setGeometry(QRect(234, 151, 57, 25));
+	ui->fontSelectButton->setGeometry(QRect(50, 146, 181, 38));
+	ui->fontColorLabel->setGeometry(QRect(10, 200, 71, 16));
+	ui->textColorPushButton->setGeometry(QRect(85, 198, 205, 21));
+	ui->shadowOffsetLabel->setGeometry(QRect(10, 232, 91, 16));
+	ui->offsetYLabel->setGeometry(QRect(210, 232, 16, 16));
+	ui->shadowColorLabel->setGeometry(QRect(10, 262, 91, 16));
+	ui->shadowOffsetXSpinBox->setGeometry(QRect(140, 228, 57, 25));
+	ui->shadowOffsetYSpinBox->setGeometry(QRect(230, 228, 57, 25));
+	ui->shadowColorButton->setGeometry(QRect(105, 260, 185, 21));
+	ui->offsetXLabel->setGeometry(QRect(120, 232, 16, 16));
+	ui->AlignLabel->setGeometry(QRect(10, 296, 62, 16));
+	ui->alignComboBox->setGeometry(QRect(80, 290, 209, 26));
 }
 
 void TextPropertyGridWidget::Cleanup()
 {
     UnregisterGridWidgetAsStateAware();
     UnregisterLineEditWidget(localizationKeyNameLineEdit);
+	UnregisterCheckBoxWidget(multilineCheckBox);
     UITextFieldPropertyGridWidget::Cleanup();
 }
 

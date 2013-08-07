@@ -58,41 +58,20 @@ void TestScreen::LoadResources()
 	bigBoxEmitter->LoadFromYaml(FilePath("~res:/Particles/sparkles.yaml"));
 	bigBoxEmitter->SetPriority(10);
 	
-//	RefPtr<GameObject> centerTest  = GameObject::Create("~res:/Gfx/GameObjects/bluecircle");
-//	centerTest->SetPosition(0, 0);
-//	centerTest->SetPivotPoint(ALIGN_HCENTER | ALIGN_VCENTER);
-//	bigBoxEmitter->AddObject(centerTest.Get());
-
 	smallCircle->AddObject(bigBoxEmitter.Get());
-	
-//	ParticleEmitterObject* bigBoxEmitterClone = new ParticleEmitterObject();
-//	bigBoxEmitterClone->SetEmitter(bigBoxEmitter->GetEmitter()->Clone());
-//	bigBoxEmitterClone->SetPriority(10);
-//	bigBoxEmitterClone->SetPosition(Vector2(300, 300));
-//	manager->AddObject(bigBoxEmitterClone);
 
-	testSprite = Sprite::Create(FilePath("~res:/Gfx/GameObjects/blueboxbig"));
-
-	sndClick = Sound::CreateFX(FilePath("~res:/Sounds/click.wav"), Sound::TYPE_STATIC);
-
-	music = Sound::CreateMusic(FilePath("~res:/Sounds/final.ogg"), Sound::TYPE_STREAMED);
-	music->SetLooping(true);
-
-	isPlaying = false;
+    testSprite = Sprite::Create("~res:/Gfx/GameObjects/blueboxbig");
 }
 
 void TestScreen::UnloadResources()
 {
 	SafeRelease(testSprite);
 	SafeRelease(manager);
-	SafeRelease(sndClick);
-	SafeRelease(music);
 }
 
 void TestScreen::WillAppear()
 {
-	music->Play();
-	isPlaying = true;
+    
 }
 
 void TestScreen::WillDisappear()
@@ -108,20 +87,6 @@ void TestScreen::Input(UIEvent * event)
 		{
 			Core::Instance()->ToggleFullscreen();
 		}
-	}
-	if (event->phase == UIEvent::PHASE_BEGAN)
-	{
-		if(isPlaying)
-		{
-			music->Stop();
-			isPlaying = false;
-		}
-		else
-		{
-			music->Play();
-			isPlaying = true;
-		}
-		sndClick->Play();
 	}
 }
 

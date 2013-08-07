@@ -1,31 +1,17 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #include "Particles/ParticleEmitter.h"
 #include "Particles/Particle.h"
@@ -42,6 +28,9 @@
 namespace DAVA 
 {
 
+#define PARTICLE_EMITTER_DEFAULT_LIFE_TIME 100.0f
+#define PARTICLE_EMITTER_DEFERRED_UPDATE_INTERVAL 0.1f // in seconds
+	
 REGISTER_CLASS(ParticleEmitter);
 
 ParticleEmitter::ParticleEmitter()
@@ -50,6 +39,8 @@ ParticleEmitter::ParticleEmitter()
 	Cleanup(false);
 
 	bbox = AABBox3(Vector3(), Vector3());
+	parentParticle = NULL;
+	deferredTimeElapsed = 0.0f;
 }
 
 ParticleEmitter::~ParticleEmitter()
@@ -74,7 +65,7 @@ void ParticleEmitter::Cleanup(bool needCleanupLayers)
 
 	time = 0.0f;
 	repeatCount = 0;
-	lifeTime = 1000000000.0f;
+	lifeTime = PARTICLE_EMITTER_DEFAULT_LIFE_TIME;
 	emitPointsCount = -1;
 	isPaused = false;
 	angle = 0.f;
@@ -82,7 +73,7 @@ void ParticleEmitter::Cleanup(bool needCleanupLayers)
 	particlesFollow = false;
     is3D = false;
 	playbackSpeed = 1.0f;
-
+	shouldBeDeleted = false;
 	// Also cleanup layers, if needed.
 	if (needCleanupLayers)
 	{
@@ -158,11 +149,10 @@ void ParticleEmitter::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
 
 	if(NULL != archive)
 	{
-		if(archive->IsKeyExists("pe.configpath"))
+		String filename = archive->GetString("pe.configpath");
+		if(!filename.empty())
 		{
-            String filename = archive->GetString("pe.configpath");
 			configPath = sceneFile->GetScenePath() + filename;
-            
 			LoadFromYaml(configPath);
 		}
 	}
@@ -170,21 +160,37 @@ void ParticleEmitter::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
 
 void ParticleEmitter::AddLayer(ParticleLayer * layer)
 {
-	if (layer)
+	if (!layer)
 	{
-		layers.push_back(layer);
-		layer->Retain();
-		layer->SetEmitter(this);
-		AddRenderBatch(layer->GetRenderBatch());
-	}	
+		return;
+	}
+
+	// Don't allow the same layer to be added twice.
+	Vector<DAVA::ParticleLayer*>::iterator layerIter = std::find(layers.begin(), layers.end(),
+																 layer);
+	if (layerIter != layers.end())
+	{
+		DVASSERT(false);
+		return;
+	}
+
+	layer->Retain();
+	if (layer->GetEmitter())
+	{
+		layer->GetEmitter()->RemoveLayer(layer);
+	}
+
+	layers.push_back(layer);
+	layer->SetEmitter(this);
+	AddRenderBatch(layer->GetRenderBatch());
 }
 
-void ParticleEmitter::AddLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove)
+void ParticleEmitter::InsertLayer(ParticleLayer * layer, ParticleLayer * beforeLayer)
 {
 	AddLayer(layer);
-	if (layerToMoveAbove)
+	if (beforeLayer)
 	{
-		MoveLayer(layer, layerToMoveAbove);
+		MoveLayer(layer, beforeLayer);
 	}
 }
 	
@@ -198,6 +204,7 @@ void ParticleEmitter::RemoveLayer(ParticleLayer * layer)
 	Vector<DAVA::ParticleLayer*>::iterator layerIter = std::find(layers.begin(), layers.end(), layer);
 	if (layerIter != this->layers.end())
 	{
+		layer->RemoveInnerEmitter();
 		layers.erase(layerIter);
 
         RemoveRenderBatch(layer->GetRenderBatch());
@@ -209,18 +216,17 @@ void ParticleEmitter::RemoveLayer(ParticleLayer * layer)
 void ParticleEmitter::RemoveLayer(int32 index)
 {
     DVASSERT(0 <= index && index < (int32)layers.size());
-
     RemoveLayer(layers[index]);
 }
 
 	
-void ParticleEmitter::MoveLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove)
+void ParticleEmitter::MoveLayer(ParticleLayer * layer, ParticleLayer * beforeLayer)
 {
 	Vector<DAVA::ParticleLayer*>::iterator layerIter = std::find(layers.begin(), layers.end(), layer);
-	Vector<DAVA::ParticleLayer*>::iterator layerToMoveAboveIter = std::find(layers.begin(), layers.end(),layerToMoveAbove);
+	Vector<DAVA::ParticleLayer*>::iterator beforeLayerIter = std::find(layers.begin(), layers.end(),beforeLayer);
 
-	if (layerIter == layers.end() || layerToMoveAboveIter == layers.end() ||
-		layerIter == layerToMoveAboveIter)
+	if (layerIter == layers.end() || beforeLayerIter == layers.end() ||
+		layerIter == beforeLayerIter)
 	{
 		return;
 	}
@@ -228,8 +234,28 @@ void ParticleEmitter::MoveLayer(ParticleLayer * layer, ParticleLayer * layerToMo
 	layers.erase(layerIter);
 
 	// Look for the position again - an iterator might be changed.
-	layerToMoveAboveIter = std::find(layers.begin(), layers.end(),layerToMoveAbove);
-	layers.insert(layerToMoveAboveIter, layer);
+	beforeLayerIter = std::find(layers.begin(), layers.end(), beforeLayer);
+	layers.insert(beforeLayerIter, layer);
+}
+
+ParticleLayer* ParticleEmitter::GetNextLayer(ParticleLayer* layer)
+{
+	if (!layer || layers.size() < 2)
+	{
+		return NULL;
+	}
+
+	int32 layersToCheck = layers.size() - 1;
+	for (int32 i = 0; i < layersToCheck; i ++)
+	{
+		ParticleLayer* curLayer = layers[i];
+		if (curLayer == layer)
+		{
+			return layers[i + 1];
+		}
+	}
+	
+	return NULL;
 }
 
 /* float32 ParticleEmitter::GetCurrentNumberScale()
@@ -273,8 +299,23 @@ void ParticleEmitter::DoRestart(bool isDeleteAllParticles)
 	repeatCount = 0;
 }
 
+void ParticleEmitter::DeferredUpdate(float32 timeElapsed)
+{
+	deferredTimeElapsed += timeElapsed;
+	if (deferredTimeElapsed > PARTICLE_EMITTER_DEFERRED_UPDATE_INTERVAL)
+	{
+		Update(deferredTimeElapsed);
+		deferredTimeElapsed = 0.0f;
+	}
+}
+	
 void ParticleEmitter::Update(float32 timeElapsed)
 {
+	if (isPaused)
+	{
+		return;
+	}
+
 	timeElapsed *= playbackSpeed;
 	time += timeElapsed;
 	float32 t = time / lifeTime;
@@ -299,7 +340,7 @@ void ParticleEmitter::Update(float32 timeElapsed)
 	Vector<ParticleLayer*>::iterator it;
 	for(it = layers.begin(); it != layers.end(); ++it)
 	{
-        if(!(*it)->isDisabled)
+        if(!(*it)->GetDisabled())
             (*it)->Update(timeElapsed);
 	}
 }
@@ -319,7 +360,7 @@ void ParticleEmitter::RenderUpdate(Camera *camera, float32 timeElapsed)
 	Vector<ParticleLayer*>::iterator it;
 	for(it = layers.begin(); it != layers.end(); ++it)
 	{
-		if(!(*it)->isDisabled)
+		if(!(*it)->GetDisabled())
 			(*it)->Draw(camera);
 	}
 
@@ -350,7 +391,9 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
             lineDirection = Vector3(size->GetValue(time).x * rand05_x, size->GetValue(time).y * rand05_y, size->GetValue(time).z * rand05_z);
 		particle->position = tempPosition + lineDirection;
 	}
-    else if ((emitterType == EMITTER_ONCIRCLE) || (emitterType == EMITTER_SHOCKWAVE))
+    else if ((emitterType == EMITTER_ONCIRCLE_VOLUME) ||
+			 (emitterType == EMITTER_ONCIRCLE_EDGES) ||
+			 (emitterType == EMITTER_SHOCKWAVE))
     {
         // here just set particle position
 		// Yuri Coder, 2013/04/18. Shockwave particle isn't implemented for 2D mode -
@@ -391,7 +434,9 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
     // reuse particle velocity we've calculated
 	// Yuri Coder, 2013/04/18. Shockwave particle isn't implemented for 2D mode -
 	// currently draw them in the same way as "onCircle" ones.
-    if ((emitterType == EMITTER_ONCIRCLE) || (emitterType == EMITTER_SHOCKWAVE))
+    if ((emitterType == EMITTER_ONCIRCLE_VOLUME) ||
+		(emitterType == EMITTER_ONCIRCLE_EDGES) ||
+		(emitterType == EMITTER_SHOCKWAVE))
     {
         if(radius)
             particle->position += vel * radius->GetValue(time);
@@ -417,7 +462,7 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 	configPath = filename;
 	time = 0.0f;
 	repeatCount = 0;
-	lifeTime = 1000000000.0f;
+	lifeTime = PARTICLE_EMITTER_DEFAULT_LIFE_TIME;
 
 	YamlNode * rootNode = parser->GetRootNode();
 
@@ -457,7 +502,7 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 			lifeTime = lifeTimeNode->AsFloat();
 		}else
 		{
-			lifeTime = 1000000000.0f;
+			lifeTime = PARTICLE_EMITTER_DEFAULT_LIFE_TIME;
 		}
         
         is3D = false;
@@ -481,7 +526,9 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 			else if (typeNode->AsString() == "rect")
 				emitterType = EMITTER_RECT;
 			else if (typeNode->AsString() == "oncircle")
-				emitterType = EMITTER_ONCIRCLE;
+				emitterType = EMITTER_ONCIRCLE_VOLUME;
+			else if (typeNode->AsString() == "oncircle_edges")
+				emitterType = EMITTER_ONCIRCLE_EDGES;
 			else if (typeNode->AsString() == "shockwave")
 				emitterType = EMITTER_SHOCKWAVE;
 			else
@@ -552,7 +599,9 @@ void ParticleEmitter::SaveToYaml(const FilePath & filename)
         Logger::Error("ParticleEmitter::SaveToYaml() - unable to create parser!");
         return;
     }
-    
+
+	configPath = filename;
+
     YamlNode* rootYamlNode = new YamlNode(YamlNode::TYPE_MAP);
     YamlNode* emitterYamlNode = new YamlNode(YamlNode::TYPE_MAP);
     rootYamlNode->AddNodeToMap("emitter", emitterYamlNode);
@@ -631,6 +680,13 @@ float32 ParticleEmitter::GetTime()
 void ParticleEmitter::Pause(bool _isPaused)
 {
 	isPaused = _isPaused;
+
+	// Also update Inner Emitters.
+	int32 layersCount = layers.size();
+	for (int32 i = 0; i < layersCount; i ++)
+	{
+		layers[i]->PauseInnerEmitter(_isPaused);
+	}
 }
 bool ParticleEmitter::IsPaused()
 {
@@ -690,9 +746,14 @@ String ParticleEmitter::GetEmitterTypeName()
             return "rect";
         }
 
-        case EMITTER_ONCIRCLE:
+        case EMITTER_ONCIRCLE_VOLUME:
         {
             return "oncircle";
+        }
+
+		case EMITTER_ONCIRCLE_EDGES:
+        {
+            return "oncircle_edges";
         }
 
 		case EMITTER_SHOCKWAVE:
@@ -763,25 +824,12 @@ void ParticleEmitter::InvertEmissionVectorCoordinates()
 		return;
 	}
 
-	PropertyLineValue<Vector3> *pv;
-    PropertyLineKeyframes<Vector3> *pk;
-
-    pk = dynamic_cast< PropertyLineKeyframes<Vector3> *>(this->emissionVector.Get());
-    if (pk)
-    {
-        for (uint32 i = 0; i < pk->keys.size(); ++i)
-        {
-			pk->keys[i].value *= -1;
-        }
-		
-		return;
-    }
-
-	pv = dynamic_cast< PropertyLineValue<Vector3> *>(this->emissionVector.Get());
-	if (pv)
-    {
-		pv->value *= -1;
-    }
+	PropertyLine<Vector3> *pvk = emissionVector.Get();
+	uint32 keysSize = pvk->keys.size();
+	for (uint32 i = 0; i < keysSize; ++i)
+	{
+		pvk->keys[i].value *= -1;
+	}
 }
 
 int32 ParticleEmitter::GetActiveParticlesCount()
@@ -796,4 +844,57 @@ int32 ParticleEmitter::GetActiveParticlesCount()
 	return particlesCount;
 }
 
-};
+void ParticleEmitter::RememberInitialTranslationVector()
+{
+	if (GetWorldTransformPtr())
+	{
+		this->initialTranslationVector = GetWorldTransformPtr()->GetTranslationVector();
+	}
+}
+
+const Vector3& ParticleEmitter::GetInitialTranslationVector()
+{
+	return this->initialTranslationVector;
+}
+
+void ParticleEmitter::SetDisabledForAllLayers(bool value)
+{
+	for (Vector<ParticleLayer*>::iterator iter = layers.begin(); iter != layers.end(); iter ++)
+	{
+		(*iter)->SetDisabled(value);
+	}
+}
+
+void ParticleEmitter::RecalcBoundingBox()
+{
+	bbox = AABBox3(Vector3(), Vector3());
+}
+
+void ParticleEmitter::SetLongToAllLayers(bool isLong)
+{
+	for(Vector<ParticleLayer*>::iterator it = layers.begin(); it != layers.end(); ++it)
+	{
+		(*it)->SetLong(isLong);
+	}
+}
+
+void ParticleEmitter::SetParentParticle(Particle* parent)
+{
+	parentParticle = parent;
+}
+
+Particle* ParticleEmitter::GetParentParticle()
+{
+	return parentParticle;
+}
+
+void ParticleEmitter::HandleRemoveFromSystem()
+{
+	Vector<ParticleLayer*>::iterator it;
+	for(it = layers.begin(); it != layers.end(); ++it)
+	{
+		(*it)->HandleRemoveFromSystem();
+	}
+}
+
+}; 

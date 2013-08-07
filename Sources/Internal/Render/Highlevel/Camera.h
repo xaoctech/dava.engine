@@ -1,31 +1,17 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #ifndef __DAVA_CAMERA_H__
 #define __DAVA_CAMERA_H__
@@ -214,19 +200,19 @@ public:
         \brief Function change camera position.
         \param[in] position new camera position
      */
-    void SetPosition(const Vector3 & position);
+    virtual void SetPosition(const Vector3 & position);
     /**
         \brief Function change camera direction.
         Be carefull with this function. It changing target of the camera because in calculations we use pair: position, target. 
         \param[in] direction new camera direction
      */
-	void SetDirection(const Vector3 & direction);
+	virtual void SetDirection(const Vector3 & direction);
     
     /**
         \brief Function to change camera target
         \param[in] target new camera target
      */
-	void SetTarget(const Vector3 & target);
+	virtual void SetTarget(const Vector3 & target);
     
     /**
         \brief Function to change camera up vector
@@ -246,17 +232,17 @@ public:
         It'll be just a point that located on (position, direction) ray distant on 1 from position.
         \returns target vector
      */
-	const Vector3 & GetTarget() const;
+	virtual const Vector3 & GetTarget() const;
     /**
         \brief Function returns position of camera
         \returns current position
      */
-	const Vector3 & GetPosition() const;
+	virtual const Vector3 & GetPosition() const;
     /**
         \brief Function returns normalized direction of camera
         \returns current normalized direction
      */
-	const Vector3 & GetDirection();   // camera forward direction
+	virtual const Vector3 & GetDirection();   // camera forward direction
     /**
         \brief Function returns current normalized up vector of camera
         \returns current normalized up vector
@@ -399,27 +385,27 @@ public:
 
 public:
     INTROSPECTION_EXTEND(Camera, BaseObject,
-        PROPERTY("xmin", "xmin", GetXMin, SetXMin, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        PROPERTY("xmax", "xmax", GetXMax, SetXMax, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        PROPERTY("ymin", "ymin", GetYMin, SetYMin, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        PROPERTY("ymax", "ymax", GetYMax, SetYMax, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        PROPERTY("znear", "znear", GetZNear, SetZNear, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        PROPERTY("zfar", "zfar", GetZFar, SetZFar, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        PROPERTY("aspect", "aspect", GetAspect, SetAspect, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        PROPERTY("fovx", "fovx", GetFOV, SetFOV, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        PROPERTY("ortho", "Is Ortho", GetIsOrtho, SetIsOrtho, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY("xmin", "xmin", GetXMin, SetXMin, I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("xmax", "xmax", GetXMax, SetXMax, I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("ymin", "ymin", GetYMin, SetYMin, I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("ymax", "ymax", GetYMax, SetYMax, I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("znear", "znear", GetZNear, SetZNear, I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("zfar", "zfar", GetZFar, SetZFar, I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("aspect", "aspect", GetAspect, SetAspect, I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("fovx", "fovx", GetFOV, SetFOV, I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("ortho", "Is Ortho", GetIsOrtho, SetIsOrtho, I_SAVE | I_VIEW | I_EDIT)
                          
 //        PROPERTY(zoomFactor, "Zoom factor", GetFOV, SetFOV, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-		PROPERTY("position", "Position", GetPosition, SetPosition, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        PROPERTY("target", "Target", GetTarget, SetTarget, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-		PROPERTY("up", "Up", GetUp, SetUp, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-		PROPERTY("left", "Left", GetLeft, SetLeft, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(direction, "Direction", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
-        MEMBER(flags, "Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+		PROPERTY("position", "Position", GetPosition, SetPosition, I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("target", "Target", GetTarget, SetTarget, I_SAVE | I_VIEW | I_EDIT)
+		PROPERTY("up", "Up", GetUp, SetUp, I_SAVE | I_VIEW | I_EDIT)
+		PROPERTY("left", "Left", GetLeft, SetLeft, I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(direction, "Direction", I_SAVE | I_VIEW)
+        MEMBER(flags, "Flags", I_SAVE | I_VIEW | I_EDIT)
                          
-        MEMBER(cameraTransform, "Camera Transform", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
-        MEMBER(modelMatrix, "Model Matrix", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
-        MEMBER(projMatrix, "Proj Matrix", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
+        MEMBER(cameraTransform, "Camera Transform", I_SAVE | I_VIEW)
+        MEMBER(modelMatrix, "Model Matrix", I_SAVE | I_VIEW)
+        MEMBER(projMatrix, "Proj Matrix", I_SAVE | I_VIEW)
     );
 };
 

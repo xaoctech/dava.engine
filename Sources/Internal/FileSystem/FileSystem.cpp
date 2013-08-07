@@ -1,31 +1,17 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #include "FileSystem/FileSystem.h"
 #include "FileSystem/FileList.h"
@@ -35,17 +21,27 @@
 #include "FileSystem/ResourceArchive.h"
 
 
-#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
+#if defined(__DAVAENGINE_MACOS__)
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/errno.h>
 #include <copyfile.h>
+#include <libproc.h>
+#include <libgen.h>
+#elif defined(__DAVAENGINE_IPHONE__)
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/errno.h>
+#include <copyfile.h>
+#include <libgen.h>
+#include <sys/sysctl.h>
 #elif defined(__DAVAENGINE_WIN32__)
 #include <direct.h>
 #include <io.h> 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <Shlobj.h>
+#include <tchar.h>
 #elif defined(__DAVAENGINE_ANDROID__)
 #include "Platform/TemplateAndroid/CorePlatformAndroid.h"
 #include <unistd.h>
@@ -59,6 +55,7 @@ namespace DAVA
 {
 
 	
+
 FileSystem::FileSystem()
 {
 }
@@ -374,6 +371,23 @@ const FilePath & FileSystem::GetCurrentWorkingDirectory()
 	return currentWorkingDirectory;
 }
 
+FilePath FileSystem::GetCurrentExecutableDirectory()
+{
+    char tempDir[2048];
+    FilePath currentExecuteDirectory;
+#if defined(__DAVAENGINE_WIN32__)
+    ::GetModuleFileNameA( NULL, tempDir, 2048 );
+    currentExecuteDirectory = FilePath(tempDir).GetDirectory();
+#elif defined(__DAVAENGINE_MACOS__)
+    proc_pidpath(getpid(), tempDir, sizeof(tempDir));
+    currentExecuteDirectory = FilePath(dirname(tempDir));
+#elif defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+	DVASSERT(0);
+#endif //PLATFORMS
+	currentExecuteDirectory.MakeDirectoryPathname();
+	return currentExecuteDirectory;
+}
+
 bool FileSystem::SetCurrentWorkingDirectory(const FilePath & newWorkingDirectory)
 {
     DVASSERT(newWorkingDirectory.IsDirectoryPathname());
@@ -544,15 +558,40 @@ void FileSystem::AttachArchive(const String & archiveName, const String & attach
 	resourceArchiveList.push_back(item);
 }
 
+
 int32 FileSystem::Spawn(const String& command)
 {
-#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__) 
-	return std::system(command.c_str());
-#else
-	return 0;
-#endif
-}
+	int32 retCode = 0;
+#if defined(__DAVAENGINE_MACOS__)
+	retCode = std::system(command.c_str());
+#elif defined(__DAVAENGINE_WIN32__) 
 
+	/* std::system calls "start" command from Windows command line
+	Start help:
+	Starts a separate window to run a specified program or command.
+
+	START ["title"] [/D path] [/I] [/MIN] [/MAX] [/SEPARATE | /SHARED]
+	[/LOW | /NORMAL | /HIGH | /REALTIME | /ABOVENORMAL | /BELOWNORMAL]
+	[/NODE <NUMA node>] [/AFFINITY <hex affinity mask>] [/WAIT] [/B]
+	[command/program] [parameters]
+
+	If we use "" for path to executable, start resolves it as title. So we need to specify call of start
+	http://stackoverflow.com/questions/5681055/how-do-i-start-a-windows-program-with-spaces-in-the-path-from-perl
+
+	*/
+
+ 	String startString = "start \"\" /WAIT " + command;
+	retCode = std::system(startString.c_str());
+#endif
+
+	if(retCode != 0)
+
+	{
+		Logger::Warning("[FileSystem::Spawn] command (%s) has return code (%d)", command.c_str(), retCode);
+	}
+
+	return retCode;
+}
 
     
 }

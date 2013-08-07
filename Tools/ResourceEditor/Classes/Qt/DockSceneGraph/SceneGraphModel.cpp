@@ -1,3 +1,19 @@
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
 #include "SceneGraphModel.h"
 #include "SceneGraphItem.h"
 
@@ -119,6 +135,38 @@ void SceneGraphModel::AddNodeToTree(GraphItem *parent, DAVA::Entity *node, bool 
     }
 }
 
+void SceneGraphModel::AddNodeToTree(GraphItem* parentItem, GraphItem* childItem)
+{
+	if (!parentItem || !childItem)
+	{
+		return;
+	}
+	
+	QModelIndex parentIndex = createIndex(parentItem->Row(), 0, parentItem);
+	int32 rowToAdd = parentItem->Row();
+	beginInsertRows(parentIndex, rowToAdd, rowToAdd);
+
+	parentItem->AppendChild(childItem);
+
+	endInsertRows();
+}
+
+void SceneGraphModel::RemoveNodeFromTree(GraphItem* parentItem, GraphItem* childItem)
+{
+	if (!parentItem || !childItem)
+	{
+		return;
+	}
+	
+	QModelIndex parentIndex = createIndex(parentItem->Row(), 0, parentItem);
+	int32 rowToRemove = childItem->Row();
+	
+	// Remove the previous children and add new ones.
+	beginRemoveRows(parentIndex, rowToRemove, rowToRemove);
+	parentItem->RemoveChild(childItem);
+	endRemoveRows();
+}
+
 void SceneGraphModel::RebuildNode(DAVA::Entity* rootNode)
 {
 	if(!rootNode)
@@ -145,13 +193,7 @@ void SceneGraphModel::RebuildNode(DAVA::Entity* rootNode)
 	for (int32 i = 0; i < childrenToRemoveCount; i ++)
 	{
 		GraphItem* childItem = childrenToRemove[i];
-		QModelIndex parentIndex = createIndex(graphItem->Row(), 0, graphItem);
-		int32 rowToRemove = childItem->Row();
-
-		// Remove the previous children and add new ones.
-		beginRemoveRows(parentIndex, rowToRemove, rowToRemove);
-		graphItem->RemoveChild(childItem);
-		endRemoveRows();
+		RemoveNodeFromTree(graphItem, childItem);
 	}
 
 	// Add the child nodes only if the root node is not solid.
@@ -530,6 +572,9 @@ QVariant SceneGraphModel::data(const QModelIndex &index, int role) const
 
 void SceneGraphModel::RefreshParticlesLayer(DAVA::ParticleLayer* layer)
 {
+	// Changing the layer type might add/remove extra items (like Inner Emitter).
+	particlesEditorSceneModelHelper.UpdateLayerRepresentation(rootItem, layer, this);
+	
 	// Ask Helper to return us the SceneGraph node for this Particle layer.
 	SceneGraphItem* itemToRefresh = particlesEditorSceneModelHelper.GetGraphItemForParticlesLayer(rootItem, layer);
 	if (itemToRefresh)

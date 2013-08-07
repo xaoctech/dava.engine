@@ -1,31 +1,17 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #ifndef __DAVAENGINE_SCENENODE_H__
 #define __DAVAENGINE_SCENENODE_H__
@@ -40,6 +26,7 @@
 #include "Base/HashMap.h"
 
 //#define COMPONENT_STORAGE_STDMAP 1
+#include "Scene3D/Components/CustomPropertiesComponent.h"
 
 namespace DAVA
 {
@@ -92,10 +79,11 @@ public:
     virtual void    InsertBeforeNode(Entity *newNode, Entity *beforeNode);
     
 	virtual void	RemoveNode(Entity * node);
-	virtual Entity * GetChild(int32 index);
-	virtual int32   GetChildrenCount();
-    virtual int32   GetChildrenCountRecursive();
+	virtual Entity* GetChild(int32 index) const;
+	virtual int32   GetChildrenCount() const;
+    virtual int32   GetChildrenCountRecursive() const;
 	virtual void	RemoveAllChildren();
+	virtual Entity*	GetNextChild(Entity *child);
         
 	virtual bool FindNodesByNamePart(const String & namePart, List<Entity *> &outNodeList);
     
@@ -145,7 +133,7 @@ public:
         \brief Return tag for this object
         \returns tag for this object
      */
-    inline const int32 GetTag(); 
+    inline int32 GetTag(); 
 
 	
 	// virtual updates
@@ -269,7 +257,10 @@ public:
     	
     void SetSolid(bool isSolid);
     bool GetSolid();
-	
+
+	void SetLocked(bool isLocked);
+	bool GetLocked();
+
     /**
         \brief function returns maximum bounding box of scene in world coordinates.
         \returns bounding box
@@ -295,7 +286,7 @@ public:
         \brief Function returns keyed archive of custom properties for this object. 
         Custom properties can be set for each node in editor, and used in the game later to implement game logic.
      */
-    KeyedArchive *GetCustomProperties();
+    KeyedArchive* GetCustomProperties();
     
     /**
         \brief This function should be implemented in each node that have data nodes inside it.
@@ -306,7 +297,11 @@ public:
      */
     template<template <typename> class Container, class T>
 	void GetDataNodes(Container<T> & container);
-    
+	/**
+	 \brief Optimize scene before export.
+     */
+	void OptimizeBeforeExport();
+
     /**
         \brief Function to get child nodes of requested type and move them to specific container you provide.
         For example if you want to get a list of MeshInstanceNodes you should do the following.
@@ -338,6 +333,7 @@ public:
     
 	// Property names.
 	static const char* SCENE_NODE_IS_SOLID_PROPERTY_NAME;
+	static const char* SCENE_NODE_IS_LOCKED_PROPERTY_NAME;
 
 	void FindComponentsByTypeRecursive(Component::eType type, List<DAVA::Entity*> & components);
     
@@ -351,6 +347,7 @@ protected:
 protected:
 
     String RecursiveBuildFullName(Entity * node, Entity * endNode);
+	CustomPropertiesComponent* GetCustomPropertiesComponent();
 
 //    virtual Entity* CopyDataTo(Entity *dstNode);
 	void SetParent(Entity * node);
@@ -363,8 +360,6 @@ protected:
 	int32	tag;
 
     uint32 flags;
-
-    KeyedArchive *customProperties;
     
 private:
         
@@ -389,10 +384,9 @@ private:
     
 public:
 	INTROSPECTION_EXTEND(Entity, BaseObject,
-		MEMBER(name, "Name", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-		MEMBER(customProperties, "Custom properties", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(tag, "Tag", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(flags, "Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+		MEMBER(name, "Name", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(tag, "Tag", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(flags, "Flags", I_SAVE | I_VIEW | I_EDIT)
 
 		//COLLECTION(components, "Components", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
 		//COLLECTION(children, "Children nodes", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
@@ -440,7 +434,7 @@ inline const String & Entity::GetName()
     return name;
 }
 
-inline const int32 Entity::GetTag() 
+inline int32 Entity::GetTag() 
 { 
     return tag; 
 };;

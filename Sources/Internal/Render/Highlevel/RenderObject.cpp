@@ -1,31 +1,17 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #include "Render/Highlevel/RenderObject.h"
 #include "Base/ObjectFactory.h"
@@ -37,9 +23,11 @@ namespace DAVA
 
 REGISTER_CLASS(RenderObject)
 
+static const int32 DEFAULT_FLAGS = RenderObject::VISIBLE | RenderObject::VISIBLE_LOD | RenderObject::VISIBLE_SWITCH;
+
 RenderObject::RenderObject()
     :   type(TYPE_RENDEROBJECT)
-    ,   flags(VISIBLE | VISIBLE_LOD | VISIBLE_SWITCH)
+    ,   flags(DEFAULT_FLAGS)
     ,   removeIndex(-1)
     ,   debugFlags(0)
     ,   worldTransform(0)
@@ -173,14 +161,13 @@ void RenderObject::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 {
 	if(NULL != archive)
 	{
-		if(archive->IsKeyExists("ro.type")) type = archive->GetUInt32("ro.type");
-		if(archive->IsKeyExists("ro.flags")) flags = archive->GetUInt32("ro.flags");
-		if(archive->IsKeyExists("ro.debugflags")) debugFlags = archive->GetUInt32("ro.debugflags");
+		type = archive->GetUInt32("ro.type", TYPE_RENDEROBJECT);
+		flags = archive->GetUInt32("ro.flags", DEFAULT_FLAGS);
+		debugFlags = archive->GetUInt32("ro.debugflags", 0);
 
-		if(archive->IsKeyExists("ro.batchCount"))
-		{
+		uint32 roBatchCount = archive->GetUInt32("ro.batchCount");
 			KeyedArchive *batchesArch = archive->GetArchive("ro.batches");
-			for(uint32 i = 0; i < archive->GetUInt32("ro.batchCount"); ++i)
+        for(uint32 i = 0; i < roBatchCount; ++i)
 			{
 				KeyedArchive *batchArch = batchesArch->GetArchive(KeyedArchive::GenKeyFromIndex(i));
 				if(NULL != batchArch)
@@ -195,7 +182,6 @@ void RenderObject::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 				}
 			}
 		}
-	}
 
 	AnimatedObject::Load(archive);
 }
@@ -210,5 +196,8 @@ RenderSystem * RenderObject::GetRenderSystem()
 	return renderSystem;
 }
 
+void RenderObject::BakeTransform(const Matrix4 & /*transform*/)
+{
+}
 
 };

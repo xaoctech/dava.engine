@@ -1,31 +1,17 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Alexey 'Hottych' Prosin
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
 #include "UI/UIControl.h"
@@ -37,6 +23,7 @@
 #include "UI/UIYamlLoader.h"
 #include "Render/RenderHelper.h"
 #include "Utils/Utils.h"
+#include "Input/InputSystem.h"
 
 namespace DAVA 
 {
@@ -811,6 +798,8 @@ namespace DAVA
 		size = newSize;
 		// Update size and align of childs		
 		RecalculateChildsSize();
+		// DF-1482 - Each time we resize control - we have to reset tiles arrays for DRAW_TILED option
+		GetBackground()->ResetTilesArrays();
 	}
 	
 	float32 UIControl::GetAngle() const
@@ -894,6 +883,8 @@ namespace DAVA
 			scale.y = rect.dy / (size.y * gd.scale.y);
 			SetPosition(Vector2(rect.x + pivotPoint.x * scale.x, rect.y + pivotPoint.y * scale.y), rectInAbsoluteCoordinates);
 		}
+		// DF-1482 - Each time we change control rect - we have to reset tiles arrays for DRAW_TILED option
+		GetBackground()->ResetTilesArrays();
 	}
 
 	
@@ -1252,10 +1243,10 @@ namespace DAVA
 		_vcenterAlignEnabled = srcControl->_vcenterAlignEnabled;
 		_bottomAlignEnabled = srcControl->_bottomAlignEnabled;
 		
-		if (GetBackground() && srcControl->GetBackground())
+		if (background && srcControl->background)
 		{
-			GetBackground()->SetLeftRightStretchCap(srcControl->GetBackground()->GetLeftRightStretchCap());
-			GetBackground()->SetTopBottomStretchCap(srcControl->GetBackground()->GetTopBottomStretchCap());
+			background->SetLeftRightStretchCap(srcControl->background->GetLeftRightStretchCap());
+			background->SetTopBottomStretchCap(srcControl->background->GetTopBottomStretchCap());
 		}
 
         tag = srcControl->GetTag();
@@ -1506,12 +1497,9 @@ namespace DAVA
 			Draw(drawData);
 		}
 		
-		if (debugDrawEnabled)
-		{//TODO: Add debug draw for rotated controls
-			Color oldColor = RenderManager::Instance()->GetColor();
-			RenderManager::Instance()->SetColor(debugDrawColor);
-			RenderHelper::Instance()->DrawRect(drawData.GetUnrotatedRect());
-			RenderManager::Instance()->SetColor(oldColor);
+		if (debugDrawEnabled && !clipContents)
+		{	//TODO: Add debug draw for rotated controls
+			DrawDebugRect(drawData.GetUnrotatedRect());
 		}
 		
 		isIteratorCorrupted = false;
@@ -1530,11 +1518,53 @@ namespace DAVA
 		if(clipContents)
 		{
 			RenderManager::Instance()->ClipPop();
+			
+			if(debugDrawEnabled)
+			{ //TODO: Add debug draw for rotated controls
+				DrawDebugRect(drawData.GetUnrotatedRect());
+			}
+		}
+
+		if(debugDrawEnabled && NULL != parent && parent->GetClipContents())
+		{	
+			RenderManager::Instance()->ClipPush();
+			RenderManager::Instance()->ClipRect(Rect(0, 0, -1, -1));
+			DrawDebugRect(drawData.GetUnrotatedRect(), true);
+			RenderManager::Instance()->ClipPop();
 		}
 	}
 	
-	bool UIControl::IsPointInside(const Vector2 &point, bool expandWithFocus/* = false*/)
+	void UIControl::DrawDebugRect(const Rect &drawRect, bool useAlpha)
 	{
+		Color oldColor = RenderManager::Instance()->GetColor();
+		RenderManager::Instance()->ClipPush();
+
+		if (useAlpha)
+		{
+			Color drawColor = debugDrawColor;
+			drawColor.a = 0.4f;
+			RenderManager::Instance()->SetColor(drawColor);
+		}
+		else
+		{
+			RenderManager::Instance()->SetColor(debugDrawColor);
+		}
+		RenderHelper::Instance()->DrawRect(drawRect);
+
+		RenderManager::Instance()->ClipPop();
+		RenderManager::Instance()->SetColor(oldColor);
+	}
+	
+	bool UIControl::IsPointInside(const Vector2 &_point, bool expandWithFocus/* = false*/)
+	{
+        Vector2 point = _point;
+
+		if(InputSystem::Instance()->IsCursorPining())
+		{
+			point.x = Core::Instance()->GetVirtualScreenWidth() / 2;
+            point.y = Core::Instance()->GetVirtualScreenHeight() / 2;
+		}
+        
 		UIGeometricData gd = GetGeometricData();
 		Rect rect = gd.GetUnrotatedRect();
 		if(expandWithFocus)
@@ -1569,12 +1599,14 @@ namespace DAVA
 		
 		switch (currentInput->phase) 
 		{
-#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)                
+#if !defined(__DAVAENGINE_IPHONE__)
 			case UIEvent::PHASE_KEYCHAR:
 			{
 					Input(currentInput);
 			}
-				break;
+			break;
+#endif
+#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)
 			case UIEvent::PHASE_MOVE:
 			{
 				if (!currentInput->touchLocker && IsPointInside(currentInput->point))
@@ -1650,7 +1682,7 @@ namespace DAVA
 									{
 										controlState |= STATE_PRESSED_INSIDE;
 										controlState &= ~STATE_PRESSED_OUTSIDE;
-#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)                                        
+#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)
 										controlState |= STATE_HOVER;
 #endif
 									}
@@ -1693,7 +1725,7 @@ namespace DAVA
 							if(currentInput->controlState == UIEvent::CONTROL_STATE_INSIDE)
 							{
 								--touchesInside;
-#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)                                        
+#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)
 								if(totalTouches == 0)
 								{
 									controlState |= STATE_HOVER;
@@ -1735,7 +1767,7 @@ namespace DAVA
 							{
 								controlState |= STATE_PRESSED_OUTSIDE;
 								controlState &= ~STATE_PRESSED_INSIDE;
-#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)                                        
+#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)
 								controlState &= ~STATE_HOVER;
 #endif
 							}
@@ -1747,6 +1779,10 @@ namespace DAVA
 				}
 			}
 				break;
+			case UIEvent::PHASE_JOYSTICK:
+			{
+				Input(currentInput);
+			}
 		}
 		
 		return false;
@@ -1760,7 +1796,8 @@ namespace DAVA
 			if(clipContents 
                && (currentInput->phase != UIEvent::PHASE_DRAG 
                    && currentInput->phase != UIEvent::PHASE_ENDED
-                   && currentInput->phase != UIEvent::PHASE_KEYCHAR))
+                   && currentInput->phase != UIEvent::PHASE_KEYCHAR
+                   && currentInput->phase != UIEvent::PHASE_JOYSTICK))
 			{
 				if(!IsPointInside(currentInput->point))
 				{
@@ -1918,8 +1955,8 @@ namespace DAVA
 		Sprite *sprite =  this->GetSprite();
 		if (sprite)
 		{
-            FilePath path(sprite->GetRelativePathname());
-            path.TruncateExtension();
+			FilePath path(sprite->GetRelativePathname());
+			path.TruncateExtension();
 
             String pathname = path.GetFrameworkPath();
 			node->Set("sprite", pathname);
@@ -2382,7 +2419,7 @@ namespace DAVA
 		return debugDrawColor;
 	}
     
-    bool UIControl::IsLostFocusAllowed( UIControl *newFocus ) const
+    bool UIControl::IsLostFocusAllowed( UIControl *newFocus )
     {
         return true;
     }

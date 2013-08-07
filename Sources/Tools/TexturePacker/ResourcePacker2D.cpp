@@ -4,6 +4,7 @@
 #include "TexturePacker/CommandLineParser.h"
 #include "FileSystem/FileSystem.h"
 #include "FileSystem/FileList.h"
+#include "FileSystem/YamlParser.h"
 #include "Core/Core.h"
 #include "Platform/SystemTimer.h"
 #include "Utils/MD5.h"
@@ -13,8 +14,12 @@
 #include <magick/MagickCore.h>
 #include <magick/property.h>
 
+#include "Render/GPUFamilyDescriptor.h"
+#include "FramePathHelper.h"
+
 namespace DAVA
 {
+static const String SAVED_FILE_LIST_YAML_FILE("filelist.yaml");
 
 ResourcePacker2D::ResourcePacker2D()
 {
@@ -36,13 +41,19 @@ void ResourcePacker2D::InitFolders(const FilePath & inputPath,const FilePath & o
 	excludeDirectory = inputPath + "../";
 }
     
-void ResourcePacker2D::PackResources()
+void ResourcePacker2D::PackResources(eGPUFamily forGPU)
 {
-	Logger::Debug("Input: %s \nOutput: %s \nExclude: %s",
+	Logger::Debug("Input: %s \nOutput: %s \nExclude: %s\n",
                   inputGfxDirectory.GetAbsolutePathname().c_str(),
                   outputGfxDirectory.GetAbsolutePathname().c_str(),
                   excludeDirectory.GetAbsolutePathname().c_str());
-	
+
+    if(CommandLineParser::Instance()->GetVerbose())
+        printf("For GPU: %s \n", GPUFamilyDescriptor::GetGPUName(forGPU).c_str());
+
+    
+	requestedGPUFamily = forGPU;
+    
 	isGfxModified = false;
 
     gfxDirName = inputGfxDirectory.GetLastDirectoryName();
@@ -80,6 +91,132 @@ void ResourcePacker2D::PackResources()
 	IsMD5ChangedDir(processDirectoryPath, outputGfxDirectory, gfxDirName + ".md5", true);
 }
 
+bool ResourcePacker2D::SaveFileListToYaml(const FilePath & yamlFilePath)
+{
+	YamlNode fontsNode(YamlNode::TYPE_MAP);
+	MultiMap<String, YamlNode*> &fontsMap = fontsNode.AsMap();
+	
+    for (ResourcePacker2D::FILESMAP::const_iterator iter = spriteFiles.begin(); iter != spriteFiles.end(); ++iter)
+    {
+		YamlNode *fileNode = new YamlNode(YamlNode::TYPE_MAP);
+		String fileName = iter->first;
+		String fileDate = iter->second;
+		// Put file date
+		fileNode->Set("date", fileDate);
+		// Put file node into map
+		fontsMap.insert(std::pair<String, YamlNode*>(fileName, fileNode));
+    }
+	
+	YamlParser* parser = YamlParser::Create();
+	
+	return parser->SaveToYamlFile(yamlFilePath, &fontsNode, true, File::CREATE | File::WRITE);
+}
+
+void ResourcePacker2D::FillSpriteFilesMap(const FilePath & inputPathName)
+{
+	// Reset sprites files map
+	spriteFiles.clear();
+
+	// Get the list of files inside input directory
+	FileList * fileList = new FileList(inputPathName);	
+	
+	if (fileList)
+	{
+		// Process the list of files inside input directory and fill psdFile map with values
+		for(int i = 0; i < fileList->GetCount(); ++i)
+		{
+			if(!fileList->IsDirectory(i) && !fileList->IsNavigationDirectory(i))
+			{
+				String fileName = fileList->GetFilename(i);
+				String modDate = File::GetModificationDate(fileList->GetPathname(i));
+
+				// spriteFiles into map file date with a key - file name
+				spriteFiles[fileName] = modDate;
+			}
+		}
+	}
+}
+
+bool ResourcePacker2D::CheckSpriteFilesDates(YamlNode *rootNode)
+{
+	// Check here if we the number of files in yaml file and inside input directory is equal
+	// If not - we should launch md5 checksum calculation
+	if (rootNode->AsMap().size() != spriteFiles.size())
+	{
+		return true;
+	}
+	// Compare modify date of saved files list and modify date of actual files inside input directory
+	// If only one file differs or new file found - we should launch md5 checksum calculation
+	for (MultiMap<String, YamlNode*>::iterator t = rootNode->AsMap().begin(); t != rootNode->AsMap().end(); ++t)
+	{
+		YamlNode * fileNode = t->second;
+		// Skip empty file node
+		if (!fileNode) continue;
+
+		YamlNode * dateNode = fileNode->Get("date");
+		// Skip empty date node
+		if (!dateNode) continue;
+													
+		String fileName = fileNode->AsString();
+		String fileDate = dateNode->AsString();
+		// Look for a new files iside sprite's input folder
+		FILESMAP::const_iterator iter = spriteFiles.find(fileName);
+		
+		// If we have a new sprite - we should launch md5 check process
+		if (iter == spriteFiles.end())
+		{
+			return true;
+		}
+		
+		// Compare saved file modify date and actual file modify date
+		String saveFileDate = iter->second;
+		if (saveFileDate.compare(fileDate) != 0)
+		{
+			// If modify date of files differs - we should launch md5 check process
+			return true;
+		}
+	}
+	
+	return false;
+}
+
+bool ResourcePacker2D::IsModifyDateChagedDir(const FilePath & processDirectoryPath, const FilePath & pathName)
+{
+    DVASSERT(processDirectoryPath.IsDirectoryPathname());
+    
+	bool md5ChecksumNeeded = false;
+	FilePath yamlFilePath = processDirectoryPath + SAVED_FILE_LIST_YAML_FILE;
+	
+	// Get sprite file names inside input folder and put them into files map
+	FillSpriteFilesMap(pathName);
+		
+	if (spriteFiles.size() > 0)
+	{
+		// Read existing yaml file with saved file names and their modify date
+		YamlParser * parser = YamlParser::Create(yamlFilePath);
+			
+		if (parser && parser->GetRootNode())
+		{
+			md5ChecksumNeeded = CheckSpriteFilesDates(parser->GetRootNode());
+		}
+		else
+		{
+			Logger::Error("Failed to open yaml file or the file is empty: %s", yamlFilePath.GetAbsolutePathname().c_str());
+			md5ChecksumNeeded = true;
+		}
+		
+		// Always update yaml file with actual file list
+		SaveFileListToYaml(yamlFilePath);
+	}
+
+	// Check here if las modified date correspond to
+	if (!md5ChecksumNeeded)
+	{		
+		return false;
+	}
+    
+	return IsMD5ChangedDir(processDirectoryPath, pathName, "dir.md5", false);
+}
 
 bool ResourcePacker2D::IsMD5ChangedDir(const FilePath & processDirectoryPath, const FilePath & pathname, const String & name, bool isRecursive)
 {
@@ -164,11 +301,7 @@ DefinitionFile * ResourcePacker2D::ProcessPSD(const FilePath & processDirectoryP
 {
     DVASSERT(processDirectoryPath.IsDirectoryPathname());
     
-	int32 maxTextureSize = 1024;
-	if (CommandLineParser::Instance()->IsFlagSet("--tsize2048"))
-	{
-		maxTextureSize = 2048;
-	}
+	int32 maxTextureSize = TexturePacker::TEXTURE_SIZE;
 	
 	// TODO: Check CRC32
 	Vector<Magick::Image> layers;
@@ -202,11 +335,10 @@ DefinitionFile * ResourcePacker2D::ProcessPSD(const FilePath & processDirectoryP
 			
 			currentLayer.crop(Magick::Geometry(width,height, 0, 0));
 			currentLayer.magick("PNG");
-			FilePath outputFile = FilePath::CreateWithNewExtension(psdNameWithoutExtension, String(Format("%d.png", k - 1)));
+			FilePath outputFile = FramePathHelper::GetFramePathRelative(psdNameWithoutExtension, k - 1);
 			currentLayer.write(outputFile.GetAbsolutePathname());
 		}
-		
-		
+
 		DefinitionFile * defFile = new DefinitionFile;
 		defFile->filename = FilePath::CreateWithNewExtension(psdNameWithoutExtension, ".txt");
 		defFile->spriteWidth = width;
@@ -287,14 +419,20 @@ void ResourcePacker2D::ProcessFlags(const FilePath & flagsPathname)
 	{
 		Logger::Error("Failed to open file: %s", flagsPathname.GetAbsolutePathname().c_str());
 	}
-	char flagsTmpBuffer[4096];
+	char flagsTmpBuffer[4096] = {0};
 	int flagsSize = 0;
 	while(!file->IsEof())
 	{
-		char c;
+		char c = 0x00;
 		int32 readSize = file->Read(&c, 1);
 		if (readSize == 1)
 		{
+			// Terminate reading if end-of-line is detected.
+			if (c == 0x0D || c == 0x0A)
+			{
+				break;
+			}
+
 			flagsTmpBuffer[flagsSize++] = c;
 		}	
 	}
@@ -328,17 +466,17 @@ void ResourcePacker2D::ProcessFlags(const FilePath & flagsPathname)
 			Logger::Debug("Token: %s", tokens[k].c_str());
 		}
 
-	if (Core::Instance()->IsConsoleMode())
-	{
-		for (int k = 0; k < (int) tokens.size(); ++k)
-		{
-			String sub = tokens[k].substr(0, 2);
-			if (sub != "--")
-				printf("\n[WARNING: flag %s incorrect]\n", tokens[k].c_str());
-		}
-	}
+//	if (Core::Instance()->IsConsoleMode())
+//	{
+//		for (int k = 0; k < (int) tokens.size(); ++k)
+//		{
+//			String sub = tokens[k].substr(0, 2);
+//			if (sub != "--")
+//				printf("\n[WARNING: flag %s incorrect]\n", tokens[k].c_str());
+//		}
+//	}
 	
-	CommandLineParser::Instance()->SetFlags(tokens);
+	CommandLineParser::Instance()->SetArguments(tokens);
 	
 	SafeRelease(file);
 }
@@ -370,7 +508,7 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 		//Logger::Error("Can't create directory: %s", outputPath.c_str());
 	}
 	
-	CommandLineParser::Instance()->ClearFlags();
+	CommandLineParser::Instance()->Clear();
 	List<DefinitionFile *> definitionFileList;
 
 	// Find flags and setup them
@@ -390,13 +528,12 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 	bool modified = isGfxModified;
 	// Process all psd / png files
 
-	if (IsMD5ChangedDir(processDirectoryPath, inputPath, "dir.md5", false))
+	if (IsModifyDateChagedDir(processDirectoryPath, inputPath))
 	{
 		modified = true;
-		//if (Core::Instance()->IsConsoleMode())
-		//	printf("[Directory changed - rebuild: %s]\n", inputGfxDirectory.c_str());
 	}
 
+	bool needPackResourcesInThisDir = true;
 	if (modified)
 	{
 		FileSystem::Instance()->DeleteDirectoryFiles(outputPath, false);
@@ -410,6 +547,13 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 				{
                     //TODO: check if we need filename or pathname
 					DefinitionFile * defFile = ProcessPSD(processDirectoryPath, fullname, fullname.GetFilename());
+					if (!defFile)
+					{
+						// An error occured while converting this PSD file - cancel converting in this directory.
+						needPackResourcesInThisDir = false;
+						break;
+					}
+
 					definitionFileList.push_back(defFile);
 				}
 				else if(isLightmapsPacking && fullname.IsEqualToExtension(".png"))
@@ -434,7 +578,7 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 		}
 
 		// 
-		if (definitionFileList.size() > 0 && modified)
+		if (needPackResourcesInThisDir && definitionFileList.size() > 0 && modified)
 		{
 			TexturePacker packer;
 			if(isLightmapsPacking)
@@ -445,11 +589,11 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 
 			if (CommandLineParser::Instance()->IsFlagSet("--split"))
 			{
-				packer.PackToTexturesSeparate(excludeDirectory, outputPath, definitionFileList);
+				packer.PackToTexturesSeparate(excludeDirectory, outputPath, definitionFileList, requestedGPUFamily);
 			}
 			else
 			{
-				packer.PackToTextures(excludeDirectory, outputPath, definitionFileList);
+				packer.PackToTextures(excludeDirectory, outputPath, definitionFileList, requestedGPUFamily);
 			}
 		}
 	}	

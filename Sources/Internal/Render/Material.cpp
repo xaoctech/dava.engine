@@ -1,31 +1,17 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #include "Render/Material.h"
 #include "Render/UberShader.h"
@@ -243,6 +229,8 @@ const char8 * Material::GetTypeName(eType format)
 			return "VERTEX_COLOR_ALPHABLEND";
 		case MATERIAL_FLAT_COLOR:
 			return "FLAT_COLOR";
+		case MATERIAL_SKYBOX:
+			return "SKYBOX";
         default:
             break;
     };
@@ -390,7 +378,7 @@ void Material::RebuildShader()
     
     String shaderCombileCombo = "";
     
-    switch (type) 
+    switch (type)
     {
         case MATERIAL_UNLIT_TEXTURE:
             shaderCombileCombo = "MATERIAL_TEXTURE";
@@ -426,10 +414,17 @@ void Material::RebuildShader()
         case MATERIAL_FLAT_COLOR:
             isFlatColorEnabled = true;
             break;
+		case MATERIAL_SKYBOX:
+		{
+			shaderCombileCombo = "MATERIAL_SKYBOX";
+			isFlatColorEnabled = true;
+			break;
+		}
+			
         default:
             break;
     };
-
+	 
 	switch (viewOptions)
 	{
 		case MATERIAL_VIEW_TEXTURE_LIGHTMAP:
@@ -486,36 +481,36 @@ void Material::RebuildShader()
         case MATERIAL_UNLIT_TEXTURE_LIGHTMAP:
         case MATERIAL_UNLIT_TEXTURE_DECAL:
         case MATERIAL_UNLIT_TEXTURE_DETAIL:
-            uniformTexture0 = shader->FindUniformLocationByName("texture0");
-            uniformTexture1 = shader->FindUniformLocationByName("texture1");
-            uniformUvOffset = shader->FindUniformLocationByName("uvOffset");
-            uniformUvScale = shader->FindUniformLocationByName("uvScale");
+            uniformTexture0 = shader->FindUniformIndexByName("texture0");
+            uniformTexture1 = shader->FindUniformIndexByName("texture1");
+            uniformUvOffset = shader->FindUniformIndexByName("uvOffset");
+            uniformUvScale = shader->FindUniformIndexByName("uvScale");
             
             break;
         case MATERIAL_VERTEX_LIT_TEXTURE:
             //
-            uniformLightPosition0 = shader->FindUniformLocationByName("lightPosition0");
-            uniformMaterialLightAmbientColor = shader->FindUniformLocationByName("materialLightAmbientColor");
-            uniformMaterialLightDiffuseColor = shader->FindUniformLocationByName("materialLightDiffuseColor");
-            uniformMaterialLightSpecularColor = shader->FindUniformLocationByName("materialLightSpecularColor");
-            uniformMaterialSpecularShininess = shader->FindUniformLocationByName("materialSpecularShininess");
-            uniformLightIntensity0 = shader->FindUniformLocationByName("lightIntensity0");
-            uniformLightAttenuationQ = shader->FindUniformLocationByName("uniformLightAttenuationQ");
+            uniformLightPosition0 = shader->FindUniformIndexByName("lightPosition0");
+            uniformMaterialLightAmbientColor = shader->FindUniformIndexByName("materialLightAmbientColor");
+            uniformMaterialLightDiffuseColor = shader->FindUniformIndexByName("materialLightDiffuseColor");
+            uniformMaterialLightSpecularColor = shader->FindUniformIndexByName("materialLightSpecularColor");
+            uniformMaterialSpecularShininess = shader->FindUniformIndexByName("materialSpecularShininess");
+            uniformLightIntensity0 = shader->FindUniformIndexByName("lightIntensity0");
+            uniformLightAttenuationQ = shader->FindUniformIndexByName("uniformLightAttenuationQ");
             
             break;
         case MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE:
         case MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR:
         case MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP:
-            uniformTexture0 = shader->FindUniformLocationByName("texture0");
-            uniformTexture1 = shader->FindUniformLocationByName("normalMapTexture");
+            uniformTexture0 = shader->FindUniformIndexByName("texture0");
+            uniformTexture1 = shader->FindUniformIndexByName("normalMapTexture");
 
-            uniformLightPosition0 = shader->FindUniformLocationByName("lightPosition0");
-            uniformMaterialLightAmbientColor = shader->FindUniformLocationByName("materialLightAmbientColor");
-            uniformMaterialLightDiffuseColor = shader->FindUniformLocationByName("materialLightDiffuseColor");
-            uniformMaterialLightSpecularColor = shader->FindUniformLocationByName("materialLightSpecularColor");
-            uniformMaterialSpecularShininess = shader->FindUniformLocationByName("materialSpecularShininess");
-            uniformLightIntensity0 = shader->FindUniformLocationByName("lightIntensity0");
-            uniformLightAttenuationQ = shader->FindUniformLocationByName("uniformLightAttenuationQ");
+            uniformLightPosition0 = shader->FindUniformIndexByName("lightPosition0");
+            uniformMaterialLightAmbientColor = shader->FindUniformIndexByName("materialLightAmbientColor");
+            uniformMaterialLightDiffuseColor = shader->FindUniformIndexByName("materialLightDiffuseColor");
+            uniformMaterialLightSpecularColor = shader->FindUniformIndexByName("materialLightSpecularColor");
+            uniformMaterialSpecularShininess = shader->FindUniformIndexByName("materialSpecularShininess");
+            uniformLightIntensity0 = shader->FindUniformIndexByName("lightIntensity0");
+            uniformLightAttenuationQ = shader->FindUniformIndexByName("uniformLightAttenuationQ");
             break;
 
         default:
@@ -524,21 +519,21 @@ void Material::RebuildShader()
     
     if (isFogEnabled)
     {
-        uniformFogDensity = shader->FindUniformLocationByName("fogDensity");
-        uniformFogColor = shader->FindUniformLocationByName("fogColor");
+        uniformFogDensity = shader->FindUniformIndexByName("fogDensity");
+        uniformFogColor = shader->FindUniformIndexByName("fogColor");
         DVASSERT(uniformFogDensity != -1);
         DVASSERT(uniformFogColor != -1);
     }
     
     if (isFlatColorEnabled)
     {
-        uniformFlatColor = shader->FindUniformLocationByName("flatColor");
+        uniformFlatColor = shader->FindUniformIndexByName("flatColor");
         DVASSERT(uniformFlatColor != -1);
     }
     
     if (isTexture0ShiftEnabled)
     {
-        uniformTexture0Shift = shader->FindUniformLocationByName("texture0Shift");
+        uniformTexture0Shift = shader->FindUniformIndexByName("texture0Shift");
         DVASSERT(uniformTexture0Shift != -1);
     }
     
@@ -633,9 +628,16 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 {
     DataNode::Load(keyedArchive, sceneFile);
 
+	eType mtype = (eType)keyedArchive->GetInt32("mat.type", type);
+
     int32 texCount = keyedArchive->GetInt32("mat.texCount");
     for (int32 k = 0; k < texCount; ++k)
     {
+		if(mtype == MATERIAL_UNLIT_TEXTURE_LIGHTMAP && k == TEXTURE_LIGHTMAP)
+		{
+			continue;
+		}
+
         String relativePathname = keyedArchive->GetString(Format("mat.tex%d", k));
         if (!relativePathname.empty())
         {
@@ -677,7 +679,6 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 	isFlatColorEnabled = keyedArchive->GetBool("mat.isFlatColorEnabled", isFlatColorEnabled);
 	isTexture0ShiftEnabled = keyedArchive->GetBool("mat.isTexture0ShiftEnabled", isTexture0ShiftEnabled);
 
-    eType mtype = (eType)keyedArchive->GetInt32("mat.type", type);
     SetType(mtype);
 
 	if(keyedArchive->IsKeyExists("mat.staticTransparencyColor"))
@@ -885,19 +886,19 @@ void Material::PrepareRenderState(InstanceMaterialState * instanceMaterialState)
 
     if(uniformTexture0 != -1)
     {
-        shader->SetUniformValue(uniformTexture0, 0);
+        shader->SetUniformValueByIndex(uniformTexture0, 0);
     }
     if(uniformTexture1 != -1)
     {
-        shader->SetUniformValue(uniformTexture1, 1);
+        shader->SetUniformValueByIndex(uniformTexture1, 1);
     }
 
 	if(isSetupLightmap)
 	{
-		int32 lightmapSizePosition = shader->FindUniformLocationByName("lightmapSize");
+		int32 lightmapSizePosition = shader->FindUniformIndexByName("lightmapSize");
 		if (lightmapSizePosition != -1)
 		{
-			shader->SetUniformValue(lightmapSizePosition, (float32)instanceMaterialState->GetLightmapSize()); 
+			shader->SetUniformValueByIndex(lightmapSizePosition, (float32)instanceMaterialState->GetLightmapSize()); 
 		}
 	}
     
@@ -905,18 +906,18 @@ void Material::PrepareRenderState(InstanceMaterialState * instanceMaterialState)
 	if(MATERIAL_UNLIT_TEXTURE_LIGHTMAP == type)
 	{
 		if (uniformUvOffset != -1)
-			shader->SetUniformValue(uniformUvOffset, instanceMaterialState->uvOffset);
+			shader->SetUniformValueByIndex(uniformUvOffset, instanceMaterialState->uvOffset);
 		if (uniformUvScale != -1)
-			shader->SetUniformValue(uniformUvScale, instanceMaterialState->uvScale);
+			shader->SetUniformValueByIndex(uniformUvScale, instanceMaterialState->uvScale);
 	}
 
 	if (isFogEnabled)
 	{
 		DVASSERT(uniformFogDensity != -1);
-        shader->SetUniformValue(uniformFogDensity, fogDensity);
+        shader->SetUniformValueByIndex(uniformFogDensity, fogDensity);
 		
         DVASSERT(uniformFogColor != -1)
-        shader->SetUniformColor3(uniformFogColor, fogColor);
+        shader->SetUniformColor3ByIndex(uniformFogColor, fogColor);
 	}
     
     if (instanceMaterialState)
@@ -924,12 +925,12 @@ void Material::PrepareRenderState(InstanceMaterialState * instanceMaterialState)
         if (isFlatColorEnabled)
         {
             DVASSERT(uniformFlatColor != -1);
-            shader->SetUniformColor4(uniformFlatColor, instanceMaterialState->flatColor);
+            shader->SetUniformColor4ByIndex(uniformFlatColor, instanceMaterialState->flatColor);
         }
         if (isTexture0ShiftEnabled)
         {
             DVASSERT(uniformTexture0Shift != -1);
-            shader->SetUniformValue(uniformTexture0Shift, instanceMaterialState->texture0Shift);
+            shader->SetUniformValueByIndex(uniformTexture0Shift, instanceMaterialState->texture0Shift);
         }
 
 		if(scene)
@@ -943,28 +944,28 @@ void Material::PrepareRenderState(InstanceMaterialState * instanceMaterialState)
 					const Matrix4 & matrix = camera->GetMatrix();
 					Vector3 lightPosition0InCameraSpace = lightNode0->GetPosition() * matrix;
                 
-					shader->SetUniformValue(uniformLightPosition0, lightPosition0InCameraSpace);
+					shader->SetUniformValueByIndex(uniformLightPosition0, lightPosition0InCameraSpace);
 				}
 				if (uniformMaterialLightAmbientColor != -1)
 				{
-					shader->SetUniformColor3(uniformMaterialLightAmbientColor, lightNode0->GetAmbientColor() * GetAmbientColor());
+					shader->SetUniformColor3ByIndex(uniformMaterialLightAmbientColor, lightNode0->GetAmbientColor() * GetAmbientColor());
 				}
 				if (uniformMaterialLightDiffuseColor != -1)
 				{
-					shader->SetUniformColor3(uniformMaterialLightDiffuseColor, lightNode0->GetDiffuseColor() * GetDiffuseColor());
+					shader->SetUniformColor3ByIndex(uniformMaterialLightDiffuseColor, lightNode0->GetDiffuseColor() * GetDiffuseColor());
 				}
 				if (uniformMaterialLightSpecularColor != -1)
 				{
-					shader->SetUniformColor3(uniformMaterialLightSpecularColor, lightNode0->GetSpecularColor() * GetSpecularColor());
+					shader->SetUniformColor3ByIndex(uniformMaterialLightSpecularColor, lightNode0->GetSpecularColor() * GetSpecularColor());
 				}
 				if (uniformMaterialSpecularShininess != -1)
 				{
-					shader->SetUniformValue(uniformMaterialSpecularShininess, shininess);
+					shader->SetUniformValueByIndex(uniformMaterialSpecularShininess, shininess);
 				}
             
 				if (uniformLightIntensity0 != -1)
 				{
-					shader->SetUniformValue(uniformLightIntensity0, lightNode0->GetIntensity());
+					shader->SetUniformValueByIndex(uniformLightIntensity0, lightNode0->GetIntensity());
 				}
 				if (uniformLightAttenuationQ != -1)
 				{

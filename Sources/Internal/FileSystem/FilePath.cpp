@@ -1,31 +1,17 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #include "FileSystem/FilePath.h"
 #include "FileSystem/FileSystem.h"
@@ -48,12 +34,14 @@ List<FilePath> FilePath::resourceFolders;
 void FilePath::SetBundleName(const FilePath & newBundlePath)
 {
 	FilePath virtualBundlePath = newBundlePath;
-    virtualBundlePath.pathType = PATH_IN_RESOURCES;
 
 	if(!virtualBundlePath.IsEmpty())
+	{
 		virtualBundlePath.MakeDirectoryPathname();
-    
-    
+	}
+
+    virtualBundlePath.pathType = PATH_IN_RESOURCES;
+
     if(resourceFolders.size())
         resourceFolders.pop_front();
     
@@ -68,8 +56,9 @@ const FilePath & FilePath::GetBundleName()
     
 void FilePath::AddResourcesFolder(const FilePath & folder)
 {
-    auto endIt = resourceFolders.end();
-    for(auto it = resourceFolders.begin(); it != endIt; ++it)
+	DVASSERT(!folder.IsEmpty());
+
+    for(List<FilePath>::iterator it = resourceFolders.begin(); it != resourceFolders.end(); ++it)
     {
         if(folder == *it)
         {
@@ -84,8 +73,7 @@ void FilePath::AddResourcesFolder(const FilePath & folder)
     
 void FilePath::RemoveResourcesFolder(const FilePath & folder)
 {
-    auto endIt = resourceFolders.end();
-    for(auto it = resourceFolders.begin(); it != endIt; ++it)
+    for(List<FilePath>::iterator it = resourceFolders.begin(); it != resourceFolders.end(); ++it)
     {
         if(folder == *it)
         {
@@ -106,7 +94,13 @@ const List<FilePath> FilePath::GetResourcesFolders()
 #if defined(__DAVAENGINE_WIN32__)
 void FilePath::InitializeBundleName()
 {
-    SetBundleName(FileSystem::Instance()->GetCurrentWorkingDirectory());
+	FilePath execDirectory = FileSystem::Instance()->GetCurrentExecutableDirectory();
+	FilePath workingDirectory = FileSystem::Instance()->GetCurrentWorkingDirectory();
+	SetBundleName(execDirectory);
+	if(workingDirectory != execDirectory)
+	{
+		AddResourcesFolder(workingDirectory);
+	}
 }
 #endif //#if defined(__DAVAENGINE_WIN32__)
 
@@ -138,7 +132,7 @@ FilePath FilePath::FilepathInDocuments(const String & relativePathname)
 
 FilePath::FilePath()
 {
-    pathType = PATH_IN_FILESYSTEM;
+    pathType = PATH_EMPTY;
     absolutePathname = String();
 }
 
@@ -150,34 +144,20 @@ FilePath::FilePath(const FilePath &path)
     
 FilePath::FilePath(const char * sourcePath)
 {
-	if(sourcePath)
-    {
-        Initialize(String(sourcePath));
-    }
-	else
-    {
-		absolutePathname = String();
-        pathType = PATH_IN_FILESYSTEM;
-    }
+    Initialize(String(sourcePath));
 }
 
 FilePath::FilePath(const String &pathname)
 {
-	if(pathname.empty())
-    {
-		absolutePathname = String();
-        pathType = PATH_IN_FILESYSTEM;
-    }
-	else
-    {
-        Initialize(String(pathname));
-    }
+    Initialize(pathname);
 }
 
     
 FilePath::FilePath(const char * directory, const String &filename)
 {
 	FilePath directoryPath(directory);
+	DVASSERT(!directoryPath.IsEmpty());
+    
 	directoryPath.MakeDirectoryPathname();
 
     pathType = directoryPath.pathType;
@@ -187,6 +167,7 @@ FilePath::FilePath(const char * directory, const String &filename)
 FilePath::FilePath(const String &directory, const String &filename)
 {
 	FilePath directoryPath(directory);
+	DVASSERT(!directoryPath.IsEmpty());
 	directoryPath.MakeDirectoryPathname();
 
     pathType = directoryPath.pathType;
@@ -206,8 +187,12 @@ void FilePath::Initialize(const String &_pathname)
 {
 	String pathname = NormalizePathname(_pathname);
     pathType = GetPathType(pathname);
-    
-    if(pathType == PATH_IN_RESOURCES || pathType == PATH_IN_MEMORY)
+
+	if (pathType == PATH_EMPTY)
+	{
+		absolutePathname = String();
+	}
+    else if(pathType == PATH_IN_RESOURCES || pathType == PATH_IN_MEMORY)
     {
         absolutePathname = pathname;
     }
@@ -221,6 +206,9 @@ void FilePath::Initialize(const String &_pathname)
     }
     else
     {
+        Logger::Warning("[FilePath::Initialize] FilePath was initialized from relative path name (%s)", _pathname.c_str());
+        
+        
 #if defined(__DAVAENGINE_ANDROID__)
         absolutePathname = pathname;
 #else //#if defined(__DAVAENGINE_ANDROID__)
@@ -257,15 +245,18 @@ String FilePath::ResolveResourcesPath() const
         String relativePathname = "Data" + absolutePathname.substr(5);
         FilePath path;
         
+		bool isResolved = false;
         List<FilePath>::reverse_iterator endIt = resourceFolders.rend();
         for(List<FilePath>::reverse_iterator it = resourceFolders.rbegin(); it != endIt; ++it)
         {
+            FilePath t = *it;
             path = *it + relativePathname;
             
             if(isDirectory)
             {
                 if(FileSystem::Instance()->IsDirectory(path))
                 {
+					isResolved = true;
                     break;
                 }
             }
@@ -273,9 +264,18 @@ String FilePath::ResolveResourcesPath() const
             {
                 if(FileSystem::Instance()->IsFile(path))
                 {
+					isResolved = true;
                     break;
                 }
             }
+        }
+		
+		if (!isResolved)
+		{
+			String warningMsg = "Unable to resolve relative path " + absolutePathname + "\n";
+			warningMsg += "Returning default absolute path found ";
+			warningMsg += path.absolutePathname;
+			Logger::Warning(warningMsg.c_str());
         }
         
         return path.absolutePathname;
@@ -296,13 +296,25 @@ FilePath& FilePath::operator=(const FilePath &path)
 FilePath FilePath::operator+(const String &path) const
 {
     FilePath pathname(AddPath(*this, path));
+
     pathname.pathType = this->pathType;
+	if (this->pathType == PATH_EMPTY)
+	{
+		pathname.pathType = GetPathType(pathname.absolutePathname);
+	}
+
     return pathname;
 }
 
 FilePath& FilePath::operator+=(const String & path)
 {
     absolutePathname = AddPath(*this, path);
+
+	if (pathType == PATH_EMPTY)
+	{
+		pathType = GetPathType(absolutePathname);
+	}
+
     return (*this);
 }
     
@@ -316,6 +328,13 @@ bool FilePath::operator!=(const FilePath &path) const
     return absolutePathname != path.absolutePathname;
 }
 
+    
+bool FilePath::operator < (const FilePath& right) const
+{
+    return GetAbsolutePathname() < right.GetAbsolutePathname();
+}
+
+    
     
 bool FilePath::IsDirectoryPathname() const
 {
@@ -395,7 +414,10 @@ String FilePath::GetRelativePathname() const
     
 String FilePath::GetRelativePathname(const FilePath &forDirectory) const
 {
-    DVASSERT(forDirectory.IsDirectoryPathname() || forDirectory.IsEmpty());
+    if(forDirectory.IsEmpty())
+        return GetAbsolutePathname();
+    
+    DVASSERT(forDirectory.IsDirectoryPathname());
     
     return AbsoluteToRelative(forDirectory, *this);
 }
@@ -427,18 +449,20 @@ void FilePath::ReplaceFilename(const String &filename)
     
 void FilePath::ReplaceBasename(const String &basename)
 {
-    DVASSERT(!IsEmpty());
-    
-    const String extension = GetExtension();
-    absolutePathname = NormalizePathname((GetDirectory() + (basename + extension)).absolutePathname);
+    if(!IsEmpty())
+    {
+        const String extension = GetExtension();
+        absolutePathname = NormalizePathname((GetDirectory() + (basename + extension)).absolutePathname);
+    }
 }
     
 void FilePath::ReplaceExtension(const String &extension)
 {
-    DVASSERT(!IsEmpty());
-    
-    const String basename = GetBasename();
-    absolutePathname = NormalizePathname((GetDirectory() + (basename + extension)).absolutePathname);
+    if(!IsEmpty())
+    {
+        const String basename = GetBasename();
+        absolutePathname = NormalizePathname((GetDirectory() + (basename + extension)).absolutePathname);
+    }
 }
     
 void FilePath::ReplaceDirectory(const String &directory)
@@ -502,18 +526,17 @@ FilePath FilePath::CreateWithNewExtension(const FilePath &pathname, const String
     
 String FilePath::GetSystemPathname(const String &pathname, const ePathType pType)
 {
-    if(pType == PATH_IN_FILESYSTEM)
+    if(pType == PATH_IN_FILESYSTEM || pType == PATH_IN_MEMORY)
         return pathname;
     
     String retPath = pathname;
-    retPath = retPath.erase(0, 5);
-    
 	if(pType == PATH_IN_RESOURCES)
 	{
 		retPath = FilePath(retPath).GetAbsolutePathname();
 	}
 	else if(pType == PATH_IN_DOCUMENTS)
 	{
+        retPath = retPath.erase(0, 5);
         retPath = FilepathInDocuments(retPath).GetAbsolutePathname();
 	}
     
@@ -521,8 +544,11 @@ String FilePath::GetSystemPathname(const String &pathname, const ePathType pType
 }
     
 
-String FilePath::GetFrameworkPath()
+String FilePath::GetFrameworkPath() const
 {
+    if(PATH_IN_RESOURCES == pathType)
+        return absolutePathname;
+    
     String pathInRes = GetFrameworkPathForPrefix("~res:/", PATH_IN_RESOURCES);
     if(!pathInRes.empty())
     {
@@ -541,7 +567,7 @@ String FilePath::GetFrameworkPath()
 }
 
 
-String FilePath::GetFrameworkPathForPrefix( const String &typePrefix, const ePathType pType)
+String FilePath::GetFrameworkPathForPrefix( const String &typePrefix, const ePathType pType) const
 {
     DVASSERT(!typePrefix.empty());
     
@@ -638,13 +664,21 @@ String FilePath::AbsoluteToRelative(const FilePath &directoryPathname, const Fil
     if(absolutePathname.IsEmpty())
         return String();
 
-    DVASSERT(absolutePathname.IsAbsolutePathname());
     DVASSERT(directoryPathname.IsDirectoryPathname());
 
     Vector<String> folders;
-    Split(directoryPathname.GetAbsolutePathname(), "/", folders);
-    Vector<String> fileFolders;
-    Split(absolutePathname.GetDirectory().GetAbsolutePathname(), "/", fileFolders);
+	Vector<String> fileFolders;
+
+	if(directoryPathname.GetType() == PATH_IN_RESOURCES &&	absolutePathname.GetType() == PATH_IN_RESOURCES)
+	{
+		Split(directoryPathname.absolutePathname, "/", folders);
+		Split(absolutePathname.GetDirectory().absolutePathname, "/", fileFolders);
+	}
+	else
+	{
+		Split(directoryPathname.GetAbsolutePathname(), "/", folders);
+		Split(absolutePathname.GetDirectory().GetAbsolutePathname(), "/", fileFolders);
+	}
     
     Vector<String>::size_type equalCount = 0;
     for(; equalCount < folders.size() && equalCount < fileFolders.size(); ++equalCount)
@@ -669,11 +703,6 @@ String FilePath::AbsoluteToRelative(const FilePath &directoryPathname, const Fil
     return (retPath + absolutePathname.GetFilename());
 }
     
-bool FilePath::IsAbsolutePathname() const
-{
-    return IsAbsolutePathname(absolutePathname);
-}
-    
     
 bool FilePath::IsAbsolutePathname(const String &pathname)
 {
@@ -696,8 +725,6 @@ bool FilePath::IsAbsolutePathname(const String &pathname)
     
 String FilePath::AddPath(const FilePath &folder, const String & addition)
 {
-    DVASSERT(folder.IsDirectoryPathname() || folder.IsEmpty());
-
     String absPathname = folder.absolutePathname + addition;
     if(folder.pathType == PATH_IN_RESOURCES && absPathname.find("~res:") != String::npos)
     {
@@ -724,26 +751,47 @@ String FilePath::AddPath(const FilePath &folder, const String & addition)
 
 FilePath::ePathType FilePath::GetPathType(const String &pathname)
 {
+	if (pathname.empty())
+	{
+		return PATH_EMPTY;
+	}
+
     String::size_type find = pathname.find("~res:");
-    if(find != String::npos)
+    if(find == 0)
     {
         return PATH_IN_RESOURCES;
     }
 
     find = pathname.find("~doc:");
-    if(find != String::npos)
+    if(find == 0)
     {
         return PATH_IN_DOCUMENTS;
     }
     
     if(    (pathname.find("FBO ") == 0)
-       ||  (pathname.find("memoryfile_0x") == 0)
+       ||  (pathname.find("memoryfile_") == 0)
        ||  (pathname.find("Text ") == 0))
     {
         return PATH_IN_MEMORY;
     }
     
     return PATH_IN_FILESYSTEM;
+}
+
+    
+bool FilePath::Exists() const
+{
+    if(pathType == PATH_IN_MEMORY || pathType == PATH_EMPTY)
+    {
+        return false;
+    }
+    
+    if(IsDirectoryPathname())
+    {
+        return FileSystem::Instance()->IsDirectory(*this);
+    }
+
+    return FileSystem::Instance()->IsFile(*this);
 }
 
     
