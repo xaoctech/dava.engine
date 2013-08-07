@@ -18,6 +18,13 @@
 #include "Render/LibPVRHelper.h"
 #include "Render/LibDxtHelper.h"
 
+#include "TextureCompression/PVRConverter.h"
+#include "TextureCompression/DXTConverter.h"
+
+#include "Render/GPUFamilyDescriptor.h"
+
+#include "../Qt/Main/QtUtils.h"
+
 using namespace DAVA;
 
 uint32 ImageTools::GetTexturePhysicalSize(const TextureDescriptor *descriptor, const eGPUFamily forGPU)
@@ -51,4 +58,31 @@ uint32 ImageTools::GetTexturePhysicalSize(const TextureDescriptor *descriptor, c
 
     SafeRelease(imageFile);
     return size;
+}
+
+void ImageTools::ConvertImage( const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily forGPU, const DAVA::PixelFormat format)
+{
+	if(!descriptor || (format == FORMAT_INVALID)) return;
+
+	const String & extension = GPUFamilyDescriptor::GetCompressedFileExtension(forGPU, format);
+	if(extension == ".pvr")
+	{
+		DeleteOldPVRTextureIfPowerVr_IOS(descriptor, forGPU);
+		PVRConverter::Instance()->ConvertPngToPvr(*descriptor, forGPU);
+	}
+	else if(extension == ".dds")
+	{
+		DeleteOldDXTTextureIfTegra(descriptor, forGPU);
+		DXTConverter::ConvertPngToDxt(*descriptor, forGPU);
+	}
+	else
+	{
+		DVASSERT(false);
+	}
+
+	bool wasUpdated = descriptor->UpdateCrcForFormat(forGPU);
+	if(wasUpdated)
+	{
+		descriptor->Save();
+	}
 }

@@ -47,7 +47,7 @@ void SceneUtils::SetInFolder(const FilePath &folderPathname)
 
 void SceneUtils::SetOutFolder(const FilePath &folderPathname)
 {
-    DVASSERT(folderPathname.IsDirectoryPathname());
+	DVASSERT(folderPathname.IsDirectoryPathname());
     dataFolder = folderPathname;
 }
 

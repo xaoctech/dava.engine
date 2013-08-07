@@ -200,7 +200,7 @@ extern void FrameworkMain(int argc, char *argv[]);
 
 - (void) resetCursorRects
 {
-	NSLog(@"OpenGLView resetCursorRects");
+//	NSLog(@"OpenGLView resetCursorRects");
 	//
 	if (activeCursor)
 	{
