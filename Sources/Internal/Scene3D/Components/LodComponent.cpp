@@ -212,7 +212,8 @@ void LodComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 LodComponent::LodComponent()
 :	forceLodLayer(INVALID_LOD_LAYER),
 	forceDistance(INVALID_DISTANCE),
-	forceDistanceSq(INVALID_DISTANCE)
+	forceDistanceSq(INVALID_DISTANCE),
+    currentLod(0)
 {
 	lodLayersArray.resize(MAX_LOD_LAYERS);
 
