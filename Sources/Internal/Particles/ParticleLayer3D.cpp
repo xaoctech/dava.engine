@@ -1,3 +1,19 @@
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
 #include "Particles/ParticleLayer3D.h"
 #include "Render/RenderDataObject.h"
 #include "Render/RenderManager.h"
@@ -15,7 +31,7 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 {
 	isLong = false;
 	renderData = new RenderDataObject();
-	this->parent = parent;
+	this->emitter = parent;
 
 	//TODO: set material from outside
 	
@@ -28,12 +44,13 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 
     //TODO: MATERIAL TODO
     NMaterial * material = MaterialSystem::Instance()->GetMaterial("~res:/Materials/TextureMulVertexColorAdd");
-    renderBatch->SetMaterial(material);
+	renderBatch->SetMaterial(material);
 	SafeRelease(material);
 }
 
 ParticleLayer3D::~ParticleLayer3D()
 {
+	DeleteAllParticles();
 	SafeRelease(renderData);
 }
 
@@ -44,8 +61,10 @@ void ParticleLayer3D::Draw(Camera * camera)
 
 void ParticleLayer3D::DrawLayer(Camera* camera)
 {
-	if (!sprite)
+	// Yuri Coder, 2013/06/07. Don't draw SuperEmitter layers - see pls DF-1251 for details.
+	if (!sprite || type == TYPE_SUPEREMITTER_PARTICLES)
 	{
+		renderBatch->SetTotalCount(0);
 		return;
 	}
 
@@ -73,14 +92,31 @@ void ParticleLayer3D::DrawLayer(Camera* camera)
 	colors.clear();
 	int32 totalCount = 0;
 
+	// Reserve the memory for vectors to avoid the resize operations. Actually there can be less than count
+	// particles (for Single Particle or Superemitter one), but never more than count.
+	static const int32 POINTS_PER_PARTICLE = 6;
+	verts.resize(count * POINTS_PER_PARTICLE * 3); // 6 vertices per each particle, 3 coords per vertex.
+	textures.resize(count * POINTS_PER_PARTICLE * 2); // 6 texture coords per particle, 2 values per texture coord.
+	colors.resize(count * POINTS_PER_PARTICLE);
+
 	Particle * current = head;
 	if(current)
 	{
 		renderBatch->GetMaterial()->SetTexture(TEXTURE_ALBEDO, sprite->GetTexture(current->frame));
 	}
 
+	int32 verticesCount = 0;
+	int32 texturesCount = 0;
+	int32 colorsCount = 0;
+
 	while(current != 0)
 	{
+		Particle* parent = emitter->GetParentParticle();
+		if(NULL != parent && IsLong())
+		{
+			current->direction = parent->direction;
+		}
+
 		Vector3 topRight;
 		Vector3 topLeft;
 		Vector3 botRight;
@@ -95,58 +131,89 @@ void ParticleLayer3D::DrawLayer(Camera* camera)
 			CalcNonLong(current, topLeft, topRight, botLeft, botRight);
 		}
 
-		verts.push_back(topLeft.x);//0
-		verts.push_back(topLeft.y);
-		verts.push_back(topLeft.z);
+		verts[verticesCount] = topLeft.x;//0
+		verticesCount ++;
+		verts[verticesCount] = topLeft.y;
+		verticesCount ++;
+		verts[verticesCount] = topLeft.z;
+		verticesCount ++;
 
-		verts.push_back(topRight.x);//1
-		verts.push_back(topRight.y);
-		verts.push_back(topRight.z);
+		verts[verticesCount] = topRight.x;//1
+		verticesCount ++;
+		verts[verticesCount] = topRight.y;
+		verticesCount ++;
+		verts[verticesCount] = topRight.z;
+		verticesCount ++;
 
-		verts.push_back(botLeft.x);//2
-		verts.push_back(botLeft.y);
-		verts.push_back(botLeft.z);
+		verts[verticesCount] = botLeft.x;//2
+		verticesCount ++;
+		verts[verticesCount] = botLeft.y;
+		verticesCount ++;
+		verts[verticesCount] = botLeft.z;
+		verticesCount ++;
 
-		verts.push_back(botLeft.x);//2
-		verts.push_back(botLeft.y);
-		verts.push_back(botLeft.z);
+		verts[verticesCount] = botLeft.x;//2
+		verticesCount ++;
+		verts[verticesCount] = botLeft.y;
+		verticesCount ++;
+		verts[verticesCount] = botLeft.z;
+		verticesCount ++;
 
-		verts.push_back(topRight.x);//1
-		verts.push_back(topRight.y);
-		verts.push_back(topRight.z);
+		verts[verticesCount] = topRight.x;//1
+		verticesCount ++;
+		verts[verticesCount] = topRight.y;
+		verticesCount ++;
+		verts[verticesCount] = topRight.z;
+		verticesCount ++;
 
-		verts.push_back(botRight.x);//3
-		verts.push_back(botRight.y);
-		verts.push_back(botRight.z);
+		verts[verticesCount] = botRight.x;//3
+		verticesCount ++;
+		verts[verticesCount] = botRight.y;
+		verticesCount ++;
+		verts[verticesCount] = botRight.z;
+		verticesCount ++;
 
 		float32 *pT = sprite->GetTextureVerts(current->frame);
 
-		textures.push_back(pT[0]);
-		textures.push_back(pT[1]);
+		textures[texturesCount] = pT[0];
+		texturesCount ++;
+		textures[texturesCount] = pT[1];
+		texturesCount ++;
 
-		textures.push_back(pT[2]);
-		textures.push_back(pT[3]);
+		textures[texturesCount] = pT[2];
+		texturesCount ++;
+		textures[texturesCount] = pT[3];
+		texturesCount ++;
 
-		textures.push_back(pT[4]);
-		textures.push_back(pT[5]);
+		textures[texturesCount] = pT[4];
+		texturesCount ++;
+		textures[texturesCount] = pT[5];
+		texturesCount ++;
 
-		textures.push_back(pT[4]);
-		textures.push_back(pT[5]);
+		textures[texturesCount] = pT[4];
+		texturesCount ++;
+		textures[texturesCount] = pT[5];
+		texturesCount ++;
 
-		textures.push_back(pT[2]);
-		textures.push_back(pT[3]);
+		textures[texturesCount] = pT[2];
+		texturesCount ++;
+		textures[texturesCount] = pT[3];
+		texturesCount ++;
 
-		textures.push_back(pT[6]);
-		textures.push_back(pT[7]);
+		textures[texturesCount] = pT[6];
+		texturesCount ++;
+		textures[texturesCount] = pT[7];
+		texturesCount ++;
 
 		// Yuri Coder, 2013/04/03. Need to use drawColor here instead of just colot
 		// to take colorOverlife property into account.
 		uint32 color = (((uint32)(current->drawColor.a*255.f))<<24) |  (((uint32)(current->drawColor.b*255.f))<<16) |
 			(((uint32)(current->drawColor.g*255.f))<<8) | ((uint32)(current->drawColor.r*255.f));
-		for(int32 i = 0; i < 6; ++i)
+		for(int32 i = 0; i < POINTS_PER_PARTICLE; ++i)
 		{
-			colors.push_back(color);
+			colors[i + colorsCount] = color;
 		}
+		colorsCount += POINTS_PER_PARTICLE;
 
 		totalCount++;
 		current = TYPE_PARTICLES == type ? current->next : 0;
@@ -182,20 +249,26 @@ void ParticleLayer3D::CalcNonLong(Particle* current,
 	float32 cosine;
 	SinCosFast(current->angle, sine, cosine);
 
-	float32 pivotRight = ((sprite->GetWidth()-pivotPoint.x)*current->size.x*current->sizeOverLife.x)/2.f;
-	float32 pivotLeft = (pivotPoint.x*current->size.x*current->sizeOverLife.x)/2.f;
-	float32 pivotUp = (pivotPoint.y*current->size.y*current->sizeOverLife.y)/2.f;
-	float32 pivotDown = ((sprite->GetHeight()-pivotPoint.y)*current->size.y*current->sizeOverLife.y)/2.f;
+	// Draw pivot point is Sprite center + layer pivot point.
+	Vector2 drawPivotPoint = GetDrawPivotPoint();
+
+	float32 pivotRight = ((sprite->GetWidth()-drawPivotPoint.x)*current->size.x*current->sizeOverLife.x)/2.f;
+	float32 pivotLeft = (drawPivotPoint.x*current->size.x*current->sizeOverLife.x)/2.f;
+	float32 pivotUp = (drawPivotPoint.y*current->size.y*current->sizeOverLife.y)/2.f;
+	float32 pivotDown = ((sprite->GetHeight()-drawPivotPoint.y)*current->size.y*current->sizeOverLife.y)/2.f;
 
 	Vector3 dxc = dx*cosine;
 	Vector3 dxs = dx*sine;
 	Vector3 dyc = dy*cosine;
 	Vector3 dys = dy*sine;
 
-	topLeft = current->position+(dxs+dyc)*pivotLeft + (dxc-dys)*pivotDown;
-	topRight = current->position+(-dxc+dys)*pivotUp + (dxs+dyc)*pivotLeft;
-	botLeft = current->position+(dxc-dys)*pivotDown + (-dxs-dyc)*pivotRight;
-	botRight = current->position+(-dxs-dyc)*pivotRight + (-dxc+dys)*pivotUp;
+	// Apply offset to the current position according to the emitter position.
+	UpdateCurrentParticlePosition(current);
+
+	topLeft = currentParticlePosition+(dxs+dyc)*pivotLeft + (dxc-dys)*pivotDown;
+	topRight = currentParticlePosition+(-dxc+dys)*pivotUp + (dxs+dyc)*pivotLeft;
+	botLeft = currentParticlePosition+(dxc-dys)*pivotDown + (-dxs-dyc)*pivotRight;
+	botRight = currentParticlePosition+(-dxs-dyc)*pivotRight + (-dxc+dys)*pivotUp;
 }
 
 void ParticleLayer3D::CalcLong(Particle* current,
@@ -212,8 +285,11 @@ void ParticleLayer3D::CalcLong(Particle* current,
 	float32 widthDiv2 = sprite->GetWidth()*current->size.x*current->sizeOverLife.x;
 	float32 heightDiv2 = sprite->GetHeight()*current->size.y*current->sizeOverLife.y;
 
-	topRight = current->position + widthDiv2*vecShort;
-	topLeft = current->position - widthDiv2*vecShort;
+	// Apply offset to the current position according to the emitter position.
+	UpdateCurrentParticlePosition(current);
+
+	topRight = currentParticlePosition + widthDiv2*vecShort;
+	topLeft = currentParticlePosition - widthDiv2*vecShort;
 	botRight = topRight + heightDiv2*vecLong;
 	botLeft = topLeft + heightDiv2*vecLong;
 }
@@ -229,6 +305,8 @@ ParticleLayer * ParticleLayer3D::Clone(ParticleLayer * dstLayer /*= 0*/)
 {
 	if(!dstLayer)
 	{
+		// YuriCoder, 2013/04/30. TODO - this part isn't supposed to work, since
+		// dstLayer is always NULL here. Return to it later.
 		ParticleEmitter* parentFor3DLayer = NULL;
 		if (dynamic_cast<ParticleLayer3D*>(dstLayer))
 		{
@@ -236,6 +314,7 @@ ParticleLayer * ParticleLayer3D::Clone(ParticleLayer * dstLayer /*= 0*/)
 		}
 
 		dstLayer = new ParticleLayer3D(parentFor3DLayer);
+		dstLayer->SetLong(this->isLong);
 	}
 
 	ParticleLayer::Clone(dstLayer);
@@ -255,7 +334,7 @@ void ParticleLayer3D::SetAdditive(bool additive)
 	{
         NMaterial * material = MaterialSystem::Instance()->GetMaterial("~res:/Materials/TextureMulVertexColorAdd");
         renderBatch->SetMaterial(material);
-    }
+	}
 	else
 	{
         NMaterial * material = MaterialSystem::Instance()->GetMaterial("~res:/Materials/TextureMulVertexColorAlphablend");
@@ -271,8 +350,32 @@ bool ParticleLayer3D::IsLong()
 void ParticleLayer3D::SetLong(bool value)
 {
 	isLong = value;
-	//renderBatch->GetMaterial()->SetTwoSided(isLong);
-    Logger::Error("Return renderBatch->GetMaterial()->SetTwoSided(isLong);");
+	renderBatch->GetMaterial()->SetTwoSided(isLong);
+	if(innerEmitter)
+	{
+		innerEmitter->SetLongToAllLayers(value);
+	}
+}
+
+void ParticleLayer3D::UpdateCurrentParticlePosition(Particle* particle)
+{
+	if (this->emitter)
+	{
+		// For Superemitter adjust the particle position according to the
+		// current emitter position.
+		this->currentParticlePosition = particle->position + (emitter->GetPosition() - emitter->GetInitialTranslationVector());
+	}
+	else
+	{
+		// For all other types just leave the particle position untouched.
+		this->currentParticlePosition = particle->position;
+	}
+}
+
+void ParticleLayer3D::CreateInnerEmitter()
+{
+	SafeRelease(this->innerEmitter);
+	this->innerEmitter = new ParticleEmitter3D();
 }
 
 };

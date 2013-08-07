@@ -1,31 +1,17 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #include "Scene3D/SceneFileV2.h"
 #include "Scene3D/Entity.h"
@@ -70,7 +56,7 @@
 #include "Render/Material/NMaterial.h"
 #include "Render/Material/MaterialSystem.h"
 #include "Render/Highlevel/RenderFastNames.h"
-
+#include "Scene3D/Components/CustomPropertiesComponent.h"
 
 namespace DAVA
 {
@@ -145,7 +131,6 @@ SceneFileV2::eError SceneFileV2::GetError()
     return lastError;
 }
 
-
 SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scene *_scene)
 {
     File * file = File::Create(filename, File::CREATE | File::WRITE);
@@ -164,8 +149,7 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
     header.signature[2] = 'V';
     header.signature[3] = '2';
     
-    //VI: see Entity::Load - version 7 is new components save format
-    header.version = 7;
+    header.version = 8;
     header.nodeCount = _scene->GetChildrenCount();
     
     file->Write(&header, sizeof(Header));
@@ -195,6 +179,8 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
 //    SaveDataHierarchy(_scene->GetStaticMeshes(), file, 1);
 
     List<DataNode*> nodes;
+	if (isSaveForGame)
+		_scene->OptimizeBeforeExport();
     _scene->GetDataNodes(nodes);
     int32 dataNodesCount = (int32)nodes.size();
     file->Write(&dataNodesCount, sizeof(int32));
@@ -268,8 +254,9 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
     {
         LoadHierarchy(0, rootNode, file, 1);
     }
-    
+		    
     OptimizeScene(rootNode);
+	StopParticleEffectComponents(rootNode);
     
 	rootNode->SceneDidLoaded();
     
@@ -687,11 +674,10 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
             {
                 Entity * childNode = SafeRetain(currentNode->GetChild(0));
                 String currentName = currentNode->GetName();
-				KeyedArchive * currentProperties = SafeRetain(currentNode->GetCustomProperties());
+				KeyedArchive * currentProperties = currentNode->GetCustomProperties();
                 
                 //Logger::Debug("remove node: %s %p", currentNode->GetName().c_str(), currentNode);
 				parent->InsertBeforeNode(childNode, currentNode);
-                parent->RemoveNode(currentNode);
                 
                 childNode->SetName(currentName);
 				//merge custom properties
@@ -702,9 +688,13 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
 				{
 					newProperties->SetVariant(it->first, *it->second);
 				}
+				
+				//VI: remove node after copying its properties since properties become invalid after node removal
+				parent->RemoveNode(currentNode);
+				
                 removedNodeCount++;
                 SafeRelease(childNode);
-				SafeRelease(currentProperties);
+				
                 return true;
             }
             //RemoveEmptyHierarchy(childNode);
@@ -1122,6 +1112,25 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
     Logger::Debug("nodes removed: %d before: %d, now: %d, diff: %d", removedNodeCount, beforeCount, nowCount, beforeCount - nowCount);
 }
 
+void SceneFileV2::StopParticleEffectComponents(Entity * currentNode)
+{
+	for(int32 c = 0; c < currentNode->GetChildrenCount(); ++c)
+	{
+		Entity * childNode = currentNode->GetChild(c);
+		if (childNode->GetComponent(Component::PARTICLE_EFFECT_COMPONENT))
+		{
+			ParticleEffectComponent *particleEffect = static_cast<ParticleEffectComponent *>(childNode->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+			if (particleEffect->IsStopOnLoad())
+			{
+				particleEffect->Stop();
+			}
+		}
+
+		// Do the same for all children.
+		StopParticleEffectComponents(childNode);
+	}
+		
+}
 
 
 };

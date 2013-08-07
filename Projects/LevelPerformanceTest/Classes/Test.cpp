@@ -35,7 +35,7 @@ void Test::LoadResources()
 	Core* core = DAVA::Core::Instance();
 	float32 aspect = core->GetVirtualScreenHeight() / core->GetVirtualScreenWidth();
 
-	cam->SetupPerspective(70.f, aspect, 1.f, 5000.f);
+	cam->SetupPerspective(70.f, aspect, 0.5f, 2500.f);
 	cam->SetLeft(Vector3(1, 0, 0));
 	cam->SetUp(Vector3(0, 0, 1));
     
@@ -94,7 +94,7 @@ void Test::OnSectorCameraAnimationEnded(BaseObject* caller, void* userData, void
 		curSectorTime = 0.f;
 	}
 
-	if(curSectorIndex < 8)
+	if(curSectorIndex < SECTORS_COUNT)
 	{
 		float32 timeToRotate = 45.f / SettingsManager::Instance()->GetCameraRotationSpeed();
 		camRotateAnimation = new LinearAnimation<float32>(this, &curCameraAngle, curCameraAngle + 45.f, timeToRotate, Interpolation::LINEAR);
@@ -248,7 +248,7 @@ void Test::ZeroCurFpsStat()
 	curSectorIndex = 0;
 	curSectorTime = 0.f;
 
-	for(int i = 0; i < 8; i++)
+	for(int i = 0; i < SECTORS_COUNT; i++)
 		fpsStatItem.avFps[i] = 0;
 }
 
@@ -274,7 +274,7 @@ inline Landscape* Test::GetLandscape()
 	Landscape* landscape = NULL;
 	if (landscapeNode)
 	{
-		RenderComponent* renderComponent = cast_if_equal<RenderComponent*>(landscapeNode->GetComponent(Component::RENDER_COMPONENT));
+		RenderComponent* renderComponent = dynamic_cast<RenderComponent*>(landscapeNode->GetComponent(Component::RENDER_COMPONENT));
 		if (renderComponent)
 		{
 			landscape = dynamic_cast<Landscape*>(renderComponent->GetRenderObject());

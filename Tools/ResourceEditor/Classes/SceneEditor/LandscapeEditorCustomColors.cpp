@@ -1,3 +1,19 @@
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
 #include "LandscapeEditorCustomColors.h"
 
 #include "LandscapeTool.h"
@@ -5,6 +21,7 @@
 #include "PropertyControlCreator.h"
 #include "EditorScene.h"
 #include "EditorConfig.h"
+#include "EditorSettings.h"
 
 #include "HeightmapNode.h"
 
@@ -18,6 +35,8 @@
 #include "../Qt/Main/QtUtils.h"
 #include "../Commands/CustomColorCommands.h"
 #include "../Commands/CommandsManager.h"
+
+#include "Scene3D/Components/CustomPropertiesComponent.h"
 
 #define CUSTOM_COLOR_TEXTURE_PROP "customColorTexture"
 
@@ -379,7 +398,8 @@ void LandscapeEditorCustomColors::HideAction()
 	SafeRelease(texSurf);
 	SafeRelease(circleTexture);
 	
-	QtMainWindowHandler::Instance()->SetCustomColorsWidgetsState(false);
+	// TODO: mainwindow
+	//QtMainWindowHandler::Instance()->SetCustomColorsWidgetsState(false);
 }
 
 void LandscapeEditorCustomColors::ShowAction()
@@ -411,7 +431,8 @@ void LandscapeEditorCustomColors::ShowAction()
 
 	PerformLandscapeDraw();
 
-	QtMainWindowHandler::Instance()->SetCustomColorsWidgetsState(true);
+	// TODO: mainwindow
+	//QtMainWindowHandler::Instance()->SetCustomColorsWidgetsState(true);
 }
 
 void LandscapeEditorCustomColors::SaveTextureAction(const FilePath &pathToFile)
@@ -526,7 +547,7 @@ void LandscapeEditorCustomColors::StoreSaveFileName(const FilePath& fileName)
 	if(NULL != workingLandscapeEntity)
 	{
 		KeyedArchive* customProps = workingLandscapeEntity->GetCustomProperties();
-		customProps->SetString(CUSTOM_COLOR_TEXTURE_PROP, GetRelativePathToProjectPath(fileName));
+		customProps->SetString(CUSTOM_COLOR_TEXTURE_PROP, GetRelativePathToScenePath(fileName));
 	}
 }
 
@@ -543,7 +564,7 @@ FilePath LandscapeEditorCustomColors::GetCurrentSaveFileName()
 		}
 	}
 
-	return GetAbsolutePathFromProjectPath(currentSaveName);
+	return GetAbsolutePathFromScenePath(currentSaveName);
 }
 
 FilePath LandscapeEditorCustomColors::GetScenePath()
@@ -589,7 +610,7 @@ void LandscapeEditorCustomColors::SaveTexture()
 {
 	if (unsavedChanges)
 	{
-		CommandsManager::Instance()->ExecuteAndRelease(new CommandSaveTextureCustomColors());
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandSaveTextureCustomColors(), workingScene);
 	}
 	Close();
 }
@@ -621,7 +642,7 @@ void LandscapeEditorCustomColors::CreateUndoPoint()
 	if (originalTexture)
 	{
 		Image* newTexture = StoreState();
-		CommandsManager::Instance()->ExecuteAndRelease(new CommandDrawCustomColors(originalTexture, newTexture));
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandDrawCustomColors(originalTexture, newTexture), workingScene);
 		SafeRelease(originalTexture);
 		SafeRelease(newTexture);
 	}

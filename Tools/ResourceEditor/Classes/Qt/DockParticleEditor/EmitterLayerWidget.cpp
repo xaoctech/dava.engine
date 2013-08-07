@@ -1,16 +1,24 @@
-//
-//  EmitterLayerWidget.cpp
-//  ResourceEditorQt
-//
-//  Created by adebt on 11/26/12.
-//
-//
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
 
 #include "EmitterLayerWidget.h"
-#include "Commands/ParticleEditorCommands.h"
-#include "Commands/CommandsManager.h"
+#include "Commands2/ParticleEditorCommands.h"
 #include "TextureBrowser/TextureConvertor.h"
 #include "SceneEditor/EditorSettings.h"
+#include "../Scene/SceneDataManager.h"
 
 #include <QHBoxLayout>
 #include <QGraphicsWidget>
@@ -26,11 +34,13 @@
 const EmitterLayerWidget::LayerTypeMap EmitterLayerWidget::layerTypeMap[] =
 {
 	{ParticleLayer::TYPE_SINGLE_PARTICLE, "Single Particle"},
-	{ParticleLayer::TYPE_PARTICLES, "Particles"}
+	{ParticleLayer::TYPE_PARTICLES, "Particles"},
+	{ParticleLayer::TYPE_SUPEREMITTER_PARTICLES, "SuperEmitter"}
 };
 
-EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
-	QWidget(parent)
+EmitterLayerWidget::EmitterLayerWidget(SceneEditor2* scene, QWidget *parent) :
+	QWidget(parent),
+	BaseParticleEditorContentWidget(scene)
 {
 	mainBox = new QVBoxLayout;
 	this->setLayout(mainBox);
@@ -95,6 +105,43 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 			SLOT(OnSpriteBtn()));
 	connect(spritePathLabel, SIGNAL(textChanged(const QString&)), this, SLOT(OnSpritePathChanged(const QString&)));
 
+	QVBoxLayout* innerEmitterLayout = new QVBoxLayout();
+	innerEmitterLabel = new QLabel("Inner Emitter", this);
+	innerEmitterPathLabel = new QLineEdit(this);
+	innerEmitterPathLabel->setReadOnly(true);
+	innerEmitterLayout->addWidget(innerEmitterLabel);
+	innerEmitterLayout->addWidget(innerEmitterPathLabel);
+	mainBox->addLayout(innerEmitterLayout);
+	
+	QVBoxLayout* pivotPointLayout = new QVBoxLayout();
+	pivotPointLabel = new QLabel("Pivot Point", this);
+	pivotPointLayout->addWidget(pivotPointLabel);
+	QHBoxLayout* pivotPointInnerLayout = new QHBoxLayout();
+
+	pivotPointXSpinBoxLabel = new QLabel("X:", this);
+	pivotPointInnerLayout->addWidget(pivotPointXSpinBoxLabel);
+	pivotPointXSpinBox = new QSpinBox(this);
+	pivotPointXSpinBox->setMinimum(-9999);
+	pivotPointXSpinBox->setMaximum(9999);
+	pivotPointInnerLayout->addWidget(pivotPointXSpinBox);
+
+	pivotPointYSpinBoxLabel = new QLabel("Y:", this);
+	pivotPointInnerLayout->addWidget(pivotPointYSpinBoxLabel);
+	pivotPointYSpinBox = new QSpinBox(this);
+	pivotPointYSpinBox->setMinimum(-9999);
+	pivotPointYSpinBox->setMaximum(9999);
+	pivotPointInnerLayout->addWidget(pivotPointYSpinBox);
+	
+	pivotPointResetButton = new QPushButton("Reset", this);
+	pivotPointInnerLayout->addWidget(pivotPointResetButton);
+	connect(pivotPointResetButton, SIGNAL(clicked(bool)), this, SLOT(OnPivotPointReset()));
+
+	connect(pivotPointXSpinBox, SIGNAL(valueChanged(int)), this, SLOT(OnValueChanged()));
+	connect(pivotPointYSpinBox, SIGNAL(valueChanged(int)), this, SLOT(OnValueChanged()));
+
+	pivotPointLayout->addLayout(pivotPointInnerLayout);
+	mainBox->addLayout(pivotPointLayout);
+
 	lifeTimeLine = new TimeLineWidget(this);
 	InitWidget(lifeTimeLine);
 	numberTimeLine = new TimeLineWidget(this);
@@ -132,9 +179,11 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 	connect(frameOverlifeFPSSpin, SIGNAL(valueChanged(int)),
 			this, SLOT(OnValueChanged()));
 
+	frameOverlifeFPSLabel = new QLabel("FPS", this);
+
 	frameOverlifeLayout->addWidget(frameOverlifeCheckBox);
 	frameOverlifeLayout->addWidget(frameOverlifeFPSSpin);
-	frameOverlifeLayout->addWidget(new QLabel("FPS", this));
+	frameOverlifeLayout->addWidget(frameOverlifeFPSLabel);
 	mainBox->addLayout(frameOverlifeLayout);
 	
 	angleTimeLine = new TimeLineWidget(this);
@@ -142,7 +191,7 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 
 	QHBoxLayout* startTimeHBox = new QHBoxLayout;
 	startTimeHBox->addWidget(new QLabel("startTime", this));
-	startTimeSpin = new QDoubleSpinBox(this);
+	startTimeSpin = new EventFilterDoubleSpinBox(this);
 	startTimeSpin->setMinimum(-std::numeric_limits<double>::infinity());
 	startTimeSpin->setMaximum(std::numeric_limits<double>::infinity());
 	startTimeHBox->addWidget(startTimeSpin);
@@ -154,13 +203,20 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 
 	QHBoxLayout* endTimeHBox = new QHBoxLayout;
 	endTimeHBox->addWidget(new QLabel("endTime", this));
-	endTimeSpin = new QDoubleSpinBox(this);
+	endTimeSpin = new EventFilterDoubleSpinBox(this);
 	endTimeSpin->setMinimum(-std::numeric_limits<double>::infinity());
 	endTimeSpin->setMaximum(std::numeric_limits<double>::infinity());
 	endTimeHBox->addWidget(endTimeSpin);
 	mainBox->addLayout(endTimeHBox);
 	connect(endTimeSpin,
 			SIGNAL(valueChanged(double)),
+			this,
+			SLOT(OnValueChanged()));
+			
+	isLoopedCheckBox = new QCheckBox("Loop layer");
+	mainBox->addWidget(isLoopedCheckBox);
+	connect(isLoopedCheckBox,
+			SIGNAL(stateChanged(int)),
 			this,
 			SLOT(OnValueChanged()));
 	
@@ -220,6 +276,14 @@ EmitterLayerWidget::~EmitterLayerWidget()
 		   SIGNAL(valueChanged(int)),
 		   this,
 		   SLOT(OnValueChanged()));
+	disconnect(pivotPointXSpinBox,
+			   SIGNAL(valueChanged(int)),
+			   this,
+			   SLOT(OnValueChanged()));
+	disconnect(pivotPointYSpinBox,
+			SIGNAL(valueChanged(int)),
+			this,
+			SLOT(OnValueChanged()));
 }
 
 void EmitterLayerWidget::InitWidget(QWidget* widget)
@@ -247,9 +311,10 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	layerNameLineEdit->setText(QString::fromStdString(layer->layerName));
 	layerTypeComboBox->setCurrentIndex(LayerTypeToIndex(layer->type));
 
-	enableCheckBox->setChecked(!layer->isDisabled);
+	enableCheckBox->setChecked(!layer->GetDisabled());
 	additiveCheckBox->setChecked(layer->GetAdditive());
 	isLongCheckBox->setChecked(layer->IsLong());
+	isLoopedCheckBox->setChecked(layer->GetLooped());
 
 	//LAYER_SPRITE = 0,
 	sprite = layer->GetSprite();
@@ -264,7 +329,7 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	RenderManager::Instance()->RestoreRenderTarget();
 	Texture* texture = renderSprite->GetTexture();
 	Image* image = texture->CreateImageFromMemory();
-	spriteLabel->setPixmap(QPixmap::fromImage(TextureConvertor::fromDavaImage(image)));
+	spriteLabel->setPixmap(QPixmap::fromImage(TextureConvertor::FromDavaImage(image)));
 	SafeRelease(image);
 	SafeRelease(renderSprite);
 
@@ -365,9 +430,11 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	endTimeSpin->setMinimum(0);
 	endTimeSpin->setValue(layer->endTime);
 	endTimeSpin->setMaximum(emitter->GetLifeTime());
-	
-	//, LAYER_IS_LONG
-	
+
+	const Vector2& layerPivotPoint = layer->GetPivotPoint();
+	pivotPointXSpinBox->setValue((int)layerPivotPoint.x);
+	pivotPointYSpinBox->setValue((int)layerPivotPoint.y);
+
 	blockSignals = false;
 }
 
@@ -455,19 +522,6 @@ void EmitterLayerWidget::OnSpriteBtn()
 	// Yuri Coder. Verify that the path of the file opened is correct (i.e. inside the Project Path),
 	// this is according to the DF-551 issue.
     FilePath filePathToBeOpened(filePath.toStdString());
-
-#ifdef __DAVAENGINE_WIN32__
-    //TODO: fix this code on win32 on working FilePath
-	// Remove the drive name, if any.
-	String path = filePathToBeOpened.GetAbsolutePathname();
-	String::size_type driveNamePos = path.find(":/");
-	if (driveNamePos != String::npos && path.length() > 2)
-	{
-		path = path.substr(2, path.length() - 2);
-		filePathToBeOpened = FilePath(path);
-	}
-#endif
-
 	if (filePathToBeOpened.GetDirectory() != projectPath)
 	{
 		QString message = QString("You've opened Particle Sprite from incorrect path (%1).\n Correct one is %2.").
@@ -546,11 +600,12 @@ void EmitterLayerWidget::OnValueChanged()
 	ParticleLayer::eType propLayerType = layerTypeMap[layerTypeComboBox->currentIndex()].layerType;
 
 	CommandUpdateParticleLayer* updateLayerCmd = new CommandUpdateParticleLayer(emitter, layer);
-	updateLayerCmd->Init(layerNameLineEdit->text(),
+	updateLayerCmd->Init(layerNameLineEdit->text().toStdString(),
 						 propLayerType,
 						 !enableCheckBox->isChecked(),
 						 additiveCheckBox->isChecked(),
 						 isLongCheckBox->isChecked(),
+						 isLoopedCheckBox->isChecked(),
 						 sprite,
 						 propLife.GetPropLine(),
 						 propLifeVariation.GetPropLine(),
@@ -575,9 +630,12 @@ void EmitterLayerWidget::OnValueChanged()
 						 (float32)startTimeSpin->value(),
 						 (float32)endTimeSpin->value(),
 						 frameOverlifeCheckBox->isChecked(),
-						 (float32)frameOverlifeFPSSpin->value());
+						 (float32)frameOverlifeFPSSpin->value(),
+						 (float32)pivotPointXSpinBox->value(),
+						 (float32)pivotPointYSpinBox->value());
 
-	CommandsManager::Instance()->ExecuteAndRelease(updateLayerCmd);
+	DVASSERT(activeScene);
+	activeScene->Exec(updateLayerCmd);
 
 	Init(this->emitter, this->layer, false);
 	emit ValueChanged();
@@ -645,4 +703,68 @@ int32 EmitterLayerWidget::LayerTypeToIndex(ParticleLayer::eType layerType)
 	}
 	
 	return 0;
+}
+
+void EmitterLayerWidget::SetSuperemitterMode(bool isSuperemitter)
+{
+	// Sprite has no sense for Superemitter.
+	spriteBtn->setVisible(!isSuperemitter);
+	spriteLabel->setVisible(!isSuperemitter);
+	spritePathLabel->setVisible(!isSuperemitter);
+	
+	// The same is for "Additive" flag, Color, Alpha and Frame.
+	additiveCheckBox->setVisible(!isSuperemitter);
+	colorRandomGradient->setVisible(!isSuperemitter);
+	colorOverLifeGradient->setVisible(!isSuperemitter);
+	alphaOverLifeTimeLine->setVisible(!isSuperemitter);
+
+	frameOverlifeCheckBox->setVisible(!isSuperemitter);
+	frameOverlifeFPSSpin->setVisible(!isSuperemitter);
+	frameOverlifeFPSLabel->setVisible(!isSuperemitter);
+
+	// The Pivot Point must be hidden for Superemitter mode.
+	pivotPointLabel->setVisible(!isSuperemitter);
+	pivotPointXSpinBox->setVisible(!isSuperemitter);
+	pivotPointXSpinBoxLabel->setVisible(!isSuperemitter);
+	pivotPointYSpinBox->setVisible(!isSuperemitter);
+	pivotPointYSpinBoxLabel->setVisible(!isSuperemitter);
+	pivotPointResetButton->setVisible(!isSuperemitter);
+
+	// Some controls are however specific for this mode only - display and update them.
+	innerEmitterLabel->setVisible(isSuperemitter);
+	innerEmitterPathLabel->setVisible(isSuperemitter);
+	
+	if (isSuperemitter && this->layer->GetInnerEmitter())
+	{
+		innerEmitterPathLabel->setText(QString::fromStdString(layer->GetInnerEmitter()->GetConfigPath().GetAbsolutePathname()));
+	}
+}
+
+void EmitterLayerWidget::OnPivotPointReset()
+{
+	blockSignals = true;
+	this->pivotPointXSpinBox->setValue(0);
+	this->pivotPointYSpinBox->setValue(0);
+	blockSignals = false;
+	
+	OnValueChanged();
+}
+
+void EmitterLayerWidget::OnLayerValueChanged()
+{
+	// Start/End time and Enabled flag can be changed from external side.
+	blockSignals = true;
+	if (startTimeSpin->value() != layer->startTime || endTimeSpin->value() != layer->endTime)
+	{
+		startTimeSpin->setValue(layer->startTime);
+		endTimeSpin->setValue(layer->endTime);
+	}
+	
+	// NOTE: inverse logic here.
+	if (enableCheckBox->isChecked() == layer->GetDisabled())
+	{
+		enableCheckBox->setChecked(!layer->GetDisabled());
+	}
+	
+	blockSignals = false;
 }

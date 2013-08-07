@@ -1,3 +1,19 @@
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
 #ifndef __DAVAENGINE_UI_SPINNER_H__
 #define __DAVAENGINE_UI_SPINNER_H__
 
@@ -20,6 +36,14 @@ class SpinnerAdapter : public BaseObject
 {
 
 public:
+    
+    enum eItemOrder
+    {
+        PREVIOUS = -1,
+        CURRENT = 0,
+        NEXT = 1
+    };
+    
     class SelectionObserver
     {
     public:
@@ -38,12 +62,18 @@ public:
 
     /*
      * This method actually displays selected element in a manner specific for particular control (it can be text or image or whatever).
-     * To implement it use lookup by name to find controls inside the 'spinner' and fill them with data.
      *
-     * Implementation depends on a kind of controls used to display data element.
+     * Default implementation assumes that spinner has only scrollable content, so it just calls FillScrollableContent() with order == CURRENT.
+     * If your spinner has some selected-item-dependant content outside scrollable area (e.g. text description of selected item) override this method to update this content.
      */
-    virtual void DisplaySelectedData(UISpinner * spinner) = 0;
+    virtual void DisplaySelectedData(UISpinner * spinner);
 
+    /*
+     * This method displays scrollable content of current/previous/next item.
+     * Implementation depends on a kind of controls used to display item data: use lookup by name to find controls inside the 'scrollableContent' and fill them with data.
+     */
+    virtual void FillScrollableContent(UIControl * scrollableContent, eItemOrder order) = 0;
+    
     /*
      * Select next element. Returns 'true' and calls OnSelectedChanged for all observers if next element selected successfully. Returns 'false' otherwise.
      */
@@ -89,31 +119,66 @@ public:
 
     virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
     virtual void LoadFromYamlNodeCompleted();
-    virtual void CopyDataFrom(DAVA::UIControl *srcControl);
+    virtual void CopyDataFrom(UIControl *srcControl);
     virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
 
     UIButton * GetButtonNext() {return buttonNext;}
     UIButton * GetButtonPrevious() {return buttonPrevious;}
-
+    
+    UIControl * GetContent() {return content;}
+    
+    /*
+     * You have to call it if you change 'content' from code.
+     */
+    void ContentChanged();
+    
     virtual List<UIControl* >& GetRealChildren();
     virtual List<UIControl* > GetSubcontrols();
 
     virtual UIControl *Clone();
-
+	virtual void AddControl(UIControl *control);
+    virtual void Input(UIEvent *currentInput);
+    virtual void Update(float32 timeElapsed);
+    
 protected:
+    
+    struct Move
+    {
+        float32 dx;
+        float32 time;
+    };
+    
     SpinnerAdapter * adapter;
 
     UIButton * buttonNext;
     UIButton * buttonPrevious;
-
-    void OnNextPressed(DAVA::BaseObject * caller, void * param, void *callerData);
-    void OnPreviousPressed(DAVA::BaseObject * caller, void * param, void *callerData);
-
+    
+    //we need these 'content' controls to scroll items with slide
+    UIControl * content;
+    UIControl * nextContent;
+    UIControl * contentViewport; //area that clips items when we scroll them
+    
+    float32 dragAnchorX;
+    
+    //these are for quick short slide gesure recognition
+    float32 previousTouchX;
+    float32 currentTouchX;
+    float32 totalGestureTime;
+    float32 totalGestureDx;
+    List<Move> moves;
+    
+    void OnNextPressed(BaseObject * caller, void * param, void *callerData);
+    void OnPreviousPressed(BaseObject * caller, void * param, void *callerData);
+    void OnScrollAnimationEnd(BaseObject * caller, void * param, void *callerData);
+    
     virtual void OnSelectedChanged(bool isSelectedFirst, bool isSelectedLast, bool isSelectedChanged);
 
     void InitButtons();
     void ReleaseButtons();
     void FindRequiredControls();
+    void SaveChilds(UIControl *parent, UIYamlLoader * loader, YamlNode * parentNode);
+    void OnSelectWithSlide(bool isPrevious);
+    
 };
 
 }

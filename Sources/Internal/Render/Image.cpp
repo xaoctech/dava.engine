@@ -1,31 +1,17 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #include "Render/Image.h"
 #include "Render/Texture.h"
@@ -40,6 +26,8 @@ Image::Image()
 ,	width(0)
 ,	height(0)
 ,	format(FORMAT_RGB565)
+,	cubeFaceID(Texture::CUBE_FACE_INVALID)
+,	mipmapLevel(-1)
 {
 }
 
@@ -189,6 +177,45 @@ void Image::ResizeCanvas(uint32 newWidth, uint32 newHeight)
         data = newData;
         dataSize = newDataSize;
     }
+}
+
+void Image::ResizeToSquare()
+{
+    float32 newImageSize = Max(width, height);
+    ResizeCanvas(newImageSize, newImageSize);
+}
+
+Image* Image::CopyImageRegion(const Image* imageToCopy,
+							  uint32 newWidth, uint32 newHeight,
+							  uint32 xOffset, uint32 yOffset)
+{
+	DVASSERT(newWidth > 0 && newHeight > 0 && xOffset >= 0 && yOffset >= 0);
+
+	uint32 oldWidth = imageToCopy->GetWidth();
+	uint32 oldHeight = imageToCopy->GetHeight();
+	DVASSERT((newWidth + xOffset) <= oldWidth && (newHeight + yOffset) <= oldHeight);
+
+	PixelFormat format = imageToCopy->GetPixelFormat();
+	int32 formatSize = Texture::GetPixelFormatSizeInBytes(format);
+
+	Image* newImage = Image::Create(newWidth, newHeight, format);
+
+	uint8* oldData = imageToCopy->GetData();
+	uint8* newData = newImage->data;
+
+	for (uint32 i = 0; i < newHeight; ++i)
+	{
+		memcpy((newData + newWidth * i * formatSize),
+			   (oldData + (oldWidth * (yOffset + i) + xOffset) * formatSize),
+			   formatSize * newWidth);
+	}
+
+	return newImage;
+}
+
+Image* Image::CopyImageRegion(const Image* imageToCopy, const Rect& rect)
+{
+	return CopyImageRegion(imageToCopy, (uint32)rect.dx, (uint32)rect.dy, (uint32)rect.x, (uint32)rect.y);
 }
 
 

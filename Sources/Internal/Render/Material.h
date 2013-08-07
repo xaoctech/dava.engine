@@ -1,31 +1,17 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #ifndef __DAVAENGINE_MATERIAL_H__
 #define __DAVAENGINE_MATERIAL_H__
@@ -60,7 +46,7 @@ struct StaticLightingParams
 	StaticLightingParams() : transparencyColor(0, 0, 0, 0) {}
 
 	INTROSPECTION(StaticLightingParams,
-	MEMBER(transparencyColor, "Transparency Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR))
+	MEMBER(transparencyColor, "Transparency Color", I_SAVE | I_VIEW | I_EDIT))
 };
 
 class InstanceMaterialState : public BaseObject
@@ -115,12 +101,12 @@ public:
     INTROSPECTION_EXTEND(InstanceMaterialState, BaseObject,
                          //MEMBER(lightmapTexture, "Texture:", INTROSPECTION_EDITOR)
 //                         MEMBER(lightmapName, "Lightmap Name:", INTROSPECTION_EDITOR)
-                         MEMBER(uvOffset, "UV Offset", INTROSPECTION_EDITOR)
-                         MEMBER(uvScale, "UV Scale", INTROSPECTION_EDITOR)
-                         MEMBER(lightmapSize, "Lightmap Size", INTROSPECTION_EDITOR)
+                         MEMBER(uvOffset, "UV Offset", I_VIEW | I_EDIT)
+                         MEMBER(uvScale, "UV Scale", I_VIEW | I_EDIT)
+                         MEMBER(lightmapSize, "Lightmap Size", I_VIEW | I_EDIT)
                          
-                         PROPERTY("flatColor", "Flat Color (works only if flat color enabled)", GetFlatColor, SetFlatColor, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-                         PROPERTY("texture0Shift", "Texture Shift", GetTextureShift, SetTextureShift, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         PROPERTY("flatColor", "Flat Color (works only if flat color enabled)", GetFlatColor, SetFlatColor, I_SAVE | I_VIEW | I_EDIT)
+                         PROPERTY("texture0Shift", "Texture Shift", GetTextureShift, SetTextureShift, I_SAVE | I_VIEW | I_EDIT)
                          
                          //MEMBER(aabbox, "AABBox", INTROSPECTION_EDITOR)
                          );
@@ -148,7 +134,9 @@ public:
         MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP, // single texture + diffuse light normal mapping
 
 		MATERIAL_VERTEX_COLOR_ALPHABLENDED,
-        MATERIAL_FLAT_COLOR, 
+        MATERIAL_FLAT_COLOR,
+		
+		MATERIAL_SKYBOX,
         
         // MATERIAL_TEXTURE, 
         // MATERIAL_LIGHTMAPPED_TEXTURE,   
@@ -284,6 +272,7 @@ public:
         TEXTURE_DIFFUSE = 0,
         TEXTURE_DETAIL = 1,
         TEXTURE_DECAL = 1,
+		TEXTURE_LIGHTMAP = 1,
 		TEXTURE_NORMALMAP = 2,
         
         TEXTURE_COUNT, 
@@ -389,37 +378,37 @@ private:
 public:
     
     INTROSPECTION_EXTEND(Material, DataNode,
-		MEMBER(lightingParams, "Static Lighting Params", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+		MEMBER(lightingParams, "Static Lighting Params", I_SAVE | I_VIEW | I_EDIT)
 
-        MEMBER(isTranslucent, "Is Translucent", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(isTwoSided, "Is Two Sided", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(isSetupLightmap, "Is Setup Lightmap", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(shininess, "Shininess", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(isTranslucent, "Is Translucent", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(isTwoSided, "Is Two Sided", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(isSetupLightmap, "Is Setup Lightmap", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(shininess, "Shininess", I_SAVE | I_VIEW | I_EDIT)
 
-        MEMBER(ambientColor, "Ambient Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(diffuseColor, "Diffuse Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(specularColor, "Specular Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(emissiveColor, "Emissive Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(ambientColor, "Ambient Color", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(diffuseColor, "Diffuse Color", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(specularColor, "Specular Color", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(emissiveColor, "Emissive Color", I_SAVE | I_VIEW | I_EDIT)
 
-        MEMBER(isFogEnabled, "Is Fog Enabled", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(fogDensity, "Fog Density", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(fogColor, "Fog Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(isFogEnabled, "Is Fog Enabled", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(fogDensity, "Fog Density", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(fogColor, "Fog Color", I_SAVE | I_VIEW | I_EDIT)
                          
-        MEMBER(isAlphablend, "Is Alphablended", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(isAlphablend, "Is Alphablended", I_SAVE | I_VIEW | I_EDIT)
         
-        PROPERTY("isFlatColorEnabled", "Is flat color enabled", IsFlatColorEnabled, EnableFlatColor, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        PROPERTY("isTexture0ShiftEnabled", "Is texture shift enabled", IsTextureShiftEnabled, EnableTextureShift, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        PROPERTY("isExportOwnerLayerEnabled", "Is export owner layer enabled. (Export layer settings to render batch on set)", IsExportOwnerLayerEnabled, SetExportOwnerLayer, INTROSPECTION_SERIALIZABLE)
-        PROPERTY("ownerLayerName", "Owner layer name", GetOwnerLayerName, SetOwnerLayerName, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
+        PROPERTY("isFlatColorEnabled", "Is flat color enabled", IsFlatColorEnabled, EnableFlatColor, I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("isTexture0ShiftEnabled", "Is texture shift enabled", IsTextureShiftEnabled, EnableTextureShift, I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("isExportOwnerLayerEnabled", "Is export owner layer enabled. (Export layer settings to render batch on set)", IsExportOwnerLayerEnabled, SetExportOwnerLayer, I_SAVE)
+        PROPERTY("ownerLayerName", "Owner layer name", GetOwnerLayerName, SetOwnerLayerName, I_SAVE | I_VIEW)
                          
-        MEMBER(blendSrc, "Blend Source", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(blendDst, "Blend Destination", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(isWireframe, "Is Wire Frame", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-		MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(blendSrc, "Blend Source", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(blendDst, "Blend Destination", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(isWireframe, "Is Wire Frame", I_SAVE | I_VIEW | I_EDIT)
+		MEMBER(type, "Type", I_SAVE | I_VIEW | I_EDIT)
                          
-        COLLECTION(names, "Names", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        COLLECTION(names, "Names", I_SAVE | I_VIEW | I_EDIT)
 
-		MEMBER(renderStateBlock, "Render State", INTROSPECTION_EDITOR)
+		MEMBER(renderStateBlock, "Render State", I_VIEW | I_EDIT)
     );
 };
 

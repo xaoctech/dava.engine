@@ -133,13 +133,13 @@ void InputTest::LoadResources()
 	webView1->SetVisible(false);
 	delegate = new UIWebViewDelegate();
 	webView1->SetDelegate((UIWebViewDelegate*)delegate);
-	webView1->OpenURL("http://www.linux.org.ru");
+	webView1->OpenURL("http://www.google.com");
 	AddControl(webView1);
 
 	webView2 = new UIWebView(Rect(305, 300, 440, 190));
     webView2->SetVisible(false);
     webView2->SetDelegate((UIWebViewDelegate*)delegate);
-	webView2->OpenURL("http://www.apple.com");
+	webView2->OpenURL("http://www.google.com");
 	AddControl(webView2);
 
 	FilePath srcDir("~res:/TestData/InputTest/");
@@ -162,6 +162,13 @@ void InputTest::LoadResources()
     
     SafeRelease(spr);
     SafeRelease(texture);
+	
+	staticText->SetShadowColor(DAVA::Color(0xFF/255.f, 0xC4/255.f, 0xC3/255.f, 1.f));
+	staticText->SetShadowOffset(DAVA::Vector2(4.0f, 4.0f));
+	Color faded = staticText->GetBackground()->color;
+	faded.a = 0.1f;
+	staticText->ColorAnimation(faded, 2.0f, Interpolation::LINEAR);
+	staticText->ShadowColorAnimation(faded, 2.0f, Interpolation::LINEAR);
 }
 
 void InputTest::UnloadResources()

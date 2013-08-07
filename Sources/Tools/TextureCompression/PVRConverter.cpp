@@ -3,6 +3,8 @@
 #include "FileSystem/FileSystem.h"
 #include "Utils/StringFormat.h"
 
+#include "Render/GPUFamilyDescriptor.h"
+
 namespace DAVA
 {
 
@@ -18,6 +20,7 @@ PVRConverter::PVRConverter()
 	pixelFormatToPVRFormat[FORMAT_PVR2] = "OGLPVRTC2";
 	pixelFormatToPVRFormat[FORMAT_PVR4] = "OGLPVRTC4";
 	pixelFormatToPVRFormat[FORMAT_A8] = "OGL8";
+	pixelFormatToPVRFormat[FORMAT_ETC1] = "ETC";
 }
 
 PVRConverter::~PVRConverter()
@@ -25,34 +28,37 @@ PVRConverter::~PVRConverter()
 
 }
 
-FilePath PVRConverter::ConvertPngToPvr(const FilePath & fileToConvert, const TextureDescriptor &descriptor)
+FilePath PVRConverter::ConvertPngToPvr(const TextureDescriptor &descriptor, eGPUFamily gpuFamily)
 {
 	FilePath outputName;
-	String command = GetCommandLinePVR(fileToConvert, descriptor);
+	String command = GetCommandLinePVR(descriptor, FilePath::CreateWithNewExtension(descriptor.pathname, ".png"), gpuFamily);
     Logger::Info("[PVRConverter::ConvertPngToPvr] (%s)", command.c_str());
     
 	if(!command.empty())
 	{
 		FileSystem::Instance()->Spawn(command);
-		outputName = GetPVRToolOutput(fileToConvert);
+		outputName = GetPVRToolOutput(descriptor, gpuFamily);
 	}
 
 	return outputName;
 }
 
-String PVRConverter::GetCommandLinePVR(const FilePath & fileToConvert, const TextureDescriptor &descriptor)
+String PVRConverter::GetCommandLinePVR(const TextureDescriptor &descriptor, FilePath fileToConvert, eGPUFamily gpuFamily)
 {
-	String command = pvrTexToolPathname.GetAbsolutePathname();
-	String format = pixelFormatToPVRFormat[descriptor.pvrCompression.format];
+	String command = "\"" + pvrTexToolPathname.GetAbsolutePathname() + "\"";
+	String format = pixelFormatToPVRFormat[(PixelFormat) descriptor.compression[gpuFamily].format];
 
 	if(command != "" && format != "")
 	{
-		FilePath outputFile = GetPVRToolOutput(fileToConvert);
+		FilePath outputFile = GetPVRToolOutput(descriptor, gpuFamily);
 
 		// assemble command
-
-		// input file
 		command += Format(" -i \"%s\"", fileToConvert.GetAbsolutePathname().c_str());
+
+		if(descriptor.IsCubeMap())
+		{
+			command += " -s";
+		}
 
 		// output format
 		command += Format(" -f%s", format.c_str());
@@ -61,15 +67,15 @@ String PVRConverter::GetCommandLinePVR(const FilePath & fileToConvert, const Tex
 		command += " -yflip0";
 
 		// mipmaps
-		if(descriptor.generateMipMaps)
+		if(descriptor.settings.generateMipMaps)
 		{
 			command += " -m";
 		}
 
 		// base mipmap level (base resize)
-		if(0 != descriptor.pvrCompression.compressToWidth && descriptor.pvrCompression.compressToHeight != 0)
+		if(0 != descriptor.compression[gpuFamily].compressToWidth && descriptor.compression[gpuFamily].compressToHeight != 0)
 		{
-			command += Format(" -x %d -y %d", descriptor.pvrCompression.compressToWidth, descriptor.pvrCompression.compressToHeight);
+			command += Format(" -x %d -y %d", descriptor.compression[gpuFamily].compressToWidth, descriptor.compression[gpuFamily].compressToHeight);
 		}
 
 		// output file
@@ -77,17 +83,16 @@ String PVRConverter::GetCommandLinePVR(const FilePath & fileToConvert, const Tex
 	}
     else
     {
-        Logger::Error("[PVRConverter::GetCommandLinePVR] Can't create command line for file (%s)", fileToConvert.GetAbsolutePathname().c_str());
+        Logger::Error("[PVRConverter::GetCommandLinePVR] Can't create command line for file with descriptor (%s)", descriptor.pathname.GetAbsolutePathname().c_str());
         command = "";
     }
 
 	return command;
 }
 
-FilePath PVRConverter::GetPVRToolOutput(const FilePath &inputPVR)
+FilePath PVRConverter::GetPVRToolOutput(const TextureDescriptor &descriptor, eGPUFamily gpuFamily)
 {
-    FilePath path = FilePath::CreateWithNewExtension(inputPVR, ".pvr");
-	return path;
+    return GPUFamilyDescriptor::CreatePathnameForGPU(&descriptor, gpuFamily);
 }
 
 void PVRConverter::SetPVRTexTool(const FilePath &textToolPathname)

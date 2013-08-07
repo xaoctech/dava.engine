@@ -1,31 +1,17 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #include "Render/Highlevel/RenderSystem.h"
 #include "Render/Highlevel/RenderLayer.h"
@@ -42,6 +28,7 @@
 // TODO: Move class to other place
 #include "Scene3D/Systems/ParticleEmitterSystem.h"
 #include "Render/Highlevel/RenderFastNames.h"
+#include "Utils/Utils.h"
 
 namespace DAVA
 {
@@ -53,6 +40,7 @@ RenderSystem::RenderSystem()
     renderPassesMap.Insert(PASS_SHADOW_VOLUME, new ShadowVolumeRenderPass(PASS_SHADOW_VOLUME));
 
     renderLayersMap.Insert(LAYER_OPAQUE, new RenderLayer(LAYER_OPAQUE));
+	renderLayersMap.Insert(LAYER_AFTER_OPAQUE, new RenderLayer(LAYER_AFTER_OPAQUE));
     renderLayersMap.Insert(LAYER_ALPHA_TEST_LAYER, new RenderLayer(LAYER_ALPHA_TEST_LAYER));
     
     renderLayersMap.Insert(LAYER_TRANSLUCENT, new RenderLayer(LAYER_TRANSLUCENT));
@@ -63,6 +51,7 @@ RenderSystem::RenderSystem()
     
     RenderPass * forwardPass = renderPassesMap[PASS_FORWARD];
     forwardPass->AddRenderLayer(renderLayersMap[LAYER_OPAQUE], LAST_LAYER);
+	forwardPass->AddRenderLayer(renderLayersMap[LAYER_AFTER_OPAQUE], LAST_LAYER);
     forwardPass->AddRenderLayer(renderLayersMap[LAYER_TRANSLUCENT], LAST_LAYER);
 
     ShadowVolumeRenderPass * shadowVolumePass = (ShadowVolumeRenderPass*)renderPassesMap[PASS_SHADOW_VOLUME];
@@ -72,8 +61,6 @@ RenderSystem::RenderSystem()
     renderPassOrder.push_back(renderPassesMap[PASS_SHADOW_VOLUME]);
 
 	particleEmitterSystem = new ParticleEmitterSystem();
-    renderHierarchy = new RenderHierarchy();
-    globalBatchArray = new RenderPassBatchArray();
 }
 
 RenderSystem::~RenderSystem()
@@ -130,6 +117,8 @@ void RenderSystem::RemoveFromRender(RenderObject * renderObject)
 //		RemoveRenderBatch(batch);
 //	}
 
+	FindAndRemoveExchangingWithLast(markedObjects, renderObject);
+
 	RenderObject * lastRenderObject = renderObjectArray[renderObjectArray.size() - 1];
     renderObjectArray[renderObject->GetRemoveIndex()] = lastRenderObject;
     renderObjectArray.pop_back();
@@ -152,6 +141,34 @@ void RenderSystem::RemoveRenderObject(RenderObject * renderObject)
     particleEmitterSystem->RemoveIfEmitter(renderObject);
 	renderObject->SetRenderSystem(0);
 }
+
+void RenderSystem::AddRenderBatch(RenderBatch * renderBatch)
+{
+    // Get Layer Name
+    const FastName & name = renderBatch->GetOwnerLayerName();
+
+    RenderLayer * oldLayer = renderBatch->GetOwnerLayer();
+    if (oldLayer != 0)
+    {
+        oldLayer->RemoveRenderBatch(renderBatch);
+    }
+    RenderLayer * layer = renderLayersMap[name];
+    layer->AddRenderBatch(renderBatch);
+}
+    
+void RenderSystem::RemoveRenderBatch(RenderBatch * renderBatch)
+{
+    RenderLayer * oldLayer = renderBatch->GetOwnerLayer();
+    if (oldLayer != 0)
+    {
+        oldLayer->RemoveRenderBatch(renderBatch);
+    }
+}
+
+void RenderSystem::ImmediateUpdateRenderBatch(RenderBatch * renderBatch)
+{
+    AddRenderBatch(renderBatch);
+}
     
 void RenderSystem::SetCamera(Camera * _camera)
 {
@@ -161,6 +178,49 @@ void RenderSystem::SetCamera(Camera * _camera)
 Camera * RenderSystem::GetCamera()
 {
 	return camera;
+}
+    
+void RenderSystem::ProcessClipping()
+{
+    int32 objectBoxesUpdated = 0;
+    List<RenderObject*>::iterator end = markedObjects.end();
+    for (List<RenderObject*>::iterator it = markedObjects.begin(); it != end; ++it)
+    {
+        RenderObject * obj = *it;
+        obj->GetBoundingBox().GetTransformedBox(*obj->GetWorldTransformPtr(), obj->GetWorldBoundingBox());
+        FindNearestLights(obj);
+        objectBoxesUpdated++;
+    }
+    markedObjects.clear();
+    
+//    List<RenderObject*>::iterator endLights = movedLights.end();
+//    for (List<LightNode*>::iterator it = movedLights.begin(); it != endLights; ++it)
+//    {
+//        FindNearestLights(*it);
+//    }
+    if (movedLights.size() > 0)
+    {
+        FindNearestLights();
+    }
+    movedLights.clear();
+    
+    
+    int32 objectsCulled = 0;
+    
+    Frustum * frustum = camera->GetFrustum();
+
+    uint32 size = renderObjectArray.size();
+    for (uint32 pos = 0; pos < size; ++pos)
+    {
+        RenderObject * node = renderObjectArray[pos];
+        node->AddFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
+        //Logger::Debug("Cull Node: %s rc: %d", node->GetFullName().c_str(), node->GetRetainCount());
+        if (!frustum->IsInside(node->GetWorldBoundingBox()))
+        {
+            node->RemoveFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
+            objectsCulled++;
+        }
+    }
 }
 
 void RenderSystem::MarkForUpdate(RenderObject * renderObject)

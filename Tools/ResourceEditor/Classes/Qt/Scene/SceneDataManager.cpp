@@ -1,3 +1,19 @@
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
 #include "SceneDataManager.h"
 
 #include "DockSceneGraph/SceneGraphModel.h"
@@ -8,6 +24,13 @@
 
 #include "./Qt/SpritesPacker/SpritePackerHelper.h"
 #include "../Main/QtUtils.h"
+#include "../Main/QtMainWindowHandler.h"
+#include "../SceneEditor/EntityOwnerPropertyHelper.h"
+#include "../StringConstants.h"
+
+#include "../Qt/CubemapEditor/MaterialHelper.h"
+
+#include "Scene3D/Components/CustomPropertiesComponent.h"
 
 using namespace DAVA;
 
@@ -36,7 +59,7 @@ SceneData* SceneDataManager::CreateNewScene()
 	return levelScene;	
 }
 
-void SceneDataManager::AddScene(const FilePath &scenePathname)
+Entity* SceneDataManager::AddScene(const FilePath &scenePathname)
 {
     DVASSERT(scenePathname.IsEqualToExtension(".sc2"));
 
@@ -44,20 +67,20 @@ void SceneDataManager::AddScene(const FilePath &scenePathname)
 	if (!sceneData)
 	{
 		DVASSERT(false && "No way to add the scene when SceneGetActive() returns NULL!");
-		return;
+		return NULL;
 	}
 	
 	EditorScene* scene = sceneData->GetScene();
 	if (!scene)
 	{
 		DVASSERT(false && "sceneData->GetScene() returned NULL!");
-		return;
+		return NULL;
 	}
 
     Entity * rootNode = scene->GetRootNode(scenePathname)->Clone();
 
     KeyedArchive * customProperties = rootNode->GetCustomProperties();
-    customProperties->SetString("editor.referenceToOwner", scenePathname.GetAbsolutePathname());
+    customProperties->SetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, scenePathname.GetAbsolutePathname());
     
     rootNode->SetSolid(true);
     scene->AddNode(rootNode);
@@ -91,21 +114,20 @@ void SceneDataManager::AddScene(const FilePath &scenePathname)
     Landscape *landscape = scene->GetLandscape(scene);
     bool needUpdateLandscapeController = (landscape != NULL);
 
-	
-    SafeRelease(rootNode);
-	
     //TODO: need save scene automatically?
     bool changesWereMade = SceneValidator::Instance()->ValidateSceneAndShowErrors(scene);
-    SceneValidator::Instance()->EnumerateSceneTextures();
+//    SceneValidator::Instance()->EnumerateSceneTextures();
 	
 	if(needUpdateLandscapeController)
 	{
 		sceneData->SetLandscapesControllerScene(scene);
 	}
 
-	SceneHidePreview();
+    SceneHidePreview();
 	UpdateParticleSprites();
 	emit SceneGraphNeedRebuild();
+
+	return rootNode;
 }
 
 void SceneDataManager::EditLevelScene(const FilePath &scenePathname)
@@ -118,7 +140,6 @@ void SceneDataManager::EditLevelScene(const FilePath &scenePathname)
 	}
 
 	EditScene(sceneData, scenePathname);
-	emit SceneCreated(sceneData);
 }
 
 void SceneDataManager::EditActiveScene(const FilePath &scenePathname)
@@ -130,7 +151,7 @@ void SceneDataManager::EditActiveScene(const FilePath &scenePathname)
 		return;
 	}
 	
-	return EditScene(sceneData, scenePathname);
+	EditScene(sceneData, scenePathname);
 }
 
 void SceneDataManager::EditScene(SceneData* sceneData, const FilePath &scenePathname)
@@ -164,15 +185,18 @@ void SceneDataManager::EditScene(SceneData* sceneData, const FilePath &scenePath
 
     //TODO: need save scene automatically?
     bool changesWereMade = SceneValidator::Instance()->ValidateSceneAndShowErrors(scene);
-    SceneValidator::Instance()->EnumerateSceneTextures();
+//    SceneValidator::Instance()->EnumerateSceneTextures();
 
     sceneData->SetLandscapesControllerScene(scene);
 	
 	scene->Update(0);
 	sceneData->EmitSceneChanged();
 
+
 	UpdateParticleSprites();
     emit SceneGraphNeedRebuild();
+
+	emit SceneCreated(sceneData);
 }
 
 void SceneDataManager::ReloadScene(const FilePath &scenePathname, const FilePath &fromScenePathname)
@@ -205,13 +229,15 @@ void SceneDataManager::ReloadScene(const FilePath &scenePathname, const FilePath
         nodesToAdd.clear();
         return;
     }
-    
-    
+
+    Landscape* landscape = EditorScene::GetLandscape(currentScene->GetScene());
     for (int32 i = 0; i < (int32)nodesToAdd.size(); i++)
     {
         scene->ReleaseUserData(nodesToAdd[i].nodeToRemove);
         nodesToAdd[i].parent->RemoveNode(nodesToAdd[i].nodeToRemove);
         nodesToAdd[i].parent->AddNode(nodesToAdd[i].nodeToAdd);
+		ApplyDefaultFogSettings(landscape, nodesToAdd[i].nodeToAdd);
+
         SafeRelease(nodesToAdd[i].nodeToAdd);
     }
     nodesToAdd.clear();
@@ -222,6 +248,7 @@ void SceneDataManager::ReloadScene(const FilePath &scenePathname, const FilePath
         screen->OnReloadRootNodesQt();
     }
     
+    
 	UpdateParticleSprites();
     emit SceneGraphNeedRebuild();
 	sceneData->SetLandscapesControllerScene(scene);
@@ -231,14 +258,16 @@ void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const FilePa
 {
 	//если в рут ноды сложить такие же рут ноды то на релоаде все накроет пиздой
     KeyedArchive *customProperties = node->GetCustomProperties();
-    if (customProperties->GetString("editor.referenceToOwner", "") == nodePathname.GetAbsolutePathname())
+	EntityOwnerPropertyHelper::Instance()->UpdateEntityOwner(customProperties);
+    if (customProperties->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, "") == nodePathname.GetAbsolutePathname())
     {
-        Entity *loadedNode = scene->GetRootNode(fromPathname)->Clone();
+        Entity *loadedNode = scene->GetRootNode(fromPathname);
         if(loadedNode)
         {
             Entity *newNode = loadedNode->Clone();
             newNode->SetLocalTransform(node->GetLocalTransform());
-            newNode->GetCustomProperties()->SetString("editor.referenceToOwner", fromPathname.GetAbsolutePathname());
+            newNode->GetCustomProperties()->SetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER,
+															fromPathname.GetAbsolutePathname());
             newNode->SetSolid(true);
             
             Entity *parent = node->GetParent();
@@ -253,7 +282,7 @@ void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const FilePa
         {
             errors.insert(Format("Cannot load object: %s", fromPathname.GetAbsolutePathname().c_str()));
         }
-
+        
         return;
     }
     
@@ -275,6 +304,10 @@ void SceneDataManager::SetActiveScene(EditorScene *scene)
     currentScene = FindDataForScene(scene);
     DVASSERT(currentScene && "There is no current scene. Something wrong.");
     currentScene->RebuildSceneGraph();
+
+    
+	// TODO: mainwindow
+    //QtMainWindowHandler::Instance()->ShowStatusBarMessage(currentScene->GetScenePathname().GetAbsolutePathname());
 
 	emit SceneActivated(currentScene);
 }
@@ -336,31 +369,6 @@ DAVA::Entity* SceneDataManager::SceneGetRootNode(SceneData *scene)
 	return node;
 }
 
-void SceneDataManager::SceneShowPreview(const DAVA::FilePath &path)
-{
-	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-
-	if(screen)
-	{
-		if(path.IsEqualToExtension(".sc2") && FileSystem::Instance()->IsFile(path))
-		{
-			screen->ShowScenePreview(path);
-		}
-		else
-		{
-			SceneHidePreview();
-		}
-	}
-}
-
-void SceneDataManager::SceneHidePreview()
-{
-	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	if(NULL != screen)
-	{
-		screen->HideScenePreview();
-	}
-}
 
 EditorScene * SceneDataManager::RegisterNewScene()
 {
@@ -421,6 +429,23 @@ SceneData *SceneDataManager::SceneGet(DAVA::int32 index)
     
     return *it;
 }
+
+SceneData *SceneDataManager::SceneGet(DAVA::Scene *scene)
+{
+    DVASSERT(scene);
+    
+    auto endIt = scenes.end();
+    for(auto it = scenes.begin(); it != endIt; ++it)
+    {
+        if((*it)->GetScene() == scene)
+            return *it;
+    }
+    
+    DVASSERT(false);
+    
+    return NULL;
+}
+
 
 void SceneDataManager::InSceneData_SceneChanged(EditorScene *scene)
 {
@@ -525,6 +550,75 @@ void SceneDataManager::CollectTexture(Map<String, Texture *> &textures, const St
 }
 
 
+void SceneDataManager::EnumerateDescriptors(DAVA::Entity *forNode, DAVA::Set<DAVA::FilePath> &descriptors)
+{
+    if(!forNode)  return;
+    
+    Vector<Entity *> nodes;
+    forNode->GetChildNodes(nodes);
+    
+    nodes.push_back(forNode);
+    
+    for(int32 n = 0; n < (int32)nodes.size(); ++n)
+    {
+        RenderComponent *rc = static_cast<RenderComponent *>(nodes[n]->GetComponent(Component::RENDER_COMPONENT));
+        if(!rc) continue;
+        
+        RenderObject *ro = rc->GetRenderObject();
+        if(!ro) continue;
+        
+        uint32 count = ro->GetRenderBatchCount();
+        for(uint32 b = 0; b < count; ++b)
+        {
+            RenderBatch *renderBatch = ro->GetRenderBatch(b);
+            
+            Material *material = renderBatch->GetMaterial();
+            if(material)
+            {
+                for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
+                {
+                    CollectDescriptors(descriptors, material->GetTextureName((DAVA::Material::eTextureLevel)t));
+                }
+            }
+            
+            InstanceMaterialState *instanceMaterial = renderBatch->GetMaterialInstance();
+            if(instanceMaterial)
+            {
+                CollectDescriptors(descriptors, instanceMaterial->GetLightmapName());
+            }
+        }
+        
+        Landscape *land = dynamic_cast<Landscape *>(ro);
+        if(land)
+        {
+            CollectLandscapeDescriptors(descriptors, land);
+        }
+    }
+}
+
+
+void SceneDataManager::CollectLandscapeDescriptors(DAVA::Set<DAVA::FilePath> &descriptors, DAVA::Landscape *forNode)
+{
+    for(int32 t = 0; t < Landscape::TEXTURE_COUNT; t++)
+	{
+		CollectDescriptors(descriptors, forNode->GetTextureName((Landscape::eTextureLevel)t));
+	}
+}
+
+void SceneDataManager::CollectDescriptors(DAVA::Set<DAVA::FilePath> &descriptors, const DAVA::FilePath &pathname)
+{
+    if(pathname.GetType() == FilePath::PATH_EMPTY)
+        return;
+
+    DVASSERT(pathname.IsEqualToExtension(TextureDescriptor::GetDescriptorExtension()));
+    
+    if(!pathname.IsEmpty() && SceneValidator::Instance()->IsPathCorrectForProject(pathname))
+	{
+        descriptors.insert(pathname);
+	}
+}
+
+
 void SceneDataManager::TextureCompressAllNotCompressed()
 {
 	Map<String, Texture *> textures;
@@ -540,24 +634,34 @@ void SceneDataManager::TextureCompressAllNotCompressed()
 	Map<String, Texture *>::const_iterator endItTextures = textures.end();
 	for(Map<String, Texture *>::const_iterator it = textures.begin(); it != endItTextures; ++it)
 	{
-		if(SceneValidator::Instance()->IsTextureChanged(it->first, PVR_FILE))
-		{
-			texturesForPVRCompression.push_back(SafeRetain(it->second));
-		}
-		else if(SceneValidator::Instance()->IsTextureChanged(it->first, DXT_FILE))
-		{
-			texturesForDXTCompression.push_back(SafeRetain(it->second));
-		}
+        for(int32 i = 0; i < GPU_FAMILY_COUNT; ++i)
+        {
+            eGPUFamily gpu = (eGPUFamily)i;
+            if(SceneValidator::Instance()->IsTextureChanged(it->first, gpu))
+            {
+                //TODO: need correct code to create compression threads
+                DVASSERT(false);
+            }
+        }
+        
+//		if(SceneValidator::Instance()->IsTextureChanged(it->first, PVR_FILE))
+//		{
+//			texturesForPVRCompression.push_back(SafeRetain(it->second));
+//		}
+//		else if(SceneValidator::Instance()->IsTextureChanged(it->first, DXT_FILE))
+//		{
+//			texturesForDXTCompression.push_back(SafeRetain(it->second));
+//		}
 	}
 
-	CompressTextures(texturesForPVRCompression, PVR_FILE);
-	CompressTextures(texturesForDXTCompression, DXT_FILE);
+//	CompressTextures(texturesForPVRCompression, PVR_FILE);
+//	CompressTextures(texturesForDXTCompression, DXT_FILE);
 
 	for_each(texturesForPVRCompression.begin(), texturesForPVRCompression.end(),  SafeRelease<Texture>);
 	for_each(texturesForDXTCompression.begin(), texturesForDXTCompression.end(),  SafeRelease<Texture>);
 }
 
-void SceneDataManager::CompressTextures(const List<DAVA::Texture *> texturesForCompression, DAVA::ImageFileFormat fileFormat)
+void SceneDataManager::CompressTextures(const List<DAVA::Texture *> texturesForCompression, DAVA::eGPUFamily forGPU)
 {
 	//TODO: need to run compression at thread
 
@@ -585,7 +689,7 @@ void SceneDataManager::CompressTextures(const List<DAVA::Texture *> texturesForC
 // 	}
 }
 
-void SceneDataManager::TextureReloadAll(DAVA::ImageFileFormat asFile)
+void SceneDataManager::TextureReloadAll(DAVA::eGPUFamily forGPU)
 {
 	Map<String, Texture *> textures;
 	List<SceneData *>::const_iterator endIt = scenes.end();
@@ -600,13 +704,13 @@ void SceneDataManager::TextureReloadAll(DAVA::ImageFileFormat asFile)
 		TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(it->first);
 		if(descriptor)
 		{
-			Texture *newTexture = TextureReload(descriptor, it->second, asFile);
+			Texture *newTexture = TextureReload(descriptor, it->second, forGPU);
 			SafeRelease(descriptor);
-		}
+		} //todo: need to reload texture as pinkplaceholder
 	}
 }
 
-DAVA::Texture * SceneDataManager::TextureReload(const TextureDescriptor *descriptor, DAVA::Texture *prevTexture, DAVA::ImageFileFormat asFile)
+DAVA::Texture * SceneDataManager::TextureReload(const TextureDescriptor *descriptor, DAVA::Texture *prevTexture, DAVA::eGPUFamily forGPU)
 {
 	if(!descriptor)
 		return NULL;
@@ -629,7 +733,7 @@ DAVA::Texture * SceneDataManager::TextureReload(const TextureDescriptor *descrip
 	}
 
 	//apply descriptor parameters
-	workingTexture->ReloadAs((ImageFileFormat)asFile, descriptor);
+	workingTexture->ReloadAs(forGPU, descriptor);
 	return workingTexture;
 }
 
@@ -647,6 +751,8 @@ void SceneDataManager::EnumerateMaterials(DAVA::Entity *forNode, Vector<Material
 	if(forNode)
 	{
 		forNode->GetDataNodes(materials);
+		//VI: remove skybox materials so they not to appear in the lists
+		MaterialHelper::FilterMaterialsByType(materials, DAVA::Material::MATERIAL_SKYBOX);
 	}
 }
 
@@ -668,3 +774,52 @@ void SceneDataManager::UpdateParticleSprites()
 	SpritePackerHelper::Instance()->UpdateParticleSprites();
 }
 
+void SceneDataManager::ApplyDefaultFogSettings(Landscape* landscape, DAVA::Entity *entity)
+{
+	if (!entity || !landscape)
+	{
+		return;
+	}
+	
+	// Yuri Coder, 2013/05/13. The default fog settings are taken from Landscape.
+	Vector<Material *> materials;
+	entity->GetDataNodes(materials);
+	//VI: remove skybox materials so they not to appear in the lists
+	MaterialHelper::FilterMaterialsByType(materials, DAVA::Material::MATERIAL_SKYBOX);
+
+	for (Vector<Material*>::iterator iter = materials.begin(); iter != materials.end();
+		 iter ++)
+	{
+		Material* material = (*iter);
+
+		material->SetFog(landscape->IsFogEnabled());
+		material->SetFogColor(landscape->GetFogColor());
+		material->SetFogDensity(landscape->GetFogDensity());
+	}
+}
+
+void SceneDataManager::SceneShowPreview(const DAVA::FilePath &path)
+{
+    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+
+    if(screen)
+    {
+        if(path.IsEqualToExtension(".sc2") && FileSystem::Instance()->IsFile(path))
+        {
+            screen->ShowScenePreview(path);
+        }
+        else
+        {
+            SceneHidePreview();
+        }
+    }
+}
+
+void SceneDataManager::SceneHidePreview()
+{
+    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+    if(screen)
+    {
+        screen->HideScenePreview();
+    }
+}

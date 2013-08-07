@@ -1,31 +1,17 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #ifndef __DAVAENGINE_PARTICLE_EMITTER_H__
 #define __DAVAENGINE_PARTICLE_EMITTER_H__
@@ -89,7 +75,8 @@ public:
 	{
 		EMITTER_POINT,
 		EMITTER_RECT,
-		EMITTER_ONCIRCLE,
+		EMITTER_ONCIRCLE_VOLUME,
+		EMITTER_ONCIRCLE_EDGES,
 		EMITTER_SHOCKWAVE
 	};
 
@@ -187,13 +174,13 @@ public:
 	virtual void AddLayer(ParticleLayer * layer);
 
 	/**
-	 \brief Function adds layer to emitter to the particular position.
+	 \brief Function insert layer to emitter to the particular position.
 	 You can use this function if you create emitters on the fly manually. It's not often case, but probably sometimes
 	 it can be required.
 	 \param[in] layer layer to be added
-  	 \param[in] layerToMoveAbove the position above which the layer will be inserted
+  	 \param[in] beforeLayer the position beforez which the layer will be inserted
 	 */
-	virtual void AddLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove);
+	virtual void InsertLayer(ParticleLayer * layer, ParticleLayer * beforeLayer);
 
 	/**
 	 \brief Function removes layer to emitter.
@@ -207,10 +194,18 @@ public:
 	/**
 	 \brief Function change the layer's order inside the same emitter.
 	 \param[in] layer layer to be moved
- 	 \param[in] layerToMoveAbove the position above which the layer will be moved
+ 	 \param[in] layerToMoveBefore the position before which the layer will be moved
 	 */
-	void MoveLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove);
+	void MoveLayer(ParticleLayer * layer, ParticleLayer * beforeLayer);
 
+	/**
+	 \brief Function returns the next layer for the layer to be passed or NULL if next layer
+	 is not found.
+	 \param[in] layer layer to be moved
+ 	 \param[in] layerToMoveBefore the position before which the layer will be moved
+	 */
+	ParticleLayer* GetNextLayer(ParticleLayer* layer);
+	
 	/**
 		\brief Function to clone emitter.
 		This function is needed then you do not want to reload emitter every time from disk.
@@ -224,6 +219,7 @@ public:
 	virtual RenderObject * Clone(RenderObject *newObject);
 	virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
 	virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void RecalcBoundingBox();
 	
 	/**
 		\brief Function to get number of repeats for current particle emitter.
@@ -252,6 +248,16 @@ public:
 		\param[in] timeElapsed time in seconds elapsed from previous update
 	 */
 	void Update(float32 timeElapsed);
+	
+	/**
+	 \brief Function to perform deferred update for the Particle Emitter.
+	 This function accumulates update time and calls Update() if the accumulated time is
+	 more then PARTICLE_EMITTER_DEFERRED_UPDATE_INTERVAL.
+	 Call this function in case you are using ParticleEmitter directly and it is not visible.
+	 \param[in] timeElapsed time in seconds elapsed from previous update
+	 */
+	void DeferredUpdate(float32 timeElapsed);
+	
 	/**	
 		\brief function to draw particle emitter
 		If you using ParticleEmitter directly you should call this function to draw emitter.
@@ -304,6 +310,12 @@ public:
 	void SetPlaybackSpeed(float32 value);
 	float32 GetPlaybackSpeed();
 
+	/**
+	 \brief Set the "IsDisabled" flag for all the inner layers.
+	 \param[in] "Is Disabled" flag.
+	 */
+	void SetDisabledForAllLayers(bool value);
+
 	/// Particles' color is multiplied by ambientColor before drawing.
 	Color ambientColor;
 
@@ -334,6 +346,30 @@ public:
      \brief Returns the total active particles count for the whole effect.
      */
 	int32 GetActiveParticlesCount();
+
+	// This functionality is needed for SuperEmitter functionality. Each "inner" Particle Emitter
+	// must remember its initial translation vector when created. It will be used during particles
+	// movement.
+	void RememberInitialTranslationVector();
+	const Vector3& GetInitialTranslationVector();
+
+	bool IsToBeDeleted()
+	{
+		return shouldBeDeleted;
+	};
+
+	void SetToBeDeleted(bool value)
+	{
+		shouldBeDeleted = value;
+	}
+
+	void SetLongToAllLayers(bool isLong);
+
+	void SetParentParticle(Particle* parent);
+	Particle* GetParentParticle();
+
+	// This method is called when the emitter is about to remove from Emitters System.
+	virtual void HandleRemoveFromSystem();
 
 protected:
 	// Virtual methods which are different for 2D and 3D emitters.
@@ -366,6 +402,13 @@ protected:
     bool    is3D;
 	float32 playbackSpeed;
 
+	Vector3 initialTranslationVector;
+
+	float32 deferredTimeElapsed;
+	bool	shouldBeDeleted;
+
+	Particle*	parentParticle;
+
 public:
 	RefPtr< PropertyLine<Vector3> > emissionVector;
     RefPtr< PropertyLine<float32> > emissionAngle;
@@ -382,6 +425,16 @@ public:
 	
 	friend class ParticleLayer;
     
+	// Setters needed for Clone().
+	inline void SetRepeatCount(int32 repeatCount) {this->repeatCount = repeatCount;};
+	inline void SetTime(float32 time) {this->time = time;};
+	inline void SetEmitPointsCount(int32 emitPointsCount) {this->emitPointsCount = emitPointsCount;};
+	inline void SetPaused(bool isPaused) {this->isPaused = isPaused;};
+	inline void SetAutoRestart(bool isAutorestart) {this->isAutorestart = isAutorestart;};
+    inline void Set3D(bool is3D) {this->is3D = is3D;};
+	inline void SetConfigPath(const FilePath& configPath) {this->configPath = configPath;};
+	inline void SetInitialTranslationVector(const Vector3& translationVector) {this->initialTranslationVector = translationVector;};
+
 public:
     
     INTROSPECTION_EXTEND(ParticleEmitter, RenderObject,

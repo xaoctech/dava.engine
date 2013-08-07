@@ -1,13 +1,19 @@
-/*
- *  CorePlatformAndroid.cpp
- *  TemplateProjectAndroid
- *
- *  Created by Viktor  Kleschenko on 2/18/11.
- *  Copyright 2011 __MyCompanyName__. All rights reserved.
- *
- */
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
 #include "Platform/TemplateAndroid/CorePlatformAndroid.h"
-#include "Platform/TemplateAndroid/AndroidSpecifics.h"
 
 //#include "Core/Core.h"
 
@@ -17,6 +23,7 @@ extern void FrameworkDidLaunched();
 extern void FrameworkWillTerminate();
 
 #include "Platform/Thread.h"
+#include "Input/InputSystem.h"
 
 namespace DAVA
 {
@@ -53,6 +60,7 @@ namespace DAVA
 		renderIsActive = false;
 		width = 0;
 		height = 0;
+		screenOrientation = Core::SCREEN_ORIENTATION_PORTRAIT; //no need rotate GL for Android
 
 		foreground = false;
 	}
@@ -77,6 +85,7 @@ namespace DAVA
 	{
 		Logger::Debug("[CorePlatformAndroid::Quit]");
 		QuitAction();
+		Core::Quit();
 	}
 
 	void CorePlatformAndroid::QuitAction()
@@ -124,8 +133,7 @@ namespace DAVA
 	void CorePlatformAndroid::UpdateScreenMode()
 	{
 		Logger::Debug("[CorePlatformAndroid::UpdateScreenMode] start");
-//		UIControlSystem::Instance()->SetInputScreenAreaSize(width, height);
-		UIControlSystem::Instance()->SetInputScreenAreaSize(height, width);
+		UIControlSystem::Instance()->SetInputScreenAreaSize(width, height);
 		Core::Instance()->SetPhysicalScreenSize(width, height);
 
 		RenderManager::Instance()->InitFBSize(width, height);
@@ -155,7 +163,13 @@ namespace DAVA
 
 		if(wasCreated)
 		{
-            ResizeView(w, h);
+			RenderManager::Instance()->Lost();
+			RenderResource::SaveAllResourcesToSystemMem();
+			RenderResource::LostAllResources();
+
+			ResizeView(w, h);
+
+			RenderManager::Instance()->Invalidate();
 			RenderResource::InvalidateAllResources();
 		}
 		else
@@ -168,10 +182,9 @@ namespace DAVA
 			RenderManager::Instance()->InitFBO(androidDelegate->RenderBuffer(), androidDelegate->FrameBuffer());
 			Logger::Debug("[CorePlatformAndroid::] after create renderer");
 
-            ResizeView(w, h);
+			ResizeView(w, h);
 
 			FrameworkDidLaunched();
-			screenOrientation = Core::SCREEN_ORIENTATION_PORTRAIT; //no need rotate GL for Android
 
 			RenderManager::Instance()->SetFPS(60);
 
@@ -209,14 +222,18 @@ namespace DAVA
 	void CorePlatformAndroid::StartForeground()
 	{
 		Logger::Debug("[CorePlatformAndroid::StartForeground] start");
-		//TODO: VK: add code for handling
 
 		if(wasCreated)
 		{
-			ApplicationCore * core = Core::Instance()->GetApplicationCore();
+			DAVA::ApplicationCore * core = DAVA::Core::Instance()->GetApplicationCore();
 			if(core)
 			{
+				DAVA::Core::Instance()->GoForeground();
 				core->OnResume();
+			}
+			else
+			{
+				DAVA::Core::Instance()->SetIsActive(true);
 			}
 
 			foreground = true;
@@ -224,19 +241,11 @@ namespace DAVA
 		Logger::Debug("[CorePlatformAndroid::StartForeground] end");
 	}
 
-	void CorePlatformAndroid::StopForeground()
+	void CorePlatformAndroid::StopForeground(bool isLock)
 	{
 		Logger::Debug("[CorePlatformAndroid::StopForeground]");
-		//TODO: VK: add code for handling
 
-		RenderResource::SaveAllResourcesToSystemMem();
-		RenderResource::LostAllResources();
-
-		ApplicationCore * core = Core::Instance()->GetApplicationCore();
-		if(core)
-		{
-			core->OnSuspend();
-		}
+		DAVA::Core::Instance()->GoBackground(isLock);
 
 		foreground = false;
 
@@ -245,34 +254,28 @@ namespace DAVA
 	}
 
 	static Vector<DAVA::UIEvent> activeTouches;
+
 	void CorePlatformAndroid::KeyUp(int32 keyCode)
 	{
-		Vector<DAVA::UIEvent> touches;
-		Vector<DAVA::UIEvent> emptyTouches;
-
-		for(Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
-		{
-			touches.push_back(*it);
-		}
-
-		DAVA::UIEvent ev;
-		ev.keyChar = (char16)keyCode;
-		ev.phase = DAVA::UIEvent::PHASE_KEYCHAR;
-		ev.tapCount = 1;
-		ev.tid = (int32)keyCode;
-
-		touches.push_back(ev);
-
-		UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
-		touches.pop_back();
-		UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
+		InputSystem::Instance()->GetKeyboard()->OnSystemKeyUnpressed(keyCode);
 	}
 
 	void CorePlatformAndroid::KeyDown(int32 keyCode)
 	{
+		InputSystem::Instance()->GetKeyboard()->OnSystemKeyPressed(keyCode);
+
+		UIEvent * keyEvent = new UIEvent;
+		keyEvent->keyChar = 0;
+		keyEvent->phase = DAVA::UIEvent::PHASE_KEYCHAR;
+		keyEvent->tapCount = 1;
+		keyEvent->tid = InputSystem::Instance()->GetKeyboard()->GetDavaKeyForSystemKey(keyCode);
+
+		InputSystem::Instance()->ProcessInputEvent(keyEvent);
+
+		SafeDelete(keyEvent);
 	}
 
-	UIEvent CorePlatformAndroid::CreateTouchEvent(int32 action, int32 id, float32 x, float32 y, float64 time)
+	UIEvent CorePlatformAndroid::CreateInputEvent(int32 action, int32 id, float32 x, float32 y, float64 time, int32 source)
 	{
 		int32 phase = DAVA::UIEvent::PHASE_DRAG;
 		switch(action)
@@ -286,8 +289,16 @@ namespace DAVA
 			case 1://ACTION_UP
 			phase = DAVA::UIEvent::PHASE_ENDED;
 			break;
+
 			case 2://ACTION_MOVE
-			phase = DAVA::UIEvent::PHASE_DRAG;
+			{
+				if((source & 0x10) > 0)//SOURCE_CLASS_JOYSTICK
+				{
+					phase = DAVA::UIEvent::PHASE_JOYSTICK;
+				}
+				else //Touches
+					phase = DAVA::UIEvent::PHASE_DRAG;
+			}
 			break;
 
 			case 3://ACTION_CANCEL
@@ -298,17 +309,17 @@ namespace DAVA
 			break;
 		}
 
-		UIEvent newTouch;
-		newTouch.tid = id;
-		newTouch.physPoint.x = x;
-		newTouch.physPoint.y = y;
-		newTouch.point.x = x;
-		newTouch.point.y = y;
-		newTouch.phase = phase;
-		newTouch.tapCount = 1;
-		newTouch.timestamp = time;
+		UIEvent newEvent;
+		newEvent.tid = id;
+		newEvent.physPoint.x = x;
+		newEvent.physPoint.y = y;
+		newEvent.point.x = x;
+		newEvent.point.y = y;
+		newEvent.phase = phase;
+		newEvent.tapCount = 1;
+		newEvent.timestamp = time;
 
-		return newTouch;
+		return newEvent;
 	}
 
 	AAssetManager * CorePlatformAndroid::GetAssetManager()
@@ -321,12 +332,12 @@ namespace DAVA
 		assetMngr = mngr;
 	}
 
-	void CorePlatformAndroid::OnTouch(int32 action, int32 id, float32 x, float32 y, float64 time)
+	void CorePlatformAndroid::OnInput(int32 action, int32 id, float32 x, float32 y, float64 time, int32 source)
 	{
 //		Logger::Debug("[CorePlatformAndroid::OnTouch] IN totalTouches.size = %d", totalTouches.size());
 //		Logger::Debug("[CorePlatformAndroid::OnTouch] action is %d, id is %d, x is %f, y is %f, time is %lf", action, id, x, y, time);
 
-		UIEvent touchEvent = CreateTouchEvent(action, id, x, y, time);
+		UIEvent touchEvent = CreateInputEvent(action, id, x, y, time, source);
 		Vector<DAVA::UIEvent> activeTouches;
 		activeTouches.push_back(touchEvent);
 
@@ -352,7 +363,7 @@ namespace DAVA
 
 		for(Vector<DAVA::UIEvent>::iterator it = totalTouches.begin(); it != totalTouches.end(); )
 		{
-			if((DAVA::UIEvent::PHASE_ENDED == (*it).phase) || (DAVA::UIEvent::PHASE_CANCELLED == (*it).phase))
+			if((DAVA::UIEvent::PHASE_ENDED == (*it).phase) || (DAVA::UIEvent::PHASE_CANCELLED == (*it).phase) || (DAVA::UIEvent::PHASE_JOYSTICK == (*it).phase))
 			{
 				it = totalTouches.erase(it);
 			}

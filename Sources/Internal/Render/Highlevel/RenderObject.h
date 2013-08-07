@@ -1,31 +1,17 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #ifndef __DAVAENGINE_SCENE3D_RENDEROBJECT_H__
 #define	__DAVAENGINE_SCENE3D_RENDEROBJECT_H__
@@ -97,7 +83,7 @@ public:
     
     void AddRenderBatch(RenderBatch * batch);
     void RemoveRenderBatch(RenderBatch * batch);
-    void RecalcBoundingBox();
+    virtual void RecalcBoundingBox();
     
     uint32 GetRenderBatchCount();
     RenderBatch * GetRenderBatch(uint32 batchIndex);
@@ -128,7 +114,7 @@ public:
 	void SetRenderSystem(RenderSystem * renderSystem);
 	RenderSystem * GetRenderSystem();
 
-	virtual void BakeTransform(const Matrix4 & transform) {}
+	virtual void BakeTransform(const Matrix4 & transform);
 	virtual ShadowVolume * CreateShadow() {return 0;}
     
 protected:
@@ -149,17 +135,17 @@ protected:
 
 public:
 	INTROSPECTION_EXTEND(RenderObject, AnimatedObject,
-        MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(type, "Type", I_SAVE | I_VIEW | I_EDIT)
                          
-        MEMBER(flags, "Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(debugFlags, "Debug Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(removeIndex, "Remove index", INTROSPECTION_SERIALIZABLE)
-        MEMBER(bbox, "Box", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(worldBBox, "World Box", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(flags, "Flags", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(debugFlags, "Debug Flags", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(removeIndex, "Remove index", I_SAVE)
+        MEMBER(bbox, "Box", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(worldBBox, "World Box", I_SAVE | I_VIEW | I_EDIT)
 
-        MEMBER(worldTransform, "World Transform", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(worldTransform, "World Transform", I_SAVE | I_VIEW | I_EDIT)
                  
-        COLLECTION(renderBatchArray, "Render Batch Array", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        COLLECTION(renderBatchArray, "Render Batch Array", I_SAVE | I_VIEW | I_EDIT)
     );
 };
 

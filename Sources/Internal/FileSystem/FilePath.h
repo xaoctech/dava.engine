@@ -1,31 +1,17 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #ifndef __DAVAENGINE_FILE_PATH_H__
 #define __DAVAENGINE_FILE_PATH_H__
@@ -45,6 +31,7 @@ public:
     
     enum ePathType
     {
+		PATH_EMPTY = -1,			// empty path, newly created with empty string
         PATH_IN_FILESYSTEM = 0,     // not framework path /Users/... or c:/...
         PATH_IN_RESOURCES,          // ~res:/...
         PATH_IN_DOCUMENTS,          // ~doc:/...
@@ -62,7 +49,7 @@ public:
     FilePath(const String & directory, const String & filename);
     FilePath(const char *directory, const String & filename);
 
-	virtual ~FilePath();
+	~FilePath();
 
     /**
         \brief Function to retrieve FilePath with new extension without changing of source FilePath object
@@ -80,6 +67,9 @@ public:
     bool operator==(const FilePath & path) const;
 	bool operator!=(const FilePath & path) const;
 
+    bool operator < (const FilePath& right) const;
+
+    
 	/*
         \brief Function to check is filepath empty or no
         \returns true if absolutePathname is not empty
@@ -193,13 +183,20 @@ public:
         \param[in] type of FilePath representation
 		\returns pathname value for requested type
 	 */
-	String GetFrameworkPath();
+	String GetFrameworkPath() const;
 
 	/**
         \brief Function to set system path bundle path to project path for resolving pathnames such as "~res:/Gfx/image.png"
 	 */
     static void InitializeBundleName();
 
+	/**
+	 \brief Temporary function to set system path for NPAPI plugins for resolving pathnames such as "~res:/Gfx/image.png"
+	 */
+	#if defined (__DAVAENGINE_NPAPI__)
+	static void InitializeBundleNameNPAPI(const String& pathToNPAPIPlugin);
+	#endif // #if defined (__DAVAENGINE_NPAPI__)
+	
 	/**
         \brief Function to set project path for resolving pathnames such as "~res:/Gfx/image.png"
         \param[in] new project path
@@ -229,7 +226,7 @@ public:
         \brief Function to retrieve type of path
         \returns type of path
      */
-    inline const ePathType GetType() const;
+    inline ePathType GetType() const;
     
     
     static void AddResourcesFolder(const FilePath & folder);
@@ -237,12 +234,7 @@ public:
     static const List<FilePath> GetResourcesFolders();
     
     
-    /**
-        \brief Function to check if path is absolute
-        \returns true if path is absolute
-     */
-    bool IsAbsolutePathname() const;
-
+    bool Exists() const;
     
 protected:
     
@@ -262,7 +254,7 @@ protected:
     static FilePath GetDirectory(const String &pathname, const ePathType pType);
 
     static String GetSystemPathname(const String &pathname, const ePathType pType);
-	String GetFrameworkPathForPrefix(const String &typePrefix, const ePathType pType);
+	String GetFrameworkPathForPrefix(const String &typePrefix, const ePathType pType) const;
     
     static bool IsAbsolutePathname(const String &pathname);
 
@@ -282,10 +274,10 @@ protected:
     
 inline bool FilePath::IsEmpty() const
 {
-    return absolutePathname.empty();
+    return (pathType == PATH_EMPTY);
 }
     
-inline const FilePath::ePathType FilePath::GetType() const
+inline FilePath::ePathType FilePath::GetType() const
 {
     return pathType;
 }

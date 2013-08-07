@@ -1,11 +1,28 @@
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
 #include "CommandLineManager.h"
 #include "CommandLineTool.h"
-#include "CommandLine/EditorCommandLineParser.h"
 
 #include "ImageSplitter/ImageSplitterTool.h"
 #include "SceneUtils/CleanFolderTool.h"
 #include "SceneSaver/SceneSaverTool.h"
 #include "SceneExporter/SceneExporterTool.h"
+
+#include "Beast/BeastCommandLineTool.h"
 
 #include "TexturePacker/CommandLineParser.h"
 
@@ -37,10 +54,21 @@ CommandLineManager::CommandLineManager()
     AddCommandLineTool(new ImageSplitterTool());
     AddCommandLineTool(new SceneExporterTool());
     AddCommandLineTool(new SceneSaverTool());
+
+#if defined (__DAVAENGINE_WIN32__)
+	AddCommandLineTool(new BeastCommandLineTool());
+#endif //#if defined (__DAVAENGINE_WIN32__)
+    
  
     ParseCommandLine();
     
     DetectCommandLineMode();
+    
+    if(isCommandLineModeEnabled)
+    {
+        Logger::Instance()->EnableConsoleMode();
+    }
+    
 
     FindActiveTool();
     
@@ -74,18 +102,18 @@ void CommandLineManager::AddCommandLineTool(CommandLineTool *tool)
 
 void CommandLineManager::ParseCommandLine()
 {
-    if(EditorCommandLineParser::CommandIsFound(String("-usage")) || EditorCommandLineParser::CommandIsFound(String("-help")))
+    if(CommandLineParser::CommandIsFound(String("-usage")) || CommandLineParser::CommandIsFound(String("-help")))
     {
         PrintUsage();
         return;
     }
     
-    if(EditorCommandLineParser::CommandIsFound(String("-v")) || EditorCommandLineParser::CommandIsFound(String("-verbose")))
+    if(CommandLineParser::CommandIsFound(String("-v")) || CommandLineParser::CommandIsFound(String("-verbose")))
     {
         CommandLineParser::Instance()->SetVerbose(true);
     }
     
-    if(EditorCommandLineParser::CommandIsFound(String("-exo")))
+    if(CommandLineParser::CommandIsFound(String("-exo")))
     {
         CommandLineParser::Instance()->SetExtendedOutput(true);
     }
@@ -98,7 +126,7 @@ void CommandLineManager::DetectCommandLineMode()
     Map<String, CommandLineTool *>::const_iterator endIT = commandLineTools.end();
     for(auto it = commandLineTools.begin(); it != endIT; ++it)
     {
-        if(EditorCommandLineParser::CommandIsFound(it->first))
+        if(CommandLineParser::CommandIsFound(it->first))
         {
             isCommandLineModeEnabled = true;
             break;
@@ -115,7 +143,7 @@ void CommandLineManager::FindActiveTool()
         Map<String, CommandLineTool *>::const_iterator endIT = commandLineTools.end();
         for(auto it = commandLineTools.begin(); it != endIT; ++it)
         {
-            if(EditorCommandLineParser::CommandIsFound(it->first))
+            if(CommandLineParser::CommandIsFound(it->first))
             {
                 activeTool = it->second;
                 break;
@@ -132,20 +160,18 @@ void CommandLineManager::Process()
     }
 }
 
-bool CommandLineManager::PrintResults()
+void CommandLineManager::PrintResults()
 {
-    if(!activeTool) return false;
+    if(!activeTool) return;
     
     const Set<String> &errors = activeTool->GetErrorList();
     if(0 < errors.size())
     {
-        printf("\nErrors:\n");
         Logger::Error("Errors:");
         Set<String>::const_iterator endIt = errors.end();
         int32 index = 0;
         for (auto it = errors.begin(); it != endIt; ++it)
         {
-            printf("[%d] %s\n", index, (*it).c_str());
             Logger::Error(Format("[%d] %s\n", index, (*it).c_str()));
             
             ++index;
@@ -153,10 +179,28 @@ bool CommandLineManager::PrintResults()
         
         ShowErrorDialog(errors);
     }
-    
-    bool forceMode =    EditorCommandLineParser::CommandIsFound(String("-force"))
-                    ||  EditorCommandLineParser::CommandIsFound(String("-forceclose"));
-    return (forceMode || 0 == errors.size());
 }
 
+DAVA::uint32 CommandLineManager::GetErrorsCount() const
+{
+	if(activeTool) 
+		return activeTool->GetErrorList().size();
 
+	return 0;
+}
+
+bool CommandLineManager::NeedCloseApplication()
+{
+	if(!activeTool) return true;
+
+
+	bool forceClose =	CommandLineParser::CommandIsFound(String("-force"))
+					||  CommandLineParser::CommandIsFound(String("-forceclose"));
+
+	uint32 errorsCount = GetErrorsCount();
+
+	if(activeTool->IsOneFrameCommand())
+		return (forceClose || 0 == errorsCount);
+
+	return (forceClose && errorsCount);
+}

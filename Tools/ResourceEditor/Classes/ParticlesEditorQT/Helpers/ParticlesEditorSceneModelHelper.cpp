@@ -1,20 +1,33 @@
-//
-//  ParticlesEditorSceneModelHelper.cpp
-//  ResourceEditorQt
-//
-//  Created by Yuri Coder on 11/26/12.
-//
-//
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
 
 #include "ParticlesEditorSceneModelHelper.h"
 #include "DockParticleEditor/ParticlesEditorController.h"
+#include "DockSceneGraph/SceneGraphModel.h"
 
 #include "Commands/CommandsManager.h"
 #include "Commands/SceneGraphCommands.h"
-#include "Commands/ParticleEditorCommands.h"
+#include "Commands2/ParticleEditorCommands.h"
 
 #include "Entity/Component.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
+
+#include "../StringConstants.h"
+
+#include "../../Qt/Scene/SceneDataManager.h"
 
 using namespace DAVA;
 
@@ -130,7 +143,7 @@ Entity* ParticlesEditorSceneModelHelper::PreprocessSceneNode(Entity* rawNode)
         ParticlesEditorController::Instance()->RegisterParticleEffectNode(newParentNodeParticleEffect);
         EmitterParticleEditorNode* emitterEditorNode = new EmitterParticleEditorNode(newParentNodeParticleEffect,
             rawNode, QString::fromStdString(rawNode->GetName()));
-        effectEditorNode->AddChildNode(emitterEditorNode);
+        effectEditorNode->AddNode(emitterEditorNode);
 
         return newParentNodeParticleEffect;
     }
@@ -142,7 +155,7 @@ Entity* ParticlesEditorSceneModelHelper::PreprocessSceneNode(Entity* rawNode)
 Entity* ParticlesEditorSceneModelHelper::CreateParticleEffectNode()
 {
 	Entity * newParentNodeParticleEffect = new Entity();
-	newParentNodeParticleEffect->SetName("Particle effect");
+	newParentNodeParticleEffect->SetName(ResourceEditor::PARTICLE_EFFECT_NODE_NAME);
 	ParticleEffectComponent * newEffectComponent = new ParticleEffectComponent();
 	newParentNodeParticleEffect->AddComponent(newEffectComponent);
 
@@ -162,7 +175,7 @@ bool ParticlesEditorSceneModelHelper::AddNodeToSceneGraph(SceneGraphItem *graphI
     if (!effectEditorNode)
     {
         // Possible while loading projects - register the node in this case.
-        effectEditorNode = ParticlesEditorController::Instance()->RegisterParticleEffectNode(node);
+        effectEditorNode = ParticlesEditorController::Instance()->RegisterParticleEffectNode(node, false);
     }
     
     if (graphItem->GetExtraUserData() == NULL)
@@ -271,7 +284,7 @@ void ParticlesEditorSceneModelHelper::SynchronizeEmitterParticleEditorNode(Emitt
         {
             // Create the new node and add it to the tree.
             LayerParticleEditorNode* layerNode = new LayerParticleEditorNode(node, emitter->GetLayers()[i]);
-            node->AddChildNode(layerNode);
+            node->AddNode(layerNode);
         }
      }
 }
@@ -295,6 +308,9 @@ void ParticlesEditorSceneModelHelper::SynchronizeLayerParticleEditorNode(LayerPa
         return;
     }
 
+	// Yuri Coder, 2012/04.29. The SuperEmitter layer might contain inner emitter.
+	SynchronizeInnerEmitterNode(node);
+	
     // Synchronize the Forces.
     int32 forcesCountInLayer = layer->forces.size();
     int32 forcesCountInLayerNode = node->GetForcesCount();
@@ -305,11 +321,104 @@ void ParticlesEditorSceneModelHelper::SynchronizeLayerParticleEditorNode(LayerPa
         for (int32 i = 0; i < forcesCountInLayer; i ++)
         {
             ForceParticleEditorNode* forceNode = new ForceParticleEditorNode(node, i);
-            node->AddChildNode(forceNode);
+            node->AddNode(forceNode);
         }
 
         node->UpdateForcesIndices();
     }
+}
+
+void ParticlesEditorSceneModelHelper::SynchronizeInnerEmitterNode(LayerParticleEditorNode* node,
+																  SceneGraphItem* layerNodeItem,
+																  SceneGraphModel* sceneGraphModel)
+{
+	if (!node)
+    {
+        return;
+    }
+    
+    ParticleLayer* layer = node->GetLayer();
+    if (!layer)
+    {
+        return;
+    }
+
+	ParticleEmitter* innerEmitter = layer->GetInnerEmitter();
+	int32 innerEmittersCountInLayerNode = node->GetInnerEmittersCount();
+	
+	bool needAddInnerEmitter = ((layer->type == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES) &&
+								innerEmitter &&
+								(innerEmittersCountInLayerNode == 0));
+	
+	if (needAddInnerEmitter)
+	{
+		// There is inner emitter defined, but it doesn't exist in the Layer.
+		// Need to add it.
+		InnerEmitterParticleEditorNode* innerEmitterEditorNode = new InnerEmitterParticleEditorNode(node);
+		
+		node->AddNode(innerEmitterEditorNode);
+
+		// Also update the Scene Graph, if requested.
+		if (layerNodeItem && sceneGraphModel)
+		{
+			SceneGraphItem* childItem = new SceneGraphItem();
+			childItem->SetExtraUserData(innerEmitterEditorNode);
+			sceneGraphModel->AddNodeToTree(layerNodeItem, childItem);
+		}
+
+		return;
+	}
+
+	bool needRemoveInnerEmitter = ((layer->type != ParticleLayer::TYPE_SUPEREMITTER_PARTICLES &&
+									innerEmittersCountInLayerNode > 0));
+	if (needRemoveInnerEmitter)
+	{
+		// Update the Scene Graph, if needed.
+		if (layerNodeItem && sceneGraphModel)
+		{
+			int childrenCount = layerNodeItem->ChildrenCount();
+			List<GraphItem*> childItemsToRemove;
+
+			// Two-step pass is needed - first one is to find all the children to remove,
+			// second one is to do actual remove.
+			for (int i = 0; i < childrenCount; i ++)
+			{
+				GraphItem* childItem = layerNodeItem->Child(i);
+				SceneGraphItem* childSceneGraphItem = dynamic_cast<SceneGraphItem*>(childItem);
+				ExtraUserData* extraUserData = childSceneGraphItem->GetExtraUserData();
+
+				if (childSceneGraphItem && extraUserData &&
+					dynamic_cast<InnerEmitterParticleEditorNode*>(extraUserData))
+				{
+					childItemsToRemove.push_back(childItem);
+				}
+			}
+
+			for (List<GraphItem*>::iterator iter = childItemsToRemove.begin();
+				 iter != childItemsToRemove.end(); iter ++)
+			{
+				GraphItem* childItem = (*iter);
+				sceneGraphModel->RemoveNodeFromTree(layerNodeItem, childItem);
+			}
+		}
+
+		// AFTER the Scene Graph was updated - do the actual remove.
+		BaseParticleEditorNode::PARTICLEEDITORNODESLIST nodesToRemove;
+		for (BaseParticleEditorNode::PARTICLEEDITORNODESLIST::const_iterator iter = node->GetChildren().begin();
+			 iter != node->GetChildren().end(); iter ++)
+		{
+			if (dynamic_cast<InnerEmitterParticleEditorNode*>(*iter))
+			{
+				nodesToRemove.push_back(*iter);
+			}
+		}
+		
+		for (BaseParticleEditorNode::PARTICLEEDITORNODESLIST::iterator removeIter = nodesToRemove.begin();
+			 removeIter != nodesToRemove.end(); removeIter ++)
+		{
+			node->RemoveNode(*removeIter);
+		}
+	}
 }
 
 bool ParticlesEditorSceneModelHelper::NeedDisplaySceneEditorPopupMenuItems(const QModelIndex &index) const
@@ -335,7 +444,12 @@ bool ParticlesEditorSceneModelHelper::NeedDisplaySceneEditorPopupMenuItems(const
     {
         return false;
     }
-    
+
+	if (dynamic_cast<InnerEmitterParticleEditorNode*>(extraUserData))
+    {
+        return false;
+    }
+
     return true;
 }
 
@@ -376,15 +490,20 @@ void ParticlesEditorSceneModelHelper::AddPopupMenuItems(QMenu& menu, const QMode
     // Which kind of Node is it?
     if (dynamic_cast<EffectParticleEditorNode*>(extraUserData))
     {
+		// Yuri Coder, 2013/07/24. These commands aren't used now and to be removed soon.
+		/*
         // Effect Node. Allow to add Particle Emitters and start/stop the animation.
 		QMenu* emittersMenu = menu.addMenu("Particle Effect");
         AddActionToMenu(emittersMenu, QString("Add Particle Emitter"), new CommandAddParticleEmitter());
         AddActionToMenu(emittersMenu, QString("Start Particle Effect"), new CommandStartStopParticleEffect(true));
         AddActionToMenu(emittersMenu, QString("Stop Particle Effect"), new CommandStartStopParticleEffect(false));
         AddActionToMenu(emittersMenu, QString("Restart Particle Effect"), new CommandRestartParticleEffect());
+		 */
     }
     else if (dynamic_cast<EmitterParticleEditorNode*>(extraUserData))
     {
+		// Yuri Coder, 2013/07/24. These commands aren't used now and to be removed soon.
+		/*
         // For Particle Emitter we also allow to load/save it.
         AddActionToMenu(&menu, QString("Load Emitter from Yaml"), new CommandLoadParticleEmitterFromYaml());
         AddActionToMenu(&menu, QString("Save Emitter to Yaml"), new CommandSaveParticleEmitterToYaml(false));
@@ -393,6 +512,7 @@ void ParticlesEditorSceneModelHelper::AddPopupMenuItems(QMenu& menu, const QMode
         // Emitter node. Allow to remove it and also add Layers.
         AddActionToMenu(&menu, QString("Remove Particle Emitter"), new CommandRemoveSceneNode());
         AddActionToMenu(&menu, QString("Add Layer"), new CommandAddParticleEmitterLayer());
+		*/
     }
     else if (dynamic_cast<LayerParticleEditorNode*>(extraUserData))
     {
@@ -406,12 +526,22 @@ void ParticlesEditorSceneModelHelper::AddPopupMenuItems(QMenu& menu, const QMode
         // Force Node. Allow to remove it.
         AddActionToMenu(&menu, QString("Remove Force"), new CommandRemoveParticleEmitterForce());
     }
+	else if (dynamic_cast<InnerEmitterParticleEditorNode*>(extraUserData))
+	{
+		/*
+		// TODO!!! YURI CODER, 2013/07/22. TEMPORARILY commented out!!!
+		// Inner Emitter node, similar to Emitter one.
+		AddActionToMenu(&menu, QString("Load Emitter from Yaml"), new CommandLoadInnerEmitterFromYaml());
+        AddActionToMenu(&menu, QString("Save Emitter to Yaml"), new CommandSaveInnerEmitterToYaml(false));
+        AddActionToMenu(&menu, QString("Save Emitter to Yaml As"), new CommandSaveInnerEmitterToYaml(true));
+		 */
+	}
 }
 
-void ParticlesEditorSceneModelHelper::AddActionToMenu(QMenu *menu, const QString &actionTitle, Command *command) const
+void ParticlesEditorSceneModelHelper::AddActionToMenu(QMenu *menu, const QString &actionTitle, Command2 *command) const
 {
     QAction *action = menu->addAction(actionTitle);
-    action->setData(PointerHolder<Command *>::ToQVariant(command));
+    //action->setData(PointerHolder<Command2 *>::ToQVariant(command));
 }
 
 bool ParticlesEditorSceneModelHelper::NeedMoveItemToParent(GraphItem* movedItem, GraphItem* newParentItem)
@@ -620,7 +750,7 @@ bool ParticlesEditorSceneModelHelper::GetCheckableStateForGraphItem(GraphItem* g
 		return false;
 	}
 	
-	return !layerEditorNode->GetLayer()->isDisabled;
+	return !layerEditorNode->GetLayer()->GetDisabled();
 }
 
 void ParticlesEditorSceneModelHelper::SetCheckableStateForGraphItem(GraphItem* graphItem, bool value)
@@ -632,7 +762,10 @@ void ParticlesEditorSceneModelHelper::SetCheckableStateForGraphItem(GraphItem* g
 	}
 	
 	// Execute the appropriate command.
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandUpdateParticleLayerEnabled(layerEditorNode->GetLayer(), value));
+	/*
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandUpdateParticleLayerEnabled(layerEditorNode->GetLayer(), value),
+												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
+	 */
 }
 
 LayerParticleEditorNode* ParticlesEditorSceneModelHelper::GetLayerEditorNodeByGraphItem(GraphItem* graphItem) const
@@ -703,7 +836,7 @@ void ParticlesEditorSceneModelHelper::AddNewNodesToSceneGraph(EffectParticleEdit
 		
 		EmitterParticleEditorNode* emitterEditorNode = new EmitterParticleEditorNode(effectRootNode, effectRootNode->GetChild(i),
 																					 QString::fromStdString(effectRootNode->GetChild(i)->GetName()));
-		node->AddChildNode(emitterEditorNode);
+		node->AddNode(emitterEditorNode);
 	}
 }
 
@@ -723,4 +856,28 @@ void ParticlesEditorSceneModelHelper::RemoveExcessiveNodesFromSceneGraph(EffectP
 			ParticlesEditorController::Instance()->RemoveParticleEmitterNode(*iter);
 		}
 	}
+}
+
+void ParticlesEditorSceneModelHelper::UpdateLayerRepresentation(GraphItem* rootItem,
+																DAVA::ParticleLayer* layer,
+																SceneGraphModel* sceneGraphModel)
+{
+	// Get the appropriate Scene Graph Item.
+	SceneGraphItem* layerItem = GetGraphItemForParticlesLayer(rootItem, layer);
+	if (!layerItem)
+	{
+		return;
+	}
+	
+	// Extract the Particle Editor Node from it...
+	LayerParticleEditorNode* layerNode = GetLayerEditorNodeByGraphItem(layerItem);
+	if (!layerNode)
+	{
+		return;
+	}
+
+	bool innerEmitterExistedBeforeSync = (layerNode->GetInnerEmittersCount() > 0);
+	
+	// ... and do the synchronization for inner emitters.
+	SynchronizeInnerEmitterNode(layerNode, layerItem, sceneGraphModel);
 }

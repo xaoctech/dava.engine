@@ -1,31 +1,17 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #include "Scene3D/Entity.h"
 #include "Scene3D/Scene.h"
@@ -46,6 +32,10 @@
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
 #include "Scene3D/Components/SwitchComponent.h"
+#include "Utils/Random.h"
+
+#define CUSTOM_PROPERTIES_COMPONENT_SAVE_SCENE_VERSION 8
+
 
 #define USE_VECTOR(x) (((1 << x) & vectorComponentsMask) != 0)
 
@@ -58,11 +48,12 @@ namespace DAVA
 {
     
 uint32 vectorComponentsMask = (1 << Component::TRANSFORM_COMPONENT) | (1 << Component::RENDER_COMPONENT) | (1 << Component::LOD_COMPONENT);
-
+    
 REGISTER_CLASS(Entity);
 
 // Property Names.
 const char* Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME = "editor.isSolid";
+const char* Entity::SCENE_NODE_IS_LOCKED_PROPERTY_NAME = "editor.isLocked";
 
 Entity::Entity()
 	: scene(0)
@@ -72,21 +63,19 @@ Entity::Entity()
 #if !defined(COMPONENT_STORAGE_STDMAP)
     , componentsMap(4)
 #endif
-    {
+{
 //    Logger::Debug("Entity: %p", this);
     componentFlags = 0;
 
 	components.resize(COMPONENTS_IN_VECTOR_COUNT);
     for (uint32 k = 0; k < COMPONENTS_IN_VECTOR_COUNT; ++k)
         components[k] = 0;
-        
+    
     defaultLocalTransform.Identity();
 	//animation = 0;
     //debugFlags = DEBUG_DRAW_NONE;
     flags = NODE_VISIBLE | NODE_UPDATABLE | NODE_LOCAL_MATRIX_IDENTITY;
     
-    customProperties = new KeyedArchive();
-
 	AddComponent(new TransformComponent());
     
 //    Stats::Instance()->RegisterEvent("Scene.Update.Entity.Update", "Entity update time");
@@ -114,15 +103,15 @@ Entity::~Entity()
 }
     
 void Entity::AddComponent(Component * component)
-{
+	{
 	component->SetEntity(this);
     
     uint32 componentType = component->GetType();
     if(USE_VECTOR(componentType))
-    {
+		{
         SafeDelete(components[componentType]);
         components[componentType] = component;
-    }
+		}
     else
     {
 #if defined(COMPONENT_STORAGE_STDMAP)
@@ -134,8 +123,8 @@ void Entity::AddComponent(Component * component)
             std::pair<ComponentsMap::iterator, bool> insertResult =
                 componentsMap.insert(std::pair<uint32, Vector<Component*>* >(componentType, componentsVector));
             it = insertResult.first;
-        }
-        
+	}
+
         it->second->reserve(it->second->size() + 1); //reserve memory to avoid capacity growth
         it->second->push_back(component);
 #else
@@ -147,8 +136,8 @@ void Entity::AddComponent(Component * component)
             
             componentsVector = new Vector<Component*>();
             componentsMap.Insert(componentType, componentsVector);
-        }
-        
+}
+    
         componentsVector->reserve(componentsVector->size() + 1); //reserve memory to avoid capacity growth
         componentsVector->push_back(component);
 #endif
@@ -314,19 +303,19 @@ void Entity::RemoveComponent(uint32 componentType, uint32 index)
     
 inline void Entity::CleanupComponent(Component* component, uint32 componentCount)
 {
-    component->SetEntity(0);
-    
+	component->SetEntity(0);
+
     if (scene)
         scene->RemoveComponent(this, component);
     
     if(componentCount <= 0)
     {
-        componentFlags &= ~(1 << component->GetType());
+    componentFlags &= ~(1 << component->GetType());
     }
     
-    delete(component);
+	delete(component);
 }
-
+    
 Component * Entity::GetComponent(uint32 componentType, uint32 index)
 {
     Component* component = NULL;
@@ -341,16 +330,16 @@ Component * Entity::GetComponent(uint32 componentType, uint32 index)
         ComponentsMap::iterator it = componentsMap.find(componentType);
         if(componentsMap.end() != it &&
            it->second->size() > index)
-        {
+{
             component = it->second->at(index);
-        }
-        
+}
+
 #else
-        
+    
         Vector<Component*>* componentsVector = componentsMap.GetValue(componentType);
         if(NULL != componentsVector &&
            componentsVector->size() > index)
-        {
+{
             component = componentsVector->at(index);
         }
         
@@ -413,7 +402,7 @@ uint32 Entity::GetComponentCount()
 uint32 Entity::GetComponentCount(uint32 componentType)
 {
     int componentCount = 0;
-    
+
     if(USE_VECTOR(componentType))
     {
         if(components[componentType] != NULL)
@@ -503,22 +492,38 @@ void Entity::AddNode(Entity * node)
     
 void Entity::InsertBeforeNode(Entity *newNode, Entity *beforeNode)
 {
-    if (newNode)
+    if(newNode && newNode != beforeNode)
     {
-        const Vector<Entity*>::iterator &itEnd = children.end();
+		bool canBeInserted = false;
+
+		Vector<Entity*>::iterator itEnd = children.end();
         for (Vector<Entity*>::iterator it = children.begin(); it != itEnd; ++it)
         {
             if(beforeNode == (*it))
             {
+				canBeInserted = true;
+                break;
+            }
+        }
+
+		if(canBeInserted)
+		{
                 newNode->Retain();
-                children.insert(it, newNode);
                 if (newNode->parent)
                 {
                     newNode->parent->RemoveNode(newNode);
                 }
-                newNode->SetParent(this);
-                newNode->SetScene(GetScene());
-                break;
+
+			itEnd = children.end();
+			for (Vector<Entity*>::iterator it = children.begin(); it != itEnd; ++it)
+			{
+				if(beforeNode == (*it))
+				{
+					children.insert(it, newNode);
+                    newNode->SetParent(this);
+                    newNode->SetScene(GetScene());
+                    break;
+                }
             }
         }
     }
@@ -549,20 +554,39 @@ void Entity::RemoveNode(Entity * node)
 	
 }
 	
-Entity * Entity::GetChild(int32 index)
+Entity * Entity::GetChild(int32 index) const
 {
 	return children[index];
 }
 
-int32 Entity::GetChildrenCount()
+Entity* Entity::GetNextChild(Entity *child)
+{
+	Entity* next = NULL;
+
+	for(uint32 i = 0; i < children.size(); i++)
+	{
+		if(children[i] == child)
+		{
+			if((i + 1) < children.size())
+			{
+				next = children[i + 1];
+			}
+			break;
+		}
+	}
+
+	return next;
+}
+
+int32 Entity::GetChildrenCount() const
 {
     return (int32)children.size();
 }
-int32 Entity::GetChildrenCountRecursive()
+int32 Entity::GetChildrenCountRecursive() const
 {
     int32 result = 0;
     result += (int32)children.size();
-    for (std::vector<Entity*>::iterator t = children.begin(); t != children.end(); ++t)
+    for (std::vector<Entity*>::const_iterator t = children.begin(); t != children.end(); ++t)
 	{
         Entity *node = *t;
         result += node->GetChildrenCountRecursive();
@@ -882,9 +906,6 @@ Entity* Entity::Clone(Entity *dstNode)
     dstNode->tag = tag;
     //dstNode->flags = flags;
 
-    SafeRelease(dstNode->customProperties);
-    dstNode->customProperties = new KeyedArchive(*customProperties);
-    
     dstNode->nodeAnimations = nodeAnimations;
     
     DVASSERT(dstNode->GetChildrenCount() == 0);
@@ -1029,14 +1050,6 @@ void Entity::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     // Perform refactoring and add Matrix4, Vector4 types to VariantType and KeyedArchive
     BaseObject::Save(archive);
     
-    String savedPath = "";
-    if(customProperties && customProperties->IsKeyExists("editor.referenceToOwner"))
-    {
-        savedPath = customProperties->GetString("editor.referenceToOwner");
-        String newPath = FilePath(savedPath).GetRelativePathname(sceneFileV2->GetScenePath());
-        customProperties->SetString("editor.referenceToOwner", newPath);
-    }
-    
     archive->SetString("name", name);
     archive->SetInt32("tag", tag);
     archive->SetByteArrayAsType("localTransform", GetLocalTransform());
@@ -1045,19 +1058,22 @@ void Entity::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     archive->SetUInt32("flags", flags);
 //    archive->SetUInt32("debugFlags", debugFlags);
     
-    archive->SetByteArrayFromArchive("customprops", customProperties);
-    
-    if(customProperties && savedPath.length())
-    {
-        customProperties->SetString("editor.referenceToOwner", savedPath);
-    }
-	
-    KeyedArchive *compsArch = new KeyedArchive();
+	KeyedArchive *compsArch = new KeyedArchive();
     uint32 savedIndex = 0;
 	for(uint32 i = 0; i < components.size(); ++i)
 	{
 		if(NULL != components[i])
 		{
+			//don't save empty custom properties
+			if(Component::CUSTOM_PROPERTIES_COMPONENT == i)
+			{
+				CustomPropertiesComponent* customProps = cast_if_equal<CustomPropertiesComponent*>(components[i]);
+				if(customProps && customProps->GetArchive()->Count() <= 0)
+				{
+					continue;
+				}
+			}
+			
 			KeyedArchive *compArch = new KeyedArchive();
 			components[i]->Serialize(compArch, sceneFileV2);
 			compsArch->SetArchive(KeyedArchive::GenKeyFromIndex(savedIndex), compArch);
@@ -1080,7 +1096,7 @@ void Entity::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 			compArch->Release();
             savedIndex++;
         }
-    }
+		}
     
 #else
     
@@ -1097,7 +1113,7 @@ void Entity::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 			compsArch->SetArchive(KeyedArchive::GenKeyFromIndex(savedIndex), compArch);
 			compArch->Release();
             savedIndex++;
-        }
+	}
     }
     
 #endif
@@ -1125,24 +1141,6 @@ void Entity::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     /// InvalidateLocalTransform();
 //    debugFlags = archive->GetUInt32("debugFlags", 0);
     
-    SafeRelease(customProperties);
-    customProperties = archive->GetArchiveFromByteArray("customprops");
-    if (!customProperties)
-    {
-        customProperties = new KeyedArchive();
-    }
-    else
-    {
-        if(customProperties->IsKeyExists("editor.referenceToOwner"))
-        {
-            FilePath newPath(sceneFileV2->GetScenePath());
-            newPath += customProperties->GetString("editor.referenceToOwner");
-
-            //TODO: why we use absolute pathname instead of relative?
-            customProperties->SetString("editor.referenceToOwner", newPath.GetAbsolutePathname());
-        }
-    }
-
 	KeyedArchive *compsArch = archive->GetArchive("components");
     
     if(sceneFileV2->GetVersion() < COMPONENTS_BY_NAME_SAVE_SCENE_VERSION)
@@ -1157,7 +1155,7 @@ void Entity::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     
 void Entity::LoadComponentsV6(KeyedArchive *compsArch, SceneFileV2 * sceneFileV2)
 {
-   	if(NULL != compsArch)
+	if(NULL != compsArch)
 	{
 		for(uint32 i = 0; i < COMPONENT_COUNT_V6; ++i)
 		{
@@ -1191,9 +1189,36 @@ void Entity::LoadComponentsV6(KeyedArchive *compsArch, SceneFileV2 * sceneFileV2
 				}
 			}
 		}
-	}    
+	}
+	
+	if(sceneFileV2->GetVersion() < CUSTOM_PROPERTIES_COMPONENT_SAVE_SCENE_VERSION)
+	{
+		KeyedArchive* customProps = archive->GetArchiveFromByteArray("customprops");
+		
+		if(customProps != NULL)
+		{
+			CustomPropertiesComponent* customPropsComponent = GetCustomPropertiesComponent();
+			customPropsComponent->LoadFromArchive(*customProps, sceneFileV2);
+			
+			SafeRelease(customProps);
+		}
+	}
 }
-    
+	
+CustomPropertiesComponent* Entity::GetCustomPropertiesComponent()
+{
+	CustomPropertiesComponent* component = cast_if_equal<CustomPropertiesComponent*>(GetComponent(Component::CUSTOM_PROPERTIES_COMPONENT));
+	
+	if(NULL == component)
+	{
+		component = new CustomPropertiesComponent();
+		AddComponent(component);
+	}
+	
+    return component;
+
+}
+
 void Entity::LoadComponentsV7(KeyedArchive *compsArch, SceneFileV2 * sceneFileV2)
 {
     if(NULL != compsArch)
@@ -1219,19 +1244,30 @@ void Entity::LoadComponentsV7(KeyedArchive *compsArch, SceneFileV2 * sceneFileV2
 
 KeyedArchive * Entity::GetCustomProperties()
 {
-    return customProperties;
+	CustomPropertiesComponent* component = GetCustomPropertiesComponent();	
+    return component->GetArchive();
 }
     
 void Entity::SetSolid(bool isSolid)
 {
 //    isSolidNode = isSolid;
-    customProperties->SetBool(SCENE_NODE_IS_SOLID_PROPERTY_NAME, isSolid);
+    GetCustomProperties()->SetBool(SCENE_NODE_IS_SOLID_PROPERTY_NAME, isSolid);
 }
     
 bool Entity::GetSolid()
 {
 //    return isSolidNode;
-    return customProperties->GetBool(SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
+    return GetCustomProperties()->GetBool(SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
+}
+
+void Entity::SetLocked(bool isLocked)
+{
+	GetCustomProperties()->SetBool(SCENE_NODE_IS_LOCKED_PROPERTY_NAME, isLocked);
+}
+
+bool Entity::GetLocked()
+{
+	return GetCustomProperties()->GetBool(SCENE_NODE_IS_LOCKED_PROPERTY_NAME, false);
 }
 
 void Entity::GetDataNodes(Set<DataNode*> & dataNodes)
@@ -1243,7 +1279,7 @@ void Entity::GetDataNodes(Set<DataNode*> & dataNodes)
             components[k]->GetDataNodes(dataNodes);
         }
     }
-   
+
 #if defined(COMPONENT_STORAGE_STDMAP)
 
     for(ComponentsMap::iterator it = componentsMap.begin();
@@ -1279,6 +1315,20 @@ void Entity::GetDataNodes(Set<DataNode*> & dataNodes)
     }
 }
 
+void Entity::OptimizeBeforeExport()
+{
+	for (uint32 i = 0; i < Component::COMPONENT_COUNT; ++i)
+	{
+		if (components[i])
+			components[i]->OptimizeBeforeExport();
+	}
+	
+	uint32 size = (uint32)children.size();
+	for (uint32 c = 0; c < size; ++c)
+	{
+		children[c]->OptimizeBeforeExport();
+	}
+}
     
 void Entity::AddFlagRecursive(int32 flagToAdd)
 {

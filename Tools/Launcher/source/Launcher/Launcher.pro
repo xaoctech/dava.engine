@@ -5,9 +5,9 @@
 #-------------------------------------------------
 
 
-DEFINES += LAUNCER_VER=\\\"0.82\\\"
+DEFINES += LAUNCER_VER=\\\"0.87.5\\\"
 
-QT       += core gui network
+QT       += core gui network webkit
 
 TARGET = Launcher
 TEMPLATE = app
@@ -35,6 +35,9 @@ HEADERS  += Classes/mainwindow.h \
     Classes/processhelper.h
 
 FORMS    += UI/mainwindow.ui
+
+win32: RC_FILE = Launcher.rc
+macx: ICON = icon.icns
 
 macx: LIBS += -L$$PWD/yaml-cpp/libs/ -lyaml-cpp_osx
 macx: PRE_TARGETDEPS += $$PWD/yaml-cpp/libs/libyaml-cpp_osx.a
@@ -85,3 +88,5 @@ mac: SOURCES += \
     quazip/quagzipfile.cpp \
     quazip/quacrc32.cpp \
     quazip/quaadler32.cpp
+
+OTHER_FILES +=
