@@ -257,7 +257,7 @@ protected:
 	Vector<SceneNodeAnimationList*> animations;
     
     Map<String, ProxyNode*> rootNodes;
-    	
+
 //    // TODO: move to nodes
 //    Vector<LodLayer> lodLayers;
 //    int32 forceLodLayer;

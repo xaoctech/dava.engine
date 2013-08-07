@@ -265,6 +265,8 @@ public slots:
     void CameraLightTrigerred();
 
     void AddSwitchEntity();
+	void AddActionComponent();
+	void RemoveActionComponent();
     
 signals:
 	void ProjectChanged();

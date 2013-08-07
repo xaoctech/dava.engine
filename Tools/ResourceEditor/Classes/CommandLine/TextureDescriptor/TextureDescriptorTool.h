@@ -13,23 +13,52 @@
     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+#ifndef __TEXTURE_DESCRIPTOR_TOOL_H__
+#define __TEXTURE_DESCRIPTOR_TOOL_H__
 
-#ifndef __COMMAND_RELOAD_TEXTURES_H__
-#define __COMMAND_RELOAD_TEXTURES_H__
+#include "DAVAEngine.h"
+#include "../CommandLineTool.h"
 
-#include "Command.h"
-#include "../Constants.h"
-
-class CommandReloadTextures: public Command
+class TextureDescriptorTool: public CommandLineTool
 {
-public:	
-	DAVA_DEPRECATED(CommandReloadTextures());// DEPRECATED: using SceneDataManager
+    enum eAction
+    {
+        ACTION_NONE = -1,
+        
+        ACTION_RESAVE_DESCRIPTORS,
+        ACTION_COPY_COMPRESSION,
+        ACTION_CREATE_DESCRIPTORS,
+		ACTION_SET_COMPRESSION_FOR_FOLDER,
+		ACTION_SET_COMPRESSION_FOR_DESCRIPTOR
+    };
     
+public:
+
+    virtual DAVA::String GetCommandLineKey();
+    virtual bool InitializeFromCommandLine();
+    virtual void Process();
+    virtual void PrintUsage();
+
+
 protected:
-    virtual void Execute();
+
+	DAVA::FilePath ReadFolderPathname() const;
+	DAVA::FilePath ReadFilePathname() const;
+
+	void ReadCompressionParams();
+
+protected:
+
+    eAction commandAction;
+    
+    DAVA::FilePath folderPathname;
+	DAVA::FilePath filePathname;
+
+	bool forceModeEnabled;
+	bool convertEnabled;
+    
+	DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> compressionParams;
 };
 
 
-
-
-#endif // #ifndef __COMMAND_RELOAD_TEXTURES_H__
+#endif // __TEXTURE_DESCRIPTOR_TOOL_H__

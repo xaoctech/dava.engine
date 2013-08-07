@@ -22,6 +22,8 @@
 #include "Classes/SceneEditor/EditorConfig.h"
 #include "Classes/SceneEditor/SceneEditorScreenMain.h"
 
+#include "Classes/CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
+
 ProjectManager::ProjectManager()
 	: curProjectPath("")
 	, curProjectPathDataSource("")
@@ -74,7 +76,7 @@ void ProjectManager::ProjectOpen(const QString &path)
 			EditorSettings::Instance()->SetDataSourcePath(dataSource3Dpathname);
 			EditorSettings::Instance()->Save();
 
-			SceneValidator::Instance()->CreateDefaultDescriptors(dataSource3Dpathname);
+			TextureDescriptorUtils::CreateDescriptorsForFolder(dataSource3Dpathname);
 			SceneValidator::Instance()->SetPathForChecking(projectPath);
 
 			EditorConfig::Instance()->ParseConfig(projectPath + "EditorConfig.yaml");

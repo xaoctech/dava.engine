@@ -4148,6 +4148,8 @@
 				A68B3EED17AA82CE00E129C1 /* SkyboxComponent.h in Headers */,
 				A68B3EF517AA8C4000E129C1 /* SkyboxSystem.h in Headers */,
 				4F64848D17AFCAF900034454 /* AllocatorFactory.h in Headers */,
+				A60AE95517A00D9C00B5626A /* ActionUpdateSystem.h in Headers */,
+				A60AE95917A00E3200B5626A /* ActionComponent.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4497,6 +4499,8 @@
 				A68B3EE917AA82B800E129C1 /* SkyboxComponent.h in Headers */,
 				A68B3EF317AA8C4000E129C1 /* SkyboxSystem.h in Headers */,
 				4F64848217AFB73C00034454 /* AllocatorFactory.h in Headers */,
+				A60AE94D17A00D5100B5626A /* ActionComponent.h in Headers */,
+				A60AE95317A00D9C00B5626A /* ActionUpdateSystem.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4837,6 +4841,8 @@
 				A68B3EEC17AA82CD00E129C1 /* SkyboxComponent.h in Headers */,
 				A68B3EF417AA8C4000E129C1 /* SkyboxSystem.h in Headers */,
 				4F64848C17AFCAF800034454 /* AllocatorFactory.h in Headers */,
+				A60AE95417A00D9C00B5626A /* ActionUpdateSystem.h in Headers */,
+				A60AE95817A00E3100B5626A /* ActionComponent.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5246,6 +5252,8 @@
 				A68B3EEB17AA82C700E129C1 /* SkyboxComponent.cpp in Sources */,
 				A68B3EF217AA8C4000E129C1 /* SkyboxSystem.cpp in Sources */,
 				4F64848F17AFCAFD00034454 /* AllocatorFactory.cpp in Sources */,
+				A60AE95217A00D9C00B5626A /* ActionUpdateSystem.cpp in Sources */,
+				A60AE95717A00E2D00B5626A /* ActionComponent.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5550,6 +5558,8 @@
 				A68B3EE817AA82B800E129C1 /* SkyboxComponent.cpp in Sources */,
 				A68B3EF017AA8C4000E129C1 /* SkyboxSystem.cpp in Sources */,
 				4F64848117AFB73C00034454 /* AllocatorFactory.cpp in Sources */,
+				A60AE94C17A00D5100B5626A /* ActionComponent.cpp in Sources */,
+				A60AE95017A00D9C00B5626A /* ActionUpdateSystem.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5848,6 +5858,8 @@
 				A68B3EEA17AA82C500E129C1 /* SkyboxComponent.cpp in Sources */,
 				A68B3EF117AA8C4000E129C1 /* SkyboxSystem.cpp in Sources */,
 				4F64848E17AFCAFC00034454 /* AllocatorFactory.cpp in Sources */,
+				A60AE95117A00D9C00B5626A /* ActionUpdateSystem.cpp in Sources */,
+				A60AE95617A00E2C00B5626A /* ActionComponent.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
