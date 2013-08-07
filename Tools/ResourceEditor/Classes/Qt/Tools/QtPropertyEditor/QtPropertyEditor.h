@@ -18,6 +18,7 @@
 #define __QT_PROPERTY_VIEW_H__
 
 #include <QTreeView>
+#include <QTimer>
 
 class QtPropertyItem;
 class QtPropertyData;
@@ -50,11 +51,14 @@ signals:
 protected:
 	QtPropertyModel *curModel;
 	QtPropertyItemDelegate *curItemDelegate;
+	int refreshTimeout;
+	QTimer refreshTimer;
 
 	virtual void drawRow(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
 
 protected slots:
 	void ItemClicked(const QModelIndex &);
+	void OnRefreshTimeout();
 };
 
 #endif // __QT_PROPERTY_VIEW_H__
