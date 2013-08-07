@@ -148,7 +148,7 @@ SceneTreeItem* SceneTreeModel::GetItem(const QModelIndex &index) const
 
 Qt::DropActions SceneTreeModel::supportedDropActions() const
 {
-	return Qt::CopyAction | Qt::MoveAction;
+	return Qt::LinkAction;
 }
 
 QMimeData * SceneTreeModel::mimeData(const QModelIndexList & indexes) const
@@ -354,12 +354,16 @@ bool SceneTreeModel::DropCanBeAccepted(const QMimeData * data, Qt::DropAction ac
 				QVector<void*> *entities = DecodeMimeData(data, mimeFormatEntity);
 				if(NULL != entities)
 				{
+					DAVA::Entity *parentEntity = SceneTreeItemEntity::GetEntity(parentItem);
+
 					for (int i = 0; i < entities->size(); ++i)
 					{
 						DAVA::Entity *entity = (DAVA::Entity *) entities->at(i);
 
 						// 2. we don't accept drops if it has locked items
-						if(NULL != entity && entity->GetLocked())
+						// 3. or this is self-drop
+						if((NULL != entity && entity->GetLocked()) ||
+							parentEntity == entity)
 						{
 							ret = false;
 							break;
