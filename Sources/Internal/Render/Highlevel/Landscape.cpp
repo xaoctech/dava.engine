@@ -1179,9 +1179,7 @@ void Landscape::Draw(Camera * camera)
 //    frustum->Set();
 
     frustum = camera->GetFrustum();
-    cameraPos = camera->GetPosition();
-    
-    fans.clear();
+    cameraPos = camera->GetPosition();        
     
     flashQueueCounter = 0;
     
@@ -1190,12 +1188,17 @@ void Landscape::Draw(Camera * camera)
 	Draw(&quadTreeHead);
 #else //#if defined (DRAW_OLD_STYLE)   
     
-    
+
+
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, camera->GetMatrix());
+
+if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_LANDSCAPE_LODS)){
+	fans.clear();
     lod0quads.clear();
     lodNot0quads.clear();
     
 	Draw(&quadTreeHead);
+}
     
     BindMaterial(nearLodIndex);
     int32 count0 = lod0quads.size();
