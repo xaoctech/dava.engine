@@ -3407,9 +3407,6 @@
     <ClInclude Include="_GeneratedQt\ui_ParticleProperty.h">
       <Filter>QtGenerated</Filter>
     </ClInclude>
-    <ClInclude Include="_GeneratedQt\ui_SelectPathWidget.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
     <ClInclude Include="_GeneratedQt\ui_SetSwitchIndexView.h">
       <Filter>QtGenerated</Filter>
     </ClInclude>
@@ -3670,9 +3667,6 @@
       <Filter>QtData</Filter>
     </None>
     <None Include="DataQt\BaseAddEntityDialog.ui">
-      <Filter>QtData</Filter>
-    </None>
-    <None Include="DataQt\SelectPathWidget.ui">
       <Filter>QtData</Filter>
     </None>
   </ItemGroup>
