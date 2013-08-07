@@ -46,13 +46,6 @@ EditorLightSystem::~EditorLightSystem()
 }
 
 
-void EditorLightSystem::Update( DAVA::float32 /* timeElapsed */)
-{
-	if(isEnabled)
-	{
-		UpdateCameraLightPosition();
-	}
-}
 
 void EditorLightSystem::ProcessCommand( const Command2 *command, bool redo )
 {
@@ -167,5 +160,13 @@ void EditorLightSystem::AddEditorEntity(DAVA::Entity *entity)
 	else
 	{
 		sc->AddNode(entity);
+	}
+}
+
+void EditorLightSystem::Process()
+{
+	if(isEnabled)
+	{
+		UpdateCameraLightPosition();
 	}
 }

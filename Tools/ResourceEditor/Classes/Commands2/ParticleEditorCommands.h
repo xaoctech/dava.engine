@@ -214,6 +214,10 @@ public:
 
 			  float32 startTime,
 			  float32 endTime,
+			  float32 deltaTime,
+			  float32 deltaVariation,
+			  float32 loopEndTime,
+			  float32 loopVariation,
 			  bool frameOverLifeEnabled,
 			  float32 frameOverLifeFPS,
 
@@ -255,6 +259,10 @@ protected:
 
 	float32 startTime;
 	float32 endTime;
+	float32 deltaTime;
+	float32 deltaVariation;
+	float32 loopEndTime;
+	float32 loopVariation;
 	bool frameOverLifeEnabled;
 	float32 frameOverLifeFPS;
 
