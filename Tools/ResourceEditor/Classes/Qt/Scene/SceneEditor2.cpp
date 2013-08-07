@@ -73,7 +73,7 @@ SceneEditor2::SceneEditor2()
 	AddSystem(structureSystem, 0);
 
 	editorLightSystem = new EditorLightSystem(this);
-	AddSystem(editorLightSystem, 0);
+	AddSystem(editorLightSystem, Component::LIGHT_COMPONENT);
 
 	SceneSignals::Instance()->EmitOpened(this);
 }
@@ -287,7 +287,7 @@ void SceneEditor2::Update(float timeElapsed)
 	rulerToolSystem->Update(timeElapsed);
 	structureSystem->Update(timeElapsed);
 	particlesSystem->Update(timeElapsed);
-	editorLightSystem->Update(timeElapsed);
+	editorLightSystem->Process();
 }
 
 void SceneEditor2::PostUIEvent(DAVA::UIEvent *event)
