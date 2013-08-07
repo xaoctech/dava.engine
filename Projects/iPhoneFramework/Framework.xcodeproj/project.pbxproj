@@ -26,6 +26,8 @@
 		02F6403E173A597A0053F038 /* libfmodex_iphonesimulator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E3A3172967F300C501BC /* libfmodex_iphonesimulator.a */; };
 		02F64041173A5A950053F038 /* SoundUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02F6403F173A5A950053F038 /* SoundUpdateSystem.cpp */; };
 		02F64042173A5A950053F038 /* SoundUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 02F64040173A5A950053F038 /* SoundUpdateSystem.h */; };
+		17816B8017B2748900B067E1 /* AllocatorFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17816B7E17B2748900B067E1 /* AllocatorFactory.cpp */; };
+		17816B8117B2748900B067E1 /* AllocatorFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 17816B7F17B2748900B067E1 /* AllocatorFactory.h */; };
 		1799E51A16CCEBDA0058061F /* ParticleForce.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1799E51816CCEBDA0058061F /* ParticleForce.cpp */; };
 		1799E51B16CCEBDA0058061F /* ParticleForce.h in Headers */ = {isa = PBXBuildFile; fileRef = 1799E51916CCEBDA0058061F /* ParticleForce.h */; };
 		17D30ADD1799793E007A4594 /* UIDismissionHandlerAlertView.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D30ADB1799793E007A4594 /* UIDismissionHandlerAlertView.h */; };
@@ -65,10 +67,6 @@
 		A6E4FDF61761D40200B48E41 /* CustomPropertiesComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = A6E4FDF21761D40200B48E41 /* CustomPropertiesComponent.h */; };
 		A6E4FDFB1761D83100B48E41 /* ActionUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6E4FDF91761D83100B48E41 /* ActionUpdateSystem.cpp */; };
 		A6E4FDFC1761D83100B48E41 /* ActionUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A6E4FDFA1761D83100B48E41 /* ActionUpdateSystem.h */; };
-		A60AE95E17A010F300B5626A /* ActionComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A60AE95C17A010F300B5626A /* ActionComponent.cpp */; };
-		A60AE95F17A010F300B5626A /* ActionComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = A60AE95D17A010F300B5626A /* ActionComponent.h */; };
-		A60AE96217A0110B00B5626A /* ActionUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A60AE96017A0110B00B5626A /* ActionUpdateSystem.cpp */; };
-		A60AE96317A0110B00B5626A /* ActionUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A60AE96117A0110B00B5626A /* ActionUpdateSystem.h */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
 		C1DC1F081717FD3C001C5EC3 /* libTextureConverter_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C1DC1F071717FD3C001C5EC3 /* libTextureConverter_macos.a */; };
 		CC247FF116D69F1700183D40 /* DVAssertMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC247FEC16D69F1700183D40 /* DVAssertMessage.cpp */; };
@@ -325,8 +323,6 @@
 		E8B3CB8016B9326E002BD35F /* ParticleLayer3D.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C8B416B9326D002BD35F /* ParticleLayer3D.h */; };
 		E8B3CB8316B9326E002BD35F /* ParticlePropertyLine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C8B716B9326D002BD35F /* ParticlePropertyLine.cpp */; };
 		E8B3CB8416B9326E002BD35F /* ParticlePropertyLine.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C8B816B9326D002BD35F /* ParticlePropertyLine.h */; };
-		E8B3CB8516B9326E002BD35F /* ParticleSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C8B916B9326D002BD35F /* ParticleSystem.cpp */; };
-		E8B3CB8616B9326E002BD35F /* ParticleSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C8BA16B9326D002BD35F /* ParticleSystem.h */; };
 		E8B3CB8E16B9326E002BD35F /* Mutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C8C416B9326D002BD35F /* Mutex.cpp */; };
 		E8B3CB8F16B9326E002BD35F /* Mutex.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C8C516B9326D002BD35F /* Mutex.h */; };
 		E8B3CB9E16B9326E002BD35F /* SystemTimer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C8D716B9326D002BD35F /* SystemTimer.cpp */; };
@@ -717,6 +713,8 @@
 		02E9E3E11734176D00C501BC /* SoundComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundComponent.h; sourceTree = "<group>"; };
 		02F6403F173A5A950053F038 /* SoundUpdateSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundUpdateSystem.cpp; sourceTree = "<group>"; };
 		02F64040173A5A950053F038 /* SoundUpdateSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundUpdateSystem.h; sourceTree = "<group>"; };
+		17816B7E17B2748900B067E1 /* AllocatorFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AllocatorFactory.cpp; sourceTree = "<group>"; };
+		17816B7F17B2748900B067E1 /* AllocatorFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AllocatorFactory.h; sourceTree = "<group>"; };
 		1799E51816CCEBDA0058061F /* ParticleForce.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleForce.cpp; sourceTree = "<group>"; };
 		1799E51916CCEBDA0058061F /* ParticleForce.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleForce.h; sourceTree = "<group>"; };
 		17D30ADB1799793E007A4594 /* UIDismissionHandlerAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDismissionHandlerAlertView.h; sourceTree = "<group>"; };
@@ -1014,8 +1012,6 @@
 		E8B3C8B416B9326D002BD35F /* ParticleLayer3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayer3D.h; sourceTree = "<group>"; };
 		E8B3C8B716B9326D002BD35F /* ParticlePropertyLine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticlePropertyLine.cpp; sourceTree = "<group>"; };
 		E8B3C8B816B9326D002BD35F /* ParticlePropertyLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticlePropertyLine.h; sourceTree = "<group>"; };
-		E8B3C8B916B9326D002BD35F /* ParticleSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleSystem.cpp; sourceTree = "<group>"; };
-		E8B3C8BA16B9326D002BD35F /* ParticleSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleSystem.h; sourceTree = "<group>"; };
 		E8B3C8C416B9326D002BD35F /* Mutex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mutex.cpp; sourceTree = "<group>"; };
 		E8B3C8C516B9326D002BD35F /* Mutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mutex.h; sourceTree = "<group>"; };
 		E8B3C8D716B9326D002BD35F /* SystemTimer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SystemTimer.cpp; sourceTree = "<group>"; };
@@ -1495,6 +1491,8 @@
 		E8B3C7BD16B9326D002BD35F /* Base */ = {
 			isa = PBXGroup;
 			children = (
+				17816B7E17B2748900B067E1 /* AllocatorFactory.cpp */,
+				17816B7F17B2748900B067E1 /* AllocatorFactory.h */,
 				E8679182175F62D600C5A6A2 /* EnumMap.cpp */,
 				E8679183175F62D600C5A6A2 /* EnumMap.h */,
 				E867917A175F620400C5A6A2 /* GlobalEnum.cpp */,
@@ -1795,8 +1793,6 @@
 				E8B3C8B416B9326D002BD35F /* ParticleLayer3D.h */,
 				E8B3C8B716B9326D002BD35F /* ParticlePropertyLine.cpp */,
 				E8B3C8B816B9326D002BD35F /* ParticlePropertyLine.h */,
-				E8B3C8B916B9326D002BD35F /* ParticleSystem.cpp */,
-				E8B3C8BA16B9326D002BD35F /* ParticleSystem.h */,
 			);
 			path = Particles;
 			sourceTree = "<group>";
@@ -2510,7 +2506,6 @@
 				E8B3CB7E16B9326E002BD35F /* ParticleLayer.h in Headers */,
 				E8B3CB8016B9326E002BD35F /* ParticleLayer3D.h in Headers */,
 				E8B3CB8416B9326E002BD35F /* ParticlePropertyLine.h in Headers */,
-				E8B3CB8616B9326E002BD35F /* ParticleSystem.h in Headers */,
 				E8B3CB8F16B9326E002BD35F /* Mutex.h in Headers */,
 				E8B3CB9F16B9326E002BD35F /* SystemTimer.h in Headers */,
 				E8B3CBA016B9326E002BD35F /* EAGLView.h in Headers */,
@@ -2729,6 +2724,7 @@
 				4FDDEC5A17A6920D00D9DDEA /* MaterialOptimazer.h in Headers */,
 				A66BC2EE17AB98C300B6252E /* SkyboxComponent.h in Headers */,
 				A66BC2F217AB98E800B6252E /* SkyboxSystem.h in Headers */,
+				17816B8117B2748900B067E1 /* AllocatorFactory.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2892,7 +2888,6 @@
 				E8B3CB7D16B9326E002BD35F /* ParticleLayer.cpp in Sources */,
 				E8B3CB7F16B9326E002BD35F /* ParticleLayer3D.cpp in Sources */,
 				E8B3CB8316B9326E002BD35F /* ParticlePropertyLine.cpp in Sources */,
-				E8B3CB8516B9326E002BD35F /* ParticleSystem.cpp in Sources */,
 				E8B3CB8E16B9326E002BD35F /* Mutex.cpp in Sources */,
 				E8B3CB9E16B9326E002BD35F /* SystemTimer.cpp in Sources */,
 				E8B3CBA116B9326E002BD35F /* EAGLView.mm in Sources */,
@@ -3103,6 +3098,7 @@
 				4FDDEC5917A6920D00D9DDEA /* MaterialOptimazer.cpp in Sources */,
 				A66BC2ED17AB98C300B6252E /* SkyboxComponent.cpp in Sources */,
 				A66BC2F117AB98E800B6252E /* SkyboxSystem.cpp in Sources */,
+				17816B8017B2748900B067E1 /* AllocatorFactory.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
