@@ -88,7 +88,7 @@ public:
     virtual void    RemoveComponent(Entity * entity, Component * component);
     
     virtual void    AddSystem(SceneSystem * sceneSystem, uint32 componentFlags);
-    virtual void    RemoveSystem(SceneSystem * sceneSystem, uint32 componentFlags);
+    virtual void    RemoveSystem(SceneSystem * sceneSystem);
     
 	virtual void ImmediateEvent(Entity * entity, uint32 componentType, uint32 event);
 
