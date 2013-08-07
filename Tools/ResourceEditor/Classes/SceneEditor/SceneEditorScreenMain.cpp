@@ -547,16 +547,17 @@ void SceneEditorScreenMain::SaveToFolder(const FilePath & folder)
 	iBody->bodyControl->PushEditorEntities();
     
 	// Get project path
-    KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
-    FilePath dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
+//     KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
+//     FilePath dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
+	SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
+
 
     SceneSaver sceneSaver;
-    sceneSaver.SetInFolder(dataSourcePath);
+//    sceneSaver.SetInFolder(dataSourcePath);
+	sceneSaver.SetInFolder(sceneData->GetScenePathname().GetDirectory());
     sceneSaver.SetOutFolder(folder);
     
     Set<String> errorsLog;
-
-	SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
     sceneSaver.SaveScene(iBody->bodyControl->GetScene(), sceneData->GetScenePathname(), errorsLog);
     
 	iBody->bodyControl->PopEditorEntities();
