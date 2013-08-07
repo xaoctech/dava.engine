@@ -24,23 +24,18 @@ CommandNotify::~CommandNotify()
 
 CommandNotifyProvider::CommandNotifyProvider()
 	: curNotify(NULL)
-	, curAutorelease(false)
 { }
 
 CommandNotifyProvider::~CommandNotifyProvider()
 {
-	SetNotify(NULL, true);
+	SafeRelease(curNotify);
 }
 
-void CommandNotifyProvider::SetNotify(CommandNotify *notify, bool autorelease)
+void CommandNotifyProvider::SetNotify(CommandNotify *notify)
 {
-	if(NULL != curNotify && curAutorelease)
-	{
-		delete curNotify;
-	}
-
+	SafeRelease(curNotify);
 	curNotify = notify;
-	curAutorelease = autorelease;
+	SafeRetain(curNotify);
 }
 
 CommandNotify* CommandNotifyProvider::GetNotify() const
@@ -53,5 +48,13 @@ void CommandNotifyProvider::EmitNotify(const Command2 *command, bool redo)
 	if(NULL != curNotify)
 	{
 		curNotify->Notify(command, redo);
+	}
+}
+
+void CommandNotifyProvider::EmitCleanChanged(bool clean)
+{
+	if(NULL != curNotify)
+	{
+		curNotify->CleanChanged(clean);
 	}
 }

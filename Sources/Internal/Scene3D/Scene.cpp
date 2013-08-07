@@ -53,6 +53,7 @@
 #include "Scene3D/Systems/SwitchSystem.h"
 #include "Scene3D/Systems/SoundUpdateSystem.h"
 #include "Scene3D/Systems/ActionUpdateSystem.h"
+#include "Scene3D/Systems/SkyboxSystem.h"
 
 //#include "Entity/Entity.h"
 //#include "Entity/EntityManager.h"
@@ -122,6 +123,9 @@ void Scene::CreateSystems()
 	
 	actionSystem = new ActionUpdateSystem(this);
 	AddSystem(actionSystem, (1 << Component::ACTION_COMPONENT));
+	
+	skyboxSystem = new SkyboxSystem(this);
+	AddSystem(skyboxSystem, (1 << Component::SKYBOX_COMPONENT));
 }
 
 Scene::~Scene()
@@ -269,9 +273,19 @@ void Scene::AddSystem(SceneSystem * sceneSystem, uint32 componentFlags)
     systems.push_back(sceneSystem);
 }
     
-void Scene::RemoveSystem(SceneSystem * sceneSystem, uint32 componentFlags)
+void Scene::RemoveSystem(SceneSystem * sceneSystem)
 {
-    DVASSERT(0 && "Need to write remove system function");
+    Vector<SceneSystem*>::const_iterator endIt = systems.end();
+    for(Vector<SceneSystem*>::iterator it = systems.begin(); it != endIt; ++it)
+    {
+        if(*it == sceneSystem)
+        {
+            systems.erase(it);
+            return;
+        }
+    }
+
+    DVASSERT_MSG(false, "System must be at systems array");
 }
 
 Scene * Scene::GetScene()
@@ -406,6 +420,7 @@ Entity *Scene::GetRootNode(const FilePath &rootNodePath)
         file->EnableDebugLog(false);
         file->LoadScene(rootNodePath, this);
         SafeRelease(file);
+				
         uint64 deltaTime = SystemTimer::Instance()->AbsoluteMS() - startTime;
         Logger::Info("[GETROOTNODE TIME] %dms (%ld)", deltaTime, deltaTime);
     }
@@ -580,6 +595,7 @@ void Scene::Draw()
     renderUpdateSystem->Process();
 	actionSystem->Process(); //update action system before particles and render
 	particleEffectSystem->Process();
+	skyboxSystem->Process();
     renderSystem->Render();
     debugRenderSystem->SetCamera(currentCamera);
     debugRenderSystem->Process();
@@ -590,8 +606,6 @@ void Scene::Draw()
 	{
 		imposterManager->Draw();
 	}
-    
-
 
 	RenderManager::Instance()->SetState(RenderState::DEFAULT_2D_STATE_BLEND);
 	drawTime = SystemTimer::Instance()->AbsoluteMS() - time;

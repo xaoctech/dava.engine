@@ -15,7 +15,6 @@
 =====================================================================================*/
 #include "Particles/ParticleLayer.h"
 #include "Particles/ParticleEmitter.h"
-#include "Particles/ParticleSystem.h"
 #include "Utils/StringFormat.h"
 #include "Render/RenderManager.h"
 #include "Render/Image.h"
@@ -79,10 +78,17 @@ ParticleLayer::ParticleLayer()
 	angleVariation = 0;
 
 	layerTime = 0.0f;
+	loopLayerTime = 0.0f;
 	additive = true;
 	type = TYPE_PARTICLES;
     
     endTime = 100000000.0f;
+	deltaTime = 0.0f;
+	deltaVariation = 0.0f;
+	loopVariation = 0.0f;
+	loopEndTime = 0.0f;
+	currentLoopVariation = 0.0f;
+	currentDeltaVariation = 0.0f;
 
 	frameStart = 0;
 	frameEnd = 0;
@@ -91,12 +97,15 @@ ParticleLayer::ParticleLayer()
 	frameOverLifeFPS = 0;
 
     isDisabled = false;
+	isLooped = false;
 
 	playbackSpeed = 1.0f;
 }
 
 ParticleLayer::~ParticleLayer()
 {
+	DeleteAllParticles();
+
 	SafeRelease(renderBatch);
 	SafeRelease(sprite);
 	SafeRelease(innerEmitter);
@@ -200,6 +209,13 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	dstLayer->SetAdditive(additive);
 	dstLayer->startTime = startTime;
 	dstLayer->endTime = endTime;
+	
+	dstLayer->isLooped = isLooped;
+	dstLayer->deltaTime = deltaTime;
+	dstLayer->deltaVariation = deltaVariation;
+	dstLayer->loopVariation = loopVariation;
+	dstLayer->loopEndTime = loopEndTime;
+	
 	dstLayer->type = type;
 	dstLayer->sprite = SafeRetain(sprite);
 	dstLayer->layerPivotPoint = layerPivotPoint;
@@ -259,7 +275,7 @@ void ParticleLayer::DeleteAllParticles()
 	while(current)
 	{
 		Particle * next = current->next;
-		ParticleSystem::Instance()->DeleteParticle(current);
+		delete(current);
 		count--;
 		current = next;
 	}
@@ -293,10 +309,118 @@ void ParticleLayer::Restart(bool isDeleteAllParticles)
 
 	layerTime = 0.0f;
 	particlesToGenerate = 0.0f;
+	loopLayerTime = 0.0f;
+
+	RecalculateVariation();
 	
 	if (innerEmitter)
 	{
 		innerEmitter->Restart(isDeleteAllParticles);
+	}
+}
+
+void ParticleLayer::RestartLoop(bool isDeleteAllParticles)
+{
+	if (isDeleteAllParticles)
+		DeleteAllParticles();
+
+	layerTime = startTime;
+	particlesToGenerate = 0.0f;
+	
+	RecalculateVariation();
+	
+	if (innerEmitter)
+	{
+		innerEmitter->Restart(isDeleteAllParticles);
+	}
+}
+
+void ParticleLayer::SetLooped(bool _isLooped)
+{
+	isLooped = _isLooped;
+	// Reset loop values if isLooped flag is changed
+	loopVariation = 0.0f;
+	deltaTime = 0.0f;
+	deltaVariation = 0.0f;
+	/*if (isLooped)
+	{
+		if (emitter)
+		{
+			loopEndTime = emitter->GetLifeTime();
+		}
+	}*/
+}
+
+bool ParticleLayer::GetLooped()
+{
+	return isLooped;
+}
+
+void ParticleLayer::SetDeltaTime(float32 _deltaTime)
+{
+	deltaTime = _deltaTime;
+}
+	
+float32 ParticleLayer::GetDeltaTime()
+{
+	return deltaTime;
+}
+
+void ParticleLayer::SetDeltaVariation(float32 _deltaVariation)
+{
+	deltaVariation = _deltaVariation;
+	RecalculateVariation();
+}
+	
+float32 ParticleLayer::GetDeltaVariation()
+{
+	return deltaVariation;
+}
+
+void ParticleLayer::SetLoopEndTime(float32 endTime)
+{
+	loopEndTime = endTime;
+}
+
+float32 ParticleLayer::GetLoopEndTime()
+{
+	return loopEndTime;
+}
+
+void ParticleLayer::SetLoopVariation(float32 _loopVariation)
+{
+	loopVariation = _loopVariation;
+	RecalculateVariation();
+}
+
+float32 ParticleLayer::GetLoopVariation()
+{
+	return loopVariation;
+}
+
+float32 ParticleLayer::GetRandomFactor()
+{
+	return (float32)(Rand() & 255) / 255.0f;
+}
+
+void ParticleLayer::RecalculateVariation()
+{
+	currentLoopVariation = (loopVariation * GetRandomFactor());
+	
+	if (deltaTime > 0)
+	{
+		currentDeltaVariation = (deltaVariation * GetRandomFactor());
+	}	
+}
+
+void ParticleLayer::RestartLayerIfNeed()
+{
+	float32 layerRestartTime = (endTime + currentLoopVariation) + (deltaTime + currentDeltaVariation);
+	// Restart layer effect if auto restart option is on and layer time exceeds its endtime
+	// Endtime can be increased by DeltaTime
+	if(isLooped && (layerTime > layerRestartTime) && !emitter->IsPaused())
+	{
+		RestartLoop(false);
 	}
 }
 
@@ -305,6 +429,19 @@ void ParticleLayer::Update(float32 timeElapsed)
 	// increment timer, take the playbackSpeed into account.
 	timeElapsed *= playbackSpeed;
 	layerTime += timeElapsed;
+	loopLayerTime += timeElapsed;
+	
+	RestartLayerIfNeed();
+	// Don't emit particles when lood end is reached
+	bool useLoopStop = false;
+	if (isLooped)
+	{
+		useLoopStop = (loopLayerTime >= loopEndTime);
+	}
+	else
+	{
+		currentLoopVariation = 0.0f;
+	}
 
 	switch(type)
 	{
@@ -320,7 +457,7 @@ void ParticleLayer::Update(float32 timeElapsed)
 				{
 					if (prev == 0)head = next;
 					else prev->next = next;
-					ParticleSystem::Instance()->DeleteParticle(current);
+					delete(current);
 					count--;
 				}else
 				{
@@ -336,14 +473,14 @@ void ParticleLayer::Update(float32 timeElapsed)
 				DVASSERT(head == 0);
 			}
 			
-			if ((layerTime >= startTime) && (layerTime < endTime) && !emitter->IsPaused())
+			if ((layerTime >= startTime) && (layerTime < (endTime + currentLoopVariation)) &&
+				!emitter->IsPaused() && !useLoopStop)
 			{
-				float32 randCoeff = (float32)(Rand() & 255) / 255.0f;
 				float32 newParticles = 0.0f;
 				if (number)
 					newParticles += timeElapsed * number->GetValue(layerTime);
 				if (numberVariation)
-					newParticles += randCoeff * timeElapsed * numberVariation->GetValue(layerTime);
+					newParticles += GetRandomFactor() * timeElapsed * numberVariation->GetValue(layerTime);
 				//newParticles *= emitter->GetCurrentNumberScale();
 				particlesToGenerate += newParticles;
 
@@ -368,7 +505,8 @@ void ParticleLayer::Update(float32 timeElapsed)
 		case TYPE_SINGLE_PARTICLE:
 		{
 			bool needUpdate = true;
-			if ((layerTime >= startTime) && (layerTime < endTime) && !emitter->IsPaused())
+			if ((layerTime >= startTime) && (layerTime < (endTime + currentLoopVariation)) &&
+				!emitter->IsPaused() && !useLoopStop)
 			{
 				if(!head)
 				{
@@ -380,11 +518,12 @@ void ParticleLayer::Update(float32 timeElapsed)
             {
 				if (!head->Update(timeElapsed))
 				{
-					ParticleSystem::Instance()->DeleteParticle(head);
+					delete(head);
 					count--;
 					DVASSERT(0 == count);
 					head = 0;
-					if ((layerTime >= startTime) && (layerTime < endTime) && !emitter->IsPaused())
+					if ((layerTime >= startTime) && (layerTime < (endTime + currentLoopVariation)) &&
+						!emitter->IsPaused() && !useLoopStop)
 					{
 						GenerateSingleParticle();
 					}
@@ -418,7 +557,7 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 		return;
 	}
 	
-	Particle * particle = ParticleSystem::Instance()->NewParticle();
+	Particle * particle = new Particle();
 
 	// SuperEmitter particles contains the emitter inside.
 	if (type == TYPE_SUPEREMITTER_PARTICLES)
@@ -433,15 +572,13 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 	particle->sprite = sprite;
 	particle->life = 0.0f;
 
-	float32 randCoeff = (float32)(Rand() & 255) / 255.0f;
-	
+	float32 randCoeff = GetRandomFactor();	
 	
 	particle->color = Color();
 	if (colorRandom)
 	{
 		particle->color = colorRandom->GetValue(randCoeff);
 	}
-	
 
 	particle->lifeTime = 0.0f;
 	if (life)
@@ -816,6 +953,31 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 	YamlNode * endTimeNode = node->Get("endTime");
 	if (endTimeNode)
 		endTime = endTimeNode->AsFloat();
+		
+	isLooped = false;	
+	deltaTime = 0.0f;
+	deltaVariation = 0.0f;
+	loopVariation = 0.0f;
+	
+	YamlNode * isLoopedNode = node->Get("isLooped");
+	if (isLoopedNode)
+		isLooped = isLoopedNode->AsBool();
+		
+	YamlNode * deltaTimeNode = node->Get("deltaTime");
+	if (deltaTimeNode)
+		deltaTime = deltaTimeNode->AsFloat();
+		
+	YamlNode * deltaVariationNode = node->Get("deltaVariation");
+	if (deltaVariationNode)
+		deltaVariation = deltaVariationNode->AsFloat();
+		
+	YamlNode * loopVariationNode = node->Get("loopVariation");
+	if (loopVariationNode)
+		loopVariation = loopVariationNode->AsFloat();
+		
+	YamlNode * loopEndTimeNode = node->Get("loopEndTime");
+	if (loopEndTimeNode)
+		loopEndTime = loopEndTimeNode->AsFloat();
 	
 	frameStart = 0;
 	frameEnd = 0;
@@ -916,6 +1078,12 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
 
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "startTime", this->startTime);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "endTime", this->endTime);
+	
+	PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "isLooped", this->isLooped);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "deltaTime", this->deltaTime);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "deltaVariation", this->deltaVariation);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "loopVariation", this->loopVariation);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "loopEndTime", this->loopEndTime);
 
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "isDisabled", this->isDisabled);
 
@@ -987,6 +1155,7 @@ void ParticleLayer::SetAdditive(bool additive)
 
 void ParticleLayer::AddForce(ParticleForce* force)
 {
+	SafeRetain(force);
 	this->forces.push_back(force);
 }
 
@@ -1007,8 +1176,8 @@ void ParticleLayer::RemoveForce(ParticleForce* force)
 													  force);
 	if (iter != this->forces.end())
 	{
+		SafeRelease(*iter);
 		this->forces.erase(iter);
-		SafeDelete(*iter);
 	}
 }
 
@@ -1016,7 +1185,7 @@ void ParticleLayer::RemoveForce(int32 forceIndex)
 {
 	if (forceIndex <= (int32)this->forces.size())
 	{
-		SafeDelete(this->forces[forceIndex]);
+		SafeRelease(this->forces[forceIndex]);
 		this->forces.erase(this->forces.begin() + forceIndex);
 	}
 }
@@ -1026,7 +1195,7 @@ void ParticleLayer::CleanupForces()
 	for (Vector<ParticleForce*>::iterator iter = this->forces.begin();
 		 iter != this->forces.end(); iter ++)
 	{
-		SafeDelete(*iter);
+		SafeRelease(*iter);
 	}
 	
 	this->forces.clear();

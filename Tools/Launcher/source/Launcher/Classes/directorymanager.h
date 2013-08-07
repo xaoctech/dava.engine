@@ -40,6 +40,7 @@ public:
     //QString GetRunPath() const {return m_runPath;}
     QString GetDownloadDir() const;
     QString GetStableDir() const;
+    QString GetToMasterDir() const;
     QString GetTestDir() const;
     QString GetDevelopment() const;
     QString GetDependencies() const;

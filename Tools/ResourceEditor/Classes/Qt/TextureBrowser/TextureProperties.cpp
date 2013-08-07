@@ -17,8 +17,8 @@
 #include "Base/GlobalEnum.h"
 #include "Render/TextureDescriptor.h"
 
-#include "TextureBrowser/TextureProperties.h"
-#include "QtPropertyEditor/QtPropertyItem.h"
+#include "TextureProperties.h"
+#include "Tools/QtPropertyEditor/QtPropertyItem.h"
 
 TextureProperties::TextureProperties( QWidget *parent /*= 0*/ )
 	: QtPropertyEditor(parent)
@@ -54,6 +54,7 @@ void TextureProperties::setTextureDescriptor(DAVA::TextureDescriptor *descriptor
 	{
 		// no texture - disable this widget
 		setEnabled(false);
+		RemovePropertyAll();
 	}
 }
 
@@ -301,7 +302,7 @@ void TextureProperties::SetPropertyItemValidValues(QtPropertyDataMetaObject* ite
 {
 	if(NULL != item && NULL != validValues)
 	{
-		for(int i = 0; i < validValues->GetCount(); ++i)
+		for(size_t i = 0; i < validValues->GetCount(); ++i)
 		{
 			int v;
 

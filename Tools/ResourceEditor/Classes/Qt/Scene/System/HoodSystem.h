@@ -46,7 +46,10 @@ public:
 
 	DAVA::Vector3 GetPosition() const;
 	void SetPosition(const DAVA::Vector3 &pos);
-	void MovePosition(const DAVA::Vector3 &offset);
+	
+	void SetModifOffset(const DAVA::Vector3 &offset);
+	void SetModifRotate(const DAVA::float32 &angle);
+	void SetModifScale(const DAVA::float32 &scale);
 
 	void SetModifAxis(ST_Axis axis);
 	ST_Axis GetModifAxis() const;
@@ -68,8 +71,8 @@ protected:
 	ST_Axis curAxis;
 	ST_Axis moseOverAxis;
 	DAVA::Vector3 curPos;
-	DAVA::Vector3 curOffset;
 	DAVA::float32 curScale;
+	DAVA::Vector3 modifOffset;
 
 	SceneCameraSystem *cameraSystem;
 
@@ -77,10 +80,12 @@ protected:
 	void Draw();
 
 	void ProcessUIEvent(DAVA::UIEvent *event);
-	void PropeccCommand(const Command2 *command, bool redo);
+	void ProcessCommand(const Command2 *command, bool redo);
 
 	void AddCollObjects(const DAVA::Vector<HoodCollObject*>* objects);
 	void RemCollObjects(const DAVA::Vector<HoodCollObject*>* objects);
+
+	void ResetModifValues();
 
 private:
 	btCollisionWorld* collWorld;

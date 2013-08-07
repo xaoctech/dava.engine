@@ -16,8 +16,7 @@
 
 #include "LayerForceWidget.h"
 #include "TimeLineWidget.h"
-#include "Commands/ParticleEditorCommands.h"
-#include "Commands/CommandsManager.h"
+#include "Commands2/ParticleEditorCommands.h"
 #include "../Scene/SceneDataManager.h"
 
 #include <QVBoxLayout>
@@ -25,7 +24,8 @@
 #include <QSizePolicy>
 
 LayerForceWidget::LayerForceWidget(QWidget *parent):
-	QWidget(parent)
+	QWidget(parent),
+	BaseParticleEditorContentWidget()
 {
 	mainBox = new QVBoxLayout;
 	this->setLayout(mainBox);
@@ -55,7 +55,7 @@ void LayerForceWidget::InitWidget(QWidget* widget)
 			SLOT(OnValueChanged()));
 }
 
-void LayerForceWidget::Init(ParticleEmitter* emitter, ParticleLayer* layer, uint32 forceIndex, bool updateMinimized)
+void LayerForceWidget::Init(SceneEditor2* scene, ParticleEmitter* emitter, ParticleLayer* layer, uint32 forceIndex, bool updateMinimized)
 {	
 	if (!layer || layer->forces.size() <= forceIndex)
 	{
@@ -65,6 +65,7 @@ void LayerForceWidget::Init(ParticleEmitter* emitter, ParticleLayer* layer, uint
 	this->emitter = emitter;
 	this->layer = layer;
 	this->forceIndex = forceIndex;
+	SetActiveScene(scene);
 	
 	blockSignals = true;
 	
@@ -140,14 +141,14 @@ void LayerForceWidget::OnValueChanged()
 						 propForceVariable.GetPropLine(),
 						 propForceOverLife.GetPropLine());
 	
-	CommandsManager::Instance()->ExecuteAndRelease(updateForceCmd,
-												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
+	DVASSERT(activeScene);
+	activeScene->Exec(updateForceCmd);
 
-	Init(emitter, layer, forceIndex, false);
+	Init(activeScene, emitter, layer, forceIndex, false);
 	emit ValueChanged();
 }
 
 void LayerForceWidget::Update()
 {
-	Init(emitter, layer, forceIndex, false);
+	Init(activeScene, emitter, layer, forceIndex, false);
 }

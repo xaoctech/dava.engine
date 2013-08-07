@@ -30,6 +30,7 @@
 #include "Sound/Sound.h"
 #include "Input/InputSystem.h"
 #include "Platform/DPIHelper.h"
+#include "Base/AllocatorFactory.h"
 
 
 #if defined(__DAVAENGINE_IPHONE__)
@@ -88,6 +89,7 @@ void Core::CreateSingletons()
     
     // check types size
 	new Logger();
+	new AllocatorFactory();
 
 	new FileSystem();
     FilePath::InitializeBundleName();
@@ -144,7 +146,6 @@ void Core::CreateRenderManager()
         
 void Core::ReleaseSingletons()
 {
-	Texture::ReleasePinkPlaceholder();
 	UIScreenManager::Instance()->Release();
 	UIControlSystem::Instance()->Release();
 	SoundSystem::Instance()->Release();
@@ -165,6 +166,7 @@ void Core::ReleaseSingletons()
 #endif
 
 	InputSystem::Instance()->Release();
+	AllocatorFactory::Instance()->Release();
 	Logger::Instance()->Release();
 }
 

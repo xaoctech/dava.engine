@@ -22,6 +22,8 @@
 #include "Scene/EntityGroup.h"
 #include "Scene/SceneEditor2.h"
 
+#include "Scene/System/VisibilityToolSystem.h"
+
 // framework
 #include "Base/StaticSingleton.h"
 #include "Scene3D/Entity.h"
@@ -43,16 +45,44 @@ signals:
 	void Activated(SceneEditor2 *scene);
 	void Deactivated(SceneEditor2 *scene);
 
+	void CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
+	void StructureChanged(SceneEditor2 *scene, DAVA::Entity *parent);
+	void ModifyStatusChanged(SceneEditor2 *scene, bool modified);
+
 	// entities
 	void Selected(SceneEditor2 *scene, DAVA::Entity *entity);
 	void Deselected(SceneEditor2 *scene, DAVA::Entity *entity);
 
-	void Moved(SceneEditor2 *scene, DAVA::Entity *entity);
-	void Removed(SceneEditor2 *scene, DAVA::Entity *entity);
-
 	// mouse
 	void MouseOver(SceneEditor2 *scene, const EntityGroup *entities);
 	void MouseOverSelection(SceneEditor2 *scene, const EntityGroup *entities);
+
+	// particles - selection
+	void EffectSelected(SceneEditor2* scene, DAVA::Entity* effectNode);
+	void EmitterSelected(SceneEditor2* scene, DAVA::Entity* emitterNode);
+	void LayerSelected(SceneEditor2* scene, DAVA::ParticleLayer* layer, bool forceRefresh);
+	void ForceSelected(SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::int32 forceIndex);
+
+	// particles - value changed
+	void ParticleEmitterValueChanged(SceneEditor2* scene, DAVA::ParticleEmitter* emitter);
+	void ParticleLayerValueChanged(SceneEditor2* scene, DAVA::ParticleLayer* layer);
+	void ParticleForceValueChanged(SceneEditor2* scene, DAVA::ParticleLayer* layer, int32 forceIndex);
+
+	// particles - effect started/stopped.
+	void ParticleEffectStateChanged(SceneEditor2* scene, DAVA::Entity* effect, bool isStarted);
+
+	// particles - loading/saving.
+	void ParticleEmitterLoaded(SceneEditor2* scene, DAVA::ParticleEmitter* emitter);
+	void ParticleEmitterSaved(SceneEditor2* scene, DAVA::ParticleEmitter* emitter);
+	
+	// particles - structure changes.
+	void ParticleLayerAdded(SceneEditor2* scene, DAVA::ParticleLayer* layer);
+	void ParticleLayerRemoved(SceneEditor2* scene, DAVA::ParticleEmitter* emitter);
+
+	void DropperHeightChanged(SceneEditor2* scene, double height);
+	void VisibilityToolStateChanged(SceneEditor2* scene, VisibilityToolSystem::eVisibilityToolState state);
+	void CustomColorsTextureShouldBeSaved(SceneEditor2* scene);
+	void RulerToolLengthChanged(SceneEditor2* scene, double length, double previewLength);
 
 public:
 	void EmitOpened(SceneEditor2 *scene) { emit Opened(scene); }
@@ -64,14 +94,79 @@ public:
 	void EmitActivated(SceneEditor2 *scene) { emit Activated(scene); }
 	void EmitDeactivated(SceneEditor2 *scene) { emit Deactivated(scene); }
 
+	void EmitCommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo) { emit CommandExecuted(scene, command, redo); };
+	void EmitStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent) { emit StructureChanged(scene, parent); }
+	void EmitModifyStatusChanged(SceneEditor2 *scene, bool modified) { emit ModifyStatusChanged(scene, modified); }
+
 	void EmitSelected(SceneEditor2 *scene, DAVA::Entity *entity) { emit Selected(scene, entity); }
 	void EmitDeselected(SceneEditor2 *scene, DAVA::Entity *entity)  { emit Deselected(scene, entity); }
 
-	void EmitMoved(SceneEditor2 *scene, DAVA::Entity *entity) { emit Moved(scene, entity); }
-	void EmitRemoved(SceneEditor2 *scene, DAVA::Entity *entity) { emit Removed(scene, entity); }
+	void EmitDropperHeightChanged(SceneEditor2* scene, DAVA::float32 height) { emit DropperHeightChanged(scene, (double)height); };
+	void EmitVisibilityToolStateChanged(SceneEditor2* scene, VisibilityToolSystem::eVisibilityToolState state)
+	{
+		emit VisibilityToolStateChanged(scene, state);
+	};
+	void EmitCustomColorsTextureShouldBeSaved(SceneEditor2* scene) { emit CustomColorsTextureShouldBeSaved(scene); };
+	void EmitRulerToolLengthChanged(SceneEditor2* scene, double length, double previewLength)
+	{
+		emit RulerToolLengthChanged(scene, length, previewLength);
+	}
 
 	void EmitMouseOver(SceneEditor2 *scene, const EntityGroup *entities) { emit MouseOver(scene, entities); }
 	void EmitMouseOverSelection(SceneEditor2 *scene, const EntityGroup *entities) { emit MouseOverSelection(scene, entities); }
+
+	// Particle Editor Selection signals.
+	void EmitEffectSelected(SceneEditor2* scene, DAVA::Entity* effectNode) { emit EffectSelected(scene, effectNode); };
+	void EmitEmitterSelected(SceneEditor2* scene, DAVA::Entity* emitterNode) { emit EmitterSelected(scene, emitterNode); };
+	void EmitLayerSelected(SceneEditor2* scene, DAVA::ParticleLayer* layer, bool forceRefresh)
+	{
+		emit LayerSelected(scene, layer, forceRefresh);
+	};
+	void EmitForceSelected(SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::int32 forceIndex)
+	{
+		emit ForceSelected(scene, layer, forceIndex);
+	};
+	
+	// Particle Editor Value Changed signals.
+	void EmitParticleEmitterValueChanged(SceneEditor2* scene, DAVA::ParticleEmitter* emitter)
+	{
+		emit ParticleEmitterValueChanged(scene, emitter);
+	}
+
+	void EmitParticleLayerValueChanged(SceneEditor2* scene, DAVA::ParticleLayer* layer)
+	{
+		emit ParticleLayerValueChanged(scene, layer);
+	}
+
+	void EmitParticleForceValueChanged(SceneEditor2* scene, DAVA::ParticleLayer* layer, int32 forceIndex)
+	{
+		emit ParticleForceValueChanged(scene, layer, forceIndex);
+	}
+
+	void EmitParticleEffectStateChanged(SceneEditor2* scene, DAVA::Entity* effect, bool isStarted)
+	{
+		emit ParticleEffectStateChanged(scene, effect, isStarted);
+	}
+	
+	void EmitParticleEmitterLoaded(SceneEditor2* scene, DAVA::ParticleEmitter* emitter)
+	{
+		emit ParticleEmitterLoaded(scene, emitter);
+	}
+	
+	void EmitParticleEmitterSaved(SceneEditor2* scene, DAVA::ParticleEmitter* emitter)
+	{
+		emit ParticleEmitterSaved(scene, emitter);
+	}
+
+	void EmitParticleLayerAdded(SceneEditor2* scene, DAVA::ParticleLayer* layer)
+	{
+		emit ParticleLayerAdded(scene, layer);
+	}
+	
+	void EmitParticleLayerRemoved(SceneEditor2* scene, DAVA::ParticleEmitter* emitter)
+	{
+		emit ParticleLayerRemoved(scene, emitter);
+	}
 };
 
 #endif // __SCENE_MANAGER_H__

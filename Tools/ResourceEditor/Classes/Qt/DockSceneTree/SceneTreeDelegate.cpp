@@ -15,7 +15,10 @@
 =====================================================================================*/
 
 #include <QtGui>
+#include <QSortFilterProxyModel>
+
 #include "DockSceneTree/SceneTreeDelegate.h"
+#include "DockSceneTree/SceneTreeModel.h"
 #include "DockSceneTree/SceneTreeItem.h"
 
 SceneTreeDelegate::SceneTreeDelegate(QWidget *parent /* = 0 */)
@@ -41,15 +44,24 @@ QSize SceneTreeDelegate::sizeHint(const QStyleOptionViewItem &option, const QMod
 
 void SceneTreeDelegate::customDraw(QPainter *painter, QStyleOptionViewItem *option, const QModelIndex &index) const
 {
-	DAVA::Entity *entity = index.data(SceneTreeItem::TreeItemEntityRole).value<DAVA::Entity*>();
-
-	if(NULL != entity && entity->GetLocked())
+	QSortFilterProxyModel *proxyModel = (QSortFilterProxyModel *) index.model();
+	if(NULL != proxyModel)
 	{
-		QRect owRect = option->rect;
-		owRect.setLeft(owRect.right() - 16);
+		SceneTreeModel *model = (SceneTreeModel *) proxyModel->sourceModel();
 
-		lockedIcon.paint(painter, owRect);
+		if(NULL != model)
+		{
+			QModelIndex realIndex = proxyModel->mapToSource(index);
 
-		option->rect.setRight(owRect.left());
+			if(model->GetLocked(realIndex))
+			{
+				QRect owRect = option->rect;
+				owRect.setLeft(owRect.right() - 16);
+
+				lockedIcon.paint(painter, owRect);
+
+				option->rect.setRight(owRect.left());
+			}
+		}
 	}
 }

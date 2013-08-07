@@ -123,6 +123,11 @@ void UIStaticText::SetMultiline(bool _isMultilineEnabled, bool bySymbol)
 	PrepareSprite();
 }
 
+bool UIStaticText::GetMultiline() const
+{
+	return textBlock->GetMultiline();
+}
+
 void UIStaticText::SetAlign(int32 _align)
 {
 	UIControl::SetSpriteAlign(_align);

@@ -19,7 +19,7 @@
 HoodCollObject::HoodCollObject()
 	 : btObject(NULL)
 	 , btShape(NULL) 
-	 , curScale(1.0)
+	 , curScale(1.0f)
 { }
 
 HoodCollObject::~HoodCollObject()
@@ -49,10 +49,10 @@ void HoodCollObject::UpdatePos(const DAVA::Vector3 &pos)
 
 void HoodCollObject::UpdateScale(const DAVA::float32 &scale)
 {
-	this->curScale = scale;
+	curScale = scale;
 
-	btShape->setLocalScaling(btVector3(scale, scale, scale));
-	scaledOffset = DAVA::MultiplyVectorMat3x3(baseOffset * scale, baseRotate);
+	btShape->setLocalScaling(btVector3(curScale, curScale, curScale));
+	scaledOffset = DAVA::MultiplyVectorMat3x3(baseOffset * curScale, baseRotate);
 
 	UpdatePos(curPos);
 }

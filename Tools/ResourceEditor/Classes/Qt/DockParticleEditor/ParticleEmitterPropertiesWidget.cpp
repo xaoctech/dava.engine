@@ -15,8 +15,7 @@
 =====================================================================================*/
 
 #include "ParticleEmitterPropertiesWidget.h"
-#include "Commands/ParticleEditorCommands.h"
-#include "Commands/CommandsManager.h"
+#include "Commands2/ParticleEditorCommands.h"
 #include "../Scene/SceneDataManager.h"
 
 #include <QLineEdit>
@@ -26,7 +25,8 @@
 #define EMISSION_RANGE_MAX_LIMIT_DEGREES 180.0f
 
 ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent) :
-	QWidget(parent)
+	QWidget(parent),
+	BaseParticleEditorContentWidget()
 {
 	mainLayout = new QVBoxLayout();
 	this->setLayout(mainLayout);
@@ -150,17 +150,19 @@ void ParticleEmitterPropertiesWidget::OnValueChanged()
 							   size.GetPropLine(),
 							   life,
 							   playbackSpeed);
-	CommandsManager::Instance()->ExecuteAndRelease(commandUpdateEmitter,
-												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
 
-	Init(emitter, false, initEmittersByDef);
+	DVASSERT(activeScene != 0);
+	activeScene->Exec(commandUpdateEmitter);
+
+	Init(activeScene, emitter, false, initEmittersByDef);
 	emit ValueChanged();
 }
 
-void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool updateMinimize, bool needUpdateTimeLimits)
+void ParticleEmitterPropertiesWidget::Init(SceneEditor2* scene, DAVA::ParticleEmitter *emitter, bool updateMinimize, bool needUpdateTimeLimits)
 {
 	DVASSERT(emitter != 0);
 	this->emitter = emitter;
+	SetActiveScene(scene);
 
 	blockSignals = true;
 
@@ -279,7 +281,7 @@ void ParticleEmitterPropertiesWidget::StoreVisualState(KeyedArchive* visualState
 
 void ParticleEmitterPropertiesWidget::Update()
 {
-	Init(emitter, false);
+	Init(activeScene, emitter, false);
 }
 
 bool ParticleEmitterPropertiesWidget::eventFilter(QObject * o, QEvent * e)

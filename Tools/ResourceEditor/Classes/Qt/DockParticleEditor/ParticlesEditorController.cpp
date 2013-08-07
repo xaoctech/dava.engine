@@ -250,119 +250,6 @@ void ParticlesEditorController::RemoveParticleEmitterNode(Entity* emitterSceneNo
     }
 }
 
-void ParticlesEditorController::CleanupParticleEmitterEditorNode(EmitterParticleEditorNode* emitterNode)
-{
-    // Leave the node itself, but cleanup all the children.
-    while (!emitterNode->GetChildren().empty())
-    {
-        emitterNode->RemoveNode(emitterNode->GetChildren().front());
-    }
-}
-
-LayerParticleEditorNode* ParticlesEditorController::AddParticleLayerToNode(EmitterParticleEditorNode* emitterNode)
-{
-    if (!emitterNode)
-    {
-        return NULL;
-    }
-    
-    ParticleEmitter* emitter = emitterNode->GetParticleEmitter();
-    if (!emitter)
-    {
-        return NULL;
-    }
-    
-    // Create the new layer.
-    ParticleLayer *layer;
-    if(emitter->GetIs3D())
-    {
-        layer = new ParticleLayer3D(emitter);
-    }
-    else
-    {
-        layer = new ParticleLayer();
-    }
-
-	layer->startTime = 0;
-    layer->endTime = LIFETIME_FOR_NEW_PARTICLE_EMITTER;
-	layer->life = new PropertyLineValue<float32>(emitter->GetLifeTime());
-
-    layer->layerName = ParticlesEditorNodeNameHelper::GetNewLayerName(ResourceEditor::LAYER_NODE_NAME, emitter);
-
-    emitter->AddLayer(layer);
-
-    // Create the new node and add it to the tree.
-    LayerParticleEditorNode* layerNode = new LayerParticleEditorNode(emitterNode, layer);
-    emitterNode->AddNode(layerNode);
-
-    SafeRelease(layer);
-
-    return layerNode;
-}
-
-LayerParticleEditorNode* ParticlesEditorController::CloneParticleLayerNode(LayerParticleEditorNode* layerToClone)
-{
-    if (!layerToClone || !layerToClone->GetLayer())
-    {
-        return NULL;
-    }
-    
-    EmitterParticleEditorNode* emitterNode = layerToClone->GetEmitterEditorNode();
-    if (!emitterNode)
-    {
-        return NULL;
-    }
-
-    ParticleEmitter* emitter = emitterNode->GetParticleEmitter();
-    if (!emitter)
-    {
-        return NULL;
-    }
-
-    ParticleLayer* clonedLayer = layerToClone->GetLayer()->Clone();
-    emitter->AddLayer(clonedLayer);
-    
-    LayerParticleEditorNode* clonedEditorNode = new LayerParticleEditorNode(emitterNode, clonedLayer);
-    emitterNode->AddNode(clonedEditorNode);
-
-    return clonedEditorNode;
-}
-
-void ParticlesEditorController::RemoveParticleLayerNode(LayerParticleEditorNode* layerToRemove)
-{
-    if (!layerToRemove)
-    {
-        return;
-    }
-    
-    EmitterParticleEditorNode* emitterNode = layerToRemove->GetEmitterEditorNode();
-    if (!emitterNode)
-    {
-        return;
-    }
-
-    ParticleEmitter* emitter = emitterNode->GetParticleEmitter();
-    if (!emitter)
-    {
-        return;
-    }
-    
-    // Lookup for the layer to be removed.
-    int32 layerIndex = layerToRemove->GetLayerIndex();
-    if (layerIndex == -1)
-    {
-        return;
-    }
-
-	// Reset the selected node in case it is one to be removed.
-	CleanupSelectedNodeIfDeleting(layerToRemove);
-
-    // Remove the node from the layers list and also from the emitter.
-    emitter->RemoveLayer(layerIndex);
-    
-    emitterNode->RemoveNode(layerToRemove);
-}
-
 ForceParticleEditorNode* ParticlesEditorController::AddParticleForceToNode(LayerParticleEditorNode* layerNode)
 {
     if (!layerNode)
@@ -380,6 +267,7 @@ ForceParticleEditorNode* ParticlesEditorController::AddParticleForceToNode(Layer
 	ParticleForce* newForce = new ParticleForce(RefPtr<PropertyLine<Vector3> >(new PropertyLineValue<Vector3>(Vector3(0, 0, 0))),
 												RefPtr<PropertyLine<Vector3> >(NULL), RefPtr<PropertyLine<float32> >(NULL));
 	layer->AddForce(newForce);
+	newForce->Release();
 
     // Create the node for the new layer.
     int newLayerIndex = layer->forces.size() - 1;

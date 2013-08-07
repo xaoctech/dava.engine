@@ -39,6 +39,7 @@ public:
 	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
     virtual void GetDataNodes(Set<DataNode*> & dataNodes);
+	virtual void OptimizeBeforeExport();
     
 private:
     RenderObject * renderObject;

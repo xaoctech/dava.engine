@@ -21,6 +21,7 @@ const QChar BaseParticleEditorContentWidget::DEGREE_MARK_CHARACTER = QChar(0x00B
 BaseParticleEditorContentWidget::BaseParticleEditorContentWidget()
 {
 	emitter = NULL;
+	activeScene = NULL;
 }
 
 int BaseParticleEditorContentWidget::ConvertFromPlaybackSpeedToSliderValue(float32 playbackSpeed)

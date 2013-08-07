@@ -28,6 +28,10 @@
 #include "../SceneEditor/EntityOwnerPropertyHelper.h"
 #include "../StringConstants.h"
 
+#include "../Qt/CubemapEditor/MaterialHelper.h"
+
+#include "Scene3D/Components/CustomPropertiesComponent.h"
+
 using namespace DAVA;
 
 SceneDataManager::SceneDataManager()
@@ -119,7 +123,6 @@ Entity* SceneDataManager::AddScene(const FilePath &scenePathname)
 		sceneData->SetLandscapesControllerScene(scene);
 	}
 
-    sceneData->GetScene()->UpdateCameraLightOnScene();
     SceneHidePreview();
 	UpdateParticleSprites();
 	emit SceneGraphNeedRebuild();
@@ -190,7 +193,6 @@ void SceneDataManager::EditScene(SceneData* sceneData, const FilePath &scenePath
 	sceneData->EmitSceneChanged();
 
 
-    scene->UpdateCameraLightOnScene();
 	UpdateParticleSprites();
     emit SceneGraphNeedRebuild();
 
@@ -247,7 +249,6 @@ void SceneDataManager::ReloadScene(const FilePath &scenePathname, const FilePath
     }
     
     
-    scene->UpdateCameraLightOnScene();
 	UpdateParticleSprites();
     emit SceneGraphNeedRebuild();
 	sceneData->SetLandscapesControllerScene(scene);
@@ -282,7 +283,6 @@ void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const FilePa
             errors.insert(Format("Cannot load object: %s", fromPathname.GetAbsolutePathname().c_str()));
         }
         
-        scene->UpdateCameraLightOnScene();
         return;
     }
     
@@ -306,7 +306,8 @@ void SceneDataManager::SetActiveScene(EditorScene *scene)
     currentScene->RebuildSceneGraph();
 
     
-    QtMainWindowHandler::Instance()->ShowStatusBarMessage(currentScene->GetScenePathname().GetAbsolutePathname());
+	// TODO: mainwindow
+    //QtMainWindowHandler::Instance()->ShowStatusBarMessage(currentScene->GetScenePathname().GetAbsolutePathname());
 
 	emit SceneActivated(currentScene);
 }
@@ -481,6 +482,8 @@ void SceneDataManager::InSceneData_SceneGraphModelNeedsSelectNode(DAVA::Entity* 
 	SceneData *sceneData = (SceneData *) QObject::sender();
 	emit SceneGraphNeedSelectNode(sceneData, node);
 }
+
+/*
 
 void SceneDataManager::EnumerateTextures(DAVA::Entity *forNode, Map<String, Texture *> &textures)
 {
@@ -748,9 +751,11 @@ void SceneDataManager::EnumerateMaterials(DAVA::Entity *forNode, Vector<Material
 	if(forNode)
 	{
 		forNode->GetDataNodes(materials);
+		//VI: remove skybox materials so they not to appear in the lists
+		MaterialHelper::FilterMaterialsByType(materials, DAVA::Material::MATERIAL_SKYBOX);
 	}
 }
-
+*/
 void SceneDataManager::SceneNodeSelectedInSceneGraph(Entity* node)
 {
 	SceneData *activeScene = SceneGetActive();
@@ -779,6 +784,9 @@ void SceneDataManager::ApplyDefaultFogSettings(Landscape* landscape, DAVA::Entit
 	// Yuri Coder, 2013/05/13. The default fog settings are taken from Landscape.
 	Vector<Material *> materials;
 	entity->GetDataNodes(materials);
+	//VI: remove skybox materials so they not to appear in the lists
+	MaterialHelper::FilterMaterialsByType(materials, DAVA::Material::MATERIAL_SKYBOX);
+
 	for (Vector<Material*>::iterator iter = materials.begin(); iter != materials.end();
 		 iter ++)
 	{
@@ -788,17 +796,6 @@ void SceneDataManager::ApplyDefaultFogSettings(Landscape* landscape, DAVA::Entit
 		material->SetFogColor(landscape->GetFogColor());
 		material->SetFogDensity(landscape->GetFogDensity());
 	}
-}
-
-void SceneDataManager::UpdateCameraLightOnScene(bool show)
-{
- 	List<SceneData *>::const_iterator endIt = scenes.end();
-	for(List<SceneData *>::const_iterator it = scenes.begin(); it != endIt; ++it)
-	{
-        (*it)->GetScene()->UpdateCameraLightOnScene(show);
-	}
-    
-    emit SceneGraphNeedRebuild();
 }
 
 void SceneDataManager::SceneShowPreview(const DAVA::FilePath &path)
@@ -826,3 +823,4 @@ void SceneDataManager::SceneHidePreview()
         screen->HideScenePreview();
     }
 }
+

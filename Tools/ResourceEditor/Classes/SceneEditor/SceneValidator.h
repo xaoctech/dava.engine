@@ -35,6 +35,13 @@ public:
 	 */
     bool ValidateSceneAndShowErrors(Scene *scene);
     
+	/*
+     \brief Function to validate Particle Emitter upon loading.
+     \param[in] emitter Particle Emitter to validate
+     \param[out] errorsLog set for validation erros
+	 */
+	bool ValidateParticleEmitter(ParticleEmitter* emitter, Set<String> &errorsLog);
+	
     /*
      \brief Function to validate Scene errors
      \param[in] scene scene for validation
@@ -89,7 +96,6 @@ public:
 	 */
     void ValidateMaterial(Material *material, Set<String> &errorsLog);
 
-    
     /*
      \brief Function sets 3d folder path for cheking texture pathnames
      \param[in] pathname path to DataSource/3d folder

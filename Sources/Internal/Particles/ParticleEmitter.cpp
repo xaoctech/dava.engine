@@ -179,7 +179,8 @@ void ParticleEmitter::AddLayer(ParticleLayer * layer)
 	{
 		layer->GetEmitter()->RemoveLayer(layer);
 	}
-
+	// DF-1213 - Set loopEndTime initial value
+	layer->SetLoopEndTime(this->GetLifeTime());
 	layers.push_back(layer);
 	layer->SetEmitter(this);
 	AddRenderBatch(layer->GetRenderBatch());

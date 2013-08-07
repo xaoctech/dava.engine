@@ -21,11 +21,10 @@
 #include "TextureBrowser/TextureCache.h"
 #include "Main/QtUtils.h"
 #include "Main/mainwindow.h"
-#include "Scene/SceneData.h"
 #include "Render/LibPVRHelper.h"
 #include "Render/LibDxtHelper.h"
 #include "SceneEditor/EditorSettings.h"
-#include "Scene/SceneDataManager.h"
+#include "Scene/SceneHelper.h"
 
 #include "ui_texturebrowser.h"
 
@@ -65,14 +64,14 @@ TextureBrowser::TextureBrowser(QWidget *parent)
 	textureListSortModes["Name"] = TextureListModel::SortByName;
 
 	// global scene manager signals
-	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneActivated(SceneData *)), this, SLOT(sceneActivated(SceneData *)));
-	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneChanged(SceneData *)), this, SLOT(sceneChanged(SceneData *)));
-	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneReleased(SceneData *)), this, SLOT(sceneReleased(SceneData *)));
-	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneNodeSelected(SceneData *, DAVA::Entity *)), this, SLOT(sceneNodeSelected(SceneData *, DAVA::Entity *)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(sceneActivated(SceneEditor2 *)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(sceneDeactivated(SceneEditor2 *)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(Selected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(sceneNodeSelected(SceneEditor2 *, DAVA::Entity *)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(Deselected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(sceneNodeDeselected(SceneEditor2 *, DAVA::Entity *)));
 
 	// convertor signals
-	QObject::connect(TextureConvertor::Instance(), SIGNAL(ReadyOriginal(const DAVA::TextureDescriptor *, const QImage &)), this, SLOT(textureReadyOriginal(const DAVA::TextureDescriptor *, const QImage &)));
-	QObject::connect(TextureConvertor::Instance(), SIGNAL(ReadyConverted(const DAVA::TextureDescriptor *, DAVA::eGPUFamily, const QImage &)), this, SLOT(textureReadyConverted(const DAVA::TextureDescriptor *, DAVA::eGPUFamily, const QImage &)));
+	QObject::connect(TextureConvertor::Instance(), SIGNAL(ReadyOriginal(const DAVA::TextureDescriptor *, DAVA::Vector<QImage>&)), this, SLOT(textureReadyOriginal(const DAVA::TextureDescriptor *, DAVA::Vector<QImage>&)));
+	QObject::connect(TextureConvertor::Instance(), SIGNAL(ReadyConverted(const DAVA::TextureDescriptor *, DAVA::eGPUFamily, DAVA::Vector<QImage>&)), this, SLOT(textureReadyConverted(const DAVA::TextureDescriptor *, DAVA::eGPUFamily, DAVA::Vector<QImage>&)));
 
 	setupStatusBar();
 	setupTexturesList();
@@ -168,11 +167,12 @@ void TextureBrowser::setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor 
 
 		// load original image
 		// check if image is in cache
-		QImage img = TextureCache::Instance()->getOriginal(curDescriptor);
-		if(!img.isNull())
+		DAVA::Vector<QImage> images = TextureCache::Instance()->getOriginal(curDescriptor);
+		if(images.size() > 0 &&
+		   !images[0].isNull())
 		{
 			// image is in cache, so set it immediately (by calling image-ready slot)
-			textureReadyOriginal(curDescriptor, img);
+			textureReadyOriginal(curDescriptor, images);
 		}
 		else
 		{
@@ -225,12 +225,13 @@ void TextureBrowser::setTextureView(DAVA::eGPUFamily view, bool forceConvert /* 
 		if(!forceConvert)
 		{
 			// try to find image in cache
-			QImage img = TextureCache::Instance()->getConverted(curDescriptor, view);
+			const DAVA::Vector<QImage>& images = TextureCache::Instance()->getConverted(curDescriptor, view);
 
-			if(!img.isNull())
+			if(images.size() > 0 &&
+			   !images[0].isNull())
 			{
 				// image already in cache, just draw it
-				updateConvertedImageAndInfo(img);
+				updateConvertedImageAndInfo(images, *curDescriptor);
 				
 				needConvert = false;
 				infoConvertedIsUpToDate = true;
@@ -265,9 +266,17 @@ void TextureBrowser::updatePropertiesWarning()
 	}
 }
 
-void TextureBrowser::updateConvertedImageAndInfo(const QImage &image)
+void TextureBrowser::updateConvertedImageAndInfo(const DAVA::Vector<QImage> &images, DAVA::TextureDescriptor& descriptor)
 {
-	ui->textureAreaConverted->setImage(image);
+	if(!descriptor.IsCubeMap())
+	{
+		ui->textureAreaConverted->setImage(images[0]);
+	}
+	else
+	{
+		ui->textureAreaConverted->setImage(images, descriptor.faceDescription);
+	}
+	
 	ui->textureAreaConverted->setEnabled(true);
 	ui->textureAreaConverted->waitbarShow(false);
 
@@ -474,7 +483,9 @@ void TextureBrowser::setupTextureListToolbar()
 
 	ui->textureListToolbar->insertWidget(ui->actionConvertAll, spacerWidget);
 	ui->textureListToolbar->insertSeparator(ui->actionConvertAll);
-	QtMainWindow::Instance()->ShowActionWithText(ui->textureListToolbar, ui->actionConvertAll, true);
+
+	// TODO: mainwindow
+	//QtMainWindow::Instance()->ShowActionWithText(ui->textureListToolbar, ui->actionConvertAll, true);
 
 	ui->textureListSortToolbar->addWidget(texturesSortComboLabel);
 	ui->textureListSortToolbar->addWidget(texturesSortCombo);
@@ -573,19 +584,7 @@ void TextureBrowser::reloadTextureToScene(DAVA::Texture *texture, const DAVA::Te
 		// or if given texture format if not a file (will happened if some common texture params changed - mipmap/filtering etc.)
 		if(DAVA::GPU_UNKNOWN == gpu || gpu == curEditorImageGPUForTextures)
 		{
-			DAVA::Texture *newTexture = SceneDataManager::Instance()->TextureReload(descriptor, texture, curEditorImageGPUForTextures);
-
-			if(NULL != newTexture)
-			{
-				// need reset cur texture to newly loaded
-				if(curTexture == texture)
-				{
-					curTexture = newTexture;
-				}
-
-				// need to set new Texture into Textures list model
-				textureListModel->setTexture(descriptor, newTexture);
-			}
+			texture->ReloadAs(gpu);
 		}
 	}
 }
@@ -679,37 +678,44 @@ void TextureBrowser::texturePropertyChanged(int type)
 	updatePropertiesWarning();
 }
 
-void TextureBrowser::textureReadyOriginal(const DAVA::TextureDescriptor *descriptor, const QImage &image)
+void TextureBrowser::textureReadyOriginal(const DAVA::TextureDescriptor *descriptor, DAVA::Vector<QImage>& images)
 {
 	if(NULL != descriptor)
 	{
 		// put this image into cache
-		TextureCache::Instance()->setOriginal(descriptor, image);
+		TextureCache::Instance()->setOriginal(descriptor, images);
 
 		if(curDescriptor == descriptor)
 		{
-			ui->textureAreaOriginal->setImage(image);
+			if(descriptor->IsCubeMap())
+			{
+				ui->textureAreaOriginal->setImage(images, descriptor->faceDescription);
+			}
+			else
+			{
+				ui->textureAreaOriginal->setImage(images[0]);
+			}
 			ui->textureAreaOriginal->setEnabled(true);
 			ui->textureAreaOriginal->waitbarShow(false);
 
 			// set info about original image size info texture properties
-			ui->textureProperties->setOriginalImageSize(image.size());
+			ui->textureProperties->setOriginalImageSize(images[0].size());
 
 			// set info about loaded image
-			updateInfoOriginal(image);
+			updateInfoOriginal(images[0]);
 		}
 	}
 }
 
-void TextureBrowser::textureReadyConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, const QImage &image)
+void TextureBrowser::textureReadyConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, DAVA::Vector<QImage>& images)
 {
 	if(NULL != descriptor)
 	{
 		// put this image into cache
-		TextureCache::Instance()->setConverted(descriptor, gpu, image);
+		TextureCache::Instance()->setConverted(descriptor, gpu, images);
 		if(curDescriptor == descriptor && curTextureView == gpu)
 		{
-			updateConvertedImageAndInfo(image);
+			updateConvertedImageAndInfo(images, *curDescriptor);
 		}
 
 		DAVA::Texture *texture = textureListModel->getTexture(descriptor);
@@ -772,7 +778,7 @@ void TextureBrowser::textureZoomFit(bool checked)
 		int w = 0;
 		int h = 0;
 
-		if(curTexture == Texture::GetPinkPlaceholder())
+		if(curTexture->IsPinkPlaceholder())
 		{
 			QImage img = ui->textureAreaOriginal->getImage();
 			w = img.width();
@@ -780,8 +786,17 @@ void TextureBrowser::textureZoomFit(bool checked)
 		}
 		else
 		{
-			w = curTexture->width;
-			h = curTexture->height;
+			if(DAVA::Texture::TEXTURE_CUBE == curTexture->textureType)
+			{
+				QSize size = ui->textureAreaOriginal->getContentSize();
+				w = size.width();
+				h = size.height();
+			}
+			else
+			{
+				w = curTexture->width;
+				h = curTexture->height;
+			}
 		}
 
 		if(0 != w && 0 != h)
@@ -832,11 +847,11 @@ void TextureBrowser::textureConver(bool checked)
 
 void TextureBrowser::textureConverAll(bool checked)
 {
-	DAVA::Scene* activeScene = SceneDataManager::Instance()->SceneGetActive()->GetScene();
+	DAVA::Scene* activeScene = QtMainWindow::Instance()->GetCurrentScene();
 	if(NULL != activeScene)
 	{
 		QMessageBox msgBox(this);
-		msgBox.setText("You chose to convert all textures.");
+		msgBox.setText("You are going to convert all textures.");
 		msgBox.setInformativeText("This could take a long time. Would you like to continue?");
 		msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
 		msgBox.setDefaultButton(QMessageBox::Cancel);
@@ -890,55 +905,38 @@ void TextureBrowser::setScene(DAVA::Scene *scene)
 	DAVA::SafeRelease(curScene);
 	curScene = DAVA::SafeRetain(scene);
 
+	// reset current texture
+	setTexture(NULL, NULL);
+
+	// set new scene
 	textureListModel->setScene(curScene);
 }
 
-void TextureBrowser::sceneChanged(SceneData *sceneData)
+void TextureBrowser::sceneActivated(SceneEditor2 *scene)
 {
-	DAVA::Scene *scene = NULL;
-	if(NULL != sceneData)
+	// set new scene
+	if(curScene != scene)
 	{
-		scene = sceneData->GetScene();
-
-		// reload current scene if it is the same as changed
-		// or if there is no current scene now - set it
-		//if(scene == curScene || curScene == NULL)
-		{
-			setScene(scene);
-		}
-	}
-}
-
-void TextureBrowser::sceneActivated(SceneData *sceneData)
-{
-	DAVA::Scene *scene = NULL;
-	if(NULL != sceneData)
-	{
-		scene = sceneData->GetScene();
-
-		// set new scene
 		setScene(scene);
 	}
 }
 
-void TextureBrowser::sceneReleased(SceneData *sceneData)
+void TextureBrowser::sceneDeactivated(SceneEditor2 *scene)
 {
-	DAVA::Scene *scene = NULL;
-	if(NULL != sceneData)
+	if(curScene == scene)
 	{
-		scene = sceneData->GetScene();
-
-		// close current scene
-		if(scene == curScene)
-		{
-			setScene(NULL);
-		}
+		setScene(NULL);
 	}
 }
 
-void TextureBrowser::sceneNodeSelected(SceneData *sceneData, DAVA::Entity *node)
+void TextureBrowser::sceneNodeSelected(SceneEditor2 *scene, DAVA::Entity *entity)
 {
-	textureListModel->setHighlight(node);
+	textureListModel->setHighlight(entity);
+}
+
+void TextureBrowser::sceneNodeDeselected(SceneEditor2 *scene, DAVA::Entity *entity)
+{
+	textureListModel->setHighlight(NULL);
 }
 
 void TextureBrowser::textureViewChanged(int index)

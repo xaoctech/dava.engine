@@ -15,15 +15,15 @@
 =====================================================================================*/
 
 #include "ParticleEffectPropertiesWidget.h"
-#include "Commands/ParticleEditorCommands.h"
-#include "Commands/CommandsManager.h"
+#include "Commands2/ParticleEditorCommands.h"
 #include "../Scene/SceneDataManager.h"
 
 #include <QLineEdit>
 #include <QEvent>
 
 ParticleEffectPropertiesWidget::ParticleEffectPropertiesWidget(QWidget* parent) :
-QWidget(parent)
+	QWidget(parent),
+	BaseParticleEditorContentWidget()
 {
 	mainLayout = new QVBoxLayout();
 	mainLayout->setAlignment(Qt::AlignTop);
@@ -72,17 +72,19 @@ void ParticleEffectPropertiesWidget::OnValueChanged()
 
 	CommandUpdateEffect* commandUpdateEffect = new CommandUpdateEffect(particleEffect);
 	commandUpdateEffect->Init(playbackSpeed, stopOnLoad);
-	CommandsManager::Instance()->ExecuteAndRelease(commandUpdateEffect,
-												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
 
-	Init(particleEffect);
+	DVASSERT(activeScene != 0);
+	activeScene->Exec(commandUpdateEffect);
+
+	Init(activeScene, particleEffect);
 }
 
-void ParticleEffectPropertiesWidget::Init(DAVA::ParticleEffectComponent *effect)
+void ParticleEffectPropertiesWidget::Init(SceneEditor2* scene, DAVA::ParticleEffectComponent *effect)
 {
 	DVASSERT(effect != 0);
 	this->particleEffect = effect;
 	this->emitter = NULL;
+	SetActiveScene(scene);
 
 	blockSignals = true;
 

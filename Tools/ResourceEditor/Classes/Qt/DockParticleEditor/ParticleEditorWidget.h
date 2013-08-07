@@ -24,6 +24,8 @@
 #include "ParticleEmitterPropertiesWidget.h"
 #include "ParticlesEditorQT/Nodes/LayerParticleEditorNode.h"
 
+#include "Scene/SceneEditor2.h"
+
 class EmitterLayerWidget;
 class LayerForceWidget;
 
@@ -38,22 +40,39 @@ public:
     ~ParticleEditorWidget();
 	
 protected slots:
-	void OnEffectSelected(Entity* effectNode);
-	void OnEmitterSelected(Entity* emitterNode, BaseParticleEditorNode* editorNode);
-    void OnLayerSelected(Entity* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode, bool forceRefresh);
-    void OnForceSelected(Entity* emitterNode, ParticleLayer* layer, int32 forceIndex, BaseParticleEditorNode* editorNode);
+	// SceneTree-specific slots.
+	void OnEffectSelectedFromSceneTree(SceneEditor2* scene, DAVA::Entity* effectNode);
+	void OnEmitterSelectedFromSceneTree(SceneEditor2* scene, DAVA::Entity* emitterNode);
+	void OnLayerSelectedFromSceneTree(SceneEditor2* scene, DAVA::ParticleLayer* layer, bool forceRefresh);
+    void OnForceSelectedFromSceneTree(SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::int32 forceIndex);
 
 	void OnUpdate();
 	void OnValueChanged();
 	void OnNodeDeselected(BaseParticleEditorNode* particleEditorNode);
-	
+
+	// Notifications about changes in the Particles items.
+	void OnParticleLayerValueChanged(SceneEditor2* scene, DAVA::ParticleLayer* layer);
+	void OnParticleEmitterLoaded(SceneEditor2* scene, DAVA::ParticleEmitter* emitter);
+	void OnParticleEmitterSaved(SceneEditor2* scene, DAVA::ParticleEmitter* emitter);
+
 signals:
 	void ChangeVisible(bool bVisible);
-	void ValueChanged();
 	
 private:
+	enum ParticleEditorWidgetMode
+	{
+		MODE_NONE = 0,
+		MODE_EFFECT,
+		MODE_EMITTER,
+		MODE_LAYER,
+		MODE_FORCE
+	};
+
 	void DeleteOldWidget();
 	void UpdateParticleEditorWidgets();
+	
+	// Handle the "Emitter Selected" notification for different cases.
+	void HandleEmitterSelected(SceneEditor2* scene, DAVA::ParticleEmitter* emitter, bool forceUpdate);
 	
 	// Update the visible timelines for the particular Particle Emitter elements.
 	void UpdateVisibleTimelinesForParticleEmitter();
@@ -61,11 +80,31 @@ private:
 	// Update visible widgets for the layer.
 	void UpdateWidgetsForLayer();
 
+	// Emit the "Value Changed" signal depending on the active widget.
+	void EmitValueChangedSceneSignal();
+
+	// Create/delete Inner Widgets. Note - they are created once only.
+	void CreateInnerWidgets();
+	void DeleteInnerWidgets();
+
+	// Switch editor to the particular mode.
+	void SwitchEditorToEffectMode(SceneEditor2* scene, ParticleEffectComponent* effect);
+	void SwitchEditorToEmitterMode(SceneEditor2* scene, DAVA::ParticleEmitter* emitter);
+	void SwitchEditorToLayerMode(SceneEditor2* scene, DAVA::ParticleLayer* layer);
+	void SwitchEditorToForceMode(SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::int32 forceIndex);
+
+	// Reset the editor mode, hide/disconnect appropriate widgets.
+	void ResetEditorMode();
+
 private:
+	// Current Particle Editor Widget mode.
+	ParticleEditorWidgetMode widgetMode;
+
+	// Inner widgets.
 	ParticleEffectPropertiesWidget* effectPropertiesWidget;
+	ParticleEmitterPropertiesWidget* emitterPropertiesWidget;
 	EmitterLayerWidget* emitterLayerWidget;
 	LayerForceWidget* layerForceWidget;
-	ParticleEmitterPropertiesWidget* emitterPropertiesWidget;
 };
 
 #endif /* defined(__ResourceEditorQt__ParticleEditorWidget__) */

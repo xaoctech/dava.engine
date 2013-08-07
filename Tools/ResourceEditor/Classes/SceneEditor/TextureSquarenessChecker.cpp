@@ -15,10 +15,11 @@
 =====================================================================================*/
 
 #include "TextureSquarenessChecker.h"
-#include "Qt/Scene/SceneDataManager.h"
+#include "Qt/Scene/SceneHelper.h"
 #include "SceneEditor/SceneEditorScreenMain.h"
 #include "Scene3D/Components/ComponentHelpers.h"
-#include "Qt/Main/QtUtils.h"
+#include "Main/QtUtils.h"
+#include "Main/mainwindow.h"
 
 TextureSquarenessChecker::TextureSquarenessChecker()
 {
@@ -34,7 +35,7 @@ void TextureSquarenessChecker::CheckSceneForTextureSquarenessAndResave(Scene *sc
     if(scene) 
     {
         Vector<Material *> allMaterials;
-        SceneDataManager::EnumerateMaterials(scene, allMaterials);
+        SceneHelper::EnumerateMaterials(scene, allMaterials);
 
         for(int32 i = 0; i < allMaterials.size(); i++)
         {
@@ -60,7 +61,7 @@ void TextureSquarenessChecker::CheckSceneForTextureSquarenessAndResave(Scene *sc
         {
             ValidateTextureCoordsOfNodeGeometry(scene);
 
-			FilePath currentPath = SceneDataManager::Instance()->SceneGetActive()->GetScenePathname();
+			FilePath currentPath = QtMainWindow::Instance()->GetCurrentScene()->GetScenePath();
 
 			SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
             screen->SaveSceneToFile(currentPath);

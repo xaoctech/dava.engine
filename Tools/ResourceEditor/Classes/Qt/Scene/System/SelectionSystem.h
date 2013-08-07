@@ -50,6 +50,8 @@ public:
 	void SetPivotPoint(ST_PivotPoint pp);
 	ST_PivotPoint GetPivotPoint() const;
 
+	void LockSelection(bool lock);
+
 	DAVA::AABBox3 GetSelectionAABox(DAVA::Entity *entity) const;
 	DAVA::AABBox3 GetSelectionAABox(DAVA::Entity *entity, const DAVA::Matrix4 &transform) const;
 
@@ -58,7 +60,7 @@ protected:
 	void Draw();
 
 	void ProcessUIEvent(DAVA::UIEvent *event);
-	void PropeccCommand(const Command2 *command, bool redo);
+	void ProcessCommand(const Command2 *command, bool redo);
 
 	void UpdateHoodPos() const;
 	void SelectedItemsWereModified();
@@ -69,6 +71,7 @@ protected:
 private:
 	int drawMode;
 	bool applyOnPhaseEnd;
+	bool selectionLocked;
 
 	SceneCollisionSystem *collisionSystem;
 	HoodSystem* hoodSystem;

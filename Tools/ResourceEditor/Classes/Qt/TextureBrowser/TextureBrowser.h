@@ -20,8 +20,8 @@
 #include <QDialog>
 #include <QMap>
 #include "DAVAEngine.h"
-#include "QtPosSaver/QtPosSaver.h"
-#include "Scene/SceneDataManager.h"
+#include "Tools/QtPosSaver/QtPosSaver.h"
+#include "Scene/SceneSignals.h"
 
 class QModelIndex;
 class TextureListDelegate;
@@ -59,10 +59,10 @@ protected:
 	void closeEvent(QCloseEvent * e);
 
 public slots:
-	void sceneActivated(SceneData *scene);
-	void sceneChanged(SceneData *scene);
-	void sceneReleased(SceneData *scene);
-	void sceneNodeSelected(SceneData *scene, DAVA::Entity *node);
+	void sceneActivated(SceneEditor2 *scene);
+	void sceneDeactivated(SceneEditor2 *scene);
+	void sceneNodeSelected(SceneEditor2 *scene, DAVA::Entity *entity);
+	void sceneNodeDeselected(SceneEditor2 *scene, DAVA::Entity *entity);
 
 private:
     Ui::TextureBrowser *ui;
@@ -103,7 +103,7 @@ private:
 	void setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor *descriptor);
 	void setTextureView(DAVA::eGPUFamily view, bool forceConvert = false);
 
-	void updateConvertedImageAndInfo(const QImage &image);
+	void updateConvertedImageAndInfo(const DAVA::Vector<QImage> &images, DAVA::TextureDescriptor& descriptor);
 	void updateInfoColor(QLabel *label, const QColor &color = QColor());
 	void updateInfoPos(QLabel *label, const QPoint &pos = QPoint());
 	void updateInfoOriginal(const QImage &origImage);
@@ -124,8 +124,8 @@ private slots:
 	void textureBorderPressed(bool checked);
 	void textureBgMaskPressed(bool checked);
 	void texturePropertyChanged(int type);
-	void textureReadyOriginal(const DAVA::TextureDescriptor *descriptor, const QImage &image);
-	void textureReadyConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, const QImage &image);
+	void textureReadyOriginal(const DAVA::TextureDescriptor *descriptor, DAVA::Vector<QImage>& images);
+	void textureReadyConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu,  DAVA::Vector<QImage>& images);
 	void texturePixelOver(const QPoint &pos);
 	void textureZoomSlide(int value);
 	void textureZoom100(bool checked);

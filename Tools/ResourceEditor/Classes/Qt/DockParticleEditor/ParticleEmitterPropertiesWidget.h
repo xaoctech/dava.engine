@@ -22,7 +22,7 @@
 #include "GradientPickerWidget.h"
 #include "TimeLineWidget.h"
 #include "BaseParticleEditorContentWidget.h"
-#include "../CustomControls/EventFilterDoubleSpinBox.h"
+#include "Tools/EventFilterDoubleSpinBox/EventFilterDoubleSpinBox.h"
 
 #include <QComboBox>
 #include <QLabel>
@@ -36,7 +36,7 @@ public:
 	explicit ParticleEmitterPropertiesWidget(QWidget* parent = 0);
 	~ParticleEmitterPropertiesWidget();
 
-	void Init(DAVA::ParticleEmitter* emitter, bool updateMinimize, bool needUpdateTimeLimits = true);
+	void Init(SceneEditor2* scene, DAVA::ParticleEmitter* emitter, bool updateMinimize, bool needUpdateTimeLimits = true);
 	void Update();
 	
 	virtual bool eventFilter( QObject * o, QEvent * e );

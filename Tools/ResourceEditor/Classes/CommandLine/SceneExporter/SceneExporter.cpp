@@ -21,7 +21,8 @@
 #include "TextureCompression/DXTConverter.h"
 
 #include "Render/TextureDescriptor.h"
-#include "Qt/Scene/SceneDataManager.h"
+#include "Qt/Scene/SceneHelper.h"
+#include "EditorScene.h"
 
 #include "Render/GPUFamilyDescriptor.h"
 
@@ -175,7 +176,7 @@ void SceneExporter::RemoveEditorNodes(DAVA::Entity *rootNode)
 void SceneExporter::ExportDescriptors(DAVA::Scene *scene, Set<String> &errorLog)
 {
     Set<FilePath> descriptorsForExport;
-    SceneDataManager::EnumerateDescriptors(scene, descriptorsForExport);
+    SceneHelper::EnumerateDescriptors(scene, descriptorsForExport);
 
     Set<FilePath>::const_iterator endIt = descriptorsForExport.end();
     Set<FilePath>::iterator it = descriptorsForExport.begin();
@@ -311,7 +312,7 @@ void SceneExporter::ExportLandscapeFullTiledTexture(Landscape *landscape, Set<St
         String workingPathname = sceneUtils.RemoveFolderFromPath(fullTiledPathname, sceneUtils.dataSourceFolder);
         sceneUtils.PrepareFolderForCopyFile(workingPathname, errorLog);
 
-        Texture *fullTiledTexture = Texture::GetPinkPlaceholder();
+        Texture *fullTiledTexture = Texture::CreatePink();
         Image *image = fullTiledTexture->CreateImageFromMemory();
         if(image)
         {
@@ -345,7 +346,8 @@ void SceneExporter::ExportLandscapeFullTiledTexture(Landscape *landscape, Set<St
             errorLog.insert(String(Format("Can't create image for fullTiled Texture for file %s", workingPathname.c_str())));
             landscape->SetTextureName(Landscape::TEXTURE_TILE_FULL, String(""));
         }
-        
+
+		fullTiledTexture->Release();
         landscape->SetTextureName(Landscape::TEXTURE_TILE_FULL, sceneUtils.dataSourceFolder + workingPathname);
     }
 }

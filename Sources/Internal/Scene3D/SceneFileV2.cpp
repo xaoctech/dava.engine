@@ -53,6 +53,7 @@
 #include "Scene3D/SpriteNode.h"
 #include "Render/Highlevel/SpriteObject.h"
 
+#include "Scene3D/Components/CustomPropertiesComponent.h"
 
 namespace DAVA
 {
@@ -127,7 +128,6 @@ SceneFileV2::eError SceneFileV2::GetError()
     return lastError;
 }
 
-
 SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scene *_scene)
 {
     File * file = File::Create(filename, File::CREATE | File::WRITE);
@@ -146,7 +146,8 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
     header.signature[2] = 'V';
     header.signature[3] = '2';
     
-    header.version = 6;
+	//VI: version = 7 is in the feature-new-materials branch
+    header.version = 8;
     header.nodeCount = _scene->GetChildrenCount();
     
     file->Write(&header, sizeof(Header));
@@ -176,6 +177,8 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
 //    SaveDataHierarchy(_scene->GetStaticMeshes(), file, 1);
 
     List<DataNode*> nodes;
+	if (isSaveForGame)
+		_scene->OptimizeBeforeExport();
     _scene->GetDataNodes(nodes);
     int32 dataNodesCount = (int32)nodes.size();
     file->Write(&dataNodesCount, sizeof(int32));
@@ -249,7 +252,7 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
     {
         LoadHierarchy(0, rootNode, file, 1);
     }
-    
+		    
     OptimizeScene(rootNode);
 	StopParticleEffectComponents(rootNode);
     
@@ -640,40 +643,41 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
     for (int32 c = 0; c < currentNode->GetChildrenCount(); ++c)
     {
         Entity * childNode = currentNode->GetChild(c);
+
         bool dec = RemoveEmptyHierarchy(childNode);
         if(dec)c--;
     }
     
-//    if (currentNode->GetName() == "back_plain02.sc2")
-//    {
-//        int32 k = 0;
-//        k++;
-//        Logger::Debug("found node: %s %p", currentNode->GetName().c_str(), currentNode);
-//    }
-
-    if ((currentNode->GetChildrenCount() == 1) && (typeid(*currentNode) == typeid(Entity)))
+    if(currentNode->GetChildrenCount() == 1)
     {
-        if (currentNode->GetComponentCount() == 1)
-        {
-            bool isTransfrom = currentNode->GetComponent(Component::TRANSFORM_COMPONENT) != 0;
-            if (!isTransfrom)
-                return false;
-        }
-        else if (currentNode->GetComponentCount() >= 2)
+		uint32 allowed_comp_count = 0;
+		if(NULL != currentNode->GetComponent(Component::TRANSFORM_COMPONENT))
+		{
+			allowed_comp_count++;
+		}
+
+		if(NULL != currentNode->GetComponent(Component::CUSTOM_PROPERTIES_COMPONENT))
+		{
+			allowed_comp_count++;
+		}
+
+		if (currentNode->GetComponentCount() > allowed_comp_count)
+		{
             return false;
+		}
         
         if (currentNode->GetFlags() & Entity::NODE_LOCAL_MATRIX_IDENTITY)
         {
             Entity * parent  = currentNode->GetParent();
+
             if (parent)
             {
                 Entity * childNode = SafeRetain(currentNode->GetChild(0));
                 String currentName = currentNode->GetName();
-				KeyedArchive * currentProperties = SafeRetain(currentNode->GetCustomProperties());
+				KeyedArchive * currentProperties = currentNode->GetCustomProperties();
                 
                 //Logger::Debug("remove node: %s %p", currentNode->GetName().c_str(), currentNode);
 				parent->InsertBeforeNode(childNode, currentNode);
-                parent->RemoveNode(currentNode);
                 
                 childNode->SetName(currentName);
 				//merge custom properties
@@ -684,9 +688,13 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
 				{
 					newProperties->SetVariant(it->first, *it->second);
 				}
+				
+				//VI: remove node after copying its properties since properties become invalid after node removal
+				parent->RemoveNode(currentNode);
+				
                 removedNodeCount++;
                 SafeRelease(childNode);
-				SafeRelease(currentProperties);
+				
                 return true;
             }
             //RemoveEmptyHierarchy(childNode);

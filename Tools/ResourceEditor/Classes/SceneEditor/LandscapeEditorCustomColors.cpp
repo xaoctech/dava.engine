@@ -21,6 +21,7 @@
 #include "PropertyControlCreator.h"
 #include "EditorScene.h"
 #include "EditorConfig.h"
+#include "EditorSettings.h"
 
 #include "HeightmapNode.h"
 
@@ -34,6 +35,8 @@
 #include "../Qt/Main/QtUtils.h"
 #include "../Commands/CustomColorCommands.h"
 #include "../Commands/CommandsManager.h"
+
+#include "Scene3D/Components/CustomPropertiesComponent.h"
 
 #define CUSTOM_COLOR_TEXTURE_PROP "customColorTexture"
 
@@ -395,7 +398,8 @@ void LandscapeEditorCustomColors::HideAction()
 	SafeRelease(texSurf);
 	SafeRelease(circleTexture);
 	
-	QtMainWindowHandler::Instance()->SetCustomColorsWidgetsState(false);
+	// TODO: mainwindow
+	//QtMainWindowHandler::Instance()->SetCustomColorsWidgetsState(false);
 }
 
 void LandscapeEditorCustomColors::ShowAction()
@@ -427,7 +431,8 @@ void LandscapeEditorCustomColors::ShowAction()
 
 	PerformLandscapeDraw();
 
-	QtMainWindowHandler::Instance()->SetCustomColorsWidgetsState(true);
+	// TODO: mainwindow
+	//QtMainWindowHandler::Instance()->SetCustomColorsWidgetsState(true);
 }
 
 void LandscapeEditorCustomColors::SaveTextureAction(const FilePath &pathToFile)

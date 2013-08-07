@@ -25,6 +25,9 @@
 #include "DockSceneTree/SceneTreeModel.h"
 #include "DockSceneTree/SceneTreeDelegate.h"
 
+// temp include
+#include "ParticlesEditorQT/Nodes/BaseParticleEditorNode.h"
+
 class SceneTree : public QTreeView
 {
 	Q_OBJECT
@@ -35,13 +38,11 @@ public:
 
 public slots:
 	void ShowContextMenu(const QPoint &pos);
-	void LookAtSelection();
-	void RemoveSelection();
-	void LockEntities();
-	void UnlockEntities();
+	void SetFilter(const QString &filter);
 
 protected:
 	SceneTreeModel * treeModel;
+	SceneTreeFilteringModel *filteringProxyModel;
 	SceneTreeDelegate *treeDelegate;
 
 	bool skipTreeSelectionProcessing;
@@ -50,11 +51,17 @@ protected:
 	void dragMoveEvent(QDragMoveEvent *event);
 	void dragEnterEvent(QDragEnterEvent *event);
 
+	void GetDropParams(const QPoint &pos, QModelIndex &index, int &row, int &col);
+
+	void EmitParticleSignals(const QItemSelection & selected);
+
 protected slots:
 	void SceneActivated(SceneEditor2 *scene);
 	void SceneDeactivated(SceneEditor2 *scene);
 	void EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity);
 	void EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity);
+
+	void ParticleLayerValueChanged(SceneEditor2* scene, DAVA::ParticleLayer* layer);
 
 	void TreeSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
 	void TreeItemClicked(const QModelIndex & index);
@@ -64,6 +71,51 @@ protected slots:
 
 	void SyncSelectionToTree();
 	void SyncSelectionFromTree();
+
+	void ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos);
+	void ShowContextMenuLayer(DAVA::ParticleLayer *layer, const QPoint &pos);
+	void ShowContextMenuForce(DAVA::ParticleLayer *layer, DAVA::ParticleForce *force, const QPoint &pos);
+
+	void LookAtSelection();
+	void RemoveSelection();
+	void LockEntities();
+	void UnlockEntities();
+	
+	// Particle Emitter handlers.
+	void AddEmitter();
+	void StartEmitter();
+	void StopEmitter();
+	void RestartEmitter();
+	
+	void AddLayer();
+	void LoadEmitterFromYaml();
+	void SaveEmitterToYaml();
+	void SaveEmitterToYamlAs();
+
+	void CloneLayer();
+	void RemoveLayer();
+	void AddForce();
+	void RemoveForce();
+
+	void EditModel();
+	void ReloadModel();
+	void ReloadModelAs();
+	
+protected:
+	// Helpers for Particles.
+	// Get the default path to Particles Config.
+	QString GetParticlesConfigPath();
+	
+	// Perform save for selected Emitters.
+	void PerformSaveEmitter(bool forceAskFileName);
+
+	// Cleanup the selected Particle Editor items.
+	void CleanupParticleEditorSelectedItems();
+
+private:
+	// Selected Particle Layer.
+	ParticleLayer* selectedLayer;
+	ParticleForce* selectedForce;
 };
 
 #endif // __QT_SCENE_TREE_H__

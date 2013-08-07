@@ -49,11 +49,24 @@ protected:
 	
 	int GetOrientation();
 	void SetOrientation(int value);
+
+	virtual void SetLeftAlign(int value);
+	virtual void SetHCenterAlign(int value);
+	virtual void SetRightAlign(int value);
+	virtual void SetTopAlign(int value);
+	virtual void SetVCenterAlign(int value);
+	virtual void SetBottomAlign(int value);
+	virtual void SetLeftAlignEnabled(const bool value);
+	virtual void SetHCenterAlignEnabled(const bool value);
+	virtual void SetRightAlignEnabled(const bool value);
+	virtual void SetTopAlignEnabled(const bool value);
+	virtual void SetVCenterAlignEnabled(const bool value);
+	virtual void SetBottomAlignEnabled(const bool value);
 	
 	virtual void SetActiveControlRect(const Rect& rect);
 
 private:
-	void UpdateListCellSize(const Rect& rect, UIList::eListOrientation orientation);
+	void UpdateListCellSize();
 };
 
 };
