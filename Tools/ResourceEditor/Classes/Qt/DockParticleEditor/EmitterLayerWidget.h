@@ -123,6 +123,15 @@ private:
 
 	EventFilterDoubleSpinBox* startTimeSpin;
 	EventFilterDoubleSpinBox* endTimeSpin;
+	EventFilterDoubleSpinBox* deltaSpin;
+	EventFilterDoubleSpinBox* loopEndSpin;
+	EventFilterDoubleSpinBox* deltaVariationSpin;
+	EventFilterDoubleSpinBox* loopVariationSpin;
+	
+	QLabel* deltaSpinLabel;
+	QLabel* deltaVariationSpinLabel;
+	QLabel* loopEndSpinLabel;
+	QLabel* loopVariationSpinLabel;
 	
 	bool blockSignals;
 

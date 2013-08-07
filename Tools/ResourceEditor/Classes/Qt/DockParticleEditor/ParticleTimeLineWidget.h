@@ -59,8 +59,10 @@ public:
 	{
 		float32 startTime;
 		float32 endTime;
-		float32 loopedEndTime;
+		float32 deltaTime;
+		float32 loopEndTime;
 		bool isLooped;
+		bool hasLoopVariation;
 		QColor color;
 		QString legend;
 		ParticleLayer* layer;
@@ -105,13 +107,15 @@ protected:
 	virtual void mouseDoubleClickEvent(QMouseEvent *);
 
 private:
-	bool GetLineRect(uint32 id, QRect& startPoint, QRect& endPoint, bool useLoopedTime = false) const;
+	bool GetLineRect(uint32 id, QRect& startPoint, QRect& endPoint) const;
+	bool GetLoopedLineRect(uint32 id, QRect& startPoint, QRect& endPoint, float32 startTime, float32 endTime) const;
 	QRect GetGraphRect() const;
 	QPoint GetPoint(const QPoint&) const;
 	
 	void AddLayerLine(uint32 layerLineID, float32 minTime, float32 maxTime,
 					  const QColor& layerColor, ParticleLayer* layer);
-	void AddLine(uint32 lineId, float32 startTime, float32 endTime, float32 loopedEndTime, bool isLooped, const QColor& color, const QString& legend, ParticleLayer* layer);
+	void AddLine(uint32 lineId, float32 startTime, float32 endTime, float32 deltaTime, float32 loopEndTime, bool isLooped,
+					bool hasLoopVariation, const QColor& color, const QString& legend, ParticleLayer* layer);
 
 	void OnValueChanged(int lineId);
 	void UpdateSizePolicy();

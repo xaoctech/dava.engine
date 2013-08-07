@@ -60,12 +60,13 @@ EditorScene::EditorScene()
 
     editorLightSystem = 0;
     editorLightSystem = new EditorLightSystem(this);
-	AddSystem(editorLightSystem, 0);
+	AddSystem(editorLightSystem, Component::LIGHT_COMPONENT);
 }
 
 EditorScene::~EditorScene()
 {
-    editorLightSystem->SetCameraLightEnabled(false);
+	RemoveSystem(editorLightSystem);
+	SafeDelete(editorLightSystem);
     
 	ReleaseUserData(this);
 	SafeDelete(collisionWorld);
@@ -83,7 +84,7 @@ void EditorScene::Update(float32 timeElapsed)
 {    
 	Scene::Update(timeElapsed);
 
-	editorLightSystem->Update(timeElapsed);
+	editorLightSystem->Process();
 
 	CheckNodes(this);
 	UpdateBullet(this);

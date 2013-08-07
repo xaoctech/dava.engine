@@ -71,9 +71,6 @@ void BaseAddEntityDialog::SetEntity(DAVA::Entity* _entity)
 void BaseAddEntityDialog::AddControlToUserContainer(QWidget* widget)
 {
 	ui->userContentLayout->addWidget(widget);
-	
-	int margin = this->layout()->margin();
-	widget->setMinimumWidth(width()- 2* margin);
 }
 
 void BaseAddEntityDialog::RemoveControlFromUserContainer(QWidget* widget)

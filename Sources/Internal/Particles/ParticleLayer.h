@@ -71,18 +71,80 @@ public:
 	void Restart(bool isDeleteAllParticles = true);
 	
 	/**
+		\brief This function restarts this layer. It should be used only if layer is looped
+		You can delete particles at restart. 
+		\param[in] isDeleteAllParticles if it's set to true layer deletes all previous particles that was generated
+	 */
+	void RestartLoop(bool isDeleteAllParticles = true);
+	
+	/**
 	 \brief Enable/disable loop otion.
 	 If loop option is enabled, layer will automatically restart after it's lifeTime ends.
-	 Option is enabled by default.
+	 Option is disbled by default.
 	 \param[in] autoRestart enable autorestart if true
 	 */
 	void SetLooped(bool isLopped);
 
 	/**
 	 \brief Get isLooped state.
-	 \returns current autorestart state.
+	 \returns current layer autorestart state.
 	 */
 	bool GetLooped();
+	
+	/**
+	 \brief Set looped layer delta time.
+	 DeltaTime handle time delay between each layer loop
+	 \param[in] deltaTime time delay between layer restarts
+	 */
+	void SetDeltaTime(float32 deltaTime);
+	
+	/**
+	 \brief Get delta time.
+	 \returns current deltaTime delay
+	 */
+	float32 GetDeltaTime();
+	
+	/**
+	 \brief Set delta time variation
+	 DeltaVariation defines maximum shift of deltaTime
+	 For each loop we should calculate random deltaTime shift in range [0..deltaVariation]
+	 \param[in] deltaVariation time variation for deltaTime
+	 */
+	void SetDeltaVariation(float32 deltaVariation);
+	
+	/**
+	 \brief Get delta variation.
+	 \returns current delta variation maximum shift
+	 */
+	float32 GetDeltaVariation();
+	
+	/**
+	 \brief Set loop time variation
+	 loopVariation defines maximum shift of loop life (loopLife = endTime - startTime)
+	 For each loop we should calculate random loopLife shift in range [0..loopVariation]
+	 \param[in] loopVariation time variation for loop life
+	 */
+	void SetLoopVariation(float32 loopVariation);
+	
+	/**
+	 \brief Get loop variation.
+	 \returns current loop variation maximum shift
+	 */
+	float32 GetLoopVariation();
+
+	/**
+	 \brief Set end time of looped layer.
+	 endTime defines the time at which looped layer should stop "playing" and
+	 wait for ParticleEmitter restart
+	 \param[in] deltaTime time delay between layer restarts
+	 */
+	void SetLoopEndTime(float32 endTime);
+	
+	/**
+	 \brief Get isLooped state.
+	 \returns current autorestart state.
+	 */
+	float32 GetLoopEndTime();
 	
 	/**
 		\brief This function retrieve current particle count from current layer.
@@ -228,6 +290,7 @@ protected:
 	// time properties for the particle layer
 	float32 particlesToGenerate;
 	float32 layerTime;
+	float32 loopLayerTime;
 	
 	// parent emitter (required to know emitter params during generation)
 	ParticleEmitter * emitter;
@@ -289,6 +352,12 @@ public:
 	float32		alignToMotion;
 	float32		startTime;
 	float32		endTime;
+	// Layer loop paremeters
+	float32		deltaTime;
+	float32 	deltaVariation;
+	float32 	loopVariation;
+	float32 	loopEndTime;
+	
 	int32		frameStart;
 	int32		frameEnd;
 	eType		type;
@@ -306,6 +375,10 @@ private:
 		String layerTypeName;
 	};
 	static const LayerTypeNamesInfo layerTypeNamesInfoMap[];
+	void RecalculateVariation();
+	float32 GetRandomFactor();
+	float32 currentLoopVariation;
+	float32 currentDeltaVariation;
 
 public:
     

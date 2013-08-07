@@ -139,6 +139,10 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
 
 									  float32 startTime,
 									  float32 endTime,
+									  float32 deltaTime,
+									  float32 deltaVariation,
+									  float32 loopEndTime,
+									  float32 loopVariation,
 									  bool frameOverLifeEnabled,
 									  float32 frameOverLifeFPS,
 									  
@@ -175,6 +179,10 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
 
 	this->startTime = startTime;
 	this->endTime = endTime;
+	this->deltaTime = deltaTime;
+	this->deltaVariation = deltaVariation;
+	this->loopEndTime = loopEndTime;
+	this->loopVariation = loopVariation;
 	this->frameOverLifeEnabled = frameOverLifeEnabled;
 	this->frameOverLifeFPS = frameOverLifeFPS;
 	
@@ -216,6 +224,10 @@ void CommandUpdateParticleLayer::Redo()
 
 	layer->startTime = startTime;
 	layer->endTime = endTime;
+	layer->deltaTime = deltaTime;
+	layer->deltaVariation = deltaVariation;
+	layer->loopEndTime = loopEndTime;
+	layer->loopVariation = loopVariation;
 	
 	layer->SetPivotPoint(Vector2(pivotPointX, pivotPointY));
 

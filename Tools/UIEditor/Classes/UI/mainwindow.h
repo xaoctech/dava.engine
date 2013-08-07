@@ -40,9 +40,14 @@ protected:
 	virtual void closeEvent(QCloseEvent * event);
 
 private slots:
-    void on_scaleSpin_valueChanged(double arg1);
+	// Zoom.
+	void OnScaleSliderValueChanged(int value);
+	void OnScaleComboIndexChanged(int value);
+	void OnScaleComboTextEditingFinished();
+
+	// Scroll.
 	void OnSliderMoved();
-    void on_scaleSlider_valueChanged(int value);
+
     void OnOpenFontManager();
     void OnOpenLocalizationManager();
     void OnShowHelpContents();
@@ -98,6 +103,13 @@ private:
 
 	// Save the full project or changes only.
 	void DoSaveProject(bool changesOnly);
+
+	// Handle the scale change.
+	void UpdateScaleAndScaleSliderByIndex(int32 index);
+
+	void UpdateScale(int32 newScalePercents);
+	void UpdateScaleComboIndex(int newIndex);
+	void UpdateScaleSlider(int32 newScalePercents);
 
 private:
     Ui::MainWindow *ui;
