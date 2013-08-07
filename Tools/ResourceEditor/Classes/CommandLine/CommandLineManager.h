@@ -27,15 +27,20 @@ public:
 	virtual ~CommandLineManager();
     
     bool IsCommandLineModeEnabled() { return isCommandLineModeEnabled; };
+    bool IsToolInitialized() { return isToolInitialized; };
     
     void Process();
     void PrintResults();
 	bool NeedCloseApplication();
     
     CommandLineTool * GetActiveCommandLineTool() { return  activeTool; };
+    
 
 	DAVA::uint32 GetErrorsCount() const;
 
+    
+    void PrintUsageForActiveTool();
+    
 protected:
 
     void AddCommandLineTool(CommandLineTool *tool);
@@ -51,6 +56,7 @@ protected:
     bool isCommandLineModeEnabled;
     
     CommandLineTool *activeTool;
+    bool isToolInitialized;
 };
 
 

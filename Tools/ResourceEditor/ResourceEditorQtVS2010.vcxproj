@@ -372,6 +372,8 @@
     <ClCompile Include="Classes\CommandLine\SceneUtils\CleanFolderTool.cpp" />
     <ClCompile Include="Classes\CommandLine\SceneUtils\SceneUtils.cpp" />
     <ClCompile Include="Classes\Commands2\AddEntityCommand.cpp" />
+    <ClCompile Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorTool.cpp" />
+    <ClCompile Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorUtils.cpp" />
     <ClCompile Include="Classes\Commands2\Command2.cpp" />
     <ClCompile Include="Classes\Commands2\CommandAction.cpp" />
     <ClCompile Include="Classes\Commands2\CommandBatch.cpp" />
@@ -391,7 +393,6 @@
     <ClCompile Include="Classes\Commands2\VisibilityToolActions.cpp" />
     <ClCompile Include="Classes\Commands\Command.cpp" />
     <ClCompile Include="Classes\Commands\CommandCreateNode.cpp" />
-    <ClCompile Include="Classes\Commands\CommandReloadTextures.cpp" />
     <ClCompile Include="Classes\Commands\CommandsManager.cpp" />
     <ClCompile Include="Classes\Commands\CustomColorCommands.cpp" />
     <ClCompile Include="Classes\Commands\EditorBodyControlCommands.cpp" />
@@ -1034,6 +1035,8 @@
     <ClInclude Include="Classes\CommandLine\SceneUtils\CleanFolderTool.h" />
     <ClInclude Include="Classes\CommandLine\SceneUtils\SceneUtils.h" />
     <ClInclude Include="Classes\Commands2\AddEntityCommand.h" />
+    <ClInclude Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorTool.h" />
+    <ClInclude Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorUtils.h" />
     <ClInclude Include="Classes\Commands2\Command2.h" />
     <ClInclude Include="Classes\Commands2\CommandAction.h" />
     <ClInclude Include="Classes\Commands2\CommandBatch.h" />

@@ -1574,8 +1574,6 @@ void Landscape::SetHeightmap(DAVA::Heightmap *height)
     
 Texture * Landscape::CreateFullTiledTexture()
 {
-    Logger::Debug("[LN] CreateFullTiledTexture");
-    
     bool savedIsFogEnabled = isFogEnabled;
     SetFog(false);
 
