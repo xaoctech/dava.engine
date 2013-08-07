@@ -95,9 +95,7 @@ Entity::~Entity()
 
 	RemoveAllChildren();
 	SetScene(0);
-
-    SafeRelease(customProperties);
-
+    
 	RemoveAllComponents();
 //  Logger::Debug("~Entity: %p", this);
 }
@@ -1193,7 +1191,7 @@ void Entity::LoadComponentsV6(KeyedArchive *compsArch, SceneFileV2 * sceneFileV2
 	
 	if(sceneFileV2->GetVersion() < CUSTOM_PROPERTIES_COMPONENT_SAVE_SCENE_VERSION)
 	{
-		KeyedArchive* customProps = archive->GetArchiveFromByteArray("customprops");
+		KeyedArchive* customProps = compsArch->GetArchiveFromByteArray("customprops");
 		
 		if(customProps != NULL)
 		{

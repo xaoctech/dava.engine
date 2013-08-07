@@ -207,7 +207,10 @@ const char * Shader::GetUniformTypeSLName(eUniformType type)
 	return "";
 }
 
-    
+Shader::Uniform * Shader::GetUniform(int32 index)
+{
+    return GET_UNIFORM(index);
+}
     
 const char * Shader::GetUniformName(int32 index)
 {
@@ -583,12 +586,73 @@ bool Shader::Recompile()
     return true;
 }
     
+void Shader::SetUniformValueByIndex(int32 uniformIndex, eUniformType uniformType, uint32 arraySize, void * data)
+{
+    Uniform* currentUniform = GET_UNIFORM(uniformIndex);
+
+    switch(uniformType)
+    {
+        case Shader::UT_FLOAT:
+            RENDER_VERIFY(glUniform1fv(currentUniform->location, arraySize, (float*)data));
+            break;
+        case Shader::UT_FLOAT_VEC2:
+            RENDER_VERIFY(glUniform2fv(currentUniform->location, arraySize, (float*)data));
+            break;
+        case Shader::UT_FLOAT_VEC3:
+            RENDER_VERIFY(glUniform3fv(currentUniform->location, arraySize, (float*)data));
+            break;
+        case Shader::UT_FLOAT_VEC4:
+            RENDER_VERIFY(glUniform4fv(currentUniform->location, arraySize, (float*)data));
+            break;
+        case Shader::UT_INT:
+            RENDER_VERIFY(glUniform1iv(currentUniform->location, arraySize, (int32*)data));
+            break;
+        case Shader::UT_INT_VEC2:
+            RENDER_VERIFY(glUniform2iv(currentUniform->location, arraySize, (int32*)data));
+            break;
+        case Shader::UT_INT_VEC3:
+            RENDER_VERIFY(glUniform3iv(currentUniform->location, arraySize, (int32*)data));
+            break;
+        case Shader::UT_INT_VEC4:
+            RENDER_VERIFY(glUniform4iv(currentUniform->location, arraySize, (int32*)data));
+            break;
+        case Shader::UT_BOOL:
+            RENDER_VERIFY(glUniform1iv(currentUniform->location, arraySize, (int32*)data));
+            break;
+        case Shader::UT_BOOL_VEC2:
+            RENDER_VERIFY(glUniform2iv(currentUniform->location, arraySize, (int32*)data));
+            break;
+        case Shader::UT_BOOL_VEC3:
+            RENDER_VERIFY(glUniform3iv(currentUniform->location, arraySize, (int32*)data));
+            break;
+        case Shader::UT_BOOL_VEC4:
+            RENDER_VERIFY(glUniform4iv(currentUniform->location, arraySize, (int32*)data));
+            break;
+        case Shader::UT_FLOAT_MAT2:
+            RENDER_VERIFY(glUniformMatrix2fv(currentUniform->location, arraySize, GL_FALSE, (float32*)data));
+            break;
+        case Shader::UT_FLOAT_MAT3:
+            RENDER_VERIFY(glUniformMatrix3fv(currentUniform->location, arraySize, GL_FALSE, (float32*)data));
+            break;
+        case Shader::UT_FLOAT_MAT4:
+            RENDER_VERIFY(glUniformMatrix4fv(currentUniform->location, arraySize, GL_FALSE, (float32*)data));
+            break;
+        case Shader::UT_SAMPLER_2D:
+            RENDER_VERIFY(glUniform1iv(currentUniform->location, arraySize, (int32*)data));
+            break;
+        case Shader::UT_SAMPLER_CUBE:
+            RENDER_VERIFY(glUniform1iv(currentUniform->location, arraySize, (int32*)data));
+            break;
+    }
+}
+
+    
 void Shader::SetUniformValueByIndex(int32 uniformIndex, int32 value)
 {
 	DVASSERT(uniformIndex >= 0 && uniformIndex < activeUniforms);
 	Uniform* currentUniform = GET_UNIFORM(uniformIndex);
 	if(currentUniform->ValidateCache(value) == false)
-{
+    {
 		RENDER_VERIFY(glUniform1i(currentUniform->location, value));
 	}
 }
@@ -598,7 +662,7 @@ void Shader::SetUniformValueByIndex(int32 uniformIndex, float32 value)
 	DVASSERT(uniformIndex >= 0 && uniformIndex < activeUniforms);
 	Uniform* currentUniform = GET_UNIFORM(uniformIndex);
 	if(currentUniform->ValidateCache(value) == false)
-{
+    {
 		RENDER_VERIFY(glUniform1f(currentUniform->location, value));
 	}
 }
@@ -608,7 +672,7 @@ void Shader::SetUniformValueByIndex(int32 uniformIndex, const Vector2 & vector)
 	DVASSERT(uniformIndex >= 0 && uniformIndex < activeUniforms);
 	Uniform* currentUniform = GET_UNIFORM(uniformIndex);
 	if(currentUniform->ValidateCache(vector) == false)
-{
+    {
 		RENDER_VERIFY(glUniform2fv(currentUniform->location, 1, &vector.x));
 	}
 }
@@ -648,7 +712,7 @@ void Shader::SetUniformValueByIndex(int32 uniformIndex, const Vector4 & vector)
 	DVASSERT(uniformIndex >= 0 && uniformIndex < activeUniforms);
 	Uniform* currentUniform = GET_UNIFORM(uniformIndex);
 	if(currentUniform->ValidateCache(vector) == false)
-{
+    {
 		RENDER_VERIFY(glUniform4fv(currentUniform->location, 1, &vector.x));
 	}
 }
@@ -658,7 +722,7 @@ void Shader::SetUniformValueByIndex(int32 uniformIndex, const Matrix4 & matrix)
 	DVASSERT(uniformIndex >= 0 && uniformIndex < activeUniforms);
 	Uniform* currentUniform = GET_UNIFORM(uniformIndex);
 	if(currentUniform->ValidateCache(matrix) == false)
-{
+    {
 		RENDER_VERIFY(glUniformMatrix4fv(currentUniform->location, 1, GL_FALSE, matrix.data));
 	}
 }

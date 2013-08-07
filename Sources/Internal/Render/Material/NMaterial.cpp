@@ -662,7 +662,7 @@ void NMaterial::BindMaterialTechnique(const FastName & techniqueName)
                     int32 * dataInt32 = (int32 *)property->data;
                     
                     
-                    shader->SetUniformValue(uniform->location, uniform->type, uniform->size, property->data);
+                    shader->SetUniformValueByIndex(uniformIndex, uniform->type, uniform->size, property->data);
                     break;
                 }
                 currentMaterial = currentMaterial->parent;

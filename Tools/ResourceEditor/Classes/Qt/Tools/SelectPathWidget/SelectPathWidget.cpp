@@ -15,7 +15,6 @@
 =====================================================================================*/
 
 #include "SelectPathWidget.h"
-#include "ui_SelectPathWidget.h"
 #include "./../Qt/Tools/MimeDataHelper/MimeDataHelper.h"
 
 

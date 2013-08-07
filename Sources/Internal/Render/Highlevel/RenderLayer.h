@@ -41,7 +41,7 @@ private:
 public:
     INTROSPECTION(RenderLayer,
         MEMBER(name, "Name", I_VIEW )
-        COLLECTION(renderBatchArray, "Render Batch Array", I_VIEW)
+        //COLLECTION(renderBatchArray, "Render Batch Array", I_VIEW)
     );
 };
     

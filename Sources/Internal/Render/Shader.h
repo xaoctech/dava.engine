@@ -75,6 +75,27 @@ public:
         UT_SAMPLER_2D = GL_SAMPLER_2D,
         UT_SAMPLER_CUBE = GL_SAMPLER_CUBE,
     };
+    
+    struct Uniform
+    {
+        eUniform        id;
+        FastName        name;
+        GLint           location;
+        GLint           size;
+        eUniformType    type;
+		void*			cacheValue;
+		uint16			cacheValueSize;
+		
+		bool ValidateCache(int32 value);
+		bool ValidateCache(float32 value);
+		bool ValidateCache(const Vector2 & value);
+		bool ValidateCache(const Vector3 & value);
+		bool ValidateCacheColor3(const Color & value);
+		bool ValidateCacheColor4(const Color & value);
+		bool ValidateCache(const Vector4 & value);
+		bool ValidateCache(const Matrix4 & value);
+		bool ValidateCache(const Matrix3 & value);
+    };
 
     Shader();
     virtual ~Shader();
@@ -104,6 +125,7 @@ public:
     int32 GetAttributeCount();
     
     int32 GetUniformCount();
+    Uniform * GetUniform(int32 index);
     eUniformType GetUniformType(int32 index);
     static int32 GetUniformTypeSize(eUniformType type);
     static const char * GetUniformTypeSLName(eUniformType type);
@@ -125,6 +147,7 @@ public:
     void SetUniformValue(int32 uniformLocation, const Vector4 & vector);
     void SetUniformValue(int32 uniformLocation, const Matrix4 & matrix);*/
 
+    void SetUniformValueByIndex(int32 uniformIndex, eUniformType uniformType, uint32 arraySize, void * data);
 	void SetUniformValueByIndex(int32 uniformIndex, int32 value);
     void SetUniformValueByIndex(int32 uniformIndex, float32 value);
     //void SetUniformValueByIndex(int32 uniformIndex, int32 count, int32 * value);
@@ -177,28 +200,6 @@ private:
 //    GLint * uniformLocations;
 //    GLint * uniformSizes;
 //    eUniformType * uniformTypes;
-    
-    
-    struct Uniform
-    {
-        eUniform        id;
-        FastName        name;
-        GLint           location;
-        GLint           size;
-        eUniformType    type;
-		void*			cacheValue;
-		uint16			cacheValueSize;
-		
-		bool ValidateCache(int32 value);
-		bool ValidateCache(float32 value);
-		bool ValidateCache(const Vector2 & value);
-		bool ValidateCache(const Vector3 & value);
-		bool ValidateCacheColor3(const Color & value);
-		bool ValidateCacheColor4(const Color & value);
-		bool ValidateCache(const Vector4 & value);
-		bool ValidateCache(const Matrix4 & value);
-		bool ValidateCache(const Matrix3 & value);
-    };
 	
 	uint16* uniformOffsets;
 	uint8* uniformData;

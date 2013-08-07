@@ -335,7 +335,6 @@
 		176DEA1C174B5561007A983B /* VectorSpinnerAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = CC24804116E0DF2800183D40 /* VectorSpinnerAdapter.h */; };
 		176DEA1D174B5561007A983B /* UISwitch.h in Headers */ = {isa = PBXBuildFile; fileRef = E9E798A816F0BE7600745AF5 /* UISwitch.h */; };
 		176DEA1E174B5561007A983B /* Camera.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A3FB16F1D6170061EA5D /* Camera.h */; };
-		176DEA1F174B5561007A983B /* CullingSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A3FD16F1D6170061EA5D /* CullingSystem.h */; };
 		176DEA20174B5561007A983B /* Frustum.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A3FF16F1D6170061EA5D /* Frustum.h */; };
 		176DEA21174B5561007A983B /* Heightmap.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A40116F1D6170061EA5D /* Heightmap.h */; };
 		176DEA22174B5561007A983B /* IRenderUpdatable.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A40216F1D6170061EA5D /* IRenderUpdatable.h */; };
@@ -618,7 +617,6 @@
 		176DEB39174B5561007A983B /* UTF8UtilsMac.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8B4F8CE16EF377D0072442A /* UTF8UtilsMac.mm */; };
 		176DEB3A174B5561007A983B /* UISwitch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9E798A716F0BE7600745AF5 /* UISwitch.cpp */; };
 		176DEB3B174B5561007A983B /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A3FA16F1D6170061EA5D /* Camera.cpp */; };
-		176DEB3C174B5561007A983B /* CullingSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A3FC16F1D6170061EA5D /* CullingSystem.cpp */; };
 		176DEB3D174B5561007A983B /* Frustum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A3FE16F1D6170061EA5D /* Frustum.cpp */; };
 		176DEB3E174B5561007A983B /* Heightmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A40016F1D6170061EA5D /* Heightmap.cpp */; };
 		176DEB3F174B5561007A983B /* Landscape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A40316F1D6170061EA5D /* Landscape.cpp */; };
@@ -790,10 +788,6 @@
 		CCC7A42616F1D6170061EA5D /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A3FA16F1D6170061EA5D /* Camera.cpp */; };
 		CCC7A42716F1D6170061EA5D /* Camera.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A3FB16F1D6170061EA5D /* Camera.h */; };
 		CCC7A42816F1D6170061EA5D /* Camera.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A3FB16F1D6170061EA5D /* Camera.h */; };
-		CCC7A42916F1D6170061EA5D /* CullingSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A3FC16F1D6170061EA5D /* CullingSystem.cpp */; };
-		CCC7A42A16F1D6170061EA5D /* CullingSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A3FC16F1D6170061EA5D /* CullingSystem.cpp */; };
-		CCC7A42B16F1D6170061EA5D /* CullingSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A3FD16F1D6170061EA5D /* CullingSystem.h */; };
-		CCC7A42C16F1D6170061EA5D /* CullingSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A3FD16F1D6170061EA5D /* CullingSystem.h */; };
 		CCC7A42D16F1D6170061EA5D /* Frustum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A3FE16F1D6170061EA5D /* Frustum.cpp */; };
 		CCC7A42E16F1D6170061EA5D /* Frustum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCC7A3FE16F1D6170061EA5D /* Frustum.cpp */; };
 		CCC7A42F16F1D6170061EA5D /* Frustum.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC7A3FF16F1D6170061EA5D /* Frustum.h */; };
@@ -2117,8 +2111,6 @@
 		CCB4C41916CBC5B200F2B085 /* ComponentHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComponentHelpers.h; sourceTree = "<group>"; };
 		CCC7A3FA16F1D6170061EA5D /* Camera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Camera.cpp; sourceTree = "<group>"; };
 		CCC7A3FB16F1D6170061EA5D /* Camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Camera.h; sourceTree = "<group>"; };
-		CCC7A3FC16F1D6170061EA5D /* CullingSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CullingSystem.cpp; sourceTree = "<group>"; };
-		CCC7A3FD16F1D6170061EA5D /* CullingSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CullingSystem.h; sourceTree = "<group>"; };
 		CCC7A3FE16F1D6170061EA5D /* Frustum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Frustum.cpp; sourceTree = "<group>"; };
 		CCC7A3FF16F1D6170061EA5D /* Frustum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Frustum.h; sourceTree = "<group>"; };
 		CCC7A40016F1D6170061EA5D /* Heightmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Heightmap.cpp; sourceTree = "<group>"; };
@@ -3406,8 +3398,6 @@
 			children = (
 				CCC7A3FA16F1D6170061EA5D /* Camera.cpp */,
 				CCC7A3FB16F1D6170061EA5D /* Camera.h */,
-				CCC7A3FC16F1D6170061EA5D /* CullingSystem.cpp */,
-				CCC7A3FD16F1D6170061EA5D /* CullingSystem.h */,
 				CCC7A3FE16F1D6170061EA5D /* Frustum.cpp */,
 				CCC7A3FF16F1D6170061EA5D /* Frustum.h */,
 				CCC7A40016F1D6170061EA5D /* Heightmap.cpp */,
@@ -4103,7 +4093,6 @@
 				176DEA1C174B5561007A983B /* VectorSpinnerAdapter.h in Headers */,
 				176DEA1D174B5561007A983B /* UISwitch.h in Headers */,
 				176DEA1E174B5561007A983B /* Camera.h in Headers */,
-				176DEA1F174B5561007A983B /* CullingSystem.h in Headers */,
 				176DEA20174B5561007A983B /* Frustum.h in Headers */,
 				176DEA21174B5561007A983B /* Heightmap.h in Headers */,
 				176DEA22174B5561007A983B /* IRenderUpdatable.h in Headers */,
@@ -4448,7 +4437,6 @@
 				CC24804216E0DF2800183D40 /* VectorSpinnerAdapter.h in Headers */,
 				E9E798AB16F0BE7600745AF5 /* UISwitch.h in Headers */,
 				CCC7A42716F1D6170061EA5D /* Camera.h in Headers */,
-				CCC7A42B16F1D6170061EA5D /* CullingSystem.h in Headers */,
 				CCC7A42F16F1D6170061EA5D /* Frustum.h in Headers */,
 				CCC7A43316F1D6170061EA5D /* Heightmap.h in Headers */,
 				CCC7A43516F1D6170061EA5D /* IRenderUpdatable.h in Headers */,
@@ -4791,7 +4779,6 @@
 				E9EA496F16DF93FA00C44B6F /* UISpinner.h in Headers */,
 				E9E798AC16F0BE7600745AF5 /* UISwitch.h in Headers */,
 				CCC7A42816F1D6170061EA5D /* Camera.h in Headers */,
-				CCC7A42C16F1D6170061EA5D /* CullingSystem.h in Headers */,
 				CCC7A43016F1D6170061EA5D /* Frustum.h in Headers */,
 				CCC7A43416F1D6170061EA5D /* Heightmap.h in Headers */,
 				CCC7A43616F1D6170061EA5D /* IRenderUpdatable.h in Headers */,
@@ -5199,7 +5186,6 @@
 				176DEB39174B5561007A983B /* UTF8UtilsMac.mm in Sources */,
 				176DEB3A174B5561007A983B /* UISwitch.cpp in Sources */,
 				176DEB3B174B5561007A983B /* Camera.cpp in Sources */,
-				176DEB3C174B5561007A983B /* CullingSystem.cpp in Sources */,
 				176DEB3D174B5561007A983B /* Frustum.cpp in Sources */,
 				176DEB3E174B5561007A983B /* Heightmap.cpp in Sources */,
 				176DEB3F174B5561007A983B /* Landscape.cpp in Sources */,
@@ -5502,7 +5488,6 @@
 				E8B4F8CF16EF377D0072442A /* UTF8UtilsMac.mm in Sources */,
 				E9E798A916F0BE7600745AF5 /* UISwitch.cpp in Sources */,
 				CCC7A42516F1D6170061EA5D /* Camera.cpp in Sources */,
-				CCC7A42916F1D6170061EA5D /* CullingSystem.cpp in Sources */,
 				CCC7A42D16F1D6170061EA5D /* Frustum.cpp in Sources */,
 				CCC7A43116F1D6170061EA5D /* Heightmap.cpp in Sources */,
 				CCC7A43716F1D6170061EA5D /* Landscape.cpp in Sources */,
@@ -5805,7 +5790,6 @@
 				E8B4F8D016EF377D0072442A /* UTF8UtilsMac.mm in Sources */,
 				E9E798AA16F0BE7600745AF5 /* UISwitch.cpp in Sources */,
 				CCC7A42616F1D6170061EA5D /* Camera.cpp in Sources */,
-				CCC7A42A16F1D6170061EA5D /* CullingSystem.cpp in Sources */,
 				CCC7A42E16F1D6170061EA5D /* Frustum.cpp in Sources */,
 				CCC7A43216F1D6170061EA5D /* Heightmap.cpp in Sources */,
 				CCC7A43816F1D6170061EA5D /* Landscape.cpp in Sources */,
