@@ -15,7 +15,6 @@
 =====================================================================================*/
 
 #include "SelectPathWidget.h"
-#include "ui_SelectPathWidget.h"
 #include "./../Qt/Tools/MimeDataHelper/MimeDataHelper.h"
 
 
@@ -23,6 +22,7 @@
 #include <QKeyEvent>
 #include <QUrl>
 #include <QFileDialog>
+#include <QStyle>
 
 SelectPathWidget::SelectPathWidget(QWidget* _parent, DAVA::String _openDialogDefualtPath, DAVA::String _relativPath)
 :	QLineEdit(_parent)
