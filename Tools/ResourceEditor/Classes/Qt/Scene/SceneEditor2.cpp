@@ -66,18 +66,21 @@ SceneEditor2::SceneEditor2()
 	visibilityToolSystem = new VisibilityToolSystem(this);
 	AddSystem(visibilityToolSystem, 0);
 
+	rulerToolSystem = new RulerToolSystem(this);
+	AddSystem(rulerToolSystem, 0);
+
 	structureSystem = new StructureSystem(this);
 	AddSystem(structureSystem, 0);
 
 	editorLightSystem = new EditorLightSystem(this);
-	AddSystem(editorLightSystem, 0);
+	AddSystem(editorLightSystem, Component::LIGHT_COMPONENT);
 
 	SceneSignals::Instance()->EmitOpened(this);
 }
 
 SceneEditor2::~SceneEditor2()
 {
-    RemoveSystem(editorLightSystem, 0);
+    RemoveSystem(editorLightSystem);
     SafeDelete(editorLightSystem);
 
 	SceneSignals::Instance()->EmitClosed(this);
@@ -97,10 +100,14 @@ bool SceneEditor2::Load(const DAVA::FilePath &path)
 		DAVA::Vector<DAVA::Entity*> tmpEntities;
 		int entitiesCount = rootNode->GetChildrenCount();
 
-		tmpEntities.reserve(entitiesCount);
+		// optimize scene
+		SceneFileV2 *sceneFile = new SceneFileV2();
+		sceneFile->OptimizeScene(rootNode);
+		sceneFile->Release();
 
 		// remember all child pointers, but don't add them to scene in this cycle
 		// because when entity is adding it is automatically removing from its old hierarchy
+		tmpEntities.reserve(entitiesCount);
 		for (DAVA::int32 i = 0; i < entitiesCount; ++i)
 		{
 			tmpEntities.push_back(rootNode->GetChild(i));
@@ -277,9 +284,10 @@ void SceneEditor2::Update(float timeElapsed)
 	tilemaskEditorSystem->Update(timeElapsed);
 	customColorsSystem->Update(timeElapsed);
 	visibilityToolSystem->Update(timeElapsed);
+	rulerToolSystem->Update(timeElapsed);
 	structureSystem->Update(timeElapsed);
 	particlesSystem->Update(timeElapsed);
-	editorLightSystem->Update(timeElapsed);
+	editorLightSystem->Process();
 }
 
 void SceneEditor2::PostUIEvent(DAVA::UIEvent *event)
@@ -294,6 +302,7 @@ void SceneEditor2::PostUIEvent(DAVA::UIEvent *event)
 	tilemaskEditorSystem->ProcessUIEvent(event);
 	customColorsSystem->ProcessUIEvent(event);
 	visibilityToolSystem->ProcessUIEvent(event);
+	rulerToolSystem->ProcessUIEvent(event);
 	structureSystem->ProcessUIEvent(event);
 	particlesSystem->ProcessUIEvent(event);
 }

@@ -42,12 +42,6 @@
 		171F938616CE6F28007038AB /* UIWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 171F938416CE6F28007038AB /* UIWebView.h */; };
 		1723D46F16CCF1C00039CCC2 /* ParticleForce.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1799E52416CCEC030058061F /* ParticleForce.cpp */; };
 		1723D47016CCF1C00039CCC2 /* ParticleForce.h in Headers */ = {isa = PBXBuildFile; fileRef = 1799E52516CCEC030058061F /* ParticleForce.h */; };
-		17677EAC176B098600306201 /* SkyBoxNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17677EAA176B098600306201 /* SkyBoxNode.cpp */; };
-		17677EAD176B098600306201 /* SkyBoxNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17677EAA176B098600306201 /* SkyBoxNode.cpp */; };
-		17677EAE176B098600306201 /* SkyBoxNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17677EAA176B098600306201 /* SkyBoxNode.cpp */; };
-		17677EAF176B098600306201 /* SkyBoxNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 17677EAB176B098600306201 /* SkyBoxNode.h */; };
-		17677EB0176B098600306201 /* SkyBoxNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 17677EAB176B098600306201 /* SkyBoxNode.h */; };
-		17677EB1176B098600306201 /* SkyBoxNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 17677EAB176B098600306201 /* SkyBoxNode.h */; };
 		176DE8F9174B5561007A983B /* AnimatedObject.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989ABF16BD24E400732C04 /* AnimatedObject.h */; };
 		176DE8FA174B5561007A983B /* Animation.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AC116BD24E400732C04 /* Animation.h */; };
 		176DE8FB174B5561007A983B /* AnimationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989AC316BD24E400732C04 /* AnimationManager.h */; };
@@ -177,7 +171,6 @@
 		176DE977174B5561007A983B /* ParticleLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BCE16BD24E400732C04 /* ParticleLayer.h */; };
 		176DE978174B5561007A983B /* ParticleLayer3D.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BD016BD24E400732C04 /* ParticleLayer3D.h */; };
 		176DE979174B5561007A983B /* ParticlePropertyLine.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BD416BD24E400732C04 /* ParticlePropertyLine.h */; };
-		176DE97A174B5561007A983B /* ParticleSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BD616BD24E400732C04 /* ParticleSystem.h */; };
 		176DE97B174B5561007A983B /* Mutex.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BE116BD24E400732C04 /* Mutex.h */; };
 		176DE97C174B5561007A983B /* SystemTimer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BF416BD24E400732C04 /* SystemTimer.h */; };
 		176DE97D174B5561007A983B /* AppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C0216BD24E400732C04 /* AppDelegate.h */; };
@@ -467,7 +460,6 @@
 		176DEA9A174B5561007A983B /* ParticleLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BCD16BD24E400732C04 /* ParticleLayer.cpp */; };
 		176DEA9B174B5561007A983B /* ParticleLayer3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BCF16BD24E400732C04 /* ParticleLayer3D.cpp */; };
 		176DEA9C174B5561007A983B /* ParticlePropertyLine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BD316BD24E400732C04 /* ParticlePropertyLine.cpp */; };
-		176DEA9D174B5561007A983B /* ParticleSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BD516BD24E400732C04 /* ParticleSystem.cpp */; };
 		176DEA9E174B5561007A983B /* Mutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BE016BD24E400732C04 /* Mutex.cpp */; };
 		176DEA9F174B5561007A983B /* SystemTimer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BF316BD24E400732C04 /* SystemTimer.cpp */; };
 		176DEAA0174B5561007A983B /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8989C0316BD24E400732C04 /* AppDelegate.mm */; };
@@ -695,6 +687,12 @@
 		17F687E1174B63BA000783FD /* NPAPIEntryPoint.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1795D26C174B56900023F61E /* NPAPIEntryPoint.mm */; };
 		17F687E2174B63C0000783FD /* NPAPIEntryPoint.h in Headers */ = {isa = PBXBuildFile; fileRef = 1795D26D174B56900023F61E /* NPAPIEntryPoint.h */; };
 		4910CBF6167B73EC00CF948A /* libdxt_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4910CBF5167B73EC00CF948A /* libdxt_macos.a */; };
+		4F64848117AFB73C00034454 /* AllocatorFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F64847F17AFB73C00034454 /* AllocatorFactory.cpp */; };
+		4F64848217AFB73C00034454 /* AllocatorFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F64848017AFB73C00034454 /* AllocatorFactory.h */; };
+		4F64848C17AFCAF800034454 /* AllocatorFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F64848017AFB73C00034454 /* AllocatorFactory.h */; };
+		4F64848D17AFCAF900034454 /* AllocatorFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F64848017AFB73C00034454 /* AllocatorFactory.h */; };
+		4F64848E17AFCAFC00034454 /* AllocatorFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F64847F17AFB73C00034454 /* AllocatorFactory.cpp */; };
+		4F64848F17AFCAFD00034454 /* AllocatorFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F64847F17AFB73C00034454 /* AllocatorFactory.cpp */; };
 		4FA5CDBF1757AF430040CC6E /* EnumMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FA5CDBD1757AF430040CC6E /* EnumMap.cpp */; };
 		4FA5CDC01757AF430040CC6E /* EnumMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FA5CDBE1757AF430040CC6E /* EnumMap.h */; };
 		4FE7D3591745056700D2FCE6 /* GlobalEnum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FE7D3571745056700D2FCE6 /* GlobalEnum.cpp */; };
@@ -735,6 +733,18 @@
 		846CFE60174D1A64004ECE3C /* OpenUDIDApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 846CFE5E174D1A64004ECE3C /* OpenUDIDApple.mm */; };
 		846CFE63174D1A75004ECE3C /* OpenUDIDMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 846CFE61174D1A75004ECE3C /* OpenUDIDMacOS.h */; };
 		846CFE64174D1A75004ECE3C /* OpenUDIDMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 846CFE62174D1A75004ECE3C /* OpenUDIDMacOS.mm */; };
+		A68B3EE817AA82B800E129C1 /* SkyboxComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A68B3EE617AA82B800E129C1 /* SkyboxComponent.cpp */; };
+		A68B3EE917AA82B800E129C1 /* SkyboxComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = A68B3EE717AA82B800E129C1 /* SkyboxComponent.h */; };
+		A68B3EEA17AA82C500E129C1 /* SkyboxComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A68B3EE617AA82B800E129C1 /* SkyboxComponent.cpp */; };
+		A68B3EEB17AA82C700E129C1 /* SkyboxComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A68B3EE617AA82B800E129C1 /* SkyboxComponent.cpp */; };
+		A68B3EEC17AA82CD00E129C1 /* SkyboxComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = A68B3EE717AA82B800E129C1 /* SkyboxComponent.h */; };
+		A68B3EED17AA82CE00E129C1 /* SkyboxComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = A68B3EE717AA82B800E129C1 /* SkyboxComponent.h */; };
+		A68B3EF017AA8C4000E129C1 /* SkyboxSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A68B3EEE17AA8C4000E129C1 /* SkyboxSystem.cpp */; };
+		A68B3EF117AA8C4000E129C1 /* SkyboxSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A68B3EEE17AA8C4000E129C1 /* SkyboxSystem.cpp */; };
+		A68B3EF217AA8C4000E129C1 /* SkyboxSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A68B3EEE17AA8C4000E129C1 /* SkyboxSystem.cpp */; };
+		A68B3EF317AA8C4000E129C1 /* SkyboxSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A68B3EEF17AA8C4000E129C1 /* SkyboxSystem.h */; };
+		A68B3EF417AA8C4000E129C1 /* SkyboxSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A68B3EEF17AA8C4000E129C1 /* SkyboxSystem.h */; };
+		A68B3EF517AA8C4000E129C1 /* SkyboxSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A68B3EEF17AA8C4000E129C1 /* SkyboxSystem.h */; };
 		A6E4FE031761D96C00B48E41 /* ActionComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6E4FDFF1761D96C00B48E41 /* ActionComponent.cpp */; };
 		A6E4FE041761D96C00B48E41 /* ActionComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = A6E4FE001761D96C00B48E41 /* ActionComponent.h */; };
 		A6E4FE051761D96C00B48E41 /* CustomPropertiesComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6E4FE011761D96C00B48E41 /* CustomPropertiesComponent.cpp */; };
@@ -1112,8 +1122,6 @@
 		E8989E9C16BD24E500732C04 /* ParticleLayer3D.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BD016BD24E400732C04 /* ParticleLayer3D.h */; };
 		E8989E9F16BD24E500732C04 /* ParticlePropertyLine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BD316BD24E400732C04 /* ParticlePropertyLine.cpp */; };
 		E8989EA016BD24E500732C04 /* ParticlePropertyLine.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BD416BD24E400732C04 /* ParticlePropertyLine.h */; };
-		E8989EA116BD24E500732C04 /* ParticleSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BD516BD24E400732C04 /* ParticleSystem.cpp */; };
-		E8989EA216BD24E500732C04 /* ParticleSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BD616BD24E400732C04 /* ParticleSystem.h */; };
 		E8989EAA16BD24E500732C04 /* Mutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BE016BD24E400732C04 /* Mutex.cpp */; };
 		E8989EAB16BD24E500732C04 /* Mutex.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BE116BD24E400732C04 /* Mutex.h */; };
 		E8989EBA16BD24E500732C04 /* SystemTimer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BF316BD24E400732C04 /* SystemTimer.cpp */; };
@@ -1535,7 +1543,6 @@
 		E898A0D416BD265400732C04 /* ParticleLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BCE16BD24E400732C04 /* ParticleLayer.h */; };
 		E898A0D516BD265400732C04 /* ParticleLayer3D.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BD016BD24E400732C04 /* ParticleLayer3D.h */; };
 		E898A0D716BD265400732C04 /* ParticlePropertyLine.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BD416BD24E400732C04 /* ParticlePropertyLine.h */; };
-		E898A0D816BD265400732C04 /* ParticleSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BD616BD24E400732C04 /* ParticleSystem.h */; };
 		E898A0D916BD265400732C04 /* Mutex.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BE116BD24E400732C04 /* Mutex.h */; };
 		E898A0DA16BD265400732C04 /* CorePlatformMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BE516BD24E400732C04 /* CorePlatformMacOS.h */; };
 		E898A0DB16BD265400732C04 /* OpenGLView.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989BE616BD24E400732C04 /* OpenGLView.h */; };
@@ -1776,7 +1783,6 @@
 		E898A1F416BD265400732C04 /* ParticleLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BCD16BD24E400732C04 /* ParticleLayer.cpp */; };
 		E898A1F516BD265400732C04 /* ParticleLayer3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BCF16BD24E400732C04 /* ParticleLayer3D.cpp */; };
 		E898A1F716BD265400732C04 /* ParticlePropertyLine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BD316BD24E400732C04 /* ParticlePropertyLine.cpp */; };
-		E898A1F816BD265400732C04 /* ParticleSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BD516BD24E400732C04 /* ParticleSystem.cpp */; };
 		E898A1F916BD265400732C04 /* Mutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BE016BD24E400732C04 /* Mutex.cpp */; };
 		E898A1FA16BD265400732C04 /* CorePlatformMacOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989BE416BD24E400732C04 /* CorePlatformMacOS.cpp */; };
 		E898A1FB16BD265400732C04 /* OpenGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8989BE716BD24E400732C04 /* OpenGLView.mm */; };
@@ -2036,8 +2042,6 @@
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		171F938316CE6F28007038AB /* UIWebView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIWebView.cpp; sourceTree = "<group>"; };
 		171F938416CE6F28007038AB /* UIWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIWebView.h; sourceTree = "<group>"; };
-		17677EAA176B098600306201 /* SkyBoxNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyBoxNode.cpp; sourceTree = "<group>"; };
-		17677EAB176B098600306201 /* SkyBoxNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkyBoxNode.h; sourceTree = "<group>"; };
 		176DEB77174B5561007A983B /* libFrameworkNPAPI.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFrameworkNPAPI.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		1789108D1740DFBC007B72BA /* NMaterialConsts.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NMaterialConsts.cpp; sourceTree = "<group>"; };
 		1795D26C174B56900023F61E /* NPAPIEntryPoint.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NPAPIEntryPoint.mm; sourceTree = "<group>"; };
@@ -2053,6 +2057,8 @@
 		17F53E2116D36DDE004D5099 /* IWebViewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IWebViewControl.h; sourceTree = "<group>"; };
 		32DBCF5E0370ADEE00C91783 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = "<group>"; };
 		4910CBF5167B73EC00CF948A /* libdxt_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_macos.a; path = ../../Libs/libs/libdxt_macos.a; sourceTree = "<group>"; };
+		4F64847F17AFB73C00034454 /* AllocatorFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AllocatorFactory.cpp; sourceTree = "<group>"; };
+		4F64848017AFB73C00034454 /* AllocatorFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AllocatorFactory.h; sourceTree = "<group>"; };
 		4FA5CDBD1757AF430040CC6E /* EnumMap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EnumMap.cpp; sourceTree = "<group>"; };
 		4FA5CDBE1757AF430040CC6E /* EnumMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EnumMap.h; sourceTree = "<group>"; };
 		4FE7D3571745056700D2FCE6 /* GlobalEnum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GlobalEnum.cpp; sourceTree = "<group>"; };
@@ -2080,6 +2086,10 @@
 		846CFE5E174D1A64004ECE3C /* OpenUDIDApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenUDIDApple.mm; sourceTree = "<group>"; };
 		846CFE61174D1A75004ECE3C /* OpenUDIDMacOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenUDIDMacOS.h; sourceTree = "<group>"; };
 		846CFE62174D1A75004ECE3C /* OpenUDIDMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenUDIDMacOS.mm; sourceTree = "<group>"; };
+		A68B3EE617AA82B800E129C1 /* SkyboxComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyboxComponent.cpp; sourceTree = "<group>"; };
+		A68B3EE717AA82B800E129C1 /* SkyboxComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkyboxComponent.h; sourceTree = "<group>"; };
+		A68B3EEE17AA8C4000E129C1 /* SkyboxSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyboxSystem.cpp; sourceTree = "<group>"; };
+		A68B3EEF17AA8C4000E129C1 /* SkyboxSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkyboxSystem.h; sourceTree = "<group>"; };
 		A6E4FDFF1761D96C00B48E41 /* ActionComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActionComponent.cpp; sourceTree = "<group>"; };
 		A6E4FE001761D96C00B48E41 /* ActionComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionComponent.h; sourceTree = "<group>"; };
 		A6E4FE011761D96C00B48E41 /* CustomPropertiesComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CustomPropertiesComponent.cpp; sourceTree = "<group>"; };
@@ -2380,8 +2390,6 @@
 		E8989BD016BD24E400732C04 /* ParticleLayer3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayer3D.h; sourceTree = "<group>"; };
 		E8989BD316BD24E400732C04 /* ParticlePropertyLine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticlePropertyLine.cpp; sourceTree = "<group>"; };
 		E8989BD416BD24E400732C04 /* ParticlePropertyLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticlePropertyLine.h; sourceTree = "<group>"; };
-		E8989BD516BD24E400732C04 /* ParticleSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleSystem.cpp; sourceTree = "<group>"; };
-		E8989BD616BD24E400732C04 /* ParticleSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleSystem.h; sourceTree = "<group>"; };
 		E8989BE016BD24E400732C04 /* Mutex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mutex.cpp; sourceTree = "<group>"; };
 		E8989BE116BD24E400732C04 /* Mutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mutex.h; sourceTree = "<group>"; };
 		E8989BE416BD24E400732C04 /* CorePlatformMacOS.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CorePlatformMacOS.cpp; sourceTree = "<group>"; };
@@ -2894,6 +2902,8 @@
 		E8989AD916BD24E400732C04 /* Base */ = {
 			isa = PBXGroup;
 			children = (
+				4F64847F17AFB73C00034454 /* AllocatorFactory.cpp */,
+				4F64848017AFB73C00034454 /* AllocatorFactory.h */,
 				4FA5CDBD1757AF430040CC6E /* EnumMap.cpp */,
 				4FA5CDBE1757AF430040CC6E /* EnumMap.h */,
 				4FE7D3571745056700D2FCE6 /* GlobalEnum.cpp */,
@@ -3191,8 +3201,6 @@
 				E8989BD016BD24E400732C04 /* ParticleLayer3D.h */,
 				E8989BD316BD24E400732C04 /* ParticlePropertyLine.cpp */,
 				E8989BD416BD24E400732C04 /* ParticlePropertyLine.h */,
-				E8989BD516BD24E400732C04 /* ParticleSystem.cpp */,
-				E8989BD616BD24E400732C04 /* ParticleSystem.h */,
 			);
 			path = Particles;
 			sourceTree = "<group>";
@@ -3541,8 +3549,6 @@
 				E8989D1116BD24E500732C04 /* ShadowVolumeNode.h */,
 				E8989D1216BD24E500732C04 /* SkeletonNode.cpp */,
 				E8989D1316BD24E500732C04 /* SkeletonNode.h */,
-				17677EAA176B098600306201 /* SkyBoxNode.cpp */,
-				17677EAB176B098600306201 /* SkyBoxNode.h */,
 				E8989D1416BD24E500732C04 /* SpriteNode.cpp */,
 				E8989D1516BD24E500732C04 /* SpriteNode.h */,
 				E8989D1716BD24E500732C04 /* SwitchNode.cpp */,
@@ -3586,6 +3592,8 @@
 				E8989CDC16BD24E500732C04 /* TransformComponent.h */,
 				E8989CDD16BD24E500732C04 /* UpdatableComponent.cpp */,
 				E8989CDE16BD24E500732C04 /* UpdatableComponent.h */,
+				A68B3EE617AA82B800E129C1 /* SkyboxComponent.cpp */,
+				A68B3EE717AA82B800E129C1 /* SkyboxComponent.h */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -3621,6 +3629,8 @@
 				E8989D2D16BD24E500732C04 /* SwitchSystem.h */,
 				E8989D2E16BD24E500732C04 /* TransformSystem.cpp */,
 				E8989D2F16BD24E500732C04 /* TransformSystem.h */,
+				A68B3EEE17AA8C4000E129C1 /* SkyboxSystem.cpp */,
+				A68B3EEF17AA8C4000E129C1 /* SkyboxSystem.h */,
 			);
 			path = Systems;
 			sourceTree = "<group>";
@@ -3929,7 +3939,6 @@
 				176DE977174B5561007A983B /* ParticleLayer.h in Headers */,
 				176DE978174B5561007A983B /* ParticleLayer3D.h in Headers */,
 				176DE979174B5561007A983B /* ParticlePropertyLine.h in Headers */,
-				176DE97A174B5561007A983B /* ParticleSystem.h in Headers */,
 				176DE97B174B5561007A983B /* Mutex.h in Headers */,
 				176DE97C174B5561007A983B /* SystemTimer.h in Headers */,
 				176DE97D174B5561007A983B /* AppDelegate.h in Headers */,
@@ -4135,8 +4144,10 @@
 				A6E4FE0E1761D9CD00B48E41 /* ActionComponent.h in Headers */,
 				A6E4FE121761D9D900B48E41 /* CustomPropertiesComponent.h in Headers */,
 				A6E4FE161761D9E700B48E41 /* ActionUpdateSystem.h in Headers */,
-				17677EB1176B098600306201 /* SkyBoxNode.h in Headers */,
 				4FFE5CB31779E0B200728624 /* MipmapReplacer.h in Headers */,
+				A68B3EED17AA82CE00E129C1 /* SkyboxComponent.h in Headers */,
+				A68B3EF517AA8C4000E129C1 /* SkyboxSystem.h in Headers */,
+				4F64848D17AFCAF900034454 /* AllocatorFactory.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4273,7 +4284,6 @@
 				E8989E9A16BD24E500732C04 /* ParticleLayer.h in Headers */,
 				E8989E9C16BD24E500732C04 /* ParticleLayer3D.h in Headers */,
 				E8989EA016BD24E500732C04 /* ParticlePropertyLine.h in Headers */,
-				E8989EA216BD24E500732C04 /* ParticleSystem.h in Headers */,
 				E8989EAB16BD24E500732C04 /* Mutex.h in Headers */,
 				E8989EBB16BD24E500732C04 /* SystemTimer.h in Headers */,
 				E8989EC716BD24E500732C04 /* AppDelegate.h in Headers */,
@@ -4482,9 +4492,11 @@
 				A6E4FE041761D96C00B48E41 /* ActionComponent.h in Headers */,
 				A6E4FE061761D96C00B48E41 /* CustomPropertiesComponent.h in Headers */,
 				A6E4FE0A1761D97C00B48E41 /* ActionUpdateSystem.h in Headers */,
-				17677EAF176B098600306201 /* SkyBoxNode.h in Headers */,
 				4FFE5CAF1779DBC700728624 /* MipmapReplacer.h in Headers */,
 				C18577EF17A16DA800331A95 /* MaterialOptimazer.h in Headers */,
+				A68B3EE917AA82B800E129C1 /* SkyboxComponent.h in Headers */,
+				A68B3EF317AA8C4000E129C1 /* SkyboxSystem.h in Headers */,
+				4F64848217AFB73C00034454 /* AllocatorFactory.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4621,7 +4633,6 @@
 				E898A0D416BD265400732C04 /* ParticleLayer.h in Headers */,
 				E898A0D516BD265400732C04 /* ParticleLayer3D.h in Headers */,
 				E898A0D716BD265400732C04 /* ParticlePropertyLine.h in Headers */,
-				E898A0D816BD265400732C04 /* ParticleSystem.h in Headers */,
 				E898A0D916BD265400732C04 /* Mutex.h in Headers */,
 				E898A0DA16BD265400732C04 /* CorePlatformMacOS.h in Headers */,
 				E898A0DB16BD265400732C04 /* OpenGLView.h in Headers */,
@@ -4822,8 +4833,10 @@
 				A6E4FE0D1761D9CB00B48E41 /* ActionComponent.h in Headers */,
 				A6E4FE111761D9D700B48E41 /* CustomPropertiesComponent.h in Headers */,
 				A6E4FE151761D9E500B48E41 /* ActionUpdateSystem.h in Headers */,
-				17677EB0176B098600306201 /* SkyBoxNode.h in Headers */,
 				4FFE5CB21779E09C00728624 /* MipmapReplacer.h in Headers */,
+				A68B3EEC17AA82CD00E129C1 /* SkyboxComponent.h in Headers */,
+				A68B3EF417AA8C4000E129C1 /* SkyboxSystem.h in Headers */,
+				4F64848C17AFCAF800034454 /* AllocatorFactory.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5028,7 +5041,6 @@
 				176DEA9A174B5561007A983B /* ParticleLayer.cpp in Sources */,
 				176DEA9B174B5561007A983B /* ParticleLayer3D.cpp in Sources */,
 				176DEA9C174B5561007A983B /* ParticlePropertyLine.cpp in Sources */,
-				176DEA9D174B5561007A983B /* ParticleSystem.cpp in Sources */,
 				176DEA9E174B5561007A983B /* Mutex.cpp in Sources */,
 				176DEA9F174B5561007A983B /* SystemTimer.cpp in Sources */,
 				176DEAA0174B5561007A983B /* AppDelegate.mm in Sources */,
@@ -5227,11 +5239,13 @@
 				A6E4FE0C1761D9C600B48E41 /* ActionComponent.cpp in Sources */,
 				A6E4FE101761D9D200B48E41 /* CustomPropertiesComponent.cpp in Sources */,
 				A6E4FE141761D9E100B48E41 /* ActionUpdateSystem.cpp in Sources */,
-				17677EAE176B098600306201 /* SkyBoxNode.cpp in Sources */,
 				4FFE5CB41779E0B400728624 /* MipmapReplacer.cpp in Sources */,
 				0211D551177C26D600EB7011 /* OpenUDIDApple.mm in Sources */,
 				0211D552177C26E000EB7011 /* OpenUDIDMacOS.mm in Sources */,
 				C18577F117A2600400331A95 /* MaterialOptimazer.cpp in Sources */,
+				A68B3EEB17AA82C700E129C1 /* SkyboxComponent.cpp in Sources */,
+				A68B3EF217AA8C4000E129C1 /* SkyboxSystem.cpp in Sources */,
+				4F64848F17AFCAFD00034454 /* AllocatorFactory.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5330,7 +5344,6 @@
 				E8989E9916BD24E500732C04 /* ParticleLayer.cpp in Sources */,
 				E8989E9B16BD24E500732C04 /* ParticleLayer3D.cpp in Sources */,
 				E8989E9F16BD24E500732C04 /* ParticlePropertyLine.cpp in Sources */,
-				E8989EA116BD24E500732C04 /* ParticleSystem.cpp in Sources */,
 				E8989EAA16BD24E500732C04 /* Mutex.cpp in Sources */,
 				E8989EBA16BD24E500732C04 /* SystemTimer.cpp in Sources */,
 				E8989EC816BD24E500732C04 /* AppDelegate.mm in Sources */,
@@ -5532,9 +5545,11 @@
 				A6E4FE031761D96C00B48E41 /* ActionComponent.cpp in Sources */,
 				A6E4FE051761D96C00B48E41 /* CustomPropertiesComponent.cpp in Sources */,
 				A6E4FE091761D97C00B48E41 /* ActionUpdateSystem.cpp in Sources */,
-				17677EAC176B098600306201 /* SkyBoxNode.cpp in Sources */,
 				4FFE5CAE1779DBC700728624 /* MipmapReplacer.cpp in Sources */,
 				C18577EE17A16DA800331A95 /* MaterialOptimazer.cpp in Sources */,
+				A68B3EE817AA82B800E129C1 /* SkyboxComponent.cpp in Sources */,
+				A68B3EF017AA8C4000E129C1 /* SkyboxSystem.cpp in Sources */,
+				4F64848117AFB73C00034454 /* AllocatorFactory.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5636,7 +5651,6 @@
 				E898A1F416BD265400732C04 /* ParticleLayer.cpp in Sources */,
 				E898A1F516BD265400732C04 /* ParticleLayer3D.cpp in Sources */,
 				E898A1F716BD265400732C04 /* ParticlePropertyLine.cpp in Sources */,
-				E898A1F816BD265400732C04 /* ParticleSystem.cpp in Sources */,
 				E898A1F916BD265400732C04 /* Mutex.cpp in Sources */,
 				E898A1FA16BD265400732C04 /* CorePlatformMacOS.cpp in Sources */,
 				E898A1FB16BD265400732C04 /* OpenGLView.mm in Sources */,
@@ -5829,9 +5843,11 @@
 				A6E4FE0B1761D9C500B48E41 /* ActionComponent.cpp in Sources */,
 				A6E4FE0F1761D9D100B48E41 /* CustomPropertiesComponent.cpp in Sources */,
 				A6E4FE131761D9E000B48E41 /* ActionUpdateSystem.cpp in Sources */,
-				17677EAD176B098600306201 /* SkyBoxNode.cpp in Sources */,
 				4FFE5CB11779E09300728624 /* MipmapReplacer.cpp in Sources */,
 				C18577F017A2600300331A95 /* MaterialOptimazer.cpp in Sources */,
+				A68B3EEA17AA82C500E129C1 /* SkyboxComponent.cpp in Sources */,
+				A68B3EF117AA8C4000E129C1 /* SkyboxSystem.cpp in Sources */,
+				4F64848E17AFCAFC00034454 /* AllocatorFactory.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

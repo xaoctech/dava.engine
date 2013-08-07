@@ -15,6 +15,7 @@ protected:
 	
 	int currentPage;
 	std::map<std::string, QImage*> iconsCache;
+	std::map<std::string, QSize> iconSizeCache;
 	
 public:
 	

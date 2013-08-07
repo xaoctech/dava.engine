@@ -31,6 +31,7 @@ void CubeListItemDelegate::ClearCache()
 	}
 	
 	iconsCache.clear();
+	iconSizeCache.clear();
 }
 
 void CubeListItemDelegate::SetNeedsRepaint()
@@ -69,6 +70,7 @@ void CubeListItemDelegate::UpdateCache(QStringList& filesList)
 			scaledFace = new QImage(scaledFaceTemp);
 			
 			iconsCache[faceNames[faceIndex]] = scaledFace;
+			iconSizeCache[faceNames[faceIndex]] = QSize(faceImage.width(), faceImage.height());
 		}
 	}
 }
@@ -112,8 +114,12 @@ void CubeListItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem 
 		std::map<std::string, QImage*>::const_iterator cachedImage = iconsCache.find(faceNames[i]);
 		if(iconsCache.end() != cachedImage)
 		{
-			imageHeight = cachedImage->second->width();
-			imageHeight = cachedImage->second->height();
+			std::map<std::string, QSize>::const_iterator cachedImageSize = iconSizeCache.find(faceNames[i]);
+			if(cachedImageSize != iconSizeCache.end())
+			{
+				imageWidth = cachedImageSize->second.width();
+				imageHeight = cachedImageSize->second.height();
+			}
 			
 			painter->drawImage(QPoint(faceStartX + i * (FACE_IMAGE_SIZE + FACE_IMAGE_BORDER), y + FACE_IMAGE_BORDER), *cachedImage->second);
 		}

@@ -91,12 +91,6 @@ void LandscapeProxy::SetTilemaskTexture(Texture* texture)
 	baseLandscape->SetTexture(Landscape::TEXTURE_TILE_MASK, texture);
 }
 
-void LandscapeProxy::SetTilemaskTextureEnabled(bool enabled)
-{
-	texturesEnabled[TEXTURE_TYPE_TILEMASK] = enabled;
-	UpdateDisplayedTexture();
-}
-
 void LandscapeProxy::SetNotPassableTexture(Texture* texture)
 {
 	SafeRelease(texturesToBlend[TEXTURE_TYPE_NOT_PASSABLE]);
@@ -136,6 +130,20 @@ void LandscapeProxy::SetVisibilityCheckToolTexture(Texture* texture)
 void LandscapeProxy::SetVisibilityCheckToolTextureEnabled(bool enabled)
 {
 	texturesEnabled[TEXTURE_TYPE_VISIBILITY_CHECK_TOOL] = enabled;
+	UpdateDisplayedTexture();
+}
+
+void LandscapeProxy::SetRulerToolTexture(Texture* texture)
+{
+	SafeRelease(texturesToBlend[TEXTURE_TYPE_RULER_TOOL]);
+	texturesToBlend[TEXTURE_TYPE_RULER_TOOL] = SafeRetain(texture);
+
+	UpdateDisplayedTexture();
+}
+
+void LandscapeProxy::SetRulerToolTextureEnabled(bool enabled)
+{
+	texturesEnabled[TEXTURE_TYPE_RULER_TOOL] = enabled;
 	UpdateDisplayedTexture();
 }
 
@@ -193,7 +201,18 @@ void LandscapeProxy::UpdateDisplayedTexture()
 		visibilityCheckToolSprite->Draw();
 	}
 	SafeRelease(visibilityCheckToolSprite);
-	
+
+	Texture* rulerToolTexture = texturesToBlend[TEXTURE_TYPE_RULER_TOOL];
+	Sprite* rulerToolSprite = NULL;
+	if (rulerToolTexture && texturesEnabled[TEXTURE_TYPE_RULER_TOOL])
+	{
+		RenderManager::Instance()->SetColor(Color::White());
+		rulerToolSprite = Sprite::CreateFromTexture(rulerToolTexture, 0, 0, (float32)fullTiledWidth, (float32)fullTiledHeight);
+		rulerToolSprite->SetPosition(0.f, 0.f);
+		rulerToolSprite->Draw();
+	}
+	SafeRelease(rulerToolSprite);
+
 	RenderManager::Instance()->RestoreRenderTarget();
 	
 	SafeRelease(displayingTexture);
@@ -286,4 +305,11 @@ void LandscapeProxy::UpdateFullTiledTexture(bool force)
 
 		UpdateDisplayedTexture();
 	}
+}
+
+Vector3 LandscapeProxy::PlacePoint(const Vector3& point)
+{
+	Vector3 landscapePoint;
+	bool res = baseLandscape->PlacePoint(point, landscapePoint);
+	return landscapePoint;
 }

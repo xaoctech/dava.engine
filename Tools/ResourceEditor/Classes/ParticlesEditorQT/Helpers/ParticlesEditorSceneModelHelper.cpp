@@ -516,15 +516,22 @@ void ParticlesEditorSceneModelHelper::AddPopupMenuItems(QMenu& menu, const QMode
     }
     else if (dynamic_cast<LayerParticleEditorNode*>(extraUserData))
     {
+		// Yuri Coder, 2013/07/24. These commands aren't used now and to be removed soon.
+		/*
         // Layer Node. Allow to remove it and add new Force.
         AddActionToMenu(&menu, QString("Remove Layer"), new CommandRemoveParticleEmitterLayer());
+		
         AddActionToMenu(&menu, QString("Clone Layer"), new CommandCloneParticleEmitterLayer());
         AddActionToMenu(&menu, QString("Add Force"), new CommandAddParticleEmitterForce());
+		 */
     }
     else if (dynamic_cast<ForceParticleEditorNode*>(extraUserData))
     {
+		// Yuri Coder, 2013/07/24. These commands aren't used now and to be removed soon.
+		/*
         // Force Node. Allow to remove it.
         AddActionToMenu(&menu, QString("Remove Force"), new CommandRemoveParticleEmitterForce());
+		 */
     }
 	else if (dynamic_cast<InnerEmitterParticleEditorNode*>(extraUserData))
 	{

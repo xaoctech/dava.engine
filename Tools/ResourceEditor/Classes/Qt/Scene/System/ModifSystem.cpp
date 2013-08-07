@@ -199,7 +199,9 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 
 					// lock hood, so it wont process ui events, wont calc. scale depending on it current position
 					hoodSystem->LockScale(true);
-					hoodSystem->MovePosition(moveOffset);
+					hoodSystem->SetModifOffset(moveOffset);
+					hoodSystem->SetModifRotate(rotateAngle);
+					hoodSystem->SetModifScale(scaleForce);
 				}
 			}
 			// phase ended
@@ -212,6 +214,8 @@ void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
 						ApplyModification();
 					}
 
+					hoodSystem->SetModifRotate(0);
+					hoodSystem->SetModifScale(0);
 					hoodSystem->LockScale(false);
 
 					EndModification();

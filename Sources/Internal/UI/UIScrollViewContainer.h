@@ -45,7 +45,7 @@ protected:
 	void		ProcessScroll(Vector2 currentScrollPosition);
 	void		EndScroll();
 	void		ScrollToPosition(const Vector2& position);
-	void   		SaveChilds(UIControl *parent, UIYamlLoader * loader, YamlNode * parentNode);
+	void   		SaveChildren(UIControl *parent, UIYamlLoader * loader, YamlNode * parentNode);
 
 	enum 
 	{

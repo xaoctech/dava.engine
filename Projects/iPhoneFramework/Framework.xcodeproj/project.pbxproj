@@ -37,6 +37,8 @@
 		17F53E3516D3705E004D5099 /* WebViewControliOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17F53E3316D3705E004D5099 /* WebViewControliOS.mm */; };
 		496526D0167F173400107C70 /* libdxt_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 496526CF167F173400107C70 /* libdxt_ios.a */; };
 		497BF6E216F751ED00AC57C6 /* DeviceInfoiOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 497BF6E116F751ED00AC57C6 /* DeviceInfoiOS.mm */; };
+		4FDDEC5917A6920D00D9DDEA /* MaterialOptimazer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FDDEC5717A6920D00D9DDEA /* MaterialOptimazer.cpp */; };
+		4FDDEC5A17A6920D00D9DDEA /* MaterialOptimazer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FDDEC5817A6920D00D9DDEA /* MaterialOptimazer.h */; };
 		5C0105D21577993400E0B939 /* libmongodb_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0105D11577993400E0B939 /* libmongodb_ios.a */; };
 		5C77ABBF14C7703800E92D28 /* libpng_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C77ABBE14C7703800E92D28 /* libpng_ios.a */; };
 		5C97964714E3E75000FFFA14 /* libxml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964514E3E75000FFFA14 /* libxml_ios.a */; };
@@ -51,16 +53,18 @@
 		84E5E0FF174D02EA0001C74F /* OpenUDIDApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 84E5E0FD174D02EA0001C74F /* OpenUDIDApple.mm */; };
 		84E5E102174D02F60001C74F /* OpenUDIDios.h in Headers */ = {isa = PBXBuildFile; fileRef = 84E5E100174D02F60001C74F /* OpenUDIDios.h */; };
 		84E5E103174D02F60001C74F /* OpenUDIDios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 84E5E101174D02F60001C74F /* OpenUDIDios.mm */; };
+		A66BC2ED17AB98C300B6252E /* SkyboxComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A66BC2EB17AB98C300B6252E /* SkyboxComponent.cpp */; };
+		A66BC2EE17AB98C300B6252E /* SkyboxComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = A66BC2EC17AB98C300B6252E /* SkyboxComponent.h */; };
+		A66BC2F117AB98E800B6252E /* SkyboxSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A66BC2EF17AB98E800B6252E /* SkyboxSystem.cpp */; };
+		A66BC2F217AB98E800B6252E /* SkyboxSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A66BC2F017AB98E800B6252E /* SkyboxSystem.h */; };
+		A6A1E8691785688600AA3A86 /* CRC32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6A1E8671785688600AA3A86 /* CRC32.cpp */; };
+		A6A1E86A1785688600AA3A86 /* CRC32.h in Headers */ = {isa = PBXBuildFile; fileRef = A6A1E8681785688600AA3A86 /* CRC32.h */; };
 		A6E4FDF31761D40200B48E41 /* ActionComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6E4FDEF1761D40200B48E41 /* ActionComponent.cpp */; };
 		A6E4FDF41761D40200B48E41 /* ActionComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = A6E4FDF01761D40200B48E41 /* ActionComponent.h */; };
 		A6E4FDF51761D40200B48E41 /* CustomPropertiesComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6E4FDF11761D40200B48E41 /* CustomPropertiesComponent.cpp */; };
 		A6E4FDF61761D40200B48E41 /* CustomPropertiesComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = A6E4FDF21761D40200B48E41 /* CustomPropertiesComponent.h */; };
 		A6E4FDFB1761D83100B48E41 /* ActionUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6E4FDF91761D83100B48E41 /* ActionUpdateSystem.cpp */; };
 		A6E4FDFC1761D83100B48E41 /* ActionUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A6E4FDFA1761D83100B48E41 /* ActionUpdateSystem.h */; };
-		A667C6691767475000E5AC56 /* SkyBoxNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A667C6671767475000E5AC56 /* SkyBoxNode.cpp */; };
-		A667C66A1767475000E5AC56 /* SkyBoxNode.h in Headers */ = {isa = PBXBuildFile; fileRef = A667C6681767475000E5AC56 /* SkyBoxNode.h */; };
-		A6A1E8691785688600AA3A86 /* CRC32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6A1E8671785688600AA3A86 /* CRC32.cpp */; };
-		A6A1E86A1785688600AA3A86 /* CRC32.h in Headers */ = {isa = PBXBuildFile; fileRef = A6A1E8681785688600AA3A86 /* CRC32.h */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
 		C1DC1F081717FD3C001C5EC3 /* libTextureConverter_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C1DC1F071717FD3C001C5EC3 /* libTextureConverter_macos.a */; };
 		CC247FF116D69F1700183D40 /* DVAssertMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC247FEC16D69F1700183D40 /* DVAssertMessage.cpp */; };
@@ -720,6 +724,8 @@
 		17F53E3316D3705E004D5099 /* WebViewControliOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WebViewControliOS.mm; sourceTree = "<group>"; };
 		496526CF167F173400107C70 /* libdxt_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_ios.a; path = ../../Libs/libs/libdxt_ios.a; sourceTree = "<group>"; };
 		497BF6E116F751ED00AC57C6 /* DeviceInfoiOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DeviceInfoiOS.mm; sourceTree = "<group>"; };
+		4FDDEC5717A6920D00D9DDEA /* MaterialOptimazer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialOptimazer.cpp; sourceTree = "<group>"; };
+		4FDDEC5817A6920D00D9DDEA /* MaterialOptimazer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialOptimazer.h; sourceTree = "<group>"; };
 		5C0105D11577993400E0B939 /* libmongodb_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmongodb_ios.a; path = ../../Libs/libs/libmongodb_ios.a; sourceTree = "<group>"; };
 		5C77ABBE14C7703800E92D28 /* libpng_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng_ios.a; path = ../../Libs/libs/libpng_ios.a; sourceTree = "<group>"; };
 		5C97964514E3E75000FFFA14 /* libxml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml_ios.a; path = ../../Libs/libs/libxml_ios.a; sourceTree = "<group>"; };
@@ -734,16 +740,18 @@
 		84E5E0FD174D02EA0001C74F /* OpenUDIDApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenUDIDApple.mm; sourceTree = "<group>"; };
 		84E5E100174D02F60001C74F /* OpenUDIDios.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenUDIDios.h; sourceTree = "<group>"; };
 		84E5E101174D02F60001C74F /* OpenUDIDios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenUDIDios.mm; sourceTree = "<group>"; };
+		A66BC2EB17AB98C300B6252E /* SkyboxComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyboxComponent.cpp; sourceTree = "<group>"; };
+		A66BC2EC17AB98C300B6252E /* SkyboxComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkyboxComponent.h; sourceTree = "<group>"; };
+		A66BC2EF17AB98E800B6252E /* SkyboxSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyboxSystem.cpp; sourceTree = "<group>"; };
+		A66BC2F017AB98E800B6252E /* SkyboxSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkyboxSystem.h; sourceTree = "<group>"; };
+		A6A1E8671785688600AA3A86 /* CRC32.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CRC32.cpp; sourceTree = "<group>"; };
+		A6A1E8681785688600AA3A86 /* CRC32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRC32.h; sourceTree = "<group>"; };
 		A6E4FDEF1761D40200B48E41 /* ActionComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActionComponent.cpp; sourceTree = "<group>"; };
 		A6E4FDF01761D40200B48E41 /* ActionComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionComponent.h; sourceTree = "<group>"; };
 		A6E4FDF11761D40200B48E41 /* CustomPropertiesComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CustomPropertiesComponent.cpp; sourceTree = "<group>"; };
 		A6E4FDF21761D40200B48E41 /* CustomPropertiesComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomPropertiesComponent.h; sourceTree = "<group>"; };
 		A6E4FDF91761D83100B48E41 /* ActionUpdateSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActionUpdateSystem.cpp; sourceTree = "<group>"; };
 		A6E4FDFA1761D83100B48E41 /* ActionUpdateSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionUpdateSystem.h; sourceTree = "<group>"; };
-		A667C6671767475000E5AC56 /* SkyBoxNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyBoxNode.cpp; sourceTree = "<group>"; };
-		A667C6681767475000E5AC56 /* SkyBoxNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkyBoxNode.h; sourceTree = "<group>"; };
-		A6A1E8671785688600AA3A86 /* CRC32.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CRC32.cpp; sourceTree = "<group>"; };
-		A6A1E8681785688600AA3A86 /* CRC32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRC32.h; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		C1DC1F071717FD3C001C5EC3 /* libTextureConverter_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libTextureConverter_macos.a; path = ../../Libs/libs/libTextureConverter_macos.a; sourceTree = "<group>"; };
 		CC247FEC16D69F1700183D40 /* DVAssertMessage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DVAssertMessage.cpp; sourceTree = "<group>"; };
@@ -2015,6 +2023,8 @@
 				E8B3C95B16B9326E002BD35F /* MaterialGraph.h */,
 				E8B3C95C16B9326E002BD35F /* MaterialGraphNode.cpp */,
 				E8B3C95D16B9326E002BD35F /* MaterialGraphNode.h */,
+				4FDDEC5717A6920D00D9DDEA /* MaterialOptimazer.cpp */,
+				4FDDEC5817A6920D00D9DDEA /* MaterialOptimazer.h */,
 				E8B3C95E16B9326E002BD35F /* NMaterial.cpp */,
 				E8B3C95F16B9326E002BD35F /* NMaterial.h */,
 				E8B3C96016B9326E002BD35F /* NMaterialConsts.h */,
@@ -2107,8 +2117,6 @@
 				E8B3C9FD16B9326E002BD35F /* Systems */,
 				E8B3CA1616B9326E002BD35F /* UserNode.cpp */,
 				E8B3CA1716B9326E002BD35F /* UserNode.h */,
-				A667C6671767475000E5AC56 /* SkyBoxNode.cpp */,
-				A667C6681767475000E5AC56 /* SkyBoxNode.h */,
 			);
 			path = Scene3D;
 			sourceTree = "<group>";
@@ -2116,6 +2124,8 @@
 		E8B3C9AC16B9326E002BD35F /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				A66BC2EB17AB98C300B6252E /* SkyboxComponent.cpp */,
+				A66BC2EC17AB98C300B6252E /* SkyboxComponent.h */,
 				A6E4FDEF1761D40200B48E41 /* ActionComponent.cpp */,
 				A6E4FDF01761D40200B48E41 /* ActionComponent.h */,
 				A6E4FDF11761D40200B48E41 /* CustomPropertiesComponent.cpp */,
@@ -2153,6 +2163,8 @@
 		E8B3C9FD16B9326E002BD35F /* Systems */ = {
 			isa = PBXGroup;
 			children = (
+				A66BC2EF17AB98E800B6252E /* SkyboxSystem.cpp */,
+				A66BC2F017AB98E800B6252E /* SkyboxSystem.h */,
 				A6E4FDF91761D83100B48E41 /* ActionUpdateSystem.cpp */,
 				A6E4FDFA1761D83100B48E41 /* ActionUpdateSystem.h */,
 				02F6403F173A5A950053F038 /* SoundUpdateSystem.cpp */,
@@ -2706,11 +2718,13 @@
 				A6E4FDF41761D40200B48E41 /* ActionComponent.h in Headers */,
 				A6E4FDF61761D40200B48E41 /* CustomPropertiesComponent.h in Headers */,
 				A6E4FDFC1761D83100B48E41 /* ActionUpdateSystem.h in Headers */,
-				A667C66A1767475000E5AC56 /* SkyBoxNode.h in Headers */,
 				A6A1E86A1785688600AA3A86 /* CRC32.h in Headers */,
 				74338647179D18F60014FBD3 /* UIScrollView.h in Headers */,
 				74338649179D18F60014FBD3 /* UIScrollViewContainer.h in Headers */,
 				17D30ADD1799793E007A4594 /* UIDismissionHandlerAlertView.h in Headers */,
+				4FDDEC5A17A6920D00D9DDEA /* MaterialOptimazer.h in Headers */,
+				A66BC2EE17AB98C300B6252E /* SkyboxComponent.h in Headers */,
+				A66BC2F217AB98E800B6252E /* SkyboxSystem.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3078,11 +3092,13 @@
 				A6E4FDF31761D40200B48E41 /* ActionComponent.cpp in Sources */,
 				A6E4FDF51761D40200B48E41 /* CustomPropertiesComponent.cpp in Sources */,
 				A6E4FDFB1761D83100B48E41 /* ActionUpdateSystem.cpp in Sources */,
-				A667C6691767475000E5AC56 /* SkyBoxNode.cpp in Sources */,
 				A6A1E8691785688600AA3A86 /* CRC32.cpp in Sources */,
 				74338646179D18F60014FBD3 /* UIScrollView.cpp in Sources */,
 				74338648179D18F60014FBD3 /* UIScrollViewContainer.cpp in Sources */,
 				17D30ADE1799793E007A4594 /* UIDismissionHandlerAlertView.mm in Sources */,
+				4FDDEC5917A6920D00D9DDEA /* MaterialOptimazer.cpp in Sources */,
+				A66BC2ED17AB98C300B6252E /* SkyboxComponent.cpp in Sources */,
+				A66BC2F117AB98E800B6252E /* SkyboxSystem.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

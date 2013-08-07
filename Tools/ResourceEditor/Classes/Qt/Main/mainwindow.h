@@ -20,6 +20,7 @@
 #include <QMainWindow>
 #include "ui_mainwindow.h"
 #include "ModificationWidget.h"
+#include "Tools/QtWaitDialog/QtWaitDialog.h"
 
 #include "Base/Singleton.h"
 
@@ -29,6 +30,7 @@
 // TODO: remove old screen -->
 #include "Classes/SceneEditor/MaterialEditor.h"
 // <---
+class AddSwitchEntityDialog;
 
 class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
 {
@@ -44,6 +46,14 @@ public:
 
 	bool SaveSceneAs(SceneEditor2 *scene);
 
+	void SetGPUFormat(DAVA::eGPUFamily gpu);
+	DAVA::eGPUFamily GetGPUFormat();
+
+	void WaitStart(const QString &title, const QString &message, int min = 0, int max = 100);
+	void WaitSetMessage(const QString &messsage);
+	void WaitSetValue(int value);
+	void WaitStop();
+
 // qt actions slots
 public slots:
 	void OnProjectOpen();
@@ -53,10 +63,14 @@ public slots:
 	void OnSceneSave();
 	void OnSceneSaveAs();
 	void OnSceneSaveToFolder();
+	void OnRecentTriggered(QAction *recentAction);
 	void ExportMenuTriggered(QAction *exportAsAction);
 
 	void OnUndo();
 	void OnRedo();
+
+	void OnReloadTextures();
+	void OnReloadTexturesTriggered(QAction *reloadAction);
 
 	void OnSelectMode();
 	void OnMoveMode();
@@ -73,8 +87,22 @@ public slots:
 	void OnSceneLightMode();
 
 	void OnCubemapEditor();
+		
+	void OnLandscapeDialog();
+	void OnLightDialog();
+	void OnServiceNodeDialog();
+	void OnCameraDialog();
+	void OnImposterDialog();
 
+	void OnUserNodeDialog();
+	void OnSwitchEntityDialog();
+	void OnParticleEffectDialog();
+	
 	void OnNotPassableTerrain();
+	void OnRulerTool();
+	
+	void OnAddSkyboxNode();
+	void OnAddEntityMenuAboutToShow();
 
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
@@ -83,6 +111,10 @@ protected:
 	void SetupToolBars();
 	void SetupDocks();
 	void SetupActions();
+	void SetupTitle();
+
+	void InitRecent();
+	void AddRecent(const QString &path);
 
 protected slots:
 	void ProjectOpened(const QString &path);
@@ -91,12 +123,19 @@ protected slots:
 	void SceneCommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
 	void SceneActivated(SceneEditor2 *scene);
 	void SceneDeactivated(SceneEditor2 *scene);
+	
+	void AddSwitchDialogFinished(int result);
+
+	void UpdateRulerToolLength(SceneEditor2* scene, double length, double previewLength);
 
 private:
 	Ui::MainWindow *ui;
+	QtWaitDialog *waitDialog;
 	QtPosSaver posSaver;
 
+	QList<QAction *> recentScenes;
 	ModificationWidget *modificationWidget;
+	AddSwitchEntityDialog* addSwitchEntityDialog;
 
 	// TODO: remove this old screen -->
 	MaterialEditor *materialEditor;
@@ -106,6 +145,9 @@ private:
 	void LoadModificationState(SceneEditor2 *scene);
 	void LoadEditorLightState(SceneEditor2 *scene);
 	void LoadNotPassableState(SceneEditor2* scene);
+	void LoadRulerToolState(SceneEditor2* scene);
+	void LoadGPUFormat();
+	void CreateAndDisplayAddEntityDialog(Entity* sceneNode);
 };
 
 #if 0

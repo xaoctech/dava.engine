@@ -30,7 +30,7 @@ class PropertyEditor : public QtPropertyEditor
 	Q_OBJECT
 
 public:
-	PropertyEditor(QWidget *parent = 0);
+	PropertyEditor(QWidget *parent = 0, bool connectToSceneSignals = true);
 	~PropertyEditor();
 
 	void SetNode(DAVA::Entity *node);

@@ -15,58 +15,66 @@
 =====================================================================================*/
 
 #include "AddSwitchEntityDialog.h"
-#include "ui_AddSwitchEntityDialog.h"
 #include "./../Qt/Tools/MimeDataHelper/MimeDataHelper.h"
+#include "./../Qt/Tools/SelectPathWidget/SelectPathWidget.h"
+#include <QLabel>
 
-#include <QKeyEvent>
-
-AddSwitchEntityDialog::AddSwitchEntityDialog(QWidget* parent)
-:	QDialog(parent),
-ui(new Ui::AddSwitchEntityDialog)
+AddSwitchEntityDialog::AddSwitchEntityDialog(DAVA::Entity* entityToDisplay, QWidget* parent)
+		:BaseAddEntityDialog(entityToDisplay,parent)
 {
-	ui->setupUi(this);
 	setAcceptDrops(false);
 	
-	setWindowFlags(windowFlags() | Qt::Tool );
-	setAttribute( Qt::WA_MacAlwaysShowToolWindow);
-	ui->firstSelectionWidget->SetDiscriptionText("Select first entity:");
+	SelectPathWidget* firstWidget = new SelectPathWidget(parent);
+	SelectPathWidget* secondWidget = new SelectPathWidget(parent);
+	SelectPathWidget* thirdWidget = new SelectPathWidget(parent);
 
-	ui->secondSelectionWidget->SetDiscriptionText("Select second entity:");
+	QLabel* label1 = new QLabel("First Entity:", parent);
+	QLabel* label2 = new QLabel("Second Entity:", parent);
+	QLabel* label3 = new QLabel("Third Entity:", parent);
+	
+	
+	AddControlToUserContainer(label1);
+	AddControlToUserContainer(firstWidget);
+	AddControlToUserContainer(label2);
+	AddControlToUserContainer(secondWidget);
+	AddControlToUserContainer(label3);
+	AddControlToUserContainer(thirdWidget);
 
-}
-
-void AddSwitchEntityDialog::SetRelativePath(const DAVA::String& rPath, bool forFirstWidget )
-{
-	if(forFirstWidget)
-	{
-		ui->firstSelectionWidget->SetRelativePath(rPath);
-	}
-	else
-	{
-		ui->firstSelectionWidget->SetRelativePath(rPath);
-	}
-}
-
-void AddSwitchEntityDialog::SetOpenDialogsDefaultPath(const DAVA::String& path)
-{
-	ui->firstSelectionWidget->SetOpenDialogDefaultPath(path);
-	ui->secondSelectionWidget->SetOpenDialogDefaultPath(path);
-}
-
-void AddSwitchEntityDialog::GetSelectedEntities(DAVA::Entity** firstChild, DAVA::Entity** secondChild, SceneEditor2* editor)
-{
-	*firstChild  = ui->firstSelectionWidget->GetOutputEntity(editor);
-	*secondChild = ui->secondSelectionWidget->GetOutputEntity(editor);
-}
-
-void AddSwitchEntityDialog::ErasePathWidgets()
-{
-	ui->firstSelectionWidget->EraseWidget();
-	ui->secondSelectionWidget->EraseWidget();
+	pathWidgets.push_back(firstWidget);
+	pathWidgets.push_back(secondWidget);
+	pathWidgets.push_back(thirdWidget);
+	
+	additionalWidgets.push_back(label1);
+	additionalWidgets.push_back(label2);
+	additionalWidgets.push_back(label3);
 }
 
 AddSwitchEntityDialog::~AddSwitchEntityDialog()
 {
-	delete ui;
+	RemoveAllControlsFromUserContainer();
+	
+	Q_FOREACH(SelectPathWidget* widget, pathWidgets)
+	{
+		delete widget;
+	}
+	Q_FOREACH(QWidget* widget, additionalWidgets)
+	{
+		delete widget;
+	}
 }
 
+void AddSwitchEntityDialog::CleanupPathWidgets()
+{
+	Q_FOREACH(SelectPathWidget* widget, pathWidgets)
+	{
+		widget->EraseWidget();
+	}
+}
+
+void AddSwitchEntityDialog::GetPathEntities(DAVA::Vector<DAVA::Entity*>& entities, SceneEditor2* editor)
+{
+	Q_FOREACH(SelectPathWidget* widget, pathWidgets)
+	{
+		entities.push_back(widget->GetOutputEntity(editor));
+	}
+}

@@ -38,10 +38,10 @@ class EmitterLayerWidget: public QWidget, public BaseParticleEditorContentWidget
     Q_OBJECT
     
 public:
-    explicit EmitterLayerWidget(SceneEditor2* scene, QWidget *parent = 0);
+    explicit EmitterLayerWidget(QWidget *parent = 0);
     ~EmitterLayerWidget();
 
-	void Init(ParticleEmitter* emitter, ParticleLayer* layer, bool updateMinimized);
+	void Init(SceneEditor2* scene, ParticleEmitter* emitter, ParticleLayer* layer, bool updateMinimized);
 	ParticleLayer* GetLayer() const {return layer;};
 	void Update();
 	
@@ -123,6 +123,15 @@ private:
 
 	EventFilterDoubleSpinBox* startTimeSpin;
 	EventFilterDoubleSpinBox* endTimeSpin;
+	EventFilterDoubleSpinBox* deltaSpin;
+	EventFilterDoubleSpinBox* loopEndSpin;
+	EventFilterDoubleSpinBox* deltaVariationSpin;
+	EventFilterDoubleSpinBox* loopVariationSpin;
+	
+	QLabel* deltaSpinLabel;
+	QLabel* deltaVariationSpinLabel;
+	QLabel* loopEndSpinLabel;
+	QLabel* loopVariationSpinLabel;
 	
 	bool blockSignals;
 

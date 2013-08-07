@@ -147,6 +147,8 @@ public:
         \param[in] pathName path to the png or pvr file
      */
 	static Texture * CreateFromFile(const FilePath & pathName);
+	static Texture * CreateFromDescriptor(const TextureDescriptor *descriptor);
+	static Texture * CreateFromDescriptor(const TextureDescriptor *descriptor, eGPUFamily gpu);
 
 	/**
         \brief Create texture from given file. Supported formats .png, .pvr (only on iOS). 
@@ -165,6 +167,8 @@ public:
      */
 	static Texture * CreateFBO(uint32 width, uint32 height, PixelFormat format, DepthFormat depthFormat);
 	
+	static Texture * CreatePink(const FilePath &path = FilePath());
+
     /**
         \brief Function to load specific mip-map level from file
         \param[in] level level of mip map you want to replace
@@ -218,14 +222,7 @@ public:
     
     Image * CreateImageFromMemory();
 
-	static Texture * GetPinkPlaceholder();
-	static void ReleasePinkPlaceholder();
-
-	/**
-        \brief Check if texture was created by GetPinkPlaceholder()
-     */
 	bool IsPinkPlaceholder();
-    
     
     static PixelFormatDescriptor GetPixelFormatDescriptor(PixelFormat formatID);
 	
@@ -265,6 +262,7 @@ public:							// properties for fast access
 
 	FilePath relativePathname;
 
+	bool		isPink;
 	String		debugInfo;
 	uint32		width;			// texture width 
 	uint32		height;			// texture height
@@ -301,9 +299,8 @@ private:
 	static Map<String, Texture*> textureMap;
 	static Texture * Get(const FilePath & name);
     
-	static Texture * CreateFromDescriptor(TextureDescriptor *descriptor);
-	static Texture * CreateFromImage(const FilePath & pathname, TextureDescriptor *descriptor);
-	static Texture * CreateFromImage(File *file, TextureDescriptor *descriptor);
+	static Texture * CreateFromImage(const FilePath & pathname, const TextureDescriptor *descriptor);
+	static Texture * CreateFromImage(File *file, const TextureDescriptor *descriptor);
 
     bool LoadFromImage(File *file, const TextureDescriptor *descriptor);
     bool CheckImageSize(const Vector<Image *> &imageSet);

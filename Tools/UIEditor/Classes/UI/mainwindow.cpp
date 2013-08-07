@@ -47,6 +47,16 @@ const QString APP_COMPANY = "DAVA";
 const QString APP_GEOMETRY = "geometry";
 const QString APP_STATE = "windowstate";
 
+static const int SCALE_PERCENTAGES[] =
+{
+	10,   25,   50,  75,
+	100,  200,  400, 800,
+	1200, 1600, 3200
+};
+
+static const int32 DEFAULT_SCALE_PERCENTAGE_INDEX = 4; // 100%
+static const char* PERCENTAGE_FORMAT = "%1 %";
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -59,9 +69,26 @@ MainWindow::MainWindow(QWidget *parent) :
     
 	this->setWindowTitle(ResourcesManageHelper::GetProjectTitle());
 
-	ui->scaleSlider->setMinimum((int)(ui->scaleSpin->minimum() * SPIN_SCALE));
-	ui->scaleSlider->setMaximum((int)(ui->scaleSpin->maximum() * SPIN_SCALE));
-	
+	int32 scalesCount = COUNT_OF(SCALE_PERCENTAGES);
+
+	// Setup the Scale Slider.
+	ui->scaleSlider->setTickInterval(1);
+	ui->scaleSlider->setMinimum(0);
+	ui->scaleSlider->setMaximum(scalesCount - 1);
+	ui->scaleSlider->setValue(DEFAULT_SCALE_PERCENTAGE_INDEX);
+	connect(ui->scaleSlider, SIGNAL(valueChanged(int)), this, SLOT(OnScaleSliderValueChanged(int)));
+
+	// Setup the Scale Combo.
+	for (int32 i = 0; i < scalesCount; i ++)
+	{
+		ui->scaleCombo->addItem(QString(PERCENTAGE_FORMAT).arg(SCALE_PERCENTAGES[i]));
+	}
+	ui->scaleCombo->setCurrentIndex(DEFAULT_SCALE_PERCENTAGE_INDEX);
+	ui->scaleCombo->lineEdit()->setMaxLength(6);
+	ui->scaleCombo->setInsertPolicy(QComboBox::NoInsert);
+	connect(ui->scaleCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(OnScaleComboIndexChanged(int)));
+	connect(ui->scaleCombo->lineEdit(), SIGNAL(editingFinished()), this, SLOT(OnScaleComboTextEditingFinished()));
+
 	connect(ui->verticalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(OnSliderMoved()));
 	connect(ui->horizontalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(OnSliderMoved()));
 
@@ -195,22 +222,140 @@ void MainWindow::CreateHierarchyDockWidgetToolbar()
 
 void MainWindow::OnUpdateScaleRequest(float scaleDelta)
 {
-	ui->scaleSpin->setValue(ui->scaleSpin->value() + scaleDelta);
+	// Lookup for the next/prev index.
+	int32 curScaleIndex = ui->scaleSlider->value();
+	if (scaleDelta > 0)
+	{
+		curScaleIndex ++;
+		int32 maxIndex = (int32)(COUNT_OF(SCALE_PERCENTAGES) - 1);
+		if (curScaleIndex > maxIndex)
+		{
+			curScaleIndex = maxIndex;
+		}
+	}
+	else
+	{
+		curScaleIndex --;
+		if (curScaleIndex < 0)
+		{
+			curScaleIndex = 0;
+		}
+	}
+
+	UpdateScaleAndScaleSliderByIndex(curScaleIndex);
+	UpdateScaleComboIndex(curScaleIndex);
 }
 
-void MainWindow::on_scaleSpin_valueChanged(double arg1)
+void MainWindow::OnScaleComboIndexChanged(int value)
 {
-	ui->scaleSlider->setValue(int(arg1 * SPIN_SCALE));
-	ScreenWrapper::Instance()->SetScale((float)arg1);
+	UpdateScaleAndScaleSliderByIndex(value);
+}
+
+void MainWindow::OnScaleComboTextEditingFinished()
+{
+	// Firstly verify whether the value is already set.
+	QString curTextValue = ui->scaleCombo->currentText().trimmed();
+	int scaleValue = 0;
+	if (curTextValue.endsWith(" %"))
+	{
+		int endCharPos = curTextValue.lastIndexOf(" %");
+		QString remainderNumber = curTextValue.left(endCharPos);
+		scaleValue = remainderNumber.toInt();
+	}
+	else
+	{
+		// Try to parse the value.
+		scaleValue = curTextValue.toFloat();
+	}
+
+	// Do the validation.
+	bool needSetDefaultIndex = false;
+	if ((scaleValue < SCALE_PERCENTAGES[0]) ||
+		(scaleValue > SCALE_PERCENTAGES[COUNT_OF(SCALE_PERCENTAGES) - 1]))
+	{
+		// The value is wrong or can't be parsed, use the default one.
+		scaleValue = SCALE_PERCENTAGES[DEFAULT_SCALE_PERCENTAGE_INDEX];
+		needSetDefaultIndex = true;
+	}
+
+	// Update the value in the combo.
+	ui->scaleCombo->blockSignals(true);
+	ui->scaleCombo->lineEdit()->blockSignals(true);
+
+	ui->scaleCombo->setEditText(QString(PERCENTAGE_FORMAT).arg((int)scaleValue));
+	if (needSetDefaultIndex)
+	{
+		ui->scaleCombo->setCurrentIndex(DEFAULT_SCALE_PERCENTAGE_INDEX);
+	}
+
+	ui->scaleCombo->lineEdit()->blockSignals(false);
+	ui->scaleCombo->blockSignals(false);
+
+	// Update the rest of the controls.
+	UpdateScale(scaleValue);
+	UpdateScaleSlider(scaleValue);
+}
+
+void MainWindow::OnScaleSliderValueChanged(int value)
+{
+	int32 scaleValue = SCALE_PERCENTAGES[value];
+	UpdateScale(scaleValue);
+	UpdateScaleComboIndex(value);
+}
+
+void MainWindow::UpdateScaleAndScaleSliderByIndex(int32 index)
+{
+	if (index < 0 || index >= (int)COUNT_OF(SCALE_PERCENTAGES))
+	{
+		return;
+	}
+	
+	int32 scaleValue = SCALE_PERCENTAGES[index];
+	UpdateScale(scaleValue);
+	UpdateScaleSlider(scaleValue);
+}
+
+void MainWindow::UpdateScale(int32 newScalePercents)
+{
+	// Scale is sent in percents, so need to divide by 100.
+	ScreenWrapper::Instance()->SetScale((float)newScalePercents / 100);
+
 	UpdateSliders();
 	UpdateScreenPosition();
 }
 
-void MainWindow::on_scaleSlider_valueChanged(int value)
+void MainWindow::UpdateScaleComboIndex(int newIndex)
 {
-	double spinValue = value / SPIN_SCALE;
-	if (Abs(spinValue - ui->scaleSpin->value()) > 0.01)
-		ui->scaleSpin->setValue(spinValue);
+	if (newIndex < 0 || newIndex >= (int)COUNT_OF(SCALE_PERCENTAGES))
+	{
+		return;
+	}
+
+	ui->scaleCombo->blockSignals(true);
+	ui->scaleCombo->setCurrentIndex(newIndex);
+	ui->scaleCombo->blockSignals(false);
+}
+
+void MainWindow::UpdateScaleSlider(int32 newScalePercents)
+{
+	// Find the nearest value for the slider.
+	int32 nearestDistance = INT_MAX;
+	int32 nearestIndex = 0;
+
+	int32 scalesCount = COUNT_OF(SCALE_PERCENTAGES);
+	for (int32 i = 0; i < scalesCount; i ++)
+	{
+		int32 curDistance = abs(SCALE_PERCENTAGES[i] - newScalePercents);
+		if (curDistance < nearestDistance)
+		{
+			nearestDistance = curDistance;
+			nearestIndex = i;
+		}
+	}
+
+	ui->scaleSlider->blockSignals(true);
+	ui->scaleSlider->setValue(nearestIndex);
+	ui->scaleSlider->blockSignals(false);
 }
 
 void MainWindow::OnSliderMoved()
@@ -248,7 +393,7 @@ void MainWindow::OnSelectedScreenChanged()
 	screenChangeUpdate = true;
 	if (HierarchyTreeController::Instance()->GetActiveScreen())
 	{
-		ui->scaleSpin->setValue(HierarchyTreeController::Instance()->GetActiveScreen()->GetScale());
+		//ui->scaleSpin->setValue(HierarchyTreeController::Instance()->GetActiveScreen()->GetScale());
 
 		UpdateSliders();
 		ui->horizontalScrollBar->setValue(HierarchyTreeController::Instance()->GetActiveScreen()->GetPosX());
@@ -703,12 +848,12 @@ void MainWindow::OnRedoRequested()
 
 void MainWindow::OnZoomInRequested()
 {
-	OnUpdateScaleRequest(ui->scaleSpin->singleStep());
+	OnUpdateScaleRequest(1.0f);
 }
 
 void MainWindow::OnZoomOutRequested()
 {
-	OnUpdateScaleRequest(ui->scaleSpin->singleStep() * (-1));
+	OnUpdateScaleRequest(-1.0f);
 }
 
 void MainWindow::OnUndoRedoAvailabilityChanged()

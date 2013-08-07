@@ -33,11 +33,26 @@ void ActionUpdateSystem::Process()
 {
 	float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
 	
-	uint32 size = components.size();
+	uint32 size = activeActions.size();
 	for(uint32 index = 0; index < size; ++index)
 	{
-		ActionComponent* component = cast_if_equal<ActionComponent*>(components[index]);
+		ActionComponent* component = activeActions[index];
 		component->Update(timeElapsed);
+	}
+}
+	
+void ActionUpdateSystem::Watch(ActionComponent* component)
+{
+	activeActions.push_back(component);
+}
+
+void ActionUpdateSystem::UnWatch(ActionComponent* component)
+{
+	Vector<ActionComponent*>::iterator i = std::find(activeActions.begin(), activeActions.end(), component);
+	
+	if(i != activeActions.end())
+	{
+		activeActions.erase(i);
 	}
 }
 	

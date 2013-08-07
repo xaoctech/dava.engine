@@ -2518,6 +2518,7 @@ const char* LibPVRHelper::GetCubemapMetadata(PVRHeaderV3* pvrHeader, const char*
 			else
 			{
 				pvrData += dataSize * sizeof(uint8);
+				index += sizeof(fourCC) + sizeof(dataKey) + sizeof(dataSize) + dataSize * sizeof(uint8);
 			}
 		}
 	}

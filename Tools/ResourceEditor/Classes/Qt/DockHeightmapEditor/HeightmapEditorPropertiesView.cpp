@@ -28,14 +28,16 @@
 #include "HeightmapEditorPropertiesView.h"
 #include "ui_heightmapEditorProperties.h"
 
-#include "../Main/QtMainWindowHandler.h"
-
 #include "Qt/Scene/SceneSignals.h"
+#include "../Main/mainwindow.h"
+
+#include <QMessageBox>
 
 HeightmapEditorPropertiesView::HeightmapEditorPropertiesView(QWidget* parent)
 :	QWidget(parent)
 ,	ui(new Ui::HeightmapEditorPropertiesView)
 ,	activeScene(NULL)
+,	toolbarAction(NULL)
 {
 	ui->setupUi(this);
 
@@ -50,10 +52,11 @@ HeightmapEditorPropertiesView::~HeightmapEditorPropertiesView()
 void HeightmapEditorPropertiesView::Init()
 {
 	InitBrushImages();
+	toolbarAction = QtMainWindow::Instance()->GetUI()->actionHeightMapEditor;
 
 	connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2*)), this, SLOT(SceneActivated(SceneEditor2*)));
 	connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2*)), this, SLOT(SceneDeactivated(SceneEditor2*)));
-	connect(SceneSignals::Instance(), SIGNAL(UpdateDropperHeight(SceneEditor2*, double)),
+	connect(SceneSignals::Instance(), SIGNAL(DropperHeightChanged(SceneEditor2*, double)),
 			this, SLOT(SetDropperHeight(SceneEditor2*, double)));
 
 	connect(ui->sliderStrength, SIGNAL(valueChanged(int)), ui->labelStrength, SLOT(setNum(int)));
@@ -71,6 +74,8 @@ void HeightmapEditorPropertiesView::Init()
 	connect(ui->sliderAverageStrength, SIGNAL(valueChanged(int)), this, SLOT(SetAverageStrength(int)));
 	connect(ui->checkboxHeightmap, SIGNAL(stateChanged(int)), this, SLOT(SetCopyPasteHeightmap(int)));
 	connect(ui->checkboxTilemask, SIGNAL(stateChanged(int)), this, SLOT(SetCopyPasteTilemask(int)));
+
+	connect(toolbarAction, SIGNAL(triggered()), this, SLOT(Toggle()));
 
 	SetWidgetsState(false);
 }
@@ -128,6 +133,7 @@ void HeightmapEditorPropertiesView::SetWidgetsState(bool enabled)
 	ui->buttonEnableHeightmapEditor->setCheckable(enabled);
 	ui->buttonEnableHeightmapEditor->setChecked(enabled);
 	ui->buttonEnableHeightmapEditor->blockSignals(false);
+	toolbarAction->setChecked(enabled);
 
 	QString buttonText = enabled ? tr("Disable Heightmap Editor") : tr("Enable Heightmap Editor");
 	ui->buttonEnableHeightmapEditor->setText(buttonText);
@@ -183,6 +189,9 @@ void HeightmapEditorPropertiesView::UpdateFromScene(SceneEditor2* scene)
 	ui->comboBrushImage->setCurrentIndex(toolImage);
 	ui->checkboxHeightmap->setChecked(copyPasteHeightmap);
 	ui->checkboxTilemask->setChecked(copyPasteTilemask);
+
+	ui->labelStrength->setNum((int32)strength);
+	ui->labelAverageStrength->setNum(averageStrengthVal);
 
 	ui->radioRelAbs->setChecked(false);
 	ui->radioAvg->setChecked(false);
@@ -252,7 +261,8 @@ void HeightmapEditorPropertiesView::Toggle()
 		}
 		else
 		{
-			// show "Couldn't enable heightmap editing" message box
+			QMessageBox::critical(0, "Error enabling Heightmap editor",
+								  "Error enabling Heightmap editor.\nMake sure there is landscape in scene and disable other landscape editors.");
 		}
 	}
 }

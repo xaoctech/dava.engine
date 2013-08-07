@@ -61,9 +61,8 @@ public:
 	
     void * New();
 	void Delete(void * _item);
-
     void Reset();
-private:
+
     bool CheckIsPointerValid(void * block);
     void InsertBlockToFreeNodes(void * block);
 	void CreateNewDataBlock();
@@ -72,6 +71,11 @@ private:
     uint32 blockArraySize;
     void * allocatedBlockArrays;    // ptr to last allocated block
     void * nextFreeBlock;      // next free 
+
+	//debug stats
+	uint32 totalBlockCount;
+	uint32 freeItemCount;
+	uint32 maxItemCount;
 };
 		
 };

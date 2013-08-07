@@ -43,38 +43,41 @@ void CubeMapTextureBrowser::ReloadTextures(const DAVA::String& rootPath)
 	
 	QDir dir(rootPath.c_str());
 	QStringList filesList = dir.entryList(QStringList("*.tex"));
+	int cubemapTextures = 0;
 	
 	if(filesList.size() > 0)
 	{
-		QStringList fixedFilesList;
+		QStringList fullPathFileList;
 		FilePath fp = rootPath;
 		for(int i = 0; i < filesList.size(); ++i)
 		{
 			QString str = filesList.at(i);
 			fp.ReplaceFilename(str.toStdString());
-
-			fixedFilesList.append(QString(fp.GetAbsolutePathname().c_str()));
-		}
-		
-		cubeListItemDelegate.UpdateCache(fixedFilesList);
-		
-		for(int i = 0; i < filesList.size(); ++i)
-		{
-			DAVA::TextureDescriptor* texDesc = DAVA::TextureDescriptor::CreateFromFile(fp);
 			
+			DAVA::TextureDescriptor* texDesc = DAVA::TextureDescriptor::CreateFromFile(fp);
 			if(texDesc && texDesc->IsCubeMap())
 			{
-				QListWidgetItem* listItem = new QListWidgetItem();
-				listItem->setData(CUBELIST_DELEGATE_ITEMFULLPATH, fixedFilesList.at(i));
-				listItem->setData(CUBELIST_DELEGATE_ITEMFILENAME, filesList.at(i));
-				ui->listTextures->addItem(listItem);
+				fullPathFileList.append(QString(fp.GetAbsolutePathname().c_str()));
 			}
 		}
 		
+		cubeListItemDelegate.UpdateCache(fullPathFileList);
+		
+		for(int i = 0; i < fullPathFileList.size(); ++i)
+		{
+			fp = fullPathFileList.at(i).toStdString();
+			
+			QListWidgetItem* listItem = new QListWidgetItem();
+			listItem->setData(CUBELIST_DELEGATE_ITEMFULLPATH, fullPathFileList.at(i));
+			listItem->setData(CUBELIST_DELEGATE_ITEMFILENAME, fp.GetFilename().c_str());
+			ui->listTextures->addItem(listItem);
+		}
+		
+		cubemapTextures = fullPathFileList.size();
 		ui->listTextures->setCurrentItem(ui->listTextures->item(0));
 	}
 	
-	ui->listTextures->setVisible(filesList.size() > 0);
+	ui->listTextures->setVisible(cubemapTextures > 0);
 }
 
 void CubeMapTextureBrowser::ReloadTexturesFromUI(QString& path)

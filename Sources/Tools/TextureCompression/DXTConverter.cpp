@@ -73,14 +73,16 @@ FilePath DXTConverter::ConvertCubemapPngToDxt(const TextureDescriptor &descripto
     
     if(inputImages.size() == DAVA::Texture::CUBE_FACE_MAX_COUNT)
     {
-        Image* image = inputImages[0];
-        
         FilePath outputName = GetDXTOutput(descriptor, gpuFamily);
         
         if((descriptor.compression[gpuFamily].compressToWidth != 0) && (descriptor.compression[gpuFamily].compressToHeight != 0))
         {
             Logger::Warning("[DXTConverter::ConvertPngToDxt] convert to compression size");
-            image->ResizeImage(descriptor.compression[gpuFamily].compressToWidth, descriptor.compression[gpuFamily].compressToHeight);
+			
+			for(int i = 0; i < inputImages.size(); ++i)
+			{
+				inputImages[i]->ResizeImage(descriptor.compression[gpuFamily].compressToWidth, descriptor.compression[gpuFamily].compressToHeight);
+			}
         }
 		
 		uint8** faceData = new uint8*[inputImages.size()];
@@ -90,7 +92,7 @@ FilePath DXTConverter::ConvertCubemapPngToDxt(const TextureDescriptor &descripto
 		}
         
         if(LibDxtHelper::WriteDdsFile(outputName,
-                                      image->width, image->height, faceData, inputImages.size(),
+                                      inputImages[0]->width, inputImages[0]->height, faceData, inputImages.size(),
                                       (PixelFormat) descriptor.compression[gpuFamily].format,
                                       (descriptor.settings.generateMipMaps == TextureDescriptor::OPTION_ENABLED)))
         {

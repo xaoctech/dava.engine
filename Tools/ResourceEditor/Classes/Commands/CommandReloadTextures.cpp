@@ -31,6 +31,6 @@ CommandReloadTextures::CommandReloadTextures()
 
 void CommandReloadTextures::Execute()
 {
-    SceneDataManager::Instance()->TextureReloadAll(EditorSettings::Instance()->GetTextureViewGPU());
+    //SceneDataManager::Instance()->TextureReloadAll(EditorSettings::Instance()->GetTextureViewGPU());
 }
 

@@ -30,7 +30,7 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
-#define SINGLE_MODE
+//#define SINGLE_MODE
 
 #if defined (SINGLE_MODE)   
     #define SINGLE_TEST_NAME        String("Memory Test")      //Screen Name

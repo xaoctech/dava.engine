@@ -32,7 +32,7 @@ VisibilityToolSystem::VisibilityToolSystem(Scene* scene)
 ,	enabled(false)
 ,	editingIsEnabled(false)
 ,	curToolSize(0)
-,	cursorSize(0)
+,	cursorSize(120)
 ,	prevCursorPos(Vector2(-1.f, -1.f))
 ,	originalImage(NULL)
 ,	state(VT_STATE_NORMAL)
@@ -60,6 +60,22 @@ bool VisibilityToolSystem::IsLandscapeEditingEnabled() const
 	return enabled;
 }
 
+bool VisibilityToolSystem::IsCanBeEnabled()
+{
+	SceneEditor2* scene = dynamic_cast<SceneEditor2*>(GetScene());
+	DVASSERT(scene);
+	
+	bool canBeEnabled = true;
+//	canBeEnabled &= !(scene->visibilityToolSystem->IsLandscapeEditingEnabled());
+	canBeEnabled &= !(scene->heightmapEditorSystem->IsLandscapeEditingEnabled());
+	canBeEnabled &= !(scene->tilemaskEditorSystem->IsLandscapeEditingEnabled());
+	canBeEnabled &= !(scene->rulerToolSystem->IsLandscapeEditingEnabled());
+	canBeEnabled &= !(scene->customColorsSystem->IsLandscapeEditingEnabled());
+	canBeEnabled &= !(scene->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled());
+
+	return canBeEnabled;
+}
+
 bool VisibilityToolSystem::EnableLandscapeEditing()
 {
 	if (enabled)
@@ -67,12 +83,20 @@ bool VisibilityToolSystem::EnableLandscapeEditing()
 		return true;
 	}
 
-	SetState(VT_STATE_NORMAL);
+	if (!IsCanBeEnabled())
+	{
+		return false;
+	}
 
+	if (!drawSystem->EnableCustomDraw())
+	{
+		return false;
+	}
+
+	SetState(VT_STATE_NORMAL);
+	
 	selectionSystem->SetLocked(true);
 	modifSystem->SetLocked(true);
-
-	drawSystem->EnableCustomDraw();
 
 	Texture* visibilityToolTexture = drawSystem->GetVisibilityToolProxy()->GetSprite()->GetTexture();
 	drawSystem->GetLandscapeProxy()->SetVisibilityCheckToolTexture(visibilityToolTexture);
@@ -334,7 +358,7 @@ void VisibilityToolSystem::SetState(eVisibilityToolState newState)
 			}
 			break;
 	}
-	SceneSignals::Instance()->EmitUpdateVisibilityButtonsState(dynamic_cast<SceneEditor2*>(GetScene()));
+	SceneSignals::Instance()->EmitVisibilityToolStateChanged(dynamic_cast<SceneEditor2*>(GetScene()), state);
 }
 
 void VisibilityToolSystem::SetVisibilityPoint()

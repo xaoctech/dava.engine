@@ -32,16 +32,17 @@ class ModificationWidget: public QWidget
 	Q_OBJECT
 
 public:
-	enum ModificationMode
+	enum PivotMode
 	{
-		ModifyAbsolute,
-		ModifyRelative
+		PivotAbsolute,
+		PivotRelative
 	};
 
 	explicit ModificationWidget(QWidget* parent = 0);
 	~ModificationWidget();
 
-	void SetMode(ModificationMode mode);
+	void SetPivotMode(PivotMode pivotMode);
+	void SetModifMode(ST_ModifMode modifMode);
 
 private slots:
 	void OnSceneActivated(SceneEditor2 *scene);
@@ -58,10 +59,19 @@ private:
 	Ui::ModificationWidget *ui;
 	SceneEditor2 *curScene;
 	bool groupMode;
-	ModificationMode modifMode;
+
+	PivotMode pivotMode;
+	ST_ModifMode modifMode;
 
 	void ReloadValues();
+	void ReloadModeValues();
+	void ReloadRotateValues();
+	void ReloadScaleValues();
+
 	void ApplyValues(ST_Axis axis);
+	void ApplyMoveValues(ST_Axis axis);
+	void ApplyRotateValues(ST_Axis axis);
+	void ApplyScaleValues(ST_Axis axis);
 };
 
 #endif /* defined(__RESOURCEEDITORQT__MODIFICATIONWIDGET__) */
