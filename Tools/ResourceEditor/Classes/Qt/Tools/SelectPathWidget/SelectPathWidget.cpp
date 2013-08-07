@@ -22,6 +22,7 @@
 #include <QKeyEvent>
 #include <QUrl>
 #include <QFileDialog>
+#include <QStyle>
 
 SelectPathWidget::SelectPathWidget(QWidget* _parent, DAVA::String _openDialogDefualtPath, DAVA::String _relativPath)
 :	QLineEdit(_parent)

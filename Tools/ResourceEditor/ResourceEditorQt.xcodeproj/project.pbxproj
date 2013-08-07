@@ -880,7 +880,6 @@
 		4FAD0CD01785EC6E00B05A35 /* ui_MaterialViewOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_MaterialViewOptions.h; path = _GeneratedQt/ui_MaterialViewOptions.h; sourceTree = "<group>"; };
 		4FAD0CD11785EC6E00B05A35 /* ui_ModificationWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_ModificationWidget.h; path = _GeneratedQt/ui_ModificationWidget.h; sourceTree = "<group>"; };
 		4FAD0CD21785EC6E00B05A35 /* ui_ParticleProperty.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_ParticleProperty.h; path = _GeneratedQt/ui_ParticleProperty.h; sourceTree = "<group>"; };
-		4FAD0CD31785EC6E00B05A35 /* ui_SelectPathWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_SelectPathWidget.h; path = _GeneratedQt/ui_SelectPathWidget.h; sourceTree = "<group>"; };
 		4FAD0CD41785EC6E00B05A35 /* ui_SetSwitchIndexView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_SetSwitchIndexView.h; path = _GeneratedQt/ui_SetSwitchIndexView.h; sourceTree = "<group>"; };
 		4FAD0CD51785EC6E00B05A35 /* ui_texturebrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_texturebrowser.h; path = _GeneratedQt/ui_texturebrowser.h; sourceTree = "<group>"; };
 		4FAD0CD61785EC6E00B05A35 /* ui_VisibilityToolView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_VisibilityToolView.h; path = _GeneratedQt/ui_VisibilityToolView.h; sourceTree = "<group>"; };
@@ -3582,7 +3581,6 @@
 				4FAD0CD01785EC6E00B05A35 /* ui_MaterialViewOptions.h */,
 				4FAD0CD11785EC6E00B05A35 /* ui_ModificationWidget.h */,
 				4FAD0CD21785EC6E00B05A35 /* ui_ParticleProperty.h */,
-				4FAD0CD31785EC6E00B05A35 /* ui_SelectPathWidget.h */,
 				4FAD0CD41785EC6E00B05A35 /* ui_SetSwitchIndexView.h */,
 				4FAD0CD51785EC6E00B05A35 /* ui_texturebrowser.h */,
 				4FAD0CD61785EC6E00B05A35 /* ui_VisibilityToolView.h */,
