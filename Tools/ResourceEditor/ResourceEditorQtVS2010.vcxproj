@@ -1311,7 +1311,6 @@
     <ClInclude Include="_GeneratedQt\ui_MaterialViewOptions.h" />
     <ClInclude Include="_GeneratedQt\ui_ModificationWidget.h" />
     <ClInclude Include="_GeneratedQt\ui_ParticleProperty.h" />
-    <ClInclude Include="_GeneratedQt\ui_SelectPathWidget.h" />
     <ClInclude Include="_GeneratedQt\ui_SetSwitchIndexView.h" />
     <ClInclude Include="_GeneratedQt\ui_texturebrowser.h" />
     <ClInclude Include="_GeneratedQt\ui_tilemaskEditorProperties.h" />
@@ -1330,7 +1329,6 @@
     <None Include="DataQt\MaterialViewOptions.ui" />
     <None Include="DataQt\ModificationWidget.ui" />
     <None Include="DataQt\ParticleProperty.ui" />
-    <None Include="DataQt\SelectPathWidget.ui" />
     <None Include="DataQt\texturebrowser.ui" />
     <None Include="DataQt\SetSwitchIndexView.ui" />
     <None Include="DataQt\VisibilityToolView.ui" />
