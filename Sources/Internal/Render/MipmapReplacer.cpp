@@ -57,13 +57,15 @@ void MipMapReplacer::EnumerateTexturesRecursive(Entity * entity, Set<Texture *> 
             RenderBatch * rb = ro->GetRenderBatch(i);
             if(rb)
             {
-                Material * material = rb->GetMaterial();
+                DVASSERT(0 && "Vitaliy Borodovsky: Temporarly disabled. Need to rewrite for new materials");
+                
+                /*Material * material = rb->GetMaterial();
                 if(material)
                 {
                     Texture * texture = material->GetTexture(Material::TEXTURE_DIFFUSE);
                     if(texture)
                         textures.insert(texture);
-                }
+                }*/
             }
         }
     }

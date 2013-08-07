@@ -142,33 +142,6 @@ void RenderSystem::RemoveRenderObject(RenderObject * renderObject)
 	renderObject->SetRenderSystem(0);
 }
 
-void RenderSystem::AddRenderBatch(RenderBatch * renderBatch)
-{
-    // Get Layer Name
-    const FastName & name = renderBatch->GetOwnerLayerName();
-
-    RenderLayer * oldLayer = renderBatch->GetOwnerLayer();
-    if (oldLayer != 0)
-    {
-        oldLayer->RemoveRenderBatch(renderBatch);
-    }
-    RenderLayer * layer = renderLayersMap[name];
-    layer->AddRenderBatch(renderBatch);
-}
-    
-void RenderSystem::RemoveRenderBatch(RenderBatch * renderBatch)
-{
-    RenderLayer * oldLayer = renderBatch->GetOwnerLayer();
-    if (oldLayer != 0)
-    {
-        oldLayer->RemoveRenderBatch(renderBatch);
-    }
-}
-
-void RenderSystem::ImmediateUpdateRenderBatch(RenderBatch * renderBatch)
-{
-    AddRenderBatch(renderBatch);
-}
     
 void RenderSystem::SetCamera(Camera * _camera)
 {
@@ -178,49 +151,6 @@ void RenderSystem::SetCamera(Camera * _camera)
 Camera * RenderSystem::GetCamera()
 {
 	return camera;
-}
-    
-void RenderSystem::ProcessClipping()
-{
-    int32 objectBoxesUpdated = 0;
-    List<RenderObject*>::iterator end = markedObjects.end();
-    for (List<RenderObject*>::iterator it = markedObjects.begin(); it != end; ++it)
-    {
-        RenderObject * obj = *it;
-        obj->GetBoundingBox().GetTransformedBox(*obj->GetWorldTransformPtr(), obj->GetWorldBoundingBox());
-        FindNearestLights(obj);
-        objectBoxesUpdated++;
-    }
-    markedObjects.clear();
-    
-//    List<RenderObject*>::iterator endLights = movedLights.end();
-//    for (List<LightNode*>::iterator it = movedLights.begin(); it != endLights; ++it)
-//    {
-//        FindNearestLights(*it);
-//    }
-    if (movedLights.size() > 0)
-    {
-        FindNearestLights();
-    }
-    movedLights.clear();
-    
-    
-    int32 objectsCulled = 0;
-    
-    Frustum * frustum = camera->GetFrustum();
-
-    uint32 size = renderObjectArray.size();
-    for (uint32 pos = 0; pos < size; ++pos)
-    {
-        RenderObject * node = renderObjectArray[pos];
-        node->AddFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
-        //Logger::Debug("Cull Node: %s rc: %d", node->GetFullName().c_str(), node->GetRetainCount());
-        if (!frustum->IsInside(node->GetWorldBoundingBox()))
-        {
-            node->RemoveFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
-            objectsCulled++;
-        }
-    }
 }
 
 void RenderSystem::MarkForUpdate(RenderObject * renderObject)
@@ -332,8 +262,8 @@ void RenderSystem::Update(float32 timeElapsed)
     
     // Update nearest lights for objects    
     int32 objectBoxesUpdated = 0;
-    List<RenderObject*>::iterator end = markedObjects.end();
-    for (List<RenderObject*>::iterator it = markedObjects.begin(); it != end; ++it)
+    Vector<RenderObject*>::iterator end = markedObjects.end();
+    for (Vector<RenderObject*>::iterator it = markedObjects.begin(); it != end; ++it)
     {
         RenderObject * obj = *it;
         obj->GetBoundingBox().GetTransformedBox(*obj->GetWorldTransformPtr(), obj->GetWorldBoundingBox());

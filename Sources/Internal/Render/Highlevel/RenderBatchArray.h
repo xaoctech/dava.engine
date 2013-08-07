@@ -80,7 +80,7 @@ private:
     static bool MaterialCompareFunction(const RenderBatchSortItem & a, const RenderBatchSortItem & b);
 public:
     INTROSPECTION(RenderLayerBatchArray,
-        COLLECTION(renderBatchArray, "Render Batch Array", INTROSPECTION_EDITOR)
+        COLLECTION(renderBatchArray, "Render Batch Array", I_EDIT)
     );
 };
     

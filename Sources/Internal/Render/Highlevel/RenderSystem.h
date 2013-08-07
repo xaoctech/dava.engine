@@ -90,9 +90,6 @@ public:
     Vector<Light*> & GetLights();
 
 	RenderLayer * AddRenderLayer(const FastName & layerName, const FastName & passName, const FastName & afterLayer);
-
-	void AddRenderBatch(RenderBatch * renderBatch);
-	void RemoveRenderBatch(RenderBatch * renderBatch);
     
     
     void SetShadowRectColor(const Color &color);

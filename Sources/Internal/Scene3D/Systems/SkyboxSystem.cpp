@@ -96,7 +96,7 @@ namespace DAVA
 		
 		skyboxRenderBatch = new SkyBoxRenderBatch();
 		skyboxRenderBatch->SetRenderDataObject(renderDataObj);
-		skyboxRenderBatch->SetMaterial(skyboxMaterial);
+		//skyboxRenderBatch->SetMaterial(skyboxMaterial);
 		SafeRelease(renderDataObj);
 		
 		RenderObject* renderObj = new RenderObject();
@@ -355,7 +355,7 @@ namespace DAVA
 		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
 		
 		RenderManager::Instance()->SetRenderData(renderDataObject);
-		material->PrepareRenderState();
+		//material->PrepareRenderState();
 		
 		RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLELIST, 0, SKYBOX_VERTEX_COUNT);
 	}

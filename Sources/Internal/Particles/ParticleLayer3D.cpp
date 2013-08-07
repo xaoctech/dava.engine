@@ -349,7 +349,6 @@ bool ParticleLayer3D::IsLong()
 void ParticleLayer3D::SetLong(bool value)
 {
 	isLong = value;
-	renderBatch->GetMaterial()->SetTwoSided(isLong);
 	if(innerEmitter)
 	{
 		innerEmitter->SetLongToAllLayers(value);

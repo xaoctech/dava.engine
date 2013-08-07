@@ -25,6 +25,8 @@
 #include "Render/ShaderUniformArray.h"
 #include "Render/Material/NMaterialConsts.h"
 #include "Render/Shader.h"
+#include "Render/RenderState.h"
+#include "Base/Introspection.h"
 
 namespace DAVA
 {
@@ -35,7 +37,6 @@ class SceneFileV2;
 class Light;
 class PolygonGroup;
 class RenderDataObject;
-class RenderState;
 class Light;
 class MaterialCompiler;
 class MaterialGraph;
@@ -176,7 +177,7 @@ public:
     void AddMaterialTechnique(FastName & techniqueName, MaterialTechnique * materialTechnique);
     void BindMaterialTechnique(const FastName & techniqueName);
     MaterialTechnique * GetTechnique(const FastName & techniqueName);
-    
+        
     void Draw(PolygonGroup * polygonGroup);
 
     
@@ -207,7 +208,7 @@ private:
     MaterialTechnique * activeTechnique;
 public:
     INTROSPECTION_EXTEND(NMaterial, DataNode,
-         MEMBER(materialName, "Material Name", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+         MEMBER(materialName, "Material Name", I_SAVE | I_EDIT | I_VIEW)
          );
 
 };
