@@ -23,7 +23,7 @@ CollisionLandscape::CollisionLandscape(DAVA::Entity *entity, btCollisionWorld *w
 	if(NULL != landscape && NULL != word)
 	{
 		DAVA::Heightmap *heightmap = landscape->GetHeightmap();
-		if(NULL != heightmap)
+		if(NULL != heightmap && heightmap->Size() > 0)
 		{
 			DAVA::Vector3 landSize;
 			DAVA::AABBox3 landBox = landscape->GetBoundingBox();
