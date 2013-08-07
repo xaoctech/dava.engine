@@ -764,8 +764,8 @@ void EditorBodyControl::Update(float32 timeElapsed)
 	            Core::Instance()->Quit();
         }
 #endif //#if defined (__DAVAENGINE_WIN32__)
-
-		QtMainWindowHandler::Instance()->ReloadSceneTextures();
+		// TODO: mainwindow
+		// QtMainWindowHandler::Instance()->ReloadSceneTextures();
 	}
 }
 
