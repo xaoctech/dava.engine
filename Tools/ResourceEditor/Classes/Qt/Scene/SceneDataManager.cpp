@@ -50,6 +50,7 @@ SceneData* SceneDataManager::CreateNewScene()
 	SceneData *levelScene = SceneGetLevel();
     
 	levelScene->CreateScene(true);
+    levelScene->SetScenePathname(FilePath());
 	
 	UpdateParticleSprites();
 	return levelScene;	
