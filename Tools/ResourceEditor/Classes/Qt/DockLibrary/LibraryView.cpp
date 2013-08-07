@@ -16,6 +16,9 @@
 
 #include "DockLibrary/LibraryView.h"
 #include "Project/ProjectManager.h"
+#include "Main/mainwindow.h"
+#include "Scene/SceneTabWidget.h"
+
 #include <QFileSystemModel>
 #include <QMenu>
 
@@ -79,36 +82,15 @@ void LibraryView::ShowContextMenu(const QPoint &point)
 
 			if(0 == fileExtension.compare("sc2", Qt::CaseInsensitive))
 			{
-				SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
-				LandscapesController *landsacpesController = activeScene->GetLandscapesController();
-
-				SceneEditorScreenMain *screen = static_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen(SCREEN_MAIN_OLD));
-				EditorBodyControl *c = screen->FindCurrentBody()->bodyControl;
-
-				bool canChangeScene = !landsacpesController->EditorLandscapeIsActive() && !c->LandscapeEditorActive();
-				if(canChangeScene)
-				{
-					contextMenu.addAction(new ContextMenuAction(QString("Add Model"), new CommandAddScene(fileInfo.filePath().toStdString())));
-				}
-
-				contextMenu.addAction(new ContextMenuAction(QString("Edit Model"), new CommandEditScene(fileInfo.filePath().toStdString())));
-
-				if(canChangeScene)
-				{
-					contextMenu.addAction(new ContextMenuAction(QString("Reload Model"), new CommandReloadScene(fileInfo.filePath().toStdString())));
-				}
-
+				contextMenu.addAction("Add Model", this, SLOT(OnModelAdd()));
+				contextMenu.addAction("Edit Model", this, SLOT(OnModelEdit()));
 			}
 			else if(0 == fileExtension.compare("dae", Qt::CaseInsensitive))
 			{
-				contextMenu.addAction(new ContextMenuAction(QString("Convert"), new CommandConvertScene(fileInfo.filePath().toStdString())));
+				contextMenu.addAction("Convert", this, SLOT(OnDAEConvert()));
 			}
 
-			ContextMenuAction* action = (ContextMenuAction *) contextMenu.exec(mapToGlobal(point));
-			if(NULL != action)
-			{
-				action->Exec();
-			}
+			contextMenu.exec(mapToGlobal(point));
 		}
 	}
 }
@@ -138,4 +120,25 @@ void LibraryView::FileSelectionChanged(const QItemSelection & selected, const QI
 void LibraryView::LibraryFileTypesChanged(bool showDAEFiles, bool showSC2Files)
 {
 	libModel->SetFileNameFilters(showDAEFiles, showSC2Files);
+}
+
+void LibraryView::OnModelEdit()
+{
+	const QModelIndex index = currentIndex();
+	if(index.isValid())
+	{
+		QFileInfo fileInfo = libModel->fileInfo(index);
+		int tabId = QtMainWindow::Instance()->GetSceneWidget()->OpenTab(fileInfo.absoluteFilePath().toStdString());
+		QtMainWindow::Instance()->GetSceneWidget()->SetCurrentTab(tabId);
+	}
+}
+
+void LibraryView::OnModelAdd()
+{
+
+}
+
+void LibraryView::OnDAEConvert()
+{
+
 }
