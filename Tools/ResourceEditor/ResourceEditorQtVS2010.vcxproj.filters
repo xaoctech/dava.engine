@@ -166,7 +166,6 @@
     <Filter Include="Classes\Deprecated">
       <UniqueIdentifier>{b383f0c0-b1f2-483d-9f28-a261d8afc960}</UniqueIdentifier>
     </Filter>
-<<<<<<< HEAD
     <Filter Include="Classes\Qt\Tools\QtPosSaver">
       <UniqueIdentifier>{5139cbe9-d6b3-4aef-9d36-62293b1aad8a}</UniqueIdentifier>
     </Filter>
@@ -217,6 +216,7 @@
     </Filter>
     <Filter Include="Classes\Qt\Tools\BaseAddEntityDialog">
       <UniqueIdentifier>{f5717c29-6eb0-43a0-818b-f1c51dcf0cba}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Classes\CommandLine\TextureDescriptor">
       <UniqueIdentifier>{0a088ade-5d9f-4b54-9645-040c63c435f8}</UniqueIdentifier>
     </Filter>
@@ -3577,6 +3577,7 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockProperties\PropertyEditorDialog.h">
       <Filter>Classes\Qt\DockProperties</Filter>
+    </ClInclude>
     <ClInclude Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorTool.h">
       <Filter>Classes\CommandLine\TextureDescriptor</Filter>
     </ClInclude>
