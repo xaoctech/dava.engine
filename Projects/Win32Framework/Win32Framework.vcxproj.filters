@@ -2290,6 +2290,7 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Autotesting\KeyedArchiveSwig.cpp">
       <Filter>Internal\Autotesting</Filter>
+	</ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\GPUFamilyDescriptor.cpp">
       <Filter>Internal\Render</Filter>
     </ClCompile>
