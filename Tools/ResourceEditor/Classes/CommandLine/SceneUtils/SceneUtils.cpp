@@ -54,8 +54,9 @@ void SceneUtils::SetOutFolder(const FilePath &folderPathname)
 
 bool SceneUtils::CopyFile(const FilePath &filePathname, Set<String> &errorLog)
 {
-    String workingPathname = RemoveFolderFromPath(filePathname, dataSourceFolder);
-    PrepareFolderForCopyFile(workingPathname, errorLog);
+	String workingPathname = filePathname.GetRelativePathname(dataSourceFolder);
+
+	PrepareFolderForCopyFile(workingPathname, errorLog);
     
     bool retCopy = FileSystem::Instance()->CopyFile(dataSourceFolder + workingPathname, dataFolder + workingPathname);
     if(!retCopy)
@@ -83,19 +84,5 @@ void SceneUtils::PrepareFolderForCopyFile(const String &filename, Set<String> &e
     }
     
     FileSystem::Instance()->DeleteFile(dataFolder + filename);
-}
-
-String SceneUtils::RemoveFolderFromPath(const FilePath &pathname, const FilePath &folderPathname)
-{
-    DVASSERT(folderPathname.IsDirectoryPathname());
-
-    String workingPathname = pathname.GetAbsolutePathname();
-    String::size_type pos = workingPathname.find(folderPathname.GetAbsolutePathname());
-    if(String::npos != pos)
-    {
-        workingPathname = workingPathname.replace(pos, folderPathname.GetAbsolutePathname().length(), "");
-    }
-
-    return workingPathname;
 }
 
