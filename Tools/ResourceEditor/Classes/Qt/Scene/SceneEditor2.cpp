@@ -80,7 +80,7 @@ SceneEditor2::SceneEditor2()
 
 SceneEditor2::~SceneEditor2()
 {
-    RemoveSystem(editorLightSystem, 0);
+    RemoveSystem(editorLightSystem);
     SafeDelete(editorLightSystem);
 
 	SceneSignals::Instance()->EmitClosed(this);
