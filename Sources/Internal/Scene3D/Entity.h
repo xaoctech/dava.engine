@@ -23,7 +23,7 @@
 #include "Scene3D/SceneNodeAnimationKey.h"
 #include "Entity/Component.h"
 #include "FileSystem/KeyedArchive.h"
-
+#include "Scene3D/Components/CustomPropertiesComponent.h"
 
 namespace DAVA
 {
@@ -252,10 +252,10 @@ public:
     uint32 GetDebugFlags() const;
     	
     void SetSolid(bool isSolid);
-    bool GetSolid() const;
+    bool GetSolid();
 
 	void SetLocked(bool isLocked);
-	bool GetLocked() const;
+	bool GetLocked();
 
     /**
         \brief function returns maximum bounding box of scene in world coordinates.
@@ -282,7 +282,7 @@ public:
         \brief Function returns keyed archive of custom properties for this object. 
         Custom properties can be set for each node in editor, and used in the game later to implement game logic.
      */
-    KeyedArchive *GetCustomProperties();
+    KeyedArchive* GetCustomProperties();
     
     /**
         \brief This function should be implemented in each node that have data nodes inside it.
@@ -293,7 +293,11 @@ public:
      */
     template<template <typename> class Container, class T>
 	void GetDataNodes(Container<T> & container);
-    
+	/**
+	 \brief Optimize scene before export.
+     */
+	void OptimizeBeforeExport();
+
     /**
         \brief Function to get child nodes of requested type and move them to specific container you provide.
         For example if you want to get a list of MeshInstanceNodes you should do the following.
@@ -332,6 +336,7 @@ public:
 protected:
 
     String RecursiveBuildFullName(Entity * node, Entity * endNode);
+	CustomPropertiesComponent* GetCustomPropertiesComponent();
 
 //    virtual Entity* CopyDataTo(Entity *dstNode);
 	void SetParent(Entity * node);
@@ -344,8 +349,6 @@ protected:
 	int32	tag;
 
     uint32 flags;
-
-    KeyedArchive *customProperties;
     
 private:
 	Vector<Component *> components;
@@ -359,7 +362,6 @@ private:
 public:
 	INTROSPECTION_EXTEND(Entity, BaseObject,
 		MEMBER(name, "Name", I_SAVE | I_VIEW | I_EDIT)
-		MEMBER(customProperties, "Custom properties", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(tag, "Tag", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(flags, "Flags", I_SAVE | I_VIEW | I_EDIT)
 

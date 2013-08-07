@@ -28,6 +28,8 @@
 
 #include "Qt/Scene/SceneDataManager.h"
 #include "Qt/Scene/SceneData.h"
+
+#include "Scene3D/Components/CustomPropertiesComponent.h"
 #include "../StringConstants.h"
 
 CreateNodesDialog::CreateNodesDialog(const Rect & rect)
@@ -216,6 +218,14 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 			sceneNode->AddComponent(newEffectComponent);
 			sceneNode->SetName(ResourceEditor::PARTICLE_EFFECT_NODE_NAME);
 
+			break;
+		}
+
+		case ResourceEditor::NODE_SKYBOX:
+		{
+			SetHeader(L"SkyBox");
+			
+			//TODO: add skybox creation code here
 			break;
 		}
 

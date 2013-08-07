@@ -19,6 +19,8 @@
 
 #include <QGraphicsView>
 
+#include "Base/BaseTypes.h"
+
 class QImage;
 class QLabel;
 
@@ -43,6 +45,7 @@ public:
 	~TextureScrollArea();
 
 	void setImage(const QImage &image);
+	void setImage(const DAVA::Vector<QImage>& images, int flags = 0x000000FF); //this method sets cubemap faces
 	QImage getImage();
 	void setColorChannel(int mask);
 
@@ -54,6 +57,8 @@ public:
 	void waitbarShow(bool show);
 
 	void resetTexturePosZoom();
+	
+	QSize getContentSize();
 
 public slots:	
 	void setTexturePos(const QPoint &pos);
@@ -86,6 +91,10 @@ private:
 	QGraphicsProxyWidget *waitBar;
 
 	QImage currentTextureImage;
+	
+	DAVA::Vector<QImage> currentCompositeImages;
+	int compositeImagesFlags;
+	QPixmap cubeDrawPixmap;
 
 	QGraphicsScene *textureScene;
 	QGraphicsPixmapItem *texturePixmap;
@@ -100,9 +109,20 @@ private:
 
 	void sutupCustomTiledBg();
 
+	void applyTextureImageToScenePixmap();
+	
 	void applyCurrentImageToScenePixmap();
+	void applyCurrentCompositeImagesToScenePixmap();
+	
+	void applyTextureImageBorder();
+	void applyCompositeImageBorder();
 	void applyCurrentImageBorder();
+	
 	void adjustWidgetsPos();
+	
+	void prepareImageWithColormask(QImage& srcImage, QImage& dstImage);
+	
+	bool isCompositeImage() const;
 };
 
 #endif // __TEXTURE_SCROLL_AREA_H__

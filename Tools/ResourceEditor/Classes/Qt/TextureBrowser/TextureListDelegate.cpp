@@ -14,6 +14,7 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "Base/BaseTypes.h"
 #include "TextureListDelegate.h"
 #include "TextureListModel.h"
 #include "TextureCache.h"
@@ -37,7 +38,7 @@ TextureListDelegate::TextureListDelegate(QObject *parent /* = 0 */)
 	, nameFontMetrics(nameFont)
 	, drawRule(DRAW_PREVIEW_BIG)
 {
-	QObject::connect(TextureConvertor::Instance(), SIGNAL(ReadyOriginal(const DAVA::TextureDescriptor *, const QImage &)), this, SLOT(textureReadyOriginal(const DAVA::TextureDescriptor *, const QImage &)));
+	QObject::connect(TextureConvertor::Instance(), SIGNAL(ReadyOriginal(const DAVA::TextureDescriptor *, DAVA::Vector<QImage>&)), this, SLOT(textureReadyOriginal(const DAVA::TextureDescriptor *, DAVA::Vector<QImage>&)));
 };
 
 void TextureListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -70,11 +71,11 @@ QSize TextureListDelegate::sizeHint(const QStyleOptionViewItem &option, const QM
 	}
 }
 
-void TextureListDelegate::textureReadyOriginal(const DAVA::TextureDescriptor *descriptor, const QImage &image)
+void TextureListDelegate::textureReadyOriginal(const DAVA::TextureDescriptor *descriptor, DAVA::Vector<QImage>& images)
 {
 	if(NULL != descriptor)
 	{
-		TextureCache::Instance()->setOriginal(descriptor, image);
+		TextureCache::Instance()->setOriginal(descriptor, images);
 		if(descriptorIndexes.contains(descriptor))
 		{
 			QModelIndex index = descriptorIndexes[descriptor];
@@ -125,16 +126,17 @@ void TextureListDelegate::drawPreviewBig(QPainter *painter, const QStyleOptionVi
 		painter->setPen(BORDER_COLOR);
 		painter->drawRect(borderRect);
 
-		QImage img = TextureCache::Instance()->getOriginal(curTextureDescriptor);
+		const DAVA::Vector<QImage>& images = TextureCache::Instance()->getOriginal(curTextureDescriptor);
 
 		// draw image preview
-		if(!img.isNull())
+		if(images.size() > 0 &&
+		   !images[0].isNull())
 		{
-			QSize imageSize = img.rect().size();
+			QSize imageSize = images[0].rect().size();
 			imageSize.scale(QSize(TEXTURE_PREVIEW_SIZE - option.decorationSize.width(), TEXTURE_PREVIEW_SIZE - option.decorationSize.height()), Qt::KeepAspectRatio);
 			int imageX =  option.rect.x() + (TEXTURE_PREVIEW_SIZE - imageSize.width())/2;
 			int imageY =  option.rect.y() + (TEXTURE_PREVIEW_SIZE - imageSize.height())/2;
-			painter->drawImage(QRect(QPoint(imageX, imageY), imageSize), img);
+			painter->drawImage(QRect(QPoint(imageX, imageY), imageSize), images[0]);
 		}
 		else
 		{

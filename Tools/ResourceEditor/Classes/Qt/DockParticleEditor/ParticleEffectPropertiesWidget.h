@@ -33,7 +33,7 @@ public:
 	explicit ParticleEffectPropertiesWidget(QWidget* parent = 0);
 	~ParticleEffectPropertiesWidget();
 
-	void Init(DAVA::ParticleEffectComponent* effect);
+	void Init(SceneEditor2* scene, DAVA::ParticleEffectComponent* effect);
 	ParticleEffectComponent* GetEffect() {return particleEffect;};
 
 	virtual void StoreVisualState(KeyedArchive* visualStateProps);

@@ -29,6 +29,8 @@
 
 #include "../../ImageTools/ImageTools.h"
 
+#include "../Qt/CubemapEditor/MaterialHelper.h"
+
 
 #include <QHeaderView>
 #include <QTimer>
@@ -263,6 +265,9 @@ void SceneInfo::CollectSceneData(SceneData *sceneData, bool force)
  
         scene->GetChildNodes(nodesAtScene);
         scene->GetDataNodes(materialsAtScene);
+		//VI: remove skybox materials so they not to appear in the lists
+		MaterialHelper::FilterMaterialsByType(materialsAtScene, DAVA::Material::MATERIAL_SKYBOX);
+
         scene->GetDataNodes(dataNodesAtScene);
         
         CollectSceneTextures();
@@ -450,6 +455,9 @@ void SceneInfo::showEvent ( QShowEvent * event )
 
 void SceneInfo::timerDone()
 {
+	// TODO: mainwindow
+	// ...
+	/*
     SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
     if(sceneData)
         RefreshAllData(sceneData);
@@ -458,6 +466,7 @@ void SceneInfo::timerDone()
     {
         QTimer::singleShot(1000, this, SLOT(timerDone()));
     }
+    */
 }
 
 void SceneInfo::RefreshAllData(SceneData *sceneData)

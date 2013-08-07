@@ -132,7 +132,9 @@ public:
         MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP, // single texture + diffuse light normal mapping
 
 		MATERIAL_VERTEX_COLOR_ALPHABLENDED,
-        MATERIAL_FLAT_COLOR, 
+        MATERIAL_FLAT_COLOR,
+		
+		MATERIAL_SKYBOX,
         
         // MATERIAL_TEXTURE, 
         // MATERIAL_LIGHTMAPPED_TEXTURE,   

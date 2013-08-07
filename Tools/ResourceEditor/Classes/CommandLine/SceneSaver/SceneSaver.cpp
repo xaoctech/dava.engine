@@ -17,8 +17,11 @@
 #include "SceneSaver.h"
 #include "SceneEditor/SceneValidator.h"
 
-#include "Qt/Scene/SceneDataManager.h"
+#include "Qt/Scene/SceneHelper.h"
+#include "EditorScene.h"
 #include "../StringConstants.h"
+
+#include "Scene3D/Components/CustomPropertiesComponent.h"
 
 using namespace DAVA;
 
@@ -130,7 +133,7 @@ void SceneSaver::SaveScene(Scene *scene, const FilePath &fileName, Set<String> &
     SceneValidator::Instance()->ValidateScene(scene, errorLog);
 
     texturesForSave.clear();
-    SceneDataManager::EnumerateTextures(scene, texturesForSave);
+    SceneHelper::EnumerateTextures(scene, texturesForSave);
 
     CopyTextures(scene, errorLog);
 	ReleaseTextures();

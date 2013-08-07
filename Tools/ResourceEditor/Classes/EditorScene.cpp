@@ -36,7 +36,6 @@ REGISTER_CLASS_WITH_ALIAS(EditorScene, "Scene");
 EditorScene::EditorScene()
 :Scene()
 {
-    cameraLight = NULL;
     selectedEntity = NULL;
     originalHandler = NULL;
 	selection = 0;
@@ -58,13 +57,16 @@ EditorScene::EditorScene()
 	renderSystem->AddRenderLayer(LAYER_ARROWS, PASS_FORWARD, LAST_LAYER);
 
     SetDrawGrid(true);
-    
-    CreateCameraLight();
+
+    editorLightSystem = 0;
+    editorLightSystem = new EditorLightSystem(this);
+	AddSystem(editorLightSystem, Component::LIGHT_COMPONENT);
 }
 
 EditorScene::~EditorScene()
 {
-    SafeRelease(cameraLight);
+	RemoveSystem(editorLightSystem);
+	SafeDelete(editorLightSystem);
     
 	ReleaseUserData(this);
 	SafeDelete(collisionWorld);
@@ -80,9 +82,9 @@ EditorScene::~EditorScene()
 
 void EditorScene::Update(float32 timeElapsed)
 {    
-    UpdateCameraLight();
-
 	Scene::Update(timeElapsed);
+
+	editorLightSystem->Process();
 
 	CheckNodes(this);
 	UpdateBullet(this);
@@ -676,51 +678,7 @@ const RenderManager::Stats & EditorScene::GetRenderStats() const
     return renderStats;
 }
 
-void EditorScene::CreateCameraLight()
-{
-    SafeRelease(cameraLight);
-    
-    Light *light = new Light();
-    light->SetType(Light::TYPE_DIRECTIONAL);
 
-    cameraLight = new Entity();
-    cameraLight->SetName(ResourceEditor::EDITOR_CAMERA_LIGHT);
-    cameraLight->AddComponent(new LightComponent(light));
-    light->Release();
-    
-    UpdateCameraLightOnScene();
-}
-
-void EditorScene::UpdateCameraLight()
-{
-    Camera *camera = GetCurrentCamera();
-    if(!camera || !cameraLight || !cameraLight->GetParent()) return;
-    
-    
-    Matrix4 m = Matrix4::MakeTranslation(camera->GetPosition() + camera->GetLeft() * 20.f + camera->GetUp() * 20.f);
-    cameraLight->SetLocalTransform(m);
-}
-
-void EditorScene::UpdateCameraLightOnScene()
-{
-    UpdateCameraLightOnScene(EditorSettings::Instance()->GetShowEditorCamerLight());
-}
-
-void EditorScene::UpdateCameraLightOnScene(bool show)
-{
-    if(show)
-    {
-        bool foundLight = IsLightOnSceneRecursive(this);
-        if(!foundLight)
-        {   //only one case for showing camera relative light
-            AddEditorEntity(cameraLight);
-            return;
-        }
-    }
-
-    //Need to hide camera
-    HideCameraLight();
-}
 
 void EditorScene::AddEditorEntity(Entity *editorEntity)
 {
@@ -734,29 +692,6 @@ void EditorScene::AddEditorEntity(Entity *editorEntity)
     }
 }
 
-
-void EditorScene::HideCameraLight()
-{
-    if(cameraLight->GetParent())
-    {
-        cameraLight->GetParent()->RemoveNode(cameraLight);
-    }
-}
-
-bool EditorScene::IsLightOnSceneRecursive(Entity *entity)
-{
-    if(entity->GetComponent(Component::LIGHT_COMPONENT) && entity != cameraLight)
-        return true;
-    
-    int32 count = entity->GetChildrenCount();
-    for(int32 i = 0; i < count; ++i)
-    {
-        if(IsLightOnSceneRecursive(entity->GetChild(i)))
-            return true;
-    }
-    
-    return false;
-}
 
 
 

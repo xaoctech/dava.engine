@@ -22,6 +22,8 @@
 #include "Qt/Scene/SceneDataManager.h"
 #include "Qt/Scene/SceneData.h"
 
+#include "Qt/CubemapEditor/MaterialHelper.h"
+
 MeshInstancePropertyControl::MeshInstancePropertyControl(const Rect & rect, bool createNodeProperties)
 :	NodesPropertyControl(rect, createNodeProperties)
 {
@@ -60,6 +62,8 @@ void MeshInstancePropertyControl::ReadFrom(Entity * sceneNode)
 	if(workingScene)
 	{
 		workingScene->GetDataNodes(materials);
+		//VI: remove skybox materials so they not to appear in the lists
+		MaterialHelper::FilterMaterialsByType(materials, DAVA::Material::MATERIAL_SKYBOX);
 	}
 
     int32 matCount = (int32)materials.size();

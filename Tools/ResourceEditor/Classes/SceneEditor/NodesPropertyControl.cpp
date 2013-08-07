@@ -23,6 +23,7 @@
 #include "EditorConfig.h"
 #include "SceneNodePropertyNames.h"
 
+#include "Scene3D/Components/CustomPropertiesComponent.h"
 #include "../StringConstants.h"
 
 NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodeProperties)

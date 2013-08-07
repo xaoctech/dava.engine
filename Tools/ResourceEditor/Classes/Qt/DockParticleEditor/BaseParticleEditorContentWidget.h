@@ -20,6 +20,8 @@
 #include "DAVAEngine.h"
 #include <QChar>
 
+#include "Scene/SceneEditor2.h"
+
 using namespace DAVA;
 
 class BaseParticleEditorContentWidget
@@ -31,7 +33,11 @@ public:
 	virtual void RestoreVisualState(KeyedArchive* visualStateProps) = 0;
 	
 	ParticleEmitter* GetEmitter() const {return emitter;};
-	
+
+	// Get/set the active scene.
+	void SetActiveScene(SceneEditor2* scene) {activeScene = scene;};
+	SceneEditor2* GetActiveScene() const {return activeScene;};
+
 protected:
 	// "Degree mark" character needed for some widgets.
 	static const QChar DEGREE_MARK_CHARACTER;
@@ -41,6 +47,8 @@ protected:
 	float ConvertFromSliderValueToPlaybackSpeed(int sliderValue);
 
 	ParticleEmitter* emitter;
+
+	SceneEditor2* activeScene;
 };
 
 #endif /* defined(__RESOURCEEDITORQT__BASEPARTICLEEDITORCONTENTWIDGET__) */

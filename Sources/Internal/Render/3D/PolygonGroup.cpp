@@ -505,13 +505,111 @@ public:
     DynamicObjectCacheData<Vertex>
 };*/
 
-
-void PolygonGroup::OptimizeVertices(float32 eplison)
+void PolygonGroup::CopyData(uint8 ** meshData, uint8 ** newMeshData, uint32 vertexFormat, uint32 newVertexFormat, uint32 format) const
 {
-    
+	if (vertexFormat & format)
+	{
+		uint32 formatSize = GetVertexSize(format);
+		if (newVertexFormat & format)
+		{
+			memcpy(*newMeshData, *meshData, formatSize);
+			*newMeshData += formatSize;
+		}
+		*meshData += formatSize;
+	}
+}
+
+bool PolygonGroup::IsFloatDataEqual(const float32 ** meshData, const float32 ** optData, uint32 vertexFormat, uint32 format) const
+{
+	if (vertexFormat & format)
+	{
+		uint32 size = GetVertexSize(format);
+		uint32 count = size / sizeof(float32);
+		for (uint32 i = 0; i < count; ++i)
+		{
+			float32 x1 = **meshData;
+			*meshData += sizeof(float32);
+			float32 x2 = **optData;
+			*optData += sizeof(float32);
+			if (!FLOAT_EQUAL_EPS(x1, x2, 0.00001f))
+				return false;
+		}
+	}
+	return true;
+}
+	
+int32 PolygonGroup::OptimazeVertexes(const uint8 * meshData, Vector<uint8> & optMeshData, uint32 vertexFormat) const
+{
+	uint32 optimizedVertexCount = optMeshData.size() / GetVertexSize(vertexFormat);
+
+	for (uint32 i = 0; i < optimizedVertexCount; ++i)
+	{
+		const float32 * optData = (float32*)(&optMeshData[i * GetVertexSize(vertexFormat)]);
+		const float32 * tmpMeshData = (float32*) meshData;
+		
+		bool skip = false;
+		for (uint32 mask = 1; mask <= EVF_HIGHER_BIT; mask = mask << 1)
+		{
+			if (!IsFloatDataEqual(&tmpMeshData, &optData, vertexFormat, EVF_VERTEX))
+			{
+				skip = true;
+				break;
+			}
+		}
+		if (skip)
+			continue;
+
+		return i;
+	}
+
+	optMeshData.resize(GetVertexSize(vertexFormat) * (optimizedVertexCount + 1));
+	
+	uint8* dest = &optMeshData[GetVertexSize(vertexFormat) * optimizedVertexCount];
+	memcpy(dest, meshData, GetVertexSize(vertexFormat));
+	return optimizedVertexCount;
+}
+	
+void PolygonGroup::OptimizeVertices(uint32 newVertexFormat, float32 eplison)
+{	
+	int32 newVertexStride = GetVertexSize(newVertexFormat);
+	uint8 * newMeshData = new uint8[newVertexStride * vertexCount];
+	memset(newMeshData, 0, sizeof(newVertexStride * vertexCount));
+	
+	uint8 * tmpMesh = meshData;
+	uint8 * tmpNewMesh = newMeshData;
+	for (uint32 i = 0; i < vertexCount; ++i)
+	{
+		for (uint32 mask = 1; mask <= EVF_HIGHER_BIT; mask = mask << 1)
+		{
+			CopyData(&tmpMesh, &tmpNewMesh, vertexFormat, newVertexFormat, mask);
+		}
+	}
+	
+	Vector<uint8> optMeshData;
+	tmpNewMesh = newMeshData;
+	for (uint32 i = 0; i < vertexCount; ++i)
+	{
+		int16 newIndex = OptimazeVertexes(tmpNewMesh, optMeshData, newVertexFormat);
+		tmpNewMesh += GetVertexSize(newVertexFormat);
+		
+		for (uint32 i1 = 0; i1 < indexCount; ++i1)
+		{
+			if (indexArray[i1] == i)
+				indexArray[i1] = newIndex;
+		}
+	}
+
+	uint32 newVertexCount = optMeshData.size() / GetVertexSize(newVertexFormat);
+	
+	SAFE_DELETE_ARRAY(meshData);
+	SAFE_DELETE_ARRAY(newMeshData);
+	vertexCount = newVertexCount;
+	vertexStride = newVertexStride;
+	vertexFormat = newVertexFormat;
+	
+	meshData = new uint8[vertexStride * vertexCount];
+	memcpy(meshData, &optMeshData[0], vertexStride * vertexCount);
 };
-    
-    
     
 };
 

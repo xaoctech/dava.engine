@@ -32,9 +32,6 @@ public:
 		
 	// Remove the Scene Node, if it is related to Particles Editor.
 	void RemoveSceneNode(Entity* node) const;
-	
-	// Validate the Particle Emitter, generate the error message, if needed.
-	static bool ValidateParticleEmitter(ParticleEmitter* emitter, String& validationMsg);
 };
 
 };

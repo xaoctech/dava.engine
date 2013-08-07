@@ -100,7 +100,6 @@ void FrameworkDidLaunched()
     uint32 size = sizeof(EntityX);
     uint32 size2 = sizeof(EntitySTL);
     
-    new CommandLineManager();
     new SceneExporter();
     new EditorSettings();
 	new EditorConfig();
@@ -159,6 +158,4 @@ void FrameworkWillTerminate()
 	EditorConfig::Instance()->Release();
 	EditorSettings::Instance()->Release();
     TextureSquarenessChecker::Instance()->Release();
-
-	CommandLineManager::Instance()->Release();
 }

@@ -52,6 +52,9 @@ private slots:
 
     void on_btnCancel_clicked();
 
+    void tableItemClicked(QTableWidgetItem * item);
+    void tableItemChanged(QTableWidgetItem * item);
+
     void OnComboBoxValueChanged(const QString& value);
 
 private:
@@ -72,6 +75,9 @@ private:
     QTimer* m_pUpdateTimer;
 
     bool m_bBusy;
+
+    QString lastSelectedValue;
+    bool isTablesFilling;
 };
 
 #endif // MAINWINDOW_H

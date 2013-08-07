@@ -33,6 +33,8 @@ struct ScaleHood : public HoodObject
 	HoodCollObject *axisXY;
 	HoodCollObject *axisXZ;
 	HoodCollObject *axisYZ;
+
+	DAVA::float32 modifScale;
 };
 
 #endif // __SCALE_HOOD_H__

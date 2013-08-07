@@ -787,6 +787,8 @@ namespace DAVA
 				relativePosition = absolutePosition = position;
 			}
 		}
+		// DF-1482 - Each time we change control's position - we have to reset tiles arrays for DRAW_TILED option
+		GetBackground()->ResetTilesArrays();
 	}
 	
 	const Vector2 &UIControl::GetSize() const

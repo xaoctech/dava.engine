@@ -33,8 +33,9 @@ WideString s2ws(const String& s)
     return r;
 }
 
-void DVAssertMessage::InnerShow(const char* content)
+void DVAssertMessage::InnerShow(eModalType /*modalType*/, const char* content)
 {
+	// Modal Type is ignored by Win32.
 	MessageBox(HWND_DESKTOP, s2ws(content).c_str(), L"Assert", MB_OK | MB_ICONEXCLAMATION);
 }
 

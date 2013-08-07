@@ -111,6 +111,8 @@ public:
     bool IsCompressedFile() const;
     
     bool GetGenerateMipMaps() const;
+	
+	bool IsCubeMap() const;
 
     FilePath GetSourceTexturePathname() const; 
 
@@ -162,6 +164,8 @@ public:
     //Binary only
     int8 exportedAsGpuFamily;
     int8 exportedAsPixelFormat;
+	
+	uint8 faceDescription;
     
     bool isCompressedFile;
 };

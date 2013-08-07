@@ -154,7 +154,8 @@ void RulerTool::SetStartPoint(const DAVA::Vector3 &point)
 
     length = 0;
     landscapeSize = 0;
-    QtMainWindowHandler::Instance()->ShowStatusBarMessage(Format("Length: %f", length));
+	// TODO: mainwindow
+    //QtMainWindowHandler::Instance()->ShowStatusBarMessage(Format("Length: %f", length));
 }
 
 void RulerTool::AddPoint(const DAVA::Vector3 &point)
@@ -166,7 +167,8 @@ void RulerTool::AddPoint(const DAVA::Vector3 &point)
         
         linePoints.push_back(point);
         
-        QtMainWindowHandler::Instance()->ShowStatusBarMessage(Format("Length: %f", length));
+		// TODO: mainwindow
+        //QtMainWindowHandler::Instance()->ShowStatusBarMessage(Format("Length: %f", length));
     }
 }
 

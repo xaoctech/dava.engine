@@ -22,6 +22,8 @@
 #include "EditorConfig.h"
 #include "Scene3D/Components/DebugRenderComponent.h"
 
+#include "Scene3D/Components/CustomPropertiesComponent.h"
+
 
 static const float32 BUTTON_W = 20.0f;
 static const float32 BUTTON_B = 5.0f;

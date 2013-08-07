@@ -55,6 +55,9 @@
 #include "../CommandLine/Beast/BeastCommandLineTool.h"
 #include "TexturePacker/CommandLineParser.h"
 
+#include "Scene3D/Components/CustomPropertiesComponent.h"
+
+#define ARROWS_NODE_NAME "editor.arrows-node"
 #include "ArrowsNode.h"
 
 EditorBodyControl::EditorBodyControl(const Rect & rect)
@@ -752,7 +755,8 @@ void EditorBodyControl::Update(float32 timeElapsed)
 		BeastCommandLineTool *beastTool = dynamic_cast<BeastCommandLineTool *>(CommandLineManager::Instance()->GetActiveCommandLineTool());
         if(beastTool)
         {
-            QtMainWindowHandler::Instance()->SaveScene(scene, beastTool->GetScenePathname());
+			// TODO: mainwindow
+            // QtMainWindowHandler::Instance()->SaveScene(scene, beastTool->GetScenePathname());
 
 			bool forceClose =	CommandLineParser::CommandIsFound(String("-force"))
 							||  CommandLineParser::CommandIsFound(String("-forceclose"));
@@ -760,8 +764,8 @@ void EditorBodyControl::Update(float32 timeElapsed)
 	            Core::Instance()->Quit();
         }
 #endif //#if defined (__DAVAENGINE_WIN32__)
-
-		QtMainWindowHandler::Instance()->ReloadSceneTextures();
+		// TODO: mainwindow
+		// QtMainWindowHandler::Instance()->ReloadSceneTextures();
 	}
 }
 
@@ -1348,7 +1352,7 @@ ArrowsNode* EditorBodyControl::GetArrowsNode(bool createIfNotExist)
         arrowsNode->SetName(ResourceEditor::EDITOR_ARROWS_NODE);
 
         EditorScene *scene = SceneDataManager::Instance()->SceneGetActive()->GetScene();
-        scene->InsertBeforeNode(arrowsNode, scene->GetChild(0));
+        scene->AddEditorEntity(arrowsNode);
 
 		arrowsNode->Release();
 	}

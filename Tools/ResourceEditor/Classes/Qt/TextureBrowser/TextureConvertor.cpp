@@ -18,6 +18,7 @@
 #include <QPainter>
 #include <QProcess>
 #include <QTextOption>
+#include <QPushButton>
 #include <QLabel>
 
 #include "Main/mainwindow.h"
@@ -27,16 +28,43 @@
 #include "SceneEditor/SceneValidator.h"
 #include "Render/LibDxtHelper.h"
 
-#include "Platform/Qt/QtLayer.h"
+#include "FileSystem/FileSystem.h"
 
-#include "../Main/QtUtils.h"
+#include "Platform/Qt/QtLayer.h"
+#include "Main/QtUtils.h"
+#include "Scene/SceneHelper.h"
+
+
+static DAVA::String CUBEMAP_TMP_DIR = "~doc:/ResourceEditor_Cubemap_Tmp/";
+
+static DAVA::String PVRTOOL_INPUT_NAMES[] =
+{
+	DAVA::String("1"), //pz
+	DAVA::String("2"), //nz
+	DAVA::String("3"), //px
+	DAVA::String("4"), //nx
+	DAVA::String("5"), //pz
+	DAVA::String("6"), //nz
+};
+
+static DAVA::String PVRTOOL_MAP_NAMES[] =
+{
+	DAVA::String("_pz"), //1
+	DAVA::String("_nz"), //2
+	DAVA::String("_px"), //3
+	DAVA::String("_nx"), //4
+	DAVA::String("_ny"), //5
+	DAVA::String("_py"), //6
+};
+
+DAVA::Vector<DAVA::String> TextureConvertor::pvrToolSuffixes;
+DAVA::Vector<DAVA::String> TextureConvertor::cubemapSuffixes;
 
 TextureConvertor::TextureConvertor()
 	: curJobOriginal(NULL)
 	, jobIdCounter(1)
 	, convertJobQueueSize(0)
-	, waitDialog(NULL)
-	, waitDialogCancelBnt(NULL)
+	, waitingComletion(0)
 {
 	// slots will be called in connector(this) thread
 	QObject::connect(&originalWatcher, SIGNAL(finished()), this, SLOT(threadOriginalFinished()), Qt::QueuedConnection);
@@ -104,7 +132,7 @@ int TextureConvertor::Reconvert(DAVA::Scene *scene, bool forceConvert)
 	{
 		// get list of all scenes textures
 		DAVA::Map<DAVA::String, DAVA::Texture *> allTextures;
-		SceneDataManager::EnumerateTextures(scene, allTextures);
+		SceneHelper::EnumerateTextures(scene, allTextures);
 
 		// add jobs to convert every texture
 		if(allTextures.size() > 0)
@@ -146,32 +174,25 @@ void TextureConvertor::WaitConvertedAll(QWidget *parent)
 {
 	if(convertJobQueueSize > 0)
 	{
-		waitDialog = new QProgressDialog(parent, Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowSystemMenuHint);
-
-		QLabel *waitDialogLabel = new QLabel(waitDialog);
-		waitDialogLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-		waitDialog->setLabel(waitDialogLabel);
-
-		waitDialogCancelBnt = new QPushButton("Cancel", waitDialog);
-		waitDialog->setCancelButton(waitDialogCancelBnt);
-
-		if(0 == jobStackConverted.size())
+		waitDialog = new QtWaitDialog(parent);
+		bool hasCancel = false;
+		
+		if(jobStackConverted.size() > 0)
 		{
-			waitDialogCancelBnt->setEnabled(false);
+			hasCancel = true;
 		}
 
-		QObject::connect(waitDialogCancelBnt, SIGNAL(pressed()), this, SLOT(waitCanceled()));
+		QObject::connect(waitDialog, SIGNAL(canceled()), this, SLOT(waitCanceled()));
 
-		waitDialog->setRange(0, convertJobQueueSize);
-		waitDialog->setValue(convertJobQueueSize - jobStackConverted.size());
-		waitDialog->setMinimumSize(400, 150);
-		waitDialog->setLabelText(waitStatusText);
-		waitDialog->setWindowModified(Qt::WindowModal);
-		waitDialog->exec();
+		waitDialog->SetRange(0, convertJobQueueSize);
+		waitDialog->SetValue(convertJobQueueSize - jobStackConverted.size());
+		waitDialog->SetMessage(waitStatusText);
+
+		waitingComletion = true;
+		waitDialog->Exec("Waiting for conversion completion", waitStatusText, true, hasCancel);
 
 		waitDialog->deleteLater();
 		waitDialog = NULL;
-		waitDialogCancelBnt = NULL;
 	}
 }
 
@@ -202,7 +223,7 @@ void TextureConvertor::jobRunNextOriginal()
 		if(NULL != curJobOriginal)
 		{
 			// copy descriptor
-			QFuture<QImage> f = QtConcurrent::run(this, &TextureConvertor::GetOriginalThread, curJobOriginal);
+			QFuture< DAVA::Vector<QImage> > f = QtConcurrent::run(this, &TextureConvertor::GetOriginalThread, curJobOriginal);
 			originalWatcher.setFuture(f);
 		}
 	}
@@ -219,7 +240,7 @@ void TextureConvertor::jobRunNextConvert()
 		{
 			TextureDescriptor *desc = (TextureDescriptor *) curJobConverted->data;
 
-			QFuture<QImage> f = QtConcurrent::run(this, &TextureConvertor::GetConvertedThread, curJobConverted);
+			QFuture< DAVA::Vector<QImage> > f = QtConcurrent::run(this, &TextureConvertor::GetConvertedThread, curJobConverted);
 			convertedWatcher.setFuture(f);
 
 			if(0 == convertJobQueueSize)
@@ -238,8 +259,8 @@ void TextureConvertor::jobRunNextConvert()
 
 			if(NULL != waitDialog)
 			{
-				waitDialog->setValue(convertJobQueueSize - jobStackConverted.size());
-				waitDialog->setLabelText(waitStatusText);
+				waitDialog->SetValue(convertJobQueueSize - jobStackConverted.size());
+				waitDialog->SetMessage(waitStatusText);
 			}
 		}
 		else
@@ -260,7 +281,7 @@ void TextureConvertor::jobRunNextConvert()
 			if(NULL != waitDialog)
 			{
 				// close wait dialog
-				waitDialog->reset();
+				waitDialog->Reset();
 			}
 		}
 	}
@@ -271,7 +292,7 @@ void TextureConvertor::jobRunNextConvert()
 
 		if(NULL != waitDialog)
 		{
-			waitDialog->setMaximum(convertJobQueueSize);
+			waitDialog->SetRangeMax(convertJobQueueSize);
 		}
 	}
 }
@@ -283,7 +304,8 @@ void TextureConvertor::threadOriginalFinished()
 		const DAVA::TextureDescriptor *originalDescriptor = (DAVA::TextureDescriptor *) curJobOriginal->identity;
 		DAVA::TextureDescriptor *descriptor = (DAVA::TextureDescriptor *) curJobOriginal->data;
 
-		emit ReadyOriginal(originalDescriptor, originalWatcher.result());
+		DAVA::Vector<QImage> watcherResult = originalWatcher.result();
+		emit ReadyOriginal(originalDescriptor, watcherResult);
 
 		delete descriptor;
 		delete curJobOriginal;
@@ -300,7 +322,8 @@ void TextureConvertor::threadConvertedFinished()
 		const DAVA::TextureDescriptor *convertedDescriptor = (DAVA::TextureDescriptor *) curJobConverted->identity;
 		DAVA::TextureDescriptor *descriptor = (DAVA::TextureDescriptor *) curJobConverted->data;
 
-		emit ReadyConverted(convertedDescriptor, (DAVA::eGPUFamily) curJobConverted->type, convertedWatcher.result());
+		DAVA::Vector<QImage> watcherResult = convertedWatcher.result();
+		emit ReadyConverted(convertedDescriptor, (DAVA::eGPUFamily) curJobConverted->type, watcherResult);
 
 		delete descriptor;
 		delete curJobConverted;
@@ -312,33 +335,52 @@ void TextureConvertor::threadConvertedFinished()
 
 void TextureConvertor::waitCanceled()
 {
-	if(NULL != waitDialogCancelBnt)
-	{
-		CancelConvert();
-		waitDialogCancelBnt->setEnabled(false);
-	}
+	CancelConvert();
 }
 
-QImage TextureConvertor::GetOriginalThread(JobItem *item)
+DAVA::Vector<QImage> TextureConvertor::GetOriginalThread(JobItem *item)
 {
-	QImage img;
+	DAVA::Vector<QImage> resultArray;
     void *pool = DAVA::QtLayer::Instance()->CreateAutoreleasePool();
     
 	if(NULL != item && NULL != item->data)
 	{
 		TextureDescriptor *descriptor = (TextureDescriptor *) item->data;
-		img = QImage(descriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str());
+		
+		if(descriptor->IsCubeMap())
+		{
+			DAVA::Vector<DAVA::String> cubeFaceNames;
+			DAVA::Texture::GenerateCubeFaceNames(descriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str(), cubeFaceNames);
+			
+			for(int i = 0; i < DAVA::Texture::CUBE_FACE_MAX_COUNT; ++i)
+			{
+				if((descriptor->faceDescription & (1 << i)) != 0)
+				{
+					QImage img;
+					img = QImage(cubeFaceNames[i].c_str());
+					resultArray.push_back(img);
+				}
+			}
+		}
+		else
+		{
+			QImage img;
+			img = QImage(descriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str());
+			resultArray.push_back(img);
+		}
 	}
 
     DAVA::QtLayer::Instance()->ReleaseAutoreleasePool(pool);
-	return img;
+	
+	return resultArray;
 }
 
-QImage TextureConvertor::GetConvertedThread(JobItem *item)
+DAVA::Vector<QImage> TextureConvertor::GetConvertedThread(JobItem *item)
 {
 	void *pool = DAVA::QtLayer::Instance()->CreateAutoreleasePool();
 
-	QImage ret;
+	DAVA::Vector<QImage> ret;
+	DAVA::Vector<DAVA::Image*> convertedImages;
 	DAVA::Image* davaImg = NULL;
 
 	if(NULL != item)
@@ -353,16 +395,16 @@ QImage TextureConvertor::GetConvertedThread(JobItem *item)
 			const String& outExtension = GPUFamilyDescriptor::GetCompressedFileExtension(gpu, (DAVA::PixelFormat) descriptor->compression[gpu].format);
 			if(outExtension == ".pvr")
 			{
-				DAVA::Logger::Info("Starting PVR conversion (%s), id %d...", 
+				DAVA::Logger::Info("Starting PVR conversion (%s), id %d...",
 					GlobalEnumMap<DAVA::PixelFormat>::Instance()->ToString(descriptor->compression[gpu].format), item->id);
-				davaImg = ConvertPVR(descriptor, gpu, item->force);
+				convertedImages = ConvertPVR(descriptor, gpu, item->force);
 				DAVA::Logger::Info("Done, id %d", item->id);
 			}
 			else if(outExtension == ".dds")
 			{
 				DAVA::Logger::Info("Starting DXT conversion (%s), id %d...",
 					GlobalEnumMap<DAVA::PixelFormat>::Instance()->ToString(descriptor->compression[gpu].format), item->id);
-				davaImg = ConvertDXT(descriptor, gpu, item->force);
+				convertedImages = ConvertDXT(descriptor, gpu, item->force);
 				DAVA::Logger::Info("Done, id %d", item->id);
 			}
 			else
@@ -376,19 +418,52 @@ QImage TextureConvertor::GetConvertedThread(JobItem *item)
 		}
 	}
 
-	if(NULL != davaImg)
+	if(convertedImages.size() > 0)
 	{
-		ret = FromDavaImage(davaImg);
-		davaImg->Release();
+		for(size_t i = 0; i < convertedImages.size(); ++i)
+		{
+			if(convertedImages[i] != NULL)
+			{
+				QImage img = FromDavaImage(convertedImages[i]);
+				ret.push_back(img);
+			
+				convertedImages[i]->Release();
+			}
+			else
+			{
+				QImage img;
+				ret.push_back(img);
+			}
+		}
+	}
+	else
+	{
+		int stubImageCount = Texture::CUBE_FACE_MAX_COUNT;
+		if(NULL != item)
+		{
+			DAVA::TextureDescriptor *descriptor = (DAVA::TextureDescriptor*) item->data;
+			if(NULL != descriptor &&
+			   !descriptor->IsCubeMap())
+			{
+				stubImageCount = 1;
+			}
+		}
+		
+		for(int i = 0; i < stubImageCount; ++i)
+		{
+			QImage img;
+			ret.push_back(img);
+		}
 	}
 
 	DAVA::QtLayer::Instance()->ReleaseAutoreleasePool(pool);
+	
 	return ret;
 }
 
-DAVA::Image* TextureConvertor::ConvertPVR(DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, bool forceConvert)
+DAVA::Vector<DAVA::Image*> TextureConvertor::ConvertPVR(DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, bool forceConvert)
 {
-	DAVA::Image* image = NULL;
+	DAVA::Vector<DAVA::Image*> resultImages;
 	DAVA::FilePath compressedTexturePath = DAVA::GPUFamilyDescriptor::CreatePathnameForGPU(descriptor, gpu);
 	DAVA::FilePath outputPath = PVRConverter::Instance()->GetPVRToolOutput(*descriptor, gpu);
 	if(!outputPath.IsEmpty())
@@ -397,8 +472,9 @@ DAVA::Image* TextureConvertor::ConvertPVR(DAVA::TextureDescriptor *descriptor, D
 		{
             DeleteOldPVRTextureIfPowerVr_IOS(descriptor, gpu);
 
-            
-			QString command = PVRConverter::Instance()->GetCommandLinePVR(*descriptor, gpu).c_str();
+			DAVA::FilePath pathToConvert = (descriptor->IsCubeMap()) ? PrepareCubeMapForConvert(*descriptor) : FilePath::CreateWithNewExtension(descriptor->pathname, ".png");
+			
+			QString command = PVRConverter::Instance()->GetCommandLinePVR(*descriptor, pathToConvert, gpu).c_str();
 			DAVA::Logger::Info("%s", command.toStdString().c_str());
 
 			QProcess p;
@@ -422,25 +498,62 @@ DAVA::Image* TextureConvertor::ConvertPVR(DAVA::TextureDescriptor *descriptor, D
             {
                 descriptor->Save();
             }
+			
+			CleanupCubemapAfterConversion(*descriptor);
         }
 
 		Vector<DAVA::Image *> davaImages = DAVA::ImageLoader::CreateFromFile(outputPath);
 
 		if(davaImages.size() > 0)
 		{
-			image = davaImages[0];
-			image->Retain();
+			if(!descriptor->IsCubeMap())
+			{
+				DAVA::Image* image = davaImages[0];
+				image->Retain();
+				
+				resultImages.push_back(image);
+			}
+			else
+			{
+				//select images with mipmap level = 0 for cube map display
+				for(size_t i = 0; i < davaImages.size(); ++i)
+				{
+					DAVA::Image* image = davaImages[i];
+					if(0 == image->mipmapLevel)
+					{
+						image->Retain();
+						resultImages.push_back(image);
+					}
+				}
+				
+				if(resultImages.size() < Texture::CUBE_FACE_MAX_COUNT)
+				{
+					int imagesToAdd = Texture::CUBE_FACE_MAX_COUNT - resultImages.size();
+					for(int i = 0; i < imagesToAdd; ++i)
+					{
+						resultImages.push_back(NULL);
+					}
+				}
+			}
+			
+			for_each(davaImages.begin(), davaImages.end(),  DAVA::SafeRelease<DAVA::Image>);
 		}
-
-		for_each(davaImages.begin(), davaImages.end(),  DAVA::SafeRelease<DAVA::Image>);
+		else
+		{
+			int stubImageCount = (descriptor->IsCubeMap()) ? Texture::CUBE_FACE_MAX_COUNT : 1;
+			for(int i = 0; i < stubImageCount; ++i)
+			{
+				resultImages.push_back(NULL);
+			}
+		}
 	}
-
-	return image;
+	
+	return resultImages;
 }
 
-DAVA::Image* TextureConvertor::ConvertDXT(DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, bool forceConvert)
+DAVA::Vector<DAVA::Image*> TextureConvertor::ConvertDXT(DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, bool forceConvert)
 {
-	DAVA::Image* image = NULL;
+	DAVA::Vector<DAVA::Image*> images;
 	DAVA::FilePath outputPath = DXTConverter::GetDXTOutput(*descriptor, gpu);
 	if(!outputPath.IsEmpty())
 	{
@@ -448,8 +561,15 @@ DAVA::Image* TextureConvertor::ConvertDXT(DAVA::TextureDescriptor *descriptor, D
 		{
             DeleteOldDXTTextureIfTegra(descriptor, gpu);
 
-			outputPath = DXTConverter::ConvertPngToDxt(*descriptor, gpu);
-
+			if(descriptor->IsCubeMap())
+			{
+				outputPath = DXTConverter::ConvertCubemapPngToDxt(*descriptor, gpu);
+			}
+			else
+			{
+				outputPath = DXTConverter::ConvertPngToDxt(*descriptor, gpu);
+			}
+			
 			bool wasUpdated = descriptor->UpdateCrcForFormat(gpu);
             if(wasUpdated)
             {
@@ -461,14 +581,48 @@ DAVA::Image* TextureConvertor::ConvertDXT(DAVA::TextureDescriptor *descriptor, D
 
 		if(davaImages.size() > 0)
 		{
-			image = davaImages[0];
-			image->Retain();
+			for(size_t i = 0; i < davaImages.size(); ++i)
+			{
+				Image* image = davaImages[i];
+				
+				if(0 == image->mipmapLevel)
+				{
+					image->Retain();
+					images.push_back(image);
+				}
+			}
+			
+			if(descriptor->IsCubeMap() &&
+			   images.size() < Texture::CUBE_FACE_MAX_COUNT)
+			{
+				int imagesToAdd = Texture::CUBE_FACE_MAX_COUNT - images.size();
+				for(int i = 0; i < imagesToAdd; ++i)
+				{
+					images.push_back(NULL);
+				}
+			}
+			
+			for_each(davaImages.begin(), davaImages.end(),  DAVA::SafeRelease< DAVA::Image>);
 		}
-
-		for_each(davaImages.begin(), davaImages.end(),  DAVA::SafeRelease< DAVA::Image>);
+		else
+		{
+			int stubImageCount = (descriptor->IsCubeMap()) ? Texture::CUBE_FACE_MAX_COUNT : 1;
+			for(int i = 0; i < stubImageCount; ++i)
+			{
+				images.push_back(NULL);
+			}
+		}
 	}
-
-	return image;
+	else
+	{
+		int stubImageCount = (descriptor->IsCubeMap()) ? Texture::CUBE_FACE_MAX_COUNT : 1;
+		for(int i = 0; i < stubImageCount; ++i)
+		{
+			images.push_back(NULL);
+		}
+	}
+	
+	return images;
 }
 
 QImage TextureConvertor::FromDavaImage(DAVA::Image *image)
@@ -639,3 +793,72 @@ QImage TextureConvertor::FromDavaImage(DAVA::Image *image)
 
 	return qtImage;
 }
+
+DAVA::FilePath TextureConvertor::PrepareCubeMapForConvert(DAVA::TextureDescriptor& descriptor)
+{
+	InitFileSuffixes();
+	
+	DAVA::Vector<DAVA::String> pvrToolFaceNames;
+	DAVA::Vector<DAVA::String> cubemapFaceNames;
+	DAVA::Texture::GenerateCubeFaceNames(CUBEMAP_TMP_DIR, pvrToolSuffixes, pvrToolFaceNames);
+	DAVA::Texture::GenerateCubeFaceNames(descriptor.pathname.GetAbsolutePathname(), cubemapSuffixes, cubemapFaceNames);
+	
+	DVASSERT(pvrToolSuffixes.size() == cubemapSuffixes.size());
+	
+	if(!FileSystem::Instance()->IsDirectory(CUBEMAP_TMP_DIR))
+	{
+		int createResult = FileSystem::Instance()->CreateDirectory(CUBEMAP_TMP_DIR);
+		if(FileSystem::DIRECTORY_CREATED != createResult)
+		{
+			DAVA::Logger::Error("Failed to create temp dir for cubemap generation!");
+			return FilePath();
+		}
+	}
+	
+	for(size_t i = 0; i < pvrToolFaceNames.size(); ++i)
+	{
+		//cleanup in case previous cleanup failed
+		if(FileSystem::Instance()->IsFile(pvrToolFaceNames[i]))
+		{
+			FileSystem::Instance()->DeleteFile(pvrToolFaceNames[i]);
+		}
+			
+		bool result = FileSystem::Instance()->CopyFile(cubemapFaceNames[i], pvrToolFaceNames[i]);
+		if(!result)
+		{
+			DAVA::Logger::Error("Failed to copy tmp files for cubemap generation!");
+			return FilePath();
+		}
+	}
+	
+	return FilePath(pvrToolFaceNames[0]);
+}
+
+void TextureConvertor::CleanupCubemapAfterConversion(DAVA::TextureDescriptor& descriptor)
+{
+	InitFileSuffixes();
+	
+	DAVA::Vector<DAVA::String> pvrToolFaceNames;
+	DAVA::Texture::GenerateCubeFaceNames(CUBEMAP_TMP_DIR, pvrToolSuffixes, pvrToolFaceNames);
+
+	for(size_t i = 0; i < pvrToolFaceNames.size(); ++i)
+	{
+		if(FileSystem::Instance()->IsFile(pvrToolFaceNames[i]))
+		{
+			FileSystem::Instance()->DeleteFile(pvrToolFaceNames[i]);
+		}
+	}
+}
+
+void TextureConvertor::InitFileSuffixes()
+{
+	if(pvrToolSuffixes.empty())
+	{
+		for(int i = 0; i < DAVA::Texture::CUBE_FACE_MAX_COUNT; ++i)
+		{
+			pvrToolSuffixes.push_back(PVRTOOL_INPUT_NAMES[i]);
+			cubemapSuffixes.push_back(PVRTOOL_MAP_NAMES[i]);
+		}
+	}
+}
+
