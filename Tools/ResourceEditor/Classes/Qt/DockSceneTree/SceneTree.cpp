@@ -133,7 +133,7 @@ void SceneTree::dragMoveEvent(QDragMoveEvent *event)
 	QTreeView::dragMoveEvent(event);
 
 	GetDropParams(event->pos(), parent, row, col);
-	if(!treeModel->DropCanBeAccepted(event->mimeData(), event->dropAction(), row, col, parent))
+	if(!treeModel->DropCanBeAccepted(event->mimeData(), event->dropAction(), row, col, filteringProxyModel->mapToSource(parent)))
 	{
 		event->ignore();
 	}
