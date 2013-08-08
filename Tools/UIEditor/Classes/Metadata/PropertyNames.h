@@ -48,6 +48,8 @@ public:
     static const char* TEXT_COLOR_PROPERTY_NAME;
 	static const char* TEXT_ALIGN_PROPERTY_NAME;
 
+	static const char* IS_PASSWORD_PROPERTY_NAME;
+
 	static const char* SHADOW_OFFSET_X;
 	static const char* SHADOW_OFFSET_Y;
 	static const char* SHADOW_COLOR;

@@ -29,7 +29,7 @@ class UITextFieldMetadata : public UITextControlMetadata
     // Text field text Properties
     Q_PROPERTY(QString Text READ GetText WRITE SetText);
     Q_PROPERTY(QColor TextColor READ GetTextColor WRITE SetTextColor);
-
+	Q_PROPERTY(bool IsPassword READ GetIsPassword WRITE SetIsPassword);
 public:
     UITextFieldMetadata(QObject* parent = 0);
 
@@ -68,6 +68,9 @@ protected:
 
 	virtual int GetTextAlign();
     virtual void SetTextAlign(int align);
+	
+	bool GetIsPassword() const;
+	void SetIsPassword(bool value);
 };
 
 };

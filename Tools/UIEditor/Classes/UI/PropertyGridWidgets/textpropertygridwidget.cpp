@@ -80,6 +80,9 @@ void TextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
 									dynamic_cast<UIButtonMetadata*>(activeMetadata)		!= NULL);
 	ui->alignComboBox->setEnabled(enableTextAlignComboBox);
 
+	bool showIsPasswordCheckbox = (dynamic_cast<UITextFieldMetadata*>(activeMetadata) != NULL);
+	ui->isPasswordCheckbox->setVisible(showIsPasswordCheckbox);
+
     UpdateLocalizationValue();
 
     RegisterGridWidgetAsStateAware();

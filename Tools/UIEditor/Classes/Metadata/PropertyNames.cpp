@@ -42,6 +42,8 @@ const char* PropertyNames::TEXT_PROPERTY_NAME = "Text";
 const char* PropertyNames::TEXT_COLOR_PROPERTY_NAME = "TextColor";
 const char* PropertyNames::TEXT_ALIGN_PROPERTY_NAME = "TextAlign";
 
+const char* PropertyNames::IS_PASSWORD_PROPERTY_NAME = "IsPassword";
+
 const char* PropertyNames::SHADOW_OFFSET_X = "ShadowOffsetX";
 const char* PropertyNames::SHADOW_OFFSET_Y = "ShadowOffsetY";
 const char* PropertyNames::SHADOW_COLOR = "ShadowColor";
