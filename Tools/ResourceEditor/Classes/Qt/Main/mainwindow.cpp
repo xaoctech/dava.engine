@@ -85,11 +85,12 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 	LoadGPUFormat();
 
-	addSwitchEntityDialog = new AddSwitchEntityDialog( NULL, dynamic_cast<QWidget*>(QObject::parent()));
+	addSwitchEntityDialog = new AddSwitchEntityDialog(NULL, this);
 }
 
 QtMainWindow::~QtMainWindow()
 {
+	delete addSwitchEntityDialog;
 	materialEditor->Release();
 	TextureBrowser::Instance()->Release();
 
@@ -99,7 +100,6 @@ QtMainWindow::~QtMainWindow()
 	ui = NULL;
 
 	ProjectManager::Instance()->Release();
-	delete addSwitchEntityDialog;
 }
 
 Ui::MainWindow* QtMainWindow::GetUI()
