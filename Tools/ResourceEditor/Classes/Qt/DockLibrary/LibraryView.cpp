@@ -18,6 +18,7 @@
 #include "Project/ProjectManager.h"
 #include "Main/mainwindow.h"
 #include "Scene/SceneTabWidget.h"
+#include "Commands2/DAEConvertAction.h"
 
 #include <QFileSystemModel>
 #include <QMenu>
@@ -135,10 +136,32 @@ void LibraryView::OnModelEdit()
 
 void LibraryView::OnModelAdd()
 {
+	const QModelIndex index = currentIndex();
+	if(index.isValid())
+	{
+		QFileInfo fileInfo = libModel->fileInfo(index);
 
+		SceneEditor2 *scene = QtMainWindow::Instance()->GetCurrentScene();
+		if(NULL != scene)
+		{
+			scene->structureSystem->Add(fileInfo.absoluteFilePath().toStdString());
+		}
+	}
 }
 
 void LibraryView::OnDAEConvert()
 {
+	const QModelIndex index = currentIndex();
+	if(index.isValid())
+	{
+		QFileInfo fileInfo = libModel->fileInfo(index);
 
+		QtMainWindow::Instance()->WaitStart("DAE to SC2 Conversion", fileInfo.absoluteFilePath());
+
+		Command2 *daeCmd = new DAEConvertAction(fileInfo.absoluteFilePath().toStdString());
+		daeCmd->Redo();
+		delete daeCmd;
+
+		QtMainWindow::Instance()->WaitStop();
+	}
 }

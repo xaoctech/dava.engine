@@ -1104,12 +1104,6 @@
     <ClCompile Include="Classes\Qt\DockProperties\PropertyEditor.cpp">
       <Filter>Classes\Qt\DockProperties</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit.cpp">
-      <Filter>Classes\Qt\QtPropertyEditor\QtPropertyWidgets</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection.cpp">
-      <Filter>Classes\Qt\QtPropertyEditor\QtPropertyData</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Commands\Command.cpp">
       <Filter>Classes\Commands</Filter>
     </ClCompile>
@@ -1132,9 +1126,6 @@
       <Filter>Classes\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\LibraryCommands.cpp">
-      <Filter>Classes\Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Commands\ParticleEditorCommands.cpp">
       <Filter>Classes\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\SceneEditorScreenMainCommands.cpp">
@@ -1567,9 +1558,6 @@
       <Filter>Classes\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\CommandCreateNode.cpp">
-      <Filter>Classes\Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Commands\CommandReloadTextures.cpp">
       <Filter>Classes\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\CommandsManager.cpp">
@@ -2057,6 +2045,9 @@
     </ClCompile>
     <ClCompile Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorUtils.cpp">
       <Filter>Classes\CommandLine\TextureDescriptor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands2\DAEConvertAction.cpp">
+      <Filter>Classes\Commands2</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2996,12 +2987,6 @@
     <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphModel.h">
       <Filter>Sources\Qt\DockSceneGraph</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit.h">
-      <Filter>Classes\Qt\QtPropertyEditor\QtPropertyWidgets</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection.h">
-      <Filter>Classes\Qt\QtPropertyEditor\QtPropertyData</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands\Command.h">
       <Filter>Classes\Commands</Filter>
     </ClInclude>
@@ -3583,6 +3568,9 @@
     </ClInclude>
     <ClInclude Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorUtils.h">
       <Filter>Classes\CommandLine\TextureDescriptor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands2\DAEConvertAction.h">
+      <Filter>Classes\Commands2</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
