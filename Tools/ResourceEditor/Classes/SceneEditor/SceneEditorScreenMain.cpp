@@ -492,6 +492,8 @@ void SceneEditorScreenMain::RecreteFullTilingTexture()
 
 void SceneEditorScreenMain::NewScene()
 {
+    bodies[0]->bodyControl->SetScene(NULL); // need to correctly close landscape editors
+
 	SceneData *levelScene = SceneDataManager::Instance()->CreateNewScene();
     
     bodies[0]->bodyControl->SetScene(levelScene->GetScene());
@@ -544,14 +546,15 @@ void SceneEditorScreenMain::SaveToFolder(const FilePath & folder)
     BodyItem *iBody = FindCurrentBody();
 	iBody->bodyControl->PushEditorEntities();
     
-    SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
-    
 	// Get project path
-    KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
-    FilePath dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
+//     KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
+//     FilePath dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
+	SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
+
 
     SceneSaver sceneSaver;
-    sceneSaver.SetInFolder(dataSourcePath);
+//    sceneSaver.SetInFolder(dataSourcePath);
+	sceneSaver.SetInFolder(sceneData->GetScenePathname().GetDirectory());
     sceneSaver.SetOutFolder(folder);
     
     Set<String> errorsLog;
@@ -564,10 +567,15 @@ void SceneEditorScreenMain::SaveToFolder(const FilePath & folder)
 
 void SceneEditorScreenMain::ExportAs(eGPUFamily forGPU)
 {
-    BodyItem *iBody = FindCurrentBody();
+	SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
+	if(sceneData->GetScenePathname().IsEmpty())
+	{
+		ShowErrorDialog("Can't export not saved scene.");
+		return;
+	}
+
+	BodyItem *iBody = FindCurrentBody();
 	iBody->bodyControl->PushEditorEntities();
-    
-    SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
     
     // Get project path
     KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();

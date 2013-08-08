@@ -2,7 +2,6 @@
 #include "SettingsManager.h"
 #include "GameCore.h"
 #include "Config.h"
-#include "DeviceInfo.h"
 
 using namespace DAVA;
 

@@ -6,8 +6,10 @@ import java.security.NoSuchAlgorithmException;
 import java.security.MessageDigest;
 import java.math.BigInteger;
 
+import android.bluetooth.BluetoothAdapter;
 import android.os.Build;
 import android.provider.Settings.Secure;
+import android.util.Log;
 
 public class JNIDeviceInfo {
 	final static String TAG = "JNIDeviceInfo";
@@ -57,8 +59,15 @@ public class JNIDeviceInfo {
 			obj = aid.substring(0, 32);
 		}
 
-
 		SetJString(obj.toString().toLowerCase());
+	}
+	
+	public static void GetName()
+	{
+		String serial = android.os.Build.SERIAL;
+		if (serial == null || serial.isEmpty())
+			serial = "ErrorGetSerialNumber";
+		SetJString(serial);
 	}
 
 	public static native void SetJString(String str);
