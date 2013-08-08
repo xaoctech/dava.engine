@@ -56,6 +56,8 @@ void UITextFieldPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     RegisterColorButtonWidgetForProperty(propertiesMap, PropertyNames::SHADOW_COLOR, ui->shadowColorButton);
 
 	RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::TEXT_ALIGN_PROPERTY_NAME, ui->alignComboBox, false, true);
+
+	RegisterCheckBoxWidgetForProperty(propertiesMap, PropertyNames::IS_PASSWORD_PROPERTY_NAME, ui->isPasswordCheckbox);
 }
 
 void UITextFieldPropertyGridWidget::Cleanup()
@@ -69,7 +71,9 @@ void UITextFieldPropertyGridWidget::Cleanup()
     UnregisterColorButtonWidget(ui->shadowColorButton);
 
 	UnregisterComboBoxWidget(ui->alignComboBox);
-    
+
+	UnregisterCheckBoxWidget(ui->isPasswordCheckbox);
+
     BasePropertyGridWidget::Cleanup();
 }
 
