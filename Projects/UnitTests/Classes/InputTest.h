@@ -16,7 +16,7 @@ using namespace DAVA;
 
 #include "TestTemplate.h"
 
-class InputTest: public TestTemplate<InputTest>
+class InputTest: public TestTemplate<InputTest>, public UITextFieldDelegate
 {
 public:
 	InputTest();
@@ -28,6 +28,8 @@ public:
 	virtual void DidAppear();
 	virtual void Update(float32 timeElapsed);
 
+	virtual bool TextFieldKeyPressed(UITextField * textField, int32 replacementLocation, int32 replacementLength, const WideString & replacementString);
+
 	void TestFunction(PerfFuncData * data);
 	void OnPageLoaded(DAVA::BaseObject * caller, void * param, void *callerData);
 	
@@ -36,6 +38,8 @@ private:
 	
 private:
 	UITextField* textField;
+	UITextField* passwordTextField;
+
 	UIStaticText* staticText;
 	UIButton* testButton;
 	
