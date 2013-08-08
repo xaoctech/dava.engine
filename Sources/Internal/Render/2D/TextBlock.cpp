@@ -52,8 +52,6 @@ void TextBlock::ScreenResolutionChanged()
 	{
 		(*it)->needRedraw = true;
 		(*it)->Prepare();
-		(*it)->ProcessAlign();
-
 	}
 }
 
@@ -117,7 +115,6 @@ void TextBlock::SetRectSize(const Vector2 & size)
 	if (rectSize != size) 
 	{
 		rectSize = size;
-		ProcessAlign();
 	}
 }
 
@@ -190,7 +187,8 @@ void TextBlock::SetAlign(int32 _align)
 	if (align != _align) 
 	{
 		align = _align;
-		ProcessAlign();
+		needRedraw = true;
+		Prepare();
 	}
 }
 
@@ -662,7 +660,6 @@ void TextBlock::Prepare()
 			SafeRelease(tex);
 		}
 
-		ProcessAlign();
 		needRedraw = false;
 	}
 	else
@@ -671,53 +668,6 @@ void TextBlock::Prepare()
 	}
 #endif 
 }
-	
-void TextBlock::ProcessAlign()
-{
-	if (!sprite) 
-	{
-		return;
-	}
-	
-	float x = 0, y = 0;
-
-	if(align & ALIGN_TOP)
-	{
-	}
-	else if(align & ALIGN_BOTTOM)
-	{
-		y = -(rectSize.dy - sprite->GetHeight());
-		if (!isMultilineEnabled) 
-		{
-			y += (font->GetFontHeight() - sprite->GetHeight());//Moves text up for a real descender size. Text always have size of ascender + part of descender size. It's an our realisation but not a my feature
-		}
-	}
-	else
-	{
-		y = -(rectSize.dy - sprite->GetHeight()) * 0.5f;
-		if (!isMultilineEnabled) 
-		{
-			y += (font->GetFontHeight()  - sprite->GetHeight()) * 0.5f;
-		}
-	}
-
-	if(align & ALIGN_LEFT || align & ALIGN_HJUSTIFY)
-	{
-		x = 0;
-	}
-	else if(align & ALIGN_RIGHT)
-	{
-		x = -(rectSize.dx - sprite->GetWidth());
-	}
-	else
-	{
-		x = -(rectSize.dx - sprite->GetWidth()) * 0.5f;
-	}
-
-	sprite->SetDefaultPivotPoint(x, y);
-}
-	
-	
 
 void TextBlock::DrawToBuffer(int16 *buf)
 {

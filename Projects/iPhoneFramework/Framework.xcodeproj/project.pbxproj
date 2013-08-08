@@ -47,6 +47,8 @@
 		74338647179D18F60014FBD3 /* UIScrollView.h in Headers */ = {isa = PBXBuildFile; fileRef = 74338643179D18F60014FBD3 /* UIScrollView.h */; };
 		74338648179D18F60014FBD3 /* UIScrollViewContainer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 74338644179D18F60014FBD3 /* UIScrollViewContainer.cpp */; };
 		74338649179D18F60014FBD3 /* UIScrollViewContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = 74338645179D18F60014FBD3 /* UIScrollViewContainer.h */; };
+		7497447817B3D79600282DAA /* AllocatorFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7497447617B3D79600282DAA /* AllocatorFactory.cpp */; };
+		7497447917B3D79600282DAA /* AllocatorFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 7497447717B3D79600282DAA /* AllocatorFactory.h */; };
 		840ED3C916D506F900D2BA6C /* DPIHelperiOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 840ED3C816D506F900D2BA6C /* DPIHelperiOS.mm */; };
 		840ED3CB16D5070400D2BA6C /* DPIHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 840ED3CA16D5070400D2BA6C /* DPIHelper.h */; };
 		84E5E0FE174D02EA0001C74F /* OpenUDIDApple.h in Headers */ = {isa = PBXBuildFile; fileRef = 84E5E0FC174D02EA0001C74F /* OpenUDIDApple.h */; };
@@ -321,8 +323,6 @@
 		E8B3CB8016B9326E002BD35F /* ParticleLayer3D.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C8B416B9326D002BD35F /* ParticleLayer3D.h */; };
 		E8B3CB8316B9326E002BD35F /* ParticlePropertyLine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C8B716B9326D002BD35F /* ParticlePropertyLine.cpp */; };
 		E8B3CB8416B9326E002BD35F /* ParticlePropertyLine.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C8B816B9326D002BD35F /* ParticlePropertyLine.h */; };
-		E8B3CB8516B9326E002BD35F /* ParticleSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C8B916B9326D002BD35F /* ParticleSystem.cpp */; };
-		E8B3CB8616B9326E002BD35F /* ParticleSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C8BA16B9326D002BD35F /* ParticleSystem.h */; };
 		E8B3CB8E16B9326E002BD35F /* Mutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C8C416B9326D002BD35F /* Mutex.cpp */; };
 		E8B3CB8F16B9326E002BD35F /* Mutex.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C8C516B9326D002BD35F /* Mutex.h */; };
 		E8B3CB9E16B9326E002BD35F /* SystemTimer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C8D716B9326D002BD35F /* SystemTimer.cpp */; };
@@ -734,6 +734,8 @@
 		74338643179D18F60014FBD3 /* UIScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIScrollView.h; sourceTree = "<group>"; };
 		74338644179D18F60014FBD3 /* UIScrollViewContainer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIScrollViewContainer.cpp; sourceTree = "<group>"; };
 		74338645179D18F60014FBD3 /* UIScrollViewContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIScrollViewContainer.h; sourceTree = "<group>"; };
+		7497447617B3D79600282DAA /* AllocatorFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AllocatorFactory.cpp; sourceTree = "<group>"; };
+		7497447717B3D79600282DAA /* AllocatorFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AllocatorFactory.h; sourceTree = "<group>"; };
 		840ED3C816D506F900D2BA6C /* DPIHelperiOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DPIHelperiOS.mm; sourceTree = "<group>"; };
 		840ED3CA16D5070400D2BA6C /* DPIHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DPIHelper.h; sourceTree = "<group>"; };
 		84E5E0FC174D02EA0001C74F /* OpenUDIDApple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenUDIDApple.h; sourceTree = "<group>"; };
@@ -1010,8 +1012,6 @@
 		E8B3C8B416B9326D002BD35F /* ParticleLayer3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayer3D.h; sourceTree = "<group>"; };
 		E8B3C8B716B9326D002BD35F /* ParticlePropertyLine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticlePropertyLine.cpp; sourceTree = "<group>"; };
 		E8B3C8B816B9326D002BD35F /* ParticlePropertyLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticlePropertyLine.h; sourceTree = "<group>"; };
-		E8B3C8B916B9326D002BD35F /* ParticleSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleSystem.cpp; sourceTree = "<group>"; };
-		E8B3C8BA16B9326D002BD35F /* ParticleSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleSystem.h; sourceTree = "<group>"; };
 		E8B3C8C416B9326D002BD35F /* Mutex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mutex.cpp; sourceTree = "<group>"; };
 		E8B3C8C516B9326D002BD35F /* Mutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mutex.h; sourceTree = "<group>"; };
 		E8B3C8D716B9326D002BD35F /* SystemTimer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SystemTimer.cpp; sourceTree = "<group>"; };
@@ -1491,6 +1491,8 @@
 		E8B3C7BD16B9326D002BD35F /* Base */ = {
 			isa = PBXGroup;
 			children = (
+				7497447617B3D79600282DAA /* AllocatorFactory.cpp */,
+				7497447717B3D79600282DAA /* AllocatorFactory.h */,
 				E8679182175F62D600C5A6A2 /* EnumMap.cpp */,
 				E8679183175F62D600C5A6A2 /* EnumMap.h */,
 				E867917A175F620400C5A6A2 /* GlobalEnum.cpp */,
@@ -1791,8 +1793,6 @@
 				E8B3C8B416B9326D002BD35F /* ParticleLayer3D.h */,
 				E8B3C8B716B9326D002BD35F /* ParticlePropertyLine.cpp */,
 				E8B3C8B816B9326D002BD35F /* ParticlePropertyLine.h */,
-				E8B3C8B916B9326D002BD35F /* ParticleSystem.cpp */,
-				E8B3C8BA16B9326D002BD35F /* ParticleSystem.h */,
 			);
 			path = Particles;
 			sourceTree = "<group>";
@@ -2506,7 +2506,6 @@
 				E8B3CB7E16B9326E002BD35F /* ParticleLayer.h in Headers */,
 				E8B3CB8016B9326E002BD35F /* ParticleLayer3D.h in Headers */,
 				E8B3CB8416B9326E002BD35F /* ParticlePropertyLine.h in Headers */,
-				E8B3CB8616B9326E002BD35F /* ParticleSystem.h in Headers */,
 				E8B3CB8F16B9326E002BD35F /* Mutex.h in Headers */,
 				E8B3CB9F16B9326E002BD35F /* SystemTimer.h in Headers */,
 				E8B3CBA016B9326E002BD35F /* EAGLView.h in Headers */,
@@ -2725,6 +2724,7 @@
 				4FDDEC5A17A6920D00D9DDEA /* MaterialOptimazer.h in Headers */,
 				A66BC2EE17AB98C300B6252E /* SkyboxComponent.h in Headers */,
 				A66BC2F217AB98E800B6252E /* SkyboxSystem.h in Headers */,
+				7497447917B3D79600282DAA /* AllocatorFactory.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2888,7 +2888,6 @@
 				E8B3CB7D16B9326E002BD35F /* ParticleLayer.cpp in Sources */,
 				E8B3CB7F16B9326E002BD35F /* ParticleLayer3D.cpp in Sources */,
 				E8B3CB8316B9326E002BD35F /* ParticlePropertyLine.cpp in Sources */,
-				E8B3CB8516B9326E002BD35F /* ParticleSystem.cpp in Sources */,
 				E8B3CB8E16B9326E002BD35F /* Mutex.cpp in Sources */,
 				E8B3CB9E16B9326E002BD35F /* SystemTimer.cpp in Sources */,
 				E8B3CBA116B9326E002BD35F /* EAGLView.mm in Sources */,
@@ -3099,6 +3098,7 @@
 				4FDDEC5917A6920D00D9DDEA /* MaterialOptimazer.cpp in Sources */,
 				A66BC2ED17AB98C300B6252E /* SkyboxComponent.cpp in Sources */,
 				A66BC2F117AB98E800B6252E /* SkyboxSystem.cpp in Sources */,
+				7497447817B3D79600282DAA /* AllocatorFactory.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
