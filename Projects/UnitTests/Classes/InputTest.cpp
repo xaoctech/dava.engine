@@ -227,6 +227,12 @@ void InputTest::ButtonPressed(BaseObject *obj, void *data, void *callerData)
 
 bool InputTest::TextFieldKeyPressed(UITextField * textField, int32 replacementLocation, int32 replacementLength, const WideString & replacementString)
 {
+	if (replacementLocation < 0 || replacementLength < 0)
+	{
+		staticText->SetText(L"");
+		return true;
+	}
+
 	WideString resultString = textField->GetText();
 	resultString.replace(replacementLocation, replacementLength, replacementString);
 	staticText->SetText(resultString);
