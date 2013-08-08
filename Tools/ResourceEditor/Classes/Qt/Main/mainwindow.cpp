@@ -40,6 +40,7 @@
 #include "../Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
 #include "../../Commands2/AddEntityCommand.h"
 #include "StringConstants.h"
+#include "HintManager.h"
 
 
 #include <QFileDialog>
@@ -65,6 +66,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 	// create tool windows
 	new TextureBrowser(this);
+	new HintManager();//needed for hints in MaterialEditor
 	materialEditor = new MaterialEditor(DAVA::Rect(20, 20, 500, 600));
 	waitDialog = new QtWaitDialog(this);
 
@@ -92,6 +94,7 @@ QtMainWindow::~QtMainWindow()
 {
 	delete addSwitchEntityDialog;
 	materialEditor->Release();
+	HintManager::Instance()->Release();
 	TextureBrowser::Instance()->Release();
 
 	posSaver.SaveState(this);
@@ -777,10 +780,10 @@ void QtMainWindow::OnMaterialEditor()
 		if(NULL != sceneEditor)
 		{
 			materialEditor->SetWorkingScene(sceneEditor, sceneEditor->selectionSystem->GetSelection()->GetEntity(0));
+			
+			DAVA::UIScreen *curScreen = DAVA::UIScreenManager::Instance()->GetScreen();
+			curScreen->AddControl(materialEditor);
 		}
-
-		DAVA::UIScreen *curScreen = DAVA::UIScreenManager::Instance()->GetScreen();
-		curScreen->AddControl(materialEditor);
 	}
 	else
 	{
