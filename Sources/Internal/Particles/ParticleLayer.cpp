@@ -595,7 +595,8 @@ void ParticleLayer::ProcessParticle(Particle * particle)
 		if (timeElapsed > (1 / frameOverLifeFPS))
 		{
 			particle->frame ++;
-			if (particle->frame >= this->sprite->GetFrameCount())
+			// Spright might not be loaded (see please DF-1661).
+			if (!this->sprite || particle->frame >= this->sprite->GetFrameCount())
 			{
 				particle->frame = 0;
 			}
