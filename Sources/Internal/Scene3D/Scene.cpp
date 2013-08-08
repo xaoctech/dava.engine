@@ -125,7 +125,7 @@ void Scene::CreateSystems()
 	AddSystem(actionSystem, (1 << Component::ACTION_COMPONENT));
 	
 	skyboxSystem = new SkyboxSystem(this);
-	AddSystem(skyboxSystem, (1 << Component::SKYBOX_COMPONENT));
+	AddSystem(skyboxSystem, (1 << Component::RENDER_COMPONENT));
 }
 
 Scene::~Scene()

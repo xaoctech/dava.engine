@@ -85,7 +85,8 @@ void RenderBatch::Draw(Camera * camera)
     }
     
     uint32 flags = renderObject->GetFlags();
-    if ((flags & visiblityCriteria) != visiblityCriteria)
+    if (((flags & RenderObject::VISIBLE_ALWAYS) == 0) &&
+		(flags & visiblityCriteria) != visiblityCriteria)
         return;
 	
     Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();

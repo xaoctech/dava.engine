@@ -31,7 +31,6 @@
 #include "Scene3D/Components/SoundComponent.h"
 #include "Scene3D/Components/ActionComponent.h"
 #include "Scene3D/Components/CustomPropertiesComponent.h"
-#include "Scene3D/Components/SkyboxComponent.h"
 
 namespace DAVA
 {
@@ -73,8 +72,6 @@ Component * Component::CreateByType(uint32 componentType)
 		return new CustomPropertiesComponent();
 	case ACTION_COMPONENT:
 		return new ActionComponent();
-	case SKYBOX_COMPONENT:
-		return new SkyboxComponent();
 	case ANIMATION_COMPONENT:
 	case COLLISION_COMPONENT:
 	case SCRIPT_COMPONENT:
