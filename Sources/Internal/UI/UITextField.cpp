@@ -655,6 +655,10 @@ void UITextField::SetIsPassword(bool isPassword)
 {
     this->isPassword = isPassword;
     needRedraw = true;
+	
+#ifdef __DAVAENGINE_IPHONE__
+	textFieldiPhone->SetIsPassword(isPassword);
+#endif
 }
     
 bool UITextField::IsPassword() const

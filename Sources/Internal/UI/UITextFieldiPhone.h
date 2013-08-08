@@ -44,7 +44,7 @@ public:
 	void HideField();
 	
 	void SetReturnKey(int32 returnType);
-
+	void SetIsPassword(bool isPassword);
 
 private:
 	void * objcClassPtr;
