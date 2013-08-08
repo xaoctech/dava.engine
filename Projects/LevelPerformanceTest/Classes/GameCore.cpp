@@ -55,8 +55,6 @@ GameCore::~GameCore()
 
 void GameCore::OnAppStarted()
 {
-    DeviceInfo();
-
 	File * testIdFile = File::Create("~res:/testId", File::OPEN | File::READ);
 	if(testIdFile)
 	{
@@ -70,7 +68,6 @@ void GameCore::OnAppStarted()
 	{
 		Logger::Debug("[GameCore::OnAppStarted()] testId file not found!");
         logToDb.push_back("'testId' file not found!");
-		SafeRelease(testIdFile);
 		Core::Instance()->Quit();
 		return;
 	}

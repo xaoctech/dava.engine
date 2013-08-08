@@ -1559,7 +1559,7 @@ void Sprite::Reload()
 {
     if(type == SPRITE_FROM_FILE)
     {
-        ReloadSpriteTextures();
+        ReloadExistingTextures();
 
         int32 sizeIndex = resourceSizeIndex;
 
@@ -1590,22 +1590,17 @@ void Sprite::Reload()
     }
 }
     
-void Sprite::ReloadSpriteTextures()
+void Sprite::ReloadExistingTextures()
 {
+	//this function need to be sure that textures really would reload
     for(int32 i = 0; i < textureCount; ++i)
     {
-        if(textures[i] == Texture::GetPinkPlaceholder())
+		if(textures[i] && !textures[i]->GetPathname().IsEmpty())
         {
-            SafeRelease(textures[i]);
-            textures[i] = Texture::CreateFromFile(textureNames[i]);
-        }
-        else if(textures[i] && !textures[i]->GetPathname().IsEmpty())
-        {
-            textures[i]->Reload();
-        }
-        else
-        {
-            Logger::Error("[Sprite::ReloadSpriteTextures] Something strange with texture_%d", i);
+			if(textures[i]->GetPathname().Exists())
+			{	
+				textures[i]->Reload();
+			}
         }
     }
 }
