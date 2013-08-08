@@ -40,7 +40,7 @@
 #include "../Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
 #include "../../Commands2/AddEntityCommand.h"
 #include "StringConstants.h"
-#include "HintManager.h"
+#include "SceneEditor/HintManager.h"
 
 
 #include <QFileDialog>
