@@ -26,6 +26,7 @@
 #include "Render/LibDxtHelper.h"
 #include "SceneEditor/EditorSettings.h"
 #include "Scene/SceneDataManager.h"
+#include "ImageTools/ImageTools.h"
 
 #include "ui_texturebrowser.h"
 
@@ -353,8 +354,8 @@ void TextureBrowser::updateInfoConverted()
 				imgSize = QSize(curTexture->width, curTexture->height);
 			}
 
-			// TODO:
 			// get data size
+			datasize = ImageTools::GetTexturePhysicalSize(curDescriptor, curTextureView);
 		}
 
 		sprintf(tmp, "Format\t: %s\nSize\t: %dx%d\nData size\t: %s\nFile size\t: %s", formatStr, imgSize.width(), imgSize.height(),

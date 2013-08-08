@@ -504,7 +504,6 @@ void EmitterLayerWidget::StoreVisualState(KeyedArchive* visualStateProps)
 void EmitterLayerWidget::OnSpriteBtn()
 {
 	FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
-	
 	projectPath += "Data/Gfx/Particles/";
     
 	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open particle sprite"), QString::fromStdString(projectPath.GetAbsolutePathname()), QString("Effect File (*.txt)"));
@@ -514,7 +513,10 @@ void EmitterLayerWidget::OnSpriteBtn()
 	// Yuri Coder. Verify that the path of the file opened is correct (i.e. inside the Project Path),
 	// this is according to the DF-551 issue.
     FilePath filePathToBeOpened(filePath.toStdString());
-	if (filePathToBeOpened.GetDirectory() != projectPath)
+	String relativePathForProjectPath = filePathToBeOpened.GetRelativePathname(projectPath);
+
+// 	if (filePathToBeOpened.GetDirectory() != projectPath)
+	if (relativePathForProjectPath.find("../") != String::npos)
 	{
 		QString message = QString("You've opened Particle Sprite from incorrect path (%1).\n Correct one is %2.").
 			arg(QString::fromStdString(filePathToBeOpened.GetDirectory().GetAbsolutePathname())).
