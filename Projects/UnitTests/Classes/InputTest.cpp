@@ -57,6 +57,7 @@ InputTest::InputTest() :
  TestTemplate<InputTest>("InputTest")
 {
 	textField = NULL;
+	passwordTextField = NULL;
 	staticText = NULL;
 	testButton = NULL;
 	
@@ -78,20 +79,22 @@ void InputTest::LoadResources()
 	font->SetSize(20);
     font->SetColor(Color::White());
 	
-	textField = new UITextField(Rect(0, 0, 512, 100));
+	passwordTextField = new UITextField(Rect(0, 30, 512, 50));
 #ifdef __DAVAENGINE_IPHONE__
 	Color color(1.f, 1.f, 1.f, 1.f);
-	textField->SetFontColor(color);
+	passwordTextField->SetFontColor(color);
 #else
-	textField->SetFont(font);
+	passwordTextField->SetFont(font);
 #endif
-	textField->SetSprite(spr,0);
-    textField->SetSpriteAlign(ALIGN_RIGHT);
-	textField->SetTextAlign(ALIGN_LEFT | ALIGN_BOTTOM);
-	textField->SetText(L"textField");
-	textField->SetDebugDraw(true);
-	textField->SetDelegate(new UITextFieldDelegate());
-	AddControl(textField);
+	passwordTextField->SetSprite(spr,0);
+    passwordTextField->SetSpriteAlign(ALIGN_RIGHT);
+	passwordTextField->SetTextAlign(ALIGN_LEFT | ALIGN_BOTTOM);
+	passwordTextField->SetText(L"");
+	passwordTextField->SetDebugDraw(true);
+	passwordTextField->SetDelegate(new UITextFieldDelegate());
+	passwordTextField->SetIsPassword(true);
+	passwordTextField->SetDelegate(this);
+	AddControl(passwordTextField);
 	
 	textField = new UITextField(Rect(600, 10, 100, 100));
 #ifdef __DAVAENGINE_IPHONE__
@@ -121,11 +124,11 @@ void InputTest::LoadResources()
 	testButton->SetDebugDraw(true);
 	testButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &InputTest::ButtonPressed));
 
-	staticText = new UIStaticText(Rect(500, 500, 100, 50));
+	staticText = new UIStaticText(Rect(0, 0, 512, 20));
 	font->SetSize(10);
 	staticText->SetFont(font);
-	staticText->SetTextAlign(12);// 12 - Rtop
-	staticText->SetText(L"StaticText");
+	staticText->SetTextAlign(ALIGN_HCENTER | ALIGN_VCENTER);// 12 - Rtop
+	staticText->SetText(L"Type password in the field below");
 	staticText->SetDebugDraw(true);
 	AddControl(staticText);
 
@@ -162,13 +165,15 @@ void InputTest::LoadResources()
     
     SafeRelease(spr);
     SafeRelease(texture);
-	
+
+	/*
 	staticText->SetShadowColor(DAVA::Color(0xFF/255.f, 0xC4/255.f, 0xC3/255.f, 1.f));
 	staticText->SetShadowOffset(DAVA::Vector2(4.0f, 4.0f));
 	Color faded = staticText->GetBackground()->color;
 	faded.a = 0.1f;
 	staticText->ColorAnimation(faded, 2.0f, Interpolation::LINEAR);
 	staticText->ShadowColorAnimation(faded, 2.0f, Interpolation::LINEAR);
+	 */
 }
 
 void InputTest::UnloadResources()
@@ -218,6 +223,15 @@ bool InputTest::RunTest(int32 testNum)
 void InputTest::ButtonPressed(BaseObject *obj, void *data, void *callerData)
 {
 	testFinished = true;
+}
+
+bool InputTest::TextFieldKeyPressed(UITextField * textField, int32 replacementLocation, int32 replacementLength, const WideString & replacementString)
+{
+	WideString resultString = textField->GetText();
+	resultString.replace(replacementLocation, replacementLength, replacementString);
+	staticText->SetText(resultString);
+
+	return true;
 }
 
 void InputTest::OnPageLoaded(DAVA::BaseObject * caller, void * param, void *callerData)
