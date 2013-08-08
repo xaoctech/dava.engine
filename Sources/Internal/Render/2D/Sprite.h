@@ -278,7 +278,7 @@ protected:
     static FilePath GetScaledName(const FilePath & spriteName);
     static File* LoadLocalizedFile(const FilePath & spritePathname, FilePath & texturePath);
     
-    void ReloadSpriteTextures();
+    void ReloadExistingTextures();
 //private:
     
     
