@@ -237,32 +237,13 @@ void StructureSystem::Reload(const EntityGroup *entityGroup, const DAVA::FilePat
 				}
 			}
 
-			if(loadModelPath.Exists())
+			DAVA::Entity *loadedEntity = Load(loadModelPath);
+			if(NULL != loadedEntity)
 			{
-				DAVA::Scene *scene = new DAVA::Scene();
-				DAVA::SceneFileV2 *sceneFile = new DAVA::SceneFileV2();
-				DAVA::Entity *rootEntity = new DAVA::Entity();
-				DAVA::Entity *modelEntity = scene->GetRootNode(loadModelPath);
+				loadedEntity->GetCustomProperties()->SetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, loadModelPath.GetAbsolutePathname());
+				newEntities[i] = loadedEntity;
 
-				rootEntity->AddNode(modelEntity);
-				sceneFile->OptimizeScene(modelEntity);
-
-				sceneFile->Release();
-				scene->Release();
-
-				modelEntity = rootEntity->GetChild(0);
-
-				if(NULL != modelEntity)
-				{
-					modelEntity->Retain();
-					modelEntity->SetSolid(true);
-					modelEntity->GetCustomProperties()->SetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, loadModelPath.GetAbsolutePathname());
-
-					newEntities[i] = modelEntity;
-					loadSuccess = true;
-				}
-
-				rootEntity->Release();
+				loadSuccess = true;
 			}
 		}
 
@@ -292,6 +273,26 @@ void StructureSystem::Reload(const EntityGroup *entityGroup, const DAVA::FilePat
 
 			sceneEditor->EndBatch();
 			UnlockSignals();
+
+			SceneSignals::Instance()->EmitStructureChanged((SceneEditor2 *) GetScene(), NULL);
+		}
+	}
+}
+
+void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector3 pos)
+{
+	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
+	if(NULL != sceneEditor)
+	{
+		DAVA::Entity *loadedEntity = Load(newModelPath);
+		if(NULL != loadedEntity)
+		{
+			DAVA::Matrix4 transform = loadedEntity->GetLocalTransform();
+			transform.SetTranslationVector(pos);
+			loadedEntity->SetLocalTransform(transform);
+
+			sceneEditor->Exec(new EntityMoveCommand(loadedEntity, sceneEditor, NULL));
+			loadedEntity->Release();
 
 			SceneSignals::Instance()->EmitStructureChanged((SceneEditor2 *) GetScene(), NULL);
 		}
@@ -412,4 +413,32 @@ void StructureSystem::MarkLocked(DAVA::Entity *entity)
 			MarkLocked(entity->GetChild(i));
 		}
 	}
+}
+
+DAVA::Entity* StructureSystem::Load(const DAVA::FilePath& sc2path)
+{
+	DAVA::Entity* loadedEntity = NULL;
+	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
+
+	if(NULL != sceneEditor && sc2path.Exists())
+	{
+		loadedEntity = sceneEditor->GetRootNode(sc2path);
+		if(NULL != loadedEntity)
+		{
+			DAVA::SceneFileV2 *sceneFile = new DAVA::SceneFileV2();
+			DAVA::Entity *rootEntity = new DAVA::Entity();
+
+			rootEntity->AddNode(loadedEntity);
+			sceneFile->OptimizeScene(loadedEntity);
+
+			loadedEntity = rootEntity->GetChild(0);
+			loadedEntity->Retain();
+			loadedEntity->SetSolid(true);
+
+			sceneFile->Release();
+			rootEntity->Release();
+		}
+	}
+
+	return loadedEntity;
 }
