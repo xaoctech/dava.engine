@@ -317,6 +317,12 @@ Material * Material::Clone()
 {
     Material * newMaterial = new Material();
 
+    newMaterial->pointer = pointer;
+    newMaterial->scene = scene;
+    newMaterial->name = name;
+    newMaterial->children = children;
+    newMaterial->index = index;
+
     newMaterial->type = type;
     newMaterial->viewOptions = viewOptions;
 
@@ -348,7 +354,7 @@ Material * Material::Clone()
     newMaterial->shininess = shininess;
     
     newMaterial->ambientColor = ambientColor;
-	newMaterial->ambientColor = diffuseColor;
+	newMaterial->diffuseColor = diffuseColor;
 	newMaterial->specularColor = specularColor;
 	newMaterial->emissiveColor = emissiveColor;
     
