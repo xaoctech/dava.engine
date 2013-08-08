@@ -23,6 +23,7 @@
 		5CDC2533156CE21000742348 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CDC2532156CE20F00742348 /* libz.dylib */; };
 		74338640179D18CF0014FBD3 /* UIListTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7433863C179D18CE0014FBD3 /* UIListTest.cpp */; };
 		74338641179D18CF0014FBD3 /* UIScrollViewTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7433863E179D18CE0014FBD3 /* UIScrollViewTest.cpp */; };
+		7497447517B3D61800282DAA /* AlignTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7497447317B3D61800282DAA /* AlignTest.cpp */; };
 		84C8F71516D3D16000FAC7DF /* DPITest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84C8F71316D3D16000FAC7DF /* DPITest.cpp */; };
 		C19E4FAA16C5488C00D0AC28 /* DLCSystemTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C19E4FA816C5488C00D0AC28 /* DLCSystemTests.cpp */; };
 		CC24802616DF6CE000183D40 /* InputTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC24802416DF6CE000183D40 /* InputTest.cpp */; };
@@ -101,6 +102,8 @@
 		7433863D179D18CE0014FBD3 /* UIListTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIListTest.h; sourceTree = "<group>"; };
 		7433863E179D18CE0014FBD3 /* UIScrollViewTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIScrollViewTest.cpp; sourceTree = "<group>"; };
 		7433863F179D18CF0014FBD3 /* UIScrollViewTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIScrollViewTest.h; sourceTree = "<group>"; };
+		7497447317B3D61800282DAA /* AlignTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AlignTest.cpp; sourceTree = "<group>"; };
+		7497447417B3D61800282DAA /* AlignTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlignTest.h; sourceTree = "<group>"; };
 		84C8F71316D3D16000FAC7DF /* DPITest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DPITest.cpp; sourceTree = "<group>"; };
 		84C8F71416D3D16000FAC7DF /* DPITest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DPITest.h; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* TemplateProjectiPhone-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "TemplateProjectiPhone-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
@@ -260,6 +263,8 @@
 		5C7BE30F156E0EF400F9F538 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				7497447317B3D61800282DAA /* AlignTest.cpp */,
+				7497447417B3D61800282DAA /* AlignTest.h */,
 				7433863C179D18CE0014FBD3 /* UIListTest.cpp */,
 				7433863D179D18CE0014FBD3 /* UIListTest.h */,
 				7433863E179D18CE0014FBD3 /* UIScrollViewTest.cpp */,
@@ -466,6 +471,7 @@
 				E8679179175F607700C5A6A2 /* FormatsTest.cpp in Sources */,
 				74338640179D18CF0014FBD3 /* UIListTest.cpp in Sources */,
 				74338641179D18CF0014FBD3 /* UIScrollViewTest.cpp in Sources */,
+				7497447517B3D61800282DAA /* AlignTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
