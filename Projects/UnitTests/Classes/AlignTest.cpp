@@ -43,7 +43,7 @@ TestTemplate<AlignTest>("SplitTest")
 	RegisterFunction(this, &AlignTest::ResizeControl, Format("ResizeTest"), NULL);
 	RegisterFunction(this, &AlignTest::MoveControl, Format("MultilineTest"), NULL);
 	// Register align function for each align option
-	for (int32 i = 0; i <= GetAlignTypesCount(); ++i)
+	for (int32 i = 0; i < GetAlignTypesCount(); ++i)
 	{
 		RegisterFunction(this, &AlignTest::AlignText, Format("AlignTest"), NULL);
 	}
