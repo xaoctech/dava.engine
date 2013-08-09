@@ -56,9 +56,6 @@ DefaultScreen::DefaultScreen()
 	
 	selectorControl = new UISelectorControl();
 	
-	oldSmartSelected = NULL;
-	oldSmartSelectedId = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
-	
 	copyControlsInProcess = false;
 	mouseAlreadyPressed = false;
 }
@@ -66,7 +63,6 @@ DefaultScreen::DefaultScreen()
 DefaultScreen::~DefaultScreen()
 {
 	SafeRelease(selectorControl);
-	SAFE_DELETE(oldSmartSelected);
 }
 
 void DefaultScreen::Update(float32 /*timeElapsed*/)
@@ -359,24 +355,10 @@ HierarchyTreeControlNode* DefaultScreen::GetSelectedControl(const Vector2& point
 
 HierarchyTreeControlNode* DefaultScreen::SmartGetSelectedControl(const Vector2& point)
 {
-	SmartSelection* root = new SmartSelection(HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY);
-	SmartGetSelectedControl(root, HierarchyTreeController::Instance()->GetActiveScreen(), point);
-	
-	if (oldSmartSelected && oldSmartSelected->IsEqual(root))
-	{
-		oldSmartSelectedId = root->GetNext(oldSmartSelectedId);
-		if (oldSmartSelectedId == HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY)
-			oldSmartSelectedId = root->GetLast();
-	}
-	else
-	{
-		oldSmartSelectedId = root->GetLast();
-	}
-	
-	SAFE_DELETE(oldSmartSelected);
-	oldSmartSelected = root;
-	
-	return dynamic_cast<HierarchyTreeControlNode*>(HierarchyTreeController::Instance()->GetTree().GetNode(oldSmartSelectedId));
+	SmartSelection root(HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY);
+	SmartGetSelectedControl(&root, HierarchyTreeController::Instance()->GetActiveScreen(), point);
+	// DF-1593 - Always select first control (on top)
+	return dynamic_cast<HierarchyTreeControlNode*>(HierarchyTreeController::Instance()->GetTree().GetNode(root.GetLast()));
 }
 
 void DefaultScreen::GetSelectedControl(HierarchyTreeNode::HIERARCHYTREENODESLIST& list, const Rect& rect, const HierarchyTreeNode* parent) const
@@ -1030,8 +1012,6 @@ void DefaultScreen::ControlContextMenuTriggered(QAction* action)
 		{
 			HierarchyTreeController::Instance()->ResetSelectedControl();
 			HierarchyTreeController::Instance()->SelectControl(controlNode);			
-			// Reset smart selection
-			SAFE_DELETE(oldSmartSelected);
 		}
 		
 		SaveControlsPostion();

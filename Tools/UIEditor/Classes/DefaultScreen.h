@@ -149,8 +149,7 @@ private:
 	
 	UIControl* selectorControl;
 	
-	SmartSelection* oldSmartSelected;
-	HierarchyTreeNode::HIERARCHYTREENODEID oldSmartSelectedId;
+	//SmartSelection* oldSmartSelected;
 
 	// Whether the Mouse Begin event happened?
 	bool mouseAlreadyPressed;

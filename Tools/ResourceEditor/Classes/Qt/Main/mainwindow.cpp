@@ -27,7 +27,6 @@
 #include "MaterialBrowser/MaterialBrowser.h"
 
 #include "CubemapEditor/CubemapTextureBrowser.h"
-#include "Scene3D/Components/SkyboxComponent.h"
 #include "Scene3D/Systems/SkyboxSystem.h"
 
 #include "Tools/BaseAddEntityDialog/BaseAddEntityDialog.h"
@@ -378,8 +377,7 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionShowNotPassableLandscape, SIGNAL(triggered()), this, SLOT(OnNotPassableTerrain()));
 	QObject::connect(ui->actionRulerTool, SIGNAL(triggered()), this, SLOT(OnRulerTool()));
 
-	QObject::connect(ui->menuAdd, SIGNAL(aboutToShow()), this, SLOT(OnAddEntityMenuAboutToShow()));
-	QObject::connect(ui->actionSkyboxNode, SIGNAL(triggered()), this, SLOT(OnAddSkyboxNode()));
+	QObject::connect(ui->actionSkyboxNode, SIGNAL(triggered()), this, SLOT(OnSetSkyboxNode()));
 
 	QObject::connect(ui->actionLandscape, SIGNAL(triggered()), this, SLOT(OnLandscapeDialog()));
 	QObject::connect(ui->actionLight, SIGNAL(triggered()), this, SLOT(OnLightDialog()));
@@ -880,7 +878,7 @@ void QtMainWindow::OnRulerTool()
 	ui->actionRulerTool->setChecked(scene->rulerToolSystem->IsLandscapeEditingEnabled());
 }
 
-void QtMainWindow::OnAddSkyboxNode()
+void QtMainWindow::OnSetSkyboxNode()
 {
 	SceneEditor2* scene = GetCurrentScene();
 	if (!scene)
@@ -888,33 +886,10 @@ void QtMainWindow::OnAddSkyboxNode()
 		return;
 	}
 	
-	if(scene->skyboxSystem->IsSkyboxPresent())
-	{
-		QMessageBox::warning(0, tr("Skybox was not added"), tr("There's a skybox present in the scene already! Please remove it to add another one."));
-		return;
-	}
-
-	Entity* skyboxNode = new Entity();
-	skyboxNode->SetName("Skybox-singleton");
-	SkyboxComponent* component = new SkyboxComponent();
-	skyboxNode->AddComponent(component);
-	
-	scene->AddNode(skyboxNode);
-	
+	Entity* skyboxNode = scene->skyboxSystem->AddSkybox();
 	scene->selectionSystem->SetSelection(skyboxNode);
 }
 
-void QtMainWindow::OnAddEntityMenuAboutToShow()
-{
-	SceneEditor2* scene = GetCurrentScene();
-	if (!scene)
-	{
-		return;
-	}
-	
-	//disable adding of skybox if it was present
-	ui->actionSkyboxNode->setEnabled(!scene->skyboxSystem->IsSkyboxPresent());
-}
 void QtMainWindow::OnSwitchEntityDialog()
 {
 	if(addSwitchEntityDialog->GetEntity() != NULL)//dialog is on screen, do nothing
