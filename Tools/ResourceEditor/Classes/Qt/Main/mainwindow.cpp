@@ -26,22 +26,21 @@
 #include "TextureBrowser/TextureBrowser.h"
 #include "MaterialBrowser/MaterialBrowser.h"
 
-#include "Classes/SceneEditor/EditorSettings.h"
-#include "Classes/SceneEditor/EditorConfig.h"
-
-#include "../CubemapEditor/CubemapTextureBrowser.h"
+#include "CubemapEditor/CubemapTextureBrowser.h"
 #include "Scene3D/Components/SkyboxComponent.h"
 #include "Scene3D/Systems/SkyboxSystem.h"
 
-#include "../Tools/BaseAddEntityDialog/BaseAddEntityDialog.h"
-//#include "../Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
-#include "../Tools/SelectPathWidget/SelectPathWidget.h"
+#include "Tools/BaseAddEntityDialog/BaseAddEntityDialog.h"
+//#include "Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
+#include "Tools/SelectPathWidget/SelectPathWidget.h"
 
-#include "../Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
-#include "../../Commands2/AddEntityCommand.h"
+#include "Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
+#include "Commands2/AddEntityCommand.h"
 #include "StringConstants.h"
-#include "HintManager.h"
 
+#include "SceneEditor/EditorSettings.h"
+#include "SceneEditor/EditorConfig.h"
+#include "SceneEditor/HintManager.h"
 
 #include <QFileDialog>
 #include <QMessageBox>

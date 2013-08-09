@@ -24,6 +24,7 @@
 #include <QVBoxLayout>
 #include <QResizeEvent>
 #include <QMessageBox>
+#include <QFileInfo>
 
 SceneTabWidget::SceneTabWidget(QWidget *parent)
 	: QWidget(parent)
@@ -44,7 +45,7 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	// create Qt controls and add them into layout
 	// 
 	// tab bar
-	tabBar = new QTabBar(this);
+	tabBar = new MainTabBar(this);
 	tabBar->setTabsClosable(true);
 	tabBar->setMovable(true);
 	tabBar->setUsesScrollButtons(true);
@@ -63,11 +64,15 @@ SceneTabWidget::SceneTabWidget(QWidget *parent)
 	layout->setSpacing(1);
 	setLayout(layout);
 
+	setAcceptDrops(true);
+
 	// create DAVA UI
 	InitDAVAUI();
 
 	QObject::connect(tabBar, SIGNAL(currentChanged(int)), this, SLOT(TabBarCurrentChanged(int)));
 	QObject::connect(tabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(TabBarCloseRequest(int)));
+	QObject::connect(tabBar, SIGNAL(OnDrop(const QMimeData *)), this, SLOT(TabBarDataDropped(const QMimeData *)));
+	QObject::connect(davaWidget, SIGNAL(OnDrop(const QMimeData *)), this, SLOT(DAVAWidgetDataDropped(const QMimeData *)));
 
 	QObject::connect(SceneSignals::Instance(), SIGNAL(MouseOverSelection(SceneEditor2*, const EntityGroup*)), this, SLOT(MouseOverSelectedEntities(SceneEditor2*, const EntityGroup*)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Saved(SceneEditor2*)), this, SLOT(SceneSaved(SceneEditor2*)));
@@ -263,6 +268,55 @@ void SceneTabWidget::TabBarCloseRequest(int index)
 	CloseTab(index);
 }
 
+void SceneTabWidget::TabBarDataDropped(const QMimeData *data)
+{
+	if(data->hasUrls())
+	{
+		QList<QUrl> urls = data->urls();
+		for(int i = 0; i < urls.size(); ++i)
+		{
+			DAVA::FilePath path(urls[i].toLocalFile().toStdString());
+			if(path.IsEqualToExtension(".sc2") && path.Exists())
+			{
+				int tabId = OpenTab(path);
+				SetCurrentTab(tabId);
+			}
+		}
+	}
+}
+
+void SceneTabWidget::DAVAWidgetDataDropped(const QMimeData *data)
+{
+	if(NULL != curScene)
+	{
+		if(data->hasUrls())
+		{
+			DAVA::Vector3 pos;
+
+			if(!curScene->collisionSystem->LandRayTestFromCamera(pos))
+			{
+				DAVA::Landscape *landscape = curScene->collisionSystem->GetLandscape();
+				if( NULL != landscape && 
+					NULL != landscape->GetHeightmap() &&
+					landscape->GetHeightmap()->Size() > 0)
+				{
+					curScene->collisionSystem->GetLandscape()->PlacePoint(DAVA::Vector3(), pos);
+				}
+			}
+
+			QString sc2path = data->urls().at(0).toLocalFile();
+			
+			QtMainWindow::Instance()->WaitStart("Adding object to scene", sc2path);
+			curScene->structureSystem->Add(sc2path.toStdString(), pos);
+			QtMainWindow::Instance()->WaitStop();
+		}
+	}
+	else
+	{
+		TabBarDataDropped(data);
+	}
+}
+
 void SceneTabWidget::MouseOverSelectedEntities(SceneEditor2* scene, const EntityGroup *entities)
 {
 	if(GetCurrentScene() == scene && NULL != entities)
@@ -354,119 +408,36 @@ void SceneTabWidget::UpdateTabName(int index)
 	}
 }
 
-/*
-ST_ModifMode SceneTabWidget::GetModifMode() const
-{
-	return curModifMode;
-}
-
-void SceneTabWidget::SetModifMode(ST_ModifMode mode)
-{
-	if(curModifMode != mode)
-	{
-		curModifMode = mode;
-
-		for(int i = 0; i < tabBar->count(); ++i)
-		{
-			SceneEditor2 *scene = GetTabScene(i);
-			if(NULL != scene)
-			{
-				scene->modifSystem->SetModifMode(curModifMode);
-			}
-		}
-	}
-}
-
-ST_PivotPoint SceneTabWidget::GetPivotPoint() const
-{
-	return curPivotPoint;
-}
-
-void SceneTabWidget::SetPivotPoint(ST_PivotPoint pivotpoint)
-{
-	if(curPivotPoint != pivotpoint)
-	{
-		curPivotPoint = pivotpoint;
-
-		for(int i = 0; i < tabBar->count(); ++i)
-		{
-			SceneEditor2 *scene = GetTabScene(i);
-			if(NULL != scene)
-			{
-				scene->selectionSystem->SetPivotPoint(curPivotPoint);
-			}
-		}
-	}
-}
-
-ST_Axis SceneTabWidget::GetModifAxis() const
-{
-	return curModifAxis;
-}
-
-void SceneTabWidget::SetModifAxis(ST_Axis axis)
-{
-	if(curModifAxis != axis)
-	{
-		curModifAxis = axis;
-
-		for(int i = 0; i < tabBar->count(); ++i)
-		{
-			SceneEditor2 *scene = GetTabScene(i);
-			if(NULL != scene)
-			{
-				scene->modifSystem->SetModifAxis(curModifAxis);
-			}
-		}
-	}
-}
-
-int SceneTabWidget::GetSelectionDrawMode() const
-{
-	return curSelDrawMode;
-}
-
-void SceneTabWidget::SetSelectionDrawMode(int mode)
-{
-	if(curSelDrawMode != mode)
-	{
-		curSelDrawMode = mode;
-
-		for(int i = 0; i < tabBar->count(); ++i)
-		{
-			SceneEditor2 *scene = GetTabScene(i);
-			if(NULL != scene)
-			{
-				scene->selectionSystem->SetDrawMode(curSelDrawMode);
-			}
-		}
-	}
-}
-
-int SceneTabWidget::GetCollisionDrawMode() const
-{
-	return curColDrawMode;
-}
-
-void SceneTabWidget::SetCollisionDrawMode(int mode)
-{
-	if(curColDrawMode != mode)
-	{
-		curColDrawMode = mode;
-
-		for(int i = 0; i < tabBar->count(); ++i)
-		{
-			SceneEditor2 *scene = GetTabScene(i);
-			if(NULL != scene)
-			{
-				scene->collisionSystem->SetDrawMode(curColDrawMode);
-			}
-		}
-	}
-}
-*/
-
 SceneEditor2* SceneTabWidget::GetCurrentScene() const
 {
-	return GetTabScene(GetCurrentTab());
+	return curScene;
+}
+
+MainTabBar::MainTabBar(QWidget* parent /* = 0 */)
+	: QTabBar(parent)
+{
+	setAcceptDrops(true);
+}
+
+void MainTabBar::dragEnterEvent(QDragEnterEvent *event)
+{
+	const QMimeData *mimeData = event->mimeData();
+	if(mimeData->hasUrls()) 
+	{
+		event->acceptProposedAction();
+	}
+	else
+	{
+		event->setDropAction(Qt::IgnoreAction);
+		event->accept();
+	}
+}
+
+void MainTabBar::dropEvent(QDropEvent *event)
+{
+	const QMimeData *mimeData = event->mimeData();
+	if(mimeData->hasUrls())
+	{
+		emit OnDrop(mimeData);
+	}
 }
