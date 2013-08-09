@@ -136,9 +136,12 @@ bool CommandLineParser::CommandIsFound(const DAVA::String &command)
 DAVA::String CommandLineParser::GetCommand(DAVA::uint32 commandPosition)
 {
     Vector<String> & commandLine = Core::Instance()->GetCommandLine();
-    DVASSERT(commandPosition < commandLine.size());
+	if(commandPosition < commandLine.size())
+	{
+		return commandLine[commandPosition];
+	}
     
-    return commandLine[commandPosition];
+	return String();
 }
 
 
@@ -168,6 +171,13 @@ DAVA::String CommandLineParser::GetCommandParam(const DAVA::String &command)
     }
     
     return String();
+}
+
+String CommandLineParser::GetCommandParamAdditional(const String &command, const int32 paramIndex)	//TODO: remove this method after fix of DF-1584
+{
+	int32 commandPosition = GetCommandPosition(command);
+	int32 firstParamPosition = commandPosition + 1;
+	return GetCommand(firstParamPosition + paramIndex);
 }
 
 

@@ -60,6 +60,7 @@ public:
 	
 	inline void	GetColor(int32 i, RGBColor & v);
 	inline void	GetTexcoord(int32 ti, int32 i, Vector2 & v);
+	inline void	GetCubeTexcoord(int32 ti, int32 i, Vector3 & v);
 	inline void	GetIndex(int32 i, int32 & index);
     
     inline ePrimitiveType GetPrimitiveType();
@@ -72,6 +73,7 @@ public:
 	
 	inline void	SetColor(int32 i, const RGBColor & v);
 	inline void	SetTexcoord(int32 ti, int32 i, const Vector2 & v);
+	inline void	SetCubeTexcoord(int32 ti, int32 i, const Vector3 & v);
 	inline void	SetJointIndex(int32 vIndex, int32 jointIndex, int32 boneIndexValue);
 	inline void SetJointCount(int32 vIndex, int32 jointCount);
 	inline void	SetWeight(int32 vIndex, int32 jointIndex, float32 boneWeightValue);
@@ -95,6 +97,7 @@ public:
 	int32	indexFormat;
 	int32	triangleCount;
     ePrimitiveType primitiveType;
+	int32	cubeTextureCoordCount;
 	
 	Vector3		*vertexArray;
 	Vector2		**textureCoordArray;
@@ -103,6 +106,7 @@ public:
 	Vector3		*binormalArray;
 	int32		*jointIdxArray;
 	float32		*weightArray;
+	Vector3		**cubeTextureCoordArray;
 
 	int32		*jointCountArray;
 	
@@ -231,6 +235,12 @@ inline void	PolygonGroup::SetTexcoord(int32 ti, int32 i, const Vector2 & _t)
 	*t = _t;
 }
 	
+inline void	PolygonGroup::SetCubeTexcoord(int32 ti, int32 i, const Vector3 & _t)
+{
+	Vector3 * t = (Vector3 *)((uint8 *)cubeTextureCoordArray[ti] + i * vertexStride);
+	*t = _t;
+}
+	
 inline void	PolygonGroup::SetJointIndex(int32 vIndex, int32 jointIndex, int32 boneIndexValue)
 {
 	int32 * t = (int32*)((uint8*)jointIdxArray + vIndex * vertexStride);  
@@ -300,6 +310,12 @@ inline void	PolygonGroup::GetTexcoord(int32 ti, int32 i, Vector2 & _t)
 	_t = *t;
 }
 
+inline void	PolygonGroup::GetCubeTexcoord(int32 ti, int32 i, Vector3 & _t)
+{
+	Vector3 * t = (Vector3 *)((uint8 *)cubeTextureCoordArray[ti] + i * vertexStride);
+	_t = *t;
+}
+	
 inline void	PolygonGroup::GetIndex(int32 i, int32 &index)
 {
 	index = indexArray[i];

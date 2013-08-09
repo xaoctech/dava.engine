@@ -115,51 +115,24 @@ void MipMapReplacer::ReplaceMipMapFromMemory(Texture * texture, int32 level)
     uint32 dataSize = 0;
     uint8 * data = 0;
 
-    int32 elementBytesCount = 0;
-    uint32 elementValue = 0;
-
-    switch (texture->format)
+    if(texture->format == FORMAT_RGB888)
     {
-    case FORMAT_RGB565:
-        elementBytesCount = 2;
-        elementValue = 0xf800f800;//0xf800 - 5bits of red
-        break;
-    case FORMAT_RGBA4444:
-        elementBytesCount = 2;
-        elementValue = 0xf00ff00f;//0xf00f - 4bits of red and 4bits of alpha
-        break;
-    case FORMAT_RGBA5551:
-        elementBytesCount = 2;
-        elementValue = 0xf801f801;//0xf801 - 5bits of red and 1bit of alpha
-        break;
-    case FORMAT_RGBA8888:
-        elementBytesCount = 4;
-        elementValue = 0xff0000ff;//0xff0000ff - 8bits of red and 8bits of alpha
-        break;
-    case FORMAT_A8:
-        elementBytesCount = 1;
-        elementValue = 0xffffffff;//0xff - 8bits of alpha
-        break;
-    case FORMAT_RGB888:
+        uint32 pixelsCount = mipMapSize * mipMapSize;
+        dataSize = pixelsCount * 3;
+        data = new uint8[dataSize];
+
+        for(uint32 i = 0; i < pixelsCount; i++)
         {
-            uint32 pixelsCount = mipMapSize * mipMapSize;
-            dataSize = pixelsCount * 3;
-            data = new uint8[dataSize];
-
-            for(uint32 i = 0; i < pixelsCount; i++)
-            {
-                data[i * 3] = 0xff;
-                data[i * 3 + 1] = 0;
-                data[i * 3 + 2] = 0;
-            }
+            data[i * 3] = 0xff;
+            data[i * 3 + 1] = 0;
+            data[i * 3 + 2] = 0;
         }
-        break;
-    default:
-        return;
     }
-
-    if(texture->format != FORMAT_RGB888)
+    else
     {
+        int32 elementBytesCount = Texture::GetPixelFormatSizeInBytes(texture->format);
+        uint32 elementValue = GetReplaceValue(texture->format);
+
         uint32 pixelsCount = mipMapSize * mipMapSize;
         dataSize = pixelsCount * elementBytesCount;
         data = new uint8[dataSize];
@@ -179,6 +152,32 @@ void MipMapReplacer::ReplaceMipMapFromMemory(Texture * texture, int32 level)
     RenderManager::Instance()->UnlockNonMain();
 
     SafeDeleteArray(data);
+}
+
+uint32 MipMapReplacer::GetReplaceValue(PixelFormat format)
+{
+    uint32 elementValue = 0;
+    switch (format)
+    {
+    case FORMAT_RGB565:
+        elementValue = 0xf800f800;//0xf800 - 5bits of red
+        break;
+    case FORMAT_RGBA4444:
+        elementValue = 0xf00ff00f;//0xf00f - 4bits of red and 4bits of alpha
+        break;
+    case FORMAT_RGBA5551:
+        elementValue = 0xf801f801;//0xf801 - 5bits of red and 1bit of alpha
+        break;
+    case FORMAT_RGBA8888:
+        elementValue = 0xff0000ff;//0xff0000ff - 8bits of red and 8bits of alpha
+        break;
+    case FORMAT_A8:
+        elementValue = 0xffffffff;//0xff - 8bits of alpha
+        break;
+    default:
+        break;
+    }
+    return elementValue;
 }
 
 FilePath MipMapReplacer::GetDummyTextureFilePath(Texture * texture)

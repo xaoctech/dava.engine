@@ -59,8 +59,6 @@ public:
 		ID_COMMAND_LOAD_INNER_EMITTER_FROM_YAML,
 		ID_COMMAND_SAVE_INNER_EMITTER_TO_YAML,
 
-		ID_COMMAND_RELOAD_TEXTURES,
-
 		ID_COMMAND_ADD_SCENE,
 		ID_COMMAND_EDIT_SCENE,
 		ID_COMMAND_RELOAD_SCENE,
@@ -155,12 +153,6 @@ class CommandUpdateParticleLayerEnabled;
 class CommandUpdateParticleForce;
 class CommandLoadParticleEmitterFromYaml;
 class CommandSaveParticleEmitterToYaml;
-
-
-/*
- * CommandReloadTextures.h
- */
-class CommandReloadTextures;
 
 
 /*

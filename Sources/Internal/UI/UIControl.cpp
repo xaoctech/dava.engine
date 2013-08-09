@@ -1958,11 +1958,15 @@ namespace DAVA
 		if (sprite)
 		{
 			FilePath path(sprite->GetRelativePathname());
-			path.TruncateExtension();
-
-            String pathname = path.GetFrameworkPath();
-			node->Set("sprite", pathname);
+			String pathName = "";
+			if (!path.IsEmpty())
+			{
+				path.TruncateExtension();
+				pathName = path.GetFrameworkPath();
+			}
+			node->Set("sprite", pathName);
 		}
+
 		// Color
 		Color color =  this->GetBackground()->GetColor();
 		if (baseControl->GetBackground()->color != color)

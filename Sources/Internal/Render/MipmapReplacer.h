@@ -34,6 +34,7 @@ public:
 private:
     static FilePath GetDummyTextureFilePath(Texture * texture);
     static void ReplaceMipMapFromMemory(Texture * texture, int32 level);
+    static uint32 GetReplaceValue(PixelFormat format);
     static void EnumerateTexturesRecursive(Entity * entity, Set<Texture *> & textures);
 };
     

@@ -14,23 +14,34 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "CommandReloadTextures.h"
+#ifndef __TEXTURE_DESCRIPTOR_UTILS_H__
+#define __TEXTURE_DESCRIPTOR_UTILS_H__
 
 #include "DAVAEngine.h"
-#include "../Qt/Scene/SceneDataManager.h"
-#include "../SceneEditor/EditorSettings.h"
+#include "CommandLine/SceneUtils/SceneUtils.h"
 
 using namespace DAVA;
 
-
-CommandReloadTextures::CommandReloadTextures()
-    :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT, CommandList::ID_COMMAND_RELOAD_TEXTURES)
+class TextureDescriptorUtils
 {
-}
+public:
+    static void ResaveDescriptorsForFolder(const FilePath &folderPathname);
+	static void CopyCompressionParamsForFolder(const FilePath &folderPathname);
+    static void CreateDescriptorsForFolder(const FilePath &folderPathname);
+	static void SetCompressionParamsForFolder(const FilePath &folderPathname, const DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> & compressionParams, bool convertionEnabled, bool force);
+
+	static void SetCompressionParams(const FilePath &descriptorPathname, const DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> & compressionParams, bool convertionEnabled, bool force);
+    static void CreateDescriptorIfNeed(const FilePath &pngPathname);
+    
+private:
+    
+	static void ResaveDescriptor(const FilePath & descriptorPathname);
+    static void CopyCompressionParams(const FilePath &descriptorPathname);
+
+	static bool IsCorrectDirectory(FileList *fileList, const int32 fileIndex);
+	static bool IsDescriptorPathname(const FilePath &pathname);
+};
 
 
-void CommandReloadTextures::Execute()
-{
-    //SceneDataManager::Instance()->TextureReloadAll(EditorSettings::Instance()->GetTextureViewGPU());
-}
 
+#endif // __TEXTURE_DESCRIPTOR_UTILS_H__

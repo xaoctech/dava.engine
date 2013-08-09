@@ -34,47 +34,7 @@ namespace DAVA
 	{
 	private:
 		
-		enum SkyboxState
-		{
-			SYSTEM_NONE = 0,
-			SYSTEM_INITIAL_STATE,
-			SYSTEM_DIRTY,
-			SYSTEM_READY
-		};
-		
-		class SkyBoxRenderBatch : public RenderBatch
-		{
-		private:
-			
-			RenderDataStream* positionStream;
-			RenderDataStream* texCoordStream;
-			float32 nonClippingDistance;
-			float32 zOffset;
-			float32 rotation;
-			
-		public:
-			
-			SkyBoxRenderBatch();
-			~SkyBoxRenderBatch();
-			
-			void SetBox(const AABBox3& box);
-			void SetVerticalOffset(float32 verticalOffset);
-			void SetRotation(float32 angle);
-			
-			virtual void Draw(DAVA::Camera * camera);
-		};
-		
-	private:
-		
-		SkyboxState state;
 		Entity* skyboxEntity;
-		SkyBoxRenderBatch* skyboxRenderBatch;
-		Material* skyboxMaterial;
-		
-	private:
-		
-		void CreateSkybox();
-		void UpdateSkybox();
 		
 	public:
 		SkyboxSystem(Scene* scene);
@@ -84,7 +44,9 @@ namespace DAVA
 		virtual void AddEntity(Entity * entity);
 		virtual void RemoveEntity(Entity * entity);
 		
-		void SetSystemStateDirty();
+		//this method used by editor to add new skybox
+		//returns pointer to skybox (newly added or already present)
+		Entity* AddSkybox();
 		
 		bool IsSkyboxPresent();
 	};

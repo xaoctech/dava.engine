@@ -23,6 +23,7 @@ class ImageTools: public DAVA::ImageLoader
 public:
 
     static DAVA::uint32 GetTexturePhysicalSize(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily forGPU);
+	static void ConvertImage(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily forGPU, const DAVA::PixelFormat format);
     
 private:
 

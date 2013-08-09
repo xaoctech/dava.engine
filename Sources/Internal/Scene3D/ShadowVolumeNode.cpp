@@ -108,8 +108,6 @@ void ShadowVolumeNode::CopyGeometryFrom(MeshInstanceNode * meshInstance)
 {
 	PolygonGroup * oldPolygonGroup = meshInstance->GetPolygonGroups()[0]->GetPolygonGroup();
 
-	
-
 	int32 numEdges = oldPolygonGroup->GetIndexCount();
 	int32 oldIndexCount = oldPolygonGroup->GetIndexCount();
 	EdgeMapping * mapping = new EdgeMapping[numEdges];

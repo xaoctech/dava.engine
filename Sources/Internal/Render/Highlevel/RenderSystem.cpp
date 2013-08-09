@@ -219,7 +219,8 @@ void RenderSystem::ProcessClipping()
 		
 		uint32 flags = node->GetFlags();
 		flags = (flags | RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME) & RenderObject::VISIBILITY_CRITERIA;
-		if (flags != RenderObject::VISIBILITY_CRITERIA)
+		if (flags != RenderObject::VISIBILITY_CRITERIA ||
+			(flags & RenderObject::VISIBLE_ALWAYS) != 0)
 		{
 			continue;
 		}

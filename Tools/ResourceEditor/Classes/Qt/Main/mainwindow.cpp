@@ -30,7 +30,6 @@
 #include "Classes/SceneEditor/EditorConfig.h"
 
 #include "../CubemapEditor/CubemapTextureBrowser.h"
-#include "Scene3D/Components/SkyboxComponent.h"
 #include "Scene3D/Systems/SkyboxSystem.h"
 
 #include "../Tools/BaseAddEntityDialog/BaseAddEntityDialog.h"
@@ -40,6 +39,7 @@
 #include "../Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
 #include "../../Commands2/AddEntityCommand.h"
 #include "StringConstants.h"
+#include "SceneEditor/HintManager.h"
 
 
 #include <QFileDialog>
@@ -65,6 +65,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 	// create tool windows
 	new TextureBrowser(this);
+	new HintManager();//needed for hints in MaterialEditor
 	materialEditor = new MaterialEditor(DAVA::Rect(20, 20, 500, 600));
 	waitDialog = new QtWaitDialog(this);
 
@@ -85,12 +86,14 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 	LoadGPUFormat();
 
-	addSwitchEntityDialog = new AddSwitchEntityDialog( NULL, dynamic_cast<QWidget*>(QObject::parent()));
+	addSwitchEntityDialog = new AddSwitchEntityDialog(NULL, this);
 }
 
 QtMainWindow::~QtMainWindow()
 {
+	delete addSwitchEntityDialog;
 	materialEditor->Release();
+	HintManager::Instance()->Release();
 	TextureBrowser::Instance()->Release();
 
 	posSaver.SaveState(this);
@@ -99,7 +102,6 @@ QtMainWindow::~QtMainWindow()
 	ui = NULL;
 
 	ProjectManager::Instance()->Release();
-	delete addSwitchEntityDialog;
 }
 
 Ui::MainWindow* QtMainWindow::GetUI()
@@ -376,8 +378,7 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionShowNotPassableLandscape, SIGNAL(triggered()), this, SLOT(OnNotPassableTerrain()));
 	QObject::connect(ui->actionRulerTool, SIGNAL(triggered()), this, SLOT(OnRulerTool()));
 
-	QObject::connect(ui->menuAdd, SIGNAL(aboutToShow()), this, SLOT(OnAddEntityMenuAboutToShow()));
-	QObject::connect(ui->actionSkyboxNode, SIGNAL(triggered()), this, SLOT(OnAddSkyboxNode()));
+	QObject::connect(ui->actionSkyboxNode, SIGNAL(triggered()), this, SLOT(OnSetSkyboxNode()));
 
 	QObject::connect(ui->actionLandscape, SIGNAL(triggered()), this, SLOT(OnLandscapeDialog()));
 	QObject::connect(ui->actionLight, SIGNAL(triggered()), this, SLOT(OnLightDialog()));
@@ -777,10 +778,10 @@ void QtMainWindow::OnMaterialEditor()
 		if(NULL != sceneEditor)
 		{
 			materialEditor->SetWorkingScene(sceneEditor, sceneEditor->selectionSystem->GetSelection()->GetEntity(0));
+			
+			DAVA::UIScreen *curScreen = DAVA::UIScreenManager::Instance()->GetScreen();
+			curScreen->AddControl(materialEditor);
 		}
-
-		DAVA::UIScreen *curScreen = DAVA::UIScreenManager::Instance()->GetScreen();
-		curScreen->AddControl(materialEditor);
 	}
 	else
 	{
@@ -878,7 +879,7 @@ void QtMainWindow::OnRulerTool()
 	ui->actionRulerTool->setChecked(scene->rulerToolSystem->IsLandscapeEditingEnabled());
 }
 
-void QtMainWindow::OnAddSkyboxNode()
+void QtMainWindow::OnSetSkyboxNode()
 {
 	SceneEditor2* scene = GetCurrentScene();
 	if (!scene)
@@ -886,33 +887,10 @@ void QtMainWindow::OnAddSkyboxNode()
 		return;
 	}
 	
-	if(scene->skyboxSystem->IsSkyboxPresent())
-	{
-		QMessageBox::warning(0, tr("Skybox was not added"), tr("There's a skybox present in the scene already! Please remove it to add another one."));
-		return;
-	}
-
-	Entity* skyboxNode = new Entity();
-	skyboxNode->SetName("Skybox-singleton");
-	SkyboxComponent* component = new SkyboxComponent();
-	skyboxNode->AddComponent(component);
-	
-	scene->AddNode(skyboxNode);
-	
+	Entity* skyboxNode = scene->skyboxSystem->AddSkybox();
 	scene->selectionSystem->SetSelection(skyboxNode);
 }
 
-void QtMainWindow::OnAddEntityMenuAboutToShow()
-{
-	SceneEditor2* scene = GetCurrentScene();
-	if (!scene)
-	{
-		return;
-	}
-	
-	//disable adding of skybox if it was present
-	ui->actionSkyboxNode->setEnabled(!scene->skyboxSystem->IsSkyboxPresent());
-}
 void QtMainWindow::OnSwitchEntityDialog()
 {
 	if(addSwitchEntityDialog->GetEntity() != NULL)//dialog is on screen, do nothing
