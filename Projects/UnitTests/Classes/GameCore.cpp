@@ -39,6 +39,7 @@
 #include "MemoryAllocatorsTest.h"
 #include "HashMapTest.h"
 #include "SoundTest.h"
+#include "AlignTest.h"
 #include "SplitTest.h"
 #include "MaterialCompilerTest.h"
 #include "PVRTest.h"
@@ -95,6 +96,7 @@ void GameCore::OnAppStarted()
 	new HashMapTest();
 //	new SoundTest();
 	new SplitTest();
+	new AlignTest();
 	new EMailTest();
 	new DPITest();
 	new MaterialCompilerTest();
