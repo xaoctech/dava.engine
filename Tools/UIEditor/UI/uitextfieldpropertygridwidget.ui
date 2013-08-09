@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>300</width>
-    <height>225</height>
+    <height>250</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>300</width>
-    <height>225</height>
+    <height>250</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -25,7 +25,7 @@
      <x>0</x>
      <y>0</y>
      <width>299</width>
-     <height>221</height>
+     <height>249</height>
     </rect>
    </property>
    <property name="title">
@@ -232,6 +232,19 @@ QPushButton:pressed {background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 
     </property>
     <property name="text">
      <string>Align:</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="isPasswordCheckbox">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>220</y>
+      <width>271</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Is Password</string>
     </property>
    </widget>
   </widget>

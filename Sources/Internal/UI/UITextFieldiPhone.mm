@@ -48,6 +48,7 @@ float GetUITextViewSizeDivider()
 - (void) dealloc;
 - (BOOL)textFieldShouldReturn:(UITextField *)textField;
 - (BOOL)textField:(UITextField *)_textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string;
+- (void)setIsPassword:(bool)isPassword;
 
 @end
 
@@ -122,6 +123,10 @@ float GetUITextViewSizeDivider()
 	return TRUE;
 }
 
+- (void)setIsPassword:(bool)isPassword
+{
+	[textField setSecureTextEntry:isPassword ? YES: NO];
+}
 
 @end
 
@@ -308,8 +313,12 @@ namespace DAVA
             string[i] = (wchar_t)uchar;
         }
     }
-    
-    
+
+	void UITextFieldiPhone::SetIsPassword(bool isPassword)
+	{
+        UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
+		[textFieldHolder setIsPassword: isPassword];
+	}
 }
 
 #endif

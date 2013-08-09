@@ -1303,7 +1303,6 @@
     <ClInclude Include="Classes\UIScrollView.h" />
     <ClInclude Include="Classes\UISpriteEditor.h" />
     <ClInclude Include="Classes\VertexOctTree.h" />
-    <ClInclude Include="_GeneratedQt\ui_AddSwitchEntityDialog.h" />
     <ClInclude Include="_GeneratedQt\ui_CustomColorsProperties.h" />
     <ClInclude Include="_GeneratedQt\ui_CustomColorsView.h" />
     <ClInclude Include="_GeneratedQt\ui_davaglwidget.h" />

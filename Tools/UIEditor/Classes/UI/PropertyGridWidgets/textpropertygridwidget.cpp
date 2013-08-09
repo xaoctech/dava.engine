@@ -92,6 +92,9 @@ void TextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
 	multilineCheckBox->setEnabled(enableMultilineCheckBox);
 	multilineCheckBox->setVisible(enableMultilineCheckBox);
 		
+	bool showIsPasswordCheckbox = (dynamic_cast<UITextFieldMetadata*>(activeMetadata) != NULL);
+	ui->isPasswordCheckbox->setVisible(showIsPasswordCheckbox);
+
     UpdateLocalizationValue();
 
     RegisterGridWidgetAsStateAware();
