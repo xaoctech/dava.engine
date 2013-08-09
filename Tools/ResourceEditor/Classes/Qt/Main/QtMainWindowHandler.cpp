@@ -21,7 +21,6 @@
 #include "../Commands/FileCommands.h"
 #include "../Commands/ToolsCommands.h"
 #include "../Commands/SceneGraphCommands.h"
-#include "../Commands/CommandReloadTextures.h"
 #include "../Commands/ParticleEditorCommands.h"
 #include "../Commands/TextureOptionsCommands.h"
 #include "../Commands/CustomColorCommands.h"
@@ -71,6 +70,7 @@
 #include <QMimeData>
 
 #include "Render/LibDxtHelper.h"
+#include "Scene3D/Components/ActionComponent.h"
 
 #include "Scene3D/SkyBoxNode.h"
 #include "./../Qt/Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
@@ -600,7 +600,7 @@ void QtMainWindowHandler::SquareTextures()
 void QtMainWindowHandler::ReplaceZeroMipmaps()
 {
     EditorScene * scene = SceneDataManager::Instance()->SceneGetActive()->GetScene();
-    CommandsManager::Instance()->ExecuteAndRelease(new ReplaceMipmapLevelCommand(0, scene), scene);
+    MipMapReplacer::ReplaceMipMaps(scene, 0);
 }
 
 void QtMainWindowHandler::CubemapEditor()
@@ -715,8 +715,7 @@ void QtMainWindowHandler::ReloadMenuTriggered(QAction *reloadAsAction)
 
 void QtMainWindowHandler::ReloadSceneTextures()
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandReloadTextures(),
-												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
+	SceneDataManager::Instance()->TextureReloadAll(EditorSettings::Instance()->GetTextureViewGPU());
 }
 
 void QtMainWindowHandler::OnEntityModified(DAVA::Scene* scene, CommandList::eCommandId id, const DAVA::Set<DAVA::Entity*>& affectedEntities)
@@ -2072,6 +2071,25 @@ void QtMainWindowHandler::HandleMenuItemsState(CommandList::eCommandId id, const
 	}
 }
 
+void QtMainWindowHandler::AddActionComponent()
+{
+	SceneData* sceneData = SceneDataManager::Instance()->SceneGetActive();
+	
+	if(sceneData)
+	{
+		Entity* entity = SceneDataManager::Instance()->SceneGetSelectedNode(sceneData);
+		
+		if(entity)
+		{
+			//need to remove component at first in order to clean ActionUpdateSystem
+			entity->RemoveComponent(Component::ACTION_COMPONENT);
+			
+			ActionComponent* actionComponent = new ActionComponent();
+			entity->AddComponent(actionComponent);
+		}
+	}
+}
+
 void QtMainWindowHandler::CheckNeedEnableSkyboxMenu(const DAVA::Set<DAVA::Entity*>& affectedEntities,
 													bool isEnabled)
 {
@@ -2082,6 +2100,21 @@ void QtMainWindowHandler::CheckNeedEnableSkyboxMenu(const DAVA::Set<DAVA::Entity
 		{
 			EnableSkyboxMenuItem(isEnabled);
 			break;
+		}
+	}
+}
+
+void QtMainWindowHandler::RemoveActionComponent()
+{
+	SceneData* sceneData = SceneDataManager::Instance()->SceneGetActive();
+	
+	if(sceneData)
+	{
+		Entity* entity = SceneDataManager::Instance()->SceneGetSelectedNode(sceneData);
+		
+		if(entity)
+		{
+			entity->RemoveComponent(Component::ACTION_COMPONENT);
 		}
 	}
 }
@@ -2102,4 +2135,3 @@ void QtMainWindowHandler::UpdateSkyboxMenuItemAfterSceneLoaded(SceneData* sceneD
 	
 	EnableSkyboxMenuItem(nodes.size() == 0);
 }
-

@@ -1299,8 +1299,8 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SkyboxSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SkyboxComponent.h">
-      <Filter>Internal\Scene3D\Components</Filter>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\SkyboxRenderObject.h">
+      <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2294,8 +2294,8 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SkyboxSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SkyboxComponent.cpp">
-      <Filter>Internal\Scene3D\Components</Filter>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\SkyboxRenderObject.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

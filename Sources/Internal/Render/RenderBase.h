@@ -435,6 +435,10 @@ enum eVertexFormat
     EVF_TANGENT			= 128,
     EVF_BINORMAL		= 256,
     EVF_JOINTWEIGHT		= 512,
+	EVF_CUBETEXCOORD0	= 1024,
+    EVF_CUBETEXCOORD1	= 2048,
+    EVF_CUBETEXCOORD2	= 4096,
+    EVF_CUBETEXCOORD3	= 8192,
     EVF_LOWER_BIT		= EVF_VERTEX,
     EVF_HIGHER_BIT		= EVF_JOINTWEIGHT, 
     EVF_NEXT_AFTER_HIGHER_BIT
@@ -459,6 +463,21 @@ inline int32 GetTexCoordCount(int32 vertexFormat)
 
 	return ret;
 }
+	
+inline int32 GetCubeTexCoordCount(int32 vertexFormat)
+{
+	int32 ret = 0;
+	for(int32 i = EVF_CUBETEXCOORD0; i < EVF_CUBETEXCOORD3+1; i = (i << 1))
+	{
+		if(vertexFormat & i)
+		{
+			ret++;
+		}
+	}
+		
+	return ret;
+}
+
     
     
 inline int32 GetVertexSize(int32 flags)
@@ -474,7 +493,13 @@ inline int32 GetVertexSize(int32 flags)
     if (flags & EVF_TANGENT) size += 3 * sizeof(float32);
     if (flags & EVF_BINORMAL) size += 3 * sizeof(float32);
     
-    if (flags & EVF_JOINTWEIGHT) size += 2 * sizeof(float32); // 4 * 3 + 4 * 3= 12 + 12 
+    if (flags & EVF_JOINTWEIGHT) size += 2 * sizeof(float32); // 4 * 3 + 4 * 3= 12 + 12
+	
+	if (flags & EVF_CUBETEXCOORD0) size += 3 * sizeof(float32);
+    if (flags & EVF_CUBETEXCOORD1) size += 3 * sizeof(float32);
+    if (flags & EVF_CUBETEXCOORD2) size += 3 * sizeof(float32);
+    if (flags & EVF_CUBETEXCOORD3) size += 3 * sizeof(float32);
+	
     return size;
 }
 

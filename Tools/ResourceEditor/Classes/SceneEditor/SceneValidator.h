@@ -112,12 +112,7 @@ public:
 	bool ValidateTexturePathname(const FilePath &pathForValidation, Set<String> &errorsLog);
 	bool ValidateHeightmapPathname(const FilePath &pathForValidation, Set<String> &errorsLog);
 
-    void CreateDefaultDescriptors(const FilePath &folderPathname);
-
     bool IsPathCorrectForProject(const FilePath &pathname);
-
-	void CreateDescriptorIfNeed(const FilePath &forPathname);
-    
     
     
 protected:

@@ -733,12 +733,12 @@
 		846CFE60174D1A64004ECE3C /* OpenUDIDApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 846CFE5E174D1A64004ECE3C /* OpenUDIDApple.mm */; };
 		846CFE63174D1A75004ECE3C /* OpenUDIDMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 846CFE61174D1A75004ECE3C /* OpenUDIDMacOS.h */; };
 		846CFE64174D1A75004ECE3C /* OpenUDIDMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 846CFE62174D1A75004ECE3C /* OpenUDIDMacOS.mm */; };
-		A68B3EE817AA82B800E129C1 /* SkyboxComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A68B3EE617AA82B800E129C1 /* SkyboxComponent.cpp */; };
-		A68B3EE917AA82B800E129C1 /* SkyboxComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = A68B3EE717AA82B800E129C1 /* SkyboxComponent.h */; };
-		A68B3EEA17AA82C500E129C1 /* SkyboxComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A68B3EE617AA82B800E129C1 /* SkyboxComponent.cpp */; };
-		A68B3EEB17AA82C700E129C1 /* SkyboxComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A68B3EE617AA82B800E129C1 /* SkyboxComponent.cpp */; };
-		A68B3EEC17AA82CD00E129C1 /* SkyboxComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = A68B3EE717AA82B800E129C1 /* SkyboxComponent.h */; };
-		A68B3EED17AA82CE00E129C1 /* SkyboxComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = A68B3EE717AA82B800E129C1 /* SkyboxComponent.h */; };
+		A679101F17B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A679101D17B3C71B000AA2F2 /* SkyboxRenderObject.cpp */; };
+		A679102017B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A679101D17B3C71B000AA2F2 /* SkyboxRenderObject.cpp */; };
+		A679102117B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A679101D17B3C71B000AA2F2 /* SkyboxRenderObject.cpp */; };
+		A679102217B3C71B000AA2F2 /* SkyboxRenderObject.h in Headers */ = {isa = PBXBuildFile; fileRef = A679101E17B3C71B000AA2F2 /* SkyboxRenderObject.h */; };
+		A679102317B3C71B000AA2F2 /* SkyboxRenderObject.h in Headers */ = {isa = PBXBuildFile; fileRef = A679101E17B3C71B000AA2F2 /* SkyboxRenderObject.h */; };
+		A679102417B3C71B000AA2F2 /* SkyboxRenderObject.h in Headers */ = {isa = PBXBuildFile; fileRef = A679101E17B3C71B000AA2F2 /* SkyboxRenderObject.h */; };
 		A68B3EF017AA8C4000E129C1 /* SkyboxSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A68B3EEE17AA8C4000E129C1 /* SkyboxSystem.cpp */; };
 		A68B3EF117AA8C4000E129C1 /* SkyboxSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A68B3EEE17AA8C4000E129C1 /* SkyboxSystem.cpp */; };
 		A68B3EF217AA8C4000E129C1 /* SkyboxSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A68B3EEE17AA8C4000E129C1 /* SkyboxSystem.cpp */; };
@@ -2086,8 +2086,8 @@
 		846CFE5E174D1A64004ECE3C /* OpenUDIDApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenUDIDApple.mm; sourceTree = "<group>"; };
 		846CFE61174D1A75004ECE3C /* OpenUDIDMacOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenUDIDMacOS.h; sourceTree = "<group>"; };
 		846CFE62174D1A75004ECE3C /* OpenUDIDMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenUDIDMacOS.mm; sourceTree = "<group>"; };
-		A68B3EE617AA82B800E129C1 /* SkyboxComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyboxComponent.cpp; sourceTree = "<group>"; };
-		A68B3EE717AA82B800E129C1 /* SkyboxComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkyboxComponent.h; sourceTree = "<group>"; };
+		A679101D17B3C71B000AA2F2 /* SkyboxRenderObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyboxRenderObject.cpp; sourceTree = "<group>"; };
+		A679101E17B3C71B000AA2F2 /* SkyboxRenderObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkyboxRenderObject.h; sourceTree = "<group>"; };
 		A68B3EEE17AA8C4000E129C1 /* SkyboxSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyboxSystem.cpp; sourceTree = "<group>"; };
 		A68B3EEF17AA8C4000E129C1 /* SkyboxSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkyboxSystem.h; sourceTree = "<group>"; };
 		A6E4FDFF1761D96C00B48E41 /* ActionComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActionComponent.cpp; sourceTree = "<group>"; };
@@ -3404,6 +3404,8 @@
 		E8989C3F16BD24E400732C04 /* Highlevel */ = {
 			isa = PBXGroup;
 			children = (
+				A679101D17B3C71B000AA2F2 /* SkyboxRenderObject.cpp */,
+				A679101E17B3C71B000AA2F2 /* SkyboxRenderObject.h */,
 				CCC7A3FA16F1D6170061EA5D /* Camera.cpp */,
 				CCC7A3FB16F1D6170061EA5D /* Camera.h */,
 				CCC7A3FC16F1D6170061EA5D /* CullingSystem.cpp */,
@@ -3592,8 +3594,6 @@
 				E8989CDC16BD24E500732C04 /* TransformComponent.h */,
 				E8989CDD16BD24E500732C04 /* UpdatableComponent.cpp */,
 				E8989CDE16BD24E500732C04 /* UpdatableComponent.h */,
-				A68B3EE617AA82B800E129C1 /* SkyboxComponent.cpp */,
-				A68B3EE717AA82B800E129C1 /* SkyboxComponent.h */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -4145,9 +4145,9 @@
 				A6E4FE121761D9D900B48E41 /* CustomPropertiesComponent.h in Headers */,
 				A6E4FE161761D9E700B48E41 /* ActionUpdateSystem.h in Headers */,
 				4FFE5CB31779E0B200728624 /* MipmapReplacer.h in Headers */,
-				A68B3EED17AA82CE00E129C1 /* SkyboxComponent.h in Headers */,
 				A68B3EF517AA8C4000E129C1 /* SkyboxSystem.h in Headers */,
 				4F64848D17AFCAF900034454 /* AllocatorFactory.h in Headers */,
+				A679102417B3C71B000AA2F2 /* SkyboxRenderObject.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4494,9 +4494,9 @@
 				A6E4FE0A1761D97C00B48E41 /* ActionUpdateSystem.h in Headers */,
 				4FFE5CAF1779DBC700728624 /* MipmapReplacer.h in Headers */,
 				C18577EF17A16DA800331A95 /* MaterialOptimazer.h in Headers */,
-				A68B3EE917AA82B800E129C1 /* SkyboxComponent.h in Headers */,
 				A68B3EF317AA8C4000E129C1 /* SkyboxSystem.h in Headers */,
 				4F64848217AFB73C00034454 /* AllocatorFactory.h in Headers */,
+				A679102217B3C71B000AA2F2 /* SkyboxRenderObject.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4834,9 +4834,9 @@
 				A6E4FE111761D9D700B48E41 /* CustomPropertiesComponent.h in Headers */,
 				A6E4FE151761D9E500B48E41 /* ActionUpdateSystem.h in Headers */,
 				4FFE5CB21779E09C00728624 /* MipmapReplacer.h in Headers */,
-				A68B3EEC17AA82CD00E129C1 /* SkyboxComponent.h in Headers */,
 				A68B3EF417AA8C4000E129C1 /* SkyboxSystem.h in Headers */,
 				4F64848C17AFCAF800034454 /* AllocatorFactory.h in Headers */,
+				A679102317B3C71B000AA2F2 /* SkyboxRenderObject.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5243,9 +5243,9 @@
 				0211D551177C26D600EB7011 /* OpenUDIDApple.mm in Sources */,
 				0211D552177C26E000EB7011 /* OpenUDIDMacOS.mm in Sources */,
 				C18577F117A2600400331A95 /* MaterialOptimazer.cpp in Sources */,
-				A68B3EEB17AA82C700E129C1 /* SkyboxComponent.cpp in Sources */,
 				A68B3EF217AA8C4000E129C1 /* SkyboxSystem.cpp in Sources */,
 				4F64848F17AFCAFD00034454 /* AllocatorFactory.cpp in Sources */,
+				A679102117B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5547,9 +5547,9 @@
 				A6E4FE091761D97C00B48E41 /* ActionUpdateSystem.cpp in Sources */,
 				4FFE5CAE1779DBC700728624 /* MipmapReplacer.cpp in Sources */,
 				C18577EE17A16DA800331A95 /* MaterialOptimazer.cpp in Sources */,
-				A68B3EE817AA82B800E129C1 /* SkyboxComponent.cpp in Sources */,
 				A68B3EF017AA8C4000E129C1 /* SkyboxSystem.cpp in Sources */,
 				4F64848117AFB73C00034454 /* AllocatorFactory.cpp in Sources */,
+				A679101F17B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5845,9 +5845,9 @@
 				A6E4FE131761D9E000B48E41 /* ActionUpdateSystem.cpp in Sources */,
 				4FFE5CB11779E09300728624 /* MipmapReplacer.cpp in Sources */,
 				C18577F017A2600300331A95 /* MaterialOptimazer.cpp in Sources */,
-				A68B3EEA17AA82C500E129C1 /* SkyboxComponent.cpp in Sources */,
 				A68B3EF117AA8C4000E129C1 /* SkyboxSystem.cpp in Sources */,
 				4F64848E17AFCAFC00034454 /* AllocatorFactory.cpp in Sources */,
+				A679102017B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

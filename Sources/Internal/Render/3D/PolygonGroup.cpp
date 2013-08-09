@@ -29,6 +29,7 @@ PolygonGroup::PolygonGroup()
     vertexCount(0),
 	indexCount(0),
 	textureCoordCount(0),
+	cubeTextureCoordCount(0),
 	vertexStride(0),
 	vertexFormat(0),
     indexFormat(EIF_16),
@@ -36,10 +37,11 @@ PolygonGroup::PolygonGroup()
 	
 	vertexArray(0), 
 	textureCoordArray(0),
+	cubeTextureCoordArray(0),
 	normalArray(0), 
 	tangentArray(0),
 	binormalArray(0),
-	jointIdxArray(0), 
+	jointIdxArray(0),
 	weightArray(0),
 	jointCountArray(0),
 	
@@ -125,7 +127,6 @@ void PolygonGroup::UpdateDataPointersAndStreams()
         
         renderDataObject->SetStream(EVF_BINORMAL, TYPE_FLOAT, 3, vertexStride, binormalArray);
 	}
-    
 	if (vertexFormat & EVF_JOINTWEIGHT)
 	{
 		jointIdxArray = reinterpret_cast<int32*>(meshData + baseShift);
@@ -134,6 +135,34 @@ void PolygonGroup::UpdateDataPointersAndStreams()
 		
 		SafeDeleteArray(jointCountArray);
 		jointCountArray = new int32[vertexCount];
+	}
+	if (vertexFormat & EVF_CUBETEXCOORD0)
+	{
+		cubeTextureCoordArray[0] = reinterpret_cast<Vector3*>(meshData + baseShift);
+		baseShift += GetVertexSize(EVF_CUBETEXCOORD0);
+        
+        renderDataObject->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 3, vertexStride, cubeTextureCoordArray[0]);
+	}
+	if (vertexFormat & EVF_CUBETEXCOORD1)
+	{
+		cubeTextureCoordArray[1] = reinterpret_cast<Vector3*>(meshData + baseShift);
+		baseShift += GetVertexSize(EVF_CUBETEXCOORD1);
+        
+        renderDataObject->SetStream(EVF_TEXCOORD1, TYPE_FLOAT, 3, vertexStride, cubeTextureCoordArray[1]);
+    }
+	if (vertexFormat & EVF_CUBETEXCOORD2)
+	{
+		cubeTextureCoordArray[2] = reinterpret_cast<Vector3*>(meshData + baseShift);
+		baseShift += GetVertexSize(EVF_CUBETEXCOORD2);
+        
+        renderDataObject->SetStream(EVF_TEXCOORD2, TYPE_FLOAT, 3, vertexStride, cubeTextureCoordArray[2]);
+	}
+	if (vertexFormat & EVF_CUBETEXCOORD3)
+	{
+		cubeTextureCoordArray[3] = reinterpret_cast<Vector3*>(meshData + baseShift);
+		baseShift += GetVertexSize(EVF_CUBETEXCOORD3);
+        
+        renderDataObject->SetStream(EVF_TEXCOORD3, TYPE_FLOAT, 3, vertexStride, cubeTextureCoordArray[3]);
 	}
 }
 
@@ -144,10 +173,12 @@ void PolygonGroup::AllocateData(int32 _meshFormat, int32 _vertexCount, int32 _in
 	vertexStride = GetVertexSize(_meshFormat);
 	vertexFormat = _meshFormat;
 	textureCoordCount = GetTexCoordCount(vertexFormat);
+	cubeTextureCoordCount = GetCubeTexCoordCount(vertexFormat);
 
 	meshData = new uint8[vertexStride * vertexCount];
 	indexArray = new int16[indexCount];
 	textureCoordArray = new Vector2*[textureCoordCount];
+	cubeTextureCoordArray = new Vector3*[cubeTextureCoordCount];
 	
     renderDataObject = new RenderDataObject();
     
@@ -365,6 +396,7 @@ void PolygonGroup::ReleaseData()
     SafeDeleteArray(meshData);
     SafeDeleteArray(indexArray);
     SafeDeleteArray(textureCoordArray);
+	SafeDeleteArray(cubeTextureCoordArray);
 }
 	
 void PolygonGroup::BuildBuffers()
@@ -392,6 +424,7 @@ void PolygonGroup::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     keyedArchive->SetByteArray("vertices", meshData, vertexCount * vertexStride);
     keyedArchive->SetInt32("indexFormat", indexFormat);
     keyedArchive->SetByteArray("indices", (uint8*)indexArray, indexCount * INDEX_FORMAT_SIZE[indexFormat]);
+	keyedArchive->SetInt32("cubeTextureCoordCount", cubeTextureCoordCount);
 
 //    for (int32 k = 0; k < GetVertexCount(); ++k)
 //    {
@@ -413,6 +446,7 @@ void PolygonGroup::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     indexCount = keyedArchive->GetInt32("indexCount");
     textureCoordCount = keyedArchive->GetInt32("textureCoordCount");
     primitiveType = (ePrimitiveType)keyedArchive->GetInt32("primitiveType");
+	cubeTextureCoordCount = keyedArchive->GetInt32("cubeTextureCoordCount");
     
     int32 formatPacking = keyedArchive->GetInt32("packing");
     if (formatPacking == PACKING_NONE)
@@ -446,6 +480,12 @@ void PolygonGroup::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 
 	SafeDeleteArray(textureCoordArray);
 	textureCoordArray = new Vector2*[textureCoordCount];
+	
+	SafeDeleteArray(cubeTextureCoordArray);
+	if(cubeTextureCoordCount)
+	{
+		cubeTextureCoordArray = new Vector3*[cubeTextureCoordCount];
+	}
 
 	SafeRelease(renderDataObject);
     renderDataObject = new RenderDataObject();

@@ -27,6 +27,8 @@
 #include "CommandLine/CommandLineManager.h"
 #include "CommandLine/SceneExporter/SceneExporter.h"
 
+#include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
+
 #include "version.h"
 
 using namespace DAVA;
@@ -87,7 +89,7 @@ void CreateDefaultDescriptorsAtDataSource3D()
     if(sourceFolder.length() <= dataSourcePathname.GetAbsolutePathname().length())
     {
 //        uint64 creationTime = SystemTimer::Instance()->AbsoluteMS();
-        SceneValidator::Instance()->CreateDefaultDescriptors(dataSourcePathname);
+        TextureDescriptorUtils::CreateDescriptorsForFolder(dataSourcePathname);
 //        creationTime = SystemTimer::Instance()->AbsoluteMS() - creationTime;
 //      Logger::Info("[CreateDefaultDescriptors time is %ldms]", creationTime);
     }

@@ -53,6 +53,7 @@ public:
         int32 compressToHeight;
         mutable uint32 convertedFileCrc;
         
+		Compression() { Clear(); } 
         void Clear();
 
 		INTROSPECTION(Compression,

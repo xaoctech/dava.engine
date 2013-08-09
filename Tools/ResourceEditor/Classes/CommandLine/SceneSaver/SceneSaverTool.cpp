@@ -51,7 +51,7 @@ bool SceneSaverTool::InitializeFromCommandLine()
     inFolder = CommandLineParser::GetCommandParam(String("-indir"));
     if(inFolder.IsEmpty())
     {
-        errors.insert("Incorrect indir parameter");
+        errors.insert("[SceneSaverTool] Incorrect indir parameter");
         return false;
     }
     inFolder.MakeDirectoryPathname();
@@ -59,7 +59,7 @@ bool SceneSaverTool::InitializeFromCommandLine()
     filename = CommandLineParser::GetCommandParam(String("-processfile"));
     if(filename.empty())
     {
-        errors.insert("Filename is not set");
+        errors.insert("[SceneSaverTool] Filename is not set");
         return false;
     }
     
@@ -70,7 +70,7 @@ bool SceneSaverTool::InitializeFromCommandLine()
         outFolder = CommandLineParser::GetCommandParam(String("-outdir"));
         if(outFolder.IsEmpty())
         {
-            errors.insert("Incorrect outdir parameter");
+            errors.insert("[SceneSaverTool] Incorrect outdir parameter");
             return false;
         }
         outFolder.MakeDirectoryPathname();
@@ -81,7 +81,7 @@ bool SceneSaverTool::InitializeFromCommandLine()
     }
     else
     {
-        errors.insert("Incorrect action");
+        errors.insert("[SceneSaverTool] Incorrect action");
         return false;
     }
     
