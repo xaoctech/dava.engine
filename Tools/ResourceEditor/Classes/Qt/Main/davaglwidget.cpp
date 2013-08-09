@@ -15,8 +15,8 @@
 =====================================================================================*/
 
 #include "DAVAEngine.h"
-#include "UI\UIEvent.h"
-#include "UI\UIControlSystem.h"
+#include "UI/UIEvent.h"
+#include "UI/UIControlSystem.h"
 
 #include "davaglwidget.h"
 #include "ui_davaglwidget.h"
