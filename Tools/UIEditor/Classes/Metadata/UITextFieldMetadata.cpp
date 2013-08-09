@@ -216,6 +216,26 @@ void UITextFieldMetadata::SetTextAlign(int32 align)
 	GetActiveUITextField()->SetTextAlign(align);
 }
 
+bool UITextFieldMetadata::GetIsPassword() const
+{
+    if (!VerifyActiveParamID())
+    {
+        return false;
+    }
+	
+	return GetActiveUITextField()->IsPassword();
+}
+
+void UITextFieldMetadata::SetIsPassword(bool value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+	
+	GetActiveUITextField()->SetIsPassword(value);
+}
+
 // Initialize the control(s) attached.
 void UITextFieldMetadata::InitializeControl(const String& controlName, const Vector2& position)
 {

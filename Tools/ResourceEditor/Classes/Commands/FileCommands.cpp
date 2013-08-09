@@ -221,6 +221,13 @@ CommandSaveToFolderWithChilds::CommandSaveToFolderWithChilds()
 
 void CommandSaveToFolderWithChilds::Execute()
 {
+	SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
+	if(sceneData->GetScenePathname().IsEmpty())
+	{
+		ShowErrorDialog("Can't save not saved scene.");
+		return;
+	}
+
 	QString path = QFileDialog::getExistingDirectory(NULL, QString("Open Folder"), QString("/"));
 	
     if(0 < path.size())

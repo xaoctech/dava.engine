@@ -102,7 +102,9 @@ void Entity::AddComponent(Component * component)
 {
 	component->SetEntity(this);
 
+	//<--THIS WILL CAUSE CRASH IN SYSTEMS!!!!
     SafeDelete(components[component->GetType()]);
+	//-->
     components[component->GetType()] = component;
     if (scene)
         scene->AddComponent(this, component);

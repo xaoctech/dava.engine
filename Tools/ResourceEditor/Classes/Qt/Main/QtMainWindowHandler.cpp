@@ -1185,6 +1185,9 @@ void QtMainWindowHandler::AddActionComponent()
 			
 			ActionComponent* actionComponent = new ActionComponent();
 			entity->AddComponent(actionComponent);
+
+			sceneData->SelectNode(NULL);
+			sceneData->SelectNode(entity);
 		}
 	}
 }
@@ -1200,6 +1203,9 @@ void QtMainWindowHandler::RemoveActionComponent()
 		if(entity)
 		{
 			entity->RemoveComponent(Component::ACTION_COMPONENT);
+			
+			sceneData->SelectNode(NULL);
+			sceneData->SelectNode(entity);
 		}
 	}
 }
