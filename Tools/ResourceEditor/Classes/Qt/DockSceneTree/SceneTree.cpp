@@ -123,25 +123,39 @@ void SceneTree::dropEvent(QDropEvent * event)
 	// so no body will decide to remove/insert grag&dropped items into treeview
 	// except our model. Model will do this when scene entity remove/move signals catched
 	event->setDropAction(Qt::IgnoreAction);
+	event->accept();
 }
 
 void SceneTree::dragMoveEvent(QDragMoveEvent *event)
 {
-	int row, col; 
-	QModelIndex parent;
-
 	QTreeView::dragMoveEvent(event);
 
-	GetDropParams(event->pos(), parent, row, col);
-	if(!treeModel->DropCanBeAccepted(event->mimeData(), event->dropAction(), row, col, filteringProxyModel->mapToSource(parent)))
 	{
-		event->ignore();
+		int row, col; 
+		QModelIndex parent;
+
+		GetDropParams(event->pos(), parent, row, col);
+		if(treeModel->DropCanBeAccepted(event->mimeData(), event->dropAction(), row, col, filteringProxyModel->mapToSource(parent)))
+		{
+			event->setDropAction(Qt::MoveAction);
+			event->accept();
+		}
+		else
+		{
+			event->setDropAction(Qt::IgnoreAction);
+			event->accept();
+		}
 	}
 }
 
 void SceneTree::dragEnterEvent(QDragEnterEvent *event)
 {
-	QTreeView::dragEnterEvent(event);
+	const QMimeData *mimeData = event->mimeData();
+	if(SceneTreeModel::DropingUnknown != treeModel->GetDropType(mimeData))
+	{
+		event->setDropAction(Qt::MoveAction);
+		event->accept();
+	}
 }
 
 void SceneTree::SceneActivated(SceneEditor2 *scene)
