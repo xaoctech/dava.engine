@@ -839,9 +839,12 @@ NSInteger floatSort(id num1, id num2, void *context)
 	for (t = 0; t < [symbolTable length]; ++t)
 	{
 		unichar c = [symbolTable characterAtIndex:t];
-		fwrite(&c, 2, 1, fontFP); 
-		fwrite(&symbolBounds[t].origin.x, 4, 1, fontFP);
-		fwrite(&symbolBounds[t].size.width, 4, 1, fontFP);
+		fwrite(&c, 2, 1, fontFP);
+        int ss = sizeof(Float32);
+        Float32 orig_x = symbolBounds[t].origin.x;
+        Float32 size_w = symbolBounds[t].size.width;
+		fwrite(&orig_x, 4, 1, fontFP);
+		fwrite(&size_w, 4, 1, fontFP);
 	}
 	
 	fwrite(&defaultShiftValue, 4, 1, fontFP);
