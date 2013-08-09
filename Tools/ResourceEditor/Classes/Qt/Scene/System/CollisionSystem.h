@@ -82,7 +82,7 @@ protected:
 	DAVA::Vector3 lastLandRayFrom;
 	DAVA::Vector3 lastLandRayTo;
 	DAVA::Vector3 lastLandCollision;
-	bool lastResult;
+	bool landIntersectCached;
 
 	DAVA::Landscape *curLandscape;
 
