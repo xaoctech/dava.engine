@@ -912,10 +912,13 @@ namespace DAVA
 				YamlNode *spriteNode = new YamlNode(YamlNode::TYPE_ARRAY);
                 
                 FilePath path(stateSprite->GetRelativePathname());
-                path.TruncateExtension();
-
-                String pathname = path.GetFrameworkPath();
-				spriteNode->AddValueToArray(pathname);
+				String pathName = "";
+				if (!path.IsEmpty())
+				{
+					path.TruncateExtension();
+					pathName = path.GetFrameworkPath();
+				}
+				spriteNode->AddValueToArray(pathName);
                 
 				spriteNode->AddValueToArray(stateFrame);
 				int32 modification = stateBacks[BackgroundIndexForState((eButtonDrawState)i)]->GetModification();
