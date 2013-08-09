@@ -59,41 +59,35 @@ void EditorParticlesSystem::DrawDebugInfoForEmitter(DAVA::Entity* parentEntity)
 	
 	if (collisionSystem)
 	{		
+		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.9f, 0.9f, 0.9f, 0.35f));		
 		for(int i = 0; i < parentEntity->GetChildrenCount(); ++i)
 		{
 			DAVA::Entity *entity = parentEntity->GetChild(i);
-			DAVA::AABBox3 entitySizeBox = collisionSystem->GetBoundingBox(entity);
-			// Get center of debug effect
-			DAVA::AABBox3 entityCenterBox = entity->GetWTMaximumBoundingBoxSlow();
-			DAVA::Vector3 center = entityCenterBox.GetCenter();				
-			// Get sphere radius (size) of debug effect
-			DAVA::float32 radius = GetDebugDrawRadius(entitySizeBox);
-			
-			DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.9f, 0.9f, 0.9f, 0.35f));
-			DAVA::RenderHelper::Instance()->FillDodecahedron(center, radius);
+			if(NULL != entity)
+			{
+				DAVA::AABBox3 wordBox;
+				DAVA::AABBox3 collBox = collisionSystem->GetBoundingBox(entity);
+				collBox.GetTransformedBox(entity->GetWorldTransform(), wordBox);	
+				// Get sphere radius (size) of debug effect
+				DAVA::float32 radius = (collBox.max - collBox.min).Length() / 3;
+				DAVA::RenderHelper::Instance()->FillDodecahedron(wordBox.GetCenter(), radius);
+			}
 		}
 		DAVA::RenderManager::Instance()->ResetColor();
 	}
 }
 
-DAVA::float32 EditorParticlesSystem::GetDebugDrawRadius(DAVA::AABBox3 entitySizeBox)
-{
-	DAVA::float32 drawRadius;
-	// The radius of sphere - should be equal half-size of box edge
-	DAVA::float32 sizeX = (Abs(entitySizeBox.max.x) + Abs(entitySizeBox.min.x)) / 2;
-	DAVA::float32 sizeY = (Abs(entitySizeBox.max.y) + Abs(entitySizeBox.min.y)) / 2;
-	DAVA::float32 sizeZ = (Abs(entitySizeBox.max.z) + Abs(entitySizeBox.min.z)) / 2;
-	// We should get minimuz size - the figure edges may not be equal
-	drawRadius = Min(sizeX, sizeY);
-	drawRadius = Min(drawRadius, sizeZ);
-	
-	return drawRadius;
-}
-
 void EditorParticlesSystem::Draw()
 {
+	int oldState = DAVA::RenderManager::Instance()->GetState();
+	DAVA::eBlendMode oldBlendSrc = DAVA::RenderManager::Instance()->GetSrcBlend();
+	DAVA::eBlendMode oldBlendDst = DAVA::RenderManager::Instance()->GetDestBlend();
+
+	DAVA::RenderManager::Instance()->SetState(DAVA::RenderState::STATE_BLEND | DAVA::RenderState::STATE_COLORMASK_ALL | DAVA::RenderState::STATE_DEPTH_TEST);
+	DAVA::RenderManager::Instance()->SetBlendMode(DAVA::BLEND_SRC_ALPHA, DAVA::BLEND_ONE_MINUS_SRC_ALPHA);
+	
 	// Draw debug information for non-selected entities
-	for(int i = 0; i < entities.size(); ++i)
+	for(size_t i = 0; i < entities.size(); ++i)
 	{				
 		DrawDebugInfoForEmitter(entities[i]);
 	}
@@ -102,16 +96,12 @@ void EditorParticlesSystem::Draw()
 	SceneSelectionSystem *selectionSystem = ((SceneEditor2 *) GetScene())->selectionSystem;
 	if(selectionSystem != NULL)
 	{
+		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.7f, 0.0f, 0.0f, 0.25f));
 		const EntityGroup *selectedEntities = selectionSystem->GetSelection();
 		
 		for (size_t i = 0; i < selectedEntities->Size(); i++)
 		{
 			DAVA::Entity *entity = selectedEntities->GetEntity(i);
-			// Get center of entity object
-			DAVA::AABBox3 box = entity->GetWTMaximumBoundingBoxSlow();
-			DAVA::Vector3 center = box.GetCenter();
-			
-			DAVA::AABBox3 selectionBox = selectedEntities->GetBbox(i);
 			
 			DAVA::RenderComponent *renderComponent = static_cast<DAVA::RenderComponent*>(entity->GetComponent(DAVA::Component::RENDER_COMPONENT));
 		
@@ -121,7 +111,9 @@ void EditorParticlesSystem::Draw()
 				// Draw additional effects according to emitter type
 				if (emitter)
 				{
-					DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.7f, 0.0f, 0.0f, 0.25f));
+					// Get center of entity object
+					DAVA::AABBox3 selectionBox = selectedEntities->GetBbox(i);
+					DAVA::Vector3 center = selectionBox.GetCenter();
 					// Always draw emission vector arrow for emitter
 					DrawVectorArrow(emitter, center);
 					
@@ -146,13 +138,15 @@ void EditorParticlesSystem::Draw()
 							DAVA::RenderHelper::Instance()->FillDodecahedron(center, 0.05f);
 						}
 						break;
-					} // switch
-				} // if
-			} // if
-		} // for
-	} // if
+					}
+				}
+			}
+		}
+		DAVA::RenderManager::Instance()->ResetColor();
+	}
 	
-	DAVA::RenderManager::Instance()->ResetColor();
+	DAVA::RenderManager::Instance()->SetBlendMode(oldBlendSrc, oldBlendDst);
+	DAVA::RenderManager::Instance()->SetState(oldState);
 }
 
 void EditorParticlesSystem::DrawSizeCircle(DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
