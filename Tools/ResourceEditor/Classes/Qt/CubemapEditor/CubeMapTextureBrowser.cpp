@@ -1,5 +1,6 @@
 #include "CubemapEditor/CubeMapTextureBrowser.h"
 #include "CubemapEditor/CubemapEditorDialog.h"
+#include "CubemapEditor/CubemapUtils.h"
 #include "ui_CubeMapTextureBrowser.h"
 
 #include <QFileDialog>
@@ -7,6 +8,8 @@
 
 #include "SceneEditor/EditorSettings.h"
 #include <qdir>
+
+const String CUBEMAP_LAST_PROJECT_DIR_KEY = "cubemap_last_proj_dir";
 
 CubeMapTextureBrowser::CubeMapTextureBrowser(QWidget *parent) :
     QDialog(parent),
@@ -18,8 +21,10 @@ CubeMapTextureBrowser::CubeMapTextureBrowser(QWidget *parent) :
 	
 	ConnectSignals();
 	
-	FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
-	
+	FilePath projectPath = CubemapUtils::GetDialogSavedPath(CUBEMAP_LAST_PROJECT_DIR_KEY,
+															EditorSettings::Instance()->GetDataSourcePath().GetAbsolutePathname(),
+															EditorSettings::Instance()->GetDataSourcePath().GetAbsolutePathname());
+		
 	ui->textRootPath->setText(projectPath.GetAbsolutePathname().c_str());
 	ReloadTextures(projectPath.GetAbsolutePathname());
 }
@@ -90,6 +95,11 @@ void CubeMapTextureBrowser::ReloadTexturesFromUI(QString& path)
 	
 	ui->textRootPath->setText(path);
 	
+	FilePath projectPath = path.toStdString();
+	EditorSettings::Instance()->GetSettings()->SetString(CUBEMAP_LAST_PROJECT_DIR_KEY,
+														 projectPath.GetAbsolutePathname());
+	EditorSettings::Instance()->Save();
+	
 	ReloadTextures(path.toStdString());
 }
 
@@ -108,7 +118,8 @@ void CubeMapTextureBrowser::RestoreListSelection(int currentRow)
 
 void CubeMapTextureBrowser::OnChooseDirectoryClicked()
 {
-	QString newDir = QFileDialog::getExistingDirectory(this, tr("Open Directory"));
+	QString newDir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
+													   ui->textRootPath->text());
 	if(!newDir.isNull())
 	{
 		ReloadTexturesFromUI(newDir);
@@ -125,7 +136,7 @@ void CubeMapTextureBrowser::OnReloadClicked()
 void CubeMapTextureBrowser::OnCreateCubemapClicked()
 {
 	QString fileName = QFileDialog::getSaveFileName(this,
-													tr("Create Cube Texture"),
+													tr("Create Cubemap Texture"),
 													ui->textRootPath->text(),
 													tr("Tex File (*.tex)"));
 	
@@ -134,21 +145,27 @@ void CubeMapTextureBrowser::OnCreateCubemapClicked()
 		CubemapEditorDialog dlg(this);
 		FilePath fp = fileName.toStdString();
 		
-		DAVA::FilePath rootPath = ui->textRootPath->text().toStdString();
+		DAVA::FilePath rootPath = fp.GetDirectory();
 		dlg.InitForCreating(fp, rootPath);
 		dlg.exec();
 		
+		QString path = rootPath.GetAbsolutePathname().c_str();
+		ui->textRootPath->setText(path);
 		int currentRow = ui->listTextures->currentRow();
-		QString path = ui->textRootPath->text();
 		ReloadTexturesFromUI(path);
 		
-		RestoreListSelection(currentRow);
+		if(ui->listTextures->count() > 0 &&
+		   currentRow < ui->listTextures->count())
+		{
+			RestoreListSelection(currentRow);
+		}
 	}	
 }
 
 void CubeMapTextureBrowser::OnListItemDoubleClicked(QListWidgetItem* item)
 {
 	CubemapEditorDialog dlg(this);
+	
 	DAVA::FilePath rootPath = ui->textRootPath->text().toStdString();
 	FilePath fp = item->data(CUBELIST_DELEGATE_ITEMFULLPATH).toString().toStdString();
 	dlg.InitForEditing(fp, rootPath);

@@ -11,14 +11,35 @@ const int LIST_ITEMS_PER_PAGE = 9;
 const QColor SELECTION_BORDER_COLOR = QColor(0, 0, 0, 50);
 const int SELECTION_COLOR_ALPHA = 100;
 
-CubeListItemDelegate::CubeListItemDelegate(QObject *parent) : currentPage(0)
-{
+const QString FONT_NAMES[] = {QString("Arial"), QString("Arial"), QString("Arial")};
+const int FONT_SIZES[] = {16, 11, 11};
+const int FONT_STYLES[] = {QFont::Bold, QFont::Normal, QFont::Normal};
+const int FONT_ATTRIBUTE_COUNT = 3;
+
+const int TITLE_ITEM_DATA = 0;
+const int DESCRIPTION_ITEM_DATA = 1;
+const int FACE_SIZE_ITEM_DATA = 2;
+
+CubeListItemDelegate::CubeListItemDelegate(QObject *parent)
+{	
+	int textTotalHeight = 0;
+	for(int i = 0; i < FONT_ATTRIBUTE_COUNT; ++i)
+	{
+		QFontMetrics fontMetrics = QFontMetrics(QFont(FONT_NAMES[i], FONT_SIZES[i], FONT_STYLES[i]));
+		textTotalHeight += GetAdjustedTextHeight(fontMetrics.height());
+	}
 	
+	itemHeight = std::max(textTotalHeight, FACE_IMAGE_SIZE + 2 * FACE_IMAGE_BORDER + 2 * LIST_ITEM_OFFSET + 1);
 }
 
 CubeListItemDelegate::~CubeListItemDelegate()
 {
 	ClearCache();
+}
+
+int CubeListItemDelegate::GetAdjustedTextHeight(int baseHeight) const
+{
+	return baseHeight + FACE_IMAGE_BORDER;
 }
 
 void CubeListItemDelegate::ClearCache()
@@ -32,21 +53,6 @@ void CubeListItemDelegate::ClearCache()
 	
 	iconsCache.clear();
 	iconSizeCache.clear();
-}
-
-void CubeListItemDelegate::SetNeedsRepaint()
-{
-	
-}
-
-void CubeListItemDelegate::SetCurrentPage(int newPage)
-{
-	if(currentPage != newPage)
-	{
-		SetNeedsRepaint();
-	}
-	
-	currentPage = newPage;
 }
 
 void CubeListItemDelegate::UpdateCache(QStringList& filesList)
@@ -95,15 +101,20 @@ void CubeListItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem 
 	QString title = index.data(CUBELIST_DELEGATE_ITEMFILENAME).toString();
 	QString description = index.data(CUBELIST_DELEGATE_ITEMFULLPATH).toString();
 	
+	int textStartY = y;
 	//TITLE
-	painter->setFont(QFont("Arial", 16, QFont::Bold));
+	painter->setFont(QFont(FONT_NAMES[TITLE_ITEM_DATA], FONT_SIZES[TITLE_ITEM_DATA], FONT_STYLES[TITLE_ITEM_DATA]));
 	QFontMetrics fontMetrics = painter->fontMetrics();
 	QRect textRect = fontMetrics.boundingRect(title);
-	painter->drawText(FACE_IMAGE_BORDER, y + textRect.height() + FACE_IMAGE_BORDER, title);
+	painter->drawText(FACE_IMAGE_BORDER, textStartY + GetAdjustedTextHeight(textRect.height()), title);
+	textStartY += GetAdjustedTextHeight(textRect.height());
 	
 	//DESCRIPTION
-	painter->setFont(QFont("Arial", 11, QFont::Normal));
-	painter->drawText(FACE_IMAGE_BORDER, y + 2 * (textRect.height() + FACE_IMAGE_BORDER), description);
+	painter->setFont(QFont(FONT_NAMES[DESCRIPTION_ITEM_DATA], FONT_SIZES[DESCRIPTION_ITEM_DATA], FONT_STYLES[DESCRIPTION_ITEM_DATA]));
+	fontMetrics = painter->fontMetrics();
+	textRect = fontMetrics.boundingRect(description);
+	painter->drawText(FACE_IMAGE_BORDER, textStartY + GetAdjustedTextHeight(textRect.height()), description);
+	textStartY += GetAdjustedTextHeight(textRect.height());
 	
 	int imageWidth = 0;
 	int imageHeight = 0;
@@ -127,11 +138,10 @@ void CubeListItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem 
 	
 	//FACE SIZE
 	QString sizeInfo = QString("%1x%2").arg(QString().setNum(imageWidth), QString().setNum(imageHeight));
-	int descriptionStartY = 2 * (textRect.height() + FACE_IMAGE_BORDER);
-	painter->setFont(QFont("Arial", 11, QFont::Normal));
+	painter->setFont(QFont(FONT_NAMES[FACE_SIZE_ITEM_DATA], FONT_SIZES[FACE_SIZE_ITEM_DATA], FONT_STYLES[FACE_SIZE_ITEM_DATA]));
 	fontMetrics = painter->fontMetrics();
 	textRect = fontMetrics.boundingRect(description);
-	painter->drawText(FACE_IMAGE_BORDER, y + descriptionStartY + textRect.height() + FACE_IMAGE_BORDER, sizeInfo);
+	painter->drawText(FACE_IMAGE_BORDER, textStartY + GetAdjustedTextHeight(textRect.height()), sizeInfo);
 	
 	// draw selected item
 	if(option.state & QStyle::State_Selected)
@@ -148,5 +158,5 @@ void CubeListItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem 
 
 QSize CubeListItemDelegate::sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const
 {
-	return QSize(option.rect.width(), (FACE_IMAGE_SIZE + 2 * FACE_IMAGE_BORDER + 2 * LIST_ITEM_OFFSET + 1));
+	return QSize(option.rect.width(), itemHeight);
 }

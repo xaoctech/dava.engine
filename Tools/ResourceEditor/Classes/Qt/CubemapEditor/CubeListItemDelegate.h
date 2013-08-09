@@ -13,9 +13,13 @@ class CubeListItemDelegate : public QAbstractItemDelegate
 {
 protected:
 	
-	int currentPage;
+	int itemHeight;
 	std::map<std::string, QImage*> iconsCache;
 	std::map<std::string, QSize> iconSizeCache;
+	
+private:
+	
+	int GetAdjustedTextHeight(int baseHeight) const;
 	
 public:
 	
@@ -24,10 +28,7 @@ public:
 	
 	void paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
 	QSize sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const;
-	
-	void SetNeedsRepaint();
-	void SetCurrentPage(int newPage);
-	
+		
 	void ClearCache();
 	void UpdateCache(QStringList& filesList);
 };

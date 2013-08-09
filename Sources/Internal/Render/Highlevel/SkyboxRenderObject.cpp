@@ -29,9 +29,7 @@ namespace DAVA
 	rotationZ(0.0f),
 	nonClippingDistance(0.0f)
 	{
-		type = RenderObject::TYPE_CUSTOM_DRAW;
-		
-		AddFlag(RenderObject::VISIBLE_ALWAYS);
+		type = RenderObject::TYPE_SKYBOX;
 	}
 	
 	SkyboxRenderObject::~SkyboxRenderObject()
