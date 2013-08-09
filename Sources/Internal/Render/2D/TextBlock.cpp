@@ -115,6 +115,8 @@ void TextBlock::SetRectSize(const Vector2 & size)
 	if (rectSize != size) 
 	{
 		rectSize = size;
+		needRedraw = true;
+		Prepare();
 	}
 }
 
