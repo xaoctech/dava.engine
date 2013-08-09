@@ -287,6 +287,7 @@ void QtMainWindow::SetupMainMenu()
 	ui->menuView->addAction(actionVisibilityTool2);
 	ui->menuView->addAction(actionHeightmapEditor2);
 	ui->menuView->addAction(actionTilemaskEditor2);
+	ui->menuView->addAction(ui->dockLODEditor->toggleViewAction());
 
 	InitRecent();
 }
