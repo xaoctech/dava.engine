@@ -54,8 +54,8 @@ TextureBrowser::TextureBrowser(QWidget *parent)
 	, curDescriptor(NULL)
 {
 	ui->setupUi(this);
-	setWindowFlags(Qt::Window);
-
+	setWindowFlags(WINDOWFLAG_ON_TOP_OF_APPLICATION);
+	
 	textureListModel = new TextureListModel();
 	textureListImagesDelegate = new TextureListDelegate();
 
