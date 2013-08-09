@@ -515,7 +515,7 @@ void UITextField::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
     YamlNode * passwordNode = node->Get("isPassword");
     if (passwordNode)
     {
-        isPassword = passwordNode->AsBool();
+		SetIsPassword(passwordNode->AsBool());
     }
 
     if(staticText)
