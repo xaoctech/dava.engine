@@ -52,6 +52,9 @@ LibraryView::LibraryView(QWidget *parent /* = 0 */)
 	{
 		setColumnHidden(i, true);
 	}
+
+	setDragDropMode(QAbstractItemView::DragOnly);
+	setDragEnabled(true);
 }
 
 LibraryView::~LibraryView()
@@ -164,4 +167,14 @@ void LibraryView::OnDAEConvert()
 
 		QtMainWindow::Instance()->WaitStop();
 	}
+}
+
+void LibraryView::ShowDAE(bool show)
+{
+	libModel->SetFileNameFilters(show, libModel->IsSC2Shown());
+}
+
+void LibraryView::ShowSC2(bool show)
+{
+	libModel->SetFileNameFilters(libModel->IsDAEShown(), show);
 }

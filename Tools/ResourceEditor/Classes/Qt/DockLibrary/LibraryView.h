@@ -71,6 +71,9 @@ public slots:
 	void OnModelAdd();
 	void OnDAEConvert();
 
+	void ShowDAE(bool show);
+	void ShowSC2(bool show);
+
 protected slots:
 	void ModelRootPathChanged(const QString & newPath);
 	void ShowContextMenu(const QPoint &point);
