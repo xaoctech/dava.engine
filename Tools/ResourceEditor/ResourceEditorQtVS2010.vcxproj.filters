@@ -3470,9 +3470,6 @@
     <ClInclude Include="Classes\Commands\VisibilityCheckToolCommands.h">
       <Filter>Classes\Commands</Filter>
     </ClInclude>
-    <ClInclude Include="_GeneratedQt\ui_AddSwitchEntityDialog.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
     <ClInclude Include="_GeneratedQt\ui_CustomColorsProperties.h">
       <Filter>QtGenerated</Filter>
     </ClInclude>
