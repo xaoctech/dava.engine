@@ -2,6 +2,7 @@
 #define __CUBEMAP_UTILS_H__
 
 #include "Base/BaseTypes.h"
+#include "FileSystem/FilePath.h"
 
 #define CUBEMAPEDITOR_FACE_PX 0
 #define CUBEMAPEDITOR_FACE_NX 1
@@ -21,6 +22,7 @@ public:
 	static int MapFrameworkToUIFace(int frameworkFace);
 	static const DAVA::String& GetFaceNameSuffix(int faceId);
 	static const DAVA::String& GetDefaultFaceExtension();
+	static DAVA::FilePath GetDialogSavedPath(const DAVA::String& key, DAVA::String initialValue, DAVA::String defaultValue);
 };
 
 #endif /* defined(__CUBEMAP_UTILS_H__) */

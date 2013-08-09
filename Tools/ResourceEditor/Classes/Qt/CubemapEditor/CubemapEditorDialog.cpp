@@ -6,6 +6,8 @@
 #include <QFileDialog>
 #include "ui_cubemapeditordialog.h"
 
+const String CUBEMAP_LAST_FACE_DIR_KEY = "cubemap_last_face_dir";
+
 CubemapEditorDialog::CubemapEditorDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::CubemapEditorDialog)
@@ -47,9 +49,13 @@ void CubemapEditorDialog::ConnectSignals()
 
 void CubemapEditorDialog::LoadImageFromUserFile(float rotation, int face)
 {
-	FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
+	KeyedArchive* settings = EditorSettings::Instance()->GetSettings();
+	FilePath projectPath = CubemapUtils::GetDialogSavedPath(CUBEMAP_LAST_FACE_DIR_KEY,
+															rootPath.toStdString(),
+															EditorSettings::Instance()->GetDataSourcePath().GetAbsolutePathname());
+		
 	QString fileName = QFileDialog::getOpenFileName(this,
-													tr("Open Face Image"),
+													tr("Open Cubemap Face Image"),
 													QString::fromStdString(projectPath.GetAbsolutePathname()),
 													tr("Image Files (*.png)"));
 	
@@ -57,6 +63,9 @@ void CubemapEditorDialog::LoadImageFromUserFile(float rotation, int face)
 	{
 		String stdFilePath = fileName.toStdString();
 		LoadImageTo(stdFilePath, face);
+		
+		projectPath = stdFilePath;
+		settings->SetString(CUBEMAP_LAST_FACE_DIR_KEY, projectPath.GetDirectory().GetAbsolutePathname());
 	}
 }
 
@@ -89,7 +98,7 @@ void CubemapEditorDialog::LoadImageTo(const DAVA::String& filePath, int face)
 	}
 	else
 	{
-		ShowErrorDialog("This image is not suitable as cubemap face!");
+		ShowErrorDialog("This image is not suitable as current cubemap face!");
 	}
 
 }
@@ -354,7 +363,7 @@ void CubemapEditorDialog::OnLoadTexture()
 	if(AnyFaceLoaded())
 	{
 		answer = ShowQuestion("Warning",
-								  "Do you really want to load new cube texture over currently loaded one?",
+								  "Do you really want to load new cubemap texture over currently loaded one?",
 								  MB_FLAG_YES | MB_FLAG_NO,
 								  MB_FLAG_NO);		
 	}
@@ -362,7 +371,7 @@ void CubemapEditorDialog::OnLoadTexture()
 	if(MB_FLAG_YES == answer)
 	{
 		QString fileName = QFileDialog::getOpenFileName(this,
-														tr("Open Cube Texture"),
+														tr("Open Cubemap Texture"),
 														rootPath,
 														tr("Tex File (*.tex)"));
 		
@@ -379,7 +388,7 @@ void CubemapEditorDialog::OnSave()
 	//while file formats specs allows to specify cubemaps partially actual implementations don't allow that
 	if(!AllFacesLoaded())
 	{
-		ShowErrorDialog("Please specify ALL cube map faces.");
+		ShowErrorDialog("Please specify ALL cubemap faces.");
 		return;
 	}
 	
@@ -387,6 +396,7 @@ void CubemapEditorDialog::OnSave()
 	
 	edited = false;
 	
+	EditorSettings::Instance()->Save();
 	close();
 }
 
@@ -396,13 +406,14 @@ void CubemapEditorDialog::OnClose()
 	if(edited)
 	{
 		answer = ShowQuestion("Warning",
-							  "Cubemap was edited. Do you want to close it without saving?",
+							  "Cubemap texture was edited. Do you want to close it without saving?",
 							  MB_FLAG_YES | MB_FLAG_NO,
 							  MB_FLAG_NO);
 	}
 
 	if(MB_FLAG_YES == answer)
 	{
+		EditorSettings::Instance()->Save();
 		close();
 	}
 }
