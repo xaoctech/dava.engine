@@ -16,8 +16,8 @@
 
 #include "BaseAddEntityDialog.h"
 #include "ui_BaseAddEntityDialog.h"
+#include "Qt/Main/QtUtils.h"
 #include <QSizePolicy>
-
 
 BaseAddEntityDialog::BaseAddEntityDialog(DAVA::Entity* _entity, QWidget* parent)
 :	QDialog(parent),
@@ -26,8 +26,9 @@ ui(new Ui::BaseAddEntityDialog)
 	ui->setupUi(this);
 	setAcceptDrops(false);
 	setWindowModality(Qt::NonModal);
-	setWindowFlags(windowFlags() | Qt::Tool );
-	setAttribute( Qt::WA_MacAlwaysShowToolWindow);
+	setWindowFlags(WINDOWFLAG_ON_TOP_OF_APPLICATION);	
+	setAttribute( Qt::WA_MacAlwaysShowToolWindow);// on top of all applications
+
 	entity = _entity;
 	if(entity)
 	{
