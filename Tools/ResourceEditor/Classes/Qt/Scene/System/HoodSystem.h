@@ -28,6 +28,7 @@
 #include "bullet/btBulletCollisionCommon.h"
 
 // framework
+#include "Render/2D/GraphicsFont.h"
 #include "Entity/SceneSystem.h"
 #include "UI/UIEvent.h"
 
@@ -73,6 +74,8 @@ protected:
 	DAVA::Vector3 curPos;
 	DAVA::float32 curScale;
 	DAVA::Vector3 modifOffset;
+
+	DAVA::GraphicsFont *font;
 
 	SceneCameraSystem *cameraSystem;
 
