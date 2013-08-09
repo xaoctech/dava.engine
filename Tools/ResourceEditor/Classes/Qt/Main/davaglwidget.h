@@ -19,6 +19,7 @@
 
 #include <QWidget>
 #include <QTimer>
+#include <QMimeData>
 
 #include "Platform/Qt/QtLayer.h"
 
@@ -36,7 +37,7 @@ public:
 
 	void SetMaxFPS(int fps);
 	int GetMaxFPS();
-	int GetFPS();
+	int GetFPS() const;
     
 	virtual QPaintEngine *paintEngine() const;
 	
@@ -48,6 +49,10 @@ public:
 
     virtual void focusInEvent(QFocusEvent *);
     virtual void focusOutEvent(QFocusEvent *);
+
+	virtual void dropEvent(QDropEvent *);
+	virtual void dragMoveEvent(QDragMoveEvent *);
+	virtual void dragEnterEvent(QDragEnterEvent *);
     
 #if defined (Q_WS_MAC)
     virtual void mouseMoveEvent(QMouseEvent *);
@@ -57,6 +62,9 @@ public:
 	virtual bool winEvent(MSG *message, long *result);
 #endif //#if defined(Q_WS_WIN)
 
+signals:
+	void OnDrop(const QMimeData *mimeData);
+
 protected slots:
 	void Render();
 
@@ -65,6 +73,10 @@ private:
 
 	int maxFPS;
     int minFrameTimeMs;
+	int fps;
+
+	qint64 fpsCountTime;
+	int fpsCount;
 
 	void Quit();
 };

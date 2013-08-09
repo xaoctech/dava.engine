@@ -21,6 +21,8 @@
 #include <QTabBar>
 #include <QWidget>
 #include <QMetaType>
+#include <QMimeData>
+#include <QUrl>
 
 #include "Qt/Main/davaglwidget.h"
 #include "Qt/Scene/EntityGroup.h"
@@ -35,6 +37,7 @@ class SceneEditorScreenMain;
 // <--
 class SceneEditor2;
 class DAVAUI3DView;
+class MainTabBar;
 
 Q_DECLARE_METATYPE(SceneEditor2 *);
 
@@ -60,12 +63,10 @@ public:
 public slots:
 	// this slot redirects any UIEvent to the active sceneProxy for processing
 	void ProcessDAVAUIEvent(DAVA::UIEvent *event);
-
-	// tab switched by user
 	void TabBarCurrentChanged(int index);
-
-	// tab request close
 	void TabBarCloseRequest(int index);
+	void TabBarDataDropped(const QMimeData *data);
+	void DAVAWidgetDataDropped(const QMimeData *data);
 
 	// scene signals
 	void MouseOverSelectedEntities(SceneEditor2* scene, const EntityGroup *entities);
@@ -73,7 +74,7 @@ public slots:
 	void SceneModifyStatusChanged(SceneEditor2 *scene, bool modified);
 
 protected:
-	QTabBar *tabBar;
+	MainTabBar *tabBar;
 	DavaGLWidget *davaWidget;
 	DAVA::UIScreen *davaUIScreen;
 	DAVA::UI3DView *dava3DView;
@@ -116,6 +117,22 @@ public:
 
 protected:
 	SceneTabWidget *tabWidget;
+};
+
+// tabBar widged to handle drop actions and emit signal about it
+class MainTabBar : public QTabBar
+{
+	Q_OBJECT
+
+public:
+	MainTabBar(QWidget* parent = 0);
+
+signals:
+	void OnDrop(const QMimeData *mimeData);
+
+protected:
+	virtual void dropEvent(QDropEvent *de);
+	virtual void dragEnterEvent(QDragEnterEvent *event);
 };
 
 #endif // __SCENE_TAB_WIDGET_H__
