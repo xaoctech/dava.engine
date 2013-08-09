@@ -78,6 +78,20 @@ void ParticleEffectComponent::Stop(bool isDeleteAllParticles)
 	}
 }
 
+void ParticleEffectComponent::Pause(bool isPaused /*= true*/)
+{
+	int32 childrenCount = entity->GetChildrenCount();
+	for (int32 i = 0; i < childrenCount; i ++)
+	{
+		RenderComponent * component = static_cast<RenderComponent*>(entity->GetChild(i)->GetComponent(Component::RENDER_COMPONENT));
+		if(component && component->GetRenderObject() && component->GetRenderObject()->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
+		{
+			ParticleEmitter * emitter = static_cast<ParticleEmitter*>(component->GetRenderObject());
+			emitter->Pause(isPaused);
+		}
+	}
+}
+
 bool ParticleEffectComponent::IsStopped()
 {
 	// Effect is stopped if all its emitters are stopped.
@@ -278,5 +292,7 @@ void ParticleEffectComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sc
 		
 	Component::Deserialize(archive, sceneFile);
 }
+
+
 
 }

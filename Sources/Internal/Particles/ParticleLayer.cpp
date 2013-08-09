@@ -336,7 +336,7 @@ void ParticleLayer::Update(float32 timeElapsed)
 				DVASSERT(head == 0);
 			}
 			
-			if ((layerTime >= startTime) && (layerTime < endTime) && !emitter->IsPaused())
+			if (!emitter->IsPaused() && (layerTime >= startTime) && (layerTime < endTime))
 			{
 				float32 randCoeff = (float32)(Rand() & 255) / 255.0f;
 				float32 newParticles = 0.0f;

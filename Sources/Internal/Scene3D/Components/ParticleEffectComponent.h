@@ -49,6 +49,12 @@ public:
 	 */
 	bool IsStopped();
 
+	/**
+		\brief Function to pause generation from this effect
+		\param[in] isPaused true if you want to pause the generation, false if you want to resume it
+	 */
+	void Pause(bool isPaused = true);
+
     /**
      \brief Function marks that all the emitters must be stopped after N repeats of emitter animation.
      \param[in] numberOfRepeats number of times we need to repeat emitter animation before stop.
