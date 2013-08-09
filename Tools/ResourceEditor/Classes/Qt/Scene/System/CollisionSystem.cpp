@@ -164,10 +164,10 @@ bool SceneCollisionSystem::LandRayTest(const DAVA::Vector3 &from, const DAVA::Ve
 	DAVA::Vector3 ret;
 
 	// check if cache is available 
-	if(lastLandRayFrom == from && lastLandRayTo == to)
+	if(landIntersectCached && lastLandRayFrom == from && lastLandRayTo == to)
 	{
 		intersectionPoint = lastLandCollision;
-		return lastResult;
+		return landIntersectCached;
 	}
 
 	// no cache. start new ray test
@@ -180,7 +180,7 @@ bool SceneCollisionSystem::LandRayTest(const DAVA::Vector3 &from, const DAVA::Ve
 
 	btVector3 btFrom(from.x, from.y, from.z);
 
-	lastResult = false;
+	landIntersectCached = false;
 
 	while (rayLength > 0)
 	{
@@ -193,7 +193,7 @@ bool SceneCollisionSystem::LandRayTest(const DAVA::Vector3 &from, const DAVA::Ve
 			btVector3 hitPoint = btCallback.m_hitPointWorld;
 			ret = DAVA::Vector3(hitPoint.x(), hitPoint.y(), hitPoint.z());
 
-			lastResult = true;
+			landIntersectCached = true;
 			break;
 		}
 
@@ -203,7 +203,7 @@ bool SceneCollisionSystem::LandRayTest(const DAVA::Vector3 &from, const DAVA::Ve
 
 	lastLandCollision = ret;
 	intersectionPoint = ret;
-	return lastResult;
+	return landIntersectCached;
 }
 
 bool SceneCollisionSystem::LandRayTestFromCamera(DAVA::Vector3& intersectionPoint)
@@ -259,6 +259,12 @@ void SceneCollisionSystem::Update(DAVA::float32 timeElapsed)
 {
 	// reset cache on new frame
 	rayIntersectCached = false;
+
+	if(drawMode & ST_COLL_DRAW_LAND_COLLISION)
+	{
+		DAVA::Vector3 tmp;
+		LandRayTestFromCamera(tmp);
+	}
 }
 
 void SceneCollisionSystem::ProcessUIEvent(DAVA::UIEvent *event)
