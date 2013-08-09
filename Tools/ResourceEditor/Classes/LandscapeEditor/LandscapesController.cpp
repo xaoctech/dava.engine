@@ -289,12 +289,14 @@ void LandscapesController::HeghtWasChanged(const DAVA::Rect &changedRect)
 
 void LandscapesController::CursorEnable()
 {
-    currentLandscape->CursorEnable();
+    if(currentLandscape)
+        currentLandscape->CursorEnable();
 }
 
 void LandscapesController::CursorDisable()
 {
-    currentLandscape->CursorDisable();
+    if(currentLandscape)
+        currentLandscape->CursorDisable();
 }
 
 RulerToolLandscape *LandscapesController::CreateRulerToolLandscape()

@@ -18,6 +18,7 @@
 #define __QT_PROPERTY_VIEW_H__
 
 #include <QTreeView>
+#include <QTimer>
 
 class QtPropertyItem;
 class QtPropertyData;
@@ -51,8 +52,12 @@ protected:
 	QtPropertyModel *curModel;
 	QtPropertyItemDelegate *curItemDelegate;
 
+	int refreshTimeout;
+	QTimer refreshTimer;
+
 protected slots:
 	void ItemClicked(const QModelIndex &);
+	void OnRefreshTimeout();
 };
 
 #endif // __QT_PROPERTY_VIEW_H__

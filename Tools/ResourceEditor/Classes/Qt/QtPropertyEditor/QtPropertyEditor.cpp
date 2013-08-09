@@ -21,6 +21,7 @@
 
 QtPropertyEditor::QtPropertyEditor(QWidget *parent /* = 0 */)
 	: QTreeView(parent)
+	, refreshTimeout(0)
 {
 	curModel = new QtPropertyModel();
 	setModel(curModel);
@@ -31,6 +32,7 @@ QtPropertyEditor::QtPropertyEditor(QWidget *parent /* = 0 */)
 	QObject::connect(this, SIGNAL(clicked(const QModelIndex &)), this, SLOT(ItemClicked(const QModelIndex &)));
 	QObject::connect(this, SIGNAL(expanded(const QModelIndex &)), curItemDelegate, SLOT(expand(const QModelIndex &)));
 	QObject::connect(this, SIGNAL(collapsed(const QModelIndex &)), curItemDelegate, SLOT(collapse(const QModelIndex &)));
+	QObject::connect(&refreshTimer, SIGNAL(timeout()), this, SLOT(OnRefreshTimeout()));
 }
 
 QtPropertyEditor::~QtPropertyEditor()
@@ -81,12 +83,21 @@ void QtPropertyEditor::Expand(QtPropertyItem *item)
 
 void QtPropertyEditor::SetRefreshTimeout(int ms)
 {
-	curModel->SetRefreshTimeout(ms);
+	refreshTimeout = ms;
+
+	if(0 != refreshTimeout)
+	{
+		refreshTimer.start(refreshTimeout);
+	}
+	else
+	{
+		refreshTimer.stop();
+	}
 }
 
 int QtPropertyEditor::GetRefreshTimeout()
 {
-	return curModel->GetRefreshTimeout();
+	return refreshTimeout;
 }
 
 void QtPropertyEditor::ItemClicked(const QModelIndex &index)
@@ -95,5 +106,13 @@ void QtPropertyEditor::ItemClicked(const QModelIndex &index)
 	if(NULL != item && item->isEditable() && item->isEnabled())
 	{
 		edit(index);
+	}
+}
+
+void QtPropertyEditor::OnRefreshTimeout()
+{
+	if(state() != QAbstractItemView::EditingState)
+	{
+		curModel->RefreshAll();
 	}
 }

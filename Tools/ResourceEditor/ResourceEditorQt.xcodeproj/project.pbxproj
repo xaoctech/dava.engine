@@ -303,6 +303,8 @@
 		84EF22CE171EECA900B45031 /* ScrollZoomWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84EF22CD171EECA900B45031 /* ScrollZoomWidget_moc.cpp */; };
 		84EF22D4171EECBD00B45031 /* ScrollZoomWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84EF22D2171EECBD00B45031 /* ScrollZoomWidget.cpp */; };
 		A51FBC516D952C0C5AB72EA1 /* QtGui.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 9B8EE51E126C761F3F797428 /* QtGui.framework */; };
+		A607F45A17A1237B00AB5D98 /* ActionComponentEditor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A607F45817A1237B00AB5D98 /* ActionComponentEditor.cpp */; };
+		A607F46017A1242F00AB5D98 /* ActionComponentEditor_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A607F45F17A1242F00AB5D98 /* ActionComponentEditor_moc.cpp */; };
 		A93E34BD17283146D6E95207 /* QtCore.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 419FFB6CDDEB353FF0A4F469 /* QtCore.framework */; };
 		A9F72A8809110F713D328E52 /* OpenAL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 52F4216CE5F81A8073DE30C0 /* OpenAL.framework */; };
 		B08AE0866171E2B79EF2D621 /* QtOpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */; };
@@ -1193,6 +1195,9 @@
 		84EF22D2171EECBD00B45031 /* ScrollZoomWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScrollZoomWidget.cpp; sourceTree = "<group>"; };
 		84EF22D3171EECBD00B45031 /* ScrollZoomWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScrollZoomWidget.h; sourceTree = "<group>"; };
 		9B8EE51E126C761F3F797428 /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework"; sourceTree = "<absolute>"; };
+		A607F45817A1237B00AB5D98 /* ActionComponentEditor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActionComponentEditor.cpp; sourceTree = "<group>"; };
+		A607F45917A1237B00AB5D98 /* ActionComponentEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionComponentEditor.h; sourceTree = "<group>"; };
+		A607F45F17A1242F00AB5D98 /* ActionComponentEditor_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActionComponentEditor_moc.cpp; sourceTree = "<group>"; };
 		C18521A716831F84003D4A6F /* BaseParticleEditorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseParticleEditorNode.cpp; sourceTree = "<group>"; };
 		C18521A816831F84003D4A6F /* BaseParticleEditorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseParticleEditorNode.h; sourceTree = "<group>"; };
 		C18521A916831F84003D4A6F /* EffectParticleEditorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EffectParticleEditorNode.cpp; sourceTree = "<group>"; };
@@ -2640,6 +2645,8 @@
 		E838D4EF16AFFED4006F1721 /* DockProperties */ = {
 			isa = PBXGroup;
 			children = (
+				A607F45817A1237B00AB5D98 /* ActionComponentEditor.cpp */,
+				A607F45917A1237B00AB5D98 /* ActionComponentEditor.h */,
 				177D1A9116CB8C820021104B /* PropertyEditorStateHelper.cpp */,
 				177D1A9216CB8C820021104B /* PropertyEditorStateHelper.h */,
 				E838D84D16B0059F006F1721 /* PropertyEditor.cpp */,
@@ -2886,6 +2893,7 @@
 		E838D79E16B00511006F1721 /* DockProperties */ = {
 			isa = PBXGroup;
 			children = (
+				A607F45F17A1242F00AB5D98 /* ActionComponentEditor_moc.cpp */,
 				E838D79F16B00511006F1721 /* PropertyEditor_moc.cpp */,
 			);
 			name = DockProperties;
@@ -3968,6 +3976,8 @@
 				17B82025178FF21400954A81 /* FramePathHelper.cpp in Build Sources */,
 				E8F799D9179830D500E7C3C8 /* TextureDescriptorTool.cpp in Build Sources */,
 				E8F799DA179830D500E7C3C8 /* TextureDescriptorUtils.cpp in Build Sources */,
+				A607F45A17A1237B00AB5D98 /* ActionComponentEditor.cpp in Build Sources */,
+				A607F46017A1242F00AB5D98 /* ActionComponentEditor_moc.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

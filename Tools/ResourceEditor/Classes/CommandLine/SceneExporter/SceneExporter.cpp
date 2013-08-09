@@ -209,7 +209,7 @@ bool SceneExporter::ExportTextureDescriptor(const FilePath &pathname, Set<String
     }
     
     
-    String workingPathname = sceneUtils.RemoveFolderFromPath(descriptor->pathname, sceneUtils.dataSourceFolder);
+    String workingPathname = descriptor->pathname.GetRelativePathname(sceneUtils.dataSourceFolder);
     sceneUtils.PrepareFolderForCopyFile(workingPathname, errorLog);
 
     bool isExported = ExportTexture(descriptor, errorLog);
@@ -252,7 +252,7 @@ void SceneExporter::ExportFolder(const String &folderName, Set<String> &errorLog
 		{
             if(!fileList->IsNavigationDirectory(i))
             {
-                String workingPathname = sceneUtils.RemoveFolderFromPath(pathname, sceneUtils.dataSourceFolder);
+                String workingPathname = pathname.GetRelativePathname(sceneUtils.dataSourceFolder);
                 ExportFolder(workingPathname, errorLog);
             }
         }
@@ -267,7 +267,7 @@ void SceneExporter::ExportFolder(const String &folderName, Set<String> &errorLog
                     continue;
                 }
                 
-                String workingPathname = sceneUtils.RemoveFolderFromPath(pathname, sceneUtils.dataSourceFolder);
+                String workingPathname = pathname.GetRelativePathname(sceneUtils.dataSourceFolder);
                 ExportFile(workingPathname, errorLog);
             }
         }
@@ -308,7 +308,7 @@ void SceneExporter::ExportLandscapeFullTiledTexture(Landscape *landscape, Set<St
         FilePath fullTiledPathname = landscape->GetTextureName(Landscape::TEXTURE_COLOR);
         fullTiledPathname.ReplaceExtension(".thumbnail_exported.png");
         
-        String workingPathname = sceneUtils.RemoveFolderFromPath(fullTiledPathname, sceneUtils.dataSourceFolder);
+        String workingPathname = fullTiledPathname.GetRelativePathname(sceneUtils.dataSourceFolder);
         sceneUtils.PrepareFolderForCopyFile(workingPathname, errorLog);
 
         Texture *fullTiledTexture = Texture::GetPinkPlaceholder();
