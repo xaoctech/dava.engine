@@ -70,6 +70,7 @@ public:
         VISIBLE_AFTER_CLIPPING_THIS_FRAME = 1 << 1,
 		VISIBLE_LOD = 1 << 2,
 		VISIBLE_SWITCH = 1 << 3,
+		VISIBLE_ALWAYS = 1 << 4,
         TRANSFORM_UPDATED = 1 << 15,
 	};
 
@@ -86,7 +87,7 @@ public:
     void RemoveRenderBatch(RenderBatch * batch);
     virtual void RecalcBoundingBox();
     
-    uint32 GetRenderBatchCount();
+	uint32 GetRenderBatchCount();
     RenderBatch * GetRenderBatch(uint32 batchIndex);
     
     inline void SetFlags(uint32 _flags) { flags = _flags; }
@@ -112,7 +113,7 @@ public:
 
     void SetOwnerDebugInfo(const String & str) { ownerDebugInfo = str; };
 
-	void SetRenderSystem(RenderSystem * renderSystem);
+	virtual void SetRenderSystem(RenderSystem * renderSystem);
 	RenderSystem * GetRenderSystem();
 
 	virtual void BakeTransform(const Matrix4 & transform);

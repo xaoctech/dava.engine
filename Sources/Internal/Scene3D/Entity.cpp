@@ -215,6 +215,9 @@ void Entity::InsertBeforeNode(Entity *newNode, Entity *beforeNode)
     {
 		bool canBeInserted = false;
 
+		//need 2 passes because iterator will be invalidated when the entity
+		//is already present in the list of children and changes its position.
+		
 		Vector<Entity*>::iterator itEnd = children.end();
         for (Vector<Entity*>::iterator it = children.begin(); it != itEnd; ++it)
         {

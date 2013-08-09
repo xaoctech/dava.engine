@@ -13,49 +13,59 @@
  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
+#ifndef __DAVAENGINE_SKYBOXRENDEROBJECT_H__
+#define __DAVAENGINE_SKYBOXRENDEROBJECT_H__
 
-#ifndef __DAVAENGINE_SKYBOX_COMPONENT_H__
-#define __DAVAENGINE_SKYBOX_COMPONENT_H__
-
-#include "Base/BaseTypes.h"
-#include "Entity/Component.h"
+#include "Render/Highlevel/RenderObject.h"
 
 namespace DAVA
 {
-	class SkyboxComponent : public Component
+	class SkyboxRenderObject : public RenderObject, public IRenderUpdatable
 	{
 	public:
-		IMPLEMENT_COMPONENT_TYPE(SKYBOX_COMPONENT);
 		
-		SkyboxComponent();
-		~SkyboxComponent();
-				
-		virtual Component* Clone(Entity * toEntity);
-		virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
-		virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
+		SkyboxRenderObject();
+		virtual ~SkyboxRenderObject();
+		
+		//this method should be called by external editor to initialize skybox
+		//after adding skybox to scene and setting up its paramaters it becames self-sufficent
+		void Initialize(AABBox3& box);
+		
+		virtual void RenderUpdate(Camera *camera, float32 timeElapsed);
+		
+		RenderObject * Clone(RenderObject *newObject);
+		virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
+		virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
+		virtual void SetRenderSystem(RenderSystem * renderSystem);
 		
 		void SetTexture(const FilePath& texPath);
 		FilePath GetTexture();
-		void SetVerticalOffset(const float32& offset);
-		float32 GetVerticalOffset();
-		void SetRotationAngle(const float32& rotation);
-		float32 GetRotationAngle();
+		void SetOffsetZ(const float32& offset);
+		float32 GetOffsetZ();
+		void SetRotationZ(const float32& rotation);
+		float32 GetRotationZ();
 		
-		Vector3 GetBoxSize();
-		
-		INTROSPECTION_EXTEND(SkyboxComponent, Component,
-							 PROPERTY("texture", "Texture Path", GetTexture, SetTexture, I_SAVE | I_VIEW | I_EDIT)
-							 PROPERTY("verticalOffset", "Vertical Offset", GetVerticalOffset, SetVerticalOffset, I_SAVE | I_VIEW | I_EDIT)
-							 PROPERTY("rotationAngle", "Rotation", GetRotationAngle, SetRotationAngle, I_SAVE | I_VIEW | I_EDIT));
+		//INTROSPECTION used intentionally instead of INTROSPECTION_EXTEND in order to hide underlying details of SkyboxRenderObject implementation
+		INTROSPECTION(SkyboxRenderObject,
+					  PROPERTY("texture", "Texture Path", GetTexture, SetTexture, I_SAVE | I_VIEW | I_EDIT)
+					  PROPERTY("verticalOffset", "Vertical Offset", GetOffsetZ, SetOffsetZ, I_SAVE | I_VIEW | I_EDIT)
+					  PROPERTY("rotationAngle", "Rotation", GetRotationZ, SetRotationZ, I_SAVE | I_VIEW | I_EDIT)
+					  );
 
-	
-	
+		
+	private:
+		
+		void CreateRenderData();
+		void BuildSkybox();
+		void UpdateMaterial();
+
 	private:
 		
 		FilePath texturePath;
-		float32 verticalOffset;
-		float32 rotationAngle;
+		float32 offsetZ;
+		float32 rotationZ;
+		float32 nonClippingDistance;		
 	};
-}
+};
 
-#endif //__DAVAENGINE_SKYBOX_COMPONENT_H__
+#endif //__DAVAENGINE_SKYBOXRENDEROBJECT_H__
