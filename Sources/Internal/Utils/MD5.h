@@ -1,10 +1,4 @@
 /*
-    Adopted for DAVA SDK
-    MD5 Hash algorithm. 
-    Original license below. Adopted by: Vitaliy Borodovsky.
-*/
-
-/*
 **********************************************************************
 ** md5.h -- Header file for implementation of MD5                   **
 ** RSA Data Security, Inc. MD5 Message Digest Algorithm             **

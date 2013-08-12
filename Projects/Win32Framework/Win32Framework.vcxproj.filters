@@ -1185,6 +1185,12 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ComponentHelpers.h">
       <Filter>Internal\Scene3D\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\AutotestingSystemLua.h">
+      <Filter>Internal\Autotesting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\AutotestingSystemYaml.h">
+      <Filter>Internal\Autotesting</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Platform\DPIHelper.h">
       <Filter>Internal\Platform</Filter>
     </ClInclude>
@@ -1268,6 +1274,27 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\DAVAVersion.h">
       <Filter>Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Base\EnumMap.h">
+      <Filter>Internal\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\GPUFamilyDescriptor.h">
+      <Filter>Internal\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\MipmapReplacer.h">
+      <Filter>Internal\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\UI\UIScrollView.h">
+      <Filter>Internal\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\UI\UIScrollViewContainer.h">
+      <Filter>Internal\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ActionComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\ActionUpdateSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2180,6 +2207,33 @@
     <ClCompile Include="..\..\Sources\Internal\UI\UISwitch.cpp">
       <Filter>Internal\UI</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystemLua.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystemSwig.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystemYaml.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\Rect_wrap.cxx">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\RectSwig.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\UIControl_wrap.cxx">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\UIControlSwig.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\Vector_wrap.cxx">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\VectorSwig.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Landscape.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
@@ -2228,8 +2282,32 @@
     <ClCompile Include="..\..\Sources\Internal\Base\GlobalEnum.cpp">
       <Filter>Internal\Base</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Base\EnumMap.cpp">
+      <Filter>Internal\Base</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\FileSystem\LoggerWin.cpp">
       <Filter>Internal\FileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\KeyedArchiveSwig.cpp">
+      <Filter>Internal\Autotesting</Filter>
+	</ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\GPUFamilyDescriptor.cpp">
+      <Filter>Internal\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\MipmapReplacer.cpp">
+      <Filter>Internal\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\UI\UIScrollView.cpp">
+      <Filter>Internal\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\UI\UIScrollViewContainer.cpp">
+      <Filter>Internal\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\ActionComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ActionUpdateSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
