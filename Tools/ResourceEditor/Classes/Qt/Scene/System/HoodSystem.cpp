@@ -68,6 +68,7 @@ HoodSystem::HoodSystem(DAVA::Scene * scene, SceneCameraSystem *camSys)
 	normalHood.colorS = DAVA::Color(0, 0, 0, 1);
 
 	font = DAVA::GraphicsFont::Create("/Users/smile4u/Projects/dava.framework/Tools/ResourceEditor/Data/Fonts/terminus.def", "/Users/smile4u/Projects/dava.framework/Tools/ResourceEditor/Data/Gfx/Fonts/terminus.txt");
+    font->SetSize(14.0f);
 	//font = DAVA::GraphicsFont::Create("d:/Projects/dava.framework/Tools/ResourceEditor/Data/Fonts/arial_mono_11.def", "d:/Projects/dava.framework/Tools/ResourceEditor/Data/Gfx/Fonts/arial_mono_11.txt");
 }
 
@@ -313,6 +314,7 @@ void HoodSystem::Draw()
 	{
 		RenderManager::Instance()->SetRenderOrientation(DAVA::Core::SCREEN_ORIENTATION_PORTRAIT);
 		RenderManager::Instance()->SetRenderEffect(NULL);
+        RenderManager::Instance()->SetColor(255, 0, 0, 255);
 
 		//DAVA::Matrix4 mat;
 		//mat.Identity();
@@ -320,6 +322,7 @@ void HoodSystem::Draw()
 		//RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_PROJECTION, mat);
 		// 
 		DAVA::Vector2 pos = cameraSystem->GetScreenPos(curPos);
+        font->SetColor(255,0,0,255);
 		font->DrawString(pos.x, pos.y, L"pos1^^&", 0);
 	}
 }

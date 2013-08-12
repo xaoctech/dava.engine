@@ -840,7 +840,6 @@ NSInteger floatSort(id num1, id num2, void *context)
 	{
 		unichar c = [symbolTable characterAtIndex:t];
 		fwrite(&c, 2, 1, fontFP);
-        int ss = sizeof(Float32);
         Float32 orig_x = symbolBounds[t].origin.x;
         Float32 size_w = symbolBounds[t].size.width;
 		fwrite(&orig_x, 4, 1, fontFP);
@@ -851,7 +850,8 @@ NSInteger floatSort(id num1, id num2, void *context)
 
 	for (t = 0; t < [symbolTable length]; ++t)
 	{
-		fwrite(&kerningBaseShift[t], 4, 1, fontFP);
+        Float32 kerBaseShift = kerningBaseShift[t];
+		fwrite(&kerBaseShift, 4, 1, fontFP);
 	}
 	
 	fwrite(&kerningPairCount, 4, 1, fontFP);

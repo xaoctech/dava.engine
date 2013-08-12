@@ -73,13 +73,13 @@
 	CGFloat kerningBaseShift[2048];
 	signed char	fixedKerningTable[2048][2048];
 	int kerningPairCount;
-	CGFloat defaultShiftValue;
-	CGFloat fontAscent;
-	CGFloat fontDescent;
-	CGFloat fontLeading;
-	CGFloat fontXHeight;
-	CGFloat fontWidth;
-	CGFloat fontHeight;
+	Float32 defaultShiftValue;
+	Float32 fontAscent;
+	Float32 fontDescent;
+	Float32 fontLeading;
+	Float32 fontXHeight;
+	Float32 fontWidth;
+	Float32 fontHeight;
 	
 	CGContextRef symbolTableContext;
 	CGImageRef symbolTableImage;
