@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.webkit.WebView;
@@ -153,6 +154,25 @@ public class JNIWebView {
 				}
 				WebView view = views.get(id);
 				view.setVisibility(isVisible ? WebView.VISIBLE : WebView.INVISIBLE);
+			}
+		});
+	}
+
+	public static void SetBackgroundTransparency(final int id, final boolean enabled)
+	{
+		final JNIActivity activity = JNIActivity.GetActivity();
+		activity.runOnUiThread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				if (!views.containsKey(id))
+				{
+					Log.d(TAG, String.format("Unknown view id %d", id));
+					return;
+				}
+				WebView view = views.get(id);
+				view.setBackgroundColor((enabled ? Color.TRANSPARENT : Color.WHITE));
 			}
 		});
 	}

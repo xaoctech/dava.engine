@@ -55,8 +55,6 @@ GameCore::~GameCore()
 
 void GameCore::OnAppStarted()
 {
-    DeviceInfo();
-
 	File * testIdFile = File::Create("~res:/testId", File::OPEN | File::READ);
 	if(testIdFile)
 	{
@@ -70,7 +68,6 @@ void GameCore::OnAppStarted()
 	{
 		Logger::Debug("[GameCore::OnAppStarted()] testId file not found!");
         logToDb.push_back("'testId' file not found!");
-		SafeRelease(testIdFile);
 		Core::Instance()->Quit();
 		return;
 	}
@@ -223,7 +220,9 @@ void GameCore::Update(float32 timeElapsed)
 	}
     else
     {
-        FlushLogToDB();
+        if(!FlushLogToDB())
+            Logger::Debug("Error sending data to DB (connection is lost) !!!");
+
 		Core::Instance()->Quit();
 	}
 }
@@ -235,8 +234,11 @@ void GameCore::Draw()
 
 bool GameCore::ConnectToDB()
 {
-	if(dbClient)
+	if(dbClient && dbClient->IsConnected())
 		return true;
+
+    if(dbClient)
+        SafeRelease(dbClient);
     
 	dbClient = MongodbClient::Create(DATABASE_IP, DATAPASE_PORT);
     
@@ -269,7 +271,9 @@ bool GameCore::ConnectToDB()
 
 bool GameCore::FlushLogToDB()
 {
-    if(!dbClient)
+    ConnectToDB();
+
+    if(!dbClient && !dbClient->IsConnected())
         return false;
 
     if(logToDb.size() == 0)
@@ -332,7 +336,9 @@ bool GameCore::FlushLogToDB()
 
 bool GameCore::FlushToDB(const FilePath & levelName, const Map<String, String> &results, const FilePath &imagePath)
 {
-	if(!dbClient)
+    ConnectToDB();
+
+	if(!dbClient && !dbClient->IsConnected())
 		return false;
 
     Logger::Debug("Sending results to DB...");

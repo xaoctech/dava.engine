@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		020AB21117463A020082F336 /* libfmodevent.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 02E9E476173A465300C501BC /* libfmodevent.dylib */; };
 		020AB21217463A020082F336 /* libfmodex.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 02E9E477173A465300C501BC /* libfmodex.dylib */; };
-		0260582716E79799003BE248 /* DeviceInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0260582516E79799003BE248 /* DeviceInfo.cpp */; };
 		02E9E478173A465300C501BC /* libfmodevent.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E476173A465300C501BC /* libfmodevent.dylib */; };
 		02E9E479173A465300C501BC /* libfmodex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E477173A465300C501BC /* libfmodex.dylib */; };
 		49D80A4A16E0B9A400367B12 /* TextureHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49D80A4816E0B9A400367B12 /* TextureHelper.cpp */; };
@@ -55,6 +54,13 @@
 			remoteGlobalIDString = D2AAC07D0554694100DB518D;
 			remoteInfo = Framework;
 		};
+		E8BBC02A17AAB1340073F021 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 49DE0D2E1647BB9A004965F9 /* Framework.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 176DEB77174B5561007A983B;
+			remoteInfo = FrameworkNPAPI;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -73,8 +79,6 @@
 
 /* Begin PBXFileReference section */
 		0260582416E79799003BE248 /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Config.h; path = Classes/Config.h; sourceTree = "<group>"; };
-		0260582516E79799003BE248 /* DeviceInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DeviceInfo.cpp; path = Classes/DeviceInfo.cpp; sourceTree = "<group>"; };
-		0260582616E79799003BE248 /* DeviceInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DeviceInfo.h; path = Classes/DeviceInfo.h; sourceTree = "<group>"; };
 		02E9E476173A465300C501BC /* libfmodevent.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodevent.dylib; path = ../../Libs/fmod/lib/macos/libfmodevent.dylib; sourceTree = "<group>"; };
 		02E9E477173A465300C501BC /* libfmodex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodex.dylib; path = ../../Libs/fmod/lib/macos/libfmodex.dylib; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
@@ -208,6 +212,7 @@
 			children = (
 				49DE0D3A1647BB9B004965F9 /* libFramework.a */,
 				49D80A4D16E0B9A500367B12 /* libFrameworkQt.a */,
+				E8BBC02B17AAB1340073F021 /* libFrameworkNPAPI.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -233,8 +238,6 @@
 				FEC3CA721283557F00541220 /* GameCore.h */,
 				FEC3CA6C1283557F00541220 /* AppScreens.h */,
 				0260582416E79799003BE248 /* Config.h */,
-				0260582516E79799003BE248 /* DeviceInfo.cpp */,
-				0260582616E79799003BE248 /* DeviceInfo.h */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -320,6 +323,13 @@
 			remoteRef = 49DE0D391647BB9B004965F9 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		E8BBC02B17AAB1340073F021 /* libFrameworkNPAPI.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libFrameworkNPAPI.a;
+			remoteRef = E8BBC02A17AAB1340073F021 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -367,7 +377,6 @@
 				49DE0D4A1647BC8E004965F9 /* Test.cpp in Sources */,
 				49F12A8716514373008EF307 /* LandscapeTestData.cpp in Sources */,
 				49D80A4A16E0B9A400367B12 /* TextureHelper.cpp in Sources */,
-				0260582716E79799003BE248 /* DeviceInfo.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
