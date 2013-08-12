@@ -1108,6 +1108,10 @@ public:
 
 	// Find the control by name and add it to the list, if found.
 	bool AddControlToList(List<UIControl*>& controlsList, const String& controlName, bool isRecursive = false);
+
+	// Get the framework path for sprite, don't process it if it is empty.
+	String GetSpriteFrameworkPath(Sprite* sprite);
+
 public:
 
 	Vector2 relativePosition;//!<position in the parent control.
