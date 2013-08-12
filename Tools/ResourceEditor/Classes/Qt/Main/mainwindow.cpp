@@ -85,7 +85,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 	LoadGPUFormat();
 
-	addSwitchEntityDialog = new AddSwitchEntityDialog(NULL, this);
+	addSwitchEntityDialog = new AddSwitchEntityDialog( this);
 }
 
 QtMainWindow::~QtMainWindow()
@@ -502,6 +502,7 @@ void QtMainWindow::AddSwitchDialogFinished(int result)
 	Vector<Entity*> vector;
 	addSwitchEntityDialog->GetPathEntities(vector, scene);	
 	addSwitchEntityDialog->CleanupPathWidgets();
+	addSwitchEntityDialog->SetEntity(NULL);
 	
 	Q_FOREACH(Entity* item, vector)
 	{
@@ -510,6 +511,7 @@ void QtMainWindow::AddSwitchDialogFinished(int result)
 	if(vector.size())
 	{
 		scene->Exec(new AddEntityCommand(switchEntity, scene));
+		SafeRelease(switchEntity);
 	}
 }
 
@@ -904,6 +906,8 @@ void QtMainWindow::OnSwitchEntityDialog()
 	customProperties->SetBool(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
 	addSwitchEntityDialog->SetEntity(entityToAdd);
 	
+	SafeRelease(entityToAdd);
+	
 	QObject::connect(addSwitchEntityDialog, SIGNAL(finished(int)), this, SLOT(AddSwitchDialogFinished(int)));
 	addSwitchEntityDialog->show();
 }
@@ -969,19 +973,21 @@ void QtMainWindow::OnParticleEffectDialog()
 }
 
 
-void QtMainWindow::CreateAndDisplayAddEntityDialog(Entity* sceneNode)
+void QtMainWindow::CreateAndDisplayAddEntityDialog(Entity* entity)
 {
 	SceneEditor2* sceneEditor = GetCurrentScene();
-	BaseAddEntityDialog* dlg = new BaseAddEntityDialog(sceneNode, this);
+	BaseAddEntityDialog* dlg = new BaseAddEntityDialog(this);
+
+	dlg->SetEntity(entity);
 	dlg->exec();
+	
 	if(dlg->result() == QDialog::Accepted && sceneEditor)
 	{
-		sceneEditor->Exec(new AddEntityCommand(sceneNode, sceneEditor));
+		sceneEditor->Exec(new AddEntityCommand(entity, sceneEditor));
 	}
-	else
-	{
-		SafeRelease(sceneNode);
-	}
+	
+	SafeRelease(entity);
+	
 	delete dlg;
 }
 
