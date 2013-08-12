@@ -29,13 +29,17 @@ protected:
 	void ReloadTextures(const DAVA::String& rootPath);
 	void ConnectSignals();
 	void RestoreListSelection(int currentRow);
+	int GetCheckedItemsCount();
+	void UpdateCheckedState();
 	
 protected slots:
 	
 	void OnChooseDirectoryClicked();
 	void OnReloadClicked();
 	void OnCreateCubemapClicked();
-	void OnListItemDoubleClicked(QListWidgetItem* item);
+	void OnEditCubemap(const QModelIndex &index);
+	void OnItemCheckStateChanged(const QModelIndex &index);
+	void OnDeleteSelectedItemsClicked();
     
 private:
     Ui::CubeMapTextureBrowser *ui;
