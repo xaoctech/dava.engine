@@ -238,7 +238,8 @@ void UIControlSystem::Update()
 	
 	float32 timeElapsed = SystemTimer::FrameDelta();
 
-	if (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_UI_CONTROL_SYSTEM)){
+	if (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_UI_CONTROL_SYSTEM))
+	{
 		if(currentScreen)
 		{
 			currentScreen->SystemUpdate(timeElapsed);

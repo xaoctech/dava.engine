@@ -509,7 +509,8 @@ void Scene::Update(float timeElapsed)
 
 	updatableSystem->UpdatePostTransform();
 
-	if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_LODS)){
+	if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_LODS))
+	{
 		lodSystem->SetCamera(currentCamera);
 		lodSystem->Process();
 	}
@@ -530,7 +531,8 @@ void Scene::Update(float timeElapsed)
 
 	referenceNodeSuffixChanged = false;
 
-	if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_ANIMATED_MESHES)){
+	if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_ANIMATED_MESHES))
+	{
 		size = (int32)animatedMeshes.size();
 		for (int32 animatedMeshIndex = 0; animatedMeshIndex < size; ++animatedMeshIndex)
 		{
