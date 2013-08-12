@@ -36,7 +36,7 @@ class BaseAddEntityDialog: public QDialog
 	Q_OBJECT
 
 public:
-	explicit BaseAddEntityDialog(DAVA::Entity* _entity, QWidget* parent = 0);
+	explicit BaseAddEntityDialog( QWidget* parent = 0);
 
 	~BaseAddEntityDialog();
 	

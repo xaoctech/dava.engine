@@ -19,8 +19,8 @@
 #include "./../Qt/Tools/SelectPathWidget/SelectPathWidget.h"
 #include <QLabel>
 
-AddSwitchEntityDialog::AddSwitchEntityDialog(DAVA::Entity* entityToDisplay, QWidget* parent)
-		:BaseAddEntityDialog(entityToDisplay,parent)
+AddSwitchEntityDialog::AddSwitchEntityDialog( QWidget* parent)
+		:BaseAddEntityDialog(parent)
 {
 	setAcceptDrops(false);
 	

@@ -26,6 +26,8 @@ class PropertyEditorDialog : public PropertyEditor
 public:
 	
 	PropertyEditorDialog(QWidget *parent = 0):PropertyEditor(parent,false){};
+	
+	~PropertyEditorDialog(){};
 };
 
 #endif // __QT_PROPERTY_DIALOG_WIDGET_H__
