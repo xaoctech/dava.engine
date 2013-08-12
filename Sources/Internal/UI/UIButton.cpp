@@ -910,17 +910,10 @@ namespace DAVA
 			{
 				//Create array yamlnode and add it to map
 				YamlNode *spriteNode = new YamlNode(YamlNode::TYPE_ARRAY);
-                
-                FilePath path(stateSprite->GetRelativePathname());
-				String pathName = "";
-				if (!path.IsEmpty())
-				{
-					path.TruncateExtension();
-					pathName = path.GetFrameworkPath();
-				}
-				spriteNode->AddValueToArray(pathName);
-                
+
+				spriteNode->AddValueToArray(GetSpriteFrameworkPath(stateSprite));
 				spriteNode->AddValueToArray(stateFrame);
+
 				int32 modification = stateBacks[BackgroundIndexForState((eButtonDrawState)i)]->GetModification();
 				spriteNode->AddValueToArray(modification);
 				node->AddNodeToMap(Format("stateSprite%s", statePostfix[i].c_str()), spriteNode);
