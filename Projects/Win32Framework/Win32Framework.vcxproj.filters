@@ -2290,7 +2290,7 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Autotesting\KeyedArchiveSwig.cpp">
       <Filter>Internal\Autotesting</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\GPUFamilyDescriptor.cpp">
       <Filter>Internal\Render</Filter>
     </ClCompile>
@@ -2309,5 +2309,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ActionUpdateSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\TouchAction.cpp" />
   </ItemGroup>
 </Project>
