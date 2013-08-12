@@ -66,6 +66,11 @@ void CubemapEditorDialog::LoadImageFromUserFile(float rotation, int face)
 		
 		projectPath = stdFilePath;
 		settings->SetString(CUBEMAP_LAST_FACE_DIR_KEY, projectPath.GetDirectory().GetAbsolutePathname());
+		
+		if(AllFacesLoaded())
+		{
+			ui->legend->setVisible(false);
+		}
 	}
 }
 
@@ -312,6 +317,7 @@ void CubemapEditorDialog::InitForEditing(DAVA::FilePath& textureDescriptorPath, 
 	LoadCubemap(targetFile.GetAbsolutePathname().c_str());
 	
 	ui->buttonSave->setEnabled(false);
+	ui->legend->setVisible(false);
 	
 	edited = false;
 }
@@ -321,6 +327,7 @@ void CubemapEditorDialog::InitForCreating(DAVA::FilePath& textureDescriptorPath,
 	targetFile = textureDescriptorPath;
 	editorMode = CubemapEditorDialog::eEditorModeCreating;
 	rootPath = QString::fromStdString(root.GetAbsolutePathname());
+	ui->legend->setVisible(true);
 	
 	edited = false;
 }
