@@ -24,9 +24,13 @@ AddEntityCommand::AddEntityCommand(DAVA::Entity* _entityToAdd, DAVA::Scene* _sce
     , entityToAdd(_entityToAdd)
     , scene(_scene)
 {
+	SafeRetain(entityToAdd);
 }
 
-AddEntityCommand::~AddEntityCommand(){}
+AddEntityCommand::~AddEntityCommand()
+{
+	SafeRelease(entityToAdd);
+}
 
 void AddEntityCommand::Undo()
 {

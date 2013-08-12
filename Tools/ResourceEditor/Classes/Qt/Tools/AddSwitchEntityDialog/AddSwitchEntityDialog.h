@@ -26,7 +26,7 @@ class SelectPathWidget;
 class AddSwitchEntityDialog: public BaseAddEntityDialog
 {
 public:
-	AddSwitchEntityDialog(DAVA::Entity* entityToDisplay, QWidget* parent = 0);
+	AddSwitchEntityDialog( QWidget* parent = 0);
 	
 	~AddSwitchEntityDialog();
 	
