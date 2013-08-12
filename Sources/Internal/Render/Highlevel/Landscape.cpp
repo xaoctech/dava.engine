@@ -1192,13 +1192,14 @@ void Landscape::Draw(Camera * camera)
 
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, camera->GetMatrix());
 
-if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_LANDSCAPE_LODS)){
-	fans.clear();
-    lod0quads.clear();
-    lodNot0quads.clear();
-    
-	Draw(&quadTreeHead);
-}
+	if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_LANDSCAPE_LODS))
+	{
+		fans.clear();
+		lod0quads.clear();
+		lodNot0quads.clear();
+
+		Draw(&quadTreeHead);
+	}
     
     BindMaterial(nearLodIndex);
     int32 count0 = lod0quads.size();

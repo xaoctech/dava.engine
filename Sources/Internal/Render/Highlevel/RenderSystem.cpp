@@ -323,7 +323,8 @@ Vector<Light*> & RenderSystem::GetLights()
 
 void RenderSystem::Update(float32 timeElapsed)
 {
-	if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::PROCESS_CLIPPING)){
+	if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::PROCESS_CLIPPING))
+	{
 		ProcessClipping();
 	}
     
@@ -333,7 +334,8 @@ void RenderSystem::Update(float32 timeElapsed)
         objectsForUpdate[i]->RenderUpdate(camera, timeElapsed);
     }
 
-	if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_PARTICLE_EMMITERS)){
+	if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_PARTICLE_EMMITERS))
+	{
 		particleEmitterSystem->Update(timeElapsed);
 	}
 }
