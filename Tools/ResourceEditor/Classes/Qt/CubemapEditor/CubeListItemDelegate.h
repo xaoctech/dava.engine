@@ -11,6 +11,8 @@
 
 class CubeListItemDelegate : public QAbstractItemDelegate
 {
+	Q_OBJECT
+	
 protected:
 	
 	int itemHeight;
@@ -20,6 +22,7 @@ protected:
 private:
 	
 	int GetAdjustedTextHeight(int baseHeight) const;
+	QRect GetCheckBoxRect(const QStyleOptionViewItem & option) const;
 	
 public:
 	
@@ -28,9 +31,16 @@ public:
 	
 	void paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
 	QSize sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const;
+	bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
 		
 	void ClearCache();
 	void UpdateCache(QStringList& filesList);
+	
+signals:
+	
+	void OnEditCubemap(const QModelIndex &index);
+	void OnItemCheckStateChanged(const QModelIndex &index);
+
 };
 
 #endif /* defined(__CUBE_LIST_ITEM_DELEGATE_H__) */
