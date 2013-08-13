@@ -14,34 +14,43 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "EventFilterDoubleSpinBox.h"
+#ifndef __DISTANCE_SLIDER_H__
+#define __DISTANCE_SLIDER_H__
 
-#include <QChar>
-#include <QLocale>
+#include "DAVAEngine.h"
 
-EventFilterDoubleSpinBox::EventFilterDoubleSpinBox(QWidget *parent) :
-    QDoubleSpinBox(parent)
+#include <QFrame>
+#include <QSplitter>
+#include <QFrame>
+
+class DistanceSlider: public QFrame
 {
-    setKeyboardTracking(false);
-}
+	Q_OBJECT
 
-void EventFilterDoubleSpinBox::keyPressEvent(QKeyEvent *event)
-{
-	QKeyEvent *changedKeyEvent = NULL;
-	// Get decimal point specific to current system
-	QChar decimalPoint = QLocale().decimalPoint();
+public:
+	DistanceSlider(QWidget *parent = 0);
+	~DistanceSlider();
 
-	if (event->key() == Qt::Key_Comma && decimalPoint.toAscii() == Qt::Key_Period)
-	{
-		// Change comma key event to period key event
-		changedKeyEvent = new QKeyEvent(QEvent::KeyPress , Qt::Key_Period, Qt::NoModifier, decimalPoint, 0);
-	}
-	else if (event->key() == Qt::Key_Period && decimalPoint.toAscii() == Qt::Key_Comma)
-	{
-		// Change period key event to comma key event
-		changedKeyEvent = new QKeyEvent(QEvent::KeyPress , Qt::Key_Comma, Qt::NoModifier, decimalPoint, 0);
-	}
-	
-	// Default behaviour
-	QDoubleSpinBox::keyPressEvent(changedKeyEvent ? changedKeyEvent : event);	
-}
+    void SetLayersCount(int count);
+    void SetDistance(int layer, double value);
+    
+
+signals:
+    void DistanceChanged(int, double);
+    
+protected slots:
+
+    void SplitterMoved(int pos, int index);
+
+    
+    
+private:
+    QSplitter *splitter;
+    QFrame *frames[DAVA::LodComponent::MAX_LOD_LAYERS];
+    
+    int layersCount;
+    
+    int stretchSize[DAVA::LodComponent::MAX_LOD_LAYERS];
+};
+
+#endif // __DISTANCE_SLIDER_H__
