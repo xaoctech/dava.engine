@@ -158,6 +158,11 @@ protected:
 class NMaterial : public DataNode
 {
 public:
+    static const FastName TEXTURE_ALBEDO;
+    static const FastName TEXTURE_NORMAL;
+    static const FastName TEXTURE_DETAIL;
+    static const FastName TEXTURE_LIGHTMAP;
+    
     NMaterial();
     virtual ~NMaterial();
     
@@ -166,6 +171,8 @@ public:
     // Work with textures and properties
     void SetTexture(const FastName & textureFastName, Texture * texture);
     Texture * GetTexture(const FastName & textureFastName) const;
+    Texture * GetTexture(uint32 index);
+    uint32 GetTextureCount();
     
     void SetPropertyValue(const FastName & propertyFastName, Shader::eUniformType type, uint32 size, const void * data);
 
@@ -200,6 +207,8 @@ private:
     
     HashMap<FastName, NMaterialProperty*> materialProperties;
     HashMap<FastName, Texture*> textures;
+    Vector<Texture*> texturesArray;
+    Vector<FastName> textureNamesArray;
     uint32 lightCount;
     Light * lights[8];
 

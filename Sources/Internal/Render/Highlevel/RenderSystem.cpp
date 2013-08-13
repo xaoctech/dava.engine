@@ -61,6 +61,9 @@ RenderSystem::RenderSystem()
     renderPassOrder.push_back(renderPassesMap[PASS_SHADOW_VOLUME]);
 
 	particleEmitterSystem = new ParticleEmitterSystem();
+    renderHierarchy = new RenderHierarchy();
+    globalBatchArray = new RenderPassBatchArray();
+
 }
 
 RenderSystem::~RenderSystem()

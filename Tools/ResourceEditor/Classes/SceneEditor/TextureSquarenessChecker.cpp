@@ -95,10 +95,10 @@ void TextureSquarenessChecker::ValidateTextureCoordsOfNodeGeometry(Entity *scene
             PolygonGroup *polygonGroup = rb->GetPolygonGroup();
             if(!polygonGroup) continue;
 
-            Material *material = rb->GetMaterial();
+            NMaterial *material = rb->GetMaterial();
             if(!material) continue;
 
-            Texture * texture = material->GetTexture(Material::TEXTURE_DIFFUSE);
+            Texture * texture = material->GetTexture(NMaterial::TEXTURE_ALBEDO);
             if(squaredTextures.count(texture) && std::find(parsedPG.begin(), parsedPG.end(), polygonGroup) == parsedPG.end())
             {
                 Vector2 newScale = squaredTextures[texture];
