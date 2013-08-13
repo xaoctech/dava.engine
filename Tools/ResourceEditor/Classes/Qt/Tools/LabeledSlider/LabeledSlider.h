@@ -19,10 +19,8 @@
 
 #include <QWidget>
 
-namespace Ui {
-	class LabeledSlider;
-}
-
+class QLabel;
+class QSlider;
 class LabeledSlider: public QWidget
 {
 	Q_OBJECT
@@ -55,9 +53,16 @@ protected slots:
     void ValueChanged(int value);
     void RangeChanged(int min, int max);
     
+protected:
+    
+    void InitUI();
     
 private:
-	Ui::LabeledSlider *ui;
+
+    QSlider *slider;
+    QLabel * minText;
+    QLabel * maxText;
+    QLabel * valueText;
 };
 
 #endif // __LABELED_SLIDER_H__

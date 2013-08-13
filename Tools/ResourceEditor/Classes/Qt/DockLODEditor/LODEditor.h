@@ -43,7 +43,6 @@ protected slots:
     void LODCorrectionChanged(double value);
     void ForceDistanceStateChanged(int checked);
     void ForceDistanceChanged(int distance);
-    void LODDistanceChanged(double value);
 
     void SceneActivated(SceneEditor2 *scene);
 	void SceneDeactivated(SceneEditor2 *scene);
@@ -51,7 +50,10 @@ protected slots:
 
     
     void LODDataChanged();
-    void LODLevelChanged(int layerNum, double value);
+    void LODDistanceChangedBySpinbox(double value);
+    void LODDistanceChangedBySlider(int layerNum, double value);
+    
+    void ForceLayerActivated(const QString & text);
     
 protected:
     
@@ -65,6 +67,9 @@ protected:
     
     void AddLODRecurcive(DAVA::Entity *entity);
     void RemoveLODRecurcive(DAVA::Entity *entity);
+    
+    void SetSpinboxValue(QDoubleSpinBox *spinbox, double value);
+    void SetForceLayerValues(int layersCount);
     
 private:
 	Ui::LODEditor *ui;

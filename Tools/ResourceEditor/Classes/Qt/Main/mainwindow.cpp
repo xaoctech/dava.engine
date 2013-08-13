@@ -65,8 +65,9 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 	// create tool windows
 	new TextureBrowser(this);
-	new HintManager();//needed for hints in MaterialEditor
-	materialEditor = new MaterialEditor(DAVA::Rect(20, 20, 500, 600));
+//	new HintManager();//needed for hints in MaterialEditor
+//	materialEditor = new MaterialEditor(DAVA::Rect(20, 20, 500, 600));
+	materialEditor = NULL;
 	waitDialog = new QtWaitDialog(this);
 
 	// initial state is as project closed
@@ -92,9 +93,13 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 QtMainWindow::~QtMainWindow()
 {
 	delete addSwitchEntityDialog;
-	materialEditor->Release();
-	HintManager::Instance()->Release();
-	TextureBrowser::Instance()->Release();
+
+    SafeRelease(materialEditor);
+    
+    if(HintManager::Instance())
+        HintManager::Instance()->Release();
+	
+    TextureBrowser::Instance()->Release();
 
 	posSaver.SaveState(this);
 
@@ -467,13 +472,16 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 	LoadRulerToolState(scene);
 
 	// TODO: remove this code. it is for old material editor -->
-	DAVA::UIControl* parent = materialEditor->GetParent();
-	if(NULL != parent && NULL != scene)
-	{
-		parent->RemoveControl(materialEditor);
-		materialEditor->SetWorkingScene(scene, scene->selectionSystem->GetSelection()->GetEntity(0));
-		parent->AddControl(materialEditor);
-	}
+    if(materialEditor)
+    {
+        DAVA::UIControl* parent = materialEditor->GetParent();
+        if(NULL != parent && NULL != scene)
+        {
+            parent->RemoveControl(materialEditor);
+            materialEditor->SetWorkingScene(scene, scene->selectionSystem->GetSelection()->GetEntity(0));
+            parent->AddControl(materialEditor);
+        }
+    }
 	// <---
 }
 

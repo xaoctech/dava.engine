@@ -38,19 +38,28 @@ public:
     void SetLayerDistance(DAVA::int32 layerNum, DAVA::float32 distance);
 
     void EnableForceDistance(bool enable);
-    void SetForceDistance(DAVA::float32 distance);
+    bool GetForceDistanceEnabled() const;
     
+    void SetForceDistance(DAVA::float32 distance);
+    DAVA::float32 GetForceDistance() const;
+
+    void SetForceLayer(DAVA::int32 layer);
+    DAVA::int32 GetForceLayer() const;
+    
+    void GetDataFromSelection(SceneEditor2 * scene);
     
 signals:
     
     void DataChanged();
-    void LODLevelChanged(int, double);
     
 protected slots:
     
     void EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity);
 	void EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity);
 
+protected:
+    
+    void GetDataFromEntityRecurcive(DAVA::Entity *entity);
     
     
 protected:
@@ -58,6 +67,12 @@ protected:
     DAVA::int32 lodLayersCount;
     DAVA::float32 lodDistances[DAVA::LodComponent::MAX_LOD_LAYERS];
 
+    bool forceDistanceEnabled;
+    DAVA::float32 forceDistance;
+    DAVA::int32 forceLayer;
+    
+    
+    DAVA::Vector<DAVA::LodComponent *> lodData;
 };
 
 #endif //#ifndef __EDITOR_LOD_DATA_H__
