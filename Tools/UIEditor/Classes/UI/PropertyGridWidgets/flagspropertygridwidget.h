@@ -33,6 +33,14 @@ public:
 
     virtual void Initialize(BaseMetadata* activeMetadata);
     virtual void Cleanup();
+
+protected:
+	// Combobox handling.
+	void FillComboboxes();
+    virtual void ProcessComboboxValueChanged(QComboBox* senderWidget, const PROPERTYGRIDWIDGETSITER& iter,
+                                             const QString& value);
+    virtual void UpdateComboBoxWidgetWithPropertyValue(QComboBox* comboBoxWidget, const QMetaProperty& curProperty);
+
 private:
     Ui::FlagsPropertyGridWidget *ui;
 };
