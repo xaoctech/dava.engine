@@ -64,9 +64,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 	// create tool windows
 	new TextureBrowser(this);
-//	new HintManager();//needed for hints in MaterialEditor
-//	materialEditor = new MaterialEditor(DAVA::Rect(20, 20, 500, 600));
-	materialEditor = NULL;
+    materialEditor = NULL;
 	waitDialog = new QtWaitDialog(this);
 
 	// initial state is as project closed
@@ -471,6 +469,7 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 	LoadRulerToolState(scene);
 
 	// TODO: remove this code. it is for old material editor -->
+    CreateMaterialEditorIfNeed();
     if(materialEditor)
     {
         DAVA::UIControl* parent = materialEditor->GetParent();
@@ -483,6 +482,20 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
     }
 	// <---
 }
+
+void QtMainWindow::CreateMaterialEditorIfNeed()
+{
+    if(!materialEditor)
+    {
+        if(HintManager::Instance() == NULL)
+        {
+            new HintManager();//needed for hints in MaterialEditor
+        }
+        
+        materialEditor = new MaterialEditor(DAVA::Rect(20, 20, 500, 600));
+    }
+}
+
 
 void QtMainWindow::SceneDeactivated(SceneEditor2 *scene)
 {
@@ -782,6 +795,8 @@ void QtMainWindow::OnSnapToLandscape()
 
 void QtMainWindow::OnMaterialEditor()
 {
+    if(!materialEditor) return;
+    
 	if(NULL == materialEditor->GetParent())
 	{
 		SceneEditor2* sceneEditor = GetCurrentScene();
