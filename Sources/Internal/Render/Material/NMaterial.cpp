@@ -364,6 +364,12 @@ void MaterialTechnique::RecompileShader()
     shader = ShaderCache::Instance()->Get(shaderName, uniqueDefines);
 }
     
+    
+const FastName NMaterial::TEXTURE_ALBEDO("Albedo");
+const FastName NMaterial::TEXTURE_NORMAL("Normal");
+const FastName NMaterial::TEXTURE_DETAIL("Detail");
+const FastName NMaterial::TEXTURE_LIGHTMAP("Lightmap");
+
 NMaterial::NMaterial()
     : parent(0)
 {
@@ -621,12 +627,25 @@ MaterialTechnique * NMaterial::GetTechnique(const FastName & techniqueName)
 void NMaterial::SetTexture(const FastName & textureFastName, Texture * texture)
 {
     textures.Insert(textureFastName, texture);
+    texturesArray.push_back(texture);
+    textureNamesArray.push_back(textureFastName);
 }
     
 Texture * NMaterial::GetTexture(const FastName & textureFastName) const
 {
     return textures.GetValue(textureFastName);
 }
+    
+Texture * NMaterial::GetTexture(uint32 index)
+{
+    return texturesArray[index];
+}
+
+uint32 NMaterial::GetTextureCount()
+{
+    return (uint32)texturesArray.size();
+}
+
 
 
     
