@@ -68,6 +68,10 @@ QVariant LibraryModel::data(const QModelIndex &index, int role) const
 void LibraryModel::SetFileNameFilters(bool showDAEFiles, bool showSC2Files)
 {
 	QStringList nameFilters;
+
+	showDAE = showDAEFiles;
+	showSC2 = showSC2Files;
+
 	if (showDAEFiles)
 	{
 	    nameFilters << QString("*.dae");
@@ -89,6 +93,16 @@ void LibraryModel::SetFileNameFilters(bool showDAEFiles, bool showSC2Files)
 		this->setFilter(filterForNoneSelected | QDir::Files);
 		setNameFilters(nameFilters);
 	}
+}
+
+bool LibraryModel::IsDAEShown()
+{
+	return showDAE;
+}
+
+bool LibraryModel::IsSC2Shown()
+{
+	return showSC2;
 }
 
 QVariant LibraryModel::GetColorForExtension(const QString& extension, const ExtensionToColorMap* colorMap, const QModelIndex &index, int role) const

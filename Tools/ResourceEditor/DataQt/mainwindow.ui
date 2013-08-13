@@ -1505,6 +1505,10 @@
    <class>LibraryView</class>
    <extends>QTreeView</extends>
    <header>DockLibrary/libraryview.h</header>
+   <slots>
+    <slot>ShowDAE(bool)</slot>
+    <slot>ShowSC2(bool)</slot>
+   </slots>
   </customwidget>
   <customwidget>
    <class>PropertyEditor</class>
@@ -1593,5 +1597,38 @@
  <resources>
   <include location="QtIcons.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>cbShowDAEFiles</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>libraryView</receiver>
+   <slot>ShowDAE(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>823</x>
+     <y>121</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>840</x>
+     <y>154</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cbShowSC2Files</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>libraryView</receiver>
+   <slot>ShowSC2(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>953</x>
+     <y>121</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>957</x>
+     <y>164</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

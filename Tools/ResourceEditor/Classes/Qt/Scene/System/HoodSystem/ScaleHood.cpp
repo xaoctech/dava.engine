@@ -16,6 +16,7 @@
 
 #include "Scene/System/HoodSystem/ScaleHood.h"
 #include "Scene/System/ModifSystem.h"
+#include "Scene/System/TextDrawSystem.h"
 
 // framework
 #include "Render/RenderManager.h"
@@ -51,7 +52,7 @@ ScaleHood::~ScaleHood()
 
 }
 
-void ScaleHood::Draw(ST_Axis selectedAxis, ST_Axis mouseOverAxis)
+void ScaleHood::Draw(ST_Axis selectedAxis, ST_Axis mouseOverAxis, TextDrawSystem *textDrawSystem)
 {
 	int oldState = DAVA::RenderManager::Instance()->GetState();
 	DAVA::eBlendMode oldBlendSrc = DAVA::RenderManager::Instance()->GetSrcBlend();

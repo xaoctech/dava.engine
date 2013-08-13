@@ -33,6 +33,16 @@ class SceneTreeModel : public QStandardItemModel
 	Q_OBJECT
 
 public:
+	enum DropType
+	{
+		DropingUnknown = -1,
+		DropingMixed = 0,
+
+		DropingEntity,
+		DropingLayer,
+		DropingForce
+	};
+
 	static const char* mimeFormatEntity;
 	static const char* mimeFormatLayer;
 	static const char* mimeFormatForce;
@@ -62,20 +72,11 @@ public:
 	bool dropMimeData(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent);
 	bool DropCanBeAccepted(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent) const;
 	bool DropAccepted() const;
+	int GetDropType(const QMimeData *data) const;
 
 	void ResyncStructure(QStandardItem *item, DAVA::Entity *entity);
 
 protected:
-	enum DropType
-	{
-		DropingUnknown = -1,
-		DropingMixed = 0,
-
-		DropingEntity,
-		DropingLayer,
-		DropingForce
-	};
-
 	SceneEditor2 * curScene;
 	bool dropAccepted;
 
@@ -87,7 +88,6 @@ protected:
 	void AddIndexesCache(SceneTreeItem *item);
 
 	bool AreSameType(const QModelIndexList & indexes) const;
-	int GetDropType(const QMimeData *data) const;
 
 	QMimeData* EncodeMimeData(const QVector<void*> &data, const QString &format) const;
 	QVector<void*>* DecodeMimeData(const QMimeData* data, const QString &format) const;

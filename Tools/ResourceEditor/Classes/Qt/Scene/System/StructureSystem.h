@@ -45,6 +45,7 @@ public:
 	void MoveForce(const DAVA::Vector<DAVA::ParticleForce *> &forces, const DAVA::Vector<DAVA::ParticleLayer *> &oldLayers, DAVA::ParticleLayer *newLayer);
 	void RemoveForce(const DAVA::Vector<DAVA::ParticleForce *> &forces, const DAVA::Vector<DAVA::ParticleLayer *> &layers);
 	void Reload(const EntityGroup *entityGroup, const DAVA::FilePath &newModelPath = "");
+	void Add(const DAVA::FilePath &newModelPath, const DAVA::Vector3 pos = DAVA::Vector3());
 
 	void LockSignals();
 	void UnlockSignals();
@@ -61,6 +62,8 @@ protected:
 	void CheckAndMarkSolid(DAVA::Entity *entity);
 	void CheckAndMarkLocked(DAVA::Entity *entity);
 	void MarkLocked(DAVA::Entity *entity);
+
+	DAVA::Entity* Load(const DAVA::FilePath& sc2path);
 
 	virtual void AddEntity(DAVA::Entity * entity);
 	virtual void RemoveEntity(DAVA::Entity * entity);

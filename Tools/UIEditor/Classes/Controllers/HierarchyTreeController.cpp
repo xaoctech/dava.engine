@@ -166,7 +166,8 @@ void HierarchyTreeController::UnselectControl(HierarchyTreeControlNode* control,
 	if (uiControl)
 	{
 		uiControl->SetDebugDraw(false);
-		
+		uiControl->SetState(uiControl->GetInitialState());
+
 		//YZ draw parent rect
 		UIControl* parentToRemove = uiControl->GetParent();
 		if (parentToRemove)

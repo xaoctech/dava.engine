@@ -40,6 +40,7 @@ UIControlBackground::UIControlBackground()
 ,	tilesVertices(NULL)
 ,	tilesTexCoords(NULL)
 ,	tilesIndeces(NULL)
+, 	generateTilesArrays(false)
 {
 	rdoObject = new RenderDataObject();
     vertexStream = rdoObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 2, 0, 0);
@@ -656,6 +657,7 @@ void UIControlBackground::GenerateCell(float32* vertices, int32 offset, float32 
 void UIControlBackground::InitTilesArrays(int32 vertexCount, int32 trianglesCount)
 {	
 	DeleteTilesArrays();
+	SetGenerateTilesArraysFlag();
 	
 	tilesVertices = new float32[vertexCount];
 	tilesTexCoords = new float32[vertexCount];
@@ -680,6 +682,11 @@ void UIControlBackground::ResetTilesArrays()
 	{
 		DeleteTilesArrays();
 	}
+}
+
+void UIControlBackground::SetGenerateTilesArraysFlag()
+{
+	generateTilesArrays = true;
 }
 
 void UIControlBackground::DrawTiled(const Rect &drawRect)
@@ -730,7 +737,10 @@ void UIControlBackground::DrawTiled(const Rect &drawRect)
 	if (!tilesVertices || !tilesTexCoords || !tilesIndeces)
 	{
 		InitTilesArrays(vertexCount, vertInTriCount);
+	}
 	
+	if (generateTilesArrays)
+	{
 		// Generate coorinates for corner cells
 		// Top left corner cell
 		GenerateCell(tilesVertices, 0, leftStretchCap, topStretchCap, x, y);
@@ -845,6 +855,8 @@ void UIControlBackground::DrawTiled(const Rect &drawRect)
 				a += 4;
 			}
 		}
+		
+		generateTilesArrays = false;
 	}
 	vertexStream->Set(TYPE_FLOAT, 2, 0, tilesVertices);
 	texCoordStream->Set(TYPE_FLOAT, 2, 0, tilesTexCoords);

@@ -23,6 +23,7 @@
 TextureProperties::TextureProperties( QWidget *parent /*= 0*/ )
 	: QtPropertyEditor(parent)
 	, curTextureDescriptor(NULL)
+	, skipPropSizeChanged(false)
 { }
 
 TextureProperties::~TextureProperties()
@@ -340,7 +341,11 @@ void TextureProperties::PropWrapChanged()
 void TextureProperties::PropSizeChanged()
 {
 	SaveCurSizeFromProp();
-	emit PropertyChanged(PROP_SIZE);
+
+	if(!skipPropSizeChanged)
+	{
+		emit PropertyChanged(PROP_SIZE);
+	}
 }
 
 void TextureProperties::LoadCurSizeToProp()
@@ -353,7 +358,9 @@ void TextureProperties::LoadCurSizeToProp()
 
 		if(-1 != level)
 		{
+			skipPropSizeChanged = true;
 			propSizes->SetValue(level);
+			skipPropSizeChanged = false;
 		}
 	}
 }

@@ -63,6 +63,8 @@ protected:
 	QtPropertyDataMetaObject *propFormat;
 	QtPropertyDataMetaObject *propSizes;
 	
+	bool skipPropSizeChanged;
+
 	QSize origImageSize;
 	int curSizeLevelObject;
 

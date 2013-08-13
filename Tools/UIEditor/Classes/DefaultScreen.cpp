@@ -24,7 +24,7 @@
 #include <QMenu>
 #include <QAction>
 
-#define SIZE_CURSOR_DELTA 4
+#define SIZE_CURSOR_DELTA 5
 #define MIN_DRAG_DELTA 3
 #define KEY_MOVE_DELTA 5
 
@@ -516,7 +516,7 @@ Qt::CursorShape DefaultScreen::GetCursor(const Vector2& point)
 		
 		Rect rect = GetControlRect(node);
 		
-		if (!rect.PointInside(pos))
+		if (!IsPointInsideRectWithDelta(rect, pos, SIZE_CURSOR_DELTA))
 			continue;
 		
 		cursor = Qt::SizeAllCursor;
@@ -541,20 +541,21 @@ DefaultScreen::ResizeType DefaultScreen::GetResizeType(const HierarchyTreeContro
 	 
 	//check is resize
 	Rect rect = GetControlRect(selectedControlNode);
-	if (!rect.PointInside(pos))
+
+	if (!IsPointInsideRectWithDelta(rect, pos, SIZE_CURSOR_DELTA))
 		return ResizeTypeNoResize;
 	
 	bool horLeft = false;
 	bool horRight = false;
 	bool verTop = false;
 	bool verBottom = false;
-	if ((pos.x >= rect.x) && (pos.x <= (rect.x + SIZE_CURSOR_DELTA)))
+	if ((pos.x >= rect.x - SIZE_CURSOR_DELTA) && (pos.x <= (rect.x + SIZE_CURSOR_DELTA)))
 		horLeft = true;
-	if ((pos.x <= (rect.x + rect.dx)) && (pos.x >= (rect.x + rect.dx - SIZE_CURSOR_DELTA)))
+	if ((pos.x <= (rect.x + rect.dx + SIZE_CURSOR_DELTA)) && (pos.x >= (rect.x + rect.dx - SIZE_CURSOR_DELTA)))
 		horRight = true;
-	if ((pos.y >= rect.y) && (pos.y <= (rect.y + SIZE_CURSOR_DELTA)))
+	if ((pos.y >= rect.y - SIZE_CURSOR_DELTA) && (pos.y <= (rect.y + SIZE_CURSOR_DELTA)))
 		verTop = true;
-	if ((pos.y <= (rect.y + rect.dy)) && (pos.y >= (rect.y + rect.dy - SIZE_CURSOR_DELTA)))
+	if ((pos.y <= (rect.y + rect.dy + SIZE_CURSOR_DELTA)) && (pos.y >= (rect.y + rect.dy - SIZE_CURSOR_DELTA)))
 		verBottom = true;
 	
 	if (horLeft && verTop)
@@ -589,6 +590,14 @@ Qt::CursorShape DefaultScreen::ResizeTypeToQt(ResizeType resize)
 		return Qt::SizeVerCursor;
 
 	return Qt::ArrowCursor;
+}
+
+bool DefaultScreen::IsPointInsideRectWithDelta(const Rect& rect, const Vector2& point, int32 pointDelta) const
+{
+    if ((point.x >= (rect.x - pointDelta)) && (point.x <= (rect.x + rect.dx + pointDelta))
+		&& (point.y >= (rect.y - pointDelta)) && (point.y <= (rect.y + rect.dy + pointDelta)))
+			return true;
+	return false;
 }
 
 void DefaultScreen::ApplySizeDelta(const Vector2& delta)

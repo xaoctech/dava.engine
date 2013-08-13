@@ -19,26 +19,22 @@
 #include "Qt/Main/QtUtils.h"
 #include <QSizePolicy>
 
-BaseAddEntityDialog::BaseAddEntityDialog(DAVA::Entity* _entity, QWidget* parent)
+BaseAddEntityDialog::BaseAddEntityDialog(QWidget* parent)
 :	QDialog(parent),
-ui(new Ui::BaseAddEntityDialog)
+	entity(NULL),
+	ui(new Ui::BaseAddEntityDialog)
 {
 	ui->setupUi(this);
 	setAcceptDrops(false);
 	setWindowModality(Qt::NonModal);
 	setWindowFlags(WINDOWFLAG_ON_TOP_OF_APPLICATION);	
 	setAttribute( Qt::WA_MacAlwaysShowToolWindow);// on top of all applications
-
-	entity = _entity;
-	if(entity)
-	{
-		setWindowTitle(QString("Add ") + QString(entity->GetName().c_str()));
-	}
 }
 
 BaseAddEntityDialog::~BaseAddEntityDialog()
 {
 	delete ui;
+	SafeRelease(entity);
 }
 
 void BaseAddEntityDialog::showEvent ( QShowEvent * event )
@@ -63,6 +59,7 @@ void BaseAddEntityDialog::SetEntity(DAVA::Entity* _entity)
 	SafeRelease(entity);
 	
 	entity = _entity;
+	SafeRetain(entity);
 	if(entity)
 	{
 		setWindowTitle(QString("Add ") + QString(entity->GetName().c_str()));

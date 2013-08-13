@@ -16,6 +16,7 @@
 
 #include "Scene/System/HoodSystem/RotateHood.h"
 #include "Scene/System/ModifSystem.h"
+#include "Scene/System/TextDrawSystem.h"
 
 // framework
 #include "Render/RenderManager.h"
@@ -59,7 +60,7 @@ RotateHood::RotateHood() : HoodObject(4.0f)
 RotateHood::~RotateHood()
 { }
 
-void RotateHood::Draw(ST_Axis selectedAxis, ST_Axis mouseOverAxis)
+void RotateHood::Draw(ST_Axis selectedAxis, ST_Axis mouseOverAxis, TextDrawSystem *textDrawSystem)
 {
 	int oldState = DAVA::RenderManager::Instance()->GetState();
 	DAVA::eBlendMode oldBlendSrc = DAVA::RenderManager::Instance()->GetSrcBlend();

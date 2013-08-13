@@ -15,6 +15,8 @@
 =====================================================================================*/
 
 #include "DAVAEngine.h"
+#include "UI/UIEvent.h"
+#include "UI/UIControlSystem.h"
 
 #include "davaglwidget.h"
 #include "ui_davaglwidget.h"
@@ -27,6 +29,7 @@
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QFocusEvent>
+#include <QDateTime>
 
 #if defined (__DAVAENGINE_MACOS__)
 	#include "Platform/Qt/MacOS/QtLayerMacOS.h"
@@ -39,6 +42,9 @@ DavaGLWidget::DavaGLWidget(QWidget *parent)
 	: QWidget(parent)
     , ui(new Ui::DavaGLWidget)
 	, maxFPS(60)
+	, fps(0)
+	, fpsCountTime(0)
+	, fpsCount(0)
 	, minFrameTimeMs(0)
 {
 	ui->setupUi(this);
@@ -71,6 +77,7 @@ DavaGLWidget::DavaGLWidget(QWidget *parent)
 	setAttribute(Qt::WA_OpaquePaintEvent, true);
 	setAttribute(Qt::WA_NoSystemBackground, true);
 	setAttribute(Qt::WA_PaintOnScreen, true);
+	setAcceptDrops(true);
 
 	// Setup FPS
 	SetMaxFPS(maxFPS);
@@ -130,6 +137,34 @@ void DavaGLWidget::focusOutEvent(QFocusEvent *e)
 	DAVA::QtLayer::Instance()->LockKeyboardInput(false);
 }
 
+void DavaGLWidget::dragEnterEvent(QDragEnterEvent *event)
+{
+	event->accept();
+}
+
+void DavaGLWidget::dragMoveEvent(QDragMoveEvent *event)
+{
+	DAVA::Vector<DAVA::UIEvent> touches;
+	DAVA::Vector<DAVA::UIEvent> emptyTouches;
+
+	DAVA::UIEvent newTouch;
+	newTouch.tid = 1;
+	newTouch.physPoint.x = event->pos().x();
+	newTouch.physPoint.y = event->pos().y();
+	newTouch.phase = DAVA::UIEvent::PHASE_MOVE;
+	touches.push_back(newTouch);
+
+	DAVA::UIControlSystem::Instance()->OnInput(DAVA::UIEvent::PHASE_MOVE, emptyTouches, touches);
+
+	event->accept();
+}
+
+void DavaGLWidget::dropEvent(QDropEvent *event)
+{
+	const QMimeData *mimeData = event->mimeData();
+	emit OnDrop(mimeData);
+}
+
 #if defined(Q_WS_WIN)
 bool DavaGLWidget::winEvent(MSG *message, long *result)
 {
@@ -178,6 +213,11 @@ void DavaGLWidget::SetMaxFPS(int fps)
 	DAVA::RenderManager::Instance()->SetFPS(maxFPS);
 }
 
+int DavaGLWidget::GetFPS() const
+{
+	return fps;
+}
+
 void DavaGLWidget::Render()
 {
 	QElapsedTimer frameTimer;
@@ -185,15 +225,24 @@ void DavaGLWidget::Render()
 
 	DAVA::QtLayer::Instance()->ProcessFrame();
 
-	qint64 waitUntilNextFrameMs = (qint64) minFrameTimeMs - frameTimer.elapsed();
+	if(QDateTime::currentMSecsSinceEpoch() >= fpsCountTime)
+	{
+		fps = fpsCount;
+		fpsCount = 0;
+		fpsCountTime = QDateTime::currentMSecsSinceEpoch() + 1000.0;
+	}
+	else
+	{
+		fpsCount++;
+	}
 
+	qint64 waitUntilNextFrameMs = (qint64) minFrameTimeMs - frameTimer.elapsed();
 	if(waitUntilNextFrameMs <= 0)
 	{
 		// our render is too slow to reach maxFPS,
 		// so we can wait a minimum time
 		waitUntilNextFrameMs = 1;
 	}
-
 	QTimer::singleShot(waitUntilNextFrameMs, this, SLOT(Render()));
 }
 

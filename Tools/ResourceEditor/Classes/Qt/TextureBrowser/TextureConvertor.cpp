@@ -252,9 +252,9 @@ void TextureConvertor::jobRunNextConvert()
 			emit ConvertStatusQueue(convertJobQueueSize - jobStackConverted.size(), convertJobQueueSize);
 
 			// generate current wait message, that can be displayed by wait dialog
-			waitStatusText = "Please wait, convert in progress.\n\nPath:\t";
+			waitStatusText = "Path: ";
 			waitStatusText += desc->pathname.GetAbsolutePathname().c_str();
-			waitStatusText += "\nGPU:\t";
+			waitStatusText += "\n\nGPU: ";
 			waitStatusText += GlobalEnumMap<DAVA::eGPUFamily>::Instance()->ToString(curJobConverted->type);
 
 			if(NULL != waitDialog)
