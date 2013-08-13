@@ -43,6 +43,8 @@ public:
 	void GetIncludedControls(QList<QWidget*>& includedWidgets);
 	
 	void showEvent ( QShowEvent * event );
+
+	void hideEvent ( QHideEvent * event );
 	
 	DAVA::Entity* GetEntity()
 	{
