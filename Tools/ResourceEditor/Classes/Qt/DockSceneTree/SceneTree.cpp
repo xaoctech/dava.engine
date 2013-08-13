@@ -587,6 +587,16 @@ void SceneTree::SyncSelectionFromTree()
 	{
 		QSet<DAVA::Entity*> treeSelectedEntities;
 
+		// remove from selection system all entities that are not selected in tree
+		EntityGroup selGroup = *(curScene->selectionSystem->GetSelection());
+		for(size_t i = 0; i < selGroup.Size(); ++i)
+		{
+			if(!treeSelectedEntities.contains(selGroup.GetEntity(i)))
+			{
+				curScene->selectionSystem->RemSelection(selGroup.GetEntity(i));
+			}
+		}
+
 		// select items in scene
 		QModelIndexList indexList = selectionModel()->selection().indexes();
 		for (int i = 0; i < indexList.size(); ++i)
@@ -597,16 +607,6 @@ void SceneTree::SyncSelectionFromTree()
 			{
 				treeSelectedEntities.insert(entity);
 				curScene->selectionSystem->AddSelection(entity);
-			}
-		}
-
-		// remove from selection system all entities that are not selected in tree
-		EntityGroup selGroup = *(curScene->selectionSystem->GetSelection());
-		for(size_t i = 0; i < selGroup.Size(); ++i)
-		{
-			if(!treeSelectedEntities.contains(selGroup.GetEntity(i)))
-			{
-				curScene->selectionSystem->RemSelection(selGroup.GetEntity(i));
 			}
 		}
 	}
