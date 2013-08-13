@@ -64,8 +64,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 	// create tool windows
 	new TextureBrowser(this);
-	new HintManager();//needed for hints in MaterialEditor
-	materialEditor = new MaterialEditor(DAVA::Rect(20, 20, 500, 600));
+    materialEditor = NULL;
 	waitDialog = new QtWaitDialog(this);
 
 	// initial state is as project closed
@@ -91,9 +90,13 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 QtMainWindow::~QtMainWindow()
 {
 	delete addSwitchEntityDialog;
-	materialEditor->Release();
-	HintManager::Instance()->Release();
-	TextureBrowser::Instance()->Release();
+    
+	SafeRelease(materialEditor);
+    
+    if(HintManager::Instance())
+        HintManager::Instance()->Release();
+	
+    TextureBrowser::Instance()->Release();
 
 	posSaver.SaveState(this);
 
@@ -465,15 +468,33 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 	LoadRulerToolState(scene);
 
 	// TODO: remove this code. it is for old material editor -->
-	DAVA::UIControl* parent = materialEditor->GetParent();
-	if(NULL != parent && NULL != scene)
-	{
-		parent->RemoveControl(materialEditor);
-		materialEditor->SetWorkingScene(scene, scene->selectionSystem->GetSelection()->GetEntity(0));
-		parent->AddControl(materialEditor);
-	}
+    CreateMaterialEditorIfNeed();
+    if(materialEditor)
+    {
+        DAVA::UIControl* parent = materialEditor->GetParent();
+        if(NULL != parent && NULL != scene)
+        {
+            parent->RemoveControl(materialEditor);
+            materialEditor->SetWorkingScene(scene, scene->selectionSystem->GetSelection()->GetEntity(0));
+            parent->AddControl(materialEditor);
+        }
+    }
 	// <---
 }
+
+void QtMainWindow::CreateMaterialEditorIfNeed()
+{
+    if(!materialEditor)
+    {
+        if(HintManager::Instance() == NULL)
+        {
+            new HintManager();//needed for hints in MaterialEditor
+        }
+        
+        materialEditor = new MaterialEditor(DAVA::Rect(20, 20, 500, 600));
+    }
+}
+
 
 void QtMainWindow::SceneDeactivated(SceneEditor2 *scene)
 {
@@ -773,6 +794,8 @@ void QtMainWindow::OnSnapToLandscape()
 
 void QtMainWindow::OnMaterialEditor()
 {
+    if(!materialEditor) return;
+    
 	if(NULL == materialEditor->GetParent())
 	{
 		SceneEditor2* sceneEditor = GetCurrentScene();
