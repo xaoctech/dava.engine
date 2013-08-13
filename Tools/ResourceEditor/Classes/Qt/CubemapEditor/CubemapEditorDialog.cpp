@@ -74,8 +74,9 @@ void CubemapEditorDialog::LoadImageFromUserFile(float rotation, int face)
 	}
 }
 
-void CubemapEditorDialog::LoadImageTo(const DAVA::String& filePath, int face, bool silent)
+bool CubemapEditorDialog::LoadImageTo(const DAVA::String& filePath, int face, bool silent)
 {
+	bool result = true;
 	ClickableQLabel* label = GetLabelForFace(face);
 	
 	QString fileName = filePath.c_str();
@@ -101,12 +102,18 @@ void CubemapEditorDialog::LoadImageTo(const DAVA::String& filePath, int face, bo
 		
 		edited = true;
 	}
-	else if(!silent)
+	else
 	{
-		QString message = QString("%1\n is not suitable as current cubemap face!").arg(fileName);
-		ShowErrorDialog(message.toStdString());
+		if(!silent)
+		{
+			QString message = QString("%1\n is not suitable as current cubemap face!").arg(fileName);
+			ShowErrorDialog(message.toStdString());
+		}
+		
+		result = false;
 	}
 
+	return result;
 }
 
 ClickableQLabel* CubemapEditorDialog::GetLabelForFace(int face)
@@ -215,6 +222,7 @@ void CubemapEditorDialog::LoadCubemap(const QString& path)
 		String extension = filePath.GetExtension();
 		fileNameWithoutExtension.replace(fileNameWithoutExtension.find(extension), extension.size(), "");
 
+		bool cubemapLoadResult = true;
 		for(int i = 0; i < CubemapUtils::GetMaxFaces(); ++i)
 		{
 			if(texDescriptor->faceDescription & (1 << CubemapUtils::MapUIToFrameworkFace(i)))
@@ -224,8 +232,14 @@ void CubemapEditorDialog::LoadCubemap(const QString& path)
 											 CubemapUtils::GetFaceNameSuffix(CubemapUtils::MapUIToFrameworkFace(i)) + "." +
 											 CubemapUtils::GetDefaultFaceExtension());
 
-				LoadImageTo(faceFilePath.GetAbsolutePathname(), i, true);
+				bool faceLoadResult = LoadImageTo(faceFilePath.GetAbsolutePathname(), i, true);
+				cubemapLoadResult = cubemapLoadResult && faceLoadResult;
 			}
+		}
+		
+		if(!cubemapLoadResult)
+		{
+			ShowErrorDialog("This cubemap texture seems to be damaged.\nPlease repair it by setting image(s) to empty face(s) and save to disk.");
 		}
 	}
 	else
