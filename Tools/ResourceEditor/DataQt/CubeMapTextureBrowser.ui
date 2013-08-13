@@ -213,6 +213,46 @@
     <bool>false</bool>
    </property>
   </widget>
+  <widget class="QWidget" name="loadingWidget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1024</width>
+     <height>751</height>
+    </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>ArrowCursor</cursorShape>
+   </property>
+   <property name="autoFillBackground">
+    <bool>true</bool>
+   </property>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>310</y>
+      <width>211</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>30</pointsize>
+     </font>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
+    </property>
+    <property name="text">
+     <string>Loading...</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+  </widget>
   <zorder>textRootPath</zorder>
   <zorder>buttonSelectRootPath</zorder>
   <zorder>buttonCreateCube</zorder>
@@ -221,6 +261,7 @@
   <zorder>buttonReload</zorder>
   <zorder>selectedItemsStatus</zorder>
   <zorder>buttonRemove</zorder>
+  <zorder>loadingWidget</zorder>
  </widget>
  <resources>
   <include location="QtIcons.qrc"/>
