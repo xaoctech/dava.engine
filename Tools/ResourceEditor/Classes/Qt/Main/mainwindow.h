@@ -114,6 +114,8 @@ protected:
 
 	void InitRecent();
 	void AddRecent(const QString &path);
+    
+    void CreateMaterialEditorIfNeed();
 
 protected slots:
 	void ProjectOpened(const QString &path);
