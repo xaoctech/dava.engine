@@ -62,7 +62,7 @@ void CubemapEditorDialog::LoadImageFromUserFile(float rotation, int face)
 	if(!fileName.isNull())
 	{
 		String stdFilePath = fileName.toStdString();
-		LoadImageTo(stdFilePath, face);
+		LoadImageTo(stdFilePath, face, false);
 		
 		projectPath = stdFilePath;
 		settings->SetString(CUBEMAP_LAST_FACE_DIR_KEY, projectPath.GetDirectory().GetAbsolutePathname());
@@ -74,7 +74,7 @@ void CubemapEditorDialog::LoadImageFromUserFile(float rotation, int face)
 	}
 }
 
-void CubemapEditorDialog::LoadImageTo(const DAVA::String& filePath, int face)
+void CubemapEditorDialog::LoadImageTo(const DAVA::String& filePath, int face, bool silent)
 {
 	ClickableQLabel* label = GetLabelForFace(face);
 	
@@ -83,14 +83,14 @@ void CubemapEditorDialog::LoadImageTo(const DAVA::String& filePath, int face)
 	QImage faceImage;
 	faceImage.load(fileName);
 	
-	if(VerifyImage(faceImage))
+	if(VerifyImage(faceImage, face))
 	{
 		QImage scaledFace = faceImage.scaled(label->width(), label->height());
 		label->setPixmap(QPixmap::fromImage(scaledFace));
 		
 		facePath[face] = fileName;
 		
-		if(faceHeight < 0)
+		if(faceHeight != faceImage.height())
 		{
 			faceHeight = faceImage.height();
 			faceWidth = faceImage.width();
@@ -101,9 +101,10 @@ void CubemapEditorDialog::LoadImageTo(const DAVA::String& filePath, int face)
 		
 		edited = true;
 	}
-	else
+	else if(!silent)
 	{
-		ShowErrorDialog("This image is not suitable as current cubemap face!");
+		QString message = QString("%1\n is not suitable as current cubemap face!").arg(fileName);
+		ShowErrorDialog(message.toStdString());
 	}
 
 }
@@ -123,10 +124,11 @@ ClickableQLabel* CubemapEditorDialog::GetLabelForFace(int face)
 	return labels[face];
 }
 
-bool CubemapEditorDialog::VerifyImage(const QImage& image)
+bool CubemapEditorDialog::VerifyImage(const QImage& image, int faceIndex)
 {
 	bool result = true;
-	if(AnyFaceLoaded())
+	if(GetLoadedFaceCount() > 1 ||
+	   (GetLoadedFaceCount() == 1 && QString::null == facePath[faceIndex]))
 	{
 		if(image.width() != faceWidth ||
 		   image.height() != faceHeight)
@@ -134,7 +136,8 @@ bool CubemapEditorDialog::VerifyImage(const QImage& image)
 			result = false;
 		}
 	}
-	else if(image.height() != image.width())
+	else if(image.height() != image.width() ||
+			!IsPowerOf2(image.height()))
 	{
 		result = false;
 	}
@@ -184,7 +187,20 @@ bool CubemapEditorDialog::AllFacesLoaded()
 	}
 	
 	return faceLoaded;
+}
 
+int CubemapEditorDialog::GetLoadedFaceCount()
+{
+	int faceLoaded = 0;
+	for(int i = 0; i < CubemapUtils::GetMaxFaces(); ++i)
+	{
+		if(QString::null != facePath[i])
+		{
+			faceLoaded++;
+		}
+	}
+	
+	return faceLoaded;
 }
 
 void CubemapEditorDialog::LoadCubemap(const QString& path)
@@ -208,7 +224,7 @@ void CubemapEditorDialog::LoadCubemap(const QString& path)
 											 CubemapUtils::GetFaceNameSuffix(CubemapUtils::MapUIToFrameworkFace(i)) + "." +
 											 CubemapUtils::GetDefaultFaceExtension());
 
-				LoadImageTo(faceFilePath.GetAbsolutePathname(), i);
+				LoadImageTo(faceFilePath.GetAbsolutePathname(), i, true);
 			}
 		}
 	}
