@@ -22,7 +22,7 @@ CubemapEditorDialog::CubemapEditorDialog(QWidget *parent) :
 		facePath[i] = QString::null;
 	}
 	
-	edited = false;
+	faceChanged = false;
 	
 	ConnectSignals();
 }
@@ -41,7 +41,14 @@ void CubemapEditorDialog::ConnectSignals()
 	QObject::connect(ui->labelNY, SIGNAL(OnLabelClicked()), this, SLOT(OnNYClicked()));
 	QObject::connect(ui->labelPZ, SIGNAL(OnLabelClicked()), this, SLOT(OnPZClicked()));
 	QObject::connect(ui->labelNZ, SIGNAL(OnLabelClicked()), this, SLOT(OnNZClicked()));
-	
+
+	QObject::connect(ui->labelPX, SIGNAL(OnRotationChanged()), this, SLOT(OnRotationChanged()));
+	QObject::connect(ui->labelNX, SIGNAL(OnRotationChanged()), this, SLOT(OnRotationChanged()));
+	QObject::connect(ui->labelPY, SIGNAL(OnRotationChanged()), this, SLOT(OnRotationChanged()));
+	QObject::connect(ui->labelNY, SIGNAL(OnRotationChanged()), this, SLOT(OnRotationChanged()));
+	QObject::connect(ui->labelPZ, SIGNAL(OnRotationChanged()), this, SLOT(OnRotationChanged()));
+	QObject::connect(ui->labelNZ, SIGNAL(OnRotationChanged()), this, SLOT(OnRotationChanged()));
+
 	//QObject::connect(ui->buttonLoadTexture, SIGNAL(pressed()), this, SLOT(OnLoadTexture()));
 	QObject::connect(ui->buttonSave, SIGNAL(pressed()), this, SLOT(OnSave()));
 	QObject::connect(ui->buttonClose, SIGNAL(pressed()), this, SLOT(OnClose()));
@@ -88,6 +95,8 @@ bool CubemapEditorDialog::LoadImageTo(const DAVA::String& filePath, int face, bo
 	{
 		QImage scaledFace = faceImage.scaled(label->width(), label->height());
 		label->setPixmap(QPixmap::fromImage(scaledFace));
+		label->SetFaceLoaded(true);
+		label->SetRotation(0);
 		
 		facePath[face] = fileName;
 		
@@ -98,9 +107,9 @@ bool CubemapEditorDialog::LoadImageTo(const DAVA::String& filePath, int face, bo
 			UpdateFaceInfo();
 		}
 		
-		UpdateButtonState();
+		faceChanged = true;
 		
-		edited = true;
+		UpdateButtonState();
 	}
 	else
 	{
@@ -163,6 +172,12 @@ void CubemapEditorDialog::UpdateButtonState()
 	//check if all files are present.
 	//while file formats specs allow to specify cubemaps partially actual implementations don't allow that
 	bool enableSave = AllFacesLoaded();
+	
+	if(enableSave)
+	{
+		enableSave = IsCubemapEdited();
+	}
+	
 	ui->buttonSave->setEnabled(enableSave);
 }
 
@@ -273,21 +288,22 @@ void CubemapEditorDialog::SaveCubemap(const QString& path)
 										 CubemapUtils::GetFaceNameSuffix(CubemapUtils::MapUIToFrameworkFace(i)) + "." +
 										 CubemapUtils::GetDefaultFaceExtension());
 
-			if(facePath[i] != faceFilePath.GetAbsolutePathname().c_str())
+			DAVA::String targetFullPath = faceFilePath.GetAbsolutePathname().c_str();
+			if(facePath[i] != targetFullPath.c_str())
 			{
-				if(QFile::exists(faceFilePath.GetAbsolutePathname().c_str()))
+				if(QFile::exists(targetFullPath.c_str()))
 				{
 					int answer = ShowQuestion("File overwrite",
-											  "File " + faceFilePath.GetAbsolutePathname() + " already exist. Do you want to overwrite it with " + facePath[i].toStdString(),
+											  "File " + targetFullPath + " already exist. Do you want to overwrite it with " + facePath[i].toStdString(),
 											  MB_FLAG_YES | MB_FLAG_NO, MB_FLAG_NO);
 					
 					if(MB_FLAG_YES == answer)
 					{
-						bool removeResult = QFile::remove(faceFilePath.GetAbsolutePathname().c_str());
+						bool removeResult = QFile::remove(targetFullPath.c_str());
 						
 						if(!removeResult)
 						{
-							ShowErrorDialog("Failed to copy texture " + facePath[i].toStdString() + " to " + faceFilePath.GetAbsolutePathname().c_str());
+							ShowErrorDialog("Failed to copy texture " + facePath[i].toStdString() + " to " + targetFullPath.c_str());
 							return;
 						}
 
@@ -298,13 +314,23 @@ void CubemapEditorDialog::SaveCubemap(const QString& path)
 					}
 				}
 				
-				bool copyResult = QFile::copy(facePath[i], faceFilePath.GetAbsolutePathname().c_str());
+				bool copyResult = QFile::copy(facePath[i], targetFullPath.c_str());
 				
 				if(!copyResult)
 				{
-					ShowErrorDialog("Failed to copy texture " + facePath[i].toStdString() + " to " + faceFilePath.GetAbsolutePathname().c_str());
+					ShowErrorDialog("Failed to copy texture " + facePath[i].toStdString() + " to " + targetFullPath);
 					return;
 				}
+			}
+			
+			ClickableQLabel* faceLabel = GetLabelForFace(i);
+			if(faceLabel->GetRotation() != 0)
+			{
+				QTransform transform;
+				transform.rotate(faceLabel->GetRotation());
+				QImage qimg(targetFullPath.c_str());
+				QImage rotatedImage = qimg.transformed(transform);
+				rotatedImage.save(targetFullPath.c_str());
 			}
 		}
 	}
@@ -349,7 +375,7 @@ void CubemapEditorDialog::InitForEditing(DAVA::FilePath& textureDescriptorPath, 
 	ui->buttonSave->setEnabled(false);
 	ui->legend->setVisible(false);
 	
-	edited = false;
+	faceChanged = false;
 }
 
 void CubemapEditorDialog::InitForCreating(DAVA::FilePath& textureDescriptorPath, DAVA::FilePath& root)
@@ -359,7 +385,7 @@ void CubemapEditorDialog::InitForCreating(DAVA::FilePath& textureDescriptorPath,
 	rootPath = QString::fromStdString(root.GetAbsolutePathname());
 	ui->legend->setVisible(true);
 	
-	edited = false;
+	faceChanged = false;
 }
 
 ////////////////////////////////////////////////////
@@ -431,7 +457,7 @@ void CubemapEditorDialog::OnSave()
 	
 	SaveCubemap(targetFile.GetAbsolutePathname().c_str());
 	
-	edited = false;
+	faceChanged = false;
 	
 	EditorSettings::Instance()->Save();
 	close();
@@ -440,7 +466,7 @@ void CubemapEditorDialog::OnSave()
 void CubemapEditorDialog::OnClose()
 {
 	int answer = MB_FLAG_YES;
-	if(edited)
+	if(IsCubemapEdited())
 	{
 		answer = ShowQuestion("Warning",
 							  "Cubemap texture was edited. Do you want to close it without saving?",
@@ -453,5 +479,39 @@ void CubemapEditorDialog::OnClose()
 		EditorSettings::Instance()->Save();
 		close();
 	}
+}
+
+bool CubemapEditorDialog::IsCubemapEdited()
+{
+	bool edited = faceChanged;
+	
+	if(!edited)
+	{
+		ClickableQLabel* labels[] =
+		{
+			ui->labelPX,
+			ui->labelNX,
+			ui->labelPY,
+			ui->labelNY,
+			ui->labelPZ,
+			ui->labelNZ
+		};
+
+		for(int i = 0; i < CubemapUtils::GetMaxFaces(); ++i)
+		{
+			if(labels[i]->GetRotation() != 0)
+			{
+				edited = true;
+				break;
+			}
+		}
+	}
+	
+	return edited;
+}
+
+void CubemapEditorDialog::OnRotationChanged()
+{
+	UpdateButtonState();
 }
 

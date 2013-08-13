@@ -38,7 +38,7 @@ protected:
 	QString* facePath;
 	QString rootPath;
 	
-	bool edited;
+	bool faceChanged;
 	
 	eEditorMode editorMode;
 	DAVA::FilePath targetFile;
@@ -58,6 +58,7 @@ protected:
 	DAVA::uint8 GetFaceMask();
 	bool LoadImageTo(const DAVA::String& filePath, int face, bool silent);
 	ClickableQLabel* GetLabelForFace(int face);
+	bool IsCubemapEdited();
 	
 protected slots:
 
@@ -67,6 +68,7 @@ protected slots:
 	void OnNYClicked();
 	void OnPZClicked();
 	void OnNZClicked();
+	void OnRotationChanged();
 	
 	void OnLoadTexture();
 	void OnSave();

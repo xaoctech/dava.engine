@@ -85,6 +85,8 @@
         <file>QtIcons/clone.png</file>
         <file>QtIcons/remove_layer.png</file>
         <file>QtIcons/remove_force.png</file>
+		<file>QtIcons/btn_rotate_ccw.png</file>
+		<file>QtIcons/btn_rotate_cw.png</file>
         <file>QtImages/sky_example0.png</file>
         <file>QtImages/sky_example1.png</file>
         <file>QtImages/sky_example2.png</file>
