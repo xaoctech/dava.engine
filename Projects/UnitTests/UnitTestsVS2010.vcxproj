@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Classes\AlignTest.h" />
     <ClInclude Include="Classes\BaseScreen.h" />
     <ClInclude Include="Classes\CloneTest.h" />
     <ClInclude Include="Classes\Config.h" />
@@ -43,6 +44,7 @@
     <ClInclude Include="Classes\UIScrollViewTest.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Classes\AlignTest.cpp" />
     <ClCompile Include="Classes\BaseScreen.cpp" />
     <ClCompile Include="Classes\CloneTest.cpp" />
     <ClCompile Include="Classes\DeviceInfoTest.cpp" />

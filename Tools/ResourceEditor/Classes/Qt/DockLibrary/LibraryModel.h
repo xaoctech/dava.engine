@@ -39,6 +39,8 @@ public:
     virtual ~LibraryModel();
 
 	void SetFileNameFilters(bool showDAEFiles, bool showSC2Files);
+	bool IsDAEShown();
+	bool IsSC2Shown();
 
     void SetLibraryPath(const QString &path);
 	// bool SelectFile(const QString &path);
@@ -50,6 +52,9 @@ protected:
 								const QModelIndex &index, int role) const;
 
 private:
+	bool showDAE;
+	bool showSC2;
+
 	static ExtensionToColorMap extensionToBackgroundColorMap[];
 };
 

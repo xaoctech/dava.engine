@@ -16,6 +16,13 @@
 #include "flagspropertygridwidget.h"
 #include "ui_flagspropertygridwidget.h"
 
+#include "WidgetSignalsBlocker.h"
+#include "UIControlStateHelper.h"
+#include "PropertiesHelper.h"
+
+#include "CommandsController.h"
+#include "ChangePropertyCommand.h"
+
 static const QString FLAGS_PROPERTY_BLOCK_NAME = "Flags";
 
 FlagsPropertyGridWidget::FlagsPropertyGridWidget(QWidget *parent) :
@@ -34,23 +41,95 @@ FlagsPropertyGridWidget::~FlagsPropertyGridWidget()
 void FlagsPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
 {
     BasePropertyGridWidget::Initialize(activeMetadata);
+	FillComboboxes();
 
     // Build the properties map to make the properties search faster.
     PROPERTIESMAP propertiesMap = BuildMetadataPropertiesMap();
 
     // Initialize the widgets.
-    RegisterCheckBoxWidgetForProperty(propertiesMap, "Selected", ui->selectedCheckBox);
     RegisterCheckBoxWidgetForProperty(propertiesMap, "Visible", ui->visibleCheckBox);
-    RegisterCheckBoxWidgetForProperty(propertiesMap, "Enabled", ui->enabledCheckBox);
     RegisterCheckBoxWidgetForProperty(propertiesMap, "Input", ui->inputCheckBox);
     RegisterCheckBoxWidgetForProperty(propertiesMap, "ClipContents", ui->clipContentsCheckbox);
+	
+	RegisterComboBoxWidgetForProperty(propertiesMap, "InitialState", ui->initialStateComboBox);
 }
 
 void FlagsPropertyGridWidget::Cleanup()
 {
-    UnregisterCheckBoxWidget(ui->selectedCheckBox);
     UnregisterCheckBoxWidget(ui->visibleCheckBox);
-    UnregisterCheckBoxWidget(ui->enabledCheckBox);
     UnregisterCheckBoxWidget(ui->inputCheckBox);
     UnregisterCheckBoxWidget(ui->clipContentsCheckbox);
+
+	UnregisterComboBoxWidget(ui->initialStateComboBox);
 }
+
+void FlagsPropertyGridWidget::FillComboboxes()
+{
+    WidgetSignalsBlocker initialStateBlocker(ui->initialStateComboBox);
+
+	ui->initialStateComboBox->clear();
+
+    int statesCount = UIControlStateHelper::GetUIControlStatesCount();
+    for (int i = 0; i < statesCount; i ++)
+    {
+        UIControl::eControlState controlState = UIControlStateHelper::GetUIControlState(i);
+		QString stateName = UIControlStateHelper::GetUIControlStateName(controlState);
+        ui->initialStateComboBox->addItem(stateName, QVariant(controlState));
+    }
+}
+
+void FlagsPropertyGridWidget::ProcessComboboxValueChanged(QComboBox* senderWidget,
+														  const PROPERTYGRIDWIDGETSITER& iter,
+														  const QString& value)
+{
+	if (senderWidget == NULL)
+    {
+        Logger::Error("FlagsPropertyGridWidget::ProcessComboboxValueChanged: senderWidget is NULL!");
+        return;
+    }
+
+    if (senderWidget == ui->initialStateComboBox)
+    {
+	    int selectedIndex = senderWidget->currentIndex();
+		int selectedValue = (int)UIControlStateHelper::GetUIControlState(selectedIndex);
+		int curValue = PropertiesHelper::GetAllPropertyValues<int>(this->activeMetadata,
+																   iter->second.getProperty().name());
+		// Don't update the property if the text wasn't actually changed.
+		if (curValue == selectedValue)
+		{
+			return;
+		}
+
+		BaseCommand* command = new ChangePropertyCommand<int>(activeMetadata, iter->second, selectedValue);
+		CommandsController::Instance()->ExecuteCommand(command);
+		SafeRelease(command);
+
+		return;
+    }
+	
+	// No postprocessing was applied - use the generic process.
+    BasePropertyGridWidget::ProcessComboboxValueChanged(senderWidget, iter, value);
+}
+
+void FlagsPropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue(QComboBox* comboBoxWidget, const QMetaProperty& curProperty)
+{
+    if (!this->activeMetadata)
+    {
+        return;
+    }
+	
+    bool isPropertyValueDiffers = false;
+    const QString& propertyName = curProperty.name();
+    int propertyValue = PropertiesHelper::GetPropertyValue<int>(this->activeMetadata, propertyName, isPropertyValueDiffers);
+
+	// Is it our combobox?
+    if (comboBoxWidget == ui->initialStateComboBox)
+    {
+        return SetComboboxSelectedItem(comboBoxWidget,
+									   UIControlStateHelper::GetUIControlStateName((UIControl::eControlState)propertyValue));
+    }
+	
+    // Not related to the custom combobox - call the generic one.
+    BasePropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue(comboBoxWidget, curProperty);
+}
+

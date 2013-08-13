@@ -39,7 +39,7 @@
 #include "Scene/System/StructureSystem.h"
 #include "Scene/System/EditorParticlesSystem.h"
 #include "Scene/System/EditorLightSystem.h"
-
+#include "Scene/System/TextDrawSystem.h"
 
 class SceneEditor2 : public DAVA::Scene
 {
@@ -63,6 +63,7 @@ public:
 	StructureSystem *structureSystem;
 	EditorParticlesSystem *particlesSystem;
 	EditorLightSystem *editorLightSystem;
+	TextDrawSystem *textDrawSystem;
 
 
 	// save/load

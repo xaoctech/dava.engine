@@ -639,9 +639,7 @@ void QtPropertyDataDavaVariant::ToMatrix2(const QVariant &value)
 
 void QtPropertyDataDavaVariant::ToColor(const QVariant &value)
 {
-	//curVariantValue.SetColor(QColorToColor(c));
-	// TODO:
-	// ...
+	curVariantValue.SetColor(QColorToColor(value.value<QColor>()));
 }
 
 void QtPropertyDataDavaVariant::ToAABBox3(const QVariant &value)
@@ -732,8 +730,7 @@ bool QtPropertyDataDavaVariant::EditorDoneInternal(QWidget *editor)
 		if(curVariantValue.type == DAVA::VariantType::TYPE_COLOR)
 		{
 			QtColorLineEdit *colorLineEdit = (QtColorLineEdit *) editor;
-
-			curVariantValue.SetColor(QColorToColor(colorLineEdit->GetColor()));
+			SetValue(colorLineEdit->GetColor());
 			ret = true;
 		}
 	}
@@ -752,9 +749,7 @@ void QtPropertyDataDavaVariant::ColorOWPressed()
 	QColor c = QColorDialog::getColor(ColorToQColor(curVariantValue.AsColor()), NULL, "Select color", QColorDialog::ShowAlphaChannel);
 	if(c.isValid())
 	{
-		curVariantValue.SetColor(QColorToColor(c));
-		ParentUpdate();
-
+		SetValue(c);
 		iconCacheIsValid = false;
 	}
 }
@@ -764,7 +759,7 @@ void QtPropertyDataDavaVariant::FilePathOWPressed()
 	QString path = QFileDialog::getOpenFileName(GetOWViewport(), "Select file", QString(curVariantValue.AsFilePath().GetAbsolutePathname().c_str()));
 	if(!path.isEmpty())
 	{
-		curVariantValue.SetFilePath(DAVA::FilePath(path.toStdString()));
+		SetValue(path);
 	}
 }
 

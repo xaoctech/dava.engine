@@ -90,6 +90,7 @@ namespace DAVA
 		__touchStart = Vector2(0.f, 0.f);
 		__oldRect = relativeRect;
 #endif
+		initialState = STATE_NORMAL;
 	}
 	
 	UIControl::~UIControl()
@@ -267,6 +268,24 @@ namespace DAVA
 		resultList.erase(std::unique(resultList.begin(), resultList.end()), resultList.end());
 		
 		return resultList;
+	}
+
+	String UIControl::GetSpriteFrameworkPath(Sprite* sprite)
+	{
+		if (!sprite)
+		{
+			return "";
+		}
+
+		FilePath path(sprite->GetRelativePathname());
+		String pathName = "";
+		if (!path.IsEmpty())
+		{
+			path.TruncateExtension();
+			pathName = path.GetFrameworkPath();
+		}
+		
+		return pathName;
 	}
 
 	void UIControl::SetName(const String & _name)
@@ -787,8 +806,8 @@ namespace DAVA
 				relativePosition = absolutePosition = position;
 			}
 		}
-		// DF-1482 - Each time we change control's position - we have to reset tiles arrays for DRAW_TILED option
-		GetBackground()->ResetTilesArrays();
+		// DF-1482 - Each time we change control's position - we have to re-generate tiles arrays for DRAW_TILED option
+		GetBackground()->SetGenerateTilesArraysFlag();
 	}
 	
 	const Vector2 &UIControl::GetSize() const
@@ -1260,7 +1279,10 @@ namespace DAVA
 		visible = srcControl->visible;
 		inputEnabled = srcControl->inputEnabled;
 		clipContents = srcControl->clipContents;
-		
+
+		customControlType = srcControl->GetCustomControlType();
+		initialState = srcControl->GetInitialState();
+
 		SafeRelease(eventDispatcher);
 		if(srcControl->eventDispatcher)
 		{
@@ -1957,12 +1979,9 @@ namespace DAVA
 		Sprite *sprite =  this->GetSprite();
 		if (sprite)
 		{
-			FilePath path(sprite->GetRelativePathname());
-			path.TruncateExtension();
-
-            String pathname = path.GetFrameworkPath();
-			node->Set("sprite", pathname);
+			node->Set("sprite", GetSpriteFrameworkPath(sprite));
 		}
+
 		// Color
 		Color color =  this->GetBackground()->GetColor();
 		if (baseControl->GetBackground()->color != color)
@@ -2062,7 +2081,13 @@ namespace DAVA
 		{
 			node->Set("spriteModification", this->GetBackground()->GetModification());
 		}
-        
+
+		// Initial state.
+		if (baseControl->GetInitialState() != this->initialState)
+		{
+			node->Set("initialState", this->initialState);
+		}
+
 		// Release variantType variable
 		SafeDelete(nodeValue);
 		// Release model variable
@@ -2095,6 +2120,7 @@ namespace DAVA
 		YamlNode * tagNode = node->Get("tag");
 
 		YamlNode * spriteModificationNode = node->Get("spriteModification");
+		YamlNode * initialStateNode = node->Get("initialState");
 		
 		Rect rect = GetRect();
 		if (rectNode)
@@ -2251,6 +2277,13 @@ namespace DAVA
 			int32 spriteModification = spriteModificationNode->AsInt32();
             GetBackground()->SetModification(spriteModification);
         }
+		
+		if (initialStateNode)
+		{
+			int32 newInitialState = initialStateNode->AsInt32();
+			SetInitialState(newInitialState);
+			SetState(newInitialState);
+		}
 	}
 	
 	Animation *	UIControl::WaitAnimation(float32 time, int32 track)
@@ -2676,5 +2709,15 @@ namespace DAVA
 			// The type coincides with the node type name passed, no base type exists.
 			node->Set("type", nodeTypeName);
 		}
+	}
+
+	int32 UIControl::GetInitialState() const
+	{
+		return initialState;
+	}
+	
+	void UIControl::SetInitialState(int32 newState)
+	{
+		initialState = newState;
 	}
 }

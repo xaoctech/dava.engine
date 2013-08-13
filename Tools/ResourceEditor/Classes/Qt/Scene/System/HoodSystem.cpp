@@ -283,6 +283,8 @@ void HoodSystem::Draw()
 {
 	if(visible && NULL != curHood)
 	{
+		TextDrawSystem *textDrawSys = ((SceneEditor2 *) GetScene())->textDrawSystem;
+
 		if(!lockedModif)
 		{
 			ST_Axis showAsSelected = curAxis;
@@ -295,14 +297,14 @@ void HoodSystem::Draw()
 				}
 			}
 
-			curHood->Draw(showAsSelected, moseOverAxis);
+			curHood->Draw(showAsSelected, moseOverAxis, textDrawSys);
 
 			// debug draw axis collision word
 			//collWorld->debugDrawWorld();
 		}
 		else
 		{
-			normalHood.Draw(curAxis, ST_AXIS_NONE);
+			normalHood.Draw(curAxis, ST_AXIS_NONE, textDrawSys);
 		}
 	}
 }

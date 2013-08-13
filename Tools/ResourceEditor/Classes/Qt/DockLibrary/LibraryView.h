@@ -67,6 +67,12 @@ public slots:
 	void ProjectOpened(const QString &path);
 	void ProjectClosed(const QString &path);
 	void LibraryFileTypesChanged(bool showDAEFiles, bool showSC2Files);
+	void OnModelEdit();
+	void OnModelAdd();
+	void OnDAEConvert();
+
+	void ShowDAE(bool show);
+	void ShowSC2(bool show);
 
 protected slots:
 	void ModelRootPathChanged(const QString & newPath);

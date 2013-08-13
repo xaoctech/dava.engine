@@ -281,26 +281,6 @@ void UIControlMetadata::SetAngle(float value)
 }
 
 //Boolean getters/setters
-bool UIControlMetadata::GetSelected() const
-{
-    if (!VerifyActiveParamID())
-    {
-        return false;
-    }
-
-    return GetActiveUIControl()->GetSelected();
-}
-
-void UIControlMetadata::SetSelected(const bool value)
-{
-    if (!VerifyActiveParamID())
-    {
-        return;
-    }
-    
-    GetActiveUIControl()->SetSelected(value);
-}
-
 bool UIControlMetadata::GetVisible() const
 {
     if (!VerifyActiveParamID())
@@ -320,26 +300,6 @@ void UIControlMetadata::SetVisible(const bool value)
     }
     
     GetActiveUIControl()->SetVisible(value);
-}
-
-bool UIControlMetadata::GetEnabled() const
-{
-    if (!VerifyActiveParamID())
-    {
-        return false;
-    }
-    
-    return !GetActiveUIControl()->GetDisabled();
-}
-
-void UIControlMetadata::SetEnabled(const bool value)
-{
-    if (!VerifyActiveParamID())
-    {
-        return;
-    }
-    
-    GetActiveUIControl()->SetDisabled(!value);
 }
 
 bool UIControlMetadata::GetInput() const
@@ -914,6 +874,26 @@ void UIControlMetadata::SetCustomControlName(const QString& value)
 	{
 		GetActiveUIControl()->SetCustomControlType(value.toStdString());
 	}
+}
+
+int UIControlMetadata::GetInitialState() const
+{
+	if (!VerifyActiveParamID())
+	{
+		return -1;
+	}
+	
+	return (int)GetActiveUIControl()->GetInitialState();
+}
+
+void UIControlMetadata::SetInitialState(int value)
+{
+	if (!VerifyActiveParamID())
+	{
+		return;
+	}
+	
+	GetActiveUIControl()->SetInitialState((int)value);
 }
 
 void UIControlMetadata::ResizeScrollViewContent(UIControl * control)

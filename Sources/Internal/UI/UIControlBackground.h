@@ -271,9 +271,11 @@ private:
 	float32* tilesVertices;
 	float32* tilesTexCoords;
 	uint32 *tilesIndeces;
+	bool generateTilesArrays;
 	
 public:
-	void ResetTilesArrays();
+	void ResetTilesArrays(); // Delete all tiles arrays
+	void SetGenerateTilesArraysFlag(); // Drop generateTilesArrays flag - so new tiles arrays values need to be calculated
     
 protected:
 	~UIControlBackground();

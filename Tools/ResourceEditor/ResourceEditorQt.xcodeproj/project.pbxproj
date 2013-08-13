@@ -195,6 +195,8 @@
 		4FAD0D411785EC6E00B05A35 /* QtPropertyDataMetaObject_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0CC71785EC6E00B05A35 /* QtPropertyDataMetaObject_moc.cpp */; };
 		4FAD0D421785EC6E00B05A35 /* SelectPathWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FAD0CC91785EC6E00B05A35 /* SelectPathWidget_moc.cpp */; };
 		4FB96A281705C90500EB205E /* SceneTabWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FB96A211705C90500EB205E /* SceneTabWidget.cpp */; };
+		4FBD351A17B5769E0051833D /* DAEConvertAction.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FBD351817B5769E0051833D /* DAEConvertAction.cpp */; };
+		4FBD352117BA38940051833D /* TextDrawSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FBD351F17BA38940051833D /* TextDrawSystem.cpp */; };
 		4FFE5C75176B379600728624 /* SceneEditor2.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FFE5C73176B379600728624 /* SceneEditor2.cpp */; };
 		4FFE5C82176B37B600728624 /* Command2.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FFE5C77176B37B600728624 /* Command2.cpp */; };
 		4FFE5C83176B37B600728624 /* CommandBatch.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FFE5C79176B37B600728624 /* CommandBatch.cpp */; };
@@ -894,6 +896,10 @@
 		4FAD0CD61785EC6E00B05A35 /* ui_VisibilityToolView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_VisibilityToolView.h; path = _GeneratedQt/ui_VisibilityToolView.h; sourceTree = "<group>"; };
 		4FB96A211705C90500EB205E /* SceneTabWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneTabWidget.cpp; sourceTree = "<group>"; };
 		4FB96A221705C90500EB205E /* SceneTabWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneTabWidget.h; sourceTree = "<group>"; };
+		4FBD351817B5769E0051833D /* DAEConvertAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DAEConvertAction.cpp; sourceTree = "<group>"; };
+		4FBD351917B5769E0051833D /* DAEConvertAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DAEConvertAction.h; sourceTree = "<group>"; };
+		4FBD351F17BA38940051833D /* TextDrawSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextDrawSystem.cpp; sourceTree = "<group>"; };
+		4FBD352017BA38940051833D /* TextDrawSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextDrawSystem.h; sourceTree = "<group>"; };
 		4FFE5C73176B379600728624 /* SceneEditor2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneEditor2.cpp; sourceTree = "<group>"; };
 		4FFE5C74176B379600728624 /* SceneEditor2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneEditor2.h; sourceTree = "<group>"; };
 		4FFE5C77176B37B600728624 /* Command2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Command2.cpp; sourceTree = "<group>"; };
@@ -2336,6 +2342,8 @@
 		4FB96A231705C90500EB205E /* System */ = {
 			isa = PBXGroup;
 			children = (
+				4FBD351F17BA38940051833D /* TextDrawSystem.cpp */,
+				4FBD352017BA38940051833D /* TextDrawSystem.h */,
 				49CAAF7817A65FA400C91496 /* RulerToolSystem.cpp */,
 				49CAAF7917A65FA400C91496 /* RulerToolSystem.h */,
 				499E4A6F178ABDD10067FA56 /* CustomColorsSystem.cpp */,
@@ -2376,6 +2384,8 @@
 		4FFE5C76176B37B600728624 /* Commands2 */ = {
 			isa = PBXGroup;
 			children = (
+				4FBD351817B5769E0051833D /* DAEConvertAction.cpp */,
+				4FBD351917B5769E0051833D /* DAEConvertAction.h */,
 				62AD51C317AF95D4001A4621 /* AddEntityCommand.cpp */,
 				62AD51C417AF95D4001A4621 /* AddEntityCommand.h */,
 				176D7F0C179D5C6800795610 /* ParticleEditorCommands.cpp */,
@@ -4570,6 +4580,8 @@
 				E8BD39D617B4BB4D00C63420 /* LabeledSlider_moc.cpp in Build Sources */,
 				E8BD39FC17B52A8200C63420 /* DistanceSlider.cpp in Build Sources */,
 				E8BD3A0217B52BC600C63420 /* DistanceSlider_moc.cpp in Build Sources */,
+				4FBD351A17B5769E0051833D /* DAEConvertAction.cpp in Build Sources */,
+				4FBD352117BA38940051833D /* TextDrawSystem.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

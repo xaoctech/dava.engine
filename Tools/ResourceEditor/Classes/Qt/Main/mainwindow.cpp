@@ -26,21 +26,20 @@
 #include "TextureBrowser/TextureBrowser.h"
 #include "MaterialBrowser/MaterialBrowser.h"
 
-#include "Classes/SceneEditor/EditorSettings.h"
-#include "Classes/SceneEditor/EditorConfig.h"
-
-#include "../CubemapEditor/CubemapTextureBrowser.h"
+#include "CubemapEditor/CubemapTextureBrowser.h"
 #include "Scene3D/Systems/SkyboxSystem.h"
 
-#include "../Tools/BaseAddEntityDialog/BaseAddEntityDialog.h"
-//#include "../Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
-#include "../Tools/SelectPathWidget/SelectPathWidget.h"
+#include "Tools/BaseAddEntityDialog/BaseAddEntityDialog.h"
+//#include "Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
+#include "Tools/SelectPathWidget/SelectPathWidget.h"
 
-#include "../Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
-#include "../../Commands2/AddEntityCommand.h"
+#include "Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
+#include "Commands2/AddEntityCommand.h"
 #include "StringConstants.h"
-#include "SceneEditor/HintManager.h"
 
+#include "SceneEditor/EditorSettings.h"
+#include "SceneEditor/EditorConfig.h"
+#include "SceneEditor/HintManager.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -87,7 +86,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 	LoadGPUFormat();
 
-	addSwitchEntityDialog = new AddSwitchEntityDialog(NULL, this);
+	addSwitchEntityDialog = new AddSwitchEntityDialog( this);
 }
 
 QtMainWindow::~QtMainWindow()
@@ -512,6 +511,7 @@ void QtMainWindow::AddSwitchDialogFinished(int result)
 	Vector<Entity*> vector;
 	addSwitchEntityDialog->GetPathEntities(vector, scene);	
 	addSwitchEntityDialog->CleanupPathWidgets();
+	addSwitchEntityDialog->SetEntity(NULL);
 	
 	Q_FOREACH(Entity* item, vector)
 	{
@@ -520,6 +520,7 @@ void QtMainWindow::AddSwitchDialogFinished(int result)
 	if(vector.size())
 	{
 		scene->Exec(new AddEntityCommand(switchEntity, scene));
+		SafeRelease(switchEntity);
 	}
 }
 
@@ -914,6 +915,8 @@ void QtMainWindow::OnSwitchEntityDialog()
 	customProperties->SetBool(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
 	addSwitchEntityDialog->SetEntity(entityToAdd);
 	
+	SafeRelease(entityToAdd);
+	
 	QObject::connect(addSwitchEntityDialog, SIGNAL(finished(int)), this, SLOT(AddSwitchDialogFinished(int)));
 	addSwitchEntityDialog->show();
 }
@@ -979,19 +982,21 @@ void QtMainWindow::OnParticleEffectDialog()
 }
 
 
-void QtMainWindow::CreateAndDisplayAddEntityDialog(Entity* sceneNode)
+void QtMainWindow::CreateAndDisplayAddEntityDialog(Entity* entity)
 {
 	SceneEditor2* sceneEditor = GetCurrentScene();
-	BaseAddEntityDialog* dlg = new BaseAddEntityDialog(sceneNode, dynamic_cast<QWidget*>(QObject::parent()));
+	BaseAddEntityDialog* dlg = new BaseAddEntityDialog(this);
+
+	dlg->SetEntity(entity);
 	dlg->exec();
+	
 	if(dlg->result() == QDialog::Accepted && sceneEditor)
 	{
-		sceneEditor->Exec(new AddEntityCommand(sceneNode, sceneEditor));
+		sceneEditor->Exec(new AddEntityCommand(entity, sceneEditor));
 	}
-	else
-	{
-		SafeRelease(sceneNode);
-	}
+	
+	SafeRelease(entity);
+	
 	delete dlg;
 }
 

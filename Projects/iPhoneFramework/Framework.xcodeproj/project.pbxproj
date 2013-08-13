@@ -49,6 +49,8 @@
 		74338647179D18F60014FBD3 /* UIScrollView.h in Headers */ = {isa = PBXBuildFile; fileRef = 74338643179D18F60014FBD3 /* UIScrollView.h */; };
 		74338648179D18F60014FBD3 /* UIScrollViewContainer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 74338644179D18F60014FBD3 /* UIScrollViewContainer.cpp */; };
 		74338649179D18F60014FBD3 /* UIScrollViewContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = 74338645179D18F60014FBD3 /* UIScrollViewContainer.h */; };
+		7497447817B3D79600282DAA /* AllocatorFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7497447617B3D79600282DAA /* AllocatorFactory.cpp */; };
+		7497447917B3D79600282DAA /* AllocatorFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 7497447717B3D79600282DAA /* AllocatorFactory.h */; };
 		840ED3C916D506F900D2BA6C /* DPIHelperiOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 840ED3C816D506F900D2BA6C /* DPIHelperiOS.mm */; };
 		840ED3CB16D5070400D2BA6C /* DPIHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 840ED3CA16D5070400D2BA6C /* DPIHelper.h */; };
 		84E5E0FE174D02EA0001C74F /* OpenUDIDApple.h in Headers */ = {isa = PBXBuildFile; fileRef = 84E5E0FC174D02EA0001C74F /* OpenUDIDApple.h */; };
@@ -736,6 +738,8 @@
 		74338643179D18F60014FBD3 /* UIScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIScrollView.h; sourceTree = "<group>"; };
 		74338644179D18F60014FBD3 /* UIScrollViewContainer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIScrollViewContainer.cpp; sourceTree = "<group>"; };
 		74338645179D18F60014FBD3 /* UIScrollViewContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIScrollViewContainer.h; sourceTree = "<group>"; };
+		7497447617B3D79600282DAA /* AllocatorFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AllocatorFactory.cpp; sourceTree = "<group>"; };
+		7497447717B3D79600282DAA /* AllocatorFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AllocatorFactory.h; sourceTree = "<group>"; };
 		840ED3C816D506F900D2BA6C /* DPIHelperiOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DPIHelperiOS.mm; sourceTree = "<group>"; };
 		840ED3CA16D5070400D2BA6C /* DPIHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DPIHelper.h; sourceTree = "<group>"; };
 		84E5E0FC174D02EA0001C74F /* OpenUDIDApple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenUDIDApple.h; sourceTree = "<group>"; };

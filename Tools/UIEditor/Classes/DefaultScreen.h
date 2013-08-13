@@ -149,7 +149,8 @@ private:
 	
 	UIControl* selectorControl;
 	
-	//SmartSelection* oldSmartSelected;
+	// Verify if the point is iside control's rect. Extend control's rect with delta.
+	bool IsPointInsideRectWithDelta(const Rect& rect, const Vector2& point, int32 pointDelta = 0) const;
 
 	// Whether the Mouse Begin event happened?
 	bool mouseAlreadyPressed;

@@ -22,6 +22,7 @@
 		5CDC2501156CC93300742348 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CDC2500156CC93300742348 /* libz.dylib */; };
 		5CF22540157E555D00DF5395 /* BaseScreen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CF2253E157E555D00DF5395 /* BaseScreen.cpp */; };
 		7410E83117146D5B0028AAAA /* UIListTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7410E82F17146D5B0028AAAA /* UIListTest.cpp */; };
+		7497446817B3C38D00282DAA /* AlignTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7497446617B3C38D00282DAA /* AlignTest.cpp */; };
 		749A1B4F174A73130082B080 /* UIScrollViewTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 749A1B4D174A73130082B080 /* UIScrollViewTest.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		C151B19116D37E8300E09BAF /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C151B18E16D37E2700E09BAF /* WebKit.framework */; };
@@ -55,6 +56,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		7497446417B3C29900282DAA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FE98930B11638F3C00500198 /* Framework.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 176DEB77174B5561007A983B;
+			remoteInfo = FrameworkNPAPI;
+		};
 		E81F2AEC16BFA49100C4545E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = FE98930B11638F3C00500198 /* Framework.xcodeproj */;
@@ -125,6 +133,8 @@
 		5CF2253F157E555D00DF5395 /* BaseScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BaseScreen.h; path = Classes/BaseScreen.h; sourceTree = "<group>"; };
 		7410E82F17146D5B0028AAAA /* UIListTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIListTest.cpp; path = Classes/UIListTest.cpp; sourceTree = "<group>"; };
 		7410E83017146D5B0028AAAA /* UIListTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIListTest.h; path = Classes/UIListTest.h; sourceTree = "<group>"; };
+		7497446617B3C38D00282DAA /* AlignTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AlignTest.cpp; path = Classes/AlignTest.cpp; sourceTree = "<group>"; };
+		7497446717B3C38D00282DAA /* AlignTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AlignTest.h; path = Classes/AlignTest.h; sourceTree = "<group>"; };
 		749A1B4D174A73130082B080 /* UIScrollViewTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIScrollViewTest.cpp; path = Classes/UIScrollViewTest.cpp; sourceTree = "<group>"; };
 		749A1B4E174A73130082B080 /* UIScrollViewTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIScrollViewTest.h; path = Classes/UIScrollViewTest.h; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* UnitTests.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UnitTests.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -311,6 +321,7 @@
 		5C1066D8156D351400912A45 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				7497446117B3C29900282DAA /* AlignTest */,
 				E8679170175F405F00C5A6A2 /* FormatsTest */,
 				749A1B48174A70C80082B080 /* UIScrollViewTest */,
 				E87402CF172582C900A4A75A /* FileSystemTests */,
@@ -373,6 +384,15 @@
 				7410E83017146D5B0028AAAA /* UIListTest.h */,
 			);
 			name = UIListTest;
+			sourceTree = "<group>";
+		};
+		7497446117B3C29900282DAA /* AlignTest */ = {
+			isa = PBXGroup;
+			children = (
+				7497446617B3C38D00282DAA /* AlignTest.cpp */,
+				7497446717B3C38D00282DAA /* AlignTest.h */,
+			);
+			name = AlignTest;
 			sourceTree = "<group>";
 		};
 		749A1B48174A70C80082B080 /* UIScrollViewTest */ = {
@@ -501,6 +521,7 @@
 			children = (
 				FE98931811638F3C00500198 /* libFramework.a */,
 				E81F2AED16BFA49100C4545E /* libFrameworkQt.a */,
+				7497446517B3C29900282DAA /* libFrameworkNPAPI.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -591,6 +612,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		7497446517B3C29900282DAA /* libFrameworkNPAPI.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libFrameworkNPAPI.a;
+			remoteRef = 7497446417B3C29900282DAA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		E81F2AED16BFA49100C4545E /* libFrameworkQt.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -673,6 +701,7 @@
 				E87402D8172582DB00A4A75A /* FilePathTest.cpp in Sources */,
 				E87402D9172582DB00A4A75A /* FileSystemTest.cpp in Sources */,
 				E8679174175F407200C5A6A2 /* FormatsTest.cpp in Sources */,
+				7497446817B3C38D00282DAA /* AlignTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
