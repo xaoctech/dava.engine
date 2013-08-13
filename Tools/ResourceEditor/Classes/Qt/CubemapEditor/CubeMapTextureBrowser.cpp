@@ -10,14 +10,17 @@
 #include "SceneEditor/EditorSettings.h"
 #include <qdir>
 
+const int FACE_IMAGE_SIZE = 64;
+
 const String CUBEMAP_LAST_PROJECT_DIR_KEY = "cubemap_last_proj_dir";
 
 CubeMapTextureBrowser::CubeMapTextureBrowser(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::CubeMapTextureBrowser)
+    ui(new Ui::CubeMapTextureBrowser),
+	cubeListItemDelegate(QSize(FACE_IMAGE_SIZE, FACE_IMAGE_SIZE))
 {
     ui->setupUi(this);
-	
+	ui->loadingWidget->setVisible(false);
 	ui->listTextures->setItemDelegate(&cubeListItemDelegate);
 	
 	ConnectSignals();
@@ -48,17 +51,26 @@ void CubeMapTextureBrowser::ConnectSignals()
 }
 
 void CubeMapTextureBrowser::ReloadTextures(const DAVA::String& rootPath)
-{
+{	
 	cubeListItemDelegate.ClearCache();
 	ui->listTextures->clear();
+	ui->listTextures->setVisible(false);
+	ui->loadingWidget->setVisible(true);
 	
+	this->paintEvent(NULL);
+	ui->loadingWidget->update();
+	QApplication::processEvents();
+	QApplication::flush();
+	
+	this->setUpdatesEnabled(false);
+
 	QDir dir(rootPath.c_str());
 	QStringList filesList = dir.entryList(QStringList("*.tex"));
-	int cubemapTextures = 0;
+	size_t cubemapTextures = 0;
 	
 	if(filesList.size() > 0)
 	{
-		QStringList fullPathFileList;
+		DAVA::Vector<CubeListItemDelegate::ListItemInfo> cubemapList;
 		FilePath fp = rootPath;
 		for(int i = 0; i < filesList.size(); ++i)
 		{
@@ -68,28 +80,43 @@ void CubeMapTextureBrowser::ReloadTextures(const DAVA::String& rootPath)
 			DAVA::TextureDescriptor* texDesc = DAVA::TextureDescriptor::CreateFromFile(fp);
 			if(texDesc && texDesc->IsCubeMap())
 			{
-				fullPathFileList.append(QString(fp.GetAbsolutePathname().c_str()));
+				CubeListItemDelegate::ListItemInfo itemInfo;
+				itemInfo.path = fp;
+				itemInfo.valid = ValidateTextureAndFillThumbnails(fp, itemInfo.icons, itemInfo.actualSize);
+				
+				if(itemInfo.valid)
+				{
+					cubemapList.push_back(itemInfo);
+				}
+				else
+				{
+					//non-valid items should be always at the beginning of the list
+					cubemapList.insert(cubemapList.begin(), itemInfo);
+				}
 			}
 		}
 		
-		cubeListItemDelegate.UpdateCache(fullPathFileList);
+		cubeListItemDelegate.UpdateCache(cubemapList);
 		
-		for(int i = 0; i < fullPathFileList.size(); ++i)
+		for(size_t i = 0; i < cubemapList.size(); ++i)
 		{
-			fp = fullPathFileList.at(i).toStdString();
+			CubeListItemDelegate::ListItemInfo& itemInfo = cubemapList[i];
 			
 			QListWidgetItem* listItem = new QListWidgetItem();
 			listItem->setData(Qt::CheckStateRole, false);
-			listItem->setData(CUBELIST_DELEGATE_ITEMFULLPATH, fullPathFileList.at(i));
-			listItem->setData(CUBELIST_DELEGATE_ITEMFILENAME, fp.GetFilename().c_str());
-			ui->listTextures->addItem(listItem);			
+			listItem->setData(CUBELIST_DELEGATE_ITEMFULLPATH, itemInfo.path.GetAbsolutePathname().c_str());
+			listItem->setData(CUBELIST_DELEGATE_ITEMFILENAME, itemInfo.path.GetFilename().c_str());
+			ui->listTextures->addItem(listItem);
 		}
 		
-		cubemapTextures = fullPathFileList.size();
+		cubemapTextures = cubemapList.size();
 		ui->listTextures->setCurrentItem(ui->listTextures->item(0));
 	}
 	
+	this->setUpdatesEnabled(true);
+	
 	ui->listTextures->setVisible(cubemapTextures > 0);
+	ui->loadingWidget->setVisible(false);
 }
 
 void CubeMapTextureBrowser::ReloadTexturesFromUI(QString& path)
@@ -286,4 +313,50 @@ void CubeMapTextureBrowser::OnDeleteSelectedItemsClicked()
 		ReloadTexturesFromUI(path);
 		UpdateCheckedState();
 	}
+}
+
+bool CubeMapTextureBrowser::ValidateTextureAndFillThumbnails(DAVA::FilePath& fp,
+									  DAVA::Vector<QImage*>& icons,
+									  DAVA::Vector<QSize>& actualSize)
+{
+	bool result = true;
+	
+	int width = 0;
+	int height = 0;
+	DAVA::Vector<DAVA::String> faceNames;
+	CubemapUtils::GenerateFaceNames(fp.GetAbsolutePathname(), faceNames);
+	for(size_t i = 0; i < faceNames.size(); ++i)
+	{
+		QImage faceImage;
+		if(!faceImage.load(faceNames[i].c_str())) //file must be present
+		{
+			result = false;
+		}
+	
+		if(faceImage.width() != faceImage.height() || //file must be square and be power of 2
+		   !IsPowerOf2(faceImage.width()))
+		{
+			result = false;
+		}
+				
+		if(0 == i)
+		{
+			width = faceImage.width();
+			height = faceImage.height();
+		}
+		else if(faceImage.width() != width || //all files should be the same size
+				faceImage.height() != height)
+		{
+			result = false;
+		}
+		
+		//scale image and put scaled version to an array
+		QImage scaledFaceTemp = faceImage.scaled(FACE_IMAGE_SIZE, FACE_IMAGE_SIZE);
+		QImage* scaledFace = new QImage(scaledFaceTemp);
+		
+		icons.push_back(scaledFace);
+		actualSize.push_back(QSize(faceImage.width(), faceImage.height()));
+	}
+	
+	return result;
 }
