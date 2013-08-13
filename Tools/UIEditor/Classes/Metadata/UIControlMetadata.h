@@ -65,9 +65,7 @@ class UIControlMetadata : public BaseMetadata
 	Q_PROPERTY(float TopBottomStretchCap READ GetTopBottomStretchCap WRITE SetTopBottomStretchCap);
 
     // Flag Properties
-    Q_PROPERTY(bool Selected READ GetSelected WRITE SetSelected);
     Q_PROPERTY(bool Visible READ GetVisible WRITE SetVisible);
-    Q_PROPERTY(bool Enabled READ GetEnabled WRITE SetEnabled);
     Q_PROPERTY(bool Input READ GetInput WRITE SetInput);
     Q_PROPERTY(bool ClipContents READ GetClipContents WRITE SetClipContents);
 	
@@ -86,7 +84,10 @@ class UIControlMetadata : public BaseMetadata
 	Q_PROPERTY(bool TopAlignEnabled READ GetTopAlignEnabled WRITE SetTopAlignEnabled);
 	Q_PROPERTY(bool VCenterAlignEnabled READ GetVCenterAlignEnabled WRITE SetVCenterAlignEnabled);
 	Q_PROPERTY(bool BottomAlignEnabled READ GetBottomAlignEnabled WRITE SetBottomAlignEnabled);
-    
+
+	// Initial State Property.
+	Q_PROPERTY(int InitialState READ GetInitialState WRITE SetInitialState);
+
 	// Custom Control Name property.
 	Q_PROPERTY(QString CustomControlName READ GetCustomControlName WRITE SetCustomControlName);
 
@@ -165,14 +166,8 @@ protected:
     virtual int GetSpriteModification();
 
     //Boolean gettes/setters
-    bool GetSelected() const;
-    void SetSelected(const bool value);
-
     bool GetVisible() const;
     void SetVisible(const bool value);
-
-    bool GetEnabled() const;
-    void SetEnabled(const bool value);
 
     bool GetInput() const;
     void SetInput(const bool value);
@@ -220,6 +215,10 @@ protected:
 
 	QString GetCustomControlName() const;
 	void SetCustomControlName(const QString& value);
+
+	// Initial state.
+	int GetInitialState() const;
+	void SetInitialState(int value);
 
 	virtual void SetActiveControlRect(const Rect& rect);
 

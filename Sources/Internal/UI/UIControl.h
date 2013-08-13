@@ -1112,6 +1112,10 @@ public:
 	// Get the framework path for sprite, don't process it if it is empty.
 	String GetSpriteFrameworkPath(Sprite* sprite);
 
+	// Get/set the Initial State.
+	int32 GetInitialState() const;
+	void SetInitialState(int32 newState);
+
 public:
 
 	Vector2 relativePosition;//!<position in the parent control.
@@ -1173,6 +1177,9 @@ protected:
 
 	// If this UI control represents Custom Control - its type is stored here.
 	String customControlType;
+
+	// Initial control's state which is stored on Yaml.
+	int32 initialState;
 
 	void SetParent(UIControl *newParent);
 	virtual ~UIControl();
