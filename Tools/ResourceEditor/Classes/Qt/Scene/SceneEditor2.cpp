@@ -75,6 +75,9 @@ SceneEditor2::SceneEditor2()
 	editorLightSystem = new EditorLightSystem(this);
 	AddSystem(editorLightSystem, Component::LIGHT_COMPONENT);
 
+	textDrawSystem = new TextDrawSystem(this, cameraSystem);
+	AddSystem(textDrawSystem, 0);
+
 	SceneSignals::Instance()->EmitOpened(this);
 }
 
@@ -287,6 +290,7 @@ void SceneEditor2::Update(float timeElapsed)
 	rulerToolSystem->Update(timeElapsed);
 	structureSystem->Update(timeElapsed);
 	particlesSystem->Update(timeElapsed);
+	textDrawSystem->Update(timeElapsed);
 	editorLightSystem->Process();
 }
 
@@ -327,6 +331,7 @@ void SceneEditor2::Draw()
 
 	// should be last
 	hoodSystem->Draw();
+	textDrawSystem->Draw();
 }
 
 void SceneEditor2::EditorCommandProcess(const Command2 *command, bool redo)
