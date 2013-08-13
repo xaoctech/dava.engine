@@ -20,6 +20,8 @@
 #include "Scene/System/HoodSystem/HoodCollObject.h"
 #include "Scene/SceneTypes.h"
 
+class TextDrawSystem;
+
 struct HoodObject 
 {
 	HoodObject(DAVA::float32 baseSize);
@@ -34,7 +36,7 @@ struct HoodObject
 
 	virtual void UpdatePos(const DAVA::Vector3 &pos);
 	virtual void UpdateScale(const DAVA::float32 &scale);
-	virtual void Draw(ST_Axis selectedAxis, ST_Axis mouseOverAxis) = 0;
+	virtual void Draw(ST_Axis selectedAxis, ST_Axis mouseOverAxis, TextDrawSystem *textDrawSystem) = 0;
 
 	HoodCollObject* CreateLine(const DAVA::Vector3 &from, const DAVA::Vector3 &to);
 
