@@ -5,6 +5,7 @@
 #include <QAbstractItemDelegate>
 
 #include "Base/BaseTypes.h"
+#include "FileSystem/FilePath.h"
 
 #define CUBELIST_DELEGATE_ITEMFULLPATH (Qt::UserRole)
 #define CUBELIST_DELEGATE_ITEMFILENAME (Qt::UserRole + 1)
@@ -15,9 +16,16 @@ class CubeListItemDelegate : public QAbstractItemDelegate
 	
 protected:
 	
+	struct ListCacheItem
+	{
+		DAVA::Vector<QImage*> icons;
+		DAVA::Vector<QSize> actualSize;
+		bool valid;
+	};
+	
+	QSize thumbnailSize;
 	int itemHeight;
-	std::map<std::string, QImage*> iconsCache;
-	std::map<std::string, QSize> iconSizeCache;
+	std::map<std::string, ListCacheItem> itemCache;
 	
 private:
 	
@@ -26,7 +34,17 @@ private:
 	
 public:
 	
-	CubeListItemDelegate(QObject *parent = 0);
+	struct ListItemInfo
+	{
+		DAVA::FilePath path;
+		DAVA::Vector<QImage*> icons;
+		DAVA::Vector<QSize> actualSize;
+		bool valid;
+	};
+	
+public:
+	
+	CubeListItemDelegate(QSize thumbSize, QObject *parent = 0);
 	virtual ~CubeListItemDelegate();
 	
 	void paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
@@ -34,7 +52,7 @@ public:
 	bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
 		
 	void ClearCache();
-	void UpdateCache(QStringList& filesList);
+	void UpdateCache(DAVA::Vector<CubeListItemDelegate::ListItemInfo>& fileList);
 	
 signals:
 	

@@ -6,7 +6,6 @@
 #include <QApplication>
 #include <QMouseEvent>
 
-const int FACE_IMAGE_SIZE = 64;
 const int FACE_IMAGE_BORDER = 5;
 const int LIST_ITEM_OFFSET = 1;
 const int LIST_ITEMS_PER_PAGE = 9;
@@ -29,8 +28,10 @@ const int FACE_SIZE_ITEM_DATA = 2;
 
 const int TARGET_TEXT_SIZE_PX[] = {17, 12, 12};
 
-CubeListItemDelegate::CubeListItemDelegate(QObject *parent)
+CubeListItemDelegate::CubeListItemDelegate(QSize thumbSize, QObject *parent)
 {
+	thumbnailSize = thumbSize;
+	
 	//HACK: use this hack in order to achieve consistent text size on screens with different DPI
 	for(int i = 0; i < FONT_ATTRIBUTE_COUNT; ++i)
 	{
@@ -45,7 +46,7 @@ CubeListItemDelegate::CubeListItemDelegate(QObject *parent)
 		textTotalHeight += GetAdjustedTextHeight(fontMetrics.height());
 	}
 	
-	itemHeight = std::max(textTotalHeight, FACE_IMAGE_SIZE + 2 * FACE_IMAGE_BORDER + 2 * LIST_ITEM_OFFSET + 1);
+	itemHeight = std::max(textTotalHeight, thumbnailSize.height() + 2 * FACE_IMAGE_BORDER + 2 * LIST_ITEM_OFFSET + 1);
 }
 
 CubeListItemDelegate::~CubeListItemDelegate()
@@ -60,47 +61,41 @@ int CubeListItemDelegate::GetAdjustedTextHeight(int baseHeight) const
 
 void CubeListItemDelegate::ClearCache()
 {
-	for(std::map<std::string, QImage*>::iterator i = iconsCache.begin();
-		i != iconsCache.end();
+	for(std::map<std::string, ListCacheItem>::iterator i = itemCache.begin();
+		i != itemCache.end();
 		++i)
 	{
-		delete i->second;
+		ListCacheItem& cacheItem = i->second;
+		for(size_t iconIndex = 0; iconIndex < cacheItem.icons.size(); ++iconIndex)
+		{
+			delete cacheItem.icons[iconIndex];
+		}
 	}
 	
-	iconsCache.clear();
-	iconSizeCache.clear();
+	itemCache.clear();
 }
 
-void CubeListItemDelegate::UpdateCache(QStringList& filesList)
+void CubeListItemDelegate::UpdateCache(DAVA::Vector<CubeListItemDelegate::ListItemInfo>& fileList)
 {
 	ClearCache();
 	
-	for(int i = 0; i < filesList.size(); ++i)
+	for(size_t i = 0; i < fileList.size(); ++i)
 	{
-		QString str = filesList.at(i);
+		ListItemInfo& itemInfo = fileList.at(i);
 		
-		DAVA::Vector<DAVA::String> faceNames;
-		CubemapUtils::GenerateFaceNames(str.toStdString(), faceNames);
-		for(int faceIndex = 0; faceIndex < faceNames.size(); ++faceIndex)
-		{
-			QImage* scaledFace = NULL;
-			QImage faceImage;
-			
-			faceImage.load(faceNames[faceIndex].c_str());
-			
-			QImage scaledFaceTemp = faceImage.scaled(FACE_IMAGE_SIZE, FACE_IMAGE_SIZE);
-			scaledFace = new QImage(scaledFaceTemp);
-			
-			iconsCache[faceNames[faceIndex]] = scaledFace;
-			iconSizeCache[faceNames[faceIndex]] = QSize(faceImage.width(), faceImage.height());
-		}
+		ListCacheItem cacheItem;
+		
+		cacheItem.icons.insert(cacheItem.icons.end(), itemInfo.icons.begin(), itemInfo.icons.end());
+		cacheItem.actualSize.insert(cacheItem.actualSize.end(), itemInfo.actualSize.begin(), itemInfo.actualSize.end());
+		cacheItem.valid = itemInfo.valid;
+		itemCache[itemInfo.path.GetAbsolutePathname()] = cacheItem;
 	}
 }
 
 void CubeListItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
 {
 	int y = option.rect.y();
-	int totalImageStripWidth = (FACE_IMAGE_SIZE + FACE_IMAGE_BORDER) * CubemapUtils::GetMaxFaces();
+	int totalImageStripWidth = (thumbnailSize.width() + FACE_IMAGE_BORDER) * CubemapUtils::GetMaxFaces();
 	int faceStartX = option.rect.width() - totalImageStripWidth - FACE_IMAGE_BORDER;
 
 	QRect r = option.rect;
@@ -113,13 +108,24 @@ void CubeListItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem 
 	QString title = index.data(CUBELIST_DELEGATE_ITEMFILENAME).toString();
 	QString description = index.data(CUBELIST_DELEGATE_ITEMFULLPATH).toString();
 	
-	QColor regularColor = (selected) ? QColor(255, 255, 224) : Qt::white;
+	std::map<std::string, ListCacheItem>::const_iterator itemIter = itemCache.find(description.toStdString());
+	
+	QColor regularColor = (index.row() % 2) ? Qt::white : QColor(240, 240, 240);
+	regularColor = (selected) ? QColor(255, 255, 224) : regularColor;
+	
+	if(itemIter != itemCache.end())
+	{
+		regularColor = (itemIter->second.valid) ? regularColor : QColor(249, 204, 202);
+	}
+	else
+	{
+		regularColor = QColor(249, 204, 202);
+	}
 
-	painter->setBrush((index.row() % 2 || selected) ? regularColor : QColor(240, 240, 240));
+	painter->setBrush(regularColor);
 	painter->drawRect(r);
 	
 	painter->setPen(fontPen);
-	
 	
 	int textStartY = y;
 	//TITLE
@@ -138,24 +144,22 @@ void CubeListItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem 
 	
 	int imageWidth = 0;
 	int imageHeight = 0;
-	DAVA::Vector<DAVA::String> faceNames;
-	CubemapUtils::GenerateFaceNames(description.toStdString(), faceNames);
-	for(int i = 0; i < faceNames.size(); ++i)
+	if(itemIter != itemCache.end())
 	{
-		std::map<std::string, QImage*>::const_iterator cachedImage = iconsCache.find(faceNames[i]);
-		if(iconsCache.end() != cachedImage)
+		const ListCacheItem& cacheItem = itemIter->second;
+		for(size_t iconIndex = 0; iconIndex < cacheItem.icons.size(); ++iconIndex)
 		{
-			std::map<std::string, QSize>::const_iterator cachedImageSize = iconSizeCache.find(faceNames[i]);
-			if(cachedImageSize != iconSizeCache.end())
-			{
-				imageWidth = cachedImageSize->second.width();
-				imageHeight = cachedImageSize->second.height();
-			}
-			
-			painter->drawImage(QPoint(faceStartX + i * (FACE_IMAGE_SIZE + FACE_IMAGE_BORDER), y + FACE_IMAGE_BORDER), *cachedImage->second);
+			painter->drawImage(QPoint(faceStartX + iconIndex * (thumbnailSize.width() + FACE_IMAGE_BORDER), y + FACE_IMAGE_BORDER),
+							   *cacheItem.icons[iconIndex]);
+		}
+		
+		if(cacheItem.actualSize.size() > 0)
+		{
+			imageWidth = cacheItem.actualSize[0].width();
+			imageHeight = cacheItem.actualSize[0].height();
 		}
 	}
-	
+		
 	//FACE SIZE
 	QString sizeInfo = QString("%1x%2").arg(QString().setNum(imageWidth), QString().setNum(imageHeight));
 	painter->setFont(QFont(FONT_NAMES[FACE_SIZE_ITEM_DATA], FONT_SIZES[FACE_SIZE_ITEM_DATA], FONT_STYLES[FACE_SIZE_ITEM_DATA]));
