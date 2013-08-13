@@ -20,6 +20,7 @@
 // framework
 #include "Render/RenderManager.h"
 #include "Render/RenderHelper.h"
+#include "Scene/System/TextDrawSystem.h"
 
 MoveHood::MoveHood() : HoodObject(4.0f)
 {
@@ -59,7 +60,7 @@ MoveHood::~MoveHood()
 
 }
 
-void MoveHood::Draw(ST_Axis selectedAxis, ST_Axis mouseOverAxis)
+void MoveHood::Draw(ST_Axis selectedAxis, ST_Axis mouseOverAxis, TextDrawSystem *textDrawSystem)
 {
 	int oldState = DAVA::RenderManager::Instance()->GetState();
 	DAVA::eBlendMode oldBlendSrc = DAVA::RenderManager::Instance()->GetSrcBlend();
@@ -179,6 +180,23 @@ void MoveHood::Draw(ST_Axis selectedAxis, ST_Axis mouseOverAxis)
 		DAVA::RenderManager::Instance()->SetColor(colorZ);
 		DAVA::RenderHelper::Instance()->DrawLine(axisYZ2->curFrom, axisYZ2->curTo);
 	}
+
+	DAVA::Vector2 textPos;
+
+	// x
+	textPos = textDrawSystem->ToPos2d(axisX->curTo);
+	textPos.y -= 15;
+	textDrawSystem->DrawText(textPos, "X", colorX);
+
+	// y
+	textPos = textDrawSystem->ToPos2d(axisY->curTo);
+	textPos.y -= 15;
+	textDrawSystem->DrawText(textPos, "Y", colorY);
+
+	// z
+	textPos = textDrawSystem->ToPos2d(axisZ->curTo);
+	textPos.y -= 15;
+	textDrawSystem->DrawText(textPos, "Z", colorZ);
 
 	DAVA::RenderManager::Instance()->SetBlendMode(oldBlendSrc, oldBlendDst);
 	DAVA::RenderManager::Instance()->SetState(oldState);
