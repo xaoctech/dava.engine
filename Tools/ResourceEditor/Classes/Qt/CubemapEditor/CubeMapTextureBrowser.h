@@ -31,6 +31,9 @@ protected:
 	void RestoreListSelection(int currentRow);
 	int GetCheckedItemsCount();
 	void UpdateCheckedState();
+	bool ValidateTextureAndFillThumbnails(DAVA::FilePath& fp,
+										  DAVA::Vector<QImage*>& icons,
+										  DAVA::Vector<QSize>& actualSize);
 	
 protected slots:
 	
