@@ -75,8 +75,6 @@ protected:
 	DAVA::float32 curScale;
 	DAVA::Vector3 modifOffset;
 
-	DAVA::GraphicsFont *font;
-
 	SceneCameraSystem *cameraSystem;
 
 	virtual void Update(float timeElapsed);

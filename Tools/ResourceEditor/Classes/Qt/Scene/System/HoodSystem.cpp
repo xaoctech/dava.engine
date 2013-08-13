@@ -66,10 +66,6 @@ HoodSystem::HoodSystem(DAVA::Scene * scene, SceneCameraSystem *camSys)
 	normalHood.colorY = DAVA::Color(0.3f, 0.7f, 0.3f, 1);
 	normalHood.colorZ = DAVA::Color(0.3f, 0.3f, 0.7f, 1);
 	normalHood.colorS = DAVA::Color(0, 0, 0, 1);
-
-	font = DAVA::GraphicsFont::Create("/Users/smile4u/Projects/dava.framework/Tools/ResourceEditor/Data/Fonts/terminus.def", "/Users/smile4u/Projects/dava.framework/Tools/ResourceEditor/Data/Gfx/Fonts/terminus.txt");
-    font->SetSize(14.0f);
-	//font = DAVA::GraphicsFont::Create("d:/Projects/dava.framework/Tools/ResourceEditor/Data/Fonts/arial_mono_11.def", "d:/Projects/dava.framework/Tools/ResourceEditor/Data/Gfx/Fonts/arial_mono_11.txt");
 }
 
 HoodSystem::~HoodSystem()
@@ -287,6 +283,8 @@ void HoodSystem::Draw()
 {
 	if(visible && NULL != curHood)
 	{
+		TextDrawSystem *textDrawSys = ((SceneEditor2 *) GetScene())->textDrawSystem;
+
 		if(!lockedModif)
 		{
 			ST_Axis showAsSelected = curAxis;
@@ -299,31 +297,15 @@ void HoodSystem::Draw()
 				}
 			}
 
-			curHood->Draw(showAsSelected, moseOverAxis);
+			curHood->Draw(showAsSelected, moseOverAxis, textDrawSys);
 
 			// debug draw axis collision word
 			//collWorld->debugDrawWorld();
 		}
 		else
 		{
-			normalHood.Draw(curAxis, ST_AXIS_NONE);
+			normalHood.Draw(curAxis, ST_AXIS_NONE, textDrawSys);
 		}
-	}
-
-	if(NULL != font)
-	{
-		RenderManager::Instance()->SetRenderOrientation(DAVA::Core::SCREEN_ORIENTATION_PORTRAIT);
-		RenderManager::Instance()->SetRenderEffect(NULL);
-        RenderManager::Instance()->SetColor(255, 0, 0, 255);
-
-		//DAVA::Matrix4 mat;
-		//mat.Identity();
-		//RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, mat);
-		//RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_PROJECTION, mat);
-		// 
-		DAVA::Vector2 pos = cameraSystem->GetScreenPos(curPos);
-        font->SetColor(255,0,0,255);
-		font->DrawString(pos.x, pos.y, L"pos1^^&", 0);
 	}
 }
 
