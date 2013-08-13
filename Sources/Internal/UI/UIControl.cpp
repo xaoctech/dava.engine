@@ -90,6 +90,7 @@ namespace DAVA
 		__touchStart = Vector2(0.f, 0.f);
 		__oldRect = relativeRect;
 #endif
+		initialState = STATE_NORMAL;
 	}
 	
 	UIControl::~UIControl()
@@ -1280,6 +1281,7 @@ namespace DAVA
 		clipContents = srcControl->clipContents;
 
 		customControlType = srcControl->GetCustomControlType();
+		initialState = srcControl->GetInitialState();
 
 		SafeRelease(eventDispatcher);
 		if(srcControl->eventDispatcher)
@@ -2079,7 +2081,13 @@ namespace DAVA
 		{
 			node->Set("spriteModification", this->GetBackground()->GetModification());
 		}
-        
+
+		// Initial state.
+		if (baseControl->GetInitialState() != this->initialState)
+		{
+			node->Set("initialState", this->initialState);
+		}
+
 		// Release variantType variable
 		SafeDelete(nodeValue);
 		// Release model variable
@@ -2112,6 +2120,7 @@ namespace DAVA
 		YamlNode * tagNode = node->Get("tag");
 
 		YamlNode * spriteModificationNode = node->Get("spriteModification");
+		YamlNode * initialStateNode = node->Get("initialState");
 		
 		Rect rect = GetRect();
 		if (rectNode)
@@ -2268,6 +2277,13 @@ namespace DAVA
 			int32 spriteModification = spriteModificationNode->AsInt32();
             GetBackground()->SetModification(spriteModification);
         }
+		
+		if (initialStateNode)
+		{
+			int32 newInitialState = initialStateNode->AsInt32();
+			SetInitialState(newInitialState);
+			SetState(newInitialState);
+		}
 	}
 	
 	Animation *	UIControl::WaitAnimation(float32 time, int32 track)
@@ -2693,5 +2709,15 @@ namespace DAVA
 			// The type coincides with the node type name passed, no base type exists.
 			node->Set("type", nodeTypeName);
 		}
+	}
+
+	int32 UIControl::GetInitialState() const
+	{
+		return initialState;
+	}
+	
+	void UIControl::SetInitialState(int32 newState)
+	{
+		initialState = newState;
 	}
 }
