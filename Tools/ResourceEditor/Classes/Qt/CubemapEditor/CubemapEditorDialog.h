@@ -47,15 +47,16 @@ protected:
 	
 	void ConnectSignals();
 	void LoadImageFromUserFile(float rotation, int face);
-	bool VerifyImage(const QImage& image);
+	bool VerifyImage(const QImage& image, int faceIndex);
 	void UpdateFaceInfo();
 	void UpdateButtonState();
 	bool AnyFaceLoaded();
 	bool AllFacesLoaded();
+	int GetLoadedFaceCount();
 	void LoadCubemap(const QString& path);
 	void SaveCubemap(const QString& path);
 	DAVA::uint8 GetFaceMask();
-	void LoadImageTo(const DAVA::String& filePath, int face);
+	void LoadImageTo(const DAVA::String& filePath, int face, bool silent);
 	ClickableQLabel* GetLabelForFace(int face);
 	
 protected slots:
