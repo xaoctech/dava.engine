@@ -47,7 +47,7 @@ TestTemplate<AlignTest>("SplitTest"),
 	RegisterFunction(this, &AlignTest::ResizeControl, Format("ResizeTest"), NULL);
 	RegisterFunction(this, &AlignTest::MoveControl, Format("MoveTest"), NULL);
 	// Register align function for each align option
-	for (int32 i = 0; i <= GetAlignTypesCount(); ++i)
+	for (int32 i = 0; i < GetAlignTypesCount(); ++i)
 	{
 		RegisterFunction(this, &AlignTest::AlignText, Format("AlignTest"), NULL);
 	}
@@ -147,7 +147,9 @@ void AlignTest::MakeScreenShot()
 
 void AlignTest::OnScreenShot(Image *testImage)
 {
-	//ImageLoader::Save(testImage, Format("~res:/TestData/AlignTest/PNG/test%d.png", currenTestIndex));
+	//Use this code to generate new reference screenshots
+	//FilePath workingPath = FileSystem::Instance()->GetCurrentWorkingDirectory();
+	//ImageLoader::Save(testImage,documentsPath + Format("Data/TestData/AlignTest/PNG/test%d.png", currenTestIndex));
 	VerifyTestImage(testImage);
 }
 
