@@ -64,9 +64,6 @@ private:
 	ST_ModifMode modifMode;
 
 	void ReloadValues();
-	void ReloadModeValues();
-	void ReloadRotateValues();
-	void ReloadScaleValues();
 
 	void ApplyValues(ST_Axis axis);
 	void ApplyMoveValues(ST_Axis axis);
