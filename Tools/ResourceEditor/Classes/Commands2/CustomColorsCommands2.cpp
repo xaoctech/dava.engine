@@ -58,7 +58,7 @@ void ModifyCustomColorsCommand::ApplyImage(DAVA::Image *image)
 	
 	Texture* texture = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(),
 											   image->GetWidth(), image->GetHeight(), false);
-	Sprite* sprite = Sprite::CreateFromTexture(texture, 0, 0, texture->GetWidth(), texture->GetHeight());
+	Sprite* sprite = Sprite::CreateFromTexture(texture, 0, 0, (float32)texture->GetWidth(), (float32)texture->GetHeight());
 	
 	RenderManager::Instance()->SetRenderTarget(customColorsSprite);
 	RenderManager::Instance()->ClipPush();

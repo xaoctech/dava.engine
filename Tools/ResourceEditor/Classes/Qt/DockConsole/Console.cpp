@@ -46,7 +46,7 @@ void Console::Echo(const DAVA::String &text)
 	}
 }
 
-int Console::GetLineCount() const
+size_t Console::GetLineCount() const
 {
 	return log.size();
 }

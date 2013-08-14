@@ -383,7 +383,7 @@ void TextureScrollArea::setImage(const DAVA::Vector<QImage>& images, int flags)
 	currentCompositeImages.clear();
 	currentCompositeImages.resize(images.size());
 	
-	for(int i = 0; i < images.size(); ++i)
+	for(int i = 0; i < (int)images.size(); ++i)
 	{
 		currentCompositeImages[i] = images[i];
 	}
