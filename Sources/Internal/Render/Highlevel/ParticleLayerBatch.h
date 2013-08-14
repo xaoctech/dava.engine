@@ -37,6 +37,7 @@ public:
 
 	virtual RenderBatch * Clone(RenderBatch * destination = 0);
 
+	void SetLayerBoundingBox(const AABBox3 & bbox);
 protected:
 	int32 totalCount;
 	ParticleLayer * particleLayer;

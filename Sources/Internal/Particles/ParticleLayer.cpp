@@ -615,6 +615,11 @@ void ParticleLayer::ProcessParticle(Particle * particle)
 	}
 }
 
+void ParticleLayer::PrepareRenderData(Camera * camera)
+{
+
+}
+
 void ParticleLayer::Draw(Camera * camera)
 {
 	if (additive)

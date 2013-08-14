@@ -38,6 +38,9 @@ public:
 
 	virtual void Draw(Camera * camera);
 
+	// Draw method for generic and long emitters. former DrawLayer
+	virtual void PrepareRenderData(Camera * camera);
+
 	Material * GetMaterial();
 	
 	virtual void SetAdditive(bool additive);
@@ -65,9 +68,7 @@ protected:
 						 Vector3& topRight,
 						 Vector3& botLeft,
 						 Vector3& botRight);
-
-	// Draw method for generic and long emitters.
-	void DrawLayer(Camera* camera);
+		
 
 	// Update the current particle position according to the current emitter type.
 	void UpdateCurrentParticlePosition(Particle* particle);
