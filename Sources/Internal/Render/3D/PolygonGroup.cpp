@@ -617,7 +617,7 @@ void PolygonGroup::OptimizeVertices(uint32 newVertexFormat, float32 eplison)
 	
 	uint8 * tmpMesh = meshData;
 	uint8 * tmpNewMesh = newMeshData;
-	for (uint32 i = 0; i < vertexCount; ++i)
+	for (int32 i = 0; i < vertexCount; ++i)
 	{
 		for (uint32 mask = 1; mask <= EVF_HIGHER_BIT; mask = mask << 1)
 		{
@@ -627,12 +627,12 @@ void PolygonGroup::OptimizeVertices(uint32 newVertexFormat, float32 eplison)
 	
 	Vector<uint8> optMeshData;
 	tmpNewMesh = newMeshData;
-	for (uint32 i = 0; i < vertexCount; ++i)
+	for (int32 i = 0; i < vertexCount; ++i)
 	{
 		int16 newIndex = OptimazeVertexes(tmpNewMesh, optMeshData, newVertexFormat);
 		tmpNewMesh += GetVertexSize(newVertexFormat);
 		
-		for (uint32 i1 = 0; i1 < indexCount; ++i1)
+		for (int32 i1 = 0; i1 < indexCount; ++i1)
 		{
 			if (indexArray[i1] == i)
 				indexArray[i1] = newIndex;
