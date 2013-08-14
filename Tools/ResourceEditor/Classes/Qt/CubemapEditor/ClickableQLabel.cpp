@@ -155,6 +155,11 @@ void ClickableQLabel::mouseMoveEvent(QMouseEvent *ev)
 	}
 	else
 	{
+		if(IsPointOutsideControl(ev))
+		{
+			mouseEntered = false;
+		}
+
 		buttonDrawFlags = ClickableQLabel::None;
 	}
 	
@@ -213,3 +218,7 @@ QPoint ClickableQLabel::GetPointForButton(RotateButtonDrawFlags flag)
 	return pt;
 }
 
+bool ClickableQLabel::IsPointOutsideControl(QMouseEvent *ev)
+{
+	return rect().contains(ev->globalPos());
+}

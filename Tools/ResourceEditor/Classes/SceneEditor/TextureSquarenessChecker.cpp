@@ -37,7 +37,7 @@ void TextureSquarenessChecker::CheckSceneForTextureSquarenessAndResave(Scene *sc
         Vector<Material *> allMaterials;
         SceneHelper::EnumerateMaterials(scene, allMaterials);
 
-        for(int32 i = 0; i < (int32)allMaterials.size(); i++)
+        for(size_t i = 0; i < allMaterials.size(); i++)
         {
             Texture *texture = allMaterials[i]->GetTexture(Material::TEXTURE_DIFFUSE);
             if(texture)
