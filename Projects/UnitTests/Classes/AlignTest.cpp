@@ -19,7 +19,17 @@
 #include "Render/RenderManager.h"
 
 const float32 ACCETABLE_DELTA_IN_PERSENTS = 2.0f;
-const char* REFERENCE_IMAGE_PATH = "~res:/TestData/AlignTest/PNG/test%d.png";
+
+#if defined(__DAVAENGINE_MACOS__)
+const char* REFERENCE_IMAGE_PATH = "~res:/TestData/AlignTest/MacOS/test%d.png";
+#elif defined(__DAVAENGINE_WIN32__)
+const char* REFERENCE_IMAGE_PATH = "~res:/TestData/AlignTest/Win32/test%d.png";
+#elif defined(__DAVAENGINE_IPHONE__)
+const char* REFERENCE_IMAGE_PATH = "~res:/TestData/AlignTest/IOS/test%d.png";
+#elif defined(__DAVAENGINE_ANDROID__)
+const char* REFERENCE_IMAGE_PATH = "~res:/TestData/AlignTest/Android/test%d.png";
+#endif
+
 const WideString controlText = L"THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED";
 
 const int AlignTest::alignTypesData[] =
@@ -149,7 +159,7 @@ void AlignTest::OnScreenShot(Image *testImage)
 {
 	//Use this code to generate new reference screenshots
 	//FilePath workingPath = FileSystem::Instance()->GetCurrentWorkingDirectory();
-	//ImageLoader::Save(testImage,documentsPath + Format("Data/TestData/AlignTest/PNG/test%d.png", currenTestIndex));
+	//ImageLoader::Save(testImage,workingPath + Format("Data/TestData/AlignTest/IOS/test%d.png", currenTestIndex));
 	VerifyTestImage(testImage);
 }
 
