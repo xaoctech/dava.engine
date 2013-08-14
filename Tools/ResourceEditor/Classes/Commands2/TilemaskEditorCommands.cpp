@@ -18,7 +18,7 @@
 #include "../Qt/Scene/System/LandscapeEditorDrawSystem/LandscapeProxy.h"
 
 ModifyTilemaskCommand::ModifyTilemaskCommand(Image* originalMask, LandscapeProxy* landscapeProxy, const Rect& updatedRect)
-:	Command2(CMDID_MODIFY_TILEMASK, "Tilemask Modification")
+:	Command2(CMDID_MODIFY_TILEMASK, "Tile Mask Modification")
 {
 	this->updatedRect = updatedRect;
 	this->landscapeProxy = SafeRetain(landscapeProxy);
