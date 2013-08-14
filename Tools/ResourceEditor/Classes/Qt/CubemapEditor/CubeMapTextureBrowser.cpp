@@ -275,7 +275,7 @@ void CubeMapTextureBrowser::OnDeleteSelectedItemsClicked()
 				{
 					DAVA::Vector<DAVA::String> faceNames;
 					CubemapUtils::GenerateFaceNames(fp.GetAbsolutePathname(), faceNames);
-					for(int faceIndex = 0; faceIndex < faceNames.size(); ++faceIndex)
+					for(size_t faceIndex = 0; faceIndex < faceNames.size(); ++faceIndex)
 					{
 						bool removeResult = QFile::remove(faceNames[faceIndex].c_str());
 						if(!removeResult)

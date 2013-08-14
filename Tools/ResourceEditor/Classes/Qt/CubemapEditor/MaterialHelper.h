@@ -74,7 +74,7 @@ namespace DAVA
 			ConditionalMaterialAccum<MaterialTypePredicate> accum((MaterialTypePredicate(type)), &accumulatedMaterials);
 			std::for_each(allMaterials.begin(), allMaterials.end(), accum);
 			
-			for(int i = 0; i < accumulatedMaterials.size(); ++i)
+			for(size_t i = 0; i < accumulatedMaterials.size(); ++i)
 			{
 				typename Container::iterator iter = std::find(allMaterials.begin(), allMaterials.end(), accumulatedMaterials[i]);
 				

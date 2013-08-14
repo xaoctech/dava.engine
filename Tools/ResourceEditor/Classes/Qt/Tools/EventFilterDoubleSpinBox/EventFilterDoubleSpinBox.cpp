@@ -22,6 +22,7 @@
 EventFilterDoubleSpinBox::EventFilterDoubleSpinBox(QWidget *parent) :
     QDoubleSpinBox(parent)
 {
+    setKeyboardTracking(false);
 }
 
 void EventFilterDoubleSpinBox::keyPressEvent(QKeyEvent *event)

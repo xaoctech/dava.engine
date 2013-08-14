@@ -279,9 +279,9 @@ void RenderHelper::DrawCylinder(const Vector3 & center, float32 radius, bool use
 	int32 ptsCount = (int32)(PI_2 / (DegToRad(angle))) + 1;
 
 	Vector<Vector2> vertexes;
-	for(int32 i = 0; i < ptsCount + 1; i++)
+	for(int32 i = 0; i <= ptsCount; i++)
  	{
-		float32 seta = i * 360.0 / ptsCount;
+		float32 seta = i * 360.0f / (float32)ptsCount;
   		float32 x = sin(DegToRad(seta)) * radius;
   		float32 y = cos(DegToRad(seta)) * radius;
 

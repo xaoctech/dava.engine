@@ -58,38 +58,6 @@ Component * LodComponent::Clone(Entity * toEntity)
 		LodData & ld = *it;
 		ld.nodes.clear();
 	}
-	//if(!newLod->lodLayers.empty())
-	//{
-	//	const List<LodData>::const_iterator endLod = newLod->lodLayers.end();
-	//	newLod->currentLod = &(*newLod->lodLayers.begin());
-	//	for (List<LodData>::iterator it = newLod->lodLayers.begin(); it != endLod; ++it)
-	//	{
-	//		LodData & ld = *it;
-	//		uint32 size = ld.nodes.size();
-	//		for (uint32 idx = 0; idx < size; ++idx)
-	//		{
-	//			int32 count = entity->GetChildrenCount();
-	//			for (int32 i = 0; i < count; i++) 
-	//			{
-	//				Entity * child = entity->GetChild(i);
-	//				if(child == ld.nodes[idx])
-	//				{
-	//					ld.nodes[idx] = toEntity->GetChild(i);
-	//					if (newLod->currentLod != &ld) 
-	//					{
-	//						ld.nodes[idx]->SetUpdatable(false);
-	//					}
-	//					else 
-	//					{
-	//						ld.nodes[idx]->SetUpdatable(true);
-	//					}
-
-	//					break;
-	//				}
-	//			}
-	//		}
-	//	}
-	//}
 
 	//Lod values
 	for(int32 iLayer = 0; iLayer < MAX_LOD_LAYERS; ++iLayer)
@@ -117,9 +85,6 @@ void LodComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 		uint32 i;
 
 		archive->SetUInt32("lc.flags", flags);
-		archive->SetFloat("lc.forceDistance", forceDistance);
-		archive->SetFloat("lc.forceDistanceSq", forceDistanceSq);
-		archive->SetInt32("lc.forceLodLayer", forceLodLayer);
 
 		KeyedArchive *lodDistArch = new KeyedArchive();
 		for (i = 0; i < MAX_LOD_LAYERS; ++i)
@@ -172,10 +137,11 @@ void LodComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 	if(NULL != archive)
 	{
 		if(archive->IsKeyExists("lc.flags")) flags = archive->GetUInt32("lc.flags");
-		if(archive->IsKeyExists("lc.forceDistance")) forceDistance = archive->GetFloat("lc.forceDistance");
-		if(archive->IsKeyExists("lc.forceDistanceSq")) forceDistanceSq = archive->GetFloat("lc.forceDistanceSq");
-		if(archive->IsKeyExists("lc.forceLodLayer")) forceLodLayer = archive->GetInt32("lc.forceLodLayer");
 
+        forceDistance = 0;
+        forceDistanceSq = 0;
+        forceLodLayer = INVALID_LOD_LAYER;
+        
 		KeyedArchive *lodDistArch = archive->GetArchive("lc.loddist");
 		if(NULL != lodDistArch)
 		{

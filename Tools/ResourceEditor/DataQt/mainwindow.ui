@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1068</width>
+    <width>1103</width>
     <height>796</height>
    </rect>
   </property>
@@ -237,8 +237,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1068</width>
-     <height>21</height>
+     <width>1103</width>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -823,6 +823,15 @@
      </item>
     </layout>
    </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockLODEditor">
+   <property name="windowTitle">
+    <string>LOD Editor</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="LODEditor" name="dockLODEditorContent"/>
   </widget>
   <action name="actionNewScene">
    <property name="icon">
@@ -1550,6 +1559,11 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>ConsoleView</class>
+   <extends>QPlainTextEdit</extends>
+   <header>DockConsole/ConsoleView.h</header>
+  </customwidget>
+  <customwidget>
    <class>HeightmapEditorPropertiesView</class>
    <extends>QWidget</extends>
    <header>DockHeightmapEditor/HeightmapEditorPropertiesView.h</header>
@@ -1568,14 +1582,15 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>ConsoleView</class>
-   <extends>QPlainTextEdit</extends>
-   <header>DockConsole/ConsoleView.h</header>
-  </customwidget>
-  <customwidget>
    <class>VisibilityToolPropertiesView</class>
    <extends>QWidget</extends>
    <header>DockVisibilityToolEditor/VisibilityToolPropertiesView.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LODEditor</class>
+   <extends>QWidget</extends>
+   <header>DockLODEditor/LODEditor.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

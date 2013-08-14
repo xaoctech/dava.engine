@@ -4,8 +4,8 @@
 #include <QMouseEvent>
 #include <QPainter>
 
-const float DEFAULT_ROTATION_BUTTON_OPACITY = 0.6;
-const float HOVER_ROTATION_BUTTON_OPACITY = 1.0;
+const float DEFAULT_ROTATION_BUTTON_OPACITY = 0.6f;
+const float HOVER_ROTATION_BUTTON_OPACITY = 1.0f;
 
 QImage ClickableQLabel::rotateClockwiseImage;
 QImage ClickableQLabel::rotateCounterclockwiseImage;
@@ -155,6 +155,11 @@ void ClickableQLabel::mouseMoveEvent(QMouseEvent *ev)
 	}
 	else
 	{
+		if(IsPointOutsideControl(ev))
+		{
+			mouseEntered = false;
+		}
+
 		buttonDrawFlags = ClickableQLabel::None;
 	}
 	
@@ -213,3 +218,7 @@ QPoint ClickableQLabel::GetPointForButton(RotateButtonDrawFlags flag)
 	return pt;
 }
 
+bool ClickableQLabel::IsPointOutsideControl(QMouseEvent *ev)
+{
+	return rect().contains(ev->globalPos());
+}

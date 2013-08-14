@@ -17,7 +17,7 @@ public:
 	void Clear();
 	void Echo(const DAVA::String &text);
 
-	int GetLineCount() const;
+	size_t GetLineCount() const;
 	const DAVA::String& GetLine(size_t index) const;
 
 signals:

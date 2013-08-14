@@ -446,6 +446,9 @@
     <ClCompile Include="Classes\Qt\DockHeightmapEditor\HeightmapEditorPropertiesView.cpp" />
     <ClCompile Include="Classes\Qt\DockLibrary\LibraryModel.cpp" />
     <ClCompile Include="Classes\Qt\DockLibrary\LibraryView.cpp" />
+    <ClCompile Include="Classes\Qt\DockLODEditor\DistanceSlider.cpp" />
+    <ClCompile Include="Classes\Qt\DockLODEditor\EditorLODData.cpp" />
+    <ClCompile Include="Classes\Qt\DockLODEditor\LODEditor.cpp" />
     <ClCompile Include="Classes\Qt\DockMaterialViewOptions\MaterialViewOptions.cpp" />
     <ClCompile Include="Classes\Qt\DockParticleEditor\BaseParticleEditorContentWidget.cpp" />
     <ClCompile Include="Classes\Qt\DockParticleEditor\EmitterLayerWidget.cpp" />
@@ -543,6 +546,7 @@
     <ClCompile Include="Classes\Qt\Tools\AddSwitchEntityDialog\AddSwitchEntityDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\BaseAddEntityDialog\BaseAddEntityDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\EventFilterDoubleSpinBox\EventFilterDoubleSpinBox.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\LabeledSlider\LabeledSlider.cpp" />
     <ClCompile Include="Classes\Qt\Tools\MimeDataHelper\MimeDataHelper.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QResourceEditorProgressDialog\QResourceEditorProgressDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPosSaver\QtPosSaver.cpp" />
@@ -644,6 +648,9 @@
     <ClCompile Include="_GeneratedQt\DockHeightmapEditor\HeightmapEditorPropertiesView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLibrary\LibraryModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLibrary\LibraryView_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockLODEditor\DistanceSlider_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockLODEditor\EditorLODData_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockLODEditor\LODEditor_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockMaterialViewOptions\MaterialViewOptions_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockParticleEditor\BaseParticleEditorContentWidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockParticleEditor\EmitterLayerWidget_moc.cpp" />
@@ -745,6 +752,7 @@
     <ClCompile Include="_GeneratedQt\Tools\AddSwitchEntityDialog\AddSwitchEntityDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\BaseAddEntityDialog\BaseAddEntityDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\EventFilterDoubleSpinBox\EventFilterDoubleSpinBox_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Tools\LabeledSlider\LabeledSlider_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\MimeDataHelper\MimeDataHelper_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QResourceEditorProgressDialog\QResourceEditorProgressDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtPosSaver\QtPosSaver_moc.cpp" />
@@ -1119,6 +1127,9 @@
     <ClInclude Include="Classes\Qt\DockHeightmapEditor\HeightmapEditorPropertiesView.h" />
     <ClInclude Include="Classes\Qt\DockLibrary\LibraryModel.h" />
     <ClInclude Include="Classes\Qt\DockLibrary\LibraryView.h" />
+    <ClInclude Include="Classes\Qt\DockLODEditor\DistanceSlider.h" />
+    <ClInclude Include="Classes\Qt\DockLODEditor\EditorLODData.h" />
+    <ClInclude Include="Classes\Qt\DockLODEditor\LODEditor.h" />
     <ClInclude Include="Classes\Qt\DockMaterialViewOptions\MaterialViewOptions.h" />
     <ClInclude Include="Classes\Qt\DockParticleEditor\BaseParticleEditorContentWidget.h" />
     <ClInclude Include="Classes\Qt\DockParticleEditor\EmitterLayerWidget.h" />
@@ -1218,6 +1229,7 @@
     <ClInclude Include="Classes\Qt\Tools\AddSwitchEntityDialog\AddSwitchEntityDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\BaseAddEntityDialog\BaseAddEntityDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\EventFilterDoubleSpinBox\EventFilterDoubleSpinBox.h" />
+    <ClInclude Include="Classes\Qt\Tools\LabeledSlider\LabeledSlider.h" />
     <ClInclude Include="Classes\Qt\Tools\MimeDataHelper\MimeDataHelper.h" />
     <ClInclude Include="Classes\Qt\Tools\QResourceEditorProgressDialog\QResourceEditorProgressDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPosSaver\QtPosSaver.h" />
@@ -1312,6 +1324,7 @@
     <ClInclude Include="_GeneratedQt\ui_davaglwidget.h" />
     <ClInclude Include="_GeneratedQt\ui_HangingObjectsView.h" />
     <ClInclude Include="_GeneratedQt\ui_heightmapEditorProperties.h" />
+    <ClInclude Include="_GeneratedQt\ui_LODEditor.h" />
     <ClInclude Include="_GeneratedQt\ui_mainwindow.h" />
     <ClInclude Include="_GeneratedQt\ui_materialbrowser.h" />
     <ClInclude Include="_GeneratedQt\ui_MaterialViewOptions.h" />

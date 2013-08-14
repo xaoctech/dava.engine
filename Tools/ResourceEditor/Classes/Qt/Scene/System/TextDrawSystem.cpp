@@ -74,7 +74,7 @@ void TextDrawSystem::Draw()
 
 void TextDrawSystem::DrawText(int x, int y, const DAVA::String &text, const DAVA::Color &color)
 {
-	DrawText(DAVA::Vector2(x, y), text, color);
+	DrawText(DAVA::Vector2((DAVA::float32)x, (DAVA::float32)y), text, color);
 }
 
 void TextDrawSystem::DrawText(DAVA::Vector2 pos2d, const DAVA::String &text, const DAVA::Color &color)

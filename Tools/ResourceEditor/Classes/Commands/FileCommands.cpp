@@ -163,7 +163,7 @@ void CommandSaveSpecifiedScene::Execute()
 			{
 				Vector<Entity*> tempV;
 				tempV.reserve(size);
-				for (int32 ci = 0; ci < size; ++ci)
+				for (uint32 ci = 0; ci < size; ++ci)
 				{
 					Entity *child = entityToAdd->GetChild(ci);
 					child->Retain();

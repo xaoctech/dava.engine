@@ -189,7 +189,14 @@ public:
 		EVENT_TOUCH_UP_OUTSIDE		= 8,//!<Trigger when mouse pressure or touch processed by the control is released outside of the control.
         EVENTS_COUNT
 	};	
-	
+
+	enum eDebugDrawPivotMode
+	{
+		DRAW_NEVER					= 1, //!<Never draw the Pivot Point.
+		DRAW_ONLY_IF_NONZERO,			 //!<Draw the Pivot Point only if it is defined (nonzero).
+		DRAW_ALWAYS						 //!<Always draw the Pivot Point mark.
+	};
+
 	friend class ControlSystem;
 
 	
@@ -898,7 +905,14 @@ public:
 	void	SetDebugDraw(bool _debugDrawEnabled, bool hierarchic = false);
 	void	SetDebugDrawColor(const Color& color);
 	Color	GetDebugDrawColor() const;
-	
+
+	/**
+	 \brief Set the draw pivot point mode for the control.
+	 \param[in] mode draw pivot point mode
+	 \param[in] hierarchic Is value need to be changed in all coltrol children.
+	 */
+	void SetDrawPivotPointMode(eDebugDrawPivotMode mode, bool hierarchic = false);
+
 public:
 	
 	/**
@@ -1175,6 +1189,8 @@ protected:
 	bool debugDrawEnabled;
 	Color debugDrawColor;
 
+	eDebugDrawPivotMode drawPivotPointMode;
+
 	// If this UI control represents Custom Control - its type is stored here.
 	String customControlType;
 
@@ -1201,8 +1217,10 @@ private:
 	
 	void RecalculateAlignProperties();
 	void RecalculateChildsSize();
+
 	void DrawDebugRect(const Rect &drawRect, bool useAlpha = false);
-	
+	void DrawPivotPoint(const Rect &drawRect);
+
 	float32 GetSizeX(UIControl *parent, int32 leftAlign, int32 rightAlign, bool useHalfParentSize = false);
 	float32 GetSizeY(UIControl *parent, int32 topAlign, int32 bottomAlign, bool useHalfParentSize = false);
 	

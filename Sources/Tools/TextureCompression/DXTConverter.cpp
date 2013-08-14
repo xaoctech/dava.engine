@@ -50,7 +50,7 @@ FilePath DXTConverter::ConvertCubemapPngToDxt(const TextureDescriptor &descripto
 	Vector<Image*> inputImages;
 	Vector<String> faceNames;
 	Texture::GenerateCubeFaceNames(descriptor.pathname.GetAbsolutePathname().c_str(), faceNames);
-	for(int i = 0; i < faceNames.size(); ++i)
+	for(size_t i = 0; i < faceNames.size(); ++i)
 	{
 		Vector<Image*> tempImages = ImageLoader::CreateFromFile(faceNames[i]);
 		if(tempImages.size() == 1)
@@ -79,14 +79,14 @@ FilePath DXTConverter::ConvertCubemapPngToDxt(const TextureDescriptor &descripto
         {
             Logger::Warning("[DXTConverter::ConvertPngToDxt] convert to compression size");
 			
-			for(int i = 0; i < inputImages.size(); ++i)
+			for(size_t i = 0; i < inputImages.size(); ++i)
 			{
 				inputImages[i]->ResizeImage(descriptor.compression[gpuFamily].compressToWidth, descriptor.compression[gpuFamily].compressToHeight);
 			}
         }
 		
 		uint8** faceData = new uint8*[inputImages.size()];
-		for(int i = 0; i < inputImages.size(); ++i)
+		for(size_t i = 0; i < inputImages.size(); ++i)
 		{
 			faceData[i] = inputImages[i]->data;
 		}
