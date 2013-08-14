@@ -23,6 +23,7 @@
 
 #include <QMenu>
 #include <QAction>
+#include <QApplication>
 
 #define SIZE_CURSOR_DELTA 5
 #define MIN_DRAG_DELTA 3
@@ -67,16 +68,8 @@ DefaultScreen::~DefaultScreen()
 
 void DefaultScreen::Update(float32 /*timeElapsed*/)
 {
-	if (inputState == InputStateScreenMove)
-	{
-		//reset screen move state if space key released
-		if (!InputSystem::Instance()->GetKeyboard()->IsKeyPressed(MOVE_SCREEN_KEY))
-		{
-			inputState = InputStateSelection;
-			ScreenWrapper::Instance()->RequestUpdateCursor();
-		}
-	}
-	
+	CheckScreenMoveState();
+
 	//update view port
 	RenderManager::Instance()->SetDrawScale(scale);
 	RenderManager::Instance()->SetDrawTranslate(pos);
@@ -135,6 +128,7 @@ void DefaultScreen::Input(DAVA::UIEvent* event)
 		}break;
 		case UIEvent::PHASE_MOVE:
 		{
+			MouseInputMove(event);
 			ScreenWrapper::Instance()->SetCursor(GetCursor(event->point));
 		}break;
 		case UIEvent::PHASE_ENDED:
@@ -496,7 +490,7 @@ void DefaultScreen::DeleteSelectedControls()
 Qt::CursorShape DefaultScreen::GetCursor(const Vector2& point)
 {
 	if (inputState == InputStateScreenMove)
-		return Qt::SizeAllCursor;
+		return Qt::OpenHandCursor;
 		
 	if (inputState == InputStateSize)
 		return ResizeTypeToQt(resizeType);
@@ -756,6 +750,11 @@ void DefaultScreen::MouseInputBegin(const DAVA::UIEvent* event)
 	}
 	this->mouseAlreadyPressed = true;
 
+	if (event->tid == UIEvent::BUTTON_1 && CheckEnterScreenMoveState())
+	{
+		return;
+	}
+
 	if (inputState == InputStateScreenMove)
 		return;
 	
@@ -953,6 +952,9 @@ void DefaultScreen::MouseInputEnd(const DAVA::UIEvent* event)
 				break;
 		}
 	}
+	
+	CheckExitScreenMoveState();
+
 	// We don't have to reset control for right mouse click. Control position is not changed and we don't select another control
 	// So we have to keep previous "selection" for that case
 	if (bResetControlPosition)
@@ -1065,15 +1067,6 @@ void DefaultScreen::KeyboardInput(const DAVA::UIEvent* event)
 		{
 			DeleteSelectedControls();
 		}break;
-		case MOVE_SCREEN_KEY:
-		{
-			if (inputState == InputStateSelection)
-			{
-				inputState = InputStateScreenMove;
-				ScreenWrapper::Instance()->RequestUpdateCursor();
-				inputPos = Vector2(-1, -1);
-			}
-		}break;
 		case DVKEY_C:
 		{
 			if (InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_CTRL))
@@ -1118,23 +1111,34 @@ void DefaultScreen::KeyboardInput(const DAVA::UIEvent* event)
 	
 }
 
-void DefaultScreen::MouseInputMove(const Vector2& pos)
+void DefaultScreen::MouseInputMove(const DAVA::UIEvent* event)
 {
 	if (inputState == InputStateScreenMove)
 	{
+
+		const Vector2& pos = event->point;
 		if (Abs(inputPos.x + 1) < 0.1f && (inputPos.y + 1) < 0.1f)
+		{
 			inputPos = pos;
-		Vector2 delta = GetInputDelta(pos);
+		}
+
+		// In this particular case don't take Scale into account.
+		Vector2 delta = GetInputDelta(pos, false);
 		ScreenWrapper::Instance()->RequestViewMove(-delta);
 		inputPos = pos;
 	}
 }
 
-Vector2 DefaultScreen::GetInputDelta(const Vector2& point) const
+Vector2 DefaultScreen::GetInputDelta(const Vector2& point, bool applyScale) const
 {
 	Vector2 delta = point - inputPos;
-	delta.x /= scale.x;
-	delta.y /= scale.y;
+
+	if (applyScale)
+	{
+		delta.x /= scale.x;
+		delta.y /= scale.y;
+	}
+
 	return delta;
 }
 
@@ -1181,4 +1185,47 @@ Rect DefaultScreen::GetControlRect(const HierarchyTreeControlNode* controlNode) 
 	rect += controlNode->GetParentDelta(true);
 
 	return rect;
+}
+
+bool DefaultScreen::CheckEnterScreenMoveState()
+{
+	// If we are here - the Mouse Down event just happened. Check whether we are
+	// in appropriate state and the key is pressed.
+	if (inputState == InputStateSelection && IsMoveScreenKeyPressed())
+	{
+		inputState = InputStateScreenMove;
+		ScreenWrapper::Instance()->RequestUpdateCursor();
+		inputPos = Vector2(-1, -1);
+
+		return true;
+	}
+	
+	return false;
+}
+
+void DefaultScreen::CheckScreenMoveState()
+{
+	// This is called on every frame. If the move sceeen key is released -
+	// treat this as "reset Screen Move state".
+	if (inputState == InputStateScreenMove && !IsMoveScreenKeyPressed())
+	{
+		inputState = InputStateSelection;
+	}
+}
+
+void DefaultScreen::CheckExitScreenMoveState()
+{
+	// Reset in any case.
+	if (inputState == InputStateScreenMove)
+	{
+		inputState = InputStateSelection;
+		ScreenWrapper::Instance()->RequestUpdateCursor();
+	}
+}
+
+bool DefaultScreen::IsMoveScreenKeyPressed()
+{
+	//return InputSystem::Instance()->GetKeyboard()->IsKeyPressed(MOVE_SCREEN_KEY);
+	Qt::KeyboardModifiers modifiers = QApplication::keyboardModifiers();
+	return (modifiers & Qt::AltModifier);
 }
