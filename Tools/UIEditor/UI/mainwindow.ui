@@ -58,6 +58,9 @@
           <property name="editable">
            <bool>true</bool>
           </property>
+          <property name="maxVisibleItems">
+           <number>12</number>
+          </property>
          </widget>
         </item>
        </layout>

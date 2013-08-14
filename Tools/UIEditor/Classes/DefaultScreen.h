@@ -46,7 +46,7 @@ public:
 	virtual bool SystemInput(UIEvent *currentInput);
 	
 	Qt::CursorShape GetCursor(const Vector2&);
-	void MouseInputMove(const Vector2& pos);
+	void MouseInputMove(const DAVA::UIEvent* event);
 	
 	void BacklightControl(const Vector2& pos);
 	bool IsDropEnable(const Vector2& pos)const;
@@ -127,7 +127,7 @@ private:
 	void MouseInputDrag(const DAVA::UIEvent* event);
 	void KeyboardInput(const DAVA::UIEvent* event);
 	
-	Vector2 GetInputDelta(const Vector2& point) const;
+	Vector2 GetInputDelta(const Vector2& point, bool applyScale = true) const;
 	
 	Rect GetControlRect(const HierarchyTreeControlNode* control) const;
 	void CopySelectedControls();
@@ -158,7 +158,15 @@ private:
 	void HandleMouseRightButtonClick(const Vector2& point);
 	void HandleMouseLeftButtonClick(const Vector2& point);	
 	void ShowControlContextMenu(const SmartSelection& selection);
+
+	// Screen Move functionality.
+	bool CheckEnterScreenMoveState();
+	void CheckScreenMoveState();
+	void CheckExitScreenMoveState();
 	
+	// Get the state of the "Move Screen" key.
+	bool IsMoveScreenKeyPressed();
+
 private slots:
 	void ControlContextMenuTriggered(QAction* action);
 };
