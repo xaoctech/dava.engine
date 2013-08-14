@@ -71,8 +71,6 @@ Landscape::Landscape()
     uniformFogColor = -1;
     uniformFogDensityFT = -1;
     uniformFogColorFT = -1;
-
-    SetTiledShaderMode(TILED_MODE_MIXED);
     
     heightmap = new Heightmap();
         
@@ -81,6 +79,9 @@ Landscape::Landscape()
     isFogEnabled = false;
     fogDensity = 0.006f;
     fogColor = Color::White();
+	
+	//VI: init shaders AFTER all member variables were initialized
+	SetTiledShaderMode(TILED_MODE_MIXED);
     
     LandscapeChunk * chunk = new LandscapeChunk(this);
     AddRenderBatch(chunk);
@@ -1129,9 +1130,9 @@ void Landscape::BindMaterial(int32 lodLayer)
         RenderManager::Instance()->FlushState();
         
         if (uniformFogColorFT != -1)
-            tileMaskShader->SetUniformColor3ByIndex(uniformFogColorFT, fogColor);
+            fullTiledShader->SetUniformColor3ByIndex(uniformFogColorFT, fogColor);
         if (uniformFogDensityFT != -1)
-            tileMaskShader->SetUniformValueByIndex(uniformFogDensityFT, fogDensity);
+            fullTiledShader->SetUniformValueByIndex(uniformFogDensityFT, fogDensity);
     }
     
     prevLodLayer = lodLayer;
