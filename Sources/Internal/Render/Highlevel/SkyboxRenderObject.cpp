@@ -177,8 +177,17 @@ namespace DAVA
 			//since the renderBatchArray is entirely controlled by SkyboxRenderObject
 			//we can safely assume that objects in render batch array are properly initialized
 			//and have material in place (no need to check for NULL)
-			skyboxMaterial->SetTexture(Material::TEXTURE_DIFFUSE,
-									   DAVA::Texture::CreateFromFile(texturePath));
+			
+			DAVA::Texture* tx = DAVA::Texture::CreateFromFile(texturePath);
+			
+			if(tx && DAVA::Texture::TEXTURE_2D == tx->textureType)
+			{
+				//this count happen when pink texture were returned
+				SafeRelease(tx);
+			}
+			
+			skyboxMaterial->SetTexture(Material::TEXTURE_DIFFUSE, tx);
+			SafeRelease(tx);
 		}
 	}
 	
