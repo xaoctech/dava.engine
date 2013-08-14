@@ -125,7 +125,7 @@ void ActionSetVisibilityArea::ApplyImage(DAVA::Image *image)
 	Texture* texture = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(),
 											   image->GetWidth(), image->GetHeight(), false);
 	texture->GeneratePixelesation();
-	Sprite* sprite = Sprite::CreateFromTexture(texture, 0, 0, image->GetWidth(), image->GetHeight());
+	Sprite* sprite = Sprite::CreateFromTexture(texture, 0, 0, (float32)image->GetWidth(), (float32)image->GetHeight());
 
 	RenderManager::Instance()->SetRenderTarget(visibilityToolSprite);
 	RenderManager::Instance()->ClipPush();

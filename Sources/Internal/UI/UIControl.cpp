@@ -56,7 +56,9 @@ namespace DAVA
 		debugDrawEnabled = false;
 		debugDrawColor = Color(1.0f, 0.0f, 0.0f, 1.0f);
 		absolutePosition = Vector2(0, 0);
-		
+
+		drawPivotPointMode = DRAW_NEVER;
+
 		pivotPoint = Vector2(0, 0);
 		scale = Vector2(1.0f, 1.0f);
 		angle = 0;
@@ -1521,10 +1523,13 @@ namespace DAVA
 			Draw(drawData);
 		}
 		
+		const Rect& unrotatedRect = drawData.GetUnrotatedRect();
+	
 		if (debugDrawEnabled && !clipContents)
 		{	//TODO: Add debug draw for rotated controls
-			DrawDebugRect(drawData.GetUnrotatedRect());
+			DrawDebugRect(unrotatedRect);
 		}
+		DrawPivotPoint(unrotatedRect);
 		
 		isIteratorCorrupted = false;
 		List<UIControl*>::iterator it = childs.begin();
@@ -1545,15 +1550,16 @@ namespace DAVA
 			
 			if(debugDrawEnabled)
 			{ //TODO: Add debug draw for rotated controls
-				DrawDebugRect(drawData.GetUnrotatedRect());
+				DrawDebugRect(unrotatedRect);
 			}
+			DrawPivotPoint(unrotatedRect);
 		}
 
 		if(debugDrawEnabled && NULL != parent && parent->GetClipContents())
 		{	
 			RenderManager::Instance()->ClipPush();
 			RenderManager::Instance()->ClipRect(Rect(0, 0, -1, -1));
-			DrawDebugRect(drawData.GetUnrotatedRect(), true);
+			DrawDebugRect(unrotatedRect, true);
 			RenderManager::Instance()->ClipPop();
 		}
 	}
@@ -1574,6 +1580,45 @@ namespace DAVA
 			RenderManager::Instance()->SetColor(debugDrawColor);
 		}
 		RenderHelper::Instance()->DrawRect(drawRect);
+
+		RenderManager::Instance()->ClipPop();
+		RenderManager::Instance()->SetColor(oldColor);
+	}
+
+	void UIControl::DrawPivotPoint(const Rect &drawRect)
+	{
+		if (drawPivotPointMode == DRAW_NEVER)
+		{
+			return;
+		}
+		
+		if (drawPivotPointMode == DRAW_ONLY_IF_NONZERO && pivotPoint.IsZero())
+		{
+			return;
+		}
+
+		static const uint32 PIVOT_POINT_MARK_RADIUS = 10.0f;
+		static const uint32 PIVOT_POINT_MARK_HALF_LINE_LENGTH = 13.0f;
+
+		Color oldColor = RenderManager::Instance()->GetColor();
+		RenderManager::Instance()->ClipPush();
+		RenderManager::Instance()->SetColor(Color(1.0f, 0.0f, 0.0f, 1.0f));
+
+		Vector2 pivotPointCenter = drawRect.GetPosition() + pivotPoint;
+		RenderHelper::Instance()->DrawCircle(pivotPointCenter, PIVOT_POINT_MARK_RADIUS);
+
+		// Draw the cross mark.
+		Vector2 lineStartPoint = pivotPointCenter;
+		Vector2 lineEndPoint = pivotPointCenter;
+		lineStartPoint.y -= PIVOT_POINT_MARK_HALF_LINE_LENGTH;
+		lineEndPoint.y += PIVOT_POINT_MARK_HALF_LINE_LENGTH;
+		RenderHelper::Instance()->DrawLine(lineStartPoint, lineEndPoint);
+		
+		lineStartPoint = pivotPointCenter;
+		lineEndPoint = pivotPointCenter;
+		lineStartPoint.x -= PIVOT_POINT_MARK_HALF_LINE_LENGTH;
+		lineEndPoint.x += PIVOT_POINT_MARK_HALF_LINE_LENGTH;
+		RenderHelper::Instance()->DrawLine(lineStartPoint, lineEndPoint);
 
 		RenderManager::Instance()->ClipPop();
 		RenderManager::Instance()->SetColor(oldColor);
@@ -2454,6 +2499,19 @@ namespace DAVA
 		return debugDrawColor;
 	}
     
+	void UIControl::SetDrawPivotPointMode(eDebugDrawPivotMode mode, bool hierarchic /*=false*/)
+	{
+		drawPivotPointMode = mode;
+		if (hierarchic)
+		{
+			List<UIControl*>::iterator it = childs.begin();
+			for(; it != childs.end(); ++it)
+			{
+				(*it)->SetDrawPivotPointMode(mode, hierarchic);
+			}
+		}
+	}
+
     bool UIControl::IsLostFocusAllowed( UIControl *newFocus )
     {
         return true;

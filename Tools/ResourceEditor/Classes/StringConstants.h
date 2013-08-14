@@ -58,6 +58,9 @@ namespace ResourceEditor
 
     //Documentation
     static const String DOCUMENTATION_PATH = "~doc:/ResourceEditorHelp/";
+    
+    //service strings
+    static const String TAG = "tag";
 }
 
 #endif //#ifndef __STRING_CONSTANTS_H__

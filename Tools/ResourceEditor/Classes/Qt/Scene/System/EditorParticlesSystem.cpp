@@ -202,7 +202,7 @@ void EditorParticlesSystem::DrawSizeBox(DAVA::Entity *entity, DAVA::ParticleEmit
 
 void EditorParticlesSystem::DrawVectorArrow(DAVA::Entity *entity, DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
 {
-	DAVA::Vector3 emitterVector;
+	DAVA::Vector3 emitterVector(0.f, 0.f, 1.f);
 	DAVA::float32 arrowBaseSize = 5.0f;
 				
 	if (emitter->emissionVector)

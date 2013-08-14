@@ -41,6 +41,7 @@ private:
 	
 	bool IsPointInsideClockwiseRotationArea(QMouseEvent *ev);
 	bool IsPointInsideCounterclockwiseRotationArea(QMouseEvent *ev);
+	bool IsPointOutsideControl(QMouseEvent *ev);
 	void DrawRotationIcon(QPaintEvent *ev, QPoint position, float opacity, bool flipped);
 	void DrawFaceImage(QPaintEvent *ev);
 	QPoint GetPointForButton(RotateButtonDrawFlags flag);

@@ -30,7 +30,6 @@
 #include "Scene3D/Systems/SkyboxSystem.h"
 
 #include "Tools/BaseAddEntityDialog/BaseAddEntityDialog.h"
-//#include "Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
 #include "Tools/SelectPathWidget/SelectPathWidget.h"
 
 #include "Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
@@ -90,8 +89,8 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 QtMainWindow::~QtMainWindow()
 {
 	delete addSwitchEntityDialog;
-    
-	SafeRelease(materialEditor);
+
+    SafeRelease(materialEditor);
     
     if(HintManager::Instance())
         HintManager::Instance()->Release();
@@ -291,6 +290,7 @@ void QtMainWindow::SetupMainMenu()
 	ui->menuView->addAction(actionVisibilityTool2);
 	ui->menuView->addAction(actionHeightmapEditor2);
 	ui->menuView->addAction(actionTilemaskEditor2);
+	ui->menuView->addAction(ui->dockLODEditor->toggleViewAction());
 
 	InitRecent();
 }
