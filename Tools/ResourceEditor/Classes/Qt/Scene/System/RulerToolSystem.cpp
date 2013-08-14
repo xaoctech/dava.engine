@@ -90,6 +90,9 @@ bool RulerToolSystem::EnableLandscapeEditing()
 
 	previewLength = 0;
 
+	Clear();
+	DrawPoints();
+
 	SceneSignals::Instance()->EmitRulerToolLengthChanged(dynamic_cast<SceneEditor2*>(GetScene()), length, previewLength);
 
 	enabled = true;
@@ -193,11 +196,10 @@ void RulerToolSystem::UpdateCursorPosition(int32 landscapeSize)
 
 void RulerToolSystem::SetStartPoint(const DAVA::Vector3 &point)
 {
-	linePoints.clear();
-	linePoints.push_back(point);
+	Clear();
 
-	length = 0;
 	previewPoint = point;
+	linePoints.push_back(point);
 	SceneSignals::Instance()->EmitRulerToolLengthChanged(dynamic_cast<SceneEditor2*>(GetScene()), length, length);
 }
 
@@ -303,4 +305,10 @@ void RulerToolSystem::DrawPoints()
 	RenderManager::Instance()->RestoreRenderTarget();
 
 	drawSystem->GetRulerToolProxy()->UpdateSprite();
+}
+
+void RulerToolSystem::Clear()
+{
+	linePoints.clear();
+	length = 0;
 }

@@ -72,6 +72,8 @@ protected:
 	void DrawPoints();
 
 	bool IsCanBeEnabled();
+
+	void Clear();
 };
 
 #endif /* defined(__RESOURCEEDITORQT__RULERTOOLSYSTEM__) */
