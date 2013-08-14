@@ -563,6 +563,8 @@
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtProperyData\QtPropertyDataMetaObject.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtWaitDialog\QtWaitDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\SelectPathWidget\SelectPathWidget.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsEditor.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\SettingsDialog\SettingsDialogQt.cpp" />
     <ClCompile Include="Classes\RulerTool\RulerTool.cpp" />
     <ClCompile Include="Classes\SceneEditor\ArrowsNode.cpp" />
     <ClCompile Include="Classes\SceneEditor\CameraController.cpp" />
@@ -769,6 +771,8 @@
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtProperyData\QtPropertyDataMetaObject_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtWaitDialog\QtWaitDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\SelectPathWidget\SelectPathWidget_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\GeneralSettingsEditor_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\SettingsDialogQt_moc.cpp" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
     </ClInclude>
@@ -1246,6 +1250,8 @@
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtProperyData\QtPropertyDataMetaObject.h" />
     <ClInclude Include="Classes\Qt\Tools\QtWaitDialog\QtWaitDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\SelectPathWidget\SelectPathWidget.h" />
+    <ClInclude Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsEditor.h" />
+    <ClInclude Include="Classes\Qt\Tools\SettingsDialog\SettingsDialogQt.h" />
     <ClInclude Include="Classes\RulerTool\RulerTool.h" />
     <ClInclude Include="Classes\SceneEditor\ArrowsNode.h" />
     <ClInclude Include="Classes\SceneEditor\CameraController.h" />

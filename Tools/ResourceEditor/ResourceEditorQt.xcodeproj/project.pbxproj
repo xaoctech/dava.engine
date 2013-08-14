@@ -431,6 +431,10 @@
 		6295E409178B08050007F9EC /* MimeDataHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 6295E407178B08050007F9EC /* MimeDataHelper.cpp */; };
 		629FF9D117A9603B00724B29 /* BaseAddEntityDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 629FF9CF17A9603B00724B29 /* BaseAddEntityDialog.cpp */; };
 		629FF9D317A960F200724B29 /* BaseAddEntityDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 629FF9D217A960F200724B29 /* BaseAddEntityDialog_moc.cpp */; };
+		62A7CA6917B8D05A000AEBF5 /* GeneralSettingsEditor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62A7CA6517B8D05A000AEBF5 /* GeneralSettingsEditor.cpp */; };
+		62A7CA6A17B8D05A000AEBF5 /* SettingsDialogQt.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62A7CA6717B8D05A000AEBF5 /* SettingsDialogQt.cpp */; };
+		62A7CA6E17B8D08D000AEBF5 /* GeneralSettingsEditor_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62A7CA6C17B8D08D000AEBF5 /* GeneralSettingsEditor_moc.cpp */; };
+		62A7CA6F17B8D08D000AEBF5 /* SettingsDialogQt_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62A7CA6D17B8D08D000AEBF5 /* SettingsDialogQt_moc.cpp */; };
 		62AD51C517AF95D4001A4621 /* AddEntityCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62AD51C317AF95D4001A4621 /* AddEntityCommand.cpp */; };
 		748E55931761D5EB000E24FF /* ParticlesEditorNodeNameHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 748E55911761D5EB000E24FF /* ParticlesEditorNodeNameHelper.cpp */; };
 		74FE1CE5178B117500693D15 /* EditorParticlesSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74FE1CE3178B117300693D15 /* EditorParticlesSystem.cpp */; };
@@ -1449,6 +1453,12 @@
 		629FF9D017A9603B00724B29 /* BaseAddEntityDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BaseAddEntityDialog.h; path = Classes/Qt/Tools/BaseAddEntityDialog/BaseAddEntityDialog.h; sourceTree = "<group>"; };
 		629FF9D217A960F200724B29 /* BaseAddEntityDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BaseAddEntityDialog_moc.cpp; path = BaseAddEntityDialog/BaseAddEntityDialog_moc.cpp; sourceTree = "<group>"; };
 		62A0173F17A94D9500322B30 /* PropertyEditorDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyEditorDialog.h; sourceTree = "<group>"; };
+		62A7CA6517B8D05A000AEBF5 /* GeneralSettingsEditor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GeneralSettingsEditor.cpp; path = Classes/Qt/Tools/SettingsDialog/GeneralSettingsEditor.cpp; sourceTree = "<group>"; };
+		62A7CA6617B8D05A000AEBF5 /* GeneralSettingsEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GeneralSettingsEditor.h; path = Classes/Qt/Tools/SettingsDialog/GeneralSettingsEditor.h; sourceTree = "<group>"; };
+		62A7CA6717B8D05A000AEBF5 /* SettingsDialogQt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SettingsDialogQt.cpp; path = Classes/Qt/Tools/SettingsDialog/SettingsDialogQt.cpp; sourceTree = "<group>"; };
+		62A7CA6817B8D05A000AEBF5 /* SettingsDialogQt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SettingsDialogQt.h; path = Classes/Qt/Tools/SettingsDialog/SettingsDialogQt.h; sourceTree = "<group>"; };
+		62A7CA6C17B8D08D000AEBF5 /* GeneralSettingsEditor_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GeneralSettingsEditor_moc.cpp; path = SettingsDialog/GeneralSettingsEditor_moc.cpp; sourceTree = "<group>"; };
+		62A7CA6D17B8D08D000AEBF5 /* SettingsDialogQt_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SettingsDialogQt_moc.cpp; path = SettingsDialog/SettingsDialogQt_moc.cpp; sourceTree = "<group>"; };
 		62AD51C317AF95D4001A4621 /* AddEntityCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddEntityCommand.cpp; sourceTree = "<group>"; };
 		62AD51C417AF95D4001A4621 /* AddEntityCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddEntityCommand.h; sourceTree = "<group>"; };
 		6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtOpenGL.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework"; sourceTree = "<absolute>"; };
@@ -2252,6 +2262,7 @@
 			isa = PBXGroup;
 			children = (
 				E8BD39D417B4BB4D00C63420 /* LabeledSlider */,
+				62A7CA6B17B8D072000AEBF5 /* SettingsDialog */,
 				624C2ADF17A26D470031DC68 /* BaseEntityAddDialog */,
 				E8F799BE1797D6F400E7C3C8 /* MimeDataHelper */,
 				4FAD0CB01785EC6E00B05A35 /* AddSwitchEntityDialog */,
@@ -3168,6 +3179,7 @@
 			isa = PBXGroup;
 			children = (
 				E8BD39CC17B4BA8E00C63420 /* LabeledSlider */,
+				62A7CA6017B8D037000AEBF5 /* SettingsDialog */,
 				4F64847717AFB5AB00034454 /* QtWaitDialog */,
 				624C2AD717A26BC00031DC68 /* BaseAddEntityDialog */,
 				6295E406178B07EB0007F9EC /* MimeDataHelper */,
@@ -3208,6 +3220,26 @@
 				6295E408178B08050007F9EC /* MimeDataHelper.h */,
 			);
 			name = MimeDataHelper;
+			sourceTree = "<group>";
+		};
+		62A7CA6017B8D037000AEBF5 /* SettingsDialog */ = {
+			isa = PBXGroup;
+			children = (
+				62A7CA6517B8D05A000AEBF5 /* GeneralSettingsEditor.cpp */,
+				62A7CA6617B8D05A000AEBF5 /* GeneralSettingsEditor.h */,
+				62A7CA6717B8D05A000AEBF5 /* SettingsDialogQt.cpp */,
+				62A7CA6817B8D05A000AEBF5 /* SettingsDialogQt.h */,
+			);
+			name = SettingsDialog;
+			sourceTree = "<group>";
+		};
+		62A7CA6B17B8D072000AEBF5 /* SettingsDialog */ = {
+			isa = PBXGroup;
+			children = (
+				62A7CA6C17B8D08D000AEBF5 /* GeneralSettingsEditor_moc.cpp */,
+				62A7CA6D17B8D08D000AEBF5 /* SettingsDialogQt_moc.cpp */,
+			);
+			name = SettingsDialog;
 			sourceTree = "<group>";
 		};
 		841703FF16CBCE9700F1023D /* SpritesPacker */ = {
@@ -4582,6 +4614,10 @@
 				E8BD3A0217B52BC600C63420 /* DistanceSlider_moc.cpp in Build Sources */,
 				4FBD351A17B5769E0051833D /* DAEConvertAction.cpp in Build Sources */,
 				4FBD352117BA38940051833D /* TextDrawSystem.cpp in Build Sources */,
+				62A7CA6917B8D05A000AEBF5 /* GeneralSettingsEditor.cpp in Build Sources */,
+				62A7CA6A17B8D05A000AEBF5 /* SettingsDialogQt.cpp in Build Sources */,
+				62A7CA6E17B8D08D000AEBF5 /* GeneralSettingsEditor_moc.cpp in Build Sources */,
+				62A7CA6F17B8D08D000AEBF5 /* SettingsDialogQt_moc.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
