@@ -102,6 +102,8 @@ public slots:
 	void OnRulerTool();
 	
 	void OnSetSkyboxNode();
+	
+	void OnShowSettings();
 
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);

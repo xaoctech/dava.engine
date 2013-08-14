@@ -26,19 +26,21 @@
 #include "TextureBrowser/TextureBrowser.h"
 #include "MaterialBrowser/MaterialBrowser.h"
 
-#include "CubemapEditor/CubemapTextureBrowser.h"
+#include "Classes/SceneEditor/EditorSettings.h"
+#include "Classes/SceneEditor/EditorConfig.h"
+
+#include "../CubemapEditor/CubemapTextureBrowser.h"
 #include "Scene3D/Systems/SkyboxSystem.h"
 
 #include "Tools/BaseAddEntityDialog/BaseAddEntityDialog.h"
 #include "Tools/SelectPathWidget/SelectPathWidget.h"
 
-#include "Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
-#include "Commands2/AddEntityCommand.h"
+#include "../Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
+#include "../../Commands2/AddEntityCommand.h"
 #include "StringConstants.h"
-
-#include "SceneEditor/EditorSettings.h"
-#include "SceneEditor/EditorConfig.h"
 #include "SceneEditor/HintManager.h"
+#include "../Tools/SettingsDialog/SettingsDialogQt.h"
+
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -390,6 +392,9 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionUserNode, SIGNAL(triggered()), this, SLOT(OnUserNodeDialog()));
 	QObject::connect(ui->actionSwitchNode, SIGNAL(triggered()), this, SLOT(OnSwitchEntityDialog()));
 	QObject::connect(ui->actionParticleEffectNode, SIGNAL(triggered()), this, SLOT(OnParticleEffectDialog()));
+	
+	
+	QObject::connect(ui->actionShowSettings, SIGNAL(triggered()), this, SLOT(OnShowSettings()));
 }
 
 void QtMainWindow::InitRecent()
@@ -1013,6 +1018,12 @@ void QtMainWindow::CreateAndDisplayAddEntityDialog(Entity* entity)
 	SafeRelease(entity);
 	
 	delete dlg;
+}
+
+void QtMainWindow::OnShowSettings()
+{
+	SettingsDialogQt t(this);
+	t.exec();
 }
 
 // ###################################################################################################
