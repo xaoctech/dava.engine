@@ -265,6 +265,8 @@ void HeightmapEditorPropertiesView::Toggle()
 								  "Error enabling Heightmap editor.\nMake sure there is landscape in scene and disable other landscape editors.");
 		}
 	}
+
+	toolbarAction->setChecked(activeScene->heightmapEditorSystem->IsLandscapeEditingEnabled());
 }
 
 void HeightmapEditorPropertiesView::SetBrushSize(int brushSize)
