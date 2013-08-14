@@ -59,6 +59,7 @@ namespace DAVA
 		15, 16, 17, 18, 19
 	};
 	
+	const float32 SEGMENT_LENGTH = 15.0f;
 	
 RenderHelper::RenderHelper()
 {
@@ -184,8 +185,7 @@ void RenderHelper::DrawPoint(const Vector3 & pt, float32 ptSize)
 void RenderHelper::DrawCircle(const Vector2 & center, float32 radius)
 {
 	Polygon2 pts;
-    float32 seglength = 15.0f;
-    float32 angle = seglength / radius;
+    float32 angle = SEGMENT_LENGTH / radius;
 	int ptsCount = (int)(2 * PI / angle) + 1;
 	
 	for (int k = 0; k < ptsCount; ++k)
@@ -204,8 +204,7 @@ void RenderHelper::DrawCircle(const Vector2 & center, float32 radius)
 void RenderHelper::DrawCircle(const Vector3 & center, float32 radius)
 {
 	Polygon3 pts;
-    float32 seglength = 15.0f;
-    float32 angle = seglength / radius;
+    float32 angle = SEGMENT_LENGTH / radius;
 	int ptsCount = (int)(2 * PI / (DegToRad(angle))) + 1;
 
 
@@ -224,8 +223,7 @@ void RenderHelper::DrawCircle(const Vector3 & center, float32 radius)
 void RenderHelper::DrawCircle3D(const Vector3 & center, const Vector3 &emissionVector, float32 radius, bool useFilling)
 {
 	Polygon3 pts;
-    float32 seglength = 15.0f;
-    float32 angle = seglength / radius;
+    float32 angle = SEGMENT_LENGTH / radius;
 	int ptsCount = (int)(PI_2 / (DegToRad(angle))) + 1;
 
 	for (int k = 0; k < ptsCount; ++k)
@@ -277,8 +275,7 @@ void RenderHelper::DrawCircle3D(const Vector3 & center, const Vector3 &emissionV
 void RenderHelper::DrawCylinder(const Vector3 & center, float32 radius, bool useFilling)
 {
 	Polygon3 pts;
-    float32 seglength = 15.0f;
-    float32 angle = seglength / radius;
+    float32 angle = SEGMENT_LENGTH / radius;
 	int32 ptsCount = (int32)(PI_2 / (DegToRad(angle))) + 1;
 
 	Vector<Vector2> vertexes;
