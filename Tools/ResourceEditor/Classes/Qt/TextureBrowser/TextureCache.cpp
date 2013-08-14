@@ -47,7 +47,7 @@ void TextureCache::setOriginal(const DAVA::TextureDescriptor *descriptor, DAVA::
 	if(NULL != descriptor)
 	{
 		DAVA::Vector<QImage> tmpImages;
-		for(int i = 0; i < (int)images.size(); ++i)
+		for(size_t i = 0; i < images.size(); ++i)
 		{
 			tmpImages.push_back(images[i]);
 		}
@@ -62,7 +62,7 @@ void TextureCache::setConverted(const DAVA::TextureDescriptor *descriptor, DAVA:
 		gpu > DAVA::GPU_UNKNOWN && gpu < DAVA::GPU_FAMILY_COUNT)
 	{
 		DAVA::Vector<QImage> tmpImages;
-		for(int i = 0; i < (int)images.size(); ++i)
+		for(int i = 0; i < images.size(); ++i)
 		{
 			tmpImages.push_back(images[i]);
 		}
