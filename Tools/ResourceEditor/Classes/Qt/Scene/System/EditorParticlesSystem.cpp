@@ -115,7 +115,7 @@ void EditorParticlesSystem::Draw()
 					DAVA::AABBox3 selectionBox = selectedEntities->GetBbox(i);
 					DAVA::Vector3 center = selectionBox.GetCenter();
 					// Always draw emission vector arrow for emitter
-					DrawVectorArrow(emitter, center);
+					DrawVectorArrow(entity, emitter, center);
 					
 					switch (emitter->emitterType)
 					{
@@ -123,13 +123,13 @@ void EditorParticlesSystem::Draw()
 						case DAVA::ParticleEmitter::EMITTER_ONCIRCLE_EDGES:
 						case DAVA::ParticleEmitter::EMITTER_SHOCKWAVE:
 						{
-							DrawSizeCircle(emitter, center);
+							DrawSizeCircle(entity, emitter, center);
 						}
 						break;
 					
 						case DAVA::ParticleEmitter::EMITTER_RECT:
 						{
-							DrawSizeBox(emitter, center);
+							DrawSizeBox(entity, emitter, center);
 						}
 						break;
 					
@@ -149,7 +149,7 @@ void EditorParticlesSystem::Draw()
 	DAVA::RenderManager::Instance()->SetState(oldState);
 }
 
-void EditorParticlesSystem::DrawSizeCircle(DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
+void EditorParticlesSystem::DrawSizeCircle(DAVA::Entity *entity, DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
 {
 	float32 emitterRadius = 0.0f;
 	DAVA::Vector3 emitterVector;
@@ -161,13 +161,17 @@ void EditorParticlesSystem::DrawSizeCircle(DAVA::ParticleEmitter *emitter, DAVA:
 
 	if (emitter->emissionVector)
 	{
+		DAVA::Matrix4 wMat = entity->GetWorldTransform();
+		wMat.SetTranslationVector(DAVA::Vector3(0, 0, 0));
+
 		emitterVector = emitter->emissionVector->GetValue(emitter->GetTime());
+		emitterVector = emitterVector * wMat;
 	}
 							
 	DAVA::RenderHelper::Instance()->DrawCircle3D(center, emitterVector, emitterRadius, true);
 }
 
-void EditorParticlesSystem::DrawSizeBox(DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
+void EditorParticlesSystem::DrawSizeBox(DAVA::Entity *entity, DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
 {
 	// Default value of emitter size
 	DAVA::Vector3 emitterSize;
@@ -196,7 +200,7 @@ void EditorParticlesSystem::DrawSizeBox(DAVA::ParticleEmitter *emitter, DAVA::Ve
 	DAVA::RenderHelper::Instance()->FillBox(DAVA::AABBox3(min, max));
 }
 
-void EditorParticlesSystem::DrawVectorArrow(DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
+void EditorParticlesSystem::DrawVectorArrow(DAVA::Entity *entity, DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
 {
 	DAVA::Vector3 emitterVector;
 	DAVA::float32 arrowBaseSize = 5.0f;
@@ -219,6 +223,10 @@ void EditorParticlesSystem::DrawVectorArrow(DAVA::ParticleEmitter *emitter, DAVA
 	DAVA::float32 arrowSize = scale;
 	emitterVector = (emitterVector * arrowBaseSize * scale) + center;
 	
+	DAVA::Matrix4 wMat = entity->GetWorldTransform();
+	wMat.SetTranslationVector(DAVA::Vector3(0, 0, 0));
+	emitterVector = emitterVector * wMat;
+
 	DAVA::RenderHelper::Instance()->FillArrow(center, emitterVector, arrowSize, 1);
 }
 
