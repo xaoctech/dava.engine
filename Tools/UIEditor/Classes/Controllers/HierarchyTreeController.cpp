@@ -139,6 +139,7 @@ void HierarchyTreeController::SelectControl(HierarchyTreeControlNode* control)
 	if (uiControl)
 	{
 		uiControl->SetDebugDraw(true);
+		uiControl->SetDrawPivotPointMode(UIControl::DRAW_ONLY_IF_NONZERO);
 		uiControl->SetDebugDrawColor(Color(1.f, 0, 0, 1.f));
 	
 		//YZ draw parent rect
@@ -167,6 +168,7 @@ void HierarchyTreeController::UnselectControl(HierarchyTreeControlNode* control,
 	{
 		uiControl->SetDebugDraw(false);
 		uiControl->SetState(uiControl->GetInitialState());
+		uiControl->SetDrawPivotPointMode(UIControl::DRAW_NEVER);
 
 		//YZ draw parent rect
 		UIControl* parentToRemove = uiControl->GetParent();
