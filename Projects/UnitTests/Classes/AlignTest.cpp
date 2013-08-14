@@ -19,7 +19,17 @@
 #include "Render/RenderManager.h"
 
 const float32 ACCETABLE_DELTA_IN_PERSENTS = 2.0f;
-const char* REFERENCE_IMAGE_PATH = "~res:/TestData/AlignTest/PNG/test%d.png";
+
+#if defined(__DAVAENGINE_MACOS__)
+const char* REFERENCE_IMAGE_PATH = "~res:/TestData/AlignTest/MacOS/test%d.png";
+#elif defined(__DAVAENGINE_WIN32__)
+const char* REFERENCE_IMAGE_PATH = "~res:/TestData/AlignTest/Win32/test%d.png";
+#elif defined(__DAVAENGINE_IPHONE__)
+const char* REFERENCE_IMAGE_PATH = "~res:/TestData/AlignTest/IOS/test%d.png";
+#elif defined(__DAVAENGINE_ANDROID__)
+const char* REFERENCE_IMAGE_PATH = "~res:/TestData/AlignTest/Android/test%d.png";
+#endif
+
 const WideString controlText = L"THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED";
 
 const int AlignTest::alignTypesData[] =
@@ -47,7 +57,7 @@ TestTemplate<AlignTest>("SplitTest"),
 	RegisterFunction(this, &AlignTest::ResizeControl, Format("ResizeTest"), NULL);
 	RegisterFunction(this, &AlignTest::MoveControl, Format("MoveTest"), NULL);
 	// Register align function for each align option
-	for (int32 i = 0; i <= GetAlignTypesCount(); ++i)
+	for (int32 i = 0; i < GetAlignTypesCount(); ++i)
 	{
 		RegisterFunction(this, &AlignTest::AlignText, Format("AlignTest"), NULL);
 	}
@@ -147,7 +157,9 @@ void AlignTest::MakeScreenShot()
 
 void AlignTest::OnScreenShot(Image *testImage)
 {
-	//ImageLoader::Save(testImage, Format("~res:/TestData/AlignTest/PNG/test%d.png", currenTestIndex));
+	//Use this code to generate new reference screenshots
+//	FilePath workingPath = FileSystem::Instance()->GetCurrentWorkingDirectory();
+//	ImageLoader::Save(testImage,workingPath + Format("Data/TestData/AlignTest/Win32/test%d.png", currenTestIndex));
 	VerifyTestImage(testImage);
 }
 
