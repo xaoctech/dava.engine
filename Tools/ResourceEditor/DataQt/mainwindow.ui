@@ -708,7 +708,7 @@
   </widget>
   <widget class="QDockWidget" name="dockHeightmapEditor">
    <property name="windowTitle">
-    <string>Heightmap Editor</string>
+    <string>Height Map Editor</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -726,7 +726,7 @@
   </widget>
   <widget class="QDockWidget" name="dockTilemaskEditor">
    <property name="windowTitle">
-    <string>Tilemask Editor</string>
+    <string>Tile Mask Editor</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -968,7 +968,7 @@
      <normaloff>:/QtIcons/tilemapeditor.png</normaloff>:/QtIcons/tilemapeditor.png</iconset>
    </property>
    <property name="text">
-    <string>Tile Map Editor</string>
+    <string>Tile Mask Editor</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+T</string>

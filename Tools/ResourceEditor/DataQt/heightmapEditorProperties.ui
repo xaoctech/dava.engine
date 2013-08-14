@@ -17,7 +17,7 @@
    <item>
     <widget class="QPushButton" name="buttonEnableHeightmapEditor">
      <property name="text">
-      <string>Enable Heightmap Editor</string>
+      <string>Enable Height Map Editor</string>
      </property>
     </widget>
    </item>
@@ -266,14 +266,14 @@ strength:</string>
         <item>
          <widget class="QCheckBox" name="checkboxHeightmap">
           <property name="text">
-           <string>Heightmap</string>
+           <string>Height Map</string>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QCheckBox" name="checkboxTilemask">
           <property name="text">
-           <string>Tilemask</string>
+           <string>Tile Mask</string>
           </property>
          </widget>
         </item>

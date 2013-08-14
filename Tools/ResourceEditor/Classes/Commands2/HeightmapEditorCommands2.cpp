@@ -32,7 +32,7 @@
 ModifyHeightmapCommand::ModifyHeightmapCommand(HeightmapProxy* heightmapProxy,
 											   Heightmap* originalHeightmap,
 											   const Rect& updatedRect)
-:	Command2(CMDID_DRAW_HEIGHTMAP, "Heightmap Change")
+:	Command2(CMDID_DRAW_HEIGHTMAP, "Height Map Change")
 ,	heightmapProxy(heightmapProxy)
 {
 	if (originalHeightmap && heightmapProxy)
@@ -118,7 +118,7 @@ CopyPasteHeightmapCommand::CopyPasteHeightmapCommand(bool heightmapModified,
 													 LandscapeProxy* landscapeProxy,
 													 Image* originalTilemaskImage,
 													 const Rect& tilemaskUpdatedRect)
-:	Command2(CMDID_COPY_PASTE_HEIGHTMAP, "Heightmap Copy/Paste")
+:	Command2(CMDID_COPY_PASTE_HEIGHTMAP, "Height Map Copy/Paste")
 ,	heightmapProxy(heightmapProxy)
 ,	landscapeProxy(landscapeProxy)
 ,	heightmapModified(heightmapModified)
