@@ -93,6 +93,7 @@ namespace DAVA
 			GetScene()->AddNode(result);
 			
 			DVASSERT(skyboxEntity);
+			result->Release();
 		}
 		
 		return result;
