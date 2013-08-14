@@ -323,6 +323,7 @@ Vector<Light*> & RenderSystem::GetLights()
 
 void RenderSystem::Update(float32 timeElapsed)
 {
+	particleEmitterSystem->Update(timeElapsed, camera);
     ProcessClipping();
     
     uint32 size = objectsForUpdate.size();
@@ -331,7 +332,7 @@ void RenderSystem::Update(float32 timeElapsed)
         objectsForUpdate[i]->RenderUpdate(camera, timeElapsed);
     }
 
-	particleEmitterSystem->Update(timeElapsed);
+	
 }
 
 void RenderSystem::Render()

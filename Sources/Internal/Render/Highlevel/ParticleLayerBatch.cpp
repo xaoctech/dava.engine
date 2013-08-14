@@ -35,7 +35,10 @@ ParticleLayerBatch::ParticleLayerBatch()
 ParticleLayerBatch::~ParticleLayerBatch()
 {
 }
-
+void ParticleLayerBatch::SetLayerBoundingBox(const AABBox3 & bbox)
+{
+	aabbox = bbox;
+}
 void ParticleLayerBatch::Draw(Camera * camera)
 {
 	if(!renderObject)return;

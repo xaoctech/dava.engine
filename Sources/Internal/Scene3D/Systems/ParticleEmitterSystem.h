@@ -24,13 +24,15 @@ namespace DAVA
 
 class RenderObject;
 class ParticleEmitter;
+class Camera;
 
 class ParticleEmitterSystem
 {
 public:
 	void AddIfEmitter(RenderObject * maybeEmitter);
 	void RemoveIfEmitter(RenderObject * maybeEmitter);
-	void Update(float32 timeElapsed);
+	/*camera is required for updating arrays*/
+	void Update(float32 timeElapsed, Camera * camera);
 
 private:
 	//TODO: use HashMap

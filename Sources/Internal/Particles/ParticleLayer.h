@@ -85,6 +85,12 @@ public:
 		\brief This function draws layer properties and layer particles. 
 	 */
 	virtual void Draw(Camera * camera);
+
+	/**
+		\brief it is not implemented for old 2d particles yet - they just use draw.
+		ParticleLayer3d uses it to prepare render data.
+	 */
+	virtual void PrepareRenderData(Camera * camera);
 	
 	/** 
 		\brief Function to set emitter for layer. 

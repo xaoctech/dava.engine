@@ -299,14 +299,16 @@ void ParticleEmitter::DoRestart(bool isDeleteAllParticles)
 	repeatCount = 0;
 }
 
-void ParticleEmitter::DeferredUpdate(float32 timeElapsed)
+bool ParticleEmitter::DeferredUpdate(float32 timeElapsed)
 {
 	deferredTimeElapsed += timeElapsed;
 	if (deferredTimeElapsed > PARTICLE_EMITTER_DEFERRED_UPDATE_INTERVAL)
 	{
 		Update(deferredTimeElapsed);
 		deferredTimeElapsed = 0.0f;
-	}
+		return true;
+	}	
+	return false;	
 }
 	
 void ParticleEmitter::Update(float32 timeElapsed)
@@ -341,6 +343,13 @@ void ParticleEmitter::Update(float32 timeElapsed)
 	{
         if(!(*it)->GetDisabled())
             (*it)->Update(timeElapsed);
+	}
+}
+
+void ParticleEmitter::PrepareRenderData(Camera * camera){
+	for(Vector<ParticleLayer*>::iterator it = layers.begin(), e = layers.end(); it!=e; ++it)
+	{
+		(*it)->PrepareRenderData(camera);
 	}
 }
 
