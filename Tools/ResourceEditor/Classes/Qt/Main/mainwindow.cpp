@@ -31,6 +31,7 @@
 
 #include "../CubemapEditor/CubemapTextureBrowser.h"
 #include "Scene3D/Systems/SkyboxSystem.h"
+#include "Render/Highlevel/SkyboxRenderObject.h"
 
 #include "Tools/BaseAddEntityDialog/BaseAddEntityDialog.h"
 #include "Tools/SelectPathWidget/SelectPathWidget.h"
@@ -382,7 +383,7 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionShowNotPassableLandscape, SIGNAL(triggered()), this, SLOT(OnNotPassableTerrain()));
 	QObject::connect(ui->actionRulerTool, SIGNAL(triggered()), this, SLOT(OnRulerTool()));
 
-	QObject::connect(ui->actionSkyboxNode, SIGNAL(triggered()), this, SLOT(OnSetSkyboxNode()));
+	QObject::connect(ui->actionSkyboxEditor, SIGNAL(triggered()), this, SLOT(OnSetSkyboxNode()));
 
 	QObject::connect(ui->actionLandscape, SIGNAL(triggered()), this, SLOT(OnLandscapeDialog()));
 	QObject::connect(ui->actionLight, SIGNAL(triggered()), this, SLOT(OnLightDialog()));
@@ -917,8 +918,62 @@ void QtMainWindow::OnSetSkyboxNode()
 		return;
 	}
 	
+	bool skyboxInitiallyPresent = scene->skyboxSystem->IsSkyboxPresent();
+	
 	Entity* skyboxNode = scene->skyboxSystem->AddSkybox();
-	scene->selectionSystem->SetSelection(skyboxNode);
+	RenderComponent* renderComponent = cast_if_equal<RenderComponent*>(skyboxNode->GetComponent(Component::RENDER_COMPONENT));
+	DVASSERT(renderComponent);
+	
+	if(renderComponent)
+	{
+		SkyboxRenderObject* renderObject = cast_if_equal<SkyboxRenderObject*>(renderComponent->GetRenderObject());
+		DVASSERT(renderObject);
+		
+		if(renderObject)
+		{
+			FilePath currentTexture = renderObject->GetTexture();
+			DAVA::float32 currentOffset = renderObject->GetOffsetZ();
+			DAVA::float32 currentRotation = renderObject->GetRotationZ();
+			
+			BaseAddEntityDialog dlg(this);
+			dlg.SetEntity(skyboxNode);
+			dlg.setWindowTitle("Setup Skybox");
+			dlg.exec();
+						
+			if(dlg.result() != QDialog::Accepted)
+			{
+				if(!skyboxInitiallyPresent)
+				{
+					skyboxNode->GetParent()->RemoveNode(skyboxNode);
+					skyboxNode = NULL;
+				}
+				else
+				{
+					if(renderObject->GetTexture() != currentTexture)
+					{
+						renderObject->SetTexture(currentTexture);
+					}
+					
+					if(renderObject->GetRotationZ() != currentRotation)
+					{
+						renderObject->SetRotationZ(currentRotation);
+					}
+					
+					if(renderObject->GetOffsetZ() != currentOffset)
+					{
+						renderObject->SetOffsetZ(currentOffset);
+					}
+				}
+			}
+			else
+			{
+				if(!skyboxInitiallyPresent)
+				{
+					scene->selectionSystem->SetSelection(skyboxNode);
+				}
+			}			
+		}
+	}
 }
 
 void QtMainWindow::OnSwitchEntityDialog()
