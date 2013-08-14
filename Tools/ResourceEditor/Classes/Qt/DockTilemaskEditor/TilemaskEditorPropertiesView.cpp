@@ -219,6 +219,8 @@ void TilemaskEditorPropertiesView::Toggle()
 								  "Error enabling Tilemask editor.\nMake sure there is landscape in scene and disable other landscape editors.");
 		}
 	}
+
+	toolbarAction->setChecked(activeScene->tilemaskEditorSystem->IsLandscapeEditingEnabled());
 }
 
 void TilemaskEditorPropertiesView::SetBrushSize(int brushSize)
