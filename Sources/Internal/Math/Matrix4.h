@@ -94,7 +94,7 @@ struct Matrix4
 
 	inline bool	Inverse();
 	inline bool GetInverse(Matrix4 & out) const;
-	
+	inline bool Decomposition(Vector3& position, Vector3& scale, Vector3& orientation) const;
 
     //! 
     inline static Matrix4 MakeTranslation(const Vector3 & translationVector);
@@ -491,6 +491,31 @@ inline bool	Matrix4::Inverse()
 		*this = temp;
 	}
 	return can;
+}
+
+inline bool Matrix4::Decomposition(Vector3& position, Vector3& scale, Vector3& orientation) const
+{
+	//if(_data[3][0] == 0 && _data[3][1] == 0 && _data[3][2] == 0 && _data[3][3] == 1)
+	//{
+	//	return false;
+	//}
+	//else
+	{
+		Matrix3 mat3(_data[0][0], _data[0][1], _data[0][2], 
+			_data[1][0], _data[1][1], _data[1][2], 
+			_data[2][0], _data[2][1], _data[2][2]);
+
+		Matrix3 matQ;
+		Vector3 vecU;
+		mat3.Decomposition(matQ, scale, vecU);
+
+		orientation = Vector3(matQ._21, matQ._02, matQ._10);
+		position = Vector3(_data[0][3], _data[1][3], _data[2][3]);
+
+		return true;
+	}
+
+	return false;
 }
     
 inline Matrix4 Matrix4::operator *(const Matrix4 & m) const
