@@ -54,6 +54,12 @@ void BaseAddEntityDialog::showEvent ( QShowEvent * event )
 	setGeometry(rect);
 }
 
+void BaseAddEntityDialog::hideEvent ( QHideEvent * event )
+{
+	QDialog::hideEvent(event);
+	ui->propEditor->SetNode(NULL);
+}
+
 void BaseAddEntityDialog::SetEntity(DAVA::Entity* _entity)
 {
 	SafeRelease(entity);

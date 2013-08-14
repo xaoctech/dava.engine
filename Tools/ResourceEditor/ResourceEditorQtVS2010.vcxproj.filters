@@ -220,6 +220,12 @@
     <Filter Include="Classes\CommandLine\TextureDescriptor">
       <UniqueIdentifier>{0a088ade-5d9f-4b54-9645-040c63c435f8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\Qt\DockLODEditor">
+      <UniqueIdentifier>{ed4aaea3-1da4-404c-a731-5c07c75578fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Qt\Tools\LabeledSlider">
+      <UniqueIdentifier>{6ede20eb-ce62-4548-96a9-aa34fa463912}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -2052,6 +2058,30 @@
     <ClCompile Include="Classes\Qt\Scene\System\TextDrawSystem.cpp">
       <Filter>Classes\Qt\Scene\System</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\DockLODEditor\DistanceSlider.cpp">
+      <Filter>Classes\Qt\DockLODEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockLODEditor\EditorLODData.cpp">
+      <Filter>Classes\Qt\DockLODEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockLODEditor\LODEditor.cpp">
+      <Filter>Classes\Qt\DockLODEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\LabeledSlider\LabeledSlider.cpp">
+      <Filter>Classes\Qt\Tools\LabeledSlider</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\LabeledSlider\LabeledSlider_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockLODEditor\DistanceSlider_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockLODEditor\EditorLODData_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockLODEditor\LODEditor_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3574,6 +3604,21 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Scene\System\TextDrawSystem.h">
       <Filter>Classes\Qt\Scene\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockLODEditor\DistanceSlider.h">
+      <Filter>Classes\Qt\DockLODEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockLODEditor\EditorLODData.h">
+      <Filter>Classes\Qt\DockLODEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockLODEditor\LODEditor.h">
+      <Filter>Classes\Qt\DockLODEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\LabeledSlider\LabeledSlider.h">
+      <Filter>Classes\Qt\Tools\LabeledSlider</Filter>
+    </ClInclude>
+    <ClInclude Include="_GeneratedQt\ui_LODEditor.h">
+      <Filter>QtGenerated</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -41,7 +41,7 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
     currentState(),
     hardwareState(),
     needGLScreenShot(false),
-    screenShotIndex(0)
+    screenShotCallback(NULL)
 {
 //	Logger::Debug("[RenderManager] created");
 
@@ -153,6 +153,12 @@ RenderManager::~RenderManager()
 void RenderManager::SetDebug(bool isDebugEnabled)
 {
 	debugEnabled = isDebugEnabled;
+}
+
+void RenderManager::RequestGLScreenShot(ScreenShotCallbackDelegate *callback)
+{ 
+	screenShotCallback = callback;
+	needGLScreenShot = true; 
 }
 	
 bool RenderManager::IsInsideDraw()

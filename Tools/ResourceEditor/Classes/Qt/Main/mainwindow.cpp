@@ -30,7 +30,6 @@
 #include "Scene3D/Systems/SkyboxSystem.h"
 
 #include "Tools/BaseAddEntityDialog/BaseAddEntityDialog.h"
-//#include "Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
 #include "Tools/SelectPathWidget/SelectPathWidget.h"
 
 #include "Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
@@ -524,7 +523,6 @@ void QtMainWindow::AddSwitchDialogFinished(int result)
 	Vector<Entity*> vector;
 	addSwitchEntityDialog->GetPathEntities(vector, scene);	
 	addSwitchEntityDialog->CleanupPathWidgets();
-	addSwitchEntityDialog->SetEntity(NULL);
 	
 	Q_FOREACH(Entity* item, vector)
 	{
@@ -535,6 +533,8 @@ void QtMainWindow::AddSwitchDialogFinished(int result)
 		scene->Exec(new AddEntityCommand(switchEntity, scene));
 		SafeRelease(switchEntity);
 	}
+
+	addSwitchEntityDialog->SetEntity(NULL);
 }
 
 void QtMainWindow::SceneCommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
