@@ -277,6 +277,10 @@ void CubeMapTextureBrowser::OnDeleteSelectedItemsClicked()
 					CubemapUtils::GenerateFaceNames(fp.GetAbsolutePathname(), faceNames);
 					for(size_t faceIndex = 0; faceIndex < faceNames.size(); ++faceIndex)
 					{
+						FilePath hackTex = faceNames[faceIndex];
+						hackTex.ReplaceExtension(".tex");
+						
+						QFile::remove(hackTex.GetAbsolutePathname().c_str());
 						bool removeResult = QFile::remove(faceNames[faceIndex].c_str());
 						if(!removeResult)
 						{

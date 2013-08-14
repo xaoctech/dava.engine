@@ -1463,7 +1463,7 @@
      <normaloff>:/QtIcons/cubemap.png</normaloff>:/QtIcons/cubemap.png</iconset>
    </property>
    <property name="text">
-    <string>Cubemap Editor1</string>
+    <string>Cubemap Editor</string>
    </property>
   </action>
   <action name="actionReloadTextures">
