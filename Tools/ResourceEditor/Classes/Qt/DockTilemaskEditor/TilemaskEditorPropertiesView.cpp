@@ -115,7 +115,7 @@ void TilemaskEditorPropertiesView::SetWidgetsState(bool enabled)
 	ui->buttonEnableTilemaskEditor->blockSignals(false);
 	toolbarAction->setChecked(enabled);
 
-	QString buttonText = enabled ? tr("Disable Tilemask Editor") : tr("Enable Tilemask Editor");
+	QString buttonText = enabled ? tr("Disable Tile Mask Editor") : tr("Enable Tile Mask Editor");
 	ui->buttonEnableTilemaskEditor->setText(buttonText);
 
 	ui->sliderBrushSize->setEnabled(enabled);
@@ -215,8 +215,8 @@ void TilemaskEditorPropertiesView::Toggle()
 		}
 		else
 		{
-			QMessageBox::critical(0, "Error enabling Tilemask editor",
-								  "Error enabling Tilemask editor.\nMake sure there is landscape in scene and disable other landscape editors.");
+			QMessageBox::critical(0, "Error enabling Tile Mask Editor",
+								  "Error enabling Tile Mask Editor.\nMake sure there is landscape in scene and disable other landscape editors.");
 		}
 	}
 

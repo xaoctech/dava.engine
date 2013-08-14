@@ -135,7 +135,7 @@ void HeightmapEditorPropertiesView::SetWidgetsState(bool enabled)
 	ui->buttonEnableHeightmapEditor->blockSignals(false);
 	toolbarAction->setChecked(enabled);
 
-	QString buttonText = enabled ? tr("Disable Heightmap Editor") : tr("Enable Heightmap Editor");
+	QString buttonText = enabled ? tr("Disable Height Map Editor") : tr("Enable Height Map Editor");
 	ui->buttonEnableHeightmapEditor->setText(buttonText);
 
 	ui->sliderBrushSize->setEnabled(enabled);
@@ -261,8 +261,8 @@ void HeightmapEditorPropertiesView::Toggle()
 		}
 		else
 		{
-			QMessageBox::critical(0, "Error enabling Heightmap editor",
-								  "Error enabling Heightmap editor.\nMake sure there is landscape in scene and disable other landscape editors.");
+			QMessageBox::critical(0, "Error enabling Height Map editor",
+								  "Error enabling Height Map editor.\nMake sure there is landscape in scene and disable other landscape editors.");
 		}
 	}
 
