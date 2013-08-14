@@ -22,13 +22,14 @@
 class MetaObjModifyCommand : public Command2
 {
 public:
-	MetaObjModifyCommand(DAVA::MetaInfo *info, void *object, const DAVA::VariantType &value);
+	MetaObjModifyCommand(const DAVA::MetaInfo *info, void *object, const DAVA::VariantType &value);
 	~MetaObjModifyCommand();
 
 	virtual void Undo();
 	virtual void Redo();
+	virtual DAVA::Entity* GetEntity() const { return NULL; };
 
-	DAVA::MetaInfo *info;
+	const DAVA::MetaInfo *info;
 	void *object;
 
 	DAVA::VariantType oldValue;

@@ -16,7 +16,7 @@
 
 #include "Commands2/MetaObjModifyCommand.h"
 
-MetaObjModifyCommand::MetaObjModifyCommand(DAVA::MetaInfo *_info, void *_object, const DAVA::VariantType &_newValue)
+MetaObjModifyCommand::MetaObjModifyCommand(const DAVA::MetaInfo *_info, void *_object, const DAVA::VariantType &_newValue)
 	: Command2(CMDID_META_OBJ_MODIFY, "Modify value")
 	, info(_info)
 	, object(_object)

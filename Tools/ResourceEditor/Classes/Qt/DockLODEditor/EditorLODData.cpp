@@ -17,6 +17,7 @@
 #include "EditorLODData.h"
 
 #include "Classes/Qt/Scene/SceneSignals.h"
+#include "Classes/Commands2/MetaObjModifyCommand.h"
 
 EditorLODData::EditorLODData()
     :   lodLayersCount(0)
@@ -113,6 +114,16 @@ void EditorLODData::SetForceDistance(DAVA::float32 distance)
         for(DAVA::uint32 i = 0; i < count; ++i)
         {
             lodData[i]->SetForceDistance(forceDistance);
+            
+            //
+//            const DAVA::InspMember *member = lodData[i]->GetTypeInfo()->Member("distance");
+//            const DAVA::MetaInfo *info = member->Type();
+//            void *object = member->Pointer(lodData[i]);
+//            
+//            SceneEditor2 *sc;
+//            
+//            DAVA::VariantType v(distance);
+//            sc->Exec(new MetaObjModifyCommand(info, object, v));
         }
     }
 }
