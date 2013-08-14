@@ -38,7 +38,7 @@ class BaseAddEntityDialog: public QDialog
 public:
 	explicit BaseAddEntityDialog( QWidget* parent = 0);
 
-	~BaseAddEntityDialog();
+	virtual ~BaseAddEntityDialog();
 	
 	void GetIncludedControls(QList<QWidget*>& includedWidgets);
 	
@@ -64,7 +64,6 @@ protected:
 	DAVA::Entity* entity;
 	
 	Ui::BaseAddEntityDialog *ui;
-	
 };
 
 #endif /* defined(__RESOURCEEDITORQT__BASEADDENTITYDIALOG__) */

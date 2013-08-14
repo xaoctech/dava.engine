@@ -285,7 +285,6 @@
      <addaction name="actionUserNode"/>
      <addaction name="actionSwitchNode"/>
      <addaction name="actionParticleEffectNode"/>
-     <addaction name="actionSkyboxNode"/>
     </widget>
     <addaction name="actionParticleEmitter"/>
     <addaction name="actionParticle_Emitter"/>
@@ -311,6 +310,7 @@
     <addaction name="separator"/>
     <addaction name="actionShowSettings"/>
     <addaction name="actionEnableCameraLight"/>
+    <addaction name="actionSkyboxEditor"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -1463,7 +1463,7 @@
      <normaloff>:/QtIcons/cubemap.png</normaloff>:/QtIcons/cubemap.png</iconset>
    </property>
    <property name="text">
-    <string>Cubemap Editor</string>
+    <string>Cubemap Editor1</string>
    </property>
   </action>
   <action name="actionReloadTextures">
@@ -1496,6 +1496,16 @@
    </property>
    <property name="text">
     <string>Remove ActionComponent</string>
+   </property>
+  </action>
+  <action name="actionSetupSkybox">
+   <property name="text">
+    <string>Setup Skybox</string>
+   </property>
+  </action>
+  <action name="actionSkyboxEditor">
+   <property name="text">
+    <string>Set up Skybox</string>
    </property>
   </action>
  </widget>
