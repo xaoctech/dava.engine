@@ -63,10 +63,8 @@ void ParticleLayer3D::PrepareRenderData(Camera* camera)
 	// Yuri Coder, 2013/06/07. Don't draw SuperEmitter layers - see pls DF-1251 for details.
 	if (!sprite || type == TYPE_SUPEREMITTER_PARTICLES)
 	{		
-		//Ivan Radkevich. This will tell system SuperEmitter is always in camera. It doesn't break anything as SuperEmitter layer draw nothing (see above)
-		//                but will force SuperEmitter to use Update instead of DefferedUpdate - see DF-1307
-		Particle * current = head;
-
+		//build bounding box as sum of inner particle emitters bboxes
+		Particle *current = head;
 		while (current){
 			bbox.AddAABBox(current->GetInnerEmitter()->GetBoundingBox());
 			current=current->next;
