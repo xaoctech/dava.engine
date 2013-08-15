@@ -29,6 +29,7 @@
 #include "Classes/SceneEditor/EditorSettings.h"
 #include "Classes/SceneEditor/EditorConfig.h"
 
+#include "../CubemapEditor/CubemapUtils.h"
 #include "../CubemapEditor/CubemapTextureBrowser.h"
 #include "Scene3D/Systems/SkyboxSystem.h"
 #include "Render/Highlevel/SkyboxRenderObject.h"
@@ -931,13 +932,18 @@ void QtMainWindow::OnSetSkyboxNode()
 		
 		if(renderObject)
 		{
+			if(renderObject->GetTextureValidator() == NULL)
+			{
+				renderObject->SetTextureValidator(new CubemapUtils::CubemapTextureValidator());
+			}
+			
 			FilePath currentTexture = renderObject->GetTexture();
 			DAVA::float32 currentOffset = renderObject->GetOffsetZ();
 			DAVA::float32 currentRotation = renderObject->GetRotationZ();
 			
 			BaseAddEntityDialog dlg(this);
 			dlg.SetEntity(skyboxNode);
-			dlg.setWindowTitle("Setup Skybox");
+			dlg.setWindowTitle("Set up Skybox");
 			dlg.exec();
 						
 			if(dlg.result() != QDialog::Accepted)
