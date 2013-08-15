@@ -57,6 +57,7 @@ void CubeMapTextureBrowser::ReloadTextures(const DAVA::String& rootPath)
 	ui->listTextures->setVisible(false);
 	ui->loadingWidget->setVisible(true);
 	
+	
 	this->paintEvent(NULL);
 	ui->loadingWidget->update();
 	QApplication::processEvents();
@@ -117,6 +118,8 @@ void CubeMapTextureBrowser::ReloadTextures(const DAVA::String& rootPath)
 	
 	ui->listTextures->setVisible(cubemapTextures > 0);
 	ui->loadingWidget->setVisible(false);
+	
+	UpdateCheckedState();
 }
 
 void CubeMapTextureBrowser::ReloadTexturesFromUI(QString& path)
