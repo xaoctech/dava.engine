@@ -25,6 +25,7 @@
 #include "SceneEditor/EditorSettings.h"
 #include "SceneEditor/SceneValidator.h"
 #include "Main/QTUtils.h"
+#include "Project/ProjectManager.h"
 
 // framework
 #include "Scene3D/Components/ComponentHelpers.h"
@@ -32,6 +33,7 @@
 
 // commands
 #include "Commands2/ParticleEditorCommands.h"
+#include "Commands2/SaveEntityAsAction.h"
 
 SceneTree::SceneTree(QWidget *parent /*= 0*/)
 	: QTreeView(parent)
@@ -334,6 +336,11 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos)
 			unlockAction->setDisabled(true);
 		}
 
+		// save model as
+		contextMenu.addSeparator();
+		contextMenu.addAction(QIcon(":/QtIcons/save_as.png"), "Save Entity As...", this, SLOT(SaveEntityAs()));
+
+
 		// custom properties
 		DAVA::KeyedArchive *customProp = entity->GetCustomProperties();
 		if(NULL != customProp)
@@ -374,7 +381,7 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos)
 			particleEffectMenu->addSeparator();
 			particleEffectMenu->addAction(QIcon(":/QtIcons/openscene.png"), "Load Emitter from Yaml", this, SLOT(LoadEmitterFromYaml()));
 			particleEffectMenu->addAction(QIcon(":/QtIcons/savescene.png"), "Save Emitter to Yaml", this, SLOT(SaveEmitterToYaml()));
-			particleEffectMenu->addAction(QIcon(":/QtIcons/save_as.png"), "Save Emitter to Yaml As", this, SLOT(SaveEmitterToYamlAs()));
+			particleEffectMenu->addAction(QIcon(":/QtIcons/save_as.png"), "Save Emitter to Yaml As...", this, SLOT(SaveEmitterToYamlAs()));
 		}
 
 		contextMenu.exec(pos);
@@ -510,6 +517,23 @@ void SceneTree::ReloadModelAs()
 			if(!filePath.isEmpty())
 			{
 				sceneEditor->structureSystem->Reload(selection, filePath.toStdString());
+			}
+		}
+	}
+}
+
+void SceneTree::SaveEntityAs()
+{
+	SceneEditor2 *sceneEditor = treeModel->GetScene();
+	if(NULL != sceneEditor)
+	{
+		const EntityGroup *selection = sceneEditor->selectionSystem->GetSelection();
+		if(NULL != selection && selection->Size() > 0)
+		{
+			QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save scene file"), ProjectManager::Instance()->CurProjectDataSourcePath(), QString("DAVA SceneV2 (*.sc2)"));
+			if(!filePath.isEmpty())
+			{
+				sceneEditor->Exec(new SaveEntityAsAction(selection, filePath.toStdString()));
 			}
 		}
 	}

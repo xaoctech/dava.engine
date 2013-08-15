@@ -100,6 +100,8 @@ protected slots:
 	void EditModel();
 	void ReloadModel();
 	void ReloadModelAs();
+
+	void SaveEntityAs();
 	
 protected:
 	// Helpers for Particles.
