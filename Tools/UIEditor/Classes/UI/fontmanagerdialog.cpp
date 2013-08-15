@@ -48,9 +48,12 @@ FontManagerDialog::FontManagerDialog(bool okButtonEnable,  const QString& graphi
 
 	DAVA::String inDir = ResourcesManageHelper::GetFontSpritesDatasourceDirectory().toStdString();
 	DAVA::String outDir = ResourcesManageHelper::GetFontSpritesDirectory().toStdString();
-
-	resPacker->InitFolders(inDir, outDir);
-	resPacker->PackResources(GPU_UNKNOWN);
+	// Do not pack resources if input/output folders are empty
+	if (!inDir.empty() && !outDir.empty())
+	{
+		resPacker->InitFolders(inDir, outDir);
+		resPacker->PackResources(GPU_UNKNOWN);
+	}
     // Initialize dialog
     ConnectToSignals();
     InitializeTableView();

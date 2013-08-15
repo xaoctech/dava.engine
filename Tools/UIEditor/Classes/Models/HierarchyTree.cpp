@@ -160,9 +160,18 @@ void HierarchyTree::CreateProject()
 void HierarchyTree::CloseProject()
 {
 	projectCreated = false;
+	// Remove closed project resource folder
+	FilePath bundleName(rootNode.GetProjectDir().toStdString());
+	if (!bundleName.IsEmpty())
+	{
+		bundleName.MakeDirectoryPathname();
+		FilePath::RemoveResourcesFolder(bundleName);
+	}  
 	// Reset project path
 	rootNode.SetProjectFilePath(QString());
 	rootNode.ResetUnsavedChanges();
+	// Reset default font
+	EditorFontManager::Instance()->ResetDefaultFont();
 	Clear();
 }
 

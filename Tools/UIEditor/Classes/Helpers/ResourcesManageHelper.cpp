@@ -81,6 +81,8 @@ static const QString PROJECT_DATASOURCE_GRAPHICS_FONTS = PROJECT_DATASOURCE_GFX 
 static const QString PROJECT_DATA_GFX = PROJECT_DATA + GFX;
 // Project converted graphics fonts sprites folder
 static const QString PROJECT_DATA_GRAPHICS_FONTS = PROJECT_DATA_GFX + FONTS;
+// Default project title
+static const QString PROJECT_TITLE = "UIEdtior";
 
 // Resource wrong location error message
 static const QString RES_WRONG_LOCATION_ERROR_MESSAGE = "Resource %1 is not located inside project 'Data' folder. It can't be linked with project or control!";
@@ -224,12 +226,12 @@ void ResourcesManageHelper::InitInternalResources()
         DAVA::KeyedArchive *options = DAVA::Core::Instance()->GetOptions();
         if(options)
         {
-           	projectTitle = options->GetString("title", "UIEditor").c_str();
+			projectTitle = options->GetString("title", PROJECT_TITLE.toStdString()).c_str();
         }
     }
 	// If project name wasn't set - create default name
 	if (projectTitle.isNull() || projectTitle.isEmpty())
-		projectTitle = "UIEditor";
+		projectTitle = PROJECT_TITLE;
 }
 
 QString ResourcesManageHelper::GetButtonBackgroundImagePath()

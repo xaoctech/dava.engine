@@ -23,6 +23,7 @@ static const String DEFAULT_FONT_PATH = "~res:/Fonts/MyriadPro-Regular.otf";
 EditorFontManager::EditorFontManager()
 {
 	defaultFont = NULL;
+	baseFont = NULL;
 	Init();
 }
 
@@ -33,12 +34,13 @@ EditorFontManager::~EditorFontManager()
 
 void EditorFontManager::Init()
 {
-	defaultFont = LoadFont(DEFAULT_FONT_PATH, DEFAULT_FONT_NAME);
+	baseFont = LoadFont(DEFAULT_FONT_PATH, DEFAULT_FONT_NAME);
 }
 
 void EditorFontManager::Reset()
 {
 	defaultFont = NULL;
+	baseFont = NULL;
 	
 	for (FONTSMAP::iterator iter = fonts.begin(); iter != fonts.end(); ++iter)
 	{
@@ -68,12 +70,17 @@ Font* EditorFontManager::LoadFont(const String& fontPath, const String& fontName
 
 Font* EditorFontManager::GetDefaultFont() const
 {
-	return defaultFont;
+	return defaultFont ? defaultFont : baseFont;
 }
 
 void EditorFontManager::SetDefaultFont(Font *font)
 {
 	defaultFont = font->Clone();
+}
+
+void EditorFontManager::ResetDefaultFont()
+{
+	defaultFont = NULL;
 }
 
 Font* EditorFontManager::GetFont(const String& name) const
@@ -161,18 +168,21 @@ void EditorFontManager::InitDefaultFontFromPath(const EditorFontManager::Default
 
 QString EditorFontManager::GetDefaultFontName() const
 {		
-	Font::eFontType fontType = defaultFont->GetFontType();
-    switch (fontType)
-    {
-    	case Font::TYPE_FT:
-        {
-        	FTFont *ftFont = dynamic_cast<FTFont*>(defaultFont);
-			return QString::fromStdString(ftFont->GetFontPath().GetAbsolutePathname());
-        }
-		case Font::TYPE_GRAPHICAL:
-        {
-        	GraphicsFont *gFont = dynamic_cast<GraphicsFont*>(defaultFont);
-			return QString::fromStdString(gFont->GetFontDefinitionName().GetAbsolutePathname());
+	if (defaultFont)
+	{
+		Font::eFontType fontType = defaultFont->GetFontType();
+		switch (fontType)
+		{
+			case Font::TYPE_FT:
+			{
+				FTFont *ftFont = dynamic_cast<FTFont*>(defaultFont);
+				return QString::fromStdString(ftFont->GetFontPath().GetAbsolutePathname());
+			}
+			case Font::TYPE_GRAPHICAL:
+			{
+				GraphicsFont *gFont = dynamic_cast<GraphicsFont*>(defaultFont);
+				return QString::fromStdString(gFont->GetFontDefinitionName().GetAbsolutePathname());
+			}
 		}
 	}
 	return QString::fromStdString(DEFAULT_FONT_PATH);
