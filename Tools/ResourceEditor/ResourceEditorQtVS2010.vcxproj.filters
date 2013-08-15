@@ -3855,5 +3855,11 @@
     <None Include="DataQt\BaseAddEntityDialog.ui">
       <Filter>QtData</Filter>
     </None>
+    <None Include="DataQt\CubemapEditorDialog.ui">
+      <Filter>QtData</Filter>
+    </None>
+    <None Include="DataQt\CubeMapTextureBrowser.ui">
+      <Filter>QtData</Filter>
+    </None>
   </ItemGroup>
 </Project>

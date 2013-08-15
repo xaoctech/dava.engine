@@ -1349,6 +1349,8 @@
   <ItemGroup>
     <None Include="DataQt\AddSwitchEntityDialog.ui" />
     <None Include="DataQt\BaseAddEntityDialog.ui" />
+    <None Include="DataQt\CubemapEditorDialog.ui" />
+    <None Include="DataQt\CubeMapTextureBrowser.ui" />
     <None Include="DataQt\HangingObjectsView.ui" />
     <None Include="DataQt\mainwindow.ui">
       <SubType>Designer</SubType>
