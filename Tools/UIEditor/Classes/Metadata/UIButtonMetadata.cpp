@@ -400,7 +400,7 @@ QString UIButtonMetadata::GetSpriteNameForState(UIControl::eControlState state) 
         return StringConstants::NO_SPRITE_IS_SET;
     }
 
-    return QString::fromStdString(sprite->GetRelativePathname().GetAbsolutePathname());
+	return QString::fromStdString(sprite->GetRelativePathname().GetFrameworkPath());
 }
 
 QString UIButtonMetadata::GetSprite()
