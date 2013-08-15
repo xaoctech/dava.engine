@@ -128,7 +128,6 @@ void DefaultScreen::Input(DAVA::UIEvent* event)
 		}break;
 		case UIEvent::PHASE_MOVE:
 		{
-			MouseInputMove(event);
 			ScreenWrapper::Instance()->SetCursor(GetCursor(event->point));
 		}break;
 		case UIEvent::PHASE_ENDED:
@@ -871,6 +870,8 @@ void DefaultScreen::MouseInputDrag(const DAVA::UIEvent* event)
 		return;
 	}
 
+	HandleScreenMove(event);
+
 	Vector2 delta = GetInputDelta(event->point);
 	
 	if (inputState == InputStateSelection)
@@ -1111,24 +1112,6 @@ void DefaultScreen::KeyboardInput(const DAVA::UIEvent* event)
 	
 }
 
-void DefaultScreen::MouseInputMove(const DAVA::UIEvent* event)
-{
-	if (inputState == InputStateScreenMove)
-	{
-
-		const Vector2& pos = event->point;
-		if (Abs(inputPos.x + 1) < 0.1f && (inputPos.y + 1) < 0.1f)
-		{
-			inputPos = pos;
-		}
-
-		// In this particular case don't take Scale into account.
-		Vector2 delta = GetInputDelta(pos, false);
-		ScreenWrapper::Instance()->RequestViewMove(-delta);
-		inputPos = pos;
-	}
-}
-
 Vector2 DefaultScreen::GetInputDelta(const Vector2& point, bool applyScale) const
 {
 	Vector2 delta = point - inputPos;
@@ -1228,4 +1211,21 @@ bool DefaultScreen::IsMoveScreenKeyPressed()
 	//return InputSystem::Instance()->GetKeyboard()->IsKeyPressed(MOVE_SCREEN_KEY);
 	Qt::KeyboardModifiers modifiers = QApplication::keyboardModifiers();
 	return (modifiers & Qt::AltModifier);
+}
+
+void DefaultScreen::HandleScreenMove(const DAVA::UIEvent* event)
+{
+	if (inputState == InputStateScreenMove)
+	{
+		const Vector2& pos = event->point;
+		if (Abs(inputPos.x + 1) < 0.1f && (inputPos.y + 1) < 0.1f)
+		{
+			inputPos = pos;
+		}
+
+		// In this particular case don't take Scale into account.
+		Vector2 delta = GetInputDelta(pos, false);
+		ScreenWrapper::Instance()->RequestViewMove(-delta);
+		inputPos = pos;
+	}
 }
