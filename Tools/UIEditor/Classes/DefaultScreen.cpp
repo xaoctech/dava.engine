@@ -1229,7 +1229,6 @@ void DefaultScreen::HandleScreenMove(const DAVA::UIEvent* event)
 		}
 
 		// In this particular case don't take Scale into account.
-		Logger::Warning("SCROLL!!!");
 		Vector2 delta = GetInputDelta(pos, false);
 		ScreenWrapper::Instance()->RequestViewMove(-delta);
 		inputPos = pos;
