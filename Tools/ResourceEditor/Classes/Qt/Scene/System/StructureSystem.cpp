@@ -430,7 +430,6 @@ DAVA::Entity* StructureSystem::Load(const DAVA::FilePath& sc2path)
 			DAVA::Entity *rootEntity = new DAVA::Entity();
 
 			rootEntity->AddNode(loadedEntity);
-			sceneFile->OptimizeScene(loadedEntity);
 			loadedEntity = rootEntity->GetChild(0);
 
 			loadedEntity->Retain();
