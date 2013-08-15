@@ -522,6 +522,7 @@
 		E83AB8FA1779AF1E0037561B /* ScenePreviewControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E83AB8F81779AF1E0037561B /* ScenePreviewControl.cpp */; };
 		E83AB8FD1779B6CF0037561B /* ScenePreviewDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E83AB8FB1779B6CF0037561B /* ScenePreviewDialog.cpp */; };
 		E84779B11669009B004CD20A /* ParticleEffectPropertyControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E84779AF1669009B004CD20A /* ParticleEffectPropertyControl.cpp */; };
+		E860839B17BCF05500FF798D /* SaveEntityAsAction.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E860839917BCF05500FF798D /* SaveEntityAsAction.cpp */; };
 		E862903C17BBD20100C88FC0 /* MetaObjModifyCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E862903A17BBD20100C88FC0 /* MetaObjModifyCommand.cpp */; };
 		E8637C4B17B37DCF00ECA297 /* LODEditor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8637C4917B37DCF00ECA297 /* LODEditor.cpp */; };
 		E8637C5217B37F5500ECA297 /* LODEditor_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8637C5117B37F5500ECA297 /* LODEditor_moc.cpp */; };
@@ -1626,6 +1627,8 @@
 		E83AB8FC1779B6CF0037561B /* ScenePreviewDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScenePreviewDialog.h; path = Classes/Deprecated/ScenePreviewDialog.h; sourceTree = "<group>"; };
 		E84779AF1669009B004CD20A /* ParticleEffectPropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParticleEffectPropertyControl.cpp; path = Classes/SceneEditor/ParticleEffectPropertyControl.cpp; sourceTree = "<group>"; };
 		E84779B01669009B004CD20A /* ParticleEffectPropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParticleEffectPropertyControl.h; path = Classes/SceneEditor/ParticleEffectPropertyControl.h; sourceTree = "<group>"; };
+		E860839917BCF05500FF798D /* SaveEntityAsAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SaveEntityAsAction.cpp; sourceTree = "<group>"; };
+		E860839A17BCF05500FF798D /* SaveEntityAsAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SaveEntityAsAction.h; sourceTree = "<group>"; };
 		E862903A17BBD20100C88FC0 /* MetaObjModifyCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MetaObjModifyCommand.cpp; sourceTree = "<group>"; };
 		E862903B17BBD20100C88FC0 /* MetaObjModifyCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetaObjModifyCommand.h; sourceTree = "<group>"; };
 		E8637C4917B37DCF00ECA297 /* LODEditor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LODEditor.cpp; sourceTree = "<group>"; };
@@ -2398,6 +2401,8 @@
 		4FFE5C76176B37B600728624 /* Commands2 */ = {
 			isa = PBXGroup;
 			children = (
+				E860839917BCF05500FF798D /* SaveEntityAsAction.cpp */,
+				E860839A17BCF05500FF798D /* SaveEntityAsAction.h */,
 				E862903A17BBD20100C88FC0 /* MetaObjModifyCommand.cpp */,
 				E862903B17BBD20100C88FC0 /* MetaObjModifyCommand.h */,
 				4FBD351817B5769E0051833D /* DAEConvertAction.cpp */,
@@ -4624,6 +4629,7 @@
 				62A7CA6E17B8D08D000AEBF5 /* GeneralSettingsEditor_moc.cpp in Build Sources */,
 				62A7CA6F17B8D08D000AEBF5 /* SettingsDialogQt_moc.cpp in Build Sources */,
 				E862903C17BBD20100C88FC0 /* MetaObjModifyCommand.cpp in Build Sources */,
+				E860839B17BCF05500FF798D /* SaveEntityAsAction.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
