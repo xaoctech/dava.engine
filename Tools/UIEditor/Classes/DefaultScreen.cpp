@@ -128,7 +128,6 @@ void DefaultScreen::Input(DAVA::UIEvent* event)
 		}break;
 		case UIEvent::PHASE_MOVE:
 		{
-			MouseInputMove(event);
 			ScreenWrapper::Instance()->SetCursor(GetCursor(event->point));
 		}break;
 		case UIEvent::PHASE_ENDED:
@@ -1111,10 +1110,6 @@ void DefaultScreen::KeyboardInput(const DAVA::UIEvent* event)
 			break;
 	}
 	
-}
-
-void DefaultScreen::MouseInputMove(const DAVA::UIEvent* event)
-{
 }
 
 Vector2 DefaultScreen::GetInputDelta(const Vector2& point, bool applyScale) const
