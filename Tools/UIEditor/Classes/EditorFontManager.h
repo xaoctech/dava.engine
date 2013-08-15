@@ -36,6 +36,7 @@ public:
 	
 	Font* GetDefaultFont() const;
 	void SetDefaultFont(Font* font);
+	void ResetDefaultFont();
     
 	Font* GetFont(const String& name) const;
     QString GetFontName(Font* font) const;
@@ -66,6 +67,7 @@ private:
 	
 private:
 	Font* defaultFont;
+	Font* baseFont;
 	FONTSMAP fonts; 
 
 };
