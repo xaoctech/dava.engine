@@ -46,7 +46,6 @@ public:
 	virtual bool SystemInput(UIEvent *currentInput);
 	
 	Qt::CursorShape GetCursor(const Vector2&);
-	void MouseInputMove(const DAVA::UIEvent* event);
 	
 	void BacklightControl(const Vector2& pos);
 	bool IsDropEnable(const Vector2& pos)const;
@@ -163,7 +162,9 @@ private:
 	bool CheckEnterScreenMoveState();
 	void CheckScreenMoveState();
 	void CheckExitScreenMoveState();
-	
+
+	void HandleScreenMove(const DAVA::UIEvent* event);
+
 	// Get the state of the "Move Screen" key.
 	bool IsMoveScreenKeyPressed();
 
