@@ -163,7 +163,9 @@ private:
 	bool CheckEnterScreenMoveState();
 	void CheckScreenMoveState();
 	void CheckExitScreenMoveState();
-	
+
+	void HandleScreenMove(const DAVA::UIEvent* event);
+
 	// Get the state of the "Move Screen" key.
 	bool IsMoveScreenKeyPressed();
 
