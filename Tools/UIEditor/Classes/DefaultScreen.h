@@ -46,7 +46,6 @@ public:
 	virtual bool SystemInput(UIEvent *currentInput);
 	
 	Qt::CursorShape GetCursor(const Vector2&);
-	void MouseInputMove(const DAVA::UIEvent* event);
 	
 	void BacklightControl(const Vector2& pos);
 	bool IsDropEnable(const Vector2& pos)const;
