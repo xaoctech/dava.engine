@@ -45,6 +45,7 @@ public:
     ShadowRect * GetShadowRect() const;
 
 	void SetBlendMode(eBlend blendMode);
+	eBlend GetBlendMode() const;
     
 private:
     ShadowRect * shadowRect;
