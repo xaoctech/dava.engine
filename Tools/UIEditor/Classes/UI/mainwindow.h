@@ -111,6 +111,11 @@ private:
 	void UpdateScaleComboIndex(int newIndex);
 	void UpdateScaleSlider(int32 newScalePercents);
 
+	// "Smart zoom" functionality - retain the scene under cursor when zoom is changed.
+	Vector2 CalculateScenePositionForPoint(const Vector2& point, float curScale);
+	void ScrollToScenePositionAndPoint(const Vector2& scenePosition, const Vector2& point,
+									   float newScale);
+
 private:
     Ui::MainWindow *ui;
 	QAction *recentPojectActions[EditorSettings::RECENT_FILES_COUNT];
