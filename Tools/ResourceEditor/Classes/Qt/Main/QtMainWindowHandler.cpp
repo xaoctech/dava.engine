@@ -68,6 +68,7 @@
 #include <QDesktopServices>
 #include <QUrl>
 #include <QMimeData>
+#include <QColorDialog>
 
 #include "Render/LibDxtHelper.h"
 #include "Scene3D/Components/ActionComponent.h"
@@ -76,6 +77,9 @@
 #include "./../Qt/Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
 #include "./../Qt/Tools/MimeDataHelper/MimeDataHelper.h"
 #include "Commands2/AddSwitchEntityCommand.h"
+#include "Classes/EditorScene.h"
+
+#include "Render/Highlevel/ShadowVolumeRenderPass.h"
 
 using namespace DAVA;
 
@@ -2135,3 +2139,25 @@ void QtMainWindowHandler::UpdateSkyboxMenuItemAfterSceneLoaded(SceneData* sceneD
 	
 	EnableSkyboxMenuItem(nodes.size() == 0);
 }
+
+void QtMainWindowHandler::SetShadowColor()
+{
+	EditorScene *scene = SceneDataManager::Instance()->SceneGetActive()->GetScene();
+
+	QColor color = QColorDialog::getColor(ColorToQColor(scene->GetShadowColor()), 0, tr("Shadow Color"), QColorDialog::ShowAlphaChannel);
+
+	scene->SetShadowColor(QColorToColor(color));
+}
+
+void QtMainWindowHandler::SetShadowBlendAlpha()
+{
+	EditorScene *scene = SceneDataManager::Instance()->SceneGetActive()->GetScene();
+	scene->SetShadowBlendMode(ShadowVolumeRenderPass::MODE_BLEND_ALPHA);
+}
+
+void QtMainWindowHandler::SetShadowBlendMultiply()
+{
+	EditorScene *scene = SceneDataManager::Instance()->SceneGetActive()->GetScene();
+	scene->SetShadowBlendMode(ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY);
+}
+

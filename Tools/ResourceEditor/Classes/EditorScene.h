@@ -23,6 +23,7 @@
 #include "BulletObject.h"
 
 #include "Scene/System/EditorLightSystem.h"
+#include "Render/Highlevel/ShadowVolumeRenderPass.h"
 
 using namespace DAVA;
 
@@ -80,6 +81,13 @@ public:
     
 	void AddEditorEntity(Entity *editorEntity);
 
+	void SetShadowColor(const Color &color);
+	Color GetShadowColor();
+	void UpdateShadowColorFromLandscape();
+
+	void SetShadowBlendMode(ShadowVolumeRenderPass::eBlend blend);
+	ShadowVolumeRenderPass::eBlend GetShadowBlendMode();
+
 protected:
     void SetForceLodLayerRecursive(Entity *node, int32 layer);
     
@@ -99,7 +107,6 @@ protected:
 	
 	Entity * FindSelected(Entity * curr, btCollisionObject * coll);
 	HeightmapNode * FindHeightmap(Entity * curr, btCollisionObject * coll);
-
 	Entity * lastSelectedPhysics;
     bool drawGrid;
 

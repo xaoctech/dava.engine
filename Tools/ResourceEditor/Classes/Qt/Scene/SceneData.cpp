@@ -208,6 +208,7 @@ void SceneData::CreateScene(bool createEditorCameras)
     
     EditorScene *createdScene = new EditorScene();
 
+
     // Camera setup
     if(createEditorCameras)
     {

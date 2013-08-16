@@ -123,6 +123,7 @@ Entity* SceneDataManager::AddScene(const FilePath &scenePathname)
 		sceneData->SetLandscapesControllerScene(scene);
 	}
 
+	scene->UpdateShadowColorFromLandscape();
     SceneHidePreview();
 	UpdateParticleSprites();
 	emit SceneGraphNeedRebuild();
@@ -192,6 +193,7 @@ void SceneDataManager::EditScene(SceneData* sceneData, const FilePath &scenePath
 	scene->Update(0);
 	sceneData->EmitSceneChanged();
 
+	scene->UpdateShadowColorFromLandscape();
 
 	UpdateParticleSprites();
     emit SceneGraphNeedRebuild();
@@ -249,6 +251,7 @@ void SceneDataManager::ReloadScene(const FilePath &scenePathname, const FilePath
     }
     
     
+	scene->UpdateShadowColorFromLandscape();
 	UpdateParticleSprites();
     emit SceneGraphNeedRebuild();
 	sceneData->SetLandscapesControllerScene(scene);
@@ -283,6 +286,7 @@ void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const FilePa
             errors.insert(Format("Cannot load object: %s", fromPathname.GetAbsolutePathname().c_str()));
         }
         
+		scene->UpdateShadowColorFromLandscape();
         return;
     }
     
