@@ -60,7 +60,7 @@ void SceneSystem::Process()
     
 }
 
-Scene * SceneSystem::GetScene()
+Scene * SceneSystem::GetScene() const
 {
 	return scene;
 }

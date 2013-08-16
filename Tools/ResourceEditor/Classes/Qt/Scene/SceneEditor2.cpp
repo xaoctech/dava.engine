@@ -19,6 +19,8 @@
 #include "CommandLine/SceneExporter/SceneExporter.h"
 #include "SceneEditor/EditorSettings.h"
 
+#include "Render/Highlevel/ShadowVolumeRenderPass.h"
+
 // framework
 #include "Scene3D/SceneFileV2.h"
 
@@ -78,6 +80,8 @@ SceneEditor2::SceneEditor2()
 	textDrawSystem = new TextDrawSystem(this, cameraSystem);
 	AddSystem(textDrawSystem, 0);
 
+	SetShadowBlendMode(ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY);
+
 	SceneSignals::Instance()->EmitOpened(this);
 }
 
@@ -130,6 +134,8 @@ bool SceneEditor2::Load(const DAVA::FilePath &path)
 
 	structureSystem->Init();
 	structureSystem->UnlockSignals();
+
+	UpdateShadowColorFromLandscape();
 
 	SceneSignals::Instance()->EmitLoaded(this);
 	return ret;
@@ -379,3 +385,58 @@ void SceneEditor2::EditorCommandNotify::CleanChanged(bool clean)
 		SceneSignals::Instance()->EmitModifyStatusChanged(editor, !clean);
 	}
 }
+
+void SceneEditor2::UpdateShadowColorFromLandscape()
+{
+	// try to get shadow color for landscape
+	Entity *land = structureSystem->FindLandscapeEntity();
+	if(!land || !GetRenderSystem()) return;
+
+	KeyedArchive * props = land->GetCustomProperties();
+	if (props->IsKeyExists("ShadowColor"))
+	{
+		GetRenderSystem()->SetShadowRectColor(props->GetVariant("ShadowColor")->AsColor());
+	}
+}
+
+void SceneEditor2::SetShadowColor( const Color &color )
+{
+	Entity *land = structureSystem->FindLandscapeEntity();
+	if(!land) return;
+
+	KeyedArchive * props = land->GetCustomProperties();
+	if(!props) return;
+
+	props->SetVariant("ShadowColor", VariantType(color));
+
+	UpdateShadowColorFromLandscape();
+}
+
+const Color SceneEditor2::GetShadowColor() const
+{
+	if(GetRenderSystem())
+		return GetRenderSystem()->GetShadowRectColor();
+
+	return Color::White();
+}
+
+void SceneEditor2::SetShadowBlendMode( ShadowVolumeRenderPass::eBlend blend )
+{
+	if(GetRenderSystem())
+	{
+		ShadowVolumeRenderPass *shadowPass = DynamicTypeCheck<ShadowVolumeRenderPass*>( GetRenderSystem()->GetRenderPass(PASS_SHADOW_VOLUME) );
+		shadowPass->SetBlendMode(blend);
+	}
+}
+
+ShadowVolumeRenderPass::eBlend SceneEditor2::GetShadowBlendMode() const
+{
+	if(GetRenderSystem())
+	{
+		ShadowVolumeRenderPass *shadowPass = DynamicTypeCheck<ShadowVolumeRenderPass*>( GetRenderSystem()->GetRenderPass(PASS_SHADOW_VOLUME) );
+		return shadowPass->GetBlendMode();
+	}
+
+	return ShadowVolumeRenderPass::MODE_BLEND_COUNT;
+}
+

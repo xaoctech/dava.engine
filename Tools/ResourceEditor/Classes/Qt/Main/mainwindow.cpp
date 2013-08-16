@@ -43,10 +43,12 @@
 #include "SceneEditor/HintManager.h"
 #include "../Tools/SettingsDialog/SettingsDialogQt.h"
 
+#include "Render/Highlevel/ShadowVolumeRenderPass.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QDesktopServices>
+#include <QColorDialog>
 
 QtMainWindow::QtMainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -398,6 +400,11 @@ void QtMainWindow::SetupActions()
 	
 	QObject::connect(ui->actionShowSettings, SIGNAL(triggered()), this, SLOT(OnShowSettings()));
 	
+	QObject::connect(ui->actionSetShadowColor, SIGNAL(triggered()), this, SLOT(OnSetShadowColor()));
+	QObject::connect(ui->menuDynamicShadowBlendMode, SIGNAL(aboutToShow()), this, SLOT(OnShadowBlendModeMenu()));
+	QObject::connect(ui->actionDynamicBlendModeAlpha, SIGNAL(triggered()), this, SLOT(OnShadowBlendModeAlpha()));
+	QObject::connect(ui->actionDynamicBlendModeMultiply, SIGNAL(triggered()), this, SLOT(OnShadowBlendModeMultiply()));
+
 	//Help
     QObject::connect(ui->actionHelp, SIGNAL(triggered()), this, SLOT(OnOpenHelp()));
 }
@@ -1207,3 +1214,34 @@ void QtMainWindow::LoadGPUFormat()
 		}
 	}
 }
+
+void QtMainWindow::OnSetShadowColor()
+{
+	SceneEditor2* scene = GetCurrentScene();
+
+	QColor color = QColorDialog::getColor(ColorToQColor(scene->GetShadowColor()), 0, tr("Shadow Color"), QColorDialog::ShowAlphaChannel);
+
+	scene->SetShadowColor(QColorToColor(color));
+}
+
+void QtMainWindow::OnShadowBlendModeMenu()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	const ShadowVolumeRenderPass::eBlend blend = scene->GetShadowBlendMode();
+
+	ui->actionDynamicBlendModeAlpha->setChecked(blend == ShadowVolumeRenderPass::MODE_BLEND_ALPHA);
+	ui->actionDynamicBlendModeMultiply->setChecked(blend == ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY);
+}
+
+void QtMainWindow::OnShadowBlendModeAlpha()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	scene->SetShadowBlendMode(ShadowVolumeRenderPass::MODE_BLEND_ALPHA);
+}
+
+void QtMainWindow::OnShadowBlendModeMultiply()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	scene->SetShadowBlendMode(ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY);
+}
+

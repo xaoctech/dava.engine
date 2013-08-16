@@ -814,7 +814,7 @@ EventSystem * Scene::GetEventSystem()
 	return eventSystem;
 }
 
-RenderSystem * Scene::GetRenderSystem()
+RenderSystem * Scene::GetRenderSystem() const
 {
 	return renderSystem;
 }

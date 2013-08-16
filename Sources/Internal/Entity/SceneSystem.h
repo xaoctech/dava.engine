@@ -43,7 +43,7 @@ public:
 	bool IsLocked();
 
 protected:
-	Scene * GetScene();
+	Scene * GetScene() const;
 
 private:
     uint32 requiredComponents;
