@@ -294,6 +294,8 @@ void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector
 			sceneEditor->Exec(new EntityMoveCommand(loadedEntity, sceneEditor, NULL));
 			loadedEntity->Release();
 
+			sceneEditor->UpdateShadowColorFromLandscape();
+
 			SceneSignals::Instance()->EmitStructureChanged((SceneEditor2 *) GetScene(), NULL);
 		}
 	}
@@ -443,4 +445,55 @@ DAVA::Entity* StructureSystem::Load(const DAVA::FilePath& sc2path)
 	}
 
 	return loadedEntity;
+}
+
+DAVA::Landscape * StructureSystem::FindLanscape() const
+{
+	return FindLanscapeRecursive(GetScene());
+}
+
+DAVA::Entity * StructureSystem::FindLandscapeEntity() const
+{
+	return FindLandscapeEntityRecursive(GetScene());
+}
+
+DAVA::Landscape * StructureSystem::FindLanscapeRecursive( DAVA::Entity *entity ) const
+{
+	DAVA::Landscape *land = GetLandscape(entity);
+	if(land)
+	{
+		return land;
+	}
+
+	DAVA::int32 count = entity->GetChildrenCount();
+	for(DAVA::int32 i = 0; i < count; ++i)
+	{
+		land = FindLanscapeRecursive(entity->GetChild(i));
+		if(land)
+		{
+			return land;
+		}
+	}
+
+	return NULL;
+}
+
+DAVA::Entity * StructureSystem::FindLandscapeEntityRecursive( DAVA::Entity *entity ) const
+{
+	if(GetLandscape(entity))
+	{
+		return entity;
+	}
+
+	DAVA::int32 count = entity->GetChildrenCount();
+	for(DAVA::int32 i = 0; i < count; ++i)
+	{
+		Entity *child = entity->GetChild(i);
+		if(FindLandscapeEntityRecursive(child))
+		{
+			return child;
+		}
+	}
+
+	return NULL;
 }

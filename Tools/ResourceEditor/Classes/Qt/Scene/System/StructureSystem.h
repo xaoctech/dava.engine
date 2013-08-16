@@ -27,6 +27,7 @@
 #include "Particles/ParticleLayer.h"
 #include "Particles/ParticleEmitter.h"
 #include "UI/UIEvent.h"
+#include "Render/Highlevel/Landscape.h"
 
 class StructureSystem : public DAVA::SceneSystem
 {
@@ -50,6 +51,9 @@ public:
 	void LockSignals();
 	void UnlockSignals();
 
+	DAVA::Landscape * FindLanscape() const;
+	DAVA::Entity * FindLandscapeEntity() const;
+
 protected:
 	bool lockedSignals;
 
@@ -67,6 +71,11 @@ protected:
 
 	virtual void AddEntity(DAVA::Entity * entity);
 	virtual void RemoveEntity(DAVA::Entity * entity);
+
+
+	DAVA::Landscape * FindLanscapeRecursive(DAVA::Entity *entity) const;
+	DAVA::Entity * FindLandscapeEntityRecursive(DAVA::Entity *entity) const;
+
 };
 
 #endif // __SCENE_STRUCTURE_SYSTEM_H__

@@ -107,6 +107,11 @@ public slots:
 
 	void OnOpenHelp();
 
+	void OnSetShadowColor();
+	void OnShadowBlendModeMenu();
+	void OnShadowBlendModeAlpha();
+	void OnShadowBlendModeMultiply();
+
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
 
@@ -153,6 +158,7 @@ private:
 	void LoadRulerToolState(SceneEditor2* scene);
 	void LoadGPUFormat();
 	void CreateAndDisplayAddEntityDialog(Entity* sceneNode);
+
 };
 
 #if 0

@@ -102,6 +102,13 @@ public:
 	//Insert entity to begin of scene hierarchy to display editor entities at one place on top og scene tree
 	void AddEditorEntity(Entity *editorEntity);
 
+	void SetShadowColor(const Color &color);
+	const Color GetShadowColor() const;
+	void UpdateShadowColorFromLandscape();
+
+	void SetShadowBlendMode(ShadowVolumeRenderPass::eBlend blend);
+	ShadowVolumeRenderPass::eBlend GetShadowBlendMode() const;
+
 protected:
 	bool isLoaded;
 

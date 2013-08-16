@@ -239,7 +239,7 @@ public:
 	bool IsReferenceNodeSuffixChanged();
 
 	EventSystem * GetEventSystem();
-	RenderSystem * GetRenderSystem();
+	RenderSystem * GetRenderSystem() const;
     
 protected:	
     
