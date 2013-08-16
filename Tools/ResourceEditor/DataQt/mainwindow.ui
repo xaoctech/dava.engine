@@ -226,6 +226,7 @@
    <addaction name="actionMaterialEditor"/>
    <addaction name="actionTextureConverter"/>
    <addaction name="actionEnableCameraLight"/>
+   <addaction name="actionSetShadowColor"/>
    <addaction name="separator"/>
    <addaction name="actionHeightMapEditor"/>
    <addaction name="actionTileMapEditor"/>
@@ -237,8 +238,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1103</width>
-     <height>22</height>
+     <width>1068</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -295,6 +296,13 @@
     <property name="title">
      <string>Tools</string>
     </property>
+    <widget class="QMenu" name="menuDynamicShadowBlendMode">
+     <property name="title">
+      <string>Dynamic Shadow Blend Mode</string>
+     </property>
+     <addaction name="actionDynamicBlendModeAlpha"/>
+     <addaction name="actionDynamicBlendModeMultiply"/>
+    </widget>
     <addaction name="actionMaterialEditor"/>
     <addaction name="actionTextureConverter"/>
     <addaction name="separator"/>
@@ -311,6 +319,8 @@
     <addaction name="actionShowSettings"/>
     <addaction name="actionEnableCameraLight"/>
     <addaction name="actionSkyboxEditor"/>
+    <addaction name="actionSetShadowColor"/>
+    <addaction name="menuDynamicShadowBlendMode"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -1506,6 +1516,31 @@
   <action name="actionSkyboxEditor">
    <property name="text">
     <string>Set up Skybox</string>
+   </property>
+  </action>
+  <action name="actionSetShadowColor">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/color.png</normaloff>:/QtIcons/color.png</iconset>
+   </property>
+   <property name="text">
+    <string>Dynamic Shadow Color</string>
+   </property>
+  </action>
+  <action name="actionDynamicBlendModeAlpha">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Alpha</string>
+   </property>
+  </action>
+  <action name="actionDynamicBlendModeMultiply">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Multiply</string>
    </property>
   </action>
  </widget>
