@@ -106,7 +106,7 @@ private:
 	void updateConvertedImageAndInfo(const DAVA::Vector<QImage> &images, DAVA::TextureDescriptor& descriptor);
 	void updateInfoColor(QLabel *label, const QColor &color = QColor());
 	void updateInfoPos(QLabel *label, const QPoint &pos = QPoint());
-	void updateInfoOriginal(const QImage &origImage);
+	void updateInfoOriginal(const DAVA::Vector<QImage> &images);
 	void updateInfoConverted();
 	void updatePropertiesWarning();
 

@@ -281,6 +281,21 @@ namespace DAVA
 	
 	void SkyboxRenderObject::SetOffsetZ(const float32& offset)
 	{
+		//VI: do not allow to set offset more that 1/2 of skybox height
+		//VI see DF-1766
+		if(renderBatchArray.size() > 0)
+		{
+			AABBox3 transformedBox;
+			bbox.GetTransformedBox(*worldTransform, transformedBox);
+			float32 maxOffset = 0.5f * (transformedBox.max.z - transformedBox.min.z);
+			
+			if(offset > maxOffset ||
+			   offset < -maxOffset)
+			{
+				return;
+			}
+		}
+		
 		offsetZ = offset;
 	}
 	
