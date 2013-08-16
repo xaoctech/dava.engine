@@ -46,6 +46,7 @@
 
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QDesktopServices>
 
 QtMainWindow::QtMainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -395,8 +396,10 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionSwitchNode, SIGNAL(triggered()), this, SLOT(OnSwitchEntityDialog()));
 	QObject::connect(ui->actionParticleEffectNode, SIGNAL(triggered()), this, SLOT(OnParticleEffectDialog()));
 	
-	
 	QObject::connect(ui->actionShowSettings, SIGNAL(triggered()), this, SLOT(OnShowSettings()));
+	
+	//Help
+    QObject::connect(ui->actionHelp, SIGNAL(triggered()), this, SLOT(OnOpenHelp()));
 }
 
 void QtMainWindow::InitRecent()
@@ -1085,6 +1088,13 @@ void QtMainWindow::OnShowSettings()
 {
 	SettingsDialogQt t(this);
 	t.exec();
+}
+
+void QtMainWindow::OnOpenHelp()
+{
+	FilePath docsPath = ResourceEditor::DOCUMENTATION_PATH + "index.html";
+	QString docsFile = QString::fromStdString("file:///" + docsPath.GetAbsolutePathname());
+	QDesktopServices::openUrl(QUrl(docsFile));
 }
 
 // ###################################################################################################
