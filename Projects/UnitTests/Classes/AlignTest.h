@@ -22,8 +22,9 @@
 using namespace DAVA;
 
 #include "TestTemplate.h"
+#include "Render/RenderManager.h"
 
-class AlignTest : public TestTemplate<AlignTest>
+class AlignTest : public TestTemplate<AlignTest>, public ScreenShotCallbackDelegate
 {
 public:
 	AlignTest();
@@ -31,16 +32,22 @@ public:
 	virtual void LoadResources();
 	virtual void UnloadResources();
 
-	virtual void MultilineEnable(PerfFuncData * data);
-	virtual void ResizeControl(PerfFuncData * data);
-	virtual void MoveControl(PerfFuncData * data);
-	virtual void AlignText(PerfFuncData * data);
+	virtual void MultilineEnable(PerfFuncData * testData);
+	virtual void ResizeControl(PerfFuncData * testData);
+	virtual void MoveControl(PerfFuncData * testData);
+	virtual void AlignText(PerfFuncData * testData);
     
 private:
     UIStaticText * staticText;
     UIStaticText * staticText2;
     Font * font;
 	
+	void OnScreenShot(Image *testImage);
+	void MakeScreenShot();
+	void VerifyTestImage(Image *testImage);
+	
+	PerfFuncData * data;
+	int currenTestIndex;
 	int currentAlignIndex;
 	int GetAlignTypesCount();
     int GetAlignType(int index);

@@ -37,7 +37,6 @@ namespace DAVA
 class Texture;
 class Shader;
 class RenderState;
-
 class Image;
 struct ScreenShotCallbackDelegate
 {
