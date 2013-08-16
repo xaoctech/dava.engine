@@ -125,6 +125,8 @@ namespace DAVA
 		{
 			UIAggregatorControl* control = new UIAggregatorControl();
 			control->CopyDataFrom(aggregatorControl);
+			// DF-1770 - Reset aggregator's background draw type
+			control->GetBackground()->SetDrawType(UIControlBackground::DRAW_ALIGNED);
 			cell->AddControl(control);
 		}
 		else
