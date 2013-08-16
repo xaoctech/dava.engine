@@ -410,4 +410,9 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 			return editText.getText().toString();
 		return "";
 	}
+	
+	public void PostEventToGL(Runnable event)
+	{
+		glView.queueEvent(event);
+	}
 }
