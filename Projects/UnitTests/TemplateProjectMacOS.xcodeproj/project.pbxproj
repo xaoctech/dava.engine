@@ -24,6 +24,7 @@
 		5CF22540157E555D00DF5395 /* BaseScreen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CF2253E157E555D00DF5395 /* BaseScreen.cpp */; };
 		7410E83117146D5B0028AAAA /* UIListTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7410E82F17146D5B0028AAAA /* UIListTest.cpp */; };
 		749A1B4F174A73130082B080 /* UIScrollViewTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 749A1B4D174A73130082B080 /* UIScrollViewTest.cpp */; };
+		749A3DCE17B8CF400008EC12 /* AlignTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 749A3DCC17B8CF400008EC12 /* AlignTest.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		C151B19116D37E8300E09BAF /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C151B18E16D37E2700E09BAF /* WebKit.framework */; };
 		C151B1C016D50BDA00E09BAF /* eMailTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C151B1BE16D50BDA00E09BAF /* eMailTest.cpp */; };
@@ -137,6 +138,8 @@
 		7410E83017146D5B0028AAAA /* UIListTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIListTest.h; path = Classes/UIListTest.h; sourceTree = "<group>"; };
 		749A1B4D174A73130082B080 /* UIScrollViewTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIScrollViewTest.cpp; path = Classes/UIScrollViewTest.cpp; sourceTree = "<group>"; };
 		749A1B4E174A73130082B080 /* UIScrollViewTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIScrollViewTest.h; path = Classes/UIScrollViewTest.h; sourceTree = "<group>"; };
+		749A3DCC17B8CF400008EC12 /* AlignTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AlignTest.cpp; path = Classes/AlignTest.cpp; sourceTree = "<group>"; };
+		749A3DCD17B8CF400008EC12 /* AlignTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AlignTest.h; path = Classes/AlignTest.h; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* UnitTests.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UnitTests.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C151B18E16D37E2700E09BAF /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		C151B1BE16D50BDA00E09BAF /* eMailTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = eMailTest.cpp; path = Classes/eMailTest.cpp; sourceTree = "<group>"; };
@@ -330,6 +333,7 @@
 		5C1066D8156D351400912A45 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				749A3DC917B8CF330008EC12 /* AlignTest */,
 				495B67021797DC8D0017D8DD /* TransparentWebViewTest */,
 				E8679170175F405F00C5A6A2 /* FormatsTest */,
 				749A1B48174A70C80082B080 /* UIScrollViewTest */,
@@ -402,6 +406,15 @@
 				749A1B4E174A73130082B080 /* UIScrollViewTest.h */,
 			);
 			name = UIScrollViewTest;
+			sourceTree = "<group>";
+		};
+		749A3DC917B8CF330008EC12 /* AlignTest */ = {
+			isa = PBXGroup;
+			children = (
+				749A3DCC17B8CF400008EC12 /* AlignTest.cpp */,
+				749A3DCD17B8CF400008EC12 /* AlignTest.h */,
+			);
+			name = AlignTest;
 			sourceTree = "<group>";
 		};
 		C151B1BC16D50BD000E09BAF /* eMailTest */ = {
@@ -702,6 +715,7 @@
 				E87402D9172582DB00A4A75A /* FileSystemTest.cpp in Sources */,
 				495B67091797DCA30017D8DD /* TransparentWebViewTest.cpp in Sources */,
 				E8679174175F407200C5A6A2 /* FormatsTest.cpp in Sources */,
+				749A3DCE17B8CF400008EC12 /* AlignTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
