@@ -15,10 +15,22 @@
 =====================================================================================*/
 
 #include "AlignTest.h"
+#include "TextureUtils.h"
 #include "Render/RenderManager.h"
 
-static const float ALIGN_TEST_AUTO_CLOSE_TIME = 30.0f;
-static const WideString controlText = L"THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED";
+const float32 ACCETABLE_DELTA_IN_PERSENTS = 2.0f;
+
+#if defined(__DAVAENGINE_MACOS__)
+const char* REFERENCE_IMAGE_PATH = "~res:/TestData/AlignTest/MacOS/test%d.png";
+#elif defined(__DAVAENGINE_WIN32__)
+const char* REFERENCE_IMAGE_PATH = "~res:/TestData/AlignTest/Win32/test%d.png";
+#elif defined(__DAVAENGINE_IPHONE__)
+const char* REFERENCE_IMAGE_PATH = "~res:/TestData/AlignTest/IOS/test%d.png";
+#elif defined(__DAVAENGINE_ANDROID__)
+const char* REFERENCE_IMAGE_PATH = "~res:/TestData/AlignTest/Android/test%d.png";
+#endif
+
+const WideString controlText = L"THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED";
 
 const int AlignTest::alignTypesData[] =
 {
@@ -35,13 +47,15 @@ const int AlignTest::alignTypesData[] =
 };
 
 AlignTest::AlignTest():
-TestTemplate<AlignTest>("SplitTest")
+TestTemplate<AlignTest>("SplitTest"),
+	currentAlignIndex(0),
+	currenTestIndex(0),
+	data(NULL)
 {	
-	currentAlignIndex = 0;
 	
 	RegisterFunction(this, &AlignTest::MultilineEnable, Format("MultilineTest"), NULL);
 	RegisterFunction(this, &AlignTest::ResizeControl, Format("ResizeTest"), NULL);
-	RegisterFunction(this, &AlignTest::MoveControl, Format("MultilineTest"), NULL);
+	RegisterFunction(this, &AlignTest::MoveControl, Format("MoveTest"), NULL);
 	// Register align function for each align option
 	for (int32 i = 0; i < GetAlignTypesCount(); ++i)
 	{
@@ -77,13 +91,15 @@ void AlignTest::UnloadResources()
     SafeRelease(font);
 }
 
-void AlignTest::MultilineEnable(PerfFuncData * data)
+void AlignTest::MultilineEnable(PerfFuncData * testData)
 {
 	staticText->SetMultiline(true);
    	staticText2->SetMultiline(true);
+	MakeScreenShot();
+	data = testData;
 }
 
-void AlignTest::ResizeControl(PerfFuncData * data)
+void AlignTest::ResizeControl(PerfFuncData * testData)
 {
 	Rect rect = staticText->GetRect();
 	rect.dx = 500.f;
@@ -94,9 +110,12 @@ void AlignTest::ResizeControl(PerfFuncData * data)
 	rect.dx = 300.f;
 	rect.dy = 150.f;
 	staticText2->SetRect(rect);
+	
+	MakeScreenShot();
+	data = testData;
 }
 
-void AlignTest::MoveControl(PerfFuncData * data)
+void AlignTest::MoveControl(PerfFuncData * testData)
 {
 	Rect rect = staticText->GetRect();
 	rect.x = 50.f;
@@ -106,14 +125,18 @@ void AlignTest::MoveControl(PerfFuncData * data)
 	rect = staticText2->GetRect();
 	rect.x = 10.f;
 	staticText2->SetRect(rect);
+	MakeScreenShot();
+	data = testData;
 }
 
-void AlignTest::AlignText(PerfFuncData * data)
+void AlignTest::AlignText(PerfFuncData * testData)
 {
 	staticText->SetTextAlign(GetAlignType(currentAlignIndex));
 	staticText2->SetTextAlign(GetAlignType(currentAlignIndex));
 		
 	currentAlignIndex++;
+	MakeScreenShot();
+	data = testData;
 }
 
 int AlignTest::GetAlignTypesCount()
@@ -124,4 +147,46 @@ int AlignTest::GetAlignTypesCount()
 int AlignTest::GetAlignType(int index)
 {
     return alignTypesData[index];
+}
+
+void AlignTest::MakeScreenShot()
+{
+	RenderManager::Instance()->RequestGLScreenShot(this);
+	currenTestIndex++;
+}
+
+void AlignTest::OnScreenShot(Image *testImage)
+{
+	//Use this code to generate new reference screenshots
+//	FilePath workingPath = FileSystem::Instance()->GetCurrentWorkingDirectory();
+//	ImageLoader::Save(testImage,workingPath + Format("Data/TestData/AlignTest/Win32/test%d.png", currenTestIndex));
+	VerifyTestImage(testImage);
+}
+
+void AlignTest::VerifyTestImage(Image *testImage)
+{
+	// Loade reference image for current test
+	Image *referenceImage = NULL;
+	Vector<Image *> imageSet = ImageLoader::CreateFromFile(Format(REFERENCE_IMAGE_PATH, currenTestIndex));
+	
+	if(imageSet.size() != 0)
+    {
+		referenceImage = imageSet[0];
+	}
+	// Compare reference and test images and calculate differebce persentage
+	float32 differencePersentage = 100.f;
+	if (testImage && referenceImage)
+	{
+		TextureUtils::CompareResult result = TextureUtils::CompareImages(testImage,
+																	referenceImage, FORMAT_RGBA8888);
+				
+		differencePersentage = ((float32)result.difference / ((float32)result.bytesCount * 256.f)) * 100.f;
+	}
+
+	// Verify compare results
+	if (data)
+	{
+    	TEST_VERIFY(differencePersentage < ACCETABLE_DELTA_IN_PERSENTS);
+	}
+
 }
