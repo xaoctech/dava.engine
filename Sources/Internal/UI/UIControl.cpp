@@ -1284,6 +1284,7 @@ namespace DAVA
 
 		customControlType = srcControl->GetCustomControlType();
 		initialState = srcControl->GetInitialState();
+		drawPivotPointMode = srcControl->drawPivotPointMode;
 
 		SafeRelease(eventDispatcher);
 		if(srcControl->eventDispatcher)
@@ -1552,8 +1553,9 @@ namespace DAVA
 			{ //TODO: Add debug draw for rotated controls
 				DrawDebugRect(unrotatedRect);
 			}
-			DrawPivotPoint(unrotatedRect);
 		}
+		
+		DrawPivotPoint(unrotatedRect);
 
 		if(debugDrawEnabled && NULL != parent && parent->GetClipContents())
 		{	
