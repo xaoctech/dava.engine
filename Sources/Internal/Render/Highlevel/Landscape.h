@@ -275,6 +275,10 @@ public:
     
 	virtual RenderObject * Clone(RenderObject *newObject);
 
+	//editor props
+	void SetFogProp(const bool& fogState);
+    bool GetFogProp();
+
 
 protected:	
     
@@ -405,7 +409,7 @@ public:
          
         MEMBER(tiledShaderMode, "Tiled Shader Mode", I_SAVE | I_VIEW | I_EDIT)
 
-        MEMBER(isFogEnabled, "Is Fog Enabled", I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("isFogEnabled", "Is Fog Enabled", GetFogProp, SetFogProp, I_SAVE | I_VIEW | I_EDIT)
         MEMBER(fogDensity, "Fog Density", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(fogColor, "Fog Color", I_SAVE | I_VIEW | I_EDIT)
     );

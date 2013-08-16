@@ -1802,6 +1802,17 @@ RenderObject * Landscape::Clone( RenderObject *newObject )
 
 	return newObject;
 }
+	
+void Landscape::SetFogProp(const bool& fogState)
+{
+	SetFog(fogState);
+}
+	
+bool Landscape::GetFogProp()
+{
+	return IsFogEnabled();
+}
+
 
 
 };
