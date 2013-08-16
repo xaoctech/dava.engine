@@ -30,6 +30,7 @@
 #include "Render/ImageLoader.h"
 #include "LandscapeChunk.h"
 #include "Debug/Stats.h"
+#include "Render/Material/NMaterial.h"
 
 
 namespace DAVA
@@ -71,8 +72,6 @@ Landscape::Landscape()
     uniformFogColor = -1;
     uniformFogDensityFT = -1;
     uniformFogColorFT = -1;
-
-    SetTiledShaderMode(TILED_MODE_MIXED);
     
     heightmap = new Heightmap();
         
@@ -81,8 +80,14 @@ Landscape::Landscape()
     isFogEnabled = false;
     fogDensity = 0.006f;
     fogColor = Color::White();
-    
-    LandscapeChunk * chunk = new LandscapeChunk(this);
+	
+	landscapeMaterial = new NMaterial();
+	landscapeMaterial->LoadFromFile("~res:/Materials/Landscape.material");
+	
+	SetTiledShaderMode(TILED_MODE_MIXED);
+	
+	LandscapeChunk * chunk = new LandscapeChunk(this);
+	chunk->SetMaterial(landscapeMaterial);
     AddRenderBatch(chunk);
     SafeRelease(chunk);
 }
@@ -100,14 +105,15 @@ Landscape::~Landscape()
 
     SafeRelease(heightmap);
 	SafeDelete(cursor);
+	SafeRelease(landscapeMaterial);
 }
     
 void Landscape::InitShaders()
 {
     ReleaseShaders();
     
-    tileMaskShader = new Shader();
-    tileMaskShader->LoadFromYaml("~res:/Shaders/Landscape/tilemask.shader");
+    tileMaskShader = landscapeMaterial->GetTechnique("Landscape.TileMask")->GetShader();
+	tileMaskShader->SetDefineList("");
     
     String defines = "";
     
@@ -122,7 +128,7 @@ void Landscape::InitShaders()
     }
     tileMaskShader->SetDefineList(defines);
     
-    tileMaskShader->Recompile();
+    tileMaskShader->Recompile(true);
     
     uniformTextures[TEXTURE_TILE0] = tileMaskShader->FindUniformIndexByName("tileTexture0");
     uniformTextures[TEXTURE_TILE1] = tileMaskShader->FindUniformIndexByName("tileTexture1");
@@ -150,14 +156,14 @@ void Landscape::InitShaders()
         uniformFogDensity = tileMaskShader->FindUniformIndexByName("fogDensity");   
     }
     
-    fullTiledShader = new Shader();
-    fullTiledShader->LoadFromYaml("~res:/Shaders/Landscape/fulltiled_texture.shader");
+    fullTiledShader = landscapeMaterial->GetTechnique("Landscape.FullTiled")->GetShader();
+	fullTiledShader->SetDefineList("");
 	if(isFogEnabled && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
     {
         fullTiledShader->SetDefineList("VERTEX_FOG");   
     }
     
-    fullTiledShader->Recompile();
+    fullTiledShader->Recompile(true);
     
     if(isFogEnabled && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
     {
@@ -168,10 +174,7 @@ void Landscape::InitShaders()
     
 void Landscape::ReleaseShaders()
 {
-    SafeRelease(tileMaskShader);
-    SafeRelease(fullTiledShader);
-    
-    uniformCameraPosition = -1;
+	uniformCameraPosition = -1;
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
         uniformTextures[k] = -1;
@@ -1129,9 +1132,9 @@ void Landscape::BindMaterial(int32 lodLayer)
         RenderManager::Instance()->FlushState();
         
         if (uniformFogColorFT != -1)
-            tileMaskShader->SetUniformColor3ByIndex(uniformFogColorFT, fogColor);
+            fullTiledShader->SetUniformColor3ByIndex(uniformFogColorFT, fogColor);
         if (uniformFogDensityFT != -1)
-            tileMaskShader->SetUniformValueByIndex(uniformFogDensityFT, fogDensity);
+            fullTiledShader->SetUniformValueByIndex(uniformFogDensityFT, fogDensity);
     }
     
     prevLodLayer = lodLayer;

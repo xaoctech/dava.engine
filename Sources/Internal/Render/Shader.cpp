@@ -375,9 +375,19 @@ Shader::~Shader()
     DeleteShaders();
 }
     
-bool Shader::Recompile()
+bool Shader::Recompile(bool silentDelete)
 {
-    DVASSERT((vertexShader == 0) && (fragmentShader == 0) && (program == 0));
+	if(silentDelete &&
+	   ((vertexShader != 0) || (fragmentShader != 0) || (program != 0)))
+	{
+		//VI: be a man: just delete shader and recompile instead of complaining with assert
+		//VI: such behavior is needed for Landscape since it uses shaders directly but doesn't own them
+		DeleteShaders();
+	}
+	else
+	{
+		DVASSERT((vertexShader == 0) && (fragmentShader == 0) && (program == 0));
+	}
     
     RenderManager::Instance()->LockNonMain();
     if (!CompileShader(&vertexShader, GL_VERTEX_SHADER, vertexShaderData->GetSize(), (GLchar*)vertexShaderData->GetPtr(), vertexShaderDefines))
