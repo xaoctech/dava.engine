@@ -105,6 +105,8 @@ public slots:
 	
 	void OnShowSettings();
 
+	void OnOpenHelp();
+
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
 
