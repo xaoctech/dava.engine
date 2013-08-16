@@ -318,10 +318,26 @@ void MainWindow::UpdateScaleAndScaleSliderByIndex(int32 index)
 void MainWindow::UpdateScale(int32 newScalePercents)
 {
 	// Scale is sent in percents, so need to divide by 100.
-	ScreenWrapper::Instance()->SetScale((float)newScalePercents / 100);
+	float prevScale = ScreenWrapper::Instance()->GetScale();
+	float newScale = (float)newScalePercents / 100;
+	
+	if (FLOAT_EQUAL(prevScale, newScale))
+	{
+		return;
+	}
+	
+	// Remember the current "absolute" view area position to position the same point
+	// under mouse cursor after scale level will be changed.
+	Vector2 cursorPos = ScreenWrapper::Instance()->GetCursorPosition();
+	Vector2 scenePosition = CalculateScenePositionForPoint(cursorPos, prevScale);
+
+	ScreenWrapper::Instance()->SetScale(newScale);
 
 	UpdateSliders();
 	UpdateScreenPosition();
+
+	// Position back the view area to show the "scene position" remembered under mouse cursor.
+	ScrollToScenePositionAndPoint(scenePosition, cursorPos, newScale);
 }
 
 void MainWindow::UpdateScaleComboIndex(int newIndex)
@@ -875,4 +891,59 @@ void MainWindow::OnUnsavedChangesNumberChanged()
 		projectTitle += " *";
 	}
 	setWindowTitle(projectTitle);
+}
+
+Vector2 MainWindow::CalculateScenePositionForPoint(const Vector2& point, float curScale)
+{
+	// Correctly handle scales less then 100%.
+	QRect widgetRect = ui->davaGlWidget->rect();
+	QRect viewRect = ScreenWrapper::Instance()->GetRect();
+	
+	// If horz/vert offset is less than zero, it means no scroll bars visible, and the view size
+	// less than widget size. This situation should be handled separately.
+	float hOffset = (viewRect.width() - widgetRect.width()) / 2;
+	if (hOffset > 0)
+	{
+		hOffset = ui->horizontalScrollBar->value();
+	}
+	
+	float vOffset = (viewRect.height() - widgetRect.height()) / 2;
+	if (vOffset > 0)
+	{
+		vOffset = ui->verticalScrollBar->value();
+	}
+	
+	Vector2 resultPosition;
+	resultPosition.x = (hOffset + point.x) / curScale;
+	resultPosition.y = (vOffset + point.y) / curScale;
+	Logger::Warning("Scene position under mouse: X:%f, Y:%f", resultPosition.x, resultPosition.y);
+	
+	return resultPosition;
+}
+
+void MainWindow::ScrollToScenePositionAndPoint(const Vector2& scenePosition, const Vector2& point,
+											   float newScale)
+{
+	float newHScrollValue = (scenePosition.x * newScale) - point.x;
+	if (newHScrollValue < ui->horizontalScrollBar->minimum())
+	{
+		newHScrollValue = ui->horizontalScrollBar->minimum();
+	}
+	if (newHScrollValue > ui->horizontalScrollBar->maximum())
+	{
+		newHScrollValue = ui->horizontalScrollBar->maximum();
+	}
+	
+	float newVScrollValue = (scenePosition.y * newScale) - point.y;
+	if (newVScrollValue < ui->verticalScrollBar->minimum())
+	{
+		newVScrollValue = ui->verticalScrollBar->minimum();
+	}
+	if (newVScrollValue > ui->verticalScrollBar->maximum())
+	{
+		newVScrollValue = ui->verticalScrollBar->maximum();
+	}
+	
+	ui->horizontalScrollBar->setValue(newHScrollValue);
+	ui->verticalScrollBar->setValue(newVScrollValue);
 }
