@@ -117,7 +117,7 @@ public:
     Shader * RecompileNewInstance(const String & combination);
     
     static Shader * CompileShader(Data * vertexShaderData, Data * fragmentShaderData, const FastNameSet & definesSet);
-    bool Recompile();
+    bool Recompile(bool silentDelete = false);
     
     void Bind();
     static void Unbind();

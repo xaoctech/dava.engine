@@ -25,6 +25,7 @@
 #include "Render/Highlevel/LandscapeCursor.h"
 #include "Render/Highlevel/RenderObject.h"
 
+
 #include "FileSystem/FilePath.h"
 
 namespace DAVA
@@ -37,6 +38,7 @@ class RenderDataObject;
 class Shader;
 class SceneFileV2;
 class Heightmap;
+class NMaterial;
     
 template<class T>
 class LandQuadTreeNode
@@ -358,7 +360,7 @@ protected:
     int32 uniformFogDensityFT;
     int32 uniformFogColorFT;
 
-    
+    NMaterial* landscapeMaterial;
     Shader * tileMaskShader;
     Shader * fullTiledShader;
 
