@@ -26,6 +26,7 @@
 #include "SceneEditor/EditorSettings.h"
 #include "Scene/SceneHelper.h"
 #include "ImageTools/ImageTools.h"
+#include "CubemapEditor/CubemapUtils.h"
 
 #include "ui_texturebrowser.h"
 
@@ -178,7 +179,9 @@ void TextureBrowser::setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor 
 		else
 		{
 			// set empty info
-			updateInfoOriginal(QImage());
+			DAVA::Vector<QImage> emptyImages;
+			emptyImages.push_back(QImage());
+			updateInfoOriginal(emptyImages);
 
 			// there is no image in cache - start loading it in different thread. image-ready slot will be called 
 			ui->textureAreaOriginal->setImage(QImage());
@@ -311,7 +314,7 @@ void TextureBrowser::updateInfoPos(QLabel *label, const QPoint &pos /* = QPoint(
 	}
 }
 
-void TextureBrowser::updateInfoOriginal(const QImage &origImage)
+void TextureBrowser::updateInfoOriginal(const DAVA::Vector<QImage> &images)
 {
 	if(NULL != curTexture && NULL != curDescriptor)
 	{
@@ -319,10 +322,28 @@ void TextureBrowser::updateInfoOriginal(const QImage &origImage)
 
 		const char *formatStr = DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_RGBA8888);
 
-		int datasize = origImage.width() * origImage.height() * DAVA::Texture::GetPixelFormatSizeInBytes(DAVA::FORMAT_RGBA8888);
-		int filesize = QFileInfo(curDescriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str()).size();
-
-		sprintf(tmp, "Format\t: %s\nSize\t: %dx%d\nData size\t: %s\nFile size\t: %s", formatStr, origImage.width(), origImage.height(),
+		int datasize = 0;
+		int filesize = 0;
+		for(size_t i = 0; i < images.size(); ++i)
+		{
+			datasize += images[i].width() * images[i].height() * DAVA::Texture::GetPixelFormatSizeInBytes(DAVA::FORMAT_RGBA8888);
+		}
+		
+		if(!curDescriptor->IsCubeMap())
+		{
+			filesize = QFileInfo(curDescriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str()).size();
+		}
+		else
+		{
+			DAVA::Vector<DAVA::String> faceNames;
+			CubemapUtils::GenerateFaceNames(curDescriptor->pathname.GetAbsolutePathname(), faceNames);
+			for(size_t i = 0; i < faceNames.size(); ++i)
+			{
+				filesize += QFileInfo(faceNames[i].c_str()).size();
+			}
+		}
+		
+		sprintf(tmp, "Format\t: %s\nSize\t: %dx%d\nData size\t: %s\nFile size\t: %s", formatStr, images[0].width(), images[0].height(),
 			 SizeInBytesToString(datasize).c_str(),
 			 SizeInBytesToString(filesize).c_str());
 
@@ -571,7 +592,9 @@ void TextureBrowser::resetTextureInfo()
 	updateInfoColor(ui->labelConvertedRGBA);
 	updateInfoPos(ui->labelConvertedXY);
 
-	updateInfoOriginal(QImage());
+	DAVA::Vector<QImage> emptyImages;
+	emptyImages.push_back(QImage());
+	updateInfoOriginal(emptyImages);
 	updateInfoConverted();
 }
 
@@ -703,7 +726,7 @@ void TextureBrowser::textureReadyOriginal(const DAVA::TextureDescriptor *descrip
 			ui->textureProperties->setOriginalImageSize(images[0].size());
 
 			// set info about loaded image
-			updateInfoOriginal(images[0]);
+			updateInfoOriginal(images);
 		}
 	}
 }
