@@ -480,13 +480,11 @@ void MainWindow::OnOpenLocalizationManager()
     }
 }
 
-void MainWindow::OnShowHelpContents()
+void MainWindow::OnShowHelp()
 {
-    //Get help contents file absolute path
-    QString helpPath = "file:///";
-    helpPath += ResourcesManageHelper::GetHelpContentsPath();
-    //Open help file in default browser new window
-    QDesktopServices::openUrl(QUrl(helpPath));
+	FilePath docsPath = ResourcesManageHelper::GetDocumentationPath().toStdString() + "index.html";
+	QString docsFile = QString::fromStdString("file:///" + docsPath.GetAbsolutePathname());
+	QDesktopServices::openUrl(QUrl(docsFile));
 }
 
 void MainWindow::InitMenu()
@@ -531,7 +529,7 @@ void MainWindow::InitMenu()
     }
 	
 	//Help contents dialog
-    connect(ui->actionHelpContents, SIGNAL(triggered()), this, SLOT(OnShowHelpContents()));
+    connect(ui->actionHelp, SIGNAL(triggered()), this, SLOT(OnShowHelp()));
 	
 	// Undo/Redo.
 	connect(ui->actionUndo, SIGNAL(triggered()), this, SLOT(OnUndoRequested()));
