@@ -1227,6 +1227,8 @@ void QtMainWindow::OnSetShadowColor()
 void QtMainWindow::OnShadowBlendModeMenu()
 {
 	SceneEditor2* scene = GetCurrentScene();
+    if(!scene) return;
+    
 	const ShadowVolumeRenderPass::eBlend blend = scene->GetShadowBlendMode();
 
 	ui->actionDynamicBlendModeAlpha->setChecked(blend == ShadowVolumeRenderPass::MODE_BLEND_ALPHA);
@@ -1236,12 +1238,16 @@ void QtMainWindow::OnShadowBlendModeMenu()
 void QtMainWindow::OnShadowBlendModeAlpha()
 {
 	SceneEditor2* scene = GetCurrentScene();
+    if(!scene) return;
+
 	scene->SetShadowBlendMode(ShadowVolumeRenderPass::MODE_BLEND_ALPHA);
 }
 
 void QtMainWindow::OnShadowBlendModeMultiply()
 {
 	SceneEditor2* scene = GetCurrentScene();
+    if(!scene) return;
+
 	scene->SetShadowBlendMode(ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY);
 }
 
