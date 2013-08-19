@@ -30,7 +30,8 @@ namespace DAVA
     {
     }
     
-    UIListCell::UIListCell(const Rect &rect, const String &cellIdentifier, const FilePath &aggregatorPath)
+    UIListCell::UIListCell(const Rect &rect, const String &cellIdentifier, const FilePath &aggregatorPath,
+							const Vector2 &aggregatorSize)
         :	UIButton(rect)
         ,	currentIndex(-1)
         ,	identifier(cellIdentifier)
@@ -41,6 +42,7 @@ namespace DAVA
 			UIAggregatorControl *aggregator = new UIAggregatorControl();
 			UIYamlLoader loader;
 			loader.Load(aggregator, aggregatorPath);
+			aggregator->SetSize(aggregatorSize);
 			
 			this->AddControl(aggregator);
 		}

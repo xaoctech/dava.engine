@@ -156,10 +156,13 @@ namespace DAVA
 		if (aggregatorNode)
 		{
 			forList->SetAggregatorPath(aggregatorNode->GetPath());
+			Rect aggregatorRect = aggregatorNode->GetRect();
+			forList->SetAggregatorSize(Vector2(aggregatorRect.dx, aggregatorRect.dy));
 		}
 		else
 		{
 			forList->SetAggregatorPath(String());
+			forList->SetAggregatorSize(Vector2());
 		}
 	}
 	

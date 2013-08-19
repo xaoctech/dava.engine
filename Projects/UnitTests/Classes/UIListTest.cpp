@@ -15,7 +15,7 @@ static const float LIST_TEST_AUTO_CLOSE_TIME = 30.0f;
 UIListTestDelegate::UIListTestDelegate(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*/)
 	: UIControl(rect, rectInAbsoluteCoordinates)
 {
-	cellSize = Vector2(100.0f, 30.0f);
+	cellSize = Vector2(100.0f, 40.0f);
 }
 
 UIListTestDelegate::~UIListTestDelegate()
@@ -33,7 +33,7 @@ UIListCell *UIListTestDelegate::CellAtIndex(UIList *list, int32 index)
 	
     if(!cell)
     { //if cell of requested type isn't find in the store create new cell
-        cell = new UIListCell(Rect(0, 0, (float32)list->size.x, (float32)cellSize.y), "List cell", list->GetAggregatorPath());
+        cell = new UIListCell(Rect(0, 0, cellSize.x, cellSize.y), "List cell", list->GetAggregatorPath(), list->GetAggregatorSize());
 		
 		/*Font *font = FTFont::Create("~res:/Fonts/korinna.ttf");
     	DVASSERT(font);
@@ -48,7 +48,12 @@ UIListCell *UIListTestDelegate::CellAtIndex(UIList *list, int32 index)
     return cell;
 }
 
-int32 UIListTestDelegate::CellHeight(UIList *list, int32 index)
+int32 UIListTestDelegate::CellWidth(UIList*, int32)
+{
+   	return (int32)cellSize.x;
+}
+
+int32 UIListTestDelegate::CellHeight(UIList*, int32)
 {
    	return (int32)cellSize.y;
 }
@@ -98,7 +103,7 @@ void UIListTest::LoadResources()
 	SafeRelease(loader);
 	SafeRelease(parser);	
 
-	finishTestBtn = new UIButton(Rect(10, 210, 300, 30));
+	finishTestBtn = new UIButton(Rect(10, 250, 300, 30));
 	finishTestBtn->SetStateFont(0xFF, font);
 	finishTestBtn->SetStateText(0xFF, L"Finish test");
 
