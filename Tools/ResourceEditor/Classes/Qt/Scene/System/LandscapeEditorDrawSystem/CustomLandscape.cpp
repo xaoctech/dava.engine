@@ -31,6 +31,7 @@ void CustomLandscape::SetRenderer(LandscapeRenderer *renderer)
 {
 	SafeRelease(landscapeRenderer);
 	landscapeRenderer = SafeRetain(renderer);
+	landscapeRenderer->SetMaterial(landscapeMaterial);
 }
 
 LandscapeRenderer* CustomLandscape::GetRenderer()
@@ -67,4 +68,10 @@ void CustomLandscape::Draw(DAVA::Camera *camera)
 	}
 	
 	landscapeRenderer->UnbindMaterial();
+}
+
+void CustomLandscape::SetBoundingBox(const AABBox3& box, const AABBox3& worldBox)
+{
+	bbox = box;
+	worldBBox = worldBox;
 }

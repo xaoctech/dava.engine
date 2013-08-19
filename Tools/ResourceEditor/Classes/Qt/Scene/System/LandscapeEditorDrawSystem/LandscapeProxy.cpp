@@ -40,6 +40,7 @@ LandscapeProxy::LandscapeProxy(Landscape* landscape)
 	}
 
 	customLandscape = new CustomLandscape();
+	customLandscape->SetBoundingBox(landscape->GetBoundingBox(), landscape->GetWorldBoundingBox());
 	customLandscape->SetTexture(Landscape::TEXTURE_TILE_FULL, baseLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL));
 }
 

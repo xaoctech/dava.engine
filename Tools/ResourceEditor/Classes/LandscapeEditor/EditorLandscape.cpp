@@ -80,6 +80,7 @@ void EditorLandscape::SetRenderer(LandscapeRenderer *renderer)
 {
     SafeRelease(landscapeRenderer);
     landscapeRenderer = SafeRetain(renderer);
+	landscapeRenderer->SetMaterial(landscapeMaterial);
 }
 
 
@@ -155,6 +156,9 @@ void EditorLandscape::SetParentLandscape(EditorLandscape *landscapeNode)
 {
     SafeRelease(parentLandscape);
     parentLandscape = SafeRetain(landscapeNode);
+	
+	bbox = parentLandscape->GetBoundingBox();
+	worldBBox = parentLandscape->GetWorldBoundingBox();
 }
 
 EditorLandscape *EditorLandscape::GetParentLandscape()
