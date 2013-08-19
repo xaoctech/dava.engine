@@ -25,6 +25,7 @@ public:
 	// UIListDelegate
     virtual int32 ElementsCount(UIList *list);
 	virtual UIListCell *CellAtIndex(UIList *list, int32 index);
+	virtual int32 CellWidth(UIList *list, int32 index);
 	virtual int32 CellHeight(UIList *list, int32 index);
 
 private:
