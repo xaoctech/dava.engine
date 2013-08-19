@@ -1218,15 +1218,17 @@ void QtMainWindow::LoadGPUFormat()
 void QtMainWindow::OnSetShadowColor()
 {
 	SceneEditor2* scene = GetCurrentScene();
-
-	QColor color = QColorDialog::getColor(ColorToQColor(scene->GetShadowColor()), 0, tr("Shadow Color"), QColorDialog::ShowAlphaChannel);
-
-	scene->SetShadowColor(QColorToColor(color));
+    if(!scene) return;
+    
+    QColor color = QColorDialog::getColor(ColorToQColor(scene->GetShadowColor()), 0, tr("Shadow Color"), QColorDialog::ShowAlphaChannel);
+    scene->SetShadowColor(QColorToColor(color));
 }
 
 void QtMainWindow::OnShadowBlendModeMenu()
 {
 	SceneEditor2* scene = GetCurrentScene();
+    if(!scene) return;
+    
 	const ShadowVolumeRenderPass::eBlend blend = scene->GetShadowBlendMode();
 
 	ui->actionDynamicBlendModeAlpha->setChecked(blend == ShadowVolumeRenderPass::MODE_BLEND_ALPHA);
@@ -1236,12 +1238,16 @@ void QtMainWindow::OnShadowBlendModeMenu()
 void QtMainWindow::OnShadowBlendModeAlpha()
 {
 	SceneEditor2* scene = GetCurrentScene();
+    if(!scene) return;
+
 	scene->SetShadowBlendMode(ShadowVolumeRenderPass::MODE_BLEND_ALPHA);
 }
 
 void QtMainWindow::OnShadowBlendModeMultiply()
 {
 	SceneEditor2* scene = GetCurrentScene();
+    if(!scene) return;
+
 	scene->SetShadowBlendMode(ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY);
 }
 
