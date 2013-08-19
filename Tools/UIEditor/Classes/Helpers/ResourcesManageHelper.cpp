@@ -55,13 +55,9 @@ static const String FONTS_RES_PATH("~res:/Fonts/");
 static const String GRAPHICS_FONTS_RES_PATH("~res:/Fontdef/");
 // Button background image path
 static const String BACKGROUND_IMAGE_PATH("~res:/Images/buttonBg.png");
-// Help contents path
-// Help contents path
-#if defined(__DAVAENGINE_WIN32__)
-static const String HELP_CONTENTS_PATH("/Data/Help/UIEditor.html");
-#else
-static const String HELP_CONTENTS_PATH("~res:/Help/UIEditor.html");
-#endif
+// Documentation path.
+static const QString DOCUMENTATION_PATH = "~doc:/UIEditorHelp/";
+
 // Additional text constants
 static const QString GFX = "/Gfx/";
 static const QString FONTS = "/Fonts/";
@@ -91,7 +87,6 @@ static const QString RES_WRONG_LOCATION_ERROR_MESSAGE = "Resource %1 is not loca
 static const QStringList FONTS_EXTENSIONS_FILTER = (QStringList() << "*.ttf" << "*.otf" << "*.fon" << "*.fnt" << "*.def");
 
 QString ResourcesManageHelper::buttonBackgroundImagePath;
-QString ResourcesManageHelper::helpContentsPath;
 QString ResourcesManageHelper::projectTitle;
 
 QString ResourcesManageHelper::GetFontAbsolutePath(const QString& resourceFileName, bool graphicsFont)
@@ -213,13 +208,7 @@ QStringList ResourcesManageHelper::GetFontsList()
 void ResourcesManageHelper::InitInternalResources()
 {
 	buttonBackgroundImagePath = QString::fromStdString(FilePath(BACKGROUND_IMAGE_PATH).GetAbsolutePathname());
-
-#if defined(__DAVAENGINE_WIN32__)
-	FilePath currentFolder = FileSystem::Instance()->GetCurrentWorkingDirectory();
-	helpContentsPath = ConvertPathToUnixStyle(QString::fromStdString((currentFolder + HELP_CONTENTS_PATH).GetAbsolutePathname()));
-#else
-    helpContentsPath = QString::fromStdString(FilePath(HELP_CONTENTS_PATH).GetAbsolutePathname());
-#endif
+	
 	// Save project default title
     if(DAVA::Core::Instance())
     {
@@ -239,9 +228,9 @@ QString ResourcesManageHelper::GetButtonBackgroundImagePath()
 	return buttonBackgroundImagePath;
 }
 
-QString ResourcesManageHelper::GetHelpContentsPath()
+QString ResourcesManageHelper::GetDocumentationPath()
 {
-	return helpContentsPath;
+	return DOCUMENTATION_PATH;
 }
 
 QString ResourcesManageHelper::GetProjectPath()

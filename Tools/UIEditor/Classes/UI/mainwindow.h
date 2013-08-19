@@ -50,7 +50,7 @@ private slots:
 
     void OnOpenFontManager();
     void OnOpenLocalizationManager();
-    void OnShowHelpContents();
+    void OnShowHelp();
 	
 	void OnNewProject();
 	void OnSaveProject();

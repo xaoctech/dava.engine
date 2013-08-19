@@ -37,8 +37,8 @@ public:
     static QStringList GetFontsList();
 	// Functions to work with help contents and button background image
 	static QString GetButtonBackgroundImagePath();
-	// Get path to help contents hmtl file
-	static QString GetHelpContentsPath();
+	// Get path to documentation folder
+	static QString GetDocumentationPath();
 	// Get graphics font sprite file path
 	static QString GetGraphicsFontPath(Font* font);
 	
@@ -86,7 +86,6 @@ public:
 
 private:
 	static QString buttonBackgroundImagePath;
-	static QString helpContentsPath;
 	static QString projectTitle;
 };
 };

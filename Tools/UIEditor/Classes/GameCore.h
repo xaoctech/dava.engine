@@ -37,6 +37,9 @@ public:
 	virtual void Update(DAVA::float32 update);
 	virtual void Draw();
 	
+protected:
+	void UnpackHelp();
+
 private:
 	Cursor * cursor;
 };

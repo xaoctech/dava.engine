@@ -29,6 +29,7 @@
 #include "EditorSettings.h"
 #include "ResourcesManageHelper.h"
 #include "LibraryController.h"
+#include "FileSystem/ResourceArchive.h"
 
 using namespace DAVA;
 
@@ -49,7 +50,10 @@ GameCore::GameCore()
 	new EditorSettings();
 	new UndoRedoController();
 	new LibraryController();
-	
+
+	// Unpack the help data, if needed.
+	UnpackHelp();
+
 	//Initialize internal resources of application
 	ResourcesManageHelper::InitInternalResources();
 }
@@ -108,4 +112,23 @@ void GameCore::Update(float32 timeElapsed)
 void GameCore::Draw()
 {
 	ApplicationCore::Draw();
+}
+
+void GameCore::UnpackHelp()
+{
+	//Unpack Help to Documents. TODO! add version management.
+	FilePath docsPath = FilePath(ResourcesManageHelper::GetDocumentationPath().toStdString()	);
+	if(!docsPath.Exists())
+	{
+		ResourceArchive * helpRA = new ResourceArchive();
+		if(helpRA->Open("~res:/Help.docs"))
+		{
+			FileSystem::Instance()->DeleteDirectory(docsPath);
+			FileSystem::Instance()->CreateDirectory(docsPath, true);
+		
+			helpRA->UnpackToFolder(docsPath);
+		}
+		
+		SafeRelease(helpRA);
+	}
 }

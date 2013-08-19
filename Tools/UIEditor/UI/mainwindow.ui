@@ -193,9 +193,9 @@
      <enum>Qt::ActionsContextMenu</enum>
     </property>
     <property name="title">
-     <string> Help</string>
+     <string>Help</string>
     </property>
-    <addaction name="actionHelpContents"/>
+    <addaction name="actionHelp"/>
    </widget>
    <widget class="QMenu" name="menu">
     <property name="title">
@@ -380,9 +380,13 @@
     <enum>Qt::ApplicationShortcut</enum>
    </property>
   </action>
-  <action name="actionHelpContents">
+  <action name="actionHelp">
+   <property name="icon">
+    <iconset resource="../Data/icons.qrc">
+     <normaloff>:/Icons/help.png</normaloff>:/Icons/help.png</iconset>
+   </property>
    <property name="text">
-    <string>Help contents</string>
+    <string>UI Editor Help</string>
    </property>
    <property name="shortcut">
     <string>F1</string>
