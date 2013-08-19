@@ -1218,10 +1218,10 @@ void QtMainWindow::LoadGPUFormat()
 void QtMainWindow::OnSetShadowColor()
 {
 	SceneEditor2* scene = GetCurrentScene();
-
-	QColor color = QColorDialog::getColor(ColorToQColor(scene->GetShadowColor()), 0, tr("Shadow Color"), QColorDialog::ShowAlphaChannel);
-
-	scene->SetShadowColor(QColorToColor(color));
+    if(!scene) return;
+    
+    QColor color = QColorDialog::getColor(ColorToQColor(scene->GetShadowColor()), 0, tr("Shadow Color"), QColorDialog::ShowAlphaChannel);
+    scene->SetShadowColor(QColorToColor(color));
 }
 
 void QtMainWindow::OnShadowBlendModeMenu()
