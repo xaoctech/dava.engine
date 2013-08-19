@@ -1129,7 +1129,7 @@ void DefaultScreen::BacklightControl(const Vector2& position)
 {
 	Vector2 pos = LocalToInternal(position);
 	
-	HierarchyTreeControlNode* newSelectedNode = GetSelectedControl(pos, HierarchyTreeController::Instance()->GetActiveScreen());
+	HierarchyTreeControlNode* newSelectedNode = SmartGetSelectedControl(pos);
 	if (newSelectedNode)
 	{
 		if (!HierarchyTreeController::Instance()->IsNodeActive(newSelectedNode))
