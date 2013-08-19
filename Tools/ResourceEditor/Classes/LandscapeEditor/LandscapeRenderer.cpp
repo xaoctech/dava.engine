@@ -22,45 +22,25 @@ LandscapeRenderer::LandscapeRenderer(DAVA::Heightmap *heightmap, const DAVA::AAB
 {
     landscapeRenderObject = new RenderDataObject();
     DVASSERT(landscapeRenderObject);
+	
+	shader = NULL;
+	landscapeMaterial = NULL;
     
-    InitShader();
+	//VI: shader will be set via SetMaterial
+    //InitShader();
 
     SetHeightmap(heightmap, box);
 }
 
 LandscapeRenderer::~LandscapeRenderer()
 {
-    SafeRelease(shader);
     uniformFogColor = -1;
     uniformFogDensity = -1;
     
     SafeRelease(landscapeRenderObject);
     SafeRelease(heightmap);
-}
-
-void LandscapeRenderer::InitShader()
-{
-    bool isFogEnabled = false;
-    
-    shader = new Shader();
-    shader->LoadFromYaml("~res:/Shaders/Landscape/fulltiled_texture.shader");
-	if(isFogEnabled && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
-    {
-        shader->SetDefineList("VERTEX_FOG");
-    }
-    
-    shader->Recompile();
-    
-    if(isFogEnabled && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
-    {
-        uniformFogColor = shader->FindUniformIndexByName("fogColor");
-        uniformFogDensity = shader->FindUniformIndexByName("fogDensity");
-    }
-    else
-    {
-        uniformFogColor = -1;
-        uniformFogDensity = -1;
-    }
+	SafeRelease(shader);
+	SafeRelease(landscapeMaterial);
 }
 
 void LandscapeRenderer::SetHeightmap(DAVA::Heightmap *heightmap, const DAVA::AABBox3 &box)
@@ -176,5 +156,34 @@ void LandscapeRenderer::UnbindMaterial()
 DAVA::uint32 * LandscapeRenderer::Indicies()
 {
     return &indices.front();
+}
+
+void LandscapeRenderer::SetMaterial(DAVA::NMaterial* material)
+{
+	SafeRelease(shader);
+	SafeRelease(landscapeMaterial);
+
+	landscapeMaterial = SafeRetain(material);
+	shader = SafeRetain(landscapeMaterial->GetTechnique("Landscape.FullTiled")->GetShader());
+	
+	bool isFogEnabled = false;
+    
+	if(isFogEnabled && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
+    {
+        shader->SetDefineList("VERTEX_FOG");
+    }
+    
+    shader->Recompile(true);
+    
+    if(isFogEnabled && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
+    {
+        uniformFogColor = shader->FindUniformIndexByName("fogColor");
+        uniformFogDensity = shader->FindUniformIndexByName("fogDensity");
+    }
+    else
+    {
+        uniformFogColor = -1;
+        uniformFogDensity = -1;
+    }
 }
 
