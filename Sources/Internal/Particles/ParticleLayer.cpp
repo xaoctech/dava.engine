@@ -220,7 +220,7 @@ template <class T> void UpdatePropertyLineKeys(PropertyLine<T> * line, float sta
 {	
 	if (!line)	
 		return;	
-	Vector<PropertyLine<T>::PropertyKey> &keys = line->GetValues();
+	Vector<typename PropertyLine<T>::PropertyKey> &keys = line->GetValues();
 	int size = keys.size();		
 	int i;
 	for (i=0; i<size; ++i)
@@ -243,7 +243,7 @@ template <class T> void UpdatePropertyLineOnLoad(PropertyLine<T> * line, float s
 {
 	if (!line)
 		return;
-	Vector<PropertyLine<T>::PropertyKey> &keys = line->GetValues();
+	Vector<typename PropertyLine<T>::PropertyKey> &keys = line->GetValues();
 	int size = keys.size();		
 	int i;
 	/*drop keys before*/
@@ -256,7 +256,7 @@ template <class T> void UpdatePropertyLineOnLoad(PropertyLine<T> * line, float s
 	{
 		T v0 = line->GetValue(startTime);
 		keys.erase(keys.begin(), keys.begin()+i);
-		PropertyLine<T>::PropertyKey key;
+		typename PropertyLine<T>::PropertyKey key;
 		key.t = startTime;
 		key.value = v0;
 		keys.insert(keys.begin(), key);
@@ -273,7 +273,7 @@ template <class T> void UpdatePropertyLineOnLoad(PropertyLine<T> * line, float s
 	{
 		T v1 = line->GetValue(endTime);
 		keys.erase(keys.begin()+i, keys.end());
-		PropertyLine<T>::PropertyKey key;
+		typename PropertyLine<T>::PropertyKey key;
 		key.t = endTime;
 		key.value = v1;
 		keys.push_back(key);
