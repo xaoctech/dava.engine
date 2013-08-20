@@ -206,6 +206,18 @@ void RenderBatch::Save(KeyedArchive * archive, SceneFileV2* sceneFile)
 		archive->SetVariant("rb.datasource", VariantType((uint64)dataSource));
 		archive->SetVariant("rb.material", VariantType((uint64)GetMaterial()));
 		
+		if(material &&
+		   materialInstance &&
+		   Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP != material->type &&
+		   Material::MATERIAL_VERTEX_LIT_LIGHTMAP != material->type &&
+		   materialInstance->GetLightmap() != NULL)
+		{
+			materialInstance->ClearLightmap();
+			Logger::Warning("[RenderBatch::Save] Material %s is not a lightmap but has lightmap texture set to %s. Clearing lightmap to avoid future problems.",
+							material->GetName().c_str(),
+							materialInstance->GetLightmapName().GetAbsolutePathname().c_str());
+		}
+		
 		KeyedArchive *mia = new KeyedArchive();
 		materialInstance->Save(mia, sceneFile);
 		archive->SetArchive("rb.matinst", mia);
@@ -231,6 +243,18 @@ void RenderBatch::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 		KeyedArchive *mia = archive->GetArchive("rb.matinst");
 		if(NULL != mia)
 		{
+			if(material &&
+			   Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP != material->type &&
+			   Material::MATERIAL_VERTEX_LIT_LIGHTMAP != material->type &&
+			   mia->GetString("ims.lightmapname").size() > 0)
+			{
+				Logger::Warning("[RenderBatch::Load] Material %s is not a lightmap but has lightmap texture set to %s. Clearing lightmap to avoid future problems.",
+								material->GetName().c_str(),
+								mia->GetString("ims.lightmapname").c_str());
+				
+				mia->SetString("ims.lightmapname", "");
+			}
+			
 			materialInstance->Load(mia, sceneFile);
 		}
 	}
