@@ -41,6 +41,7 @@
 ParticleTimeLineWidget::ParticleTimeLineWidget(QWidget *parent/* = 0*/) :
 	ScrollZoomWidget(parent),
 	selectedPoint(-1, -1),
+	selectedLine(-1),	
 	emitterNode(NULL),
 	effectNode(NULL),
 	selectedLayer(NULL),
@@ -439,6 +440,9 @@ void ParticleTimeLineWidget::paintEvent(QPaintEvent *e)
 		}
 		if(!(startPosition == endPosition && startPosition != POSITION_INSIDE))
 		{
+			if (selectedLine == iter->first)
+				painter.setPen(QPen(line.color, LINE_WIDTH+2));
+
 			painter.drawLine(startPoint, endPoint);
 		}
 
@@ -527,35 +531,77 @@ void ParticleTimeLineWidget::UpdateSizePolicy()
 
 void ParticleTimeLineWidget::mouseMoveEvent(QMouseEvent * event)
 {
-	if (selectedPoint.x() == -1)
+	if (selectedPoint.x() != -1)
 	{
-		ScrollZoomWidget::mouseMoveEvent(event);
+		LINE_MAP::iterator iter = lines.find(selectedPoint.x());
+		if (iter == lines.end())
+			return;
+
+		LINE& line = iter->second;
+
+		QRect graphRect = GetGraphRect();
+		float32 value = (event->pos().x() - graphRect.left()) / (float32)graphRect.width() * (maxTime - minTime) + minTime;
+		value = Max(minTime, Min(maxTime, value));
+		if (selectedPoint.y() == 0) //start point selected
+		{
+			line.startTime = Min(value, line.endTime);
+		}
+		else
+		{
+			line.endTime = Max(value, line.startTime);
+		}
+		update();
 		return;
 	}
-	
-	LINE_MAP::iterator iter = lines.find(selectedPoint.x());
-	if (iter == lines.end())
+	else if (selectedLine != -1)
+	{
+		LINE_MAP::iterator iter = lines.find(selectedLine);
+		if (iter == lines.end())
+			return;
+		LINE& line = iter->second;
+		int delta = event->pos().x() - selectedLineOrigin;
+		selectedLineOrigin = event->pos().x();
+
+		QRect graphRect = GetGraphRect();
+		
+		float32 offset = delta / (float32)graphRect.width() * (maxTime - minTime);		
+		offset = Max(generalMinTime-line.startTime, Min(generalMaxTime-line.endTime, offset));		
+		line.startTime+=offset;
+		line.endTime+=offset;
+		update();
 		return;
-	
-	LINE& line = iter->second;
-	
-	QRect graphRect = GetGraphRect();
-	float32 value = (event->pos().x() - graphRect.left()) / (float32)graphRect.width() * (maxTime - minTime) + minTime;
-	value = Max(minTime, Min(maxTime, value));
-	if (selectedPoint.y() == 0) //start point selected
-	{
-		line.startTime = Min(value, line.endTime);
+
 	}
-	else
-	{
-		line.endTime = Max(value, line.startTime);
-	}
-	update();
+
+	ScrollZoomWidget::mouseMoveEvent(event);
+	
+	
 }
 
 void ParticleTimeLineWidget::mousePressEvent(QMouseEvent * event)
 {
 	selectedPoint = GetPoint(event->pos());
+	if (selectedPoint.x() == -1) //try selecting line only if no point selected endpoint
+	{
+		uint32 i = 0;
+		QRect grapRect = GetGraphRect();
+		
+		for (LINE_MAP::const_iterator iter = lines.begin(); iter != lines.end(); ++iter, ++i)
+		{			
+			const LINE& line = iter->second;
+
+			QPoint startPoint(grapRect.left() + (line.startTime - minTime) / (maxTime - minTime) * grapRect.width(), grapRect.top() + (i + 1) * LINE_STEP);
+			QPoint endPoint(grapRect.left() + (line.endTime - minTime) / (maxTime - minTime) * grapRect.width(), grapRect.top() + (i + 1) * LINE_STEP);
+			QRect lineRect = QRect(startPoint - QPoint(RECT_SIZE, RECT_SIZE), endPoint + QPoint(RECT_SIZE, RECT_SIZE));			
+
+			if (lineRect.contains(event->pos()))
+			{
+				selectedLine = iter->first;
+				selectedLineOrigin = event->pos().x();
+				break;
+			}
+		}		
+	}
 
 	ScrollZoomWidget::mousePressEvent(event);
 	update();
@@ -568,7 +614,12 @@ void ParticleTimeLineWidget::mouseReleaseEvent(QMouseEvent * e)
 	{
 		OnValueChanged(selectedPoint.x());
 	}
+	if (selectedLine != -1)
+	{
+		OnValueChanged(selectedLine);
+	}
 		
+	selectedLine = -1;
 	selectedPoint = QPoint(-1, -1);
 	ScrollZoomWidget::mouseReleaseEvent(e);
 	update();
