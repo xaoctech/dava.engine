@@ -361,7 +361,7 @@ MaterialTechnique::~MaterialTechnique()
 void MaterialTechnique::RecompileShader()
 {
     SafeRelease(shader);
-    shader = ShaderCache::Instance()->Get(shaderName, uniqueDefines);
+    shader = SafeRetain(ShaderCache::Instance()->Get(shaderName, uniqueDefines));
 }
     
     
