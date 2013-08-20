@@ -23,6 +23,7 @@ namespace DAVA
 {
 	class Entity;
 	class Scene;
+	class ActionUpdateSystem;
 	class ActionComponent : public Component
 	{
 	public:
@@ -81,7 +82,6 @@ namespace DAVA
 		virtual Component * Clone(Entity * toEntity);
 		virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 		virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
-		virtual void SetEntity(Entity * entity);
 		
 		static ActionComponent::Action MakeAction(ActionComponent::Action::eType type, String targetName, float32 delay);
 		static ActionComponent::Action MakeAction(ActionComponent::Action::eType type, String targetName, float32 delay, int32 switchIndex);
@@ -122,7 +122,6 @@ namespace DAVA
 		Vector<ActionComponent::ActionContainer> actions;
 		bool started;
 		bool allActionsActive; //skip processing when all actions are active
-		Scene* parentScene;
 		
 	public:
 		
