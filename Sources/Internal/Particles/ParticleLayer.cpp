@@ -216,6 +216,91 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	return dstLayer;
 }
 
+template <class T> void UpdatePropertyLineKeys(PropertyLine<T> * line, float startTime, float translateTime, float endTime)
+{	
+	if (!line)	
+		return;	
+	Vector<PropertyLine<T>::PropertyKey> &keys = line->GetValues();
+	int size = keys.size();		
+	int i;
+	for (i=0; i<size; ++i)
+	{
+		keys[i].t += translateTime;
+		if (keys[i].t>endTime)		
+			break;		
+		
+	}
+	if (i==0)
+		i+=1; //keep at least 1
+	keys.erase(keys.begin()+i, keys.end());
+	if (keys.size() == 1)
+	{
+		keys[0].t = startTime;
+	}
+}
+
+template <class T> void UpdatePropertyLineOnLoad(PropertyLine<T> * line, float startTime, float endTime)
+{
+	if (!line)
+		return;
+	Vector<PropertyLine<T>::PropertyKey> &keys = line->GetValues();
+	int size = keys.size();		
+	int i;
+	/*drop keys before*/
+	for (i=0; i<size; ++i)
+	{
+		if (keys[i].t>=startTime)
+			break;
+	}
+	if (i!=0)
+	{
+		T v0 = line->GetValue(startTime);
+		keys.erase(keys.begin(), keys.begin()+i);
+		PropertyLine<T>::PropertyKey key;
+		key.t = startTime;
+		key.value = v0;
+		keys.insert(keys.begin(), key);
+	}	
+	
+	/*drop keys after*/
+	size = keys.size();
+	for (i=0; i<size; i++)
+	{
+		if (keys[i].t>endTime)
+			break;
+	}
+	if (i!=size)
+	{
+		T v1 = line->GetValue(endTime);
+		keys.erase(keys.begin()+i, keys.end());
+		PropertyLine<T>::PropertyKey key;
+		key.t = endTime;
+		key.value = v1;
+		keys.push_back(key);
+	}
+}
+
+void ParticleLayer::UpdateLayerTime(float startTime, float endTime)
+{
+	float translateTime = startTime-this->startTime;
+	this->startTime = startTime;
+	this->endTime = endTime;
+	/*validate all time depended property lines*/	
+	UpdatePropertyLineKeys(life.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(lifeVariation.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(number.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(numberVariation.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(size.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(sizeVariation.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(velocity.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(velocityVariation.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(spin.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(spinVariation.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(angle.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(angleVariation.Get(), startTime, translateTime, endTime);
+
+}
+
 ParticleEmitter* ParticleLayer::GetEmitter() const
 {
 	return emitter;
@@ -838,6 +923,20 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 	{
 		isDisabled = isDisabledNode->AsBool();
 	}
+
+	/*validate all time depended property lines*/	
+	UpdatePropertyLineOnLoad(life.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(lifeVariation.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(number.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(numberVariation.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(size.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(sizeVariation.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(velocity.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(velocityVariation.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(spin.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(spinVariation.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(angle.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(angleVariation.Get(), startTime, endTime);
 
 	// Load the Inner Emitter parameters.
 	YamlNode * innerEmitterPathNode = node->Get("innerEmitterPath");
