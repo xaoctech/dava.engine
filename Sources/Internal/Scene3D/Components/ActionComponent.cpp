@@ -25,16 +25,17 @@
 namespace DAVA
 {
 
-	ActionComponent::ActionComponent() : started(false), allActionsActive(false), parentScene(NULL)
+	ActionComponent::ActionComponent() : started(false), allActionsActive(false)
 	{
 		
 	}
 	
 	ActionComponent::~ActionComponent()
 	{
-		if(parentScene)
+		if(entity &&
+		   entity->GetScene())
 		{
-			parentScene->actionSystem->UnWatch(this);
+			entity->GetScene()->actionSystem->UnWatch(this);
 		}
 	}
 	
@@ -81,7 +82,7 @@ namespace DAVA
 		{
 			if(!started)
 			{
-				parentScene->actionSystem->Watch(this);
+				entity->GetScene()->actionSystem->Watch(this);
 			}
 			
 			started = true;
@@ -109,7 +110,7 @@ namespace DAVA
 				actions[i].markedForUpdate = false;
 			}
 			
-			parentScene->actionSystem->UnWatch(this);
+			entity->GetScene()->actionSystem->UnWatch(this);
 		}
 	}
 	
@@ -140,7 +141,7 @@ namespace DAVA
 				started = false;
 				allActionsActive = false;
 				
-				parentScene->actionSystem->UnWatch(this);
+				entity->GetScene()->actionSystem->UnWatch(this);
 			}
 		}
 	}
@@ -182,7 +183,7 @@ namespace DAVA
 		if(!prevActionsActive &&
 		   allActionsActive != prevActionsActive)
 		{
-			parentScene->actionSystem->UnWatch(this);
+			entity->GetScene()->actionSystem->UnWatch(this);
 		}
 	}
 	
@@ -237,7 +238,7 @@ namespace DAVA
 			   allActionsActive != prevActionsActive)
 			{
 				started = false;
-				parentScene->actionSystem->UnWatch(this);
+				entity->GetScene()->actionSystem->UnWatch(this);
 			}
 		}
 	}
@@ -248,6 +249,7 @@ namespace DAVA
 		actionComponent->SetEntity(toEntity);
 		
 		uint32 count = actions.size();
+		actionComponent->actions.resize(count);
 		for(uint32 i = 0; i < count; ++i)
 		{
 			actionComponent->actions[i] = actions[i];
@@ -305,17 +307,7 @@ namespace DAVA
 		
 		Component::Deserialize(archive, sceneFile);
 	}
-	
-	void ActionComponent::SetEntity(Entity * entity)
-	{
-		if(entity)
-		{
-			parentScene = entity->GetScene();
-		}
 		
-		Component::SetEntity(entity);
-	}
-	
 	void ActionComponent::EvaluateAction(const Action& action)
 	{
 		if(Action::TYPE_PARTICLE_EFFECT == action.type)
