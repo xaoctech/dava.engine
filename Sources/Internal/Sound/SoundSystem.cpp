@@ -76,7 +76,13 @@ void SoundSystem::Update()
 
 void SoundSystem::Suspend()
 {
-
+#ifdef __DAVAENGINE_ANDROID__
+	for(FastNameMap<SoundGroup*>::Iterator it = soundGroups.Begin(); it != soundGroups.End(); ++it)
+	{
+		SoundGroup * soundGroup = it.GetValue();
+		soundGroup->Stop();
+	}
+#endif
 }
 
 void SoundSystem::Resume()
