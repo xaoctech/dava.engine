@@ -118,7 +118,7 @@ void UITextFieldPropertyGridWidget::ProcessPushButtonClicked(QPushButton *sender
     
 	// Don't update the property if the text wasn't actually changed.
     Font* curValue = PropertiesHelper::GetAllPropertyValues<Font*>(this->activeMetadata, iter->second.getProperty().name());
-	if (curValue->IsEqual(resultFont))
+	if (curValue && curValue->IsEqual(resultFont))
 	{
 		SafeRelease(resultFont);
 		return;
