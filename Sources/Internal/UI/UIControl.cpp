@@ -272,7 +272,7 @@ namespace DAVA
 		return resultList;
 	}
 
-	String UIControl::GetSpriteFrameworkPath(Sprite* sprite)
+	String UIControl::GetSpriteFrameworkPath( const Sprite* sprite)
 	{
 		if (!sprite)
 		{
@@ -1285,6 +1285,8 @@ namespace DAVA
 		customControlType = srcControl->GetCustomControlType();
 		initialState = srcControl->GetInitialState();
 		drawPivotPointMode = srcControl->drawPivotPointMode;
+		debugDrawColor = srcControl->debugDrawColor;
+		debugDrawEnabled = srcControl->debugDrawEnabled;
 
 		SafeRelease(eventDispatcher);
 		if(srcControl->eventDispatcher)
@@ -2496,7 +2498,7 @@ namespace DAVA
 		debugDrawColor = color;
 	}
 	
-	Color UIControl::GetDebugDrawColor() const
+	const Color &UIControl::GetDebugDrawColor() const
 	{
 		return debugDrawColor;
 	}
