@@ -904,7 +904,7 @@ public:
 	 */
 	void	SetDebugDraw(bool _debugDrawEnabled, bool hierarchic = false);
 	void	SetDebugDrawColor(const Color& color);
-	Color	GetDebugDrawColor() const;
+	const Color	&GetDebugDrawColor() const;
 
 	/**
 	 \brief Set the draw pivot point mode for the control.
@@ -1124,7 +1124,7 @@ public:
 	bool AddControlToList(List<UIControl*>& controlsList, const String& controlName, bool isRecursive = false);
 
 	// Get the framework path for sprite, don't process it if it is empty.
-	String GetSpriteFrameworkPath(Sprite* sprite);
+	static String GetSpriteFrameworkPath( const Sprite* sprite);
 
 	// Get/set the Initial State.
 	int32 GetInitialState() const;
