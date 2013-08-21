@@ -201,6 +201,10 @@ public slots:
 	void AddActionComponent();
 	void RemoveActionComponent();
     
+	void SetShadowColor();
+	void SetShadowBlendAlpha();
+	void SetShadowBlendMultiply();
+
 signals:
 	void ProjectChanged();
     void UpdateCameraLightOnScene(bool show);

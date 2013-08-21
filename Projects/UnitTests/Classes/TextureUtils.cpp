@@ -61,7 +61,26 @@ TextureUtils::CompareResult TextureUtils::CompareSprites(Sprite *first, Sprite *
     CompareResult compareResult = {0};
 
     
-    int32 imageSizeInBytes = (int32)(first->GetWidth() * first->GetHeight() * Texture::GetPixelFormatSizeInBytes(firstComparer->format));
+	compareResult = CompareImages(firstComparer, secondComparer, format);
+ 
+//    String documentsPath = FileSystem::Instance()->GetCurrentDocumentsDirectory();
+//    firstComparer->Save(documentsPath + Format("PVRTest/src_number_%d.png", currentTest));
+//    secondComparer->Save(documentsPath + Format("PVRTest/dst_number_%d.png", currentTest));
+    
+    
+    SafeRelease(firstComparer);
+    SafeRelease(secondComparer);
+    return compareResult;
+}
+
+TextureUtils::CompareResult TextureUtils::CompareImages(Image *first, Image *second, PixelFormat format)
+{
+    DVASSERT(first->GetHeight() == second->GetHeight());
+    DVASSERT(first->GetWidth() == second->GetWidth());
+
+    CompareResult compareResult = {0};
+    
+    int32 imageSizeInBytes = (int32)(first->GetWidth() * first->GetHeight() * Texture::GetPixelFormatSizeInBytes(first->format));
 
     int32 step = 1;
     int32 startIndex = 0;
@@ -79,17 +98,9 @@ TextureUtils::CompareResult TextureUtils::CompareSprites(Sprite *first, Sprite *
 
 	for(int32 i = startIndex; i < imageSizeInBytes; i += step)
 	{
-		compareResult.difference += abs(firstComparer->GetData()[i] - secondComparer->GetData()[i]);
+		compareResult.difference += abs(first->GetData()[i] - second->GetData()[i]);
 	}
 
-    
-//    String documentsPath = FileSystem::Instance()->GetCurrentDocumentsDirectory();
-//    firstComparer->Save(documentsPath + Format("PVRTest/src_number_%d.png", currentTest));
-//    secondComparer->Save(documentsPath + Format("PVRTest/dst_number_%d.png", currentTest));
-    
-    
-    SafeRelease(firstComparer);
-    SafeRelease(secondComparer);
     return compareResult;
 }
 
