@@ -501,11 +501,10 @@ void UIControlBackground::DrawStretched(const Rect &drawRect)
 
     const float32 scaleFactorX = drawRect.dx / spriteWidth;
     const float32 scaleFactorY = drawRect.dy / spriteHeight;
-    const float32 x = drawRect.x + Max( 0.0f, -leftOffset ) * scaleFactorX;
-    const float32 y = drawRect.y + Max( 0.0f, -topOffset  ) * scaleFactorY;
-
-    const float32 dx = drawRect.dx - ( Max( 0.0f, -leftOffset ) + Max( 0.0f, -rightOffset  ) ) * scaleFactorX;
-    const float32 dy = drawRect.dy - ( Max( 0.0f, -topOffset  ) + Max( 0.0f, -bottomOffset ) ) * scaleFactorY;
+    float32 x = drawRect.x + Max( 0.0f, -leftOffset ) * scaleFactorX;
+    float32 y = drawRect.y + Max( 0.0f, -topOffset  ) * scaleFactorX;
+    float32 dx = drawRect.dx - ( Max( 0.0f, -leftOffset ) + Max( 0.0f, -rightOffset  ) ) * scaleFactorX;
+    float32 dy = drawRect.dy - ( Max( 0.0f, -topOffset  ) + Max( 0.0f, -bottomOffset ) ) * scaleFactorY;
 
     const float32 resMulFactor = 1.0f / Core::Instance()->GetResourceToVirtualFactor(spr->GetResourceSizeIndex());
 //	if (spr->IsUseContentScale()) 
@@ -532,6 +531,10 @@ void UIControlBackground::DrawStretched(const Rect &drawRect)
 	{
 		case DRAW_STRETCH_HORIZONTAL:
 		{
+			float32 ddy = (spriteHeight - dy);
+			y -= ddy * 0.5f;
+			dy += ddy;
+			
             vertices[0] = vertices[8]  = x;
             vertices[1] = vertices[3]  = vertices[5]  = vertices[7]  = y;
             vertices[4] = vertices[12] = x + dx - realRightStretchCap;
@@ -551,6 +554,10 @@ void UIControlBackground::DrawStretched(const Rect &drawRect)
 		break;
 		case DRAW_STRETCH_VERTICAL:
 		{
+			float32 ddx = (spriteWidth - dx);
+			x -= ddx * 0.5f;
+			dx += ddx;
+			
             vertices[0] = vertices[2]  = vertices[4]  = vertices[6]  = x;
             vertices[8] = vertices[10] = vertices[12] = vertices[14] = x + dx;
 
