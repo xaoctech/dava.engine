@@ -207,8 +207,7 @@ void CommandUpdateParticleLayer::Execute()
 	layer->angle = angle;
 	layer->angleVariation = angleVariation;
 
-	layer->startTime = startTime;
-	layer->endTime = endTime;
+	layer->UpdateLayerTime(startTime, endTime);	
 	
 	layer->SetPivotPoint(Vector2(pivotPointX, pivotPointY));
 
@@ -261,8 +260,7 @@ void CommandUpdateParticleLayerTime::Init(float32 startTime, float32 endTime)
 
 void CommandUpdateParticleLayerTime::Execute()
 {
-	layer->startTime = startTime;
-	layer->endTime = endTime;
+	layer->UpdateLayerTime(startTime, endTime);	
 }
 
 CommandUpdateParticleLayerEnabled::CommandUpdateParticleLayerEnabled(ParticleLayer* layer, bool isEnabled) :
