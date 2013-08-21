@@ -13,52 +13,30 @@
     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
-#ifndef ALIGNSPROPERTYGRIDWIDGET_H
-#define ALIGNSPROPERTYGRIDWIDGET_H
 
-#include <QWidget>
-#include "basepropertygridwidget.h"
+#ifndef CHANGEALIGNPROPERTYCOMMAND_H
+#define CHANGEALIGNPROPERTYCOMMAND_H
 
-namespace Ui {
-class AlignsPropertyGridWidget;
-}
+#include "BaseCommand.h"
+#include "HierarchyTreeNode.h"
+#include "PropertyGridWidgetData.h"
+#include "PropertiesHelper.h"
+#include "ChangePropertyCommand.h"
 
-class AlignsPropertyGridWidget : public BasePropertyGridWidget
+using namespace DAVA;
+
+class ChangeAlignPropertyCommand: public ChangePropertyCommand<bool>
 {
-    Q_OBJECT
-
 public:
-    explicit AlignsPropertyGridWidget(QWidget *parent = 0);
-    ~AlignsPropertyGridWidget();
-
-    virtual void Initialize(BaseMetadata* activeMetadata);
-    virtual void Cleanup();
-
-public:
-    Ui::AlignsPropertyGridWidget *ui;	
-    
-
+	ChangeAlignPropertyCommand(BaseMetadata* baseMetadata,
+								const PropertyGridWidgetData& propertyGridWidgetData,
+                                bool value);
+	virtual void Rollback();
+	
 protected:
-	void RegisterAlignCheckBoxWidgetForProperty(const PROPERTIESMAP& propertiesMap, const char* propertyName,
-                                           QCheckBox* checkBoxWidget,
-                                           bool needUpdateTree = false, bool stateAware = false);
-	void UnregisterAlignCheckBoxWidget(QCheckBox* checkBoxWidget);
-				
-	virtual void OnPropertiesChangedFromExternalSource();
-	virtual void UpdateCheckBoxWidgetWithPropertyValue(QCheckBox* checkBoxWidget, const QMetaProperty& curProperty);
-	virtual void HandleChangePropertySucceeded(const QString& propertyName);
-
-	void UpdateCheckBoxSates();
-	void UpdateSpinBoxState(QCheckBox *buddyWidget);
-	
-    typedef Map<QCheckBox*, QSpinBox*> ALIGNWIDGETSMAP;
-    typedef ALIGNWIDGETSMAP::iterator ALIGNWIDGETSMAPITER;
-    typedef ALIGNWIDGETSMAP::const_iterator ALIGNWIDGETSMAPCONSTITER;
-	
-	ALIGNWIDGETSMAP alignWidgetsMap;
-
-protected slots:
-    void OnAlignCheckBoxStateChanged(int state);
+	void RestoreControlRect(const COMMANDDATAVECTITER& iter);
 };
 
-#endif // ALIGNSPROPERTYGRIDWIDGET_H
+
+
+#endif /* defined(CHANGEALIGNPROPERTYCOMMAND_H) */
