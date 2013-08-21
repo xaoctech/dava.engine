@@ -13,52 +13,48 @@
     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
-#ifndef ALIGNSPROPERTYGRIDWIDGET_H
-#define ALIGNSPROPERTYGRIDWIDGET_H
 
-#include <QWidget>
-#include "basepropertygridwidget.h"
+#include "ChangeAlignPropertyCommand.h"
 
-namespace Ui {
-class AlignsPropertyGridWidget;
+ChangeAlignPropertyCommand::ChangeAlignPropertyCommand(BaseMetadata* baseMetadata,
+								const PropertyGridWidgetData& propertyGridWidgetData,
+                                bool value):
+ChangePropertyCommand<bool>(baseMetadata, propertyGridWidgetData, value)
+{
 }
 
-class AlignsPropertyGridWidget : public BasePropertyGridWidget
+void ChangeAlignPropertyCommand::Rollback()
 {
-    Q_OBJECT
+	// The previous values are stored in Command Data.
+	QString propertyName = GetPropertyName();
+    for (COMMANDDATAVECTITER iter = this->commandData.begin(); iter != commandData.end(); iter ++)
+    {
+		bool previousValue = (*iter).GetTreeNodePropertyValue();
+		bool propertySetOK = ApplyPropertyValue(iter, previousValue);
+		// Always restore control rect for align property while rollback
+		RestoreControlRect(iter);
 
-public:
-    explicit AlignsPropertyGridWidget(QWidget *parent = 0);
-    ~AlignsPropertyGridWidget();
+        if (propertySetOK)
+        {			
+            CommandsController::Instance()->EmitChangePropertySucceeded(propertyName);
+        }
+        else
+        {
+			CommandsController::Instance()->EmitChangePropertyFailed(propertyName);
+        }
+    }
+}
 
-    virtual void Initialize(BaseMetadata* activeMetadata);
-    virtual void Cleanup();
-
-public:
-    Ui::AlignsPropertyGridWidget *ui;	
-    
-
-protected:
-	void RegisterAlignCheckBoxWidgetForProperty(const PROPERTIESMAP& propertiesMap, const char* propertyName,
-                                           QCheckBox* checkBoxWidget,
-                                           bool needUpdateTree = false, bool stateAware = false);
-	void UnregisterAlignCheckBoxWidget(QCheckBox* checkBoxWidget);
-				
-	virtual void OnPropertiesChangedFromExternalSource();
-	virtual void UpdateCheckBoxWidgetWithPropertyValue(QCheckBox* checkBoxWidget, const QMetaProperty& curProperty);
-	virtual void HandleChangePropertySucceeded(const QString& propertyName);
-
-	void UpdateCheckBoxSates();
-	void UpdateSpinBoxState(QCheckBox *buddyWidget);
-	
-    typedef Map<QCheckBox*, QSpinBox*> ALIGNWIDGETSMAP;
-    typedef ALIGNWIDGETSMAP::iterator ALIGNWIDGETSMAPITER;
-    typedef ALIGNWIDGETSMAP::const_iterator ALIGNWIDGETSMAPCONSTITER;
-	
-	ALIGNWIDGETSMAP alignWidgetsMap;
-
-protected slots:
-    void OnAlignCheckBoxStateChanged(int state);
-};
-
-#endif // ALIGNSPROPERTYGRIDWIDGET_H
+void ChangeAlignPropertyCommand::RestoreControlRect(const COMMANDDATAVECTITER& iter)
+{
+	BaseMetadata* baseMetadata = GetMetadataForTreeNode((*iter).GetTreeNodeID());
+	if (baseMetadata)
+	{
+		Rect rect = (*iter).GetTreeNodeRect();
+		// This command is NOT state-aware and contains one and only param.
+		baseMetadata->SetActiveParamID(0);
+		// Restore control position and size
+		baseMetadata->ApplyMove(Vector2(rect.x, rect.y));
+		baseMetadata->ApplyResize(Rect(), rect);
+	}
+}

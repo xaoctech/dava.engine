@@ -38,9 +38,10 @@ template<typename T> class ChangePropertyCommandData
 {
 public:
     ChangePropertyCommandData(HierarchyTreeNode::HIERARCHYTREENODEID treeNodeID,
-                              const T& treeNodePropertyValue)
+                              const T& treeNodePropertyValue, const Rect& rect)
     {
         this->treeNodeID = treeNodeID;
+		this->controlRect = rect;
         this->treeNodePropertyValue = treeNodePropertyValue;
     }
 
@@ -48,6 +49,11 @@ public:
     {
         return this->treeNodeID;
     }
+	
+	const Rect& GetTreeNodeRect() const
+	{
+		return this->controlRect;
+	}
     
     const T& GetTreeNodePropertyValue() const
     {
@@ -56,6 +62,7 @@ public:
 
 private:
     HierarchyTreeNode::HIERARCHYTREENODEID treeNodeID;
+	Rect controlRect;
     T treeNodePropertyValue;
 };
 
@@ -158,11 +165,14 @@ template<typename Type>
     {
         const BaseMetadataParams& params = paramsVect[i] ;
         HierarchyTreeNode::HIERARCHYTREENODEID nodeID = params.GetTreeNodeID();
+		// Get rect for control node
+		UIControl *control = params.GetUIControl();
+		Rect controlRect = control->GetRect();
 
         Type nodeValue = PropertiesHelper::GetPropertyValue<Type>(baseMetadata, GetPropertyName(), i);
         ChangePropertyCommandHelper<Type>::RetainBeforeStore(nodeValue);
 
-        commandData.push_back(ChangePropertyCommandData<Type>(nodeID, nodeValue));
+        commandData.push_back(ChangePropertyCommandData<Type>(nodeID, nodeValue, controlRect));
     }
     
     return commandData;
