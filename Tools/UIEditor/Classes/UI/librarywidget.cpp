@@ -63,3 +63,11 @@ void LibraryWidget::SetItemVisible(QTreeWidgetItem* item, bool visible)
 {
 	item->setHidden(!visible);
 }
+
+void LibraryWidget::ResetSelection()
+{
+	if (ui->treeWidget->currentItem())
+	{
+		ui->treeWidget->reset();
+	}
+}
