@@ -35,6 +35,7 @@ public:
 	void RemoveControl(QTreeWidgetItem* item);
 	void UpdateControl(QTreeWidgetItem* item, const QString& name);
 	void SetItemVisible(QTreeWidgetItem* item, bool visible);
+	void ResetSelection();
 	
 private:
     Ui::LibraryWidget *ui;

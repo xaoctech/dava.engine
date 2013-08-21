@@ -179,4 +179,6 @@ void LibraryController::UpdateLibrary()
 		}
 		widget->SetItemVisible(iter->second, visible);
 	}
+	// DF-1488 - Reset treeview widget state, including selection
+	widget->ResetSelection();
 }
