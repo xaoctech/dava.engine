@@ -124,7 +124,9 @@ void ApplicationManager::DownloadFinished()
         if(data.size())
         {
             remoteConfig = new ConfigParser(data);
-            localConfig->SetWebpageURL(remoteConfig->GetWebpageURL());
+            QString webPageUrl = remoteConfig->GetWebpageURL();
+            if(!webPageUrl.isEmpty())
+                localConfig->SetWebpageURL(webPageUrl);
             localConfig->CopyStringsFromConfig(*remoteConfig);
             localConfig->SaveToYamlFile(localConfigFilePath);
         }
@@ -133,13 +135,14 @@ void ApplicationManager::DownloadFinished()
     emit Refresh();
 }
 
-const QString & ApplicationManager::GetString(const QString & stringID)
+QString ApplicationManager::GetString(const QString & stringID)
 {
+    QString string = stringID;
     if(remoteConfig)
-        return remoteConfig->GetString(stringID);
-    if(localConfig)
-        return localConfig->GetString(stringID);
-    return stringID;
+        string = remoteConfig->GetString(stringID);
+    if(localConfig && string == stringID)
+        string = localConfig->GetString(stringID);
+    return string;
 }
 
 ConfigParser * ApplicationManager::GetRemoteConfig()

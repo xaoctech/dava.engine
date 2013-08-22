@@ -18,7 +18,7 @@ public:
 
     void RefreshRemoteConfig();
 
-    const QString & GetString(const QString & stringID);
+    QString GetString(const QString & stringID);
 
     ConfigParser * GetLocalConfig();
     ConfigParser * GetRemoteConfig();

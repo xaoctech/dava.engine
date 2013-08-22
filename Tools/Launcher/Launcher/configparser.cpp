@@ -96,6 +96,7 @@ Branch Branch::LoadFromYamlNode(const YAML::Node * node)
 
 ConfigParser::ConfigParser(const QByteArray & configData) :
     launcherVersion(LAUNCHER_VER),
+    webPageURL(""),
     remoteConfigURL(REMOTE_CONFIG_URL_DEFAULT),
     newsID("0")
 {
@@ -158,7 +159,10 @@ ConfigParser::ConfigParser(const QByteArray & configData) :
 
 void ConfigParser::CopyStringsFromConfig(const ConfigParser & parser)
 {
-    strings = parser.strings;
+    QMap<QString, QString>::ConstIterator it = parser.strings.begin();
+    QMap<QString, QString>::ConstIterator itEnd = parser.strings.end();
+    for(; it != itEnd; ++it)
+        strings[it.key()] = it.value();
 }
 
 void ConfigParser::SaveToYamlFile(const QString & filePath)
