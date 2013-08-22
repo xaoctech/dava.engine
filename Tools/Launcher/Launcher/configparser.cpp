@@ -112,39 +112,46 @@ ConfigParser::ConfigParser(const QByteArray & configData) :
         std::istringstream fileStream(configData.data());
         parser.Load(fileStream);
 
-        if(parser.GetNextDocument(configRoot))
+        try
         {
-            launcherNode = configRoot.FindValue(CONFIG_LAUNCHER_KEY);
-            stringsNode = configRoot.FindValue(CONFIG_STRINGS_KEY);
-            branchesNode = configRoot.FindValue(CONFIG_BRANCHES_KEY);
-
-            launcherVersion = GetStringValueFromYamlNode(launcherNode->FindValue(CONFIG_LAUNCHER_VERSION_KEY), LAUNCHER_VER);
-            launcherURL = GetStringValueFromYamlNode(launcherNode->FindValue(CONFIG_URL_KEY));
-            webPageURL = GetStringValueFromYamlNode(launcherNode->FindValue(CONFIG_LAUNCHER_WEBPAGE_KEY));
-            remoteConfigURL = GetStringValueFromYamlNode(launcherNode->FindValue(CONFIG_LAUNCHER_REMOTE_URL_KEY), REMOTE_CONFIG_URL_DEFAULT);
-            newsID = GetStringValueFromYamlNode(launcherNode->FindValue(CONFIG_LAUNCHER_NEWSID_KEY));
-
-            it = stringsNode->begin();
-            while(it != stringsNode->end())
+            if(parser.GetNextDocument(configRoot))
             {
-                QString key = GetStringValueFromYamlNode(&it.first());
-                QString value = GetStringValueFromYamlNode(&it.second());
-                strings[key] = value;
-                ++it;
+                launcherNode = configRoot.FindValue(CONFIG_LAUNCHER_KEY);
+                stringsNode = configRoot.FindValue(CONFIG_STRINGS_KEY);
+                branchesNode = configRoot.FindValue(CONFIG_BRANCHES_KEY);
+
+                launcherVersion = GetStringValueFromYamlNode(launcherNode->FindValue(CONFIG_LAUNCHER_VERSION_KEY), LAUNCHER_VER);
+                launcherURL = GetStringValueFromYamlNode(launcherNode->FindValue(CONFIG_URL_KEY));
+                webPageURL = GetStringValueFromYamlNode(launcherNode->FindValue(CONFIG_LAUNCHER_WEBPAGE_KEY));
+                remoteConfigURL = GetStringValueFromYamlNode(launcherNode->FindValue(CONFIG_LAUNCHER_REMOTE_URL_KEY), REMOTE_CONFIG_URL_DEFAULT);
+                newsID = GetStringValueFromYamlNode(launcherNode->FindValue(CONFIG_LAUNCHER_NEWSID_KEY));
+
+                it = stringsNode->begin();
+                while(it != stringsNode->end())
+                {
+                    QString key = GetStringValueFromYamlNode(&it.first());
+                    QString value = GetStringValueFromYamlNode(&it.second());
+                    strings[key] = value;
+                    ++it;
+                }
+
+                it = branchesNode->begin();
+                while(it != branchesNode->end())
+                {
+                    Branch branch = Branch::LoadFromYamlNode(&it.second());
+                    branch.id = GetStringValueFromYamlNode(&it.first());
+                    branches.push_back(branch);
+                    ++it;
+                }
             }
-
-            it = branchesNode->begin();
-            while(it != branchesNode->end())
+            else
             {
-                Branch branch = Branch::LoadFromYamlNode(&it.second());
-                branch.id = GetStringValueFromYamlNode(&it.first());
-                branches.push_back(branch);
-                ++it;
+                ErrorMessanger::Instance()->ShowErrorMessage(ErrorMessanger::ERROR_CONFIG);
             }
         }
-        else
+        catch(YAML::ParserException& e)
         {
-            ErrorMessanger::Instance()->ShowErrorMessage(ErrorMessanger::ERROR_CONFIG);
+            ErrorMessanger::Instance()->ShowErrorMessage(ErrorMessanger::ERROR_CONFIG, -1, QString(e.msg.c_str()));
         }
     }
 }
