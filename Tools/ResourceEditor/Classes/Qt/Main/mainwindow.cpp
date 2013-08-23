@@ -42,6 +42,7 @@
 #include "StringConstants.h"
 #include "SceneEditor/HintManager.h"
 #include "../Tools/SettingsDialog/SettingsDialogQt.h"
+#include "../Settings/SettingsManager.h"
 
 #include "Render/Highlevel/ShadowVolumeRenderPass.h"
 
@@ -57,7 +58,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 {
 	Console::Instance();
 	new ProjectManager();
-
+	new SettingsManager();
 	ui->setupUi(this);
 
 	qApp->installEventFilter(this);
@@ -110,6 +111,7 @@ QtMainWindow::~QtMainWindow()
 	ui = NULL;
 
 	ProjectManager::Instance()->Release();
+	SettingsManager::Instance()->Release();
 }
 
 Ui::MainWindow* QtMainWindow::GetUI()
