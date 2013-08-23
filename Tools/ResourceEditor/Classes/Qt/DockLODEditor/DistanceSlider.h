@@ -42,7 +42,9 @@ protected slots:
 
     void SplitterMoved(int pos, int index);
 
+protected:
     
+    int GetScaleSize();
     
 private:
     QSplitter *splitter;
