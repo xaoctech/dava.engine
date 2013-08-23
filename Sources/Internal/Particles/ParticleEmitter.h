@@ -372,6 +372,8 @@ public:
 	virtual void HandleRemoveFromSystem();
 
 	void SetDesiredLodLevel(int32 level);
+	bool IsShortEffect();
+	void SetShortEffect(bool isShort);
 
 protected:
 	// Virtual methods which are different for 2D and 3D emitters.
@@ -410,6 +412,11 @@ protected:
 	bool	shouldBeDeleted;
 
 	Particle*	parentParticle;
+
+	bool shortEffect;
+	uint32 currentLodLevel, desiredLodLevel; //if lodLevelLocked - set lod level updates desired level
+	bool lodLevelLocked; //short effect locks it's lod layer once started
+	
 
 public:
 	RefPtr< PropertyLine<Vector3> > emissionVector;

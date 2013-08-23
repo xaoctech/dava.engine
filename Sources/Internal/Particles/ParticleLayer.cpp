@@ -20,6 +20,7 @@
 #include "Render/Image.h"
 #include "Utils/Random.h"
 #include "FileSystem/FileSystem.h"
+#include "Scene3D/Components/LodComponent.h"
 
 namespace DAVA
 {
@@ -100,6 +101,8 @@ ParticleLayer::ParticleLayer()
 	isLooped = false;
 
 	playbackSpeed = 1.0f;
+
+	activeLODS.resize(LodComponent::MAX_LOD_LAYERS, true);
 }
 
 ParticleLayer::~ParticleLayer()
@@ -230,6 +233,20 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	dstLayer->spritePath = spritePath;
 
 	return dstLayer;
+}
+
+bool ParticleLayer::IsLodActive(int32 lod)
+{
+	if (lod<activeLODS.size())
+		return activeLODS[lod];
+	
+	return false;
+}
+
+void ParticleLayer::SetLodActive(int32 lod, bool active)
+{
+	if (lod<activeLODS.size())
+		activeLODS[lod] = active;
 }
 
 ParticleEmitter* ParticleLayer::GetEmitter() const
@@ -424,7 +441,7 @@ void ParticleLayer::RestartLayerIfNeed()
 	}
 }
 
-void ParticleLayer::Update(float32 timeElapsed)
+void ParticleLayer::Update(float32 timeElapsed, bool generateNewParticles)
 {
 	// increment timer, take the playbackSpeed into account.
 	timeElapsed *= playbackSpeed;
@@ -477,11 +494,15 @@ void ParticleLayer::Update(float32 timeElapsed)
 				!emitter->IsPaused() && !useLoopStop)
 			{
 				float32 newParticles = 0.0f;
-				if (number)
-					newParticles += timeElapsed * number->GetValue(layerTime);
-				if (numberVariation)
-					newParticles += GetRandomFactor() * timeElapsed * numberVariation->GetValue(layerTime);
-				//newParticles *= emitter->GetCurrentNumberScale();
+				if (generateNewParticles)
+				{
+					if (number)
+						newParticles += timeElapsed * number->GetValue(layerTime);
+					if (numberVariation)
+						newParticles += GetRandomFactor() * timeElapsed * numberVariation->GetValue(layerTime);
+					//newParticles *= emitter->GetCurrentNumberScale();
+				}				
+				
 				particlesToGenerate += newParticles;
 
 				while(particlesToGenerate >= 1.0f)

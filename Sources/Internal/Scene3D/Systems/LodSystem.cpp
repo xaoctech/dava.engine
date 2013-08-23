@@ -96,10 +96,11 @@ void LodSystem::UpdateEntityAfterLoad(Entity * entity)
 	}
 
 	lod->currentLod = LodComponent::INVALID_LOD_LAYER;
-	RenderComponent * renderComponent = static_cast<RenderComponent*>(entity->GetComponent(Component::RENDER_COMPONENT));
-	if (renderComponent&&renderComponent->GetRenderObject()&&renderComponent->GetRenderObject()->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
+	ParticleEmitter * emmiter = GetEmitter(entity);
+	if (emmiter)
 	{
 		lod->currentLod = LodComponent::MAX_LOD_LAYERS-1;
+		emmiter->SetDesiredLodLevel(lod->currentLod);
 	}
 	else if(lod->lodLayers.size() > 0)
 	{
@@ -135,10 +136,11 @@ void LodSystem::UpdateLod(Entity * entity)
 	if (oldLod != lodComponent->currentLod) 
 	{
 
-		RenderComponent * renderComponent = static_cast<RenderComponent*>(entity->GetComponent(Component::RENDER_COMPONENT));
-		if (renderComponent&&renderComponent->GetRenderObject()&&renderComponent->GetRenderObject()->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
+		ParticleEmitter * emmiter = GetEmitter(entity);
+		if (emmiter)
 		{
-			static_cast<ParticleEmitter*>(renderComponent->GetRenderObject())->SetDesiredLodLevel(lodComponent->currentLod);
+			emmiter->SetDesiredLodLevel(lodComponent->currentLod);
+			return;
 		}
 		
 		if (oldLod) 
@@ -163,9 +165,9 @@ void LodSystem::RecheckLod(Entity * entity)
 	LodComponent * lodComponent = static_cast<LodComponent*>(entity->GetComponent(Component::LOD_COMPONENT));
 	if (lodComponent->currentLod == LodComponent::INVALID_LOD_LAYER) return;
 
-	int32 layersCount = lodComponent->lodLayers.size();
-	RenderComponent * renderComponent = static_cast<RenderComponent*>(entity->GetComponent(Component::RENDER_COMPONENT));
-	if (renderComponent&&renderComponent->GetRenderObject()&&renderComponent->GetRenderObject()->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
+	int32 layersCount = lodComponent->lodLayers.size();	
+	RenderObject *renderObject = GetRenderObject(entity);
+	if (renderObject&&renderObject->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
 	{
 		layersCount = LodComponent::MAX_LOD_LAYERS;
 	}
