@@ -1,0 +1,6 @@
+Material:
+    MaterialDefines: ["MATERIAL_DECAL"]
+
+RenderPass:
+    Name: "ForwardPass"
+    Shader: "~res:/Materials/Shaders/Old/materials"

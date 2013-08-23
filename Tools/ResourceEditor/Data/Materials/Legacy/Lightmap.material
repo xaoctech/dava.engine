@@ -1,0 +1,6 @@
+Material:
+    MaterialDefines: ["MATERIAL_LIGHTMAP"]
+
+RenderPass:
+    Name: "ForwardPass"
+    Shader: "~res:/Materials/Shaders/Old/materials"

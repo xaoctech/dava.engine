@@ -374,6 +374,11 @@ Shader::~Shader()
     
     DeleteShaders();
 }
+	
+bool Shader::IsReady()
+{
+	return (vertexShader != 0 && fragmentShader != 0 && program != 0);
+}
     
 bool Shader::Recompile(bool silentDelete)
 {

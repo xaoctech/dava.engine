@@ -384,7 +384,7 @@ void Material::RebuildShader()
             shaderCombileCombo = "MATERIAL_TEXTURE";
             break;
         case MATERIAL_UNLIT_TEXTURE_LIGHTMAP:
-			shaderCombileCombo = "MATERIAL_TEXTURE; MATERIAL_LIGHTMAP";
+			shaderCombileCombo = "MATERIAL_TEXTURE;MATERIAL_LIGHTMAP";
 			if(isSetupLightmap)
 			{
 				shaderCombileCombo = shaderCombileCombo + ";SETUP_LIGHTMAP";
@@ -444,7 +444,7 @@ void Material::RebuildShader()
     if (isTranslucent)
     {
         if (shaderCombileCombo.size() > 0)shaderCombileCombo += ";";
-        shaderCombileCombo = shaderCombileCombo + "OPAQUE";
+        shaderCombileCombo = shaderCombileCombo + "ALPHATEST";
     }
 
 	if(isAlphablend)
@@ -690,13 +690,13 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 	}
 }
 
-void Material::SetOpaque(bool _isOpaque)
+void Material::SetAlphatest(bool alphatest)
 {
-    isTranslucent = _isOpaque;
+    isTranslucent = alphatest;
     RebuildShader();
 }
 
-bool Material::GetOpaque()
+bool Material::GetAlphatest()
 {
     return isTranslucent;
 }

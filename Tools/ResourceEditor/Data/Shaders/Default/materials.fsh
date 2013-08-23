@@ -73,7 +73,7 @@ void main()
     // FETCH PHASE
 #if defined(MATERIAL_TEXTURE)
 	
-#if defined(GLOSS) || defined(OPAQUE) || defined(ALPHABLEND)
+#if defined(GLOSS) || defined(ALPHATEST) || defined(ALPHABLEND)
     lowp vec4 textureColor0 = texture2D(texture0, varTexCoord0);
 #else
     lowp vec3 textureColor0 = texture2D(texture0, varTexCoord0).rgb;
@@ -84,7 +84,7 @@ void main()
 #endif
 	
 #if defined(MATERIAL_TEXTURE)
-#if defined(OPAQUE)
+#if defined(ALPHATEST)
     float alpha = textureColor0.a;
     #if defined(VERTEX_COLOR)
         alpha *= varVertexColor.a;

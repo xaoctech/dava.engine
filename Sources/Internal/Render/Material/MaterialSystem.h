@@ -59,9 +59,30 @@ class PolygonGroup;
 class MaterialSystem : public StaticSingleton<MaterialSystem>
 {
 public:
-    NMaterial * GetMaterial(const FastName & name);
+	
+	//VI: use this method to load material config.
+	//You may create several material configuration files with different settings (i.e Low, Medium, High)
+	//and load them depending on the device
+	bool LoadMaterialConfig(const FilePath& filePath);
+	
+    NMaterial* GetMaterial(const FastName & name);
     
 private:
+	
+	struct MaterialData
+	{
+		String name;
+		String path;
+		String parent;
+	};
+	
+private:
+	
+	NMaterial* LoadMaterial(const FastName& name,
+							const FilePath& filePath,
+							NMaterial* parentMaterial,
+							Map<String, Vector<MaterialData> >& nodes);
+	
     HashMap<FastName, NMaterial*> materials;
 };
 

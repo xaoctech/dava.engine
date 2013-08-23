@@ -115,6 +115,8 @@ public:
     
 class Material : public DataNode
 {
+	friend class SceneFileV2;
+	
 public:
     enum eType
     {
@@ -193,8 +195,8 @@ public:
     
     void SetType(eType _type);
     
-    void SetOpaque(bool _isOpaque);
-    bool GetOpaque();
+    void SetAlphatest(bool alphatest);
+    bool GetAlphatest();
 
 	void SetAlphablend(bool isAlphablend);
 	bool GetAlphablend();

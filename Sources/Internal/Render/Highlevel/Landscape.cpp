@@ -31,7 +31,7 @@
 #include "LandscapeChunk.h"
 #include "Debug/Stats.h"
 #include "Render/Material/NMaterial.h"
-
+#include "Render/Material/MaterialSystem.h"
 
 namespace DAVA
 {
@@ -81,8 +81,8 @@ Landscape::Landscape()
     fogDensity = 0.006f;
     fogColor = Color::White();
 	
-	landscapeMaterial = new NMaterial();
-	landscapeMaterial->LoadFromFile("~res:/Materials/Landscape.material");
+	landscapeMaterial = MaterialSystem::Instance()->GetMaterial("Landscape");
+	landscapeMaterial->Rebuild(); //rebuild material here
 	
 	SetTiledShaderMode(TILED_MODE_MIXED);
 	

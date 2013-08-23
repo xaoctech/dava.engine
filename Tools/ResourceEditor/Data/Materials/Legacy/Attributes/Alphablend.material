@@ -1,0 +1,3 @@
+Material:
+    Layers: ["TransclucentRenderLayer"]
+    MaterialDefines: ["ALPHABLEND"]

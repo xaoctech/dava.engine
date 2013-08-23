@@ -711,88 +711,164 @@ void SceneFileV2::ConvertOldMaterialToNewMaterial(Material * oldMaterial, Instan
     NMaterial * resultMaterial = 0;
     NMaterialInstance * resultMaterialInstance = 0;
 	
-	FastName newMaterialName;
-    
-	switch (oldMaterial->type)
+	FastName newMaterialName = MaterialNameMapper::MapName(oldMaterial);
+	resultMaterial = MaterialSystem::Instance()->GetMaterial(newMaterialName);
+	
+	RenderState* oldRenderState = oldMaterial->GetRenderState();
+	RenderState& renderStateBlock = *resultMaterial->GetTechnique(PASS_FORWARD)->GetRenderState();
+
+	oldRenderState->CopyTo(&renderStateBlock);
+	
+	//VI: creative copypaste from Material::PrepareRenderState below
+	
+	if(Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP == oldMaterial->type)
 	{
-		case Material::MATERIAL_UNLIT_TEXTURE:
-        {
-            newMaterialName = "~res:/Materials/UnlitTexture.material";
-            resultMaterial = MaterialSystem::Instance()->GetMaterial(newMaterialName);
-            Texture * tex = oldMaterial->GetTexture(Material::TEXTURE_DIFFUSE);
-            MaterialTechnique * tech = resultMaterial->GetTechnique(PASS_FORWARD);
-            tech->GetRenderState()->SetTexture(tex, 0);
-        }
-        break;
-		case Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP:
-        {
-            newMaterialName = "~res:/Materials/UnlitTextureLightmap.material";
-            resultMaterial = MaterialSystem::Instance()->GetMaterial(newMaterialName);
-            MaterialTechnique * tech = resultMaterial->GetTechnique(PASS_FORWARD);
-            Texture * tex = oldMaterial->GetTexture(Material::TEXTURE_DIFFUSE);
-            tech->GetRenderState()->SetTexture(tex, 0);
-            Texture * tex2 = oldMaterial->GetTexture(Material::TEXTURE_DETAIL);
-            tech->GetRenderState()->SetTexture(tex2, 1);
-           
-            //Logger::Debug("tex2: %s", tex2->GetPathname().GetAbsolutePathname().c_str());
-        }
-        break;
-		case Material::MATERIAL_UNLIT_TEXTURE_DETAIL:
-		case Material::MATERIAL_UNLIT_TEXTURE_DECAL:
-        {
-            newMaterialName = "~res:/Materials/UnlitTextureDetail.material";
-            resultMaterial = MaterialSystem::Instance()->GetMaterial(newMaterialName);
-            MaterialTechnique * tech = resultMaterial->GetTechnique(PASS_FORWARD);
-            Texture * tex = oldMaterial->GetTexture(Material::TEXTURE_DIFFUSE);
-            tech->GetRenderState()->SetTexture(tex, 0);
-            Texture * tex2 = oldMaterial->GetTexture(Material::TEXTURE_DETAIL);
-            tech->GetRenderState()->SetTexture(tex2, 1);
-            
-            //Logger::Debug("tex2: %s", tex2->GetPathname().GetAbsolutePathname().c_str());
-        }
-        break;
-		case Material::MATERIAL_VERTEX_LIT_TEXTURE:
-        {
-            newMaterialName = "~res:/Materials/VertexLitTexture.material";
-            resultMaterial = MaterialSystem::Instance()->GetMaterial(newMaterialName);
-            MaterialTechnique * tech = resultMaterial->GetTechnique(PASS_FORWARD);
-            Texture * tex = oldMaterial->GetTexture(Material::TEXTURE_DIFFUSE);
-            tech->GetRenderState()->SetTexture(tex, 0);
-        }
-        break;
-		default:
-        {
-            newMaterialName = "~res:/Materials/VertexColorNoLightingOpaque.material";
-            resultMaterial = MaterialSystem::Instance()->GetMaterial(newMaterialName);
-        }
-        break;
-	}
-    
-    if (oldMaterialState)
+		resultMaterial->SetPropertyValue("uvOffset", Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVOffset());
+		resultMaterial->SetPropertyValue("uvScale", Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVScale());
+
+		renderStateBlock.SetTexture(oldMaterialState->GetLightmap(), 1);
+    }
+	else if (Material::MATERIAL_UNLIT_TEXTURE_DECAL == oldMaterial->type ||
+			 Material::MATERIAL_UNLIT_TEXTURE_DETAIL == oldMaterial->type)
     {
-        Vector2 offset = oldMaterialState->GetUVOffset();
-        Vector2 scale = oldMaterialState->GetUVScale();
-        //Logger::Debug("texl: %s", oldMaterialState->GetLightmapName().GetAbsolutePathname().c_str());
-        //Logger::Debug("offs: %0.5f %0.5f scal: %0.5f %0.5f", offset.x, offset.y, scale.x, scale.y);
-        
+        renderStateBlock.SetTexture(oldMaterial->textures[Material::TEXTURE_DECAL], 1);
+    }
+	
+	if (oldMaterial->textures[Material::TEXTURE_DIFFUSE])
+	{
+		renderStateBlock.SetTexture(oldMaterial->textures[Material::TEXTURE_DIFFUSE], 0);
+	}
+	
+	if(Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE == oldMaterial->type ||
+	   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == oldMaterial->type ||
+	   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == oldMaterial->type)
+	{
+		if (oldMaterial->textures[Material::TEXTURE_NORMALMAP])
+		{
+			renderStateBlock.SetTexture(oldMaterial->textures[Material::TEXTURE_NORMALMAP], 1);
+		}
+	}
+	
+	if (oldMaterial->isTranslucent || oldMaterial->isTwoSided)
+	{
+		renderStateBlock.state &= ~RenderState::STATE_CULL;
+	}
+	else
+	{
+		renderStateBlock.state |= RenderState::STATE_CULL;
+	}
+	
+	if(oldMaterial->isAlphablend)
+	{
+		renderStateBlock.state |= RenderState::STATE_BLEND;
+		//Dizz: temporary solution
+		renderStateBlock.state &= ~RenderState::STATE_DEPTH_WRITE;
+		
+		renderStateBlock.SetBlendMode((eBlendMode)oldMaterial->blendSrc, (eBlendMode)oldMaterial->blendDst);
+	}
+	else
+	{
+		//Dizz: temporary solution
+		renderStateBlock.state |= RenderState::STATE_DEPTH_WRITE;
+		renderStateBlock.state &= ~RenderState::STATE_BLEND;
+	}
+	
+	if(oldMaterial->isWireframe)
+	{
+		renderStateBlock.SetFillMode(FILLMODE_WIREFRAME);
+	}
+	else
+	{
+		renderStateBlock.SetFillMode(FILLMODE_SOLID);
+	}
+	
+	int textureId = 0;
+	resultMaterial->SetPropertyValue("texture0", Shader::UT_INT, 1, &textureId);
+	textureId = 1;
+	resultMaterial->SetPropertyValue("texture1", Shader::UT_INT, 1, &textureId);
+	resultMaterial->SetPropertyValue("normalMapTexture", Shader::UT_INT, 1, &textureId);
+	
+	resultMaterial->SetPropertyValue("fogDensity", Shader::UT_FLOAT, 1, &oldMaterial->fogDensity);
+	resultMaterial->SetPropertyValue("fogColor", Shader::UT_BOOL_VEC4, 1, &oldMaterial->fogColor);
+	
+	resultMaterial->SetPropertyValue("flatColor", Shader::UT_BOOL_VEC4, 1, &oldMaterialState->GetFlatColor());
+	resultMaterial->SetPropertyValue("texture0Shift", Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetTextureShift());
+    
+    //VI: this block should be called on per-frame basis
+	/*if (oldMaterialState)
+    {
+ 		
+		if(scene)
+		{
+			Camera * camera = scene->GetCurrentCamera();
+			Light * lightNode0 = instanceMaterialState->GetLight(0);
+			if (lightNode0 && camera)
+			{
+				if (uniformLightPosition0 != -1)
+				{
+					const Matrix4 & matrix = camera->GetMatrix();
+					Vector3 lightPosition0InCameraSpace = lightNode0->GetPosition() * matrix;
+					
+					shader->SetUniformValueByIndex(uniformLightPosition0, lightPosition0InCameraSpace);
+				}
+				if (uniformMaterialLightAmbientColor != -1)
+				{
+					shader->SetUniformColor3ByIndex(uniformMaterialLightAmbientColor, lightNode0->GetAmbientColor() * GetAmbientColor());
+				}
+				if (uniformMaterialLightDiffuseColor != -1)
+				{
+					shader->SetUniformColor3ByIndex(uniformMaterialLightDiffuseColor, lightNode0->GetDiffuseColor() * GetDiffuseColor());
+				}
+				if (uniformMaterialLightSpecularColor != -1)
+				{
+					shader->SetUniformColor3ByIndex(uniformMaterialLightSpecularColor, lightNode0->GetSpecularColor() * GetSpecularColor());
+				}
+				if (uniformMaterialSpecularShininess != -1)
+				{
+					shader->SetUniformValueByIndex(uniformMaterialSpecularShininess, shininess);
+				}
+				
+				if (uniformLightIntensity0 != -1)
+				{
+					shader->SetUniformValueByIndex(uniformLightIntensity0, lightNode0->GetIntensity());
+				}
+				
+				if (uniformLightAttenuationQ != -1)
+				{
+					//shader->SetUniformValue(uniformLightAttenuationQ, lightNode0->GetAttenuation());
+				}
+			}
+		}
+    }*/
+
+	
+	
+	
+	
+	//oldRenderState->CopyTo(newRenderState);
+	
+	//MaterialTechnique* tech = resultMaterial->GetTechnique(PASS_FORWARD);
+	//Texture * tex = oldMaterial->GetTexture(Material::TEXTURE_DIFFUSE);
+	//tech->GetRenderState()->SetTexture(tex, 0);
+	    
+    /*if (oldMaterialState)
+    {
         resultMaterial->SetPropertyValue(LIGHTMAP_UV_OFFSET, Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVOffset());
         resultMaterial->SetPropertyValue(LIGHTMAP_UV_SCALE, Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVScale());
 
         // Right way to setup lightmaps
-        MaterialTechnique * tech = resultMaterial->GetTechnique(PASS_FORWARD);
-        Texture * tex2 = oldMaterialState->GetLightmap();
-        tech->GetRenderState()->SetTexture(tex2, 1);
-
-        
-    }else{
-        
-    }
-
-    
+        Texture* tex2 = oldMaterialState->GetLightmap();
+		
+		if(tex2)
+		{
+			int texId = 1;
+			tech->GetRenderState()->SetTexture(tex2, 1);
+			resultMaterial->SetPropertyValue("texture1", Shader::UT_INT, 1, &texId);
+		}
+	}*/
+	
     resultMaterialInstance = new NMaterialInstance();
-    
-    
-    
+	
     *newMaterial = resultMaterial;
     *newMaterialInstance = resultMaterialInstance;
 }
@@ -1134,5 +1210,114 @@ void SceneFileV2::StopParticleEffectComponents(Entity * currentNode)
 		
 }
 
-
+String SceneFileV2::MaterialNameMapper::MapName(Material* mat)
+{
+	String name;
+		
+	if(mat->GetAlphablend() ||
+	   Material::MATERIAL_VERTEX_COLOR_ALPHABLENDED == mat->type)
+	{
+		name = "Global.Alphablend";
+	}
+	else if(mat->GetAlphatest())
+	{
+		name = "Global.Alphatest";
+	}
+	else
+	{
+		name = "Global.Opaque";
+	}
+	
+	if(mat->IsTextureShiftEnabled())
+	{
+		name += ".TextureShift";
+	}
+	
+	if(Material::MATERIAL_FLAT_COLOR == mat->type)
+	{
+		name += ".Flatcolor";
+	}
+	
+	switch(mat->type)
+	{
+		case Material::MATERIAL_UNLIT_TEXTURE:
+		{
+			name += ".Textured";
+			break;
+		}
+			
+		case Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP:
+		{
+			int viewOption = mat->GetViewOption();
+			if(Material::MATERIAL_VIEW_TEXTURE_ONLY == viewOption)
+			{
+				name += ".ViewTextureOnly.Textured.Lightmap";
+			}
+			else if(Material::MATERIAL_VIEW_LIGHTMAP_ONLY == viewOption)
+			{
+				name += ".ViewLightmapOnly.Textured.Lightmap";
+			}
+			else
+			{
+				name += ".Textured.Lightmap";
+			}
+			
+			break;
+		}
+			
+		case Material::MATERIAL_UNLIT_TEXTURE_DECAL:
+		{
+			name += ".Textured.Decal";
+			break;
+		}
+			
+		case Material::MATERIAL_UNLIT_TEXTURE_DETAIL:
+		{
+			name += ".Textured.Detail";
+			break;
+		}
+			
+		case Material::MATERIAL_VERTEX_LIT_TEXTURE:
+		{
+			name += ".Textured.VertexLit";
+			break;
+		}
+			
+		case Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE:
+		{
+			name += ".Textured.PixelLit";
+			break;
+		}
+			
+		case Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR:
+		{
+			name += ".Textured.PixelLit.Specular";
+			break;
+		}
+			
+		case Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP:
+		{
+			name += ".Textured.PixelLit.Specular.Gloss";
+			break;
+		}
+			
+		case Material::MATERIAL_VERTEX_COLOR_ALPHABLENDED:
+		{
+			name += ".Textured.VertexColor";
+			break;
+		}
+						
+		case Material::MATERIAL_SKYBOX:
+		{
+			name = "Skybox";
+			break;
+		}
+			
+		default:
+			break;
+	};
+	
+	return name;
+}
+	
 };

@@ -481,6 +481,8 @@ public:
 	void GetCurrentStateStrings(Vector<String> & statesStrs);
 
 	static uint32 GetRenderStateByName(const String & str);
+	
+	void CopyTo(RenderState* target) const;
 
 private:
 	RenderState(const RenderState & renderState);

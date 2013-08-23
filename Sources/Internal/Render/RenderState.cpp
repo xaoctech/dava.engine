@@ -1017,5 +1017,32 @@ uint32 RenderState::GetRenderStateByName(const String & str)
 	}
 	return 0;
 }
-
+	
+void RenderState::CopyTo(RenderState* target) const
+{
+	target->renderer = renderer;
+    target->state = state;
+    
+    target->color = color;
+    target->sourceFactor = sourceFactor;
+	target->destFactor = destFactor;
+    target->cullMode = cullMode;
+    target->alphaFunc = alphaFunc;
+    target->alphaFuncCmpValue = alphaFuncCmpValue;
+	target->depthFunc = depthFunc;
+	target->scissorRect = scissorRect;
+	target->fillMode = fillMode;
+	
+	target->stencilState.ref = stencilState.ref;
+	target->stencilState.mask = stencilState.mask;
+	memcpy(target->stencilState.func, stencilState.func, sizeof(stencilState.func));
+    memcpy(target->stencilState.pass, stencilState.pass, sizeof(stencilState.pass));
+	memcpy(target->stencilState.fail, stencilState.fail, sizeof(stencilState.fail));
+	memcpy(target->stencilState.zFail, stencilState.zFail, sizeof(stencilState.zFail));
+	
+	for(int i = 0; i < MAX_TEXTURE_LEVELS; ++i)
+	{
+		target->currentTexture[i] = SafeRetain(currentTexture[i]);
+	}	
+}
 };
