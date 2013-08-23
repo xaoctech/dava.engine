@@ -1,31 +1,17 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #include "Render/LibPngHelpers.h"
 
@@ -116,7 +102,7 @@ int LibPngWrapper::ReadPngFile(File *infile, Image * image, PixelFormat targetFo
 	png_structp png_ptr;
 	png_infop info_ptr;
 	
-	uint8 *image_data;
+	uint8 *image_data = NULL;
 	char sig[8];
 	
 	int bit_depth;
@@ -126,7 +112,6 @@ int LibPngWrapper::ReadPngFile(File *infile, Image * image, PixelFormat targetFo
 	png_uint_32 height;
 	unsigned int rowbytes;
 	
-	image_data = NULL;
 	int i;
 	png_bytepp row_pointers = NULL;
 	
@@ -258,6 +243,83 @@ bool LibPngWrapper::IsPngFile(File *file)
     file->Read(sig, 8);
 	
     return (0 != png_check_sig((unsigned char *) sig, 8));
+}
+
+uint32 LibPngWrapper::GetDataSize(const FilePath &filePathname)
+{
+    File * infile = File::Create(filePathname, File::OPEN | File::READ);
+	if (!infile)
+	{
+		return 0;
+	}
+    
+	char sig[8];
+	infile->Read(sig, 8);
+	if (!png_check_sig((unsigned char *) sig, 8))
+	{
+        SafeRelease(infile);
+		return 0;
+	}
+
+    
+    png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+	if (!png_ptr)
+	{
+        SafeRelease(infile);
+		return 0;
+	}
+
+	png_infop info_ptr = png_create_info_struct(png_ptr);
+	if (!info_ptr)
+	{
+		png_destroy_read_struct(&png_ptr, (png_infopp) NULL, (png_infopp) NULL);
+        
+        SafeRelease(infile);
+		return 0;
+	}
+	
+    if (setjmp(png_jmpbuf(png_ptr)))
+	{
+		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+        
+        SafeRelease(infile);
+		return 0;
+	}
+
+    PngImageRawData	raw;
+	raw.file = infile;
+	png_set_read_fn (png_ptr, &raw, PngImageRead);
+
+
+    png_set_sig_bytes(png_ptr, 8);
+	png_read_info(png_ptr, info_ptr);
+
+
+    int bit_depth;
+	int color_type;
+	
+	png_uint_32 width;
+	png_uint_32 height;
+	
+	
+	png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type, NULL, NULL, NULL);
+
+	PixelFormat format = FORMAT_RGBA8888;
+	if (color_type == PNG_COLOR_TYPE_GRAY ||
+		color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
+    {
+        format = (bit_depth == 16) ? FORMAT_A16 : FORMAT_A8;
+	}
+
+    uint32 imageSize = width * height * Texture::GetPixelFormatSizeInBytes(format);
+    
+    
+	/* Clean up. */
+	png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+	
+    SafeRelease(infile);
+
+	return imageSize;
 }
 
 

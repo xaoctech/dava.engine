@@ -204,7 +204,7 @@ int32 ScenePreviewControl::OpenScene(const FilePath &pathToFile)
     if(pathToFile.IsEqualToExtension(".sce"))
     {
         SceneFile *file = new SceneFile();
-        file->SetDebugLog(true);
+        file->SetDebugLog(false);
         if(!file->LoadScene(pathToFile, editorScene))
         {
             retError = ERROR_CANNOT_OPEN_FILE;
@@ -215,7 +215,7 @@ int32 ScenePreviewControl::OpenScene(const FilePath &pathToFile)
     else if(pathToFile.IsEqualToExtension(".sc2"))
     {
         SceneFileV2 *file = new SceneFileV2();
-        file->EnableDebugLog(true);
+        file->EnableDebugLog(false);
         retError = file->LoadScene(pathToFile, editorScene);
         SafeRelease(file);
     }
