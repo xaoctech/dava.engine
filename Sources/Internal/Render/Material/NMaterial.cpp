@@ -358,12 +358,18 @@ MaterialTechnique::~MaterialTechnique()
     SafeRelease(shader);
 }
 
-void MaterialTechnique::RecompileShader()
+void MaterialTechnique::RecompileShader(const FastNameSet& materialDefines)
 {
-    SafeRelease(shader);
-    shader = SafeRetain(ShaderCache::Instance()->Get(shaderName, uniqueDefines));
+	FastNameSet combinedDefines = materialDefines;
+	
+	if(uniqueDefines.Size() > 0)
+	{
+		combinedDefines.Combine(uniqueDefines);
+	}
+	
+	SafeRelease(shader);
+    shader = SafeRetain(ShaderCache::Instance()->Get(shaderName, combinedDefines));
 }
-    
     
 const FastName NMaterial::TEXTURE_ALBEDO("Albedo");
 const FastName NMaterial::TEXTURE_NORMAL("Normal");
@@ -374,6 +380,7 @@ NMaterial::NMaterial()
     : parent(0)
 {
     activeTechnique = 0;
+	ready = false;
 }
     
 NMaterial::~NMaterial()
@@ -505,6 +512,7 @@ bool NMaterial::LoadFromFile(const String & pathname)
     if (!rootNode)
     {
         SafeRelease(rootNode);
+		SafeRelease(parser);
         return false;
     }
     
@@ -520,6 +528,7 @@ bool NMaterial::LoadFromFile(const String & pathname)
             layers.Insert(FastName(singleLayerNode->AsString()));
         }
     }
+	effectiveLayers.Combine(layers);
     
     YamlNode * uniformsNode = materialNode->Get("Uniforms");
     if (uniformsNode)
@@ -535,6 +544,20 @@ bool NMaterial::LoadFromFile(const String & pathname)
         }
     }
 
+	YamlNode * materialDefinesNode = materialNode->Get("MaterialDefines");
+    if (materialDefinesNode)
+    {
+        uint32 count = materialDefinesNode->GetCount();
+        for (uint32 k = 0; k < count; ++k)
+        {
+            YamlNode * defineNode = materialDefinesNode->Get(k);
+            if (defineNode)
+            {
+                nativeDefines.Insert(FastName(defineNode->AsString().c_str()));
+            }
+        }
+    }
+	
     for (int32 k = 0; k < rootNode->GetCount(); ++k)
     {
         YamlNode * renderStepNode = rootNode->Get(k);
@@ -603,7 +626,6 @@ bool NMaterial::LoadFromFile(const String & pathname)
                         
             MaterialTechnique * technique = new MaterialTechnique(shaderName, definesSet, renderState);
             AddMaterialTechnique(renderPassName, technique);
-            technique->RecompileShader();
         }
     }
 
@@ -645,12 +667,14 @@ uint32 NMaterial::GetTextureCount()
 {
     return (uint32)texturesArray.size();
 }
-
-
-
     
 void NMaterial::BindMaterialTechnique(const FastName & techniqueName)
 {
+	if(!ready)
+	{
+		Rebuild(false);
+	}
+	
     if (techniqueName != activeTechniqueName)
     {
         activeTechnique = GetTechnique(techniqueName);
@@ -658,7 +682,7 @@ void NMaterial::BindMaterialTechnique(const FastName & techniqueName)
             activeTechniqueName = techniqueName;
     }
     
-    Shader * shader = activeTechnique->GetShader();
+    Shader * shader = activeTechnique->GetShader();	
     activeTechnique->GetRenderState()->SetShader(shader);
 
     RenderManager::Instance()->FlushState(activeTechnique->GetRenderState());
@@ -690,13 +714,6 @@ void NMaterial::BindMaterialTechnique(const FastName & techniqueName)
     }
 }
 
-//uint32 NMaterial::GetShaderCount()
-//{
-//    return (uint32)shaders.Size();
-//}
-
-
-
 void NMaterial::Draw(PolygonGroup * polygonGroup)
 {
     // TODO: Remove support of OpenGL ES 1.0 from attach render data
@@ -714,7 +731,160 @@ void NMaterial::Draw(PolygonGroup * polygonGroup)
     }
 };
     
+void NMaterial::SetParent(NMaterial* material)
+{
+	if(parent)
+	{
+		parent->RemoveChild(this);
+	}
+	
+	ResetParent();
+	parent = SafeRetain(material);
+	
+	if(parent)
+	{
+		parent->AddChild(this);
+	}
+}
+	
+void NMaterial::AddChild(NMaterial* material)
+{
+	DVASSERT(material);
+	DVASSERT(material != this);
+	//sanity check if such material is already present
+	DVASSERT(std::find(children.begin(), children.end(), material) == children.end());
+	
+	if(material)
+	{
+		SafeRetain(material);
+		children.push_back(material);
+		
+		//TODO: propagate properties such as defines, textures, render state etc here
+		material->OnParentChanged();
+	}
+}
+	
+void NMaterial::RemoveChild(NMaterial* material)
+{
+	DVASSERT(material);
+	DVASSERT(material != this);
+	
+	Vector<NMaterial*>::iterator child = std::find(children.begin(), children.end(), material);
+	if(children.end() != child)
+	{
+		material->ResetParent();
+		children.erase(child);
+	}
+}
+	
+void NMaterial::ResetParent()
+{
+	//TODO: clear parent states such as textures, defines, etc
+	effectiveLayers.Clear();
+	effectiveLayers.Combine(layers);
+	UnPropagateParentDefines();
+	
+	SafeRelease(parent);
+}
+	
+void NMaterial::PropagateParentDefines()
+{
+	ready = false;
+	inheritedDefines.Clear();
+	if(parent)
+	{
+		if(parent->inheritedDefines.Size() > 0)
+		{
+			inheritedDefines.Combine(parent->inheritedDefines);
+		}
+		
+		if(parent->nativeDefines.Size() > 0)
+		{
+			inheritedDefines.Combine(parent->nativeDefines);
+		}
+	}	
+}
 
-
-
+void NMaterial::UnPropagateParentDefines()
+{
+	ready = false;
+	inheritedDefines.Clear();
+}
+	
+void NMaterial::Rebuild(bool recursive)
+{
+	FastNameSet combinedDefines = inheritedDefines;
+	
+	if(nativeDefines.Size() > 0)
+	{
+		combinedDefines.Combine(nativeDefines);
+	}
+	
+	HashMap<FastName, MaterialTechnique *>::Iterator iter = techniqueForRenderPass.Begin();
+	while(iter != techniqueForRenderPass.End())
+	{
+		iter.GetValue()->RecompileShader(combinedDefines);
+		++iter;
+	}
+	
+	if(recursive)
+	{
+		size_t childrenCount = children.size();
+		for(size_t i = 0; i < childrenCount; ++i)
+		{
+			children[i]->Rebuild(recursive);
+		}
+	}
+	
+	ready = true;
+}
+	
+void NMaterial::AddMaterialDefine(const FastName& defineName)
+{
+	ready = false;
+	nativeDefines.Insert(defineName);
+	
+	NotifyChildrenOnChange();
+}
+	
+void NMaterial::RemoveMaterialDefine(const FastName& defineName)
+{
+	ready = false;
+	nativeDefines.Remove(defineName);
+	
+	NotifyChildrenOnChange();
+}
+	
+const FastNameSet& NMaterial::GetRenderLayers()
+{
+	return effectiveLayers;
+}
+	
+void NMaterial::OnParentChanged()
+{
+	PropagateParentLayers();
+	PropagateParentDefines();
+}
+	
+void NMaterial::NotifyChildrenOnChange()
+{
+	size_t count = children.size();
+	for(size_t i = 0; i < count; ++i)
+	{
+		children[i]->OnParentChanged();
+	}
+}
+	
+void NMaterial::PropagateParentLayers()
+{
+	effectiveLayers.Clear();
+	effectiveLayers.Combine(layers);
+	
+	if(parent)
+	{
+		const FastNameSet& parentLayers = parent->GetRenderLayers();
+		effectiveLayers.Combine(parentLayers);
+	}
+}
+	
 };

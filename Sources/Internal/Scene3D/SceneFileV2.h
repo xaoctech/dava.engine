@@ -82,6 +82,15 @@ class NMaterial;
     
 class SceneFileV2 : public BaseObject
 {
+private:
+	
+	class MaterialNameMapper
+	{
+	public:
+		
+		static String MapName(Material* mat);
+	};
+	
 public: 
     enum eError{
         ERROR_NO_ERROR = 0,

@@ -1,0 +1,2 @@
+Material:
+    MaterialDefines: ["MATERIAL_VIEW_LIGHTMAP_ONLY"]

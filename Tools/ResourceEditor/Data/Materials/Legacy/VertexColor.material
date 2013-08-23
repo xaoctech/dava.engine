@@ -1,0 +1,6 @@
+Material:
+    MaterialDefines: ["VERTEX_COLOR"]
+
+RenderPass:
+    Name: "ForwardPass"
+    Shader: "~res:/Materials/Shaders/Old/materials"

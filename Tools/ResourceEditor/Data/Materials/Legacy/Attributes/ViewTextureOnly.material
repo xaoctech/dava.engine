@@ -1,0 +1,2 @@
+Material:
+    MaterialDefines: ["MATERIAL_VIEW_TEXTURE_ONLY"]

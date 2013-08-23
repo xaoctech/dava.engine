@@ -118,6 +118,7 @@ public:
     
     static Shader * CompileShader(Data * vertexShaderData, Data * fragmentShaderData, const FastNameSet & definesSet);
     bool Recompile(bool silentDelete = false);
+	bool IsReady();
     
     void Bind();
     static void Unbind();

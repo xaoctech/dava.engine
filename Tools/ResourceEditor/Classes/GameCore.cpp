@@ -37,6 +37,8 @@
 #include "StringConstants.h"
 #include "version.h"
 
+#include "Render/Material/MaterialSystem.h"
+
 using namespace DAVA;
 
 
@@ -53,6 +55,8 @@ void GameCore::OnAppStarted()
 
     LocalizationSystem::Instance()->SetCurrentLocale(EditorSettings::Instance()->GetLanguage());
 	LocalizationSystem::Instance()->InitWithDirectory("~res:/Strings/");
+	
+	MaterialSystem::Instance()->LoadMaterialConfig("~res:/Materials/MaterialTree.config");
 
     
 #ifdef __DAVAENGINE_BEAST__

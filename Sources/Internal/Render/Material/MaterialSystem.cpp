@@ -36,11 +36,12 @@
 #include "FileSystem/FileSystem.h"
 #include "Render/Shader.h"
 #include "Utils/StringFormat.h"
+#include "FileSystem/YamlParser.h"
 
 namespace DAVA
 {
     
-NMaterial * MaterialSystem::GetMaterial(const FastName & name)
+/*NMaterial * MaterialSystem::GetMaterial(const FastName & name)
 {
     NMaterial * material = materials.GetValue(name);
     if (!material)
@@ -50,9 +51,168 @@ NMaterial * MaterialSystem::GetMaterial(const FastName & name)
         //materials.Insert(name, material);
     }
     return material;
+}*/
+	
+NMaterial * MaterialSystem::GetMaterial(const FastName & name)
+{
+	NMaterial* material = materials.GetValue(name);
+	
+	DVASSERT(material);
+	
+	return material;
 }
 
+bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
+{
+	YamlParser * parser = YamlParser::Create(filePath);
+    if (!parser)
+    {
+        Logger::Error("[MaterialSystem::LoadMaterialConfig] Can't load material tree configuration: %s", filePath.GetAbsolutePathname().c_str());
+        return false;
+    }
+	
+    YamlNode * rootNode = parser->GetRootNode();
+    
+    if (!rootNode)
+    {
+        SafeRelease(rootNode);
+		SafeRelease(parser);
+        return false;
+    }
 
+	Map<String, Vector<MaterialData> > nodes;
+	int32 nodeCount = rootNode->GetCount();
+	for(int32 i = 0; i < nodeCount; ++i)
+	{
+		YamlNode* materialNode = rootNode->Get(i);
+		if(materialNode->AsString() == "Material")
+		{
+			MaterialData data;
+			
+			YamlNode* nameNode = materialNode->Get("Name");
+			DVASSERT(nameNode);
+			
+			if(nameNode)
+			{
+				data.name = nameNode->AsString();
+				
+				DVASSERT(data.name.size() > 0);
+				if(data.name.size() > 0)
+				{
+					YamlNode* pathNode = materialNode->Get("Path");
+					DVASSERT(pathNode);
+					
+					if(pathNode)
+					{
+						data.path = pathNode->AsString();
+						
+						DVASSERT(data.path.size() > 0);
+						if(data.path.size() > 0)
+						{
+							//only parent node is optional
+							YamlNode* parentNode = materialNode->Get("Parent");
+							if(parentNode)
+							{
+								data.parent = parentNode->AsString();
+							}
+							
+							Map<String, Vector<MaterialData> >::iterator iter = nodes.find(data.parent);
+							if(iter != nodes.end())
+							{
+								Vector<MaterialData>& dataList = iter->second;
+								dataList.push_back(data);
+							}
+							else
+							{
+								Vector<MaterialData> dataList;
+								dataList.push_back(data);
+								nodes[data.parent] = dataList;
+							}
+						}
+						else
+						{
+							Logger::Error("[MaterialSystem::LoadMaterialConfig] Material node %s in the material configuration has empty Path. Skipping...", data.name.c_str());
+						}
+					}
+					else
+					{
+						Logger::Error("[MaterialSystem::LoadMaterialConfig] Material node %s in the material configuration doesn't contain Path. Skipping...", data.name.c_str());
+					}
+				}
+				else
+				{
+					Logger::Error("[MaterialSystem::LoadMaterialConfig] Material node %d in the material configuration has empty Name. Skipping...", i);
+				}
+			}
+			else
+			{
+				Logger::Error("[MaterialSystem::LoadMaterialConfig] Material node %d in the material configuration doesn't contain Name. Skipping...", i);
+			}
+		}
+	}
+	
+	SafeRelease(rootNode);
+	SafeRelease(parser);
+	
+	//TODO: validate material tree structure. It shouldn't contain loops or nodes belonging to several roots
+	
+	//fetch root nodes
+	Map<String, Vector<MaterialData> >::iterator rootsIter = nodes.find("");
+	DVASSERT(rootsIter != nodes.end());
+	if(rootsIter != nodes.end())
+	{
+		Vector<MaterialData>& roots = rootsIter->second;
+		size_t rootCount = roots.size();
+		for(size_t i = 0; i < rootCount; ++i)
+		{
+			MaterialData& currentData = roots[i];
+			LoadMaterial(currentData.name, currentData.path, NULL, nodes);
+		}
+	}
+	else
+	{
+		Logger::Error("[MaterialSystem::LoadMaterialConfig] Material config %s contains no root material(s). Skipping...", filePath.GetAbsolutePathname().c_str());
+		return false;
+	}
+	
+	return true;
+}
+	
+NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
+										const FilePath& filePath,
+										NMaterial* parentMaterial,
+										Map<String, Vector<MaterialData> >& nodes)
+{
+	NMaterial* material = new NMaterial();
+	bool result = material->LoadFromFile(filePath.GetAbsolutePathname());
+	
+	DVASSERT(result);
+	if(result)
+	{
+		material->SetName(name.c_str());
+		materials.Insert(name, material);
+		material->SetParent(parentMaterial);
+		
+		Map<String, Vector<MaterialData> >::iterator childrenIter = nodes.find(material->GetName());
+		if(childrenIter != nodes.end())
+		{
+			Vector<MaterialData>& materials = childrenIter->second;
+			size_t materialCount = materials.size();
+			for(size_t i = 0; i < materialCount; ++i)
+			{
+				MaterialData& currentData = materials[i];
+				LoadMaterial(currentData.name, currentData.path, material, nodes);
+			}
+		}
+	}
+	else
+	{
+		Logger::Error("[MaterialSystem::LoadMaterialConfig] Failed to load material %s", filePath.GetAbsolutePathname().c_str());
+		SafeRelease(material);
+	}
+	
+	return material;
+}
 
 };
 

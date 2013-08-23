@@ -100,7 +100,7 @@ void MaterialPropertyControl::ReadFrom(DataNode * dataNode)
 
     
     propertyList->AddBoolProperty("property.material.isopaque");
-    propertyList->SetBoolPropertyValue("property.material.isopaque", material->GetOpaque());
+    propertyList->SetBoolPropertyValue("property.material.isopaque", material->GetAlphatest());
     
     propertyList->AddBoolProperty("property.material.twosided");
     propertyList->SetBoolPropertyValue("property.material.twosided", material->GetTwoSided());
@@ -173,7 +173,7 @@ void MaterialPropertyControl::OnBoolPropertyChanged(PropertyList *forList, const
     if("property.material.isopaque" == forKey)
     {
         Material *material = dynamic_cast<Material *> (currentDataNode);
-        material->SetOpaque(newValue);
+        material->SetAlphatest(newValue);
     }
     else if("property.material.twosided" == forKey)
     {

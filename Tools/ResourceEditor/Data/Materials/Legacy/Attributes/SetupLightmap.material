@@ -1,0 +1,2 @@
+Material:
+    MaterialDefines: ["SETUP_LIGHTMAP"]

@@ -1,0 +1,6 @@
+Material:
+    MaterialDefines: ["PIXEL_LIT", "DIFFUSE"]
+
+RenderPass:
+    Name: "ForwardPass"
+    Shader: "~res:/Materials/Shaders/Old/materials"

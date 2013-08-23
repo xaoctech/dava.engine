@@ -103,7 +103,7 @@ public:
     void SetOwnerLayerName(const FastName & fastname);
     
     NMaterialInstance * Clone();
-    
+	
 private:
     
     static const uint32 SKIP_UNIFORM = 1 << 0;
@@ -141,7 +141,7 @@ public:
     MaterialTechnique(const FastName & _shaderName, FastNameSet & _uniqueDefines, RenderState * _renderState);
     ~MaterialTechnique();
     
-    void RecompileShader();
+	void RecompileShader(const FastNameSet& materialDefines);
 
     const FastName & GetShaderName() const { return shaderName; }
     Shader * GetShader() const { return shader; }
@@ -188,9 +188,19 @@ public:
     void Draw(PolygonGroup * polygonGroup);
 
     
-    const FastNameSet & GetRenderLayers() { return layers; };
-    
-    NMaterial * CreateChildMaterial();
+    const FastNameSet & GetRenderLayers();
+	    
+	void SetParent(NMaterial* material);
+	void AddChild(NMaterial* material);
+	void RemoveChild(NMaterial* material);
+	
+	void Rebuild(bool recursive = true);
+	bool IsReady() {return ready;}
+	
+	//VI: you need to manually rebuild material after defines have been changed
+	//this is done in order to be able change defines serially without autorebuild
+	void AddMaterialDefine(const FastName& defineName);
+	void RemoveMaterialDefine(const FastName& defineName);
     
     // Load default render state from yaml.
     // Keep it here, by default MaterialInstance Render State should be referenced from this point.
@@ -200,10 +210,15 @@ private:
     
     FastName materialName;
     
-    NMaterial * parent;
+    NMaterial* parent;
+	Vector<NMaterial*> children;
+	
+	FastNameSet effectiveLayers;
     FastNameSet layers;
     HashMap<FastName, MaterialTechnique *> techniqueForRenderPass; // TODO: HashMap<FastName, NMaterialInstance*> baseInstances;
-
+	
+	FastNameSet nativeDefines;
+	FastNameSet inheritedDefines;
     
     HashMap<FastName, NMaterialProperty*> materialProperties;
     HashMap<FastName, Texture*> textures;
@@ -215,6 +230,19 @@ private:
     //
     FastName activeTechniqueName;
     MaterialTechnique * activeTechnique;
+	bool ready;
+	
+private:
+	
+	void ResetParent();
+	
+	void OnParentChanged();
+	void NotifyChildrenOnChange();
+	
+	void PropagateParentLayers();
+	void PropagateParentDefines();
+	void UnPropagateParentDefines();
+		
 public:
     INTROSPECTION_EXTEND(NMaterial, DataNode,
          MEMBER(materialName, "Material Name", I_SAVE | I_EDIT | I_VIEW)

@@ -1,0 +1,7 @@
+Material:
+    Layers: ["AfterOpaqueRenderLayer"]
+    MaterialDefines: ["SKYBOX"]
+
+RenderPass:
+    Name: "ForwardPass"
+    Shader: "~res:/Materials/Shaders/Old/materials"

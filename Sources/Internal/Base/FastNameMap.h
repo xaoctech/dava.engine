@@ -38,6 +38,7 @@ template<> struct Hash<FastName>
 class FastNameSet : public HashMap<FastName, int>
 {
 public:
+	
 	void Insert(const char *name)
 	{
 		HashMap<FastName, int>::Insert(FastName(name), 0);
@@ -47,6 +48,16 @@ public:
     {
         HashMap<FastName, int>::Insert(name, 0);
     }
+	
+	void Combine(const FastNameSet& nameSet)
+	{
+		FastNameSet::Iterator iter = nameSet.Begin();
+		while(iter != nameSet.End())
+		{
+			Insert(iter.GetKey());
+			++iter;
+		}
+	}
     
     inline bool operator == (const FastNameSet & _another) const;
 

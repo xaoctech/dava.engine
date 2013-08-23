@@ -315,7 +315,7 @@ bool SceneFile::ReadMaterial()
 	mat->reflectivity = materialDef.reflectivity;
 	mat->transparency = materialDef.transparency;
 	mat->transparent = materialDef.transparent;
-    mat->SetOpaque(materialDef.hasOpacity != 0);
+    mat->SetAlphatest(materialDef.hasOpacity != 0);
 	
     // retain object when we put it to array
     materials.push_back(SafeRetain(mat));
