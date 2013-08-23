@@ -24,6 +24,8 @@ namespace DAVA {
 
 class EditorListDelegate : public UIControl, public UIListDelegate
 {
+	const int32 CELL_COUNT = 3;
+	const int32 DEFAULT_AGGREGATOR_ID = 0;
 
 public:
 	EditorListDelegate(const Rect &rect = Rect(), UIList::eListOrientation orientation =  UIList::ORIENTATION_VERTICAL,

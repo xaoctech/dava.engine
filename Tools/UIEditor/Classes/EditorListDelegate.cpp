@@ -24,8 +24,6 @@
 #include "HierarchyTreeController.h"
 #include "EditorFontManager.h"
 
-#define CELLS_COUNT 3
-#define DEFAULT_AGGREGATOR_ID 0
 
 namespace DAVA
 {
@@ -33,16 +31,16 @@ namespace DAVA
 																			, bool rectInAbsoluteCoordinates/* = FALSE*/)
 	: UIControl(rect, rectInAbsoluteCoordinates),
 		aggregatorID(DEFAULT_AGGREGATOR_ID),
-		cellsCount(CELLS_COUNT),
+		cellsCount(CELL_COUNT),
 		isElementsCountNeedUpdate(false)
 	{
 		if (orientation == UIList::ORIENTATION_VERTICAL)
 		{
-			cellSize = Vector2(rect.dx, (rect.dy / CELLS_COUNT));
+			cellSize = Vector2(rect.dx, (rect.dy / CELL_COUNT));
 		}
 		else
 		{
-			cellSize = Vector2((rect.dx / CELLS_COUNT), rect.dy);
+			cellSize = Vector2((rect.dx / CELL_COUNT), rect.dy);
 		}
 	}
 	
