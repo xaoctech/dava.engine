@@ -79,11 +79,10 @@ void LODEditor::SetupInternalUI()
     ui->globalLODSettingsButton->setDown(true);
     ui->viewLODButton->setDown(true);
     ui->editLODButton->setDown(true);
-    
+
     connect(ui->globalLODSettingsButton, SIGNAL(released()), SLOT(GlobalSettingsButtonReleased()));
     connect(ui->viewLODButton, SIGNAL(released()), SLOT(ViewLODButtonReleased()));
     connect(ui->editLODButton, SIGNAL(released()), SLOT(EditLODButtonReleased()));
-    
     
     InitCorrectionSpinBox(ui->lod0Correction, 0);
     InitCorrectionSpinBox(ui->lod1Correction, 1);
