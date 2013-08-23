@@ -53,11 +53,11 @@ public:
 		int32 justifyWidth, int32 spaceAddon,
 		Vector<int32> *charSizes = NULL,
 		bool contentScaleIncluded = false);
-	uint32 GetFontHeight(float32 size);
+	uint32 GetFontHeight(float32 size) const;
 
-	bool IsCharAvaliable(char16 ch);
+	bool IsCharAvaliable(char16 ch) const;
 
-	void SetFTCharSize(float32 size);
+	void SetFTCharSize(float32 size) const;
 
 	virtual int32 Release();
 
@@ -119,7 +119,7 @@ FTFont * FTFont::Create(const FilePath& path)
 	return font;
 }
 	
-FTFont *	FTFont::Clone()
+FTFont *	FTFont::Clone() const
 {
 	FTFont *retFont = new FTFont(internalFont);
 	retFont->size =	size;
@@ -132,9 +132,10 @@ FTFont *	FTFont::Clone()
 	return retFont;
 }
 
-bool FTFont::IsEqual(Font *font)
+bool FTFont::IsEqual(const Font *font) const
 {
-	if (!Font::IsEqual(font) || internalFont != ((FTFont*)font)->internalFont)
+    const FTFont *ftfont = DynamicTypeCheck<const FTFont *>(font);
+	if (!Font::IsEqual(font) || internalFont != ftfont->internalFont)
 	{
 		return false;
 	}
@@ -151,28 +152,28 @@ Size2i FTFont::DrawStringToBuffer(void * buffer, int32 bufWidth, int32 bufHeight
 	return internalFont->DrawString(str, buffer, bufWidth, bufHeight, r, g, b, a, size, true, offsetX, offsetY, justifyWidth, spaceAddon, NULL, contentScaleIncluded );
 }
 
-Size2i FTFont::GetStringSize(const WideString& str, Vector<int32> *charSizes)
+Size2i FTFont::GetStringSize(const WideString& str, Vector<int32> *charSizes) const
 {
 	return internalFont->DrawString(str, 0, 0, 0, 0, 0, 0, 0, size, false, 0, 0, 0, 0, charSizes);
 }
 
-uint32 FTFont::GetFontHeight()
+uint32 FTFont::GetFontHeight() const
 {
 	return internalFont->GetFontHeight(size);
 }
 
 
-bool FTFont::IsCharAvaliable(char16 ch)
+bool FTFont::IsCharAvaliable(char16 ch) const
 {
 	return internalFont->IsCharAvaliable(ch);
 }
 
-const FilePath & FTFont::GetFontPath()
+const FilePath & FTFont::GetFontPath() const
 {
 	return internalFont->fontPath;
 }
 
-YamlNode * FTFont::SaveToYamlNode()
+YamlNode * FTFont::SaveToYamlNode() const
 {
 	YamlNode *node = Font::SaveToYamlNode();
 	//Type
@@ -415,19 +416,19 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
 }
 
 
-bool FTInternalFont::IsCharAvaliable(char16 ch)
+bool FTInternalFont::IsCharAvaliable(char16 ch) const
 {
 	return FT_Get_Char_Index(face, ch) != 0;
 }
 	
 
-uint32 FTInternalFont::GetFontHeight(float32 size)
+uint32 FTInternalFont::GetFontHeight(float32 size) const
 {
 	SetFTCharSize(size);
 	return (uint32)ceilf((float32)((FT_MulFix(face->bbox.yMax-face->bbox.yMin, face->size->metrics.y_scale)))/64.f);
 }
 	
-void FTInternalFont::SetFTCharSize(float32 size)
+void FTInternalFont::SetFTCharSize(float32 size) const
 {
 	FT_Error error = FT_Set_Char_Size(face, 0, (int32)(size * 64), 0, (FT_UInt)Font::GetDPI()); 
 	

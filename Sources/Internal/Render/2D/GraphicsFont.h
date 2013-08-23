@@ -34,32 +34,32 @@ public:
 	static GraphicsFont * Create(const FilePath & fontDefName, const FilePath & spriteName);
 	
 	virtual void	SetSize(float32 size);
-	virtual Size2i	GetStringSize(const WideString & str, Vector<int32> *charSizes = NULL);
-	virtual bool	IsCharAvaliable(char16 ch);
-	virtual uint32	GetFontHeight();
-    virtual int32   GetHorizontalSpacing();
+	virtual Size2i	GetStringSize(const WideString & str, Vector<int32> *charSizes = NULL) const;
+	virtual bool	IsCharAvaliable(char16 ch) const;
+	virtual uint32	GetFontHeight() const;
+    virtual int32   GetHorizontalSpacing() const;
 	
-	virtual bool	IsTextSupportsHardwareRendering();
+	virtual bool	IsTextSupportsHardwareRendering() const;
 	virtual Size2i	DrawString(float32 x, float32 y, const WideString & string, int32 justifyWidth = 0);
 	
     virtual void    SetHorizontalSpacing(int32 horizontalSpacing);
     
-	virtual Font	* Clone();
+	virtual Font	* Clone() const;
 	/**
 	\brief Tests if two fonts are the same.
 	*/
-	virtual bool IsEqual(Font *font);
+	virtual bool IsEqual(const Font *font) const;
 	/* Put font properties into YamlNode */
-	virtual YamlNode * SaveToYamlNode();
+	virtual YamlNode * SaveToYamlNode() const;
 	//Additional functions which allow return needed values of protected properties
 	Sprite *GetFontSprite();
-	FilePath & GetFontDefinitionName();
+	const FilePath & GetFontDefinitionName() const;
 	
 protected:
 	GraphicsFont();
 	virtual ~GraphicsFont();
 	
-	float32 GetDistanceFromAtoB(int32 aIndex, int32 bIndex);
+	float32 GetDistanceFromAtoB(int32 aIndex, int32 bIndex) const;
     
 	int32 horizontalSpacing;
     

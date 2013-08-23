@@ -57,12 +57,12 @@ public:
 	/**
 		\brief Clone font.
 	*/
-	FTFont *	Clone();
+	FTFont *	Clone() const;
 
 	/**
 		\brief Tests if two fonts are the same.
 	*/
-	virtual bool IsEqual(Font *font);
+	virtual bool IsEqual(const Font *font) const;
 
 	/**
 		\brief Get string size(rect).
@@ -70,20 +70,20 @@ public:
 		\param[in, out] charSizes - if present(not NULL), will contain widths of every symbol in str 
 		\returns bounding rect for string in pixels
 	*/
-	virtual Size2i		GetStringSize(const WideString & str, Vector<int32> *charSizes = NULL);
+	virtual Size2i		GetStringSize(const WideString & str, Vector<int32> *charSizes = NULL) const;
 
 	/**
 		\brief Get height of highest symbol in font.
 		\returns height in pixels
 	*/
-	virtual uint32		GetFontHeight();
+	virtual uint32		GetFontHeight() const;
 	
 	/**
 		\brief Checks if symbol is present in font.
 		\param[in] ch - tested symbol
 		\returns true if symbol is available, false otherwise
 	*/
-	virtual bool		IsCharAvaliable(char16 ch);
+	virtual bool		IsCharAvaliable(char16 ch) const;
 
 	/**
 		\brief Draw string to memory buffer
@@ -100,12 +100,12 @@ public:
 	*/
 	virtual Size2i DrawStringToBuffer(void * buffer, int32 bufWidth, int32 bufHeight, int32 offsetX, int32 offsetY, int32 justifyWidth, int32 spaceAddon, const WideString & str, bool contentScaleIncluded = false);
 
-	virtual bool IsTextSupportsSoftwareRendering() { return true; };
+	virtual bool IsTextSupportsSoftwareRendering() const { return true; };
 
 	//We need to return font path
-	const FilePath & GetFontPath();
+	const FilePath & GetFontPath() const;
 	// Put font properties into YamlNode
-	virtual YamlNode * SaveToYamlNode();
+	virtual YamlNode * SaveToYamlNode() const;
 
 private:
 	FTFont(FTInternalFont* internalFont);

@@ -87,7 +87,7 @@ public:
 		\brief Get size.
 		\returns size in pixels
 	*/
-	virtual float32	GetSize();
+	virtual float32	GetSize() const;
 	
 	/**
 	 \brief Set vertical spacing.
@@ -101,7 +101,7 @@ public:
 	 \brief Get vertical spacing 
 	 \returns vertical spacing value in pixels
 	 */
-	virtual int32 GetVerticalSpacing();
+	virtual int32 GetVerticalSpacing() const;
 	
 	/**
 		\brief Split string into substrings.
@@ -129,30 +129,30 @@ public:
 		\param[in, out] charSizes - if present(not NULL), will contain widths of every symbol in str 
 		\returns bounding rect for string in pixels
 	*/
-	virtual Size2i GetStringSize(const WideString & str, Vector<int32> *charSizes = 0) = 0;
+	virtual Size2i GetStringSize(const WideString & str, Vector<int32> *charSizes = 0) const = 0;
 
 	/**
 		\brief Checks if symbol is present in font.
 		\param[in] ch - tested symbol
 		\returns true if symbol is available, false otherwise
 	*/
-	virtual bool IsCharAvaliable(char16 ch) = 0;
+	virtual bool IsCharAvaliable(char16 ch) const = 0;
 
 	/**
 		\brief Get height of highest symbol in font.
 		\returns height in pixels
 	*/
-	virtual uint32 GetFontHeight() = 0;
+	virtual uint32 GetFontHeight() const = 0;
 
 	/**
 		\brief Clone font.
 	*/
-	virtual Font * Clone() = 0;
+	virtual Font * Clone() const = 0;
 
 	/**
 		\brief Tests if two fonts are the same.
 	*/
-	virtual bool IsEqual(Font *font);
+	virtual bool IsEqual(const Font *font) const;
 
 	/**
 		\brief Draw string to screen.
@@ -180,14 +180,14 @@ public:
 	virtual Size2i DrawStringToBuffer(void * buffer, int32 bufWidth, int32 bufHeight, int32 offsetX, int32 offsetY, int32 justifyWidth, int32 spaceAddon, const WideString & str, bool contentScaleIncluded = false);
 
 	//TODO: get rid of this
-	virtual bool IsTextSupportsSoftwareRendering() { return false; };
-	virtual bool IsTextSupportsHardwareRendering() { return false; };
+	virtual bool IsTextSupportsSoftwareRendering() const { return false; };
+	virtual bool IsTextSupportsHardwareRendering() const { return false; };
 
 	//This will allow to determine font type
-	virtual eFontType GetFontType();
+	virtual eFontType GetFontType() const;
 
 	/* Put font properties into YamlNode */
-	virtual YamlNode * SaveToYamlNode();
+	virtual YamlNode * SaveToYamlNode() const;
 
 protected:
 	static int32 globalFontDPI;

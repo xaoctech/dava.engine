@@ -57,11 +57,12 @@ GraphicsFont::GraphicsFont()
 	FontManager::Instance()->RegisterFont(this);
 }
     
-bool GraphicsFont::IsEqual(Font *font)
+bool GraphicsFont::IsEqual(const Font *font) const
 {
+    const GraphicsFont * gfont = DynamicTypeCheck<const GraphicsFont*>(font);
     if (!Font::IsEqual(font) ||
-        fontDefinitionName != ((GraphicsFont*)font)->fontDefinitionName ||
-        fontSprite != ((GraphicsFont*)font)->fontSprite)
+        fontDefinitionName != gfont->fontDefinitionName ||
+        fontSprite != gfont->fontSprite)
     {
         return false;
     }
@@ -75,12 +76,12 @@ GraphicsFont::~GraphicsFont()
 	FontManager::Instance()->UnregisterFont(this);
 }	
 
-int32 GraphicsFont::GetHorizontalSpacing()
+int32 GraphicsFont::GetHorizontalSpacing() const
 {
     return horizontalSpacing;
 }
     
-Font * GraphicsFont::Clone()
+Font * GraphicsFont::Clone() const
 {
 	GraphicsFont * cloneFont = new GraphicsFont();
 
@@ -96,7 +97,7 @@ Font * GraphicsFont::Clone()
 	return cloneFont;
 }
 
-Size2i GraphicsFont::GetStringSize(const WideString & string, Vector<int32> *charSizes)
+Size2i GraphicsFont::GetStringSize(const WideString & string, Vector<int32> *charSizes) const
 {
 	uint32 length = (uint32)string.length();
 	if (length == 0)
@@ -161,12 +162,12 @@ Size2i GraphicsFont::GetStringSize(const WideString & string, Vector<int32> *cha
 	return Size2i((int32)(currentX + sizeFix + 1.5f), GetFontHeight());
 }
 	
-bool GraphicsFont::IsCharAvaliable(char16 ch)
+bool GraphicsFont::IsCharAvaliable(char16 ch) const
 {
 	return (fdef->CharacterToIndex(ch) != GraphicsFontDefinition::INVALID_CHARACTER_INDEX);
 }
 
-uint32 GraphicsFont::GetFontHeight()
+uint32 GraphicsFont::GetFontHeight() const
 {
 	return (uint32)((fdef->fontHeight) * fontScaleCoeff);
 }
@@ -182,7 +183,7 @@ void GraphicsFont::SetSize(float32 _size)
 	fontScaleCoeff = size / (fdef->fontAscent + fdef->fontDescent);	
 }
 
-YamlNode * GraphicsFont::SaveToYamlNode()
+YamlNode * GraphicsFont::SaveToYamlNode() const
 {
     YamlNode *node = Font::SaveToYamlNode();
     
@@ -211,7 +212,7 @@ Sprite *GraphicsFont::GetFontSprite()
     return fontSprite;
 }
     
-FilePath & GraphicsFont::GetFontDefinitionName()
+const FilePath & GraphicsFont::GetFontDefinitionName() const
 {
     return fontDefinitionName;
 }
@@ -371,12 +372,12 @@ GraphicsFont * GraphicsFont::Create(const FilePath & fontDefName, const FilePath
 	return font;
 }
 
-bool GraphicsFont::IsTextSupportsHardwareRendering() 
+bool GraphicsFont::IsTextSupportsHardwareRendering() const
 { 
 	return true; 
 };
 
-float32 GraphicsFont::GetDistanceFromAtoB(int32 prevChIndex, int32 chIndex)
+float32 GraphicsFont::GetDistanceFromAtoB(int32 prevChIndex, int32 chIndex) const
 {
 	float32 currentX = 0.0f;
 	currentX += fdef->defaultShiftValue;
