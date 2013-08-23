@@ -46,14 +46,13 @@ protected slots:
 
     void SceneActivated(SceneEditor2 *scene);
 	void SceneDeactivated(SceneEditor2 *scene);
-    void SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent);
 
     
     void LODDataChanged();
     void LODDistanceChangedBySpinbox(double value);
     void LODDistanceChangedBySlider(int layerNum, double value);
     
-    void ForceLayerActivated(const QString & text);
+    void ForceLayerActivated(int index);
     
 protected:
     
