@@ -231,7 +231,7 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 				}
 				break;
 			case GOODCHAR: 
-				if ((t == ' ') || (t == '\\') || t == 0) // if we've found any possible separator process current line 
+				if ((t == ' ') || (t == '\\') || (t == '\n') || t == 0) // if we've found any possible separator process current line
 				{ 
 					lastWordEnd = pos;
 					
