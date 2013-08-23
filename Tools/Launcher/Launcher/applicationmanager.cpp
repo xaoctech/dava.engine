@@ -120,8 +120,14 @@ void ApplicationManager::DownloadFinished()
     if(currentDownload)
     {
         SafeDelete(remoteConfig);
+
+        bool breakFlag = false;
         QByteArray data = currentDownload->readAll();
-        if(data.size())
+        if(currentDownload->hasRawHeader(QByteArray("Content-Type"))
+                && currentDownload->rawHeader(QByteArray("Content-Type")) == QByteArray("text/html"))
+            breakFlag = true;
+
+        if(data.size() && !breakFlag)
         {
             remoteConfig = new ConfigParser(data);
             QString webPageUrl = remoteConfig->GetWebpageURL();
