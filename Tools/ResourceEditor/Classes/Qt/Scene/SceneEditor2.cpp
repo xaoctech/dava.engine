@@ -90,6 +90,9 @@ SceneEditor2::~SceneEditor2()
     RemoveSystem(editorLightSystem);
     SafeDelete(editorLightSystem);
 
+    RemoveSystem(structureSystem);
+    SafeDelete(structureSystem);
+    
 	SceneSignals::Instance()->EmitClosed(this);
 }
 
