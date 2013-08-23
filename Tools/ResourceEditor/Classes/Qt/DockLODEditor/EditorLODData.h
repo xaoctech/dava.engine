@@ -68,6 +68,10 @@ protected:
 
     void ResetForceState(DAVA::Entity *entity);
     
+
+    DAVA::int32 GetLayersCount(DAVA::LodComponent *lod) const;
+    
+    
 protected:
 
     DAVA::int32 lodLayersCount;

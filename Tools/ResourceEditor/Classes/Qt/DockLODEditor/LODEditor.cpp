@@ -117,6 +117,12 @@ void LODEditor::ForceDistanceStateChanged(int checked)
     bool enable = (checked == Qt::Checked);
     editedLODData->EnableForceDistance(enable);
     
+    if(!enable)
+    {
+        int layer = ui->forceLayer->itemData(ui->forceLayer->currentIndex()).toInt();
+        editedLODData->SetForceLayer(layer);
+    }
+    
     ui->forceSlider->setEnabled(enable);
     ui->forceLayer->setEnabled(!enable);
 }

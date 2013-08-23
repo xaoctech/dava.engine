@@ -87,7 +87,7 @@ void EditorLODData::SetLayerDistance(DAVA::int32 layerNum, DAVA::float32 distanc
         for(DAVA::int32 i = 0; i < componentsCount; ++i)
         {
             //TODO: need correct introspection
-            if(layerNum >= lodData[i]->GetLodLayersCount())
+            if(layerNum >= GetLayersCount(lodData[i]))
                 continue;
             
             lodData[i]->SetLodLayerDistance(layerNum, distance);
@@ -143,6 +143,7 @@ void EditorLODData::SetForceDistance(DAVA::float32 distance)
         for(DAVA::uint32 i = 0; i < count; ++i)
         {
             lodData[i]->SetForceDistance(forceDistance);
+            lodData[i]->SetForceLodLayer(DAVA::LodComponent::INVALID_LOD_LAYER);
         }
     }
 }
@@ -177,7 +178,7 @@ void EditorLODData::GetDataFromSelection()
         
         for(DAVA::int32 i = 0; i < lodComponentsSize; ++i)
         {
-            DAVA::int32 layersCount = lodData[i]->GetLodLayersCount();
+            DAVA::int32 layersCount = GetLayersCount(lodData[i]);
             for(DAVA::int32 layer = 0; layer < layersCount; ++layer)
             {
                 lodDistances[layer] += lodData[i]->GetLodLayerDistance(layer);
@@ -273,5 +274,15 @@ void EditorLODData::SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *par
     {
         SetForceDistance(forceDistance);
     }
+}
+
+DAVA::int32 EditorLODData::GetLayersCount(DAVA::LodComponent *lod) const
+{
+    if(GetEmitter(lod->GetEntity()))
+    {
+        return DAVA::LodComponent::MAX_LOD_LAYERS;
+    }
+
+    return lod->GetLodLayersCount();
 }
 

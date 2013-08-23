@@ -86,14 +86,16 @@ void DistanceSlider::SetDistance(int layer, double value)
     DVASSERT(0 <= layer && layer < DAVA::LodComponent::MAX_LOD_LAYERS);
     stretchSize[layer] = value;
     
+    int scaleSize = GetScaleSize();
+    
     QList<int> sizes;
     for(int i = 1; i < layersCount; ++i)
     {
-        sizes.push_back((stretchSize[i] - stretchSize[i-1]) * splitter->geometry().width() / DAVA::LodComponent::MAX_LOD_DISTANCE);
+        sizes.push_back((stretchSize[i] - stretchSize[i-1]) * splitter->geometry().width() / scaleSize);
     }
     
     if(layersCount)
-        sizes.push_back((DAVA::LodComponent::MAX_LOD_DISTANCE - stretchSize[layer]) * splitter->geometry().width() / DAVA::LodComponent::MAX_LOD_DISTANCE);
+        sizes.push_back((scaleSize - stretchSize[layer]) * splitter->geometry().width() / scaleSize);
 
     
     bool wasBlocked = splitter->blockSignals(true);
@@ -104,6 +106,8 @@ void DistanceSlider::SetDistance(int layer, double value)
 void DistanceSlider::SplitterMoved(int pos, int index)
 {
     QList<int> sizes = splitter->sizes();
+    
+    double scaleSize = GetScaleSize();
     
     int fullSize = 0;
     for(int i = 0; i  < sizes.size() && i < layersCount-1; ++i)
@@ -117,14 +121,14 @@ void DistanceSlider::SplitterMoved(int pos, int index)
                 if(i >= index)
                 {
                     int ind = i + 1;
-                    double value = fullSize * DAVA::LodComponent::MAX_LOD_DISTANCE / splitter->geometry().width();
+                    double value = fullSize * scaleSize / splitter->geometry().width();
                     stretchSize[ind] = value;
                     emit DistanceChanged(ind, (double)stretchSize[ind]);
                 }
                 else
                 {
                     int ind = i;
-                    double value = fullSize * DAVA::LodComponent::MAX_LOD_DISTANCE / splitter->geometry().width();
+                    double value = fullSize * scaleSize / splitter->geometry().width();
                     stretchSize[ind] = value;
                     emit DistanceChanged(ind, (double)stretchSize[ind]);
                 }
@@ -135,9 +139,18 @@ void DistanceSlider::SplitterMoved(int pos, int index)
     }
     
     
-    double value = pos * DAVA::LodComponent::MAX_LOD_DISTANCE / splitter->geometry().width();
+    double value = pos * scaleSize / splitter->geometry().width();
 
     stretchSize[index] = value;
     emit DistanceChanged(index, (double)stretchSize[index]);
 }
 
+int DistanceSlider::GetScaleSize()
+{
+    if(layersCount == DAVA::LodComponent::MAX_LOD_LAYERS)
+    {
+        return DAVA::LodComponent::MAX_LOD_DISTANCE + 100;
+    }
+    
+    return DAVA::LodComponent::MAX_LOD_DISTANCE;
+}
