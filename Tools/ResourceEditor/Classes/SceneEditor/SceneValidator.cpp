@@ -374,7 +374,8 @@ void SceneValidator::ValidateLandscape(Landscape *landscape, Set<String> &errors
 void SceneValidator::ValidateLandscapeTexture(Landscape *landscape, Landscape::eTextureLevel texLevel, Set<String> &errorsLog)
 {
 	DAVA::FilePath landTexName = landscape->GetTextureName(texLevel);
-	if(!IsTextureDescriptorPath(landTexName))
+	if(!IsTextureDescriptorPath(landTexName) &&
+	   landTexName.GetAbsolutePathname().size() > 0)
 	{
 		landscape->SetTextureName(texLevel, TextureDescriptor::GetDescriptorPathname(landTexName));
 	}
