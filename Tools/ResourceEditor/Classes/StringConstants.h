@@ -61,6 +61,29 @@ namespace ResourceEditor
     
     //service strings
     static const String TAG = "tag";
+	
+	//settings properties names
+	static const String SETTINGS_3D_DATA_SOURCEPATH	=	"3dDataSourcePath";
+	static const String SETTINGS_PROJECT_PATH =			"ProjectPath";
+	static const String SETTINGS_CAMERA_SPEED_INDEX =	"CameraSpeedIndex";
+	static const String SETTINGS_CAMERA_SPEED_VALUE =	"CameraSpeedValue";
+	static const String SETTINGS_SCREEN_WIDTH =			"ScreenWidth";
+	static const String SETTINGS_SCREEN_HEIGHT =		"ScreenHeight";
+	static const String SETTINGS_LANGUAGE =				"Language";
+	static const String SETTINGS_SHOW_OUTPUT =			"ShowOutput";
+	static const String SETTINGS_LEFT_PANEL_WIDTH =		"LeftPanelWidth";
+	static const String SETTINGS_RIGHT_PANEL_WIDTH =	"RightPanelWidth";
+	static const String SETTINGS_LOD_LAYER =			"LODLayer";
+	static const String SETTINGS_LAST_OPENED_FILE =		"LastOpenedFile";
+	static const String SETTINGS_LAST_OPENED_FILES_COUNT = "LastOpenedFilesCount";
+	static const String SETTINGS_DRAW_GRID =			"DrawGrid";
+	static const String SETTINGS_ENABLE_IMPOSTERS =		"enableImposters";
+	static const String SETTINGS_TEXTURE_VIEW_GPU =		"TextureViewGPU";
+	static const String SETTINGS_MATERIALS_AMBIENT =	"materials.ambient";
+	static const String SETTINGS_MATERIALS_DIFFUSE =	"materials.diffuse";
+	static const String SETTINGS_MATERIALS_SPECULAR	=	"materials.specular";
+	static const String SETTINGS_DESIGNER_NAME =		"DesignerName";
+	static const String SETTINGS_PREVIEW_DIALOG_ENABLED = "PreviewDialogEnabled";
 }
 
 #endif //#ifndef __STRING_CONSTANTS_H__
