@@ -671,7 +671,7 @@ void ParticleEmitter::SetLifeTime(float32 time)
     lifeTime = time;
 	
 	/*see DF-1686*/
-	for (int i = 0, size = layers.size(); i<size; ++i)
+	for (int32 i = 0, size = layers.size(); i<size; ++i)
 	{
 		if (lifeTime<layers[i]->endTime)
 		{

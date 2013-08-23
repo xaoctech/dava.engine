@@ -101,8 +101,8 @@ private:
 	QFont nameFont;
 	
 	QPoint selectedPoint;
-	int selectedLine;
-	int selectedLineOrigin;
+	int32 selectedLine;
+	int32 selectedLineOrigin;
 	Entity* emitterNode;
 	Entity* effectNode;
 	ParticleLayer* selectedLayer;

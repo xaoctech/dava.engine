@@ -559,7 +559,7 @@ void ParticleTimeLineWidget::mouseMoveEvent(QMouseEvent * event)
 		if (iter == lines.end())
 			return;
 		LINE& line = iter->second;
-		int delta = event->pos().x() - selectedLineOrigin;
+		int32 delta = event->pos().x() - selectedLineOrigin;
 		selectedLineOrigin = event->pos().x();
 
 		QRect graphRect = GetGraphRect();
