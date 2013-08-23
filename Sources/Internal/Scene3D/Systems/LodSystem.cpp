@@ -18,6 +18,8 @@
 #include "Debug/DVAssert.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Components/LodComponent.h"
+#include "Scene3D/Components/RenderComponent.h"
+#include "Particles/ParticleEmitter.h"
 #include "Render/Highlevel/Camera.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 
@@ -93,10 +95,15 @@ void LodSystem::UpdateEntityAfterLoad(Entity * entity)
 		}
 	}
 
-	lod->currentLod = NULL;
-	if(lod->lodLayers.size() > 0)
+	lod->currentLod = LodComponent::INVALID_LOD_LAYER;
+	RenderComponent * renderComponent = static_cast<RenderComponent*>(entity->GetComponent(Component::RENDER_COMPONENT));
+	if (renderComponent&&renderComponent->GetRenderObject()&&renderComponent->GetRenderObject()->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
 	{
-		lod->SetCurrentLod(&(*lod->lodLayers.rbegin()));
+		lod->currentLod = LodComponent::MAX_LOD_LAYERS-1;
+	}
+	else if(lod->lodLayers.size() > 0)
+	{
+		lod->SetCurrentLod(lod->lodLayers.size()-1);
 	}
 }
 
@@ -123,38 +130,53 @@ void LodSystem::UpdatePartialUpdateIndices()
 void LodSystem::UpdateLod(Entity * entity)
 {
 	LodComponent * lodComponent = static_cast<LodComponent*>(entity->GetComponent(Component::LOD_COMPONENT));
-	LodComponent::LodData * oldLod = lodComponent->currentLod;
+	int32 oldLod = lodComponent->currentLod;
 	RecheckLod(entity);
 	if (oldLod != lodComponent->currentLod) 
 	{
+
+		RenderComponent * renderComponent = static_cast<RenderComponent*>(entity->GetComponent(Component::RENDER_COMPONENT));
+		if (renderComponent&&renderComponent->GetRenderObject()&&renderComponent->GetRenderObject()->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
+		{
+			static_cast<ParticleEmitter*>(renderComponent->GetRenderObject())->SetDesiredLodLevel(lodComponent->currentLod);
+		}
+		
 		if (oldLod) 
 		{
-			int32 size = oldLod->nodes.size();
-			for (int i = 0; i < size; i++) 
+			int32 size = lodComponent->lodLayers[oldLod].nodes.size();
+			for (int32 i = 0; i < size; i++) 
 			{
-				oldLod->nodes[i]->SetLodVisible(false);
+				lodComponent->lodLayers[oldLod].nodes[i]->SetLodVisible(false);
 			}
 		}
-		int32 size = lodComponent->currentLod->nodes.size();
-		for (int i = 0; i < size; i++) 
+		int32 size = lodComponent->lodLayers[lodComponent->currentLod].nodes.size();
+		for (int32 i = 0; i < size; i++) 
 		{
-			lodComponent->currentLod->nodes[i]->SetLodVisible(true);
+			lodComponent->lodLayers[lodComponent->currentLod].nodes[i]->SetLodVisible(true);
 		}
 	}
 }
 
 void LodSystem::RecheckLod(Entity * entity)
 {
+	
 	LodComponent * lodComponent = static_cast<LodComponent*>(entity->GetComponent(Component::LOD_COMPONENT));
-	if (!lodComponent->currentLod)return;
+	if (lodComponent->currentLod == LodComponent::INVALID_LOD_LAYER) return;
+
+	int32 layersCount = lodComponent->lodLayers.size();
+	RenderComponent * renderComponent = static_cast<RenderComponent*>(entity->GetComponent(Component::RENDER_COMPONENT));
+	if (renderComponent&&renderComponent->GetRenderObject()&&renderComponent->GetRenderObject()->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
+	{
+		layersCount = LodComponent::MAX_LOD_LAYERS;
+	}
 
 	if(LodComponent::INVALID_LOD_LAYER != lodComponent->forceLodLayer) 
 	{
-		for (Vector<LodComponent::LodData>::iterator it = lodComponent->lodLayers.begin(); it != lodComponent->lodLayers.end(); it++)
+		for (int32 i = 0; i < layersCount; i++)
 		{
-			if (it->layer >= lodComponent->forceLodLayer)
+			if (i >= lodComponent->forceLodLayer)
 			{
-				lodComponent->currentLod = &(*it);
+				lodComponent->currentLod = i;
 				return;
 			}
 		}
@@ -176,13 +198,13 @@ void LodSystem::RecheckLod(Entity * entity)
 			dst = lodComponent->forceDistanceSq;
 		}
 
-		if (dst > lodComponent->GetLodLayerFarSquare(lodComponent->currentLod->layer) || dst < lodComponent->GetLodLayerNearSquare(lodComponent->currentLod->layer))
+		if (dst > lodComponent->GetLodLayerFarSquare(lodComponent->currentLod) || dst < lodComponent->GetLodLayerNearSquare(lodComponent->currentLod))
 		{
-			for (Vector<LodComponent::LodData>::iterator it = lodComponent->lodLayers.begin(); it != lodComponent->lodLayers.end(); it++)
+			for (int32 i=0; i<layersCount; ++i)
 			{
-				if (dst >= lodComponent->GetLodLayerNearSquare(it->layer))
+				if (dst >= lodComponent->GetLodLayerNearSquare(i))
 				{
-					lodComponent->currentLod = &(*it);
+					lodComponent->currentLod = i;
 				}
 				else 
 				{

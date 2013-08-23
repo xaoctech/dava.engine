@@ -371,6 +371,8 @@ public:
 	// This method is called when the emitter is about to remove from Emitters System.
 	virtual void HandleRemoveFromSystem();
 
+	void SetDesiredLodLevel(int32 level);
+
 protected:
 	// Virtual methods which are different for 2D and 3D emitters.
 	virtual void PrepareEmitterParameters(Particle * particle, float32 velocity, int32 emitIndex);
