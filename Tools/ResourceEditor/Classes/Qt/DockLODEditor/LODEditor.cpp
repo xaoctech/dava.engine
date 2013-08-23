@@ -24,6 +24,7 @@
 #include "Classes/Qt/Scene/SceneSignals.h"
 
 #include <QLabel>
+#include <QWidget>
 
 
 struct DistanceWidget
@@ -46,13 +47,16 @@ LODEditor::LODEditor(QWidget* parent)
 	ui(new Ui::LODEditor)
 {
 	ui->setupUi(this);
-    posSaver.Attach(this);
     
     editedLODData = new EditorLODData();
     connect(editedLODData, SIGNAL(DataChanged()), SLOT(LODDataChanged()));
   
 //TODO: remove after lod offsets will be enabled    
-    ui->groupBox->setVisible(false);
+    ui->globalLODSettingsButton->setVisible(false);
+    ui->frameGlobalSettings->setVisible(false);
+    
+    ui->viewLODButton->setDown(true);
+    ui->editLODButton->setDown(true);
     
     
     SetupInternalSignals();
@@ -60,6 +64,8 @@ LODEditor::LODEditor(QWidget* parent)
     
     ForceDistanceStateChanged(Qt::Unchecked);
     LODDataChanged();
+    
+    posSaver.Attach(this);
 }
 
 LODEditor::~LODEditor()
@@ -71,6 +77,11 @@ LODEditor::~LODEditor()
 
 void LODEditor::SetupInternalSignals()
 {
+    connect(ui->globalLODSettingsButton, SIGNAL(released()), SLOT(GlobalSettingsButtonReleased()));
+    connect(ui->viewLODButton, SIGNAL(released()), SLOT(ViewLODButtonReleased()));
+    connect(ui->editLODButton, SIGNAL(released()), SLOT(EditLODButtonReleased()));
+    
+    
     InitCorrectionSpinBox(ui->lod0Correction, 0);
     InitCorrectionSpinBox(ui->lod1Correction, 1);
     InitCorrectionSpinBox(ui->lod2Correction, 2);
@@ -247,4 +258,31 @@ void LODEditor::SetForceLayerValues(int layersCount)
         ui->forceLayer->addItem(Format("%d", i), QVariant(i));
     }
 }
+
+void LODEditor::GlobalSettingsButtonReleased()
+{
+    InvertVisibility(ui->frameGlobalSettings);
+    ui->globalLODSettingsButton->setDown(ui->frameGlobalSettings->isVisible());
+}
+
+void LODEditor::ViewLODButtonReleased()
+{
+    InvertVisibility(ui->frameViewLOD);
+    ui->viewLODButton->setDown(ui->frameViewLOD->isVisible());
+}
+
+void LODEditor::EditLODButtonReleased()
+{
+    InvertVisibility(ui->frameEditLOD);
+    ui->editLODButton->setDown(ui->frameEditLOD->isVisible());
+}
+
+void LODEditor::InvertVisibility(QWidget *widget)
+{
+    bool visible = widget->isVisible();
+    widget->setVisible(!visible);
+}
+
+
+
 
