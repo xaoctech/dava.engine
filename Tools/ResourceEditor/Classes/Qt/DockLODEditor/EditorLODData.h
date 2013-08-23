@@ -30,7 +30,6 @@ public:
     EditorLODData();
     virtual ~EditorLODData();
 
-    void SetupFromEntity(DAVA::Entity *entity);
     void Clear();
     
     DAVA::int32 GetLayersCount() const;
@@ -45,9 +44,9 @@ public:
 
     void SetForceLayer(DAVA::int32 layer);
     DAVA::int32 GetForceLayer() const;
-    
-    void GetDataFromSelection(SceneEditor2 * scene);
-    
+
+    void GetDataFromSelection();
+
 signals:
     
     void DataChanged();
@@ -57,10 +56,17 @@ protected slots:
     void EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity);
 	void EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity);
 
+    void SceneActivated(SceneEditor2 *scene);
+	void SceneDeactivated(SceneEditor2 *scene);
+    void SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent);
+
+    
 protected:
     
-    void GetDataFromEntityRecurcive(DAVA::Entity *entity);
-    
+    void EnumerateSelectionLODs(SceneEditor2 * scene);
+    void EnumerateLODsRecursive(DAVA::Entity *entity, DAVA::Vector<DAVA::LodComponent *> & lods);
+
+    void ResetForceState(DAVA::Entity *entity);
     
 protected:
 
@@ -73,6 +79,8 @@ protected:
     
     
     DAVA::Vector<DAVA::LodComponent *> lodData;
+    
+    SceneEditor2 *activeScene;
 };
 
 #endif //#ifndef __EDITOR_LOD_DATA_H__
