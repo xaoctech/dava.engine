@@ -1,3 +1,19 @@
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
 #include "SceneValidator.h"
 #include "EditorSettings.h"
 
@@ -8,16 +24,19 @@
 #include "../Qt/Scene/SceneDataManager.h"
 #include "../Qt/Scene/SceneData.h"
 #include "../EditorScene.h"
+#include "../StringConstants.h"
 
 #include "../LandscapeEditor/EditorLandscape.h"
 #include "../ParticlesEditorQT/Helpers/ParticlesEditorSceneDataHelper.h"
 
 #include "Scene3D/Components/ComponentHelpers.h"
 
+#include "../CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
+
 SceneValidator::SceneValidator()
 {
-    sceneTextureCount = 0;
-    sceneTextureMemory = 0;
+//    sceneTextureCount = 0;
+//    sceneTextureMemory = 0;
 
     pathForChecking = String("");
 }
@@ -290,34 +309,39 @@ void SceneValidator::ValidateLandscape(Landscape *landscape, Set<String> &errors
 {
     if(!landscape) return;
     
-    EditorLandscape *editorLandscape = dynamic_cast<EditorLandscape *>(landscape);
-    if(editorLandscape)
-    {
-        return;
-    }
+	if(dynamic_cast<EditorLandscape *>(landscape)) return;
     
-    
-    for(int32 i = 0; i < Landscape::TEXTURE_COUNT; ++i)
-    {
-        if(		(Landscape::TEXTURE_DETAIL == (Landscape::eTextureLevel)i)
-           ||	(Landscape::TEXTURE_TILE_FULL == (Landscape::eTextureLevel)i
-                 &&	(landscape->GetTiledShaderMode() == Landscape::TILED_MODE_TILEMASK
-                 || landscape->GetTiledShaderMode() == Landscape::TILED_MODE_TILE_DETAIL_MASK)))
-        {
-            continue;
-        }
-        
-		// TODO:
-		// new texture path
-		DAVA::FilePath landTexName = landscape->GetTextureName((Landscape::eTextureLevel)i);
-		if(!IsTextureDescriptorPath(landTexName))
+
+	if(landscape->GetTiledShaderMode() == Landscape::TILED_MODE_TILE_DETAIL_MASK)
+	{
+		for(int32 i = 0; i < Landscape::TEXTURE_COUNT; ++i)
 		{
-			landscape->SetTextureName((Landscape::eTextureLevel)i, TextureDescriptor::GetDescriptorPathname(landTexName));
+			Landscape::eTextureLevel texLevel = (Landscape::eTextureLevel)i;
+			if(texLevel == Landscape::TEXTURE_COLOR || texLevel == Landscape::TEXTURE_TILE_MASK || texLevel == Landscape::TEXTURE_TILE0)
+			{
+				ValidateLandscapeTexture(landscape, texLevel, errorsLog);
+			}
 		}
-        
-        ValidateTexture(landscape->GetTexture((Landscape::eTextureLevel)i), landscape->GetTextureName((Landscape::eTextureLevel)i), Format("Landscape. TextureLevel %d", i), errorsLog);
-    }
-    
+	}
+	else
+	{
+		for(int32 i = 0; i < Landscape::TEXTURE_COUNT; ++i)
+		{
+			Landscape::eTextureLevel texLevel = (Landscape::eTextureLevel)i;
+			if(		(Landscape::TEXTURE_DETAIL == texLevel)
+				||	(Landscape::TEXTURE_TILE_FULL == texLevel
+				&&	(landscape->GetTiledShaderMode() == Landscape::TILED_MODE_TILEMASK
+				|| landscape->GetTiledShaderMode() == Landscape::TILED_MODE_TILE_DETAIL_MASK)))
+			{
+				continue;
+			}
+
+			ValidateLandscapeTexture(landscape, texLevel, errorsLog);
+		}
+	}
+
+
+	//validate heightmap
     bool pathIsCorrect = ValidatePathname(landscape->GetHeightmapPathname(), String("Landscape. Heightmap."));
     if(!pathIsCorrect)
     {
@@ -325,6 +349,18 @@ void SceneValidator::ValidateLandscape(Landscape *landscape, Set<String> &errors
         errorsLog.insert("Wrong path of Heightmap: " + path);
     }
 }
+
+void SceneValidator::ValidateLandscapeTexture(Landscape *landscape, Landscape::eTextureLevel texLevel, Set<String> &errorsLog)
+{
+	DAVA::FilePath landTexName = landscape->GetTextureName(texLevel);
+	if(!IsTextureDescriptorPath(landTexName))
+	{
+		landscape->SetTextureName(texLevel, TextureDescriptor::GetDescriptorPathname(landTexName));
+	}
+
+	ValidateTexture(landscape->GetTexture(texLevel), landscape->GetTextureName(texLevel), Format("Landscape. TextureLevel %d", texLevel), errorsLog);
+}
+
 
 void SceneValidator::ConvertLightmapSizeFromProperty(Entity *ownerNode, InstanceMaterialState *materialState)
 {
@@ -345,7 +381,7 @@ void SceneValidator::ConvertLightmapSizeFromProperty(Entity *ownerNode, Instance
 bool SceneValidator::NodeRemovingDisabled(Entity *node)
 {
     KeyedArchive *customProperties = node->GetCustomProperties();
-    return (customProperties && customProperties->IsKeyExists("editor.donotremove"));
+    return (customProperties && customProperties->IsKeyExists(ResourceEditor::EDITOR_DO_NOT_REMOVE));
 }
 
 
@@ -375,7 +411,7 @@ void SceneValidator::ValidateTexture(Texture *texture, const FilePath &texturePa
 		if(!IsFBOTexture(texture))
 		{
 			// if there is no descriptor file for this texture - generate it
-			CreateDescriptorIfNeed(texturePathname);
+			TextureDescriptorUtils::CreateDescriptorIfNeed(texturePathname);
 		}
 	}
 	else
@@ -396,54 +432,54 @@ void SceneValidator::ValidateTexture(Texture *texture, const FilePath &texturePa
 
 
 
-void SceneValidator::EnumerateSceneTextures()
-{
-    SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
-    DVASSERT_MSG(sceneData, "Illegal situation");
-    
-    Map<String, Texture *> textureMap;
-    SceneDataManager::EnumerateTextures(sceneData->GetScene(), textureMap);
-    sceneTextureCount = textureMap.size();
+//void SceneValidator::EnumerateSceneTextures()
+//{
+//    SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
+//    DVASSERT_MSG(sceneData, "Illegal situation");
+//    
+//    Map<String, Texture *> textureMap;
+//    SceneDataManager::EnumerateTextures(sceneData->GetScene(), textureMap);
+//    sceneTextureCount = textureMap.size();
+//
+//    KeyedArchive *settings = EditorSettings::Instance()->GetSettings();
+//    String projectPath = settings->GetString("ProjectPath");
+//
+//    sceneTextureMemory = 0;
+//	for(Map<String, Texture *>::const_iterator it = textureMap.begin(); it != textureMap.end(); ++it)
+//	{
+//		Texture *t = it->second;
+//        if(String::npos == t->GetPathname().GetAbsolutePathname().find(projectPath))
+//        {   // skip all textures that are not related the scene
+//            continue;
+//        }
+//
+//        
+//        if(String::npos != t->GetPathname().GetAbsolutePathname().find(projectPath))
+//        {   //We need real info about textures size. In Editor on desktop pvr textures are decompressed to RGBA8888, so they have not real size.
+//            FilePath imageFileName = TextureDescriptor::GetPathnameForFormat(t->GetPathname(), t->GetSourceFileFormat());
+//            switch (t->GetSourceFileFormat())
+//            {
+//                case DAVA::PVR_FILE:
+//                {
+//                    sceneTextureMemory += LibPVRHelper::GetDataLength(imageFileName);
+//                    break;
+//                }
+//                    
+//                case DAVA::DXT_FILE:
+//                {
+//                    sceneTextureMemory += (int32)LibDxtHelper::GetDataSize(imageFileName);
+//                    break;
+//                }
+//                    
+//                default:
+//                    sceneTextureMemory += t->GetDataSize();
+//                    break;
+//            }
+//        }
+//	}
+//}
 
-    KeyedArchive *settings = EditorSettings::Instance()->GetSettings();
-    String projectPath = settings->GetString("ProjectPath");
-
-    sceneTextureMemory = 0;
-	for(Map<String, Texture *>::const_iterator it = textureMap.begin(); it != textureMap.end(); ++it)
-	{
-		Texture *t = it->second;
-        if(String::npos == t->GetPathname().GetAbsolutePathname().find(projectPath))
-        {   // skip all textures that are not related the scene
-            continue;
-        }
-
-        
-        if(String::npos != t->GetPathname().GetAbsolutePathname().find(projectPath))
-        {   //We need real info about textures size. In Editor on desktop pvr textures are decompressed to RGBA8888, so they have not real size.
-            FilePath imageFileName = TextureDescriptor::GetPathnameForFormat(t->GetPathname(), t->GetSourceFileFormat());
-            switch (t->GetSourceFileFormat())
-            {
-                case DAVA::PVR_FILE:
-                {
-                    sceneTextureMemory += LibPVRHelper::GetDataLength(imageFileName);
-                    break;
-                }
-                    
-                case DAVA::DXT_FILE:
-                {
-                    sceneTextureMemory += (int32)LibDxtHelper::GetDataSize(imageFileName);
-                    break;
-                }
-                    
-                default:
-                    sceneTextureMemory += t->GetDataSize();
-                    break;
-            }
-        }
-	}
-}
-
-bool SceneValidator::WasTextureChanged(Texture *texture, ImageFileFormat fileFormat)
+bool SceneValidator::WasTextureChanged(Texture *texture, eGPUFamily forGPU)
 {
     if(IsFBOTexture(texture))
     {
@@ -451,7 +487,7 @@ bool SceneValidator::WasTextureChanged(Texture *texture, ImageFileFormat fileFor
     }
     
     FilePath texturePathname = texture->GetPathname();
-    return (IsPathCorrectForProject(texturePathname) && IsTextureChanged(texturePathname, fileFormat));
+    return (IsPathCorrectForProject(texturePathname) && IsTextureChanged(texturePathname, forGPU));
 }
 
 bool SceneValidator::IsFBOTexture(Texture *texture)
@@ -495,7 +531,7 @@ bool SceneValidator::ValidateTexturePathname(const FilePath &pathForValidation, 
 			return false;
 		}
 
-		CreateDescriptorIfNeed(pathForValidation);
+        TextureDescriptorUtils::CreateDescriptorIfNeed(pathForValidation);
 	}
 	else
 	{
@@ -561,24 +597,6 @@ bool SceneValidator::ValidateHeightmapPathname(const FilePath &pathForValidation
 }
 
 
-void SceneValidator::CreateDescriptorIfNeed(const FilePath &forPathname)
-{
-    FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(forPathname);
-    if(! FileSystem::Instance()->IsFile(descriptorPathname))
-    {
-		Logger::Warning("[SceneValidator::CreateDescriptorIfNeed] Need descriptor for file %s", forPathname.GetAbsolutePathname().c_str());
-        
-		TextureDescriptor *descriptor = new TextureDescriptor();
-		descriptor->textureFileFormat = PNG_FILE;
-        
-        FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(forPathname);
-		descriptor->Save(descriptorPathname);
-
-        SafeRelease(descriptor);
-    }
-}
-
-
 bool SceneValidator::ValidatePathname(const FilePath &pathForValidation, const String &validatedObjectName)
 {
     DVASSERT(!pathForChecking.IsEmpty());
@@ -631,19 +649,27 @@ int32 SceneValidator::EnumerateSceneNodes(DAVA::Entity *node)
 }
 
 
-bool SceneValidator::IsTextureChanged(const FilePath &texturePathname, ImageFileFormat fileFormat)
+bool SceneValidator::IsTextureChanged(const FilePath &texturePathname, eGPUFamily forGPU)
 {
     bool isChanged = false;
 
 	TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(texturePathname);
     if(descriptor)
     {
-        isChanged = descriptor->IsSourceChanged(fileFormat);
+        isChanged = IsTextureChanged(descriptor, forGPU);
         SafeRelease(descriptor);
     }
 
     return isChanged;
 }
+
+bool SceneValidator::IsTextureChanged(const TextureDescriptor *descriptor, eGPUFamily forGPU)
+{
+    DVASSERT(descriptor);
+    
+    return !descriptor->IsCompressedTextureActual(forGPU);
+}
+
 
 bool SceneValidator::IsTextureDescriptorPath(const FilePath &path)
 {
@@ -652,33 +678,6 @@ bool SceneValidator::IsTextureDescriptorPath(const FilePath &path)
 
 
 
-void SceneValidator::CreateDefaultDescriptors(const FilePath &folderPathname)
-{
-	FileList * fileList = new FileList(folderPathname);
-    if(!fileList) return;
-    
-	for (int32 fi = 0; fi < fileList->GetCount(); ++fi)
-	{
-		if (fileList->IsDirectory(fi))
-		{
-            String name = fileList->GetFilename(fi);
-            
-            if(0 != CompareCaseInsensitive(String(".svn"), name) && !fileList->IsNavigationDirectory(fi))
-            {
-                CreateDefaultDescriptors(fileList->GetPathname(fi));
-            }
-		}
-        else
-        {
-			if(fileList->GetPathname(fi).IsEqualToExtension(".png"))
-            {
-                CreateDescriptorIfNeed(fileList->GetPathname(fi));
-            }
-        }
-	}
-
-	SafeRelease(fileList);
-}
 
 
 

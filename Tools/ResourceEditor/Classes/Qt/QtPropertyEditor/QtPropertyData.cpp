@@ -1,3 +1,19 @@
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
 #include <QPushButton>
 #include "QtPropertyEditor/QtPropertyData.h"
 
@@ -39,15 +55,20 @@ QtPropertyData::~QtPropertyData()
 
 QVariant QtPropertyData::GetValue()
 {
-	QVariant value = GetValueInternal();
+	QVariant internalValue = GetValueInternal();
 
-	if(value != curValue)
+	if(internalValue != curValue)
 	{
-		curValue = value;
+		curValue = internalValue;
 		ChildNeedUpdate();
 	}
 
 	return curValue;
+}
+
+QVariant QtPropertyData::GetAlias()
+{
+	return GetValueAlias();
 }
 
 void QtPropertyData::SetValue(const QVariant &value)
@@ -86,7 +107,11 @@ int QtPropertyData::GetFlags()
 
 void QtPropertyData::SetFlags(int flags)
 {
-	curFlags = flags;
+	if(curFlags != flags)
+	{
+		curFlags = flags;
+		emit FlagsChanged();
+	}
 }
 
 QWidget* QtPropertyData::CreateEditor(QWidget *parent, const QStyleOptionViewItem& option) 
@@ -94,14 +119,14 @@ QWidget* QtPropertyData::CreateEditor(QWidget *parent, const QStyleOptionViewIte
 	return CreateEditorInternal(parent, option);
 }
 
-void QtPropertyData::EditorDone(QWidget *editor)
+bool QtPropertyData::EditorDone(QWidget *editor)
 {
-    EditorDoneInternal(editor);
+    return EditorDoneInternal(editor);
 }
 
-void QtPropertyData::SetEditorData(QWidget *editor)
+bool QtPropertyData::SetEditorData(QWidget *editor)
 {
-    SetEditorDataInternal(editor);
+    return SetEditorDataInternal(editor);
 }
 
 void QtPropertyData::ParentUpdate()
@@ -274,6 +299,13 @@ QVariant QtPropertyData::GetValueInternal()
 	return curValue;
 }
 
+QVariant QtPropertyData::GetValueAlias()
+{
+	// should be re-implemented by sub-class
+
+	return QVariant();
+}
+
 void QtPropertyData::SetValueInternal(const QVariant &value)
 {
 	// should be re-implemented by sub-class
@@ -288,14 +320,16 @@ QWidget* QtPropertyData::CreateEditorInternal(QWidget *parent, const QStyleOptio
 	return NULL;
 }
 
-void QtPropertyData::EditorDoneInternal(QWidget *editor)
+bool QtPropertyData::EditorDoneInternal(QWidget *editor)
 {
 	// should be re-implemented by sub-class
+	return false;
 }
 
-void QtPropertyData::SetEditorDataInternal(QWidget *editor)
+bool QtPropertyData::SetEditorDataInternal(QWidget *editor)
 {
 	// should be re-implemented by sub-class
+	return false;
 }
 
 void QtPropertyData::ChildChanged(const QString &key, QtPropertyData *data)

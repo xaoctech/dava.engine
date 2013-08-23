@@ -31,11 +31,11 @@ public:
 	TexturePacker();
 	
 	// pack textures to single texture
-	void PackToTextures(const FilePath & excludeFolder, const FilePath & outputPath, List<DefinitionFile*> & defsList);
+	void PackToTextures(const FilePath & excludeFolder, const FilePath & outputPath, List<DefinitionFile*> & defsList, eGPUFamily forGPU);
 	// page each PSD file to separate texture
-	void PackToTexturesSeparate(const FilePath & excludeFolder, const FilePath & outputPath, List<DefinitionFile*> & defsList);
+	void PackToTexturesSeparate(const FilePath & excludeFolder, const FilePath & outputPath, List<DefinitionFile*> & defsList, eGPUFamily forGPU);
 	// pack one sprite and use several textures if more than one needed
-	void PackToMultipleTextures(const FilePath & excludeFolder, const FilePath & outputPath, List<DefinitionFile*> & remainingList);
+	void PackToMultipleTextures(const FilePath & excludeFolder, const FilePath & outputPath, List<DefinitionFile*> & remainingList, eGPUFamily forGPU);
 
 	bool TryToPack(const Rect2i & textureRect, List<DefinitionFile*> & defsList);
 	bool WriteDefinition(const FilePath & excludeFolder, const FilePath & outputPath, const String & textureName, DefinitionFile * defFile);
@@ -52,9 +52,10 @@ public:
 	
 private:
     
-    void ExportImage(PngImageExt *image, const FilePath &exportedPathname);
-    TextureDescriptor * CreateDescriptor();
-    PixelFormat DetectPixelFormatFromFlags();
+    void ExportImage(PngImageExt *image, const FilePath &exportedPathname, eGPUFamily forGPU);
+    TextureDescriptor * CreateDescriptor(eGPUFamily forGPU);
+    
+    bool CheckFrameSize(const Size2i &spriteSize, const Size2i &frameSize);
     
     
 	ImagePacker *			lastPackedPacker;
@@ -64,6 +65,8 @@ private:
 	int32 maxTextureSize;
 
 	bool onlySquareTextures;
+    bool NeedSquareTextureForCompression(eGPUFamily forGPU);
+	bool IsFormatSupportedForGPU(PixelFormat format, eGPUFamily forGPU);
 };
 
 };
