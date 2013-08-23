@@ -52,7 +52,7 @@ static const QString RES_HEADER = "~res:";
 // True type fonts resource folder path
 static const String FONTS_RES_PATH("~res:/Fonts/");
 // Graphics fonts definition resource folder path
-static const String GRAPHICS_FONTS_RES_PATH("~res:/Fontdef/");
+static const String GRAPHICS_FONTS_RES_PATH("~res:/Fonts/");
 // Button background image path
 static const String BACKGROUND_IMAGE_PATH("~res:/Images/buttonBg.png");
 // Help contents path

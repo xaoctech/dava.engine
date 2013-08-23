@@ -112,5 +112,10 @@ ShadowRect * ShadowVolumeRenderPass::GetShadowRect() const
     return shadowRect;
 }
 
+ShadowVolumeRenderPass::eBlend ShadowVolumeRenderPass::GetBlendMode() const
+{
+	return blendMode;
+}
+
     
 };
