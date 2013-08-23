@@ -40,6 +40,11 @@ public:
 
 protected slots:
 
+    void GlobalSettingsButtonReleased();
+    void ViewLODButtonReleased();
+    void EditLODButtonReleased();
+    
+    
     void LODCorrectionChanged(double value);
     void ForceDistanceStateChanged(int checked);
     void ForceDistanceChanged(int distance);
@@ -69,6 +74,8 @@ protected:
     
     void SetSpinboxValue(QDoubleSpinBox *spinbox, double value);
     void SetForceLayerValues(int layersCount);
+    
+    void InvertVisibility(QWidget *widget);
     
 private:
 	Ui::LODEditor *ui;
