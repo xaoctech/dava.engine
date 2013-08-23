@@ -163,7 +163,7 @@ void LodSystem::RecheckLod(Entity * entity)
 
 	{
 		float32 dst = 0.f;
-		if(LodComponent::INVALID_DISTANCE == lodComponent->forceDistance)
+		if (lodComponent->forceDistance < 0) //LodComponent::INVALID_DISTANCE
 		{
 			if(camera)
 			{
