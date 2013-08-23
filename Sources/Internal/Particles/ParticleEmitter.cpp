@@ -41,6 +41,11 @@ ParticleEmitter::ParticleEmitter()
 	bbox = AABBox3(Vector3(), Vector3());
 	parentParticle = NULL;
 	deferredTimeElapsed = 0.0f;
+
+	currentLodLevel = 0;
+	desiredLodLevel = 0;
+	shortEffect = false;
+	lodLevelLocked = false;
 }
 
 ParticleEmitter::~ParticleEmitter()
@@ -266,7 +271,19 @@ ParticleLayer* ParticleEmitter::GetNextLayer(ParticleLayer* layer)
 
 void ParticleEmitter::SetDesiredLodLevel(int32 level)
 {
-	int32 qqq = level;
+	desiredLodLevel = level;
+	if (!lodLevelLocked){
+		currentLodLevel = desiredLodLevel;
+	}
+}
+
+bool ParticleEmitter::IsShortEffect()
+{
+	return shortEffect;
+}
+void ParticleEmitter::SetShortEffect(bool isShort)
+{
+	shortEffect = isShort;
 }
 
 void ParticleEmitter::Play()
@@ -303,6 +320,8 @@ void ParticleEmitter::DoRestart(bool isDeleteAllParticles)
 
 	time = 0.0f;
 	repeatCount = 0;
+	lodLevelLocked = false;
+	currentLodLevel = desiredLodLevel;
 }
 
 void ParticleEmitter::DeferredUpdate(float32 timeElapsed)
@@ -347,8 +366,11 @@ void ParticleEmitter::Update(float32 timeElapsed)
 	for(it = layers.begin(); it != layers.end(); ++it)
 	{
         if(!(*it)->GetDisabled())
-            (*it)->Update(timeElapsed);
+            (*it)->Update(timeElapsed, (*it)->IsLodActive(currentLodLevel));
 	}
+
+	if (shortEffect)
+		lodLevelLocked = true;
 }
 
 void ParticleEmitter::RenderUpdate(Camera *camera, float32 timeElapsed)

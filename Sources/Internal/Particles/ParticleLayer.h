@@ -155,7 +155,7 @@ public:
 	/**
 		\brief This function updates layer properties and layer particles. 
 	 */
-	void Update(float32 timeElapsed);
+	void Update(float32 timeElapsed, bool generateNewParticles = true);
 	
 	/**
 		\brief This function draws layer properties and layer particles. 
@@ -249,6 +249,9 @@ public:
 	// Handle the situation when layer is removed from the system.
 	void HandleRemoveFromSystem();
 
+	bool IsLodActive(int32 lod);
+	void SetLodActive(int32 lod, bool active);	
+
 protected:
 	void GenerateNewParticle(int32 emitIndex);
 	void GenerateSingleParticle();
@@ -306,6 +309,8 @@ protected:
 	float32		playbackSpeed;
 
 	Vector2		layerPivotPoint;
+
+	Vector<bool> activeLODS;	
 
 public:
 	String			layerName;
