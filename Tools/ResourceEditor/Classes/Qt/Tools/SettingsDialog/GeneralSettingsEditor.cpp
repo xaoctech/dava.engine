@@ -17,52 +17,71 @@
 #include "GeneralSettingsEditor.h"
 #include "SceneEditor/EditorSettings.h"
 #include <QHeaderView>
+#include "../../Settings/SettingsManager.h"
+#include "../StringConstants.h"
 
-#define SETTINGS_SCREEN_WIDTH		"settingsdialog.screenwidth"
-#define SETTINGS_SCREEN_HEIGHT		"settingsdialog.screenheight"
-#define SETTINGS_LANGUAGE			"settingsdialog.language"
-#define SETTINGS_OUTPUT				"settingsdialog.output"
-#define SETTINGS_CAMERA_SPEED_1		"settingsdialog.cameraspeed1"
-#define SETTINGS_CAMERA_SPEED_2		"settingsdialog.cameraspeed2"
-#define SETTINGS_CAMERA_SPEED_3		"settingsdialog.cameraspeed3"
-#define SETTINGS_CAMERA_SPEED_4		"settingsdialog.cameraspeed4"
-#define SETTINGS_LEFTPANE_WIDTH		"settingsdialog.leftpanelwidth"
-#define SETTINGS_RIGHTPANE_WIDTH	"settingsdialog.rightpanelwidth"
-#define SETTINGS_DRAW_GRID			"settingsdialog.drawgrid"
-#define SETTINGS_IMPOSTERS			"settingsdialog.imposters"
-#define SETTINGS_DESIGNER_NAME		"settingsdialog.designername"
-#define SETTINGS_PREVIEW_AT_LIBRARY	"Enable Preview at Library"
+#define SETTINGS_LOCALIZATION_SCREEN_WIDTH			"settingsdialog.screenwidth"
+#define SETTINGS_LOCALIZATION_SCREEN_HEIGHT			"settingsdialog.screenheight"
+#define SETTINGS_LOCALIZATION_LANGUAGE				"settingsdialog.language"
+#define SETTINGS_LOCALIZATION_OUTPUT				"settingsdialog.output"
+#define SETTINGS_LOCALIZATION_CAMERA_SPEED_1		"settingsdialog.cameraspeed1"
+#define SETTINGS_LOCALIZATION_CAMERA_SPEED_2		"settingsdialog.cameraspeed2"
+#define SETTINGS_LOCALIZATION_CAMERA_SPEED_3		"settingsdialog.cameraspeed3"
+#define SETTINGS_LOCALIZATION_CAMERA_SPEED_4		"settingsdialog.cameraspeed4"
+#define SETTINGS_LOCALIZATION_LEFTPANE_WIDTH		"settingsdialog.leftpanelwidth"
+#define SETTINGS_LOCALIZATION_RIGHTPANE_WIDTH		"settingsdialog.rightpanelwidth"
+#define SETTINGS_LOCALIZATION_DRAW_GRID				"settingsdialog.drawgrid"
+#define SETTINGS_LOCALIZATION_IMPOSTERS				"settingsdialog.imposters"
+#define SETTINGS_LOCALIZATION_DESIGNER_NAME			"settingsdialog.designername"
+#define SETTINGS_LOCALIZATION_PREVIEW_AT_LIBRARY	"Enable Preview at Library"
 
-#define INITIALIZE_PROPERTY(propertyInstanceName, settingsGetterName, configName)\
-	propertyInstanceName = new QtPropertyDataDavaVariant(VariantType(EditorSettings::Instance()->settingsGetterName));\
-	AppendProperty(QString((WStringToString(LocalizedString(configName))).c_str()),	propertyInstanceName, NULL);\
-	connect(propertyInstanceName,SIGNAL(ValueChanged()),this, SLOT(OnValueChanged()));\
-	propertiesSet.push_back(propertyInstanceName);
+#define INITIALIZE_PROPERTY_WITH_ARGUMENTS(propertyName, configName, localizationName, argumentsList)\
+	QtPropertyDataDavaVariant* propertyName = new QtPropertyDataDavaVariant(VariantType(SettingsManager::Instance()->GetValue(DAVA::String(configName), argumentsList)));\
+	AppendProperty(QString((WStringToString(LocalizedString(localizationName))).c_str()),	propertyName, NULL);\
+	connect(propertyName,SIGNAL(ValueChanged()),this, SLOT(OnValueChanged()));\
+	propertiesMap[propertyName] = std::make_pair(DAVA::String(configName), argumentsList);
 
-void GeneralSettingsEditor::InitializeProperties() {
-	INITIALIZE_PROPERTY(propertyScreenWidth,	GetScreenWidth(),			SETTINGS_SCREEN_WIDTH)
-	INITIALIZE_PROPERTY(propertyScreenHeight,	GetScreenHeight(),			SETTINGS_SCREEN_HEIGHT)
-	INITIALIZE_PROPERTY(propertyLanguage,		GetLanguage(),				SETTINGS_LANGUAGE)
-	INITIALIZE_PROPERTY(propertyOutput,			GetShowOutput(),			SETTINGS_OUTPUT)
-	INITIALIZE_PROPERTY(propertyCameraSpeed1,	GetCameraSpeed(0),			SETTINGS_CAMERA_SPEED_1)
-	INITIALIZE_PROPERTY(propertyCameraSpeed2,	GetCameraSpeed(1),			SETTINGS_CAMERA_SPEED_2)
-	INITIALIZE_PROPERTY(propertyCameraSpeed3,	GetCameraSpeed(2),			SETTINGS_CAMERA_SPEED_3)
-	INITIALIZE_PROPERTY(propertyCameraSpeed4,	GetCameraSpeed(3),			SETTINGS_CAMERA_SPEED_4)
-	INITIALIZE_PROPERTY(propertyLeftpaneWidth,	GetLeftPanelWidth(),		SETTINGS_LEFTPANE_WIDTH)
-	INITIALIZE_PROPERTY(propertyRightpaneWidth,	GetRightPanelWidth(),		SETTINGS_RIGHTPANE_WIDTH)
-	INITIALIZE_PROPERTY(propertyDrawGrid,		GetDrawGrid(),				SETTINGS_DRAW_GRID)
-	INITIALIZE_PROPERTY(propertyImposters,		GetEnableImposters(),		SETTINGS_IMPOSTERS)
-	INITIALIZE_PROPERTY(propertyDesignerName,	GetDesignerName(),			SETTINGS_DESIGNER_NAME)
-	INITIALIZE_PROPERTY(propertyPreviewAtLibrary,GetPreviewDialogEnabled(),	SETTINGS_PREVIEW_AT_LIBRARY)
+#define INITIALIZE_PROPERTY(propertyName, configName, localizationName)\
+	QtPropertyDataDavaVariant* propertyName = new QtPropertyDataDavaVariant(VariantType(SettingsManager::Instance()->GetValue(DAVA::String(configName))));\
+	AppendProperty(QString((WStringToString(LocalizedString(localizationName))).c_str()),	propertyName, NULL);\
+	connect(propertyName,SIGNAL(ValueChanged()),this, SLOT(OnValueChanged()));\
+	propertiesMap[propertyName] = std::make_pair(DAVA::String(configName), DAVA::List<DAVA::VariantType>());
+
+
+void GeneralSettingsEditor::InitializeProperties()
+{
+	DAVA::List<DAVA::VariantType> argumentsSpeed0;
+	argumentsSpeed0.push_back(VariantType(0));
+	DAVA::List<DAVA::VariantType> argumentsSpeed1;
+	argumentsSpeed1.push_back(VariantType(1));
+	DAVA::List<DAVA::VariantType> argumentsSpeed2;
+	argumentsSpeed2.push_back(VariantType(2));
+	DAVA::List<DAVA::VariantType> argumentsSpeed3;
+	argumentsSpeed3.push_back(VariantType(3));
+		
+	INITIALIZE_PROPERTY(propertyScreenWidth, ResourceEditor::SETTINGS_SCREEN_WIDTH, SETTINGS_LOCALIZATION_SCREEN_WIDTH)
+	INITIALIZE_PROPERTY(propertyScreenHeight,ResourceEditor::SETTINGS_SCREEN_HEIGHT, SETTINGS_LOCALIZATION_SCREEN_HEIGHT)
+	INITIALIZE_PROPERTY(propertyLanguage, ResourceEditor::SETTINGS_LANGUAGE, SETTINGS_LOCALIZATION_LANGUAGE)
+	INITIALIZE_PROPERTY(propertyOutput, ResourceEditor::SETTINGS_SHOW_OUTPUT, SETTINGS_LOCALIZATION_OUTPUT)
+	INITIALIZE_PROPERTY_WITH_ARGUMENTS(propertyCameraSpeed1, ResourceEditor::SETTINGS_CAMERA_SPEED_VALUE, SETTINGS_LOCALIZATION_CAMERA_SPEED_1, argumentsSpeed0)
+	INITIALIZE_PROPERTY_WITH_ARGUMENTS(propertyCameraSpeed2, ResourceEditor::SETTINGS_CAMERA_SPEED_VALUE, SETTINGS_LOCALIZATION_CAMERA_SPEED_2, argumentsSpeed1)
+	INITIALIZE_PROPERTY_WITH_ARGUMENTS(propertyCameraSpeed3, ResourceEditor::SETTINGS_CAMERA_SPEED_VALUE, SETTINGS_LOCALIZATION_CAMERA_SPEED_3, argumentsSpeed2)
+	INITIALIZE_PROPERTY_WITH_ARGUMENTS(propertyCameraSpeed4, ResourceEditor::SETTINGS_CAMERA_SPEED_VALUE, SETTINGS_LOCALIZATION_CAMERA_SPEED_4, argumentsSpeed3)
+	INITIALIZE_PROPERTY(propertyLeftpaneWidth, ResourceEditor::SETTINGS_LEFT_PANEL_WIDTH, SETTINGS_LOCALIZATION_LEFTPANE_WIDTH)
+	INITIALIZE_PROPERTY(propertyRightpaneWidth, ResourceEditor::SETTINGS_RIGHT_PANEL_WIDTH, SETTINGS_LOCALIZATION_RIGHTPANE_WIDTH)
+	INITIALIZE_PROPERTY(propertyDrawGrid, ResourceEditor::SETTINGS_DRAW_GRID, SETTINGS_LOCALIZATION_DRAW_GRID)
+	INITIALIZE_PROPERTY(propertyImposters, ResourceEditor::SETTINGS_ENABLE_IMPOSTERS, SETTINGS_LOCALIZATION_IMPOSTERS)
+	INITIALIZE_PROPERTY(propertyDesignerName, ResourceEditor::SETTINGS_DESIGNER_NAME, SETTINGS_LOCALIZATION_DESIGNER_NAME)
+	INITIALIZE_PROPERTY(propertyPreviewAtLibrary, ResourceEditor::SETTINGS_PREVIEW_DIALOG_ENABLED, SETTINGS_LOCALIZATION_PREVIEW_AT_LIBRARY)
+	
+	propertyLanguage->AddAllowedValue(DAVA::VariantType(String("en")), "en");
+	propertyLanguage->AddAllowedValue(DAVA::VariantType(String("ru")), "ru");
 }
 
 GeneralSettingsEditor::GeneralSettingsEditor( QWidget* parent)
 		:QtPropertyEditor(parent)
 {
 	InitializeProperties();
-
-	propertyLanguage->AddAllowedValue(DAVA::VariantType(String("en")), "en");
-	propertyLanguage->AddAllowedValue(DAVA::VariantType(String("ru")), "ru");
 
 	expandAll();
 
@@ -71,11 +90,12 @@ GeneralSettingsEditor::GeneralSettingsEditor( QWidget* parent)
 
 GeneralSettingsEditor::~GeneralSettingsEditor()
 {
-	Q_FOREACH(QtPropertyDataDavaVariant * item, propertiesSet)
+	for (DAVA::Map<QtPropertyDataDavaVariant *, std::pair<DAVA::String, DAVA::List<DAVA::VariantType> > >::iterator it= propertiesMap.begin(); it != propertiesMap.end(); ++it)
 	{
-		delete item;
+		delete it->first;
 	}
-	propertiesSet.clear();
+	
+	propertiesMap.clear();
 }
 
 void GeneralSettingsEditor::OnValueChanged()
@@ -85,64 +105,8 @@ void GeneralSettingsEditor::OnValueChanged()
 	{
 		return;
 	}
+	VariantType senderContent(sender->GetVariantValue());
 	
-	if(sender == propertyScreenWidth)
-	{
-		EditorSettings::Instance()->SetScreenWidth(sender->GetValue().toInt());
-	}
-	else if(sender == propertyScreenHeight)
-	{
-		EditorSettings::Instance()->SetScreenHeight(sender->GetValue().toInt());
-	}
-	else if(sender == propertyLanguage)
-	{
-		EditorSettings::Instance()->SetLanguage(sender->GetValue().toString().toStdString());
-	}
-	else if(sender == propertyOutput)
-	{
-		EditorSettings::Instance()->SetShowOuput(sender->GetValue().toBool());
-	}
-	else if(sender == propertyCameraSpeed1)
-	{
-		EditorSettings::Instance()->SetCameraSpeed(0, sender->GetValue().toFloat());
-	}
-	else if(sender == propertyCameraSpeed2)
-	{
-		EditorSettings::Instance()->SetCameraSpeed(1, sender->GetValue().toFloat());
-	}
-	else if(sender == propertyCameraSpeed3)
-	{
-		EditorSettings::Instance()->SetCameraSpeed(2, sender->GetValue().toFloat());
-	}
-	else if(sender == propertyCameraSpeed4)
-	{
-		EditorSettings::Instance()->SetCameraSpeed(3, sender->GetValue().toFloat());
-	}
-	else if(sender == propertyLeftpaneWidth)
-	{
-		EditorSettings::Instance()->SetLeftPanelWidth(sender->GetValue().toInt());
-	}
-	else if(sender == propertyRightpaneWidth)
-	{
-		EditorSettings::Instance()->SetRightPanelWidth(sender->GetValue().toInt());
-	}
-	else if(sender == propertyDrawGrid)
-	{
-		EditorSettings::Instance()->SetDrawGrid(sender->GetValue().toBool());
-	}
-	else if(sender == propertyImposters)
-	{
-		EditorSettings::Instance()->SetEnableImposters(sender->GetValue().toBool());
-	}
-	else if(sender == propertyDesignerName)
-	{
-		EditorSettings::Instance()->SetDesignerName(sender->GetValue().toString().toStdString());
-	}
-	else if(sender == propertyPreviewAtLibrary)
-	{
-		EditorSettings::Instance()->SetPreviewDialogEnabled(sender->GetValue().toBool());
-	}
-	
-	EditorSettings::Instance()->Save();
+	SettingsManager::Instance()->SetValue(propertiesMap[sender].first, senderContent, propertiesMap[sender].second);
 }
 
