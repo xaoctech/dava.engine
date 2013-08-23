@@ -13,61 +13,30 @@
     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
-#include "Classes/UI/librarywidget.h"
-#include "ui_librarywidget.h"
-#include "LibraryController.h"
-#include "IconHelper.h"
+
+#ifndef CHANGEALIGNPROPERTYCOMMAND_H
+#define CHANGEALIGNPROPERTYCOMMAND_H
+
+#include "BaseCommand.h"
+#include "HierarchyTreeNode.h"
+#include "PropertyGridWidgetData.h"
+#include "PropertiesHelper.h"
+#include "ChangePropertyCommand.h"
 
 using namespace DAVA;
 
-#define TEXT_ID 0
-
-LibraryWidget::LibraryWidget(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::LibraryWidget)
+class ChangeAlignPropertyCommand: public ChangePropertyCommand<bool>
 {
-    ui->setupUi(this);
-	ui->treeWidget->clear();
-	LibraryController::Instance()->Init(this);
-}
+public:
+	ChangeAlignPropertyCommand(BaseMetadata* baseMetadata,
+								const PropertyGridWidgetData& propertyGridWidgetData,
+                                bool value);
+	virtual void Rollback();
+	
+protected:
+	void RestoreControlRect(const COMMANDDATAVECTITER& iter);
+};
 
-LibraryWidget::~LibraryWidget()
-{
-    delete ui;
-}
 
-QTreeWidgetItem* LibraryWidget::AddControl(const QString& name, const QString& iconPath)
-{
-	QTreeWidgetItem* control = new QTreeWidgetItem();
-	control->setText(TEXT_ID, name);
-	control->setIcon(TEXT_ID, QIcon(iconPath));
-	ui->treeWidget->addTopLevelItem(control);
-	return control;
-}
 
-void LibraryWidget::RemoveControl(QTreeWidgetItem* item)
-{
-	int index = ui->treeWidget->indexOfTopLevelItem(item);
-	if (index != -1)
-	{
-		delete item;
-	}
-}
-
-void LibraryWidget::UpdateControl(QTreeWidgetItem* item, const QString& name)
-{
-	item->setText(TEXT_ID, name);
-}
-
-void LibraryWidget::SetItemVisible(QTreeWidgetItem* item, bool visible)
-{
-	item->setHidden(!visible);
-}
-
-void LibraryWidget::ResetSelection()
-{
-	if (ui->treeWidget->currentItem())
-	{
-		ui->treeWidget->reset();
-	}
-}
+#endif /* defined(CHANGEALIGNPROPERTYCOMMAND_H) */

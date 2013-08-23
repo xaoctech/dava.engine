@@ -13,61 +13,48 @@
     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
-#include "Classes/UI/librarywidget.h"
-#include "ui_librarywidget.h"
-#include "LibraryController.h"
-#include "IconHelper.h"
 
-using namespace DAVA;
+#include "ChangeAlignPropertyCommand.h"
 
-#define TEXT_ID 0
-
-LibraryWidget::LibraryWidget(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::LibraryWidget)
+ChangeAlignPropertyCommand::ChangeAlignPropertyCommand(BaseMetadata* baseMetadata,
+								const PropertyGridWidgetData& propertyGridWidgetData,
+                                bool value):
+ChangePropertyCommand<bool>(baseMetadata, propertyGridWidgetData, value)
 {
-    ui->setupUi(this);
-	ui->treeWidget->clear();
-	LibraryController::Instance()->Init(this);
 }
 
-LibraryWidget::~LibraryWidget()
+void ChangeAlignPropertyCommand::Rollback()
 {
-    delete ui;
+	// The previous values are stored in Command Data.
+	QString propertyName = GetPropertyName();
+    for (COMMANDDATAVECTITER iter = this->commandData.begin(); iter != commandData.end(); iter ++)
+    {
+		bool previousValue = (*iter).GetTreeNodePropertyValue();
+		bool propertySetOK = ApplyPropertyValue(iter, previousValue);
+		// Always restore control rect for align property while rollback
+		RestoreControlRect(iter);
+
+        if (propertySetOK)
+        {			
+            CommandsController::Instance()->EmitChangePropertySucceeded(propertyName);
+        }
+        else
+        {
+			CommandsController::Instance()->EmitChangePropertyFailed(propertyName);
+        }
+    }
 }
 
-QTreeWidgetItem* LibraryWidget::AddControl(const QString& name, const QString& iconPath)
+void ChangeAlignPropertyCommand::RestoreControlRect(const COMMANDDATAVECTITER& iter)
 {
-	QTreeWidgetItem* control = new QTreeWidgetItem();
-	control->setText(TEXT_ID, name);
-	control->setIcon(TEXT_ID, QIcon(iconPath));
-	ui->treeWidget->addTopLevelItem(control);
-	return control;
-}
-
-void LibraryWidget::RemoveControl(QTreeWidgetItem* item)
-{
-	int index = ui->treeWidget->indexOfTopLevelItem(item);
-	if (index != -1)
+	BaseMetadata* baseMetadata = GetMetadataForTreeNode((*iter).GetTreeNodeID());
+	if (baseMetadata)
 	{
-		delete item;
-	}
-}
-
-void LibraryWidget::UpdateControl(QTreeWidgetItem* item, const QString& name)
-{
-	item->setText(TEXT_ID, name);
-}
-
-void LibraryWidget::SetItemVisible(QTreeWidgetItem* item, bool visible)
-{
-	item->setHidden(!visible);
-}
-
-void LibraryWidget::ResetSelection()
-{
-	if (ui->treeWidget->currentItem())
-	{
-		ui->treeWidget->reset();
+		Rect rect = (*iter).GetTreeNodeRect();
+		// This command is NOT state-aware and contains one and only param.
+		baseMetadata->SetActiveParamID(0);
+		// Restore control position and size
+		baseMetadata->ApplyMove(Vector2(rect.x, rect.y));
+		baseMetadata->ApplyResize(Rect(), rect);
 	}
 }

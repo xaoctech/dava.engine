@@ -21,6 +21,7 @@
     <ClCompile Include="..\..\Sources\Tools\TexturePacker\ResourcePacker2D.cpp" />
     <ClCompile Include="..\..\Sources\Tools\TexturePacker\TexturePacker.cpp" />
     <ClCompile Include="Classes\Commands\BaseCommand.cpp" />
+    <ClCompile Include="Classes\Commands\ChangeAlignPropertyCommand.cpp" />
     <ClCompile Include="Classes\Commands\ControlCommands.cpp" />
     <ClCompile Include="Classes\Commands\ImportCommands.cpp" />
     <ClCompile Include="Classes\Commands\ItemsCommand.cpp" />
@@ -210,6 +211,7 @@
     <ClInclude Include="..\..\Sources\Tools\TexturePacker\ResourcePacker2D.h" />
     <ClInclude Include="..\..\Sources\Tools\TexturePacker\TexturePacker.h" />
     <ClInclude Include="Classes\Commands\BaseCommand.h" />
+    <ClInclude Include="Classes\Commands\ChangeAlignPropertyCommand.h" />
     <ClInclude Include="Classes\Commands\ChangePropertyCommand.h" />
     <ClInclude Include="Classes\Commands\ControlCommands.h" />
     <ClInclude Include="Classes\Commands\ImportCommands.h" />
