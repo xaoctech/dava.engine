@@ -190,6 +190,7 @@ NMaterial* MaterialSystem::LoadMaterial(const FastName& name,
 	if(result)
 	{
 		material->SetName(name.c_str());
+		material->SetMaterialName(name.c_str());
 		materials.Insert(name, material);
 		material->SetParent(parentMaterial);
 		

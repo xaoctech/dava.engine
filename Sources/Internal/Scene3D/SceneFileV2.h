@@ -128,7 +128,7 @@ public:
     int32 removedNodeCount;
     
     void ConvertOldMaterialToNewMaterial(Material * oldMaterial, InstanceMaterialState * oldMaterialState,
-                                         NMaterial ** newMaterial, NMaterialInstance ** newMaterialInstance);
+                                         NMaterial ** newMaterial);
 
 private:
     void AddToNodeMap(DataNode * node);

@@ -57,75 +57,6 @@ private:
     Map<String, uint32> slotNameMap;
     Map<String, uint32> uniformNameMap;
 };
-
-/*
-    Sorting should be done by NMaterialInstance shader, because it can be changed by material
- */
-class NMaterialInstance : public BaseObject
-{
-public:
-    NMaterialInstance();
-    virtual ~NMaterialInstance();
-    
-    void Save(KeyedArchive * archive, SceneFileV2 *sceneFile);
-	void Load(KeyedArchive * archive, SceneFileV2 *sceneFile);
-
-    void PrepareInstanceForShader(Shader * shader);
-    RenderState * GetRenderState() { return &renderState; };
-
-    // Functions
-    void SetUniformData(uint32 uniformIndex, void * data, uint32 size);
-    void UpdateUniforms();
-    void BindUniforms();
-
-    // Helper functions
-    uint32 GetLightCount() { return lightCount; };
-    void SetLight(uint32 index, Light * light) { lights[index] = light; };
-    Light * GetLight(uint32 index) { return lights[index]; };
-    
-    void SetTwoSided(bool isTwoSided);
-    bool IsTwoSided();
-    
-    void SetLightmap(Texture * texture, const FilePath & lightmapName);
-    void SetUVOffsetScale(const Vector2 & uvOffset, const Vector2 uvScale);
-    
-    Texture * GetLightmap() const;
-    String GetLightmapName() const;
-
-    
-    // Prepare and draw functions
-    void PrepareRenderState();
-    void Draw(PolygonGroup * polygonGroup);
-    
-    bool IsExportOwnerLayerEnabled() const;
-    void SetExportOwnerLayer(const bool & isEnabled);
-    FastName GetOwnerLayerName() const;
-    void SetOwnerLayerName(const FastName & fastname);
-    
-    NMaterialInstance * Clone();
-	
-private:
-    
-    static const uint32 SKIP_UNIFORM = 1 << 0;
-    
-    
-    struct UniformInfo
-    {
-        uint32  flags: 8;
-        uint32  arraySize : 8;
-        uint32  shift : 16;
-    };
-    
-    
-    uint32 uniformCount;
-    UniformInfo * uniforms;
-    uint8 * uniformData;
-    uint32 lightCount;
-    Light * lights[8];
-    RenderState renderState;
-    Shader * shader;
-    friend class NMaterial;
-};
     
 class NMaterialProperty
 {
@@ -138,7 +69,7 @@ public:
 class MaterialTechnique
 {
 public:
-    MaterialTechnique(const FastName & _shaderName, FastNameSet & _uniqueDefines, RenderState * _renderState);
+    MaterialTechnique(const FastName & _shaderName, const FastNameSet & _uniqueDefines, RenderState * _renderState);
     ~MaterialTechnique();
     
 	void RecompileShader(const FastNameSet& materialDefines);
@@ -167,6 +98,7 @@ public:
     virtual ~NMaterial();
     
     bool LoadFromFile(const String & pathname);
+	void SetMaterialName(const String& name);
     
     // Work with textures and properties
     void SetTexture(const FastName & textureFastName, Texture * texture);
@@ -181,18 +113,18 @@ public:
     Light * GetLight(uint32 index) { return lights[index]; };
 
     
-    void AddMaterialTechnique(FastName & techniqueName, MaterialTechnique * materialTechnique);
+    void AddMaterialTechnique(const FastName & techniqueName, MaterialTechnique * materialTechnique);
     void BindMaterialTechnique(const FastName & techniqueName);
     MaterialTechnique * GetTechnique(const FastName & techniqueName);
         
     void Draw(PolygonGroup * polygonGroup);
-
     
     const FastNameSet & GetRenderLayers();
 	    
 	void SetParent(NMaterial* material);
 	void AddChild(NMaterial* material);
 	void RemoveChild(NMaterial* material);
+	NMaterial* CreateChild();
 	
 	void Rebuild(bool recursive = true);
 	bool IsReady() {return ready;}

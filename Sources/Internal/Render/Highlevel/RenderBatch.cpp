@@ -232,9 +232,7 @@ void RenderBatch::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
         }
 
         NMaterial * newMaterial = 0;
-        NMaterialInstance * newMaterialInstance = 0;
-        
-        sceneFile->ConvertOldMaterialToNewMaterial(mat, oldMaterialInstance, &newMaterial, &newMaterialInstance);
+        sceneFile->ConvertOldMaterialToNewMaterial(mat, oldMaterialInstance, &newMaterial);
         
         SafeRelease(oldMaterialInstance);
 		SetPolygonGroup(pg);
