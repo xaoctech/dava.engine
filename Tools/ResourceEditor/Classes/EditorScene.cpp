@@ -60,6 +60,8 @@ EditorScene::EditorScene()
     SetDrawGrid(true);
     
     CreateCameraLight();
+
+	SetShadowBlendMode(ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY);
 }
 
 EditorScene::~EditorScene()
@@ -758,5 +760,48 @@ bool EditorScene::IsLightOnSceneRecursive(Entity *entity)
     return false;
 }
 
+void EditorScene::UpdateShadowColorFromLandscape()
+{
+	// try to get shadow color for landscape
+	Entity *land = GetLandscapeNode(this);
+	if(!land) return;
+
+	KeyedArchive * props = land->GetCustomProperties();
+	if (props->IsKeyExists("ShadowColor"))
+	{
+		GetRenderSystem()->SetShadowRectColor(props->GetVariant("ShadowColor")->AsColor());
+	}
+}
+
+void EditorScene::SetShadowColor( const Color &color )
+{
+	Entity *land = GetLandscapeNode(this);
+	if(!land) return;
+
+	KeyedArchive * props = land->GetCustomProperties();
+	if(!props) return;
+	
+	props->SetVariant("ShadowColor", VariantType(color));
+
+	UpdateShadowColorFromLandscape();
+}
+
+Color EditorScene::GetShadowColor()
+{
+	return GetRenderSystem()->GetShadowRectColor();
+}
+
+void EditorScene::SetShadowBlendMode( ShadowVolumeRenderPass::eBlend blend )
+{
+	ShadowVolumeRenderPass *shadowPass = DynamicTypeCheck<ShadowVolumeRenderPass*>( GetRenderSystem()->GetRenderPass(PASS_SHADOW_VOLUME) );
+	shadowPass->SetBlendMode(blend);
+
+}
+
+ShadowVolumeRenderPass::eBlend EditorScene::GetShadowBlendMode()
+{
+	ShadowVolumeRenderPass *shadowPass = DynamicTypeCheck<ShadowVolumeRenderPass*>( GetRenderSystem()->GetRenderPass(PASS_SHADOW_VOLUME) );
+	return shadowPass->GetBlendMode();
+}
 
 
