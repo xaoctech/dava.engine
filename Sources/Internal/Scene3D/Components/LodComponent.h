@@ -87,7 +87,7 @@ public:
 	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 
 	static float32 GetDefaultDistance(int32 layer);
-	void SetCurrentLod(LodData *newLod);
+	void SetCurrentLod(int32 newLod);
 
 	inline int32 GetLodLayersCount();
 	inline float32 GetLodLayerDistance(int32 layerNum);
@@ -98,7 +98,7 @@ public:
 
 	void GetLodData(Vector<LodData*> &retLodLayers);
 
-	LodData *currentLod;
+	int32 currentLod;
 	Vector<LodData> lodLayers;
 	Vector<LodDistance> lodLayersArray;
 	int32 forceLodLayer;
