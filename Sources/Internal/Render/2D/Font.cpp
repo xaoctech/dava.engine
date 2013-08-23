@@ -66,7 +66,7 @@ const Color & Font::GetColor() const
 	return color;
 }
 
-bool Font::IsEqual(Font *font)
+bool Font::IsEqual(const Font *font) const
 {
     if(!font)
     {
@@ -90,7 +90,7 @@ void Font::SetSize(float32 _size)
 	size = _size;
 }
 
-float32	Font::GetSize()
+float32	Font::GetSize() const
 {
 	return size;
 }
@@ -100,7 +100,7 @@ void Font::SetVerticalSpacing(int32 _verticalSpacing)
 	verticalSpacing = _verticalSpacing;
 }
 
-int32 Font::GetVerticalSpacing()
+int32 Font::GetVerticalSpacing() const
 {
 	return verticalSpacing;
 }
@@ -326,12 +326,12 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 	};
 }
 
-Font::eFontType Font::GetFontType()
+Font::eFontType Font::GetFontType() const
 {
     return  fontType;
 }
 
-YamlNode * Font::SaveToYamlNode()
+YamlNode * Font::SaveToYamlNode() const
 {
     YamlNode *node = new YamlNode(YamlNode::TYPE_MAP);
     
