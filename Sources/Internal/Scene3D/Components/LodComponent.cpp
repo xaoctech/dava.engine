@@ -138,8 +138,8 @@ void LodComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 	{
 		if(archive->IsKeyExists("lc.flags")) flags = archive->GetUInt32("lc.flags");
 
-        forceDistance = 0;
-        forceDistanceSq = 0;
+        forceDistance = INVALID_DISTANCE;
+        forceDistanceSq = INVALID_DISTANCE;
         forceLodLayer = INVALID_LOD_LAYER;
         
 		KeyedArchive *lodDistArch = archive->GetArchive("lc.loddist");
