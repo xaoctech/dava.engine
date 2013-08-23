@@ -705,14 +705,17 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
     return false;
 }
 
-void SceneFileV2::ConvertOldMaterialToNewMaterial(Material * oldMaterial, InstanceMaterialState * oldMaterialState,
-                                                  NMaterial ** newMaterial, NMaterialInstance ** newMaterialInstance)
+void SceneFileV2::ConvertOldMaterialToNewMaterial(Material * oldMaterial,
+												  InstanceMaterialState * oldMaterialState,
+                                                  NMaterial ** newMaterial)
 {
-    NMaterial * resultMaterial = 0;
-    NMaterialInstance * resultMaterialInstance = 0;
+    NMaterial * parentMaterial = 0;
 	
 	FastName newMaterialName = MaterialNameMapper::MapName(oldMaterial);
-	resultMaterial = MaterialSystem::Instance()->GetMaterial(newMaterialName);
+	parentMaterial = MaterialSystem::Instance()->GetMaterial(newMaterialName);
+	DVASSERT(parentMaterial);
+	
+	NMaterial* resultMaterial = parentMaterial->CreateChild();
 	
 	RenderState* oldRenderState = oldMaterial->GetRenderState();
 	RenderState& renderStateBlock = *resultMaterial->GetTechnique(PASS_FORWARD)->GetRenderState();
@@ -720,12 +723,8 @@ void SceneFileV2::ConvertOldMaterialToNewMaterial(Material * oldMaterial, Instan
 	oldRenderState->CopyTo(&renderStateBlock);
 	
 	//VI: creative copypaste from Material::PrepareRenderState below
-	
 	if(Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP == oldMaterial->type)
 	{
-		resultMaterial->SetPropertyValue("uvOffset", Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVOffset());
-		resultMaterial->SetPropertyValue("uvScale", Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVScale());
-
 		renderStateBlock.SetTexture(oldMaterialState->GetLightmap(), 1);
     }
 	else if (Material::MATERIAL_UNLIT_TEXTURE_DECAL == oldMaterial->type ||
@@ -791,8 +790,11 @@ void SceneFileV2::ConvertOldMaterialToNewMaterial(Material * oldMaterial, Instan
 	resultMaterial->SetPropertyValue("fogDensity", Shader::UT_FLOAT, 1, &oldMaterial->fogDensity);
 	resultMaterial->SetPropertyValue("fogColor", Shader::UT_BOOL_VEC4, 1, &oldMaterial->fogColor);
 	
+	
 	resultMaterial->SetPropertyValue("flatColor", Shader::UT_BOOL_VEC4, 1, &oldMaterialState->GetFlatColor());
 	resultMaterial->SetPropertyValue("texture0Shift", Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetTextureShift());
+	resultMaterial->SetPropertyValue("uvOffset", Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVOffset());
+	resultMaterial->SetPropertyValue("uvScale", Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVScale());
     
     //VI: this block should be called on per-frame basis
 	/*if (oldMaterialState)
@@ -867,10 +869,7 @@ void SceneFileV2::ConvertOldMaterialToNewMaterial(Material * oldMaterial, Instan
 		}
 	}*/
 	
-    resultMaterialInstance = new NMaterialInstance();
-	
     *newMaterial = resultMaterial;
-    *newMaterialInstance = resultMaterialInstance;
 }
 
     
@@ -908,8 +907,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
             PolygonGroupWithMaterial * group = polygroups[k];
             
             NMaterial * nMaterial = 0;
-            NMaterialInstance * nMaterialInstance = 0;
-            ConvertOldMaterialToNewMaterial(group->GetMaterial(), 0, &nMaterial, &nMaterialInstance);
+            ConvertOldMaterialToNewMaterial(group->GetMaterial(), 0, &nMaterial);
             mesh->AddPolygonGroup(group->GetPolygonGroup(), nMaterial);
             
             
