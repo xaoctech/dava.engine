@@ -50,16 +50,8 @@ LODEditor::LODEditor(QWidget* parent)
     
     editedLODData = new EditorLODData();
     connect(editedLODData, SIGNAL(DataChanged()), SLOT(LODDataChanged()));
-  
-//TODO: remove after lod offsets will be enabled    
-    ui->globalLODSettingsButton->setVisible(false);
-    ui->frameGlobalSettings->setVisible(false);
     
-    ui->viewLODButton->setDown(true);
-    ui->editLODButton->setDown(true);
-    
-    
-    SetupInternalSignals();
+    SetupInternalUI();
     SetupSceneSignals();
     
     ForceDistanceStateChanged(Qt::Unchecked);
@@ -75,8 +67,19 @@ LODEditor::~LODEditor()
 	delete ui;
 }
 
-void LODEditor::SetupInternalSignals()
+void LODEditor::SetupInternalUI()
 {
+    ui->globalLODSettingsButton->setVisible(false);
+    ui->frameGlobalSettings->setVisible(false);
+    ui->viewLODButton->setVisible(false);
+    ui->frameViewLOD->setVisible(false);
+    ui->editLODButton->setVisible(false);
+    ui->frameEditLOD->setVisible(false);
+    
+    ui->globalLODSettingsButton->setDown(true);
+    ui->viewLODButton->setDown(true);
+    ui->editLODButton->setDown(true);
+    
     connect(ui->globalLODSettingsButton, SIGNAL(released()), SLOT(GlobalSettingsButtonReleased()));
     connect(ui->viewLODButton, SIGNAL(released()), SLOT(ViewLODButtonReleased()));
     connect(ui->editLODButton, SIGNAL(released()), SLOT(EditLODButtonReleased()));
@@ -214,6 +217,8 @@ void LODEditor::LODDataChanged()
     {
         distanceWidgets[i].SetVisible(false);
     }
+    
+    UpdateWidgetVisibility();
 }
 
 void LODEditor::LODDistanceChangedBySlider(int layerNum, double value)
@@ -284,5 +289,13 @@ void LODEditor::InvertVisibility(QWidget *widget)
 }
 
 
-
+void LODEditor::UpdateWidgetVisibility()
+{
+    bool visible = (editedLODData->GetLayersCount() != 0);
+    
+    ui->viewLODButton->setVisible(visible);
+    ui->frameViewLOD->setVisible(visible);
+    ui->editLODButton->setVisible(visible);
+    ui->frameEditLOD->setVisible(visible);
+}
 

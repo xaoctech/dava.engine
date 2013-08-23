@@ -61,7 +61,7 @@ protected slots:
     
 protected:
     
-    void SetupInternalSignals();
+    void SetupInternalUI();
     void InitCorrectionSpinBox(QDoubleSpinBox *spinbox, int index);
     void InitDistanceSpinBox(QLabel *name, QDoubleSpinBox *spinbox, int index);
     
@@ -76,6 +76,8 @@ protected:
     void SetForceLayerValues(int layersCount);
     
     void InvertVisibility(QWidget *widget);
+    
+    void UpdateWidgetVisibility();
     
 private:
 	Ui::LODEditor *ui;
