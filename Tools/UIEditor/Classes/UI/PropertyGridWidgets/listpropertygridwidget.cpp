@@ -110,11 +110,13 @@ void ListPropertyGridWidget::ProcessComboboxValueChanged(QComboBox* senderWidget
     
     if (senderWidget == ui->aggregatorsComboBox)
     {
-		return CustomProcessComboboxValueChanged(iter, nodeIDList.at(selectedIndex));
+		CustomProcessComboboxValueChanged(iter, nodeIDList.at(selectedIndex));
+		return;
     }
 	else if (senderWidget == ui->orientationComboBox)
 	{
-		return CustomProcessComboboxValueChanged(iter, ListPropertyGridWidgetHelper::GetOrientation(selectedIndex));
+		CustomProcessComboboxValueChanged(iter, ListPropertyGridWidgetHelper::GetOrientation(selectedIndex));
+		return;
 	}
 
     // No postprocessing was applied - use the generic process.
