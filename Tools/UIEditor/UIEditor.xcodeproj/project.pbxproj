@@ -165,6 +165,7 @@
 		748A997D1726D7A700C6411B /* UIScrollViewMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 748A997B1726D7A600C6411B /* UIScrollViewMetadata.cpp */; };
 		748A997F1726DAB300C6411B /* UIScrollViewMetadata_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 748A997E1726DAB300C6411B /* UIScrollViewMetadata_moc.cpp */; };
 		748E2E5C1649684300C77EB8 /* UITextFieldMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 748E2E5A1649684300C77EB8 /* UITextFieldMetadata.cpp */; };
+		7490884E17C4B49200FE4E95 /* ChangeAlignPropertyCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7490884C17C4B49200FE4E95 /* ChangeAlignPropertyCommand.cpp */; };
 		7492E0EA1639445D00DF883A /* fontmanagerdialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7492E0E81639445D00DF883A /* fontmanagerdialog.cpp */; };
 		7497D74D1705AD5500E1DE60 /* UISwitchMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7497D74B1705AD5500E1DE60 /* UISwitchMetadata.cpp */; };
 		7497D74F1705AD7200E1DE60 /* UISwitchMetadata_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7497D74E1705AD7200E1DE60 /* UISwitchMetadata_moc.cpp */; };
@@ -533,6 +534,8 @@
 		748A997E1726DAB300C6411B /* UIScrollViewMetadata_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIScrollViewMetadata_moc.cpp; sourceTree = "<group>"; };
 		748E2E5A1649684300C77EB8 /* UITextFieldMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UITextFieldMetadata.cpp; path = Metadata/UITextFieldMetadata.cpp; sourceTree = "<group>"; };
 		748E2E5B1649684300C77EB8 /* UITextFieldMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UITextFieldMetadata.h; path = Metadata/UITextFieldMetadata.h; sourceTree = "<group>"; };
+		7490884C17C4B49200FE4E95 /* ChangeAlignPropertyCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ChangeAlignPropertyCommand.cpp; path = Commands/ChangeAlignPropertyCommand.cpp; sourceTree = "<group>"; };
+		7490884D17C4B49200FE4E95 /* ChangeAlignPropertyCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ChangeAlignPropertyCommand.h; path = Commands/ChangeAlignPropertyCommand.h; sourceTree = "<group>"; };
 		7492E0E81639445D00DF883A /* fontmanagerdialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fontmanagerdialog.cpp; sourceTree = "<group>"; };
 		7492E0E91639445D00DF883A /* fontmanagerdialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fontmanagerdialog.h; sourceTree = "<group>"; };
 		7497D74B1705AD5500E1DE60 /* UISwitchMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UISwitchMetadata.cpp; path = Metadata/UISwitchMetadata.cpp; sourceTree = "<group>"; };
@@ -993,6 +996,8 @@
 				C15D3E4F16415A3600161684 /* ControlCommands.cpp */,
 				C15D3E5016415A3600161684 /* ControlCommands.h */,
 				17112B51163921700017E713 /* ChangePropertyCommand.h */,
+				7490884C17C4B49200FE4E95 /* ChangeAlignPropertyCommand.cpp */,
+				7490884D17C4B49200FE4E95 /* ChangeAlignPropertyCommand.h */,
 				17112B461639214D0017E713 /* BaseCommand.cpp */,
 				17112B471639214D0017E713 /* BaseCommand.h */,
 				C107415E163E7B740069A640 /* ItemsCommand.cpp */,
@@ -1652,6 +1657,7 @@
 				1712331E1741118F0051D960 /* PropertyNames.cpp in Build Sources */,
 				749EBEF4178D9C3000D0699F /* ListPropertyGridWidgetHelper.cpp in Build Sources */,
 				173B4E57179593EB00421BCC /* FramePathHelper.cpp in Build Sources */,
+				7490884E17C4B49200FE4E95 /* ChangeAlignPropertyCommand.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

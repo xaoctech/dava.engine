@@ -17,7 +17,7 @@
 #include "ui_alignspropertygridwidget.h"
 
 #include "PropertyNames.h"
-#include "ChangePropertyCommand.h"
+#include "ChangeAlignPropertyCommand.h"
 #include "CommandsController.h"
 #include "WidgetSignalsBlocker.h"
 #include "ResourcesManageHelper.h"
@@ -58,13 +58,13 @@ void AlignsPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     // Build the properties map to make the properties search faster.
     PROPERTIESMAP propertiesMap = BuildMetadataPropertiesMap();
 	
-	RegisterCheckBoxWidgetForProperty(propertiesMap, PropertyNames::LEFT_ALIGN_ENABLED, ui->leftAlignCheckBox);
-	RegisterCheckBoxWidgetForProperty(propertiesMap, PropertyNames::HCENTER_ALIGN_ENABLED, ui->hcenterAlignCheckBox);
-	RegisterCheckBoxWidgetForProperty(propertiesMap, PropertyNames::RIGHT_ALIGN_ENABLED, ui->rightAlignCheckBox);
+	RegisterAlignCheckBoxWidgetForProperty(propertiesMap, PropertyNames::LEFT_ALIGN_ENABLED, ui->leftAlignCheckBox);
+	RegisterAlignCheckBoxWidgetForProperty(propertiesMap, PropertyNames::HCENTER_ALIGN_ENABLED, ui->hcenterAlignCheckBox);
+	RegisterAlignCheckBoxWidgetForProperty(propertiesMap, PropertyNames::RIGHT_ALIGN_ENABLED, ui->rightAlignCheckBox);
 	
-	RegisterCheckBoxWidgetForProperty(propertiesMap, PropertyNames::TOP_ALIGN_ENABLED, ui->topAlignCheckBox);
-	RegisterCheckBoxWidgetForProperty(propertiesMap, PropertyNames::VCENTER_ALIGN_ENABLED, ui->vcenterAlignCheckBox);
-	RegisterCheckBoxWidgetForProperty(propertiesMap, PropertyNames::BOTTOM_ALIGN_ENABLED, ui->bottomAlignCheckBox);
+	RegisterAlignCheckBoxWidgetForProperty(propertiesMap, PropertyNames::TOP_ALIGN_ENABLED, ui->topAlignCheckBox);
+	RegisterAlignCheckBoxWidgetForProperty(propertiesMap, PropertyNames::VCENTER_ALIGN_ENABLED, ui->vcenterAlignCheckBox);
+	RegisterAlignCheckBoxWidgetForProperty(propertiesMap, PropertyNames::BOTTOM_ALIGN_ENABLED, ui->bottomAlignCheckBox);
 
     // Register the widgets.
     RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::LEFT_ALIGN, ui->leftAlignSpinBox);
@@ -80,12 +80,12 @@ void AlignsPropertyGridWidget::Cleanup()
 {
     BasePropertyGridWidget::Cleanup();
 	
-	UnregisterCheckBoxWidget(ui->leftAlignCheckBox);
-	UnregisterCheckBoxWidget(ui->hcenterAlignCheckBox);
-	UnregisterCheckBoxWidget(ui->rightAlignCheckBox);
-	UnregisterCheckBoxWidget(ui->topAlignCheckBox);
-	UnregisterCheckBoxWidget(ui->vcenterAlignCheckBox);
-	UnregisterCheckBoxWidget(ui->bottomAlignCheckBox);	
+	UnregisterAlignCheckBoxWidget(ui->leftAlignCheckBox);
+	UnregisterAlignCheckBoxWidget(ui->hcenterAlignCheckBox);
+	UnregisterAlignCheckBoxWidget(ui->rightAlignCheckBox);
+	UnregisterAlignCheckBoxWidget(ui->topAlignCheckBox);
+	UnregisterAlignCheckBoxWidget(ui->vcenterAlignCheckBox);
+	UnregisterAlignCheckBoxWidget(ui->bottomAlignCheckBox);	
 	
 	UnregisterSpinBoxWidget(ui->leftAlignSpinBox);
 	UnregisterSpinBoxWidget(ui->hcenterAlignSpinBox);
@@ -93,6 +93,75 @@ void AlignsPropertyGridWidget::Cleanup()
 	UnregisterSpinBoxWidget(ui->topAlignSpinBox);
 	UnregisterSpinBoxWidget(ui->vcenterAlignSpinBox);
 	UnregisterSpinBoxWidget(ui->bottomAlignSpinBox);
+}
+
+void AlignsPropertyGridWidget::RegisterAlignCheckBoxWidgetForProperty(const PROPERTIESMAP& propertiesMap,
+															   const char* propertyName,
+                                                               QCheckBox* checkBoxWidget,
+                                                               bool needUpdateTree, bool stateAware)
+{
+    PROPERTIESMAPCONSTITER iter = propertiesMap.find(propertyName);
+    if (iter == propertiesMap.end())
+    {
+        Logger::Error("Unable to found property named %s in the properties map!", propertyName);
+        return;
+    }
+
+    const QMetaProperty& curProperty = iter->second;
+    propertyGridWidgetsMap.insert(std::make_pair(checkBoxWidget, PropertyGridWidgetData(curProperty,
+                                                                                        needUpdateTree, stateAware)));
+
+    UpdateCheckBoxWidgetWithPropertyValue(checkBoxWidget, curProperty);
+
+    // Register the signal for this widget.
+    connect(checkBoxWidget, SIGNAL(stateChanged(int)), this, SLOT(OnAlignCheckBoxStateChanged(int)));
+}
+
+void AlignsPropertyGridWidget::UnregisterAlignCheckBoxWidget(QCheckBox* checkBoxWidget)
+{
+    disconnect(checkBoxWidget, SIGNAL(stateChanged(int)), this, SLOT(OnAlignCheckBoxStateChanged(int)));
+}
+
+void AlignsPropertyGridWidget::OnAlignCheckBoxStateChanged(int state)
+{
+    if (activeMetadata == NULL)
+    {
+        // No control already assinged.
+        return;
+    }
+
+    QCheckBox* senderWidget = dynamic_cast<QCheckBox*>(QObject::sender());
+    if (senderWidget == NULL)
+    {
+        Logger::Error("OnCheckBoxStateChanged - sender is NULL!");
+        return;
+    }
+
+    // After the first change don't allow the checkbox to be tristate.
+    senderWidget->setTristate(false);
+    
+    PROPERTYGRIDWIDGETSITER iter = propertyGridWidgetsMap.find(senderWidget);
+    if (iter == propertyGridWidgetsMap.end())
+    {
+        Logger::Error("OnCheckBoxStateChanged - unable to find attached property in the propertyGridWidgetsMap!");
+        return;
+    }
+
+	// Don't update the property if the text wasn't actually changed.
+	bool isPropertyValueDiffers = false;
+    bool curValue = PropertiesHelper::GetAllPropertyValues<bool>(this->activeMetadata, iter->second.getProperty().name(),
+																 isPropertyValueDiffers);
+
+	// In case we have differences in property values for different widgets - force update the states too.
+	bool newValue = (state == Qt::Checked);
+	if ((curValue == newValue) && !isPropertyValueDiffers)
+	{
+		return;
+	}
+
+    BaseCommand* command = new ChangeAlignPropertyCommand(activeMetadata, iter->second, newValue);
+    CommandsController::Instance()->ExecuteCommand(command);
+	SafeRelease(command);
 }
 
 void AlignsPropertyGridWidget::OnPropertiesChangedFromExternalSource()

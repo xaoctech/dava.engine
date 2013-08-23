@@ -39,6 +39,11 @@ public:
     
 
 protected:
+	void RegisterAlignCheckBoxWidgetForProperty(const PROPERTIESMAP& propertiesMap, const char* propertyName,
+                                           QCheckBox* checkBoxWidget,
+                                           bool needUpdateTree = false, bool stateAware = false);
+	void UnregisterAlignCheckBoxWidget(QCheckBox* checkBoxWidget);
+				
 	virtual void OnPropertiesChangedFromExternalSource();
 	virtual void UpdateCheckBoxWidgetWithPropertyValue(QCheckBox* checkBoxWidget, const QMetaProperty& curProperty);
 	virtual void HandleChangePropertySucceeded(const QString& propertyName);
@@ -50,7 +55,10 @@ protected:
     typedef ALIGNWIDGETSMAP::iterator ALIGNWIDGETSMAPITER;
     typedef ALIGNWIDGETSMAP::const_iterator ALIGNWIDGETSMAPCONSTITER;
 	
-	ALIGNWIDGETSMAP alignWidgetsMap;	
+	ALIGNWIDGETSMAP alignWidgetsMap;
+
+protected slots:
+    void OnAlignCheckBoxStateChanged(int state);
 };
 
 #endif // ALIGNSPROPERTYGRIDWIDGET_H
