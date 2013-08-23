@@ -154,14 +154,16 @@ void ListPropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue(QComboBox* co
         UpdateWidgetPalette(comboBoxWidget, propertyName);
 		int index = nodeIDList.indexOf(propertyValue);
 		
-        return SetComboboxSelectedItem(comboBoxWidget, ui->aggregatorsComboBox->itemText(index));
+        SetComboboxSelectedItem(comboBoxWidget, ui->aggregatorsComboBox->itemText(index));
+		return;
     }
 	else if (comboBoxWidget == ui->orientationComboBox)
 	{
 	    UpdateWidgetPalette(comboBoxWidget, propertyName);
 		
-        return SetComboboxSelectedItem(comboBoxWidget,  ListPropertyGridWidgetHelper::GetOrientationDescByType(
+        SetComboboxSelectedItem(comboBoxWidget,  ListPropertyGridWidgetHelper::GetOrientationDescByType(
 																		(UIList::eListOrientation)propertyValue));
+		return;
 	}
 
     // Not related to the custom combobox - call the generic one.
