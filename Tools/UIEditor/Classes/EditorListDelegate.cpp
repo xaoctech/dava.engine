@@ -24,7 +24,6 @@
 #include "HierarchyTreeController.h"
 #include "EditorFontManager.h"
 
-
 namespace DAVA
 {
 	EditorListDelegate::EditorListDelegate(const Rect &rect, UIList::eListOrientation orientation /*ORIENTATION_VERTICAL*/
@@ -34,13 +33,14 @@ namespace DAVA
 		cellsCount(CELL_COUNT),
 		isElementsCountNeedUpdate(false)
 	{
+		DVASSERT(cellsCount > 0);
 		if (orientation == UIList::ORIENTATION_VERTICAL)
 		{
-			cellSize = Vector2(rect.dx, (rect.dy / CELL_COUNT));
+			cellSize = Vector2(rect.dx, (rect.dy / cellsCount));
 		}
 		else
 		{
-			cellSize = Vector2((rect.dx / CELL_COUNT), rect.dy);
+			cellSize = Vector2((rect.dx / cellsCount), rect.dy);
 		}
 	}
 	
@@ -77,13 +77,15 @@ namespace DAVA
 				SetCellSize(aggregatorSize);
 			}
 			
-			Vector2 listSize = forList->GetSize();			
-			if (forList->GetOrientation() == UIList::ORIENTATION_HORIZONTAL)
+			Vector2 listSize = forList->GetSize();
+			if(forList->GetOrientation() == UIList::ORIENTATION_HORIZONTAL)
 			{
+				DVASSERT(cellSize.x > 0);
 				cellsCount =  ceilf( listSize.x / cellSize.x );
 			}
 			else
 			{
+				DVASSERT(cellSize.y > 0);
 				cellsCount =  ceilf( listSize.y / cellSize.y );
 			}
 		}
