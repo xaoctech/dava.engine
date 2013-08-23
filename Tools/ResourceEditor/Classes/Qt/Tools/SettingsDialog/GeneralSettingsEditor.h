@@ -42,22 +42,7 @@ protected:
 	QtPropertyItem* AddHeader(const char *text);
 	QtPropertyDataMetaObject* AddPropertyItem(const char *name, DAVA::BaseObject *object, QtPropertyItem *parent);
 	
-	QtPropertyDataDavaVariant *propertyScreenWidth;
-	QtPropertyDataDavaVariant *propertyScreenHeight;
-	QtPropertyDataDavaVariant *propertyLanguage;
-	QtPropertyDataDavaVariant *propertyOutput;
-	QtPropertyDataDavaVariant *propertyCameraSpeed1;
-	QtPropertyDataDavaVariant *propertyCameraSpeed2;
-	QtPropertyDataDavaVariant *propertyCameraSpeed3;
-	QtPropertyDataDavaVariant *propertyCameraSpeed4;
-	QtPropertyDataDavaVariant *propertyLeftpaneWidth;
-	QtPropertyDataDavaVariant *propertyRightpaneWidth;
-	QtPropertyDataDavaVariant *propertyDrawGrid;
-	QtPropertyDataDavaVariant *propertyImposters;
-	QtPropertyDataDavaVariant *propertyDesignerName;
-	QtPropertyDataDavaVariant *propertyPreviewAtLibrary;
-	
-	DAVA::Vector<QtPropertyDataDavaVariant *> propertiesSet;
+	DAVA::Map<QtPropertyDataDavaVariant* , std::pair<DAVA::String, DAVA::List<DAVA::VariantType> > > propertiesMap;
 	
 };
 #endif /* defined(__RESOURCEEDITORQT__GENERAL_SETTINGS_EDITOR__) */

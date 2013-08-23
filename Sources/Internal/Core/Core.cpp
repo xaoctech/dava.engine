@@ -43,6 +43,10 @@
 #include "Autotesting/AutotestingSystem.h"
 #endif
 
+#ifdef __DAVAENGINE_NVIDIA_TEGRA_PROFILE__
+#include <EGL/eglext.h>
+#endif //__DAVAENGINE_NVIDIA_TEGRA_PROFILE__
+
 namespace DAVA 
 {
 
@@ -597,6 +601,24 @@ void Core::SystemAppFinished()
 
 void Core::SystemProcessFrame()
 {
+#ifdef __DAVAENGINE_NVIDIA_TEGRA_PROFILE__
+	static bool isInit = false;
+	static EGLuint64NV frequency;
+	static PFNEGLGETSYSTEMTIMENVPROC eglGetSystemTimeNV;
+	static PFNEGLGETSYSTEMTIMEFREQUENCYNVPROC eglGetSystemTimeFrequencyNV;
+	if (!isInit)
+	{
+		eglGetSystemTimeNV = (PFNEGLGETSYSTEMTIMENVPROC) eglGetProcAddress("eglGetSystemTimeNV");
+		eglGetSystemTimeFrequencyNV = (PFNEGLGETSYSTEMTIMEFREQUENCYNVPROC) eglGetProcAddress("eglGetSystemTimeFrequencyNV");
+		if (!eglGetSystemTimeNV || !eglGetSystemTimeFrequencyNV)
+		{
+			DVASSERT(!"Error export eglGetSystemTimeNV, eglGetSystemTimeFrequencyNV");
+			exit(0);
+		}
+		frequency = eglGetSystemTimeFrequencyNV();
+	}
+	EGLuint64NV start = eglGetSystemTimeNV() / frequency;
+#endif //__DAVAENGINE_NVIDIA_TEGRA_PROFILE__
     Stats::Instance()->BeginFrame();
     TIME_PROFILE("Core::SystemProcessFrame");
     
@@ -662,6 +684,11 @@ void Core::SystemProcessFrame()
 	}
     Stats::Instance()->EndFrame();
 	globalFrameIndex++;
+	
+#ifdef __DAVAENGINE_NVIDIA_TEGRA_PROFILE__
+	EGLuint64NV end = eglGetSystemTimeNV() / frequency;
+	EGLuint64NV interval = end - start;
+#endif //__DAVAENGINE_NVIDIA_TEGRA_PROFILE__
 }
 
 	

@@ -50,6 +50,10 @@ LODEditor::LODEditor(QWidget* parent)
     
     editedLODData = new EditorLODData();
     connect(editedLODData, SIGNAL(DataChanged()), SLOT(LODDataChanged()));
+  
+//TODO: remove after lod offsets will be enabled    
+    ui->groupBox->setVisible(false);
+    
     
     SetupInternalSignals();
     SetupSceneSignals();
@@ -85,14 +89,13 @@ void LODEditor::SetupInternalSignals()
     InitDistanceSpinBox(ui->lod3Name, ui->lod3Distance, 3);
     
     SetForceLayerValues(DAVA::LodComponent::MAX_LOD_LAYERS);
-    connect(ui->forceLayer, SIGNAL(activated(const QString &)), SLOT(ForceLayerActivated(const QString &)));
+    connect(ui->forceLayer, SIGNAL(activated(int)), SLOT(ForceLayerActivated(int)));
 }
 
 void LODEditor::SetupSceneSignals()
 {
     connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(SceneActivated(SceneEditor2 *)));
     connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(SceneDeactivated(SceneEditor2 *)));
-    connect(SceneSignals::Instance(), SIGNAL(StructureChanged(SceneEditor2 *, DAVA::Entity *)), this, SLOT(SceneStructureChanged(SceneEditor2 *, DAVA::Entity *)));
 }
 
 
@@ -163,8 +166,6 @@ void LODEditor::UpdateSpinboxColor(QDoubleSpinBox *spinbox)
 void LODEditor::SceneActivated(SceneEditor2 *scene)
 {
     //TODO: set gloabal scene settings
-
-    editedLODData->GetDataFromSelection(scene);
 }
 
 
@@ -173,13 +174,6 @@ void LODEditor::SceneDeactivated(SceneEditor2 *scene)
     //TODO: clear/save gloabal scene settings
 
     ForceDistanceStateChanged(Qt::Unchecked);
-    editedLODData->Clear();
-}
-
-
-void LODEditor::SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent)
-{
-    editedLODData->GetDataFromSelection(scene);
 }
 
 
@@ -231,9 +225,9 @@ void LODEditor::SetSpinboxValue(QDoubleSpinBox *spinbox, double value)
     spinbox->blockSignals(wasBlocked);
 }
 
-void LODEditor::ForceLayerActivated(const QString & text)
+void LODEditor::ForceLayerActivated(int index)
 {
-    int layer = text.toInt();
+    int layer = ui->forceLayer->itemData(index).toInt();
     editedLODData->SetForceLayer(layer);
 }
 
@@ -241,10 +235,10 @@ void LODEditor::SetForceLayerValues(int layersCount)
 {
     ui->forceLayer->clear();
     
-    ui->forceLayer->addItem(Format("%d", DAVA::LodComponent::INVALID_LOD_LAYER));
+    ui->forceLayer->addItem("Auto", QVariant(DAVA::LodComponent::INVALID_LOD_LAYER));
     for(DAVA::int32 i = 0; i < layersCount; ++i)
     {
-        ui->forceLayer->addItem(Format("%d", i));
+        ui->forceLayer->addItem(Format("%d", i), QVariant(i));
     }
 }
 

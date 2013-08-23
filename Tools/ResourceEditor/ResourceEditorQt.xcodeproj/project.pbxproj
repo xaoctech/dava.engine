@@ -431,6 +431,10 @@
 		6295E409178B08050007F9EC /* MimeDataHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 6295E407178B08050007F9EC /* MimeDataHelper.cpp */; };
 		629FF9D117A9603B00724B29 /* BaseAddEntityDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 629FF9CF17A9603B00724B29 /* BaseAddEntityDialog.cpp */; };
 		629FF9D317A960F200724B29 /* BaseAddEntityDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 629FF9D217A960F200724B29 /* BaseAddEntityDialog_moc.cpp */; };
+		62A43E0B17BCFCDE0003287B /* SettingsManager.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62A43E0917BCFCDE0003287B /* SettingsManager.cpp */; };
+		62A43E0E17BCFF090003287B /* SettingsManager_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62A43E0D17BCFF090003287B /* SettingsManager_moc.cpp */; };
+		62A66F4E17BBC9EF0092AC7B /* SystemsSettingsEditor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62A66F4D17BBC9EF0092AC7B /* SystemsSettingsEditor.cpp */; };
+		62A66F5717BBD9A50092AC7B /* SystemsSettingsEditor_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62A66F5617BBD9A50092AC7B /* SystemsSettingsEditor_moc.cpp */; };
 		62A7CA6917B8D05A000AEBF5 /* GeneralSettingsEditor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62A7CA6517B8D05A000AEBF5 /* GeneralSettingsEditor.cpp */; };
 		62A7CA6A17B8D05A000AEBF5 /* SettingsDialogQt.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62A7CA6717B8D05A000AEBF5 /* SettingsDialogQt.cpp */; };
 		62A7CA6E17B8D08D000AEBF5 /* GeneralSettingsEditor_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62A7CA6C17B8D08D000AEBF5 /* GeneralSettingsEditor_moc.cpp */; };
@@ -1455,6 +1459,12 @@
 		629FF9D017A9603B00724B29 /* BaseAddEntityDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BaseAddEntityDialog.h; path = Classes/Qt/Tools/BaseAddEntityDialog/BaseAddEntityDialog.h; sourceTree = "<group>"; };
 		629FF9D217A960F200724B29 /* BaseAddEntityDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BaseAddEntityDialog_moc.cpp; path = BaseAddEntityDialog/BaseAddEntityDialog_moc.cpp; sourceTree = "<group>"; };
 		62A0173F17A94D9500322B30 /* PropertyEditorDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyEditorDialog.h; sourceTree = "<group>"; };
+		62A43E0917BCFCDE0003287B /* SettingsManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SettingsManager.cpp; path = Classes/Qt/Settings/SettingsManager.cpp; sourceTree = "<group>"; };
+		62A43E0A17BCFCDE0003287B /* SettingsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SettingsManager.h; path = Classes/Qt/Settings/SettingsManager.h; sourceTree = "<group>"; };
+		62A43E0D17BCFF090003287B /* SettingsManager_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SettingsManager_moc.cpp; path = _GeneratedQt/Settings/SettingsManager_moc.cpp; sourceTree = "<group>"; };
+		62A66F4D17BBC9EF0092AC7B /* SystemsSettingsEditor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SystemsSettingsEditor.cpp; path = Classes/Qt/Tools/SettingsDialog/SystemsSettingsEditor.cpp; sourceTree = "<group>"; };
+		62A66F5517BBD97A0092AC7B /* SystemsSettingsEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SystemsSettingsEditor.h; path = Classes/Qt/Tools/SettingsDialog/SystemsSettingsEditor.h; sourceTree = "<group>"; };
+		62A66F5617BBD9A50092AC7B /* SystemsSettingsEditor_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SystemsSettingsEditor_moc.cpp; path = SettingsDialog/SystemsSettingsEditor_moc.cpp; sourceTree = "<group>"; };
 		62A7CA6517B8D05A000AEBF5 /* GeneralSettingsEditor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GeneralSettingsEditor.cpp; path = Classes/Qt/Tools/SettingsDialog/GeneralSettingsEditor.cpp; sourceTree = "<group>"; };
 		62A7CA6617B8D05A000AEBF5 /* GeneralSettingsEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GeneralSettingsEditor.h; path = Classes/Qt/Tools/SettingsDialog/GeneralSettingsEditor.h; sourceTree = "<group>"; };
 		62A7CA6717B8D05A000AEBF5 /* SettingsDialogQt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SettingsDialogQt.cpp; path = Classes/Qt/Tools/SettingsDialog/SettingsDialogQt.cpp; sourceTree = "<group>"; };
@@ -2460,6 +2470,7 @@
 		5C2763A415B82BDF0030A8FD /* Qt */ = {
 			isa = PBXGroup;
 			children = (
+				62A43E0417BCFCAF0003287B /* Settings */,
 				E8637C4817B37DCF00ECA297 /* DockLODEditor */,
 				A69AA3911796EDE80008B683 /* CubemapEditor */,
 				499E4AAA178ABF070067FA56 /* DockVisibilityToolEditor */,
@@ -3232,9 +3243,28 @@
 			name = MimeDataHelper;
 			sourceTree = "<group>";
 		};
+		62A43E0417BCFCAF0003287B /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				62A43E0917BCFCDE0003287B /* SettingsManager.cpp */,
+				62A43E0A17BCFCDE0003287B /* SettingsManager.h */,
+			);
+			name = Settings;
+			sourceTree = "<group>";
+		};
+		62A43E0C17BCFEEA0003287B /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				62A43E0D17BCFF090003287B /* SettingsManager_moc.cpp */,
+			);
+			name = Settings;
+			sourceTree = "<group>";
+		};
 		62A7CA6017B8D037000AEBF5 /* SettingsDialog */ = {
 			isa = PBXGroup;
 			children = (
+				62A66F5517BBD97A0092AC7B /* SystemsSettingsEditor.h */,
+				62A66F4D17BBC9EF0092AC7B /* SystemsSettingsEditor.cpp */,
 				62A7CA6517B8D05A000AEBF5 /* GeneralSettingsEditor.cpp */,
 				62A7CA6617B8D05A000AEBF5 /* GeneralSettingsEditor.h */,
 				62A7CA6717B8D05A000AEBF5 /* SettingsDialogQt.cpp */,
@@ -3246,6 +3276,7 @@
 		62A7CA6B17B8D072000AEBF5 /* SettingsDialog */ = {
 			isa = PBXGroup;
 			children = (
+				62A66F5617BBD9A50092AC7B /* SystemsSettingsEditor_moc.cpp */,
 				62A7CA6C17B8D08D000AEBF5 /* GeneralSettingsEditor_moc.cpp */,
 				62A7CA6D17B8D08D000AEBF5 /* SettingsDialogQt_moc.cpp */,
 			);
@@ -3642,6 +3673,7 @@
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
 			isa = PBXGroup;
 			children = (
+				62A43E0C17BCFEEA0003287B /* Settings */,
 				E8637C5017B37F5500ECA297 /* DockLODEditor */,
 				4F64848617AFCAD100034454 /* QtWaitDialog */,
 				4F64848817AFCAD100034454 /* ui_CubemapEditorDialog.h */,
@@ -4630,6 +4662,10 @@
 				62A7CA6F17B8D08D000AEBF5 /* SettingsDialogQt_moc.cpp in Build Sources */,
 				E862903C17BBD20100C88FC0 /* MetaObjModifyCommand.cpp in Build Sources */,
 				E860839B17BCF05500FF798D /* SaveEntityAsAction.cpp in Build Sources */,
+				62A66F4E17BBC9EF0092AC7B /* SystemsSettingsEditor.cpp in Build Sources */,
+				62A66F5717BBD9A50092AC7B /* SystemsSettingsEditor_moc.cpp in Build Sources */,
+				62A43E0B17BCFCDE0003287B /* SettingsManager.cpp in Build Sources */,
+				62A43E0E17BCFF090003287B /* SettingsManager_moc.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

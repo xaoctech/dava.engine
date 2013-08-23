@@ -264,6 +264,11 @@ ParticleLayer* ParticleEmitter::GetNextLayer(ParticleLayer* layer)
 	return number->GetValue(time);
 } */
 
+void ParticleEmitter::SetDesiredLodLevel(int32 level)
+{
+	int32 qqq = level;
+}
+
 void ParticleEmitter::Play()
 {
     Pause(false);

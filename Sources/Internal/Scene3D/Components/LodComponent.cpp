@@ -138,8 +138,8 @@ void LodComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 	{
 		if(archive->IsKeyExists("lc.flags")) flags = archive->GetUInt32("lc.flags");
 
-        forceDistance = 0;
-        forceDistanceSq = 0;
+        forceDistance = INVALID_DISTANCE;
+        forceDistanceSq = INVALID_DISTANCE;
         forceLodLayer = INVALID_LOD_LAYER;
         
 		KeyedArchive *lodDistArch = archive->GetArchive("lc.loddist");
@@ -215,23 +215,23 @@ float32 LodComponent::GetDefaultDistance(int32 layer)
 	return distance;
 }
 
-void LodComponent::SetCurrentLod(LodData *newLod)
+void LodComponent::SetCurrentLod(int32 newLod)
 {
 	if (newLod != currentLod) 
 	{
-		if (currentLod) 
+		if (currentLod!=INVALID_LOD_LAYER) 
 		{
-			int32 size = currentLod->nodes.size();
-			for (int i = 0; i < size; i++) 
+			int32 size = lodLayers[currentLod].nodes.size();
+			for (int32 i = 0; i < size; i++) 
 			{
-				currentLod->nodes[i]->SetLodVisible(false);
+				lodLayers[currentLod].nodes[i]->SetLodVisible(false);
 			}
 		}
-		currentLod = newLod;
-		int32 size = currentLod->nodes.size();
-		for (int i = 0; i < size; i++) 
+		currentLod = newLod;		
+		int32 size = lodLayers[currentLod].nodes.size();
+		for (int32 i = 0; i < size; i++) 
 		{
-			currentLod->nodes[i]->SetLodVisible(true);
+			lodLayers[currentLod].nodes[i]->SetLodVisible(true);
 		}
 	}
 }
