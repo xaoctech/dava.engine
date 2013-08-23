@@ -229,6 +229,12 @@
     <Filter Include="Classes\Qt\SettingsDialog">
       <UniqueIdentifier>{4535800f-030e-4c16-b5e6-52e487679816}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\Qt\Tools\SettingsDialog">
+      <UniqueIdentifier>{2a103ada-c8f2-4c94-9110-478ab33c842e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Qt\Settings">
+      <UniqueIdentifier>{0c11ce84-cd79-4a91-8ae8-eb63aca96f0e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -2091,6 +2097,15 @@
     <ClCompile Include="Classes\Qt\Tools\SettingsDialog\SettingsDialogQt.cpp">
       <Filter>Classes\Qt\SettingsDialog</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\SettingsDialog\SettingsDialogQt.cpp">
+      <Filter>Classes\Qt\Tools\SettingsDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\SettingsDialogQt_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsEditor.cpp">
+      <Filter>Classes\Qt\Tools\SettingsDialog</Filter>
+    </ClCompile>
     <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\GeneralSettingsEditor_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
@@ -2102,6 +2117,12 @@
     </ClCompile>
     <ClCompile Include="Classes\Commands2\SaveEntityAsAction.cpp">
       <Filter>Classes\Commands2</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Settings\SettingsManager.cpp">
+      <Filter>Classes\Qt\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Settings\SettingsManager_moc.cpp">
+      <Filter>QtGenerated</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -3652,6 +3673,15 @@
     </ClInclude>
     <ClInclude Include="Classes\Commands2\SaveEntityAsAction.h">
       <Filter>Classes\Commands2</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\SettingsDialog\SettingsDialogQt.h">
+      <Filter>Classes\Qt\Tools\SettingsDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsEditor.h">
+      <Filter>Classes\Qt\Tools\SettingsDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Settings\SettingsManager.h">
+      <Filter>Classes\Qt\Settings</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

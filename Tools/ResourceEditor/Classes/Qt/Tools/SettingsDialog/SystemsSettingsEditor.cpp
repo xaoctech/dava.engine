@@ -14,69 +14,18 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __LOD_EDITOR_H__
-#define __LOD_EDITOR_H__
+#include "SystemsSettingsEditor.h"
+#include "SceneEditor/EditorSettings.h"
+#include <QHeaderView>
 
-#include <QWidget>
-#include "Tools/QtPosSaver/QtPosSaver.h"
-
-namespace Ui
+SystemSettingsEditor::SystemSettingsEditor( QWidget* parent)
+		:QtPropertyEditor(parent)
 {
-	class LODEditor;
+	
+	expandAll();
+	resizeColumnToContents(0);
 }
 
-class QLabel;
-class QDoubleSpinBox;
-class SceneEditor2;
-class EditorLODData;
-
-class LODEditor: public QWidget
+SystemSettingsEditor::~SystemSettingsEditor()
 {
-	Q_OBJECT
-
-public:
-	explicit LODEditor(QWidget* parent = 0);
-	~LODEditor();
-
-protected slots:
-
-    void LODCorrectionChanged(double value);
-    void ForceDistanceStateChanged(int checked);
-    void ForceDistanceChanged(int distance);
-
-    void SceneActivated(SceneEditor2 *scene);
-	void SceneDeactivated(SceneEditor2 *scene);
-
-    
-    void LODDataChanged();
-    void LODDistanceChangedBySpinbox(double value);
-    void LODDistanceChangedBySlider(int layerNum, double value);
-    
-    void ForceLayerActivated(int index);
-    
-protected:
-    
-    void SetupInternalSignals();
-    void InitCorrectionSpinBox(QDoubleSpinBox *spinbox, int index);
-    void InitDistanceSpinBox(QLabel *name, QDoubleSpinBox *spinbox, int index);
-    
-    void SetupSceneSignals();
-    
-    void UpdateSpinboxColor(QDoubleSpinBox *spinbox);
-    
-    void AddLODRecurcive(DAVA::Entity *entity);
-    void RemoveLODRecurcive(DAVA::Entity *entity);
-    
-    void SetSpinboxValue(QDoubleSpinBox *spinbox, double value);
-    void SetForceLayerValues(int layersCount);
-    
-private:
-	Ui::LODEditor *ui;
-    QtPosSaver posSaver;
-    
-    EditorLODData *editedLODData;
-    
-    
-};
-
-#endif //#ifndef __LOD_EDITOR_H__
+}
