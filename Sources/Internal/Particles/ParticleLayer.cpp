@@ -216,13 +216,13 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	return dstLayer;
 }
 
-template <class T> void UpdatePropertyLineKeys(PropertyLine<T> * line, float startTime, float translateTime, float endTime)
+template <class T> void UpdatePropertyLineKeys(PropertyLine<T> * line, float32 startTime, float32 translateTime, float32 endTime)
 {	
 	if (!line)	
 		return;	
 	Vector<typename PropertyLine<T>::PropertyKey> &keys = line->GetValues();
-	int size = keys.size();		
-	int i;
+	int32 size = keys.size();		
+	int32 i;
 	for (i=0; i<size; ++i)
 	{
 		keys[i].t += translateTime;
@@ -239,13 +239,13 @@ template <class T> void UpdatePropertyLineKeys(PropertyLine<T> * line, float sta
 	}
 }
 
-template <class T> void UpdatePropertyLineOnLoad(PropertyLine<T> * line, float startTime, float endTime)
+template <class T> void UpdatePropertyLineOnLoad(PropertyLine<T> * line, float32 startTime, float32 endTime)
 {
 	if (!line)
 		return;
 	Vector<typename PropertyLine<T>::PropertyKey> &keys = line->GetValues();
-	int size = keys.size();		
-	int i;
+	int32 size = keys.size();		
+	int32 i;
 	/*drop keys before*/
 	for (i=0; i<size; ++i)
 	{
@@ -280,9 +280,9 @@ template <class T> void UpdatePropertyLineOnLoad(PropertyLine<T> * line, float s
 	}
 }
 
-void ParticleLayer::UpdateLayerTime(float startTime, float endTime)
+void ParticleLayer::UpdateLayerTime(float32 startTime, float32 endTime)
 {
-	float translateTime = startTime-this->startTime;
+	float32 translateTime = startTime-this->startTime;
 	this->startTime = startTime;
 	this->endTime = endTime;
 	/*validate all time depended property lines*/	
