@@ -38,7 +38,9 @@ void DAVA::DVAssertMessage::InnerShow(eModalType modalType, const char* content)
 	// Modal Types are ignored on MacOS - there is no way to show non-modal alerts on this platform.
     [alert runModal];
     [alert release];
-    [contents release];
+	
+	//VI: no need to release contents since its created on autorelease pool
+    //[contents release];
 #elif defined(__DAVAENGINE_IPHONE__)
 	static const uint MAX_WARNING_MESSAGE_LENGTH = 8192;
     NSString *contents = [NSString stringWithUTF8String:content];

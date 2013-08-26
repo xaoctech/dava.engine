@@ -250,7 +250,7 @@ namespace DAVA
 			
 				archive->SetArchive(KeyedArchive::GenKeyFromIndex(i), actionArchive);
 				SafeRelease(actionArchive);
-			}
+			}			
 		}
 	}
 	

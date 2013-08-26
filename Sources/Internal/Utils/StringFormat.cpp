@@ -16,6 +16,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include "Utils/StringFormat.h"
+#include "Utils/Utils.h"
 #include "Debug/DVAssert.h"
 
 namespace DAVA
@@ -39,7 +40,7 @@ const char8* Format(const char8 * text, ...)
 
 	va_start(ll, text);
 	int32 len = vsnprintf(&formatString8[formatString8Position],  FORMAT_STRING_MAX_LEN, text, ll);
-    DVASSERT(len <= FORMAT_STRING_MAX_LEN);
+    DVASSERT_MSG(len <= FORMAT_STRING_MAX_LEN, formatString8[formatString8Position]);
     
 	formatString8Position += (len + 1);
 
@@ -744,7 +745,7 @@ const char16* Format(const char16 * text, ...)
 #else // MAC_OS & other nix systems
 	int32 len = vswprintf((wchar_t *)&formatString16[formatString16Position], FORMAT_STRING_MAX_LEN, (wchar_t *)text, ll);
 #endif
-    DVASSERT(len < FORMAT_STRING_MAX_LEN);
+    DVASSERT_MSG(len < FORMAT_STRING_MAX_LEN, WStringToString(WideString(formatString16[formatString16Position], len)).c_str());
 	
 	formatString16Position += (len + 1);
 	va_end(ll);
@@ -758,7 +759,7 @@ const char8* FormatVL(const char8 * text, va_list ll)
 		formatString8Position = 0;
 	}
 	int32 len = vsprintf(&formatString8[formatString8Position],  text, ll);
-    DVASSERT(len < FORMAT_STRING_MAX_LEN);
+    DVASSERT_MSG(len < FORMAT_STRING_MAX_LEN, formatString8[formatString8Position]);
 
 	formatString8Position += (len + 1);
 
@@ -776,7 +777,8 @@ const char16* FormatVL(const char16 * text, va_list ll)
 #else // MAC_OS & other nix systems
 	int32 len = vswprintf((wchar_t *)&formatString16[formatString16Position], FORMAT_STRING_MAX_LEN, (wchar_t *)text, ll);
 #endif
-	DVASSERT(len < FORMAT_STRING_MAX_LEN);
+
+	DVASSERT_MSG(len < FORMAT_STRING_MAX_LEN, WStringToString(WideString(formatString16[formatString16Position], len)).c_str());
 
 	formatString16Position += (len + 1);
 	return &formatString16[formatString16Position - (len + 1)];

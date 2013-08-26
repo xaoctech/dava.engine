@@ -70,6 +70,13 @@ UITextField::UITextField(const Rect &rect, bool rectInAbsoluteCoordinates/*= fal
 ,   textFont(NULL)
 ,   staticText(NULL)
 ,   isPassword(false)
+,	autoCapitalizationType(AUTO_CAPITALIZATION_TYPE_SENTENCES)
+,	autoCorrectionType(AUTO_CORRECTION_TYPE_DEFAULT)
+,	spellCheckingType(SPELL_CHECKING_TYPE_DEFAULT)
+,	keyboardAppearanceType(KEYBOARD_APPEARANCE_DEFAULT)
+,	keyboardType(KEYBOARD_TYPE_DEFAULT)
+,	returnKeyType(RETURN_KEY_DEFAULT)
+,	enableReturnKeyAutomatically(false)
 {
 #ifdef __DAVAENGINE_ANDROID__
 	textFieldAndroid = new UITextFieldAndroid(this);
@@ -94,6 +101,13 @@ UITextField::UITextField()
 ,   textFont(NULL)
 ,   staticText(NULL)
 ,   isPassword(false)
+,	autoCapitalizationType(AUTO_CAPITALIZATION_TYPE_SENTENCES)
+,	autoCorrectionType(AUTO_CORRECTION_TYPE_DEFAULT)
+,	spellCheckingType(SPELL_CHECKING_TYPE_DEFAULT)
+,	keyboardAppearanceType(KEYBOARD_APPEARANCE_DEFAULT)
+,	keyboardType(KEYBOARD_TYPE_DEFAULT)
+,	returnKeyType(RETURN_KEY_DEFAULT)
+,	enableReturnKeyAutomatically(false)
 {
 #ifdef __DAVAENGINE_ANDROID__
 	textFieldAndroid = new UITextFieldAndroid(this);
@@ -161,13 +175,6 @@ void UITextField::CloseKeyboard()
 #endif
 }
 	
-void UITextField::SetReturnKey(int32 returnType)
-{
-#ifdef __DAVAENGINE_IPHONE__
-	textFieldiPhone->SetReturnKey(returnType);
-#endif
-}
-
 void UITextField::Update(float32 timeElapsed)
 {
 #ifdef __DAVAENGINE_IPHONE__
@@ -518,6 +525,49 @@ void UITextField::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 		SetIsPassword(passwordNode->AsBool());
     }
 
+	// Keyboard customization params.
+	YamlNode* autoCapitalizationTypeNode = node->Get("autoCapitalizationType");
+	if (autoCapitalizationTypeNode)
+	{
+		autoCapitalizationType = (eAutoCapitalizationType)autoCapitalizationTypeNode->AsInt32();
+	}
+
+	YamlNode* autoCorrectionTypeNode = node->Get("autoCorrectionType");
+	if (autoCorrectionTypeNode)
+	{
+		autoCorrectionType = (eAutoCorrectionType)autoCorrectionTypeNode->AsInt32();
+	}
+
+	YamlNode* spellCheckingTypeNode = node->Get("spellCheckingType");
+	if (spellCheckingTypeNode)
+	{
+		spellCheckingType = (eSpellCheckingType)spellCheckingTypeNode->AsInt32();
+	}
+
+	YamlNode* keyboardAppearanceTypeNode = node->Get("keyboardAppearanceType");
+	if (keyboardAppearanceTypeNode)
+	{
+		keyboardAppearanceType = (eKeyboardAppearanceType)keyboardAppearanceTypeNode->AsInt32();
+	}
+
+	YamlNode* keyboardTypeNode = node->Get("keyboardType");
+	if (keyboardTypeNode)
+	{
+		keyboardType = (eKeyboardType)keyboardTypeNode->AsInt32();
+	}
+
+	YamlNode* returnKeyTypeNode = node->Get("returnKeyType");
+	if (returnKeyTypeNode)
+	{
+		returnKeyType = (eReturnKeyType)returnKeyTypeNode->AsInt32();
+	}
+
+	YamlNode* enableReturnKeyAutomaticallyNode = node->Get("enableReturnKeyAutomatically");
+	if (enableReturnKeyAutomaticallyNode)
+	{
+		enableReturnKeyAutomatically = enableReturnKeyAutomaticallyNode->AsBool();
+	}
+
     if(staticText)
     {
         staticText->SetRect(Rect(0,0,GetRect().dx, GetRect().dy));
@@ -611,6 +661,15 @@ YamlNode * UITextField::SaveToYamlNode(UIYamlLoader * loader)
     // Is password
     node->Set("isPassword", isPassword);
 
+	// Keyboard customization params.
+	node->Set("autoCapitalizationType", autoCapitalizationType);
+	node->Set("autoCorrectionType", autoCorrectionType);
+	node->Set("spellCheckingType", spellCheckingType);
+	node->Set("keyboardAppearanceType", keyboardAppearanceType);
+	node->Set("keyboardType", keyboardType);
+	node->Set("returnKeyType", returnKeyType);
+	node->Set("enableReturnKeyAutomatically", enableReturnKeyAutomatically);
+
     SafeDelete(nodeValue);
     
     return node;
@@ -649,6 +708,14 @@ void UITextField::CopyDataFrom(UIControl *srcControl)
 	}
 	if (t->textFont)
 		SetFont(t->textFont);
+
+	t->SetAutoCapitalizationType(GetAutoCapitalizationType());
+	t->SetAutoCorrectionType(GetAutoCorrectionType());
+	t->SetSpellCheckingType(GetSpellCheckingType());
+	t->SetKeyboardAppearanceType(GetKeyboardAppearanceType());
+	t->SetKeyboardType(GetKeyboardType());
+	t->SetReturnKeyType(GetReturnKeyType());
+	t->SetEnableReturnKeyAutomatically(IsEnableReturnKeyAutomatically());
 }
     
 void UITextField::SetIsPassword(bool isPassword)
@@ -676,6 +743,98 @@ WideString UITextField::GetVisibleText() const
     return text;
 }
 	
+UITextField::eAutoCapitalizationType UITextField::GetAutoCapitalizationType()
+{
+	return autoCapitalizationType;
+}
+
+void UITextField::SetAutoCapitalizationType(eAutoCapitalizationType value)
+{
+	autoCapitalizationType = value;
+#ifdef __DAVAENGINE_IPHONE__
+	textFieldiPhone->SetAutoCapitalizationType(value);
+#endif
+}
+
+UITextField::eAutoCorrectionType UITextField::GetAutoCorrectionType()
+{
+	return autoCorrectionType;
+}
+
+void UITextField::SetAutoCorrectionType(eAutoCorrectionType value)
+{
+	autoCorrectionType = value;
+#ifdef __DAVAENGINE_IPHONE__
+	textFieldiPhone->SetAutoCorrectionType(value);
+#endif
+}
+
+UITextField::eSpellCheckingType UITextField::GetSpellCheckingType()
+{
+	return spellCheckingType;
+}
+
+void UITextField::SetSpellCheckingType(eSpellCheckingType value)
+{
+	spellCheckingType = value;
+#ifdef __DAVAENGINE_IPHONE__
+	textFieldiPhone->SetSpellCheckingType(value);
+#endif
+}
+
+UITextField::eKeyboardAppearanceType UITextField::GetKeyboardAppearanceType()
+{
+	return keyboardAppearanceType;
+}
+
+void UITextField::SetKeyboardAppearanceType(eKeyboardAppearanceType value)
+{
+	keyboardAppearanceType = value;
+#ifdef __DAVAENGINE_IPHONE__
+	textFieldiPhone->SetKeyboardAppearanceType(value);
+#endif
+}
+
+UITextField::eKeyboardType UITextField::GetKeyboardType()
+{
+	return keyboardType;
+}
+
+void UITextField::SetKeyboardType(eKeyboardType value)
+{
+	keyboardType = value;
+#ifdef __DAVAENGINE_IPHONE__
+	textFieldiPhone->SetKeyboardType(value);
+#endif
+}
+
+UITextField::eReturnKeyType UITextField::GetReturnKeyType()
+{
+	return returnKeyType;
+}
+
+void UITextField::SetReturnKeyType(eReturnKeyType value)
+{
+	returnKeyType = value;
+#ifdef __DAVAENGINE_IPHONE__
+	textFieldiPhone->SetReturnKeyType(value);
+#endif
+}
+
+bool UITextField::IsEnableReturnKeyAutomatically()
+{
+	return enableReturnKeyAutomatically;
+}
+
+void UITextField::SetEnableReturnKeyAutomatically(bool value)
+{
+	enableReturnKeyAutomatically = value;
+#ifdef __DAVAENGINE_IPHONE__
+	textFieldiPhone->SetEnableReturnKeyAutomatically(value);
+#endif
+
+}
+
 }; // namespace
 
 
