@@ -57,6 +57,16 @@
      <string>Switch Index</string>
     </property>
    </column>
+   <column>
+    <property name="text">
+     <string>Stop After N Repeats</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Stop When Empty</string>
+    </property>
+   </column>
   </widget>
   <widget class="QPushButton" name="buttonAddItem">
    <property name="geometry">
