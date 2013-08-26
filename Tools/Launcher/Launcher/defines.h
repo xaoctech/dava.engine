@@ -5,7 +5,7 @@
 
 ////Global launcher defines
 
-#define LAUNCHER_VER "0.9"
+#define LAUNCHER_VER "0.9 build 2"
 
 #define LOCAL_CONFIG_NAME "localConfig.yaml"
 #ifdef Q_OS_DARWIN

@@ -33,6 +33,8 @@ public slots:
     void OnCellClicked(const QPoint & pos);
     void OnCellDoubleClicked(QModelIndex index);
 
+    void OnlinkClicked(QUrl url);
+
 private:
     void ShowWebpage();
     void ShowTable(const QString & branchID);
