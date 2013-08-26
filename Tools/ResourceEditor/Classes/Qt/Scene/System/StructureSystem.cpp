@@ -449,7 +449,8 @@ DAVA::Entity* StructureSystem::Load(const DAVA::FilePath& sc2path)
 
 DAVA::Landscape * StructureSystem::FindLanscape() const
 {
-	return FindLanscapeRecursive(GetScene());
+    Entity *entity = FindLandscapeEntity();
+    return GetLandscape(entity);
 }
 
 DAVA::Entity * StructureSystem::FindLandscapeEntity() const
@@ -457,26 +458,6 @@ DAVA::Entity * StructureSystem::FindLandscapeEntity() const
 	return FindLandscapeEntityRecursive(GetScene());
 }
 
-DAVA::Landscape * StructureSystem::FindLanscapeRecursive( DAVA::Entity *entity ) const
-{
-	DAVA::Landscape *land = GetLandscape(entity);
-	if(land)
-	{
-		return land;
-	}
-
-	DAVA::int32 count = entity->GetChildrenCount();
-	for(DAVA::int32 i = 0; i < count; ++i)
-	{
-		land = FindLanscapeRecursive(entity->GetChild(i));
-		if(land)
-		{
-			return land;
-		}
-	}
-
-	return NULL;
-}
 
 DAVA::Entity * StructureSystem::FindLandscapeEntityRecursive( DAVA::Entity *entity ) const
 {

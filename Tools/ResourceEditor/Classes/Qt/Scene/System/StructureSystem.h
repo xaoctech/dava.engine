@@ -72,10 +72,7 @@ protected:
 	virtual void AddEntity(DAVA::Entity * entity);
 	virtual void RemoveEntity(DAVA::Entity * entity);
 
-
-	DAVA::Landscape * FindLanscapeRecursive(DAVA::Entity *entity) const;
 	DAVA::Entity * FindLandscapeEntityRecursive(DAVA::Entity *entity) const;
-
 };
 
 #endif // __SCENE_STRUCTURE_SYSTEM_H__
