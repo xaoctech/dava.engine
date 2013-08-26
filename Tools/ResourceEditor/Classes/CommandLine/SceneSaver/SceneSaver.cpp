@@ -19,6 +19,7 @@
 
 #include "Qt/Scene/SceneDataManager.h"
 #include "../StringConstants.h"
+#include "Classes/Qt/Main/QtUtils.h"
 
 using namespace DAVA;
 
@@ -142,6 +143,7 @@ void SceneSaver::SaveScene(Scene *scene, const FilePath &fileName, Set<String> &
     }
 
 	CopyReferencedObject(scene, errorLog);
+	CopyEffects(scene, errorLog);
 
     //save scene to new place
     FilePath tempSceneName = sceneUtils.dataSourceFolder + relativeFilename;
@@ -200,7 +202,44 @@ void SceneSaver::CopyReferencedObject( Entity *node, Set<String> &errorLog )
 	{
 		CopyReferencedObject(node->GetChild(i), errorLog);
 	}
-
 }
 
+void SceneSaver::CopyEffects(Entity *node, Set<String> &errorLog)
+{
+	ParticleEmitter *emitter = GetEmitter(node);
+	if(emitter)
+	{
+		CopyEmitter(emitter, errorLog);
+	}
+
+	for (int i = 0; i < node->GetChildrenCount(); ++i)
+	{
+		CopyEffects(node->GetChild(i), errorLog);
+	}
+}
+
+void SceneSaver::CopyEmitter( ParticleEmitter *emitter, Set<String> &errorLog )
+{
+	sceneUtils.CopyFile(emitter->GetConfigPath(), errorLog);
+
+	const Vector<ParticleLayer*> &layers = emitter->GetLayers();
+
+	uint32 count = (uint32)layers.size();
+	for(uint32 i = 0; i < count; ++i)
+	{
+		if(layers[i]->type == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
+		{
+			CopyEmitter(layers[i]->GetInnerEmitter(), errorLog);
+		}
+		else
+		{
+			Sprite *sprite = layers[i]->GetSprite();
+			if(!sprite) continue;
+
+			FilePath psdPath = ReplaceInString(sprite->GetRelativePathname().GetAbsolutePathname(), "/Data/", "/DataSource/");
+			psdPath.ReplaceExtension(".psd");
+			sceneUtils.CopyFile(psdPath, errorLog);
+		}
+	}
+}
 

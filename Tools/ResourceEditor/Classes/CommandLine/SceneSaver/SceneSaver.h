@@ -43,6 +43,8 @@ protected:
     void CopyTexture(const FilePath &texturePathname, Set<String> &errorLog);
 
 	void CopyReferencedObject(Entity *node, Set<String> &errorLog);
+	void CopyEffects(Entity *node, Set<String> &errorLog);
+	void CopyEmitter(ParticleEmitter *emitter, Set<String> &errorLog);
 
 protected:
     
