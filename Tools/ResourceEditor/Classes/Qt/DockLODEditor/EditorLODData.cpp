@@ -186,19 +186,24 @@ void EditorLODData::GetDataFromSelection()
         
         for(DAVA::int32 i = 0; i < lodComponentsSize; ++i)
         {
-            Vector<LodComponent::LodData*> lodLayers;
-            lodData[i]->GetLodData(lodLayers);
-            
+            //distances
             DAVA::int32 layersCount = GetLayersCount(lodData[i]);
-            Vector<LodComponent::LodData*>::const_iterator lodLayerIt = lodLayers.begin();
-            for(DAVA::int32 layer = 0; layer < layersCount; ++layer, ++lodLayerIt)
+            for(DAVA::int32 layer = 0; layer < layersCount; ++layer)
             {
                 lodDistances[layer] += lodData[i]->GetLodLayerDistance(layer);
                 ++lodComponentsCount[layer];
-                
+            }
+
+            //triangles
+            Vector<LodComponent::LodData*> lodLayers;
+            lodData[i]->GetLodData(lodLayers);
+            Vector<LodComponent::LodData*>::const_iterator lodLayerIt = lodLayers.begin();
+            for(DAVA::int32 layer = 0; layer < layersCount && lodLayerIt != lodLayers.end(); ++layer, ++lodLayerIt)
+            {
                 lodTriangles[layer] += GetTrianglesForLodLayer(*lodLayerIt);
             }
         }
+        
 
         for(DAVA::int32 i = 0; i < DAVA::LodComponent::MAX_LOD_LAYERS; ++i)
         {
