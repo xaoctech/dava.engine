@@ -25,17 +25,24 @@
 
 #include <QLabel>
 #include <QWidget>
+#include <QLineEdit>
 
 
 struct DistanceWidget
 {
     QLabel *name;
     QDoubleSpinBox *distance;
-    
+
+    QLabel *trianglesName;
+    QLineEdit *triangles;
+
     void SetVisible(bool visible)
     {
         name->setVisible(visible);
         distance->setVisible(visible);
+        
+        trianglesName->setVisible(visible);
+        triangles->setVisible(visible);
     }
 };
 
@@ -96,6 +103,11 @@ void LODEditor::SetupInternalUI()
     
     connect(ui->distanceSlider, SIGNAL(DistanceChanged(int, double)), SLOT(LODDistanceChangedBySlider(int, double)));
     
+    InitTriangles(ui->labelTriangles0, ui->triangles0, 0);
+    InitTriangles(ui->labelTriangles1, ui->triangles1, 1);
+    InitTriangles(ui->labelTriangles2, ui->triangles2, 2);
+    InitTriangles(ui->labelTriangles3, ui->triangles3, 3);
+
     InitDistanceSpinBox(ui->lod0Name, ui->lod0Distance, 0);
     InitDistanceSpinBox(ui->lod1Name, ui->lod1Distance, 1);
     InitDistanceSpinBox(ui->lod2Name, ui->lod2Distance, 2);
@@ -170,6 +182,15 @@ void LODEditor::InitDistanceSpinBox(QLabel *name, QDoubleSpinBox *spinbox, int i
     distanceWidgets->SetVisible(false);
 }
 
+void LODEditor::InitTriangles(QLabel *name, QLineEdit *lineedit, int index)
+{
+    distanceWidgets[index].trianglesName = name;
+    distanceWidgets[index].triangles = lineedit;
+    
+    lineedit->setText("0");
+}
+
+
 
 void LODEditor::UpdateSpinboxColor(QDoubleSpinBox *spinbox)
 {
@@ -211,6 +232,8 @@ void LODEditor::LODDataChanged()
         
         SetSpinboxValue(distanceWidgets[i].distance, distance);
         ui->distanceSlider->SetDistance(i, distance);
+        
+        distanceWidgets[i].triangles->setText(Format("%d", editedLODData->GetLayerTriangles(i)));
     }
     for (DAVA::int32 i = lodLayersCount; i < DAVA::LodComponent::MAX_LOD_LAYERS; ++i)
     {

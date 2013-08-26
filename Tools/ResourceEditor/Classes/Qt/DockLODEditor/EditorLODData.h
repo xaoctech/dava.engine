@@ -36,6 +36,8 @@ public:
     DAVA::float32 GetLayerDistance(DAVA::int32 layerNum) const;
     void SetLayerDistance(DAVA::int32 layerNum, DAVA::float32 distance);
 
+    DAVA::uint32 GetLayerTriangles(DAVA::int32 layerNum) const;
+
     void EnableForceDistance(bool enable);
     bool GetForceDistanceEnabled() const;
     
@@ -48,7 +50,7 @@ public:
     void GetDataFromSelection();
 
     static void EnumerateLODsRecursive(DAVA::Entity *entity, DAVA::Vector<DAVA::LodComponent *> & lods);
-
+    static DAVA::uint32 GetTrianglesForLodLayer(DAVA::LodComponent::LodData *lodData);
     
 signals:
     
@@ -70,7 +72,6 @@ protected:
 
     void ResetForceState(DAVA::Entity *entity);
     
-
     DAVA::int32 GetLayersCount(DAVA::LodComponent *lod) const;
     
     
@@ -79,6 +80,9 @@ protected:
     DAVA::int32 lodLayersCount;
     DAVA::float32 lodDistances[DAVA::LodComponent::MAX_LOD_LAYERS];
 
+    DAVA::uint32 lodTriangles[DAVA::LodComponent::MAX_LOD_LAYERS];
+
+    
     bool forceDistanceEnabled;
     DAVA::float32 forceDistance;
     DAVA::int32 forceLayer;
