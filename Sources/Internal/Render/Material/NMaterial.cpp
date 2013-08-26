@@ -112,6 +112,7 @@ NMaterial::NMaterial()
     
 NMaterial::~NMaterial()
 {
+	SetParent(NULL);
 }
     
 void NMaterial::AddMaterialProperty(const String & keyName, YamlNode * uniformNode)
