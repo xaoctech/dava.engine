@@ -148,7 +148,8 @@ public:
 			  RefPtr<PropertyLine<Color> > colorOverLife,
 			  RefPtr<PropertyLine<Vector3> > size,
 			  float32 life,
-			  float32 playbackSpeed);
+			  float32 playbackSpeed,
+			  bool isShortEffect);
 
 	ParticleEmitter* GetEmitter() const {return emitter;};
 
@@ -165,6 +166,7 @@ protected:
 	RefPtr<PropertyLine<Vector3> > size;
 	float32 life;
 	float32 playbackSpeed;
+	bool isShortEffect;
 };
 
 class CommandUpdateParticleLayerBase : public CommandAction

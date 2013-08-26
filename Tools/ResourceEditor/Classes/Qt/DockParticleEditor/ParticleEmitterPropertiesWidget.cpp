@@ -36,6 +36,10 @@ ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent
 	mainLayout->addWidget(emitterYamlPath);
 	connect(emitterYamlPath, SIGNAL(textChanged(const QString&)), this, SLOT(OnEmitterYamlPathChanged(const QString&)));
 
+	shortEffectCheckBox = new QCheckBox("Short effect");
+	mainLayout->addWidget(shortEffectCheckBox);
+	connect(shortEffectCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+
 	QHBoxLayout* emitterTypeHBox = new QHBoxLayout();
 	emitterTypeHBox->addWidget(new QLabel("type"));
 	emitterType = new QComboBox(this);
@@ -141,6 +145,8 @@ void ParticleEmitterPropertiesWidget::OnValueChanged()
 
 	float playbackSpeed = ConvertFromSliderValueToPlaybackSpeed(emitterPlaybackSpeed->value());
 
+	bool isShortEffect = shortEffectCheckBox->isChecked();
+
 	CommandUpdateEmitter* commandUpdateEmitter = new CommandUpdateEmitter(emitter);
 	commandUpdateEmitter->Init(type,
 							   emissionRange.GetPropLine(),
@@ -149,7 +155,8 @@ void ParticleEmitterPropertiesWidget::OnValueChanged()
 							   colorOverLife.GetPropLine(),
 							   size.GetPropLine(),
 							   life,
-							   playbackSpeed);
+							   playbackSpeed,
+							   isShortEffect);
 
 	DVASSERT(activeScene != 0);
 	activeScene->Exec(commandUpdateEmitter);
@@ -165,6 +172,8 @@ void ParticleEmitterPropertiesWidget::Init(SceneEditor2* scene, DAVA::ParticleEm
 	SetActiveScene(scene);
 
 	blockSignals = true;
+
+	shortEffectCheckBox->setChecked(emitter->IsShortEffect());
 
 	float32 emitterLifeTime = emitter->GetLifeTime();
 

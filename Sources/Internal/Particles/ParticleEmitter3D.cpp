@@ -112,6 +112,7 @@ void ParticleEmitter3D::PrepareEmitterParameters(Particle * particle, float32 ve
 		Matrix4 newTransform = *worldTransformPtr;
 		newTransform._30 = newTransform._31 = newTransform._32 = 0;
 		particle->direction = particle->direction*newTransform;
+		particle->direction.Normalize();
 	}
 }
 
@@ -222,8 +223,10 @@ void ParticleEmitter3D::PrepareEmitterParametersGeneric(Particle * particle, flo
 	{
 		// Yuri Coder, 2013/04/12. Need to invert the directions in the emission vector, since
 		// their coordinates are in the opposite directions for the Particles Editor.
-        vel = emissionVector->GetValue(0) * -1.0f;
 		vel = vel*rotationMatrix;
+		vel.Normalize();
+        vel = emissionVector->GetValue(0) * -1.0f;
+		
 	}
 
     Vector3 rotVect(0, 0, 1);

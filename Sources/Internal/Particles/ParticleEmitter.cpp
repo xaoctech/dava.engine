@@ -284,6 +284,11 @@ bool ParticleEmitter::IsShortEffect()
 void ParticleEmitter::SetShortEffect(bool isShort)
 {
 	shortEffect = isShort;
+	if (!isShort)
+	{
+		lodLevelLocked = false; //once effect is not considered short anymore - unlock lod
+		currentLodLevel = desiredLodLevel;
+	}
 }
 
 void ParticleEmitter::Play()
@@ -539,6 +544,9 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 		{	
 			is3D = _3dNode->AsBool();
 		}
+		YamlNode * shortEffectNode = emitterNode->Get("shortEffect");
+		if (shortEffectNode)
+			shortEffect = shortEffectNode->AsBool();
         
 		YamlNode * typeNode = emitterNode->Get("type");
 		if (typeNode)
@@ -636,6 +644,7 @@ void ParticleEmitter::SaveToYaml(const FilePath & filename)
     
     emitterYamlNode->Set("3d", this->is3D);
     emitterYamlNode->Set("type", GetEmitterTypeName());
+	emitterYamlNode->Set("shortEffect", shortEffect);
     
     // Write the property lines.
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(emitterYamlNode, "emissionAngle", this->emissionAngle);
