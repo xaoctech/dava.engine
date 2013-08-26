@@ -327,7 +327,9 @@ void SceneEditor2::SetViewportRect(const DAVA::Rect &newViewportRect)
 
 void SceneEditor2::Draw()
 {
+    RenderManager::Instance()->ClearStats();
 	Scene::Draw();
+    renderStats = RenderManager::Instance()->GetStats();
 
 	gridSystem->Draw();
 	cameraSystem->Draw();
@@ -441,5 +443,10 @@ ShadowVolumeRenderPass::eBlend SceneEditor2::GetShadowBlendMode() const
 	}
 
 	return ShadowVolumeRenderPass::MODE_BLEND_COUNT;
+}
+
+const RenderManager::Stats & SceneEditor2::GetRenderStats() const
+{
+    return renderStats;
 }
 

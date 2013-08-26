@@ -109,11 +109,16 @@ public:
 	void SetShadowBlendMode(ShadowVolumeRenderPass::eBlend blend);
 	ShadowVolumeRenderPass::eBlend GetShadowBlendMode() const;
 
+    const RenderManager::Stats & GetRenderStats() const;
+
 protected:
 	bool isLoaded;
 
 	DAVA::FilePath curScenePath;
 	CommandStack commandStack;
+    
+    RenderManager::Stats renderStats;
+
 
 	virtual void EditorCommandProcess(const Command2 *command, bool redo);
 	virtual void Update(float timeElapsed);
