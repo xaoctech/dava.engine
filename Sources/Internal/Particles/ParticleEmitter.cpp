@@ -669,6 +669,15 @@ float32 ParticleEmitter::GetLifeTime()
 void ParticleEmitter::SetLifeTime(float32 time)
 {
     lifeTime = time;
+	
+	/*see DF-1686*/
+	for (int32 i = 0, size = layers.size(); i<size; ++i)
+	{
+		if (lifeTime<layers[i]->endTime)
+		{
+			layers[i]->UpdateLayerTime(layers[i]->startTime, lifeTime);
+		}
+	}
 }
     
 float32 ParticleEmitter::GetTime()

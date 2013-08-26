@@ -74,6 +74,8 @@ private slots:
 	void ApplyReferenceNodeSuffix();
 	void RepackSpritesWaitDone(QObject *destroyed);
 
+	void MenuDynamicShadowBlendTriggered();
+
 signals:
 	// Library File Types.
 	void LibraryFileTypesChanged(bool showDAEFiles, bool showSC2Files);
