@@ -754,7 +754,6 @@
 		C1DC1EFD1717E8B7001C5EC3 /* libTextureConverter_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C1DC1EFB1717E791001C5EC3 /* libTextureConverter_macos.a */; };
 		C1DC1F001717EC1E001C5EC3 /* libTextureConverter_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C1DC1EFB1717E791001C5EC3 /* libTextureConverter_macos.a */; };
 		C70B56421753C2BB008966FA /* KeyedArchiveSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C70B56401753C2BB008966FA /* KeyedArchiveSwig.cpp */; };
-		C7FBCFB316CD1FE5006F1B3F /* AutotestingSystem_wrap.cxx in Sources */ = {isa = PBXBuildFile; fileRef = C7FBCFA716CD1FE5006F1B3F /* AutotestingSystem_wrap.cxx */; };
 		C7FBCFB416CD1FE5006F1B3F /* AutotestingSystemLua.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7FBCFA816CD1FE5006F1B3F /* AutotestingSystemLua.cpp */; };
 		C7FBCFB516CD1FE5006F1B3F /* AutotestingSystemLua.h in Headers */ = {isa = PBXBuildFile; fileRef = C7FBCFA916CD1FE5006F1B3F /* AutotestingSystemLua.h */; };
 		C7FBCFB616CD1FE5006F1B3F /* AutotestingSystemSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7FBCFAA16CD1FE5006F1B3F /* AutotestingSystemSwig.cpp */; };
@@ -4499,7 +4498,6 @@
 				4FFE5CAF1779DBC700728624 /* MipmapReplacer.h in Headers */,
 				A60AE94D17A00D5100B5626A /* ActionComponent.h in Headers */,
 				A60AE95317A00D9C00B5626A /* ActionUpdateSystem.h in Headers */,
-				1794211517A6A5B300783123 /* UIDismissionHandlerAlertView.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5486,7 +5484,6 @@
 				509740D816C12EED00631E71 /* IntrospectionBase.cpp in Sources */,
 				E8F21DCA16C196DC007F957A /* GlobalEventSystem.cpp in Sources */,
 				CCB4C41A16CBC5B200F2B085 /* ComponentHelpers.cpp in Sources */,
-				C7FBCFB316CD1FE5006F1B3F /* AutotestingSystem_wrap.cxx in Sources */,
 				C7FBCFB416CD1FE5006F1B3F /* AutotestingSystemLua.cpp in Sources */,
 				C7FBCFB616CD1FE5006F1B3F /* AutotestingSystemSwig.cpp in Sources */,
 				C7FBCFB716CD1FE5006F1B3F /* AutotestingSystemYaml.cpp in Sources */,
@@ -5553,7 +5550,6 @@
 				4FFE5CAE1779DBC700728624 /* MipmapReplacer.cpp in Sources */,
 				A60AE94C17A00D5100B5626A /* ActionComponent.cpp in Sources */,
 				A60AE95017A00D9C00B5626A /* ActionUpdateSystem.cpp in Sources */,
-				1794211617A6A5B300783123 /* UIDismissionHandlerAlertView.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5980,7 +5976,9 @@
 					./../../Libs/freetype/include,
 					./../../Libs/include/,
 					./../../Libs/oggvorbis/include,
-./../../Libs/fmod/include,./../../Libs/lua/include,				);
+					./../../Libs/fmod/include,
+					./../../Libs/lua/include,
+				);
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -6015,7 +6013,8 @@
 					./../../Libs/include/,
 					./../../Libs/oggvorbis/include,
 					./../../Libs/fmod/include,
-					./../../Libs/lua/include,				);
+					./../../Libs/lua/include,
+				);
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",

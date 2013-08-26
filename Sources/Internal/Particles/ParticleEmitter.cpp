@@ -311,30 +311,29 @@ void ParticleEmitter::DeferredUpdate(float32 timeElapsed)
 	
 void ParticleEmitter::Update(float32 timeElapsed)
 {
-	if (isPaused)
-	{
-		return;
-	}
-
 	timeElapsed *= playbackSpeed;
-	time += timeElapsed;
-	float32 t = time / lifeTime;
 
-	if (colorOverLife)
+	if (false == isPaused)
 	{
-		currentColor = colorOverLife->GetValue(t);
-	}
+		time += timeElapsed;
+		float32 t = time / lifeTime;
 
-	if(isAutorestart && (time > lifeTime))
-	{
-		time -= lifeTime;
+		if (colorOverLife)
+		{
+			currentColor = colorOverLife->GetValue(t);
+		}
 
-        // Restart() resets repeatCount, so store it locally and then revert.
-        int16 curRepeatCount = repeatCount;
-		Restart(true);
-        repeatCount = curRepeatCount;
+		if(isAutorestart && (time > lifeTime))
+		{
+			time -= lifeTime;
 
-		repeatCount ++;
+			// Restart() resets repeatCount, so store it locally and then revert.
+			int16 curRepeatCount = repeatCount;
+			Restart(true);
+			repeatCount = curRepeatCount;
+
+			repeatCount ++;
+		}
 	}
 
 	Vector<ParticleLayer*>::iterator it;
@@ -670,6 +669,15 @@ float32 ParticleEmitter::GetLifeTime()
 void ParticleEmitter::SetLifeTime(float32 time)
 {
     lifeTime = time;
+	
+	/*see DF-1686*/
+	for (int32 i = 0, size = layers.size(); i<size; ++i)
+	{
+		if (lifeTime<layers[i]->endTime)
+		{
+			layers[i]->UpdateLayerTime(layers[i]->startTime, lifeTime);
+		}
+	}
 }
     
 float32 ParticleEmitter::GetTime()

@@ -120,7 +120,8 @@ Entity* SceneDataManager::AddScene(const FilePath &scenePathname)
 		sceneData->SetLandscapesControllerScene(scene);
 	}
 
-    sceneData->GetScene()->UpdateCameraLightOnScene();
+    scene->UpdateCameraLightOnScene();
+	scene->UpdateShadowColorFromLandscape();
     SceneHidePreview();
 	UpdateParticleSprites();
 	emit SceneGraphNeedRebuild();
@@ -189,9 +190,8 @@ void SceneDataManager::EditScene(SceneData* sceneData, const FilePath &scenePath
 	
 	scene->Update(0);
 	sceneData->EmitSceneChanged();
-
-
     scene->UpdateCameraLightOnScene();
+	scene->UpdateShadowColorFromLandscape();
 	UpdateParticleSprites();
     emit SceneGraphNeedRebuild();
 
@@ -249,6 +249,8 @@ void SceneDataManager::ReloadScene(const FilePath &scenePathname, const FilePath
     
     
     scene->UpdateCameraLightOnScene();
+	scene->UpdateShadowColorFromLandscape();
+
 	UpdateParticleSprites();
     emit SceneGraphNeedRebuild();
 	sceneData->SetLandscapesControllerScene(scene);
@@ -284,6 +286,7 @@ void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const FilePa
         }
         
         scene->UpdateCameraLightOnScene();
+		scene->UpdateShadowColorFromLandscape();
         return;
     }
     
@@ -801,6 +804,7 @@ void SceneDataManager::UpdateCameraLightOnScene(bool show)
     
     emit SceneGraphNeedRebuild();
 }
+
 
 void SceneDataManager::SceneShowPreview(const DAVA::FilePath &path)
 {

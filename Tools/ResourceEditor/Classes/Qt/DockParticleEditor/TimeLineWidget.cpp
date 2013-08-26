@@ -435,6 +435,10 @@ void TimeLineWidget::AddLine(uint32 lineId, const Vector< PropValue<float32> >& 
 	LOGIC_POINTS desLine;
 	for (uint32 i = 0; i < line.size(); ++i)
 		desLine.push_back(Vector2(line[i].t, line[i].v));
+	if (desLine.size()==1) //force correct min time
+	{
+		desLine[0].x = minTime;
+	}
 
 	lines[lineId].line = desLine;
 	lines[lineId].color = color;
@@ -457,10 +461,17 @@ void TimeLineWidget::AddLines(const Vector< PropValue<Vector2> >& lines, const V
 		desLine[0].push_back(Vector2(lines[i].t, lines[i].v.x));
 		desLine[1].push_back(Vector2(lines[i].t, lines[i].v.y));
 	}
-	
-	for (int i = 0; i < 2; i++)
+	for (int32 i=0; i <2; ++i)
 	{
-		int id = this->lines.size();
+		if (desLine[i].size()==1) //force correct min time
+		{
+			desLine[i][0].x = minTime;
+		}
+	}
+	
+	for (int32 i = 0; i < 2; i++)
+	{
+		int32 id = this->lines.size();
 		this->lines[id].line = desLine[i];
 		this->lines[id].color = colors[i];
 		this->lines[id].legend = legends[i];
@@ -484,10 +495,17 @@ void TimeLineWidget::AddLines(const Vector< PropValue<Vector3> >& lines, const V
 		desLine[1].push_back(Vector2(lines[i].t, lines[i].v.y));
 		desLine[2].push_back(Vector2(lines[i].t, lines[i].v.z));
 	}
-	
-	for (int i = 0; i < 3; i++)
+	for (int32 i=0; i <3; ++i)
 	{
-		int id = this->lines.size();
+		if (desLine[i].size()==1) //force correct min time
+		{
+			desLine[i][0].x = minTime;
+		}
+	}
+	
+	for (int32 i = 0; i < 3; i++)
+	{
+		int32 id = this->lines.size();
 		this->lines[id].line = desLine[i];
 		this->lines[id].color = colors[i];
 		this->lines[id].legend = legends[i];
