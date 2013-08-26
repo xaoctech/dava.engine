@@ -1601,8 +1601,8 @@ namespace DAVA
 			return;
 		}
 
-		static const uint32 PIVOT_POINT_MARK_RADIUS = 10.0f;
-		static const uint32 PIVOT_POINT_MARK_HALF_LINE_LENGTH = 13.0f;
+		static const float32 PIVOT_POINT_MARK_RADIUS = 10.0f;
+		static const float32 PIVOT_POINT_MARK_HALF_LINE_LENGTH = 13.0f;
 
 		Color oldColor = RenderManager::Instance()->GetColor();
 		RenderManager::Instance()->ClipPush();
