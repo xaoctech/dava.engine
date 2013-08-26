@@ -274,7 +274,7 @@ public:
 
 	float32		startTime;
 	float32		endTime;
-	void		UpdateLayerTime(float startTime, float endTime);
+	void		UpdateLayerTime(float32 startTime, float32 endTime);
 
 	int32		frameStart;
 	int32		frameEnd;
