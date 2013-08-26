@@ -271,8 +271,11 @@ public:
 	RefPtr< PropertyLine<float32> > angleVariation;		// variations in degrees
 
 	float32		alignToMotion;
+
 	float32		startTime;
 	float32		endTime;
+	void		UpdateLayerTime(float32 startTime, float32 endTime);
+
 	int32		frameStart;
 	int32		frameEnd;
 	eType		type;
