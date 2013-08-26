@@ -302,6 +302,25 @@ void CommandUpdateParticleLayerEnabled::Redo()
 	}
 }
 
+CommandUpdateParticleLayerLods::CommandUpdateParticleLayerLods(ParticleLayer* layer, const Vector<bool>& lods) :
+CommandUpdateParticleLayerBase(CMDID_UPDATE_PARTICLE_LAYER_LODS)
+{
+	this->layer = layer;
+	this->lods = lods;
+}
+
+void CommandUpdateParticleLayerLods::Redo()
+{
+	if (this->layer)
+	{
+		for (size_t i=0; i<lods.size(); i++)
+		{
+			this->layer->SetLodActive(i, lods[i]);
+		}		
+		ParticlesEditorController::Instance()->RefreshSelectedNode(true);
+	}
+}
+
 CommandUpdateParticleForce::CommandUpdateParticleForce(ParticleLayer* layer, uint32 forceId) :
 	CommandAction(CMDID_UPDATE_PARTICLE_FORCE)
 {
