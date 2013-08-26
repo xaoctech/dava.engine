@@ -47,6 +47,9 @@ public:
 
     void GetDataFromSelection();
 
+    static void EnumerateLODsRecursive(DAVA::Entity *entity, DAVA::Vector<DAVA::LodComponent *> & lods);
+
+    
 signals:
     
     void DataChanged();
@@ -64,7 +67,6 @@ protected slots:
 protected:
     
     void EnumerateSelectionLODs(SceneEditor2 * scene);
-    void EnumerateLODsRecursive(DAVA::Entity *entity, DAVA::Vector<DAVA::LodComponent *> & lods);
 
     void ResetForceState(DAVA::Entity *entity);
     

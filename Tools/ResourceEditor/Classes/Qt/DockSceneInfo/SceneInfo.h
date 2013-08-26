@@ -23,7 +23,7 @@
 
 #include <QShowEvent>
 
-class SceneData;
+class SceneEditor2;
 class SceneInfo : public QtPropertyEditor
 {
 	Q_OBJECT
@@ -50,10 +50,14 @@ public:
 	~SceneInfo();
 
 
-public slots:
-	void sceneActivated(SceneData *scene);
-	void sceneChanged(SceneData *scene);
-	void sceneReleased(SceneData *scene);
+protected slots:
+    
+    void EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity);
+	void EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity);
+    
+    void SceneActivated(SceneEditor2 *scene);
+	void SceneDeactivated(SceneEditor2 *scene);
+    void SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent);
 
 //TODO: add set of slots to different scene changes
 //    void nodeDeleted(SceneData *scene);
@@ -76,19 +80,21 @@ protected:
     void Initialize3DDrawSection();
     void InitializeMaterialsSection();
     void InitializeLODSection();
+    void InitializeLODSectionForSelection();
     void InitializeParticlesSection();
 
     void RefreshSceneGeneralInfo();
     void Refresh3DDrawInfo();
     void RefreshMaterialsInfo();
     void RefreshLODInfo();
+    void RefreshLODInfoForSelection();
     void RefreshParticlesInfo();
 
     
-	void RefreshAllData(SceneData *sceneData);
+	void RefreshAllData(SceneEditor2 *scene);
 
-    void CollectSceneData(SceneData *sceneData, bool force);
     void ClearData();
+    void ClearSelectionData();
     
     void SaveTreeState();
     void RestoreTreeState();
@@ -101,9 +107,15 @@ protected:
     void SetChild(const QString & key, const QVariant &value, QtPropertyData *parent);
     
     
+    void CollectSceneData(SceneEditor2 *scene);
     void CollectSceneTextures();
     void CollectParticlesData();
     void CollectLODData();
+    void CollectLODDataForSelection();
+    static void CollectLODTriangles(const DAVA::Vector<DAVA::LodComponent *> &lods, LODInfo &info);
+    static DAVA::uint32 GetTrianglesForLodLayer(DAVA::LodComponent::LodData *lodData);
+
+    
     void CollectTexture(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, const DAVA::FilePath &pathname, DAVA::Texture *tex);
     
     static DAVA::uint32 CalculateTextureSize(const DAVA::Map<DAVA::String, DAVA::Texture *> &textures);
@@ -114,7 +126,7 @@ protected:
 	QtPosSaver posSaver;
     PropertyEditorStateHelper treeStateHelper;
     
-    DAVA::Scene * scene;
+    SceneEditor2 * activeScene;
     DAVA::Vector<DAVA::Entity *> nodesAtScene;
     
     DAVA::Vector<DAVA::Material *>materialsAtScene;
@@ -131,6 +143,7 @@ protected:
     DAVA::uint32 spritesCount;
     
     LODInfo lodInfo;
+    LODInfo lodInfoSelection;
 };
 
 #endif // __SCENE_INFO_H__
