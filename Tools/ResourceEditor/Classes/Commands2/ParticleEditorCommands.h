@@ -293,6 +293,16 @@ protected:
 	bool isEnabled;
 };
 
+class CommandUpdateParticleLayerLods: public CommandUpdateParticleLayerBase
+{
+public:
+	CommandUpdateParticleLayerLods(ParticleLayer* layer, const Vector<bool>& lods);
+	virtual void Redo();
+
+protected:
+	Vector<bool> lods;
+};
+
 class CommandUpdateParticleForce: public CommandAction
 {
 public:

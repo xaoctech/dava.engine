@@ -874,6 +874,14 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 		SetSprite(_sprite);
         SafeRelease(_sprite);
 	}
+	YamlNode *lodsNode = node->Get("activeLODS");
+	if (lodsNode)
+	{
+		Vector<YamlNode*> & vec = lodsNode->AsVector();
+		for (int32 i=0; i<vec.size(); ++i)
+			SetLodActive(i, (bool)vec[i]->AsInt()); //as AddToArray has no override for bool, flags are stored as int
+	}
+
 
 	colorOverLife = PropertyLineYamlReader::CreateColorPropertyLineFromYamlNode(node, "colorOverLife");
 	colorRandom = PropertyLineYamlReader::CreateColorPropertyLineFromYamlNode(node, "colorRandom");
@@ -1108,6 +1116,11 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "loopEndTime", this->loopEndTime);
 
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "isDisabled", this->isDisabled);
+
+	YamlNode *lodsNode = new YamlNode(YamlNode::TYPE_ARRAY);
+	for (int32 i =0; i<LodComponent::MAX_LOD_LAYERS; i++)
+		lodsNode->AddValueToArray((int32)activeLODS[i]); //as for now AddValueToArray has no bool type - force it to int
+	layerNode->SetNodeToMap("activeLODS", lodsNode);
 
 	if (innerEmitter)
 	{

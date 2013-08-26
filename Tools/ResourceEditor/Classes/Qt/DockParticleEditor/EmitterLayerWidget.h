@@ -60,6 +60,7 @@ signals:
 	void ValueChanged();
 	
 protected slots:
+	void OnLodsChanged();
 	void OnValueChanged();
 	void OnSpriteBtn();
 	void OnSpritePathChanged(const QString& text);
@@ -82,6 +83,8 @@ private:
 	QCheckBox* additiveCheckBox;
 	QCheckBox* isLongCheckBox;
 	QCheckBox* isLoopedCheckBox;
+
+	QCheckBox* layerLodsCheckBox[LodComponent::MAX_LOD_LAYERS];
 
 	QLabel* layerTypeLabel;
 	QComboBox* layerTypeComboBox;

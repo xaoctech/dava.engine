@@ -52,6 +52,23 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 			this,
 			SLOT(OnValueChanged()));
 
+	QVBoxLayout* lodsLayout = new QVBoxLayout();
+	QLabel *lodsLabel = new QLabel("Active in LODs", this);
+	lodsLayout->addWidget(lodsLabel);
+	QHBoxLayout* lodsInnerLayout = new QHBoxLayout();
+
+	for (int32 i=0; i<LodComponent::MAX_LOD_LAYERS; ++i)
+	{
+		layerLodsCheckBox[i] = new QCheckBox(QString("LOD")+QString::number(i));
+		lodsInnerLayout->addWidget(layerLodsCheckBox[i]);
+		connect(layerLodsCheckBox[i],
+			SIGNAL(stateChanged(int)),
+			this,
+			SLOT(OnLodsChanged()));		
+	}
+	lodsLayout->addLayout(lodsInnerLayout);
+	mainBox->addLayout(lodsLayout);
+
 	layerTypeLabel = new QLabel(this);
 	layerTypeLabel->setText("Layer type");
 	mainBox->addWidget(layerTypeLabel);
@@ -70,6 +87,7 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 			SIGNAL(stateChanged(int)),
 			this,
 			SLOT(OnValueChanged()));
+	
 	
 	additiveCheckBox = new QCheckBox("Additive");
 	mainBox->addWidget(additiveCheckBox);
@@ -351,6 +369,13 @@ EmitterLayerWidget::~EmitterLayerWidget()
 			SIGNAL(valueChanged(int)),
 			this,
 			SLOT(OnValueChanged()));
+	for (int32 i=0; i<LodComponent::MAX_LOD_LAYERS; ++i)
+	{	
+		disconnect(layerLodsCheckBox[i],
+			SIGNAL(stateChanged(int)),
+			this,
+			SLOT(OnLodsChanged()));		
+	}
 }
 
 void EmitterLayerWidget::InitWidget(QWidget* widget)
@@ -383,6 +408,11 @@ void EmitterLayerWidget::Init(SceneEditor2* scene, ParticleEmitter* emitter, DAV
 	additiveCheckBox->setChecked(layer->GetAdditive());
 	isLongCheckBox->setChecked(layer->IsLong());
 	isLoopedCheckBox->setChecked(layer->GetLooped());
+
+	for (int32 i = 0; i < LodComponent::MAX_LOD_LAYERS; ++i)
+	{
+		layerLodsCheckBox[i]->setChecked(layer->IsLodActive(i));
+	}
 
 	//LAYER_SPRITE = 0,
 	sprite = layer->GetSprite();
@@ -735,6 +765,21 @@ void EmitterLayerWidget::OnValueChanged()
 	activeScene->Exec(updateLayerCmd);
 
 	Init(activeScene, emitter, layer, false);
+	emit ValueChanged();
+}
+
+void EmitterLayerWidget::OnLodsChanged()
+{
+	if (blockSignals)
+		return;
+	Vector<bool> lods;
+	lods.resize(LodComponent::MAX_LOD_LAYERS, true);
+	for (int32 i=0; i<LodComponent::MAX_LOD_LAYERS; ++i)
+	{
+		lods[i] = layerLodsCheckBox[i]->isChecked();
+	}
+	CommandUpdateParticleLayerLods * updateLodsCmd = new CommandUpdateParticleLayerLods(layer, lods);
+	activeScene->Exec(updateLodsCmd);
 	emit ValueChanged();
 }
 
