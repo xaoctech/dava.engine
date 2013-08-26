@@ -43,8 +43,16 @@ public:
 	void ShowField();
 	void HideField();
 	
-	void SetReturnKey(int32 returnType);
 	void SetIsPassword(bool isPassword);
+
+	// Keyboard traits.
+	void SetAutoCapitalizationType(DAVA::int32 value);
+	void SetAutoCorrectionType(DAVA::int32 value);
+	void SetSpellCheckingType(DAVA::int32 value);
+	void SetKeyboardAppearanceType(DAVA::int32 value);
+	void SetKeyboardType(DAVA::int32 value);
+	void SetReturnKeyType(DAVA::int32 value);
+	void SetEnableReturnKeyAutomatically(bool value);
 
 private:
 	void * objcClassPtr;
