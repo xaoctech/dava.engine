@@ -23,6 +23,7 @@ public:
 
     void ShowErrorMessage(ErrorID id, int errorCode = 0, const QString & addInfo = "");
     int ShowRetryDlg(bool canCancel);
+    void ShowNotificationDlg(const QString & info);
 
     void LogMessage(QtMsgType, const char *);
 private:

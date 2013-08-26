@@ -61,6 +61,12 @@ int ErrorMessanger::ShowRetryDlg(bool canCancel)
     return msgBox.result();
 }
 
+void ErrorMessanger::ShowNotificationDlg(const QString & info)
+{
+    QMessageBox msgBox(QMessageBox::Information, "Launcher", info, QMessageBox::Ok);
+    msgBox.exec();
+}
+
 void ErrorMessanger::LogMessage(QtMsgType type, const char * msg)
 {
     QString typeStr;

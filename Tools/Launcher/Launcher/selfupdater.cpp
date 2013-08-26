@@ -60,7 +60,6 @@ void SelfUpdater::DownloadFinished()
         const QString & tempDir = FileManager::Instance()->GetTempDirectory();
         const QString & appDir = FileManager::Instance()->GetLauncherDirectory();
         const QString & selfUpdateDir = FileManager::Instance()->GetSelfUpdateTempDirectory();
-        const QString & runPath = qApp->applicationFilePath();
 
         QFile archiveFile(archiveFilePath);
         archiveFile.open(QFile::WriteOnly);
@@ -76,9 +75,9 @@ void SelfUpdater::DownloadFinished()
         FileManager::Instance()->MoveFilesOnlyToDirectory(selfUpdateDir, appDir);
         FileManager::Instance()->DeleteDirectory(selfUpdateDir);
 
+        ErrorMessanger::Instance()->ShowNotificationDlg("Launcher was updated. Please, relaunch application.");
+
         qApp->exit();
-        QProcess process;
-        process.startDetached(runPath);
     }
     else if(lastErrorCode != QNetworkReply::OperationCanceledError)
     {

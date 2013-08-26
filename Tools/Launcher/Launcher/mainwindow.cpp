@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->webView->setContextMenuPolicy(Qt::NoContextMenu);
+    ui->webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     ui->tableWidget->setStyleSheet(TABLE_STYLESHEET);
 
 #ifdef Q_OS_WIN
@@ -27,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
     setWindowTitle(QString("DAVA Launcher %1").arg(LAUNCHER_VER));
     ui->listWidget->setSortingEnabled(true);
 
+    connect(ui->webView, SIGNAL(linkClicked(QUrl)), this, SLOT(OnlinkClicked(QUrl)));
     connect(ui->refreshButton, SIGNAL(clicked()), this, SLOT(OnRefreshClicked()));
     connect(ui->listWidget, SIGNAL(clicked(QModelIndex)), this, SLOT(OnListItemClicked(QModelIndex)));
     connect(ui->setUrlButton, SIGNAL(clicked()), this, SLOT(OnURLClicked()));
@@ -63,6 +65,10 @@ void MainWindow::OnURLClicked()
         appManager->GetLocalConfig()->SetRemoteConfigURL(dialog.textValue());
         UpdateURLValue();
     }
+}
+void MainWindow::OnlinkClicked(QUrl url)
+{
+    QDesktopServices::openUrl( url );
 }
 
 void MainWindow::OnCellDoubleClicked(QModelIndex index)
