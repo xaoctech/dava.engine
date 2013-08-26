@@ -143,7 +143,7 @@ void LodSystem::UpdateLod(Entity * entity)
 			return;
 		}
 		
-		if (oldLod) 
+		if (oldLod != LodComponent::INVALID_LOD_LAYER)
 		{
 			int32 size = lodComponent->lodLayers[oldLod].nodes.size();
 			for (int32 i = 0; i < size; i++) 

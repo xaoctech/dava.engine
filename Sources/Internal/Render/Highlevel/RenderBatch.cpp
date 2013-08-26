@@ -84,8 +84,11 @@ void RenderBatch::Draw(Camera * camera)
         return;
     }
     
-    uint32 flags = renderObject->GetFlags();
-    if ((flags & visiblityCriteria) != visiblityCriteria)
+//    uint32 flags = renderObject->GetFlags();
+//    if ((flags & visiblityCriteria) != visiblityCriteria)
+//        return;
+    
+    if(!GetVisible())
         return;
 	
     Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();
@@ -277,6 +280,13 @@ void RenderBatch::UpdateAABBoxFromSource()
 			aabbox.min.z != AABBOX_INFINITY);
 	}
 }
+    
+bool RenderBatch::GetVisible() const
+{
+    uint32 flags = renderObject->GetFlags();
+    return ((flags & visiblityCriteria) == visiblityCriteria);
+}
+    
 
 
 };

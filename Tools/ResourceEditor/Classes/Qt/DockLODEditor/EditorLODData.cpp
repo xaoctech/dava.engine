@@ -200,7 +200,7 @@ void EditorLODData::GetDataFromSelection()
             Vector<LodComponent::LodData*>::const_iterator lodLayerIt = lodLayers.begin();
             for(DAVA::int32 layer = 0; layer < layersCount && lodLayerIt != lodLayers.end(); ++layer, ++lodLayerIt)
             {
-                lodTriangles[layer] += GetTrianglesForLodLayer(*lodLayerIt);
+                lodTriangles[layer] += GetTrianglesForLodLayer(*lodLayerIt, false);
             }
         }
         
@@ -218,7 +218,7 @@ void EditorLODData::GetDataFromSelection()
     }
 }
 
-DAVA::uint32 EditorLODData::GetTrianglesForLodLayer(DAVA::LodComponent::LodData *lodData)
+DAVA::uint32 EditorLODData::GetTrianglesForLodLayer(DAVA::LodComponent::LodData *lodData, bool checkVisibility)
 {
     Vector<Entity *> meshes;
     
@@ -229,28 +229,47 @@ DAVA::uint32 EditorLODData::GetTrianglesForLodLayer(DAVA::LodComponent::LodData 
         lodData->nodes[n]->GetChildNodes(meshes);
     }
     
-    
     uint32 trianglesCount = 0;
     uint32 meshesCount = (uint32)meshes.size();
     for(uint32 m = 0; m < meshesCount; ++m)
     {
-        RenderObject *ro = GetRenderObject(meshes[m]);
-        if(!ro || ro->GetType() != RenderObject::TYPE_MESH) continue;
-        
-        uint32 count = ro->GetRenderBatchCount();
-        for(uint32 r = 0; r < count; ++r)
+        if(checkVisibility)
         {
-            PolygonGroup *pg = ro->GetRenderBatch(r)->GetPolygonGroup();
-            if(pg)
+            RenderObject *ro = GetRenderObject(meshes[m]);
+            if(!ro || ((ro->GetFlags() & RenderObject::VISIBLE_LOD) != RenderObject::VISIBLE_LOD))
             {
-                trianglesCount += pg->GetIndexCount() / 3;
+                continue;
             }
         }
+        
+        trianglesCount += GetTrianglesForEntity(meshes[m], checkVisibility);
     }
     
     return trianglesCount;
 }
 
+DAVA::uint32 EditorLODData::GetTrianglesForEntity(DAVA::Entity *entity, bool checkVisibility)
+{
+    RenderObject *ro = GetRenderObject(entity);
+    if(!ro || ro->GetType() != RenderObject::TYPE_MESH) return 0;
+    
+    uint32 trianglesCount = 0;
+    uint32 count = ro->GetRenderBatchCount();
+    for(uint32 r = 0; r < count; ++r)
+    {
+        RenderBatch *rb = ro->GetRenderBatch(r);
+        if(checkVisibility && !rb->GetVisible())
+            continue;
+        
+        PolygonGroup *pg = rb->GetPolygonGroup();
+        if(pg)
+        {
+            trianglesCount += pg->GetIndexCount() / 3;
+        }
+    }
+
+    return trianglesCount;
+}
 
 void EditorLODData::EnumerateSelectionLODs(SceneEditor2 * scene)
 {
