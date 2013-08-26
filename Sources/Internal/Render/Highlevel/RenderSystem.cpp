@@ -54,6 +54,7 @@ RenderSystem::RenderSystem()
 	forwardPass->AddRenderLayer(renderLayersMap[LAYER_AFTER_OPAQUE], LAST_LAYER);
 	forwardPass->AddRenderLayer(renderLayersMap[LAYER_ALPHA_TEST_LAYER], LAST_LAYER);
     forwardPass->AddRenderLayer(renderLayersMap[LAYER_TRANSLUCENT], LAST_LAYER);
+	forwardPass->AddRenderLayer(renderLayersMap[LAYER_AFTER_TRANSLUCENT], LAST_LAYER);
 
     ShadowVolumeRenderPass * shadowVolumePass = (ShadowVolumeRenderPass*)renderPassesMap[PASS_SHADOW_VOLUME];
     shadowVolumePass->AddRenderLayer(renderLayersMap[LAYER_SHADOW_VOLUME], LAST_LAYER);
