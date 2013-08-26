@@ -190,7 +190,12 @@ void ParticleEmitter3D::PrepareEmitterParametersShockwave(Particle * particle, f
 							curRadius * sinAngle,
 							0.0f);
 
-	particle->position = (tempPosition + directionVector) * rotationMatrix;
+	particle->position = (tempPosition + directionVector);
+	float32 posLength = particle->position.Length();
+	particle->position = particle->position * rotationMatrix;
+	particle->position.Normalize();
+	particle->position*=posLength;
+
 	particle->speed = velocity;
 
 	// Calculate Z value.
@@ -225,9 +230,11 @@ void ParticleEmitter3D::PrepareEmitterParametersGeneric(Particle * particle, flo
 	{
 		// Yuri Coder, 2013/04/12. Need to invert the directions in the emission vector, since
 		// their coordinates are in the opposite directions for the Particles Editor.        
-		vel = vel*rotationMatrix;
-		vel.Normalize();
 		vel = emissionVector->GetValue(0) * -1.0f;
+		float32 velLength = vel.Length();		
+		vel = vel*rotationMatrix;		
+		vel.Normalize();
+		vel*=velLength;
 	}
 
     Vector3 rotVect(0, 0, 1);
