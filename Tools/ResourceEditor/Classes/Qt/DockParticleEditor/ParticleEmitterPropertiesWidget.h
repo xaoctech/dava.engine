@@ -27,6 +27,7 @@
 #include <QComboBox>
 #include <QLabel>
 #include <QSlider>
+#include <QCheckBox>
 
 class ParticleEmitterPropertiesWidget: public QWidget, public BaseParticleEditorContentWidget
 {
@@ -65,6 +66,8 @@ private:
 
 	QLineEdit* emitterYamlPath;
 	QComboBox* emitterType;
+
+	QCheckBox* shortEffectCheckBox;
 
 	TimeLineWidget* emitterEmissionRange;
 	TimeLineWidget* emitterEmissionVector;

@@ -78,7 +78,8 @@ void CommandUpdateEmitter::Init(ParticleEmitter::eType emitterType,
 								RefPtr<PropertyLine<Color> > colorOverLife,
 								RefPtr<PropertyLine<Vector3> > size,
 								float32 life,
-								float32 playbackSpeed)
+								float32 playbackSpeed,
+								bool isShortEffect)
 {
 	this->emitterType = emitterType;
 	this->emissionRange = emissionRange;
@@ -88,6 +89,7 @@ void CommandUpdateEmitter::Init(ParticleEmitter::eType emitterType,
 	this->size = size;
 	this->life = life;
 	this->playbackSpeed = playbackSpeed;
+	this->isShortEffect = isShortEffect;
 }
 
 void CommandUpdateEmitter::Redo()
@@ -102,6 +104,7 @@ void CommandUpdateEmitter::Redo()
 	emitter->size = size;
 	emitter->SetLifeTime(life);
 	emitter->SetPlaybackSpeed(playbackSpeed);
+	emitter->SetShortEffect(isShortEffect);
 }
 
 CommandUpdateParticleLayer::CommandUpdateParticleLayer(ParticleEmitter* emitter, ParticleLayer* layer) :
