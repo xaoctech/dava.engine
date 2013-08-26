@@ -106,6 +106,7 @@ public:
     inline uint32 GetSortingKey();
 
 	void SetVisibilityCriteria(uint32 criteria);
+    bool GetVisible() const;
 
 	virtual void UpdateAABBoxFromSource();
 

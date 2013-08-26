@@ -34,6 +34,7 @@ protected:
     {
         DAVA::uint32 trianglesOnLod[DAVA::LodComponent::MAX_LOD_LAYERS];
         DAVA::uint32 trianglesOnLandscape;
+        DAVA::uint32 trianglesOnObjects;
         
         void Clear()
         {
@@ -42,6 +43,7 @@ protected:
                 trianglesOnLod[i] = 0;
             }
             trianglesOnLandscape = 0;
+            trianglesOnObjects = 0;
         }
     };
     
@@ -79,14 +81,14 @@ protected:
     void InitializeGeneralSection();
     void Initialize3DDrawSection();
     void InitializeMaterialsSection();
-    void InitializeLODSection();
+    void InitializeLODSectionInFrame();
     void InitializeLODSectionForSelection();
     void InitializeParticlesSection();
 
     void RefreshSceneGeneralInfo();
     void Refresh3DDrawInfo();
     void RefreshMaterialsInfo();
-    void RefreshLODInfo();
+    void RefreshLODInfoInFrame();
     void RefreshLODInfoForSelection();
     void RefreshParticlesInfo();
 
@@ -110,7 +112,8 @@ protected:
     void CollectSceneData(SceneEditor2 *scene);
     void CollectSceneTextures();
     void CollectParticlesData();
-    void CollectLODData();
+    void CollectLODDataInFrame();
+    void CollectLODDataInFrameRecursive(DAVA::Entity *entity);
     void CollectLODDataForSelection();
     static void CollectLODTriangles(const DAVA::Vector<DAVA::LodComponent *> &lods, LODInfo &info);
     
@@ -140,8 +143,8 @@ protected:
     DAVA::uint32 emittersCount;
     DAVA::uint32 spritesCount;
     
-    LODInfo lodInfo;
     LODInfo lodInfoSelection;
+    LODInfo lodInfoInFrame;
 };
 
 #endif // __SCENE_INFO_H__

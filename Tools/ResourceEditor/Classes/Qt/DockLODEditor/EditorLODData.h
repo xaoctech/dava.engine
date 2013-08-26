@@ -50,7 +50,8 @@ public:
     void GetDataFromSelection();
 
     static void EnumerateLODsRecursive(DAVA::Entity *entity, DAVA::Vector<DAVA::LodComponent *> & lods);
-    static DAVA::uint32 GetTrianglesForLodLayer(DAVA::LodComponent::LodData *lodData);
+    static DAVA::uint32 GetTrianglesForLodLayer(DAVA::LodComponent::LodData *lodData, bool checkVisibility);
+    static DAVA::uint32 GetTrianglesForEntity(DAVA::Entity *entity, bool checkVisibility);
     
 signals:
     
@@ -79,7 +80,6 @@ protected:
 
     DAVA::int32 lodLayersCount;
     DAVA::float32 lodDistances[DAVA::LodComponent::MAX_LOD_LAYERS];
-
     DAVA::uint32 lodTriangles[DAVA::LodComponent::MAX_LOD_LAYERS];
 
     

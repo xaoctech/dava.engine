@@ -79,7 +79,7 @@ void SceneInfo::InitializeInfo()
     InitializeGeneralSection();
     Initialize3DDrawSection();
     InitializeMaterialsSection();
-    InitializeLODSection();
+    InitializeLODSectionInFrame();
     InitializeLODSectionForSelection();
     InitializeParticlesSection();
 }
@@ -151,16 +151,17 @@ void SceneInfo::RefreshMaterialsInfo()
     SetChild("Textures Size", QString::fromStdString(SizeInBytesToString((float32)sceneTexturesSize)), header);
 }
 
-void SceneInfo::InitializeLODSection()
+void SceneInfo::InitializeLODSectionInFrame()
 {
-    QtPropertyData* header = CreateInfoHeader("LOD");
+    QtPropertyData* header = CreateInfoHeader("LOD in Frame");
     
     for(int32 i = 0; i < LodComponent::MAX_LOD_LAYERS; ++i)
     {
         AddChild(Format("Objects LOD%d Triangles", i), header);
     }
     
-    AddChild("Objects LOD Triangles", header);
+    AddChild("All LOD Triangles", header);
+    AddChild("Objects without LOD Triangles", header);
     AddChild("Landscape Triangles", header);
     AddChild("All Triangles", header);
 }
@@ -174,25 +175,26 @@ void SceneInfo::InitializeLODSectionForSelection()
         AddChild(Format("Objects LOD%d Triangles", i), header);
     }
     
-    AddChild("Objects LOD Triangles", header);
+    AddChild("All LOD Triangles", header);
 }
 
 
-void SceneInfo::RefreshLODInfo()
+void SceneInfo::RefreshLODInfoInFrame()
 {
-    QtPropertyData* header = GetInfoHeader("LOD");
+    QtPropertyData* header = GetInfoHeader("LOD in Frame");
 
-    uint32 objectTriangles = 0;
+    uint32 lodTriangles = 0;
     for(int32 i = 0; i < LodComponent::MAX_LOD_LAYERS; ++i)
     {
-        SetChild(Format("Objects LOD%d Triangles", i), lodInfo.trianglesOnLod[i], header);
+        SetChild(Format("Objects LOD%d Triangles", i), lodInfoInFrame.trianglesOnLod[i], header);
         
-        objectTriangles += lodInfo.trianglesOnLod[i];
+        lodTriangles += lodInfoInFrame.trianglesOnLod[i];
     }
     
-    SetChild("Objects LOD Triangles", objectTriangles, header);
-    SetChild("Landscape Triangles", lodInfo.trianglesOnLandscape, header);
-    SetChild("All Triangles", lodInfo.trianglesOnLandscape + objectTriangles, header);
+    SetChild("All LOD Triangles", lodTriangles, header);
+    SetChild("Objects without LOD Triangles", lodInfoInFrame.trianglesOnObjects, header);
+    SetChild("Landscape Triangles", lodInfoInFrame.trianglesOnLandscape, header);
+    SetChild("All Triangles", lodInfoInFrame.trianglesOnObjects + lodInfoInFrame.trianglesOnLandscape + lodTriangles, header);
 }
 
 void SceneInfo::RefreshLODInfoForSelection()
@@ -207,7 +209,7 @@ void SceneInfo::RefreshLODInfoForSelection()
         objectTriangles += lodInfoSelection.trianglesOnLod[i];
     }
     
-    SetChild("Objects LOD Triangles", objectTriangles, header);
+    SetChild("All LOD Triangles", objectTriangles, header);
 }
 
 
@@ -284,7 +286,7 @@ void SceneInfo::CollectSceneData(SceneEditor2 *scene)
         CollectSceneTextures();
         CollectParticlesData();
         
-        CollectLODData();
+        CollectLODDataInFrame();
         CollectLODDataForSelection();
         
         sceneTexturesSize = CalculateTextureSize(sceneTextures);
@@ -300,7 +302,8 @@ void SceneInfo::ClearData()
     sceneTextures.clear();
     particleTextures.clear();
     
-    lodInfo.Clear();
+    lodInfoInFrame.Clear();
+    
     ClearSelectionData();
     
     sceneTexturesSize = 0;
@@ -386,16 +389,6 @@ void SceneInfo::CollectParticlesData()
     spritesCount = (uint32)sprites.size();
 }
 
-void SceneInfo::CollectLODData()
-{
-    if(!activeScene) return;
-    
-    Vector<LodComponent *>lods;
-    EditorLODData::EnumerateLODsRecursive(activeScene, lods);
-
-    CollectLODTriangles(lods, lodInfo);
-}
-
 void SceneInfo::CollectLODDataForSelection()
 {
     if(!activeScene) return;
@@ -411,6 +404,45 @@ void SceneInfo::CollectLODDataForSelection()
     CollectLODTriangles(lods, lodInfoSelection);
 }
 
+void SceneInfo::CollectLODDataInFrame()
+{
+    lodInfoInFrame.Clear();
+
+    if(!activeScene) return;
+
+    CollectLODDataInFrameRecursive(activeScene);
+}
+
+void SceneInfo::CollectLODDataInFrameRecursive(DAVA::Entity *entity)
+{
+    DAVA::LodComponent *lod = GetLodComponent(entity);
+    
+    if(lod)
+    {
+        Vector<LodComponent::LodData*> lodLayers;
+        lod->GetLodData(lodLayers);
+        Vector<LodComponent::LodData*>::const_iterator lodLayerIt = lodLayers.begin();
+        DAVA::uint32 layersCount = lod->GetForceLodLayer();
+        for(DAVA::int32 layer = 0; layer < layersCount && lodLayerIt != lodLayers.end(); ++layer, ++lodLayerIt)
+        {
+            lodInfoInFrame.trianglesOnLod[layer] += EditorLODData::GetTrianglesForLodLayer(*lodLayerIt, true);
+        }
+    }
+    else
+    {
+        lodInfoInFrame.trianglesOnObjects = EditorLODData::GetTrianglesForEntity(entity, true);
+    }
+    
+    
+    DAVA::int32 count = entity->GetChildrenCount();
+    for(DAVA::int32 i = 0; i < count; ++i)
+    {
+        CollectLODDataInFrameRecursive(entity->GetChild(i));
+    }
+}
+
+
+
 void SceneInfo::CollectLODTriangles(const DAVA::Vector<DAVA::LodComponent *> &lods, LODInfo &info)
 {
     uint32 count = (uint32)lods.size();
@@ -423,7 +455,7 @@ void SceneInfo::CollectLODTriangles(const DAVA::Vector<DAVA::LodComponent *> &lo
         Vector<LodComponent::LodData*>::const_iterator lodLayerIt = lodLayers.begin();
         for(int32 layer = 0; layer < layersCount; ++layer, ++lodLayerIt)
         {
-            info.trianglesOnLod[layer] += EditorLODData::GetTrianglesForLodLayer(*lodLayerIt);
+            info.trianglesOnLod[layer] += EditorLODData::GetTrianglesForLodLayer(*lodLayerIt, false);
         }
     }
 }
@@ -517,6 +549,9 @@ void SceneInfo::timerDone()
 
     Refresh3DDrawInfo();
     
+    CollectLODDataInFrame();
+    RefreshLODInfoInFrame();
+    
     if(isVisible())
     {
         QTimer::singleShot(1000, this, SLOT(timerDone()));
@@ -532,7 +567,7 @@ void SceneInfo::RefreshAllData(SceneEditor2 *scene)
 	RefreshSceneGeneralInfo();
 	Refresh3DDrawInfo();
 	RefreshMaterialsInfo();
-	RefreshLODInfo();
+	RefreshLODInfoInFrame();
     RefreshLODInfoForSelection();
 	RefreshParticlesInfo();
 
