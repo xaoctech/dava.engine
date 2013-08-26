@@ -36,10 +36,13 @@
 #include "Classes/QT/SpritesPacker/SpritePackerHelper.h"
 #include "Classes/QT/QResourceEditorProgressDialog/QResourceEditorProgressDialog.h"
 
+
 #include <QApplication>
 #include <QPixmap>
 
 #include "ModificationWidget.h"
+
+#include "Render/Highlevel/ShadowVolumeRenderPass.h"
 
 
 QtMainWindow::QtMainWindow(QWidget *parent)
@@ -225,7 +228,6 @@ void QtMainWindow::SetupMainMenu()
     ui->actionTileMapEditor->setCheckable(false);
     //ENDOFTODO
     
-    
     //Viewport
     connect(ui->menuViewPort, SIGNAL(triggered(QAction *)), actionHandler, SLOT(ViewportTriggered(QAction *)));
     actionHandler->RegisterViewportActions(ResourceEditor::VIEWPORT_COUNT,
@@ -275,6 +277,12 @@ void QtMainWindow::SetupMainMenu()
 	
 	connect(ui->actionAddActionComponent, SIGNAL(triggered()), actionHandler, SLOT(AddActionComponent()));
 	connect(ui->actionRemoveActionComponent, SIGNAL(triggered()), actionHandler, SLOT(RemoveActionComponent()));
+
+	connect(ui->actionSetShadowColor, SIGNAL(triggered()), actionHandler, SLOT(SetShadowColor()));
+
+	connect(ui->menuDynamicShadowBlendMode, SIGNAL(aboutToShow()), this, SLOT(MenuDynamicShadowBlendTriggered()));
+	connect(ui->actionDynamicBlendModeAlpha, SIGNAL(triggered()), actionHandler, SLOT(SetShadowBlendAlpha()));
+	connect(ui->actionDynamicBlendModeMultiply, SIGNAL(triggered()), actionHandler, SLOT(SetShadowBlendMultiply()));
 
 	actionHandler->MenuViewOptionsWillShow();
 }
@@ -586,4 +594,13 @@ void QtMainWindow::Redo2()
 	{
 		sceneEditor->Redo();
 	}
+}
+
+void QtMainWindow::MenuDynamicShadowBlendTriggered()
+{
+	EditorScene *scene = SceneDataManager::Instance()->SceneGetActive()->GetScene();
+	ShadowVolumeRenderPass::eBlend blend = scene->GetShadowBlendMode();
+
+	ui->actionDynamicBlendModeAlpha->setChecked(blend == ShadowVolumeRenderPass::MODE_BLEND_ALPHA);
+	ui->actionDynamicBlendModeMultiply->setChecked(blend == ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY);
 }

@@ -219,6 +219,7 @@ namespace DAVA
 		actionComponent->SetEntity(toEntity);
 		
 		uint32 count = actions.size();
+		actionComponent->actions.resize(count);
 		for(uint32 i = 0; i < count; ++i)
 		{
 			actionComponent->actions[i] = actions[i];
