@@ -113,8 +113,6 @@ protected:
     void CollectLODData();
     void CollectLODDataForSelection();
     static void CollectLODTriangles(const DAVA::Vector<DAVA::LodComponent *> &lods, LODInfo &info);
-    static DAVA::uint32 GetTrianglesForLodLayer(DAVA::LodComponent::LodData *lodData);
-
     
     void CollectTexture(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, const DAVA::FilePath &pathname, DAVA::Texture *tex);
     

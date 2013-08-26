@@ -54,6 +54,7 @@ void EditorLODData::Clear()
     for(DAVA::int32 i = 0; i < DAVA::LodComponent::MAX_LOD_LAYERS; ++i)
     {
         lodDistances[i] = 0;
+        lodTriangles[i] = 0;
     }
 
     lodData.clear();
@@ -105,6 +106,14 @@ void EditorLODData::SetLayerDistance(DAVA::int32 layerNum, DAVA::float32 distanc
         activeScene->EndBatch();
     }
 }
+
+
+DAVA::uint32 EditorLODData::GetLayerTriangles(DAVA::int32 layerNum) const
+{
+    DVASSERT(0 <= layerNum && layerNum < lodLayersCount)
+    return lodTriangles[layerNum];
+}
+
 
 void EditorLODData::EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity)
 {
@@ -177,11 +186,17 @@ void EditorLODData::GetDataFromSelection()
         
         for(DAVA::int32 i = 0; i < lodComponentsSize; ++i)
         {
+            Vector<LodComponent::LodData*> lodLayers;
+            lodData[i]->GetLodData(lodLayers);
+            
             DAVA::int32 layersCount = GetLayersCount(lodData[i]);
-            for(DAVA::int32 layer = 0; layer < layersCount; ++layer)
+            Vector<LodComponent::LodData*>::const_iterator lodLayerIt = lodLayers.begin();
+            for(DAVA::int32 layer = 0; layer < layersCount; ++layer, ++lodLayerIt)
             {
                 lodDistances[layer] += lodData[i]->GetLodLayerDistance(layer);
                 ++lodComponentsCount[layer];
+                
+                lodTriangles[layer] += GetTrianglesForLodLayer(*lodLayerIt);
             }
         }
 
@@ -197,6 +212,40 @@ void EditorLODData::GetDataFromSelection()
         emit DataChanged();
     }
 }
+
+DAVA::uint32 EditorLODData::GetTrianglesForLodLayer(DAVA::LodComponent::LodData *lodData)
+{
+    Vector<Entity *> meshes;
+    
+    for(int32 n = 0; n < (int32)lodData->nodes.size(); ++n)
+    {
+        meshes.push_back(lodData->nodes[n]);
+        
+        lodData->nodes[n]->GetChildNodes(meshes);
+    }
+    
+    
+    uint32 trianglesCount = 0;
+    uint32 meshesCount = (uint32)meshes.size();
+    for(uint32 m = 0; m < meshesCount; ++m)
+    {
+        RenderObject *ro = GetRenderObject(meshes[m]);
+        if(!ro || ro->GetType() != RenderObject::TYPE_MESH) continue;
+        
+        uint32 count = ro->GetRenderBatchCount();
+        for(uint32 r = 0; r < count; ++r)
+        {
+            PolygonGroup *pg = ro->GetRenderBatch(r)->GetPolygonGroup();
+            if(pg)
+            {
+                trianglesCount += pg->GetIndexCount() / 3;
+            }
+        }
+    }
+    
+    return trianglesCount;
+}
+
 
 void EditorLODData::EnumerateSelectionLODs(SceneEditor2 * scene)
 {
