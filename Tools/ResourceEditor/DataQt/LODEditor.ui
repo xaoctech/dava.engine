@@ -25,6 +25,10 @@
      <property name="text">
       <string>Global LOD Settings</string>
      </property>
+     <property name="icon">
+      <iconset resource="QtIcons.qrc">
+       <normaloff>:/QtIcons/advanced.png</normaloff>:/QtIcons/advanced.png</iconset>
+     </property>
     </widget>
    </item>
    <item>
@@ -208,6 +212,10 @@
      <property name="text">
       <string>View LOD</string>
      </property>
+     <property name="icon">
+      <iconset resource="QtIcons.qrc">
+       <normaloff>:/QtIcons/advanced.png</normaloff>:/QtIcons/advanced.png</iconset>
+     </property>
     </widget>
    </item>
    <item>
@@ -287,6 +295,10 @@
     <widget class="QPushButton" name="editLODButton">
      <property name="text">
       <string>Edit LOD</string>
+     </property>
+     <property name="icon">
+      <iconset resource="QtIcons.qrc">
+       <normaloff>:/QtIcons/advanced.png</normaloff>:/QtIcons/advanced.png</iconset>
      </property>
     </widget>
    </item>
@@ -528,6 +540,8 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="QtIcons.qrc"/>
+ </resources>
  <connections/>
 </ui>

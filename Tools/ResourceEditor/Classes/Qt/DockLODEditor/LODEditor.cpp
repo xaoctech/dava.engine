@@ -76,10 +76,10 @@ void LODEditor::SetupInternalUI()
     ui->editLODButton->setVisible(false);
     ui->frameEditLOD->setVisible(false);
     
-    ui->globalLODSettingsButton->setDown(true);
-    ui->viewLODButton->setDown(true);
-    ui->editLODButton->setDown(true);
-
+    ui->globalLODSettingsButton->setStyleSheet("Text-align:left");
+    ui->viewLODButton->setStyleSheet("Text-align:left");
+    ui->editLODButton->setStyleSheet("Text-align:left");
+    
     connect(ui->globalLODSettingsButton, SIGNAL(released()), SLOT(GlobalSettingsButtonReleased()));
     connect(ui->viewLODButton, SIGNAL(released()), SLOT(ViewLODButtonReleased()));
     connect(ui->editLODButton, SIGNAL(released()), SLOT(EditLODButtonReleased()));
@@ -266,19 +266,25 @@ void LODEditor::SetForceLayerValues(int layersCount)
 void LODEditor::GlobalSettingsButtonReleased()
 {
     InvertVisibility(ui->frameGlobalSettings);
-    ui->globalLODSettingsButton->setDown(ui->frameGlobalSettings->isVisible());
+    
+    QIcon icon = (ui->frameGlobalSettings->isVisible()) ? QIcon(":/QtIcons/advanced.png") : QIcon(":/QtIcons/play.png");
+    ui->globalLODSettingsButton->setIcon(icon);
 }
 
 void LODEditor::ViewLODButtonReleased()
 {
     InvertVisibility(ui->frameViewLOD);
-    ui->viewLODButton->setDown(ui->frameViewLOD->isVisible());
+
+    QIcon icon = (ui->frameViewLOD->isVisible()) ? QIcon(":/QtIcons/advanced.png") : QIcon(":/QtIcons/play.png");
+    ui->viewLODButton->setIcon(icon);
 }
 
 void LODEditor::EditLODButtonReleased()
 {
     InvertVisibility(ui->frameEditLOD);
-    ui->editLODButton->setDown(ui->frameEditLOD->isVisible());
+    
+    QIcon icon = (ui->frameEditLOD->isVisible()) ? QIcon(":/QtIcons/advanced.png") : QIcon(":/QtIcons/play.png");
+    ui->editLODButton->setIcon(icon);
 }
 
 void LODEditor::InvertVisibility(QWidget *widget)
