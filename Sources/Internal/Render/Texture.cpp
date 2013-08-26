@@ -272,6 +272,7 @@ void Texture::TexImage(int32 level, uint32 width, uint32 height, const void * _d
         }
         else
         {
+            DVASSERT(width <= MAX_WIDTH && height <= MAX_HEIGHT);
             RENDER_VERIFY(glTexImage2D(textureMode, level, pixelDescriptors[format].internalformat, width, height, 0, pixelDescriptors[format].format, pixelDescriptors[format].type, _data));
         }
     }
@@ -347,7 +348,7 @@ void Texture::TexImage(int32 level, uint32 width, uint32 height, const void * _d
     
 Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint32 _width, uint32 _height, bool generateMipMaps)
 {
-	Texture * texture = new Texture();
+    Texture * texture = new Texture();
 	if (!texture)return 0;
 
     RenderManager::Instance()->LockNonMain();
@@ -359,6 +360,7 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 #if defined(__DAVAENGINE_OPENGL__)
     
     texture->GenerateID();
+	
 	texture->TexImage(0, _width, _height, _data, 0, Texture::CUBE_FACE_INVALID);
 
 	int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();

@@ -372,6 +372,23 @@ void NMaterial::AddMaterialTechnique(const FastName & techniqueName, MaterialTec
 MaterialTechnique * NMaterial::GetTechnique(const FastName & techniqueName)
 {
     MaterialTechnique * technique = techniqueForRenderPass.GetValue(techniqueName);
+/*  
+    if (!technique)
+    {
+        NMaterial * currentMaterial = parent;
+        while(currentMaterial != 0)
+        {
+            technique = currentMaterial->techniqueForRenderPass.GetValue(techniqueName);
+            if (technique)
+            {
+                // TODO: Find effective way to store parent techniques in children, to avoid cycling through them
+                // As a first decision we can use just store of this technique in child material map.
+                break;
+            }
+            currentMaterial = currentMaterial->parent;
+        }
+    }
+*/
     DVASSERT(technique != 0);
     return technique;
 }
@@ -386,7 +403,23 @@ void NMaterial::SetTexture(const FastName & textureFastName, Texture * texture)
     
 Texture * NMaterial::GetTexture(const FastName & textureFastName) const
 {
-    return textures.GetValue(textureFastName);
+    Texture * texture = textures.GetValue(textureFastName);
+    if (!texture)
+    {
+        NMaterial * currentMaterial = parent;
+        while(currentMaterial != 0)
+        {
+            texture = currentMaterial->textures.GetValue(textureFastName);
+            if (texture)
+            {
+                // TODO: Find effective way to store parent techniques in children, to avoid cycling through them
+                // As a first decision we can use just store of this technique in child material map.
+                break;
+            }
+            currentMaterial = currentMaterial->parent;
+        }
+    }
+    return texture;
 }
     
 Texture * NMaterial::GetTexture(uint32 index)
@@ -432,8 +465,8 @@ void NMaterial::BindMaterialTechnique(const FastName & techniqueName)
                 NMaterialProperty * property = materialProperties.GetValue(uniform->name);
                 if (property)
                 {
-                    Vector2 * dataVec2 = (Vector2 *)property->data;
-                    int32 * dataInt32 = (int32 *)property->data;
+//                    Vector2 * dataVec2 = (Vector2 *)property->data;
+//                    int32 * dataInt32 = (int32 *)property->data;
                     
                     
                     shader->SetUniformValueByIndex(uniformIndex, uniform->type, uniform->size, property->data);
