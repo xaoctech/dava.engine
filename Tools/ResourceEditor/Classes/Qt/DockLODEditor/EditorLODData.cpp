@@ -131,6 +131,8 @@ void EditorLODData::EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity)
 
 void EditorLODData::ResetForceState(DAVA::Entity *entity)
 {
+    if(!entity) return;
+    
     DAVA::Vector<DAVA::LodComponent *> lods;
     EnumerateLODsRecursive(entity, lods);
     

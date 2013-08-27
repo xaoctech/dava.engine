@@ -33,7 +33,6 @@ protected:
     struct LODInfo
     {
         DAVA::uint32 trianglesOnLod[DAVA::LodComponent::MAX_LOD_LAYERS];
-        DAVA::uint32 trianglesOnLandscape;
         DAVA::uint32 trianglesOnObjects;
         
         void Clear()
@@ -42,7 +41,6 @@ protected:
             {
                 trianglesOnLod[i] = 0;
             }
-            trianglesOnLandscape = 0;
             trianglesOnObjects = 0;
         }
     };
@@ -129,6 +127,7 @@ protected:
     
     SceneEditor2 * activeScene;
     DAVA::Vector<DAVA::Entity *> nodesAtScene;
+    DAVA::Landscape *landscape;
     
     DAVA::Vector<DAVA::Material *>materialsAtScene;
     DAVA::Vector<DAVA::DataNode *>dataNodesAtScene;
