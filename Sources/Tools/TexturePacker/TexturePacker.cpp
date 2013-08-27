@@ -451,10 +451,10 @@ bool TexturePacker::WriteDefinition(const FilePath & /*excludeFolder*/, const Fi
 		Rect2i writeRect = ReduceRectToOriginalSize(*destRect);
 		fprintf(fp, "%d %d %d %d %d %d %d\n", writeRect.x, writeRect.y, writeRect.dx, writeRect.dy, origRect.x, origRect.y, 0);
 
-		if((writeRect.dx > defFile->spriteWidth) || (writeRect.dy > defFile->spriteHeight))
-		{
-			Logger::Error("[!!!!] frame %d has size bigger than sprite size!", frame);
-		}
+        if(!CheckFrameSize(Size2i(defFile->spriteWidth, defFile->spriteHeight), writeRect.GetSize()))
+        {
+            Logger::Error("In sprite %s.psd frame %d has size bigger than sprite size!", defFile->filename.GetBasename().c_str(), frame);
+        }
 	}
 	
 	for (int pathInfoLine = 0; pathInfoLine < (int)defFile->pathsInfo.size(); ++pathInfoLine)
@@ -533,11 +533,10 @@ bool TexturePacker::WriteMultipleDefinition(const FilePath & /*excludeFolder*/, 
 			Rect2i writeRect = ReduceRectToOriginalSize(*destRect);
 			fprintf(fp, "%d %d %d %d %d %d %d\n", writeRect.x, writeRect.y, writeRect.dx, writeRect.dy, origRect.x, origRect.y, packerIndex);
 
-			if((writeRect.dx > defFile->spriteWidth) || (writeRect.dy > defFile->spriteHeight))
-			{
-				Logger::Error("[!!!!] frame %d has size bigger than sprite size!", frame);
-			}
-
+            if(!CheckFrameSize(Size2i(defFile->spriteWidth, defFile->spriteHeight), writeRect.GetSize()))
+            {
+                Logger::Error("In sprite %s.psd frame %d has size bigger than sprite size!", defFile->filename.GetBasename().c_str(), frame);
+            }
 		}else
 		{
 			Logger::Error("*** FATAL ERROR: can't find rect in all of packers");
@@ -671,5 +670,13 @@ bool TexturePacker::IsFormatSupportedForGPU(PixelFormat format, eGPUFamily forGP
 
 	return (curFormatIter != supportedFormats.end());
 }
+    
+bool TexturePacker::CheckFrameSize(const Size2i &spriteSize, const Size2i &frameSize)
+{
+    bool isSizeCorrect = ((frameSize.dx <= spriteSize.dx) && (frameSize.dy <= spriteSize.dy));
+    
+    return isSizeCorrect;
+}
+
 
 };

@@ -46,6 +46,7 @@ public:
 	virtual void SetVisible(bool isVisible, bool hierarchic);
 
 	virtual void SetDelegate(IUIWebViewDelegate *delegate, UIWebView* webView);
+	virtual void SetBackgroundTransparency(bool enabled);
 
 private:
 	static int webViewIdCount;
@@ -66,6 +67,8 @@ public:
 
 	void SetRect(int id, const Rect& rect);
 	void SetVisible(int id, bool isVisible);
+
+	void SetBackgroundTransparency(int id, bool isVisible);
 
 	IUIWebViewDelegate::eAction URLChanged(int id, const String& newURL);
 	void PageLoaded(int id);

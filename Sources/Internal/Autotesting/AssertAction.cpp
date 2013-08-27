@@ -121,7 +121,7 @@ void AssertAction::Execute()
         isPassed = (actual->Get() == expected->Get());
     }
 	Action::Execute();
-    AutotestingSystem::Instance()->OnTestAssert(message, isPassed);
+    AutotestingSystem::Instance()->OnTestStep(message, isPassed);
 }
 
 String AssertAction::Dump()

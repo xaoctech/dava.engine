@@ -144,8 +144,10 @@ public:
 
     /**
      \brief Function to stop generation from this emitter
+
+	 \param[in] isDeleteAllParticles if it's set to true emitter deletes all previous particles that was generated
 	 */
-	void Stop();
+	void Stop(bool isDeleteAllParticles = true);
 
 	/**
      \brief Function returns is emitter stopped
@@ -255,9 +257,15 @@ public:
 	 more then PARTICLE_EMITTER_DEFERRED_UPDATE_INTERVAL.
 	 Call this function in case you are using ParticleEmitter directly and it is not visible.
 	 \param[in] timeElapsed time in seconds elapsed from previous update
+	 \return value - true if was Update, false if not
 	 */
-	void DeferredUpdate(float32 timeElapsed);
+	bool DeferredUpdate(float32 timeElapsed);
 	
+	/**
+	 \brief prepares render data for all layers in emitter
+	 */
+	virtual void PrepareRenderData(Camera * camera);
+
 	/**	
 		\brief function to draw particle emitter
 		If you using ParticleEmitter directly you should call this function to draw emitter.

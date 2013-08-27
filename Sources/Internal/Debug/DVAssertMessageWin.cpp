@@ -42,4 +42,3 @@ void DVAssertMessage::InnerShow(eModalType /*modalType*/, const char* content)
 };
 
 #endif //#if defined (__DAVAENGINE_WIN32__)
-

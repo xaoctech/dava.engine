@@ -260,14 +260,21 @@ public:
 	 \brief Returns currently focused control
 	 */
     UIControl *GetFocusedControl();
+
+    /**
+	 \brief Calculates physical point for given virtual point
+	 */
+    void RecalculatePointToPhysical(const Vector2 &virtualPoint, Vector2 &physicalPoint);
+    
+    /**
+	 \brief Calculates virtual point for given physical point
+	 */
+    void RecalculatePointToVirtual(const Vector2 &physicalPoint, Vector2 &virtualPoint);
     
 private:
-	
-	
 
 	void ProcessScreenLogic();
-	
-	void RecalculatePointToVirtual(const Vector2 &physicalPoint, Vector2 &virtualPoint);
+
 	
 	UIScreen * currentScreen;
 	UIScreen * nextScreen;

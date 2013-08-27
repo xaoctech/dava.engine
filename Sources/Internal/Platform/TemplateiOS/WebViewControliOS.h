@@ -39,6 +39,7 @@ public:
 	virtual void SetVisible(bool isVisible, bool hierarchic);
 
 	virtual void SetDelegate(DAVA::IUIWebViewDelegate *delegate, DAVA::UIWebView* webView);
+	virtual void SetBackgroundTransparency(bool enabled);
 
 protected:
 	// Get the scale divider for Retina devices.
@@ -51,6 +52,11 @@ protected:
 	void* webViewDelegatePtr;
 
 	void* webViewURLDelegatePtr;
+
+	Map<void*, bool> subviewVisibilityMap;
+
+	void HideSubviewImages(void* view);
+	void RestoreSubviewImages();
 };
 
 };

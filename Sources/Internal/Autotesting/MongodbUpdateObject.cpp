@@ -36,22 +36,22 @@ MongodbUpdateObject::~MongodbUpdateObject()
     SafeRelease(updateData);
 }
     
-void MongodbUpdateObject::LoadData()
+bool MongodbUpdateObject::LoadData()
 {
     SafeRelease(updateData);
     updateData = new KeyedArchive();
     Finish();
     
-    MongodbClient::DBObjectToKeyedArchive(this, updateData);
+    return MongodbClient::DBObjectToKeyedArchive(this, updateData);
 }    
     
-void MongodbUpdateObject::SaveData()
+bool MongodbUpdateObject::SaveData()
 {
+    Logger::Debug("MongodbUpdateObject::SaveData");
     SafeRelease(updateObject);
-    
     updateObject = new MongodbObject();
     updateObject->SetObjectName(GetObjectName());
-    MongodbClient::KeyedArchiveToDBObject(updateData, updateObject);
+    return MongodbClient::KeyedArchiveToDBObject(updateData, updateObject);
 }    
     
 KeyedArchive* MongodbUpdateObject::GetData()
@@ -68,7 +68,10 @@ bool MongodbUpdateObject::SaveToDB(MongodbClient* dbClient)
 {
     if(!updateObject)
     {
-        SaveData();
+        if(!SaveData())
+        {
+            Logger::Error("MongodbUpdateObject::SaveToDB SaveData failed");
+        }
     }
     
     if(dbClient && updateObject)
@@ -80,9 +83,10 @@ bool MongodbUpdateObject::SaveToDB(MongodbClient* dbClient)
         
         //Logger::Debug("MongodbUpdateObject::SaveToDB new object:");
         //updateObject->Print();
-        
+		Logger::Debug("MongodbUpdateObject::SaveToDB return dbClient->SaveObject");
         return dbClient->SaveObject(updateObject);
     }
+	Logger::Error("MongodbUpdateObject::SaveToDB return false");
     return false;
 }
     

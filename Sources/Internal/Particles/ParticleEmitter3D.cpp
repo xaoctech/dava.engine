@@ -62,6 +62,12 @@ void ParticleEmitter3D::Draw(Camera * camera)
 	//Dizz: now layer->Draw is called from ParticleLayerBatch
 }
 
+void ParticleEmitter3D::RecalcBoundingBox()
+{
+	RenderObject::RecalcBoundingBox(); //transpass ParticleEmitter::RecalcBoundingBox()
+}
+
+
 void ParticleEmitter3D::PrepareEmitterParameters(Particle * particle, float32 velocity, int32 emitIndex)
 {
 	Vector3 tempPosition = Vector3();

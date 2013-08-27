@@ -56,6 +56,7 @@
 #include "DeviceInfoTest.h"
 #include "LocalizationTest.h"
 #include "UIListTest.h"
+#include "TransparentWebViewTest.h"
 #include "FormatsTest.h"
 #include "UIScrollViewTest.h"
 
@@ -87,6 +88,7 @@ void GameCore::OnAppStarted()
 	
     new FormatsTest();
 	new DeviceInfoTest();
+	new TransparentWebViewTest();
     new FilePathTest();
     new FileListTest();
     new FileSystemTest();

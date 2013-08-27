@@ -64,6 +64,7 @@ public:
 #endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
     
     bool FlushToDB(const FilePath & levelName, const Map<String, String> &results, const FilePath &imagePath);
+    bool FlushLogToDB();
     
 private:
     bool ConnectToDB();
@@ -78,6 +79,8 @@ private:
 	ResultScreen *resultScreen;
 	
 	bool appFinished;
+
+    Vector<String> logToDb;
 };
 
 
