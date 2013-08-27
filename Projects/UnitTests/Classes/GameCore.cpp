@@ -83,7 +83,9 @@ void GameCore::OnAppStarted()
 	RenderManager::Instance()->SetFPS(60);
 
     CreateDocumentsFolder();
-
+    
+	new InputTest();
+	
     new FormatsTest();
 	new DeviceInfoTest();
 	new TransparentWebViewTest();
@@ -91,7 +93,7 @@ void GameCore::OnAppStarted()
     new FileListTest();
     new FileSystemTest();
     new LocalizationTest();
-    new InputTest();
+
 	new SampleTest();
 	new EntityTest(); 
 	new MemoryAllocatorsTest();
