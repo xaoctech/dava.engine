@@ -100,6 +100,7 @@ namespace DAVA
 	int32 EditorListDelegate::ElementsCount(UIList *forList)
 	{
 		UpdateCellSize(forList);
+		DVASSERT(cellsCount > 0);
 		return cellsCount;
 	}
 	
