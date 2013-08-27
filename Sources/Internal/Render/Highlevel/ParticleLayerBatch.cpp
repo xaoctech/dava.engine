@@ -46,9 +46,7 @@ void ParticleLayerBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 	if (((flags & RenderObject::VISIBILITY_CRITERIA) != RenderObject::VISIBILITY_CRITERIA) || particleLayer->GetDisabled())
 		return;
 
-	Matrix4 worldMatrix = Matrix4::IDENTITY;
-	Matrix4 finalMatrix = worldMatrix * camera->GetMatrix();
-	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
+	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, camera->GetMatrix());
 
     particleLayer->Draw(camera);
     
@@ -56,7 +54,7 @@ void ParticleLayerBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 
 	RenderManager::Instance()->SetRenderData(renderDataObject);
 	material->BindMaterialTechnique(ownerRenderPass);
-
+	
 	RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLELIST, 0, 6*totalCount);
 }
 

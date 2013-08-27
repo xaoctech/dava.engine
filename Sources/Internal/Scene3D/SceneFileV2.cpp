@@ -715,7 +715,7 @@ void SceneFileV2::ConvertOldMaterialToNewMaterial(Material * oldMaterial,
 	parentMaterial = MaterialSystem::Instance()->GetMaterial(newMaterialName);
 	DVASSERT(parentMaterial);
 	
-	RenderState& renderStateBlock = *oldMaterial->GetRenderState();
+/*	RenderState& renderStateBlock = *oldMaterial->GetRenderState();
 	
 	if (oldMaterial->isTranslucent || oldMaterial->isTwoSided)
 	{
@@ -750,13 +750,13 @@ void SceneFileV2::ConvertOldMaterialToNewMaterial(Material * oldMaterial,
 	{
 		renderStateBlock.SetFillMode(FILLMODE_SOLID);
 	}
-	
-	FilePath fp = String("~res:/Materials/Legacy/RenderStates/") + newMaterialName.c_str() + String(".rs");
+
+ 	FilePath fp = String("~res:/Materials/Legacy/RenderStates/") + newMaterialName.c_str() + String(".rs");
 	if(!fp.Exists())
 	{
 		oldMaterial->GetRenderState()->SaveToYamlFile(fp);
 	}
-	
+*/
 	NMaterial* resultMaterial = parentMaterial->CreateChild();
 	
 	if(Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP == oldMaterial->type)

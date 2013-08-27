@@ -520,7 +520,7 @@ void NMaterial::BindMaterialTechnique(const FastName & techniqueName)
     Shader * shader = activeTechnique->GetShader();	
     renderState->SetShader(shader);
 
-    RenderManager::Instance()->FlushState(activeTechnique->GetRenderState());
+    RenderManager::Instance()->FlushState(renderState);
 
     uint32 uniformCount = shader->GetUniformCount();
 
