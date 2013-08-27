@@ -4818,8 +4818,6 @@
 				62AD51C517AF95D4001A4621 /* AddEntityCommand.cpp in Build Sources */,
 				E8F799D9179830D500E7C3C8 /* TextureDescriptorTool.cpp in Build Sources */,
 				E8F799DA179830D500E7C3C8 /* TextureDescriptorUtils.cpp in Build Sources */,
-				A607F45A17A1237B00AB5D98 /* ActionComponentEditor.cpp in Build Sources */,
-				A607F46017A1242F00AB5D98 /* ActionComponentEditor_moc.cpp in Build Sources */,
 				E8637C4B17B37DCF00ECA297 /* LODEditor.cpp in Build Sources */,
 				E8637C5217B37F5500ECA297 /* LODEditor_moc.cpp in Build Sources */,
 				E8637C5517B3DE0B00ECA297 /* EditorLODData.cpp in Build Sources */,
