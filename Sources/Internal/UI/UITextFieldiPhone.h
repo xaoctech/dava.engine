@@ -44,7 +44,6 @@ public:
 	void HideField();
 	
 	void SetIsPassword(bool isPassword);
-	void SetIsPassword(bool isPassword);
 
 	// Keyboard traits.
 	void SetAutoCapitalizationType(DAVA::int32 value);
