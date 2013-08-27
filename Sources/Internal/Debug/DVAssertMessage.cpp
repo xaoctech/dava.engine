@@ -40,7 +40,7 @@ void DVAssertMessage::ShowMessage(eModalType modalType, const char8 * text, ...)
 
 #else
 
-void DVAssertMessage::ShowMessage(const char8 * /*text*/, ...)
+void DVAssertMessage::ShowMessage(eModalType /*modalType*/, const char8 * /*text*/, ...)
 {
 	// Do nothing here.
 }

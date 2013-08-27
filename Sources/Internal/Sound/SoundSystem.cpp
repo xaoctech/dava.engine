@@ -66,10 +66,20 @@ SoundEvent * SoundSystem::CreateSoundEvent(const String & eventPath)
 
 void SoundSystem::Update()
 {
-	for(Vector<VolumeAnimatedObject *>::iterator it = animatedObjects.begin(); it != animatedObjects.end(); it++)
-	{
-		(*it)->Update();
-	}
+    int32 size = animatedObjects.size();
+    for(int32 i = 0; i < size; i++)
+        animatedObjects[i]->Update();
+
+    size = soundSendCallbackOnUpdate.size();
+    for(int32 i = 0; i < size; i++)
+    {
+        Sound * sound = soundSendCallbackOnUpdate[i];
+        sound->PerformPlaybackComplete();
+        sound->Release();
+    }
+
+    if(size)
+        soundSendCallbackOnUpdate.clear();
 
 	fmodEventSystem->update();
 }
@@ -155,6 +165,11 @@ void SoundSystem::RemoveVolumeAnimatedObject(VolumeAnimatedObject * object)
 	Vector<VolumeAnimatedObject *>::iterator it = std::find(animatedObjects.begin(), animatedObjects.end(), object);
 	if(it != animatedObjects.end())
 		animatedObjects.erase(it);
+}
+
+void SoundSystem::SendCallbackOnUpdate(Sound * sound)
+{
+    soundSendCallbackOnUpdate.push_back(sound);
 }
 
 };

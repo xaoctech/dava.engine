@@ -165,6 +165,7 @@ bool RenderManager::IsInsideDraw()
 {
 	return isInsideDraw;
 }
+
     
 #ifdef __DAVAENGINE_ANDROID__    
 void RenderManager::InitFBSize(int32 _frameBufferWidth, int32 _frameBufferHeight)

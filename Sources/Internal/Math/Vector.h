@@ -111,6 +111,7 @@ inline Vector2 Reflect(const Vector2 & v, const Vector2 & n);
 class Vector3
 {
 public:
+
 	union{
 		struct
 		{
@@ -118,7 +119,7 @@ public:
 		};
 		float32 data[3];
 	};
-	
+
 	inline Vector3();
 	inline Vector3(float32 _x, float32 _y, float32 _z);
 	inline Vector3(float32 *_data);
@@ -930,7 +931,6 @@ inline Vector4 Normalize(const Vector4 & v)
 	res.Normalize();
 	return res;
 }
-
 
 };
 

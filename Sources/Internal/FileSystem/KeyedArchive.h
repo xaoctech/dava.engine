@@ -34,7 +34,6 @@ namespace DAVA
 	\ingroup filesystem
 	\brief this is a class that should be used for serialization & deserialization of the items
  */
-
 class YamlNode;
     
 class KeyedArchive : public BaseObject
@@ -96,7 +95,8 @@ public:
 		\param[in] key string key
 		\param[in] defaultValue this is value that is used if variable with this key do not exists in archive
 		\returns value of variable or defaultValue if key isn't available
-	 */
+		*/
+
 	WideString GetWideString(const String & key, const WideString & defaultValue = L"");
 	/**
         \brief Function to get variable from archive.
@@ -160,7 +160,7 @@ public:
      \returns value of variable or defaultValue if key isn't available
 	 */
 	Vector3 GetVector3(const String & key, const Vector3 & defaultValue = Vector3());
-    
+  
     /**
      \brief Function to get variable from archive.
      \param[in] key string key
@@ -199,7 +199,7 @@ public:
      */
     template <class T>
     T GetByteArrayAsType(const String & key, const T & defaultValue = T());
-	
+
 	
 	/**
 		\brief Function to get variable from archive.
@@ -207,7 +207,7 @@ public:
 		\returns value of variable or default VariantType class if value isn't available
 	 */
 	VariantType *GetVariant(const String & key);
-	
+
 	/**
 		\brief Function to set variable in archive.
 		\param[in] key string key
@@ -244,6 +244,7 @@ public:
 		\param[in] key string key
 		\param[in] value we want to set for this key
 	 */
+
 	void SetWideString(const String & key, const WideString & value);
 	/**
         \brief Function to set variable in archive.
@@ -299,7 +300,7 @@ public:
      \param[in] value we want to set for this key
 	 */
 	void SetVector3(const String & key, Vector3 &value);
-    
+ 
     /**
      \brief Function to set variable in archive.
      \param[in] key string key
@@ -370,7 +371,7 @@ public:
      \param[in] file to save
 	 */
 	bool SaveToYamlFile(const FilePath & pathName);
-    
+
 	/**
 		\brief Deletes named key.
 		\param[in] key name of the key to delete
@@ -417,6 +418,7 @@ public:
     
 	static const char* GenKeyFromIndex(uint32 index);
 
+
 private:
 	Map<String, VariantType*> objectMap;
 
@@ -425,6 +427,7 @@ public:
 };
     
 // Implementation 
+
 template <class T>
 T KeyedArchive::GetByteArrayAsType(const String & key, const T & defaultValue)
 {
@@ -449,8 +452,6 @@ void KeyedArchive::SetByteArrayAsType(const String & key, const T & value)
     SetByteArray(key, (uint8 * )&value, sizeof(T));
 }
 
-	
-	
 };
 
 #endif // __DAVAENGINE_KEYED_ARCHIVE_H__

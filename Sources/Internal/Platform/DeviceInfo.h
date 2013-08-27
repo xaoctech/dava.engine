@@ -45,6 +45,7 @@ public:
 	static String GetRegion();
 	static String GetTimeZone();
     static String GetUDID();
+    static WideString GetName();
 };
 
 };

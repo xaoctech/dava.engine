@@ -1561,7 +1561,7 @@ void Sprite::Reload()
 {
     if(type == SPRITE_FROM_FILE)
     {
-        ReloadSpriteTextures();
+        ReloadExistingTextures();
 
         int32 sizeIndex = resourceSizeIndex;
 
@@ -1594,13 +1594,17 @@ void Sprite::Reload()
     }
 }
     
-void Sprite::ReloadSpriteTextures()
+void Sprite::ReloadExistingTextures()
 {
+	//this function need to be sure that textures really would reload
     for(int32 i = 0; i < textureCount; ++i)
     {
         if(textures[i] && !textures[i]->GetPathname().IsEmpty())
         {
-            textures[i]->Reload();
+			if(textures[i]->GetPathname().Exists())
+			{	
+				textures[i]->Reload();
+			}
         }
         else
         {

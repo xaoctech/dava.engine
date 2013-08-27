@@ -516,17 +516,23 @@ bool SceneGraphModel::MoveItemToParent(GraphItem * movedItem, const QModelIndex 
 		return particlesEditorSceneModelHelper.MoveItemToParent(movedItem, newParentItem);
 	}
 
+	Entity *movedNode = static_cast<Entity *>(movedItem->GetUserData());
+	if (!movedNode)
+	{
+		// We are attempting to move the node to the empty Scene Graph place, which is not allowed.
+		// See please DF-1674.
+		return false;
+	}
+
     GraphItem *oldParentItem = movedItem->GetParent();
     
     oldParentItem->RemoveChild(movedItem);
     newParentItem->AppendChild(movedItem);
     
-    Entity *movedNode = static_cast<Entity *>(movedItem->GetUserData());
     Entity *newParentNode = static_cast<Entity *>(newParentItem->GetUserData());
     Entity *oldParentNode = static_cast<Entity *>(oldParentItem->GetUserData());
 
-    DVASSERT((NULL != movedNode) && "movedNode is NULL");
-    DVASSERT((NULL != newParentNode) && "newParentNode is NULL");
+	DVASSERT((NULL != newParentNode) && "newParentNode is NULL");
     DVASSERT((NULL != oldParentNode) && "oldParentNode is NULL");
     
     SafeRetain(movedNode);

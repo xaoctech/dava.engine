@@ -60,7 +60,7 @@ public:
 	
 	float32 cosA;
 	float32 sinA;
-	
+
 	void AddToGeometricData(const UIGeometricData &data)
 	{
 		position.x = data.position.x - data.pivotPoint.x * data.scale.x + position.x * data.scale.x;
@@ -101,10 +101,8 @@ public:
 		return unrotatedRect;
 	}
 	
-//private:
 	Rect unrotatedRect;
 	float32 oldAngle;
-
 };
 
 
@@ -201,6 +199,7 @@ public:
 
 	
 public:
+
 	/**
 	 \brief Creates control with requested size and position.
 	 \param[in] rect Size and coordinates of control you want.
@@ -209,7 +208,6 @@ public:
 		Warning, rectInAbsoluteCoordinates isn't properly works for now!
 	 */
 	UIControl(const Rect &rect = Rect(), bool rectInAbsoluteCoordinates = false);
-	
 	
 	/**
 	 \brief Returns Sprite used for draw in the current UIControlBackground object.
@@ -274,6 +272,7 @@ public:
 	 \returns background used for draw.
 	 */
 	virtual UIControlBackground * GetBackground();
+
 	/**
 	 \brief Sets left align of control relative to its parent. 
 	 \param[in] align left align of control.
@@ -394,6 +393,7 @@ public:
 	 \returns bottom align of control.
 	 */
 	virtual bool GetBottomAlignEnabled();	
+	
 	/**
 	 \brief Returns untransformed control rect.
 		To get control metrics that applies all control transformation you need to use 
@@ -402,14 +402,15 @@ public:
 	 \returns control rect.
 	 */
 	virtual const Rect & GetRect(bool absoluteCoordinates = false);
+    
 	/**
 	 \brief Sets the untransformed control rect.
 		Warning, rectInAbsoluteCoordinates isn't properly works for now!
 	 \param[in] rect new control rect.
 	 */
 	virtual void SetRect(const Rect &rect, bool rectInAbsoluteCoordinates = false);
-
-	
+    
+    
 	/**
 	 \brief Returns untransformed control position.
 		To get control metrics that applies all control transformation you need to use 
@@ -418,12 +419,14 @@ public:
 	 \returns control position.
 	 */
 	virtual const Vector2 &GetPosition(bool absoluteCoordinates = false);
-	/**
+
+    /**
 	 \brief Sets the untransformed control position.
 		Warning, rectInAbsoluteCoordinates isn't properly works for now!
 	 \param[in] position new control position.
 	 */
 	virtual void SetPosition(const Vector2 &position, bool positionInAbsoluteCoordinates = false);
+
 	/**
 	 \brief Returns untransformed control size.
 		To get control metrics that applies all control transformation you need to use 
@@ -431,6 +434,7 @@ public:
 	 \returns control size.
 	 */
 	virtual const Vector2 &GetSize() const;
+   
 	/**
 	 \brief Sets the untransformed control size.
 	 \param[in] newSize new control size.
@@ -442,6 +446,7 @@ public:
 	 \returns control geometric data.
 	 */
 	virtual const UIGeometricData &GetGeometricData();
+
 	/**
 	 \brief Sets the scaled control rect.
 		This method didn't apply any changes to the control size, but recalculate control scale.
@@ -461,8 +466,7 @@ public:
 	 \param[in] angleInRad new control angle in radians.
 	 */
 	virtual void SetAngle(float32 angleInRad);
-	
-	
+
 	/**
 	 \brief Returns control visibility.
 		Invisible controls don't process any inputs. But allows input processing for their children.
@@ -471,6 +475,7 @@ public:
 	 \returns control visibility.
 	 */
 	virtual bool GetVisible() const;
+   
 	/**
 	 \brief Sets contol visibility.
 		Invisible controls don't process any inputs. But allows input processing for their children.
@@ -489,6 +494,7 @@ public:
 	 \returns true if control pocessing inputs.
 	 */
 	virtual bool GetInputEnabled() const;
+   
 	/**
 	 \brief Sets contol input processing ability.
 		If input is disabled control don't process any inputs. If input is disabled all inputs events would comes to the parent control.
@@ -498,6 +504,7 @@ public:
 	 \param[in] isEnabled is control should process inputs?
 	 \param[in] hierarchic use true if you want to all control children change input ability.
 	 */
+
 	virtual void SetInputEnabled(bool isEnabled, bool hierarchic = true);
 	
 	/**
@@ -509,6 +516,7 @@ public:
 	 \returns true if control is disabled.
 	 */
 	virtual bool GetDisabled() const;
+    
 	/**
 	 \brief Sets the contol enabling/disabling.
 		Disabled control don't process any inputs. But allows input processing for their children.
@@ -519,12 +527,13 @@ public:
 	 \param[in] hierarchic use true if you want to all control children change enabling/disabling.
 	 */
 	virtual void SetDisabled(bool isDisabled, bool hierarchic = true);
-	
+
 	/**
 	 \brief Returns control selection state.
 	 \returns is control selected.
 	 */
 	virtual bool GetSelected() const;
+     
 	/**
 	 \brief Sets contol selection state.
 		Selection state don't influence on any control activities.
@@ -591,31 +600,32 @@ public:
 	 \param[in] hierarchic use true if you want to all control children change multi nput support state.
 	 */
 	virtual void SetMultiInput(bool isMultiInput, bool hierarchic = true);
-	
-	
+		
 	/**
 	 \brief Sets the contol name.
 		Later you can find control by this name. 
 	 \param[in] _name new control name.
 	 */
 	void SetName(const String & _name);
+
 	/**
 	 \brief Returns current name of the control.
 	 \returns control name.
 	 */
-    const String & GetName() const; 
-
+	const String & GetName() const;
+    
 	/**
 	 \brief Sets the contol tag.
 	 \param[in] tag new control tag.
 	 */
 	void SetTag(int32 tag);
+
 	/**
 	 \brief Returns current control tag.
 	 \returns control tag.
 	 */
-    int32 GetTag() const;
-
+	int32 GetTag() const;
+     
 	/**
 	 \brief Returns control with given name.
 	 \param[in] name requested control name.
@@ -641,6 +651,7 @@ public:
 	 \returns if contorl hasn't parent returns NULL.
 	 */
 	UIControl *GetParent();
+
 	/**
 	 \brief Returns list of control children.
 	 \returns list of control children.
@@ -728,7 +739,6 @@ public:
 	 \param[in] _aboveThisChild control to sends after.
 	 */
 	virtual void SendChildAbove(UIControl * _control, UIControl * _aboveThisChild);
-	
 	
 	/**
 	 \brief Adds callback message for the event trigger.
@@ -1139,7 +1149,6 @@ public:
 	Vector2	scale;//!<control scale. Scale relative to pivot point.
 	float32	angle;//!<control rotation angle. Rotation around pivot point.
 	
-
 protected:
 	
 //	void SystemClearHoverState();//<! Internal method used by ControlSystem
@@ -1198,12 +1207,12 @@ protected:
 	int32 initialState;
 
 	void SetParent(UIControl *newParent);
-	virtual ~UIControl();
 
+	virtual ~UIControl();
+	
 	// Set the preferred node type. Needed for saving controls to Yaml while taking
 	// custom controls into account.
 	void SetPreferredNodeType(YamlNode* node, const String& nodeTypeName);
-
 #ifdef ENABLE_CONTROL_EDIT
 	Vector2	__touchStart;
 	Vector2		__oldPosition;
@@ -1214,6 +1223,7 @@ private:
 	bool isIteratorCorrupted;
 	String	name;
 	int32	tag;
+
 	
 	void RecalculateAlignProperties();
 	void RecalculateChildsSize();

@@ -30,8 +30,8 @@
 		17816B8117B2748900B067E1 /* AllocatorFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 17816B7F17B2748900B067E1 /* AllocatorFactory.h */; };
 		1799E51A16CCEBDA0058061F /* ParticleForce.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1799E51816CCEBDA0058061F /* ParticleForce.cpp */; };
 		1799E51B16CCEBDA0058061F /* ParticleForce.h in Headers */ = {isa = PBXBuildFile; fileRef = 1799E51916CCEBDA0058061F /* ParticleForce.h */; };
-		17D30ADD1799793E007A4594 /* UIDismissionHandlerAlertView.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D30ADB1799793E007A4594 /* UIDismissionHandlerAlertView.h */; };
-		17D30ADE1799793E007A4594 /* UIDismissionHandlerAlertView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17D30ADC1799793E007A4594 /* UIDismissionHandlerAlertView.mm */; };
+		17D7E5F617A6C06B00861981 /* UIDismissionHandlerAlertView.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D7E5F417A6C06B00861981 /* UIDismissionHandlerAlertView.h */; };
+		17D7E5F717A6C06B00861981 /* UIDismissionHandlerAlertView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17D7E5F517A6C06B00861981 /* UIDismissionHandlerAlertView.mm */; };
 		17F53E2F16D36FF3004D5099 /* IWebViewControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F53E2C16D36FF3004D5099 /* IWebViewControl.h */; };
 		17F53E3016D36FF3004D5099 /* UIWebView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17F53E2D16D36FF3004D5099 /* UIWebView.cpp */; };
 		17F53E3116D36FF3004D5099 /* UIWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F53E2E16D36FF3004D5099 /* UIWebView.h */; };
@@ -45,12 +45,16 @@
 		5C77ABBF14C7703800E92D28 /* libpng_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C77ABBE14C7703800E92D28 /* libpng_ios.a */; };
 		5C97964714E3E75000FFFA14 /* libxml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964514E3E75000FFFA14 /* libxml_ios.a */; };
 		5C97964814E3E75000FFFA14 /* libyaml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964614E3E75000FFFA14 /* libyaml_ios.a */; };
-		74338646179D18F60014FBD3 /* UIScrollView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 74338642179D18F60014FBD3 /* UIScrollView.cpp */; };
-		74338647179D18F60014FBD3 /* UIScrollView.h in Headers */ = {isa = PBXBuildFile; fileRef = 74338643179D18F60014FBD3 /* UIScrollView.h */; };
-		74338648179D18F60014FBD3 /* UIScrollViewContainer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 74338644179D18F60014FBD3 /* UIScrollViewContainer.cpp */; };
-		74338649179D18F60014FBD3 /* UIScrollViewContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = 74338645179D18F60014FBD3 /* UIScrollViewContainer.h */; };
+		62BAA48F178EF915003DE32C /* MailComposeDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 62BAA48D178EF915003DE32C /* MailComposeDelegate.h */; };
+		62BAA492178EF952003DE32C /* MailComposeDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 62BAA491178EF952003DE32C /* MailComposeDelegate.mm */; };
+		7433865D179D1E170014FBD3 /* UIScrollView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 74338659179D1E170014FBD3 /* UIScrollView.cpp */; };
+		7433865E179D1E170014FBD3 /* UIScrollView.h in Headers */ = {isa = PBXBuildFile; fileRef = 7433865A179D1E170014FBD3 /* UIScrollView.h */; };
+		7433865F179D1E170014FBD3 /* UIScrollViewContainer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7433865B179D1E170014FBD3 /* UIScrollViewContainer.cpp */; };
+		74338660179D1E170014FBD3 /* UIScrollViewContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = 7433865C179D1E170014FBD3 /* UIScrollViewContainer.h */; };
 		7497447817B3D79600282DAA /* AllocatorFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7497447617B3D79600282DAA /* AllocatorFactory.cpp */; };
 		7497447917B3D79600282DAA /* AllocatorFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 7497447717B3D79600282DAA /* AllocatorFactory.h */; };
+		74338669179D1E8E0014FBD3 /* CRC32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 74338667179D1E8E0014FBD3 /* CRC32.cpp */; };
+		7433866A179D1E8E0014FBD3 /* CRC32.h in Headers */ = {isa = PBXBuildFile; fileRef = 74338668179D1E8E0014FBD3 /* CRC32.h */; };
 		840ED3C916D506F900D2BA6C /* DPIHelperiOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 840ED3C816D506F900D2BA6C /* DPIHelperiOS.mm */; };
 		840ED3CB16D5070400D2BA6C /* DPIHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 840ED3CA16D5070400D2BA6C /* DPIHelper.h */; };
 		84E5E0FE174D02EA0001C74F /* OpenUDIDApple.h in Headers */ = {isa = PBXBuildFile; fileRef = 84E5E0FC174D02EA0001C74F /* OpenUDIDApple.h */; };
@@ -71,6 +75,16 @@
 		A6E4FDFC1761D83100B48E41 /* ActionUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A6E4FDFA1761D83100B48E41 /* ActionUpdateSystem.h */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
 		C1DC1F081717FD3C001C5EC3 /* libTextureConverter_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C1DC1F071717FD3C001C5EC3 /* libTextureConverter_macos.a */; };
+		C70B565B1753CB5E008966FA /* KeyedArchiveSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C70B56591753CB5E008966FA /* KeyedArchiveSwig.cpp */; };
+		C7E76D3116DF69370041ED9A /* AutotestingSystemLua.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2116DF69370041ED9A /* AutotestingSystemLua.cpp */; };
+		C7E76D3216DF69370041ED9A /* AutotestingSystemLua.h in Headers */ = {isa = PBXBuildFile; fileRef = C7E76D2216DF69370041ED9A /* AutotestingSystemLua.h */; };
+		C7E76D3316DF69370041ED9A /* AutotestingSystemSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2316DF69370041ED9A /* AutotestingSystemSwig.cpp */; };
+		C7E76D3416DF69370041ED9A /* AutotestingSystemYaml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2416DF69370041ED9A /* AutotestingSystemYaml.cpp */; };
+		C7E76D3516DF69370041ED9A /* AutotestingSystemYaml.h in Headers */ = {isa = PBXBuildFile; fileRef = C7E76D2516DF69370041ED9A /* AutotestingSystemYaml.h */; };
+		C7E76D3816DF69370041ED9A /* RectSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2816DF69370041ED9A /* RectSwig.cpp */; };
+		C7E76D3B16DF69370041ED9A /* UIControlSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2B16DF69370041ED9A /* UIControlSwig.cpp */; };
+		C7E76D3E16DF69370041ED9A /* VectorSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2E16DF69370041ED9A /* VectorSwig.cpp */; };
+		C7E76D4316DF6CC70041ED9A /* liblua_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C7E76D4216DF6CC70041ED9A /* liblua_ios.a */; };
 		CC247FF116D69F1700183D40 /* DVAssertMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC247FEC16D69F1700183D40 /* DVAssertMessage.cpp */; };
 		CC247FF216D69F1700183D40 /* DVAssertMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = CC247FED16D69F1700183D40 /* DVAssertMessage.h */; };
 		CC247FF316D69F1700183D40 /* DVAssertMessageApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = CC247FEE16D69F1700183D40 /* DVAssertMessageApple.mm */; };
@@ -719,8 +733,8 @@
 		17816B7F17B2748900B067E1 /* AllocatorFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AllocatorFactory.h; sourceTree = "<group>"; };
 		1799E51816CCEBDA0058061F /* ParticleForce.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleForce.cpp; sourceTree = "<group>"; };
 		1799E51916CCEBDA0058061F /* ParticleForce.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleForce.h; sourceTree = "<group>"; };
-		17D30ADB1799793E007A4594 /* UIDismissionHandlerAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDismissionHandlerAlertView.h; sourceTree = "<group>"; };
-		17D30ADC1799793E007A4594 /* UIDismissionHandlerAlertView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UIDismissionHandlerAlertView.mm; sourceTree = "<group>"; };
+		17D7E5F417A6C06B00861981 /* UIDismissionHandlerAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDismissionHandlerAlertView.h; sourceTree = "<group>"; };
+		17D7E5F517A6C06B00861981 /* UIDismissionHandlerAlertView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UIDismissionHandlerAlertView.mm; sourceTree = "<group>"; };
 		17F53E2C16D36FF3004D5099 /* IWebViewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IWebViewControl.h; sourceTree = "<group>"; };
 		17F53E2D16D36FF3004D5099 /* UIWebView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIWebView.cpp; sourceTree = "<group>"; };
 		17F53E2E16D36FF3004D5099 /* UIWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIWebView.h; sourceTree = "<group>"; };
@@ -734,12 +748,16 @@
 		5C77ABBE14C7703800E92D28 /* libpng_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng_ios.a; path = ../../Libs/libs/libpng_ios.a; sourceTree = "<group>"; };
 		5C97964514E3E75000FFFA14 /* libxml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml_ios.a; path = ../../Libs/libs/libxml_ios.a; sourceTree = "<group>"; };
 		5C97964614E3E75000FFFA14 /* libyaml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyaml_ios.a; path = ../../Libs/libs/libyaml_ios.a; sourceTree = "<group>"; };
-		74338642179D18F60014FBD3 /* UIScrollView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIScrollView.cpp; sourceTree = "<group>"; };
-		74338643179D18F60014FBD3 /* UIScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIScrollView.h; sourceTree = "<group>"; };
-		74338644179D18F60014FBD3 /* UIScrollViewContainer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIScrollViewContainer.cpp; sourceTree = "<group>"; };
-		74338645179D18F60014FBD3 /* UIScrollViewContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIScrollViewContainer.h; sourceTree = "<group>"; };
+		62BAA48D178EF915003DE32C /* MailComposeDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MailComposeDelegate.h; sourceTree = "<group>"; };
+		62BAA491178EF952003DE32C /* MailComposeDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MailComposeDelegate.mm; sourceTree = "<group>"; };
+		74338659179D1E170014FBD3 /* UIScrollView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIScrollView.cpp; sourceTree = "<group>"; };
+		7433865A179D1E170014FBD3 /* UIScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIScrollView.h; sourceTree = "<group>"; };
+		7433865B179D1E170014FBD3 /* UIScrollViewContainer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIScrollViewContainer.cpp; sourceTree = "<group>"; };
+		7433865C179D1E170014FBD3 /* UIScrollViewContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIScrollViewContainer.h; sourceTree = "<group>"; };
 		7497447617B3D79600282DAA /* AllocatorFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AllocatorFactory.cpp; sourceTree = "<group>"; };
 		7497447717B3D79600282DAA /* AllocatorFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AllocatorFactory.h; sourceTree = "<group>"; };
+		74338667179D1E8E0014FBD3 /* CRC32.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CRC32.cpp; sourceTree = "<group>"; };
+		74338668179D1E8E0014FBD3 /* CRC32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRC32.h; sourceTree = "<group>"; };
 		840ED3C816D506F900D2BA6C /* DPIHelperiOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DPIHelperiOS.mm; sourceTree = "<group>"; };
 		840ED3CA16D5070400D2BA6C /* DPIHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DPIHelper.h; sourceTree = "<group>"; };
 		84E5E0FC174D02EA0001C74F /* OpenUDIDApple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenUDIDApple.h; sourceTree = "<group>"; };
@@ -760,6 +778,21 @@
 		A6E4FDFA1761D83100B48E41 /* ActionUpdateSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionUpdateSystem.h; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		C1DC1F071717FD3C001C5EC3 /* libTextureConverter_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libTextureConverter_macos.a; path = ../../Libs/libs/libTextureConverter_macos.a; sourceTree = "<group>"; };
+		C70B56581753CB5E008966FA /* KeyedArchive_wrap.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyedArchive_wrap.cxx; sourceTree = "<group>"; };
+		C70B56591753CB5E008966FA /* KeyedArchiveSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyedArchiveSwig.cpp; sourceTree = "<group>"; };
+		C7E76D1F16DF69370041ED9A /* AutotestingSystem_wrap.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystem_wrap.cxx; sourceTree = "<group>"; };
+		C7E76D2116DF69370041ED9A /* AutotestingSystemLua.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemLua.cpp; sourceTree = "<group>"; };
+		C7E76D2216DF69370041ED9A /* AutotestingSystemLua.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystemLua.h; sourceTree = "<group>"; };
+		C7E76D2316DF69370041ED9A /* AutotestingSystemSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemSwig.cpp; sourceTree = "<group>"; };
+		C7E76D2416DF69370041ED9A /* AutotestingSystemYaml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemYaml.cpp; sourceTree = "<group>"; };
+		C7E76D2516DF69370041ED9A /* AutotestingSystemYaml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystemYaml.h; sourceTree = "<group>"; };
+		C7E76D2616DF69370041ED9A /* Rect_wrap.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rect_wrap.cxx; sourceTree = "<group>"; };
+		C7E76D2816DF69370041ED9A /* RectSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RectSwig.cpp; sourceTree = "<group>"; };
+		C7E76D2916DF69370041ED9A /* UIControl_wrap.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIControl_wrap.cxx; sourceTree = "<group>"; };
+		C7E76D2B16DF69370041ED9A /* UIControlSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIControlSwig.cpp; sourceTree = "<group>"; };
+		C7E76D2C16DF69370041ED9A /* Vector_wrap.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Vector_wrap.cxx; sourceTree = "<group>"; };
+		C7E76D2E16DF69370041ED9A /* VectorSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VectorSwig.cpp; sourceTree = "<group>"; };
+		C7E76D4216DF6CC70041ED9A /* liblua_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua_ios.a; path = ../../Libs/libs/liblua_ios.a; sourceTree = "<group>"; };
 		CC247FEC16D69F1700183D40 /* DVAssertMessage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DVAssertMessage.cpp; sourceTree = "<group>"; };
 		CC247FED16D69F1700183D40 /* DVAssertMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DVAssertMessage.h; sourceTree = "<group>"; };
 		CC247FEE16D69F1700183D40 /* DVAssertMessageApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DVAssertMessageApple.mm; sourceTree = "<group>"; };
@@ -1380,6 +1413,7 @@
 				02F6403D173A597A0053F038 /* libfmodex_iphoneos.a in Frameworks */,
 				02F6403E173A597A0053F038 /* libfmodex_iphonesimulator.a in Frameworks */,
 				C1DC1F081717FD3C001C5EC3 /* libTextureConverter_macos.a in Frameworks */,
+				C7E76D4316DF6CC70041ED9A /* liblua_ios.a in Frameworks */,
 				E81F2B0516BFF65700C4545E /* libcurl_ios.a in Frameworks */,
 				496526D0167F173400107C70 /* libdxt_ios.a in Frameworks */,
 				0224B74A1598B40100CDEF9E /* libogg_ios.a in Frameworks */,
@@ -1414,6 +1448,7 @@
 				02E9E3A2172967F300C501BC /* libfmodex_iphoneos.a */,
 				02E9E3A3172967F300C501BC /* libfmodex_iphonesimulator.a */,
 				C1DC1F071717FD3C001C5EC3 /* libTextureConverter_macos.a */,
+				C7E76D4216DF6CC70041ED9A /* liblua_ios.a */,
 				E81F2B0416BFF65700C4545E /* libcurl_ios.a */,
 				496526CF167F173400107C70 /* libdxt_ios.a */,
 				E80D2FB2164D51A100C13D70 /* libbz2.dylib */,
@@ -1477,6 +1512,20 @@
 		E8B3C7B116B9326D002BD35F /* Autotesting */ = {
 			isa = PBXGroup;
 			children = (
+				C70B56581753CB5E008966FA /* KeyedArchive_wrap.cxx */,
+				C70B56591753CB5E008966FA /* KeyedArchiveSwig.cpp */,
+				C7E76D1F16DF69370041ED9A /* AutotestingSystem_wrap.cxx */,
+				C7E76D2116DF69370041ED9A /* AutotestingSystemLua.cpp */,
+				C7E76D2216DF69370041ED9A /* AutotestingSystemLua.h */,
+				C7E76D2316DF69370041ED9A /* AutotestingSystemSwig.cpp */,
+				C7E76D2416DF69370041ED9A /* AutotestingSystemYaml.cpp */,
+				C7E76D2516DF69370041ED9A /* AutotestingSystemYaml.h */,
+				C7E76D2616DF69370041ED9A /* Rect_wrap.cxx */,
+				C7E76D2816DF69370041ED9A /* RectSwig.cpp */,
+				C7E76D2916DF69370041ED9A /* UIControl_wrap.cxx */,
+				C7E76D2B16DF69370041ED9A /* UIControlSwig.cpp */,
+				C7E76D2C16DF69370041ED9A /* Vector_wrap.cxx */,
+				C7E76D2E16DF69370041ED9A /* VectorSwig.cpp */,
 				E8B3C7B216B9326D002BD35F /* Action.cpp */,
 				E8B3C7B316B9326D002BD35F /* Action.h */,
 				E8B3C7B416B9326D002BD35F /* AssertAction.cpp */,
@@ -1596,6 +1645,8 @@
 		E8B3C80416B9326D002BD35F /* Debug */ = {
 			isa = PBXGroup;
 			children = (
+				17D7E5F417A6C06B00861981 /* UIDismissionHandlerAlertView.h */,
+				17D7E5F517A6C06B00861981 /* UIDismissionHandlerAlertView.mm */,
 				CC247FEC16D69F1700183D40 /* DVAssertMessage.cpp */,
 				CC247FED16D69F1700183D40 /* DVAssertMessage.h */,
 				CC247FEE16D69F1700183D40 /* DVAssertMessageApple.mm */,
@@ -1755,6 +1806,8 @@
 		E8B3C89716B9326D002BD35F /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				62BAA491178EF952003DE32C /* MailComposeDelegate.mm */,
+				62BAA48D178EF915003DE32C /* MailComposeDelegate.h */,
 				E8BD1F0916DE4A9C00499E18 /* MailSender.cpp */,
 				E8BD1F0A16DE4A9C00499E18 /* MailSender.h */,
 				E8BD1F0B16DE4A9C00499E18 /* MailSenderMacOS.mm */,
@@ -2688,6 +2741,8 @@
 				E89CE92D16C54A36006BEFF4 /* SpriteRenderBatch.h in Headers */,
 				CCB4C44716CBC65D00F2B085 /* ComponentHelpers.h in Headers */,
 				1799E51B16CCEBDA0058061F /* ParticleForce.h in Headers */,
+				C7E76D3216DF69370041ED9A /* AutotestingSystemLua.h in Headers */,
+				C7E76D3516DF69370041ED9A /* AutotestingSystemYaml.h in Headers */,
 				17F53E2F16D36FF3004D5099 /* IWebViewControl.h in Headers */,
 				17F53E3116D36FF3004D5099 /* UIWebView.h in Headers */,
 				17F53E3416D3705E004D5099 /* WebViewControliOS.h in Headers */,
@@ -2715,6 +2770,7 @@
 				02F64042173A5A950053F038 /* SoundUpdateSystem.h in Headers */,
 				84E5E0FE174D02EA0001C74F /* OpenUDIDApple.h in Headers */,
 				84E5E102174D02F60001C74F /* OpenUDIDios.h in Headers */,
+				62BAA48F178EF915003DE32C /* MailComposeDelegate.h in Headers */,
 				E867917D175F620400C5A6A2 /* GlobalEnum.h in Headers */,
 				E8679181175F621E00C5A6A2 /* GPUFamilyDescriptor.h in Headers */,
 				E8679185175F62D600C5A6A2 /* EnumMap.h in Headers */,
@@ -2729,6 +2785,7 @@
 				A66BC2F217AB98E800B6252E /* SkyboxSystem.h in Headers */,
 				17816B8117B2748900B067E1 /* AllocatorFactory.h in Headers */,
 				A679102A17B3CF2D000AA2F2 /* SkyboxRenderObject.h in Headers */,
+				17D7E5F617A6C06B00861981 /* UIDismissionHandlerAlertView.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3061,6 +3118,12 @@
 				E89CE92C16C54A36006BEFF4 /* SpriteRenderBatch.cpp in Sources */,
 				CCB4C44616CBC65D00F2B085 /* ComponentHelpers.cpp in Sources */,
 				1799E51A16CCEBDA0058061F /* ParticleForce.cpp in Sources */,
+				C7E76D3116DF69370041ED9A /* AutotestingSystemLua.cpp in Sources */,
+				C7E76D3316DF69370041ED9A /* AutotestingSystemSwig.cpp in Sources */,
+				C7E76D3416DF69370041ED9A /* AutotestingSystemYaml.cpp in Sources */,
+				C7E76D3816DF69370041ED9A /* RectSwig.cpp in Sources */,
+				C7E76D3B16DF69370041ED9A /* UIControlSwig.cpp in Sources */,
+				C7E76D3E16DF69370041ED9A /* VectorSwig.cpp in Sources */,
 				17F53E3016D36FF3004D5099 /* UIWebView.cpp in Sources */,
 				17F53E3516D3705E004D5099 /* WebViewControliOS.mm in Sources */,
 				840ED3C916D506F900D2BA6C /* DPIHelperiOS.mm in Sources */,
@@ -3089,6 +3152,8 @@
 				02F64041173A5A950053F038 /* SoundUpdateSystem.cpp in Sources */,
 				84E5E0FF174D02EA0001C74F /* OpenUDIDApple.mm in Sources */,
 				84E5E103174D02F60001C74F /* OpenUDIDios.mm in Sources */,
+				C70B565B1753CB5E008966FA /* KeyedArchiveSwig.cpp in Sources */,
+				62BAA492178EF952003DE32C /* MailComposeDelegate.mm in Sources */,
 				E867917C175F620400C5A6A2 /* GlobalEnum.cpp in Sources */,
 				E8679180175F621E00C5A6A2 /* GPUFamilyDescriptor.cpp in Sources */,
 				E8679184175F62D600C5A6A2 /* EnumMap.cpp in Sources */,
@@ -3103,6 +3168,7 @@
 				A66BC2F117AB98E800B6252E /* SkyboxSystem.cpp in Sources */,
 				17816B8017B2748900B067E1 /* AllocatorFactory.cpp in Sources */,
 				A679102917B3CF2D000AA2F2 /* SkyboxRenderObject.cpp in Sources */,
+				17D7E5F717A6C06B00861981 /* UIDismissionHandlerAlertView.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3122,6 +3188,10 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../..\"",
+				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -3141,6 +3211,7 @@
 					./../../Libs/freetype/include,
 					./../../Libs/include,
 					./../../Libs/fmod/include,
+					./../../Libs/lua/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3158,6 +3229,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../..\"",
+				);
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Framework_Prefix.pch;
@@ -3176,6 +3251,7 @@
 					./../../Libs/freetype/include,
 					./../../Libs/include,
 					./../../Libs/fmod/include,
+					./../../Libs/lua/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3214,6 +3290,7 @@
 					./../../Libs/freetype/include,
 					./../../Libs/include,
 					./../../Libs/fmod/include,
+					./../../Libs/lua/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				OTHER_CFLAGS = "-mno-thumb";
@@ -3256,6 +3333,7 @@
 					./../../Libs/freetype/include,
 					./../../Libs/include,
 					./../../Libs/fmod/include,
+					./../../Libs/lua/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				OTHER_CFLAGS = "-mno-thumb";
@@ -3298,6 +3376,7 @@
 					./../../Libs/freetype/include,
 					./../../Libs/include,
 					./../../Libs/fmod/include,
+					./../../Libs/lua/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				OTHER_CFLAGS = "-mno-thumb";
@@ -3320,6 +3399,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../..\"",
+				);
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Framework_Prefix.pch;
@@ -3338,6 +3421,7 @@
 					./../../Libs/freetype/include,
 					./../../Libs/include,
 					./../../Libs/fmod/include,
+					./../../Libs/lua/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3375,6 +3459,7 @@
 					./../../Libs/freetype/include,
 					./../../Libs/include,
 					./../../Libs/fmod/include,
+					./../../Libs/lua/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				OTHER_CFLAGS = "-mno-thumb";
@@ -3397,6 +3482,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../..\"",
+				);
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Framework_Prefix.pch;
@@ -3415,6 +3504,7 @@
 					./../../Libs/freetype/include,
 					./../../Libs/include,
 					./../../Libs/fmod/include,
+					./../../Libs/lua/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
