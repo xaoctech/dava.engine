@@ -86,6 +86,8 @@ Landscape::Landscape()
     LandscapeChunk * chunk = new LandscapeChunk(this);
     AddRenderBatch(chunk);
     SafeRelease(chunk);
+    
+    drawIndices = 0;
 }
 
 Landscape::~Landscape()
@@ -664,6 +666,8 @@ void Landscape::FlushQueue()
 	RenderManager::Instance()->AttachRenderData();
     RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, queueRenderCount, EIF_16, indices); 
 
+    drawIndices += queueRenderCount;
+    
     ClearQueue();
     
     ++flashQueueCounter;
@@ -1177,6 +1181,8 @@ void Landscape::UnbindMaterial()
     
 void Landscape::Draw(Camera * camera)
 {
+    drawIndices = 0;
+    
     TIME_PROFILE("LandscapeNode.Draw");
 
 	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::LANDSCAPE_DRAW))
@@ -1820,6 +1826,10 @@ bool Landscape::GetFogProp()
 	return IsFogEnabled();
 }
 
+int32 Landscape::GetDrawIndices() const
+{
+    return drawIndices;
+}
 
 
 };

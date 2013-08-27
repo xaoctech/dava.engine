@@ -191,10 +191,12 @@ void SceneInfo::RefreshLODInfoInFrame()
         lodTriangles += lodInfoInFrame.trianglesOnLod[i];
     }
     
+    int32 landTriangles = (landscape) ? landscape->GetDrawIndices() : 0;
+    landTriangles /= 3;
     SetChild("All LOD Triangles", lodTriangles, header);
     SetChild("Objects without LOD Triangles", lodInfoInFrame.trianglesOnObjects, header);
-    SetChild("Landscape Triangles", lodInfoInFrame.trianglesOnLandscape, header);
-    SetChild("All Triangles", lodInfoInFrame.trianglesOnObjects + lodInfoInFrame.trianglesOnLandscape + lodTriangles, header);
+    SetChild("Landscape Triangles", landTriangles, header);
+    SetChild("All Triangles", lodInfoInFrame.trianglesOnObjects + landTriangles + lodTriangles, header);
 }
 
 void SceneInfo::RefreshLODInfoForSelection()
@@ -577,6 +579,7 @@ void SceneInfo::RefreshAllData(SceneEditor2 *scene)
 void SceneInfo::SceneActivated(SceneEditor2 *scene)
 {
     activeScene = scene;
+    landscape = activeScene->structureSystem->FindLanscape();
     RefreshAllData(scene);
 }
 
@@ -585,6 +588,7 @@ void SceneInfo::SceneDeactivated(SceneEditor2 *scene)
     if(activeScene == scene)
     {
         activeScene = NULL;
+        landscape = NULL;
         RefreshAllData(NULL);
     }
 }
@@ -593,6 +597,7 @@ void SceneInfo::SceneStructureChanged(SceneEditor2 *scene, DAVA::Entity *parent)
 {
     if(activeScene == scene)
     {
+        landscape = activeScene->structureSystem->FindLanscape();
         RefreshAllData(scene);
     }
 }

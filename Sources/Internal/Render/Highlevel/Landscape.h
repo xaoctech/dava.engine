@@ -279,6 +279,7 @@ public:
 	void SetFogProp(const bool& fogState);
     bool GetFogProp();
 
+    int32 GetDrawIndices() const;
 
 protected:	
     
@@ -400,6 +401,7 @@ protected:
     float32 fogDensity;
     Color   fogColor;
     
+    uint32 drawIndices;
     
 public:
     
