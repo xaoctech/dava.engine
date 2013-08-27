@@ -712,6 +712,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Debug/DVAssertMessageAndroid.cpp</locationURI>
 		</link>
 		<link>
+			<name>Internal/Debug/DVAssertMessageAndroid.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Debug/DVAssertMessageAndroid.h</locationURI>
+		</link>
+		<link>
 			<name>Internal/Debug/DVAssertMessageApple.mm</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Debug/DVAssertMessageApple.mm</locationURI>
@@ -2952,6 +2957,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Utils/UtilsAndroid.cpp</locationURI>
 		</link>
 		<link>
+			<name>Internal/Utils/UtilsAndroid.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Utils/UtilsAndroid.h</locationURI>
+		</link>
+		<link>
 			<name>Internal/Utils/UtilsMacOS.mm</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Utils/UtilsMacOS.mm</locationURI>
@@ -3025,6 +3035,11 @@
 			<name>Internal/Platform/TemplateAndroid/DPIHelperAndroid.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/DPIHelperAndroid.cpp</locationURI>
+		</link>
+		<link>
+			<name>Internal/Platform/TemplateAndroid/DPIHelperAndroid.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/DPIHelperAndroid.h</locationURI>
 		</link>
 		<link>
 			<name>Internal/Platform/TemplateAndroid/DeviceInfoAndroid.cpp</name>
