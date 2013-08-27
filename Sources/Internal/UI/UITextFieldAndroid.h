@@ -18,8 +18,10 @@
 #define __DAVAENGINE_UI_TEXT_FIELD_ANDROID_H__
 
 #include "UI/UITextField.h"
-#include "JniExtensions.h"
 #include "Base/BaseTypes.h"
+
+#if defined(__DAVAENGINE_ANDROID__)
+#include "JniExtensions.h"
 
 namespace DAVA
 {
@@ -27,17 +29,23 @@ namespace DAVA
 class JniTextField: public JniExtension
 {
 public:
-	JniTextField();
 	void ShowField(UITextField* textField, const Rect& rect, const char* defaultText);
 	void HideField();
-	void FieldHiddenWithText(const char* text);
-	void TextFieldShouldReturn();
-	bool TextFieldKeyPressed(int32 replacementLocation, int32 replacementLength, const char* text);
+
+	static void FieldHiddenWithText(const char* text);
+	static void TextFieldShouldReturn();
+	static bool TextFieldKeyPressed(int32 replacementLocation, int32 replacementLength, const char* text);
+
+protected:
+	virtual jclass GetJavaClass() const;
+	virtual const char* GetJavaClassName() const;
+
 public:
-	static JniTextField* jniTextField;
+	static jclass gJavaClass;
+	static const char* gJavaClassName;
 
 private:
-	UITextField* activeTextField;
+	static UITextField* activeTextField;
 };
 
 class UITextFieldAndroid
@@ -52,6 +60,10 @@ public:
 private:
 	UITextField* textField;
 };
+
 };
+
+#endif //__DAVAENGINE_ANDROID__
+
 
 #endif //__DAVAENGINE_UI_TEXT_FIELD_ANDROID_H__
