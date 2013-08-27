@@ -59,6 +59,11 @@ GraphicsFont::GraphicsFont()
     
 bool GraphicsFont::IsEqual(const Font *font) const
 {
+	if (font->GetFontType() != this->GetFontType())
+	{
+		return false;
+	}
+
     const GraphicsFont * gfont = DynamicTypeCheck<const GraphicsFont*>(font);
     if (!Font::IsEqual(font) ||
         fontDefinitionName != gfont->fontDefinitionName ||

@@ -127,7 +127,7 @@ void FontManager::PrepareToSaveFonts()
 			FONT_NAME* fontName = (*iter);
 			
 			Font* firstFont = (*fontName->fonts.begin());
-			if (firstFont->IsEqual(font))
+			if (firstFont && firstFont->IsEqual(font))
 			{
 				fontName->fonts.insert(font);
 				fontAdded = true;
