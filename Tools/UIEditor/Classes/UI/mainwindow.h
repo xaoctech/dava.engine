@@ -88,7 +88,8 @@ private slots:
 
 private:
 	bool CloseProject();
-	
+
+	void UpdateScaleControls();
 	void UpdateSliders();
 	void UpdateScreenPosition();
 	

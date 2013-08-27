@@ -220,6 +220,51 @@ void MainWindow::CreateHierarchyDockWidgetToolbar()
  	ui->hierarchyDockWidget->setWidget(window);
 }
 
+void MainWindow::UpdateScaleControls()
+{
+	float32 newScale = ScreenWrapper::Instance()->GetScale();
+	float32 scaleInPercents = ScreenWrapper::Instance()->GetScale() * 100;
+
+	float32 minDistance = FLT_MAX;
+	int32 nearestScaleIndex = 0;
+
+	// Setup the nearest scale index.
+	if (scaleInPercents > SCALE_PERCENTAGES[0])
+	{
+		for (uint32 i = 0; i < COUNT_OF(SCALE_PERCENTAGES); i ++)
+		{
+			float32 curDistance = fabsf(scaleInPercents - SCALE_PERCENTAGES[i]);
+			if (curDistance < minDistance)
+			{
+				minDistance = curDistance;
+				nearestScaleIndex = i;
+			}
+		}
+	}
+	else
+	{
+		minDistance = 0.0f;
+	}
+
+	// Done, perform update.
+	int32 scaleValue = SCALE_PERCENTAGES[nearestScaleIndex];
+	UpdateScaleSlider(scaleValue);
+	
+	if (FLOAT_EQUAL(minDistance, 0.0f))
+	{
+		// Exact match.
+		UpdateScaleComboIndex(nearestScaleIndex);
+	}
+	else
+	{
+		// Set the current scale as-is.
+		this->ui->scaleCombo->setEditText(QString("%1 %").arg(scaleInPercents));
+	}
+
+	// Re-update the scale on the Screen Wrapper level to sync everything.
+	ScreenWrapper::Instance()->SetScale(newScale);
+}
+
 void MainWindow::OnUpdateScaleRequest(float scaleDelta)
 {
 	// Lookup for the next/prev index.
@@ -393,9 +438,9 @@ void MainWindow::OnSelectedScreenChanged()
 	screenChangeUpdate = true;
 	if (HierarchyTreeController::Instance()->GetActiveScreen())
 	{
-		//ui->scaleSpin->setValue(HierarchyTreeController::Instance()->GetActiveScreen()->GetScale());
-
 		UpdateSliders();
+		UpdateScaleControls();
+
 		ui->horizontalScrollBar->setValue(HierarchyTreeController::Instance()->GetActiveScreen()->GetPosX());
 		ui->verticalScrollBar->setValue(HierarchyTreeController::Instance()->GetActiveScreen()->GetPosY());
 		// Enable library widget for selected screen
@@ -562,6 +607,9 @@ void MainWindow::OnNewProject()
 void MainWindow::OnProjectCreated()
 {
 	UpdateMenu();
+	UpdateScaleSlider(SCALE_PERCENTAGES[DEFAULT_SCALE_PERCENTAGE_INDEX]);
+	UpdateScaleComboIndex(DEFAULT_SCALE_PERCENTAGE_INDEX);
+
 	// Release focus from Dava GL widget, so after the first click to it
 	// it will lock the keyboard and will process events successfully.
 	ui->hierarchyDockWidget->setFocus();
