@@ -39,6 +39,7 @@ ParticleLayer3D::ParticleLayer3D(ParticleEmitter* parent)
 	material->SetBlendSrc(BLEND_SRC_ALPHA);
 	material->SetBlendDest(BLEND_ONE);
 	material->SetName("ParticleLayer3D_material");
+	material->SetFog(true);
 
 	renderBatch->SetMaterial(material);
 	SafeRelease(material);
@@ -51,15 +52,24 @@ ParticleLayer3D::~ParticleLayer3D()
 
 void ParticleLayer3D::Draw(Camera * camera)
 {
-	DrawLayer(camera);
+	//render data are now prepared explicitly
+	//DrawLayer(camera);	
 }
 
-void ParticleLayer3D::DrawLayer(Camera* camera)
+void ParticleLayer3D::PrepareRenderData(Camera* camera)
 {
+	AABBox3 bbox;
 	// Yuri Coder, 2013/06/07. Don't draw SuperEmitter layers - see pls DF-1251 for details.
 	if (!sprite || type == TYPE_SUPEREMITTER_PARTICLES)
-	{
-		renderBatch->SetTotalCount(0);
+	{		
+		//build bounding box as sum of inner particle emitters bboxes
+		Particle *current = head;
+		while (current){
+			bbox.AddAABBox(current->GetInnerEmitter()->GetBoundingBox());
+			current=current->next;
+		}
+		renderBatch->SetLayerBoundingBox(bbox);
+		renderBatch->SetTotalCount(0);		
 		return;
 	}
 
@@ -102,8 +112,7 @@ void ParticleLayer3D::DrawLayer(Camera* camera)
 
 	int32 verticesCount = 0;
 	int32 texturesCount = 0;
-	int32 colorsCount = 0;
-
+	int32 colorsCount = 0;	
 	while(current != 0)
 	{
 		Particle* parent = emitter->GetParentParticle();
@@ -168,6 +177,11 @@ void ParticleLayer3D::DrawLayer(Camera* camera)
 		verts[verticesCount] = botRight.z;
 		verticesCount ++;
 
+		bbox.AddPoint(topLeft);
+		bbox.AddPoint(topRight);
+		bbox.AddPoint(botLeft);
+		bbox.AddPoint(botRight);
+
 		float32 *pT = sprite->GetTextureVerts(current->frame);
 
 		textures[texturesCount] = pT[0];
@@ -214,9 +228,10 @@ void ParticleLayer3D::DrawLayer(Camera* camera)
 		current = TYPE_PARTICLES == type ? current->next : 0;
 	}
 
-	renderBatch->SetTotalCount(totalCount);
+	renderBatch->SetTotalCount(totalCount);	
 	if(totalCount > 0)
 	{			
+		renderBatch->SetLayerBoundingBox(bbox);
 		renderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &verts.front());
 		renderData->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &textures.front());
 		renderData->SetStream(EVF_COLOR, TYPE_UNSIGNED_BYTE, 4, 0, &colors.front());
@@ -227,6 +242,10 @@ void ParticleLayer3D::DrawLayer(Camera* camera)
 			renderBatch->GetMaterial()->PrepareRenderState();
 		}
 		renderBatch->SetRenderDataObject(renderData);
+	}
+	else
+	{
+		renderBatch->SetLayerBoundingBox(AABBox3(Vector3(), Vector3()));
 	}
 }
 

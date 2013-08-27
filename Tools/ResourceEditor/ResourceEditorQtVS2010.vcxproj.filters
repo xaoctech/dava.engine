@@ -2061,6 +2061,15 @@
     <ClCompile Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorUtils.cpp">
       <Filter>Classes\CommandLine\TextureDescriptor</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Tools\TexturePacker\FramePathHelper.cpp">
+      <Filter>Tools\TexturePacker</Filter>
+    </ClCompile>
+   <ClCompile Include="Classes\Qt\DockProperties\ActionComponentEditor.cpp">
+      <Filter>Classes\Qt\DockProperties</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockProperties\ActionComponentEditor_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
     <ClCompile Include="Classes\Commands2\DAEConvertAction.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
@@ -3640,6 +3649,12 @@
     </ClInclude>
     <ClInclude Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorUtils.h">
       <Filter>Classes\CommandLine\TextureDescriptor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Tools\TexturePacker\FramePathHelper.h">
+      <Filter>Tools\TexturePacker</Filter>
+    </ClInclude>
+   <ClInclude Include="Classes\Qt\DockProperties\ActionComponentEditor.h">
+      <Filter>Classes\Qt\DockProperties</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands2\DAEConvertAction.h">
       <Filter>Classes\Commands2</Filter>

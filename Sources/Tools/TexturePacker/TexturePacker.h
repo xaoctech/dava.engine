@@ -55,6 +55,8 @@ private:
     void ExportImage(PngImageExt *image, const FilePath &exportedPathname, eGPUFamily forGPU);
     TextureDescriptor * CreateDescriptor(eGPUFamily forGPU);
     
+    bool CheckFrameSize(const Size2i &spriteSize, const Size2i &frameSize);
+    
     
 	ImagePacker *			lastPackedPacker;
 	Vector<ImagePacker*> usedPackers;

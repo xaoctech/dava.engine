@@ -33,8 +33,6 @@ public:
     
     bool CopyFile(const DAVA::FilePath &filePathname, DAVA::Set<DAVA::String> &errorLog);
     
-    DAVA::String RemoveFolderFromPath(const DAVA::FilePath &pathname, const DAVA::FilePath &folderPathname);
-
     void PrepareFolderForCopyFile(const DAVA::String &filename, DAVA::Set<DAVA::String> &errorLog);
 
 public:

@@ -16,6 +16,7 @@
 #include "Database/MongodbClient.h"
 #include "Database/MongodbObject.h"
 #include "mongodb/mongo.h"
+#include "mongodb/gridfs.h"
 
 #include "Utils/Utils.h"
 #include "Utils/StringFormat.h"
@@ -36,16 +37,23 @@ public:
 
 		Memset(connection, 0, sizeof(mongo));
 		mongo_init(connection);
+
+		/* Initialize the write concern object.*/
+		mongo_write_concern_init( write_concern );
+		write_concern->w = 1;
+		mongo_write_concern_finish( write_concern );
 	}
 
 	virtual ~MongodbClientInternalData()
 	{
+		mongo_write_concern_destroy( write_concern );
 		mongo_destroy(connection);
 		SafeDelete(connection);
 	}
 
 public:
 	mongo *connection;
+	mongo_write_concern write_concern[1];
 };
 
 
@@ -69,7 +77,7 @@ MongodbClient::MongodbClient()
 #if defined (__DAVAENGINE_WIN32__)
     mongo_init_sockets();
 #endif //#if defined (__DAVAENGINE_WIN32__)
-    
+	
 	clientData = new MongodbClientInternalData();
     
     SetDatabaseName(String("Database"));
@@ -87,6 +95,9 @@ bool MongodbClient::Connect(const String &ip, int32 port)
 {
     
     int32 status = mongo_connect(clientData->connection, ip.c_str(), port );
+
+	mongo_set_write_concern( clientData->connection, clientData->write_concern );
+
     if(MONGO_OK != status)
     {
         LogError(String("Connect"), clientData->connection->err);
@@ -178,6 +189,34 @@ bool MongodbClient::IsConnected()
 }
     
     
+bool MongodbClient::SaveBufferToGridFS(const String &name, char * buffer, uint32 length)
+{
+	gridfs gfs[1];
+	gridfs_init(clientData->connection, database.c_str(), "fs", gfs);
+	bool isOk = false;
+	isOk = (MONGO_OK == gridfs_store_buffer(gfs, buffer, length, name.c_str(), NULL));
+	if(!isOk)
+	{
+		Logger::Error("MongodbClient::SaveBufferToGridFS failed to save %s to gridfs", name.c_str());
+	}
+	gridfs_destroy(gfs);
+	return isOk;
+}
+
+bool MongodbClient::SaveFileToGridFS(const String &name, const String &pathToFile)
+{
+	gridfs gfs[1];
+	gridfs_init(clientData->connection, database.c_str(), "fs", gfs);
+	bool isOk = false;
+	isOk = (MONGO_OK == gridfs_store_file(gfs, pathToFile.c_str(), name.c_str(), NULL));
+	if(!isOk)
+	{
+		Logger::Error("MongodbClient::SaveFileToGridFS failed to save %s to gridfs", name.c_str());
+	}
+	gridfs_destroy(gfs);
+	return isOk;
+}
+
 bool MongodbClient::SaveBinary(const String &key, uint8 *data, int32 dataSize)
 {
     int32 status = MONGO_ERROR;
@@ -324,6 +363,7 @@ bool MongodbClient::SaveObject(MongodbObject *object)
         }
     }
     
+	Logger::Debug("MongodbClient::SaveObject status = %d", status);
     return (MONGO_OK == status);
 }
 
@@ -408,6 +448,9 @@ bool MongodbClient::DBObjectToKeyedArchive(MongodbObject* dbObject, KeyedArchive
         
         return true;
     }
+
+	DVASSERT(false);
+
     return false;
 }    
 

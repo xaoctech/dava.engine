@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0260581316E77271003BE248 /* DeviceInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0260581116E77270003BE248 /* DeviceInfo.cpp */; };
-		0260581516E775AE003BE248 /* DeviceInfoiOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0260581416E775AE003BE248 /* DeviceInfoiOS.mm */; };
 		184BFAC6161C83E700BFBD83 /* ResultScreen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 184BFAC5161C83E700BFBD83 /* ResultScreen.cpp */; };
 		185A26A61611921E00C2554E /* libFramework.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 185A26A3161190A700C2554E /* libFramework.a */; };
 		187C016616135179000A1E2C /* Data in Resources */ = {isa = PBXBuildFile; fileRef = 187C016516135179000A1E2C /* Data */; };
@@ -18,6 +16,8 @@
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
 		4929815E16E0ACAF00F2C7B6 /* TextureHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4929815C16E0ACAF00F2C7B6 /* TextureHelper.cpp */; };
+		49F388B0179E84B40038625F /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49F388AF179E84B40038625F /* MessageUI.framework */; };
+		49F388B3179E84BA0038625F /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49F388B2179E84BA0038625F /* AdSupport.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C110F03416C2537A001EEAB2 /* FileManagerWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C110F02F16C2537A001EEAB2 /* FileManagerWrapper.cpp */; };
 		C110F03516C2537A001EEAB2 /* LandscapeTestData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C110F03016C2537A001EEAB2 /* LandscapeTestData.cpp */; };
 		C110F03616C2537A001EEAB2 /* SettingsManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C110F03216C2537A001EEAB2 /* SettingsManager.cpp */; };
@@ -47,9 +47,6 @@
 
 /* Begin PBXFileReference section */
 		0260580016E646A0003BE248 /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
-		0260581116E77270003BE248 /* DeviceInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DeviceInfo.cpp; sourceTree = "<group>"; };
-		0260581216E77270003BE248 /* DeviceInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceInfo.h; sourceTree = "<group>"; };
-		0260581416E775AE003BE248 /* DeviceInfoiOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DeviceInfoiOS.mm; sourceTree = "<group>"; };
 		184BFAC5161C83E700BFBD83 /* ResultScreen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ResultScreen.cpp; sourceTree = "<group>"; };
 		184BFAC7161C83FA00BFBD83 /* ResultScreen.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ResultScreen.h; sourceTree = "<group>"; };
 		185A2697161190A600C2554E /* Framework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Framework.xcodeproj; path = ../iPhoneFramework/Framework.xcodeproj; sourceTree = "<group>"; };
@@ -64,6 +61,8 @@
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		4929815C16E0ACAF00F2C7B6 /* TextureHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureHelper.cpp; sourceTree = "<group>"; };
 		4929815D16E0ACAF00F2C7B6 /* TextureHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureHelper.h; sourceTree = "<group>"; };
+		49F388AF179E84B40038625F /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
+		49F388B2179E84BA0038625F /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
 		C110F02F16C2537A001EEAB2 /* FileManagerWrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileManagerWrapper.cpp; sourceTree = "<group>"; };
 		C110F03016C2537A001EEAB2 /* LandscapeTestData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeTestData.cpp; sourceTree = "<group>"; };
 		C110F03116C2537A001EEAB2 /* LandscapeTestData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeTestData.h; sourceTree = "<group>"; };
@@ -92,6 +91,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				49F388B3179E84BA0038625F /* AdSupport.framework in Frameworks */,
+				49F388B0179E84B40038625F /* MessageUI.framework in Frameworks */,
 				18B1F5121622FEC8007FBF1B /* AssetsLibrary.framework in Frameworks */,
 				185A26A61611921E00C2554E /* libFramework.a in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
@@ -130,9 +131,6 @@
 				4929815C16E0ACAF00F2C7B6 /* TextureHelper.cpp */,
 				4929815D16E0ACAF00F2C7B6 /* TextureHelper.h */,
 				0260580016E646A0003BE248 /* Config.h */,
-				0260581116E77270003BE248 /* DeviceInfo.cpp */,
-				0260581216E77270003BE248 /* DeviceInfo.h */,
-				0260581416E775AE003BE248 /* DeviceInfoiOS.mm */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -189,6 +187,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				49F388B2179E84BA0038625F /* AdSupport.framework */,
+				49F388AF179E84B40038625F /* MessageUI.framework */,
 				18B1F5111622FEC8007FBF1B /* AssetsLibrary.framework */,
 				FEFB01D211C8F28A00B65B8B /* GameKit.framework */,
 				FE76DA031163F32F009E83B6 /* QuartzCore.framework */,
@@ -308,8 +308,6 @@
 				C110F03516C2537A001EEAB2 /* LandscapeTestData.cpp in Sources */,
 				C110F03616C2537A001EEAB2 /* SettingsManager.cpp in Sources */,
 				4929815E16E0ACAF00F2C7B6 /* TextureHelper.cpp in Sources */,
-				0260581316E77271003BE248 /* DeviceInfo.cpp in Sources */,
-				0260581516E775AE003BE248 /* DeviceInfoiOS.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

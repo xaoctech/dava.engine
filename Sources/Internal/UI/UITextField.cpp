@@ -425,9 +425,9 @@ void UITextField::Input(UIEvent *currentInput)
         {
             //TODO: act the same way on iPhone
             WideString str = L"";
-            if(delegate->TextFieldKeyPressed(this, (int32)GetText().length(), -1, str))
+            if(delegate->TextFieldKeyPressed(this, (int32)GetText().length() - 1, 1, str))
 			{
-                SetText(GetAppliedChanges((int32)GetText().length(),  -1, str));
+                SetText(GetAppliedChanges((int32)GetText().length() - 1,  1, str));
 			}
         }
 		else if (currentInput->tid == DVKEY_ENTER)
@@ -442,9 +442,9 @@ void UITextField::Input(UIEvent *currentInput)
         {
 			WideString str;
 			str += currentInput->keyChar;
-			if(delegate->TextFieldKeyPressed(this, (int32)GetText().length(), 1, str))
+			if(delegate->TextFieldKeyPressed(this, (int32)GetText().length(), 0, str))
 			{
-                SetText(GetAppliedChanges((int32)GetText().length(),  1, str));
+                SetText(GetAppliedChanges((int32)GetText().length(),  0, str));
 			}
         }
     }
@@ -455,17 +455,12 @@ void UITextField::Input(UIEvent *currentInput)
 WideString UITextField::GetAppliedChanges(int32 replacementLocation, int32 replacementLength, const WideString & replacementString)
 {//TODO: fix this for copy/paste
     WideString txt = GetText();
-    if (replacementLength < 0) 
+    
+    if(replacementLocation >= 0)
     {
-        if (txt.size() > 0)
-        {
-            txt.erase(txt.end() + replacementLength);
-        }
+        txt.replace(replacementLocation, replacementLength, replacementString);
     }
-    else 
-    {
-        txt = GetText() + replacementString;
-    }
+    
     return txt;
 }
     

@@ -24,6 +24,7 @@
 #import <UIKit/UIDevice.h>
 #import <Foundation/NSLocale.h>
 #import <sys/utsname.h>
+#import <AdSupport/ASIdentifierManager.h>
 
 namespace DAVA
 {
@@ -181,8 +182,37 @@ String DeviceInfo::GetTimeZone()
     
 String DeviceInfo::GetUDID()
 {
-    OpenUDIDiOS*  udid = [[[OpenUDIDiOS alloc] init] autorelease];
-    return [[udid value] UTF8String];
+	bool hasAdvertisingId = (NSClassFromString(@"ASIdentifierManager") != nil);
+
+	bool iOSLowerThan7 = false;
+	NSString* version = [NSString stringWithCString:GetVersion().c_str()
+										   encoding:[NSString defaultCStringEncoding]];
+	if ([version compare:@"7.0" options:NSNumericSearch] == NSOrderedAscending)
+	{
+		iOSLowerThan7 = true;
+	}
+
+	NSString* udid = nil;
+	if (iOSLowerThan7 || !hasAdvertisingId)
+	{
+		udid = [[[[OpenUDIDiOS alloc] init] autorelease] value];
+	}
+	else
+	{
+		udid = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
+	}
+
+	return [udid UTF8String];
+}
+    
+WideString DeviceInfo::GetName()
+{
+    NSString * deviceName = [[UIDevice currentDevice] name];
+    
+    NSStringEncoding pEncode    =   CFStringConvertEncodingToNSStringEncoding ( kCFStringEncodingUTF32LE );
+    NSData* pSData              =   [ deviceName dataUsingEncoding : pEncode ];
+    
+    return WideString ( (wchar_t*) [ pSData bytes ], [ pSData length] / sizeof ( wchar_t ) );
 }
 
 }

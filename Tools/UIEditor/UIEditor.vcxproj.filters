@@ -612,6 +612,9 @@
     <ClCompile Include="Classes\Metadata\PropertyNames.cpp">
       <Filter>Sources\Metadata</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Tools\TexturePacker\FramePathHelper.cpp">
+      <Filter>Sources\Tools\TexturePacker</Filter>
+    </ClCompile>
     <ClCompile Include="Classes\Helpers\ListPropertyGridWidgetHelper.cpp">
       <Filter>Sources\Helpers</Filter>
     </ClCompile>
@@ -987,6 +990,9 @@
       <Filter>Sources\Tools\TexturePacker</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Tools\TexturePacker\TexturePacker.h">
+      <Filter>Sources\Tools\TexturePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Tools\TexturePacker\FramePathHelper.h">
       <Filter>Sources\Tools\TexturePacker</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Helpers\ListPropertyGridWidgetHelper.h">

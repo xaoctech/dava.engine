@@ -18,6 +18,7 @@
 #include "Particles/ParticleEmitter.h"
 #include "Platform/SystemTimer.h"
 #include "Base/TemplateHelpers.h"
+#include "Render/Highlevel/Camera.h"
 
 namespace DAVA
 {
@@ -52,7 +53,7 @@ void ParticleEmitterSystem::RemoveIfEmitter(RenderObject * maybeEmitter)
 	}
 }
 
-void ParticleEmitterSystem::Update(float32 timeElapsed)
+void ParticleEmitterSystem::Update(float32 timeElapsed, Camera * camera)
 {
 	uint32 size = emitters.size();
 	Vector<ParticleEmitter*> emittersToBeDeleted;
@@ -62,19 +63,27 @@ void ParticleEmitterSystem::Update(float32 timeElapsed)
 		// Yuri Coder, 2013/05/15. Visible emitters are always updated, "deferred" update
 		// is called for invisible ones. See pls issue #DF-1140.
 		uint32 flags = emitters[i]->GetFlags();
+		bool requireUpdate = false;
         if ((flags & RenderObject::VISIBILITY_CRITERIA) == RenderObject::VISIBILITY_CRITERIA)
         {
             emitters[i]->Update(timeElapsed);
+			requireUpdate = true;
         }
 		else
 		{
-			emitters[i]->DeferredUpdate(timeElapsed);
-		}
+			requireUpdate = emitters[i]->DeferredUpdate(timeElapsed);
+		}		
 
 		if (emitters[i]->IsToBeDeleted())
 		{
 			emittersToBeDeleted.push_back(emitters[i]);
 		}
+		else if (requireUpdate)
+		{
+			emitters[i]->PrepareRenderData(camera);
+			emitters[i]->RecalcBoundingBox();
+			emitters[i]->GetRenderSystem()->MarkForUpdate(emitters[i]);
+		}				
 	}
 
 	for(Vector<ParticleEmitter*>::iterator it = emittersToBeDeleted.begin(); it != emittersToBeDeleted.end(); ++it)

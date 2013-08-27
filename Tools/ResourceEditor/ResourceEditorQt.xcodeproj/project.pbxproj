@@ -453,6 +453,8 @@
 		8463A51F1745309E00F2398F /* EntityOwnerPropertyHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8463A51D1745309E00F2398F /* EntityOwnerPropertyHelper.cpp */; };
 		84EF22D4171EECBD00B45031 /* ScrollZoomWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84EF22D2171EECBD00B45031 /* ScrollZoomWidget.cpp */; };
 		A51FBC516D952C0C5AB72EA1 /* QtGui.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 9B8EE51E126C761F3F797428 /* QtGui.framework */; };
+		A607F45A17A1237B00AB5D98 /* ActionComponentEditor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A607F45817A1237B00AB5D98 /* ActionComponentEditor.cpp */; };
+		A607F46017A1242F00AB5D98 /* ActionComponentEditor_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A607F45F17A1242F00AB5D98 /* ActionComponentEditor_moc.cpp */; };
 		A69AA39C1796EDE80008B683 /* ClickableQLabel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A69AA3921796EDE80008B683 /* ClickableQLabel.cpp */; };
 		A69AA39D1796EDE80008B683 /* CubeListItemDelegate.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A69AA3941796EDE80008B683 /* CubeListItemDelegate.cpp */; };
 		A69AA39E1796EDE80008B683 /* CubemapEditorDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A69AA3961796EDE80008B683 /* CubemapEditorDialog.cpp */; };
@@ -1501,6 +1503,9 @@
 		84EF22D2171EECBD00B45031 /* ScrollZoomWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScrollZoomWidget.cpp; sourceTree = "<group>"; };
 		84EF22D3171EECBD00B45031 /* ScrollZoomWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScrollZoomWidget.h; sourceTree = "<group>"; };
 		9B8EE51E126C761F3F797428 /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework"; sourceTree = "<absolute>"; };
+		A607F45817A1237B00AB5D98 /* ActionComponentEditor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActionComponentEditor.cpp; sourceTree = "<group>"; };
+		A607F45917A1237B00AB5D98 /* ActionComponentEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionComponentEditor.h; sourceTree = "<group>"; };
+		A607F45F17A1242F00AB5D98 /* ActionComponentEditor_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActionComponentEditor_moc.cpp; sourceTree = "<group>"; };
 		A69AA3921796EDE80008B683 /* ClickableQLabel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ClickableQLabel.cpp; sourceTree = "<group>"; };
 		A69AA3931796EDE80008B683 /* ClickableQLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClickableQLabel.h; sourceTree = "<group>"; };
 		A69AA3941796EDE80008B683 /* CubeListItemDelegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CubeListItemDelegate.cpp; sourceTree = "<group>"; };
@@ -3471,6 +3476,8 @@
 		E838D4EF16AFFED4006F1721 /* DockProperties */ = {
 			isa = PBXGroup;
 			children = (
+				A607F45817A1237B00AB5D98 /* ActionComponentEditor.cpp */,
+				A607F45917A1237B00AB5D98 /* ActionComponentEditor.h */,
 				62A0173F17A94D9500322B30 /* PropertyEditorDialog.h */,
 				177D1A9116CB8C820021104B /* PropertyEditorStateHelper.cpp */,
 				177D1A9216CB8C820021104B /* PropertyEditorStateHelper.h */,
@@ -3646,6 +3653,171 @@
 			);
 			name = DockLODEditor;
 			path = _GeneratedQt/DockLODEditor;
+			sourceTree = "<group>";
+		};
+		E838D79E16B00511006F1721 /* DockProperties */ = {
+			isa = PBXGroup;
+			children = (
+				A607F45F17A1242F00AB5D98 /* ActionComponentEditor_moc.cpp */,
+				E838D79F16B00511006F1721 /* PropertyEditor_moc.cpp */,
+			);
+			name = DockProperties;
+			path = _GeneratedQt/DockProperties;
+			sourceTree = "<group>";
+		};
+		E838D7A016B00511006F1721 /* DockSceneGraph */ = {
+			isa = PBXGroup;
+			children = (
+				E83626481700580600BC26CF /* PointerHolder_moc.cpp */,
+				E8362646170057E000BC26CF /* ExtraUserData_moc.cpp */,
+				E838D7A116B00511006F1721 /* GraphItem_moc.cpp */,
+				E838D7A216B00511006F1721 /* GraphModel_moc.cpp */,
+				E838D7A316B00511006F1721 /* QSceneGraphTreeView_moc.cpp */,
+				E838D7A416B00511006F1721 /* SceneGraphItem_moc.cpp */,
+				E838D7A516B00511006F1721 /* SceneGraphModel_moc.cpp */,
+			);
+			name = DockSceneGraph;
+			path = _GeneratedQt/DockSceneGraph;
+			sourceTree = "<group>";
+		};
+		E838D7A616B00511006F1721 /* DockVisibilityTool */ = {
+			isa = PBXGroup;
+			children = (
+				E838D7A716B00511006F1721 /* VisibilityToolView_moc.cpp */,
+			);
+			name = DockVisibilityTool;
+			path = _GeneratedQt/DockVisibilityTool;
+			sourceTree = "<group>";
+		};
+		E838D7A816B00511006F1721 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				49C89A3816C3AB72008AA6F0 /* ModificationWidget_moc.cpp */,
+				E838D7A916B00511006F1721 /* davaglwidget_moc.cpp */,
+				E838D7AC16B00511006F1721 /* mainwindow_moc.cpp */,
+				E838D7AE16B00511006F1721 /* QtMainWindowHandler_moc.cpp */,
+				E838D7AF16B00511006F1721 /* QtUtils_moc.cpp */,
+			);
+			name = Main;
+			path = _GeneratedQt/Main;
+			sourceTree = "<group>";
+		};
+		E838D7B116B00511006F1721 /* MaterialBrowser */ = {
+			isa = PBXGroup;
+			children = (
+				E838D7B216B00511006F1721 /* MaterialBrowser_moc.cpp */,
+				E838D7B316B00511006F1721 /* MaterialTree_moc.cpp */,
+				E838D7B416B00511006F1721 /* MaterialTreeItem_moc.cpp */,
+				E838D7B516B00511006F1721 /* MaterialTreeModel_moc.cpp */,
+				E838D7B616B00511006F1721 /* MaterialView_moc.cpp */,
+				E838D7B716B00511006F1721 /* MaterialViewModel_moc.cpp */,
+			);
+			name = MaterialBrowser;
+			path = _GeneratedQt/MaterialBrowser;
+			sourceTree = "<group>";
+		};
+		E838D7B816B00511006F1721 /* MaterialEditor */ = {
+			isa = PBXGroup;
+			children = (
+				E838D7B916B00511006F1721 /* MaterialEditor_moc.cpp */,
+			);
+			name = MaterialEditor;
+			path = _GeneratedQt/MaterialEditor;
+			sourceTree = "<group>";
+		};
+		E838D7BA16B00511006F1721 /* Project */ = {
+			isa = PBXGroup;
+			children = (
+				E838D7BB16B00511006F1721 /* ProjectManager_moc.cpp */,
+			);
+			name = Project;
+			path = _GeneratedQt/Project;
+			sourceTree = "<group>";
+		};
+		E838D7BD16B00511006F1721 /* QtPosSaver */ = {
+			isa = PBXGroup;
+			children = (
+				E838D7BE16B00511006F1721 /* QtPosSaver_moc.cpp */,
+			);
+			name = QtPosSaver;
+			path = _GeneratedQt/QtPosSaver;
+			sourceTree = "<group>";
+		};
+		E838D7BF16B00511006F1721 /* QtPropertyEditor */ = {
+			isa = PBXGroup;
+			children = (
+				E838D7C016B00511006F1721 /* QtPropertyData_moc.cpp */,
+				E838D7C116B00511006F1721 /* QtPropertyEditor_moc.cpp */,
+				E838D7C216B00511006F1721 /* QtPropertyItem_moc.cpp */,
+				E838D7C316B00511006F1721 /* QtPropertyItemDelegate_moc.cpp */,
+				E838D7C416B00511006F1721 /* QtPropertyModel_moc.cpp */,
+				E838D7C516B00511006F1721 /* QtPropertyWidgets */,
+				E838D7C716B00511006F1721 /* QtProperyData */,
+			);
+			name = QtPropertyEditor;
+			path = _GeneratedQt/QtPropertyEditor;
+			sourceTree = "<group>";
+		};
+		E838D7C516B00511006F1721 /* QtPropertyWidgets */ = {
+			isa = PBXGroup;
+			children = (
+				E838D7C616B00511006F1721 /* QtColorLineEdit_moc.cpp */,
+			);
+			path = QtPropertyWidgets;
+			sourceTree = "<group>";
+		};
+		E838D7C716B00511006F1721 /* QtProperyData */ = {
+			isa = PBXGroup;
+			children = (
+				E83457B1170195930058083C /* QtPropertyDataDavaKeyedArchive_moc.cpp */,
+				E838D7C816B00511006F1721 /* QtPropertyDataDavaVariant_moc.cpp */,
+				E838D7C916B00511006F1721 /* QtPropertyDataIntoCollection_moc.cpp */,
+				E838D7CA16B00511006F1721 /* QtPropertyDataIntrospection_moc.cpp */,
+			);
+			path = QtProperyData;
+			sourceTree = "<group>";
+		};
+		E838D7CB16B00511006F1721 /* Scene */ = {
+			isa = PBXGroup;
+			children = (
+				4FFE5C87176B393900728624 /* SceneEditor2_moc.cpp */,
+				E8C4C69D17294E47004B0B3B /* SceneSignals_moc.cpp */,
+				E8C4C66C172945F0004B0B3B /* EntityGroup_moc.cpp */,
+				4FB96A2F1705C91700EB205E /* SceneTabWidget_moc.cpp */,
+				4FB96A301705C91700EB205E /* System */,
+				E838D7CC16B00511006F1721 /* SceneData_moc.cpp */,
+				E838D7CD16B00511006F1721 /* SceneDataManager_moc.cpp */,
+			);
+			name = Scene;
+			path = _GeneratedQt/Scene;
+			sourceTree = "<group>";
+		};
+		E838D7CE16B00511006F1721 /* TextureBrowser */ = {
+			isa = PBXGroup;
+			children = (
+				E838D7CF16B00511006F1721 /* TextureBrowser_moc.cpp */,
+				E838D7D016B00511006F1721 /* TextureCache_moc.cpp */,
+				E838D7D116B00511006F1721 /* TextureConvertor_moc.cpp */,
+				E838D7D216B00511006F1721 /* TextureConvertorWork_moc.cpp */,
+				E838D7D316B00511006F1721 /* TextureList_moc.cpp */,
+				E838D7D416B00511006F1721 /* TextureListDelegate_moc.cpp */,
+				E838D7D516B00511006F1721 /* TextureListModel_moc.cpp */,
+				E838D7D616B00511006F1721 /* TextureProperties_moc.cpp */,
+				E838D7D716B00511006F1721 /* TextureScrollArea_moc.cpp */,
+			);
+			name = TextureBrowser;
+			path = _GeneratedQt/TextureBrowser;
+			sourceTree = "<group>";
+		};
+		E83AB8F31779AF130037561B /* Deprecated */ = {
+			isa = PBXGroup;
+			children = (
+				E83AB8FB1779B6CF0037561B /* ScenePreviewDialog.cpp */,
+				E83AB8FC1779B6CF0037561B /* ScenePreviewDialog.h */,
+				E83AB8F81779AF1E0037561B /* ScenePreviewControl.cpp */,
+				E83AB8F91779AF1E0037561B /* ScenePreviewControl.h */,
+			);
+			name = Deprecated;
 			sourceTree = "<group>";
 		};
 		E88F2FF9171C801600510B78 /* DockSceneInfo */ = {
@@ -4646,6 +4818,8 @@
 				62AD51C517AF95D4001A4621 /* AddEntityCommand.cpp in Build Sources */,
 				E8F799D9179830D500E7C3C8 /* TextureDescriptorTool.cpp in Build Sources */,
 				E8F799DA179830D500E7C3C8 /* TextureDescriptorUtils.cpp in Build Sources */,
+				A607F45A17A1237B00AB5D98 /* ActionComponentEditor.cpp in Build Sources */,
+				A607F46017A1242F00AB5D98 /* ActionComponentEditor_moc.cpp in Build Sources */,
 				E8637C4B17B37DCF00ECA297 /* LODEditor.cpp in Build Sources */,
 				E8637C5217B37F5500ECA297 /* LODEditor_moc.cpp in Build Sources */,
 				E8637C5517B3DE0B00ECA297 /* EditorLODData.cpp in Build Sources */,

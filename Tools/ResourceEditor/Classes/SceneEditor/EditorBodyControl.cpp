@@ -1140,13 +1140,6 @@ void EditorBodyControl::SetScene(EditorScene *newScene)
         landscapeRulerTool->DisableTool();
         SafeRelease(landscapeRulerTool);
     }
-    SafeRelease(scene);
-    scene = SafeRetain(newScene);
-    
-    scene3dView->SetScene(scene);
-	sceneGraph->SetScene(scene);
-    
-    modificationPanel->SetScene(scene);
 
 	if(landscapeEditorColor)
 	{
@@ -1181,7 +1174,14 @@ void EditorBodyControl::SetScene(EditorScene *newScene)
 		landscapeEditorVisibilityTool->ClearSceneResources();
 	}
 
-
+    
+    SafeRelease(scene);
+    scene = SafeRetain(newScene);
+    
+    scene3dView->SetScene(scene);
+	sceneGraph->SetScene(scene);
+    
+    modificationPanel->SetScene(scene);
 }
 
 void EditorBodyControl::SetCameraController(CameraController *newCameraController)

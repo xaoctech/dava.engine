@@ -27,6 +27,7 @@
 #include "Scene/SceneHelper.h"
 #include "ImageTools/ImageTools.h"
 #include "CubemapEditor/CubemapUtils.h"
+#include "ImageTools/ImageTools.h"
 
 #include "ui_texturebrowser.h"
 
