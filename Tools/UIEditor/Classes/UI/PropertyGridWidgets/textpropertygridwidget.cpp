@@ -81,9 +81,22 @@ void TextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
 									dynamic_cast<UIButtonMetadata*>(activeMetadata)		!= NULL);
 	ui->alignComboBox->setEnabled(enableTextAlignComboBox);
 
-	bool showIsPasswordCheckbox = (dynamic_cast<UITextFieldMetadata*>(activeMetadata) != NULL);
-	ui->isPasswordCheckbox->setVisible(showIsPasswordCheckbox);
-	
+	bool isUITextField = (dynamic_cast<UITextFieldMetadata*>(activeMetadata) != NULL);
+	ui->isPasswordCheckbox->setVisible(isUITextField);
+	ui->autoCapitalizationTypeLabel->setVisible(isUITextField);
+	ui->autoCapitalizationTypeComboBox->setVisible(isUITextField);
+	ui->autoCorrectionTypeLabel->setVisible(isUITextField);
+	ui->autoCorrectionTypeComboBox->setVisible(isUITextField);
+	ui->spellCheckingTypeLabel->setVisible(isUITextField);
+	ui->spellCheckingTypeComboBox->setVisible(isUITextField);
+	ui->keyboardAppearanceTypeLabel->setVisible(isUITextField);
+	ui->keyboardAppearanceTypeComboBox->setVisible(isUITextField);
+	ui->keyboardTypeLabel->setVisible(isUITextField);
+	ui->keyboardTypeComboBox->setVisible(isUITextField);
+	ui->returnKeyTypeLabel->setVisible(isUITextField);
+	ui->returnKeyTypeComboBox->setVisible(isUITextField);
+	ui->isReturnKeyAutomatically->setVisible(isUITextField);
+		
 	bool enableMultilineCheckBox = (dynamic_cast<UIStaticTextMetadata*>(activeMetadata)	!= NULL);
 	// Register checkbox widget for property Multiline only for UIStaticText
 	if (enableMultilineCheckBox)
