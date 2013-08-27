@@ -1,6 +1,9 @@
 Material:
     Layers: ["AfterOpaqueRenderLayer"]
     MaterialDefines: ["SKYBOX"]
+    Uniforms:
+        albedo: 0
+
 
 RenderPass:
     Name: "ForwardPass"

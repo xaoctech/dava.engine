@@ -715,38 +715,7 @@ void SceneFileV2::ConvertOldMaterialToNewMaterial(Material * oldMaterial,
 	parentMaterial = MaterialSystem::Instance()->GetMaterial(newMaterialName);
 	DVASSERT(parentMaterial);
 	
-	NMaterial* resultMaterial = parentMaterial->CreateChild();
-	
-	RenderState* oldRenderState = oldMaterial->GetRenderState();
-	RenderState& renderStateBlock = *resultMaterial->GetTechnique(PASS_FORWARD)->GetRenderState();
-
-	oldRenderState->CopyTo(&renderStateBlock);
-	
-	//VI: creative copypaste from Material::PrepareRenderState below
-	if(Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP == oldMaterial->type)
-	{
-		renderStateBlock.SetTexture(oldMaterialState->GetLightmap(), 1);
-    }
-	else if (Material::MATERIAL_UNLIT_TEXTURE_DECAL == oldMaterial->type ||
-			 Material::MATERIAL_UNLIT_TEXTURE_DETAIL == oldMaterial->type)
-    {
-        renderStateBlock.SetTexture(oldMaterial->textures[Material::TEXTURE_DECAL], 1);
-    }
-	
-	if (oldMaterial->textures[Material::TEXTURE_DIFFUSE])
-	{
-		renderStateBlock.SetTexture(oldMaterial->textures[Material::TEXTURE_DIFFUSE], 0);
-	}
-	
-	if(Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE == oldMaterial->type ||
-	   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == oldMaterial->type ||
-	   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == oldMaterial->type)
-	{
-		if (oldMaterial->textures[Material::TEXTURE_NORMALMAP])
-		{
-			renderStateBlock.SetTexture(oldMaterial->textures[Material::TEXTURE_NORMALMAP], 1);
-		}
-	}
+	RenderState& renderStateBlock = *oldMaterial->GetRenderState();
 	
 	if (oldMaterial->isTranslucent || oldMaterial->isTwoSided)
 	{
@@ -756,6 +725,7 @@ void SceneFileV2::ConvertOldMaterialToNewMaterial(Material * oldMaterial,
 	{
 		renderStateBlock.state |= RenderState::STATE_CULL;
 	}
+	
 	
 	if(oldMaterial->isAlphablend)
 	{
@@ -781,94 +751,50 @@ void SceneFileV2::ConvertOldMaterialToNewMaterial(Material * oldMaterial,
 		renderStateBlock.SetFillMode(FILLMODE_SOLID);
 	}
 	
-	int textureId = 0;
-	resultMaterial->SetPropertyValue("texture0", Shader::UT_INT, 1, &textureId);
-	textureId = 1;
-	resultMaterial->SetPropertyValue("texture1", Shader::UT_INT, 1, &textureId);
-	resultMaterial->SetPropertyValue("normalMapTexture", Shader::UT_INT, 1, &textureId);
+	FilePath fp = String("~res:/Materials/Legacy/RenderStates/") + newMaterialName.c_str() + String(".rs");
+	if(!fp.Exists())
+	{
+		oldMaterial->GetRenderState()->SaveToYamlFile(fp);
+	}
 	
+	NMaterial* resultMaterial = parentMaterial->CreateChild();
+	
+	if(Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP == oldMaterial->type)
+	{
+		resultMaterial->SetTexture(NMaterial::TEXTURE_LIGHTMAP, oldMaterialState->GetLightmap());
+    }
+	else if (Material::MATERIAL_UNLIT_TEXTURE_DECAL == oldMaterial->type)
+    {
+		resultMaterial->SetTexture(NMaterial::TEXTURE_DECAL, oldMaterial->textures[Material::TEXTURE_DECAL]);
+    }
+	else if(Material::MATERIAL_UNLIT_TEXTURE_DETAIL == oldMaterial->type)
+	{
+		resultMaterial->SetTexture(NMaterial::TEXTURE_DETAIL, oldMaterial->textures[Material::TEXTURE_DETAIL]);
+	}
+	
+	if (oldMaterial->textures[Material::TEXTURE_DIFFUSE])
+	{
+		resultMaterial->SetTexture(NMaterial::TEXTURE_ALBEDO, oldMaterial->textures[Material::TEXTURE_DIFFUSE]);
+	}
+	
+	if(Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE == oldMaterial->type ||
+	   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == oldMaterial->type ||
+	   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == oldMaterial->type)
+	{
+		if (oldMaterial->textures[Material::TEXTURE_NORMALMAP])
+		{
+			resultMaterial->SetTexture(NMaterial::TEXTURE_NORMAL, oldMaterial->textures[Material::TEXTURE_NORMALMAP]);
+		}
+	}
+			
 	resultMaterial->SetPropertyValue("fogDensity", Shader::UT_FLOAT, 1, &oldMaterial->fogDensity);
 	resultMaterial->SetPropertyValue("fogColor", Shader::UT_BOOL_VEC4, 1, &oldMaterial->fogColor);
-	
 	
 	resultMaterial->SetPropertyValue("flatColor", Shader::UT_BOOL_VEC4, 1, &oldMaterialState->GetFlatColor());
 	resultMaterial->SetPropertyValue("texture0Shift", Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetTextureShift());
 	resultMaterial->SetPropertyValue("uvOffset", Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVOffset());
 	resultMaterial->SetPropertyValue("uvScale", Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVScale());
     
-    //VI: this block should be called on per-frame basis
-	/*if (oldMaterialState)
-    {
- 		
-		if(scene)
-		{
-			Camera * camera = scene->GetCurrentCamera();
-			Light * lightNode0 = instanceMaterialState->GetLight(0);
-			if (lightNode0 && camera)
-			{
-				if (uniformLightPosition0 != -1)
-				{
-					const Matrix4 & matrix = camera->GetMatrix();
-					Vector3 lightPosition0InCameraSpace = lightNode0->GetPosition() * matrix;
-					
-					shader->SetUniformValueByIndex(uniformLightPosition0, lightPosition0InCameraSpace);
-				}
-				if (uniformMaterialLightAmbientColor != -1)
-				{
-					shader->SetUniformColor3ByIndex(uniformMaterialLightAmbientColor, lightNode0->GetAmbientColor() * GetAmbientColor());
-				}
-				if (uniformMaterialLightDiffuseColor != -1)
-				{
-					shader->SetUniformColor3ByIndex(uniformMaterialLightDiffuseColor, lightNode0->GetDiffuseColor() * GetDiffuseColor());
-				}
-				if (uniformMaterialLightSpecularColor != -1)
-				{
-					shader->SetUniformColor3ByIndex(uniformMaterialLightSpecularColor, lightNode0->GetSpecularColor() * GetSpecularColor());
-				}
-				if (uniformMaterialSpecularShininess != -1)
-				{
-					shader->SetUniformValueByIndex(uniformMaterialSpecularShininess, shininess);
-				}
-				
-				if (uniformLightIntensity0 != -1)
-				{
-					shader->SetUniformValueByIndex(uniformLightIntensity0, lightNode0->GetIntensity());
-				}
-				
-				if (uniformLightAttenuationQ != -1)
-				{
-					//shader->SetUniformValue(uniformLightAttenuationQ, lightNode0->GetAttenuation());
-				}
-			}
-		}
-    }*/
-
-	
-	
-	
-	
-	//oldRenderState->CopyTo(newRenderState);
-	
-	//MaterialTechnique* tech = resultMaterial->GetTechnique(PASS_FORWARD);
-	//Texture * tex = oldMaterial->GetTexture(Material::TEXTURE_DIFFUSE);
-	//tech->GetRenderState()->SetTexture(tex, 0);
-	    
-    /*if (oldMaterialState)
-    {
-        resultMaterial->SetPropertyValue(LIGHTMAP_UV_OFFSET, Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVOffset());
-        resultMaterial->SetPropertyValue(LIGHTMAP_UV_SCALE, Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVScale());
-
-        // Right way to setup lightmaps
-        Texture* tex2 = oldMaterialState->GetLightmap();
-		
-		if(tex2)
-		{
-			int texId = 1;
-			tech->GetRenderState()->SetTexture(tex2, 1);
-			resultMaterial->SetPropertyValue("texture1", Shader::UT_INT, 1, &texId);
-		}
-	}*/
-	
     *newMaterial = resultMaterial;
 }
 
@@ -1210,31 +1136,7 @@ void SceneFileV2::StopParticleEffectComponents(Entity * currentNode)
 
 String SceneFileV2::MaterialNameMapper::MapName(Material* mat)
 {
-	String name;
-		
-	if(mat->GetAlphablend() ||
-	   Material::MATERIAL_VERTEX_COLOR_ALPHABLENDED == mat->type)
-	{
-		name = "Global.Alphablend";
-	}
-	else if(mat->GetAlphatest())
-	{
-		name = "Global.Alphatest";
-	}
-	else
-	{
-		name = "Global.Opaque";
-	}
-	
-	if(mat->IsTextureShiftEnabled())
-	{
-		name += ".TextureShift";
-	}
-	
-	if(Material::MATERIAL_FLAT_COLOR == mat->type)
-	{
-		name += ".Flatcolor";
-	}
+	String name = "Global";
 	
 	switch(mat->type)
 	{
@@ -1246,20 +1148,7 @@ String SceneFileV2::MaterialNameMapper::MapName(Material* mat)
 			
 		case Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP:
 		{
-			int viewOption = mat->GetViewOption();
-			if(Material::MATERIAL_VIEW_TEXTURE_ONLY == viewOption)
-			{
-				name += ".ViewTextureOnly.Textured.Lightmap";
-			}
-			else if(Material::MATERIAL_VIEW_LIGHTMAP_ONLY == viewOption)
-			{
-				name += ".ViewLightmapOnly.Textured.Lightmap";
-			}
-			else
-			{
-				name += ".Textured.Lightmap";
-			}
-			
+			name += ".Textured.Lightmap";
 			break;
 		}
 			
@@ -1304,7 +1193,7 @@ String SceneFileV2::MaterialNameMapper::MapName(Material* mat)
 			name += ".Textured.VertexColor";
 			break;
 		}
-						
+			
 		case Material::MATERIAL_SKYBOX:
 		{
 			name = "Skybox";
@@ -1314,6 +1203,30 @@ String SceneFileV2::MaterialNameMapper::MapName(Material* mat)
 		default:
 			break;
 	};
+
+	if(mat->IsTextureShiftEnabled())
+	{
+		name += ".TextureShift";
+	}
+	
+	if(Material::MATERIAL_FLAT_COLOR == mat->type)
+	{
+		name += ".Flatcolor";
+	}
+		
+	if(mat->GetAlphablend() ||
+	   Material::MATERIAL_VERTEX_COLOR_ALPHABLENDED == mat->type)
+	{
+		name += ".Alphablend";
+	}
+	else if(mat->GetAlphatest())
+	{
+		name += ".Alphatest";
+	}
+	else
+	{
+		name += ".Opaque";
+	}
 	
 	return name;
 }

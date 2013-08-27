@@ -93,6 +93,7 @@ public:
     static const FastName TEXTURE_NORMAL;
     static const FastName TEXTURE_DETAIL;
     static const FastName TEXTURE_LIGHTMAP;
+	static const FastName TEXTURE_DECAL;
     
     NMaterial();
     virtual ~NMaterial();
@@ -138,7 +139,17 @@ public:
     // Keep it here, by default MaterialInstance Render State should be referenced from this point.
     
 private:
+	
+	struct TextureBucket
+	{
+		Texture* texture;
+		size_t index;
+	};
+	
+private:
+	
     void AddMaterialProperty(const String & keyName, YamlNode * uniformNode);
+	NMaterialProperty* GetMaterialProperty(const FastName & keyName);
     
     FastName materialName;
     
@@ -153,9 +164,10 @@ private:
 	FastNameSet inheritedDefines;
     
     HashMap<FastName, NMaterialProperty*> materialProperties;
-    HashMap<FastName, Texture*> textures;
+    HashMap<FastName, TextureBucket*> textures;
     Vector<Texture*> texturesArray;
     Vector<FastName> textureNamesArray;
+	Vector<int32> textureSlotArray;
     uint32 lightCount;
     Light * lights[8];
 
@@ -174,7 +186,9 @@ private:
 	void PropagateParentLayers();
 	void PropagateParentDefines();
 	void UnPropagateParentDefines();
-		
+	
+	void BindTextures(NMaterial* curMaterial, RenderState* rs);
+			
 public:
     INTROSPECTION_EXTEND(NMaterial, DataNode,
          MEMBER(materialName, "Material Name", I_SAVE | I_EDIT | I_VIEW)

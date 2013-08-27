@@ -1,8 +1,6 @@
 Material:
     Layers: ["AfterTransclucentRenderLayer"]
     MaterialDefines: ["ALPHABLEND"]
-    Uniforms:
-        texture0: 0
 
 RenderPass:
     Name: "ForwardPass"

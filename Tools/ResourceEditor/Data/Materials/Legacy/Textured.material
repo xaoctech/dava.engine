@@ -1,5 +1,7 @@
 Material:
     MaterialDefines: ["MATERIAL_TEXTURE"]
+    Uniforms:
+        albedo: 0
 
 RenderPass:
     Name: "ForwardPass"
