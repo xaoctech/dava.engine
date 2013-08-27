@@ -1,5 +1,7 @@
 Material:
     MaterialDefines: ["PIXEL_LIT", "DIFFUSE"]
+    Uniforms:
+        normalmap: 1
 
 RenderPass:
     Name: "ForwardPass"

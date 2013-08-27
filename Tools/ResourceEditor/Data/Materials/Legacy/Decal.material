@@ -1,5 +1,7 @@
 Material:
     MaterialDefines: ["MATERIAL_DECAL"]
+    Uniforms:
+        decal: 1
 
 RenderPass:
     Name: "ForwardPass"

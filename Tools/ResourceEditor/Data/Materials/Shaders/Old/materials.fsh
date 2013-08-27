@@ -15,20 +15,31 @@ precision highp float;
 
 // DECLARATIONS
 #if defined(MATERIAL_TEXTURE)
-uniform sampler2D texture0;
+uniform sampler2D albedo;
 varying mediump vec2 varTexCoord0;
 #elif defined(MATERIAL_SKYBOX)
-uniform samplerCube texture0;
+uniform samplerCube albedo;
 varying mediump vec3 varTexCoord0;
 #endif
 
+#if defined(MATERIAL_DECAL)
+uniform sampler2D decal;
+#endif
+
+#if defined(MATERIAL_DETAIL)
+uniform sampler2D detail;
+#endif
+
+#if defined(MATERIAL_LIGHTMAP) || defined(MATERIAL_VIEW_LIGHTMAP_ONLY)
+uniform sampler2D lightmap;
+#endif
+
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(MATERIAL_VIEW_LIGHTMAP_ONLY)
-uniform sampler2D texture1;
 varying mediump vec2 varTexCoord1;
 #endif
 
 #if defined(PIXEL_LIT)
-uniform sampler2D normalMapTexture;
+uniform sampler2D normalmap;
 uniform float materialSpecularShininess;
 uniform float lightIntensity0; 
 #endif
@@ -74,13 +85,13 @@ void main()
 #if defined(MATERIAL_TEXTURE)
 	
 #if defined(GLOSS) || defined(ALPHATEST) || defined(ALPHABLEND)
-    lowp vec4 textureColor0 = texture2D(texture0, varTexCoord0);
+    lowp vec4 textureColor0 = texture2D(albedo, varTexCoord0);
 #else
-    lowp vec3 textureColor0 = texture2D(texture0, varTexCoord0).rgb;
+    lowp vec3 textureColor0 = texture2D(albedo, varTexCoord0).rgb;
 #endif
 	
 #elif defined(MATERIAL_SKYBOX)
-	lowp vec4 textureColor0 = textureCube(texture0, varTexCoord0);
+	lowp vec4 textureColor0 = textureCube(albedo, varTexCoord0);
 #endif
 	
 #if defined(MATERIAL_TEXTURE)
@@ -92,9 +103,20 @@ void main()
     if (alpha < 0.5)discard;
 #endif
 #endif
-    
+
+#if defined(MATERIAL_DECAL)
+	lowp vec3 textureColor1 = texture2D(decal, varTexCoord1).rgb;
+#endif
+
+#if defined(MATERIAL_DETAIL)
+	lowp vec3 textureColor1 = texture2D(detail, varTexCoord1).rgb;
+#endif
+	
+#if defined(MATERIAL_LIGHTMAP) || defined(MATERIAL_VIEW_LIGHTMAP_ONLY)
+	lowp vec3 textureColor1 = texture2D(lightmap, varTexCoord1).rgb;
+#endif
+	
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(MATERIAL_VIEW_LIGHTMAP_ONLY)
-    lowp vec3 textureColor1 = texture2D(texture1, varTexCoord1).rgb;
 #if defined(SETUP_LIGHTMAP)
 	vec3 lightGray = vec3(0.75, 0.75, 0.75);
 	vec3 darkGray = vec3(0.25, 0.25, 0.25);
@@ -133,7 +155,7 @@ void main()
 	vec3 color = (materialLightAmbientColor + varDiffuseColor * materialLightDiffuseColor) * textureColor0.rgb + varSpecularColor * materialLightSpecularColor;
 #elif defined(PIXEL_LIT)
 	// lookup normal from normal map, move from [0, 1] to  [-1, 1] range, normalize
-    vec3 normal = 2.0 * texture2D (normalMapTexture, varTexCoord0).rgb - 1.0;
+    vec3 normal = 2.0 * texture2D (normalmap, varTexCoord0).rgb - 1.0;
     normal = normalize (normal);
 
     
