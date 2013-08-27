@@ -134,6 +134,11 @@ FTFont *	FTFont::Clone() const
 
 bool FTFont::IsEqual(const Font *font) const
 {
+	if (font->GetFontType() != this->GetFontType())
+	{
+		return false;
+	}
+
     const FTFont *ftfont = DynamicTypeCheck<const FTFont *>(font);
 	if (!Font::IsEqual(font) || internalFont != ftfont->internalFont)
 	{
