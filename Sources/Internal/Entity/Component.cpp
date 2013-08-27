@@ -74,6 +74,7 @@ Component * Component::CreateByType(uint32 componentType)
 		return new ActionComponent();
 	case ANIMATION_COMPONENT:
 	case COLLISION_COMPONENT:
+			return new ActionComponent();
 	case SCRIPT_COMPONENT:
 	default:
 		DVASSERT(0);

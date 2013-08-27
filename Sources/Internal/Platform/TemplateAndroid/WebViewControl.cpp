@@ -102,6 +102,20 @@ void JniWebView::SetVisible(int id, bool isVisible)
 	ReleaseJavaClass(javaClass);
 }
 
+void JniWebView::SetBackgroundTransparency(int id, bool enabled)
+{
+	jclass javaClass = GetJavaClass();
+	if (!javaClass)
+		return;
+
+	jmethodID mid = GetMethodID(javaClass, "SetBackgroundTransparency", "(IZ)V");
+	if (mid)
+	{
+		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, id, enabled);
+	}
+	ReleaseJavaClass(javaClass);
+}
+
 IUIWebViewDelegate::eAction JniWebView::URLChanged(int id, const String& newURL)
 {
 	CONTROLS_MAP::iterator iter = controls.find(id);
@@ -175,6 +189,11 @@ void WebViewControl::SetDelegate(DAVA::IUIWebViewDelegate *delegate, DAVA::UIWeb
 {
 	this->delegate = delegate;
 	this->webView = webView;
+}
+
+void WebViewControl::SetBackgroundTransparency(bool enabled)
+{
+	JniWebView::jniWebView->SetBackgroundTransparency(webViewId, enabled);
 }
 
 }//namespace DAVA

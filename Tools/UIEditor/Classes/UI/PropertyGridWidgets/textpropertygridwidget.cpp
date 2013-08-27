@@ -95,6 +95,9 @@ void TextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
 	bool showIsPasswordCheckbox = (dynamic_cast<UITextFieldMetadata*>(activeMetadata) != NULL);
 	ui->isPasswordCheckbox->setVisible(showIsPasswordCheckbox);
 
+	bool showIsPasswordCheckbox = (dynamic_cast<UITextFieldMetadata*>(activeMetadata) != NULL);
+	ui->isPasswordCheckbox->setVisible(showIsPasswordCheckbox);
+
     UpdateLocalizationValue();
 
     RegisterGridWidgetAsStateAware();

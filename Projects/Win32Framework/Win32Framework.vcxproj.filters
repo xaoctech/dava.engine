@@ -1182,6 +1182,12 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ComponentHelpers.h">
       <Filter>Internal\Scene3D\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\AutotestingSystemLua.h">
+      <Filter>Internal\Autotesting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\AutotestingSystemYaml.h">
+      <Filter>Internal\Autotesting</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Platform\DPIHelper.h">
       <Filter>Internal\Platform</Filter>
     </ClInclude>
@@ -2210,6 +2216,24 @@
     <ClCompile Include="..\..\Sources\Internal\UI\UISwitch.cpp">
       <Filter>Internal\UI</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystemLua.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystemSwig.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystemYaml.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\RectSwig.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\UIControlSwig.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\VectorSwig.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Landscape.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
@@ -2264,6 +2288,9 @@
     <ClCompile Include="..\..\Sources\Internal\FileSystem\LoggerWin.cpp">
       <Filter>Internal\FileSystem</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\KeyedArchiveSwig.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\GPUFamilyDescriptor.cpp">
       <Filter>Internal\Render</Filter>
     </ClCompile>
@@ -2294,6 +2321,10 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SkyboxSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\TouchAction.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\TouchAction.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\SkyboxRenderObject.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>

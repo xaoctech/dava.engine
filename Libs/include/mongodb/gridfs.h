@@ -24,6 +24,8 @@
 #ifndef MONGO_GRIDFS_H_
 #define MONGO_GRIDFS_H_
 
+MONGO_EXTERN_C_START
+
 enum {DEFAULT_CHUNK_SIZE = 256 * 1024};
 
 typedef uint64_t gridfs_offset;
@@ -328,5 +330,7 @@ MONGO_EXPORT gridfs_offset gridfile_read( gridfile *gfile, gridfs_offset size, c
  *  @return - resulting offset location
  */
 MONGO_EXPORT gridfs_offset gridfile_seek( gridfile *gfile, gridfs_offset offset );
+
+MONGO_EXTERN_C_END
 
 #endif

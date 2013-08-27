@@ -180,7 +180,7 @@ void MongodbObject::AddObject(const String &fieldname, DAVA::MongodbObject *addO
     
 void MongodbObject::Finish()
 {
-    bson_finish(objectData->object);
+    BSON_VERIFY(bson_finish(objectData->object));
 }
 
 bool MongodbObject::IsFinished()

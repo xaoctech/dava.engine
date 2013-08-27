@@ -14,7 +14,6 @@
 		5CEE1CA51573CE0100BC45C6 /* env_standard.c in Sources */ = {isa = PBXBuildFile; fileRef = 5CEE1C971573CE0100BC45C6 /* env_standard.c */; };
 		5CEE1CA71573CE0100BC45C6 /* env.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CEE1C991573CE0100BC45C6 /* env.h */; };
 		5CEE1CA81573CE0100BC45C6 /* gridfs.c in Sources */ = {isa = PBXBuildFile; fileRef = 5CEE1C9A1573CE0100BC45C6 /* gridfs.c */; };
-		5CEE1CA91573CE0100BC45C6 /* gridfs.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CEE1C9B1573CE0100BC45C6 /* gridfs.h */; };
 		5CEE1CAA1573CE0100BC45C6 /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = 5CEE1C9C1573CE0100BC45C6 /* md5.c */; };
 		5CEE1CAB1573CE0100BC45C6 /* md5.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CEE1C9D1573CE0100BC45C6 /* md5.h */; };
 		5CEE1CAC1573CE0100BC45C6 /* mongo.c in Sources */ = {isa = PBXBuildFile; fileRef = 5CEE1C9E1573CE0100BC45C6 /* mongo.c */; };
@@ -30,7 +29,6 @@
 		5CEE1C971573CE0100BC45C6 /* env_standard.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = env_standard.c; path = ../../src/env_standard.c; sourceTree = "<group>"; };
 		5CEE1C991573CE0100BC45C6 /* env.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = env.h; path = ../../src/env.h; sourceTree = "<group>"; };
 		5CEE1C9A1573CE0100BC45C6 /* gridfs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gridfs.c; path = ../../src/gridfs.c; sourceTree = "<group>"; };
-		5CEE1C9B1573CE0100BC45C6 /* gridfs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gridfs.h; path = ../../src/gridfs.h; sourceTree = "<group>"; };
 		5CEE1C9C1573CE0100BC45C6 /* md5.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = md5.c; path = ../../src/md5.c; sourceTree = "<group>"; };
 		5CEE1C9D1573CE0100BC45C6 /* md5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = md5.h; path = ../../src/md5.h; sourceTree = "<group>"; };
 		5CEE1C9E1573CE0100BC45C6 /* mongo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mongo.c; path = ../../src/mongo.c; sourceTree = "<group>"; };
@@ -84,7 +82,6 @@
 				5CEE1C971573CE0100BC45C6 /* env_standard.c */,
 				5CEE1C991573CE0100BC45C6 /* env.h */,
 				5CEE1C9A1573CE0100BC45C6 /* gridfs.c */,
-				5CEE1C9B1573CE0100BC45C6 /* gridfs.h */,
 				5CEE1C9C1573CE0100BC45C6 /* md5.c */,
 				5CEE1C9D1573CE0100BC45C6 /* md5.h */,
 				5CEE1C9E1573CE0100BC45C6 /* mongo.c */,
@@ -102,7 +99,6 @@
 			files = (
 				5CEE1CA31573CE0100BC45C6 /* encoding.h in Headers */,
 				5CEE1CA71573CE0100BC45C6 /* env.h in Headers */,
-				5CEE1CA91573CE0100BC45C6 /* gridfs.h in Headers */,
 				5CEE1CAB1573CE0100BC45C6 /* md5.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

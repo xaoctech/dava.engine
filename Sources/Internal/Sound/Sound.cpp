@@ -113,6 +113,8 @@ void Sound::Play()
 		FMOD_VERIFY(fmodInstance->set3DAttributes(&pos, 0));
 
 	FMOD_VERIFY(fmodInstance->setPaused(false));
+
+    Retain();
 }
 
 void Sound::SetPosition(const Vector3 & _position)
@@ -155,7 +157,7 @@ float32	Sound::GetVolume()
 
 void Sound::Pause(bool isPaused)
 {
-	FMOD_VERIFY(fmodInstanceGroup->setPaused(isPaused));
+    FMOD_VERIFY(fmodInstanceGroup->setPaused(isPaused));
 }
 
 bool Sound::IsPaused()
@@ -167,7 +169,7 @@ bool Sound::IsPaused()
 
 void Sound::Stop()
 {
-	FMOD_VERIFY(fmodInstanceGroup->stop());
+    FMOD_VERIFY(fmodInstanceGroup->stop());
 }
 
 int32 Sound::GetLoopCount() const
@@ -193,8 +195,8 @@ FMOD_RESULT F_CALLBACK SoundInstanceEndPlaying(FMOD_CHANNEL *channel, FMOD_CHANN
 	{
 		FMOD::Channel *cppchannel = (FMOD::Channel *)channel;
 		Sound * sound = 0;
-		FMOD_VERIFY(cppchannel->getUserData((void**)&sound));
-		sound->PerformPlaybackComplete();
+        FMOD_VERIFY(cppchannel->getUserData((void**)&sound));
+        SoundSystem::Instance()->SendCallbackOnUpdate(sound);
 	}
 
 	return FMOD_OK;
