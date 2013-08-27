@@ -56,9 +56,6 @@ protected:
 
 	virtual void drawRow(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
 
-	int refreshTimeout;
-	QTimer refreshTimer;
-
 protected slots:
 	void ItemClicked(const QModelIndex &);
 	void OnRefreshTimeout();

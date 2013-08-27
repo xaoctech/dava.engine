@@ -166,11 +166,6 @@ bool RenderManager::IsInsideDraw()
 	return isInsideDraw;
 }
 
-void RenderManager::RequestGLScreenShot(ScreenShotCallbackDelegate *callback)
-{ 
-	screenShotCallback = callback;
-	needGLScreenShot = true; 
-}
     
 #ifdef __DAVAENGINE_ANDROID__    
 void RenderManager::InitFBSize(int32 _frameBufferWidth, int32 _frameBufferHeight)
