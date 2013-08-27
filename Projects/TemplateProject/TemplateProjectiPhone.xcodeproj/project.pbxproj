@@ -126,8 +126,6 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				EA56553D17CCF07D00426EB8 /* MessageUI.framework */,
-				EA56553B17CCF06B00426EB8 /* AdSupport.framework */,
 				FE7569051541CBB400EDC0E4 /* Framework.xcodeproj */,
 				FEFCD63312AE78D90060A1A1 /* Data */,
 				080E96DDFE201D6D7F000001 /* Classes */,
@@ -162,6 +160,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				EA56553D17CCF07D00426EB8 /* MessageUI.framework */,
+				EA56553B17CCF06B00426EB8 /* AdSupport.framework */,
 				FEFB01D211C8F28A00B65B8B /* GameKit.framework */,
 				FE76DA031163F32F009E83B6 /* QuartzCore.framework */,
 				FE76D9FE1163F316009E83B6 /* AudioToolbox.framework */,
