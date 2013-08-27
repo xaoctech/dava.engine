@@ -20,25 +20,28 @@
 namespace DAVA
 {
 
-JniExtension::JniExtension(const char* className)
+JniExtension::JniExtension()
 {
-	Logger::Debug("JniExtension::JniExtension(%s)", className);
-	this->className = className;
-	//isThreadAttached = false;
+	//Logger::Debug("JniExtension::JniExtension(%s)", GetJavaClassName());
 
 	CorePlatformAndroid *core = (CorePlatformAndroid *)Core::Instance();
 	AndroidSystemDelegate* delegate = core->GetAndroidSystemDelegate();
 	vm = delegate->GetVM();
 
 	jint res = JNI_OK;
-	res = vm->GetEnv((void **)&env,JNI_VERSION_1_6);
 
-	/*if (res == JNI_EDETACHED)
+	if (Thread::IsMainThread())
+	{
+		res = vm->GetEnv((void **)&env,JNI_VERSION_1_6);
+	}
+	else
 	{
 		res = vm->AttachCurrentThread(&env, NULL);
-		if (res == JNI_OK)
-			isThreadAttached = true;
-	}*/
+		if (res != JNI_OK)
+		{
+			Logger::Error("Failed to AttachCurrentThread: res:%d", res);
+		}
+	}
 
 	if (res != JNI_OK)
 	{
@@ -49,47 +52,33 @@ JniExtension::JniExtension(const char* className)
 
 JniExtension::~JniExtension()
 {
-	Logger::Debug("JniExtension::~JniExtension(%s)", className);
+	//Logger::Debug("JniExtension::~JniExtension(%s)", GetJavaClassName());
 
-	/*if (isThreadAttached)
+	if (!Thread::IsMainThread())
 	{
 		jint res = vm->DetachCurrentThread();
-		Logger::Error("vm->DetachCurrentThread() = %d", res);
-		Logger::Error("Failed to DetachCurrentThread()");
-	}*/
+		Logger::Error("Failed to DetachCurrentThread: res:%d", res);
+	}
 }
 
-jclass JniExtension::GetJavaClass() const
+void JniExtension::SetJavaClass(JNIEnv* env, const char* className, jclass* gJavaClass, const char** gJavaClassName)
 {
-	DVASSERT(env);
-	if (!env)
-		return NULL;
+	*gJavaClass = (jclass) env->NewGlobalRef(env->FindClass(className));
+	*gJavaClassName = className;
+}
 
-	jclass javaClass = env->FindClass(className);
+jmethodID JniExtension::GetMethodID(const char *methodName, const char *paramCode) const
+{
+	jclass javaClass = GetJavaClass();
+	DVASSERT(javaClass && "Not initialized Java class");
 	if (!javaClass)
-		Logger::Error("Error find class %s", className);
+		return 0;
 
-	return javaClass;
-}
-
-void JniExtension::ReleaseJavaClass(jclass javaClass) const
-{
-	DVASSERT(env);
-	if (!env)
-		return;
-
-	env->DeleteLocalRef(javaClass);
-	javaClass = NULL;
-}
-
-jmethodID JniExtension::GetMethodID(jclass javaClass, const char *methodName, const char *paramCode) const
-{
-	DVASSERT(javaClass);
 	jmethodID mid = env->GetStaticMethodID(javaClass, methodName, paramCode);
 
 	if (!mid)
 	{
-		Logger::Error("get method id of %s.%s error ", className, methodName);
+		Logger::Error("get method id of %s.%s error ", GetJavaClassName(), methodName);
 	}
 
 	return mid;
