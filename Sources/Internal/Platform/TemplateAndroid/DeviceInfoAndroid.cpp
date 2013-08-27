@@ -39,202 +39,161 @@ void Java_com_dava_framework_JNIDeviceInfo_SetJString(JNIEnv* env, jobject class
 namespace DAVA
 {
 
-JniDeviceInfo::JniDeviceInfo()
-:	JniExtension("com/dava/framework/JNIDeviceInfo")
+jclass JniDeviceInfo::gJavaClass = NULL;
+const char* JniDeviceInfo::gJavaClassName = NULL;
+
+jclass JniDeviceInfo::GetJavaClass() const
 {
+	return gJavaClass;
+}
+
+const char* JniDeviceInfo::GetJavaClassName() const
+{
+	return gJavaClassName;
 }
 
 String JniDeviceInfo::GetVersion()
 {
-	jclass javaClass = GetJavaClass();
-	if (!javaClass)
-		return "";
-
 	intermediateStr = "";
-	jmethodID mid = GetMethodID(javaClass, "GetVersion", "()V");
+	jmethodID mid = GetMethodID("GetVersion", "()V");
 	if (mid)
-		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, 0);
-
-	ReleaseJavaClass(javaClass);
+		GetEnvironment()->CallStaticVoidMethod(GetJavaClass(), mid, 0);
 
 	return intermediateStr;
 }
 
 String JniDeviceInfo::GetManufacturer()
 {
-	jclass javaClass = GetJavaClass();
-	if (!javaClass)
-		return "";
-
 	intermediateStr = "";
-	jmethodID mid = GetMethodID(javaClass, "GetManufacturer", "()V");
+	jmethodID mid = GetMethodID("GetManufacturer", "()V");
 	if (mid)
-		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, 0);
+		GetEnvironment()->CallStaticVoidMethod(GetJavaClass(), mid, 0);
 
-	ReleaseJavaClass(javaClass);
 	return intermediateStr;
 }
 
 String JniDeviceInfo::GetModel()
 {
-	jclass javaClass = GetJavaClass();
-	if (!javaClass)
-		return "";
-
 	intermediateStr = "";
 
-	jmethodID mid = GetMethodID(javaClass, "GetModel", "()V");
+	jmethodID mid = GetMethodID("GetModel", "()V");
 	if (mid)
-		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, 0);
-	ReleaseJavaClass(javaClass);
+		GetEnvironment()->CallStaticVoidMethod(GetJavaClass(), mid, 0);
 
 	return intermediateStr;
 }
 
 String JniDeviceInfo::GetLocale()
 {
-	jclass javaClass = GetJavaClass();
-	if (!javaClass)
-		return "";
-
 	intermediateStr = "";
 
-	jmethodID mid = GetMethodID(javaClass, "GetLocale", "()V");
+	jmethodID mid = GetMethodID("GetLocale", "()V");
 	if (mid)
-		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, 0);
-	ReleaseJavaClass(javaClass);
+		GetEnvironment()->CallStaticVoidMethod(GetJavaClass(), mid, 0);
 
 	return intermediateStr;
 }
 
 String JniDeviceInfo::GetRegion()
 {
-	jclass javaClass = GetJavaClass();
-	if (!javaClass)
-		return "";
-
 	intermediateStr = "";
-	jmethodID mid = GetMethodID(javaClass, "GetRegion", "()V");
+	jmethodID mid = GetMethodID("GetRegion", "()V");
 	if (mid)
-		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, 0);
-	ReleaseJavaClass(javaClass);
+		GetEnvironment()->CallStaticVoidMethod(GetJavaClass(), mid, 0);
 
 	return intermediateStr;
 }
 
 String JniDeviceInfo::GetTimeZone()
 {
-	jclass javaClass = GetJavaClass();
-	if (!javaClass)
-		return "";
-
 	intermediateStr = "";
-	jmethodID mid = GetMethodID(javaClass, "GetTimeZone", "()V");
+	jmethodID mid = GetMethodID("GetTimeZone", "()V");
 	if (mid)
-		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, 0);
-	ReleaseJavaClass(javaClass);
+		GetEnvironment()->CallStaticVoidMethod(GetJavaClass(), mid, 0);
 
 	return intermediateStr;
 }
 
 String JniDeviceInfo::GetUDID()
 {
-	jclass javaClass = GetJavaClass();
-	if (!javaClass)
-		return "";
-
 	intermediateStr = "";
-	jmethodID mid = GetMethodID(javaClass, "GetUDID", "()V");
+	jmethodID mid = GetMethodID("GetUDID", "()V");
 	if (mid)
-		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, 0);
-	ReleaseJavaClass(javaClass);
+		GetEnvironment()->CallStaticVoidMethod(GetJavaClass(), mid, 0);
 
 	return intermediateStr;
 }
 
 String JniDeviceInfo::GetName()
 {
-	jclass javaClass = GetJavaClass();
-	if (!javaClass)
-		return "";
-
 	intermediateStr = "";
-	jmethodID mid = GetMethodID(javaClass, "GetName", "()V");
+	jmethodID mid = GetMethodID("GetName", "()V");
 	if (mid)
-		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, 0);
-	ReleaseJavaClass(javaClass);
+		GetEnvironment()->CallStaticVoidMethod(GetJavaClass(), mid, 0);
 
 	return intermediateStr;
 }
 
 String DeviceInfo::GetVersion()
 {
-	JniDeviceInfo* jniDeviceInfo = new JniDeviceInfo();
-	String version = jniDeviceInfo->GetVersion();
-	delete jniDeviceInfo;
+	JniDeviceInfo jniDeviceInfo;
+	String version = jniDeviceInfo.GetVersion();
 
 	return version;
 }
 
 String DeviceInfo::GetManufacturer()
 {
-	JniDeviceInfo* jniDeviceInfo = new JniDeviceInfo();
-	String version = jniDeviceInfo->GetManufacturer();
-	delete jniDeviceInfo;
+	JniDeviceInfo jniDeviceInfo;
+	String version = jniDeviceInfo.GetManufacturer();
 
 	return version;
 }
 
 String DeviceInfo::GetModel()
 {
-	JniDeviceInfo* jniDeviceInfo = new JniDeviceInfo();
-	String version = jniDeviceInfo->GetModel();
-	delete jniDeviceInfo;
+	JniDeviceInfo jniDeviceInfo;
+	String version = jniDeviceInfo.GetModel();
 
 	return version;
 }
 
 String DeviceInfo::GetLocale()
 {
-	JniDeviceInfo* jniDeviceInfo = new JniDeviceInfo();
-	String version = jniDeviceInfo->GetLocale();
-	delete jniDeviceInfo;
+	JniDeviceInfo jniDeviceInfo;
+	String version = jniDeviceInfo.GetLocale();
 
 	return version;
 }
 
 String DeviceInfo::GetRegion()
 {
-	JniDeviceInfo* jniDeviceInfo = new JniDeviceInfo();
-	String version = jniDeviceInfo->GetRegion();
-	delete jniDeviceInfo;
+	JniDeviceInfo jniDeviceInfo;
+	String version = jniDeviceInfo.GetRegion();
 
 	return version;
 }
 
 String DeviceInfo::GetTimeZone()
 {
-	JniDeviceInfo* jniDeviceInfo = new JniDeviceInfo();
-	String version = jniDeviceInfo->GetTimeZone();
-	delete jniDeviceInfo;
+	JniDeviceInfo jniDeviceInfo;
+	String version = jniDeviceInfo.GetTimeZone();
 
 	return version;
 }
 
 String DeviceInfo::GetUDID()
 {
-	JniDeviceInfo* jniDeviceInfo = new JniDeviceInfo();
-	String udid = jniDeviceInfo->GetUDID();
-	delete jniDeviceInfo;
+	JniDeviceInfo jniDeviceInfo;
+	String udid = jniDeviceInfo.GetUDID();
 
 	return udid;
 }
 
 WideString DeviceInfo::GetName()
 {
-	JniDeviceInfo* jniDeviceInfo = new JniDeviceInfo();
-	String name = jniDeviceInfo->GetName();
-	delete jniDeviceInfo;
+	JniDeviceInfo jniDeviceInfo;
+	String name = jniDeviceInfo.GetName();
 
 	return StringToWString(name);
 }

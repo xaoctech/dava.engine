@@ -5,11 +5,17 @@
 #include <QTableWidgetItem>
 #include <QComboBox>
 #include <QSpinBox>
+#include <QCheckBox>
 
-#define COLUMN_ACTION_TYPE 0
-#define COLUMN_ENTITY_NAME 1
-#define COLUMN_DELAY 2
-#define COLUMN_SWITCH_INDEX 3
+const int COLUMN_ACTION_TYPE = 0;
+const int COLUMN_ENTITY_NAME = 1;
+const int COLUMN_DELAY = 2;
+const int COLUMN_SWITCH_INDEX = 3;
+const int COLUMN_STOPAFTERNREPEATS_INDEX = 4;
+const int COLUMN_STOPWHENEMPTY_INDEX = 5;
+
+const int COMBO_YES_INDEX = 0;
+const int COMBO_NO_INDEX = 1;
 
 const int ACTION_NAME_COUNT = 3;
 static QString ACTION_TYPE_NAME[] =
@@ -69,11 +75,15 @@ void ActionComponentEditor::UpdateTableFromComponent(DAVA::ActionComponent* comp
 			QTableWidgetItem* entityNameTableItem = new QTableWidgetItem(action.entityName.c_str());
 			QTableWidgetItem* delayTableItem = new QTableWidgetItem(QString("%1").arg(action.delay, 16, 'f', 2));
 			QTableWidgetItem* switchIndexTableItem = new QTableWidgetItem(QString("%1").arg(action.switchIndex));
+			QTableWidgetItem* stopAfterNRepeatsTableItem = new QTableWidgetItem(QString("%1").arg(action.stopAfterNRepeats));
+			QTableWidgetItem* stopWhenEmptyTableItem = new QTableWidgetItem((action.stopWhenEmpty) ? "Yes" : "No", Qt::EditRole);
 			
 			ui->tableActions->setItem(i, COLUMN_ACTION_TYPE, actionTypeTableItem);
 			ui->tableActions->setItem(i, COLUMN_ENTITY_NAME, entityNameTableItem);
 			ui->tableActions->setItem(i, COLUMN_DELAY, delayTableItem);
 			ui->tableActions->setItem(i, COLUMN_SWITCH_INDEX, switchIndexTableItem);
+			ui->tableActions->setItem(i, COLUMN_STOPAFTERNREPEATS_INDEX, stopAfterNRepeatsTableItem);
+			ui->tableActions->setItem(i, COLUMN_STOPWHENEMPTY_INDEX, stopWhenEmptyTableItem);
 		}
 		
 		ui->tableActions->resizeColumnsToContents();
@@ -240,6 +250,29 @@ QWidget* ActionItemEditDelegate::createEditor(QWidget *parent, const QStyleOptio
 
 			break;
 		}
+			
+		case COLUMN_STOPAFTERNREPEATS_INDEX:
+		{
+			QSpinBox* spinBox = new QSpinBox(parent);
+			spinBox->setMinimum(-1);
+			spinBox->setMaximum(100000);
+			spinBox->setSingleStep(1);
+			
+			editor = spinBox;
+			
+			break;
+		}
+
+		case COLUMN_STOPWHENEMPTY_INDEX:
+		{
+			QComboBox* combo = new QComboBox(parent);
+			combo->setFrame(false);
+			combo->addItem("Yes");
+			combo->addItem("No");
+			
+			editor = combo;
+			break;
+		}
 	}
 
 	DVASSERT(editor);
@@ -290,6 +323,22 @@ void ActionItemEditDelegate::setEditorData(QWidget *editor, const QModelIndex &i
 			
 			break;
 		}
+			
+		case COLUMN_STOPAFTERNREPEATS_INDEX:
+		{
+			QSpinBox* spinBox = static_cast<QSpinBox*>(editor);
+			spinBox->setValue(currentAction.stopAfterNRepeats);
+			
+			break;
+		}
+			
+		case COLUMN_STOPWHENEMPTY_INDEX:
+		{
+			QComboBox* combo = static_cast<QComboBox*>(editor);
+			combo->setCurrentIndex(currentAction.stopWhenEmpty ? COMBO_YES_INDEX : COMBO_NO_INDEX);
+			break;
+		}
+
 	}
 
 }
@@ -336,6 +385,25 @@ void ActionItemEditDelegate::setModelData(QWidget *editor, QAbstractItemModel *m
 			
 			break;
 		}
+			
+		case COLUMN_STOPAFTERNREPEATS_INDEX:
+		{
+			QSpinBox* spinBox = static_cast<QSpinBox*>(editor);
+			currentAction.stopAfterNRepeats = spinBox->value();
+			model->setData(index, QString("%1").arg(currentAction.stopAfterNRepeats), Qt::EditRole);
+			
+			break;
+		}
+			
+		case COLUMN_STOPWHENEMPTY_INDEX:
+		{
+			QComboBox* combo = static_cast<QComboBox*>(editor);
+			currentAction.stopWhenEmpty = (combo->currentIndex() == COMBO_YES_INDEX);
+			model->setData(index, (currentAction.stopWhenEmpty) ? "Yes" : "No", Qt::EditRole);
+			
+			break;
+		}
+
 	}
 	
 	componentEditor->Update();
