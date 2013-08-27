@@ -14,71 +14,53 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #include "Utils/Utils.h"
+#include "UtilsAndroid.h"
 
 using namespace DAVA;
 
 #if defined(__DAVAENGINE_ANDROID__)
 
-#include "JniExtensions.h"
+jclass JniUtils::gJavaClass = NULL;
+const char* JniUtils::gJavaClassName = NULL;
 
-class JniUtils: public JniExtension
+jclass JniUtils::GetJavaClass() const
 {
-public:
-	JniUtils();
+	return gJavaClass;
+}
 
-public:
-	bool DisableSleepTimer();
-	bool EnableSleepTimer();
-};
-
-JniUtils::JniUtils() :
-	JniExtension("com/dava/framework/JNIUtils")
+const char* JniUtils::GetJavaClassName() const
 {
-
+	return gJavaClassName;
 }
 
 bool JniUtils::DisableSleepTimer()
 {
-	jclass javaClass = GetJavaClass();
-	if (!javaClass)
-		return false;
-
-	jmethodID mid = GetMethodID(javaClass, "DisableSleepTimer", "()V");
+	jmethodID mid = GetMethodID("DisableSleepTimer", "()V");
 	if (!mid)
 		return false;
 
-	GetEnvironment()->CallStaticVoidMethod(javaClass, mid);
-	ReleaseJavaClass(javaClass);
+	GetEnvironment()->CallStaticVoidMethod(GetJavaClass(), mid);
 	return true;
 }
 
 bool JniUtils::EnableSleepTimer()
 {
-	jclass javaClass = GetJavaClass();
-	if (!javaClass)
-		return false;
-
-	jmethodID mid = GetMethodID(javaClass, "EnableSleepTimer", "()V");
+	jmethodID mid = GetMethodID("EnableSleepTimer", "()V");
 	if (!mid)
 		return false;
 
-	GetEnvironment()->CallStaticVoidMethod(javaClass, mid);
-	ReleaseJavaClass(javaClass);
+	GetEnvironment()->CallStaticVoidMethod(GetJavaClass(), mid);
 	return true;
 }
 
 void DAVA::DisableSleepTimer()
 {
-	//UIApplication * app = [UIApplication sharedApplication];
-	//app.idleTimerDisabled = YES;
 	JniUtils jniUtils;
 	jniUtils.DisableSleepTimer();
 }
 
 void DAVA::EnableSleepTimer()
 {
-	//UIApplication * app = [UIApplication sharedApplication];
-	//app.idleTimerDisabled = NO;
 	JniUtils jniUtils;
 	jniUtils.EnableSleepTimer();
 }
