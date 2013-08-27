@@ -26,8 +26,6 @@ namespace DAVA
 class JniDeviceInfo: public JniExtension
 {
 public:
-	JniDeviceInfo();
-
 	String GetVersion();
 	String GetManufacturer();
 	String GetModel();
@@ -36,6 +34,14 @@ public:
 	String GetTimeZone();
 	String GetUDID();
 	String GetName();
+
+protected:
+	virtual jclass GetJavaClass() const;
+	virtual const char* GetJavaClassName() const;
+
+public:
+	static jclass gJavaClass;
+	static const char* gJavaClassName;
 };
 
 };

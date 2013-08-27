@@ -20,13 +20,21 @@
 namespace DAVA
 {
 
-JniWebView* JniWebView::jniWebView = NULL;
 int WebViewControl::webViewIdCount = 0;
 
-JniWebView::JniWebView() :
-	JniExtension("com/dava/framework/JNIWebView")
-{
+jclass JniWebView::gJavaClass = NULL;
+const char* JniWebView::gJavaClassName = NULL;
+JniWebView::CONTROLS_MAP JniWebView::controls;
 
+
+jclass JniWebView::GetJavaClass() const
+{
+	return gJavaClass;
+}
+
+const char* JniWebView::GetJavaClassName() const
+{
+	return gJavaClassName;
 }
 
 void JniWebView::Initialize(WebViewControl* control, int id, const Rect& controlRect)
@@ -34,86 +42,56 @@ void JniWebView::Initialize(WebViewControl* control, int id, const Rect& control
 	controls[id] = control;
 	Rect rect = V2P(controlRect);
 
-	jclass javaClass = GetJavaClass();
-	if (!javaClass)
-		return;
-
-	jmethodID mid = GetMethodID(javaClass, "Initialize", "(IFFFF)V");
+	jmethodID mid = GetMethodID("Initialize", "(IFFFF)V");
 	if (mid)
-		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, id, rect.x, rect.y, rect.dx, rect.dy);
-	ReleaseJavaClass(javaClass);
+		GetEnvironment()->CallStaticVoidMethod(GetJavaClass(), mid, id, rect.x, rect.y, rect.dx, rect.dy);
 }
 
 void JniWebView::Deinitialize(int id)
 {
-	jclass javaClass = GetJavaClass();
-	if (!javaClass)
-		return;
-
 	controls.erase(id);
-	jmethodID mid = GetMethodID(javaClass, "Deinitialize", "(I)V");
+	jmethodID mid = GetMethodID("Deinitialize", "(I)V");
 	if (mid)
-		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, id);
-	ReleaseJavaClass(javaClass);
+		GetEnvironment()->CallStaticVoidMethod(GetJavaClass(), mid, id);
 }
 
 void JniWebView::OpenURL(int id, const String& urlToOpen)
 {
-	jclass javaClass = GetJavaClass();
-	if (!javaClass)
-		return;
-
-	jmethodID mid = GetMethodID(javaClass, "OpenURL", "(ILjava/lang/String;)V");
+	jmethodID mid = GetMethodID("OpenURL", "(ILjava/lang/String;)V");
 	if (mid)
 	{
 		jstring jUrlToOpen = GetEnvironment()->NewStringUTF(urlToOpen.c_str());
-		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, id, jUrlToOpen);
+		GetEnvironment()->CallStaticVoidMethod(GetJavaClass(), mid, id, jUrlToOpen);
 		GetEnvironment()->DeleteLocalRef(jUrlToOpen);
 	}
-	ReleaseJavaClass(javaClass);
 }
 
 void JniWebView::SetRect(int id, const Rect& controlRect)
 {
-	jclass javaClass = GetJavaClass();
-	if (!javaClass)
-		return;
-
 	Rect rect = V2P(controlRect);
-	jmethodID mid = GetMethodID(javaClass, "SetRect", "(IFFFF)V");
+	jmethodID mid = GetMethodID("SetRect", "(IFFFF)V");
 	if (mid)
 	{
-		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, id, rect.x, rect.y, rect.dx, rect.dy);
+		GetEnvironment()->CallStaticVoidMethod(GetJavaClass(), mid, id, rect.x, rect.y, rect.dx, rect.dy);
 	}
-	ReleaseJavaClass(javaClass);
 }
 
 void JniWebView::SetVisible(int id, bool isVisible)
 {
-	jclass javaClass = GetJavaClass();
-	if (!javaClass)
-		return;
-
-	jmethodID mid = GetMethodID(javaClass, "SetVisible", "(IZ)V");
+	jmethodID mid = GetMethodID("SetVisible", "(IZ)V");
 	if (mid)
 	{
-		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, id, isVisible);
+		GetEnvironment()->CallStaticVoidMethod(GetJavaClass(), mid, id, isVisible);
 	}
-	ReleaseJavaClass(javaClass);
 }
 
 void JniWebView::SetBackgroundTransparency(int id, bool enabled)
 {
-	jclass javaClass = GetJavaClass();
-	if (!javaClass)
-		return;
-
-	jmethodID mid = GetMethodID(javaClass, "SetBackgroundTransparency", "(IZ)V");
+	jmethodID mid = GetMethodID("SetBackgroundTransparency", "(IZ)V");
 	if (mid)
 	{
-		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, id, enabled);
+		GetEnvironment()->CallStaticVoidMethod(GetJavaClass(), mid, id, enabled);
 	}
-	ReleaseJavaClass(javaClass);
 }
 
 IUIWebViewDelegate::eAction JniWebView::URLChanged(int id, const String& newURL)
@@ -155,34 +133,37 @@ WebViewControl::WebViewControl()
 	delegate = NULL;
 	webView = NULL;
 
-	if (!JniWebView::jniWebView)
-		JniWebView::jniWebView = new JniWebView();
 	webViewId = webViewIdCount++;
 }
 
 WebViewControl::~WebViewControl()
 {
-	JniWebView::jniWebView->Deinitialize(webViewId);
+	JniWebView jniWebView;
+	jniWebView.Deinitialize(webViewId);
 }
 
 void WebViewControl::Initialize(const Rect& rect)
 {
-	JniWebView::jniWebView->Initialize(this, webViewId, rect);
+	JniWebView jniWebView;
+	jniWebView.Initialize(this, webViewId, rect);
 }
 
 void WebViewControl::OpenURL(const String& urlToOpen)
 {
-	JniWebView::jniWebView->OpenURL(webViewId, urlToOpen);
+	JniWebView jniWebView;
+	jniWebView.OpenURL(webViewId, urlToOpen);
 }
 
 void WebViewControl::SetRect(const Rect& rect)
 {
-	JniWebView::jniWebView->SetRect(webViewId, rect);
+	JniWebView jniWebView;
+	jniWebView.SetRect(webViewId, rect);
 }
 
 void WebViewControl::SetVisible(bool isVisible, bool hierarchic)
 {
-	JniWebView::jniWebView->SetVisible(webViewId, isVisible);
+	JniWebView jniWebView;
+	jniWebView.SetVisible(webViewId, isVisible);
 }
 
 void WebViewControl::SetDelegate(DAVA::IUIWebViewDelegate *delegate, DAVA::UIWebView* webView)
@@ -193,7 +174,8 @@ void WebViewControl::SetDelegate(DAVA::IUIWebViewDelegate *delegate, DAVA::UIWeb
 
 void WebViewControl::SetBackgroundTransparency(bool enabled)
 {
-	JniWebView::jniWebView->SetBackgroundTransparency(webViewId, enabled);
+	JniWebView jniWebView;
+	jniWebView.SetBackgroundTransparency(webViewId, enabled);
 }
 
 }//namespace DAVA

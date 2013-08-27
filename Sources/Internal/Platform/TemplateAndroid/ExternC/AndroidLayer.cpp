@@ -26,6 +26,16 @@
 #include "AndroidDelegate.h"
 #include "AndroidCrashReport.h"
 
+#include "JniExtensions.h"
+#include "WebViewControl.h"
+#include "Debug/DVAssertMessageAndroid.h"
+#include "Platform/TemplateAndroid/DeviceInfoAndroid.h"
+#include "Network/MailSender.h"
+#include "Utils/UtilsAndroid.h"
+#include "UI/UITextFieldAndroid.h"
+#include "Platform/TemplateAndroid/DPIHelperAndroid.h"
+#include "Platform/TemplateAndroid/AndroidCrashReport.h"
+
 extern "C"
 {
 	jint JNI_OnLoad(JavaVM *vm, void *reserved);
@@ -72,11 +82,28 @@ AndroidDelegate *androidDelegate;
 
 jint JNI_OnLoad(JavaVM *vm, void *reserved)
 {
+	JNIEnv* env;
+	if (vm->GetEnv((void **)&env,JNI_VERSION_1_6))
+	{
+		LOGE("Failed get java environment");
+		return -1;
+	}
+
+	DAVA::JniExtension::SetJavaClass(env, "com/dava/framework/JNIAssert", &DAVA::JniDVAssertMessage::gJavaClass, &DAVA::JniDVAssertMessage::gJavaClassName);
+	DAVA::JniExtension::SetJavaClass(env, "com/dava/framework/JNIUtils", &DAVA::JniUtils::gJavaClass, &DAVA::JniUtils::gJavaClassName);
+	DAVA::JniExtension::SetJavaClass(env, "com/dava/framework/JNIDeviceInfo", &DAVA::JniDeviceInfo::gJavaClass, &DAVA::JniDeviceInfo::gJavaClassName);
+	DAVA::JniExtension::SetJavaClass(env, "com/dava/framework/JNISendMail", &DAVA::JniMailSender::gJavaClass, &DAVA::JniMailSender::gJavaClassName);
+	DAVA::JniExtension::SetJavaClass(env, "com/dava/framework/JNITextField", &DAVA::JniTextField::gJavaClass, &DAVA::JniTextField::gJavaClassName);
+	DAVA::JniExtension::SetJavaClass(env, "com/dava/framework/JNIWebView", &DAVA::JniWebView::gJavaClass, &DAVA::JniWebView::gJavaClassName);
+	DAVA::JniExtension::SetJavaClass(env, "com/dava/framework/JNIDpiHelper", &DAVA::JniDpiHelper::gJavaClass, &DAVA::JniDpiHelper::gJavaClassName);
+	DAVA::JniExtension::SetJavaClass(env, "com/dava/framework/JNICrashReporter", &DAVA::JniCrashReporter::gJavaClass, &DAVA::JniCrashReporter::gJavaClassName);
+
 	androidDelegate = new AndroidDelegate(vm);
 
 	DAVA::AndroidCrashReport::Init();
 
-	return JNI_VERSION_1_4;
+
+	return JNI_VERSION_1_6;
 }
 
 bool CreateStringFromJni(JNIEnv* env, jstring jniString, char *generalString)
