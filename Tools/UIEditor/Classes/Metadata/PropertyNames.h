@@ -50,6 +50,14 @@ public:
 	static const char* TEXT_ALIGN_PROPERTY_NAME;
 
 	static const char* IS_PASSWORD_PROPERTY_NAME;
+	
+	static const char* AUTO_CAPITALIZATION_TYPE_PROPERTY_NAME;
+	static const char* AUTO_CORRECTION_TYPE_PROPERTY_NAME;
+	static const char* SPELL_CHECKING_TYPE_PROPERTY_NAME;
+	static const char* KEYBOARD_APPEARANCE_TYPE_PROPERTY_NAME;
+	static const char* KEYBOARD_TYPE_PROPERTY_NAME;
+	static const char* RETURN_KEY_TYPE_PROPERTY_NAME;
+	static const char* IS_RETURN_KEY_PROPERTY_NAME;
 
 	static const char* SHADOW_OFFSET_X;
 	static const char* SHADOW_OFFSET_Y;

@@ -33,7 +33,6 @@ UIScrollView::UIScrollView(const Rect &rect, bool rectInAbsoluteCoordinates/* = 
 	inputEnabled = true;
 	multiInput = true;
 	SetClipContents(true);
-	SetDebugDraw(true, true);
 	
 	scrollContainer->SetName(UISCROLL_VIEW_CONTAINER_NAME);
 	// Scroll container is a child of ScrollView
@@ -87,6 +86,13 @@ Vector2 UIScrollView::GetMaxSize(UIControl * parentControl, Vector2 currentMaxSi
 			continue;
 		
 		Rect childRect = childControl->GetRect();
+		// Reset child rect - we can't move child controls from scroll container
+		if ((childRect.x < 0) || (childRect.y < 0))
+		{
+			childRect.x = Max(0.0f, childRect.x);
+			childRect.y = Max(0.0f, childRect.y);
+			childControl->SetRect(childRect);
+		}
 		// Calculate control full "length" and "height"
 		float32 controlSizeX = abs(parentOffset.x) + childRect.x + childRect.dx;
 		float32 controlSizeY = abs(parentOffset.y) + childRect.y + childRect.dy;
