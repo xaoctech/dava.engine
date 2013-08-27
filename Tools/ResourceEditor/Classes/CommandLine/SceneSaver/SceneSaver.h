@@ -46,6 +46,8 @@ protected:
 	void CopyEffects(Entity *node, Set<String> &errorLog);
 	void CopyEmitter(ParticleEmitter *emitter, Set<String> &errorLog);
 
+	void CopyCustomColorTexture(Scene *scene, const FilePath & sceneFolder, Set<String> &errorLog);
+
 protected:
     
     SceneUtils sceneUtils;

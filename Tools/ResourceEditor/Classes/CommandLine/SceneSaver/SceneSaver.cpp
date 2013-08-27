@@ -144,6 +144,7 @@ void SceneSaver::SaveScene(Scene *scene, const FilePath &fileName, Set<String> &
 
 	CopyReferencedObject(scene, errorLog);
 	CopyEffects(scene, errorLog);
+	CopyCustomColorTexture(scene, fileName.GetDirectory(), errorLog);
 
     //save scene to new place
     FilePath tempSceneName = sceneUtils.dataSourceFolder + relativeFilename;
@@ -241,5 +242,20 @@ void SceneSaver::CopyEmitter( ParticleEmitter *emitter, Set<String> &errorLog )
 			sceneUtils.CopyFile(psdPath, errorLog);
 		}
 	}
+}
+
+#define CUSTOM_COLOR_TEXTURE_PROP "customColorTexture"
+void SceneSaver::CopyCustomColorTexture(Scene *scene, const FilePath & sceneFolder, Set<String> &errorLog)
+{
+	Entity *land = EditorScene::GetLandscapeNode(scene);
+	if(!land) return;
+
+	KeyedArchive* customProps = land->GetCustomProperties();
+	if(!customProps) return;
+
+	String pathname = customProps->GetString(CUSTOM_COLOR_TEXTURE_PROP);
+	if(pathname.empty()) return;
+
+	sceneUtils.CopyFile(sceneFolder + pathname, errorLog);
 }
 
