@@ -236,6 +236,146 @@ void UITextFieldMetadata::SetIsPassword(bool value)
 	GetActiveUITextField()->SetIsPassword(value);
 }
 
+int UITextFieldMetadata::GetAutoCapitalizationType() const
+{
+	if (!VerifyActiveParamID())
+	{
+		return 0;
+	}
+	
+	return GetActiveUITextField()->GetAutoCapitalizationType();
+}
+
+void UITextFieldMetadata::SetAutoCapitalizationType(int value)
+{
+	if (!VerifyActiveParamID())
+	{
+		return;
+	}
+	
+	return GetActiveUITextField()->SetAutoCapitalizationType((DAVA::UITextField::eAutoCapitalizationType) value);
+}
+
+int UITextFieldMetadata::GetAutoCorrectionType() const
+{
+	if (!VerifyActiveParamID())
+	{
+		return 0;
+	}
+	
+	return GetActiveUITextField()->GetAutoCorrectionType();
+}
+
+void UITextFieldMetadata::SetAutoCorrectionType(int value)
+{
+	if (!VerifyActiveParamID())
+	{
+		return;
+	}
+	
+	return GetActiveUITextField()->SetAutoCorrectionType((DAVA::UITextField::eAutoCorrectionType) value);
+}
+
+int UITextFieldMetadata::GetSpellCheckingType() const
+{
+	if (!VerifyActiveParamID())
+	{
+		return 0;
+	}
+	
+	return GetActiveUITextField()->GetSpellCheckingType();
+}
+
+void UITextFieldMetadata::SetSpellCheckingType(int value)
+{
+	if (!VerifyActiveParamID())
+	{
+		return;
+	}
+	
+	return GetActiveUITextField()->SetSpellCheckingType((DAVA::UITextField::eSpellCheckingType) value);
+}
+
+int UITextFieldMetadata::GetKeyboardAppearanceType() const
+{
+	if (!VerifyActiveParamID())
+	{
+		return 0;
+	}
+	
+	return GetActiveUITextField()->GetKeyboardAppearanceType();
+}
+
+void UITextFieldMetadata::SetKeyboardAppearanceType(int value)
+{
+	if (!VerifyActiveParamID())
+	{
+		return;
+	}
+	
+	return GetActiveUITextField()->SetKeyboardAppearanceType((DAVA::UITextField::eKeyboardAppearanceType) value);
+}
+
+int UITextFieldMetadata::GetKeyboardType() const
+{
+	if (!VerifyActiveParamID())
+	{
+		return 0;
+	}
+	
+	return GetActiveUITextField()->GetKeyboardType();
+}
+
+void UITextFieldMetadata::SetKeyboardType(int value)
+{
+	if (!VerifyActiveParamID())
+	{
+		return;
+	}
+	
+	return GetActiveUITextField()->SetKeyboardType((DAVA::UITextField::eKeyboardType) value);
+}
+
+int UITextFieldMetadata::GetReturnKeyType() const
+{
+	if (!VerifyActiveParamID())
+	{
+		return 0;
+	}
+	
+	return GetActiveUITextField()->GetReturnKeyType();
+}
+
+void UITextFieldMetadata::SetReturnKeyType(int value)
+{
+	if (!VerifyActiveParamID())
+	{
+		return;
+	}
+	
+	return GetActiveUITextField()->SetReturnKeyType((DAVA::UITextField::eReturnKeyType) value);
+}
+
+bool UITextFieldMetadata::GetIsReturnKeyAutomatically() const
+{
+	if (!VerifyActiveParamID())
+	{
+		return false;
+	}
+	
+	return GetActiveUITextField()->IsEnableReturnKeyAutomatically();
+}
+
+void UITextFieldMetadata::SetIsReturnKeyAutomatically(bool value)
+{
+	if (!VerifyActiveParamID())
+	{
+		return;
+	}
+	
+	return GetActiveUITextField()->SetEnableReturnKeyAutomatically(value);
+}
+
 // Initialize the control(s) attached.
 void UITextFieldMetadata::InitializeControl(const String& controlName, const Vector2& position)
 {
