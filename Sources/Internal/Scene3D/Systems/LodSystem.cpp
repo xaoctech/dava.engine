@@ -124,7 +124,19 @@ void LodSystem::UpdateLod(Entity * entity)
 {
 	LodComponent * lodComponent = static_cast<LodComponent*>(entity->GetComponent(Component::LOD_COMPONENT));
 	LodComponent::LodData * oldLod = lodComponent->currentLod;
-	RecheckLod(entity);
+    if (!RecheckLod(entity))
+    {
+        if (oldLod)
+        {
+            int32 size = oldLod->nodes.size();
+            for (int i = 0; i < size; i++) 
+            {
+                oldLod->nodes[i]->SetLodVisible(false);
+            }
+        }
+        lodComponent->currentLod = NULL;
+        return;
+    }
 	if (oldLod != lodComponent->currentLod) 
 	{
 		if (oldLod) 
@@ -135,18 +147,20 @@ void LodSystem::UpdateLod(Entity * entity)
 				oldLod->nodes[i]->SetLodVisible(false);
 			}
 		}
-		int32 size = lodComponent->currentLod->nodes.size();
-		for (int i = 0; i < size; i++) 
-		{
-			lodComponent->currentLod->nodes[i]->SetLodVisible(true);
-		}
+        if (lodComponent->currentLod)
+        {
+            int32 size = lodComponent->currentLod->nodes.size();
+            for (int i = 0; i < size; i++) 
+            {
+                lodComponent->currentLod->nodes[i]->SetLodVisible(true);
+            }
+        }
 	}
 }
 
-void LodSystem::RecheckLod(Entity * entity)
+bool LodSystem::RecheckLod(Entity * entity)
 {
 	LodComponent * lodComponent = static_cast<LodComponent*>(entity->GetComponent(Component::LOD_COMPONENT));
-	if (!lodComponent->currentLod)return;
 
 	if(LodComponent::INVALID_LOD_LAYER != lodComponent->forceLodLayer) 
 	{
@@ -155,11 +169,12 @@ void LodSystem::RecheckLod(Entity * entity)
 			if (it->layer >= lodComponent->forceLodLayer)
 			{
 				lodComponent->currentLod = &(*it);
-				return;
+				return true;
 			}
 		}
-		return;
+		return false;
 	}
+    
 
 	{
 		float32 dst = 0.f;
@@ -176,7 +191,8 @@ void LodSystem::RecheckLod(Entity * entity)
 			dst = lodComponent->forceDistanceSq;
 		}
 
-		if (dst > lodComponent->GetLodLayerFarSquare(lodComponent->currentLod->layer) || dst < lodComponent->GetLodLayerNearSquare(lodComponent->currentLod->layer))
+		if (!lodComponent->currentLod
+            || dst > lodComponent->GetLodLayerFarSquare(lodComponent->currentLod->layer) || dst < lodComponent->GetLodLayerNearSquare(lodComponent->currentLod->layer))
 		{
 			for (Vector<LodComponent::LodData>::iterator it = lodComponent->lodLayers.begin(); it != lodComponent->lodLayers.end(); it++)
 			{
@@ -186,11 +202,16 @@ void LodSystem::RecheckLod(Entity * entity)
 				}
 				else 
 				{
-					return;
+					return true;
 				}
 			}
+            if (dst > lodComponent->GetLodLayerFarSquare(lodComponent->lodLayers.rbegin()->layer))
+            {
+                return false;
+            }
 		}
 	}
+    return true;
 }
 
 void LodSystem::SetCamera(Camera * _camera)

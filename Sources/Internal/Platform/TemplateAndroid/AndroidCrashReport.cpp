@@ -17,7 +17,6 @@
 #include "AndroidCrashReport.h"
 
 #include "FileSystem/Logger.h"
-#include "JniExtensions.h"
 #include "FileSystem/File.h"
 
 #include <dlfcn.h>
@@ -50,37 +49,31 @@ static int fatalSignalsCount = (sizeof(fatalSignals) / sizeof(fatalSignals[0]));
 stack_t AndroidCrashReport::s_sigstk;
 CustomReport* AndroidCrashReport::s_customReport = NULL;
 
-class JniCrashReporter: public JniExtension
-{
-public:
-	JniCrashReporter();
-	String GetReportFile();
-};
+jclass JniCrashReporter::gJavaClass = NULL;
+const char* JniCrashReporter::gJavaClassName = NULL;
 
-JniCrashReporter::JniCrashReporter()
-:	JniExtension("com/dava/framework/JNICrashReporter")
+jclass JniCrashReporter::GetJavaClass() const
 {
+	return gJavaClass;
+}
+
+const char* JniCrashReporter::GetJavaClassName() const
+{
+	return gJavaClassName;
 }
 
 String JniCrashReporter::GetReportFile()
 {
-	jclass javaClass = GetJavaClass();
-	if (!javaClass)
-		return "";
-
 	char path[255];
-	jmethodID mid = GetMethodID(javaClass, "GetReportFile", "()Ljava/lang/String;");
-	//jmethodID mid = GetMethodID(javaClass, "GetReportFile", "()V");
+	jmethodID mid = GetMethodID("GetReportFile", "()Ljava/lang/String;");
 	if (mid)
 	{
-		jobject obj = env->CallStaticObjectMethod(javaClass, mid, 0);
+		jobject obj = env->CallStaticObjectMethod(GetJavaClass(), mid, 0);
 		jstring jStr = (jstring)obj;
 		char const* nativeString = env->GetStringUTFChars(jStr, 0);
 		strncpy(path, nativeString, 255);
 		env->ReleaseStringUTFChars(jStr, nativeString);
 	}
-
-	ReleaseJavaClass(javaClass);
 
 	return String(path);
 }

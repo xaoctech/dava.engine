@@ -20,6 +20,7 @@
 #include "Base/BaseTypes.h"
 #if defined(__DAVAENGINE_ANDROID__)
 
+#include "JniExtensions.h"
 #include <signal.h>
 
 namespace DAVA
@@ -47,6 +48,21 @@ private:
 	static stack_t s_sigstk;
 	static CustomReport* s_customReport;
 };
+
+class JniCrashReporter: public JniExtension
+{
+public:
+	String GetReportFile();
+
+protected:
+	virtual jclass GetJavaClass() const;
+	virtual const char* GetJavaClassName() const;
+
+public:
+	static jclass gJavaClass;
+	static const char* gJavaClassName;
+};
+
 
 }
 
