@@ -52,8 +52,10 @@ void ParticleLayerBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
     
 	if(!totalCount)return;
 
-	RenderManager::Instance()->SetRenderData(renderDataObject);
 	material->BindMaterialTechnique(ownerRenderPass);
+	
+	RenderManager::Instance()->SetRenderData(renderDataObject);
+	RenderManager::Instance()->AttachRenderData();
 	
 	RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLELIST, 0, 6*totalCount);
 }
