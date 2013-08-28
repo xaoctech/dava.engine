@@ -20,6 +20,8 @@
 #include <QStyle>
 #include <QStyleOption>
 
+#include <cmath>
+	
 ScaleSlider::ScaleSlider(QWidget *parent) :
 	QSlider(parent)
 {
