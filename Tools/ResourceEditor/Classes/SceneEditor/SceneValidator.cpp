@@ -181,7 +181,6 @@ void SceneValidator::ValidateLodComponent(Entity *ownerNode, Set<String> &errors
     LodComponent *lodComponent = GetLodComponent(ownerNode);
     if(!lodComponent) return;
 
-
     int32 layersCount = lodComponent->GetLodLayersCount();
     for(int32 layer = 0; layer < layersCount; ++layer)
     {
