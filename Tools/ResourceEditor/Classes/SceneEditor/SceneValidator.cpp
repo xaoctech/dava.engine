@@ -224,6 +224,13 @@ void SceneValidator::ValidateParticleEmitterComponent(DAVA::Entity *ownerNode, S
 		return;
 	}
 
+	LodComponent * lodComponent = GetLodComponent(ownerNode);
+	if (!lodComponent)
+	{
+		lodComponent = new LodComponent();
+		ownerNode->AddComponent(lodComponent);		
+	}
+
 	ValidateParticleEmitter(emitter, errorsLog);
 }
 
