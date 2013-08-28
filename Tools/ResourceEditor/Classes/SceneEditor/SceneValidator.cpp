@@ -182,6 +182,12 @@ void SceneValidator::ValidateLodComponent(Entity *ownerNode, Set<String> &errors
     if(!lodComponent) return;
 
     int32 layersCount = lodComponent->GetLodLayersCount();
+    
+    if(layersCount == 0)
+    {
+        errorsLog.insert(Format("Node %s: Count of layers is 0", ownerNode->GetName().c_str()));
+    }
+    
     for(int32 layer = 0; layer < layersCount; ++layer)
     {
         float32 distance = lodComponent->GetLodLayerDistance(layer);
