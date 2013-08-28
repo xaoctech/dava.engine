@@ -401,7 +401,7 @@ public:
      \brief Function loads data from given yaml Node.
      \param[in] pathName relative pathname in application documents folder
 	 */
-	bool LoadFromYamlNode(YamlNode* rootNode);
+	bool LoadFromYamlNode(const YamlNode* rootNode);
 
 //	yaml
 // 	/**

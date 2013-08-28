@@ -822,7 +822,7 @@ void ParticleLayer::Draw(Camera * camera)
 }
 
 
-void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
+void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * node)
 {
 // 	PropertyLine<float32> * life;				// in seconds
 // 	PropertyLine<float32> * lifeVariation;		// variation part of life that added to particle life during generation of the particle
@@ -856,25 +856,25 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 	
 	
 	type = TYPE_PARTICLES;
-	YamlNode * typeNode = node->Get("layerType");
+	const YamlNode * typeNode = node->Get("layerType");
 	if (typeNode)
 	{
 		type = StringToLayerType(typeNode->AsString(), TYPE_PARTICLES);
 	}
 
-	YamlNode * nameNode = node->Get("name");
+	const YamlNode * nameNode = node->Get("name");
 	if (nameNode)
 	{
 		layerName = nameNode->AsString();
 	}
 
-	YamlNode * pivotPointNode = node->Get("pivotPoint");
+	const YamlNode * pivotPointNode = node->Get("pivotPoint");
 	if(pivotPointNode)
 	{
 		layerPivotPoint = pivotPointNode->AsPoint();
 	}
 
-	YamlNode * spriteNode = node->Get("sprite");
+	const YamlNode * spriteNode = node->Get("sprite");
 	if (spriteNode && !spriteNode->AsString().empty())
 	{
 		// Store the absolute path to sprite.
@@ -884,10 +884,10 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 		SetSprite(_sprite);
         SafeRelease(_sprite);
 	}
-	YamlNode *lodsNode = node->Get("activeLODS");
+	const YamlNode *lodsNode = node->Get("activeLODS");
 	if (lodsNode)
 	{
-		Vector<YamlNode*> & vec = lodsNode->AsVector();
+		const Vector<YamlNode*> & vec = lodsNode->AsVector();
 		for (int32 i=0; i<vec.size(); ++i)
 			SetLodActive(i, (bool)vec[i]->AsInt()); //as AddToArray has no override for bool, flags are stored as int
 	}
@@ -897,13 +897,13 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 	colorRandom = PropertyLineYamlReader::CreateColorPropertyLineFromYamlNode(node, "colorRandom");
 	alphaOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "alphaOverLife");
 	
-	YamlNode* frameOverLifeEnabledNode = node->Get("frameOverLifeEnabled");
+	const YamlNode* frameOverLifeEnabledNode = node->Get("frameOverLifeEnabled");
 	if (frameOverLifeEnabledNode)
 	{
 		frameOverLifeEnabled = frameOverLifeEnabledNode->AsBool();
 	}
 
-	YamlNode* frameOverLifeFPSNode = node->Get("frameOverLifeFPS");
+	const YamlNode* frameOverLifeFPSNode = node->Get("frameOverLifeFPS");
 	if (frameOverLifeFPSNode)
 	{
 		frameOverLifeFPS = frameOverLifeFPSNode->AsFloat();
@@ -947,7 +947,7 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 	angleVariation = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "angleVariation");
 	
 	int32 forceCount = 0;
-	YamlNode * forceCountNode = node->Get("forceCount");
+	const YamlNode * forceCountNode = node->Get("forceCount");
 	if (forceCountNode)
 		forceCount = forceCountNode->AsInt();
 
@@ -971,7 +971,7 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 	motionRandomOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "motionRandomOverLife");	
 
 
-	YamlNode * blend = node->Get("blend");
+	const YamlNode * blend = node->Get("blend");
 	if (blend)
 	{
 		if (blend->AsString() == "alpha")
@@ -980,17 +980,17 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 			additive = true;
 	}
 
-	YamlNode * alignToMotionNode = node->Get("alignToMotion");
+	const YamlNode * alignToMotionNode = node->Get("alignToMotion");
 	if (alignToMotionNode)
 		alignToMotion = DegToRad(alignToMotionNode->AsFloat());
 
 	startTime = 0.0f;
 	endTime = 100000000.0f;
-	YamlNode * startTimeNode = node->Get("startTime");
+	const YamlNode * startTimeNode = node->Get("startTime");
 	if (startTimeNode)
 		startTime = startTimeNode->AsFloat();
 
-	YamlNode * endTimeNode = node->Get("endTime");
+	const YamlNode * endTimeNode = node->Get("endTime");
 	if (endTimeNode)
 		endTime = endTimeNode->AsFloat();
 		
@@ -999,30 +999,30 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 	deltaVariation = 0.0f;
 	loopVariation = 0.0f;
 	
-	YamlNode * isLoopedNode = node->Get("isLooped");
+	const YamlNode * isLoopedNode = node->Get("isLooped");
 	if (isLoopedNode)
 		isLooped = isLoopedNode->AsBool();
 		
-	YamlNode * deltaTimeNode = node->Get("deltaTime");
+	const YamlNode * deltaTimeNode = node->Get("deltaTime");
 	if (deltaTimeNode)
 		deltaTime = deltaTimeNode->AsFloat();
 		
-	YamlNode * deltaVariationNode = node->Get("deltaVariation");
+	const YamlNode * deltaVariationNode = node->Get("deltaVariation");
 	if (deltaVariationNode)
 		deltaVariation = deltaVariationNode->AsFloat();
 		
-	YamlNode * loopVariationNode = node->Get("loopVariation");
+	const YamlNode * loopVariationNode = node->Get("loopVariation");
 	if (loopVariationNode)
 		loopVariation = loopVariationNode->AsFloat();
 		
-	YamlNode * loopEndTimeNode = node->Get("loopEndTime");
+	const YamlNode * loopEndTimeNode = node->Get("loopEndTime");
 	if (loopEndTimeNode)
 		loopEndTime = loopEndTimeNode->AsFloat();
 	
 	frameStart = 0;
 	frameEnd = 0;
 
-	YamlNode * frameNode = node->Get("frame");
+	const YamlNode * frameNode = node->Get("frame");
 	if (frameNode)
 	{
 		if (frameNode->GetType() == YamlNode::TYPE_STRING)
@@ -1034,14 +1034,14 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 		}
 	}
 
-	YamlNode * isDisabledNode = node->Get("isDisabled");
+	const YamlNode * isDisabledNode = node->Get("isDisabled");
 	if (isDisabledNode)
 	{
 		isDisabled = isDisabledNode->AsBool();
 	}
 
 	// Load the Inner Emitter parameters.
-	YamlNode * innerEmitterPathNode = node->Get("innerEmitterPath");
+	const YamlNode * innerEmitterPathNode = node->Get("innerEmitterPath");
 	if (innerEmitterPathNode)
 	{
 		CreateInnerEmitter();

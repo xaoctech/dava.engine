@@ -116,7 +116,7 @@ void UISwitch::ReleaseControls()
     SafeRelease(toggle);
 }
 
-void UISwitch::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
+void UISwitch::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
     //release default buttons - they have to be loaded from yaml
     RemoveControl(buttonLeft);

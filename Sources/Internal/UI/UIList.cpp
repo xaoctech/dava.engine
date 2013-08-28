@@ -641,11 +641,11 @@ void UIList::SystemWillAppear()
 	Refresh();
 }
 
-void UIList::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
+void UIList::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
 	UIControl::LoadFromYamlNode(node, loader);
 		
-	YamlNode * orientNode = node->Get("orientation");
+	const YamlNode * orientNode = node->Get("orientation");
 	if (orientNode)
 	{
 		if (orientNode->AsString() == "ORIENTATION_VERTICAL")
@@ -658,13 +658,13 @@ void UIList::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 		}
 	}
 	// Load aggregator path
-	YamlNode * aggregatorPathNode = node->Get("aggregatorPath");
+	const YamlNode * aggregatorPathNode = node->Get("aggregatorPath");
 	if (aggregatorPathNode)
 	{
 		aggregatorPath = aggregatorPathNode->AsString();
 	}
 	// Load aggregator size
-	YamlNode * aggregatorSizeNode = node->Get("aggregatorSize");
+	const YamlNode * aggregatorSizeNode = node->Get("aggregatorSize");
 	if (aggregatorSizeNode)
 	{
 		aggregatorSize = aggregatorSizeNode->AsVector2();

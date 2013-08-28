@@ -52,7 +52,7 @@ public:
 
 	//Internal functions that do actual loading and saving.
 	void ProcessLoad(UIControl * rootControl, const FilePath & yamlPathname);
-	void LoadFromNode(UIControl * rootControl, YamlNode * node, bool needParentCallback);
+	void LoadFromNode(UIControl * rootControl, const YamlNode * node, bool needParentCallback);
 	
 	/**
      \brief	This function saves the UIControl's hierarchy to the YAML file passed.
@@ -69,12 +69,11 @@ public:
 
 	Font * GetFontByName(const String & fontName);
 	
-    int32 GetDrawTypeFromNode(YamlNode * drawTypeNode);
-	int32 GetColorInheritTypeFromNode(YamlNode * colorInheritNode);
-	int32 GetAlignFromYamlNode(YamlNode * align);
-	Rect GetRectFromYamlNode(YamlNode * rect);
-	bool GetBoolFromYamlNode(YamlNode * node, bool defaultValue);
-	Color GetColorFromYamlNode(YamlNode * node);
+    int32 GetDrawTypeFromNode(const YamlNode * drawTypeNode);
+	int32 GetColorInheritTypeFromNode(const YamlNode * colorInheritNode);
+	int32 GetAlignFromYamlNode(const YamlNode * align);
+	bool GetBoolFromYamlNode(const YamlNode * node, bool defaultValue);
+	Color GetColorFromYamlNode(const YamlNode * node);
 	
     String GetColorInheritTypeNodeValue(int32 colorInheritType);
     String GetDrawTypeNodeValue(int32 drawType);

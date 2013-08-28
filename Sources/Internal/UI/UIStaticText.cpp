@@ -220,18 +220,18 @@ const WideString & UIStaticText::GetText()
 	return textBlock->GetText();
 }
 
-void UIStaticText::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
+void UIStaticText::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
 	UIControl::LoadFromYamlNode(node, loader);
 	
-	YamlNode * fontNode = node->Get("font");
-	YamlNode * textNode = node->Get("text");
-	YamlNode * multilineNode = node->Get("multiline");
-    YamlNode * multilineBySymbolNode = node->Get("multilineBySymbol");
-    YamlNode * fittingNode = node->Get("fitting");
-	YamlNode * textColorNode = node->Get("textcolor");
-	YamlNode * shadowColorNode = node->Get("shadowcolor");
-	YamlNode * shadowOffsetNode = node->Get("shadowoffset");
+	const YamlNode * fontNode = node->Get("font");
+	const YamlNode * textNode = node->Get("text");
+	const YamlNode * multilineNode = node->Get("multiline");
+    const YamlNode * multilineBySymbolNode = node->Get("multilineBySymbol");
+    const YamlNode * fittingNode = node->Get("fitting");
+	const YamlNode * textColorNode = node->Get("textcolor");
+	const YamlNode * shadowColorNode = node->Get("shadowcolor");
+	const YamlNode * shadowOffsetNode = node->Get("shadowoffset");
 
 	if (fontNode)
 	{
@@ -287,7 +287,7 @@ void UIStaticText::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 		SetShadowOffset(shadowOffsetNode->AsVector2());
 	}
 
-	YamlNode * alignNode = node->Get("textalign");
+	const YamlNode * alignNode = node->Get("textalign");
 	SetTextAlign(loader->GetAlignFromYamlNode(alignNode)); // NULL is also OK here.
 }
 

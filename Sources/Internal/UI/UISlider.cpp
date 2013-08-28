@@ -425,20 +425,20 @@ List<UIControl* >& UISlider::GetRealChildren()
 	return realChildren;
 }
 	
-void UISlider::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
+void UISlider::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
 	UIControl::LoadFromYamlNode(node, loader);
 	
 	ReleaseAllSubcontrols();
-	YamlNode * thumbSpriteNode = node->Get("thumbSprite");
+	const YamlNode * thumbSpriteNode = node->Get("thumbSprite");
 
 	if (thumbSpriteNode)
 	{
 		// Yuri Coder, 2012/04/24. This is old configuration version without the subcontrols.
 		// Need to create sprite subcontrol.
 		InitThumb();
-		YamlNode * spriteNode = thumbSpriteNode->Get(0);
-		YamlNode * frameNode = thumbSpriteNode->Get(1);
+		const YamlNode * spriteNode = thumbSpriteNode->Get(0);
+		const YamlNode * frameNode = thumbSpriteNode->Get(1);
 		
 		if (spriteNode)
 		{
@@ -446,15 +446,15 @@ void UISlider::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 		}
 	}
 	
-	YamlNode * minSpriteNode = node->Get("minSprite");
+	const YamlNode * minSpriteNode = node->Get("minSprite");
 	
 	if (minSpriteNode)
 	{
 		// Yuri Coder, 2012/04/24. This is old configuration version without the subcontrols.
 		// Need to create min background subcontrol.
 		InitMinBackground();
-		YamlNode * spriteNode = minSpriteNode->Get(0);
-		YamlNode * frameNode = minSpriteNode->Get(1);
+		const YamlNode * spriteNode = minSpriteNode->Get(0);
+		const YamlNode * frameNode = minSpriteNode->Get(1);
 		
 		if (spriteNode)
 		{
@@ -462,15 +462,15 @@ void UISlider::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 		}
 	}
 	
-	YamlNode * maxSpriteNode = node->Get("maxSprite");
+	const YamlNode * maxSpriteNode = node->Get("maxSprite");
 	
 	if (maxSpriteNode)
 	{
 		// Yuri Coder, 2012/04/24. This is old configuration version without the subcontrols.
 		// Need to create max background subcontrol.
 		InitMaxBackground();
-		YamlNode * spriteNode = maxSpriteNode->Get(0);
-		YamlNode * frameNode = maxSpriteNode->Get(1);
+		const YamlNode * spriteNode = maxSpriteNode->Get(0);
+		const YamlNode * frameNode = maxSpriteNode->Get(1);
 		
 		if (spriteNode)
 		{
@@ -479,31 +479,31 @@ void UISlider::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 	}
 	
 	// Values
-	YamlNode * valueNode = node->Get("value");
+	const YamlNode * valueNode = node->Get("value");
 	
 	if (valueNode)
 		SetValue(valueNode->AsFloat());
 		
-	YamlNode * minValueNode= node->Get("minValue");
+	const YamlNode * minValueNode= node->Get("minValue");
 	
 	if (minValueNode)
 		SetMinValue(minValueNode->AsFloat());
 		
-	YamlNode * maxValueNode= node->Get("maxValue");
+	const YamlNode * maxValueNode= node->Get("maxValue");
 	
 	if (maxValueNode)
 		SetMaxValue(maxValueNode->AsFloat());
 	
 	
 	// Load the Min/Max draw types to apply them when the loading will be completed.
-	YamlNode * minDrawTypeNode = node->Get("minDrawType");
+	const YamlNode * minDrawTypeNode = node->Get("minDrawType");
 
 	if(minDrawTypeNode)
 	{
 		this->minDrawType =(UIControlBackground::eDrawType)loader->GetDrawTypeFromNode(minDrawTypeNode);
 	}
 	
-	YamlNode * maxDrawTypeNode = node->Get("maxDrawType");
+	const YamlNode * maxDrawTypeNode = node->Get("maxDrawType");
 	if(maxDrawTypeNode)
 	{
 		this->maxDrawType= (UIControlBackground::eDrawType)loader->GetDrawTypeFromNode(maxDrawTypeNode);

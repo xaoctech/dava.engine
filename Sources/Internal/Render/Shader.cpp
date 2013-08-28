@@ -303,28 +303,28 @@ bool Shader::LoadFromYaml(const FilePath & pathname)
         return false;
     }
     
-    YamlNode * vertexShaderNode = rootNode->Get("vertexShader");
+    const YamlNode * vertexShaderNode = rootNode->Get("vertexShader");
     if (!vertexShaderNode)
     {
         SafeRelease(parser);
         return false;
     }
 
-    YamlNode * glslVertexNode = vertexShaderNode->Get("glsl");
+    const YamlNode * glslVertexNode = vertexShaderNode->Get("glsl");
     if (!glslVertexNode)
     {
         SafeRelease(parser);
         return false;
     }
     
-    YamlNode * fragmentShaderNode = rootNode->Get("fragmentShader");
+    const YamlNode * fragmentShaderNode = rootNode->Get("fragmentShader");
     if (!fragmentShaderNode)
     {
         SafeRelease(parser);
         return false;
     }
     
-    YamlNode * glslFragmentNode = fragmentShaderNode->Get("glsl");
+    const YamlNode * glslFragmentNode = fragmentShaderNode->Get("glsl");
     if (!glslFragmentNode)
     {
         SafeRelease(parser);

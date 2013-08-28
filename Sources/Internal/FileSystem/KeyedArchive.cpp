@@ -149,19 +149,19 @@ bool KeyedArchive::LoadFromYamlFile(const FilePath & pathName)
 	return retValue;
 }
 
-bool KeyedArchive::LoadFromYamlNode(YamlNode* rootNode)
+bool KeyedArchive::LoadFromYamlNode(const YamlNode* rootNode)
 {
     if(NULL == rootNode)
     {
         return  false;
     }
 
-    Vector<YamlNode*> &rootVector = rootNode->Get(VariantType::TYPENAME_KEYED_ARCHIVE)->AsVector();
+    const Vector<YamlNode*> &rootVector = rootNode->Get(VariantType::TYPENAME_KEYED_ARCHIVE)->AsVector();
     
     for (Vector<YamlNode*>::const_iterator it = rootVector.begin(); it != rootVector.end(); ++it)
     {
-		YamlNode * node = *it;
-		String variableNameToArchMap = node->AsString();
+		const YamlNode * node = *it;
+		const String &variableNameToArchMap = node->AsString();
 
         VariantType *value = new VariantType(node->AsVariantType());
                 

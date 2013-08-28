@@ -438,7 +438,7 @@ public:
 	 \brief Function to load render state from yaml node.
 	 \param[in] rootNode root yaml node
 	 */
-	void LoadFromYamlNode(YamlNode * rootNode);
+	void LoadFromYamlNode(const YamlNode * rootNode);
 
     /**
      \brief Function to save render state to yaml file.

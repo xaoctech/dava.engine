@@ -87,9 +87,9 @@ namespace DAVA
         identifier = srcListCell->identifier;
     }
     
-    void UIListCell::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
+    void UIListCell::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 	{
-        YamlNode * identifierNode = node->Get("identifier");
+        const YamlNode * identifierNode = node->Get("identifier");
         if (identifierNode)
         {
             identifier = identifierNode->AsString();

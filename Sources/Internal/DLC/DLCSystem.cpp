@@ -169,7 +169,7 @@ void DLCSystem::DownloadComplete(FileDownloaderDelegate::DownloadStatusCode stat
         {
             // Create DLC files descriptions
             YamlParser * parser = YamlParser::Create(indexFilePath + "IndexDLC.yaml");
-            YamlNode * rootNode = parser->GetRootNode()->Get( "downloads" );
+            const YamlNode * rootNode = parser->GetRootNode()->Get( "downloads" );
             for ( uint16 roonInd = 0; roonInd < rootNode->GetCount(); ++roonInd )
             {
                 DLCSource * dlcSource = new DLCSource( rootNode->Get(roonInd) );
@@ -462,7 +462,7 @@ const DLCSource * DLCSystem::GetDLCSource(const uint16 index)
     
 
 // DLCSource imlementation
-DLCSource::DLCSource(YamlNode* node)
+DLCSource::DLCSource(const YamlNode* node)
     : BaseObject()
     , name("")
     , pathOnServer("")
