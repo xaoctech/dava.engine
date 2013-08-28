@@ -45,7 +45,7 @@ public:
 	//! Basic
 	inline Vector2();
 	inline Vector2(float32 _x, float32 _y);
-	inline Vector2(float32 *_data);
+	inline Vector2(const float32 *_data);
 	inline Vector2 & operator =(const Vector2 & _v);
 
 	//! Set functions
@@ -122,7 +122,7 @@ public:
 
 	inline Vector3();
 	inline Vector3(float32 _x, float32 _y, float32 _z);
-	inline Vector3(float32 *_data);
+	inline Vector3(const float32 *_data);
 	explicit inline Vector3(const Vector2 & v);
 	inline Vector3 & operator =(const Vector3 & _v);
 	inline Vector3 & operator =(const Vector2 & _v);
@@ -273,7 +273,7 @@ inline Vector2::Vector2(float32 _x, float32 _y)
 	y = _y;
 }
 
-inline Vector2::Vector2(float32 *_data)
+inline Vector2::Vector2(const float32 *_data)
 {
 	data[0] = _data[0];
 	data[1] = _data[1];
@@ -474,7 +474,7 @@ inline Vector3::Vector3(float32 _x, float32 _y, float32 _z)
 	z = _z;
 }
 
-inline Vector3::Vector3(float32 *_data)
+inline Vector3::Vector3(const float32 *_data)
 {
 	data[0] = _data[0];
 	data[1] = _data[1];
