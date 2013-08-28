@@ -111,7 +111,7 @@ void YamlNode::Print(int32 identation)
 	}
 }
 
-void YamlNode::PrintToFile(DAVA::File* file, uint32 identationDepth)
+void YamlNode::PrintToFile(DAVA::File* file, uint32 identationDepth) const
 {
     if (type == TYPE_STRING)
     {
@@ -160,7 +160,7 @@ void YamlNode::PrintToFile(DAVA::File* file, uint32 identationDepth)
 		delete[] spacesBuffer;
 
         file->WriteNonTerminatedString("\r\n" + spaces );
-        for (MultiMap<String, YamlNode*>::iterator t = objectMap.begin(); t != objectMap.end(); ++t )
+        for (MultiMap<String, YamlNode*>::const_iterator t = objectMap.begin(); t != objectMap.end(); ++t )
         {
 
             String strToFile( t->first + ": ");
@@ -1256,7 +1256,7 @@ bool YamlParser::Parse(const FilePath & pathName)
 	return true;
 }
 	
-bool YamlParser::SaveToYamlFile(const FilePath & fileName, YamlNode * rootNode, bool skipRootNode, uint32 attr /*= File::CREATE | File::WRITE*/)
+bool YamlParser::SaveToYamlFile(const FilePath & fileName, const YamlNode * rootNode, bool skipRootNode, uint32 attr /*= File::CREATE | File::WRITE*/)
 {
     // Firstly try to check whether the file can be created.
 	File * yamlFileToSave = File::Create(fileName, attr);
@@ -1278,7 +1278,8 @@ bool YamlParser::SaveToYamlFile(const FilePath & fileName, YamlNode * rootNode, 
             DVASSERT(rootNode->GetType() == YamlNode::TYPE_MAP);
             const MultiMap<String, YamlNode*> & childrenList = rootNode->AsMap();
             
-            const Vector<YamlNodeKeyValuePair>& orderedRootLevelItems = OrderMapYamlNode(childrenList);
+            Vector<YamlNodeKeyValuePair> orderedRootLevelItems;
+            OrderMapYamlNode(childrenList, orderedRootLevelItems);
             for (Vector<YamlNodeKeyValuePair>::const_iterator iter = orderedRootLevelItems.begin();
                  iter != orderedRootLevelItems.end(); iter ++)
             {
@@ -1340,7 +1341,7 @@ bool YamlParser::SaveStringsList(const FilePath & fileName, YamlNode * rootNode,
 	return saveSucceeded;
 }
 
-bool YamlParser::WriteStringListNodeToYamlFie(File* fileToSave, const String& nodeName, YamlNode* currentNode)
+bool YamlParser::WriteStringListNodeToYamlFie(File* fileToSave, const String& nodeName, const YamlNode* currentNode) const
 {
 	const char16* NAME_VALUE_DELIMITER = L"\": ";
 	WideString resultString = L"\"";
@@ -1364,10 +1365,9 @@ bool YamlParser::WriteStringListNodeToYamlFie(File* fileToSave, const String& no
 	return WriteStringToYamlFile(fileToSave, resultString);
 }
 	
-Vector<YamlNodeKeyValuePair> YamlParser::OrderMapYamlNode(const MultiMap<String, YamlNode*>& mapNodes)
+void YamlParser::OrderMapYamlNode(const MultiMap<String, YamlNode*>& mapNodes, Vector<YamlNodeKeyValuePair> &sortedChildren ) const
 {
     // Order the map nodes by the "Relative Depth".
-    Vector<YamlNodeKeyValuePair> sortedChildren;
     for (MultiMap<String, YamlNode*>::const_iterator t = mapNodes.begin(); t != mapNodes.end(); ++t)
     {
         // Only the nodes of type Map are expected here.
@@ -1380,10 +1380,9 @@ Vector<YamlNodeKeyValuePair> YamlParser::OrderMapYamlNode(const MultiMap<String,
     }
 
     std::sort(sortedChildren.begin(), sortedChildren.end());
-    return sortedChildren;
 }
-    
-bool YamlParser::WriteScalarNodeToYamlFile(File* fileToSave, const String& nodeName, const String& nodeValue, int16 depth)
+
+bool YamlParser::WriteScalarNodeToYamlFile(File* fileToSave, const String& nodeName, const String& nodeValue, int16 depth) const
 {
     if (nodeName.compare(YamlNode::YAML_NODE_RELATIVE_DEPTH_NAME) == 0)
     {
@@ -1403,7 +1402,7 @@ bool YamlParser::WriteScalarNodeToYamlFile(File* fileToSave, const String& nodeN
 }
 
 bool YamlParser::WriteArrayNodeToYamlFile(File* fileToSave, const String& nodeName,
-                                          YamlNode* currentNode, int16 depth)
+                                          const YamlNode* currentNode, int16 depth) const
 {
     DVASSERT(currentNode->GetType() == YamlNode::TYPE_ARRAY);
 
@@ -1411,8 +1410,8 @@ bool YamlParser::WriteArrayNodeToYamlFile(File* fileToSave, const String& nodeNa
     return WriteStringToYamlFile(fileToSave, resultString);
 }
 
-String YamlParser::GetArrayNodeRepresentation(const String& nodeName, YamlNode* currentNode,
-                                              int16 depth, bool writeAsOuterNode)
+String YamlParser::GetArrayNodeRepresentation(const String& nodeName, const YamlNode* currentNode,
+                                              int16 depth, bool writeAsOuterNode) const
 {
     DVASSERT(currentNode->GetType() == YamlNode::TYPE_ARRAY);
     
@@ -1479,7 +1478,7 @@ String YamlParser::GetArrayNodeRepresentation(const String& nodeName, YamlNode* 
     return resultString;
 }
 
-bool YamlParser::WriteStringToYamlFile(File* fileToSave, const String& stringToWrite)
+bool YamlParser::WriteStringToYamlFile(File* fileToSave, const String& stringToWrite) const
 {
     uint32 prevFileSize = fileToSave->GetSize();
     uint32 bytesWritten = fileToSave->Write(stringToWrite.c_str(), stringToWrite.size());
@@ -1487,14 +1486,14 @@ bool YamlParser::WriteStringToYamlFile(File* fileToSave, const String& stringToW
     return (fileToSave->GetSize() == prevFileSize + bytesWritten);
 }
 
-bool YamlParser::WriteStringToYamlFile(File* fileToSave, const WideString& stringToWrite)
+bool YamlParser::WriteStringToYamlFile(File* fileToSave, const WideString& stringToWrite) const
 {
 	// Yaml contains UTF8 strings only.
 	String utf8String = UTF8Utils::EncodeToUTF8(stringToWrite);
 	return WriteStringToYamlFile(fileToSave, utf8String);
 }
 
-bool YamlParser::WriteMapNodeToYamlFile(File* fileToSave, const String& mapNodeName, int16 depth)
+bool YamlParser::WriteMapNodeToYamlFile(File* fileToSave, const String& mapNodeName, int16 depth) const
 {
     const char8* MAP_DELIMITER = ":";
 
@@ -1516,7 +1515,7 @@ bool YamlParser::WriteMapNodeToYamlFile(File* fileToSave, const String& mapNodeN
     return WriteStringToYamlFile(fileToSave, resultString);
 }
  
-String YamlParser::PrepareIdentedString(int16 depth)
+String YamlParser::PrepareIdentedString(int16 depth) const
 {
     const int32  IDENTATION_SPACES_COUNT = 4;
     const char8  IDENTATION_CHAR = 0x20;
@@ -1532,7 +1531,7 @@ String YamlParser::PrepareIdentedString(int16 depth)
 }
 
 bool YamlParser::SaveNodeRecursive(File* fileToSave, const String& nodeName,
-                                   YamlNode* currentNode, int16 depth)
+                                   const YamlNode* currentNode, int16 depth) const
 {
     switch (currentNode->GetType())
     {
@@ -1582,7 +1581,8 @@ bool YamlParser::SaveNodeRecursive(File* fileToSave, const String& nodeName,
             }
 
             // Order the map nodes by the "Relative Depth" and write.
-            const Vector<YamlNodeKeyValuePair>& sortedMapNodes = OrderMapYamlNode(mapNodes);
+            Vector<YamlNodeKeyValuePair> sortedMapNodes;
+            OrderMapYamlNode(mapNodes, sortedMapNodes);
             for (std::vector<YamlNodeKeyValuePair>::const_iterator t = sortedMapNodes.begin(); t != sortedMapNodes.end(); ++t)
             {
                 SaveNodeRecursive(fileToSave, (*t).GetNodeName(), (*t).GetNodeValue(), depth);
