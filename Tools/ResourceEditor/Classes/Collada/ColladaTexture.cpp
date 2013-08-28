@@ -8,6 +8,8 @@
 #include "Utils/Utils.h"
 #include "../Qt/Main/QtUtils.h"
 
+#include "Classes/CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
+
 ///*
 // INCLUDE DevIL
 // */
@@ -75,6 +77,9 @@ ColladaTexture::ColladaTexture(FCDImage * _image)
     Image * image = CreateTopLevelImage(fileName);
     if (image)
     {
+        //VK: create default descriptor for new material textures
+        TextureDescriptorUtils::CreateDescriptorIfNeed(fileName);
+        
         bool opacityFound = false;
         
         int32 height = image->GetHeight();
