@@ -64,8 +64,8 @@ private:
 	
 	Vector<Entity*> entities;
 
-	void UpdateLod(Entity * entity);
-	void RecheckLod(Entity * entity);
+	void UpdateLod(Entity * entity, float32 psLodOffsetSq, float32 psLodMultSq);
+	void RecheckLod(Entity * entity, float32 psLodOffsetSq, float32 psLodMultSq);
 
 	Camera * camera;
 };
