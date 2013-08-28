@@ -1109,6 +1109,7 @@ void QtMainWindow::OnAddEntityMenuAboutToShow()
 	SceneEditor2* sceneEditor = GetCurrentScene();
 	if(NULL == sceneEditor)
 	{
+		ui->actionUniteEntitiesWithLODs->setEnabled(false);
 		return;
 	}
 	int32 selectedItemsNumber =	sceneEditor->selectionSystem->GetSelection()->Size();
