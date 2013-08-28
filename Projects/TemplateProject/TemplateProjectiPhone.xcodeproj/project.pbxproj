@@ -338,7 +338,7 @@
 					./../dava.framework/Sources/Internal,
 					./../dava.framework/Sources/External,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				LIBRARY_SEARCH_PATHS = ./../dava.framework/Libs/libs;
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -365,7 +365,7 @@
 					./../dava.framework/Sources/Internal,
 					./../dava.framework/Sources/External,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				LIBRARY_SEARCH_PATHS = ./../dava.framework/Libs/libs;
 				OTHER_LDFLAGS = (
 					"-ObjC",
