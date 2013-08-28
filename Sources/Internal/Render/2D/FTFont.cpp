@@ -395,6 +395,8 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
 							++readBuf;
 						}
 						writeBuf += bufWidth-realW;
+						// DF-1827 - Increment read buffer with proper value
+						readBuf += (int32)bitmap->width-realW;
 					}
 					if(writeBuf > resultBuf + ind)
 					{
