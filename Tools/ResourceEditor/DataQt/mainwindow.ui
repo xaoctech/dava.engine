@@ -305,6 +305,13 @@
      <addaction name="actionDynamicBlendModeAlpha"/>
      <addaction name="actionDynamicBlendModeMultiply"/>
     </widget>
+    <widget class="QMenu" name="menuLandscape">
+     <property name="title">
+      <string>Landscape</string>
+     </property>
+     <addaction name="actionSaveHeightmapToPNG"/>
+     <addaction name="actionSaveTiledTexture"/>
+    </widget>
     <addaction name="actionMaterialEditor"/>
     <addaction name="actionTextureConverter"/>
     <addaction name="separator"/>
@@ -323,6 +330,8 @@
     <addaction name="actionSkyboxEditor"/>
     <addaction name="actionSetShadowColor"/>
     <addaction name="menuDynamicShadowBlendMode"/>
+    <addaction name="separator"/>
+    <addaction name="menuLandscape"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -1558,6 +1567,16 @@
   <action name="actionUniteEntitiesWithLODs">
    <property name="text">
     <string>Group to entity with merged LODs</string>
+   </property>
+  </action>
+  <action name="actionSaveHeightmapToPNG">
+   <property name="text">
+    <string>Save Heightmap to PNG</string>
+   </property>
+  </action>
+  <action name="actionSaveTiledTexture">
+   <property name="text">
+    <string>Save Tiled Texture</string>
    </property>
   </action>
  </widget>
