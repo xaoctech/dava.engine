@@ -27,6 +27,8 @@
 #include "../../Commands/FileCommands.h"
 #include "../../Commands/CommandsManager.h"
 
+#include "Classes/CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
+
 #include "DAVAEngine.h"
 using namespace DAVA;
 
@@ -51,6 +53,12 @@ DAVA::FilePath GetOpenFileName(const DAVA::String &title, const DAVA::FilePath &
         //Need to Show Error
 		ShowErrorDialog(String(Format("File(%s) was selected from incorect project.", openedPathname.GetAbsolutePathname().c_str())));
         openedPathname = FilePath();
+    }
+    
+    if(openedPathname.IsEqualToExtension(".png"))
+    {
+        //VK: create descriptor only for *.png without paired *.tex
+        TextureDescriptorUtils::CreateDescriptorIfNeed(openedPathname);
     }
     
     return openedPathname;
