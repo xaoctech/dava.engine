@@ -320,20 +320,11 @@ NMaterial * ParticleLayer3D::GetMaterial()
 void ParticleLayer3D::SetAdditive(bool additive)
 {
 	ParticleLayer::SetAdditive(additive);
-	if(additive)
-	{
-        NMaterial * material = MaterialSystem::Instance()->GetMaterial("Global.Textured.VertexColor.ParticlesAdditive");
-		DVASSERT(material);
-		
-        renderBatch->SetMaterial(material);
-	}
-	else
-	{
-        NMaterial * material = MaterialSystem::Instance()->GetMaterial("Global.Textured.VertexColor.ParticlesBlend");
-		DVASSERT(material);
-		
-        renderBatch->SetMaterial(material);
-	}
+	NMaterial * material = MaterialSystem::Instance()->GetMaterial(
+		(additive) ? "Global.Textured.VertexColor.ParticlesAdditive" : "Global.Textured.VertexColor.ParticlesBlend");
+	DVASSERT(material);
+
+	renderBatch->SetMaterial(material);
 }
 
 bool ParticleLayer3D::IsLong()

@@ -117,7 +117,7 @@ void SpriteRenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
 
 	RenderManager::Instance()->SetRenderData(renderDataObject);
-	material->BindMaterialTechnique(ownerRenderPass);
+	material->BindMaterialTechnique(ownerRenderPass, camera);
 
 	RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, spriteObject->GetFrame() * 4, 4);
 }

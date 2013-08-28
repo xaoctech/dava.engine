@@ -65,6 +65,7 @@ public:
     uint32 size;
     void * data;
 };
+	
     
 class MaterialTechnique
 {
@@ -85,7 +86,8 @@ protected:
     RenderState * renderState;
     FastNameSet uniqueDefines;
 };
- 
+
+class Camera;
 class NMaterial : public DataNode
 {
 public:
@@ -115,7 +117,7 @@ public:
 
     
     void AddMaterialTechnique(const FastName & techniqueName, MaterialTechnique * materialTechnique);
-    void BindMaterialTechnique(const FastName & techniqueName);
+    void BindMaterialTechnique(const FastName & techniqueName, Camera* camera);
     MaterialTechnique * GetTechnique(const FastName & techniqueName);
         
     void Draw(PolygonGroup * polygonGroup);
@@ -188,6 +190,7 @@ private:
 	void UnPropagateParentDefines();
 	
 	void BindTextures(NMaterial* curMaterial, RenderState* rs);
+	void SetupPerFrameProperties(Camera* camera);
 			
 public:
     INTROSPECTION_EXTEND(NMaterial, DataNode,
