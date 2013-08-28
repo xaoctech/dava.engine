@@ -28,7 +28,7 @@ namespace DAVA
 		virtual UIControl *Clone();
 
 		virtual YamlNode* SaveToYamlNode(UIYamlLoader * loader);
-		virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
+		virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
 		virtual List<UIControl* >& GetRealChildren();
 	
 		void AddAggregatorChild(UIControl* uiControl);

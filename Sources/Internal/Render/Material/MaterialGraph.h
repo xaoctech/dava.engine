@@ -35,7 +35,7 @@ public:
     ~MaterialGraph();
     
     bool LoadFromFile(const FilePath & pathname);
-    bool LoadNode(YamlNode * graphNode);
+    bool LoadNode(const YamlNode * graphNode);
     
     void SortByDepthMarkerAndRemoveUnused();
     

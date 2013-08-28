@@ -208,7 +208,7 @@ const Vector2 UIScrollView::GetContentSize() const
 	return Vector2(contentRect.dx, contentRect.dy);
 }
 		
-void UIScrollView::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
+void UIScrollView::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
 	RemoveControl(scrollContainer);
 	SafeRelease(scrollContainer);

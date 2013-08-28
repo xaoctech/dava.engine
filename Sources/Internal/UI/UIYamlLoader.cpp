@@ -33,7 +33,7 @@ UIYamlLoader::UIYamlLoader() :
 	currentPath = FilePath();
 }
 
-int32 UIYamlLoader::GetDrawTypeFromNode(YamlNode * drawTypeNode)
+int32 UIYamlLoader::GetDrawTypeFromNode(const YamlNode * drawTypeNode)
 {
     int32 ret = UIControlBackground::DRAW_ALIGNED;
     if(!drawTypeNode)
@@ -92,7 +92,7 @@ String UIYamlLoader::GetDrawTypeNodeValue(int32 drawType)
     return ret;
 }
     
-int32 UIYamlLoader::GetColorInheritTypeFromNode(YamlNode * colorInheritNode)
+int32 UIYamlLoader::GetColorInheritTypeFromNode(const YamlNode * colorInheritNode)
 {
 	int32 ret = UIControlBackground::COLOR_IGNORE_PARENT;
 	if(!colorInheritNode)
@@ -139,11 +139,11 @@ String UIYamlLoader::GetColorInheritTypeNodeValue(int32 colorInheritType)
     return ret;
 }
 	
-int32 UIYamlLoader::GetAlignFromYamlNode(YamlNode * alignNode)
+int32 UIYamlLoader::GetAlignFromYamlNode(const YamlNode * alignNode)
 {
 	if (!alignNode)return ALIGN_HCENTER | ALIGN_VCENTER;
 	
-	Vector<YamlNode*> & vec = alignNode->AsVector();
+	const Vector<YamlNode*> & vec = alignNode->AsVector();
 	if (vec.size() != 2)return ALIGN_HCENTER | ALIGN_VCENTER;
 	
 	const String & horzAlign = vec[0]->AsString();
@@ -200,7 +200,7 @@ YamlNode * UIYamlLoader::GetAlignNodeValue(int32 align)
 	return alignNode;
 }
 	
-bool UIYamlLoader::GetBoolFromYamlNode(YamlNode * node, bool defaultValue)
+bool UIYamlLoader::GetBoolFromYamlNode(const YamlNode * node, bool defaultValue)
 {
 	if (!node)return defaultValue;
 	
@@ -220,12 +220,12 @@ int32 HexCharToInt(char c)
 	return 0;
 }
 
-Color UIYamlLoader::GetColorFromYamlNode(YamlNode * node)
+Color UIYamlLoader::GetColorFromYamlNode(const YamlNode * node)
 {
 	if (node->GetType() == YamlNode::TYPE_ARRAY)
 	{
 		if (node->GetCount() == 4)
-			return Color(node->Get(0)->AsFloat(), node->Get(1)->AsFloat(), node->Get(2)->AsFloat(), node->Get(3)->AsFloat());
+			return node->AsColor();
 		else return Color(1.0f, 1.0f, 1.0f, 1.0f);
 	}else
 	{
@@ -295,21 +295,21 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const FilePath & yamlPat
         return;
     }
 	
-	for (MultiMap<String, YamlNode*>::iterator t = rootNode->AsMap().begin(); t != rootNode->AsMap().end(); ++t)
+	for (MultiMap<String, YamlNode*>::const_iterator t = rootNode->AsMap().begin(); t != rootNode->AsMap().end(); ++t)
 	{
 		YamlNode * node = t->second;
-		YamlNode * typeNode = node->Get("type");
+		const YamlNode * typeNode = node->Get("type");
 		if (!typeNode)continue;
 		
 		const String & type = typeNode->AsString();
 		if (type == "FTFont")
 		{
 			// parse font
-			YamlNode * fontNameNode = node->Get("name");
+			const YamlNode * fontNameNode = node->Get("name");
 			if (!fontNameNode)continue;
 			
 			float32 fontSize = 10.0f;
-			YamlNode * fontSizeNode = node->Get("size");
+			const YamlNode * fontSizeNode = node->Get("size");
 			if (fontSizeNode)fontSize = fontSizeNode->AsFloat();
 			
 			FTFont * font = FTFont::Create(fontNameNode->AsString());
@@ -321,14 +321,14 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const FilePath & yamlPat
 			font->SetSize(fontSize);
 			
 			
-			YamlNode * fontColorNode = node->Get("color");
+			const YamlNode * fontColorNode = node->Get("color");
 			if (fontColorNode)
 			{
 				Color color = GetColorFromYamlNode(fontColorNode);
 				font->SetColor(color);
 			}
             
-            YamlNode * fontVerticalSpacingNode = node->Get("verticalSpacing");
+            const YamlNode * fontVerticalSpacingNode = node->Get("verticalSpacing");
             if(fontVerticalSpacingNode)
             {
                 font->SetVerticalSpacing(fontVerticalSpacingNode->AsInt());
@@ -340,10 +340,10 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const FilePath & yamlPat
 		else if(type == "GraphicsFont")
 		{
 			// parse font
-			YamlNode * fontNameNode = node->Get("sprite");
+			const YamlNode * fontNameNode = node->Get("sprite");
 			if (!fontNameNode)continue;
 
-			YamlNode * definitionNode = node->Get("definition");
+			const YamlNode * definitionNode = node->Get("definition");
 			if (!definitionNode)continue;
 
 			GraphicsFont * font = GraphicsFont::Create(definitionNode->AsString(), fontNameNode->AsString());
@@ -352,13 +352,13 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const FilePath & yamlPat
                 continue;
             }
 
-			YamlNode * fontSizeNode = node->Get("size");
+			const YamlNode * fontSizeNode = node->Get("size");
 			if (fontSizeNode)
 			{
 				font->SetSize(fontSizeNode->AsFloat());
 			}
             
-            YamlNode * fontColorNode = node->Get("color");
+            const YamlNode * fontColorNode = node->Get("color");
 			if (fontColorNode)
 			{
 				Color color = GetColorFromYamlNode(fontColorNode);
@@ -369,13 +369,13 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const FilePath & yamlPat
                 font->SetColor(1.f, 1.f, 1.f, 1.f);
             }
             
-            YamlNode * fontVerticalSpacingNode = node->Get("verticalSpacing");
+            const YamlNode * fontVerticalSpacingNode = node->Get("verticalSpacing");
             if(fontVerticalSpacingNode)
             {
                 font->SetVerticalSpacing(fontVerticalSpacingNode->AsInt());
             }
             
-            YamlNode * fontHorizontalSpacingNode = node->Get("horizontalSpacing");
+            const YamlNode * fontHorizontalSpacingNode = node->Get("horizontalSpacing");
             if(fontHorizontalSpacingNode)
             {
                 font->SetHorizontalSpacing(fontHorizontalSpacingNode->AsInt());
@@ -420,8 +420,7 @@ bool UIYamlLoader::ProcessSave(UIControl * rootControl, const FilePath & yamlPat
 	uint32 fileAttr = File::CREATE | File::WRITE;
 	//save used fonts
 	const FontManager::TRACKED_FONTS& usedFonts = FontManager::Instance()->GetTrackedFont();
-	YamlNode fontsNode(YamlNode::TYPE_MAP);
-	MultiMap<String, YamlNode*> &fontsMap = fontsNode.AsMap();
+	ScopedPtr<YamlNode> fontsNode( new YamlNode(YamlNode::TYPE_MAP) );
 	for (FontManager::TRACKED_FONTS::const_iterator iter = usedFonts.begin();
 		 iter != usedFonts.end();
 		 ++iter)
@@ -432,14 +431,14 @@ bool UIYamlLoader::ProcessSave(UIControl * rootControl, const FilePath & yamlPat
 		
 		// The font should be stored once only.
         String fontName = FontManager::Instance()->GetFontName(font);
-		if (fontsMap.find(fontName) == fontsMap.end())
+		if (fontsNode->AsMap().find(fontName) == fontsNode->AsMap().end())
 		{
-			fontsMap.insert(std::pair<String, YamlNode*>(fontName, font->SaveToYamlNode()));
+            fontsNode->AddNodeToMap( fontName, font->SaveToYamlNode() );
 		}
 	}
 
 	//resultNode
-	parser->SaveToYamlFile(yamlPathname, &fontsNode, true, File::CREATE | File::WRITE);
+	parser->SaveToYamlFile(yamlPathname, fontsNode, true, File::CREATE | File::WRITE);
 	fileAttr = File::APPEND | File::WRITE;
 	
     // Save the resulting YAML file to the path passed.
@@ -454,21 +453,21 @@ bool UIYamlLoader::ProcessSave(UIControl * rootControl, const FilePath & yamlPat
     return savedOK;
 }
 	
-void UIYamlLoader::LoadFromNode(UIControl * parentControl, YamlNode * rootNode, bool needParentCallback)
+void UIYamlLoader::LoadFromNode(UIControl * parentControl, const YamlNode * rootNode, bool needParentCallback)
 {
 	//for (Map<String, YamlNode*>::iterator t = rootNode->AsMap().begin(); t != rootNode->AsMap().end(); ++t)
 	int cnt = rootNode->GetCount();
 	for (int k = 0; k < cnt; ++k)
 	{
-		YamlNode * node = rootNode->Get(k);
-		YamlNode * typeNode = node->Get("type");
+		const YamlNode * node = rootNode->Get(k);
+		const YamlNode * typeNode = node->Get("type");
 		if (!typeNode)continue;
 		const String & type = typeNode->AsString();
 		if (type == "FTFont")continue;
 		if (type == "GraphicsFont")continue;
 
 		// Base Type might be absent.
-		YamlNode* baseTypeNode = node->Get("baseType");
+		const YamlNode* baseTypeNode = node->Get("baseType");
 		const String baseType = baseTypeNode ? baseTypeNode->AsString() : String();
 
 		// The control can be loaded either from its Type or from Base Type (depending on

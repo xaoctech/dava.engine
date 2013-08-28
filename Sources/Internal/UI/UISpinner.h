@@ -117,7 +117,7 @@ public:
     SpinnerAdapter * GetAdater() {return adapter;}
     void SetAdapter(SpinnerAdapter * adapter);
 
-    virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
+    virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
     virtual void LoadFromYamlNodeCompleted();
     virtual void CopyDataFrom(UIControl *srcControl);
     virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);

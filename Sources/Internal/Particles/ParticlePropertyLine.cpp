@@ -19,9 +19,9 @@
 namespace DAVA
 {
 
-RefPtr<PropertyLine<float32> > PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(YamlNode * parentNode, const String & propertyName, RefPtr<PropertyLine<float32> > defaultPropertyLine)
+RefPtr<PropertyLine<float32> > PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(const YamlNode * parentNode, const String & propertyName, RefPtr<PropertyLine<float32> > defaultPropertyLine)
 {
-	YamlNode * node = parentNode->Get(propertyName);
+	const YamlNode * node = parentNode->Get(propertyName);
 	if (!node)return defaultPropertyLine;
 
 	if (node->GetType() == YamlNode::TYPE_STRING)
@@ -33,8 +33,8 @@ RefPtr<PropertyLine<float32> > PropertyLineYamlReader::CreateFloatPropertyLineFr
 
 		for (int k = 0; k < node->GetCount() / 2; ++k)
 		{
-			YamlNode * time = node->Get(k * 2);
-			YamlNode * value = node->Get(k * 2 + 1);
+			const YamlNode * time = node->Get(k * 2);
+			const YamlNode * value = node->Get(k * 2 + 1);
 
 			if (time && value)
 			{
@@ -46,9 +46,9 @@ RefPtr<PropertyLine<float32> > PropertyLineYamlReader::CreateFloatPropertyLineFr
 	return RefPtr<PropertyLine<float32> >();
 }
 
-RefPtr< PropertyLine<Vector2> > PropertyLineYamlReader::CreateVector2PropertyLineFromYamlNode( YamlNode * parentNode, const String & propertyName, RefPtr< PropertyLine<Vector2> > defaultPropertyLine /*= 0*/ )
+RefPtr< PropertyLine<Vector2> > PropertyLineYamlReader::CreateVector2PropertyLineFromYamlNode( const YamlNode * parentNode, const String & propertyName, RefPtr< PropertyLine<Vector2> > defaultPropertyLine /*= 0*/ )
 {
-	YamlNode * node = parentNode->Get(propertyName);
+	const YamlNode * node = parentNode->Get(propertyName);
 	if (!node)return defaultPropertyLine;
 
 	if (node->GetType() == YamlNode::TYPE_STRING)
@@ -68,8 +68,8 @@ RefPtr< PropertyLine<Vector2> > PropertyLineYamlReader::CreateVector2PropertyLin
 
 		for (int k = 0; k < node->GetCount() / 2; ++k)
 		{
-			YamlNode * time = node->Get(k * 2);
-			YamlNode * value = node->Get(k * 2 + 1);
+			const YamlNode * time = node->Get(k * 2);
+			const YamlNode * value = node->Get(k * 2 + 1);
 
 			if (time && value)
 			{
@@ -89,9 +89,9 @@ RefPtr< PropertyLine<Vector2> > PropertyLineYamlReader::CreateVector2PropertyLin
 
 	return RefPtr< PropertyLine<Vector2> >();
 }
-    RefPtr< PropertyLine<Vector3> > PropertyLineYamlReader::CreateVector3PropertyLineFromYamlNode( YamlNode * parentNode, const String & propertyName, RefPtr< PropertyLine<Vector3> > defaultPropertyLine /*= 0*/ )
+    RefPtr< PropertyLine<Vector3> > PropertyLineYamlReader::CreateVector3PropertyLineFromYamlNode( const YamlNode * parentNode, const String & propertyName, RefPtr< PropertyLine<Vector3> > defaultPropertyLine /*= 0*/ )
     {
-        YamlNode * node = parentNode->Get(propertyName);
+        const YamlNode * node = parentNode->Get(propertyName);
         if (!node)return defaultPropertyLine;
         
         if (node->GetType() == YamlNode::TYPE_STRING)
@@ -127,8 +127,8 @@ RefPtr< PropertyLine<Vector2> > PropertyLineYamlReader::CreateVector2PropertyLin
             
             for (int k = 0; k < node->GetCount() / 2; ++k)
             {
-                YamlNode * time = node->Get(k * 2);
-                YamlNode * value = node->Get(k * 2 + 1);
+                const YamlNode * time = node->Get(k * 2);
+                const YamlNode * value = node->Get(k * 2 + 1);
                 
                 if (time && value)
                 {
@@ -157,7 +157,7 @@ RefPtr< PropertyLine<Vector2> > PropertyLineYamlReader::CreateVector2PropertyLin
     }
     
     
-Color ColorFromYamlNode(YamlNode * node)
+Color ColorFromYamlNode(const YamlNode * node)
 {
 	Color c;
 	c.r = node->Get(0)->AsFloat() / 255.0f;
@@ -167,9 +167,9 @@ Color ColorFromYamlNode(YamlNode * node)
 	return c;
 }
 
-RefPtr< PropertyLine<Color> > PropertyLineYamlReader::CreateColorPropertyLineFromYamlNode( YamlNode * parentNode, const String & propertyName, RefPtr< PropertyLine<Color> > defaultPropertyLine)
+RefPtr< PropertyLine<Color> > PropertyLineYamlReader::CreateColorPropertyLineFromYamlNode( const YamlNode * parentNode, const String & propertyName, RefPtr< PropertyLine<Color> > defaultPropertyLine)
 {
-	YamlNode * node = parentNode->Get(propertyName);
+	const YamlNode * node = parentNode->Get(propertyName);
 	if (!node)return defaultPropertyLine;
 
 	if (node->GetType() == YamlNode::TYPE_ARRAY)
@@ -188,8 +188,8 @@ RefPtr< PropertyLine<Color> > PropertyLineYamlReader::CreateColorPropertyLineFro
 
 			for (int k = 0; k < node->GetCount() / 2; ++k)
 			{
-				YamlNode * time = node->Get(k * 2);
-				YamlNode * value = node->Get(k * 2 + 1);
+				const YamlNode * time = node->Get(k * 2);
+				const YamlNode * value = node->Get(k * 2 + 1);
 
 				if (time && value)
 				{

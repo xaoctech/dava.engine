@@ -501,17 +501,17 @@ void UITextField::RenderText()
 #endif
 }
 
-void UITextField::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
+void UITextField::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
 	UIControl::LoadFromYamlNode(node, loader);
 
-    YamlNode * textNode = node->Get("text");
+    const YamlNode * textNode = node->Get("text");
 	if (textNode)
     {
         SetText(textNode->AsWString());
     }
 
-    YamlNode * fontNode = node->Get("font");
+    const YamlNode * fontNode = node->Get("font");
     if (fontNode)
     {
         Font * font = loader->GetFontByName(fontNode->AsString());
@@ -519,50 +519,50 @@ void UITextField::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
             SetFont(font);
     }
     
-    YamlNode * passwordNode = node->Get("isPassword");
+    const YamlNode * passwordNode = node->Get("isPassword");
     if (passwordNode)
     {
 		SetIsPassword(passwordNode->AsBool());
     }
 
 	// Keyboard customization params.
-	YamlNode* autoCapitalizationTypeNode = node->Get("autoCapitalizationType");
+	const YamlNode* autoCapitalizationTypeNode = node->Get("autoCapitalizationType");
 	if (autoCapitalizationTypeNode)
 	{
 		autoCapitalizationType = (eAutoCapitalizationType)autoCapitalizationTypeNode->AsInt32();
 	}
 
-	YamlNode* autoCorrectionTypeNode = node->Get("autoCorrectionType");
+	const YamlNode* autoCorrectionTypeNode = node->Get("autoCorrectionType");
 	if (autoCorrectionTypeNode)
 	{
 		autoCorrectionType = (eAutoCorrectionType)autoCorrectionTypeNode->AsInt32();
 	}
 
-	YamlNode* spellCheckingTypeNode = node->Get("spellCheckingType");
+	const YamlNode* spellCheckingTypeNode = node->Get("spellCheckingType");
 	if (spellCheckingTypeNode)
 	{
 		spellCheckingType = (eSpellCheckingType)spellCheckingTypeNode->AsInt32();
 	}
 
-	YamlNode* keyboardAppearanceTypeNode = node->Get("keyboardAppearanceType");
+	const YamlNode* keyboardAppearanceTypeNode = node->Get("keyboardAppearanceType");
 	if (keyboardAppearanceTypeNode)
 	{
 		keyboardAppearanceType = (eKeyboardAppearanceType)keyboardAppearanceTypeNode->AsInt32();
 	}
 
-	YamlNode* keyboardTypeNode = node->Get("keyboardType");
+	const YamlNode* keyboardTypeNode = node->Get("keyboardType");
 	if (keyboardTypeNode)
 	{
 		keyboardType = (eKeyboardType)keyboardTypeNode->AsInt32();
 	}
 
-	YamlNode* returnKeyTypeNode = node->Get("returnKeyType");
+	const YamlNode* returnKeyTypeNode = node->Get("returnKeyType");
 	if (returnKeyTypeNode)
 	{
 		returnKeyType = (eReturnKeyType)returnKeyTypeNode->AsInt32();
 	}
 
-	YamlNode* enableReturnKeyAutomaticallyNode = node->Get("enableReturnKeyAutomatically");
+	const YamlNode* enableReturnKeyAutomaticallyNode = node->Get("enableReturnKeyAutomatically");
 	if (enableReturnKeyAutomaticallyNode)
 	{
 		enableReturnKeyAutomatically = enableReturnKeyAutomaticallyNode->AsBool();
@@ -572,10 +572,10 @@ void UITextField::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
     {
         staticText->SetRect(Rect(0,0,GetRect().dx, GetRect().dy));
 		
-		YamlNode * textColorNode = node->Get("textcolor");
-		YamlNode * shadowColorNode = node->Get("shadowcolor");
-		YamlNode * shadowOffsetNode = node->Get("shadowoffset");
-		YamlNode * textAlignNode = node->Get("textalign");
+		const YamlNode * textColorNode = node->Get("textcolor");
+		const YamlNode * shadowColorNode = node->Get("shadowcolor");
+		const YamlNode * shadowOffsetNode = node->Get("shadowoffset");
+		const YamlNode * textAlignNode = node->Get("textalign");
 		
 		if(textColorNode)
 		{
@@ -602,7 +602,7 @@ void UITextField::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
     //InitAfterYaml();
 
 #if 0
-	YamlNode * orientNode = node->Get("orientation");
+	const YamlNode * orientNode = node->Get("orientation");
 	if (orientNode)
 	{
 		if (orientNode->AsString() == "Vertical")

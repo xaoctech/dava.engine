@@ -77,21 +77,21 @@ bool MaterialGraph::LoadFromFile(const FilePath & pathname)
     materialPathname = pathname;
         
     
-    YamlNode * rootNode = materialFileParser->GetRootNode();
-    YamlNode * materialNode = rootNode->Get("material");
+    const YamlNode * rootNode = materialFileParser->GetRootNode();
+    const YamlNode * materialNode = rootNode->Get("material");
     
-    YamlNode * vertexShaderFileNode = materialNode->Get("vertexShader");
+    const YamlNode * vertexShaderFileNode = materialNode->Get("vertexShader");
     vertexShaderFilename = vertexShaderFileNode->AsString();
     
-    YamlNode * pixelShaderFileNode = materialNode->Get("pixelShader");
+    const YamlNode * pixelShaderFileNode = materialNode->Get("pixelShader");
     pixelShaderFilename = pixelShaderFileNode->AsString();
     
-    YamlNode * nodes = rootNode->Get("nodes");
+    const YamlNode * nodes = rootNode->Get("nodes");
     if (nodes && nodes->GetType() == YamlNode::TYPE_ARRAY)
     {
         for (int32 k = 0; k < nodes->GetCount(); ++k)
         {
-            YamlNode * graphNode = nodes->Get(k);
+            const YamlNode * graphNode = nodes->Get(k);
             bool result = LoadNode(graphNode);
             if (!result)break;
         }
@@ -101,7 +101,7 @@ bool MaterialGraph::LoadFromFile(const FilePath & pathname)
     return true;
 }
 
-bool MaterialGraph::LoadNode(YamlNode * graphNode)
+bool MaterialGraph::LoadNode(const YamlNode * graphNode)
 {
 
     MaterialGraphNode * node = new MaterialGraphNode(this);
@@ -114,18 +114,18 @@ bool MaterialGraph::LoadNode(YamlNode * graphNode)
         usedTextures++;
     
     //YamlNode *
-    YamlNode * nameNode = graphNode->Get("name");
-    YamlNode * typeNode = graphNode->Get("node");
+    const YamlNode * nameNode = graphNode->Get("name");
+    const YamlNode * typeNode = graphNode->Get("node");
     Logger::Debug("- Read Node %s %s", typeNode->AsString().c_str(), nameNode->AsString().c_str());
 
     // Parse inputs
-    std::multimap<String, YamlNode*> & map = graphNode->AsMap();
-    std::pair<std::multimap<String, YamlNode*>::iterator, std::multimap<String, YamlNode*>::iterator> inputs = map.equal_range("input");
+    const MultiMap<String, YamlNode*> & map = graphNode->AsMap();
+    std::pair<MultiMap<String, YamlNode*>::const_iterator, MultiMap<String, YamlNode*>::const_iterator> inputs = map.equal_range("input");
     
     uint32 count = 0;
-    for (std::multimap<String, YamlNode*>::iterator it = inputs.first; it != inputs.second; ++it)
+    for (MultiMap<String, YamlNode*>::const_iterator it = inputs.first; it != inputs.second; ++it)
     {
-        YamlNode * inputNode = it->second;
+        const YamlNode * inputNode = it->second;
         const String & inputName = inputNode->Get(0)->AsString();
         const String & nodeName = inputNode->Get(1)->AsString();
         const String & connectionModifier = inputNode->Get(2)->AsString();
