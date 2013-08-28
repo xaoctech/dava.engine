@@ -115,6 +115,9 @@ public slots:
 	void OnShadowBlendModeMenu();
 	void OnShadowBlendModeAlpha();
 	void OnShadowBlendModeMultiply();
+    
+    void OnSaveHeightmapToPNG();
+    void OnSaveTiledTexture();
 
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);

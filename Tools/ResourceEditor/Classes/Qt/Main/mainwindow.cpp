@@ -44,6 +44,8 @@
 #include "../Tools/SettingsDialog/SettingsDialogQt.h"
 #include "../Settings/SettingsManager.h"
 
+#include "Classes/Qt/Scene/SceneEditor2.h"
+
 #include "Render/Highlevel/ShadowVolumeRenderPass.h"
 #include "../../Commands2/GroupEntitiesForMultiselectCommand.h"
 #include <QFileDialog>
@@ -419,6 +421,9 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->menuDynamicShadowBlendMode, SIGNAL(aboutToShow()), this, SLOT(OnShadowBlendModeMenu()));
 	QObject::connect(ui->actionDynamicBlendModeAlpha, SIGNAL(triggered()), this, SLOT(OnShadowBlendModeAlpha()));
 	QObject::connect(ui->actionDynamicBlendModeMultiply, SIGNAL(triggered()), this, SLOT(OnShadowBlendModeMultiply()));
+
+    QObject::connect(ui->actionSaveHeightmapToPNG, SIGNAL(triggered()), this, SLOT(OnSaveHeightmapToPNG()));
+	QObject::connect(ui->actionSaveTiledTexture, SIGNAL(triggered()), this, SLOT(OnSaveTiledTexture()));
 
 	//Help
     QObject::connect(ui->actionHelp, SIGNAL(triggered()), this, SLOT(OnOpenHelp()));
@@ -1294,3 +1299,40 @@ void QtMainWindow::OnShadowBlendModeMultiply()
 	scene->SetShadowBlendMode(ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY);
 }
 
+void QtMainWindow::OnSaveHeightmapToPNG()
+{
+	SceneEditor2* scene = GetCurrentScene();
+    if(!scene) return;
+
+    Landscape *landscape = scene->structureSystem->FindLanscape();
+    if(!landscape) return;
+    
+    Heightmap * heightmap = landscape->GetHeightmap();
+    FilePath heightmapPath = landscape->GetHeightmapPathname();
+    heightmapPath.ReplaceExtension(".png");
+    heightmap->SaveToImage(heightmapPath);
+}
+
+void QtMainWindow::OnSaveTiledTexture()
+{
+	SceneEditor2* scene = GetCurrentScene();
+    if(!scene) return;
+
+    Landscape *landscape = scene->structureSystem->FindLanscape();
+    if(!landscape) return;
+    
+    FilePath texPathname = landscape->SaveFullTiledTexture();
+    FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(texPathname);
+    
+    TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
+    if(!descriptor)
+    {
+        descriptor = new TextureDescriptor();
+        descriptor->pathname = descriptorPathname;
+        descriptor->Save();
+    }
+    
+    landscape->SetTexture(Landscape::TEXTURE_TILE_FULL, descriptor->pathname);
+    
+    SafeRelease(descriptor);
+}
