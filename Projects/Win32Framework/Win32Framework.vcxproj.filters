@@ -1308,6 +1308,9 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\SkyboxRenderObject.h">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Core\PerformanceSettings.h">
+      <Filter>Internal\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2327,6 +2330,11 @@
     <ClCompile Include="..\..\Sources\Internal\Autotesting\TouchAction.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\SkyboxRenderObject.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\TouchAction.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Core\PerformanceSettings.cpp">
+      <Filter>Internal\Core</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
