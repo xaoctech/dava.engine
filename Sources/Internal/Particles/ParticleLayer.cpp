@@ -231,6 +231,7 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 
     dstLayer->isDisabled = isDisabled;
 	dstLayer->spritePath = spritePath;
+	dstLayer->activeLODS = activeLODS;
 
 	return dstLayer;
 }

@@ -864,10 +864,17 @@ void Texture::ReloadAs(eGPUFamily gpuFamily, const TextureDescriptor *descriptor
 	eGPUFamily gpuForLoading = GetFormatForLoading(gpuFamily, descriptor);
     FilePath imagePathname = GPUFamilyDescriptor::CreatePathnameForGPU(descriptor, gpuForLoading);
     
-    File *file = File::Create(imagePathname, File::OPEN | File::READ);
+    File *file = NULL;
+	
+	if(!descriptor->IsCubeMap())
+	{
+		file = File::Create(imagePathname, File::OPEN | File::READ);
+	}
 
     bool loaded = false;
-    if(descriptor && file && IsLoadAvailable(gpuForLoading, descriptor))
+    if(descriptor &&
+	   (file != NULL || descriptor->IsCubeMap()) &&
+	   IsLoadAvailable(gpuForLoading, descriptor))
     {
         loaded = LoadFromImage(file, descriptor);
     }
