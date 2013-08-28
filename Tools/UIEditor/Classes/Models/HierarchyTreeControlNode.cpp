@@ -17,6 +17,7 @@
 
 #include "HierarchyTreeControlNode.h"
 #include "UI/UIList.h"
+#include "UI/UIScrollViewContainer.h"
 #include "EditorListDelegate.h"
 
 HierarchyTreeControlNode::HierarchyTreeControlNode(HierarchyTreeNode* parent,
@@ -307,6 +308,22 @@ Rect HierarchyTreeControlNode::GetRect() const
 			continue;
 		
 		Rect controlRect = control->GetRect();
+		// Yuri Coder, 2013/08/28. Don't take into account controls inside the Scroll View Containers
+		// because of issue #1844. Take the Container size instead.
+		if (control->GetUIObject() && control->GetUIObject()->GetParent() &&
+			dynamic_cast<UIScrollViewContainer*>(control->GetUIObject()->GetParent()))
+		{
+			UIScrollViewContainer* container = dynamic_cast<UIScrollViewContainer*>(control->GetUIObject()->GetParent());
+			UIScrollView* scrollView = dynamic_cast<UIScrollView*>(container->GetParent());
+			if (scrollView)
+			{
+				controlRect.x = scrollView->GetRect().x;
+				controlRect.y = scrollView->GetRect().y;
+				controlRect.dx = container->GetRect().dx;
+				controlRect.dy = container->GetRect().dy;
+			}
+		}
+		
 		rect = rect.Combine(controlRect);
 	}
 
