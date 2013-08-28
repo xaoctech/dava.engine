@@ -144,6 +144,7 @@ void SceneSaver::SaveScene(Scene *scene, const FilePath &fileName, Set<String> &
 
 	CopyReferencedObject(scene, errorLog);
 	CopyEffects(scene, errorLog);
+	CopyCustomColorTexture(scene, fileName.GetDirectory(), errorLog);
 
     //save scene to new place
     FilePath tempSceneName = sceneUtils.dataSourceFolder + relativeFilename;
@@ -240,6 +241,31 @@ void SceneSaver::CopyEmitter( ParticleEmitter *emitter, Set<String> &errorLog )
 			psdPath.ReplaceExtension(".psd");
 			sceneUtils.CopyFile(psdPath, errorLog);
 		}
+	}
+}
+
+#define CUSTOM_COLOR_TEXTURE_PROP "customColorTexture"
+void SceneSaver::CopyCustomColorTexture(Scene *scene, const FilePath & sceneFolder, Set<String> &errorLog)
+{
+	Entity *land = EditorScene::GetLandscapeNode(scene);
+	if(!land) return;
+
+	KeyedArchive* customProps = land->GetCustomProperties();
+	if(!customProps) return;
+
+	String pathname = customProps->GetString(CUSTOM_COLOR_TEXTURE_PROP);
+	if(pathname.empty()) return;
+
+	String fullPath = sceneFolder.GetAbsolutePathname();
+	String::size_type pos = fullPath.find("/Data");
+	if(pos != String::npos)
+	{
+		FilePath texPathname = fullPath.substr(0, pos+1) + pathname;
+		sceneUtils.CopyFile(texPathname, errorLog);
+	}
+	else
+	{
+		Logger::Error("[SceneSaver::CopyCustomColorTexture] Can't copy custom colors texture (%s)", pathname.c_str());
 	}
 }
 
