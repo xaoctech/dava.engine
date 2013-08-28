@@ -715,7 +715,7 @@ void SceneFileV2::ConvertOldMaterialToNewMaterial(Material * oldMaterial,
 	parentMaterial = MaterialSystem::Instance()->GetMaterial(newMaterialName);
 	DVASSERT(parentMaterial);
 	
-/*	RenderState& renderStateBlock = *oldMaterial->GetRenderState();
+	/*RenderState& renderStateBlock = *oldMaterial->GetRenderState();
 	
 	if (oldMaterial->isTranslucent || oldMaterial->isTwoSided)
 	{
@@ -755,13 +755,16 @@ void SceneFileV2::ConvertOldMaterialToNewMaterial(Material * oldMaterial,
 	if(!fp.Exists())
 	{
 		oldMaterial->GetRenderState()->SaveToYamlFile(fp);
-	}
-*/
+	}*/
+
 	NMaterial* resultMaterial = parentMaterial->CreateChild();
 	
 	if(Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP == oldMaterial->type)
 	{
-		resultMaterial->SetTexture(NMaterial::TEXTURE_LIGHTMAP, oldMaterialState->GetLightmap());
+		if(oldMaterialState)
+		{
+			resultMaterial->SetTexture(NMaterial::TEXTURE_LIGHTMAP, oldMaterialState->GetLightmap());
+		}
     }
 	else if (Material::MATERIAL_UNLIT_TEXTURE_DECAL == oldMaterial->type)
     {
@@ -786,14 +789,45 @@ void SceneFileV2::ConvertOldMaterialToNewMaterial(Material * oldMaterial,
 			resultMaterial->SetTexture(NMaterial::TEXTURE_NORMAL, oldMaterial->textures[Material::TEXTURE_NORMALMAP]);
 		}
 	}
+	
+	if(Material::MATERIAL_VERTEX_LIT_TEXTURE == oldMaterial->type ||
+	   Material::MATERIAL_VERTEX_LIT_DETAIL == oldMaterial->type ||
+	   Material::MATERIAL_VERTEX_LIT_DECAL == oldMaterial->type ||
+	   Material::MATERIAL_VERTEX_LIT_LIGHTMAP == oldMaterial->type ||
+	   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE == oldMaterial->type ||
+	   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == oldMaterial->type ||
+	   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == oldMaterial->type)
+	{
+		bool litFlag = true;
+		resultMaterial->SetPropertyValue("prop_litMaterial", Shader::UT_BOOL, 1, &litFlag);
+		resultMaterial->SetPropertyValue("materialSpecularShininess", Shader::UT_FLOAT, 1, &oldMaterial->shininess);
+		
+		resultMaterial->SetPropertyValue("prop_ambientColor", Shader::UT_FLOAT_VEC4, 1, &oldMaterial->ambientColor);
+		resultMaterial->SetPropertyValue("prop_diffuseColor", Shader::UT_FLOAT_VEC4, 1, &oldMaterial->diffuseColor);
+		resultMaterial->SetPropertyValue("prop_specularColor", Shader::UT_FLOAT_VEC4, 1, &oldMaterial->specularColor);
+	}
 			
 	resultMaterial->SetPropertyValue("fogDensity", Shader::UT_FLOAT, 1, &oldMaterial->fogDensity);
 	resultMaterial->SetPropertyValue("fogColor", Shader::UT_BOOL_VEC4, 1, &oldMaterial->fogColor);
 	
-	resultMaterial->SetPropertyValue("flatColor", Shader::UT_BOOL_VEC4, 1, &oldMaterialState->GetFlatColor());
-	resultMaterial->SetPropertyValue("texture0Shift", Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetTextureShift());
-	resultMaterial->SetPropertyValue("uvOffset", Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVOffset());
-	resultMaterial->SetPropertyValue("uvScale", Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVScale());
+	if(oldMaterial->isFlatColorEnabled)
+	{
+		resultMaterial->SetPropertyValue("flatColor", Shader::UT_BOOL_VEC4, 1, &oldMaterialState->GetFlatColor());
+	}
+	
+	if(oldMaterial->isTexture0ShiftEnabled)
+	{
+		resultMaterial->SetPropertyValue("texture0Shift", Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetTextureShift());
+	}
+	
+	if(oldMaterialState)
+	{		
+		if(Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP == oldMaterial->type)
+		{
+			resultMaterial->SetPropertyValue("uvOffset", Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVOffset());
+			resultMaterial->SetPropertyValue("uvScale", Shader::UT_FLOAT_VEC2, 1, &oldMaterialState->GetUVScale());
+		}
+	}
     
     *newMaterial = resultMaterial;
 }
@@ -833,7 +867,8 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
             PolygonGroupWithMaterial * group = polygroups[k];
             
             NMaterial * nMaterial = 0;
-            ConvertOldMaterialToNewMaterial(group->GetMaterial(), 0, &nMaterial);
+			Material* oldMaterial = group->GetMaterial();
+            ConvertOldMaterialToNewMaterial(oldMaterial, 0, &nMaterial);
             mesh->AddPolygonGroup(group->GetPolygonGroup(), nMaterial);
             
             

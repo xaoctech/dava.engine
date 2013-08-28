@@ -24,7 +24,8 @@
 #include "Render/Material/MaterialGraph.h"
 #include "Render/Material/MaterialCompiler.h"
 #include "Render/ShaderCache.h"
-
+#include "Render/Highlevel/Camera.h"
+#include "Render/Highlevel/Light.h"
 
 namespace DAVA
 {
@@ -494,7 +495,7 @@ uint32 NMaterial::GetTextureCount()
     return (uint32)texturesArray.size();
 }
     
-void NMaterial::BindMaterialTechnique(const FastName & techniqueName)
+void NMaterial::BindMaterialTechnique(const FastName & techniqueName, Camera* camera)
 {
 	if(!ready)
 	{
@@ -507,6 +508,8 @@ void NMaterial::BindMaterialTechnique(const FastName & techniqueName)
         if (activeTechnique)
             activeTechniqueName = techniqueName;
     }
+	
+	SetupPerFrameProperties(camera);
     
 	RenderState* renderState = activeTechnique->GetRenderState();
 	
@@ -523,7 +526,6 @@ void NMaterial::BindMaterialTechnique(const FastName & techniqueName)
     RenderManager::Instance()->FlushState(renderState);
 
     uint32 uniformCount = shader->GetUniformCount();
-
     for (uint32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
     {
         Shader::Uniform * uniform = shader->GetUniform(uniformIndex);
@@ -764,6 +766,39 @@ NMaterial* NMaterial::CreateChild()
 	childMaterial->SetMaterialName(childName);
 	childMaterial->SetParent(this);
 	return childMaterial;
+}
+	
+void NMaterial::SetupPerFrameProperties(Camera* camera)
+{
+	NMaterialProperty* propLitMaterial = GetMaterialProperty("prop_litMaterial");
+	
+	//VI: this is vertex or pixel lit material
+	//VI: setup light for the material
+	//VI: TODO: deal with multiple lights
+	if(propLitMaterial && lights[0])
+	{
+		NMaterialProperty* propAmbientColor = GetMaterialProperty("prop_ambientColor");
+		NMaterialProperty* propDiffuseColor = GetMaterialProperty("prop_diffuseColor");
+		NMaterialProperty* propSpecularColor = GetMaterialProperty("prop_specularColor");
+		
+		const Matrix4 & matrix = camera->GetMatrix();
+		Vector3 lightPosition0InCameraSpace = lights[0]->GetPosition() * matrix;
+		Color materialAmbientColor = (propAmbientColor) ? *(Color*)propAmbientColor->data : Color();
+		Color materialDiffuseColor = (propDiffuseColor) ? *(Color*)propDiffuseColor->data : Color();
+		Color materialSpecularColor = (propSpecularColor) ? *(Color*)propSpecularColor->data : Color();
+		float32 intensity = lights[0]->GetIntensity();
+		
+		materialAmbientColor = materialAmbientColor * lights[0]->GetAmbientColor();
+		materialDiffuseColor = materialDiffuseColor * lights[0]->GetDiffuseColor();
+		materialSpecularColor = materialSpecularColor * lights[0]->GetSpecularColor();
+		
+		SetPropertyValue("lightPosition0", Shader::UT_FLOAT_VEC3, 1, lightPosition0InCameraSpace.data);
+		
+		SetPropertyValue("materialLightAmbientColor", Shader::UT_FLOAT_VEC3, 1, &materialAmbientColor);
+		SetPropertyValue("materialLightDiffuseColor", Shader::UT_FLOAT_VEC3, 1, &materialDiffuseColor);
+		SetPropertyValue("materialLightSpecularColor", Shader::UT_FLOAT_VEC3, 1, &materialSpecularColor);
+		SetPropertyValue("lightIntensity0", Shader::UT_FLOAT, 1, &intensity);
+	}
 }
 	
 };

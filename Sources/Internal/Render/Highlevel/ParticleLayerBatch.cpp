@@ -52,7 +52,7 @@ void ParticleLayerBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
     
 	if(!totalCount)return;
 
-	material->BindMaterialTechnique(ownerRenderPass);
+	material->BindMaterialTechnique(ownerRenderPass, camera);
 	
 	RenderManager::Instance()->SetRenderData(renderDataObject);
 	RenderManager::Instance()->AttachRenderData();

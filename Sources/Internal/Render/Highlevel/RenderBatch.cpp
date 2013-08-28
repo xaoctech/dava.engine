@@ -89,7 +89,7 @@ void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
     Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
 
-    material->BindMaterialTechnique(ownerRenderPass);
+    material->BindMaterialTechnique(ownerRenderPass, camera);
     material->Draw(dataSource);
 }
     
@@ -232,7 +232,11 @@ void RenderBatch::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
         }
 
         NMaterial * newMaterial = 0;
-        sceneFile->ConvertOldMaterialToNewMaterial(mat, oldMaterialInstance, &newMaterial);
+		
+		if(mat)
+		{
+			sceneFile->ConvertOldMaterialToNewMaterial(mat, oldMaterialInstance, &newMaterial);
+		}
         
         SafeRelease(oldMaterialInstance);
 		SetPolygonGroup(pg);
