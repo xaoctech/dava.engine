@@ -531,8 +531,12 @@ void ParticleLayer::Update(float32 timeElapsed, bool generateNewParticles)
 			{
 				if(!head)
 				{
-					GenerateSingleParticle();
-					needUpdate = false;
+					if (generateNewParticles)
+					{
+						GenerateSingleParticle();
+						needUpdate = false;
+					}
+					
 				}
 			}
             if(head && needUpdate)
@@ -546,7 +550,8 @@ void ParticleLayer::Update(float32 timeElapsed, bool generateNewParticles)
 					if ((layerTime >= startTime) && (layerTime < (endTime + currentLoopVariation)) &&
 						!emitter->IsPaused() && !useLoopStop)
 					{
-						GenerateSingleParticle();
+						if (generateNewParticles)
+							GenerateSingleParticle();
 					}
 				}
 				else

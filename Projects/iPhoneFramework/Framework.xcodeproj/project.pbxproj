@@ -47,14 +47,6 @@
 		5C97964814E3E75000FFFA14 /* libyaml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964614E3E75000FFFA14 /* libyaml_ios.a */; };
 		62BAA48F178EF915003DE32C /* MailComposeDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 62BAA48D178EF915003DE32C /* MailComposeDelegate.h */; };
 		62BAA492178EF952003DE32C /* MailComposeDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 62BAA491178EF952003DE32C /* MailComposeDelegate.mm */; };
-		7433865D179D1E170014FBD3 /* UIScrollView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 74338659179D1E170014FBD3 /* UIScrollView.cpp */; };
-		7433865E179D1E170014FBD3 /* UIScrollView.h in Headers */ = {isa = PBXBuildFile; fileRef = 7433865A179D1E170014FBD3 /* UIScrollView.h */; };
-		7433865F179D1E170014FBD3 /* UIScrollViewContainer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7433865B179D1E170014FBD3 /* UIScrollViewContainer.cpp */; };
-		74338660179D1E170014FBD3 /* UIScrollViewContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = 7433865C179D1E170014FBD3 /* UIScrollViewContainer.h */; };
-		7497447817B3D79600282DAA /* AllocatorFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7497447617B3D79600282DAA /* AllocatorFactory.cpp */; };
-		7497447917B3D79600282DAA /* AllocatorFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 7497447717B3D79600282DAA /* AllocatorFactory.h */; };
-		74338669179D1E8E0014FBD3 /* CRC32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 74338667179D1E8E0014FBD3 /* CRC32.cpp */; };
-		7433866A179D1E8E0014FBD3 /* CRC32.h in Headers */ = {isa = PBXBuildFile; fileRef = 74338668179D1E8E0014FBD3 /* CRC32.h */; };
 		840ED3C916D506F900D2BA6C /* DPIHelperiOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 840ED3C816D506F900D2BA6C /* DPIHelperiOS.mm */; };
 		840ED3CB16D5070400D2BA6C /* DPIHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 840ED3CA16D5070400D2BA6C /* DPIHelper.h */; };
 		84E5E0FE174D02EA0001C74F /* OpenUDIDApple.h in Headers */ = {isa = PBXBuildFile; fileRef = 84E5E0FC174D02EA0001C74F /* OpenUDIDApple.h */; };
@@ -688,6 +680,8 @@
 		E95B4C5D16DF78EE00880713 /* UISpinner.h in Headers */ = {isa = PBXBuildFile; fileRef = E95B4C5B16DF78EE00880713 /* UISpinner.h */; };
 		E9E7982F16F0B45100745AF5 /* UISwitch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9E7982D16F0B45100745AF5 /* UISwitch.cpp */; };
 		E9E7983016F0B45100745AF5 /* UISwitch.h in Headers */ = {isa = PBXBuildFile; fileRef = E9E7982E16F0B45100745AF5 /* UISwitch.h */; };
+		EA56555317CE00E100426EB8 /* PerformanceSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA56555117CE00E100426EB8 /* PerformanceSettings.cpp */; };
+		EA56555417CE00E100426EB8 /* PerformanceSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = EA56555217CE00E100426EB8 /* PerformanceSettings.h */; };
 		EA7DEDDA144854E900D9E652 /* libfreetype_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA7DEDD9144854E900D9E652 /* libfreetype_ios.a */; };
 		FEF4D44812C92F57004B850E /* libBox2D_iPhone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FEF4D38612C91A3A004B850E /* libBox2D_iPhone.a */; };
 /* End PBXBuildFile section */
@@ -750,14 +744,6 @@
 		5C97964614E3E75000FFFA14 /* libyaml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyaml_ios.a; path = ../../Libs/libs/libyaml_ios.a; sourceTree = "<group>"; };
 		62BAA48D178EF915003DE32C /* MailComposeDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MailComposeDelegate.h; sourceTree = "<group>"; };
 		62BAA491178EF952003DE32C /* MailComposeDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MailComposeDelegate.mm; sourceTree = "<group>"; };
-		74338659179D1E170014FBD3 /* UIScrollView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIScrollView.cpp; sourceTree = "<group>"; };
-		7433865A179D1E170014FBD3 /* UIScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIScrollView.h; sourceTree = "<group>"; };
-		7433865B179D1E170014FBD3 /* UIScrollViewContainer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIScrollViewContainer.cpp; sourceTree = "<group>"; };
-		7433865C179D1E170014FBD3 /* UIScrollViewContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIScrollViewContainer.h; sourceTree = "<group>"; };
-		7497447617B3D79600282DAA /* AllocatorFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AllocatorFactory.cpp; sourceTree = "<group>"; };
-		7497447717B3D79600282DAA /* AllocatorFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AllocatorFactory.h; sourceTree = "<group>"; };
-		74338667179D1E8E0014FBD3 /* CRC32.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CRC32.cpp; sourceTree = "<group>"; };
-		74338668179D1E8E0014FBD3 /* CRC32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRC32.h; sourceTree = "<group>"; };
 		840ED3C816D506F900D2BA6C /* DPIHelperiOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DPIHelperiOS.mm; sourceTree = "<group>"; };
 		840ED3CA16D5070400D2BA6C /* DPIHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DPIHelper.h; sourceTree = "<group>"; };
 		84E5E0FC174D02EA0001C74F /* OpenUDIDApple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenUDIDApple.h; sourceTree = "<group>"; };
@@ -1398,6 +1384,8 @@
 		E95B4C5B16DF78EE00880713 /* UISpinner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UISpinner.h; sourceTree = "<group>"; };
 		E9E7982D16F0B45100745AF5 /* UISwitch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UISwitch.cpp; sourceTree = "<group>"; };
 		E9E7982E16F0B45100745AF5 /* UISwitch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UISwitch.h; sourceTree = "<group>"; };
+		EA56555117CE00E100426EB8 /* PerformanceSettings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PerformanceSettings.cpp; sourceTree = "<group>"; };
+		EA56555217CE00E100426EB8 /* PerformanceSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PerformanceSettings.h; sourceTree = "<group>"; };
 		EA7DEDD9144854E900D9E652 /* libfreetype_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_ios.a; path = ../../Libs/freetype/lib/libfreetype_ios.a; sourceTree = "<group>"; };
 		EA7DEDDC1448550100D9E652 /* libfreetype_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_ios.a; path = ../../Libs/freetype/lib/libfreetype_ios.a; sourceTree = "<group>"; };
 		FEF4D38112C91A3A004B850E /* Box2D_iPhone.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Box2D_iPhone.xcodeproj; path = ../../Libs/Box2D/Projects/Box2D_iPhone/Box2D_iPhone.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -1622,6 +1610,8 @@
 		E8B3C7F116B9326D002BD35F /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				EA56555117CE00E100426EB8 /* PerformanceSettings.cpp */,
+				EA56555217CE00E100426EB8 /* PerformanceSettings.h */,
 				E8B3C7F216B9326D002BD35F /* ApplicationCore.cpp */,
 				E8B3C7F316B9326D002BD35F /* ApplicationCore.h */,
 				E8B3C7F416B9326D002BD35F /* Core.cpp */,
@@ -1652,8 +1642,6 @@
 				CC247FEE16D69F1700183D40 /* DVAssertMessageApple.mm */,
 				CC247FEF16D69F1700183D40 /* UIAlertView_Modal.h */,
 				CC247FF016D69F1700183D40 /* UIAlertView_Modal.m */,
-				17D30ADB1799793E007A4594 /* UIDismissionHandlerAlertView.h */,
-				17D30ADC1799793E007A4594 /* UIDismissionHandlerAlertView.mm */,
 				E8B3C80516B9326D002BD35F /* Backtrace.cpp */,
 				E8B3C80616B9326D002BD35F /* Backtrace.h */,
 				E8B3C80716B9326D002BD35F /* DVAssert.h */,
@@ -2322,10 +2310,6 @@
 				E8B3CA5416B9326E002BD35F /* UIMoveInTransition.h */,
 				E8B3CA5516B9326E002BD35F /* UIPopup.cpp */,
 				E8B3CA5616B9326E002BD35F /* UIPopup.h */,
-				74338642179D18F60014FBD3 /* UIScrollView.cpp */,
-				74338643179D18F60014FBD3 /* UIScrollView.h */,
-				74338644179D18F60014FBD3 /* UIScrollViewContainer.cpp */,
-				74338645179D18F60014FBD3 /* UIScrollViewContainer.h */,
 				E8B3CA5716B9326E002BD35F /* UIScreen.cpp */,
 				E8B3CA5816B9326E002BD35F /* UIScreen.h */,
 				E8B3CA5916B9326E002BD35F /* UIScreenManager.h */,
@@ -2778,14 +2762,12 @@
 				A6E4FDF61761D40200B48E41 /* CustomPropertiesComponent.h in Headers */,
 				A6E4FDFC1761D83100B48E41 /* ActionUpdateSystem.h in Headers */,
 				A6A1E86A1785688600AA3A86 /* CRC32.h in Headers */,
-				74338647179D18F60014FBD3 /* UIScrollView.h in Headers */,
-				74338649179D18F60014FBD3 /* UIScrollViewContainer.h in Headers */,
-				17D30ADD1799793E007A4594 /* UIDismissionHandlerAlertView.h in Headers */,
 				4FDDEC5A17A6920D00D9DDEA /* MaterialOptimazer.h in Headers */,
 				A66BC2F217AB98E800B6252E /* SkyboxSystem.h in Headers */,
 				17816B8117B2748900B067E1 /* AllocatorFactory.h in Headers */,
 				A679102A17B3CF2D000AA2F2 /* SkyboxRenderObject.h in Headers */,
 				17D7E5F617A6C06B00861981 /* UIDismissionHandlerAlertView.h in Headers */,
+				EA56555417CE00E100426EB8 /* PerformanceSettings.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3161,14 +3143,12 @@
 				A6E4FDF51761D40200B48E41 /* CustomPropertiesComponent.cpp in Sources */,
 				A6E4FDFB1761D83100B48E41 /* ActionUpdateSystem.cpp in Sources */,
 				A6A1E8691785688600AA3A86 /* CRC32.cpp in Sources */,
-				74338646179D18F60014FBD3 /* UIScrollView.cpp in Sources */,
-				74338648179D18F60014FBD3 /* UIScrollViewContainer.cpp in Sources */,
-				17D30ADE1799793E007A4594 /* UIDismissionHandlerAlertView.mm in Sources */,
 				4FDDEC5917A6920D00D9DDEA /* MaterialOptimazer.cpp in Sources */,
 				A66BC2F117AB98E800B6252E /* SkyboxSystem.cpp in Sources */,
 				17816B8017B2748900B067E1 /* AllocatorFactory.cpp in Sources */,
 				A679102917B3CF2D000AA2F2 /* SkyboxRenderObject.cpp in Sources */,
 				17D7E5F717A6C06B00861981 /* UIDismissionHandlerAlertView.mm in Sources */,
+				EA56555317CE00E100426EB8 /* PerformanceSettings.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

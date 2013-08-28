@@ -237,6 +237,7 @@
     <ClInclude Include="..\..\Sources\Internal\Base\ScopedPtr.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\Serializable.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\TemplateHelpers.h" />
+    <ClInclude Include="..\..\Sources\Internal\Core\PerformanceSettings.h" />
     <ClInclude Include="..\..\Sources\Internal\Database\MongodbClient.h" />
     <ClInclude Include="..\..\Sources\Internal\Database\MongodbObject.h" />
     <ClInclude Include="..\..\Sources\Internal\DAVAConfig.h" />
@@ -641,6 +642,7 @@
     <ClCompile Include="..\..\Sources\Internal\Base\IntrospectionBase.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\Observable.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\Radix\Radix.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Core\PerformanceSettings.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Database\MongodbClient.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Database\MongodbObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\DAVAEngine.cpp" />
