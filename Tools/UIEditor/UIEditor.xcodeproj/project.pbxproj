@@ -99,6 +99,8 @@
 		17112B481639214D0017E713 /* BaseCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17112B461639214D0017E713 /* BaseCommand.cpp */; };
 		17112B5916392EA80017E713 /* WidgetSignalsBlocker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17112B5716392EA80017E713 /* WidgetSignalsBlocker.cpp */; };
 		1712331E1741118F0051D960 /* PropertyNames.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1712331D1741118F0051D960 /* PropertyNames.cpp */; };
+		1719682D17CE501000053905 /* ScaleSlider_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1719682C17CE501000053905 /* ScaleSlider_moc.cpp */; };
+		1719683217CE502100053905 /* ScaleSlider.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1719683017CE502100053905 /* ScaleSlider.cpp */; };
 		173339E71694472600E98820 /* UndoRedoController.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173339E51694472600E98820 /* UndoRedoController.cpp */; };
 		173AC331162FFFC300A773F5 /* PropertiesGridController.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173AC32F162FFFC300A773F5 /* PropertiesGridController.cpp */; };
 		173AC33A1630137400A773F5 /* controlpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173AC3381630137400A773F5 /* controlpropertygridwidget.cpp */; };
@@ -400,6 +402,9 @@
 		17112B5816392EA80017E713 /* WidgetSignalsBlocker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WidgetSignalsBlocker.h; path = Helpers/WidgetSignalsBlocker.h; sourceTree = "<group>"; };
 		17112B5B16392EC60017E713 /* PropertiesHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PropertiesHelper.h; path = Helpers/PropertiesHelper.h; sourceTree = "<group>"; };
 		1712331D1741118F0051D960 /* PropertyNames.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PropertyNames.cpp; path = Metadata/PropertyNames.cpp; sourceTree = "<group>"; };
+		1719682C17CE501000053905 /* ScaleSlider_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScaleSlider_moc.cpp; sourceTree = "<group>"; };
+		1719683017CE502100053905 /* ScaleSlider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScaleSlider.cpp; sourceTree = "<group>"; };
+		1719683117CE502100053905 /* ScaleSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScaleSlider.h; sourceTree = "<group>"; };
 		173339E51694472600E98820 /* UndoRedoController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UndoRedoController.cpp; path = Controllers/UndoRedoController.cpp; sourceTree = "<group>"; };
 		173339E61694472600E98820 /* UndoRedoController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UndoRedoController.h; path = Controllers/UndoRedoController.h; sourceTree = "<group>"; };
 		173AC32F162FFFC300A773F5 /* PropertiesGridController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PropertiesGridController.cpp; path = Controllers/PropertiesGridController.cpp; sourceTree = "<group>"; };
@@ -1109,6 +1114,7 @@
 				02D69C3B16F08CED00F3803F /* EditorSettings_moc.cpp */,
 				02D69C3C16F08CED00F3803F /* FrameworkMain_moc.cpp */,
 				02D69C3D16F08CED00F3803F /* GameCore_moc.cpp */,
+				1719682C17CE501000053905 /* ScaleSlider_moc.cpp */,
 				02D69C3E16F08CED00F3803F /* Helpers */,
 				02D69C4516F08CED00F3803F /* icons_qrc.cpp */,
 				02D69C4616F08CED00F3803F /* Metadata */,
@@ -1169,6 +1175,8 @@
 				C10740E3163A94450069A640 /* ScreenManager.h */,
 				C1C62A22162C33FC000C1B32 /* ScreenWrapper.cpp */,
 				C1C62A23162C33FC000C1B32 /* ScreenWrapper.h */,
+				1719683017CE502100053905 /* ScaleSlider.cpp */,
+				1719683117CE502100053905 /* ScaleSlider.h */,
 				17F2EF2916355E1000DEE054 /* Commands */,
 				176D3951162C38FF0099AACF /* Controllers */,
 				17112B5616392E880017E713 /* Helpers */,
@@ -1652,6 +1660,8 @@
 				1712331E1741118F0051D960 /* PropertyNames.cpp in Build Sources */,
 				749EBEF4178D9C3000D0699F /* ListPropertyGridWidgetHelper.cpp in Build Sources */,
 				173B4E57179593EB00421BCC /* FramePathHelper.cpp in Build Sources */,
+				1719682D17CE501000053905 /* ScaleSlider_moc.cpp in Build Sources */,
+				1719683217CE502100053905 /* ScaleSlider.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
