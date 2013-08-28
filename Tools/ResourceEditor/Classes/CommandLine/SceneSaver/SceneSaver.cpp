@@ -256,6 +256,16 @@ void SceneSaver::CopyCustomColorTexture(Scene *scene, const FilePath & sceneFold
 	String pathname = customProps->GetString(CUSTOM_COLOR_TEXTURE_PROP);
 	if(pathname.empty()) return;
 
-	sceneUtils.CopyFile(sceneFolder + pathname, errorLog);
+	String fullPath = sceneFolder.GetAbsolutePathname();
+	String::size_type pos = fullPath.find("/Data");
+	if(pos != String::npos)
+	{
+		FilePath texPathname = fullPath.substr(0, pos+1) + pathname;
+		sceneUtils.CopyFile(texPathname, errorLog);
+	}
+	else
+	{
+		Logger::Error("[SceneSaver::CopyCustomColorTexture] Can't copy custom colors texture (%s)", pathname.c_str());
+	}
 }
 
