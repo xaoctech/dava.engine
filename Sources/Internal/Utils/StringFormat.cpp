@@ -29,16 +29,6 @@ static char16 formatString16[FORMAT_STRING_SIZE];
 static int32 formatString8Position = 0;
 static int32 formatString16Position = 0;
 
-int32 AddLength(int32 length, int32 value)
-{
-	if(value < 0)
-	{
-		return length + FORMAT_STRING_MAX_LEN;
-	}
-
-	return length + (value + 1);
-}
-
 //! formatting function (use printf syntax)
 const char8* Format(const char8 * text, ...)
 {
@@ -52,10 +42,18 @@ const char8* Format(const char8 * text, ...)
 	va_list ll;
 	va_start(ll, text);
 	int32 len = vsnprintf(buffer,  FORMAT_STRING_MAX_LEN, text, ll);
-    DVASSERT_MSG((0 < len && len < FORMAT_STRING_MAX_LEN), buffer);
 	va_end(ll);
 
-	formatString8Position = AddLength(formatString8Position, len);
+	if(len < 0 || len > FORMAT_STRING_MAX_LEN)
+	{
+		Logger::Error("[Format8] len = %d, str = %s", len, buffer);
+
+		formatString8Position += FORMAT_STRING_MAX_LEN;
+	}
+	else
+	{
+		formatString8Position += (len + 1);
+	}
 
 	return buffer;
 }
@@ -760,9 +758,17 @@ const char16* Format(const char16 * text, ...)
 #endif
 	va_end(ll);
 
-	DVASSERT_MSG(0 < len  && len < FORMAT_STRING_MAX_LEN, WStringToString(WideString(buffer, len)).c_str());
+	if(len < 0 || len > FORMAT_STRING_MAX_LEN)
+	{
+		Logger::Error("[Format16] len = %d, str = %s", len,  WStringToString(WideString(buffer, len)).c_str());
 
-	formatString16Position = AddLength(formatString16Position, len);
+		formatString16Position += FORMAT_STRING_MAX_LEN;
+	}
+	else
+	{
+		formatString16Position += (len + 1);
+	}
+
 	return buffer;
 }
 
@@ -778,7 +784,16 @@ const char8* FormatVL(const char8 * text, va_list ll)
 	int32 len = vsprintf(buffer,  text, ll);
     DVASSERT_MSG(0 < len && len < FORMAT_STRING_MAX_LEN, buffer);
 
-	formatString8Position = AddLength(formatString8Position, len);
+	if(len < 0 || len > FORMAT_STRING_MAX_LEN)
+	{
+		Logger::Error("[FormatVL8] len = %d, str = %s", len, buffer);
+
+		formatString8Position += FORMAT_STRING_MAX_LEN;
+	}
+	else
+	{
+		formatString8Position += (len + 1);
+	}
 
 	return buffer;
 }
@@ -798,9 +813,16 @@ const char16* FormatVL(const char16 * text, va_list ll)
 	int32 len = vswprintf((wchar_t *)buffer, FORMAT_STRING_MAX_LEN, (wchar_t *)text, ll);
 #endif
 
-	DVASSERT_MSG(0 < len && len < FORMAT_STRING_MAX_LEN, WStringToString(WideString(buffer, len)).c_str());
+	if(len < 0 || len > FORMAT_STRING_MAX_LEN)
+	{
+		Logger::Error("[FormatVL16] len = %d, str = %s", len,  WStringToString(WideString(buffer, len)).c_str());
 
-	formatString16Position = AddLength(formatString16Position, len);
+		formatString16Position += FORMAT_STRING_MAX_LEN;
+	}
+	else
+	{
+		formatString16Position += (len + 1);
+	}
 
 	return buffer;
 }
