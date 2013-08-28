@@ -35,7 +35,7 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QSlider" name="scaleSlider">
+         <widget class="ScaleSlider" name="scaleSlider">
           <property name="minimum">
            <number>1</number>
           </property>
@@ -527,6 +527,11 @@
    <extends>QWidget</extends>
    <header>propertygridcontainerwidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ScaleSlider</class>
+   <extends>QSlider</extends>
+   <header>ScaleSlider.h</header>
   </customwidget>
  </customwidgets>
  <resources>
