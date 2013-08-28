@@ -25,6 +25,8 @@
 #include "Commands2/ParticleForceMoveCommand.h"
 #include "Commands2/ParticleForceRemoveCommand.h"
 
+#include "Classes/SceneEditor/SceneValidator.h"
+
 StructureSystem::StructureSystem(DAVA::Scene * scene)
 	: DAVA::SceneSystem(scene)
 	, lockedSignals(false)
@@ -274,6 +276,8 @@ void StructureSystem::Reload(const EntityGroup *entityGroup, const DAVA::FilePat
 			sceneEditor->EndBatch();
 			UnlockSignals();
 
+            SceneValidator::Instance()->ValidateSceneAndShowErrors(GetScene());
+            
 			SceneSignals::Instance()->EmitStructureChanged((SceneEditor2 *) GetScene(), NULL);
 		}
 	}
@@ -287,6 +291,9 @@ void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector
 		DAVA::Entity *loadedEntity = Load(newModelPath);
 		if(NULL != loadedEntity)
 		{
+            KeyedArchive *customProps = loadedEntity->GetCustomProperties();
+            customProps->SetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, newModelPath.GetAbsolutePathname());
+            
 			DAVA::Matrix4 transform = loadedEntity->GetLocalTransform();
 			transform.SetTranslationVector(pos);
 			loadedEntity->SetLocalTransform(transform);
@@ -296,6 +303,8 @@ void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector
 
 			sceneEditor->UpdateShadowColorFromLandscape();
 
+            SceneValidator::Instance()->ValidateSceneAndShowErrors(GetScene());
+            
 			SceneSignals::Instance()->EmitStructureChanged((SceneEditor2 *) GetScene(), NULL);
 		}
 	}

@@ -21,6 +21,8 @@
 
 #include "Render/Highlevel/ShadowVolumeRenderPass.h"
 
+#include "Classes/SceneEditor/SceneValidator.h"
+
 // framework
 #include "Scene3D/SceneFileV2.h"
 
@@ -140,6 +142,8 @@ bool SceneEditor2::Load(const DAVA::FilePath &path)
 
 	UpdateShadowColorFromLandscape();
 
+    SceneValidator::Instance()->ValidateSceneAndShowErrors(this);
+    
 	SceneSignals::Instance()->EmitLoaded(this);
 	return ret;
 }
