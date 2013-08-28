@@ -17,6 +17,7 @@
 #include "TextureDescriptorUtils.h"
 
 #include "Classes/ImageTools/ImageTools.h"
+using namespace DAVA;
 
 void TextureDescriptorUtils::ResaveDescriptorsForFolder(const FilePath &folderPathname)
 {

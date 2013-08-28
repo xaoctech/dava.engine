@@ -20,26 +20,26 @@
 #include "DAVAEngine.h"
 #include "CommandLine/SceneUtils/SceneUtils.h"
 
-using namespace DAVA;
+//using namespace DAVA;
 
 class TextureDescriptorUtils
 {
 public:
-    static void ResaveDescriptorsForFolder(const FilePath &folderPathname);
-	static void CopyCompressionParamsForFolder(const FilePath &folderPathname);
-    static void CreateDescriptorsForFolder(const FilePath &folderPathname);
-	static void SetCompressionParamsForFolder(const FilePath &folderPathname, const DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> & compressionParams, bool convertionEnabled, bool force);
+    static void ResaveDescriptorsForFolder(const DAVA::FilePath &folderPathname);
+	static void CopyCompressionParamsForFolder(const DAVA::FilePath &folderPathname);
+    static void CreateDescriptorsForFolder(const DAVA::FilePath &folderPathname);
+	static void SetCompressionParamsForFolder(const DAVA::FilePath &folderPathname, const DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> & compressionParams, bool convertionEnabled, bool force);
 
-	static void SetCompressionParams(const FilePath &descriptorPathname, const DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> & compressionParams, bool convertionEnabled, bool force);
-    static void CreateDescriptorIfNeed(const FilePath &pngPathname);
+	static void SetCompressionParams(const DAVA::FilePath &descriptorPathname, const DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> & compressionParams, bool convertionEnabled, bool force);
+    static void CreateDescriptorIfNeed(const DAVA::FilePath &pngPathname);
     
 private:
     
-	static void ResaveDescriptor(const FilePath & descriptorPathname);
-    static void CopyCompressionParams(const FilePath &descriptorPathname);
+	static void ResaveDescriptor(const DAVA::FilePath & descriptorPathname);
+    static void CopyCompressionParams(const DAVA::FilePath &descriptorPathname);
 
-	static bool IsCorrectDirectory(FileList *fileList, const int32 fileIndex);
-	static bool IsDescriptorPathname(const FilePath &pathname);
+	static bool IsCorrectDirectory(DAVA::FileList *fileList, const DAVA::int32 fileIndex);
+	static bool IsDescriptorPathname(const DAVA::FilePath &pathname);
 };
 
 

@@ -19,6 +19,7 @@
 #include "Platform/SystemTimer.h"
 #include "Base/TemplateHelpers.h"
 #include "Render/Highlevel/Camera.h"
+#include "Core/PerformanceSettings.h"
 
 namespace DAVA
 {
@@ -58,20 +59,29 @@ void ParticleEmitterSystem::Update(float32 timeElapsed, Camera * camera)
 	uint32 size = emitters.size();
 	Vector<ParticleEmitter*> emittersToBeDeleted;
 
+	float32 currFps = 1.0f/timeElapsed;
+	
+	float32 currPSValue = (currFps - PerformanceSettings::Instance()->GetPsPerformanceMinFPS())/(PerformanceSettings::Instance()->GetPsPerformanceMaxFPS()-PerformanceSettings::Instance()->GetPsPerformanceMinFPS());
+	currPSValue = Clamp(currPSValue, 0.0f, 1.0f);
+	float32 speedMult = 1.0f+(PerformanceSettings::Instance()->GetPsPerformanceSpeedMult()-1.0f)*(1-currPSValue);
+
 	for(uint32 i = 0; i < size; ++i)
 	{
 		// Yuri Coder, 2013/05/15. Visible emitters are always updated, "deferred" update
 		// is called for invisible ones. See pls issue #DF-1140.
 		uint32 flags = emitters[i]->GetFlags();
 		bool requireUpdate = false;
+
+		float32 effectTime = emitters[i]->IsShortEffect()?timeElapsed*speedMult:timeElapsed;
+
         if ((flags & RenderObject::VISIBILITY_CRITERIA) == RenderObject::VISIBILITY_CRITERIA)
         {
-            emitters[i]->Update(timeElapsed);
+            emitters[i]->Update(effectTime);
 			requireUpdate = true;
         }
 		else
 		{
-			requireUpdate = emitters[i]->DeferredUpdate(timeElapsed);
+			requireUpdate = emitters[i]->DeferredUpdate(effectTime);
 		}		
 
 		if (emitters[i]->IsToBeDeleted())
