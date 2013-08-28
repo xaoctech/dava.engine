@@ -17,6 +17,7 @@
 #include "Base/ObjectFactory.h"
 #include "Core/ApplicationCore.h"
 #include "Core/Core.h"
+#include "Core/PerformanceSettings.h"
 #include "Render/RenderManager.h"
 #include "Platform/SystemTimer.h"
 #include "Platform/Thread.h"
@@ -119,6 +120,7 @@ void Core::CreateSingletons()
 	new UIControlSystem();
 	new SoundSystem(64);
 	new InputSystem();
+	new PerformanceSettings();
 	
 #if defined __DAVAENGINE_IPHONE__
 	new AccelerometeriPhoneImpl();
@@ -150,6 +152,7 @@ void Core::CreateRenderManager()
         
 void Core::ReleaseSingletons()
 {
+	PerformanceSettings::Instance()->Release();
 	UIScreenManager::Instance()->Release();
 	UIControlSystem::Instance()->Release();
 	SoundSystem::Instance()->Release();
