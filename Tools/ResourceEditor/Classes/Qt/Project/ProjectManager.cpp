@@ -76,7 +76,6 @@ void ProjectManager::ProjectOpen(const QString &path)
 			EditorSettings::Instance()->SetDataSourcePath(dataSource3Dpathname);
 			EditorSettings::Instance()->Save();
 
-			TextureDescriptorUtils::CreateDescriptorsForFolder(dataSource3Dpathname);
 			SceneValidator::Instance()->SetPathForChecking(projectPath);
 
 			EditorConfig::Instance()->ParseConfig(projectPath + "EditorConfig.yaml");

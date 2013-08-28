@@ -81,20 +81,6 @@ class EntitySTL
  */
 
 
-void CreateDefaultDescriptorsAtDataSource3D()
-{
-    FilePath dataSourcePathname = EditorSettings::Instance()->GetDataSourcePath();
-    String sourceFolder = String("DataSource/3d/");
-    
-    if(sourceFolder.length() <= dataSourcePathname.GetAbsolutePathname().length())
-    {
-//        uint64 creationTime = SystemTimer::Instance()->AbsoluteMS();
-        TextureDescriptorUtils::CreateDescriptorsForFolder(dataSourcePathname);
-//        creationTime = SystemTimer::Instance()->AbsoluteMS() - creationTime;
-//      Logger::Info("[CreateDefaultDescriptors time is %ldms]", creationTime);
-    }
-}
-
 void FrameworkDidLaunched()
 {
     uint32 size = sizeof(EntityX);
@@ -108,10 +94,6 @@ void FrameworkDidLaunched()
 
     
     SceneValidator::Instance()->SetPathForChecking(EditorSettings::Instance()->GetProjectPath());
-    if(!CommandLineManager::Instance()->IsCommandLineModeEnabled())
-    {
-        CreateDefaultDescriptorsAtDataSource3D();
-    }
     
 #if defined(__DAVAENGINE_IPHONE__)
 	KeyedArchive * appOptions = new KeyedArchive();
