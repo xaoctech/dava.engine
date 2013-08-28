@@ -318,6 +318,15 @@ void QtMainWindow::SetupToolBars()
 	ui->modificationToolBar->insertWidget(ui->actionModifyReset, modificationWidget);
 
 	// reload
+    QToolButton *reloadSpritesBtn = new QToolButton();
+	reloadSpritesBtn->setDefaultAction(ui->actionReloadSprites);
+	reloadSpritesBtn->setMaximumWidth(100);
+	reloadSpritesBtn->setMinimumWidth(100);
+	ui->mainToolBar->addSeparator();
+    QAction *a = ui->mainToolBar->addWidget(reloadSpritesBtn);
+	reloadSpritesBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+	reloadSpritesBtn->setAutoRaise(false);
+
 	QToolButton *reloadTexturesBtn = new QToolButton();
 	reloadTexturesBtn->setMenu(ui->menuTexturesForGPU);
 	reloadTexturesBtn->setPopupMode(QToolButton::MenuButtonPopup);
@@ -325,7 +334,7 @@ void QtMainWindow::SetupToolBars()
 	reloadTexturesBtn->setMaximumWidth(100);
 	reloadTexturesBtn->setMinimumWidth(100);
 	ui->mainToolBar->addSeparator();
-	ui->mainToolBar->addWidget(reloadTexturesBtn);
+	ui->mainToolBar->insertWidget(a, reloadTexturesBtn);
 	reloadTexturesBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	reloadTexturesBtn->setAutoRaise(false);
 
@@ -365,6 +374,8 @@ void QtMainWindow::SetupActions()
 	ui->actionReloadPNG->setData(GPU_UNKNOWN);
 	QObject::connect(ui->menuTexturesForGPU, SIGNAL(triggered(QAction *)), this, SLOT(OnReloadTexturesTriggered(QAction *)));
 	QObject::connect(ui->actionReloadTextures, SIGNAL(triggered()), this, SLOT(OnReloadTextures()));
+    QObject::connect(ui->actionReloadSprites, SIGNAL(triggered()), this, SLOT(OnReloadSprites()));
+
 	
 	// scene undo/redo
 	QObject::connect(ui->actionUndo, SIGNAL(triggered()), this, SLOT(OnUndo()));
@@ -719,6 +730,11 @@ void QtMainWindow::OnReloadTexturesTriggered(QAction *reloadAction)
 
 		SetGPUFormat(gpu);
 	}
+}
+
+void QtMainWindow::OnReloadSprites()
+{
+    SpritePackerHelper::Instance()->UpdateParticleSprites();
 }
 
 void QtMainWindow::OnSelectMode()

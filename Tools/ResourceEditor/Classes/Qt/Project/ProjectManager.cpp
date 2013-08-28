@@ -23,6 +23,7 @@
 #include "Classes/SceneEditor/SceneEditorScreenMain.h"
 
 #include "Classes/CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
+#include "Classes/Qt/SpritesPacker/SpritePackerHelper.h"
 
 ProjectManager::ProjectManager()
 	: curProjectPath("")
@@ -77,6 +78,8 @@ void ProjectManager::ProjectOpen(const QString &path)
 			EditorSettings::Instance()->Save();
 
 			SceneValidator::Instance()->SetPathForChecking(projectPath);
+            
+            SpritePackerHelper::Instance()->UpdateParticleSprites();
 
 			EditorConfig::Instance()->ParseConfig(projectPath + "EditorConfig.yaml");
 		}

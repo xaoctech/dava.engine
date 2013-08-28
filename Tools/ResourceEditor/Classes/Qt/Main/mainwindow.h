@@ -72,6 +72,8 @@ public slots:
 	void OnReloadTextures();
 	void OnReloadTexturesTriggered(QAction *reloadAction);
 
+    void OnReloadSprites();
+    
 	void OnSelectMode();
 	void OnMoveMode();
 	void OnRotateMode();
