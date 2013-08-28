@@ -99,6 +99,8 @@ public slots:
 	void OnUserNodeDialog();
 	void OnSwitchEntityDialog();
 	void OnParticleEffectDialog();
+	void OnUniteEntitiesWithLODs();
+	void OnAddEntityMenuAboutToShow();
 	
 	void OnNotPassableTerrain();
 	void OnRulerTool();
