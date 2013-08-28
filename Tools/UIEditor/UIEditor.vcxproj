@@ -74,6 +74,7 @@
     <ClCompile Include="Classes\Models\HierarchyTreePlatformNode.cpp" />
     <ClCompile Include="Classes\Models\HierarchyTreeRootNode.cpp" />
     <ClCompile Include="Classes\Models\HierarchyTreeScreenNode.cpp" />
+    <ClCompile Include="Classes\ScaleSlider.cpp" />
     <ClCompile Include="Classes\ScreenControl.cpp" />
     <ClCompile Include="Classes\ScreenManager.cpp" />
     <ClCompile Include="Classes\ScreenWrapper.cpp" />
@@ -161,6 +162,7 @@
     <ClCompile Include="GeneratedFiles\Models\HierarchyTreeRootNode_moc.cpp" />
     <ClCompile Include="GeneratedFiles\Models\HierarchyTreeScreenNode_moc.cpp" />
     <ClCompile Include="GeneratedFiles\Models\HierarchyTree_moc.cpp" />
+    <ClCompile Include="GeneratedFiles\ScaleSlider_moc.cpp" />
     <ClCompile Include="GeneratedFiles\ScreenControl_moc.cpp" />
     <ClCompile Include="GeneratedFiles\ScreenManager_moc.cpp" />
     <ClCompile Include="GeneratedFiles\ScreenWrapper_moc.cpp" />
@@ -375,6 +377,7 @@
     <ClInclude Include="Classes\Models\HierarchyTreePlatformNode.h" />
     <ClInclude Include="Classes\Models\HierarchyTreeRootNode.h" />
     <ClInclude Include="Classes\Models\HierarchyTreeScreenNode.h" />
+    <ClInclude Include="Classes\ScaleSlider.h" />
     <ClInclude Include="Classes\ScreenControl.h" />
     <ClInclude Include="Classes\ScreenWrapper.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">

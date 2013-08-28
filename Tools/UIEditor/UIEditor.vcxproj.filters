@@ -633,6 +633,12 @@
     <ClCompile Include="Classes\Commands\ChangeAlignPropertyCommand.cpp">
       <Filter>Sources\Commands</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\ScaleSlider.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\ScaleSlider_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\DefaultScreen.h">
@@ -1009,6 +1015,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Commands\ChangeAlignPropertyCommand.h">
       <Filter>Sources\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ScaleSlider.h">
+      <Filter>Sources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
