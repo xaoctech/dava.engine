@@ -428,15 +428,7 @@ void SceneValidator::ValidateTexture(Texture *texture, const FilePath &texturePa
 	}
 
 	bool pathIsCorrect = ValidatePathname(texturePathname, validatedObjectName);
-	if(pathIsCorrect)
-	{
-		if(!IsFBOTexture(texture))
-		{
-			// if there is no descriptor file for this texture - generate it
-			TextureDescriptorUtils::CreateDescriptorIfNeed(texturePathname);
-		}
-	}
-	else
+	if(!pathIsCorrect)
 	{
 		errorsLog.insert("Wrong path of: " + textureInfo);
 	}
@@ -552,8 +544,6 @@ bool SceneValidator::ValidateTexturePathname(const FilePath &pathForValidation, 
 			errorsLog.insert(Format("Path %s has incorrect extension", pathForValidation.GetAbsolutePathname().c_str()));
 			return false;
 		}
-
-        TextureDescriptorUtils::CreateDescriptorIfNeed(pathForValidation);
 	}
 	else
 	{

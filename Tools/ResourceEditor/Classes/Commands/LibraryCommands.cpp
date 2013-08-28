@@ -177,7 +177,8 @@ CommandConvertScene::CommandConvertScene(const DAVA::FilePath &pathname)
 void CommandConvertScene::Execute()
 {
     DVASSERT(CheckExtension(String(".dae")) && "Wrong extension");
-    TextureDescriptorUtils::CreateDescriptorsForFolder(EditorSettings::Instance()->GetDataSourcePath());
+//    TextureDescriptorUtils::CreateDescriptorsForFolder(EditorSettings::Instance()->GetDataSourcePath());
+    DVASSERT(false)
     
     eColladaErrorCodes code = ConvertDaeToSce(filePathname);
     if(code == COLLADA_OK)
