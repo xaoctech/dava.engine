@@ -45,7 +45,7 @@
 #include "../Settings/SettingsManager.h"
 
 #include "Render/Highlevel/ShadowVolumeRenderPass.h"
-
+#include "../../Commands2/GroupEntitiesForMultiselectCommand.h"
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QDesktopServices>
@@ -410,7 +410,9 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionUserNode, SIGNAL(triggered()), this, SLOT(OnUserNodeDialog()));
 	QObject::connect(ui->actionSwitchNode, SIGNAL(triggered()), this, SLOT(OnSwitchEntityDialog()));
 	QObject::connect(ui->actionParticleEffectNode, SIGNAL(triggered()), this, SLOT(OnParticleEffectDialog()));
-	
+	QObject::connect(ui->actionUniteEntitiesWithLODs, SIGNAL(triggered()), this, SLOT(OnUniteEntitiesWithLODs()));
+	QObject::connect(ui->menuCreateNode, SIGNAL(aboutToShow()), this, SLOT(OnAddEntityMenuAboutToShow()));
+			
 	QObject::connect(ui->actionShowSettings, SIGNAL(triggered()), this, SLOT(OnShowSettings()));
 	
 	QObject::connect(ui->actionSetShadowColor, SIGNAL(triggered()), this, SLOT(OnSetShadowColor()));
@@ -1090,6 +1092,28 @@ void QtMainWindow::OnParticleEffectDialog()
 	CreateAndDisplayAddEntityDialog(sceneNode);
 }
 
+void QtMainWindow::OnUniteEntitiesWithLODs()
+{
+	SceneEditor2* sceneEditor = GetCurrentScene();
+	if(NULL == sceneEditor)
+	{
+		return;
+	}
+	const EntityGroup* selectedEntities = sceneEditor->selectionSystem->GetSelection();
+	sceneEditor->Exec(new GroupEntitiesForMultiselectCommand(selectedEntities));
+}
+
+
+void QtMainWindow::OnAddEntityMenuAboutToShow()
+{
+	SceneEditor2* sceneEditor = GetCurrentScene();
+	if(NULL == sceneEditor)
+	{
+		return;
+	}
+	int32 selectedItemsNumber =	sceneEditor->selectionSystem->GetSelection()->Size();
+	ui->actionUniteEntitiesWithLODs->setEnabled(selectedItemsNumber > 1);
+}
 
 void QtMainWindow::CreateAndDisplayAddEntityDialog(Entity* entity)
 {
