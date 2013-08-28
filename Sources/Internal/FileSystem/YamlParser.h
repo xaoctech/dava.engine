@@ -52,7 +52,7 @@ public:
 	virtual ~YamlNode();
 	
 	void Print(int32 identation);
-    void PrintToFile(DAVA::File* file, uint32 identationDepth = 0);
+    void PrintToFile(DAVA::File* file, uint32 identationDepth = 0) const;
 	
 	bool			AsBool() const;
 	int32			AsInt() const;//left for old code
@@ -193,7 +193,7 @@ public:
 	static YamlParser	* Create(const FilePath & fileName);
 	
     // Save to YAML file.
-	bool SaveToYamlFile(const FilePath & fileName, YamlNode * rootNode, bool skipRootNode, uint32 attr = File::CREATE | File::WRITE);
+	bool SaveToYamlFile(const FilePath & fileName, const YamlNode * rootNode, bool skipRootNode, uint32 attr = File::CREATE | File::WRITE);
     
 	// Save the strings list (needed for Localization).
 	bool SaveStringsList(const FilePath & fileName, YamlNode * rootNode, uint32 attr = File::CREATE | File::WRITE);
@@ -210,27 +210,27 @@ public:
 
 private:
 	YamlNode			* GetNodeByPath(const String & path);
-	bool                SaveNodeRecursive(File* fileToSave, const String& nodeName, YamlNode* currentNode, int16 depth);
+	bool                SaveNodeRecursive(File* fileToSave, const String& nodeName, const YamlNode* currentNode, int16 depth) const;
 
     // Order the YAML node with type "Map" according to the depth.
-    Vector<YamlNodeKeyValuePair> OrderMapYamlNode(const MultiMap<String, YamlNode*>& mapNodes);
+    void OrderMapYamlNode(const MultiMap<String, YamlNode*>& mapNodes, Vector<YamlNodeKeyValuePair> &sortedChildren ) const;
 
     // Write different Yaml node types to the file.
-    bool WriteScalarNodeToYamlFile(File* fileToSave, const String& nodeName, const String& nodeValue, int16 depth);
+    bool WriteScalarNodeToYamlFile(File* fileToSave, const String& nodeName, const String& nodeValue, int16 depth) const;
     bool WriteArrayNodeToYamlFile(File* fileToSave, const String& nodeName,
-                                  YamlNode* currentNode, int16 depth);
-    bool WriteMapNodeToYamlFile(File* fileToSave, const String& mapNodeName, int16 depth);
+                                  const YamlNode* currentNode, int16 depth) const;
+    bool WriteMapNodeToYamlFile(File* fileToSave, const String& mapNodeName, int16 depth) const;
 
-    bool WriteStringToYamlFile(File* fileToSave, const String& stringToWrite);
-	bool WriteStringToYamlFile(File* fileToSave, const WideString& stringToWrite);
+    bool WriteStringToYamlFile(File* fileToSave, const String& stringToWrite) const;
+	bool WriteStringToYamlFile(File* fileToSave, const WideString& stringToWrite) const;
 
-	bool WriteStringListNodeToYamlFie(File* fileToSave, const String& nodeName, YamlNode* currentNode);
+	bool WriteStringListNodeToYamlFie(File* fileToSave, const String& nodeName, const YamlNode* currentNode) const;
 
     // Recursively get the array node representation string.
-    String GetArrayNodeRepresentation(const String& nodeName, YamlNode* currentNode, int16 depth, bool writeAsOuterNode = true);
+    String GetArrayNodeRepresentation(const String& nodeName, const YamlNode* currentNode, int16 depth, bool writeAsOuterNode = true) const;
 
     // Return the identation string of the appropriate depth.
-    String PrepareIdentedString(int16 depth);
+    String PrepareIdentedString(int16 depth) const;
 
 	YamlNode			* rootObject;
 	String				lastMapKey;
