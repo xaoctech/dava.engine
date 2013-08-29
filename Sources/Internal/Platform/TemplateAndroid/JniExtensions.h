@@ -30,23 +30,21 @@ class Rect;
 class JniExtension
 {
 public:
-	JniExtension(const char* className);
+	JniExtension();
 	virtual ~JniExtension();
 
-	jclass GetJavaClass() const;
-	void ReleaseJavaClass(jclass javaClass) const;
-	jmethodID GetMethodID(jclass javaClass, const char *methodName, const char *paramCode) const;
+	static void SetJavaClass(JNIEnv* env, const char* className, jclass* gJavaClass, const char** gJavaClassName);
 
 protected:
+	virtual jclass GetJavaClass() const = 0;
+	virtual const char* GetJavaClassName() const = 0;
+	jmethodID GetMethodID(const char *methodName, const char *paramCode) const;
 	JNIEnv* GetEnvironment() {return env;};
 	Rect V2P(const Rect& rect) const;
 
 protected:
-	const char* className;
 	JNIEnv* env;
 	JavaVM* vm;
-
-	//bool isThreadAttached;
 };
 
 }

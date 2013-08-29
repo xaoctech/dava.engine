@@ -21,12 +21,37 @@
 
 namespace DAVA 
 {
+
 class MailSender
 {
 public:
 	static bool SendEmail(const WideString& email, const WideString& subject, const WideString& messageText);
 };
+
 };
 
+#if defined(__DAVAENGINE_ANDROID__)
+#include "JniExtensions.h"
+
+namespace DAVA
+{
+
+class JniMailSender: public JniExtension
+{
+public:
+	bool SendEmail(const String& email, const String& subject, const String& messageText);
+
+protected:
+	virtual jclass GetJavaClass() const;
+	virtual const char* GetJavaClassName() const;
+
+public:
+	static jclass gJavaClass;
+	static const char* gJavaClassName;
+};
+
+};
+
+#endif
 
 #endif
