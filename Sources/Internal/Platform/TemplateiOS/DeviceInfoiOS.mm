@@ -184,6 +184,16 @@ String DeviceInfo::GetUDID()
     OpenUDIDiOS*  udid = [[[OpenUDIDiOS alloc] init] autorelease];
     return [[udid value] UTF8String];
 }
+    
+WideString DeviceInfo::GetName()
+{
+    NSString * deviceName = [[UIDevice currentDevice] name];
+    
+    NSStringEncoding pEncode    =   CFStringConvertEncodingToNSStringEncoding ( kCFStringEncodingUTF32LE );
+    NSData* pSData              =   [ deviceName dataUsingEncoding : pEncode ];
+    
+    return WideString ( (wchar_t*) [ pSData bytes ], [ pSData length] / sizeof ( wchar_t ) );
+}
 
 }
 
