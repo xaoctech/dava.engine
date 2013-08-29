@@ -503,7 +503,7 @@ void UIControlBackground::DrawStretched(const Rect &drawRect)
     const float32 scaleFactorX = drawRect.dx / spriteWidth;
     const float32 scaleFactorY = drawRect.dy / spriteHeight;
     float32 x = drawRect.x + Max( 0.0f, -leftOffset ) * scaleFactorX;
-    float32 y = drawRect.y + Max( 0.0f, -topOffset  ) * scaleFactorX;
+    float32 y = drawRect.y + Max( 0.0f, -topOffset  ) * scaleFactorY;
     float32 dx = drawRect.dx - ( Max( 0.0f, -leftOffset ) + Max( 0.0f, -rightOffset  ) ) * scaleFactorX;
     float32 dy = drawRect.dy - ( Max( 0.0f, -topOffset  ) + Max( 0.0f, -bottomOffset ) ) * scaleFactorY;
 
