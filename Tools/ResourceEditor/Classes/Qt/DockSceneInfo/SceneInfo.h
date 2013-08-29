@@ -67,7 +67,7 @@ protected slots:
     
 protected slots:
     
-    void timerDone();
+    void UpdateInfoByTimer();
     
 protected:
     

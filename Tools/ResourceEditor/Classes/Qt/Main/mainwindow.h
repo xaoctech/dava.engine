@@ -54,6 +54,10 @@ public:
 	void WaitSetValue(int value);
 	void WaitStop();
 
+signals:
+    void DrawTimerDone();
+
+    
 // qt actions slots
 public slots:
 	void OnProjectOpen();
@@ -145,6 +149,12 @@ protected slots:
 
 	void UpdateRulerToolLength(SceneEditor2* scene, double length, double previewLength);
 
+    
+    
+    void OnDrawStringTimerDone();
+
+    
+    
 private:
 	Ui::MainWindow *ui;
 	QtWaitDialog *waitDialog;
