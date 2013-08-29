@@ -45,6 +45,7 @@
 #include "../Settings/SettingsManager.h"
 
 #include "Classes/Qt/Scene/SceneEditor2.h"
+#include "Classes/CommandLine/CommandLineManager.h"
 
 #include "Render/Highlevel/ShadowVolumeRenderPass.h"
 #include "../../Commands2/GroupEntitiesForMultiselectCommand.h"
@@ -94,6 +95,11 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	LoadGPUFormat();
 
 	addSwitchEntityDialog = new AddSwitchEntityDialog( this);
+    
+    if(!CommandLineManager::Instance()->IsCommandLineModeEnabled())
+    {
+        QTimer::singleShot(1000, this, SLOT(OnDrawStringTimerDone()));
+    }
 }
 
 QtMainWindow::~QtMainWindow()
@@ -1336,3 +1342,11 @@ void QtMainWindow::OnSaveTiledTexture()
     
     SafeRelease(descriptor);
 }
+
+void QtMainWindow::OnDrawStringTimerDone()
+{
+    emit DrawTimerDone();
+    
+    QTimer::singleShot(1000, this, SLOT(OnDrawStringTimerDone()));
+}
+
