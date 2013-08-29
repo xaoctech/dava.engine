@@ -13,29 +13,34 @@
     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+#ifndef __DAVAENGINE_UTILS_ANDROID_H__
+#define __DAVAENGINE_UTILS_ANDROID_H__
 
-#include "AndroidLayer.h"
-#include "UI/UITextFieldAndroid.h"
+#include "Base/BaseTypes.h"
+#if defined(__DAVAENGINE_ANDROID__)
+#include "JniExtensions.h"
 
-char text[256] = {0};
-
-extern "C"
+namespace DAVA
 {
-	void Java_com_dava_framework_JNITextField_FieldHiddenWithText(JNIEnv* env, jobject classthis, jstring jStrText)
-	{
-		CreateStringFromJni(env, jStrText, text);
-		DAVA::JniTextField::FieldHiddenWithText(text);
-	}
 
+class JniUtils: public JniExtension
+{
+public:
+	bool DisableSleepTimer();
+	bool EnableSleepTimer();
 
-	void Java_com_dava_framework_JNITextField_TextFieldShouldReturn(JNIEnv* env, jobject classthis)
-	{
-		DAVA::JniTextField::TextFieldShouldReturn();
-	}
+protected:
+	virtual jclass GetJavaClass() const;
+	virtual const char* GetJavaClassName() const;
 
-	bool Java_com_dava_framework_JNITextField_TextFieldKeyPressed(JNIEnv* env, jobject classthis, int replacementLocation, int replacementLength, jstring replacementString)
-	{
-		CreateStringFromJni(env, replacementString, text);
-		return DAVA::JniTextField::TextFieldKeyPressed(replacementLocation, replacementLength, text);
-	}
+public:
+	static jclass gJavaClass;
+	static const char* gJavaClassName;
 };
+
+};
+
+#endif //__DAVAENGINE_ANDROID__
+
+#endif // __DAVAENGINE_UTILS_H__
+
