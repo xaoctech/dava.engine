@@ -14,28 +14,30 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "AndroidLayer.h"
-#include "UI/UITextFieldAndroid.h"
+#ifndef __DAVAENGINE_DVASSERT_MESSAGE_ANDROID_H__
+#define __DAVAENGINE_DVASSERT_MESSAGE_ANDROID_H__
 
-char text[256] = {0};
+#include "Base/BaseTypes.h"
+#ifdef __DAVAENGINE_ANDROID__
+#include "JniExtensions.h"
 
-extern "C"
+namespace DAVA {
+
+class JniDVAssertMessage: public JniExtension
 {
-	void Java_com_dava_framework_JNITextField_FieldHiddenWithText(JNIEnv* env, jobject classthis, jstring jStrText)
-	{
-		CreateStringFromJni(env, jStrText, text);
-		DAVA::JniTextField::FieldHiddenWithText(text);
-	}
+public:
+	void ShowMessage(const char* message);
 
+protected:
+	virtual jclass GetJavaClass() const;
+	virtual const char* GetJavaClassName() const;
 
-	void Java_com_dava_framework_JNITextField_TextFieldShouldReturn(JNIEnv* env, jobject classthis)
-	{
-		DAVA::JniTextField::TextFieldShouldReturn();
-	}
-
-	bool Java_com_dava_framework_JNITextField_TextFieldKeyPressed(JNIEnv* env, jobject classthis, int replacementLocation, int replacementLength, jstring replacementString)
-	{
-		CreateStringFromJni(env, replacementString, text);
-		return DAVA::JniTextField::TextFieldKeyPressed(replacementLocation, replacementLength, text);
-	}
+public:
+	static jclass gJavaClass;
+	static const char* gJavaClassName;
 };
+
+};
+#endif //__DAVAENGINE_ANDROID__
+
+#endif // __DAVAENGINE_DVASSERT_MESSAGE_ANDROID_H__

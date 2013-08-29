@@ -22,6 +22,8 @@
 #include "Particles/ParticleEmitter.h"
 #include "Render/Highlevel/Camera.h"
 #include "Scene3D/Components/ComponentHelpers.h"
+#include "Platform/SystemTimer.h"
+#include "Core/PerformanceSettings.h";
 
 namespace DAVA
 {
@@ -35,6 +37,17 @@ LodSystem::LodSystem(Scene * scene)
 
 void LodSystem::Process()
 {
+	float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
+	float32 currFps = 1.0f/timeElapsed;
+
+	float32 currPSValue = (currFps - PerformanceSettings::Instance()->GetPsPerformanceMinFPS())/(PerformanceSettings::Instance()->GetPsPerformanceMaxFPS()-PerformanceSettings::Instance()->GetPsPerformanceMinFPS());
+	currPSValue = Clamp(currPSValue, 0.0f, 1.0f);
+	float32 lodOffset = PerformanceSettings::Instance()->GetPsPerformanceLodOffset()*(1-currPSValue);
+	float32 lodMult = 1.0f+(PerformanceSettings::Instance()->GetPsPerformanceLodMult()-1.0f)*(1-currPSValue);
+	/*as we use square values - multiply it too*/
+	lodOffset*=lodOffset;
+	lodMult*=lodMult;
+
 	for(int32 i = partialUpdateIndices[currentPartialUpdateIndex]; i < partialUpdateIndices[currentPartialUpdateIndex+1]; ++i)
 	{
 		Entity * entity = entities[i];
@@ -45,7 +58,7 @@ void LodSystem::Process()
 			lod->flags &= ~LodComponent::NEED_UPDATE_AFTER_LOAD;
 		}
 
-		UpdateLod(entity);
+		UpdateLod(entity, lodOffset, lodMult);
 	}
 
 	currentPartialUpdateIndex = currentPartialUpdateIndex < UPDATE_PART_PER_FRAME-1 ? currentPartialUpdateIndex+1 : 0;
@@ -128,11 +141,11 @@ void LodSystem::UpdatePartialUpdateIndices()
 	LastSlot = Max(LastSlot, size);
 }
 
-void LodSystem::UpdateLod(Entity * entity)
+void LodSystem::UpdateLod(Entity * entity, float32 psLodOffsetSq, float32 psLodMultSq)
 {
 	LodComponent * lodComponent = static_cast<LodComponent*>(entity->GetComponent(Component::LOD_COMPONENT));
 	int32 oldLod = lodComponent->currentLod;
-	RecheckLod(entity);
+	RecheckLod(entity, psLodOffsetSq, psLodMultSq);
 	if (oldLod != lodComponent->currentLod) 
 	{
 
@@ -159,7 +172,7 @@ void LodSystem::UpdateLod(Entity * entity)
 	}
 }
 
-void LodSystem::RecheckLod(Entity * entity)
+void LodSystem::RecheckLod(Entity * entity, float32 psLodOffsetSq, float32 psLodMultSq)
 {
 	
 	LodComponent * lodComponent = static_cast<LodComponent*>(entity->GetComponent(Component::LOD_COMPONENT));
@@ -167,9 +180,11 @@ void LodSystem::RecheckLod(Entity * entity)
 
 	int32 layersCount = lodComponent->lodLayers.size();	
 	RenderObject *renderObject = GetRenderObject(entity);
+	bool usePsSettings = false;
 	if (renderObject&&renderObject->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
 	{
 		layersCount = LodComponent::MAX_LOD_LAYERS;
+		usePsSettings = true;
 	}
 
 	if(LodComponent::INVALID_LOD_LAYER != lodComponent->forceLodLayer) 
@@ -198,6 +213,11 @@ void LodSystem::RecheckLod(Entity * entity)
 		else 
 		{
 			dst = lodComponent->forceDistanceSq;
+		}
+
+		if (usePsSettings)
+		{
+			dst = dst*psLodMultSq+psLodOffsetSq;
 		}
 
 		if (dst > lodComponent->GetLodLayerFarSquare(lodComponent->currentLod) || dst < lodComponent->GetLodLayerNearSquare(lodComponent->currentLod))

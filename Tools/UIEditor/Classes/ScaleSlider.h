@@ -14,28 +14,21 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "AndroidLayer.h"
-#include "UI/UITextFieldAndroid.h"
+#ifndef __UIEDITOR__SCALESLIDER__H__
+#define __UIEDITOR__SCALESLIDER__H__
 
-char text[256] = {0};
+#include <QSlider>
 
-extern "C"
+class ScaleSlider : public QSlider
 {
-	void Java_com_dava_framework_JNITextField_FieldHiddenWithText(JNIEnv* env, jobject classthis, jstring jStrText)
-	{
-		CreateStringFromJni(env, jStrText, text);
-		DAVA::JniTextField::FieldHiddenWithText(text);
-	}
+	Q_OBJECT
+public:
+    explicit ScaleSlider(QWidget *parent = 0);
+    explicit ScaleSlider(Qt::Orientation orientation, QWidget *parent = 0);
 
-
-	void Java_com_dava_framework_JNITextField_TextFieldShouldReturn(JNIEnv* env, jobject classthis)
-	{
-		DAVA::JniTextField::TextFieldShouldReturn();
-	}
-
-	bool Java_com_dava_framework_JNITextField_TextFieldKeyPressed(JNIEnv* env, jobject classthis, int replacementLocation, int replacementLength, jstring replacementString)
-	{
-		CreateStringFromJni(env, replacementString, text);
-		return DAVA::JniTextField::TextFieldKeyPressed(replacementLocation, replacementLength, text);
-	}
+protected:
+	void mousePressEvent (QMouseEvent* event);
+	int RoundToNearestInteger(float value);
 };
+
+#endif //__UIEDITOR__SCALESLIDER__H__

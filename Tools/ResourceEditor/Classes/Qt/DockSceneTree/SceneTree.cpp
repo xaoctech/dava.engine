@@ -383,6 +383,17 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos)
 			particleEffectMenu->addAction(QIcon(":/QtIcons/savescene.png"), "Save Emitter to Yaml", this, SLOT(SaveEmitterToYaml()));
 			particleEffectMenu->addAction(QIcon(":/QtIcons/save_as.png"), "Save Emitter to Yaml As...", this, SLOT(SaveEmitterToYamlAs()));
 		}
+		
+		SceneEditor2* sceneEditor = treeModel->GetScene();
+		if(NULL != sceneEditor)
+		{
+			int32 selectedItemsNumber =	sceneEditor->selectionSystem->GetSelection()->Size();
+			if(selectedItemsNumber > 1)
+			{
+				contextMenu.addSeparator();
+				contextMenu.addAction("Group to entity with merged LODs", QtMainWindow::Instance(), SLOT(OnUniteEntitiesWithLODs()));
+			}
+		}
 
 		contextMenu.exec(pos);
 	}

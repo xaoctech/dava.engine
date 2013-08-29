@@ -181,8 +181,15 @@ void SceneValidator::ValidateLodComponent(Entity *ownerNode, Set<String> &errors
     LodComponent *lodComponent = GetLodComponent(ownerNode);
     if(!lodComponent) return;
 
-
     int32 layersCount = lodComponent->GetLodLayersCount();
+	if (GetEmitter(ownerNode))
+		layersCount = LodComponent::MAX_LOD_LAYERS;
+    
+    if(layersCount == 0)
+    {
+        errorsLog.insert(Format("Node %s: Count of layers is 0", ownerNode->GetName().c_str()));
+    }
+    
     for(int32 layer = 0; layer < layersCount; ++layer)
     {
         float32 distance = lodComponent->GetLodLayerDistance(layer);
@@ -217,6 +224,13 @@ void SceneValidator::ValidateParticleEmitterComponent(DAVA::Entity *ownerNode, S
     if(!emitter)
 	{
 		return;
+	}
+
+	LodComponent * lodComponent = GetLodComponent(ownerNode);
+	if (!lodComponent)
+	{
+		lodComponent = new LodComponent();
+		ownerNode->AddComponent(lodComponent);		
 	}
 
 	ValidateParticleEmitter(emitter, errorsLog);

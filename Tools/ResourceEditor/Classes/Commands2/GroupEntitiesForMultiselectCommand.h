@@ -14,28 +14,38 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "AndroidLayer.h"
-#include "UI/UITextFieldAndroid.h"
+#ifndef __GROUP_ENTITIES_FOR_MULTISELECT__COMMAND_H__
+#define __GROUP_ENTITIES_FOR_MULTISELECT__COMMAND_H__
 
-char text[256] = {0};
+#include "Commands2/Command2.h"
+#include "Qt/Scene/EntityGroup.h"
+#include "Qt/Scene/SceneEditor2.h"
+#include "Scene3D/Entity.h"
 
-extern "C"
+class GroupEntitiesForMultiselectCommand : public Command2
 {
-	void Java_com_dava_framework_JNITextField_FieldHiddenWithText(JNIEnv* env, jobject classthis, jstring jStrText)
-	{
-		CreateStringFromJni(env, jStrText, text);
-		DAVA::JniTextField::FieldHiddenWithText(text);
-	}
+public:
+	GroupEntitiesForMultiselectCommand(const EntityGroup* entities);
+	~GroupEntitiesForMultiselectCommand();
 
+	virtual void Undo();
+	virtual void Redo();
 
-	void Java_com_dava_framework_JNITextField_TextFieldShouldReturn(JNIEnv* env, jobject classthis)
-	{
-		DAVA::JniTextField::TextFieldShouldReturn();
-	}
+	virtual DAVA::Entity* GetEntity() const;
 
-	bool Java_com_dava_framework_JNITextField_TextFieldKeyPressed(JNIEnv* env, jobject classthis, int replacementLocation, int replacementLength, jstring replacementString)
-	{
-		CreateStringFromJni(env, replacementString, text);
-		return DAVA::JniTextField::TextFieldKeyPressed(replacementLocation, replacementLength, text);
-	}
+protected:
+	EntityGroup				entitiesToGroup;
+	//DAVA::Set<DAVA::Entity*> entities;
+	DAVA::Entity*			resultEntity;
+	DAVA::Map<DAVA::Entity*, DAVA::Entity*>	originalChildParentRelations;//child, paretn
+	SceneEditor2*			sceneEditor;
+	
+	DAVA::Map<DAVA::Entity*, DAVA::Matrix4> originalMatrixes; // local, world
+	
+	void UpdateTransformMatrixes(Entity* entity, Matrix4& worldMatrix);
+	void MoveEntity(Entity* entity, Vector3& destPoint);
+	Entity* GetEntityWithSolidProp(Entity* en);
+	
 };
+
+#endif // __GROUP_ENTITIES_FOR_MULTISELECT__COMMAND_H__

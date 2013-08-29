@@ -14,28 +14,56 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "AndroidLayer.h"
-#include "UI/UITextFieldAndroid.h"
+#include "ScaleSlider.h"
 
-char text[256] = {0};
+#include <QMouseEvent>
+#include <QStyle>
+#include <QStyleOption>
 
-extern "C"
+#include <cmath>
+	
+ScaleSlider::ScaleSlider(QWidget *parent) :
+	QSlider(parent)
 {
-	void Java_com_dava_framework_JNITextField_FieldHiddenWithText(JNIEnv* env, jobject classthis, jstring jStrText)
-	{
-		CreateStringFromJni(env, jStrText, text);
-		DAVA::JniTextField::FieldHiddenWithText(text);
-	}
+}
 
+ScaleSlider::ScaleSlider(Qt::Orientation orientation, QWidget *parent) :
+	QSlider(orientation, parent)
+{
+}
 
-	void Java_com_dava_framework_JNITextField_TextFieldShouldReturn(JNIEnv* env, jobject classthis)
-	{
-		DAVA::JniTextField::TextFieldShouldReturn();
-	}
+void ScaleSlider::mousePressEvent (QMouseEvent* event)
+{
+	// Handle mouse click on the nearest position.
+	QStyleOptionSlider opt;
+	initStyleOption(&opt);
+	QRect sr = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderHandle, this);
 
-	bool Java_com_dava_framework_JNITextField_TextFieldKeyPressed(JNIEnv* env, jobject classthis, int replacementLocation, int replacementLength, jstring replacementString)
+	if (event->button() == Qt::LeftButton && sr.contains(event->pos()) == false)
 	{
-		CreateStringFromJni(env, replacementString, text);
-		return DAVA::JniTextField::TextFieldKeyPressed(replacementLocation, replacementLength, text);
+		// Calculate in float to allow clicking between the ticks.
+		float newValueRelative = minimum() + (float)((maximum()-minimum()) * event->x()) / (float)width();
+		int newVal = RoundToNearestInteger(newValueRelative);
+
+		if (invertedAppearance() == true)
+		{
+		    setValue(maximum() - newVal);
+		}
+		else
+		{
+			setValue(newVal);
+		}
+
+		event->accept();
 	}
-};
+	else
+	{
+		// Not ours, handle as-is.
+		QSlider::mousePressEvent(event);
+	}
+}
+
+int ScaleSlider::RoundToNearestInteger(float value)
+{
+	return (int)((value > 0.0) ? floor(value+ 0.5) : ceil(value - 0.5));
+}
