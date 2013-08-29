@@ -72,6 +72,8 @@ public slots:
 	void OnReloadTextures();
 	void OnReloadTexturesTriggered(QAction *reloadAction);
 
+    void OnReloadSprites();
+    
 	void OnSelectMode();
 	void OnMoveMode();
 	void OnRotateMode();
@@ -97,6 +99,8 @@ public slots:
 	void OnUserNodeDialog();
 	void OnSwitchEntityDialog();
 	void OnParticleEffectDialog();
+	void OnUniteEntitiesWithLODs();
+	void OnAddEntityMenuAboutToShow();
 	
 	void OnNotPassableTerrain();
 	void OnRulerTool();
@@ -111,6 +115,9 @@ public slots:
 	void OnShadowBlendModeMenu();
 	void OnShadowBlendModeAlpha();
 	void OnShadowBlendModeMultiply();
+    
+    void OnSaveHeightmapToPNG();
+    void OnSaveTiledTexture();
 
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);

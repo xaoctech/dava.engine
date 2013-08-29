@@ -26,6 +26,9 @@
 #include "TexturePacker/ResourcePacker2D.h"
 #include "Platform/Qt/QtLayer.h"
 
+#include "Classes/Qt/Main/mainwindow.h"
+#include "Classes/Qt/Scene/SceneTabWidget.h"
+
 using namespace DAVA;
 
 SpritePackerHelper::SpritePackerHelper()
@@ -80,17 +83,15 @@ void SpritePackerHelper::Pack()
 void SpritePackerHelper::Reload()
 {
     Map<String, Sprite *>spritesForReloading;
-    
-	for(int i = 0; i < SceneDataManager::Instance()->SceneCount(); ++i)
+
+    // All the Particle Effects must be re-started after sprites are reloaded to avoid
+    // issue like DF-545.
+    const SceneTabWidget *widget = QtMainWindow::Instance()->GetSceneWidget();
+    for(int tab = 0; tab < widget->GetTabCount(); ++tab)
 	{
-		SceneData *sceneData = SceneDataManager::Instance()->SceneGet(i);
-		if(NULL != sceneData)
-		{
-			// All the Particle Effects must be re-started after sprites are reloaded to avoid
-			// issue like DF-545.
-			EnumerateSpritesForReloading(sceneData, spritesForReloading);
-		}
-    }
+		Scene *scene = widget->GetTabScene(tab);
+        EnumerateSpritesForReloading(scene, spritesForReloading);
+	}
 
     Map<String, Sprite *>::const_iterator endIt = spritesForReloading.end();
     for(Map<String, Sprite *>::const_iterator it = spritesForReloading.begin(); it != endIt; ++it)
@@ -102,10 +103,10 @@ void SpritePackerHelper::Reload()
         ParticlesEditorController::Instance()->RefreshSelectedNode();
 }
 
-void SpritePackerHelper::EnumerateSpritesForReloading(SceneData* sceneData, Map<String, Sprite *> &sprites)
+void SpritePackerHelper::EnumerateSpritesForReloading(Scene * scene, Map<String, Sprite *> &sprites)
 {
     List<Entity*> particleEffects;
-	sceneData->GetAllParticleEffects(particleEffects);
+    FindAllParticleEffectsRecursive(scene, particleEffects);
     
 	for (auto it = particleEffects.begin(); it != particleEffects.end(); ++it)
 	{
@@ -139,6 +140,22 @@ void SpritePackerHelper::EnumerateSpritesForReloading(SceneData* sceneData, Map<
 		}
 	}
 }
+
+void SpritePackerHelper::FindAllParticleEffectsRecursive(Entity *entity , List<DAVA::Entity*> & particleEffects)
+{
+    ParticleEffectComponent * effectComponent = cast_if_equal<ParticleEffectComponent*>(entity->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+	if (effectComponent)
+	{
+		particleEffects.push_back(entity);
+	}
+    
+	uint32 childCount = entity->GetChildrenCount();
+	for(uint32 i = 0 ; i < childCount; ++i)
+	{
+		FindAllParticleEffectsRecursive(entity->GetChild(i), particleEffects);
+	}
+}
+
 
 void SpritePackerHelper::EnumerateSpritesForParticleEmitter(ParticleEmitter* emitter, Map<String, Sprite *> &sprites)
 {

@@ -44,8 +44,10 @@
 #include "../Tools/SettingsDialog/SettingsDialogQt.h"
 #include "../Settings/SettingsManager.h"
 
-#include "Render/Highlevel/ShadowVolumeRenderPass.h"
+#include "Classes/Qt/Scene/SceneEditor2.h"
 
+#include "Render/Highlevel/ShadowVolumeRenderPass.h"
+#include "../../Commands2/GroupEntitiesForMultiselectCommand.h"
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QDesktopServices>
@@ -318,6 +320,15 @@ void QtMainWindow::SetupToolBars()
 	ui->modificationToolBar->insertWidget(ui->actionModifyReset, modificationWidget);
 
 	// reload
+    QToolButton *reloadSpritesBtn = new QToolButton();
+	reloadSpritesBtn->setDefaultAction(ui->actionReloadSprites);
+	reloadSpritesBtn->setMaximumWidth(100);
+	reloadSpritesBtn->setMinimumWidth(100);
+	ui->mainToolBar->addSeparator();
+    QAction *a = ui->mainToolBar->addWidget(reloadSpritesBtn);
+	reloadSpritesBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+	reloadSpritesBtn->setAutoRaise(false);
+
 	QToolButton *reloadTexturesBtn = new QToolButton();
 	reloadTexturesBtn->setMenu(ui->menuTexturesForGPU);
 	reloadTexturesBtn->setPopupMode(QToolButton::MenuButtonPopup);
@@ -325,7 +336,7 @@ void QtMainWindow::SetupToolBars()
 	reloadTexturesBtn->setMaximumWidth(100);
 	reloadTexturesBtn->setMinimumWidth(100);
 	ui->mainToolBar->addSeparator();
-	ui->mainToolBar->addWidget(reloadTexturesBtn);
+	ui->mainToolBar->insertWidget(a, reloadTexturesBtn);
 	reloadTexturesBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	reloadTexturesBtn->setAutoRaise(false);
 
@@ -365,6 +376,8 @@ void QtMainWindow::SetupActions()
 	ui->actionReloadPNG->setData(GPU_UNKNOWN);
 	QObject::connect(ui->menuTexturesForGPU, SIGNAL(triggered(QAction *)), this, SLOT(OnReloadTexturesTriggered(QAction *)));
 	QObject::connect(ui->actionReloadTextures, SIGNAL(triggered()), this, SLOT(OnReloadTextures()));
+    QObject::connect(ui->actionReloadSprites, SIGNAL(triggered()), this, SLOT(OnReloadSprites()));
+
 	
 	// scene undo/redo
 	QObject::connect(ui->actionUndo, SIGNAL(triggered()), this, SLOT(OnUndo()));
@@ -399,13 +412,18 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionUserNode, SIGNAL(triggered()), this, SLOT(OnUserNodeDialog()));
 	QObject::connect(ui->actionSwitchNode, SIGNAL(triggered()), this, SLOT(OnSwitchEntityDialog()));
 	QObject::connect(ui->actionParticleEffectNode, SIGNAL(triggered()), this, SLOT(OnParticleEffectDialog()));
-	
+	QObject::connect(ui->actionUniteEntitiesWithLODs, SIGNAL(triggered()), this, SLOT(OnUniteEntitiesWithLODs()));
+	QObject::connect(ui->menuCreateNode, SIGNAL(aboutToShow()), this, SLOT(OnAddEntityMenuAboutToShow()));
+			
 	QObject::connect(ui->actionShowSettings, SIGNAL(triggered()), this, SLOT(OnShowSettings()));
 	
 	QObject::connect(ui->actionSetShadowColor, SIGNAL(triggered()), this, SLOT(OnSetShadowColor()));
 	QObject::connect(ui->menuDynamicShadowBlendMode, SIGNAL(aboutToShow()), this, SLOT(OnShadowBlendModeMenu()));
 	QObject::connect(ui->actionDynamicBlendModeAlpha, SIGNAL(triggered()), this, SLOT(OnShadowBlendModeAlpha()));
 	QObject::connect(ui->actionDynamicBlendModeMultiply, SIGNAL(triggered()), this, SLOT(OnShadowBlendModeMultiply()));
+
+    QObject::connect(ui->actionSaveHeightmapToPNG, SIGNAL(triggered()), this, SLOT(OnSaveHeightmapToPNG()));
+	QObject::connect(ui->actionSaveTiledTexture, SIGNAL(triggered()), this, SLOT(OnSaveTiledTexture()));
 
 	//Help
     QObject::connect(ui->actionHelp, SIGNAL(triggered()), this, SLOT(OnOpenHelp()));
@@ -719,6 +737,11 @@ void QtMainWindow::OnReloadTexturesTriggered(QAction *reloadAction)
 
 		SetGPUFormat(gpu);
 	}
+}
+
+void QtMainWindow::OnReloadSprites()
+{
+    SpritePackerHelper::Instance()->UpdateParticleSprites();
 }
 
 void QtMainWindow::OnSelectMode()
@@ -1074,6 +1097,29 @@ void QtMainWindow::OnParticleEffectDialog()
 	CreateAndDisplayAddEntityDialog(sceneNode);
 }
 
+void QtMainWindow::OnUniteEntitiesWithLODs()
+{
+	SceneEditor2* sceneEditor = GetCurrentScene();
+	if(NULL == sceneEditor)
+	{
+		return;
+	}
+	const EntityGroup* selectedEntities = sceneEditor->selectionSystem->GetSelection();
+	sceneEditor->Exec(new GroupEntitiesForMultiselectCommand(selectedEntities));
+}
+
+
+void QtMainWindow::OnAddEntityMenuAboutToShow()
+{
+	SceneEditor2* sceneEditor = GetCurrentScene();
+	if(NULL == sceneEditor)
+	{
+		ui->actionUniteEntitiesWithLODs->setEnabled(false);
+		return;
+	}
+	int32 selectedItemsNumber =	sceneEditor->selectionSystem->GetSelection()->Size();
+	ui->actionUniteEntitiesWithLODs->setEnabled(selectedItemsNumber > 1);
+}
 
 void QtMainWindow::CreateAndDisplayAddEntityDialog(Entity* entity)
 {
@@ -1253,3 +1299,40 @@ void QtMainWindow::OnShadowBlendModeMultiply()
 	scene->SetShadowBlendMode(ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY);
 }
 
+void QtMainWindow::OnSaveHeightmapToPNG()
+{
+	SceneEditor2* scene = GetCurrentScene();
+    if(!scene) return;
+
+    Landscape *landscape = scene->structureSystem->FindLanscape();
+    if(!landscape) return;
+    
+    Heightmap * heightmap = landscape->GetHeightmap();
+    FilePath heightmapPath = landscape->GetHeightmapPathname();
+    heightmapPath.ReplaceExtension(".png");
+    heightmap->SaveToImage(heightmapPath);
+}
+
+void QtMainWindow::OnSaveTiledTexture()
+{
+	SceneEditor2* scene = GetCurrentScene();
+    if(!scene) return;
+
+    Landscape *landscape = scene->structureSystem->FindLanscape();
+    if(!landscape) return;
+    
+    FilePath texPathname = landscape->SaveFullTiledTexture();
+    FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(texPathname);
+    
+    TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
+    if(!descriptor)
+    {
+        descriptor = new TextureDescriptor();
+        descriptor->pathname = descriptorPathname;
+        descriptor->Save();
+    }
+    
+    landscape->SetTexture(Landscape::TEXTURE_TILE_FULL, descriptor->pathname);
+    
+    SafeRelease(descriptor);
+}

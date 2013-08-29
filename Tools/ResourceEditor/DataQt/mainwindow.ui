@@ -238,8 +238,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1068</width>
-     <height>21</height>
+     <width>1103</width>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -291,6 +291,8 @@
     <addaction name="actionParticle_Emitter"/>
     <addaction name="menuAdd"/>
     <addaction name="actionRemoveEntity"/>
+    <addaction name="separator"/>
+    <addaction name="actionUniteEntitiesWithLODs"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -302,6 +304,13 @@
      </property>
      <addaction name="actionDynamicBlendModeAlpha"/>
      <addaction name="actionDynamicBlendModeMultiply"/>
+    </widget>
+    <widget class="QMenu" name="menuLandscape">
+     <property name="title">
+      <string>Landscape</string>
+     </property>
+     <addaction name="actionSaveHeightmapToPNG"/>
+     <addaction name="actionSaveTiledTexture"/>
     </widget>
     <addaction name="actionMaterialEditor"/>
     <addaction name="actionTextureConverter"/>
@@ -321,6 +330,8 @@
     <addaction name="actionSkyboxEditor"/>
     <addaction name="actionSetShadowColor"/>
     <addaction name="menuDynamicShadowBlendMode"/>
+    <addaction name="separator"/>
+    <addaction name="menuLandscape"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -354,6 +365,7 @@
     </widget>
     <addaction name="menuViewPort"/>
     <addaction name="menuTexturesForGPU"/>
+    <addaction name="actionReloadSprites"/>
     <addaction name="separator"/>
     <addaction name="menuToolbars"/>
     <addaction name="separator"/>
@@ -1541,6 +1553,30 @@
    </property>
    <property name="text">
     <string>Multiply</string>
+   </property>
+  </action>
+  <action name="actionReloadSprites">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/reloadtextures.png</normaloff>:/QtIcons/reloadtextures.png</iconset>
+   </property>
+   <property name="text">
+    <string>Reload Sprites</string>
+   </property>
+  </action>
+  <action name="actionUniteEntitiesWithLODs">
+   <property name="text">
+    <string>Group to entity with merged LODs</string>
+   </property>
+  </action>
+  <action name="actionSaveHeightmapToPNG">
+   <property name="text">
+    <string>Save Heightmap to PNG</string>
+   </property>
+  </action>
+  <action name="actionSaveTiledTexture">
+   <property name="text">
+    <string>Save Tiled Texture</string>
    </property>
   </action>
  </widget>

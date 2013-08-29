@@ -16,13 +16,13 @@
 
 #include "AndroidCrashReport.h"
 
-#include "FileSystem/Logger.h"
-#include "JniExtensions.h"
+#include "Platform/TemplateAndroid/ExternC/AndroidLayer.h"
 #include "FileSystem/File.h"
 
 #include <dlfcn.h>
 #include <unistd.h>
 
+#include "ExternC/AndroidLayer.h"
 
 namespace DAVA
 {
@@ -48,117 +48,90 @@ static int fatalSignals[] = {
 static int fatalSignalsCount = (sizeof(fatalSignals) / sizeof(fatalSignals[0]));
 
 stack_t AndroidCrashReport::s_sigstk;
-CustomReport* AndroidCrashReport::s_customReport = NULL;
 
-class JniCrashReporter: public JniExtension
-{
-public:
-	JniCrashReporter();
-	String GetReportFile();
-};
+jclass JniCrashReporter::gJavaClass = NULL;
+const char* JniCrashReporter::gJavaClassName = NULL;
 
-JniCrashReporter::JniCrashReporter()
-:	JniExtension("com/dava/framework/JNICrashReporter")
+jclass JniCrashReporter::GetJavaClass() const
 {
+	return gJavaClass;
 }
 
-String JniCrashReporter::GetReportFile()
+const char* JniCrashReporter::GetJavaClassName() const
 {
-	jclass javaClass = GetJavaClass();
-	if (!javaClass)
-		return "";
+	return gJavaClassName;
+}
 
-	char path[255];
-	jmethodID mid = GetMethodID(javaClass, "GetReportFile", "()Ljava/lang/String;");
-	//jmethodID mid = GetMethodID(javaClass, "GetReportFile", "()V");
+void JniCrashReporter::ThrowJavaExpetion(const String& cppSignal)
+{
+	jmethodID mid = GetMethodID("ThrowJavaExpetion", "(Ljava/lang/String;)V");
 	if (mid)
 	{
-		jobject obj = env->CallStaticObjectMethod(javaClass, mid, 0);
-		jstring jStr = (jstring)obj;
-		char const* nativeString = env->GetStringUTFChars(jStr, 0);
-		strncpy(path, nativeString, 255);
-		env->ReleaseStringUTFChars(jStr, nativeString);
+		jstring jCppSignal = GetEnvironment()->NewStringUTF(cppSignal.c_str());
+		env->CallStaticVoidMethod(GetJavaClass(), mid, jCppSignal);
+		GetEnvironment()->DeleteLocalRef(jCppSignal);
 	}
-
-	ReleaseJavaClass(javaClass);
-
-	return String(path);
 }
 
-String GetInfo(void* pc)
-{
-	char buff[255];
 
-	Dl_info dlInfo;
-	if (dladdr(pc, &dlInfo))
-		sprintf(buff, "pc=0x%x, module=%s, function=%s", pc, dlInfo.dli_fname, dlInfo.dli_sname);
-	else
-		sprintf(buff, "pc=0x%x", pc);
+//libcorkscrew definition
+typedef struct map_info_t map_info_t;
 
-	return String(buff);
-}
+typedef struct {
+    uintptr_t absolute_pc;
+    uintptr_t stack_top;
+    size_t stack_size;
+} backtrace_frame_t;
 
-void AndroidCrashReport::WriteCStack(File* file, void *uapVoid)
-{
-	file->WriteLine("C++CallStack");
-	ucontext_t *crashctx = (ucontext_t*) uapVoid;
+typedef struct {
+    uintptr_t relative_pc;
+    uintptr_t relative_symbol_addr;
+    char* map_name;
+    char* symbol_name;
+    char* demangled_name;
+} backtrace_symbol_t;
 
-	file->WriteLine(GetInfo((void*)crashctx->uc_mcontext.arm_pc));
-	//file->WriteLine(GetInfo((void*)crashctx->uc_mcontext.arm_lr));
+typedef ssize_t (*t_unwind_backtrace_signal_arch)(siginfo_t* si, void* sc, const map_info_t* lst, backtrace_frame_t* bt, size_t ignore_depth, size_t max_depth);
+static t_unwind_backtrace_signal_arch unwind_backtrace_signal_arch;
 
-	file->WriteLine("\n");
-}
+typedef map_info_t* (*t_acquire_my_map_info_list)();
+static t_acquire_my_map_info_list acquire_my_map_info_list;
 
-void AndroidCrashReport::SignalHandler(int signal, siginfo_t *info, void *uapVoid)
-{
-	for (int i = 0; i < fatalSignalsCount; i++)
-	{
-		struct sigaction sa;
-		memset(&sa, 0, sizeof(sa));
-		sa.sa_handler = SIG_DFL;
-		sigemptyset(&sa.sa_mask);
-		sigaction(fatalSignals[i], &sa, NULL);
-	}
+typedef void (*t_release_my_map_info_list)(map_info_t* milist);
+static t_release_my_map_info_list release_my_map_info_list;
 
-	JniCrashReporter reporter;
-	String path = reporter.GetReportFile();
+typedef void (*t_get_backtrace_symbols)(const backtrace_frame_t* backtrace, size_t frames, backtrace_symbol_t* symbols);
+static t_get_backtrace_symbols get_backtrace_symbols;
 
-	File* file = File::Create(path, File::WRITE | File::APPEND);
-	if (file)
-	{
-		WriteCStack(file, uapVoid);
-
-		if (s_customReport)
-			s_customReport->WriteCustomReport(file, signal, info, uapVoid);
-	}
-	SafeRelease(file);
-
-
-	//void** fp = (void**) crashctx->uc_mcontext.arm_fp;
-	//void* pc = *((void**)*fp);
-
-	//GetInfo((void*)pc);
-
-    /*while (true)
-    {
-    	fp++;
-    	if (pc == (void*) *fp)
-    	{
-    		fp--;
-    		pc = *((void**)*((void**)fp));
-    		fp++;
-    		if (!GetInfo(pc))
-    			break;
-    	}
-    }*/
-
-	//LOGE("END STACK");
-
-	kill(getpid(), SIGKILL);
-}
+typedef void (*t_free_backtrace_symbols)(backtrace_symbol_t* symbols, size_t frames);
+static t_free_backtrace_symbols free_backtrace_symbols;
+//libcorkscrew definition
 
 void AndroidCrashReport::Init()
 {
+	void* libcorkscrew = dlopen("/system/lib/libcorkscrew.so", RTLD_NOW);
+	if (libcorkscrew)
+	{
+		unwind_backtrace_signal_arch = (t_unwind_backtrace_signal_arch) dlsym(libcorkscrew, "unwind_backtrace_signal_arch");
+		if (!unwind_backtrace_signal_arch) LOGE("unwind_backtrace_signal_arch not found");
+
+		acquire_my_map_info_list = (t_acquire_my_map_info_list) dlsym(libcorkscrew, "acquire_my_map_info_list");
+		if (!acquire_my_map_info_list) LOGE("acquire_my_map_info_list not found");
+
+		get_backtrace_symbols = (t_get_backtrace_symbols) dlsym(libcorkscrew, "get_backtrace_symbols");
+		if (!get_backtrace_symbols) LOGE("get_backtrace_symbols not found");
+
+		free_backtrace_symbols = (t_free_backtrace_symbols) dlsym(libcorkscrew, "free_backtrace_symbols");
+		if (!free_backtrace_symbols) LOGE("free_backtrace_symbols not found");
+
+		release_my_map_info_list = (t_release_my_map_info_list) dlsym(libcorkscrew, "release_my_map_info_list");
+		if (!release_my_map_info_list) LOGE("release_my_map_info_list not found");
+	}
+	else
+	{
+		LOGE("libcorkscrew not found");
+	}
+
 	s_sigstk.ss_size = 64 * 1024;
 	s_sigstk.ss_sp = malloc(s_sigstk.ss_size);
 	s_sigstk.ss_flags = 0;
@@ -183,9 +156,38 @@ void AndroidCrashReport::Init()
 	}
 }
 
-void AndroidCrashReport::SetCustomReport(CustomReport* logger)
+void AndroidCrashReport::SignalHandler(int signal, struct siginfo *siginfo, void *sigcontext)
 {
-	s_customReport = logger;
+	String log;
+	if (unwind_backtrace_signal_arch != NULL)  {
+		map_info_t *map_info = acquire_my_map_info_list();
+		backtrace_frame_t frames[256] = {0};
+		backtrace_symbol_t symbols[256] = {0};
+		char temp[255];
+
+		const ssize_t size = unwind_backtrace_signal_arch(siginfo, sigcontext, map_info, frames, 0, 255);
+		sprintf(temp, "stack size: %d\n", size);
+		log += temp;
+		get_backtrace_symbols(frames,  size, symbols);
+		for (int i = 0; i < size; ++i)
+		{
+			log += "module name: ";		log += symbols[i].map_name;
+			log += "	function name: ";	log += symbols[i].demangled_name ? symbols[i].demangled_name : symbols[i].symbol_name;
+
+			sprintf(temp, "	pc: 0x%08x\n", symbols[i].relative_pc);
+			log += temp;
+		}
+		free_backtrace_symbols(symbols, size);
+		release_my_map_info_list(map_info);
+	}
+	else
+	{
+		log = "There is no cpp stack";
+	}
+
+	JniCrashReporter crashReport;
+	crashReport.ThrowJavaExpetion(log);
 }
+
 
 } // namespace DAVA

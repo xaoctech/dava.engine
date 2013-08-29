@@ -39,9 +39,12 @@ signals:
 
 protected:
     
-    void EnumerateSpritesForReloading(SceneData* sceneData, Map<String, Sprite *> &sprites);
+    void EnumerateSpritesForReloading(Scene * scene, Map<String, Sprite *> &sprites);
     void EnumerateSpritesForParticleEmitter(ParticleEmitter* emitter, Map<String, Sprite *> &sprites);
 
+    void FindAllParticleEffectsRecursive(DAVA::Entity *entity , DAVA::List<DAVA::Entity*> & particleEffects);
+
+    
 	void Pack();
 	void Reload();
 
