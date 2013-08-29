@@ -33,6 +33,13 @@ GroupEntitiesForMultiselectCommand::GroupEntitiesForMultiselectCommand(const Ent
 GroupEntitiesForMultiselectCommand::~GroupEntitiesForMultiselectCommand()
 {
 	SafeRelease(resultEntity);
+	for(Map<Entity*,DAVA::Component*>::iterator it = originalLodComponents.begin();
+		it != originalLodComponents.end(); ++it)
+	{
+		DAVA::Component* lodComponent = it->second;
+		delete(lodComponent);
+	}
+	originalLodComponents.clear();
 }
 
 void GroupEntitiesForMultiselectCommand::Undo()
@@ -62,6 +69,13 @@ void GroupEntitiesForMultiselectCommand::Undo()
 	{
 		resultEntity->GetParent()->RemoveNode(resultEntity);
 	}
+	
+	for(Map<Entity*,DAVA::Component*>::iterator it = originalLodComponents.begin();
+		it != originalLodComponents.end(); ++it)
+	{
+		it->first->AddComponent(it->second);
+	}
+	originalLodComponents.clear();
 }
 
 void GroupEntitiesForMultiselectCommand::Redo()
@@ -100,6 +114,8 @@ void GroupEntitiesForMultiselectCommand::Redo()
 			originalMatrixes[en] = en->GetWorldTransform();
 			originalChildParentRelations[solidEntityToAdd] = solidEntityToAdd->GetParent();
 			complexEntity->AddNode(solidEntityToAdd);
+
+			GetLodComponentsRecursive(en, originalLodComponents);
 		}
 	}
 	
@@ -112,14 +128,21 @@ void GroupEntitiesForMultiselectCommand::Redo()
 	}
 	
 	resultEntity = complexEntity;
-	
-/*	entities.insert(resultEntity);
-	for(size_t i = 0; i < entitiesToGroup.Size(); ++i)
-	{
-		Entity *en = entitiesToGroup.GetEntity(i);
-		entities.insert(en);
-	}*/
+}
 
+void GroupEntitiesForMultiselectCommand::GetLodComponentsRecursive(Entity* fromEntity, DAVA::Map<DAVA::Entity*, DAVA::Component*>& hostEntitiesAndComponents)
+{
+	DAVA::Component* lodComponent = fromEntity->GetComponent(DAVA::Component::LOD_COMPONENT);
+	if(NULL != lodComponent)
+	{
+		hostEntitiesAndComponents[fromEntity] = lodComponent->Clone(fromEntity);
+	}
+	
+	int32 count = fromEntity->GetChildrenCount();
+	for(int32 i = 0; i < count; ++i)
+	{
+		GetLodComponentsRecursive(fromEntity->GetChild(i), hostEntitiesAndComponents);
+	}
 }
 
 Entity* GroupEntitiesForMultiselectCommand::GetEntity() const
