@@ -570,7 +570,7 @@
    </attribute>
    <addaction name="actionShowMipmapLevel"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="StatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockWidget">
    <property name="windowTitle">
     <string>Material View Options</string>
@@ -1673,6 +1673,11 @@
    <extends>QWidget</extends>
    <header>DockLODEditor/LODEditor.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>StatusBar</class>
+   <extends>QStatusBar</extends>
+   <header>Main/StatusBar.h</header>
   </customwidget>
  </customwidgets>
  <resources>
