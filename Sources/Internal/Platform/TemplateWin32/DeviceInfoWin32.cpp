@@ -56,6 +56,12 @@ String DeviceInfo::GetUDID()
 	return "Not yet implemented";
 }
 
+WideString DeviceInfo::GetName()
+{
+    //TODO: need code here
+    return WideString ();
+}
+
 }
 
 #endif
