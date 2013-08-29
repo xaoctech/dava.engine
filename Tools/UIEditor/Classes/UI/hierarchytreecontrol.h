@@ -19,6 +19,8 @@
 #include <QTreeWidget>
 #include "HierarchyTreeNode.h"
 
+#include "Classes/UI/controllist.h"
+
 class HierarchyTreeControlMimeData: public QObjectUserData
 {
 public:
@@ -47,6 +49,16 @@ protected:
 	void dragMoveEvent(QDragMoveEvent *event);
     void dragEnterEvent(QDragEnterEvent *event);
 	
+	// Custom Drag&Drop handlers for different mime data.
+	void HandleDragEnterControlMimeData(QDragEnterEvent *event, const ControlMimeData* mimeData);
+	void HandleDragEnterHierarchyMimeData(QDragEnterEvent *event, const HierarchyTreeControlMimeData* mimeData);
+	
+	void HandleDragMoveControlMimeData(QDragMoveEvent *event, const ControlMimeData* mimeData);
+	void HandleDragMoveHierarchyMimeData(QDragMoveEvent *event, const HierarchyTreeControlMimeData* mimeData);
+
+	void HandleDropControlMimeData(QDropEvent *event, const ControlMimeData* mimeData);
+	void HandleDropHierarchyMimeData(QDropEvent *event, const HierarchyTreeControlMimeData* mimeData);
+
 signals:
 	void ShowCustomMenu(const QPoint& pos);
     
