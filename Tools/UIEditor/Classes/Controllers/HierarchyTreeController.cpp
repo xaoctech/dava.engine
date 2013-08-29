@@ -230,10 +230,6 @@ HierarchyTreeNode::HIERARCHYTREENODEID HierarchyTreeController::CreateNewControl
 		return HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
 	}
 		
-    // Create the control itself.
-	String type = strType.toStdString();
-	String newName = activeScreen->GetNewControlName(type);
-
 	HierarchyTreeNode* parentNode = activeScreen;
 	Vector2 parentDelta(0, 0);
 	if (activeControlNodes.size() == 1)
@@ -249,12 +245,27 @@ HierarchyTreeNode::HIERARCHYTREENODEID HierarchyTreeController::CreateNewControl
 	if (screen)
 		point = screen->LocalToInternal(point);
 	point -= parentDelta;
+	
+	// Can create.
+	return CreateNewControl(strType, point, parentNode);
+}
+
+HierarchyTreeNode::HIERARCHYTREENODEID HierarchyTreeController::CreateNewControl(const QString& strType, const Vector2& position,
+																				 HierarchyTreeNode* parentNode)
+{
+	// Create the control itself.
+	String type = strType.toStdString();
+	String newName = activeScreen->GetNewControlName(type);
 
     // Add the tree node - we need it before initializing control.
-	HierarchyTreeControlNode* controlNode = LibraryController::Instance()->CreateNewControl(parentNode, strType, QString::fromStdString(newName), point);
+	HierarchyTreeControlNode* controlNode = LibraryController::Instance()->CreateNewControl(parentNode, strType,
+																							QString::fromStdString(newName),
+																							position);
 	if (!controlNode)
+	{
 		return HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
-
+	}
+	
 	emit HierarchyTreeUpdated();
 	ResetSelectedControl();
 	SelectControl(controlNode);
