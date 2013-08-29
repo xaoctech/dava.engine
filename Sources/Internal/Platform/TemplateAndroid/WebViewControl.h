@@ -46,6 +46,7 @@ public:
 	virtual void SetVisible(bool isVisible, bool hierarchic);
 
 	virtual void SetDelegate(IUIWebViewDelegate *delegate, UIWebView* webView);
+	virtual void SetBackgroundTransparency(bool enabled);
 
 private:
 	static int webViewIdCount;
@@ -57,8 +58,6 @@ private:
 class JniWebView: public JniExtension
 {
 public:
-	JniWebView();
-
 	void Initialize(WebViewControl* control, int id, const Rect& rect);
 	void Deinitialize(int id);
 
@@ -67,15 +66,22 @@ public:
 	void SetRect(int id, const Rect& rect);
 	void SetVisible(int id, bool isVisible);
 
-	IUIWebViewDelegate::eAction URLChanged(int id, const String& newURL);
-	void PageLoaded(int id);
+	void SetBackgroundTransparency(int id, bool isVisible);
+
+	static IUIWebViewDelegate::eAction URLChanged(int id, const String& newURL);
+	static void PageLoaded(int id);
+
+protected:
+	virtual jclass GetJavaClass() const;
+	virtual const char* GetJavaClassName() const;
 
 public:
-	static JniWebView* jniWebView;
+	static jclass gJavaClass;
+	static const char* gJavaClassName;
 
 private:
 	typedef std::map<int, WebViewControl*> CONTROLS_MAP;
-	CONTROLS_MAP controls;
+	static CONTROLS_MAP controls;
 };
 
 };

@@ -18,12 +18,19 @@
 
 using namespace DAVA;
 
-JniTextField* JniTextField::jniTextField = NULL;
+jclass JniTextField::gJavaClass = NULL;
+const char* JniTextField::gJavaClassName = NULL;
 
-JniTextField::JniTextField() :
-	JniExtension("com/dava/framework/JNITextField")
+UITextField* JniTextField::activeTextField = NULL;
+
+jclass JniTextField::GetJavaClass() const
 {
-	activeTextField = NULL;
+	return gJavaClass;
+}
+
+const char* JniTextField::GetJavaClassName() const
+{
+	return gJavaClassName;
 }
 
 void JniTextField::ShowField(UITextField* textField, const Rect& controlRect, const char* defaultText)
@@ -33,35 +40,24 @@ void JniTextField::ShowField(UITextField* textField, const Rect& controlRect, co
 	if (activeTextField)
 		HideField();
 
-	jclass javaClass = GetJavaClass();
-	if (!javaClass)
-		return;
-
-	jmethodID mid = GetMethodID(javaClass, "ShowField", "(FFFFLjava/lang/String;Z)V");
+	jmethodID mid = GetMethodID("ShowField", "(FFFFLjava/lang/String;Z)V");
 	if (mid)
 	{
 		jstring jStrDefaultText = GetEnvironment()->NewStringUTF(defaultText);
-		GetEnvironment()->CallStaticVoidMethod(javaClass, mid, rect.x, rect.y, rect.dx, rect.dy, jStrDefaultText, textField->IsPassword());
+		GetEnvironment()->CallStaticVoidMethod(GetJavaClass(), mid, rect.x, rect.y, rect.dx, rect.dy, jStrDefaultText, textField->IsPassword());
 		GetEnvironment()->DeleteLocalRef(jStrDefaultText);
 		activeTextField = textField;
 		SafeRetain(activeTextField);
 	}
-	ReleaseJavaClass(javaClass);
 }
 
 void JniTextField::HideField()
 {
-	jclass javaClass = GetJavaClass();
-	if (!javaClass)
-		return;
-
-	jmethodID mid = GetMethodID(javaClass, "HideField", "()V");
+	jmethodID mid = GetMethodID("HideField", "()V");
 	if (mid)
 	{
-		GetEnvironment()->CallStaticVoidMethod(javaClass, mid);
+		GetEnvironment()->CallStaticVoidMethod(GetJavaClass(), mid);
 	}
-
-	ReleaseJavaClass(javaClass);
 }
 
 void JniTextField::FieldHiddenWithText(const char* text)
@@ -107,10 +103,6 @@ bool JniTextField::TextFieldKeyPressed(int32 replacementLocation, int32 replacem
 UITextFieldAndroid::UITextFieldAndroid(UITextField* textField)
 {
 	this->textField = textField;
-	if (!JniTextField::jniTextField)
-	{
-		JniTextField::jniTextField = new JniTextField();
-	}
 }
 
 UITextFieldAndroid::~UITextFieldAndroid()
@@ -121,12 +113,14 @@ UITextFieldAndroid::~UITextFieldAndroid()
 void UITextFieldAndroid::ShowField()
 {
 	String text = WStringToString(textField->GetText());
-	JniTextField::jniTextField->ShowField(textField, textField->GetRect(), text.c_str());
+	JniTextField jniTextField;
+	jniTextField.ShowField(textField, textField->GetRect(), text.c_str());
 }
 
 void UITextFieldAndroid::HideField()
 {
-	JniTextField::jniTextField->HideField();
+	JniTextField jniTextField;
+	jniTextField.HideField();
 }
 
 
