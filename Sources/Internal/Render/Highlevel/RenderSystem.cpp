@@ -190,8 +190,11 @@ void RenderSystem::ProcessClipping()
     for (Vector<RenderObject*>::iterator it = markedObjects.begin(); it != end; ++it)
     {
         RenderObject * obj = *it;
-        obj->GetBoundingBox().GetTransformedBox(*obj->GetWorldTransformPtr(), obj->GetWorldBoundingBox());
-        FindNearestLights(obj);
+		if (obj->GetType()==RenderObject::TYPE_PARTICLE_EMTITTER) //as particle render batch doesn't use transformation matrix
+			obj->GetWorldBoundingBox() = obj->GetBoundingBox();
+		else
+			obj->GetBoundingBox().GetTransformedBox(*obj->GetWorldTransformPtr(), obj->GetWorldBoundingBox());
+		FindNearestLights(obj);
         objectBoxesUpdated++;
     }
     markedObjects.clear();
