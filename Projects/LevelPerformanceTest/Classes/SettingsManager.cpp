@@ -33,7 +33,7 @@ void SettingsManager::InitWithFile(const FilePath &filename)
         YamlNode* rootNode = parser->GetRootNode();
         if(rootNode)
         {
-            YamlNode* node;
+            const YamlNode* node;
             
             node = rootNode->Get("landscapeNodeName");
             if(node)
@@ -89,12 +89,12 @@ void SettingsManager::InitWithFile(const FilePath &filename)
 				int32 listCount = node->GetCount();
 				for(int32 i = 0; i < listCount; ++i)
 				{
-					YamlNode* listElement = node->Get(i);
+					const YamlNode* listElement = node->Get(i);
 					if(listElement == 0 || listElement->GetCount() != 2)
 						continue;
 
-					YamlNode* fpsNode = listElement->Get(0);
-					YamlNode* colorNode = listElement->Get(1);
+					const YamlNode* fpsNode = listElement->Get(0);
+					const YamlNode* colorNode = listElement->Get(1);
 					
 					if(fpsNode == 0 || colorNode == 0 || colorNode->GetCount() != 3)
 						continue;
