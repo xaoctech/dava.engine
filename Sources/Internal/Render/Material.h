@@ -81,6 +81,7 @@ public:
 	void ClearLightmap();
 	
 	InstanceMaterialState * Clone();
+    void InitFromState(const InstanceMaterialState * state);
 
 private:
     Texture * lightmapTexture;

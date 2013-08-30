@@ -182,17 +182,22 @@ void InstanceMaterialState::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 InstanceMaterialState * InstanceMaterialState::Clone()
 {
 	InstanceMaterialState * newState = new InstanceMaterialState();
-
-	newState->lightmapTexture = SafeRetain(lightmapTexture);
-	newState->lightmapName = lightmapName;
-	newState->lightmapSize = lightmapSize;
-	newState->uvOffset = uvOffset;
-	newState->uvScale = uvScale;
-	newState->flatColor = flatColor;
-	newState->texture0Shift = texture0Shift;
-
+    newState->InitFromState(this);
+    
 	return newState;
 }
+    
+void InstanceMaterialState::InitFromState(const InstanceMaterialState * state)
+{
+    lightmapTexture = SafeRetain(state->lightmapTexture);
+	lightmapName = state->lightmapName;
+	lightmapSize = state->lightmapSize;
+	uvOffset = state->uvOffset;
+	uvScale = state->uvScale;
+	flatColor = state->flatColor;
+	texture0Shift = state->texture0Shift;
+}
+
 
 
 REGISTER_CLASS(Material);

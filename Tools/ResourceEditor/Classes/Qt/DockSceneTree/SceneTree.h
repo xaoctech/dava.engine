@@ -100,6 +100,7 @@ protected slots:
 	void EditModel();
 	void ReloadModel();
 	void ReloadModelAs();
+    void ReloadModelWithoutLightmaps();
 
 	void SaveEntityAs();
 	
