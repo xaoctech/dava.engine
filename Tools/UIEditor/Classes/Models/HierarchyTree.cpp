@@ -70,17 +70,17 @@ bool HierarchyTree::Load(const QString& projectPath)
     // LocalizedStrings obtaining will interfere with the loading process!
     LocalizationSystem::Instance()->Cleanup();
 
-    Map<HierarchyTreePlatformNode*, YamlNode*> loadedPlatforms;
+    Map<HierarchyTreePlatformNode*, const YamlNode*> loadedPlatforms;
 
 	bool result = true;
-	YamlNode* platforms = projectRoot->Get(PLATFORMS_NODE);
+	const YamlNode* platforms = projectRoot->Get(PLATFORMS_NODE);
 	for (int32 i = 0; i < platforms->GetCount(); i++)
 	{
-		YamlNode* platform = platforms->Get(i);
+		const YamlNode* platform = platforms->Get(i);
 		if (!platform)
 			continue;
 		
-		String platformName = platform->AsString();
+		const String &platformName = platform->AsString();
 		HierarchyTreePlatformNode* platformNode = new HierarchyTreePlatformNode(&rootNode, QString::fromStdString(platformName));
 		result &= platformNode->Load(platform);
 		rootNode.AddTreeNode(platformNode);
@@ -90,15 +90,15 @@ bool HierarchyTree::Load(const QString& projectPath)
 	}
 	
 	// Get font node
-	YamlNode *font = projectRoot->Get(FONT_NODE);
+	const YamlNode *font = projectRoot->Get(FONT_NODE);
 	if (font)
 	{
 		// Get default font node
-		YamlNode *fontPath = font->Get(DEFAULT_FONT_PATH_NODE);
+		const YamlNode *fontPath = font->Get(DEFAULT_FONT_PATH_NODE);
 		if (fontPath)
 		{
 			// Get font values into array
-			Vector<YamlNode*> fontPathArray = fontPath->AsVector();
+			const Vector<YamlNode*> &fontPathArray = fontPath->AsVector();
 			EditorFontManager::DefaultFontPath defaultFontPath("", "");
 			// True type font
 			if (fontPathArray.size() == 1)
@@ -119,7 +119,7 @@ bool HierarchyTree::Load(const QString& projectPath)
     UpdateExtraData(BaseMetadata::UPDATE_EXTRADATA_FROM_CONTROL);
 
     // Now we can load the Localization for each Platform.
-    for (Map<HierarchyTreePlatformNode*, YamlNode*>::iterator iter = loadedPlatforms.begin();
+    for (Map<HierarchyTreePlatformNode*, const YamlNode*>::iterator iter = loadedPlatforms.begin();
          iter != loadedPlatforms.end(); iter ++)
     {
         iter->first->LoadLocalization(iter->second);
@@ -335,7 +335,6 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
 {
 	bool result = true;
 	YamlNode root(YamlNode::TYPE_MAP);
-	MultiMap<String, YamlNode*> &rootMap = root.AsMap();
 	
 	// Get paths for default font
 	const EditorFontManager::DefaultFontPath& defaultFontPath = EditorFontManager::Instance()->GetDefaultFontPath();
@@ -346,11 +345,9 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
 	{
 		// Create font node
 		YamlNode* fontNode = new YamlNode(YamlNode::TYPE_MAP);
-		rootMap.erase(FONT_NODE);
-		rootMap.insert(std::pair<String, YamlNode*>(FONT_NODE, fontNode));
+		root.SetNodeToMap( FONT_NODE, fontNode );
 	
 		// Create fonts array
-		MultiMap<String, YamlNode*> &fontMap = fontNode->AsMap();	
 		YamlNode* fontPathNode = new YamlNode(YamlNode::TYPE_ARRAY);
 		
 		// Put font path
@@ -361,12 +358,11 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
 			fontPathNode->AddValueToArray(fontSpritePath.GetFrameworkPath());
 		}
 		// Insert array into node
-		fontMap.insert(std::pair<String, YamlNode*>(DEFAULT_FONT_PATH_NODE, fontPathNode));
+		fontNode->AddNodeToMap(DEFAULT_FONT_PATH_NODE, fontPathNode);
 	}
 	
 	YamlNode* platforms = new YamlNode(YamlNode::TYPE_MAP);
-	rootMap.erase(PLATFORMS_NODE);
-	rootMap.insert(std::pair<String, YamlNode*>(PLATFORMS_NODE, platforms));
+	root.SetNodeToMap( PLATFORMS_NODE, platforms );
 
     // Prior to Save we need to put the Localization Keys FROM the ExtraData TO the
     // appropriate text controls to save the localization keys, and not values.
