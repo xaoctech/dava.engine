@@ -59,7 +59,7 @@ EditorScene::EditorScene()
     SetDrawGrid(true);
 
     editorLightSystem = new EditorLightSystem(this);
-	AddSystem(editorLightSystem, Component::LIGHT_COMPONENT);
+	AddSystem(editorLightSystem, 1 << Component::LIGHT_COMPONENT);
     
 	SetShadowBlendMode(ShadowVolumeRenderPass::MODE_BLEND_MULTIPLY);
 }

@@ -77,7 +77,7 @@ SceneEditor2::SceneEditor2()
 	AddSystem(structureSystem, 0);
 
 	editorLightSystem = new EditorLightSystem(this);
-	AddSystem(editorLightSystem, Component::LIGHT_COMPONENT);
+	AddSystem(editorLightSystem, 1 << Component::LIGHT_COMPONENT);
 
 	textDrawSystem = new TextDrawSystem(this, cameraSystem);
 	AddSystem(textDrawSystem, 0);
