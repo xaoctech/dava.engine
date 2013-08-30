@@ -130,7 +130,7 @@ private:
 class DLCSource: public BaseObject
 {
 public:
-    DLCSource(YamlNode* node);
+    DLCSource(const YamlNode* node);
     DLCSource(File * file);
     void Save(File * file) const;
     

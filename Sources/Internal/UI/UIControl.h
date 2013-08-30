@@ -1084,7 +1084,7 @@ public:
 	virtual void DrawAfterChilds(const UIGeometricData &geometricData);
 	
 		//TODO: Борода напиши дескрипшн.
-	virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
+	virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
 	/**
 	 \brief Save the control to YAML node and return it.
 	 */

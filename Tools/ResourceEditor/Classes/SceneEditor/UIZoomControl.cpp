@@ -52,12 +52,12 @@ UIZoomControl::~UIZoomControl()
 {
 }
 
-void UIZoomControl::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
+void UIZoomControl::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
     UIControl::LoadFromYamlNode(node, loader);
     
     //TODO: load zoom control specific params (content size, input style?)
-    YamlNode * contentSizeNode = node->Get("contentSize");
+    const YamlNode * contentSizeNode = node->Get("contentSize");
     
     if(contentSizeNode)
     {
@@ -69,13 +69,13 @@ void UIZoomControl::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
         SetContentSize(Vector2(rc.dx, rc.dy));
     }
     
-    YamlNode * minScaleNode  = node->Get("minScale");
+    const YamlNode * minScaleNode  = node->Get("minScale");
     minScale = minScaleNode->AsFloat();
     
-    YamlNode * maxScaleNode  = node->Get("maxScale");
+    const YamlNode * maxScaleNode  = node->Get("maxScale");
     maxScale = maxScaleNode->AsFloat();
     
-    YamlNode * zoomScaleNode  = node->Get("zoomScale");
+    const YamlNode * zoomScaleNode  = node->Get("zoomScale");
     SetScale(zoomScaleNode->AsFloat());
 }
 

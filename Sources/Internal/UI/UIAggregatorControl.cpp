@@ -45,11 +45,11 @@ YamlNode* UIAggregatorControl::SaveToYamlNode(UIYamlLoader * loader)
 	return node;
 }
 
-void UIAggregatorControl::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
+void UIAggregatorControl::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
 	UIControl::LoadFromYamlNode(node, loader);
 	
-	YamlNode * pathNode = node->Get(AGGREGATOR_PATH);
+	const YamlNode * pathNode = node->Get(AGGREGATOR_PATH);
 	if (pathNode)
 	{
 		aggregatorPath = FilePath(pathNode->AsString());

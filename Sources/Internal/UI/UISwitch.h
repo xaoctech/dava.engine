@@ -45,7 +45,7 @@ public:
     UISwitch(const Rect &rect = Rect(), bool rectInAbsoluteCoordinates = false);
     virtual ~UISwitch();
 
-    virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
+    virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
     virtual void LoadFromYamlNodeCompleted();
     virtual void CopyDataFrom(DAVA::UIControl *srcControl);
 

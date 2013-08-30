@@ -1515,18 +1515,18 @@ namespace DAVA
 			GetBackground()->SetParentColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
 		}
 				
+		const Rect& unrotatedRect = drawData.GetUnrotatedRect();
+		
 		if(clipContents)
 		{//WARNING: for now clip contents don't work for rotating controls if you have any ideas you are welcome
 			RenderManager::Instance()->ClipPush();
-			RenderManager::Instance()->ClipRect(drawData.GetUnrotatedRect());
+			RenderManager::Instance()->ClipRect(unrotatedRect);
 		}
 
 		if(visible)
 		{
 			Draw(drawData);
 		}
-		
-		const Rect& unrotatedRect = drawData.GetUnrotatedRect();
 	
 		if (debugDrawEnabled && !clipContents)
 		{	//TODO: Add debug draw for rotated controls
@@ -2145,31 +2145,31 @@ namespace DAVA
 		return node;
 	}
 
-	void UIControl::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
+	void UIControl::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 	{
-		YamlNode * spriteNode = node->Get("sprite");
-		YamlNode * colorNode = node->Get("color");
-		YamlNode * frameNode = node->Get("frame"); 
-		YamlNode * rectNode = node->Get("rect");
-		YamlNode * alignNode = node->Get("align");
-		YamlNode * leftAlignNode = node->Get("leftAlign");
-		YamlNode * hcenterAlignNode = node->Get("hcenterAlign");
-		YamlNode * rightAlignNode = node->Get("rightAlign");
-		YamlNode * topAlignNode = node->Get("topAlign");
-		YamlNode * vcenterAlignNode = node->Get("vcenterAlign");
-		YamlNode * bottomAlignNode = node->Get("bottomAlign");
-		YamlNode * pivotNode = node->Get("pivot");
-		YamlNode * colorInheritNode = node->Get("colorInherit");
+		const YamlNode * spriteNode = node->Get("sprite");
+		const YamlNode * colorNode = node->Get("color");
+		const YamlNode * frameNode = node->Get("frame"); 
+		const YamlNode * rectNode = node->Get("rect");
+		const YamlNode * alignNode = node->Get("align");
+		const YamlNode * leftAlignNode = node->Get("leftAlign");
+		const YamlNode * hcenterAlignNode = node->Get("hcenterAlign");
+		const YamlNode * rightAlignNode = node->Get("rightAlign");
+		const YamlNode * topAlignNode = node->Get("topAlign");
+		const YamlNode * vcenterAlignNode = node->Get("vcenterAlign");
+		const YamlNode * bottomAlignNode = node->Get("bottomAlign");
+		const YamlNode * pivotNode = node->Get("pivot");
+		const YamlNode * colorInheritNode = node->Get("colorInherit");
         
-        YamlNode * drawTypeNode = node->Get("drawType");
-        YamlNode * leftRightStretchCapNode = node->Get("leftRightStretchCap");
-        YamlNode * topBottomStretchCapNode = node->Get("topBottomStretchCap");
+        const YamlNode * drawTypeNode = node->Get("drawType");
+        const YamlNode * leftRightStretchCapNode = node->Get("leftRightStretchCap");
+        const YamlNode * topBottomStretchCapNode = node->Get("topBottomStretchCap");
 		
-		YamlNode * angleNode = node->Get("angle");
-		YamlNode * tagNode = node->Get("tag");
+		const YamlNode * angleNode = node->Get("angle");
+		const YamlNode * tagNode = node->Get("tag");
 
-		YamlNode * spriteModificationNode = node->Get("spriteModification");
-		YamlNode * initialStateNode = node->Get("initialState");
+		const YamlNode * spriteModificationNode = node->Get("spriteModification");
+		const YamlNode * initialStateNode = node->Get("initialState");
 		
 		Rect rect = GetRect();
 		if (rectNode)
@@ -2249,14 +2249,14 @@ namespace DAVA
 			SetBottomAlign(bottomAlign);
 		}
 	
-		YamlNode * clipNode = node->Get("clip");
+		const YamlNode * clipNode = node->Get("clip");
 		if (clipNode)
 		{
 			bool clipContents = loader->GetBoolFromYamlNode(clipNode, false); 
 			SetClipContents(clipContents);
 		}
 		
-		YamlNode * visibleNode = node->Get("visible");
+		const YamlNode * visibleNode = node->Get("visible");
 		if(visibleNode)
 		{
 			bool visible = loader->GetBoolFromYamlNode(visibleNode, false); 
@@ -2279,7 +2279,7 @@ namespace DAVA
             }
 		}
 
-        YamlNode * inputNode = node->Get("noInput");
+        const YamlNode * inputNode = node->Get("noInput");
 
         if (inputNode)
         {

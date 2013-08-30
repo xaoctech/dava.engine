@@ -64,10 +64,10 @@ MaterialGraphNode::~MaterialGraphNode()
     inputConnectors.clear();
 }
     
-void MaterialGraphNode::InitFromYamlNode(YamlNode * graphNode)
+void MaterialGraphNode::InitFromYamlNode(const YamlNode * graphNode)
 {
-    YamlNode * typeNode = graphNode->Get("node");
-    YamlNode * nameNode = graphNode->Get("name");
+    const YamlNode * typeNode = graphNode->Get("node");
+    const YamlNode * nameNode = graphNode->Get("name");
     SetType(typeNode->AsString());
     SetName(nameNode->AsString());
         
@@ -76,19 +76,19 @@ void MaterialGraphNode::InitFromYamlNode(YamlNode * graphNode)
     
     if (type == TYPE_SAMPLE_2D)
     {
-        YamlNode * textureChannelNode = graphNode->Get("channel");
+        const YamlNode * textureChannelNode = graphNode->Get("channel");
         if (textureChannelNode)
             textureChannelIndex = textureChannelNode->AsInt();
     }
     if (type == TYPE_TEX_COORD_INPUT)
     {
-        YamlNode * inputNode = graphNode->Get("input");
+        const YamlNode * inputNode = graphNode->Get("input");
         if (inputNode)
             textureInputIndex = inputNode->AsInt();
     }
     if (type == TYPE_CONST)
     {
-        YamlNode * valueNode = graphNode->Get("value");
+        const YamlNode * valueNode = graphNode->Get("value");
         if (valueNode->GetType() == YamlNode::TYPE_STRING)
         {
             constValue.SetFloat(valueNode->AsFloat());

@@ -45,11 +45,11 @@ public:
 	QString GetScreenPath(QString screenName) const;
 	QString GetScreenPath(String screenName) const;
 	
-	bool Load(YamlNode* node);
+	bool Load(const YamlNode* node);
 	bool Save(YamlNode* node, bool saveAll);
 
     // Separate method to load/save localization.
-    bool LoadLocalization(YamlNode* platform);
+    bool LoadLocalization(const YamlNode* platform);
     bool SaveLocalization(YamlNode* platform);
 
     // Accessors to the current localization info.
