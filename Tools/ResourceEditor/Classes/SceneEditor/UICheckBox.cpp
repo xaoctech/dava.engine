@@ -44,7 +44,7 @@ UICheckBox::UICheckBox(const FilePath &spriteName, const Rect &rect, bool rectIn
     AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &UICheckBox::OnClick));
 }
 
-void UICheckBox::LoadFromYamlNode( YamlNode * node, UIYamlLoader * loader )
+void UICheckBox::LoadFromYamlNode( const YamlNode * node, UIYamlLoader * loader )
 {
 	UIControl::LoadFromYamlNode(node, loader);
 }

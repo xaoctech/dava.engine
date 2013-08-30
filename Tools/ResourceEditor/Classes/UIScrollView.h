@@ -39,7 +39,7 @@ protected:
 	virtual bool SystemInput(UIEvent *currentTouch);
 	virtual void Input(UIEvent *currentTouch);
 	virtual void SystemDraw(const UIGeometricData & geometricData);
-	virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
+	virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
 
 	//called on TOUCH_UP which is now scroll or zoom event
 	virtual void		ScrollTouch(UIEvent *currentTouch) {};

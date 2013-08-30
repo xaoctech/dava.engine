@@ -36,7 +36,7 @@ public:
 	UICheckBox();
 	UICheckBox(const FilePath &spriteName, const Rect &rect, bool rectInAbsoluteCoordinates = false);
 
-	virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
+	virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
     virtual void LoadFromYamlNodeCompleted();
 
 	void SetChecked(bool _checked, bool needDelegateCall);

@@ -38,7 +38,7 @@ public:
 	void SetRect(const Rect &rect, bool rectInAbsoluteCoordinates = false);
 	void SetPreviewSprite(const FilePath & spriteName);
 	
-	void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
+	void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
 	void LoadFromYamlNodeCompleted();
 	
 	
