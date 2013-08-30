@@ -35,7 +35,7 @@ EditorLightSystem::EditorLightSystem(DAVA::Scene * scene)
 	light->Release();
 
 	lightCountOnScene = 0;
-	SetRequiredComponents(Component::LIGHT_COMPONENT);
+	SetRequiredComponents(1 << Component::LIGHT_COMPONENT);
 
 	SetCameraLightEnabled(true);
 }
