@@ -165,11 +165,7 @@ void ParticleEmitter3D::CalculateParticlePositionForCircle(Particle* particle, c
 		directionVector = rotatedVector;
 	}
 		
-	particle->position = (tempPosition + directionVector);
-	float32 posLength = particle->position.Length();
-	particle->position = particle->position * rotationMatrix;
-	particle->position.Normalize();
-	particle->position*=posLength;
+	particle->position = TransformPerserveLength(tempPosition + directionVector, rotationMatrix);	
 }
 	
 void ParticleEmitter3D::PrepareEmitterParametersShockwave(Particle * particle, float32 velocity,
@@ -192,11 +188,7 @@ void ParticleEmitter3D::PrepareEmitterParametersShockwave(Particle * particle, f
 							curRadius * sinAngle,
 							0.0f);
 
-	particle->position = (tempPosition + directionVector);
-	float32 posLength = particle->position.Length();
-	particle->position = particle->position * rotationMatrix;
-	particle->position.Normalize();
-	particle->position*=posLength;
+	particle->position = TransformPerserveLength(tempPosition + directionVector, rotationMatrix);	
 
 	particle->speed = velocity;
 
