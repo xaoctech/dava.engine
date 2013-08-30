@@ -38,7 +38,7 @@ public:
 	 */
     TheoraPlayer(const FilePath & filePath = FilePath());
 
-    virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
+    virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
     
 	/**
 	 \brief Calls on every frame to draw control.

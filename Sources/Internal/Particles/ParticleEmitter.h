@@ -386,7 +386,7 @@ public:
 protected:
 	// Virtual methods which are different for 2D and 3D emitters.
 	virtual void PrepareEmitterParameters(Particle * particle, float32 velocity, int32 emitIndex);
-	virtual void LoadParticleLayerFromYaml(YamlNode* yamlNode, bool isLong);
+	virtual void LoadParticleLayerFromYaml(const YamlNode* yamlNode, bool isLong);
 
 	// Internal restart function.
 	void DoRestart(bool isDeleteAllParticles);

@@ -165,10 +165,10 @@ void HierarchyTreePlatformNode::ActivatePlatform()
 	}
 }
 
-bool HierarchyTreePlatformNode::Load(YamlNode* platform)
+bool HierarchyTreePlatformNode::Load(const YamlNode* platform)
 {
-	YamlNode* width = platform->Get(WIDTH_NODE);
-	YamlNode* height = platform->Get(HEIGHT_NODE);
+	const YamlNode* width = platform->Get(WIDTH_NODE);
+	const YamlNode* height = platform->Get(HEIGHT_NODE);
 	if (!width || !height)
 		return false;
 	
@@ -176,12 +176,12 @@ bool HierarchyTreePlatformNode::Load(YamlNode* platform)
 	SetSize(width->AsInt(), height->AsInt());
 	ActivatePlatform();
 	
-	YamlNode* screens = platform->Get(SCREENS_NODE);
+	const YamlNode* screens = platform->Get(SCREENS_NODE);
 	if (screens)
 	{
 		for (int i = 0; i < screens->GetCount(); i++)
 		{
-			YamlNode* screen = screens->Get(i);
+			const YamlNode* screen = screens->Get(i);
 			if (!screen)
 				continue;
 			String screenName = screen->AsString();
@@ -193,12 +193,12 @@ bool HierarchyTreePlatformNode::Load(YamlNode* platform)
 		}
 	}
 	
-	YamlNode* aggregators = platform->Get(AGGREGATORS_NODE);
+	const YamlNode* aggregators = platform->Get(AGGREGATORS_NODE);
 	if (aggregators)
 	{
 		for (int i = 0; i < aggregators->GetCount(); i++)
 		{
-			YamlNode* aggregator = aggregators->Get(i);
+			const YamlNode* aggregator = aggregators->Get(i);
 			if (!aggregator)
 				continue;
 			String aggregatorName = aggregator->AsString();
@@ -206,8 +206,8 @@ bool HierarchyTreePlatformNode::Load(YamlNode* platform)
 			QString aggregatorPath = GetScreenPath(aggregatorName);
 			HierarchyTreeAggregatorNode* aggregatorNode = new HierarchyTreeAggregatorNode(this, QString::fromStdString(aggregatorName), Rect());
 
-			YamlNode* aggregatorWidth = aggregator->Get(WIDTH_NODE);
-			YamlNode* aggregatorHeight = aggregator->Get(HEIGHT_NODE);
+			const YamlNode* aggregatorWidth = aggregator->Get(WIDTH_NODE);
+			const YamlNode* aggregatorHeight = aggregator->Get(HEIGHT_NODE);
 			if (!aggregatorWidth || !aggregatorHeight)
 			{
 				result = false;
@@ -225,15 +225,15 @@ bool HierarchyTreePlatformNode::Load(YamlNode* platform)
 	return result;
 }
 
-bool HierarchyTreePlatformNode::LoadLocalization(YamlNode* platform)
+bool HierarchyTreePlatformNode::LoadLocalization(const YamlNode* platform)
 {
     if (!platform)
     {
         return false;
     }
     
-    YamlNode* pathNode = platform->Get(LOCALIZATION_PATH_NODE);
-    YamlNode* localeNode = platform->Get(LOCALIZATION_LOCALE_NODE);
+    const YamlNode* pathNode = platform->Get(LOCALIZATION_PATH_NODE);
+    const YamlNode* localeNode = platform->Get(LOCALIZATION_LOCALE_NODE);
 
     if (pathNode && localeNode &&
         !pathNode->AsString().empty() &&
@@ -256,19 +256,14 @@ bool HierarchyTreePlatformNode::Save(YamlNode* node, bool saveAll)
 	platform->Set(WIDTH_NODE, GetWidth());
 	platform->Set(HEIGHT_NODE, GetHeight());
 
-	MultiMap<String, YamlNode*> &platformsMap = node->AsMap();
-	platformsMap.erase(GetName().toStdString());
-	platformsMap.insert(std::pair<String, YamlNode*>(GetName().toStdString(), platform));
+	node->SetNodeToMap( GetName().toStdString(), platform );
 	ActivatePlatform();
 	
-	MultiMap<String, YamlNode*> &platformMap = platform->AsMap();
 	YamlNode* screens = new YamlNode(YamlNode::TYPE_ARRAY);
-	platformMap.erase(SCREENS_NODE);
-	platformMap.insert(std::pair<String, YamlNode*>(SCREENS_NODE, screens));
+	platform->SetNodeToMap( SCREENS_NODE, screens );
 	
 	YamlNode* aggregators = new YamlNode(YamlNode::TYPE_MAP);
-	platformMap.erase(AGGREGATORS_NODE);
-	platformMap.insert(std::pair<String, YamlNode*>(AGGREGATORS_NODE, aggregators));
+	platform->SetNodeToMap( AGGREGATORS_NODE, aggregators );
 
     // Add the Localization info - specific for each Platform.
     SaveLocalization(platform);
@@ -290,13 +285,11 @@ bool HierarchyTreePlatformNode::Save(YamlNode* node, bool saveAll)
 			continue;
 
 		QString path = GetScreenPath(node->GetName());
-		MultiMap<String, YamlNode*> &aggregatorsMap = aggregators->AsMap();
 		
 		YamlNode* aggregator = new YamlNode(YamlNode::TYPE_MAP);
 		result &= node->Save(aggregator, path, saveAll);
-		
-		aggregatorsMap.erase(node->GetName().toStdString());
-		aggregatorsMap.insert(std::pair<String, YamlNode*>(node->GetName().toStdString(), aggregator));
+
+		aggregators->SetNodeToMap( node->GetName().toStdString(), aggregator );
 	}
 		
 	

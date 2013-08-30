@@ -82,20 +82,20 @@ void EditorConfig::ParseConfig(const FilePath &filePath)
 		YamlNode *rootNode = parser->GetRootNode();
 		if(rootNode)
 		{
-			Vector<YamlNode*> &yamlNodes = rootNode->AsVector();
+			const Vector<YamlNode*> &yamlNodes = rootNode->AsVector();
 			int32 propertiesCount = yamlNodes.size();
 			for(int32 i = 0; i < propertiesCount; ++i)
 			{
 				YamlNode *propertyNode = yamlNodes[i];
 				if(propertyNode)
 				{
-					YamlNode *nameNode = propertyNode->Get("name");
-					YamlNode *typeNode = propertyNode->Get("type");
-					YamlNode *defaultNode = propertyNode->Get("default");
+					const YamlNode *nameNode = propertyNode->Get("name");
+					const YamlNode *typeNode = propertyNode->Get("type");
+					const YamlNode *defaultNode = propertyNode->Get("default");
 					if(nameNode && typeNode)
 					{
-						String nameStr = nameNode->AsString();
-						String typeStr = typeNode->AsString();
+						const String &nameStr = nameNode->AsString();
+						const String &typeStr = typeNode->AsString();
 						int32 type = ParseType(typeStr);
 						if(type)
 						{
@@ -166,10 +166,10 @@ void EditorConfig::ParseConfig(const FilePath &filePath)
 										}
 										properties[nameStr]->defaultValue.SetInt32(defaultValue);
 
-										YamlNode *comboNode = propertyNode->Get("list");
+										const YamlNode *comboNode = propertyNode->Get("list");
 										if(comboNode)
 										{
-											Vector<YamlNode*> comboValueNodes = comboNode->AsVector();
+											const Vector<YamlNode*> &comboValueNodes = comboNode->AsVector();
 											int32 comboValuesCount = comboValueNodes.size();
 											for(int32 i = 0; i < comboValuesCount; ++i)
 											{
@@ -187,14 +187,14 @@ void EditorConfig::ParseConfig(const FilePath &filePath)
                                         }
                                         properties[nameStr]->defaultValue.SetInt32(defaultValue);
                                         
-                                        YamlNode *colorListNode = propertyNode->Get("list");
+                                        const YamlNode *colorListNode = propertyNode->Get("list");
                                         if(colorListNode)
                                         {
-                                            Vector<YamlNode*> colorListNodes = colorListNode->AsVector();
+                                            const Vector<YamlNode*> &colorListNodes = colorListNode->AsVector();
                                             int32 colorListValuesCount = colorListNodes.size();
                                             for(int32 i = 0; i < colorListValuesCount; ++i)
                                             {
-                                                YamlNode* colorNode = colorListNodes[i];
+                                                const YamlNode* colorNode = colorListNodes[i];
                                                 if(!colorNode || colorNode->GetCount() != 4)
                                                     continue;
                                                 

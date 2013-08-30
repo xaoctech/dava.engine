@@ -26,7 +26,7 @@ class GroupEntitiesForMultiselectCommand : public Command2
 {
 public:
 	GroupEntitiesForMultiselectCommand(const EntityGroup* entities);
-	~GroupEntitiesForMultiselectCommand();
+	virtual ~GroupEntitiesForMultiselectCommand();
 
 	virtual void Undo();
 	virtual void Redo();
@@ -35,17 +35,17 @@ public:
 
 protected:
 	EntityGroup				entitiesToGroup;
-	//DAVA::Set<DAVA::Entity*> entities;
 	DAVA::Entity*			resultEntity;
 	DAVA::Map<DAVA::Entity*, DAVA::Entity*>	originalChildParentRelations;//child, paretn
 	SceneEditor2*			sceneEditor;
 	
 	DAVA::Map<DAVA::Entity*, DAVA::Matrix4> originalMatrixes; // local, world
-	
+	DAVA::Map<DAVA::Entity*, DAVA::Component*> originalLodComponents;
+		
 	void UpdateTransformMatrixes(Entity* entity, Matrix4& worldMatrix);
 	void MoveEntity(Entity* entity, Vector3& destPoint);
 	Entity* GetEntityWithSolidProp(Entity* en);
-	
+	void GetLodComponentsRecursive(Entity* fromEntity, DAVA::Map<DAVA::Entity*, DAVA::Component*>& hostEntitiesAndComponents);
 };
 
 #endif // __GROUP_ENTITIES_FOR_MULTISELECT__COMMAND_H__

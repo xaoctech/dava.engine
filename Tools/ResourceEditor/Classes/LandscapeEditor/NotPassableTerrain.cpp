@@ -123,7 +123,7 @@ void NotPassableTerrain::LoadColorsArray()
         
         for (int32 i = 0; i < anglesCount; ++i)
         {
-            YamlNode* node = rootNode->Get(i);
+            const YamlNode* node = rootNode->Get(i);
             if (!node || node->GetCount() != 3)
                 continue;
             
@@ -136,7 +136,7 @@ void NotPassableTerrain::LoadColorsArray()
             float32 tangentMin = tan(DegToRad(angle1));
             float32 tangentMax = tan(DegToRad(angle2));
             
-            YamlNode* colorNode = node->Get(2);
+            const YamlNode* colorNode = node->Get(2);
             if (!colorNode || colorNode->GetCount() != 4)
                 continue;
          

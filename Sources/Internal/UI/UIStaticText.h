@@ -101,7 +101,7 @@ protected:
 	virtual void Draw(const UIGeometricData &geometricData);
 	
 public:
-	void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
+	void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
 	virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
 };
 };

@@ -830,15 +830,15 @@ void RenderState::LoadFromYamlFile(const FilePath & filePath)
 	SafeRelease(parser);
 }
 
-void RenderState::LoadFromYamlNode(YamlNode * rootNode)
+void RenderState::LoadFromYamlNode(const YamlNode * rootNode)
 {
 	if (!rootNode)
 		return;
 
-	YamlNode * renderStateNode = rootNode->Get("RenderState");
+	const YamlNode * renderStateNode = rootNode->Get("RenderState");
 	if(renderStateNode)
 	{
-		YamlNode * stateNode = renderStateNode->Get("state");
+		const YamlNode * stateNode = renderStateNode->Get("state");
 		if(stateNode)
 		{
 			Vector<String> states;
@@ -850,8 +850,8 @@ void RenderState::LoadFromYamlNode(YamlNode * rootNode)
 			state = currentState;
 		}
 
-		YamlNode * blendSrcNode = renderStateNode->Get("blendSrc");
-		YamlNode * blendDestNode = renderStateNode->Get("blendDest");
+		const YamlNode * blendSrcNode = renderStateNode->Get("blendSrc");
+		const YamlNode * blendDestNode = renderStateNode->Get("blendDest");
 		if(blendSrcNode && blendDestNode)
 		{
 			eBlendMode newBlendScr = GetBlendModeByName(blendSrcNode->AsString());
@@ -859,22 +859,22 @@ void RenderState::LoadFromYamlNode(YamlNode * rootNode)
 			SetBlendMode(newBlendScr, newBlendDest);
 		}
 
-		YamlNode * cullModeNode = renderStateNode->Get("cullMode");
+		const YamlNode * cullModeNode = renderStateNode->Get("cullMode");
 		if(cullModeNode)
 		{
 			int32 newCullMode = (int32)GetFaceByName(cullModeNode->AsString());
 			SetCullMode(newCullMode);
 		}
 
-		YamlNode * depthFuncNode = renderStateNode->Get("depthFunc");
+		const YamlNode * depthFuncNode = renderStateNode->Get("depthFunc");
 		if(depthFuncNode)
 		{
 			eCmpFunc newDepthFunc = GetCmpFuncByName(depthFuncNode->AsString());
 			SetDepthFunc(newDepthFunc);
 		}
 
-		YamlNode * alphaFuncNode = renderStateNode->Get("alphaFunc");
-		YamlNode * alphaFuncCmpValueNode = renderStateNode->Get("alphaFuncCmpValue");
+		const YamlNode * alphaFuncNode = renderStateNode->Get("alphaFunc");
+		const YamlNode * alphaFuncCmpValueNode = renderStateNode->Get("alphaFuncCmpValue");
 		if(alphaFuncNode && alphaFuncCmpValueNode)
 		{
 			eCmpFunc newAlphaFunc = GetCmpFuncByName(alphaFuncNode->AsString());
@@ -882,39 +882,39 @@ void RenderState::LoadFromYamlNode(YamlNode * rootNode)
 			SetAlphaFunc(newAlphaFunc, newCmpValue);
 		}
 
-		YamlNode * stencilNode = renderStateNode->Get("stencil");
+		const YamlNode * stencilNode = renderStateNode->Get("stencil");
 		if(stencilNode)
 		{
-			YamlNode * stencilRefNode = stencilNode->Get("ref");
+			const YamlNode * stencilRefNode = stencilNode->Get("ref");
 			if(stencilRefNode)
 				SetStencilRef(stencilRefNode->AsInt32());
 
-			YamlNode * stencilMaskNode = stencilNode->Get("mask");
+			const YamlNode * stencilMaskNode = stencilNode->Get("mask");
 			if(stencilMaskNode)
 				SetStencilMask(stencilMaskNode->AsUInt32());
 
-			YamlNode * stencilFuncNode = stencilNode->Get("funcFront");
+			const YamlNode * stencilFuncNode = stencilNode->Get("funcFront");
 			if(stencilFuncNode)
 				SetStencilFunc(FACE_FRONT, GetCmpFuncByName(stencilFuncNode->AsString()));
 			stencilFuncNode = stencilNode->Get("funcBack");
 			if(stencilFuncNode)
 				SetStencilFunc(FACE_BACK, GetCmpFuncByName(stencilFuncNode->AsString()));
 
-			YamlNode * stencilPassNode = stencilNode->Get("passFront");
+			const YamlNode * stencilPassNode = stencilNode->Get("passFront");
 			if(stencilPassNode)
 				SetStencilPass(FACE_FRONT, GetStencilOpByName(stencilPassNode->AsString()));
 			stencilPassNode = stencilNode->Get("passBack");
 			if(stencilPassNode)
 				SetStencilPass(FACE_BACK, GetStencilOpByName(stencilPassNode->AsString()));
 
-			YamlNode * stencilFailNode = stencilNode->Get("failFront");
+			const YamlNode * stencilFailNode = stencilNode->Get("failFront");
 			if(stencilFailNode)
 				SetStencilFail(FACE_FRONT, GetStencilOpByName(stencilFailNode->AsString()));
 			stencilFailNode = stencilNode->Get("failBack");
 			if(stencilFailNode)
 				SetStencilFail(FACE_BACK, GetStencilOpByName(stencilFailNode->AsString()));
 
-			YamlNode * stencilZFailNode = stencilNode->Get("zFailFront");
+			const YamlNode * stencilZFailNode = stencilNode->Get("zFailFront");
 			if(stencilZFailNode)
 				SetStencilZFail(FACE_FRONT, GetStencilOpByName(stencilZFailNode->AsString()));
 			stencilZFailNode = stencilNode->Get("zFailBack");

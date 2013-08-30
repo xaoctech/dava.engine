@@ -189,7 +189,7 @@ public:
 		\brief Function to load layer from yaml node.
 		Normally this function is called from ParticleEmitter. 	 
 	 */
-	virtual void LoadFromYaml(const FilePath & configPath, YamlNode * node);
+	virtual void LoadFromYaml(const FilePath & configPath, const YamlNode * node);
 
 	/**
      \brief Function to save layer to yaml node.

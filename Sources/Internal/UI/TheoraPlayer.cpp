@@ -381,15 +381,15 @@ uint32 TheoraPlayer::binCeil(uint32 value)
     return bin;
 }
 
-void TheoraPlayer::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
+void TheoraPlayer::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
     UIControl::LoadFromYamlNode(node, loader);
-    YamlNode * fileNode = node->Get("file");
+    const YamlNode * fileNode = node->Get("file");
     
 	if(fileNode)
         OpenFile(fileNode->AsString());
     
-    YamlNode * rectNode = node->Get("rect");
+    const YamlNode * rectNode = node->Get("rect");
     
     if(rectNode)
     {

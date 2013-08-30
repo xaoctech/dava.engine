@@ -730,7 +730,7 @@ namespace DAVA
 		return DRAW_STATE_UNPRESSED;
 	}
 	
-	void UIButton::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
+	void UIButton::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 	{
 		UIControl::LoadFromYamlNode(node, loader);
 		
@@ -739,12 +739,12 @@ namespace DAVA
 	
 		for (int k = 0; k < STATE_COUNT; ++k)
 		{
-			YamlNode * stateSpriteNode = node->Get(Format("stateSprite%s", statePostfix[k].c_str()));
+			const YamlNode * stateSpriteNode = node->Get(Format("stateSprite%s", statePostfix[k].c_str()));
 			if (stateSpriteNode)
 			{
-				YamlNode * spriteNode = stateSpriteNode->Get(0);
-				YamlNode * frameNode = stateSpriteNode->Get(1);
-				YamlNode * backgroundModificationNode = NULL;
+				const YamlNode * spriteNode = stateSpriteNode->Get(0);
+				const YamlNode * frameNode = stateSpriteNode->Get(1);
+				const YamlNode * backgroundModificationNode = NULL;
 				if(stateSpriteNode->GetCount() > 2)
 				{
 					backgroundModificationNode = stateSpriteNode->Get(2);
@@ -762,14 +762,14 @@ namespace DAVA
 				}
 			}
             
-            YamlNode * stateDrawTypeNode = node->Get(Format("stateDrawType%s", statePostfix[k].c_str()));
+            const YamlNode * stateDrawTypeNode = node->Get(Format("stateDrawType%s", statePostfix[k].c_str()));
 			if (stateDrawTypeNode)
 			{
 				UIControlBackground::eDrawType type = (UIControlBackground::eDrawType)loader->GetDrawTypeFromNode(stateDrawTypeNode);
                 SetStateDrawType(stateArray[k],type);
                 
-                YamlNode * leftRightStretchCapNode = node->Get(Format("leftRightStretchCap%s", statePostfix[k].c_str()));
-                YamlNode * topBottomStretchCapNode = node->Get(Format("topBottomStretchCap%s", statePostfix[k].c_str()));
+                const YamlNode * leftRightStretchCapNode = node->Get(Format("leftRightStretchCap%s", statePostfix[k].c_str()));
+                const YamlNode * topBottomStretchCapNode = node->Get(Format("topBottomStretchCap%s", statePostfix[k].c_str()));
 
                 if(leftRightStretchCapNode)
                 {
@@ -788,54 +788,54 @@ namespace DAVA
                 SetStateDrawType(stateArray[k],UIControlBackground::DRAW_ALIGNED);
 			}
             
-            YamlNode * stateAlignNode = node->Get(Format("stateAlign%s", statePostfix[k].c_str()));
+            const YamlNode * stateAlignNode = node->Get(Format("stateAlign%s", statePostfix[k].c_str()));
 			if (stateAlignNode)
 			{
 				int32 align = loader->GetAlignFromYamlNode(stateAlignNode);
                 SetStateAlign(stateArray[k],align);
 			}
 
-			YamlNode * stateFontNode = node->Get(Format("stateFont%s", statePostfix[k].c_str()));
+			const YamlNode * stateFontNode = node->Get(Format("stateFont%s", statePostfix[k].c_str()));
 			if (stateFontNode)
 			{
 				Font * font = loader->GetFontByName(stateFontNode->AsString());
 				if (font)SetStateFont(stateArray[k], font);
 			}
 			
-			YamlNode * stateTextNode = node->Get(Format("stateText%s", statePostfix[k].c_str()));
+			const YamlNode * stateTextNode = node->Get(Format("stateText%s", statePostfix[k].c_str()));
 			if (stateTextNode)
 			{
 				SetStateText(stateArray[k], LocalizedString(stateTextNode->AsWString()));
 			}
 			
-			YamlNode * stateTextColorNode = node->Get(Format("stateTextcolor%s", statePostfix[k].c_str()));
+			const YamlNode * stateTextColorNode = node->Get(Format("stateTextcolor%s", statePostfix[k].c_str()));
 			if (stateTextColorNode)
 			{
 				Vector4 c = stateTextColorNode->AsVector4();
 				SetStateFontColor(stateArray[k], Color(c.x, c.y, c.z, c.w));
 			}
 			
-			YamlNode * stateShadowColorNode = node->Get(Format("stateShadowcolor%s", statePostfix[k].c_str()));
+			const YamlNode * stateShadowColorNode = node->Get(Format("stateShadowcolor%s", statePostfix[k].c_str()));
 			if (stateShadowColorNode)
 			{
 				Vector4 c = stateShadowColorNode->AsVector4();
 				SetStateShadowColor(stateArray[k], Color(c.x, c.y, c.z, c.w));
 			}			
 			
-			YamlNode * stateShadowOffsetNode = node->Get(Format("stateShadowoffset%s", statePostfix[k].c_str()));
+			const YamlNode * stateShadowOffsetNode = node->Get(Format("stateShadowoffset%s", statePostfix[k].c_str()));
 			if (stateShadowOffsetNode)
 			{
 				SetStateShadowOffset(stateArray[k], stateShadowOffsetNode->AsVector2());
 			}
 			
-			YamlNode * colorInheritNode = node->Get(Format("stateColorInherit%s", statePostfix[k].c_str()));
+			const YamlNode * colorInheritNode = node->Get(Format("stateColorInherit%s", statePostfix[k].c_str()));
 			if(colorInheritNode)
 			{
 				UIControlBackground::eColorInheritType type = (UIControlBackground::eColorInheritType)loader->GetColorInheritTypeFromNode(colorInheritNode);
 				GetActualBackground(stateArray[k])->SetColorInheritType(type);
 			}
 			
-			YamlNode * colorNode = node->Get(Format("stateColor%s", statePostfix[k].c_str()));
+			const YamlNode * colorNode = node->Get(Format("stateColor%s", statePostfix[k].c_str()));
 			if(colorNode)
 			{
 				Color color = loader->GetColorFromYamlNode(colorNode);
@@ -858,14 +858,14 @@ namespace DAVA
         
 		//Remove values of UIControl
 		//UIButton has state specific properties
-		YamlNode *colorNode = node->Get("color");
-		YamlNode *spriteNode = node->Get("sprite");
-		YamlNode *drawTypeNode = node->Get("drawType");
-		YamlNode *colorInheritNode = node->Get("colorInherit");
-		YamlNode *alignNode = node->Get("align");
-		YamlNode *leftRightStretchCapNode = node->Get("leftRightStretchCap");
-		YamlNode *topBottomStretchCapNode = node->Get("topBottomStretchCap");
-		YamlNode *spriteModificationNode = node->Get("spriteModification");
+		const YamlNode *colorNode = node->Get("color");
+		const YamlNode *spriteNode = node->Get("sprite");
+		const YamlNode *drawTypeNode = node->Get("drawType");
+		const YamlNode *colorInheritNode = node->Get("colorInherit");
+		const YamlNode *alignNode = node->Get("align");
+		const YamlNode *leftRightStretchCapNode = node->Get("leftRightStretchCap");
+		const YamlNode *topBottomStretchCapNode = node->Get("topBottomStretchCap");
+		const YamlNode *spriteModificationNode = node->Get("spriteModification");
         
 		if (colorNode)
 		{

@@ -36,7 +36,7 @@ class CommandNotifyProvider
 {
 public:
 	CommandNotifyProvider();
-	~CommandNotifyProvider();
+	virtual ~CommandNotifyProvider();
 
 	void SetNotify(CommandNotify *notify);
 	CommandNotify* GetNotify() const;

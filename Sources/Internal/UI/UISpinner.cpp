@@ -275,7 +275,7 @@ void UISpinner::ReleaseButtons()
     SafeRelease(content);
 }
 
-void UISpinner::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
+void UISpinner::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
     //release default buttons - they have to be loaded from yaml
     ReleaseButtons();

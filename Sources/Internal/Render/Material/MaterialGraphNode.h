@@ -73,7 +73,7 @@ public:
     MaterialGraphNode(MaterialGraph * graph);
     ~MaterialGraphNode();
     
-    void InitFromYamlNode(YamlNode * graphNode);
+    void InitFromYamlNode(const YamlNode * graphNode);
     
     void SetDepthMarker(uint32 depthMarker);
     uint32 GetDepthMarker();

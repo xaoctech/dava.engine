@@ -507,7 +507,7 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 
 	YamlNode * rootNode = parser->GetRootNode();
 
-	YamlNode * emitterNode = rootNode->Get("emitter");
+	const YamlNode * emitterNode = rootNode->Get("emitter");
 	if (emitterNode)
 	{
 		if (emitterNode->Get("emissionAngle"))
@@ -516,7 +516,7 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 		if (emitterNode->Get("emissionVector"))
 			emissionVector = PropertyLineYamlReader::CreateVector3PropertyLineFromYamlNode(emitterNode, "emissionVector");
         
-		YamlNode* emissionVectorInvertedNode = emitterNode->Get("emissionVectorInverted");
+		const YamlNode* emissionVectorInvertedNode = emitterNode->Get("emissionVectorInverted");
 		if (!emissionVectorInvertedNode)
 		{
 			// Yuri Coder, 2013/04/12. This means that the emission vector in the YAML file is not inverted yet.
@@ -533,11 +533,11 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 			radius = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(emitterNode, "radius");
 		
 		emitPointsCount = -1; 
-		YamlNode * emitAtPointsNode = emitterNode->Get("emitAtPoints");
+		const YamlNode * emitAtPointsNode = emitterNode->Get("emitAtPoints");
 		if (emitAtPointsNode)
 			emitPointsCount = emitAtPointsNode->AsInt();
 		
-		YamlNode * lifeTimeNode = emitterNode->Get("life");
+		const YamlNode * lifeTimeNode = emitterNode->Get("life");
 		if (lifeTimeNode)
 		{
 			lifeTime = lifeTimeNode->AsFloat();
@@ -547,16 +547,16 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 		}
         
         is3D = false;
-		YamlNode * _3dNode = emitterNode->Get("3d");
+		const YamlNode * _3dNode = emitterNode->Get("3d");
 		if (_3dNode)
 		{	
 			is3D = _3dNode->AsBool();
 		}
-		YamlNode * shortEffectNode = emitterNode->Get("shortEffect");
+		const YamlNode * shortEffectNode = emitterNode->Get("shortEffect");
 		if (shortEffectNode)
 			shortEffect = shortEffectNode->AsBool();
         
-		YamlNode * typeNode = emitterNode->Get("type");
+		const YamlNode * typeNode = emitterNode->Get("type");
 		if (typeNode)
 		{	
 			if (typeNode->AsString() == "point")
@@ -585,26 +585,26 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename)
         if(size == 0)
         {
             Vector3 _size(0, 0, 0);
-            YamlNode * widthNode = emitterNode->Get("width");
+            const YamlNode * widthNode = emitterNode->Get("width");
             if (widthNode)
                 _size.x = widthNode->AsFloat();
 
-            YamlNode * heightNode = emitterNode->Get("height");
+            const YamlNode * heightNode = emitterNode->Get("height");
             if (heightNode)
                 _size.y = heightNode->AsFloat();
 
-            YamlNode * depthNode = emitterNode->Get("depth");
+            const YamlNode * depthNode = emitterNode->Get("depth");
             if (depthNode)
                 _size.y = depthNode->AsFloat();
             
             size = new PropertyLineValue<Vector3>(_size);
         }
         
-		YamlNode * autorestartNode = emitterNode->Get("autorestart");
+		const YamlNode * autorestartNode = emitterNode->Get("autorestart");
 		if(autorestartNode)
 			isAutorestart = autorestartNode->AsBool();
 
-		YamlNode * particlesFollowNode = emitterNode->Get("particlesFollow");
+		const YamlNode * particlesFollowNode = emitterNode->Get("particlesFollow");
 		if(particlesFollowNode)
 			particlesFollow = particlesFollowNode->AsBool();
 	}
@@ -612,10 +612,10 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename)
 	int cnt = rootNode->GetCount();
 	for (int k = 0; k < cnt; ++k)
 	{
-		YamlNode * node = rootNode->Get(k);
-		YamlNode * typeNode = node->Get("type");
+		const YamlNode * node = rootNode->Get(k);
+		const YamlNode * typeNode = node->Get("type");
 		
-		YamlNode * longNode = node->Get("isLong");
+		const YamlNode * longNode = node->Get("isLong");
 		bool isLong = false;
 		if(longNode && (longNode->AsBool() == true))
 		{
@@ -831,7 +831,7 @@ void ParticleEmitter::UpdateLayerNameIfEmpty(ParticleLayer* layer, int32 index)
 }
 
 
-void ParticleEmitter::LoadParticleLayerFromYaml(YamlNode* yamlNode, bool isLong)
+void ParticleEmitter::LoadParticleLayerFromYaml(const YamlNode* yamlNode, bool isLong)
 {
 	ParticleLayer* layer = new ParticleLayer();
 	AddLayer(layer);

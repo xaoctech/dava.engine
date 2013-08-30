@@ -80,7 +80,7 @@ void UIListTest::LoadResources()
 			
 	if (parser && parser->GetRootNode())
 	{
-		for (MultiMap<String, YamlNode*>::iterator t = parser->GetRootNode()->AsMap().begin(); t != parser->GetRootNode()->AsMap().end(); ++t)
+		for (MultiMap<String, YamlNode*>::const_iterator t = parser->GetRootNode()->AsMap().begin(); t != parser->GetRootNode()->AsMap().end(); ++t)
 		{
 			YamlNode * listNode = t->second;
 			// Skip empty list node
