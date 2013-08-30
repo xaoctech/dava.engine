@@ -96,6 +96,8 @@ void GameCore::OnBackground()
 void GameCore::BeginFrame()
 {
 	ApplicationCore::BeginFrame();
+	// DF-1781 and DF-1572 - Increase size and position of default cliprect
+	RenderManager::Instance()->SetClip(Rect(-1000, -1000, -1, -1));
 	RenderManager::Instance()->ClearWithColor(0, 0, 0, 0);
 }
 
