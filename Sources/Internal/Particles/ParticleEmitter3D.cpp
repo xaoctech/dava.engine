@@ -291,7 +291,7 @@ void ParticleEmitter3D::PrepareEmitterParametersGeneric(Particle * particle, flo
     //particle->angle = atanf(particle->direction.z/particle->direction.x);
 }
 
-void ParticleEmitter3D::LoadParticleLayerFromYaml(YamlNode* yamlNode, bool isLong)
+void ParticleEmitter3D::LoadParticleLayerFromYaml(const YamlNode* yamlNode, bool isLong)
 {
 	ParticleLayer3D* layer = new ParticleLayer3D(this);
 	layer->SetLong(isLong);

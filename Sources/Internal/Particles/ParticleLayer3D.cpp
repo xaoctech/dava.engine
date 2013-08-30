@@ -308,7 +308,7 @@ void ParticleLayer3D::CalcLong(Particle* current,
 }
 
 
-void ParticleLayer3D::LoadFromYaml(const FilePath & configPath, YamlNode * node)
+void ParticleLayer3D::LoadFromYaml(const FilePath & configPath, const YamlNode * node)
 {
 	ParticleLayer::LoadFromYaml(configPath, node);
 	SetAdditive(additive);
