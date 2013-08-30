@@ -114,10 +114,19 @@ class CreateControlCommand: public BaseCommand
 {
 public:
 	CreateControlCommand(const QString& type, const QPoint& pos);
-	
+	CreateControlCommand(const QString& type, HierarchyTreeNode* parent);
+
 	virtual void Execute();
 	void Rollback();
 	virtual bool IsUndoRedoSupported() {return true;};
+
+protected:
+	// Command mode.
+	enum eCreateControlCommandMode
+	{
+		CREATE_FROM_POINT,
+		CREATE_FROM_NODE
+	};
 
 private:
 	QString type;
@@ -130,6 +139,12 @@ private:
 	
 	// Information needed during Undo/Redo.
 	HierarchyTreeNode* redoNode;
+	
+	// Command mode.
+	eCreateControlCommandMode commandMode;
+	
+	// Parent node, if defined.
+	HierarchyTreeNode* parentNode;
 };
 
 class DeleteSelectedNodeCommand: public UndoableHierarchyTreeNodeCommand

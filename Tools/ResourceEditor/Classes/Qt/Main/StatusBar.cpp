@@ -14,38 +14,42 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __GROUP_ENTITIES_FOR_MULTISELECT__COMMAND_H__
-#define __GROUP_ENTITIES_FOR_MULTISELECT__COMMAND_H__
+#include "DAVAEngine.h"
 
-#include "Commands2/Command2.h"
-#include "Qt/Scene/EntityGroup.h"
-#include "Qt/Scene/SceneEditor2.h"
-#include "Scene3D/Entity.h"
+#include "StatusBar.h"
 
-class GroupEntitiesForMultiselectCommand : public Command2
+#include <QLabel>
+#include <QLayout>
+
+StatusBar::StatusBar(QWidget *parent)
+	: QStatusBar(parent)
 {
-public:
-	GroupEntitiesForMultiselectCommand(const EntityGroup* entities);
-	virtual ~GroupEntitiesForMultiselectCommand();
+    distanceToCamera = new QLabel(this);
+    
+    
+	addPermanentWidget(distanceToCamera);
 
-	virtual void Undo();
-	virtual void Redo();
+    
+    setContentsMargins(0, 0, 0, 0);
+    setStyleSheet("QStatusBar::item {border: none;}");
+    layout()->setMargin(0);
+    layout()->setSpacing(1);
+    layout()->setContentsMargins(0, 0, 0, 0);
+}
 
-	virtual DAVA::Entity* GetEntity() const;
+StatusBar::~StatusBar()
+{
 
-protected:
-	EntityGroup				entitiesToGroup;
-	DAVA::Entity*			resultEntity;
-	DAVA::Map<DAVA::Entity*, DAVA::Entity*>	originalChildParentRelations;//child, paretn
-	SceneEditor2*			sceneEditor;
-	
-	DAVA::Map<DAVA::Entity*, DAVA::Matrix4> originalMatrixes; // local, world
-	DAVA::Map<DAVA::Entity*, DAVA::Component*> originalLodComponents;
-		
-	void UpdateTransformMatrixes(Entity* entity, Matrix4& worldMatrix);
-	void MoveEntity(Entity* entity, Vector3& destPoint);
-	Entity* GetEntityWithSolidProp(Entity* en);
-	void GetLodComponentsRecursive(Entity* fromEntity, DAVA::Map<DAVA::Entity*, DAVA::Component*>& hostEntitiesAndComponents);
-};
+}
 
-#endif // __GROUP_ENTITIES_FOR_MULTISELECT__COMMAND_H__
+void StatusBar::SetDistanceToCamera(DAVA::float32 distance)
+{
+    distanceToCamera->setText(QString::fromStdString(DAVA::Format("Distance to selection: %0.6f", distance)));
+}
+
+void StatusBar::ResetDistanceToCamera()
+{
+    distanceToCamera->setText(QString::fromStdString("Distance to selection: No selection"));
+}
+
+

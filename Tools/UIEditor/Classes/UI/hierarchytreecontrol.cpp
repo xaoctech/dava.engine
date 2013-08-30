@@ -13,6 +13,7 @@
     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
 #include "Classes/UI/hierarchytreecontrol.h"
 #include <QAction>
 #include <QMenu>
@@ -96,6 +97,8 @@ HierarchyTreeNode::HIERARCHYTREENODESIDLIST HierarchyTreeControlMimeData::GetIte
 HierarchyTreeControl::HierarchyTreeControl(QWidget *parent) :
     QTreeWidget(parent)
 {
+	setAcceptDrops(true);
+	setAutoScroll(true);
 }
 
 void HierarchyTreeControl::contextMenuEvent(QContextMenuEvent * event)
@@ -180,6 +183,54 @@ void HierarchyTreeControl::dropEvent(QDropEvent *event)
 	if (!item)
 		return;
 	
+	// What are we dropping?
+	const ControlMimeData* controlMimeData = dynamic_cast<const ControlMimeData*>(event->mimeData());
+	if (controlMimeData)
+	{
+		return HandleDropControlMimeData(event, controlMimeData);
+	}
+	
+	const HierarchyTreeControlMimeData* hierarchyMimeData = dynamic_cast<const HierarchyTreeControlMimeData*>(event->mimeData()->userData(TREE_MIME_DATA));
+	if (hierarchyMimeData)
+	{
+		return HandleDropHierarchyMimeData(event, hierarchyMimeData);
+	}
+}
+
+void HierarchyTreeControl::HandleDropControlMimeData(QDropEvent *event, const ControlMimeData* mimeData)
+{
+	// Appropriate item is already selected, just create and execute appropriate command.
+	HierarchyTreeNode* parentNode = NULL;
+	const HierarchyTreeController::SELECTEDCONTROLNODES& selectedNodes = HierarchyTreeController::Instance()->GetActiveControlNodes();
+	if (selectedNodes.empty())
+	{
+		// Check whether the cursor in on Screen node.
+		QVariant data = itemAt(event->pos())->data(ITEM_ID);
+		HierarchyTreeNode::HIERARCHYTREENODEID screenNodeID = data.toInt();
+		HierarchyTreeNode* possiblyScreeNode = HierarchyTreeController::Instance()->GetTree().GetNode(screenNodeID);
+
+		if (dynamic_cast<HierarchyTreeScreenNode*>(possiblyScreeNode))
+		{
+			parentNode = possiblyScreeNode;
+		}
+	}
+	else
+	{
+		parentNode = (*selectedNodes.begin());
+	}
+	
+	if (!parentNode)
+	{
+		return;
+	}
+
+	CreateControlCommand* cmd = new CreateControlCommand(mimeData->GetControlName(), parentNode);
+	CommandsController::Instance()->ExecuteCommand(cmd);
+	SafeRelease(cmd);
+}
+
+void HierarchyTreeControl::HandleDropHierarchyMimeData(QDropEvent *event, const HierarchyTreeControlMimeData* mimeData)
+{
 	HierarchyTreeNode::HIERARCHYTREENODEID insertInTo = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
 	HierarchyTreeNode::HIERARCHYTREENODEID insertAfter = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
 	if (!GetMoveItemID(event, insertInTo, insertAfter))
@@ -192,12 +243,10 @@ void HierarchyTreeControl::dropEvent(QDropEvent *event)
 		insertInTo = parentNode->GetId();
 	}
 	
-	const HierarchyTreeControlMimeData* mimeData = dynamic_cast<const HierarchyTreeControlMimeData* >(event->mimeData()->userData(TREE_MIME_DATA));
-	if (!mimeData)
-		return;
-	
 	if (!mimeData->IsDropEnable(parentNode))
+	{
 		return;
+	}
 		
 	//Copy current selected item(s) if ctrl key is pressed during drag
 	if (event->keyboardModifiers() == Qt::ControlModifier)
@@ -218,11 +267,31 @@ void HierarchyTreeControl::dragEnterEvent(QDragEnterEvent *event)
 {
 	if (!event->mimeData())
 		return;
-	
-	const HierarchyTreeControlMimeData* mimeData = dynamic_cast<const HierarchyTreeControlMimeData* >(event->mimeData()->userData(TREE_MIME_DATA));
-	if (!mimeData)
-		return;
 
+	// Check what is arriving - Library Control or another Hierarchy Tree node.
+	const ControlMimeData* controlMimeData = dynamic_cast<const ControlMimeData*>(event->mimeData());
+	if (controlMimeData)
+	{
+		return HandleDragEnterControlMimeData(event, controlMimeData);
+	}
+	
+	const HierarchyTreeControlMimeData* hierarchyMimeData = dynamic_cast<const HierarchyTreeControlMimeData*>(event->mimeData()->userData(TREE_MIME_DATA));
+	if (hierarchyMimeData)
+	{
+		return HandleDragEnterHierarchyMimeData(event, hierarchyMimeData);
+	}
+	
+	// Not ours...
+	event->ignore();
+}
+
+void HierarchyTreeControl::HandleDragEnterControlMimeData(QDragEnterEvent *event, const ControlMimeData* /*mimeData*/)
+{
+	event->accept();
+}
+
+void HierarchyTreeControl::HandleDragEnterHierarchyMimeData(QDragEnterEvent *event, const HierarchyTreeControlMimeData* mimeData)
+{
 	HierarchyTreeNode * selectedTreeNode = HierarchyTreeController::Instance()->GetTree().GetNode(*(mimeData->GetItems().begin()));
 	HierarchyTreeControlNode * selectedControlNode =  dynamic_cast<HierarchyTreeControlNode*>(selectedTreeNode);
 	if(selectedControlNode)
@@ -239,12 +308,75 @@ void HierarchyTreeControl::dragEnterEvent(QDragEnterEvent *event)
 void HierarchyTreeControl::dragMoveEvent(QDragMoveEvent *event)
 {
 	QTreeWidget::dragMoveEvent(event);
-
 	event->ignore();
-	
-	if (!event->mimeData())
-		return;
 
+	if (!event->mimeData())
+	{
+		return;
+	}
+
+	// What are we dragging?
+	const ControlMimeData* controlMimeData = dynamic_cast<const ControlMimeData*>(event->mimeData());
+	if (controlMimeData)
+	{
+		return HandleDragMoveControlMimeData(event, controlMimeData);
+	}
+	
+	const HierarchyTreeControlMimeData* hierarchyMimeData = dynamic_cast<const HierarchyTreeControlMimeData*>(event->mimeData()->userData(TREE_MIME_DATA));
+	if (hierarchyMimeData)
+	{
+		return HandleDragMoveHierarchyMimeData(event, hierarchyMimeData);
+	}
+}
+
+void HierarchyTreeControl::HandleDragMoveControlMimeData(QDragMoveEvent *event, const ControlMimeData* /*mimeData*/)
+{
+	// Where we are in tree?
+	QTreeWidgetItem* item = itemAt(event->pos());
+	if (!item)
+	{
+		HierarchyTreeController::Instance()->ResetSelectedControl();
+		return;
+	}
+
+	HierarchyTreeNode::HIERARCHYTREENODEID insertInto = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
+	QVariant data = item->data(ITEM_ID);
+	insertInto = data.toInt();
+	
+	// Handle specific types of nodes.
+	HierarchyTreeNode* nodeToInsertControlTo = HierarchyTreeController::Instance()->GetTree().GetNode(insertInto);
+	if (dynamic_cast<HierarchyTreePlatformNode*>(nodeToInsertControlTo))
+	{
+		// Don't allow to drop the controls directly to Platform.
+		HierarchyTreeController::Instance()->ResetSelectedControl();
+		return;
+	}
+	
+	// Expand the items while dragging control on them.
+	if (!item->isExpanded())
+	{
+		item->setExpanded(true);
+	}
+
+	scrollTo(indexAt(event->pos()));
+
+	HierarchyTreeControlNode* controlNode = dynamic_cast<HierarchyTreeControlNode*>(nodeToInsertControlTo);
+	if (controlNode)
+	{
+		// Don't reselect the same control, if it is already selected.
+		if (!HierarchyTreeController::Instance()->IsControlSelected(controlNode))
+		{
+			HierarchyTreeController::Instance()->ResetSelectedControl();
+			HierarchyTreeController::Instance()->SelectControl(controlNode);
+		}
+
+	}
+
+	event->accept();
+}
+
+void HierarchyTreeControl::HandleDragMoveHierarchyMimeData(QDragMoveEvent *event, const HierarchyTreeControlMimeData* mimeData)
+{
 	HierarchyTreeNode::HIERARCHYTREENODEID insertInTo = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
 	HierarchyTreeNode::HIERARCHYTREENODEID insertAfter = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
 	if (!GetMoveItemID(event, insertInTo, insertAfter))
@@ -252,11 +384,9 @@ void HierarchyTreeControl::dragMoveEvent(QDragMoveEvent *event)
 	
 	HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetTree().GetNode(insertInTo);
 	if (!node)
+	{
 		node = (HierarchyTreeNode*) HierarchyTreeController::Instance()->GetTree().GetRootNode();
-	
-	const HierarchyTreeControlMimeData* mimeData = dynamic_cast<const HierarchyTreeControlMimeData* >(event->mimeData()->userData(TREE_MIME_DATA));
-	if (!mimeData)
-		return;
+	}
 
 	if (mimeData->IsDropEnable(node))
 	{
@@ -308,7 +438,7 @@ bool HierarchyTreeControl::GetMoveItemID(QDropEvent *event, HierarchyTreeNode::H
 		}break;
 	}
 	
-	if (currentItem()->data(ITEM_ID) == insertAfter)
+	if (currentItem() && currentItem()->data(ITEM_ID) == insertAfter)
 		return false;
 
 	return true;

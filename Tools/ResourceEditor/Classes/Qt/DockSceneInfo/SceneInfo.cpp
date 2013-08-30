@@ -33,6 +33,7 @@
 #include "Classes/Qt/Scene/SceneSignals.h"
 #include "Classes/Qt/Scene/SceneEditor2.h"
 #include "Classes/Qt/DockLODEditor/EditorLODData.h"
+#include "Classes/Qt/Main/mainwindow.h"
 
 #include <QHeaderView>
 #include <QTimer>
@@ -53,6 +54,8 @@ SceneInfo::SceneInfo(QWidget *parent /* = 0 */)
     connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), SLOT(SceneActivated(SceneEditor2 *)));
     connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), SLOT(SceneDeactivated(SceneEditor2 *)));
     connect(SceneSignals::Instance(), SIGNAL(StructureChanged(SceneEditor2 *, DAVA::Entity *)), SLOT(SceneStructureChanged(SceneEditor2 *, DAVA::Entity *)));
+    
+    connect(QtMainWindow::Instance(), SIGNAL(DrawTimerDone()), SLOT(UpdateInfoByTimer()));
     
 	// MainWindow actions
 	posSaver.Attach(this, "DockSceneInfo");
@@ -538,27 +541,16 @@ void SceneInfo::RestoreTreeState()
 void SceneInfo::showEvent ( QShowEvent * event )
 {
     QtPropertyEditor::showEvent(event);
-    
-    if(isVisible() && !CommandLineManager::Instance()->IsCommandLineModeEnabled())
-    {
-        QTimer::singleShot(1000, this, SLOT(timerDone()));
-    }
 }
 
-void SceneInfo::timerDone()
+void SceneInfo::UpdateInfoByTimer()
 {
-	// TODO: mainwindow
-	// ...
+    if(!isVisible()) return;
 
     Refresh3DDrawInfo();
     
     CollectLODDataInFrame();
     RefreshLODInfoInFrame();
-    
-    if(isVisible())
-    {
-        QTimer::singleShot(1000, this, SLOT(timerDone()));
-    }
 }
 
 void SceneInfo::RefreshAllData(SceneEditor2 *scene)

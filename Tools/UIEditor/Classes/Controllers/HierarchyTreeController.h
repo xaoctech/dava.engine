@@ -61,7 +61,11 @@ public:
 	HierarchyTreePlatformNode* AddPlatform(const QString& name, const Vector2& size);
 	HierarchyTreeScreenNode* AddScreen(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platform);
 	HierarchyTreeAggregatorNode* AddAggregator(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platform, const Rect& rect);
+
+	// Two separate versions of CreateNewControl method - by its position (when control is dropped
+	// to the screen) and by its direct parent (when the control is dropped to the tree).
 	HierarchyTreeNode::HIERARCHYTREENODEID CreateNewControl(const QString& type, const QPoint& position);
+	HierarchyTreeNode::HIERARCHYTREENODEID CreateNewControl(const QString& strType, const Vector2& position,																				 HierarchyTreeNode* parentNode);
 
 	// Return any kind of node (one or multiple) back to the scene.
 	void ReturnNodeToScene(HierarchyTreeNode* nodeToReturn);

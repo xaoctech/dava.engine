@@ -490,6 +490,7 @@
     <ClCompile Include="Classes\Qt\Main\mainwindow.cpp" />
     <ClCompile Include="Classes\Qt\Main\ModificationWidget.cpp" />
     <ClCompile Include="Classes\Qt\Main\QtUtils.cpp" />
+    <ClCompile Include="Classes\Qt\Main\StatusBar.cpp" />
     <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialBrowser.cpp" />
     <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialTree.cpp" />
     <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialTreeItem.cpp" />
@@ -700,6 +701,7 @@
     <ClCompile Include="_GeneratedQt\Main\ModificationWidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\QTreeViewStateHelper_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\QtUtils_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Main\StatusBar_moc.cpp" />
     <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialBrowser_moc.cpp" />
     <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialTreeItem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialTreeModel_moc.cpp" />
@@ -1182,6 +1184,7 @@
     <ClInclude Include="Classes\Qt\Main\mainwindow.h" />
     <ClInclude Include="Classes\Qt\Main\ModificationWidget.h" />
     <ClInclude Include="Classes\Qt\Main\QtUtils.h" />
+    <ClInclude Include="Classes\Qt\Main\StatusBar.h" />
     <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialBrowser.h" />
     <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialTree.h" />
     <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialTreeItem.h" />
@@ -1337,6 +1340,10 @@
     <ClInclude Include="Classes\UIScrollView.h" />
     <ClInclude Include="Classes\UISpriteEditor.h" />
     <ClInclude Include="Classes\VertexOctTree.h" />
+    <ClInclude Include="_GeneratedQt\ui_ActionComponentEditor.h" />
+    <ClInclude Include="_GeneratedQt\ui_BaseAddEntityDialog.h" />
+    <ClInclude Include="_GeneratedQt\ui_CubemapEditorDialog.h" />
+    <ClInclude Include="_GeneratedQt\ui_CubeMapTextureBrowser.h" />
     <ClInclude Include="_GeneratedQt\ui_CustomColorsProperties.h" />
     <ClInclude Include="_GeneratedQt\ui_CustomColorsView.h" />
     <ClInclude Include="_GeneratedQt\ui_davaglwidget.h" />
@@ -1353,6 +1360,7 @@
     <ClInclude Include="_GeneratedQt\ui_tilemaskEditorProperties.h" />
     <ClInclude Include="_GeneratedQt\ui_VisibilityToolPropertiesView.h" />
     <ClInclude Include="_GeneratedQt\ui_VisibilityToolView.h" />
+    <ClInclude Include="_GeneratedQt\ui_waitdialog.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DataQt\AddSwitchEntityDialog.ui" />
