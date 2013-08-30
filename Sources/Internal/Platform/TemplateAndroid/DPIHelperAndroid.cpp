@@ -15,38 +15,32 @@
 =====================================================================================*/
 
 #include "Platform/DPIHelper.h"
-#include "JniExtensions.h"
+#include "DPIHelperAndroid.h"
 
 namespace DAVA
 {
 
-class JniDpiHelper: public JniExtension
+jclass JniDpiHelper::gJavaClass = NULL;
+const char* JniDpiHelper::gJavaClassName = NULL;
+
+jclass JniDpiHelper::GetJavaClass() const
 {
-public:
-	JniDpiHelper();
+	return gJavaClass;
+}
 
-	uint32 GetScreenDPI();
-};
-
-JniDpiHelper::JniDpiHelper() :
-	JniExtension("com/dava/framework/JNIDpiHelper")
+const char* JniDpiHelper::GetJavaClassName() const
 {
-
+	return gJavaClassName;
 }
 
 uint32 JniDpiHelper::GetScreenDPI()
 {
-	jclass javaClass = GetJavaClass();
-	if (!javaClass)
-		return 0;
-
 	uint32 dpi = 0;
-	jmethodID mid = GetMethodID(javaClass, "GetScreenDPI", "()I");
+	jmethodID mid = GetMethodID("GetScreenDPI", "()I");
 	if (mid)
 	{
-		dpi = GetEnvironment()->CallStaticIntMethod(javaClass, mid);
+		dpi = GetEnvironment()->CallStaticIntMethod(GetJavaClass(), mid);
 	}
-	ReleaseJavaClass(javaClass);
 	return dpi;
 }
 

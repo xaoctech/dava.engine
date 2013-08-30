@@ -102,9 +102,16 @@ void InputTest::LoadResources()
 #else
 	textField->SetFont(font);
 #endif
-	textField->SetText(L"textField");
+	textField->SetText(L"Traited Field");
 	textField->SetDebugDraw(true);
 	textField->SetDelegate(new UITextFieldDelegate());
+
+	textField->SetAutoCapitalizationType(DAVA::UITextField::AUTO_CAPITALIZATION_TYPE_NONE);
+	textField->SetAutoCorrectionType(DAVA::UITextField::AUTO_CORRECTION_TYPE_NO);
+	textField->SetKeyboardAppearanceType(DAVA::UITextField::KEYBOARD_APPEARANCE_ALERT);
+	textField->SetReturnKeyType(DAVA::UITextField::RETURN_KEY_JOIN);
+	textField->SetKeyboardType(DAVA::UITextField::KEYBOARD_TYPE_TWITTER);
+
 	AddControl(textField);
 
 	textField = new UITextField(Rect(750, 10, 100, 500));

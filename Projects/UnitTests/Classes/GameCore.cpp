@@ -59,6 +59,7 @@
 #include "TransparentWebViewTest.h"
 #include "FormatsTest.h"
 #include "UIScrollViewTest.h"
+#include "ThreadSyncTest.h"
 
 using namespace DAVA;
 
@@ -83,7 +84,9 @@ void GameCore::OnAppStarted()
 	RenderManager::Instance()->SetFPS(60);
 
     CreateDocumentsFolder();
-
+    
+	new InputTest();
+	
     new FormatsTest();
 	new DeviceInfoTest();
 	new TransparentWebViewTest();
@@ -91,7 +94,7 @@ void GameCore::OnAppStarted()
     new FileListTest();
     new FileSystemTest();
     new LocalizationTest();
-    new InputTest();
+
 	new SampleTest();
 	new EntityTest(); 
 	new MemoryAllocatorsTest();
@@ -113,6 +116,8 @@ void GameCore::OnAppStarted()
 	new DLCTest();
 	new UIListTest();
 	new UIScrollViewTest();
+
+    new ThreadSyncTest();
     
     errors.reserve(TestCount());
 
