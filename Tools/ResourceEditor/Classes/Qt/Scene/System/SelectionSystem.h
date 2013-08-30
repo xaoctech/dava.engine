@@ -54,6 +54,8 @@ public:
 
 	DAVA::AABBox3 GetSelectionAABox(DAVA::Entity *entity) const;
 	DAVA::AABBox3 GetSelectionAABox(DAVA::Entity *entity, const DAVA::Matrix4 &transform) const;
+    
+    DAVA::float32 GetDistanceToCamera() const;
 
 protected:
 	void Update(DAVA::float32 timeElapsed);
@@ -67,6 +69,8 @@ protected:
 
 	EntityGroup GetSelecetableFromCollision(const EntityGroup *collisionEntities);
 	DAVA::Entity* GetSelectableEntity(DAVA::Entity* entity);
+    
+    void UpdateDistanceToCamera();
 
 private:
 	int drawMode;
@@ -80,6 +84,8 @@ private:
 	DAVA::Entity *lastSelection;
 
 	ST_PivotPoint curPivotPoint;
+    
+    DAVA::float32 distanceToCamera;
 };
 
 #endif //__SCENE_SELECTION_SYSTEM_H__

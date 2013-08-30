@@ -202,7 +202,20 @@ CreateControlCommand::CreateControlCommand(const QString& type, const QPoint& po
 	this->type = type;
 	this->pos = pos;
 	this->createdControlID = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
+
+	this->commandMode = CREATE_FROM_POINT;
+	this->parentNode = NULL;
+	this->redoNode = NULL;
+}
+
+CreateControlCommand::CreateControlCommand(const QString& type, HierarchyTreeNode* parent)
+{
+	this->type = type;
+	this->pos = pos;
+	this->createdControlID = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
 	
+	this->commandMode = CREATE_FROM_NODE;
+	this->parentNode = parent;
 	this->redoNode = NULL;
 }
 
@@ -215,8 +228,32 @@ void CreateControlCommand::Execute()
 		return;
 	}
 
+	
 	// The command is executed for the first time; create the node.
-	HierarchyTreeNode::HIERARCHYTREENODEID newControlID = HierarchyTreeController::Instance()->CreateNewControl(type, pos);
+	HierarchyTreeNode::HIERARCHYTREENODEID newControlID = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
+	switch (this->commandMode)
+	{
+		case CREATE_FROM_POINT:
+		{
+			// Use the point passed.
+			newControlID = HierarchyTreeController::Instance()->CreateNewControl(type, pos);
+			break;
+		}
+
+		case CREATE_FROM_NODE:
+		{
+			static const Vector2 NEW_CONTROL_OFFSET = Vector2(10, 10);
+			DVASSERT(parentNode);
+			newControlID = HierarchyTreeController::Instance()->CreateNewControl(type, NEW_CONTROL_OFFSET, this->parentNode);
+			break;
+		}
+
+		default:
+		{
+			break;
+		}
+	}
+
 	if (newControlID == HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY)
 	{
 		// The control wasn't created.

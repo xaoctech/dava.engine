@@ -45,6 +45,7 @@
 #include "../Settings/SettingsManager.h"
 
 #include "Classes/Qt/Scene/SceneEditor2.h"
+#include "Classes/CommandLine/CommandLineManager.h"
 
 #include "Render/Highlevel/ShadowVolumeRenderPass.h"
 #include "../../Commands2/GroupEntitiesForMultiselectCommand.h"
@@ -88,12 +89,19 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2 *, const Command2*, bool)), this, SLOT(SceneCommandExecuted(SceneEditor2 *, const Command2*, bool)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(SceneActivated(SceneEditor2 *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(SceneDeactivated(SceneEditor2 *)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(Selected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(EntitySelected(SceneEditor2 *, DAVA::Entity *)));
+    QObject::connect(SceneSignals::Instance(), SIGNAL(Deselected(SceneEditor2 *, DAVA::Entity *)), this, SLOT(EntityDeselected(SceneEditor2 *, DAVA::Entity *)));
 
 	QObject::connect(SceneSignals::Instance(), SIGNAL(RulerToolLengthChanged(SceneEditor2*, double, double)), this, SLOT(UpdateRulerToolLength(SceneEditor2*, double, double)));
 
 	LoadGPUFormat();
 
 	addSwitchEntityDialog = new AddSwitchEntityDialog( this);
+    
+    if(!CommandLineManager::Instance()->IsCommandLineModeEnabled())
+    {
+        QTimer::singleShot(1000, this, SLOT(OnDrawStringTimerDone()));
+    }
 }
 
 QtMainWindow::~QtMainWindow()
@@ -517,6 +525,8 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
         }
     }
 	// <---
+    
+    UpdateStatusBar();
 }
 
 void QtMainWindow::CreateMaterialEditorIfNeed()
@@ -1335,4 +1345,44 @@ void QtMainWindow::OnSaveTiledTexture()
     landscape->SetTexture(Landscape::TEXTURE_TILE_FULL, descriptor->pathname);
     
     SafeRelease(descriptor);
+}
+
+void QtMainWindow::OnDrawStringTimerDone()
+{
+    UpdateStatusBar();
+    
+    emit DrawTimerDone();
+    
+    QTimer::singleShot(1000, this, SLOT(OnDrawStringTimerDone()));
+}
+
+void QtMainWindow::UpdateStatusBar()
+{
+	SceneEditor2* scene = GetCurrentScene();
+    if(!scene)
+    {
+        ui->statusBar->ResetDistanceToCamera();
+        return;
+    }
+
+    const EntityGroup *selection = scene->selectionSystem->GetSelection();
+    if(selection->Size())
+    {
+        float32 distanceToCamera = scene->selectionSystem->GetDistanceToCamera();
+        ui->statusBar->SetDistanceToCamera(distanceToCamera);
+    }
+    else
+    {
+        ui->statusBar->ResetDistanceToCamera();
+    }
+}
+
+void QtMainWindow::EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity)
+{
+    UpdateStatusBar();
+}
+                     
+void QtMainWindow::EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity)
+{
+    UpdateStatusBar();
 }

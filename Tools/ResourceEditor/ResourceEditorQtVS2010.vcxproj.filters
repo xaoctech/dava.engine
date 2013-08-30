@@ -2136,6 +2136,12 @@
     <ClCompile Include="Classes\Commands2\GroupEntitiesForMultiselectCommand.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\Main\StatusBar.cpp">
+      <Filter>Classes\Qt\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Main\StatusBar_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3703,6 +3709,24 @@
     </ClInclude>
     <ClInclude Include="Classes\Commands2\GroupEntitiesForMultiselectCommand.h">
       <Filter>Classes\Commands2</Filter>
+    </ClInclude>
+    <ClInclude Include="_GeneratedQt\ui_ActionComponentEditor.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="_GeneratedQt\ui_BaseAddEntityDialog.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="_GeneratedQt\ui_CubemapEditorDialog.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="_GeneratedQt\ui_CubeMapTextureBrowser.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="_GeneratedQt\ui_waitdialog.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Main\StatusBar.h">
+      <Filter>Classes\Qt\Main</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

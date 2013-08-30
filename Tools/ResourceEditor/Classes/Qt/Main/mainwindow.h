@@ -54,6 +54,10 @@ public:
 	void WaitSetValue(int value);
 	void WaitStop();
 
+signals:
+    void DrawTimerDone();
+
+    
 // qt actions slots
 public slots:
 	void OnProjectOpen();
@@ -132,6 +136,8 @@ protected:
 	void AddRecent(const QString &path);
     
     void CreateMaterialEditorIfNeed();
+    
+    void UpdateStatusBar();
 
 protected slots:
 	void ProjectOpened(const QString &path);
@@ -140,11 +146,20 @@ protected slots:
 	void SceneCommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
 	void SceneActivated(SceneEditor2 *scene);
 	void SceneDeactivated(SceneEditor2 *scene);
-	
+	void EntitySelected(SceneEditor2 *scene, DAVA::Entity *entity);
+	void EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity);
+    
+    
 	void AddSwitchDialogFinished(int result);
 
 	void UpdateRulerToolLength(SceneEditor2* scene, double length, double previewLength);
 
+    
+    
+    void OnDrawStringTimerDone();
+
+    
+    
 private:
 	Ui::MainWindow *ui;
 	QtWaitDialog *waitDialog;
