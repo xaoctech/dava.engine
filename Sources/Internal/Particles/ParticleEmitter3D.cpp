@@ -110,11 +110,9 @@ void ParticleEmitter3D::PrepareEmitterParameters(Particle * particle, float32 ve
 	if(worldTransformPtr)
 	{
 		Matrix4 newTransform = *worldTransformPtr;
-		newTransform._30 = newTransform._31 = newTransform._32 = 0;
-		float32 dirLength = particle->direction.Length();
+		newTransform._30 = newTransform._31 = newTransform._32 = 0;		
 		particle->direction = particle->direction*newTransform;
-		particle->direction.Normalize();
-		particle->direction*=dirLength;
+		particle->direction.Normalize();		
 	}
 }
 
@@ -223,6 +221,9 @@ void ParticleEmitter3D::PrepareEmitterParametersShockwave(Particle * particle, f
 	}
 
 	particle->direction = directionVector;
+	float dirLength = particle->direction.Length();
+	particle->direction*=(1.0f/dirLength);
+	particle->speed*=dirLength;
 }
 
 void ParticleEmitter3D::PrepareEmitterParametersGeneric(Particle * particle, float32 velocity,
