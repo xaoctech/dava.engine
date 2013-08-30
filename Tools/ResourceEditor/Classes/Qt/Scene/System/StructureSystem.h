@@ -45,7 +45,7 @@ public:
 	void RemoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &layers);
 	void MoveForce(const DAVA::Vector<DAVA::ParticleForce *> &forces, const DAVA::Vector<DAVA::ParticleLayer *> &oldLayers, DAVA::ParticleLayer *newLayer);
 	void RemoveForce(const DAVA::Vector<DAVA::ParticleForce *> &forces, const DAVA::Vector<DAVA::ParticleLayer *> &layers);
-	void Reload(const EntityGroup *entityGroup, const DAVA::FilePath &newModelPath = "");
+	void Reload(const EntityGroup *entityGroup, const DAVA::FilePath &newModelPath = "", bool saveLightmapSettings = false);
 	void Add(const DAVA::FilePath &newModelPath, const DAVA::Vector3 pos = DAVA::Vector3());
 
 	void LockSignals();
@@ -73,6 +73,9 @@ protected:
 	virtual void RemoveEntity(DAVA::Entity * entity);
 
 	DAVA::Entity * FindLandscapeEntityRecursive(DAVA::Entity *entity) const;
+    
+    bool CopyLightmapSettings(DAVA::Entity *fromEntity, DAVA::Entity *toEntity) const;
+    void FindMeshesRecursive(DAVA::Entity *entity, DAVA::Vector<DAVA::RenderObject *> & objects) const;
 };
 
 #endif // __SCENE_STRUCTURE_SYSTEM_H__

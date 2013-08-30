@@ -214,7 +214,7 @@ void StructureSystem::RemoveForce(const DAVA::Vector<DAVA::ParticleForce *> &for
 	}
 }
 
-void StructureSystem::Reload(const EntityGroup *entityGroup, const DAVA::FilePath &newModelPath)
+void StructureSystem::Reload(const EntityGroup *entityGroup, const DAVA::FilePath &newModelPath, bool saveLightmapSettings)
 {
 	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
 	if(NULL != sceneEditor && entityGroup->Size() > 0)
@@ -265,6 +265,11 @@ void StructureSystem::Reload(const EntityGroup *entityGroup, const DAVA::FilePat
 					DAVA::Entity *before = origEntity->GetParent()->GetNextChild(origEntity);
 
 					newEntity->SetLocalTransform(origEntity->GetLocalTransform());
+                    
+                    if(saveLightmapSettings)
+                    {
+                        CopyLightmapSettings(origEntity, newEntity);
+                    }
 					
 					sceneEditor->Exec(new EntityMoveCommand(newEntity, origEntity->GetParent(), before));
 					sceneEditor->Exec(new EntityRemoveCommand(origEntity));
@@ -487,3 +492,62 @@ DAVA::Entity * StructureSystem::FindLandscapeEntityRecursive( DAVA::Entity *enti
 
 	return NULL;
 }
+
+
+bool StructureSystem::CopyLightmapSettings(DAVA::Entity *fromEntity, DAVA::Entity *toEntity) const
+{
+    DAVA::Vector<DAVA::RenderObject *> fromMeshes;
+    FindMeshesRecursive(fromEntity, fromMeshes);
+
+    DAVA::Vector<DAVA::RenderObject *> toMeshes;
+    FindMeshesRecursive(toEntity, toMeshes);
+    
+    if(fromMeshes.size() == toMeshes.size())
+    {
+        DAVA::uint32 meshCount = (DAVA::uint32)fromMeshes.size();
+        for(DAVA::uint32 m = 0; m < meshCount; ++m)
+        {
+            DAVA::uint32 rbFromCount = fromMeshes[m]->GetRenderBatchCount();
+            DAVA::uint32 rbToCount = toMeshes[m]->GetRenderBatchCount();
+            
+            if(rbFromCount != rbToCount)
+                return false;
+            
+            for(DAVA::uint32 rb = 0; rb < rbFromCount; ++rb)
+            {
+                DAVA::RenderBatch *fromBatch = fromMeshes[m]->GetRenderBatch(rb);
+                DAVA::RenderBatch *toBatch = toMeshes[m]->GetRenderBatch(rb);
+                
+                DAVA::InstanceMaterialState *fromState = fromBatch->GetMaterialInstance();
+                DAVA::InstanceMaterialState *toState = toBatch->GetMaterialInstance();
+                
+                if(fromState && toState)
+                {
+                    toState->InitFromState(fromState);
+                }
+                
+            }
+        }
+        
+        return true;
+    }
+
+    return false;
+}
+
+void StructureSystem::FindMeshesRecursive(DAVA::Entity *entity, DAVA::Vector<DAVA::RenderObject *> & objects) const
+{
+    RenderObject *ro = GetRenderObject(entity);
+    if(ro && ro->GetType() == RenderObject::TYPE_MESH)
+    {
+        objects.push_back(ro);
+    }
+    
+	DAVA::int32 count = entity->GetChildrenCount();
+	for(DAVA::int32 i = 0; i < count; ++i)
+	{
+        FindMeshesRecursive(entity->GetChild(i), objects);
+	}
+}
+
+

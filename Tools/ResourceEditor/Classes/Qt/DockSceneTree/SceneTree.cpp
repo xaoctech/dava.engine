@@ -353,6 +353,7 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, const QPoint &pos)
 				QAction *editModelAction = contextMenu.addAction("Edit Model", this, SLOT(EditModel()));
 				QAction *reloadModelAction = contextMenu.addAction("Reload Model", this, SLOT(ReloadModel()));
 				QAction *reloadModelAsAction = contextMenu.addAction("Reload Model As...", this, SLOT(ReloadModelAs()));
+				QAction *reloadModelLightmapsAction = contextMenu.addAction("Reload Model without Lightmaps", this, SLOT(ReloadModelWithoutLightmaps()));
 			}
 		}
 
@@ -530,6 +531,16 @@ void SceneTree::ReloadModelAs()
 				sceneEditor->structureSystem->Reload(selection, filePath.toStdString());
 			}
 		}
+	}
+}
+
+void SceneTree::ReloadModelWithoutLightmaps()
+{
+	SceneEditor2 *sceneEditor = treeModel->GetScene();
+	if(NULL != sceneEditor)
+	{
+		const EntityGroup *selection = sceneEditor->selectionSystem->GetSelection();
+		sceneEditor->structureSystem->Reload(selection, "", true);
 	}
 }
 
