@@ -1515,18 +1515,18 @@ namespace DAVA
 			GetBackground()->SetParentColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
 		}
 				
+		const Rect& unrotatedRect = drawData.GetUnrotatedRect();
+		
 		if(clipContents)
 		{//WARNING: for now clip contents don't work for rotating controls if you have any ideas you are welcome
 			RenderManager::Instance()->ClipPush();
-			RenderManager::Instance()->ClipRect(drawData.GetUnrotatedRect());
+			RenderManager::Instance()->ClipRect(unrotatedRect);
 		}
 
 		if(visible)
 		{
 			Draw(drawData);
 		}
-		
-		const Rect& unrotatedRect = drawData.GetUnrotatedRect();
 	
 		if (debugDrawEnabled && !clipContents)
 		{	//TODO: Add debug draw for rotated controls
