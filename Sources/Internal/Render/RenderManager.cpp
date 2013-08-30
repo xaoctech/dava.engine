@@ -395,15 +395,15 @@ void RenderManager::ClipRect(const Rect &rect)
 	Rect r = currentClip;
 	if(r.dx < 0)
 	{
-		r.dx = (float32)retScreenWidth;
+		r.dx = (float32)retScreenWidth + abs(r.x);
 	}
 	if(r.dy < 0)
 	{
-		r.dy = (float32)retScreenHeight;
+		r.dy = (float32)retScreenHeight + abs(r.x);
 	}
 	
 	r = r.Intersection(rect);
-	SetHWClip(rect);
+	SetHWClip(r);
 }
 
 void RenderManager::ClipPush()
