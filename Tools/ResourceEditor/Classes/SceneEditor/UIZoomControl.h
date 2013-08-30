@@ -38,7 +38,7 @@ public:
     
 	Animation *	ScrollOffsetAnimation(const Vector2 & _position, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 0);
     
-    virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
+    virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
     
 	virtual void		Update(float32 timeElapsed);
 	virtual void		Input(UIEvent * currentTouch);

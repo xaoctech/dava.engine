@@ -644,11 +644,11 @@ void UIScrollView::SystemDraw(const UIGeometricData & geometricData)
 }
 	
 	
-void UIScrollView::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
+void UIScrollView::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
 	UIControl::LoadFromYamlNode(node, loader);
 	
-	YamlNode *contentSizeNode = node->Get("contentSize");
+	const YamlNode *contentSizeNode = node->Get("contentSize");
 	SetContentSize(contentSizeNode->AsPoint());
 }		
 

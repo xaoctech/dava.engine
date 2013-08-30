@@ -48,7 +48,7 @@ UISpriteEditor::~UISpriteEditor()
 	SafeRelease(currentFrame);
 }
 	
-void UISpriteEditor::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
+void UISpriteEditor::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
 	UIControl::LoadFromYamlNode(node, loader);
 	UIYamlLoader::Load(this, "~res:/Screens/SpriteEditor.yaml");
