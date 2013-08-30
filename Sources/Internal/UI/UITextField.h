@@ -82,11 +82,67 @@ class UITextField : public UIControl
 {
 public:
 	// TODO: fix big BOOLs(TRUE, FALSE) in code
-	
-	enum eReturnKeyType 
+	// Auto-capitalization type.
+	enum eAutoCapitalizationType
 	{
-		RETURN_KEY_RETURN = 0,
-		RETURN_KEY_DONE
+		AUTO_CAPITALIZATION_TYPE_NONE = 0,
+		AUTO_CAPITALIZATION_TYPE_WORDS,
+		AUTO_CAPITALIZATION_TYPE_SENTENCES,
+		AUTO_CAPITALIZATION_TYPE_ALL_CHARS,
+	};
+	
+	// Auto-correction type.
+	enum eAutoCorrectionType
+	{
+		AUTO_CORRECTION_TYPE_DEFAULT = 0,
+		AUTO_CORRECTION_TYPE_NO,
+		AUTO_CORRECTION_TYPE_YES
+	};
+	
+	// Spell checking type.
+	enum eSpellCheckingType
+	{
+		SPELL_CHECKING_TYPE_DEFAULT = 0,
+		SPELL_CHECKING_TYPE_NO,
+		SPELL_CHECKING_TYPE_YES
+	};
+	
+	// Keyboard appearance.
+	enum eKeyboardAppearanceType
+	{
+		KEYBOARD_APPEARANCE_DEFAULT = 0,
+		KEYBOARD_APPEARANCE_ALERT
+	};
+
+	// Keyboard type.
+	enum eKeyboardType
+	{
+		KEYBOARD_TYPE_DEFAULT = 0,
+		KEYBOARD_TYPE_ASCII_CAPABLE,
+		KEYBOARD_TYPE_NUMBERS_AND_PUNCTUATION,
+		KEYBOARD_TYPE_URL,
+		KEYBOARD_TYPE_NUMBER_PAD,
+		KEYBOARD_TYPE_PHONE_PAD,
+		KEYBOARD_TYPE_NAME_PHONE_PAD,
+		KEYBOARD_TYPE_EMAIL_ADDRESS,
+		KEYBOARD_TYPE_DECIMAL_PAD,
+		KEYBOARD_TYPE_TWITTER,
+	};
+	
+	// Return key type.
+	enum eReturnKeyType
+	{
+		RETURN_KEY_DEFAULT = 0,
+		RETURN_KEY_GO,
+		RETURN_KEY_GOOGLE,
+		RETURN_KEY_JOIN,
+		RETURN_KEY_NEXT,
+		RETURN_KEY_ROUTE,
+		RETURN_KEY_SEARCH,
+		RETURN_KEY_SEND,
+		RETURN_KEY_YAHOO,
+		RETURN_KEY_DONE,
+		RETURN_KEY_EMERGENCY_CALL
 	};
 
     UITextField();
@@ -115,9 +171,6 @@ public:
 	void SetText(const WideString & text);
     
     virtual WideString GetAppliedChanges(int32 replacementLocation, int32 replacementLength, const WideString & replacementString);
-
-
-	void SetReturnKey(int32 returnType);
 
     virtual void Input(UIEvent *currentInput);
 
@@ -195,6 +248,48 @@ public:
 	 \brief Return is text style is hide.
 	 */
     bool IsPassword() const;
+
+	/**
+ 	 \brief Auto-capitalization type.
+	 */
+	eAutoCapitalizationType GetAutoCapitalizationType();
+	void SetAutoCapitalizationType(eAutoCapitalizationType value);
+
+	/**
+ 	 \brief Auto-correction type.
+	 */
+	eAutoCorrectionType GetAutoCorrectionType();
+	void SetAutoCorrectionType(eAutoCorrectionType value);
+
+	/**
+ 	 \brief Spell checking type.
+	 */
+	eSpellCheckingType GetSpellCheckingType();
+	void SetSpellCheckingType(eSpellCheckingType value);
+
+	/**
+ 	 \brief Keyboard appearance type.
+	 */
+	eKeyboardAppearanceType GetKeyboardAppearanceType();
+	void SetKeyboardAppearanceType(eKeyboardAppearanceType value);
+
+	/**
+ 	 \brief Keyboard type.
+	 */
+	eKeyboardType GetKeyboardType();
+	void SetKeyboardType(eKeyboardType value);
+	
+	/**
+ 	 \brief Return key type.
+	 */
+	eReturnKeyType GetReturnKeyType();
+	void SetReturnKeyType(eReturnKeyType value);
+
+	/**
+ 	 \brief Enable return key automatically.
+	 */
+	bool IsEnableReturnKeyAutomatically();
+	void SetEnableReturnKeyAutomatically(bool value);
 	
 	/**
 	 \brief Returns list of control children without internal controls.
@@ -212,6 +307,16 @@ protected:
 	float32	cursorBlinkingTime;
     Font * textFont;
     bool isPassword;
+	
+	// Keyboard customization params.
+	eAutoCapitalizationType autoCapitalizationType;
+	eAutoCorrectionType autoCorrectionType;
+	eSpellCheckingType spellCheckingType;
+	eKeyboardAppearanceType keyboardAppearanceType;
+	eKeyboardType keyboardType;
+	eReturnKeyType returnKeyType;
+	bool enableReturnKeyAutomatically;
+
 //    Sprite *textSprite;
 
 //    virtual void Draw(const UIGeometricData &geometricData);

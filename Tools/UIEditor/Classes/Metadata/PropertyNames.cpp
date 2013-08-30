@@ -44,6 +44,14 @@ const char* PropertyNames::TEXT_COLOR_PROPERTY_NAME = "TextColor";
 const char* PropertyNames::TEXT_ALIGN_PROPERTY_NAME = "TextAlign";
 
 const char* PropertyNames::IS_PASSWORD_PROPERTY_NAME = "IsPassword";
+	
+const char* PropertyNames::AUTO_CAPITALIZATION_TYPE_PROPERTY_NAME = "AutoCapitalizationType";
+const char* PropertyNames::AUTO_CORRECTION_TYPE_PROPERTY_NAME = "AutoCorrectionType";
+const char* PropertyNames::SPELL_CHECKING_TYPE_PROPERTY_NAME = "SpellCheckingType";
+const char* PropertyNames::KEYBOARD_APPEARANCE_TYPE_PROPERTY_NAME = "KeyboardAppearanceType";
+const char* PropertyNames::KEYBOARD_TYPE_PROPERTY_NAME = "KeyboardType";
+const char* PropertyNames::RETURN_KEY_TYPE_PROPERTY_NAME = "ReturnKeyType";
+const char* PropertyNames::IS_RETURN_KEY_PROPERTY_NAME = "IsReturnKeyAutomatically";
 
 const char* PropertyNames::SHADOW_OFFSET_X = "ShadowOffsetX";
 const char* PropertyNames::SHADOW_OFFSET_Y = "ShadowOffsetY";

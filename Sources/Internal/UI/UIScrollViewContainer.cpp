@@ -29,7 +29,6 @@ UIScrollViewContainer::UIScrollViewContainer(const Rect &rect, bool rectInAbsolu
 {
 	this->SetInputEnabled(true);
 	this->SetMultiInput(true);
-	this->SetDebugDraw(true);
 }
 
 UIScrollViewContainer::~UIScrollViewContainer()
