@@ -457,8 +457,24 @@ void MainWindow::OnSelectedScreenChanged()
 		UpdateSliders();
 		UpdateScaleControls();
 
-		ui->horizontalScrollBar->setValue(HierarchyTreeController::Instance()->GetActiveScreen()->GetPosX());
-		ui->verticalScrollBar->setValue(HierarchyTreeController::Instance()->GetActiveScreen()->GetPosY());
+		HierarchyTreeScreenNode* activeScreen = HierarchyTreeController::Instance()->GetActiveScreen();
+		float posX = activeScreen->GetPosX();
+		float posY = activeScreen->GetPosY();
+
+		Logger::Error("Positions: %f, %f", posX, posY);
+		if (FLOAT_EQUAL(posX, HierarchyTreeScreenNode::POSITION_UNDEFINED) &&
+			FLOAT_EQUAL(posY, HierarchyTreeScreenNode::POSITION_UNDEFINED))
+		{
+			// The screen was just loaded and wasn't positioned yet. Need to center it in the
+			// screen according to the DF-1873.
+			// Since sliders were just updated, just take their centers.
+			posX = (ui->horizontalScrollBar->maximum() - ui->horizontalScrollBar->minimum()) / 2;
+			posY = (ui->verticalScrollBar->maximum() - ui->verticalScrollBar->minimum()) / 2;
+		}
+
+		ui->horizontalScrollBar->setValue(posX);
+		ui->verticalScrollBar->setValue(posY);
+
 		// Enable library widget for selected screen
 		ui->libraryDockWidget->setEnabled(true);
 	}
