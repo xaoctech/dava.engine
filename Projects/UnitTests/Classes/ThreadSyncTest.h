@@ -14,49 +14,33 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_ANDROID_CRASH_REPORT_H__
-#define __DAVAENGINE_ANDROID_CRASH_REPORT_H__
+#ifndef __THREAD_SYNC_TEST_H__
+#define __THREAD_SYNC_TEST_H__
 
-#include "Base/BaseTypes.h"
-#if defined(__DAVAENGINE_ANDROID__)
+#include "DAVAEngine.h"
+using namespace DAVA;
 
-#include "JniExtensions.h"
-#include <signal.h>
+#include "TestTemplate.h"
 
-namespace DAVA
-{
-
-class File;
-
-class AndroidCrashReport
+class ThreadSyncTest : public TestTemplate<ThreadSyncTest>
 {
 public:
-	static void Init();
+	ThreadSyncTest();
+
+	virtual void LoadResources();
+	virtual void UnloadResources();
+
+	void ThreadSyncTestFunction(PerfFuncData * data);
+    void ThreadSleepTestFunction(PerfFuncData * data);
+
+    void SomeThreadFunc(BaseObject * caller, void * callerData, void * userData);
 
 private:
-	static void SignalHandler(int signal, siginfo_t *info, void *uapVoid);
+    Thread * someThread;
 
-private:
-	static stack_t s_sigstk;
-};
-
-class JniCrashReporter: public JniExtension
-{
-public:
-	void ThrowJavaExpetion(const String& cppSignal);
-
-protected:
-	virtual jclass GetJavaClass() const;
-	virtual const char* GetJavaClassName() const;
-
-public:
-	static jclass gJavaClass;
-	static const char* gJavaClassName;
+    ConditionalVariable cv;
+    int someValue;
 };
 
 
-}
-
-#endif //#if defined(__DAVAENGINE_ANDROID__)
-
-#endif /* #ifndef __DAVAENGINE_ANDROID_CRASH_HANDLER_H__ */
+#endif // __THREAD_SYNC_TEST_H__

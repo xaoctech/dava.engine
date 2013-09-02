@@ -20,7 +20,7 @@
 					<folderInfo id="com.android.toolchain.gcc.175927209.1293249414" name="/" resourcePath="">
 						<toolChain id="com.android.toolchain.gcc.1525818643" name="com.android.toolchain.gcc" superClass="com.android.toolchain.gcc">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF" id="com.android.targetPlatform.1819615440" isAbstract="false" superClass="com.android.targetPlatform"/>
-							<builder id="com.android.builder.1552481904" incrementalBuildTarget=" -j 4 NDK_DEBUG=1" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Android Builder" superClass="com.android.builder">
+							<builder id="com.android.builder.1552481904" incrementalBuildTarget=" -j 8 NDK_DEBUG=1" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Android Builder" superClass="com.android.builder">
 								<outputEntries>
 									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="obj"/>
 									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="libs"/>
@@ -40,7 +40,7 @@
 		</cconfiguration>
 	</storageModule>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-		<project id="UnitTests.null.1366407662" name="UnitTests"/>
+		<project id="Template.null.1366407662" name="Template"/>
 	</storageModule>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
@@ -49,7 +49,7 @@
 		</scannerConfigBuildInfo>
 	</storageModule>
 	<storageModule moduleId="refreshScope" versionNumber="1">
-		<resource resourceType="PROJECT" workspacePath="/UnitTests"/>
+		<resource resourceType="PROJECT" workspacePath="/Template"/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cproject>
