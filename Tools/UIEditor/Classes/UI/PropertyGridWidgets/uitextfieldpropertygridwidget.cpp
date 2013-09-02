@@ -1,3 +1,18 @@
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
 #include "uitextfieldpropertygridwidget.h"
 #include "ui_uitextfieldpropertygridwidget.h"
 #include "fontmanagerdialog.h"
@@ -41,6 +56,16 @@ void UITextFieldPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     RegisterColorButtonWidgetForProperty(propertiesMap, PropertyNames::SHADOW_COLOR, ui->shadowColorButton);
 
 	RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::TEXT_ALIGN_PROPERTY_NAME, ui->alignComboBox, false, true);
+
+	RegisterCheckBoxWidgetForProperty(propertiesMap, PropertyNames::IS_PASSWORD_PROPERTY_NAME, ui->isPasswordCheckbox);
+	
+	RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::AUTO_CAPITALIZATION_TYPE_PROPERTY_NAME, ui->autoCapitalizationTypeComboBox);
+	RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::AUTO_CORRECTION_TYPE_PROPERTY_NAME, ui->autoCorrectionTypeComboBox);
+	RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::SPELL_CHECKING_TYPE_PROPERTY_NAME, ui->spellCheckingTypeComboBox);
+	RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::KEYBOARD_APPEARANCE_TYPE_PROPERTY_NAME, ui->keyboardAppearanceTypeComboBox);
+	RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::KEYBOARD_TYPE_PROPERTY_NAME, ui->keyboardTypeComboBox);
+	RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::RETURN_KEY_TYPE_PROPERTY_NAME, ui->returnKeyTypeComboBox);
+	RegisterCheckBoxWidgetForProperty(propertiesMap, PropertyNames::IS_RETURN_KEY_PROPERTY_NAME, ui->isReturnKeyAutomatically);
 }
 
 void UITextFieldPropertyGridWidget::Cleanup()
@@ -54,7 +79,17 @@ void UITextFieldPropertyGridWidget::Cleanup()
     UnregisterColorButtonWidget(ui->shadowColorButton);
 
 	UnregisterComboBoxWidget(ui->alignComboBox);
-    
+
+	UnregisterCheckBoxWidget(ui->isPasswordCheckbox);
+	
+	UnregisterComboBoxWidget(ui->autoCapitalizationTypeComboBox);
+	UnregisterComboBoxWidget(ui->autoCorrectionTypeComboBox);
+	UnregisterComboBoxWidget(ui->spellCheckingTypeComboBox);
+	UnregisterComboBoxWidget(ui->keyboardAppearanceTypeComboBox);
+	UnregisterComboBoxWidget(ui->keyboardTypeComboBox);
+	UnregisterComboBoxWidget(ui->returnKeyTypeComboBox);
+	UnregisterCheckBoxWidget(ui->isReturnKeyAutomatically);
+
     BasePropertyGridWidget::Cleanup();
 }
 
@@ -99,7 +134,7 @@ void UITextFieldPropertyGridWidget::ProcessPushButtonClicked(QPushButton *sender
     
 	// Don't update the property if the text wasn't actually changed.
     Font* curValue = PropertiesHelper::GetAllPropertyValues<Font*>(this->activeMetadata, iter->second.getProperty().name());
-	if (curValue->IsEqual(resultFont))
+	if (curValue && curValue->IsEqual(resultFont))
 	{
 		SafeRelease(resultFont);
 		return;
@@ -176,7 +211,55 @@ void UITextFieldPropertyGridWidget::FillComboboxes()
     {
         ui->alignComboBox->addItem(BackgroundGridWidgetHelper::GetAlignTypeDesc(i));
     }
-
+	
+	ui->autoCapitalizationTypeComboBox->clear();
+	itemsCount = BackgroundGridWidgetHelper::GetAutoCapitalizationTypesCount();
+	for (int i = 0; i < itemsCount; i ++)
+	{
+		ui->autoCapitalizationTypeComboBox->addItem(BackgroundGridWidgetHelper::GetAutoCapitalizationTypeDesc(i));
+	}
+	
+	ui->autoCorrectionTypeComboBox->clear();
+	itemsCount = BackgroundGridWidgetHelper::GetAutoCorrectionTypesCount();
+	for (int i = 0; i < itemsCount; i ++)
+	{
+		ui->autoCorrectionTypeComboBox->addItem(BackgroundGridWidgetHelper::GetAutoCorrectionTypeDesc(i));
+	}
+	
+	ui->spellCheckingTypeComboBox->clear();
+	itemsCount = BackgroundGridWidgetHelper::GetSpellCheckingTypesCount();
+	for (int i = 0; i < itemsCount; i ++)
+	{
+		ui->spellCheckingTypeComboBox->addItem(BackgroundGridWidgetHelper::GetSpellCheckingTypeDesc(i));
+	}
+	
+	ui->keyboardAppearanceTypeComboBox->clear();
+	itemsCount = BackgroundGridWidgetHelper::GetKeyboardAppearanceTypesCount();
+	for (int i = 0; i < itemsCount; i ++)
+	{
+		ui->keyboardAppearanceTypeComboBox->addItem(BackgroundGridWidgetHelper::GetKeyboardAppearanceTypeDesc(i));
+	}
+	
+	ui->keyboardTypeComboBox->clear();
+	itemsCount = BackgroundGridWidgetHelper::GetKeyboardTypesCount();
+	for (int i = 0; i < itemsCount; i ++)
+	{
+		ui->keyboardTypeComboBox->addItem(BackgroundGridWidgetHelper::GetKeyboardTypeDesc(i));
+	}
+	
+	ui->keyboardTypeComboBox->clear();
+	itemsCount = BackgroundGridWidgetHelper::GetKeyboardTypesCount();
+	for (int i = 0; i < itemsCount; i ++)
+	{
+		ui->keyboardTypeComboBox->addItem(BackgroundGridWidgetHelper::GetKeyboardTypeDesc(i));
+	}
+	
+	ui->returnKeyTypeComboBox->clear();
+	itemsCount = BackgroundGridWidgetHelper::GetReturnKeyTypesCount();
+	for (int i = 0; i < itemsCount; i ++)
+	{
+		ui->returnKeyTypeComboBox->addItem(BackgroundGridWidgetHelper::GetReturnKeyTypeDesc(i));
+	}
 }
 
 void UITextFieldPropertyGridWidget::CustomProcessComboboxValueChanged(const PROPERTYGRIDWIDGETSITER& iter, int value)
@@ -209,6 +292,30 @@ void UITextFieldPropertyGridWidget::ProcessComboboxValueChanged(QComboBox* sende
     {
         return CustomProcessComboboxValueChanged(iter, BackgroundGridWidgetHelper::GetAlignType(selectedIndex));
     }
+	else if (senderWidget == ui->autoCapitalizationTypeComboBox)
+    {
+        return CustomProcessComboboxValueChanged(iter, BackgroundGridWidgetHelper::GetAutoCapitalizationType(selectedIndex));
+    }
+	else if (senderWidget == ui->autoCorrectionTypeComboBox)
+    {
+        return CustomProcessComboboxValueChanged(iter, BackgroundGridWidgetHelper::GetAutoCorrectionType(selectedIndex));
+    }
+	else if (senderWidget == ui->spellCheckingTypeComboBox)
+    {
+        return CustomProcessComboboxValueChanged(iter, BackgroundGridWidgetHelper::GetSpellCheckingType(selectedIndex));
+    }
+	else if (senderWidget == ui->keyboardAppearanceTypeComboBox)
+    {
+        return CustomProcessComboboxValueChanged(iter, BackgroundGridWidgetHelper::GetKeyboardAppearanceType(selectedIndex));
+    }
+	else if (senderWidget == ui->keyboardTypeComboBox)
+    {
+        return CustomProcessComboboxValueChanged(iter, BackgroundGridWidgetHelper::GetKeyboardType(selectedIndex));
+    }
+	else if (senderWidget == ui->returnKeyTypeComboBox)
+    {
+        return CustomProcessComboboxValueChanged(iter, BackgroundGridWidgetHelper::GetReturnKeyType(selectedIndex));
+    }
 
     // No postprocessing was applied - use the generic process.
     BasePropertyGridWidget::ProcessComboboxValueChanged(senderWidget, iter, value);
@@ -232,6 +339,42 @@ void UITextFieldPropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue(QCombo
         return SetComboboxSelectedItem(comboBoxWidget,
                                        BackgroundGridWidgetHelper::GetAlignTypeDescByType(propertyValue));
     }
+	else if (comboBoxWidget == ui->autoCapitalizationTypeComboBox)
+	{
+		UpdateWidgetPalette(comboBoxWidget, propertyName);
+		return SetComboboxSelectedItem(comboBoxWidget,
+									BackgroundGridWidgetHelper::GetAutoCapitalizationTypeDescByType(propertyValue));
+	}
+	else if (comboBoxWidget == ui->autoCorrectionTypeComboBox)
+	{
+		UpdateWidgetPalette(comboBoxWidget, propertyName);
+		return SetComboboxSelectedItem(comboBoxWidget,
+									   BackgroundGridWidgetHelper::GetAutoCorrectionTypeDescByType(propertyValue));
+	}
+	else if (comboBoxWidget == ui->spellCheckingTypeComboBox)
+	{
+		UpdateWidgetPalette(comboBoxWidget, propertyName);
+		return SetComboboxSelectedItem(comboBoxWidget,
+									   BackgroundGridWidgetHelper::GetSpellCheckingTypeDescByType(propertyValue));
+	}
+	else if (comboBoxWidget == ui->keyboardAppearanceTypeComboBox)
+	{
+		UpdateWidgetPalette(comboBoxWidget, propertyName);
+		return SetComboboxSelectedItem(comboBoxWidget,
+									   BackgroundGridWidgetHelper::GetKeyboardAppearanceTypeDescByType(propertyValue));
+	}
+	else if (comboBoxWidget == ui->keyboardTypeComboBox)
+	{
+		UpdateWidgetPalette(comboBoxWidget, propertyName);
+		return SetComboboxSelectedItem(comboBoxWidget,
+									   BackgroundGridWidgetHelper::GetKeyboardTypeDescByType(propertyValue));
+	}
+	else if (comboBoxWidget == ui->returnKeyTypeComboBox)
+	{
+		UpdateWidgetPalette(comboBoxWidget, propertyName);
+		return SetComboboxSelectedItem(comboBoxWidget,
+									   BackgroundGridWidgetHelper::GetReturnKeyTypeDescByType(propertyValue));
+	}
 
     // Not related to the custom combobox - call the generic one.
     BasePropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue(comboBoxWidget, curProperty);

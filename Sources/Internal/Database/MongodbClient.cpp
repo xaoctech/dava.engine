@@ -1,35 +1,22 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #include "Database/MongodbClient.h"
 #include "Database/MongodbObject.h"
 #include "mongodb/mongo.h"
+#include "mongodb/gridfs.h"
 
 #include "Utils/Utils.h"
 #include "Utils/StringFormat.h"
@@ -50,16 +37,23 @@ public:
 
 		Memset(connection, 0, sizeof(mongo));
 		mongo_init(connection);
+
+		/* Initialize the write concern object.*/
+		mongo_write_concern_init( write_concern );
+		write_concern->w = 1;
+		mongo_write_concern_finish( write_concern );
 	}
 
 	virtual ~MongodbClientInternalData()
 	{
+		mongo_write_concern_destroy( write_concern );
 		mongo_destroy(connection);
 		SafeDelete(connection);
 	}
 
 public:
 	mongo *connection;
+	mongo_write_concern write_concern[1];
 };
 
 
@@ -83,7 +77,7 @@ MongodbClient::MongodbClient()
 #if defined (__DAVAENGINE_WIN32__)
     mongo_init_sockets();
 #endif //#if defined (__DAVAENGINE_WIN32__)
-    
+	
 	clientData = new MongodbClientInternalData();
     
     SetDatabaseName(String("Database"));
@@ -101,6 +95,9 @@ bool MongodbClient::Connect(const String &ip, int32 port)
 {
     
     int32 status = mongo_connect(clientData->connection, ip.c_str(), port );
+
+	mongo_set_write_concern( clientData->connection, clientData->write_concern );
+
     if(MONGO_OK != status)
     {
         LogError(String("Connect"), clientData->connection->err);
@@ -192,6 +189,34 @@ bool MongodbClient::IsConnected()
 }
     
     
+bool MongodbClient::SaveBufferToGridFS(const String &name, char * buffer, uint32 length)
+{
+	gridfs gfs[1];
+	gridfs_init(clientData->connection, database.c_str(), "fs", gfs);
+	bool isOk = false;
+	isOk = (MONGO_OK == gridfs_store_buffer(gfs, buffer, length, name.c_str(), NULL));
+	if(!isOk)
+	{
+		Logger::Error("MongodbClient::SaveBufferToGridFS failed to save %s to gridfs", name.c_str());
+	}
+	gridfs_destroy(gfs);
+	return isOk;
+}
+
+bool MongodbClient::SaveFileToGridFS(const String &name, const String &pathToFile)
+{
+	gridfs gfs[1];
+	gridfs_init(clientData->connection, database.c_str(), "fs", gfs);
+	bool isOk = false;
+	isOk = (MONGO_OK == gridfs_store_file(gfs, pathToFile.c_str(), name.c_str(), NULL));
+	if(!isOk)
+	{
+		Logger::Error("MongodbClient::SaveFileToGridFS failed to save %s to gridfs", name.c_str());
+	}
+	gridfs_destroy(gfs);
+	return isOk;
+}
+
 bool MongodbClient::SaveBinary(const String &key, uint8 *data, int32 dataSize)
 {
     int32 status = MONGO_ERROR;
@@ -338,6 +363,7 @@ bool MongodbClient::SaveObject(MongodbObject *object)
         }
     }
     
+	Logger::Debug("MongodbClient::SaveObject status = %d", status);
     return (MONGO_OK == status);
 }
 
@@ -422,6 +448,9 @@ bool MongodbClient::DBObjectToKeyedArchive(MongodbObject* dbObject, KeyedArchive
         
         return true;
     }
+
+	DVASSERT(false);
+
     return false;
 }    
 

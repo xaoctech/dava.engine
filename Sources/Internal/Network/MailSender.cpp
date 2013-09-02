@@ -1,10 +1,18 @@
-//
-//  MailSender.cpp
-//  
-//
-//  Created by Denis Bespalov on 2/18/13.
-//
-//
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
 
 #include "Network/MailSender.h"
 
@@ -36,61 +44,48 @@ bool MailSender::SendEmail(const WideString& email, const WideString& subject, c
 };
 
 #elif defined(__DAVAENGINE_ANDROID__)
-#include "JniExtensions.h"
 #include "Utils/Utils.h"
 #include "Utils/UTF8Utils.h"
 
 namespace DAVA
 {
 
-class JniMailSender: public JniExtension
+jclass JniMailSender::gJavaClass = NULL;
+const char* JniMailSender::gJavaClassName = NULL;
+
+jclass JniMailSender::GetJavaClass() const
 {
-public:
-	JniMailSender();
+	return gJavaClass;
+}
 
-	bool SendEmail(const String& email, const String& subject, const String& messageText);
-
-public:
-	static JniMailSender* jniMailSender;
-};
-
-JniMailSender* JniMailSender::jniMailSender = NULL;
-
-JniMailSender::JniMailSender() :
-	JniExtension("com/dava/framework/JNISendMail")
+const char* JniMailSender::GetJavaClassName() const
 {
-
+	return gJavaClassName;
 }
 
 bool JniMailSender::SendEmail(const String& email, const String& subject, const String& messageText)
 {
-	jclass javaClass = GetJavaClass();
-	if (!javaClass)
-		return false;
-
-	jmethodID mid = GetMethodID(javaClass, "SendEMail", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z");
+	jmethodID mid = GetMethodID("SendEMail", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z");
 	bool res = false;
 	if (mid)
 	{
 		jstring jEMail = GetEnvironment()->NewStringUTF(email.c_str());
 		jstring jSubject = GetEnvironment()->NewStringUTF(subject.c_str());
 		jstring jMessageText = GetEnvironment()->NewStringUTF(messageText.c_str());
-		res = GetEnvironment()->CallStaticBooleanMethod(javaClass, mid, jEMail, jSubject, jMessageText);
+		res = GetEnvironment()->CallStaticBooleanMethod(GetJavaClass(), mid, jEMail, jSubject, jMessageText);
 		GetEnvironment()->DeleteLocalRef(jEMail);
 		GetEnvironment()->DeleteLocalRef(jSubject);
 		GetEnvironment()->DeleteLocalRef(jMessageText);
 	}
-	ReleaseJavaClass(javaClass);
 
 	return res;
 }
 
 bool MailSender::SendEmail(const WideString& email, const WideString& subject, const WideString& messageText)
 {
-	if (!JniMailSender::jniMailSender)
-		JniMailSender::jniMailSender = new JniMailSender();
+	JniMailSender jniMailSender;
 
-	return JniMailSender::jniMailSender->SendEmail(UTF8Utils::EncodeToUTF8(email), UTF8Utils::EncodeToUTF8(subject), UTF8Utils::EncodeToUTF8(messageText));
+	return jniMailSender.SendEmail(UTF8Utils::EncodeToUTF8(email), UTF8Utils::EncodeToUTF8(subject), UTF8Utils::EncodeToUTF8(messageText));
 }
 
 };

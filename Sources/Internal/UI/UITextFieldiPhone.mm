@@ -1,32 +1,18 @@
 /*==================================================================================
- Copyright (c) 2008, DAVA Consulting, LLC
- All rights reserved.
- 
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions are met:
- * Redistributions of source code must retain the above copyright
- notice, this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright
- notice, this list of conditions and the following disclaimer in the
- documentation and/or other materials provided with the distribution.
- * Neither the name of the DAVA Consulting, LLC nor the
- names of its contributors may be used to endorse or promote products
- derived from this software without specific prior written permission.
- 
- THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
- ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
- DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- 
- Revision History:
- * Created by Alexey 'Hottych' Prosin
- =====================================================================================*/
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
 
 #include "BaseTypes.h"
 
@@ -62,6 +48,17 @@ float GetUITextViewSizeDivider()
 - (void) dealloc;
 - (BOOL)textFieldShouldReturn:(UITextField *)textField;
 - (BOOL)textField:(UITextField *)_textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string;
+- (void)setIsPassword:(bool)isPassword;
+
+- (void)setupTraits;
+
+- (UITextAutocapitalizationType) convertAutoCapitalizationType:(DAVA::UITextField::eAutoCapitalizationType) davaType;
+- (UITextAutocorrectionType) convertAutoCorrectionType:(DAVA::UITextField::eAutoCorrectionType) davaType;
+- (UITextSpellCheckingType) convertSpellCheckingType:(DAVA::UITextField::eSpellCheckingType) davaType;
+- (BOOL) convertEnablesReturnKeyAutomatically:(bool) davaType;
+- (UIKeyboardAppearance) convertKeyboardAppearanceType:(DAVA::UITextField::eKeyboardAppearanceType) davaType;
+- (UIKeyboardType) convertKeyboardType:(DAVA::UITextField::eKeyboardType) davaType;
+- (UIReturnKeyType) convertReturnKeyType:(DAVA::UITextField::eReturnKeyType) davaType;
 
 @end
 
@@ -91,6 +88,7 @@ float GetUITextViewSizeDivider()
         
 		textField.delegate = self;
 		
+		[self setupTraits];
 		[self addSubview:textField];
 	}
 	return self;
@@ -136,6 +134,243 @@ float GetUITextViewSizeDivider()
 	return TRUE;
 }
 
+- (void)setIsPassword:(bool)isPassword
+{
+	[textField setSecureTextEntry:isPassword ? YES: NO];
+}
+
+- (void) setupTraits
+{
+	if (!cppTextField || !textField)
+	{
+		return;
+	}
+
+	textField.autocapitalizationType = [self convertAutoCapitalizationType: cppTextField->GetAutoCapitalizationType()];
+	textField.autocorrectionType = [self convertAutoCorrectionType: cppTextField->GetAutoCorrectionType()];
+	
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_5_0
+	textField.spellCheckingType = [self convertSpellCheckingType: cppTextField->GetSpellCheckingType()];
+#endif
+	textField.enablesReturnKeyAutomatically = [self convertEnablesReturnKeyAutomatically: cppTextField->IsEnableReturnKeyAutomatically()];
+	textField.keyboardAppearance = [self convertKeyboardAppearanceType: cppTextField->GetKeyboardAppearanceType()];
+	textField.keyboardType = [self convertKeyboardType: cppTextField->GetKeyboardType()];
+	textField.returnKeyType = [self convertReturnKeyType: cppTextField->GetReturnKeyType()];
+}
+
+- (UITextAutocapitalizationType) convertAutoCapitalizationType:(DAVA::UITextField::eAutoCapitalizationType) davaType
+{
+	switch (davaType)
+	{
+		case DAVA::UITextField::AUTO_CAPITALIZATION_TYPE_NONE:
+		{
+			return UITextAutocapitalizationTypeNone;
+		}
+
+		case DAVA::UITextField::AUTO_CAPITALIZATION_TYPE_WORDS:
+		{
+			return UITextAutocapitalizationTypeWords;
+		}
+
+		case DAVA::UITextField::AUTO_CAPITALIZATION_TYPE_ALL_CHARS:
+		{
+			return UITextAutocapitalizationTypeAllCharacters;
+		}
+
+		case DAVA::UITextField::AUTO_CAPITALIZATION_TYPE_SENTENCES:
+		default:
+		{
+			// This is default one for iOS.
+			return UITextAutocapitalizationTypeSentences;
+		}
+	}
+}
+
+- (UITextAutocorrectionType) convertAutoCorrectionType:(DAVA::UITextField::eAutoCorrectionType) davaType
+{
+	switch (davaType)
+	{
+		case DAVA::UITextField::AUTO_CORRECTION_TYPE_NO:
+		{
+			return UITextAutocorrectionTypeNo;
+		}
+			
+		case DAVA::UITextField::AUTO_CORRECTION_TYPE_YES:
+		{
+			
+			return UITextAutocorrectionTypeYes;
+		}
+
+		case DAVA::UITextField::AUTO_CORRECTION_TYPE_DEFAULT:
+		default:
+		{
+			return UITextAutocorrectionTypeDefault;
+		}
+	}
+}
+
+- (UITextSpellCheckingType) convertSpellCheckingType:(DAVA::UITextField::eSpellCheckingType) davaType
+{
+	switch (davaType)
+	{
+		case DAVA::UITextField::SPELL_CHECKING_TYPE_NO:
+		{
+			return UITextSpellCheckingTypeNo;
+		}
+
+		case DAVA::UITextField::SPELL_CHECKING_TYPE_YES:
+		{
+			return UITextSpellCheckingTypeYes;
+		}
+
+		case DAVA::UITextField::SPELL_CHECKING_TYPE_DEFAULT:
+		default:
+		{
+			return UITextSpellCheckingTypeDefault;
+		}
+	}
+}
+
+- (BOOL) convertEnablesReturnKeyAutomatically:(bool) davaType
+{
+	return (davaType ? YES : NO);
+}
+
+- (UIKeyboardAppearance) convertKeyboardAppearanceType:(DAVA::UITextField::eKeyboardAppearanceType) davaType
+{
+	switch (davaType)
+	{
+		case DAVA::UITextField::KEYBOARD_APPEARANCE_ALERT:
+		{
+			return UIKeyboardAppearanceAlert;
+		}
+			
+		case DAVA::UITextField::KEYBOARD_APPEARANCE_DEFAULT:
+		default:
+		{
+			return UIKeyboardAppearanceDefault;
+		}
+	}
+}
+
+- (UIKeyboardType) convertKeyboardType:(DAVA::UITextField::eKeyboardType) davaType
+{
+	switch (davaType)
+	{
+		case DAVA::UITextField::KEYBOARD_TYPE_ASCII_CAPABLE:
+		{
+			return UIKeyboardTypeASCIICapable;
+		}
+
+		case DAVA::UITextField::KEYBOARD_TYPE_NUMBERS_AND_PUNCTUATION:
+		{
+			return UIKeyboardTypeNumbersAndPunctuation;
+		}
+
+		case DAVA::UITextField::KEYBOARD_TYPE_URL:
+		{
+			return UIKeyboardTypeURL;
+		}
+
+		case DAVA::UITextField:: KEYBOARD_TYPE_NUMBER_PAD:
+		{
+			return UIKeyboardTypeNumberPad;
+		}
+
+		case DAVA::UITextField::KEYBOARD_TYPE_PHONE_PAD:
+		{
+			return UIKeyboardTypePhonePad;
+		}
+
+		case DAVA::UITextField::KEYBOARD_TYPE_NAME_PHONE_PAD:
+		{
+			return UIKeyboardTypeNamePhonePad;
+		}
+
+		case DAVA::UITextField::KEYBOARD_TYPE_EMAIL_ADDRESS:
+		{
+			return UIKeyboardTypeEmailAddress;
+		}
+
+		case DAVA::UITextField::KEYBOARD_TYPE_DECIMAL_PAD:
+		{
+			return UIKeyboardTypeDecimalPad;
+		}
+
+		case DAVA::UITextField::KEYBOARD_TYPE_TWITTER:
+		{
+			return UIKeyboardTypeTwitter;
+		}
+
+		case DAVA::UITextField::KEYBOARD_TYPE_DEFAULT:
+		default:
+		{
+			return UIKeyboardTypeDefault;
+		}
+	}
+}
+
+- (UIReturnKeyType) convertReturnKeyType:(DAVA::UITextField::eReturnKeyType) davaType
+{
+	switch (davaType)
+	{
+		case DAVA::UITextField::RETURN_KEY_GO:
+		{
+			return UIReturnKeyGo;
+		}
+
+		case DAVA::UITextField::RETURN_KEY_GOOGLE:
+		{
+			return UIReturnKeyGoogle;
+		}
+
+		case DAVA::UITextField::RETURN_KEY_JOIN:
+		{
+			return UIReturnKeyJoin;
+		}
+
+		case DAVA::UITextField::RETURN_KEY_NEXT:
+		{
+			return UIReturnKeyNext;
+		}
+
+		case DAVA::UITextField::RETURN_KEY_ROUTE:
+		{
+			return UIReturnKeyRoute;
+		}
+
+		case DAVA::UITextField::RETURN_KEY_SEARCH:
+		{
+			return UIReturnKeySearch;
+		}
+
+		case DAVA::UITextField::RETURN_KEY_SEND:
+		{
+			return UIReturnKeySend;
+		}
+
+		case DAVA::UITextField::RETURN_KEY_YAHOO:
+		{
+			return UIReturnKeyYahoo;
+		}
+
+		case DAVA::UITextField::RETURN_KEY_DONE:
+		{
+			return UIReturnKeyDone;
+		}
+
+		case DAVA::UITextField::RETURN_KEY_EMERGENCY_CALL:
+		{
+			return UIReturnKeyEmergencyCall;
+		}
+
+		case DAVA::UITextField::RETURN_KEY_DEFAULT:
+		default:
+		{
+			return UIReturnKeyDefault;
+		}
+	}
+}
 
 @end
 
@@ -246,26 +481,6 @@ namespace DAVA
     return retValue;
     }
     
-    void UITextFieldiPhone::SetReturnKey(int32 returnType)
-    {
-        UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
-        switch (returnType) 
-        {
-            case UITextField::RETURN_KEY_RETURN:
-            {
-                textFieldHolder->textField.returnKeyType = UIReturnKeyRoute;
-            }
-                break;
-            case UITextField::RETURN_KEY_DONE:
-            {
-                textFieldHolder->textField.returnKeyType = UIReturnKeyDone;
-            }
-                break;
-        }
-        
-    }
-    
-    
     void UITextFieldiPhone::OpenKeyboard()
     {
         UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
@@ -322,8 +537,63 @@ namespace DAVA
             string[i] = (wchar_t)uchar;
         }
     }
-    
-    
+
+	void UITextFieldiPhone::SetIsPassword(bool isPassword)
+	{
+        UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
+		[textFieldHolder setIsPassword: isPassword];
+	}
+	
+	
+	void UITextFieldiPhone::SetAutoCapitalizationType(DAVA::int32 value)
+	{
+		UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
+		textFieldHolder->textField.autocapitalizationType = [textFieldHolder convertAutoCapitalizationType:
+															 (DAVA::UITextField::eAutoCapitalizationType)value];
+	}
+
+	void UITextFieldiPhone::SetAutoCorrectionType(DAVA::int32 value)
+	{
+		UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
+		textFieldHolder->textField.autocorrectionType = [textFieldHolder convertAutoCorrectionType:
+														 (DAVA::UITextField::eAutoCorrectionType)value];
+	}
+
+	void UITextFieldiPhone::SetSpellCheckingType(DAVA::int32 value)
+	{
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_5_0
+		UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
+		textFieldHolder->textField.spellCheckingType = [textFieldHolder convertSpellCheckingType:
+														 (DAVA::UITextField::eSpellCheckingType)value];
+#endif
+	}
+
+	void UITextFieldiPhone::SetKeyboardAppearanceType(DAVA::int32 value)
+	{
+		UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
+		textFieldHolder->textField.keyboardAppearance = [textFieldHolder convertKeyboardAppearanceType:
+														(DAVA::UITextField::eKeyboardAppearanceType)value];
+	}
+
+	void UITextFieldiPhone::SetKeyboardType(DAVA::int32 value)
+	{
+		UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
+		textFieldHolder->textField.keyboardType = [textFieldHolder convertKeyboardType:
+														 (DAVA::UITextField::eKeyboardType)value];
+	}
+
+	void UITextFieldiPhone::SetReturnKeyType(DAVA::int32 value)
+	{
+		UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
+		textFieldHolder->textField.returnKeyType = [textFieldHolder convertReturnKeyType:
+												   (DAVA::UITextField::eReturnKeyType)value];
+	}
+	
+	void UITextFieldiPhone::SetEnableReturnKeyAutomatically(bool value)
+	{
+		UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
+		textFieldHolder->textField.enablesReturnKeyAutomatically = [textFieldHolder convertEnablesReturnKeyAutomatically:value];
+	}
 }
 
 #endif

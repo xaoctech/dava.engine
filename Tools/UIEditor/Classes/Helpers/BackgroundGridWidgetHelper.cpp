@@ -1,10 +1,18 @@
-//
-//  BackgroundGridWidgetHelper.cpp
-//  UIEditor
-//
-//  Created by Yuri Coder on 10/31/12.
-//
-//
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
 
 #include "BackgroundGridWidgetHelper.h"
 using namespace DAVA;
@@ -56,6 +64,63 @@ const BackgroundGridWidgetHelper::AlignTypesData BackgroundGridWidgetHelper::ali
     {ALIGN_RIGHT | ALIGN_BOTTOM,    "Right & Bottom"},
     
     {ALIGN_HJUSTIFY,                "Horizontal Justify"}
+};
+
+const BackgroundGridWidgetHelper::ReturnKeyTypesData BackgroundGridWidgetHelper::returnKeyTypesData[] =
+{
+	{UITextField::RETURN_KEY_DEFAULT,	"Default"},
+	{UITextField::RETURN_KEY_GO,		"Go"},
+	{UITextField::RETURN_KEY_GOOGLE,	"Google"},
+	{UITextField::RETURN_KEY_JOIN,		"Join"},
+	{UITextField::RETURN_KEY_NEXT,		"Next"},
+	{UITextField::RETURN_KEY_ROUTE,		"Route"},
+	{UITextField::RETURN_KEY_SEARCH,	"Search"},
+	{UITextField::RETURN_KEY_SEND,		"Send"},
+	{UITextField::RETURN_KEY_YAHOO,		"Yahoo"},
+	{UITextField::RETURN_KEY_DONE,		"Done"},
+	{UITextField::RETURN_KEY_EMERGENCY_CALL, "Emergency call"}
+};
+
+const BackgroundGridWidgetHelper::KeyboardTypesData BackgroundGridWidgetHelper::keyboardTypesData[] =
+{
+	{UITextField::KEYBOARD_TYPE_DEFAULT,		"Default"},
+	{UITextField::KEYBOARD_TYPE_ASCII_CAPABLE,	"ASCII capatible"},
+	{UITextField::KEYBOARD_TYPE_NUMBERS_AND_PUNCTUATION,	"Numbers & punctuation"},
+	{UITextField::KEYBOARD_TYPE_URL,			"URL"},
+	{UITextField::KEYBOARD_TYPE_NUMBER_PAD,		"Number pad"},
+	{UITextField::KEYBOARD_TYPE_PHONE_PAD,		"Phone pad"},
+	{UITextField::KEYBOARD_TYPE_NAME_PHONE_PAD,	"Name phone pad"},
+	{UITextField::KEYBOARD_TYPE_EMAIL_ADDRESS,	"Email"},
+	{UITextField::KEYBOARD_TYPE_DECIMAL_PAD,	"Decimal"},
+	{UITextField::KEYBOARD_TYPE_TWITTER,		"Twitter"}
+};
+
+const BackgroundGridWidgetHelper::KeyboardAppearanceTypesData BackgroundGridWidgetHelper::keyboardAppearanceTypesData[] =
+{
+	{UITextField::KEYBOARD_APPEARANCE_DEFAULT,		"Default"},
+	{UITextField::KEYBOARD_APPEARANCE_ALERT,		"Alert"}
+};
+
+const BackgroundGridWidgetHelper::SpellCheckingTypesData BackgroundGridWidgetHelper::spellCheckingTypesData[] =
+{
+	{UITextField::SPELL_CHECKING_TYPE_DEFAULT,	"Default"},
+	{UITextField::SPELL_CHECKING_TYPE_NO,		"No"},
+	{UITextField::SPELL_CHECKING_TYPE_YES,		"Yes"}
+};
+
+const BackgroundGridWidgetHelper::AutoCorrectionTypesData BackgroundGridWidgetHelper::autoCorrectionTypesData[] =
+{
+	{UITextField::AUTO_CORRECTION_TYPE_DEFAULT,		"Default"},
+	{UITextField::AUTO_CORRECTION_TYPE_DEFAULT,		"No"},
+	{UITextField::AUTO_CORRECTION_TYPE_DEFAULT,		"Yes"}
+};
+
+const BackgroundGridWidgetHelper::AutoCapitalizationTypesData BackgroundGridWidgetHelper::autoCapitalizationTypesData[] =
+{
+	{UITextField::AUTO_CAPITALIZATION_TYPE_NONE,		"None"},
+	{UITextField::AUTO_CAPITALIZATION_TYPE_WORDS,		"Words"},
+	{UITextField::AUTO_CAPITALIZATION_TYPE_SENTENCES,	"Sentences"},
+	{UITextField::AUTO_CAPITALIZATION_TYPE_ALL_CHARS,	"All chars"}
 };
 
 int BackgroundGridWidgetHelper::GetDrawTypesCount()
@@ -179,6 +244,256 @@ QString BackgroundGridWidgetHelper::GetAlignTypeDescByType(int alignType)
     return QString();
 }
 
+//Return key type.
+int BackgroundGridWidgetHelper::GetReturnKeyTypesCount()
+{
+    return sizeof(returnKeyTypesData)/sizeof(*returnKeyTypesData);
+}
+
+int BackgroundGridWidgetHelper::GetReturnKeyType(int index)
+{
+	if (ValidateReturnKeyTypeIndex(index) == false)
+	{
+		return returnKeyTypesData[0].returnKeyType;
+	}
+	
+	return returnKeyTypesData[index].returnKeyType;
+}
+
+QString BackgroundGridWidgetHelper::GetReturnKeyTypeDesc(int index)
+{
+	if (ValidateReturnKeyTypeIndex(index) == false)
+	{
+		return returnKeyTypesData[0].returnKeyTypeDescription;
+	}
+	
+	return returnKeyTypesData[index].returnKeyTypeDescription;
+}
+
+// Get the Return Key Type Description by the Value.
+QString BackgroundGridWidgetHelper::GetReturnKeyTypeDescByType(int retKeyType)
+{
+	int count = GetReturnKeyTypesCount();
+	for (int i = 0; i < count; i ++)
+	{
+		if (returnKeyTypesData[i].returnKeyType == retKeyType)
+		{
+			return returnKeyTypesData[i].returnKeyTypeDescription;
+		}
+	}
+	
+	Logger::Error("Unknown/unsupported Return key  Type %i!", retKeyType);
+	return QString();
+}
+
+
+//Keyboard type.
+int BackgroundGridWidgetHelper::GetKeyboardTypesCount()
+{
+    return sizeof(keyboardTypesData)/sizeof(*keyboardTypesData);
+}
+
+int BackgroundGridWidgetHelper::GetKeyboardType(int index)
+{
+	if (ValidateKeyboardTypeIndex(index) == false)
+	{
+		return keyboardTypesData[0].keyboardType;
+	}
+	
+	return keyboardTypesData[index].keyboardType;
+}
+
+QString BackgroundGridWidgetHelper::GetKeyboardTypeDesc(int index)
+{
+	if (ValidateKeyboardTypeIndex(index) == false)
+	{
+		return keyboardTypesData[0].keyboardTypeDescription;
+	}
+	
+	return keyboardTypesData[index].keyboardTypeDescription;
+}
+
+// Get the Keyboard Type Description by the Value.
+QString BackgroundGridWidgetHelper::GetKeyboardTypeDescByType(int keyboardType)
+{
+	int count = GetKeyboardTypesCount();
+	for (int i = 0; i < count; i ++)
+	{
+		if (keyboardTypesData[i].keyboardType == keyboardType)
+		{
+			return keyboardTypesData[i].keyboardTypeDescription;
+		}
+	}
+	
+	Logger::Error("Unknown/unsupported Keyboard Type %i!", keyboardType);
+	return QString();
+}
+
+//Keyboard Appearance Type.
+int BackgroundGridWidgetHelper::GetKeyboardAppearanceTypesCount()
+{
+	return sizeof(keyboardAppearanceTypesData)/sizeof(*keyboardAppearanceTypesData);
+}
+
+int BackgroundGridWidgetHelper::GetKeyboardAppearanceType(int index)
+{
+	if (ValidateKeyboardAppearanceIndex(index) == false)
+	{
+		return keyboardAppearanceTypesData[0].keyboardAppearanceType;
+	}
+	
+	return keyboardAppearanceTypesData[index].keyboardAppearanceType;
+}
+
+QString BackgroundGridWidgetHelper::GetKeyboardAppearanceTypeDesc(int index)
+{
+	if (ValidateKeyboardAppearanceIndex(index) == false)
+	{
+		return keyboardAppearanceTypesData[0].keyboardAppearanceTypeDescription;
+	}
+	
+	return keyboardAppearanceTypesData[index].keyboardAppearanceTypeDescription;
+}
+// Get the Keyboard Appearance Type Description by the Value.
+QString BackgroundGridWidgetHelper::GetKeyboardAppearanceTypeDescByType(int keyboardAppearabveType)
+{
+	int count = GetKeyboardAppearanceTypesCount();
+	for (int i = 0; i < count; i ++)
+	{
+		if (keyboardAppearanceTypesData[i].keyboardAppearanceType == keyboardAppearabveType)
+		{
+			return keyboardAppearanceTypesData[i].keyboardAppearanceTypeDescription;
+		}
+	}
+	
+	Logger::Error("Unknown/unsupported Keyboard Appearance Type %i!", keyboardAppearabveType);
+	return QString();
+}
+
+//Spell Checking Type.
+int BackgroundGridWidgetHelper::GetSpellCheckingTypesCount()
+{
+	return sizeof(spellCheckingTypesData)/sizeof(*spellCheckingTypesData);
+}
+
+int BackgroundGridWidgetHelper::GetSpellCheckingType(int index)
+{
+	if (ValidateSpellCheckingIndex(index) == false)
+	{
+		return spellCheckingTypesData[0].spellCheckingType;
+	}
+	
+	return spellCheckingTypesData[index].spellCheckingType;
+}
+QString BackgroundGridWidgetHelper::GetSpellCheckingTypeDesc(int index)
+{
+	if (ValidateSpellCheckingIndex(index) == false)
+	{
+		return spellCheckingTypesData[0].spellCheckingTypeDescription;
+	}
+	
+	return spellCheckingTypesData[index].spellCheckingTypeDescription;
+}
+// Get the SpellCheckingType Description by the Value.
+QString BackgroundGridWidgetHelper::GetSpellCheckingTypeDescByType(int spellCheckingType)
+{
+	int count = GetSpellCheckingTypesCount();
+	for (int i = 0; i < count; i ++)
+	{
+		if (spellCheckingTypesData[i].spellCheckingType == spellCheckingType)
+		{
+			return spellCheckingTypesData[i].spellCheckingTypeDescription;
+		}
+	}
+	
+	Logger::Error("Unknown/unsupported Spell checking Type %i!", spellCheckingType);
+	return QString();
+}
+
+//	Auto Correction Type.
+int BackgroundGridWidgetHelper::GetAutoCorrectionTypesCount()
+{
+	return sizeof(autoCorrectionTypesData)/sizeof(*autoCorrectionTypesData);
+}
+
+int BackgroundGridWidgetHelper::GetAutoCorrectionType(int index)
+{
+	if (ValidateAutoCorrectionIndex(index) == false)
+	{
+		return autoCorrectionTypesData[0].autoCorrectionType;
+	}
+	
+	return autoCorrectionTypesData[index].autoCorrectionType;
+}
+
+QString BackgroundGridWidgetHelper::GetAutoCorrectionTypeDesc(int index)
+{
+	if (ValidateAutoCorrectionIndex(index) == false)
+	{
+		return autoCorrectionTypesData[0].autoCorrectionTypeDescription;
+	}
+	
+	return autoCorrectionTypesData[index].autoCorrectionTypeDescription;
+}
+
+// Get the AutoCorrectionType Description by the Value.
+QString BackgroundGridWidgetHelper::GetAutoCorrectionTypeDescByType(int autoCorrectionType)
+{
+	int count = GetAutoCorrectionTypesCount();
+	for (int i = 0; i < count; i ++)
+	{
+		if (autoCorrectionTypesData[i].autoCorrectionType == autoCorrectionType)
+		{
+			return autoCorrectionTypesData[i].autoCorrectionTypeDescription;
+		}
+	}
+	
+	Logger::Error("Unknown/unsupported autoCorrection type %i!", autoCorrectionType);
+	return QString();
+}
+
+
+//	Auto Capitalization Type.
+int BackgroundGridWidgetHelper::GetAutoCapitalizationTypesCount()
+{
+	return sizeof(autoCapitalizationTypesData)/sizeof(*autoCapitalizationTypesData);
+}
+
+int BackgroundGridWidgetHelper::GetAutoCapitalizationType(int index)
+{
+	if (ValidateAutoCapitalizationIndex(index) == false)
+	{
+		return autoCapitalizationTypesData[0].autoCapitalizationType;
+	}
+	
+	return autoCapitalizationTypesData[index].autoCapitalizationType;
+}
+
+QString BackgroundGridWidgetHelper::GetAutoCapitalizationTypeDesc(int index)
+{
+	if (ValidateAutoCapitalizationIndex(index) == false)
+	{
+		return autoCapitalizationTypesData[0].autoCapitalizationTypeDescription;
+	}
+	
+	return autoCapitalizationTypesData[index].autoCapitalizationTypeDescription;
+}
+// Get the AutoCapitalizationType Description by the Value.
+QString BackgroundGridWidgetHelper::GetAutoCapitalizationTypeDescByType(int autoCapitalizationType)
+{
+	int count = GetAutoCapitalizationTypesCount();
+	for (int i = 0; i < count; i ++)
+	{
+		if (autoCapitalizationTypesData[i].autoCapitalizationType == autoCapitalizationType)
+		{
+			return autoCapitalizationTypesData[i].autoCapitalizationTypeDescription;
+		}
+	}
+	
+	Logger::Error("Unknown/unsupported autoCapitalization type %i!", autoCapitalizationType);
+	return QString();
+}
+
 int BackgroundGridWidgetHelper::GetModificationType(int index)
 {
 	if (ValidateSpriteModificationIndex(index) == false)
@@ -260,5 +575,71 @@ bool BackgroundGridWidgetHelper::ValidateSpriteModificationIndex(int index)
     }
     
     return true;
+}
+
+bool BackgroundGridWidgetHelper::ValidateReturnKeyTypeIndex(int index)
+{
+	if (index < 0 || index >= GetReturnKeyTypesCount())
+	{
+		Logger::Error("Return keys index %i is out of bounds!", index);
+		return false;
+	}
+	
+	return true;
+}
+
+bool BackgroundGridWidgetHelper::ValidateKeyboardTypeIndex(int index)
+{
+	if (index < 0 || index >= GetKeyboardTypesCount())
+	{
+		Logger::Error("Keyboard types index %i is out of bounds!", index);
+		return false;
+	}
+	
+	return true;
+}
+
+bool BackgroundGridWidgetHelper::ValidateKeyboardAppearanceIndex(int index)
+{
+	if (index < 0 || index >= GetKeyboardAppearanceTypesCount())
+	{
+		Logger::Error("Keyboard Appearence index %i is out of bounds!", index);
+		return false;
+	}
+	
+	return true;
+}
+
+bool BackgroundGridWidgetHelper::ValidateSpellCheckingIndex(int index)
+{
+	if (index < 0 || index >= GetSpellCheckingTypesCount())
+	{
+		Logger::Error("Spell checking index %i is out of bounds!", index);
+		return false;
+	}
+	
+	return true;
+}
+
+bool BackgroundGridWidgetHelper::ValidateAutoCorrectionIndex(int index)
+{
+	if (index < 0 || index >= GetAutoCorrectionTypesCount())
+	{
+		Logger::Error("Autocorrection index %i is out of bounds!", index);
+		return false;
+	}
+	
+	return true;
+}
+
+bool BackgroundGridWidgetHelper::ValidateAutoCapitalizationIndex(int index)
+{
+	if (index < 0 || index >= GetAutoCapitalizationTypesCount())
+	{
+		Logger::Error("Autocapitalization index %i is out of bounds!", index);
+		return false;
+	}
+	
+	return true;
 }
 

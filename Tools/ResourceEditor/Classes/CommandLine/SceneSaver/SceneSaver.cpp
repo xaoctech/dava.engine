@@ -1,7 +1,25 @@
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
 #include "SceneSaver.h"
 #include "SceneEditor/SceneValidator.h"
 
 #include "Qt/Scene/SceneDataManager.h"
+#include "Classes/StringConstants.h"
+#include "Classes/Qt/Main/QtUtils.h"
 
 using namespace DAVA;
 
@@ -61,8 +79,6 @@ void SceneSaver::SaveFile(const String &fileName, Set<String> &errorLog)
 
 void SceneSaver::ResaveFile(const String &fileName, Set<String> &errorLog)
 {
-    DVASSERT(0);    //TODO: check save
-
 	Logger::Info("[SceneSaver::ResaveFile] %s", fileName.c_str());
 
 	FilePath sc2Filename = sceneUtils.dataSourceFolder + fileName;
@@ -127,6 +143,8 @@ void SceneSaver::SaveScene(Scene *scene, const FilePath &fileName, Set<String> &
     }
 
 	CopyReferencedObject(scene, errorLog);
+	CopyEffects(scene, errorLog);
+	CopyCustomColorTexture(scene, fileName.GetDirectory(), errorLog);
 
     //save scene to new place
     FilePath tempSceneName = sceneUtils.dataSourceFolder + relativeFilename;
@@ -167,7 +185,7 @@ void SceneSaver::ReleaseTextures()
 void SceneSaver::CopyTexture(const FilePath &texturePathname, Set<String> &errorLog)
 {
     FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(texturePathname);
-    FilePath pngPathname = TextureDescriptor::GetPathnameForFormat(texturePathname, PNG_FILE);
+    FilePath pngPathname = GPUFamilyDescriptor::CreatePathnameForGPU(texturePathname, GPU_UNKNOWN, FORMAT_RGBA8888);
 
     sceneUtils.CopyFile(descriptorPathname, errorLog);
     sceneUtils.CopyFile(pngPathname, errorLog);
@@ -176,16 +194,77 @@ void SceneSaver::CopyTexture(const FilePath &texturePathname, Set<String> &error
 void SceneSaver::CopyReferencedObject( Entity *node, Set<String> &errorLog )
 {
 	KeyedArchive *customProperties = node->GetCustomProperties();
-	if(customProperties && customProperties->IsKeyExists("editor.referenceToOwner"))
+	if(customProperties && customProperties->IsKeyExists(ResourceEditor::EDITOR_REFERENCE_TO_OWNER))
 	{
-		String path = customProperties->GetString("editor.referenceToOwner");
+		String path = customProperties->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
 		sceneUtils.CopyFile(path, errorLog);
 	}
 	for (int i = 0; i < node->GetChildrenCount(); i++)
 	{
 		CopyReferencedObject(node->GetChild(i), errorLog);
 	}
-
 }
 
+void SceneSaver::CopyEffects(Entity *node, Set<String> &errorLog)
+{
+	ParticleEmitter *emitter = GetEmitter(node);
+	if(emitter)
+	{
+		CopyEmitter(emitter, errorLog);
+	}
+
+	for (int i = 0; i < node->GetChildrenCount(); ++i)
+	{
+		CopyEffects(node->GetChild(i), errorLog);
+	}
+}
+
+void SceneSaver::CopyEmitter( ParticleEmitter *emitter, Set<String> &errorLog )
+{
+	sceneUtils.CopyFile(emitter->GetConfigPath(), errorLog);
+
+	const Vector<ParticleLayer*> &layers = emitter->GetLayers();
+
+	uint32 count = (uint32)layers.size();
+	for(uint32 i = 0; i < count; ++i)
+	{
+		if(layers[i]->type == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
+		{
+			CopyEmitter(layers[i]->GetInnerEmitter(), errorLog);
+		}
+		else
+		{
+			Sprite *sprite = layers[i]->GetSprite();
+			if(!sprite) continue;
+
+			FilePath psdPath = ReplaceInString(sprite->GetRelativePathname().GetAbsolutePathname(), "/Data/", "/DataSource/");
+			psdPath.ReplaceExtension(".psd");
+			sceneUtils.CopyFile(psdPath, errorLog);
+		}
+	}
+}
+
+void SceneSaver::CopyCustomColorTexture(Scene *scene, const FilePath & sceneFolder, Set<String> &errorLog)
+{
+	Entity *land = EditorScene::GetLandscapeNode(scene);
+	if(!land) return;
+
+	KeyedArchive* customProps = land->GetCustomProperties();
+	if(!customProps) return;
+
+	String pathname = customProps->GetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP);
+	if(pathname.empty()) return;
+
+	String fullPath = sceneFolder.GetAbsolutePathname();
+	String::size_type pos = fullPath.find("/Data");
+	if(pos != String::npos)
+	{
+		FilePath texPathname = fullPath.substr(0, pos+1) + pathname;
+		sceneUtils.CopyFile(texPathname, errorLog);
+	}
+	else
+	{
+		Logger::Error("[SceneSaver::CopyCustomColorTexture] Can't copy custom colors texture (%s)", pathname.c_str());
+	}
+}
 
