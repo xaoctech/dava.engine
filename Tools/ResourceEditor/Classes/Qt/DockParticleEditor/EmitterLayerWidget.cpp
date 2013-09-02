@@ -211,6 +211,11 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 	frameOverlifeLayout->addWidget(frameOverlifeFPSSpin);
 	frameOverlifeLayout->addWidget(frameOverlifeFPSLabel);
 	mainBox->addLayout(frameOverlifeLayout);
+
+	randomFrameOnStartCheckBox = new QCheckBox("random frame on start", this);
+	connect(randomFrameOnStartCheckBox, SIGNAL(stateChanged(int)),
+		this, SLOT(OnValueChanged()));
+	mainBox->addWidget(randomFrameOnStartCheckBox);
 	
 	angleTimeLine = new TimeLineWidget(this);
 	InitWidget(angleTimeLine);
@@ -373,6 +378,10 @@ EmitterLayerWidget::~EmitterLayerWidget()
 		   SIGNAL(valueChanged(int)),
 		   this,
 		   SLOT(OnValueChanged()));
+	disconnect(randomFrameOnStartCheckBox,
+		SIGNAL(stateChanged(int)),
+		this,
+		SLOT(OnValueChanged()));
 	disconnect(pivotPointXSpinBox,
 			   SIGNAL(valueChanged(int)),
 			   this,
@@ -526,6 +535,7 @@ void EmitterLayerWidget::Init(SceneEditor2* scene, ParticleEmitter* emitter, DAV
 	frameOverlifeCheckBox->setChecked(layer->frameOverLifeEnabled);
 	frameOverlifeFPSSpin->setValue(layer->frameOverLifeFPS);
 	frameOverlifeFPSSpin->setEnabled(layer->frameOverLifeEnabled);
+	randomFrameOnStartCheckBox->setChecked(layer->randomFrameOnStart);
 	
 	angleTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
 	angleTimeLine->AddLine(0, PropLineWrapper<float32>(layer->angle).GetProps(), Qt::blue, "angle");
@@ -774,6 +784,7 @@ void EmitterLayerWidget::OnValueChanged()
 						 (float32)loopVariationSpin->value(),
 						 frameOverlifeCheckBox->isChecked(),
 						 (float32)frameOverlifeFPSSpin->value(),
+						 randomFrameOnStartCheckBox->isChecked(),
 						 (float32)pivotPointXSpinBox->value(),
 						 (float32)pivotPointYSpinBox->value());
 
@@ -879,6 +890,7 @@ void EmitterLayerWidget::SetSuperemitterMode(bool isSuperemitter)
 	frameOverlifeCheckBox->setVisible(!isSuperemitter);
 	frameOverlifeFPSSpin->setVisible(!isSuperemitter);
 	frameOverlifeFPSLabel->setVisible(!isSuperemitter);
+	randomFrameOnStartCheckBox->setVisible(!isSuperemitter);
 
 	// The Pivot Point must be hidden for Superemitter mode.
 	pivotPointLabel->setVisible(!isSuperemitter);

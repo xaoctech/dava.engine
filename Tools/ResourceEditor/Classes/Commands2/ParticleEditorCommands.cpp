@@ -149,6 +149,7 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
 									  float32 loopVariation,
 									  bool frameOverLifeEnabled,
 									  float32 frameOverLifeFPS,
+									  bool randomFrameOnStart,
 									  
 									  float32 pivotPointX,
 									  float32 pivotPointY)
@@ -190,6 +191,7 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
 	this->loopVariation = loopVariation;
 	this->frameOverLifeEnabled = frameOverLifeEnabled;
 	this->frameOverLifeFPS = frameOverLifeFPS;
+	this->randomFrameOnStart = randomFrameOnStart;
 	
 	this->pivotPointX = pivotPointX;
 	this->pivotPointY = pivotPointY;
@@ -224,6 +226,7 @@ void CommandUpdateParticleLayer::Redo()
 	
 	layer->frameOverLifeEnabled = frameOverLifeEnabled;
 	layer->frameOverLifeFPS = frameOverLifeFPS;
+	layer->randomFrameOnStart = randomFrameOnStart;
 
 	layer->angle = angle;
 	layer->angleVariation = angleVariation;

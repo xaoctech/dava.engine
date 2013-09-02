@@ -372,14 +372,13 @@ public:
 	float32		deltaTime;
 	float32 	deltaVariation;
 	float32 	loopVariation;
-	float32 	loopEndTime;
-	
-	int32		frameStart;
-	int32		frameEnd;
+	float32 	loopEndTime;		
+
 	eType		type;
 
 	bool		frameOverLifeEnabled;
 	float32		frameOverLifeFPS;
+	bool		randomFrameOnStart;
 
 	ParticleEmitter* innerEmitter;
 	FilePath	innerEmitterPath;
