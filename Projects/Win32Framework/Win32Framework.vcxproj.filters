@@ -1296,13 +1296,15 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\ActionUpdateSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
+	<ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\pThreadWin32.h">
+      <Filter>Internal\Platform\TemplateWin32</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Autotesting\AutotestingDB.h">
       <Filter>Internal\Autotesting</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Autotesting\GameAPI.h">
       <Filter>Internal\Autotesting</Filter>
-    </ClInclude>
-  </ItemGroup>
+    </ClInclude>  </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
       <Filter>External\Box2D\Collision</Filter>
@@ -2302,8 +2304,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Autotesting\TouchAction.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\TouchAction.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\pThreadWin32.cpp">
+      <Filter>Internal\Platform\TemplateWin32</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingDB.cpp">
       <Filter>Internal\Autotesting</Filter>
     </ClCompile>
