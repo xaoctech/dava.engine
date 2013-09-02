@@ -33,6 +33,7 @@
     <ClCompile Include="Classes\FormatsTest.cpp" />
     <ClCompile Include="Classes\UIScrollViewTest.cpp" />
     <ClCompile Include="Classes\AlignTest.cpp" />
+    <ClCompile Include="Classes\ThreadSyncTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\BaseScreen.h" />
@@ -67,5 +68,6 @@
     <ClInclude Include="Classes\FormatsTest.h" />
     <ClInclude Include="Classes\UIScrollViewTest.h" />
     <ClInclude Include="Classes\AlignTest.h" />
+    <ClInclude Include="Classes\ThreadSyncTest.h" />
   </ItemGroup>
 </Project>

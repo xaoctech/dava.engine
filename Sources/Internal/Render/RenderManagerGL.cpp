@@ -270,7 +270,6 @@ void RenderManager::MakeGLScreenShot()
     tempData = new uint8[imageDataSize];
 
     LockNonMain();
-    
     glBindFramebuffer(GL_FRAMEBUFFER, fboViewRenderbuffer);
 //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 //    glBindFramebuffer(GL_FRAMEBUFFER_BINDING_OES, fboViewRenderbuffer);

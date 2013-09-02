@@ -84,6 +84,8 @@ namespace ResourceEditor
 	static const String SETTINGS_MATERIALS_SPECULAR	=	"materials.specular";
 	static const String SETTINGS_DESIGNER_NAME =		"DesignerName";
 	static const String SETTINGS_PREVIEW_DIALOG_ENABLED = "PreviewDialogEnabled";
+
+	static const String CUSTOM_COLOR_TEXTURE_PROP = "customColorTexture";
 }
 
 #endif //#ifndef __STRING_CONSTANTS_H__

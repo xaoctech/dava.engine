@@ -361,6 +361,7 @@ public:
 	RefPtr< PropertyLine<float32> > angleVariation;		// variations in degrees
 
 	float32		alignToMotion;
+
 	float32		startTime;
 	float32		endTime;
 	// Layer loop paremeters
@@ -369,6 +370,8 @@ public:
 	float32 	loopVariation;
 	float32 	loopEndTime;
 	
+	void		UpdateLayerTime(float32 startTime, float32 endTime);
+
 	int32		frameStart;
 	int32		frameEnd;
 	eType		type;

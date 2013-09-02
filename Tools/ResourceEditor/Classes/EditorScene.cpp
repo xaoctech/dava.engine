@@ -720,6 +720,7 @@ void EditorScene::SetShadowColor( const Color &color )
 	UpdateShadowColorFromLandscape();
 }
 
+
 Color EditorScene::GetShadowColor()
 {
 	return GetRenderSystem()->GetShadowRectColor();
@@ -737,3 +738,4 @@ ShadowVolumeRenderPass::eBlend EditorScene::GetShadowBlendMode()
 	ShadowVolumeRenderPass *shadowPass = DynamicTypeCheck<ShadowVolumeRenderPass*>( GetRenderSystem()->GetRenderPass(PASS_SHADOW_VOLUME) );
 	return shadowPass->GetBlendMode();
 }
+

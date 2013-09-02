@@ -225,8 +225,7 @@ void CommandUpdateParticleLayer::Redo()
 	layer->angle = angle;
 	layer->angleVariation = angleVariation;
 
-	layer->startTime = startTime;
-	layer->endTime = endTime;
+	layer->UpdateLayerTime(startTime, endTime);	
 	layer->deltaTime = deltaTime;
 	layer->deltaVariation = deltaVariation;
 	layer->loopEndTime = loopEndTime;
@@ -285,8 +284,7 @@ void CommandUpdateParticleLayerTime::Init(float32 startTime, float32 endTime)
 
 void CommandUpdateParticleLayerTime::Redo()
 {
-	layer->startTime = startTime;
-	layer->endTime = endTime;
+	layer->UpdateLayerTime(startTime, endTime);	
 }
 
 CommandUpdateParticleLayerEnabled::CommandUpdateParticleLayerEnabled(ParticleLayer* layer, bool isEnabled) :

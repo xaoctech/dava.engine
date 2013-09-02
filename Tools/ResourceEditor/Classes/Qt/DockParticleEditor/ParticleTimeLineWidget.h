@@ -151,6 +151,11 @@ private:
 
 	Entity* selectedEffect;
 	ParticleEmitter* selectedEmitter;
+
+	int32 selectedLine;
+	int32 selectedLineOrigin;
+	Entity* emitterNode;
+	Entity* effectNode;
 	ParticleLayer* selectedLayer;
 	
 	QTimer updateTimer;

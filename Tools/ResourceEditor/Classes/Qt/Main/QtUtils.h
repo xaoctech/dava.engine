@@ -66,4 +66,7 @@ DAVA_DEPRECATED(void DeleteOldDXTTextureIfTegra(const DAVA::TextureDescriptor *d
 	const Qt::WindowFlags WINDOWFLAG_ON_TOP_OF_APPLICATION = Qt::Tool;
 #endif
 
+DAVA::String ReplaceInString(const DAVA::String & sourceString, const DAVA::String & what, const DAVA::String & on);
+
+
 #endif // __QT_UTILS_H__
