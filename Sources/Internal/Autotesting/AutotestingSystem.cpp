@@ -20,12 +20,9 @@
 #include "Core/Core.h"
 #include "Render/RenderHelper.h"
 #include "FileSystem/FileList.h"
+#include "Platform/DeviceInfo.h"
 
-#ifdef AUTOTESTING_LUA
 #include "AutotestingSystemLua.h"
-#else
-#include "AutotestingSystemYaml.h"
-#endif
 
 namespace DAVA
 {
@@ -35,6 +32,7 @@ AutotestingSystem::AutotestingSystem()
     , isRunning(false)
     , needExitApp(false)
     , timeBeforeExit(0.0f)
+	, autotestingId(1)
     , testsId(0)
     , testsDate(0)
     , testIndex(0)
@@ -69,7 +67,27 @@ AutotestingSystem::~AutotestingSystem()
     AutotestingSystemLua::Instance()->Release();
 }
 
+// This method is called on application started and it handle autotest initialisation
 void AutotestingSystem::OnAppStarted()
+{
+	Logger::Debug("AutotestingSystem::OnAppStarted");
+	
+	isInit = false; //for debbug
+	
+	if(!isInit)
+	{
+		//deviceName = DeviceInfo::GetName();
+		Logger::Debug("AutotestingSystem::OnAppStarted DeviceName=%s", deviceName);
+
+		FetchParametersFromDB();
+	}
+	else
+	{
+		ForceQuit("App already initialized");
+	}
+}
+
+void AutotestingSystem::OnAppStartedOld()
 {
 	if(!isInit)
     {
@@ -302,12 +320,73 @@ bool AutotestingSystem::ConnectToDB()
     
     return (NULL != dbClient);
 }
-    
-//void AutotestingSystem::AddTestResult(const String &text, bool isPassed, const String &error)
-//{
-//    testResults.push_back(TestResult(text, isPassed, error));
-//}
-  
+     
+// Get test parameters from id.tx
+void AutotestingSystem::FetchParametersFromIdTxt()
+{
+	Logger::Debug("AutotestingSystem::FetchParametersFromIdTxt");
+
+	//TODO: read autotesting id from ~res:/Autotesting/autotesting.archive
+	File* file = File::Create("~res:/Autotesting/id.txt", File::OPEN | File::READ);
+	
+	if(file)
+	{
+		char tempBuf[1024];
+		file->ReadLine(tempBuf, 1024);
+		sscanf(tempBuf, "%d", &autotestingId);
+
+		if(!file->IsEof())
+		{
+			char tempBuf[1024];
+			file->ReadLine(tempBuf, 1024);
+			sscanf(tempBuf, "%d", &testsDate);
+		}
+
+		if(!file->IsEof())
+		{
+			char projectCharName[128];
+			file->ReadLine(tempBuf, 1024);
+			sscanf(tempBuf, "%s", projectCharName);
+			SetProjectName(projectCharName);
+		}
+
+		if(!file->IsEof())
+		{
+			char groupCharName[128];
+			file->ReadLine(tempBuf, 1024);
+			sscanf(tempBuf, "%s", groupCharName);
+			String gName = groupCharName;
+			if(!gName.empty())
+			{
+				groupName = gName;
+			}
+		}
+
+		if(!file->IsEof())
+		{
+			char deviceCharName[128];
+			file->ReadLine(tempBuf, 1024);
+			sscanf(tempBuf, "%s", deviceCharName);
+			String dName = deviceCharName;
+			if(!dName.empty())
+			{
+				device = dName;
+			}
+		}
+	}
+	else
+	{
+		// build for local testing
+		isDB = false;
+	}
+	SafeRelease(file);
+}
+
+// Get test parameters from autotesting db
+void AutotestingSystem::FetchParametersFromDB()
+{
+	Logger::Debug("AutotestingSystem::FetchParametersFromDB");
+}
 
 // Work with MongoDb API
 #define AUTOTESTING_TESTS "Tests"
@@ -891,69 +970,6 @@ bool AutotestingSystem::SaveToDB(MongodbUpdateObject *dbUpdateObject)
 	uint64 finishTime = SystemTimer::Instance()->AbsoluteMS();
 	Logger::Debug("AutotestingSystem::SaveToDB FINISH result time %d", finishTime - startTime);
 	return ret;
-	/*
-    else
-    {
-
-		Logger::Debug("AutotestingSystem::SaveToDB Ok");
-		return ret;
-		int32 maxAttemptsToWait = 1;
-        int32 attemptsToWaitLeft = maxAttemptsToWait;
-		int32 maxAttemptsToRetry = 5;
-		int32 attemptsToRetryLeft = maxAttemptsToRetry;
-
-		Logger::Debug("AutotestingSystem::SaveToDB CheckSavedObjectInDB wait=%d retry=%d", attemptsToWaitLeft, attemptsToRetryLeft);
-
-        while(!CheckSavedObjectInDB(dbUpdateObject))
-        {
-            if(--attemptsToWaitLeft <= 0)
-            {
-				if(--attemptsToRetryLeft <= 0)
-				{
-					Logger::Error("AutotestingSystem::SaveToDB failed, retried %d times", maxAttemptsToRetry);
-				}
-				else
-				{
-					attemptsToWaitLeft = maxAttemptsToWait;
-					--attemptsToRetryLeft;
-
-					while(!dbUpdateObject->SaveToDB(dbClient))
-					{
-						if(--attemptsToRetryLeft <= 0)
-						{
-							Logger::Error("AutotestingSystem::SaveToDB failed, retried %d times", maxAttemptsToRetry);
-							break;
-						}
-
-						Logger::Debug("AutotestingSystem::SaveToDB retry failed wait=%d retry=%d, sleep 1 sec", attemptsToWaitLeft, attemptsToRetryLeft);
-#if !defined( _WIN32 )
-            //sleep( 1 );
-#else
-            //Sleep( 1000 );
-#endif
-					}
-				}
-
-				if(attemptsToRetryLeft <= 0)
-				{
-					Logger::Error("AutotestingSystem::SaveToDB failed, retried %d times", maxAttemptsToRetry);
-					break;
-				}
-				else
-				{
-					Logger::Warning("AutotestingSystem::SaveToDB failed. Attempts to retry left: %d", attemptsToRetryLeft);
-				}
-            }
-
-			Logger::Debug("AutotestingSystem::SaveToDB CheckSavedObjectInDB failed wait=%d retry=%d, sleep 1 sec", attemptsToWaitLeft, attemptsToRetryLeft);
-#if !defined( _WIN32 )
-            sleep( 1 );
-#else
-            Sleep( 1000 );
-#endif
-        }
-    }
-    return ret;*/
 }
 
 void AutotestingSystem::Log(const String &level, const String &message)
@@ -1390,26 +1406,32 @@ void AutotestingSystem::OnError(const String & errorMessage)
 {
     Logger::Error("AutotestingSystem::OnError %s",errorMessage.c_str());
 	
-	Log("ERROR", errorMessage);
-    //SaveTestStepLogEntryToDB("ERROR", GetCurrentTimeString(), errorMessage);
+	if (isDB)
+	{
+		Log("ERROR", errorMessage);
+		//SaveTestStepLogEntryToDB("ERROR", GetCurrentTimeString(), errorMessage);
 	
-	MakeScreenShot();
-	SaveScreenShotNameToDB();
+		MakeScreenShot();
+		SaveScreenShotNameToDB();
     
-	if (deviceName != "not-initialized")
-	{
-		WriteState(deviceName, "error");
+		if (deviceName != "not-initialized")
+		{
+			WriteState(deviceName, "error");
+		}
 	}
-
-	String exitOnErrorMsg = Format("EXIT %s OnError %s", testName.c_str(), errorMessage.c_str());
-	if(reportFile)
-	{
-		reportFile->WriteLine(exitOnErrorMsg);
-	}
-	SafeRelease(reportFile);
 
     ExitApp();
 }
+
+void AutotestingSystem::ForceQuit(const String & errorMessage)
+{
+	Logger::Error("AutotestingSystem::ForceQuit %s",errorMessage.c_str());
+	
+	ExitApp();
+	
+	exit(0);
+}
+
 
 void AutotestingSystem::MakeScreenShot()
 {
