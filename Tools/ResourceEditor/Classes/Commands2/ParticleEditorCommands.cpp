@@ -118,6 +118,7 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
 									  ParticleLayer::eType layerType,
 									  bool isDisabled,
 									  bool additive,
+									  bool inheritPosition,
 									  bool isLong,
 									  bool isLooped,
 									  Sprite* sprite,
@@ -156,6 +157,7 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
 	this->layerType = layerType;
 	this->isDisabled = isDisabled;
 	this->additive = additive;
+	this->inheritPosition = inheritPosition;
 	this->isLooped = isLooped;
 	this->isLong = isLong;
 	this->sprite = sprite;
@@ -199,6 +201,7 @@ void CommandUpdateParticleLayer::Redo()
 	layer->layerName = layerName;
 	layer->SetDisabled(isDisabled);
 	layer->SetAdditive(additive);
+	layer->SetInheritPosition(inheritPosition);
 	layer->SetLong(isLong);
 	layer->SetLooped(isLooped);
 	layer->life = life;

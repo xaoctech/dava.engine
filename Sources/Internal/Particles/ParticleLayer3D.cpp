@@ -63,11 +63,16 @@ void ParticleLayer3D::PrepareRenderData(Camera* camera)
 	if (!sprite || type == TYPE_SUPEREMITTER_PARTICLES)
 	{		
 		//build bounding box as sum of inner particle emitters bboxes
-		Particle *current = head;
-		while (current){
-			bbox.AddAABBox(current->GetInnerEmitter()->GetBoundingBox());
-			current=current->next;
+		if (type == TYPE_SUPEREMITTER_PARTICLES)
+		{
+			Particle *current = head;
+			while (current)
+			{
+				bbox.AddAABBox(current->GetInnerEmitter()->GetBoundingBox());
+				current=current->next;
+			}
 		}
+		
 		renderBatch->SetLayerBoundingBox(bbox);
 		renderBatch->SetTotalCount(0);		
 		return;
@@ -114,12 +119,7 @@ void ParticleLayer3D::PrepareRenderData(Camera* camera)
 	int32 texturesCount = 0;
 	int32 colorsCount = 0;	
 	while(current != 0)
-	{
-		Particle* parent = emitter->GetParentParticle();
-		if(NULL != parent && IsLong())
-		{
-			current->direction = parent->direction;
-		}
+	{		
 
 		Vector3 topRight;
 		Vector3 topLeft;
@@ -290,10 +290,23 @@ void ParticleLayer3D::CalcLong(Particle* current,
 							   Vector3& botLeft,
 							   Vector3& botRight)
 {
-	Vector3 vecShort = current->direction.CrossProduct(direction);
+
+	Vector3 currDirection;
+	Particle* parent = emitter->GetParentParticle();		
+	if(NULL != parent)
+	{
+		
+		currDirection = current->direction*current->speed*current->velocityOverLife + parent->direction*parent->speed*parent->velocityOverLife;
+		currDirection.Normalize();
+	}else
+	{
+		currDirection = current->direction;
+	}
+
+	Vector3 vecShort = currDirection.CrossProduct(direction);
 	vecShort /= 2.f;
 		
-	Vector3 vecLong = -current->direction;
+	Vector3 vecLong = -currDirection;
 
 	float32 widthDiv2 = sprite->GetWidth()*current->size.x*current->sizeOverLife.x;
 	float32 heightDiv2 = sprite->GetHeight()*current->size.y*current->sizeOverLife.y;
@@ -376,7 +389,10 @@ void ParticleLayer3D::UpdateCurrentParticlePosition(Particle* particle)
 	{
 		// For Superemitter adjust the particle position according to the
 		// current emitter position.
-		this->currentParticlePosition = particle->position + (emitter->GetPosition() - emitter->GetInitialTranslationVector());
+		if (inheritPosition)
+			this->currentParticlePosition = particle->position + (emitter->GetPosition() - emitter->GetInitialTranslationVector());
+		else
+			this->currentParticlePosition = particle->position;
 	}
 	else
 	{
