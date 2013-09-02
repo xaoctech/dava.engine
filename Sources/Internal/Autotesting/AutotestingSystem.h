@@ -60,6 +60,7 @@ public:
     ~AutotestingSystem();
 
     void OnAppStarted();
+	void OnAppStartedOld();
     void OnAppFinished();
 
     void Update(float32 timeElapsed);
@@ -74,6 +75,10 @@ public:
     
     void RunTests();
     
+	// Parameters from DB
+	void FetchParametersFromDB();
+	void FetchParametersFromIdTxt();
+
 	// multiplayer api
 	void WriteState(const String & device, const String & state);
 	void WriteCommand(const String & device, const String & state);
@@ -94,6 +99,7 @@ public:
     void OnTestStep(const String & stepName, bool isPassed, const String & error = "");
     void OnError(const String & errorMessage = "");
 	void OnMessage(const String & logMessage = "");
+	void ForceQuit(const String & logMessage = "");
     void OnTestsFinished();
     
     // helpers
@@ -170,6 +176,7 @@ protected:
     String projectName;
     String groupName;
 	String device;
+	uint32 autotestingId;
     uint32 testsId;
     uint32 testsDate;
     int32 testIndex;

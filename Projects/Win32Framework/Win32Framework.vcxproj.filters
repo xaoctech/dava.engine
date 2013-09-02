@@ -1296,6 +1296,12 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\ActionUpdateSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\AutotestingDB.h">
+      <Filter>Internal\Autotesting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\GameAPI.h">
+      <Filter>Internal\Autotesting</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1946,9 +1952,6 @@
     <ClCompile Include="..\..\Sources\Internal\Autotesting\Action.cpp">
       <Filter>Internal\Autotesting</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\TouchAction.cpp">
-      <Filter>Internal\Autotesting</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Autotesting\AssertAction.cpp">
       <Filter>Internal\Autotesting</Filter>
     </ClCompile>
@@ -1957,9 +1960,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\UI\TheoraPlayer.cpp">
       <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.cpp">
-      <Filter>Internal\Autotesting</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ParticleEmitterNode.cpp">
       <Filter>Internal\Scene3D</Filter>
@@ -2304,5 +2304,11 @@
     <ClCompile Include="..\..\Sources\Internal\Autotesting\TouchAction.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Autotesting\TouchAction.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingDB.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\GameAPI.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
