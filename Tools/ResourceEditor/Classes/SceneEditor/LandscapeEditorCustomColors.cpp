@@ -35,7 +35,7 @@
 #include "../Commands/CustomColorCommands.h"
 #include "../Commands/CommandsManager.h"
 
-#define CUSTOM_COLOR_TEXTURE_PROP "customColorTexture"
+#include "Classes/StringConstants.h"
 
 LandscapeEditorCustomColors::LandscapeEditorCustomColors(LandscapeEditorDelegate *newDelegate, EditorBodyControl *parentControl, const Rect &toolsRect)
     :   LandscapeEditorBase(newDelegate, parentControl)
@@ -545,8 +545,7 @@ void LandscapeEditorCustomColors::StoreSaveFileName(const FilePath& fileName)
 
 		FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
 
-		customProps->SetString(CUSTOM_COLOR_TEXTURE_PROP, fileName.GetRelativePathname(projectPath));
-// 		customProps->SetString(CUSTOM_COLOR_TEXTURE_PROP, GetRelativePathToScenePath(fileName));
+		customProps->SetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP, fileName.GetRelativePathname(projectPath));
 	}
 }
 
@@ -555,16 +554,9 @@ FilePath LandscapeEditorCustomColors::GetCurrentSaveFileName()
 	if(NULL != workingLandscapeEntity)
 	{
 		KeyedArchive* customProps = workingLandscapeEntity->GetCustomProperties();
-		if(customProps->IsKeyExists(CUSTOM_COLOR_TEXTURE_PROP))
+		if(customProps->IsKeyExists(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP))
 		{
-			String currentSaveName = customProps->GetString(CUSTOM_COLOR_TEXTURE_PROP);
-			
-// 			//VK: fix for DF-1852
-// 			if(currentSaveName.find("DataSource/") == String::npos)
-// 			{
-// 				return GetAbsolutePathFromScenePath(currentSaveName);
-// 			}
-// 			//VK: end
+			String currentSaveName = customProps->GetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP);
 
 			FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
 			return projectPath + currentSaveName;

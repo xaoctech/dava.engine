@@ -18,7 +18,7 @@
 #include "SceneEditor/SceneValidator.h"
 
 #include "Qt/Scene/SceneDataManager.h"
-#include "../StringConstants.h"
+#include "Classes/StringConstants.h"
 #include "Classes/Qt/Main/QtUtils.h"
 
 using namespace DAVA;
@@ -244,7 +244,6 @@ void SceneSaver::CopyEmitter( ParticleEmitter *emitter, Set<String> &errorLog )
 	}
 }
 
-#define CUSTOM_COLOR_TEXTURE_PROP "customColorTexture"
 void SceneSaver::CopyCustomColorTexture(Scene *scene, const FilePath & sceneFolder, Set<String> &errorLog)
 {
 	Entity *land = EditorScene::GetLandscapeNode(scene);
@@ -253,7 +252,7 @@ void SceneSaver::CopyCustomColorTexture(Scene *scene, const FilePath & sceneFold
 	KeyedArchive* customProps = land->GetCustomProperties();
 	if(!customProps) return;
 
-	String pathname = customProps->GetString(CUSTOM_COLOR_TEXTURE_PROP);
+	String pathname = customProps->GetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP);
 	if(pathname.empty()) return;
 
 	String fullPath = sceneFolder.GetAbsolutePathname();
