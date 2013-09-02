@@ -317,10 +317,7 @@ Rect HierarchyTreeControlNode::GetRect() const
 			UIScrollView* scrollView = dynamic_cast<UIScrollView*>(container->GetParent());
 			if (scrollView)
 			{
-				controlRect.x = scrollView->GetRect(true).x;
-				controlRect.y = scrollView->GetRect(true).y;
-				controlRect.dx = container->GetRect(true).dx;
-				controlRect.dy = container->GetRect(true).dy;
+				controlRect = Rect(scrollView->GetPosition(), container->GetSize());
 			}
 		}
 		
