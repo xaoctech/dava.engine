@@ -39,6 +39,7 @@
 #include "MemoryAllocatorsTest.h"
 #include "HashMapTest.h"
 #include "SoundTest.h"
+#include "AlignTest.h"
 #include "SplitTest.h"
 #include "MaterialCompilerTest.h"
 #include "PVRTest.h"
@@ -56,6 +57,9 @@
 #include "LocalizationTest.h"
 #include "UIListTest.h"
 #include "TransparentWebViewTest.h"
+#include "FormatsTest.h"
+#include "UIScrollViewTest.h"
+#include "ThreadSyncTest.h"
 
 using namespace DAVA;
 
@@ -80,20 +84,24 @@ void GameCore::OnAppStarted()
 	RenderManager::Instance()->SetFPS(60);
 
     CreateDocumentsFolder();
-
+    
+	new InputTest();
+	
+    new FormatsTest();
 	new DeviceInfoTest();
 	new TransparentWebViewTest();
     new FilePathTest();
     new FileListTest();
     new FileSystemTest();
     new LocalizationTest();
-    new InputTest();
+
 	new SampleTest();
 	new EntityTest(); 
 	new MemoryAllocatorsTest();
 	new HashMapTest();
 //	new SoundTest();
 	new SplitTest();
+	new AlignTest();
 	new EMailTest();
 	new DPITest();
 	new MaterialCompilerTest();
@@ -106,6 +114,10 @@ void GameCore::OnAppStarted()
 	new SplitTest();
 	new KeyedArchiveYamlTest();
 	new DLCTest();
+	new UIListTest();
+	new UIScrollViewTest();
+
+    new ThreadSyncTest();
     
     errors.reserve(TestCount());
 

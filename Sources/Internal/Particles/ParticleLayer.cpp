@@ -1,31 +1,17 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #include "Particles/ParticleLayer.h"
 #include "Particles/ParticleEmitter.h"
@@ -229,7 +215,96 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 
 	return dstLayer;
 }
+
+template <class T> void UpdatePropertyLineKeys(PropertyLine<T> * line, float32 startTime, float32 translateTime, float32 endTime)
+{	
+	if (!line)	
+		return;	
+	Vector<typename PropertyLine<T>::PropertyKey> &keys = line->GetValues();
+	int32 size = keys.size();		
+	int32 i;
+	for (i=0; i<size; ++i)
+	{
+		keys[i].t += translateTime;
+		if (keys[i].t>endTime)		
+			break;		
+		
+	}
+	if (i==0)
+		i+=1; //keep at least 1
+	keys.erase(keys.begin()+i, keys.end());
+	if (keys.size() == 1)
+	{
+		keys[0].t = startTime;
+	}
+}
+
+template <class T> void UpdatePropertyLineOnLoad(PropertyLine<T> * line, float32 startTime, float32 endTime)
+{
+	if (!line)
+		return;
+	Vector<typename PropertyLine<T>::PropertyKey> &keys = line->GetValues();
+	int32 size = keys.size();		
+	int32 i;
+	/*drop keys before*/
+	for (i=0; i<size; ++i)
+	{
+		if (keys[i].t>=startTime)
+			break;
+	}
+	if (i!=0)
+	{
+		T v0 = line->GetValue(startTime);
+		keys.erase(keys.begin(), keys.begin()+i);
+		typename PropertyLine<T>::PropertyKey key;
+		key.t = startTime;
+		key.value = v0;
+		keys.insert(keys.begin(), key);
+	}	
 	
+	/*drop keys after*/
+	size = keys.size();
+	for (i=0; i<size; i++)
+	{
+		if (keys[i].t>endTime)
+			break;
+	}
+	if (i!=size)
+	{
+		T v1 = line->GetValue(endTime);
+		keys.erase(keys.begin()+i, keys.end());
+		typename PropertyLine<T>::PropertyKey key;
+		key.t = endTime;
+		key.value = v1;
+		keys.push_back(key);
+	}
+}
+
+void ParticleLayer::UpdateLayerTime(float32 startTime, float32 endTime)
+{
+	float32 translateTime = startTime-this->startTime;
+	this->startTime = startTime;
+	this->endTime = endTime;
+	/*validate all time depended property lines*/	
+	UpdatePropertyLineKeys(life.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(lifeVariation.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(number.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(numberVariation.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(size.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(sizeVariation.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(velocity.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(velocityVariation.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(spin.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(spinVariation.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(angle.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(angleVariation.Get(), startTime, translateTime, endTime);
+
+}
+
+ParticleEmitter* ParticleLayer::GetEmitter() const
+{
+	return emitter;
+}
 
 void ParticleLayer::SetEmitter(ParticleEmitter * _emitter)
 {
@@ -346,7 +421,7 @@ void ParticleLayer::Update(float32 timeElapsed)
 				DVASSERT(head == 0);
 			}
 			
-			if ((layerTime >= startTime) && (layerTime < endTime) && !emitter->IsPaused())
+			if (!emitter->IsPaused() && (layerTime >= startTime) && (layerTime < endTime))
 			{
 				float32 randCoeff = (float32)(Rand() & 255) / 255.0f;
 				float32 newParticles = 0.0f;
@@ -605,7 +680,8 @@ void ParticleLayer::ProcessParticle(Particle * particle)
 		if (timeElapsed > (1 / frameOverLifeFPS))
 		{
 			particle->frame ++;
-			if (particle->frame >= this->sprite->GetFrameCount())
+			// Spright might not be loaded (see please DF-1661).
+			if (!this->sprite || particle->frame >= this->sprite->GetFrameCount())
 			{
 				particle->frame = 0;
 			}
@@ -847,6 +923,20 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 	{
 		isDisabled = isDisabledNode->AsBool();
 	}
+
+	/*validate all time depended property lines*/	
+	UpdatePropertyLineOnLoad(life.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(lifeVariation.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(number.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(numberVariation.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(size.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(sizeVariation.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(velocity.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(velocityVariation.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(spin.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(spinVariation.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(angle.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(angleVariation.Get(), startTime, endTime);
 
 	// Load the Inner Emitter parameters.
 	YamlNode * innerEmitterPathNode = node->Get("innerEmitterPath");

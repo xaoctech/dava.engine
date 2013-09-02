@@ -1,21 +1,35 @@
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
 #include "TextureListDelegate.h"
 #include "TextureListModel.h"
 #include "TextureCache.h"
+#include "TextureBrowser.h"
 #include <QPainter>
 #include <QFileInfo>
 
-#define TEXTURE_PREVIEW_SIZE 100
+#define TEXTURE_PREVIEW_SIZE 80
 #define TEXTURE_PREVIEW_SIZE_SMALL 24
 #define BORDER_MARGIN 1
 #define BORDER_COLOR QColor(0, 0, 0, 25)
 #define SELECTION_BORDER_COLOR QColor(0, 0, 0, 50)
 #define SELECTION_COLOR_ALPHA 100
 #define INFO_TEXT_COLOR QColor(0, 0, 0, 100)
-#define FORMAT_INFO_WIDTH 4
-#define FORMAT_INFO_SPACING 2
-#define FORMAT_PVR_COLOR QColor(0, 200, 0, 100)
-#define FORMAT_DXT_COLOR QColor(0, 0, 200, 100)
-#define NOT_SQUARE_COLOR QColor(150, 0, 0, 100)
+#define FORMAT_INFO_WIDTH 3
+#define FORMAT_INFO_SPACING 1
 
 TextureListDelegate::TextureListDelegate(QObject *parent /* = 0 */)
 	: QAbstractItemDelegate(parent)
@@ -23,7 +37,7 @@ TextureListDelegate::TextureListDelegate(QObject *parent /* = 0 */)
 	, nameFontMetrics(nameFont)
 	, drawRule(DRAW_PREVIEW_BIG)
 {
-	QObject::connect(TextureConvertor::Instance(), SIGNAL(readyOriginal(const DAVA::TextureDescriptor *, const QImage &)), this, SLOT(textureReadyOriginal(const DAVA::TextureDescriptor *, const QImage &)));
+	QObject::connect(TextureConvertor::Instance(), SIGNAL(ReadyOriginal(const DAVA::TextureDescriptor *, const QImage &)), this, SLOT(textureReadyOriginal(const DAVA::TextureDescriptor *, const QImage &)));
 };
 
 void TextureListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -126,17 +140,17 @@ void TextureListDelegate::drawPreviewBig(QPainter *painter, const QStyleOptionVi
 		{
 			// there is no image for this texture in cache
 			// so load it async
-			TextureConvertor::Instance()->loadOriginal(curTextureDescriptor);
+			TextureConvertor::Instance()->GetOriginal(curTextureDescriptor);
 			descriptorIndexes.insert(curTextureDescriptor, index);
 		}
 
 		// draw formats info
-		drawFormatInfo(painter, borderRect, curTexture, curTextureDescriptor);
+		int infoLen = drawFormatInfo(painter, borderRect, curTexture, curTextureDescriptor);
 
 		// draw text info
 		{
 			QRectF textRect = option.rect;
-			textRect.adjust(TEXTURE_PREVIEW_SIZE, option.decorationSize.height() / 2, 0, 0);
+			textRect.adjust(TEXTURE_PREVIEW_SIZE, option.decorationSize.height() / 2, -infoLen, 0);
 
 			QFont origFont = painter->font();
 			painter->setPen(option.palette.text().color());
@@ -155,18 +169,6 @@ void TextureListDelegate::drawPreviewBig(QPainter *painter, const QStyleOptionVi
 			infoText += dimen;
 			infoText += "\nData size: ";
 			infoText += textureDataSize.toString();
-
-			if(curTextureDescriptor->pvrCompression.format != DAVA::FORMAT_INVALID)
-			{
-				infoText += "\nPVR: ";
-				infoText += QString(DAVA::Texture::GetPixelFormatString(curTextureDescriptor->pvrCompression.format));
-			}
-
-			if(curTextureDescriptor->dxtCompression.format != DAVA::FORMAT_INVALID)
-			{
-				infoText += "\nDXT: ";
-				infoText += QString(DAVA::Texture::GetPixelFormatString(curTextureDescriptor->dxtCompression.format));
-			}
 
 			painter->drawText(textRect, infoText);
 		}
@@ -219,11 +221,11 @@ void TextureListDelegate::drawPreviewSmall(QPainter *painter, const QStyleOption
 		painter->drawRect(previewRect);
 
 		// draw formats info
-		drawFormatInfo(painter, borderRect, curTexture, curTextureDescriptor);
+		int infoLen = drawFormatInfo(painter, borderRect, curTexture, curTextureDescriptor);
 
 		// draw text
 		QRectF textRect = option.rect;
-		textRect.adjust(TEXTURE_PREVIEW_SIZE_SMALL, (option.rect.height() - option.fontMetrics.height())/2, 0, 0);
+		textRect.adjust(TEXTURE_PREVIEW_SIZE_SMALL, (option.rect.height() - option.fontMetrics.height())/2, -infoLen, 0);
 		painter->setPen(option.palette.text().color());
 		painter->drawText(textRect, curModel->data(index).toString());
 
@@ -243,43 +245,52 @@ void TextureListDelegate::drawPreviewSmall(QPainter *painter, const QStyleOption
 	}
 }
 
-void TextureListDelegate::drawFormatInfo(QPainter *painter, QRect rect, const DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor) const
+int TextureListDelegate::drawFormatInfo(QPainter *painter, QRect rect, const DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor) const
 {
+	static QIcon errorIcon = QIcon(":/QtIcons/error.png");
+
+	int ret = 0;
+	QRect r = rect;
+
 	if(NULL != descriptor && NULL != texture)
 	{
-		rect.adjust(FORMAT_INFO_SPACING, FORMAT_INFO_SPACING, -FORMAT_INFO_SPACING, -FORMAT_INFO_SPACING);
-		rect.setX(rect.x() + rect.width() - FORMAT_INFO_WIDTH);
-		rect.setWidth(FORMAT_INFO_WIDTH);
+		r.adjust(FORMAT_INFO_SPACING, FORMAT_INFO_SPACING, -FORMAT_INFO_SPACING, -FORMAT_INFO_SPACING);
+		r.setX(rect.x() + rect.width());
+		r.setWidth(FORMAT_INFO_WIDTH);
 
-		if(descriptor->pvrCompression.format != DAVA::FORMAT_INVALID)
+		QColor gpuInfoColors[DAVA::GPU_FAMILY_COUNT];
+		gpuInfoColors[DAVA::GPU_POWERVR_IOS] = TextureBrowser::gpuColor_PVR_ISO;
+		gpuInfoColors[DAVA::GPU_POWERVR_ANDROID] = TextureBrowser::gpuColor_PVR_Android;
+		gpuInfoColors[DAVA::GPU_TEGRA] = TextureBrowser::gpuColor_Tegra;
+		gpuInfoColors[DAVA::GPU_MALI] = TextureBrowser::gpuColor_MALI;
+		gpuInfoColors[DAVA::GPU_ADRENO] = TextureBrowser::gpuColor_Adreno;
+
+		// format lines
+		for(int i = (DAVA::GPU_FAMILY_COUNT - 1); i >= 0; --i)
 		{
-			painter->setPen(FORMAT_PVR_COLOR);
-			painter->setBrush(QBrush(FORMAT_PVR_COLOR));
+			r.moveLeft(r.x() - FORMAT_INFO_WIDTH);
 
-			painter->drawRect(rect);
-			rect.adjust(-FORMAT_INFO_WIDTH - FORMAT_INFO_SPACING, 0, -FORMAT_INFO_WIDTH - FORMAT_INFO_SPACING, 0);
+			if(descriptor->compression[i].format != DAVA::FORMAT_INVALID)
+			{
+				QColor c = gpuInfoColors[i];
+
+				painter->setPen(Qt::NoPen);
+				painter->setBrush(c);
+				painter->drawRect(r);
+			}
+
+			r.moveLeft(r.x() - FORMAT_INFO_SPACING);
 		}
 
-		if(descriptor->dxtCompression.format != DAVA::FORMAT_INVALID)
+		// error icon
+		if(texture->width != texture->height)
 		{
-			painter->setPen(FORMAT_DXT_COLOR);
-			painter->setBrush(QBrush(FORMAT_DXT_COLOR));
-
-			painter->drawRect(rect);
-			rect.adjust(-FORMAT_INFO_WIDTH - FORMAT_INFO_SPACING, 0, -FORMAT_INFO_WIDTH - FORMAT_INFO_SPACING, 0);
+			r.moveLeft(r.x() - 16);
+			errorIcon.paint(painter, r.x(), r.y(), 16, 16);
 		}
 
-		if((descriptor->pvrCompression.format == DAVA::FORMAT_PVR4 || descriptor->pvrCompression.format == DAVA::FORMAT_PVR2) &&
-			texture->width != texture->height)
-		{
-			QRect r = rect;
-			r.setHeight(FORMAT_INFO_WIDTH * 2);
-
-			painter->setPen(NOT_SQUARE_COLOR);
-			painter->setBrush(QBrush(NOT_SQUARE_COLOR));
-			painter->drawRect(r);
-
-			rect.adjust(-FORMAT_INFO_WIDTH - FORMAT_INFO_SPACING, 0, -FORMAT_INFO_WIDTH - FORMAT_INFO_SPACING, 0);
-		}
+		ret = rect.width() - (r.x() - rect.x());
 	}
+
+	return ret;
 }

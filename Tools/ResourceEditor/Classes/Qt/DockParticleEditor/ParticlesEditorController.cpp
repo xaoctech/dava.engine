@@ -1,11 +1,18 @@
-//
-//  ParticlesEditorController.cpp
-//  ResourceEditorQt
-//
-//  Created by Yuri Coder on 11/26/12.
-//
-//
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
 
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
 #include "ParticlesEditorController.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "ParticlesEditorQT/Helpers/ParticlesEditorNodeNameHelper.h"
@@ -222,7 +229,7 @@ void ParticlesEditorController::AddParticleEmitterNodeToScene(Entity* emitterSce
 		emitterSceneNode->SetName(newName);
 
         effectNode->AddNode(emitterSceneNode);
-        effectEditorNode->AddChildNode(emitterEditorNode);
+        effectEditorNode->AddNode(emitterEditorNode);
     }
 }
 
@@ -237,7 +244,7 @@ void ParticlesEditorController::RemoveParticleEmitterNode(Entity* emitterSceneNo
     if (effectEditorNode && emitterEditorNode)
     {
 		CleanupSelectedNodeIfDeleting(emitterEditorNode);
-        effectEditorNode->RemoveChildNode(emitterEditorNode);
+        effectEditorNode->RemoveNode(emitterEditorNode);
     }
 }
 
@@ -246,7 +253,7 @@ void ParticlesEditorController::CleanupParticleEmitterEditorNode(EmitterParticle
     // Leave the node itself, but cleanup all the children.
     while (!emitterNode->GetChildren().empty())
     {
-        emitterNode->RemoveChildNode(emitterNode->GetChildren().front());
+        emitterNode->RemoveNode(emitterNode->GetChildren().front());
     }
 }
 
@@ -283,7 +290,7 @@ LayerParticleEditorNode* ParticlesEditorController::AddParticleLayerToNode(Emitt
 
     // Create the new node and add it to the tree.
     LayerParticleEditorNode* layerNode = new LayerParticleEditorNode(emitterNode, layer);
-    emitterNode->AddChildNode(layerNode);
+    emitterNode->AddNode(layerNode);
 
     SafeRelease(layer);
 
@@ -313,7 +320,7 @@ LayerParticleEditorNode* ParticlesEditorController::CloneParticleLayerNode(Layer
     emitter->AddLayer(clonedLayer);
     
     LayerParticleEditorNode* clonedEditorNode = new LayerParticleEditorNode(emitterNode, clonedLayer);
-    emitterNode->AddChildNode(clonedEditorNode);
+    emitterNode->AddNode(clonedEditorNode);
 
     return clonedEditorNode;
 }
@@ -350,7 +357,7 @@ void ParticlesEditorController::RemoveParticleLayerNode(LayerParticleEditorNode*
     // Remove the node from the layers list and also from the emitter.
     emitter->RemoveLayer(layerIndex);
     
-    emitterNode->RemoveChildNode(layerToRemove);
+    emitterNode->RemoveNode(layerToRemove);
 }
 
 ForceParticleEditorNode* ParticlesEditorController::AddParticleForceToNode(LayerParticleEditorNode* layerNode)
@@ -374,7 +381,7 @@ ForceParticleEditorNode* ParticlesEditorController::AddParticleForceToNode(Layer
     // Create the node for the new layer.
     int newLayerIndex = layer->forces.size() - 1;
     ForceParticleEditorNode* forceNode = new ForceParticleEditorNode(layerNode, newLayerIndex);
-    layerNode->AddChildNode(forceNode);
+    layerNode->AddNode(forceNode);
 
     // Update the names for the forces.
     layerNode->UpdateForcesIndices();
@@ -404,7 +411,7 @@ void ParticlesEditorController::RemoveParticleForceNode(ForceParticleEditorNode*
 	layer->RemoveForce(forceIndex);
     
     // ...and from the tree.
-    layerNode->RemoveChildNode(forceNode);
+    layerNode->RemoveNode(forceNode);
     
     // Done removing, recalculate the indices and names.
     layerNode->UpdateForcesIndices();
@@ -438,7 +445,7 @@ void ParticlesEditorController::FindEmitterEditorNode(Entity* emitterSceneNode,
     }
 }
 
-bool ParticlesEditorController::MoveEmitter(EmitterParticleEditorNode* movedItemEmitterNode, EffectParticleEditorNode* newEffectParentNode)
+bool ParticlesEditorController::MoveEmitter(EmitterParticleEditorNode* movedItemEmitterNode, EffectParticleEditorNode* newEffectParentNode, EmitterParticleEditorNode* newEffectReferenceEmitterNode)
 {
 	if (!movedItemEmitterNode || !newEffectParentNode)
 	{
@@ -453,8 +460,20 @@ bool ParticlesEditorController::MoveEmitter(EmitterParticleEditorNode* movedItem
 
 	// Move the Emitter to the new Effect inside the Particles Editor hierarchy...
 	BaseParticleEditorNode* oldEffectParentNode = movedItemEmitterNode->GetParentNode();
-	oldEffectParentNode->RemoveChildNode(movedItemEmitterNode, false);
-	newEffectParentNode->AddChildNode(movedItemEmitterNode);
+	oldEffectParentNode->RemoveNode(movedItemEmitterNode, false);
+	
+	if (newEffectReferenceEmitterNode)
+	{
+		// The particular position of the Emitter Node in the new Effect is defined, however need
+		// to be sure that reference emitter node belongs to the correct parent.
+		DVASSERT(newEffectReferenceEmitterNode->GetParentNode() == newEffectParentNode);
+		newEffectParentNode->InsertBeforeNode(movedItemEmitterNode, newEffectReferenceEmitterNode);
+	}
+	else
+	{
+		// No particular position specified - just move to the end.
+		newEffectParentNode->AddNode(movedItemEmitterNode);
+	}
 
 	// and inside the SceneGraph.
 	Entity* movedNode = movedItemEmitterNode->GetEmitterNode();
@@ -463,9 +482,54 @@ bool ParticlesEditorController::MoveEmitter(EmitterParticleEditorNode* movedItem
 
     SafeRetain(movedNode);
     oldParentNode->RemoveNode(movedNode);
-    newParentNode->AddNode(movedNode);
+	if (newEffectReferenceEmitterNode)
+	{
+		// Position the new Emitter correctly according to the reference node.
+		Entity* referenceEmitterNode = newEffectReferenceEmitterNode->GetEmitterNode();
+		DVASSERT(referenceEmitterNode->GetParent() == newParentNode);
+		newParentNode->InsertBeforeNode(movedNode, referenceEmitterNode);
+	}
+	else
+	{
+		// No particular position specified - just move to the end.
+		newParentNode->AddNode(movedNode);
+	}
     SafeRelease(movedNode);
 
+	return true;
+}
+
+bool ParticlesEditorController::MoveEmitter(EmitterParticleEditorNode* movedItemEmitterNode, EmitterParticleEditorNode* newItemEmitterNode)
+{
+	if (!movedItemEmitterNode || !newItemEmitterNode ||
+		!movedItemEmitterNode->GetParentNode() || !newItemEmitterNode->GetParentNode())
+	{
+		return false;
+	}
+	
+	if (movedItemEmitterNode->GetParentNode() != newItemEmitterNode->GetParentNode())
+	{
+		// We are moving emitter between Effects.
+		EffectParticleEditorNode* effectNode = dynamic_cast<EffectParticleEditorNode*>(newItemEmitterNode->GetParentNode());
+		DVASSERT(effectNode);
+		return MoveEmitter(movedItemEmitterNode, effectNode, newItemEmitterNode);
+	}
+
+	// Just move the emitter inside the Entity...
+	Entity* referenceNode = newItemEmitterNode->GetEmitterNode();
+	Entity* movedNode = movedItemEmitterNode->GetEmitterNode();
+	Entity* effectNode = movedItemEmitterNode->GetRootNode();
+	
+	movedNode->Retain();
+	effectNode->RemoveNode(movedNode);
+	effectNode->InsertBeforeNode(movedNode, referenceNode);
+	movedNode->Release();
+	
+	// and update the editor structure.
+	BaseParticleEditorNode* effectEditorNode = movedItemEmitterNode->GetParentNode();
+	effectEditorNode->RemoveNode(movedItemEmitterNode, false);
+	effectEditorNode->InsertBeforeNode(movedItemEmitterNode, newItemEmitterNode);
+	
 	return true;
 }
 
@@ -513,7 +577,7 @@ bool ParticlesEditorController::ChangeLayersOrderInSameEmitter(LayerParticleEdit
 		return false;
 	}
 
-	parentNode->MoveChildNode(movedItemNode, moveAboveNode);
+	parentNode->MoveNode(movedItemNode, moveAboveNode);
 	
 	ParticleLayer* layerToMove = movedItemNode->GetLayer();
 	ParticleLayer* layerToMoveAbove = moveAboveNode->GetLayer();
@@ -563,8 +627,8 @@ bool ParticlesEditorController::PerformMoveBetweenEmitters(EmitterParticleEditor
 	}
 
 	// Move the Editor node. layerNodeToInsertAbove is allowed to be NULL.
-	newEmitterNode->AddChildNodeAbove(layerNodeToMove, layerNodeToInsertAbove);
-	oldEmitterNode->RemoveChildNode(layerNodeToMove, false);
+	newEmitterNode->InsertBeforeNode(layerNodeToMove, layerNodeToInsertAbove);
+	oldEmitterNode->RemoveNode(layerNodeToMove, false);
 	
 	// Move the Particle Layers themselves.
 	ParticleLayer* layerToMove = layerNodeToMove->GetLayer();
@@ -577,7 +641,7 @@ bool ParticlesEditorController::PerformMoveBetweenEmitters(EmitterParticleEditor
 	SafeRetain(layerToMove);
 	oldParentEmitter->RemoveLayer(layerToMove);
 	
-	newParentEmitter->AddLayer(layerToMove, layerToInsertAbove);
+	newParentEmitter->InsertLayer(layerToMove, layerToInsertAbove);
 	SafeRelease(layerToMove);
 	
 	// Update the emitter.

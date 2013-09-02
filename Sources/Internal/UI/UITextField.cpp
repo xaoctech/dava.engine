@@ -1,31 +1,17 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Alexey 'Hottych' Prosin
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 #include "UI/UITextField.h"
 #include "Base/ObjectFactory.h"
@@ -80,9 +66,17 @@ UITextField::UITextField(const Rect &rect, bool rectInAbsoluteCoordinates/*= fal
 :	UIControl(rect, rectInAbsoluteCoordinates)
 ,	text()
 ,	delegate(0)
-,	cursorBlinkingTime(0.0f),
-        textFont(NULL),
-        staticText(NULL)
+,	cursorBlinkingTime(0.0f)
+,   textFont(NULL)
+,   staticText(NULL)
+,   isPassword(false)
+,	autoCapitalizationType(AUTO_CAPITALIZATION_TYPE_SENTENCES)
+,	autoCorrectionType(AUTO_CORRECTION_TYPE_DEFAULT)
+,	spellCheckingType(SPELL_CHECKING_TYPE_DEFAULT)
+,	keyboardAppearanceType(KEYBOARD_APPEARANCE_DEFAULT)
+,	keyboardType(KEYBOARD_TYPE_DEFAULT)
+,	returnKeyType(RETURN_KEY_DEFAULT)
+,	enableReturnKeyAutomatically(false)
 {
 #ifdef __DAVAENGINE_ANDROID__
 	textFieldAndroid = new UITextFieldAndroid(this);
@@ -101,8 +95,19 @@ UITextField::UITextField(const Rect &rect, bool rectInAbsoluteCoordinates/*= fal
     showCursor = true;    
 }
 
-UITextField::UITextField() : delegate(NULL), cursorBlinkingTime(0.f),
-        textFont(NULL), staticText(NULL)
+UITextField::UITextField()
+:   delegate(NULL)
+,   cursorBlinkingTime(0.f)
+,   textFont(NULL)
+,   staticText(NULL)
+,   isPassword(false)
+,	autoCapitalizationType(AUTO_CAPITALIZATION_TYPE_SENTENCES)
+,	autoCorrectionType(AUTO_CORRECTION_TYPE_DEFAULT)
+,	spellCheckingType(SPELL_CHECKING_TYPE_DEFAULT)
+,	keyboardAppearanceType(KEYBOARD_APPEARANCE_DEFAULT)
+,	keyboardType(KEYBOARD_TYPE_DEFAULT)
+,	returnKeyType(RETURN_KEY_DEFAULT)
+,	enableReturnKeyAutomatically(false)
 {
 #ifdef __DAVAENGINE_ANDROID__
 	textFieldAndroid = new UITextFieldAndroid(this);
@@ -170,49 +175,42 @@ void UITextField::CloseKeyboard()
 #endif
 }
 	
-void UITextField::SetReturnKey(int32 returnType)
-{
-#ifdef __DAVAENGINE_IPHONE__
-	textFieldiPhone->SetReturnKey(returnType);
-#endif
-}
-
 void UITextField::Update(float32 timeElapsed)
 {
 #ifdef __DAVAENGINE_IPHONE__
 	Rect rect = GetGeometricData().GetUnrotatedRect();//GetRect(true);
 	textFieldiPhone->UpdateRect(rect);
 #else
-
-    cursorTime += timeElapsed;
-
-    if (cursorTime >= 0.5f)
+    
+#ifndef __DAVAENGINE_ANDROID__
+    if(this == UIControlSystem::Instance()->GetFocusedControl())
     {
-        cursorTime = 0;
-        showCursor = !showCursor;
-        needRedraw = true;
-    }
+        cursorTime += timeElapsed;
 
+        if (cursorTime >= 0.5f)
+        {
+            cursorTime = 0;
+            showCursor = !showCursor;
+            needRedraw = true;
+        }
+    }
+#endif
+    
+    if (!needRedraw)
+        return;
+
+#ifndef __DAVAENGINE_ANDROID__
 	if(this == UIControlSystem::Instance()->GetFocusedControl())
 	{
-		if(needRedraw)
-		{
-			WideString txt = text;
-
-			if (showCursor)
-				txt += L"_";
-			else
-				txt += L" ";
-
-			staticText->SetText(txt);
-			needRedraw = false;
-		}
+        WideString txt = GetVisibleText();
+        txt += showCursor ? L"_" : L" ";
+        staticText->SetText(txt);
 	}
 	else
-	{
-		staticText->SetText(text);
-	}
+#endif
+		staticText->SetText(GetVisibleText());
 
+    needRedraw = false;
 #endif
 }
 
@@ -230,7 +228,7 @@ void UITextField::DidAppear()
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->ShowField();
 #elif defined(__DAVAENGINE_ANDROID__)
-	textFieldAndroid->ShowField();
+//	textFieldAndroid->ShowField();
 #endif
 }
 
@@ -313,7 +311,7 @@ void UITextField::SetShadowOffset(const DAVA::Vector2 &offset)
 void UITextField::SetShadowColor(const Color& color)
 {
 	staticText->SetShadowColor(color);
-   }
+}
 
 void UITextField::SetTextAlign(int32 align)
 {
@@ -321,8 +319,7 @@ void UITextField::SetTextAlign(int32 align)
     textFieldiPhone->SetTextAlign(align);
 #else
     staticText->SetTextAlign(align);
-#endif
-	
+#endif	
 }
 
 void UITextField::SetFontSize(float size)
@@ -358,12 +355,9 @@ void UITextField::SetSize(const DAVA::Vector2 &newSize)
     
 void UITextField::SetText(const WideString & _text)
 {
-	text = _text;
+	this->text = _text;
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->SetText(text);
-
-#else
-    //staticText->SetText(text);
 #endif
 
     needRedraw = true;
@@ -524,6 +518,55 @@ void UITextField::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
         if (font)
             SetFont(font);
     }
+    
+    YamlNode * passwordNode = node->Get("isPassword");
+    if (passwordNode)
+    {
+		SetIsPassword(passwordNode->AsBool());
+    }
+
+	// Keyboard customization params.
+	YamlNode* autoCapitalizationTypeNode = node->Get("autoCapitalizationType");
+	if (autoCapitalizationTypeNode)
+	{
+		autoCapitalizationType = (eAutoCapitalizationType)autoCapitalizationTypeNode->AsInt32();
+	}
+
+	YamlNode* autoCorrectionTypeNode = node->Get("autoCorrectionType");
+	if (autoCorrectionTypeNode)
+	{
+		autoCorrectionType = (eAutoCorrectionType)autoCorrectionTypeNode->AsInt32();
+	}
+
+	YamlNode* spellCheckingTypeNode = node->Get("spellCheckingType");
+	if (spellCheckingTypeNode)
+	{
+		spellCheckingType = (eSpellCheckingType)spellCheckingTypeNode->AsInt32();
+	}
+
+	YamlNode* keyboardAppearanceTypeNode = node->Get("keyboardAppearanceType");
+	if (keyboardAppearanceTypeNode)
+	{
+		keyboardAppearanceType = (eKeyboardAppearanceType)keyboardAppearanceTypeNode->AsInt32();
+	}
+
+	YamlNode* keyboardTypeNode = node->Get("keyboardType");
+	if (keyboardTypeNode)
+	{
+		keyboardType = (eKeyboardType)keyboardTypeNode->AsInt32();
+	}
+
+	YamlNode* returnKeyTypeNode = node->Get("returnKeyType");
+	if (returnKeyTypeNode)
+	{
+		returnKeyType = (eReturnKeyType)returnKeyTypeNode->AsInt32();
+	}
+
+	YamlNode* enableReturnKeyAutomaticallyNode = node->Get("enableReturnKeyAutomatically");
+	if (enableReturnKeyAutomaticallyNode)
+	{
+		enableReturnKeyAutomatically = enableReturnKeyAutomaticallyNode->AsBool();
+	}
 
     if(staticText)
     {
@@ -614,6 +657,18 @@ YamlNode * UITextField::SaveToYamlNode(UIYamlLoader * loader)
 	// Draw Type must be overwritten fot UITextField.
 	UIControlBackground::eDrawType drawType =  this->GetBackground()->GetDrawType();
 	node->Set("drawType", loader->GetDrawTypeNodeValue(drawType));
+    
+    // Is password
+    node->Set("isPassword", isPassword);
+
+	// Keyboard customization params.
+	node->Set("autoCapitalizationType", autoCapitalizationType);
+	node->Set("autoCorrectionType", autoCorrectionType);
+	node->Set("spellCheckingType", spellCheckingType);
+	node->Set("keyboardAppearanceType", keyboardAppearanceType);
+	node->Set("keyboardType", keyboardType);
+	node->Set("returnKeyType", returnKeyType);
+	node->Set("enableReturnKeyAutomatically", enableReturnKeyAutomatically);
 
     SafeDelete(nodeValue);
     
@@ -641,6 +696,7 @@ void UITextField::CopyDataFrom(UIControl *srcControl)
 		
 	cursorTime = t->cursorTime;
     showCursor = t->showCursor;
+    isPassword = t->isPassword;
 	SetText(t->text);
 	SetRect(t->GetRect());
 	
@@ -652,8 +708,133 @@ void UITextField::CopyDataFrom(UIControl *srcControl)
 	}
 	if (t->textFont)
 		SetFont(t->textFont);
+
+	SetAutoCapitalizationType(t->GetAutoCapitalizationType());
+	SetAutoCorrectionType(t->GetAutoCorrectionType());
+	SetSpellCheckingType(t->GetSpellCheckingType());
+	SetKeyboardAppearanceType(t->GetKeyboardAppearanceType());
+	SetKeyboardType(t->GetKeyboardType());
+	SetReturnKeyType(t->GetReturnKeyType());
+	SetEnableReturnKeyAutomatically(t->IsEnableReturnKeyAutomatically());
+}
+    
+void UITextField::SetIsPassword(bool isPassword)
+{
+    this->isPassword = isPassword;
+    needRedraw = true;
+	
+#ifdef __DAVAENGINE_IPHONE__
+	textFieldiPhone->SetIsPassword(isPassword);
+#endif
+}
+    
+bool UITextField::IsPassword() const
+{
+    return isPassword;
+}
+    
+WideString UITextField::GetVisibleText() const
+{
+    if (!isPassword)
+        return text;
+    
+    WideString text = this->text;
+    text.replace(0, text.length(), text.length(), L'*');
+    return text;
 }
 	
+UITextField::eAutoCapitalizationType UITextField::GetAutoCapitalizationType()
+{
+	return autoCapitalizationType;
+}
+
+void UITextField::SetAutoCapitalizationType(eAutoCapitalizationType value)
+{
+	autoCapitalizationType = value;
+#ifdef __DAVAENGINE_IPHONE__
+	textFieldiPhone->SetAutoCapitalizationType(value);
+#endif
+}
+
+UITextField::eAutoCorrectionType UITextField::GetAutoCorrectionType()
+{
+	return autoCorrectionType;
+}
+
+void UITextField::SetAutoCorrectionType(eAutoCorrectionType value)
+{
+	autoCorrectionType = value;
+#ifdef __DAVAENGINE_IPHONE__
+	textFieldiPhone->SetAutoCorrectionType(value);
+#endif
+}
+
+UITextField::eSpellCheckingType UITextField::GetSpellCheckingType()
+{
+	return spellCheckingType;
+}
+
+void UITextField::SetSpellCheckingType(eSpellCheckingType value)
+{
+	spellCheckingType = value;
+#ifdef __DAVAENGINE_IPHONE__
+	textFieldiPhone->SetSpellCheckingType(value);
+#endif
+}
+
+UITextField::eKeyboardAppearanceType UITextField::GetKeyboardAppearanceType()
+{
+	return keyboardAppearanceType;
+}
+
+void UITextField::SetKeyboardAppearanceType(eKeyboardAppearanceType value)
+{
+	keyboardAppearanceType = value;
+#ifdef __DAVAENGINE_IPHONE__
+	textFieldiPhone->SetKeyboardAppearanceType(value);
+#endif
+}
+
+UITextField::eKeyboardType UITextField::GetKeyboardType()
+{
+	return keyboardType;
+}
+
+void UITextField::SetKeyboardType(eKeyboardType value)
+{
+	keyboardType = value;
+#ifdef __DAVAENGINE_IPHONE__
+	textFieldiPhone->SetKeyboardType(value);
+#endif
+}
+
+UITextField::eReturnKeyType UITextField::GetReturnKeyType()
+{
+	return returnKeyType;
+}
+
+void UITextField::SetReturnKeyType(eReturnKeyType value)
+{
+	returnKeyType = value;
+#ifdef __DAVAENGINE_IPHONE__
+	textFieldiPhone->SetReturnKeyType(value);
+#endif
+}
+
+bool UITextField::IsEnableReturnKeyAutomatically()
+{
+	return enableReturnKeyAutomatically;
+}
+
+void UITextField::SetEnableReturnKeyAutomatically(bool value)
+{
+	enableReturnKeyAutomatically = value;
+#ifdef __DAVAENGINE_IPHONE__
+	textFieldiPhone->SetEnableReturnKeyAutomatically(value);
+#endif
+
+}
+
 }; // namespace
 
 

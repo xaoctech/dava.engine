@@ -1,13 +1,23 @@
-//
-//  HierarchyTreeControlNode.cpp
-//  UIEditor
-//
-//  Created by Yuri Coder on 10/15/12.
-//
-//
+/*==================================================================================
+    Copyright (c) 2008, DAVA, INC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
 
 #include "HierarchyTreeControlNode.h"
 #include "UI/UIList.h"
+#include "UI/UIScrollViewContainer.h"
 #include "EditorListDelegate.h"
 
 HierarchyTreeControlNode::HierarchyTreeControlNode(HierarchyTreeNode* parent,
@@ -26,7 +36,7 @@ HierarchyTreeControlNode::HierarchyTreeControlNode(HierarchyTreeNode* parent,
 	UIList *list = dynamic_cast<UIList*>(uiObject);
 	if (list)
 	{
-		EditorListDelegate *listDelegate = new EditorListDelegate(list->GetRect());
+		EditorListDelegate *listDelegate = new EditorListDelegate(list->GetRect(), list->GetOrientation());
 		list->SetDelegate(listDelegate);
 	}
 
@@ -40,6 +50,21 @@ HierarchyTreeControlNode::HierarchyTreeControlNode(HierarchyTreeNode* parent,
 	this->parent = parent;
 	this->uiObject = node->GetUIObject()->Clone();
 	this->needReleaseUIObjects = false;
+	
+	// All UIList controls should always have a delegate
+	// We set a delegate here to avoid inappropriate loading of saved list
+	UIList *list = dynamic_cast<UIList*>(this->uiObject);
+	UIList *srcList = dynamic_cast<UIList*>(node->GetUIObject());
+	if (list)
+	{
+		EditorListDelegate *listDelegate = new EditorListDelegate(list->GetRect(), list->GetOrientation());
+		EditorListDelegate *srcListDelegate = dynamic_cast<EditorListDelegate*>(srcList->GetDelegate());
+		if (srcListDelegate)
+		{
+			listDelegate->SetAggregatorID(srcListDelegate->GetAggregatorID());
+		}
+		list->SetDelegate(listDelegate);
+	}
 	
 	// Remove real children & subcontrols - each control is responsible for its
 	// subcontrols by itself.
@@ -188,6 +213,12 @@ Vector2 HierarchyTreeControlNode::GetParentDelta(bool skipControl/* = false*/) c
 	{
 		Rect rect = uiObject->GetRect();
 		parentDelta = rect.GetPosition();
+		// For UIScrollView we should consider scrollcontainer delta also
+		UIScrollView* scrollView = dynamic_cast<UIScrollView* >(uiObject);
+		if (scrollView)
+		{
+			parentDelta += scrollView->GetPadding();
+		}
 	}
 	
 	const HierarchyTreeControlNode* parentControl = dynamic_cast<const HierarchyTreeControlNode* >(parent);
@@ -277,6 +308,19 @@ Rect HierarchyTreeControlNode::GetRect() const
 			continue;
 		
 		Rect controlRect = control->GetRect();
+		// Yuri Coder, 2013/08/28. Don't take into account controls inside the Scroll View Containers
+		// because of issue #1844. Take the Container size instead.
+		if (control->GetUIObject() && control->GetUIObject()->GetParent() &&
+			dynamic_cast<UIScrollViewContainer*>(control->GetUIObject()->GetParent()))
+		{
+			UIScrollViewContainer* container = dynamic_cast<UIScrollViewContainer*>(control->GetUIObject()->GetParent());
+			UIScrollView* scrollView = dynamic_cast<UIScrollView*>(container->GetParent());
+			if (scrollView)
+			{
+				controlRect = Rect(scrollView->GetPosition(), container->GetSize());
+			}
+		}
+		
 		rect = rect.Combine(controlRect);
 	}
 

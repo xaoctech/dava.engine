@@ -14,34 +14,57 @@ import string;
 import platform;
 import shutil;
 import subprocess;
+import filecmp;
 
 arguments = sys.argv[1:]
 
-index_OS = 0
-index_Project = 1
+if len(arguments) != 5:
+    print 'Usage: ./autotesting_init.py PlatformName Device ProjectName ProjectFolder TestsGroupName'
+    exit(1)
 
-if 0 == len(arguments):
-	print 'Usage: ./autotesting_init.py [PlatformName] [ProjectName]'
-	exit(1)
-
+def copy_file(srcFolder, destFolder, fileName):
+    fileSrcPath = os.path.realpath(srcFolder + "/" + fileName)
+    fileDestPath = os.path.realpath(destFolder + "/" + fileName)
+    if os.path.exists(fileDestPath):
+        print "delete " + fileDestPath
+        os.remove(fileDestPath)
+    print "copy " + fileSrcPath + " to " + fileDestPath
+    shutil.copy(fileSrcPath, fileDestPath)
+    
 print "*** DAVA Initializing autotesting"
+platformName = arguments[0]
+device = arguments[1]
+projectName = arguments[2]
+projectFolder = arguments[3]
+testsGroupName = arguments[4]
+
+
+#if 3 == len(arguments):
+#    testsGroupName = arguments[2]
+testsSrcFolder = "/Tests/" + testsGroupName
 
 print "platform.system: " + platform.system()
 
 currentDir = os.getcwd(); 
 frameworkDir =  os.path.realpath(currentDir + "/../../../")
-projectDir = os.path.realpath(currentDir + "/../../../../" + arguments[index_Project])
+projectDir = os.path.realpath(currentDir + "/../../../../" + projectFolder)
 print "Framework directory:" + frameworkDir
 print "Project directory:" + projectDir
 
-if 2 == len(arguments):
+if 2 <= len(arguments):
     autotestingConfigSrcPath = os.path.realpath(currentDir + "/../Data/Config.h")
     autotestingConfigDestPath = os.path.realpath(frameworkDir + "/Sources/Internal/Autotesting/Config.h")
-    if os.path.exists(autotestingConfigDestPath):    
-        print "delete " + autotestingConfigDestPath
-        os.remove(autotestingConfigDestPath)
-    print "copy " + autotestingConfigSrcPath + " to " + autotestingConfigDestPath
-    shutil.copy(autotestingConfigSrcPath, autotestingConfigDestPath)
+    if os.path.exists(autotestingConfigDestPath):
+        if filecmp.cmp(autotestingConfigSrcPath, autotestingConfigDestPath):
+            print "skip copy Config.h - dest file exists and equal to src file"
+        else:
+            print "delete " + autotestingConfigDestPath
+            os.remove(autotestingConfigDestPath)
+            print "copy " + autotestingConfigSrcPath + " to " + autotestingConfigDestPath
+            shutil.copy(autotestingConfigSrcPath, autotestingConfigDestPath)
+    else:
+        print "copy " + autotestingConfigSrcPath + " to " + autotestingConfigDestPath
+        shutil.copy(autotestingConfigSrcPath, autotestingConfigDestPath)
 
 autotestingSrcFolder = os.path.realpath(projectDir + "/Autotesting")
 autotestingDestFolder = os.path.realpath(projectDir + "/Data/Autotesting")
@@ -49,7 +72,7 @@ autotestingDestFolder = os.path.realpath(projectDir + "/Data/Autotesting")
 scripts = ["/generate_id.py", "/copy_tests.py"]
 
 if (platform.system() == "Darwin"):
-    if (arguments[index_OS] == "iOS"):
+    if (platformName == "iOS"):
         scripts.append("/runOnDevice.sh")
         scripts.append("/floatsign.sh")
         scripts.append("/packipa.sh")
@@ -57,15 +80,12 @@ if (platform.system() == "Darwin"):
         scripts.append("/testRun.js")
 
 autotestingReportsFolder = os.path.realpath(autotestingSrcFolder + "/Reports")      
-
+# Remove as depricated
 if os.path.exists(autotestingReportsFolder):   
-    print "remove previous report for " + arguments[index_OS]       
-    autotestingReportPath = os.path.realpath(autotestingReportsFolder + "/report_" + arguments[index_OS] + ".html") 
-    if os.path.exists(autotestingReportPath): 
-        os.remove(autotestingReportPath)
-else:
-    os.mkdir(autotestingReportsFolder)    
-    
+    print "remove previous report folder: " + autotestingReportsFolder       
+    shutil.rmtree(autotestingReportsFolder)
+
+	
 print "copy scripts from " + currentDir + " to " + autotestingSrcFolder
 for scriptName in scripts:
     scriptSrcPath = os.path.realpath(currentDir + scriptName)
@@ -82,13 +102,20 @@ if os.path.exists(autotestingDestFolder):
 
 os.mkdir(autotestingDestFolder)
 
+luaScriptDestFolder = os.path.realpath(autotestingDestFolder + "/Scripts")
+os.mkdir(luaScriptDestFolder)
+
+copy_file(currentDir, luaScriptDestFolder, "autotesting_api.lua")
+copy_file(currentDir, luaScriptDestFolder, "logger.lua")
+copy_file(currentDir, luaScriptDestFolder, "coxpcall.lua")
+
 os.chdir(autotestingSrcFolder)
 
-params = ["python", "./copy_tests.py", arguments[index_Project], autotestingDestFolder]
+params = ["python", "./copy_tests.py", testsSrcFolder, autotestingDestFolder]
 print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
 subprocess.call(params)
 
-params = ["python", "./generate_id.py", arguments[index_Project], autotestingDestFolder]
+params = ["python", "./generate_id.py", projectName, autotestingDestFolder, testsGroupName, device]
 print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
 subprocess.call(params)
 
