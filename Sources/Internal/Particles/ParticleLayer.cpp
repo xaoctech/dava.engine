@@ -81,6 +81,7 @@ ParticleLayer::ParticleLayer()
 	layerTime = 0.0f;
 	loopLayerTime = 0.0f;
 	additive = true;
+	inheritPosition = true;
 	type = TYPE_PARTICLES;
     
     endTime = 100000000.0f;
@@ -89,13 +90,11 @@ ParticleLayer::ParticleLayer()
 	loopVariation = 0.0f;
 	loopEndTime = 0.0f;
 	currentLoopVariation = 0.0f;
-	currentDeltaVariation = 0.0f;
-
-	frameStart = 0;
-	frameEnd = 0;
+	currentDeltaVariation = 0.0f;	
 
 	frameOverLifeEnabled = false;
 	frameOverLifeFPS = 0;
+	randomFrameOnStart = false;
 
     isDisabled = false;
 	isLooped = false;
@@ -210,8 +209,10 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	dstLayer->layerName = layerName;
 	dstLayer->alignToMotion = alignToMotion;
 	dstLayer->SetAdditive(additive);
+	dstLayer->SetInheritPosition(inheritPosition);
 	dstLayer->startTime = startTime;
 	dstLayer->endTime = endTime;
+	
 	
 	dstLayer->isLooped = isLooped;
 	dstLayer->deltaTime = deltaTime;
@@ -221,13 +222,11 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	
 	dstLayer->type = type;
 	dstLayer->sprite = SafeRetain(sprite);
-	dstLayer->layerPivotPoint = layerPivotPoint;
-	
-	dstLayer->frameStart = frameStart;
-	dstLayer->frameEnd = frameEnd;
+	dstLayer->layerPivotPoint = layerPivotPoint;	
 
 	dstLayer->frameOverLifeEnabled = frameOverLifeEnabled;
 	dstLayer->frameOverLifeFPS = frameOverLifeFPS;
+	dstLayer->randomFrameOnStart = randomFrameOnStart;
 
     dstLayer->isDisabled = isDisabled;
 	dstLayer->spritePath = spritePath;
@@ -730,6 +729,11 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 	//particle->position = emitter->GetPosition();	
 	// parameters should be prepared inside prepare emitter parameters
 	emitter->PrepareEmitterParameters(particle, vel, emitIndex);
+	if (this->emitter&&!inheritPosition) //just generate at correct position
+	{		
+		particle->position += emitter->GetPosition();
+	}
+
 	//particle->angle += alignToMotion;
 	if (angle)
 		particle->angle += DegToRad(angle->GetValue(layerTime));
@@ -802,7 +806,11 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 		particle->AddForce(toAddForceValue, toAddForceDirection, toAddForceOverlife, toAddForceOvelifeEnabled);
 	}
     
-	particle->frame = frameStart + (int32)(randCoeff * (float32)(frameEnd - frameStart));
+	particle->frame = 0;
+	if (randomFrameOnStart&&sprite)
+	{
+		particle->frame =  (int32)(randCoeff * (float32)(this->sprite->GetFrameCount()));
+	}	
 	
 	// process it to fill first life values
 	ProcessParticle(particle);
@@ -988,6 +996,12 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * n
 		frameOverLifeEnabled = frameOverLifeEnabledNode->AsBool();
 	}
 
+	const YamlNode* randomFrameOnStartNode = node->Get("randomFrameOnStart");
+	if (randomFrameOnStartNode)
+	{
+		randomFrameOnStart = randomFrameOnStartNode->AsBool();
+	}
+
 	const YamlNode* frameOverLifeFPSNode = node->Get("frameOverLifeFPS");
 	if (frameOverLifeFPSNode)
 	{
@@ -1102,22 +1116,7 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * n
 		
 	const YamlNode * loopEndTimeNode = node->Get("loopEndTime");
 	if (loopEndTimeNode)
-		loopEndTime = loopEndTimeNode->AsFloat();
-	
-	frameStart = 0;
-	frameEnd = 0;
-
-	const YamlNode * frameNode = node->Get("frame");
-	if (frameNode)
-	{
-		if (frameNode->GetType() == YamlNode::TYPE_STRING)
-			frameStart = frameEnd = frameNode->AsInt();
-		else if (frameNode->GetType() == YamlNode::TYPE_ARRAY)
-		{
-			frameStart = frameNode->Get(0)->AsInt();
-			frameEnd = frameNode->Get(1)->AsInt();
-		}
-	}
+		loopEndTime = loopEndTimeNode->AsFloat();			
 
 	const YamlNode * isDisabledNode = node->Get("isDisabled");
 	if (isDisabledNode)
@@ -1138,6 +1137,12 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * n
 	UpdatePropertyLineOnLoad(spinVariation.Get(), startTime, endTime);
 	UpdatePropertyLineOnLoad(angle.Get(), startTime, endTime);
 	UpdatePropertyLineOnLoad(angleVariation.Get(), startTime, endTime);
+
+	const YamlNode * inheritPositionNode = node->Get("inheritPosition");
+	if (inheritPositionNode)
+	{
+		inheritPosition = inheritPositionNode->AsBool();
+	}
 
 	// Load the Inner Emitter parameters.
 	const YamlNode * innerEmitterPathNode = node->Get("innerEmitterPath");
@@ -1211,6 +1216,7 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
     PropertyLineYamlWriter::WriteColorPropertyLineToYamlNode(layerNode, "colorOverLife", this->colorOverLife);
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "frameOverLifeEnabled", this->frameOverLifeEnabled);
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "frameOverLifeFPS", this->frameOverLifeFPS);
+	PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "randomFrameOnStart", this->randomFrameOnStart);
 
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "alignToMotion", this->alignToMotion);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "blend", this->additive ? "add" : "alpha");
@@ -1225,6 +1231,8 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "loopEndTime", this->loopEndTime);
 
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "isDisabled", this->isDisabled);
+
+	layerNode->Set("inheritPosition", inheritPosition);	
 
 	YamlNode *lodsNode = new YamlNode(YamlNode::TYPE_ARRAY);
 	for (int32 i =0; i<LodComponent::MAX_LOD_LAYERS; i++)
@@ -1295,6 +1303,11 @@ void ParticleLayer::UpdateFrameTimeline()
 void ParticleLayer::SetAdditive(bool additive)
 {
 	this->additive = additive;
+}
+
+void ParticleLayer::SetInheritPosition(bool inherit)
+{
+	inheritPosition = inherit;
 }
 
 void ParticleLayer::AddForce(ParticleForce* force)

@@ -394,11 +394,11 @@ void RenderManager::ClipRect(const Rect &rect)
 	Rect r = currentClip;
 	if(r.dx < 0)
 	{
-		r.dx = (float32)retScreenWidth + abs(r.x);
+		r.dx = (float32)retScreenWidth;
 	}
 	if(r.dy < 0)
 	{
-		r.dy = (float32)retScreenHeight + abs(r.x);
+		r.dy = (float32)retScreenHeight;
 	}
 	
 	r = r.Intersection(rect);
