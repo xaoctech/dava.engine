@@ -229,7 +229,7 @@ LodComponent::LodComponent()
 :	forceLodLayer(INVALID_LOD_LAYER),
 	forceDistance(INVALID_DISTANCE),
 	forceDistanceSq(INVALID_DISTANCE),
-    currentLod(NULL)
+	currentLod(NULL)
 {
 	lodLayersArray.resize(MAX_LOD_LAYERS);
 
