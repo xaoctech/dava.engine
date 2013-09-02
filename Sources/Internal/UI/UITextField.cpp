@@ -526,43 +526,71 @@ void UITextField::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
     }
 
 	// Keyboard customization params.
+<<<<<<< HEAD
 	const YamlNode* autoCapitalizationTypeNode = node->Get("autoCapitalizationType");
+=======
+	YamlNode* autoCapitalizationTypeNode = node->Get("autoCapitalizationType");
+>>>>>>> development-qa
 	if (autoCapitalizationTypeNode)
 	{
 		autoCapitalizationType = (eAutoCapitalizationType)autoCapitalizationTypeNode->AsInt32();
 	}
 
+<<<<<<< HEAD
 	const YamlNode* autoCorrectionTypeNode = node->Get("autoCorrectionType");
+=======
+	YamlNode* autoCorrectionTypeNode = node->Get("autoCorrectionType");
+>>>>>>> development-qa
 	if (autoCorrectionTypeNode)
 	{
 		autoCorrectionType = (eAutoCorrectionType)autoCorrectionTypeNode->AsInt32();
 	}
 
+<<<<<<< HEAD
 	const YamlNode* spellCheckingTypeNode = node->Get("spellCheckingType");
+=======
+	YamlNode* spellCheckingTypeNode = node->Get("spellCheckingType");
+>>>>>>> development-qa
 	if (spellCheckingTypeNode)
 	{
 		spellCheckingType = (eSpellCheckingType)spellCheckingTypeNode->AsInt32();
 	}
 
+<<<<<<< HEAD
 	const YamlNode* keyboardAppearanceTypeNode = node->Get("keyboardAppearanceType");
+=======
+	YamlNode* keyboardAppearanceTypeNode = node->Get("keyboardAppearanceType");
+>>>>>>> development-qa
 	if (keyboardAppearanceTypeNode)
 	{
 		keyboardAppearanceType = (eKeyboardAppearanceType)keyboardAppearanceTypeNode->AsInt32();
 	}
 
+<<<<<<< HEAD
 	const YamlNode* keyboardTypeNode = node->Get("keyboardType");
+=======
+	YamlNode* keyboardTypeNode = node->Get("keyboardType");
+>>>>>>> development-qa
 	if (keyboardTypeNode)
 	{
 		keyboardType = (eKeyboardType)keyboardTypeNode->AsInt32();
 	}
 
+<<<<<<< HEAD
 	const YamlNode* returnKeyTypeNode = node->Get("returnKeyType");
+=======
+	YamlNode* returnKeyTypeNode = node->Get("returnKeyType");
+>>>>>>> development-qa
 	if (returnKeyTypeNode)
 	{
 		returnKeyType = (eReturnKeyType)returnKeyTypeNode->AsInt32();
 	}
 
+<<<<<<< HEAD
 	const YamlNode* enableReturnKeyAutomaticallyNode = node->Get("enableReturnKeyAutomatically");
+=======
+	YamlNode* enableReturnKeyAutomaticallyNode = node->Get("enableReturnKeyAutomatically");
+>>>>>>> development-qa
 	if (enableReturnKeyAutomaticallyNode)
 	{
 		enableReturnKeyAutomatically = enableReturnKeyAutomaticallyNode->AsBool();
