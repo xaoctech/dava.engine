@@ -83,6 +83,7 @@ private:
 	QCheckBox* additiveCheckBox;
 	QCheckBox* isLongCheckBox;
 	QCheckBox* isLoopedCheckBox;
+	QCheckBox* inheritPostionCheckBox;
 
 	QCheckBox* layerLodsCheckBox[LodComponent::MAX_LOD_LAYERS];
 
@@ -119,6 +120,7 @@ private:
 	QCheckBox* frameOverlifeCheckBox;
 	QSpinBox* frameOverlifeFPSSpin;
 	QLabel* frameOverlifeFPSLabel;
+	QCheckBox* randomFrameOnStartCheckBox;
 
 	TimeLineWidget* angleTimeLine;
 	GradientPickerWidget* colorRandomGradient;

@@ -191,6 +191,7 @@ public:
 			  ParticleLayer::eType layerType,
 			  bool isDisabled,
 			  bool additive,
+			  bool inheritPosition,
   			  bool isLong,
 			  bool isLooped,
 			  Sprite* sprite,
@@ -222,6 +223,7 @@ public:
 			  float32 loopVariation,
 			  bool frameOverLifeEnabled,
 			  float32 frameOverLifeFPS,
+			  bool randomFrameOnStart,
 
 			  float32 pivotPointX,
 			  float32 pivotPointY);
@@ -236,6 +238,7 @@ protected:
 	bool isDisabled;
 	bool isLong;
 	bool additive;
+	bool inheritPosition;
 	bool isLooped;
 	Sprite* sprite;
 	RefPtr< PropertyLine<float32> > life;
@@ -267,6 +270,7 @@ protected:
 	float32 loopVariation;
 	bool frameOverLifeEnabled;
 	float32 frameOverLifeFPS;
+	bool randomFrameOnStart;
 
 	float32 pivotPointX;
 	float32 pivotPointY;

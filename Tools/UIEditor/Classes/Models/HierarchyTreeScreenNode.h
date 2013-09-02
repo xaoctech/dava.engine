@@ -30,6 +30,8 @@ class HierarchyTreePlatformNode;
 class HierarchyTreeScreenNode: public HierarchyTreeNode
 {
 public:
+	static const float32 POSITION_UNDEFINED;
+
 	HierarchyTreeScreenNode(HierarchyTreePlatformNode* parent, const QString& name);
 	HierarchyTreeScreenNode(HierarchyTreePlatformNode* parent, const HierarchyTreeScreenNode* base);
 	~HierarchyTreeScreenNode();

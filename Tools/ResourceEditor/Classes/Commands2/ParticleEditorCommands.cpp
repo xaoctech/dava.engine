@@ -118,6 +118,7 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
 									  ParticleLayer::eType layerType,
 									  bool isDisabled,
 									  bool additive,
+									  bool inheritPosition,
 									  bool isLong,
 									  bool isLooped,
 									  Sprite* sprite,
@@ -148,6 +149,7 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
 									  float32 loopVariation,
 									  bool frameOverLifeEnabled,
 									  float32 frameOverLifeFPS,
+									  bool randomFrameOnStart,
 									  
 									  float32 pivotPointX,
 									  float32 pivotPointY)
@@ -156,6 +158,7 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
 	this->layerType = layerType;
 	this->isDisabled = isDisabled;
 	this->additive = additive;
+	this->inheritPosition = inheritPosition;
 	this->isLooped = isLooped;
 	this->isLong = isLong;
 	this->sprite = sprite;
@@ -188,6 +191,7 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
 	this->loopVariation = loopVariation;
 	this->frameOverLifeEnabled = frameOverLifeEnabled;
 	this->frameOverLifeFPS = frameOverLifeFPS;
+	this->randomFrameOnStart = randomFrameOnStart;
 	
 	this->pivotPointX = pivotPointX;
 	this->pivotPointY = pivotPointY;
@@ -199,6 +203,7 @@ void CommandUpdateParticleLayer::Redo()
 	layer->layerName = layerName;
 	layer->SetDisabled(isDisabled);
 	layer->SetAdditive(additive);
+	layer->SetInheritPosition(inheritPosition);
 	layer->SetLong(isLong);
 	layer->SetLooped(isLooped);
 	layer->life = life;
@@ -221,6 +226,7 @@ void CommandUpdateParticleLayer::Redo()
 	
 	layer->frameOverLifeEnabled = frameOverLifeEnabled;
 	layer->frameOverLifeFPS = frameOverLifeFPS;
+	layer->randomFrameOnStart = randomFrameOnStart;
 
 	layer->angle = angle;
 	layer->angleVariation = angleVariation;
