@@ -58,6 +58,8 @@ namespace ResourceEditor
 
     //Documentation
     static const String DOCUMENTATION_PATH = "~doc:/ResourceEditorHelp/";
+
+	static const String CUSTOM_COLOR_TEXTURE_PROP = "customColorTexture";
 }
 
 #endif //#ifndef __STRING_CONSTANTS_H__
