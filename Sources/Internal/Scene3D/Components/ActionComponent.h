@@ -41,8 +41,13 @@ namespace DAVA
 			int32 switchIndex;
 			float32 delay;
 			String entityName;
+			//VI: properties needed to control particle effect
+			int32 stopAfterNRepeats;
+			bool stopWhenEmpty;
+
 			
-			Action() : type(TYPE_NONE), delay(0.0f), switchIndex(-1)
+			Action() : type(TYPE_NONE), delay(0.0f), switchIndex(-1),
+						stopAfterNRepeats(-1), stopWhenEmpty(false)
 			{
 			}
 			
@@ -52,6 +57,8 @@ namespace DAVA
 				delay = action.delay;
 				entityName = action.entityName;
 				switchIndex = action.switchIndex;
+				stopAfterNRepeats = action.stopAfterNRepeats;
+				stopWhenEmpty = action.stopWhenEmpty;
 				
 				return *this;
 			}
@@ -122,7 +129,7 @@ namespace DAVA
 		Vector<ActionComponent::ActionContainer> actions;
 		bool started;
 		bool allActionsActive; //skip processing when all actions are active
-		
+				
 	public:
 		
 		INTROSPECTION_EXTEND(ActionComponent, Component,

@@ -524,27 +524,36 @@ void Scene::Update(float timeElapsed)
 
 	updatableSystem->UpdatePostTransform();
 
-	lodSystem->SetCamera(currentCamera);
-	lodSystem->Process();
+	if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_LODS))
+	{
+		lodSystem->SetCamera(currentCamera);
+		lodSystem->Process();
+	}
+	
 
 	switchSystem->Process();
     
 //	entityManager->Flush();
-
-	int32 size = (int32)animations.size();
+	int32 size;
+	
+	size = (int32)animations.size();
 	for (int32 animationIndex = 0; animationIndex < size; ++animationIndex)
 	{
 		SceneNodeAnimationList * anim = animations[animationIndex];
 		anim->Update(timeElapsed);
 	}
+	
 
 	referenceNodeSuffixChanged = false;
-	
-	size = (int32)animatedMeshes.size();
-	for (int32 animatedMeshIndex = 0; animatedMeshIndex < size; ++animatedMeshIndex)
+
+	if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_ANIMATED_MESHES))
 	{
-		AnimatedMesh * mesh = animatedMeshes[animatedMeshIndex];
-		mesh->Update(timeElapsed);
+		size = (int32)animatedMeshes.size();
+		for (int32 animatedMeshIndex = 0; animatedMeshIndex < size; ++animatedMeshIndex)
+		{
+			AnimatedMesh * mesh = animatedMeshes[animatedMeshIndex];
+			mesh->Update(timeElapsed);
+		}
 	}
 
 	//if(imposterManager)

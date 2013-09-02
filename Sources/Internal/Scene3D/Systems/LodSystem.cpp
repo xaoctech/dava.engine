@@ -23,7 +23,7 @@
 #include "Render/Highlevel/Camera.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Platform/SystemTimer.h"
-#include "Core/PerformanceSettings.h";
+#include "Core/PerformanceSettings.h"
 
 namespace DAVA
 {
@@ -145,7 +145,21 @@ void LodSystem::UpdateLod(Entity * entity, float32 psLodOffsetSq, float32 psLodM
 {
 	LodComponent * lodComponent = static_cast<LodComponent*>(entity->GetComponent(Component::LOD_COMPONENT));
 	int32 oldLod = lodComponent->currentLod;
-	RecheckLod(entity, psLodOffsetSq, psLodMultSq);
+	if(!RecheckLod(entity, psLodOffsetSq, psLodMultSq))
+
+{
+		if (oldLod != LodComponent::INVALID_LOD_LAYER)
+		{
+			int32 size = lodComponent->lodLayers[oldLod].nodes.size();
+			for (int32 i = 0; i < size; i++) 
+			{
+				lodComponent->lodLayers[oldLod].nodes[i]->SetLodVisible(false);
+			}
+		}
+
+lodComponent->currentLod = LodComponent::INVALID_LOD_LAYER;
+return;
+}
 	if (oldLod != lodComponent->currentLod) 
 	{
 
@@ -172,11 +186,11 @@ void LodSystem::UpdateLod(Entity * entity, float32 psLodOffsetSq, float32 psLodM
 	}
 }
 
-void LodSystem::RecheckLod(Entity * entity, float32 psLodOffsetSq, float32 psLodMultSq)
+bool LodSystem::RecheckLod(Entity * entity, float32 psLodOffsetSq, float32 psLodMultSq)
 {
 	
 	LodComponent * lodComponent = static_cast<LodComponent*>(entity->GetComponent(Component::LOD_COMPONENT));
-	if (lodComponent->currentLod == LodComponent::INVALID_LOD_LAYER) return;
+	if (lodComponent->currentLod == LodComponent::INVALID_LOD_LAYER) return false;
 
 	int32 layersCount = lodComponent->lodLayers.size();	
 	RenderObject *renderObject = GetRenderObject(entity);
@@ -194,10 +208,10 @@ void LodSystem::RecheckLod(Entity * entity, float32 psLodOffsetSq, float32 psLod
 			if (i >= lodComponent->forceLodLayer)
 			{
 				lodComponent->currentLod = i;
-				return;
+				return true;
 			}
 		}
-		return;
+		return false;
 	}
 
 	{
@@ -230,11 +244,17 @@ void LodSystem::RecheckLod(Entity * entity, float32 psLodOffsetSq, float32 psLod
 				}
 				else 
 				{
-					return;
+					return true;
 				}
 			}
+            if (dst > lodComponent->GetLodLayerFarSquare(lodComponent->lodLayers.rbegin()->layer))
+            {
+                return false;
+            }
 		}
 	}
+
+return true;
 }
 
 void LodSystem::SetCamera(Camera * _camera)

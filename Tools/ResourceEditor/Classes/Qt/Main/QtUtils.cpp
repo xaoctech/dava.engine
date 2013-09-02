@@ -205,3 +205,16 @@ void ShowActionWithText(QToolBar *toolbar, QAction *action, bool showText)
 	}
 }
 
+DAVA::String ReplaceInString(const DAVA::String & sourceString, const DAVA::String & what, const DAVA::String & on)
+{
+	String::size_type pos = sourceString.find(what);
+	if(pos != String::npos)
+	{
+		String newString = sourceString;
+		newString = newString.replace(pos, what.length(), on);
+		return newString;
+	}
+
+	return sourceString;
+}
+

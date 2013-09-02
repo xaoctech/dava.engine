@@ -596,46 +596,19 @@ function SelectHorizontal(list, item)
 	end
 end
 
-function SelectHorizontalRightToLeft(list)
-	Log("Select "..tostring(item).." item in horizontal list "..list.." scrolling from right to left")
-	
-	local cell = list.."/".. tostring(item)
-	assert(WaitControl(list), "Couldn't select "..cell)
-	
-	local first_visible = 0
-	local previous_first = 0
-	local index = 0
+function SelectFirstHorizontal(list)
+	Log("Select first item in horizontal list "..list)
 	
 	-- find first visible element
 	for i = 0, 100 do --to avoid hanging up in empty list
-		if IsVisible(list.."/"..tostring(i)) then
-			--previous_first = i
-			first_visible = i
-			break
-		end
-	end
-	
-	repeat
-		if IsVisible(cell, list) then
-			ClickControl(cell)
+		if IsVisible(list.."/0", list) then
 			return true
 		else
-			previous_first = first_visible
 			ScrollLeft(list, true)
-			
-			index = first_visible - 1
-			while true do
-				if not IsVisible(list.."/"..tostring(index)) then
-					first_visible = index + 1
-					--Log( "previous_last = "..tostring(previous_last) )
-					break
-				end
-				index = index - 1
-			end
 		end
-	until previous_first == first_visible
-	
-	Log("Item "..item.." in "..list.." not found")
+	end
+    
+	Log("First item in "..list.." not found")
 	return false
 end
 
@@ -703,7 +676,7 @@ function SelectVertical(list, item)
 end
 
 function SelectFirstVertical(list)
-	Log("Selectfirst item in vertical list "..list)
+	Log("Select first item in vertical list "..list)
 	
 	-- find first visible element
 	for i = 0, 100 do --to avoid hanging up in empty list
