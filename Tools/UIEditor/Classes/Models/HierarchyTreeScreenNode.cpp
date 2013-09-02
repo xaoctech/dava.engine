@@ -23,6 +23,8 @@
 #include "Render/2D/FontManager.h"
 #include <qmessagebox.h>
 
+const float32 HierarchyTreeScreenNode::POSITION_UNDEFINED = -1.0f;
+
 HierarchyTreeScreenNode::HierarchyTreeScreenNode(HierarchyTreePlatformNode* parent, const QString& name) :
 	HierarchyTreeNode(name)
 {
@@ -31,8 +33,9 @@ HierarchyTreeScreenNode::HierarchyTreeScreenNode(HierarchyTreePlatformNode* pare
 	screen->SetRect(Rect(0, 0, parent->GetWidth(), parent->GetHeight()));
 	
 	scale = 1.f;
-	posX = 0;
-	posY = 0;
+	
+	posX = POSITION_UNDEFINED;
+	posY = POSITION_UNDEFINED;
 }
 
 HierarchyTreeScreenNode::HierarchyTreeScreenNode(HierarchyTreePlatformNode* parent, const HierarchyTreeScreenNode* base):
