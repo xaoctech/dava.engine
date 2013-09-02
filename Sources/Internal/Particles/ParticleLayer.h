@@ -214,6 +214,8 @@ public:
 	virtual void SetAdditive(bool additive);
 	bool GetAdditive() const {return additive;};
 
+	void SetInheritPosition(bool inherit);
+	bool GetInheritPosition() const {return inheritPosition;}
 
 	// Logic to work with Particle Forces.
 	void AddForce(ParticleForce* force);
@@ -312,6 +314,9 @@ protected:
 	bool		isDisabled;
 	bool		additive;
 	bool		isLooped;
+
+	bool inheritPosition;  //for supperemitter - if true the whole emitter would be moved, otherwise just emission point
+
 	float32		playbackSpeed;
 
 	Vector2		layerPivotPoint;

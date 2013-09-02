@@ -191,6 +191,7 @@ public:
 			  ParticleLayer::eType layerType,
 			  bool isDisabled,
 			  bool additive,
+			  bool inheritPosition,
   			  bool isLong,
 			  bool isLooped,
 			  Sprite* sprite,
@@ -236,6 +237,7 @@ protected:
 	bool isDisabled;
 	bool isLong;
 	bool additive;
+	bool inheritPosition;
 	bool isLooped;
 	Sprite* sprite;
 	RefPtr< PropertyLine<float32> > life;

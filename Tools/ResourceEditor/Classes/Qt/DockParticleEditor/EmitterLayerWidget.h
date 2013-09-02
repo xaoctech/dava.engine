@@ -83,6 +83,7 @@ private:
 	QCheckBox* additiveCheckBox;
 	QCheckBox* isLongCheckBox;
 	QCheckBox* isLoopedCheckBox;
+	QCheckBox* inheritPostionCheckBox;
 
 	QCheckBox* layerLodsCheckBox[LodComponent::MAX_LOD_LAYERS];
 

@@ -81,6 +81,7 @@ ParticleLayer::ParticleLayer()
 	layerTime = 0.0f;
 	loopLayerTime = 0.0f;
 	additive = true;
+	inheritPosition = true;
 	type = TYPE_PARTICLES;
     
     endTime = 100000000.0f;
@@ -210,8 +211,10 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	dstLayer->layerName = layerName;
 	dstLayer->alignToMotion = alignToMotion;
 	dstLayer->SetAdditive(additive);
+	dstLayer->SetInheritPosition(inheritPosition);
 	dstLayer->startTime = startTime;
 	dstLayer->endTime = endTime;
+	
 	
 	dstLayer->isLooped = isLooped;
 	dstLayer->deltaTime = deltaTime;
@@ -646,6 +649,11 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 	//particle->position = emitter->GetPosition();	
 	// parameters should be prepared inside prepare emitter parameters
 	emitter->PrepareEmitterParameters(particle, vel, emitIndex);
+	if (this->emitter&&!inheritPosition) //just generate at correct position
+	{		
+		particle->position += emitter->GetPosition();
+	}
+
 	//particle->angle += alignToMotion;
 	if (angle)
 		particle->angle += DegToRad(angle->GetValue(layerTime));
@@ -1041,6 +1049,12 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * n
 		isDisabled = isDisabledNode->AsBool();
 	}
 
+	const YamlNode * inheritPositionNode = node->Get("inheritPosition");
+	if (inheritPositionNode)
+	{
+		inheritPosition = inheritPositionNode->AsBool();
+	}
+
 	// Load the Inner Emitter parameters.
 	const YamlNode * innerEmitterPathNode = node->Get("innerEmitterPath");
 	if (innerEmitterPathNode)
@@ -1128,6 +1142,8 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
 
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "isDisabled", this->isDisabled);
 
+	layerNode->Set("inheritPosition", inheritPosition);	
+
 	YamlNode *lodsNode = new YamlNode(YamlNode::TYPE_ARRAY);
 	for (int32 i =0; i<LodComponent::MAX_LOD_LAYERS; i++)
 		lodsNode->AddValueToArray((int32)activeLODS[i]); //as for now AddValueToArray has no bool type - force it to int
@@ -1197,6 +1213,11 @@ void ParticleLayer::UpdateFrameTimeline()
 void ParticleLayer::SetAdditive(bool additive)
 {
 	this->additive = additive;
+}
+
+void ParticleLayer::SetInheritPosition(bool inherit)
+{
+	inheritPosition = inherit;
 }
 
 void ParticleLayer::AddForce(ParticleForce* force)

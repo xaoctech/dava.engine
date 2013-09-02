@@ -96,6 +96,14 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 			this,
 			SLOT(OnValueChanged()));
 
+
+	inheritPostionCheckBox = new QCheckBox("Inherit Position");
+	mainBox->addWidget(inheritPostionCheckBox);
+	connect(inheritPostionCheckBox,
+		SIGNAL(stateChanged(int)),
+		this,
+		SLOT(OnValueChanged()));
+
 	isLongCheckBox = new QCheckBox("Long");
 	mainBox->addWidget(isLongCheckBox);
 	connect(isLongCheckBox,
@@ -321,6 +329,10 @@ EmitterLayerWidget::~EmitterLayerWidget()
 			SIGNAL(stateChanged(int)),
 			this,
 			SLOT(OnValueChanged()));
+	disconnect(inheritPostionCheckBox,
+		SIGNAL(stateChanged(int)),
+		this,
+		SLOT(OnValueChanged()));
 	disconnect(isLongCheckBox,
 			SIGNAL(stateChanged(int)),
 			this,
@@ -406,6 +418,7 @@ void EmitterLayerWidget::Init(SceneEditor2* scene, ParticleEmitter* emitter, DAV
 
 	enableCheckBox->setChecked(!layer->GetDisabled());
 	additiveCheckBox->setChecked(layer->GetAdditive());
+	inheritPostionCheckBox->setChecked(layer->GetInheritPosition());
 	isLongCheckBox->setChecked(layer->IsLong());
 	isLoopedCheckBox->setChecked(layer->GetLooped());
 
@@ -729,6 +742,7 @@ void EmitterLayerWidget::OnValueChanged()
 						 propLayerType,
 						 !enableCheckBox->isChecked(),
 						 additiveCheckBox->isChecked(),
+						 inheritPostionCheckBox->isChecked(),
 						 isLongCheckBox->isChecked(),
 						 isLoopedCheckBox->isChecked(),
 						 sprite,
