@@ -1108,6 +1108,12 @@
 			children = (
 				02D69C2D16F08CED00F3803F /* Commands */,
 				02D69C3316F08CED00F3803F /* Controllers */,
+				02D69C3916F08CED00F3803F /* DefaultScreen_moc.cpp */,
+				02D69C3A16F08CED00F3803F /* EditorFontManager_moc.cpp */,
+				02D69C3B16F08CED00F3803F /* EditorSettings_moc.cpp */,
+				02D69C3C16F08CED00F3803F /* FrameworkMain_moc.cpp */,
+				02D69C3D16F08CED00F3803F /* GameCore_moc.cpp */,
+				1719682C17CE501000053905 /* ScaleSlider_moc.cpp */,
 				02D69C3E16F08CED00F3803F /* Helpers */,
 				02D69C4616F08CED00F3803F /* Metadata */,
 				02D69C5516F08CED00F3803F /* Models */,

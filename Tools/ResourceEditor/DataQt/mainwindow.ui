@@ -395,8 +395,6 @@
     <addaction name="actionAddNewComponent"/>
     <addaction name="actionRemoveComponent"/>
     <addaction name="separator"/>
-    <addaction name="actionAddActionComponent"/>
-    <addaction name="actionRemoveActionComponent"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
