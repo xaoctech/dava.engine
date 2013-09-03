@@ -24,12 +24,22 @@ public:
 	void SetPVRTexTool(const FilePath &textToolPathname);
 
 	FilePath GetPVRToolOutput(const TextureDescriptor &descriptor, eGPUFamily gpuFamily);
+	
+protected:
+	
+	FilePath PrepareCubeMapForPvrConvert(const TextureDescriptor& descriptor);
+	void CleanupCubemapAfterConversion(const TextureDescriptor& descriptor);
+	void InitFileSuffixes();
 
 protected:
 	
     Map<PixelFormat, String> pixelFormatToPVRFormat;
 
 	FilePath pvrTexToolPathname;
+	
+	Vector<String> pvrToolSuffixes;
+	Vector<String> cubemapSuffixes;
+
 };
 
 };

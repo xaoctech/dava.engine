@@ -17,8 +17,7 @@
 #include "SceneExporter.h"
 #include "SceneEditor/SceneValidator.h"
 
-#include "TextureCompression/PVRConverter.h"
-#include "TextureCompression/DXTConverter.h"
+#include "TextureCompression/TextureConverter.h"
 
 #include "Render/TextureDescriptor.h"
 #include "Qt/Scene/SceneHelper.h"
@@ -371,28 +370,9 @@ void SceneExporter::CompressTextureIfNeed(const TextureDescriptor * descriptor, 
         //TODO: convert to pvr/dxt
         //TODO: do we need to convert to pvr if needToConvert is false, but *.pvr file isn't at filesystem
         
-        const String & extension = GPUFamilyDescriptor::GetCompressedFileExtension((eGPUFamily)descriptor->exportedAsGpuFamily, (PixelFormat)descriptor->exportedAsPixelFormat);
-        
-        if(extension == ".pvr")
-        {
-            DeleteOldPVRTextureIfPowerVr_IOS(descriptor, (eGPUFamily)descriptor->exportedAsGpuFamily);
-            PVRConverter::Instance()->ConvertPngToPvr(*descriptor, (eGPUFamily)descriptor->exportedAsGpuFamily);
-        }
-        else if(extension == ".dds")
-        {
-            DeleteOldDXTTextureIfTegra(descriptor, (eGPUFamily)descriptor->exportedAsGpuFamily);
-            DXTConverter::ConvertPngToDxt(*descriptor, (eGPUFamily)descriptor->exportedAsGpuFamily);
-        }
-        else
-        {
-            DVASSERT(false);
-        }
-        
-        bool wasUpdated = descriptor->UpdateCrcForFormat((eGPUFamily)descriptor->exportedAsGpuFamily);
-        if(wasUpdated)
-        {
-            descriptor->Save();
-        }
+		eGPUFamily gpuFamily = (eGPUFamily)descriptor->exportedAsGpuFamily;
+		TextureConverter::CleanupOldTextures(descriptor, gpuFamily, (PixelFormat)descriptor->exportedAsPixelFormat);
+		TextureConverter::ConvertTexture(*descriptor, gpuFamily, true);
     }
 }
 
