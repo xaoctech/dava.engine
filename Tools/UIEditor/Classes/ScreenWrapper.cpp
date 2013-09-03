@@ -27,6 +27,7 @@ ScreenWrapper::ScreenWrapper(QObject *parent) :
 {
 	qtScreen = NULL;
 	mainWindow = NULL;
+	cursorPosition.SetZero();
 }
 
 ScreenWrapper::~ScreenWrapper()
@@ -172,8 +173,14 @@ void ScreenWrapper::RequestUpdateView()
 	UpdateScaleRequest(-1);
 }
 
-void ScreenWrapper::SetCursor(Qt::CursorShape cursor)
+void ScreenWrapper::SetCursor(const Vector2& position, Qt::CursorShape cursor)
 {
+	cursorPosition = position;
 	if (qtScreen)
 		qtScreen->setCursor(cursor);
+}
+
+Vector2 ScreenWrapper::GetCursorPosition()
+{
+	return cursorPosition;
 }

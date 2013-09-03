@@ -58,8 +58,10 @@ public:
 	bool IsDropEnable(const QPoint& pos);
 	
 	void RequestUpdateCursor();
-	void SetCursor(Qt::CursorShape cursor);
-	
+	void SetCursor(const Vector2& position, Qt::CursorShape cursor);
+
+	Vector2 GetCursorPosition();
+
 signals:
 	void UpdateScaleRequest(float scaleDelta);
 	void UpdateScreenPositionRequest(const QPoint& posDelta);
@@ -69,6 +71,8 @@ private:
 	
 	QWidget* qtScreen;
 	QWidget* mainWindow;
+	
+	Vector2 cursorPosition;
 };
 
 #endif /* defined(__UIEditor__ScreenWrapper__) */
