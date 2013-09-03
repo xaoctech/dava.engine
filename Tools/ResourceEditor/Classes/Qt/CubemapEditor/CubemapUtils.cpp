@@ -81,7 +81,7 @@ const DAVA::String& CubemapUtils::GetDefaultFaceExtension()
 	return FACE_FILE_TYPE;
 }
 
-DAVA::FilePath CubemapUtils::GetDialogSavedPath(const DAVA::String& key, const DAVA::String initialValue, const DAVA::String defaultValue)
+DAVA::FilePath CubemapUtils::GetDialogSavedPath(const DAVA::String& key, const DAVA::String& initialValue, const DAVA::String& defaultValue)
 {
 	DAVA::KeyedArchive* settings = EditorSettings::Instance()->GetSettings();
 	DAVA::FilePath projectPath = settings->GetString(key, initialValue);
