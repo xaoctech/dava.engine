@@ -86,7 +86,6 @@ protected:
 	void ReloadEnumFilters();
 	void ReloadProperties();
 
-	QtPropertyItem *AddHeader(const char* text);
 	QtPropertyDataMetaObject* AddPropertyItem(const char *name, DAVA::BaseObject *object, QtPropertyItem *parent);
 	void SetPropertyItemValidValues(QtPropertyDataMetaObject* item, EnumMap *validValues);
 

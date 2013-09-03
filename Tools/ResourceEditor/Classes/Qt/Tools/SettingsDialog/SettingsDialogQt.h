@@ -20,7 +20,10 @@
 #include <QDialog.h>
 #include <QTabWidget.h>
 #include <QVBoxLayout>
+#include <QPushButton.h>
 #include "DAVAEngine.h"
+#include "GeneralSettingsEditor.h"
+#include "SystemsSettingsEditor.h"
 
 class DAVA::Entity;
 
@@ -35,11 +38,18 @@ public:
 	~SettingsDialogQt();
 
 	void AddTab(QWidget* tabContent, const QString& tabName);
+
+public slots:
+	
+	void RestoreInitialSettings();
 	
 protected:
 	
 	QTabWidget* tabWidget;
 	QVBoxLayout* mainLayout;
-		
+	QPushButton* cancelButton;
+	GeneralSettingsEditor* generalSettingsTab;
+	SystemsSettingsEditor* systemsSettingsTab;
+	
 };
 #endif /* defined(__RESOURCEEDITORQT__SETTINGS_DIALOG__) */

@@ -314,12 +314,15 @@ Rect CustomColorsSystem::GetUpdatedRect()
 	return r;
 }
 
-void CustomColorsSystem::SetBrushSize(int32 brushSize)
+void CustomColorsSystem::SetBrushSize(int32 brushSize, bool updateDrawSystem /*= true*/)
 {
 	if (brushSize > 0)
 	{
 		cursorSize = (uint32)brushSize;
-		drawSystem->SetCursorSize(cursorSize);
+		if(updateDrawSystem)
+		{
+			drawSystem->SetCursorSize(cursorSize);
+		}
 	}
 }
 
