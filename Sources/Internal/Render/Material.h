@@ -174,6 +174,7 @@ public:
     Material();
     virtual ~Material();
     
+    Material * Clone();
     
     enum eValidationResult
     {
