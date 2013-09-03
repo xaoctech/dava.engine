@@ -86,3 +86,8 @@ void SceneUtils::PrepareFolderForCopyFile(const String &filename, Set<String> &e
     FileSystem::Instance()->DeleteFile(dataFolder + filename);
 }
 
+DAVA::FilePath SceneUtils::GetNewFilePath(const DAVA::FilePath &oldPathname) const
+{
+	String workingPathname = oldPathname.GetRelativePathname(dataSourceFolder);
+    return dataFolder + workingPathname;
+}

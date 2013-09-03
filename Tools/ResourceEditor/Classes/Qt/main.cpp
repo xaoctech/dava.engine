@@ -46,7 +46,8 @@ int main(int argc, char *argv[])
 	DVASSERT(false && "Wrong platform")
 #endif
 
-    new QtMainWindow();
+    bool needInvalidateTimer = (CommandLineManager::Instance()->IsCommandLineModeEnabled() == false);
+    new QtMainWindow(needInvalidateTimer);
 
     bool needToQuit = false;
     if(CommandLineManager::Instance()->IsCommandLineModeEnabled())

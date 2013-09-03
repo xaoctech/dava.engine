@@ -36,8 +36,12 @@ class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
 {
 	Q_OBJECT
 
+protected:
+    
+    static const int GLOBAL_INVALIDATE_TIMER_DELTA = 1000;
+    
 public:
-	explicit QtMainWindow(QWidget *parent = 0);
+	explicit QtMainWindow(bool enableGlobalTimeout, QWidget *parent = 0);
 	~QtMainWindow();
 
 	Ui::MainWindow* GetUI();
@@ -54,8 +58,10 @@ public:
 	void WaitSetValue(int value);
 	void WaitStop();
 
+    void EnableGlobalTimeout(bool enable);
+    
 signals:
-    void DrawTimerDone();
+    void GlobalInvalidateTimeout();
 
     
 // qt actions slots
@@ -138,6 +144,7 @@ protected:
     void CreateMaterialEditorIfNeed();
     
     void UpdateStatusBar();
+    void StartGlobalInvalidateTimer();
 
 protected slots:
 	void ProjectOpened(const QString &path);
@@ -156,7 +163,7 @@ protected slots:
 
     
     
-    void OnDrawStringTimerDone();
+    void OnGlobalInvalidateTimeout();
 
     
     
@@ -180,89 +187,9 @@ private:
 	void LoadRulerToolState(SceneEditor2* scene);
 	void LoadGPUFormat();
 	void CreateAndDisplayAddEntityDialog(Entity* sceneNode);
-
+    
+    bool globalInvalidateTimeoutEnabled;
 };
 
-#if 0
-#include <QMainWindow>
-#include <QProgressDialog>
-#include "Base/Singleton.h"
-#include "Tools/QtPosSaver/QtPosSaver.h"
-#include "ui_mainwindow.h"
-
-
-class LibraryModel;
-class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
-{
-    Q_OBJECT
-    
-public:
-	explicit QtMainWindow(QWidget *parent = 0);
-	~QtMainWindow();
-
-	Ui::MainWindow* GetUI();
-    
-    virtual bool eventFilter(QObject *, QEvent *);
-
-	SceneEditor2* GetCurrentScene();
-
-private:
-	void OpenLastProject();
-
-	void SetupActions();
-    void SetupMainMenu();
-	void SetupToolBars();
-    void SetupDocks();
-
-    void SetupCustomColorsDock();
-	void SetupVisibilityToolDock();
-    
-    void SetCustomColorsDockControlsEnabled(bool enabled);
-
-	void UpdateLibraryFileTypes();
-	void UpdateLibraryFileTypes(bool showDAEFiles, bool showSC2Files);
-
-public slots:
-	void ShowActionWithText(QToolBar *toolbar, QAction *action, bool showText);
-
-	void ChangeParticleDockVisible(bool visible, bool forceUpdate = false);
-	void ChangeParticleDockTimeLineVisible(bool visible);
-	void returnToOldMaxMinSizesForDockSceneGraph();
-
-	//return true if conversion has been started
-	void UpdateParticleSprites();
-	void RepackAndReloadScene();
-
-	void EnableNotPassableNew();
-
-	void Undo2();
-	void Redo2();
-
-private slots:
-	void ProjectOpened(const QString &path);
-	void LibraryFileTypesChanged();
-	
-	void RepackSpritesWaitDone(QObject *destroyed);
-
-	void MenuDynamicShadowBlendTriggered();
-
-signals:
-	// Library File Types.
-	void LibraryFileTypesChanged(bool showDAEFiles, bool showSC2Files);
-	void RepackAndReloadFinished();
-
-private:
-    Ui::MainWindow *ui;
-	QtPosSaver posSaver;
-
-	QProgressDialog *repackSpritesWaitDialog;
-    
-	QSize oldDockSceneGraphMaxSize;
-	QSize oldDockSceneGraphMinSize;
-
-	bool emitRepackAndReloadFinished;
-};
-
-#endif
 
 #endif // MAINWINDOW_H

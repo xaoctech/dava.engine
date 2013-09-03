@@ -823,9 +823,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
 		for(int32 iLayer = 0; iLayer < LodComponent::MAX_LOD_LAYERS; ++iLayer)
 		{
 			lc->lodLayersArray[iLayer].distance = lod->GetLodLayerDistance(iLayer);
-			lc->lodLayersArray[iLayer].nearDistance = lod->GetLodLayerNear(iLayer);
 			lc->lodLayersArray[iLayer].nearDistanceSq = lod->GetLodLayerNearSquare(iLayer);
-			lc->lodLayersArray[iLayer].farDistance = lod->GetLodLayerFar(iLayer);
 			lc->lodLayersArray[iLayer].farDistanceSq = lod->GetLodLayerFarSquare(iLayer);
 		}
 

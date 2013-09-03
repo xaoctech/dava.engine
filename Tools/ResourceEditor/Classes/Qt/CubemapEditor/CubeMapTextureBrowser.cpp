@@ -3,6 +3,7 @@
 #include "CubemapEditor/CubemapUtils.h"
 #include "Qt/Main/QtUtils.h"
 #include "ui_CubeMapTextureBrowser.h"
+#include "../../StringConstants.h"
 
 #include <QFileDialog>
 #include <QScrollBar>
@@ -11,8 +12,6 @@
 #include <qdir>
 
 const int FACE_IMAGE_SIZE = 64;
-
-const String CUBEMAP_LAST_PROJECT_DIR_KEY = "cubemap_last_proj_dir";
 
 CubeMapTextureBrowser::CubeMapTextureBrowser(QWidget *parent) :
     QDialog(parent),
@@ -25,7 +24,7 @@ CubeMapTextureBrowser::CubeMapTextureBrowser(QWidget *parent) :
 	
 	ConnectSignals();
 	
-	FilePath projectPath = CubemapUtils::GetDialogSavedPath(CUBEMAP_LAST_PROJECT_DIR_KEY,
+	FilePath projectPath = CubemapUtils::GetDialogSavedPath(ResourceEditor::CUBEMAP_LAST_PROJECT_DIR_KEY,
 															EditorSettings::Instance()->GetDataSourcePath().GetAbsolutePathname(),
 															EditorSettings::Instance()->GetDataSourcePath().GetAbsolutePathname());
 		
@@ -133,7 +132,7 @@ void CubeMapTextureBrowser::ReloadTexturesFromUI(QString& path)
 	ui->textRootPath->setText(path);
 	
 	FilePath projectPath = path.toStdString();
-	EditorSettings::Instance()->GetSettings()->SetString(CUBEMAP_LAST_PROJECT_DIR_KEY,
+	EditorSettings::Instance()->GetSettings()->SetString(ResourceEditor::CUBEMAP_LAST_PROJECT_DIR_KEY,
 														 projectPath.GetAbsolutePathname());
 	EditorSettings::Instance()->Save();
 	

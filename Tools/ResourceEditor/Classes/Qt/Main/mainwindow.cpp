@@ -54,7 +54,7 @@
 #include <QDesktopServices>
 #include <QColorDialog>
 
-QtMainWindow::QtMainWindow(QWidget *parent)
+QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 	: QMainWindow(parent)
 	, ui(new Ui::MainWindow)
 	, waitDialog(NULL)
@@ -98,10 +98,8 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 	addSwitchEntityDialog = new AddSwitchEntityDialog( this);
     
-    if(!CommandLineManager::Instance()->IsCommandLineModeEnabled())
-    {
-        QTimer::singleShot(1000, this, SLOT(OnDrawStringTimerDone()));
-    }
+    globalInvalidateTimeoutEnabled = false;
+    EnableGlobalTimeout(enableGlobalTimeout);
 }
 
 QtMainWindow::~QtMainWindow()
@@ -1357,13 +1355,15 @@ void QtMainWindow::OnSaveTiledTexture()
     SafeRelease(descriptor);
 }
 
-void QtMainWindow::OnDrawStringTimerDone()
+void QtMainWindow::OnGlobalInvalidateTimeout()
 {
     UpdateStatusBar();
     
-    emit DrawTimerDone();
-    
-    QTimer::singleShot(1000, this, SLOT(OnDrawStringTimerDone()));
+    emit GlobalInvalidateTimeout();
+    if(globalInvalidateTimeoutEnabled)
+    {
+        StartGlobalInvalidateTimer();
+    }
 }
 
 void QtMainWindow::UpdateStatusBar()
@@ -1396,3 +1396,22 @@ void QtMainWindow::EntityDeselected(SceneEditor2 *scene, DAVA::Entity *entity)
 {
     UpdateStatusBar();
 }
+
+void QtMainWindow::EnableGlobalTimeout(bool enable)
+{
+    if(globalInvalidateTimeoutEnabled != enable)
+    {
+        globalInvalidateTimeoutEnabled = enable;
+        
+        if(globalInvalidateTimeoutEnabled)
+        {
+            StartGlobalInvalidateTimer();
+        }
+    }
+}
+
+void QtMainWindow::StartGlobalInvalidateTimer()
+{
+    QTimer::singleShot(GLOBAL_INVALIDATE_TIMER_DELTA, this, SLOT(OnGlobalInvalidateTimeout()));
+}
+

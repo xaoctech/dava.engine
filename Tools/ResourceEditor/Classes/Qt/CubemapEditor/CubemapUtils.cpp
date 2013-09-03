@@ -81,7 +81,7 @@ const DAVA::String& CubemapUtils::GetDefaultFaceExtension()
 	return FACE_FILE_TYPE;
 }
 
-DAVA::FilePath CubemapUtils::GetDialogSavedPath(const DAVA::String& key, DAVA::String initialValue, DAVA::String defaultValue)
+DAVA::FilePath CubemapUtils::GetDialogSavedPath(const DAVA::String& key, const DAVA::String& initialValue, const DAVA::String& defaultValue)
 {
 	DAVA::KeyedArchive* settings = EditorSettings::Instance()->GetSettings();
 	DAVA::FilePath projectPath = settings->GetString(key, initialValue);
@@ -96,7 +96,7 @@ DAVA::FilePath CubemapUtils::GetDialogSavedPath(const DAVA::String& key, DAVA::S
 	return projectPath;
 }
 
-bool CubemapUtils::CubemapTextureValidator::IsValid(DAVA::FilePath filePath)
+bool CubemapUtils::CubemapTextureValidator::IsValid(const DAVA::FilePath& filePath)
 {
 	DAVA::TextureDescriptor descriptor;
 	bool result = descriptor.Load(filePath);

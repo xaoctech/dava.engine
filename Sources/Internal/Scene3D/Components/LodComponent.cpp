@@ -26,7 +26,7 @@ const float32 LodComponent::MAX_LOD_DISTANCE = 1000.f;
 
 LodComponent::LodDistance::LodDistance()
 {
-	distance = nearDistance = nearDistanceSq = farDistance = farDistanceSq = (float32) INVALID_DISTANCE;
+	distance = nearDistanceSq = farDistanceSq = (float32) INVALID_DISTANCE;
 }
 
 void LodComponent::LodDistance::SetDistance(const float32 &newDistance)
@@ -36,14 +36,12 @@ void LodComponent::LodDistance::SetDistance(const float32 &newDistance)
 
 void LodComponent::LodDistance::SetNearDistance(const float32 &newDistance)
 {
-	nearDistance = newDistance;
-	nearDistanceSq = nearDistance * nearDistance;
+	nearDistanceSq = newDistance * newDistance;
 }
 
 void LodComponent::LodDistance::SetFarDistance(const float32 &newDistance)
 {
-	farDistance = newDistance;
-	farDistanceSq = farDistance * farDistance;
+	farDistanceSq = newDistance * newDistance;
 }
 
 Component * LodComponent::Clone(Entity * toEntity)
@@ -63,9 +61,7 @@ Component * LodComponent::Clone(Entity * toEntity)
 	for(int32 iLayer = 0; iLayer < MAX_LOD_LAYERS; ++iLayer)
 	{
 		newLod->lodLayersArray[iLayer].distance = lodLayersArray[iLayer].distance;
-		newLod->lodLayersArray[iLayer].nearDistance = lodLayersArray[iLayer].nearDistance;
 		newLod->lodLayersArray[iLayer].nearDistanceSq = lodLayersArray[iLayer].nearDistanceSq;
-		newLod->lodLayersArray[iLayer].farDistance = lodLayersArray[iLayer].farDistance;
 		newLod->lodLayersArray[iLayer].farDistanceSq = lodLayersArray[iLayer].farDistanceSq;
 	}
 
@@ -91,8 +87,6 @@ void LodComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 		{
 			KeyedArchive *lodDistValuesArch = new KeyedArchive();
 			lodDistValuesArch->SetFloat("ld.distance", lodLayersArray[i].distance);
-			lodDistValuesArch->SetFloat("ld.neardist", lodLayersArray[i].nearDistance);
-			lodDistValuesArch->SetFloat("ld.fardist", lodLayersArray[i].farDistance);
 			lodDistValuesArch->SetFloat("ld.neardistsq", lodLayersArray[i].nearDistanceSq);
 			lodDistValuesArch->SetFloat("ld.fardistsq", lodLayersArray[i].farDistanceSq);
 
@@ -151,8 +145,6 @@ void LodComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 				if(NULL != lodDistValuesArch)
 				{
 					lodLayersArray[i].distance = lodDistValuesArch->GetFloat("ld.distance");
-					lodLayersArray[i].nearDistance = lodDistValuesArch->GetFloat("ld.neardist");
-					lodLayersArray[i].farDistance = lodDistValuesArch->GetFloat("ld.fardist");
 					lodLayersArray[i].nearDistanceSq = lodDistValuesArch->GetFloat("ld.neardistsq");
 					lodLayersArray[i].farDistanceSq = lodDistValuesArch->GetFloat("ld.fardistsq");
 				}
@@ -222,18 +214,10 @@ void LodComponent::SetCurrentLod(int32 newLod)
 	{
 		if (currentLod!=INVALID_LOD_LAYER) 
 		{
-			int32 size = lodLayers[currentLod].nodes.size();
-			for (int32 i = 0; i < size; i++) 
-			{
-				lodLayers[currentLod].nodes[i]->SetLodVisible(false);
-			}
+			SetLayerVisibility(currentLod, false);
 		}
 		currentLod = newLod;		
-		int32 size = lodLayers[currentLod].nodes.size();
-		for (int32 i = 0; i < size; i++) 
-		{
-			lodLayers[currentLod].nodes[i]->SetLodVisible(true);
-		}
+		SetLayerVisibility(currentLod, true);
 	}
 }
 
@@ -313,5 +297,16 @@ int32 LodComponent::GetMaxLodLayer()
 	return ret;
 }
 
-    
+void LodComponent::SetLayerVisibility(int32 layerNum, bool visible)
+{
+	DVASSERT(0 <= layerNum && layerNum < MAX_LOD_LAYERS);
+
+	int32 size = lodLayers[layerNum].nodes.size();
+	for (int32 i = 0; i < size; i++) 
+	{
+		lodLayers[layerNum].nodes[i]->SetLodVisible(visible);
+	}
+}
+
+
 };
