@@ -37,6 +37,8 @@ public:
 	int GetMaxFPS();
 	int GetFPS();
 
+	QSize GetPrevSize() const { return prevSize;};
+
 	virtual QPaintEngine *paintEngine() const;
 	virtual void paintEvent(QPaintEvent *);
 
@@ -72,6 +74,9 @@ private:
 
 	int maxFPS;
 	int minFrameTimeMs;
+
+	// Previous widget size.
+	QSize prevSize;
 
 	void Quit();
 };

@@ -856,27 +856,37 @@ void Landscape::DrawFans()
  */
 }
 	
-int Landscape::GetMaxLod(LandscapeQuad& quad)
+int Landscape::GetMaxLod(float32 quadDistance)
 {
-	Vector3 v = cameraPos - quad.bbox.max;
-	float32 dist0 = v.SquareLength();
-		
-	v = cameraPos - quad.bbox.min;
-	float32 dist1 = v.SquareLength();
-		
-	dist0 = Max(dist0, dist1);
-		
 	int32 maxLod = 0;
 		
 	for (int32 k = 0; k < lodLevelsCount; ++k)
 	{
-		if (dist0 > lodSqDistance[k])
+		if (quadDistance > lodSqDistance[k])
+		{
 			maxLod = k + 1;
+		}
+		else //DF-1863 (stop checking for max lod when distance is less than in lodSqDistance since lodSqDistance is sorted)
+		{
+			break;
+		}
 	}
 		
 	return maxLod;
 }
-    
+	
+float32 Landscape::GetQuadToCameraDistance(const Vector3 camPos, LandscapeQuad& quad)
+{
+	Vector3 v = camPos - quad.bbox.max;
+	float32 dist0 = v.SquareLength();
+	
+	v = camPos - quad.bbox.min;
+	float32 dist1 = v.SquareLength();
+	
+	dist0 = Max(dist0, dist1);
+	return dist0;
+}
+	
 void Landscape::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
 {
     //Frustum * frustum = scene->GetClipCamera()->GetFrustum();
@@ -947,30 +957,37 @@ void Landscape::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
     }
 	
 	//VI: this check should fix occasional cracks on the landscape
+	//VI: DF-1864 - select max distance from camera to quad and calculate max lod for that distance only
 	if(minLod == maxLod)
 	{
 		LandQuadTreeNode<LandscapeQuad> * parentNode = currentNode->parent;
+		float32 maxQuadDistance = -1.0f;
 		
 		if(parentNode)
 		{
 			if(parentNode->neighbours[LEFT])
 			{
-				maxLod = Max(maxLod, GetMaxLod(parentNode->neighbours[LEFT]->data));
+				maxQuadDistance = GetQuadToCameraDistance(cameraPos, parentNode->neighbours[LEFT]->data);
 			}
 			
 			if(parentNode->neighbours[RIGHT])
 			{
-				maxLod = Max(maxLod, GetMaxLod(parentNode->neighbours[RIGHT]->data));
+				maxQuadDistance = Max(maxQuadDistance, GetQuadToCameraDistance(cameraPos, parentNode->neighbours[RIGHT]->data));
 			}
 			
 			if(parentNode->neighbours[TOP])
 			{
-				maxLod = Max(maxLod, GetMaxLod(parentNode->neighbours[TOP]->data));
+				maxQuadDistance = Max(maxQuadDistance, GetQuadToCameraDistance(cameraPos, parentNode->neighbours[TOP]->data));
 			}
 			
 			if(parentNode->neighbours[BOTTOM])
 			{
-				maxLod = Max(maxLod, GetMaxLod(parentNode->neighbours[BOTTOM]->data));
+				maxQuadDistance = Max(maxQuadDistance, GetQuadToCameraDistance(cameraPos, parentNode->neighbours[BOTTOM]->data));
+			}
+			
+			if(maxQuadDistance >= 0.0f)
+			{
+				maxLod = GetMaxLod(maxQuadDistance);
 			}
 		}
     }
@@ -983,7 +1000,7 @@ void Landscape::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
     }
     //Logger::Debug("%f %f %d %d", minDist, maxDist, minLod, maxLod);
 #endif
-                      
+
 //    if (frustum->IsFullyInside(currentNode->data.bbox))
 //    {
 //        RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
