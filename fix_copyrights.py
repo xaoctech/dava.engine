@@ -80,13 +80,13 @@ def visit_directory(arg, dirname, names):
 	return
 	
 def process_contents(content):
-	pattern = re.compile("^/[*]=.*=[*]/", re.DOTALL);
+	pattern = re.compile("^/[*][=]+[^=]*[=]+[*]/", re.DOTALL);
 
 	replacedContent = re.subn(pattern, replaceString, content, count=1);
 
 	newContent = replacedContent[0];
 	if(replacedContent[1] == 0):
-		newContent = replaceString + "\n\n" + newContent;
+		newContent = replaceString + "\n" + newContent;
 		
 	return newContent;
 	
