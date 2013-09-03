@@ -35,9 +35,9 @@ void ThreadSyncTest::UnloadResources()
 
 void ThreadSyncTest::ThreadSleepTestFunction(PerfFuncData * data)
 {
-    int32 time = SystemTimer::Instance()->AbsoluteMS();
+    uint64 time = SystemTimer::Instance()->AbsoluteMS();
     Thread::SleepThread(300);
-    int32 elapsedTime = SystemTimer::Instance()->AbsoluteMS() - time;
+    uint64 elapsedTime = SystemTimer::Instance()->AbsoluteMS() - time;
     TEST_VERIFY(elapsedTime >= 300);
 }
 
