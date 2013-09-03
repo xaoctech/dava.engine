@@ -19,6 +19,7 @@
 #include "Platform/Thread.h"
 #include "Render/RenderManager.h"
 #include "FileSystem/YamlParser.h"
+#include <sstream>
 
 namespace DAVA
 {
@@ -136,5 +137,5 @@ int32 CompareCaseInsensitive(const String &str1, const String &str2)
     
     return 1;
 }
-	
+
 }; // end of namespace DAVA

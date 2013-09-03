@@ -23,6 +23,7 @@
 #include "Base/BaseTypes.h"
 #include "FileSystem/FilePath.h"
 #include "Render/RenderBase.h"
+#include <sstream>
 
 namespace DAVA 
 {
@@ -49,6 +50,9 @@ void Split(const String & inputString, const String & delims, Vector<String> & t
 
 void ReplaceBundleName(const String &newBundlePath);
     
+template<class T>
+T ParseStringTo(const String & str);
+
 /**
  \brief Function to compare strings case-insensitive
  \param[in] ext1 - first string 
@@ -104,6 +108,15 @@ void RemoveExchangingWithLast(Vector<T> & array, uint32 index)
 {
     array[index] = array[array.size() - 1];
     array.pop_back();
+}
+
+template<class T>
+T ParseStringTo(const String & str)
+{
+    T result;
+    std::stringstream stream (str);
+    stream >> result;
+    return result;
 }
 
 };
