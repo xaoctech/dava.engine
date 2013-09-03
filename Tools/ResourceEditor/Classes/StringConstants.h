@@ -86,6 +86,8 @@ namespace ResourceEditor
 	static const String SETTINGS_PREVIEW_DIALOG_ENABLED = "PreviewDialogEnabled";
 
 	static const String CUSTOM_COLOR_TEXTURE_PROP = "customColorTexture";
+	
+	static const String CUBEMAP_LAST_PROJECT_DIR_KEY = "cubemap_last_proj_dir";
 }
 
 #endif //#ifndef __STRING_CONSTANTS_H__

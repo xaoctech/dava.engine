@@ -146,20 +146,16 @@ void LodSystem::UpdateLod(Entity * entity, float32 psLodOffsetSq, float32 psLodM
 	LodComponent * lodComponent = static_cast<LodComponent*>(entity->GetComponent(Component::LOD_COMPONENT));
 	int32 oldLod = lodComponent->currentLod;
 	if(!RecheckLod(entity, psLodOffsetSq, psLodMultSq))
-
-{
+	{
 		if (oldLod != LodComponent::INVALID_LOD_LAYER)
 		{
-			int32 size = lodComponent->lodLayers[oldLod].nodes.size();
-			for (int32 i = 0; i < size; i++) 
-			{
-				lodComponent->lodLayers[oldLod].nodes[i]->SetLodVisible(false);
-			}
+			lodComponent->SetLayerVisibility(oldLod, false);
 		}
 
-lodComponent->currentLod = LodComponent::INVALID_LOD_LAYER;
-return;
-}
+		lodComponent->currentLod = LodComponent::INVALID_LOD_LAYER;
+		return;
+	}
+
 	if (oldLod != lodComponent->currentLod) 
 	{
 
@@ -172,23 +168,15 @@ return;
 		
 		if (oldLod != LodComponent::INVALID_LOD_LAYER)
 		{
-			int32 size = lodComponent->lodLayers[oldLod].nodes.size();
-			for (int32 i = 0; i < size; i++) 
-			{
-				lodComponent->lodLayers[oldLod].nodes[i]->SetLodVisible(false);
-			}
+			lodComponent->SetLayerVisibility(oldLod, false);
 		}
-		int32 size = lodComponent->lodLayers[lodComponent->currentLod].nodes.size();
-		for (int32 i = 0; i < size; i++) 
-		{
-			lodComponent->lodLayers[lodComponent->currentLod].nodes[i]->SetLodVisible(true);
-		}
+
+		lodComponent->SetLayerVisibility(lodComponent->currentLod, true);
 	}
 }
 
 bool LodSystem::RecheckLod(Entity * entity, float32 psLodOffsetSq, float32 psLodMultSq)
 {
-	
 	LodComponent * lodComponent = static_cast<LodComponent*>(entity->GetComponent(Component::LOD_COMPONENT));
 	if (lodComponent->currentLod == LodComponent::INVALID_LOD_LAYER) return false;
 

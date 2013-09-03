@@ -875,7 +875,7 @@ int Landscape::GetMaxLod(float32 quadDistance)
 	return maxLod;
 }
 	
-float32 Landscape::GetQuadToCameraDistance(const Vector3 camPos, LandscapeQuad& quad)
+float32 Landscape::GetQuadToCameraDistance(const Vector3& camPos, const LandscapeQuad& quad)
 {
 	Vector3 v = camPos - quad.bbox.max;
 	float32 dist0 = v.SquareLength();
@@ -1768,11 +1768,11 @@ void Landscape::SetTiledShaderMode(DAVA::Landscape::eTiledShaderMode _tiledShade
     InitShaders();
 }
     
-void Landscape::SetFog(bool _isFogEnabled)
+void Landscape::SetFog(const bool& fogState)
 {
-    if(isFogEnabled != _isFogEnabled)
+    if(isFogEnabled != fogState)
     {
-        isFogEnabled = _isFogEnabled;
+        isFogEnabled = fogState;
         
         InitShaders();
     }
@@ -1837,16 +1837,6 @@ RenderObject * Landscape::Clone( RenderObject *newObject )
 	return newObject;
 }
 	
-void Landscape::SetFogProp(const bool& fogState)
-{
-	SetFog(fogState);
-}
-	
-bool Landscape::GetFogProp()
-{
-	return IsFogEnabled();
-}
-
 int32 Landscape::GetDrawIndices() const
 {
     return drawIndices;
