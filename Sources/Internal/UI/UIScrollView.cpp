@@ -254,4 +254,12 @@ void UIScrollView::RecalculateContentSize()
 	}
 }
 
+void UIScrollView::SetReturnSpeed(int32 speedInPixelsPerSec)
+{
+	if (scrollContainer)
+	{
+		scrollContainer->SetReturnSpeed(speedInPixelsPerSec);
+	}
+}
+
 }
