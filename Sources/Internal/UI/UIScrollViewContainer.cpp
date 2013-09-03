@@ -162,30 +162,27 @@ void UIScrollViewContainer::Update(float32 timeElapsed)
 		Rect contentRect = this->GetRect();
 		Rect parentRect = this->GetParent()->GetRect();
 	
-		float32 shiftSizeX = abs(contentRect.x) + parentRect.dx;
-		float32 shiftSizeY = abs(contentRect.y) + parentRect.dy;
+		float32 shiftSizeX = floor(fabs(contentRect.x) + parentRect.dx);
+		float32 shiftSizeY = floor(fabs(contentRect.y) + parentRect.dy);
 	
 		if (contentRect.x > 0)
 		{
 			contentRect.x -= 1;
-			this->SetRect(contentRect);
 		}
 		else if (shiftSizeX > contentRect.dx)
 		{
 			contentRect.x += 1;
-			this->SetRect(contentRect);
 		}
 	
 		if (contentRect.y > 0)
 		{
 			contentRect.y -=  1;
-			this->SetRect(contentRect);
 		}
 		else if (shiftSizeY > contentRect.dy)
 		{
 			contentRect.y += 1;
-			this->SetRect(contentRect);
 		}
+		this->SetRect(contentRect);
 	}
 }
 
