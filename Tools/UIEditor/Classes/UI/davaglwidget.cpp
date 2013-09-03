@@ -87,6 +87,8 @@ DavaGLWidget::DavaGLWidget(QWidget *parent)
 	this->setAcceptDrops(true);	
 	setMouseTracking(true);
 
+	// Remember the previous size as current one.
+	prevSize = size();
 	ScreenWrapper::Instance()->SetQtScreen(this);
 }
 
@@ -108,6 +110,9 @@ void DavaGLWidget::paintEvent(QPaintEvent *)
 
 void DavaGLWidget::resizeEvent(QResizeEvent *e)
 {
+	// Remember previous size of the widget.
+	prevSize = e->oldSize();
+
 	QWidget::resizeEvent(e);
 	DAVA::QtLayer::Instance()->Resize(e->size().width(), e->size().height());
 
