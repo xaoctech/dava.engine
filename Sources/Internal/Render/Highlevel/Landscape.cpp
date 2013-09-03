@@ -1768,11 +1768,11 @@ void Landscape::SetTiledShaderMode(DAVA::Landscape::eTiledShaderMode _tiledShade
     InitShaders();
 }
     
-void Landscape::SetFog(bool _isFogEnabled)
+void Landscape::SetFog(const bool& fogState)
 {
-    if(isFogEnabled != _isFogEnabled)
+    if(isFogEnabled != fogState)
     {
-        isFogEnabled = _isFogEnabled;
+        isFogEnabled = fogState;
         
         InitShaders();
     }
@@ -1837,11 +1837,6 @@ RenderObject * Landscape::Clone( RenderObject *newObject )
 	return newObject;
 }
 	
-void Landscape::SetFogProp(const bool& fogState)
-{
-	SetFog(fogState);
-}
-
 int32 Landscape::GetDrawIndices() const
 {
     return drawIndices;
