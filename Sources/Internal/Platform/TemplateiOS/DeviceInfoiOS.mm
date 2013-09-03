@@ -19,7 +19,6 @@
 #ifdef __DAVAENGINE_IPHONE__
 
 #include "Utils/StringFormat.h"
-#include "OpenUDIDios.h"
 
 #import <UIKit/UIDevice.h>
 #import <Foundation/NSLocale.h>
@@ -195,7 +194,7 @@ String DeviceInfo::GetUDID()
 	NSString* udid = nil;
 	if (iOSLowerThan7 || !hasAdvertisingId)
 	{
-		udid = [[[[OpenUDIDiOS alloc] init] autorelease] value];
+		udid = [[UIDevice currentDevice] uniqueIdentifier];
 	}
 	else
 	{
