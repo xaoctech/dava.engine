@@ -57,9 +57,6 @@ enum eMessageBoxFlags
 int ShowQuestion(const DAVA::String &header, const DAVA::String &question, int buttons, int defaultButton);
 int ShowSaveSceneQuestion(DAVA::Scene *scene);
 
-DAVA_DEPRECATED(void DeleteOldPVRTextureIfPowerVr_IOS(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu));
-DAVA_DEPRECATED(void DeleteOldDXTTextureIfTegra(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu));
-
 #ifdef __DAVAENGINE_WIN32__
 	const Qt::WindowFlags WINDOWFLAG_ON_TOP_OF_APPLICATION = Qt::Window;
 #else
