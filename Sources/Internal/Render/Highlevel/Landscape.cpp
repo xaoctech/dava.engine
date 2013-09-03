@@ -1841,11 +1841,6 @@ void Landscape::SetFogProp(const bool& fogState)
 {
 	SetFog(fogState);
 }
-	
-bool Landscape::GetFogProp()
-{
-	return IsFogEnabled();
-}
 
 int32 Landscape::GetDrawIndices() const
 {
