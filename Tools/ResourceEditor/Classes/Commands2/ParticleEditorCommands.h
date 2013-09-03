@@ -223,6 +223,7 @@ public:
 			  float32 loopVariation,
 			  bool frameOverLifeEnabled,
 			  float32 frameOverLifeFPS,
+			  bool randomFrameOnStart,
 
 			  float32 pivotPointX,
 			  float32 pivotPointY);
@@ -269,6 +270,7 @@ protected:
 	float32 loopVariation;
 	bool frameOverLifeEnabled;
 	float32 frameOverLifeFPS;
+	bool randomFrameOnStart;
 
 	float32 pivotPointX;
 	float32 pivotPointY;

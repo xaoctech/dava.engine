@@ -577,8 +577,13 @@ void QtMainWindow::AddSwitchDialogFinished(int result)
 	}
 	if(vector.size())
 	{
-		scene->Exec(new AddEntityCommand(switchEntity, scene));
+		AddEntityCommand* command = new AddEntityCommand(switchEntity, scene);
+		scene->Exec(command);
 		SafeRelease(switchEntity);
+		
+		Entity* affectedEntity = command->GetEntity();
+		scene->selectionSystem->SetSelection(affectedEntity);
+		scene->ImmediateEvent(affectedEntity, Component::SWITCH_COMPONENT, EventSystem::SWITCH_CHANGED);
 	}
 
 	addSwitchEntityDialog->SetEntity(NULL);
@@ -1115,7 +1120,10 @@ void QtMainWindow::OnUniteEntitiesWithLODs()
 		return;
 	}
 	const EntityGroup* selectedEntities = sceneEditor->selectionSystem->GetSelection();
-	sceneEditor->Exec(new GroupEntitiesForMultiselectCommand(selectedEntities));
+
+	GroupEntitiesForMultiselectCommand* command = new GroupEntitiesForMultiselectCommand(selectedEntities);
+	sceneEditor->Exec(command);
+	sceneEditor->selectionSystem->SetSelection(command->GetEntity());
 }
 
 
@@ -1141,7 +1149,9 @@ void QtMainWindow::CreateAndDisplayAddEntityDialog(Entity* entity)
 	
 	if(dlg->result() == QDialog::Accepted && sceneEditor)
 	{
-		sceneEditor->Exec(new AddEntityCommand(entity, sceneEditor));
+		AddEntityCommand* command = new AddEntityCommand(entity, sceneEditor);
+		sceneEditor->Exec(command);
+		sceneEditor->selectionSystem->SetSelection(command->GetEntity());
 	}
 	
 	SafeRelease(entity);

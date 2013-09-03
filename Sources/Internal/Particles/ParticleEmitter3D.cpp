@@ -116,8 +116,9 @@ void ParticleEmitter3D::PrepareEmitterParameters(Particle * particle, float32 ve
 	if(worldTransformPtr)
 	{
 		Matrix4 newTransform = *worldTransformPtr;
-		newTransform._30 = newTransform._31 = newTransform._32 = 0;
-		particle->direction = particle->direction*newTransform;		
+		newTransform._30 = newTransform._31 = newTransform._32 = 0;		
+		particle->direction = particle->direction*newTransform;
+		particle->direction.Normalize();		
 	}
 }
 
@@ -170,7 +171,7 @@ void ParticleEmitter3D::CalculateParticlePositionForCircle(Particle* particle, c
 		directionVector = rotatedVector;
 	}
 		
-	particle->position = (directionVector + tempPosition) * rotationMatrix;
+	particle->position = TransformPerserveLength(tempPosition + directionVector, rotationMatrix);	
 }
 	
 void ParticleEmitter3D::PrepareEmitterParametersShockwave(Particle * particle, float32 velocity,
@@ -193,7 +194,8 @@ void ParticleEmitter3D::PrepareEmitterParametersShockwave(Particle * particle, f
 							curRadius * sinAngle,
 							0.0f);
 
-	particle->position = (tempPosition + directionVector) * rotationMatrix;
+	particle->position = TransformPerserveLength(tempPosition + directionVector, rotationMatrix);	
+
 	particle->speed = velocity;
 
 	// Calculate Z value.
@@ -217,6 +219,9 @@ void ParticleEmitter3D::PrepareEmitterParametersShockwave(Particle * particle, f
 	}
 
 	particle->direction = directionVector;
+	float dirLength = particle->direction.Length();
+	particle->direction*=(1.0f/dirLength);
+	particle->speed*=dirLength;
 }
 
 void ParticleEmitter3D::PrepareEmitterParametersGeneric(Particle * particle, float32 velocity,
@@ -227,10 +232,8 @@ void ParticleEmitter3D::PrepareEmitterParametersGeneric(Particle * particle, flo
     if(emissionVector)
 	{
 		// Yuri Coder, 2013/04/12. Need to invert the directions in the emission vector, since
-		// their coordinates are in the opposite directions for the Particles Editor.
+		// their coordinates are in the opposite directions for the Particles Editor.        
 		vel = emissionVector->GetValue(0) * -1.0f;
-		vel = vel*rotationMatrix;		        
-		
 	}
 
     Vector3 rotVect(0, 0, 1);

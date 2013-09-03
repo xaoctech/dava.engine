@@ -709,13 +709,13 @@ void UITextField::CopyDataFrom(UIControl *srcControl)
 	if (t->textFont)
 		SetFont(t->textFont);
 
-	t->SetAutoCapitalizationType(GetAutoCapitalizationType());
-	t->SetAutoCorrectionType(GetAutoCorrectionType());
-	t->SetSpellCheckingType(GetSpellCheckingType());
-	t->SetKeyboardAppearanceType(GetKeyboardAppearanceType());
-	t->SetKeyboardType(GetKeyboardType());
-	t->SetReturnKeyType(GetReturnKeyType());
-	t->SetEnableReturnKeyAutomatically(IsEnableReturnKeyAutomatically());
+	SetAutoCapitalizationType(t->GetAutoCapitalizationType());
+	SetAutoCorrectionType(t->GetAutoCorrectionType());
+	SetSpellCheckingType(t->GetSpellCheckingType());
+	SetKeyboardAppearanceType(t->GetKeyboardAppearanceType());
+	SetKeyboardType(t->GetKeyboardType());
+	SetReturnKeyType(t->GetReturnKeyType());
+	SetEnableReturnKeyAutomatically(t->IsEnableReturnKeyAutomatically());
 }
     
 void UITextField::SetIsPassword(bool isPassword)

@@ -8,6 +8,27 @@
 namespace DAVA
 {
 
+static String CUBEMAP_TMP_DIR = "~doc:/ResourceEditor_Cubemap_Tmp/";
+	
+static String PVRTOOL_INPUT_NAMES[] =
+{
+	String("1"), //pz
+	String("2"), //nz
+	String("3"), //px
+	String("4"), //nx
+	String("5"), //pz
+	String("6"), //nz
+};
+	
+static DAVA::String PVRTOOL_MAP_NAMES[] =
+{
+	String("_pz"), //1
+	String("_nz"), //2
+	String("_px"), //3
+	String("_nx"), //4
+	String("_ny"), //5
+	String("_py"), //6
+};
 
 PVRConverter::PVRConverter()
 {
@@ -21,6 +42,8 @@ PVRConverter::PVRConverter()
 	pixelFormatToPVRFormat[FORMAT_PVR4] = "OGLPVRTC4";
 	pixelFormatToPVRFormat[FORMAT_A8] = "OGL8";
 	pixelFormatToPVRFormat[FORMAT_ETC1] = "ETC";
+	
+	InitFileSuffixes();
 }
 
 PVRConverter::~PVRConverter()
@@ -30,14 +53,19 @@ PVRConverter::~PVRConverter()
 
 FilePath PVRConverter::ConvertPngToPvr(const TextureDescriptor &descriptor, eGPUFamily gpuFamily)
 {
-	FilePath outputName;
-	String command = GetCommandLinePVR(descriptor, FilePath::CreateWithNewExtension(descriptor.pathname, ".png"), gpuFamily);
+	FilePath outputName = (descriptor.IsCubeMap()) ? PrepareCubeMapForPvrConvert(descriptor) : FilePath::CreateWithNewExtension(descriptor.pathname, ".png");
+	String command = GetCommandLinePVR(descriptor, outputName, gpuFamily);
     Logger::Info("[PVRConverter::ConvertPngToPvr] (%s)", command.c_str());
     
 	if(!command.empty())
 	{
-		FileSystem::Instance()->Spawn(command);
+		FileSystem::Instance()->Spawn(command);		
 		outputName = GetPVRToolOutput(descriptor, gpuFamily);
+	}
+	
+	if(descriptor.IsCubeMap())
+	{
+		CleanupCubemapAfterConversion(descriptor);
 	}
 
 	return outputName;
@@ -106,5 +134,68 @@ void PVRConverter::SetPVRTexTool(const FilePath &textToolPathname)
 	}
 }
 
+FilePath PVRConverter::PrepareCubeMapForPvrConvert(const TextureDescriptor& descriptor)
+{
+	DAVA::Vector<DAVA::String> pvrToolFaceNames;
+	DAVA::Vector<DAVA::String> cubemapFaceNames;
+	DAVA::Texture::GenerateCubeFaceNames(CUBEMAP_TMP_DIR, pvrToolSuffixes, pvrToolFaceNames);
+	DAVA::Texture::GenerateCubeFaceNames(descriptor.pathname.GetAbsolutePathname(), cubemapSuffixes, cubemapFaceNames);
+		
+	DVASSERT(pvrToolSuffixes.size() == cubemapSuffixes.size());
+		
+	if(!FileSystem::Instance()->IsDirectory(CUBEMAP_TMP_DIR))
+	{
+		int createResult = FileSystem::Instance()->CreateDirectory(CUBEMAP_TMP_DIR);
+		if(FileSystem::DIRECTORY_CREATED != createResult)
+		{
+			DAVA::Logger::Error("Failed to create temp dir for cubemap generation!");
+			return FilePath();
+		}
+	}
+		
+	for(size_t i = 0; i < pvrToolFaceNames.size(); ++i)
+	{
+		//cleanup in case previous cleanup failed
+		if(FileSystem::Instance()->IsFile(pvrToolFaceNames[i]))
+		{
+			FileSystem::Instance()->DeleteFile(pvrToolFaceNames[i]);
+		}
+			
+		bool result = FileSystem::Instance()->CopyFile(cubemapFaceNames[i], pvrToolFaceNames[i]);
+		if(!result)
+		{
+			DAVA::Logger::Error("Failed to copy tmp files for cubemap generation!");
+			return FilePath();
+		}
+	}
+		
+	return FilePath(pvrToolFaceNames[0]);
+}
+
+void PVRConverter::CleanupCubemapAfterConversion(const TextureDescriptor& descriptor)
+{
+	Vector<String> pvrToolFaceNames;
+	Texture::GenerateCubeFaceNames(CUBEMAP_TMP_DIR, pvrToolSuffixes, pvrToolFaceNames);
+		
+	for(size_t i = 0; i < pvrToolFaceNames.size(); ++i)
+	{
+		if(FileSystem::Instance()->IsFile(pvrToolFaceNames[i]))
+		{
+			FileSystem::Instance()->DeleteFile(pvrToolFaceNames[i]);
+		}
+	}
+}
+	
+void PVRConverter::InitFileSuffixes()
+{
+	if(pvrToolSuffixes.empty())
+	{
+		for(int i = 0; i < DAVA::Texture::CUBE_FACE_MAX_COUNT; ++i)
+		{
+			pvrToolSuffixes.push_back(PVRTOOL_INPUT_NAMES[i]);
+			cubemapSuffixes.push_back(PVRTOOL_MAP_NAMES[i]);
+		}
+	}
+}	
 };
 

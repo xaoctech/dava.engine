@@ -6,8 +6,7 @@
 #include "Render/TextureDescriptor.h"
 #include "FileSystem/FileSystem.h"
 #include "Render/Texture.h"
-#include "TextureCompression/PVRConverter.h"
-#include "TextureCompression/DXTConverter.h"
+#include "TextureCompression/TextureConverter.h"
 #include "Render/GPUFamilyDescriptor.h"
 #include "FramePathHelper.h"
 
@@ -575,19 +574,7 @@ void TexturePacker::ExportImage(PngImageExt *image, const FilePath &exportedPath
     eGPUFamily gpuFamily = (eGPUFamily)descriptor->exportedAsGpuFamily;
     if(gpuFamily != GPU_UNKNOWN)
     {
-        const String & extension = GPUFamilyDescriptor::GetCompressedFileExtension(gpuFamily, (PixelFormat)descriptor->exportedAsPixelFormat);
-        if(extension == ".pvr")
-        {
-            PVRConverter::Instance()->ConvertPngToPvr(*descriptor, gpuFamily);
-        }
-        else if(extension == ".dds")
-        {
-            DXTConverter::ConvertPngToDxt(*descriptor, gpuFamily);
-        }
-        else
-        {
-            DVASSERT(false);
-        }
+		TextureConverter::ConvertTexture(*descriptor, gpuFamily, false);
         
         FileSystem::Instance()->DeleteFile(exportedPathname);
     }

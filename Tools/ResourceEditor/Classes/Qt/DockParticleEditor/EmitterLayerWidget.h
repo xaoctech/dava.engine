@@ -120,6 +120,7 @@ private:
 	QCheckBox* frameOverlifeCheckBox;
 	QSpinBox* frameOverlifeFPSSpin;
 	QLabel* frameOverlifeFPSLabel;
+	QCheckBox* randomFrameOnStartCheckBox;
 
 	TimeLineWidget* angleTimeLine;
 	GradientPickerWidget* colorRandomGradient;

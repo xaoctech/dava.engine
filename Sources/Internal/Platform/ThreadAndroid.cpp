@@ -245,31 +245,6 @@ void Thread::InitMainThread()
     Logger::Info("[Thread::InitMainThread] %ld", mainThreadId);
 }
 
-pthread_mutex_t fakeMutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t fakeCond = PTHREAD_COND_INITIALIZER;
-void Thread::SleepThread(int32 timems)
-{
-//	Logger::Info("[Thread::SleepThread] timems = %d", timems);
-
-	struct timespec timeToWait;
-	struct timeval now;
-	int rt;
-
-	gettimeofday(&now,NULL);
-
-	timeToWait.tv_sec = now.tv_sec;
-	timeToWait.tv_nsec = now.tv_usec*1000 + timems*1000000;
-
-//	Logger::Info("[Thread::SleepThread] sec = %ld, nsec = %ld", timeToWait.tv_sec, timeToWait.tv_nsec);
-
-
-	pthread_mutex_lock(&fakeMutex);
-	rt = pthread_cond_timedwait(&fakeCond, &fakeMutex, &timeToWait);
-	pthread_mutex_unlock(&fakeMutex);
-
-//	Logger::Info("[Thread::SleepThread] done");
-}
-
 void Thread::YieldThread()
 {
     sched_yield();

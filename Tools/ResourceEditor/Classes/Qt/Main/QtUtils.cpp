@@ -170,22 +170,6 @@ int ShowSaveSceneQuestion(DAVA::Scene *scene)
     return answer;
 }
 
-void DeleteOldPVRTextureIfPowerVr_IOS(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu)
-{
-    if(!descriptor || gpu != GPU_POWERVR_IOS) return;
-    
-    FilePath oldPvrPath = FilePath::CreateWithNewExtension(descriptor->pathname, ".pvr");
-    FileSystem::Instance()->DeleteFile(oldPvrPath);
-}
-
-void DeleteOldDXTTextureIfTegra(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu)
-{
-    if(!descriptor || gpu != GPU_TEGRA) return;
-    
-    FilePath oldDdsPath = FilePath::CreateWithNewExtension(descriptor->pathname, ".dds");
-    FileSystem::Instance()->DeleteFile(oldDdsPath);
-}
-
 void ShowActionWithText(QToolBar *toolbar, QAction *action, bool showText)
 {
 	if(NULL != toolbar && NULL != action)
@@ -203,5 +187,18 @@ void ShowActionWithText(QToolBar *toolbar, QAction *action, bool showText)
 			}
 		}
 	}
+}
+
+DAVA::String ReplaceInString(const DAVA::String & sourceString, const DAVA::String & what, const DAVA::String & on)
+{
+	String::size_type pos = sourceString.find(what);
+	if(pos != String::npos)
+	{
+		String newString = sourceString;
+		newString = newString.replace(pos, what.length(), on);
+		return newString;
+	}
+
+	return sourceString;
 }
 

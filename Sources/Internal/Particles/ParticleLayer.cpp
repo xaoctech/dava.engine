@@ -90,13 +90,11 @@ ParticleLayer::ParticleLayer()
 	loopVariation = 0.0f;
 	loopEndTime = 0.0f;
 	currentLoopVariation = 0.0f;
-	currentDeltaVariation = 0.0f;
-
-	frameStart = 0;
-	frameEnd = 0;
+	currentDeltaVariation = 0.0f;	
 
 	frameOverLifeEnabled = false;
 	frameOverLifeFPS = 0;
+	randomFrameOnStart = false;
 
     isDisabled = false;
 	isLooped = false;
@@ -224,13 +222,11 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	
 	dstLayer->type = type;
 	dstLayer->sprite = SafeRetain(sprite);
-	dstLayer->layerPivotPoint = layerPivotPoint;
-	
-	dstLayer->frameStart = frameStart;
-	dstLayer->frameEnd = frameEnd;
+	dstLayer->layerPivotPoint = layerPivotPoint;	
 
 	dstLayer->frameOverLifeEnabled = frameOverLifeEnabled;
 	dstLayer->frameOverLifeFPS = frameOverLifeFPS;
+	dstLayer->randomFrameOnStart = randomFrameOnStart;
 
     dstLayer->isDisabled = isDisabled;
 	dstLayer->spritePath = spritePath;
@@ -251,6 +247,90 @@ void ParticleLayer::SetLodActive(int32 lod, bool active)
 {
 	if (lod<activeLODS.size())
 		activeLODS[lod] = active;
+}
+
+template <class T> void UpdatePropertyLineKeys(PropertyLine<T> * line, float32 startTime, float32 translateTime, float32 endTime)
+{	
+	if (!line)	
+		return;	
+	Vector<typename PropertyLine<T>::PropertyKey> &keys = line->GetValues();
+	int32 size = keys.size();		
+	int32 i;
+	for (i=0; i<size; ++i)
+	{
+		keys[i].t += translateTime;
+		if (keys[i].t>endTime)		
+			break;		
+		
+	}
+	if (i==0)
+		i+=1; //keep at least 1
+	keys.erase(keys.begin()+i, keys.end());
+	if (keys.size() == 1)
+	{
+		keys[0].t = startTime;
+	}
+}
+
+template <class T> void UpdatePropertyLineOnLoad(PropertyLine<T> * line, float32 startTime, float32 endTime)
+{
+	if (!line)
+		return;
+	Vector<typename PropertyLine<T>::PropertyKey> &keys = line->GetValues();
+	int32 size = keys.size();		
+	int32 i;
+	/*drop keys before*/
+	for (i=0; i<size; ++i)
+	{
+		if (keys[i].t>=startTime)
+			break;
+	}
+	if (i!=0)
+	{
+		T v0 = line->GetValue(startTime);
+		keys.erase(keys.begin(), keys.begin()+i);
+		typename PropertyLine<T>::PropertyKey key;
+		key.t = startTime;
+		key.value = v0;
+		keys.insert(keys.begin(), key);
+	}	
+	
+	/*drop keys after*/
+	size = keys.size();
+	for (i=0; i<size; i++)
+	{
+		if (keys[i].t>endTime)
+			break;
+	}
+	if (i!=size)
+	{
+		T v1 = line->GetValue(endTime);
+		keys.erase(keys.begin()+i, keys.end());
+		typename PropertyLine<T>::PropertyKey key;
+		key.t = endTime;
+		key.value = v1;
+		keys.push_back(key);
+	}
+}
+
+void ParticleLayer::UpdateLayerTime(float32 startTime, float32 endTime)
+{
+	float32 translateTime = startTime-this->startTime;
+	this->startTime = startTime;
+	this->endTime = endTime;
+	/*validate all time depended property lines*/	
+	UpdatePropertyLineKeys(life.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(lifeVariation.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(number.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(numberVariation.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(size.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(sizeVariation.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(velocity.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(velocityVariation.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(spin.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(spinVariation.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(angle.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(angleVariation.Get(), startTime, translateTime, endTime);
 }
 
 ParticleEmitter* ParticleLayer::GetEmitter() const
@@ -726,7 +806,11 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 		particle->AddForce(toAddForceValue, toAddForceDirection, toAddForceOverlife, toAddForceOvelifeEnabled);
 	}
     
-	particle->frame = frameStart + (int32)(randCoeff * (float32)(frameEnd - frameStart));
+	particle->frame = 0;
+	if (randomFrameOnStart&&sprite)
+	{
+		particle->frame =  (int32)(randCoeff * (float32)(this->sprite->GetFrameCount()));
+	}	
 	
 	// process it to fill first life values
 	ProcessParticle(particle);
@@ -897,7 +981,7 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * n
 	if (lodsNode)
 	{
 		const Vector<YamlNode*> & vec = lodsNode->AsVector();
-		for (int32 i=0; i<vec.size(); ++i)
+		for (uint32 i=0; i<(uint32)vec.size(); ++i)
 			SetLodActive(i, (bool)vec[i]->AsInt()); //as AddToArray has no override for bool, flags are stored as int
 	}
 
@@ -910,6 +994,12 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * n
 	if (frameOverLifeEnabledNode)
 	{
 		frameOverLifeEnabled = frameOverLifeEnabledNode->AsBool();
+	}
+
+	const YamlNode* randomFrameOnStartNode = node->Get("randomFrameOnStart");
+	if (randomFrameOnStartNode)
+	{
+		randomFrameOnStart = randomFrameOnStartNode->AsBool();
 	}
 
 	const YamlNode* frameOverLifeFPSNode = node->Get("frameOverLifeFPS");
@@ -1026,28 +1116,27 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * n
 		
 	const YamlNode * loopEndTimeNode = node->Get("loopEndTime");
 	if (loopEndTimeNode)
-		loopEndTime = loopEndTimeNode->AsFloat();
-	
-	frameStart = 0;
-	frameEnd = 0;
-
-	const YamlNode * frameNode = node->Get("frame");
-	if (frameNode)
-	{
-		if (frameNode->GetType() == YamlNode::TYPE_STRING)
-			frameStart = frameEnd = frameNode->AsInt();
-		else if (frameNode->GetType() == YamlNode::TYPE_ARRAY)
-		{
-			frameStart = frameNode->Get(0)->AsInt();
-			frameEnd = frameNode->Get(1)->AsInt();
-		}
-	}
+		loopEndTime = loopEndTimeNode->AsFloat();			
 
 	const YamlNode * isDisabledNode = node->Get("isDisabled");
 	if (isDisabledNode)
 	{
 		isDisabled = isDisabledNode->AsBool();
 	}
+
+	/*validate all time depended property lines*/	
+	UpdatePropertyLineOnLoad(life.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(lifeVariation.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(number.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(numberVariation.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(size.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(sizeVariation.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(velocity.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(velocityVariation.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(spin.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(spinVariation.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(angle.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(angleVariation.Get(), startTime, endTime);
 
 	const YamlNode * inheritPositionNode = node->Get("inheritPosition");
 	if (inheritPositionNode)
@@ -1127,6 +1216,7 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
     PropertyLineYamlWriter::WriteColorPropertyLineToYamlNode(layerNode, "colorOverLife", this->colorOverLife);
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "frameOverLifeEnabled", this->frameOverLifeEnabled);
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "frameOverLifeFPS", this->frameOverLifeFPS);
+	PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "randomFrameOnStart", this->randomFrameOnStart);
 
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "alignToMotion", this->alignToMotion);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "blend", this->additive ? "add" : "alpha");

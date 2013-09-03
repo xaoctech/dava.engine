@@ -420,6 +420,12 @@ Material::~Material()
 Material::eValidationResult Material::Validate(PolygonGroup * polygonGroup)
 {
     RebuildShader();
+	
+	if(Material::MATERIAL_SKYBOX == type)
+	{
+		return VALIDATE_COMPATIBLE;
+	}
+	
     /*
         General check if number of attributes in shader is 
      */

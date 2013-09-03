@@ -30,6 +30,14 @@ class UITextFieldMetadata : public UITextControlMetadata
     Q_PROPERTY(QString Text READ GetText WRITE SetText);
     Q_PROPERTY(QColor TextColor READ GetTextColor WRITE SetTextColor);
 	Q_PROPERTY(bool IsPassword READ GetIsPassword WRITE SetIsPassword);
+	
+	Q_PROPERTY(int AutoCapitalizationType READ GetAutoCapitalizationType WRITE SetAutoCapitalizationType);
+	Q_PROPERTY(int AutoCorrectionType READ GetAutoCorrectionType WRITE SetAutoCorrectionType);
+	Q_PROPERTY(int SpellCheckingType READ GetSpellCheckingType WRITE SetSpellCheckingType);
+	Q_PROPERTY(int KeyboardAppearanceType READ GetKeyboardAppearanceType WRITE SetKeyboardAppearanceType);
+	Q_PROPERTY(int KeyboardType READ GetKeyboardType WRITE SetKeyboardType);
+	Q_PROPERTY(int ReturnKeyType READ GetReturnKeyType WRITE SetReturnKeyType);
+	Q_PROPERTY(bool IsReturnKeyAutomatically READ GetIsReturnKeyAutomatically WRITE SetIsReturnKeyAutomatically);
 public:
     UITextFieldMetadata(QObject* parent = 0);
 
@@ -71,6 +79,27 @@ protected:
 	
 	bool GetIsPassword() const;
 	void SetIsPassword(bool value);
+	
+	int GetAutoCapitalizationType() const;
+	void SetAutoCapitalizationType(int value);
+	
+	int GetAutoCorrectionType() const;
+	void SetAutoCorrectionType(int value);
+	
+	int GetSpellCheckingType() const;
+	void SetSpellCheckingType(int value);
+	
+	int GetKeyboardAppearanceType() const;
+	void SetKeyboardAppearanceType(int value);
+	
+	int GetKeyboardType() const;
+	void SetKeyboardType(int value);
+	
+	int GetReturnKeyType() const;
+	void SetReturnKeyType(int value);
+	
+	bool GetIsReturnKeyAutomatically() const;
+	void SetIsReturnKeyAutomatically(bool value);
 };
 
 };

@@ -38,6 +38,11 @@ bool Thread::IsMainThread()
 	return (mainThreadId == GetCurrentThreadId());
 }
 
+void Thread::SleepThread(uint32 timeMS)
+{
+    Sleep(timeMS);
+}
+
 DWORD WINAPI ThreadFunc(void* param)
 {	
 	Thread * t = (Thread*)param;
