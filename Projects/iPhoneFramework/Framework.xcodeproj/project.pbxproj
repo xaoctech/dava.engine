@@ -672,6 +672,10 @@
 		E8BD1F0C16DE4A9C00499E18 /* MailSender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8BD1F0916DE4A9C00499E18 /* MailSender.cpp */; };
 		E8BD1F0D16DE4A9C00499E18 /* MailSender.h in Headers */ = {isa = PBXBuildFile; fileRef = E8BD1F0A16DE4A9C00499E18 /* MailSender.h */; };
 		E8BD1F0E16DE4A9C00499E18 /* MailSenderMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8BD1F0B16DE4A9C00499E18 /* MailSenderMacOS.mm */; };
+		E8C0A6FA17D5D8B300F8F93C /* UIScrollView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8C0A6F817D5D8B300F8F93C /* UIScrollView.cpp */; };
+		E8C0A6FB17D5D8B300F8F93C /* UIScrollView.h in Headers */ = {isa = PBXBuildFile; fileRef = E8C0A6F917D5D8B300F8F93C /* UIScrollView.h */; };
+		E8C0A6FE17D5D8EC00F8F93C /* UIScrollViewContainer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8C0A6FC17D5D8EC00F8F93C /* UIScrollViewContainer.cpp */; };
+		E8C0A6FF17D5D8EC00F8F93C /* UIScrollViewContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8C0A6FD17D5D8EC00F8F93C /* UIScrollViewContainer.h */; };
 		E8CBDFC716EE10EE00F70C8F /* UTF8UtilsMac.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8CBDFC616EE10EE00F70C8F /* UTF8UtilsMac.mm */; };
 		E8CC1BFC16C10A5A009B49BF /* IntrospectionBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8CC1BFB16C10A5A009B49BF /* IntrospectionBase.cpp */; };
 		E8F21DD016C1971F007F957A /* GlobalEventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8F21DCE16C1971F007F957A /* GlobalEventSystem.cpp */; };
@@ -1376,6 +1380,10 @@
 		E8BD1F0916DE4A9C00499E18 /* MailSender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MailSender.cpp; sourceTree = "<group>"; };
 		E8BD1F0A16DE4A9C00499E18 /* MailSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MailSender.h; sourceTree = "<group>"; };
 		E8BD1F0B16DE4A9C00499E18 /* MailSenderMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MailSenderMacOS.mm; sourceTree = "<group>"; };
+		E8C0A6F817D5D8B300F8F93C /* UIScrollView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIScrollView.cpp; sourceTree = "<group>"; };
+		E8C0A6F917D5D8B300F8F93C /* UIScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIScrollView.h; sourceTree = "<group>"; };
+		E8C0A6FC17D5D8EC00F8F93C /* UIScrollViewContainer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIScrollViewContainer.cpp; sourceTree = "<group>"; };
+		E8C0A6FD17D5D8EC00F8F93C /* UIScrollViewContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIScrollViewContainer.h; sourceTree = "<group>"; };
 		E8CBDFC616EE10EE00F70C8F /* UTF8UtilsMac.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UTF8UtilsMac.mm; sourceTree = "<group>"; };
 		E8CC1BFB16C10A5A009B49BF /* IntrospectionBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IntrospectionBase.cpp; sourceTree = "<group>"; };
 		E8F21DCE16C1971F007F957A /* GlobalEventSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GlobalEventSystem.cpp; sourceTree = "<group>"; };
@@ -2265,6 +2273,10 @@
 		E8B3CA2E16B9326E002BD35F /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				E8C0A6FC17D5D8EC00F8F93C /* UIScrollViewContainer.cpp */,
+				E8C0A6FD17D5D8EC00F8F93C /* UIScrollViewContainer.h */,
+				E8C0A6F817D5D8B300F8F93C /* UIScrollView.cpp */,
+				E8C0A6F917D5D8B300F8F93C /* UIScrollView.h */,
 				E8373BD617268CD9001A9770 /* UIAggregatorControl.cpp */,
 				E8373BD717268CD9001A9770 /* UIAggregatorControl.h */,
 				17F53E2C16D36FF3004D5099 /* IWebViewControl.h */,
@@ -2768,6 +2780,8 @@
 				A679102A17B3CF2D000AA2F2 /* SkyboxRenderObject.h in Headers */,
 				17D7E5F617A6C06B00861981 /* UIDismissionHandlerAlertView.h in Headers */,
 				EA56555417CE00E100426EB8 /* PerformanceSettings.h in Headers */,
+				E8C0A6FB17D5D8B300F8F93C /* UIScrollView.h in Headers */,
+				E8C0A6FF17D5D8EC00F8F93C /* UIScrollViewContainer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3149,6 +3163,8 @@
 				A679102917B3CF2D000AA2F2 /* SkyboxRenderObject.cpp in Sources */,
 				17D7E5F717A6C06B00861981 /* UIDismissionHandlerAlertView.mm in Sources */,
 				EA56555317CE00E100426EB8 /* PerformanceSettings.cpp in Sources */,
+				E8C0A6FA17D5D8B300F8F93C /* UIScrollView.cpp in Sources */,
+				E8C0A6FE17D5D8EC00F8F93C /* UIScrollViewContainer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
