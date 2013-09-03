@@ -277,7 +277,6 @@ public:
 
 	//editor props
 	void SetFogProp(const bool& fogState);
-    bool GetFogProp();
 
     int32 GetDrawIndices() const;
 
@@ -412,7 +411,7 @@ public:
          
         MEMBER(tiledShaderMode, "Tiled Shader Mode", I_SAVE | I_VIEW | I_EDIT)
 
-        PROPERTY("isFogEnabled", "Is Fog Enabled", GetFogProp, SetFogProp, I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("isFogEnabled", "Is Fog Enabled", IsFogEnabled, SetFogProp, I_SAVE | I_VIEW | I_EDIT)
         MEMBER(fogDensity, "Fog Density", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(fogColor, "Fog Color", I_SAVE | I_VIEW | I_EDIT)
     );
