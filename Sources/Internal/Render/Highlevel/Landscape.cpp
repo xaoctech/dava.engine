@@ -875,7 +875,7 @@ int Landscape::GetMaxLod(float32 quadDistance)
 	return maxLod;
 }
 	
-float32 Landscape::GetQuadToCameraDistance(const Vector3 camPos, LandscapeQuad& quad)
+float32 Landscape::GetQuadToCameraDistance(const Vector3& camPos, const LandscapeQuad& quad)
 {
 	Vector3 v = camPos - quad.bbox.max;
 	float32 dist0 = v.SquareLength();
