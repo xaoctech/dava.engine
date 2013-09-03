@@ -96,7 +96,7 @@ DAVA::FilePath CubemapUtils::GetDialogSavedPath(const DAVA::String& key, const D
 	return projectPath;
 }
 
-bool CubemapUtils::CubemapTextureValidator::IsValid(DAVA::FilePath filePath)
+bool CubemapUtils::CubemapTextureValidator::IsValid(const DAVA::FilePath& filePath)
 {
 	DAVA::TextureDescriptor descriptor;
 	bool result = descriptor.Load(filePath);
