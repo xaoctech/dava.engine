@@ -2302,12 +2302,13 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ActionUpdateSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\TouchAction.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\pThreadWin32.cpp">
       <Filter>Internal\Platform\TemplateWin32</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingDB.cpp">
+	 <ClCompile Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>	
+	<ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingDB.cpp">
       <Filter>Internal\Autotesting</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Autotesting\GameAPI.cpp">
