@@ -264,7 +264,7 @@ public:
     FilePath SaveFullTiledTexture();
     Texture *CreateFullTiledTexture();
     
-    void SetFog(bool _fogEnabled);
+    void SetFog(const bool& fogState);
     bool IsFogEnabled() const;
     void SetFogDensity(float32 _fogDensity);
     float32 GetFogDensity() const;
@@ -274,10 +274,6 @@ public:
     LandscapeCursor *GetCursor();
     
 	virtual RenderObject * Clone(RenderObject *newObject);
-
-	//editor props
-	void SetFogProp(const bool& fogState);
-    bool GetFogProp();
 
     int32 GetDrawIndices() const;
 
@@ -325,7 +321,7 @@ protected:
     void ReleaseAllRDOQuads();
 
 	int GetMaxLod(float32 quadDistance);
-	float32 GetQuadToCameraDistance(const Vector3 camPos, LandscapeQuad& quad);
+	float32 GetQuadToCameraDistance(const Vector3& camPos, const LandscapeQuad& quad);
 	
     Vector<LandscapeVertex *> landscapeVerticesArray;
     Vector<RenderDataObject *> landscapeRDOArray;
@@ -412,7 +408,7 @@ public:
          
         MEMBER(tiledShaderMode, "Tiled Shader Mode", I_SAVE | I_VIEW | I_EDIT)
 
-        PROPERTY("isFogEnabled", "Is Fog Enabled", GetFogProp, SetFogProp, I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("isFogEnabled", "Is Fog Enabled", IsFogEnabled, SetFog, I_SAVE | I_VIEW | I_EDIT)
         MEMBER(fogDensity, "Fog Density", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(fogColor, "Fog Color", I_SAVE | I_VIEW | I_EDIT)
     );

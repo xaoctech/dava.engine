@@ -23,7 +23,7 @@ public:
 	static int MapFrameworkToUIFace(int frameworkFace);
 	static const DAVA::String& GetFaceNameSuffix(int faceId);
 	static const DAVA::String& GetDefaultFaceExtension();
-	static DAVA::FilePath GetDialogSavedPath(const DAVA::String& key, const DAVA::String initialValue, const DAVA::String defaultValue);
+	static DAVA::FilePath GetDialogSavedPath(const DAVA::String& key, const DAVA::String& initialValue, const DAVA::String& defaultValue);
 
 public:
 	
@@ -31,7 +31,7 @@ public:
 	{
 	public:
 		
-		virtual bool IsValid(DAVA::FilePath filePath);
+		virtual bool IsValid(const DAVA::FilePath& filePath);
 	};
 
 };
