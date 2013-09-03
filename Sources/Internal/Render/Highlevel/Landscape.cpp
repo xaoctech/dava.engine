@@ -52,26 +52,10 @@ Landscape::Landscape()
     
     frustum = 0; //new Frustum();
     
-    tileMaskShader = NULL;
-    fullTiledShader = NULL;
     nearLodIndex = 0;
     farLodIndex = 1;
     
 	cursor = 0;
-    uniformCameraPosition = -1;
-    
-    for (int32 k = 0; k < TEXTURE_COUNT; ++k)
-    {
-        uniformTextures[k] = -1;
-        uniformTextureTiling[k] = -1;
-        textureTiling[k] = Vector2(1.0f, 1.0f);
-        uniformTileColor[k] = -1;
-        tileColor[k] = Color::White();
-    }
-    uniformFogDensity = -1;
-    uniformFogColor = -1;
-    uniformFogDensityFT = -1;
-    uniformFogColorFT = -1;
     
     heightmap = new Heightmap();
         
@@ -81,20 +65,21 @@ Landscape::Landscape()
     fogDensity = 0.006f;
     fogColor = Color::White();
 	
-	landscapeMaterial = MaterialSystem::Instance()->GetMaterial("Landscape");
-	landscapeMaterial->Rebuild(); //rebuild material here
-	
+	tileMaskMaterial = MaterialSystem::Instance()->GetMaterial("Global.Landscape.TileMask")->CreateChild();
+	fullTiledMaterial = MaterialSystem::Instance()->GetMaterial("Global.Landscape.FullTiled")->CreateChild();
+		
+	tiledShaderMode = TILED_MODE_COUNT;
 	SetTiledShaderMode(TILED_MODE_MIXED);
 	
 	LandscapeChunk * chunk = new LandscapeChunk(this);
-	chunk->SetMaterial(landscapeMaterial);
+	//TODO: how should be handled situation when single renderbatch object draws with multiple materials?
+	chunk->SetMaterial(tileMaskMaterial);
     AddRenderBatch(chunk);
     SafeRelease(chunk);
 }
 
 Landscape::~Landscape()
 {
-    ReleaseShaders();
     ReleaseAllRDOQuads();
     
     for (int32 t = 0; t < TEXTURE_COUNT; ++t)
@@ -105,88 +90,14 @@ Landscape::~Landscape()
 
     SafeRelease(heightmap);
 	SafeDelete(cursor);
-	SafeRelease(landscapeMaterial);
+	
+	tileMaskMaterial->SetParent(NULL);
+	fullTiledMaterial->SetParent(NULL);
+	
+	SafeRelease(tileMaskMaterial);
+	SafeRelease(fullTiledMaterial);
 }
     
-void Landscape::InitShaders()
-{
-    ReleaseShaders();
-    
-    tileMaskShader = landscapeMaterial->GetTechnique("Landscape.TileMask")->GetShader();
-	tileMaskShader->SetDefineList("");
-    
-    String defines = "";
-    
-	if(isFogEnabled && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
-    {
-        defines += "VERTEX_FOG";
-    }
-    if (TILED_MODE_TILE_DETAIL_MASK == tiledShaderMode)
-    {
-        if (defines.size() != 0)defines += ";";
-        defines += "DETAILMASK";
-    }
-    tileMaskShader->SetDefineList(defines);
-    
-    tileMaskShader->Recompile(true);
-    
-    uniformTextures[TEXTURE_TILE0] = tileMaskShader->FindUniformIndexByName("tileTexture0");
-    uniformTextures[TEXTURE_TILE1] = tileMaskShader->FindUniformIndexByName("tileTexture1");
-    uniformTextures[TEXTURE_TILE2] = tileMaskShader->FindUniformIndexByName("tileTexture2");
-    uniformTextures[TEXTURE_TILE3] = tileMaskShader->FindUniformIndexByName("tileTexture3");
-    uniformTextures[TEXTURE_TILE_MASK] = tileMaskShader->FindUniformIndexByName("tileMask");
-    uniformTextures[TEXTURE_COLOR] = tileMaskShader->FindUniformIndexByName("colorTexture");
-    
-    uniformCameraPosition = tileMaskShader->FindUniformIndexByName("cameraPosition");
-    
-    uniformTextureTiling[TEXTURE_TILE0] = tileMaskShader->FindUniformIndexByName("texture0Tiling");
-    uniformTextureTiling[TEXTURE_TILE1] = tileMaskShader->FindUniformIndexByName("texture1Tiling");
-    uniformTextureTiling[TEXTURE_TILE2] = tileMaskShader->FindUniformIndexByName("texture2Tiling");
-    uniformTextureTiling[TEXTURE_TILE3] = tileMaskShader->FindUniformIndexByName("texture3Tiling");
-    
-    uniformTileColor[TEXTURE_TILE0] = tileMaskShader->FindUniformIndexByName("tileColor0");
-    uniformTileColor[TEXTURE_TILE1] = tileMaskShader->FindUniformIndexByName("tileColor1");
-    uniformTileColor[TEXTURE_TILE2] = tileMaskShader->FindUniformIndexByName("tileColor2");
-    uniformTileColor[TEXTURE_TILE3] = tileMaskShader->FindUniformIndexByName("tileColor3");
-
-    
-	if(isFogEnabled && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
-    {
-        uniformFogColor = tileMaskShader->FindUniformIndexByName("fogColor");
-        uniformFogDensity = tileMaskShader->FindUniformIndexByName("fogDensity");   
-    }
-    
-    fullTiledShader = landscapeMaterial->GetTechnique("Landscape.FullTiled")->GetShader();
-	fullTiledShader->SetDefineList("");
-	if(isFogEnabled && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
-    {
-        fullTiledShader->SetDefineList("VERTEX_FOG");   
-    }
-    
-    fullTiledShader->Recompile(true);
-    
-    if(isFogEnabled && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
-    {
-        uniformFogColorFT = fullTiledShader->FindUniformIndexByName("fogColor");
-        uniformFogDensityFT = fullTiledShader->FindUniformIndexByName("fogDensity");   
-    }
-}
-    
-void Landscape::ReleaseShaders()
-{
-	uniformCameraPosition = -1;
-    for (int32 k = 0; k < TEXTURE_COUNT; ++k)
-    {
-        uniformTextures[k] = -1;
-        uniformTextureTiling[k] = -1;
-    }
-    
-    uniformFogColor = -1;
-    uniformFogDensity = -1;   
-    uniformFogColorFT = -1;
-    uniformFogDensityFT = -1;   
-}
-
 
 int16 Landscape::AllocateRDOQuad(LandscapeQuad * quad)
 {
@@ -249,14 +160,12 @@ void Landscape::SetLods(const Vector4 & lods)
     
 void Landscape::BuildLandscapeFromHeightmapImage(const FilePath & heightmapPathname, const AABBox3 & _box)
 {
-    ReleaseShaders(); // release previous shaders
     ReleaseAllRDOQuads();
     SafeDeleteArray(indices); //TODO: need here or no?
     
 	heightmapPath = heightmapPathname;
 	bbox = _box;
 
-    InitShaders(); // init new shaders according to the selected rendering mode
     BuildHeightmap();
     BuildLandscape();
 }
@@ -654,10 +563,7 @@ void Landscape::FlushQueue()
 {
     if (queueRenderCount == 0)return;
     
-    RenderManager::Instance()->SetRenderData(landscapeRDOArray[queueRdoQuad]);
-    RenderManager::Instance()->FlushState();
-	RenderManager::Instance()->AttachRenderData();
-    RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, queueRenderCount, EIF_16, indices); 
+	currentMaterial->Draw(landscapeRDOArray[queueRdoQuad], indices, queueRenderCount);
 
     ClearQueue();
     
@@ -1049,93 +955,59 @@ void Landscape::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
 }
 
     
-void Landscape::BindMaterial(int32 lodLayer)
-{
-    if(-1 != prevLodLayer)
-    {
-        UnbindMaterial();
-    }
+void Landscape::BindMaterial(int32 lodLayer, Camera* camera)
+{	
+    //if(-1 != prevLodLayer)
+    //{
+    //    UnbindMaterial();
+    //}
 
     if(0 == lodLayer)
     {
-        if (textures[TEXTURE_TILE0])
-            RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE0], 0);
-        if (textures[TEXTURE_TILE1])
-            RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE1], 1);
-        if (textures[TEXTURE_TILE2])
-            RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE2], 2);
-        if (textures[TEXTURE_TILE3])
-            RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE3], 3);
-        if (textures[TEXTURE_TILE_MASK])
-            RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE_MASK], 4);
-        if (textures[TEXTURE_COLOR])
-            RenderManager::Instance()->SetTexture(textures[TEXTURE_COLOR], 5);
-        
-        RenderManager::Instance()->SetShader(tileMaskShader);
-        RenderManager::Instance()->FlushState();
-        
-        if (uniformTextures[TEXTURE_TILE0] != -1)
-            tileMaskShader->SetUniformValueByIndex(uniformTextures[TEXTURE_TILE0], 0);
-        
-        if (uniformTextures[TEXTURE_TILE1] != -1)
-            tileMaskShader->SetUniformValueByIndex(uniformTextures[TEXTURE_TILE1], 1);
-        
-        if (uniformTextures[TEXTURE_TILE2] != -1)
-            tileMaskShader->SetUniformValueByIndex(uniformTextures[TEXTURE_TILE2], 2);
-        
-        if (uniformTextures[TEXTURE_TILE3] != -1)
-            tileMaskShader->SetUniformValueByIndex(uniformTextures[TEXTURE_TILE3], 3);
-        
-        if (uniformTextures[TEXTURE_TILE_MASK] != -1)
-            tileMaskShader->SetUniformValueByIndex(uniformTextures[TEXTURE_TILE_MASK], 4);
-        
-        if (uniformTextures[TEXTURE_COLOR] != -1)
-            tileMaskShader->SetUniformValueByIndex(uniformTextures[TEXTURE_COLOR], 5);
-        
-        if (uniformCameraPosition != -1)
-            tileMaskShader->SetUniformValueByIndex(uniformCameraPosition, cameraPos);
-        
-        if (uniformTextureTiling[TEXTURE_TILE0] != -1)
-            tileMaskShader->SetUniformValueByIndex(uniformTextureTiling[TEXTURE_TILE0], textureTiling[TEXTURE_TILE0]);
-        
-        if (uniformTextureTiling[TEXTURE_TILE1] != -1)
-            tileMaskShader->SetUniformValueByIndex(uniformTextureTiling[TEXTURE_TILE1], textureTiling[TEXTURE_TILE1]);
-        
-        if (uniformTextureTiling[TEXTURE_TILE2] != -1)
-            tileMaskShader->SetUniformValueByIndex(uniformTextureTiling[TEXTURE_TILE2], textureTiling[TEXTURE_TILE2]);
-        
-        if (uniformTextureTiling[TEXTURE_TILE3] != -1)
-            tileMaskShader->SetUniformValueByIndex(uniformTextureTiling[TEXTURE_TILE3], textureTiling[TEXTURE_TILE3]);
+		if(currentMaterial == tileMaskMaterial) return;
+		
+		currentMaterial = tileMaskMaterial;
+		
+		//TODO: set up textures once when they were changed
+		tileMaskMaterial->SetTexture("tileTexture0", textures[TEXTURE_TILE0]);
+		tileMaskMaterial->SetTexture("tileTexture1", textures[TEXTURE_TILE1]);
+		tileMaskMaterial->SetTexture("tileTexture2", textures[TEXTURE_TILE2]);
+		tileMaskMaterial->SetTexture("tileTexture3", textures[TEXTURE_TILE3]);
+		tileMaskMaterial->SetTexture("tileMask", textures[TEXTURE_TILE_MASK]);
+		tileMaskMaterial->SetTexture("colorTexture", textures[TEXTURE_COLOR]);
+		
+		//TODO: set up texture tilings once when they were changed
+		tileMaskMaterial->SetPropertyValue("texture0Tiling", Shader::UT_FLOAT_VEC2, 1, &textureTiling[TEXTURE_TILE0]);
+		tileMaskMaterial->SetPropertyValue("texture1Tiling", Shader::UT_FLOAT_VEC2, 1, &textureTiling[TEXTURE_TILE1]);
+		tileMaskMaterial->SetPropertyValue("texture2Tiling", Shader::UT_FLOAT_VEC2, 1, &textureTiling[TEXTURE_TILE2]);
+		tileMaskMaterial->SetPropertyValue("texture3Tiling", Shader::UT_FLOAT_VEC2, 1, &textureTiling[TEXTURE_TILE0]);
 
-        
-        if (uniformTileColor[TEXTURE_TILE0] != -1)
-            tileMaskShader->SetUniformColor3ByIndex(uniformTileColor[TEXTURE_TILE0], tileColor[TEXTURE_TILE0]);
-        if (uniformTileColor[TEXTURE_TILE1] != -1)
-            tileMaskShader->SetUniformColor3ByIndex(uniformTileColor[TEXTURE_TILE1], tileColor[TEXTURE_TILE1]);
-        if (uniformTileColor[TEXTURE_TILE2] != -1)
-            tileMaskShader->SetUniformColor3ByIndex(uniformTileColor[TEXTURE_TILE2], tileColor[TEXTURE_TILE2]);
-        if (uniformTileColor[TEXTURE_TILE3] != -1)
-            tileMaskShader->SetUniformColor3ByIndex(uniformTileColor[TEXTURE_TILE3], tileColor[TEXTURE_TILE3]);
-                
-        
-        if (uniformFogColor != -1)
-            tileMaskShader->SetUniformColor3ByIndex(uniformFogColor, fogColor);
-        if (uniformFogDensity != -1)
-            tileMaskShader->SetUniformValueByIndex(uniformFogDensity, fogDensity);
-    }
-    else 
-    {
-        if (textures[TEXTURE_TILE_FULL])
-            RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE_FULL], 0);
+		//TODO: set up tile colors once they were changed
+		tileMaskMaterial->SetPropertyValue("tileColor0", Shader::UT_FLOAT_VEC4, 1, &tileColor[TEXTURE_TILE0]);
+		tileMaskMaterial->SetPropertyValue("tileColor1", Shader::UT_FLOAT_VEC4, 1, &tileColor[TEXTURE_TILE1]);
+		tileMaskMaterial->SetPropertyValue("tileColor2", Shader::UT_FLOAT_VEC4, 1, &tileColor[TEXTURE_TILE2]);
+		tileMaskMaterial->SetPropertyValue("tileColor3", Shader::UT_FLOAT_VEC4, 1, &tileColor[TEXTURE_TILE3]);
+		
+		//TODO: set up fog parameters once they were changed
+		tileMaskMaterial->SetPropertyValue("fogColor", Shader::UT_FLOAT_VEC4, 1, &fogColor);
+		tileMaskMaterial->SetPropertyValue("fogDensity", Shader::UT_FLOAT, 1, &fogDensity);
 
-        RenderManager::Instance()->SetShader(fullTiledShader);
-        RenderManager::Instance()->FlushState();
-        
-        if (uniformFogColorFT != -1)
-            fullTiledShader->SetUniformColor3ByIndex(uniformFogColorFT, fogColor);
-        if (uniformFogDensityFT != -1)
-            fullTiledShader->SetUniformValueByIndex(uniformFogDensityFT, fogDensity);
+		tileMaskMaterial->SetPropertyValue("cameraPosition", Shader::UT_FLOAT_VEC3, 1, &cameraPos);
+		
     }
+    else
+    {		
+		if(currentMaterial == fullTiledMaterial) return;
+		
+		currentMaterial = fullTiledMaterial;
+		
+		//TODO: set up texture and fog parameters once they were changed
+		fullTiledMaterial->SetTexture("sampler2d", textures[TEXTURE_COLOR]);
+		fullTiledMaterial->SetPropertyValue("fogColor", Shader::UT_FLOAT_VEC4, 1, &fogColor);
+		fullTiledMaterial->SetPropertyValue("fogDensity", Shader::UT_FLOAT, 1, &fogDensity);
+    }
+	
+	currentMaterial->BindMaterialTechnique("Landscape", camera);
     
     prevLodLayer = lodLayer;
 }
@@ -1144,26 +1016,7 @@ void Landscape::UnbindMaterial()
 {
     if(-1 != prevLodLayer)
     {
-        if(0 == prevLodLayer)
-        {
-            RenderManager::Instance()->SetTexture(0, 0);
-            RenderManager::Instance()->SetTexture(0, 1);
-            RenderManager::Instance()->SetTexture(0, 2);
-            RenderManager::Instance()->SetTexture(0, 3);
-            RenderManager::Instance()->SetTexture(0, 4);
-            RenderManager::Instance()->SetTexture(0, 5);
-            
-            RenderManager::Instance()->SetShader(NULL);
-            RenderManager::Instance()->FlushState();
-        }
-        else
-        {
-            RenderManager::Instance()->SetTexture(0, 0);
-            
-            RenderManager::Instance()->SetShader(NULL);
-            RenderManager::Instance()->FlushState();
-        }
-        
+		//TODO: review if should unbind new material
         prevLodLayer = -1;
     }
 }
@@ -1178,17 +1031,19 @@ void Landscape::Draw(Camera * camera)
 	{
 		return;
 	}
+	
+	currentMaterial = NULL;
 
 	//Dizz: uniformFogDensity != -1 is a check if fog is inabled in shader
-	if(isFogEnabled && (uniformFogDensity != -1) && !RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
-	{
-		InitShaders();
-	}
+	//if(isFogEnabled && (uniformFogDensity != -1) && !RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
+	//{
+	//	InitShaders();
+	//}
 
-	if(isFogEnabled && (uniformFogDensity == -1) && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
-	{
-		InitShaders();
-	}
+	//if(isFogEnabled && (uniformFogDensity == -1) && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
+	//{
+	//	InitShaders();
+	//}
     
 #if defined(__DAVAENGINE_OPENGL__) && (defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__))
 //    if (debugFlags & DEBUG_DRAW_GRID)
@@ -1250,7 +1105,7 @@ void Landscape::Draw(Camera * camera)
     
 	Draw(&quadTreeHead);
     
-    BindMaterial(nearLodIndex);
+    BindMaterial(nearLodIndex, camera);
     int32 count0 = lod0quads.size();
     for(int32 i = 0; i < count0; ++i)
     {
@@ -1258,9 +1113,9 @@ void Landscape::Draw(Camera * camera)
     }
 	FlushQueue();
     
-    if(nearLodIndex != farLodIndex)     
+    if(nearLodIndex != farLodIndex)
 	{
-		BindMaterial(farLodIndex);
+		BindMaterial(farLodIndex, camera);
 	}
 
     int32 countNot0 = lodNot0quads.size();
@@ -1304,7 +1159,7 @@ void Landscape::Draw(Camera * camera)
         
         if(nearLodIndex != farLodIndex)     
 		{
-			BindMaterial(nearLodIndex);
+			BindMaterial(nearLodIndex, camera);
 		}
         int32 count0 = lod0quads.size();
         for(int32 i = 0; i < count0; ++i)
@@ -1315,7 +1170,7 @@ void Landscape::Draw(Camera * camera)
         
         if(nearLodIndex != farLodIndex)
 		{
-			BindMaterial(farLodIndex);
+			BindMaterial(farLodIndex, camera);
 		}
         
         int32 countNot0 = lodNot0quads.size();
@@ -1564,9 +1419,7 @@ void Landscape::SetHeightmap(DAVA::Heightmap *height)
 {
     SafeRelease(heightmap);
     
-    ReleaseShaders(); // release previous shaders
     ReleaseAllRDOQuads();
-    InitShaders(); // init new shaders according to the selected rendering mode
     
     SafeDeleteArray(indices);
 
@@ -1646,11 +1499,12 @@ Texture * Landscape::CreateFullTiledTexture()
     RenderManager::Instance()->SetState(RenderState::DEFAULT_2D_STATE);
     
     prevLodLayer = -1;
-    BindMaterial(0);
-    RenderManager::Instance()->SetRenderData(ftRenderData);
-    RenderManager::Instance()->FlushState();
+
+	RenderManager::Instance()->SetRenderData(ftRenderData);
 	RenderManager::Instance()->AttachRenderData();
-    RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
+
+    BindMaterial(0, NULL);
+	RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
     UnbindMaterial();
 
 #ifdef __DAVAENGINE_OPENGL__
@@ -1707,6 +1561,9 @@ void Landscape::UpdateFullTiledTexture()
     
 void Landscape::SetTiledShaderMode(DAVA::Landscape::eTiledShaderMode _tiledShaderMode)
 {
+	bool prevContainsDetailMask = (TILED_MODE_TILE_DETAIL_MASK == tiledShaderMode);
+	bool curContainsDetailMask = (TILED_MODE_TILE_DETAIL_MASK == _tiledShaderMode);
+	
     tiledShaderMode = _tiledShaderMode;
     
     switch (tiledShaderMode)
@@ -1714,28 +1571,46 @@ void Landscape::SetTiledShaderMode(DAVA::Landscape::eTiledShaderMode _tiledShade
         case TILED_MODE_TILE_DETAIL_MASK:
             nearLodIndex = 0;
             farLodIndex = 0;
+						
             break;
         case TILED_MODE_TILEMASK:
             nearLodIndex = 0;
             farLodIndex = 0;
+			
             break;
             
         case TILED_MODE_MIXED:
             nearLodIndex = 0;
             farLodIndex = 1;
+			
             break;
 
         case TILED_MODE_TEXTURE:
             nearLodIndex = 1;
             farLodIndex = 1;
+			
             break;
 
         default:
             break;
     }
-    // Reload shaders to
-    ReleaseShaders();
-    InitShaders();
+	
+	if(prevContainsDetailMask != curContainsDetailMask)
+	{
+		NMaterial* globalLandscape = MaterialSystem::Instance()->GetMaterial("Global.Landscape");
+		DVASSERT(globalLandscape);
+
+		if(curContainsDetailMask)
+		{
+			globalLandscape->AddMaterialDefine("DETAILMASK");
+		}
+		else
+		{
+			globalLandscape->RemoveMaterialDefine("DETAILMASK");
+		}
+		
+		globalLandscape->Rebuild();
+	}	
 }
     
 void Landscape::SetFog(bool _isFogEnabled)
@@ -1743,8 +1618,20 @@ void Landscape::SetFog(bool _isFogEnabled)
     if(isFogEnabled != _isFogEnabled)
     {
         isFogEnabled = _isFogEnabled;
-        
-        InitShaders();
+		
+		NMaterial* global = MaterialSystem::Instance()->GetMaterial("Global");
+		DVASSERT(global);
+		
+		if(isFogEnabled)
+		{
+			global->AddMaterialDefine("VERTEX_FOG");
+		}
+		else
+		{
+			global->RemoveMaterialDefine("VERTEX_FOG");
+		}
+		
+		global->Rebuild();
     }
 }
 
@@ -1778,6 +1665,7 @@ LandscapeCursor * Landscape::GetCursor()
     return cursor;
 }
 
+	//TODO: review landscape cloning
 RenderObject * Landscape::Clone( RenderObject *newObject )
 {
 	if(!newObject)

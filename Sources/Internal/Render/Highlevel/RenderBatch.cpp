@@ -50,6 +50,12 @@ RenderBatch::~RenderBatch()
 {
 	SafeRelease(dataSource);
 	SafeRelease(renderDataObject);
+	
+	if(material)
+	{
+		material->SetParent(NULL);
+	}
+	
 	SafeRelease(material);
 }
     

@@ -80,7 +80,7 @@ void EditorLandscape::SetRenderer(LandscapeRenderer *renderer)
 {
     SafeRelease(landscapeRenderer);
     landscapeRenderer = SafeRetain(renderer);
-	landscapeRenderer->SetMaterial(landscapeMaterial);
+	landscapeRenderer->SetMaterial(tileMaskMaterial);
 }
 
 

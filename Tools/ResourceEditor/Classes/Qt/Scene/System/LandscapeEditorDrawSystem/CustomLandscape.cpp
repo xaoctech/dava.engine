@@ -31,7 +31,7 @@ void CustomLandscape::SetRenderer(LandscapeRenderer *renderer)
 {
 	SafeRelease(landscapeRenderer);
 	landscapeRenderer = SafeRetain(renderer);
-	landscapeRenderer->SetMaterial(landscapeMaterial);
+	landscapeRenderer->SetMaterial(tileMaskMaterial);
 }
 
 LandscapeRenderer* CustomLandscape::GetRenderer()
