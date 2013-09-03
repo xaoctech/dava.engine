@@ -374,7 +374,7 @@ void MainWindow::UpdateScale(int32 newScalePercents)
 	// Remember the current "absolute" view area position to position the same point
 	// under mouse cursor after scale level will be changed.
 	Vector2 cursorPos = ScreenWrapper::Instance()->GetCursorPosition();
-	Vector2 scenePosition = CalculateScenePositionForPoint(cursorPos, prevScale);
+	Vector2 scenePosition = CalculateScenePositionForPoint(ui->davaGlWidget->rect(), cursorPos, prevScale);
 
 	ScreenWrapper::Instance()->SetScale(newScale);
 
@@ -426,10 +426,22 @@ void MainWindow::OnSliderMoved()
 
 void MainWindow::resizeEvent(QResizeEvent * event)
 {
-	QMainWindow::resizeEvent(event);
+	// Need to reposition the center of the viewport according to the new window size.
+	QSize widgetSize = ui->davaGlWidget->GetPrevSize();
+	QRect oldWidgetRect(QPoint(0, 0), widgetSize);
+	Vector2 oldViewPortCenter = Vector2(oldWidgetRect.center().x(), oldWidgetRect.center().y());
 
+	float32 curScale = ScreenWrapper::Instance()->GetScale();
+	Vector2 viewPortSceneCenter = CalculateScenePositionForPoint(oldWidgetRect, oldViewPortCenter, curScale);
+
+	QMainWindow::resizeEvent(event);
 	UpdateSliders();
-	UpdateScreenPosition();
+
+	// Widget size is now changed - reposition center of viewport.
+	widgetSize = ui->davaGlWidget->size();
+	Vector2 newViewPortCenter = Vector2(widgetSize.width() / 2, widgetSize.height() / 2);
+
+	ScrollToScenePositionAndPoint(viewPortSceneCenter, newViewPortCenter, curScale);
 }
 
 void MainWindow::closeEvent(QCloseEvent * event)
@@ -457,8 +469,23 @@ void MainWindow::OnSelectedScreenChanged()
 		UpdateSliders();
 		UpdateScaleControls();
 
-		ui->horizontalScrollBar->setValue(HierarchyTreeController::Instance()->GetActiveScreen()->GetPosX());
-		ui->verticalScrollBar->setValue(HierarchyTreeController::Instance()->GetActiveScreen()->GetPosY());
+		HierarchyTreeScreenNode* activeScreen = HierarchyTreeController::Instance()->GetActiveScreen();
+		float posX = activeScreen->GetPosX();
+		float posY = activeScreen->GetPosY();
+
+		if (FLOAT_EQUAL(posX, HierarchyTreeScreenNode::POSITION_UNDEFINED) &&
+			FLOAT_EQUAL(posY, HierarchyTreeScreenNode::POSITION_UNDEFINED))
+		{
+			// The screen was just loaded and wasn't positioned yet. Need to center it in the
+			// screen according to the DF-1873.
+			// Since sliders were just updated, just take their centers.
+			posX = (ui->horizontalScrollBar->maximum() - ui->horizontalScrollBar->minimum()) / 2;
+			posY = (ui->verticalScrollBar->maximum() - ui->verticalScrollBar->minimum()) / 2;
+		}
+
+		ui->horizontalScrollBar->setValue(posX);
+		ui->verticalScrollBar->setValue(posY);
+
 		// Enable library widget for selected screen
 		ui->libraryDockWidget->setEnabled(true);
 	}
@@ -941,10 +968,9 @@ void MainWindow::OnUnsavedChangesNumberChanged()
 	setWindowTitle(projectTitle);
 }
 
-Vector2 MainWindow::CalculateScenePositionForPoint(const Vector2& point, float curScale)
+Vector2 MainWindow::CalculateScenePositionForPoint(const QRect& widgetRect, const Vector2& point, float curScale)
 {
 	// Correctly handle scales less then 100%.
-	QRect widgetRect = ui->davaGlWidget->rect();
 	QRect viewRect = ScreenWrapper::Instance()->GetRect();
 	
 	// If horz/vert offset is less than zero, it means no scroll bars visible, and the view size
