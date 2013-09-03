@@ -46,6 +46,10 @@ public:
 	const Vector2 GetContentSize() const;
 	
 	void RecalculateContentSize();
+	
+	// Set the speed of returning scroll container to bounds.
+	void SetReturnSpeed(int32 speedInPixelsPerSec);
+
 protected:
 	virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
     virtual void LoadFromYamlNodeCompleted();
