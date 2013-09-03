@@ -370,6 +370,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\pThreadWin32.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\WebViewControlWin32.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\WindowsSpecifics.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
@@ -620,13 +621,9 @@
     <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystemSwig.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystemYaml.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Autotesting\KeyedArchiveSwig.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Autotesting\RectSwig.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\TouchAction.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Autotesting\UIControlSwig.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Autotesting\VectorSwig.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\TouchAction.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\BaseObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\Data.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\EnumMap.cpp" />
@@ -733,6 +730,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\DeviceInfoWin32.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\pThreadWin32.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\WebViewControlWin32.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\DPIHelperWin32.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\Thread.cpp" />

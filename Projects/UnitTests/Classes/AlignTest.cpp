@@ -86,6 +86,7 @@ void AlignTest::LoadResources()
 
 void AlignTest::UnloadResources()
 {
+	RemoveAllControls();
     SafeRelease(staticText);
     SafeRelease(staticText2);
     SafeRelease(font);

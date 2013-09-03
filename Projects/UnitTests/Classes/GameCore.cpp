@@ -59,6 +59,7 @@
 #include "TransparentWebViewTest.h"
 #include "FormatsTest.h"
 #include "UIScrollViewTest.h"
+#include "ThreadSyncTest.h"
 
 using namespace DAVA;
 
@@ -115,6 +116,8 @@ void GameCore::OnAppStarted()
 	new DLCTest();
 	new UIListTest();
 	new UIScrollViewTest();
+
+    new ThreadSyncTest();
     
     errors.reserve(TestCount());
 

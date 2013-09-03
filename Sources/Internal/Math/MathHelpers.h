@@ -161,6 +161,14 @@ namespace DAVA
 		y  = y * ( f - ( x * y * y ) );
 		return number * y;
 	}
+
+	inline Vector3 TransformPerserveLength(Vector3 vec, const Matrix3& mat)
+	{
+		float vl = vec.Length();
+		vec = vec*mat;
+		vec *=(vl/vec.Length());
+		return vec;
+	}
 	
 } // end of namespace DAVA
 

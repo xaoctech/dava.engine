@@ -36,17 +36,26 @@ const char8* Format(const char8 * text, ...)
 	{
 		formatString8Position = 0;
 	}
+
+	char8 *buffer = &formatString8[formatString8Position];
+
 	va_list ll;
-
 	va_start(ll, text);
-	int32 len = vsnprintf(&formatString8[formatString8Position],  FORMAT_STRING_MAX_LEN, text, ll);
-    DVASSERT_MSG(len <= FORMAT_STRING_MAX_LEN, formatString8[formatString8Position]);
-    
-	formatString8Position += (len + 1);
-
+	int32 len = vsnprintf(buffer,  FORMAT_STRING_MAX_LEN, text, ll);
 	va_end(ll);
 
-	return &formatString8[formatString8Position  - (len + 1)];
+	if(len < 0 || len > FORMAT_STRING_MAX_LEN)
+	{
+		Logger::Error("[Format8] len = %d, str = %s", len, buffer);
+
+		formatString8Position += FORMAT_STRING_MAX_LEN;
+	}
+	else
+	{
+		formatString8Position += (len + 1);
+	}
+
+	return buffer;
 }
 
 const char8* GetIndentString(char8 indentChar, int32 level)
@@ -735,21 +744,32 @@ const char16* Format(const char16 * text, ...)
 		formatString16Position = 0;
 	}
 
+	char16 *buffer = formatString16 + formatString16Position;
+
     va_list ll;
 	va_start(ll, text);
 
 #if defined(_WIN32)
-	int32 len = vswprintf((wchar_t *)&formatString16[formatString16Position], (wchar_t *)text, ll);
+	int32 len = vswprintf((wchar_t *)buffer, (wchar_t *)text, ll);
 #elif defined (__DAVAENGINE_ANDROID__)
-    int32 len = _vsnwprintf_android((char16 *)&formatString16[formatString16Position], FORMAT_STRING_MAX_LEN, (char16 *)text, ll);
+    int32 len = _vsnwprintf_android((char16 *)buffer, FORMAT_STRING_MAX_LEN, (char16 *)text, ll);
 #else // MAC_OS & other nix systems
-	int32 len = vswprintf((wchar_t *)&formatString16[formatString16Position], FORMAT_STRING_MAX_LEN, (wchar_t *)text, ll);
+	int32 len = vswprintf((wchar_t *)buffer, FORMAT_STRING_MAX_LEN, (wchar_t *)text, ll);
 #endif
-    DVASSERT_MSG(len < FORMAT_STRING_MAX_LEN, WStringToString(WideString(formatString16[formatString16Position], len)).c_str());
-	
-	formatString16Position += (len + 1);
 	va_end(ll);
-	return &formatString16[formatString16Position - (len + 1)];
+
+	if(len < 0 || len > FORMAT_STRING_MAX_LEN)
+	{
+		Logger::Error("[Format16] len = %d, str = %s", len,  WStringToString(WideString(buffer, len)).c_str());
+
+		formatString16Position += FORMAT_STRING_MAX_LEN;
+	}
+	else
+	{
+		formatString16Position += (len + 1);
+	}
+
+	return buffer;
 }
 
 const char8* FormatVL(const char8 * text, va_list ll)
@@ -758,12 +778,24 @@ const char8* FormatVL(const char8 * text, va_list ll)
 	{
 		formatString8Position = 0;
 	}
-	int32 len = vsprintf(&formatString8[formatString8Position],  text, ll);
-    DVASSERT_MSG(len < FORMAT_STRING_MAX_LEN, formatString8[formatString8Position]);
 
-	formatString8Position += (len + 1);
+	char8 *buffer = formatString8 + formatString8Position;
 
-	return &formatString8[formatString8Position  - (len + 1)];
+	int32 len = vsprintf(buffer,  text, ll);
+    DVASSERT_MSG(0 < len && len < FORMAT_STRING_MAX_LEN, buffer);
+
+	if(len < 0 || len > FORMAT_STRING_MAX_LEN)
+	{
+		Logger::Error("[FormatVL8] len = %d, str = %s", len, buffer);
+
+		formatString8Position += FORMAT_STRING_MAX_LEN;
+	}
+	else
+	{
+		formatString8Position += (len + 1);
+	}
+
+	return buffer;
 }
 
 const char16* FormatVL(const char16 * text, va_list ll)
@@ -772,15 +804,26 @@ const char16* FormatVL(const char16 * text, va_list ll)
 	{
 		formatString16Position = 0;
 	}
+
+	char16 *buffer = formatString16 + formatString16Position;
+
 #if defined(_WIN32)
-	int32 len = vswprintf((wchar_t *)&formatString16[formatString16Position], (wchar_t *)text, ll);
+	int32 len = vswprintf((wchar_t *)buffer, (wchar_t *)text, ll);
 #else // MAC_OS & other nix systems
-	int32 len = vswprintf((wchar_t *)&formatString16[formatString16Position], FORMAT_STRING_MAX_LEN, (wchar_t *)text, ll);
+	int32 len = vswprintf((wchar_t *)buffer, FORMAT_STRING_MAX_LEN, (wchar_t *)text, ll);
 #endif
 
-	DVASSERT_MSG(len < FORMAT_STRING_MAX_LEN, WStringToString(WideString(formatString16[formatString16Position], len)).c_str());
+	if(len < 0 || len > FORMAT_STRING_MAX_LEN)
+	{
+		Logger::Error("[FormatVL16] len = %d, str = %s", len,  WStringToString(WideString(buffer, len)).c_str());
 
-	formatString16Position += (len + 1);
-	return &formatString16[formatString16Position - (len + 1)];
+		formatString16Position += FORMAT_STRING_MAX_LEN;
+	}
+	else
+	{
+		formatString16Position += (len + 1);
+	}
+
+	return buffer;
 }
 }; // end of namespace Log

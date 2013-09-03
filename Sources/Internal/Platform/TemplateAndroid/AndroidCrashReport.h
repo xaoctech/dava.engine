@@ -20,6 +20,7 @@
 #include "Base/BaseTypes.h"
 #if defined(__DAVAENGINE_ANDROID__)
 
+#include "JniExtensions.h"
 #include <signal.h>
 
 namespace DAVA
@@ -27,26 +28,32 @@ namespace DAVA
 
 class File;
 
-class CustomReport
-{
-public:
-	virtual void WriteCustomReport(File*, int signal, siginfo_t *info, void *uapVoid);
-};
-
 class AndroidCrashReport
 {
 public:
 	static void Init();
-	static void SetCustomReport(CustomReport* );
 
 private:
 	static void SignalHandler(int signal, siginfo_t *info, void *uapVoid);
-	static void WriteCStack(File*, void *uapVoid);
 
 private:
 	static stack_t s_sigstk;
-	static CustomReport* s_customReport;
 };
+
+class JniCrashReporter: public JniExtension
+{
+public:
+	void ThrowJavaExpetion(const String& cppSignal);
+
+protected:
+	virtual jclass GetJavaClass() const;
+	virtual const char* GetJavaClassName() const;
+
+public:
+	static jclass gJavaClass;
+	static const char* gJavaClassName;
+};
+
 
 }
 
