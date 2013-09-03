@@ -389,7 +389,7 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 #elif defined(__DAVAENGINE_DIRECTX9__)
 
 	texture->id = CreateTextureNative(Vector2((float32)_width, (float32)_height), texture->format, false, 0);
-	texture->TexImage(0, _width, _height, _data, 0);
+	texture->TexImage(0, _width, _height, _data, Texture::CUBE_FACE_INVALID);
 
 	// allocate only 2 levels, and reuse buffers for generation of every mipmap level
 	uint8 *mipMapData = new uint8[(_width / 2) * (_height / 2) * GetPixelFormatSize(texture->format) / 8];
@@ -407,7 +407,7 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 			prevMipData, mipMapWidth << 1, mipMapHeight << 1, (mipMapWidth << 1) * GetPixelFormatSize(texture->format) / 8,
 			currentMipData, mipMapWidth, mipMapHeight, mipMapWidth * GetPixelFormatSize(texture->format) / 8);
 
-		texture->TexImage(i, mipMapWidth, mipMapHeight, currentMipData, 0);
+		texture->TexImage(i, mipMapWidth, mipMapHeight, currentMipData, Texture::CUBE_FACE_INVALID);
 		
 		mipMapWidth  >>= 1;
 		mipMapHeight >>= 1;
@@ -658,7 +658,7 @@ bool Texture::LoadFromImage(File *file, const TextureDescriptor *descriptor)
                                                       prevMipData, mipMapWidth << 1, mipMapHeight << 1, (mipMapWidth << 1) * GetPixelFormatSizeInBytes(format),
                                                       currentMipData, mipMapWidth, mipMapHeight, mipMapWidth * GetPixelFormatSizeInBytes(format));
                 
-                TexImage(i, mipMapWidth, mipMapHeight, currentMipData, 0);
+                TexImage(i, mipMapWidth, mipMapHeight, currentMipData, Texture::CUBE_FACE_INVALID);
                 
                 mipMapWidth  >>= 1;
                 mipMapHeight >>= 1;
