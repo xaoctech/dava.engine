@@ -28,7 +28,7 @@ namespace DAVA
 		{
 		public:
 			
-			virtual bool IsValid(FilePath descriptorPath) = 0;
+			virtual bool IsValid(const FilePath& descriptorPath) = 0;
 		};
 		
 	public:

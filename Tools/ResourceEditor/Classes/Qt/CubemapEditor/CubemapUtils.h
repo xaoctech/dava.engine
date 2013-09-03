@@ -31,7 +31,7 @@ public:
 	{
 	public:
 		
-		virtual bool IsValid(DAVA::FilePath filePath);
+		virtual bool IsValid(const DAVA::FilePath& filePath);
 	};
 
 };
