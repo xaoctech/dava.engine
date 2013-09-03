@@ -321,6 +321,7 @@ namespace DAVA
 	
 	void SkyboxRenderObject::SetTextureValidator(SkyboxRenderObject::SkyboxTextureValidator* validator)
 	{
+		SafeDelete(textureValidator);
 		textureValidator = validator;
 	}
 
