@@ -324,7 +324,8 @@ protected:
     int16 AllocateRDOQuad(LandscapeQuad * quad);
     void ReleaseAllRDOQuads();
 
-	int GetMaxLod(LandscapeQuad& quad);
+	int GetMaxLod(float32 quadDistance);
+	float32 GetQuadToCameraDistance(const Vector3 camPos, LandscapeQuad& quad);
 	
     Vector<LandscapeVertex *> landscapeVerticesArray;
     Vector<RenderDataObject *> landscapeRDOArray;
