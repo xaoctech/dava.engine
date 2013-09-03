@@ -139,7 +139,7 @@ void DefaultScreen::Input(DAVA::UIEvent* event)
 		}break;
 		case UIEvent::PHASE_MOVE:
 		{
-			ScreenWrapper::Instance()->SetCursor(GetCursor(event->point));
+			ScreenWrapper::Instance()->SetCursor(event->point, GetCursor(event->point));
 		}break;
 		case UIEvent::PHASE_ENDED:
 		{
