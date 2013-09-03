@@ -581,7 +581,33 @@ void NMaterial::Draw(PolygonGroup * polygonGroup)
     {
         RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, polygonGroup->indexCount, EIF_16, polygonGroup->indexArray);
     }
-};
+}
+	
+void NMaterial::Draw(RenderDataObject*	renderData, uint16* indices, uint16 indexCount)
+{
+	DVASSERT(renderData);
+	
+	// TODO: Remove support of OpenGL ES 1.0 from attach render data
+    RenderManager::Instance()->SetRenderData(renderData);
+	RenderManager::Instance()->AttachRenderData();
+	
+    // TODO: rethink this code
+    if (renderData->GetIndexBufferID() != 0)
+    {
+        RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, renderData->indexCount, EIF_16, 0);
+    }
+    else
+    {
+		if(renderData->indexCount)
+		{
+			RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, renderData->indexCount, EIF_16, renderData->indices);
+		}
+		else
+		{
+			RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, indexCount, EIF_16, indices);
+		}
+    }
+}
     
 void NMaterial::SetParent(NMaterial* material)
 {
@@ -716,6 +742,8 @@ void NMaterial::OnParentChanged()
 {
 	PropagateParentLayers();
 	PropagateParentDefines();
+	
+	NotifyChildrenOnChange();
 }
 	
 void NMaterial::NotifyChildrenOnChange()
@@ -775,7 +803,7 @@ void NMaterial::SetupPerFrameProperties(Camera* camera)
 	//VI: this is vertex or pixel lit material
 	//VI: setup light for the material
 	//VI: TODO: deal with multiple lights
-	if(propLitMaterial && lights[0])
+	if(camera && propLitMaterial && lights[0])
 	{
 		NMaterialProperty* propAmbientColor = GetMaterialProperty("prop_ambientColor");
 		NMaterialProperty* propDiffuseColor = GetMaterialProperty("prop_diffuseColor");

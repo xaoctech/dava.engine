@@ -25,7 +25,6 @@
 #include "Render/Highlevel/LandscapeCursor.h"
 #include "Render/Highlevel/RenderObject.h"
 
-
 #include "FileSystem/FilePath.h"
 
 namespace DAVA
@@ -85,6 +84,7 @@ public:
     Keep in mind that landscape orientation cannot be changed using localTransform and worldTransform matrices. 
  */ 
 
+class NMaterial;
 class Landscape : public RenderObject
 {
 public:	
@@ -309,7 +309,7 @@ protected:
     void FindNeighbours(LandQuadTreeNode<LandscapeQuad> * currentNode);
     void MarkFrames(LandQuadTreeNode<LandscapeQuad> * currentNode, int32 & depth);
 
-    void BindMaterial(int32 lodLayer);
+    void BindMaterial(int32 lodLayer, Camera* camera);
     void UnbindMaterial();
     
     void DrawQuad(LandQuadTreeNode<LandscapeQuad> * currentNode, int8 lod);
@@ -344,26 +344,10 @@ protected:
     Frustum *frustum;
     
     ePrimitiveType primitypeType;
-
-    void InitShaders();
-    void ReleaseShaders();
     
-    int32 uniformCameraPosition;
-    int32 uniformTextures[TEXTURE_COUNT];
-    int32 uniformTextureTiling[TEXTURE_COUNT];
     Vector2 textureTiling[TEXTURE_COUNT];
-    int32 uniformTileColor[TEXTURE_COUNT];
     Color tileColor[TEXTURE_COUNT];
     
-    int32 uniformFogDensity;
-    int32 uniformFogColor;
-    int32 uniformFogDensityFT;
-    int32 uniformFogColorFT;
-
-    NMaterial* landscapeMaterial;
-    Shader * tileMaskShader;
-    Shader * fullTiledShader;
-
 	LandscapeCursor * cursor;
         
     int16 queueRdoQuad;
@@ -387,7 +371,6 @@ protected:
     
     int32 flashQueueCounter;
     
-//    eTiledShaderMode tiledShaderMode;
     uint32 tiledShaderMode;
     
     int32 nearLodIndex;
@@ -398,6 +381,9 @@ protected:
     float32 fogDensity;
     Color   fogColor;
     
+	NMaterial* tileMaskMaterial;
+	NMaterial* fullTiledMaterial;
+	NMaterial* currentMaterial;
     
 public:
     

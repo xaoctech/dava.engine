@@ -121,6 +121,7 @@ public:
     MaterialTechnique * GetTechnique(const FastName & techniqueName);
         
     void Draw(PolygonGroup * polygonGroup);
+	void Draw(RenderDataObject* renderData, uint16* indices = NULL, uint16 indexCount = 0);
     
     const FastNameSet & GetRenderLayers();
 	    

@@ -27,6 +27,7 @@ namespace DAVA
 class RenderDataObject;
 class RenderManager;
 class RenderManagerGL20;
+class NMaterial;
     
 class RenderDataStream : public BaseObject
 {
@@ -95,6 +96,7 @@ private:
     
     friend class RenderManager;
     friend class RenderManagerGL20;
+	friend class NMaterial;
 };
     
 };
