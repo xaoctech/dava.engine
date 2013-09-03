@@ -48,6 +48,8 @@ protected:
 
 	void CopyCustomColorTexture(Scene *scene, const FilePath & sceneFolder, Set<String> &errorLog);
 
+    static FilePath CreateProjectPathFromPath(const FilePath & pathname);
+    
 protected:
     
     SceneUtils sceneUtils;
