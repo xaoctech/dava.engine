@@ -28,6 +28,7 @@ void UIScrollViewTest::LoadResources()
     font->SetColor(Color::White());
 	
 	scrollView = new UIScrollView(Rect(10, 10, 250, 180));
+	scrollView->SetReturnSpeed(500);
 	AddControl(scrollView);
 	
 	UIControl *testControlChild = new UIControl(Rect(100, 100, 150, 150));
