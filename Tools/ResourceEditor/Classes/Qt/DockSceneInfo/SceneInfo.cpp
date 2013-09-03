@@ -429,7 +429,7 @@ void SceneInfo::CollectLODDataInFrameRecursive(DAVA::Entity *entity)
         lod->GetLodData(lodLayers);
         Vector<LodComponent::LodData*>::const_iterator lodLayerIt = lodLayers.begin();
         DAVA::uint32 layersCount = lod->GetForceLodLayer();
-        for(DAVA::int32 layer = 0; layer < layersCount && lodLayerIt != lodLayers.end(); ++layer, ++lodLayerIt)
+        for(DAVA::uint32 layer = 0; layer < layersCount && lodLayerIt != lodLayers.end(); ++layer, ++lodLayerIt)
         {
             lodInfoInFrame.trianglesOnLod[layer] += EditorLODData::GetTrianglesForLodLayer(*lodLayerIt, true);
         }

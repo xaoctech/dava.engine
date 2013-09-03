@@ -195,7 +195,6 @@ void SceneDataManager::EditScene(SceneData* sceneData, const FilePath &scenePath
 	sceneData->EmitSceneChanged();
 
 	scene->UpdateShadowColorFromLandscape();
-
 	UpdateParticleSprites();
     emit SceneGraphNeedRebuild();
 
@@ -802,6 +801,7 @@ void SceneDataManager::ApplyDefaultFogSettings(Landscape* landscape, DAVA::Entit
 		material->SetFogDensity(landscape->GetFogDensity());
 	}
 }
+
 
 void SceneDataManager::SceneShowPreview(const DAVA::FilePath &path)
 {

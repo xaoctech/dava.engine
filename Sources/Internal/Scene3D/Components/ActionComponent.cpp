@@ -277,10 +277,12 @@ namespace DAVA
 				actionArchive->SetUInt32("act.type", actions[i].action.type);
 				actionArchive->SetString("act.entityName", actions[i].action.entityName);
 				actionArchive->SetInt32("act.switchIndex", actions[i].action.switchIndex);
+				actionArchive->SetInt32("act.stopAfterNRepeats", actions[i].action.stopAfterNRepeats);
+				actionArchive->SetBool("act.stopWhenEmpty", actions[i].action.stopWhenEmpty);
 			
 				archive->SetArchive(KeyedArchive::GenKeyFromIndex(i), actionArchive);
 				SafeRelease(actionArchive);
-			}
+			}			
 		}
 	}
 	
@@ -300,6 +302,8 @@ namespace DAVA
 				action.delay = actionArchive->GetFloat("act.delay");
 				action.entityName = actionArchive->GetString("act.entityName");
 				action.switchIndex = actionArchive->GetInt32("act.switchIndex", -1);
+				action.stopAfterNRepeats = actionArchive->GetInt32("act.stopAfterNRepeats", -1);
+				action.stopWhenEmpty = actionArchive->GetBool("act.stopWhenEmpty", false);
 				
 				Add(action);
 			}
@@ -329,6 +333,8 @@ namespace DAVA
 			ParticleEffectComponent* component = static_cast<ParticleEffectComponent*>(target->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
 			if(component)
 			{
+				component->StopAfterNRepeats(action.stopAfterNRepeats);
+				component->StopWhenEmpty(action.stopWhenEmpty);
 				component->Start();
 			}
 		}

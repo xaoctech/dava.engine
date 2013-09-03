@@ -37,8 +37,7 @@
 #include "../Commands/CommandsManager.h"
 
 #include "Scene3D/Components/CustomPropertiesComponent.h"
-
-#define CUSTOM_COLOR_TEXTURE_PROP "customColorTexture"
+#include "Classes/StringConstants.h"
 
 LandscapeEditorCustomColors::LandscapeEditorCustomColors(LandscapeEditorDelegate *newDelegate, EditorBodyControl *parentControl, const Rect &toolsRect)
     :   LandscapeEditorBase(newDelegate, parentControl)
@@ -547,25 +546,30 @@ void LandscapeEditorCustomColors::StoreSaveFileName(const FilePath& fileName)
 	if(NULL != workingLandscapeEntity)
 	{
 		KeyedArchive* customProps = workingLandscapeEntity->GetCustomProperties();
-		customProps->SetString(CUSTOM_COLOR_TEXTURE_PROP, GetRelativePathToScenePath(fileName));
+
+		FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
+
+		customProps->SetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP, fileName.GetRelativePathname(projectPath));
 	}
 }
 
 FilePath LandscapeEditorCustomColors::GetCurrentSaveFileName()
 {
-	String currentSaveName;
-
 	if(NULL != workingLandscapeEntity)
 	{
 		KeyedArchive* customProps = workingLandscapeEntity->GetCustomProperties();
-		if(customProps->IsKeyExists(CUSTOM_COLOR_TEXTURE_PROP))
+		if(customProps->IsKeyExists(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP))
 		{
-			currentSaveName = customProps->GetString(CUSTOM_COLOR_TEXTURE_PROP);
+			String currentSaveName = customProps->GetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP);
+
+			FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
+			return projectPath + currentSaveName;
 		}
 	}
 
-	return GetAbsolutePathFromScenePath(currentSaveName);
+	return FilePath();
 }
+
 
 FilePath LandscapeEditorCustomColors::GetScenePath()
 {

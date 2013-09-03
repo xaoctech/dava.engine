@@ -41,9 +41,11 @@ public:
 	~TextureConvertor();
 
 	static QImage FromDavaImage(DAVA::Image *image);
-	static DAVA::Vector<DAVA::Image*> ConvertPVR(DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, bool forceConvert);
-	static DAVA::Vector<DAVA::Image*> ConvertDXT(DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, bool forceConvert);
+	//static DAVA::Vector<DAVA::Image*> ConvertPVR(DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, bool forceConvert);
+	//static DAVA::Vector<DAVA::Image*> ConvertDXT(DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, bool forceConvert);
 
+	static DAVA::Vector<DAVA::Image*> ConvertFormat(DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, bool forceConvert);
+	
 	int GetOriginal(const DAVA::TextureDescriptor *descriptor);
 	int GetConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, bool forceConver = false);
 	int Reconvert(DAVA::Scene *scene, bool forceConvert);
@@ -84,13 +86,6 @@ private:
 
 	DAVA::Vector<QImage> GetOriginalThread(JobItem *item);
 	DAVA::Vector<QImage> GetConvertedThread(JobItem *item);
-	
-	static DAVA::FilePath PrepareCubeMapForConvert(DAVA::TextureDescriptor& descriptor);
-	static void CleanupCubemapAfterConversion(DAVA::TextureDescriptor& descriptor);
-	static void InitFileSuffixes();
-	
-	static DAVA::Vector<DAVA::String> pvrToolSuffixes;
-	static DAVA::Vector<DAVA::String> cubemapSuffixes;
 
 private slots:
 	

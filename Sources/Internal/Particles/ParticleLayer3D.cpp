@@ -293,9 +293,8 @@ void ParticleLayer3D::CalcLong(Particle* current,
 
 	Vector3 currDirection;
 	Particle* parent = emitter->GetParentParticle();		
-	if(NULL != parent)
-	{
-		
+	if ((NULL != parent)&&inheritPosition)
+	{		
 		currDirection = current->direction*current->speed*current->velocityOverLife + parent->direction*parent->speed*parent->velocityOverLife;
 		currDirection.Normalize();
 	}else

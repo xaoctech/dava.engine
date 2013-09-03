@@ -113,7 +113,7 @@ private:
 	void UpdateScaleSlider(int32 newScalePercents);
 
 	// "Smart zoom" functionality - retain the scene under cursor when zoom is changed.
-	Vector2 CalculateScenePositionForPoint(const Vector2& point, float curScale);
+	Vector2 CalculateScenePositionForPoint(const QRect& widgetRect, const Vector2& point, float curScale);
 	void ScrollToScenePositionAndPoint(const Vector2& scenePosition, const Vector2& point,
 									   float newScale);
 

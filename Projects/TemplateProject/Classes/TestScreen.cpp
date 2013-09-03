@@ -60,7 +60,7 @@ void TestScreen::LoadResources()
 	
 	smallCircle->AddObject(bigBoxEmitter.Get());
 
-    testSprite = Sprite::Create("~res:/Gfx/GameObjects/blueboxbig");
+    testSprite = Sprite::Create("~res:/Gfx/GameObjects/bluecircle");
 }
 
 void TestScreen::UnloadResources()
