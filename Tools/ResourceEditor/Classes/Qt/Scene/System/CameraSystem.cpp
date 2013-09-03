@@ -113,7 +113,7 @@ DAVA::Vector3 SceneCameraSystem::GetCameraPosition()
 	return pos;
 }
 
-void SceneCameraSystem::SetMoveSeep(DAVA::float32 speed)
+void SceneCameraSystem::SetMoveSpeed(DAVA::float32 speed)
 {
 	curSpeed = speed;
 }

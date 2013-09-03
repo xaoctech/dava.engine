@@ -49,7 +49,7 @@ public:
 	void Update(DAVA::float32 timeElapsed);
 	void ProcessUIEvent(DAVA::UIEvent *event);
 	
-	void SetBrushSize(int32 brushSize);
+	void SetBrushSize(int32 brushSize, bool updateDrawSystem = true);
 	int32 GetBrushSize();
 	void SetColor(int32 colorIndex);
 	int32 GetColor();

@@ -567,8 +567,8 @@ QVariant QtPropertyDataDavaVariant::FromMatrix2(const DAVA::Matrix2 &matrix)
 	QVariant v;
 
 	v = QString().sprintf("([%8.2f, %8.2f]\n[%8.2f, %8.2f])",
-		matrix._00, matrix._10,
-		matrix._01, matrix._11);
+		matrix._00, matrix._01,
+		matrix._10, matrix._11);
 
 	return v;
 }

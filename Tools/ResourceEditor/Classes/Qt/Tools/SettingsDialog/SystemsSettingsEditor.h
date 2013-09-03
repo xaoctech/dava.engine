@@ -20,6 +20,7 @@
 #include "DAVAEngine.h"
 #include "Tools/QtPropertyEditor/QtPropertyEditor.h"
 #include "Tools/QtPropertyEditor/QtPropertyData.h"
+#include "Tools/QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
 
 #include "Scene/System/CameraSystem.h"
 #include "Scene/System/CollisionSystem.h"
@@ -41,21 +42,58 @@
 #include "Scene3D/Systems/ParticleEffectSystem.h"
 #include "Scene3D/Systems/RenderUpdateSystem.h"
 
-class SystemSettingsEditor: public QtPropertyEditor
+#include "Tools/QtPropertyEditor/QtPropertyItem.h"
+
+class SceneEditor2;
+
+class SystemsSettingsEditor: public QtPropertyEditor
 {
 	Q_OBJECT
 	
 public:
-	explicit SystemSettingsEditor(QWidget* parent = 0);
+	explicit SystemsSettingsEditor(QWidget* parent = 0);
 	
-	~SystemSettingsEditor();
+	~SystemsSettingsEditor();
 	
-	ParticleEffectSystem * particleEffectSystem;
+	void InitializeProperties();
+	void RestoreInitialSettings();
+
+	
+protected slots:
+	
+	void HandleCustomColorBrushSize();
+
+	void HandleCameraMoveSpeed();
+	
+	void HandleCameraViewportRect();
+	
+	void HandleCollisionDrawMode();
+	
+	void HandleHoodModifMode();
+	
+	void HandleHoodPosition();
+	
+	void HandleHoodModifAxis();
+	
+	void HandleHoodScale();
+	
+	void HandleSelectionDrawMode();
+	
+	void HandlePivotPoint();
+	
+protected:
+	
+//	DAVA::String GetCollisionSystemDrawMode();
+	
+	DAVA::Map<QtPropertyDataDavaVariant* , DAVA::VariantType> propertiesMap;
+
+	SceneEditor2* sceneEditor;
+	
+	/*ParticleEffectSystem * particleEffectSystem;
 	RenderSystem * renderSystem;
 
 	SceneCameraSystem *cameraSystem;
 	SceneCollisionSystem *collisionSystem;
-	SceneGridSystem *gridSystem;
 	HoodSystem *hoodSystem;
 	SceneSelectionSystem *selectionSystem;
 	EntityModificationSystem *modifSystem;
@@ -64,10 +102,6 @@ public:
 	TilemaskEditorSystem* tilemaskEditorSystem;
 	CustomColorsSystem* customColorsSystem;
 	VisibilityToolSystem* visibilityToolSystem;
-	RulerToolSystem* rulerToolSystem;
-	StructureSystem *structureSystem;
-	EditorParticlesSystem *particlesSystem;
-	EditorLightSystem *editorLightSystem;
-	TextDrawSystem *textDrawSystem;
+	EditorLightSystem *editorLightSystem;*/
 };
 #endif /* defined(__RESOURCEEDITORQT__SYSTEMS_SETTINGS_EDITOR__) */

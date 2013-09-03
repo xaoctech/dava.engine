@@ -265,22 +265,6 @@ void TextureProperties::ReloadEnumWrap()
 	enumWpar.Register(DAVA::Texture::WRAP_CLAMP_TO_EDGE, globalFormats->ToString(DAVA::Texture::WRAP_CLAMP_TO_EDGE));
 }
 
-QtPropertyItem* TextureProperties::AddHeader(const char *text)
-{
-	QPair<QtPropertyItem*, QtPropertyItem*> propHeader;
-
-	propHeader = AppendProperty(text, NULL);
-
-	QFont boldFont = propHeader.first->font();
-	boldFont.setBold(true);
-
-	propHeader.first->setFont(boldFont);
-	propHeader.first->setBackground(QBrush(QColor(Qt::lightGray)));
-	propHeader.second->setBackground(QBrush(QColor(Qt::lightGray)));
-
-	return propHeader.first;
-}
-
 QtPropertyDataMetaObject* TextureProperties::AddPropertyItem(const char *name, DAVA::BaseObject *object, QtPropertyItem *parent)
 {
 	QtPropertyDataMetaObject* ret = NULL;

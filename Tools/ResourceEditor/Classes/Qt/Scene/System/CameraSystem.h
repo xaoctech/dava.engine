@@ -35,7 +35,7 @@ public:
 	DAVA::Vector3 GetPointDirection(const DAVA::Vector2 &point);
 	DAVA::Vector3 GetCameraPosition();
 
-	void SetMoveSeep(DAVA::float32 speed);
+	void SetMoveSpeed(DAVA::float32 speed);
 	DAVA::float32 GetMoveSpeed();
 
 	void SetViewportRect(const DAVA::Rect &rect);

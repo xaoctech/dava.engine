@@ -96,7 +96,7 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 
 	LoadGPUFormat();
 
-	addSwitchEntityDialog = new AddSwitchEntityDialog( this);
+	addSwitchEntityDialog = NULL;
     
     globalInvalidateTimeoutEnabled = false;
     EnableGlobalTimeout(enableGlobalTimeout);
@@ -104,9 +104,7 @@ QtMainWindow::QtMainWindow(bool enableGlobalTimeout, QWidget *parent)
 
 QtMainWindow::~QtMainWindow()
 {
-	delete addSwitchEntityDialog;
-
-    SafeRelease(materialEditor);
+	SafeRelease(materialEditor);
     
     if(HintManager::Instance())
         HintManager::Instance()->Release();
@@ -562,6 +560,7 @@ void QtMainWindow::AddSwitchDialogFinished(int result)
 	{
 		addSwitchEntityDialog->CleanupPathWidgets();
 		addSwitchEntityDialog->SetEntity(NULL);
+		addSwitchEntityDialog = NULL;
 		return;
 	}
 
@@ -585,6 +584,7 @@ void QtMainWindow::AddSwitchDialogFinished(int result)
 	}
 
 	addSwitchEntityDialog->SetEntity(NULL);
+	addSwitchEntityDialog = NULL;
 }
 
 void QtMainWindow::SceneCommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
@@ -1032,11 +1032,12 @@ void QtMainWindow::OnSetSkyboxNode()
 
 void QtMainWindow::OnSwitchEntityDialog()
 {
-	if(addSwitchEntityDialog->GetEntity() != NULL)//dialog is on screen, do nothing
+	if(addSwitchEntityDialog!= NULL)//dialog is on screen, do nothing
 	{
 		return;
 	}
-	
+	addSwitchEntityDialog = new AddSwitchEntityDialog( this);
+	addSwitchEntityDialog->setAttribute( Qt::WA_DeleteOnClose, true );
 	Entity* entityToAdd = new Entity();
 	entityToAdd->SetName(ResourceEditor::SWITCH_NODE_NAME);
 	entityToAdd->AddComponent(new SwitchComponent());

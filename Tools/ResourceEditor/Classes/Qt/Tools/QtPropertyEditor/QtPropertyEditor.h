@@ -45,6 +45,8 @@ public:
 	void SetRefreshTimeout(int ms);
 	int GetRefreshTimeout();
 
+	QtPropertyItem* AddHeader(const char *text);
+
 signals:
 	void PropertyChanged(const QString &name, QtPropertyData *data);
 

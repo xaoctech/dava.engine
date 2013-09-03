@@ -217,9 +217,6 @@
     <Filter Include="Classes\Qt\Tools\LabeledSlider">
       <UniqueIdentifier>{6ede20eb-ce62-4548-96a9-aa34fa463912}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Classes\Qt\SettingsDialog">
-      <UniqueIdentifier>{4535800f-030e-4c16-b5e6-52e487679816}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Classes\Qt\Tools\SettingsDialog">
       <UniqueIdentifier>{2a103ada-c8f2-4c94-9110-478ab33c842e}</UniqueIdentifier>
     </Filter>
@@ -2061,12 +2058,6 @@
     <ClCompile Include="_GeneratedQt\DockLODEditor\LODEditor_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsEditor.cpp">
-      <Filter>Classes\Qt\SettingsDialog</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\Tools\SettingsDialog\SettingsDialogQt.cpp">
-      <Filter>Classes\Qt\SettingsDialog</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\Tools\SettingsDialog\SettingsDialogQt.cpp">
       <Filter>Classes\Qt\Tools\SettingsDialog</Filter>
     </ClCompile>
@@ -2101,6 +2092,18 @@
       <Filter>Classes\Qt\Main</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\Main\StatusBar_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\SettingsDialog\SystemsSettingsEditor.cpp">
+      <Filter>Classes\Qt\Tools\SettingsDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsEditor.cpp">
+      <Filter>Classes\Qt\Tools\SettingsDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\SettingsDialog\SettingsDialogQt.cpp">
+      <Filter>Classes\Qt\Tools\SettingsDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\SystemsSettingsEditor_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
   </ItemGroup>
@@ -3617,12 +3620,6 @@
     <ClInclude Include="_GeneratedQt\ui_LODEditor.h">
       <Filter>QtGenerated</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsEditor.h">
-      <Filter>Classes\Qt\SettingsDialog</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Tools\SettingsDialog\SettingsDialogQt.h">
-      <Filter>Classes\Qt\SettingsDialog</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands2\MetaObjModifyCommand.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
@@ -3658,6 +3655,15 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Main\StatusBar.h">
       <Filter>Classes\Qt\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\SettingsDialog\SystemsSettingsEditor.h">
+      <Filter>Classes\Qt\Tools\SettingsDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsEditor.h">
+      <Filter>Classes\Qt\Tools\SettingsDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\SettingsDialog\SettingsDialogQt.h">
+      <Filter>Classes\Qt\Tools\SettingsDialog</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
