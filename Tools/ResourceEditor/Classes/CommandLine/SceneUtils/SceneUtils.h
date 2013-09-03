@@ -35,6 +35,8 @@ public:
     
     void PrepareFolderForCopyFile(const DAVA::String &filename, DAVA::Set<DAVA::String> &errorLog);
 
+    DAVA::FilePath GetNewFilePath(const DAVA::FilePath &oldPathname) const;
+    
 public:
 
     DAVA::FilePath dataFolder;
