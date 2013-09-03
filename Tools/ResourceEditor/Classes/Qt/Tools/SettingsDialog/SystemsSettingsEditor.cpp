@@ -20,7 +20,7 @@
 
 #include "Tools/QtPropertyEditor/QtPropertyEditor.h"
 #include "Tools/QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
-
+#include "Qt/Settings/SettingsStateDialog.h"
 #include "Main/mainwindow.h"
  
 #include <QHeaderView>
@@ -148,61 +148,86 @@ void SystemsSettingsEditor::InitializeProperties()
 	INIT_PROPERTY(hoodScale, sceneEditor->hoodSystem->GetScale(), "Scale", HandleHoodScale());
 	
 	ADD_HEADER("Selection system settings:");
-	VariantType t(sceneEditor->selectionSystem->GetDrawMode());
-	
-	VariantType t1(ST_SELDRAW_NOTHING);
-	INIT_PROPERTY(selectionDrawMode, (uint32)sceneEditor->selectionSystem->GetDrawMode(), "Draw mode", HandleSelectionDrawMode());
-	selectionDrawMode->AddAllowedValue(DAVA::VariantType(ST_SELDRAW_NOTHING), ST_SELDRAW_NOTHING_NAME);
-	selectionDrawMode->AddAllowedValue(DAVA::VariantType(ST_SELDRAW_DRAW_SHAPE), ST_SELDRAW_DRAW_SHAPE_NAME);
-	selectionDrawMode->AddAllowedValue(DAVA::VariantType(ST_SELDRAW_DRAW_CORNERS), ST_SELDRAW_DRAW_CORNERS_NAME);
-	selectionDrawMode->AddAllowedValue(DAVA::VariantType(ST_SELDRAW_FILL_SHAPE), ST_SELDRAW_FILL_SHAPE_NAME);
-	selectionDrawMode->AddAllowedValue(DAVA::VariantType(ST_SELDRAW_NO_DEEP_TEST), ST_SELDRAW_NO_DEEP_TEST_NAME);
-	selectionDrawMode->AddAllowedValue(DAVA::VariantType(ST_SELDRAW_ALL), ST_SELDRAW_ALL_NAME);
+
+	selectionSysDrawStateMap[ST_SELDRAW_NOTHING_NAME]		= std::make_pair<DAVA::uint32,bool>(ST_SELDRAW_NOTHING, false);
+	selectionSysDrawStateMap[ST_SELDRAW_DRAW_SHAPE_NAME]	= std::make_pair<DAVA::uint32,bool>(ST_SELDRAW_DRAW_SHAPE, false);
+	selectionSysDrawStateMap[ST_SELDRAW_DRAW_CORNERS_NAME]	= std::make_pair<DAVA::uint32,bool>(ST_SELDRAW_DRAW_CORNERS, false);
+	selectionSysDrawStateMap[ST_SELDRAW_FILL_SHAPE_NAME]	= std::make_pair<DAVA::uint32,bool>(ST_SELDRAW_FILL_SHAPE, false);
+	selectionSysDrawStateMap[ST_SELDRAW_NO_DEEP_TEST_NAME]	= std::make_pair<DAVA::uint32,bool>(ST_SELDRAW_NO_DEEP_TEST, false);
+	selectionSysDrawStateMap[ST_SELDRAW_ALL_NAME]			= std::make_pair<DAVA::uint32,bool>(ST_SELDRAW_ALL, false);
+
+	//uint32 currValue = sceneEditor->selectionSystem->GetDrawMode();
+	DAVA::String valueDescrition = ResolveFlags(selectionSysDrawStateMap,sceneEditor->selectionSystem->GetDrawMode());
+	INIT_PROPERTY(selectionDrawMode, valueDescrition, "Draw mode", HandleSelectionDrawMode());
+	selectionDrawMode->SetFlags(QtPropertyData::FLAG_IS_NOT_EDITABLE);
+	//as QtPropertyDataDavaVariant dosen't have abilities to display string alias of content(uint currValue)
+	// it's gained by adding of combobox with 1 row(uint - string) and  usefull external dialog to the right corner of cell
+	//selectionDrawMode->AddAllowedValue(DAVA::VariantType(currValue), valueDescrition.c_str());
+
 	INIT_PROPERTY(selectionPivotPoint, sceneEditor->selectionSystem->GetPivotPoint(), "Pivot point", HandlePivotPoint());
 	selectionPivotPoint->AddAllowedValue(DAVA::VariantType(ST_PIVOT_ENTITY_CENTER), ST_PIVOT_ENTITY_CENTER_NAME);
 	selectionPivotPoint->AddAllowedValue(DAVA::VariantType(ST_PIVOT_COMMON_CENTER), ST_PIVOT_COMMON_CENTER_NAME);
+
+	QPushButton *configBtn = new QPushButton(QIcon(":/QtIcons/settings.png"), "");
+	configBtn->setIconSize(QSize(12, 12));
+	configBtn->setFlat(true);
+	selectionDrawMode->AddOW(QtPropertyOW(configBtn));
+	QObject::connect(configBtn, SIGNAL(pressed()), this, SLOT(ShowDialog(/*selectionSysDrawStateMap*/)));
 }
-/*
-DAVA::String SystemsSettingsEditor::GetCollisionSystemDrawMode()
-{
-	DAVA::String retString = ST_COLL_DRAW_NOTHING_NAME;
-	switch (sceneEditor->collisionSystem->GetDebugDrawFlags())
-	{
-		case ST_COLL_DRAW_NOTHING:
-			retString = ST_COLL_DRAW_NOTHING_NAME;
-			break;
-		case ST_COLL_DRAW_OBJECTS:
-			retString = ST_COLL_DRAW_OBJECTS_NAME;
-			break;
-		case ST_COLL_DRAW_OBJECTS_SELECTED:
-			retString = ST_COLL_DRAW_OBJECTS_SELECTED_NAME;
-			break;
-		case ST_COLL_DRAW_OBJECTS_RAYTEST:
-			retString = ST_COLL_DRAW_OBJECTS_RAYTEST_NAME;
-			break;
-		case ST_COLL_DRAW_LAND:
-			retString = ST_COLL_DRAW_LAND_NAME;
-			break;
-		case ST_COLL_DRAW_LAND_RAYTEST:
-			retString = ST_COLL_DRAW_LAND_RAYTEST_NAME;
-			break;
-		case ST_COLL_DRAW_LAND_COLLISION:
-			retString = ST_COLL_DRAW_LAND_COLLISION_NAME;
-			break;
-		case ST_COLL_DRAW_ALL:
-			retString = ST_COLL_DRAW_ALL_NAME;
-			break;
-		default:
-			break;
-	}
-	return retString;
-}
-*/
+
 void SystemsSettingsEditor::RestoreInitialSettings()
 {
 	for (DAVA::Map<QtPropertyDataDavaVariant *, DAVA::VariantType>::iterator it= propertiesMap.begin(); it != propertiesMap.end(); ++it)
 	{
 		it->first->SetVariantValue(it->second);
+	}
+}
+
+DAVA::String SystemsSettingsEditor::ResolveFlags(DAVA::Map<DAVA::String,std::pair<DAVA::uint32, bool>>& map, DAVA::uint32 currValue)
+{
+	DAVA::String retValue = "";
+
+	for(DAVA::Map<DAVA::String,std::pair<DAVA::uint32, bool>>::iterator it = map.begin(); it !=  map.end(); ++it)
+	{
+		DAVA::String description = it->first;
+		bool isChecked = it->second.second;
+		DAVA::uint32 flag = it->second.first;
+		
+		if(flag == 0 && currValue == 0)
+		{
+			retValue = description;
+			it->second.second = true;
+			break;
+		}
+
+		if(flag == std::numeric_limits<DAVA::uint32>::max() )//FF...
+		{
+			if(flag == currValue)
+			{
+				retValue = description;
+				it->second.second = true;
+				break;
+			}
+			continue;
+		}
+
+		if(flag & currValue)
+		{
+			retValue += ( " " + description);
+			it->second.second = true;
+		}
+	}
+	return retValue;
+}
+
+void SystemsSettingsEditor::ShowDialog(/*DAVA::Map<DAVA::String,std::pair<DAVA::uint32, bool>>& map*/)
+{
+	SettingsStateDialog dialog(&selectionSysDrawStateMap);
+	dialog.exec();
+	
+	if(dialog.result() == QDialog::Accepted )
+	{
+		int k = 0;
 	}
 }
 
@@ -288,3 +313,4 @@ void SystemsSettingsEditor::HandlePivotPoint()
 	uint32 value = senderContent.AsUInt32();
 	sceneEditor->selectionSystem->SetPivotPoint((ST_PivotPoint)value);
 }
+

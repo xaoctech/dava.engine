@@ -80,14 +80,21 @@ protected slots:
 	void HandleSelectionDrawMode();
 	
 	void HandlePivotPoint();
-	
+
+protected slots:
+
+	void ShowDialog(/*DAVA::Map<DAVA::String,std::pair<DAVA::uint32, bool>>& map*/);
+
 protected:
 	
+	DAVA::String ResolveFlags(DAVA::Map<DAVA::String,std::pair<DAVA::uint32, bool>>& map, DAVA::uint32 currValue);
 //	DAVA::String GetCollisionSystemDrawMode();
 	
 	DAVA::Map<QtPropertyDataDavaVariant* , DAVA::VariantType> propertiesMap;
 
 	SceneEditor2* sceneEditor;
+
+	DAVA::Map<DAVA::String,std::pair<DAVA::uint32, bool>> selectionSysDrawStateMap;
 	
 	/*ParticleEffectSystem * particleEffectSystem;
 	RenderSystem * renderSystem;
