@@ -44,10 +44,6 @@ public:
 	struct LodDistance
 	{
 		float32 distance;
-
-		float32 nearDistance;
-		float32 farDistance;
-
 		float32 nearDistanceSq;
 		float32 farDistanceSq;
 
@@ -56,15 +52,12 @@ public:
         float32 GetDistance() const { return distance; };
         
 		void SetNearDistance(const float32 &newDistance);
-        float32 GetNearDistance() const {return  nearDistance; };
-        
 		void SetFarDistance(const float32 &newDistance);
-        float32 GetFarDistance() const {return farDistance; };
         
         INTROSPECTION(LodDistance,
             PROPERTY("distance", "Distance", GetDistance, SetDistance, I_SAVE | I_VIEW | I_EDIT)
-            PROPERTY("nearDistance", "Near Distance", GetNearDistance, SetNearDistance, I_EDIT)
-            PROPERTY("farDistance", "Far Distance", GetFarDistance, SetFarDistance, I_EDIT)
+            MEMBER(nearDistanceSq, "Near Distance", I_SAVE)
+            MEMBER(farDistanceSq, "Far Distance", I_SAVE)
         );
 	};
 
@@ -127,6 +120,8 @@ public:
 
 	int32 GetMaxLodLayer();
 
+	void SetLayerVisibility(int32 layerNum, bool visible);
+
 public:
     
     INTROSPECTION_EXTEND(LodComponent, Component,
@@ -174,18 +169,6 @@ float32 LodComponent::GetLodLayerDistance(int32 layerNum)
 {
 	DVASSERT(0 <= layerNum && layerNum < MAX_LOD_LAYERS);
 	return lodLayersArray[layerNum].distance;
-}
-
-float32 LodComponent::GetLodLayerNear(int32 layerNum)
-{
-	DVASSERT(0 <= layerNum && layerNum < MAX_LOD_LAYERS);
-	return lodLayersArray[layerNum].nearDistance;
-}
-
-float32 LodComponent::GetLodLayerFar(int32 layerNum)
-{
-	DVASSERT(0 <= layerNum && layerNum < MAX_LOD_LAYERS);
-	return lodLayersArray[layerNum].farDistance;
 }
 
 float32 LodComponent::GetLodLayerNearSquare(int32 layerNum)
