@@ -87,7 +87,7 @@ SceneCameraSystem::~SceneCameraSystem()
 	SafeRelease(curSceneCamera);
 }
 
-DAVA::Vector3 SceneCameraSystem::GetPointDirection(const DAVA::Vector2 &point)
+DAVA::Vector3 SceneCameraSystem::GetPointDirection(const DAVA::Vector2 &point) const
 {
 	DAVA::Vector3 dir;
 
@@ -101,7 +101,7 @@ DAVA::Vector3 SceneCameraSystem::GetPointDirection(const DAVA::Vector2 &point)
 	return dir;
 }
 
-DAVA::Vector3 SceneCameraSystem::GetCameraPosition()
+DAVA::Vector3 SceneCameraSystem::GetCameraPosition() const
 {
 	DAVA::Vector3 pos;
 
@@ -111,6 +111,18 @@ DAVA::Vector3 SceneCameraSystem::GetCameraPosition()
 	}
 
 	return pos;
+}
+
+DAVA::Vector3 SceneCameraSystem::GetCameraDirection() const
+{
+	DAVA::Vector3 dir;
+
+	if(NULL != curSceneCamera)
+	{
+		dir = curSceneCamera->GetDirection();
+	}
+
+	return dir;
 }
 
 void SceneCameraSystem::SetMoveSeep(DAVA::float32 speed)
