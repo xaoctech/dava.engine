@@ -50,12 +50,13 @@ SettingsDialogQt::SettingsDialogQt( QWidget* parent)
 	systemsSettingsTab = new SystemsSettingsEditor(this);
 	tabWidget->addTab(systemsSettingsTab, "Systems");
 	
-	cancelButton = new QPushButton("Cancel", this);
-	connect(cancelButton,SIGNAL(clicked(bool)),this, SLOT(RestoreInitialSettings()));
+	btnBox = new QDialogButtonBox(QDialogButtonBox::Ok|QDialogButtonBox::Cancel);;
+	connect(btnBox, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(btnBox, SIGNAL(rejected()), this, SLOT(reject()));
 	
 	mainLayout = new QVBoxLayout;
 	mainLayout->addWidget(tabWidget);
-	mainLayout->addWidget(cancelButton);
+	mainLayout->addWidget(btnBox);
 	setLayout(mainLayout);
 }
 
@@ -63,12 +64,14 @@ SettingsDialogQt::~SettingsDialogQt()
 {
 	delete systemsSettingsTab;
 	delete generalSettingsTab;
-	delete cancelButton;
+	delete btnBox;
 	delete tabWidget;
 }
 
-void SettingsDialogQt::RestoreInitialSettings()
+
+void SettingsDialogQt::reject()
 {
 	generalSettingsTab->RestoreInitialSettings();
-	this->close();
+	systemsSettingsTab->RestoreInitialSettings();
+	QDialog::reject();
 }

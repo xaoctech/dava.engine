@@ -60,9 +60,9 @@
 
 #include <QPushButton>
 
-typedef DAVA::Map<DAVA::String,std::pair<DAVA::uint32, bool> > STATE_FLAGS_MAP;
-typedef DAVA::Map<QtPropertyDataDavaVariant* , DAVA::VariantType> PROPERTY_INITIAL_VAL_MAP;
-typedef DAVA::Map<QPushButton * , STATE_FLAGS_MAP*>  BUTTON_TO_FLAGS_MAP;
+typedef DAVA::Map<DAVA::String, std::pair<DAVA::uint32, bool> > STATE_FLAGS_MAP;
+//typedef DAVA::Map<QtPropertyDataDavaVariant* , DAVA::VariantType> PROPERTY_INITIAL_VAL_MAP;
+//typedef DAVA::Map<QPushButton * , STATE_FLAGS_MAP*>  BUTTON_TO_FLAGS_MAP;
 
 class SceneEditor2;
 
@@ -82,6 +82,8 @@ public:
 protected slots:
 	
 	void HandleCustomColorBrushSize();
+
+	void HandleCustomColorColorIndex();
 
 	void HandleCameraMoveSpeed();
 	
@@ -106,7 +108,25 @@ protected slots:
 	void ShowDialog();
 
 protected:
-	
+
+	struct PropertyInfo
+	{
+		QtPropertyDataDavaVariant*	property;
+		DAVA::VariantType			defaultValue;
+		STATE_FLAGS_MAP *			flagsMap;
+		PropertyInfo()
+		{
+			property = NULL;
+			flagsMap = NULL;
+		}
+		PropertyInfo(QtPropertyDataDavaVariant* _property, DAVA::VariantType _defaultValue, STATE_FLAGS_MAP * _flagsMap = NULL)
+		{
+			property = _property;
+			defaultValue = _defaultValue;
+			flagsMap = _flagsMap;
+		}
+	};
+
 	QPushButton * CreatePushBnt();
 	
 	DAVA::uint32 ResolveMapToUint(STATE_FLAGS_MAP& map);
@@ -115,16 +135,16 @@ protected:
 	DAVA::String ResolveMapToString(STATE_FLAGS_MAP& map);
 	
 	
-	PROPERTY_INITIAL_VAL_MAP propertiesMapInitialValues;
+	DAVA::List<PropertyInfo> propertiesMap;
 
 	SceneEditor2* sceneEditor;
 
 	STATE_FLAGS_MAP selectionSysDrawStateMap;
 	STATE_FLAGS_MAP collisionSysDrawStateMap;
 
-	BUTTON_TO_FLAGS_MAP buttonToFlagsMap;
-	
-	DAVA::List<QPushButton * > buttonsList;
+	DAVA::Map<QPushButton * , PropertyInfo>  buttonsMap;
+//	BUTTON_TO_FLAGS_MAP buttonToFlagsMap;
+
 	
 	/*ParticleEffectSystem * particleEffectSystem;
 	RenderSystem * renderSystem;

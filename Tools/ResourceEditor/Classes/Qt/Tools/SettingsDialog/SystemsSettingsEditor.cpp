@@ -44,17 +44,18 @@
 #define INIT_PROPERTY(propertyName, getter, rowName, handlerName) QtPropertyDataDavaVariant* propertyName = new QtPropertyDataDavaVariant(VariantType(getter));\
 	AppendProperty(QString(rowName), propertyName, header);\
 	connect(propertyName,SIGNAL(ValueChanged()),this, SLOT(handlerName));\
-	propertiesMapInitialValues[propertyName] = DAVA::VariantType(getter);
+	propertiesMap.push_back(PropertyInfo(propertyName, DAVA::VariantType(getter)));
+	//propertiesMap[propertyName] = DAVA::VariantType(getter);
 
 #define INIT_PROPERTY_WITH_BTN(propertyName, propertyNameBtn, getter, rowName, handlerName,drawStateMap) QtPropertyDataDavaVariant* propertyName = new QtPropertyDataDavaVariant(VariantType(getter));\
 	AppendProperty(QString(rowName), propertyName, header);\
 	connect(propertyName,SIGNAL(ValueChanged()),this, SLOT(handlerName));\
-	propertiesMapInitialValues[propertyName] = DAVA::VariantType(getter);\
+	propertiesMap.push_back(PropertyInfo(propertyName, DAVA::VariantType(getter), &drawStateMap));\
 	propertyName->SetFlags(QtPropertyData::FLAG_IS_NOT_EDITABLE);\
 	QPushButton * propertyNameBtn = CreatePushBnt();\
 	propertyName->AddOW(QtPropertyOW(propertyNameBtn));\
 	QObject::connect(propertyNameBtn, SIGNAL(pressed()), this, SLOT(ShowDialog()));\
-	buttonToFlagsMap[propertyNameBtn]= &drawStateMap;
+	buttonsMap[propertyNameBtn] = propertiesMap.back();
 
 #define ST_COLL_DRAW_NOTHING_NAME			"Draw nothing"
 #define ST_COLL_DRAW_OBJECTS_NAME			"Draw objects"
@@ -111,40 +112,35 @@ SystemsSettingsEditor::SystemsSettingsEditor( QWidget* parent)
 
 SystemsSettingsEditor::~SystemsSettingsEditor()
 {
-	for (DAVA::Map<QtPropertyDataDavaVariant *, DAVA::VariantType >::iterator it= propertiesMapInitialValues.begin(); it != propertiesMapInitialValues.end(); ++it)
+	for( DAVA::List<PropertyInfo>::iterator it= propertiesMap.begin(); it != propertiesMap.end(); ++it)
 	{
-		delete it->first;
+		delete it->property;
 	}
-	//TODO: delete buttons
-	propertiesMapInitialValues.clear();
+	propertiesMap.clear();
+
+	buttonsMap.clear();
 }
 
 void SystemsSettingsEditor::InitializeProperties()
 {
 	QtPropertyItem *header = NULL;
 	
-	/*ADD_HEADER("Custom color settings:");
-	INIT_PROPERTY(brushSizeProp, sceneEditor->customColorsSystem->GetBrushSize(), "Brush size", HandleCustomColorBrushSize());*/
-	/*
+	ADD_HEADER("Custom color settings:");
+	INIT_PROPERTY(brushSizeProp, sceneEditor->customColorsSystem->GetBrushSize(), "Brush size", HandleCustomColorBrushSize());
+	
 	Vector<Color> customColors = EditorConfig::Instance()->GetColorPropertyValues("LandscapeCustomColors");
 	Vector<String> customColorsDescription = EditorConfig::Instance()->GetComboPropertyValues("LandscapeCustomColorsDescription");
-	
-	QtPropertyDataDavaVariant* brushColorProp = new QtPropertyDataDavaVariant(VariantType(customColors[0]));
-	AppendProperty(QString("Brush size"), brushColorProp, header);
-	connect(brushColorProp,SIGNAL(ValueChanged()),this, SLOT(HandleCustomColorBrushSize()));
-	propertiesMap[brushColorProp] = DAVA::VariantType(customColors[0]);
-
+	INIT_PROPERTY(brushColorProp, customColors[0], "Color", HandleCustomColorColorIndex());
 	brushColorProp->AddAllowedValue(DAVA::VariantType(customColors[0]), customColorsDescription[0].c_str());
 	brushColorProp->AddAllowedValue(DAVA::VariantType(customColors[1]), customColorsDescription[1].c_str());
-	brushColorProp->AddAllowedValue(DAVA::VariantType(customColors[2]), customColorsDescription[2].c_str());*/
+	brushColorProp->AddAllowedValue(DAVA::VariantType(customColors[2]), customColorsDescription[2].c_str());
 	
-/*	ADD_HEADER("Camera system settings:");
+	ADD_HEADER("Camera system settings:");
 	INIT_PROPERTY(camSysMoveSpeed, sceneEditor->cameraSystem->GetMoveSpeed(), "Move speed", HandleCameraMoveSpeed());
 	Rect rect = sceneEditor->cameraSystem->GetViewportRect();
-	INIT_PROPERTY(camSysViewportRect, DAVA::Matrix2(rect.x, rect.y, rect.dx,rect.dy), "Viewport rect", HandleCameraViewportRect());*/
+	INIT_PROPERTY(camSysViewportRect, DAVA::Matrix2(rect.x, rect.y, rect.dx,rect.dy), "Viewport rect", HandleCameraViewportRect());
 	
 	ADD_HEADER("Collision system settings:");
-	
 	
 	collisionSysDrawStateMap[ST_COLL_DRAW_NOTHING_NAME]			= std::make_pair<DAVA::uint32,bool>(ST_COLL_DRAW_NOTHING, false);
 	collisionSysDrawStateMap[ST_COLL_DRAW_OBJECTS_NAME]			= std::make_pair<DAVA::uint32,bool>(ST_COLL_DRAW_OBJECTS, false);
@@ -154,26 +150,17 @@ void SystemsSettingsEditor::InitializeProperties()
 	collisionSysDrawStateMap[ST_COLL_DRAW_LAND_RAYTEST_NAME]	= std::make_pair<DAVA::uint32,bool>(ST_COLL_DRAW_LAND_RAYTEST, false);
 	collisionSysDrawStateMap[ST_COLL_DRAW_LAND_COLLISION_NAME]	= std::make_pair<DAVA::uint32,bool>(ST_COLL_DRAW_LAND_COLLISION, false);
 	collisionSysDrawStateMap[ST_COLL_DRAW_ALL_NAME]				= std::make_pair<DAVA::uint32,bool>(ST_COLL_DRAW_ALL, false);
-
 	InitMapWithFlag(collisionSysDrawStateMap, sceneEditor->collisionSystem->GetDebugDrawFlags());
-	INIT_PROPERTY_WITH_BTN(collSysDrawMode, collSysDrawModeBtn,ResolveMapToString(collisionSysDrawStateMap), "Collision draw mode", HandleCollisionDrawMode(),collisionSysDrawStateMap);
-	/*collSysDrawMode->AddAllowedValue(DAVA::VariantType(ST_COLL_DRAW_NOTHING), ST_COLL_DRAW_NOTHING_NAME);
-	collSysDrawMode->AddAllowedValue(DAVA::VariantType(ST_COLL_DRAW_OBJECTS), ST_COLL_DRAW_OBJECTS_NAME);
-	collSysDrawMode->AddAllowedValue(DAVA::VariantType(ST_COLL_DRAW_OBJECTS_SELECTED), ST_COLL_DRAW_OBJECTS_SELECTED_NAME);
-	collSysDrawMode->AddAllowedValue(DAVA::VariantType(ST_COLL_DRAW_OBJECTS_RAYTEST), ST_COLL_DRAW_OBJECTS_RAYTEST_NAME);
-	collSysDrawMode->AddAllowedValue(DAVA::VariantType(ST_COLL_DRAW_LAND), ST_COLL_DRAW_LAND_NAME);
-	collSysDrawMode->AddAllowedValue(DAVA::VariantType(ST_COLL_DRAW_LAND_RAYTEST), ST_COLL_DRAW_LAND_RAYTEST_NAME);
-	collSysDrawMode->AddAllowedValue(DAVA::VariantType(ST_COLL_DRAW_LAND_COLLISION), ST_COLL_DRAW_LAND_COLLISION_NAME);
-	collSysDrawMode->AddAllowedValue(DAVA::VariantType(ST_COLL_DRAW_ALL), ST_COLL_DRAW_ALL_NAME);*/
-	
-/*	ADD_HEADER("Hood system settings:");
+	INIT_PROPERTY_WITH_BTN(collSysDrawMode, collSysDrawModeBtn, ResolveMapToString(collisionSysDrawStateMap), "Collision draw mode", HandleCollisionDrawMode(),collisionSysDrawStateMap);
+
+	ADD_HEADER("Hood system settings:");
 	INIT_PROPERTY(hoodSysModifMode, sceneEditor->hoodSystem->GetModifMode(), "Modif. mode", HandleHoodModifMode());
 	hoodSysModifMode->AddAllowedValue(DAVA::VariantType(ST_MODIF_OFF), ST_MODIF_OFF_NAME);
 	hoodSysModifMode->AddAllowedValue(DAVA::VariantType(ST_MODIF_MOVE), ST_MODIF_MOVE_NAME);
 	hoodSysModifMode->AddAllowedValue(DAVA::VariantType(ST_MODIF_ROTATE), ST_MODIF_ROTATE_NAME);
 	hoodSysModifMode->AddAllowedValue(DAVA::VariantType(ST_MODIF_SCALE), ST_MODIF_SCALE_NAME);
 	INIT_PROPERTY(hoodSysPosition, sceneEditor->hoodSystem->GetPosition(), "Position", HandleHoodPosition());
-	INIT_PROPERTY(hoodModifAxis, sceneEditor->hoodSystem->GetModifAxis(), "Modif. axis", HandleHoodModifAxis());
+	INIT_PROPERTY(hoodModifAxis, (DAVA::uint32)sceneEditor->hoodSystem->GetModifAxis(), "Modif. axis", HandleHoodModifAxis());
 	hoodModifAxis->AddAllowedValue(DAVA::VariantType(ST_AXIS_NONE), ST_AXIS_NONE_NAME);
 	hoodModifAxis->AddAllowedValue(DAVA::VariantType(ST_AXIS_X), ST_AXIS_X_NAME);
 	hoodModifAxis->AddAllowedValue(DAVA::VariantType(ST_AXIS_Y), ST_AXIS_Y_NAME);
@@ -191,28 +178,22 @@ void SystemsSettingsEditor::InitializeProperties()
 	selectionSysDrawStateMap[ST_SELDRAW_FILL_SHAPE_NAME]	= std::make_pair<DAVA::uint32,bool>(ST_SELDRAW_FILL_SHAPE, false);
 	selectionSysDrawStateMap[ST_SELDRAW_NO_DEEP_TEST_NAME]	= std::make_pair<DAVA::uint32,bool>(ST_SELDRAW_NO_DEEP_TEST, false);
 	selectionSysDrawStateMap[ST_SELDRAW_ALL_NAME]			= std::make_pair<DAVA::uint32,bool>(ST_SELDRAW_ALL, false);
-	
-	DAVA::String valueDescrition = ResolveFlags(selectionSysDrawStateMap,sceneEditor->selectionSystem->GetDrawMode());
-	INIT_PROPERTY_WITH_BTN(selectionDrawMode, selectionDrawModeBtn,valueDescrition, "Draw mode", HandleSelectionDrawMode(),selectionSysDrawStateMap);*/
-	/*selectionDrawMode->SetFlags(QtPropertyData::FLAG_IS_NOT_EDITABLE);
-	
-	QPushButton *configBtn = CreatePushBnt();
-	selectionDrawMode->AddOW(QtPropertyOW(configBtn));
-	QObject::connect(configBtn, SIGNAL(pressed()), this, SLOT(ShowDialog()));
-	buttonToFlagsMap[configBtn]= &selectionSysDrawStateMap;*/
-	
-	/*INIT_PROPERTY(selectionPivotPoint, sceneEditor->selectionSystem->GetPivotPoint(), "Pivot point", HandlePivotPoint());
-	selectionPivotPoint->AddAllowedValue(DAVA::VariantType(ST_PIVOT_ENTITY_CENTER), ST_PIVOT_ENTITY_CENTER_NAME);
-	selectionPivotPoint->AddAllowedValue(DAVA::VariantType(ST_PIVOT_COMMON_CENTER), ST_PIVOT_COMMON_CENTER_NAME);*/
+	InitMapWithFlag(selectionSysDrawStateMap, sceneEditor->selectionSystem->GetDrawMode());
 
-	
+	INIT_PROPERTY_WITH_BTN(selectionDrawMode, selectionDrawModeBtn, ResolveMapToString(selectionSysDrawStateMap), "Draw mode", HandleSelectionDrawMode(),selectionSysDrawStateMap);
+	INIT_PROPERTY(selectionPivotPoint, (DAVA::uint32)sceneEditor->selectionSystem->GetPivotPoint(), "Pivot point", HandlePivotPoint());
+	selectionPivotPoint->AddAllowedValue(DAVA::VariantType(ST_PIVOT_ENTITY_CENTER), ST_PIVOT_ENTITY_CENTER_NAME);
+	selectionPivotPoint->AddAllowedValue(DAVA::VariantType(ST_PIVOT_COMMON_CENTER), ST_PIVOT_COMMON_CENTER_NAME);
 }
 
 void SystemsSettingsEditor::RestoreInitialSettings()
 {
-	for (DAVA::Map<QtPropertyDataDavaVariant *, DAVA::VariantType>::iterator it= propertiesMapInitialValues.begin(); it != propertiesMapInitialValues.end(); ++it)
+	for (DAVA::List<PropertyInfo>::iterator it= propertiesMap.begin(); it != propertiesMap.end(); ++it)
 	{
-		it->first->SetVariantValue(it->second);
+		QtPropertyDataDavaVariant* property = it->property;
+		property->SetVariantValue(it->defaultValue);
+		//to emit value changed event
+		property->SetValue(property->FromDavaVariant(it->defaultValue));
 	}
 }
 
@@ -283,8 +264,13 @@ void SystemsSettingsEditor::ShowDialog()
 {
 	QPushButton * sender = dynamic_cast<QPushButton *>(QObject::sender());
 	DVASSERT(sender);
-	STATE_FLAGS_MAP* propFlagsMap = buttonToFlagsMap[sender];
-	
+
+	QtPropertyDataDavaVariant* propertyToChange = buttonsMap[sender].property;
+	STATE_FLAGS_MAP* propFlagsMap = buttonsMap[sender].flagsMap;
+
+	DVASSERT(propertyToChange);
+	DVASSERT(propFlagsMap);
+
 	SettingsStateDialog dialog(propFlagsMap,this);
 	dialog.exec();
 	
@@ -292,19 +278,7 @@ void SystemsSettingsEditor::ShowDialog()
 	{
 		return;
 	}
-	QObject* viewPort = sender->parent();
-	QtPropertyDataDavaVariant* propertyToChange = NULL;
 	
-	for(PROPERTY_INITIAL_VAL_MAP::iterator it = propertiesMapInitialValues.begin(); it !=  propertiesMapInitialValues.end(); ++it)
-	{
-		if (it->first->GetOWViewport() ==viewPort)
-		{
-			propertyToChange = it->first;
-			break;
-		}
-	}
-	
-	DVASSERT(propertyToChange);
 	propertyToChange->SetValue(QVariant(ResolveMapToString(*propFlagsMap).c_str()));
 }
 
@@ -313,7 +287,6 @@ QPushButton * SystemsSettingsEditor::CreatePushBnt()
 	QPushButton *configBtn = new QPushButton(QIcon(":/QtIcons/settings.png"), "");
 	configBtn->setIconSize(QSize(12, 12));
 	configBtn->setFlat(true);
-	buttonsList.push_back(configBtn);
 	return configBtn;
 }
 
@@ -335,6 +308,15 @@ void SystemsSettingsEditor::HandleCustomColorBrushSize()
 	}
 	
 	sceneEditor->customColorsSystem->SetBrushSize(senderContent.AsInt32(), false);
+}
+
+void SystemsSettingsEditor::HandleCustomColorColorIndex()
+{
+	GET_SENDER_CONTENT
+	DAVA::Color value = senderContent.AsColor();
+	Vector<Color> customColors = EditorConfig::Instance()->GetColorPropertyValues("LandscapeCustomColors");
+	int pos = std::find(customColors.begin(), customColors.end(), value) - customColors.begin();
+	sceneEditor->customColorsSystem->SetColor(pos);
 }
 
 void SystemsSettingsEditor::HandleCameraMoveSpeed()
@@ -389,7 +371,7 @@ void SystemsSettingsEditor::HandleHoodScale()
 void SystemsSettingsEditor::HandleSelectionDrawMode()
 {
 	GET_SENDER_CONTENT
-	uint32 value = senderContent.AsUInt32();
+	uint32 value = ResolveMapToUint(selectionSysDrawStateMap);
 	sceneEditor->selectionSystem->SetDrawMode(value);
 }
 

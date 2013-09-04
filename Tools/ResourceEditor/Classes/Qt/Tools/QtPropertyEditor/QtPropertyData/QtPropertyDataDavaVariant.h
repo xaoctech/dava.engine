@@ -59,6 +59,8 @@ public:
 	virtual void SetIcon(const QIcon &icon);
 	virtual QIcon GetIcon();
 
+	QVariant FromDavaVariant(const DAVA::VariantType &variant);
+
 protected:
 	DAVA::VariantType curVariantValue;
 
@@ -95,7 +97,7 @@ private:
 	void ChildsSetFromMe();
 	void MeSetFromChilds(const QString &lastChangedChildKey, QtPropertyData *lastChangedChildData);
 
-	QVariant FromDavaVariant(const DAVA::VariantType &variant);
+
 	QVariant FromKeyedArchive(DAVA::KeyedArchive *archive);
 	QVariant FromVector4(const DAVA::Vector4 &vector);
 	QVariant FromVector3(const DAVA::Vector3 &vector);
