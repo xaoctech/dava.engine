@@ -375,8 +375,7 @@ DAVA::int32 EditorLODData::GetLayersCount(DAVA::LodComponent *lod) const
 void EditorLODData::CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
 {
     int commandId = command->GetId();
-    
-    if(commandId == CMDID_META_OBJ_MODIFY /* || commandId == ... */) //TODO: need second command id
+    if(commandId == CMDID_META_OBJ_MODIFY || commandId == CMDID_INSP_MEMBER_MODIFY)
     {
         GetDataFromSelection();
     }
