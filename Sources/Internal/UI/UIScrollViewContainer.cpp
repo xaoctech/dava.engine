@@ -41,7 +41,8 @@ const int32	DEFAULT_RETURN_TO_BOUNDS_SPEED = 200; // in pixels per second.
 UIScrollViewContainer::UIScrollViewContainer(const Rect &rect, bool rectInAbsoluteCoordinates/* = false*/)
 :	UIControl(rect, rectInAbsoluteCoordinates),
 	scrollOrigin(0, 0),
-	returnToBoundsSpeed(DEFAULT_RETURN_TO_BOUNDS_SPEED)
+	returnToBoundsSpeed(DEFAULT_RETURN_TO_BOUNDS_SPEED),
+	mainTouch(-1)
 {
 	this->SetInputEnabled(true);
 	this->SetMultiInput(true);
@@ -167,6 +168,40 @@ void UIScrollViewContainer::Input(UIEvent *currentTouch)
 				break;
 		}
 	}
+}
+
+bool UIScrollViewContainer::SystemInput(UIEvent *currentTouch)
+{
+	if(!inputEnabled || !visible || controlState & STATE_DISABLED)
+	{
+		return false;
+	}
+	
+	if(currentTouch->phase == UIEvent::PHASE_BEGAN)
+	{
+		if(IsPointInside(currentTouch->point))
+		{
+			mainTouch = currentTouch->tid;
+			PerformEvent(EVENT_TOUCH_DOWN);
+			Input(currentTouch); 
+		}
+	}
+	else if(currentTouch->tid == mainTouch && currentTouch->phase == UIEvent::PHASE_DRAG)
+	{
+		UIControlSystem::Instance()->SwitchInputToControl(mainTouch, this);
+		Input(currentTouch);
+	}
+	else if(currentTouch->tid == mainTouch && currentTouch->phase == UIEvent::PHASE_ENDED)
+	{
+		mainTouch = -1;
+	}
+
+	if (scrollStartMovement && currentTouch->tid == mainTouch)
+	{
+		return true;
+	}
+	
+	return UIControl::SystemInput(currentTouch);
 }
 
 void UIScrollViewContainer::Update(float32 timeElapsed)
