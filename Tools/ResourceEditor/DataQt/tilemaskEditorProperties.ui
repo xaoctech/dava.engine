@@ -17,7 +17,7 @@
    <item>
     <widget class="QPushButton" name="buttonEnableTilemaskEditor">
      <property name="text">
-      <string>Enable Tilemask Editor</string>
+      <string>Enable Tile Mask Editor</string>
      </property>
     </widget>
    </item>

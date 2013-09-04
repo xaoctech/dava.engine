@@ -190,7 +190,7 @@ public class JNIGLSurfaceView extends GLSurfaceView
     		queueEvent(new KeyInputRunnable(keyCode));
     	pressedKeys[keyCode] = true;
     	
-    	if(keyCode == KeyEvent.KEYCODE_BACK)
+    	if (event.isSystem())
     		return super.onKeyDown(keyCode, event);
     	else
     		return true;

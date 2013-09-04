@@ -1,23 +1,35 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #include "ParticlesEditorController.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "ParticlesEditorQT/Helpers/ParticlesEditorNodeNameHelper.h"
-
-#include "../StringConstants.h"
 
 using namespace DAVA;
 
@@ -250,6 +262,7 @@ void ParticlesEditorController::RemoveParticleEmitterNode(Entity* emitterSceneNo
     }
 }
 
+
 ForceParticleEditorNode* ParticlesEditorController::AddParticleForceToNode(LayerParticleEditorNode* layerNode)
 {
     if (!layerNode)
@@ -336,7 +349,7 @@ void ParticlesEditorController::FindEmitterEditorNode(Entity* emitterSceneNode,
     }
 }
 
-bool ParticlesEditorController::MoveEmitter(EmitterParticleEditorNode* movedItemEmitterNode, EffectParticleEditorNode* newEffectParentNode)
+bool ParticlesEditorController::MoveEmitter(EmitterParticleEditorNode* movedItemEmitterNode, EffectParticleEditorNode* newEffectParentNode, EmitterParticleEditorNode* newEffectReferenceEmitterNode)
 {
 	if (!movedItemEmitterNode || !newEffectParentNode)
 	{
@@ -351,33 +364,95 @@ bool ParticlesEditorController::MoveEmitter(EmitterParticleEditorNode* movedItem
 
 	// Move the Emitter to the new Effect inside the Particles Editor hierarchy...
 	BaseParticleEditorNode* oldEffectParentNode = movedItemEmitterNode->GetParentNode();
-	newEffectParentNode->AddNode(movedItemEmitterNode);
+	oldEffectParentNode->RemoveNode(movedItemEmitterNode, false);
+	
+	if (newEffectReferenceEmitterNode)
+	{
+		// The particular position of the Emitter Node in the new Effect is defined, however need
+		// to be sure that reference emitter node belongs to the correct parent.
+		DVASSERT(newEffectReferenceEmitterNode->GetParentNode() == newEffectParentNode);
+		newEffectParentNode->InsertBeforeNode(movedItemEmitterNode, newEffectReferenceEmitterNode);
+	}
+	else
+	{
+		// No particular position specified - just move to the end.
+		newEffectParentNode->AddNode(movedItemEmitterNode);
+	}
 
 	// and inside the SceneGraph.
 	Entity* movedNode = movedItemEmitterNode->GetEmitterNode();
 	Entity* newParentNode = newEffectParentNode->GetRootNode();
+	Entity* oldParentNode = oldEffectParentNode->GetRootNode();
 
-    newParentNode->AddNode(movedNode);
+    SafeRetain(movedNode);
+    oldParentNode->RemoveNode(movedNode);
+	if (newEffectReferenceEmitterNode)
+	{
+		// Position the new Emitter correctly according to the reference node.
+		Entity* referenceEmitterNode = newEffectReferenceEmitterNode->GetEmitterNode();
+		DVASSERT(referenceEmitterNode->GetParent() == newParentNode);
+		newParentNode->InsertBeforeNode(movedNode, referenceEmitterNode);
+	}
+	else
+	{
+		// No particular position specified - just move to the end.
+		newParentNode->AddNode(movedNode);
+	}
+    SafeRelease(movedNode);
 
 	return true;
 }
 
-bool ParticlesEditorController::MoveLayer(LayerParticleEditorNode* moveItemNode, LayerParticleEditorNode* beforeNode)
+bool ParticlesEditorController::MoveEmitter(EmitterParticleEditorNode* movedItemEmitterNode, EmitterParticleEditorNode* newItemEmitterNode)
 {
-	if (!moveItemNode || !beforeNode)
+	if (!movedItemEmitterNode || !newItemEmitterNode ||
+		!movedItemEmitterNode->GetParentNode() || !newItemEmitterNode->GetParentNode())
 	{
 		return false;
 	}
 	
-	if (beforeNode->GetParentNode() == moveItemNode->GetParentNode())
+	if (movedItemEmitterNode->GetParentNode() != newItemEmitterNode->GetParentNode())
+	{
+		// We are moving emitter between Effects.
+		EffectParticleEditorNode* effectNode = dynamic_cast<EffectParticleEditorNode*>(newItemEmitterNode->GetParentNode());
+		DVASSERT(effectNode);
+		return MoveEmitter(movedItemEmitterNode, effectNode, newItemEmitterNode);
+	}
+
+	// Just move the emitter inside the Entity...
+	Entity* referenceNode = newItemEmitterNode->GetEmitterNode();
+	Entity* movedNode = movedItemEmitterNode->GetEmitterNode();
+	Entity* effectNode = movedItemEmitterNode->GetRootNode();
+	
+	movedNode->Retain();
+	effectNode->RemoveNode(movedNode);
+	effectNode->InsertBeforeNode(movedNode, referenceNode);
+	movedNode->Release();
+	
+	// and update the editor structure.
+	BaseParticleEditorNode* effectEditorNode = movedItemEmitterNode->GetParentNode();
+	effectEditorNode->RemoveNode(movedItemEmitterNode, false);
+	effectEditorNode->InsertBeforeNode(movedItemEmitterNode, newItemEmitterNode);
+	
+	return true;
+}
+
+bool ParticlesEditorController::MoveLayer(LayerParticleEditorNode* moveItemNode, LayerParticleEditorNode* moveAboveNode)
+{
+	if (!moveItemNode || !moveAboveNode)
+	{
+		return false;
+	}
+	
+	if (moveAboveNode->GetParentNode() == moveItemNode->GetParentNode())
 	{
 		// We are just changing the layer's order inside the same node.
-		return ChangeLayersOrderInSameEmitter(moveItemNode, beforeNode);
+		return ChangeLayersOrderInSameEmitter(moveItemNode, moveAboveNode);
 	}
 	else
 	{
 		// We are also changing the "parent" emitters.
-		return ChangeLayersOrderInDifferentEmitters(moveItemNode, beforeNode);
+		return ChangeLayersOrderInDifferentEmitters(moveItemNode, moveAboveNode);
 	}
 }
 
@@ -397,7 +472,7 @@ bool ParticlesEditorController::MoveLayer(LayerParticleEditorNode* moveItemNode,
 	return MoveLayerToEmitter(moveItemNode, newEmitterNode);
 }
 
-bool ParticlesEditorController::ChangeLayersOrderInSameEmitter(LayerParticleEditorNode* movedItemNode, LayerParticleEditorNode* beforeNode)
+bool ParticlesEditorController::ChangeLayersOrderInSameEmitter(LayerParticleEditorNode* movedItemNode, LayerParticleEditorNode* moveAboveNode)
 {
 	// Change both the order of the representation tree nodes and the layers themselves.
 	BaseParticleEditorNode* parentNode = movedItemNode->GetParentNode();
@@ -406,28 +481,28 @@ bool ParticlesEditorController::ChangeLayersOrderInSameEmitter(LayerParticleEdit
 		return false;
 	}
 
-	parentNode->MoveNode(movedItemNode, beforeNode);
+	parentNode->MoveNode(movedItemNode, moveAboveNode);
 	
 	ParticleLayer* layerToMove = movedItemNode->GetLayer();
-	ParticleLayer* beforeLayer = beforeNode->GetLayer();
+	ParticleLayer* layerToMoveAbove = moveAboveNode->GetLayer();
 
 	ParticleEmitter* parentEmitter = movedItemNode->GetParticleEmitter();
-	parentEmitter->MoveLayer(layerToMove, beforeLayer);
+	parentEmitter->MoveLayer(layerToMove, layerToMoveAbove);
 	
 	return true;
 }
 
-bool ParticlesEditorController::ChangeLayersOrderInDifferentEmitters(LayerParticleEditorNode* moveItemNode, LayerParticleEditorNode* beforeNode)
+bool ParticlesEditorController::ChangeLayersOrderInDifferentEmitters(LayerParticleEditorNode* moveItemNode, LayerParticleEditorNode* moveAboveNode)
 {
 	// Sanity check.
 	EmitterParticleEditorNode* oldParentNode = dynamic_cast<EmitterParticleEditorNode*>(moveItemNode->GetParentNode());
-	EmitterParticleEditorNode* newParentNode = dynamic_cast<EmitterParticleEditorNode*>(beforeNode->GetParentNode());
+	EmitterParticleEditorNode* newParentNode = dynamic_cast<EmitterParticleEditorNode*>(moveAboveNode->GetParentNode());
 	if (!oldParentNode || !newParentNode)
 	{
 		return false;
 	}
 
-	return PerformMoveBetweenEmitters(oldParentNode, newParentNode, moveItemNode, beforeNode);
+	return PerformMoveBetweenEmitters(oldParentNode, newParentNode, moveItemNode, moveAboveNode);
 }
 
 bool ParticlesEditorController::MoveLayerToEmitter(LayerParticleEditorNode* moveItemNode, EmitterParticleEditorNode* newEmitterNode)
@@ -446,7 +521,7 @@ bool ParticlesEditorController::MoveLayerToEmitter(LayerParticleEditorNode* move
 bool ParticlesEditorController::PerformMoveBetweenEmitters(EmitterParticleEditorNode* oldEmitterNode,
 														   EmitterParticleEditorNode* newEmitterNode,
 														   LayerParticleEditorNode* layerNodeToMove,
-														   LayerParticleEditorNode* layerNodeToInsertBefore)
+														   LayerParticleEditorNode* layerNodeToInsertAbove)
 {
 	ParticleEmitter* oldParentEmitter = oldEmitterNode->GetParticleEmitter();
 	ParticleEmitter* newParentEmitter = newEmitterNode->GetParticleEmitter();
@@ -455,20 +530,23 @@ bool ParticlesEditorController::PerformMoveBetweenEmitters(EmitterParticleEditor
 		return false;
 	}
 
-	// Move the Editor node. layerNodeToInsertBefore is allowed to be NULL.
-	newEmitterNode->InsertBeforeNode(layerNodeToMove, layerNodeToInsertBefore);
+	// Move the Editor node. layerNodeToInsertAbove is allowed to be NULL.
+	newEmitterNode->InsertBeforeNode(layerNodeToMove, layerNodeToInsertAbove);
+	oldEmitterNode->RemoveNode(layerNodeToMove, false);
 	
 	// Move the Particle Layers themselves.
 	ParticleLayer* layerToMove = layerNodeToMove->GetLayer();
-	ParticleLayer* layerToInsertBefore = NULL;
-	if (layerNodeToInsertBefore)
+	ParticleLayer* layerToInsertAbove = NULL;
+	if (layerNodeToInsertAbove)
 	{
-		layerToInsertBefore = layerNodeToInsertBefore->GetLayer();
+		layerToInsertAbove = layerNodeToInsertAbove->GetLayer();
 	}
 
-	// Yuri Coder, 2013/07/01. InsertLayer() functionality now removes layer
-	// from previous emitter too.
-	newParentEmitter->InsertLayer(layerToMove, layerToInsertBefore);
+	SafeRetain(layerToMove);
+	oldParentEmitter->RemoveLayer(layerToMove);
+	
+	newParentEmitter->InsertLayer(layerToMove, layerToInsertAbove);
+	SafeRelease(layerToMove);
 	
 	// Update the emitter.
 	layerNodeToMove->UpdateEmitterEditorNode(newEmitterNode);

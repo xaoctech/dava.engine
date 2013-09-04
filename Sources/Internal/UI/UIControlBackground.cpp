@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 
 #include "UI/UIControlBackground.h"
 #include "Debug/DVAssert.h"
@@ -40,6 +54,7 @@ UIControlBackground::UIControlBackground()
 ,	tilesVertices(NULL)
 ,	tilesTexCoords(NULL)
 ,	tilesIndeces(NULL)
+, 	generateTilesArrays(false)
 {
 	rdoObject = new RenderDataObject();
     vertexStream = rdoObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 2, 0, 0);
@@ -501,11 +516,10 @@ void UIControlBackground::DrawStretched(const Rect &drawRect)
 
     const float32 scaleFactorX = drawRect.dx / spriteWidth;
     const float32 scaleFactorY = drawRect.dy / spriteHeight;
-    const float32 x = drawRect.x + Max( 0.0f, -leftOffset ) * scaleFactorX;
-    const float32 y = drawRect.y + Max( 0.0f, -topOffset  ) * scaleFactorY;
-
-    const float32 dx = drawRect.dx - ( Max( 0.0f, -leftOffset ) + Max( 0.0f, -rightOffset  ) ) * scaleFactorX;
-    const float32 dy = drawRect.dy - ( Max( 0.0f, -topOffset  ) + Max( 0.0f, -bottomOffset ) ) * scaleFactorY;
+    float32 x = drawRect.x + Max( 0.0f, -leftOffset ) * scaleFactorX;
+    float32 y = drawRect.y + Max( 0.0f, -topOffset  ) * scaleFactorY;
+    float32 dx = drawRect.dx - ( Max( 0.0f, -leftOffset ) + Max( 0.0f, -rightOffset  ) ) * scaleFactorX;
+    float32 dy = drawRect.dy - ( Max( 0.0f, -topOffset  ) + Max( 0.0f, -bottomOffset ) ) * scaleFactorY;
 
     const float32 resMulFactor = 1.0f / Core::Instance()->GetResourceToVirtualFactor(spr->GetResourceSizeIndex());
 //	if (spr->IsUseContentScale()) 
@@ -532,6 +546,10 @@ void UIControlBackground::DrawStretched(const Rect &drawRect)
 	{
 		case DRAW_STRETCH_HORIZONTAL:
 		{
+			float32 ddy = (spriteHeight - dy);
+			y -= ddy * 0.5f;
+			dy += ddy;
+			
             vertices[0] = vertices[8]  = x;
             vertices[1] = vertices[3]  = vertices[5]  = vertices[7]  = y;
             vertices[4] = vertices[12] = x + dx - realRightStretchCap;
@@ -551,6 +569,10 @@ void UIControlBackground::DrawStretched(const Rect &drawRect)
 		break;
 		case DRAW_STRETCH_VERTICAL:
 		{
+			float32 ddx = (spriteWidth - dx);
+			x -= ddx * 0.5f;
+			dx += ddx;
+			
             vertices[0] = vertices[2]  = vertices[4]  = vertices[6]  = x;
             vertices[8] = vertices[10] = vertices[12] = vertices[14] = x + dx;
 
@@ -656,6 +678,7 @@ void UIControlBackground::GenerateCell(float32* vertices, int32 offset, float32 
 void UIControlBackground::InitTilesArrays(int32 vertexCount, int32 trianglesCount)
 {	
 	DeleteTilesArrays();
+	SetGenerateTilesArraysFlag();
 	
 	tilesVertices = new float32[vertexCount];
 	tilesTexCoords = new float32[vertexCount];
@@ -680,6 +703,11 @@ void UIControlBackground::ResetTilesArrays()
 	{
 		DeleteTilesArrays();
 	}
+}
+
+void UIControlBackground::SetGenerateTilesArraysFlag()
+{
+	generateTilesArrays = true;
 }
 
 void UIControlBackground::DrawTiled(const Rect &drawRect)
@@ -730,7 +758,10 @@ void UIControlBackground::DrawTiled(const Rect &drawRect)
 	if (!tilesVertices || !tilesTexCoords || !tilesIndeces)
 	{
 		InitTilesArrays(vertexCount, vertInTriCount);
+	}
 	
+	if (generateTilesArrays)
+	{
 		// Generate coorinates for corner cells
 		// Top left corner cell
 		GenerateCell(tilesVertices, 0, leftStretchCap, topStretchCap, x, y);
@@ -845,6 +876,8 @@ void UIControlBackground::DrawTiled(const Rect &drawRect)
 				a += 4;
 			}
 		}
+		
+		generateTilesArrays = false;
 	}
 	vertexStream->Set(TYPE_FLOAT, 2, 0, tilesVertices);
 	texCoordStream->Set(TYPE_FLOAT, 2, 0, tilesTexCoords);

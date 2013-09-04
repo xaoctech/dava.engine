@@ -2,8 +2,12 @@ package com.dava.framework;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 
 import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.webkit.WebView;
@@ -25,12 +29,40 @@ public class JNIWebView {
 		@Override
 		public void onPageFinished(WebView view, String url) {
 			super.onPageFinished(view, url);
-			OnPageLoaded(id);
+			JNIActivity.GetActivity().PostEventToGL(new Runnable() {
+				@Override
+				public void run() {
+					OnPageLoaded(id);
+				}
+			});
 		};
 		
 		@Override
-		public boolean shouldOverrideUrlLoading(WebView view, String url) {
-			int res = OnUrlChange(id, url);
+		public boolean shouldOverrideUrlLoading(WebView view, final String url) {
+			Callable<Integer> urlChanged = new Callable<Integer>() {
+				
+				@Override
+				public Integer call() throws Exception {
+					return OnUrlChange(id, url);
+				}
+			};
+			
+			FutureTask<Integer> task = new FutureTask<Integer>(urlChanged);
+			
+			JNIActivity.GetActivity().PostEventToGL(task);
+			
+			while (!task.isDone()) {
+				Thread.yield();
+			}
+			
+			int res = 0;
+			try {
+				res = task.get();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+			}
 			
 			/*enum eAction
 			{
@@ -152,7 +184,26 @@ public class JNIWebView {
 					return;
 				}
 				WebView view = views.get(id);
-				view.setVisibility(isVisible ? WebView.VISIBLE : WebView.INVISIBLE);
+				view.setVisibility(isVisible ? WebView.VISIBLE : WebView.GONE);
+			}
+		});
+	}
+
+	public static void SetBackgroundTransparency(final int id, final boolean enabled)
+	{
+		final JNIActivity activity = JNIActivity.GetActivity();
+		activity.runOnUiThread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				if (!views.containsKey(id))
+				{
+					Log.d(TAG, String.format("Unknown view id %d", id));
+					return;
+				}
+				WebView view = views.get(id);
+				view.setBackgroundColor((enabled ? Color.TRANSPARENT : Color.WHITE));
 			}
 		});
 	}

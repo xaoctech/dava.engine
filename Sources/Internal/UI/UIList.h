@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 
 
 #ifndef __DAVAENGINE_UI_LIST_H__
@@ -27,6 +41,21 @@
 
 namespace DAVA 
 {
+
+/**
+	\ingroup controlsystem
+	\brief Class container for other controls and display them as list
+	
+	This class can show inner controls (UIListCell) as list.
+	Inner controls are not real childs of UIList. Each List has scrollContainer which contain cells.
+	All cells are build from specified by ID UIAggregatorControl.	
+	
+	Aggregator ID of specific aggregator is set inside user's implementation of UIListDelegate::CellAtIndex.
+	Only one aggregator for cells is allowed for a list.
+	
+	Aggregator Path is used for Save/Load procedure. Using this path, system can locate proper aggregator and get
+	its ID.
+*/
 
 class UIList;
 /**
@@ -162,6 +191,9 @@ public:
 	// Get and set aggregator path
 	const FilePath & GetAggregatorPath();
 	void SetAggregatorPath(const FilePath &aggregatorPath);
+	// Get and set aggregator size
+	const Vector2& GetAggregatorSize();
+	void SetAggregatorSize(const Vector2 &aggregatorSize);
     
     float32 GetScrollPosition();
     void SetScrollPosition(float32 newScrollPos);
@@ -188,7 +220,7 @@ public:
 	
 	virtual void SystemWillAppear(); // Internal method used by ControlSystem
 	
-	virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
+	virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
 	virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
 
     virtual float32 VisibleAreaSize(UIScrollBar *forScrollBar);
@@ -242,7 +274,7 @@ protected:
 	
 	bool needRefresh;
 	FilePath aggregatorPath;
-	
+	Vector2 aggregatorSize;
 
 	Map<String,Vector<UIListCell*>*> cellStore;
 

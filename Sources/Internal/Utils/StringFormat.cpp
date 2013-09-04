@@ -1,21 +1,36 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #include <stdarg.h>
 #include <stdio.h>
 #include "Utils/StringFormat.h"
+#include "Utils/Utils.h"
 #include "Debug/DVAssert.h"
 
 namespace DAVA
@@ -35,17 +50,26 @@ const char8* Format(const char8 * text, ...)
 	{
 		formatString8Position = 0;
 	}
+
+	char8 *buffer = &formatString8[formatString8Position];
+
 	va_list ll;
-
 	va_start(ll, text);
-	int32 len = vsnprintf(&formatString8[formatString8Position],  FORMAT_STRING_MAX_LEN, text, ll);
-    DVASSERT(len <= FORMAT_STRING_MAX_LEN);
-    
-	formatString8Position += (len + 1);
-
+	int32 len = vsnprintf(buffer,  FORMAT_STRING_MAX_LEN, text, ll);
 	va_end(ll);
 
-	return &formatString8[formatString8Position  - (len + 1)];
+	if(len < 0 || len > FORMAT_STRING_MAX_LEN)
+	{
+		Logger::Error("[Format8] len = %d, str = %s", len, buffer);
+
+		formatString8Position += FORMAT_STRING_MAX_LEN;
+	}
+	else
+	{
+		formatString8Position += (len + 1);
+	}
+
+	return buffer;
 }
 
 const char8* GetIndentString(char8 indentChar, int32 level)
@@ -734,21 +758,32 @@ const char16* Format(const char16 * text, ...)
 		formatString16Position = 0;
 	}
 
+	char16 *buffer = formatString16 + formatString16Position;
+
     va_list ll;
 	va_start(ll, text);
 
 #if defined(_WIN32)
-	int32 len = vswprintf((wchar_t *)&formatString16[formatString16Position], (wchar_t *)text, ll);
+	int32 len = vswprintf((wchar_t *)buffer, (wchar_t *)text, ll);
 #elif defined (__DAVAENGINE_ANDROID__)
-    int32 len = _vsnwprintf_android((char16 *)&formatString16[formatString16Position], FORMAT_STRING_MAX_LEN, (char16 *)text, ll);
+    int32 len = _vsnwprintf_android((char16 *)buffer, FORMAT_STRING_MAX_LEN, (char16 *)text, ll);
 #else // MAC_OS & other nix systems
-	int32 len = vswprintf((wchar_t *)&formatString16[formatString16Position], FORMAT_STRING_MAX_LEN, (wchar_t *)text, ll);
+	int32 len = vswprintf((wchar_t *)buffer, FORMAT_STRING_MAX_LEN, (wchar_t *)text, ll);
 #endif
-    DVASSERT(len < FORMAT_STRING_MAX_LEN);
-	
-	formatString16Position += (len + 1);
 	va_end(ll);
-	return &formatString16[formatString16Position - (len + 1)];
+
+	if(len < 0 || len > FORMAT_STRING_MAX_LEN)
+	{
+		Logger::Error("[Format16] len = %d, str = %s", len,  WStringToString(WideString(buffer, len)).c_str());
+
+		formatString16Position += FORMAT_STRING_MAX_LEN;
+	}
+	else
+	{
+		formatString16Position += (len + 1);
+	}
+
+	return buffer;
 }
 
 const char8* FormatVL(const char8 * text, va_list ll)
@@ -757,12 +792,24 @@ const char8* FormatVL(const char8 * text, va_list ll)
 	{
 		formatString8Position = 0;
 	}
-	int32 len = vsprintf(&formatString8[formatString8Position],  text, ll);
-    DVASSERT(len < FORMAT_STRING_MAX_LEN);
 
-	formatString8Position += (len + 1);
+	char8 *buffer = formatString8 + formatString8Position;
 
-	return &formatString8[formatString8Position  - (len + 1)];
+	int32 len = vsprintf(buffer,  text, ll);
+    DVASSERT_MSG(0 < len && len < FORMAT_STRING_MAX_LEN, buffer);
+
+	if(len < 0 || len > FORMAT_STRING_MAX_LEN)
+	{
+		Logger::Error("[FormatVL8] len = %d, str = %s", len, buffer);
+
+		formatString8Position += FORMAT_STRING_MAX_LEN;
+	}
+	else
+	{
+		formatString8Position += (len + 1);
+	}
+
+	return buffer;
 }
 
 const char16* FormatVL(const char16 * text, va_list ll)
@@ -771,14 +818,26 @@ const char16* FormatVL(const char16 * text, va_list ll)
 	{
 		formatString16Position = 0;
 	}
-#if defined(_WIN32)
-	int32 len = vswprintf((wchar_t *)&formatString16[formatString16Position], (wchar_t *)text, ll);
-#else // MAC_OS & other nix systems
-	int32 len = vswprintf((wchar_t *)&formatString16[formatString16Position], FORMAT_STRING_MAX_LEN, (wchar_t *)text, ll);
-#endif
-	DVASSERT(len < FORMAT_STRING_MAX_LEN);
 
-	formatString16Position += (len + 1);
-	return &formatString16[formatString16Position - (len + 1)];
+	char16 *buffer = formatString16 + formatString16Position;
+
+#if defined(_WIN32)
+	int32 len = vswprintf((wchar_t *)buffer, (wchar_t *)text, ll);
+#else // MAC_OS & other nix systems
+	int32 len = vswprintf((wchar_t *)buffer, FORMAT_STRING_MAX_LEN, (wchar_t *)text, ll);
+#endif
+
+	if(len < 0 || len > FORMAT_STRING_MAX_LEN)
+	{
+		Logger::Error("[FormatVL16] len = %d, str = %s", len,  WStringToString(WideString(buffer, len)).c_str());
+
+		formatString16Position += FORMAT_STRING_MAX_LEN;
+	}
+	else
+	{
+		formatString16Position += (len + 1);
+	}
+
+	return buffer;
 }
 }; // end of namespace Log

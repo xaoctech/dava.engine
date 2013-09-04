@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #include "Particles/ParticleLayer.h"
 #include "Particles/ParticleEmitter.h"
 #include "Utils/StringFormat.h"
@@ -20,6 +34,7 @@
 #include "Render/Image.h"
 #include "Utils/Random.h"
 #include "FileSystem/FileSystem.h"
+#include "Scene3D/Components/LodComponent.h"
 
 namespace DAVA
 {
@@ -80,6 +95,7 @@ ParticleLayer::ParticleLayer()
 	layerTime = 0.0f;
 	loopLayerTime = 0.0f;
 	additive = true;
+	inheritPosition = true;
 	type = TYPE_PARTICLES;
     
     endTime = 100000000.0f;
@@ -88,18 +104,18 @@ ParticleLayer::ParticleLayer()
 	loopVariation = 0.0f;
 	loopEndTime = 0.0f;
 	currentLoopVariation = 0.0f;
-	currentDeltaVariation = 0.0f;
-
-	frameStart = 0;
-	frameEnd = 0;
+	currentDeltaVariation = 0.0f;	
 
 	frameOverLifeEnabled = false;
 	frameOverLifeFPS = 0;
+	randomFrameOnStart = false;
 
     isDisabled = false;
 	isLooped = false;
 
 	playbackSpeed = 1.0f;
+
+	activeLODS.resize(LodComponent::MAX_LOD_LAYERS, true);
 }
 
 ParticleLayer::~ParticleLayer()
@@ -207,8 +223,10 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	dstLayer->layerName = layerName;
 	dstLayer->alignToMotion = alignToMotion;
 	dstLayer->SetAdditive(additive);
+	dstLayer->SetInheritPosition(inheritPosition);
 	dstLayer->startTime = startTime;
 	dstLayer->endTime = endTime;
+	
 	
 	dstLayer->isLooped = isLooped;
 	dstLayer->deltaTime = deltaTime;
@@ -218,18 +236,115 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	
 	dstLayer->type = type;
 	dstLayer->sprite = SafeRetain(sprite);
-	dstLayer->layerPivotPoint = layerPivotPoint;
-	
-	dstLayer->frameStart = frameStart;
-	dstLayer->frameEnd = frameEnd;
+	dstLayer->layerPivotPoint = layerPivotPoint;	
 
 	dstLayer->frameOverLifeEnabled = frameOverLifeEnabled;
 	dstLayer->frameOverLifeFPS = frameOverLifeFPS;
+	dstLayer->randomFrameOnStart = randomFrameOnStart;
 
     dstLayer->isDisabled = isDisabled;
 	dstLayer->spritePath = spritePath;
+	dstLayer->activeLODS = activeLODS;
 
 	return dstLayer;
+}
+
+bool ParticleLayer::IsLodActive(int32 lod)
+{
+	if (lod<activeLODS.size())
+		return activeLODS[lod];
+	
+	return false;
+}
+
+void ParticleLayer::SetLodActive(int32 lod, bool active)
+{
+	if (lod<activeLODS.size())
+		activeLODS[lod] = active;
+}
+
+template <class T> void UpdatePropertyLineKeys(PropertyLine<T> * line, float32 startTime, float32 translateTime, float32 endTime)
+{	
+	if (!line)	
+		return;	
+	Vector<typename PropertyLine<T>::PropertyKey> &keys = line->GetValues();
+	int32 size = keys.size();		
+	int32 i;
+	for (i=0; i<size; ++i)
+	{
+		keys[i].t += translateTime;
+		if (keys[i].t>endTime)		
+			break;		
+		
+	}
+	if (i==0)
+		i+=1; //keep at least 1
+	keys.erase(keys.begin()+i, keys.end());
+	if (keys.size() == 1)
+	{
+		keys[0].t = startTime;
+	}
+}
+
+template <class T> void UpdatePropertyLineOnLoad(PropertyLine<T> * line, float32 startTime, float32 endTime)
+{
+	if (!line)
+		return;
+	Vector<typename PropertyLine<T>::PropertyKey> &keys = line->GetValues();
+	int32 size = keys.size();		
+	int32 i;
+	/*drop keys before*/
+	for (i=0; i<size; ++i)
+	{
+		if (keys[i].t>=startTime)
+			break;
+	}
+	if (i!=0)
+	{
+		T v0 = line->GetValue(startTime);
+		keys.erase(keys.begin(), keys.begin()+i);
+		typename PropertyLine<T>::PropertyKey key;
+		key.t = startTime;
+		key.value = v0;
+		keys.insert(keys.begin(), key);
+	}	
+	
+	/*drop keys after*/
+	size = keys.size();
+	for (i=0; i<size; i++)
+	{
+		if (keys[i].t>endTime)
+			break;
+	}
+	if (i!=size)
+	{
+		T v1 = line->GetValue(endTime);
+		keys.erase(keys.begin()+i, keys.end());
+		typename PropertyLine<T>::PropertyKey key;
+		key.t = endTime;
+		key.value = v1;
+		keys.push_back(key);
+	}
+}
+
+void ParticleLayer::UpdateLayerTime(float32 startTime, float32 endTime)
+{
+	float32 translateTime = startTime-this->startTime;
+	this->startTime = startTime;
+	this->endTime = endTime;
+	/*validate all time depended property lines*/	
+	UpdatePropertyLineKeys(life.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(lifeVariation.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(number.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(numberVariation.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(size.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(sizeVariation.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(velocity.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(velocityVariation.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(spin.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(spinVariation.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(angle.Get(), startTime, translateTime, endTime);
+	UpdatePropertyLineKeys(angleVariation.Get(), startTime, translateTime, endTime);
 }
 
 ParticleEmitter* ParticleLayer::GetEmitter() const
@@ -424,7 +539,7 @@ void ParticleLayer::RestartLayerIfNeed()
 	}
 }
 
-void ParticleLayer::Update(float32 timeElapsed)
+void ParticleLayer::Update(float32 timeElapsed, bool generateNewParticles)
 {
 	// increment timer, take the playbackSpeed into account.
 	timeElapsed *= playbackSpeed;
@@ -477,11 +592,15 @@ void ParticleLayer::Update(float32 timeElapsed)
 				!emitter->IsPaused() && !useLoopStop)
 			{
 				float32 newParticles = 0.0f;
-				if (number)
-					newParticles += timeElapsed * number->GetValue(layerTime);
-				if (numberVariation)
-					newParticles += GetRandomFactor() * timeElapsed * numberVariation->GetValue(layerTime);
-				//newParticles *= emitter->GetCurrentNumberScale();
+				if (generateNewParticles)
+				{
+					if (number)
+						newParticles += timeElapsed * number->GetValue(layerTime);
+					if (numberVariation)
+						newParticles += GetRandomFactor() * timeElapsed * numberVariation->GetValue(layerTime);
+					//newParticles *= emitter->GetCurrentNumberScale();
+				}				
+				
 				particlesToGenerate += newParticles;
 
 				while(particlesToGenerate >= 1.0f)
@@ -510,8 +629,12 @@ void ParticleLayer::Update(float32 timeElapsed)
 			{
 				if(!head)
 				{
-					GenerateSingleParticle();
-					needUpdate = false;
+					if (generateNewParticles)
+					{
+						GenerateSingleParticle();
+						needUpdate = false;
+					}
+					
 				}
 			}
             if(head && needUpdate)
@@ -525,7 +648,8 @@ void ParticleLayer::Update(float32 timeElapsed)
 					if ((layerTime >= startTime) && (layerTime < (endTime + currentLoopVariation)) &&
 						!emitter->IsPaused() && !useLoopStop)
 					{
-						GenerateSingleParticle();
+						if (generateNewParticles)
+							GenerateSingleParticle();
 					}
 				}
 				else
@@ -619,6 +743,11 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 	//particle->position = emitter->GetPosition();	
 	// parameters should be prepared inside prepare emitter parameters
 	emitter->PrepareEmitterParameters(particle, vel, emitIndex);
+	if (this->emitter&&!inheritPosition) //just generate at correct position
+	{		
+		particle->position += emitter->GetPosition();
+	}
+
 	//particle->angle += alignToMotion;
 	if (angle)
 		particle->angle += DegToRad(angle->GetValue(layerTime));
@@ -691,7 +820,11 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 		particle->AddForce(toAddForceValue, toAddForceDirection, toAddForceOverlife, toAddForceOvelifeEnabled);
 	}
     
-	particle->frame = frameStart + (int32)(randCoeff * (float32)(frameEnd - frameStart));
+	particle->frame = 0;
+	if (randomFrameOnStart&&sprite)
+	{
+		particle->frame =  (int32)(randCoeff * (float32)(this->sprite->GetFrameCount()));
+	}	
 	
 	// process it to fill first life values
 	ProcessParticle(particle);
@@ -732,7 +865,8 @@ void ParticleLayer::ProcessParticle(Particle * particle)
 		if (timeElapsed > (1 / frameOverLifeFPS))
 		{
 			particle->frame ++;
-			if (particle->frame >= this->sprite->GetFrameCount())
+			// Spright might not be loaded (see please DF-1661).
+			if (!this->sprite || particle->frame >= this->sprite->GetFrameCount())
 			{
 				particle->frame = 0;
 			}
@@ -749,6 +883,11 @@ void ParticleLayer::ProcessParticle(Particle * particle)
 			particle->UpdateForceOverlife(i, forces[i]->GetForceOverlife()->GetValue(t));
 		}
 	}
+}
+
+void ParticleLayer::PrepareRenderData(Camera * camera)
+{
+
 }
 
 void ParticleLayer::Draw(Camera * camera)
@@ -790,7 +929,7 @@ void ParticleLayer::Draw(Camera * camera)
 }
 
 
-void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
+void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * node)
 {
 // 	PropertyLine<float32> * life;				// in seconds
 // 	PropertyLine<float32> * lifeVariation;		// variation part of life that added to particle life during generation of the particle
@@ -824,25 +963,25 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 	
 	
 	type = TYPE_PARTICLES;
-	YamlNode * typeNode = node->Get("layerType");
+	const YamlNode * typeNode = node->Get("layerType");
 	if (typeNode)
 	{
 		type = StringToLayerType(typeNode->AsString(), TYPE_PARTICLES);
 	}
 
-	YamlNode * nameNode = node->Get("name");
+	const YamlNode * nameNode = node->Get("name");
 	if (nameNode)
 	{
 		layerName = nameNode->AsString();
 	}
 
-	YamlNode * pivotPointNode = node->Get("pivotPoint");
+	const YamlNode * pivotPointNode = node->Get("pivotPoint");
 	if(pivotPointNode)
 	{
 		layerPivotPoint = pivotPointNode->AsPoint();
 	}
 
-	YamlNode * spriteNode = node->Get("sprite");
+	const YamlNode * spriteNode = node->Get("sprite");
 	if (spriteNode && !spriteNode->AsString().empty())
 	{
 		// Store the absolute path to sprite.
@@ -852,18 +991,32 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 		SetSprite(_sprite);
         SafeRelease(_sprite);
 	}
+	const YamlNode *lodsNode = node->Get("activeLODS");
+	if (lodsNode)
+	{
+		const Vector<YamlNode*> & vec = lodsNode->AsVector();
+		for (uint32 i=0; i<(uint32)vec.size(); ++i)
+			SetLodActive(i, (bool)vec[i]->AsInt()); //as AddToArray has no override for bool, flags are stored as int
+	}
+
 
 	colorOverLife = PropertyLineYamlReader::CreateColorPropertyLineFromYamlNode(node, "colorOverLife");
 	colorRandom = PropertyLineYamlReader::CreateColorPropertyLineFromYamlNode(node, "colorRandom");
 	alphaOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "alphaOverLife");
 	
-	YamlNode* frameOverLifeEnabledNode = node->Get("frameOverLifeEnabled");
+	const YamlNode* frameOverLifeEnabledNode = node->Get("frameOverLifeEnabled");
 	if (frameOverLifeEnabledNode)
 	{
 		frameOverLifeEnabled = frameOverLifeEnabledNode->AsBool();
 	}
 
-	YamlNode* frameOverLifeFPSNode = node->Get("frameOverLifeFPS");
+	const YamlNode* randomFrameOnStartNode = node->Get("randomFrameOnStart");
+	if (randomFrameOnStartNode)
+	{
+		randomFrameOnStart = randomFrameOnStartNode->AsBool();
+	}
+
+	const YamlNode* frameOverLifeFPSNode = node->Get("frameOverLifeFPS");
 	if (frameOverLifeFPSNode)
 	{
 		frameOverLifeFPS = frameOverLifeFPSNode->AsFloat();
@@ -907,7 +1060,7 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 	angleVariation = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "angleVariation");
 	
 	int32 forceCount = 0;
-	YamlNode * forceCountNode = node->Get("forceCount");
+	const YamlNode * forceCountNode = node->Get("forceCount");
 	if (forceCountNode)
 		forceCount = forceCountNode->AsInt();
 
@@ -931,7 +1084,7 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 	motionRandomOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "motionRandomOverLife");	
 
 
-	YamlNode * blend = node->Get("blend");
+	const YamlNode * blend = node->Get("blend");
 	if (blend)
 	{
 		if (blend->AsString() == "alpha")
@@ -940,17 +1093,17 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 			additive = true;
 	}
 
-	YamlNode * alignToMotionNode = node->Get("alignToMotion");
+	const YamlNode * alignToMotionNode = node->Get("alignToMotion");
 	if (alignToMotionNode)
 		alignToMotion = DegToRad(alignToMotionNode->AsFloat());
 
 	startTime = 0.0f;
 	endTime = 100000000.0f;
-	YamlNode * startTimeNode = node->Get("startTime");
+	const YamlNode * startTimeNode = node->Get("startTime");
 	if (startTimeNode)
 		startTime = startTimeNode->AsFloat();
 
-	YamlNode * endTimeNode = node->Get("endTime");
+	const YamlNode * endTimeNode = node->Get("endTime");
 	if (endTimeNode)
 		endTime = endTimeNode->AsFloat();
 		
@@ -959,49 +1112,54 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, YamlNode * node)
 	deltaVariation = 0.0f;
 	loopVariation = 0.0f;
 	
-	YamlNode * isLoopedNode = node->Get("isLooped");
+	const YamlNode * isLoopedNode = node->Get("isLooped");
 	if (isLoopedNode)
 		isLooped = isLoopedNode->AsBool();
 		
-	YamlNode * deltaTimeNode = node->Get("deltaTime");
+	const YamlNode * deltaTimeNode = node->Get("deltaTime");
 	if (deltaTimeNode)
 		deltaTime = deltaTimeNode->AsFloat();
 		
-	YamlNode * deltaVariationNode = node->Get("deltaVariation");
+	const YamlNode * deltaVariationNode = node->Get("deltaVariation");
 	if (deltaVariationNode)
 		deltaVariation = deltaVariationNode->AsFloat();
 		
-	YamlNode * loopVariationNode = node->Get("loopVariation");
+	const YamlNode * loopVariationNode = node->Get("loopVariation");
 	if (loopVariationNode)
 		loopVariation = loopVariationNode->AsFloat();
 		
-	YamlNode * loopEndTimeNode = node->Get("loopEndTime");
+	const YamlNode * loopEndTimeNode = node->Get("loopEndTime");
 	if (loopEndTimeNode)
-		loopEndTime = loopEndTimeNode->AsFloat();
-	
-	frameStart = 0;
-	frameEnd = 0;
+		loopEndTime = loopEndTimeNode->AsFloat();			
 
-	YamlNode * frameNode = node->Get("frame");
-	if (frameNode)
-	{
-		if (frameNode->GetType() == YamlNode::TYPE_STRING)
-			frameStart = frameEnd = frameNode->AsInt();
-		else if (frameNode->GetType() == YamlNode::TYPE_ARRAY)
-		{
-			frameStart = frameNode->Get(0)->AsInt();
-			frameEnd = frameNode->Get(1)->AsInt();
-		}
-	}
-
-	YamlNode * isDisabledNode = node->Get("isDisabled");
+	const YamlNode * isDisabledNode = node->Get("isDisabled");
 	if (isDisabledNode)
 	{
 		isDisabled = isDisabledNode->AsBool();
 	}
 
+	/*validate all time depended property lines*/	
+	UpdatePropertyLineOnLoad(life.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(lifeVariation.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(number.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(numberVariation.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(size.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(sizeVariation.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(velocity.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(velocityVariation.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(spin.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(spinVariation.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(angle.Get(), startTime, endTime);
+	UpdatePropertyLineOnLoad(angleVariation.Get(), startTime, endTime);
+
+	const YamlNode * inheritPositionNode = node->Get("inheritPosition");
+	if (inheritPositionNode)
+	{
+		inheritPosition = inheritPositionNode->AsBool();
+	}
+
 	// Load the Inner Emitter parameters.
-	YamlNode * innerEmitterPathNode = node->Get("innerEmitterPath");
+	const YamlNode * innerEmitterPathNode = node->Get("innerEmitterPath");
 	if (innerEmitterPathNode)
 	{
 		CreateInnerEmitter();
@@ -1072,6 +1230,7 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
     PropertyLineYamlWriter::WriteColorPropertyLineToYamlNode(layerNode, "colorOverLife", this->colorOverLife);
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "frameOverLifeEnabled", this->frameOverLifeEnabled);
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "frameOverLifeFPS", this->frameOverLifeFPS);
+	PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "randomFrameOnStart", this->randomFrameOnStart);
 
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "alignToMotion", this->alignToMotion);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "blend", this->additive ? "add" : "alpha");
@@ -1086,6 +1245,13 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "loopEndTime", this->loopEndTime);
 
 	PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "isDisabled", this->isDisabled);
+
+	layerNode->Set("inheritPosition", inheritPosition);	
+
+	YamlNode *lodsNode = new YamlNode(YamlNode::TYPE_ARRAY);
+	for (int32 i =0; i<LodComponent::MAX_LOD_LAYERS; i++)
+		lodsNode->AddValueToArray((int32)activeLODS[i]); //as for now AddValueToArray has no bool type - force it to int
+	layerNode->SetNodeToMap("activeLODS", lodsNode);
 
 	if (innerEmitter)
 	{
@@ -1151,6 +1317,11 @@ void ParticleLayer::UpdateFrameTimeline()
 void ParticleLayer::SetAdditive(bool additive)
 {
 	this->additive = additive;
+}
+
+void ParticleLayer::SetInheritPosition(bool inherit)
+{
+	inheritPosition = inherit;
 }
 
 void ParticleLayer::AddForce(ParticleForce* force)

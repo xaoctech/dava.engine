@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #include "Render/TextureDescriptor.h"
 #include "FileSystem/Logger.h"
 #include "FileSystem/File.h"
@@ -63,6 +77,9 @@ TextureDescriptor::~TextureDescriptor()
 
 TextureDescriptor *TextureDescriptor::CreateFromFile(const FilePath &filePathname)
 {
+	if(filePathname.IsEmpty() || filePathname.GetType() == FilePath::PATH_IN_MEMORY)
+		return NULL;
+
     FilePath descriptorPathname = GetDescriptorPathname(filePathname);
     TextureDescriptor *descriptor = new TextureDescriptor();
     bool loaded = descriptor->Load(descriptorPathname);
@@ -335,19 +352,50 @@ void TextureDescriptor::LoadVersion5(int32 signature, DAVA::File *file)
 	{
         int8 format;
         file->Read(&format, sizeof(format));
-        compression[GPU_POWERVR_IOS].format = (PixelFormat)format;
-        
-        file->Read(&compression[GPU_POWERVR_IOS].compressToWidth, sizeof(compression[GPU_POWERVR_IOS].compressToWidth));
-        file->Read(&compression[GPU_POWERVR_IOS].compressToHeight, sizeof(compression[GPU_POWERVR_IOS].compressToHeight));
-        file->Read(&compression[GPU_POWERVR_IOS].sourceFileCrc, sizeof(compression[GPU_POWERVR_IOS].sourceFileCrc));
 
+		if(format == FORMAT_ETC1)
+		{
+			Logger::Warning("[TextureDescriptor::LoadVersion5] format for pvr was ETC1");
+
+			compression[GPU_POWERVR_IOS].Clear();
+
+			uint32 dummy32 = 0;
+
+			file->Read(&dummy32, sizeof(dummy32));
+			file->Read(&dummy32, sizeof(dummy32));
+			file->Read(&dummy32, sizeof(dummy32));
+		}
+		else
+		{
+			compression[GPU_POWERVR_IOS].format = (PixelFormat)format;
+
+			file->Read(&compression[GPU_POWERVR_IOS].compressToWidth, sizeof(compression[GPU_POWERVR_IOS].compressToWidth));
+			file->Read(&compression[GPU_POWERVR_IOS].compressToHeight, sizeof(compression[GPU_POWERVR_IOS].compressToHeight));
+			file->Read(&compression[GPU_POWERVR_IOS].sourceFileCrc, sizeof(compression[GPU_POWERVR_IOS].sourceFileCrc));
+		}
 
         file->Read(&format, sizeof(format));
-        compression[GPU_TEGRA].format = (PixelFormat)format;
-        
-        file->Read(&compression[GPU_TEGRA].compressToWidth, sizeof(compression[GPU_TEGRA].compressToWidth));
-        file->Read(&compression[GPU_TEGRA].compressToHeight, sizeof(compression[GPU_TEGRA].compressToHeight));
-        file->Read(&compression[GPU_TEGRA].sourceFileCrc, sizeof(compression[GPU_TEGRA].sourceFileCrc));
+
+		if(format == FORMAT_ATC_RGB || format == FORMAT_ATC_RGBA_EXPLICIT_ALPHA || format == FORMAT_ATC_RGBA_INTERPOLATED_ALPHA)
+		{
+			Logger::Warning("[TextureDescriptor::LoadVersion5] format for dds was ATC_...");
+
+			compression[GPU_TEGRA].Clear();
+
+			uint32 dummy32 = 0;
+
+			file->Read(&dummy32, sizeof(dummy32));
+			file->Read(&dummy32, sizeof(dummy32));
+			file->Read(&dummy32, sizeof(dummy32));
+		}
+		else
+		{
+			compression[GPU_TEGRA].format = (PixelFormat)format;
+
+			file->Read(&compression[GPU_TEGRA].compressToWidth, sizeof(compression[GPU_TEGRA].compressToWidth));
+			file->Read(&compression[GPU_TEGRA].compressToHeight, sizeof(compression[GPU_TEGRA].compressToHeight));
+			file->Read(&compression[GPU_TEGRA].sourceFileCrc, sizeof(compression[GPU_TEGRA].sourceFileCrc));
+		}
 	}
 }
 

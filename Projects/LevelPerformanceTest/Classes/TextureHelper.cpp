@@ -1,3 +1,32 @@
+/*==================================================================================
+    Copyright (c) 2008, binaryzebra
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
+
 #include "TextureHelper.h"
 
 #include "Render/LibPVRHelper.h"
@@ -27,25 +56,25 @@ uint32 TextureHelper::EnumerateSceneTextures(DAVA::Scene* scene)
 	{
 		Texture *t = it->second;
 		//We need real info about textures size. In Editor on desktop pvr textures are decompressed to RGBA8888, so they have not real size.
-		FilePath imageFileName = TextureDescriptor::GetPathnameForFormat(t->GetPathname(), t->GetSourceFileFormat());
-		switch (t->GetSourceFileFormat())
-		{
-		case DAVA::PVR_FILE:
-			{
-				sceneTextureMemory += LibPVRHelper::GetDataLength(imageFileName);
-				break;
-			}
-
-		case DAVA::DXT_FILE:
-			{
-				sceneTextureMemory += (int32)LibDxtHelper::GetDataSize(imageFileName);
-				break;
-			}
-
-		default:
-			sceneTextureMemory += t->GetDataSize();
-			break;
-		}
+        TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(t->GetPathname());
+        if(descriptor)
+        {
+            FilePath imageFileName = GPUFamilyDescriptor::CreatePathnameForGPU(descriptor, (eGPUFamily)descriptor->exportedAsGpuFamily);
+            if(imageFileName.IsEqualToExtension(".pvr"))
+            {
+                sceneTextureMemory += LibPVRHelper::GetDataSize(imageFileName);
+            }
+            else if(imageFileName.IsEqualToExtension(".dds"))
+            {
+                sceneTextureMemory += LibDxtHelper::GetDataSize(imageFileName);
+            }
+            else
+            {
+                sceneTextureMemory += t->GetDataSize();
+            }
+            
+            descriptor->Release();
+        }
 	}
 
 	return sceneTextureMemory;
@@ -61,10 +90,21 @@ DAVA::uint32 TextureHelper::EnumerateSceneTexturesFileSize(DAVA::Scene* scene)
 	{
 		Texture *t = it->second;
 
-		FilePath imageFileName = TextureDescriptor::GetPathnameForFormat(t->GetPathname(), t->GetSourceFileFormat());
-		File * textureFile = File::Create(imageFileName, File::OPEN | File::READ);
-		sceneTextureFilesSize += textureFile->GetSize();
-		SafeRelease(textureFile);
+        TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(t->GetPathname());
+        if(descriptor)
+        {
+            FilePath imageFileName = GPUFamilyDescriptor::CreatePathnameForGPU(descriptor, (eGPUFamily)descriptor->exportedAsGpuFamily);
+
+            File * textureFile = File::Create(imageFileName, File::OPEN | File::READ);
+            if(textureFile)
+            {
+                sceneTextureFilesSize += textureFile->GetSize();
+                
+                textureFile->Release();
+            }
+            
+            descriptor->Release();
+        }
 	}
 
 	return sceneTextureFilesSize;

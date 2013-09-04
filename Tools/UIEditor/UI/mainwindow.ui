@@ -35,7 +35,7 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QSlider" name="scaleSlider">
+         <widget class="ScaleSlider" name="scaleSlider">
           <property name="minimum">
            <number>1</number>
           </property>
@@ -57,6 +57,9 @@
          <widget class="QComboBox" name="scaleCombo">
           <property name="editable">
            <bool>true</bool>
+          </property>
+          <property name="maxVisibleItems">
+           <number>12</number>
           </property>
          </widget>
         </item>
@@ -190,9 +193,9 @@
      <enum>Qt::ActionsContextMenu</enum>
     </property>
     <property name="title">
-     <string> Help</string>
+     <string>Help</string>
     </property>
-    <addaction name="actionHelpContents"/>
+    <addaction name="actionHelp"/>
    </widget>
    <widget class="QMenu" name="menu">
     <property name="title">
@@ -377,9 +380,13 @@
     <enum>Qt::ApplicationShortcut</enum>
    </property>
   </action>
-  <action name="actionHelpContents">
+  <action name="actionHelp">
+   <property name="icon">
+    <iconset resource="../Data/icons.qrc">
+     <normaloff>:/Icons/help.png</normaloff>:/Icons/help.png</iconset>
+   </property>
    <property name="text">
-    <string>Help contents</string>
+    <string>UI Editor Help</string>
    </property>
    <property name="shortcut">
     <string>F1</string>
@@ -520,6 +527,11 @@
    <extends>QWidget</extends>
    <header>propertygridcontainerwidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ScaleSlider</class>
+   <extends>QSlider</extends>
+   <header>ScaleSlider.h</header>
   </customwidget>
  </customwidgets>
  <resources>

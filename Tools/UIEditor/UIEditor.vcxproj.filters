@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Form Files">
@@ -57,15 +57,6 @@
     </Filter>
     <Filter Include="Form Files\PropertyGridWidgets">
       <UniqueIdentifier>{b3f4a243-35ab-40b2-9d99-c25873885539}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Tools">
-      <UniqueIdentifier>{96891271-63f5-4a83-8bd8-43ca9ad6dc52}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Tools\TextureCompression">
-      <UniqueIdentifier>{498b966c-c59c-4b23-99e8-5379c3d3ba3b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Tools\TexturePacker">
-      <UniqueIdentifier>{c517ea7e-2fa7-46c7-8860-952172c82f17}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -585,38 +576,11 @@
     <ClCompile Include="Classes\UI\Dialogs\importdialog.cpp">
       <Filter>Sources\UI\Dialogs</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Tools\TextureCompression\DXTConverter.cpp">
-      <Filter>Sources\Tools\TextureCompression</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Tools\TextureCompression\PVRConverter.cpp">
-      <Filter>Sources\Tools\TextureCompression</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Tools\TexturePacker\CommandLineParser.cpp">
-      <Filter>Sources\Tools\TexturePacker</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Tools\TexturePacker\DefinitionFile.cpp">
-      <Filter>Sources\Tools\TexturePacker</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Tools\TexturePacker\ImagePacker.cpp">
-      <Filter>Sources\Tools\TexturePacker</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Tools\TexturePacker\PngImage.cpp">
-      <Filter>Sources\Tools\TexturePacker</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Tools\TexturePacker\ResourcePacker2D.cpp">
-      <Filter>Sources\Tools\TexturePacker</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Tools\TexturePacker\TexturePacker.cpp">
-      <Filter>Sources\Tools\TexturePacker</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Metadata\PropertyNames.cpp">
       <Filter>Sources\Metadata</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Helpers\ListPropertyGridWidgetHelper.cpp">
       <Filter>Sources\Helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Tools\TexturePacker\FramePathHelper.cpp">
-      <Filter>Sources\Tools\TexturePacker</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Metadata\UIScrollViewMetadata.cpp">
       <Filter>Sources\Metadata</Filter>
@@ -628,6 +592,15 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Metadata\UIScrollViewMetadata_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\ChangeAlignPropertyCommand.cpp">
+      <Filter>Sources\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\ScaleSlider.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\ScaleSlider_moc.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -962,30 +935,6 @@
     <ClInclude Include="Classes\UI\Dialogs\importdialog.h">
       <Filter>Sources\UI\Dialogs</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Tools\TextureCompression\DXTConverter.h">
-      <Filter>Sources\Tools\TextureCompression</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Tools\TextureCompression\PVRConverter.h">
-      <Filter>Sources\Tools\TextureCompression</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Tools\TexturePacker\CommandLineParser.h">
-      <Filter>Sources\Tools\TexturePacker</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Tools\TexturePacker\DefinitionFile.h">
-      <Filter>Sources\Tools\TexturePacker</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Tools\TexturePacker\ImagePacker.h">
-      <Filter>Sources\Tools\TexturePacker</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Tools\TexturePacker\PngImage.h">
-      <Filter>Sources\Tools\TexturePacker</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Tools\TexturePacker\ResourcePacker2D.h">
-      <Filter>Sources\Tools\TexturePacker</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Tools\TexturePacker\TexturePacker.h">
-      <Filter>Sources\Tools\TexturePacker</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Helpers\ListPropertyGridWidgetHelper.h">
       <Filter>Sources\Helpers</Filter>
     </ClInclude>
@@ -1000,6 +949,12 @@
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_scrollviewpropertygridwidget.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\ChangeAlignPropertyCommand.h">
+      <Filter>Sources\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ScaleSlider.h">
+      <Filter>Sources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

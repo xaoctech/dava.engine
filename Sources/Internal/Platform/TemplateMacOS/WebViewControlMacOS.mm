@@ -141,7 +141,7 @@ using namespace DAVA;
 
 WebViewControl::WebViewControl()
 {
-	NSRect emptyRect = NSMakeRect(0.0f, 0.0f, 0.0f, 0.0f);
+	NSRect emptyRect = NSMakeRect(0.0f, 0.0f, 0.0f, 0.0f);	
 	webViewPtr = [[WebView alloc] initWithFrame:emptyRect frameName:nil groupName:nil];
 
 	WebView* localWebView = (WebView*)webViewPtr;
@@ -214,3 +214,8 @@ void WebViewControl::SetVisible(bool isVisible, bool hierarchic)
 	[(WebView*)webViewPtr setHidden:!isVisible];
 }
 
+void WebViewControl::SetBackgroundTransparency(bool enabled)
+{
+	WebView* webView = (WebView*)webViewPtr;
+	[webView setDrawsBackground:(enabled ? NO : YES)];
+}

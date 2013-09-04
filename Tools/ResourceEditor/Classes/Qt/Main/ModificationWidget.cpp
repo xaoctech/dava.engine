@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 
 #include "ModificationWidget.h"
 #include "ui_ModificationWidget.h"
@@ -62,83 +76,96 @@ void ModificationWidget::ReloadValues()
 {
 	if(NULL != curScene)
 	{
-		ui->xAxisModify->clear();
-		ui->xAxisModify->setEnabled(false);
-		ui->yAxisModify->clear();
-		ui->yAxisModify->setEnabled(false);
-		ui->zAxisModify->clear();
-		ui->zAxisModify->setEnabled(false);
-
-		switch (modifMode)
+		const EntityGroup* selection = curScene->selectionSystem->GetSelection();
+		if(NULL != selection && selection->Size() > 0 &&
+			(modifMode == ST_MODIF_MOVE || modifMode == ST_MODIF_ROTATE || modifMode == ST_MODIF_SCALE))
 		{
-		case ST_MODIF_MOVE:
-			ReloadModeValues();
-			break;
-		case ST_MODIF_ROTATE:
-			ReloadRotateValues();
-			break;
-		case ST_MODIF_SCALE:
-			ReloadScaleValues();
-			break;
-		default:
-			break;
-		}
-	}
-}
+			ui->xAxisModify->setEnabled(true);
+			ui->yAxisModify->setEnabled(true);
+			ui->zAxisModify->setEnabled(true);
 
-void ModificationWidget::ReloadModeValues()
-{
-	const EntityGroup* selection = curScene->selectionSystem->GetSelection();
-
-	if(NULL != selection && selection->Size() > 0)
-	{
-		ui->xAxisModify->setEnabled(true);
-		ui->yAxisModify->setEnabled(true);
-		ui->zAxisModify->setEnabled(true);
-
-		if(selection->Size() > 1)
-		{
-			groupMode = true;
-
-			ui->xAxisModify->clear();
-			ui->yAxisModify->clear();
-			ui->zAxisModify->clear();
-		}
-		else
-		{
-			groupMode = false;
-
-			if(pivotMode == PivotRelative)
+			if(selection->Size() > 1)
 			{
-				ui->xAxisModify->setValue(0);
-				ui->yAxisModify->setValue(0);
-				ui->zAxisModify->setValue(0);
+				groupMode = true;
+
+				ui->xAxisModify->clear();
+				ui->yAxisModify->clear();
+				ui->zAxisModify->clear();
 			}
 			else
 			{
-				DAVA::Entity *singleEntity = selection->GetEntity(0);
-				if(NULL != singleEntity)
-				{
-					DAVA::Matrix4 localMatrix = singleEntity->GetLocalTransform();
-					DAVA::Vector3 translation = localMatrix.GetTranslationVector();
+				groupMode = false;
 
-					ui->xAxisModify->setValue(translation.x);
-					ui->yAxisModify->setValue(translation.y);
-					ui->zAxisModify->setValue(translation.z);
+				if(pivotMode == PivotRelative)
+				{
+					ui->xAxisModify->setValue(0);
+					ui->yAxisModify->setValue(0);
+					ui->zAxisModify->setValue(0);
+				}
+				else
+				{
+					DAVA::Entity *singleEntity = selection->GetEntity(0);
+					if(NULL != singleEntity)
+					{
+
+						DAVA::float32 x = 0;
+						DAVA::float32 y = 0;
+						DAVA::float32 z = 0;
+
+						DAVA::Matrix4 localMatrix = singleEntity->GetLocalTransform();
+						switch (modifMode)
+						{
+						case ST_MODIF_MOVE:
+							{
+								DAVA::Vector3 translation = localMatrix.GetTranslationVector();
+								x = translation.x;
+								y = translation.y;
+								z = translation.z;
+							}
+							break;
+						case ST_MODIF_ROTATE:
+							{
+								DAVA::Vector3 pos, scale, rotate;
+								if(localMatrix.Decomposition(pos, scale, rotate))
+								{
+									x = rotate.x;
+									y = rotate.y;
+									z = rotate.z;
+								}
+							}
+							break;
+						case ST_MODIF_SCALE:
+							{
+								DAVA::Vector3 pos, scale, rotate;
+								if(localMatrix.Decomposition(pos, scale, rotate))
+								{
+									x = scale.x;
+									y = scale.y;
+									z = scale.z;
+								}
+							}
+							break;
+						default:
+							break;
+						}
+
+						ui->xAxisModify->setValue(x);
+						ui->yAxisModify->setValue(y);
+						ui->zAxisModify->setValue(z);
+					}
 				}
 			}
 		}
+		else
+		{
+			ui->xAxisModify->clear();
+			ui->xAxisModify->setEnabled(false);
+			ui->yAxisModify->clear();
+			ui->yAxisModify->setEnabled(false);
+			ui->zAxisModify->clear();
+			ui->zAxisModify->setEnabled(false);
+		}
 	}
-}
-
-void ModificationWidget::ReloadRotateValues()
-{
-
-}
-
-void ModificationWidget::ReloadScaleValues()
-{
-
 }
 
 void ModificationWidget::ApplyValues(ST_Axis axis)
