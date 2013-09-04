@@ -157,7 +157,7 @@ void QtPropertyEditor::ItemClicked(const QModelIndex &index)
 	QStandardItem *item = curModel->itemFromIndex(index);
 	if(NULL != item && item->isEditable() && item->isEnabled())
 	{
-		edit(index);
+		edit(index, QAbstractItemView::DoubleClicked, NULL);
 	}
 }
 

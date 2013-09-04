@@ -33,8 +33,6 @@
 
 namespace DAVA
 {
-    
-REGISTER_CLASS(LodComponent)
 
 const float32 LodComponent::INVALID_DISTANCE = -1.f;
 const float32 LodComponent::MIN_LOD_DISTANCE = 0.f;
@@ -55,10 +53,22 @@ void LodComponent::LodDistance::SetNearDistance(const float32 &newDistance)
 	nearDistanceSq = newDistance * newDistance;
 }
 
+float32 LodComponent::LodDistance::GetNearDistance() const
+{
+	return sqrtf(nearDistanceSq);
+}
+
+
 void LodComponent::LodDistance::SetFarDistance(const float32 &newDistance)
 {
 	farDistanceSq = newDistance * newDistance;
 }
+
+float32 LodComponent::LodDistance::GetFarDistance() const
+{
+	return sqrtf(farDistanceSq);
+}
+
 
 Component * LodComponent::Clone(Entity * toEntity)
 {

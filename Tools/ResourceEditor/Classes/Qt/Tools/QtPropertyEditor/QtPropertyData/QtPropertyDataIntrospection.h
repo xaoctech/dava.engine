@@ -28,27 +28,37 @@
 
 
 
-#ifndef __QT_PROPERTY_DATA_INTRO_COLLECTION_H__
-#define __QT_PROPERTY_DATA_INTRO_COLLECTION_H__
+#ifndef __QT_PROPERTY_DATA_INTROSPECTION_H__
+#define __QT_PROPERTY_DATA_INTROSPECTION_H__
 
 #include "Base/Introspection.h"
 #include "../QtPropertyData.h"
 
-class QtPropertyDataIntroCollection : public QtPropertyData
+#include <QMap>
+
+class QtPropertyDataDavaVariant;
+
+class QtPropertyDataIntrospection : public QtPropertyData
 {
+	Q_OBJECT
 public:
-	QtPropertyDataIntroCollection(void *_object, const DAVA::InspColl *_collection, int hasAllFlags = DAVA::I_NONE);
-	virtual ~QtPropertyDataIntroCollection();
+	QtPropertyDataIntrospection(void *object, const DAVA::InspInfo *info, int hasAllFlags = DAVA::I_NONE);
+	virtual ~QtPropertyDataIntrospection();
 
 protected:
 	void *object;
-	const DAVA::InspColl *collection;
+	const DAVA::InspInfo *info;
+	QMap<QtPropertyDataDavaVariant*, const DAVA::InspMember *> childVariantMembers;
 
-	//QMap<QtPropertyDataDavaVariant*, int> childVariantIndexes;
+	void AddMember(const DAVA::InspMember *member, int hasAllFlags);
 
 	virtual QVariant GetValueInternal();
-	//virtual void ChildChanged(const QString &key, QtPropertyData *data);
-	//virtual void ChildNeedUpdate();
+	virtual void ChildNeedUpdate();
+
+	DAVA_DEPRECATED(void CreateCustomButtonsForRenderObject());
+
+protected slots:
+	void BakeTransform();
 };
 
-#endif // __QT_PROPERTY_DATA_INTRO_COLLECTION_H__
+#endif // __QT_PROPERTY_DATA_INTROSPECTION_H__

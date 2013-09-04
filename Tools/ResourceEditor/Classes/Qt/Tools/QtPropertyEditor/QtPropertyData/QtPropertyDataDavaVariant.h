@@ -76,6 +76,7 @@ protected:
 protected slots:
 	void ColorOWPressed();
 	void FilePathOWPressed();
+	//void ComboIndexChanged(int index);
 
 private:
 	struct AllowedValue

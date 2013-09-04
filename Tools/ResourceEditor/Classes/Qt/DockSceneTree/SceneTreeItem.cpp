@@ -469,16 +469,16 @@ void SceneTreeItemParticleLayer::DoSync(QStandardItem *rootItem, DAVA::ParticleL
 		size_t itemsCount = layer->forces.size();
 		QList<QStandardItem*> items;
 
-		int innerEmiterItem = 0;
-		if (layer->type == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
-		{
-			items.push_back(new SceneTreeItemParticleInnerEmmiter(layer, layer->GetInnerEmitter()));		
-			innerEmiterItem=1;
-		}
+		int innerEmiterItem = 0;		
 		// add all items to the head
 		for(size_t i = 0; i < itemsCount; ++i)
 		{
 			items.push_back(new SceneTreeItemParticleForce(layer, layer->forces[i]));
+		}
+		if (layer->type == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
+		{
+			items.push_back(new SceneTreeItemParticleInnerEmmiter(layer, layer->GetInnerEmitter()));		
+			innerEmiterItem=1;
 		}
 
 		if(items.size() > 0)
