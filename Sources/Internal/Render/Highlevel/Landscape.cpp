@@ -37,11 +37,56 @@ namespace DAVA
 {
 REGISTER_CLASS(Landscape);
 
+static FastName TILEMASK_TEXTURE_PROPS_NAMES[] =
+{
+	"colorTexture",
+	"tileMask",
+	"tileTexture0",
+	"tileTexture1",
+	"tileTexture2",
+	"tileTexture3",
+	""
+};
+
+static FastName TILEMASK_TILING_PROPS_NAMES[] =
+{
+	"",
+	"",
+	"texture0Tiling",
+	"texture1Tiling",
+	"texture2Tiling",
+	"texture3Tiling",
+	""
+};
+
+static FastName TILEMASK_COLOR_PROPS_NAMES[] =
+{
+	"",
+	"",
+	"tileColor0",
+	"tileColor1",
+	"tileColor2",
+	"tileColor3",
+	""
+};
+	
+static FastName FULL_TILED_TEXTURE_PROPS_NAMES[] =
+{
+	"sampler2d",
+	"tileMask",
+	"tileTexture0",
+	"tileTexture1",
+	"tileTexture2",
+	"tileTexture3",
+	""
+};
+
+	
 //#define DRAW_OLD_STYLE
 // const float32 LandscapeNode::TEXTURE_TILE_FULL_SIZE = 2048;
 
 Landscape::Landscape()
-    : indices(0)
+    : indices(0), currentMaterial(NULL)
 {
     textureNames.resize(TEXTURE_COUNT);
     
@@ -486,6 +531,8 @@ void Landscape::MarkFrames(LandQuadTreeNode<LandscapeQuad> * currentNode, int32 
 void Landscape::SetTextureTiling(eTextureLevel level, const Vector2 & tiling)
 {
     textureTiling[level] = tiling;
+	
+	tileMaskMaterial->SetPropertyValue(TILEMASK_TILING_PROPS_NAMES[level], Shader::UT_FLOAT_VEC4, 1, &textureTiling[level]);
 }
     
 const Vector2 & Landscape::GetTextureTiling(eTextureLevel level)
@@ -496,6 +543,8 @@ const Vector2 & Landscape::GetTextureTiling(eTextureLevel level)
 void Landscape::SetTileColor(eTextureLevel level, const Color & color)
 {
     tileColor[level] = color;
+	
+	tileMaskMaterial->SetPropertyValue(TILEMASK_COLOR_PROPS_NAMES[level], Shader::UT_FLOAT_VEC4, 1, &tileColor[level]);
 }
 
 const Color & Landscape::GetTileColor(eTextureLevel level)
@@ -515,11 +564,20 @@ void Landscape::SetTexture(eTextureLevel level, const FilePath & textureName)
         textureNames[level] = textureName;
     }
     textures[level] = texture;
-    
+	    
     if(TEXTURE_TILE_FULL == level)
     {
         UpdateFullTiledTexture();
     }
+	
+	if(TEXTURE_TILE_FULL != level)
+	{
+		tileMaskMaterial->SetTexture(TILEMASK_TEXTURE_PROPS_NAMES[level], textures[level]);
+		if(TEXTURE_COLOR == level)
+		{
+			fullTiledMaterial->SetTexture(FULL_TILED_TEXTURE_PROPS_NAMES[level], textures[level]);
+		}
+	}
 }
     
 Texture * Landscape::CreateTexture(eTextureLevel level, const FilePath & textureName)
@@ -551,6 +609,15 @@ void Landscape::SetTexture(eTextureLevel level, Texture *texture)
             textureNames[level] = textures[level]->GetPathname();
         }
     }
+	
+	if(TEXTURE_TILE_FULL != level)
+	{
+		tileMaskMaterial->SetTexture(TILEMASK_TEXTURE_PROPS_NAMES[level], textures[level]);
+		if(TEXTURE_COLOR == level)
+		{
+			fullTiledMaterial->SetTexture(FULL_TILED_TEXTURE_PROPS_NAMES[level], textures[level]);
+		}
+	}
 }
 
     
@@ -967,46 +1034,15 @@ void Landscape::BindMaterial(int32 lodLayer, Camera* camera)
 		if(currentMaterial == tileMaskMaterial) return;
 		
 		currentMaterial = tileMaskMaterial;
-		
-		//TODO: set up textures once when they were changed
-		tileMaskMaterial->SetTexture("tileTexture0", textures[TEXTURE_TILE0]);
-		tileMaskMaterial->SetTexture("tileTexture1", textures[TEXTURE_TILE1]);
-		tileMaskMaterial->SetTexture("tileTexture2", textures[TEXTURE_TILE2]);
-		tileMaskMaterial->SetTexture("tileTexture3", textures[TEXTURE_TILE3]);
-		tileMaskMaterial->SetTexture("tileMask", textures[TEXTURE_TILE_MASK]);
-		tileMaskMaterial->SetTexture("colorTexture", textures[TEXTURE_COLOR]);
-		
-		//TODO: set up texture tilings once when they were changed
-		tileMaskMaterial->SetPropertyValue("texture0Tiling", Shader::UT_FLOAT_VEC2, 1, &textureTiling[TEXTURE_TILE0]);
-		tileMaskMaterial->SetPropertyValue("texture1Tiling", Shader::UT_FLOAT_VEC2, 1, &textureTiling[TEXTURE_TILE1]);
-		tileMaskMaterial->SetPropertyValue("texture2Tiling", Shader::UT_FLOAT_VEC2, 1, &textureTiling[TEXTURE_TILE2]);
-		tileMaskMaterial->SetPropertyValue("texture3Tiling", Shader::UT_FLOAT_VEC2, 1, &textureTiling[TEXTURE_TILE0]);
-
-		//TODO: set up tile colors once they were changed
-		tileMaskMaterial->SetPropertyValue("tileColor0", Shader::UT_FLOAT_VEC4, 1, &tileColor[TEXTURE_TILE0]);
-		tileMaskMaterial->SetPropertyValue("tileColor1", Shader::UT_FLOAT_VEC4, 1, &tileColor[TEXTURE_TILE1]);
-		tileMaskMaterial->SetPropertyValue("tileColor2", Shader::UT_FLOAT_VEC4, 1, &tileColor[TEXTURE_TILE2]);
-		tileMaskMaterial->SetPropertyValue("tileColor3", Shader::UT_FLOAT_VEC4, 1, &tileColor[TEXTURE_TILE3]);
-		
-		//TODO: set up fog parameters once they were changed
-		tileMaskMaterial->SetPropertyValue("fogColor", Shader::UT_FLOAT_VEC4, 1, &fogColor);
-		tileMaskMaterial->SetPropertyValue("fogDensity", Shader::UT_FLOAT, 1, &fogDensity);
-
-		tileMaskMaterial->SetPropertyValue("cameraPosition", Shader::UT_FLOAT_VEC3, 1, &cameraPos);
-		
     }
     else
     {		
 		if(currentMaterial == fullTiledMaterial) return;
 		
 		currentMaterial = fullTiledMaterial;
-		
-		//TODO: set up texture and fog parameters once they were changed
-		fullTiledMaterial->SetTexture("sampler2d", textures[TEXTURE_COLOR]);
-		fullTiledMaterial->SetPropertyValue("fogColor", Shader::UT_FLOAT_VEC4, 1, &fogColor);
-		fullTiledMaterial->SetPropertyValue("fogDensity", Shader::UT_FLOAT, 1, &fogDensity);
     }
 	
+	currentMaterial->SetPropertyValue("cameraPosition", Shader::UT_FLOAT_VEC3, 1, &cameraPos);
 	currentMaterial->BindMaterialTechnique("Landscape", camera);
     
     prevLodLayer = lodLayer;
@@ -1364,6 +1400,8 @@ void Landscape::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
                 textureTiling[k] = archive->GetByteArrayAsType(Format("tiling_%d", k), textureTiling[k]);
         }
     }
+	
+	SetupMaterialProperties();
 }
 
 const FilePath & Landscape::GetTextureName(DAVA::Landscape::eTextureLevel level)
@@ -1479,7 +1517,8 @@ Texture * Landscape::CreateFullTiledTexture()
     ftRenderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &ftVertexes.front());
     ftRenderData->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &ftTextureCoords.front());
 
-
+	SetupMaterialProperties();
+	
     //Draw landscape to texture
     Rect oldViewport = RenderManager::Instance()->GetViewport();
     
@@ -1548,6 +1587,7 @@ FilePath Landscape::SaveFullTiledTexture()
     
 void Landscape::UpdateFullTiledTexture()
 {
+	//TODO: WTF? this method is called during load phase when not all properties have been initialized potentially!
     if(textureNames[TEXTURE_TILE_FULL].IsEmpty())
     {
 		RenderManager::Instance()->LockNonMain();
@@ -1643,6 +1683,9 @@ bool Landscape::IsFogEnabled() const
 void Landscape::SetFogDensity(float32 _fogDensity)
 {
     fogDensity = _fogDensity;
+	
+	tileMaskMaterial->SetPropertyValue("fogDensity", Shader::UT_FLOAT, 1, &fogDensity);
+	fullTiledMaterial->SetPropertyValue("fogDensity", Shader::UT_FLOAT, 1, &fogDensity);
 }
 
 float32 Landscape::GetFogDensity() const
@@ -1653,6 +1696,9 @@ float32 Landscape::GetFogDensity() const
 void Landscape::SetFogColor(const Color & _fogColor)
 {
     fogColor = _fogColor;
+	
+	tileMaskMaterial->SetPropertyValue("fogColor", Shader::UT_FLOAT_VEC4, 1, &fogColor);
+	fullTiledMaterial->SetPropertyValue("fogColor", Shader::UT_FLOAT_VEC4, 1, &fogColor);
 }
 
 const Color & Landscape::GetFogColor() const
@@ -1691,9 +1737,39 @@ RenderObject * Landscape::Clone( RenderObject *newObject )
         newLandscape->textureTiling[k] = textureTiling[k];
         newLandscape->tileColor[k] = tileColor[k];
     }
+	
+	newLandscape->SetupMaterialProperties();
 
 	return newObject;
 }
 
-
+void Landscape::SetupMaterialProperties()
+{
+	tileMaskMaterial->SetTexture("tileTexture0", textures[TEXTURE_TILE0]);
+	tileMaskMaterial->SetTexture("tileTexture1", textures[TEXTURE_TILE1]);
+	tileMaskMaterial->SetTexture("tileTexture2", textures[TEXTURE_TILE2]);
+	tileMaskMaterial->SetTexture("tileTexture3", textures[TEXTURE_TILE3]);
+	tileMaskMaterial->SetTexture("tileMask", textures[TEXTURE_TILE_MASK]);
+	tileMaskMaterial->SetTexture("colorTexture", textures[TEXTURE_COLOR]);
+		
+	tileMaskMaterial->SetPropertyValue("texture0Tiling", Shader::UT_FLOAT_VEC2, 1, &textureTiling[TEXTURE_TILE0]);
+	tileMaskMaterial->SetPropertyValue("texture1Tiling", Shader::UT_FLOAT_VEC2, 1, &textureTiling[TEXTURE_TILE1]);
+	tileMaskMaterial->SetPropertyValue("texture2Tiling", Shader::UT_FLOAT_VEC2, 1, &textureTiling[TEXTURE_TILE2]);
+	tileMaskMaterial->SetPropertyValue("texture3Tiling", Shader::UT_FLOAT_VEC2, 1, &textureTiling[TEXTURE_TILE0]);
+		
+	tileMaskMaterial->SetPropertyValue("tileColor0", Shader::UT_FLOAT_VEC4, 1, &tileColor[TEXTURE_TILE0]);
+	tileMaskMaterial->SetPropertyValue("tileColor1", Shader::UT_FLOAT_VEC4, 1, &tileColor[TEXTURE_TILE1]);
+	tileMaskMaterial->SetPropertyValue("tileColor2", Shader::UT_FLOAT_VEC4, 1, &tileColor[TEXTURE_TILE2]);
+	tileMaskMaterial->SetPropertyValue("tileColor3", Shader::UT_FLOAT_VEC4, 1, &tileColor[TEXTURE_TILE3]);
+		
+	tileMaskMaterial->SetPropertyValue("fogColor", Shader::UT_FLOAT_VEC4, 1, &fogColor);
+	tileMaskMaterial->SetPropertyValue("fogDensity", Shader::UT_FLOAT, 1, &fogDensity);
+	
+	tileMaskMaterial->SetPropertyValue("cameraPosition", Shader::UT_FLOAT_VEC3, 1, &cameraPos);
+		
+	fullTiledMaterial->SetTexture("sampler2d", textures[TEXTURE_COLOR]);
+	fullTiledMaterial->SetPropertyValue("fogColor", Shader::UT_FLOAT_VEC4, 1, &fogColor);
+	fullTiledMaterial->SetPropertyValue("fogDensity", Shader::UT_FLOAT, 1, &fogDensity);
+}
+	
 };
