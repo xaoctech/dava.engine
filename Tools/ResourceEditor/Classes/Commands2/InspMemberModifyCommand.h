@@ -14,38 +14,26 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __QT_PROPERTY_DATA_INTROSPECTION_H__
-#define __QT_PROPERTY_DATA_INTROSPECTION_H__
+#ifndef __INSP_MEMEBER_MODIFY_COMMAND_H__
+#define __INSP_MEMEBER_MODIFY_COMMAND_H__
 
-#include "Base/Introspection.h"
-#include "../QtPropertyData.h"
+#include "Commands2/Command2.h"
 
-#include <QMap>
-
-class QtPropertyDataDavaVariant;
-
-class QtPropertyDataIntrospection : public QtPropertyData
+class InspMemberModifyCommand : public Command2
 {
-	Q_OBJECT
 public:
-	QtPropertyDataIntrospection(void *object, const DAVA::InspInfo *info, int hasAllFlags = DAVA::I_NONE);
-	virtual ~QtPropertyDataIntrospection();
+	InspMemberModifyCommand(const DAVA::InspMember *member, void *object, const DAVA::VariantType &value);
+	~InspMemberModifyCommand();
 
-protected:
+	virtual void Undo();
+	virtual void Redo();
+	virtual DAVA::Entity* GetEntity() const { return NULL; };
+
+	const DAVA::InspMember *member;
 	void *object;
-	const DAVA::InspInfo *info;
-	QMap<QtPropertyDataDavaVariant*, const DAVA::InspMember *> childVariantMembers;
 
-	void AddMember(const DAVA::InspMember *member, int hasAllFlags);
-
-	virtual QVariant GetValueInternal();
-	virtual void ChildChanged(const QString &key, QtPropertyData *data);
-	virtual void ChildNeedUpdate();
-
-	DAVA_DEPRECATED(void CreateCustomButtonsForRenderObject());
-
-protected slots:
-	void BakeTransform();
+	DAVA::VariantType oldValue;
+	DAVA::VariantType newValue;
 };
 
-#endif // __QT_PROPERTY_DATA_INTROSPECTION_H__
+#endif // __INSP_MEMEBER_MODIFY_COMMAND_H__

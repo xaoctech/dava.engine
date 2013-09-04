@@ -14,27 +14,35 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __QT_PROPERTY_DATA_INTRO_COLLECTION_H__
-#define __QT_PROPERTY_DATA_INTRO_COLLECTION_H__
+#include "Commands2/InspMemberModifyCommand.h"
 
-#include "Base/Introspection.h"
-#include "../QtPropertyData.h"
-
-class QtPropertyDataIntroCollection : public QtPropertyData
+InspMemberModifyCommand::InspMemberModifyCommand(const DAVA::InspMember *_member, void *_object, const DAVA::VariantType &_newValue)
+	: Command2(CMDID_INSP_MEMBER_MODIFY, "Modify value")
+	, member(_member)
+	, object(_object)
+	, newValue(_newValue)
 {
-public:
-	QtPropertyDataIntroCollection(void *_object, const DAVA::InspColl *_collection, int hasAllFlags = DAVA::I_NONE);
-	virtual ~QtPropertyDataIntroCollection();
+	if(NULL != member && NULL != object)
+	{
+		oldValue = member->Value(object);
+	}
+}
 
-protected:
-	void *object;
-	const DAVA::InspColl *collection;
+InspMemberModifyCommand::~InspMemberModifyCommand()
+{ }
 
-	//QMap<QtPropertyDataDavaVariant*, int> childVariantIndexes;
+void InspMemberModifyCommand::Undo()
+{
+	if(NULL != member && NULL != object)
+	{
+		member->SetValue(object, oldValue);
+	}
+}
 
-	virtual QVariant GetValueInternal();
-	//virtual void ChildChanged(const QString &key, QtPropertyData *data);
-	//virtual void ChildNeedUpdate();
-};
-
-#endif // __QT_PROPERTY_DATA_INTRO_COLLECTION_H__
+void InspMemberModifyCommand::Redo()
+{
+	if(NULL != member && NULL != object)
+	{
+		member->SetValue(object, newValue);
+	}
+}

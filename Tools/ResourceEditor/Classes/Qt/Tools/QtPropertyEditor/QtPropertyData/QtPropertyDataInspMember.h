@@ -14,66 +14,26 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __QT_PROPERTY_DATA_DAVA_KEYEDARCHIVE_H__
-#define __QT_PROPERTY_DATA_DAVA_KEYEDARCHIVE_H__
+#ifndef __QT_PROPERTY_DATA_INSP_MEMBER_H__
+#define __QT_PROPERTY_DATA_INSP_MEMBER_H__
 
 #include "Base/Introspection.h"
 #include "../QtPropertyData.h"
+#include "QtPropertyDataDavaVariant.h"
 
-#include <QLineEdit>
-#include <QComboBox>
-#include <QPushButton>
-
-class QtPropertyDataDavaKeyedArcive : public QtPropertyData
+class QtPropertyDataInspMember : public QtPropertyDataDavaVariant
 {
-	Q_OBJECT;
-
 public:
-	QtPropertyDataDavaKeyedArcive(DAVA::KeyedArchive *archive);
-	virtual ~QtPropertyDataDavaKeyedArcive();
+	QtPropertyDataInspMember(void *_object, const DAVA::InspMember *_member);
+	virtual ~QtPropertyDataInspMember();
 
 protected:
-	DAVA::KeyedArchive* curArchive;
-	int lastAddedType;
+	void *object;
+	const DAVA::InspMember *member;
 
 	virtual QVariant GetValueInternal();
 	virtual void SetValueInternal(const QVariant &value);
-	virtual void ChildChanged(const QString &key, QtPropertyData *data);
-
-private:
-	void ChildsSync();
-	void ChildCreate(const QString &key, DAVA::VariantType *value);
-
-protected slots:
-	void AddKeyedArchiveField();
-	void RemKeyedArchiveField();
-	void NewKeyedArchiveFieldReady(const DAVA::String &key, const DAVA::VariantType &value);
+	virtual bool EditorDoneInternal(QWidget *editor);
 };
 
-class KeyedArchiveItemWidget : public QWidget
-{
-	Q_OBJECT;
-
-public:
-	KeyedArchiveItemWidget(DAVA::KeyedArchive *arch, int defaultType = DAVA::VariantType::TYPE_STRING, QWidget *parent = NULL);
-	~KeyedArchiveItemWidget();
-
-signals:
-	void ValueReady(const DAVA::String &key, const DAVA::VariantType &value);
-
-protected:
-	DAVA::KeyedArchive *arch;
-
-	QLineEdit *keyWidget;
-	QComboBox *valueWidget;
-	QComboBox *presetWidget;
-	QPushButton *defaultBtn;
-
-	virtual void showEvent(QShowEvent * event);
-	virtual void keyPressEvent(QKeyEvent *event);
-
-protected slots:
-	void OkKeyPressed();
-};
-
-#endif // __QT_PROPERTY_DATA_DAVA_KEYEDARCHIVE_H__
+#endif // __QT_PROPERTY_DATA_INSP_MEMBER_H__
