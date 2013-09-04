@@ -43,6 +43,7 @@ protected slots:
 	// SceneTree-specific slots.
 	void OnEffectSelectedFromSceneTree(SceneEditor2* scene, DAVA::Entity* effectNode);
 	void OnEmitterSelectedFromSceneTree(SceneEditor2* scene, DAVA::Entity* emitterNode);
+	void OnInnerEmitterSelectedFromSceneTree(SceneEditor2* scene, DAVA::ParticleEmitter* emitter);
 	void OnLayerSelectedFromSceneTree(SceneEditor2* scene, DAVA::ParticleLayer* layer, bool forceRefresh);
     void OnForceSelectedFromSceneTree(SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::int32 forceIndex);
 
