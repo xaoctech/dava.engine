@@ -25,6 +25,8 @@
 #include <QPushButton>
 #include <QPainter>
 #include <QLineEdit>
+#include <QEvent>
+#include <QCoreApplication>
 
 #include "SceneEditor/EditorSettings.h"
 
@@ -83,7 +85,7 @@ const DAVA::VariantType& QtPropertyDataDavaVariant::GetVariantValue() const
 
 void QtPropertyDataDavaVariant::SetVariantValue(const DAVA::VariantType& value)
 {
-	DVASSERT(curVariantValue.type == value.type);
+	DVASSERT(curVariantValue.type == DAVA::VariantType::TYPE_NONE || curVariantValue.type == value.type);
 	curVariantValue = value;
 }
 
@@ -578,11 +580,11 @@ QVariant QtPropertyDataDavaVariant::FromColor(const DAVA::Color &color)
 	QVariant v;
 	QColor c = ColorToQColor(color);
 
-	v = QString().sprintf("#%02x%02x%02x%02x", c.red(), c.green(), c.blue(), c.alpha());
+	//v = QString().sprintf("#%02x%02x%02x%02x", c.red(), c.green(), c.blue(), c.alpha());
 
+	v.setValue(c);
 	return v;
 }
-
 
 QVariant QtPropertyDataDavaVariant::FromAABBox3(const DAVA::AABBox3 &aabbox)
 {
@@ -698,6 +700,10 @@ bool QtPropertyDataDavaVariant::SetEditorDataInternal(QWidget *editor)
 			}
 
 			comboBox->setCurrentIndex(index);
+			comboBox->showPopup();
+
+			// QObject::connect(comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(ComboIndexChanged(int)));
+
 			ret = true;
 		}
 	}
@@ -762,6 +768,25 @@ void QtPropertyDataDavaVariant::FilePathOWPressed()
 		SetValue(path);
 	}
 }
+
+/*
+void QtPropertyDataDavaVariant::ComboIndexChanged(int index)
+{
+	QObject *obj = QObject::sender();
+	QWidget *parent = NULL;
+
+	while(NULL != obj && NULL == parent)
+	{
+		obj = obj->parent();
+		parent = dynamic_cast<QWidget *>(obj);
+	}
+
+	if(NULL != parent)
+	{
+		parent->setFocus(Qt::FocusReason::MouseFocusReason);
+	}
+}
+*/
 
 QIcon QtPropertyDataDavaVariant::GetIcon()
 {
