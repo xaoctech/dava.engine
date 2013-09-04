@@ -222,6 +222,7 @@ public:
 			  RefPtr< PropertyLine<float32> > spin,
 			  RefPtr< PropertyLine<float32> > spinVariation,
 			  RefPtr< PropertyLine<float32> > spinOverLife,
+			  bool randomSpinDirection,
 
 			  RefPtr< PropertyLine<Color> > colorRandom,
 			  RefPtr< PropertyLine<float32> > alphaOverLife,
@@ -268,6 +269,7 @@ protected:
 	RefPtr< PropertyLine<float32> > spin;
 	RefPtr< PropertyLine<float32> > spinVariation;
 	RefPtr< PropertyLine<float32> > spinOverLife;
+	bool randomSpinDirection;
 
 	RefPtr< PropertyLine<Color> > colorRandom;
 	RefPtr< PropertyLine<float32> > alphaOverLife;

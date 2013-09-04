@@ -200,6 +200,11 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 	InitWidget(spinTimeLine);
 	spinOverLifeTimeLine = new TimeLineWidget(this);
 	InitWidget(spinOverLifeTimeLine);
+		
+	randomSpinDirectionCheckBox = new QCheckBox("random spin direction", this);
+	connect(randomSpinDirectionCheckBox, SIGNAL(stateChanged(int)),
+			this, SLOT(OnValueChanged()));
+	mainBox->addWidget(randomSpinDirectionCheckBox);
 
 	colorRandomGradient = new GradientPickerWidget(this);
 	InitWidget(colorRandomGradient);
@@ -396,6 +401,10 @@ EmitterLayerWidget::~EmitterLayerWidget()
 		SIGNAL(stateChanged(int)),
 		this,
 		SLOT(OnValueChanged()));
+	disconnect(randomSpinDirectionCheckBox,
+		SIGNAL(stateChanged(int)),
+		this,
+		SLOT(OnValueChanged()));	
 	disconnect(pivotPointXSpinBox,
 			   SIGNAL(valueChanged(int)),
 			   this,
@@ -533,6 +542,8 @@ void EmitterLayerWidget::Init(SceneEditor2* scene, ParticleEmitter* emitter, DAV
 	//LAYER_SPIN_OVER_LIFE,
 	spinOverLifeTimeLine->Init(0, 1, updateMinimized);
 	spinOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->spinOverLife).GetProps(), Qt::blue, "spin over life");
+	
+	randomSpinDirectionCheckBox->setChecked(layer->randomSpinDirection);
 
 	//LAYER_COLOR_RANDOM, LAYER_ALPHA_OVER_LIFE, LAYER_COLOR_OVER_LIFE,
 	colorRandomGradient->Init(0, 1, "random color");
@@ -783,6 +794,7 @@ void EmitterLayerWidget::OnValueChanged()
 						 propSpin.GetPropLine(),
 						 propSpinVariation.GetPropLine(),
 						 propSpinOverLife.GetPropLine(),
+						 randomSpinDirectionCheckBox->isChecked(),
 
 						 propColorRandom.GetPropLine(),
 						 propAlphaOverLife.GetPropLine(),

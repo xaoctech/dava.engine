@@ -704,6 +704,7 @@
     <ClCompile Include="..\..\Sources\Internal\Math\Polygon3.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Math\RectPacker.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Math\Spline.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Math\Vector.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Network\MailSender.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Network\NetworkConnection.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Network\NetworkDelegate.cpp" />
