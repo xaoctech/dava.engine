@@ -44,6 +44,12 @@
 
 #include "Tools/QtPropertyEditor/QtPropertyItem.h"
 
+#include <QPushButton>
+
+typedef DAVA::Map<DAVA::String,std::pair<DAVA::uint32, bool> > STATE_FLAGS_MAP;
+typedef DAVA::Map<QtPropertyDataDavaVariant* , DAVA::VariantType> PROPERTY_INITIAL_VAL_MAP;
+typedef DAVA::Map<QPushButton * , STATE_FLAGS_MAP*>  BUTTON_TO_FLAGS_MAP;
+
 class SceneEditor2;
 
 class SystemsSettingsEditor: public QtPropertyEditor
@@ -83,18 +89,28 @@ protected slots:
 
 protected slots:
 
-	void ShowDialog(/*DAVA::Map<DAVA::String,std::pair<DAVA::uint32, bool>>& map*/);
+	void ShowDialog();
 
 protected:
 	
-	DAVA::String ResolveFlags(DAVA::Map<DAVA::String,std::pair<DAVA::uint32, bool>>& map, DAVA::uint32 currValue);
-//	DAVA::String GetCollisionSystemDrawMode();
+	QPushButton * CreatePushBnt();
 	
-	DAVA::Map<QtPropertyDataDavaVariant* , DAVA::VariantType> propertiesMap;
+	DAVA::uint32 ResolveMapToUint(STATE_FLAGS_MAP& map);
+	
+	void InitMapWithFlag(STATE_FLAGS_MAP& map, DAVA::uint32 value);
+	DAVA::String ResolveMapToString(STATE_FLAGS_MAP& map);
+	
+	
+	PROPERTY_INITIAL_VAL_MAP propertiesMapInitialValues;
 
 	SceneEditor2* sceneEditor;
 
-	DAVA::Map<DAVA::String,std::pair<DAVA::uint32, bool>> selectionSysDrawStateMap;
+	STATE_FLAGS_MAP selectionSysDrawStateMap;
+	STATE_FLAGS_MAP collisionSysDrawStateMap;
+
+	BUTTON_TO_FLAGS_MAP buttonToFlagsMap;
+	
+	DAVA::List<QPushButton * > buttonsList;
 	
 	/*ParticleEffectSystem * particleEffectSystem;
 	RenderSystem * renderSystem;

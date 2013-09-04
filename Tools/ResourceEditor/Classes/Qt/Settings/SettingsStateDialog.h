@@ -28,7 +28,7 @@ class SettingsStateDialog: public QDialog
 	Q_OBJECT
 
 public:
-	explicit SettingsStateDialog(DAVA::Map<DAVA::String,std::pair<DAVA::uint32, bool>>* flags, QWidget* parent = 0);
+	explicit SettingsStateDialog(DAVA::Map<DAVA::String,std::pair<DAVA::uint32, bool> >* flags, QWidget* parent = 0);
 	
 	~SettingsStateDialog();
 
@@ -42,7 +42,7 @@ protected slots:
 
 protected:
 
-	DAVA::Map<DAVA::String,std::pair<DAVA::uint32, bool>>* flags; 
+	DAVA::Map<DAVA::String,std::pair<DAVA::uint32, bool> >* flags;
 	DAVA::Map<DAVA::String, bool> initialValues; 
 	DAVA::List<QCheckBox*> checkList;
 	QDialogButtonBox* btnBox;

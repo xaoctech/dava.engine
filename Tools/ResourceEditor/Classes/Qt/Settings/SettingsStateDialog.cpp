@@ -20,14 +20,14 @@
 #include <Qstring>
 
 
-SettingsStateDialog::SettingsStateDialog(DAVA::Map<DAVA::String,std::pair<DAVA::uint32, bool>>* _flags, QWidget* parent)
+SettingsStateDialog::SettingsStateDialog(DAVA::Map<DAVA::String,std::pair<DAVA::uint32, bool> >* _flags, QWidget* parent)
 		:QDialog(parent)
 {
 	flags = _flags;
 	checkBoxForNothing = NULL;
 	checkBoxForAll = NULL;
 	mainLayout = new QVBoxLayout;
-	for(DAVA::Map<DAVA::String,std::pair<DAVA::uint32, bool>>::iterator it = flags->begin(); it != flags->end(); ++it)
+	for(DAVA::Map<DAVA::String,std::pair<DAVA::uint32, bool> >::iterator it = flags->begin(); it != flags->end(); ++it)
 	{
 		DAVA::String description = it->first;
 		bool isChecked = it->second.second;
@@ -57,6 +57,8 @@ SettingsStateDialog::SettingsStateDialog(DAVA::Map<DAVA::String,std::pair<DAVA::
 
 	mainLayout->addWidget(btnBox);
 	setLayout(mainLayout);
+	
+	setWindowFlags(Qt::Popup);
 }
 
 SettingsStateDialog::~SettingsStateDialog()
@@ -74,7 +76,7 @@ void SettingsStateDialog::CheckBoxChecked(int value)
 	QCheckBox* sender = dynamic_cast<QCheckBox*>(QObject::sender());
 	DVASSERT(sender);
 	DAVA::String key = sender->text().toStdString();
-	bool isChecked = value == Qt::Checked;
+	bool isChecked = value != Qt::Unchecked;
 	(*flags)[key].second =  isChecked;
 	
 	if(!isChecked)
@@ -87,6 +89,7 @@ void SettingsStateDialog::CheckBoxChecked(int value)
 			}
 		}
 		checkBoxForNothing->setChecked(true);
+		checkBoxForNothing->setEnabled(false);
 		return;
 	}
 	if( sender == checkBoxForNothing ||	sender == checkBoxForAll)
@@ -102,6 +105,7 @@ void SettingsStateDialog::CheckBoxChecked(int value)
 	else
 	{
 		checkBoxForNothing->setChecked(false);
+		checkBoxForNothing->setEnabled(true);
 		checkBoxForAll->setChecked(false);
 	}
 }
