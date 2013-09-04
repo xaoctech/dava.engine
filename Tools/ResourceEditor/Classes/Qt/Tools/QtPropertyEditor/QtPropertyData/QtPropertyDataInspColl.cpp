@@ -28,11 +28,11 @@
 
 
 
-#include "QtPropertyDataIntoCollection.h"
+#include "QtPropertyDataInspColl.h"
 #include "QtPropertyDataIntrospection.h"
 #include "QtPropertyDataDavaVariant.h"
 
-QtPropertyDataIntroCollection::QtPropertyDataIntroCollection(void *_object, const DAVA::InspColl *_collection, int hasAllFlags)
+QtPropertyDataInspColl::QtPropertyDataInspColl(void *_object, const DAVA::InspColl *_collection, int hasAllFlags)
 	: object(_object)
 	, collection(_collection)
 {
@@ -85,10 +85,10 @@ QtPropertyDataIntroCollection::QtPropertyDataIntroCollection(void *_object, cons
 	SetFlags(FLAG_IS_DISABLED);
 }
 
-QtPropertyDataIntroCollection::~QtPropertyDataIntroCollection()
+QtPropertyDataInspColl::~QtPropertyDataInspColl()
 { }
 
-QVariant QtPropertyDataIntroCollection::GetValueInternal()
+QVariant QtPropertyDataInspColl::GetValueInternal()
 {
 	ChildNeedUpdate();
 	return QString().sprintf("Collection, size %d", collection->Size(object));
