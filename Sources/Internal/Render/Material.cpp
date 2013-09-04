@@ -400,7 +400,7 @@ Material * Material::Clone()
     newMaterial->uniformFlatColor = uniformFlatColor;
     newMaterial->uniformTexture0Shift = uniformTexture0Shift;
 
-	newMaterial->renderStateBlock = renderStateBlock;
+	renderStateBlock.CopyTo(&newMaterial->renderStateBlock);
     
     newMaterial->isExportOwnerLayerEnabled = isExportOwnerLayerEnabled;
     newMaterial->ownerLayerName = ownerLayerName;

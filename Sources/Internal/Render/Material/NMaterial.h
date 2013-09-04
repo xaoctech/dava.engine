@@ -123,6 +123,7 @@ public:
     uint32 GetTextureCount();
     
     void SetPropertyValue(const FastName & propertyFastName, Shader::eUniformType type, uint32 size, const void * data);
+	NMaterialProperty* GetMaterialProperty(const FastName & keyName);
 
     uint32 GetLightCount() { return lightCount; };
     void SetLight(uint32 index, Light * light) { lights[index] = light; };
@@ -164,8 +165,7 @@ private:
 	
 private:
 	
-    void AddMaterialProperty(const String & keyName, YamlNode * uniformNode);
-	NMaterialProperty* GetMaterialProperty(const FastName & keyName);
+    void AddMaterialProperty(const String & keyName, const YamlNode * uniformNode);
     
     FastName materialName;
     

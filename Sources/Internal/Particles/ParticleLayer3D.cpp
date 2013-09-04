@@ -31,10 +31,12 @@
 #include "Particles/ParticleLayer3D.h"
 #include "Render/RenderDataObject.h"
 #include "Render/RenderManager.h"
-#include "Render/Material.h"
+#include "Render/Material/NMaterial.h"
+#include "Render/Material/MaterialSystem.h"
 #include "Math/MathHelpers.h"
 #include "Render/Highlevel/Camera.h"
 #include "ParticleEmitter3D.h"
+#include "Render/Highlevel/RenderFastNames.h"
 
 namespace DAVA
 {
@@ -119,9 +121,9 @@ void ParticleLayer3D::PrepareRenderData(Camera* camera)
 	Particle * current = head;
 	if(current)
 	{
-		renderBatch->GetMaterial()->GetRenderState()->SetTexture(sprite->GetTexture(current->frame));
+		renderBatch->GetMaterial()->SetTexture(TEXTURE_ALBEDO, sprite->GetTexture(current->frame));
 	}
-
+	
 	int32 verticesCount = 0;
 	int32 texturesCount = 0;
 	int32 colorsCount = 0;	
@@ -246,7 +248,8 @@ void ParticleLayer3D::PrepareRenderData(Camera* camera)
 		if (IsLong())
 		{
 			RenderManager::Instance()->SetRenderData(renderData);
-			renderBatch->GetMaterial()->PrepareRenderState();
+			//renderBatch->GetMaterial()->PrepareRenderState();
+			Logger::Error("Need to return preparation of the render state to particles.");
 		}
 		renderBatch->SetRenderDataObject(renderData);
 	}

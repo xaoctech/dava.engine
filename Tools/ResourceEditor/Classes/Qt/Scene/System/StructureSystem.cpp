@@ -532,12 +532,29 @@ bool StructureSystem::CopyLightmapSettings(DAVA::Entity *fromEntity, DAVA::Entit
                 DAVA::RenderBatch *fromBatch = fromMeshes[m]->GetRenderBatch(rb);
                 DAVA::RenderBatch *toBatch = toMeshes[m]->GetRenderBatch(rb);
                 
-                DAVA::InstanceMaterialState *fromState = fromBatch->GetMaterialInstance();
-                DAVA::InstanceMaterialState *toState = toBatch->GetMaterialInstance();
+                //DAVA::InstanceMaterialState *fromState = fromBatch->GetMaterialInstance();
+                //DAVA::InstanceMaterialState *toState = toBatch->GetMaterialInstance();
                 
-                if(fromState && toState)
+				NMaterial* fromMaterial = fromBatch->GetMaterial();
+				NMaterial* toMaterial = toBatch->GetMaterial();
+				
+                if(fromMaterial && toMaterial)
                 {
-                    toState->InitFromState(fromState);
+                    //toState->InitFromState(fromState);
+					
+					toMaterial->SetTexture(TEXTURE_LIGHTMAP, fromMaterial->GetTexture(TEXTURE_LIGHTMAP));
+					
+					NMaterialProperty* uvOffsetProp = fromMaterial->GetMaterialProperty(LIGHTMAP_UV_OFFSET);
+					if(uvOffsetProp)
+					{
+						toMaterial->SetPropertyValue(LIGHTMAP_UV_OFFSET, Shader::UT_FLOAT_VEC2, 1, uvOffsetProp->data);
+					}
+					
+					NMaterialProperty* uvScaleProp = fromMaterial->GetMaterialProperty(LIGHTMAP_UV_SCALE);
+					if(uvScaleProp)
+					{
+						toMaterial->SetPropertyValue(LIGHTMAP_UV_SCALE, Shader::UT_FLOAT_VEC2, 1, uvScaleProp->data);
+					}
                 }
                 
             }

@@ -84,12 +84,12 @@ bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
 	int32 nodeCount = rootNode->GetCount();
 	for(int32 i = 0; i < nodeCount; ++i)
 	{
-		YamlNode* materialNode = rootNode->Get(i);
+		const YamlNode* materialNode = rootNode->Get(i);
 		if(materialNode->AsString() == "Material")
 		{
 			MaterialData data;
 			
-			YamlNode* nameNode = materialNode->Get("Name");
+			const YamlNode* nameNode = materialNode->Get("Name");
 			DVASSERT(nameNode);
 			
 			if(nameNode)
@@ -99,7 +99,7 @@ bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
 				DVASSERT(data.name.size() > 0);
 				if(data.name.size() > 0)
 				{
-					YamlNode* pathNode = materialNode->Get("Path");
+					const YamlNode* pathNode = materialNode->Get("Path");
 					DVASSERT(pathNode);
 					
 					if(pathNode)
@@ -110,7 +110,7 @@ bool MaterialSystem::LoadMaterialConfig(const FilePath& filePath)
 						if(data.path.size() > 0)
 						{
 							//only parent node is optional
-							YamlNode* parentNode = materialNode->Get("Parent");
+							const YamlNode* parentNode = materialNode->Get("Parent");
 							if(parentNode)
 							{
 								data.parent = parentNode->AsString();
