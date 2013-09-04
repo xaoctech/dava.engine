@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 
 #include "EmitterLayerWidget.h"
 #include "Commands2/ParticleEditorCommands.h"
@@ -95,6 +109,14 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 			SIGNAL(stateChanged(int)),
 			this,
 			SLOT(OnValueChanged()));
+
+
+	inheritPostionCheckBox = new QCheckBox("Inherit Position");
+	mainBox->addWidget(inheritPostionCheckBox);
+	connect(inheritPostionCheckBox,
+		SIGNAL(stateChanged(int)),
+		this,
+		SLOT(OnValueChanged()));
 
 	isLongCheckBox = new QCheckBox("Long");
 	mainBox->addWidget(isLongCheckBox);
@@ -203,6 +225,11 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 	frameOverlifeLayout->addWidget(frameOverlifeFPSSpin);
 	frameOverlifeLayout->addWidget(frameOverlifeFPSLabel);
 	mainBox->addLayout(frameOverlifeLayout);
+
+	randomFrameOnStartCheckBox = new QCheckBox("random frame on start", this);
+	connect(randomFrameOnStartCheckBox, SIGNAL(stateChanged(int)),
+		this, SLOT(OnValueChanged()));
+	mainBox->addWidget(randomFrameOnStartCheckBox);
 	
 	angleTimeLine = new TimeLineWidget(this);
 	InitWidget(angleTimeLine);
@@ -321,6 +348,10 @@ EmitterLayerWidget::~EmitterLayerWidget()
 			SIGNAL(stateChanged(int)),
 			this,
 			SLOT(OnValueChanged()));
+	disconnect(inheritPostionCheckBox,
+		SIGNAL(stateChanged(int)),
+		this,
+		SLOT(OnValueChanged()));
 	disconnect(isLongCheckBox,
 			SIGNAL(stateChanged(int)),
 			this,
@@ -361,6 +392,10 @@ EmitterLayerWidget::~EmitterLayerWidget()
 		   SIGNAL(valueChanged(int)),
 		   this,
 		   SLOT(OnValueChanged()));
+	disconnect(randomFrameOnStartCheckBox,
+		SIGNAL(stateChanged(int)),
+		this,
+		SLOT(OnValueChanged()));
 	disconnect(pivotPointXSpinBox,
 			   SIGNAL(valueChanged(int)),
 			   this,
@@ -406,6 +441,7 @@ void EmitterLayerWidget::Init(SceneEditor2* scene, ParticleEmitter* emitter, DAV
 
 	enableCheckBox->setChecked(!layer->GetDisabled());
 	additiveCheckBox->setChecked(layer->GetAdditive());
+	inheritPostionCheckBox->setChecked(layer->GetInheritPosition());
 	isLongCheckBox->setChecked(layer->IsLong());
 	isLoopedCheckBox->setChecked(layer->GetLooped());
 
@@ -513,6 +549,7 @@ void EmitterLayerWidget::Init(SceneEditor2* scene, ParticleEmitter* emitter, DAV
 	frameOverlifeCheckBox->setChecked(layer->frameOverLifeEnabled);
 	frameOverlifeFPSSpin->setValue(layer->frameOverLifeFPS);
 	frameOverlifeFPSSpin->setEnabled(layer->frameOverLifeEnabled);
+	randomFrameOnStartCheckBox->setChecked(layer->randomFrameOnStart);
 	
 	angleTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
 	angleTimeLine->AddLine(0, PropLineWrapper<float32>(layer->angle).GetProps(), Qt::blue, "angle");
@@ -729,6 +766,7 @@ void EmitterLayerWidget::OnValueChanged()
 						 propLayerType,
 						 !enableCheckBox->isChecked(),
 						 additiveCheckBox->isChecked(),
+						 inheritPostionCheckBox->isChecked(),
 						 isLongCheckBox->isChecked(),
 						 isLoopedCheckBox->isChecked(),
 						 sprite,
@@ -760,6 +798,7 @@ void EmitterLayerWidget::OnValueChanged()
 						 (float32)loopVariationSpin->value(),
 						 frameOverlifeCheckBox->isChecked(),
 						 (float32)frameOverlifeFPSSpin->value(),
+						 randomFrameOnStartCheckBox->isChecked(),
 						 (float32)pivotPointXSpinBox->value(),
 						 (float32)pivotPointYSpinBox->value());
 
@@ -865,6 +904,7 @@ void EmitterLayerWidget::SetSuperemitterMode(bool isSuperemitter)
 	frameOverlifeCheckBox->setVisible(!isSuperemitter);
 	frameOverlifeFPSSpin->setVisible(!isSuperemitter);
 	frameOverlifeFPSLabel->setVisible(!isSuperemitter);
+	randomFrameOnStartCheckBox->setVisible(!isSuperemitter);
 
 	// The Pivot Point must be hidden for Superemitter mode.
 	pivotPointLabel->setVisible(!isSuperemitter);

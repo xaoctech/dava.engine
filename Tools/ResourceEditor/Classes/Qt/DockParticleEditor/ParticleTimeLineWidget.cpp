@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 
 #include "ParticleTimeLineWidget.h"
 #include "ParticleTimeLineColumns.h"
@@ -32,6 +46,9 @@ ParticleTimeLineWidget::ParticleTimeLineWidget(QWidget *parent/* = 0*/) :
 	selectedPoint(-1, -1),
 	selectedEffect(NULL),
 	selectedEmitter(NULL),
+	selectedLine(-1),	
+	emitterNode(NULL),
+	effectNode(NULL),
 	selectedLayer(NULL),
 	activeScene(NULL),
 #ifdef Q_WS_WIN
@@ -54,6 +71,10 @@ ParticleTimeLineWidget::ParticleTimeLineWidget(QWidget *parent/* = 0*/) :
 			SIGNAL(EmitterSelected(SceneEditor2*, DAVA::Entity*)),
 			this,
 			SLOT(OnEmitterSelectedFromSceneTree(SceneEditor2*, DAVA::Entity*)));
+	connect(SceneSignals::Instance(),
+			SIGNAL(InnerEmitterSelected(SceneEditor2*, DAVA::ParticleEmitter*)),
+			this,
+			SLOT(OnInnerEmitterSelectedFromSceneTree(SceneEditor2*, DAVA::ParticleEmitter*)));
 	connect(SceneSignals::Instance(),
 			SIGNAL(LayerSelected(SceneEditor2*, DAVA::ParticleLayer*, bool)),
 			this,
@@ -483,6 +504,9 @@ void ParticleTimeLineWidget::paintEvent(QPaintEvent *e)
 		}
 		if(!(startPosition == endPosition && startPosition != POSITION_INSIDE))
 		{
+			if (selectedLine == iter->first)
+				painter.setPen(QPen(line.color, LINE_WIDTH+2));
+
 			painter.drawLine(startPoint, endPoint);
 		}
 		// Draw additional lines if layer is looped
@@ -693,38 +717,75 @@ void ParticleTimeLineWidget::UpdateSizePolicy()
 
 void ParticleTimeLineWidget::mouseMoveEvent(QMouseEvent * event)
 {
-	if (selectedPoint.x() == -1)
+	if (selectedPoint.x() != -1)
 	{
-		ScrollZoomWidget::mouseMoveEvent(event);
+		LINE_MAP::iterator iter = lines.find(selectedPoint.x());
+		if (iter == lines.end())
+			return;
+
+		LINE& line = iter->second;
+
+		QRect graphRect = GetGraphRect();
+		float32 value = (event->pos().x() - graphRect.left()) / (float32)graphRect.width() * (maxTime - minTime) + minTime;
+		value = Max(minTime, Min(maxTime, value));
+		if (selectedPoint.y() == 0) //start point selected
+		{
+			line.startTime = Min(value, line.endTime);
+		}
+		else
+		{
+			line.endTime = Max(value, line.startTime);
+		}
+		update();
 		return;
 	}
-	
-	LINE_MAP::iterator iter = lines.find(selectedPoint.x());
-	if (iter == lines.end())
-		return;
-	
-	LINE& line = iter->second;
-	
-	if (line.hasLoopVariation)
-		return;
+	else if (selectedLine != -1)
+	{
+		LINE_MAP::iterator iter = lines.find(selectedLine);
+		if (iter == lines.end())
+			return;
+		LINE& line = iter->second;
+		int32 delta = event->pos().x() - selectedLineOrigin;
+		selectedLineOrigin = event->pos().x();
+
+		QRect graphRect = GetGraphRect();
 		
-	QRect graphRect = GetGraphRect();
-	float32 value = (event->pos().x() - graphRect.left()) / (float32)graphRect.width() * (maxTime - minTime) + minTime;
-	value = Max(minTime, Min(maxTime, value));
-	if (selectedPoint.y() == 0) //start point selected
-	{
-		line.startTime = Min(value, line.endTime);
+		float32 offset = delta / (float32)graphRect.width() * (maxTime - minTime);		
+		offset = Max(generalMinTime-line.startTime, Min(generalMaxTime-line.endTime, offset));		
+		line.startTime+=offset;
+		line.endTime+=offset;
+		update();
+		return;
+
 	}
-	else
-	{
-		line.endTime = Max(value, line.startTime);
-	}
-	update();
+
+	ScrollZoomWidget::mouseMoveEvent(event);
 }
 
 void ParticleTimeLineWidget::mousePressEvent(QMouseEvent * event)
 {
 	selectedPoint = GetPoint(event->pos());
+	if (selectedPoint.x() == -1) //try selecting line only if no point selected endpoint
+	{
+		uint32 i = 0;
+		QRect grapRect = GetGraphRect();
+		
+		for (LINE_MAP::const_iterator iter = lines.begin(); iter != lines.end(); ++iter, ++i)
+		{			
+			const LINE& line = iter->second;
+
+			QPoint startPoint(grapRect.left() + (line.startTime - minTime) / (maxTime - minTime) * grapRect.width(), grapRect.top() + (i + 1) * LINE_STEP);
+			QPoint endPoint(grapRect.left() + (line.endTime - minTime) / (maxTime - minTime) * grapRect.width(), grapRect.top() + (i + 1) * LINE_STEP);
+			QRect lineRect = QRect(startPoint - QPoint(RECT_SIZE, RECT_SIZE), endPoint + QPoint(RECT_SIZE, RECT_SIZE));			
+
+			if (lineRect.contains(event->pos()))
+			{
+				selectedLine = iter->first;
+				selectedLineOrigin = event->pos().x();
+				break;
+			}
+		}		
+	}
 
 	ScrollZoomWidget::mousePressEvent(event);
 	update();
@@ -737,7 +798,12 @@ void ParticleTimeLineWidget::mouseReleaseEvent(QMouseEvent * e)
 	{
 		OnValueChanged(selectedPoint.x());
 	}
+	if (selectedLine != -1)
+	{
+		OnValueChanged(selectedLine);
+	}
 		
+	selectedLine = -1;
 	selectedPoint = QPoint(-1, -1);
 	ScrollZoomWidget::mouseReleaseEvent(e);
 	update();
@@ -864,6 +930,12 @@ void ParticleTimeLineWidget::OnEmitterSelectedFromSceneTree(SceneEditor2* scene,
 		emitter = GetEmitter(emitterNode);
 	}
 
+	HandleEmitterSelected(emitter, NULL);
+}
+
+void ParticleTimeLineWidget::OnInnerEmitterSelectedFromSceneTree(SceneEditor2* scene, DAVA::ParticleEmitter* emitter)
+{
+	activeScene = scene;	
 	HandleEmitterSelected(emitter, NULL);
 }
 

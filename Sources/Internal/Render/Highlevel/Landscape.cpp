@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #include "Render/Highlevel/Landscape.h"
 #include "Render/Image.h"
 #include "Render/RenderManager.h"
@@ -856,27 +870,37 @@ void Landscape::DrawFans()
  */
 }
 	
-int Landscape::GetMaxLod(LandscapeQuad& quad)
+int Landscape::GetMaxLod(float32 quadDistance)
 {
-	Vector3 v = cameraPos - quad.bbox.max;
-	float32 dist0 = v.SquareLength();
-		
-	v = cameraPos - quad.bbox.min;
-	float32 dist1 = v.SquareLength();
-		
-	dist0 = Max(dist0, dist1);
-		
 	int32 maxLod = 0;
 		
 	for (int32 k = 0; k < lodLevelsCount; ++k)
 	{
-		if (dist0 > lodSqDistance[k])
+		if (quadDistance > lodSqDistance[k])
+		{
 			maxLod = k + 1;
+		}
+		else //DF-1863 (stop checking for max lod when distance is less than in lodSqDistance since lodSqDistance is sorted)
+		{
+			break;
+		}
 	}
 		
 	return maxLod;
 }
-    
+	
+float32 Landscape::GetQuadToCameraDistance(const Vector3& camPos, const LandscapeQuad& quad)
+{
+	Vector3 v = camPos - quad.bbox.max;
+	float32 dist0 = v.SquareLength();
+	
+	v = camPos - quad.bbox.min;
+	float32 dist1 = v.SquareLength();
+	
+	dist0 = Max(dist0, dist1);
+	return dist0;
+}
+	
 void Landscape::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
 {
     //Frustum * frustum = scene->GetClipCamera()->GetFrustum();
@@ -947,30 +971,37 @@ void Landscape::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
     }
 	
 	//VI: this check should fix occasional cracks on the landscape
+	//VI: DF-1864 - select max distance from camera to quad and calculate max lod for that distance only
 	if(minLod == maxLod)
 	{
 		LandQuadTreeNode<LandscapeQuad> * parentNode = currentNode->parent;
+		float32 maxQuadDistance = -1.0f;
 		
 		if(parentNode)
 		{
 			if(parentNode->neighbours[LEFT])
 			{
-				maxLod = Max(maxLod, GetMaxLod(parentNode->neighbours[LEFT]->data));
+				maxQuadDistance = GetQuadToCameraDistance(cameraPos, parentNode->neighbours[LEFT]->data);
 			}
 			
 			if(parentNode->neighbours[RIGHT])
 			{
-				maxLod = Max(maxLod, GetMaxLod(parentNode->neighbours[RIGHT]->data));
+				maxQuadDistance = Max(maxQuadDistance, GetQuadToCameraDistance(cameraPos, parentNode->neighbours[RIGHT]->data));
 			}
 			
 			if(parentNode->neighbours[TOP])
 			{
-				maxLod = Max(maxLod, GetMaxLod(parentNode->neighbours[TOP]->data));
+				maxQuadDistance = Max(maxQuadDistance, GetQuadToCameraDistance(cameraPos, parentNode->neighbours[TOP]->data));
 			}
 			
 			if(parentNode->neighbours[BOTTOM])
 			{
-				maxLod = Max(maxLod, GetMaxLod(parentNode->neighbours[BOTTOM]->data));
+				maxQuadDistance = Max(maxQuadDistance, GetQuadToCameraDistance(cameraPos, parentNode->neighbours[BOTTOM]->data));
+			}
+			
+			if(maxQuadDistance >= 0.0f)
+			{
+				maxLod = GetMaxLod(maxQuadDistance);
 			}
 		}
     }
@@ -983,7 +1014,7 @@ void Landscape::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
     }
     //Logger::Debug("%f %f %d %d", minDist, maxDist, minLod, maxLod);
 #endif
-                      
+
 //    if (frustum->IsFullyInside(currentNode->data.bbox))
 //    {
 //        RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
@@ -1243,9 +1274,7 @@ void Landscape::Draw(Camera * camera)
 //    frustum->Set();
 
     frustum = camera->GetFrustum();
-    cameraPos = camera->GetPosition();
-    
-    fans.clear();
+    cameraPos = camera->GetPosition();        
     
     flashQueueCounter = 0;
     
@@ -1254,12 +1283,18 @@ void Landscape::Draw(Camera * camera)
 	Draw(&quadTreeHead);
 #else //#if defined (DRAW_OLD_STYLE)   
     
-    
+
+
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, camera->GetMatrix());
-    lod0quads.clear();
-    lodNot0quads.clear();
-    
-	Draw(&quadTreeHead);
+
+	if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_LANDSCAPE_LODS))
+	{
+		fans.clear();
+		lod0quads.clear();
+		lodNot0quads.clear();
+
+		Draw(&quadTreeHead);
+	}
     
     BindMaterial(nearLodIndex);
     int32 count0 = lod0quads.size();
@@ -1747,11 +1782,11 @@ void Landscape::SetTiledShaderMode(DAVA::Landscape::eTiledShaderMode _tiledShade
     InitShaders();
 }
     
-void Landscape::SetFog(bool _isFogEnabled)
+void Landscape::SetFog(const bool& fogState)
 {
-    if(isFogEnabled != _isFogEnabled)
+    if(isFogEnabled != fogState)
     {
-        isFogEnabled = _isFogEnabled;
+        isFogEnabled = fogState;
         
         InitShaders();
     }
@@ -1816,16 +1851,6 @@ RenderObject * Landscape::Clone( RenderObject *newObject )
 	return newObject;
 }
 	
-void Landscape::SetFogProp(const bool& fogState)
-{
-	SetFog(fogState);
-}
-	
-bool Landscape::GetFogProp()
-{
-	return IsFogEnabled();
-}
-
 int32 Landscape::GetDrawIndices() const
 {
     return drawIndices;

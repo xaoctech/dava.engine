@@ -130,15 +130,6 @@
     <Filter Include="Classes\CommandLine\SceneUtils">
       <UniqueIdentifier>{ea1c3731-01c7-4f90-ba93-09071caa53a8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Tools">
-      <UniqueIdentifier>{45b2cb13-419f-47b9-99d2-89b20886f0da}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Tools\TextureCompression">
-      <UniqueIdentifier>{205dab52-3e67-44b6-bbac-6f311418ba44}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Tools\TexturePacker">
-      <UniqueIdentifier>{58389bc5-6d21-46ea-a880-93363866a5c2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Classes\Qt\SpritePacker">
       <UniqueIdentifier>{7ef6c442-b117-4fd7-9727-2ca137b19620}</UniqueIdentifier>
     </Filter>
@@ -1305,30 +1296,6 @@
     <ClCompile Include="Classes\Qt\DockSceneTree\SceneTreeItem.cpp">
       <Filter>Classes\Qt\DockSceneTree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Tools\TexturePacker\CommandLineParser.cpp">
-      <Filter>Tools\TexturePacker</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Tools\TexturePacker\DefinitionFile.cpp">
-      <Filter>Tools\TexturePacker</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Tools\TexturePacker\ImagePacker.cpp">
-      <Filter>Tools\TexturePacker</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Tools\TexturePacker\PngImage.cpp">
-      <Filter>Tools\TexturePacker</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Tools\TexturePacker\ResourcePacker2D.cpp">
-      <Filter>Tools\TexturePacker</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Tools\TexturePacker\TexturePacker.cpp">
-      <Filter>Tools\TexturePacker</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Tools\TextureCompression\DXTConverter.cpp">
-      <Filter>Tools\TextureCompression</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Tools\TextureCompression\PVRConverter.cpp">
-      <Filter>Tools\TextureCompression</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\SpritesPacker\SpritePackerHelper.cpp">
       <Filter>Classes\Qt\SpritePacker</Filter>
     </ClCompile>
@@ -1562,9 +1529,6 @@
     </ClCompile>
     <ClCompile Include="Classes\Qt\Tools\MimeDataHelper\MimeDataHelper.cpp">
       <Filter>Classes\Qt\Tools\MimeDataHelper</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Tools\TexturePacker\FramePathHelper.cpp">
-      <Filter>Tools\TexturePacker</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\Scene\System\EditorLightSystem.cpp">
       <Filter>Classes\Qt\Scene\System</Filter>
@@ -2060,9 +2024,6 @@
     </ClCompile>
     <ClCompile Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorUtils.cpp">
       <Filter>Classes\CommandLine\TextureDescriptor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Tools\TexturePacker\FramePathHelper.cpp">
-      <Filter>Tools\TexturePacker</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\DockProperties\ActionComponentEditor.cpp">
       <Filter>Classes\Qt\DockProperties</Filter>
@@ -3284,30 +3245,6 @@
     <ClInclude Include="Classes\Qt\DockSceneTree\SceneTreeItem.h">
       <Filter>Classes\Qt\DockSceneTree</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Tools\TexturePacker\CommandLineParser.h">
-      <Filter>Tools\TexturePacker</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Tools\TexturePacker\DefinitionFile.h">
-      <Filter>Tools\TexturePacker</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Tools\TexturePacker\ImagePacker.h">
-      <Filter>Tools\TexturePacker</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Tools\TexturePacker\PngImage.h">
-      <Filter>Tools\TexturePacker</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Tools\TexturePacker\ResourcePacker2D.h">
-      <Filter>Tools\TexturePacker</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Tools\TexturePacker\TexturePacker.h">
-      <Filter>Tools\TexturePacker</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Tools\TextureCompression\DXTConverter.h">
-      <Filter>Tools\TextureCompression</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Tools\TextureCompression\PVRConverter.h">
-      <Filter>Tools\TextureCompression</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\SpritesPacker\SpritePackerHelper.h">
       <Filter>Classes\Qt\SpritePacker</Filter>
     </ClInclude>
@@ -3509,9 +3446,6 @@
     <ClInclude Include="Classes\Qt\Tools\MimeDataHelper\MimeDataHelper.h">
       <Filter>Classes\Qt\Tools\MimeDataHelper</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Tools\TexturePacker\FramePathHelper.h">
-      <Filter>Tools\TexturePacker</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\Scene\System\EditorLightSystem.h">
       <Filter>Classes\Qt\Scene\System</Filter>
     </ClInclude>
@@ -3664,9 +3598,6 @@
     </ClInclude>
     <ClInclude Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorUtils.h">
       <Filter>Classes\CommandLine\TextureDescriptor</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Tools\TexturePacker\FramePathHelper.h">
-      <Filter>Tools\TexturePacker</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockProperties\ActionComponentEditor.h">
       <Filter>Classes\Qt\DockProperties</Filter>
